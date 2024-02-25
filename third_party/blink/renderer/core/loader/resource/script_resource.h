@@ -47,6 +47,11 @@ class KURL;
 class ResourceFetcher;
 class ScriptCachedMetadataHandler;
 
+namespace v8_compile_hints {
+class V8CrowdsourcedCompileHintsConsumer;
+class V8CrowdsourcedCompileHintsProducer;
+}  // namespace v8_compile_hints
+
 // ScriptResource is a resource representing a JavaScript, either a classic or
 // module script. Based on discussions (crbug.com/1178198) ScriptResources are
 // shared between classic and module scripts.
@@ -65,13 +70,18 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   // is passed in.
   enum StreamingAllowed { kNoStreaming, kAllowStreaming };
 
-  static ScriptResource* Fetch(FetchParameters&,
-                               ResourceFetcher*,
-                               ResourceClient*,
-                               StreamingAllowed);
+  static ScriptResource* Fetch(
+      FetchParameters&,
+      ResourceFetcher*,
+      ResourceClient*,
+      v8::Isolate*,
+      StreamingAllowed,
+      v8_compile_hints::V8CrowdsourcedCompileHintsProducer*,
+      v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*);
 
   // Public for testing
   static ScriptResource* CreateForTest(
+      v8::Isolate* isolate,
       const KURL& url,
       const WTF::TextEncoding& encoding,
       mojom::blink::ScriptType = mojom::blink::ScriptType::kClassic);
@@ -79,6 +89,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   ScriptResource(const ResourceRequest&,
                  const ResourceLoaderOptions&,
                  const TextResourceDecoderOptions&,
+                 v8::Isolate*,
                  StreamingAllowed,
                  mojom::blink::ScriptType);
   ~ScriptResource() override;
@@ -98,8 +109,6 @@ class CORE_EXPORT ScriptResource final : public TextResource {
                     WebProcessMemoryDump*) const override;
 
   void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
-
-  bool CodeCacheHashRequired() const override;
 
   const ParkableString& SourceText();
 
@@ -140,6 +149,19 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Visible for tests.
   void SetRevalidatingRequest(const ResourceRequestHead&) override;
+
+  v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
+  GetV8CrowdsourcedCompileHintsProducer() const {
+    return v8_compile_hints_producer_.Get();
+  }
+
+  v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
+  GetV8CrowdsourcedCompileHintsConsumer() const {
+    return v8_compile_hints_consumer_.Get();
+  }
+
+  // Returns the Isolate if set. This may be null.
+  v8::Isolate* GetIsolateOrNull() { return isolate_if_main_thread_; }
 
  protected:
   void DestroyDecodedDataIfPossible() override;
@@ -194,10 +216,12 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   class ScriptResourceFactory : public ResourceFactory {
    public:
     explicit ScriptResourceFactory(
+        v8::Isolate* isolate,
         StreamingAllowed streaming_allowed,
         mojom::blink::ScriptType initial_request_script_type)
         : ResourceFactory(ResourceType::kScript,
                           TextResourceDecoderOptions::kPlainTextContent),
+          isolate_(isolate),
           streaming_allowed_(streaming_allowed),
           initial_request_script_type_(initial_request_script_type) {}
 
@@ -206,11 +230,12 @@ class CORE_EXPORT ScriptResource final : public TextResource {
         const ResourceLoaderOptions& options,
         const TextResourceDecoderOptions& decoder_options) const override {
       return MakeGarbageCollected<ScriptResource>(
-          request, options, decoder_options, streaming_allowed_,
+          request, options, decoder_options, isolate_, streaming_allowed_,
           initial_request_script_type_);
     }
 
    private:
+    v8::Isolate* isolate_;
     StreamingAllowed streaming_allowed_;
     mojom::blink::ScriptType initial_request_script_type_;
   };
@@ -236,6 +261,10 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   ParkableString source_text_;
 
+  // This isolate will be null if this ScriptResource is not created on the main
+  // thread. The isolate is not stored because non-main thread Isolates are
+  // transient. The main thread isolate will be always outlive this object.
+  v8::Isolate* isolate_if_main_thread_;
   Member<ResourceScriptStreamer> streamer_;
   ScriptStreamer::NotStreamingReason no_streamer_reason_ =
       ScriptStreamer::NotStreamingReason::kInvalid;
@@ -245,6 +274,22 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   ConsumeCacheState consume_cache_state_;
   const mojom::blink::ScriptType initial_request_script_type_;
   std::unique_ptr<TextResourceDecoder> stream_text_decoder_;
+
+  Member<v8_compile_hints::V8CrowdsourcedCompileHintsProducer>
+      v8_compile_hints_producer_;
+  // The data V8CrowdsourcedCompileHintsConsumer consumes is tied to a Page.
+  // It's possible that another Page requests the same script while streaming is
+  // ongoing, and starts using the same ScriptResource. This is safe to do, as
+  // compile hints only affect what's compiled upfront, but don't change the
+  // semantics of JavaScript. It might lead to compiling a non-optimal set of
+  // functions (compiling too much and consuming memory, or not compiling enough
+  // and increasing the execution time). In practice, the compile hints are
+  // probably mostly reasonable, e.g., pages often use a common library in a
+  // similar way. As this situation is rare and nothing will go too badly wrong,
+  // we don't do anything to avoid false sharing of compile hints via a common
+  // ScriptResource.
+  Member<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>
+      v8_compile_hints_consumer_;
 };
 
 template <>

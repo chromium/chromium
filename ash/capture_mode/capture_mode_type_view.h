@@ -20,9 +20,9 @@ class TabSliderButton;
 // A view that is part of the CaptureBarView, from which the user can toggle
 // between the two available capture types (image, and video).
 class ASH_EXPORT CaptureModeTypeView : public views::View {
- public:
-  METADATA_HEADER(CaptureModeTypeView);
+  METADATA_HEADER(CaptureModeTypeView, views::View)
 
+ public:
   // The `active_behavior` decides the supported capture types.
   explicit CaptureModeTypeView(CaptureModeBehavior* active_behavior);
   CaptureModeTypeView(const CaptureModeTypeView&) = delete;
@@ -41,13 +41,13 @@ class ASH_EXPORT CaptureModeTypeView : public views::View {
 
   // Owned by the views hierarchy. The capture type switch contains image and
   // video capture type toggle buttons.
-  raw_ptr<TabSlider, ExperimentalAsh> capture_type_switch_;
+  raw_ptr<TabSlider> capture_type_switch_;
 
   // Image and video toggle buttons are owned by `capture_type_switch_` which
   // will be created based on the active behavior of the current capture mode
   // session.
-  raw_ptr<TabSliderButton, ExperimentalAsh> image_toggle_button_ = nullptr;
-  raw_ptr<TabSliderButton, ExperimentalAsh> video_toggle_button_;
+  raw_ptr<TabSliderButton> image_toggle_button_ = nullptr;
+  raw_ptr<TabSliderButton> video_toggle_button_;
 };
 
 }  // namespace ash

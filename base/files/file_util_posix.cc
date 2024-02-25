@@ -20,6 +20,9 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <bit>
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/base_switches.h"
 #include "base/bits.h"
@@ -340,10 +343,10 @@ FilePath MakeAbsoluteFilePath(const FilePath& input) {
   return FilePath(full_path);
 }
 
-absl::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
+std::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
     const FilePath& input) {
   if (input.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   FilePath collapsed_path;
@@ -356,7 +359,7 @@ absl::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
     components_span = components_span.subspan(1);
   } else {
     if (!GetCurrentDirectory(&collapsed_path)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -450,8 +453,9 @@ bool SetNonBlocking(int fd) {
     return false;
   if (flags & O_NONBLOCK)
     return true;
-  if (HANDLE_EINTR(fcntl(fd, F_SETFL, flags | O_NONBLOCK)) == -1)
+  if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
     return false;
+  }
   return true;
 }
 
@@ -461,8 +465,23 @@ bool SetCloseOnExec(int fd) {
     return false;
   if (flags & FD_CLOEXEC)
     return true;
-  if (HANDLE_EINTR(fcntl(fd, F_SETFD, flags | FD_CLOEXEC)) == -1)
+  if (fcntl(fd, F_SETFD, flags | FD_CLOEXEC) == -1) {
     return false;
+  }
+  return true;
+}
+
+bool RemoveCloseOnExec(int fd) {
+  const int flags = fcntl(fd, F_GETFD);
+  if (flags == -1) {
+    return false;
+  }
+  if ((flags & FD_CLOEXEC) == 0) {
+    return true;
+  }
+  if (fcntl(fd, F_SETFD, flags & ~FD_CLOEXEC) == -1) {
+    return false;
+  }
   return true;
 }
 
@@ -494,16 +513,20 @@ bool DirectoryExists(const FilePath& path) {
   return S_ISDIR(file_info.st_mode);
 }
 
-bool ReadFromFD(int fd, char* buffer, size_t bytes) {
-  size_t total_read = 0;
-  while (total_read < bytes) {
-    ssize_t bytes_read =
-        HANDLE_EINTR(read(fd, buffer + total_read, bytes - total_read));
-    if (bytes_read <= 0)
-      break;
-    total_read += static_cast<size_t>(bytes_read);
+bool ReadFromFD(int fd, span<char> buffer) {
+  while (!buffer.empty()) {
+    ssize_t bytes_read = HANDLE_EINTR(read(fd, buffer.data(), buffer.size()));
+
+    if (bytes_read <= 0) {
+      return false;
+    }
+    buffer = buffer.subspan(static_cast<size_t>(bytes_read));
   }
-  return total_read == bytes;
+  return true;
+}
+
+bool ReadFromFD(int fd, char* buffer, size_t bytes) {
+  return ReadFromFD(fd, make_span(buffer, bytes));
 }
 
 ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
@@ -554,11 +577,10 @@ bool ReadSymbolicLink(const FilePath& symlink_path, FilePath* target_path) {
   return true;
 }
 
-absl::optional<FilePath> ReadSymbolicLinkAbsolute(
-    const FilePath& symlink_path) {
+std::optional<FilePath> ReadSymbolicLinkAbsolute(const FilePath& symlink_path) {
   FilePath target_path;
   if (!ReadSymbolicLink(symlink_path, &target_path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Relative symbolic links are relative to the symlink's directory.
@@ -781,6 +803,7 @@ bool CreateDirectoryAndGetError(const FilePath& full_path,
     if (!DirectoryExists(subpath)) {
       if (error)
         *error = File::OSErrorToFileError(saved_errno);
+      errno = saved_errno;
       return false;
     }
   }
@@ -912,18 +935,27 @@ File FILEToFile(FILE* file_stream) {
 }
 #endif  // !BUILDFLAG(IS_NACL)
 
-int ReadFile(const FilePath& filename, char* data, int max_size) {
+std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  if (max_size < 0)
-    return -1;
   int fd = HANDLE_EINTR(open(filename.value().c_str(), O_RDONLY));
-  if (fd < 0)
-    return -1;
+  if (fd < 0) {
+    return std::nullopt;
+  }
 
-  long bytes_read = HANDLE_EINTR(read(fd, data, static_cast<size_t>(max_size)));
-  if (IGNORE_EINTR(close(fd)) < 0)
-    return -1;
-  return checked_cast<int>(bytes_read);
+  // TODO(crbug.com/1333521): Consider supporting reading more than INT_MAX
+  // bytes.
+  size_t bytes_to_read = static_cast<size_t>(checked_cast<int>(buffer.size()));
+
+  ssize_t bytes_read = HANDLE_EINTR(read(fd, buffer.data(), bytes_to_read));
+  if (IGNORE_EINTR(close(fd)) < 0) {
+    return std::nullopt;
+  }
+  if (bytes_read < 0) {
+    return std::nullopt;
+  }
+
+  static_assert(SSIZE_MAX <= UINT64_MAX);
+  return bytes_read;
 }
 
 int WriteFile(const FilePath& filename, const char* data, int size) {
@@ -1017,7 +1049,8 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
   blksize_t block_size = 512;  // Start with something safe.
   stat_wrapper_t statbuf;
   if (File::Fstat(file->GetPlatformFile(), &statbuf) == 0 &&
-      statbuf.st_blksize > 0 && base::bits::IsPowerOfTwo(statbuf.st_blksize)) {
+      statbuf.st_blksize > 0 &&
+      std::has_single_bit(base::checked_cast<uint64_t>(statbuf.st_blksize))) {
     block_size = static_cast<blksize_t>(statbuf.st_blksize);
   }
 
@@ -1105,7 +1138,7 @@ bool VerifyPathControlledByUser(const FilePath& base,
     // |base| must be a subpath of |path|, so all components should match.
     // If these CHECKs fail, look at the test that base is a parent of
     // path at the top of this function.
-    DCHECK(ip != path_components.end());
+    CHECK(ip != path_components.end(), base::NotFatalUntil::M125);
     DCHECK(*ip == *ib);
   }
 

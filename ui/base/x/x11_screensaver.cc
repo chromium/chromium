@@ -11,12 +11,11 @@
 #include "base/notreached.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/property_cache.h"
 #include "ui/gfx/x/screensaver.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -44,10 +43,6 @@ class ScreensaverStatusWatcher : public x11::EventObserver {
         connection, connection->default_root(),
         std::vector<x11::Atom>{x11::GetAtom("_SCREENSAVER_STATUS")});
 
-    // Let the server know the client version before making any requests.
-    connection->screensaver().QueryVersion(
-        {x11::ScreenSaver::major_version, x11::ScreenSaver::minor_version});
-
     connection->AddEventObserver(this);
     connection->screensaver().SelectInput(connection->default_root(),
                                           x11::ScreenSaver::Event::NotifyMask);
@@ -66,8 +61,9 @@ class ScreensaverStatusWatcher : public x11::EventObserver {
   ~ScreensaverStatusWatcher() override = default;
 
   bool ScreensaverActive() {
-    if (mit_screensaver_active_)
+    if (mit_screensaver_active_) {
       return true;
+    }
 
     // Ironically, xscreensaver does not use the MIT-SCREENSAVER extension,
     // so add a special check for xscreensaver.
@@ -78,8 +74,9 @@ class ScreensaverStatusWatcher : public x11::EventObserver {
 
  private:
   void OnEvent(const x11::Event& event) override {
-    if (auto* notify = event.As<x11::ScreenSaver::NotifyEvent>())
+    if (auto* notify = event.As<x11::ScreenSaver::NotifyEvent>()) {
       mit_screensaver_active_ = IsMitScreensaverActive(notify->state);
+    }
   }
 
   std::unique_ptr<x11::PropertyCache> x_screensaver_status_;
@@ -90,8 +87,9 @@ class ScreensaverStatusWatcher : public x11::EventObserver {
 
 bool IsXScreensaverActive() {
   // Avoid calling into potentially missing X11 APIs in headless mode.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
     return false;
+  }
 
   static base::NoDestructor<ScreensaverStatusWatcher> watcher;
   return watcher->ScreensaverActive();

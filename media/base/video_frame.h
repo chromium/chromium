@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,7 +34,6 @@
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -169,7 +169,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // specified layout including offsets and plane sizes. Except that VideoFrame
   // knows how to compute plane sizes, this method should be in
   // `VideoFrameLayout`, probably just folded into `CreateWithStrides()`.
-  static absl::optional<VideoFrameLayout> CreateFullySpecifiedLayoutWithStrides(
+  static std::optional<VideoFrameLayout> CreateFullySpecifiedLayoutWithStrides(
       VideoPixelFormat format,
       const gfx::Size& coded_size);
 
@@ -317,9 +317,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Wraps provided dmabufs
   // (https://www.kernel.org/doc/html/latest/driver-api/dma-buf.html) with a
   // VideoFrame. The frame will take ownership of |dmabuf_fds|, and will
-  // automatically close() them on destruction. Callers can call
-  // media::DuplicateFDs() if they need to retain a copy of the FDs for
-  // themselves. Note that the FDs are consumed even in case of failure.
+  // automatically close() them on destruction. Callers can duplicate the file
+  // descriptors if they need to retain a copy of the FDs for themselves. Note
+  // that the FDs are consumed even in case of failure.
   // The image data is only accessible via dmabuf fds, which are usually passed
   // directly to a hardware device and/or to another process, or can also be
   // mapped via mmap() for CPU access.
@@ -502,11 +502,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     color_space_ = color_space;
   }
 
-  const absl::optional<gfx::HDRMetadata>& hdr_metadata() const {
+  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
     return hdr_metadata_;
   }
 
-  void set_hdr_metadata(const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  void set_hdr_metadata(const std::optional<gfx::HDRMetadata>& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
 
@@ -577,7 +577,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     return const_cast<uint8_t*>(data_[plane]);
   }
 
-  const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const {
+  const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const {
     return wrapped_frame_ ? wrapped_frame_->ycbcr_info() : ycbcr_info_;
   }
 
@@ -594,18 +594,18 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const gpu::MailboxHolder& mailbox_holder(size_t texture_index) const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Returns a vector containing the backing DmaBufs for this frame. The number
-  // of returned DmaBufs will be equal or less than the number of planes of
+  // The number of DmaBufs will be equal or less than the number of planes of
   // the frame. If there are less, this means that the last FD contains the
-  // remaining planes.
-  // Note that the returned FDs are still owned by the VideoFrame. This means
-  // that the caller shall not close them, or use them after the VideoFrame is
-  // destroyed. For such use cases, use media::DuplicateFDs() to obtain your
-  // own copy of the FDs.
-  const std::vector<base::ScopedFD>& DmabufFds() const;
+  // remaining planes. Should be > 0 for STORAGE_DMABUFS.
+  size_t NumDmabufFds() const;
 
   // Returns true if |frame| has DmaBufs.
   bool HasDmaBufs() const;
+
+  // The returned FDs are still owned by the VideoFrame. This means that the
+  // caller shall not close them, or use them after the VideoFrame is destroyed.
+  // For such use cases, use dup() to obtain your own copy of the FDs.
+  int GetDmabufFd(size_t i) const;
 
   // Returns true if both VideoFrames are backed by DMABUF memory and point
   // to the same set of DMABUFs, meaning that both frames use the same memory.
@@ -686,7 +686,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   size_t BitDepth() const;
 
   // Provide the sampler conversion information for the frame.
-  void set_ycbcr_info(const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
+  void set_ycbcr_info(const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
     ycbcr_info_ = ycbcr_info;
   }
 
@@ -819,9 +819,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // the memory area represented by the last FD contains the remaining planes.
   // If a STORAGE_DMABUFS frame is wrapped into another, the wrapping frame
   // will get an extra reference to the FDs (i.e. no duplication is involved).
-  // This makes it possible to test whether two VideoFrame instances point to
-  // the same DMABUF memory by testing for
-  // (&vf1->DmabufFds() == &vf2->DmabufFds()).
   scoped_refptr<DmabufHolder> dmabuf_fds_;
 
   friend scoped_refptr<VideoFrame>
@@ -852,7 +849,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const ID unique_id_;
 
   gfx::ColorSpace color_space_;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   // The format type used to create shared images. When set to Legacy creates
   // shared images with current path; when set to SharedImageFormat with/without
@@ -862,7 +859,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       SharedImageFormatType::kLegacy;
 
   // Sampler conversion information which is used in vulkan context for android.
-  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
+  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
   // Allocation which makes up |data_| planes for self-allocated frames.
   std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> private_data_;

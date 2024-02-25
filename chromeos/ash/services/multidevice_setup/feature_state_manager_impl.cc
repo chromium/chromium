@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager_impl.h"
 
 #include <array>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
@@ -20,7 +21,6 @@
 #include "chromeos/ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -40,7 +40,6 @@ GenerateFeatureToEnabledPrefNameMap() {
       {mojom::Feature::kBetterTogetherSuite,
        kBetterTogetherSuiteEnabledPrefName},
       {mojom::Feature::kInstantTethering, kInstantTetheringEnabledPrefName},
-      {mojom::Feature::kMessages, kMessagesEnabledPrefName},
       {mojom::Feature::kSmartLock, kSmartLockEnabledPrefName},
       {mojom::Feature::kPhoneHub, kPhoneHubEnabledPrefName},
       {mojom::Feature::kPhoneHubCameraRoll, kPhoneHubCameraRollEnabledPrefName},
@@ -55,7 +54,6 @@ base::flat_map<mojom::Feature, std::string>
 GenerateFeatureToAllowedPrefNameMap() {
   return base::flat_map<mojom::Feature, std::string>{
       {mojom::Feature::kInstantTethering, kInstantTetheringAllowedPrefName},
-      {mojom::Feature::kMessages, kMessagesAllowedPrefName},
       {mojom::Feature::kSmartLock, kSmartLockAllowedPrefName},
       {mojom::Feature::kPhoneHub, kPhoneHubAllowedPrefName},
       {mojom::Feature::kPhoneHubCameraRoll, kPhoneHubCameraRollAllowedPrefName},
@@ -75,8 +73,6 @@ GenerateInitialDefaultCachedStateMap() {
       {mojom::Feature::kBetterTogetherSuite,
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kInstantTethering,
-       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
-      {mojom::Feature::kMessages,
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kSmartLock,
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
@@ -114,13 +110,15 @@ void ProcessSuiteEdgeCases(
   bool is_at_least_one_feature_supported = false;
   for (const auto& map_entry : feature_states_map) {
     // Skip the suite feature, since it doesn't have its own policy.
-    if (map_entry.first == mojom::Feature::kBetterTogetherSuite)
+    if (map_entry.first == mojom::Feature::kBetterTogetherSuite) {
       continue;
+    }
 
     const mojom::FeatureState feature_state = map_entry.second;
 
-    if (feature_state != mojom::FeatureState::kNotSupportedByChromebook)
+    if (feature_state != mojom::FeatureState::kNotSupportedByChromebook) {
       is_at_least_one_feature_supported = true;
+    }
 
     // Also check for features that are not supported by the Chromebook, since
     // we should still consider the suite prohibited if all sub-features are
@@ -155,8 +153,7 @@ void ProcessSuiteEdgeCases(
       mojom::FeatureState::kDisabledByUser) {
     for (auto& map_entry : feature_states_map) {
       mojom::FeatureState& feature_state = map_entry.second;
-      if (feature_state == mojom::FeatureState::kEnabledByUser ||
-          feature_state == mojom::FeatureState::kFurtherSetupRequired) {
+      if (feature_state == mojom::FeatureState::kEnabledByUser) {
         feature_state = mojom::FeatureState::kUnavailableSuiteDisabled;
       }
     }
@@ -243,8 +240,9 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
       cached_feature_state_map_(GenerateInitialDefaultCachedStateMap()) {
   host_status_provider_->AddObserver(this);
   device_sync_client_->AddObserver(this);
-  if (android_sms_pairing_state_tracker_)
+  if (android_sms_pairing_state_tracker_) {
     android_sms_pairing_state_tracker_->AddObserver(this);
+  }
 
   registrar_.Init(pref_service_);
 
@@ -284,8 +282,9 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
 FeatureStateManagerImpl::~FeatureStateManagerImpl() {
   host_status_provider_->RemoveObserver(this);
   device_sync_client_->RemoveObserver(this);
-  if (android_sms_pairing_state_tracker_)
+  if (android_sms_pairing_state_tracker_) {
     android_sms_pairing_state_tracker_->RemoveObserver(this);
+  }
 }
 
 FeatureStateManager::FeatureStatesMap
@@ -345,8 +344,9 @@ void FeatureStateManagerImpl::UpdateFeatureStateCache(
   // Some computed values must be updated to support various edge cases.
   ProcessSuiteEdgeCases(&cached_feature_state_map_);
 
-  if (previous_cached_feature_state_map == cached_feature_state_map_)
+  if (previous_cached_feature_state_map == cached_feature_state_map_) {
     return;
+  }
   PA_LOG(INFO) << "Feature states map changed. Old map: "
                << previous_cached_feature_state_map
                << ", new map: " << cached_feature_state_map_;
@@ -356,30 +356,33 @@ void FeatureStateManagerImpl::UpdateFeatureStateCache(
 
 mojom::FeatureState FeatureStateManagerImpl::ComputeFeatureState(
     mojom::Feature feature) {
-  if (!IsAllowedByPolicy(feature))
+  if (!IsAllowedByPolicy(feature)) {
     return mojom::FeatureState::kProhibitedByPolicy;
+  }
 
   HostStatusProvider::HostStatusWithDevice status_with_device =
       host_status_provider_->GetHostWithStatus();
 
-  if (status_with_device.host_status() == mojom::HostStatus::kNoEligibleHosts)
+  if (status_with_device.host_status() == mojom::HostStatus::kNoEligibleHosts) {
     return mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts;
+  }
 
-  if (status_with_device.host_status() != mojom::HostStatus::kHostVerified)
+  if (status_with_device.host_status() != mojom::HostStatus::kHostVerified) {
     return mojom::FeatureState::
         kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified;
+  }
 
-  if (!IsSupportedByChromebook(feature))
+  if (!IsSupportedByChromebook(feature)) {
     return mojom::FeatureState::kNotSupportedByChromebook;
+  }
 
-  if (!HasSufficientSecurity(feature, *status_with_device.host_device()))
+  if (!HasSufficientSecurity(feature, *status_with_device.host_device())) {
     return mojom::FeatureState::kUnavailableInsufficientSecurity;
+  }
 
-  if (!HasBeenActivatedByPhone(feature, *status_with_device.host_device()))
+  if (!HasBeenActivatedByPhone(feature, *status_with_device.host_device())) {
     return mojom::FeatureState::kNotSupportedByPhone;
-
-  if (RequiresFurtherSetup(feature))
-    return mojom::FeatureState::kFurtherSetupRequired;
+  }
 
   return GetEnabledOrDisabledState(feature);
 }
@@ -387,21 +390,24 @@ mojom::FeatureState FeatureStateManagerImpl::ComputeFeatureState(
 bool FeatureStateManagerImpl::IsAllowedByPolicy(mojom::Feature feature) {
   // If no policy preference exists for this feature, the feature is implicitly
   // allowed.
-  if (!base::Contains(feature_to_allowed_pref_name_map_, feature))
+  if (!base::Contains(feature_to_allowed_pref_name_map_, feature)) {
     return true;
+  }
 
   return pref_service_->GetBoolean(feature_to_allowed_pref_name_map_[feature]);
 }
 
 bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
+  if (!base::FeatureList::IsEnabled(features::kAllowCrossDeviceFeatureSuite)) {
+    return false;
+  }
+
   static const std::pair<mojom::Feature, multidevice::SoftwareFeature>
       kFeatureAndClientSoftwareFeaturePairs[] = {
           {mojom::Feature::kBetterTogetherSuite,
            multidevice::SoftwareFeature::kBetterTogetherClient},
           {mojom::Feature::kInstantTethering,
            multidevice::SoftwareFeature::kInstantTetheringClient},
-          {mojom::Feature::kMessages,
-           multidevice::SoftwareFeature::kMessagesForWebClient},
           {mojom::Feature::kSmartLock,
            multidevice::SoftwareFeature::kSmartLockClient},
           // Note: Most Phone Hub-related features use the same SoftwareFeature.
@@ -418,7 +424,7 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
            multidevice::SoftwareFeature::kWifiSyncClient},
           {mojom::Feature::kEche, multidevice::SoftwareFeature::kEcheClient}};
 
-  absl::optional<multidevice::RemoteDeviceRef> local_device =
+  std::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
     PA_LOG(ERROR) << "FeatureStateManagerImpl::" << __func__
@@ -427,8 +433,9 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
   }
 
   for (const auto& pair : kFeatureAndClientSoftwareFeaturePairs) {
-    if (pair.first != feature)
+    if (pair.first != feature) {
       continue;
+    }
 
     if ((pair.second == multidevice::SoftwareFeature::kPhoneHubClient ||
          pair.second == multidevice::SoftwareFeature::kEcheClient) &&
@@ -447,8 +454,9 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
 bool FeatureStateManagerImpl::HasSufficientSecurity(
     mojom::Feature feature,
     const multidevice::RemoteDeviceRef& host_device) {
-  if (feature != mojom::Feature::kSmartLock)
+  if (feature != mojom::Feature::kSmartLock) {
     return true;
+  }
 
   // Special case for Smart Lock: if the host device does not have a lock screen
   // set, its SoftwareFeatureState for kSmartLockHost is supported but not
@@ -467,8 +475,6 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
            multidevice::SoftwareFeature::kBetterTogetherHost},
           {mojom::Feature::kInstantTethering,
            multidevice::SoftwareFeature::kInstantTetheringHost},
-          {mojom::Feature::kMessages,
-           multidevice::SoftwareFeature::kMessagesForWebHost},
           {mojom::Feature::kSmartLock,
            multidevice::SoftwareFeature::kSmartLockHost},
           // Note: Most Phone Hub-related features use the same SoftwareFeature.
@@ -486,8 +492,9 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
           {mojom::Feature::kEche, multidevice::SoftwareFeature::kEcheHost}};
 
   for (const auto& pair : kFeatureAndHostSoftwareFeaturePairs) {
-    if (pair.first != feature)
+    if (pair.first != feature) {
       continue;
+    }
 
     // The bluetooth public address is required in order to use PhoneHub/Eche
     // and its sub-features.
@@ -544,21 +551,6 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
   return false;
 }
 
-// TODO(khorimoto): Add a way to determine whether Phone Hub notification
-// access has been granted by the user on the phone.
-bool FeatureStateManagerImpl::RequiresFurtherSetup(mojom::Feature feature) {
-  if (feature != mojom::Feature::kMessages)
-    return false;
-
-  if (GetEnabledOrDisabledState(feature) ==
-      mojom::FeatureState::kDisabledByUser) {
-    return false;
-  }
-
-  return android_sms_pairing_state_tracker_ &&
-         !android_sms_pairing_state_tracker_->IsAndroidSmsPairingComplete();
-}
-
 mojom::FeatureState FeatureStateManagerImpl::GetEnabledOrDisabledState(
     mojom::Feature feature) {
   if (global_state_feature_managers_.contains(feature)) {
@@ -587,9 +579,6 @@ void FeatureStateManagerImpl::LogFeatureStates() const {
       "InstantTethering.MultiDeviceFeatureState",
       cached_feature_state_map_.find(mojom::Feature::kInstantTethering)
           ->second);
-  base::UmaHistogramEnumeration(
-      "AndroidSms.MultiDeviceFeatureState",
-      cached_feature_state_map_.find(mojom::Feature::kMessages)->second);
   base::UmaHistogramEnumeration(
       "SmartLock.MultiDeviceFeatureState",
       cached_feature_state_map_.find(mojom::Feature::kSmartLock)->second);

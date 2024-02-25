@@ -70,7 +70,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Unowned pointer.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   ArcAuthContext context_;
   FetchCallback callback_;
 

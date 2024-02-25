@@ -13,7 +13,7 @@
         align-items: center;
         color: var(--cr-secondary-text-color);
         display: flex;
-        flex: auto;
+        flex: var(--cr-tabs-flex, auto);
         height: 100%;
         justify-content: center;
         opacity: .8;
@@ -23,8 +23,13 @@
         transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
       }
 
+      :host-context([chrome-refresh-2023]) .tab {
+        opacity: 1;
+      }
+
       :host-context(.focus-outline-visible) .tab:focus {
         outline: var(--cr-tabs-focus-outline, auto);
+        outline-offset: var(--cr-tabs-focus-outline-offset, 0);
       }
 
       .selected {
@@ -36,10 +41,6 @@
         .selected {
           color: var(--cr-tabs-selected-color, var(--google-blue-300));
         }
-      }
-
-      .selected:focus {
-        font-weight: var(--cr-tabs-selected-tab-focused-font-weight, 700);
       }
 
       .tab-icon {
@@ -63,21 +64,27 @@
         }
       }
 
-      .tab-indicator {
-        background: var(--cr-tabs-selected-color, var(--google-blue-600));
-        border-top-left-radius: var(--cr-tabs-selection-bar-width, 2px);
-        border-top-right-radius: var(--cr-tabs-selection-bar-width, 2px);
+      .tab-indicator,
+      .tab-indicator-background {
         bottom: 0;
         height: var(--cr-tabs-selection-bar-width, 2px);
         left: var(--cr-tabs-tab-inline-padding, 0);
-        opacity: 0;
         position: absolute;
         right: var(--cr-tabs-tab-inline-padding, 0);
+      }
+
+      .tab-indicator {
+        border-top-left-radius: var(--cr-tabs-selection-bar-radius,
+            var(--cr-tabs-selection-bar-width, 2px));
+        border-top-right-radius: var(--cr-tabs-selection-bar-radius,
+            var(--cr-tabs-selection-bar-width, 2px));
+        opacity: 0;
         transform-origin: left center;
         transition: transform;
       }
 
       .selected .tab-indicator {
+        background: var(--cr-tabs-selected-color, var(--google-blue-600));
         opacity: 1;
       }
 
@@ -91,8 +98,18 @@
         transition-timing-function: cubic-bezier(0, 0, .2, 1);
       }
 
+      .tab-indicator-background {
+        background: var(--cr-tabs-unselected-color, var(--google-blue-600));
+        opacity: var(--cr-tabs-selection-bar-unselected-opacity, 0);
+        z-index: -1;
+      }
+
       @media (prefers-color-scheme: dark) {
-        .tab-indicator {
+        .tab-indicator-background {
+          background: var(--cr-tabs-unselected-color, var(--google-blue-300));
+        }
+
+        .selected .tab-indicator {
           background: var(--cr-tabs-selected-color, var(--google-blue-300));
         }
       }
@@ -103,6 +120,7 @@
         }
       }
     </style>
+
     <template is="dom-repeat" items="[[tabNames]]">
       <div
           role="tab"
@@ -113,6 +131,7 @@
         <div class="tab-icon" style$="[[getIconStyle_(index)]]">
         </div>
         [[item]]
+        <div class="tab-indicator-background"></div>
         <div class="tab-indicator"></div>
       </div>
     </template>

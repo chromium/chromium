@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_INSTALLABLE_ML_PROMOTION_BROWSERTEST_BASE_H_
 
+#include <optional>
 #include <string>
 
+#include "components/webapps/browser/webapps_client.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -51,8 +52,7 @@ class MLPromotionBrowserTestBase : public PlatformBrowserTest {
                                     std::string dialog_name);
 
   bool NavigateAndAwaitInstallabilityCheck(const GURL& url);
-  segmentation_platform::MockSegmentationPlatformService* GetMockSegmentation(
-      content::WebContents* custom_web_contents = nullptr);
+  segmentation_platform::MockSegmentationPlatformService* GetMockSegmentation();
 
   net::EmbeddedTestServer* https_server();
   content::WebContents* web_contents();
@@ -60,13 +60,16 @@ class MLPromotionBrowserTestBase : public PlatformBrowserTest {
 
  private:
 #if !BUILDFLAG(IS_ANDROID)
-  absl::optional<web_app::OsIntegrationManager::ScopedSuppressForTesting>
+  std::optional<web_app::OsIntegrationManager::ScopedSuppressForTesting>
       os_hooks_suppress_;
 #endif  // BUILDFLAG(IS_ANDROID)
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;
+  // Optional so it can be set after construction.
+  std::optional<WebappsClient::ScopedSegmentationServiceOverride>
+      service_override_;
 };
 
 }  // namespace webapps

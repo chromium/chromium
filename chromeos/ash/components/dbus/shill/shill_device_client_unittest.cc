@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::_;
@@ -76,7 +76,7 @@ class ShillDeviceClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillDeviceClient, DanglingUntriaged | ExperimentalAsh> client_ =
+  raw_ptr<ShillDeviceClient, DanglingUntriaged> client_ =
       nullptr;  // Unowned convenience pointer.
 };
 
@@ -137,11 +137,11 @@ TEST_F(ShillDeviceClientTest, GetProperties) {
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call GetProperties.
-  base::test::TestFuture<absl::optional<base::Value::Dict>>
+  base::test::TestFuture<std::optional<base::Value::Dict>>
       properties_result_future;
   client_->GetProperties(dbus::ObjectPath(kExampleDevicePath),
                          properties_result_future.GetCallback());
-  absl::optional<base::Value::Dict> result = properties_result_future.Take();
+  std::optional<base::Value::Dict> result = properties_result_future.Take();
   EXPECT_TRUE(result.has_value());
   const base::Value::Dict& result_value = result.value();
   EXPECT_EQ(expected_value, result_value);

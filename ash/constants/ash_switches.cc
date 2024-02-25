@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/hash/sha1.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -21,6 +22,19 @@ namespace {
 // nudges when override switch is set.
 constexpr base::TimeDelta kAshContextualNudgesMinInterval = base::Seconds(0);
 constexpr base::TimeDelta kAshContextualNudgesMaxInterval = base::Seconds(60);
+
+// The hash value for the secret key of the forest feature.
+constexpr char kForestHashKey[] =
+    "\x1a\x93\x5f\x64\x0d\x7f\x0c\x2f\x88\xe8\x80\x9a\x5f\x16\xbb\xd8\x74\x06"
+    "\x8a\xb1";
+
+// Whether checking the forest secret key is ignored.
+bool g_ignore_forest_secret_key = false;
+
+// The hash value for the secret key of the campbell feature.
+constexpr char kCampbellHashKey[] =
+    "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
+    "\x03\x18\x32";
 
 }  // namespace
 
@@ -69,12 +83,18 @@ const char kArcAvailability[] = "arc-availability";
 // Signals the availability of the ARC instance on this device.
 const char kArcAvailable[] = "arc-available";
 
+// Switch that blocks KeyMint. When KeyMint is blocked, Keymaster is enabled.
+const char kArcBlockKeyMint[] = "arc-block-keymint";
+
 // Flag that forces ARC data be cleaned on each start.
 const char kArcDataCleanupOnStart[] = "arc-data-cleanup-on-start";
 
 // Flag that disables ARC app sync flow that installs some apps silently. Used
 // in autotests to resolve racy conditions.
 const char kArcDisableAppSync[] = "arc-disable-app-sync";
+
+// Used in tests to disable DexOpt cache which is on by default.
+const char kArcDisableDexOptCache[] = "arc-disable-dexopt-cache";
 
 // Flag that disables ARC download provider that prevents extra content to be
 // downloaded and installed in context of Play Store and GMS Core.
@@ -83,10 +103,10 @@ const char kArcDisableDownloadProvider[] = "arc-disable-download-provider";
 // Used in autotest to disable GMS-core caches which is on by default.
 const char kArcDisableGmsCoreCache[] = "arc-disable-gms-core-cache";
 
-// Flag that disables ARC locale sync with Android container. Used in autotest
+// Flag that disables ARC locale sync with Android Container. Used in autotest
 // to prevent conditions when certain apps, including Play Store may get
 // restarted. Restarting Play Store may cause random test failures. Enabling
-// this flag would also forces ARC container to use 'en-US' as a locale and
+// this flag would also forces ARC Container to use 'en-US' as a locale and
 // 'en-US,en' as preferred languages.
 const char kArcDisableLocaleSync[] = "arc-disable-locale-sync";
 
@@ -121,9 +141,6 @@ const char kArcUseDevCaches[] = "arc-use-dev-caches";
 
 // Flag that indicates ARC images are formatted with EROFS (go/arcvm-erofs).
 const char kArcErofs[] = "arc-erofs";
-
-// If set, forces ARC apk cache to be enabled for testing.
-const char kArcForceEnableApkCache[] = "arc-force-enable-apk-cache";
 
 // If set, forces post boot dexopt to run immediately without device idle
 // requirement.
@@ -176,15 +193,29 @@ const char kPrivacyPolicyHostForTests[] = "privacy-policy-host-for-tests";
 // readahead (default) - used during production and is equivalent to no switch
 //                       being set. This is used in tast test to explicitly turn
 //                       on guest ureadahead (see |kArcDisableUreadahead|).
-// generate - used during Android PFQ data collector to pre-generate pack file
+// generate - used during Android Uprev data collector to pre-generate pack file
 //            and upload to Google Cloud as build artifact for CrOS build image.
 // disabled - used for test purpose to disable ureadahead during ARCVM boot.
 //            note, |kArcDisableUreadahead| also disables both, guest and host
 //            parts of ureadahead.
 const char kArcVmUreadaheadMode[] = "arcvm-ureadahead-mode";
 
+// Sets the mode of operation for ureadahead during ARC Container boot.
+// readahead (default) - used during production and is equivalent to no switch
+//                       being set.
+// generate - used during Android Uprev data collector to pre-generate pack file
+//            and upload to Google Cloud as build artifact for CrOS build image.
+// disabled - used for test purpose to disable ureadahead during ARC Container
+// boot.
+const char kArcHostUreadaheadMode[] = "arc-host-ureadahead-mode";
+
 // Madvises the kernel to use Huge Pages for guest memory.
 const char kArcVmUseHugePages[] = "arcvm-use-hugepages";
+
+// Allows bypassing the GlanceablesEnabled pref. This requires that the
+// kGlanceablesV2 feature is enabled as well. Intended to force enable
+// glanceables for testing.
+const char kAshBypassGlanceablesPref[] = "ash-bypass-glanceables-pref";
 
 // Clear the fast ink buffer upon creation. This is needed on some devices that
 // do not zero out new buffers.
@@ -213,9 +244,6 @@ const char kAshDeveloperShortcuts[] = "ash-dev-shortcuts";
 const char kAshDisableTouchExplorationMode[] =
     "ash-disable-touch-exploration-mode";
 
-// Enable cursor motion blur.
-const char kAshEnableCursorMotionBlur[] = "ash-enable-cursor-motion-blur";
-
 // Enables key bindings to scroll magnified screen.
 const char kAshEnableMagnifierKeyScroller[] =
     "ash-enable-magnifier-key-scroller";
@@ -241,6 +269,10 @@ const char kAshForceEnableStylusTools[] = "force-enable-stylus-tools";
 // Forces the status area to allow collapse/expand regardless of the current
 // state.
 const char kAshForceStatusAreaCollapsible[] = "force-status-area-collapsible";
+
+// Path for which to load growth campaigns file for testing (instead of
+// downloading from Omaha).
+const char kGrowthCampaignsPath[] = "growth-campaigns-path";
 
 // Hides notifications that are irrelevant to Chrome OS device factory testing,
 // such as battery level updates.
@@ -286,6 +318,11 @@ const char kAshUiModeTablet[] = "touch_view";
 // instead of displaying an interactive animation.
 const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 
+// Switch used to pass in a secret key for Campbell feature. Unless the correct
+// secret key is provided, Campbell feature will remain disabled, regardless of
+// the state of the associated feature flag.
+const char kCampbellKey[] = "campbell-key";
+
 // If this flag is set, it indicates that this device is a "Cellular First"
 // device. Cellular First devices use cellular telephone data networks as
 // their primary means of connecting to the internet.
@@ -323,6 +360,17 @@ const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
 // test encryption migration scenarios.
 const char kCryptohomeUseOldEncryptionForTesting[] =
     "cryptohome-use-old-encryption-for-testing";
+
+// Normally the cryptohome without any any authentication factors
+// is considered corrupted. Special mechanism would detect such situation
+// during user creation and remove such users. If such user is an owner
+// the power wash should be triggered instead. However, if such event happens
+// in tests, all logs would be lost, and it would be difficult to investigate
+// exact reason behind the Owner user being misconfigured.
+// This flag prevents triggering powerwash in such cases, simple user removal
+// would be triggered instead.
+const char kCryptohomeIgnoreCleanupOwnershipForTesting[] =
+    "cryptohome-ignore-cleanup-ownership-for-testing";
 
 // Indicates that the wallpaper images specified by
 // kAshDefaultWallpaper{Large,Small} are OEM-specific (i.e. they are not
@@ -381,6 +429,10 @@ const char kDisableDemoMode[] = "disable-demo-mode";
 // If this switch is set, the device cannot be remotely disabled by its owner.
 const char kDisableDeviceDisabling[] = "disable-device-disabling";
 
+// Disables DriveFS for testing purposes, used in tast testing and only on test
+// images.
+const char kDisableDriveFsForTesting[] = "disable-drive-fs-for-testing";
+
 // Disables fine grained time zone detection.
 const char kDisableFineGrainedTimeZoneDetection[] =
     "disable-fine-grained-time-zone-detection";
@@ -392,6 +444,9 @@ const char kDisableGaiaServices[] = "disable-gaia-services";
 // Disables HID-detection OOBE screen.
 const char kDisableHIDDetectionOnOOBEForTesting[] =
     "disable-hid-detection-on-oobe";
+
+// Skip multidevice setup screen during tast tests.
+const char kSkipMultideviceScreenForTesting[] = "skip-multidevice-screen";
 
 // Disables the Lacros keep alive for testing.
 const char kDisableLacrosKeepAliveForTesting[] = "disable-lacros-keep-alive";
@@ -518,6 +573,10 @@ const char kEnterpriseEnableUnifiedStateDetermination[] =
 const char kEnterpriseEnableForcedReEnrollment[] =
     "enterprise-enable-forced-re-enrollment";
 
+// Whether to enable forced enterprise re-enrollment on Flex.
+const char kEnterpriseEnableForcedReEnrollmentOnFlex[] =
+    "enterprise-enable-forced-re-enrollment-on-flex";
+
 // Whether to enable initial enterprise enrollment.
 const char kEnterpriseEnableInitialEnrollment[] =
     "enterprise-enable-initial-enrollment";
@@ -581,6 +640,10 @@ const char kFakeDriveFsLauncherChrootPath[] =
 const char kFakeDriveFsLauncherSocketPath[] =
     "fake-drivefs-launcher-socket-path";
 
+// Indicates that the cryptohome keys are evicted and lock screen should message
+// cryptohomed to run full authentication and restore filesystem keys.
+const char kRestoreKeyOnLockScreen[] = "restore-key-on-lock-screen";
+
 // Fingerprint sensor location indicates the physical sensor's location. The
 // value is a string with possible values: "power-button-top-left",
 // "keyboard-bottom-left", keyboard-bottom-right", "keyboard-top-right".
@@ -590,12 +653,18 @@ const char kFingerprintSensorLocation[] = "fingerprint-sensor-location";
 // Not passed on restart after sign out.
 const char kFirstExecAfterBoot[] = "first-exec-after-boot";
 
+// Forces a fetch of Birch data whenever a Pine session starts.
+const char kForceBirchFetch[] = "force-birch-fetch";
+
 // Forces fetching tokens for Cryptohome Recovery.
 const char kForceCryptohomeRecoveryForTesting[] =
     "force-cryptohome-recovery-for-testing";
 
 // Forces first-run UI to be shown for every login.
 const char kForceFirstRunUI[] = "force-first-run-ui";
+
+// Disables first-run UI from being shown.
+const char kDisableFirstRunUI[] = "disable-first-run-ui";
 
 // Forces Hardware ID check (happens during OOBE) to fail or succeed. Possible
 // values: "failure" or "success". Should be used only for testing.
@@ -605,6 +674,11 @@ const char kForceHWIDCheckResultForTest[] = "force-hwid-check-result-for-test";
 // user profile check and time limits and shows the notification every time
 // for any type of user. Should be used only for testing.
 const char kForceHappinessTrackingSystem[] = "force-happiness-tracking-system";
+
+// Forces prelaunching Lacros at login screen regardless
+// of whether there are or aren't users with Lacros enabled.
+const char kForceLacrosLaunchAtLoginScreenForTesting[] =
+    "force-lacros-launch-at-login-screen-for-testing";
 
 // Forces FullRestoreService to launch browser for telemetry tests.
 const char kForceLaunchBrowser[] = "force-launch-browser";
@@ -625,13 +699,19 @@ const char kForceShowReleaseTrack[] = "force-show-release-track";
 // screen off) is used even if the device is in laptop mode.
 const char kForceTabletPowerButton[] = "force-tablet-power-button";
 
+// Supply secret key for the Forest feature.
+const char kForestFeatureKey[] = "forest-feature-key";
+
 // Specifies the device's form factor. If provided, this flag overrides the
 // value from the LSB release info. Possible values are: "CHROMEBASE",
 // "CHROMEBIT", "CHROMEBOOK", "REFERENCE", "CHROMEBOX"
 const char kFormFactor[] = "form-factor";
 
-// Sets the throttle fps for compositor frame submission.
-const char kFrameThrottleFps[] = "frame-throttle-fps";
+// Switch name for "glanceables-v2-key" flag and its expected hashed value.
+const char kGlanceablesKeyExpectedHash[] =
+    "\x52\xde\x04\xda\xef\x3a\xde\xe2\x90\x68\xa1\x5c\x36\xd5\x6b\x1d\xb8\x11"
+    "\xe2\xcb";
+const char kGlanceablesKeySwitch[] = "glanceables-key";
 
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
@@ -689,10 +769,6 @@ const char kStabilizeTimeDependentViewForTests[] =
 // Decreases delay in uploading installation event logs for integration test.
 const char kInstallLogFastUploadForTests[] =
     "install-log-fast-upload-for-tests";
-
-// When specified, Chrome OS will install a System Extension from the specified
-// directory. For now, only one extension can be specified.
-const char kInstallSystemExtension[] = "install-system-extension";
 
 // Minimum time the kiosk splash screen will be shown in seconds.
 const char kKioskSplashScreenMinTimeSeconds[] =
@@ -805,6 +881,11 @@ const char kLoginUser[] = "login-user";
 // there are more than two signed in users i.e. inside multi-user session.
 const char kDisallowLacros[] = "disallow-lacros";
 
+// This flag disables "disallow-lacros" above, if both are set together.
+// I.e., if user flips feature flag, or policy is set, lacros can be
+// used, event if --disallow-lacros is set.
+const char kDisableDisallowLacros[] = "disable-disallow-lacros";
+
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
@@ -812,6 +893,9 @@ const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 // for.
 const char kBrowserDataBackwardMigrationForUser[] =
     "browser-data-backward-migration-for-user";
+
+// Supply secret key for Coral feature.
+const char kCoralFeatureKey[] = "coral-feature-key";
 
 // Tells Chrome to forcefully trigger backward data migration.
 extern const char kForceBrowserDataBackwardMigration[] =
@@ -892,6 +976,8 @@ const char kHiddenNetworkMigrationInterval[] =
 // follow the format "--hidden-network-migration-age=#", and should be >= 0.
 const char kHiddenNetworkMigrationAge[] = "hidden-network-migration-age";
 
+const char kPickerFeatureKey[] = "picker-feature-key";
+
 // Sets the channel from which the PPD files are loaded.
 const char kPrintingPpdChannel[] = "printing-ppd-channel";
 const char kPrintingPpdChannelProduction[] = "production";
@@ -924,8 +1010,8 @@ const char kQsShowLocaleTile[] = "qs-show-locale-tile";
 // "/usr/share/chromeos-assets/regulatory_labels/".
 const char kRegulatoryLabelDir[] = "regulatory-label-dir";
 
-// Testing timeout for reboot command. Useful for tast tests.
-const char kRemoteRebootCommandTimeoutInSecondsForTesting[] =
+// Testing delay for reboot command. Useful for tast tests.
+const char kRemoteRebootCommandDelayInSecondsForTesting[] =
     "remote-reboot-command-timeout-in-seconds-for-testing";
 
 // Indicates that reven UI strings and features should be shown.
@@ -949,6 +1035,9 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 // New modular design for the shelf with apps separated into a hotseat UI and
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";
+
+// Supply secret key for Seal feature.
+const char kSealKey[] = "seal-key";
 
 // Testing grace period for DeviceScheduledReboot policy. Useful for tast tests.
 // See `ShouldSkipRebootDueToGracePeriod` in scheduled_task_util.h.
@@ -979,11 +1068,6 @@ const char kSkipForceOnlineSignInForTesting[] =
 const char kSkipReorderNudgeShowThresholdDurationForTest[] =
     "skip-reorder-nudge-show-threshold-duration";
 
-// Used to force software cursors on specific devices that do not have enough
-// planes to display a hardware cursor when connected to displays with higher
-// widths in pixels.
-const char kSwCursorOnWideDisplays[] = "sw-cursor-on-wide-displays";
-
 // If set, the device will be forced to stay in clamshell UI mode but screen
 // auto rotation will be supported. E.g, chromebase device Dooly.
 const char kSupportsClamshellAutoRotation[] =
@@ -994,6 +1078,12 @@ const char kSuppressMessageCenterPopups[] = "suppress-message-center-popups";
 
 // Specifies directory for the Telemetry System Web Extension.
 const char kTelemetryExtensionDirectory[] = "telemetry-extension-dir";
+
+// TODO(b/299642185): Remove this flag by the end of 2023.
+// ChromeOS does not support empty passwords for users, but some legacy test
+// setups might use empty password for users.
+const char kTemporaryAllowEmptyPasswordsInTests[] =
+    "allow-empty-passwords-in-tests";
 
 // Enables testing for encryption migration UI.
 const char kTestEncryptionMigrationUI[] = "test-encryption-migration-ui";
@@ -1068,9 +1158,23 @@ const char kCameraEffectsSupportedByHardware[] =
 const char kPreventKioskAutolaunchForTesting[] =
     "prevent-kiosk-autolaunch-for-testing";
 
+// Allows the Ash shelf to apply the default pin layout without waiting for Sync
+// to download data from the server (which many tests can't achieve).
+const char kAllowDefaultShelfPinLayoutIgnoringSync[] =
+    "ash-allow-default-shelf-pin-layout-ignoring-sync";
+
+// On devices that support refresh rate throttling, force the throttling
+// behavior to be active regardless of system state.
+const char kForceRefreshRateThrottle[] = "force-refresh-rate-throttle";
+
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);
+}
+
+bool ShouldRestoreKeyOnLockScreen() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kRestoreKeyOnLockScreen);
 }
 
 bool IsCellularFirstDevice() {
@@ -1110,6 +1214,11 @@ bool IsTabletFormFactor() {
       kEnableTabletFormFactor);
 }
 
+bool ShouldMultideviceScreenBeSkippedForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kSkipMultideviceScreenForTesting);
+}
+
 bool IsGaiaServicesDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableGaiaServices);
@@ -1144,6 +1253,11 @@ bool IsAueReachedForUpdateRequiredForTest() {
       kUpdateRequiredAueForTest);
 }
 
+bool AreEmptyPasswordsAllowedForForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kTemporaryAllowEmptyPasswordsInTests);
+}
+
 bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableOOBEChromeVoxHintTimerForTesting);
@@ -1168,7 +1282,7 @@ bool IsOsInstallAllowed() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kAllowOsInstall);
 }
 
-absl::optional<base::TimeDelta> ContextualNudgesInterval() {
+std::optional<base::TimeDelta> ContextualNudgesInterval() {
   int numeric_cooldown_time;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kAshContextualNudgesInterval) &&
@@ -1179,9 +1293,9 @@ absl::optional<base::TimeDelta> ContextualNudgesInterval() {
     base::TimeDelta cooldown_time = base::Seconds(numeric_cooldown_time);
     cooldown_time = std::clamp(cooldown_time, kAshContextualNudgesMinInterval,
                                kAshContextualNudgesMaxInterval);
-    return absl::optional<base::TimeDelta>(cooldown_time);
+    return std::optional<base::TimeDelta>(cooldown_time);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ContextualNudgesResetShownCount() {
@@ -1220,6 +1334,53 @@ bool IsCameraEffectsSupportedByHardware() {
 bool UseFakeCrasAudioClientForDBus() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kUseFakeCrasAudioClientForDBus);
+}
+
+bool ShouldAllowDefaultShelfPinLayoutIgnoringSync() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kAllowDefaultShelfPinLayoutIgnoringSync);
+}
+
+bool IsCampbellSecretKeyMatched() {
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --campbell-key="INSERT KEY HERE"
+  //  --enable-features=CampbellGlyph:icon/<icon>
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kCampbellKey));
+
+  const bool key_matched = (provided_key_hash == kCampbellHashKey);
+  if (!key_matched) {
+    LOG(ERROR)
+        << "Provided campbel secrey key does not match the expected one.";
+  }
+
+  return key_matched;
+}
+
+bool IsForestSecretKeyMatched() {
+  if (g_ignore_forest_secret_key) {
+    return true;
+  }
+
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --birch-feature-key="INSERT KEY HERE" --enable-features=ForestFeature
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kForestFeatureKey));
+
+  bool birch_key_matched = (provided_key_hash == kForestHashKey);
+  if (!birch_key_matched) {
+    LOG(ERROR) << "Provided secret key does not match with the expected one.";
+  }
+
+  return birch_key_matched;
+}
+
+void SetIgnoreForestSecretKeyForTest(bool ignore) {
+  g_ignore_forest_secret_key = ignore;
 }
 
 }  // namespace switches

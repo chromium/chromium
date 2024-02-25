@@ -5,7 +5,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/process/launch.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/values.h"
@@ -441,7 +441,7 @@ TEST_F(GcpProcHelperTest, GetCommandLineForEntrypoint) {
   ASSERT_LT(0u, GetShortPathName(path, short_path, std::size(short_path)));
 
   std::wstring expected_arg =
-      base::StringPrintf(L"\"%ls\",%ls", short_path, L"entrypoint");
+      base::StrCat({L"\"", short_path, L"\",entrypoint"});
 
   ASSERT_EQ(1u, command_line.GetArgs().size());
   ASSERT_EQ(expected_arg, command_line.GetArgs()[0]);
@@ -497,56 +497,39 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
   const char* username = std::get<4>(GetParam());
   const char* domain = std::get<5>(GetParam());
   const char* serial_number = std::get<6>(GetParam());
-  std::wstring serial_number16 =
-      base::UTF8ToWide(base::StringPrintf("%s", serial_number));
   const char* machine_guid = std::get<7>(GetParam());
-  std::wstring machine_guid16 =
-      base::UTF8ToWide(base::StringPrintf("%s", machine_guid));
   const char* is_user_ad_joined = std::get<8>(GetParam());
   const char* device_resource_id = std::get<9>(GetParam());
   FakeOSUserManager fake_os_user_manager;
 
-  bool should_succeed = (email && email[0]) && (id_token && id_token[0]) &&
-                        (access_token && access_token[0]) && (sid && sid[0]) &&
-                        (username && username[0]) && (domain && domain[0]) &&
-                        (machine_guid && machine_guid[0]) &&
-                        (serial_number && serial_number[0]) &&
-                        (is_user_ad_joined && is_user_ad_joined[0]);
+  const auto has = [](const char* param) { return param && param[0]; };
+  bool should_succeed = has(email) && has(id_token) && has(access_token) &&
+                        has(sid) && has(username) && has(domain) &&
+                        has(serial_number) && has(machine_guid) &&
+                        has(is_user_ad_joined);
 
   base::Value::Dict properties;
-  if (email)
-    properties.Set(kKeyEmail, email);
-  if (id_token)
-    properties.Set(kKeyMdmIdToken, id_token);
-  if (access_token)
-    properties.Set(kKeyAccessToken, access_token);
-  if (sid)
-    properties.Set(kKeySID, sid);
-  if (username)
-    properties.Set(kKeyUsername, username);
-  if (domain)
-    properties.Set(kKeyDomain, domain);
-  if (sid)
-    properties.Set(kKeySID, sid);
-  if (is_user_ad_joined)
-    properties.Set(kKeyIsAdJoinedUser, is_user_ad_joined);
-
-  SetMachineGuidForTesting(machine_guid16);
-  GoogleRegistrationDataForTesting g_registration_data(serial_number16);
-
-  if (device_resource_id) {
-    std::wstring sid16 = base::UTF8ToWide(base::StringPrintf("%s", sid));
-    HRESULT hr = SetUserProperty(sid16, kRegUserDeviceResourceId,
-                                 base::UTF8ToWide(device_resource_id));
-    EXPECT_TRUE(SUCCEEDED(hr));
-  }
+  const auto set_property = [&](base::StringPiece key, const char* value) {
+    if (value) {
+      properties.Set(key, value);
+    }
+  };
+  set_property(kKeyEmail, email);
+  set_property(kKeyMdmIdToken, id_token);
+  set_property(kKeyAccessToken, access_token);
+  set_property(kKeySID, sid);
+  set_property(kKeyUsername, username);
+  set_property(kKeyDomain, domain);
+  GoogleRegistrationDataForTesting g_registration_data(
+      base::UTF8ToWide(serial_number));
+  SetMachineGuidForTesting(base::UTF8ToWide(machine_guid));
+  set_property(kKeyIsAdJoinedUser, is_user_ad_joined);
+  EXPECT_TRUE(
+      SUCCEEDED(SetUserProperty(base::UTF8ToWide(sid), kRegUserDeviceResourceId,
+                                base::UTF8ToWide(device_resource_id))));
 
   // EnrollToGoogleMdmIfNeeded() should fail if any field is missing.
-  if (should_succeed) {
-    ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(properties));
-  } else {
-    ASSERT_NE(S_OK, EnrollToGoogleMdmIfNeeded(properties));
-  }
+  EXPECT_EQ(should_succeed, EnrollToGoogleMdmIfNeeded(properties) == S_OK);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -555,7 +538,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values("foo@gmail.com", "", nullptr),
                        ::testing::Values("id_token", "", nullptr),
                        ::testing::Values("access_token", "", nullptr),
-                       ::testing::Values("sid", "", nullptr),
+                       ::testing::Values("sid", ""),
                        ::testing::Values("username", "", nullptr),
                        ::testing::Values("domain", "", nullptr),
                        ::testing::Values("serial_number"),

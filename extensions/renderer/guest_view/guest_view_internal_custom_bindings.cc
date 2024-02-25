@@ -9,8 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/no_destructor.h"
-#include "components/guest_view/common/guest_view.mojom.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/guest_view/renderer/guest_view_container.h"
 #include "components/guest_view/renderer/guest_view_request.h"
@@ -21,6 +19,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/renderer/script_context.h"
 #include "ipc/ipc_sync_channel.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -40,18 +39,6 @@ namespace {
 using ViewMap = std::map<int, v8::Global<v8::Object>*>;
 static base::LazyInstance<ViewMap>::DestructorAtExit weak_view_map =
     LAZY_INSTANCE_INITIALIZER;
-
-guest_view::mojom::GuestViewHost* GetGuestViewHost() {
-  static base::NoDestructor<
-      mojo::AssociatedRemote<guest_view::mojom::GuestViewHost>>
-      guest_view_host;
-  if (!*guest_view_host) {
-    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        guest_view_host.get());
-  }
-
-  return guest_view_host->get();
-}
 
 }  // namespace
 
@@ -85,6 +72,11 @@ class RenderFrameStatus final : public content::RenderFrameObserver {
 
 }  // namespace
 
+struct GuestViewInternalCustomBindings::ViewHolder {
+  mojo::Remote<guest_view::mojom::ViewHandle> keep_alive_handle_remote;
+  int view_id;
+};
+
 GuestViewInternalCustomBindings::GuestViewInternalCustomBindings(
     ScriptContext* context)
     : ObjectBackedNativeHandler(context) {}
@@ -97,8 +89,8 @@ void GuestViewInternalCustomBindings::AddRoutes() {
       base::BindRepeating(&GuestViewInternalCustomBindings::AttachIframeGuest,
                           base::Unretained(this)));
   RouteHandlerFunction(
-      "GetRoutingId",
-      base::BindRepeating(&GuestViewInternalCustomBindings::GetRoutingId,
+      "GetFrameToken",
+      base::BindRepeating(&GuestViewInternalCustomBindings::GetFrameToken,
                           base::Unretained(this)));
   RouteHandlerFunction(
       "DestroyContainer",
@@ -130,9 +122,9 @@ void GuestViewInternalCustomBindings::AddRoutes() {
 
 // static
 void GuestViewInternalCustomBindings::ResetMapEntry(
-    const v8::WeakCallbackInfo<int>& data) {
-  int* param = data.GetParameter();
-  int view_instance_id = *param;
+    const v8::WeakCallbackInfo<ViewHolder>& data) {
+  ViewHolder* param = data.GetParameter();
+  int view_instance_id = param->view_id;
   delete param;
   ViewMap& view_map = weak_view_map.Get();
   auto entry = view_map.find(view_instance_id);
@@ -144,9 +136,6 @@ void GuestViewInternalCustomBindings::ResetMapEntry(
   entry->second->Reset();
   delete entry->second;
   view_map.erase(entry);
-
-  // Let the GuestViewManager know that a GuestView has been garbage collected.
-  GetGuestViewHost()->ViewGarbageCollected(view_instance_id);
 }
 
 void GuestViewInternalCustomBindings::AttachIframeGuest(
@@ -211,7 +200,7 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
 
   std::unique_ptr<guest_view::GuestViewAttachRequest> request =
       std::make_unique<guest_view::GuestViewAttachRequest>(
-          guest_view_container, render_frame->GetRoutingID(), guest_instance_id,
+          guest_view_container, render_frame, guest_instance_id,
           std::move(*params).TakeDict(),
           args.Length() == (num_required_params + 1)
               ? args[num_required_params].As<v8::Function>()
@@ -222,17 +211,25 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
   args.GetReturnValue().Set(true);
 }
 
-void GuestViewInternalCustomBindings::GetRoutingId(
+void GuestViewInternalCustomBindings::GetFrameToken(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK_EQ(args.Length(), 1);
   if (!args[0]->IsObject()) {
-    args.GetReturnValue().Set(MSG_ROUTING_NONE);
+    args.GetReturnValue().SetEmptyString();
     return;
   }
 
   content::RenderFrame* render_frame = GetRenderFrame(args[0]);
-  args.GetReturnValue().Set(render_frame ? render_frame->GetRoutingID()
-                                         : MSG_ROUTING_NONE);
+  if (!render_frame) {
+    args.GetReturnValue().SetEmptyString();
+    return;
+  }
+  auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
+  std::string frame_token_string = frame_token.ToString();
+  auto return_object = v8::String::NewFromUtf8(
+      args.GetIsolate(), frame_token_string.data(), v8::NewStringType::kNormal,
+      frame_token_string.size());
+  args.GetReturnValue().Set(return_object.ToLocalChecked());
 }
 
 void GuestViewInternalCustomBindings::DestroyContainer(
@@ -321,17 +318,23 @@ void GuestViewInternalCustomBindings::RegisterView(
       new v8::Global<v8::Object>(args.GetIsolate(), args[1].As<v8::Object>());
   weak_view_map.Get().insert(std::make_pair(view_instance_id, object));
 
-  // The |view_instance_id| is given to the SetWeak callback so that that view's
-  // entry in |weak_view_map| can be cleared when the view object is garbage
-  // collected.
-  object->SetWeak(new int(view_instance_id),
-                  &GuestViewInternalCustomBindings::ResetMapEntry,
+  ViewHolder* view_holder = new ViewHolder();
+  view_holder->view_id = view_instance_id;
+  auto receiver =
+      view_holder->keep_alive_handle_remote.BindNewPipeAndPassReceiver();
+
+  // The `view_holder` is given to the SetWeak callback so that that view's
+  // entry in `weak_view_map` can be cleared when the view object is garbage
+  // collected. This will then also close the `keep_alive_handle_remote`
+  // indicating to the browser the object has been collected.
+  object->SetWeak(view_holder, &GuestViewInternalCustomBindings::ResetMapEntry,
                   v8::WeakCallbackType::kParameter);
 
   // Let the GuestViewManager know that a GuestView has been created.
   const std::string& view_type =
       *v8::String::Utf8Value(args.GetIsolate(), args[2]);
-  GetGuestViewHost()->ViewCreated(view_instance_id, view_type);
+  GetGuestViewHost()->ViewCreated(view_instance_id, view_type,
+                                  std::move(receiver));
 }
 
 void GuestViewInternalCustomBindings::RunWithGesture(
@@ -357,6 +360,16 @@ void GuestViewInternalCustomBindings::AllowGuestViewElementDefinition(
   CHECK(args[0]->IsFunction());
   context()->SafeCallFunction(v8::Local<v8::Function>::Cast(args[0]), 0,
                               nullptr);
+}
+
+guest_view::mojom::GuestViewHost*
+GuestViewInternalCustomBindings::GetGuestViewHost() {
+  if (!remote_.is_bound()) {
+    content::RenderFrame* render_frame = context()->GetRenderFrame();
+    CHECK(render_frame);
+    render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
+  }
+  return remote_.get();
 }
 
 }  // namespace extensions

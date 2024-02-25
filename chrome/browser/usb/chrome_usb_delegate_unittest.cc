@@ -4,6 +4,8 @@
 
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 
+#include <optional>
+
 #include "base/barrier_closure.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
@@ -24,7 +26,6 @@
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "url/gurl.h"
 
@@ -176,7 +177,7 @@ class ChromeUsbTestHelper {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates a fake extension with the specified `extension_id` so that it can
   // exercise behaviors that are only enabled for privileged extensions.
-  absl::optional<GURL> CreateExtensionWithId(base::StringPiece extension_id) {
+  std::optional<GURL> CreateExtensionWithId(base::StringPiece extension_id) {
     auto manifest = base::Value::Dict()
                         .Set("name", "Fake extension")
                         .Set("description", "For testing.")
@@ -190,7 +191,7 @@ class ChromeUsbTestHelper {
             .SetID(std::string(extension_id))
             .Build();
     if (!extension) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     extensions::TestExtensionSystem* extension_system =
         static_cast<extensions::TestExtensionSystem*>(
@@ -787,6 +788,9 @@ class ChromeUsbDelegateServiceWorkerTestBase
     auto worker_url =
         GURL(base::StringPrintf("%s/worker.js", origin_url_.spec().c_str()));
     CreateAndStartWorker(origin_url_, worker_url);
+
+    // Wait until tasks triggered by ServiceWorkerUsbDelegateObserver settle.
+    base::RunLoop().RunUntilIdle();
   }
 
   void StopWorker() { StopAndResetWorker(); }
@@ -805,12 +809,13 @@ class ChromeUsbDelegateServiceWorkerTest
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-class EnableWebUsbOnExtensionServiceWorkerHelper {
+class DisableWebUsbOnExtensionServiceWorkerHelper {
  public:
-  EnableWebUsbOnExtensionServiceWorkerHelper() {
+  DisableWebUsbOnExtensionServiceWorkerHelper() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEnableWebUsbOnExtensionServiceWorker},
-        /*disabled_features=*/{});
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kEnableWebUsbOnExtensionServiceWorker});
   }
 
  private:
@@ -820,12 +825,18 @@ class EnableWebUsbOnExtensionServiceWorkerHelper {
 class ChromeUsbDelegateExtensionRenderFrameTest
     : public ChromeUsbDelegateRenderFrameTestBase {
  public:
+  ChromeUsbDelegateExtensionRenderFrameTest() {
+    supports_usb_connection_tracker_ = true;
+  }
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
 };
 
 class ChromeUsbDelegateImprivataExtensionRenderFrameTest
     : public ChromeUsbDelegateRenderFrameTestBase {
  public:
+  ChromeUsbDelegateImprivataExtensionRenderFrameTest() {
+    supports_usb_connection_tracker_ = true;
+  }
   void SetUpOriginUrl() override {
     SetUpExtensionOriginUrl(kAllowlistedImprivataExtensionId);
   }
@@ -834,17 +845,22 @@ class ChromeUsbDelegateImprivataExtensionRenderFrameTest
 class ChromeUsbDelegateSmartCardExtensionRenderFrameTest
     : public ChromeUsbDelegateRenderFrameTestBase {
  public:
+  ChromeUsbDelegateSmartCardExtensionRenderFrameTest() {
+    supports_usb_connection_tracker_ = true;
+  }
   void SetUpOriginUrl() override {
     SetUpExtensionOriginUrl(kAllowlistedSmartCardExtensionId);
   }
 };
 
-class ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest
+class ChromeUsbDelegateExtensionRenderFrameFeatureDisabledTest
     : public ChromeUsbDelegateRenderFrameTestBase,
-      public EnableWebUsbOnExtensionServiceWorkerHelper {
+      public DisableWebUsbOnExtensionServiceWorkerHelper {
  public:
-  ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest() {
-    supports_usb_connection_tracker_ = true;
+  ChromeUsbDelegateExtensionRenderFrameFeatureDisabledTest() {
+    // There is no usb connection tracker activity when
+    // features::kEnableWebUsbOnExtensionServiceWorker is disabled.
+    supports_usb_connection_tracker_ = false;
   }
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
 };
@@ -852,24 +868,28 @@ class ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest
 class ChromeUsbDelegateExtensionServiceWorkerTest
     : public ChromeUsbDelegateServiceWorkerTestBase {
  public:
-  void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
-};
-
-class ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest
-    : public ChromeUsbDelegateServiceWorkerTestBase,
-      public EnableWebUsbOnExtensionServiceWorkerHelper {
- public:
-  ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest() {
+  ChromeUsbDelegateExtensionServiceWorkerTest() {
     supports_usb_connection_tracker_ = true;
   }
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
 };
 
-class ChromeUsbDelegateImprivataExtensionServiceWorkerFeatureEnabledTest
+class ChromeUsbDelegateExtensionServiceWorkerFeatureDisabledTest
     : public ChromeUsbDelegateServiceWorkerTestBase,
-      public EnableWebUsbOnExtensionServiceWorkerHelper {
+      public DisableWebUsbOnExtensionServiceWorkerHelper {
  public:
-  ChromeUsbDelegateImprivataExtensionServiceWorkerFeatureEnabledTest() {
+  ChromeUsbDelegateExtensionServiceWorkerFeatureDisabledTest() {
+    // There is no usb connection tracker activity when
+    // features::kEnableWebUsbOnExtensionServiceWorker is disabled.
+    supports_usb_connection_tracker_ = false;
+  }
+  void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
+};
+
+class ChromeUsbDelegateImprivataExtensionServiceWorkerTest
+    : public ChromeUsbDelegateServiceWorkerTestBase {
+ public:
+  ChromeUsbDelegateImprivataExtensionServiceWorkerTest() {
     supports_usb_connection_tracker_ = true;
   }
   void SetUpOriginUrl() override {
@@ -877,11 +897,10 @@ class ChromeUsbDelegateImprivataExtensionServiceWorkerFeatureEnabledTest
   }
 };
 
-class ChromeUsbDelegateSmartCardExtensionServiceWorkerFeatureEnabledTest
-    : public ChromeUsbDelegateServiceWorkerTestBase,
-      public EnableWebUsbOnExtensionServiceWorkerHelper {
+class ChromeUsbDelegateSmartCardExtensionServiceWorkerTest
+    : public ChromeUsbDelegateServiceWorkerTestBase {
  public:
-  ChromeUsbDelegateSmartCardExtensionServiceWorkerFeatureEnabledTest() {
+  ChromeUsbDelegateSmartCardExtensionServiceWorkerTest() {
     supports_usb_connection_tracker_ = true;
   }
   void SetUpOriginUrl() override {
@@ -952,54 +971,48 @@ TEST_F(ChromeUsbDelegateSmartCardExtensionRenderFrameTest,
   TestAllowlistedSmartCardConnectorExtension(web_contents());
 }
 
-TEST_F(ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest,
+TEST_F(ChromeUsbDelegateExtensionRenderFrameFeatureDisabledTest,
        OpenAndCloseDevice) {
   TestOpenAndCloseDevice(web_contents());
 }
 
-TEST_F(ChromeUsbDelegateExtensionRenderFrameFeatureEnabledTest,
+TEST_F(ChromeUsbDelegateExtensionRenderFrameFeatureDisabledTest,
        OpenAndDisconnectDevice) {
   TestOpenAndDisconnectDevice(web_contents());
 }
 
-TEST_F(ChromeUsbDelegateExtensionServiceWorkerTest, WebUsbServiceNotConnected) {
+TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureDisabledTest,
+       WebUsbServiceNotConnected) {
   TestWebUsbServiceNotConnected();
 }
-TEST_F(ChromeUsbDelegateImprivataExtensionServiceWorkerFeatureEnabledTest,
+
+TEST_F(ChromeUsbDelegateImprivataExtensionServiceWorkerTest,
        AllowlistedImprivataExtension) {
   TestAllowlistedImprivataExtension(nullptr);
 }
 
-TEST_F(ChromeUsbDelegateSmartCardExtensionServiceWorkerFeatureEnabledTest,
-       // TODO(crbug.com/1475901): Re-enable this test
-       DISABLED_AllowlistedSmartCardConnectorExtension) {
+TEST_F(ChromeUsbDelegateSmartCardExtensionServiceWorkerTest,
+       AllowlistedSmartCardConnectorExtension) {
   TestAllowlistedSmartCardConnectorExtension(nullptr);
 }
 
-TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest,
-       // TODO(crbug.com/1475901): Re-enable this test
-       DISABLED_NoPermissionDevice) {
+TEST_F(ChromeUsbDelegateExtensionServiceWorkerTest, NoPermissionDevice) {
   TestNoPermissionDevice();
 }
 
-TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest,
-       ReconnectDeviceManager) {
+TEST_F(ChromeUsbDelegateExtensionServiceWorkerTest, ReconnectDeviceManager) {
   TestReconnectDeviceManager();
 }
 
-TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest,
-       RevokeDevicePermission) {
+TEST_F(ChromeUsbDelegateExtensionServiceWorkerTest, RevokeDevicePermission) {
   TestRevokeDevicePermission();
 }
 
-TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest,
-       OpenAndCloseDevice) {
+TEST_F(ChromeUsbDelegateExtensionServiceWorkerTest, OpenAndCloseDevice) {
   TestOpenAndCloseDevice(/*web_contents=*/nullptr);
 }
 
-TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureEnabledTest,
-       // TODO(crbug.com/1475901): Re-enable this test
-       DISABLED_OpenAndDisconnectDevice) {
+TEST_F(ChromeUsbDelegateExtensionServiceWorkerTest, OpenAndDisconnectDevice) {
   TestOpenAndDisconnectDevice(/*web_contents=*/nullptr);
 }
 
@@ -1012,7 +1025,8 @@ TEST(ChromeUsbDelegateBrowserContextTest, BrowserContextIsNull) {
   EXPECT_FALSE(chrome_usb_delegate.CanRequestDevicePermission(
       /*browser_context=*/nullptr, origin));
   EXPECT_FALSE(chrome_usb_delegate.HasDevicePermission(
-      /*browser_context=*/nullptr, origin, device::mojom::UsbDeviceInfo()));
+      /*browser_context=*/nullptr, /*frame=*/nullptr, origin,
+      device::mojom::UsbDeviceInfo()));
   EXPECT_EQ(nullptr, chrome_usb_delegate.GetDeviceInfo(
                          /*browser_context=*/nullptr,
                          base::Uuid::GenerateRandomV4().AsLowercaseString()));

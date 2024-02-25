@@ -5,58 +5,8 @@
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
 
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
-#include "url/gurl.h"
 
 namespace autofill {
-
-// Limit the number of domains for which the import of new profiles is disabled.
-constexpr size_t kMaxStrikeEntities = 200;
-
-// Once the limit of blocked domains is reached, delete 50 least recently
-// blocked profiles to create a bit of headroom.
-constexpr size_t kMaxStrikeEntitiesAfterCleanup = 150;
-
-// The number of days it takes for strikes to expire.
-constexpr int kNumberOfDaysToExpire = 180;
-
-// The strike limit for suppressing save prompts.
-constexpr int kStrikeLimit = 3;
-
-AutofillProfileSaveStrikeDatabase::AutofillProfileSaveStrikeDatabase(
-    StrikeDatabaseBase* strike_database)
-    : StrikeDatabaseIntegratorBase(strike_database) {
-  RemoveExpiredStrikes();
-}
-
-AutofillProfileSaveStrikeDatabase::~AutofillProfileSaveStrikeDatabase() =
-    default;
-
-absl::optional<size_t> AutofillProfileSaveStrikeDatabase::GetMaximumEntries()
-    const {
-  return kMaxStrikeEntities;
-}
-
-absl::optional<size_t>
-AutofillProfileSaveStrikeDatabase::GetMaximumEntriesAfterCleanup() const {
-  return kMaxStrikeEntitiesAfterCleanup;
-}
-
-std::string AutofillProfileSaveStrikeDatabase::GetProjectPrefix() const {
-  return "AutofillProfileSave";
-}
-
-int AutofillProfileSaveStrikeDatabase::GetMaxStrikesLimit() const {
-  return kStrikeLimit;
-}
-
-absl::optional<base::TimeDelta>
-AutofillProfileSaveStrikeDatabase::GetExpiryTimeDelta() const {
-  return base::Days(kNumberOfDaysToExpire);
-}
-
-bool AutofillProfileSaveStrikeDatabase::UniqueIdsRequired() const {
-  return true;
-}
 
 void AutofillProfileSaveStrikeDatabase::ClearStrikesByOrigin(
     const std::set<std::string>& hosts_to_delete) {

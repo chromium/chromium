@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2015 The Chromium Authors
+Copyright 2018 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -10,7 +10,6 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/keyboard_accessory"
     android:layout_gravity="start|bottom"
-    android:contentDescription="@string/autofill_keyboard_accessory_content_description"
     android:scrollbars="none"
     android:visibility="gone"
     android:orientation="vertical"
@@ -20,7 +19,7 @@ found in the LICENSE file.
     android:clickable="true"
     android:focusable="true">
 
-     <ImageView
+    <ImageView
         android:id="@+id/accessory_shadow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_shadow_height"
@@ -32,20 +31,20 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/accessory_bar_contents"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/keyboard_accessory_height"
+        android:minHeight="@dimen/keyboard_accessory_height"
+        android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
-        android:background="@drawable/rectangle_surface_1">
-
-        <include layout="@layout/keyboard_accessory_tabs"
-            android:id="@+id/tabs"/>
-
-        <View style="@style/VerticalDivider" />
+        android:background="@macro/default_bg_color">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bar_items_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:requiresFadingEdge="horizontal"
+            android:fadingEdgeLength="@dimen/keyboard_accessory_scroll_shadow_width"
+            android:clipToPadding="false"/>
+
     </LinearLayout>
 
 </org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryView>

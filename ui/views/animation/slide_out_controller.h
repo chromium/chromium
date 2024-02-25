@@ -36,6 +36,10 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
 
   ~SlideOutController() override;
 
+  void set_trackpad_gestures_enabled(bool trackpad_gestures_enabled) {
+    trackpad_gestures_enabled_ = trackpad_gestures_enabled;
+  }
+
   void set_update_opacity(bool update_opacity) {
     update_opacity_ = update_opacity;
   }
@@ -48,6 +52,7 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
 
   // ui::EventHandler
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnScrollEvent(ui::ScrollEvent* event) override;
 
   // Enables the swipe control with specifying the width of buttons. Buttons
   // will appear behind the view as user slides it partially and it's kept open
@@ -110,6 +115,10 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
   // Changed only when |mode_| is FULL or PARTIAL and |has_swipe_control_| is
   // true.
   SwipeControlOpenState control_open_state_ = SwipeControlOpenState::kClosed;
+
+  // Whether slide out actions can be triggered by 2 finger scroll events from
+  // the trackpad.
+  bool trackpad_gestures_enabled_ = false;
 
   // If false, it doesn't update the opacity.
   bool update_opacity_ = true;

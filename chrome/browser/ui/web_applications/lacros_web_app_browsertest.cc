@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, AppInfo) {
 
   const GURL app_url =
       https_server()->GetURL("/web_apps/file_handler_index.html");
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlers(app_id)->size(),
             1U);
 
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, Shortcut) {
 
   const GURL app_url =
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   EXPECT_EQ(
       provider().registrar_unsafe().GetAppShortcutsMenuItemInfos(app_id).size(),
       6U);

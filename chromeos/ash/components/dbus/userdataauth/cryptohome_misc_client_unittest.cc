@@ -133,7 +133,7 @@ class CryptohomeMiscClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<CryptohomeMiscClient, DanglingUntriaged | ExperimentalAsh> client_;
+  raw_ptr<CryptohomeMiscClient, DanglingUntriaged> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::GetSystemSaltReply expected_get_system_salt_reply_;
@@ -165,7 +165,7 @@ class CryptohomeMiscClientTest : public testing::Test {
       // a very large value so the parsing will fail.
       constexpr uint8_t invalid_protobuf[] = {0x02, 0xFF, 0xFF, 0xFF,
                                               0xFF, 0xFF, 0xFF};
-      writer.AppendArrayOfBytes(invalid_protobuf, sizeof(invalid_protobuf));
+      writer.AppendArrayOfBytes(invalid_protobuf);
     } else if (method_call->GetMember() == ::user_data_auth::kGetSystemSalt) {
       writer.AppendProtoAsArrayOfBytes(expected_get_system_salt_reply_);
     } else if (method_call->GetMember() ==
@@ -198,7 +198,7 @@ class CryptohomeMiscClientTest : public testing::Test {
       // a very large value so the parsing will fail.
       constexpr uint8_t invalid_protobuf[] = {0x02, 0xFF, 0xFF, 0xFF,
                                               0xFF, 0xFF, 0xFF};
-      writer.AppendArrayOfBytes(invalid_protobuf, sizeof(invalid_protobuf));
+      writer.AppendArrayOfBytes(invalid_protobuf);
     } else if (method_call->GetMember() ==
                ::user_data_auth::kGetSanitizedUsername) {
       writer.AppendProtoAsArrayOfBytes(
@@ -213,37 +213,37 @@ class CryptohomeMiscClientTest : public testing::Test {
 TEST_F(CryptohomeMiscClientTest, GetSystemSalt) {
   constexpr char kSalt[] = "example_salt";
   expected_get_system_salt_reply_.set_salt(std::string(kSalt));
-  absl::optional<::user_data_auth::GetSystemSaltReply> result_reply;
+  std::optional<::user_data_auth::GetSystemSaltReply> result_reply;
 
   client_->GetSystemSalt(::user_data_auth::GetSystemSaltRequest(),
                          CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
+  ASSERT_NE(result_reply, std::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_get_system_salt_reply_));
 }
 
 TEST_F(CryptohomeMiscClientTest, GetSystemSaltInvalidProtobuf) {
   shall_message_parsing_fail_ = true;
-  absl::optional<::user_data_auth::GetSystemSaltReply> result_reply =
+  std::optional<::user_data_auth::GetSystemSaltReply> result_reply =
       ::user_data_auth::GetSystemSaltReply();
 
   client_->GetSystemSalt(::user_data_auth::GetSystemSaltRequest(),
                          CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(result_reply, absl::nullopt);
+  ASSERT_EQ(result_reply, std::nullopt);
 }
 
 TEST_F(CryptohomeMiscClientTest, GetSanitizedUsername) {
   constexpr char kAccountId[] = "test1234@example.com";
   expected_get_sanitized_username_reply_.set_sanitized_username(
       std::string(kAccountId));
-  absl::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply;
+  std::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply;
 
   client_->GetSanitizedUsername(::user_data_auth::GetSanitizedUsernameRequest(),
                                 CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
+  ASSERT_NE(result_reply, std::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_get_sanitized_username_reply_));
 }
@@ -251,12 +251,12 @@ TEST_F(CryptohomeMiscClientTest, GetSanitizedUsername) {
 TEST_F(CryptohomeMiscClientTest, GetLoginStatus) {
   expected_get_login_status_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::user_data_auth::GetLoginStatusReply> result_reply;
+  std::optional<::user_data_auth::GetLoginStatusReply> result_reply;
 
   client_->GetLoginStatus(::user_data_auth::GetLoginStatusRequest(),
                           CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
+  ASSERT_NE(result_reply, std::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_get_login_status_reply_));
 }
@@ -264,14 +264,14 @@ TEST_F(CryptohomeMiscClientTest, GetLoginStatus) {
 TEST_F(CryptohomeMiscClientTest, LockToSingleUserMountUntilReboot) {
   expected_lock_to_single_user_mount_until_reboot_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::user_data_auth::LockToSingleUserMountUntilRebootReply>
+  std::optional<::user_data_auth::LockToSingleUserMountUntilRebootReply>
       result_reply;
 
   client_->LockToSingleUserMountUntilReboot(
       ::user_data_auth::LockToSingleUserMountUntilRebootRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
+  ASSERT_NE(result_reply, std::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(),
                      expected_lock_to_single_user_mount_until_reboot_reply_));
@@ -280,12 +280,12 @@ TEST_F(CryptohomeMiscClientTest, LockToSingleUserMountUntilReboot) {
 TEST_F(CryptohomeMiscClientTest, GetRsuDeviceId) {
   expected_get_rsu_device_id_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::user_data_auth::GetRsuDeviceIdReply> result_reply;
+  std::optional<::user_data_auth::GetRsuDeviceIdReply> result_reply;
 
   client_->GetRsuDeviceId(::user_data_auth::GetRsuDeviceIdRequest(),
                           CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
+  ASSERT_NE(result_reply, std::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_get_rsu_device_id_reply_));
 }
@@ -294,7 +294,7 @@ TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsername) {
   constexpr char kAccountId[] = "test1234@example.com";
   expected_blocking_get_sanitized_username_reply_.set_sanitized_username(
       std::string(kAccountId));
-  absl::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply;
+  std::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply;
 
   scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
   EXPECT_CALL(*bus_.get(), GetDBusTaskRunner())
@@ -303,14 +303,14 @@ TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsername) {
   result_reply = client_->BlockingGetSanitizedUsername(
       ::user_data_auth::GetSanitizedUsernameRequest());
 
-  ASSERT_NE(result_reply, absl::nullopt);
+  ASSERT_NE(result_reply, std::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_blocking_get_sanitized_username_reply_));
 }
 
 TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsernameInvalidProtobuf) {
   shall_message_parsing_fail_ = true;
-  absl::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply =
+  std::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply =
       ::user_data_auth::GetSanitizedUsernameReply();
 
   scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
@@ -320,7 +320,7 @@ TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsernameInvalidProtobuf) {
   result_reply = client_->BlockingGetSanitizedUsername(
       ::user_data_auth::GetSanitizedUsernameRequest());
 
-  EXPECT_EQ(result_reply, absl::nullopt);
+  EXPECT_EQ(result_reply, std::nullopt);
 }
 
 }  // namespace ash

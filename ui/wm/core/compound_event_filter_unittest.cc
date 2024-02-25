@@ -74,13 +74,13 @@ TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
   // Synthesized mouse event should not show the cursor.
   ui::MouseEvent enter(ui::ET_MOUSE_ENTERED, gfx::Point(10, 10),
                        gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
-  enter.set_flags(enter.flags() | ui::EF_IS_SYNTHESIZED);
+  enter.SetFlags(enter.flags() | ui::EF_IS_SYNTHESIZED);
   DispatchEventUsingWindowDispatcher(&enter);
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
   ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
                       gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
-  move.set_flags(enter.flags() | ui::EF_IS_SYNTHESIZED);
+  move.SetFlags(enter.flags() | ui::EF_IS_SYNTHESIZED);
   DispatchEventUsingWindowDispatcher(&move);
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
@@ -107,7 +107,7 @@ TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
   // Mouse synthesized exit event should not show the cursor.
   ui::MouseEvent exit(ui::ET_MOUSE_EXITED, gfx::Point(10, 10),
                       gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
-  exit.set_flags(enter.flags() | ui::EF_IS_SYNTHESIZED);
+  exit.SetFlags(enter.flags() | ui::EF_IS_SYNTHESIZED);
   DispatchEventUsingWindowDispatcher(&exit);
   EXPECT_FALSE(cursor_client.IsCursorVisible());
 
@@ -245,12 +245,12 @@ TEST_F(CompoundEventFilterTest, DontShowCursorOnMouseMovesFromTouch) {
 
   ui::MouseEvent mouse0(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
                         gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
-  mouse0.set_flags(mouse0.flags() | ui::EF_FROM_TOUCH);
+  mouse0.SetFlags(mouse0.flags() | ui::EF_FROM_TOUCH);
 
   DispatchEventUsingWindowDispatcher(&mouse0);
   EXPECT_FALSE(cursor_client.IsMouseEventsEnabled());
 
-  mouse0.set_flags(mouse0.flags() & ~ui::EF_FROM_TOUCH);
+  mouse0.SetFlags(mouse0.flags() & ~ui::EF_FROM_TOUCH);
   DispatchEventUsingWindowDispatcher(&mouse0);
   EXPECT_TRUE(cursor_client.IsMouseEventsEnabled());
 

@@ -27,6 +27,19 @@
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <utility>
+
+#include "base/at_exit.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "third_party/cros_system_api/constants/crash_reporter.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/build_time.h"
 #endif
@@ -50,6 +63,49 @@ bool FirstChanceHandlerHelper(int signo,
   return g_first_chance_handler(signo, siginfo, context);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+// Returns /run/crash_reporter/crashpad_ready/<pid>, the file we touch to
+// tell crash_reporter that crashpad is ready and it doesn't need to use
+// early-crash mode.
+base::FilePath GetCrashpadReadyFilename() {
+  pid_t pid = getpid();
+  base::FilePath path(crash_reporter::kCrashpadReadyDirectory);
+  return path.Append(base::NumberToString(pid));
+}
+
+// Inform crash_reporter than crashpad is ready to handle crashes by
+// touching /run/crash_reporter/crashpad_ready/<pid>.
+//
+// Before this point, crash_reporter will attempt to handle Chrome crashes
+// sent to it by the kernel core_pattern. This gives us a chance to catch
+// crashes that happen before crashpad initializes. See code around
+// UserCollector::handling_early_chrome_crash_ for details. Once the
+// /run/crash_reporter/crashpad_ready/<pid> file exists, however,
+// crash_reporter's UserCollector will assume crashpad will deal with the
+// crash and can early-return.
+//
+// We only need this for the browser process; the cores are too large for
+// other processes so early crash doesn't attempt to handle them.
+void InformCrashReporterThatCrashpadIsReady() {
+  base::FilePath path = GetCrashpadReadyFilename();
+  // Note: Using a base::File with FLAG_CREATE instead of WriteFile() to
+  // avoid symbolic link shenanigans.
+  base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    LOG(ERROR) << "Could not create " << path << ": "
+               << base::File::ErrorToString(file.error_details());
+  }
+
+  // Remove file when the program exits. This isn't perfect; if the program
+  // crashes, and if the next browser process comes up with the same PID
+  // (without an intervening reboot), and that browser process crashes before
+  // crashpad initializes, then the crash service won't get the crash report.
+  // This is unlikely enough that I think we can risk it, especially since
+  // losing a single crash report is not a huge deal.
+  base::AtExitManager::RegisterTask(base::BindOnce(&DeleteCrashpadIsReadyFile));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
+
 }  // namespace
 
 void SetFirstChanceExceptionHandler(bool (*handler)(int, siginfo_t*, void*)) {
@@ -59,14 +115,19 @@ void SetFirstChanceExceptionHandler(bool (*handler)(int, siginfo_t*, void*)) {
       FirstChanceHandlerHelper);
 }
 
-bool IsCrashpadEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableCrashpad);
-}
-
 bool GetHandlerSocket(int* fd, pid_t* pid) {
   return crashpad::CrashpadClient::GetHandlerSocket(fd, pid);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+void DeleteCrashpadIsReadyFile() {
+  // Attempt delete but do not log errors if the delete fails. The file might
+  // not exist if this function is called twice, or if Chrome did a fork-
+  // without-exec and this function is not in the same process that called
+  // InformCrashReporterThatCrashpadIsReady().
+  base::DeleteFile(GetCrashpadReadyFilename());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 namespace internal {
 
@@ -117,7 +178,7 @@ bool PlatformCrashpadInitialization(
     // to ChromeOS's /sbin/crash_reporter which in turn passes the dump to
     // crash_sender which handles the upload.
     std::string url;
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
     url = crash_reporter_client->GetUploadUrl();
 #else
     url = std::string();
@@ -156,7 +217,7 @@ bool PlatformCrashpadInitialization(
     annotations["build_time_millis"] = base::NumberToString(build_time);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
     // Chromium OS: save board and builder path for 'tast symbolize'.
     annotations["chromeos-board"] = base::SysInfo::GetLsbReleaseBoard();
     std::string builder_path;
@@ -181,7 +242,7 @@ bool PlatformCrashpadInitialization(
     // contain these annotations.
     arguments.push_back("--monitor-self-annotation=ptype=crashpad-handler");
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
     arguments.push_back("--use-cros-crash-reporter");
 
     if (crash_reporter_client->IsRunningUnattended()) {
@@ -223,6 +284,12 @@ bool PlatformCrashpadInitialization(
   crashpad::CrashpadInfo::GetCrashpadInfo()
       ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
                                                 kIndirectMemoryLimit);
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  if (initial_client) {
+    InformCrashReporterThatCrashpadIsReady();
+  }
+#endif
 
   return true;
 }

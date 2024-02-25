@@ -97,7 +97,6 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(video_capturer_);
-  const base::TimeTicks time_of_call = base::TimeTicks::Now();
 
   mojo::Remote<::viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
       callbacks_remote(std::move(callbacks));
@@ -125,9 +124,6 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
     return;
   }
 
-  if (num_received_frames_ == 0)
-    UMA_HISTOGRAM_TIMES("Tab.Preview.TimeToFirstUsableFrameAfterStartCapture",
-                        time_of_call - start_time_);
   TRACE_EVENT_INSTANT1("ui", "Tab.Preview.VideoCaptureFrameReceived",
                        TRACE_EVENT_SCOPE_THREAD, "frame_number",
                        num_received_frames_);
@@ -189,8 +185,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   got_frame_callback_.Run(cropped_frame, frame_id);
 }
 
-void BackgroundThumbnailVideoCapturer::OnNewCropVersion(uint32_t crop_version) {
-}
+void BackgroundThumbnailVideoCapturer::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {}
 
 void BackgroundThumbnailVideoCapturer::OnFrameWithEmptyRegionCapture() {}
 

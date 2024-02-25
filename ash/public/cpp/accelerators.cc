@@ -50,6 +50,8 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kPrivacyScreenToggle},
     {true, ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_NONE,
      AcceleratorAction::kMicrophoneMuteToggle},
+    {true, ui::VKEY_M, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kMicrophoneMuteToggle},
     {true, ui::VKEY_KBD_BACKLIGHT_TOGGLE, ui::EF_NONE,
      AcceleratorAction::kKeyboardBacklightToggle},
     {true, ui::VKEY_KBD_BRIGHTNESS_DOWN, ui::EF_NONE,
@@ -98,10 +100,7 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kOpenDiagnostics},
     {true, ui::VKEY_M, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kOpenFileManager},
-    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kOpenGetHelp},
-    {true, ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kOpenGetHelp},
+    {true, ui::VKEY_H, ui::EF_COMMAND_DOWN, AcceleratorAction::kOpenGetHelp},
     {true, ui::VKEY_T, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kOpenCrosh},
     {true, ui::VKEY_I, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
@@ -130,6 +129,7 @@ const AcceleratorData kAcceleratorData[] = {
     // The following is triggered when Search is released while Alt is still
     // down. The key_code here is LWIN (for search) and Alt is a modifier.
     {false, ui::VKEY_LWIN, ui::EF_ALT_DOWN, AcceleratorAction::kToggleCapsLock},
+    {false, ui::VKEY_RWIN, ui::EF_ALT_DOWN, AcceleratorAction::kToggleCapsLock},
     // The following is triggered when Alt is released while search is still
     // down. The key_code here is MENU (for Alt) and Search is a modifier
     // (EF_COMMAND_DOWN is used for Search as a modifier).
@@ -147,6 +147,8 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
      AcceleratorAction::kSwitchToNextIme},
     {true, ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kOpenFeedbackPage},
+    {true, ui::VKEY_I, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
      AcceleratorAction::kOpenFeedbackPage},
     {true, ui::VKEY_Q, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
      AcceleratorAction::kExit},
@@ -178,6 +180,9 @@ const AcceleratorData kAcceleratorData[] = {
     {false, ui::VKEY_LWIN, ui::EF_NONE, AcceleratorAction::kToggleAppList},
     {false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
      AcceleratorAction::kToggleAppList},
+    {false, ui::VKEY_RWIN, ui::EF_NONE, AcceleratorAction::kToggleAppList},
+    {false, ui::VKEY_RWIN, ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kToggleAppList},
     {true, ui::VKEY_ZOOM, ui::EF_NONE, AcceleratorAction::kToggleFullscreen},
     {true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
      AcceleratorAction::kToggleFullscreen},
@@ -189,14 +194,14 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kFocusShelf},
     {true, ui::VKEY_V, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kFocusPip},
-    {true, ui::VKEY_HELP, ui::EF_NONE, AcceleratorAction::kShowShortcutViewer},
+    {true, ui::VKEY_HELP, ui::EF_NONE, AcceleratorAction::kOpenGetHelp},
     {true, ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
      AcceleratorAction::kShowShortcutViewer},
     {true, ui::VKEY_F14, ui::EF_NONE, AcceleratorAction::kShowShortcutViewer},
     {true, ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kToggleMessageCenterBubble},
     {true, ui::VKEY_P, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kShowStylusTools},
+     AcceleratorAction::kToggleStylusTools},
     {true, ui::VKEY_X, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
      AcceleratorAction::kStopScreenRecording},
     {true, ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
@@ -240,6 +245,8 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup},
     {true, ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore},
+    {true, ui::VKEY_Z, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kToggleMultitaskMenu},
 
     // Moving active window between displays shortcut.
     {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
@@ -327,52 +334,6 @@ const AcceleratorData kDisableWithNewMappingAcceleratorData[] = {
 const size_t kDisableWithNewMappingAcceleratorDataLength =
     std::size(kDisableWithNewMappingAcceleratorData);
 
-const AcceleratorData kEnableWithNewMappingAcceleratorData[] = {
-    // Desk creation and removal:
-    {true, ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kDesksNewDesk},
-    {true, ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kDesksRemoveCurrentDesk},
-
-    // Desk activation:
-    {true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kDesksActivateDeskLeft},
-    {true, ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kDesksActivateDeskRight},
-
-    // Moving windows to desks:
-    {true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kDesksMoveActiveItemLeft},
-    {true, ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kDesksMoveActiveItemRight},
-
-    // Snap
-    {true, ui::VKEY_OEM_COMMA,
-     ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kWindowCycleSnapLeft},
-    {true, ui::VKEY_OEM_PERIOD,
-     ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kWindowCycleSnapRight},
-
-    // Zoom
-    {true, ui::VKEY_UP,
-     ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kScaleUiUp},
-    {true, ui::VKEY_DOWN,
-     ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kScaleUiDown},
-    {true, ui::VKEY_BACK,
-     ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kScaleUiReset},
-
-    // Shortcut Viewer
-    {true, ui::VKEY_OEM_2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowShortcutViewer},
-};
-
-const size_t kEnableWithNewMappingAcceleratorDataLength =
-    std::size(kEnableWithNewMappingAcceleratorData);
-
 const AcceleratorData kEnableWithPositionalAcceleratorsData[] = {
     // These are the desk shortcuts as advertised, but previously
     // they were implicitly implemented in terms of F11 and F12
@@ -427,14 +388,6 @@ const AcceleratorData kEnableWithSameAppWindowCycleAcceleratorData[] = {
 const size_t kEnableWithSameAppWindowCycleAcceleratorDataLength =
     std::size(kEnableWithSameAppWindowCycleAcceleratorData);
 
-const AcceleratorData kEnableWithFloatWindowAcceleratorData[] = {
-    {true, ui::VKEY_Z, ui::EF_COMMAND_DOWN,
-     AcceleratorAction::kToggleMultitaskMenu},
-};
-
-const size_t kEnableWithFloatWindowAcceleratorDataLength =
-    std::size(kEnableWithFloatWindowAcceleratorData);
-
 const AcceleratorData kToggleGameDashboardAcceleratorData[] = {
     {true, ui::VKEY_G, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleGameDashboard},
@@ -442,6 +395,12 @@ const AcceleratorData kToggleGameDashboardAcceleratorData[] = {
 
 const size_t kToggleGameDashboardAcceleratorDataLength =
     std::size(kToggleGameDashboardAcceleratorData);
+
+const AcceleratorData kTogglePickerAcceleratorData[] = {
+    {true, ui::VKEY_S, ui::EF_COMMAND_DOWN, AcceleratorAction::kTogglePicker}};
+
+const size_t kTogglePickerAcceleratorDataLength =
+    std::size(kTogglePickerAcceleratorData);
 
 // static
 AcceleratorController* AcceleratorController::Get() {

@@ -114,32 +114,6 @@ float ViewAndroid::GetDipScale() {
   return ui::GetScaleFactorForNativeView(this);
 }
 
-absl::optional<gfx::Rect> ViewAndroid::GetDisplayFeature() {
-  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
-  if (delegate.is_null())
-    return absl::nullopt;
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jintArray> jni_display_feature =
-      Java_ViewAndroidDelegate_getDisplayFeature(env, delegate);
-  std::vector<int> display_feature_values;
-  if (jni_display_feature.obj()) {
-    // In order to reduce jni overhead, the DisplayFeature is returned in
-    // an integer array. This array must have 4 items in it (or the return
-    // value should be null).
-    base::android::JavaIntArrayToIntVector(env, jni_display_feature,
-                                           &display_feature_values);
-    CHECK(display_feature_values.size() == 4);
-    gfx::Rect display_feature;
-    display_feature.SetByBounds(
-        display_feature_values[0], display_feature_values[1],
-        display_feature_values[2], display_feature_values[3]);
-    return display_feature;
-  }
-
-  return absl::nullopt;
-}
-
 ScopedJavaLocalRef<jobject> ViewAndroid::GetEventForwarder() {
   if (!event_forwarder_) {
     DCHECK(!RootPathHasEventForwarder(parent_))
@@ -463,28 +437,20 @@ void ViewAndroid::OnBackgroundColorChanged(unsigned int color) {
   Java_ViewAndroidDelegate_onBackgroundColorChanged(env, delegate, color);
 }
 
-void ViewAndroid::OnTopControlsChanged(float top_controls_offset,
-                                       float top_content_offset,
-                                       float top_controls_min_height_offset) {
+void ViewAndroid::OnControlsChanged(float top_controls_offset,
+                                    float top_content_offset,
+                                    float top_controls_min_height_offset,
+                                    float bottom_controls_offset,
+                                    float bottom_controls_min_height_offset) {
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
   if (delegate.is_null())
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ViewAndroidDelegate_onTopControlsChanged(
+  Java_ViewAndroidDelegate_onControlsChanged(
       env, delegate, std::round(top_controls_offset),
       std::round(top_content_offset),
-      std::round(top_controls_min_height_offset));
-}
-
-void ViewAndroid::OnBottomControlsChanged(
-    float bottom_controls_offset,
-    float bottom_controls_min_height_offset) {
-  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate());
-  if (delegate.is_null())
-    return;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ViewAndroidDelegate_onBottomControlsChanged(
-      env, delegate, std::round(bottom_controls_offset),
+      std::round(top_controls_min_height_offset),
+      std::round(bottom_controls_offset),
       std::round(bottom_controls_min_height_offset));
 }
 
@@ -552,7 +518,7 @@ void ViewAndroid::DispatchOnSizeChanged() {
 
 void ViewAndroid::OnPhysicalBackingSizeChanged(
     const gfx::Size& size,
-    absl::optional<base::TimeDelta> deadline_override) {
+    std::optional<base::TimeDelta> deadline_override) {
   if (physical_size_ == size)
     return;
   physical_size_ = size;
@@ -738,6 +704,16 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
 
 void ViewAndroid::SetLayoutForTesting(int x, int y, int width, int height) {
   bounds_.SetRect(x, y, width, height);
+}
+
+size_t ViewAndroid::GetChildrenCountForTesting() const {
+  return children_.size();
+}
+
+const ViewAndroid* ViewAndroid::GetTopMostChildForTesting() const {
+  // The top-most refers to the back element of the children. This is mirroring
+  // the children ordering of the cc Layer tree.
+  return children_.back();
 }
 
 }  // namespace ui

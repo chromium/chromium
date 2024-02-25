@@ -50,9 +50,6 @@ MODE_SPECIFIC_STRINGS = {
       'IDS_APP_SHORTCUTS_SUBDIR_NAME_DEV',
       'IDS_APP_SHORTCUTS_SUBDIR_NAME_CANARY',
     ],
-    'google_chrome_for_testing': [
-      'IDS_APP_SHORTCUTS_SUBDIR_NAME',
-    ],
     'chromium': [
       'IDS_APP_SHORTCUTS_SUBDIR_NAME',
     ],
@@ -64,9 +61,6 @@ MODE_SPECIFIC_STRINGS = {
       'IDS_INBOUND_MDNS_RULE_DESCRIPTION_DEV',
       'IDS_INBOUND_MDNS_RULE_DESCRIPTION_CANARY',
     ],
-    'google_chrome_for_testing': [
-      'IDS_INBOUND_MDNS_RULE_DESCRIPTION',
-    ],
     'chromium': [
       'IDS_INBOUND_MDNS_RULE_DESCRIPTION',
     ],
@@ -77,9 +71,6 @@ MODE_SPECIFIC_STRINGS = {
       'IDS_INBOUND_MDNS_RULE_NAME_BETA',
       'IDS_INBOUND_MDNS_RULE_NAME_DEV',
       'IDS_INBOUND_MDNS_RULE_NAME_CANARY',
-    ],
-    'google_chrome_for_testing': [
-      'IDS_INBOUND_MDNS_RULE_NAME',
     ],
     'chromium': [
       'IDS_INBOUND_MDNS_RULE_NAME',
@@ -95,9 +86,6 @@ MODE_SPECIFIC_STRINGS = {
       'IDS_SHORTCUT_NAME_BETA',
       'IDS_SHORTCUT_NAME_DEV',
       'IDS_SXS_SHORTCUT_NAME',
-    ],
-    'google_chrome_for_testing': [
-      'IDS_PRODUCT_NAME',
     ],
     'chromium': [
       'IDS_PRODUCT_NAME',

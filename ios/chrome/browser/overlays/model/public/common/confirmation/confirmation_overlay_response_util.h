@@ -1,0 +1,17 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_COMMON_CONFIRMATION_CONFIRMATION_OVERLAY_RESPONSE_UTIL_H_
+#define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_COMMON_CONFIRMATION_CONFIRMATION_OVERLAY_RESPONSE_UTIL_H_
+
+#import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
+
+// Utility function for creating a ResponseConverter that returns a
+// ConfirmationOverlayResponse.  `confirm_button_row_index` is the button row
+// index of an AlertRequest's button configs that corresponds with a confirm
+// action.
+alert_overlays::ResponseConverter GetConfirmationResponseConverter(
+    size_t confirm_button_row_index);
+
+#endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_COMMON_CONFIRMATION_CONFIRMATION_OVERLAY_RESPONSE_UTIL_H_

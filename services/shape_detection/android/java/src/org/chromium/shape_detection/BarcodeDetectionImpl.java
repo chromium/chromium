@@ -22,9 +22,7 @@ import org.chromium.shape_detection.mojom.BarcodeDetectionResult;
 import org.chromium.shape_detection.mojom.BarcodeDetectorOptions;
 import org.chromium.shape_detection.mojom.BarcodeFormat;
 
-/**
- * Implementation of mojo BarcodeDetection, using Google Play Services vision package.
- */
+/** Implementation of mojo BarcodeDetection, using Google Play Services vision package. */
 public class BarcodeDetectionImpl implements BarcodeDetection {
     private static final String TAG = "BarcodeDetectionImpl";
 
@@ -69,9 +67,10 @@ public class BarcodeDetectionImpl implements BarcodeDetection {
                 }
             }
         }
-        mBarcodeDetector = new BarcodeDetector.Builder(ContextUtils.getApplicationContext())
-                                   .setBarcodeFormats(formats)
-                                   .build();
+        mBarcodeDetector =
+                new BarcodeDetector.Builder(ContextUtils.getApplicationContext())
+                        .setBarcodeFormats(formats)
+                        .build();
     }
 
     @Override

@@ -38,11 +38,11 @@ import org.chromium.ui.resources.ResourceFactoryJni;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Tests for {@link ViewResourceAdapter}.
- */
+/** Tests for {@link ViewResourceAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ViewResourceAdapterTest.ShadowCaptureUtils.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ViewResourceAdapterTest.ShadowCaptureUtils.class})
 public class ViewResourceAdapterTest {
     /**
      * Mock this out to avoid calling {@link View#draw(Canvas)} on the mocked mView.
@@ -52,8 +52,13 @@ public class ViewResourceAdapterTest {
     @Implements(CaptureUtils.class)
     static class ShadowCaptureUtils {
         @Implementation
-        public static boolean captureCommon(Canvas canvas, View view, Rect dirtyRect, float scale,
-                boolean drawWhileDetached, CaptureObserver observer) {
+        public static boolean captureCommon(
+                Canvas canvas,
+                View view,
+                Rect dirtyRect,
+                float scale,
+                boolean drawWhileDetached,
+                CaptureObserver observer) {
             return true;
         }
     }
@@ -61,12 +66,9 @@ public class ViewResourceAdapterTest {
     private int mViewWidth;
     private int mViewHeight;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private ResourceFactory.Natives mResourceFactoryJni;
-    @Mock
-    private View mView;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock private ResourceFactory.Natives mResourceFactoryJni;
+    @Mock private View mView;
 
     private ViewResourceAdapter mAdapter;
 
@@ -313,9 +315,10 @@ public class ViewResourceAdapterTest {
         Bitmap bitmap = getBitmap();
 
         Bitmap[] bitmapHolder = new Bitmap[1];
-        Callback<Resource> callback = (resource) -> {
-            bitmapHolder[0] = resource.getBitmap();
-        };
+        Callback<Resource> callback =
+                (resource) -> {
+                    bitmapHolder[0] = resource.getBitmap();
+                };
         mAdapter.addOnResourceReadyCallback(callback);
 
         CallbackHelper helper = new CallbackHelper();

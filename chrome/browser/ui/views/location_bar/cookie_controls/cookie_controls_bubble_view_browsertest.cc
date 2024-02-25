@@ -14,11 +14,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -33,8 +36,6 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kUserBypassUI);
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
 
@@ -58,16 +59,12 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), third_party_cookie_page_url()));
 
-    auto* button =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionIconView(PageActionIconType::kCookieControls);
-
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
+        /*tracking_protection_settings=*/nullptr);
 
-    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(button);
+    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
   }
 
   void TearDownOnMainThread() override {
@@ -108,8 +105,8 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     // If it does not exist, it will fall through the default wildcard.
     if (should_exist) {
       EXPECT_EQ(info.secondary_pattern,
-                ContentSettingsPattern::FromURL(first_party_url));
-
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    first_party_url));
     } else {
       EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
     }
@@ -153,18 +150,16 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
-                       InvalidCookieStatusClosesBubble) {
+                       HidingControlsClosesBubble) {
   ShowBubble();
-  view_controller()->OnStatusChanged(CookieControlsStatus::kDisabled,
-                                     CookieControlsEnforcement::kNoEnforcement,
-                                     base::Time());
-  WaitForBubbleClose();
-
-  ShowBubble();
-  view_controller()->OnStatusChanged(CookieControlsStatus::kUninitialized,
-                                     CookieControlsEnforcement::kNoEnforcement,
-                                     base::Time());
-  WaitForBubbleClose();
+  views::test::WidgetDestroyedWaiter waiter(bubble_view()->GetWidget());
+  view_controller()->OnStatusChanged(
+      CookieControlsStatus::kDisabled,
+      /*controls_visible=*/false,
+      /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
+  waiter.Wait();
+  EXPECT_EQ(bubble_view(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest, PageReload) {
@@ -215,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   EXPECT_CALL(observer, DidStartNavigation(testing::_)).Times(0);
 
   SimulateTogglePress(true);
-  SimulateTogglePress(true);
+  SimulateTogglePress(false);
 
   bubble_view()->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kLostFocus);

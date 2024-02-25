@@ -5,6 +5,8 @@
 #import "ios/chrome/test/wpt/cwt_request_handler.h"
 
 #import <XCTest/XCTest.h>
+
+#import <optional>
 #import <string>
 
 #import "base/debug/stack_trace.h"
@@ -21,7 +23,6 @@
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
 #import "net/http/http_status_code.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 EDO_STUB_CLASS(CWTWebDriverAppInterface, kCwtEdoPortNumber)
 
@@ -100,6 +101,7 @@ const char kWebDriverScriptTimeoutRequestField[] = "script";
 const char kWebDriverPageLoadTimeoutRequestField[] = "pageLoad";
 const char kWebDriverWindowHandleRequestField[] = "handle";
 const char kWebDriverScriptRequestField[] = "script";
+const char kWebDriverArgsRequestField[] = "args";
 
 // Non-standard request field names, used only for testing Chrome.
 // The additional time (in seconds) to wait for a crash after a successful page
@@ -175,7 +177,7 @@ CWTRequestHandler::CWTRequestHandler(ProceduralBlock session_completion_handler)
 
 CWTRequestHandler::~CWTRequestHandler() = default;
 
-absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
+std::optional<base::Value> CWTRequestHandler::ProcessCommand(
     const std::string& command,
     net::test_server::HttpMethod http_method,
     const std::string& request_content) {
@@ -197,11 +199,11 @@ absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kChromeVersionInfoCommand)
       return GetVersionInfo();
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (http_method == net::test_server::METHOD_POST) {
-    absl::optional<base::Value> content =
+    std::optional<base::Value> content =
         base::JSONReader::Read(request_content);
     if (!content || !content->is_dict()) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
@@ -234,19 +236,21 @@ absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverSyncScriptCommand) {
       return ExecuteScript(
           content_dict.FindString(kWebDriverScriptRequestField),
-          /*is_async_function=*/false);
+          /*is_async_function=*/false,
+          content_dict.FindList(kWebDriverArgsRequestField));
     }
 
     if (command == kWebDriverAsyncScriptCommand) {
       return ExecuteScript(
           content_dict.FindString(kWebDriverScriptRequestField),
-          /*is_async_function=*/true);
+          /*is_async_function=*/true,
+          content_dict.FindList(kWebDriverArgsRequestField));
     }
 
     if (command == kWebDriverWindowRectCommand)
       return SetWindowRect(*content);
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (http_method == net::test_server::METHOD_DELETE) {
@@ -264,16 +268,16 @@ absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverActionsCommand)
       return ReleaseActions();
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
 CWTRequestHandler::HandleRequest(const net::test_server::HttpRequest& request) {
   std::string command = request.GetURL().ExtractFileName();
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       ProcessCommand(command, request.method, request.content);
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -404,7 +408,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
         timeout:page_load_timeout_];
 
     if (!error) {
-      const absl::optional<int> extra_wait =
+      const std::optional<int> extra_wait =
           input_dict.FindInt(kChromeCrashWaitTime);
       if (extra_wait) {
         if (!extra_wait || extra_wait.value() < 0) {
@@ -509,7 +513,8 @@ base::Value CWTRequestHandler::CloseTargetTab() {
 }
 
 base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
-                                             bool is_async_function) {
+                                             bool is_async_function,
+                                             const base::Value::List* args) {
   if (!script) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
                             kWebDriverMissingScriptMessage);
@@ -519,9 +524,18 @@ base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
   if (is_async_function) {
     // The provided `script` is a function body that already calls its last
     // argument with the result of its computation.
+    NSString* updated_script = base::SysUTF8ToNSString(*script);
+    // Update the url if exists in the args
+    if (args && args->size() > 0) {
+      NSString* script_url = [NSString
+          stringWithFormat:@"\"%s\"", args->front().GetString().c_str()];
+      updated_script =
+          [updated_script stringByReplacingOccurrencesOfString:@"arguments[0]"
+                                                    withString:script_url];
+    }
     function_to_execute =
-        [NSString stringWithFormat:@"function f(completionHandler) { %s }",
-                                   script->c_str()];
+        [NSString stringWithFormat:@"function f(completionHandler) { %@ }",
+                                   updated_script];
   } else {
     // The provided `script` directly computes a result. Convert to a function
     // that calls a completion handler with the result of its computation.
@@ -544,7 +558,7 @@ base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
                             kWebDriverScriptTimeoutMessage);
   }
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       base::JSONReader::Read(base::SysNSStringToUTF8(result_as_json));
   DCHECK(result);
   return std::move(*result);

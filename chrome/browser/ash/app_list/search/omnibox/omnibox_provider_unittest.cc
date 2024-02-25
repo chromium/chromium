@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -20,6 +22,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -117,9 +120,10 @@ class OmniboxProviderTest : public testing::Test {
     // Create the object to actually test.
     list_controller_ =
         std::make_unique<::test::TestAppListControllerDelegate>();
-    provider_ =
-        std::make_unique<OmniboxProvider>(profile_, list_controller_.get());
-    provider_->set_controller(search_controller_.get());
+    auto provider = std::make_unique<OmniboxProvider>(
+        profile_, list_controller_.get(), /*provider_types=*/0);
+    provider_ = provider.get();
+    search_controller_->AddProvider(std::move(provider));
 
     std::unique_ptr<AutocompleteController> controller =
         std::make_unique<MockAutoCompleteController>();
@@ -129,7 +133,7 @@ class OmniboxProviderTest : public testing::Test {
   }
 
   void TearDown() override {
-    provider_.reset();
+    provider_ = nullptr;
     search_controller_.reset();
     list_controller_.reset();
     profile_ = nullptr;
@@ -143,8 +147,16 @@ class OmniboxProviderTest : public testing::Test {
 
   // Starts a search and waits for the query to be sent
   void StartSearch(const std::u16string& query) {
-    provider_->Start(query);
+    search_controller_->StartSearch(query);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void DisableWebSearch() {
+    ScopedDictPrefUpdate pref_update(
+        profile_->GetPrefs(), ash::prefs::kLauncherSearchCategoryControlStatus);
+
+    pref_update->Set(ash::GetAppListControlCategoryName(ControlCategory::kWeb),
+                     false);
   }
 
  protected:
@@ -157,9 +169,9 @@ class OmniboxProviderTest : public testing::Test {
   std::unique_ptr<AppListControllerDelegate> list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
 
-  std::unique_ptr<OmniboxProvider> provider_;
+  raw_ptr<OmniboxProvider> provider_;
 };
 
 // Test that results each instantiate a Chrome search result.
@@ -288,6 +300,33 @@ TEST_F(OmniboxProviderTest, UnhandledUrls) {
             search_controller_->last_results()[0]->id());
   EXPECT_EQ("opentab://https://docs.google.com/doc2",
             search_controller_->last_results()[1]->id());
+}
+
+// Test that all non-answer results are filtered if web search is disabled in
+// search control.
+TEST_F(OmniboxProviderTest, WebSearchControl) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kLauncherSearchControl);
+  DisableWebSearch();
+
+  StartSearch(u"query");
+
+  std::vector<AutocompleteMatch> to_produce;
+  AutocompleteResult result;
+
+  to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
+  to_produce.emplace_back(
+      NewAnswerResult("https://example.com/answer",
+                      SuggestionAnswer::AnswerType::ANSWER_TYPE_WEATHER));
+  to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
+  result.AppendMatches(to_produce);
+  ProduceResults(std::move(result));
+
+  // Only answer result is returned.
+  ASSERT_EQ(1u, search_controller_->last_results().size());
+  EXPECT_EQ("omnibox_answer://https://example.com/answer",
+            search_controller_->last_results()[0]->id());
 }
 
 }  // namespace app_list::test

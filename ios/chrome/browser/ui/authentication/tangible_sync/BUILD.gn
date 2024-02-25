@@ -1,4 +1,4 @@
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,21 +16,22 @@ source_set("tangible_sync") {
     ":signin_ui",
     "//base",
     "//components/consent_auditor",
+    "//components/signin/public/base:signin_switches",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/service",
     "//components/unified_consent",
     "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser/consent_auditor",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/consent_auditor/model",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements:activity_overlay",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
-    "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/browser/unified_consent/model",
   ]
   public_deps =
       [ "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator" ]

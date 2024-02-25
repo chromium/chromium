@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -88,8 +88,8 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
   }
 
   gcm::IncomingMessage CreateMessage(const std::string& device_name,
-                                     absl::optional<std::string> text,
-                                     absl::optional<GURL> image_url) {
+                                     std::optional<std::string> text,
+                                     std::optional<GURL> image_url) {
     chrome_browser_sharing::SharingMessage sharing_message;
     sharing_message.set_sender_guid(
         base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -112,7 +112,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
                        const std::string& text) {
     sharing_service_->GetFCMHandlerForTesting()->OnMessage(
         kSharingFCMAppID,
-        CreateMessage(device_name, text, /*image_url=*/absl::nullopt));
+        CreateMessage(device_name, text, /*image_url=*/std::nullopt));
   }
 
   void SendImageMessage(const std::string& device_name, const GURL& image_url) {
@@ -121,7 +121,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
     ui::ClipboardMonitor::GetInstance()->AddObserver(&observer);
     sharing_service_->GetFCMHandlerForTesting()->OnMessage(
         kSharingFCMAppID,
-        CreateMessage(device_name, /*text*/ absl::nullopt, image_url));
+        CreateMessage(device_name, /*text*/ std::nullopt, image_url));
     run_loop.Run();
     ui::ClipboardMonitor::GetInstance()->RemoveObserver(&observer);
   }

@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -37,6 +36,8 @@
 namespace blink {
 
 ImageFrame::ImageFrame() = default;
+
+ImageFrame::~ImageFrame() = default;
 
 ImageFrame::ImageFrame(const ImageFrame& other) : has_alpha_(false) {
   operator=(other);

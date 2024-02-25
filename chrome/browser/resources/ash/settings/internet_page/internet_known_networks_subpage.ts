@@ -7,11 +7,11 @@
  * 'settings-internet-known-networks' is the settings subpage listing the
  * known networks for a type (currently always WiFi).
  */
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import './internet_shared.css.js';
 
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
@@ -20,25 +20,25 @@ import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ConfigProperties, CrosNetworkConfigInterface, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './internet_known_networks_subpage.html.js';
 import {PasspointListenerMixin, PasspointListenerMixinInterface} from './passpoint_listener_mixin.js';
 
-interface SettingsInternetKnownNetworksPageElement {
+export interface SettingsInternetKnownNetworksPageElement {
   $: {
     dotsMenu: CrActionMenuElement,
     subscriptionDotsMenu: CrActionMenuElement,
@@ -58,7 +58,7 @@ const SettingsInternetKnownNetworksPageElementBase =
                 CrPolicyNetworkBehaviorMojoInterface&
                 PasspointListenerMixinInterface>;
 
-class SettingsInternetKnownNetworksPageElement extends
+export class SettingsInternetKnownNetworksPageElement extends
     SettingsInternetKnownNetworksPageElementBase {
   static get is() {
     return 'settings-internet-known-networks-subpage' as const;
@@ -323,10 +323,13 @@ class SettingsInternetKnownNetworksPageElement extends
   }
 
   private async setProperties_(config: ConfigProperties): Promise<void> {
-    recordSettingChange();
     const response =
         await this.networkConfig_.setProperties(this.selectedGuid_, config);
-    if (!response.success) {
+    if (response.success) {
+      recordSettingChange(
+          Setting.kPreferWifiNetwork,
+          {boolValue: config.priority?.value === 1});
+    } else {
       console.warn(
           'Unable to set properties for: ' + this.selectedGuid_ + ': ' +
           JSON.stringify(config));
@@ -350,18 +353,19 @@ class SettingsInternetKnownNetworksPageElement extends
   }
 
   private async onForgetClick_(): Promise<void> {
-    if (this.networkType === NetworkType.kWiFi) {
-      recordSettingChange(Setting.kForgetWifiNetwork);
-    } else {
-      recordSettingChange();
-    }
-
     this.$.dotsMenu.close();
 
     const response =
         await this.networkConfig_.forgetNetwork(this.selectedGuid_);
     if (!response.success) {
       console.warn('Forget network failed for: ' + this.selectedGuid_);
+      return;
+    }
+
+    if (this.networkType === NetworkType.kWiFi) {
+      recordSettingChange(Setting.kForgetWifiNetwork);
+    } else {
+      // TODO(b/282233232) recordSettingChange() for other network types.
     }
   }
 
@@ -411,21 +415,22 @@ class SettingsInternetKnownNetworksPageElement extends
 
   private async onSubscriptionForgetClick_(): Promise<void> {
     this.$.subscriptionDotsMenu.close();
-    this.selectedSubscriptionId_ = '';
     const response = await this.passpointService_.deletePasspointSubscription(
         this.selectedSubscriptionId_);
     if (!response.success) {
       console.warn(
           'Forget subscription failed for: ' + this.selectedSubscriptionId_);
     }
+    this.selectedSubscriptionId_ = '';
   }
 
-  override async onPasspointSubscriptionAdded(subscription:
-                                                  PasspointSubscription) {
+  override async onPasspointSubscriptionAdded(
+      subscription: PasspointSubscription): Promise<void> {
     this.push('passpointSubscriptionsList_', subscription);
   }
 
-  override onPasspointSubscriptionRemoved(subscription: PasspointSubscription) {
+  override onPasspointSubscriptionRemoved(subscription: PasspointSubscription):
+      void {
     const list = this.passpointSubscriptionsList_.filter((sub) => {
       return sub.id !== subscription.id;
     });

@@ -5,6 +5,8 @@
 #include "chromeos/ash/components/network/cellular_policy_handler.h"
 
 #include <memory>
+#include <optional>
+#include <queue>
 
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
@@ -20,6 +22,7 @@
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_test_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -28,11 +31,13 @@
 #include "components/onc/onc_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+
+using InhibitReason = CellularInhibitor::InhibitReason;
+
 namespace {
 
 // EUICC constants
@@ -80,7 +85,7 @@ const char kInstallViaPolicyRetryOperationHistogram[] =
 
 std::string GenerateCellularPolicy(
     const policy_util::SmdxActivationCode& activation_code,
-    absl::optional<std::string> iccid = absl::nullopt) {
+    std::optional<std::string> iccid = std::nullopt) {
   const char* const activation_code_type =
       activation_code.type() == policy_util::SmdxActivationCode::Type::SMDP
           ? onc::cellular::kSMDPAddress
@@ -106,21 +111,24 @@ class CellularInhibitorObserver : public CellularInhibitor::Observer {
   }
 
   void OnInhibitStateChanged() override {
-    absl::optional<CellularInhibitor::InhibitReason> inhibit_reason =
+    std::optional<InhibitReason> inhibit_reason =
         NetworkHandler::Get()->cellular_inhibitor()->GetInhibitReason();
     if (inhibit_reason.has_value()) {
-      last_inhibit_reason_ = inhibit_reason;
+      inhibit_reasons_.push(*inhibit_reason);
     }
   }
 
-  void CheckLastInhibitReason(
-      CellularInhibitor::InhibitReason last_inhibit_reason) {
-    EXPECT_TRUE(last_inhibit_reason_.has_value() &&
-                last_inhibit_reason_.value() == last_inhibit_reason);
+  std::optional<InhibitReason> PopInhibitReason() {
+    std::optional<InhibitReason> inhibit_reason;
+    if (!inhibit_reasons_.empty()) {
+      inhibit_reason = inhibit_reasons_.front();
+      inhibit_reasons_.pop();
+    }
+    return inhibit_reason;
   }
 
  private:
-  absl::optional<CellularInhibitor::InhibitReason> last_inhibit_reason_;
+  std::queue<InhibitReason> inhibit_reasons_;
   base::ScopedObservation<CellularInhibitor, CellularInhibitor::Observer>
       session_observation_{this};
 };
@@ -140,6 +148,13 @@ class CellularPolicyHandlerTest : public testing::Test {
     size_t smds_scan_profile_sum = 0u;
     size_t install_method_via_smdp_count = 0u;
     size_t install_method_via_smds_count = 0u;
+    size_t scan_duration_other_success_count = 0u;
+    size_t scan_duration_other_failure_count = 0u;
+    size_t scan_duration_android_success_count = 0u;
+    size_t scan_duration_android_failure_count = 0u;
+    size_t scan_duration_gsma_success_count = 0u;
+    size_t scan_duration_gsma_failure_count = 0u;
+    cellular_metrics::ESimSmdsScanHistogramState smds_scan_state;
   };
 
   CellularPolicyHandlerTest(
@@ -182,12 +197,20 @@ class CellularPolicyHandlerTest : public testing::Test {
 
   void AddEuiccs() {
     HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
+
+    // We call FastForwardRefreshDelay() after each time we add an EUICC since
+    // adding an EUICC will trigger an attempt to refresh/request the list of
+    // installed profiles.
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath0), kTestEid0, /*is_active=*/true,
         /*physical_slot=*/0);
+    FastForwardRefreshDelay();
+    base::RunLoop().RunUntilIdle();
+
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath1), kTestEid1, /*is_active=*/false,
         /*physical_slot=*/1);
+    FastForwardRefreshDelay();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -199,13 +222,11 @@ class CellularPolicyHandlerTest : public testing::Test {
   void InstallProfile(const base::Value::Dict& onc_config) {
     cellular_policy_handler()->InstallESim(onc_config);
     base::RunLoop().RunUntilIdle();
-
-    FastForwardRefreshDelay();
   }
 
   HermesProfileClient::Properties* FindProfileProperties(
       const std::string& activation_code_value) {
-    absl::optional<dbus::ObjectPath> euicc_path =
+    std::optional<dbus::ObjectPath> euicc_path =
         cellular_utils::GetCurrentEuiccPath();
     if (!euicc_path.has_value()) {
       return nullptr;
@@ -301,7 +322,7 @@ class CellularPolicyHandlerTest : public testing::Test {
   }
 
   void CheckCurrentEuiccSlot(int32_t physical_slot) {
-    absl::optional<dbus::ObjectPath> euicc_path =
+    std::optional<dbus::ObjectPath> euicc_path =
         cellular_utils::GetCurrentEuiccPath();
     ASSERT_TRUE(euicc_path.has_value());
 
@@ -344,6 +365,25 @@ class CellularPolicyHandlerTest : public testing::Test {
         CellularNetworkMetricsLogger::kESimPolicyInstallMethod,
         CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmds,
         /*expected_count=*/state.install_method_via_smds_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanAndroidDurationSuccess,
+        /*expected_count=*/state.scan_duration_android_success_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanAndroidDurationFailure,
+        /*expected_count=*/state.scan_duration_android_failure_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanOtherDurationSuccess,
+        /*expected_count=*/state.scan_duration_other_success_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanOtherDurationFailure,
+        /*expected_count=*/state.scan_duration_other_failure_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanGsmaDurationSuccess,
+        /*expected_count=*/state.scan_duration_gsma_success_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanGsmaDurationFailure,
+        /*expected_count=*/state.scan_duration_gsma_failure_count);
+    state.smds_scan_state.Check(&histogram_tester_);
   }
 
   // This functionality was explicitly separated from InstallProfile() since
@@ -374,6 +414,12 @@ class CellularPolicyHandlerTest : public testing::Test {
     // eSIM profile objects to be loaded is available.
     FastForwardBy(base::Seconds(1));
   }
+
+  // Between the completion of an SM-DS scan and the discovered profile paths
+  // actually being provided to CellularPolicyHandler there can be a delay. This
+  // delay allows Hermes to update the properties of the discovered profiles
+  // before we attempt to read them, e.g. the activation code.
+  void FastForwardProfileWaiterDelay() { FastForwardBy(base::Seconds(30)); }
 
   CellularPolicyHandler* cellular_policy_handler() {
     return cellular_policy_handler_;
@@ -406,8 +452,7 @@ class CellularPolicyHandlerTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<CellularPolicyHandler, DanglingUntriaged | ExperimentalAsh>
-      cellular_policy_handler_;
+  raw_ptr<CellularPolicyHandler, DanglingUntriaged> cellular_policy_handler_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple device_prefs_;
@@ -426,9 +471,7 @@ class CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled
  protected:
   CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled()
       : CellularPolicyHandlerTest(
-            /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                                  ash::features::kSmdsSupport,
-                                  ash::features::kSmdsSupportEuiccUpload},
+            /*enabled_features=*/{ash::features::kSmdsSupport},
             /*disabled_features=*/{ash::features::kCellularUseSecondEuicc}) {}
   ~CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled() override =
       default;
@@ -448,9 +491,7 @@ class CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled
   CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled()
       : CellularPolicyHandlerTest(
             /*enabled_features=*/{ash::features::kCellularUseSecondEuicc,
-                                  ash::features::kSmdsDbusMigration,
-                                  ash::features::kSmdsSupport,
-                                  ash::features::kSmdsSupportEuiccUpload},
+                                  ash::features::kSmdsSupport},
             /*disabled_features=*/{}) {}
   ~CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled() override =
       default;
@@ -472,20 +513,20 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
 
-  {
-    CellularInhibitorObserver cellular_inhibitor_observer;
-    InstallProfile(*onc_config);
-    cellular_inhibitor_observer.CheckLastInhibitReason(
-        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
-  }
+  CellularInhibitorObserver cellular_inhibitor_observer;
+  InstallProfile(*onc_config);
 
   CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kInstallingProfile,
+            cellular_inhibitor_observer.PopInhibitReason());
 
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
@@ -534,19 +575,20 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
 
-  {
-    CellularInhibitorObserver cellular_inhibitor_observer;
-    InstallProfile(*onc_config);
-    cellular_inhibitor_observer.CheckLastInhibitReason(
-        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
-  }
+  CellularInhibitorObserver cellular_inhibitor_observer;
+  InstallProfile(*onc_config);
 
   CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kInstallingProfile,
+            cellular_inhibitor_observer.PopInhibitReason());
 
   EXPECT_TRUE(IsProfileInstalled(*onc_config, different_activation_code_value,
                                  /*check_for_service=*/true));
@@ -555,6 +597,46 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum++;
   expected_state.install_method_via_smds_count++;
+  expected_state.scan_duration_other_success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .success_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_DespiteHermesErrors) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDS,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  std::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  // Queue a failure result for the SM-DS scan itself.
+  HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
+      HermesResponseStatus::kErrorUnknown);
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.scan_duration_other_failure_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .hermes_failed_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .hermes_failed_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -571,7 +653,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -584,12 +666,13 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
       ->SetNextEnableCarrierProfileResult(
           HermesResponseStatus::kErrorWrongState);
 
-  {
-    CellularInhibitorObserver cellular_inhibitor_observer;
-    InstallProfile(*onc_config);
-    cellular_inhibitor_observer.CheckLastInhibitReason(
-        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
-  }
+  CellularInhibitorObserver cellular_inhibitor_observer;
+  InstallProfile(*onc_config);
+
+  EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kInstallingProfile,
+            cellular_inhibitor_observer.PopInhibitReason());
 
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
@@ -684,12 +767,14 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
 
   InstallProfile(*onc_config);
+
+  FastForwardProfileWaiterDelay();
 
   CompleteShillServiceAutoConnect(*onc_config);
 
@@ -700,6 +785,11 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum = 5;
   expected_state.install_method_via_smds_count++;
+  expected_state.scan_duration_other_success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .success_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -717,7 +807,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -757,7 +847,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -797,7 +887,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -845,7 +935,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code, kTestProfileIccid0));
   ASSERT_TRUE(onc_config.has_value());
@@ -873,14 +963,86 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   const std::string* iccid = properties->FindString(shill::kIccidProperty);
   EXPECT_TRUE(iccid && *iccid == kTestProfileIccid0);
 
-  cellular_policy_handler()->InstallESim(*onc_config);
-
-  FastForwardRefreshDelay();
+  InstallProfile(*onc_config);
 
   CompleteShillServiceAutoConnect(*onc_config);
 
   EXPECT_TRUE(HasESimMetadata(activation_code.value()));
 
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_WaitForProfileProperties) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const dbus::ObjectPath profile_path(kTestProfilePath0);
+
+  // Add a profile that is missing the required properties.
+  HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+      profile_path, dbus::ObjectPath(kTestEuiccPath0), kTestProfileIccid0,
+      /*name=*/"", kTestProfileNickname0, kTestProfileServiceProvider0,
+      /*activation_code=*/"", kTestProfileServicePath0,
+      /*state=*/hermes::profile::State::kInactive,
+      hermes::profile::ProfileClass::kOperational,
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
+  base::RunLoop().RunUntilIdle();
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextRefreshSmdxProfilesResult({profile_path});
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+  std::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  HermesProfileClient::Properties* profile_properties =
+      HermesProfileClient::Get()->GetProperties(profile_path);
+  ASSERT_TRUE(profile_properties);
+
+  profile_properties->name().ReplaceValue(/*value=*/kTestProfileName0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  profile_properties->activation_code().ReplaceValue(
+      /*value=*/activation_code.value());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  profile_properties->state().ReplaceValue(
+      /*value=*/hermes::profile::State::kPending);
+  base::RunLoop().RunUntilIdle();
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -891,14 +1053,12 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   ExpectedHistogramState expected_state;
   CheckHistogramState(expected_state);
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           base::StringPrintf(kCellularPolicyPattern, base::RandUint64(), "{}"));
   ASSERT_TRUE(onc_config.has_value());
 
-  cellular_policy_handler()->InstallESim(*onc_config);
-
-  FastForwardRefreshDelay();
+  InstallProfile(*onc_config);
 
   CheckHistogramState(expected_state);
 }
@@ -931,7 +1091,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -943,6 +1103,11 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum++;
+  expected_state.scan_duration_other_success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .success_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -959,7 +1124,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1038,7 +1203,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1118,7 +1283,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1162,7 +1327,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled,
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  absl::optional<base::Value::Dict> onc_config =
+  std::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());

@@ -157,8 +157,7 @@ TfLiteAudioClassifierOptions TfLiteAudioClassifierOptionsCreate(void);
 // TfLiteSupportErrorDelete(error)
 //
 TfLiteAudioClassifier* TfLiteAudioClassifierFromOptions(
-    const TfLiteAudioClassifierOptions* options,
-    TfLiteSupportError** error);
+    const TfLiteAudioClassifierOptions* options, TfLiteSupportError** error);
 
 // Invokes the encapsulated TFLite model and classifies the frame_buffer.
 // Returns a pointer to the created classification result in case of success or
@@ -186,18 +185,15 @@ TfLiteAudioClassifier* TfLiteAudioClassifierFromOptions(
 //
 TfLiteClassificationResult* TfLiteAudioClassifierClassify(
     const TfLiteAudioClassifier* classifier,
-    const TfLiteAudioBuffer* audio_buffer,
-    TfLiteSupportError** error);
+    const TfLiteAudioBuffer* audio_buffer, TfLiteSupportError** error);
 
 // Returns the input buffer size required by the audio classifier.
 int TfLiteAudioClassifierGetRequiredInputBufferSize(
-    TfLiteAudioClassifier* classifier,
-    TfLiteSupportError** error);
+    TfLiteAudioClassifier* classifier, TfLiteSupportError** error);
 
 // Returns the audio format required by the audio classifier.
 TfLiteAudioFormat* TfLiteAudioClassifierGetRequiredAudioFormat(
-    TfLiteAudioClassifier* classifier,
-    TfLiteSupportError** error);
+    TfLiteAudioClassifier* classifier, TfLiteSupportError** error);
 
 // Disposes off the audio classifier.
 void TfLiteAudioClassifierDelete(TfLiteAudioClassifier* classifier);

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/policy_fetcher.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,31 +25,19 @@
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
-namespace {
-
-scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunner() {
-  constexpr base::TaskTraits KMayBlockTraits = {base::MayBlock()};
-#if BUILDFLAG(IS_WIN)
-  return base::ThreadPool::CreateCOMSTATaskRunner(KMayBlockTraits);
-#else
-  return base::ThreadPool::CreateSequencedTaskRunner(KMayBlockTraits);
-#endif
-}
-
-}  // namespace
 
 PolicyFetcher::PolicyFetcher(
     const GURL& server_url,
-    const absl::optional<PolicyServiceProxyConfiguration>& proxy_configuration,
-    const absl::optional<bool>& override_is_managed_device)
+    const std::optional<PolicyServiceProxyConfiguration>& proxy_configuration,
+    const std::optional<bool>& override_is_managed_device)
     : server_url_(server_url),
       policy_service_proxy_configuration_(proxy_configuration),
       override_is_managed_device_(override_is_managed_device),
-      sequenced_task_runner_(GetBlockingTaskRunner()) {
+      sequenced_task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
   VLOG(0) << "Policy server: " << server_url_.possibly_invalid_spec();
 }
 
@@ -72,9 +61,16 @@ void PolicyFetcher::FetchPolicies(
 void PolicyFetcher::RegisterDevice(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     base::OnceCallback<void(bool, DMClient::RequestResult)> callback) {
+  VLOG(1) << __func__;
   scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
-  VLOG(1) << __func__
-          << " with enrollment token: " << dm_storage->GetEnrollmentToken();
+  if (!dm_storage) {
+    main_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), false,
+                       DMClient::RequestResult::kNoDefaultDMStorage));
+    return;
+  }
+  VLOG(1) << "Enrollment token: " << dm_storage->GetEnrollmentToken();
   DMClient::RegisterDevice(
       DMClient::CreateDefaultConfigurator(server_url_,
                                           policy_service_proxy_configuration_),
@@ -128,10 +124,14 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
     const std::vector<PolicyValidationResult>& validation_results) {
   VLOG(1) << __func__;
 
-  if (result == DMClient::RequestResult::kSuccess)
+  if (result == DMClient::RequestResult::kSuccess) {
     return CreateDMPolicyManager(override_is_managed_device_);
+  }
 
   for (const auto& validation_result : validation_results) {
+    VLOG(1) << "Sending policy validation error, status: "
+            << validation_result.status
+            << ", issues cout: " << validation_result.issues.size();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -140,10 +140,11 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
                 server_url_, policy_service_proxy_configuration_),
             GetDefaultDMStorage(), validation_result,
             base::BindOnce([](DMClient::RequestResult result) {
-              if (result != DMClient::RequestResult::kSuccess)
+              if (result != DMClient::RequestResult::kSuccess) {
                 LOG(WARNING)
                     << "DMClient::ReportPolicyValidationErrors failed: "
                     << result;
+              }
             })));
   }
 

@@ -29,15 +29,14 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests that directories for WebappActivities are managed correctly.
- */
+/** Tests that directories for WebappActivities are managed correctly. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {CustomShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebappDirectoryManagerTest {
-    @Rule
-    public MockWebappDataStorageClockRule mClockRule = new MockWebappDataStorageClockRule();
+    @Rule public MockWebappDataStorageClockRule mClockRule = new MockWebappDataStorageClockRule();
 
     private static final String WEBAPK_PACKAGE_NAME_1 = "webapk_1";
     private static final String WEBAPK_PACKAGE_NAME_2 = "webapk_2";
@@ -58,11 +57,13 @@ public class WebappDirectoryManagerTest {
     }
 
     public void registerWebapp(String webappId) {
-        WebappRegistry.getInstance().register(
-                webappId, new WebappRegistry.FetchWebappDataStorageCallback() {
-                    @Override
-                    public void onWebappDataStorageRetrieved(WebappDataStorage storage) {}
-                });
+        WebappRegistry.getInstance()
+                .register(
+                        webappId,
+                        new WebappRegistry.FetchWebappDataStorageCallback() {
+                            @Override
+                            public void onWebappDataStorageRetrieved(WebappDataStorage storage) {}
+                        });
         ShadowApplication.runBackgroundTasks();
     }
 
@@ -104,7 +105,8 @@ public class WebappDirectoryManagerTest {
         // uninstalled.
 
         runCleanup();
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "WebApk.Update.NumStaleUpdateRequestFiles", 2));
     }
@@ -124,7 +126,8 @@ public class WebappDirectoryManagerTest {
         mClockRule.advance(TimeUnit.DAYS.toMillis(30));
 
         runCleanup();
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "WebApk.Update.NumStaleUpdateRequestFiles", 1));
     }
@@ -145,7 +148,8 @@ public class WebappDirectoryManagerTest {
         mClockRule.advance(1);
 
         runCleanup();
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "WebApk.Update.NumStaleUpdateRequestFiles", 1));
     }

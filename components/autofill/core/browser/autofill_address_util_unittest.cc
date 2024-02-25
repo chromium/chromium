@@ -89,8 +89,7 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressSanity) {
   // some more highlevel conditions that are less probable to change.
 
   // The full name should be part of the envelope style address.
-  EXPECT_NE(address.find(
-                profile.GetInfo(NAME_FULL_WITH_HONORIFIC_PREFIX, GetLocale())),
+  EXPECT_NE(address.find(profile.GetInfo(NAME_FULL, GetLocale())),
             std::string::npos);
 
   // City should be part of the envelope style address.
@@ -123,7 +122,7 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressSanity) {
 }
 
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWhenEmptyFullname) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, /*first_name=*/"", /*middle_name=*/"",
                        /*last_name=*/"", "johndoe@hades.com", "Underworld",
                        "666 Erebus St.", "Apt 8", "Elysium", "CA", "91111",
@@ -140,7 +139,7 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWhenEmptyFullname) {
 // contain empty lines.
 TEST_F(AddressFormattingTest,
        GetEnvelopeStyleAddressWhenEmptyCompanyShouldHaveNoEmptyLines) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
                        "johndoe@hades.com", /*company=*/"", "666 Erebus St.",
                        "Apt 8", "Elysium", "CA", "91111", "US", "16502111111");
@@ -157,7 +156,7 @@ TEST_F(AddressFormattingTest,
 TEST_F(
     AddressFormattingTest,
     GetEnvelopeStyleAddressWhenEmptyStateShouldHaveNoConsecutiveWhitespaces) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
                        "johndoe@hades.com", "Underworld", "666 Erebus St.",
                        "Apt 8", "Elysium", /*state=*/"", "91111", "US",
@@ -174,7 +173,7 @@ TEST_F(
 // `GetEnvelopeStyleAddress()`, by checking that Great Britain's address format
 // is extended by a state field.
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithExtensions) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
                        "johndoe@hades.com", /*company=*/"", "666 Erebus St.",
                        "Apt 8", "Elysium", /*state=*/"Greater London",
@@ -204,10 +203,9 @@ TEST_F(AddressFormattingTest,
   AutofillProfile profile2 = profile1;
   profile2.SetInfo(NAME_FULL, u"John Doe", "en-US");
 
-  EXPECT_THAT(
-      GetProfileDifferenceForUi(profile1, profile2, "en-US"),
-      ElementsAre(ProfileValueDifference{NAME_FULL_WITH_HONORIFIC_PREFIX,
-                                         u"John H. Doe", u"John Doe"}));
+  EXPECT_THAT(GetProfileDifferenceForUi(profile1, profile2, "en-US"),
+              ElementsAre(ProfileValueDifference{NAME_FULL, u"John H. Doe",
+                                                 u"John Doe"}));
 }
 
 TEST_F(AddressFormattingTest,

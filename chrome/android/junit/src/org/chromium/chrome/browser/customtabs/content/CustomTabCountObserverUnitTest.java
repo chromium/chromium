@@ -14,11 +14,9 @@ import org.mockito.Mockito;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
 
-/**
- * Unit tests for {@link CustomTabCountObserver}.
- */
+/** Unit tests for {@link CustomTabCountObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CustomTabCountObserverUnitTest {
     @Rule
@@ -40,9 +38,9 @@ public class CustomTabCountObserverUnitTest {
 
     @Test
     public void observerMultipleTabs() {
-        TabImpl tab1 = newTabWithId(1);
-        TabImpl tab2 = newTabWithId(2);
-        TabImpl tab3 = newTabWithId(3);
+        Tab tab1 = newTabWithId(1);
+        Tab tab2 = newTabWithId(2);
+        Tab tab3 = newTabWithId(3);
 
         new CustomTabCountObserver(env.tabProvider);
         env.tabProvider.setInitialTab(tab1, TabCreationMode.DEFAULT);
@@ -67,16 +65,22 @@ public class CustomTabCountObserverUnitTest {
 
     private void assertTabCountsRecorded(int count, String reason) {
         String histogram = "CustomTabs.TabCounts.UniqueTabsSeen";
-        Assert.assertEquals(String.format("<%s> with should recorded <%d> times. Reason: %s",
-                                    histogram, count, reason),
-                count, RecordHistogram.getHistogramTotalCountForTesting(histogram));
-        Assert.assertEquals(String.format("<%s> with sample <%d> is not recorded. Reason: %s",
-                                    histogram, count, reason),
-                1, RecordHistogram.getHistogramValueCountForTesting(histogram, count));
+        Assert.assertEquals(
+                String.format(
+                        "<%s> with should recorded <%d> times. Reason: %s",
+                        histogram, count, reason),
+                count,
+                RecordHistogram.getHistogramTotalCountForTesting(histogram));
+        Assert.assertEquals(
+                String.format(
+                        "<%s> with sample <%d> is not recorded. Reason: %s",
+                        histogram, count, reason),
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(histogram, count));
     }
 
-    private TabImpl newTabWithId(int id) {
-        TabImpl tab = env.prepareTab();
+    private Tab newTabWithId(int id) {
+        Tab tab = env.prepareTab();
         Mockito.doReturn(id).when(tab).getId();
         return tab;
     }

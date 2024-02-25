@@ -48,22 +48,6 @@
 #include "ui/base/l10n/time_format.h"
 
 namespace crostini {
-
-const char kCrostiniImageAliasPattern[] = "debian/%s";
-const char kCrostiniContainerDefaultVersion[] = "bullseye";
-const char kCrostiniContainerFlag[] = "crostini-container-install-version";
-
-const guest_os::VmType kCrostiniDefaultVmType = guest_os::VmType::TERMINA;
-const char kCrostiniDefaultVmName[] = "termina";
-const char kCrostiniDefaultContainerName[] = "penguin";
-const char kCrostiniDefaultUsername[] = "emperor";
-const char kCrostiniDefaultImageServerUrl[] =
-    "https://storage.googleapis.com/cros-containers/%d";
-const char kCrostiniDlcName[] = "termina-dlc";
-
-const base::FilePath::CharType kHomeDirectory[] =
-    FILE_PATH_LITERAL("/home/chronos/user");
-
 namespace {
 
 constexpr char kCrostiniAppLaunchHistogram[] = "Crostini.AppLaunch";
@@ -201,7 +185,7 @@ bool IsUninstallable(Profile* profile, const std::string& app_id) {
   }
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
+  std::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(app_id);
   if (registration) {
     return registration->CanUninstall();
@@ -308,7 +292,7 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
+  std::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(app_id);
 
   if (!registration) {
@@ -354,18 +338,20 @@ void LaunchCrostiniApp(Profile* profile,
 
 std::vector<vm_tools::cicerone::ContainerFeature> GetContainerFeatures() {
   std::vector<vm_tools::cicerone::ContainerFeature> result;
-  if (base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport)) {
+
+  // TODO: b/303743348 - Update garcon to set this env var by default and
+  // deprecate this feature.
+  result.push_back(
+      vm_tools::cicerone::ContainerFeature::ENABLE_GTK3_IME_SUPPORT);
+
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniQtImeSupport)) {
     result.push_back(
-        vm_tools::cicerone::ContainerFeature::ENABLE_GTK3_IME_SUPPORT);
-    if (base::FeatureList::IsEnabled(ash::features::kCrostiniQtImeSupport)) {
-      result.push_back(
-          vm_tools::cicerone::ContainerFeature::ENABLE_QT_IME_SUPPORT);
-    }
-    if (base::FeatureList::IsEnabled(
-            ash::features::kCrostiniVirtualKeyboardSupport)) {
-      result.push_back(vm_tools::cicerone::ContainerFeature::
-                           ENABLE_VIRTUAL_KEYBOARD_SUPPORT);
-    }
+        vm_tools::cicerone::ContainerFeature::ENABLE_QT_IME_SUPPORT);
+  }
+  if (base::FeatureList::IsEnabled(
+          ash::features::kCrostiniVirtualKeyboardSupport)) {
+    result.push_back(
+        vm_tools::cicerone::ContainerFeature::ENABLE_VIRTUAL_KEYBOARD_SUPPORT);
   }
   return result;
 }

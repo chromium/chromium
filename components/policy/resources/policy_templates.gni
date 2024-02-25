@@ -144,29 +144,6 @@ foreach(lang, policy_templates_languages) {
       [ "$policy_templates_base_dir/windows/admx/${lang}/google.adml" ]
 }
 
-# Chrome OS outputs.
-policy_templates_chromeos_admx_path =
-    "$policy_templates_base_dir/chromeos/admx/chromeos.admx"
-policy_templates_chromeos_adml_path =
-    "$policy_templates_base_dir/chromeos/admx/\${lang}/chromeos.adml"
-policy_templates_chromeos_outputs = [ policy_templates_chromeos_admx_path ]
-foreach(lang, policy_templates_languages) {
-  policy_templates_chromeos_outputs +=
-      [ "$policy_templates_base_dir/chromeos/admx/${lang}/chromeos.adml" ]
-}
-
-# Additional Chrome OS outputs for branded builds.
-policy_templates_chromeos_google_admx_path =
-    "$policy_templates_base_dir/chromeos/admx/google.admx"
-policy_templates_chromeos_google_adml_path =
-    "$policy_templates_base_dir/chromeos/admx/\${lang}/google.adml"
-policy_templates_chromeos_google_outputs =
-    [ policy_templates_chromeos_google_admx_path ]
-foreach(lang, policy_templates_languages) {
-  policy_templates_chromeos_google_outputs +=
-      [ "$policy_templates_base_dir/chromeos/admx/${lang}/google.adml" ]
-}
-
 # iOS outputs
 policy_templates_ios_app_config_path =
     "$policy_templates_base_dir/ios/appconfig.xml"

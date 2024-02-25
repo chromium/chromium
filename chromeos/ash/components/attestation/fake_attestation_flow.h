@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
 #define CHROMEOS_ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/components/attestation/attestation_flow.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -28,7 +28,7 @@ class FakeAttestationFlow : public AttestationFlow {
       bool force_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+      const std::optional<AttestationFlow::CertProfileSpecificData>&
           profile_specific_data,
       CertificateCallback callback) override;
 

@@ -28,13 +28,11 @@ declare_args() {
   # relevant files not being present.
   # Mac: //chrome/installer/mac/signing/parts.py
   # Windows: //chrome/installer/mini_installer/chrome.release and internal archive files
-  if (is_fuchsia || is_ios) {
+  if (is_fuchsia || is_ios || is_android) {
     # The library this pulls in depends on open-source LevelDB which is not supported for Fuchsia.
-    # iOS should work but is not included in the set we release for, so we do
+    # iOS and Android should work but is not included in the set we release for, so we do
     # not needlessly increase the binary size.
     build_with_internal_optimization_guide = false
-  } else if (is_android) {
-    build_with_internal_optimization_guide = enable_chrome_android_internal
   } else if (build_with_tflite_lib) {
     # When TFLite works for windows arm64, this lib should just work seamlessly.
     # Use is_chrome_branded as a proxy for "does src-internal exist".

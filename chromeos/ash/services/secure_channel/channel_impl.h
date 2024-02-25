@@ -81,7 +81,7 @@ class ChannelImpl : public mojom::Channel {
   void NotifyFileTransferUpdate(mojo::RemoteSetElementId listener_remote_id,
                                 mojom::FileTransferUpdatePtr update);
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
   mojo::Receiver<mojom::Channel> receiver_{this};
 
   // Set of FilePayloadListener remote endpoints passed from

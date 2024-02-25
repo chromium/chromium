@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++ListView textSize:16.0 style:0 htmlInfo:[{htmlTag="dl"}, {display="block"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="dt"}, {display="block"}]
+++++++TextView text:"Term" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="dd"}, {display="block"}]
+++++++TextView text:"Description" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="definition"}]
+++++TextView text:"Definition" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -38,7 +38,7 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
     virtual void OnSessionRemoved(const MediaSinkInternal& sink) = 0;
     virtual void OnMediaStatusUpdated(const MediaSinkInternal& sink,
                                       const base::Value::Dict& media_status,
-                                      absl::optional<int> request_id) = 0;
+                                      std::optional<int> request_id) = 0;
   };
 
   CastSessionTracker(const CastSessionTracker&) = delete;
@@ -87,6 +87,7 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
   void OnSinkRemoved(const MediaSinkInternal& sink) override;
 
   // cast_channel::CastMessageHandler::Observer implementation
+  void OnAppMessage(int channel_id, const CastMessage& message) override;
   void OnInternalMessage(int channel_id,
                          const cast_channel::InternalMessage& message) override;
 

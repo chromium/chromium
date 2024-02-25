@@ -27,9 +27,9 @@ class AppSyncUIStateWatcher : public AppSyncUIStateObserver {
   // AppSyncUIStateObserver overrides:
   void OnAppSyncUIStatusChanged() override;
 
-  raw_ptr<AppSyncUIState, ExperimentalAsh> app_sync_ui_state_;
+  raw_ptr<AppSyncUIState> app_sync_ui_state_;
   // Owned by AppListSyncableService
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_;
+  raw_ptr<AppListModelUpdater> model_updater_;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_WATCHER_H_

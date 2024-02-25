@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/mixed_content_checker.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <tuple>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -65,7 +65,7 @@ class LocalFrameInterceptor : public FakeLocalFrame {
     reported_web_features_ = web_features;
   }
 
-  const absl::optional<MixedContentResult>& mixed_content_result() const {
+  const std::optional<MixedContentResult>& mixed_content_result() const {
     return mixed_content_result_;
   }
   const std::vector<blink::mojom::WebFeature>& reported_web_features() const {
@@ -77,7 +77,7 @@ class LocalFrameInterceptor : public FakeLocalFrame {
  private:
   raw_ptr<TestRenderFrameHost> rfh_;
   std::vector<blink::mojom::WebFeature> reported_web_features_;
-  absl::optional<MixedContentResult> mixed_content_result_;
+  std::optional<MixedContentResult> mixed_content_result_;
 };
 
 // Needed by GTest to display errors.
@@ -143,7 +143,7 @@ TEST(MixedContentCheckerTest, IsMixedContent) {
 }
 // LINT.ThenChange(third_party/blink/renderer/core/loader/mixed_content_checker_test.cc)
 
-class MixedContentCheckerShouldBlockNavigationTestBase
+class MixedContentCheckerShouldBlockTestBase
     : public RenderViewHostImplTestHarness,
       public testing::WithParamInterface<bool> {
  protected:
@@ -154,7 +154,11 @@ class MixedContentCheckerShouldBlockNavigationTestBase
   }
 
   bool for_redirect() const { return GetParam(); }
+};
 
+class MixedContentCheckerShouldBlockNavigationTestBase
+    : public MixedContentCheckerShouldBlockTestBase {
+ protected:
   // Starts a navigation from `source_url` to `target_url`. `from_subframe`
   // tells if the navigation is initiated from the main frame or sub frame of
   // the page of `source_url`.
@@ -226,7 +230,7 @@ TEST_P(MixedContentCheckerShouldBlockNavigationTest,
   EXPECT_FALSE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
                                              for_redirect()));
   inspector->FlushLocalFrameMessages();
-  EXPECT_THAT(inspector->mixed_content_result(), Eq(absl::nullopt));
+  EXPECT_THAT(inspector->mixed_content_result(), Eq(std::nullopt));
   EXPECT_THAT(inspector->reported_web_features(), IsEmpty());
 }
 
@@ -241,7 +245,7 @@ TEST_P(MixedContentCheckerShouldBlockNavigationTest,
   EXPECT_FALSE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
                                              for_redirect()));
   inspector->FlushLocalFrameMessages();
-  EXPECT_THAT(inspector->mixed_content_result(), Eq(absl::nullopt));
+  EXPECT_THAT(inspector->mixed_content_result(), Eq(std::nullopt));
   EXPECT_THAT(inspector->reported_web_features(), IsEmpty());
 }
 
@@ -256,7 +260,7 @@ TEST_P(MixedContentCheckerShouldBlockNavigationTest,
   EXPECT_FALSE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
                                              for_redirect()));
   inspector->FlushLocalFrameMessages();
-  EXPECT_THAT(inspector->mixed_content_result(), Eq(absl::nullopt));
+  EXPECT_THAT(inspector->mixed_content_result(), Eq(std::nullopt));
   EXPECT_THAT(inspector->reported_web_features(), IsEmpty());
 }
 
@@ -474,6 +478,146 @@ TEST_P(MixedContentCheckerShouldBlockNavigationWithShouldBeBlockableContextTest,
       inspector->reported_web_features(),
       UnorderedElementsAre(blink::mojom::WebFeature::kMixedContentPresent,
                            blink::mojom::WebFeature::kMixedContentInternal));
+}
+
+class MixedContentCheckerShouldBlockFetchKeepAliveTestBase
+    : public MixedContentCheckerShouldBlockTestBase {
+ protected:
+  // Prepares a frame that loads `source_url`.
+  // `from_subframe` tells if the frame is a main frame or sub frame of the page
+  // of `source_url`.
+  // Returns a tuple of:
+  //   - a RenderFrameHostImpl representing the prepared frame.
+  //   - a LocalFrame inspector that collects messages from the prepared frame.
+  std::tuple<RenderFrameHostImpl*, std::unique_ptr<LocalFrameInterceptor>>
+  PrepareFrame(
+      const std::string& source_url,
+      bool from_subframe = false,
+      blink::mojom::InsecureRequestPolicy main_frame_insecure_request_policy =
+          blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone) {
+    // Loads the page of `source_url` first.
+    NavigateAndCommit(GURL(source_url));
+
+    TestRenderFrameHost* rfh = main_test_rfh();
+    rfh->DidEnforceInsecureRequestPolicy(main_frame_insecure_request_policy);
+    if (from_subframe) {
+      // Request is from a subframe of the page of `source_url`.
+      TestRenderFrameHost* subframe = rfh->AppendChild("subframe");
+      rfh = static_cast<TestRenderFrameHost*>(
+          NavigationSimulator::NavigateAndCommitFromDocument(
+              GURL(source_url + "/subframe"), subframe));
+    }
+    auto interceptor = std::make_unique<LocalFrameInterceptor>(rfh);
+    return std::make_tuple(rfh, std::move(interceptor));
+  }
+
+  // Expects no report to renderer no matter blocking happens or not.
+  void ExpectNoReportToRenderer(LocalFrameInterceptor* inspector) {
+    inspector->FlushLocalFrameMessages();
+    EXPECT_THAT(inspector->mixed_content_result(), Eq(std::nullopt));
+    EXPECT_THAT(inspector->reported_web_features(), IsEmpty());
+  }
+};
+
+using MixedContentCheckerShouldBlockFetchKeepAliveTest =
+    MixedContentCheckerShouldBlockFetchKeepAliveTestBase;
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MixedContentCheckerShouldBlockFetchKeepAliveTest,
+    ::testing::Values(false, true),
+    [](const testing::TestParamInfo<
+        MixedContentCheckerShouldBlockFetchKeepAliveTest::ParamType>& info) {
+      return info.param ? "ForRedirect" : "ForNonRedirect";
+    });
+
+// Loading insecure url from insecure main frame should not be blocked.
+TEST_P(MixedContentCheckerShouldBlockFetchKeepAliveTest,
+       ShouldNotBlockInsecureFetchFromInsecureMainFrame) {
+  const GURL url("http://target.com");
+  const auto [rfh, inspector] = PrepareFrame("http://source.com");
+
+  EXPECT_FALSE(
+      MixedContentChecker::ShouldBlockFetchKeepAlive(rfh, url, for_redirect()));
+
+  ExpectNoReportToRenderer(inspector.get());
+}
+
+// Loading insecure url from insecure subframe should not be blocked.
+TEST_P(MixedContentCheckerShouldBlockFetchKeepAliveTest,
+       ShouldNotBlockInsecureFetchFromInsecureSubFrame) {
+  const bool from_subframe = true;
+  const GURL url("http://target.com");
+  const auto [rfh, inspector] =
+      PrepareFrame("http://source.com", from_subframe);
+
+  EXPECT_FALSE(
+      MixedContentChecker::ShouldBlockFetchKeepAlive(rfh, url, for_redirect()));
+
+  ExpectNoReportToRenderer(inspector.get());
+}
+
+// Loading insecure url from secure main/sub frame should be blocked, where the
+// frame's InsecureRequestPolicy = kLeaveInsecureRequestsAlone.
+TEST_P(
+    MixedContentCheckerShouldBlockFetchKeepAliveTest,
+    ShouldBlockInsecureFetchFromSecureFrameWithPolicyLeaveInsecureRequestAlone) {
+  const auto main_frame_insecure_request_policy =
+      blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
+  const GURL url("http://target.com");
+  {
+    const bool from_subframe = false;
+    const auto [rfh, inspector] =
+        PrepareFrame("https://source.com", from_subframe,
+                     main_frame_insecure_request_policy);
+
+    EXPECT_TRUE(MixedContentChecker::ShouldBlockFetchKeepAlive(rfh, url,
+                                                               for_redirect()));
+
+    ExpectNoReportToRenderer(inspector.get());
+  }
+  {
+    const bool from_subframe = true;
+    const auto [rfh, inspector] =
+        PrepareFrame("https://source.com", from_subframe,
+                     main_frame_insecure_request_policy);
+
+    EXPECT_TRUE(MixedContentChecker::ShouldBlockFetchKeepAlive(rfh, url,
+                                                               for_redirect()));
+
+    ExpectNoReportToRenderer(inspector.get());
+  }
+}
+
+// Loading insecure url from secure main/sub frame should be blocked, where the
+// frame's InsecureRequestPolicy = kBlockAllMixedContent.
+TEST_P(MixedContentCheckerShouldBlockFetchKeepAliveTest,
+       ShouldBlockInsecureFetchFromSecureFrameWithPolicyBlockAllMixedContent) {
+  const auto main_frame_insecure_request_policy =
+      blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent;
+  const GURL url("http://target.com");
+  {
+    const bool from_subframe = false;
+    const auto [rfh, inspector] =
+        PrepareFrame("https://source.com", from_subframe,
+                     main_frame_insecure_request_policy);
+
+    EXPECT_TRUE(MixedContentChecker::ShouldBlockFetchKeepAlive(rfh, url,
+                                                               for_redirect()));
+
+    ExpectNoReportToRenderer(inspector.get());
+  }
+  {
+    const bool from_subframe = true;
+    const auto [rfh, inspector] =
+        PrepareFrame("https://source.com", from_subframe,
+                     main_frame_insecure_request_policy);
+
+    EXPECT_TRUE(MixedContentChecker::ShouldBlockFetchKeepAlive(rfh, url,
+                                                               for_redirect()));
+
+    ExpectNoReportToRenderer(inspector.get());
+  }
 }
 
 }  // namespace content

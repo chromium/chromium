@@ -8,15 +8,15 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -149,20 +149,6 @@ TEST_F(FeedMenuCoordinatorTest, FeedOff) {
 
 // Tests the menu actions when the user is signed-in.
 TEST_F(FeedMenuCoordinatorTest, SignedIn) {
-  SetFeedEnabled(true);
-  SignInFakeIdentity();
-  OpenFeedMenu();
-  ExpectActions({{IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM,
-                  UIAlertActionStyleDestructive},
-                 {IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ACTIVITY_ITEM},
-                 {IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM},
-                 {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM},
-                 {IDS_APP_CANCEL, UIAlertActionStyleCancel}});
-}
-
-// Tests the menu actions when the user is signed-in.
-TEST_F(FeedMenuCoordinatorTest, SignedInFollowFeedEnabled) {
-  scoped_feature_list_.InitWithFeatures({kEnableWebChannels}, {});
   SetFeedEnabled(true);
   SignInFakeIdentity();
   OpenFeedMenu();

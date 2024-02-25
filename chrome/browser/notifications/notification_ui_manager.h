@@ -71,6 +71,12 @@ class NotificationUIManager {
   virtual std::set<std::string> GetAllIdsByProfile(
       ProfileNotification::ProfileID profile_id) = 0;
 
+  // Returns the set of all delegate IDs for notifications from `profile_id` and
+  // `origin`.
+  virtual std::set<std::string> GetAllIdsByProfileAndOrigin(
+      ProfileNotification::ProfileID profile_id,
+      const GURL& origin) = 0;
+
   // Removes notifications matching the |source_origin| (which could be an
   // extension ID). Returns true if anything was removed.
   virtual bool CancelAllBySourceOrigin(const GURL& source_origin) = 0;

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 
 @interface FirstRunSigninLogger ()
 
@@ -24,7 +24,7 @@
     signin_metrics::LogSigninAccessPointStarted(self.accessPoint,
                                                 self.promoAction);
     signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
-    base::UmaHistogramEnumeration("FirstRun.Stage",
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kWelcomeAndSigninScreenStart);
   }
 }

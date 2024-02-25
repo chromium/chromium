@@ -97,7 +97,7 @@ class UserPermissionServiceAshTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   TestManagementService management_service_;
-  absl::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
+  std::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
   raw_ptr<testing::StrictMock<MockUserDelegate>, DanglingUntriaged>
       mock_user_delegate_;
   TestingPrefServiceSimple test_prefs_;

@@ -92,7 +92,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   int disconnect_message_sequence_number_ = -1;
   bool has_sent_message_;
 
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
   base::Time disconnect_start_time_;
 };
 

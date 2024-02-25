@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/ui.gni")  # For the toolkit_views variables.
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
@@ -137,25 +137,30 @@ static_library("web_test_browser") {
     "browser/web_test_permission_manager.h",
     "browser/web_test_push_messaging_service.cc",
     "browser/web_test_push_messaging_service.h",
+    "browser/web_test_sensor_provider_manager.cc",
+    "browser/web_test_sensor_provider_manager.h",
     "browser/web_test_shell_platform_delegate.cc",
     "browser/web_test_shell_platform_delegate.h",
     "browser/web_test_storage_access_manager.cc",
     "browser/web_test_storage_access_manager.h",
+    "browser/web_test_tracing_controller.cc",
+    "browser/web_test_tracing_controller.h",
     "browser/web_test_tts_platform.cc",
     "browser/web_test_tts_platform.h",
   ]
 
   if (is_mac) {
-    sources += [
-      "browser/web_test_browser_main_platform_support_mac.mm",
-      "browser/web_test_shell_platform_delegate_mac.mm",
-    ]
+    sources += [ "browser/web_test_shell_platform_delegate_mac.mm" ]
   } else if (toolkit_views && !is_castos) {
     sources += [ "browser/web_test_shell_platform_delegate_views.cc" ]
   } else if (is_ios) {
     sources += [ "browser/web_test_shell_platform_delegate_ios.mm" ]
   } else {
     sources += [ "browser/web_test_shell_platform_delegate_aura.cc" ]
+  }
+
+  if (is_apple) {
+    sources += [ "browser/web_test_browser_main_platform_support_mac.mm" ]
   }
 
   if (is_win) {
@@ -172,6 +177,8 @@ static_library("web_test_browser") {
     "//build:chromeos_buildflags",
     "//cc/base",
     "//cc/paint",
+    "//components/custom_handlers:custom_handlers",
+    "//components/custom_handlers:test_support",
     "//components/download/content/factory",
     "//components/download/public/background_service:public",
     "//components/download/public/common:public",
@@ -327,8 +334,6 @@ static_library("web_test_renderer") {
     "renderer/web_test_content_settings_client.h",
     "renderer/web_test_grammar_checker.cc",
     "renderer/web_test_grammar_checker.h",
-    "renderer/web_test_render_thread_observer.cc",
-    "renderer/web_test_render_thread_observer.h",
     "renderer/web_test_spell_checker.cc",
     "renderer/web_test_spell_checker.h",
   ]
@@ -361,7 +366,7 @@ static_library("web_test_renderer") {
     "//third_party/blink/renderer/core/web_test",
   ]
 
-  if (enable_printing || enable_printing_unittests) {
+  if (enable_printing || enable_printing_tests) {
     sources += [
       "renderer/pixel_dump.cc",
       "renderer/pixel_dump.h",

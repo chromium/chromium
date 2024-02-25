@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Region.Op;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -34,27 +35,18 @@ import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/**
- * Tests for {@link SuggestionHorizontalDivider}.
- */
+/** Tests for {@link SuggestionHorizontalDivider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SuggestionHorizontalDividerTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Mock
-    private RecyclerView mRecyclerView;
-    @Mock
-    private View mChildViewWithDivider;
-    @Mock
-    private View mChildViewWithNoDivider;
-    @Mock
-    private RecyclerView.State mState;
-    @Mock
-    private SimpleRecyclerViewAdapter.ViewHolder mShowDividerViewHolder;
-    @Mock
-    private SimpleRecyclerViewAdapter.ViewHolder mNoDividerViewHolder;
-    @Mock
-    private Canvas mCanvas;
+    @Mock private RecyclerView mRecyclerView;
+    @Mock private View mChildViewWithDivider;
+    @Mock private View mChildViewWithNoDivider;
+    @Mock private RecyclerView.State mState;
+    @Mock private SimpleRecyclerViewAdapter.ViewHolder mShowDividerViewHolder;
+    @Mock private SimpleRecyclerViewAdapter.ViewHolder mNoDividerViewHolder;
+    @Mock private Canvas mCanvas;
 
     private PropertyModel mShowDividerModel =
             new PropertyModel.Builder(DropdownCommonProperties.ALL_KEYS)
@@ -97,14 +89,21 @@ public class SuggestionHorizontalDividerTest {
     @Test
     @SmallTest
     public void testDraw() {
-        doAnswer((invocation -> {
-            ((Rect) invocation.getArgument(1)).set(0, 0, 100, 30);
-            return null;
-        }))
+        MarginLayoutParams layoutParams = new MarginLayoutParams(100, 30);
+        layoutParams.leftMargin = 13;
+        layoutParams.rightMargin = 17;
+        doReturn(new RecyclerView.LayoutParams(layoutParams))
+                .when(mChildViewWithDivider)
+                .getLayoutParams();
+        doAnswer(
+                        (invocation -> {
+                            ((Rect) invocation.getArgument(1)).set(0, 0, 100, 30);
+                            return null;
+                        }))
                 .when(mRecyclerView)
                 .getDecoratedBoundsWithMargins(any(View.class), any(Rect.class));
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
-        verify(mCanvas).clipRect(0, 29, 100, 30, Op.DIFFERENCE);
+        verify(mCanvas).clipRect(13, 29, 100 - 17, 30, Op.DIFFERENCE);
     }
 }

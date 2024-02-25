@@ -1,0 +1,9 @@
+Document
+++Group IsControlElement=false
+++++Hyperlink Name='Link'
+++++++Text Name='Link' IsControlElement=false
+++++Text Name=' '
+++++Hyperlink Name='AriaLabel'
+++++++Text Name='Link' IsControlElement=false
+++++Button Name='Button'
+++++Button Name='AriaLabel'

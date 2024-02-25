@@ -14,9 +14,10 @@ Search result #2: uiSourceCode.url = file:///var/www/search.html
 Search result #3: uiSourceCode.url = file:///var/www/search.js
   search match #1: lineNumber = 0, lineContent = 'function searchTestUniqueString()'
   search match #2: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
-  search match #3: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
-  search match #4: lineNumber = 10, lineContent = '    searchTestUniqueString();'
-  search match #5: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
+  search match #3: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
+  search match #4: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
+  search match #5: lineNumber = 10, lineContent = '    searchTestUniqueString();'
+  search match #6: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
 Search result #4: uiSourceCode.url = http://localhost/search.html
   search match #1: lineNumber = 4, lineContent = '<script>window.eval("function searchTestUniqueString() {}");</script>'
   search match #2: lineNumber = 6, lineContent = '<div>searchTestUniqueString</div>'
@@ -25,9 +26,10 @@ Search result #4: uiSourceCode.url = http://localhost/search.html
 Search result #5: uiSourceCode.url = http://localhost/search.js
   search match #1: lineNumber = 0, lineContent = 'function searchTestUniqueString()'
   search match #2: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
-  search match #3: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
-  search match #4: lineNumber = 10, lineContent = '    searchTestUniqueString();'
-  search match #5: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
+  search match #3: lineNumber = 3, lineContent = '    // searchTestUniqueString two occurences on the same line searchTestUniqueString'
+  search match #4: lineNumber = 4, lineContent = '    // searchTestUniqueString on the next line.'
+  search match #5: lineNumber = 10, lineContent = '    searchTestUniqueString();'
+  search match #6: lineNumber = 11, lineContent = '    // SEARCHTestUniqueString();'
 
 Running: testDirtyFiles
 Search result #1: uiSourceCode.url = file:///var/www/search.css

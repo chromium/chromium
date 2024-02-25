@@ -13,8 +13,7 @@
 <div class="fragment-content">
   <settings-radio-group id="safeBrowsingRadioGroup"
       pref="{{prefs.generated.safe_browsing}}"
-      selectable-elements="settings-collapse-radio-button"
-      on-keydown="onRadioGroupKeyDown_">
+      selectable-elements="settings-collapse-radio-button">
     <settings-collapse-radio-button id="safeBrowsingRadioEnhanced"
         pref="[[prefs.generated.safe_browsing]]"
         name="[[safeBrowsingSettingEnum_.ENHANCED]]"
@@ -26,11 +25,11 @@
         <!-- TODO(http://crbug.com/1470385): Remove the template element below when friendlier
         settings is fully rolled out. -->
         <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
-          <div slot="collapse" class="description-wrapper-radio two-column">
-            <div class="description-column description-column-first">
-              <div class="description-header">
+          <div slot="collapse" class="settings-columned-section">
+            <div class="column">
+              <h3 class="description-header">
                 $i18n{privacyGuideFeatureDescriptionHeader}
-              </div>
+              </h3>
               <div role="list">
                 <privacy-guide-description-item
                     role="listitem"
@@ -54,10 +53,10 @@
                 </privacy-guide-description-item>
               </div>
             </div>
-            <div class="description-column">
-              <div class="description-header">
+            <div class="column">
+              <h3 class="description-header">
                 $i18n{privacyGuideThingsToConsider}
-              </div>
+              </h3>
               <div role="list">
                 <privacy-guide-description-item
                     role="listitem"
@@ -79,11 +78,11 @@
           </div>
         </template>
         <template is="dom-if" if="[[enableFriendlierSafeBrowsingSettings_]]">
-          <div slot="collapse" class="description-wrapper-radio two-column">
-            <div class="description-column description-column-first">
-              <div class="description-header">
+          <div slot="collapse" class="settings-columned-section">
+            <div class="column">
+              <h3 class="description-header">
                 $i18n{privacyGuideFeatureDescriptionHeader}
-              </div>
+              </h3>
               <div id="updatedDescItemContainer" role="list">
                 <privacy-guide-description-item
                     role="listitem"
@@ -97,25 +96,25 @@
                 </privacy-guide-description-item>
                 <privacy-guide-description-item
                     role="listitem"
-                    icon="settings20:vpn-key-new"
+                    icon="settings20:gshield"
                     label="$i18n{safeBrowsingEnhancedWhenOnBulThree}">
                 </privacy-guide-description-item>
                 <privacy-guide-description-item
                     role="listitem"
-                    icon="settings20:gshield"
+                    icon="settings:language"
                     label="$i18n{safeBrowsingEnhancedWhenOnBulFour}">
                 </privacy-guide-description-item>
                 <privacy-guide-description-item
                     role="listitem"
-                    icon="settings:language"
+                    icon="settings20:vpn-key-new"
                     label="$i18n{safeBrowsingEnhancedWhenOnBulFive}">
                 </privacy-guide-description-item>
               </div>
             </div>
-            <div class="description-column">
-              <div class="description-header">
+            <div class="column">
+              <h3 class="description-header">
                 $i18n{privacyGuideThingsToConsider}
-              </div>
+              </h3>
               <div role="list">
                 <privacy-guide-description-item
                     role="listitem"
@@ -129,7 +128,7 @@
                 </privacy-guide-description-item>
                 <privacy-guide-description-item
                     role="listitem"
-                    icon="settings20:speed"
+                    icon="settings:performance"
                     label="$i18n{safeBrowsingEnhancedThingsToConsiderBulThree}">
                 </privacy-guide-description-item>
               </div>
@@ -148,12 +147,12 @@
         expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
         on-click="onSafeBrowsingStandardClick_">
         <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
-          <div slot="collapse" class="description-wrapper-radio two-column"
+          <div slot="collapse" class="settings-columned-section"
             id="whenOnThingsToConsiderStandardProtection">
-            <div class="description-column description-column-first">
-              <div class="description-header">
+            <div class="column">
+              <h3 class="description-header">
                 $i18n{privacyGuideFeatureDescriptionHeader}
-              </div>
+              </h3>
               <div role="list">
                 <privacy-guide-description-item
                     role="listitem"
@@ -169,10 +168,10 @@
                 </privacy-guide-description-item>
               </div>
             </div>
-            <div class="description-column">
-              <div class="description-header">
+            <div class="column">
+              <h3 class="description-header">
                 $i18n{privacyGuideThingsToConsider}
-              </div>
+              </h3>
               <div role="list">
                 <privacy-guide-description-item
                     id="standardProtectionPrivacyDescription1"

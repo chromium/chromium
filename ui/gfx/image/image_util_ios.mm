@@ -4,9 +4,15 @@
 
 #import <UIKit/UIKit.h>
 
+#include "build/blink_buildflags.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
 #include "ui/gfx/image/resize_image_dimensions.h"
+
+#if BUILDFLAG(USE_BLINK)
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#endif  // BUILDFLAG(USE_BLINK)
 
 namespace {
 // Copied from GTMUIImage+Resize in //third_party/google_toolbox_for_mac to
@@ -111,4 +117,22 @@ Image ResizedImageForSearchByImage(const Image& image) {
   return Image(ui_image);
 }
 
+#if BUILDFLAG(USE_BLINK)
+Image ImageFrom1xJPEGEncodedData(const unsigned char* input,
+                                 size_t input_size) {
+  std::unique_ptr<SkBitmap> bitmap(gfx::JPEGCodec::Decode(input, input_size));
+  if (bitmap.get()) {
+    return Image::CreateFrom1xBitmap(*bitmap);
+  }
+
+  return Image();
+}
+#endif  // BUILDFLAG(USE_BLINK)
+
+Image ResizedImage(const Image& image, const gfx::Size& size) {
+  UIImage* ui_image =
+      ResizeUIImage(image.ToUIImage(), size.ToCGSize(),
+       /*preserve_aspect_ratio=*/NO, /*trim_to_fit=*/NO);
+  return Image(ui_image);
+}
 }  // end namespace gfx

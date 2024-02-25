@@ -61,7 +61,7 @@ constexpr char kTestUser3GaiaId[] = "3333333333";
 
 void Append_en_US_InputMethod(std::vector<std::string>* out) {
   out->push_back("xkb:us::eng");
-  input_method::InputMethodManager::Get()->MigrateInputMethods(out);
+  input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(out);
 }
 
 void Append_en_US_InputMethods(std::vector<std::string>* out) {
@@ -76,7 +76,7 @@ void Append_en_US_InputMethods(std::vector<std::string>* out) {
   out->push_back("xkb:us:colemak:eng");
   out->push_back("xkb:us:workman:eng");
   out->push_back("xkb:us:workman-intl:eng");
-  input_method::InputMethodManager::Get()->MigrateInputMethods(out);
+  input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(out);
 }
 
 }  // anonymous namespace
@@ -95,7 +95,7 @@ class LoginUIKeyboardTest : public LoginManagerTest {
     user_input_methods.push_back("xkb:fr::fra");
     user_input_methods.push_back("xkb:de::ger");
 
-    input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(
         &user_input_methods);
 
     LoginManagerTest::SetUpOnMainThread();
@@ -257,7 +257,7 @@ class LoginUIKeyboardTestWithUsersAndOwner : public LoginManagerTest {
     user_input_methods.push_back("xkb:de::ger");
     user_input_methods.push_back("xkb:pl::pol");
 
-    input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(
         &user_input_methods);
 
     GetFakeUserManager().SetOwnerId(
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
   ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethodIds().size(), 1U);
   ASSERT_EQ(imm->GetActiveIMEState()->GetNumEnabledInputMethods(), 1U);
 
-  input_method::InputMethodManager::Get()->MigrateInputMethods(
+  input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(
       &allowed_input_method);
   ASSERT_EQ(imm->GetActiveIMEState()->GetCurrentInputMethod().id(),
             allowed_input_method.front());
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIDevicePolicyUserAdding, PolicyNotHonored) {
 
   std::vector<std::string> allowed_input_method{"xkb:de::ger"};
   SetAllowedInputMethod(allowed_input_method.front());
-  input_method::InputMethodManager::Get()->MigrateInputMethods(
+  input_method::InputMethodManager::Get()->GetMigratedInputMethodIDs(
       &allowed_input_method);
 
   test::ShowUserAddingScreen();

@@ -33,7 +33,7 @@ class ExtensionInputMethodEventRouter
                           bool show_message) override;
 
  private:
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 };
 
 }  // namespace chromeos

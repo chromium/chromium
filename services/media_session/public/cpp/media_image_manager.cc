@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -75,9 +76,9 @@ MediaImageManager::MediaImageManager(int min_size, int ideal_size)
 
 MediaImageManager::~MediaImageManager() = default;
 
-absl::optional<MediaImage> MediaImageManager::SelectImage(
+std::optional<MediaImage> MediaImageManager::SelectImage(
     const std::vector<MediaImage>& images) {
-  absl::optional<MediaImage> selected;
+  std::optional<MediaImage> selected;
 
   double best_score = 0;
   for (auto& image : images) {
@@ -114,10 +115,9 @@ double MediaImageManager::GetImageScore(const MediaImage& image) const {
   }
 
   double type_score = kDefaultTypeScore;
-  if (absl::optional<double> ext_score = GetImageExtensionScore(image.src)) {
+  if (std::optional<double> ext_score = GetImageExtensionScore(image.src)) {
     type_score = *ext_score;
-  } else if (absl::optional<double> mime_score =
-                 GetImageTypeScore(image.type)) {
+  } else if (std::optional<double> mime_score = GetImageTypeScore(image.type)) {
     type_score = *mime_score;
   }
 
@@ -125,10 +125,10 @@ double MediaImageManager::GetImageScore(const MediaImage& image) const {
 }
 
 // static
-absl::optional<double> MediaImageManager::GetImageExtensionScore(
+std::optional<double> MediaImageManager::GetImageExtensionScore(
     const GURL& url) {
   if (!url.has_path())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string extension = GetExtension(url.path());
 
@@ -149,15 +149,15 @@ absl::optional<double> MediaImageManager::GetImageExtensionScore(
       return kGIFTypeScore;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
-absl::optional<double> MediaImageManager::GetImageTypeScore(
+std::optional<double> MediaImageManager::GetImageTypeScore(
     const std::u16string& type) {
   // These hashes are calculated in
   // MediaImageManagerTest_CheckExpectedImageTypeHashes
-  switch (base::PersistentHash(type.data(), type.size() * sizeof(char16_t))) {
+  switch (base::PersistentHash(base::as_byte_span(type))) {
     case 0xfd295465:  // image/bmp
       return kBMPTypeScore;
     case 0xce81e113:  // image/gif
@@ -170,7 +170,7 @@ absl::optional<double> MediaImageManager::GetImageTypeScore(
       return kXIconTypeScore;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace media_session

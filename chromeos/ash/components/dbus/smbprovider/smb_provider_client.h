@@ -24,8 +24,7 @@ namespace ash {
 // service. All methods should be called from the origin thread (UI thread)
 // which initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(ASH_DBUS_SMBPROVIDER) SmbProviderClient
-    : public chromeos::DBusClient,
-      public base::SupportsWeakPtr<SmbProviderClient> {
+    : public chromeos::DBusClient {
  public:
   using ReadDirectoryCallback = base::OnceCallback<void(
       smbprovider::ErrorType error,
@@ -70,6 +69,9 @@ class COMPONENT_EXPORT(ASH_DBUS_SMBPROVIDER) SmbProviderClient
   virtual void ParseNetBiosPacket(const std::vector<uint8_t>& packet,
                                   uint16_t transaction_id,
                                   ParseNetBiosPacketCallback callback) = 0;
+
+  // Implementation classes must provide this.
+  virtual base::WeakPtr<SmbProviderClient> AsWeakPtr() = 0;
 
  protected:
   // Initialize() should be used instead.

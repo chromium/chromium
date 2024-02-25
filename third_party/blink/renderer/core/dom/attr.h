@@ -43,7 +43,7 @@ class CORE_EXPORT Attr final : public Node {
 
   String name() const { return name_.ToString(); }
   bool specified() const { return true; }
-  Element* ownerElement() const { return element_; }
+  Element* ownerElement() const { return element_.Get(); }
 
   const AtomicString& value() const;
   void setValue(const AtomicString&, ExceptionState&);

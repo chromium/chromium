@@ -8,9 +8,11 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 
 namespace net {
 
@@ -22,20 +24,21 @@ const size_t kReadBufferSize =
 }  // namespace
 
 QuicChromiumPacketReader::QuicChromiumPacketReader(
-    DatagramClientSocket* socket,
+    std::unique_ptr<DatagramClientSocket> socket,
     const quic::QuicClock* clock,
     Visitor* visitor,
     int yield_after_packets,
     quic::QuicTime::Delta yield_after_duration,
     const NetLogWithSource& net_log)
-    : socket_(socket),
+    : socket_(std::move(socket)),
       visitor_(visitor),
       clock_(clock),
       yield_after_packets_(yield_after_packets),
       yield_after_duration_(yield_after_duration),
       yield_after_(quic::QuicTime::Infinite()),
       read_buffer_(base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize)),
-      net_log_(net_log) {}
+      net_log_(net_log),
+      report_ecn_(base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {}
 
 QuicChromiumPacketReader::~QuicChromiumPacketReader() = default;
 
@@ -76,6 +79,15 @@ void QuicChromiumPacketReader::StartReading() {
   }
 }
 
+void QuicChromiumPacketReader::CloseSocket() {
+  socket_->Close();
+}
+
+static_assert(static_cast<EcnCodePoint>(quic::ECN_NOT_ECT) == ECN_NOT_ECT &&
+                  static_cast<EcnCodePoint>(quic::ECN_ECT1) == ECN_ECT1 &&
+                  static_cast<EcnCodePoint>(quic::ECN_ECT0) == ECN_ECT0 &&
+                  static_cast<EcnCodePoint>(quic::ECN_CE) == ECN_CE,
+              "Mismatch ECN codepoint values");
 bool QuicChromiumPacketReader::ProcessReadResult(int result) {
   read_pending_ = false;
   if (result <= 0 && net_log_.IsCapturing()) {
@@ -93,10 +105,20 @@ bool QuicChromiumPacketReader::ProcessReadResult(int result) {
   }
   if (result < 0) {
     // Report all other errors to the visitor.
-    return visitor_->OnReadError(result, socket_);
+    return visitor_->OnReadError(result, socket_.get());
   }
 
-  quic::QuicReceivedPacket packet(read_buffer_->data(), result, clock_->Now());
+  quic::QuicEcnCodepoint ecn = quic::ECN_NOT_ECT;
+  if (report_ecn_) {
+    DscpAndEcn tos = socket_->GetLastTos();
+    ecn = static_cast<quic::QuicEcnCodepoint>(tos.ecn);
+  }
+  quic::QuicReceivedPacket packet(read_buffer_->data(), result, clock_->Now(),
+                                  /*owns_buffer=*/false, /*ttl=*/0,
+                                  /*ttl_valid=*/true,
+                                  /*packet_headers=*/nullptr,
+                                  /*headers_length=*/0,
+                                  /*owns_header_buffer=*/false, ecn);
   IPEndPoint local_address;
   IPEndPoint peer_address;
   socket_->GetLocalAddress(&local_address);
@@ -110,8 +132,9 @@ bool QuicChromiumPacketReader::ProcessReadResult(int result) {
 }
 
 void QuicChromiumPacketReader::OnReadComplete(int result) {
-  if (ProcessReadResult(result))
+  if (ProcessReadResult(result)) {
     StartReading();
+  }
 }
 
 }  // namespace net

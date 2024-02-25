@@ -5,11 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Elements from 'devtools/panels/elements/elements.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that keyframes are shown in styles pane.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -32,7 +32,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   async function step1() {
     TestRunner.addResult('=== Before key modification ===');
     await ElementsTestRunner.dumpSelectedElementStyles(true);
-    var section = UI.panels.elements.stylesWidget.sectionBlocks[1].sections[1];
+    var section = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.sectionBlocks[1].sections[1];
     section.startEditingSelector();
     section.selectorElement.textContent = '1%';
     section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
@@ -57,7 +57,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   async function step4() {
     TestRunner.addResult('=== After redo ===');
     await ElementsTestRunner.dumpSelectedElementStyles(true);
-    var section = UI.panels.elements.stylesWidget.sectionBlocks[1].sections[1];
+    var section = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.sectionBlocks[1].sections[1];
     section.startEditingSelector();
     section.selectorElement.textContent = '1% /*';
     section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));

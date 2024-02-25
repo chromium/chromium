@@ -9,8 +9,8 @@
 namespace blink {
 
 namespace {
-absl::optional<int> max_child_frame_screen_rect_movement;
-absl::optional<int> min_screen_rect_stable_time_ms;
+std::optional<int> max_child_frame_screen_rect_movement;
+std::optional<int> min_screen_rect_stable_time_ms;
 
 // These are the values that were in use prior to adding the feature flag
 // kDiscardInputEventsToRecentlyMovedFrames; they applied only to cross-origin

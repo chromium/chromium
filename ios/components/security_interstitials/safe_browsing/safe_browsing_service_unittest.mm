@@ -5,6 +5,7 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 
 #import "base/files/scoped_temp_dir.h"
+#import "base/memory/raw_ptr.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
@@ -128,8 +129,9 @@ class TestUrlCheckerClient {
           slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist) {
+      bool has_post_commit_interstitial_skipped,
+      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+          performed_check) {
     if (slow_check_notifier) {
       *slow_check_notifier =
           base::BindOnce(&TestUrlCheckerClient::OnCheckUrlResult,
@@ -148,10 +150,10 @@ class TestUrlCheckerClient {
   bool url_is_unsafe_ = false;
   safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check_ =
       safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown;
-  SafeBrowsingService* safe_browsing_service_;
+  raw_ptr<SafeBrowsingService> safe_browsing_service_;
   web::FakeWebState web_state_;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker_;
-  SafeBrowsingClient* safe_browsing_client_;
+  raw_ptr<SafeBrowsingClient> safe_browsing_client_;
 };
 
 }  // namespace
@@ -163,16 +165,16 @@ class SafeBrowsingServiceTest : public PlatformTest {
         browser_state_(new web::FakeBrowserState()) {
     store_factory_ = new safe_browsing::TestV4StoreFactory();
     safe_browsing::V4Database::RegisterStoreFactoryForTest(
-        base::WrapUnique(store_factory_));
+        base::WrapUnique(store_factory_.get()));
 
     v4_db_factory_ = new safe_browsing::TestV4DatabaseFactory();
     safe_browsing::V4Database::RegisterDatabaseFactoryForTest(
-        base::WrapUnique(v4_db_factory_));
+        base::WrapUnique(v4_db_factory_.get()));
 
     v4_get_hash_factory_ =
         new safe_browsing::TestV4GetHashProtocolManagerFactory();
     safe_browsing::V4GetHashProtocolManager::RegisterFactory(
-        base::WrapUnique(v4_get_hash_factory_));
+        base::WrapUnique(v4_get_hash_factory_.get()));
 
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -305,7 +307,8 @@ class SafeBrowsingServiceTest : public PlatformTest {
         base::BindRepeating([](bool) { return false; }),
         /*is_off_the_record=*/false,
         /*variations_service=*/nullptr,
-        /*referrer_chain_provider=*/nullptr);
+        /*referrer_chain_provider=*/nullptr,
+        /*webui_delegate=*/nullptr);
     safe_browsing_client_.set_real_time_url_lookup_service(
         lookup_service_.get());
   }
@@ -313,11 +316,12 @@ class SafeBrowsingServiceTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
 
   // Owned by V4Database.
-  safe_browsing::TestV4DatabaseFactory* v4_db_factory_;
+  raw_ptr<safe_browsing::TestV4DatabaseFactory> v4_db_factory_;
   // Owned by V4GetHashProtocolManager.
-  safe_browsing::TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_;
+  raw_ptr<safe_browsing::TestV4GetHashProtocolManagerFactory>
+      v4_get_hash_factory_;
   // Owned by V4Database.
-  safe_browsing::TestV4StoreFactory* store_factory_;
+  raw_ptr<safe_browsing::TestV4StoreFactory> store_factory_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<safe_browsing::VerdictCacheManager> verdict_cache_manager_;
   std::unique_ptr<safe_browsing::RealTimeUrlLookupService> lookup_service_;
@@ -414,7 +418,7 @@ TEST_F(SafeBrowsingServiceTest,
   client.CheckUrl(safe_url);
   client.WaitForResult();
 
-  // Opt into real-time checks and also does real-time checks for subframe url.
+  // Opt into real-time checks.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
 
   MarkUrlAsRealTimeSafe(safe_url);
@@ -439,25 +443,18 @@ TEST_F(SafeBrowsingServiceTest,
   EXPECT_FALSE(client.result_pending());
   EXPECT_TRUE(client.url_is_unsafe());
 
+  // Subframe URL should not be checked.
   MarkUrlAsRealTimeUnsafe(unsafe_url);
   client.CheckSubFrameUrl(unsafe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
-  EXPECT_TRUE(client.url_is_unsafe());
+  EXPECT_FALSE(client.url_is_unsafe());
 
   // Opt out of real-time checks, and ensure that unsafe URLs are no longer
   // flagged.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   client.CheckUrl(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    EXPECT_TRUE(client.result_pending());
-    client.WaitForResult();
-  }
-  EXPECT_FALSE(client.result_pending());
-  EXPECT_FALSE(client.url_is_unsafe());
-
-  client.CheckSubFrameUrl(unsafe_url);
   if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
@@ -622,7 +619,7 @@ TEST_F(SafeBrowsingServiceTest, HashPrefixEnabled) {
                 kHashRealTimeCheck,
             client.performed_check());
   histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
       /*sample=*/false,
       /*expected_bucket_count=*/1);
 
@@ -651,7 +648,7 @@ TEST_F(SafeBrowsingServiceTest, HashPrefixDisabled) {
                 kHashDatabaseCheck,
             client.performed_check());
   histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
+      "SafeBrowsing.HPRT.Ineligible.IneligibleForSessionOrLocation",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
 

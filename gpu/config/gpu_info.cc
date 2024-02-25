@@ -126,6 +126,11 @@ void EnumerateOverlayInfo(const gpu::OverlayInfo& info,
                         gpu::OverlaySupportToString(info.yuy2_overlay_support));
   enumerator->AddString("nv12OverlaySupport",
                         gpu::OverlaySupportToString(info.nv12_overlay_support));
+  enumerator->AddString("bgra8OverlaySupport", gpu::OverlaySupportToString(
+                                                   info.bgra8_overlay_support));
+  enumerator->AddString(
+      "rgb10a2OverlaySupport",
+      gpu::OverlaySupportToString(info.rgb10a2_overlay_support));
   enumerator->EndOverlayInfo();
 }
 #endif
@@ -349,7 +354,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     uint32_t visibility_callback_call_count;
 
 #if BUILDFLAG(ENABLE_VULKAN)
-    absl::optional<VulkanInfo> vulkan_info;
+    std::optional<VulkanInfo> vulkan_info;
 #endif
   };
 

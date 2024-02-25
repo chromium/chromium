@@ -8,7 +8,7 @@
 #include "media/base/decoder_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -23,13 +23,15 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
  public:
   explicit EncodedAudioChunk(scoped_refptr<media::DecoderBuffer> buffer);
 
-  static EncodedAudioChunk* Create(const EncodedAudioChunkInit* init);
+  static EncodedAudioChunk* Create(ScriptState* script_state,
+                                   const EncodedAudioChunkInit* init,
+                                   ExceptionState& exception_state);
 
   // encoded_audio_chunk.idl implementation.
   String type() const;
   int64_t timestamp() const;
   uint64_t byteLength() const;
-  absl::optional<uint64_t> duration() const;
+  std::optional<uint64_t> duration() const;
   void copyTo(const AllowSharedBufferSource* destination,
               ExceptionState& exception_state);
 

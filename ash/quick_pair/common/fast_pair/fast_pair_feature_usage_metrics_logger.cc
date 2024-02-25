@@ -43,15 +43,14 @@ bool FastPairFeatureUsageMetricsLogger::IsEligible() const {
   // IsEligible reflects the hardware filtering support on the Chromebook.
   // Devices that do not have hardware filtering support are not eligible for
   // Fast Pair.
-  return features::IsFastPairSoftwareScanningEnabled() ||
-         (bluetooth_adapter_.get() && bluetooth_adapter_->IsPresent() &&
-          bluetooth_adapter_
-                  ->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
-              device::BluetoothAdapter::
-                  LowEnergyScanSessionHardwareOffloadingStatus::kSupported);
+  return bluetooth_adapter_.get() && bluetooth_adapter_->IsPresent() &&
+         bluetooth_adapter_
+                 ->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
+             device::BluetoothAdapter::
+                 LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
 }
 
-absl::optional<bool> FastPairFeatureUsageMetricsLogger::IsAccessible() const {
+std::optional<bool> FastPairFeatureUsageMetricsLogger::IsAccessible() const {
   if (!IsEligible())
     return false;
 

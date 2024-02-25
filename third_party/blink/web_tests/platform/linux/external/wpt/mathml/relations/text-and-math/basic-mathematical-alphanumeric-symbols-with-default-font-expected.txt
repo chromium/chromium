@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL Bold mathematical alphanumeric symbol with the default font assert_greater_than: Width of 'U+1D416 MATHEMATICAL BOLD CAPITAL W' is much larger than 'U+1D529 MATHEMATICAL FRAKTUR SMALL L' expected a number greater than 103 but got 78
-FAIL Italic mathematical alphanumeric symbol with the default font assert_greater_than: Width of 'U+1D44A MATHEMATICAL ITALIC CAPITAL W' is much larger than 'U+1D529 MATHEMATICAL FRAKTUR SMALL L' expected a number greater than 103 but got 78
-FAIL Bold-italic mathematical alphanumeric symbol with the default font assert_greater_than: Width of 'U+1D47E MATHEMATICAL BOLD ITALIC CAPITAL' is much larger than 'U+1D529 MATHEMATICAL FRAKTUR SMALL L' expected a number greater than 103 but got 78
+[FAIL] Bold mathematical alphanumeric symbol with the default font
+  assert_greater_than: Width of 'U+1D416 MATHEMATICAL BOLD CAPITAL W' is much larger than 'U+1D529 MATHEMATICAL FRAKTUR SMALL L' expected a number greater than 103 but got 78
+[FAIL] Italic mathematical alphanumeric symbol with the default font
+  assert_greater_than: Width of 'U+1D44A MATHEMATICAL ITALIC CAPITAL W' is much larger than 'U+1D529 MATHEMATICAL FRAKTUR SMALL L' expected a number greater than 103 but got 78
+[FAIL] Bold-italic mathematical alphanumeric symbol with the default font
+  assert_greater_than: Width of 'U+1D47E MATHEMATICAL BOLD ITALIC CAPITAL' is much larger than 'U+1D529 MATHEMATICAL FRAKTUR SMALL L' expected a number greater than 103 but got 78
 Harness: the test ran to completion.
 

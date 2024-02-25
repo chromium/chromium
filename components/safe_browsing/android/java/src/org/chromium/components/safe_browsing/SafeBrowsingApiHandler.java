@@ -14,9 +14,7 @@ import java.lang.annotation.RetentionPolicy;
  * {@code SafeBrowsingApiBridge}.
  */
 public interface SafeBrowsingApiHandler {
-    /**
-     * Observer to be notified when the SafeBrowsingApiHandler determines the verdict for a url.
-     */
+    /** Observer to be notified when the SafeBrowsingApiHandler determines the verdict for a url. */
     interface Observer {
         /**
          * Called when the SafeBrowsingApiHandler gets a response from the SafeBrowsing API.
@@ -28,14 +26,25 @@ public interface SafeBrowsingApiHandler {
          * @param responseStatus The responseStatus that is returned from the API.
          * @param checkDeltaMs The time the remote call took in microseconds.
          */
-        void onUrlCheckDone(long callbackId, @LookupResult int lookupResult, int threatType,
-                int[] threatAttributes, int responseStatus, long checkDeltaMs);
+        void onUrlCheckDone(
+                long callbackId,
+                @LookupResult int lookupResult,
+                int threatType,
+                int[] threatAttributes,
+                int responseStatus,
+                long checkDeltaMs);
     }
 
     // Possible values for lookupResult. Native side has the same definitions. See the native side
     // definition for detailed descriptions.
-    @IntDef({LookupResult.SUCCESS, LookupResult.FAILURE, LookupResult.FAILURE_API_CALL_TIMEOUT,
-            LookupResult.FAILURE_API_UNSUPPORTED, LookupResult.FAILURE_API_NOT_AVAILABLE})
+    @IntDef({
+        LookupResult.SUCCESS,
+        LookupResult.FAILURE,
+        LookupResult.FAILURE_API_CALL_TIMEOUT,
+        LookupResult.FAILURE_API_UNSUPPORTED,
+        LookupResult.FAILURE_API_NOT_AVAILABLE,
+        LookupResult.FAILURE_HANDLER_NULL
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface LookupResult {
         int SUCCESS = 0;
@@ -43,6 +52,7 @@ public interface SafeBrowsingApiHandler {
         int FAILURE_API_CALL_TIMEOUT = 2;
         int FAILURE_API_UNSUPPORTED = 3;
         int FAILURE_API_NOT_AVAILABLE = 4;
+        int FAILURE_HANDLER_NULL = 5;
     }
 
     /**

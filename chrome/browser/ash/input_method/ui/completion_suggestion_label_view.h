@@ -29,9 +29,9 @@ namespace ime {
 // prediction to distinguish the two.
 class UI_CHROMEOS_EXPORT CompletionSuggestionLabelView
     : public views::StyledLabel {
- public:
-  METADATA_HEADER(CompletionSuggestionLabelView);
+  METADATA_HEADER(CompletionSuggestionLabelView, views::StyledLabel)
 
+ public:
   // TODO(b/233264555): Allow users of this class to set the font instead of
   // hardcoding it.
   static const char kFontName[];

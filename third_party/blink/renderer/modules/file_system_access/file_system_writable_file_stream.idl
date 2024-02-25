@@ -8,6 +8,8 @@
     SecureContext,
     RuntimeEnabled=FileSystemAccess
 ] interface FileSystemWritableFileStream : WritableStream {
+    [RuntimeEnabled=FileSystemAccessLockingScheme] readonly attribute USVString mode;
+
     [
         CallWith=ScriptState,
         RaisesException

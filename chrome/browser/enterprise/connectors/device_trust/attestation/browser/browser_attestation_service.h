@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_BROWSER_ATTESTATION_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -16,11 +17,10 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-struct KeyInfo;
 
 namespace enterprise_connectors {
+
+class KeyInfo;
 
 // This class provides the methods needed in the handshake between Chrome, an
 // IdP and Verified Access.
@@ -55,7 +55,7 @@ class BrowserAttestationService : public AttestationService {
 
   void OnResponseCreated(const std::set<DTCPolicyLevel>& levels,
                          AttestationCallback callback,
-                         absl::optional<std::string> encrypted_response);
+                         std::optional<std::string> encrypted_response);
 
   void OnResponseSigned(AttestationCallback callback,
                         const std::string& encrypted_response,

@@ -5,7 +5,9 @@
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/feature_discovery_metric_util.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_base.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
@@ -159,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(FeatureDiscoveryDurationReporterBrowserTest,
       primary_user_pref->GetDict("FeatureDiscoveryReporterObservedFeatures")
           .FindDict("kMockFeature")
           ->Find("cumulative_duration");
-  absl::optional<base::TimeDelta> duration =
+  std::optional<base::TimeDelta> duration =
       base::ValueToTimeDelta(duration_value);
   EXPECT_NE(base::TimeDelta(), *duration);
 

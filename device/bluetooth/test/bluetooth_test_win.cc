@@ -281,7 +281,7 @@ BluetoothDevice* BluetoothTestWin::SimulateLowEnergyDevice(int device_ordinal) {
   NOTREACHED_NORETURN();
 }
 
-absl::optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(
+std::optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(
     BluetoothDevice* device) {
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
@@ -549,7 +549,7 @@ void BluetoothTestWinrt::SimulateConfirmOnly(BluetoothDevice* device) {
 }
 
 void BluetoothTestWinrt::SimulateDisplayPin(BluetoothDevice* device,
-                                            base::StringPiece display_pin) {
+                                            std::string_view display_pin) {
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
   DCHECK(ble_device);

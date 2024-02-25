@@ -55,9 +55,6 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   if (!data.ReadWebrtcLocalIpsAllowedUrls(&out->webrtc_local_ips_allowed_urls))
     return false;
 
-  out->webrtc_allow_legacy_tls_protocols =
-      data.webrtc_allow_legacy_tls_protocols();
-
   if (!data.ReadUserAgentOverride(&out->user_agent_override))
     return false;
 

@@ -78,24 +78,31 @@ class SigninManagerAndroid : public KeyedService {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_callback);
 
+  void SetUserAcceptedAccountManagement(JNIEnv* env,
+                                        jboolean acceptedAccountManagement);
+
+  bool GetUserAcceptedAccountManagement(JNIEnv* env);
+
  private:
   friend class SigninManagerAndroidTest;
   FRIEND_TEST_ALL_PREFIXES(SigninManagerAndroidTest,
                            DeleteGoogleServiceWorkerCaches);
 
+  struct ManagementCredentials {
+    ManagementCredentials(const std::string& dm_token,
+                          const std::string& client_id,
+                          const std::vector<std::string>& user_affiliation_ids);
+    ~ManagementCredentials();
+    const std::string dm_token;
+    const std::string client_id;
+    const std::vector<std::string> user_affiliation_ids;
+  };
+
   void OnSigninAllowedPrefChanged() const;
   bool IsSigninAllowed() const;
 
-  struct ManagementCredentials {
-    ManagementCredentials(const std::string& dm_token,
-                          const std::string& client_id)
-        : dm_token(dm_token), client_id(client_id) {}
-    const std::string dm_token;
-    const std::string client_id;
-  };
-
   using RegisterPolicyWithAccountCallback = base::OnceCallback<void(
-      const absl::optional<ManagementCredentials>& credentials)>;
+      const std::optional<ManagementCredentials>& credentials)>;
 
   // If required registers for policy with given account. callback will be
   // called with credentials if the account is managed.
@@ -105,7 +112,7 @@ class SigninManagerAndroid : public KeyedService {
   void OnPolicyRegisterDone(
       const CoreAccountInfo& account_id,
       base::OnceCallback<void()> policy_callback,
-      const absl::optional<ManagementCredentials>& credentials);
+      const std::optional<ManagementCredentials>& credentials);
 
   void FetchPolicyBeforeSignIn(const CoreAccountInfo& account_id,
                                base::OnceCallback<void()> policy_callback,

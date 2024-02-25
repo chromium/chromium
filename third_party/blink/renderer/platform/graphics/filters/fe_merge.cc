@@ -40,7 +40,7 @@ sk_sp<PaintFilter> FEMerge::CreateImageFilter() {
     input_refs[i] = paint_filter_builder::Build(InputEffect(i),
                                                 OperatingInterpolationSpace());
   }
-  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<MergePaintFilter>(input_refs.get(), size,
                                       base::OptionalToPtr(crop_rect));
 }

@@ -6,6 +6,7 @@
 #define NET_REPORTING_REPORTING_CACHE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -20,7 +22,6 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_report.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -28,6 +29,7 @@ namespace net {
 
 class ReportingContext;
 class IsolationInfo;
+class NetworkAnonymizationKey;
 
 // The cache holds undelivered reports and clients (per-origin endpoint
 // configurations) in memory. (It is not responsible for persisting them.)
@@ -66,7 +68,7 @@ class NET_EXPORT ReportingCache {
   // All other parameters correspond to the desired values for the relevant
   // fields in ReportingReport.
   virtual void AddReport(
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& url,
       const std::string& user_agent,
@@ -84,7 +86,8 @@ class NET_EXPORT ReportingCache {
   //
   // (Clears any existing data in |*reports_out|.)
   virtual void GetReports(
-      std::vector<const ReportingReport*>* reports_out) const = 0;
+      std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
+          reports_out) const = 0;
 
   // Gets all reports in the cache, including pending and doomed reports, as a
   // base::Value.
@@ -94,7 +97,8 @@ class NET_EXPORT ReportingCache {
   // eligible for delivery), and marks returned reports as pending in
   // preparation for a delivery attempt. The returned pointers are valid as long
   // as the reports are still pending.
-  virtual std::vector<const ReportingReport*> GetReportsToDeliver() = 0;
+  virtual std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  GetReportsToDeliver() = 0;
 
   // Gets all reports in the cache which are eligible for delivery, which were
   // queued for a single `reporting_source`, and marks returned reports as
@@ -102,17 +106,20 @@ class NET_EXPORT ReportingCache {
   // valid as long as the reports are still pending. This method is used when a
   // reporting source is being destroyed, to trigger delivery of any remaining
   // outstanding reports.
-  virtual std::vector<const ReportingReport*> GetReportsToDeliverForSource(
+  virtual std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+  GetReportsToDeliverForSource(
       const base::UnguessableToken& reporting_source) = 0;
 
   // Unmarks a set of reports as pending. |reports| must be previously marked as
   // pending.
   virtual void ClearReportsPending(
-      const std::vector<const ReportingReport*>& reports) = 0;
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) = 0;
 
   // Increments |attempts| on a set of reports.
   virtual void IncrementReportsAttempts(
-      const std::vector<const ReportingReport*>& reports) = 0;
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) = 0;
 
   // Records that we attempted (and possibly succeeded at) delivering
   // |reports_delivered| reports to the specified endpoint.
@@ -137,9 +144,12 @@ class NET_EXPORT ReportingCache {
   // immediately, but rather marked doomed and removed once they are no longer
   // pending.
   virtual void RemoveReports(
-      const std::vector<const ReportingReport*>& reports) = 0;
-  virtual void RemoveReports(const std::vector<const ReportingReport*>& reports,
-                             bool delivery_success) = 0;
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports) = 0;
+  virtual void RemoveReports(
+      const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+          reports,
+      bool delivery_success) = 0;
 
   // Removes all reports. Like |RemoveReports()|, pending reports are doomed
   // until no longer pending.
@@ -184,7 +194,7 @@ class NET_EXPORT ReportingCache {
   // Gets all the origins of clients in the cache.
   virtual std::set<url::Origin> GetAllOrigins() const = 0;
 
-  // Remove client for the given (NIK, origin) pair, if it exists in the cache.
+  // Remove client for the given (NAK, origin) pair, if it exists in the cache.
   // All endpoint groups and endpoints for that client are also removed.
   virtual void RemoveClient(
       const NetworkAnonymizationKey& network_anonymization_key,
@@ -281,7 +291,7 @@ class NET_EXPORT ReportingCache {
       OriginSubdomains include_subdomains,
       base::Time expires) const = 0;
 
-  // Returns whether a client for the given (NIK, Origin) exists.
+  // Returns whether a client for the given (NAK, Origin) exists.
   virtual bool ClientExistsForTesting(
       const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin) const = 0;

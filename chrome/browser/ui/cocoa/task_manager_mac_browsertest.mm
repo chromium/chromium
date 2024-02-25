@@ -72,10 +72,10 @@ class TaskManagerMacTest : public InProcessBrowserTest {
                                : nullptr;
   }
 
-  absl::optional<size_t> TableFirstSelectedRow() const {
+  std::optional<size_t> TableFirstSelectedRow() const {
     int index = GetTable().selectedRowIndexes.firstIndex;
-    return (index < 0) ? absl::nullopt
-                       : absl::make_optional(static_cast<size_t>(index));
+    return (index < 0) ? std::nullopt
+                       : std::make_optional(static_cast<size_t>(index));
   }
 
   void PressKillButton() {
@@ -109,7 +109,7 @@ class TaskManagerMacTest : public InProcessBrowserTest {
 
   // Returns the current TaskManagerTableModel index for a particular tab. Don't
   // cache this value, since it can change whenever the message loop runs.
-  absl::optional<size_t> FindRowForTab(content::WebContents* tab) {
+  std::optional<size_t> FindRowForTab(content::WebContents* tab) {
     SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     std::unique_ptr<TaskManagerTester> tester =
         TaskManagerTester::Create(base::RepeatingClosure());
@@ -117,7 +117,7 @@ class TaskManagerMacTest : public InProcessBrowserTest {
       if (tester->GetTabId(i) == tab_id)
         return i;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 };
 
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_NavigateSelection) {
     EXPECT_EQ(num_group_tasks, GetTable().numberOfSelectedRows);
   }
 
-  absl::optional<size_t> selected_row = TableFirstSelectedRow();
+  std::optional<size_t> selected_row = TableFirstSelectedRow();
   ASSERT_TRUE(selected_row.has_value());
   size_t expected_selected_row = selected_row.value();
   TaskManagerWindowController* window_controller =

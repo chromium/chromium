@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -47,7 +48,7 @@ class MediaStreamUI {
 
   // Called when Region Capture starts/stops, or when the cropped area changes.
   virtual void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect) {}
+      const std::optional<gfx::Rect>& region_capture_rect) {}
 };
 
 // Keeps track of which WebContents are capturing media streams. Used to display
@@ -166,7 +167,7 @@ class MediaStreamCaptureIndicator
   // Checks if |web_contents| or any portal WebContents in its tree is using
   // a device for capture. The type of capture is specified using |pred|.
   using WebContentsDeviceUsagePredicate =
-      base::RepeatingCallback<bool(const WebContentsDeviceUsage*)>;
+      base::FunctionRef<bool(const WebContentsDeviceUsage*)>;
   bool CheckUsage(content::WebContents* web_contents,
                   const WebContentsDeviceUsagePredicate& pred) const;
 
@@ -188,7 +189,8 @@ class MediaStreamCaptureIndicator
   // A vector which maps command IDs to their associated WebContents
   // instance. This is rebuilt each time the status tray icon context menu is
   // updated.
-  typedef std::vector<content::WebContents*> CommandTargets;
+  typedef std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+      CommandTargets;
   CommandTargets command_targets_;
 
   base::ObserverList<Observer, /* check_empty =*/true> observers_;

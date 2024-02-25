@@ -43,8 +43,10 @@ public class ExportWarningDialogFragment extends DialogFragment {
                 .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setPositiveButton(R.string.password_settings_export_action_title, mHandler)
                 .setNegativeButton(R.string.cancel, mHandler)
-                .setMessage(getActivity().getResources().getString(
-                        R.string.settings_passwords_export_description))
+                .setMessage(
+                        getActivity()
+                                .getResources()
+                                .getString(R.string.settings_passwords_export_description))
                 .create();
     }
 

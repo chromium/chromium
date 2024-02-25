@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file has been duplicated for lacros in
+// //chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host_unittest.cc
+// and should eventually be removed.
+
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
 
 #include "base/check.h"

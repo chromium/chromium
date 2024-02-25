@@ -10,10 +10,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -49,8 +51,14 @@ CloudProfileReportingService::CloudProfileReportingService(
     Profile* profile,
     policy::DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
+  std::string profile_id = "";
+  if (enterprise::ProfileIdServiceFactory::GetForProfile(profile)) {
+    profile_id = enterprise::ProfileIdServiceFactory::GetForProfile(profile)
+                     ->GetProfileId()
+                     .value_or("");
+  }
   cloud_policy_client_ = std::make_unique<policy::CloudPolicyClient>(
-      device_management_service, system_url_loader_factory,
+      profile_id, device_management_service, system_url_loader_factory,
       policy::CloudPolicyClient::DeviceDMTokenCallback());
 
 #if BUILDFLAG(IS_ANDROID)

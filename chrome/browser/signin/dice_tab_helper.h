@@ -14,7 +14,7 @@ namespace content {
 class NavigationHandle;
 }
 
-struct CoreAccountId;
+struct CoreAccountInfo;
 class SigninUIError;
 
 // Tab helper used for DICE to tag signin tabs. Signin tabs can be reused.
@@ -27,15 +27,17 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
       base::RepeatingCallback<void(Profile*,
                                    signin_metrics::AccessPoint,
                                    signin_metrics::PromoAction,
-                                   signin_metrics::Reason,
                                    content::WebContents*,
-                                   const CoreAccountId&)>;
+                                   const CoreAccountInfo&)>;
 
   // Callback displaying a signin error to the user. This is a repeating
   // callback, because multiple `ProcessDiceHeaderDelegateImpl` may make copies
   // of it.
   using ShowSigninErrorCallback = base::RepeatingCallback<
       void(Profile*, content::WebContents*, const SigninUIError&)>;
+
+  // Callback in response to the receiving the signin header.
+  using OnSigninHeaderReceived = base::RepeatingCallback<void()>;
 
   // Returns the default callback to enable sync in a browser window. Does
   // nothing if there is no browser associated with the web contents.
@@ -72,19 +74,25 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
     return state_.show_signin_error_callback;
   }
 
+  const OnSigninHeaderReceived& GetOnSigninHeaderReceived() {
+    return state_.on_signin_header_received_callback;
+  }
+
   // Initializes the DiceTabHelper for a new signin flow. Must be called once
   // per signin flow happening in the tab, when the signin URL is being loaded.
   // The `redirect_url` is used after enabling Sync or in case of errors ; it is
   // not used after a successful signin without sync, and in this case the
   // page will navigate to the `continue_url` parameter from `signin_url`.
-  void InitializeSigninFlow(const GURL& signin_url,
-                            signin_metrics::AccessPoint access_point,
-                            signin_metrics::Reason reason,
-                            signin_metrics::PromoAction promo_action,
-                            const GURL& redirect_url,
-                            bool record_signin_started_metrics,
-                            EnableSyncCallback enable_sync_callback,
-                            ShowSigninErrorCallback show_signin_error_callback);
+  void InitializeSigninFlow(
+      const GURL& signin_url,
+      signin_metrics::AccessPoint access_point,
+      signin_metrics::Reason reason,
+      signin_metrics::PromoAction promo_action,
+      const GURL& redirect_url,
+      bool record_signin_started_metrics,
+      EnableSyncCallback enable_sync_callback,
+      OnSigninHeaderReceived on_signin_header_received_callback,
+      ShowSigninErrorCallback show_signin_error_callback);
 
   // Returns true if this the tab is a re-usable chrome sign-in page (the signin
   // page is loading or loaded in the tab).
@@ -122,6 +130,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
     GURL redirect_url;
     GURL signin_url;
     EnableSyncCallback enable_sync_callback;
+    OnSigninHeaderReceived on_signin_header_received_callback;
     ShowSigninErrorCallback show_signin_error_callback;
 
     // By default the access point refers to web signin, as after a reset the

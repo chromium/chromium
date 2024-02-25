@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_LOCAL_NETWORK_COLLECTOR_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_LOCAL_NETWORK_COLLECTOR_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class WifiConfigurationSpecifics;
@@ -56,7 +56,7 @@ class LocalNetworkCollectorImpl
   void GetSyncableNetwork(const std::string& guid,
                           ProtoCallback callback) override;
 
-  absl::optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
+  std::optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
       const std::string& guid) override;
 
   void SetNetworkMetadataStore(
@@ -110,11 +110,9 @@ class LocalNetworkCollectorImpl
   GetNetworkFromProto(const sync_pb::WifiConfigurationSpecifics& proto);
   void OnFixAutoconnectComplete(bool success, const std::string& error);
 
-  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig, DanglingUntriaged>
       cros_network_config_;
-  raw_ptr<SyncedNetworkMetricsLogger, DanglingUntriaged | ExperimentalAsh>
-      metrics_recorder_;
+  raw_ptr<SyncedNetworkMetricsLogger, DanglingUntriaged> metrics_recorder_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
   std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>

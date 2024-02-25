@@ -2,52 +2,45 @@
 <head>
 <title>Test the media query "display-mode" features.</title>
 <script src="../../fullscreen/full-screen-test.js"></script>
+<script type="text/javascript" src="resources/media-utils.js"></script>
 <script>
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+  }
 
-    function log(m) {
-        document.getElementById('results').innerHTML += m + '<br>';
-    }
+  function testQueries() {
+    [
+      "(display-mode)",
+      "(display-mode: browser)",
+      "(display-mode: minimal-ui)",
+      "(display-mode: standalone)",
+      "(display-mode: fullscreen)",
+      "(display-mode: window-controls-overlay)",
+      "(display-mode: borderless)",
+    ].forEach(query => logMatchMediaQuery(query));
+  }
 
-    function testQueries() {
-        var queries = [
-            "(display-mode)",
-            "(display-mode: browser)",
-            "(display-mode: minimal-ui)",
-            "(display-mode: standalone)",
-            "(display-mode: fullscreen)",
-            "(display-mode: window-controls-overlay)",
-            "(display-mode: borderless)",
-        ];
-        for (var index=0; index < queries.length; index++) {
-            log("Query &quot;" + queries[index] + "&quot: " +
-                window.matchMedia(queries[index]).matches);
-        }
-    }
+  function runTests() {
+    var div = document.querySelector("div");
+    document.onwebkitfullscreenchange = function() {
+      log("------------- entered fullscreen -------------");
+      testQueries();
 
-    function runTests() {
-        var div = document.querySelector("div");
-        document.onwebkitfullscreenchange = function() {
-            log("------------- entered fullscreen -------------");
-            testQueries();
-
-            document.onwebkitfullscreenchange = function() {
-                log("------------- left fullscreen -------------");
-                testQueries();
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            }
-            document.exitFullscreen();
-        }
-        runWithKeyDown(function() {
-            log("------------- before entering fullscreen -------------");
-            testQueries();
-            div.webkitRequestFullscreen();
-        });
+      document.onwebkitfullscreenchange = function() {
+        log("------------- left fullscreen -------------");
+        testQueries();
+        if (window.testRunner)
+          testRunner.notifyDone();
+      }
+      document.exitFullscreen();
     }
+    runWithKeyDown(function() {
+      log("------------- before entering fullscreen -------------");
+      testQueries();
+      div.webkitRequestFullscreen();
+    });
+  }
 </script>
 </head>
 <body onload="runTests()">

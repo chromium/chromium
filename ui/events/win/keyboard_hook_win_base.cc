@@ -9,7 +9,7 @@
 namespace ui {
 
 KeyboardHookWinBase::KeyboardHookWinBase(
-    absl::optional<base::flat_set<DomCode>> dom_codes,
+    std::optional<base::flat_set<DomCode>> dom_codes,
     KeyEventCallback callback,
     bool enable_hook_registration)
     : KeyboardHookBase(std::move(dom_codes), std::move(callback)),

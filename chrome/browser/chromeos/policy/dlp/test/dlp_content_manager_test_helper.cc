@@ -8,7 +8,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
@@ -27,7 +27,7 @@ DlpContentManagerTestHelper::DlpContentManagerTestHelper() {
   manager_ = new DlpContentManagerLacros();
 #endif
   DCHECK(manager_);
-  reporting_manager_ = new DlpReportingManager();
+  reporting_manager_ = new data_controls::DlpReportingManager();
   DCHECK(reporting_manager_);
   manager_->SetReportingManagerForTesting(reporting_manager_);
   manager_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
@@ -43,15 +43,25 @@ DlpContentManagerTestHelper::~DlpContentManagerTestHelper() {
 
 void DlpContentManagerTestHelper::ChangeConfidentiality(
     content::WebContents* web_contents,
-    const DlpContentRestrictionSet& restrictions) {
+    DlpContentRestrictionSet restrictions) {
   DCHECK(manager_);
+  for (auto& restriction_lvl_url : restrictions.restrictions_) {
+    if (restriction_lvl_url.level != DlpRulesManager::Level::kNotSet) {
+      restriction_lvl_url.url = web_contents->GetLastCommittedURL();
+    }
+  }
   manager_->OnConfidentialityChanged(web_contents, restrictions);
 }
 
 void DlpContentManagerTestHelper::UpdateConfidentiality(
     content::WebContents* web_contents,
-    const DlpContentRestrictionSet& restrictions) {
+    DlpContentRestrictionSet restrictions) {
   DCHECK(manager_);
+  for (auto& restriction_lvl_url : restrictions.restrictions_) {
+    if (restriction_lvl_url.level != DlpRulesManager::Level::kNotSet) {
+      restriction_lvl_url.url = web_contents->GetLastCommittedURL();
+    }
+  }
   manager_->UpdateConfidentiality(web_contents, restrictions);
 }
 
@@ -95,7 +105,7 @@ DlpContentManagerTestHelper::GetRunningScreenShares() const {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<DlpContentManagerAsh::VideoCaptureInfo>
+std::optional<DlpContentManagerAsh::VideoCaptureInfo>
 DlpContentManagerTestHelper::GetRunningVideoCaptureInfo() const {
   DCHECK(manager_);
   return static_cast<DlpContentManagerAsh*>(manager_)
@@ -121,7 +131,8 @@ DlpContentManager* DlpContentManagerTestHelper::GetContentManager() const {
   return manager_;
 }
 
-DlpReportingManager* DlpContentManagerTestHelper::GetReportingManager() const {
+data_controls::DlpReportingManager*
+DlpContentManagerTestHelper::GetReportingManager() const {
   return manager_->reporting_manager_;
 }
 

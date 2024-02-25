@@ -50,7 +50,7 @@ class MockAndroidAppCommunication : public AndroidAppCommunication {
        const std::string& payment_request_id,
        const base::UnguessableToken& request_token,
        content::WebContents* web_contents,
-       const absl::optional<base::UnguessableToken>& twa_instance_identifier,
+       const std::optional<base::UnguessableToken>& twa_instance_identifier,
        InvokePaymentAppCallback callback),
       (override));
   MOCK_METHOD(void,

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -41,7 +42,9 @@ class ClientSideDetectionService;
 // notifies the browser that a URL was classified as phishing.  This
 // class relays this information to the client-side detection service
 // class which sends a ping to a server to validate the verdict.
-class ClientSideDetectionHost : public content::WebContentsObserver {
+class ClientSideDetectionHost
+    : public content::WebContentsObserver,
+      public permissions::PermissionRequestManager::Observer {
  public:
   // A callback via which the client of this component indicates whether the
   // primary account is signed in.
@@ -92,8 +95,13 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // From content::WebContentsObserver.  If we navigate away we cancel all
   // pending callbacks that could show an interstitial, and check to see whether
   // we should classify the new URL.
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
+
+  // permissions::PermissionRequestManager::Observer methods:
+  void OnPromptAdded() override;
+  void OnPermissionRequestManagerDestructed() override;
+
+  void RegisterPermissionRequestManager();
 
  protected:
   explicit ClientSideDetectionHost(
@@ -110,23 +118,32 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
  private:
   friend class ClientSideDetectionHostTestBase;
+  friend class ClientSideDetectionHostNotificationTest;
   class ShouldClassifyUrlRequest;
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            PrerenderShouldNotAffectClientSideDetection);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            ClassifyPrerenderedPageAfterActivation);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPolicyBrowserTest,
-                           PolicyEnabled);
 
   // Called when pre-classification checks are done for the phishing
-  // classifiers.
-  void OnPhishingPreClassificationDone(bool should_classify);
+  // classifiers. |request_type| is passed in to specify the process that
+  // requests the classification.
+  void OnPhishingPreClassificationDone(ClientSideDetectionType request_type,
+                                       bool should_classify);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result|
-  // is the outcome of the renderer classification.
-  void PhishingDetectionDone(mojom::PhishingDetectorResult result,
+  // is the outcome of the renderer classification. |request_type| is passed in
+  // to specify the process that requests the classification, which is passed
+  // along from |OnPhishingPreClassificationDone|.
+  void PhishingDetectionDone(ClientSideDetectionType request_type,
+                             mojom::PhishingDetectorResult result,
                              const std::string& verdict);
+
+  // |verdict| is an object parsed from the serialized string passed into
+  // |PhishingDetectionDone|.
+  void MaybeSendClientPhishingRequest(
+      std::unique_ptr<ClientPhishingRequest> verdict);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
   // the outcome of the renderer image embedding. The verdict is passed into
@@ -194,7 +211,7 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   scoped_refptr<BaseUIManager> ui_manager_;
   // Keep a handle to the latest classification request so that we can cancel
   // it if necessary.
-  // TODO(drubery): Make this a std::unique_ptr, for clearer lifetimes.
+  // TODO(andysjlim): Make this a std::unique_ptr, for clearer lifetimes.
   scoped_refptr<ShouldClassifyUrlRequest> classification_request_;
   // The current URL
   GURL current_url_;
@@ -227,6 +244,10 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // The remote for the currently active phishing image embedder.
   mojo::AssociatedRemote<mojom::PhishingImageEmbedderDetector>
       phishing_image_embedder_;
+
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      observation_{this};
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };

@@ -54,6 +54,8 @@ AwContentsLifecycleNotifier::AwContentsLifecycleNotifier(
   EnsureOnValidSequence();
   DCHECK(!g_instance);
   g_instance = this;
+  JNIEnv* env = AttachCurrentThread();
+  java_ref_.Reset(Java_AwContentsLifecycleNotifier_getInstance(env));
 }
 
 AwContentsLifecycleNotifier::~AwContentsLifecycleNotifier() {
@@ -75,7 +77,7 @@ void AwContentsLifecycleNotifier::OnWebViewCreated(
 
   if (first_created) {
     Java_AwContentsLifecycleNotifier_onFirstWebViewCreated(
-        AttachCurrentThread());
+        AttachCurrentThread(), java_ref_);
   }
 }
 
@@ -92,7 +94,7 @@ void AwContentsLifecycleNotifier::OnWebViewDestroyed(
 
   if (!HasAwContentsInstance()) {
     Java_AwContentsLifecycleNotifier_onLastWebViewDestroyed(
-        AttachCurrentThread());
+        AttachCurrentThread(), java_ref_);
   }
 }
 
@@ -193,7 +195,7 @@ void AwContentsLifecycleNotifier::UpdateAppState() {
     }
 
     Java_AwContentsLifecycleNotifier_onAppStateChanged(
-        AttachCurrentThread(), static_cast<jint>(app_state_));
+        AttachCurrentThread(), java_ref_, static_cast<jint>(app_state_));
   }
 }
 
@@ -209,6 +211,11 @@ AwContentsLifecycleNotifier::AwContentsData*
 AwContentsLifecycleNotifier::GetAwContentsData(const AwContents* aw_contents) {
   DCHECK(base::Contains(aw_contents_to_data_, aw_contents));
   return &aw_contents_to_data_.at(aw_contents);
+}
+
+void AwContentsLifecycleNotifier::InitForTesting() {  // IN-TEST
+  Java_AwContentsLifecycleNotifier_initialize(        // IN-TEST
+      AttachCurrentThread());
 }
 
 }  // namespace android_webview

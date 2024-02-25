@@ -12,7 +12,7 @@ namespace android {
 
 void JavaRuntime::GetMemoryUsage(uint64_t* total_memory,
                                  uint64_t* free_memory) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> runtime =
       JNI_Runtime::Java_Runtime_getRuntime(env);
   *total_memory = checked_cast<uint64_t>(

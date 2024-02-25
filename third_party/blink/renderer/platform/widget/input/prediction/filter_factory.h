@@ -63,7 +63,7 @@ class PLATFORM_EXPORT FilterFactory {
 
   // Returns the FilterType associated to the given filter
   // name if found, otherwise returns kFilterTypeEmpty
-  input_prediction::FilterType GetFilterTypeFromName(
+  static input_prediction::FilterType GetFilterTypeFromName(
       const std::string& filter_name);
 
   // Returns the filter designed by its type.

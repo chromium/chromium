@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#import "base/memory/raw_ptr.h"
 #include "ios/web/navigation/navigation_initiation_type.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #include "ios/web/navigation/synthesized_session_restore.h"
@@ -324,7 +325,7 @@ class NavigationManagerImpl final : public NavigationManager {
     WKBackForwardListItem* GetWKItemAtIndex(size_t index) const;
 
    private:
-    NavigationManagerImpl* navigation_manager_;
+    raw_ptr<NavigationManagerImpl> navigation_manager_;
     bool attached_to_web_view_;
 
     mutable GURL cached_visible_origin_url_;
@@ -403,10 +404,10 @@ class NavigationManagerImpl final : public NavigationManager {
   void FinalizeSessionRestore();
 
   // The primary delegate for this manager.
-  NavigationManagerDelegate* const delegate_;
+  const raw_ptr<NavigationManagerDelegate> delegate_;
 
   // The BrowserState that is associated with this instance.
-  BrowserState* const browser_state_;
+  const raw_ptr<BrowserState> browser_state_;
 
   // List of transient url rewriters added by `AddTransientURLRewriter()`.
   std::vector<BrowserURLRewriter::URLRewriter> transient_url_rewriters_;
@@ -450,6 +451,10 @@ class NavigationManagerImpl final : public NavigationManager {
   // history into WKWebView. It is set in Restore() and unset in
   // FinalizeSessionRestore().
   bool is_restore_session_in_progress_ = false;
+
+  // Whether this navigation manager is in the process of restoring session
+  // history into WKWebView using native restoration.
+  bool native_restore_in_progress_ = false;
 
   // Set to true when delegate_->GoToBackForwardListItem is being called, which
   // is useful to know when comparing the VisibleWebViewURL with the last

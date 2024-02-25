@@ -84,7 +84,7 @@ struct TrashLocation {
 };
 
 // Verify whether trash is enabled by feature flag and whether the enterprise
-// policy is not disabling the feature. The policy has dynamic refresh, so
+// policies are not disabling the feature. The policies have dynamic refresh, so
 // so this should be checked every time the operation this is guarding is
 // executed.
 bool IsTrashEnabledForProfile(Profile* profile);

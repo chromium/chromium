@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -66,8 +66,8 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
 
   base::RepeatingClosure close_dialog_closure_;
 
-  absl::optional<signin::AccessTokenInfo> oauth_access_token_;
-  absl::optional<std::string> initialize_edu_args_callback_;
+  std::optional<signin::AccessTokenInfo> oauth_access_token_;
+  std::optional<std::string> initialize_edu_args_callback_;
 
   std::string edu_account_email_;
 
@@ -78,7 +78,7 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
   // The terms of service version number.
   std::string terms_of_service_version_number_;
 
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // |in_error_state_| boolean tracks whether an error has occurred.
   // The error could happen when trying to access OAuth tokens.

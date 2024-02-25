@@ -185,7 +185,7 @@ TEST_F(PerformanceTest, AddLongTaskTiming) {
   Vector<String> entry_type_vec;
   entry_type_vec.push_back("longtask");
   options->setEntryTypes(entry_type_vec);
-  observer_->observe(options, exception_state);
+  observer_->observe(scope.GetScriptState(), options, exception_state);
 
   EXPECT_TRUE(base_->HasPerformanceObserverFor(PerformanceEntry::kLongTask));
   // Add a long task entry
@@ -207,7 +207,7 @@ TEST_F(PerformanceTest, BackForwardCacheRestoration) {
   Vector<String> entry_type_vec;
   entry_type_vec.push_back("back-forward-cache-restoration");
   options->setEntryTypes(entry_type_vec);
-  observer_->observe(options, exception_state);
+  observer_->observe(scope.GetScriptState(), options, exception_state);
 
   EXPECT_TRUE(base_->HasPerformanceObserverFor(
       PerformanceEntry::kBackForwardCacheRestoration));

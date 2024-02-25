@@ -9,40 +9,40 @@
 TEST(NotificationLaunchIdTest, SerializationTests) {
   {
     NotificationLaunchId id(NotificationHandler::Type::WEB_PERSISTENT,
-                            "notification_id", "Default", true,
+                            "notification_id", "Default", L"aumi", true,
                             GURL("https://example.com"));
     ASSERT_TRUE(id.is_valid());
-    EXPECT_EQ("0|0|Default|1|https://example.com/|notification_id",
+    EXPECT_EQ("0|0|Default|aumi|1|https://example.com/|notification_id",
               id.Serialize());
   }
 
   {
     NotificationLaunchId id(NotificationHandler::Type::WEB_PERSISTENT,
-                            "notification_id", "Default", true,
+                            "notification_id", "Default", L"aumi", true,
                             GURL("https://example.com"));
     id.set_button_index(0);
     ASSERT_TRUE(id.is_valid());
-    EXPECT_EQ("1|0|0|Default|1|https://example.com/|notification_id",
+    EXPECT_EQ("1|0|0|Default|aumi|1|https://example.com/|notification_id",
               id.Serialize());
   }
 
   {
     NotificationLaunchId id(NotificationHandler::Type::WEB_PERSISTENT,
-                            "notification_id", "Default", true,
+                            "notification_id", "Default", L"aumi", true,
                             GURL("https://example.com"));
     id.set_is_for_context_menu();
     ASSERT_TRUE(id.is_valid());
-    EXPECT_EQ("2|0|Default|1|https://example.com/|notification_id",
+    EXPECT_EQ("2|0|Default|aumi|1|https://example.com/|notification_id",
               id.Serialize());
   }
 
   {
     NotificationLaunchId id(NotificationHandler::Type::WEB_PERSISTENT,
-                            "notification_id", "Default", true,
+                            "notification_id", "Default", L"aumi", true,
                             GURL("https://example.com"));
     id.set_is_for_dismiss_button();
     ASSERT_TRUE(id.is_valid());
-    EXPECT_EQ("3|0|Default|1|https://example.com/|notification_id",
+    EXPECT_EQ("3|0|Default|aumi|1|https://example.com/|notification_id",
               id.Serialize());
   }
 }
@@ -50,7 +50,8 @@ TEST(NotificationLaunchIdTest, SerializationTests) {
 TEST(NotificationLaunchIdTest, ParsingTests) {
   // Input string as Windows passes it to us when you click on the notification.
   {
-    std::string encoded = "0|0|Default|1|https://example.com/|notification_id";
+    std::string encoded =
+        "0|0|Default|aumi|1|https://example.com/|notification_id";
     NotificationLaunchId id(encoded);
 
     ASSERT_TRUE(id.is_valid());
@@ -61,13 +62,14 @@ TEST(NotificationLaunchIdTest, ParsingTests) {
               id.notification_type());
     EXPECT_TRUE(id.incognito());
     EXPECT_EQ("Default", id.profile_id());
+    EXPECT_EQ(L"aumi", id.app_user_model_id());
     EXPECT_EQ("notification_id", id.notification_id());
   }
 
   // Extra pipe signs should be treated as part of the notification id.
   {
     std::string encoded =
-        "0|0|Default|1|https://example.com/|notification_id|Extra|Data";
+        "0|0|Default|aumi|1|https://example.com/|notification_id|Extra|Data";
     NotificationLaunchId id(encoded);
 
     ASSERT_TRUE(id.is_valid());
@@ -78,13 +80,14 @@ TEST(NotificationLaunchIdTest, ParsingTests) {
               id.notification_type());
     EXPECT_TRUE(id.incognito());
     EXPECT_EQ("Default", id.profile_id());
+    EXPECT_EQ(L"aumi", id.app_user_model_id());
     EXPECT_EQ("notification_id|Extra|Data", id.notification_id());
   }
 
   // Input string for when a button is pressed.
   {
     std::string encoded =
-        "1|0|0|Default|1|https://example.com/|notification_id";
+        "1|0|0|Default|aumi|1|https://example.com/|notification_id";
     NotificationLaunchId id(encoded);
 
     ASSERT_TRUE(id.is_valid());
@@ -95,6 +98,7 @@ TEST(NotificationLaunchIdTest, ParsingTests) {
               id.notification_type());
     EXPECT_TRUE(id.incognito());
     EXPECT_EQ("Default", id.profile_id());
+    EXPECT_EQ(L"aumi", id.app_user_model_id());
     EXPECT_EQ("notification_id", id.notification_id());
   }
 
@@ -102,7 +106,7 @@ TEST(NotificationLaunchIdTest, ParsingTests) {
   // id.
   {
     std::string encoded =
-        "1|0|0|Default|1|https://example.com/|notification_id|Extra|Data|";
+        "1|0|0|Default|aumi|1|https://example.com/|notification_id|Extra|Data|";
     NotificationLaunchId id(encoded);
 
     ASSERT_TRUE(id.is_valid());
@@ -113,12 +117,14 @@ TEST(NotificationLaunchIdTest, ParsingTests) {
               id.notification_type());
     EXPECT_TRUE(id.incognito());
     EXPECT_EQ("Default", id.profile_id());
+    EXPECT_EQ(L"aumi", id.app_user_model_id());
     EXPECT_EQ("notification_id|Extra|Data|", id.notification_id());
   }
 
   // Input string for when the context menu item is selected.
   {
-    std::string encoded = "2|0|Default|1|https://example.com/|notification_id";
+    std::string encoded =
+        "2|0|Default|aumi|1|https://example.com/|notification_id";
     NotificationLaunchId id(encoded);
 
     ASSERT_TRUE(id.is_valid());
@@ -129,12 +135,14 @@ TEST(NotificationLaunchIdTest, ParsingTests) {
               id.notification_type());
     EXPECT_TRUE(id.incognito());
     EXPECT_EQ("Default", id.profile_id());
+    EXPECT_EQ(L"aumi", id.app_user_model_id());
     EXPECT_EQ("notification_id", id.notification_id());
   }
 
   // Input string for when the context menu item is selected.
   {
-    std::string encoded = "3|0|Default|1|https://example.com/|notification_id";
+    std::string encoded =
+        "3|0|Default|aumi|1|https://example.com/|notification_id";
     NotificationLaunchId id(encoded);
 
     ASSERT_TRUE(id.is_valid());
@@ -145,6 +153,7 @@ TEST(NotificationLaunchIdTest, ParsingTests) {
               id.notification_type());
     EXPECT_TRUE(id.incognito());
     EXPECT_EQ("Default", id.profile_id());
+    EXPECT_EQ(L"aumi", id.app_user_model_id());
     EXPECT_EQ("notification_id", id.notification_id());
   }
 }
@@ -186,11 +195,11 @@ TEST(NotificationLaunchIdTest, ParsingErrorCases) {
 TEST(NotificationLaunchIdTest, GetProfileIdFromLaunchId) {
   // Given a valid launch id, the profile id can be obtained correctly.
   ASSERT_EQ(NotificationLaunchId::GetProfileIdFromLaunchId(
-                L"1|1|0|Default|0|https://example.com/|notification_id"),
+                L"1|1|0|Default|aumi|0|https://example.com/|notification_id"),
             "Default");
 
   // Given an invalid launch id, the profile id is set to an empty string.
   ASSERT_EQ(NotificationLaunchId::GetProfileIdFromLaunchId(
-                L"1|Default|0|https://example.com/|notification_id"),
+                L"1|Default|aumi|0|https://example.com/|notification_id"),
             "");
 }

@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SEGMENT_INFO_DATABASE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -16,7 +17,6 @@
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -35,14 +35,15 @@ class PredictionResult;
 class SegmentInfoDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
-  using SegmentInfoList = std::vector<std::pair<SegmentId, proto::SegmentInfo>>;
+  using SegmentInfoList =
+      std::vector<std::pair<SegmentId, const proto::SegmentInfo*>>;
   using MultipleSegmentInfoCallback =
       base::OnceCallback<void(std::unique_ptr<SegmentInfoList>)>;
   using SegmentInfoCallback =
-      base::OnceCallback<void(absl::optional<proto::SegmentInfo>)>;
+      base::OnceCallback<void(std::optional<proto::SegmentInfo>)>;
   using SegmentInfoProtoDb = leveldb_proto::ProtoDatabase<proto::SegmentInfo>;
   using TrainingDataCallback =
-      base::OnceCallback<void(absl::optional<proto::TrainingData>)>;
+      base::OnceCallback<void(std::optional<proto::TrainingData>)>;
 
   explicit SegmentInfoDatabase(std::unique_ptr<SegmentInfoProtoDb> database,
                                std::unique_ptr<SegmentInfoCache> cache);
@@ -70,9 +71,11 @@ class SegmentInfoDatabase {
                               ModelSource model_source,
                               SegmentInfoCallback callback);
 
-  virtual absl::optional<SegmentInfo> GetCachedSegmentInfo(
-      SegmentId segment_id,
-      ModelSource model_source);
+  // Gets the cached segment info. Segment info is always cached if available to
+  // the service, can be used as replacement for GetSegmentInfo(). Returns
+  // nullptr when not available.
+  virtual const SegmentInfo* GetCachedSegmentInfo(SegmentId segment_id,
+                                                  ModelSource model_source);
 
   // Called to get the training data for a given segment with given model source
   // and request ID. If delete_from_db is set to true, it will delete the
@@ -90,7 +93,7 @@ class SegmentInfoDatabase {
   // TODO(shaktisahu): How does the client know if a segment is to be deleted?
   virtual void UpdateSegment(SegmentId segment_id,
                              ModelSource model_source,
-                             absl::optional<proto::SegmentInfo> segment_info,
+                             std::optional<proto::SegmentInfo> segment_info,
                              SuccessCallback callback);
 
   // Called to save or update metadata for multiple segments in a single
@@ -108,7 +111,7 @@ class SegmentInfoDatabase {
   // be deleted.
   virtual void SaveSegmentResult(SegmentId segment_id,
                                  ModelSource model_source,
-                                 absl::optional<proto::PredictionResult> result,
+                                 std::optional<proto::PredictionResult> result,
                                  SuccessCallback callback);
 
   // Called to write partial training data for a given segment and model source.

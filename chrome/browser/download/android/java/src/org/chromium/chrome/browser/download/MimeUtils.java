@@ -4,19 +4,24 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Utility class for MIME type related operations.
- */
+/** Utility class for MIME type related operations. */
 public class MimeUtils {
     // MIME types for OMA downloads.
     public static final String OMA_DOWNLOAD_DESCRIPTOR_MIME = "application/vnd.oma.dd+xml";
@@ -28,16 +33,30 @@ public class MimeUtils {
 
     // Mime types that Android can't handle when tries to open the file. Chrome may deduct a better
     // mime type based on file extension.
-    private static final HashSet<String> GENERIC_MIME_TYPES = new HashSet<String>(Arrays.asList(
-            "text/plain", "application/octet-stream", "binary/octet-stream", "octet/stream",
-            "application/download", "application/force-download", "application/unknown"));
+    private static final HashSet<String> GENERIC_MIME_TYPES =
+            new HashSet<String>(
+                    Arrays.asList(
+                            "text/plain",
+                            "application/octet-stream",
+                            "binary/octet-stream",
+                            "octet/stream",
+                            "application/download",
+                            "application/force-download",
+                            "application/unknown"));
 
     // Set will be more expensive to initialize, so use an ArrayList here.
-    private static final List<String> MIME_TYPES_TO_OPEN = new ArrayList<String>(Arrays.asList(
-            MimeUtils.OMA_DOWNLOAD_DESCRIPTOR_MIME, "application/pdf", "application/x-x509-ca-cert",
-            "application/x-x509-user-cert", "application/x-x509-server-cert",
-            "application/x-pkcs12", "application/application/x-pem-file", "application/pkix-cert",
-            "application/x-wifi-config"));
+    private static final List<String> MIME_TYPES_TO_OPEN =
+            new ArrayList<String>(
+                    Arrays.asList(
+                            MimeUtils.OMA_DOWNLOAD_DESCRIPTOR_MIME,
+                            "application/pdf",
+                            "application/x-x509-ca-cert",
+                            "application/x-x509-user-cert",
+                            "application/x-x509-server-cert",
+                            "application/x-pkcs12",
+                            "application/application/x-pem-file",
+                            "application/pkix-cert",
+                            "application/x-wifi-config"));
 
     /**
      * If the given MIME type is null, or one of the "generic" types (text/plain
@@ -80,6 +99,35 @@ public class MimeUtils {
             if (index > 0) return filename.substring(index + 1);
         }
         return MimeTypeMap.getFileExtensionFromUrl(url);
+    }
+
+    /**
+     * Helper method to find apps that can open PDF file.
+     *
+     * @return A list of ResolveInfo that can open the PDF type.
+     */
+    public static List<ResolveInfo> getPdfIntentHandlers() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+
+        intent.setDataAndType(Uri.fromFile(new File("/empty.pdf")), "application/pdf");
+        return PackageManagerUtils.queryIntentActivities(intent, 0);
+    }
+
+    /**
+     * Helper method to get the app name for the first pdf viewer returned by
+     * queryIntentActivities().
+     *
+     * @return App name.
+     */
+    public static String getDefaultPdfViewerName() {
+        List<ResolveInfo> resolveInfos = getPdfIntentHandlers();
+        if (resolveInfos.size() > 0) {
+            return resolveInfos
+                    .get(0)
+                    .loadLabel(ContextUtils.getApplicationContext().getPackageManager())
+                    .toString();
+        }
+        return null;
     }
 
     /**

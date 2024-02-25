@@ -43,8 +43,13 @@ PasswordProtectionRequestIOS::PasswordProtectionRequestIOS(
                                 pps,
                                 request_timeout_in_ms),
       web_state_(web_state) {
-  request_canceler_ =
-      RequestCanceler::CreateRequestCanceler(AsWeakPtr(), web_state);
+  request_canceler_ = RequestCanceler::CreateRequestCanceler(
+      weak_factory_.GetWeakPtr(), web_state);
+}
+
+base::WeakPtr<PasswordProtectionRequest>
+PasswordProtectionRequestIOS::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void PasswordProtectionRequestIOS::MaybeLogPasswordReuseLookupEvent(

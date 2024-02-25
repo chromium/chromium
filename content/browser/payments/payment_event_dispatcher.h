@@ -41,7 +41,6 @@ class PaymentEventDispatcher {
       int64_t registration_id,
       const url::Origin& sw_origin,
       const std::string& payment_request_id,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       PaymentAppProvider::AbortCallback callback);
 
@@ -49,7 +48,6 @@ class PaymentEventDispatcher {
       int64_t registration_id,
       const url::Origin& sw_origin,
       const std::string& payment_request_id,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       payments::mojom::CanMakePaymentEventDataPtr event_data,
       PaymentAppProvider::CanMakePaymentCallback callback);
@@ -57,7 +55,6 @@ class PaymentEventDispatcher {
   void InvokePayment(
       int64_t registration_id,
       const url::Origin& sw_origin,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       payments::mojom::PaymentRequestEventDataPtr event_data,
       PaymentAppProvider::InvokePaymentAppCallback callback);

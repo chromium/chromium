@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] PerformanceEntry interface: attribute id
+  assert_true: The prototype object must have a property "id" expected true got false
+Harness: the test ran to completion.
+

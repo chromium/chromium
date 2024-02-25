@@ -8,13 +8,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareProfileInfoProvider;
 
@@ -32,7 +33,8 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
 
     // Returns all FakeNearbyShareCertificateManager instances created by
     // CreateInstance().
-    std::vector<FakeNearbyShareCertificateManager*>& instances() {
+    std::vector<raw_ptr<FakeNearbyShareCertificateManager, VectorExperimental>>&
+    instances() {
       return instances_;
     }
 
@@ -48,7 +50,8 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
         NearbyShareClientFactory* client_factory,
         const base::Clock* clock) override;
 
-    std::vector<FakeNearbyShareCertificateManager*> instances_;
+    std::vector<raw_ptr<FakeNearbyShareCertificateManager, VectorExperimental>>
+        instances_;
   };
 
   class GetDecryptedPublicCertificateCall {
@@ -74,7 +77,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   ~FakeNearbyShareCertificateManager() override;
 
   // NearbyShareCertificateManager:
-  std::vector<nearbyshare::proto::PublicCertificate>
+  std::vector<nearby::sharing::proto::PublicCertificate>
   GetPrivateCertificatesAsPublicCertificates(
       nearby_share::mojom::Visibility visibility) override;
   void GetDecryptedPublicCertificate(
@@ -105,7 +108,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   // NearbyShareCertificateManager:
   void OnStart() override;
   void OnStop() override;
-  absl::optional<NearbySharePrivateCertificate> GetValidPrivateCertificate(
+  std::optional<NearbySharePrivateCertificate> GetValidPrivateCertificate(
       nearby_share::mojom::Visibility visibility) const override;
   void UpdatePrivateCertificateInStorage(
       const NearbySharePrivateCertificate& private_certificate) override;

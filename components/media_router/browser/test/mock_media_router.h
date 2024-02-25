@@ -53,38 +53,34 @@ class MockMediaRouter : public MediaRouterBase {
                    const url::Origin& origin,
                    content::WebContents* web_contents,
                    MediaRouteResponseCallback callback,
-                   base::TimeDelta timeout,
-                   bool incognito) override {
+                   base::TimeDelta timeout) override {
     CreateRouteInternal(source, sink_id, origin, web_contents, callback,
-                        timeout, incognito);
+                        timeout);
   }
-  MOCK_METHOD7(CreateRouteInternal,
+  MOCK_METHOD6(CreateRouteInternal,
                void(const MediaSource::Id& source,
                     const MediaSink::Id& sink_id,
                     const url::Origin& origin,
                     content::WebContents* web_contents,
                     MediaRouteResponseCallback& callback,
-                    base::TimeDelta timeout,
-                    bool incognito));
+                    base::TimeDelta timeout));
 
   void JoinRoute(const MediaSource::Id& source,
                  const std::string& presentation_id,
                  const url::Origin& origin,
                  content::WebContents* web_contents,
                  MediaRouteResponseCallback callback,
-                 base::TimeDelta timeout,
-                 bool incognito) override {
+                 base::TimeDelta timeout) override {
     JoinRouteInternal(source, presentation_id, origin, web_contents, callback,
-                      timeout, incognito);
+                      timeout);
   }
-  MOCK_METHOD7(JoinRouteInternal,
+  MOCK_METHOD6(JoinRouteInternal,
                void(const MediaSource::Id& source,
                     const std::string& presentation_id,
                     const url::Origin& origin,
                     content::WebContents* web_contents,
                     MediaRouteResponseCallback& callback,
-                    base::TimeDelta timeout,
-                    bool incognito));
+                    base::TimeDelta timeout));
 
   MOCK_METHOD1(DetachRoute, void(MediaRoute::Id route_id));
   MOCK_METHOD1(TerminateRoute, void(const MediaRoute::Id& route_id));

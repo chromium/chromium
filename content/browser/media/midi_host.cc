@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/process/process.h"
 #include "base/trace_event/trace_event.h"
-#include "components/permissions/features.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -126,8 +125,7 @@ void MidiHost::ReceiveMidiData(uint32_t port,
     if (message.empty())
       break;
 
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kBlockMidiByDefault)) {
+    if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
       // MIDI devices may send messages even if the renderer doesn't have
       // permission to receive them. Don't kill the renderer as SendData() does.
       if (!has_midi_permission_) {
@@ -234,8 +232,7 @@ void MidiHost::SendData(uint32_t port,
   // Blink running in a renderer checks permission to raise a SecurityError
   // in JavaScript. The actual permission check for security purposes
   // happens here in the browser process.
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kBlockMidiByDefault)) {
+  if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
     if (!has_midi_permission_ && !base::Contains(data, kSysExByte)) {
       has_midi_permission_ =
           ChildProcessSecurityPolicyImpl::GetInstance()->CanSendMidiMessage(
@@ -282,7 +279,8 @@ void MidiHost::CallClient(Method method, Params... params) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&MidiHost::CallClient<Method, Params...>,
-                                  AsWeakPtr(), method, std::move(params)...));
+                                  weak_ptr_factory_.GetWeakPtr(), method,
+                                  std::move(params)...));
     return;
   }
   (midi_client_.get()->*method)(std::move(params)...);

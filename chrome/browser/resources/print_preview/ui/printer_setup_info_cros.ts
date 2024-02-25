@@ -7,11 +7,13 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './print_preview_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsContext, PrintPreviewLaunchSourceBucket} from '../metrics.js';
-import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
+import type {NativeLayer} from '../native_layer.js';
+import {NativeLayerImpl} from '../native_layer.js';
+import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {getTemplate} from './printer_setup_info_cros.html.js';
 
@@ -25,7 +27,12 @@ import {getTemplate} from './printer_setup_info_cros.html.js';
 
 const PrintPreviewPrinterSetupInfoCrosElementBase = I18nMixin(PolymerElement);
 
-export enum PrinterSetupInfoMetricsSource {
+// Minimum values used to hide the illustration when the preview area is reduced
+// to a small size.
+const MIN_SHOW_ILLUSTRATION_HEIGHT = 400;
+const MIN_SHOW_ILLUSTRATION_WIDTH = 250;
+
+export enum PrinterSetupInfoInitiator {
   PREVIEW_AREA,
   DESTINATION_DIALOG_CROS,
 }
@@ -75,20 +82,45 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
         value: PrinterSetupInfoMessageType.NO_PRINTERS,
       },
 
-      metricsSource: Number,
+      initiator: Number,
+
+      showManagePrintersButton: Boolean,
+
+      showIllustration: Boolean,
     };
   }
 
   messageType: PrinterSetupInfoMessageType;
-  private metricsSource: PrinterSetupInfoMetricsSource;
+  private initiator: PrinterSetupInfoInitiator;
   private nativeLayer: NativeLayer;
   private metricsContext: MetricsContext;
+  private showManagePrintersButton: boolean = false;
+  private showIllustration: boolean = true;
+  private resizeObserver: ResizeObserver;
 
   override connectedCallback() {
     super.connectedCallback();
     this.nativeLayer = NativeLayerImpl.getInstance();
     this.metricsContext =
         MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
+    NativeLayerCrosImpl.getInstance().getShowManagePrinters().then(
+        (show: boolean) => {
+          this.showManagePrintersButton = show;
+        });
+
+    // If this is Print Preview, observe the window resizing to know when to
+    // hide the illustration.
+    if (this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA) {
+      this.startResizeObserver();
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    if (this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA) {
+      this.resizeObserver.disconnect();
+    }
   }
 
   private getMessageDetail(): string {
@@ -107,12 +139,12 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
 
   private onManagePrintersClicked(): void {
     this.nativeLayer.managePrinters();
-    switch (this.metricsSource) {
-      case PrinterSetupInfoMetricsSource.PREVIEW_AREA:
+    switch (this.initiator) {
+      case PrinterSetupInfoInitiator.PREVIEW_AREA:
         this.metricsContext.record(
             PrintPreviewLaunchSourceBucket.PREVIEW_AREA_CONNECTION_ERROR);
         break;
-      case PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS:
+      case PrinterSetupInfoInitiator.DESTINATION_DIALOG_CROS:
         // `<print-preview-printer-setup-info-cros>` is only displayed when
         // there are no printers.
         this.metricsContext.record(
@@ -123,8 +155,47 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
     }
   }
 
-  setMetricsSourceForTesting(source: PrinterSetupInfoMetricsSource): void {
-    this.metricsSource = source;
+  private setShowIllustration(): void {
+    assert(this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA);
+
+    // Only show the illustration if the parent element's width and height are
+    // wide enough.
+    const parentDiv = this.getPreviewAreaParentDiv();
+    this.showIllustration =
+        parentDiv.offsetHeight >= MIN_SHOW_ILLUSTRATION_HEIGHT &&
+        parentDiv.offsetWidth >= MIN_SHOW_ILLUSTRATION_WIDTH;
+  }
+
+  private getPreviewAreaParentDiv(): HTMLElement {
+    assert(this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA);
+
+    const parentShadowRoot = this.shadowRoot!.host.getRootNode() as ShadowRoot;
+    assert(parentShadowRoot);
+    const previewContainer =
+        parentShadowRoot!.querySelector<HTMLElement>('.preview-area-message');
+    assert(previewContainer);
+    return previewContainer;
+  }
+
+  private startResizeObserver(): void {
+    // Set timeout to 0 to delay the callback action to the next event cycle.
+    this.resizeObserver = new ResizeObserver(
+        () => setTimeout(() => this.setShowIllustration(), 0));
+    this.resizeObserver.observe(this.getPreviewAreaParentDiv());
+  }
+
+  setInitiatorForTesting(
+      initiator: PrinterSetupInfoInitiator,
+      startResizeObserver: boolean): void {
+    this.initiator = initiator;
+    if (this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA) {
+      if (startResizeObserver) {
+        this.startResizeObserver();
+      } else {
+        // Most tests don't need an resize observer with an active callback.
+        this.resizeObserver = new ResizeObserver(() => {});
+      }
+    }
   }
 }
 

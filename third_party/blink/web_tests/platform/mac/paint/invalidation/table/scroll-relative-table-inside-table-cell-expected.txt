@@ -1,14 +1,14 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1566, 1781],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "transform": 1
     },
     {
-      "name": "LayoutNGTableCell (relative positioned) TD id='cellToScroll' class='relative'",
+      "name": "LayoutTableCell (relative positioned) TD id='cellToScroll' class='relative'",
       "position": [2, 2],
       "bounds": [435, 450],
       "drawsContent": false,
@@ -28,19 +28,9 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='relative red'",
+      "name": "LayoutTableCell (relative positioned) TD id='cellToScroll' class='relative'",
       "position": [2, 2],
-      "bounds": [450, 450],
-      "contentsOpaque": true,
-      "backgroundColor": "#FF0000",
-      "transform": 3
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='absolute green'",
-      "position": [502, 2],
-      "bounds": [450, 450],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
+      "bounds": [950, 450],
       "transform": 3
     },
     {
@@ -56,7 +46,7 @@
       "contentsOpaque": true
     },
     {
-      "name": "Scroll corner of LayoutNGView #document",
+      "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
       "bounds": [15, 15]
     }

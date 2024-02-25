@@ -22,7 +22,8 @@ class HeadlessWindowParentingClient
   ~HeadlessWindowParentingClient() override;
 
   aura::Window* GetDefaultParent(aura::Window* window,
-                                 const gfx::Rect& bounds) override;
+                                 const gfx::Rect& bounds,
+                                 const int64_t display) override;
 
  private:
   raw_ptr<aura::Window> root_window_;  // Not owned.

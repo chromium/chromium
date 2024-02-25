@@ -27,8 +27,8 @@ PrefService* local_state() {
 
 ArcVmmSwapScheduler::ArcVmmSwapScheduler(
     base::RepeatingCallback<void(bool)> swap_callback,
-    absl::optional<base::TimeDelta> minimum_swapout_interval,
-    absl::optional<base::TimeDelta> swappable_checking_period,
+    std::optional<base::TimeDelta> minimum_swapout_interval,
+    std::optional<base::TimeDelta> swappable_checking_period,
     std::unique_ptr<PeaceDurationProvider> peace_duration_provider)
     : swap_callback_(swap_callback) {
   // Set callback to disable vmm-swap feature immdiately after the ARC get

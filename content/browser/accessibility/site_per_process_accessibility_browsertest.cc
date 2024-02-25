@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -15,9 +14,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/site_per_process_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -25,12 +21,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/render_document_feature.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/accessibility/ax_mode.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -80,7 +78,7 @@ class MAYBE_SitePerProcessAccessibilityBrowserTest
 IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
                        CrossSiteIframeAccessibility) {
   // Enable full accessibility for all current and future WebContents.
-  BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -149,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
 IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
                        DISABLED_TwoCrossSiteNavigations) {
   // Enable full accessibility for all current and future WebContents.
-  BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -179,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
 IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
                        RemoteToLocalMainFrameNavigation) {
   // Enable full accessibility for all current and future WebContents.
-  BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -223,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(
     MAYBE_SitePerProcessAccessibilityDeviceScaleFactorBrowserTest,
     CrossSiteIframeCoordinates) {
   // Enable full accessibility for all current and future WebContents.
-  BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

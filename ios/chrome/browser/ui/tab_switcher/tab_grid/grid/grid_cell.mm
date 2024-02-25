@@ -8,11 +8,13 @@
 #import <ostream>
 
 #import "base/check.h"
+#import "base/check_op.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -115,7 +117,7 @@ void PositionView(UIView* view, CGPoint point) {
     snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIButton* closeTapTargetButton =
-        [UIButton buttonWithType:UIButtonTypeCustom];
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
     closeTapTargetButton.translatesAutoresizingMaskIntoConstraints = NO;
     [closeTapTargetButton addTarget:self
                              action:@selector(closeButtonTapped:)
@@ -203,7 +205,6 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  self.itemIdentifier = nil;
   self.title = nil;
   self.titleHidden = NO;
   self.icon = nil;
@@ -264,6 +265,15 @@ void PositionView(UIView* view, CGPoint point) {
   }
 
   _theme = theme;
+}
+
+- (void)didMoveToWindow {
+  if (self.window) {
+    if (self.theme == GridThemeLight) {
+      self.overrideUserInterfaceStyle =
+          self.window.traitCollection.userInterfaceStyle;
+    }
+  }
 }
 
 - (void)setIcon:(UIImage*)icon {

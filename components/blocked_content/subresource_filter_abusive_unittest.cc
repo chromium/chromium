@@ -96,7 +96,10 @@ class SubresourceFilterAbusiveTest
         blocked_content::SafeBrowsingTriggeredPopupBlocker::FromWebContents(
             web_contents());
   }
-
+  void TearDown() override {
+    popup_blocker_ = nullptr;
+    subresource_filter::SubresourceFilterTestHarness::TearDown();
+  }
   void ConfigureUrl(const GURL& url) {
     safe_browsing::ThreatMetadata metadata;
     metadata.subresource_filter_match = GetMatch(abusive_level_, bas_level_);
@@ -117,8 +120,8 @@ class SubresourceFilterAbusiveTest
   MetadataLevel bas_level_ = METADATA_NONE;
   bool enable_adblock_on_abusive_sites_ = false;
 
-  raw_ptr<blocked_content::SafeBrowsingTriggeredPopupBlocker, DanglingUntriaged>
-      popup_blocker_ = nullptr;
+  raw_ptr<blocked_content::SafeBrowsingTriggeredPopupBlocker> popup_blocker_ =
+      nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_features_;

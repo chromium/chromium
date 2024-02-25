@@ -54,8 +54,8 @@ class WaylandRelativePointerDelegate : public RelativePointerDelegate {
   }
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<Pointer, ExperimentalAsh> pointer_;
+  const raw_ptr<wl_resource> resource_;
+  raw_ptr<Pointer> pointer_;
 };
 
 void relative_pointer_destroy(wl_client* client, wl_resource* resource) {

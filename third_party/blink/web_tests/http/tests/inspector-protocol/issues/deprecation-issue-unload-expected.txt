@@ -1,0 +1,21 @@
+Tests that unload deprecation issues are reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 1
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : UnloadHandler
+            }
+        }
+    }
+}
+

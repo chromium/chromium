@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 # Minimal Java library for the DownloadFileProvider which will be included in
 # the base module.
@@ -47,6 +48,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogProperties.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogViewBinder.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/InsecureDownloadDialog.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadCustomView.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialog.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialogViewBinder.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfig.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfigHelper.java",
@@ -57,6 +62,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/interstitial/NewDownloadTabProvider.java",
     "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorFactory.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadDirectoryAdapter.java",
+    "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationHelperImpl.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreference.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceAdapter.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceDialog.java",
@@ -67,7 +73,6 @@ android_library("java") {
     ":file_provider_java",
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
@@ -96,6 +101,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
@@ -193,13 +199,14 @@ robolectric_library("junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//net/android:net_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -216,6 +223,7 @@ android_resources("java_resources") {
     "java/res/layout/download_location_preference_item.xml",
     "java/res/layout/download_location_spinner_dropdown_item.xml",
     "java/res/layout/download_location_spinner_item.xml",
+    "java/res/layout/open_download_dialog.xml",
     "java/res/values-v17/dimens.xml",
     "java/res/values-v17/styles.xml",
     "java/res/xml/download_preferences.xml",

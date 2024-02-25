@@ -4,8 +4,12 @@
 
 static_library("renderer") {
   sources = [
+    "a11y_utils.cc",
+    "a11y_utils.h",
     "autofill_agent.cc",
     "autofill_agent.h",
+    "form_autofill_issues.cc",
+    "form_autofill_issues.h",
     "form_autofill_util.cc",
     "form_autofill_util.h",
     "form_cache.cc",
@@ -54,15 +58,20 @@ static_library("renderer") {
     "//third_party/re2",
     "//ui/base",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
     "autofill_agent_test_api.h",
+    "autofill_renderer_test.cc",
+    "autofill_renderer_test.h",
     "focus_test_utils.cc",
     "focus_test_utils.h",
     "form_cache_test_api.h",
+    "form_tracker_test_api.h",
     "test_password_autofill_agent.cc",
     "test_password_autofill_agent.h",
     "test_utils.cc",
@@ -72,6 +81,8 @@ static_library("test_support") {
   public_deps = [
     ":renderer",
     "//base",
+    "//components/autofill/content/common/mojom",
+    "//content/test:test_support",
   ]
   deps = [
     "//components/autofill/content/renderer",
@@ -98,5 +109,33 @@ source_set("unit_tests") {
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/common",
     "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [
+    "a11y_utils_browsertest.cc",
+    "autofill_agent_browsertest.cc",
+    "autofill_agent_form_interaction_browsertest.cc",
+    "form_autofill_issues_browsertest.cc",
+    "form_autofill_util_browsertest.cc",
+    "form_cache_browsertest.cc",
+    "form_tracker_browsertest.cc",
+    "html_based_username_detector_browsertest.cc",
+    "password_form_conversion_utils_browsertest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/content/common/mojom",
+    "//components/autofill/core/common",
+    "//content/public/renderer",
+    "//google_apis:google_apis",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
   ]
 }

@@ -17,6 +17,7 @@
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 using content::BrowserThread;
 
@@ -90,7 +91,7 @@ void SyncValueStoreCache::RunWithValueStoreForExtension(
   std::move(callback).Run(backend->GetStorage(extension->id()));
 }
 
-void SyncValueStoreCache::DeleteStorageSoon(const std::string& extension_id) {
+void SyncValueStoreCache::DeleteStorageSoon(const ExtensionId& extension_id) {
   DCHECK(IsOnBackendSequence());
   app_backend_->DeleteStorage(extension_id);
   extension_backend_->DeleteStorage(extension_id);

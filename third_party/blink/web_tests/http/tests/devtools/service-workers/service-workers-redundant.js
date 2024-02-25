@@ -6,13 +6,13 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`ServiceWorkers must be shown correctly even if there is a redundant worker.\n`);
-  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
 
   const scriptURL = 'http://127.0.0.1:8000/devtools/service-workers/resources/changing-worker.php';
@@ -21,9 +21,9 @@ import {ConsoleTestRunner} from 'console_test_runner';
   let step = 0;
   let firstVersionId = -1;
   let secondVersionId = -1;
-  Resources.ServiceWorkersView.setThrottleDisabledForDebugging(true);
+  Application.ServiceWorkersView.setThrottleDisabledForDebugging(true);
 
-  TestRunner.addSniffer(Resources.ServiceWorkersView.prototype, 'updateRegistration', updateRegistration, true);
+  TestRunner.addSniffer(Application.ServiceWorkersView.ServiceWorkersView.prototype, 'updateRegistration', updateRegistration, true);
   function updateRegistration(registration) {
     if (registration.scopeURL != scope)
       return;
@@ -61,6 +61,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
       TestRunner.completeTest();
     }
   }
-  UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
+  Application.ResourcesPanel.ResourcesPanel.instance().sidebar.serviceWorkersTreeElement.select();
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
 })();

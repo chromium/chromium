@@ -26,9 +26,7 @@ class BackgroundNetworkStatusListener implements NetworkChangeNotifierAutoDetect
     private final Observer mObserver;
     private Handler mMainThreadHandler = new Handler(ThreadUtils.getUiThreadLooper());
 
-    /**
-     * Observer interface to receive network change events on the main thread.
-     */
+    /** Observer interface to receive network change events on the main thread. */
     interface Observer {
         /**
          * Called when {@link BackgroundNetworkStatusListener} is initialized on background thread.
@@ -70,15 +68,20 @@ class BackgroundNetworkStatusListener implements NetworkChangeNotifierAutoDetect
         mNotifier = sAutoDetectFactory.create(this, new RegistrationPolicyAlwaysRegister());
 
         // Update the connection type immediately on main thread.
-        @ConnectionType
-        int connectionType = getCurrentConnectionType();
-        runOnMainThread(() -> { mObserver.onNetworkStatusReady(connectionType); });
+        @ConnectionType int connectionType = getCurrentConnectionType();
+        runOnMainThread(
+                () -> {
+                    mObserver.onNetworkStatusReady(connectionType);
+                });
     }
 
     @ConnectionType
     int getCurrentConnectionType() {
         ThreadUtils.assertOnBackgroundThread();
         assert mNotifier != null;
+
+        // TODO(crbug/1493005): remove this call if it is not necessary.
+        mNotifier.updateCurrentNetworkState();
         return mNotifier.getCurrentNetworkState().getConnectionType();
     }
 
@@ -93,23 +96,30 @@ class BackgroundNetworkStatusListener implements NetworkChangeNotifierAutoDetect
         mMainThreadHandler.post(runnable);
     }
 
-    /**
-     * {@link NetworkChangeNotifierAutoDetect.Observer} implementation.
-     */
+    /** {@link NetworkChangeNotifierAutoDetect.Observer} implementation. */
     @Override
     public void onConnectionTypeChanged(int newConnectionType) {
-        runOnMainThread(() -> { mObserver.onConnectionTypeChanged(newConnectionType); });
+        runOnMainThread(
+                () -> {
+                    mObserver.onConnectionTypeChanged(newConnectionType);
+                });
     }
+
     @Override
     public void onConnectionCostChanged(int newConnectionCost) {}
+
     @Override
     public void onConnectionSubtypeChanged(int newConnectionSubtype) {}
+
     @Override
     public void onNetworkConnect(long netId, int connectionType) {}
+
     @Override
     public void onNetworkSoonToDisconnect(long netId) {}
+
     @Override
     public void onNetworkDisconnect(long netId) {}
+
     @Override
     public void purgeActiveNetworkList(long[] activeNetIds) {}
 }

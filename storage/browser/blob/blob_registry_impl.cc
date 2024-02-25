@@ -283,7 +283,7 @@ void BlobRegistryImpl::BlobUnderConstruction::StartTransportation(
     // requested asynchronously later again anyway.
     for (auto& entry : elements_) {
       if (entry.element->is_bytes())
-        entry.element->get_bytes()->embedded_data = absl::nullopt;
+        entry.element->get_bytes()->embedded_data = std::nullopt;
     }
   }
 

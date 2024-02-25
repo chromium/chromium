@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -19,6 +21,8 @@
 #include "chromeos/ash/services/secure_channel/connection_details.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 
 namespace ash::secure_channel {
 
@@ -66,6 +70,34 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
           FailureDetailType>::ConnectionSuccessCallback success_callback,
       const typename ConnectToDeviceOperation<
           FailureDetailType>::ConnectionFailedCallback& failure_callback) = 0;
+
+  void OnBleDiscoveryStateChanged(
+      mojom::DiscoveryResult discovery_result,
+      std::optional<mojom::DiscoveryErrorCode> potential_result) {
+    for (auto it = id_to_request_map_.begin();
+         it != id_to_request_map_.end();) {
+      auto it_copy = it++;
+      it_copy->second->HandleBleDiscoveryStateChange(discovery_result,
+                                                     potential_result);
+    }
+  }
+  void OnNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) {
+    for (auto it = id_to_request_map_.begin();
+         it != id_to_request_map_.end();) {
+      auto it_copy = it++;
+      it_copy->second->HandleNearbyConnectionChange(step, result);
+    }
+  }
+  void OnSecureChannelStateChanged(
+      mojom::SecureChannelState secure_channel_state) {
+    for (auto it = id_to_request_map_.begin();
+         it != id_to_request_map_.end();) {
+      auto it_copy = it++;
+      it_copy->second->HandleSecureChannelChanged(secure_channel_state);
+    }
+  }
 
  private:
   // ConnectionAttempt<FailureDetailType>:

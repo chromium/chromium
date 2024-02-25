@@ -11,8 +11,12 @@ import java.lang.annotation.RetentionPolicy;
 
 // Moving to ./feed/
 @Deprecated
-@IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED,
-        StreamType.SINGLE_WEB_FEED})
+@IntDef({
+    StreamType.UNSPECIFIED,
+    StreamType.FOR_YOU,
+    StreamType.WEB_FEED,
+    StreamType.SINGLE_WEB_FEED
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface StreamType {
     int UNSPECIFIED = 0;

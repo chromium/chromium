@@ -46,7 +46,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
 namespace enterprise_connectors {
@@ -93,18 +93,6 @@ constexpr char kBlockingScansForMalware[] = R"(
 })";
 
 constexpr char kNothingEnabled[] = R"({ "service_provider": "google" })";
-
-constexpr char kLocalBlockingScansForDlpAndMalware[] = R"(
-{
-  "service_provider": "local_user_agent",
-  "enable": [
-    {
-      "url_list": ["*"],
-      "tags": ["dlp", "malware"]
-    }
-  ],
-  "block_until_verdict": 1
-})";
 
 // Helpers to get text with sizes relative to the minimum required size of 100
 // bytes for scans to trigger.
@@ -600,7 +588,7 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
   std::map<base::FilePath, ContentAnalysisResponse> failures_;
 
   // DLP response to ovewrite in the callback if present.
-  absl::optional<ContentAnalysisResponse> dlp_response_ = absl::nullopt;
+  std::optional<ContentAnalysisResponse> dlp_response_ = std::nullopt;
 };
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, Empty) {
@@ -1410,19 +1398,27 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, EmptyWait) {
 // test params:
 // 0: upload result from binary upload service.
 // 1: whether an cloud analysis is done.
+// 2: whether to fail open.
 class ContentAnalysisDelegateResultHandlingTest
     : public BaseTest,
       public testing::WithParamInterface<
-          std::tuple<safe_browsing::BinaryUploadService::Result, bool>> {
+          std::tuple<safe_browsing::BinaryUploadService::Result, bool, bool>> {
  public:
   ContentAnalysisDelegateResultHandlingTest() = default;
 
   void SetUp() override {
     BaseTest::SetUp();
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), FILE_ATTACHED,
-        is_cloud() ? kBlockingScansForDlpAndMalware
-                   : kLocalBlockingScansForDlpAndMalware);
+    std::string pref = base::StringPrintf(R"(
+    {
+      "service_provider": "%s",
+      "enable": [{"url_list": ["*"], "tags": ["dlp", "malware"]}],
+      "block_until_verdict": 1,
+      "default_action": "%s"
+    })",
+                                          service_provider_setting(),
+                                          default_action_setting());
+    enterprise_connectors::test::SetAnalysisConnector(profile_->GetPrefs(),
+                                                      FILE_ATTACHED, pref);
 
     ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
         &test::FakeContentAnalysisDelegate::Create, run_loop_.QuitClosure(),
@@ -1440,6 +1436,16 @@ class ContentAnalysisDelegateResultHandlingTest
 
   bool is_cloud() const { return std::get<1>(GetParam()); }
 
+  const char* service_provider_setting() const {
+    return is_cloud() ? "google" : "local_system_agent";
+  }
+
+  bool should_fail_closed() const { return std::get<2>(GetParam()); }
+
+  const char* default_action_setting() const {
+    return should_fail_closed() ? "block" : "allow";
+  }
+
   ContentAnalysisResponse ConnectorStatusCallback(const std::string& contents,
                                                   const base::FilePath& path) {
     return test::FakeContentAnalysisDelegate::SuccessfulResponse(
@@ -1449,6 +1455,18 @@ class ContentAnalysisDelegateResultHandlingTest
  protected:
   ScopedSetDMToken scoped_dm_token_{
       policy::DMToken::CreateValidToken(kDmToken)};
+
+  bool ResultIsFailClosed(safe_browsing::BinaryUploadService::Result result) {
+    return result ==
+               safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE ||
+           result == safe_browsing::BinaryUploadService::Result::TIMEOUT ||
+           result == safe_browsing::BinaryUploadService::Result::
+                         FAILED_TO_GET_TOKEN ||
+           result ==
+               safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS ||
+           result == safe_browsing::BinaryUploadService::Result::UNKNOWN;
+  }
+
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // This installs a fake SDK manager that creates fake SDK clients when
   // its GetClient() method is called. This is needed so that calls to
@@ -1491,8 +1509,16 @@ TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
   RunUntilDone();
   EXPECT_TRUE(called);
 
-  EXPECT_EQ(is_cloud(), test::FakeContentAnalysisDelegate::WasDialogShown());
-  EXPECT_NE(is_cloud(), test::FakeContentAnalysisDelegate::WasDialogCanceled());
+  // Dialog should be shown for fail-close cases, regardless of local or cloud,
+  // otherwise dialog should be hidden for local analysis.
+  if (ResultIsFailClosed(result()) && should_fail_closed()) {
+    EXPECT_TRUE(test::FakeContentAnalysisDelegate::WasDialogShown());
+    EXPECT_FALSE(test::FakeContentAnalysisDelegate::WasDialogCanceled());
+  } else {
+    EXPECT_EQ(is_cloud(), test::FakeContentAnalysisDelegate::WasDialogShown());
+    EXPECT_NE(is_cloud(),
+              test::FakeContentAnalysisDelegate::WasDialogCanceled());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1508,7 +1534,156 @@ INSTANTIATE_TEST_SUITE_P(
             safe_browsing::BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
             safe_browsing::BinaryUploadService::Result::UNAUTHORIZED,
             safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED),
+        testing::Bool(),
         testing::Bool()));
+
+// The following tests should only be executed on the OS that support LCAC.
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+class ContentAnalysisDelegateWithLocalClient : public BaseTest {
+ public:
+  ContentAnalysisDelegateWithLocalClient() = default;
+
+ protected:
+  FakeContentAnalysisSdkManager sdk_manager_;
+
+  void SetLocalPolicies(bool should_fail_open) {
+    std::string pref = base::StringPrintf(R"(
+    {
+      "service_provider": "local_system_agent",
+      "enable": [{"url_list": ["*"], "tags": ["dlp", "malware"]}],
+      "block_until_verdict": 1,
+      "default_action": "%s"
+    })",
+                                          should_fail_open ? "allow" : "block");
+    enterprise_connectors::test::SetAnalysisConnector(profile_->GetPrefs(),
+                                                      BULK_DATA_ENTRY, pref);
+  }
+
+  void SetUp() override {
+    BaseTest::SetUp();
+
+    ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+        &test::FakeContentAnalysisDelegate::Create, run_loop_.QuitClosure(),
+        base::BindRepeating(
+            &ContentAnalysisDelegateWithLocalClient::ConnectorStatusCallback,
+            base::Unretained(this)),
+        kDmToken));
+    test::FakeContentAnalysisDelegate::
+        ResetStaticDialogFlagsAndTotalRequestsCount();
+  }
+
+  ContentAnalysisResponse ConnectorStatusCallback(const std::string& contents,
+                                                  const base::FilePath& path) {
+    return test::FakeContentAnalysisDelegate::SuccessfulResponse(
+        {"dlp", "malware"});
+  }
+
+ private:
+  ScopedSetDMToken scoped_dm_token_{
+      policy::DMToken::CreateValidToken(kDmToken)};
+};
+
+TEST_F(ContentAnalysisDelegateWithLocalClient, StringDataWithValidClient) {
+  SetLocalPolicies(/*should_fail_open=*/true);
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
+
+  data.text.emplace_back(large_text());
+  sdk_manager_.SetCreateClientAbility(true);
+
+  bool called = false;
+  ScanUpload(contents(), std::move(data),
+             base::BindOnce(
+                 [](bool* called, const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+                   EXPECT_EQ(1u, data.text.size());
+                   EXPECT_EQ(0u, data.paths.size());
+                   ASSERT_EQ(1u, result.text_results.size());
+                   EXPECT_EQ(0u, result.paths_results.size());
+                   EXPECT_TRUE(result.text_results[0]);
+                   *called = true;
+                 },
+                 &called));
+  RunUntilDone();
+
+  EXPECT_FALSE(sdk_manager_.NoConnectionEstablished());
+  EXPECT_EQ(1,
+            test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(called);
+}
+
+TEST_F(ContentAnalysisDelegateWithLocalClient, FailOpen) {
+  SetLocalPolicies(/*should_fail_open=*/true);
+  sdk_manager_.SetCreateClientAbility(false);
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
+
+  data.text.emplace_back(large_text());
+
+  bool called = false;
+  ScanUpload(contents(), std::move(data),
+             base::BindOnce(
+                 [](bool* called, const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+                   EXPECT_EQ(1u, data.text.size());
+                   EXPECT_EQ(0u, data.paths.size());
+                   ASSERT_EQ(1u, result.text_results.size());
+                   EXPECT_EQ(0u, result.paths_results.size());
+                   EXPECT_TRUE(result.text_results[0]);
+                   *called = true;
+                 },
+                 &called));
+  RunUntilDone();
+
+  EXPECT_TRUE(sdk_manager_.NoConnectionEstablished());
+  // No local client found, should skip data analysis.
+  EXPECT_EQ(0,
+            test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(called);
+}
+
+TEST_F(ContentAnalysisDelegateWithLocalClient, FailClosed) {
+  SetLocalPolicies(/*should_fail_open=*/false);
+  sdk_manager_.SetCreateClientAbility(false);
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
+
+  data.text.emplace_back(large_text());
+
+  bool called = false;
+  ScanUpload(contents(), std::move(data),
+             base::BindOnce(
+                 [](bool* called, const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+                   EXPECT_EQ(1u, data.text.size());
+                   EXPECT_EQ(0u, data.paths.size());
+                   ASSERT_EQ(1u, result.text_results.size());
+                   EXPECT_EQ(0u, result.paths_results.size());
+
+                   bool expected_result = true;
+    // Should only fail closed on Windows.
+#if BUILDFLAG(IS_WIN)
+                   expected_result = false;
+#endif
+                   EXPECT_EQ(expected_result, result.text_results[0]);
+                   *called = true;
+                 },
+                 &called));
+  RunUntilDone();
+
+  EXPECT_TRUE(sdk_manager_.NoConnectionEstablished());
+  // No local client found, should skip data analysis.
+  EXPECT_EQ(0,
+            test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(called);
+}
+#endif
 
 // Calling GetRequestData() twice should return the same valid region.
 TEST(StringAnalysisRequest, GetRequestData) {

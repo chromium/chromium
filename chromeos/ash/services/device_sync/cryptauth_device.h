@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_H_
 
 #include <map>
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -24,7 +24,7 @@ namespace device_sync {
 class CryptAuthDevice {
  public:
   // Returns null if |dict| cannot be converted into a CryptAuthDevice.
-  static absl::optional<CryptAuthDevice> FromDictionary(
+  static std::optional<CryptAuthDevice> FromDictionary(
       const base::Value::Dict& dict);
 
   // |instance_id|: The Instance ID, used as a unique device identifier. Cannot
@@ -35,7 +35,7 @@ class CryptAuthDevice {
       const std::string& device_name,
       const std::string& device_better_together_public_key,
       const base::Time& last_update_time,
-      const absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
+      const std::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
           better_together_device_metadata,
       const std::map<multidevice::SoftwareFeature,
                      multidevice::SoftwareFeatureState>& feature_states);
@@ -84,7 +84,7 @@ class CryptAuthDevice {
 
   // Device metadata relevant to the suite of multi-device ("Better Together")
   // features. Null if metadata could not be decrypted.
-  absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>
+  std::optional<cryptauthv2::BetterTogetherDeviceMetadata>
       better_together_device_metadata;
 
   // A map from the multi-device feature type (example: kBetterTogetherHost) to

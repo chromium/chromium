@@ -13,7 +13,7 @@
   <include name="IDR_KNOWN_INTERCEPTION_ICON_1X_PNG" file="../security_interstitials/core/browser/resources/images/1x/triangle_red.png" type="BINDATA" />
   <include name="IDR_KNOWN_INTERCEPTION_ICON_2X_PNG" file="../security_interstitials/core/browser/resources/images/2x/triangle_red.png" type="BINDATA" />
 
-  <if expr="not is_ios">
+  <if expr="use_blink">
     <include name="IDR_SSL_ERROR_ASSISTANT_PB" file="${root_gen_dir}/components/resources/ssl/ssl_error_assistant/ssl_error_assistant.pb" use_base_dir="false" type="BINDATA" compress="gzip" />
   </if>
 </grit-part>

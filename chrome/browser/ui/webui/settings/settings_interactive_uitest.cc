@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -12,6 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -99,27 +101,16 @@ class SettingsInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
-class CookieSettingsInteractiveUiTest
-    : public SettingsInteractiveUiTest,
-      public testing::WithParamInterface<bool> {
- public:
-  CookieSettingsInteractiveUiTest() {
-    feature_list_.InitWithFeatureState(
-        privacy_sandbox::kPrivacySandboxSettings4, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(CookieSettingsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
                        CheckQuestionMarkIsPresentUnderCookiesAndSiteData) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
+  bool is_3pcd = base::FeatureList::IsEnabled(
+      content_settings::features::kTrackingProtection3pcd);
   const std::string cookie_row_selector =
-      GetParam() ? "cr-link-row#thirdPartyCookiesLinkRow"
-                 : "cr-link-row#cookiesLinkRow";
+      is_3pcd ? "cr-link-row#trackingProtectionLinkRow"
+              : "cr-link-row#thirdPartyCookiesLinkRow";
   const GURL cookie_setting_url("chrome://settings/privacy");
   const WebContentsInteractionTestUtil::DeepQuery cookies_link_row = {
       "settings-ui", "settings-main", "settings-basic-page",
@@ -161,16 +152,20 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsInteractiveUiTest,
                         auto* util =
                             element->AsA<TrackedElementWebContents>()->owner();
                         auto* const contents = util->web_contents();
-                        EXPECT_EQ(chrome::kCookiesSettingsHelpCenterURL,
-                                  contents->GetURL());
+                        if (is_3pcd) {
+                          EXPECT_EQ(
+                              contents->GetURL(),
+                              GURL(chrome::kTrackingProtectionHelpCenterURL));
+                        } else {
+                          EXPECT_EQ(contents->GetURL(),
+                                    chrome::kCookiesSettingsHelpCenterURL);
+                        }
                       }))
                   .Build())
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, CookieSettingsInteractiveUiTest, testing::Bool());
 
 class ThemeSettingsInteractiveUiTest : public SettingsInteractiveUiTest {
  public:

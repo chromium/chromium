@@ -5,6 +5,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/webidl_compat.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -67,8 +67,8 @@ void ForDebuggingOnlyBindings::AttachToContext(v8::Local<v8::Context> context) {
 }
 
 void ForDebuggingOnlyBindings::Reset() {
-  loss_report_url_ = absl::nullopt;
-  win_report_url_ = absl::nullopt;
+  loss_report_url_ = std::nullopt;
+  win_report_url_ = std::nullopt;
 }
 
 void ForDebuggingOnlyBindings::ReportAdAuctionLoss(

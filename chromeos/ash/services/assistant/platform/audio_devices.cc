@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/assistant/platform/audio_devices.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -14,7 +16,6 @@
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::assistant {
 
@@ -29,14 +30,14 @@ constexpr const char kDefaultLocale[] = "en_us";
 // Examples:
 //     "fr"     ->  "fr_fr"
 //     "nl-BE"  ->  "nl_be"
-absl::optional<std::string> ToHotwordModel(std::string pref_locale) {
+std::optional<std::string> ToHotwordModel(std::string pref_locale) {
   std::vector<std::string> code_strings = base::SplitString(
       pref_locale, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (code_strings.size() == 0) {
     // Note: I am not sure this happens during real operations, but it
     // definitely happens during the ChromeOS performance tests.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK_LT(code_strings.size(), 3u);
@@ -63,13 +64,13 @@ const AudioDevice* GetHighestPriorityDevice(const AudioDevice* left,
   return left->priority < right->priority ? right : left;
 }
 
-absl::optional<uint64_t> IdToOptional(const AudioDevice* device) {
+std::optional<uint64_t> IdToOptional(const AudioDevice* device) {
   if (!device)
-    return absl::nullopt;
+    return std::nullopt;
   return device->id;
 }
 
-absl::optional<uint64_t> GetHotwordDeviceId(const AudioDeviceList& devices) {
+std::optional<uint64_t> GetHotwordDeviceId(const AudioDeviceList& devices) {
   const AudioDevice* result = nullptr;
 
   for (const AudioDevice& device : devices) {
@@ -89,7 +90,7 @@ absl::optional<uint64_t> GetHotwordDeviceId(const AudioDeviceList& devices) {
   return IdToOptional(result);
 }
 
-absl::optional<uint64_t> GetPreferredDeviceId(const AudioDeviceList& devices) {
+std::optional<uint64_t> GetPreferredDeviceId(const AudioDeviceList& devices) {
   const AudioDevice* result = nullptr;
 
   for (const AudioDevice& device : devices) {
@@ -116,9 +117,9 @@ absl::optional<uint64_t> GetPreferredDeviceId(const AudioDeviceList& devices) {
   return IdToOptional(result);
 }
 
-absl::optional<std::string> ToString(absl::optional<uint64_t> int_value) {
+std::optional<std::string> ToString(std::optional<uint64_t> int_value) {
   if (!int_value)
-    return absl::nullopt;
+    return std::nullopt;
   return base::NumberToString(int_value.value());
 }
 
@@ -159,9 +160,9 @@ class AudioDevices::ScopedCrasAudioHandlerObserver
     parent_->SetAudioDevices(audio_devices);
   }
 
-  const raw_ptr<AudioDevices, ExperimentalAsh> parent_;
+  const raw_ptr<AudioDevices> parent_;
   // Owned by |AssistantManagerServiceImpl|.
-  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler> cras_audio_handler_;
   base::ScopedObservation<CrasAudioHandler, CrasAudioHandler::AudioObserver>
       scoped_observer_{this};
 };
@@ -216,7 +217,7 @@ class AudioDevices::HotwordModelUpdater {
         }));
   }
 
-  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler> cras_audio_handler_;
   uint64_t hotword_device_;
   std::string locale_;
 

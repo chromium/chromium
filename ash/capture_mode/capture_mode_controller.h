@@ -6,10 +6,12 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_education_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_recording_watcher.h"
@@ -18,11 +20,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
@@ -118,7 +118,17 @@ class ASH_EXPORT CaptureModeController
            (video_recording_watcher_ &&
             !video_recording_watcher_->is_shutting_down());
   }
+  bool can_start_new_recording() const {
+    // Even if recording stops, it takes a while for the video/gif file to be
+    // fully finalized. Until that happens, a new recording is not allowed to
+    // start.
+    return current_video_file_path_.empty() && !is_recording_in_progress();
+  }
   bool enable_demo_tools() const { return enable_demo_tools_; }
+
+  CaptureModeEducationController* education_controller() {
+    return education_controller_.get();
+  }
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
@@ -381,18 +391,16 @@ class ASH_EXPORT CaptureModeController
   // performed (i.e. the window to be captured, and the capture bounds). If
   // nothing is to be captured (e.g. when there's no window selected in a
   // kWindow source, or no region is selected in a kRegion source), then a
-  // absl::nullopt is returned.
+  // std::nullopt is returned.
   struct CaptureParams {
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION aura::Window* window = nullptr;
+    raw_ptr<aura::Window> window = nullptr;
     // The capture bounds, either in root coordinates (in kFullscreen or kRegion
     // capture sources), or window-local coordinates (in a kWindow capture
     // source).
     gfx::Rect bounds;
   };
 
-  absl::optional<CaptureParams> GetCaptureParams() const;
+  std::optional<CaptureParams> GetCaptureParams() const;
 
   // Launches the mojo service that handles audio and video recording, and
   // begins recording according to the given `capture_params`. It creates an
@@ -476,7 +484,7 @@ class ASH_EXPORT CaptureModeController
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
                                  const CaptureModeType type,
                                  const BehaviorType behavior_type,
-                                 absl::optional<int> button_index);
+                                 std::optional<int> button_index);
 
   // Builds a path for a file of an image screenshot, or a video screen
   // recording, builds with display index if there are
@@ -715,6 +723,8 @@ class ASH_EXPORT CaptureModeController
       behaviors_map_;
 
   base::ObserverList<CaptureModeObserver> observers_;
+
+  std::unique_ptr<CaptureModeEducationController> education_controller_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

@@ -4,54 +4,67 @@ Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
+<!-- TODO(crbug.com/1479521): Write render test for autofill_save_card_base_layout.xml-->
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/AlertDialogContent"
-    android:minHeight="36dp"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:layout_marginBottom="32dp"
-    android:paddingTop="16dp"
-    android:layout_marginTop="6dp"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/description"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        android:inputType="textMultiLine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:visibility="gone"
-        tools:ignore="TextViewEdits" />
-
-    <include layout="@layout/autofill_cc_details" />
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ViewStub
-        android:id="@+id/autofill_save_card_content_stub"
-        android:inflatedId="@+id/autofill_save_card_content"
+        android:id="@+id/title_with_icon_stub"
+        android:inflatedId="@+id/title_with_icon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/error_message"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:textAppearance="@style/TextAppearance.AutofillCardErrorMessage"
-        android:visibility="gone" />
+        style="@style/AlertDialogContent"
+        android:minHeight="36dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_marginBottom="32dp"
+        android:paddingTop="16dp"
+        android:layout_marginTop="6dp"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/legal_message"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        android:inputType="textMultiLine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        tools:ignore="TextViewEdits"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/description"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:inputType="textMultiLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone"
+            tools:ignore="TextViewEdits" />
 
+        <include layout="@layout/autofill_cc_details" />
+
+        <ViewStub
+            android:id="@+id/autofill_save_card_content_stub"
+            android:inflatedId="@+id/autofill_save_card_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/error_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:textAppearance="@style/TextAppearance.AutofillCardErrorMessage"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/legal_message"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:inputType="textMultiLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            tools:ignore="TextViewEdits"
+            android:visibility="gone" />
+
+    </LinearLayout>
 </LinearLayout>

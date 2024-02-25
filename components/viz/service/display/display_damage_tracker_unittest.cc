@@ -19,6 +19,8 @@
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
@@ -31,7 +33,9 @@ class DisplayDamageTrackerTest : public testing::Test {
  public:
   DisplayDamageTrackerTest()
       : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
-        resource_provider_(&shared_bitmap_manager_),
+        resource_provider_(&shared_bitmap_manager_,
+                           &shared_image_manager_,
+                           &sync_point_manager_),
         aggregator_(manager_.surface_manager(),
                     &resource_provider_,
                     false,
@@ -76,7 +80,12 @@ class DisplayDamageTrackerTest : public testing::Test {
       return SurfaceId(frame_sink_id_, local_surface_id_);
     }
 
-    void SubmitCompositorFrame(const BeginFrameArgs& args) {
+    void SetUpAutoNeedsBeginFrame() {
+      support_->SetNeedsBeginFrame(false);
+      support_->SetAutoNeedsBeginFrame();
+    }
+
+    void SubmitCompositorFrame(const BeginFrameId& frame_id) {
       CompositorRenderPassList pass_list;
       auto pass = CompositorRenderPass::Create();
       pass->output_rect = gfx::Rect(0, 0, 100, 100);
@@ -85,7 +94,7 @@ class DisplayDamageTrackerTest : public testing::Test {
       pass_list.push_back(std::move(pass));
 
       BeginFrameAck ack;
-      ack.frame_id = BeginFrameId(args.frame_id);
+      ack.frame_id = frame_id;
       ack.has_damage = true;
 
       CompositorFrame frame = CompositorFrameBuilder()
@@ -113,6 +122,8 @@ class DisplayDamageTrackerTest : public testing::Test {
   }
 
   ServerSharedBitmapManager shared_bitmap_manager_;
+  gpu::SharedImageManager shared_image_manager_;
+  gpu::SyncPointManager sync_point_manager_;
   FrameSinkManagerImpl manager_;
   DisplayResourceProviderSoftware resource_provider_;
   SurfaceAggregator aggregator_;
@@ -133,7 +144,7 @@ TEST_F(DisplayDamageTrackerTest, Basic) {
 
   // Submit root surface and check that we have root surface and no pending
   // surfaces
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
 
   EXPECT_FALSE(damage_tracker_->root_frame_missing());
   EXPECT_FALSE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
@@ -146,7 +157,7 @@ TEST_F(DisplayDamageTrackerTest, Basic) {
   EXPECT_TRUE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 
   // Submit CF and check that we have root surface and no pending surfaces
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
   EXPECT_FALSE(damage_tracker_->root_frame_missing());
   EXPECT_FALSE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 }
@@ -156,7 +167,7 @@ TEST_F(DisplayDamageTrackerTest, Resize) {
 
   // Submit initial frame
   TickBeginFrame();
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
 
   // Expect no damage because of resize
   EXPECT_FALSE(
@@ -170,7 +181,7 @@ TEST_F(DisplayDamageTrackerTest, Resize) {
 
   // Submit next frame
   TickBeginFrame();
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
 
   // Expecting no damage
   EXPECT_FALSE(
@@ -183,7 +194,7 @@ TEST_F(DisplayDamageTrackerTest, NewRoot) {
 
   // Submit initial frame
   TickBeginFrame();
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
 
   // Root shouldn't be missing and no pending surfaces
   EXPECT_FALSE(damage_tracker_->root_frame_missing());
@@ -196,7 +207,7 @@ TEST_F(DisplayDamageTrackerTest, NewRoot) {
 
   // Submit new root
   TickBeginFrame();
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
 
   // Check that root is in place and no surface pending.
   EXPECT_FALSE(damage_tracker_->root_frame_missing());
@@ -211,8 +222,8 @@ TEST_F(DisplayDamageTrackerTest, TwoSurfaces) {
 
   // Submit initial frame
   TickBeginFrame();
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
-  embedded_client.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
+  embedded_client.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
 
   // Expect no pending surfaces
   EXPECT_FALSE(damage_tracker_->root_frame_missing());
@@ -222,23 +233,44 @@ TEST_F(DisplayDamageTrackerTest, TwoSurfaces) {
   TickBeginFrame();
   EXPECT_TRUE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 
-  embedded_client.SubmitCompositorFrame(last_begin_frame_args_);
+  embedded_client.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
   EXPECT_TRUE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
   EXPECT_FALSE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 
   // Begin next frame and check submission in order root_client, embedded_client
   TickBeginFrame();
   EXPECT_TRUE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 
-  root_client_.SubmitCompositorFrame(last_begin_frame_args_);
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
   EXPECT_TRUE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 
-  embedded_client.SubmitCompositorFrame(last_begin_frame_args_);
+  embedded_client.SubmitCompositorFrame(last_begin_frame_args_.frame_id);
   EXPECT_FALSE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 
   manager_.UnregisterFrameSinkHierarchy(kRootFrameSinkId, kChildFrameSinkId);
+}
+
+TEST_F(DisplayDamageTrackerTest, UnsolicitedFrameUnderAutoNeedsBeginFrame) {
+  root_client_.SetUpAutoNeedsBeginFrame();
+
+  // Ensure that when submitting the unsolicited frame below, a new
+  // BeginFrameArgs is used.
+  TickBeginFrame();
+
+  // Submit an unsolicited frame.
+  root_client_.SubmitCompositorFrame(
+      BeginFrameAck::CreateManualAckWithDamage().frame_id);
+
+  // Send ACK for the frame.
+  damage_tracker_->RunDrawCallbacks();
+
+  EXPECT_TRUE(damage_tracker_->IsRootSurfaceValid());
+  EXPECT_FALSE(damage_tracker_->root_frame_missing());
+
+  // Verify that the corresponding surface is not considered as pending.
+  EXPECT_FALSE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
 }
 
 }  // namespace viz

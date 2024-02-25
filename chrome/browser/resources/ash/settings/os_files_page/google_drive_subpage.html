@@ -1,23 +1,19 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  /* This id is in the string returned from getDriveAccountStatusLabel_() */
+  #driveAccountEmail {
+    font: var(--cros-button-2-font);
+  }
+</style>
 
-<div
-    class="settings-box two-line first"
-    deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
-  <template is="dom-if" if="[[driveDisabled_]]" restamp>
-    <div class="start">
-      $i18nRaw{googleDriveReconnectAs}
-    </div>
-  </template>
-  <template is="dom-if" if="[[!driveDisabled_]]" restamp>
-    <div class="start">
-      $i18nRaw{googleDriveSignedInAs}
-    </div>
-  </template>
+<div class="settings-box two-line first">
+  <div class="start"
+      inner-h-t-m-l="[[getDriveAccountStatusLabel_(driveDisabled_)]]">
+  </div>
   <controlled-button id="driveConnectDisconnect"
       on-click="onConnectDisconnectClick_"
       pref="{{prefs.gdata.disabled}}"
       label="[[getConnectDisconnectButtonLabel_(driveDisabled_)]]"
-      deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+      deep-link-focus-id$="[[Setting.kGoogleDriveRemoveAccess]]">
   </controlled-button>
   <template is="dom-if"
       if="[[shouldShowConfirmationDialog_(dialogType_, 'disconnect')]]" restamp>
@@ -35,7 +31,9 @@
 <div class="hr"></div>
 
 <template is="dom-if" if="[[!driveDisabled_]]" restamp>
-  <template is="dom-if" if="[[isDriveFsBulkPinningEnabled_]]" restamp>
+  <template is="dom-if"
+      if="[[and_(bulkPinningVisible_, isDriveFsBulkPinningEnabled_)]]"
+      restamp>
     <settings-toggle-button
         id="driveBulkPinning"
         pref="{{prefs.drivefs.bulk_pinning_enabled}}"
@@ -43,7 +41,8 @@
         sub-label="[[getBulkPinningSubLabel_(bulkPinningStatus_)]]"
         learn-more-url="$i18n{googleDriveFileSyncLearnMoreLink}"
         on-settings-boolean-control-change="onToggleBulkPinning_"
-        no-set-pref>
+        no-set-pref
+        deep-link-focus-id$="[[Setting.kGoogleDriveFileSync]]">
     </settings-toggle-button>
 
     <template is="dom-if"
@@ -55,6 +54,18 @@
           action-button-text="$i18n{googleDriveTurnOffLabel}"
           title-text="$i18n{googleDriveFileSyncTurnOffTitle}"
           body-text="$i18n{googleDriveFileSyncTurnOffBody}"
+          on-close="onDriveConfirmationDialogClose_">
+      </settings-drive-confirmation-dialog>
+    </template>
+
+    <template is="dom-if"
+        if="[[shouldShowConfirmationDialog_(dialogType_, 'bulk-pinning-listing-files')]]"
+        restamp>
+      <settings-drive-confirmation-dialog
+          id="driveBulkPinningListingFilesDialog"
+          cancel-button-text="$i18n{googleDriveOkButtonText}"
+          title-text="$i18n{googleDriveFileSyncListingFilesTitle}"
+          body-text="[[getListingFilesDialogBody_(listedFiles_)]]"
           on-close="onDriveConfirmationDialogClose_">
       </settings-drive-confirmation-dialog>
     </template>
@@ -140,4 +151,11 @@
   </template>
 
   <div class="hr"></div>
+
+  <settings-toggle-button
+      id="driveEnableDriveOnMeteredNetworkToggle"
+      inverted="true"
+      pref="{{prefs.gdata.cellular.disabled}}"
+      label="$i18n{googleDriveEnabledOnMeteredNetworkLabel}">
+  </settings-toggle-button>
 </template>

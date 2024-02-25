@@ -56,7 +56,7 @@ class PolicyConversionsClientTest : public ::testing::Test {
   base::Value::Dict GetPolicyValues(
       const PolicyConversionsClient& client,
       const PolicyMap& map,
-      const absl::optional<PolicyConversions::PolicyToSchemaMap>&
+      const std::optional<PolicyConversions::PolicyToSchemaMap>&
           known_policy_schemas) const {
     return client.GetPolicyValues(map, nullptr, PoliciesSet(), PoliciesSet(),
                                   known_policy_schemas);
@@ -70,7 +70,7 @@ TEST_F(PolicyConversionsClientTest, SetDropDefaultValues) {
   policy_map.Set(kPolicyName2, CreateEntry(true /* set_is_default */));
   policy_map.Set(kPolicyName3, CreateEntry(false /* set_is_default */));
 
-  absl::optional<PolicyConversions::PolicyToSchemaMap> policy_schemas =
+  std::optional<PolicyConversions::PolicyToSchemaMap> policy_schemas =
       policy::PolicyConversions::PolicyToSchemaMap{
           {{kPolicyName1, policy::Schema()},
            {kPolicyName2, policy::Schema()},

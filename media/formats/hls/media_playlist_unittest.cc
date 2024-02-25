@@ -345,7 +345,7 @@ TEST(HlsMediaPlaylistTest, XBitrateTag) {
   builder.ExpectAdditionalSegment();
   builder.ExpectSegment(HasMediaSequenceNumber, 0);
   builder.ExpectSegment(HasUri, GURL("http://localhost/segment0.ts"));
-  builder.ExpectSegment(HasBitRate, absl::nullopt);
+  builder.ExpectSegment(HasBitRate, std::nullopt);
 
   builder.AppendLine("#EXT-X-BITRATE:15");
   builder.AppendLine("#EXTINF:9.2,");
@@ -370,14 +370,14 @@ TEST(HlsMediaPlaylistTest, XBitrateTag) {
   builder.ExpectSegment(HasMediaSequenceNumber, 3);
   builder.ExpectSegment(HasUri, GURL("http://localhost/segment3.ts"));
   builder.ExpectSegment(HasByteRange, CreateByteRange(1024, 0));
-  builder.ExpectSegment(HasBitRate, absl::nullopt);
+  builder.ExpectSegment(HasBitRate, std::nullopt);
 
   builder.AppendLine("#EXTINF:9.2,");
   builder.AppendLine("segment4.ts");
   builder.ExpectAdditionalSegment();
   builder.ExpectSegment(HasMediaSequenceNumber, 4);
   builder.ExpectSegment(HasUri, GURL("http://localhost/segment4.ts"));
-  builder.ExpectSegment(HasByteRange, absl::nullopt);
+  builder.ExpectSegment(HasByteRange, std::nullopt);
   builder.ExpectSegment(HasBitRate, 15000);
 
   // The EXT-X-BITRATE tag is allowed to appear twice
@@ -489,7 +489,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
     fork.AppendLine("segment.ts");
     fork.ExpectAdditionalSegment();
     fork.ExpectSegment(HasUri, GURL("http://localhost/segment.ts"));
-    fork.ExpectSegment(HasByteRange, absl::nullopt);
+    fork.ExpectSegment(HasByteRange, std::nullopt);
     fork.AppendLine("#EXT-X-BYTERANGE:12@34");
     fork.AppendLine("#EXTINF:9.2,\t");
     fork.AppendLine("segment.ts");
@@ -551,7 +551,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
     fork.AppendLine("segment2.ts");
     fork.ExpectAdditionalSegment();
     fork.ExpectSegment(HasUri, GURL("http://localhost/segment2.ts"));
-    fork.ExpectSegment(HasByteRange, absl::nullopt);
+    fork.ExpectSegment(HasByteRange, std::nullopt);
     fork.AppendLine("#EXT-X-BYTERANGE:56@78");
     fork.AppendLine("#EXTINF:9.2,\t");
     fork.AppendLine("segment1.ts");
@@ -951,7 +951,7 @@ TEST(HlsMediaPlaylistTest, XMapTag) {
 
   builder.AppendLine("#EXT-X-MAP:URI=\"init1.ts\"");
   auto init1 = base::MakeRefCounted<MediaSegment::InitializationSegment>(
-      GURL("http://localhost/init1.ts"), absl::nullopt);
+      GURL("http://localhost/init1.ts"), std::nullopt);
 
   builder.AppendLine("#EXTINF:9.2,\t");
   builder.AppendLine("foo2.ts");
@@ -1140,7 +1140,7 @@ TEST(HlsMediaPlaylistTest, XPlaylistTypeTag) {
   // Without the EXT-X-PLAYLIST-TYPE tag, the playlist has no type.
   {
     auto fork = builder;
-    fork.ExpectPlaylist(HasType, absl::nullopt);
+    fork.ExpectPlaylist(HasType, std::nullopt);
     fork.ExpectOk();
   }
 
@@ -1199,10 +1199,10 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
   // Without the EXT-X-SERVER-CONTROL tag, certain properties have default
   // values
   auto fork = builder;
-  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(HasSkipBoundary, std::nullopt);
   fork.ExpectPlaylist(CanSkipDateRanges, false);
   fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
-  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, std::nullopt);
   fork.ExpectPlaylist(CanBlockReload, false);
   fork.ExpectOk();
   // An empty EXT-X-SERVER-CONTROL tag shouldn't change these defaults
@@ -1228,7 +1228,7 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
   fork.ExpectPlaylist(HasSkipBoundary, base::Seconds(36));
   fork.ExpectPlaylist(CanSkipDateRanges, false);
   fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
-  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, std::nullopt);
   fork.ExpectPlaylist(CanBlockReload, false);
   fork.ExpectOk();
 
@@ -1243,7 +1243,7 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
   fork.ExpectPlaylist(CanSkipDateRanges, true);
   fork.ExpectPlaylist(HasSkipBoundary, base::Seconds(40));
   fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
-  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, std::nullopt);
   fork.ExpectPlaylist(CanBlockReload, false);
   fork.ExpectOk();
 
@@ -1253,7 +1253,7 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
   fork.ExpectPlaylist(CanSkipDateRanges, true);
   fork.ExpectPlaylist(HasSkipBoundary, base::Seconds(40));
   fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
-  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, std::nullopt);
   fork.ExpectPlaylist(CanBlockReload, false);
   fork.ExpectOk();
 
@@ -1289,7 +1289,7 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
       HasPartialSegmentInfo,
       MediaPlaylist::PartialSegmentInfo{.target_duration = base::Seconds(0.2)});
   fork.ExpectPlaylist(HasPartHoldBackDistance, base::Seconds(0.5));
-  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(HasSkipBoundary, std::nullopt);
   fork.ExpectPlaylist(CanSkipDateRanges, false);
   fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
   fork.ExpectPlaylist(CanBlockReload, false);
@@ -1304,7 +1304,7 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
       HasPartialSegmentInfo,
       MediaPlaylist::PartialSegmentInfo{.target_duration = base::Seconds(0.2)});
   fork.ExpectPlaylist(HasPartHoldBackDistance, base::Seconds(0.4));
-  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(HasSkipBoundary, std::nullopt);
   fork.ExpectPlaylist(CanSkipDateRanges, false);
   fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
   fork.ExpectPlaylist(CanBlockReload, false);
@@ -1317,9 +1317,9 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
 
   fork = builder;
   fork.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=0.3");
-  fork.ExpectPlaylist(HasPartialSegmentInfo, absl::nullopt);
+  fork.ExpectPlaylist(HasPartialSegmentInfo, std::nullopt);
   fork.ExpectPlaylist(HasPartHoldBackDistance, base::Seconds(0.3));
-  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(HasSkipBoundary, std::nullopt);
   fork.ExpectPlaylist(CanSkipDateRanges, false);
   fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
   fork.ExpectPlaylist(CanBlockReload, false);
@@ -1329,9 +1329,9 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
   fork = builder;
   fork.AppendLine("#EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES");
   fork.ExpectPlaylist(CanBlockReload, true);
-  fork.ExpectPlaylist(HasPartialSegmentInfo, absl::nullopt);
-  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
-  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(HasPartialSegmentInfo, std::nullopt);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, std::nullopt);
+  fork.ExpectPlaylist(HasSkipBoundary, std::nullopt);
   fork.ExpectPlaylist(CanSkipDateRanges, false);
   fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
   fork.ExpectOk();

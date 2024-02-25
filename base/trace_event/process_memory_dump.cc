@@ -7,6 +7,7 @@
 #include <errno.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/bits.h"
@@ -14,6 +15,7 @@
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_tracker.h"
+#include "base/notimplemented.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -22,7 +24,6 @@
 #include "base/trace_event/traced_value.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
@@ -92,7 +93,7 @@ size_t ProcessMemoryDump::GetSystemPageSize() {
 }
 
 // static
-absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
+std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     void* start_address,
     size_t mapped_size) {
   const size_t page_size = GetSystemPageSize();
@@ -175,13 +176,13 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
   DCHECK(!failure);
   if (failure) {
     LOG(ERROR) << "CountResidentBytes failed. The resident size is invalid";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return total_resident_pages;
 }
 
 // static
-absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
+std::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
     void* start_address,
     size_t mapped_size) {
   // `MapAt()` performs some internal arithmetic to allow non-page-aligned
@@ -210,7 +211,7 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
   if (result == MachVMRegionResult::Error) {
     LOG(ERROR) << "CountResidentBytesInSharedMemory failed. The resident size "
                   "is invalid";
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   }
 
   size_t resident_pages =
@@ -289,7 +290,7 @@ MemoryAllocatorDump* ProcessMemoryDump::AddAllocatorDumpInternal(
     std::unique_ptr<MemoryAllocatorDump> mad) {
   // In background mode return the black hole dump, if invalid dump name is
   // given.
-  if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND &&
+  if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::kBackground &&
       !IsMemoryAllocatorDumpNameInAllowlist(mad->absolute_name())) {
     return GetBlackHoleMad(mad->absolute_name());
   }
@@ -532,8 +533,9 @@ void ProcessMemoryDump::CreateSharedMemoryOwnershipEdgeInternal(
 void ProcessMemoryDump::AddSuballocation(const MemoryAllocatorDumpGuid& source,
                                          const std::string& target_node_name) {
   // Do not create new dumps for suballocations in background mode.
-  if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND)
+  if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     return;
+  }
 
   std::string child_mad_name = target_node_name + "/__" + source.ToString();
   MemoryAllocatorDump* target_child_mad = CreateAllocatorDump(child_mad_name);
@@ -557,17 +559,6 @@ MemoryAllocatorDumpGuid ProcessMemoryDump::GetDumpId(
     const std::string& absolute_name) {
   return MemoryAllocatorDumpGuid(StringPrintf(
       "%s:%s", process_token().ToString().c_str(), absolute_name.c_str()));
-}
-
-bool ProcessMemoryDump::MemoryAllocatorDumpEdge::operator==(
-    const MemoryAllocatorDumpEdge& other) const {
-  return source == other.source && target == other.target &&
-         importance == other.importance && overridable == other.overridable;
-}
-
-bool ProcessMemoryDump::MemoryAllocatorDumpEdge::operator!=(
-    const MemoryAllocatorDumpEdge& other) const {
-  return !(*this == other);
 }
 
 }  // namespace trace_event

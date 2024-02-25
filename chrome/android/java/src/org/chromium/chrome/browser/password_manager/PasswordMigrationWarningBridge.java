@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.Activity;
 import android.content.Context;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
@@ -16,6 +17,8 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHand
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningTriggers;
+import org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetCoordinator;
+import org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetCoordinatorFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -26,7 +29,9 @@ import org.chromium.ui.base.WindowAndroid;
 /** The bridge that is used to show the password migration warning. */
 class PasswordMigrationWarningBridge {
     @CalledByNative
-    static void showWarning(WindowAndroid windowAndroid, Profile profile,
+    static void showWarning(
+            WindowAndroid windowAndroid,
+            Profile profile,
             @PasswordMigrationWarningTriggers int referrer) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
@@ -39,24 +44,42 @@ class PasswordMigrationWarningBridge {
     }
 
     @CalledByNative
-    static void showWarningWithActivity(Activity activity,
-            BottomSheetController bottomSheetController, Profile profile,
+    static void showWarningWithActivity(
+            Activity activity,
+            BottomSheetController bottomSheetController,
+            Profile profile,
             @PasswordMigrationWarningTriggers int referrer) {
         showWarningInternal(activity, bottomSheetController, profile, referrer);
     }
 
-    private static void showWarningInternal(Context context,
-            BottomSheetController bottomSheetController, Profile profile,
+    private static void showWarningInternal(
+            Context context,
+            BottomSheetController bottomSheetController,
+            Profile profile,
             @PasswordMigrationWarningTriggers int referrer) {
         PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
-                new PasswordMigrationWarningCoordinator(context, profile, bottomSheetController,
-                        SyncConsentActivityLauncherImpl.get(), new SettingsLauncherImpl(),
-                        ManageSyncSettings.class, new ExportFlow(),
-                        (PasswordListObserver observer)
-                                -> PasswordManagerHandlerProvider.getInstance().addObserver(
-                                        observer),
-                        new PasswordStoreBridge(), referrer,
+                new PasswordMigrationWarningCoordinator(
+                        context,
+                        profile,
+                        bottomSheetController,
+                        SyncConsentActivityLauncherImpl.get(),
+                        new SettingsLauncherImpl(),
+                        ManageSyncSettings.class,
+                        new ExportFlow(),
+                        (PasswordListObserver observer) ->
+                                PasswordManagerHandlerProvider.getInstance().addObserver(observer),
+                        new PasswordStoreBridge(),
+                        referrer,
                         ChromePureJavaExceptionReporter::reportJavaException);
         passwordMigrationWarningCoordinator.showWarning();
+    }
+
+    // TODO(321218513): Use this method to trigger showing the sheet from cpp.
+    static void maybeShowPostMigrationSheet(WindowAndroid windowAndroid) {
+        PostPasswordMigrationSheetCoordinator postMigrationSheet =
+                PostPasswordMigrationSheetCoordinatorFactory
+                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(windowAndroid);
+        if (postMigrationSheet == null) return;
+        postMigrationSheet.showSheet();
     }
 }

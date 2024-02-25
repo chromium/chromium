@@ -7,13 +7,8 @@
 
 #include "base/component_export.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "gpu/vulkan/buildflags.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/buffer_types.h"
-
-#if BUILDFLAG(ENABLE_VULKAN)
-#include <vulkan/vulkan_core.h>
-#endif
 
 namespace gpu {
 class SharedImageFormatRestrictedUtilsAccessor;
@@ -100,11 +95,6 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
   // GL_ANGLE_rgbx_internal_format extension is available.
   static unsigned int ToGLTextureStorageFormat(SharedImageFormat format,
                                                bool use_angle_rgbx_format);
-
-#if BUILDFLAG(ENABLE_VULKAN)
-  static bool HasVkFormat(SharedImageFormat format);
-  static VkFormat ToVkFormat(SharedImageFormat format);
-#endif
 };
 
 }  // namespace viz

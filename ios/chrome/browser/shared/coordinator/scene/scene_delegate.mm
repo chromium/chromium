@@ -12,7 +12,7 @@
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate.h"
-#import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#import "ios/chrome/browser/crash_report/model/main_thread_freeze_detector.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/ui/appearance/appearance_customization.h"
 

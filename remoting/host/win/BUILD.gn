@@ -129,8 +129,6 @@ source_set("win") {
     "host_service.h",
     "launch_process_with_token.cc",
     "launch_process_with_token.h",
-    "omaha.cc",
-    "omaha.h",
     "rdp_client.cc",
     "rdp_client.h",
     "rdp_client_window.cc",

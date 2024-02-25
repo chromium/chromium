@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -224,6 +225,8 @@ void NTPTilesInternalsMessageHandler::SendTiles(
     entry.Set("title", tile.title);
     entry.Set("url", tile.url.spec());
     entry.Set("source", static_cast<int>(tile.source));
+    entry.Set("visitCount", tile.visit_count);
+    entry.Set("lastVisitTime", base::TimeFormatHTTP(tile.last_visit_time));
     if (tile.source == TileSource::CUSTOM_LINKS) {
       entry.Set("fromMostVisited", tile.from_most_visited);
     }

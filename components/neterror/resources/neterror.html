@@ -10,15 +10,9 @@
   <link rel="stylesheet" href="../../../components/security_interstitials/core/common/resources/interstitial_core.css">
   <link rel="stylesheet" href="../../../components/security_interstitials/core/common/resources/interstitial_common.css">
   <link rel="stylesheet" href="neterror.css">
-  <script src="neterror.js"></script>
-  <script src="../../../components/security_interstitials/core/common/resources/interstitial_mobile_nav.js"></script>
-  <script src="offline.js"></script>
-  <script src="offline-sprite-definitions.js"></script>
-  <if expr="is_ios">
-    <script src="error_page_controller_ios.js"></script>
-  </if>
+  <script src="%ROOT_GEN_DIR%/components/neterror/resources/bundled/neterror.rollup.js"></script>
 </head>
-<body id="t" class="neterror" style="font-family: $i18n{fontfamily}; font-size: $i18n{fontsize}">
+<body class="neterror" style="font-family: $i18n{fontfamily}; font-size: $i18n{fontsize}">
   <div id="main-frame-error" class="interstitial-wrapper">
     <div id="main-content">
       <div class="icon"></div>

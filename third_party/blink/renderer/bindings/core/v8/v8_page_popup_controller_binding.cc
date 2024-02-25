@@ -29,8 +29,7 @@ void PagePopupControllerAttributeGetter(
   V8SetReturnValue(
       info, ToV8Traits<PagePopupController>::ToV8(
                 ScriptState::From(info.GetIsolate()->GetCurrentContext()),
-                PagePopupController::From(*frame->GetPage()))
-                .ToLocalChecked());
+                PagePopupController::From(*frame->GetPage())));
 }
 
 void PagePopupControllerAttributeGetterCallback(

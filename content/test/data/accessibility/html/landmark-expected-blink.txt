@@ -181,3 +181,23 @@ rootWebArea
 ++++++++++complementary
 ++++++++++++staticText name='This should have complementary role.'
 ++++++++++++++inlineTextBox name='This should have complementary role.'
+++++++article
+++++++++genericContainer ignored
+++++++++++complementary
+++++++++++++staticText name='This should have complementary role.'
+++++++++++++++inlineTextBox name='This should have complementary role.'
+++++++complementary
+++++++++genericContainer ignored
+++++++++++complementary
+++++++++++++staticText name='This should have complementary role.'
+++++++++++++++inlineTextBox name='This should have complementary role.'
+++++++navigation
+++++++++genericContainer ignored
+++++++++++complementary
+++++++++++++staticText name='This should have complementary role.'
+++++++++++++++inlineTextBox name='This should have complementary role.'
+++++++section
+++++++++genericContainer ignored
+++++++++++complementary
+++++++++++++staticText name='This should have complementary role.'
+++++++++++++++inlineTextBox name='This should have complementary role.'

@@ -7,8 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 component("impl") {
   output_name = "learning_impl"
   visibility = [
-    "//media/learning/impl:unit_tests",
     "//media/learning/impl:learning_fuzzer",
+    "//media/learning/impl:unit_tests",
 
     # Actual clients.
     "//content/browser",
@@ -52,6 +52,8 @@ component("impl") {
   ]
 
   public_deps = [ "//media/learning/common" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

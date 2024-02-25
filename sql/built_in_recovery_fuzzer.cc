@@ -22,7 +22,7 @@ class Environment {
  public:
   Environment() {
     CHECK(base::CreateTemporaryFile(&data_file_path_));
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 
   ~Environment() { base::DeleteFile(data_file_path_); }

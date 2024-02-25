@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
@@ -277,7 +278,8 @@ std::unique_ptr<BlobDataHandle> BlobStorageContext::BuildBlobInternal(
     }
   }
 
-  std::vector<ShareableBlobDataItem*> transport_items;
+  std::vector<raw_ptr<ShareableBlobDataItem, VectorExperimental>>
+      transport_items;
   transport_items.reserve(content->pending_transport_items().size());
   for (const auto& item : content->pending_transport_items())
     transport_items.emplace_back(item.get());
@@ -706,7 +708,7 @@ void BlobStorageContext::WriteBlobToFile(
     mojo::PendingRemote<::blink::mojom::Blob> pending_blob,
     const base::FilePath& file_path,
     bool flush_on_write,
-    absl::optional<base::Time> last_modified,
+    std::optional<base::Time> last_modified,
     BlobStorageContext::WriteBlobToFileCallback callback) {
   DCHECK(!last_modified || !last_modified.value().is_null());
   if (profile_directory_.empty()) {
@@ -727,7 +729,7 @@ void BlobStorageContext::WriteBlobToFile(
       base::BindOnce(
           [](base::WeakPtr<BlobStorageContext> blob_context,
              const base::FilePath& file_path, bool flush_on_write,
-             absl::optional<base::Time> last_modified,
+             std::optional<base::Time> last_modified,
              BlobStorageContext::WriteBlobToFileCallback callback,
              std::unique_ptr<BlobDataHandle> handle) {
             if (!handle || !blob_context) {
@@ -741,6 +743,11 @@ void BlobStorageContext::WriteBlobToFile(
           },
           AsWeakPtr(), file_path, flush_on_write, last_modified,
           std::move(callback)));
+}
+
+void BlobStorageContext::Clone(
+    mojo::PendingReceiver<mojom::BlobStorageContext> receiver) {
+  Bind(std::move(receiver));
 }
 
 }  // namespace storage

@@ -152,9 +152,9 @@ class MockDerivedElement : public SimpleDerivedElementConstructMagicNumberOne {
         << "element destructor called the wrong number of times";
   }
 
-  // Not using absl::optional<size_t> here in order to get a precise destructor
+  // Not using std::optional<size_t> here in order to get a precise destructor
   // behavior. The tests below need the ability to catch multiple destructor
-  // calls, and absl::optional's destructor might make has_value() return false.
+  // calls, and std::optional's destructor might make has_value() return false.
   size_t expected_destructor_calls_;
   bool has_expected_destructor_calls_ = false;
   size_t destructor_calls_ = 0;

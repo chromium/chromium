@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_PROXY_H_
 
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 #include "services/device/public/mojom/sensor.mojom-blink-forward.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
@@ -57,7 +58,6 @@ class SensorProxy : public GarbageCollected<SensorProxy>,
       device::mojom::blink::SensorConfigurationPtr) = 0;
   virtual double GetDefaultFrequency() const = 0;
   virtual std::pair<double, double> GetFrequencyLimits() const = 0;
-  virtual void SetReadingForInspector(const device::SensorReading&) {}
 
   virtual void ReportError(DOMExceptionCode code, const String& description);
   // Getters.
@@ -83,7 +83,7 @@ class SensorProxy : public GarbageCollected<SensorProxy>,
   virtual void Suspend() {}
   virtual void Resume() {}
 
-  SensorProviderProxy* sensor_provider_proxy() const { return provider_; }
+  SensorProviderProxy* sensor_provider_proxy() const { return provider_.Get(); }
 
   device::mojom::blink::SensorType type_;
   using ObserversSet = HeapHashSet<WeakMember<Observer>>;

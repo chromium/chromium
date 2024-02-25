@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 SelectPredeterminedFileDialog::SelectPredeterminedFileDialog(
@@ -25,10 +26,12 @@ void SelectPredeterminedFileDialog::SelectFileImpl(
     gfx::NativeWindow owning_window,
     void* params,
     const GURL* caller) {
-  if (result_.size() == 1)
-    listener_->FileSelected(result_[0], 0, params);
-  else
-    listener_->MultiFilesSelected(result_, params);
+  if (result_.size() == 1) {
+    listener_->FileSelected(ui::SelectedFileInfo(result_[0]), 0, params);
+  } else {
+    listener_->MultiFilesSelected(
+        ui::FilePathListToSelectedFileInfoList(result_), params);
+  }
 }
 
 bool SelectPredeterminedFileDialog::IsRunning(
@@ -36,7 +39,9 @@ bool SelectPredeterminedFileDialog::IsRunning(
   return false;
 }
 
-void SelectPredeterminedFileDialog::ListenerDestroyed() {}
+void SelectPredeterminedFileDialog::ListenerDestroyed() {
+  listener_ = nullptr;
+}
 
 bool SelectPredeterminedFileDialog::HasMultipleFileTypeChoicesImpl() {
   return false;

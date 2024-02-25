@@ -5,9 +5,11 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -29,6 +31,7 @@ struct InterestGroup;
 }
 
 namespace content {
+struct BiddingAndAuctionServerKey;
 
 // InterestGroupStorage controls access to the Interest Group Database. All
 // public functions perform operations on the database and may block. This
@@ -39,6 +42,10 @@ class CONTENT_EXPORT InterestGroupStorage {
   static constexpr base::TimeDelta kHistoryLength = base::Days(30);
   static constexpr base::TimeDelta kMaintenanceInterval = base::Hours(1);
   static constexpr base::TimeDelta kIdlePeriod = base::Seconds(30);
+  // Store a KAnon key after its corresponding interest group or ad is
+  // no longer present for this amount longer.
+  static constexpr base::TimeDelta kAdditionalKAnonStoragePeriod =
+      base::Days(1);
   // After a successful interest group update, delay the next update until
   // kUpdateSucceededBackoffPeriod time has passed.
   static constexpr base::TimeDelta kUpdateSucceededBackoffPeriod =
@@ -64,6 +71,19 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const blink::InterestGroupKey& group_key,
                           const url::Origin& main_frame);
+
+  // Removes all interest groups owned by `owner` joined from
+  // `main_frame_origin` except `interest_groups_to_keep`, if they exist.
+  // Returns a (possibly empty) list of all interest groups that were cleared.
+  std::vector<std::string> ClearOriginJoinedInterestGroups(
+      const url::Origin& owner,
+      const std::set<std::string>& interest_groups_to_keep,
+      const url::Origin& main_frame_origin);
+
+  // Gets lockout and cooldowns for sending forDebuggingOnly reports.
+  std::optional<DebugReportLockoutAndCooldowns>
+  GetDebugReportLockoutAndCooldowns(base::flat_set<url::Origin> origins);
+
   // Updates the interest group `name` of `owner` with the populated fields of
   // `update`.
   //
@@ -84,16 +104,24 @@ class CONTENT_EXPORT InterestGroupStorage {
   // piece of opaque data to identify the winning ad.
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
+  // Adds an entry to forDebuggingOnly report lockout table if the table is
+  // empty. Otherwise replaces the existing entry.
+  void RecordDebugReportLockout(base::Time last_report_sent_time);
+  // Adds an entry to forDebuggingOnly report cooldown table for `origin` if it
+  // does not exist, otherwise replaces the existing entry.
+  void RecordDebugReportCooldown(const url::Origin& origin,
+                                 base::Time cooldown_start,
+                                 DebugReportCooldownType cooldown_type);
   // Records K-anonymity.
   void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
 
   // Gets the last time that the key was reported to the k-anonymity server.
-  absl::optional<base::Time> GetLastKAnonymityReported(const std::string& key);
+  std::optional<base::Time> GetLastKAnonymityReported(const std::string& key);
   // Updates the last time that the key was reported to the k-anonymity server.
   void UpdateLastKAnonymityReported(const std::string& key);
 
   // Gets a single interest group.
-  absl::optional<StorageInterestGroup> GetInterestGroup(
+  std::optional<StorageInterestGroup> GetInterestGroup(
       const blink::InterestGroupKey& group_key);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
@@ -102,17 +130,19 @@ class CONTENT_EXPORT InterestGroupStorage {
   // associated with the provided owner.
   std::vector<StorageInterestGroup> GetInterestGroupsForOwner(
       const url::Origin& owner);
-  // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
-  // that are currently rate-limited for updates. Additionally, this will update
-  // the `next_update_after` field such that a subsequent
-  // GetInterestGroupsForUpdate() call with the same `owner` won't return
-  // anything until after the success rate limit period passes.
-  //
-  // `groups_limit` sets a limit on the maximum number of interest groups that
-  // may be returned.
-  std::vector<StorageInterestGroup> GetInterestGroupsForUpdate(
+  // For a given owner, gets interest group keys along with their update URLs
+  // and joining origin.
+  // `groups_limit` sets a limit on the maximum number of interest group keys
+  // that may be returned.
+  std::vector<InterestGroupUpdateParameter> GetInterestGroupsForUpdate(
       const url::Origin& owner,
       size_t groups_limit);
+
+  // Gets all KAnonymityData for ads part of the interest group specified by
+  // `interest_group_key`.
+  std::vector<StorageInterestGroup::KAnonymityData> GetKAnonymityDataForUpdate(
+      blink::InterestGroupKey interest_group_key);
+
   // Gets a list of all interest group joining origins. Each joining origin
   // will only appear once.
   std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();
@@ -144,6 +174,18 @@ class CONTENT_EXPORT InterestGroupStorage {
 
   std::vector<StorageInterestGroup> GetAllInterestGroupsUnfilteredForTesting();
 
+  // Update B&A keys for a coordinator. This function will overwrite any
+  // existing keys for the coordinator.
+  void SetBiddingAndAuctionServerKeys(
+      const url::Origin& coordinator,
+      const std::vector<BiddingAndAuctionServerKey>& keys,
+      base::Time expiration);
+  // Load stored B&A server keys for a coordinator along with the keys'
+  // expiration.
+
+  std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
+  GetBiddingAndAuctionServerKeys(const url::Origin& coordinator);
+
   base::Time GetLastMaintenanceTimeForTesting() const;
 
  private:
@@ -156,10 +198,13 @@ class CONTENT_EXPORT InterestGroupStorage {
   const base::FilePath path_to_database_;
   // Maximum number of interest groups, or interest group owners to keep in the
   // database.
-  // Set by the related blink::feature parameters kInterestGroupStorageMaxOwners
-  // and kInterestGroupStorageMaxGroupsPerOwner.
+  // Set by the related blink::feature parameters
+  // kInterestGroupStorageMaxOwners,
+  // kInterestGroupStorageMaxGroupsPerOwner, and
+  // kInterestGroupStorageMaxNegativeGroupsPerOwner.
   const size_t max_owners_;
-  const size_t max_owner_interest_groups_;
+  const size_t max_owner_regular_interest_groups_;
+  const size_t max_owner_negative_interest_groups_;
   const size_t max_owner_storage_size_;
 
   // Maximum number of operations allowed between maintenance calls.

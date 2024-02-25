@@ -17,7 +17,6 @@
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/report_sender.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {

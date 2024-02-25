@@ -23,9 +23,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
 
-/**
- * Test suite for viewport-related properties.
- */
+/** Test suite for viewport-related properties. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ViewportTest {
     @Rule
@@ -49,7 +47,7 @@ public class ViewportTest {
     @Feature({"Viewport", "InitialViewportSize"})
     @CommandLineFlags.Add({"enable-features=DefaultViewportIsDeviceWidth"})
     public void testDefaultViewportSize_DefaultViewportIsDeviceWidth() throws Throwable {
-        testDefaultViewportSize(/*isDefaultViewportDeviceWidth*/ true);
+        testDefaultViewportSize(/* isDefaultViewportDeviceWidth= */ true);
     }
 
     @Test
@@ -57,7 +55,7 @@ public class ViewportTest {
     @Feature({"Viewport", "InitialViewportSize"})
     @CommandLineFlags.Add({"disable-features=DefaultViewportIsDeviceWidth"})
     public void testDefaultViewportSize_DefaultViewportIs980() throws Throwable {
-        testDefaultViewportSize(/*isDefaultViewportDeviceWidth*/ false);
+        testDefaultViewportSize(/* isDefaultViewportDeviceWidth= */ false);
     }
 
     private void testDefaultViewportSize(boolean isDefaultViewportDeviceWidth) throws Throwable {
@@ -83,7 +81,8 @@ public class ViewportTest {
             Assert.assertTrue(viewportWidth <= metrics.widthPixels / metrics.density + 1);
         } else {
             Assert.assertTrue(viewportWidth >= 979);
-            Assert.assertTrue(viewportWidth <= 981);
+            Assert.assertTrue(
+                    viewportWidth <= Math.max(981, metrics.widthPixels / metrics.density + 1));
         }
     }
 

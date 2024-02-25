@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UPDATE_EOL_NOTICE_QUICK_SETTINGS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
@@ -14,6 +15,8 @@ namespace ash {
 // life. Clicking the label will request a page with more info about device end
 // of life to be opened.
 class ASH_EXPORT EolNoticeQuickSettingsView : public views::LabelButton {
+  METADATA_HEADER(EolNoticeQuickSettingsView, views::LabelButton)
+
  public:
   EolNoticeQuickSettingsView();
   ~EolNoticeQuickSettingsView() override;
@@ -27,10 +30,6 @@ class ASH_EXPORT EolNoticeQuickSettingsView : public views::LabelButton {
 
   // views::LabelButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void OnThemeChanged() override;
-
- private:
-  const bool is_qs_revamp_enabled_;
 };
 
 }  // namespace ash

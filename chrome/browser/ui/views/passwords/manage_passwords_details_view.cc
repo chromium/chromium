@@ -20,11 +20,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -35,6 +37,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -112,8 +115,8 @@ std::unique_ptr<views::Label> CreateErrorLabel(std::u16string error_msg) {
 // multiline textarea, the first line in the contents is vertically aligned with
 // the icon.
 void AlignTextfieldWithRowIcon(views::Textfield* textfield) {
-  int line_height = views::style::GetLineHeight(views::style::CONTEXT_TEXTFIELD,
-                                                views::style::STYLE_PRIMARY);
+  int line_height = views::TypographyProvider::Get().GetLineHeight(
+      views::style::CONTEXT_TEXTFIELD, views::style::STYLE_PRIMARY);
   int vertical_padding_inside_textfield =
       2 * ChromeLayoutProvider::Get()->GetDistanceMetric(
               views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING);
@@ -218,10 +221,8 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
       std::make_unique<views::BoxLayoutView>();
   auto* password_label_ptr = password_label_with_eye_icon_view->AddChildView(
       std::move(password_label));
-  password_label_ptr->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kScaleToMaximum));
+  password_label_ptr->SetProperty(views::kBoxLayoutFlexKey,
+                                  views::BoxLayoutFlexSpecification());
 
   auto* eye_icon = password_label_with_eye_icon_view->AddChildView(
       CreateVectorToggleImageButton(views::Button::PressedCallback()));
@@ -355,8 +356,8 @@ std::unique_ptr<views::View> CreateNoteLabel(
   note_label->SetMaximumWidth(kNoteLabelMaxWidth);
   note_label->SetID(static_cast<int>(ManagePasswordsViewIDs::kNoteLabel));
 
-  int line_height = views::style::GetLineHeight(note_label->GetTextContext(),
-                                                note_label->GetTextStyle());
+  int line_height = views::TypographyProvider::Get().GetLineHeight(
+      note_label->GetTextContext(), note_label->GetTextStyle());
   int vertical_margin = (kDetailRowHeight - line_height) / 2;
   auto scroll_view = std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled);
@@ -404,7 +405,7 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
   AlignTextfieldWithRowIcon(*textfield);
   *error_label = username_with_error_label_view->AddChildView(
       CreateErrorLabel(l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED,
+          IDS_PASSWORD_MANAGER_UI_USERNAME_ALREADY_USED,
           base::UTF8ToUTF16(password_manager::GetShownOrigin(
               url::Origin::Create(form.url))))));
   AlignErrorLabelWithTextFieldContents(*error_label);
@@ -443,8 +444,8 @@ std::unique_ptr<views::View> CreateEditNoteRow(
   (*textarea)->SetText(form.GetNoteWithEmptyUniqueDisplayName());
   (*textarea)->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_NOTE_TEXTFIELD));
-  int line_height = views::style::GetLineHeight(views::style::CONTEXT_TEXTFIELD,
-                                                views::style::STYLE_PRIMARY);
+  int line_height = views::TypographyProvider::Get().GetLineHeight(
+      views::style::CONTEXT_TEXTFIELD, views::style::STYLE_PRIMARY);
   (*textarea)->SetPreferredSize(
       gfx::Size(0, kMaxLinesVisibleFromPasswordNote * line_height +
                        2 * ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -487,8 +488,8 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
   views::InstallCircleHighlightPathGenerator(back_button.get());
   header->AddChildView(std::move(back_button));
 
-  std::string shown_origin =
-      password_manager::GetShownOriginAndLinkUrl(password_form).first;
+  std::string shown_origin = password_manager::GetShownOrigin(
+      password_manager::CredentialUIEntry(password_form));
   header->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(
       base::UTF8ToUTF16(shown_origin)));
   return header;
@@ -552,7 +553,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       static_cast<int>(ManagePasswordsViewIDs::kPasswordLabel));
   if (!password_form.federation_origin.opaque()) {
     // Federated credentials, there is no note and no copy password button.
-    AddChildView(CreateDetailsRow(kKeyIcon, std::move(password_label)));
+    AddChildView(CreateDetailsRow(vector_icons::kPasswordManagerIcon,
+                                  std::move(password_label)));
     return;
   }
   auto copy_password_button_callback =
@@ -565,7 +567,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
               PasswordManagementBubbleInteractions::
                   kPasswordCopyButtonClicked));
   AddChildView(CreateDetailsRowWithActionButton(
-      kKeyIcon,
+      vector_icons::kPasswordManagerIcon,
       CreatePasswordLabelWithEyeIconView(std::move(password_label),
                                          on_activity_callback_),
       kCopyIcon,
@@ -600,20 +602,20 @@ void ManagePasswordsDetailsView::SwitchToReadingMode() {
   on_activity_callback_.Run();
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 ManagePasswordsDetailsView::GetUserEnteredUsernameValue() const {
   if (username_textfield_) {
     return username_textfield_->GetText();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 ManagePasswordsDetailsView::GetUserEnteredPasswordNoteValue() const {
   if (note_textarea_) {
     return note_textarea_->GetText();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
@@ -673,3 +675,6 @@ void ManagePasswordsDetailsView::OnUserInputChanged() {
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsDetailsView, kTopView);
+
+BEGIN_METADATA(ManagePasswordsDetailsView)
+END_METADATA

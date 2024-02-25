@@ -18,4 +18,4 @@ void SetKeyEventSuppressAutoRepeat(ui::Event::Properties& properties);
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_CONSTANTS_H_
+#endif  // UI_BASE_IME_EVENTS_H_

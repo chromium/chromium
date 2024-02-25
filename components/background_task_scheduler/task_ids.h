@@ -10,15 +10,20 @@ namespace background_task {
 // This enum lists all the unique task IDs used around in Chromium. These are
 // listed here to ensure that there is no overlap of task IDs between different
 // users of the BackgroundTaskScheduler.
-// When adding your job id to the list below, remember to make a corresponding
-// update to the BackgroundTaskSchedulerExternalUma for metrics.
-// Also, if the new task id is related to a BackgroundTask class in
-// //chrome, remember to update
-// ChromeBackgroundTaskFactory#createBackgroundTaskFromTaskId in java.
-// If the task is a native task, also update
-// ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId. Id from
-// 111000000 to 111999999 are reserved for internal usage. A Java counterpart
-// will be generated for this enum.
+// When adding your job id to the list below, update:
+// 1. BackgroundTaskSchedulerExternalUma for metrics, specifically:
+// toUmaEnumValueFromTaskId() and getHistogramPatternForTaskId().
+// 2. Enum BackgroundTaskId in tools/metrics/histograms/enums.xml.
+// 3. Variant TaskType in
+// tools/metrics/histograms/metadata/android/histograms.xml.
+// 4. ChromeBackgroundTaskFactory#createBackgroundTaskFromTaskId in java.
+// 5. BackgroundTaskSchedulerUmaTest#testToUmaEnumValueFromTaskId for
+// updated BACKGROUND_TASK_COUNT.
+// 6. If the task is a native task, also update
+// ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId.
+
+// Id from 111000000 to 111999999 are reserved for internal usage. A Java
+// counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 // org.chromium.components.background_task_scheduler)
 enum class TaskIds {
@@ -78,6 +83,14 @@ enum class TaskIds {
   // team_email:
   // owner: qinmin@chromium.org
   DOWNLOAD_LATER_JOB_ID = 57,
+  // component: UI>Browser>Downloads
+  // team_email:
+  // owner: qinmin@chromium.org
+  DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID = 58,
+  // component: UI>Browser>Downloads
+  // team_email:
+  // owner: qinmin@chromium.org
+  DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID = 59,
   // component: UI>Browser>ContentSuggestions>Feed
   // team_email: feed@chromium.org
   // owner: dewittj@chromium.org

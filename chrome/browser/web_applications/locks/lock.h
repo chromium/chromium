@@ -11,7 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace content {
 struct PartitionedLockHolder;
@@ -19,7 +19,6 @@ struct PartitionedLockHolder;
 
 namespace web_app {
 
-class ExtensionsManager;
 class WebAppLockManager;
 class WebContentsManager;
 
@@ -37,7 +36,6 @@ class LockDescription {
   };
 
   LockDescription(LockDescription&&);
-  LockDescription& operator=(LockDescription&&);
 
   LockDescription(const LockDescription&) = delete;
   LockDescription& operator=(const LockDescription&) = delete;
@@ -46,7 +44,7 @@ class LockDescription {
 
   Type type() const { return type_; }
 
-  const base::flat_set<AppId>& app_ids() const { return app_ids_; }
+  const base::flat_set<webapps::AppId>& app_ids() const { return app_ids_; }
 
   // Shortcut methods looking at the `type()`. Returns if this lock includes an
   // exclusive lock on the shared web contents.
@@ -55,7 +53,7 @@ class LockDescription {
   base::Value AsDebugValue() const;
 
  protected:
-  explicit LockDescription(base::flat_set<AppId> app_ids, Type type);
+  explicit LockDescription(base::flat_set<webapps::AppId> app_ids, Type type);
 
  private:
   enum class LockLevel {
@@ -64,10 +62,8 @@ class LockDescription {
     kMaxValue = kApp,
   };
 
-  const base::flat_set<AppId> app_ids_{};
+  const base::flat_set<webapps::AppId> app_ids_{};
   const Type type_;
-
-  base::WeakPtrFactory<LockDescription> weak_factory_{this};
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -84,7 +80,6 @@ class Lock {
   ~Lock();
 
   // Resources that are available on all locks:
-  ExtensionsManager& extensions_manager();
   WebContentsManager& web_contents_manager();
 
  protected:

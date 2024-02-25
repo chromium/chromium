@@ -4,14 +4,17 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
-import {Router, routes, SettingsPrefsElement, StatusAction} from 'chrome://settings/settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getSyncAllPrefs} from './sync_test_util.js';
-import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+import type {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 
@@ -126,7 +129,10 @@ export function setupPrivacyGuidePageForTest(
     page: SettingsPrivacyGuidePageElement,
     syncBrowserProxy: TestSyncBrowserProxy): void {
   setSafeBrowsingSetting(page, SafeBrowsingSetting.STANDARD);
-  setCookieSetting(page, CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO);
+  // TODO(b:306414714): Remove once 3pcd launched.
+  if (!loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    setCookieSetting(page, CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO);
+  }
   setupSync({
     syncBrowserProxy: syncBrowserProxy,
     syncOn: true,

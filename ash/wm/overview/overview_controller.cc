@@ -18,31 +18,34 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
 namespace {
+
+OverviewController* g_instance = nullptr;
 
 // It can take up to two frames until the frame created in the UI thread that
 // triggered animation observer is drawn. Wait 50ms in attempt to let its draw
@@ -57,13 +60,6 @@ constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
 
 constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
 
-bool IsSplitViewDividerDraggedOrAnimated() {
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  return split_view_controller->is_resizing_with_divider() ||
-         split_view_controller->IsDividerAnimating();
-}
-
 // Returns the enter/exit type that should be used if kNormal enter/exit type
 // was originally requested - if the overview is expected to transition to/from
 // the home screen, the normal enter/exit mode is expected to be overridden by
@@ -73,13 +69,14 @@ bool IsSplitViewDividerDraggedOrAnimated() {
 OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
     OverviewEnterExitType original_type,
     bool enter,
-    const std::vector<aura::Window*>& windows) {
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
   if (original_type != OverviewEnterExitType::kNormal)
     return original_type;
 
   // Use normal type if home launcher is not available.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return original_type;
+  }
 
   // Transition to home screen only if all windows are minimized.
   for (const aura::Window* window : windows) {
@@ -100,21 +97,18 @@ OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
 
 OverviewController::OverviewController()
     : occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
-      delayed_animation_task_delay_(kTransition) {
-  // If the feature `kJellyroll` is enabled, there's no wallpaper blur in
-  // overview mode, thus we don't need to create `OverviewWallpaperController`
-  // which takes care the the wallpaper blur for overview mode.
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    overview_wallpaper_controller_ =
-        std::make_unique<OverviewWallpaperController>();
-  }
-
+      delayed_animation_task_delay_(kTransition),
+      // Currently, lacros windows do not have a snapshot while they are
+      // evicted.
+      windows_have_snapshot_(!base::FeatureList::IsEnabled(
+          standalone_browser::features::kLacrosOnly)) {
   Shell::Get()->activation_client()->AddObserver(this);
+  CHECK_EQ(g_instance, nullptr);
+  g_instance = this;
 }
 
 OverviewController::~OverviewController() {
   Shell::Get()->activation_client()->RemoveObserver(this);
-  overview_wallpaper_controller_.reset();
 
   // Destroy widgets that may be still animating if shell shuts down soon after
   // exiting overview mode.
@@ -127,9 +121,18 @@ OverviewController::~OverviewController() {
     overview_session_->Shutdown();
     overview_session_.reset();
   }
+
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
-bool OverviewController::StartOverview(OverviewStartAction action,
+// static
+OverviewController* OverviewController::Get() {
+  CHECK(g_instance);
+  return g_instance;
+}
+
+bool OverviewController::StartOverview(OverviewStartAction start_action,
                                        OverviewEnterExitType type) {
   // No need to start overview if overview is currently active.
   if (InOverviewSession())
@@ -139,11 +142,11 @@ bool OverviewController::StartOverview(OverviewStartAction action,
     return false;
 
   ToggleOverview(type);
-  RecordOverviewStartAction(action);
+  RecordOverviewStartAction(start_action);
   return true;
 }
 
-bool OverviewController::EndOverview(OverviewEndAction action,
+bool OverviewController::EndOverview(OverviewEndAction end_action,
                                      OverviewEnterExitType type) {
   // No need to end overview if overview is already ended.
   if (!InOverviewSession())
@@ -152,14 +155,41 @@ bool OverviewController::EndOverview(OverviewEndAction action,
   if (!CanEndOverview(type))
     return false;
 
+  overview_session_->set_overview_end_action(end_action);
   ToggleOverview(type);
-  RecordOverviewEndAction(action);
+  RecordOverviewEndAction(end_action);
 
   // If there is an undo toast active and the toast was created when ChromeVox
   // was enabled, then we need to close the toast when overview closes.
   DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
 
   return true;
+}
+
+bool OverviewController::CanEnterOverview() const {
+  if (!DesksController::Get()->CanEnterOverview()) {
+    return false;
+  }
+
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get();
+      snap_group_controller && !snap_group_controller->CanEnterOverview()) {
+    return false;
+  }
+
+  // Don't allow entering overview if there is a system modal dialog or chromeOS
+  // is running in kiosk app session.
+  Shell* shell = Shell::Get();
+  if (Shell::IsSystemModalWindowOpen() ||
+      shell->screen_pinning_controller()->IsPinned()) {
+    return false;
+  }
+
+  // Don't allow a window overview if the user session is not active or
+  // transitioning to active.
+  const session_manager::SessionState session_state =
+      shell->session_controller()->GetSessionState();
+  return session_state == session_manager::SessionState::ACTIVE ||
+         session_state == session_manager::SessionState::LOGGED_IN_NOT_ACTIVE;
 }
 
 bool OverviewController::InOverviewSession() const {
@@ -255,10 +285,6 @@ void OverviewController::RemoveAndDestroyExitAnimationObserver(
   base::EraseIf(delayed_animations_,
                 base::MatchesUniquePtr(animation_observer));
 
-  // If something has been removed and its the last observer, unblur the
-  // wallpaper and let observers know. This function may be called while still
-  // in overview (ie. splitview restores one window but leaves overview active)
-  // so check that |overview_session_| is null before notifying.
   if (!overview_session_ && !previous_empty && delayed_animations_.empty())
     OnEndingAnimationComplete(/*canceled=*/false);
 }
@@ -283,17 +309,6 @@ void OverviewController::OnWindowActivating(ActivationReason reason,
                                             aura::Window* lost_active) {
   if (InOverviewSession())
     overview_session_->OnWindowActivating(reason, gained_active, lost_active);
-}
-
-std::vector<aura::Window*>
-OverviewController::GetWindowsListInOverviewGridsForTest() {
-  std::vector<aura::Window*> windows;
-  for (const std::unique_ptr<OverviewGrid>& grid :
-       overview_session_->grid_list()) {
-    for (const auto& overview_item : grid->window_list())
-      windows.push_back(overview_item->GetWindow());
-  }
-  return windows;
 }
 
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
@@ -325,7 +340,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     return w == wm::GetTransientRoot(w) &&
            !WindowState::Get(w)->IsUserPositionable();
   };
-  std::vector<aura::Window*> hide_windows(windows.size());
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> hide_windows(
+      windows.size());
   auto end = base::ranges::copy_if(windows, hide_windows.begin(),
                                    should_hide_for_overview);
   hide_windows.resize(end - hide_windows.begin());
@@ -372,7 +388,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       // windows without animations to prevent them from getting maximized
       // during overview exit. Minimized widgets will get created in their
       // place, and those widgets will fade out of overview.
-      std::vector<aura::Window*> windows_to_minimize(windows.size());
+      std::vector<raw_ptr<aura::Window, VectorExperimental>>
+          windows_to_minimize(windows.size());
       auto it = base::ranges::copy_if(
           windows, windows_to_minimize.begin(), [](aura::Window* window) {
             return !WindowState::Get(window)->IsMinimized();
@@ -382,7 +399,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       window_util::MinimizeAndHideWithoutAnimation(windows_to_minimize);
     }
 
-    // Do not show mask and show during overview shutdown.
+    // Do not show rounded corners or shadow during overview shutdown.
     overview_session_->UpdateRoundedCornersAndShadow();
 
     for (auto& observer : observers_)
@@ -424,8 +441,6 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       if (active_widget)
         paint_as_active_lock_ = active_widget->LockPaintAsActive();
     }
-
-    Shell::Get()->frame_throttling_controller()->StartThrottling(windows);
 
     // Clear any animations that may be running from last overview end.
     for (const auto& animation : delayed_animations_)
@@ -472,8 +487,12 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       }
     }
 
-    // Suspend occlusion tracker until the enter animation is complete.
-    PauseOcclusionTracker();
+    // If we don't need to force windows to be visible to get showable content
+    // (i.e. they have a snapshot), suspend occlusion tracker until the enter
+    // animation is complete.
+    if (windows_have_snapshot_) {
+      PauseOcclusionTracker();
+    }
 
     overview_session_ = std::make_unique<OverviewSession>(this);
     // We may want to slide in the overview grid in some cases, even if not
@@ -485,15 +504,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       observer.OnOverviewModeStarting();
     overview_session_->Init(windows, hide_windows);
 
-    // When fading in from home, start animating blur immediately (if animation
-    // is required) - with this transition the item widgets are positioned in
-    // the overview immediately, so delaying blur start until start animations
-    // finish looks janky. If the feature `kJellyroll` is enabled, no need to
-    // set the wallpaper blur.
-    if (!chromeos::features::IsJellyrollEnabled()) {
-      overview_wallpaper_controller_->Blur(
-          /*animate=*/new_type == OverviewEnterExitType::kFadeInEnter);
-    }
+    overview_session_->UpdateFrameThrottling();
 
     // For app dragging, there are no start animations so add a delay to delay
     // animations observing when the start animation ends, such as the shelf,
@@ -505,6 +516,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       AddEnterAnimationObserver(std::move(force_delay_observer));
     }
 
+    // We do not pause the occlusion tracker (like we do for exit) because
+    // windows that become visible as the animation starts should be marked as
+    // visible the instant they are visible.
     if (start_animations_.empty())
       OnStartingAnimationComplete(/*canceled=*/false);
 
@@ -515,37 +529,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   }
 }
 
-bool OverviewController::CanEnterOverview() {
-  if (!DesksController::Get()->CanEnterOverview()) {
-    return false;
-  }
-
-  if (SnapGroupController* snap_group_controller = SnapGroupController::Get();
-      snap_group_controller && !snap_group_controller->CanEnterOverview()) {
-    return false;
-  }
-
-  // Prevent entering overview while the divider is dragged or animated.
-  if (IsSplitViewDividerDraggedOrAnimated()) {
-    return false;
-  }
-
-  // Don't allow a window overview if the user session is not active (e.g.
-  // locked or in user-adding screen) or a modal dialog is open or running in
-  // kiosk app session.
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-  return session_controller->GetSessionState() ==
-             session_manager::SessionState::ACTIVE &&
-         !Shell::IsSystemModalWindowOpen() &&
-         !Shell::Get()->screen_pinning_controller()->IsPinned();
-}
-
-bool OverviewController::CanEndOverview(OverviewEnterExitType type) {
-  // Prevent ending overview while the divider is dragged or animated.
-  if (IsSplitViewDividerDraggedOrAnimated())
-    return false;
-
+bool OverviewController::CanEndOverview(OverviewEnterExitType type) const {
   // Do not allow ending overview if we're in single split mode unless swiping
   // up from the shelf in tablet mode, or ending overview immediately without
   // animations.
@@ -563,25 +547,19 @@ bool OverviewController::CanEndOverview(OverviewEnterExitType type) {
 }
 
 void OverviewController::OnStartingAnimationComplete(bool canceled) {
-  DCHECK(overview_session_);
-
-  // For kFadeInEnter, wallpaper blur is initiated on transition start,
-  // so it doesn't have to be requested again on starting animation end.
-  if (!chromeos::features::IsJellyrollEnabled() && !canceled &&
-      overview_session_->enter_exit_overview_type() !=
-          OverviewEnterExitType::kFadeInEnter) {
-    overview_wallpaper_controller_->Blur(/*animate=*/true);
-  }
-
-  for (auto& observer : observers_)
-    observer.OnOverviewModeStartingAnimationComplete(canceled);
+  CHECK(overview_session_);
 
   // Observers should not do anything which may cause overview to quit
   // explicitly (i.e. ToggleOverview()) or implicity (i.e. activation change).
-  DCHECK(overview_session_);
   overview_session_->OnStartingAnimationComplete(canceled,
                                                  should_focus_overview_);
-  UnpauseOcclusionTracker(kOcclusionPauseDurationForStart);
+  for (auto& observer : observers_) {
+    observer.OnOverviewModeStartingAnimationComplete(canceled);
+  }
+
+  if (windows_have_snapshot_) {
+    UnpauseOcclusionTracker(kOcclusionPauseDurationForStart);
+  }
   TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::EnterOverview",
                                   this, "canceled", canceled);
 }
@@ -589,15 +567,8 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
 void OverviewController::OnEndingAnimationComplete(bool canceled) {
   for (auto& observer : observers_)
     observer.OnOverviewModeEndingAnimationComplete(canceled);
-  UnpauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
-  // Unblur when animation is completed (or right away if there was no
-  // delayed animation) unless it's canceled, in which case, we should keep
-  // the blur. No need to unblur the wallpaper if the feature `kJellyroll` is
-  // enabled, since it's not blurred on overview started.
-  if (!canceled && !chromeos::features::IsJellyrollEnabled()) {
-    overview_wallpaper_controller_->Unblur();
-  }
+  UnpauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
   // Resume the activation frame state.
   if (!canceled) {

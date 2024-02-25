@@ -15,10 +15,12 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node_wiring.h"
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(AudioNodeInputTest, InputDestroyedBeforeOutput) {
+  test::TaskEnvironment task_environment;
   auto page = std::make_unique<DummyPageHolder>();
   OfflineAudioContext* context = OfflineAudioContext::Create(
       page->GetFrame().DomWindow(), 2, 1, 48000, ASSERT_NO_EXCEPTION);
@@ -43,6 +45,7 @@ TEST(AudioNodeInputTest, InputDestroyedBeforeOutput) {
 }
 
 TEST(AudioNodeInputTest, OutputDestroyedBeforeInput) {
+  test::TaskEnvironment task_environment;
   auto page = std::make_unique<DummyPageHolder>();
   OfflineAudioContext* context = OfflineAudioContext::Create(
       page->GetFrame().DomWindow(), 2, 1, 48000, ASSERT_NO_EXCEPTION);

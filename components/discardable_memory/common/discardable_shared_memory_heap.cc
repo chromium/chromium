@@ -4,11 +4,11 @@
 
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
 
+#include <bit>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/memory/aligned_memory.h"
@@ -141,7 +141,7 @@ void DiscardableSharedMemoryHeap::ScopedMemorySegment::OnMemoryDump(
 DiscardableSharedMemoryHeap::DiscardableSharedMemoryHeap()
     : block_size_(base::GetPageSize()) {
   DCHECK_NE(block_size_, 0u);
-  DCHECK(base::bits::IsPowerOfTwo(block_size_));
+  DCHECK(std::has_single_bit(block_size_));
 }
 
 DiscardableSharedMemoryHeap::~DiscardableSharedMemoryHeap() {
@@ -302,7 +302,7 @@ size_t DiscardableSharedMemoryHeap::GetFreelistSize() const {
   return num_free_blocks_ * block_size_;
 }
 
-absl::optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
+std::optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
   size_t resident_size = 0;
   // Each member of |free_spans_| is a LinkedList of Spans. We need to iterate
   // over each of these.
@@ -314,11 +314,11 @@ absl::optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
       // |shared_memory|) has Span::start_ initialized to a value equivalent
       // to reinterpret_cast<shared_memory->memory()) / block_size_.
       void* mem = reinterpret_cast<void*>(free_span->start() * block_size_);
-      absl::optional<size_t> resident_in_span =
+      std::optional<size_t> resident_in_span =
           base::trace_event::ProcessMemoryDump::CountResidentBytes(
               mem, free_span->length() * base::GetPageSize());
       if (!resident_in_span)
-        return absl::nullopt;
+        return std::nullopt;
       resident_size += resident_in_span.value();
     }
   }
@@ -341,7 +341,7 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                         dirty_freed_memory_page_count_ * base::GetPageSize());
   if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     // These metrics (size and virtual size) are also reported by each
     // individual segment. If we report both, then the counts are artificially
     // inflated in detailed dumps, depending on aggregation (for instance, in

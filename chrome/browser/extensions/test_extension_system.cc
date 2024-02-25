@@ -59,8 +59,8 @@ class FakeCWSInfoService : public CWSInfoService {
   ~FakeCWSInfoService() override = default;
 
   // CWSInfoServiceInterface:
-  absl::optional<bool> IsLiveInCWS(const Extension& extension) const override;
-  absl::optional<CWSInfo> GetCWSInfo(const Extension& extension) const override;
+  std::optional<bool> IsLiveInCWS(const Extension& extension) const override;
+  std::optional<CWSInfo> GetCWSInfo(const Extension& extension) const override;
   void CheckAndMaybeFetchInfo() override {}
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
@@ -70,12 +70,12 @@ class FakeCWSInfoService : public CWSInfoService {
   void Shutdown() override {}
 };
 
-absl::optional<bool> FakeCWSInfoService::IsLiveInCWS(
+std::optional<bool> FakeCWSInfoService::IsLiveInCWS(
     const Extension& extension) const {
   return true;
 }
 
-absl::optional<CWSInfoServiceInterface::CWSInfo> FakeCWSInfoService::GetCWSInfo(
+std::optional<CWSInfoServiceInterface::CWSInfo> FakeCWSInfoService::GetCWSInfo(
     const Extension& extension) const {
   return CWSInfoServiceInterface::CWSInfo();
 }
@@ -96,14 +96,7 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
                                   StateStore::BackendType::RULES,
                                   false)),
       quota_service_(new QuotaService()),
-      app_sorting_(new ChromeAppSorting(profile_)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!user_manager::UserManager::IsInitialized()) {
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>());
-  }
-#endif
-}
+      app_sorting_(new ChromeAppSorting(profile_)) {}
 
 TestExtensionSystem::~TestExtensionSystem() = default;
 

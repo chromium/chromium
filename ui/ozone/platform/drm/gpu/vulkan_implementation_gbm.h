@@ -36,7 +36,6 @@ class VulkanImplementationGbm : public gpu::VulkanImplementation {
   std::unique_ptr<gfx::GpuFence> ExportVkFenceToGpuFence(
       VkDevice vk_device,
       VkFence vk_fence) override;
-  VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   VkExternalSemaphoreHandleTypeFlagBits GetExternalSemaphoreHandleType()
       override;
   bool CanImportGpuMemoryBuffer(
@@ -52,8 +51,8 @@ class VulkanImplementationGbm : public gpu::VulkanImplementation {
  private:
   gpu::VulkanInstance vulkan_instance_;
 
-  PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR
-      vkGetPhysicalDeviceExternalFencePropertiesKHR_ = nullptr;
+  PFN_vkGetPhysicalDeviceExternalFenceProperties
+      vkGetPhysicalDeviceExternalFenceProperties_ = nullptr;
   PFN_vkGetFenceFdKHR vkGetFenceFdKHR_ = nullptr;
 };
 

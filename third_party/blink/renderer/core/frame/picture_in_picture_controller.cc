@@ -41,6 +41,18 @@ bool PictureInPictureController::IsElementInPictureInPicture(
   return controller && controller->IsPictureInPictureElement(element);
 }
 
+// static
+LocalDOMWindow* PictureInPictureController::GetDocumentPictureInPictureWindow(
+    const Document& document) {
+#if !BUILDFLAG(IS_ANDROID)
+  PictureInPictureController* controller =
+      Supplement<Document>::From<PictureInPictureController>(document);
+  return controller ? controller->GetDocumentPictureInPictureWindow() : nullptr;
+#else
+  return nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void PictureInPictureController::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
 }

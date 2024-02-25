@@ -93,8 +93,7 @@ void Snapshot::AppendAsTraceFormat(std::string* out) const {
 
     base::StringPiece base64_input(reinterpret_cast<const char*>(&png_data[0]),
                                    png_data.size());
-    std::string base64_output;
-    base::Base64Encode(base64_input, &base64_output);
+    std::string base64_output = base::Base64Encode(base64_input);
 
     *out += "\"screenshot\":\"" + base64_output + "\"";
   }

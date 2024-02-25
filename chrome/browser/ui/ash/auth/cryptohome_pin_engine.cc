@@ -69,20 +69,20 @@ CryptohomePinEngine::CryptohomePinEngine(ash::AuthPerformer* auth_performer)
 
 CryptohomePinEngine::~CryptohomePinEngine() = default;
 
-absl::optional<bool> CryptohomePinEngine::IsCryptohomePinDisabledByPolicy(
+std::optional<bool> CryptohomePinEngine::IsCryptohomePinDisabledByPolicy(
     const AccountId& account_id,
     CryptohomePinEngine::Purpose purpose) const {
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
 
   if (!profile) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto* pref_service = profile->GetPrefs();
 
   if (!pref_service) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (purpose == CryptohomePinEngine::Purpose::kAny) {
@@ -96,7 +96,7 @@ absl::optional<bool> CryptohomePinEngine::IsCryptohomePinDisabledByPolicy(
 
 bool CryptohomePinEngine::ShouldSkipSetupBecauseOfPolicy(
     const AccountId& account_id) const {
-  absl::optional<bool> is_pin_disabled = IsCryptohomePinDisabledByPolicy(
+  std::optional<bool> is_pin_disabled = IsCryptohomePinDisabledByPolicy(
       account_id, CryptohomePinEngine::Purpose::kAny);
   bool result = is_pin_disabled.has_value() ? is_pin_disabled.value() : false;
   result = result ||
@@ -141,7 +141,7 @@ void CryptohomePinEngine::CheckCryptohomePinFactor(
 void CryptohomePinEngine::OnGetAuthFactorsConfiguration(
     IsPinAuthAvailableCallback callback,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     std::move(callback).Run(false, std::move(user_context));
     return;

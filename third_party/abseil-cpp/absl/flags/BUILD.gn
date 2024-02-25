@@ -116,6 +116,7 @@ absl_source_set("reflection") {
     ":private_handle_accessor",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/container:flat_hash_map",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:string_view",
@@ -153,19 +154,15 @@ absl_source_set("flag_internal") {
 }
 
 absl_source_set("flag") {
-  sources = [
-    "flag.cc",
-    "internal/flag_msvc.inc",
-  ]
   public = [
     "declare.h",
     "flag.h",
   ]
   deps = [
+    ":commandlineflag",
     ":config",
     ":flag_internal",
     ":reflection",
-    "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/strings:string_view",
@@ -245,9 +242,11 @@ absl_test("flag_test") {
     ":reflection",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:malloc_internal",
+    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/time",
+    "//third_party/abseil-cpp/absl/types:optional",
   ]
 }

@@ -5,12 +5,13 @@
 #ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_H_
 #define CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/updater/update_service_internal.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "chrome/updater/ipc/update_service_internal_proxy_posix.h"
@@ -36,10 +37,10 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
 
   void RunDone(base::OnceClosure callback,
                int try_count,
-               absl::optional<RpcError> error);
+               std::optional<RpcError> error);
   void HelloDone(base::OnceClosure callback,
                  int try_count,
-                 absl::optional<RpcError> result);
+                 std::optional<RpcError> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdateServiceInternalProxyImpl> proxy_;

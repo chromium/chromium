@@ -1,0 +1,63 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+
+source_set("core") {
+  sources = [
+    "password_generator.cc",
+    "password_generator.h",
+  ]
+  public_deps = [ "//components/autofill/core/browser/proto" ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser/features:password_features",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("generation") {
+  sources = [
+    "password_requirements_spec_fetcher.h",
+    "password_requirements_spec_fetcher_impl.cc",
+    "password_requirements_spec_fetcher_impl.h",
+    "password_requirements_spec_printer.cc",
+    "password_requirements_spec_printer.h",
+  ]
+  public_deps = [ ":core" ]
+  deps = [
+    "//components/password_manager/core/common:features",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "password_generator_unittest.cc",
+    "password_requirements_spec_fetcher_unittest.cc",
+  ]
+  deps = [
+    ":generation",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("password_generator_proto_fuzzer") {
+    sources = [ "password_generator_proto_fuzzer.cc" ]
+    deps = [
+      ":generation",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
+}

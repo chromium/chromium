@@ -1,0 +1,71 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package test.fuzzing.page_load_fuzzing;
+
+// A fuzzer case for page_load_in_process_fuzzer.cc.
+message FuzzCase {
+  // Any network (HTTP, HTTPS) resources that should be available
+  repeated NetworkResource network_resource = 1;
+  // Where to navigate the browser initially
+  // If present, we navigate to a data URI with a particular content.
+  // Otherwise we navigate to the first network resource.
+  optional DataUriNavigation data_uri_navigation = 2;
+  // Body of the response.
+  string body = 3;
+}
+
+// Additional information if we're loading the resource over the network.
+message NetworkResource {
+  // Which server will this resource be made available on.
+  // Typically, use HTTPS_ORIGIN1, but if you need to test a cross-origin
+  // case you can make resources available on other servers.
+  WhichServer which_server = 1;
+  // The path to request on the http(s) server. Should start with /
+  string path = 2;
+  // The HTTP status which will be presented in the response, e.g. 200
+  uint32 http_status = 3;
+  // Custom headers in the HTTP response.
+  repeated CustomHeader custom_headers = 4;
+  // The Content-Type to be returned.
+  string content_type = 5;
+  // The textual reason string to go along with the HTTP status code,
+  // for example, "OK"
+  string reason = 6;
+  // The body of the response.
+  // The strings $HTTPS_ORIGIN1, $HTTPS_ORIGIN2, $HTTP_ORIGIN1 and $HTTP_ORIGIN2
+  // will be substituted with the root URIs for the test servers.
+  // For example, "<html><img src=\"$HTTPS_ORIGIN1/test.png\"></html>"
+  // should load a page from one of the network_resources provided in
+  // the FuzzCase. Four servers are provided to test cross-origin cases.
+  optional string body = 7;
+}
+
+// Which server should this network resource be made available on.
+enum WhichServer {
+  HTTPS_ORIGIN1 = 0;
+  HTTPS_ORIGIN2 = 1;
+  HTTP_ORIGIN1 = 2;
+  HTTP_ORIGIN2 = 3;
+}
+
+// A custom header in an HTTP response.
+message CustomHeader {
+  string key = 1;
+  string value = 2;
+}
+
+// A navigation to a data: URI
+message DataUriNavigation {
+  // The content-type of the data URI
+  string content_type = 1;
+  // The body, which will be base64 encoded.
+  // The strings $HTTPS_ORIGIN1, $HTTPS_ORIGIN2, $HTTP_ORIGIN1 and $HTTP_ORIGIN2
+  // will be substituted with the root URIs for the test servers.
+  // For example, "<html><img src=\"$HTTPS_ORIGIN1/test.png\"></html>"
+  // should load a page from one of the network_resources provided in
+  // the FuzzCase. Four servers are provided to test cross-origin cases.
+  string body = 2;
+}

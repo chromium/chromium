@@ -8,8 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -25,7 +26,7 @@ NET_EXPORT bool IsWellKnownPort(int port);
 // Checks if the port is allowed for the specified scheme.  Ports set as allowed
 // with SetExplicitlyAllowedPorts() or by using ScopedPortException() will be
 // considered allowed for any scheme.
-NET_EXPORT bool IsPortAllowedForScheme(int port, base::StringPiece url_scheme);
+NET_EXPORT bool IsPortAllowedForScheme(int port, std::string_view url_scheme);
 
 // Returns the number of explicitly allowed ports; for testing.
 NET_EXPORT_PRIVATE size_t GetCountOfExplicitlyAllowedPorts();

@@ -60,6 +60,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -72,9 +73,9 @@ int kEditableComboboxButtonSize = 24;
 int kEditableComboboxControlsContainerInsets = 6;
 
 class Arrow : public Button {
- public:
-  METADATA_HEADER(Arrow);
+  METADATA_HEADER(Arrow, Button)
 
+ public:
   explicit Arrow(PressedCallback callback) : Button(std::move(callback)) {
     if (features::IsChromeRefresh2023()) {
       SetPreferredSize(
@@ -107,7 +108,7 @@ class Arrow : public Button {
     arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
     // Make sure the arrow use the same color as the text in the combobox.
     PaintComboboxArrow(
-        GetColorProvider()->GetColor(style::GetColorId(
+        GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
             style::CONTEXT_TEXTFIELD,
             GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED)),
         arrow_bounds, canvas);
@@ -122,7 +123,7 @@ class Arrow : public Button {
   }
 };
 
-BEGIN_METADATA(Arrow, Button)
+BEGIN_METADATA(Arrow)
 END_METADATA
 
 }  // namespace
@@ -408,7 +409,7 @@ void EditableCombobox::SetText(const std::u16string& text) {
   HandleNewContent(text);
 }
 
-std::u16string EditableCombobox::GetPlaceholderText() const {
+const std::u16string& EditableCombobox::GetPlaceholderText() const {
   return textfield_->GetPlaceholderText();
 }
 
@@ -417,7 +418,7 @@ void EditableCombobox::SetPlaceholderText(const std::u16string& text) {
 }
 
 const gfx::FontList& EditableCombobox::GetFontList() const {
-  return style::GetFont(text_context_, text_style_);
+  return TypographyProvider::Get().GetFont(text_context_, text_style_);
 }
 
 void EditableCombobox::SelectRange(const gfx::Range& range) {
@@ -441,8 +442,8 @@ void EditableCombobox::UpdateMenu() {
   menu_model_->UpdateItemsShown();
 }
 
-void EditableCombobox::Layout() {
-  View::Layout();
+void EditableCombobox::Layout(PassKey) {
+  LayoutSuperclass<View>(this);
   int preferred_width = control_elements_container_->GetPreferredSize().width();
   control_elements_container_->SetBounds(width() - preferred_width, 0,
                                          preferred_width, height());
@@ -616,7 +617,7 @@ const ui::ComboboxModel* EditableCombobox::GetComboboxModel() const {
   return menu_model_->GetComboboxModel();
 }
 
-BEGIN_METADATA(EditableCombobox, View)
+BEGIN_METADATA(EditableCombobox)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
 END_METADATA

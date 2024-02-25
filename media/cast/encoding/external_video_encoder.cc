@@ -38,6 +38,7 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/encoding/encoding_util.h"
 #include "media/cast/encoding/vpx_quantizer_parser.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/video/h264_parser.h"
@@ -150,9 +151,11 @@ class ExternalVideoEncoder::VEAClientImpl final
     const media::Bitrate bitrate = media::Bitrate::ConstantBitrate(
         base::saturated_cast<uint32_t>(start_bit_rate));
     media::VideoEncodeAccelerator::Config config(
-        media::PIXEL_FORMAT_I420, frame_size, codec_profile, bitrate);
-    config.content_type =
-        media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
+        media::PIXEL_FORMAT_I420, frame_size, codec_profile, bitrate,
+        static_cast<uint32_t>(max_frame_rate_ + 0.5),
+        media::VideoEncodeAccelerator::Config::StorageType::kShmem,
+        media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
+    config.drop_frame_thresh_percentage = GetEncoderDropFrameThreshold();
     encoder_active_ = video_encode_accelerator_->Initialize(
         config, this, std::make_unique<media::NullMediaLog>());
     next_frame_id_ = first_frame_id;
@@ -179,7 +182,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       // uint32_t bitrates
       video_encode_accelerator_->RequestEncodingParametersChange(
           Bitrate::ConstantBitrate(base::saturated_cast<uint32_t>(bit_rate)),
-          static_cast<uint32_t>(max_frame_rate_ + 0.5));
+          static_cast<uint32_t>(max_frame_rate_ + 0.5), std::nullopt);
     }
   }
 
@@ -239,6 +242,8 @@ class ExternalVideoEncoder::VEAClientImpl final
     if (video_frame->coded_size() != frame_coded_size_ ||
         video_frame->storage_type() !=
             media::VideoFrame::StorageType::STORAGE_SHMEM) {
+      TRACE_EVENT1("media", "VideoFrame copy", "coded size",
+                   video_frame->coded_size().ToString());
       const int index = free_input_buffer_index_.back();
       auto& mapped_region = input_buffers_[index];
       DCHECK(mapped_region.IsValid());
@@ -337,9 +342,30 @@ class ExternalVideoEncoder::VEAClientImpl final
                              base::NumberToString(bitstream_buffer_id)});
       return;
     }
-    const char* output_buffer_memory = output_buffers_[bitstream_buffer_id]
-                                           .second.GetMemoryAsSpan<char>()
-                                           .data();
+
+    if (metadata.payload_size_bytes == 0) {
+      CHECK(key_frame_encountered_);
+      // The encoder drops a frame.
+      InProgressExternalVideoFrameEncode& request =
+          in_progress_frame_encodes_.front();
+      cast_environment_->PostTask(
+          CastEnvironment::MAIN, FROM_HERE,
+          base::BindOnce(std::move(request.frame_encoded_callback), nullptr));
+      in_progress_frame_encodes_.pop_front();
+      if (encoder_active_) {
+        video_encode_accelerator_->UseOutputBitstreamBuffer(
+            media::BitstreamBuffer(
+                bitstream_buffer_id,
+                output_buffers_[bitstream_buffer_id].first.Duplicate(),
+                output_buffers_[bitstream_buffer_id].first.GetSize()));
+      }
+      return;
+    }
+
+    const char* output_buffer_memory =
+        output_buffers_[bitstream_buffer_id]
+            .second.GetMemoryAsSpan<char>(metadata.payload_size_bytes)
+            .data();
     if (metadata.payload_size_bytes >
         output_buffers_[bitstream_buffer_id].second.size()) {
       NotifyErrorStatus(
@@ -363,9 +389,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       auto encoded_frame = std::make_unique<SenderEncodedFrame>();
       encoded_frame->dependency =
           metadata.key_frame
-              ?
-
-              openscreen::cast::EncodedFrame::Dependency::kKeyFrame
+              ? openscreen::cast::EncodedFrame::Dependency::kKeyFrame
               : openscreen::cast::EncodedFrame::Dependency::kDependent;
       encoded_frame->frame_id = next_frame_id_++;
       if (metadata.key_frame) {
@@ -377,6 +401,11 @@ class ExternalVideoEncoder::VEAClientImpl final
           ToRtpTimeTicks(request.video_frame->timestamp(), kVideoFrequency);
       encoded_frame->reference_time = request.reference_time;
 
+      encoded_frame->capture_begin_time =
+          request.video_frame->metadata().capture_begin_time;
+      encoded_frame->capture_end_time =
+          request.video_frame->metadata().capture_end_time;
+
       std::string header = stream_header_.str();
       if (!header.empty()) {
         encoded_frame->data = std::move(header);
@@ -384,7 +413,6 @@ class ExternalVideoEncoder::VEAClientImpl final
       }
       encoded_frame->data.append(output_buffer_memory,
                                  metadata.payload_size_bytes);
-      DCHECK(!encoded_frame->data.empty()) << "BUG: Encoder must provide data.";
 
       // If FRAME_DURATION metadata was provided in the source VideoFrame,
       // compute the utilization metrics.

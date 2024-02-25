@@ -85,7 +85,7 @@ TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
   identity_test_env()->EnableRemovalOfExtendedAccountInfo();
   identity_manager->GetAccountsMutator()->RemoveAccount(
       CoreAccountId::FromGaiaId("secondary_account_id"),
-      signin_metrics::SourceForRefreshTokenOperation::kUserMenu_RemoveAccount);
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
 
   EXPECT_CALL(reuse_manager_, ClearGaiaPasswordHash("username"));

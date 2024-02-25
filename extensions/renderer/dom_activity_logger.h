@@ -5,9 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_DOM_ACTIVITY_LOGGER_H_
 #define EXTENSIONS_RENDERER_DOM_ACTIVITY_LOGGER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/values.h"
 #include "extensions/common/dom_action_types.h"
 #include "extensions/common/extension_id.h"
@@ -28,7 +25,7 @@ namespace extensions {
 class DOMActivityLogger: public blink::WebDOMActivityLogger {
  public:
   static const int kMainWorldId = 0;
-  explicit DOMActivityLogger(const std::string& extension_id);
+  explicit DOMActivityLogger(const ExtensionId& extension_id);
 
   DOMActivityLogger(const DOMActivityLogger&) = delete;
   DOMActivityLogger& operator=(const DOMActivityLogger&) = delete;
@@ -38,7 +35,7 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
   // Check (using the WebKit API) if there is no logger attached to the world
   // corresponding to world_id, and if so, construct a new logger and attach it.
   // world_id = 0 indicates the main world.
-  static void AttachToWorld(int32_t world_id, const std::string& extension_id);
+  static void AttachToWorld(int32_t world_id, const ExtensionId& extension_id);
 
  private:
   // blink::WebDOMActivityLogger implementation.
@@ -47,35 +44,35 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
   // log.
   // These methods don't have the override keyword due to the complexities it
   // introduces when changes blink apis.
-  void LogGetter(const blink::WebString& api_name,
+  void LogGetter(v8::Isolate* isolate,
+                 v8::Local<v8::Context> context,
+                 const blink::WebString& api_name,
                  const blink::WebURL& url,
                  const blink::WebString& title) override;
-  void LogSetter(const blink::WebString& api_name,
+  void LogSetter(v8::Isolate* isolate,
+                 v8::Local<v8::Context> context,
+                 const blink::WebString& api_name,
                  const v8::Local<v8::Value>& new_value,
                  const blink::WebURL& url,
                  const blink::WebString& title) override;
-  virtual void logSetter(const blink::WebString& api_name,
-                         const v8::Local<v8::Value>& new_value,
-                         const v8::Local<v8::Value>& old_value,
-                         const blink::WebURL& url,
-                         const blink::WebString& title);
-  void LogMethod(const blink::WebString& api_name,
+  void LogMethod(v8::Isolate* isolate,
+                 v8::Local<v8::Context> context,
+                 const blink::WebString& api_name,
                  int argc,
                  const v8::Local<v8::Value>* argv,
                  const blink::WebURL& url,
                  const blink::WebString& title) override;
-  void LogEvent(const blink::WebString& event_name,
+  void LogEvent(blink::WebLocalFrame& frame,
+                const blink::WebString& event_name,
                 int argc,
                 const blink::WebString* argv,
                 const blink::WebURL& url,
                 const blink::WebString& title) override;
 
-  mojom::RendererHost* GetRendererHost();
+  mojom::RendererHost* GetRendererHost(v8::Local<v8::Context> context);
 
   // The id of the extension with which this logger is associated.
   ExtensionId extension_id_;
-
-  mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
 };
 
 }  // namespace extensions

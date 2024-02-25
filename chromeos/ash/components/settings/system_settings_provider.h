@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -33,9 +33,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) SystemSettingsProvider
   ~SystemSettingsProvider() override;
 
   // CrosSettingsProvider implementation.
-  const base::Value* Get(base::StringPiece path) const override;
+  const base::Value* Get(std::string_view path) const override;
   TrustedStatus PrepareTrustedValues(base::OnceClosure* callback) override;
-  bool HandlesSetting(base::StringPiece path) const override;
+  bool HandlesSetting(std::string_view path) const override;
 
   // TimezoneSettings::Observer implementation.
   void TimezoneChanged(const icu::TimeZone& timezone) override;

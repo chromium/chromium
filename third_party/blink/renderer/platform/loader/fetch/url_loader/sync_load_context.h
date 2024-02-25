@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
@@ -77,7 +78,8 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   SyncLoadContext& operator=(const SyncLoadContext&) = delete;
   ~SyncLoadContext() override;
 
-  void FollowRedirect();
+  void FollowRedirect(std::vector<std::string> removed_headers,
+                      net::HttpRequestHeaders modified_headers);
   void CancelRedirect();
 
  private:
@@ -96,14 +98,14 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   // ResourceRequestClient implementation:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
-  bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
-                          network::mojom::URLResponseHeadPtr head,
-                          std::vector<std::string>*) override;
+  void OnReceivedRedirect(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr head,
+      FollowRedirectCallback follow_redirect_callback) override;
   void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
-      base::TimeTicks response_arrival_at_renderer) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
@@ -120,13 +122,17 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   // This raw pointer will remain valid for the lifetime of this object because
   // it remains on the stack until |event_| is signaled.
   // Set to null after CompleteRequest() is called.
-  SyncLoadResponse* response_;
+  raw_ptr<SyncLoadResponse> response_;
+
+  // Used when handling a redirect. It is set in OnReceivedRedirect(), and
+  // called when FollowRedirect() is called from the original thread.
+  FollowRedirectCallback follow_redirect_callback_;
 
   // This raw pointer will be set to `this` when receiving redirects on
   // independent thread and set to nullptr in `FollowRedirect()` or
   // `CancelRedirect()` on the same thread after `redirect_or_response_event_`
   // is signaled, which protects it against race condition.
-  SyncLoadContext** context_for_redirect_;
+  raw_ptr<SyncLoadContext*> context_for_redirect_;
 
   enum class Mode { kInitial, kDataPipe, kBlob };
   Mode mode_ = Mode::kInitial;

@@ -7,9 +7,10 @@
 import {PageImageServiceBrowserProxy} from '//resources/cr_components/page_image_service/browser_proxy.js';
 import {ClientId as PageImageServiceClientId} from '//resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
+import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
+import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 
 // This corresponds to the max number of concurrent ImageService requests
 // before further requests get dropped. Further requests up to 600 should be
@@ -243,9 +244,10 @@ export class PowerBookmarksService {
       let topLevelBookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
       this.folders_.forEach(
           folder => topLevelBookmarks = topLevelBookmarks.concat(
-              (folder.id === loadTimeData.getString('bookmarksBarId')) ?
-                  [folder] :
-                  folder.children!));
+              (folder.id === loadTimeData.getString('otherBookmarksId') ||
+               folder.id === loadTimeData.getString('mobileBookmarksId')) ?
+                  folder.children! :
+                  [folder]));
       bookmarks = topLevelBookmarks;
     }
     if (searchQuery || labels.find((label) => label.active)) {
@@ -506,8 +508,7 @@ export class PowerBookmarksService {
       return;
     }
 
-    const url: Url = new Url();
-    url.url = bookmark.url;
+    const url: Url = {url: bookmark.url};
 
     // Fetch the representative image for this page, if possible.
     this.activeImageServiceRequestCount_++;
@@ -515,7 +516,7 @@ export class PowerBookmarksService {
         await PageImageServiceBrowserProxy.getInstance()
             .handler.getPageImageUrl(
                 PageImageServiceClientId.Bookmarks, url,
-                {suggestImages: true, optimizationGuideImages: true});
+                {suggestImages: false, optimizationGuideImages: true});
     this.activeImageServiceRequestCount_--;
 
     if (result) {

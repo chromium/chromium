@@ -8,6 +8,11 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
@@ -15,10 +20,24 @@ namespace ash {
 // between Ash and the browser.
 class ASH_EXPORT GameDashboardDelegate {
  public:
+  using IsGameCallback = base::OnceCallback<void(bool is_game)>;
+
   virtual ~GameDashboardDelegate() = default;
 
-  // Returns true if the given appId corresponds to a game.
-  virtual bool IsGame(const std::string& app_id) const = 0;
+  // Checks App Service and ARC whether `app_id` is a game, and then fires
+  // `callback` with true if it's a game.
+  virtual void GetIsGame(const std::string& app_id,
+                         IsGameCallback callback) = 0;
+
+  // Gets the app name by `app_id`.
+  virtual std::string GetArcAppName(const std::string& app_id) const = 0;
+
+  // Records `ScalableIph::kGameWindowOpened` event.
+  virtual void RecordGameWindowOpenedEvent(aura::Window* window) = 0;
+
+  // Shows the compat mode resize toggle menu, which requires the app `window`
+  // param when creating the `ResizeToggleMenu` object.
+  virtual void ShowResizeToggleMenu(aura::Window* window) = 0;
 };
 
 }  // namespace ash

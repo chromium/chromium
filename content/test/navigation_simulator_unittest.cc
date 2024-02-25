@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -37,7 +36,7 @@ class CancellingNavigationSimulatorTest
     : public RenderViewHostImplTestHarness,
       public WebContentsObserver,
       public testing::WithParamInterface<
-          std::tuple<absl::optional<TestNavigationThrottle::ThrottleMethod>,
+          std::tuple<std::optional<TestNavigationThrottle::ThrottleMethod>,
                      TestNavigationThrottle::ResultSynchrony>> {
  public:
   CancellingNavigationSimulatorTest() {}
@@ -84,7 +83,7 @@ class CancellingNavigationSimulatorTest
 
   void OnWillFailRequestCalled() { will_fail_request_called_ = true; }
 
-  absl::optional<TestNavigationThrottle::ThrottleMethod> cancel_time_;
+  std::optional<TestNavigationThrottle::ThrottleMethod> cancel_time_;
   TestNavigationThrottle::ResultSynchrony sync_;
   std::unique_ptr<NavigationSimulator> simulator_;
   bool did_finish_navigation_ = false;
@@ -141,13 +140,21 @@ class ResponseHeadersCheckingNavigationSimulatorTest
   }
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
-    if (handle->GetResponseHeaders()) {
-      response_headers_ = handle->GetResponseHeaders();
-    }
+    EXPECT_TRUE(handle->GetResponseHeaders()->HasHeaderValue("My-Test-Header",
+                                                             "my-test-value"));
   }
 
-  raw_ptr<const net::HttpResponseHeaders, DanglingUntriaged> response_headers_;
+  scoped_refptr<net::HttpResponseHeaders> response_headers_;
 };
+
+// Test that NavigationSimulator accurately commits about:blank if the browser
+// requests a navigation to an empty URL.
+TEST_F(NavigationSimulatorTest, EmptyURL) {
+  std::unique_ptr<NavigationSimulator> simulator =
+      NavigationSimulator::CreateBrowserInitiated(GURL(), contents());
+  simulator->Commit();
+  EXPECT_EQ(GURL(url::kAboutBlankURL), main_rfh()->GetLastCommittedURL());
+}
 
 TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {
   std::unique_ptr<NavigationSimulator> simulator =
@@ -216,14 +223,12 @@ TEST_F(ResponseHeadersCheckingNavigationSimulatorTest, CheckResponseHeaders) {
           GURL("https://example.test/"), main_rfh());
   simulator->Start();
 
-  auto response_headers =
+  response_headers_ =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-  response_headers->SetHeader("My-Test-Header", "my-test-value");
-  simulator->SetResponseHeaders(response_headers);
+  response_headers_->SetHeader("My-Test-Header", "my-test-value");
+  simulator->SetResponseHeaders(response_headers_);
   simulator->ReadyToCommit();
   simulator->Commit();
-  EXPECT_TRUE(
-      response_headers_->HasHeaderValue("My-Test-Header", "my-test-value"));
 }
 
 // Stress test the navigation simulator by having a navigation throttle cancel
@@ -274,7 +279,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(TestNavigationThrottle::WILL_START_REQUEST,
                           TestNavigationThrottle::WILL_REDIRECT_REQUEST,
                           TestNavigationThrottle::WILL_PROCESS_RESPONSE,
-                          absl::nullopt),
+                          std::nullopt),
         ::testing::Values(TestNavigationThrottle::SYNCHRONOUS,
                           TestNavigationThrottle::ASYNCHRONOUS)));
 

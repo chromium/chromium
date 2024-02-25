@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/locales.gni")
 import("//components/cast_streaming/features.gni")
 import("//media/media_options.gni")
 
 # These args blocks should contain arguments used within the //chromecast
 # directory. Arguments which are used in other Chrome components should
-# be instead declared in //build/config/chromecast_build.gni.
+# be instead declared in //build/config/cast.gni.
 declare_args() {
   # True if Chromecast build is targeted for linux desktop. This type of build
   # is useful for testing and development, but currently supports only a subset

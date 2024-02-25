@@ -5,11 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that console revokes lazily handled promise rejections.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       var worker;
@@ -28,7 +28,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SDK.TargetManager.TargetManager.instance().addModelListener(SDK.ConsoleModel.ConsoleModel, SDK.ConsoleModel.Events.MessageAdded, messageAdded);
   SDK.TargetManager.TargetManager.instance().addModelListener(SDK.ConsoleModel.ConsoleModel, SDK.ConsoleModel.Events.MessageUpdated, messageUpdated);
 
-  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
+  Console.ConsoleView.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
   TestRunner.addResult('Creating worker with promise');
   TestRunner.evaluateInPageWithTimeout('createPromise()');
 
@@ -49,7 +49,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
     // Turn on verbose filter.
     TestRunner.addResult(`\nEnable verbose filter`);
-    Console.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.allLevelsFilterValue());
+    Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.ConsoleFilter.allLevelsFilterValue());
     await ConsoleTestRunner.dumpConsoleCounters();
 
     TestRunner.completeTest();

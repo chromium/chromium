@@ -12,8 +12,6 @@
   }
 
   #apnTooltip {
-    --paper-tooltip-background: var(--cros-tooltip-background-color);
-    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
     text-align: center;
   }
 
@@ -58,22 +56,22 @@
                     aria-labelledby="add-wifi-label"></cr-icon-button>
               </div>
             </template>
-            <div actionable$="[[!vpnIsProhibited_]]" class="list-item"
+            <div actionable$="[[!disableVpnUi_]]" class="list-item"
                 on-click="onAddVpnClick_">
               <div class="start settings-box-text"
                   id="add-vpn-label" aria-hidden="true">
                 $i18n{internetAddVPN}
               </div>
-              <template is="dom-if" if="[[vpnIsProhibited_]]">
+              <template is="dom-if" if="[[disableVpnUi_]]">
                 <cr-policy-indicator id="vpnPolicyIndicator"
                     icon-aria-label="$i18n{networkVpnBuiltin}"
                     indicator-type="devicePolicy"
                     on-click="doNothing_">
                 </cr-policy-indicator>
               </template>
-              <cr-icon-button class="icon-add-circle"
+              <cr-icon-button id="add-vpn-button" class="icon-add-circle"
                   aria-labelledby="add-vpn-label"
-                  disabled="[[vpnIsProhibited_]]">
+                  disabled="[[disableVpnUi_]]">
               </cr-icon-button>
             </div>
             <template is="dom-repeat" items="[[vpnProviders_]]">
@@ -131,6 +129,7 @@
           <cr-button id="createCustomApnButton"
               on-click="onCreateCustomApnClicked_"
               class="cancel-button"
+              deep-link-focus-id$="[[Setting.kCellularAddApn]]"
               disabled="[[isCreateCustomApnButtonDisabled_]]">
             <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
             $i18n{apnPageAddNewApn}
@@ -158,6 +157,17 @@
           slot="subpage-title-extra"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
       </settings-internet-subpage-menu>
+      <template is="dom-if"
+          if="[[isProviderLocked_]]" restamp>
+        <!-- Carrier locked network. -->
+        <div class="settings-box first">
+          <div id="cellularSubtitle" class="settings-box-text">
+            <localized-link
+                localized-string="[[i18nAdvanced('cellularSubpageSubtitle')]]">
+            </localized-link>
+          </div>
+        </div>
+      </template>
       <settings-internet-subpage
           default-network="[[defaultNetwork]]"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]"

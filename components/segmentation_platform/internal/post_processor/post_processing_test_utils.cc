@@ -82,7 +82,7 @@ proto::OutputConfig GetTestOutputConfigForBinnedClassifier() {
 
 proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
     int top_k_outputs,
-    absl::optional<float> threshold) {
+    std::optional<float> threshold) {
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
 
@@ -90,6 +90,14 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
                                     kShoppingUser};
   writer.AddOutputConfigForMultiClassClassifier(labels.begin(), labels.size(),
                                                 top_k_outputs, threshold);
+  return model_metadata.output_config();
+}
+
+proto::OutputConfig GetTestOutputConfigForGenericPredictor(
+    const std::vector<std::string>& labels) {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForGenericPredictor(labels);
   return model_metadata.output_config();
 }
 

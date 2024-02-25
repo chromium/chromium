@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PDF.Actions" enum="ChromePDFViewerActions"
-    expires_after="2024-01-14">
+    expires_after="2024-07-21">
   <owner>hnakashima@chromium.org</owner>
   <summary>
     Tracks user actions in the PDF viewer. Logged when the document is opened
@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.AttachmentType" enum="ViewFileType"
-    expires_after="2024-01-14">
+    expires_after="2024-05-19">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2024-02-11">
+<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2024-04-28">
   <owner>dhoss@chromium.org</owner>
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2024-01-14">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2024-07-21">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -68,25 +68,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.LinkHighlightOverlapsInPage" units="overlaps"
-    expires_after="2022-04-24">
-  <obsolete>
-    Removed 04/2022. It's no longer needed.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <owner>ankk@microsoft.com</owner>
-  <owner>mohitb@microsoft.com</owner>
-  <owner>virens@microsoft.com</owner>
-  <summary>
-    Records the number of overlapping link and highlight annotations in a PDF
-    page. This is logged once per page whenever accessibility tree creation is
-    triggered for that page. It will not be logged on render or scroll
-    operations.
-  </summary>
-</histogram>
-
 <histogram name="PDF.LoadStatus" enum="ChromePDFViewerLoadStatus"
-    expires_after="2024-01-07">
+    expires_after="2024-07-14">
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -96,7 +79,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageCount" units="pages" expires_after="2024-01-14">
+<histogram name="PDF.PageCount" units="pages" expires_after="2024-07-21">
   <owner>hnakashima@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -104,8 +87,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.PostMessageDataType" enum="PDFPostMessageDataType"
+    expires_after="2024-11-30">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the type of postMessage() call made to the PDF viewer.
+  </summary>
+</histogram>
+
 <histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-06-30">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -114,7 +106,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.Version" enum="PDFVersion" expires_after="2023-12-24">
+<histogram name="PDF.Version" enum="PDFVersion" expires_after="2024-06-30">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>Tracks versions of documents opened in the PDF viewer.</summary>

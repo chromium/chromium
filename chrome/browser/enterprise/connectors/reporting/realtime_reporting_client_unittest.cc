@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -37,7 +36,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -46,6 +44,10 @@
 #include "components/user_manager/user.h"
 #else
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -153,7 +155,11 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
   }
 
   bool should_init() {
-    return is_feature_flag_enabled_ || !profiles::IsManagedGuestSession();
+    bool is_mgs = false;
+#if BUILDFLAG(IS_CHROMEOS)
+    is_mgs = chromeos::IsManagedGuestSession();
+#endif
+    return is_feature_flag_enabled_ || !is_mgs;
   }
 
  protected:
@@ -273,7 +279,7 @@ TEST_F(RealtimeReportingClientTestBase,
        TestCrowdstrikeSignalsNotPopulatedForEmptyResponse) {
   base::Value::Dict event;
   device_signals::SignalsAggregationResponse response;
-  response.agent_signals_response = absl::nullopt;
+  response.agent_signals_response = std::nullopt;
   AddCrowdstrikeSignalsToEvent(event, response);
   EXPECT_EQ(event.Find("securityAgents"), nullptr);
 }

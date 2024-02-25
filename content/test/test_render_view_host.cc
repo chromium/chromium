@@ -5,6 +5,7 @@
 #include "content/test/test_render_view_host.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
@@ -17,10 +18,10 @@
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/input/synthetic_gesture_target.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -34,7 +35,6 @@
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
@@ -74,11 +74,7 @@ TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
 
   host()->SetView(this);
 
-  if (host()->delegate() && host()->delegate()->GetInputEventRouter() &&
-      GetFrameSinkId().is_valid()) {
-    host()->delegate()->GetInputEventRouter()->AddFrameSinkIdOwner(
-        GetFrameSinkId(), this);
-  }
+  SetIsFrameSinkIdOwner(true);
 
 #if defined(USE_AURA)
   window_ = std::make_unique<aura::Window>(
@@ -91,7 +87,7 @@ TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
 TestRenderWidgetHostView::~TestRenderWidgetHostView() {
   viz::HostFrameSinkManager* manager = GetHostFrameSinkManager();
   if (manager)
-    manager->InvalidateFrameSinkId(frame_sink_id_);
+    manager->InvalidateFrameSinkId(frame_sink_id_, this);
 }
 
 gfx::NativeView TestRenderWidgetHostView::GetNativeView() {
@@ -194,6 +190,10 @@ void TestRenderWidgetHostView::ShowSharePicker(
     const std::string& url,
     const std::vector<std::string>& file_paths,
     blink::mojom::ShareService::ShareCallback callback) {}
+
+uint64_t TestRenderWidgetHostView::GetNSViewId() const {
+  return 0;
+}
 #endif
 
 gfx::Rect TestRenderWidgetHostView::GetBoundsInRootWindow() {
@@ -210,17 +210,16 @@ void TestRenderWidgetHostView::TakeFallbackContentFrom(
   CopyBackgroundColorIfPresentFrom(*view);
 }
 
-blink::mojom::PointerLockResult TestRenderWidgetHostView::LockMouse(bool) {
+blink::mojom::PointerLockResult TestRenderWidgetHostView::LockPointer(bool) {
   return blink::mojom::PointerLockResult::kUnknownError;
 }
 
-blink::mojom::PointerLockResult TestRenderWidgetHostView::ChangeMouseLock(
+blink::mojom::PointerLockResult TestRenderWidgetHostView::ChangePointerLock(
     bool) {
   return blink::mojom::PointerLockResult::kUnknownError;
 }
 
-void TestRenderWidgetHostView::UnlockMouse() {
-}
+void TestRenderWidgetHostView::UnlockPointer() {}
 
 const viz::FrameSinkId& TestRenderWidgetHostView::GetFrameSinkId() const {
   return frame_sink_id_;
@@ -264,7 +263,7 @@ void TestRenderWidgetHostView::SetDisplayFeatureForTesting(
   if (display_feature)
     display_feature_ = *display_feature;
   else
-    display_feature_ = absl::nullopt;
+    display_feature_ = std::nullopt;
 }
 
 void TestRenderWidgetHostView::NotifyHostAndDelegateOnWasShown(
@@ -319,7 +318,7 @@ void TestRenderWidgetHostView::
   EXPECT_EQ(page_visibility_, PageVisibilityState::kHiddenButPainting);
 }
 
-absl::optional<DisplayFeature> TestRenderWidgetHostView::GetDisplayFeature() {
+std::optional<DisplayFeature> TestRenderWidgetHostView::GetDisplayFeature() {
   return display_feature_;
 }
 
@@ -379,7 +378,7 @@ TestRenderViewHost::TestRenderViewHost(
                          std::move(main_browsing_context_state),
                          create_case),
       delete_counter_(nullptr) {
-  if (frame_tree->type() == FrameTree::Type::kFencedFrame) {
+  if (frame_tree->is_fenced_frame()) {
     // TestRenderWidgetHostViewChildFrame deletes itself in
     // RenderWidgetHostViewChildFrame::Destroy.
     new TestRenderWidgetHostViewChildFrame(GetWidget());
@@ -397,11 +396,11 @@ TestRenderViewHost::~TestRenderViewHost() {
 }
 
 bool TestRenderViewHost::CreateTestRenderView() {
-  return CreateRenderView(absl::nullopt, MSG_ROUTING_NONE, false);
+  return CreateRenderView(std::nullopt, MSG_ROUTING_NONE, false);
 }
 
 bool TestRenderViewHost::CreateRenderView(
-    const absl::optional<blink::FrameToken>& opener_frame_token,
+    const std::optional<blink::FrameToken>& opener_frame_token,
     int proxy_route_id,
     bool window_was_created_with_opener) {
   DCHECK(!IsRenderViewLive());
@@ -420,6 +419,10 @@ bool TestRenderViewHost::CreateRenderView(
   } else {
     proxy_host =
         RenderFrameProxyHost::FromID(GetProcess()->GetID(), proxy_route_id);
+  }
+
+  if (!GetWidget()->view_is_frame_sink_id_owner()) {
+    main_frame->NotifyWillCreateRenderWidgetOnCommit();
   }
 
   DCHECK_EQ(!!main_frame, is_active());
@@ -497,7 +500,7 @@ void TestRenderViewHost::TestStartDragging(const DropData& drop_data,
                                            SkBitmap bitmap) {
   StoragePartitionImpl* storage_partition =
       static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
-  GetWidget()->StartDragging(
+  GetMainRenderFrameHost()->StartDragging(
       DropDataToDragData(
           drop_data, storage_partition->GetFileSystemAccessManager(),
           GetProcess()->GetID(),
@@ -515,16 +518,9 @@ void TestRenderViewHost::TestOnUpdateStateWithFile(
 
 RenderViewHostImplTestHarness::RenderViewHostImplTestHarness()
     : RenderViewHostTestHarness(
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  std::vector<ui::ResourceScaleFactor> scale_factors;
-  scale_factors.push_back(ui::k100Percent);
-  scoped_set_supported_scale_factors_ =
-      std::make_unique<ui::test::ScopedSetSupportedResourceScaleFactors>(
-          scale_factors);
-}
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-RenderViewHostImplTestHarness::~RenderViewHostImplTestHarness() {
-}
+RenderViewHostImplTestHarness::~RenderViewHostImplTestHarness() = default;
 
 TestRenderViewHost* RenderViewHostImplTestHarness::test_rvh() {
   return contents()->GetRenderViewHost();

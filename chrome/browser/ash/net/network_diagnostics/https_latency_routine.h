@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_ROUTINE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -16,8 +17,8 @@
 #include "net/base/address_list.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class HttpRequestManager;
@@ -28,9 +29,6 @@ class TickClock;
 
 namespace network {
 class SimpleHostResolver;
-namespace mojom {
-class NetworkContext;
-}
 }  // namespace network
 
 namespace ash::network_diagnostics {
@@ -39,12 +37,11 @@ namespace ash::network_diagnostics {
 // the system.
 class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
   using HttpRequestManagerGetter =
       base::RepeatingCallback<std::unique_ptr<HttpRequestManager>()>;
 
-  HttpsLatencyRoutine();
+  explicit HttpsLatencyRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   HttpsLatencyRoutine(const HttpsLatencyRoutine&) = delete;
   HttpsLatencyRoutine& operator=(const HttpsLatencyRoutine&) = delete;
   ~HttpsLatencyRoutine() override;
@@ -57,7 +54,8 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   // Processes the results of the DNS resolution done by |host_resolver_|.
 
   // Sets the NetworkContextGetter for testing.
-  void set_network_context_getter(NetworkContextGetter network_context_getter) {
+  void set_network_context_getter(
+      network::NetworkContextGetter network_context_getter) {
     network_context_getter_ = std::move(network_context_getter);
   }
 
@@ -76,8 +74,8 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   void OnHostResolutionComplete(
       int result,
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>& resolved_addresses,
-      const absl::optional<net::HostResolverEndpointResults>&);
+      const std::optional<net::AddressList>& resolved_addresses,
+      const std::optional<net::HostResolverEndpointResults>&);
 
   // Attempts the next DNS resolution.
   void AttemptNextResolution();
@@ -93,12 +91,12 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
     return weak_factory_.GetWeakPtr();
   }
 
-  NetworkContextGetter network_context_getter_;
+  network::NetworkContextGetter network_context_getter_;
   HttpRequestManagerGetter http_request_manager_getter_;
   bool successfully_resolved_hosts_ = true;
   bool failed_connection_ = false;
-  raw_ptr<const base::TickClock, DanglingUntriaged | ExperimentalAsh>
-      tick_clock_ = nullptr;  // Unowned
+  raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_ =
+      nullptr;  // Unowned
   base::TimeTicks request_start_time_;
   base::TimeTicks request_end_time_;
   std::vector<GURL> hostnames_to_query_dns_;

@@ -20,8 +20,8 @@ limitations under the License.
 #include <vector>
 
 #include "absl/container/flat_hash_map.h"  // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
-#include "absl/strings/str_format.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
@@ -73,7 +73,7 @@ class UniversalSentenceEncoderQA
   CreateFromOption(
       const tflite::task::text::RetrievalOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Retrieves output from the input by running TFLite engine.
   // Returns an error, if either query_text or responses is empty.
@@ -88,8 +88,7 @@ class UniversalSentenceEncoderQA
   // Encodes response from the text and/or context.
   // Returns an error, if both text and context are empty.
   tflite::support::StatusOr<FeatureVector> EncodeResponse(
-      absl::string_view response_text,
-      absl::string_view response_context);
+      absl::string_view response_text, absl::string_view response_context);
 
   // Calculates similarity between two encoded vectors (require same size).
   static tflite::support::StatusOr<float> Similarity(const FeatureVector& a,

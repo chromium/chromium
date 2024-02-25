@@ -14,8 +14,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.CommandLine;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -24,6 +27,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator.Delegate;
@@ -50,15 +54,23 @@ import java.util.List;
 
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class SigninFirstRunMediator
-        implements AccountsChangeObserver, ProfileDataCache.Observer,
-                   AccountPickerCoordinator.Listener, FreUMADialogCoordinator.Listener {
+        implements AccountsChangeObserver,
+                ProfileDataCache.Observer,
+                AccountPickerCoordinator.Listener,
+                FreUMADialogCoordinator.Listener {
+    private static final String TAG = "SigninFRMediator";
+
     /**
      * Used for MobileFre.SlowestLoadPoint histogram. Should be treated as append-only.
      * See {@code LoadPoint} in tools/metrics/histograms/enums.xml.
      */
     @VisibleForTesting
-    @IntDef({LoadPoint.NATIVE_INITIALIZATION, LoadPoint.POLICY_LOAD, LoadPoint.CHILD_STATUS_LOAD,
-            LoadPoint.MAX})
+    @IntDef({
+        LoadPoint.NATIVE_INITIALIZATION,
+        LoadPoint.POLICY_LOAD,
+        LoadPoint.CHILD_STATUS_LOAD,
+        LoadPoint.MAX
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LoadPoint {
         int NATIVE_INITIALIZATION = 0;
@@ -77,6 +89,7 @@ public class SigninFirstRunMediator
     private boolean mDestroyed;
 
     private @LoadPoint int mSlowestLoadPoint;
+
     /** Whether the initial load phase has been completed. See {@link #onInitialLoadCompleted}. */
     private boolean mInitialLoadCompleted;
 
@@ -87,28 +100,43 @@ public class SigninFirstRunMediator
     private @Nullable String mDefaultAccountEmail;
     private boolean mAllowMetricsAndCrashUploading;
 
-    SigninFirstRunMediator(Context context, ModalDialogManager modalDialogManager,
-            Delegate delegate, PrivacyPreferencesManager privacyPreferencesManager) {
+    SigninFirstRunMediator(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            Delegate delegate,
+            PrivacyPreferencesManager privacyPreferencesManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDelegate = delegate;
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
-        mModel = SigninFirstRunProperties.createModel(this::onSelectedAccountClicked,
-                this::onContinueAsClicked, this::onDismissClicked,
-                ExternalAuthUtils.getInstance().canUseGooglePlayServices(), getFooterString(false));
+        mModel =
+                SigninFirstRunProperties.createModel(
+                        this::onSelectedAccountClicked,
+                        this::onContinueAsClicked,
+                        this::onDismissClicked,
+                        ExternalAuthUtils.getInstance().canUseGooglePlayServices()
+                                && !disableSignInForAutomotiveDevice(),
+                        getFooterString(false));
 
-        mDelegate.getNativeInitializationPromise().then(result -> { onNativeLoaded(); });
+        mDelegate
+                .getNativeInitializationPromise()
+                .then(
+                        result -> {
+                            onNativeLoaded();
+                        });
         mDelegate.getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
-        mDelegate.getChildAccountStatusSupplier().onAvailable(
-                ignored -> onChildAccountStatusAvailable());
+        mDelegate
+                .getChildAccountStatusSupplier()
+                .onAvailable(ignored -> onChildAccountStatusAvailable());
 
         mProfileDataCache.addObserver(this);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
-        updateAccounts(AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                mAccountManagerFacade.getCoreAccountInfos()));
+        updateAccounts(
+                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        mAccountManagerFacade.getCoreAccountInfos()));
     }
 
     PropertyModel getModel() {
@@ -162,7 +190,8 @@ public class SigninFirstRunMediator
         if (!mDelegate.getNativeInitializationPromise().isFulfilled()) return;
 
         if (mDelegate.getChildAccountStatusSupplier().get() != null
-                && mDelegate.getPolicyLoadListener().get() != null && !mInitialLoadCompleted) {
+                && mDelegate.getPolicyLoadListener().get() != null
+                && !mInitialLoadCompleted) {
             mInitialLoadCompleted = true;
             onInitialLoadCompleted(mDelegate.getPolicyLoadListener().get());
             // TODO(https://crbug.com/1353330): Rename this method and the corresponding histogram.
@@ -189,11 +218,17 @@ public class SigninFirstRunMediator
 
         boolean isSigninDisabledByPolicy = false;
         boolean isMetricsReportingDisabledByPolicy = false;
+        Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
         if (hasPolicies) {
             isSigninDisabledByPolicy =
                     IdentityServicesProvider.get()
-                            .getSigninManager(mDelegate.getProfileSupplier().get())
+                            .getSigninManager(
+                                    mDelegate.getProfileSupplier().get().getOriginalProfile())
                             .isSigninDisabledByPolicy();
+            Log.i(
+                    TAG,
+                    "#onInitialLoadCompleted() isSigninDisabledByPolicy:"
+                            + isSigninDisabledByPolicy);
             isMetricsReportingDisabledByPolicy =
                     !mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
 
@@ -202,12 +237,15 @@ public class SigninFirstRunMediator
             mModel.set(SigninFirstRunProperties.FRE_POLICY, frePolicy);
         }
 
-        mModel.set(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED,
+        mModel.set(
+                SigninFirstRunProperties.IS_SIGNIN_SUPPORTED,
                 ExternalAuthUtils.getInstance().canUseGooglePlayServices()
-                        && !isSigninDisabledByPolicy);
+                        && !isSigninDisabledByPolicy
+                        && !disableSignInForAutomotiveDevice());
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
 
-        mModel.set(SigninFirstRunProperties.FOOTER_STRING,
+        mModel.set(
+                SigninFirstRunProperties.FOOTER_STRING,
                 getFooterString(isMetricsReportingDisabledByPolicy));
     }
 
@@ -217,9 +255,7 @@ public class SigninFirstRunMediator
         updateSelectedAccountData(accountEmail);
     }
 
-    /**
-     * Implements {@link AccountsChangeObserver}.
-     */
+    /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
         // TODO(crbug.com/1450614): Replace onAccountsChanged() with this method.
@@ -257,14 +293,12 @@ public class SigninFirstRunMediator
                 new AccountPickerDialogCoordinator(mContext, this, mModalDialogManager);
     }
 
-    /**
-     * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_CONTINUE_AS_CLICKED}.
-     */
+    /** Callback for the PropertyKey {@link SigninFirstRunProperties#ON_CONTINUE_AS_CLICKED}. */
     private void onContinueAsClicked() {
         assert mDelegate.getNativeInitializationPromise().isFulfilled();
         if (isContinueOrDismissClicked()) return;
         assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
-            : "The continue button shouldn't be visible while the load spinner is shown!";
+                : "The continue button shouldn't be visible while the load spinner is shown!";
 
         if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
             mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
@@ -283,9 +317,7 @@ public class SigninFirstRunMediator
         proceedWithSignIn();
     }
 
-    /**
-     * Accepts ToS and completes the account sign-in with the selected account.
-     */
+    /** Accepts ToS and completes the account sign-in with the selected account. */
     void proceedWithSignIn() {
         // This is needed to get metrics/crash reports from the sign-in flow itself.
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
@@ -303,17 +335,19 @@ public class SigninFirstRunMediator
         @Nullable
         CoreAccountInfo signedInAccount =
                 IdentityServicesProvider.get()
-                        .getIdentityManager(mDelegate.getProfileSupplier().get())
+                        .getIdentityManager(
+                                mDelegate.getProfileSupplier().get().getOriginalProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (signedInAccount != null && signedInAccount.getEmail().equals(mSelectedAccountEmail)) {
             mDelegate.advanceToNextPage();
             return;
         }
-        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
-        final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                mDelegate.getProfileSupplier().get());
-        signinManager.signin(
-                getSelectedAccount(), SigninAccessPoint.START_PAGE, new SignInCallback() {
+        final SigninManager signinManager =
+                IdentityServicesProvider.get()
+                        .getSigninManager(
+                                mDelegate.getProfileSupplier().get().getOriginalProfile());
+        final SignInCallback signInCallback =
+                new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
                         if (mDestroyed) {
@@ -328,48 +362,63 @@ public class SigninFirstRunMediator
                         // TODO(crbug/1248090): For now we enable the buttons again to not block the
                         // users from continuing to the next page. Should show a dialog with the
                         // signin error.
-                        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
+                        mModel.set(
+                                SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
                                 false);
                         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
                     }
-                });
+                };
+        CoreAccountInfo selectedAccount =
+                AccountUtils.findCoreAccountInfoByEmail(
+                        mAccountManagerFacade.getCoreAccountInfos().getResult(),
+                        mSelectedAccountEmail);
+        if (selectedAccount != null) {
+            mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
+            SigninUtils.checkAccountManagementAndSignIn(
+                    selectedAccount,
+                    signinManager,
+                    SigninAccessPoint.START_PAGE,
+                    signInCallback,
+                    mContext,
+                    mModalDialogManager);
+        }
     }
 
-    /**
-     * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}.
-     */
+    /** Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}. */
     private void onDismissClicked() {
         if (isContinueOrDismissClicked()) return;
         assert !mModel.get(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)
-            : "The dismiss button shouldn't be visible while the load spinner is shown!";
+                : "The dismiss button shouldn't be visible while the load spinner is shown!";
 
         assert mDelegate.getNativeInitializationPromise().isFulfilled();
 
         dismiss();
     }
 
-    /**
-     * Dismisses the sign-in page and continues without a signed-in account.
-     */
+    /** Dismisses the sign-in page and continues without a signed-in account. */
     void dismiss() {
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
         SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
         if (IdentityServicesProvider.get()
-                        .getIdentityManager(mDelegate.getProfileSupplier().get())
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                .getIdentityManager(mDelegate.getProfileSupplier().get().getOriginalProfile())
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
-            SignOutCallback signOutCallback = () -> {
-                if (mDestroyed) {
-                    // FirstRunActivity was destroyed while we were waiting for the sign-out.
-                    return;
-                }
+            SignOutCallback signOutCallback =
+                    () -> {
+                        if (mDestroyed) {
+                            // FirstRunActivity was destroyed while we were waiting for the
+                            // sign-out.
+                            return;
+                        }
 
-                mDelegate.advanceToNextPage();
-            };
+                        mDelegate.advanceToNextPage();
+                    };
             IdentityServicesProvider.get()
-                    .getSigninManager(mDelegate.getProfileSupplier().get())
-                    .signOut(SignoutReason.ABORT_SIGNIN, signOutCallback,
+                    .getSigninManager(mDelegate.getProfileSupplier().get().getOriginalProfile())
+                    .signOut(
+                            SignoutReason.ABORT_SIGNIN,
+                            signOutCallback,
                             /* forceWipeUserData= */ false);
         } else {
             mDelegate.advanceToNextPage();
@@ -394,7 +443,8 @@ public class SigninFirstRunMediator
 
     private void updateSelectedAccountData(String accountEmail) {
         if (TextUtils.equals(mSelectedAccountEmail, accountEmail)) {
-            mModel.set(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA,
+            mModel.set(
+                    SigninFirstRunProperties.SELECTED_ACCOUNT_DATA,
                     mProfileDataCache.getProfileDataOrDefault(accountEmail));
         }
     }
@@ -411,7 +461,7 @@ public class SigninFirstRunMediator
             mDefaultAccountEmail = coreAccountInfos.get(0).getEmail();
             if (mSelectedAccountEmail == null
                     || AccountUtils.findCoreAccountInfoByEmail(
-                               coreAccountInfos, mSelectedAccountEmail)
+                                    coreAccountInfos, mSelectedAccountEmail)
                             == null) {
                 setSelectedAccountEmail(mDefaultAccountEmail);
             }
@@ -421,7 +471,7 @@ public class SigninFirstRunMediator
                 mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
+    private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
         mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
@@ -438,11 +488,13 @@ public class SigninFirstRunMediator
         ArrayList<SpanApplier.SpanInfo> spans = new ArrayList<>();
         // Terms of Service SpanInfo.
         final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
-                new NoUnderlineClickableSpan(mContext,
-                        view
-                        -> mDelegate.showInfoPage(ColorUtils.inNightMode(mContext)
-                                        ? R.string.google_terms_of_service_dark_mode_url
-                                        : R.string.google_terms_of_service_url));
+                new NoUnderlineClickableSpan(
+                        mContext,
+                        view ->
+                                mDelegate.showInfoPage(
+                                        ColorUtils.inNightMode(mContext)
+                                                ? R.string.google_terms_of_service_dark_mode_url
+                                                : R.string.google_terms_of_service_url));
         spans.add(
                 new SpanApplier.SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableTermsOfServiceSpan));
 
@@ -457,5 +509,11 @@ public class SigninFirstRunMediator
 
         // Apply spans to footer string.
         return SpanApplier.applySpans(footerString, spans.toArray(new SpanApplier.SpanInfo[0]));
+    }
+
+    private static boolean disableSignInForAutomotiveDevice() {
+        return BuildInfo.getInstance().isAutomotive
+                && CommandLine.getInstance()
+                        .hasSwitch(ChromeSwitches.DISABLE_FRE_SIGNIN_ON_AUTOMOTIVE);
     }
 }

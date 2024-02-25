@@ -15,4 +15,12 @@ void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
     Browser* browser,
     SkColor suggested_profile_color);
 
+// Returns whether the controller triggered by
+// `ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced()` is currently
+// running in background. This is useful for determining whether the profile
+// customization UI might be shown soon in `browser`.
+// Implemented in
+// chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.cc
+bool IsProfileCustomizationBubbleSyncControllerRunning(Browser* browser);
+
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_SYNC_CONTROLLER_H_

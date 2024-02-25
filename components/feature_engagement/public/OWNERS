@@ -1,1 +1,2 @@
 per-file ios_promo_feature_configuration*=file://ios/chrome/browser/promos_manager/OWNERS
+per-file scalable_iph_feature_configurations*=file://chromeos/ash/components/scalable_iph/OWNERS

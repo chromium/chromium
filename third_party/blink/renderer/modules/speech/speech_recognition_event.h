@@ -54,7 +54,7 @@ class SpeechRecognitionEvent final : public Event {
   static SpeechRecognitionEvent* CreateNoMatch(SpeechRecognitionResult*);
 
   uint32_t resultIndex() const { return result_index_; }
-  SpeechRecognitionResultList* results() const { return results_; }
+  SpeechRecognitionResultList* results() const { return results_.Get(); }
 
   // Event
   const AtomicString& InterfaceName() const override;

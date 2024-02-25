@@ -27,8 +27,8 @@
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/protocol/sync_protocol_error.h"
 #include "url/gurl.h"
 
 namespace syncer {
@@ -81,7 +81,7 @@ class SyncManager {
 
     // Whether the local backend provided by the LoopbackServer should be used
     // and the location of the local sync backend storage.
-    bool enable_local_sync_backend;
+    bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
 
     // Used to communicate with the sync server.
@@ -110,6 +110,8 @@ class SyncManager {
     std::string cache_guid;
     std::string birthday;
     std::string bag_of_chips;
+
+    bool sync_poll_immediately_on_every_startup = false;
   };
 
   // The state of sync the feature. If the user turned on sync explicitly, it

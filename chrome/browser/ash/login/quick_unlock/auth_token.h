@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_AUTH_TOKEN_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -36,14 +36,14 @@ class AuthToken {
 
   // An unguessable identifier that can be passed to webui to verify the token
   // instance has not changed. Returns nullopt if Reset() was called.
-  absl::optional<std::string> Identifier() const;
+  std::optional<std::string> Identifier() const;
 
   // Similar to the above, but returns the strongly typed
   // `base::UnguessableToken` instead
-  absl::optional<base::UnguessableToken> GetUnguessableToken() const;
+  std::optional<base::UnguessableToken> GetUnguessableToken() const;
 
-  // Time since token was created or `absl::nullopt` if Reset() was called.
-  absl::optional<base::TimeDelta> GetAge() const;
+  // Time since token was created or `std::nullopt` if Reset() was called.
+  std::optional<base::TimeDelta> GetAge() const;
 
   // The UserContext returned here can be null if Reset() was called.
   const UserContext* user_context() const { return user_context_.get(); }

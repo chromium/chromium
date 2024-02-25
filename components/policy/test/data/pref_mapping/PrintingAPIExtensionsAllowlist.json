@@ -1,0 +1,26 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingAPIExtensionsAllowlist": [
+            "abcdefghijklmnopabcdefghijklmnop"
+          ]
+        },
+        "prefs": {
+          "printing.printing_api_extensions_whitelist": {
+            "value": [
+              "abcdefghijklmnopabcdefghijklmnop"
+            ]
+          }
+        },
+        "required_buildflags": [
+          "USE_CUPS"
+        ]
+      }
+    ]
+  }
+]

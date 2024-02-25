@@ -162,7 +162,6 @@ void ScreenPowerControllerAura::OnScreenPoweredOn(bool succeeded) {
     // Fatal since the user has no other way of turning the screen on if this
     // failed.
     LOG(FATAL) << "Failed to power on the screen";
-    return;
   }
   LOG(INFO) << "Screen is powered on";
   screen_power_on_ = true;

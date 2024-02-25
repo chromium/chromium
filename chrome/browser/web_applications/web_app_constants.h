@@ -7,8 +7,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <initializer_list>
 #include <iosfwd>
+#include <optional>
 #include <string>
 
 #include "base/containers/enum_set.h"
@@ -43,6 +45,7 @@ enum Type {
   // Installed by Kiosk on Chrome OS.
   kKiosk,
   kPolicy,
+  // Installed by APS (App Preload Service) on ChromeOS as an OEM app.
   kOem,
   kSubApp,
   kWebAppStore,
@@ -52,6 +55,10 @@ enum Type {
   // set.
   kSync,
   kCommandLine,
+  // Installed by APS (App Preload Service) on ChromeOS as a default app. These
+  // have the same UX as kDefault apps, but are are not managed by
+  // PreinstalledWebAppManager.
+  kApsDefault,
   // This value is used by both the PreinstalledWebAppManager AND the
   // AndroidSmsAppSetupControllerImpl, which is a potential conflict in the
   // future.
@@ -213,14 +220,6 @@ enum class RunOnOsLoginPolicy {
   kRunWindowed = 2,
 };
 
-// Number of times IPH can be ignored for this app before it's muted.
-constexpr int kIphMuteAfterConsecutiveAppSpecificIgnores = 3;
-// Number of times IPH can be ignored for any app before it's muted.
-constexpr int kIphMuteAfterConsecutiveAppAgnosticIgnores = 4;
-// Number of days to mute IPH after it's ignored for this app.
-constexpr int kIphAppSpecificMuteTimeSpanDays = 90;
-// Number of days to mute IPH after it's ignored for any app.
-constexpr int kIphAppAgnosticMuteTimeSpanDays = 14;
 // Default threshold for site engagement score if it's not set by field trial
 // param.
 constexpr int kIphFieldTrialParamDefaultSiteEngagementThreshold = 10;
@@ -303,19 +302,15 @@ enum class WebAppInstallStatus : int64_t {
 
 using ResultCallback = base::OnceCallback<void(Result)>;
 
-// Convert the uninstall source to string for easy printing.
-std::string ConvertUninstallSourceToStringType(
-    const webapps::WebappUninstallSource& uninstall_source);
-
 // Management types that can be uninstalled by the user.
+// Note: These work directly with the `webapps::IsUserUninstall` function - any
+// source that returns true there can uninstall these types but not others, and
+// will CHECK-fail in RemoveWebAppJob otherwise.
 constexpr WebAppManagementTypes kUserUninstallableSources = {
-    WebAppManagement::kDefault,
-    WebAppManagement::kSync,
-    WebAppManagement::kWebAppStore,
-    WebAppManagement::kSubApp,
-    WebAppManagement::kOem,
-    WebAppManagement::kCommandLine,
-    WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kDefault,     WebAppManagement::kApsDefault,
+    WebAppManagement::kSync,        WebAppManagement::kWebAppStore,
+    WebAppManagement::kSubApp,      WebAppManagement::kOem,
+    WebAppManagement::kCommandLine, WebAppManagement::kOneDriveIntegration,
 };
 
 // Management types that resulted from a user web app install.
@@ -327,4 +322,4 @@ constexpr WebAppManagementTypes kUserDrivenInstallSources = {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H

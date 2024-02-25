@@ -31,7 +31,7 @@ TEST(DumpInfoTest, BadTimeStringIsNotValid) {
   std::unique_ptr<DumpInfo> info(
       CreateDumpInfo("{"
                      "\"name\": \"name\","
-                     "\"dump_time\" : \"Mar 23 2014 01:23:45\","
+                     "\"dump_time\" : \"What up\","
                      "\"dump\": \"dump_string\","
                      "\"uptime\": \"123456789\","
                      "\"logfile\": \"logfile.log\""
@@ -47,15 +47,14 @@ TEST(DumpInfoTest, AllRequiredFieldsIsValid) {
                      "\"uptime\": \"123456789\","
                      "\"logfile\": \"logfile.log\""
                      "}"));
-  base::Time::Exploded ex = {0};
-  ex.second = 1;
-  ex.minute = 31;
-  ex.hour = 18;
-  ex.day_of_month = 12;
-  ex.month = 11;
-  ex.year = 2001;
+  static constexpr base::Time::Exploded kTime = {.year = 2001,
+                                                 .month = 11,
+                                                 .day_of_month = 12,
+                                                 .hour = 18,
+                                                 .minute = 31,
+                                                 .second = 1};
   base::Time dump_time;
-  EXPECT_TRUE(base::Time::FromLocalExploded(ex, &dump_time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kTime, &dump_time));
 
   ASSERT_TRUE(info->valid());
   ASSERT_EQ(dump_time, info->dump_time());
@@ -85,15 +84,14 @@ TEST(DumpInfoTest, SomeRequiredFieldsEmptyIsValid) {
                      "\"uptime\": \"\","
                      "\"logfile\": \"\""
                      "}"));
-  base::Time::Exploded ex = {0};
-  ex.second = 1;
-  ex.minute = 31;
-  ex.hour = 18;
-  ex.day_of_month = 12;
-  ex.month = 11;
-  ex.year = 2001;
+  static constexpr base::Time::Exploded kTime = {.year = 2001,
+                                                 .month = 11,
+                                                 .day_of_month = 12,
+                                                 .hour = 18,
+                                                 .minute = 31,
+                                                 .second = 1};
   base::Time dump_time;
-  EXPECT_TRUE(base::Time::FromLocalExploded(ex, &dump_time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kTime, &dump_time));
 
   ASSERT_TRUE(info->valid());
   ASSERT_EQ(dump_time, info->dump_time());
@@ -119,15 +117,14 @@ TEST(DumpInfoTest, AllOptionalFieldsIsValid) {
                      "\"build_number\": \"BUILD_NUMBER\","
                      "\"reason\": \"foo\""
                      "}"));
-  base::Time::Exploded ex = {0};
-  ex.second = 1;
-  ex.minute = 31;
-  ex.hour = 18;
-  ex.day_of_month = 12;
-  ex.month = 11;
-  ex.year = 2001;
+  static constexpr base::Time::Exploded kTime = {.year = 2001,
+                                                 .month = 11,
+                                                 .day_of_month = 12,
+                                                 .hour = 18,
+                                                 .minute = 31,
+                                                 .second = 1};
   base::Time dump_time;
-  EXPECT_TRUE(base::Time::FromLocalExploded(ex, &dump_time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kTime, &dump_time));
 
   ASSERT_TRUE(info->valid());
   ASSERT_EQ(dump_time, info->dump_time());
@@ -157,15 +154,14 @@ TEST(DumpInfoTest, SomeOptionalFieldsIsValid) {
                      "\"suffix\": \"suffix\","
                      "\"prev_app_name\": \"previous_app\""
                      "}"));
-  base::Time::Exploded ex = {0};
-  ex.second = 1;
-  ex.minute = 31;
-  ex.hour = 18;
-  ex.day_of_month = 12;
-  ex.month = 11;
-  ex.year = 2001;
+  static constexpr base::Time::Exploded kTime = {.year = 2001,
+                                                 .month = 11,
+                                                 .day_of_month = 12,
+                                                 .hour = 18,
+                                                 .minute = 31,
+                                                 .second = 1};
   base::Time dump_time;
-  EXPECT_TRUE(base::Time::FromLocalExploded(ex, &dump_time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kTime, &dump_time));
 
   ASSERT_TRUE(info->valid());
   ASSERT_EQ(dump_time, info->dump_time());

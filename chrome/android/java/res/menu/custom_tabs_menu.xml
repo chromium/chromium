@@ -15,7 +15,7 @@ found in the LICENSE file.
                 android:icon="@drawable/btn_forward"/>
               <item android:id="@+id/bookmark_this_page_id"
                 android:title="@string/accessibility_menu_bookmark"
-                android:icon="@drawable/btn_star"/>
+                android:icon="@drawable/star_outline_24dp"/>
               <item android:id="@+id/offline_page_id"
                 android:title="@string/download_page"
                 android:icon="@drawable/ic_file_download_white_24dp"/>
@@ -30,6 +30,10 @@ found in the LICENSE file.
         <item android:id="@+id/divider_line_id"
             android:title="@null"
             android:orderInCategory="2"/>
+        <item android:id="@+id/readaloud_menu_id"
+            android:title="@string/menu_listen_to_this_page"
+            android:icon="@drawable/ic_play_circle"
+            android:orderInCategory="2"/>
         <item android:id="@+id/share_row_menu_id"
             android:title="@null"
             android:orderInCategory="2">
@@ -40,6 +44,9 @@ found in the LICENSE file.
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/open_history_menu_id"
+            android:title="@string/menu_history"
+            android:orderInCategory="2" />
         <item android:id="@+id/page_insights_id"
             android:title="@string/menu_page_insights"
             android:visible="false"
@@ -57,6 +64,9 @@ found in the LICENSE file.
             android:orderInCategory="2" />
         <item android:id="@+id/install_webapp_id"
             android:title="@string/menu_install_webapp"
+            android:orderInCategory="2" />
+        <item android:id="@+id/universal_install"
+            android:title="@string/menu_add_to_homescreen"
             android:orderInCategory="2" />
         <item android:id="@+id/open_webapk_id"
             android:title="@string/menu_open_webapk"

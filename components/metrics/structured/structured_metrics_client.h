@@ -8,9 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 
-#include "components/metrics/structured/delegating_events_processor.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/events_processor_interface.h"
 
 namespace metrics::structured {
 
@@ -39,8 +37,8 @@ class StructuredMetricsClient {
   // metrics. This is typically used in the codegen.
   static StructuredMetricsClient* Get();
 
-  // Forwards to |delegate_|. If no delegate has been set, then no-op.
-  void Record(Event&& event);
+  // Records |event| using singleton from Get().
+  static void Record(Event&& event);
 
   // Sets the delegate for the client's recording logic. Should be called before
   // anything else. |this| does not take ownership of |delegate| and assumes
@@ -51,6 +49,9 @@ class StructuredMetricsClient {
 
  private:
   friend class base::NoDestructor<StructuredMetricsClient>;
+
+  // Forwards to |delegate_|. If no delegate has been set, then no-op.
+  void RecordEvent(Event&& event);
 
   StructuredMetricsClient();
   ~StructuredMetricsClient();

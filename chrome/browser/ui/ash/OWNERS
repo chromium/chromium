@@ -1,4 +1,5 @@
 afakhry@chromium.org
+hidehiko@chromium.org
 jamescook@chromium.org
 oshima@chromium.org
 sky@chromium.org
@@ -8,6 +9,7 @@ per-file cast_config_controller*=file://chrome/browser/media/router/OWNERS
 per-file chrome_keyboard_ui*=yhanada@chromium.org
 per-file clipboard_history*=file://ash/clipboard/OWNERS
 per-file default_pinned_apps.*=tsergeant@chromium.org
+per-file *auth*=file://ash/login/OWNERS
 per-file *login*=file://ash/login/OWNERS
 per-file keyboard_*=yhanada@chromium.org
 per-file *wallpaper*=file://ash/wallpaper/OWNERS

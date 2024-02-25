@@ -14,4 +14,8 @@ MockSyncSessionsClient::MockSyncSessionsClient() {
 
 MockSyncSessionsClient::~MockSyncSessionsClient() = default;
 
+base::WeakPtr<SyncSessionsClient> MockSyncSessionsClient::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace sync_sessions

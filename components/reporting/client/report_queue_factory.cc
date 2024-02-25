@@ -17,10 +17,9 @@
 #include "components/reporting/util/backoff_settings.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "net/base/backoff_entry.h"
-#include "report_queue_configuration.h"
 
 #define LOG_WITH_STATUS(LEVEL, MESSAGE, STATUS) \
-  VLOG(LEVEL) << MESSAGE << " status=" << STATUS.status();
+  VLOG(LEVEL) << MESSAGE << " status=" << STATUS.error();
 
 namespace reporting {
 
@@ -29,7 +28,7 @@ void ReportQueueFactory::Create(
     ReportQueueConfiguration::Builder config_builder,
     SuccessCallback done_cb) {
   auto config_result = config_builder.Build();
-  if (!config_result.ok()) {
+  if (!config_result.has_value()) {
     LOG_WITH_STATUS(1, "ReportQueueConfiguration is invalid.", config_result);
     return;
   }
@@ -37,9 +36,9 @@ void ReportQueueFactory::Create(
   // Asynchronously create and try to set ReportQueue.
   auto try_set_cb = CreateTrySetCallback(std::move(done_cb), GetBackoffEntry());
   base::ThreadPool::PostTask(
-      FROM_HERE, base::BindOnce(ReportQueueProvider::CreateQueue,
-                                std::move(config_result.ValueOrDie()),
-                                std::move(try_set_cb)));
+      FROM_HERE,
+      base::BindOnce(ReportQueueProvider::CreateQueue,
+                     std::move(config_result.value()), std::move(try_set_cb)));
 }
 
 //  static
@@ -48,26 +47,26 @@ ReportQueueFactory::CreateSpeculativeReportQueue(
     ReportQueueConfiguration::Builder config_builder) {
   CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   auto config_result = config_builder.Build();
-  if (!config_result.ok()) {
+  if (!config_result.has_value()) {
     DVLOG(1)
         << "Cannot initialize report queue. Invalid ReportQueueConfiguration: "
-        << config_result.status();
+        << config_result.error();
     return std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
         nullptr, base::OnTaskRunnerDeleter(
                      base::SequencedTaskRunner::GetCurrentDefault()));
   }
 
   auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
-      std::move(config_result.ValueOrDie()));
-  if (!speculative_queue_result.ok()) {
+      std::move(config_result.value()));
+  if (!speculative_queue_result.has_value()) {
     DVLOG(1) << "Failed to create speculative queue: "
-             << speculative_queue_result.status();
+             << speculative_queue_result.error();
     return std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
         nullptr, base::OnTaskRunnerDeleter(
                      base::SequencedTaskRunner::GetCurrentDefault()));
   }
 
-  return std::move(speculative_queue_result.ValueOrDie());
+  return std::move(speculative_queue_result.value());
 }
 
 // static
@@ -112,11 +111,11 @@ ReportQueueFactory::CreateTrySetCallback(
 void ReportQueueFactory::TrySetReportQueue(
     SuccessCallback success_cb,
     StatusOr<std::unique_ptr<ReportQueue>> report_queue_result) {
-  if (!report_queue_result.ok()) {
+  if (!report_queue_result.has_value()) {
     LOG_WITH_STATUS(1, "ReportQueue could not be created.",
                     report_queue_result);
     return;
   }
-  std::move(success_cb).Run(std::move(report_queue_result.ValueOrDie()));
+  std::move(success_cb).Run(std::move(report_queue_result.value()));
 }
 }  // namespace reporting

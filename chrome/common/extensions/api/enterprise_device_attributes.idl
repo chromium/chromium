@@ -25,7 +25,7 @@ namespace enterprise.deviceAttributes {
     // If the current user is not affiliated, returns an empty string.
     // |callback| : Called with the device identifier of the directory API when
     // received.
-    [supportsPromises] void getDirectoryDeviceId(
+    void getDirectoryDeviceId(
         GetDirectoryDeviceIdCallback callback);
 
     // Fetches the device's serial number. Please note the purpose of this API
@@ -34,27 +34,27 @@ namespace enterprise.deviceAttributes {
     // devices without the consent of the device's administrator.
     // If the current user is not affiliated, returns an empty string.
     // |callback| : Called with the serial number of the device.
-    [supportsPromises] void getDeviceSerialNumber(
+    void getDeviceSerialNumber(
         GetDeviceSerialNumberCallback callback);
 
     // Fetches the administrator-annotated Asset Id.
     // If the current user is not affiliated or no Asset Id has been set by the
     // administrator, returns an empty string.
     // |callback| : Called with the Asset ID of the device.
-    [supportsPromises] void getDeviceAssetId(GetDeviceAssetIdCallback callback);
+    void getDeviceAssetId(GetDeviceAssetIdCallback callback);
 
     // Fetches the administrator-annotated Location.
     // If the current user is not affiliated or no Annotated Location has been
     // set by the administrator, returns an empty string.
     // |callback| : Called with the Annotated Location of the device.
-    [supportsPromises] void getDeviceAnnotatedLocation(
+    void getDeviceAnnotatedLocation(
         GetDeviceAnnotatedLocationCallback callback);
 
     // Fetches the device's hostname as set by DeviceHostnameTemplate policy.
     // If the current user is not affiliated or no hostname has been set by the
     // enterprise policy, returns an empty string.
     // |callback| : Called with hostname of the device.
-    [supportsPromises] void getDeviceHostname(
+    void getDeviceHostname(
         GetDeviceHostnameCallback callback);
   };
 

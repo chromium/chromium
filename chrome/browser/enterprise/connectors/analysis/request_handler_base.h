@@ -60,7 +60,7 @@ class RequestHandlerBase {
   // expected to send one or more reports corresponding to the data that was
   // allowed to be transferred by the user.
   virtual void ReportWarningBypass(
-      absl::optional<std::u16string> user_justification) = 0;
+      std::optional<std::u16string> user_justification) = 0;
 
   // After all file requests have been processed, this call can be used to
   // retrieve any final actions stored internally.  There should one for

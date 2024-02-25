@@ -9,6 +9,9 @@ namespace chrome {
 const char kAndroidMessagesLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=multi_device_messages";
 
+const char16_t kApnSettingsLearnMoreUrl[] =
+    u"https://support.google.com/chromebook?p=apn";
+
 const char kLinuxExportImportHelpURL[] =
     "https://support.google.com/chromebook?p=linux_backup_restore";
 

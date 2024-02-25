@@ -61,11 +61,9 @@ class CrosStateSenderTest : public testing::Test {
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<MutablePhoneModel> phone_model_;
-  raw_ptr<FakeAttestationCertificateGenerator,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeAttestationCertificateGenerator, DanglingUntriaged>
       fake_attestation_certificate_generator_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
 
  private:
   std::unique_ptr<CrosStateSender> cros_state_sender_;
@@ -172,6 +170,23 @@ TEST_F(CrosStateSenderTest, CrosStateMessageIncludesAttestationIfEcheEnabled) {
   EXPECT_EQ(&(fake_attestation_certificate_generator_->CERTS),
             std::get<2>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
+}
+
+TEST_F(CrosStateSenderTest, ResendOnNewAttestationCertificate) {
+  feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
+                                 /* disabled_features= */ {});
+  // Set notification feature to be enabled.
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+  // Set camera roll feature to be enabled.
+  fake_multidevice_setup_client_->SetFeatureState(Feature::kPhoneHubCameraRoll,
+                                                  FeatureState::kEnabledByUser);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnected);
+  EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
+
+  fake_attestation_certificate_generator_->RetrieveCertificate();
+  EXPECT_EQ(2u, fake_message_sender_->GetCrosStateCallCount());
 }
 
 TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {

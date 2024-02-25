@@ -7,14 +7,10 @@
 
 #include "ash/public/cpp/style/color_provider.h"
 
-namespace ash {
-
-namespace wallpaper_constants {
+namespace ash::wallpaper_constants {
 
 // Blur sigma used for normal wallpaper.
 constexpr float kClear = 0.f;
-// Blur sigma used in overview mode.
-constexpr float kOverviewBlur = ColorProvider::kBackgroundBlurSigma;
 // Blur sigma in lock/login screen.
 constexpr float kLockLoginBlur = 30.0f;
 // Blur sigma used in oobe.
@@ -29,8 +25,6 @@ constexpr char kTimeOfDayWallpaperCollectionId[] =
 // The ID of the default time of day wallpaper.
 constexpr uint64_t kDefaultTimeOfDayWallpaperUnitId = 18;
 
-}  // namespace wallpaper_constants
-
-}  // namespace ash
+}  // namespace ash::wallpaper_constants
 
 #endif  // ASH_WALLPAPER_WALLPAPER_CONSTANTS_H_

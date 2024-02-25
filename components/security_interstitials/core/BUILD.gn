@@ -70,6 +70,8 @@ static_library("core") {
   ]
 
   public_deps = [ "//components/security_interstitials/core/common/mojom" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("unsafe_resource") {
@@ -87,16 +89,30 @@ static_library("unsafe_resource") {
     "//net",
     "//services/network/public/mojom",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ssl_error_options_mask_unittest.cc" ]
+  sources = [
+    "insecure_form_util_unittest.cc",
+    "ssl_error_options_mask_unittest.cc",
+  ]
 
   deps = [
     ":core",
+    ":insecure_form_util",
     "//base",
     "//net",
     "//testing/gtest",
   ]
+}
+
+source_set("insecure_form_util") {
+  sources = [
+    "insecure_form_util.cc",
+    "insecure_form_util.h",
+  ]
+  deps = [ "//services/network/public/cpp:cpp" ]
 }

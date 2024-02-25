@@ -38,10 +38,10 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/auto_start_linux.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -321,7 +321,7 @@ bool CreateShortcutInApplicationsMenu(base::Environment* env,
   // See this bug on xdg desktop-file-utils
   // https://gitlab.freedesktop.org/xdg/desktop-file-utils/issues/54
   base::FilePath user_applications_dir =
-      shell_integration_linux::GetDataWriteLocation(env).Append("applications");
+      base::nix::GetXDGDataWriteLocation(env).Append("applications");
   argv.clear();
   argv.push_back("update-desktop-database");
   argv.push_back(user_applications_dir.value());
@@ -678,8 +678,7 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
   }
 
   // Delete shortcuts from |kDirectoryFilename|.
-  base::FilePath applications_menu =
-      shell_integration_linux::GetDataWriteLocation(env);
+  base::FilePath applications_menu = base::nix::GetXDGDataWriteLocation(env);
   applications_menu = applications_menu.AppendASCII("applications");
   std::vector<base::FilePath> shortcut_filenames_app_menu =
       shell_integration_linux::GetExistingProfileShortcutFilenames(
@@ -699,7 +698,7 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
 bool UpdateDesktopShortcuts(
     base::Environment* env,
     const ShortcutInfo& shortcut_info,
-    absl::optional<ShortcutLocations> user_specified_locations) {
+    std::optional<ShortcutLocations> user_specified_locations) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -804,7 +803,7 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
 Result UpdatePlatformShortcuts(
     const base::FilePath& /*web_app_path*/,
     const std::u16string& /*old_app_title*/,
-    absl::optional<ShortcutLocations> user_specified_locations,
+    std::optional<ShortcutLocations> user_specified_locations,
     const ShortcutInfo& shortcut_info) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return (

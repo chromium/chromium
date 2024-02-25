@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_TRANSLATE_LANGUAGE_SELECTION_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_TRANSLATE_LANGUAGE_SELECTION_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_language_selection_consumer.h"
 
@@ -15,7 +15,8 @@
 // for selecting a different source or target language depending on
 // `sourceLanguage` passed in the init method.
 @interface InfobarTranslateLanguageSelectionTableViewController
-    : ChromeTableViewController <InfobarTranslateLanguageSelectionConsumer>
+    : LegacyChromeTableViewController <
+          InfobarTranslateLanguageSelectionConsumer>
 
 - (instancetype)initWithDelegate:(id<InfobarTranslateLanguageSelectionDelegate>)
                                      langageSelectionDelegate

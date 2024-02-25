@@ -111,7 +111,7 @@ ToastManagerImpl::~ToastManagerImpl() {
 }
 
 void ToastManagerImpl::Show(ToastData data) {
-  const std::string& id = data.id;
+  std::string_view id = data.id;
   DCHECK(!id.empty());
 
   // If `pause_counter_` is greater than 0, no toasts should be shown.
@@ -128,7 +128,7 @@ void ToastManagerImpl::Show(ToastData data) {
     *existing_toast = std::move(data);
     existing_toast->time_created = old_time_created;
   } else {
-    if (IsRunning(id)) {
+    if (IsToastShown(id)) {
       // Replace the visible toast by adding the new toast data to the front of
       // the queue and hiding the visible toast. Once the visible toast finishes
       // hiding, the new toast will be displayed.
@@ -146,8 +146,8 @@ void ToastManagerImpl::Show(ToastData data) {
     ShowLatest();
 }
 
-void ToastManagerImpl::Cancel(const std::string& id) {
-  if (IsRunning(id)) {
+void ToastManagerImpl::Cancel(std::string_view id) {
+  if (IsToastShown(id)) {
     CloseAllToastsWithAnimation();
     return;
   }
@@ -158,37 +158,54 @@ void ToastManagerImpl::Cancel(const std::string& id) {
 }
 
 bool ToastManagerImpl::MaybeToggleA11yHighlightOnActiveToastDismissButton(
-    const std::string& id) {
-  DCHECK(IsRunning(id));
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second && iter.second->MaybeToggleA11yHighlightOnDismissButton())
+    std::string_view id) {
+  DCHECK(IsToastShown(id));
+  for (auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay && overlay->MaybeToggleA11yHighlightOnDismissButton()) {
       return true;
+    }
   }
 
   return false;
 }
 
 bool ToastManagerImpl::MaybeActivateHighlightedDismissButtonOnActiveToast(
-    const std::string& id) {
-  DCHECK(IsRunning(id));
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second && iter.second->MaybeActivateHighlightedDismissButton())
+    std::string_view id) {
+  DCHECK(IsToastShown(id));
+  for (auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay && overlay->MaybeActivateHighlightedDismissButton()) {
       return true;
+    }
   }
 
   return false;
 }
 
-bool ToastManagerImpl::IsRunning(const std::string& id) const {
+bool ToastManagerImpl::IsToastShown(std::string_view id) const {
   return HasActiveToasts() && current_toast_data_ &&
          current_toast_data_->id == id;
+}
+
+bool ToastManagerImpl::IsToastDismissButtonHighlighted(
+    std::string_view id) const {
+  if (!IsToastShown(id)) {
+    return false;
+  }
+
+  for (const auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay && overlay->IsDismissButtonHighlighted()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 std::unique_ptr<ScopedToastPause> ToastManagerImpl::CreateScopedPause() {
   return std::make_unique<ScopedToastPause>();
 }
 
-void ToastManagerImpl::OnClosed() {
+void ToastManagerImpl::CloseToast() {
   const base::TimeDelta user_journey_time =
       base::TimeTicks::Now() - current_toast_data_->time_start_showing;
   const std::string time_range = GetToastDismissedTimeRange(user_journey_time);
@@ -238,11 +255,6 @@ void ToastManagerImpl::OnSessionStateChanged(
   }
 }
 
-const ToastData& ToastManagerImpl::GetCurrentToastDataForTesting() const {
-  DCHECK(current_toast_data_);
-  return current_toast_data_.value();
-}
-
 void ToastManagerImpl::ShowLatest() {
   DCHECK(!HasActiveToasts());
   DCHECK(!current_toast_data_);
@@ -259,8 +271,9 @@ void ToastManagerImpl::ShowLatest() {
   serial_++;
 
   if (current_toast_data_->show_on_all_root_windows) {
-    for (auto* root_window : Shell::GetAllRootWindows())
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
       CreateToastOverlayForRoot(root_window);
+    }
   } else {
     CreateToastOverlayForRoot(Shell::GetRootWindowForNewWindows());
   }
@@ -299,15 +312,17 @@ void ToastManagerImpl::CreateToastOverlayForRoot(aura::Window* root_window) {
 }
 
 void ToastManagerImpl::CloseAllToastsWithAnimation() {
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second)
-      iter.second->Show(false);
+  for (auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay) {
+      overlay->Show(false);
+    }
   }
 }
 
 void ToastManagerImpl::CloseAllToastsWithoutAnimation() {
-  for (auto& iter : root_window_to_overlay_)
-    iter.second.reset();
+  for (auto& [_, overlay] : root_window_to_overlay_) {
+    overlay.reset();
+  }
 
   // `OnClosed` (the other place where we stop the
   // `current_toast_expiration_timer_`) is only called when the toast is being
@@ -317,9 +332,10 @@ void ToastManagerImpl::CloseAllToastsWithoutAnimation() {
 }
 
 bool ToastManagerImpl::HasActiveToasts() const {
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second)
+  for (const auto& [_, overlay] : root_window_to_overlay_) {
+    if (overlay) {
       return true;
+    }
   }
 
   return false;
@@ -338,6 +354,13 @@ void ToastManagerImpl::OnRootWindowAdded(aura::Window* root_window) {
 }
 
 void ToastManagerImpl::OnRootWindowWillShutdown(aura::Window* root_window) {
+  // If the toast only exists in the root window that is being closed, inform
+  // the manager that the toast should be closed.
+  if (root_window_to_overlay_[root_window] &&
+      !current_toast_data_->show_on_all_root_windows) {
+    CloseToast();
+  }
+
   root_window_to_overlay_.erase(root_window);
 }
 

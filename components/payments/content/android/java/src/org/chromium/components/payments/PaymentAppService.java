@@ -48,7 +48,7 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
     public void create(PaymentAppFactoryDelegate delegate) {
         Collector collector = new Collector(new HashSet<>(mFactories.values()), delegate);
         for (PaymentAppFactoryInterface factory : mFactories.values()) {
-            factory.create(/*delegate=*/collector);
+            factory.create(/* delegate= */ collector);
         }
     }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_NATIVE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_NATIVE_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "ui/linux/nav_button_provider.h"
@@ -14,9 +15,12 @@
 // to layout frame buttons that were rendered by the native toolkit.
 class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
  public:
+  using FrameProviderGetter =
+      base::RepeatingCallback<ui::WindowFrameProvider*(bool /*tiled*/)>;
+
   explicit BrowserFrameViewLayoutLinuxNative(
       ui::NavButtonProvider* nav_button_provider,
-      ui::WindowFrameProvider* window_frame_provider);
+      FrameProviderGetter frame_provider_getter);
 
   BrowserFrameViewLayoutLinuxNative(const BrowserFrameViewLayoutLinuxNative&) =
       delete;
@@ -24,6 +28,8 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
       const BrowserFrameViewLayoutLinuxNative&) = delete;
 
   ~BrowserFrameViewLayoutLinuxNative() override;
+
+  ui::WindowFrameProvider* GetFrameProvider() const;
 
  protected:
   // OpaqueBrowserFrameViewLayout:
@@ -44,8 +50,7 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
 
   // Owned by BrowserFrameViewLinuxNative.
   const raw_ptr<ui::NavButtonProvider, DanglingUntriaged> nav_button_provider_;
-  const raw_ptr<ui::WindowFrameProvider, DanglingUntriaged>
-      window_frame_provider_;
+  FrameProviderGetter frame_provider_getter_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_NATIVE_H_

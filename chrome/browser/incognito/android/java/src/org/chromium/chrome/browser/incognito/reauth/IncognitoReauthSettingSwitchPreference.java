@@ -74,12 +74,13 @@ public class IncognitoReauthSettingSwitchPreference extends ChromeSwitchPreferen
         if (!mPreferenceInteractable) {
             TextView summary = (TextView) holder.findViewById(android.R.id.summary);
             summary.setEnabled(true);
-            summary.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mLinkClickDelegate.run();
-                }
-            });
+            summary.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mLinkClickDelegate.run();
+                        }
+                    });
         }
     }
 

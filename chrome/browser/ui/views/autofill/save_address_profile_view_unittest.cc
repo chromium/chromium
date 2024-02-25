@@ -21,11 +21,14 @@
 
 namespace autofill {
 
+using profile_ref = base::optional_ref<const AutofillProfile>;
+using ::testing::Property;
+
 class MockSaveUpdateAddressProfileBubbleController
     : public SaveUpdateAddressProfileBubbleController {
  public:
   MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
-  MOCK_METHOD(absl::optional<HeaderImages>,
+  MOCK_METHOD(std::optional<HeaderImages>,
               GetHeaderImages,
               (),
               (const, override));
@@ -46,7 +49,8 @@ class MockSaveUpdateAddressProfileBubbleController
               (const, override));
   MOCK_METHOD(void,
               OnUserDecision,
-              (AutofillClient::SaveAddressProfileOfferUserDecision decision),
+              (AutofillClient::SaveAddressProfileOfferUserDecision,
+               base::optional_ref<const AutofillProfile>),
               (override));
   MOCK_METHOD(void, OnEditButtonClicked, (), (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
@@ -91,7 +95,8 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
-  AutofillProfile address_profile_to_save_;
+  AutofillProfile address_profile_to_save_{
+      i18n_model_definition::kLegacyHierarchyCountryCode};
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
@@ -132,7 +137,8 @@ TEST_F(SaveAddressProfileViewTest, AcceptInvokesTheController) {
   EXPECT_CALL(
       *mock_controller(),
       OnUserDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+          Property(&profile_ref::has_value, false)));
   view()->AcceptDialog();
 }
 
@@ -141,7 +147,8 @@ TEST_F(SaveAddressProfileViewTest, CancelInvokesTheController) {
   EXPECT_CALL(
       *mock_controller(),
       OnUserDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+          Property(&profile_ref::has_value, false)));
   view()->CancelDialog();
 }
 

@@ -77,13 +77,13 @@ void CastSessionClientImpl::SendMessageToClient(
   connection_remote_->OnMessage(std::move(message));
 }
 
-void CastSessionClientImpl::SendMediaStatusToClient(
-    const base::Value::Dict& media_status,
-    absl::optional<int> request_id) {
+void CastSessionClientImpl::SendMediaMessageToClient(
+    const base::Value::Dict& payload,
+    std::optional<int> request_id) {
   // Look up if there is a pending request from this client associated with this
   // message. If so, send the media status message as a response by setting the
   // sequence number.
-  absl::optional<int> sequence_number;
+  std::optional<int> sequence_number;
   if (request_id) {
     auto it = pending_media_requests_.find(*request_id);
     if (it != pending_media_requests_.end()) {
@@ -93,9 +93,7 @@ void CastSessionClientImpl::SendMediaStatusToClient(
       pending_media_requests_.erase(it);
     }
   }
-
-  SendMessageToClient(
-      CreateV2Message(client_id(), media_status, sequence_number));
+  SendMessageToClient(CreateV2Message(client_id(), payload, sequence_number));
 }
 
 bool CastSessionClientImpl::MatchesAutoJoinPolicy(
@@ -124,13 +122,13 @@ void CastSessionClientImpl::OnMessage(
 }
 
 void CastSessionClientImpl::DidClose(PresentationConnectionCloseReason reason) {
-  activity_->CloseConnectionOnReceiver(client_id());
+  activity_->CloseConnectionOnReceiver(client_id(), reason);
 }
 
 void CastSessionClientImpl::SendErrorCodeToClient(
     int sequence_number,
     CastInternalMessage::ErrorCode error_code,
-    absl::optional<std::string> description) {
+    std::optional<std::string> description) {
   base::Value::Dict message;
   message.Set("code", base::Value(*cast_util::EnumToString(error_code)));
   message.Set("description",
@@ -224,7 +222,7 @@ void CastSessionClientImpl::HandleV2ProtocolMessage(
       cast_channel::V2MessageTypeFromString(type_str);
   if (cast_channel::IsMediaRequestMessageType(type)) {
     DVLOG(2) << "Got media command from client: " << type_str;
-    absl::optional<int> request_id =
+    std::optional<int> request_id =
         activity_->SendMediaRequestToReceiver(cast_message);
     if (request_id) {
       DCHECK(cast_message.sequence_number());
@@ -274,7 +272,7 @@ void CastSessionClientImpl::CloseConnection(
   if (connection_remote_)
     connection_remote_->DidClose(close_reason);
   TearDownPresentationConnection();
-  activity_->CloseConnectionOnReceiver(client_id());
+  activity_->CloseConnectionOnReceiver(client_id(), close_reason);
 }
 
 void CastSessionClientImpl::TerminateConnection() {

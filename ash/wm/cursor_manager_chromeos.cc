@@ -99,6 +99,7 @@ bool CursorManager::ShouldHideCursorOnKeyEvent(
     case ui::VKEY_MENU:
     // Search key == VKEY_LWIN.
     case ui::VKEY_LWIN:
+    case ui::VKEY_RWIN:
     case ui::VKEY_WLAN:
     case ui::VKEY_POWER:
     case ui::VKEY_BRIGHTNESS_DOWN:

@@ -5,11 +5,12 @@
 #ifndef MEDIA_FORMATS_HLS_VARIANT_STREAM_H_
 #define MEDIA_FORMATS_HLS_VARIANT_STREAM_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media::hls {
@@ -20,13 +21,13 @@ class MEDIA_EXPORT VariantStream {
  public:
   VariantStream(GURL primary_rendition_uri,
                 types::DecimalInteger bandwidth,
-                absl::optional<types::DecimalInteger> average_bandwidth,
-                absl::optional<types::DecimalFloatingPoint> score,
-                absl::optional<std::vector<std::string>> codecs,
-                absl::optional<types::DecimalResolution> resolution,
-                absl::optional<types::DecimalFloatingPoint> frame_rate,
+                std::optional<types::DecimalInteger> average_bandwidth,
+                std::optional<types::DecimalFloatingPoint> score,
+                std::optional<std::vector<std::string>> codecs,
+                std::optional<types::DecimalResolution> resolution,
+                std::optional<types::DecimalFloatingPoint> frame_rate,
                 scoped_refptr<AudioRenditionGroup> audio_renditions,
-                absl::optional<std::string> video_rendition_group_name);
+                std::optional<std::string> video_rendition_group_name);
   VariantStream(const VariantStream&) = delete;
   VariantStream(VariantStream&&);
   ~VariantStream();
@@ -70,31 +71,29 @@ class MEDIA_EXPORT VariantStream {
   //  representative period of similar content, encoded using the same
   //  settings."
   //  https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=the%20BANDWIDTH%20attribute.-,AVERAGE%2DBANDWIDTH,-The%20value%20is
-  absl::optional<types::DecimalInteger> GetAverageBandwidth() const {
+  std::optional<types::DecimalInteger> GetAverageBandwidth() const {
     return average_bandwidth_;
   }
 
   // A metric computed by the HLS server to provide a relative measure of
   // desireability for each variant. A higher score indicates that this variant
   // should be preferred over other variants with lower scores.
-  absl::optional<types::DecimalFloatingPoint> GetScore() const {
-    return score_;
-  }
+  std::optional<types::DecimalFloatingPoint> GetScore() const { return score_; }
 
   // A list of media sample formats present in one or more renditions of this
   // variant.
-  const absl::optional<std::vector<std::string>>& GetCodecs() const {
+  const std::optional<std::vector<std::string>>& GetCodecs() const {
     return codecs_;
   }
 
   // A value representing the optimal pixel resolution at which to display all
   // video in this variant stream.
-  const absl::optional<types::DecimalResolution> GetResolution() const {
+  const std::optional<types::DecimalResolution> GetResolution() const {
     return resolution_;
   }
 
   // This represents the maximum framerate for all video in this variant stream.
-  const absl::optional<types::DecimalFloatingPoint> GetFrameRate() const {
+  const std::optional<types::DecimalFloatingPoint> GetFrameRate() const {
     return frame_rate_;
   }
 
@@ -105,20 +104,20 @@ class MEDIA_EXPORT VariantStream {
   }
 
   // Returns the name of the video rendition group, if it exists.
-  const absl::optional<std::string> GetVideoRenditionGroupName() const {
+  const std::optional<std::string> GetVideoRenditionGroupName() const {
     return video_rendition_group_name_;
   }
 
  private:
   GURL primary_rendition_uri_;
   types::DecimalInteger bandwidth_;
-  absl::optional<types::DecimalInteger> average_bandwidth_;
-  absl::optional<types::DecimalFloatingPoint> score_;
-  absl::optional<std::vector<std::string>> codecs_;
-  absl::optional<types::DecimalResolution> resolution_;
-  absl::optional<types::DecimalFloatingPoint> frame_rate_;
+  std::optional<types::DecimalInteger> average_bandwidth_;
+  std::optional<types::DecimalFloatingPoint> score_;
+  std::optional<std::vector<std::string>> codecs_;
+  std::optional<types::DecimalResolution> resolution_;
+  std::optional<types::DecimalFloatingPoint> frame_rate_;
   scoped_refptr<AudioRenditionGroup> audio_rendition_group_;
-  absl::optional<std::string> video_rendition_group_name_;
+  std::optional<std::string> video_rendition_group_name_;
 };
 
 }  // namespace media::hls

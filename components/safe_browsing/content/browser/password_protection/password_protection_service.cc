@@ -197,14 +197,6 @@ PasswordProtectionService::MaybeCreateCommitDeferringCondition(
   return nullptr;
 }
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-void PasswordProtectionService::GetPhishingDetector(
-    service_manager::InterfaceProvider* provider,
-    mojo::Remote<mojom::PhishingDetector>* phishing_detector) {
-  provider->GetInterface(phishing_detector->BindNewPipeAndPassReceiver());
-}
-#endif
-
 void PasswordProtectionService::RemoveWarningRequestsByWebContents(
     content::WebContents* web_contents) {
   for (auto it = warning_requests_.begin(); it != warning_requests_.end();) {

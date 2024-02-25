@@ -13,16 +13,13 @@ import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A {@link RecyclerView.ViewHolder} meant to display a card footer.
- */
+/** A {@link RecyclerView.ViewHolder} meant to display a card footer. */
 public class CardFooterViewHolder extends ListItemViewHolder {
-    /**
-     * Creates a new {@link CardFooterViewHolder} instance.
-     */
+    /** Creates a new {@link CardFooterViewHolder} instance. */
     public static CardFooterViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_card_footer, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_card_footer, null);
         return new CardFooterViewHolder(view);
     }
 
@@ -33,9 +30,11 @@ public class CardFooterViewHolder extends ListItemViewHolder {
     @Override
     public void bind(PropertyModel properties, ListItem item) {
         ListItem.CardFooterListItem footerListItem = (ListItem.CardFooterListItem) item;
-        itemView.setOnClickListener(v -> {
-            properties.get(ListProperties.CALLBACK_GROUP_PAGINATION_CLICK)
-                    .onResult(footerListItem.dateAndDomain);
-        });
+        itemView.setOnClickListener(
+                v -> {
+                    properties
+                            .get(ListProperties.CALLBACK_GROUP_PAGINATION_CLICK)
+                            .onResult(footerListItem.dateAndDomain);
+                });
     }
 }

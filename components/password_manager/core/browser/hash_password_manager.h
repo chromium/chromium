@@ -5,18 +5,25 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HASH_PASSWORD_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HASH_PASSWORD_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 class PrefService;
 
 namespace password_manager {
+
+// Helper function to convert a dictionary value to PasswordWordHashData.
+std::optional<PasswordHashData> ConvertToPasswordHashData(
+    const base::Value& dict);
 
 // Responsible for saving, clearing, retrieving and encryption of a password
 // hash data in preferences.
@@ -31,7 +38,7 @@ class HashPasswordManager {
 
   ~HashPasswordManager();
 
-  bool SavePasswordHash(const std::string username,
+  bool SavePasswordHash(const std::string& username,
                         const std::u16string& password,
                         bool is_gaia_password = true);
   bool SavePasswordHash(const PasswordHashData& password_hash_data);
@@ -50,14 +57,20 @@ class HashPasswordManager {
 
   // Returns empty if no hash matching |username| and |is_gaia_password| is
   // available.
-  absl::optional<PasswordHashData> RetrievePasswordHash(
+  std::optional<PasswordHashData> RetrievePasswordHash(
       const std::string& username,
       bool is_gaia_password);
 
   // Whether password hash of |username| and |is_gaia_password| is stored.
   bool HasPasswordHash(const std::string& username, bool is_gaia_password);
 
+  // Moves enterpise password hashes from the profile storage to the local
+  // state storage.
+  void MigrateEnterprisePasswordHashes();
+
   void set_prefs(PrefService* prefs) { prefs_ = prefs; }
+
+  void set_local_prefs(PrefService* local_prefs) { local_prefs_ = local_prefs; }
 
   // Adds a listener for when |kPasswordHashDataList| list might have changed.
   // Should only be called on the UI thread. The callback is only called when
@@ -71,7 +84,21 @@ class HashPasswordManager {
   // Encrypts and saves |password_hash_data| to prefs. Returns true on success.
   bool EncryptAndSave(const PasswordHashData& password_hash_data);
 
+  // Retrieves all saved password hashes from |hash_list| as a
+  // PasswordHashData collection.
+  std::vector<PasswordHashData> RetrieveAllPasswordHashesInternal(
+      const base::Value::List& hash_list) const;
+
+  const base::Value::List& GetPrefList(bool is_gaia_password) const;
+  std::unique_ptr<ScopedListPrefUpdate> GetScopedListPrefUpdate(
+      bool is_gaia_password) const;
+
+  // CHECKs PrefServices.
+  void CheckPrefs(bool is_gaia_password) const;
+
   raw_ptr<PrefService> prefs_ = nullptr;
+
+  raw_ptr<PrefService> local_prefs_ = nullptr;
 
   // Callbacks when |kPasswordHashDataList| might have changed.
   // Should only be accessed on the UI thread. The callback is only called when

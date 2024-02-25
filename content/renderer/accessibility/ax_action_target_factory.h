@@ -19,8 +19,7 @@ class AXActionTarget;
 }
 
 namespace content {
-
-class PluginAXTreeSource;
+class PluginAXTreeActionTargetAdapter;
 
 class CONTENT_EXPORT AXActionTargetFactory {
  public:
@@ -28,7 +27,7 @@ class CONTENT_EXPORT AXActionTargetFactory {
   // it in an abstraction for dispatching accessibility actions.
   static std::unique_ptr<ui::AXActionTarget> CreateFromNodeId(
       const blink::WebDocument& document,
-      content::PluginAXTreeSource* plugin_tree_source,
+      content::PluginAXTreeActionTargetAdapter* plugin_tree_adapter,
       ui::AXNodeID node_id);
 };
 

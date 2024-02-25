@@ -20,8 +20,9 @@
 namespace policy {
 
 class EnterpriseStartupDialogView : public views::DialogDelegateView {
+  METADATA_HEADER(EnterpriseStartupDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(EnterpriseStartupDialogView);
   EnterpriseStartupDialogView(
       EnterpriseStartupDialog::DialogResultCallback callback);
   EnterpriseStartupDialogView(const EnterpriseStartupDialogView&) = delete;
@@ -32,7 +33,7 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   void DisplayLaunchingInformationWithThrobber(
       const std::u16string& information);
   void DisplayErrorMessage(const std::u16string& error_message,
-                           const absl::optional<std::u16string>& accept_button);
+                           const std::optional<std::u16string>& accept_button);
   void CloseDialog();
 
   void AddWidgetObserver(views::WidgetObserver* observer);
@@ -78,7 +79,7 @@ class EnterpriseStartupDialogImpl : public EnterpriseStartupDialog,
       const std::u16string& information) override;
   void DisplayErrorMessage(
       const std::u16string& error_message,
-      const absl::optional<std::u16string>& accept_button) override;
+      const std::optional<std::u16string>& accept_button) override;
   bool IsShowing() override;
 
   // views::WidgetObserver:

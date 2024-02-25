@@ -36,9 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- *  Allows tests to perform UI actions.
- */
+/** Allows tests to perform UI actions. */
 public class UiAutomatorUtils {
     private static final String TAG = "UiAutomatorUtils";
     private static final int SWIPE_STEPS_PER_SECOND = 200;
@@ -131,9 +129,16 @@ public class UiAutomatorUtils {
      */
     public void clickOutsideOf(@NonNull IUi2Locator locator) {
         Rect bounds = getBounds(locator);
-        Log.d(TAG,
-                "Clicking outside of bounds with Bottom:" + bounds.bottom + " Top:" + bounds.top
-                        + " Left:" + bounds.left + " Right:" + bounds.right);
+        Log.d(
+                TAG,
+                "Clicking outside of bounds with Bottom:"
+                        + bounds.bottom
+                        + " Top:"
+                        + bounds.top
+                        + " Left:"
+                        + bounds.left
+                        + " Right:"
+                        + bounds.right);
         clickOutsideOfArea(bounds.left, bounds.top, bounds.right, bounds.bottom);
     }
 
@@ -167,7 +172,11 @@ public class UiAutomatorUtils {
     private void clickDurationInternal(IUi2Locator locator, long duration) {
         UiObject2 object2 = mLocatorHelper.getOne(locator);
         Point center = object2.getVisibleCenter();
-        mDevice.swipe(center.x, center.y, center.x, center.y,
+        mDevice.swipe(
+                center.x,
+                center.y,
+                center.x,
+                center.y,
                 (int) (CLICK_STEPS_PER_SECOND * duration / 1000L));
     }
 
@@ -195,8 +204,9 @@ public class UiAutomatorUtils {
      */
     public String executeShellCommand(@NonNull String cmd) throws IOException {
         ParcelFileDescriptor pfd =
-                InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                        cmd);
+                InstrumentationRegistry.getInstrumentation()
+                        .getUiAutomation()
+                        .executeShellCommand(cmd);
         byte[] buf = new byte[512];
         int bytesRead;
         FileInputStream fis = new ParcelFileDescriptor.AutoCloseInputStream(pfd);
@@ -323,8 +333,7 @@ public class UiAutomatorUtils {
     public void waitUntilAnyVisible(IUi2Locator... locators) {
         CriteriaHelper.pollInstrumentationThread(
                 toNotSatisfiedRunnable(
-                        ()
-                                -> {
+                        () -> {
                             for (IUi2Locator locator : locators) {
                                 if (mLocatorHelper.isOnScreen(locator)) {
                                     return true;
@@ -335,7 +344,8 @@ public class UiAutomatorUtils {
                         "No Chrome views on screen. (i.e. Chrome has crashed "
                                 + "on startup). Look at earlier logs for the actual "
                                 + "crash stacktrace."),
-                WAIT_TIMEOUT_MS, UI_CHECK_INTERVAL);
+                WAIT_TIMEOUT_MS,
+                UI_CHECK_INTERVAL);
     }
 
     private static Runnable toNotSatisfiedRunnable(
@@ -356,8 +366,10 @@ public class UiAutomatorUtils {
         Context context = ApplicationProvider.getApplicationContext();
         final Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         if (intent == null) {
-            throw new IllegalStateException("Could not get intent to launch " + packageName
-                    + ", please ensure that it is installed");
+            throw new IllegalStateException(
+                    "Could not get intent to launch "
+                            + packageName
+                            + ", please ensure that it is installed");
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
@@ -461,9 +473,13 @@ public class UiAutomatorUtils {
         int h = mDevice.getDisplayHeight();
         int startY = h / 2 - (int) (fractionOfScreen / 2f * h);
         int stopY = startY + (int) (fractionOfScreen * h);
-        int steps = (int) (DEFAULT_SWIPE_SECONDS_PER_PAGE * Math.abs(fractionOfScreen)
-                * SWIPE_STEPS_PER_SECOND);
-        Log.d(TAG,
+        int steps =
+                (int)
+                        (DEFAULT_SWIPE_SECONDS_PER_PAGE
+                                * Math.abs(fractionOfScreen)
+                                * SWIPE_STEPS_PER_SECOND);
+        Log.d(
+                TAG,
                 "Swiping vertically from " + stopY + " to " + startY + " in " + steps + " steps");
         mDevice.swipe(x, stopY, x, startY, steps);
     }
@@ -518,7 +534,8 @@ public class UiAutomatorUtils {
                 strings.add(line);
             }
         }
-        Log.d(TAG,
+        Log.d(
+                TAG,
                 "readAllFromFile read " + strings.size() + " lines from " + file.getAbsolutePath());
         return strings;
     }

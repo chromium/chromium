@@ -26,14 +26,10 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList
 
 // The base list with no flags or special cases.
 PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
-  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
-    PermissionsPolicyFeatureList map({        {
+  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list({        {
           mojom::PermissionsPolicyFeature::kAccelerometer,
           PermissionsPolicyFeatureDefault::EnableForAll
         },    });
-
-    return map;
-  }());
   return *feature_list;
 }
 

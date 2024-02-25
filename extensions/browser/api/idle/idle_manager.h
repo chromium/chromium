@@ -18,6 +18,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/idle/idle.h"
 
 namespace base {
@@ -63,7 +64,7 @@ class IdleManager : public ExtensionRegistryObserver,
     EventDelegate& operator=(const EventDelegate&) = delete;
 
     virtual ~EventDelegate() {}
-    virtual void OnStateChanged(const std::string& extension_id,
+    virtual void OnStateChanged(const ExtensionId& extension_id,
                                 ui::IdleState new_state) = 0;
     virtual void RegisterObserver(EventRouter::Observer* observer) = 0;
     virtual void UnregisterObserver(EventRouter::Observer* observer) = 0;
@@ -91,8 +92,8 @@ class IdleManager : public ExtensionRegistryObserver,
   void OnListenerRemoved(const EventListenerInfo& details) override;
 
   ui::IdleState QueryState(int threshold);
-  void SetThreshold(const std::string& extension_id, int threshold);
-  int GetThresholdForTest(const std::string& extension_id) const;
+  void SetThreshold(const ExtensionId& extension_id, int threshold);
+  int GetThresholdForTest(const ExtensionId& extension_id) const;
 
   // Returns the maximum time in seconds until the screen lock automatically
   // when idle.
@@ -127,7 +128,7 @@ class IdleManager : public ExtensionRegistryObserver,
 
   typedef std::map<const std::string, IdleMonitor> MonitorMap;
 
-  IdleMonitor* GetMonitor(const std::string& extension_id);
+  IdleMonitor* GetMonitor(const ExtensionId& extension_id);
   void StartPolling();
   void StopPolling();
   void UpdateIdleState();

@@ -7,6 +7,7 @@
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -20,6 +21,38 @@ const char kMainHistoryClusterTileLinkUrl[] =
 const char kHistoryClustersCartTileLinkUrl[] = "https://store.google.com/cart";
 const std::string kHistoryClusterSuggestTileLinkUrl =
     "https://www.google.com/search?q=new%20google%20products";
+const char kGooglePageUrl[] = "https://www.google.com/";
+
+using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
+const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules-v2",
+                                       "#container"};
+
+struct ModuleDetails {
+  const std::vector<base::test::FeatureRefAndParams> features;
+  const DeepQuery module_query;
+  const DeepQuery more_button_query;
+  const DeepQuery more_action_menu_query;
+  const DeepQuery dismiss_button_query;
+};
+
+const ModuleDetails kTabResumptionModuleDetails = {
+    .features = {{ntp_features::kNtpTabResumptionModule,
+                  {{ntp_features::kNtpTabResumptionModuleDataParam,
+                    "Fake Data"}}},
+                 {ntp_features::kNtpModulesRedesigned, {}}},
+    .module_query = {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+                     "#moduleElement", "ntp-tab-resumption"},
+    .more_button_query = {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+                          "#moduleElement", "ntp-tab-resumption",
+                          "ntp-module-header-v2", "#menuButton"},
+    .more_action_menu_query = {"ntp-app", "ntp-modules-v2",
+                               "ntp-module-wrapper", "#moduleElement",
+                               "ntp-tab-resumption", "ntp-module-header-v2",
+                               "cr-action-menu", "dialog"},
+    .dismiss_button_query = {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+                             "#moduleElement", "ntp-tab-resumption",
+                             "ntp-module-header-v2", "#dismiss"}};
+
 }  // namespace
 
 class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
@@ -288,7 +321,7 @@ class NewTabPageModulesRedesignedInteractiveUiTest
 
 // TODO(crbug.com/1470367): Enable the test on a compatible version skew.
 // TODO(crbug.com/1472077): Flaky on Linux ChromiumOS MSan.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingHideButtonDismissesCluster \
   DISABLED_ClickingHideButtonDismissesCluster
 #else
@@ -350,7 +383,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
                                       kSampleNumClusters - 1));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1469698): Flaky on Linux Tests (dbg, MSan).
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingDoneButtonDismissesCluster \
   DISABLED_ClickingDoneButtonDismissesCluster
 #else
@@ -410,4 +444,113 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
       // resulted from dismissing a module.
       WaitForElementChildElementCount(kModulesContainer,
                                       kSampleNumClusters - 1));
+}
+
+class NewTabPageModulesRedesignedHeaderInteractiveUiTest
+    : public NewTabPageModulesInteractiveUiBaseTest,
+      public testing::WithParamInterface<ModuleDetails> {
+ public:
+  NewTabPageModulesRedesignedHeaderInteractiveUiTest() = default;
+  ~NewTabPageModulesRedesignedHeaderInteractiveUiTest() override = default;
+  NewTabPageModulesRedesignedHeaderInteractiveUiTest(
+      const NewTabPageModulesRedesignedHeaderInteractiveUiTest&) = delete;
+  void operator=(const NewTabPageModulesRedesignedHeaderInteractiveUiTest&) =
+      delete;
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSignedOutNtpModulesSwitch);
+
+    features.InitWithFeaturesAndParameters(ModuleDetails().features, {});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  ModuleDetails ModuleDetails() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NewTabPageModulesRedesignedHeaderInteractiveUiTest,
+                         ::testing::Values(kTabResumptionModuleDetails));
+
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClickingHideButtonDismissesModule \
+  DISABLED_ClickingHideButtonDismissesModule
+#else
+#define MAYBE_ClickingHideButtonDismissesModule \
+  ClickingHideButtonDismissesModule
+#endif
+IN_PROC_BROWSER_TEST_P(NewTabPageModulesRedesignedHeaderInteractiveUiTest,
+                       MAYBE_ClickingHideButtonDismissesModule) {
+  const auto& module_details = ModuleDetails();
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for modules container to have an expected child count matching
+      // the test setup.
+      WaitForElementChildElementCount(kModulesV2Container, 1),
+      // 3. Ensure the module's dismiss button exists, and thus, that the module
+      // loaded successfully.
+      WaitForElementToLoad(module_details.dismiss_button_query),
+      // 4. Scroll to the dismiss element of the NTP module's header. Modules
+      // may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, module_details.dismiss_button_query),
+      // 5. Click the "more actions" menu button of the NTP history clusters
+      // module.
+      ClickElement(kNewTabPageElementId, module_details.more_button_query),
+      // 6. Wait for module's menu dialog to be anchored.
+      WaitForElementStyleSet(module_details.more_action_menu_query),
+      // 7. Click the dismiss action element of the NTP module.
+      ClickElement(kNewTabPageElementId, module_details.dismiss_button_query),
+      // 8. Wait for modules container to reflect an updated element count that
+      // resulted from dismissing a module.
+      WaitForElementChildElementCount(kModulesV2Container, 0));
+}
+
+class NewTabPageTabResumptionModuleInteractiveUiTest
+    : public NewTabPageModulesInteractiveUiBaseTest {
+ public:
+  NewTabPageTabResumptionModuleInteractiveUiTest() = default;
+  ~NewTabPageTabResumptionModuleInteractiveUiTest() override = default;
+  NewTabPageTabResumptionModuleInteractiveUiTest(
+      const NewTabPageTabResumptionModuleInteractiveUiTest&) = delete;
+  void operator=(const NewTabPageTabResumptionModuleInteractiveUiTest&) =
+      delete;
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSignedOutNtpModulesSwitch);
+    features.InitWithFeaturesAndParameters(
+        kTabResumptionModuleDetails.features,
+        {ntp_features::kNtpHistoryClustersModule});
+    InteractiveBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTabResumptionModuleInteractiveUiTest,
+                       ClickingEntryNavigatesToCorrectPage) {
+  const DeepQuery kResumeTabLink = {"ntp-app",
+                                    "ntp-modules-v2",
+                                    "ntp-module-wrapper",
+                                    "#moduleElement",
+                                    "ntp-tab-resumption",
+                                    "#tabs",
+                                    "a"};
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for modules container to have an expected child count matching
+      // the test setup.
+      WaitForElementChildElementCount(kModulesV2Container, 1),
+      // 3. Wait for the Tab resumption module to load.
+      WaitForElementToLoad(kTabResumptionModuleDetails.module_query),
+      // 4. Wait for tile to load.
+      WaitForLinkToLoad(kResumeTabLink, kGooglePageUrl),
+      // 3. Scroll to tile. Modules may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, kResumeTabLink),
+      // 4. Click the element link.
+      ClickElement(kNewTabPageElementId, kResumeTabLink),
+      // 5. Verify that the tab navigates to the tile's link.
+      WaitForWebContentsNavigation(kNewTabPageElementId, GURL(kGooglePageUrl)));
 }

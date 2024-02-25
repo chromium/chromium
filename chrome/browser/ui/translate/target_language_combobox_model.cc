@@ -25,6 +25,6 @@ std::u16string TargetLanguageComboboxModel::GetItemAt(size_t index) const {
   return model_->GetTargetLanguageNameAt(index);
 }
 
-absl::optional<size_t> TargetLanguageComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> TargetLanguageComboboxModel::GetDefaultIndex() const {
   return default_index_;
 }

@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
 
@@ -986,7 +988,32 @@ TEST(FilterOperationsTest, HasFilterOfType) {
   EXPECT_FALSE(filters.HasFilterOfType(FilterOperation::ZOOM));
 }
 
-TEST(FilterOperationsTest, ExpandRectForPixelMovement) {
+std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
+  return info.param ? "UseMapRect" : "RectExpansion";
+}
+
+class UseMapRectFilterOperationsTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ public:
+  UseMapRectFilterOperationsTest();
+  ~UseMapRectFilterOperationsTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+UseMapRectFilterOperationsTest::UseMapRectFilterOperationsTest() {
+  if (GetParam()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kUseMapRectForPixelMovement);
+  } else {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kUseMapRectForPixelMovement);
+  }
+}
+
+TEST_P(UseMapRectFilterOperationsTest, ExpandRectForPixelMovement) {
   constexpr gfx::Rect test_rect(0, 0, 100, 100);
   FilterOperations filters;
 
@@ -997,25 +1024,50 @@ TEST(FilterOperationsTest, ExpandRectForPixelMovement) {
   filters.Clear();
   filters.Append(FilterOperation::CreateDropShadowFilter(
       gfx::Point(3, -8), 20, SkColors::kTransparent));
-  EXPECT_EQ(gfx::Rect(-57, -68, 220, 220),
-            filters.ExpandRectForPixelMovement(test_rect));
+  if (GetParam()) {
+    EXPECT_EQ(gfx::Rect(-57, -68, 220, 220),
+              filters.ExpandRectForPixelMovement(test_rect));
+  } else {
+    // max_movement = max(std::abs(3), std::abs(-8)) + 20 * 3;
+    EXPECT_EQ(gfx::Rect(-68, -68, 236, 236),
+              filters.ExpandRectForPixelMovement(test_rect));
+  }
 
   // The zoom filter is a pixel moving filter but it only moves pixels inside
   // the filtered rect and doesn't expand the rect.
   filters.Clear();
   filters.Append(FilterOperation::CreateZoomFilter(2, 3));
-  EXPECT_EQ(test_rect, filters.ExpandRectForPixelMovement(test_rect));
+  if (GetParam()) {
+    EXPECT_EQ(test_rect, filters.ExpandRectForPixelMovement(test_rect));
+  } else {
+    // max movement = zoom_inset = 3
+    EXPECT_EQ(gfx::Rect(-3, -3, 106, 106),
+              filters.ExpandRectForPixelMovement(test_rect));
+  }
 
   filters.Clear();
   filters.Append(FilterOperation::CreateOffsetFilter(gfx::Point(3, -4)));
-  EXPECT_EQ(gfx::Rect(3, -4, 100, 100),
-            filters.ExpandRectForPixelMovement(test_rect));
+  if (GetParam()) {
+    EXPECT_EQ(gfx::Rect(3, -4, 100, 100),
+              filters.ExpandRectForPixelMovement(test_rect));
+  } else {
+    EXPECT_EQ(gfx::Rect(-4, -4, 108, 108),
+              filters.ExpandRectForPixelMovement(test_rect));
+  }
 
   filters.Clear();
-  filters.Append(FilterOperation::CreateReferenceFilter(
-      sk_make_sp<OffsetPaintFilter>(10, 8, nullptr)));
-  EXPECT_EQ(gfx::Rect(10, 8, 100, 100),
-            filters.ExpandRectForPixelMovement(test_rect));
+  if (GetParam()) {
+    filters.Append(FilterOperation::CreateReferenceFilter(
+        sk_make_sp<OffsetPaintFilter>(10, 8, nullptr)));
+    EXPECT_EQ(gfx::Rect(10, 8, 100, 100),
+              filters.ExpandRectForPixelMovement(test_rect));
+  } else {
+    filters.Append(FilterOperation::CreateReferenceFilter(
+        sk_make_sp<OffsetPaintFilter>(10, 10, nullptr)));
+    // max movement = 100.
+    EXPECT_EQ(gfx::Rect(-100, -100, 300, 300),
+              filters.ExpandRectForPixelMovement(test_rect));
+  }
 
   // For filters that don't move pixels. HasFilterThatMovesPixels() = false.
   filters.Clear();
@@ -1035,7 +1087,11 @@ TEST(FilterOperationsTest, ExpandRectForPixelMovement) {
   EXPECT_EQ(test_rect, filters.ExpandRectForPixelMovement(test_rect));
 }
 
-TEST(FilterOperationsTest, ExpandRectForPixelMovement_MultipleFilters) {
+TEST_P(UseMapRectFilterOperationsTest,
+       ExpandRectForPixelMovement_MultipleFilters) {
+  if (!GetParam()) {
+    return;
+  }
   constexpr gfx::Rect test_rect(0, 0, 100, 100);
 
   FilterOperations filters;
@@ -1056,6 +1112,11 @@ TEST(FilterOperationsTest, ExpandRectForPixelMovement_MultipleFilters) {
   EXPECT_EQ(gfx::Rect(-80, -10, 220, 220),
             filters.ExpandRectForPixelMovement(test_rect));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         UseMapRectFilterOperationsTest,
+                         testing::Bool(),
+                         &PostTestCaseName);
 
 }  // namespace
 }  // namespace cc

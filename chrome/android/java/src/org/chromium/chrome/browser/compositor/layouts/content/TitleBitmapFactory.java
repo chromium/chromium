@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Typeface;
+import android.os.SystemClock;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -19,12 +20,11 @@ import android.view.InflateException;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.ui.UiUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
-/**
- * A factory that creates text and favicon bitmaps.
- */
+/** A factory that creates text and favicon bitmaps. */
 public class TitleBitmapFactory {
     private static final String TAG = "TitleBitmapFactory";
 
@@ -32,6 +32,10 @@ public class TitleBitmapFactory {
     // Canvas#drawText() seems to fail when trying to draw 4100 or more characters.
     // See https://crbug.com/524390/ for more details.
     private static final int MAX_NUM_TITLE_CHAR = 1000;
+
+    // We were drawing up to 1000 characters, but only displaying ~30 in the tab strip. Experiment
+    // with a smaller limit.
+    private static final int SMALLER_MAX_NUM_TITLE_CHAR = 100;
 
     private final int mMaxWidth;
 
@@ -47,11 +51,13 @@ public class TitleBitmapFactory {
      */
     public TitleBitmapFactory(Context context, boolean incognito) {
         Resources res = context.getResources();
-        int textColor = AppCompatResources
-                                .getColorStateList(context,
-                                        incognito ? R.color.compositor_tab_title_bar_text_incognito
-                                                  : R.color.compositor_tab_title_bar_text)
-                                .getDefaultColor();
+        int textColor =
+                AppCompatResources.getColorStateList(
+                                context,
+                                incognito
+                                        ? R.color.compositor_tab_title_bar_text_incognito
+                                        : R.color.compositor_tab_title_bar_text)
+                        .getDefaultColor();
         float textSize = res.getDimension(R.dimen.compositor_tab_title_text_size);
 
         boolean fakeBoldText = res.getBoolean(R.bool.compositor_tab_title_fake_bold_text);
@@ -87,15 +93,18 @@ public class TitleBitmapFactory {
     public Bitmap getFaviconBitmap(Bitmap favicon) {
         assert favicon != null;
         try {
-            Bitmap b = Bitmap.createBitmap(
-                    mFaviconDimension, mFaviconDimension, Bitmap.Config.ARGB_8888);
+            Bitmap b =
+                    Bitmap.createBitmap(
+                            mFaviconDimension, mFaviconDimension, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b);
             if (favicon.getWidth() > mFaviconDimension || favicon.getHeight() > mFaviconDimension) {
-                float scale = (float) mFaviconDimension
-                        / Math.max(favicon.getWidth(), favicon.getHeight());
+                float scale =
+                        (float) mFaviconDimension
+                                / Math.max(favicon.getWidth(), favicon.getHeight());
                 c.scale(scale, scale);
             } else {
-                c.translate(Math.round((mFaviconDimension - favicon.getWidth()) / 2.0f),
+                c.translate(
+                        Math.round((mFaviconDimension - favicon.getWidth()) / 2.0f),
                         Math.round((mFaviconDimension - favicon.getHeight()) / 2.0f));
             }
             c.drawBitmap(favicon, 0, 0, null);
@@ -112,36 +121,45 @@ public class TitleBitmapFactory {
     /**
      * Generates the title bitmap.
      *
-     * @param context   Android's UI context.
-     * @param title     The title of the tab.
-     * @param useRobotoMediumStyle    Whether the tab title text style should be TextMediumThick /
-     *         RobotoMedium.
-     * @return          The Bitmap with the title.
+     * @param context Android's UI context.
+     * @param title The title of the tab.
+     * @return The Bitmap with the title.
      */
-    public Bitmap getTitleBitmap(Context context, String title, boolean useRobotoMediumStyle) {
+    public Bitmap getTitleBitmap(Context context, String title) {
         try {
+            final long startTime = SystemClock.elapsedRealtime();
             boolean drawText = !TextUtils.isEmpty(title);
             int textWidth =
                     drawText ? (int) Math.ceil(Layout.getDesiredWidth(title, mTextPaint)) : 0;
 
-            // Use TextMediumThick / RobotoMediumStyle for tab title text style.
-            if (useRobotoMediumStyle) {
-                Typeface RobotoMediumStyle = UiUtils.createRobotoMediumTypeface();
-                mTextPaint.setTypeface(RobotoMediumStyle);
-            }
-
             // Minimum 1 width bitmap to avoid createBitmap function's IllegalArgumentException,
             // when textWidth == 0.
-            Bitmap b = Bitmap.createBitmap(Math.max(Math.min(mMaxWidth, textWidth), 1), mViewHeight,
-                    Bitmap.Config.ARGB_8888);
+            Bitmap b =
+                    Bitmap.createBitmap(
+                            Math.max(Math.min(mMaxWidth, textWidth), 1),
+                            mViewHeight,
+                            Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b);
             if (drawText) {
-                c.drawText(title, 0, Math.min(MAX_NUM_TITLE_CHAR, title.length()), 0,
-                        Math.round((mViewHeight - mTextHeight) / 2.0f + mTextYOffset), mTextPaint);
+                final int maxCharsToDraw =
+                        ChromeFeatureList.sSmallerTabStripTitleLimit.isEnabled()
+                                ? SMALLER_MAX_NUM_TITLE_CHAR
+                                : MAX_NUM_TITLE_CHAR;
+                c.drawText(
+                        title,
+                        0,
+                        Math.min(maxCharsToDraw, title.length()),
+                        0,
+                        Math.round((mViewHeight - mTextHeight) / 2.0f + mTextYOffset),
+                        mTextPaint);
             }
 
             // Set bolded tab title text back to normal.
             mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
+
+            RecordHistogram.recordTimesHistogram(
+                    "Android.TabStrip.TitleBitmapFactory.getTitleBitmap.Duration",
+                    SystemClock.elapsedRealtime() - startTime);
 
             return b;
         } catch (OutOfMemoryError ex) {

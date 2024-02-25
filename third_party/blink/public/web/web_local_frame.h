@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_LOCAL_FRAME_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/containers/span.h"
@@ -17,7 +18,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/css/page_size_type.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -35,10 +35,8 @@
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-forward.h"
-#include "third_party/blink/public/mojom/loader/resource_cache.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -282,7 +280,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Returns the embedding token for this frame or nullopt if the frame hasn't
   // committed a navigation. This token changes when a new document is committed
   // in this WebLocalFrame.
-  virtual const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
+  virtual const std::optional<base::UnguessableToken>& GetEmbeddingToken()
       const = 0;
 
   // "Returns true if the frame the document belongs to, or any of its ancestor
@@ -538,9 +536,17 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
     kPreserveHandleVisibility,
   };
 
+  enum SelectionSetFocusBehavior {
+    // Set Focus in the new selection.
+    kSelectionSetFocus,
+    // Not set focus in the new selection.
+    kSelectionDoNotSetFocus,
+  };
+
   virtual void SelectRange(const WebRange&,
                            HandleVisibilityBehavior,
-                           mojom::SelectionMenuBehavior) = 0;
+                           mojom::SelectionMenuBehavior,
+                           SelectionSetFocusBehavior) = 0;
 
   virtual WebString RangeAsText(const WebRange&) = 0;
 
@@ -680,6 +686,10 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Usage count for chrome.loadtimes deprecation.
   // This will be removed following the deprecation. See: crbug.com/621512
   virtual void UsageCountChromeLoadTimes(const WebString& metric) = 0;
+
+  // Usage count for chrome.csi deprecation.
+  // This will be removed following the deprecation. See: crbug.com/113048
+  virtual void UsageCountChromeCSI(const WebString& metric) = 0;
 
   // Whether we've dispatched "pagehide" on the current document in this frame
   // previously, and haven't dispatched the "pageshow" event after the last time
@@ -823,7 +833,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) = 0;
 
   // See blink::LocalFrame::AdEvidence()
-  virtual const absl::optional<blink::FrameAdEvidence>& AdEvidence() = 0;
+  virtual const std::optional<blink::FrameAdEvidence>& AdEvidence() = 0;
 
   // This is used to check if a script tagged as an ad is currently on the v8
   // stack. This is the same method used to compute the below bit which will
@@ -928,10 +938,6 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void AddHitTestOnTouchStartCallback(
       base::RepeatingCallback<void(const blink::WebHitTestResult&)>
           callback) = 0;
-
-  // Sets a ResourceCache hosted by another frame.
-  virtual void SetResourceCacheRemote(
-      CrossVariantMojoRemote<mojom::ResourceCacheInterfaceBase> remote) = 0;
 
   // Used to block and resume parsing of the current document in the frame.
   virtual void BlockParserForTesting() {}

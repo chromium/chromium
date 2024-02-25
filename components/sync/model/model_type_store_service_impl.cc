@@ -5,21 +5,26 @@
 #include "components/sync/model/model_type_store_service_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "components/sync/model/model_type_store_backend.h"
 #include "components/sync/model/model_type_store_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 namespace {
@@ -30,15 +35,22 @@ constexpr base::FilePath::CharType kSyncDataFolderName[] =
 constexpr base::FilePath::CharType kLevelDBFolderName[] =
     FILE_PATH_LITERAL("LevelDB");
 
-// Initialized ModelTypeStoreBackend, on the backend sequence.
-void InitOnBackendSequence(const base::FilePath& level_db_path,
-                           scoped_refptr<ModelTypeStoreBackend> store_backend) {
-  absl::optional<ModelError> error = store_backend->Init(level_db_path);
-  if (error) {
-    LOG(ERROR) << "Failed to initialize ModelTypeStore backend: "
-               << error->ToString();
-    return;
+// Initializes ModelTypeStoreBackend, on the backend sequence.
+std::optional<ModelError> InitOnBackendSequence(
+    const base::FilePath& level_db_path,
+    scoped_refptr<ModelTypeStoreBackend> store_backend,
+    bool migrate_rl_from_local_to_account) {
+  std::vector<std::pair<std::string, std::string>> prefixes_to_migrate;
+  if (migrate_rl_from_local_to_account) {
+    prefixes_to_migrate.emplace_back(
+        BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+            READING_LIST, StorageType::kUnspecified),
+        BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+            READING_LIST, StorageType::kAccount));
+    RecordSyncToSigninMigrationReadingListStep(
+        ReadingListMigrationStep::kMigrationStarted);
   }
+  return store_backend->Init(level_db_path, prefixes_to_migrate);
 }
 
 std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
@@ -66,7 +78,7 @@ void ConstructModelTypeStoreOnFrontendSequence(
         blocking_store) {
   if (blocking_store) {
     std::move(callback).Run(
-        /*error=*/absl::nullopt,
+        /*error=*/std::nullopt,
         std::make_unique<ModelTypeStoreImpl>(model_type, storage_type,
                                              std::move(blocking_store),
                                              backend_task_runner));
@@ -101,20 +113,52 @@ void CreateModelTypeStoreOnFrontendSequence(
 }  // namespace
 
 ModelTypeStoreServiceImpl::ModelTypeStoreServiceImpl(
-    const base::FilePath& base_path)
+    const base::FilePath& base_path,
+    PrefService* pref_service)
     : sync_path_(base_path.Append(base::FilePath(kSyncDataFolderName))),
       leveldb_path_(sync_path_.Append(base::FilePath(kLevelDBFolderName))),
+      pref_service_(pref_service),
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       store_backend_(ModelTypeStoreBackend::CreateUninitialized()) {
   DCHECK(backend_task_runner_);
-  backend_task_runner_->PostTask(
+  bool migrate_rl_from_local_to_account = pref_service_->GetBoolean(
+      syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+  backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&InitOnBackendSequence, leveldb_path_, store_backend_));
+      base::BindOnce(&InitOnBackendSequence, leveldb_path_, store_backend_,
+                     migrate_rl_from_local_to_account),
+      base::BindOnce(&ModelTypeStoreServiceImpl::BackendInitializationDone,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ModelTypeStoreServiceImpl::~ModelTypeStoreServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+}
+
+void ModelTypeStoreServiceImpl::BackendInitializationDone(
+    std::optional<ModelError> error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+
+  // If the ReadingList local-to-account migration was performed (or attempted)
+  // as part of this initialization, record the outcome.
+  if (pref_service_->GetBoolean(
+          syncer::prefs::internal::kMigrateReadingListFromLocalToAccount)) {
+    if (!error) {
+      pref_service_->ClearPref(
+          syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+    }
+    RecordSyncToSigninMigrationReadingListStep(
+        error ? ReadingListMigrationStep::kMigrationFailed
+              : ReadingListMigrationStep::kMigrationFinishedAndPrefCleared);
+  }
+
+  base::UmaHistogramBoolean("Sync.ModelTypeStoreBackendInitializationSuccess",
+                            !error.has_value());
+  if (error) {
+    DLOG(ERROR) << "Failed to initialize ModelTypeStore backend: "
+                << error->ToString();
+  }
 }
 
 const base::FilePath& ModelTypeStoreServiceImpl::GetSyncDataPath() const {

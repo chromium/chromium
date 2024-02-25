@@ -10,8 +10,8 @@
 @protocol ToolbarAnimatee<NSObject>
 
 // Changes related to the Location Bar container.
-- (void)expandLocationBar;
-- (void)contractLocationBar;
+- (void)expandLocationBar:(BOOL)animated;
+- (void)contractLocationBar:(BOOL)animated;
 
 // Changes related to the cancel button.
 - (void)showCancelButton;
@@ -20,6 +20,13 @@
 // Changes related to the buttons displayed when the omnibox is not focused.
 - (void)showControlButtons;
 - (void)hideControlButtons;
+
+// Changes related to the location bar height matching the fakebox height.
+- (void)setLocationBarHeightToMatchFakeOmnibox;
+- (void)setLocationBarHeightExpanded;
+
+// Changes related to the toolbar itself.
+- (void)setToolbarFaded:(BOOL)faded;
 
 @end
 

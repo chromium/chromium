@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_NAME_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_NAME_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -21,7 +21,7 @@ namespace network_name_util {
 // Returns null if |cellular_esim_profile_handler| is null, or network is not
 // an eSIM network.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-absl::optional<std::string> GetESimProfileName(
+std::optional<std::string> GetESimProfileName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state);
 
@@ -34,6 +34,14 @@ std::string GetNetworkName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state);
 
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+bool HasNickName(CellularESimProfileHandler* cellular_esim_profile_handler,
+                 const NetworkState* network_state);
+
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+std::string GetServiceProvider(
+    CellularESimProfileHandler* cellular_esim_profile_handler,
+    const NetworkState* network_state);
 }  // namespace network_name_util
 }  // namespace ash
 

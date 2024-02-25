@@ -81,7 +81,7 @@ TEST_P(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
   Compositor().BeginFrame();
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  DOMRect* rect = target->getBoundingClientRect();
+  DOMRect* rect = target->GetBoundingClientRect();
   const float kOneLayoutUnit = 1.f / kFixedPointDenominator;
   EXPECT_NEAR(LayoutUnit(800.f - 700.5f), rect->left(), kOneLayoutUnit);
   EXPECT_NEAR(LayoutUnit(600.f - 500.6f), rect->top(), kOneLayoutUnit);
@@ -137,11 +137,9 @@ TEST_P(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
       mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
-  EXPECT_FALSE(GetRasterInvalidationTracking(
-                   *GetDocument().View(),
-                   RuntimeEnabledFeatures::SolidColorLayersEnabled() ? 0 : 2,
-                   "container")
-                   ->HasInvalidations());
+  EXPECT_FALSE(
+      GetRasterInvalidationTracking(*GetDocument().View(), 0, "container")
+          ->HasInvalidations());
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -181,7 +179,7 @@ TEST_P(FractionalScrollSimTest, StickyDoesntOscillate) {
         ScrollOffset(0.f, kOneLayoutUnitF / 4.f),
         mojom::blink::ScrollType::kProgrammatic);
     Compositor().BeginFrame();
-    EXPECT_EQ(8, sticky->getBoundingClientRect()->top());
+    EXPECT_EQ(8, sticky->GetBoundingClientRect()->top());
   }
 
   // This offset is specifically chosen since it doesn't land on a LayoutUnit
@@ -190,7 +188,7 @@ TEST_P(FractionalScrollSimTest, StickyDoesntOscillate) {
       ScrollOffset(0.f, 98.8675308f), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant);
   Compositor().BeginFrame();
-  EXPECT_EQ(0, sticky->getBoundingClientRect()->top());
+  EXPECT_EQ(0, sticky->GetBoundingClientRect()->top());
 
   // Incrementally scroll from here, making sure the sticky position remains
   // fixed.
@@ -199,7 +197,7 @@ TEST_P(FractionalScrollSimTest, StickyDoesntOscillate) {
         ScrollOffset(0.f, kOneLayoutUnitF / 3.f),
         mojom::blink::ScrollType::kProgrammatic);
     Compositor().BeginFrame();
-    EXPECT_EQ(0, sticky->getBoundingClientRect()->top());
+    EXPECT_EQ(0, sticky->GetBoundingClientRect()->top());
   }
 }
 

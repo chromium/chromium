@@ -7,12 +7,11 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/base/video_resolution_policy.h"
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
@@ -22,7 +21,6 @@
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -51,7 +49,6 @@ class CastRenderer final : public ::media::Renderer,
                VideoResolutionPolicy* video_resolution_policy,
                const base::UnguessableToken& overlay_plane_id,
                ::media::mojom::FrameInterfaceFactory* frame_interfaces,
-               external_service_support::ExternalConnector* connector,
                bool is_buffering_enabled);
 
   CastRenderer(const CastRenderer&) = delete;
@@ -69,7 +66,7 @@ class CastRenderer final : public ::media::Renderer,
                   ::media::PipelineStatusCallback init_cb) override;
   void SetCdm(::media::CdmContext* cdm_context,
               CdmAttachedCB cdm_attached_cb) override;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
   void SetPlaybackRate(double playback_rate) override;
@@ -100,11 +97,6 @@ class CastRenderer final : public ::media::Renderer,
       ::media::MediaResource* media_resource,
       ::media::RendererClient* client,
       ::media::mojom::CastApplicationMediaInfoPtr application_media_info);
-  void OnGetMultiroomInfo(
-      ::media::MediaResource* media_resource,
-      ::media::RendererClient* client,
-      ::media::mojom::CastApplicationMediaInfoPtr application_media_info,
-      chromecast::mojom::MultiroomInfoPtr multiroom_info);
   void OnError(::media::PipelineStatus status);
   void OnEnded(Stream stream);
   void OnStatisticsUpdate(const ::media::PipelineStatistics& stats);
@@ -124,7 +116,6 @@ class CastRenderer final : public ::media::Renderer,
   base::UnguessableToken overlay_plane_id_;
   mojo::Remote<chromecast::mojom::ServiceConnector> service_connector_;
   ::media::mojom::FrameInterfaceFactory* frame_interfaces_;
-  external_service_support::ExternalConnector* const connector_;
 
   ::media::RendererClient* client_;
   CastCdmContext* cast_cdm_context_;
@@ -139,7 +130,6 @@ class CastRenderer final : public ::media::Renderer,
   VideoGeometrySetterService* video_geometry_setter_service_;
   mojo::Remote<mojom::VideoGeometryChangeSubscriber>
       video_geometry_change_subcriber_remote_;
-  mojo::Remote<chromecast::mojom::MultiroomManager> multiroom_manager_;
   ::media::PipelineStatusCallback init_cb_;
   mojo::Receiver<mojom::VideoGeometryChangeClient>
       video_geometry_change_client_receiver_{this};
@@ -150,7 +140,7 @@ class CastRenderer final : public ::media::Renderer,
     return *g_overlay_composited_callback;
   }
 
-  absl::optional<float> pending_volume_;
+  std::optional<float> pending_volume_;
 
   const bool is_buffering_enabled_;
 

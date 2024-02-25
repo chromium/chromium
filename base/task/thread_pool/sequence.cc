@@ -296,7 +296,7 @@ TimeTicks Sequence::GetDelayedSortKey() const {
   return TS_UNCHECKED_READ(latest_ready_time_).load(std::memory_order_relaxed);
 }
 
-Task Sequence::Clear(TaskSource::Transaction* transaction) {
+std::optional<Task> Sequence::Clear(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
   AnnotateLockAcquired annotate(lock_);
 
@@ -317,7 +317,8 @@ Task Sequence::Clear(TaskSource::Transaction* transaction) {
               delayed_queue.pop();
           },
           std::move(queue_), std::move(delayed_queue_)),
-      TimeTicks(), TimeDelta());
+      TimeTicks(), TimeDelta(), TimeDelta(),
+      static_cast<int>(reinterpret_cast<intptr_t>(this)));
 }
 
 void Sequence::ReleaseTaskRunner() {
@@ -329,9 +330,9 @@ void Sequence::ReleaseTaskRunner() {
 }
 
 Sequence::Sequence(const TaskTraits& traits,
-                   TaskRunner* task_runner,
+                   SequencedTaskRunner* task_runner,
                    TaskSourceExecutionMode execution_mode)
-    : TaskSource(traits, task_runner, execution_mode) {}
+    : TaskSource(traits, execution_mode), task_runner_(task_runner) {}
 
 Sequence::~Sequence() = default;
 
@@ -340,7 +341,11 @@ Sequence::Transaction Sequence::BeginTransaction() {
 }
 
 ExecutionEnvironment Sequence::GetExecutionEnvironment() {
-  return {token_, &sequence_local_storage_};
+  if (execution_mode() == TaskSourceExecutionMode::kSingleThread) {
+    return {token_, &sequence_local_storage_,
+            static_cast<SingleThreadTaskRunner*>(task_runner())};
+  }
+  return {token_, &sequence_local_storage_, task_runner()};
 }
 
 bool Sequence::IsEmpty() const {

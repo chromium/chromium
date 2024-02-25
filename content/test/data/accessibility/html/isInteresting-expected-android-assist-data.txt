@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:32.0 style:1 htmlInfo:[{htmlTag="h1"}, {display="block"}]
+++++TextView text:"A non focusable child of a control should not be interesting on Android" textSize:32.0 style:1 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {onclick="alert('success');"}]
+++++TextView text:"Div with click handler" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++Button text:"I am interesting" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="I am interesting"}, {onclick="alert('success');"}, {role="button"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++++TextView text:"I should not be interesting" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

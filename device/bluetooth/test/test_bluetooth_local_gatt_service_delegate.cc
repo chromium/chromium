@@ -33,7 +33,7 @@ void TestBluetoothLocalGattServiceDelegate::OnCharacteristicReadRequest(
     return;
   }
   last_seen_device_ = device->GetIdentifier();
-  std::move(callback).Run(/*error_code=*/absl::nullopt,
+  std::move(callback).Run(/*error_code=*/std::nullopt,
                           BluetoothGattServerTest::GetValue(value_to_write_));
 }
 
@@ -90,7 +90,7 @@ void TestBluetoothLocalGattServiceDelegate::OnDescriptorReadRequest(
     return;
   }
   last_seen_device_ = device->GetIdentifier();
-  std::move(callback).Run(/*error_code=*/absl::nullopt,
+  std::move(callback).Run(/*error_code=*/std::nullopt,
                           BluetoothGattServerTest::GetValue(value_to_write_));
 }
 

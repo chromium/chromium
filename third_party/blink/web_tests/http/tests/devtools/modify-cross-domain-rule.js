@@ -5,11 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   'use strict';
   TestRunner.addResult(
       `Tests that modifying a rule in a stylesheet loaded from a different domain does not crash the renderer.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
     `);

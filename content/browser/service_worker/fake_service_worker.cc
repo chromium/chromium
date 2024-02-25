@@ -33,8 +33,9 @@ void FakeServiceWorker::Bind(
 }
 
 void FakeServiceWorker::RunUntilInitializeGlobalScope() {
-  if (host_)
+  if (host_) {
     return;
+  }
   base::RunLoop loop;
   quit_closure_for_initialize_global_scope_ = loop.QuitClosure();
   loop.Run();
@@ -44,9 +45,17 @@ void FakeServiceWorker::FlushForTesting() {
   receiver_.FlushForTesting();
 }
 
+base::WeakPtr<FakeServiceWorker> FakeServiceWorker::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void FakeServiceWorker::InitializeGlobalScope(
     mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerHost>
         service_worker_host,
+    mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+        associated_interfaces_from_browser,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+        associated_interfaces_to_browser,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
     blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
     blink::mojom::FetchHandlerExistence fetch_handler_existence,
@@ -74,8 +83,9 @@ void FakeServiceWorker::InitializeGlobalScope(
 
   registration_info_ = std::move(registration_info);
   service_worker_info_ = std::move(service_worker_info);
-  if (quit_closure_for_initialize_global_scope_)
+  if (quit_closure_for_initialize_global_scope_) {
     std::move(quit_closure_for_initialize_global_scope_).Run();
+  }
 
   fetch_handler_existence_ = fetch_handler_existence;
 }
@@ -144,7 +154,7 @@ void FakeServiceWorker::DispatchNotificationClickEvent(
     const std::string& notification_id,
     const blink::PlatformNotificationData& notification_data,
     int action_index,
-    const absl::optional<std::u16string>& reply,
+    const std::optional<std::u16string>& reply,
     DispatchNotificationClickEventCallback callback) {
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
@@ -157,7 +167,7 @@ void FakeServiceWorker::DispatchNotificationCloseEvent(
 }
 
 void FakeServiceWorker::DispatchPushEvent(
-    const absl::optional<std::string>& payload,
+    const std::optional<std::string>& payload,
     DispatchPushEventCallback callback) {
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }

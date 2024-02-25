@@ -9,7 +9,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"

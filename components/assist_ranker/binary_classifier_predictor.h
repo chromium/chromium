@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ASSIST_RANKER_BINARY_CLASSIFIER_PREDICTOR_H_
 #define COMPONENTS_ASSIST_RANKER_BINARY_CLASSIFIER_PREDICTOR_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/assist_ranker/base_predictor.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
 
@@ -21,7 +22,7 @@ namespace assist_ranker {
 class GenericLogisticRegressionInference;
 
 // Predictor class for models that output a binary decision.
-class BinaryClassifierPredictor : public BasePredictor {
+class BinaryClassifierPredictor final : public BasePredictor {
  public:
   BinaryClassifierPredictor(const BinaryClassifierPredictor&) = delete;
   BinaryClassifierPredictor& operator=(const BinaryClassifierPredictor&) =
@@ -49,6 +50,10 @@ class BinaryClassifierPredictor : public BasePredictor {
   // Validates that the loaded RankerModel is a valid BinaryClassifier model.
   static RankerModelStatus ValidateModel(const RankerModel& model);
 
+  base::WeakPtr<BinaryClassifierPredictor> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   // Instatiates the inference module.
   bool Initialize() override;
@@ -60,6 +65,8 @@ class BinaryClassifierPredictor : public BasePredictor {
   // TODO(hamelphi): Use an abstract BinaryClassifierInferenceModule in order to
   // generalize to other models.
   std::unique_ptr<GenericLogisticRegressionInference> inference_module_;
+
+  base::WeakPtrFactory<BinaryClassifierPredictor> weak_ptr_factory_{this};
 };
 
 }  // namespace assist_ranker

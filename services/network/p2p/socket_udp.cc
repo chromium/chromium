@@ -18,7 +18,11 @@
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
 #include "services/network/p2p/socket_throttler.h"
+#include "services/network/public/cpp/p2p_socket_type.h"
 #include "services/network/public/mojom/p2p.mojom.h"
+#include "services/network/throttling/throttling_controller.h"
+#include "services/network/throttling/throttling_network_interceptor.h"
+#include "services/network/throttling/throttling_p2p_network_interceptor.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
 
 namespace {
@@ -84,21 +88,20 @@ std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
 
 namespace network {
 
-P2PSocketUdp::PendingPacket::PendingPacket(const net::IPEndPoint& to,
-                                           base::span<const uint8_t> content,
-                                           const rtc::PacketOptions& options,
-                                           uint64_t id)
+P2PPendingPacket::P2PPendingPacket(const net::IPEndPoint& to,
+                                   base::span<const uint8_t> content,
+                                   const rtc::PacketOptions& options,
+                                   uint64_t id)
     : to(to),
-      data(base::MakeRefCounted<net::IOBuffer>(content.size())),
+      data(base::MakeRefCounted<net::IOBufferWithSize>(content.size())),
       size(content.size()),
       packet_options(options),
       id(id) {
   memcpy(data->data(), content.data(), content.size());
 }
 
-P2PSocketUdp::PendingPacket::PendingPacket(const PendingPacket& other) =
-    default;
-P2PSocketUdp::PendingPacket::~PendingPacket() = default;
+P2PPendingPacket::P2PPendingPacket(const P2PPendingPacket& other) = default;
+P2PPendingPacket::~P2PPendingPacket() = default;
 
 P2PSocketUdp::P2PSocketUdp(
     Delegate* Delegate,
@@ -107,12 +110,23 @@ P2PSocketUdp::P2PSocketUdp(
     P2PMessageThrottler* throttler,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     net::NetLog* net_log,
-    const DatagramServerSocketFactory& socket_factory)
+    const DatagramServerSocketFactory& socket_factory,
+    std::optional<base::UnguessableToken> devtools_token)
     : P2PSocket(Delegate, std::move(client), std::move(socket), P2PSocket::UDP),
       throttler_(throttler),
       traffic_annotation_(traffic_annotation),
-      net_log_(net_log),
-      socket_factory_(socket_factory) {}
+      net_log_with_source_(
+          net::NetLogWithSource::Make(net_log, net::NetLogSourceType::SOCKET)),
+      throttling_token_(network::ScopedThrottlingToken::MaybeCreate(
+          net_log_with_source_.source().id,
+          devtools_token)),
+      socket_factory_(socket_factory),
+      interceptor_(ThrottlingController::GetP2PInterceptor(
+          net_log_with_source_.source().id)) {
+  if (interceptor_) {
+    interceptor_->RegisterSocket(this);
+  }
+}
 
 P2PSocketUdp::P2PSocketUdp(
     Delegate* Delegate,
@@ -120,16 +134,22 @@ P2PSocketUdp::P2PSocketUdp(
     mojo::PendingReceiver<mojom::P2PSocket> socket,
     P2PMessageThrottler* throttler,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    net::NetLog* net_log)
+    net::NetLog* net_log,
+    std::optional<base::UnguessableToken> devtools_token)
     : P2PSocketUdp(Delegate,
                    std::move(client),
                    std::move(socket),
                    throttler,
                    traffic_annotation,
                    net_log,
-                   base::BindRepeating(&DefaultSocketFactory)) {}
+                   base::BindRepeating(&DefaultSocketFactory),
+                   devtools_token) {}
 
-P2PSocketUdp::~P2PSocketUdp() = default;
+P2PSocketUdp::~P2PSocketUdp() {
+  if (interceptor_) {
+    interceptor_->UnregisterSocket(this);
+  }
+}
 
 void P2PSocketUdp::Init(
     const net::IPEndPoint& local_address,
@@ -141,7 +161,7 @@ void P2PSocketUdp::Init(
   DCHECK((min_port == 0 && max_port == 0) || min_port > 0);
   DCHECK_LE(min_port, max_port);
 
-  socket_ = socket_factory_.Run(net_log_.get());
+  socket_ = socket_factory_.Run(net_log());
 
   int result = -1;
   if (min_port == 0) {
@@ -149,8 +169,9 @@ void P2PSocketUdp::Init(
   } else if (local_address.port() == 0) {
     for (unsigned port = min_port; port <= max_port && result < 0; ++port) {
       result = socket_->Listen(net::IPEndPoint(local_address.address(), port));
-      if (result < 0 && port != max_port)
-        socket_ = socket_factory_.Run(net_log_.get());
+      if (result < 0 && port != max_port) {
+        socket_ = socket_factory_.Run(net_log());
+      }
     }
   } else if (local_address.port() >= min_port &&
              local_address.port() <= max_port) {
@@ -192,7 +213,8 @@ void P2PSocketUdp::Init(
   // NOTE: Remote address will be same as what renderer provided.
   client_->SocketCreated(address, remote_address.ip_address);
 
-  recv_buffer_ = base::MakeRefCounted<net::IOBuffer>(kUdpReadBufferSize);
+  recv_buffer_ =
+      base::MakeRefCounted<net::IOBufferWithSize>(kUdpReadBufferSize);
   DoRead();
 }
 
@@ -276,12 +298,18 @@ bool P2PSocketUdp::HandleReadResult(int result) {
         data, recv_address_,
         base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
 
-    // Save the packet to buffer and check if more packets available to batch
-    // together. Socket is non-blocking IO, and that it immediately returns
-    // 'ERR_IO_PENDING' if drained.
-    pending_received_packets_.push_back(std::move(packet));
-    pending_received_buffers_.push_back(std::move(recv_buffer_));
-    recv_buffer_ = base::MakeRefCounted<net::IOBuffer>(kUdpReadBufferSize);
+    if (interceptor_) {
+      interceptor_->EnqueueReceive(std::move(packet), std::move(recv_buffer_),
+                                   this);
+    } else {
+      // Save the packet to buffer and check if more packets available to batch
+      // together. Socket is non-blocking IO, and that it immediately returns
+      // 'ERR_IO_PENDING' if drained.
+      pending_received_packets_.push_back(std::move(packet));
+      pending_received_buffers_.push_back(std::move(recv_buffer_));
+    }
+    recv_buffer_ =
+        base::MakeRefCounted<net::IOBufferWithSize>(kUdpReadBufferSize);
 
     MaybeDrainReceivedPackets(false);
   } else if (result == net::ERR_IO_PENDING) {
@@ -299,7 +327,7 @@ bool P2PSocketUdp::HandleReadResult(int result) {
   return true;
 }
 
-bool P2PSocketUdp::DoSend(const PendingPacket& packet) {
+bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
   int64_t send_time_us = rtc::TimeMicros();
 
   // The peer is considered not connected until the first incoming STUN
@@ -320,7 +348,7 @@ bool P2PSocketUdp::DoSend(const PendingPacket& packet) {
       return false;
     }
 
-    if (throttler_->DropNextPacket(packet.size)) {
+    if (throttler_->DropNextPacket(packet.size) && !interceptor_) {
       VLOG(0) << "Throttling outgoing STUN message.";
       // The renderer expects P2PMsg_OnSendComplete for all packets it generates
       // and in the same order it generates them, so we need to respond even
@@ -353,9 +381,9 @@ bool P2PSocketUdp::DoSend(const PendingPacket& packet) {
     }
   }
 
-  cricket::ApplyPacketOptions(
-      reinterpret_cast<uint8_t*>(packet.data->data()), packet.size,
-      packet.packet_options.packet_time_params, send_time_us);
+  cricket::ApplyPacketOptions(packet.data->bytes(), packet.size,
+                              packet.packet_options.packet_time_params,
+                              send_time_us);
   auto callback_binding = base::BindRepeating(
       &P2PSocketUdp::OnSend, base::Unretained(this), packet.id,
       packet.packet_options.packet_id, send_time_us / 1000);
@@ -406,7 +434,7 @@ void P2PSocketUdp::OnSend(uint64_t packet_id,
 
   // Send next packets if we have them waiting in the buffer.
   while (!send_queue_.empty() && !send_pending_) {
-    PendingPacket packet = send_queue_.front();
+    P2PPendingPacket packet = send_queue_.front();
     send_queue_.pop_front();
     if (!DoSend(packet))
       return;
@@ -430,8 +458,10 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
             << GetTransientErrorName(result) << ". Dropping the packet.";
   }
 
-  send_completions_.emplace_back(packet_id, transport_sequence_number,
-                                 send_time_ms);
+  if (!interceptor_) {
+    send_completions_.emplace_back(packet_id, transport_sequence_number,
+                                   send_time_ms);
+  }
 
   return true;
 }
@@ -454,14 +484,21 @@ bool P2PSocketUdp::SendPacket(base::span<const uint8_t> data,
     OnError();
     return false;
   }
+  if (interceptor_) {
+    P2PPendingPacket packet(packet_info.destination, data,
+                            packet_info.packet_options, packet_info.packet_id);
+    interceptor_->EnqueueSend(std::move(packet), this);
+    return true;
+  }
+
   bool result = true;
   if (send_pending_) {
-    send_queue_.push_back(PendingPacket(packet_info.destination, data,
-                                        packet_info.packet_options,
-                                        packet_info.packet_id));
+    send_queue_.push_back(P2PPendingPacket(packet_info.destination, data,
+                                           packet_info.packet_options,
+                                           packet_info.packet_id));
   } else {
-    PendingPacket packet(packet_info.destination, data,
-                         packet_info.packet_options, packet_info.packet_id);
+    P2PPendingPacket packet(packet_info.destination, data,
+                            packet_info.packet_options, packet_info.packet_id);
     result = DoSend(packet);
   }
   return result;
@@ -479,6 +516,14 @@ void P2PSocketUdp::SendBatch(
     }
   }
   ProcessSendCompletions();
+}
+
+void P2PSocketUdp::SendFromInterceptor(const P2PPendingPacket& packet) {
+  if (send_pending_) {
+    send_queue_.push_back(packet);
+  } else {
+    std::ignore = DoSend(packet);
+  }
 }
 
 void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
@@ -511,9 +556,24 @@ void P2PSocketUdp::ProcessSendCompletions() {
   send_completions_.clear();
 }
 
+void P2PSocketUdp::SendCompletionFromInterceptor(P2PSendPacketMetrics metrics) {
+  client_->SendComplete(metrics);
+}
+
 int P2PSocketUdp::SetSocketDiffServCodePointInternal(
     net::DiffServCodePoint dscp) {
   return socket_->SetDiffServCodePoint(dscp);
+}
+
+void P2PSocketUdp::DisconnectInterceptor() {
+  interceptor_ = nullptr;
+}
+
+void P2PSocketUdp::ReceiveFromInterceptor(mojom::P2PReceivedPacketPtr packet,
+                                          scoped_refptr<net::IOBuffer> buffer) {
+  pending_received_packets_.push_back(std::move(packet));
+  pending_received_buffers_.push_back(std::move(buffer));
+  MaybeDrainReceivedPackets(true);
 }
 
 }  // namespace network

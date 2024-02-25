@@ -20,6 +20,7 @@
 #include "net/base/network_interfaces.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/hostname.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
@@ -32,13 +33,6 @@
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/strings/utf_string_conversions.h"
-
-// Needed for GetComputerNameExW/ComputerNameDnsFullyQualified.
-#include <windows.h>
-#endif
 
 namespace remoting {
 
@@ -107,29 +101,6 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
     // Starts with initial delay.
     false,
 };
-
-std::string GetHostname() {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag
-// switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  return net::GetHostName();
-#elif BUILDFLAG(IS_WIN)
-  wchar_t buffer[MAX_PATH] = {0};
-  DWORD size = MAX_PATH;
-  if (!::GetComputerNameExW(ComputerNameDnsFullyQualified, buffer, &size)) {
-    PLOG(ERROR) << "GetComputerNameExW failed";
-    return std::string();
-  }
-  std::string hostname;
-  if (!base::WideToUTF8(buffer, size, &hostname)) {
-    LOG(ERROR) << "Failed to convert from Wide to UTF8";
-    return std::string();
-  }
-  return hostname;
-#else
-  return std::string();
-#endif
-}
 
 }  // namespace
 

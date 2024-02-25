@@ -15,7 +15,8 @@ items:
   name: disabled
   value: disabled
 owners:
-- srad@google.com
+- ust@google.com
+- chromeos-commercial-printing@google.com
 - pawliczek@chromium.org
 schema:
   enum:

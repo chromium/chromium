@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -35,10 +36,12 @@ const char kTestClientId[] = "test_client_id";
 const char kTestClientSecret[] = "test_client_secret";
 const char kTestScope[] = "test_scope";
 const char kTestRefreshToken[] = "test_refresh_token";
+const char kTestUserGaiaId[] = "test_gaia_id";
 const char kTestAccessToken[] = "test_access_token";
 const char kTestDeviceId[] = "test_device_id";
 const char kTestVersion[] = "test_version";
 const char kTestChannel[] = "test_channel";
+const char kTestAssertion[] = "test_assertion";
 
 class MockOAuth2AccessTokenConsumer : public OAuth2AccessTokenConsumer {
  public:
@@ -128,7 +131,9 @@ Matcher<const OAuth2MintTokenFlow::Parameters&> ParamsEq(
             expected.consent_result),
       Field("version", &Parameters::version, expected.version),
       Field("channel", &Parameters::channel, expected.channel),
-      Field("mode", &Parameters::mode, expected.mode));
+      Field("mode", &Parameters::mode, expected.mode),
+      Field("bound_oauth_token", &Parameters::bound_oauth_token,
+            expected.bound_oauth_token));
 }
 
 }  // namespace
@@ -141,7 +146,8 @@ class OAuth2MintAccessTokenFetcherAdapterTest : public testing::Test {
   std::unique_ptr<OAuth2MintAccessTokenFetcherAdapter> CreateFetcher() {
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         &mock_consumer_, url_loader_factory_.GetSafeWeakWrapper(),
-        kTestRefreshToken, kTestDeviceId, kTestVersion, kTestChannel);
+        kTestUserGaiaId, kTestRefreshToken, kTestDeviceId, kTestVersion,
+        kTestChannel);
     fetcher->SetOAuth2MintTokenFlowFactoryForTesting(base::BindRepeating(
         &OAuth2MintAccessTokenFetcherAdapterTest::CreateMockFlow,
         base::Unretained(this)));
@@ -184,6 +190,25 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Params) {
   expected_params.enable_granular_permissions = false;
   expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   expected_params.scopes = {kTestScope};
+  expected_params.bound_oauth_token = std::string();
+  EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, ParamsWithBindingKeyAssertion) {
+  auto fetcher = CreateFetcher();
+  fetcher->SetBindingKeyAssertion(kTestAssertion);
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  EXPECT_TRUE(mock_flow());
+  OAuth2MintTokenFlow::Parameters expected_params;
+  expected_params.client_id = kTestClientId;
+  expected_params.version = kTestVersion;
+  expected_params.channel = kTestChannel;
+  expected_params.device_id = kTestDeviceId;
+  expected_params.enable_granular_permissions = false;
+  expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
+  expected_params.scopes = {kTestScope};
+  expected_params.bound_oauth_token = gaia::CreateBoundOAuthToken(
+      kTestUserGaiaId, kTestRefreshToken, kTestAssertion);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 

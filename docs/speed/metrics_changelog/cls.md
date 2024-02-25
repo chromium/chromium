@@ -2,6 +2,10 @@
 
 This is a list of changes to [Cumulative Layout Shift](https://web.dev/cls).
 
+* Chrome 118
+  * Implementation optimizations: [Image loading prioritizations](2023_10_image_loading_optimizations.md)
+* Chrome 116
+  * Implementation optimizations: [Optimizing image load scheduling](2023_08_image_loading.md)
 * Chrome 98
   * Metric definition improvement: [Record CLS value at the first OnHidden in addition to tab close in UKM](2021_11_cls.md)
 * Chrome 93

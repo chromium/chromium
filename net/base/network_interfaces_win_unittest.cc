@@ -252,7 +252,6 @@ bool read_int_or_bool(DWORD data_size, PVOID data) {
       return !!*reinterpret_cast<uint32_t*>(data);
     default:
       LOG(FATAL) << "That is not a type I know!";
-      return false;
   }
 }
 

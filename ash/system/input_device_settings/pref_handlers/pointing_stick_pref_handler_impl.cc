@@ -13,7 +13,9 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "base/check.h"
+#include "base/json/values_util.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -127,11 +129,37 @@ base::Value::Dict ConvertSettingsToDict(
   return settings_dict;
 }
 
+void UpdateInternalPointingStickImpl(
+    PrefService* pref_service,
+    const mojom::PointingStick& pointing_stick,
+    const ForcePointingStickSettingPersistence& force_persistence) {
+  CHECK(pointing_stick.settings);
+  CHECK(!pointing_stick.is_external);
+
+  base::Value::Dict existing_settings_dict =
+      pref_service->GetDict(prefs::kPointingStickInternalSettings).Clone();
+  base::Value::Dict settings_dict = ConvertSettingsToDict(
+      pointing_stick, force_persistence, &existing_settings_dict);
+
+  // Merge the new settings into the old settings so that all settings are
+  // transferred over.
+  existing_settings_dict.Merge(std::move(settings_dict));
+  pref_service->SetDict(prefs::kPointingStickInternalSettings,
+                        std::move(existing_settings_dict));
+}
+
 void UpdatePointingStickSettingsImpl(
     PrefService* pref_service,
     const mojom::PointingStick& pointing_stick,
     const ForcePointingStickSettingPersistence& force_persistence) {
   DCHECK(pointing_stick.settings);
+
+  if (!pointing_stick.is_external) {
+    UpdateInternalPointingStickImpl(pref_service, pointing_stick,
+                                    force_persistence);
+    return;
+  }
+
   base::Value::Dict devices_dict =
       pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
           .Clone();
@@ -140,6 +168,8 @@ void UpdatePointingStickSettingsImpl(
 
   base::Value::Dict settings_dict = ConvertSettingsToDict(
       pointing_stick, force_persistence, existing_settings_dict);
+  const base::Time time_stamp = base::Time::Now();
+  settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));
 
   // If an old settings dict already exists for the device, merge the updated
   // settings into the old settings. Otherwise, insert the dict at
@@ -169,6 +199,29 @@ mojom::PointingStickSettingsPtr GetPointingStickSettingsFromOldLocalStatePrefs(
   return settings;
 }
 
+void InitializeSettingsUpdateMetricInfo(
+    PrefService* pref_service,
+    const mojom::PointingStick& pointing_stick,
+    SettingsUpdatedMetricsInfo::Category category) {
+  CHECK(pref_service);
+
+  const auto& settings_metric_info =
+      pref_service->GetDict(prefs::kPointingStickUpdateSettingsMetricInfo);
+  const auto* device_metric_info =
+      settings_metric_info.Find(pointing_stick.device_key);
+  if (device_metric_info) {
+    return;
+  }
+
+  auto updated_metric_info = settings_metric_info.Clone();
+
+  const SettingsUpdatedMetricsInfo metrics_info(category, base::Time::Now());
+  updated_metric_info.Set(pointing_stick.device_key, metrics_info.ToDict());
+
+  pref_service->SetDict(prefs::kPointingStickUpdateSettingsMetricInfo,
+                        std::move(updated_metric_info));
+}
+
 }  // namespace
 
 PointingStickPrefHandlerImpl::PointingStickPrefHandlerImpl() = default;
@@ -182,23 +235,39 @@ void PointingStickPrefHandlerImpl::InitializePointingStickSettings(
     return;
   }
 
-  const auto& devices_dict =
-      pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
-  const auto* settings_dict = devices_dict.FindDict(pointing_stick->device_key);
-  ForcePointingStickSettingPersistence force_persistence;
+  const base::Value::Dict* settings_dict = nullptr;
+  if (!pointing_stick->is_external) {
+    settings_dict =
+        &pref_service->GetDict(prefs::kPointingStickInternalSettings);
+    if (settings_dict->empty()) {
+      settings_dict = nullptr;
+    }
+  } else {
+    const auto& devices_dict =
+        pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
+    settings_dict = devices_dict.FindDict(pointing_stick->device_key);
+  }
 
+  ForcePointingStickSettingPersistence force_persistence;
+  SettingsUpdatedMetricsInfo::Category category;
   if (settings_dict) {
+    category = SettingsUpdatedMetricsInfo::Category::kSynced;
     pointing_stick->settings =
         RetrievePointingStickSettings(*pointing_stick, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kPointingStick,
                  pointing_stick->device_key)) {
+    category = SettingsUpdatedMetricsInfo::Category::kDefault;
     pointing_stick->settings =
         GetPointingStickSettingsFromPrefs(pref_service, force_persistence);
   } else {
+    // Pointing Stick currently does not do syncing defaults like other devices
+    // as only internal pointing sticks are supported in the first place.
+    category = SettingsUpdatedMetricsInfo::Category::kFirstEver;
     pointing_stick->settings = GetDefaultPointingStickSettings();
   }
   DCHECK(pointing_stick->settings);
+  InitializeSettingsUpdateMetricInfo(pref_service, *pointing_stick, category);
 
   UpdatePointingStickSettingsImpl(pref_service, *pointing_stick,
                                   force_persistence);
@@ -215,18 +284,11 @@ void PointingStickPrefHandlerImpl::InitializeLoginScreenPointingStickSettings(
     PrefService* local_state,
     const AccountId& account_id,
     mojom::PointingStick* pointing_stick) {
-  CHECK(local_state);
-  // If the flag is disabled, clear all the settings dictionaries.
+  // Verify if the flag is enabled.
   if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    user_manager::KnownUser known_user(local_state);
-    known_user.SetPath(account_id,
-                       prefs::kPointingStickLoginScreenInternalSettingsPref,
-                       absl::nullopt);
-    known_user.SetPath(account_id,
-                       prefs::kPointingStickLoginScreenExternalSettingsPref,
-                       absl::nullopt);
     return;
   }
+  CHECK(local_state);
 
   const auto* settings_dict = GetLoginScreenSettingsDict(
       local_state, account_id,
@@ -256,7 +318,7 @@ void PointingStickPrefHandlerImpl::UpdateLoginScreenPointingStickSettings(
 
   user_manager::KnownUser(local_state)
       .SetPath(account_id, pref_name,
-               absl::make_optional<base::Value>(ConvertSettingsToDict(
+               std::make_optional<base::Value>(ConvertSettingsToDict(
                    pointing_stick, /*force_persistence=*/{}, settings_dict)));
 }
 

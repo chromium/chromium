@@ -10,7 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace base {
 class CommandLine;
@@ -84,8 +84,19 @@ class ApplicationContextImpl : public ApplicationContext {
   segmentation_platform::OTRWebStateObserver*
   GetSegmentationOTRWebStateObserver() override;
   PushNotificationService* GetPushNotificationService() override;
+  UpgradeCenter* GetUpgradeCenter() override;
 
  private:
+  // Represents the possible application states the app can be in.
+  enum class AppState {
+    kForeground,
+    kBackground,
+  };
+
+  // Helper method to implement the work required when transitioning between
+  // application states.
+  void OnAppEnterState(AppState app_state);
+
   // Sets the locale used by the application.
   void SetApplicationLocale(const std::string& locale);
 
@@ -96,6 +107,11 @@ class ApplicationContextImpl : public ApplicationContext {
   void CreateGCMDriver();
 
   base::ThreadChecker thread_checker_;
+
+  // Used internally for tracking whether the call to StartTearDown() has
+  // happened already, to avoid recreating lazily-constructed objects after they
+  // have already been destroyed.
+  bool tearing_down_ = false;
 
   // Logger which observers and logs application wide events to breadcrumbs.
   // Will be null if breadcrumbs feature is not enabled.
@@ -141,6 +157,8 @@ class ApplicationContextImpl : public ApplicationContext {
       segmentation_otr_web_state_observer_;
 
   std::unique_ptr<PushNotificationService> push_notification_service_;
+
+  __strong UpgradeCenter* upgrade_center_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

@@ -5,6 +5,7 @@
 /**
  * @fileoverview An interface to control the ChromeVox Panel.
  */
+import {PanelMode} from './panel_mode.js';
 
 export class PanelInterface {
   /**
@@ -12,6 +13,18 @@ export class PanelInterface {
    * was queued, execute it once focus is restored.
    */
   async closeMenusAndRestoreFocus() {}
+
+  /** @return {!PanelMode} */
+  get mode() {}
+
+  /** @param {!PanelMode} mode */
+  setMode(mode) {}
+
+  /** @return {string} */
+  get sessionState() {}
+
+  /** Exit ChromeVox. */
+  onClose() {}
 
   /**
    * A callback function to be executed to perform the action from selecting

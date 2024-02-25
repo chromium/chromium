@@ -92,7 +92,7 @@ class InstallAppLocallyCommandTest
     WebAppTest::TearDown();
   }
 
-  AppId InstallNonLocallyInstalledAppWithIcons(
+  webapps::AppId InstallNonLocallyInstalledAppWithIcons(
       std::map<SquareSizePx, SkBitmap> icon_map) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
@@ -100,23 +100,28 @@ class InstallAppLocallyCommandTest
     info->title = u"Test App";
     info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
 
+    web_app::WebAppInstallParams params;
+    params.locally_installed = false;
+    params.add_to_applications_menu = false;
+    params.add_to_desktop = false;
+    params.add_to_quick_launch_bar = false;
+    params.add_to_search = false;
     // InstallFromInfo does not trigger OS integration.
-    provider().scheduler().InstallFromInfo(
+    provider().scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        result.GetCallback());
+        result.GetCallback(), params);
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    const AppId app_id = result.Get<AppId>();
-    provider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-        app_id, /*is_locally_installed=*/false);
+    const webapps::AppId app_id = result.Get<webapps::AppId>();
     return app_id;
   }
 
@@ -137,7 +142,8 @@ class InstallAppLocallyCommandTest
     return bitmap;
   }
 
-  SkColor GetShortcutColor(const AppId& app_id, const std::string& app_name) {
+  SkColor GetShortcutColor(const webapps::AppId& app_id,
+                           const std::string& app_name) {
     if (!HasShortcutsOsIntegration()) {
       return SK_ColorTRANSPARENT;
     }
@@ -146,22 +152,22 @@ class InstallAppLocallyCommandTest
         OsIntegrationTestOverrideImpl::Get();
 
 #if BUILDFLAG(IS_WIN)
-    absl::optional<SkColor> desktop_color =
+    std::optional<SkColor> desktop_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->desktop(), app_id, app_name);
-    absl::optional<SkColor> application_menu_icon_color =
+    std::optional<SkColor> application_menu_icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->application_menu(), app_id, app_name);
     EXPECT_EQ(desktop_color.value(), application_menu_icon_color.value());
     return desktop_color.value();
 #elif BUILDFLAG(IS_MAC)
-    absl::optional<SkColor> icon_color =
+    std::optional<SkColor> icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->chrome_apps_folder(), app_id, app_name);
     EXPECT_TRUE(icon_color.has_value());
     return icon_color.value();
 #elif BUILDFLAG(IS_LINUX)
-    absl::optional<SkColor> icon_color =
+    std::optional<SkColor> icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->desktop(), app_id, app_name,
             kLauncherIconSize);
@@ -174,7 +180,7 @@ class InstallAppLocallyCommandTest
   }
 
  private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
@@ -189,7 +195,7 @@ TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallNonLocallyInstalledAppWithIcons(std::move(icon_map));
 
   auto state =
@@ -230,21 +236,12 @@ TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
   }
 }
 
-TEST_P(InstallAppLocallyCommandTest, NoAppInRegistrarCorrectLog) {
-  const AppId app_id = "abcde";
+TEST_P(InstallAppLocallyCommandTest, AppNotInRegistrar) {
+  const webapps::AppId app_id = "abcde";
 
   base::test::TestFuture<void> test_future;
   provider().scheduler().InstallAppLocally(app_id, test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-
-  base::Value::Dict logs =
-      provider().command_manager().ToDebugValue().TakeDict();
-  base::Value::List* command_log = logs.FindList("command_log");
-  ASSERT_NE(command_log, nullptr);
-  base::Value::Dict* debug_value =
-      command_log->front().GetDict().FindDict("value");
-  EXPECT_EQ(*debug_value->FindString("command_result"), "app_not_in_registry");
-
   EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
 }
 

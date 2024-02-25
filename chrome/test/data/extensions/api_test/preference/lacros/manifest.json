@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "description" : "Lacros extension controlled pref API Test Extension",
   "permissions": [ "accessibilityFeatures.read", "accessibilityFeatures.modify",
-      "privacy", "proxy"],
+      "proxy"],
   "background": {
     "scripts": ["test.js"],
     "persistent": false

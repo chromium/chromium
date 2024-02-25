@@ -98,8 +98,8 @@ class ProfilePickerUIPixelTest
             }));
     profile_picker_view_->ShowAndWait(
         GetParam().pixel_test_param.use_small_window
-            ? absl::optional<gfx::Size>(gfx::Size(750, 590))
-            : absl::nullopt);
+            ? std::optional<gfx::Size>(gfx::Size(750, 590))
+            : std::nullopt);
     observer.Wait();
   }
 
@@ -108,7 +108,7 @@ class ProfilePickerUIPixelTest
 
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     const std::string screenshot_name =
-        base::StrCat({test_info->test_case_name(), "_", test_info->name()});
+        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
 
     return VerifyPixelUi(widget, "ProfilePickerUIPixelTest", screenshot_name) !=
            ui::test::ActionResult::kFailed;

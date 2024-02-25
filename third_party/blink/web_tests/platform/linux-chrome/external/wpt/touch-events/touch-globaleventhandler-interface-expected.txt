@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Touch events in GlobalEventHandlers
+  'expose legacy touch event APIs'
+[PRECONDITION_FAILED] Touch events are GlobalEventHandlers' own property
+  'expose legacy touch event APIs'
+Harness: the test ran to completion.

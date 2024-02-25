@@ -16,8 +16,10 @@
 // show display either `light_image` or `dark_image`.
 class ThemeTrackingNonAccessibleImageView
     : public views::ThemeTrackingImageView {
+  METADATA_HEADER(ThemeTrackingNonAccessibleImageView,
+                  views::ThemeTrackingImageView)
+
  public:
-  METADATA_HEADER(ThemeTrackingNonAccessibleImageView);
   ThemeTrackingNonAccessibleImageView(
       const ui::ImageModel& light_image_model,
       const ui::ImageModel& dark_image_model,

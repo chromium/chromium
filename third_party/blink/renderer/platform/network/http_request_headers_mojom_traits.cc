@@ -5,7 +5,6 @@
 #include <memory>
 #include <utility>
 
-#include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "third_party/blink/renderer/platform/network/http_request_headers_mojom_traits.h"
 
 namespace mojo {

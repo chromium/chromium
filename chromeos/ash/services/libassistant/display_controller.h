@@ -80,15 +80,14 @@ class DisplayController
   std::unique_ptr<DisplayConnection> display_connection_;
 
   // Owned by |LibassistantService|.
-  const raw_ref<mojo::RemoteSet<mojom::SpeechRecognitionObserver>,
-                ExperimentalAsh>
+  const raw_ref<mojo::RemoteSet<mojom::SpeechRecognitionObserver>>
       speech_recognition_observers_;
 
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
 
   // Owned by |ConversationController|.
-  raw_ptr<chromeos::assistant::action::CrosActionModule, ExperimentalAsh>
-      action_module_ = nullptr;
+  raw_ptr<chromeos::assistant::action::CrosActionModule> action_module_ =
+      nullptr;
 
   // The callbacks from Libassistant are called on a different sequence,
   // so this sequence checker ensures that no other methods are called on the

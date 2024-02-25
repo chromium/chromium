@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_LACROS_SELECTION_POLICY_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_LACROS_SELECTION_POLICY_HANDLER_H_
 
+#include <optional>
+
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefValueMap;
 
@@ -30,7 +31,7 @@ class LacrosSelectionPolicyHandler : public TypeCheckingPolicyHandler {
                            PrefValueMap* prefs) override;
 
  private:
-  absl::optional<crosapi::browser_util::LacrosSelectionPolicy> GetValue(
+  std::optional<crosapi::browser_util::LacrosSelectionPolicy> GetValue(
       const PolicyMap& policies,
       PolicyErrorMap* errors);
 };

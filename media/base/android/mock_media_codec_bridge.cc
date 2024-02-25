@@ -15,17 +15,17 @@ namespace media {
 
 MockMediaCodecBridge::MockMediaCodecBridge() {
   ON_CALL(*this, DequeueInputBuffer(_, _))
-      .WillByDefault(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+      .WillByDefault(Return(MediaCodecResult::Codes::kTryAgainLater));
   ON_CALL(*this, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillByDefault(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+      .WillByDefault(Return(MediaCodecResult::Codes::kTryAgainLater));
 }
 
 MockMediaCodecBridge::~MockMediaCodecBridge() = default;
 
 void MockMediaCodecBridge::AcceptOneInput(IsEos eos) {
   EXPECT_CALL(*this, DequeueInputBuffer(_, _))
-      .WillOnce(DoAll(SetArgPointee<1>(42), Return(MEDIA_CODEC_OK)))
-      .WillRepeatedly(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+      .WillOnce(DoAll(SetArgPointee<1>(42), Return(OkStatus())))
+      .WillRepeatedly(Return(MediaCodecResult::Codes::kTryAgainLater));
   if (eos == kEos)
     EXPECT_CALL(*this, QueueEOS(_));
 
@@ -37,8 +37,8 @@ void MockMediaCodecBridge::ProduceOneOutput(IsEos eos) {
   is_drained_ = (eos == kEos);
   EXPECT_CALL(*this, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(DoAll(SetArgPointee<5>(eos == kEos ? true : false),
-                      Return(MEDIA_CODEC_OK)))
-      .WillRepeatedly(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+                      Return(OkStatus())))
+      .WillRepeatedly(Return(MediaCodecResult::Codes::kTryAgainLater));
 }
 
 bool MockMediaCodecBridge::IsDrained() const {

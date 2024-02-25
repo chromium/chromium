@@ -179,6 +179,26 @@ void GetDefaultDeviceIdCallback(pa_context* c,
   pa_threaded_mainloop_signal(data->loop_, 0);
 }
 
+struct MonitorSourceData {
+  explicit MonitorSourceData(pa_threaded_mainloop* loop) : loop_(loop) {}
+  const raw_ptr<pa_threaded_mainloop> loop_;
+  std::string monitor_source_name_;
+};
+
+// Callback used by GetMonitorSourceNameForSink(). `info` contains information
+// about the queried sink, in particular, the name of the source which acts as a
+// monitor for the sink.
+void GetMonitorSourceNameForSinkCallback(pa_context* context,
+                                         const pa_sink_info* info,
+                                         int eol,
+                                         void* userdata) {
+  MonitorSourceData* data = static_cast<MonitorSourceData*>(userdata);
+  if (!eol) {
+    data->monitor_source_name_ = info->monitor_source_name;
+  }
+  pa_threaded_mainloop_signal(data->loop_, 0);
+}
+
 struct ContextStartupData {
   raw_ptr<base::WaitableEvent> context_wait;
   raw_ptr<pa_threaded_mainloop, DanglingUntriaged> pa_mainloop;
@@ -313,6 +333,16 @@ void StreamSuccessCallback(pa_stream* s, int error, void* mainloop) {
   pa_threaded_mainloop_signal(pa_mainloop, 0);
 }
 
+// pa_context_success_cb_t
+void ContextSuccessCallback(pa_context* context, int success, void* mainloop) {
+  pa_threaded_mainloop* pa_mainloop =
+      static_cast<pa_threaded_mainloop*>(mainloop);
+  if (!success) {
+    LOG(ERROR) << "Context operation failed.";
+  }
+  pa_threaded_mainloop_signal(pa_mainloop, 0);
+}
+
 // |pa_context| and |pa_stream| state changed cb.
 void ContextStateCallback(pa_context* context, void* mainloop) {
   pa_threaded_mainloop* pa_mainloop =
@@ -406,7 +436,7 @@ base::TimeDelta GetHardwareLatency(pa_stream* stream) {
 
 bool CreateInputStream(pa_threaded_mainloop* mainloop,
                        pa_context* context,
-                       pa_stream** stream,
+                       raw_ptr<pa_stream>* stream,
                        const AudioParameters& params,
                        const std::string& device_id,
                        pa_stream_notify_cb_t stream_callback,
@@ -479,9 +509,9 @@ bool CreateInputStream(pa_threaded_mainloop* mainloop,
   return true;
 }
 
-bool CreateOutputStream(pa_threaded_mainloop** mainloop,
-                        pa_context** context,
-                        pa_stream** stream,
+bool CreateOutputStream(raw_ptr<pa_threaded_mainloop>* mainloop,
+                        raw_ptr<pa_context>* context,
+                        raw_ptr<pa_stream>* stream,
                         const AudioParameters& params,
                         const std::string& device_id,
                         const std::string& app_name,
@@ -641,6 +671,20 @@ std::string GetRealDefaultDeviceId(pa_threaded_mainloop* mainloop,
       pa_context_get_server_info(context, &GetDefaultDeviceIdCallback, &data);
   WaitForOperationCompletion(mainloop, operation, context);
   return (type == RequestType::INPUT) ? data.input_ : data.output_;
+}
+
+std::string GetMonitorSourceNameForSink(pa_threaded_mainloop* mainloop,
+                                        pa_context* context,
+                                        const std::string& sink_name) {
+  CHECK(mainloop);
+  CHECK(context);
+  CHECK(!sink_name.empty());
+  AutoPulseLock auto_lock(mainloop);
+  MonitorSourceData data(mainloop);
+  pa_operation* operation = pa_context_get_sink_info_by_name(
+      context, sink_name.c_str(), &GetMonitorSourceNameForSinkCallback, &data);
+  WaitForOperationCompletion(mainloop, operation, context);
+  return data.monitor_source_name_;
 }
 
 #undef RETURN_ON_FAILURE

@@ -39,7 +39,8 @@ bool PerfettoProducer::SetupStartupTracing(
   }
 
   // Tell data sources to enable startup tracing, too.
-  for (auto* ds : PerfettoTracedProcess::Get()->data_sources()) {
+  for (PerfettoTracedProcess::DataSourceBase* ds :
+       PerfettoTracedProcess::Get()->data_sources()) {
     ds->SetupStartupTracing(this, trace_config, privacy_filtering_enabled);
   }
 
@@ -81,7 +82,8 @@ void PerfettoProducer::OnStartupTracingTimeout() {
   LOG(WARNING) << "Startup tracing timed out (tracing service didn't start the "
                   "session?).";
 
-  for (auto* ds : PerfettoTracedProcess::Get()->data_sources()) {
+  for (PerfettoTracedProcess::DataSourceBase* ds :
+       PerfettoTracedProcess::Get()->data_sources()) {
     ds->AbortStartupTracing();
   }
 

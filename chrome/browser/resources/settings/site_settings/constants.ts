@@ -18,6 +18,7 @@ export enum ContentSettingsTypes {
   AR = 'ar',
   AUTO_PICTURE_IN_PICTURE = 'auto-picture-in-picture',
   AUTOMATIC_DOWNLOADS = 'multiple-automatic-downloads',
+  AUTOMATIC_FULLSCREEN = 'automatic-fullscreen',
   BACKGROUND_SYNC = 'background-sync',
   BLUETOOTH_DEVICES = 'bluetooth-devices',
   BLUETOOTH_SCANNING = 'bluetooth-scanning',
@@ -31,12 +32,14 @@ export enum ContentSettingsTypes {
   IDLE_DETECTION = 'idle-detection',
   IMAGES = 'images',
   JAVASCRIPT = 'javascript',
+  JAVASCRIPT_JIT = 'javascript-jit',
   LOCAL_FONTS = 'local-fonts',
   MIC = 'media-stream-mic',  // AKA Microphone.
   MIDI_DEVICES = 'midi-sysex',
   MIXEDSCRIPT = 'mixed-script',
   NOTIFICATIONS = 'notifications',
   PAYMENT_HANDLER = 'payment-handler',
+  PERFORMANCE = 'performance',
   POPUPS = 'popups',
   PRIVATE_NETWORK_DEVICES = 'private-network-devices',
   PROTECTED_CONTENT = 'protected-content',
@@ -49,6 +52,7 @@ export enum ContentSettingsTypes {
   VR = 'vr',
   WINDOW_MANAGEMENT = 'window-placement',
   ZOOM_LEVELS = 'zoom-levels',
+  WEB_PRINTING = 'web-printing',
 
   // The following items are not in the C++ kContentSettingsTypeGroupNames, but
   // are used everywhere where ContentSettingsTypes is used in JS.
@@ -114,14 +118,15 @@ export enum SiteSettingSource {
 }
 
 /**
- * Enumeration of states for the notification default setting generated pref.
- * Must be kept in sync with the enum of the same name located in:
- * chrome/browser/content_settings/generated_notification_pref.h
+ * Enumeration of states for the notification and geolocation default setting
+ * generated pref. Must be kept in sync with the SettingsState enum in:
+ * chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h
  */
-export enum NotificationSetting {
-  ASK = 0,
-  QUIETER_MESSAGING = 1,
-  BLOCK = 2,
+export enum SettingsState {
+  LOUD = 0,
+  QUIET = 1,
+  CPSS = 2,
+  BLOCK = 3,
 }
 
 /**

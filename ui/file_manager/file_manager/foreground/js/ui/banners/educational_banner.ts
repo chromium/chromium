@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import 'chrome://resources/cros_components/button/button.js';
 
-import {util} from '../../../../common/js/util.js';
+import {isCrosComponentsEnabled} from '../../../../common/js/flags.js';
+import {visitURL} from '../../../../common/js/util.js';
 
 import {getTemplate} from './educational_banner.html.js';
-import {AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSource} from './types.js';
+import {type AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSource} from './types.js';
 
 /**
  * EducationalBanner is a type of banner that is the second highest priority
@@ -30,7 +25,7 @@ import {AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSource} f
  *
  *    class ConcreteEducationalBanner extends EducationalBanner {
  *      allowedVolumes() {
- *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+ *        return [{type: VolumeType.DOWNLOADS}];
  *      }
  *    }
  *
@@ -103,8 +98,7 @@ export class EducationalBanner extends Banner {
     const overridenDismissButton =
         this.querySelector('[slot="dismiss-button"]');
     const defaultDismissButton = this.shadowRoot!.querySelector(
-        util.isCrosComponentsEnabled() ? '#dismiss-button' :
-                                         '#dismiss-button-old');
+        isCrosComponentsEnabled() ? '#dismiss-button' : '#dismiss-button-old');
     if (overridenDismissButton) {
       overridenDismissButton.addEventListener(
           'click',
@@ -125,7 +119,7 @@ export class EducationalBanner extends Banner {
     const href = extraButton?.getAttribute('href');
     if (href && extraButton) {
       extraButton.addEventListener('click', (e) => {
-        util.visitURL(/** @type {!string} */ (href));
+        visitURL(href);
         if (extraButton.hasAttribute('dismiss-banner-when-clicked')) {
           this.dispatchEvent(
               new CustomEvent(BannerEvent.BANNER_DISMISSED_FOREVER, {

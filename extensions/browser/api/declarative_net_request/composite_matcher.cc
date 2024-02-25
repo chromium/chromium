@@ -21,8 +21,7 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace flat_rule = url_pattern_index::flat;
 using PageAccess = PermissionsData::PageAccess;
 using ActionInfo = CompositeMatcher::ActionInfo;
@@ -58,7 +57,7 @@ class ScopedGetBeforeRequestActionTimer {
 }  // namespace
 
 ActionInfo::ActionInfo() = default;
-ActionInfo::ActionInfo(absl::optional<RequestAction> action,
+ActionInfo::ActionInfo(std::optional<RequestAction> action,
                        bool notify_request_withheld)
     : action(std::move(action)),
       notify_request_withheld(notify_request_withheld) {}
@@ -135,15 +134,15 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
            page_access == PermissionsData::PageAccess::kWithheld);
   }
 
-  absl::optional<RequestAction> final_action;
+  std::optional<RequestAction> final_action;
 
   // The priority of the highest priority matching allow or allowAllRequests
-  // rule within this matcher, or absl::nullopt otherwise.
-  absl::optional<uint64_t> max_allow_rule_priority;
+  // rule within this matcher, or std::nullopt otherwise.
+  std::optional<uint64_t> max_allow_rule_priority;
 
   for (const auto& matcher : matchers_) {
-    absl::optional<RequestAction> action =
-        matcher->GetBeforeRequestAction(params);
+    std::optional<RequestAction> action =
+        matcher->GetAction(params, RulesetMatchingStage::kOnBeforeRequest);
     if (!action)
       continue;
 
@@ -172,7 +171,7 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
   // `requires_host_permission` is true and `page_access` is withheld or denied.
   bool notify_request_withheld = page_access == PageAccess::kWithheld &&
                                  !final_action->IsAllowOrAllowAllRequests();
-  return ActionInfo(absl::nullopt, notify_request_withheld);
+  return ActionInfo(std::nullopt, notify_request_withheld);
 }
 
 std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
@@ -181,8 +180,8 @@ std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
   DCHECK(params.allow_rule_max_priority.contains(this));
 
   // The priority of the highest priority matching allow or allowAllRequests
-  // rule within this matcher, or absl::nullopt if no such rule exists.
-  absl::optional<uint64_t> max_allow_rule_priority =
+  // rule within this matcher, or std::nullopt if no such rule exists.
+  std::optional<uint64_t> max_allow_rule_priority =
       params.allow_rule_max_priority[this];
 
   for (const auto& matcher : matchers_) {
@@ -244,5 +243,4 @@ bool CompositeMatcher::ComputeHasAnyExtraHeadersMatcher() const {
   return false;
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

@@ -52,6 +52,11 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
         actualSpans.map(describeSpanPrettyPrint).join('\n');
   }
 
+  function describeExpectedSpans() {
+    return '\nAll expected spans:\n' +
+        expectedSpans.map(describeSpanPrettyPrint).join('\n');
+  }
+
   for (let i = 0, max = Math.max(expectedSpans.length, actualSpans.length);
        i < max; ++i) {
     const expectedSpan = expectedSpans[i];
@@ -59,12 +64,14 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
     if (!expectedSpan) {
       throw Error(
           'Unexpected span in ' + expectedText + ': ' +
-          describeSpan(actualSpan) + describeActualSpans());
+          describeSpan(actualSpan) + describeActualSpans()) +
+          describeExpectedSpans();
     }
     if (!actualSpan) {
       throw Error(
           'Missing expected span in ' + expectedText + ': ' +
-          describeSpan(expectedSpan) + describeActualSpans());
+          describeSpan(expectedSpan) + describeActualSpans()) +
+          describeExpectedSpans();
     }
     let equal = true;
     if (expectedSpan.start !== actualSpan.start ||
@@ -82,9 +89,10 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
     }
     if (!equal) {
       throw Error(
-          'Spans differ in ' + expectedText + ':\n' +
+          'Spans differ in this text: "' + expectedText + '":\n' +
           'Expected: ' + describeSpan(expectedSpan) + '\n' +
-          'Got     : ' + describeSpan(actualSpan) + describeActualSpans());
+          'Got     : ' + describeSpan(actualSpan) + describeActualSpans()) +
+          describeExpectedSpans();
     }
   }
 }
@@ -96,30 +104,6 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule('EventSource', '/chromevox/background/event_source.js'),
-      importModule('FocusBounds', '/chromevox/background/focus_bounds.js'),
-      importModule('Output', '/chromevox/background/output/output.js'),
-      importModule(
-          'OutputRoleInfo', '/chromevox/background/output/output_role_info.js'),
-      importModule(
-          'OutputRule', '/chromevox/background/output/output_rules.js'),
-      importModule(
-          ['OutputEarconAction', 'OutputNodeSpan', 'OutputSelectionSpan'],
-          '/chromevox/background/output/output_types.js'),
-      importModule('EarconId', '/chromevox/common/earcon_id.js'),
-      importModule('EventSourceType', '/chromevox/common/event_source_type.js'),
-      importModule('Msgs', '/chromevox/common/msgs.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-      importModule('TtsCategory', '/chromevox/common/tts_types.js'),
-      importModule('AutomationPredicate', '/common/automation_predicate.js'),
-      importModule('AutomationUtil', '/common/automation_util.js'),
-      importModule('Cursor', '/common/cursors/cursor.js'),
-      importModule('CursorRange', '/common/cursors/range.js'),
-    ]);
 
     globalThis.Dir = AutomationUtil.Dir;
     globalThis.RoleType = chrome.automation.RoleType;
@@ -827,7 +811,11 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', async function() {
       'this is a test of emphasized text',
       [
         {value: new OutputNodeSpan(start), start: 0, end: 10},
-        {value: new OutputNodeSpan(start.nextSibling), start: 10, end: 14},
+        {
+          value: new OutputNodeSpan(start.nextSibling.firstChild),
+          start: 10,
+          end: 14,
+        },
         {value: new OutputNodeSpan(end), start: 15, end: 33},
       ],
       o);

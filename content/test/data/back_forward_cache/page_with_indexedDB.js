@@ -21,7 +21,10 @@ async function setupIndexedDBConnection() {
 async function setupNewIndexedDBConnectionWithSameVersion() {
   let db2 = await new Promise((resolve, reject) => {
     let request = window.indexedDB.open(dbName, dbVersion);
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      window.domAutomationController.send('success_same_version');
+      resolve(request.result);
+    }
     request.onerror = (error) => reject(error);
   });
 }

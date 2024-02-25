@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Notifications: Closing a notification in the "pagehide" event does not crash.</title>
+    <script src="../resources/testharness.js"></script>
+    <script src="../resources/testharnessreport.js"></script>
+    <script src="resources/test-helpers.js"></script>
+  </head>
+  <body>
+    <script>
+      // Tests that closing a displayed Web Notification in the pagehide event does not
+      // cause the browser to crash.
+      if (window.testRunner) {
+          testRunner.setPermission('notifications', 'granted', location.origin, location.origin);
+          testRunner.setPopupBlockingEnabled(false);
+      }
+
+      async_test(function (test) {
+        var win = window.open('resources/window-close-in-pagehide-event.html');
+          window.addEventListener('message', function (event) {
+              if (event.data == 'opened') {
+                  win.close();
+              } else if (event.data == 'closed') {
+                  test.done();
+              }
+          });
+
+      }, 'Closing a notification in the "pagehide" event does not crash.');
+    </script>
+  </body>
+</html>

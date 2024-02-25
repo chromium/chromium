@@ -3,11 +3,31 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
+#import "base/apple/foundation_util.h"
+#import "components/omnibox/browser/autocomplete_match_type.h"
+#import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event_view_controller.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_event.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
+
+typedef NS_ENUM(NSUInteger, SectionRows) {
+  SuggestionDetailsRow = 0,
+  RelevanceRow,
+  GroupIdRow,
+  IsTabMatchRow,
+  SupportsDeletionRow,
+  ProviderRow,
+  SuggestionTypeRow,
+  SectionRowsCount
+};
 
 /// Debug text view used to display text that can be selected.
 UITextView* DebugTextView() {
@@ -71,14 +91,35 @@ UILabel* VariationInstructionLabel() {
   return label;
 }
 
+UITableView* SuggestionsTableView() {
+  UITableView* tableView = [[UITableView alloc] initWithFrame:CGRectZero];
+
+  [tableView registerClass:[UITableViewCell class]
+      forCellReuseIdentifier:@"Cell"];
+  [tableView registerClass:[UITableViewHeaderFooterView class]
+      forHeaderFooterViewReuseIdentifier:NSStringFromClass(
+                                             [UITableViewHeaderFooterView
+                                                 class])];
+
+  tableView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  return tableView;
+}
+
+// The initial four characters in the response body are redundant.
+const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
+
 }  // namespace
 
-@interface PopupDebugInfoViewController () <UITextFieldDelegate>
+@interface PopupDebugInfoViewController () <UITextFieldDelegate,
+                                            UITableViewDelegate,
+                                            UITableViewDataSource>
 
 @property(nonatomic, strong) UITextView* activeVariationIDTextView;
 @property(nonatomic, strong) UITextField* variationIDTextField;
 @property(nonatomic, strong) UITextView* enableVariationIDTextView;
 @property(nonatomic, strong) UITextView* disableVariationIDsTextView;
+@property(nonatomic, strong) UITableView* tableView;
 
 @property(nonatomic, strong) UILabel* variationInstructionLabel;
 @property(nonatomic, strong) UIButton* settingsButton;
@@ -88,7 +129,10 @@ UILabel* VariationInstructionLabel() {
 
 @end
 
-@implementation PopupDebugInfoViewController
+@implementation PopupDebugInfoViewController {
+  // In reverse chronological order: index 0 is most recent.
+  NSMutableArray<id<OmniboxEvent>>* _events;
+}
 
 - (instancetype)init {
   if (self = [super initWithNibName:nil bundle:nil]) {
@@ -101,6 +145,12 @@ UILabel* VariationInstructionLabel() {
     _variationInstructionLabel = VariationInstructionLabel();
     _enableVariationIDTextView = DebugTextView();
     _disableVariationIDsTextView = DebugTextView();
+    _tableView = SuggestionsTableView();
+
+    [_tableView setDelegate:self];
+    [_tableView setDataSource:self];
+
+    _events = [[NSMutableArray alloc] init];
 
     [_variationIDTextField addTarget:self
                               action:@selector(textFieldDidChange:)
@@ -120,10 +170,13 @@ UILabel* VariationInstructionLabel() {
 
   UIStackView* stackView = self.variationStackView;
   [scrollView addSubview:stackView];
+
   AddSameConstraints(stackView, scrollView);
+
   [NSLayoutConstraint activateConstraints:@[
     [scrollView.widthAnchor constraintEqualToAnchor:stackView.widthAnchor],
     [scrollView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor],
+    [stackView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor],
   ]];
 
   [stackView addArrangedSubview:self.activeVariationIDTextView];
@@ -132,6 +185,16 @@ UILabel* VariationInstructionLabel() {
   [stackView addArrangedSubview:self.variationInstructionLabel];
   [stackView addArrangedSubview:self.enableVariationIDTextView];
   [stackView addArrangedSubview:self.disableVariationIDsTextView];
+  [stackView addArrangedSubview:_tableView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_tableView.widthAnchor constraintEqualToAnchor:stackView.widthAnchor],
+    [_tableView.topAnchor
+        constraintEqualToAnchor:self.disableVariationIDsTextView.bottomAnchor
+                       constant:16],
+    [_tableView.bottomAnchor constraintEqualToAnchor:stackView.bottomAnchor
+                                            constant:-16]
+  ]];
 
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
@@ -194,24 +257,127 @@ UILabel* VariationInstructionLabel() {
 
 - (void)autocompleteController:(AutocompleteController*)controller
              didStartWithInput:(const AutocompleteInput&)input {
+  [_events removeAllObjects];
+  [_tableView reloadData];
 }
 
 - (void)autocompleteController:(AutocompleteController*)controller
     didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
+  OmniboxAutocompleteEvent* event = [[OmniboxAutocompleteEvent alloc]
+      initWithAutocompleteController:controller];
+
+  [_events insertObject:event atIndex:0];
+
+  [_tableView reloadData];
 }
 
 #pragma mark - RemoteSuggestionsServiceObserver
 
 - (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
-                 startingRequest:(const network::ResourceRequest*)request
-                uniqueIdentifier:
-                    (const base::UnguessableToken&)requestIdentifier {
+    createdRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                         request:(const network::ResourceRequest*)request {
+  OmniboxRemoteSuggestionEvent* event = [[OmniboxRemoteSuggestionEvent alloc]
+      initWithUniqueIdentifier:requestIdentifier];
+
+  [_events insertObject:event atIndex:0];
+
+  [_tableView reloadData];
+}
+
+- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
+    startedRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                     requestBody:(NSString*)requestBody
+                       URLLoader:(network::SimpleURLLoader*)URLLoader {
+  NSUInteger indexOfFoundEventElement =
+      [_events indexOfObjectPassingTest:^BOOL(id<OmniboxEvent> event,
+                                              NSUInteger, BOOL*) {
+        return event.type == kRemoteSuggestionUpdate &&
+               base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(event)
+                       .uniqueIdentifier == requestIdentifier;
+      }];
+  if (indexOfFoundEventElement != NSNotFound) {
+    base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(
+        _events[indexOfFoundEventElement])
+        .requestBody = requestBody;
+    NSIndexPath* indexPath =
+        [NSIndexPath indexPathForRow:indexOfFoundEventElement inSection:0];
+    [_tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                      withRowAnimation:UITableViewRowAnimationNone];
+  }
 }
 
 - (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
     completedRequestWithIdentifier:
         (const base::UnguessableToken&)requestIdentifier
-                  receivedResponse:(NSString*)response {
+                      responseCode:(NSInteger)code
+                      responseBody:(NSString*)responseBody {
+  NSUInteger indexOfFoundEventElement =
+      [_events indexOfObjectPassingTest:^BOOL(id<OmniboxEvent> event,
+                                              NSUInteger, BOOL*) {
+        return event.type == kRemoteSuggestionUpdate &&
+               base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(event)
+                       .uniqueIdentifier == requestIdentifier;
+      }];
+  if (indexOfFoundEventElement != NSNotFound) {
+    OmniboxRemoteSuggestionEvent* event =
+        base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(
+            _events[indexOfFoundEventElement]);
+
+    event.responseBody = [responseBody
+        substringFromIndex:
+            kRemoteSuggestionServiceResponseBodyJsonStartingIndex];
+    event.responseCode = code;
+    NSIndexPath* indexPath =
+        [NSIndexPath indexPathForRow:indexOfFoundEventElement inSection:0];
+    [_tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                      withRowAnimation:UITableViewRowAnimationNone];
+  }
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView*)tableView
+    numberOfRowsInSection:(NSInteger)section {
+  return _events.count;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return 1;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell =
+      [tableView dequeueReusableCellWithIdentifier:@"Cell"
+                                      forIndexPath:indexPath];
+  UIListContentConfiguration* content = cell.defaultContentConfiguration;
+  id<OmniboxEvent> event = _events[indexPath.row];
+  content.text = event.title;
+
+  cell.contentConfiguration = content;
+
+  return cell;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  id<OmniboxEvent> event = _events[indexPath.row];
+
+  if (event.type == kAutocompleteUpdate) {
+    OmniboxAutocompleteEventViewController* vc =
+        [[OmniboxAutocompleteEventViewController alloc] init];
+    vc.event = (OmniboxAutocompleteEvent*)event;
+    [self.navigationController pushViewController:vc animated:YES];
+  } else {
+    OmniboxRemoteSuggestionEventViewController* vc =
+        [[OmniboxRemoteSuggestionEventViewController alloc] init];
+    vc.event = (OmniboxRemoteSuggestionEvent*)event;
+    [self.navigationController pushViewController:vc animated:YES];
+  }
 }
 
 #pragma mark - private

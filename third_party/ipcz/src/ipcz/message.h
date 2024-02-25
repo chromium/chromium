@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
@@ -14,7 +15,6 @@
 #include "ipcz/sequence_number.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/safe_math.h"
 
@@ -419,10 +419,10 @@ class IPCZ_ALIGN(8) Message {
   // Inlined storage for this message's data. Used when constructing outgoing
   // messages, since most are small and can avoid additional heap allocation
   // before hitting the wire.
-  absl::optional<absl::InlinedVector<uint8_t, 128>> inlined_data_;
+  std::optional<absl::InlinedVector<uint8_t, 128>> inlined_data_;
 
   // Heap storage for this message's data, as received from a transport.
-  absl::optional<ReceivedDataBuffer> received_data_;
+  std::optional<ReceivedDataBuffer> received_data_;
 
   // A view over *either* `received_data_` *or* `inlined_data_`, or empty if
   // neither is present.

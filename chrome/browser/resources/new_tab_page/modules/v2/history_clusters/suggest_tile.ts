@@ -6,7 +6,7 @@ import 'chrome://resources/cr_components/history_clusters/history_clusters_share
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchQuery} from '../../../history_cluster_types.mojom-webui.js';
+import type {SearchQuery} from '../../../history_cluster_types.mojom-webui.js';
 import {I18nMixin} from '../../../i18n_setup.js';
 
 import {getTemplate} from './suggest_tile.html.js';

@@ -1,6 +1,7 @@
-monorail {
+monorail: {
   component: "Upboarding>QueryTiles"
 }
-
 team_email: "chrome-upboarding@google.com"
-
+buganizer_public: {
+  component_id: 1457082
+}

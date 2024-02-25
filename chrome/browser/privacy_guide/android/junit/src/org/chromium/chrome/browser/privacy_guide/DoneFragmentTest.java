@@ -11,6 +11,9 @@ import static org.mockito.Mockito.when;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -31,24 +34,16 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
-/**
- * Tests for {@link DoneFragment}
- */
+/** Tests for {@link DoneFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DoneFragmentTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private PrivacySandboxBridge.Natives mPrivacySandboxBridge;
+    @Mock private Profile mProfile;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private PrivacySandboxBridge.Natives mPrivacySandboxBridge;
 
     private FragmentScenario mScenario;
     private DoneFragment mFragment;
@@ -56,13 +51,29 @@ public class DoneFragmentTest {
     private View mWaaButton;
 
     private void initFragment() {
-        mScenario = FragmentScenario.launchInContainer(
-                DoneFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
-        mScenario.onFragment(fragment -> {
-            mFragment = (DoneFragment) fragment;
-            mPsButton = fragment.getView().findViewById(R.id.ps_button);
-            mWaaButton = fragment.getView().findViewById(R.id.waa_button);
-        });
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        DoneFragment.class,
+                        Bundle.EMPTY,
+                        R.style.Theme_MaterialComponents,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof DoneFragment) {
+                                    ((DoneFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
+        mScenario.onFragment(
+                fragment -> {
+                    mFragment = (DoneFragment) fragment;
+                    mPsButton = fragment.getView().findViewById(R.id.ps_button);
+                    mWaaButton = fragment.getView().findViewById(R.id.waa_button);
+                });
     }
 
     private void setSignedInState(boolean isSignedIn) {
@@ -77,7 +88,6 @@ public class DoneFragmentTest {
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         mMocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mPrivacySandboxBridge);

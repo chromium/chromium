@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_LINEAR_GRADIENT_H_
-#define UI_GFX_LINEAR_GRADIENT_H_
+#ifndef UI_GFX_GEOMETRY_LINEAR_GRADIENT_H_
+#define UI_GFX_GEOMETRY_LINEAR_GRADIENT_H_
 
 #include <stdint.h>
 
@@ -92,4 +92,4 @@ inline bool operator!=(const LinearGradient& lhs, const LinearGradient& rhs) {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_LINEAR_GRADIENT_H_
+#endif  // UI_GFX_GEOMETRY_LINEAR_GRADIENT_H_

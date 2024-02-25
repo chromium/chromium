@@ -4,6 +4,8 @@
 
 #include "services/audio/output_device_mixer_manager.h"
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -17,7 +19,6 @@
 #include "services/audio/reference_output.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::ByMove;
@@ -264,12 +265,12 @@ class OutputDeviceMixerManagerTest
   }
 
   void SimulateDeviceChange() {
-    SimulateDeviceChange(absl::nullopt, absl::nullopt);
+    SimulateDeviceChange(std::nullopt, std::nullopt);
   }
 
   void SimulateDeviceChange(
-      absl::optional<std::string> new_default_physical_device,
-      absl::optional<std::string> new_communications_physical_device) {
+      std::optional<std::string> new_default_physical_device,
+      std::optional<std::string> new_communications_physical_device) {
     if (new_default_physical_device)
       current_default_physical_device_id_ = *new_default_physical_device;
 
@@ -348,10 +349,10 @@ class OutputDeviceMixerManagerTest
   void SimulateReservedDeviceChange(std::string new_reserved_physical_id) {
     switch (reserved_id_test_type()) {
       case ReservedIdTestType::kDefault:
-        SimulateDeviceChange(new_reserved_physical_id, absl::nullopt);
+        SimulateDeviceChange(new_reserved_physical_id, std::nullopt);
         return;
       case ReservedIdTestType::kCommunications:
-        SimulateDeviceChange(absl::nullopt, new_reserved_physical_id);
+        SimulateDeviceChange(std::nullopt, new_reserved_physical_id);
         return;
     }
   }

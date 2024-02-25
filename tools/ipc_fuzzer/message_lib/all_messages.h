@@ -22,4 +22,3 @@
 #include "components/nacl/common/nacl_host_messages.h"
 #endif
 #include "content/common/all_messages.h"
-#include "extensions/common/extension_message_generator.h"

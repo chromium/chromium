@@ -18,8 +18,9 @@ class Insets;
 namespace views {
 
 class VIEWS_EXPORT BoxLayoutView : public View {
+  METADATA_HEADER(BoxLayoutView, View)
+
  public:
-  METADATA_HEADER(BoxLayoutView);
   BoxLayoutView();
   BoxLayoutView(BoxLayoutView&) = delete;
   BoxLayoutView& operator=(BoxLayoutView&) = delete;
@@ -54,7 +55,7 @@ class VIEWS_EXPORT BoxLayoutView : public View {
   void ClearFlexForView(const View* view);
 
  private:
-  const raw_ptr<BoxLayout, AcrossTasksDanglingUntriaged> layout_;
+  const raw_ptr<BoxLayout> layout_;
 
   // TODO(tluk): Merge these with the values in BoxLayout after transition to
   // layout views is complete.

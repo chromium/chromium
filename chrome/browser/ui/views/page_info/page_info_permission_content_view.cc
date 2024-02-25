@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
@@ -15,8 +17,9 @@
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
@@ -26,7 +29,8 @@
 PageInfoPermissionContentView::PageInfoPermissionContentView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
-    ContentSettingsType type)
+    ContentSettingsType type,
+    content::WebContents* web_contents)
     : presenter_(presenter), type_(type), ui_delegate_(ui_delegate) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -100,9 +104,13 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       (title_height - GetLayoutConstant(PAGE_INFO_ICON_SIZE)) / 2;
   icon_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
   toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
-  AddChildView(PageInfoViewFactory::CreateSeparator(
+
+  auto* separator = AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
+
+  MaybeAddMediaPreview(web_contents, *separator);
+
   // TODO(crbug.com/1225563): Consider to use permission specific text.
   AddChildView(std::make_unique<RichHoverButton>(
       base::BindRepeating(
@@ -121,7 +129,13 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
-PageInfoPermissionContentView::~PageInfoPermissionContentView() = default;
+PageInfoPermissionContentView::~PageInfoPermissionContentView() {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  if (active_devices_media_preview_coordinator_) {
+    active_devices_media_preview_coordinator_->UpdateDevicePreferenceRanking();
+  }
+#endif
+}
 
 void PageInfoPermissionContentView::SetPermissionInfo(
     const PermissionInfoList& permission_info_list,
@@ -157,6 +171,11 @@ void PageInfoPermissionContentView::SetPermissionInfo(
   PreferredSizeChanged();
 }
 
+void PageInfoPermissionContentView::ChildPreferredSizeChanged(
+    views::View* child) {
+  PreferredSizeChanged();
+}
+
 void PageInfoPermissionContentView::OnToggleButtonPressed() {
   PageInfoUI::ToggleBetweenAllowAndBlock(permission_);
 
@@ -180,3 +199,35 @@ void PageInfoPermissionContentView::PermissionChanged() {
                                       permission_.requesting_origin,
                                       permission_.is_one_time);
 }
+
+void PageInfoPermissionContentView::MaybeAddMediaPreview(
+    content::WebContents* web_contents,
+    views::View& preceding_separator) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
+    return;
+  }
+
+  if (type_ != ContentSettingsType::MEDIASTREAM_CAMERA &&
+      type_ != ContentSettingsType::MEDIASTREAM_MIC) {
+    return;
+  }
+
+  preceding_separator.GetProperty(views::kMarginsKey)->set_bottom(0);
+
+  auto view_type = type_ == ContentSettingsType::MEDIASTREAM_CAMERA
+                       ? MediaCoordinator::ViewType::kCameraOnly
+                       : MediaCoordinator::ViewType::kMicOnly;
+  active_devices_media_preview_coordinator_.emplace(web_contents, view_type,
+                                                    /*parent_view=*/this);
+
+  AddChildView(PageInfoViewFactory::CreateSeparator(
+                   ChromeLayoutProvider::Get()->GetDistanceMetric(
+                       DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)))
+      ->GetProperty(views::kMarginsKey)
+      ->set_top(0);
+#endif
+}
+
+BEGIN_METADATA(PageInfoPermissionContentView)
+END_METADATA

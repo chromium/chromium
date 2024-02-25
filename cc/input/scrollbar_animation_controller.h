@@ -27,7 +27,7 @@ class CC_EXPORT ScrollbarAnimationControllerClient {
   virtual void SetNeedsAnimateForScrollbarAnimation() = 0;
   virtual void DidChangeScrollbarVisibility() = 0;
   virtual ScrollbarSet ScrollbarsFor(ElementId scroll_element_id) const = 0;
-  virtual bool IsFluentScrollbar() const = 0;
+  virtual bool IsFluentOverlayScrollbar() const = 0;
 
  protected:
   virtual ~ScrollbarAnimationControllerClient() {}
@@ -60,7 +60,8 @@ class CC_EXPORT ScrollbarAnimationController {
       base::TimeDelta fade_delay,
       base::TimeDelta fade_duration,
       base::TimeDelta thinning_duration,
-      float initial_opacity);
+      float initial_opacity,
+      float idle_thickness_scale);
 
   ~ScrollbarAnimationController();
 
@@ -101,7 +102,7 @@ class CC_EXPORT ScrollbarAnimationController {
 
  private:
   // Describes whether the current animation should FadeIn or FadeOut.
-  enum class AnimationChange { NONE, FADE_IN, FADE_OUT };
+  enum class AnimationChange { kNone, kFadeIn, kFadeOut };
 
   ScrollbarAnimationController(ElementId scroll_element_id,
                                ScrollbarAnimationControllerClient* client,
@@ -114,7 +115,8 @@ class CC_EXPORT ScrollbarAnimationController {
                                base::TimeDelta fade_delay,
                                base::TimeDelta fade_duration,
                                base::TimeDelta thinning_duration,
-                               float initial_opacity);
+                               float initial_opacity,
+                               float idle_thickness_scale);
 
   // Any scrollbar state update would show scrollbar hen post the delay fade out
   // if needed.
@@ -157,9 +159,6 @@ class CC_EXPORT ScrollbarAnimationController {
 
   const bool show_scrollbars_on_scroll_gesture_;
   const bool need_thinning_animation_;
-  // Controls whether an overlay scrollbar should fade in/out. Should be True
-  // for Aura overlay scrollbars and False for Fluent overlay scrollbars.
-  const bool need_fade_animation_;
 
   bool is_mouse_down_;
 

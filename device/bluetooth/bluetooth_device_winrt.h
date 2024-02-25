@@ -5,13 +5,13 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_DEVICE_WINRT_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_DEVICE_WINRT_H_
 
+#include <stdint.h>
 #include <windows.devices.bluetooth.genericattributeprofile.h>
 #include <windows.devices.bluetooth.h>
 #include <wrl/client.h>
 
-#include <stdint.h>
-
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -22,7 +22,6 @@
 #include "device/base/features.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -57,7 +56,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  absl::optional<std::string> GetName() const override;
+  std::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
@@ -96,12 +95,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
   static std::string CanonicalizeAddress(uint64_t address);
 
   // Called by BluetoothAdapterWinrt when an advertisement packet is received.
-  void UpdateLocalName(absl::optional<std::string> local_name);
+  void UpdateLocalName(std::optional<std::string> local_name);
 
  protected:
   // BluetoothDevice:
   void CreateGattConnectionImpl(
-      absl::optional<BluetoothUUID> service_uuid) override;
+      std::optional<BluetoothUUID> service_uuid) override;
   void UpgradeToFullDiscovery() override;
   void DisconnectGatt() override;
 
@@ -162,7 +161,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
       gatt_session_status_;
   uint64_t raw_address_;
   std::string address_;
-  absl::optional<std::string> local_name_;
+  std::optional<std::string> local_name_;
 
   std::unique_ptr<BluetoothPairingWinrt> pairing_;
 
@@ -182,13 +181,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
   // FromBluetoothAddressAsync() otherwise.
   bool pending_gatt_service_discovery_start_ = false;
 
-  absl::optional<BluetoothUUID> target_uuid_;
+  std::optional<BluetoothUUID> target_uuid_;
   std::unique_ptr<BluetoothGattDiscovererWinrt> gatt_discoverer_;
 
-  absl::optional<EventRegistrationToken> connection_changed_token_;
-  absl::optional<EventRegistrationToken> gatt_session_status_changed_token_;
-  absl::optional<EventRegistrationToken> gatt_services_changed_token_;
-  absl::optional<EventRegistrationToken> name_changed_token_;
+  std::optional<EventRegistrationToken> connection_changed_token_;
+  std::optional<EventRegistrationToken> gatt_session_status_changed_token_;
+  std::optional<EventRegistrationToken> gatt_services_changed_token_;
+  std::optional<EventRegistrationToken> name_changed_token_;
 
   THREAD_CHECKER(thread_checker_);
 

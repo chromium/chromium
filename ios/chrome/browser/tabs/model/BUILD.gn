@@ -1,0 +1,241 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "closing_web_state_observer_browser_agent.h",
+    "ios_synced_window_delegate_getter.h",
+    "synced_window_delegate_browser_agent.h",
+    "tab_helper_delegate_installer.h",
+    "tab_helper_util.h",
+    "tab_parenting_browser_agent.h",
+    "tab_parenting_browser_agent.mm",
+    "tab_parenting_global_observer.cc",
+    "tab_parenting_global_observer.h",
+    "tab_title_util.h",
+    "tabs_closer.h",
+  ]
+  public_deps = [ "//ios/web" ]
+  deps = [
+    "//components/sessions:session_id",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("tabs_internal") {
+  sources = [
+    "closing_web_state_observer_browser_agent.mm",
+    "ios_synced_window_delegate_getter.mm",
+    "synced_window_delegate_browser_agent.mm",
+    "tab_helper_util.mm",
+    "tab_title_util.h",
+    "tab_title_util.mm",
+    "tabs_closer.mm",
+  ]
+  deps = [
+    ":model",
+    ":synced_tabs",
+    "//base",
+    "//components/autofill/ios/form_util",
+    "//components/breadcrumbs/core:status",
+    "//components/commerce/ios/browser",
+    "//components/favicon/core",
+    "//components/favicon/ios",
+    "//components/history/core/browser",
+    "//components/history/ios/browser",
+    "//components/language/ios/browser",
+    "//components/omnibox/common",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/ios/browser:allow_list",
+    "//components/security_state/ios",
+    "//components/sessions",
+    "//components/strings",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/browser/app_launcher/model",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model:model_internal",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/commerce/model",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/commerce/model/price_notifications",
+    "//ios/chrome/browser/commerce/model/push_notification",
+    "//ios/chrome/browser/complex_tasks/model",
+    "//ios/chrome/browser/contextual_panel/model",
+    "//ios/chrome/browser/crash_report/model/breadcrumbs",
+    "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/drive/model:drive_tab_helper",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/find_in_page/model",
+    "//ios/chrome/browser/find_in_page/model:util",
+    "//ios/chrome/browser/follow/model:tab_helper",
+    "//ios/chrome/browser/geolocation/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/history/model:tab_helper",
+    "//ios/chrome/browser/https_upgrades/model",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:badge",
+    "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/itunes_urls/model",
+    "//ios/chrome/browser/language/model",
+    "//ios/chrome/browser/lens/model",
+    "//ios/chrome/browser/link_to_text/model",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/overscroll_actions/model",
+    "//ios/chrome/browser/page_info:model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/permissions/model:tab_helper",
+    "//ios/chrome/browser/policy_url_blocking/model",
+    "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/safe_browsing/model",
+    "//ios/chrome/browser/safe_browsing/model/tailored_security",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:session_restoration_service",
+    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/sharing/model",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/ssl/model",
+    "//ios/chrome/browser/store_kit/model",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/translate/model",
+    "//ios/chrome/browser/ui/download:features",
+    "//ios/chrome/browser/ui/page_info:features",
+    "//ios/chrome/browser/voice/model",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model:page_placeholder",
+    "//ios/chrome/browser/web/model/annotations",
+    "//ios/chrome/browser/web/model/font_size",
+    "//ios/chrome/browser/web/model/image_fetch",
+    "//ios/chrome/browser/web/model/print",
+    "//ios/chrome/browser/web/model/web_performance_metrics",
+    "//ios/chrome/browser/web_selection/model",
+    "//ios/chrome/browser/webui/model",
+    "//ios/components/security_interstitials",
+    "//ios/components/security_interstitials/https_only_mode",
+    "//ios/components/security_interstitials/https_only_mode:feature",
+    "//ios/components/security_interstitials/lookalikes",
+    "//ios/components/security_interstitials/safe_browsing",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
+    "//ios/web/annotations",
+    "//ios/web/common",
+    "//ios/web/public/find_in_page",
+    "//ios/web/public/security",
+    "//ios/web/public/session",
+    "//ios/web/public/session/proto",
+    "//ui/base",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("synced_tabs") {
+  sources = [
+    "ios_chrome_local_session_event_router.h",
+    "ios_chrome_local_session_event_router.mm",
+    "ios_chrome_synced_tab_delegate.h",
+    "ios_chrome_synced_tab_delegate.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/sessions",
+    "//components/sessions:session_id",
+    "//components/sync/base:features",
+    "//components/sync/model",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/complex_tasks/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/sync/model/glue",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/navigation",
+
+    # TODO(crbug.com/1504753): Remove those deps when support for legacy
+    # session storage is removed.
+    "//ios/chrome/browser/sessions:session_restoration_service",
+    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/web/public/session",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ios_chrome_synced_tab_delegate_unittest.mm",
+    "tab_helper_delegate_installer_unittest.mm",
+    "tab_sync_util_unittest.mm",
+    "tab_title_util_unittest.mm",
+    "tabs_closer_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    ":synced_tabs",
+    ":tab_sync_util",
+    ":tabs_internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:fake",
+    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/browser/synced_sessions/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//ui/base" ]
+}
+
+source_set("tab_sync_util") {
+  sources = [
+    "tab_sync_util.h",
+    "tab_sync_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/synced_sessions/model",
+  ]
+}

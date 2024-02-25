@@ -34,9 +34,6 @@ TestGLES2Interface::TestGLES2Interface() : context_id_(NextContextId()) {
   // For stream textures.
   test_capabilities_.egl_image_external = true;
   set_max_texture_size(2048);
-
-  // By default, luminance textures are supported in GLES2.
-  test_capabilities_.supports_luminance_shared_images = true;
 }
 
 TestGLES2Interface::~TestGLES2Interface() = default;
@@ -124,7 +121,7 @@ void TestGLES2Interface::GetIntegerv(GLenum pname, GLint* params) {
   else if (pname == GL_FRAMEBUFFER_BINDING)
     *params = current_framebuffer_;
   else if (pname == GL_MAX_SAMPLES)
-    *params = test_capabilities_.max_samples;
+    *params = test_gl_capabilities_.max_samples;
 }
 
 void TestGLES2Interface::GetShaderiv(GLuint shader,
@@ -472,24 +469,8 @@ void TestGLES2Interface::set_avoid_stencil_buffers(bool avoid_stencil_buffers) {
   test_capabilities_.avoid_stencil_buffers = avoid_stencil_buffers;
 }
 
-void TestGLES2Interface::set_supports_scanout_shared_images(bool support) {
-  test_capabilities_.supports_scanout_shared_images = support;
-}
-
-void TestGLES2Interface::set_support_texture_npot(bool support) {
-  test_capabilities_.texture_npot = support;
-}
-
 void TestGLES2Interface::set_max_texture_size(int size) {
   test_capabilities_.max_texture_size = size;
-}
-
-void TestGLES2Interface::set_supports_oop_raster(bool support) {
-  test_capabilities_.supports_oop_raster = support;
-}
-
-void TestGLES2Interface::set_supports_shared_image_swap_chain(bool support) {
-  test_capabilities_.shared_image_swap_chain = support;
 }
 
 void TestGLES2Interface::set_supports_gpu_memory_buffer_format(

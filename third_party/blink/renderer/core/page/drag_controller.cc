@@ -103,6 +103,7 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
 using ui::mojom::blink::DragOperation;
 
 static const int kMaxOriginalImageArea = 1500 * 1500;
@@ -256,7 +257,10 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
   if ((drag_destination_action_ & kDragDestinationActionDHTML) &&
       document_is_handling_drag_) {
     bool prevented_default = false;
-    if (local_root.View()) {
+    if (drag_data->ForceDefaultAction()) {
+      // Tell the document that the drag has left the building.
+      DragExited(drag_data, local_root);
+    } else if (local_root.View()) {
       // Sending an event can result in the destruction of the view and part.
       DataTransfer* data_transfer = CreateDraggingDataTransfer(
           DataTransferAccessPolicy::kReadable, drag_data);
@@ -334,8 +338,9 @@ void DragController::MouseMovedIntoDocument(Document* new_document) {
   document_under_mouse_ = new_document;
 }
 
-DragOperation DragController::DragEnteredOrUpdated(DragData* drag_data,
-                                                   LocalFrame& local_root) {
+DragController::Operation DragController::DragEnteredOrUpdated(
+    DragData* drag_data,
+    LocalFrame& local_root) {
   DCHECK(drag_data);
 
   MouseMovedIntoDocument(local_root.DocumentAtPoint(
@@ -348,12 +353,16 @@ DragOperation DragController::DragEnteredOrUpdated(DragData* drag_data,
           : static_cast<DragDestinationAction>(kDragDestinationActionDHTML |
                                                kDragDestinationActionEdit);
 
-  DragOperation drag_operation = DragOperation::kNone;
-  document_is_handling_drag_ = TryDocumentDrag(
-      drag_data, drag_destination_action_, drag_operation, local_root);
+  Operation drag_operation;
+  document_is_handling_drag_ =
+      TryDocumentDrag(drag_data, drag_destination_action_,
+                      drag_operation.operation, local_root);
   if (!document_is_handling_drag_ &&
-      (drag_destination_action_ & kDragDestinationActionLoad))
-    drag_operation = OperationForLoad(drag_data, local_root);
+      (drag_destination_action_ & kDragDestinationActionLoad)) {
+    drag_operation.operation = OperationForLoad(drag_data, local_root);
+  }
+
+  drag_operation.document_is_handling_drag = document_is_handling_drag_;
   return drag_operation;
 }
 
@@ -362,8 +371,9 @@ static HTMLInputElement* AsFileInput(Node* node) {
   for (; node; node = node->OwnerShadowHost()) {
     auto* html_input_element = DynamicTo<HTMLInputElement>(node);
     if (html_input_element &&
-        html_input_element->type() == input_type_names::kFile)
+        html_input_element->FormControlType() == FormControlType::kInputFile) {
       return html_input_element;
+    }
   }
   return nullptr;
 }
@@ -641,7 +651,7 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
       MakeGarbageCollected<DragAndDropCommand>(*inner_frame->GetDocument()));
 
   if (DragIsMove(inner_frame->Selection(), drag_data) ||
-      IsRichlyEditablePosition(drag_caret.Base())) {
+      IsRichlyEditablePosition(drag_caret.Anchor())) {
     DragSourceType drag_source_type = DragSourceType::kHTMLSource;
     DocumentFragment* fragment = DocumentFragmentFromDragData(
         drag_data, inner_frame, range, true, drag_source_type);
@@ -668,8 +678,9 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
                   *inner_frame,
                   inner_frame->Selection()
                       .ComputeVisibleSelectionInDOMTreeDeprecated()),
-              delete_mode, drag_caret.Base()))
+              delete_mode, drag_caret.Anchor())) {
         return false;
+      }
 
       inner_frame->Selection().SetSelectionAndEndTyping(
           SelectionInDOMTree::Builder()
@@ -1122,13 +1133,8 @@ gfx::Rect DragRectForImage(const DragImage* drag_image,
 
 std::unique_ptr<DragImage> DragImageForLink(const KURL& link_url,
                                             const String& link_text,
-                                            float device_scale_factor,
-                                            const Document* document) {
-  FontDescription font_description;
-  LayoutTheme::GetTheme().SystemFont(blink::CSSValueID::kNone, font_description,
-                                     document);
-  return DragImage::Create(link_url, link_text, font_description,
-                           device_scale_factor);
+                                            float device_scale_factor) {
+  return DragImage::Create(link_url, link_text, device_scale_factor);
 }
 
 gfx::Rect DragRectForLink(const DragImage* link_image,
@@ -1205,7 +1211,7 @@ void SelectEnclosingAnchorIfContentEditable(LocalFrame* frame) {
     if (Node* anchor = EnclosingAnchorElement(
             frame->Selection()
                 .ComputeVisibleSelectionInDOMTreeDeprecated()
-                .Base())) {
+                .Anchor())) {
       frame->Selection().SetSelectionAndEndTyping(
           SelectionInDOMTree::Builder().SelectAllChildren(*anchor).Build());
     }
@@ -1275,7 +1281,7 @@ std::unique_ptr<DragImage> DetermineDragImageAndRect(
     if (!drag_image) {
       DCHECK(frame->GetPage());
       drag_image = DragImageForLink(link_url, hit_test_result.TextContent(),
-                                    device_scale_factor, frame->GetDocument());
+                                    device_scale_factor);
       drag_obj_rect = DragRectForLink(drag_image.get(), mouse_dragged_point,
                                       device_scale_factor,
                                       frame->GetPage()->PageScaleFactor());

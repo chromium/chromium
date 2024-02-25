@@ -108,7 +108,7 @@ class WindowActivationObserver : public wm::ActivationChangeObserver,
     ash::Shell::Get()->activation_client()->RemoveObserver(this);
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
   base::OnceClosure on_activated_;
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
@@ -160,7 +160,7 @@ class AppIdObserver : public aura::WindowObserver {
 
   ~AppIdObserver() override { observer_.Reset(); }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
   base::OnceCallback<void(aura::Window*)> on_ready_;
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
@@ -254,8 +254,12 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
   // kArcResizeLockTypeKey, and the new value is the same as |old| in that case.
   AppIdObserver::RunOnReady(
       window, base::BindOnce(&CompatModeButtonController::Update,
-                             compat_mode_button_controller_->GetWeakPtr(),
-                             pref_delegate_));
+                             compat_mode_button_controller_->GetWeakPtr()));
+}
+
+void ArcResizeLockManager::Shutdown() {
+  compat_mode_button_controller_->ClearPrefDelegate();
+  pref_delegate_ = nullptr;
 }
 
 void ArcResizeLockManager::OnWindowBoundsChanged(
@@ -263,13 +267,20 @@ void ArcResizeLockManager::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  compat_mode_button_controller_->Update(pref_delegate_, window);
+  compat_mode_button_controller_->Update(window);
 }
 
 void ArcResizeLockManager::OnWindowDestroying(aura::Window* window) {
   resize_lock_enabled_windows_.erase(window);
   if (window_observations_.IsObservingSource(window))
     window_observations_.RemoveObservation(window);
+}
+
+void ArcResizeLockManager::SetPrefDelegate(
+    ArcResizeLockPrefDelegate* delegate) {
+  CHECK(!pref_delegate_);
+  pref_delegate_ = delegate;
+  compat_mode_button_controller_->SetPrefDelegate(delegate);
 }
 
 void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
@@ -304,7 +315,7 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
 
   if (!is_fully_locked) {
     window->SetProperty(ash::kUnresizableSnappedSizeKey,
-                        new gfx::Size(GetPortraitPhoneSizeWidth(), 0));
+                        new gfx::Size(GetPortraitPhoneSizeWidth(window), 0));
   } else {
     window->ClearProperty(ash::kUnresizableSnappedSizeKey);
   }
@@ -352,7 +363,7 @@ void ArcResizeLockManager::UpdateResizeLockState(aura::Window* window) {
 
   // As we updated the resize lock state above, we need to update compat mode
   // button.
-  compat_mode_button_controller_->Update(pref_delegate_, window);
+  compat_mode_button_controller_->Update(window);
 
   // Even if resize lock doesn't get enabled or disabled, we need to ensure to
   // update this as resize shadow can be updated in an intermediate state when

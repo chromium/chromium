@@ -28,8 +28,6 @@ static_library("util") {
     "proto_value_conversions.cc",
     "proto_value_conversions.h",
     "proto_visitors.h",
-    "sync_protocol_error.cc",
-    "sync_protocol_error.h",
   ]
 
   public_deps = [

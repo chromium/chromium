@@ -1,0 +1,5 @@
+include_rules = [
+	"+components/compose",
+	"+components/optimization_guide"
+]
+

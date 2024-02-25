@@ -51,4 +51,3 @@ public class JsonListener extends RunListener {
         mCurrentTestPassed = false;
     }
 }
-

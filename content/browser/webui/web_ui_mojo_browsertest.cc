@@ -36,12 +36,11 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/data/web_ui_test.test-mojom.h"
-#include "content/test/data/web_ui_test_types.test-mojom.h"
 #include "content/test/data/web_ui_ts_test.test-mojom.h"
 #include "content/test/data/web_ui_ts_test_types.test-mojom.h"
 #include "content/test/grit/web_ui_mojo_test_resources.h"
@@ -51,6 +50,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/test/data/web_ui_test.test-mojom.h"
+#include "content/test/data/web_ui_test_types.test-mojom.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -58,6 +62,7 @@ const char kMojoWebUiHost[] = "mojo-web-ui";
 const char kMojoWebUiTsHost[] = "mojo-web-ui-ts";
 const char kDummyWebUiHost[] = "dummy-web-ui";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class WebUIMojoTestCacheImpl : public mojom::WebUIMojoTestCache {
  public:
   explicit WebUIMojoTestCacheImpl(
@@ -82,6 +87,7 @@ class WebUIMojoTestCacheImpl : public mojom::WebUIMojoTestCache {
   mojo::Receiver<mojom::WebUIMojoTestCache> receiver_;
   std::map<GURL, std::string> cache_;
 };
+#endif
 
 // Duplicate for the TypeScript version of the test. We can't re-use because
 // the TS interface has to be named differently to avoid conflicting symbols.
@@ -105,30 +111,28 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
     std::move(callback).Run(std::move(items));
   }
 
-  void Echo(absl::optional<bool> optional_bool,
-            absl::optional<uint8_t> optional_uint8,
-            absl::optional<mojom::TestEnum> optional_enum,
+  void Echo(std::optional<bool> optional_bool,
+            std::optional<uint8_t> optional_uint8,
+            std::optional<mojom::TestEnum> optional_enum,
             mojom::OptionalNumericsStructPtr optional_numerics,
             EchoCallback callback) override {
     std::move(callback).Run(
-        optional_bool.has_value() ? absl::make_optional(!optional_bool.value())
-                                  : absl::nullopt,
-        optional_uint8.has_value()
-            ? absl::make_optional(~optional_uint8.value())
-            : absl::nullopt,
-        optional_enum.has_value() ? absl::make_optional(mojom::TestEnum::kTwo)
-                                  : absl::nullopt,
+        optional_bool.has_value() ? std::make_optional(!optional_bool.value())
+                                  : std::nullopt,
+        optional_uint8.has_value() ? std::make_optional(~optional_uint8.value())
+                                   : std::nullopt,
+        optional_enum.has_value() ? std::make_optional(mojom::TestEnum::kTwo)
+                                  : std::nullopt,
         mojom::OptionalNumericsStruct::New(
             optional_numerics->optional_bool.has_value()
-                ? absl::make_optional(!optional_numerics->optional_bool.value())
-                : absl::nullopt,
+                ? std::make_optional(!optional_numerics->optional_bool.value())
+                : std::nullopt,
             optional_numerics->optional_uint8.has_value()
-                ? absl::make_optional(
-                      ~optional_numerics->optional_uint8.value())
-                : absl::nullopt,
+                ? std::make_optional(~optional_numerics->optional_uint8.value())
+                : std::nullopt,
             optional_numerics->optional_enum.has_value()
-                ? absl::make_optional(mojom::TestEnum::kTwo)
-                : absl::nullopt));
+                ? std::make_optional(mojom::TestEnum::kTwo)
+                : std::nullopt));
   }
 
  private:
@@ -146,6 +150,7 @@ class TestWebUIController : public WebUIController {
         base::make_span(kWebUiMojoTestResources, kWebUiMojoTestResourcesSize);
 
     web_ui->SetBindings(bindings);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {
       WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(), kMojoWebUiHost);
@@ -156,6 +161,7 @@ class TestWebUIController : public WebUIController {
       data_source->AddResourcePaths(kMojoWebUiResources);
       data_source->AddResourcePath("", IDR_WEB_UI_MOJO_HTML);
     }
+#endif
     {
       WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(), kMojoWebUiTsHost);
@@ -182,7 +188,9 @@ class TestWebUIController : public WebUIController {
   TestWebUIController& operator=(const TestWebUIController&) = delete;
 
  protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<WebUIMojoTestCacheImpl> cache_;
+#endif
   std::unique_ptr<WebUITsMojoTestCacheImpl> ts_cache_;
 };
 
@@ -195,16 +203,20 @@ class CacheTestWebUIController : public TestWebUIController {
       : TestWebUIController(web_ui) {}
   ~CacheTestWebUIController() override = default;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void BindInterface(
       mojo::PendingReceiver<mojom::WebUIMojoTestCache> receiver) {
     cache_ = std::make_unique<WebUIMojoTestCacheImpl>(std::move(receiver));
     ASSERT_FALSE(ts_cache_);
   }
+#endif
 
   void BindInterface(
       mojo::PendingReceiver<mojom::WebUITsMojoTestCache> receiver) {
     ts_cache_ = std::make_unique<WebUITsMojoTestCacheImpl>(std::move(receiver));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_FALSE(cache_);
+#endif
   }
 
   WEB_UI_CONTROLLER_TYPE_DECL();
@@ -294,8 +306,10 @@ class TestWebUIContentBrowserClient
   void RegisterBrowserInterfaceBindersForFrame(
       RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     RegisterWebUIControllerInterfaceBinder<mojom::WebUIMojoTestCache,
                                            CacheTestWebUIController>(map);
+#endif
     RegisterWebUIControllerInterfaceBinder<mojom::WebUITsMojoTestCache,
                                            CacheTestWebUIController>(map);
   }
@@ -342,11 +356,28 @@ class WebUIMojoTest : public ContentBrowserTest,
   std::unique_ptr<TestWebUIContentBrowserClient> client_;
 };
 
+// Test both JS and TS on Ash, since Ash widely uses both types of WebUI
+// bindings. Test TS only on other platforms.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE_P(All, WebUIMojoTest, testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(All, WebUIMojoTest, testing::Values(true));
+#endif
 
 // Loads a WebUI page that contains Mojo JS bindings and verifies a message
 // round-trip between the page and the browser.
 IN_PROC_BROWSER_TEST_P(WebUIMojoTest, EndToEndCommunication) {
+  // Load a dummy page in the initial RenderFrameHost.  The initial
+  // RenderFrameHost is created by the test harness prior to installing
+  // TestWebUIContentBrowserClient in WebUIMojoTest::SetUpOnMainThread().  If we
+  // were to navigate that initial RFH to WebUI directly, it would get reused,
+  // but it wouldn't have the test's browser interface binders (registered via
+  // TestWebUIContentBrowserClient::RegisterBrowserInterfaceBindersForFrame() at
+  // RFH creation time).  Navigating the initial RFH to some other page forces
+  // the subsequent WebUI navigation to create a new RenderFrameHost, and by
+  // this time, TestWebUIContentBrowserClient will take effect on that new RFH.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:,foo")));
+
   GURL kTestUrl(GetWebUIURL(GetMojoWebUiHost() + "/?cache"));
   const std::string kTestScript = "runTest();";
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
@@ -354,6 +385,7 @@ IN_PROC_BROWSER_TEST_P(WebUIMojoTest, EndToEndCommunication) {
 
   // Check that a second shell works correctly.
   Shell* other_shell = CreateBrowser();
+  EXPECT_TRUE(WaitForLoadStop(other_shell->web_contents()));
   EXPECT_TRUE(NavigateToURL(other_shell, kTestUrl));
   EXPECT_EQ(true, EvalJs(other_shell->web_contents(), kTestScript));
 
@@ -368,7 +400,14 @@ IN_PROC_BROWSER_TEST_P(WebUIMojoTest, EndToEndCommunication) {
   // limit.
   RenderProcessHost::SetMaxRendererProcessCount(1);
 
-  other_shell = CreateBrowser();
+  // Subtle: provide an explicit initial SiteInstance, since otherwise the WebUI
+  // will stay in the initial RFH's process and avoid process reuse needed for
+  // this test.
+  other_shell = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GURL(),
+      SiteInstance::CreateForURL(shell()->web_contents()->GetBrowserContext(),
+                                 kTestUrl),
+      gfx::Size());
   EXPECT_TRUE(NavigateToURL(other_shell, kTestUrl));
   EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             other_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());

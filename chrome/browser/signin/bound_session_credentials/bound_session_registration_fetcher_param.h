@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "crypto/signature_verifier.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class BoundSessionRegistrationFetcherParam {
@@ -26,8 +26,8 @@ class BoundSessionRegistrationFetcherParam {
       const BoundSessionRegistrationFetcherParam&) = delete;
   ~BoundSessionRegistrationFetcherParam();
 
-  // Will return a valid instance or return absl::nullopt;
-  static absl::optional<BoundSessionRegistrationFetcherParam>
+  // Will return a valid instance or return std::nullopt;
+  static std::optional<BoundSessionRegistrationFetcherParam>
   MaybeCreateInstance(const GURL& request_url,
                       const net::HttpResponseHeaders* headers);
 

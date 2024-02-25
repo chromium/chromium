@@ -16,12 +16,15 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 // TODO(crbug.com/1402146): Allow web apps to depend on app service.
+#include <optional>
+
 #include "chrome/browser/apps/app_service/app_service_proxy.h"  // nogncheck
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"  // nogncheck
@@ -36,7 +39,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -47,9 +49,9 @@ namespace {
 
 namespace utils = preinstalled_web_app_window_experiment_utils;
 
-base::flat_set<AppId> GetLaunchedPreinstalledAppIds(
+base::flat_set<webapps::AppId> GetLaunchedPreinstalledAppIds(
     WebAppRegistrar& registrar) {
-  std::vector<AppId> app_ids;
+  std::vector<webapps::AppId> app_ids;
   for (const WebApp& web_app : registrar.GetApps()) {
     if (web_app.IsPreinstalledApp() && !web_app.last_launch_time().is_null()) {
       app_ids.push_back(web_app.app_id());
@@ -58,10 +60,10 @@ base::flat_set<AppId> GetLaunchedPreinstalledAppIds(
   return app_ids;
 }
 
-std::vector<AppId> SetSupportedLinksPreferenceForPreinstalledApps(
+std::vector<webapps::AppId> SetSupportedLinksPreferenceForPreinstalledApps(
     WebAppRegistrar& registrar,
     apps::AppServiceProxy& proxy) {
-  std::vector<AppId> apps_affected;
+  std::vector<webapps::AppId> apps_affected;
   for (const WebApp& web_app : registrar.GetApps()) {
     if (web_app.IsPreinstalledApp()) {
       proxy.SetSupportedLinksPreference(web_app.app_id());
@@ -84,10 +86,10 @@ void SetUserDisplayModeOverridesForPreinstalledAppsOnRegistrar(
   UserDisplayMode display_mode = opt_display_mode.value();
 
   // Exclude any apps for which the user has explicitly set a display mode.
-  base::flat_set<AppId> user_set_apps =
+  base::flat_set<webapps::AppId> user_set_apps =
       utils::GetAppIdsWithUserOverridenDisplayModePref(pref_service);
 
-  std::vector<std::pair<AppId, UserDisplayMode>> overrides;
+  std::vector<std::pair<webapps::AppId, UserDisplayMode>> overrides;
   for (const WebApp& web_app : registrar.GetApps()) {
     if (web_app.IsPreinstalledApp() &&
         !user_set_apps.contains(web_app.app_id())) {
@@ -121,27 +123,28 @@ void PersistStateFromPrefsToWebAppDb(PrefService* pref_service,
 
   // Set all default apps to the experiment display mode, unless the user has
   // manually set the display mode for that app.
-  base::flat_set<AppId> user_set_apps =
+  base::flat_set<webapps::AppId> user_set_apps =
       utils::GetAppIdsWithUserOverridenDisplayModePref(pref_service);
-  std::vector<AppId> experiment_overrides;
+  std::vector<webapps::AppId> experiment_overrides;
   for (const WebApp& web_app : provider.registrar_unsafe().GetApps()) {
     if (web_app.IsPreinstalledApp() &&
         !user_set_apps.contains(web_app.app_id())) {
       experiment_overrides.emplace_back(web_app.app_id());
     }
   }
-  for (const AppId& app_id : experiment_overrides) {
-    provider.scheduler().ScheduleCallbackWithLock(
+  for (const webapps::AppId& app_id : experiment_overrides) {
+    provider.scheduler().ScheduleCallback(
         "PreinstalledWebAppWindowExperiment:PersistStateFromPrefsToWebAppDb",
-        std::make_unique<AppLockDescription>(app_id),
+        AppLockDescription(app_id),
         base::BindOnce(
-            [](AppId app_id, mojom::UserDisplayMode display_mode,
-               AppLock& lock) {
+            [](webapps::AppId app_id, mojom::UserDisplayMode display_mode,
+               AppLock& lock, base::Value::Dict& debug_value) {
               lock.sync_bridge().SetAppUserDisplayMode(
                   app_id, display_mode,
                   /*is_user_action=*/false);
             },
-            app_id, *opt_display_mode));
+            app_id, *opt_display_mode),
+        base::DoNothing());
   }
 }
 
@@ -182,7 +185,7 @@ void PreinstalledWebAppWindowExperiment::CheckEligible() {
   }
 
   // Use eligible pref to know if we need to do first time setup.
-  absl::optional<bool> eligible_pref =
+  std::optional<bool> eligible_pref =
       utils::GetEligibilityPref(profile_->GetPrefs());
   if (!eligible_pref.has_value()) {
     FirstTimeSetup();
@@ -233,7 +236,7 @@ void PreinstalledWebAppWindowExperiment::SetFirstTimePrefsThenMaybeStart() {
   // Make the UserGroup setting persist even if the experiment settings change.
   utils::SetUserGroupPref(profile_->GetPrefs(), utils::GetUserGroup());
 
-  base::flat_set<AppId> launched_before =
+  base::flat_set<webapps::AppId> launched_before =
       GetLaunchedPreinstalledAppIds(registrar_unsafe());
   utils::SetHasLaunchedAppsBeforePref(profile_->GetPrefs(), launched_before);
 
@@ -289,7 +292,7 @@ void PreinstalledWebAppWindowExperiment::OnAppRegistrarDestroyed() {
 }
 
 void PreinstalledWebAppWindowExperiment::OnWebAppUserDisplayModeChanged(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     UserDisplayMode user_display_mode) {
   auto* app = registrar_unsafe().GetAppById(app_id);
   if (!app || !app->IsPreinstalledApp()) {
@@ -310,7 +313,7 @@ void PreinstalledWebAppWindowExperiment::OnWebAppUserDisplayModeChanged(
     return;
   }
 
-  absl::optional<apps::DefaultAppName> app_name =
+  std::optional<apps::DefaultAppName> app_name =
       apps::PreinstalledWebAppIdToName(app_id);
   if (!app_name.has_value()) {
     LOG(WARNING) << "Unknown preinstalled app " << app->untranslated_name()
@@ -340,7 +343,7 @@ void PreinstalledWebAppWindowExperiment::OnPreferredAppChanged(
     return;
   }
 
-  absl::optional<apps::DefaultAppName> app_name =
+  std::optional<apps::DefaultAppName> app_name =
       apps::PreinstalledWebAppIdToName(app_id);
   if (!app_name.has_value()) {
     LOG(WARNING) << "Unknown default app " << app->untranslated_name() << " ID "

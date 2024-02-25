@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 
+#include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -78,9 +79,8 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
             RuntimeEnabledFeatures::CSSUpdateMediaFeatureEnabled()) ||
            (feature == media_feature_names::kPrefersReducedDataMediaFeature &&
             RuntimeEnabledFeatures::PrefersReducedDataEnabled()) ||
-           (feature ==
-                media_feature_names::kPrefersReducedTransparencyMediaFeature &&
-            RuntimeEnabledFeatures::PrefersReducedTransparencyEnabled()) ||
+           feature ==
+               media_feature_names::kPrefersReducedTransparencyMediaFeature ||
            (feature == media_feature_names::kForcedColorsMediaFeature &&
             RuntimeEnabledFeatures::ForcedColorsEnabled()) ||
            (feature == media_feature_names::kNavigationControlsMediaFeature &&
@@ -102,10 +102,14 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
             RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
            (feature == media_feature_names::kInvertedColorsMediaFeature &&
             RuntimeEnabledFeatures::InvertedColorsEnabled()) ||
-           (CSSVariableParser::IsValidVariableName(feature) &&
-            RuntimeEnabledFeatures::CSSStyleQueriesBooleanEnabled()) ||
-           (feature == media_feature_names::kScriptingMediaFeature &&
-            RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled());
+           CSSVariableParser::IsValidVariableName(feature) ||
+           feature == media_feature_names::kScriptingMediaFeature ||
+           (RuntimeEnabledFeatures::
+                DesktopPWAsAdditionalWindowingControlsEnabled() &&
+            feature == media_feature_names::kDisplayStateMediaFeature) ||
+           (RuntimeEnabledFeatures::
+                DesktopPWAsAdditionalWindowingControlsEnabled() &&
+            feature == media_feature_names::kResizableMediaFeature);
   }
 
   bool IsCaseSensitive(const String& feature) const override { return false; }

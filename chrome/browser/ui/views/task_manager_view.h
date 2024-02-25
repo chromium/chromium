@@ -34,8 +34,9 @@ class TaskManagerView : public TableViewDelegate,
                         public views::TableViewObserver,
                         public views::ContextMenuController,
                         public ui::SimpleMenuModel::Delegate {
+  METADATA_HEADER(TaskManagerView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(TaskManagerView);
   TaskManagerView(const TaskManagerView&) = delete;
   TaskManagerView& operator=(const TaskManagerView&) = delete;
   ~TaskManagerView() override;
@@ -48,7 +49,7 @@ class TaskManagerView : public TableViewDelegate,
 
   // task_manager::TableViewDelegate:
   bool IsColumnVisible(int column_id) const override;
-  void SetColumnVisibility(int column_id, bool new_visibility) override;
+  bool SetColumnVisibility(int column_id, bool new_visibility) override;
   bool IsTableSorted() const override;
   TableSortDescriptor GetSortDescriptor() const override;
   void SetSortDescriptor(const TableSortDescriptor& descriptor) override;
@@ -85,12 +86,12 @@ class TaskManagerView : public TableViewDelegate,
   void ExecuteCommand(int id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
+  static TaskManagerView* GetInstanceForTests();
+
  private:
   friend class TaskManagerViewTest;
 
   TaskManagerView();
-
-  static TaskManagerView* GetInstanceForTests();
 
   // Creates the child controls.
   void Init();

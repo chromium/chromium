@@ -55,7 +55,7 @@ class CastNotificationControllerLacros
       const MediaRoute& route,
       MirroringMediaControllerHost* freeze_host);
 
-  void OnNotificationClicked(absl::optional<int> button_index);
+  void OnNotificationClicked(std::optional<int> button_index);
   void StopCasting();
   void FreezeOrUnfreezeCastStream();
   void StopObservingFreezeHost();
@@ -64,10 +64,10 @@ class CastNotificationControllerLacros
   const raw_ptr<NotificationDisplayService> notification_service_;
   const raw_ptr<MediaRouter> media_router_;
 
-  absl::optional<MediaRoute> displayed_route_;
+  std::optional<MediaRoute> displayed_route_;
   bool displayed_route_is_frozen_ = false;
-  absl::optional<int> freeze_button_index_;
-  absl::optional<int> stop_button_index_;
+  std::optional<int> freeze_button_index_;
+  std::optional<int> stop_button_index_;
   raw_ptr<MirroringMediaControllerHost> freeze_host_ = nullptr;
 
   base::WeakPtrFactory<CastNotificationControllerLacros> weak_ptr_factory_{

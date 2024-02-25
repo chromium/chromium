@@ -546,8 +546,9 @@ ash::ShelfID AppServiceAppWindowArcTracker::GetShelfId(aura::Window* window) {
 }
 
 void AppServiceAppWindowArcTracker::CheckAndAttachControllers() {
-  for (auto* window : arc_window_candidates_)
+  for (aura::Window* window : arc_window_candidates_) {
     AttachControllerToWindow(window);
+  }
 }
 
 void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
@@ -574,8 +575,8 @@ void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
   AppServiceAppWindowShelfItemController* item_controller = controller.get();
 
   if (!app_service_controller_->owner()->GetItem(shelf_id)) {
-    app_service_controller_->owner()->CreateAppItem(std::move(controller),
-                                                    ash::STATUS_RUNNING);
+    app_service_controller_->owner()->CreateAppItem(
+        std::move(controller), ash::STATUS_RUNNING, /*pinned=*/false);
   } else {
     app_service_controller_->owner()->shelf_model()->ReplaceShelfItemDelegate(
         shelf_id, std::move(controller));
@@ -607,8 +608,8 @@ void AppServiceAppWindowArcTracker::AttachControllerToSession(
   AppServiceAppWindowShelfItemController* item_controller = controller.get();
 
   if (!app_service_controller_->owner()->GetItem(shelf_id)) {
-    app_service_controller_->owner()->CreateAppItem(std::move(controller),
-                                                    ash::STATUS_RUNNING);
+    app_service_controller_->owner()->CreateAppItem(
+        std::move(controller), ash::STATUS_RUNNING, /*pinned=*/false);
   } else {
     app_service_controller_->owner()->shelf_model()->ReplaceShelfItemDelegate(
         shelf_id, std::move(controller));

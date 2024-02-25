@@ -36,6 +36,7 @@
 #ifndef BASE_JSON_JSON_READER_H_
 #define BASE_JSON_JSON_READER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -44,7 +45,6 @@
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -80,9 +80,8 @@ enum JSONParserOptions {
   //
   // This set of options is mirrored in Rust
   // base::JsonOptions::with_chromium_extensions().
-  JSON_PARSE_CHROMIUM_EXTENSIONS = JSON_ALLOW_COMMENTS |
-                                   JSON_ALLOW_CONTROL_CHARS |
-                                   JSON_ALLOW_VERT_TAB | JSON_ALLOW_X_ESCAPES,
+  JSON_PARSE_CHROMIUM_EXTENSIONS =
+      JSON_ALLOW_COMMENTS | JSON_ALLOW_CONTROL_CHARS | JSON_ALLOW_X_ESCAPES,
 };
 
 class BASE_EXPORT JSONReader {
@@ -106,15 +105,15 @@ class BASE_EXPORT JSONReader {
   JSONReader& operator=(const JSONReader&) = delete;
 
   // Reads and parses |json|, returning a Value.
-  // If |json| is not a properly formed JSON string, returns absl::nullopt.
-  static absl::optional<Value> Read(
+  // If |json| is not a properly formed JSON string, returns std::nullopt.
+  static std::optional<Value> Read(
       StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a Value::Dict.
-  // If |json| is not a properly formed JSON dict string, returns absl::nullopt.
-  static absl::optional<Value::Dict> ReadDict(
+  // If |json| is not a properly formed JSON dict string, returns std::nullopt.
+  static std::optional<Value::Dict> ReadDict(
       StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
@@ -126,6 +125,9 @@ class BASE_EXPORT JSONReader {
   static Result ReadAndReturnValueWithError(
       StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS);
+
+  // Determine whether the Rust parser is in use.
+  static bool UsingRust();
 };
 
 }  // namespace base

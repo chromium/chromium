@@ -34,7 +34,7 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
   enterprise_management::RemoteCommand_Type GetType() const override;
 
  private:
-  raw_ptr<ash::attestation::MachineCertificateUploader, ExperimentalAsh>
+  raw_ptr<ash::attestation::MachineCertificateUploader>
       machine_certificate_uploader_;
 
   // RemoteCommandJob:

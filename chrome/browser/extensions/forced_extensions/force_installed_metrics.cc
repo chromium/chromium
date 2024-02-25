@@ -40,22 +40,22 @@ constexpr base::TimeDelta kInstallationTimeout = base::Minutes(5);
 ForceInstalledMetrics::UserType ConvertUserType(
     InstallStageTracker::UserInfo user_info) {
   switch (user_info.user_type) {
-    case user_manager::USER_TYPE_REGULAR: {
+    case user_manager::UserType::kRegular: {
       if (user_info.is_new_user)
         return ForceInstalledMetrics::UserType::USER_TYPE_REGULAR_NEW;
       return ForceInstalledMetrics::UserType::USER_TYPE_REGULAR_EXISTING;
     }
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return ForceInstalledMetrics::UserType::USER_TYPE_GUEST;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return ForceInstalledMetrics::UserType::USER_TYPE_PUBLIC_ACCOUNT;
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_APP;
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return ForceInstalledMetrics::UserType::USER_TYPE_CHILD;
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       return ForceInstalledMetrics::UserType::USER_TYPE_ARC_KIOSK_APP;
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kWebKioskApp:
       return ForceInstalledMetrics::UserType::USER_TYPE_WEB_KIOSK_APP;
     default:
       NOTREACHED();

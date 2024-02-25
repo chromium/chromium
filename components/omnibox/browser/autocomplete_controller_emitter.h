@@ -14,6 +14,9 @@
 #include "content/public/browser/browser_context.h"
 #endif  // !BUILDFLAG(IS_IOS)
 
+class AutocompleteInput;
+class AutocompleteResult;
+
 // This KeyedService is meant to observe multiple AutocompleteController
 // instances and forward the notifications to its own observers.
 // Its main purpose is to act as a bridge between the chrome://omnibox WebUI
@@ -41,6 +44,8 @@ class AutocompleteControllerEmitter : public KeyedService,
                const AutocompleteInput& input) override;
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
+  void OnMlScored(AutocompleteController* controller,
+                  const AutocompleteResult& result) override;
 
 #if !BUILDFLAG(IS_IOS)
   static void EnsureFactoryBuilt();

@@ -12,7 +12,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -42,7 +41,7 @@ bool FakeCryptographer::Initialize(
   return true;
 }
 
-bool FakeCryptographer::AddKey(base::StringPiece key) {
+bool FakeCryptographer::AddKey(std::string_view key) {
   if (should_fail_add_key_) {
     return false;
   }
@@ -51,10 +50,10 @@ bool FakeCryptographer::AddKey(base::StringPiece key) {
   return true;
 }
 
-absl::optional<std::string> FakeCryptographer::BeginIssuance(
-    base::StringPiece message) {
+std::optional<std::string> FakeCryptographer::BeginIssuance(
+    std::string_view message) {
   if (should_fail_begin_issuance_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::StrCat({kBlindingKey, message});
 }
@@ -70,11 +69,10 @@ std::string FakeCryptographer::UnblindMessage(
   return blind_message.substr(sizeof(kBlindingKey) - 1, std::string::npos);
 }
 
-absl::optional<std::string>
-FakeCryptographer::ConfirmIssuanceAndBeginRedemption(
-    base::StringPiece blind_token) {
+std::optional<std::string> FakeCryptographer::ConfirmIssuanceAndBeginRedemption(
+    std::string_view blind_token) {
   if (should_fail_confirm_issuance_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::StrCat({kUnblindKey, blind_token});
 }
@@ -181,15 +179,15 @@ AttributionVerificationMediator CreateTestVerificationMediator(
       std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
 }
 
-std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
-    base::StringPiece header) {
-  absl::optional<net::structured_headers::List> parsed_list =
+std::vector<std::string> DeserializeStructuredHeaderListOfStrings(
+    std::string_view header) {
+  std::optional<net::structured_headers::List> parsed_list =
       net::structured_headers::ParseList(header);
   if (!parsed_list.has_value()) {
     return {};
   }
 
-  std::vector<const std::string> strings;
+  std::vector<std::string> strings;
   strings.reserve(parsed_list->size());
   for (const auto& item : parsed_list.value()) {
     if (item.member_is_inner_list || item.member.size() != 1u ||
@@ -212,7 +210,7 @@ std::string SerializeStructureHeaderListOfStrings(
     headers.emplace_back(
         net::structured_headers::ParameterizedMember(item, {}));
   }
-  absl::optional<std::string> serialized =
+  std::optional<std::string> serialized =
       net::structured_headers::SerializeList(headers);
   CHECK(serialized.has_value());
   return serialized.value();

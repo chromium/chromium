@@ -7,8 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/common/button_configuration_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -66,18 +65,14 @@ constexpr CGFloat kButtonTopPadding = 14.0;
     cell.subtitleLabel.hidden = YES;
   }
   if ([self.buttonText length]) {
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration = cell.button.configuration;
-      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      NSDictionary* attributes = @{NSFontAttributeName : font};
-      NSMutableAttributedString* attributedString =
-          [[NSMutableAttributedString alloc] initWithString:self.buttonText
-                                                 attributes:attributes];
-      buttonConfiguration.attributedTitle = attributedString;
-      cell.button.configuration = buttonConfiguration;
-    } else {
-      [cell.button setTitle:self.buttonText forState:UIControlStateNormal];
-    }
+    UIButtonConfiguration* buttonConfiguration = cell.button.configuration;
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableAttributedString* attributedString =
+        [[NSMutableAttributedString alloc] initWithString:self.buttonText
+                                               attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedString;
+    cell.button.configuration = buttonConfiguration;
   } else {
     cell.buttonContainer.hidden = YES;
   }
@@ -127,26 +122,16 @@ constexpr CGFloat kButtonTopPadding = 14.0;
     _button.layer.cornerRadius = kButtonCornerRadius;
     _button.translatesAutoresizingMaskIntoConstraints = NO;
 
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-      buttonConfiguration.baseForegroundColor =
-          [UIColor colorNamed:kSolidButtonTextColor];
-      buttonConfiguration.background.backgroundColor =
-          [UIColor colorNamed:kBlueColor];
-      _button.configuration = buttonConfiguration;
-    } else {
-      _button.backgroundColor = [UIColor colorNamed:kBlueColor];
-      [_button.titleLabel
-          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
-      UIEdgeInsets contentInsets = UIEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-      SetContentEdgeInsets(_button, contentInsets);
-    }
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+    _button.configuration = buttonConfiguration;
 
     _buttonContainer = [[UIView alloc] init];
     _buttonContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -162,10 +147,17 @@ constexpr CGFloat kButtonTopPadding = 14.0;
 
     [self.contentView addSubview:stackView];
 
+    // Lower the height padding constraints priority. UITableView might try to
+    // set the header view height to 0 breaking the constraints. See
+    // https://crbug.com/854117 for more information.
+    NSLayoutConstraint* imageHeightConstraint =
+        [_illustratedImageView.heightAnchor
+            constraintEqualToConstant:kImageViewHeight];
+    imageHeightConstraint.priority = UILayoutPriorityRequired - 1;
+
     // Set and activate constraints.
     [NSLayoutConstraint activateConstraints:@[
-      [_illustratedImageView.heightAnchor
-          constraintEqualToConstant:kImageViewHeight],
+      imageHeightConstraint,
       [_illustratedImageView.leadingAnchor
           constraintEqualToAnchor:stackView.leadingAnchor],
       [_illustratedImageView.trailingAnchor

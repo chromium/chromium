@@ -6,11 +6,11 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(
       `This test verifies that revealing a whitespace text node RemoteObject reveals its parentElement DIV.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>
@@ -28,7 +28,7 @@ import * as Common from 'devtools/core/common/common.js';
   var childObject = await TestRunner.evaluateInPageRemoteObject('whitespaceChild()');
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      Elements.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
+      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
   Common.Revealer.reveal(childObject);
 
   function selectedNodeChanged(event) {

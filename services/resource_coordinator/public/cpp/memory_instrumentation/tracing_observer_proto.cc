@@ -33,11 +33,11 @@ perfetto::protos::pbzero::MemoryTrackerSnapshot::LevelOfDetail
 MemoryDumpLevelOfDetailToProto(
     const base::trace_event::MemoryDumpLevelOfDetail& level_of_detail) {
   switch (level_of_detail) {
-    case base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND:
+    case base::trace_event::MemoryDumpLevelOfDetail::kBackground:
       return perfetto::protos::pbzero::MemoryTrackerSnapshot::DETAIL_BACKGROUND;
-    case base::trace_event::MemoryDumpLevelOfDetail::LIGHT:
+    case base::trace_event::MemoryDumpLevelOfDetail::kLight:
       return perfetto::protos::pbzero::MemoryTrackerSnapshot::DETAIL_LIGHT;
-    case base::trace_event::MemoryDumpLevelOfDetail::DETAILED:
+    case base::trace_event::MemoryDumpLevelOfDetail::kDetailed:
       return perfetto::protos::pbzero::MemoryTrackerSnapshot::DETAIL_FULL;
   }
   NOTREACHED();

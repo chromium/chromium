@@ -36,10 +36,12 @@ class MEDIA_EXPORT AC3 {
   bool Parse(const std::vector<uint8_t>& data, MediaLog* media_log);
 
   uint32_t GetChannelCount() const;
+  ChannelLayout GetChannelLayout() const;
 
  private:
   // The channel count stored in the compressed audio stream.
   uint32_t channel_count_ = 0;
+  ChannelLayout channel_layout_ = CHANNEL_LAYOUT_UNSUPPORTED;
 };
 
 }  // namespace mp4

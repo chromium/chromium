@@ -77,35 +77,34 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
   void Initialize(mojom::WebNotificationType type) {
-    absl::optional<std::u16string> title = u"title";
-    absl::optional<std::u16string> message = u"message";
+    std::optional<std::u16string> title = u"title";
+    std::optional<std::u16string> message = u"message";
     notification_controller_->ShowNotificationFromWebUI(title, message, type);
   }
 
   void VerifyNotificationHasAction(
-      absl::optional<message_center::Notification>& notification) {
+      std::optional<message_center::Notification>& notification) {
     ASSERT_TRUE(notification);
     ASSERT_EQ(2u, notification->buttons().size());
     EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
     // Clicking the notification button should launch try again.
     EXPECT_CALL(*notification_controller_, LaunchTryAgain());
-    notification->delegate()->Click(0, absl::nullopt);
+    notification->delegate()->Click(0, std::nullopt);
   }
 
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
-      new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
 
  private:
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
-  absl::optional<std::u16string> title = u"Connection Fail Title";
-  absl::optional<std::u16string> message = u"Connection Fail Message";
+  std::optional<std::u16string> title = u"Connection Fail Title";
+  std::optional<std::u16string> message = u"Connection Fail Message";
   notification_controller_->ShowNotificationFromWebUI(
       title, message, mojom::WebNotificationType::CONNECTION_FAILED);
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppRetryConnectionNotifierId);
   ASSERT_TRUE(notification);
   ASSERT_EQ(1u, notification->buttons().size());
@@ -115,7 +114,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 
   // Clicking the notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 
   title = u"Connection Lost Title";
   message = u"Connection Lost Message";
@@ -131,7 +130,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 
   // Clicking the notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 
   title = u"Inactivity Title";
   message = u"Inactivity Message";
@@ -147,7 +146,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 
   // Clicking the first notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 
   title = u"Check WIFI Title";
   message = u"Check WIFI Message";
@@ -163,13 +162,13 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 
   // Clicking the notification button should launch network settings.
   EXPECT_CALL(*notification_controller_, LaunchNetworkSettings());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
   std::u16string title = u"title";
   notification_controller_->ShowScreenLockNotification(title);
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppScreenLockNotifierId);
   ASSERT_TRUE(notification.has_value());
   ASSERT_TRUE(notification->title().size() > 0);
@@ -179,7 +178,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
 
   // Clicking the notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchSettings());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest,
@@ -187,7 +186,7 @@ TEST_F(EcheAppNotificationControllerTest,
   // Null value for title should still show a degraded message.
   std::u16string title;
   notification_controller_->ShowScreenLockNotification(title);
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppScreenLockNotifierId);
   ASSERT_TRUE(notification.has_value());
   ASSERT_TRUE(notification->title().size() > 0);
@@ -197,18 +196,18 @@ TEST_F(EcheAppNotificationControllerTest,
 
   // Clicking the notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchSettings());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
   std::u16string title = u"title";
   notification_controller_->ShowScreenLockNotification(title);
   notification_controller_->CloseNotification(kEcheAppScreenLockNotifierId);
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppScreenLockNotifierId);
   ASSERT_FALSE(notification.has_value());
 
-  absl::optional<std::u16string> message = u"message";
+  std::optional<std::u16string> message = u"message";
   notification_controller_->ShowNotificationFromWebUI(
       title, message, mojom::WebNotificationType::CONNECTION_FAILED);
   notification_controller_->CloseNotification(
@@ -244,7 +243,7 @@ TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
 TEST_F(EcheAppNotificationControllerTest,
        CloseConnectionOrLaunchErrorNotifications) {
   std::u16string title = u"title";
-  absl::optional<std::u16string> message = u"message";
+  std::optional<std::u16string> message = u"message";
   notification_controller_->ShowScreenLockNotification(title);
   notification_controller_->ShowNotificationFromWebUI(
       title, message, mojom::WebNotificationType::CONNECTION_FAILED);
@@ -256,7 +255,7 @@ TEST_F(EcheAppNotificationControllerTest,
       title, message, mojom::WebNotificationType::WIFI_NOT_READY);
   notification_controller_->CloseConnectionOrLaunchErrorNotifications();
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppScreenLockNotifierId);
   ASSERT_TRUE(notification.has_value());
   notification =

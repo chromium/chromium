@@ -21,6 +21,7 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -75,6 +76,8 @@ class Scorer {
       base::ReadOnlySharedMemoryRegion region,
       base::File visual_tflite_model,
       base::File image_embedding_model);
+
+  void AttachImageEmbeddingModel(base::File image_embedding_model);
 
   // This method computes the probability that the given features are indicative
   // of phishing.  It returns a score value that falls in the range [0.0,1.0]
@@ -181,7 +184,7 @@ class Scorer {
   // Unowned. Points within flatbuffer_mapping_ and should not be free()d.
   // It remains valid till flatbuffer_mapping_ is valid and should be reassigned
   // if the mapping is updated.
-  const flat::ClientSideModel* flatbuffer_model_;
+  raw_ptr<const flat::ClientSideModel> flatbuffer_model_;
   base::ReadOnlySharedMemoryMapping flatbuffer_mapping_;
   google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>
       thresholds_;
@@ -208,6 +211,9 @@ class ScorerStorage {
 
   void SetScorer(std::unique_ptr<Scorer> scorer);
   Scorer* GetScorer() const;
+  // We will clear the scorer in situations where the OptimizationGuide server
+  // provides a null model to replace a bad model on disk.
+  void ClearScorer();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

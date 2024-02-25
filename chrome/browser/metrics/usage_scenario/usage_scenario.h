@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_H_
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_H_
 
+#include <optional>
+
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Describes the different usaage scenarios in Chrome.
 enum class Scenario {

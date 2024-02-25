@@ -88,7 +88,7 @@ class WebAuthenticationProxyCompleteCreateRequestFunction
  protected:
   ~WebAuthenticationProxyCompleteCreateRequestFunction() override;
 
-  void DoRespond(absl::optional<std::string> error);
+  void DoRespond(std::optional<std::string> error);
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -104,7 +104,7 @@ class WebAuthenticationProxyCompleteGetRequestFunction
  protected:
   ~WebAuthenticationProxyCompleteGetRequestFunction() override;
 
-  void DoRespond(absl::optional<std::string> error);
+  void DoRespond(std::optional<std::string> error);
 
   // ExtensionFunction:
   ResponseAction Run() override;

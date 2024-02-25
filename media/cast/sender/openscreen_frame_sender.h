@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -132,10 +134,14 @@ class OpenscreenFrameSender : public FrameSender,
   // The ID of the last acknowledged/"cancelled" frame.
   FrameId last_acked_frame_id_;
 
+  // The ID of the frame that was the first one to have a different identifier
+  // used inside of Open Screen. This only occurs if a frame is dropped.
+  std::optional<FrameId> diverged_frame_id_;
+
   // Since the encoder emits frames that depend on each other, and the Open
   // Screen sender demands that we use its FrameIDs for enqueued frames, we
-  // have to keep a map of the encoder's frame id to the Open Screen sender's
-  // frame id. This map is cleared on each keyframe.
+  // have to keep a map of the encoder's frame id to the Open Screen
+  // sender's frame id. This map is cleared on each keyframe.
   base::flat_map<FrameId, FrameId> frame_id_map_;
 
   // This is the maximum delay that the sender should get ack from receiver.

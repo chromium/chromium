@@ -9,6 +9,7 @@
 #include <windows.h>
 
 #include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -198,12 +198,12 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(AppCommandFormatParameterTest, TestCases) {
-  absl::optional<std::wstring> output = AppCommandRunner::FormatParameter(
+  std::optional<std::wstring> output = AppCommandRunner::FormatParameter(
       GetParam().format_string, GetParam().substitutions);
   if (GetParam().expected_output) {
     EXPECT_EQ(output.value(), GetParam().expected_output);
   } else {
-    EXPECT_EQ(output, absl::nullopt);
+    EXPECT_EQ(output, std::nullopt);
   }
 }
 
@@ -316,11 +316,11 @@ TEST_P(AppCommandFormatComponentsAndCommandLineTest, TestCases) {
             base::CommandLine::FromString(process_command_line).GetProgram());
   EXPECT_EQ(parameters.size(), GetParam().input.size());
 
-  absl::optional<std::wstring> command_line =
+  std::optional<std::wstring> command_line =
       AppCommandRunner::FormatAppCommandLine(parameters,
                                              GetParam().substitutions);
   if (!GetParam().output) {
-    EXPECT_EQ(command_line, absl::nullopt);
+    EXPECT_EQ(command_line, std::nullopt);
     return;
   }
 

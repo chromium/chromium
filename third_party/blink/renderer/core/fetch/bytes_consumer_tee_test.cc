@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -513,6 +514,7 @@ TEST_F(BytesConsumerTeeTest,
 }
 
 TEST(BytesConusmerTest, ClosedBytesConsumer) {
+  test::TaskEnvironment task_environment;
   BytesConsumer* consumer = BytesConsumer::CreateClosed();
 
   const char* buffer = nullptr;
@@ -522,6 +524,7 @@ TEST(BytesConusmerTest, ClosedBytesConsumer) {
 }
 
 TEST(BytesConusmerTest, ErroredBytesConsumer) {
+  test::TaskEnvironment task_environment;
   BytesConsumer::Error error("hello");
   BytesConsumer* consumer = BytesConsumer::CreateErrored(error);
 

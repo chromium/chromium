@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
+#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
 
 class GURL;
@@ -48,7 +48,7 @@ class BookmarkBubbleView {
   static void ShowBubble(views::View* anchor_view,
                          content::WebContents* web_contents,
                          views::Button* highlighted_button,
-                         std::unique_ptr<BubbleSyncPromoDelegate> delegate,
+                         std::unique_ptr<BubbleSignInPromoDelegate> delegate,
                          Browser* browser,
                          const GURL& url,
                          bool already_bookmarked);

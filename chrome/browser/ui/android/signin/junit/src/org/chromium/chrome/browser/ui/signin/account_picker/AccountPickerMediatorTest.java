@@ -26,9 +26,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests the class {@link AccountPickerMediator}.
- */
+/** Tests the class {@link AccountPickerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountPickerMediatorTest {
@@ -43,8 +41,7 @@ public class AccountPickerMediatorTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Mock
-    private AccountPickerCoordinator.Listener mListenerMock;
+    @Mock private AccountPickerCoordinator.Listener mListenerMock;
 
     private final MVCListAdapter.ModelList mModelList = new MVCListAdapter.ModelList();
 
@@ -61,8 +58,9 @@ public class AccountPickerMediatorTest {
     public void testModelPopulation() {
         mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL1, FULL_NAME1, null, null);
         mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, FULL_NAME2, null, null);
-        mMediator = new AccountPickerMediator(
-                RuntimeEnvironment.application, mModelList, mListenerMock);
+        mMediator =
+                new AccountPickerMediator(
+                        RuntimeEnvironment.application, mModelList, mListenerMock);
         // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT.
         Assert.assertEquals(3, mModelList.size());
         checkItemForExistingAccountRow(0, ACCOUNT_EMAIL1, FULL_NAME1);
@@ -74,8 +72,9 @@ public class AccountPickerMediatorTest {
     public void testProfileDataUpdateWhenAccountPickerIsShownFromSettings() {
         mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL1, FULL_NAME1, null, null);
         mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, FULL_NAME2, null, null);
-        mMediator = new AccountPickerMediator(
-                RuntimeEnvironment.application, mModelList, mListenerMock);
+        mMediator =
+                new AccountPickerMediator(
+                        RuntimeEnvironment.application, mModelList, mListenerMock);
         String newFullName2 = "Full Name2";
         mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, newFullName2, "", null);
         // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT

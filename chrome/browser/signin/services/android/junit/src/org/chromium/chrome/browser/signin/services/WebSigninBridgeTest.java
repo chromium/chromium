@@ -25,29 +25,22 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 
-/**
- * Unit tests for {@link WebSigninBridge}.
- */
+/** Unit tests for {@link WebSigninBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebSigninBridgeTest {
     private static final CoreAccountInfo CORE_ACCOUNT_INFO =
             CoreAccountInfo.createFromEmailAndGaiaId("user@domain.com", "gaia-id-user");
     private static final long NATIVE_WEB_SIGNIN_BRIDGE = 1000L;
 
-    @Rule
-    public final JniMocker mocker = new JniMocker();
+    @Rule public final JniMocker mocker = new JniMocker();
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private WebSigninBridge.Natives mNativeMock;
+    @Mock private WebSigninBridge.Natives mNativeMock;
 
-    @Mock
-    private Profile mProfileMock;
+    @Mock private Profile mProfileMock;
 
-    @Mock
-    private WebSigninBridge.Listener mListenerMock;
+    @Mock private WebSigninBridge.Listener mListenerMock;
 
     private final WebSigninBridge.Factory mFactory = new WebSigninBridge.Factory();
 

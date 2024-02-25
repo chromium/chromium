@@ -15,45 +15,42 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
  */
 public class PermissionUtils {
     public static final long DIALOG_POLLING_INTERVAL_MS = 250;
-    /**
-     * Blocks until a permission prompt appears.
-     */
+
+    /** Blocks until a permission prompt appears. */
     public static void waitForPermissionPrompt() {
-        CriteriaHelper.pollUiThread(() -> {
-            return PermissionDialogController.getInstance().isDialogShownForTest();
-        }, "Permission prompt did not appear in allotted time");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return PermissionDialogController.getInstance().isDialogShownForTest();
+                },
+                "Permission prompt did not appear in allotted time");
     }
 
-    /**
-     * Blocks until the consent prompt is dismissed.
-     */
+    /** Blocks until the consent prompt is dismissed. */
     public static void waitForPermissionPromptDismissal() {
         CriteriaHelper.pollUiThread(
-                ()
-                        -> {
+                () -> {
                     return !PermissionDialogController.getInstance().isDialogShownForTest();
                 },
                 "Consent prompt did not get dismissed in allotted time",
-                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, DIALOG_POLLING_INTERVAL_MS);
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
+                DIALOG_POLLING_INTERVAL_MS);
     }
 
-    /**
-     * Accepts the currently displayed permission prompt.
-     */
+    /** Accepts the currently displayed permission prompt. */
     public static void acceptPermissionPrompt() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PermissionDialogController.getInstance().clickButtonForTest(
-                    ModalDialogProperties.ButtonType.POSITIVE);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PermissionDialogController.getInstance()
+                            .clickButtonForTest(ModalDialogProperties.ButtonType.POSITIVE);
+                });
     }
 
-    /**
-     * Denies the currently displayed permission prompt.
-     */
+    /** Denies the currently displayed permission prompt. */
     public static void denyPermissionPrompt() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PermissionDialogController.getInstance().clickButtonForTest(
-                    ModalDialogProperties.ButtonType.NEGATIVE);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PermissionDialogController.getInstance()
+                            .clickButtonForTest(ModalDialogProperties.ButtonType.NEGATIVE);
+                });
     }
 }

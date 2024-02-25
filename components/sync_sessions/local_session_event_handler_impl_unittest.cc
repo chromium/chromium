@@ -8,9 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -170,9 +173,6 @@ TEST_F(LocalSessionEventHandlerImplTest, GetTabSpecificsFromDelegate) {
   TestSyncedTabDelegate* tab = AddTabWithTime(kWindowId1, kFoo1, kTime1);
   tab->Navigate(kBar1, kTime2);
   tab->Navigate(kBaz1, kTime3);
-  tab->SetPageLanguageAtIndex(0, "en");
-  tab->SetPageLanguageAtIndex(1, "fr");
-  tab->SetPageLanguageAtIndex(2, "in");
   InitHandler();
 
   const sync_pb::SessionTab session_tab =
@@ -198,12 +198,6 @@ TEST_F(LocalSessionEventHandlerImplTest, GetTabSpecificsFromDelegate) {
   EXPECT_EQ(200, session_tab.navigation(0).http_status_code());
   EXPECT_EQ(200, session_tab.navigation(1).http_status_code());
   EXPECT_EQ(200, session_tab.navigation(2).http_status_code());
-  EXPECT_FALSE(session_tab.navigation(0).has_blocked_state());
-  EXPECT_FALSE(session_tab.navigation(1).has_blocked_state());
-  EXPECT_FALSE(session_tab.navigation(2).has_blocked_state());
-  EXPECT_EQ("en", session_tab.navigation(0).page_language());
-  EXPECT_EQ("fr", session_tab.navigation(1).page_language());
-  EXPECT_EQ("in", session_tab.navigation(2).page_language());
 }
 
 // Verifies SessionTab.browser_type is set correctly.
@@ -272,8 +266,7 @@ TEST_F(LocalSessionEventHandlerImplTest,
   ASSERT_EQ(3, session_tab.navigation_size());
 }
 
-// Tests that for child account users blocked navigations are recorded and
-// marked as such, while regular navigations are marked as allowed.
+// Tests that for child account users blocked navigations are recorded.
 TEST_F(LocalSessionEventHandlerImplTest, BlockedNavigations) {
   AddWindow(kWindowId1);
   TestSyncedTabDelegate* tab = AddTabWithTime(kWindowId1, kFoo1, kTime1);
@@ -315,15 +308,6 @@ TEST_F(LocalSessionEventHandlerImplTest, BlockedNavigations) {
             session_tab.navigation(1).timestamp_msec());
   EXPECT_EQ(syncer::TimeToProtoTime(kTime3),
             session_tab.navigation(2).timestamp_msec());
-  EXPECT_TRUE(session_tab.navigation(0).has_blocked_state());
-  EXPECT_TRUE(session_tab.navigation(1).has_blocked_state());
-  EXPECT_TRUE(session_tab.navigation(2).has_blocked_state());
-  EXPECT_EQ(sync_pb::TabNavigation_BlockedState_STATE_ALLOWED,
-            session_tab.navigation(0).blocked_state());
-  EXPECT_EQ(sync_pb::TabNavigation_BlockedState_STATE_BLOCKED,
-            session_tab.navigation(1).blocked_state());
-  EXPECT_EQ(sync_pb::TabNavigation_BlockedState_STATE_BLOCKED,
-            session_tab.navigation(2).blocked_state());
 }
 
 // Tests that calling AssociateWindowsAndTabs() handles well the case with no
@@ -819,6 +803,42 @@ TEST_F(LocalSessionEventHandlerImplTest, ShouldRemoveAllTabsOnEmptyWindow) {
   EXPECT_THAT(session_tracker_.LookupSession(kSessionTag),
               MatchesSyncedSession(kSessionTag, {}));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(LocalSessionEventHandlerImplTest, LoadPlaceholderTabFromDisk) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(syncer::kRestoreSyncedPlaceholderTabs);
+
+  // Mimic the user opening a tab that is initially a placeholder tab.
+  TestSyncedWindowDelegate* window = AddWindow(kWindowId1);
+  PlaceholderTabDelegate placeholder_tab(
+      SessionID::FromSerializedValue(kTabId1));
+  auto snapshot = std::make_unique<TestSyncedTabDelegate>(
+      SessionID::FromSerializedValue(kWindowId1),
+      SessionID::FromSerializedValue(kTabId1), base::DoNothing());
+  snapshot->Navigate(kFoo1);
+  placeholder_tab.SetPlaceholderTabSyncedTabDelegate(std::move(snapshot));
+  window->OverrideTabAt(0, &placeholder_tab);
+
+  // Add expectations for the invocations that are expected when the loading
+  // completes.
+  auto mock_batch = std::make_unique<StrictMock<MockWriteBatch>>();
+  EXPECT_CALL(
+      *mock_batch,
+      Put(Pointee(MatchesHeader(kSessionTag, {kWindowId1}, {kTabId1}))));
+  // Expect that the tab originating as a placeholder tab was included in
+  // the write batch for resync.
+  EXPECT_CALL(*mock_batch, Put(Pointee(MatchesTab(kSessionTag, kWindowId1,
+                                                  kTabId1, /*tab_node_id=*/0,
+                                                  /*urls=*/{kFoo1}))));
+  EXPECT_CALL(*mock_batch, Commit());
+
+  EXPECT_CALL(mock_delegate_, CreateLocalSessionWriteBatch())
+      .WillOnce(Return(ByMove(std::move(mock_batch))));
+
+  InitHandler();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace sync_sessions

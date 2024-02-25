@@ -480,15 +480,17 @@ bool LayerTreeHost::IsUsingLayerLists() const {
   return settings_.use_layer_lists;
 }
 
-void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
+void LayerTreeHost::CommitComplete(int source_frame_number,
+                                   const CommitTimestamps& commit_timestamps) {
   DCHECK(IsMainThread());
   // At this point, commit_completion_event_ could be for the *next* commit, and
   // may not yet have been signaled.
   if (commit_completion_event_ && commit_completion_event_->IsSignaled())
     WaitForCommitCompletion(/* for_protected_sequence */ false);
-  client_->DidCommit(commit_timestamps.start, commit_timestamps.finish);
+  client_->DidCommit(source_frame_number, commit_timestamps.start,
+                     commit_timestamps.finish);
   if (did_complete_scale_animation_) {
-    client_->DidCompletePageScaleAnimation();
+    client_->DidCompletePageScaleAnimation(source_frame_number);
     did_complete_scale_animation_ = false;
   }
   if (compositor_mode_ == CompositorMode::THREADED) {
@@ -685,7 +687,7 @@ bool LayerTreeHost::IsRenderingPaused() const {
 void LayerTreeHost::OnDeferCommitsChanged(
     bool defer_status,
     PaintHoldingReason reason,
-    absl::optional<PaintHoldingCommitTrigger> trigger) {
+    std::optional<PaintHoldingCommitTrigger> trigger) {
   DCHECK(IsMainThread());
   client_->OnDeferCommitsChanged(defer_status, reason, trigger);
 }
@@ -893,10 +895,11 @@ bool LayerTreeHost::CaptureContent(std::vector<NodeInfo>* content) const {
 }
 
 void LayerTreeHost::DidObserveFirstScrollDelay(
+    int source_frame_number,
     base::TimeDelta first_scroll_delay,
     base::TimeTicks first_scroll_timestamp) {
   DCHECK(IsMainThread());
-  client_->DidObserveFirstScrollDelay(first_scroll_delay,
+  client_->DidObserveFirstScrollDelay(source_frame_number, first_scroll_delay,
                                       first_scroll_timestamp);
 }
 
@@ -1045,7 +1048,7 @@ void LayerTreeHost::ApplyViewportChanges(
 void LayerTreeHost::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::Vector2dF& delta,
-    const absl::optional<TargetSnapAreaElementIds>& snap_target_ids) {
+    const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   if (IsUsingLayerLists()) {
     auto& scroll_tree = property_trees()->scroll_tree_mutable();
     auto new_offset = scroll_tree.current_scroll_offset(id) + delta;
@@ -1078,12 +1081,7 @@ void LayerTreeHost::UpdateScrollOffsetFromImpl(
         //
         // But if the scroll was NOT realized on the compositor, we need a
         // commit to push the transform change.
-        //
-        // Skip this if scroll unification is disabled as we will not set
-        // ScrollNode::is_composited in that case.
-        //
-        if (base::FeatureList::IsEnabled(features::kScrollUnification) &&
-            !scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
+        if (!scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
           SetNeedsCommit();
         }
       }
@@ -1174,6 +1172,11 @@ const base::WeakPtr<CompositorDelegateForInput>&
 LayerTreeHost::GetDelegateForInput() const {
   DCHECK(IsMainThread());
   return compositor_delegate_weak_ptr_;
+}
+
+void LayerTreeHost::DetachInputDelegateAndRenderFrameObserver() {
+  DCHECK(IsMainThread());
+  proxy_->DetachInputDelegateAndRenderFrameObserver();
 }
 
 void LayerTreeHost::UpdateBrowserControlsState(BrowserControlsState constraints,

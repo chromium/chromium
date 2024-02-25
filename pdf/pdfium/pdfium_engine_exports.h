@@ -22,7 +22,7 @@ class PDFiumEngineExports : public PDFEngineExports {
 
 // PDFEngineExports:
 #if BUILDFLAG(IS_CHROMEOS)
-  std::vector<uint8_t> CreateFlattenedPdf(
+  std::optional<FlattenPdfResult> CreateFlattenedPdf(
       base::span<const uint8_t> input_buffer) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN)
@@ -49,11 +49,13 @@ class PDFiumEngineExports : public PDFEngineExports {
   bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                      int* page_count,
                      float* max_page_width) override;
-  absl::optional<bool> IsPDFDocTagged(
+  std::optional<bool> IsPDFDocTagged(
       base::span<const uint8_t> pdf_buffer) override;
   base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
                                       int page_index) override;
-  absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
+  std::optional<bool> PDFDocHasOutline(
+      base::span<const uint8_t> pdf_buffer) override;
+  std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
       base::span<const uint8_t> pdf_buffer,
       int page_index) override;
 };

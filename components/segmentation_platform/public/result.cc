@@ -55,11 +55,11 @@ AnnotatedNumericResult::AnnotatedNumericResult(const AnnotatedNumericResult&) =
 AnnotatedNumericResult& AnnotatedNumericResult::operator=(
     const AnnotatedNumericResult&) = default;
 
-absl::optional<float> AnnotatedNumericResult::GetResultForLabel(
+std::optional<float> AnnotatedNumericResult::GetResultForLabel(
     base::StringPiece label) const {
   if (status != PredictionStatus::kSucceeded ||
       !result.output_config().predictor().has_generic_predictor()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto& labels =
@@ -70,7 +70,7 @@ absl::optional<float> AnnotatedNumericResult::GetResultForLabel(
       return result.result().at(index);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string AnnotatedNumericResult::ToDebugString() const {

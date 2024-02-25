@@ -57,9 +57,6 @@ void LogoViewImpl::SetState(LogoView::State state, bool animate) {
     case LogoView::State::kMic:
       animator_state = StateModel::State::kMic;
       break;
-    case LogoView::State::kMoleculeWavy:
-      animator_state = StateModel::State::kMoleculeWavy;
-      break;
     case LogoView::State::kUserSpeaks:
       animator_state = StateModel::State::kUserSpeaks;
       break;
@@ -99,16 +96,18 @@ void LogoViewImpl::OnAnimationStep(base::TimeTicks timestamp) {
 
 void LogoViewImpl::OnCompositingShuttingDown(ui::Compositor* compositor) {
   DCHECK(compositor);
-  if (animating_compositor_ == compositor)
+  if (animating_compositor_ == compositor) {
     StopTimer();
+  }
 }
 
 void LogoViewImpl::DrawDots(gfx::Canvas* canvas) {
   // TODO: The Green Mic parts seems overlapped on the Red Mic part. Draw dots
   // in reverse order so that the Red Mic part is on top of Green Mic parts. But
   // we need to find out why the Mic parts are overlapping in the first place.
-  for (const auto& dot : base::Reversed(logo_.dots()))
+  for (const auto& dot : base::Reversed(logo_.dots())) {
     DrawDot(canvas, dot.get());
+  }
 }
 
 void LogoViewImpl::DrawDot(gfx::Canvas* canvas, Dot* dot) {
@@ -199,8 +198,9 @@ void LogoViewImpl::OnPaint(gfx::Canvas* canvas) {
 
 void LogoViewImpl::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   gfx::Rect content_bounds(GetContentsBounds());
-  if (content_bounds.IsEmpty())
+  if (content_bounds.IsEmpty()) {
     return;
+  }
 
   // Sets a scale such that an object of the specified width and height will
   // fill the view while keeping the aspect ratio if drawn at that scale.
@@ -213,13 +213,14 @@ void LogoViewImpl::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void LogoViewImpl::VisibilityChanged(views::View* starting_from,
                                      bool is_visible) {
-  if (IsDrawn())
+  if (IsDrawn()) {
     state_animator_.StartAnimator();
-  else
+  } else {
     state_animator_.StopAnimator();
+  }
 }
 
-BEGIN_METADATA(LogoViewImpl, LogoView)
+BEGIN_METADATA(LogoViewImpl)
 END_METADATA
 
 }  // namespace ash

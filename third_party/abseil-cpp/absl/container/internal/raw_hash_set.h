@@ -80,7 +80,7 @@
 //     slot_type slots[capacity];
 //   };
 //
-// The length of this array is computed by `AllocSize()` below.
+// The length of this array is computed by `RawHashSetLayout::alloc_size` below.
 //
 // Control bytes (`ctrl_t`) are bytes (collected into groups of a
 // platform-specific size) that define the state of the corresponding slot in
@@ -187,7 +187,6 @@
 #include <iterator>
 #include <limits>
 #include <memory>
-#include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -201,7 +200,7 @@
 #include "absl/base/options.h"
 #include "absl/base/port.h"
 #include "absl/base/prefetch.h"
-#include "absl/container/internal/common.h"
+#include "absl/container/internal/common.h"  // IWYU pragma: export // for node_handle
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_policy_traits.h"
@@ -235,6 +234,7 @@ namespace container_internal {
 #ifdef ABSL_SWISSTABLE_ENABLE_GENERATIONS
 #error ABSL_SWISSTABLE_ENABLE_GENERATIONS cannot be directly set
 #elif defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+    defined(ABSL_HAVE_HWADDRESS_SANITIZER) || \
     defined(ABSL_HAVE_MEMORY_SANITIZER)
 // When compiled in sanitizer mode, we add generation integers to the backing
 // array and iterators. In the backing array, we store the generation between
@@ -270,8 +270,21 @@ void SwapAlloc(AllocType& lhs, AllocType& rhs,
   swap(lhs, rhs);
 }
 template <typename AllocType>
-void SwapAlloc(AllocType& /*lhs*/, AllocType& /*rhs*/,
-               std::false_type /* propagate_on_container_swap */) {}
+void SwapAlloc(AllocType& lhs, AllocType& rhs,
+               std::false_type /* propagate_on_container_swap */) {
+  (void)lhs;
+  (void)rhs;
+  assert(lhs == rhs &&
+         "It's UB to call swap with unequal non-propagating allocators.");
+}
+
+template <typename AllocType>
+void CopyAlloc(AllocType& lhs, AllocType& rhs,
+               std::true_type /* propagate_alloc */) {
+  lhs = rhs;
+}
+template <typename AllocType>
+void CopyAlloc(AllocType&, AllocType&, std::false_type /* propagate_alloc */) {}
 
 // The state for a probe sequence.
 //
@@ -361,6 +374,9 @@ uint32_t TrailingZeros(T x) {
   return static_cast<uint32_t>(countr_zero(x));
 }
 
+// 8 bytes bitmask with most significant bit set for every byte.
+constexpr uint64_t kMsbs8Bytes = 0x8080808080808080ULL;
+
 // An abstract bitmask, such as that emitted by a SIMD instruction.
 //
 // Specifically, this type implements a simple bitset whose representation is
@@ -396,7 +412,9 @@ class NonIterableBitMask {
   uint32_t LeadingZeros() const {
     constexpr int total_significant_bits = SignificantBits << Shift;
     constexpr int extra_bits = sizeof(T) * 8 - total_significant_bits;
-    return static_cast<uint32_t>(countl_zero(mask_ << extra_bits)) >> Shift;
+    return static_cast<uint32_t>(
+               countl_zero(static_cast<T>(mask_ << extra_bits))) >>
+           Shift;
   }
 
   T mask_;
@@ -408,27 +426,35 @@ class NonIterableBitMask {
 // an ordinary 16-bit bitset occupying the low 16 bits of `mask`. When
 // `SignificantBits` is 8 and `Shift` is 3, abstract bits are represented as
 // the bytes `0x00` and `0x80`, and it occupies all 64 bits of the bitmask.
+// If NullifyBitsOnIteration is true (only allowed for Shift == 3),
+// non zero abstract bit is allowed to have additional bits
+// (e.g., `0xff`, `0x83` and `0x9c` are ok, but `0x6f` is not).
 //
 // For example:
 //   for (int i : BitMask<uint32_t, 16>(0b101)) -> yields 0, 2
 //   for (int i : BitMask<uint64_t, 8, 3>(0x0000000080800000)) -> yields 2, 3
-template <class T, int SignificantBits, int Shift = 0>
+template <class T, int SignificantBits, int Shift = 0,
+          bool NullifyBitsOnIteration = false>
 class BitMask : public NonIterableBitMask<T, SignificantBits, Shift> {
   using Base = NonIterableBitMask<T, SignificantBits, Shift>;
   static_assert(std::is_unsigned<T>::value, "");
   static_assert(Shift == 0 || Shift == 3, "");
+  static_assert(!NullifyBitsOnIteration || Shift == 3, "");
 
  public:
-  explicit BitMask(T mask) : Base(mask) {}
+  explicit BitMask(T mask) : Base(mask) {
+    if (Shift == 3 && !NullifyBitsOnIteration) {
+      assert(this->mask_ == (this->mask_ & kMsbs8Bytes));
+    }
+  }
   // BitMask is an iterator over the indices of its abstract bits.
   using value_type = int;
   using iterator = BitMask;
   using const_iterator = BitMask;
 
   BitMask& operator++() {
-    if (Shift == 3) {
-      constexpr uint64_t msbs = 0x8080808080808080ULL;
-      this->mask_ &= msbs;
+    if (Shift == 3 && NullifyBitsOnIteration) {
+      this->mask_ &= kMsbs8Bytes;
     }
     this->mask_ &= (this->mask_ - 1);
     return *this;
@@ -602,29 +628,47 @@ struct GroupSse2Impl {
   }
 
   // Returns a bitmask representing the positions of slots that match hash.
-  BitMask<uint32_t, kWidth> Match(h2_t hash) const {
+  BitMask<uint16_t, kWidth> Match(h2_t hash) const {
     auto match = _mm_set1_epi8(static_cast<char>(hash));
-    return BitMask<uint32_t, kWidth>(
-        static_cast<uint32_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
+    BitMask<uint16_t, kWidth> result = BitMask<uint16_t, kWidth>(0);
+    result = BitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
+    return result;
   }
 
   // Returns a bitmask representing the positions of empty slots.
-  NonIterableBitMask<uint32_t, kWidth> MaskEmpty() const {
+  NonIterableBitMask<uint16_t, kWidth> MaskEmpty() const {
 #ifdef ABSL_INTERNAL_HAVE_SSSE3
     // This only works because ctrl_t::kEmpty is -128.
-    return NonIterableBitMask<uint32_t, kWidth>(
-        static_cast<uint32_t>(_mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl))));
+    return NonIterableBitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl))));
 #else
     auto match = _mm_set1_epi8(static_cast<char>(ctrl_t::kEmpty));
-    return NonIterableBitMask<uint32_t, kWidth>(
-        static_cast<uint32_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
+    return NonIterableBitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
 #endif
   }
 
+  // Returns a bitmask representing the positions of full slots.
+  // Note: for `is_small()` tables group may contain the "same" slot twice:
+  // original and mirrored.
+  BitMask<uint16_t, kWidth> MaskFull() const {
+    return BitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(ctrl) ^ 0xffff));
+  }
+
+  // Returns a bitmask representing the positions of non full slots.
+  // Note: this includes: kEmpty, kDeleted, kSentinel.
+  // It is useful in contexts when kSentinel is not present.
+  auto MaskNonFull() const {
+    return BitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(ctrl)));
+  }
+
   // Returns a bitmask representing the positions of empty or deleted slots.
-  NonIterableBitMask<uint32_t, kWidth> MaskEmptyOrDeleted() const {
+  NonIterableBitMask<uint16_t, kWidth> MaskEmptyOrDeleted() const {
     auto special = _mm_set1_epi8(static_cast<char>(ctrl_t::kSentinel));
-    return NonIterableBitMask<uint32_t, kWidth>(static_cast<uint32_t>(
+    return NonIterableBitMask<uint16_t, kWidth>(static_cast<uint16_t>(
         _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(special, ctrl))));
   }
 
@@ -660,10 +704,11 @@ struct GroupAArch64Impl {
     ctrl = vld1_u8(reinterpret_cast<const uint8_t*>(pos));
   }
 
-  BitMask<uint64_t, kWidth, 3> Match(h2_t hash) const {
+  auto Match(h2_t hash) const {
     uint8x8_t dup = vdup_n_u8(hash);
     auto mask = vceq_u8(ctrl, dup);
-    return BitMask<uint64_t, kWidth, 3>(
+    return BitMask<uint64_t, kWidth, /*Shift=*/3,
+                   /*NullifyBitsOnIteration=*/true>(
         vget_lane_u64(vreinterpret_u64_u8(mask), 0));
   }
 
@@ -674,6 +719,30 @@ struct GroupAArch64Impl {
                           vreinterpret_s8_u8(ctrl))),
                       0);
     return NonIterableBitMask<uint64_t, kWidth, 3>(mask);
+  }
+
+  // Returns a bitmask representing the positions of full slots.
+  // Note: for `is_small()` tables group may contain the "same" slot twice:
+  // original and mirrored.
+  auto MaskFull() const {
+    uint64_t mask = vget_lane_u64(
+        vreinterpret_u64_u8(vcge_s8(vreinterpret_s8_u8(ctrl),
+                                    vdup_n_s8(static_cast<int8_t>(0)))),
+        0);
+    return BitMask<uint64_t, kWidth, /*Shift=*/3,
+                   /*NullifyBitsOnIteration=*/true>(mask);
+  }
+
+  // Returns a bitmask representing the positions of non full slots.
+  // Note: this includes: kEmpty, kDeleted, kSentinel.
+  // It is useful in contexts when kSentinel is not present.
+  auto MaskNonFull() const {
+    uint64_t mask = vget_lane_u64(
+        vreinterpret_u64_u8(vclt_s8(vreinterpret_s8_u8(ctrl),
+                                    vdup_n_s8(static_cast<int8_t>(0)))),
+        0);
+    return BitMask<uint64_t, kWidth, /*Shift=*/3,
+                   /*NullifyBitsOnIteration=*/true>(mask);
   }
 
   NonIterableBitMask<uint64_t, kWidth, 3> MaskEmptyOrDeleted() const {
@@ -700,11 +769,10 @@ struct GroupAArch64Impl {
 
   void ConvertSpecialToEmptyAndFullToDeleted(ctrl_t* dst) const {
     uint64_t mask = vget_lane_u64(vreinterpret_u64_u8(ctrl), 0);
-    constexpr uint64_t msbs = 0x8080808080808080ULL;
     constexpr uint64_t slsbs = 0x0202020202020202ULL;
     constexpr uint64_t midbs = 0x7e7e7e7e7e7e7e7eULL;
     auto x = slsbs & (mask >> 6);
-    auto res = (x + midbs) | msbs;
+    auto res = (x + midbs) | kMsbs8Bytes;
     little_endian::Store64(dst, res);
   }
 
@@ -732,22 +800,33 @@ struct GroupPortableImpl {
     //   v = 0x1716151413121110
     //   hash = 0x12
     //   retval = (v - lsbs) & ~v & msbs = 0x0000000080800000
-    constexpr uint64_t msbs = 0x8080808080808080ULL;
     constexpr uint64_t lsbs = 0x0101010101010101ULL;
     auto x = ctrl ^ (lsbs * hash);
-    return BitMask<uint64_t, kWidth, 3>((x - lsbs) & ~x & msbs);
+    return BitMask<uint64_t, kWidth, 3>((x - lsbs) & ~x & kMsbs8Bytes);
   }
 
   NonIterableBitMask<uint64_t, kWidth, 3> MaskEmpty() const {
-    constexpr uint64_t msbs = 0x8080808080808080ULL;
-    return NonIterableBitMask<uint64_t, kWidth, 3>((ctrl & (~ctrl << 6)) &
-                                                   msbs);
+    return NonIterableBitMask<uint64_t, kWidth, 3>((ctrl & ~(ctrl << 6)) &
+                                                   kMsbs8Bytes);
+  }
+
+  // Returns a bitmask representing the positions of full slots.
+  // Note: for `is_small()` tables group may contain the "same" slot twice:
+  // original and mirrored.
+  BitMask<uint64_t, kWidth, 3> MaskFull() const {
+    return BitMask<uint64_t, kWidth, 3>((ctrl ^ kMsbs8Bytes) & kMsbs8Bytes);
+  }
+
+  // Returns a bitmask representing the positions of non full slots.
+  // Note: this includes: kEmpty, kDeleted, kSentinel.
+  // It is useful in contexts when kSentinel is not present.
+  auto MaskNonFull() const {
+    return BitMask<uint64_t, kWidth, 3>(ctrl  & kMsbs8Bytes);
   }
 
   NonIterableBitMask<uint64_t, kWidth, 3> MaskEmptyOrDeleted() const {
-    constexpr uint64_t msbs = 0x8080808080808080ULL;
-    return NonIterableBitMask<uint64_t, kWidth, 3>((ctrl & (~ctrl << 7)) &
-                                                   msbs);
+    return NonIterableBitMask<uint64_t, kWidth, 3>((ctrl & ~(ctrl << 7)) &
+                                                   kMsbs8Bytes);
   }
 
   uint32_t CountLeadingEmptyOrDeleted() const {
@@ -759,9 +838,8 @@ struct GroupPortableImpl {
   }
 
   void ConvertSpecialToEmptyAndFullToDeleted(ctrl_t* dst) const {
-    constexpr uint64_t msbs = 0x8080808080808080ULL;
     constexpr uint64_t lsbs = 0x0101010101010101ULL;
-    auto x = ctrl & msbs;
+    auto x = ctrl & kMsbs8Bytes;
     auto res = (~x + (x >> 7)) & ~lsbs;
     little_endian::Store64(dst, res);
   }
@@ -771,10 +849,21 @@ struct GroupPortableImpl {
 
 #ifdef ABSL_INTERNAL_HAVE_SSE2
 using Group = GroupSse2Impl;
+using GroupFullEmptyOrDeleted = GroupSse2Impl;
 #elif defined(ABSL_INTERNAL_HAVE_ARM_NEON) && defined(ABSL_IS_LITTLE_ENDIAN)
 using Group = GroupAArch64Impl;
+// For Aarch64, we use the portable implementation for counting and masking
+// full, empty or deleted group elements. This is to avoid the latency of moving
+// between data GPRs and Neon registers when it does not provide a benefit.
+// Using Neon is profitable when we call Match(), but is not when we don't,
+// which is the case when we do *EmptyOrDeleted and MaskFull operations.
+// It is difficult to make a similar approach beneficial on other architectures
+// such as x86 since they have much lower GPR <-> vector register transfer
+// latency and 16-wide Groups.
+using GroupFullEmptyOrDeleted = GroupPortableImpl;
 #else
 using Group = GroupPortableImpl;
+using GroupFullEmptyOrDeleted = GroupPortableImpl;
 #endif
 
 // When there is an insertion with no reserved growth, we rehash with
@@ -813,15 +902,19 @@ class CommonFieldsGenerationInfoEnabled {
   // whenever reserved_growth_ is zero.
   bool should_rehash_for_bug_detection_on_insert(const ctrl_t* ctrl,
                                                  size_t capacity) const;
+  // Similar to above, except that we don't depend on reserved_growth_.
+  bool should_rehash_for_bug_detection_on_move(const ctrl_t* ctrl,
+                                               size_t capacity) const;
   void maybe_increment_generation_on_insert() {
     if (reserved_growth_ == kReservedGrowthJustRanOut) reserved_growth_ = 0;
 
     if (reserved_growth_ > 0) {
       if (--reserved_growth_ == 0) reserved_growth_ = kReservedGrowthJustRanOut;
     } else {
-      *generation_ = NextGeneration(*generation_);
+      increment_generation();
     }
   }
+  void increment_generation() { *generation_ = NextGeneration(*generation_); }
   void reset_reserved_growth(size_t reservation, size_t size) {
     reserved_growth_ = reservation - size;
   }
@@ -867,7 +960,11 @@ class CommonFieldsGenerationInfoDisabled {
   bool should_rehash_for_bug_detection_on_insert(const ctrl_t*, size_t) const {
     return false;
   }
+  bool should_rehash_for_bug_detection_on_move(const ctrl_t*, size_t) const {
+    return false;
+  }
   void maybe_increment_generation_on_insert() {}
+  void increment_generation() {}
   void reset_reserved_growth(size_t, size_t) {}
   size_t reserved_growth() const { return 0; }
   void set_reserved_growth(size_t) {}
@@ -920,12 +1017,6 @@ using HashSetIteratorGenerationInfo = HashSetIteratorGenerationInfoDisabled;
 // A valid capacity is a non-zero integer `2^m - 1`.
 inline bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
 
-// Computes the offset from the start of the backing allocation of control.
-// infoz and growth_left are stored at the beginning of the backing array.
-inline size_t ControlOffset(bool has_infoz) {
-  return (has_infoz ? sizeof(HashtablezInfoHandle) : 0) + sizeof(size_t);
-}
-
 // Returns the number of "cloned control bytes".
 //
 // This is the number of control bytes that are present both at the beginning
@@ -933,29 +1024,57 @@ inline size_t ControlOffset(bool has_infoz) {
 // `Group::kWidth`-width probe window starting from any control byte.
 constexpr size_t NumClonedBytes() { return Group::kWidth - 1; }
 
-// Given the capacity of a table, computes the offset (from the start of the
-// backing allocation) of the generation counter (if it exists).
-inline size_t GenerationOffset(size_t capacity, bool has_infoz) {
-  assert(IsValidCapacity(capacity));
-  const size_t num_control_bytes = capacity + 1 + NumClonedBytes();
-  return ControlOffset(has_infoz) + num_control_bytes;
+// Returns the number of control bytes including cloned.
+inline size_t NumControlBytes(size_t capacity) {
+  return capacity + 1 + NumClonedBytes();
 }
 
-// Given the capacity of a table, computes the offset (from the start of the
-// backing allocation) at which the slots begin.
-inline size_t SlotOffset(size_t capacity, size_t slot_align, bool has_infoz) {
-  assert(IsValidCapacity(capacity));
-  return (GenerationOffset(capacity, has_infoz) + NumGenerationBytes() +
-          slot_align - 1) &
-         (~slot_align + 1);
+// Computes the offset from the start of the backing allocation of control.
+// infoz and growth_left are stored at the beginning of the backing array.
+inline static size_t ControlOffset(bool has_infoz) {
+  return (has_infoz ? sizeof(HashtablezInfoHandle) : 0) + sizeof(size_t);
 }
 
-// Given the capacity of a table, computes the total size of the backing
-// array.
-inline size_t AllocSize(size_t capacity, size_t slot_size, size_t slot_align,
-                        bool has_infoz) {
-  return SlotOffset(capacity, slot_align, has_infoz) + capacity * slot_size;
-}
+// Helper class for computing offsets and allocation size of hash set fields.
+class RawHashSetLayout {
+ public:
+  explicit RawHashSetLayout(size_t capacity, size_t slot_align, bool has_infoz)
+      : capacity_(capacity),
+        control_offset_(ControlOffset(has_infoz)),
+        generation_offset_(control_offset_ + NumControlBytes(capacity)),
+        slot_offset_(
+            (generation_offset_ + NumGenerationBytes() + slot_align - 1) &
+            (~slot_align + 1)) {
+    assert(IsValidCapacity(capacity));
+  }
+
+  // Returns the capacity of a table.
+  size_t capacity() const { return capacity_; }
+
+  // Returns precomputed offset from the start of the backing allocation of
+  // control.
+  size_t control_offset() const { return control_offset_; }
+
+  // Given the capacity of a table, computes the offset (from the start of the
+  // backing allocation) of the generation counter (if it exists).
+  size_t generation_offset() const { return generation_offset_; }
+
+  // Given the capacity of a table, computes the offset (from the start of the
+  // backing allocation) at which the slots begin.
+  size_t slot_offset() const { return slot_offset_; }
+
+  // Given the capacity of a table, computes the total size of the backing
+  // array.
+  size_t alloc_size(size_t slot_size) const {
+    return slot_offset_ + capacity_ * slot_size;
+  }
+
+ private:
+  size_t capacity_;
+  size_t control_offset_;
+  size_t generation_offset_;
+  size_t slot_offset_;
+};
 
 // CommonFields hold the fields in raw_hash_set that do not depend
 // on template parameters. This allows us to conveniently pass all
@@ -969,20 +1088,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
   CommonFields& operator=(const CommonFields&) = delete;
 
   // Movable
-  CommonFields(CommonFields&& that)
-      : CommonFieldsGenerationInfo(
-            std::move(static_cast<CommonFieldsGenerationInfo&&>(that))),
-        // Explicitly copying fields into "this" and then resetting "that"
-        // fields generates less code then calling absl::exchange per field.
-        control_(that.control()),
-        slots_(that.slot_array()),
-        capacity_(that.capacity()),
-        size_(that.size_) {
-    that.set_control(EmptyGroup());
-    that.set_slots(nullptr);
-    that.set_capacity(0);
-    that.size_ = 0;
-  }
+  CommonFields(CommonFields&& that) = default;
   CommonFields& operator=(CommonFields&&) = default;
 
   ctrl_t* control() const { return control_; }
@@ -1052,13 +1158,22 @@ class CommonFields : public CommonFieldsGenerationInfo {
     return CommonFieldsGenerationInfo::
         should_rehash_for_bug_detection_on_insert(control(), capacity());
   }
+  bool should_rehash_for_bug_detection_on_move() const {
+    return CommonFieldsGenerationInfo::
+        should_rehash_for_bug_detection_on_move(control(), capacity());
+  }
+  void maybe_increment_generation_on_move() {
+    if (capacity() == 0) return;
+    increment_generation();
+  }
   void reset_reserved_growth(size_t reservation) {
     CommonFieldsGenerationInfo::reset_reserved_growth(reservation, size());
   }
 
   // The size of the backing array allocation.
   size_t alloc_size(size_t slot_size, size_t slot_align) const {
-    return AllocSize(capacity(), slot_size, slot_align, has_infoz());
+    return RawHashSetLayout(capacity(), slot_align, has_infoz())
+        .alloc_size(slot_size);
   }
 
   // Returns the number of control bytes set to kDeleted. For testing only.
@@ -1189,35 +1304,39 @@ inline void AssertIsFull(const ctrl_t* ctrl, GenerationType generation,
                          const GenerationType* generation_ptr,
                          const char* operation) {
   if (!SwisstableDebugEnabled()) return;
-  if (ctrl == nullptr) {
-    ABSL_INTERNAL_LOG(FATAL,
-                      std::string(operation) + " called on end() iterator.");
+  // `SwisstableDebugEnabled()` is also true for release builds with hardening
+  // enabled. To minimize their impact in those builds:
+  // - use `ABSL_PREDICT_FALSE()` to provide a compiler hint for code layout
+  // - use `ABSL_RAW_LOG()` with a format string to reduce code size and improve
+  //   the chances that the hot paths will be inlined.
+  if (ABSL_PREDICT_FALSE(ctrl == nullptr)) {
+    ABSL_RAW_LOG(FATAL, "%s called on end() iterator.", operation);
   }
-  if (ctrl == EmptyGroup()) {
-    ABSL_INTERNAL_LOG(FATAL, std::string(operation) +
-                                 " called on default-constructed iterator.");
+  if (ABSL_PREDICT_FALSE(ctrl == EmptyGroup())) {
+    ABSL_RAW_LOG(FATAL, "%s called on default-constructed iterator.",
+                 operation);
   }
   if (SwisstableGenerationsEnabled()) {
-    if (generation != *generation_ptr) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        std::string(operation) +
-                            " called on invalid iterator. The table could have "
-                            "rehashed since this iterator was initialized.");
+    if (ABSL_PREDICT_FALSE(generation != *generation_ptr)) {
+      ABSL_RAW_LOG(FATAL,
+                   "%s called on invalid iterator. The table could have "
+                   "rehashed or moved since this iterator was initialized.",
+                   operation);
     }
-    if (!IsFull(*ctrl)) {
-      ABSL_INTERNAL_LOG(
+    if (ABSL_PREDICT_FALSE(!IsFull(*ctrl))) {
+      ABSL_RAW_LOG(
           FATAL,
-          std::string(operation) +
-              " called on invalid iterator. The element was likely erased.");
+          "%s called on invalid iterator. The element was likely erased.",
+          operation);
     }
   } else {
-    if (!IsFull(*ctrl)) {
-      ABSL_INTERNAL_LOG(
+    if (ABSL_PREDICT_FALSE(!IsFull(*ctrl))) {
+      ABSL_RAW_LOG(
           FATAL,
-          std::string(operation) +
-              " called on invalid iterator. The element might have been erased "
-              "or the table might have rehashed. Consider running with "
-              "--config=asan to diagnose rehashing issues.");
+          "%s called on invalid iterator. The element might have been erased "
+          "or the table might have rehashed. Consider running with "
+          "--config=asan to diagnose rehashing issues.",
+          operation);
     }
   }
 }
@@ -1230,13 +1349,13 @@ inline void AssertIsValidForComparison(const ctrl_t* ctrl,
   const bool ctrl_is_valid_for_comparison =
       ctrl == nullptr || ctrl == EmptyGroup() || IsFull(*ctrl);
   if (SwisstableGenerationsEnabled()) {
-    if (generation != *generation_ptr) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        "Invalid iterator comparison. The table could have "
-                        "rehashed since this iterator was initialized.");
+    if (ABSL_PREDICT_FALSE(generation != *generation_ptr)) {
+      ABSL_RAW_LOG(FATAL,
+                   "Invalid iterator comparison. The table could have rehashed "
+                   "or moved since this iterator was initialized.");
     }
-    if (!ctrl_is_valid_for_comparison) {
-      ABSL_INTERNAL_LOG(
+    if (ABSL_PREDICT_FALSE(!ctrl_is_valid_for_comparison)) {
+      ABSL_RAW_LOG(
           FATAL, "Invalid iterator comparison. The element was likely erased.");
     }
   } else {
@@ -1276,10 +1395,15 @@ inline void AssertSameContainer(const ctrl_t* ctrl_a, const ctrl_t* ctrl_b,
                                 const GenerationType* generation_ptr_a,
                                 const GenerationType* generation_ptr_b) {
   if (!SwisstableDebugEnabled()) return;
+  // `SwisstableDebugEnabled()` is also true for release builds with hardening
+  // enabled. To minimize their impact in those builds:
+  // - use `ABSL_PREDICT_FALSE()` to provide a compiler hint for code layout
+  // - use `ABSL_RAW_LOG()` with a format string to reduce code size and improve
+  //   the chances that the hot paths will be inlined.
   const bool a_is_default = ctrl_a == EmptyGroup();
   const bool b_is_default = ctrl_b == EmptyGroup();
-  if (a_is_default != b_is_default) {
-    ABSL_INTERNAL_LOG(
+  if (ABSL_PREDICT_FALSE(a_is_default != b_is_default)) {
+    ABSL_RAW_LOG(
         FATAL,
         "Invalid iterator comparison. Comparing default-constructed iterator "
         "with non-default-constructed iterator.");
@@ -1287,36 +1411,36 @@ inline void AssertSameContainer(const ctrl_t* ctrl_a, const ctrl_t* ctrl_b,
   if (a_is_default && b_is_default) return;
 
   if (SwisstableGenerationsEnabled()) {
-    if (generation_ptr_a == generation_ptr_b) return;
+    if (ABSL_PREDICT_TRUE(generation_ptr_a == generation_ptr_b)) return;
     const bool a_is_empty = IsEmptyGeneration(generation_ptr_a);
     const bool b_is_empty = IsEmptyGeneration(generation_ptr_b);
     if (a_is_empty != b_is_empty) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        "Invalid iterator comparison. Comparing iterator from "
-                        "a non-empty hashtable with an iterator from an empty "
-                        "hashtable.");
+      ABSL_RAW_LOG(FATAL,
+                   "Invalid iterator comparison. Comparing iterator from a "
+                   "non-empty hashtable with an iterator from an empty "
+                   "hashtable.");
     }
     if (a_is_empty && b_is_empty) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        "Invalid iterator comparison. Comparing iterators from "
-                        "different empty hashtables.");
+      ABSL_RAW_LOG(FATAL,
+                   "Invalid iterator comparison. Comparing iterators from "
+                   "different empty hashtables.");
     }
     const bool a_is_end = ctrl_a == nullptr;
     const bool b_is_end = ctrl_b == nullptr;
     if (a_is_end || b_is_end) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        "Invalid iterator comparison. Comparing iterator with "
-                        "an end() iterator from a different hashtable.");
+      ABSL_RAW_LOG(FATAL,
+                   "Invalid iterator comparison. Comparing iterator with an "
+                   "end() iterator from a different hashtable.");
     }
-    ABSL_INTERNAL_LOG(FATAL,
-                      "Invalid iterator comparison. Comparing non-end() "
-                      "iterators from different hashtables.");
+    ABSL_RAW_LOG(FATAL,
+                 "Invalid iterator comparison. Comparing non-end() iterators "
+                 "from different hashtables.");
   } else {
     ABSL_HARDENING_ASSERT(
         AreItersFromSameContainer(ctrl_a, ctrl_b, slot_a, slot_b) &&
         "Invalid iterator comparison. The iterators may be from different "
-        "containers or the container might have rehashed. Consider running "
-        "with --config=asan to diagnose rehashing issues.");
+        "containers or the container might have rehashed or moved. Consider "
+        "running with --config=asan to diagnose issues.");
   }
 }
 
@@ -1339,6 +1463,12 @@ struct FindInfo {
 // `ShouldInsertBackwards()` for small tables.
 inline bool is_small(size_t capacity) { return capacity < Group::kWidth - 1; }
 
+// Whether a table fits entirely into a probing group.
+// Arbitrary order of elements in such tables is correct.
+inline bool is_single_group(size_t capacity) {
+  return capacity <= Group::kWidth;
+}
+
 // Begins a probing operation on `common.control`, using `hash`.
 inline probe_seq<Group::kWidth> probe(const ctrl_t* ctrl, const size_t capacity,
                                       size_t hash) {
@@ -1360,7 +1490,7 @@ inline FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
   auto seq = probe(common, hash);
   const ctrl_t* ctrl = common.control();
   while (true) {
-    Group g{ctrl + seq.offset()};
+    GroupFullEmptyOrDeleted g{ctrl + seq.offset()};
     auto mask = g.MaskEmptyOrDeleted();
     if (mask) {
 #if !defined(NDEBUG)
@@ -1401,7 +1531,6 @@ inline void ResetCtrl(CommonFields& common, size_t slot_size) {
               capacity + 1 + NumClonedBytes());
   ctrl[capacity] = ctrl_t::kSentinel;
   SanitizerPoisonMemoryRegion(common.slot_array(), slot_size * capacity);
-  ResetGrowthLeft(common);
 }
 
 // Sets `ctrl[i]` to `h`.
@@ -1436,40 +1565,301 @@ constexpr size_t BackingArrayAlignment(size_t align_of_slot) {
   return (std::max)(align_of_slot, alignof(size_t));
 }
 
-template <typename Alloc, size_t SizeOfSlot, size_t AlignOfSlot>
-ABSL_ATTRIBUTE_NOINLINE void InitializeSlots(CommonFields& c, Alloc alloc) {
-  assert(c.capacity());
-  // Folks with custom allocators often make unwarranted assumptions about the
-  // behavior of their classes vis-a-vis trivial destructability and what
-  // calls they will or won't make.  Avoid sampling for people with custom
-  // allocators to get us out of this mess.  This is not a hard guarantee but
-  // a workaround while we plan the exact guarantee we want to provide.
-  const size_t sample_size =
-      (std::is_same<Alloc, std::allocator<char>>::value &&
-       c.slot_array() == nullptr)
-          ? SizeOfSlot
-          : 0;
-  HashtablezInfoHandle infoz =
-      sample_size > 0 ? Sample(sample_size) : c.infoz();
+// Returns the address of the ith slot in slots where each slot occupies
+// slot_size.
+inline void* SlotAddress(void* slot_array, size_t slot, size_t slot_size) {
+  return reinterpret_cast<void*>(reinterpret_cast<char*>(slot_array) +
+                                 (slot * slot_size));
+}
 
-  const bool has_infoz = infoz.IsSampled();
+// Iterates over all full slots and calls `cb(const ctrl_t*, SlotType*)`.
+// NOTE: no erasure from this table allowed during Callback call.
+template <class SlotType, class Callback>
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline void IterateOverFullSlots(
+    const CommonFields& c, SlotType* slot, Callback cb) {
   const size_t cap = c.capacity();
-  const size_t alloc_size = AllocSize(cap, SizeOfSlot, AlignOfSlot, has_infoz);
-  char* mem = static_cast<char*>(
-      Allocate<BackingArrayAlignment(AlignOfSlot)>(&alloc, alloc_size));
-  const GenerationType old_generation = c.generation();
-  c.set_generation_ptr(reinterpret_cast<GenerationType*>(
-      mem + GenerationOffset(cap, has_infoz)));
-  c.set_generation(NextGeneration(old_generation));
-  c.set_control(reinterpret_cast<ctrl_t*>(mem + ControlOffset(has_infoz)));
-  c.set_slots(mem + SlotOffset(cap, AlignOfSlot, has_infoz));
-  ResetCtrl(c, SizeOfSlot);
-  c.set_has_infoz(has_infoz);
-  if (has_infoz) {
-    infoz.RecordStorageChanged(c.size(), cap);
-    c.set_infoz(infoz);
+  const ctrl_t* ctrl = c.control();
+  if (is_small(cap)) {
+    // Mirrored/cloned control bytes in small table are also located in the
+    // first group (starting from position 0). We are taking group from position
+    // `capacity` in order to avoid duplicates.
+
+    // Small tables capacity fits into portable group, where
+    // GroupPortableImpl::MaskFull is more efficient for the
+    // capacity <= GroupPortableImpl::kWidth.
+    assert(cap <= GroupPortableImpl::kWidth &&
+           "unexpectedly large small capacity");
+    static_assert(Group::kWidth >= GroupPortableImpl::kWidth,
+                  "unexpected group width");
+    // Group starts from kSentinel slot, so indices in the mask will
+    // be increased by 1.
+    const auto mask = GroupPortableImpl(ctrl + cap).MaskFull();
+    --ctrl;
+    --slot;
+    for (uint32_t i : mask) {
+      cb(ctrl + i, slot + i);
+    }
+    return;
+  }
+  size_t remaining = c.size();
+  while (remaining != 0) {
+    for (uint32_t i : GroupFullEmptyOrDeleted(ctrl).MaskFull()) {
+      cb(ctrl + i, slot + i);
+      --remaining;
+    }
+    slot += Group::kWidth;
+    ctrl += Group::kWidth;
   }
 }
+
+// Helper class to perform resize of the hash set.
+//
+// It contains special optimizations for small group resizes.
+// See GrowIntoSingleGroupShuffleControlBytes for details.
+class HashSetResizeHelper {
+ public:
+  explicit HashSetResizeHelper(CommonFields& c)
+      : old_ctrl_(c.control()),
+        old_capacity_(c.capacity()),
+        had_infoz_(c.has_infoz()) {}
+
+  // Optimized for small groups version of `find_first_non_full` applicable
+  // only right after calling `raw_hash_set::resize`.
+  // It has implicit assumption that `resize` will call
+  // `GrowSizeIntoSingleGroup*` in case `IsGrowingIntoSingleGroupApplicable`.
+  // Falls back to `find_first_non_full` in case of big groups, so it is
+  // safe to use after `rehash_and_grow_if_necessary`.
+  static FindInfo FindFirstNonFullAfterResize(const CommonFields& c,
+                                              size_t old_capacity,
+                                              size_t hash) {
+    if (!IsGrowingIntoSingleGroupApplicable(old_capacity, c.capacity())) {
+      return find_first_non_full(c, hash);
+    }
+    // Find a location for the new element non-deterministically.
+    // Note that any position is correct.
+    // It will located at `half_old_capacity` or one of the other
+    // empty slots with approximately 50% probability each.
+    size_t offset = probe(c, hash).offset();
+
+    // Note that we intentionally use unsigned int underflow.
+    if (offset - (old_capacity + 1) >= old_capacity) {
+      // Offset fall on kSentinel or into the mostly occupied first half.
+      offset = old_capacity / 2;
+    }
+    assert(IsEmpty(c.control()[offset]));
+    return FindInfo{offset, 0};
+  }
+
+  ctrl_t* old_ctrl() const { return old_ctrl_; }
+  size_t old_capacity() const { return old_capacity_; }
+
+  // Allocates a backing array for the hashtable.
+  // Reads `capacity` and updates all other fields based on the result of
+  // the allocation.
+  //
+  // It also may do the folowing actions:
+  // 1. initialize control bytes
+  // 2. initialize slots
+  // 3. deallocate old slots.
+  //
+  // We are bundling a lot of functionality
+  // in one ABSL_ATTRIBUTE_NOINLINE function in order to minimize binary code
+  // duplication in raw_hash_set<>::resize.
+  //
+  // `c.capacity()` must be nonzero.
+  // POSTCONDITIONS:
+  //  1. CommonFields is initialized.
+  //
+  //  if IsGrowingIntoSingleGroupApplicable && TransferUsesMemcpy
+  //    Both control bytes and slots are fully initialized.
+  //    old_slots are deallocated.
+  //    infoz.RecordRehash is called.
+  //
+  //  if IsGrowingIntoSingleGroupApplicable && !TransferUsesMemcpy
+  //    Control bytes are fully initialized.
+  //    infoz.RecordRehash is called.
+  //    GrowSizeIntoSingleGroup must be called to finish slots initialization.
+  //
+  //  if !IsGrowingIntoSingleGroupApplicable
+  //    Control bytes are initialized to empty table via ResetCtrl.
+  //    raw_hash_set<>::resize must insert elements regularly.
+  //    infoz.RecordRehash is called if old_capacity == 0.
+  //
+  //  Returns IsGrowingIntoSingleGroupApplicable result to avoid recomputation.
+  template <typename Alloc, size_t SizeOfSlot, bool TransferUsesMemcpy,
+            size_t AlignOfSlot>
+  ABSL_ATTRIBUTE_NOINLINE bool InitializeSlots(CommonFields& c, void* old_slots,
+                                               Alloc alloc) {
+    assert(c.capacity());
+    // Folks with custom allocators often make unwarranted assumptions about the
+    // behavior of their classes vis-a-vis trivial destructability and what
+    // calls they will or won't make.  Avoid sampling for people with custom
+    // allocators to get us out of this mess.  This is not a hard guarantee but
+    // a workaround while we plan the exact guarantee we want to provide.
+    const size_t sample_size =
+        (std::is_same<Alloc, std::allocator<char>>::value &&
+         c.slot_array() == nullptr)
+            ? SizeOfSlot
+            : 0;
+    HashtablezInfoHandle infoz =
+        sample_size > 0 ? Sample(sample_size) : c.infoz();
+
+    const bool has_infoz = infoz.IsSampled();
+    RawHashSetLayout layout(c.capacity(), AlignOfSlot, has_infoz);
+    char* mem = static_cast<char*>(Allocate<BackingArrayAlignment(AlignOfSlot)>(
+        &alloc, layout.alloc_size(SizeOfSlot)));
+    const GenerationType old_generation = c.generation();
+    c.set_generation_ptr(
+        reinterpret_cast<GenerationType*>(mem + layout.generation_offset()));
+    c.set_generation(NextGeneration(old_generation));
+    c.set_control(reinterpret_cast<ctrl_t*>(mem + layout.control_offset()));
+    c.set_slots(mem + layout.slot_offset());
+    ResetGrowthLeft(c);
+
+    const bool grow_single_group =
+        IsGrowingIntoSingleGroupApplicable(old_capacity_, layout.capacity());
+    if (old_capacity_ != 0 && grow_single_group) {
+      if (TransferUsesMemcpy) {
+        GrowSizeIntoSingleGroupTransferable(c, old_slots, SizeOfSlot);
+        DeallocateOld<AlignOfSlot>(alloc, SizeOfSlot, old_slots);
+      } else {
+        GrowIntoSingleGroupShuffleControlBytes(c.control(), layout.capacity());
+      }
+    } else {
+      ResetCtrl(c, SizeOfSlot);
+    }
+
+    c.set_has_infoz(has_infoz);
+    if (has_infoz) {
+      infoz.RecordStorageChanged(c.size(), layout.capacity());
+      if (grow_single_group || old_capacity_ == 0) {
+        infoz.RecordRehash(0);
+      }
+      c.set_infoz(infoz);
+    }
+    return grow_single_group;
+  }
+
+  // Relocates slots into new single group consistent with
+  // GrowIntoSingleGroupShuffleControlBytes.
+  //
+  // PRECONDITIONS:
+  // 1. GrowIntoSingleGroupShuffleControlBytes was already called.
+  template <class PolicyTraits, class Alloc>
+  void GrowSizeIntoSingleGroup(CommonFields& c, Alloc& alloc_ref,
+                               typename PolicyTraits::slot_type* old_slots) {
+    assert(old_capacity_ < Group::kWidth / 2);
+    assert(IsGrowingIntoSingleGroupApplicable(old_capacity_, c.capacity()));
+    using slot_type = typename PolicyTraits::slot_type;
+    assert(is_single_group(c.capacity()));
+
+    auto* new_slots = reinterpret_cast<slot_type*>(c.slot_array());
+
+    size_t shuffle_bit = old_capacity_ / 2 + 1;
+    for (size_t i = 0; i < old_capacity_; ++i) {
+      if (IsFull(old_ctrl_[i])) {
+        size_t new_i = i ^ shuffle_bit;
+        SanitizerUnpoisonMemoryRegion(new_slots + new_i, sizeof(slot_type));
+        PolicyTraits::transfer(&alloc_ref, new_slots + new_i, old_slots + i);
+      }
+    }
+    PoisonSingleGroupEmptySlots(c, sizeof(slot_type));
+  }
+
+  // Deallocates old backing array.
+  template <size_t AlignOfSlot, class CharAlloc>
+  void DeallocateOld(CharAlloc alloc_ref, size_t slot_size, void* old_slots) {
+    SanitizerUnpoisonMemoryRegion(old_slots, slot_size * old_capacity_);
+    auto layout = RawHashSetLayout(old_capacity_, AlignOfSlot, had_infoz_);
+    Deallocate<BackingArrayAlignment(AlignOfSlot)>(
+        &alloc_ref, old_ctrl_ - layout.control_offset(),
+        layout.alloc_size(slot_size));
+  }
+
+ private:
+  // Returns true if `GrowSizeIntoSingleGroup` can be used for resizing.
+  static bool IsGrowingIntoSingleGroupApplicable(size_t old_capacity,
+                                                 size_t new_capacity) {
+    // NOTE that `old_capacity < new_capacity` in order to have
+    // `old_capacity < Group::kWidth / 2` to make faster copies of 8 bytes.
+    return is_single_group(new_capacity) && old_capacity < new_capacity;
+  }
+
+  // Relocates control bytes and slots into new single group for
+  // transferable objects.
+  // Must be called only if IsGrowingIntoSingleGroupApplicable returned true.
+  void GrowSizeIntoSingleGroupTransferable(CommonFields& c, void* old_slots,
+                                           size_t slot_size);
+
+  // Shuffle control bits deterministically to the next capacity.
+  // Returns offset for newly added element with given hash.
+  //
+  // PRECONDITIONs:
+  // 1. new_ctrl is allocated for new_capacity,
+  //    but not initialized.
+  // 2. new_capacity is a single group.
+  //
+  // All elements are transferred into the first `old_capacity + 1` positions
+  // of the new_ctrl. Elements are rotated by `old_capacity_ / 2 + 1` positions
+  // in order to change an order and keep it non deterministic.
+  // Although rotation itself deterministic, position of the new added element
+  // will be based on `H1` and is not deterministic.
+  //
+  // Examples:
+  // S = kSentinel, E = kEmpty
+  //
+  // old_ctrl = SEEEEEEEE...
+  // new_ctrl = ESEEEEEEE...
+  //
+  // old_ctrl = 0SEEEEEEE...
+  // new_ctrl = E0ESE0EEE...
+  //
+  // old_ctrl = 012S012EEEEEEEEE...
+  // new_ctrl = 2E01EEES2E01EEE...
+  //
+  // old_ctrl = 0123456S0123456EEEEEEEEEEE...
+  // new_ctrl = 456E0123EEEEEES456E0123EEE...
+  void GrowIntoSingleGroupShuffleControlBytes(ctrl_t* new_ctrl,
+                                              size_t new_capacity) const;
+
+  // Shuffle trivially transferable slots in the way consistent with
+  // GrowIntoSingleGroupShuffleControlBytes.
+  //
+  // PRECONDITIONs:
+  // 1. old_capacity must be non-zero.
+  // 2. new_ctrl is fully initialized using
+  //    GrowIntoSingleGroupShuffleControlBytes.
+  // 3. new_slots is allocated and *not* poisoned.
+  //
+  // POSTCONDITIONS:
+  // 1. new_slots are transferred from old_slots_ consistent with
+  //    GrowIntoSingleGroupShuffleControlBytes.
+  // 2. Empty new_slots are *not* poisoned.
+  void GrowIntoSingleGroupShuffleTransferableSlots(void* old_slots,
+                                                   void* new_slots,
+                                                   size_t slot_size) const;
+
+  // Poison empty slots that were transferred using the deterministic algorithm
+  // described above.
+  // PRECONDITIONs:
+  // 1. new_ctrl is fully initialized using
+  //    GrowIntoSingleGroupShuffleControlBytes.
+  // 2. new_slots is fully initialized consistent with
+  //    GrowIntoSingleGroupShuffleControlBytes.
+  void PoisonSingleGroupEmptySlots(CommonFields& c, size_t slot_size) const {
+    // poison non full items
+    for (size_t i = 0; i < c.capacity(); ++i) {
+      if (!IsFull(c.control()[i])) {
+        SanitizerPoisonMemoryRegion(SlotAddress(c.slot_array(), i, slot_size),
+                                    slot_size);
+      }
+    }
+  }
+
+  ctrl_t* old_ctrl_;
+  size_t old_capacity_;
+  bool had_infoz_;
+};
 
 // PolicyFunctions bundles together some information for a particular
 // raw_hash_set<T, ...> instantiation. This information is passed to
@@ -1479,7 +1869,7 @@ struct PolicyFunctions {
   size_t slot_size;
 
   // Returns the hash of the pointed-to slot.
-  size_t (*hash_slot)(void* set, void* slot);
+  size_t (*hash_slot)(const void* hash_fn, void* slot);
 
   // Transfer the contents of src_slot to dst_slot.
   void (*transfer)(void* set, void* dst_slot, void* src_slot);
@@ -1495,7 +1885,7 @@ void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
                        bool reuse);
 
 // Type-erased version of raw_hash_set::erase_meta_only.
-void EraseMetaOnly(CommonFields& c, ctrl_t* it, size_t slot_size);
+void EraseMetaOnly(CommonFields& c, size_t index, size_t slot_size);
 
 // Function to place in PolicyFunctions::dealloc for raw_hash_sets
 // that are using std::allocator. This allows us to share the same
@@ -1524,7 +1914,7 @@ ABSL_ATTRIBUTE_NOINLINE void TransferRelocatable(void*, void* dst, void* src) {
 }
 
 // Type-erased version of raw_hash_set::drop_deletes_without_resize.
-void DropDeletesWithoutResize(CommonFields& common,
+void DropDeletesWithoutResize(CommonFields& common, const void* hash_fn,
                               const PolicyFunctions& policy, void* tmp_space);
 
 // A SwissTable.
@@ -1588,6 +1978,11 @@ class raw_hash_set {
   using AllocTraits = absl::allocator_traits<allocator_type>;
   using SlotAlloc = typename absl::allocator_traits<
       allocator_type>::template rebind_alloc<slot_type>;
+  // People are often sloppy with the exact type of their allocator (sometimes
+  // it has an extra const or is missing the pair, but rebinds made it work
+  // anyway).
+  using CharAlloc =
+      typename absl::allocator_traits<Alloc>::template rebind_alloc<char>;
   using SlotAllocTraits = typename absl::allocator_traits<
       allocator_type>::template rebind_traits<slot_type>;
 
@@ -1644,7 +2039,7 @@ class raw_hash_set {
     // PRECONDITION: not an end() iterator.
     reference operator*() const {
       AssertIsFull(ctrl_, generation(), generation_ptr(), "operator*()");
-      return PolicyTraits::element(slot_);
+      return unchecked_deref();
     }
 
     // PRECONDITION: not an end() iterator.
@@ -1659,6 +2054,7 @@ class raw_hash_set {
       ++ctrl_;
       ++slot_;
       skip_empty_or_deleted();
+      if (ABSL_PREDICT_FALSE(*ctrl_ == ctrl_t::kSentinel)) ctrl_ = nullptr;
       return *this;
     }
     // PRECONDITION: not an end() iterator.
@@ -1693,18 +2089,19 @@ class raw_hash_set {
     explicit iterator(const GenerationType* generation_ptr)
         : HashSetIteratorGenerationInfo(generation_ptr), ctrl_(nullptr) {}
 
-    // Fixes up `ctrl_` to point to a full by advancing it and `slot_` until
-    // they reach one.
-    //
-    // If a sentinel is reached, we null `ctrl_` out instead.
+    // Fixes up `ctrl_` to point to a full or sentinel by advancing `ctrl_` and
+    // `slot_` until they reach one.
     void skip_empty_or_deleted() {
       while (IsEmptyOrDeleted(*ctrl_)) {
-        uint32_t shift = Group{ctrl_}.CountLeadingEmptyOrDeleted();
+        uint32_t shift =
+            GroupFullEmptyOrDeleted{ctrl_}.CountLeadingEmptyOrDeleted();
         ctrl_ += shift;
         slot_ += shift;
       }
-      if (ABSL_PREDICT_FALSE(*ctrl_ == ctrl_t::kSentinel)) ctrl_ = nullptr;
     }
+
+    ctrl_t* control() const { return ctrl_; }
+    slot_type* slot() const { return slot_; }
 
     // We use EmptyGroup() for default-constructed iterators so that they can
     // be distinguished from end iterators, which have nullptr ctrl_.
@@ -1714,10 +2111,23 @@ class raw_hash_set {
     union {
       slot_type* slot_;
     };
+
+    // An equality check which skips ABSL Hardening iterator invalidation
+    // checks.
+    // Should be used when the lifetimes of the iterators are well-enough
+    // understood to prove that they cannot be invalid.
+    bool unchecked_equals(const iterator& b) { return ctrl_ == b.control(); }
+
+    // Dereferences the iterator without ABSL Hardening iterator invalidation
+    // checks.
+    reference unchecked_deref() const { return PolicyTraits::element(slot_); }
   };
 
   class const_iterator {
     friend class raw_hash_set;
+    template <class Container, typename Enabler>
+    friend struct absl::container_internal::hashtable_debug_internal::
+        HashtableDebugAccess;
 
    public:
     using iterator_category = typename iterator::iterator_category;
@@ -1751,8 +2161,14 @@ class raw_hash_set {
                    const GenerationType* gen)
         : inner_(const_cast<ctrl_t*>(ctrl), const_cast<slot_type*>(slot), gen) {
     }
+    ctrl_t* control() const { return inner_.control(); }
+    slot_type* slot() const { return inner_.slot(); }
 
     iterator inner_;
+
+    bool unchecked_equals(const const_iterator& b) {
+      return inner_.unchecked_equals(b.inner_);
+    }
   };
 
   using node_type = node_handle<Policy, hash_policy_traits<Policy>, Alloc>;
@@ -1771,8 +2187,7 @@ class raw_hash_set {
       const allocator_type& alloc = allocator_type())
       : settings_(CommonFields{}, hash, eq, alloc) {
     if (bucket_count) {
-      common().set_capacity(NormalizeCapacity(bucket_count));
-      initialize_slots();
+      resize(NormalizeCapacity(bucket_count));
     }
   }
 
@@ -1872,19 +2287,55 @@ class raw_hash_set {
                                that.alloc_ref())) {}
 
   raw_hash_set(const raw_hash_set& that, const allocator_type& a)
-      : raw_hash_set(0, that.hash_ref(), that.eq_ref(), a) {
+      : raw_hash_set(GrowthToLowerboundCapacity(that.size()), that.hash_ref(),
+                     that.eq_ref(), a) {
     const size_t size = that.size();
-    if (size == 0) return;
-    reserve(size);
-    // Because the table is guaranteed to be empty, we can do something faster
-    // than a full `insert`.
-    for (const auto& v : that) {
-      const size_t hash = PolicyTraits::apply(HashElement{hash_ref()}, v);
-      auto target = find_first_non_full_outofline(common(), hash);
-      SetCtrl(common(), target.offset, H2(hash), sizeof(slot_type));
-      emplace_at(target.offset, v);
-      common().maybe_increment_generation_on_insert();
-      infoz().RecordInsert(hash, target.probe_length);
+    if (size == 0) {
+      return;
+    }
+    const size_t cap = capacity();
+    // Note about single group tables:
+    // 1. It is correct to have any order of elements.
+    // 2. Order has to be non deterministic.
+    // 3. We are assigning elements with arbitrary `shift` starting from
+    //    `capacity + shift` position.
+    // 4. `shift` must be coprime with `capacity + 1` in order to be able to use
+    //     modular arithmetic to traverse all positions, instead if cycling
+    //     through a subset of positions. Odd numbers are coprime with any
+    //     `capacity + 1` (2^N).
+    size_t offset = cap;
+    const size_t shift =
+        is_single_group(cap) ? (PerTableSalt(control()) | 1) : 0;
+    IterateOverFullSlots(
+        that.common(), that.slot_array(),
+        [&](const ctrl_t* that_ctrl,
+            slot_type* that_slot) ABSL_ATTRIBUTE_ALWAYS_INLINE {
+          if (shift == 0) {
+            // Big tables case. Position must be searched via probing.
+            // The table is guaranteed to be empty, so we can do faster than
+            // a full `insert`.
+            const size_t hash = PolicyTraits::apply(
+                HashElement{hash_ref()}, PolicyTraits::element(that_slot));
+            FindInfo target = find_first_non_full_outofline(common(), hash);
+            infoz().RecordInsert(hash, target.probe_length);
+            offset = target.offset;
+          } else {
+            // Small tables case. Next position is computed via shift.
+            offset = (offset + shift) & cap;
+          }
+          const h2_t h2 = static_cast<h2_t>(*that_ctrl);
+          assert(  // We rely that hash is not changed for small tables.
+              H2(PolicyTraits::apply(HashElement{hash_ref()},
+                                     PolicyTraits::element(that_slot))) == h2 &&
+              "hash function value changed unexpectedly during the copy");
+          SetCtrl(common(), offset, h2, sizeof(slot_type));
+          emplace_at(offset, PolicyTraits::element(that_slot));
+          common().maybe_increment_generation_on_insert();
+        });
+    if (shift != 0) {
+      // On small table copy we do not record individual inserts.
+      // RecordInsert requires hash, but it is unknown for small tables.
+      infoz().RecordStorageChanged(size, cap);
     }
     common().set_size(size);
     set_growth_left(growth_left() - size);
@@ -1897,28 +2348,35 @@ class raw_hash_set {
       :  // Hash, equality and allocator are copied instead of moved because
          // `that` must be left valid. If Hash is std::function<Key>, moving it
          // would create a nullptr functor that cannot be called.
-        settings_(absl::exchange(that.common(), CommonFields{}),
-                  that.hash_ref(), that.eq_ref(), that.alloc_ref()) {}
+         // TODO(b/296061262): move instead of copying hash/eq/alloc.
+         // Note: we avoid using exchange for better generated code.
+        settings_(std::move(that.common()), that.hash_ref(), that.eq_ref(),
+                  that.alloc_ref()) {
+    that.common() = CommonFields{};
+    maybe_increment_generation_or_rehash_on_move();
+  }
 
   raw_hash_set(raw_hash_set&& that, const allocator_type& a)
       : settings_(CommonFields{}, that.hash_ref(), that.eq_ref(), a) {
     if (a == that.alloc_ref()) {
       std::swap(common(), that.common());
+      maybe_increment_generation_or_rehash_on_move();
     } else {
-      reserve(that.size());
-      // Note: this will copy keys instead of moving them. This can be fixed if
-      // it ever becomes an issue.
-      for (auto& elem : that) insert(std::move(elem));
+      move_elements_allocs_unequal(std::move(that));
     }
   }
 
   raw_hash_set& operator=(const raw_hash_set& that) {
-    raw_hash_set tmp(that,
-                     AllocTraits::propagate_on_container_copy_assignment::value
-                         ? that.alloc_ref()
-                         : alloc_ref());
-    swap(tmp);
-    return *this;
+    if (ABSL_PREDICT_FALSE(this == &that)) return *this;
+    constexpr bool propagate_alloc =
+        AllocTraits::propagate_on_container_copy_assignment::value;
+    // TODO(ezb): maybe avoid allocating a new backing array if this->capacity()
+    // is an exact match for that.size(). If this->capacity() is too big, then
+    // it would make iteration very slow to reuse the allocation. Maybe we can
+    // do the same heuristic as clear() and reuse if it's small enough.
+    raw_hash_set tmp(that, propagate_alloc ? that.alloc_ref() : alloc_ref());
+    // NOLINTNEXTLINE: not returning *this for performance.
+    return assign_impl<propagate_alloc>(std::move(tmp));
   }
 
   raw_hash_set& operator=(raw_hash_set&& that) noexcept(
@@ -1933,22 +2391,14 @@ class raw_hash_set {
         typename AllocTraits::propagate_on_container_move_assignment());
   }
 
-  ~raw_hash_set() {
-    const size_t cap = capacity();
-    if (!cap) return;
-    destroy_slots();
-
-    // Unpoison before returning the memory to the allocator.
-    SanitizerUnpoisonMemoryRegion(slot_array(), sizeof(slot_type) * cap);
-    infoz().Unregister();
-    Deallocate<BackingArrayAlignment(alignof(slot_type))>(
-        &alloc_ref(), common().backing_array_start(),
-        common().alloc_size(sizeof(slot_type), alignof(slot_type)));
-  }
+  ~raw_hash_set() { destructor_impl(); }
 
   iterator begin() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    // TODO(b/324478958): Consider reverting if no impact.
+    if (ABSL_PREDICT_FALSE(empty())) return end();
     auto it = iterator_at(0);
     it.skip_empty_or_deleted();
+    assert(IsFull(*it.control()));
     return it;
   }
   iterator end() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -1988,17 +2438,6 @@ class raw_hash_set {
     }
     common().set_reserved_growth(0);
     common().set_reservation_size(0);
-  }
-
-  inline void destroy_slots() {
-    const size_t cap = capacity();
-    const ctrl_t* ctrl = control();
-    slot_type* slot = slot_array();
-    for (size_t i = 0; i != cap; ++i) {
-      if (IsFull(ctrl[i])) {
-        PolicyTraits::destroy(&alloc_ref(), slot + i);
-      }
-    }
   }
 
   // This overload kicks in when the argument is an rvalue of insertable and
@@ -2128,7 +2567,7 @@ class raw_hash_set {
     alignas(slot_type) unsigned char raw[sizeof(slot_type)];
     slot_type* slot = reinterpret_cast<slot_type*>(&raw);
 
-    PolicyTraits::construct(&alloc_ref(), slot, std::forward<Args>(args)...);
+    construct(slot, std::forward<Args>(args)...);
     const auto& elem = PolicyTraits::element(slot);
     return PolicyTraits::apply(InsertSlot<true>{*this, std::move(*slot)}, elem);
   }
@@ -2232,8 +2671,8 @@ class raw_hash_set {
   // This overload is necessary because otherwise erase<K>(const K&) would be
   // a better match if non-const iterator is passed as an argument.
   void erase(iterator it) {
-    AssertIsFull(it.ctrl_, it.generation(), it.generation_ptr(), "erase()");
-    PolicyTraits::destroy(&alloc_ref(), it.slot_);
+    AssertIsFull(it.control(), it.generation(), it.generation_ptr(), "erase()");
+    destroy(it.slot());
     erase_meta_only(it);
   }
 
@@ -2264,8 +2703,8 @@ class raw_hash_set {
     assert(this != &src);
     for (auto it = src.begin(), e = src.end(); it != e;) {
       auto next = std::next(it);
-      if (PolicyTraits::apply(InsertSlot<false>{*this, std::move(*it.slot_)},
-                              PolicyTraits::element(it.slot_))
+      if (PolicyTraits::apply(InsertSlot<false>{*this, std::move(*it.slot())},
+                              PolicyTraits::element(it.slot()))
               .second) {
         src.erase_meta_only(it);
       }
@@ -2279,10 +2718,9 @@ class raw_hash_set {
   }
 
   node_type extract(const_iterator position) {
-    AssertIsFull(position.inner_.ctrl_, position.inner_.generation(),
+    AssertIsFull(position.control(), position.inner_.generation(),
                  position.inner_.generation_ptr(), "extract()");
-    auto node =
-        CommonAccess::Transfer<node_type>(alloc_ref(), position.inner_.slot_);
+    auto node = CommonAccess::Transfer<node_type>(alloc_ref(), position.slot());
     erase_meta_only(position);
     return node;
   }
@@ -2411,13 +2849,16 @@ class raw_hash_set {
   template <class K = key_type>
   const_iterator find(const key_arg<K>& key) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    prefetch_heap_block();
-    return find(key, hash_ref()(key));
+    return const_cast<raw_hash_set*>(this)->find(key);
   }
 
   template <class K = key_type>
   bool contains(const key_arg<K>& key) const {
-    return find(key) != end();
+    // Here neither the iterator returned by `find()` nor `end()` can be invalid
+    // outside of potential thread-safety issues.
+    // `find()`'s return value is constructed, used, and then destructed
+    // all in this context.
+    return !find(key).unchecked_equals(end());
   }
 
   template <class K = key_type>
@@ -2526,10 +2967,9 @@ class raw_hash_set {
     std::pair<iterator, bool> operator()(const K& key, Args&&...) && {
       auto res = s.find_or_prepare_insert(key);
       if (res.second) {
-        PolicyTraits::transfer(&s.alloc_ref(), s.slot_array() + res.first,
-                               &slot);
+        s.transfer(s.slot_array() + res.first, &slot);
       } else if (do_destroy) {
-        PolicyTraits::destroy(&s.alloc_ref(), &slot);
+        s.destroy(&slot);
       }
       return {s.iterator_at(res.first), res.second};
     }
@@ -2538,60 +2978,108 @@ class raw_hash_set {
     slot_type&& slot;
   };
 
+  // TODO(b/303305702): re-enable reentrant validation.
+  template <typename... Args>
+  inline void construct(slot_type* slot, Args&&... args) {
+    PolicyTraits::construct(&alloc_ref(), slot, std::forward<Args>(args)...);
+  }
+  inline void destroy(slot_type* slot) {
+    PolicyTraits::destroy(&alloc_ref(), slot);
+  }
+  inline void transfer(slot_type* to, slot_type* from) {
+    PolicyTraits::transfer(&alloc_ref(), to, from);
+  }
+
+  inline void destroy_slots() {
+    if (PolicyTraits::template destroy_is_trivial<Alloc>()) return;
+    IterateOverFullSlots(
+        common(), slot_array(),
+        [&](const ctrl_t*, slot_type* slot)
+            ABSL_ATTRIBUTE_ALWAYS_INLINE { this->destroy(slot); });
+  }
+
+  inline void dealloc() {
+    assert(capacity() != 0);
+    // Unpoison before returning the memory to the allocator.
+    SanitizerUnpoisonMemoryRegion(slot_array(), sizeof(slot_type) * capacity());
+    infoz().Unregister();
+    Deallocate<BackingArrayAlignment(alignof(slot_type))>(
+        &alloc_ref(), common().backing_array_start(),
+        common().alloc_size(sizeof(slot_type), alignof(slot_type)));
+  }
+
+  inline void destructor_impl() {
+    if (capacity() == 0) return;
+    destroy_slots();
+    dealloc();
+  }
+
   // Erases, but does not destroy, the value pointed to by `it`.
   //
   // This merely updates the pertinent control byte. This can be used in
   // conjunction with Policy::transfer to move the object to another place.
   void erase_meta_only(const_iterator it) {
-    EraseMetaOnly(common(), it.inner_.ctrl_, sizeof(slot_type));
+    EraseMetaOnly(common(), static_cast<size_t>(it.control() - control()),
+                  sizeof(slot_type));
   }
 
-  // Allocates a backing array for `self` and initializes its control bytes.
-  // This reads `capacity` and updates all other fields based on the result of
-  // the allocation.
+  // Resizes table to the new capacity and move all elements to the new
+  // positions accordingly.
   //
-  // This does not free the currently held array; `capacity` must be nonzero.
-  inline void initialize_slots() {
-    // People are often sloppy with the exact type of their allocator (sometimes
-    // it has an extra const or is missing the pair, but rebinds made it work
-    // anyway).
-    using CharAlloc =
-        typename absl::allocator_traits<Alloc>::template rebind_alloc<char>;
-    InitializeSlots<CharAlloc, sizeof(slot_type), alignof(slot_type)>(
-        common(), CharAlloc(alloc_ref()));
-  }
-
+  // Note that for better performance instead of
+  // find_first_non_full(common(), hash),
+  // HashSetResizeHelper::FindFirstNonFullAfterResize(
+  //    common(), old_capacity, hash)
+  // can be called right after `resize`.
   ABSL_ATTRIBUTE_NOINLINE void resize(size_t new_capacity) {
     assert(IsValidCapacity(new_capacity));
-    auto* old_ctrl = control();
+    HashSetResizeHelper resize_helper(common());
     auto* old_slots = slot_array();
-    const bool had_infoz = common().has_infoz();
-    const size_t old_capacity = common().capacity();
     common().set_capacity(new_capacity);
-    initialize_slots();
+    // Note that `InitializeSlots` does different number initialization steps
+    // depending on the values of `transfer_uses_memcpy` and capacities.
+    // Refer to the comment in `InitializeSlots` for more details.
+    const bool grow_single_group =
+        resize_helper.InitializeSlots<CharAlloc, sizeof(slot_type),
+                                      PolicyTraits::transfer_uses_memcpy(),
+                                      alignof(slot_type)>(
+            common(), const_cast<std::remove_const_t<slot_type>*>(old_slots),
+            CharAlloc(alloc_ref()));
 
-    auto* new_slots = slot_array();
-    size_t total_probe_length = 0;
-    for (size_t i = 0; i != old_capacity; ++i) {
-      if (IsFull(old_ctrl[i])) {
-        size_t hash = PolicyTraits::apply(HashElement{hash_ref()},
-                                          PolicyTraits::element(old_slots + i));
-        auto target = find_first_non_full(common(), hash);
-        size_t new_i = target.offset;
-        total_probe_length += target.probe_length;
-        SetCtrl(common(), new_i, H2(hash), sizeof(slot_type));
-        PolicyTraits::transfer(&alloc_ref(), new_slots + new_i, old_slots + i);
+    if (resize_helper.old_capacity() == 0) {
+      // InitializeSlots did all the work including infoz().RecordRehash().
+      return;
+    }
+
+    if (grow_single_group) {
+      if (PolicyTraits::transfer_uses_memcpy()) {
+        // InitializeSlots did all the work.
+        return;
       }
+      // We want GrowSizeIntoSingleGroup to be called here in order to make
+      // InitializeSlots not depend on PolicyTraits.
+      resize_helper.GrowSizeIntoSingleGroup<PolicyTraits>(common(), alloc_ref(),
+                                                          old_slots);
+    } else {
+      // InitializeSlots prepares control bytes to correspond to empty table.
+      auto* new_slots = slot_array();
+      size_t total_probe_length = 0;
+      for (size_t i = 0; i != resize_helper.old_capacity(); ++i) {
+        if (IsFull(resize_helper.old_ctrl()[i])) {
+          size_t hash = PolicyTraits::apply(
+              HashElement{hash_ref()}, PolicyTraits::element(old_slots + i));
+          auto target = find_first_non_full(common(), hash);
+          size_t new_i = target.offset;
+          total_probe_length += target.probe_length;
+          SetCtrl(common(), new_i, H2(hash), sizeof(slot_type));
+          transfer(new_slots + new_i, old_slots + i);
+        }
+      }
+      infoz().RecordRehash(total_probe_length);
     }
-    if (old_capacity) {
-      SanitizerUnpoisonMemoryRegion(old_slots,
-                                    sizeof(slot_type) * old_capacity);
-      Deallocate<BackingArrayAlignment(alignof(slot_type))>(
-          &alloc_ref(), old_ctrl - ControlOffset(had_infoz),
-          AllocSize(old_capacity, sizeof(slot_type), alignof(slot_type),
-                    had_infoz));
-    }
-    infoz().RecordRehash(total_probe_length);
+    resize_helper.DeallocateOld<alignof(slot_type)>(
+        CharAlloc(alloc_ref()), sizeof(slot_type),
+        const_cast<std::remove_const_t<slot_type>*>(old_slots));
   }
 
   // Prunes control bytes to remove as many tombstones as possible.
@@ -2600,7 +3088,7 @@ class raw_hash_set {
   inline void drop_deletes_without_resize() {
     // Stack-allocate space for swapping elements.
     alignas(slot_type) unsigned char tmp[sizeof(slot_type)];
-    DropDeletesWithoutResize(common(), GetPolicyFunctions(), tmp);
+    DropDeletesWithoutResize(common(), &hash_ref(), GetPolicyFunctions(), tmp);
   }
 
   // Called whenever the table *might* need to conditionally grow.
@@ -2661,16 +3149,62 @@ class raw_hash_set {
     }
   }
 
-  // TODO(alkis): Optimize this assuming *this and that don't overlap.
-  raw_hash_set& move_assign(raw_hash_set&& that, std::true_type) {
-    raw_hash_set tmp(std::move(that));
-    swap(tmp);
+  void maybe_increment_generation_or_rehash_on_move() {
+    common().maybe_increment_generation_on_move();
+    if (!empty() && common().should_rehash_for_bug_detection_on_move()) {
+      resize(capacity());
+    }
+  }
+
+  template<bool propagate_alloc>
+  raw_hash_set& assign_impl(raw_hash_set&& that) {
+    // We don't bother checking for this/that aliasing. We just need to avoid
+    // breaking the invariants in that case.
+    destructor_impl();
+    common() = std::move(that.common());
+    // TODO(b/296061262): move instead of copying hash/eq/alloc.
+    hash_ref() = that.hash_ref();
+    eq_ref() = that.eq_ref();
+    CopyAlloc(alloc_ref(), that.alloc_ref(),
+              std::integral_constant<bool, propagate_alloc>());
+    that.common() = CommonFields{};
+    maybe_increment_generation_or_rehash_on_move();
     return *this;
   }
-  raw_hash_set& move_assign(raw_hash_set&& that, std::false_type) {
-    raw_hash_set tmp(std::move(that), alloc_ref());
-    swap(tmp);
+
+  raw_hash_set& move_elements_allocs_unequal(raw_hash_set&& that) {
+    const size_t size = that.size();
+    if (size == 0) return *this;
+    reserve(size);
+    for (iterator it = that.begin(); it != that.end(); ++it) {
+      insert(std::move(PolicyTraits::element(it.slot())));
+      that.destroy(it.slot());
+    }
+    that.dealloc();
+    that.common() = CommonFields{};
+    maybe_increment_generation_or_rehash_on_move();
     return *this;
+  }
+
+  raw_hash_set& move_assign(raw_hash_set&& that,
+                            std::true_type /*propagate_alloc*/) {
+    return assign_impl<true>(std::move(that));
+  }
+  raw_hash_set& move_assign(raw_hash_set&& that,
+                            std::false_type /*propagate_alloc*/) {
+    if (alloc_ref() == that.alloc_ref()) {
+      return assign_impl<false>(std::move(that));
+    }
+    // Aliasing can't happen here because allocs would compare equal above.
+    assert(this != &that);
+    destructor_impl();
+    // We can't take over that's memory so we need to move each element.
+    // While moving elements, this should have that's hash/eq so copy hash/eq
+    // before moving elements.
+    // TODO(b/296061262): move instead of copying hash/eq.
+    hash_ref() = that.hash_ref();
+    eq_ref() = that.eq_ref();
+    return move_elements_allocs_unequal(std::move(that));
   }
 
  protected:
@@ -2714,8 +3248,17 @@ class raw_hash_set {
     if (!rehash_for_bug_detection &&
         ABSL_PREDICT_FALSE(growth_left() == 0 &&
                            !IsDeleted(control()[target.offset]))) {
+      size_t old_capacity = capacity();
       rehash_and_grow_if_necessary();
-      target = find_first_non_full(common(), hash);
+      // NOTE: It is safe to use `FindFirstNonFullAfterResize`.
+      // `FindFirstNonFullAfterResize` must be called right after resize.
+      // `rehash_and_grow_if_necessary` may *not* call `resize`
+      // and perform `drop_deletes_without_resize` instead. But this
+      // could happen only on big tables.
+      // For big tables `FindFirstNonFullAfterResize` will always
+      // fallback to normal `find_first_non_full`, so it is safe to use it.
+      target = HashSetResizeHelper::FindFirstNonFullAfterResize(
+          common(), old_capacity, hash);
     }
     common().increment_size();
     set_growth_left(growth_left() - IsEmpty(control()[target.offset]));
@@ -2735,8 +3278,7 @@ class raw_hash_set {
   // POSTCONDITION: *m.iterator_at(i) == value_type(forward<Args>(args)...).
   template <class... Args>
   void emplace_at(size_t i, Args&&... args) {
-    PolicyTraits::construct(&alloc_ref(), slot_array() + i,
-                            std::forward<Args>(args)...);
+    construct(slot_array() + i, std::forward<Args>(args)...);
 
     assert(PolicyTraits::apply(FindElement{*this}, *iterator_at(i)) ==
                iterator_at(i) &&
@@ -2749,6 +3291,8 @@ class raw_hash_set {
   const_iterator iterator_at(size_t i) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return {control() + i, slot_array() + i, common().generation_ptr()};
   }
+
+  reference unchecked_deref(iterator it) { return it.unchecked_deref(); }
 
  private:
   friend struct RawHashSetTestOnlyAccess;
@@ -2793,17 +3337,9 @@ class raw_hash_set {
     return settings_.template get<3>();
   }
 
-  // Make type-specific functions for this type's PolicyFunctions struct.
-  static size_t hash_slot_fn(void* set, void* slot) {
-    auto* h = static_cast<raw_hash_set*>(set);
-    return PolicyTraits::apply(
-        HashElement{h->hash_ref()},
-        PolicyTraits::element(static_cast<slot_type*>(slot)));
-  }
   static void transfer_slot_fn(void* set, void* dst, void* src) {
     auto* h = static_cast<raw_hash_set*>(set);
-    PolicyTraits::transfer(&h->alloc_ref(), static_cast<slot_type*>(dst),
-                           static_cast<slot_type*>(src));
+    h->transfer(static_cast<slot_type*>(dst), static_cast<slot_type*>(src));
   }
   // Note: dealloc_fn will only be used if we have a non-standard allocator.
   static void dealloc_fn(CommonFields& common, const PolicyFunctions&) {
@@ -2822,7 +3358,7 @@ class raw_hash_set {
   static const PolicyFunctions& GetPolicyFunctions() {
     static constexpr PolicyFunctions value = {
         sizeof(slot_type),
-        &raw_hash_set::hash_slot_fn,
+        PolicyTraits::template get_hash_slot_fn<hasher>(),
         PolicyTraits::transfer_uses_memcpy()
             ? TransferRelocatable<sizeof(slot_type)>
             : &raw_hash_set::transfer_slot_fn,
@@ -2893,24 +3429,9 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
     if (per_slot != ~size_t{}) {
       m += per_slot * c.size();
     } else {
-      const ctrl_t* ctrl = c.control();
-      for (size_t i = 0; i != capacity; ++i) {
-        if (container_internal::IsFull(ctrl[i])) {
-          m += Traits::space_used(c.slot_array() + i);
-        }
+      for (auto it = c.begin(); it != c.end(); ++it) {
+        m += Traits::space_used(it.slot());
       }
-    }
-    return m;
-  }
-
-  static size_t LowerBoundAllocatedByteSize(size_t size) {
-    size_t capacity = GrowthToLowerboundCapacity(size);
-    if (capacity == 0) return 0;
-    size_t m = AllocSize(NormalizeCapacity(capacity), sizeof(Slot),
-                         alignof(Slot), /*has_infoz=*/false);
-    size_t per_slot = Traits::space_used(static_cast<const Slot*>(nullptr));
-    if (per_slot != ~size_t{}) {
-      m += per_slot * size;
     }
     return m;
   }

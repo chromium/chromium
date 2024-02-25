@@ -40,7 +40,7 @@ public class CleanupReferenceTest {
             public void run() {
                 sObjectCount.decrementAndGet();
             }
-        };
+        }
 
         public ReferredObject() {
             sObjectCount.incrementAndGet();

@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -73,7 +74,7 @@ class MockImageDecoder : public ImageDecoder {
       : ImageDecoder(kAlphaPremultiplied,
                      ImageDecoder::kDefaultBitDepth,
                      ColorBehavior::kTransformToSRGB,
-                     kNoDecodedImageByteLimit),
+                     ImageDecoder::kNoDecodedImageByteLimit),
         client_(client) {}
 
   ~MockImageDecoder() override { client_->DecoderBeingDestroyed(); }
@@ -141,7 +142,7 @@ class MockImageDecoder : public ImageDecoder {
     frame_buffer_cache_[index].SetHasAlpha(false);
   }
 
-  MockImageDecoderClient* client_;
+  raw_ptr<MockImageDecoderClient> client_;
 };
 
 class MockImageDecoderFactory : public ImageDecoderFactory {
@@ -171,7 +172,7 @@ class MockImageDecoderFactory : public ImageDecoderFactory {
                           const gfx::Size& decoded_size)
       : client_(client), decoded_size_(decoded_size) {}
 
-  MockImageDecoderClient* client_;
+  raw_ptr<MockImageDecoderClient> client_;
   gfx::Size decoded_size_;
 };
 

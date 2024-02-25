@@ -88,7 +88,7 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderService
   void OnVideoFrameDecoded(
       const scoped_refptr<VideoFrame>& frame,
       bool can_read_without_stalling,
-      const absl::optional<base::UnguessableToken>& release_token) final;
+      const std::optional<base::UnguessableToken>& release_token) final;
   void OnWaiting(WaitingReason reason) final;
   void RequestOverlayInfo(bool restart_for_transitions) final;
 
@@ -154,7 +154,7 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderService
       GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  absl::optional<base::UnguessableToken> cdm_id_
+  std::optional<base::UnguessableToken> cdm_id_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL Tests environmentBlendMode for an AR device - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL Tests environmentBlendMode for an AR device - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL Tests environmentBlendMode for a VR device - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL Tests environmentBlendMode for a VR device - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-Harness: the test ran to completion.
-

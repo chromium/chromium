@@ -76,7 +76,7 @@ void SharedStorageBudgetCharger::DidStartNavigation(
     }
 
     shared_storage_manager->MakeBudgetWithdrawal(
-        metadata->origin, metadata->budget_to_charge, base::DoNothing());
+        metadata->site, metadata->budget_to_charge, base::DoNothing());
   }
 }
 

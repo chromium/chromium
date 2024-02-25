@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
@@ -73,31 +74,31 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 
 }  // namespace
 
-absl::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
+std::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   auto* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetSystemAppTypeForAppId(app_id)
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
-absl::optional<web_app::AppId> GetAppIdForSystemWebApp(
+std::optional<webapps::AppId> GetAppIdForSystemWebApp(
     Profile* profile,
     SystemWebAppType app_type) {
   auto* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetAppIdForSystemApp(app_type)
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
-absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
+std::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
     SystemWebAppType app_type,
     int64_t display_id) {
-  absl::optional<web_app::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile, app_type);
   // TODO(calamity): Decide whether to report app launch failure or CHECK fail.
   if (!app_id)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
@@ -124,12 +125,13 @@ namespace {
 void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
                                      const SystemWebAppType type,
                                      const SystemAppLaunchParams& params,
-                                     apps::WindowInfoPtr window_info) {
+                                     apps::WindowInfoPtr window_info,
+                                     apps::LaunchCallback callback) {
   if (profile_for_launch->ShutdownStarted()) {
     return;
   }
 
-  const absl::optional<web_app::AppId> app_id =
+  const std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile_for_launch, type);
   if (!app_id)
     return;
@@ -152,7 +154,8 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
   if (params.url) {
     DCHECK(params.url->is_valid());
     app_service->LaunchAppWithUrl(*app_id, event_flags, *params.url,
-                                  params.launch_source, std::move(window_info));
+                                  params.launch_source, std::move(window_info),
+                                  std::move(callback));
     return;
   }
 
@@ -164,10 +167,13 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
 void LaunchSystemWebAppAsync(Profile* profile,
                              const SystemWebAppType type,
                              const SystemAppLaunchParams& params,
-                             apps::WindowInfoPtr window_info) {
+                             apps::WindowInfoPtr window_info,
+                             std::optional<apps::LaunchCallback> callback) {
   DCHECK(profile);
   // Terminal should be launched with crostini::LaunchTerminal*.
   DCHECK(type != SystemWebAppType::TERMINAL);
+  // Callback is only supported when launching with an URL.
+  DCHECK(!callback || params.url.has_value());
 
   // TODO(https://crbug.com/1135863): Implement a confirmation dialog when
   // changing to a different profile.
@@ -175,18 +181,24 @@ void LaunchSystemWebAppAsync(Profile* profile,
   if (profile_for_launch == nullptr) {
     // We can't find a suitable profile to launch. Complain about this so we
     // can identify the call site, and ask them to pick the right profile.
-    base::debug::DumpWithoutCrashing();
-
-    DVLOG(1)
+    // Note that this is fatal in developer builds.
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
         << "LaunchSystemWebAppAsync is called on a profile that can't launch "
            "system web apps. The launch request is ignored. Please check the "
            "profile you are using is correct.";
 
-    // This will DCHECK in debug builds. But no-op in production builds.
-    NOTREACHED();
-
     // Early return if we can't find a profile to launch.
     return;
+  }
+
+  if (type == SystemWebAppType::PERSONALIZATION &&
+      profile_for_launch == profile) {
+    scalable_iph::ScalableIph* scalable_iph =
+        ScalableIphFactory::GetForBrowserContext(profile_for_launch);
+    if (scalable_iph) {
+      scalable_iph->RecordEvent(
+          scalable_iph::ScalableIph::Event::kOpenPersonalizationApp);
+    }
   }
 
   SystemWebAppManager* manager = SystemWebAppManager::Get(profile_for_launch);
@@ -198,7 +210,9 @@ void LaunchSystemWebAppAsync(Profile* profile,
   manager->on_apps_synchronized().Post(
       FROM_HERE,
       base::BindOnce(&LaunchSystemWebAppAsyncContinue, profile_for_launch, type,
-                     params, std::move(window_info)));
+                     params, std::move(window_info),
+                     callback.has_value() ? std::move(callback.value())
+                                          : base::DoNothing()));
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,
@@ -274,7 +288,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
                                  const GURL& url) {
   // TODO(calamity): Determine whether, during startup, we need to wait for
   // app install and then provide a valid answer here.
-  absl::optional<web_app::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile, app_type);
   if (!app_id)
     return nullptr;
@@ -288,8 +302,10 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   // Look through all the windows, find a browser for this app. Prefer the most
   // recently active app window.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->profile() != profile || browser->type() != browser_type)
+    if (browser->profile() != profile || browser->type() != browser_type ||
+        browser->is_delete_scheduled()) {
       continue;
+    }
 
     if (web_app::GetAppIdFromApplicationName(browser->app_name()) !=
         app_id.value()) {
@@ -321,11 +337,11 @@ bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type) {
          browser->app_controller()->system_app()->GetType() == type;
 }
 
-absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
-                                                             const GURL& url) {
+std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
+                                                            const GURL& url) {
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetCapturingSystemAppForURL(url)
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {

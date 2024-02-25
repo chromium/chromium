@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/mojom/geoposition.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
@@ -38,7 +41,9 @@ void GeolocationServiceImplContext::RequestPermission(
   render_frame_host->GetBrowserContext()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
-          blink::PermissionType::GEOLOCATION, render_frame_host, user_gesture,
+          render_frame_host,
+          PermissionRequestDescription(blink::PermissionType::GEOLOCATION,
+                                       user_gesture),
           base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -59,24 +64,19 @@ GeolocationServiceImpl::GeolocationServiceImpl(
   DCHECK(render_frame_host);
 }
 
-GeolocationServiceImpl::~GeolocationServiceImpl() {
-  if (device::GeolocationManager* geolocation_manager =
-          device::GeolocationManager::GetInstance();
-      geolocation_manager) {
-    // One call here is enough as the calls are grouped by app name
-    geolocation_manager->TrackGeolocationRelinquished();
-  }
-}
+GeolocationServiceImpl::~GeolocationServiceImpl() = default;
 
 void GeolocationServiceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::GeolocationService> receiver) {
   receiver_set_.Add(this, std::move(receiver),
                     std::make_unique<GeolocationServiceImplContext>());
+#if BUILDFLAG(IS_IOS)
   if (device::GeolocationManager* geolocation_manager =
           device::GeolocationManager::GetInstance();
       geolocation_manager) {
-    geolocation_manager->TrackGeolocationAttempted();
+    geolocation_manager->RequestSystemPermission();
   }
+#endif
 }
 
 void GeolocationServiceImpl::CreateGeolocation(
@@ -112,9 +112,33 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
   if (permission_status != blink::mojom::PermissionStatus::GRANTED)
     return;
 
-  const auto& requesting_url =
+  requesting_origin_ =
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
+  auto requesting_url =
       render_frame_host_->GetMainFrame()->GetLastCommittedURL();
+
   geolocation_context_->BindGeolocation(std::move(receiver), requesting_url);
+  subscription_id_ =
+      PermissionControllerImpl::FromBrowserContext(
+          render_frame_host_->GetBrowserContext())
+          ->SubscribeToPermissionStatusChange(
+              blink::PermissionType::GEOLOCATION,
+              /*render_process_host=*/nullptr, render_frame_host_,
+              requesting_url,
+              base::BindRepeating(
+                  &GeolocationServiceImpl::HandlePermissionStatusChange,
+                  weak_factory_.GetWeakPtr()));
+}
+
+void GeolocationServiceImpl::HandlePermissionStatusChange(
+    blink::mojom::PermissionStatus permission_status) {
+  if (permission_status != blink::mojom::PermissionStatus::GRANTED &&
+      subscription_id_.value()) {
+    PermissionControllerImpl::FromBrowserContext(
+        render_frame_host_->GetBrowserContext())
+        ->UnsubscribeFromPermissionStatusChange(subscription_id_);
+    geolocation_context_->OnPermissionRevoked(requesting_origin_);
+  }
 }
 
 }  // namespace content

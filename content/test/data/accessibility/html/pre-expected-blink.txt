@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++pre
+++++++genericContainer
 ++++++++staticText name='This test is to check   pre<newline>formatting.'
 ++++++++++inlineTextBox name='This test is to check   pre'
 ++++++++++inlineTextBox name='<newline>'

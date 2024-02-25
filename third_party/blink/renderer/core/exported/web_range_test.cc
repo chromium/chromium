@@ -29,13 +29,14 @@
  */
 
 #include "third_party/blink/public/web/web_range.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(WebRangeTest, Empty) {
+  test::TaskEnvironment task_environment;
   WebRange empty1(0, 0);
   EXPECT_FALSE(empty1.IsNull());
   EXPECT_TRUE(empty1.IsEmpty());

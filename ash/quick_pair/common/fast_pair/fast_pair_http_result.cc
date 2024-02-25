@@ -15,7 +15,7 @@ namespace quick_pair {
 FastPairHttpResult::FastPairHttpResult(
     const int net_error,
     const network::mojom::URLResponseHead* head) {
-  absl::optional<int> http_response_code;
+  std::optional<int> http_response_code;
   if (head && head->headers)
     http_response_code = head->headers->response_code();
   bool net_success = (net_error == net::OK ||

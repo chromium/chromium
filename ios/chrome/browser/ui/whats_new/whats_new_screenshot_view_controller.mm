@@ -9,14 +9,17 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 24;
+constexpr CGFloat kLabelBottomMargin = -40;
+constexpr CGFloat kLabelFontSize = 15;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 }  // namespace
 
@@ -28,6 +31,9 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 @property(nonatomic, strong) id<LottieAnimation> screenshotViewWrapperDarkMode;
 // Child view controller used to display the alert full-screen.
 @property(nonatomic, strong) ConfirmationAlertViewController* alertScreen;
+// Label displayed indicating that the What's New feature is only available on
+// iPhone.
+@property(nonatomic, strong) UILabel* iPhoneOnlyLabel;
 // What's New item.
 @property(nonatomic, strong) WhatsNewItem* item;
 
@@ -73,6 +79,10 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 
   [self configureAnimationView];
   [self configureAlertScreen];
+  if (self.item.isIphoneOnly &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self configureLabelView];
+  }
   [self layoutAlertScreen];
 }
 
@@ -101,8 +111,11 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
       [[ConfirmationAlertViewController alloc] init];
   alertScreen.titleString = titleString;
   alertScreen.subtitleString = subtitleString;
-  alertScreen.primaryActionString = primaryActionString;
-  alertScreen.secondaryActionString = secondaryActionString;
+  if (!self.item.isIphoneOnly ||
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    alertScreen.primaryActionString = primaryActionString;
+    alertScreen.secondaryActionString = secondaryActionString;
+  }
   alertScreen.actionHandler = self.actionHandler;
   self.alertScreen = alertScreen;
 }
@@ -112,6 +125,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
+  config.loopAnimationCount = 1000;
   return ios::provider::GenerateLottieAnimation(config);
 }
 
@@ -129,6 +143,27 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   [self.view addSubview:self.alertScreen.view];
 
   [self.alertScreen didMoveToParentViewController:self];
+}
+
+// Configures the iPhoneOnlyLabel view.
+- (void)configureLabelView {
+  self.iPhoneOnlyLabel = [[UILabel alloc] init];
+  self.iPhoneOnlyLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.iPhoneOnlyLabel.font = [UIFont systemFontOfSize:kLabelFontSize
+                                                weight:UIFontWeightRegular];
+  self.iPhoneOnlyLabel.text =
+      l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPHONE_ONLY_TITLE);
+  self.iPhoneOnlyLabel.textColor = [UIColor blackColor];
+  self.iPhoneOnlyLabel.userInteractionEnabled = NO;
+  [self.view addSubview:self.iPhoneOnlyLabel];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.iPhoneOnlyLabel.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor
+                       constant:kLabelBottomMargin],
+    [self.iPhoneOnlyLabel.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+  ]];
 }
 
 // Sets the layout of the alertScreen view.
@@ -180,6 +215,18 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 
   self.screenshotViewWrapper.animationView.hidden = darkModeEnabled;
   self.screenshotViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
+  [self updateAnimationsPlaying];
+}
+
+// Checks if the animations are hidden or unhidden and plays (or stops) them
+// accordingly.
+- (void)updateAnimationsPlaying {
+  self.screenshotViewWrapper.animationView.hidden
+      ? [self.screenshotViewWrapper stop]
+      : [self.screenshotViewWrapper play];
+  self.screenshotViewWrapperDarkMode.animationView.hidden
+      ? [self.screenshotViewWrapperDarkMode stop]
+      : [self.screenshotViewWrapperDarkMode play];
 }
 
 @end

@@ -5,13 +5,13 @@
 #ifndef BASE_BASE64URL_H_
 #define BASE_BASE64URL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -58,7 +58,7 @@ enum class Base64UrlDecodePolicy {
                                                std::string* output);
 
 // Same as the previous function, but writing to a `std::vector`.
-[[nodiscard]] BASE_EXPORT absl::optional<std::vector<uint8_t>> Base64UrlDecode(
+[[nodiscard]] BASE_EXPORT std::optional<std::vector<uint8_t>> Base64UrlDecode(
     StringPiece input,
     Base64UrlDecodePolicy policy);
 

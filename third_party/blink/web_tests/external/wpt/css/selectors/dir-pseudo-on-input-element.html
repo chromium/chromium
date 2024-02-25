@@ -84,7 +84,7 @@ test(() => {
     document.body.removeChild(container);
 }, 'input element whose type attribute is in the telephone state in a RTL block');
 
-for (let type of ['text', 'search', 'url', 'email']) {
+for (const type of ['password', 'text', 'search', 'url', 'email', 'submit', 'reset', 'button', 'hidden']) {
     test(() => {
         const input = document.createElement('input');
         input.type = type;
@@ -129,8 +129,31 @@ for (let type of ['text', 'search', 'url', 'email']) {
     }, `input element whose type attribute is in the ${type} state`);
 }
 
-for (let type of ['password', 'date', 'time', 'number', 'range', 'color',
-    'checkbox', 'radio', 'submit', 'image', 'reset', 'button']) {
+test(() => {
+    const input = document.createElement('input');
+    input.type = 'text';
+    // bidirectional character type R
+    input.value = '\u05EA';
+    input.setAttribute('dir', 'auto');
+
+    const container = document.createElement('div');
+    container.appendChild(input);
+
+    assert_false(input.matches(':dir(ltr)'));
+    assert_true(input.matches(':dir(rtl)'));
+
+    // Changing to a different type that does't use value causes the bidi rule to no longer apply.
+    input.type = 'radio';
+    assert_true(input.matches(':dir(ltr)'));
+    assert_false(input.matches(':dir(rtl)'));
+
+    // And restoring type=text brings back that behavior.
+    input.type = 'text';
+    assert_false(input.matches(':dir(ltr)'));
+    assert_true(input.matches(':dir(rtl)'));
+}, 'dynamic changes to type of input elements affect whether value is used for dir=auto');
+
+for (const type of ['date', 'time', 'number', 'range', 'color', 'checkbox', 'radio', 'image']) {
     test(() => {
         const input = document.createElement('input');
         input.type = type;

@@ -31,9 +31,9 @@ class DropToStopRecordingButtonAnimation;
 // transform into a 3 second countdown timer.
 class ASH_EXPORT CaptureLabelView : public views::View,
                                     public gfx::AnimationDelegate {
- public:
-  METADATA_HEADER(CaptureLabelView);
+  METADATA_HEADER(CaptureLabelView, views::View)
 
+ public:
   CaptureLabelView(CaptureModeSession* capture_mode_session,
                    views::Button::PressedCallback on_capture_button_pressed,
                    views::Button::PressedCallback on_drop_down_button_pressed);
@@ -75,7 +75,7 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   // views::View:
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
@@ -107,18 +107,17 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   // performed. If we are in video recording mode, and GIF recording is enabled,
   // this view will also host a drop down button to allow the user to choose the
   // type of the recording format.
-  raw_ptr<CaptureButtonView, ExperimentalAsh> capture_button_container_ =
-      nullptr;
+  raw_ptr<CaptureButtonView> capture_button_container_ = nullptr;
 
   // The label that displays a text message. Not user interactable.
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 
   // Callback function to be called after countdown if finished.
   base::OnceClosure countdown_finished_callback_;
 
   // Pointer to the current capture mode session. Not nullptr during this
   // lifecycle.
-  raw_ptr<CaptureModeSession, ExperimentalAsh> capture_mode_session_;
+  raw_ptr<CaptureModeSession> capture_mode_session_;
 
   // Animates the widget of this view towards the position of the stop recording
   // button at the end of the count down.

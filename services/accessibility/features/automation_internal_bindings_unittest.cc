@@ -4,6 +4,7 @@
 
 #include "services/accessibility/features/automation_internal_bindings.h"
 
+#include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "gin/public/context_holder.h"
@@ -43,8 +44,18 @@ class TestIsolateHolder : public BindingsIsolateHolder {
     error_count_++;
   }
 
-  void StartTestV8AndBindAutomation(
-      AutomationInternalBindings* automation_bindings) {
+  void InstallAutomation(
+      mojo::PendingAssociatedReceiver<mojom::Automation> automation) {
+    automation_bindings_ = std::make_unique<AutomationInternalBindings>(
+        this, std::move(automation));
+  }
+
+  AutomationInternalBindings* GetAutomationBindings() {
+    return automation_bindings_.get();
+  }
+
+  void StartTestV8AndBindAutomation() {
+    CHECK(automation_bindings_);
     BindingsIsolateHolder::InitializeV8();
 
     // Test isolate uses the test main thread and will block.
@@ -60,16 +71,9 @@ class TestIsolateHolder : public BindingsIsolateHolder {
 
     v8::Local<v8::ObjectTemplate> automation_template =
         v8::ObjectTemplate::New(isolate_holder_->isolate());
-    automation_bindings->AddAutomationRoutesToTemplate(&automation_template);
-    global_template->Set(isolate_holder_->isolate(), "automation",
+    automation_bindings_->AddAutomationRoutesToTemplate(&automation_template);
+    global_template->Set(isolate_holder_->isolate(), "nativeAutomationInternal",
                          automation_template);
-
-    v8::Local<v8::ObjectTemplate> automation_internal_template =
-        v8::ObjectTemplate::New(isolate_holder_->isolate());
-    automation_bindings->AddAutomationInternalRoutesToTemplate(
-        &automation_internal_template);
-    global_template->Set(isolate_holder_->isolate(), "automationInternal",
-                         automation_internal_template);
 
     v8::Local<v8::Context> context =
         v8::Context::New(isolate_holder_->isolate(),
@@ -86,6 +90,10 @@ class TestIsolateHolder : public BindingsIsolateHolder {
   int ErrorCount() const { return error_count_; }
 
  private:
+  // automation_bindings_ must outlive the isolate, as the isolate's heap holds
+  // references to automation_bindings_. However, the BindingsIsolateHolder must
+  // outlive automation_bindings_, so the bindings are a field in this class.
+  std::unique_ptr<AutomationInternalBindings> automation_bindings_;
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   std::unique_ptr<gin::ContextHolder> context_holder_;
   int error_count_ = 0;
@@ -108,39 +116,31 @@ class AutomationInternalBindingsTest : public testing::Test {
     service_client_ = std::make_unique<FakeServiceClient>(nullptr);
     test_isolate_holder_ = std::make_unique<TestIsolateHolder>();
     mojo::PendingAssociatedReceiver<mojom::Automation> automation;
-    mojo::PendingRemote<mojom::AutomationClient> automation_client;
     service_client_->BindAutomation(
-        automation.InitWithNewEndpointAndPassRemote(),
-        automation_client.InitWithNewPipeAndPassReceiver());
-    automation_bindings_ = std::make_unique<AutomationInternalBindings>(
-        test_isolate_holder_.get(), std::move(automation),
-        std::move(automation_client));
-    test_isolate_holder_->StartTestV8AndBindAutomation(
-        automation_bindings_.get());
+        automation.InitWithNewEndpointAndPassRemote());
+    test_isolate_holder_->InstallAutomation(std::move(automation));
+    test_isolate_holder_->StartTestV8AndBindAutomation();
   }
 
   void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
                                    const std::vector<ui::AXTreeUpdate>& updates,
                                    const gfx::Point& mouse_location,
                                    const std::vector<ui::AXEvent>& events) {
-    automation_bindings_->DispatchAccessibilityEvents(tree_id, updates,
-                                                      mouse_location, events);
+    test_isolate_holder_->GetAutomationBindings()->DispatchAccessibilityEvents(
+        tree_id, updates, mouse_location, events);
   }
 
   void DispatchLocationChange(const ui::AXTreeID& tree_id,
                               int node_id,
                               const ui::AXRelativeBounds& bounds) {
-    automation_bindings_->DispatchAccessibilityLocationChange(tree_id, node_id,
-                                                              bounds);
+    test_isolate_holder_->GetAutomationBindings()
+        ->DispatchAccessibilityLocationChange(tree_id, node_id, bounds);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  // Must outlive `automation_bindings_` which has a raw_ptr to
-  // `test_isolate_holder_`.
-  std::unique_ptr<TestIsolateHolder> test_isolate_holder_;
   std::unique_ptr<FakeServiceClient> service_client_;
-  std::unique_ptr<AutomationInternalBindings> automation_bindings_;
+  std::unique_ptr<TestIsolateHolder> test_isolate_holder_;
 };
 
 // A test to ensure that the testing framework can catch exceptions.
@@ -154,22 +154,21 @@ TEST_F(AutomationInternalBindingsTest, CatchesExceptions) {
 
 // Spot checks that bindings were added to the correct namespace.
 TEST_F(AutomationInternalBindingsTest, SpotCheckBindingsAdded) {
-  // This should succeed because automation and automationInternal
+  // This should succeed because automation and nativeAutomationInternal
   // bindings were added.
   std::string script =
       base::StringPrintf(R"JS(
-    automation.GetFocus();
-    automation.SetDesktopID('%s');
-    automation.StartCachingAccessibilityTrees();
-    automationInternal.enableDesktop();
+    nativeAutomationInternal.GetFocus();
+    nativeAutomationInternal.SetDesktopID('%s');
+    nativeAutomationInternal.StartCachingAccessibilityTrees();
   )JS",
                          ui::AXTreeID::CreateNewAXTreeID().ToString().c_str());
   EXPECT_TRUE(test_isolate_holder_->ExecuteScriptInContext(script));
   EXPECT_EQ(0, test_isolate_holder_->ErrorCount());
 
-  // Lowercase getFocus does not exist.
+  // Lowercase getFocus does not exist on nativeAutomationInternal.
   script = R"JS(
-    automation.getFocus();
+    nativeAutomationInternal.getFocus();
   )JS";
   EXPECT_FALSE(test_isolate_holder_->ExecuteScriptInContext(script));
   EXPECT_EQ(1, test_isolate_holder_->ErrorCount());
@@ -201,15 +200,16 @@ TEST_F(AutomationInternalBindingsTest, GetsFocusAndNodeData) {
   // throwing exceptions in these tests.
   std::string script = base::StringPrintf(R"JS(
     const treeId = '%s';
-    automation.SetDesktopID(treeId);
-    const focusedNodeInfo = automation.GetFocus();
+    nativeAutomationInternal.SetDesktopID(treeId);
+    const focusedNodeInfo = nativeAutomationInternal.GetFocus();
     if (!focusedNodeInfo) {
       throw 'Expected to find a focused object';
     }
     if (focusedNodeInfo.nodeId !== 2) {
       throw 'Expected focused node ID 2, got ' + focusedNodeInfo.nodeId;
     }
-    const role = automation.GetRole(treeId, focusedNodeInfo.nodeId);
+    const role = nativeAutomationInternal.GetRole(treeId,
+        focusedNodeInfo.nodeId);
     if (role !== 'button') {
       throw 'Expected role button, got ' + role;
     }
@@ -246,8 +246,8 @@ TEST_F(AutomationInternalBindingsTest, GetsLocation) {
   // throwing exceptions in these tests.
   std::string script = base::StringPrintf(R"JS(
     const treeId = '%s';
-    automation.SetDesktopID(treeId);
-    let bounds = automation.GetLocation(treeId, 2);
+    nativeAutomationInternal.SetDesktopID(treeId);
+    let bounds = nativeAutomationInternal.GetLocation(treeId, 2);
     if (!bounds) {
       throw 'Could not get bounds for node';
     }
@@ -267,7 +267,7 @@ TEST_F(AutomationInternalBindingsTest, GetsLocation) {
   DispatchLocationChange(tree_data.tree_id, 1, new_bounds);
 
   script = R"JS(
-    bounds = automation.GetLocation(treeId, 2);
+    bounds = nativeAutomationInternal.GetLocation(treeId, 2);
     if (!bounds) {
       throw 'Could not get bounds for node';
     }

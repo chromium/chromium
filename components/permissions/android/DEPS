@@ -1,10 +1,13 @@
 include_rules = [
   "+components/browser_ui/util/android",
+  "+components/browser_ui/widget/android",
   "+components/infobars/core",
   "+components/location/android",
   "+components/messages/android",
   "+components/omnibox/browser",
   "+components/security_state/core",
   "+content/public/android",
+  "+third_party/jni_zero",
   "+ui/android",
+  "+ui/strings/grit/ui_strings.h",
 ]

@@ -21,6 +21,8 @@ component("liburlpattern") {
 
   # Note, also update the local modifications in README.chromium.
   sources = [
+    "constructor_string_parser.cc",
+    "constructor_string_parser.h",
     "options.h",
     "parse.cc",
     "parse.h",

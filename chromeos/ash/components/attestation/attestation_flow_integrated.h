@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_INTEGRATED_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 class AccountId;
@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
       bool force_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+      const std::optional<AttestationFlow::CertProfileSpecificData>&
           profile_specific_data,
       CertificateCallback callback) override;
 
@@ -157,7 +157,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
       bool generate_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback,
       EnrollState enroll_state);
 
@@ -170,7 +170,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
                              const ::attestation::GetCertificateReply& reply);
 
   ::attestation::ACAType aca_type_;
-  raw_ptr<AttestationClient, ExperimentalAsh> attestation_client_;
+  raw_ptr<AttestationClient> attestation_client_;
 
   base::TimeDelta ready_timeout_;
   base::TimeDelta retry_delay_;

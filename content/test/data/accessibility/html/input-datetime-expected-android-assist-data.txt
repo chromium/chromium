@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++EditText text:"1/1/2015 1:00AM" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {type="datetime"}, {value="1/1/2015 1:00AM"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++++++++TextView text:"1/1/2015 1:00AM" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++EditText text:"1/1/2015 1:00AM" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {aria-label="Launch"}, {type="datetime"}, {value="1/1/2015 1:00AM"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++++++++TextView text:"1/1/2015 1:00AM" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

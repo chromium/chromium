@@ -73,6 +73,14 @@ inline constexpr char kSupervisedUserSecondCustodianProfileURL[] =
 inline constexpr char kSupervisedUserExtensionsMayRequestPermissions[] =
     "profile.managed.extensions_may_request_permissions";
 
+// Whether the supervised user may approve extension permission requests, under
+// the updated supervised user extension handling flow (feature flag
+// `kEnableSupervisedUserExtensionInstallationWithoutApproval`).
+// If true extensions can be installed without parental approval, if false
+// the parent must grant approvoal on each installation.
+inline constexpr char kSkipParentApprovalToInstallExtensions[] =
+    "profile.managed.skip_parent_approval_to_install_extensions";
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // DictionaryValue that maps extension ids to the approved version of this
 // extension for a supervised user. Missing extensions are not approved.

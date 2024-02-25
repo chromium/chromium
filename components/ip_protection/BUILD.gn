@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("ip_protection") {
+  sources = [
+    "ip_protection_proxy_config_retriever.cc",
+    "ip_protection_proxy_config_retriever.h",
+  ]
+  deps = [
+    ":get_proxy_config_proto",
+    "//base",
+    "//build:branding_buildflags",
+    "//google_apis:google_apis",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "ip_protection_proxy_config_retriever_unittest.cc" ]
+
+  deps = [
+    ":get_proxy_config_proto",
+    ":ip_protection",
+    "//base",
+    "//base/test:test_support",
+    "//net:net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("get_proxy_config_proto") {
+  sources = [ "get_proxy_config.proto" ]
+}

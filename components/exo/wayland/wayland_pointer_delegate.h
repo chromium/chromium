@@ -50,10 +50,10 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
   wl_client* client() const;
 
   // The pointer resource associated with the pointer.
-  const raw_ptr<wl_resource, ExperimentalAsh> pointer_resource_;
+  const raw_ptr<wl_resource> pointer_resource_;
 
   // Owned by Server, which always outlives this delegate.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
+  const raw_ptr<SerialTracker> serial_tracker_;
 };
 
 }  // namespace wayland

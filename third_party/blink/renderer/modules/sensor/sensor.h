@@ -52,7 +52,7 @@ class Sensor : public EventTarget,
   // Getters
   bool activated() const;
   bool hasReading() const;
-  absl::optional<DOMHighResTimeStamp> timestamp(ScriptState*) const;
+  std::optional<DOMHighResTimeStamp> timestamp(ScriptState*) const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(reading, kReading)

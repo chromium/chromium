@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -129,6 +129,10 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                      const SkSamplingOptions&,
                      const PaintFlags* flags,
                      SkCanvas::SrcRectConstraint constraint) override;
+  void drawVertices(scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+                    scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+                    scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+                    const PaintFlags& flags) override;
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                    const SkRect& dst,
                    float t,
@@ -178,14 +182,10 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
 
   int GetMaxTextureSize() const;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION SkCanvas* canvas_;
+  raw_ptr<SkCanvas, DanglingUntriaged> canvas_;
   SkBitmap bitmap_;
   std::unique_ptr<SkCanvas> owned_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION ImageProvider* image_provider_ = nullptr;
+  raw_ptr<ImageProvider, DanglingUntriaged> image_provider_ = nullptr;
 
   const ContextFlushes context_flushes_;
   int num_of_ops_ = 0;

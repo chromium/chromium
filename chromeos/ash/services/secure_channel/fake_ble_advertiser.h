@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/shared_resource_scheduler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -33,7 +33,7 @@ class FakeBleAdvertiser : public BleAdvertiser {
   const std::list<DeviceIdPair>& GetRequestsForPriority(
       ConnectionPriority connection_priority);
 
-  absl::optional<ConnectionPriority> GetPriorityForRequest(
+  std::optional<ConnectionPriority> GetPriorityForRequest(
       const DeviceIdPair& request) const;
 
   std::vector<DeviceIdPair> GetAllRequestsForRemoteDevice(

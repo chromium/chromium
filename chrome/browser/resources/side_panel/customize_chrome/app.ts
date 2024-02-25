@@ -4,6 +4,8 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './appearance.js';
 import './cards.js';
@@ -11,20 +13,23 @@ import './categories.js';
 import './chrome_colors.js';
 import './shortcuts.js';
 import './themes.js';
+import './wallpaper_search/wallpaper_search.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {AppearanceElement} from './appearance.js';
-import {CategoriesElement} from './categories.js';
-import {ChromeColorsElement} from './chrome_colors.js';
-import {BackgroundCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
+import type {AppearanceElement} from './appearance.js';
+import type {CategoriesElement} from './categories.js';
+import type {ChromeColorsElement} from './chrome_colors.js';
+import type {BackgroundCollection, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
-import {ThemesElement} from './themes.js';
+import type {ThemesElement} from './themes.js';
 
 const SECTION_TO_SELECTOR = {
   [CustomizeChromeSection.kAppearance]: '#appearance',
@@ -40,6 +45,7 @@ export enum CustomizeChromePage {
   CATEGORIES = 'categories',
   THEMES = 'themes',
   CHROME_COLORS = 'chrome-colors',
+  WALLPAPER_SEARCH = 'wallpaper-search',
 }
 
 const AppElementBase = HelpBubbleMixin(PolymerElement) as
@@ -82,6 +88,10 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('extensionsCardEnabled'),
       },
+      wallpaperSearchEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('wallpaperSearchEnabled'),
+      },
     };
   }
 
@@ -96,6 +106,12 @@ export class AppElement extends AppElementBase {
   private page_: CustomizeChromePage;
   private selectedCollection_: BackgroundCollection|null;
   private scrollToSectionListenerId_: number|null = null;
+  private pageHandler_: CustomizeChromePageHandlerInterface;
+
+  constructor() {
+    super();
+    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -103,6 +119,10 @@ export class AppElement extends AppElementBase {
         CustomizeChromeApiProxy.getInstance()
             .callbackRouter.scrollToSection.addListener(
                 (section: CustomizeChromeSection) => {
+                  if (section === CustomizeChromeSection.kWallpaperSearch) {
+                    this.onWallpaperSearchSelect_();
+                    return;
+                  }
                   const selector = SECTION_TO_SELECTOR[section];
                   const element = this.shadowRoot!.querySelector(selector);
                   if (!element) {
@@ -133,6 +153,7 @@ export class AppElement extends AppElementBase {
         break;
       case CustomizeChromePage.THEMES:
       case CustomizeChromePage.CHROME_COLORS:
+      case CustomizeChromePage.WALLPAPER_SEARCH:
         this.page_ = CustomizeChromePage.CATEGORIES;
         this.$.categoriesPage.focusOnBackButton();
         break;
@@ -158,6 +179,33 @@ export class AppElement extends AppElementBase {
   private onChromeColorsSelect_() {
     this.page_ = CustomizeChromePage.CHROME_COLORS;
     this.$.chromeColorsPage.focusOnBackButton();
+  }
+
+  private onWallpaperSearchSelect_() {
+    this.page_ = CustomizeChromePage.WALLPAPER_SEARCH;
+    const page =
+        this.shadowRoot!.querySelector('customize-chrome-wallpaper-search');
+    assert(page);
+    page.focusOnBackButton();
+  }
+
+  private onCouponsButtonClick_() {
+    this.pageHandler_.openChromeWebStoreCategoryPage(
+        ChromeWebStoreCategory.kShopping);
+  }
+
+  private onWritingButtonClick_() {
+    this.pageHandler_.openChromeWebStoreCollectionPage(
+        ChromeWebStoreCollection.kWrittingEssentials);
+  }
+
+  private onProductivityButtonClick_() {
+    this.pageHandler_.openChromeWebStoreCategoryPage(
+        ChromeWebStoreCategory.kWorkflowPlanning);
+  }
+
+  private onChromeWebStoreLinkClick_() {
+    this.pageHandler_.openChromeWebStoreHomePage();
   }
 }
 

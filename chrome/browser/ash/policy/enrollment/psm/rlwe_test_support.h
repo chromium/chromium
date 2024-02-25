@@ -22,6 +22,7 @@ using RlweTestCase = private_membership::rlwe::
 
 using RlweClientFactory = base::RepeatingCallback<
     std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>(
+        private_membership::rlwe::RlweUseCase,
         const private_membership::rlwe::RlwePlaintextId&)>;
 
 // Load a test case from the test database provided by the

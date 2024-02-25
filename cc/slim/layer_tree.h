@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -23,7 +22,6 @@
 
 namespace cc {
 class UIResourceManager;
-class TaskGraphRunner;
 }  // namespace cc
 
 namespace viz {
@@ -55,21 +53,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
     virtual ~ScopedKeepSurfaceAlive() = default;
   };
 
-  struct COMPONENT_EXPORT(CC_SLIM) InitParams {
-    InitParams();
-    ~InitParams();
-    InitParams(InitParams&&);
-    InitParams& operator=(InitParams&&);
-
-    // Non-owning. `client` needs to outlive `LayerTree`.
-    raw_ptr<LayerTreeClient> client = nullptr;
-
-    // Only used when wrapping cc.
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-    raw_ptr<cc::TaskGraphRunner> cc_task_graph_runner = nullptr;
-  };
-
-  static std::unique_ptr<LayerTree> Create(InitParams params);
+  static std::unique_ptr<LayerTree> Create(LayerTreeClient* client);
 
   virtual ~LayerTree() = default;
 
@@ -147,9 +131,9 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
   virtual base::OnceClosure DeferBeginFrame() = 0;
 
   // Requests to produce a new frame even if no content has changed.
-  // See `cc::LayerTreeHost` for distinction between these methods.
+  // See `cc::LayerTreeHost` for distinction between this and
+  // `SetNeedsRedrawForTesting()`.
   virtual void SetNeedsAnimate() = 0;
-  virtual void SetNeedsRedraw() = 0;
 
   // Works in combination with DelayedScheduler to indicate all the updates in
   // for a frame has arrived and a frame should be produced now. If compositor
@@ -168,6 +152,9 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
 
   // Exposes the ranges of referenced surfaces for testing.
   virtual const SurfaceRangesAndCounts& GetSurfaceRangesForTesting() const = 0;
+
+  // Force to produce a compositor frame even if nothing has changed.
+  virtual void SetNeedsRedrawForTesting() = 0;
 };
 
 }  // namespace cc::slim

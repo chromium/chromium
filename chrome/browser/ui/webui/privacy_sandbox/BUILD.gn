@@ -1,0 +1,14 @@
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  disable_variants = true
+  public_deps = [
+    "//components/content_settings/core/common:mojo_bindings",
+    "//mojo/public/mojom/base",
+  ]
+
+  deps = [ "//components/content_settings/core/common:content_settings_types" ]
+
+  sources = [ "privacy_sandbox_internals.mojom" ]
+  webui_module_path = "/"
+}

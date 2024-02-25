@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -14,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -57,8 +57,9 @@ static constexpr float kBackgroundBlurQuality = 0.33f;
 // MenuController.
 
 class MenuScrollButton : public View {
+  METADATA_HEADER(MenuScrollButton, View)
+
  public:
-  METADATA_HEADER(MenuScrollButton);
   MenuScrollButton(SubmenuView* host, bool is_up)
       : host_(host),
         is_up_(is_up),
@@ -143,7 +144,7 @@ class MenuScrollButton : public View {
   const int pref_height_;
 };
 
-BEGIN_METADATA(MenuScrollButton, View)
+BEGIN_METADATA(MenuScrollButton)
 END_METADATA
 
 }  // namespace
@@ -159,8 +160,9 @@ END_METADATA
 // what ScrollView does, so we use a one off variant.
 
 class MenuScrollViewContainer::MenuScrollView : public View {
+  METADATA_HEADER(MenuScrollView, View)
+
  public:
-  METADATA_HEADER(MenuScrollView);
   MenuScrollView(View* child, MenuScrollViewContainer* owner) : owner_(owner) {
     AddChildView(child);
   }
@@ -212,7 +214,7 @@ class MenuScrollViewContainer::MenuScrollView : public View {
   raw_ptr<MenuScrollViewContainer> owner_;
 };
 
-BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView, View)
+BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView)
 END_METADATA
 
 // MenuScrollViewContainer ----------------------------------------------------
@@ -282,7 +284,7 @@ gfx::RoundedCornersF MenuScrollViewContainer::GetRoundedCorners() const {
   if (!menu_controller)
     return gfx::RoundedCornersF(corner_radius_);
 
-  absl::optional<gfx::RoundedCornersF> rounded_corners =
+  std::optional<gfx::RoundedCornersF> rounded_corners =
       menu_controller->rounded_corners();
   if (rounded_corners.has_value())
     return rounded_corners.value();
@@ -505,10 +507,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     background_view_->SetBorder(std::make_unique<HighlightBorder>(
-        GetRoundedCorners(),
-        chromeos::features::IsJellyrollEnabled()
-            ? HighlightBorder::Type::kHighlightBorderOnShadow
-            : HighlightBorder::Type::kHighlightBorder1));
+        GetRoundedCorners(), HighlightBorder::Type::kHighlightBorderOnShadow));
 #endif
   } else {
     SetBackground(std::make_unique<BubbleBackground>(bubble_border.get()));
@@ -533,7 +532,7 @@ BubbleBorder::Arrow MenuScrollViewContainer::BubbleBorderTypeFromAnchor(
   }
 }
 
-BEGIN_METADATA(MenuScrollViewContainer, View)
+BEGIN_METADATA(MenuScrollViewContainer)
 END_METADATA
 
 }  // namespace views

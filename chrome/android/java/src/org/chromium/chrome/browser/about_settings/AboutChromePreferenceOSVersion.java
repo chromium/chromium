@@ -19,9 +19,7 @@ import org.chromium.chrome.browser.omaha.VersionNumberGetter;
  * the current OS version is unsupported.
  */
 public class AboutChromePreferenceOSVersion extends LongClickCopySummaryPreference {
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public AboutChromePreferenceOSVersion(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

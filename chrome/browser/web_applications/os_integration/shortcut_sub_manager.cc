@@ -51,7 +51,7 @@ ShortcutSubManager::ShortcutSubManager(Profile& profile,
 ShortcutSubManager::~ShortcutSubManager() = default;
 
 void ShortcutSubManager::Configure(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_shortcut());
@@ -74,8 +74,8 @@ void ShortcutSubManager::Configure(
 }
 
 void ShortcutSubManager::Execute(
-    const AppId& app_id,
-    const absl::optional<SynchronizeOsOptions>& synchronize_options,
+    const webapps::AppId& app_id,
+    const std::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
@@ -224,15 +224,28 @@ void ShortcutSubManager::Execute(
   std::move(callback_for_no_update).Run();
 }
 
-// TODO(b/279068663): Implement if needed.
-void ShortcutSubManager::ForceUnregister(const AppId& app_id,
+void ShortcutSubManager::ForceUnregister(const webapps::AppId& app_id,
                                          base::OnceClosure callback) {
-  std::move(callback).Run();
+  base::FilePath shortcut_data_dir = GetOsIntegrationResourcesDirectoryForApp(
+      profile_->GetPath(), app_id,
+      provider_->registrar_unsafe().GetAppStartUrl(app_id));
+
+  auto current_shortcut_info = std::make_unique<ShortcutInfo>();
+  current_shortcut_info->app_id = app_id;
+  current_shortcut_info->profile_path = profile_->GetPath();
+  current_shortcut_info->title =
+      base::UTF8ToUTF16(provider_->registrar_unsafe().GetAppShortName(app_id));
+
+  internals::ScheduleDeletePlatformShortcuts(
+      shortcut_data_dir, std::move(current_shortcut_info),
+      base::BindOnce(&ShortcutSubManager::OnShortcutsDeleted,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(callback)));
 }
 
 void ShortcutSubManager::CreateShortcut(
-    const AppId& app_id,
-    absl::optional<SynchronizeOsOptions> synchronize_options,
+    const webapps::AppId& app_id,
+    std::optional<SynchronizeOsOptions> synchronize_options,
     base::OnceClosure on_complete,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   SynchronizeOsOptions options =
@@ -256,12 +269,12 @@ void ShortcutSubManager::CreateShortcut(
 }
 
 void ShortcutSubManager::UpdateShortcut(
-    const AppId& app_id,
-    absl::optional<SynchronizeOsOptions> synchronize_options,
+    const webapps::AppId& app_id,
+    std::optional<SynchronizeOsOptions> synchronize_options,
     const std::u16string& old_app_title,
     base::OnceClosure on_complete,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
-  absl::optional<ShortcutLocations> locations = absl::nullopt;
+  std::optional<ShortcutLocations> locations = std::nullopt;
   if (synchronize_options.has_value()) {
     ShortcutLocations creation_locations;
     creation_locations.on_desktop =
@@ -284,7 +297,7 @@ void ShortcutSubManager::UpdateShortcut(
       }).Then(std::move(on_complete)));
 }
 
-void ShortcutSubManager::OnShortcutsDeleted(const AppId& app_id,
+void ShortcutSubManager::OnShortcutsDeleted(const webapps::AppId& app_id,
                                             base::OnceClosure final_callback,
                                             bool success) {
   ResultCallback final_result_callback =

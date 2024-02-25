@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL enumerateDevices depends only on capture state, not permission state assert_equals: At most one of a kind prior to capture expected 3 but got 7
+[FAIL] enumerateDevices depends only on capture state, not permission state
+  assert_equals: At most one of a kind prior to capture expected 3 but got 7
 Harness: the test ran to completion.
 

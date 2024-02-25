@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -12,10 +14,12 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -26,6 +30,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
@@ -33,6 +38,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/storage_partition.h"
@@ -45,7 +51,12 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+using testing::Eq;
+using testing::IsEmpty;
+using testing::IsNull;
+using testing::Ne;
+using testing::Not;
 
 namespace ash {
 
@@ -61,12 +72,16 @@ constexpr char kSecondaryAccount3Email[] = "secondary3@gmail.com";
 constexpr char kSecondaryAccountOAuthCode[] = "fake_oauth_code";
 constexpr char kSecondaryAccountRefreshToken[] = "fake_refresh_token";
 constexpr char kCompleteLoginMessage[] = "completeLogin";
+constexpr char kGetDeviceIdMessage[] = "getDeviceId";
 constexpr char kMakeAvailableInArcMessage[] = "makeAvailableInArc";
 constexpr char kGetAccountsNotAvailableInArcMessage[] =
     "getAccountsNotAvailableInArc";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
 constexpr char kConsentLoggedCallback[] = "consent-logged-callback";
 constexpr char kToSVersion[] = "12345678";
+constexpr char kFakeDeviceId[] = "fake-device-id";
+constexpr char kCrosAddAccountFlow[] = "crosAddAccount";
+constexpr char kCrosAddAccountEduFlow[] = "crosAddAccountEdu";
 
 struct DeviceAccountInfo {
   std::string id;
@@ -89,7 +104,7 @@ std::ostream& operator<<(std::ostream& stream,
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
   return {signin::GetTestGaiaIdForEmail("primary@gmail.com") /*id*/,
           "primary@gmail.com" /*email*/,
-          user_manager::USER_TYPE_REGULAR /*user_type*/,
+          user_manager::UserType::kRegular /*user_type*/,
           account_manager::AccountType::kGaia /*account_type*/,
           "device-account-token" /*token*/};
 }
@@ -97,7 +112,7 @@ DeviceAccountInfo GetGaiaDeviceAccountInfo() {
 DeviceAccountInfo GetChildDeviceAccountInfo() {
   return {supervised_user::kChildAccountSUID /*id*/,
           "child@gmail.com" /*email*/,
-          user_manager::USER_TYPE_CHILD /*user_type*/,
+          user_manager::UserType::kChild /*user_type*/,
           account_manager::AccountType::kGaia /*account_type*/,
           "device-account-token" /*token*/};
 }
@@ -128,6 +143,10 @@ class TestInlineLoginHandler : public InlineLoginHandlerImpl {
 
   TestInlineLoginHandler(const TestInlineLoginHandler&) = delete;
   TestInlineLoginHandler& operator=(const TestInlineLoginHandler&) = delete;
+
+  void SetExtraInitParams(base::Value::Dict& params) override {
+    InlineLoginHandlerImpl::SetExtraInitParams(params);
+  }
 };
 
 class MockAccountAppsAvailabilityObserver
@@ -189,8 +208,7 @@ class InlineLoginHandlerTest
     // Setup user.
     auto user_manager = std::make_unique<FakeChromeUserManager>();
     const user_manager::User* user;
-    if (GetDeviceAccountInfo().user_type ==
-        user_manager::UserType::USER_TYPE_CHILD) {
+    if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
       user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
           GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
       profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
@@ -225,8 +243,8 @@ class InlineLoginHandlerTest
     auto url = GaiaUrls::GetInstance()->gaia_url();
     auto cookie_obj = net::CanonicalCookie::Create(
         url, std::string("oauth_code=") + kSecondaryAccountOAuthCode,
-        base::Time::Now(), absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */);
+        base::Time::Now(), std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
     content::StoragePartition* partition =
         signin::GetSigninPartition(web_contents()->GetBrowserContext());
     base::test::TestFuture<net::CookieAccessResult> future;
@@ -235,11 +253,11 @@ class InlineLoginHandlerTest
     EXPECT_TRUE(future.Wait());
 
     // Setup fake Gaia.
-    FakeGaia::MergeSessionParams params;
+    FakeGaia::Configuration params;
     params.email = kSecondaryAccount1Email;
     params.refresh_token = kSecondaryAccountRefreshToken;
     params.auth_code = kSecondaryAccountOAuthCode;
-    fake_gaia_.UpdateMergeSessionParams(params);
+    fake_gaia_.UpdateConfiguration(params);
 
     // Setup handlers.
     handler_ =
@@ -275,6 +293,28 @@ class InlineLoginHandlerTest
     web_ui()->HandleReceivedMessage("consentLogged", list_args);
   }
 
+  void SetExtraInitParamsInHandler(base::Value::Dict& dict) {
+    handler_->SetExtraInitParams(dict);
+  }
+
+  std::string GetDeviceIdFromWebview() {
+    // Call "getDeviceId".
+    base::Value::List args;
+    args.Append(kHandleFunctionName);
+    web_ui()->HandleReceivedMessage(kGetDeviceIdMessage, args);
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_THAT(web_ui()->call_data(), Not(IsEmpty()));
+    const content::TestWebUI::CallData& call_data =
+        *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+    EXPECT_EQ(kHandleFunctionName, call_data.arg1()->GetString());
+    EXPECT_TRUE(call_data.arg2()->GetBool());
+
+    // Get results from JS callback.
+    return call_data.arg3()->GetString();
+  }
+
   FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
@@ -294,8 +334,10 @@ class InlineLoginHandlerTest
     return identity_test_env_profile_adaptor_->identity_test_env();
   }
 
+  const AccountId& primary_account_id() { return primary_account_id_; }
+
  private:
-  std::unique_ptr<InlineLoginHandler> handler_;
+  std::unique_ptr<TestInlineLoginHandler> handler_;
   std::unique_ptr<EduCoexistenceLoginHandler> edu_handler_;
   content::TestWebUI web_ui_;
   net::EmbeddedTestServer embedded_test_server_;
@@ -319,8 +361,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, NewAccountAdditionSuccess) {
   args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
   web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
-  if (GetDeviceAccountInfo().user_type ==
-      user_manager::UserType::USER_TYPE_CHILD) {
+  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
     // Consent logging is required for secondary accounts.
     CompleteConsentLogForChildUser(kSecondaryAccount1Email);
   }
@@ -353,6 +394,116 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, PrimaryReauthenticationSuccess) {
   EXPECT_TRUE(future.Wait());
 }
 
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       GetDeviceIdReturnsANonEmptyString) {
+  const std::string device_id = GetDeviceIdFromWebview();
+  EXPECT_THAT(device_id, Not(IsEmpty()));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       GetDeviceIdReturnsKnownUserDeviceIdForDeviceAccount) {
+  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  known_user.SetDeviceId(primary_account_id(), kFakeDeviceId);
+  base::Value::Dict params;
+  params.Set("email", primary_account_id().GetUserEmail());
+  SetExtraInitParamsInHandler(params);
+
+  EXPECT_THAT(GetDeviceIdFromWebview(), Eq(kFakeDeviceId));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    InlineLoginHandlerTest,
+    GetDeviceIdDoesNotReturnKnownUserDeviceIdForSecondaryAccount) {
+  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  known_user.SetDeviceId(primary_account_id(), kFakeDeviceId);
+  base::Value::Dict params;
+  params.Set("email", kSecondaryAccount1Email);
+  SetExtraInitParamsInHandler(params);
+
+  EXPECT_THAT(GetDeviceIdFromWebview(), Ne(kFakeDeviceId));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    InlineLoginHandlerTest,
+    GetDeviceIdDoesNotReturnKnownUserDeviceIdForAccountAdditions) {
+  // Device Account cannot be added inline. So if an account addition is taking
+  // place, it must be for a Secondary Account - in which case, we should not
+  // generate the device id for the Device Account.
+  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  known_user.SetDeviceId(primary_account_id(), kFakeDeviceId);
+
+  EXPECT_THAT(GetDeviceIdFromWebview(), Ne(kFakeDeviceId));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForDeviceAccountReauthentication) {
+  base::Value::Dict params;
+  params.Set("email", primary_account_id().GetUserEmail());
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountFlow));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForRegularSecondaryAccountAddition) {
+  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
+    return;
+  }
+
+  base::Value::Dict params;
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountFlow));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForRegularSecondaryAccountReauthentication) {
+  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
+    return;
+  }
+
+  base::Value::Dict params;
+  params.Set("email", kSecondaryAccount1Email);
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountFlow));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForChildEduAccountAddition) {
+  if (GetDeviceAccountInfo().user_type != user_manager::UserType::kChild) {
+    return;
+  }
+
+  base::Value::Dict params;
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountEduFlow));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
+                       FlowNameForChildEduAccountReauthentication) {
+  if (GetDeviceAccountInfo().user_type != user_manager::UserType::kChild) {
+    return;
+  }
+
+  base::Value::Dict params;
+  params.Set("email", kSecondaryAccount1Email);
+  SetExtraInitParamsInHandler(params);
+
+  std::string* flow_name = params.FindString("flow");
+  ASSERT_THAT(flow_name, Not(IsNull()));
+  EXPECT_THAT(*flow_name, Eq(kCrosAddAccountEduFlow));
+}
+
 INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestSuite,
                          InlineLoginHandlerTest,
                          ::testing::Values(GetGaiaDeviceAccountInfo(),
@@ -363,7 +514,8 @@ class InlineLoginHandlerTestWithArcRestrictions
  public:
   InlineLoginHandlerTestWithArcRestrictions() {
     auto lacros = ash::standalone_browser::GetFeatureRefs();
-    lacros.push_back(crosapi::browser_util::kLacrosForSupervisedUsers);
+    lacros.push_back(
+        ash::standalone_browser::features::kLacrosForSupervisedUsers);
     feature_list_.InitWithFeatures(/*enabled=*/lacros, /*disabled=*/{});
   }
 
@@ -412,7 +564,7 @@ class InlineLoginHandlerTestWithArcRestrictions
     return ValuesListGetAccount(values, email).has_value();
   }
 
-  absl::optional<base::Value> ValuesListGetAccount(
+  std::optional<base::Value> ValuesListGetAccount(
       const base::Value::List& values,
       const std::string& email) {
     for (const base::Value& value : values) {
@@ -421,7 +573,7 @@ class InlineLoginHandlerTestWithArcRestrictions
       if (*email_val == email)
         return value.Clone();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::List& CallGetAccountsNotAvailableInArc() {
@@ -466,8 +618,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
   args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
   web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
-  if (GetDeviceAccountInfo().user_type ==
-      user_manager::UserType::USER_TYPE_CHILD) {
+  if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
     // Consent logging is required for secondary accounts.
     CompleteConsentLogForChildUser(kSecondaryAccount1Email);
   }

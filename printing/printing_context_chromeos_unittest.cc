@@ -72,7 +72,8 @@ class PrintingContextTest : public testing::Test,
     EXPECT_CALL(*connection, GetPrinter(kPrinterName))
         .WillOnce(Return(ByMove(std::move(unique_printer))));
     printing_context_ = PrintingContextChromeos::CreateForTesting(
-        this, std::move(unique_connection));
+        this, PrintingContext::ProcessBehavior::kOopDisabled,
+        std::move(unique_connection));
     auto settings = std::make_unique<PrintSettings>();
     settings->set_device_name(kPrinterName16);
     settings->set_send_user_info(send_user_info);
@@ -208,6 +209,19 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaCol) {
   printable_area_ =
       gfx::Rect(2000, 1000, 297000 - (2000 + 3000), 420000 - (1000 + 4000));
   TestMediaColValue(gfx::Size(29700, 42000), 100, 200, 300, 400);
+}
+
+TEST_F(PrintingContextTest, SettingsToIPPOptionsMediaColLandscape) {
+  settings_.set_requested_media(
+      {gfx::Size(148000, 200000), "om_200030x148170um_200x148mm"});
+  // Use margins (LBRT) of 500, 700, 200, and 1000.
+  printable_area_ =
+      gfx::Rect(500, 700, 148000 - (500 + 200), 200000 - (700 + 1000));
+  // The requested media and printable area is in portrait mode (height larger
+  // than width).  Since the vendor ID has a width larger than the height, the
+  // expected media should get swapped.  When swapped, the margins (LBRT) should
+  // be 1000, 500, 700, and 200.
+  TestMediaColValue(gfx::Size(20000, 14800), 50, 100, 70, 20);
 }
 
 TEST_F(PrintingContextTest, SettingsToIPPOptions_Copies) {
@@ -366,7 +380,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
   EXPECT_FALSE(HasAttribute(kIppClientInfo));
 
   mojom::IppClientInfo invalid_client_info(
-      mojom::IppClientInfo::ClientType::kOther, "$", " ", "{}", absl::nullopt);
+      mojom::IppClientInfo::ClientType::kOther, "$", " ", "{}", std::nullopt);
 
   settings_.set_client_infos({invalid_client_info});
   EXPECT_FALSE(HasAttribute(kIppClientInfo));

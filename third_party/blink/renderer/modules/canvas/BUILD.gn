@@ -33,6 +33,10 @@ blink_modules_sources("canvas") {
     "canvas2d/clip_list.h",
     "canvas2d/identifiability_study_helper.cc",
     "canvas2d/identifiability_study_helper.h",
+    "canvas2d/mesh_2d_buffer.h",
+    "canvas2d/mesh_2d_index_buffer.h",
+    "canvas2d/mesh_2d_uv_buffer.h",
+    "canvas2d/mesh_2d_vertex_buffer.h",
     "canvas2d/path_2d.cc",
     "canvas2d/path_2d.h",
     "canvas2d/v8_canvas_style.cc",
@@ -57,6 +61,7 @@ blink_modules_sources("canvas") {
   deps = [
     "//third_party/blink/renderer/modules/formatted_text",
     "//third_party/blink/renderer/modules/webcodecs",
+    "//third_party/blink/renderer/modules/webgpu",
   ]
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/modules/webcodecs" ]

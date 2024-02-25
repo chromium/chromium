@@ -1,7 +1,11 @@
 Name: memchr
 URL: https://crates.io/crates/memchr
-Description: Safe interface to memchr.
-Version: 2.4.1
-Security Critical: no
+Description: Provides extremely fast (uses SIMD on x86_64, aarch64 and wasm32) routines for
+1, 2 or 3 byte search and single substring search.
+
+Version: 2.7.1
+Security Critical: yes
 Shipped: yes
 License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/memchr-2.7.1/LICENSE-MIT
+Revision: 31c1e7911e45f17db761aa1f152896d92d782587

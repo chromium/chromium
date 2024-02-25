@@ -1,0 +1,16 @@
+include_rules = [
+  "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/language/model",
+  "+ios/chrome/browser/optimization_guide/model",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove these exceptions.
+  "translate_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  "legacy_translate_infobar_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

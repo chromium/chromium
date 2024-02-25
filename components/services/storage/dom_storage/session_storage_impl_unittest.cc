@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -41,7 +42,7 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-std::vector<uint8_t> StringPieceToUint8Vector(base::StringPiece s) {
+std::vector<uint8_t> StringViewToUint8Vector(std::string_view s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
@@ -109,24 +110,24 @@ class SessionStorageImplTest : public testing::Test {
 
   void DoTestPut(const std::string& namespace_id,
                  const blink::StorageKey& storage_key,
-                 base::StringPiece key,
-                 base::StringPiece value,
+                 std::string_view key,
+                 std::string_view value,
                  const std::string& source) {
     session_storage()->CreateNamespace(namespace_id);
     mojo::Remote<blink::mojom::StorageArea> area;
     session_storage()->BindStorageArea(storage_key, namespace_id,
                                        area.BindNewPipeAndPassReceiver(),
                                        base::DoNothing());
-    EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector(key),
-                              StringPieceToUint8Vector(value), absl::nullopt,
+    EXPECT_TRUE(test::PutSync(area.get(), StringViewToUint8Vector(key),
+                              StringViewToUint8Vector(value), std::nullopt,
                               source));
     session_storage()->DeleteNamespace(namespace_id, true);
   }
 
-  absl::optional<std::vector<uint8_t>> DoTestGet(
+  std::optional<std::vector<uint8_t>> DoTestGet(
       const std::string& namespace_id,
       const blink::StorageKey& storage_key,
-      base::StringPiece key) {
+      std::string_view key) {
     session_storage()->CreateNamespace(namespace_id);
     mojo::Remote<blink::mojom::StorageArea> area;
     session_storage()->BindStorageArea(storage_key, namespace_id,
@@ -138,13 +139,13 @@ class SessionStorageImplTest : public testing::Test {
     EXPECT_TRUE(test::GetAllSync(area.get(), &data));
     session_storage()->DeleteNamespace(namespace_id, true);
 
-    std::vector<uint8_t> key_as_bytes = StringPieceToUint8Vector(key);
+    std::vector<uint8_t> key_as_bytes = StringViewToUint8Vector(key);
     for (const auto& key_value : data) {
       if (key_value->key == key_as_bytes) {
         return key_value->value;
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  protected:
@@ -245,8 +246,8 @@ TEST_F(SessionStorageImplTest, StartupShutdownSave) {
   EXPECT_EQ(0ul, data.size());
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
 
   // Verify data is there.
@@ -304,8 +305,8 @@ TEST_F(SessionStorageImplTest, CloneBeforeBrowserClone) {
                                      base::DoNothing());
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
 
   ss_namespace1->Clone(namespace_id2);
@@ -352,8 +353,8 @@ TEST_F(SessionStorageImplTest, Cloning) {
       mojom::SessionStorageCloneType::kWaitForCloneOnNamespace);
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
 
   ss_namespace1->Clone(namespace_id2);
@@ -378,8 +379,8 @@ TEST_F(SessionStorageImplTest, Cloning) {
   EXPECT_EQ(1ul, data.size());
 
   // Put some data in namespace 2.
-  EXPECT_TRUE(test::PutSync(area_n2.get(), StringPieceToUint8Vector("key2"),
-                            StringPieceToUint8Vector("value2"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n2.get(), StringViewToUint8Vector("key2"),
+                            StringViewToUint8Vector("value2"), std::nullopt,
                             "source1"));
   EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
   EXPECT_EQ(2ul, data.size());
@@ -434,8 +435,8 @@ TEST_F(SessionStorageImplTest, ImmediateCloning) {
   FlushMojo();
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value2"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value2"), std::nullopt,
                             "source1"));
 
   session_storage()->CloneNamespace(namespace_id1, namespace_id2,
@@ -494,8 +495,8 @@ TEST_F(SessionStorageImplTest, Scavenging) {
   session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
   area_n1.reset();
 
@@ -559,10 +560,10 @@ TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
 
   // Initialize Session Storage, add some data to it, and check that it's there.
   DoTestPut(namespace_id, storage_key, "key", "value", "source");
-  absl::optional<std::vector<uint8_t>> opt_value =
+  std::optional<std::vector<uint8_t>> opt_value =
       DoTestGet(namespace_id, storage_key, "key");
   ASSERT_TRUE(opt_value);
-  EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
+  EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
 
   ShutDownSessionStorage();
   {
@@ -588,7 +589,7 @@ TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
   // Data should have been preserved now.
   opt_value = DoTestGet(namespace_id, storage_key, "key");
   ASSERT_TRUE(opt_value);
-  EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
+  EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
   ShutDownSessionStorage();
 }
 
@@ -599,10 +600,10 @@ TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
 
   // Initialize Session Storage, add some data to it, and check that it's there.
   DoTestPut(namespace_id, storage_key, "key", "value", "source");
-  absl::optional<std::vector<uint8_t>> opt_value =
+  std::optional<std::vector<uint8_t>> opt_value =
       DoTestGet(namespace_id, storage_key, "key");
   ASSERT_TRUE(opt_value);
-  EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
+  EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
 
   ShutDownSessionStorage();
   // Also flush Task Scheduler tasks to make sure the leveldb is fully closed.
@@ -628,7 +629,7 @@ TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
   // Data should have been preserved now.
   opt_value = DoTestGet(namespace_id, storage_key, "key");
   ASSERT_TRUE(opt_value);
-  EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
+  EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
   ShutDownSessionStorage();
 }
 
@@ -641,7 +642,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   blink::StorageKey storage_key3 =
       blink::StorageKey::CreateFromStringForTesting("http://example.com");
 
-  absl::optional<base::RunLoop> open_loop;
+  std::optional<base::RunLoop> open_loop;
   size_t num_database_open_requests = 0;
   size_t num_databases_destroyed = 0;
   session_storage_impl()->SetDatabaseOpenCallbackForTesting(
@@ -700,9 +701,8 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   // a lot of data on the first storage_key. This put operation should result in
   // a pending commit that will get cancelled when the database connection is
   // closed.
-  auto value = StringPieceToUint8Vector("avalue");
-  area_o3->Put(StringPieceToUint8Vector("w3key"), value, absl::nullopt,
-               "source",
+  auto value = StringViewToUint8Vector("avalue");
+  area_o3->Put(StringViewToUint8Vector("w3key"), value, std::nullopt, "source",
                base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
 
   // Repeatedly write data to the database, to trigger enough commit errors.
@@ -711,10 +711,8 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
     // change to commit.
     std::vector<uint8_t> old_value = value;
     value[0]++;
-    area_o1->Put(StringPieceToUint8Vector("key"), value, absl::nullopt,
-                 "source", base::BindLambdaForTesting([&](bool success) {
-                   EXPECT_TRUE(success);
-                 }));
+    area_o1->Put(StringViewToUint8Vector("key"), value, std::nullopt, "source",
+                 base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
     area_o1.FlushForTesting();
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
@@ -745,7 +743,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   bool success = true;
   test::MockLevelDBObserver observer4;
   area_o1->AddObserver(observer4.Bind());
-  area_o1->Delete(StringPieceToUint8Vector("key"), absl::nullopt, "source",
+  area_o1->Delete(StringViewToUint8Vector("key"), std::nullopt, "source",
                   base::BindLambdaForTesting([&](bool success_in) {
                     success = success_in;
                     delete_loop.Quit();
@@ -760,10 +758,10 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   {
     // Committing data should now work.
     DoTestPut(namespace_id, storage_key1, "key", "value", "source");
-    absl::optional<std::vector<uint8_t>> opt_value =
+    std::optional<std::vector<uint8_t>> opt_value =
         DoTestGet(namespace_id, storage_key1, "key");
     ASSERT_TRUE(opt_value);
-    EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
+    EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
   }
 }
 
@@ -772,7 +770,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
 
-  absl::optional<base::RunLoop> open_loop;
+  std::optional<base::RunLoop> open_loop;
   size_t num_database_open_requests = 0;
   size_t num_databases_destroyed = 0;
   session_storage_impl()->SetDatabaseOpenCallbackForTesting(
@@ -816,14 +814,13 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
       }));
 
   // Repeatedly write data to the database, to trigger enough commit errors.
-  auto value = StringPieceToUint8Vector("avalue");
-  absl::optional<std::vector<uint8_t>> old_value = absl::nullopt;
+  auto value = StringViewToUint8Vector("avalue");
+  std::optional<std::vector<uint8_t>> old_value = std::nullopt;
   while (area.is_connected()) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
-    area->Put(StringPieceToUint8Vector("key"), value, old_value, "source",
-              base::BindLambdaForTesting(
-                  [&](bool success) { EXPECT_TRUE(success); }));
+    area->Put(StringViewToUint8Vector("key"), value, old_value, "source",
+              base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
     area.FlushForTesting();
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
@@ -850,13 +847,12 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
-  old_value = absl::nullopt;
+  old_value = std::nullopt;
   for (int i = 0; i < 64; ++i) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
-    area->Put(StringPieceToUint8Vector("key"), value, old_value, "source",
-              base::BindLambdaForTesting(
-                  [&](bool success) { EXPECT_TRUE(success); }));
+    area->Put(StringViewToUint8Vector("key"), value, old_value, "source",
+              base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
     area.FlushForTesting();
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
@@ -886,8 +882,8 @@ TEST_F(SessionStorageImplTest, GetUsage) {
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
 
   base::RunLoop loop;
@@ -915,8 +911,8 @@ TEST_F(SessionStorageImplTest, DeleteStorage) {
                                      base::DoNothing());
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
 
   session_storage()->DeleteStorage(storage_key1, namespace_id1,
@@ -928,8 +924,8 @@ TEST_F(SessionStorageImplTest, DeleteStorage) {
 
   // Next, test that it deletes the data even if there isn't a namespace open.
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
   area.reset();
 
@@ -966,8 +962,8 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
                                      base::DoNothing());
 
   // Put some data in both.
-  EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
   session_storage_impl()->FlushAreaForTesting(namespace_id1, storage_key1);
 
@@ -976,7 +972,7 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   // Clear all the data from the backing database.
   base::RunLoop loop;
   session_storage_impl()->DatabaseForTesting()->DeletePrefixed(
-      StringPieceToUint8Vector("map"),
+      StringViewToUint8Vector("map"),
       base::BindLambdaForTesting([&](leveldb::Status status) {
         loop.Quit();
         EXPECT_TRUE(status.ok());
@@ -1025,8 +1021,8 @@ TEST_F(SessionStorageImplTest, ClearDiskState) {
   EXPECT_EQ(0ul, data.size());
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
   area.reset();
 
@@ -1203,11 +1199,11 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
                                      base::DoNothing());
 
   // Put some data in both.
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
-  EXPECT_TRUE(test::PutSync(area_n2.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value2"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n2.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value2"), std::nullopt,
                             "source1"));
 
   session_storage_impl()->FlushAreaForTesting(namespace_id1, storage_key1);
@@ -1232,10 +1228,10 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
   EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
   EXPECT_EQ(1ul, data.size());
 
-  absl::optional<std::vector<uint8_t>> opt_value2 =
+  std::optional<std::vector<uint8_t>> opt_value2 =
       DoTestGet(namespace_id2, storage_key1, "key1");
   ASSERT_TRUE(opt_value2);
-  EXPECT_EQ(StringPieceToUint8Vector("value2"), opt_value2.value());
+  EXPECT_EQ(StringViewToUint8Vector("value2"), opt_value2.value());
 }
 
 TEST_F(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
@@ -1252,8 +1248,8 @@ TEST_F(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
                                      base::DoNothing());
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
 
   // Delete the storage_key namespace, but save it.
@@ -1290,8 +1286,8 @@ TEST_F(SessionStorageImplTest, DeleteWithoutPersistBeforeBrowserClone) {
                                      base::DoNothing());
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
 
   // Delete the storage_key namespace and don't save it.
@@ -1328,8 +1324,8 @@ TEST_F(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
                                      base::DoNothing());
 
   // Put some data.
-  EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), absl::nullopt,
+  EXPECT_TRUE(test::PutSync(area_n1.get(), StringViewToUint8Vector("key1"),
+                            StringViewToUint8Vector("value1"), std::nullopt,
                             "source1"));
 
   // Do the browser-side clone.

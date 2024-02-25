@@ -4,7 +4,42 @@
 
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
+
+static_library("keyboard_suppressor") {
+  sources = [
+    "touch_to_fill_keyboard_suppressor.cc",
+    "touch_to_fill_keyboard_suppressor.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+  ]
+  deps = [
+    "//components/autofill/core/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "touch_to_fill_keyboard_suppressor_unittest.cc" ]
+  deps = [
+    ":keyboard_suppressor",
+    "//base",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
 
 java_strings_grd("autofill_strings_grd") {
   grd_file = "java/strings/autofill_strings.grd"
@@ -109,6 +144,7 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable/discover_card.xml",
     "payments/java/res/drawable/elo_card.xml",
     "payments/java/res/drawable/ic_credit_card_black.xml",
+    "payments/java/res/drawable/ic_credit_card_primary.xml",
     "payments/java/res/drawable/ic_offer_tag.xml",
     "payments/java/res/drawable/mir_card.xml",
     "payments/java/res/drawable/visa_card.xml",
@@ -134,13 +170,14 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/data_model/autofill_profile.h",
     "../core/browser/data_model/autofill_structured_address_component.h",
     "../core/browser/data_model/credit_card.h",
+    "../core/browser/data_model/iban.h",
     "../core/browser/field_types.h",
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",
     "../core/browser/metrics/payments/virtual_card_enrollment_metrics.h",
     "../core/browser/payments/card_unmask_challenge_option.h",
-    "../core/browser/ui/accessory_sheet_enums.h",
     "../core/browser/ui/payments/payments_bubble_closed_reasons.h",
     "../core/browser/ui/popup_item_ids.h",
+    "../core/browser/ui/suggestion.h",
   ]
 }
 
@@ -161,11 +198,11 @@ android_library("main_autofill_java") {
     ":autofill_java_resources",
     ":payments_autofill_java",
     "//base:base_java",
-    "//base:jni_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -176,6 +213,7 @@ android_library("main_autofill_java") {
     "java/src/org/chromium/components/autofill/AutofillPopup.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/AutofillSuggestion.java",
+    "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
   srcjar_deps = [
     ":autofill_core_browser_java_enums",
@@ -188,8 +226,8 @@ generate_jni("main_autofill_jni_headers") {
   sources = [
     "java/src/org/chromium/components/autofill/AddressNormalizer.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
+    "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
-  deps = [ "//base:jni_java" ]
 }
 
 # A minimal library used to expose autofill features to webview.
@@ -208,9 +246,9 @@ android_library("payments_autofill_java") {
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
   ]
   deps = [
-    "//base:jni_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":payments_jni_headers" ]
 }
@@ -238,7 +276,6 @@ generate_jni("payments_jni_headers") {
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
   ]
-  deps = [ "//base:jni_java" ]
 }
 
 static_library("payments_autofill_cc") {

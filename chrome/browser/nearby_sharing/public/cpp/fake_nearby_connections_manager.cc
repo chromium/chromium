@@ -5,7 +5,9 @@
 #include "chrome/browser/nearby_sharing/public/cpp/fake_nearby_connections_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/optional_util.h"
 
 FakeNearbyConnectionsManager::FakeNearbyConnectionsManager() = default;
 
@@ -75,7 +77,7 @@ void FakeNearbyConnectionsManager::StopDiscovery() {
 void FakeNearbyConnectionsManager::Connect(
     std::vector<uint8_t> endpoint_info,
     const std::string& endpoint_id,
-    absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
+    std::optional<std::vector<uint8_t>> bluetooth_mac_address,
     DataUsage data_usage,
     NearbyConnectionCallback callback) {
   DCHECK(!is_shutdown());
@@ -120,15 +122,9 @@ void FakeNearbyConnectionsManager::RegisterPayloadPath(
                                    base::File::Flags::FLAG_READ |
                                    base::File::Flags::FLAG_WRITE);
   }
-
-  auto it = payload_path_status_.find(payload_id);
-  if (it == payload_path_status_.end()) {
-    std::move(callback).Run(
-        nearby::connections::mojom::Status::kPayloadUnknown);
-    return;
-  }
-
-  std::move(callback).Run(it->second);
+  auto* status = base::FindOrNull(payload_path_status_, payload_id);
+  std::move(callback).Run(
+      status ? *status : nearby::connections::mojom::Status::kPayloadUnknown);
 }
 
 FakeNearbyConnectionsManager::Payload*
@@ -152,7 +148,7 @@ void FakeNearbyConnectionsManager::Cancel(int64_t payload_id) {
             payload_id, nearby::connections::mojom::PayloadStatus::kCanceled,
             /*total_bytes=*/0,
             /*bytes_transferred=*/0),
-        /*upgraded_medium=*/absl::nullopt);
+        /*upgraded_medium=*/std::nullopt);
     payload_status_listeners_.erase(payload_id);
   }
 
@@ -166,30 +162,19 @@ void FakeNearbyConnectionsManager::ClearIncomingPayloads() {
   payload_status_listeners_.clear();
 }
 
-absl::optional<std::string>
-FakeNearbyConnectionsManager::GetAuthenticationToken(
+std::optional<std::string> FakeNearbyConnectionsManager::GetAuthenticationToken(
     const std::string& endpoint_id) {
   DCHECK(!is_shutdown());
-
-  auto iter = endpoint_auth_tokens_.find(endpoint_id);
-  if (iter != endpoint_auth_tokens_.end()) {
-    return iter->second;
-  }
-
-  return absl::nullopt;
+  return base::OptionalFromPtr(
+      base::FindOrNull(endpoint_auth_tokens_, endpoint_id));
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 FakeNearbyConnectionsManager::GetRawAuthenticationToken(
     const std::string& endpoint_id) {
   DCHECK(!is_shutdown());
-
-  auto iter = endpoint_raw_auth_tokens_.find(endpoint_id);
-  if (iter != endpoint_raw_auth_tokens_.end()) {
-    return iter->second;
-  }
-
-  return absl::nullopt;
+  return base::OptionalFromPtr(
+      base::FindOrNull(endpoint_raw_auth_tokens_, endpoint_id));
 }
 
 void FakeNearbyConnectionsManager::SetAuthenticationToken(
@@ -212,6 +197,20 @@ void FakeNearbyConnectionsManager::RegisterBandwidthUpgradeListener(
 void FakeNearbyConnectionsManager::UpgradeBandwidth(
     const std::string& endpoint_id) {
   upgrade_bandwidth_endpoint_ids_.insert(endpoint_id);
+}
+
+void FakeNearbyConnectionsManager::ConnectV3(
+    PresenceDevice remote_presence_device,
+    DataUsage data_usage,
+    NearbyConnectionCallback callback) {
+  CHECK(!is_shutdown());
+  connected_data_usage_ = data_usage;
+  std::move(callback).Run(connection_.get());
+}
+
+void FakeNearbyConnectionsManager::DisconnectV3(
+    PresenceDevice remote_presence_device) {
+  CHECK(!is_shutdown());
 }
 
 base::WeakPtr<NearbyConnectionsManager>
@@ -261,11 +260,9 @@ void FakeNearbyConnectionsManager::SetPayloadPathStatus(
 base::WeakPtr<FakeNearbyConnectionsManager::PayloadStatusListener>
 FakeNearbyConnectionsManager::GetRegisteredPayloadStatusListener(
     int64_t payload_id) {
-  auto it = payload_status_listeners_.find(payload_id);
-  if (it != payload_status_listeners_.end()) {
-    return it->second;
+  if (auto* ptr = base::FindOrNull(payload_status_listeners_, payload_id)) {
+    return *ptr;
   }
-
   return nullptr;
 }
 
@@ -279,14 +276,10 @@ bool FakeNearbyConnectionsManager::WasPayloadCanceled(
   return base::Contains(canceled_payload_ids_, payload_id);
 }
 
-absl::optional<base::FilePath>
+std::optional<base::FilePath>
 FakeNearbyConnectionsManager::GetRegisteredPayloadPath(int64_t payload_id) {
-  auto it = registered_payload_paths_.find(payload_id);
-  if (it == registered_payload_paths_.end()) {
-    return absl::nullopt;
-  }
-
-  return it->second;
+  return base::OptionalFromPtr(
+      base::FindOrNull(registered_payload_paths_, payload_id));
 }
 
 void FakeNearbyConnectionsManager::CleanupForProcessStopped() {

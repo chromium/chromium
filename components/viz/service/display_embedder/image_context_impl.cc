@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
@@ -43,6 +44,9 @@ SkColor4f GetFallbackColorForPlane(viz::SharedImageFormat format,
     case viz::SharedImageFormat::PlaneConfig::kY_U_V:
     case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       return plane_index == 0 ? SkColors::kWhite : SkColors::kGray;
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V_A:
+      return (plane_index == 0 || plane_index == 3) ? SkColors::kWhite
+                                                    : SkColors::kGray;
     case viz::SharedImageFormat::PlaneConfig::kY_UV:
       return plane_index == 0 ? SkColors::kWhite : SkColors::kGray;
     case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
@@ -60,7 +64,7 @@ ImageContextImpl::ImageContextImpl(
     const gfx::Size& size,
     SharedImageFormat format,
     bool maybe_concurrent_reads,
-    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
     bool is_for_render_pass,
     bool raw_draw_if_possible)
@@ -173,8 +177,11 @@ void ImageContextImpl::CreateFallbackImage(
   // allocated. Skia will skip drawing a null GrPromiseImageTexture, do nothing
   // and leave it null.
   const auto& formats = backend_formats();
-  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal)
+  // Return early if SIFormat prefers external sampler.
+  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal ||
+      format().PrefersExternalSampler()) {
     return;
+  }
 
   DCHECK(!fallback_context_state_);
   fallback_context_state_ = context_state;
@@ -185,8 +192,8 @@ void ImageContextImpl::CreateFallbackImage(
     auto fallback_texture =
         fallback_context_state_->gr_context()->createBackendTexture(
             size().width(), size().height(), formats[plane_index],
-            GetFallbackColorForPlane(format(), plane_index), GrMipMapped::kNo,
-            GrRenderable::kYes);
+            GetFallbackColorForPlane(format(), plane_index),
+            skgpu::Mipmapped::kNo, GrRenderable::kYes);
 
     if (!fallback_texture.isValid()) {
       DeleteFallbackTextures();
@@ -267,11 +274,10 @@ void ImageContextImpl::BeginAccessIfNecessary(
 
   // Legacy mailboxes support only single planar formats.
   CHECK(format().is_single_plane());
-  bool angle_rgbx_internal_format =
-      context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
   GrBackendTexture backend_texture;
-  gpu::GLFormatDesc format_desc = gpu::ToGLFormatDesc(
-      format(), /*plane_index=*/0, angle_rgbx_internal_format);
+  gpu::GLFormatDesc format_desc =
+      context_state->GetGLFormatCaps().ToGLFormatDesc(format(),
+                                                      /*plane_index=*/0);
   gpu::GetGrBackendTexture(
       context_state->feature_info(), texture_base->target(), size(),
       texture_base->service_id(), format_desc.storage_internal_format,

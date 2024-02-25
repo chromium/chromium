@@ -4,22 +4,20 @@
 
 #include "chrome/browser/device_reauth/chromeos/device_authenticator_chromeos.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 
 DeviceAuthenticatorChromeOS::DeviceAuthenticatorChromeOS(
-    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator)
-    : authenticator_(std::move(authenticator)) {}
+    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
+    DeviceAuthenticatorProxy* proxy,
+    const device_reauth::DeviceAuthParams& params)
+    : DeviceAuthenticatorCommon(proxy,
+                                params.GetAuthenticationValidityPeriod(),
+                                params.GetAuthResultHistogram()),
+      authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorChromeOS::~DeviceAuthenticatorChromeOS() = default;
-
-// static
-scoped_refptr<DeviceAuthenticatorChromeOS>
-DeviceAuthenticatorChromeOS::CreateForTesting(
-    std::unique_ptr<AuthenticatorChromeOSInterface> authenticator) {
-  return base::WrapRefCounted(
-      new DeviceAuthenticatorChromeOS(std::move(authenticator)));
-}
 
 bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometrics() {
   // TODO(crbug.com/1440090): Add implementation of the biometric
@@ -35,17 +33,12 @@ bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometricOrScreenLock() {
   return false;
 }
 
-void DeviceAuthenticatorChromeOS::Authenticate(
-    device_reauth::DeviceAuthRequester requester,
-    AuthenticateCallback callback,
-    bool use_last_valid_auth) {
-  NOTIMPLEMENTED();
-}
-
 void DeviceAuthenticatorChromeOS::AuthenticateWithMessage(
     const std::u16string& message,
     AuthenticateCallback callback) {
   if (!NeedsToAuthenticate()) {
+    RecordAuthResultSkipped();
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
     return;
@@ -58,8 +51,7 @@ void DeviceAuthenticatorChromeOS::AuthenticateWithMessage(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DeviceAuthenticatorChromeOS::Cancel(
-    device_reauth::DeviceAuthRequester requester) {
+void DeviceAuthenticatorChromeOS::Cancel() {
   // TODO(b/292097975): Cancel the in session auth dialog.
   if (callback_) {
     std::move(callback_).Run(false);

@@ -111,7 +111,7 @@ void MojoAudioInputIPC::StreamCreated(
         stream_client_receiver,
     media::mojom::blink::ReadOnlyAudioDataPipePtr data_pipe,
     bool initially_muted,
-    const absl::optional<base::UnguessableToken>& stream_id) {
+    const std::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
   DCHECK(!stream_);

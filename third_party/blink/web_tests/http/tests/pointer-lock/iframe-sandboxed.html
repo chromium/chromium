@@ -17,7 +17,7 @@
         }
       });
       function onIframeLoaded() {
-        clickOnElement(iframe);
+        iframe.contentWindow.postMessage([ "clickBody" ], "*");
       }
       var iframe = document.createElement('iframe');
       iframe.sandbox = 'allow-scripts';

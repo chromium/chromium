@@ -75,7 +75,7 @@ class MediaCodecLoopTest : public testing::Test {
             .WillRepeatedly(Return(false));
         EXPECT_CALL(Codec(), DequeueOutputBuffer(_, _, _, _, _, _, _))
             .Times(AtLeast(1))
-            .WillRepeatedly(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+            .WillRepeatedly(Return(MediaCodecResult::Codes::kTryAgainLater));
         break;
     }
 
@@ -106,7 +106,7 @@ class MediaCodecLoopTest : public testing::Test {
     ExpectIsAnyInputPending(false);
     EXPECT_CALL(Codec(), DequeueOutputBuffer(_, _, _, _, _, _, _))
         .Times(1)
-        .WillOnce(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+        .WillOnce(Return(MediaCodecResult::Codes::kTryAgainLater));
   }
 
   void ExpectIsAnyInputPending(bool pending) {
@@ -114,7 +114,7 @@ class MediaCodecLoopTest : public testing::Test {
   }
 
   void ExpectDequeueInputBuffer(int input_buffer_index,
-                                MediaCodecStatus status = MEDIA_CODEC_OK) {
+                                MediaCodecResult status = OkStatus()) {
     EXPECT_CALL(Codec(), DequeueInputBuffer(_, _))
         .WillOnce(DoAll(SetArgPointee<1>(input_buffer_index), Return(status)));
   }
@@ -126,7 +126,7 @@ class MediaCodecLoopTest : public testing::Test {
   // Expect a call to queue |data| into MC buffer |input_buffer_index|.
   void ExpectQueueInputBuffer(int input_buffer_index,
                               const MediaCodecLoop::InputData& data,
-                              MediaCodecStatus status = MEDIA_CODEC_OK) {
+                              MediaCodecResult status = OkStatus()) {
     EXPECT_CALL(Codec(), QueueInputBuffer(input_buffer_index, data.memory,
                                           data.length, data.presentation_time))
         .Times(1)
@@ -158,7 +158,7 @@ class MediaCodecLoopTest : public testing::Test {
     EosOutputBuffer() { eos = true; }
   };
 
-  void ExpectDequeueOutputBuffer(MediaCodecStatus status) {
+  void ExpectDequeueOutputBuffer(MediaCodecResult status) {
     EXPECT_CALL(Codec(), DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillOnce(Return(status));
   }
@@ -169,7 +169,7 @@ class MediaCodecLoopTest : public testing::Test {
             SetArgPointee<1>(buffer.index), SetArgPointee<2>(buffer.offset),
             SetArgPointee<3>(buffer.size), SetArgPointee<4>(buffer.pts),
             SetArgPointee<5>(buffer.eos), SetArgPointee<6>(buffer.key_frame),
-            Return(MEDIA_CODEC_OK)));
+            Return(OkStatus())));
   }
 
   void ExpectOnDecodedFrame(const OutputBuffer& buf) {
@@ -220,7 +220,7 @@ TEST_F(MediaCodecLoopTest, TestPendingWorkWithoutInput) {
   ExpectIsAnyInputPending(false);
   EXPECT_CALL(Codec(), DequeueOutputBuffer(_, _, _, _, _, _, _))
       .Times(1)
-      .WillOnce(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+      .WillOnce(Return(MediaCodecResult::Codes::kTryAgainLater));
   codec_loop_->ExpectWork();
   WaitUntilIdle(ShouldNotBeIdle);
 }
@@ -280,7 +280,7 @@ TEST_F(MediaCodecLoopTest, TestQueueEos) {
     // See TestUnqueuedEos.
     EXPECT_CALL(Codec(), DequeueOutputBuffer(_, _, _, _, _, _, _))
         .Times(1)
-        .WillOnce(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+        .WillOnce(Return(MediaCodecResult::Codes::kTryAgainLater));
   }
   codec_loop_->ExpectWork();
   // Don't WaitUntilIdle() here.  See TestUnqueuedEos.
@@ -334,7 +334,7 @@ TEST_F(MediaCodecLoopTest, TestQueueInputData) {
     // MCL will try to dequeue an output buffer too.
     EXPECT_CALL(Codec(), DequeueOutputBuffer(_, _, _, _, _, _, _))
         .Times(1)
-        .WillOnce(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+        .WillOnce(Return(MediaCodecResult::Codes::kTryAgainLater));
 
     // ExpectWork will try again.
     ExpectEmptyIOLoop();
@@ -358,7 +358,8 @@ TEST_F(MediaCodecLoopTest, TestQueueInputDataFails) {
     ExpectProvideInputData(data);
 
     // MCL should send the buffer into MediaCodec and notify the client.
-    ExpectQueueInputBuffer(input_buffer_index, data, MEDIA_CODEC_ERROR);
+    ExpectQueueInputBuffer(input_buffer_index, data,
+                           MediaCodecResult::Codes::kError);
     ExpectInputDataQueued(false);
     EXPECT_CALL(*client_, OnCodecLoopError()).Times(1);
   }
@@ -373,9 +374,9 @@ TEST_F(MediaCodecLoopTest, TestQueueInputDataTryAgain) {
     InSequence _s;
 
     ExpectIsAnyInputPending(true);
-    ExpectDequeueInputBuffer(-1, MEDIA_CODEC_TRY_AGAIN_LATER);
+    ExpectDequeueInputBuffer(-1, MediaCodecResult::Codes::kTryAgainLater);
     // MCL will try for output too.
-    ExpectDequeueOutputBuffer(MEDIA_CODEC_TRY_AGAIN_LATER);
+    ExpectDequeueOutputBuffer(MediaCodecResult::Codes::kTryAgainLater);
   }
   codec_loop_->ExpectWork();
   // Note that the client might not be allowed to change from "input pending"
@@ -431,18 +432,19 @@ TEST_F(MediaCodecLoopTest, TestOnKeyAdded) {
     ExpectProvideInputData(data);
 
     // Notify MCL that it's missing the key.
-    ExpectQueueInputBuffer(input_buffer_index, data, MEDIA_CODEC_NO_KEY);
+    ExpectQueueInputBuffer(input_buffer_index, data,
+                           MediaCodecResult::Codes::kNoKey);
 
     EXPECT_CALL(*client_, OnWaiting(WaitingReason::kNoDecryptionKey)).Times(1);
 
     // MCL should now try for output buffers.
-    ExpectDequeueOutputBuffer(MEDIA_CODEC_TRY_AGAIN_LATER);
+    ExpectDequeueOutputBuffer(MediaCodecResult::Codes::kTryAgainLater);
 
     // MCL will try again, since trying to queue the input buffer is considered
     // doing work, for some reason.  It would be nice to make this optional.
     // Note that it should not ask us for more input, since it has not yet sent
     // the buffer we just provided.
-    ExpectDequeueOutputBuffer(MEDIA_CODEC_TRY_AGAIN_LATER);
+    ExpectDequeueOutputBuffer(MediaCodecResult::Codes::kTryAgainLater);
   }
   codec_loop_->ExpectWork();
 
@@ -453,7 +455,7 @@ TEST_F(MediaCodecLoopTest, TestOnKeyAdded) {
     InSequence _s;
     // MCL should only try for output buffers, since it's still waiting for a
     // key to be added.
-    ExpectDequeueOutputBuffer(MEDIA_CODEC_TRY_AGAIN_LATER);
+    ExpectDequeueOutputBuffer(MediaCodecResult::Codes::kTryAgainLater);
   }
   codec_loop_->ExpectWork();
 
@@ -465,7 +467,7 @@ TEST_F(MediaCodecLoopTest, TestOnKeyAdded) {
     data.memory = nullptr;
     ExpectQueueInputBuffer(input_buffer_index, data);
     ExpectInputDataQueued(true);
-    ExpectDequeueOutputBuffer(MEDIA_CODEC_TRY_AGAIN_LATER);
+    ExpectDequeueOutputBuffer(MediaCodecResult::Codes::kTryAgainLater);
 
     // MCL did work, so it will try again.
     ExpectEmptyIOLoop();

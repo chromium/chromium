@@ -5,21 +5,26 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_H_
 
+#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
 
-class SharedStorage;
+class SharedStorageUrlWithMetadata;
+class SharedStorageRunOperationMethodOptions;
+class WorkletOptions;
 
 // Implement the worklet attribute under window.sharedStorage.
 class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit SharedStorageWorklet(SharedStorage*);
+  static SharedStorageWorklet* Create(ScriptState*);
+
   ~SharedStorageWorklet() override = default;
 
   void Trace(Visitor*) const override;
@@ -28,10 +33,37 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   // addModule() imports ES6 module scripts.
   ScriptPromise addModule(ScriptState*,
                           const String& module_url,
+                          const WorkletOptions* options,
                           ExceptionState&);
+  ScriptPromise selectURL(ScriptState*,
+                          const String& name,
+                          HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+                          ExceptionState&);
+  ScriptPromise selectURL(ScriptState*,
+                          const String& name,
+                          HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+                          const SharedStorageRunOperationMethodOptions* options,
+                          ExceptionState&);
+  ScriptPromise run(ScriptState*, const String& name, ExceptionState&);
+  ScriptPromise run(ScriptState*,
+                    const String& name,
+                    const SharedStorageRunOperationMethodOptions* options,
+                    ExceptionState&);
+
+  // Helper implementation method for `sharedStorage.worklet.addModule()` and
+  // for `sharedStorage.createWorklet()`.
+  ScriptPromise AddModuleHelper(ScriptState*,
+                                const String& module_url,
+                                const WorkletOptions* options,
+                                ExceptionState&,
+                                bool resolve_to_worklet);
 
  private:
-  Member<SharedStorage> shared_storage_;
+  // Set when addModule() was called and passed early renderer checks.
+  HeapMojoAssociatedRemote<mojom::blink::SharedStorageWorkletHost>
+      worklet_host_{nullptr};
+
+  bool keep_alive_after_operation_ = true;
 };
 
 }  // namespace blink

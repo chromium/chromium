@@ -20,6 +20,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -142,6 +144,8 @@ TEST_F(NativeWidgetAuraTest, CenterWindowSmallParentNotAtOrigin) {
 
 // View which handles both mouse and gesture events.
 class EventHandlingView : public View {
+  METADATA_HEADER(EventHandlingView, View)
+
  public:
   EventHandlingView() = default;
   EventHandlingView(const EventHandlingView&) = delete;
@@ -155,7 +159,6 @@ class EventHandlingView : public View {
   }
 
   // View:
-  const char* GetClassName() const override { return "EventHandlingView"; }
   void OnMouseEvent(ui::MouseEvent* event) override { event->SetHandled(); }
   void OnGestureEvent(ui::GestureEvent* event) override {
     // Record the handled gesture event.
@@ -174,6 +177,9 @@ class EventHandlingView : public View {
  private:
   std::set<ui::EventType> handled_gestures_set_;
 };
+
+BEGIN_METADATA(EventHandlingView)
+END_METADATA
 
 // Verifies that when the mouse click interrupts the gesture scroll, the view
 // where the gesture scroll starts should receive the scroll end event.
@@ -461,8 +467,11 @@ TEST_F(NativeWidgetAuraTest, TestPropertiesWhenAddedToLayout) {
       std::make_unique<PropertyTestLayoutManager>());
   UniqueWidgetPtr widget = std::make_unique<TestWidget>();
   Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
-  params.delegate = new WidgetDelegate();
-  params.delegate->SetOwnedByWidget(true);
+
+  auto delegate_owned = std::make_unique<WidgetDelegate>();
+  params.delegate = delegate_owned.get();
+  params.delegate->RegisterDeleteDelegateCallback(
+      base::DoNothingWithBoundArgs(std::move(delegate_owned)));
   params.delegate->SetHasWindowSizeControls(true);
   params.parent = nullptr;
   params.context = root_window();
@@ -488,6 +497,8 @@ TEST_F(NativeWidgetAuraTest, GetClientAreaScreenBounds) {
 
 // View subclass that tracks whether it has gotten a gesture event.
 class GestureTrackingView : public View {
+  METADATA_HEADER(GestureTrackingView, View)
+
  public:
   GestureTrackingView() = default;
 
@@ -513,6 +524,9 @@ class GestureTrackingView : public View {
   // Dictates what OnGestureEvent() returns.
   bool consume_gesture_event_ = true;
 };
+
+BEGIN_METADATA(GestureTrackingView)
+END_METADATA
 
 // Verifies a capture isn't set on touch press and that the view that gets
 // the press gets the release.
@@ -755,9 +769,9 @@ TEST_F(NativeWidgetAuraTest, OnWidgetMovedInvokedAfterAcquireLayer) {
   // is destroyed.
   // See WidgetDelegateView::WidgetDelegateView();
   auto delegate = std::make_unique<MoveTestWidgetDelegate>();
-  auto* delegate_ptr = delegate.get();
+  auto* delegate_ptr = delegate.release();
   UniqueWidgetPtr widget = base::WrapUnique(Widget::CreateWindowWithContext(
-      std::move(delegate), root_window(), gfx::Rect(10, 10, 100, 200)));
+      delegate_ptr, root_window(), gfx::Rect(10, 10, 100, 200)));
   widget->Show();
   delegate_ptr->ClearGotMove();
   // Simulate a maximize with animation.
@@ -830,8 +844,11 @@ TEST_F(NativeWidgetAuraTest, TransientChildModalWindowVisibility) {
   UniqueWidgetPtr child = std::make_unique<Widget>();
   Widget::InitParams child_params(Widget::InitParams::TYPE_WINDOW);
   child_params.parent = parent->GetNativeWindow();
-  child_params.delegate = new WidgetDelegate;
-  child_params.delegate->SetOwnedByWidget(true);
+
+  auto delegate_owned = std::make_unique<WidgetDelegate>();
+  child_params.delegate = delegate_owned.get();
+  child_params.delegate->RegisterDeleteDelegateCallback(
+      base::DoNothingWithBoundArgs(std::move(delegate_owned)));
   child_params.delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
   child->Init(std::move(child_params));
   child->SetBounds(gfx::Rect(0, 0, 200, 200));
@@ -963,11 +980,11 @@ class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
   }
 
   void TearDown() override {
-    native_widget_->CloseNow();
+    native_widget_.ExtractAsDangling()->CloseNow();
     ViewsTestBase::TearDown();
   }
 
-  raw_ptr<TestNativeWidgetAura, DanglingUntriaged> native_widget_;
+  raw_ptr<TestNativeWidgetAura> native_widget_ = nullptr;
 };
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, GetHitTestMaskTest) {

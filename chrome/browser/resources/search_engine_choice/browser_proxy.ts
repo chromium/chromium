@@ -7,15 +7,19 @@
  * to interact with the browser.
  */
 
-import {PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
+import {PageHandlerFactory, PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
 export interface SearchEngineChoice {
-  prepopulate_id: number;
+  prepopulateId: number;
   name: string;
+  iconPath: string;
+  url: string;
+  marketingSnippet: string;
+  showMarketingSnippet: boolean;
 }
 
 export class SearchEngineChoiceBrowserProxy {
-  handler: PageHandlerInterface;
+  handler: PageHandlerRemote;
 
   constructor(handler: PageHandlerRemote) {
     this.handler = handler;

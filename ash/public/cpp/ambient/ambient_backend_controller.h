@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_AMBIENT_AMBIENT_BACKEND_CONTROLLER_H_
 
 #include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -58,11 +58,14 @@ struct ASH_PUBLIC_EXPORT WeatherInfo {
   WeatherInfo& operator=(const WeatherInfo&);
   ~WeatherInfo();
 
+  // The description of the weather condition.
+  std::optional<std::string> condition_description;
+
   // The url of the weather condition icon image.
-  absl::optional<std::string> condition_icon_url;
+  std::optional<std::string> condition_icon_url;
 
   // Weather temperature in Fahrenheit.
-  absl::optional<float> temp_f;
+  std::optional<float> temp_f;
 
   // If the temperature should be displayed in celsius. Conversion must happen
   // before the value in temp_f is displayed.
@@ -87,7 +90,7 @@ struct ASH_PUBLIC_EXPORT ScreenUpdate {
   // 2. Fatal errors, such as response parsing failure, happened during the
   // process, and a default |ScreenUpdate| instance was returned to indicate
   // the error.
-  absl::optional<WeatherInfo> weather_info;
+  std::optional<WeatherInfo> weather_info;
 };
 
 // Interface to manage ambient mode backend.
@@ -101,10 +104,10 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
       base::OnceCallback<void(bool success, const AmbientSettings& settings)>;
   // TODO(wutao): Make |settings| move only.
   using OnSettingsAndAlbumsFetchedCallback =
-      base::OnceCallback<void(const absl::optional<AmbientSettings>& settings,
+      base::OnceCallback<void(const std::optional<AmbientSettings>& settings,
                               PersonalAlbums personal_albums)>;
   using FetchWeatherCallback =
-      base::OnceCallback<void(const absl::optional<WeatherInfo>& weather_info)>;
+      base::OnceCallback<void(const std::optional<WeatherInfo>& weather_info)>;
 
   static AmbientBackendController* Get();
 

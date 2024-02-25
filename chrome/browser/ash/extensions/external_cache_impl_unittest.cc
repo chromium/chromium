@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -29,7 +31,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -65,7 +66,7 @@ class ExternalCacheImplTest : public testing::Test,
     return test_shared_loader_factory_;
   }
 
-  const absl::optional<base::Value::Dict>& provided_prefs() { return prefs_; }
+  const std::optional<base::Value::Dict>& provided_prefs() { return prefs_; }
   const std::set<extensions::ExtensionId>& deleted_extension_files() const {
     return deleted_extension_files_;
   }
@@ -74,6 +75,10 @@ class ExternalCacheImplTest : public testing::Test,
   void OnExtensionListsUpdated(const base::Value::Dict& prefs) override {
     prefs_ = prefs.Clone();
   }
+
+  bool IsRollbackAllowed() const override { return is_rollback_allowed_; }
+
+  bool CanRollbackNow() const override { return can_rollback_now_; }
 
   void OnCachedExtensionFileDeleted(
       const extensions::ExtensionId& id) override {
@@ -104,7 +109,7 @@ class ExternalCacheImplTest : public testing::Test,
   }
 
   void CreateFile(const base::FilePath& file) {
-    EXPECT_TRUE(base::WriteFile(file, base::StringPiece()));
+    EXPECT_TRUE(base::WriteFile(file, std::string_view()));
   }
 
   base::FilePath GetExtensionFile(const base::FilePath& dir,
@@ -129,15 +134,27 @@ class ExternalCacheImplTest : public testing::Test,
     return base::Value(std::move(entry));
   }
 
+  void AllowImmediateRollback() {
+    is_rollback_allowed_ = true;
+    can_rollback_now_ = true;
+  }
+
+  void AllowRollbackOnNextInit() {
+    is_rollback_allowed_ = true;
+    can_rollback_now_ = false;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
+  bool is_rollback_allowed_ = false;
+  bool can_rollback_now_ = false;
   base::ScopedTempDir cache_dir_;
   base::ScopedTempDir temp_dir_;
-  absl::optional<base::Value::Dict> prefs_;
+  std::optional<base::Value::Dict> prefs_;
   std::set<extensions::ExtensionId> deleted_extension_files_;
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
@@ -254,22 +271,22 @@ TEST_F(ExternalCacheImplTest, Basic) {
       base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId4, "4")));
 
   // Damaged file should be removed from disk.
-  EXPECT_EQ(0ul, deleted_extension_files().size());
+  EXPECT_TRUE(deleted_extension_files().empty());
   external_cache.OnDamagedFileDetected(
       GetExtensionFile(cache_dir, kTestExtensionId2, "2"));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(3ul, provided_prefs()->size());
   EXPECT_FALSE(
       base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId2, "2")));
-  EXPECT_EQ(1ul, deleted_extension_files().size());
-  EXPECT_EQ(1ul, deleted_extension_files().count(kTestExtensionId2));
+  EXPECT_THAT(deleted_extension_files(),
+              testing::ElementsAre(kTestExtensionId2));
 
   // Shutdown with callback OnExtensionListsUpdated that clears prefs.
   external_cache.Shutdown(
       base::BindOnce(&ExternalCacheImplTest::OnExtensionListsUpdated,
                      base::Unretained(this), base::Value::Dict()));
   content::RunAllTasksUntilIdle();
-  EXPECT_EQ(provided_prefs()->size(), 0ul);
+  EXPECT_TRUE(provided_prefs()->empty());
 
   // After Shutdown directory shouldn't be touched.
   external_cache.OnDamagedFileDetected(
@@ -309,6 +326,177 @@ TEST_F(ExternalCacheImplTest, PreserveExternalCrx) {
             nullptr);
   EXPECT_NE(entry1->Find(extensions::ExternalProviderImpl::kExternalVersion),
             nullptr);
+}
+
+// Checks that if immediate rollback is allowed, extension cache is removed
+// immediately and a lower version is allowed to be installed.
+TEST_F(ExternalCacheImplTest, ImmediateRollback) {
+  base::FilePath cache_dir(CreateCacheDir(false));
+  ExternalCacheImpl external_cache(
+      cache_dir, url_loader_factory(),
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
+      true, false, false);
+
+  CreateExtensionFile(cache_dir, kTestExtensionId1, "2");
+  external_cache.UpdateExtensionsList(base::Value::Dict().Set(
+      kTestExtensionId1, CreateEntryWithUpdateUrl(false)));
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_TRUE(provided_prefs());
+  EXPECT_EQ(provided_prefs()->size(), 1ul);
+
+  // Allow rollback by ExternalCacheDelegate and check that rollback request
+  // succeeds.
+  AllowImmediateRollback();
+  EXPECT_EQ(ExternalCacheImpl::RequestRollbackResult::kAllowed,
+            external_cache.RequestRollback(kTestExtensionId1));
+
+  // Check that kTestExtensionId1's entry in the ExtensionCache will be deleted.
+  content::RunAllTasksUntilIdle();
+  EXPECT_THAT(deleted_extension_files(),
+              testing::ElementsAre(kTestExtensionId1));
+  EXPECT_TRUE(provided_prefs()->empty());
+  EXPECT_FALSE(
+      base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId1, "2")));
+
+  // Check that lower version installs correctly.
+  base::FilePath temp_dir(CreateTempDir());
+  base::FilePath temp_file = temp_dir.Append("a.crx");
+  CreateFile(temp_file);
+  {
+    extensions::CRXFileInfo crx_info_v1(temp_file,
+                                        extensions::GetTestVerifierFormat());
+    crx_info_v1.extension_id = kTestExtensionId1;
+    crx_info_v1.expected_version = base::Version("1");
+    external_cache.OnExtensionDownloadFinished(
+        crx_info_v1, true, GURL(),
+        extensions::ExtensionDownloaderDelegate::PingResult(), std::set<int>(),
+        extensions::ExtensionDownloaderDelegate::InstallCallback());
+  }
+
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1ul, provided_prefs()->size());
+  EXPECT_TRUE(
+      base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId1, "1")));
+}
+
+// Checks that if rollback is generally allowed by delegate but cannot be
+// performed immediately, cache invalidation is scheduled for the next run.
+// Checks that cache is deleted on the next run.
+TEST_F(ExternalCacheImplTest, RollbackOnNextInit) {
+  base::FilePath cache_dir(CreateCacheDir(false));
+  ExternalCacheImpl external_cache(
+      cache_dir, url_loader_factory(),
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
+      true, false, false);
+
+  CreateExtensionFile(cache_dir, kTestExtensionId1, "2");
+  base::Value::Dict prefs;
+  prefs.Set(kTestExtensionId1, CreateEntryWithUpdateUrl(false));
+  external_cache.UpdateExtensionsList(prefs.Clone());
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_TRUE(provided_prefs());
+  EXPECT_EQ(provided_prefs()->size(), 1ul);
+
+  // Allow rollback on the next run by ExternalCacheDelegate and check that
+  // rollback request returns SCHEDULED_FOR_NEXT_RUN value.
+  AllowRollbackOnNextInit();
+  EXPECT_EQ(ExternalCacheImpl::RequestRollbackResult::kScheduledForNextRun,
+            external_cache.RequestRollback(kTestExtensionId1));
+
+  // Check that extension cache is still there.
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(deleted_extension_files().empty());
+  ASSERT_TRUE(provided_prefs());
+  EXPECT_EQ(provided_prefs()->size(), 1ul);
+  EXPECT_TRUE(
+      base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId1, "2")));
+
+  // Shutdown and initialize new cache.
+  base::RunLoop run_loop;
+  external_cache.Shutdown(run_loop.QuitClosure());
+  run_loop.Run();
+  ExternalCacheImpl new_cache(
+      cache_dir, url_loader_factory(),
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
+      true, false, false);
+
+  new_cache.UpdateExtensionsList(prefs.Clone());
+  content::RunAllTasksUntilIdle();
+
+  // Check that kTestExtensionId1's entry in the ExtensionCache was deleted
+  // after initialization.
+  EXPECT_TRUE(provided_prefs()->empty());
+  EXPECT_FALSE(
+      base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId1, "2")));
+
+  // Check that lower version installs correctly.
+  base::FilePath temp_dir(CreateTempDir());
+  base::FilePath temp_file = temp_dir.Append("a.crx");
+  CreateFile(temp_file);
+  {
+    extensions::CRXFileInfo crx_info_v1(temp_file,
+                                        extensions::GetTestVerifierFormat());
+    crx_info_v1.extension_id = kTestExtensionId1;
+    crx_info_v1.expected_version = base::Version("1");
+    new_cache.OnExtensionDownloadFinished(
+        crx_info_v1, true, GURL(),
+        extensions::ExtensionDownloaderDelegate::PingResult(), std::set<int>(),
+        extensions::ExtensionDownloaderDelegate::InstallCallback());
+  }
+
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1ul, provided_prefs()->size());
+  EXPECT_TRUE(
+      base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId1, "1")));
+}
+
+// Checks that if rollback is disallowed, cache is not invalidated.
+TEST_F(ExternalCacheImplTest, RollbackDisallowed) {
+  base::FilePath cache_dir(CreateCacheDir(false));
+  ExternalCacheImpl external_cache(
+      cache_dir, url_loader_factory(),
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
+      true, false, false);
+
+  CreateExtensionFile(cache_dir, kTestExtensionId1, "2");
+  base::Value::Dict prefs;
+  prefs.Set(kTestExtensionId1, CreateEntryWithUpdateUrl(false));
+  external_cache.UpdateExtensionsList(prefs.Clone());
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_TRUE(provided_prefs());
+  EXPECT_EQ(provided_prefs()->size(), 1ul);
+
+  // Check that rollback is disallowed.
+  EXPECT_EQ(ExternalCacheImpl::RequestRollbackResult::kDisallowed,
+            external_cache.RequestRollback(kTestExtensionId1));
+
+  // Check that extension cache is still there.
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(deleted_extension_files().empty());
+  ASSERT_TRUE(provided_prefs());
+  EXPECT_EQ(provided_prefs()->size(), 1ul);
+  EXPECT_TRUE(
+      base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId1, "2")));
+
+  // Shutdown and initialize new cache.
+  base::RunLoop run_loop;
+  external_cache.Shutdown(run_loop.QuitClosure());
+  run_loop.Run();
+  ExternalCacheImpl new_cache(
+      cache_dir, url_loader_factory(),
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
+      true, false, false);
+
+  new_cache.UpdateExtensionsList(prefs.Clone());
+  content::RunAllTasksUntilIdle();
+
+  // Check that extension cache was not deleted on initialization.
+  EXPECT_EQ(provided_prefs()->size(), 1ul);
+  EXPECT_TRUE(
+      base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId1, "2")));
 }
 
 }  // namespace chromeos

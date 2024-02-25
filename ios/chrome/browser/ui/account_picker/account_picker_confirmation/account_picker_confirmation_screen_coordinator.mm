@@ -6,11 +6,12 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_mediator.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_view_controller.h"
@@ -38,6 +39,7 @@
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _configuration = configuration;
+    _askEveryTime = YES;
   }
   return self;
 }
@@ -48,11 +50,15 @@
   _mediator = [[AccountPickerConfirmationScreenMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                         GetForBrowserState(browserState)
+                    identityManager:IdentityManagerFactory::GetForBrowserState(
+                                        browserState)
                       configuration:_configuration];
   _mediator.delegate = self;
   _confirmationViewController =
       [[AccountPickerConfirmationScreenViewController alloc]
           initWithConfiguration:_configuration];
+  _confirmationViewController.accountConfirmationChildViewController =
+      self.childViewController;
   _mediator.consumer = _confirmationViewController;
   _confirmationViewController.actionDelegate = self;
   _confirmationViewController.layoutDelegate = _layoutDelegate;
@@ -65,6 +71,11 @@
 
 - (void)stopValidationSpinner {
   [_confirmationViewController stopSpinner];
+}
+
+- (void)setIdentityButtonHidden:(BOOL)hidden animated:(BOOL)animated {
+  [_confirmationViewController setIdentityButtonHidden:hidden
+                                              animated:animated];
 }
 
 - (void)stop {

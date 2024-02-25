@@ -9,7 +9,6 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,9 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * Tests for {@link ActionChipsProcessor}.
- */
+/** Tests for {@link ActionChipsProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActionChipsProcessorUnitTest {
     private static final int MATCH_POS = 1234;
@@ -64,27 +61,24 @@ public class ActionChipsProcessorUnitTest {
         mModel = new PropertyModel(ActionChipsProperties.ALL_UNIQUE_KEYS);
     }
 
-    @After
-    public void tearDown() throws Exception {
-        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
-    }
-
     /**
      * Create an instance of OmniboxAction associated with specific native handle.
      *
      * @param handle the native handle to associate the instance with. 0 indicates invalid action.
      */
     private OmniboxAction actionWithHandle(long handle) {
-        return new OmniboxAction(OmniboxActionId.ACTION_IN_SUGGEST, handle, "hint",
-                "accessibility hint", OmniboxAction.DEFAULT_ICON) {
+        return new OmniboxAction(
+                OmniboxActionId.ACTION_IN_SUGGEST,
+                handle,
+                "hint",
+                "accessibility hint",
+                OmniboxAction.DEFAULT_ICON) {
             @Override
             public void execute(OmniboxActionDelegate delegate) {}
         };
     }
 
-    /**
-     * Create a suggestion with supplied OmniboxActions (if any) and populate model.
-     */
+    /** Create a suggestion with supplied OmniboxActions (if any) and populate model. */
     private void populateModelForActions(OmniboxAction... actions) {
         var match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
@@ -94,45 +88,45 @@ public class ActionChipsProcessorUnitTest {
         mActionModel = mModel.get(ActionChipsProperties.ACTION_CHIPS);
     }
 
-    /**
-     * Simulate focus lost; confirm no more histograms are recorded.
-     */
+    /** Simulate focus lost; confirm no more histograms are recorded. */
     private void verifyNoFollowUpRecords() {
         clearInvocations(mOmniboxActionJni);
-        var watcher = HistogramWatcher.newBuilder()
-                              .expectNoRecords(OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_USED)
-                              .expectNoRecords(OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_VALID)
-                              .build();
-        mProcessor.onUrlFocusChange(false);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_USED)
+                        .expectNoRecords(OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_VALID)
+                        .build();
+        mProcessor.onOmniboxSessionStateChange(false);
         watcher.assertExpected();
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
-    public void onUrlFocusChange_noRecordsEverOnFocus() {
+    public void onOmniboxSessionStateChange_noRecordsEverOnActivation() {
         // This is a perfectly normal scenario. Simulate that we have a suggestion with actions, we
         // click on one action, and then emit a "focus" signal. There should be NO uma records.
-        populateModelForActions(actionWithHandle(1), actionWithHandle(/*invalid*/ 0));
+        populateModelForActions(actionWithHandle(1), actionWithHandle(/* handle= */ 0));
         assertEquals(2, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/*model=*/null);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
 
-        var watcher = HistogramWatcher.newBuilder()
-                              .expectNoRecords(OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_USED)
-                              .expectNoRecords(OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_VALID)
-                              .build();
-        mProcessor.onUrlFocusChange(true);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_USED)
+                        .expectNoRecords(OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_VALID)
+                        .build();
+        mProcessor.onOmniboxSessionStateChange(true);
         watcher.assertExpected();
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
-    public void onUrlFocusChange_noRecordsWhenNoActionsWereAvailable() {
-        populateModelForActions(/* no actions */);
+    public void onOmniboxSessionStateChange_noRecordsWhenNoActionsWereAvailable() {
+        populateModelForActions(/* no actions */ );
         verifyNoFollowUpRecords();
     }
 
     @Test
-    public void onUrlFocusChange_recordNoUsage() {
+    public void onOmniboxSessionStateChange_recordNoUsage() {
         populateModelForActions(actionWithHandle(1));
 
         HistogramWatcher histogramWatcher =
@@ -141,7 +135,7 @@ public class ActionChipsProcessorUnitTest {
                         .build();
 
         // Finish interaction.
-        mProcessor.onUrlFocusChange(false);
+        mProcessor.onOmniboxSessionStateChange(false);
         verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, false);
         verifyNoMoreInteractions(mOmniboxActionJni);
         histogramWatcher.assertExpected();
@@ -150,7 +144,7 @@ public class ActionChipsProcessorUnitTest {
     }
 
     @Test
-    public void onUrlFocusChange_recordUsage() {
+    public void onOmniboxSessionStateChange_recordUsage() {
         populateModelForActions(actionWithHandle(1));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -159,17 +153,17 @@ public class ActionChipsProcessorUnitTest {
 
         // Click!
         assertEquals(1, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/*model=*/null);
-        mProcessor.onUrlFocusChange(false);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
+        mProcessor.onOmniboxSessionStateChange(false);
 
-        verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, /*used=*/true);
+        verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, /* used= */ true);
         histogramWatcher.assertExpected();
 
         verifyNoFollowUpRecords();
     }
 
     @Test
-    public void onUrlFocusChange_recordActionValid() {
+    public void onOmniboxSessionStateChange_recordActionValid() {
         populateModelForActions(actionWithHandle(1), actionWithHandle(2));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -177,7 +171,7 @@ public class ActionChipsProcessorUnitTest {
                                 OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_VALID, true, 2)
                         .build();
 
-        mProcessor.onUrlFocusChange(false);
+        mProcessor.onOmniboxSessionStateChange(false);
 
         verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, false);
         verify(mOmniboxActionJni).recordActionShown(2L, MATCH_POS, false);
@@ -188,7 +182,7 @@ public class ActionChipsProcessorUnitTest {
     }
 
     @Test
-    public void onUrlFocusChange_recordActionNotValidAfterDestroyCalled() {
+    public void onOmniboxSessionStateChange_recordActionNotValidAfterDestroyCalled() {
         var action1 = actionWithHandle(1);
         var action2 = actionWithHandle(2);
         populateModelForActions(action1, action2);
@@ -203,7 +197,7 @@ public class ActionChipsProcessorUnitTest {
                                 OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_VALID, false, 1)
                         .build();
 
-        mProcessor.onUrlFocusChange(false);
+        mProcessor.onOmniboxSessionStateChange(false);
 
         verify(mOmniboxActionJni).recordActionShown(2L, MATCH_POS, false);
         verifyNoMoreInteractions(mOmniboxActionJni);
@@ -213,7 +207,7 @@ public class ActionChipsProcessorUnitTest {
     }
 
     @Test
-    public void onUrlFocusChange_actionsFromMultipleMatchesAreAggregated() {
+    public void onOmniboxSessionStateChange_actionsFromMultipleMatchesAreAggregated() {
         // Three matches. 2 valid, 1 invalid.
         // Note that typically all the ModelLists are associated with individual PropertyModels, but
         // our tests use just a single PropertyModel, so these ModelLists get replaced.
@@ -223,7 +217,7 @@ public class ActionChipsProcessorUnitTest {
 
         // Only the latest ModelList is available (previos two have been overwritten).
         assertEquals(2, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/*model=*/null);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -233,7 +227,7 @@ public class ActionChipsProcessorUnitTest {
                                 OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_VALID, false, 2)
                         .build();
 
-        mProcessor.onUrlFocusChange(false);
+        mProcessor.onOmniboxSessionStateChange(false);
 
         verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, false);
         verify(mOmniboxActionJni).recordActionShown(2L, MATCH_POS, false);
@@ -246,8 +240,8 @@ public class ActionChipsProcessorUnitTest {
     }
 
     @Test
-    public void onUrlFocusChange_recordActionInvalid() {
-        populateModelForActions(actionWithHandle(1), actionWithHandle(/*invalid*/ 0));
+    public void onOmniboxSessionStateChange_recordActionInvalid() {
+        populateModelForActions(actionWithHandle(1), actionWithHandle(/* handle= */ 0));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
@@ -256,7 +250,7 @@ public class ActionChipsProcessorUnitTest {
                                 OmniboxMetrics.HISTOGRAM_OMNIBOX_ACTION_VALID, false, 1)
                         .build();
 
-        mProcessor.onUrlFocusChange(false);
+        mProcessor.onOmniboxSessionStateChange(false);
         verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, false);
         histogramWatcher.assertExpected();
 
@@ -265,7 +259,7 @@ public class ActionChipsProcessorUnitTest {
 
     @Test
     public void onSuggestionsReceived_resetsLastState() {
-        populateModelForActions(actionWithHandle(1), actionWithHandle(/*invalid*/ 0));
+        populateModelForActions(actionWithHandle(1), actionWithHandle(/* handle= */ 0));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(

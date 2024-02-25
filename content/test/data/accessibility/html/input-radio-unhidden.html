@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:done
+-->
+<main>
+  <fieldset style="display:none;">
+    <legend>These radio buttons will randomly not have a label on Chromium web browsers.</legend>
+    <input type="radio" name="hiddenRadio" id="apple">
+    <label for="apple"><span>Apple</span></label>
+    <input type="radio" name="hiddenRadio" id="banana">
+    <label for="banana"><span>Banana</span></label>
+    <input type="radio" name="hiddenRadio" id="cherry">
+    <label for="cherry"><span>Cherry</span></label>
+    <input type="radio" name="hiddenRadio" id="durian">
+    <label for="durian"><span>Durian</span></label>
+    <input type="radio" name="hiddenRadio" id="eggplant">
+    <label for="eggplant"><span>Eggplant</span></label>
+  </fieldset>
+</main>
+<script async defer>
+  document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.querySelector('fieldset').style.display = 'block';
+        document.title = 'done';
+      });
+    })
+  });
+</script>

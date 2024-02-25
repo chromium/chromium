@@ -12,12 +12,13 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto_test_util.h"
-#include "chromeos/ash/components/tether/test_timer_factory.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "components/cross_device/timer_factory/fake_one_shot_timer.h"
+#include "components/cross_device/timer_factory/fake_timer_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,8 +52,9 @@ class TestOperation : public MessageTransferOperation {
 
   bool HasDeviceAuthenticated(multidevice::RemoteDeviceRef remote_device) {
     const auto iter = device_authenticated_map_.find(remote_device);
-    if (iter == device_authenticated_map_.end())
+    if (iter == device_authenticated_map_.end()) {
       return false;
+    }
 
     return iter->second;
   }
@@ -62,8 +64,9 @@ class TestOperation : public MessageTransferOperation {
     static const std::vector<std::unique_ptr<MessageWrapper>> empty;
 
     const auto iter = device_message_map_.find(remote_device);
-    if (iter == device_message_map_.end())
+    if (iter == device_message_map_.end()) {
       return empty;
+    }
 
     return iter->second;
   }
@@ -78,8 +81,9 @@ class TestOperation : public MessageTransferOperation {
                          multidevice::RemoteDeviceRef remote_device) override {
     device_message_map_[remote_device].push_back(std::move(message_wrapper));
 
-    if (should_unregister_device_on_message_received_)
+    if (should_unregister_device_on_message_received_) {
       UnregisterDevice(remote_device);
+    }
   }
 
   void OnOperationStarted() override { has_operation_started_ = true; }
@@ -110,7 +114,7 @@ class TestOperation : public MessageTransferOperation {
 
   bool has_operation_finished() { return has_operation_finished_; }
 
-  absl::optional<int> last_sequence_number() { return last_sequence_number_; }
+  std::optional<int> last_sequence_number() { return last_sequence_number_; }
 
  private:
   base::flat_map<multidevice::RemoteDeviceRef, bool> device_authenticated_map_;
@@ -122,7 +126,7 @@ class TestOperation : public MessageTransferOperation {
   bool should_unregister_device_on_message_received_ = false;
   bool has_operation_started_ = false;
   bool has_operation_finished_ = false;
-  absl::optional<int> last_sequence_number_;
+  std::optional<int> last_sequence_number_;
 };
 
 TetherAvailabilityResponse CreateTetherAvailabilityResponse() {
@@ -159,14 +163,9 @@ class MessageTransferOperationTest : public testing::Test {
   }
 
   void ConstructOperation(multidevice::RemoteDeviceRefList remote_devices) {
-    test_timer_factory_ = new TestTimerFactory();
-
     for (auto remote_device : remote_devices) {
       // Prepare for connection timeout timers to be made for each remote
       // device.
-      test_timer_factory_->set_device_id_for_next_timer(
-          remote_device.GetDeviceId());
-
       auto fake_connection_attempt =
           std::make_unique<secure_channel::FakeConnectionAttempt>();
       remote_device_to_fake_connection_attempt_map_[remote_device] =
@@ -180,7 +179,7 @@ class MessageTransferOperationTest : public testing::Test {
         new TestOperation(remote_devices, fake_device_sync_client_.get(),
                           fake_secure_channel_client_.get()));
     operation_->SetTimerFactoryForTest(
-        base::WrapUnique(test_timer_factory_.get()));
+        std::make_unique<cross_device::FakeTimerFactory>());
     VerifyOperationStartedAndFinished(false /* has_started */,
                                       false /* has_finished */);
   }
@@ -199,8 +198,9 @@ class MessageTransferOperationTest : public testing::Test {
     VerifyOperationStartedAndFinished(true /* has_started */,
                                       false /* has_finished */);
 
-    for (const auto& remote_device : operation_->remote_devices())
+    for (const auto& remote_device : operation_->remote_devices()) {
       VerifyConnectionTimerCreatedForDevice(remote_device);
+    }
   }
 
   void VerifyOperationStartedAndFinished(bool has_started, bool has_finished) {
@@ -210,9 +210,6 @@ class MessageTransferOperationTest : public testing::Test {
 
   void CreateAuthenticatedChannelForDevice(
       multidevice::RemoteDeviceRef remote_device) {
-    test_timer_factory_->set_device_id_for_next_timer(
-        remote_device.GetDeviceId());
-
     auto fake_client_channel =
         std::make_unique<secure_channel::FakeClientChannel>();
     remote_device_to_fake_client_channel_map_[remote_device] =
@@ -221,10 +218,10 @@ class MessageTransferOperationTest : public testing::Test {
         ->NotifyConnection(std::move(fake_client_channel));
   }
 
-  base::MockOneShotTimer* GetTimerForDevice(
+  cross_device::FakeOneShotTimer* GetTimerForDevice(
       multidevice::RemoteDeviceRef remote_device) {
-    return test_timer_factory_->GetTimerForDeviceId(
-        remote_device.GetDeviceId());
+    return static_cast<cross_device::FakeOneShotTimer*>(
+        operation_->remote_device_to_timer_map_[remote_device].get());
   }
 
   void VerifyDefaultTimerCreatedForDevice(
@@ -264,8 +261,6 @@ class MessageTransferOperationTest : public testing::Test {
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
-  raw_ptr<TestTimerFactory, DanglingUntriaged | ExperimentalAsh>
-      test_timer_factory_;
   std::unique_ptr<TestOperation> operation_;
 };
 
@@ -373,17 +368,12 @@ TEST_F(MessageTransferOperationTest, MultipleDevices) {
   ConstructOperation(test_devices_);
   InitializeOperation();
 
-  for (const auto& remote_device : test_devices_)
-    test_timer_factory_->ClearTimerForDeviceId(remote_device.GetDeviceId());
-
   // Authenticate |test_devices_[0]|'s channel.
   CreateAuthenticatedChannelForDevice(test_devices_[0]);
   EXPECT_TRUE(operation_->HasDeviceAuthenticated(test_devices_[0]));
   VerifyDefaultTimerCreatedForDevice(test_devices_[0]);
 
   // Fail to connect to |test_devices_[1]|.
-  test_timer_factory_->set_device_id_for_next_timer(
-      test_devices_[1].GetDeviceId());
   remote_device_to_fake_connection_attempt_map_[test_devices_[1]]
       ->NotifyConnectionAttemptFailure(
           secure_channel::mojom::ConnectionAttemptFailureReason::
@@ -397,8 +387,6 @@ TEST_F(MessageTransferOperationTest, MultipleDevices) {
   VerifyDefaultTimerCreatedForDevice(test_devices_[2]);
 
   // Fail to connect to |test_devices_[3]|.
-  test_timer_factory_->set_device_id_for_next_timer(
-      test_devices_[3].GetDeviceId());
   remote_device_to_fake_connection_attempt_map_[test_devices_[3]]
       ->NotifyConnectionAttemptFailure(
           secure_channel::mojom::ConnectionAttemptFailureReason::

@@ -92,7 +92,6 @@ class Rules {
         return rule;
     }
     LOG(FATAL) << "Rule not found for " << url;
-    return rules_[0];
   }
 
  private:

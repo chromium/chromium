@@ -15,8 +15,9 @@ namespace autofill {
 // LabelButton that displays a merchant promo code in an emphasized format with
 // a copy button icon.
 class PromoCodeLabelButton : public views::LabelButton {
+  METADATA_HEADER(PromoCodeLabelButton, views::LabelButton)
+
  public:
-  METADATA_HEADER(PromoCodeLabelButton);
   PromoCodeLabelButton(PressedCallback callback, const std::u16string& text);
 
   PromoCodeLabelButton(const PromoCodeLabelButton&) = delete;

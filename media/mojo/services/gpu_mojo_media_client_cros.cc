@@ -71,7 +71,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
           std::move(frame_converter),
           GetPreferredRenderableFourccs(traits.gpu_preferences),
-          traits.media_log->Clone(), std::move(traits.oop_video_decoder));
+          traits.media_log->Clone(), std::move(traits.oop_video_decoder),
+          /*in_video_decoder_process=*/false);
     }
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2: {
@@ -82,14 +83,15 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
           std::move(frame_converter),
           GetPreferredRenderableFourccs(traits.gpu_preferences),
-          traits.media_log->Clone(), /*oop_video_decoder=*/{});
+          traits.media_log->Clone(), /*oop_video_decoder=*/{},
+          /*in_video_decoder_process=*/false);
     }
     case VideoDecoderType::kVda: {
       return VdaVideoDecoder::Create(
           traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
           *traits.target_color_space, traits.gpu_preferences,
           *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
-          VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
+          VideoDecodeAccelerator::Config::OutputMode::kAllocate);
     }
     default: {
       return nullptr;
@@ -115,7 +117,7 @@ void NotifyPlatformDecoderSupport(
   }
 }
 
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
     base::WeakPtr<MediaGpuChannelManager> manager,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
@@ -133,7 +135,7 @@ GetPlatformSupportedVideoDecoderConfigs(
       return VideoDecoderPipeline::GetSupportedConfigs(decoder_implementation,
                                                        gpu_workarounds);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

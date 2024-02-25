@@ -19,15 +19,16 @@ TEST(HttpBasicStateTest, ConstructsProperly) {
   auto handle = std::make_unique<ClientSocketHandle>();
   ClientSocketHandle* const handle_ptr = handle.get();
   // Ownership of |handle| is passed to |state|.
-  const HttpBasicState state(std::move(handle), true /* using_proxy */);
+  const HttpBasicState state(std::move(handle),
+                             true /* is_for_get_to_http_proxy */);
   EXPECT_EQ(handle_ptr, state.connection());
-  EXPECT_TRUE(state.using_proxy());
+  EXPECT_TRUE(state.is_for_get_to_http_proxy());
 }
 
 TEST(HttpBasicStateTest, ConstructsProperlyWithDifferentOptions) {
   const HttpBasicState state(std::make_unique<ClientSocketHandle>(),
-                             false /* using_proxy */);
-  EXPECT_FALSE(state.using_proxy());
+                             false /* is_for_get_to_http_proxy */);
+  EXPECT_FALSE(state.is_for_get_to_http_proxy());
 }
 
 TEST(HttpBasicStateTest, ReleaseConnectionWorks) {

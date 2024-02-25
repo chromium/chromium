@@ -8,13 +8,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Interface to get language profile data for device.
- */
+/** Interface to get language profile data for device. */
 public interface LanguageProfileDelegate {
-    /**
-     * @return True if ULP is currently supported.
-     */
+    /** @return True if ULP is currently supported. */
     public boolean isULPSupported();
 
     /**

@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/blurred_background_shield.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
@@ -17,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -87,9 +91,9 @@ std::unique_ptr<views::LabelButton> CreateFingerButton(
 
 // Captures mouse events and formats them before sending them to the event sink.
 class TrackpadInternalSurfaceView : public views::View {
- public:
-  METADATA_HEADER(TrackpadInternalSurfaceView);
+  METADATA_HEADER(TrackpadInternalSurfaceView, views::View)
 
+ public:
   TrackpadInternalSurfaceView() = default;
   TrackpadInternalSurfaceView(const TrackpadInternalSurfaceView&) = delete;
   TrackpadInternalSurfaceView& operator=(const TrackpadInternalSurfaceView&) =
@@ -201,12 +205,12 @@ class TrackpadInternalSurfaceView : public views::View {
 
   // Contains the data during a scroll session. Empty when no scroll is
   // underway.
-  absl::optional<ScrollData> scroll_data_;
+  std::optional<ScrollData> scroll_data_;
 
   int fingers_ = kDefaultFingers;
 };
 
-BEGIN_METADATA(TrackpadInternalSurfaceView, views::View)
+BEGIN_METADATA(TrackpadInternalSurfaceView)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -241,20 +245,28 @@ VirtualTrackpadView::VirtualTrackpadView() {
   }
   UpdateFingerButtonsColors();
 
-  // TODO(b/286303073): Add a blur effect to the transparent background
-  // while keeping the shadow effect.
   SetPaintToLayer();
   layer()->SetOpacity(kTrackpadContainerOpacity);
 
   SetBorder(views::CreateEmptyBorder(kTrackpadContainerPadding));
   SetBackground(
       views::CreateSolidBackground(kTrackpadContainerBackgroundColor));
+
+  blurred_background_ = std::make_unique<BlurredBackgroundShield>(
+      this, SK_ColorTRANSPARENT, ColorProvider::kBackgroundBlurSigma,
+      gfx::RoundedCornersF(
+          static_cast<float>(chromeos::kTopCornerRadiusWhenRestored)));
 }
 
 VirtualTrackpadView::~VirtualTrackpadView() = default;
 
 // static
 void VirtualTrackpadView::Toggle() {
+  // If we have a real trackpad, we should use that instead.
+  if (!ui::DeviceDataManager::GetInstance()->GetTouchpadDevices().empty()) {
+    return;
+  }
+
   if (g_fake_trackpad_widget) {
     g_fake_trackpad_widget->Close();
     g_fake_trackpad_widget = nullptr;
@@ -300,8 +312,8 @@ void VirtualTrackpadView::Toggle() {
       std::move(targeter));
 }
 
-void VirtualTrackpadView::Layout() {
-  views::View::Layout();
+void VirtualTrackpadView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   // The height of the finger buttons container stays the same while the width
   // matches the parent width.
@@ -362,7 +374,7 @@ views::View* VirtualTrackpadView::GetTrackpadViewForTesting() {
   return trackpad_view_;
 }
 
-BEGIN_METADATA(VirtualTrackpadView, views::View)
+BEGIN_METADATA(VirtualTrackpadView)
 END_METADATA
 
 }  // namespace ash

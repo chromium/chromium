@@ -19,9 +19,9 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
+#include "chromeos/ash/components/dbus/device_management/device_management_interface.pb.h"
+#include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -173,14 +173,14 @@ void InstallAttributes::ReadImmutableAttributes(base::OnceClosure callback) {
 
   // Get Install Attributes Status to know if it's ready.
   install_attributes_client_->InstallAttributesGetStatus(
-      user_data_auth::InstallAttributesGetStatusRequest(),
+      device_management::InstallAttributesGetStatusRequest(),
       base::BindOnce(&InstallAttributes::ReadAttributesIfReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void InstallAttributes::ReadAttributesIfReady(
     base::OnceClosure callback,
-    absl::optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
+    std::optional<device_management::InstallAttributesGetStatusReply> reply) {
   base::ScopedClosureRunner callback_runner(std::move(callback));
 
   // Can't proceed if the call failed.
@@ -189,9 +189,9 @@ void InstallAttributes::ReadAttributesIfReady(
   }
 
   // Can't proceed if not ready.
-  if (reply->state() == ::user_data_auth::InstallAttributesState::UNKNOWN ||
+  if (reply->state() == ::device_management::InstallAttributesState::UNKNOWN ||
       reply->state() ==
-          ::user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
+          ::device_management::InstallAttributesState::TPM_NOT_OWNED) {
     return;
   }
 
@@ -203,9 +203,9 @@ void InstallAttributes::ReadAttributesIfReady(
     device_locked_ = true;
 
     static const char* const kEnterpriseAttributes[] = {
-        kAttrEnterpriseDeviceId,   kAttrEnterpriseDomain, kAttrEnterpriseRealm,
-        kAttrEnterpriseMode,       kAttrEnterpriseOwned,  kAttrEnterpriseUser,
-        kAttrConsumerKioskEnabled,
+        kAttrEnterpriseDeviceId, kAttrEnterpriseDomain,
+        kAttrEnterpriseRealm,    kAttrEnterpriseMode,
+        kAttrEnterpriseOwned,    kAttrConsumerKioskEnabled,
     };
     std::map<std::string, std::string> attr_map;
     for (size_t i = 0; i < std::size(kEnterpriseAttributes); ++i) {
@@ -222,11 +222,11 @@ void InstallAttributes::ReadAttributesIfReady(
 void InstallAttributes::SetBlockDevmodeInTpm(
     bool block_devmode,
     chromeos::DBusMethodCallback<
-        user_data_auth::SetFirmwareManagementParametersReply> callback) {
+        device_management::SetFirmwareManagementParametersReply> callback) {
   DCHECK(!callback.is_null());
   DCHECK(!device_locked_);
 
-  user_data_auth::SetFirmwareManagementParametersRequest request;
+  device_management::SetFirmwareManagementParametersRequest request;
   // Set the flags, according to enum FirmwareManagementParametersFlags from
   // rpc.proto if devmode is blocked.
   if (block_devmode) {
@@ -289,7 +289,7 @@ void InstallAttributes::LockDevice(policy::DeviceMode device_mode,
   device_lock_running_ = true;
   // Get Install Attributes Status to know if it's ready.
   install_attributes_client_->InstallAttributesGetStatus(
-      user_data_auth::InstallAttributesGetStatusRequest(),
+      device_management::InstallAttributesGetStatusRequest(),
       base::BindOnce(&InstallAttributes::LockDeviceIfAttributesIsReady,
                      weak_ptr_factory_.GetWeakPtr(), device_mode, domain, realm,
                      device_id, std::move(callback)));
@@ -301,11 +301,11 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
     const std::string& realm,
     const std::string& device_id,
     LockResultCallback callback,
-    absl::optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
+    std::optional<device_management::InstallAttributesGetStatusReply> reply) {
   if (!reply.has_value() ||
-      reply->state() == ::user_data_auth::InstallAttributesState::UNKNOWN ||
+      reply->state() == ::device_management::InstallAttributesState::UNKNOWN ||
       reply->state() ==
-          ::user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
+          ::device_management::InstallAttributesState::TPM_NOT_OWNED) {
     device_lock_running_ = false;
     std::move(callback).Run(LOCK_NOT_READY);
     return;
@@ -483,7 +483,6 @@ const char InstallAttributes::kAttrEnterpriseDomain[] = "enterprise.domain";
 const char InstallAttributes::kAttrEnterpriseRealm[] = "enterprise.realm";
 const char InstallAttributes::kAttrEnterpriseMode[] = "enterprise.mode";
 const char InstallAttributes::kAttrEnterpriseOwned[] = "enterprise.owned";
-const char InstallAttributes::kAttrEnterpriseUser[] = "enterprise.user";
 const char InstallAttributes::kAttrConsumerKioskEnabled[] =
     "consumer.app_kiosk_enabled";
 
@@ -548,7 +547,6 @@ void InstallAttributes::DecodeInstallAttributes(
   const std::string domain = ReadMapKey(attr_map, kAttrEnterpriseDomain);
   const std::string realm = ReadMapKey(attr_map, kAttrEnterpriseRealm);
   const std::string device_id = ReadMapKey(attr_map, kAttrEnterpriseDeviceId);
-  const std::string user_deprecated = ReadMapKey(attr_map, kAttrEnterpriseUser);
 
   if (enterprise_owned == "true") {
     WarnIfNonempty(attr_map, kAttrConsumerKioskEnabled);
@@ -571,9 +569,6 @@ void InstallAttributes::DecodeInstallAttributes(
       if (!domain.empty()) {
         // The canonicalization is for compatibility with earlier versions.
         registration_domain_ = gaia::CanonicalizeDomain(domain);
-      } else if (!user_deprecated.empty()) {
-        // Compatibility for pre M19 code.
-        registration_domain_ = gaia::ExtractDomainName(user_deprecated);
       } else {
         LOG(WARNING) << "Couldn't read domain.";
       }
@@ -594,16 +589,13 @@ void InstallAttributes::DecodeInstallAttributes(
   WarnIfNonempty(attr_map, kAttrEnterpriseDomain);
   WarnIfNonempty(attr_map, kAttrEnterpriseRealm);
   WarnIfNonempty(attr_map, kAttrEnterpriseDeviceId);
-  WarnIfNonempty(attr_map, kAttrEnterpriseUser);
   if (consumer_kiosk_enabled == "true") {
     registration_mode_ = policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;
     return;
   }
 
   WarnIfNonempty(attr_map, kAttrConsumerKioskEnabled);
-  if (user_deprecated.empty()) {
-    registration_mode_ = policy::DEVICE_MODE_CONSUMER;
-  }
+  registration_mode_ = policy::DEVICE_MODE_CONSUMER;
 }
 
 }  // namespace ash

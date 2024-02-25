@@ -61,7 +61,6 @@ class CORE_EXPORT WorkletGlobalScope
   String UserAgent() const final { return user_agent_; }
   bool IsContextThread() const final;
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
   void AddInspectorIssue(AuditsIssue) final;
   void ExceptionThrown(ErrorEvent*) final;
   CoreProbeSink* GetProbeSink() final;
@@ -78,10 +77,10 @@ class CORE_EXPORT WorkletGlobalScope
   const base::UnguessableToken& GetDevToolsToken() const override;
   bool IsInitialized() const final { return true; }
   CodeCacheHost* GetCodeCacheHost() override;
-  absl::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+  std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
   FindRaceNetworkRequestURLLoaderFactory(
       const base::UnguessableToken& token) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Returns `blob_url_store_pending_remote_` for use when instantiating the
@@ -124,6 +123,9 @@ class CORE_EXPORT WorkletGlobalScope
 
   void Trace(Visitor*) const override;
 
+  // ActiveScriptWrappable.
+  bool HasPendingActivity() const override;
+
   HttpsState GetHttpsState() const override { return https_state_; }
 
   // Constructs an instance as a main thread worklet. Must be called on the main
@@ -146,7 +148,7 @@ class CORE_EXPORT WorkletGlobalScope
   // Returns the ExecutionContextToken that uniquely identifies the parent
   // context that created this worklet. Note that this will always be a
   // LocalFrameToken.
-  absl::optional<ExecutionContextToken> GetParentExecutionContextToken()
+  std::optional<ExecutionContextToken> GetParentExecutionContextToken()
       const final {
     return frame_token_;
   }

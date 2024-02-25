@@ -6,6 +6,8 @@
 #define BASE_STRINGS_STRING_UTIL_IMPL_HELPERS_H_
 
 #include <algorithm>
+#include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -14,7 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/third_party/icu/icu_utf.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::internal {
 
@@ -220,7 +221,7 @@ bool StartsWithT(T str, T search_for, CompareCase case_sensitivity) {
   if (search_for.size() > str.size())
     return false;
 
-  BasicStringPiece<CharT> source = str.substr(0, search_for.size());
+  std::basic_string_view<CharT> source = str.substr(0, search_for.size());
 
   switch (case_sensitivity) {
     case CompareCase::SENSITIVE:
@@ -237,7 +238,7 @@ bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
   if (search_for.size() > str.size())
     return false;
 
-  BasicStringPiece<CharT> source =
+  std::basic_string_view<CharT> source =
       str.substr(str.size() - search_for.size(), search_for.size());
 
   switch (case_sensitivity) {
@@ -253,7 +254,7 @@ bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
 // A Matcher for DoReplaceMatchesAfterOffset() that matches substrings.
 template <class CharT>
 struct SubstringMatcher {
-  BasicStringPiece<CharT> find_this;
+  std::basic_string_view<CharT> find_this;
 
   size_t Find(const std::basic_string<CharT>& input, size_t pos) {
     return input.find(find_this.data(), pos, find_this.length());
@@ -270,7 +271,7 @@ auto MakeSubstringMatcher(T find_this) {
 // A Matcher for DoReplaceMatchesAfterOffset() that matches single characters.
 template <class CharT>
 struct CharacterMatcher {
-  BasicStringPiece<CharT> find_any_of_these;
+  std::basic_string_view<CharT> find_any_of_these;
 
   size_t Find(const std::basic_string<CharT>& input, size_t pos) {
     return input.find_first_of(find_any_of_these.data(), pos,
@@ -480,7 +481,7 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
   result.reserve(total_size);
 
   auto iter = parts.begin();
-  DCHECK(iter != parts.end());
+  CHECK(iter != parts.end(), base::NotFatalUntil::M125);
   result.append(*iter);
   ++iter;
 
@@ -507,11 +508,11 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
 //   instance, with `%` as the `placeholder_prefix`: %%->%, %%%%->%%, etc.
 // * `is_strict_mode`:
 //   * If this parameter is `true`, error handling is stricter. The function
-//   returns `absl::nullopt` if:
+//   returns `std::nullopt` if:
 //     * a placeholder %N is encountered where N > substitutions.size().
 //     * a literal `%` is not escaped with a `%`.
 template <typename T, typename CharT = typename T::value_type>
-absl::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
+std::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
     T format_string,
     const std::vector<std::basic_string<CharT>>& subst,
     const CharT placeholder_prefix,
@@ -519,7 +520,7 @@ absl::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
     const bool is_strict_mode,
     std::vector<size_t>* offsets) {
   size_t substitutions = subst.size();
-  DCHECK_LT(substitutions, 11U);
+  DCHECK_LT(substitutions, 10U);
 
   size_t sub_length = 0;
   for (const auto& cur : subst) {
@@ -547,7 +548,7 @@ absl::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
               DLOG(ERROR) << "Invalid placeholder after placeholder prefix: "
                           << std::basic_string<CharT>(1, placeholder_prefix)
                           << std::basic_string<CharT>(1, *i);
-              return absl::nullopt;
+              return std::nullopt;
             }
 
             continue;
@@ -564,12 +565,12 @@ absl::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
           } else if (is_strict_mode) {
             DLOG(ERROR) << "index out of range: " << index << ": "
                         << substitutions;
-            return absl::nullopt;
+            return std::nullopt;
           }
         }
       } else if (is_strict_mode) {
         DLOG(ERROR) << "unexpected placeholder prefix at end of string";
-        return absl::nullopt;
+        return std::nullopt;
       }
     } else {
       formatted.push_back(*i);

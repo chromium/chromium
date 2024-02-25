@@ -100,14 +100,14 @@ void AshProxyMonitor::DefaultNetworkChanged(const ash::NetworkState* network) {
     OnProxyChanged(network->GetWebProxyAutoDiscoveryUrl());
     return;
   }
-  OnProxyChanged(absl::nullopt);
+  OnProxyChanged(std::nullopt);
 }
 
 void AshProxyMonitor::OnShuttingDown() {
   network_state_handler_observer_.Reset();
 }
 
-void AshProxyMonitor::OnProxyChanged(absl::optional<GURL> wpad_url) {
+void AshProxyMonitor::OnProxyChanged(std::optional<GURL> wpad_url) {
   if (!primary_profile_) {
     return;
   }
@@ -160,7 +160,7 @@ void AshProxyMonitor::OnProfileAdded(Profile* profile) {
   profile_prefs_registrar_->Add(
       proxy_config::prefs::kProxy,
       base::BindRepeating(&AshProxyMonitor::OnProxyChanged,
-                          base::Unretained(this), /*wpad_url*/ absl::nullopt));
+                          base::Unretained(this), /*wpad_url*/ std::nullopt));
 }
 
 void AshProxyMonitor::OnProfileMarkedForPermanentDeletion(Profile* profile) {
@@ -226,10 +226,10 @@ void AshProxyMonitor::ClearLacrosExtensionControllingProxyInfo() {
   NotifyObservers();
 }
 
-absl::optional<AshProxyMonitor::ExtensionMetadata>
+std::optional<AshProxyMonitor::ExtensionMetadata>
 AshProxyMonitor::GetLacrosExtensionControllingTheProxy() const {
   if (!IsLacrosExtensionControllingProxy()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const base::Value::Dict& dictionary = primary_profile_->GetPrefs()->GetDict(
       ash::prefs::kLacrosProxyControllingExtension);
@@ -240,7 +240,7 @@ AshProxyMonitor::GetLacrosExtensionControllingTheProxy() const {
     // Ash received the proxy config from Lacros via the Prefs service but the
     // metadata of the extension, which is sent from Lacros via the
     // NetworkSettings service, is not yet received.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* extension_id = dictionary.FindString(kPrefExtensionIdKey);

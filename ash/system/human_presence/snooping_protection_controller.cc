@@ -5,6 +5,7 @@
 #include "ash/system/human_presence/snooping_protection_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -26,7 +27,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -254,7 +254,7 @@ void SnoopingProtectionController::ReconfigureService(State* new_state) {
   if (want_configured) {
     // Configure the snooping started/stopped signals that the service will
     // emit.
-    const absl::optional<hps::FeatureConfig> config =
+    const std::optional<hps::FeatureConfig> config =
         hps::GetEnableSnoopingProtectionConfig();
     if (!config.has_value()) {
       LOG(ERROR) << "SnoopingProtectionController: couldn't parse HpsNotify "
@@ -308,7 +308,7 @@ void SnoopingProtectionController::StartServiceObservation(
 // during startup the service reports an UNKNOWN state, so there's a risk of
 // logging a spurious window of absence.
 void SnoopingProtectionController::UpdateServiceState(
-    absl::optional<hps::HpsResultProto> response) {
+    std::optional<hps::HpsResultProto> response) {
   LOG_IF(WARNING, !response.has_value())
       << "Polling the presence daemon failed";
 

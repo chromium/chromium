@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -33,12 +32,11 @@ namespace content {
 
 namespace {
 
-const int kRenderProcessId = 1;
-const int kAnotherRenderProcessId = 2;
-const int kStreamId = 3;
-const int kAnotherStreamId = 6;
-const int kRenderFrameId = 4;
-const int kAnotherRenderFrameId = 8;
+const GlobalRenderFrameHostId kRenderFrameHostId = {1, 2};
+const GlobalRenderFrameHostId kRenderFrameHostIdSameProcess = {1, 3};
+const GlobalRenderFrameHostId kRenderFrameHostIdOtherProcess = {4, 5};
+const int kStreamId = 6;
+const int kAnotherStreamId = 7;
 
 // Used to confirm audio indicator state changes occur at the correct times.
 class MockWebContentsDelegate : public WebContentsDelegate {
@@ -51,9 +49,11 @@ class MockWebContentsDelegate : public WebContentsDelegate {
 
 class AudioStreamMonitorTest : public RenderViewHostTestHarness {
  public:
-  AudioStreamMonitorTest() {
-    // Start |clock_| at non-zero.
-    clock_.Advance(base::Seconds(1000000));
+  AudioStreamMonitorTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // Start time at non-zero.
+    task_environment()->FastForwardBy(base::Seconds(1000000));
   }
 
   AudioStreamMonitorTest(const AudioStreamMonitorTest&) = delete;
@@ -67,21 +67,21 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
     web_contents->SetDelegate(&mock_web_contents_delegate_);
 
     monitor_ = web_contents->audio_stream_monitor();
-    const_cast<const base::TickClock*&>(monitor_->clock_) = &clock_;
   }
 
-  base::TimeTicks GetTestClockTime() { return clock_.NowTicks(); }
+  void TearDown() override {
+    monitor_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
 
-  void AdvanceClock(const base::TimeDelta& delta) { clock_.Advance(delta); }
+  void FastForwardBy(const base::TimeDelta& delta) {
+    task_environment()->FastForwardBy(delta);
+  }
 
-  void SimulateOffTimerFired() { monitor_->MaybeToggle(); }
-
-  void ExpectIsMonitoring(int render_process_id,
-                          int render_frame_id,
+  void ExpectIsMonitoring(GlobalRenderFrameHostId render_frame_host_id,
                           int stream_id,
                           bool is_polling) {
-    const AudioStreamMonitor::StreamID key = {render_process_id,
-                                              render_frame_id, stream_id};
+    const AudioStreamMonitor::StreamID key = {render_frame_host_id, stream_id};
     EXPECT_EQ(is_polling,
               monitor_->streams_.find(key) != monitor_->streams_.end());
   }
@@ -93,7 +93,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
     EXPECT_EQ(last_became_silent_time, monitor_->last_became_silent_time_);
     EXPECT_EQ(monitor_->off_timer_.IsRunning(),
               monitor_->indicator_is_on_ && !monitor_->IsCurrentlyAudible() &&
-                  clock_.NowTicks() <
+                  base::TimeTicks::Now() <
                       monitor_->last_became_silent_time_ + holding_period());
   }
 
@@ -136,34 +136,30 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
     return base::Milliseconds(AudioStreamMonitor::kHoldOnMilliseconds);
   }
 
-  void StartMonitoring(int render_process_id,
-                       int render_frame_id,
+  void StartMonitoring(GlobalRenderFrameHostId render_frame_host_id,
                        int stream_id) {
-    monitor_->StartMonitoringStreamOnUIThread(AudioStreamMonitor::StreamID{
-        render_process_id, render_frame_id, stream_id});
+    monitor_->StartMonitoringStreamOnUIThread(
+        AudioStreamMonitor::StreamID{render_frame_host_id, stream_id});
   }
 
-  void StopMonitoring(int render_process_id,
-                      int render_frame_id,
+  void StopMonitoring(GlobalRenderFrameHostId render_frame_host_id,
                       int stream_id) {
-    monitor_->StopMonitoringStreamOnUIThread(AudioStreamMonitor::StreamID{
-        render_process_id, render_frame_id, stream_id});
+    monitor_->StopMonitoringStreamOnUIThread(
+        AudioStreamMonitor::StreamID{render_frame_host_id, stream_id});
   }
 
-  void UpdateAudibleState(int render_process_id,
-                          int render_frame_id,
+  void UpdateAudibleState(GlobalRenderFrameHostId render_frame_host_id,
                           int stream_id,
                           bool is_audible) {
     monitor_->UpdateStreamAudibleStateOnUIThread(
-        AudioStreamMonitor::StreamID{render_process_id, render_frame_id,
-                                     stream_id},
+        AudioStreamMonitor::StreamID{render_frame_host_id, stream_id},
         is_audible);
   }
 
   WebContents* web_contents() { return monitor_->web_contents_; }
 
  protected:
-  raw_ptr<AudioStreamMonitor, DanglingUntriaged> monitor_;
+  raw_ptr<AudioStreamMonitor> monitor_;
 
  private:
   void ExpectWasRecentlyAudible() const {
@@ -180,30 +176,29 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
 #endif
 
   MockWebContentsDelegate mock_web_contents_delegate_;
-  base::SimpleTestTickClock clock_;
 };
 
 TEST_F(AudioStreamMonitorTest, MonitorsWhenProvidedAStream) {
   EXPECT_FALSE(monitor_->WasRecentlyAudible());
   ExpectNotCurrentlyAudible();
-  ExpectIsMonitoring(kRenderProcessId, kRenderFrameId, kStreamId, false);
+  ExpectIsMonitoring(kRenderFrameHostId, kStreamId, false);
 
-  StartMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
+  StartMonitoring(kRenderFrameHostId, kStreamId);
   EXPECT_FALSE(monitor_->WasRecentlyAudible());
   ExpectNotCurrentlyAudible();
-  ExpectIsMonitoring(kRenderProcessId, kRenderFrameId, kStreamId, true);
+  ExpectIsMonitoring(kRenderFrameHostId, kStreamId, true);
 
-  StopMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
+  StopMonitoring(kRenderFrameHostId, kStreamId);
   EXPECT_FALSE(monitor_->WasRecentlyAudible());
   ExpectNotCurrentlyAudible();
-  ExpectIsMonitoring(kRenderProcessId, kRenderFrameId, kStreamId, false);
+  ExpectIsMonitoring(kRenderFrameHostId, kStreamId, false);
 }
 
 // Tests that AudioStreamMonitor keeps the indicator on for the holding period
 // even if there is silence during the holding period.
 // See comments in audio_stream_monitor.h for expected behavior.
 TEST_F(AudioStreamMonitorTest, IndicatorIsOnUntilHoldingPeriodHasPassed) {
-  StartMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
+  StartMonitoring(kRenderFrameHostId, kStreamId);
 
   // Expect WebContents will get one call form AudioStreamMonitor to toggle the
   // indicator upon the very first notification that the stream has become
@@ -217,43 +212,46 @@ TEST_F(AudioStreamMonitorTest, IndicatorIsOnUntilHoldingPeriodHasPassed) {
   do {
     ExpectCurrentlyAudibleChangeNotification(true);
 
-    UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, true);
+    UpdateAudibleState(kRenderFrameHostId, kStreamId, true);
     ExpectTabWasRecentlyAudible(true, last_became_silent_time);
-    AdvanceClock(one_time_step());
+    FastForwardBy(one_time_step());
 
     ExpectCurrentlyAudibleChangeNotification(false);
 
     // Notify that the stream has become silent and advance time repeatedly,
     // ensuring that the indicator is being held on during the holding period.
-    UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
-    last_became_silent_time = GetTestClockTime();
+    UpdateAudibleState(kRenderFrameHostId, kStreamId, false);
+    last_became_silent_time = base::TimeTicks::Now();
     ExpectTabWasRecentlyAudible(true, last_became_silent_time);
     for (int i = 0; i < num_silence_steps; ++i) {
-      // Note: Redundant off timer firings should not have any effect.
-      SimulateOffTimerFired();
+      // If the next time step will cause the holding period to expire, then a
+      // notification will be sent.
+      if (base::TimeTicks::Now() + one_time_step() >=
+          last_became_silent_time + holding_period()) {
+        ExpectRecentlyAudibleChangeNotification(false);
+      }
+
       ExpectTabWasRecentlyAudible(true, last_became_silent_time);
-      AdvanceClock(one_time_step());
+      FastForwardBy(one_time_step());
     }
 
     ++num_silence_steps;
-  } while (GetTestClockTime() < last_became_silent_time + holding_period());
+  } while (base::TimeTicks::Now() < last_became_silent_time + holding_period());
 
-  // At this point, the clock has just advanced to beyond the holding period, so
-  // the next firing of the off timer should turn off the tab indicator.  Also,
-  // make sure it stays off for several cycles thereafter.
-  ExpectRecentlyAudibleChangeNotification(false);
+  // At this point, the time has just advanced to beyond the holding period and
+  // the tab indicator has been turned off. Also, make sure it stays off for
+  // several cycles thereafter.
   for (int i = 0; i < 10; ++i) {
-    SimulateOffTimerFired();
     ExpectTabWasRecentlyAudible(false, last_became_silent_time);
-    AdvanceClock(one_time_step());
+    FastForwardBy(one_time_step());
   }
 }
 
 // Tests that the AudioStreamMonitor correctly processes updates from two
 // different streams in the same tab.
 TEST_F(AudioStreamMonitorTest, HandlesMultipleStreamUpdate) {
-  StartMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
-  StartMonitoring(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId);
+  StartMonitoring(kRenderFrameHostId, kStreamId);
+  StartMonitoring(kRenderFrameHostIdSameProcess, kAnotherStreamId);
 
   base::TimeTicks last_became_silent_time;
   ExpectTabWasRecentlyAudible(false, last_became_silent_time);
@@ -264,63 +262,56 @@ TEST_F(AudioStreamMonitorTest, HandlesMultipleStreamUpdate) {
   ExpectRecentlyAudibleChangeNotification(true);
   ExpectCurrentlyAudibleChangeNotification(true);
 
-  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, true);
-  UpdateAudibleState(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId,
-                     false);
+  UpdateAudibleState(kRenderFrameHostId, kStreamId, true);
+  UpdateAudibleState(kRenderFrameHostIdSameProcess, kAnotherStreamId, false);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectIsCurrentlyAudible();
 
   // Halfway through the holding period, the second stream joins in.  The
   // indicator stays on.
-  AdvanceClock(holding_period() / 2);
-  SimulateOffTimerFired();
-  UpdateAudibleState(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId,
-                     true);
+  FastForwardBy(holding_period() / 2);
+  UpdateAudibleState(kRenderFrameHostIdSameProcess, kAnotherStreamId, true);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectIsCurrentlyAudible();
 
   // Now, both streams become silent. The tab becoms silent but the indicator
   // stays on.
   ExpectCurrentlyAudibleChangeNotification(false);
-  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
-  UpdateAudibleState(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId,
-                     false);
-  last_became_silent_time = GetTestClockTime();
+  UpdateAudibleState(kRenderFrameHostId, kStreamId, false);
+  UpdateAudibleState(kRenderFrameHostIdSameProcess, kAnotherStreamId, false);
+  last_became_silent_time = base::TimeTicks::Now();
   ExpectNotCurrentlyAudible();
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
 
   // Advance half a holding period and the indicator should still be on.
-  AdvanceClock(holding_period() / 2);
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period() / 2);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
   // The first stream becomes audible again during the holding period.
   // The tab becomes audible and the indicator stays on.
   ExpectCurrentlyAudibleChangeNotification(true);
-  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, true);
+  UpdateAudibleState(kRenderFrameHostId, kStreamId, true);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectIsCurrentlyAudible();
 
   // Advance a holding period. The original holding period has expired but the
   // indicator should stay on because a stream became audible in the meantime.
-  AdvanceClock(holding_period() / 2);
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period() / 2);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectIsCurrentlyAudible();
 
   // The first stream becomes silent again. The tab becomes silent and the
   // indicator is still on.
   ExpectCurrentlyAudibleChangeNotification(false);
-  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
-  last_became_silent_time = GetTestClockTime();
+  UpdateAudibleState(kRenderFrameHostId, kStreamId, false);
+  last_became_silent_time = base::TimeTicks::Now();
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
   // After a holding period passes, the indicator turns off.
   ExpectRecentlyAudibleChangeNotification(false);
-  AdvanceClock(holding_period());
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period());
   ExpectTabWasRecentlyAudible(false, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
@@ -328,74 +319,70 @@ TEST_F(AudioStreamMonitorTest, HandlesMultipleStreamUpdate) {
   // The tab becomes audible again.
   ExpectRecentlyAudibleChangeNotification(true);
   ExpectCurrentlyAudibleChangeNotification(true);
-  UpdateAudibleState(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId,
-                     true);
+  UpdateAudibleState(kRenderFrameHostIdSameProcess, kAnotherStreamId, true);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectIsCurrentlyAudible();
 
   // From here onwards, both streams are silent.  Halfway through the holding
   // period, the tab is no longer audible but stays as recently audible.
   ExpectCurrentlyAudibleChangeNotification(false);
-  UpdateAudibleState(kRenderProcessId, kAnotherRenderFrameId, kAnotherStreamId,
-                     false);
-  last_became_silent_time = GetTestClockTime();
-  AdvanceClock(holding_period() / 2);
-  SimulateOffTimerFired();
+  UpdateAudibleState(kRenderFrameHostIdSameProcess, kAnotherStreamId, false);
+  last_became_silent_time = base::TimeTicks::Now();
+  FastForwardBy(holding_period() / 2);
   ExpectTabWasRecentlyAudible(true, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
   // Just past the holding period, the tab is no longer marked as recently
   // audible.
   ExpectRecentlyAudibleChangeNotification(false);
-  AdvanceClock(holding_period() -
-               (GetTestClockTime() - last_became_silent_time));
-  SimulateOffTimerFired();
+  FastForwardBy(holding_period() -
+                (base::TimeTicks::Now() - last_became_silent_time));
   ExpectTabWasRecentlyAudible(false, last_became_silent_time);
   ExpectNotCurrentlyAudible();
 
   // The passage of time should not turn the indicator back while both streams
   // are remaining silent.
   for (int i = 0; i < 100; ++i) {
-    AdvanceClock(one_time_step());
+    FastForwardBy(one_time_step());
     ExpectTabWasRecentlyAudible(false, last_became_silent_time);
     ExpectNotCurrentlyAudible();
   }
 }
 
 TEST_F(AudioStreamMonitorTest, MultipleRendererProcesses) {
-  StartMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
-  StartMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId);
-  ExpectIsMonitoring(kRenderProcessId, kRenderFrameId, kStreamId, true);
-  ExpectIsMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId, true);
-  StopMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId);
-  ExpectIsMonitoring(kRenderProcessId, kRenderFrameId, kStreamId, true);
-  ExpectIsMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId, false);
+  StartMonitoring(kRenderFrameHostId, kStreamId);
+  StartMonitoring(kRenderFrameHostIdOtherProcess, kStreamId);
+  ExpectIsMonitoring(kRenderFrameHostId, kStreamId, true);
+  ExpectIsMonitoring(kRenderFrameHostIdOtherProcess, kStreamId, true);
+  StopMonitoring(kRenderFrameHostIdOtherProcess, kStreamId);
+  ExpectIsMonitoring(kRenderFrameHostId, kStreamId, true);
+  ExpectIsMonitoring(kRenderFrameHostIdOtherProcess, kStreamId, false);
 }
 
 TEST_F(AudioStreamMonitorTest, RenderProcessGone) {
-  StartMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
-  StartMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId);
-  ExpectIsMonitoring(kRenderProcessId, kRenderFrameId, kStreamId, true);
-  ExpectIsMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId, true);
-  monitor_->RenderProcessGone(kRenderProcessId);
-  ExpectIsMonitoring(kRenderProcessId, kRenderFrameId, kStreamId, false);
-  monitor_->RenderProcessGone(kAnotherRenderProcessId);
-  ExpectIsMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId, false);
+  StartMonitoring(kRenderFrameHostId, kStreamId);
+  StartMonitoring(kRenderFrameHostIdOtherProcess, kStreamId);
+  ExpectIsMonitoring(kRenderFrameHostId, kStreamId, true);
+  ExpectIsMonitoring(kRenderFrameHostIdOtherProcess, kStreamId, true);
+  monitor_->RenderProcessGone(kRenderFrameHostId.child_id);
+  ExpectIsMonitoring(kRenderFrameHostId, kStreamId, false);
+  monitor_->RenderProcessGone(kRenderFrameHostIdOtherProcess.child_id);
+  ExpectIsMonitoring(kRenderFrameHostIdOtherProcess, kStreamId, false);
 }
 
 TEST_F(AudioStreamMonitorTest, RenderFrameGone) {
   RenderFrameHost* render_frame_host = web_contents()->GetPrimaryMainFrame();
-  int render_process_id = render_frame_host->GetProcess()->GetID();
-  int render_frame_id = render_frame_host->GetRoutingID();
+  GlobalRenderFrameHostId render_frame_host_id =
+      render_frame_host->GetGlobalId();
 
-  StartMonitoring(render_process_id, render_frame_id, kStreamId);
-  StartMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId);
-  ExpectIsMonitoring(render_process_id, render_frame_id, kStreamId, true);
-  ExpectIsMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId, true);
+  StartMonitoring(render_frame_host_id, kStreamId);
+  StartMonitoring(kRenderFrameHostIdOtherProcess, kStreamId);
+  ExpectIsMonitoring(render_frame_host_id, kStreamId, true);
+  ExpectIsMonitoring(kRenderFrameHostIdOtherProcess, kStreamId, true);
 
   monitor_->RenderFrameDeleted(render_frame_host);
-  ExpectIsMonitoring(render_process_id, render_frame_id, kStreamId, false);
-  ExpectIsMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId, true);
+  ExpectIsMonitoring(render_frame_host_id, kStreamId, false);
+  ExpectIsMonitoring(kRenderFrameHostIdOtherProcess, kStreamId, true);
 }
 
 TEST_F(AudioStreamMonitorTest, OneAudibleClient) {
@@ -481,7 +468,7 @@ TEST_F(AudioStreamMonitorTest, MultipleAudibleClientsMultipleRenderFrames) {
 }
 
 TEST_F(AudioStreamMonitorTest, AudibleClientAndStream) {
-  StartMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
+  StartMonitoring(kRenderFrameHostId, kStreamId);
   ExpectNotCurrentlyAudible();
 
   auto* render_frame_host_impl =
@@ -495,7 +482,7 @@ TEST_F(AudioStreamMonitorTest, AudibleClientAndStream) {
   ExpectIsCurrentlyAudible();
 
   // The stream becomes audible and the tab remains audible.
-  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, true);
+  UpdateAudibleState(kRenderFrameHostId, kStreamId, true);
   ExpectIsCurrentlyAudible();
 
   // Remove the client and the tab remains audible.
@@ -504,7 +491,7 @@ TEST_F(AudioStreamMonitorTest, AudibleClientAndStream) {
 
   // The stream becomes not audible and the tab is not audible.
   ExpectCurrentlyAudibleChangeNotification(false);
-  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
+  UpdateAudibleState(kRenderFrameHostId, kStreamId, false);
   ExpectNotCurrentlyAudible();
 }
 

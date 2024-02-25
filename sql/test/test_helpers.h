@@ -7,11 +7,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
+#include <optional>
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/strings/string_piece.h"
 
 // Collection of test-only convenience functions.
 
@@ -26,7 +25,7 @@ class Database;
 namespace sql::test {
 
 // Read a database's page size. Returns nullopt in case of error.
-absl::optional<int> ReadDatabasePageSize(const base::FilePath& db_path);
+std::optional<int> ReadDatabasePageSize(const base::FilePath& db_path);
 
 // SQLite stores the database size in the header, and if the actual
 // OS-derived size is smaller, the database is considered corrupt.

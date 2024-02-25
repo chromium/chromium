@@ -449,7 +449,7 @@ L$copy:
 	leaq	(%rsi),%rsp
 
 L$mul_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -554,7 +554,7 @@ L$mul4x_body:
 	leaq	(%rsi),%rsp
 
 L$mul4x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1221,7 +1221,7 @@ L$power5_body:
 	leaq	(%rsi),%rsp
 
 L$power5_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -2007,7 +2007,7 @@ L$8x_no_tail:
 
 	cmpq	%rdx,%rdi
 	jb	L$8x_reduction_loop
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -2063,7 +2063,7 @@ L$sqr4x_sub_entry:
 
 	movq	%r9,%r10
 	negq	%r9
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -2173,7 +2173,7 @@ L$mulx4x_body:
 	leaq	(%rsi),%rsp
 
 L$mulx4x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -2734,7 +2734,7 @@ L$powerx5_body:
 	leaq	(%rsi),%rsp
 
 L$powerx5_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -3357,7 +3357,7 @@ L$sqrx8x_no_tail:
 	leaq	64(%rdi,%rcx,1),%rdi
 	cmpq	8+8(%rsp),%r8
 	jb	L$sqrx8x_reduction_loop
-	.byte	0xf3,0xc3
+	ret
 
 
 .p2align	5
@@ -3410,7 +3410,7 @@ L$sqrx4x_sub_entry:
 
 	negq	%r9
 
-	.byte	0xf3,0xc3
+	ret
 
 
 .globl	_bn_scatter5
@@ -3440,7 +3440,7 @@ L$scatter:
 	subl	$1,%esi
 	jnz	L$scatter
 L$scatter_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -3610,7 +3610,7 @@ L$gather:
 
 	leaq	(%r10),%rsp
 
-	.byte	0xf3,0xc3
+	ret
 L$SEH_end_bn_gather5:
 
 

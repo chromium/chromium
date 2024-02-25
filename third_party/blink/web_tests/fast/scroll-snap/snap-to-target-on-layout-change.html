@@ -2,6 +2,9 @@
 <script src="../../resources/gesture-util.js"></script>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 <style>
 #scroller {
   overflow: scroll;
@@ -58,43 +61,12 @@ function cleanup() {
   assert_equals(scroller.scrollTop, 0);
 }
 
-function scrollTop() {
-  return scroller.scrollTop;
-}
-
-function wheelScroll(delta, x, y, direction) {
-  // A mouse wheel scroll comes from mouse input with imprecise delta.
-  return smoothScroll(delta, x ,y , GestureSourceType.MOUSE_INPUT, direction,
-                      SPEED_INSTANT, false /* is precise delta */);
-}
-
-function keyPress(key) {
-  return new Promise((resolve, reject) => {
-    if (window.eventSender) {
-      eventSender.keyDown(key);
-      resolve();
-    }
-    else {
-      reject('This test requires window.eventSender');
-    }
-  })
-}
-
-function touchScroll(delta, x, y, direction) {
-  return smoothScroll(delta, x, y, GestureSourceType.TOUCH_INPUT, direction,
-                      SPEED_INSTANT);
-}
-
 promise_test (async t => {
   t.add_cleanup(cleanup);
 
   await mouseClickOn(10, 10);
-  const scrollPromise = waitForScrollEvent(scroller);
-  await wheelScroll(250 /* pixels to scroll */, 50, 50, 'down');
-  await scrollPromise;
-  // Use time based wait since overshooting the snap target position.
-  await waitForAnimationEndTimeBased(scrollTop);
-  assert_equals(scrollTop(), 400);
+  await wheelScroll(50, 50, 0, 250 /* pixels to scroll */, scroller);
+  assert_equals(scroller.scrollTop, 400);
 
   target_area.style.setProperty('top', '600px');
   assert_equals(scroller.scrollTop, 800);
@@ -105,8 +77,8 @@ promise_test (async t => {
   t.add_cleanup(cleanup);
 
   await mouseClickOn(10, 10);
-  await keyPress('ArrowDown');
-  await waitForScrollEnd(scroller, scrollTop, 400);
+  await keyboardScroll("ArrowDown", scroller);
+  assert_equals(scroller.scrollTop, 400);
 
   target_area.style.setProperty('top', '600px');
   assert_equals(scroller.scrollTop, 800);
@@ -119,11 +91,7 @@ if (!macPlatform) {
     t.add_cleanup(cleanup);
 
     await mouseClickOn(10, 10);
-    const scrollPromise = waitForScrollEvent(scroller);
-    await touchScroll(250 /* delta */, 50, 50, 'down');
-    await scrollPromise;
-    // Use time based wait since overshooting the scroll snap position.
-    await waitForAnimationEndTimeBased(scrollTop);
+    await touchScroll(50, 250, 0, -250 /* delta */, scroller);
     assert_equals(scroller.scrollTop, 400);
 
     target_area.style.setProperty('top', '600px');

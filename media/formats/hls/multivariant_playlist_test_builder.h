@@ -169,7 +169,7 @@ inline void HasBandwidth(types::DecimalInteger bandwidth,
 // Checks the value of `GetAverageBandwidth` on the latest variant against the
 // given value.
 inline void HasAverageBandwidth(
-    absl::optional<types::DecimalInteger> average_bandwidth,
+    std::optional<types::DecimalInteger> average_bandwidth,
     const base::Location& from,
     const VariantStream& variant) {
   EXPECT_EQ(variant.GetAverageBandwidth(), average_bandwidth)
@@ -177,7 +177,7 @@ inline void HasAverageBandwidth(
 }
 
 // Checks the value of `GetScore` on the latest variant against the given value.
-inline void HasScore(absl::optional<types::DecimalFloatingPoint> score,
+inline void HasScore(std::optional<types::DecimalFloatingPoint> score,
                      const base::Location& from,
                      const VariantStream& variant) {
   EXPECT_EQ(variant.GetScore(), score) << from.ToString();
@@ -185,7 +185,7 @@ inline void HasScore(absl::optional<types::DecimalFloatingPoint> score,
 
 // Checks the value of `GetCodecs` on the latest variant against the given
 // value.
-inline void HasCodecs(absl::optional<std::vector<std::string>> codecs,
+inline void HasCodecs(std::optional<std::vector<std::string>> codecs,
                       const base::Location& from,
                       const VariantStream& variant) {
   EXPECT_EQ(variant.GetCodecs(), codecs) << from.ToString();
@@ -193,7 +193,7 @@ inline void HasCodecs(absl::optional<std::vector<std::string>> codecs,
 
 // Checks the value of `GetResolution` on the latest variant against the given
 // value.
-inline void HasResolution(absl::optional<types::DecimalResolution> resolution,
+inline void HasResolution(std::optional<types::DecimalResolution> resolution,
                           const base::Location& from,
                           const VariantStream& variant) {
   ASSERT_EQ(variant.GetResolution().has_value(), resolution.has_value())
@@ -208,7 +208,7 @@ inline void HasResolution(absl::optional<types::DecimalResolution> resolution,
 
 // Checks the value of `GetFrameRate` on the latest variant against the given
 // value.
-inline void HasFrameRate(absl::optional<types::DecimalFloatingPoint> frame_rate,
+inline void HasFrameRate(std::optional<types::DecimalFloatingPoint> frame_rate,
                          const base::Location& from,
                          const VariantStream& variant) {
   ASSERT_EQ(variant.GetFrameRate().has_value(), frame_rate.has_value())
@@ -221,40 +221,40 @@ inline void HasFrameRate(absl::optional<types::DecimalFloatingPoint> frame_rate,
 
 // Checks that the audio rendition group associated with the latest variant has
 // the given `group_id`.
-inline void HasAudioRenditionGroup(absl::optional<std::string> group_id,
+inline void HasAudioRenditionGroup(std::optional<std::string> group_id,
                                    const base::Location& from,
                                    const VariantStream& variant) {
   if (variant.GetAudioRenditionGroup()) {
     EXPECT_EQ(variant.GetAudioRenditionGroup()->GetId(), group_id)
         << from.ToString();
   } else {
-    EXPECT_EQ(absl::nullopt, group_id) << from.ToString();
+    EXPECT_EQ(std::nullopt, group_id) << from.ToString();
   }
 }
 
 // Checks that the audio rendition has the given URI.
-inline void RenditionHasUri(absl::optional<GURL> uri,
+inline void RenditionHasUri(std::optional<GURL> uri,
                             const base::Location& from,
                             const AudioRendition& rendition) {
   EXPECT_EQ(rendition.GetUri(), uri) << from.ToString();
 }
 
 // Checks that the audio rendition has the given language.
-inline void HasLanguage(absl::optional<std::string> language,
+inline void HasLanguage(std::optional<std::string> language,
                         const base::Location& from,
                         const AudioRendition& rendition) {
   EXPECT_EQ(rendition.GetLanguage(), language) << from.ToString();
 }
 
 // Checks that the audio rendition has the given associated language.
-inline void HasAssociatedLanguage(absl::optional<std::string> language,
+inline void HasAssociatedLanguage(std::optional<std::string> language,
                                   const base::Location& from,
                                   const AudioRendition& rendition) {
   EXPECT_EQ(rendition.GetAssociatedLanguage(), language) << from.ToString();
 }
 
 // Checks that the audio rendition has the given StableId.
-inline void HasStableRenditionId(absl::optional<types::StableId> id,
+inline void HasStableRenditionId(std::optional<types::StableId> id,
                                  const base::Location& from,
                                  const AudioRendition& rendition) {
   EXPECT_EQ(rendition.GetStableRenditionId(), id) << from.ToString();
@@ -269,14 +269,14 @@ inline void MayAutoSelect(bool value,
 }
 
 // Checks that the audio rendition group has a default rendition with the given
-// name (or `absl::nullopt` for no default rendition).
-inline void HasDefaultRendition(absl::optional<std::string> name,
+// name (or `std::nullopt` for no default rendition).
+inline void HasDefaultRendition(std::optional<std::string> name,
                                 const base::Location& from,
                                 const AudioRenditionGroup& group) {
   if (group.GetDefaultRendition()) {
     EXPECT_EQ(group.GetDefaultRendition()->GetName(), name) << from.ToString();
   } else {
-    EXPECT_EQ(absl::nullopt, name) << from.ToString();
+    EXPECT_EQ(std::nullopt, name) << from.ToString();
   }
 }
 

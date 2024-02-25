@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<p>This is the AttributePart version of this benchmark.</p>
+<fieldset style="display:flex; border:0" id="controls">
+  <div>
+    <button id="run_baseline"></button>
+    <pre id=baseline_log></pre>
+    <input type=number hidden id=last_baseline_total value=0 autocomplete=off>
+  </div>
+  <div>
+    <button id="run_parts"></button>
+    <pre id=parts_log></pre>
+    <input type=number hidden id=last_parts_total value=0 autocomplete=off>
+  </div>
+</fieldset>
+<pre id=overall_log></pre>
+
+<table style="display:none">
+  <tbody>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+const nRows = 1000;
+const nRuns = 200;
+document.querySelector(
+  "button#run_baseline"
+).textContent = `BASELINE: Create ${nRows} rows, ${nRuns} runs`;
+document.querySelector(
+  "button#run_parts"
+).textContent = `PARTS: Create ${nRows} rows, ${nRuns} runs`;
+
+// Feature detection.
+if (typeof document.getPartRoot !== "function") {
+  document.write('<h3>Error: The DOM Parts API is not supported in this browser. Please enable Experimental Web Platform Features.</h3>');
+} else if (typeof window.AttributePart !== "function") {
+  document.write('<h3>Error: AttributePart not supported - you might need to update to a more recent build of Chrome.</h3>');
+}
+if (!self.gc) {
+  document.write('<h3>Error: This benchmark requires <pre style="display:inline">--js-flags="--expose-gc"</pre> on the command line.</h3>');
+}
+
+function template(tplStr) {
+  const tplEl = document.createElement("template");
+  tplEl.parseparts = true;
+  tplEl.innerHTML = tplStr;
+  return tplEl;
+}
+const tbodyEl = document.querySelector("tbody");
+const rowTplBaseline = template(
+  `<tr><td> </td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
+);
+// The space at the front of this template works around crbug.com/1490375, and can be removed once that's fixed:
+const rowTplParts = template(
+  ` <tr class={{}}><td class={{}}>{{#}} {{/}}</td><td class="col-md-4"><a {{}} href="#"> </a></td><td class="col-md-1"><a {{}} href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
+);
+const partRoot = rowTplParts.content.getPartRoot();
+
+let tbodyPart;
+function resetTable() {
+  const c1 = document.createComment("");
+  const c2 = document.createComment("");
+  tbodyEl.replaceChildren(c1,c2);
+  document.getPartRoot().getParts().forEach(part => part.disconnect());
+  tbodyPart = new ChildNodePart(document.getPartRoot(),c1,c2);
+  self.gc && self.gc();
+}
+
+let selected = 5;
+
+function createRowBaseline(i) {
+  const perfs = [];
+  let now = performance.now();
+  let next = now;
+  // this code is run in the CREATE mode
+
+  // step (1): clone template
+  const tplClone = rowTplBaseline.content.cloneNode(true);
+  next = performance.now();
+  perfs.push(next - now); // cloning
+  now = next;
+  // step (2): find references to the "interesting" elements
+  perfs.push(0); // getParts
+  const trEl = tplClone.firstChild;
+  const tdEl = trEl.firstChild;
+  const labelTxtNode = trEl.firstChild.firstChild;
+  const aEl1 = trEl.firstChild.nextSibling.firstChild;
+  const aEl2 = trEl.firstChild.nextSibling.nextSibling.firstChild;
+  next = performance.now();
+  perfs.push(next - now); // accessNodes
+  now = next;
+
+  // step (3): add event listeners
+  aEl1.addEventListener("click", () => {
+    console.log("click first");
+  });
+  aEl2.addEventListener("click", () => {
+    console.log("click second");
+  });
+
+  // this code is run in the UPDATE mode
+  if (i === selected) {
+    trEl.classList.add("table-danger");
+  }
+  tdEl.classList.add("col-md-1");
+  labelTxtNode.nodeValue = "foo " + i;
+  next = performance.now();
+  perfs.push(next - now); // operations
+  now = next;
+  return [tplClone, perfs];
+}
+
+function createRowParts(i) {
+  const perfs = [];
+  let now = performance.now();
+  let next = now;
+  // this code is run in the CREATE mode
+
+  // step (1): clone template
+  const tplCloneRoot = rowTplParts.content
+    .getPartRoot()
+    .clone({ attributeValues: ["col-md-1", i === selected ? "table-danger" : ""] });
+  const tplClone = tplCloneRoot.rootContainer
+  next = performance.now();
+  perfs.push(next - now); // cloning
+  now = next;
+
+  // step (2): get parts
+  const parts = tplCloneRoot.getParts();
+  next = performance.now();
+  perfs.push(next - now); // getParts
+  now = next;
+
+  const labelTxtNode = parts[0].children[0];
+  const aEl1 = parts[1].node;
+  const aEl2 = parts[2].node;
+  next = performance.now();
+  perfs.push(next - now); // accessNodes
+  now = next;
+
+  // step (3): add event listeners
+  aEl1.addEventListener("click", () => {
+    console.log("click first");
+  });
+  aEl2.addEventListener("click", () => {
+    console.log("click second");
+  });
+  // this code is run in the UPDATE mode
+  labelTxtNode.nodeValue = "foo " + i;
+  next = performance.now();
+  perfs.push(next - now); // operations
+  return [tplClone, perfs];
+}
+
+function runScenario(createRowFn,tbodyRef) {
+  const numbers = {
+    cloning: 0,
+    getParts: 0,
+    accessNodes: 0,
+    operations: 0,
+    replaceChildren: 0,
+  };
+  const rows = [];
+  for (let i = 0; i < nRows; i++) {
+    const [rowEl, perfs] = createRowFn(i);
+    rows.push(rowEl);
+    numbers["cloning"] += perfs[0];
+    numbers["getParts"] += perfs[1];
+    numbers["accessNodes"] += perfs[2];
+    numbers["operations"] += perfs[3];
+  }
+  const now = performance.now();
+  tbodyRef.replaceChildren(...rows);
+  numbers["replaceChildren"] = performance.now() - now;
+  return numbers;
+}
+
+function updateRatio() {
+  const baselineVal = Number(document.getElementById("last_baseline_total").value);
+  const partsVal = Number(document.getElementById("last_parts_total").value);
+  if (baselineVal && partsVal) {
+    const logEl = document.getElementById("overall_log");
+    if (baselineVal < partsVal) {
+      logEl.textContent = `Parts are slower than Manual by ${(100*(partsVal - baselineVal)/baselineVal).toFixed(1)}%`;
+    } else {
+      logEl.textContent = `Manual is slower than Parts by ${(100*(baselineVal - partsVal)/partsVal).toFixed(1)}%`;
+    }
+  }
+}
+function connectButton(button,createRowFn,tbodyRefFn,logIdref) {
+  button.addEventListener("click", async () => {
+    const numbers = {
+      cloning: [],
+      getParts: [],
+      accessNodes: [],
+      operations: [],
+      replaceChildren: [],
+      total: []
+    };
+    controls.disabled = true;
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    setTimeout(() => {controls.disabled = false;},0);
+    for (let i = 0; i < nRuns; i++) {
+        resetTable();
+        const prev = performance.now();
+        const perfs = runScenario(createRowFn,tbodyRefFn());
+        numbers["total"].push(performance.now() - prev);
+        Object.keys(perfs).forEach((key) => {
+          numbers[key].push(perfs[key]);
+        });
+    }
+    Object.keys(numbers).forEach(key => {
+      numbers[key] = average(numbers[key]);
+    });
+    const logEl = document.querySelector(logIdref);
+    logEl.textContent = `
+cloning: ${(1000 * numbers.cloning / nRows).toFixed(3)} us/call
+getParts: ${(1000 * numbers.getParts / nRows).toFixed(3)} us/call
+accessNodes: ${(1000 * numbers.accessNodes / nRows).toFixed(3)} us/call
+operations: ${(1000 * numbers.operations / nRows).toFixed(3)} us/call
+replaceChildren: ${(numbers.replaceChildren).toFixed(3)} ms/call
+total: ${(numbers.total).toFixed(3)} ms (for ${nRows} rows)
+`;
+    const storageEl = logEl.nextElementSibling;
+    storageEl.value = numbers.total;
+    updateRatio();
+  });
+}
+connectButton(
+  document.querySelector("button#run_baseline"),
+  createRowBaseline,
+  () => tbodyEl,
+  "#baseline_log"
+);
+connectButton(
+  document.querySelector("button#run_parts"),
+  createRowParts,
+  () => tbodyPart,
+  "#parts_log"
+);
+function average(values) {
+  if (values.length === 0) {
+    throw new Error("Input array is empty");
+  }
+  const sum = values.reduce((a, b) => a + b,0);
+  return sum / values.length;
+}
+</script>

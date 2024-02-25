@@ -13,22 +13,23 @@
 #include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
 
-class OverviewWallpaperController;
+class OverviewSession;
 
 // Manages a overview session which displays an overview of all windows and
 // allows selecting a window to activate it.
 class ASH_EXPORT OverviewController : public OverviewDelegate,
-                                      public ::wm::ActivationChangeObserver {
+                                      public wm::ActivationChangeObserver {
  public:
   OverviewController();
 
@@ -37,15 +38,24 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
 
   ~OverviewController() override;
 
+  // Convenience function to get the overview controller instance, which is
+  // created and owned by Shell.
+  static OverviewController* Get();
+
   // Starts/Ends overview with `type`. Returns true if enter or exit overview
   // successful. Depending on `type` the enter/exit animation will look
-  // different. `action` is used by UMA to record the reasons that trigger
-  // overview starts or ends. E.g, pressing the overview button.
+  // different. `start_action`/`end_action` is used by UMA to record the reasons
+  // that trigger overview starts or ends. E.g, pressing the overview button.
   bool StartOverview(
-      OverviewStartAction action,
+      OverviewStartAction start_action,
       OverviewEnterExitType type = OverviewEnterExitType::kNormal);
-  bool EndOverview(OverviewEndAction action,
+  bool EndOverview(OverviewEndAction end_action,
                    OverviewEnterExitType type = OverviewEnterExitType::kNormal);
+
+  // Returns true if it's possible to enter overview mode in the current
+  // configuration. This can be false at certain times, such as when the lock
+  // screen is visible we can't enter overview mode.
+  bool CanEnterOverview() const;
 
   // Returns true if overview mode is active.
   bool InOverviewSession() const;
@@ -116,27 +126,24 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
     delayed_animation_task_delay_ = delta;
   }
 
-  // Gets the windows list that are shown in the overview windows grids if the
-  // overview mode is active for testing.
-  std::vector<aura::Window*> GetWindowsListInOverviewGridsForTest();
+  bool windows_have_snapshot() const { return windows_have_snapshot_; }
+
+  void set_windows_have_snapshot_for_test(bool windows_have_snapshot) {
+    windows_have_snapshot_ = windows_have_snapshot;
+  }
 
  private:
   friend class SavedDeskTest;
-
-  void set_disable_app_id_check_for_saved_desks(bool val) {
-    disable_app_id_check_for_saved_desks_ = val;
-  }
 
   // Toggle overview mode. Depending on |type| the enter/exit animation will
   // look different.
   void ToggleOverview(
       OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
-  // Returns true if it's possible to enter or exit overview mode in the current
-  // configuration. This can be false at certain times, such as when the lock
-  // screen is visible we can't overview mode.
-  bool CanEnterOverview();
-  bool CanEndOverview(OverviewEnterExitType type);
+  // Returns true if it's possible to exit overview mode in the current
+  // configuration. This can be false at certain times, such as when the divider
+  // or desks are animating.
+  bool CanEndOverview(OverviewEnterExitType type) const;
 
   void OnStartingAnimationComplete(bool canceled);
   void OnEndingAnimationComplete(bool canceled);
@@ -168,13 +175,10 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
       occlusion_tracker_pauser_;
 
   std::unique_ptr<OverviewSession> overview_session_;
+
   base::Time last_overview_session_time_;
 
   base::TimeDelta occlusion_pause_duration_for_end_;
-
-  // Handles blurring and dimming of the wallpaper when entering or exiting
-  // overview mode. Animates the blurring and dimming if necessary.
-  std::unique_ptr<OverviewWallpaperController> overview_wallpaper_controller_;
 
   base::CancelableOnceClosure reset_pauser_task_;
 
@@ -194,6 +198,12 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // `disable_app_id_check_for_saved_desks_` is true, then this check is
   // omitted so we can test Saved Desks.
   bool disable_app_id_check_for_saved_desks_ = false;
+
+  // True if windows shown in overview mode will have a snapshot available.
+  // If a snapshot is available then we can pause occlusion tracking until
+  // overview mode as finished its enter animation. Otherwise, we must mark
+  // all windows as visible immediately.
+  bool windows_have_snapshot_ = false;
 
   base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
 };

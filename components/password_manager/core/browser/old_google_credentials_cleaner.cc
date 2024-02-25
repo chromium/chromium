@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -33,10 +33,10 @@ void OldGoogleCredentialCleaner::StartCleaning(Observer* observer) {
 void OldGoogleCredentialCleaner::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   base::Time cutoff;  // the null time
-  static const base::Time::Exploded exploded_cutoff = {
-      2012, 1, 0, 1, 0, 0, 0, 0};  // 00:00 Jan 1 2012
+  static const base::Time::Exploded kExplodedCutoff = {
+      .year = 2012, .month = 1, .day_of_month = 1};
   bool conversion_success =
-      base::Time::FromUTCExploded(exploded_cutoff, &cutoff);
+      base::Time::FromUTCExploded(kExplodedCutoff, &cutoff);
   DCHECK(conversion_success);
 
   auto IsOldGoogleForm = [&cutoff](const std::unique_ptr<PasswordForm>& form) {

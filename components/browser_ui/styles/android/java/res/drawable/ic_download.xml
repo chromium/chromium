@@ -5,8 +5,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<vector android:alpha="0.9" android:height="24dp"
-    android:viewportHeight="960" android:viewportWidth="960"
-    android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="@macro/default_icon_color" android:pathData="M480,647 L287,454l43,-43 120,120v-371h60v371l120,-120 43,43 -193,193ZM220,800q-24,0 -42,-18t-18,-42v-143h60v143h520v-143h60v143q0,24 -18,42t-42,18L220,800Z"/>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="?attr/colorControlNormal">
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M480,640L280,440L336,382L440,486L440,160L520,160L520,486L624,382L680,440L480,640ZM240,800Q207,800 183.5,776.5Q160,753 160,720L160,600L240,600L240,720Q240,720 240,720Q240,720 240,720L720,720Q720,720 720,720Q720,720 720,720L720,600L800,600L800,720Q800,753 776.5,776.5Q753,800 720,800L240,800Z"/>
 </vector>

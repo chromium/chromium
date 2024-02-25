@@ -92,13 +92,10 @@ GL_EXPORT BASE_DECLARE_FEATURE(kDCompDebugVisualization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferRootSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferVideoSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompVisualTreeOptimization);
-GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionGpuVSync);
-GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLowLatencyPresentation);
-GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionVerifyDrawOffset);
-GL_EXPORT extern const base::FeatureParam<int> kVerifyDrawOffsetX;
-GL_EXPORT extern const base::FeatureParam<int> kVerifyDrawOffsetY;
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionSoftwareOverlays);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLetterboxVideoOptimization);
+GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionUnlimitedOverlays);
+GL_EXPORT BASE_DECLARE_FEATURE(kCopyNonOverlayResourcesToDCompSurfaces);
 GL_EXPORT BASE_DECLARE_FEATURE(kEGLDualGPURendering);
 GL_EXPORT BASE_DECLARE_FEATURE(kIntelVpSuperResolution);
 GL_EXPORT BASE_DECLARE_FEATURE(kNvidiaVpSuperResolution);
@@ -108,10 +105,12 @@ GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEMetal);
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEVulkan);
 GL_EXPORT BASE_DECLARE_FEATURE(kTrackCurrentShaders);
 GL_EXPORT BASE_DECLARE_FEATURE(kVulkanFromANGLE);
+GL_EXPORT BASE_DECLARE_FEATURE(kANGLEDebugLayer);
 GL_EXPORT BASE_DECLARE_FEATURE(kDXGIWaitableSwapChain);
 GL_EXPORT extern const base::FeatureParam<int>
     kDXGIWaitableSwapChainMaxQueuedFrames;
 GL_EXPORT BASE_DECLARE_FEATURE(kDXGISwapChainPresentInterval0);
+GL_EXPORT BASE_DECLARE_FEATURE(kUseSwapChainPresenterFloatingPointAdjustments);
 
 GL_EXPORT bool IsDefaultANGLEVulkan();
 

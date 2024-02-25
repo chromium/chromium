@@ -30,17 +30,18 @@ namespace cronet {
 IOBufferWithCronet_Buffer::IOBufferWithCronet_Buffer(
     Cronet_BufferPtr cronet_buffer)
     : net::WrappedIOBuffer(
-          reinterpret_cast<const char*>(cronet_buffer->GetData())),
+          base::make_span(static_cast<const char*>(cronet_buffer->GetData()),
+                          static_cast<size_t>(cronet_buffer->GetSize()))),
       cronet_buffer_(cronet_buffer) {}
 
 IOBufferWithCronet_Buffer::~IOBufferWithCronet_Buffer() {
   if (cronet_buffer_) {
-    Cronet_Buffer_Destroy(cronet_buffer_.release());
+    Cronet_Buffer_Destroy(Release());
   }
 }
 
 Cronet_BufferPtr IOBufferWithCronet_Buffer::Release() {
-  data_ = nullptr;
+  data_ = nullptr;  // Avoid dangling pointer.
   return cronet_buffer_.release();
 }
 

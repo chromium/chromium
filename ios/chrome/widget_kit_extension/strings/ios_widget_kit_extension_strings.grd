@@ -293,6 +293,9 @@ type URL
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL" desc="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70]" meaning="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70][iOS only]">
           Your most visited sites will show up here.
       </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_EXPIRED_OPEN_CHROME" desc="Message shown in the Shortcuts Widget if Chrome has not been opened for a long time. It invites the user to open Chrome so up-to-date information about most visited sites can be displayed in the widget." meaning="shortcuts expires after some time of not using chrome[iOS only]">
+          Open Chrome to see your most visited sites here.
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DISPLAY_NAME" desc="Name for the Search Passwords widget. [CHAR_LIMIT=30][iOS only]" meaning="String that appears as title in the installation window for the Search Passwords widget. Title-cased.">
         Password Manager
       </message>
@@ -303,8 +306,8 @@ type URL
         Search
 passwords
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL" desc="Accessibility label for the search widget. [CHAR_LIMIT=40][iOS only]" meaning="Accessibility label for the search widget. Sentence-cased.">
-        Search passwords
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL" desc="Accessibility label for the search widget. [iOS only]" meaning="Accessibility label for the search widget. Sentence-cased.">
+        Search passwords on Google Password Manager
       </message>
     </messages>
   </release>

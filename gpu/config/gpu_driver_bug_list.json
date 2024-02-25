@@ -36,18 +36,6 @@
       ]
     },
     {
-      "id": 7,
-      "cr_bugs": [89557],
-      "description": "Work around a bug in offscreen buffers on NVIDIA GPUs on Macs",
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "features": [
-        "needs_offscreen_buffer_workaround"
-      ]
-    },
-    {
       "id": 17,
       "description": "Some drivers are unable to reset the D3D device in the GPU process sandbox",
       "os": {
@@ -68,24 +56,6 @@
       ],
       "disabled_extensions": [
         "GL_OES_depth_texture"
-      ]
-    },
-    {
-      "id": 20,
-      "description": "Disable EXT_draw_buffers on GeForce GT 650M on Mac OS X due to driver bugs",
-      "cr_bugs": [180397, 779991],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.12"
-        }
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0fd5"],
-      "multi_gpu_category": "any",
-      "features": [
-        "disable_ext_draw_buffers"
       ]
     },
     {
@@ -136,20 +106,6 @@
       "gl_renderer": ".*Mali-4.*",
       "features": [
         "use_non_zero_size_for_client_side_stream_buffers"
-      ]
-    },
-    {
-      "id": 26,
-      "description": "Disable use of Direct3D 11 on Windows Vista and lower",
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<=",
-          "value": "6.0"
-        }
-      },
-      "features": [
-        "disable_d3d11"
       ]
     },
     {
@@ -220,21 +176,6 @@
       ]
     },
     {
-      "id": 39,
-      "cr_bugs": [290391],
-      "description": "Multisampled renderbuffer allocation must be validated on some Macs",
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.10"
-        }
-      },
-      "features": [
-        "validate_multisample_buffer_allocation"
-      ]
-    },
-    {
       "id": 42,
       "cr_bugs": [290876, 488463],
       "description": "Framebuffer discarding causes flickering on older IMG drivers",
@@ -273,17 +214,6 @@
       ]
     },
     {
-      "id": 45,
-      "cr_bugs": [307751],
-      "description": "Unfold short circuit on Mac OS X",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "unfold_short_circuit_as_ternary_operation"
-      ]
-    },
-    {
       "id": 48,
       "description": "Force to use discrete GPU on older MacBookPro models",
       "cr_bugs": [113703],
@@ -316,45 +246,6 @@
       ]
     },
     {
-      "id": 54,
-      "cr_bugs": [124764, 349137],
-      "description": "Clear uniforms before first program use on all platforms",
-      "exceptions": [
-        {
-          "os": {
-            "type": "macosx"
-          }
-        }
-      ],
-      "features": [
-        "clear_uniforms_before_first_program_use"
-      ]
-    },
-    {
-      "id": 55,
-      "cr_bugs": [333885],
-      "description": "Mesa drivers in Linux handle varyings without static use incorrectly",
-      "os": {
-        "type": "linux"
-      },
-      "driver_vendor": "Mesa",
-      "features": [
-        "count_all_in_varyings_packing"
-      ]
-    },
-    {
-      "id": 56,
-      "cr_bugs": [333885],
-      "description": "Mesa drivers in ChromeOS handle varyings without static use incorrectly",
-      "os": {
-        "type": "chromeos"
-      },
-      "driver_vendor": "Mesa",
-      "features": [
-        "count_all_in_varyings_packing"
-      ]
-    },
-    {
       "id": 59,
       "description": "Multisampling is buggy in Intel IvyBridge",
       "cr_bugs": [116370],
@@ -365,31 +256,6 @@
       "device_id": ["0x0152", "0x0156", "0x015a", "0x0162", "0x0166"],
       "features": [
         "disable_chromium_framebuffer_multisample"
-      ]
-    },
-    {
-      "id": 64,
-      "description": "Linux AMD drivers incorrectly return initial value of 1 for TEXTURE_MAX_ANISOTROPY",
-      "cr_bugs": [348237],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "init_texture_max_anisotropy"
-      ]
-    },
-    {
-      "id": 65,
-      "description": "Linux NVIDIA drivers don't have the correct defaults for vertex attributes",
-      "cr_bugs": [351528],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "init_vertex_attributes"
       ]
     },
     {
@@ -494,29 +360,6 @@
       ]
     },
     {
-      "id": 89,
-      "description": "Mac drivers handle struct scopes incorrectly",
-      "cr_bugs": [403957],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "regenerate_struct_names"
-      ]
-    },
-    {
-      "id": 90,
-      "description": "Linux AMD drivers handle struct scopes incorrectly",
-      "cr_bugs": [403957],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "regenerate_struct_names"
-      ]
-    },
-    {
       "id": 91,
       "cr_bugs": [150500, 414816],
       "description": "ETC1 non-power-of-two sized textures crash older IMG drivers",
@@ -564,27 +407,6 @@
       ]
     },
     {
-      "id": 94,
-      "description": "Disable EGL_KHR_wait_sync on NVIDIA with GLES 3.1",
-      "cr_bugs": [433057],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<=",
-          "value": "5.0.2"
-        }
-      },
-      "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
-      "gl_version": {
-        "op": "=",
-        "value": "3.1"
-      },
-      "disabled_extensions": [
-        "EGL_KHR_wait_sync"
-      ]
-    },
-    {
       "id": 95,
       "cr_bugs": [421271],
       "description": "glClear does not always work on these drivers",
@@ -628,36 +450,11 @@
       ]
     },
     {
-      "id": 100,
-      "description": "Disable Direct3D11 on systems with AMD switchable graphics",
-      "cr_bugs": [451420, 721121, 755722],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10"
-        }
-      },
-      "vendor_id": "0x1002",
-      "driver_version": {
-        "op": "<",
-        "value": "20.19.0.32837"
-      },
-      "multi_gpu_style": "amd_switchable",
-      "features": [
-        "disable_d3d11"
-      ]
-    },
-    {
       "id": 102,
       "description": "Adreno 420 driver loses FBO attachment contents on bound FBO deletion",
       "cr_bugs": [457027],
       "os": {
-        "type": "android",
-        "version": {
-          "op": ">",
-          "value": "5.0.2"
-        }
+        "type": "android"
       },
       "gl_renderer": "Adreno \\(TM\\) 4.*",
       "features": [
@@ -698,29 +495,6 @@
       "gl_renderer": "PowerVR SGX 544",
       "disabled_extensions": [
         "GL_EXT_occlusion_query_boolean"
-      ]
-    },
-    {
-      "id": 107,
-      "description": "Workaround IMG PowerVR G6xxx drivers bugs",
-      "cr_bugs": [480992],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "between",
-          "value": "5.0.0",
-          "value2": "5.1.99"
-        }
-      },
-      "gl_vendor": ".*Imagination.*",
-      "gl_renderer": ".*PowerVR Rogue.*",
-      "driver_version": {
-        "op": "between",
-        "value": "1.3",
-        "value2": "1.4"
-      },
-      "disabled_extensions": [
-        "EGL_KHR_wait_sync"
       ]
     },
     {
@@ -827,26 +601,6 @@
       ]
     },
     {
-      "id": 116,
-      "description": "Adreno 420 support for EXT_multisampled_render_to_texture is buggy on Android < 5.1",
-      "comment": "Corresponds to software rendering list #149",
-      "cr_bugs": [490379, 767913],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "5.1"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 4.*",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
-      ],
-      "features": [
-        "disable_chromium_framebuffer_multisample"
-      ]
-    },
-    {
       "id": 117,
       "description": "GL_KHR_blend_equation_advanced breaks blending on Adreno 4xx",
       "cr_bugs": [488485],
@@ -871,20 +625,6 @@
       "features": [
         "exit_on_context_lost"
       ]
-    },
-    {
-      "id": 123,
-      "cr_bugs": [344330],
-      "description": "NVIDIA drivers before 346 lack features in NV_path_rendering and related extensions to implement driver level path rendering.",
-      "vendor_id": "0x10de",
-      "os": {
-        "type": "linux"
-      },
-      "driver_version": {
-        "op": "<",
-        "value": "346"
-      },
-      "disabled_extensions": ["GL_NV_path_rendering"]
     },
     {
       "id": 125,
@@ -1002,19 +742,7 @@
       "vendor_id": "0x1002",
       "device_id": ["0x9440", "0x944a", "0x9488", "0x9490"],
       "features": [
-        "disable_overlay_ca_layers",
         "disable_post_sub_buffers_for_onscreen_surfaces"
-      ]
-    },
-    {
-      "id": 136,
-      "description": "glGenerateMipmap fails if the zero texture level is not set on some Mac drivers",
-      "cr_bugs": [560499],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "set_zero_level_before_generating_mipmap"
       ]
     },
     {
@@ -1078,30 +806,6 @@
       "disabled_extensions": ["GL_EXT_sRGB"]
     },
     {
-      "id": 142,
-      "cr_bugs": [563714],
-      "description": "Pack parameters work incorrectly with pack buffer bound",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "pack_parameters_workaround_with_pack_buffer"
-      ]
-    },
-    {
-      "id": 144,
-      "cr_bugs": [563714],
-      "description": "Pack parameters work incorrectly with pack buffer bound",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "pack_parameters_workaround_with_pack_buffer"
-      ]
-    },
-    {
       "id": 145,
       "cr_bugs": [585250],
       "description": "EGLImage ref counting across EGLContext/threads is broken",
@@ -1122,45 +826,6 @@
       },
       "features": [
         "webgl_or_caps_max_texture_size_limit_4096"
-      ]
-    },
-    {
-      "id": 149,
-      "description": "Direct composition flashes black initially on Win <10",
-      "cr_bugs": [588588],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10.0"
-        }
-      },
-      "features": [
-        "disable_direct_composition"
-      ]
-    },
-    {
-      "id": 150,
-      "cr_bugs": [563714],
-      "description": "Alignment works incorrectly with unpack buffer bound",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "unpack_alignment_workaround_with_unpack_buffer"
-      ]
-    },
-    {
-      "id": 151,
-      "cr_bugs": [563714],
-      "description": "Alignment works incorrectly with unpack buffer bound",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "unpack_alignment_workaround_with_unpack_buffer"
       ]
     },
     {
@@ -1193,23 +858,6 @@
       },
       "disabled_extensions": [
         "EGL_KHR_fence_sync"
-      ]
-    },
-    {
-      "id": 158,
-      "description": "IOSurface use becomes pathologically slow over time on 10.10.",
-      "cr_bugs": [580616],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "=",
-          "value": "10.10"
-        }
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0fd5"],
-      "features": [
-        "disable_overlay_ca_layers"
       ]
     },
     {
@@ -1326,55 +974,6 @@
       ]
     },
     {
-      "id": 170,
-      "description": "Zero copy DXGI video hangs on shutdown on Win < 8.1",
-      "cr_bugs": [621190],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "8.1"
-        }
-      },
-      "features": [
-        "disable_dxgi_zero_copy_video"
-      ]
-    },
-    {
-      "id": 174,
-      "description": "Adreno 4xx support for EXT_multisampled_render_to_texture is buggy on Android 7.0",
-      "cr_bugs": [612474],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "between",
-          "value": "7.0.0",
-          "value2": "7.0.99",
-          "comment": "Only initial version of N."
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 4.*",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
-      ]
-    },
-    {
-      "id": 175,
-      "description": "Adreno 5xx support for EXT_multisampled_render_to_texture is buggy on Android < 7.0",
-      "cr_bugs": [612474],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "7.0"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 5.*",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
-      ]
-    },
-    {
       "id": 176,
       "description": "glClear does not work on Acer Predator GT-810",
       "cr_bugs": [633634],
@@ -1388,29 +987,6 @@
       ]
     },
     {
-      "id": 177,
-      "description": "glGetFragData{Location|Index} works incorrectly on Max",
-      "cr_bugs": [638340],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "get_frag_data_info_bug"
-      ]
-    },
-    {
-      "id": 179,
-      "description": "glResumeTransformFeedback works incorrectly on Intel GPUs",
-      "cr_bugs": [638514],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "rebind_transform_feedback_before_resume"
-      ]
-    },
-    {
       "id": 180,
       "cr_bugs": [579060,632461],
       "description": "eglCreateImageKHR fails for one component textures on PowerVR",
@@ -1421,61 +997,6 @@
       "gl_renderer": "PowerVR .*",
       "features": [
         "avoid_one_component_egl_images"
-      ]
-    },
-    {
-      "id": 181,
-      "description": "glTexStorage* are buggy when base mipmap level is not 0",
-      "cr_bugs": [640506],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.12.4"
-        }
-      },
-      "features": [
-        "reset_base_mipmap_level_before_texstorage"
-      ]
-    },
-    {
-      "id": 182,
-      "cr_bugs": [638691],
-      "description": "Frequent hang in glClear on old android versions on Mali-T7xx",
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "6.0"
-        }
-      },
-      "gl_renderer": ".*Mali-T7.*",
-      "features": [
-        "gl_clear_broken"
-      ]
-    },
-    {
-      "id": 183,
-      "description": "Result of abs(i) where i is an integer in vertex shader is wrong",
-      "cr_bugs": [642227],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "emulate_abs_int_function"
-      ]
-    },
-    {
-      "id": 184,
-      "description": "Rewrite texelFetchOffset to texelFetch for Intel Mac",
-      "cr_bugs": [642605],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "rewrite_texelfetchoffset_to_texelfetch"
       ]
     },
     {
@@ -1507,52 +1028,6 @@
       ]
     },
     {
-      "id": 187,
-      "description": "Rewrite do-while loops to simpler constructs on Mac",
-      "cr_bugs": [644669],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.11"
-        }
-      },
-      "features": [
-        "rewrite_do_while_loops"
-      ]
-    },
-    {
-      "id": 188,
-      "description": "AVSampleBufferDisplayLayer leaks IOSurfaces on 10.9.",
-      "cr_bugs": [632178],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<=",
-          "value": "10.10"
-        }
-      },
-      "features": [
-        "disable_av_sample_buffer_display_layer"
-      ]
-    },
-    {
-      "id": 189,
-      "description": "Do TexImage2D first before CopyTexImage2D for cube map texture on Intel Mac 10.11",
-      "cr_bugs": [648197],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<=",
-          "value": "10.11"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "init_one_cube_map_level_before_copyteximage"
-      ]
-    },
-    {
       "id": 190,
       "description": "Disable partial swaps on Mesa drivers (detected with GL_VERSION)",
       "cr_bugs": [339493],
@@ -1566,242 +1041,12 @@
       ]
     },
     {
-      "id": 191,
-      "description": "Emulate GLSL function isnan() on Intel Mac",
-      "cr_bugs": [650547],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.13.2"
-        }
-      },
-      "intel_gpu_series" : [
-        "skylake"
-      ],
-      "features" : [
-        "emulate_isnan_on_float"
-      ]
-    },
-    {
-      "id": 192,
-      "description": "Decode and encode before generateMipmap for srgb format textures on os except macosx",
-      "cr_bugs": [634519],
-      "gl_type": "gl",
-      "gl_version": {
-        "op": "<",
-        "value": "4.4"
-      },
-      "exceptions": [
-        {
-          "os": {
-            "type": "macosx"
-          }
-        }
-      ],
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 193,
-      "description": "Decode and encode before generateMipmap for srgb format textures on macosx",
-      "cr_bugs": [634519],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 194,
-      "description": "Init first two levels before CopyTexImage2D for cube map texture on Intel Mac 10.12",
-      "cr_bugs": [648197],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": ">=",
-          "value": "10.12"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "init_two_cube_map_levels_before_copyteximage"
-      ]
-    },
-    {
-      "id": 195,
-      "description": "Insert statements to reference all members in unused std140/shared blocks on Mac",
-      "cr_bugs": [618464],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "use_unused_standard_shared_blocks"
-      ]
-    },
-    {
-      "id": 196,
-      "description": "Tex(Sub)Image3D performs incorrectly when uploading from unpack buffer with GL_UNPACK_IMAGE_HEIGHT greater than zero on Intel Macs",
-      "cr_bugs": [654258],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "unpack_image_height_workaround_with_unpack_buffer"
-      ]
-    },
-    {
-      "id": 197,
-      "description": "adjust src/dst region if blitting pixels outside framebuffer on Mac",
-      "cr_bugs": [644740],
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 198,
-      "description": "adjust src/dst region if blitting pixels outside framebuffer on Linux Intel",
-      "cr_bugs": [664740],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 199,
-      "description": "adjust src/dst region if blitting pixels outside framebuffer on Linux AMD",
-      "cr_bugs": [664740],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 202,
-      "cr_bugs": [639760,641129],
-      "description": "Mac driver GL 4.1 requires invariant and centroid to match between shaders",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "remove_invariant_and_centroid_for_essl3"
-      ]
-    },
-    {
-      "id": 203,
-      "cr_bugs": [639760,641129],
-      "description": "Mesa driver GL 3.3 requires invariant and centroid to match between shaders",
-      "os": {
-        "type": "linux"
-      },
-      "driver_vendor": "Mesa",
-      "gl_version": {
-        "op": "=",
-        "value": "3.3"
-      },
-      "features": [
-        "remove_invariant_and_centroid_for_essl3"
-      ]
-    },
-    {
-      "id": 205,
-      "description": "Adreno 5xx support for EXT_multisampled_render_to_texture is buggy on Android 7.1",
-      "cr_bugs": [663811],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "=",
-          "value": "7.1.0"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 5.*",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
-      ]
-    },
-    {
       "id": 206,
       "description": "Disable KHR_blend_equation_advanced until cc shaders are updated",
       "cr_bugs": [661715],
       "disabled_extensions": [
         "GL_KHR_blend_equation_advanced",
         "GL_KHR_blend_equation_advanced_coherent"
-      ]
-    },
-    {
-      "id": 207,
-      "description": "Decode and Encode before generateMipmap for srgb format textures on Windows",
-      "cr_bugs": [634519],
-      "os" : {
-        "type": "win"
-      },
-      "features" : [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 208,
-      "description": "Decode and Encode before generateMipmap for srgb format textures on Linux Mesa ANGLE path",
-      "cr_bugs": [634519],
-      "os": {
-        "type": "linux"
-      },
-      "gl_renderer": "ANGLE.*",
-      "vendor_id": "0x8086",
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 209,
-      "description": "Decode and Encode before generateMipmap for srgb format textures on Chromeos Intel",
-      "cr_bugs": [634519],
-      "os": {
-        "type": "chromeos"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 210,
-      "description": "Decode and Encode before generateMipmap for srgb format textures on Linux AMD",
-      "cr_bugs": [634519],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "decode_encode_srgb_for_generatemipmap"
-      ]
-    },
-    {
-      "id": 211,
-      "description": "Rewrite -float to 0.0 - float for Intel Mac",
-      "cr_bugs": [672380],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<=",
-          "value": "10.11"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "rewrite_float_unary_minus_operator"
       ]
     },
     {
@@ -2067,39 +1312,6 @@
       ]
     },
     {
-      "id": 236,
-      "description": "glClearColor does not always work on Intel 6xxx Mac drivers",
-      "cr_bugs": [710443],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.12.6"
-        }
-      },
-      "vendor_id": "0x8086",
-      "device_id": ["0x1626", "0x162B", "0x1622"],
-      "features": [
-        "clear_to_zero_or_one_broken"
-      ]
-    },
-    {
-      "id": 239,
-      "description": "Reset TexImage2D base level to 0 on Intel Mac 10.12.4",
-      "cr_bugs": [705865],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": ">=",
-          "value": "10.12.4"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "reset_teximage2d_base_level"
-      ]
-    },
-    {
       "id": 240,
       "cr_bugs": [750306, 764526],
       "description": "glGetQueryObject(GL_QUERY_RESULT_AVAILABLE) blocks unexpectedly on Adreno",
@@ -2126,22 +1338,6 @@
       "gl_vendor": "Intel.*",
       "features": [
         "msaa_is_slow"
-      ]
-    },
-    {
-      "id": 242,
-      "description": "Code produced by local variable initialization often triggers crashes in Marshmallow Adreno driver",
-      "cr_bugs": [728271],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "7.0"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 4.*",
-      "features": [
-        "dont_initialize_uninitialized_locals"
       ]
     },
     {
@@ -2215,25 +1411,6 @@
       ]
     },
     {
-      "id": 250,
-      "description": "Depth/stencil renderbuffers can't be resized on NVIDIA on early macOS 10.13",
-      "cr_bugs": [775202],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "between",
-          "value": "10.13.0",
-          "value2": "10.13.3",
-          "comment": "Fixed in 10.13.4."
-        }
-      },
-      "vendor_id": "0x10de",
-      "multi_gpu_category": "any",
-      "features": [
-        "depth_stencil_renderbuffer_resize_emulation"
-      ]
-    },
-    {
       "id": 251,
       "description": "Vivante GPUs shader cache breaks rendering",
       "cr_bugs": [780498],
@@ -2270,21 +1447,6 @@
       "features": [
         "max_msaa_sample_count_4",
         "use_eqaa_storage_samples_2"
-      ]
-    },
-    {
-      "id": 255,
-      "description": "Fullscreen video crashes macOS 10.11 WindowServer.",
-      "cr_bugs": [806506],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.12"
-        }
-      },
-      "features": [
-        "disable_av_sample_buffer_display_layer"
       ]
     },
     {
@@ -2335,29 +1497,6 @@
       "multi_gpu_category": "primary",
       "features": [
         "max_msaa_sample_count_4"
-      ]
-    },
-    {
-      "id": 260,
-      "cr_bugs": [760389],
-      "description": "eglClientWaitSyncKHR with nonzero timeout waits too long",
-      "comment": [
-        "This bug is specific to Samsung S8/S8+ on Android N, but there ",
-        "isn't currently a way to restrict the filter to those devices. The ",
-        "functionality is currently only used for WebVR on Daydream ready ",
-        "devices, and the non-Samsung Daydream devices generally use ",
-        "Android O, so an overbroad match seems acceptable."
-      ],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "8.0"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 540",
-      "features": [
-        "dont_use_eglclientwaitsync_with_timeout"
       ]
     },
     {
@@ -2469,26 +1608,6 @@
       ]
     },
     {
-      "id": 271,
-      "cr_bugs": [860418],
-      "description": "Frequent crashes in glClear on Mali-T7xx on N with driver 12.1.01alp0",
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "8.0"
-        }
-      },
-      "driver_version": {
-        "op": "=",
-        "value": "12.1.01alp0"
-      },
-      "gl_renderer": ".*Mali-T7.*",
-      "features": [
-        "gl_clear_broken"
-      ]
-    },
-    {
       "id": 272,
       "cr_bugs": [858879],
       "description": "A deleted query id for GL_TIMESTAMP cannot be reused for other query targets",
@@ -2498,19 +1617,6 @@
       "gl_vendor": "Qualcomm.*",
       "features": [
         "disable_timestamp_queries"
-      ]
-    },
-    {
-      "id": 274,
-      "description": "glTexStorage* are buggy when base mipmap level is not 0",
-      "cr_bugs": [877874],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "reset_base_mipmap_level_before_texstorage"
       ]
     },
     {
@@ -2540,19 +1646,6 @@
       "device_id": ["0x6900"],
       "features": [
         "disable_direct_composition"
-      ]
-    },
-    {
-      "id": 279,
-      "description": "WindowServer crashes on VMWare bots using CA renderer",
-      "cr_bugs": [828031],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x15ad",
-      "multi_gpu_category": "any",
-      "features": [
-        "disable_overlay_ca_layers"
       ]
     },
     {
@@ -2655,18 +1748,6 @@
       ]
     },
     {
-      "id": 291,
-      "description": "adjust src/dst region if blitting pixels outside framebuffer on Linux NVIDIA",
-      "cr_bugs": [830046],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "features": [
-        "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
       "id": 292,
       "description": "adjust src/dst region if blitting pixels outside framebuffer on Android NVIDIA",
       "cr_bugs": [830046],
@@ -2676,25 +1757,6 @@
       "gl_vendor": "NVIDIA.*",
       "features": [
         "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 293,
-      "cr_bugs": [931527],
-      "description": "Frequent crashes in glClear on Android N with driver 12.0.04rel0",
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "8.0"
-        }
-      },
-      "driver_version": {
-        "op": "=",
-        "value": "12.0.04rel0"
-      },
-      "features": [
-        "gl_clear_broken"
       ]
     },
     {
@@ -2814,21 +1876,9 @@
       ]
     },
     {
-      "id": 307,
-      "cr_bugs": [833975],
-      "description": "Workaround for broken EGL_IMAGE_EXTERNAL_FLUSH_EXT implementation on NVIDIA",
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "force_gl_flush_on_swap_buffers"
-      ]
-    },
-    {
       "id": 309,
       "cr_bugs": [993233],
-      "description": "Don't use video processor scaling on non-Intel, non-NVIDIA GPUs.",
+      "description": "Don't use video processor scaling on non-Intel, non-NVIDIA GPUs and older AMD GPUs",
       "os": {
         "type" : "win"
       },
@@ -2838,6 +1888,13 @@
         },
         {
           "vendor_id": "0x10de"
+        },
+        {
+          "vendor_id": "0x1002",
+          "driver_version": {
+            "op": ">=",
+            "value": "31.0.14001.45012"
+          }
         }
       ],
       "features": [
@@ -2950,17 +2007,6 @@
       ]
     },
     {
-      "id": 319,
-      "cr_bugs": [709351],
-      "description": "Remove dynamic indexing for swizzled vectors on Mac",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "remove_dynamic_indexing_of_swizzled_vector"
-      ]
-    },
-    {
       "id": 320,
       "cr_bugs": [709351],
       "description": "Remove dynamic indexing for swizzled vectors on Android",
@@ -3044,22 +2090,6 @@
       "multi_gpu_category": "any",
       "features": [
         "force_low_power_gpu"
-      ]
-    },
-    {
-      "id": 327,
-      "cr_bugs": [1027981],
-      "description": "Disable dual source blending support",
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.14"
-        }
-      },
-      "gl_vendor": "Intel.*",
-      "features": [
-        "disable_dual_source_blending_support"
       ]
     },
     {
@@ -3217,34 +2247,6 @@
       ]
     },
     {
-      "id": 341,
-      "description": "Driver crash deleting FBOs on Mac Intel Broadwell",
-      "cr_bugs": [1090584],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "intel_gpu_series": [
-        "broadwell"
-      ],
-      "features": [
-        "unbind_attachments_on_bound_render_fbo_delete"
-      ]
-    },
-    {
-      "id": 342,
-      "description": "Driver crash deleting FBOs on Mac nVidia 600/700 series",
-      "cr_bugs": [1090584],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0fe9", "0x0fd5", "0x0fd8", "0x119e", "0x0fea", "0x11a2"],
-      "features": [
-        "unbind_attachments_on_bound_render_fbo_delete"
-      ]
-    },
-    {
       "id": 343,
       "description": "Disable using GPU backed resource for imageBitmap from video on d3d9",
       "cr_bugs": [1098445, 1105923],
@@ -3298,14 +2300,13 @@
         "icelake",
         "tigerlake",
         "rocketlake",
-        "dg1",
         "alderlake",
         "alchemist",
         "raptorlake",
         "meteorlake"
       ],
       "features": [
-        "force_rgb10a2_overlay_support_flags"
+        "force_rgb10a2_overlay_support"
       ]
     },
     {
@@ -3555,7 +2556,7 @@
       "os": {
         "type": "win"
       },
-      "multi_gpu_category": "any",
+      "multi_gpu_category": "active",
       "vendor_id": "0x8086",
       "features": [
         "disable_direct_composition_sw_video_overlays"
@@ -3708,22 +2709,6 @@
       ]
     },
     {
-      "id": 386,
-      "cr_bugs": [1253962],
-      "description": "Older Adreno 4xx drivers drop draws sometimes with oop-c",
-      "os": {
-        "type" : "android"
-      },
-      "driver_version": {
-        "op": "<",
-        "value": "145"
-      },
-      "gl_renderer": ".*Adreno \\(TM\\) 4.*",
-      "features": [
-        "disable_canvas_oop_rasterization"
-      ]
-    },
-    {
       "id": 387,
       "description": "Windows hardware decoding doesn't support a set of legacy AMD GPUs",
       "cr_bugs": [822644, 1187900],
@@ -3832,21 +2817,6 @@
       ],
       "features": [
         "disable_skia_reduce_ops_task_splitting"
-      ]
-    },
-    {
-      "id": 392,
-      "cr_bugs": [1305679],
-      "description": "OOPR Canvas is unreliable on MacOS 10.12 and older.",
-      "os": {
-        "type" : "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.13"
-        }
-      },
-      "features": [
-        "disable_canvas_oop_rasterization"
       ]
     },
     {
@@ -4073,9 +3043,9 @@
       "os": {
         "type": "android"
       },
-      "gl_renderer": "ANGLE.*Samsung Xclipse 920.*",
+      "gl_renderer": "ANGLE.*Samsung Xclipse.*",
       "comment": [
-        "This issue affects the Samsung Galaxy S22 with Exynos chipsets which uses ANGLE",
+        "This issue affects the Samsung Galaxy S22/23/24 with Exynos chipsets which uses ANGLE",
         "as the system GLES driver, and the cause appears be overly strict validation."
       ],
       "features": [
@@ -4130,6 +3100,7 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
       "driver_version": {
         "op": "<",
         "value": "30.0.100.9667"
@@ -4146,6 +3117,7 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
       "intel_gpu_generation": {
         "op": "<",
         "value": "11"
@@ -4162,9 +3134,10 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
-      "intel_gpu_series": [
-        "meteorlake"
-      ],
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "12"
+      },
       "features": [
         "force_dcomp_triple_buffer_video_swap_chain"
       ]
@@ -4172,9 +3145,9 @@
     {
       "id": 414,
       "cr_bugs": [
-        1318380
+        1445741
       ],
-      "description": "Only enable video processor auto HDR on NVIDIA GPUs with 545+ driver",
+      "description": "Only enable video processor auto HDR on NVIDIA GPUs with 550.50+ driver",
       "os": {
         "type": "win"
       },
@@ -4187,7 +3160,7 @@
           "driver_version": {
             "schema": "nvidia_driver",
             "op": ">",
-            "value": "545.00"
+            "value": "550.50"
           }
         }
       ],
@@ -4214,25 +3187,6 @@
       ]
     },
     {
-      "id": 416,
-      "cr_bugs": [1465960],
-      "description": "Disable video acceleration on Jasper Lake Intel ChromeOS devices",
-      "os": {
-        "type": "chromeos"
-      },
-      "intel_gpu_series": [
-        "jasperlake"
-      ],
-      "features": [
-        "disable_accelerated_h264_decode",
-        "disable_accelerated_h264_encode",
-        "disable_accelerated_vp8_decode",
-        "disable_accelerated_vp9_decode",
-        "disable_accelerated_vp9_encode",
-        "disable_accelerated_vp9_profile2_decode"
-      ]
-    },
-    {
       "id": 417,
       "description": "Limit D3D11VideoDecoder to 11.0 due to failures on QC chipsets.",
       "comment": [
@@ -4243,7 +3197,7 @@
       "os": {
         "type": "win"
       },
-      "vendor_id": "0x5143",
+      "vendor_id": "0x4d4f4351",
       "features": [
         "limit_d3d11_video_decoder_to_11_0"
       ]
@@ -4263,6 +3217,169 @@
       "gl_type": "gles",
       "features": [
         "r8_egl_images_broken"
+      ]
+    },
+    {
+      "id": 419,
+      "cr_bugs": [1473665],
+      "description": "Corruption when consecutive VP9 keyframes are requested from MFVEA on Intel.",
+      "comment": [
+        "In MFVEA, the Intel MFT driver currently misbehaves when requesting ",
+        "two consecutive keyframes. MFVEA fixes this by causing a delta frame ",
+        "encode in between the keyframes whose results are thrown away. ",
+        "External bitrate control isn't made aware that this happens."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "features": [
+        "avoid_consecutive_keyframes_for_vp9"
+      ]
+    },
+    {
+      "id": 420,
+      "cr_bugs": [1475546],
+      "description": "GPU process crash when decoding HEVC on Intel with specific drivers.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "between",
+        "value": "20.19.15.4284",
+        "value2": "20.19.15.5172"
+      },
+      "features": [
+        "disable_accelerated_hevc_decode"
+      ]
+    },
+    {
+      "id": 421,
+      "cr_bugs": [1494147],
+      "description": "Accelerated video decoding leads to lock up in ChromeOS Zork (AMD Radeon Vega 3 GPUs).",
+      "os": {
+        "type" : "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x15d8", "0x15dd"],
+      "features": [
+        "disable_accelerated_h264_decode",
+        "disable_accelerated_h264_encode",
+        "disable_accelerated_vp9_decode",
+        "disable_accelerated_vp9_profile2_decode",
+        "disable_accelerated_hevc_decode"
+      ]
+    },
+    {
+      "id": 422,
+      "description": "Disable video acceleration on some Intel 8LP GPUs on ChromeOS [b/293173688]",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x22b1"],
+      "features": [
+        "disable_accelerated_vp8_encode",
+        "disable_accelerated_h264_encode"
+      ]
+    },
+    {
+      "id": 423,
+      "description": "Legacy AMD GPUs can't synchronize multiple write streams on SharedImages [b/293613437, b/300686930]",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x9802", "0x9834"],
+      "features": [
+        "disable_webgpu_shared_images"
+      ]
+    },
+    {
+      "id": 424,
+      "cr_bugs": [1439689],
+      "description": "Disable SVC video encoding on AMD GPUs that can't change bitrate in SVC mode",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "<",
+        "value": "31.0.21029.6002"
+      },
+      "features": [
+        "disable_svc_encoding"
+      ]
+    },
+    {
+      "id": 425,
+      "cr_bugs": [1512211],
+      "description": "Single component images fail on some embedded Intel GPUs",
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": ".*HD Graphics 500.*",
+      "features": [
+        "avoid_one_component_egl_images"
+      ]
+    },
+    {
+      "id": 426,
+      "cr_bugs": [1508379],
+      "description": "Disable VP9 k-SVC video decoding on non-Intel GPUs",
+      "os": {
+        "type": "win"
+      },
+      "exceptions": [
+        {
+          "multi_gpu_category": "active",
+          "vendor_id": "0x8086"
+        }
+      ],
+      "features": [
+        "disable_d3d11_vp9_ksvc_decoding"
+      ]
+    },
+    {
+      "id": 427,
+      "comment": "GPU process may crash when updating frame size on Intel NUC 8 (hades canyon) with old graphics drivers.",
+      "description": "Disable encoding frame size change on Intel Kaby Lake G devices with old Radeon Pro WX Vega M GL graphics drivers",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": [
+        "0x694c"
+      ],
+      "driver_version": {
+        "op": "<",
+        "value": "30.0.13025.1000"
+      },
+      "features": [
+        "disable_media_foundation_frame_size_change"
+      ]
+    },
+    {
+      "id": 428,
+      "cr_bugs": [
+        1401061
+      ],
+      "description": "Don't use Media Foundation hardware security on Polaris-architecture AMD GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "multi_gpu_category": "active",
+      "device_id": [
+        "0x67c7", "0x67df", "0x67ff", "0x6fdf", "0x67ef", "0x6981",
+        "0x6987", "0x699f", "0x67c2", "0x67d0", "0x6900", "0x6984",
+        "0x67c0", "0x67c1", "0x67e0", "0x67e3", "0x67e8", "0x67eb",
+        "0x6980", "0x6985", "0x6986", "0x6995", "0x6997"
+      ],
+      "features": [
+        "disable_media_foundation_hardware_security"
       ]
     }
   ]

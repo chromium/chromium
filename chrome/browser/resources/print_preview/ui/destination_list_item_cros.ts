@@ -11,12 +11,13 @@ import './icons.html.js';
 import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin} from '../data/destination.js';
+import type {Destination} from '../data/destination.js';
+import {DestinationOrigin} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, getStatusTextColorClass, PrinterStatusReason} from '../data/printer_status_cros.js';
 
 import {getTemplate} from './destination_list_item_cros.html.js';
@@ -108,7 +109,7 @@ export class PrintPreviewDestinationListItemElement extends
     if (this.destination.isExtension) {
       const icon =
           this.shadowRoot!.querySelector('.extension-icon')! as HTMLElement;
-      icon.style.backgroundImage = '-webkit-image-set(' +
+      icon.style.backgroundImage = 'image-set(' +
           'url(chrome://extension-icon/' + this.destination.extensionId +
           '/24/1) 1x,' +
           'url(chrome://extension-icon/' + this.destination.extensionId +

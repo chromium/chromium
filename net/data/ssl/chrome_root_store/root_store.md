@@ -1,13 +1,12 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 11
+Version: 14
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
 55926084ec963a64b96e2abe01ce0ba86a64fbfebcc7aab5afc155b37fd76066 | CN=Actalis Authentication Root CA,O=Actalis S.p.A./03358520967,L=Milan,C=IT | 2011-09-22 | 2030-09-22
 18ce6cfe7bf14e60b2e347b8dfe868cb31d02ebb3ada271569f50343b46db3a4 | CN=Amazon Root CA 3,O=Amazon,C=US | 2015-05-26 | 2040-05-26
 1ba5b2aa8c65401a82960118f80bec4f62304d83cec4713a19c39c011ea46db4 | CN=Amazon Root CA 2,O=Amazon,C=US | 2015-05-26 | 2040-05-26
-568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5 | CN=Starfield Services Root Certificate Authority - G2,O=Starfield Technologies\, Inc.,L=Scottsdale,ST=Arizona,C=US | 2009-09-01 | 2037-12-31
 8ecde6884f3d87b1125ba31ac3fcb13d7016de7f57cc904fe1cb97c6ae98196e | CN=Amazon Root CA 1,O=Amazon,C=US | 2015-05-26 | 2038-01-17
 e35d28419ed02025cfa69038cd623962458da5c695fbdea3c22b0bfb25897092 | CN=Amazon Root CA 4,O=Amazon,C=US | 2015-05-26 | 2040-05-26
 5c58468d55f58e497e743982d2b50010b6d165374acf83a7d4a32db768c4408e | CN=Certum Trusted Network CA,OU=Certum Certification Authority,O=Unizeto Technologies S.A.,C=PL | 2008-10-22 | 2029-12-31
@@ -135,3 +134,7 @@ e74fbda55bd564c473a36b441aa799c8a68e077440e8288b9fa1e50e4bbaca11 | CN=Security C
 2e44102ab58cb85419451c8e19d9acf3662cafbc614b6a53960a30f7d0e2eb41 | CN=TunTrust Root CA,O=Agence Nationale de Certification Electronique,C=TN | 2019-04-26 | 2044-04-26
 30fbba2c32238e2a98547af97931e550428b9b3f1c8eeb6633dcfa86c5b27dd3 | CN=vTrus ECC Root CA,O=iTrusChina Co.\,Ltd.,C=CN | 2018-07-31 | 2043-07-31
 8a71de6559336f426c26e53880d00d88a18da4c6a91f0dcb6194e206c5c96387 | CN=vTrus Root CA,O=iTrusChina Co.\,Ltd.,C=CN | 2018-07-31 | 2043-07-31
+b2fae53e14ccd7ab9212064701ae279c1d8988facb775fa8a008914e663988a8 | CN=Atos TrustedRoot Root CA ECC TLS 2021,O=Atos,C=DE | 2021-04-22 | 2041-04-17
+81a9088ea59fb364c548a6f85559099b6f0405efbf18e5324ec9f457ba00112f | CN=Atos TrustedRoot Root CA RSA TLS 2021,O=Atos,C=DE | 2021-04-22 | 2041-04-17
+c90f26f0fb1b4018b22227519b5ca2b53e2ca5b3be5cf18efe1bef47380c5383 | CN=Sectigo Public Server Authentication Root E46,O=Sectigo Limited,C=GB | 2021-03-22 | 2046-03-21
+7bb647a62aeeac88bf257aa522d01ffea395e0ab45c73f93f65654ec38f25a06 | CN=Sectigo Public Server Authentication Root R46,O=Sectigo Limited,C=GB | 2021-03-22 | 2046-03-21

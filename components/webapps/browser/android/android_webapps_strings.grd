@@ -206,6 +206,69 @@
       <message name="IDS_WEBAPK_INSTALL_FAILED" desc="Indicates that a WebAPK has not been added to Home screen.">
         Failed to install
       </message>
+
+      <!-- PWA Universal Install UI -->
+      <message name="IDS_PWA_UNI_INSTALL_TITLE" desc="The title for the Universal Install sheet.">
+         Add to home screen
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_INSTALL" desc="The label for the Install option in the Universal Install sheet.">
+         Install
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_ALREADY_INSTALLED" desc="When the web app is already installed, the label for the Install/Open option (in the Universal Install sheet) should explain that install is not possible, but opening the app is.">
+         This app is already installed
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_OPEN_EXPLANATION" desc="The label in the Universal Install sheet that explains that the app can be opened instead of installing.">
+         Click to open the app instead
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_CHECKING_INSTALLABILITY" desc="The label in the Universal Install sheet that explains that the app is being checked whether it can be installed.">
+         Checking if app can be installed\u2026
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_INSTALL_DISABLED" desc="The label in the Universal Install sheet that explains that the app can not be installed.">
+         This app cannot be installed.
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_SHORTCUT" desc="The label for adding a shortcut in the Universal Install sheet.">
+         Create shortcut
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_SHORTCUT_EXPLANATION" desc="The label describing how shortcuts, created in the Universal Install sheet, open.">
+         Shortcuts open in Chrome
+      </message>
+
+      <message name="IDS_PWA_UNI_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
+         Choose how to add the app to the home screen
+      </message>
+
+      <!-- PWA Restore Bottom Sheet UI -->
+      <message name="IDS_PWA_RESTORE_BUTTON_PEEKING" desc="The button label when the PWA Restore BottomSheet UI is in peeking state.">
+         Review web apps
+      </message>
+      <message name="IDS_PWA_RESTORE_DESCRIPTION_PEEKING" desc="The sheet description when the PWA Restore BottomSheet UI is in peeking state.">
+         Restore web apps you have recently used on devices connected to this account
+      </message>
+      <message name="IDS_PWA_RESTORE_TITLE_PEEKING" desc="The sheet title when the PWA Restore BottomSheet UI is in peeking state.">
+         Restore your web apps
+      </message>
+      <message name="IDS_PWA_RESTORE_RECENT_APPS_LIST" desc="The label for the recent list.">
+         Web apps used in the last month
+      </message>
+      <message name="IDS_PWA_RESTORE_OLDER_APPS_LIST" desc="The label for the list of older apps.">
+         Older
+      </message>
+      <message name="IDS_PWA_RESTORE_BUTTON_DESELECT" desc="The label for the 'Deselect All' button.">
+         Deselect all
+      </message>
+      <message name="IDS_PWA_RESTORE_BUTTON_EXPANDED" desc="The button label when the PWA Restore BottomSheet UI is in expanded state.">
+         Restore web apps
+      </message>
+      <message name="IDS_PWA_RESTORE_DESCRIPTION_EXPANDED" desc="The sheet description when the PWA Restore BottomSheet UI is in expanded state.">
+         Choose web apps to restore on this device. Apps shown here are based on your Chrome history.
+      </message>
+      <message name="IDS_PWA_RESTORE_TITLE_EXPANDED" desc="The sheet title when the PWA Restore BottomSheet UI is in expanded state.">
+         Review web apps
+      </message>
+
+      <message name="IDS_PWA_RESTORE_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
+         Review which web apps to restore
+      </message>
     </messages>
   </release>
 </grit>

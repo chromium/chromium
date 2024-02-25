@@ -50,6 +50,51 @@ using Microsoft::WRL::ComPtr;
 
 namespace media {
 
+ULONGLONG CaptureModeToExtendedPlatformFlags(
+    mojom::EyeGazeCorrectionMode mode) {
+  switch (mode) {
+    case mojom::EyeGazeCorrectionMode::OFF:
+      return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF;
+    case mojom::EyeGazeCorrectionMode::ON:
+      return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON;
+    case mojom::EyeGazeCorrectionMode::STARE:
+      return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
+             KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE;
+  }
+  NOTREACHED_NORETURN();
+}
+
+mojom::EyeGazeCorrectionMode ExtendedPlatformFlagsToCaptureMode(
+    ULONGLONG flags,
+    mojom::EyeGazeCorrectionMode default_mode) {
+  switch (flags & (KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF |
+                   KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
+                   KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE)) {
+    case KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_OFF:
+      return mojom::EyeGazeCorrectionMode::OFF;
+    case KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON:
+      return mojom::EyeGazeCorrectionMode::ON;
+    case (KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
+          KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE):
+      return mojom::EyeGazeCorrectionMode::STARE;
+    default:
+      return default_mode;
+  }
+}
+
+std::vector<mojom::EyeGazeCorrectionMode> ExtendedPlatformFlagsToCaptureModes(
+    ULONGLONG flags) {
+  std::vector<mojom::EyeGazeCorrectionMode> modes = {
+      mojom::EyeGazeCorrectionMode::OFF};
+  if (flags & KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON) {
+    modes.push_back(mojom::EyeGazeCorrectionMode::ON);
+    if (flags & KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE) {
+      modes.push_back(mojom::EyeGazeCorrectionMode::STARE);
+    }
+  }
+  return modes;
+}
+
 #if DCHECK_IS_ON()
 #define DLOG_IF_FAILED_WITH_HRESULT(message, hr)                      \
   {                                                                   \
@@ -453,9 +498,16 @@ HRESULT ConvertToVideoSinkMediaType(IMFMediaType* source_media_type,
   if (FAILED(hr) || passthrough)
     return hr;
 
-  // Both NV12 and I420 usually use 16..235 nominal range.
-  hr = sink_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
-                                  MFNominalRange_16_235);
+  // Since we have the option to send video color space at RTP layer, copy the
+  // nominal range attribute from source to sink instead of rewriting it to
+  // limited range. See https://crbug.com/1449570 for more details.
+  if (base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
+    hr = CopyAttribute(source_media_type, sink_media_type,
+                       MF_MT_VIDEO_NOMINAL_RANGE);
+  } else {
+    hr = sink_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
+                                    MFNominalRange_16_235);
+  }
   if (FAILED(hr))
     return hr;
 
@@ -636,7 +688,14 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
   hr = target_texture.As(&keyed_mutex);
   CHECK(SUCCEEDED(hr));
 
-  keyed_mutex->AcquireSync(0, INFINITE);
+  hr = keyed_mutex->AcquireSync(0, INFINITE);
+  // Can't check for FAILED(hr) because AcquireSync may return e.g.
+  // WAIT_ABANDONED.
+  if (hr != S_OK) {
+    DLOG(ERROR) << "Failed to acquire the mutex:"
+                << logging::SystemErrorCodeToString(hr);
+    return E_FAIL;
+  }
   device_context->CopySubresourceRegion(target_texture.Get(), 0, 0, 0, 0,
                                         texture, 0, nullptr);
   keyed_mutex->ReleaseSync(0);
@@ -966,37 +1025,6 @@ bool VideoCaptureDeviceMFWin::CreateMFCameraControlMonitor() {
     return false;
   }
   camera_control_monitor_ = std::move(camera_control_monitor);
-  return true;
-}
-
-bool VideoCaptureDeviceMFWin::CreateMFSensorActivityMonitor() {
-  DCHECK(video_callback_);
-
-  // The MF DLLs have been loaded by VideoCaptureDeviceFactoryWin.
-  // Just get a DLL module handle here, once.
-  static const HMODULE module = GetModuleHandleW(L"mfsensorgroup.dll");
-  if (!module) {
-    DLOG(ERROR) << "Failed to get the mfsensorgroup.dll module handle";
-    return false;
-  }
-
-  using MFCreateSensorActivityMonitorType =
-      decltype(&MFCreateSensorActivityMonitor);
-  static const MFCreateSensorActivityMonitorType create_function =
-      reinterpret_cast<MFCreateSensorActivityMonitorType>(
-          GetProcAddress(module, "MFCreateSensorActivityMonitor"));
-  if (!create_function) {
-    DLOG(ERROR) << "Failed to get the MFCreateSensorActivityMonitor function";
-    return false;
-  }
-
-  HRESULT hr =
-      create_function(activities_report_callback_.get(), &activity_monitor_);
-  if (!activity_monitor_) {
-    LOG(ERROR) << "Failed to create IMFSensorActivityMonitor: "
-               << logging::SystemErrorCodeToString(hr);
-    return false;
-  }
   return true;
 }
 
@@ -1460,10 +1488,12 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
     return;
   }
 
-  // Nominal range is rewritten to be 16..235 in non-passthrough mode.
-  // So update it before extracting the color space information.
-  if (best_match_video_capability.source_pixel_format !=
-      best_match_video_capability.supported_format.pixel_format) {
+  // If "kWebRTCColorAccuracy" is not enabled,  then nominal range is rewritten
+  // to be 16..235 in non-passthrough mode. So update it before extracting the
+  // color space information.
+  if (!base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy) &&
+      (best_match_video_capability.source_pixel_format !=
+       best_match_video_capability.supported_format.pixel_format)) {
     source_video_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
                                        MFNominalRange_16_235);
   }
@@ -1763,6 +1793,45 @@ void VideoCaptureDeviceMFWin::GetPhotoState(GetPhotoStateCallback callback) {
               ? mojom::BackgroundBlurMode::BLUR
               : mojom::BackgroundBlurMode::OFF;
     }
+
+    hr = extended_camera_controller_->GetExtendedCameraControl(
+        MF_CAPTURE_ENGINE_MEDIASOURCE,
+        KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW,
+        &extended_camera_control);
+    DLOG_IF_FAILED_WITH_HRESULT(
+        "Failed to retrieve IMFExtendedCameraControl for digital window", hr);
+    if (SUCCEEDED(hr) &&
+        (extended_camera_control->GetCapabilities() &
+         KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING)) {
+      photo_capabilities->supported_face_framing_modes = {
+          mojom::MeteringMode::NONE, mojom::MeteringMode::CONTINUOUS};
+      photo_capabilities->current_face_framing_mode =
+          (extended_camera_control->GetFlags() &
+           KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING)
+              ? mojom::MeteringMode::CONTINUOUS
+              : mojom::MeteringMode::NONE;
+    }
+
+    hr = extended_camera_controller_->GetExtendedCameraControl(
+        MF_CAPTURE_ENGINE_MEDIASOURCE,
+        KSPROPERTY_CAMERACONTROL_EXTENDED_EYEGAZECORRECTION,
+        &extended_camera_control);
+    DLOG_IF_FAILED_WITH_HRESULT(
+        "Failed to retrieve IMFExtendedCameraControl for eye gaze correction",
+        hr);
+    if (SUCCEEDED(hr)) {
+      std::vector<mojom::EyeGazeCorrectionMode> capture_modes =
+          ExtendedPlatformFlagsToCaptureModes(
+              extended_camera_control->GetCapabilities());
+      if (!capture_modes.empty()) {
+        photo_capabilities->current_eye_gaze_correction_mode =
+            ExtendedPlatformFlagsToCaptureMode(
+                extended_camera_control->GetFlags(),
+                mojom::EyeGazeCorrectionMode::OFF);
+        photo_capabilities->supported_eye_gaze_correction_modes =
+            std::move(capture_modes);
+      }
+    }
   }
 
   std::move(callback).Run(std::move(photo_capabilities));
@@ -1950,6 +2019,28 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
       hr = SetAndCommitExtendedCameraControlFlags(
           KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION, flag);
       DLOG_IF_FAILED_WITH_HRESULT("Background blur mode config failed", hr);
+      if (FAILED(hr)) {
+        return;
+      }
+    }
+    if (settings->eye_gaze_correction_mode.has_value()) {
+      const ULONGLONG flags = CaptureModeToExtendedPlatformFlags(
+          settings->eye_gaze_correction_mode.value());
+      hr = SetAndCommitExtendedCameraControlFlags(
+          KSPROPERTY_CAMERACONTROL_EXTENDED_EYEGAZECORRECTION, flags);
+      DLOG_IF_FAILED_WITH_HRESULT("Eye gaze correction config failed", hr);
+      if (FAILED(hr)) {
+        return;
+      }
+    }
+    if (settings->has_face_framing_mode) {
+      const ULONGLONG flags =
+          settings->face_framing_mode == mojom::MeteringMode::CONTINUOUS
+              ? KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING
+              : KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL;
+      hr = SetAndCommitExtendedCameraControlFlags(
+          KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW, flags);
+      DLOG_IF_FAILED_WITH_HRESULT("Auto face framing config failed", hr);
       if (FAILED(hr)) {
         return;
       }
@@ -2253,7 +2344,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
               selected_video_capability_->supported_format.frame_rate,
               pixel_format),
           gfx::ColorSpace());
-  client_->OnIncomingCapturedExternalBuffer(std::move(external_buffer), {},
+  client_->OnIncomingCapturedExternalBuffer(std::move(external_buffer),
                                             reference_time, timestamp,
                                             gfx::Rect(texture_size));
   return hr;
@@ -2418,7 +2509,8 @@ void VideoCaptureDeviceMFWin::ProcessEventError(HRESULT hr) {
           device_descriptor_.device_id);
     }
     if (!activity_monitor_) {
-      bool created = CreateMFSensorActivityMonitor();
+      bool created = CreateMFSensorActivityMonitor(
+          activities_report_callback_.get(), &activity_monitor_);
       if (!created) {
         // Can't rely on activity monitor to check if the camera is in use.
         // Just report the error.
@@ -2618,6 +2710,36 @@ void VideoCaptureDeviceMFWin::OnCameraInUseReport(bool in_use,
   if (activity_monitor_) {
     activity_monitor_->Stop();
   }
+}
+
+bool CreateMFSensorActivityMonitor(
+    IMFSensorActivitiesReportCallback* report_callback,
+    IMFSensorActivityMonitor** monitor) {
+  // The MF DLLs have been loaded by VideoCaptureDeviceFactoryWin.
+  // Just get a DLL module handle here, once.
+  static const HMODULE module = GetModuleHandleW(L"mfsensorgroup.dll");
+  if (!module) {
+    DLOG(ERROR) << "Failed to get the mfsensorgroup.dll module handle";
+    return false;
+  }
+
+  using MFCreateSensorActivityMonitorType =
+      decltype(&MFCreateSensorActivityMonitor);
+  static const MFCreateSensorActivityMonitorType create_function =
+      reinterpret_cast<MFCreateSensorActivityMonitorType>(
+          GetProcAddress(module, "MFCreateSensorActivityMonitor"));
+  if (!create_function) {
+    DLOG(ERROR) << "Failed to get the MFCreateSensorActivityMonitor function";
+    return false;
+  }
+
+  HRESULT hr = create_function(report_callback, monitor);
+  if (!*monitor) {
+    LOG(ERROR) << "Failed to create IMFSensorActivityMonitor: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  return true;
 }
 
 }  // namespace media

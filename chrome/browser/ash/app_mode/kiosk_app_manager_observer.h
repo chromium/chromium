@@ -36,7 +36,7 @@ class KioskAppManagerObserver : public base::CheckedObserver {
   virtual void OnKioskAppExternalUpdateComplete(bool success) {}
 
   // Called when kiosk app session initialization is complete - i.e. when
-  // KioskAppManager::InitSession() is called.
+  // KioskChromeAppManager::InitSession() is called.
   virtual void OnKioskSessionInitialized() {}
 
  protected:

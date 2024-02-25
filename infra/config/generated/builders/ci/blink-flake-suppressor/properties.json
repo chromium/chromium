@@ -1,0 +1,38 @@
+{
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "recipe": "chromium_expectation_files/expectation_file_scripts",
+  "scripts": [
+    {
+      "args": [
+        "--project",
+        "chrome-unexpected-pass-data",
+        "--no-prompt-for-user-input",
+        "--sample-period",
+        "7",
+        "--non-hidden-failures-only",
+        "--build-fail-consecutive-days-threshold",
+        "2",
+        "--build-fail-total-number-threshold",
+        "10",
+        "--build-fail-recent-days-threshold",
+        "2"
+      ],
+      "cl_title": "Blink web tests suppression",
+      "reviewer_list": {
+        "reviewer": [
+          "jiesheng@google.com"
+        ]
+      },
+      "script": "third_party/blink/tools/suppress_flakes.py",
+      "script_type": "FLAKE_FINDER",
+      "step_name": "generate_test_suppression_cl",
+      "submit_type": "MANUAL"
+    }
+  ]
+}

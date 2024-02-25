@@ -2,7 +2,6 @@
 load("@org_tensorflow//tensorflow:tensorflow.bzl", "pybind_extension")
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = ["//tensorflow_lite_support:users"],
     licenses = ["notice"],  # Apache 2.0
 )
@@ -35,7 +34,11 @@ pybind_extension(
     srcs = ["whitespace_tokenizer_op_resolver_wrapper.cc"],
     hdrs = ["whitespace_tokenizer_op_resolver.h"],
     additional_exported_symbols = ["AddWhitespaceTokenizerCustomOp"],
+    enable_stub_generation = True,
     module_name = "_pywrap_whitespace_tokenizer_op_resolver",
+    pytype_srcs = [
+        "_pywrap_whitespace_tokenizer_op_resolver.pyi",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":whitespace_tokenizer_op_resolver",
@@ -107,7 +110,11 @@ pybind_extension(
     srcs = ["ngrams_op_resolver_wrapper.cc"],
     hdrs = ["ngrams_op_resolver.h"],
     additional_exported_symbols = ["AddNgramsCustomOp"],
+    enable_stub_generation = True,
     module_name = "_pywrap_ngrams_op_resolver",
+    pytype_srcs = [
+        "_pywrap_ngrams_op_resolver.pyi",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":ngrams_op_resolver",

@@ -167,11 +167,7 @@ void SegmentationUkmHelper::Initialize() {
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2};
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY};
   }
   sampling_rate_ = GetModelExecutionSamplingRate();
   DCHECK_GE(sampling_rate_, 0);
@@ -210,8 +206,8 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
     const ModelProvider::Request& input_tensor,
     const ModelProvider::Response& outputs,
     const std::vector<int>& output_indexes,
-    absl::optional<proto::PredictionResult> prediction_result,
-    absl::optional<SelectedSegment> selected_segment) {
+    std::optional<proto::PredictionResult> prediction_result,
+    std::optional<SelectedSegment> selected_segment) {
   ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::Segmentation_ModelExecution execution_result(source_id);
   if (!AddInputsToUkm(&execution_result, segment_id, model_version,

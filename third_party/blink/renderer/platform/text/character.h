@@ -34,10 +34,11 @@
 #include <unicode/uchar.h>
 
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
+#include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -54,6 +55,22 @@ class PLATFORM_EXPORT Character {
                                UChar32 upper_bound) {
     return character >= lower_bound && character <= upper_bound;
   }
+
+  // Commonly used Unicode Blocks in CSS specs.
+  // https://www.unicode.org/Public/UNIDATA/Blocks.txt
+  static bool IsBlockCjkSymbolsAndPunctuation(UChar32 ch) {
+    return IsInRange(ch, 0x3000, 0x303F);
+  }
+  static bool IsBlockHalfwidthAndFullwidthForms(UChar32 ch) {
+    return IsInRange(ch, 0xFF00, 0xFFEF);
+  }
+
+  // East Asian Width: https://unicode.org/reports/tr11/
+  static UEastAsianWidth EastAsianWidth(UChar32 ch) {
+    return static_cast<UEastAsianWidth>(
+        u_getIntPropertyValue(ch, UCHAR_EAST_ASIAN_WIDTH));
+  }
+  static bool IsEastAsianWidthFullwidth(UChar32 ch);
 
   static inline bool IsUnicodeVariationSelector(UChar32 character) {
     // http://www.unicode.org/Public/UCD/latest/ucd/StandardizedVariants.html
@@ -85,15 +102,6 @@ class PLATFORM_EXPORT Character {
   static unsigned ExpansionOpportunityCount(base::span<const UChar>,
                                             TextDirection,
                                             bool& is_after_expansion);
-  static unsigned ExpansionOpportunityCount(const TextRun& run,
-                                            bool& is_after_expansion) {
-    if (run.Is8Bit()) {
-      return ExpansionOpportunityCount(run.Span8(), run.Direction(),
-                                       is_after_expansion);
-    }
-    return ExpansionOpportunityCount(run.Span16(), run.Direction(),
-                                     is_after_expansion);
-  }
 
   static bool IsUprightInMixedVertical(UChar32 character);
 
@@ -106,6 +114,17 @@ class PLATFORM_EXPORT Character {
 
   // http://unicode.org/reports/tr9/#Directional_Formatting_Characters
   static bool IsBidiControl(UChar32 character);
+
+  static HanKerningCharType GetHanKerningCharType(UChar32 character);
+  // Check the `HanKerningCharType` of a character without knowing the font.
+  // It depends on fonts, so it may not be `kOpen` or `kClose` even when this
+  // function returns `true`. See `HanKerning::GetCharType`.
+  static bool MaybeHanKerningOpen(UChar32 ch) {
+    return MaybeHanKerningOpenOrClose(ch) && MaybeHanKerningOpenSlow(ch);
+  }
+  static bool MaybeHanKerningClose(UChar32 ch) {
+    return MaybeHanKerningOpenOrClose(ch) && MaybeHanKerningCloseSlow(ch);
+  }
 
   // Collapsible white space characters defined in CSS:
   // https://drafts.csswg.org/css-text-3/#collapsible-white-space
@@ -216,9 +235,26 @@ class PLATFORM_EXPORT Character {
   static bool IsVerticalMathCharacter(UChar32);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CharacterTest, Derived);
+
   static bool IsCJKIdeographOrSymbolSlow(UChar32);
   static bool IsHangulSlow(UChar32);
+  static bool MaybeHanKerningOpenOrClose(UChar32 character) {
+    return IsInRange(character, kLeftSingleQuotationMarkCharacter, 0x301F) ||
+           IsInRange(character, 0xFF08, 0xFF60);
+  }
+  static bool MaybeHanKerningOpenSlow(UChar32);
+  static bool MaybeHanKerningCloseSlow(UChar32);
 };
+
+inline bool Character::IsEastAsianWidthFullwidth(UChar32 ch) {
+  // All EAW=F characters are in the "Halfwidth and Fullwidth forms" block,
+  // except U+3000 IDEOGRAPHIC SPACE.
+  // https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=[:ea=F:]
+  return ch == kIdeographicSpaceCharacter ||
+         (IsBlockHalfwidthAndFullwidthForms(ch) &&
+          EastAsianWidth(ch) == UEastAsianWidth::U_EA_FULLWIDTH);
+}
 
 }  // namespace blink
 

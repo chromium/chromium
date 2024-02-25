@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -16,7 +17,6 @@
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
@@ -91,7 +91,7 @@ class NTPUserDataLogger {
   // sources, such as signing in (switching from client to server tiles), then
   // only the impressions for the first source will be logged, leaving the
   // number of impressions for a source slightly out-of-sync with navigations.
-  std::array<absl::optional<ntp_tiles::NTPTileImpression>,
+  std::array<std::optional<ntp_tiles::NTPTileImpression>,
              ntp_tiles::kMaxNumTiles>
       logged_impressions_;
 

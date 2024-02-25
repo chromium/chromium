@@ -9,7 +9,7 @@
 #include "media/parsers/jpeg_parser.h"
 
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_FATAL); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 };
 
 Environment* env = new Environment();
@@ -17,6 +17,6 @@ Environment* env = new Environment();
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   media::JpegParseResult result;
-  ParseJpegPicture(data, size, &result);
+  ParseJpegPicture(base::make_span(data, size), &result);
   return 0;
 }

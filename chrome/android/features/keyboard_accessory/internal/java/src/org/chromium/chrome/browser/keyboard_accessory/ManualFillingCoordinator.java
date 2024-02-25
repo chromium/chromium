@@ -4,19 +4,21 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -40,30 +42,53 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     public ManualFillingCoordinator() {}
 
     @Override
-    public void initialize(WindowAndroid windowAndroid, BottomSheetController sheetController,
-            SoftKeyboardDelegate keyboardDelegate, BackPressManager backPressManager,
-            AsyncViewStub sheetStub, AsyncViewStub barStub) {
-        if (barStub == null || sheetStub == null) return; // The manual filling isn't needed.
-        barStub.setLayoutResource(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-                        ? R.layout.keyboard_accessory_modern
-                        : R.layout.keyboard_accessory);
+    public void initialize(
+            WindowAndroid windowAndroid,
+            BottomSheetController sheetController,
+            SoftKeyboardDelegate keyboardDelegate,
+            BackPressManager backPressManager,
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            AsyncViewStub sheetStub,
+            AsyncViewStub barStub) {
+        Context context = windowAndroid.getContext().get();
+        if (barStub == null || sheetStub == null || context == null) {
+            return; // The manual filling isn't needed.
+        }
+        // TODO(crbug.com/1448820): Initialize in the xml resources file.
+        barStub.setLayoutResource(R.layout.keyboard_accessory);
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         barStub.setShouldInflateOnBackgroundThread(true);
         sheetStub.setShouldInflateOnBackgroundThread(true);
-        initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, mMediator, barStub),
-                new AccessorySheetCoordinator(sheetStub, mMediator), sheetController,
-                backPressManager, keyboardDelegate,
-                new ConfirmationDialogHelper(windowAndroid.getContext()));
+        initialize(
+                windowAndroid,
+                new KeyboardAccessoryCoordinator(mMediator, mMediator, barStub),
+                new AccessorySheetCoordinator(sheetStub, mMediator),
+                sheetController,
+                backPressManager,
+                edgeToEdgeControllerSupplier,
+                keyboardDelegate,
+                new ConfirmationDialogHelper(context));
     }
 
     @VisibleForTesting
-    void initialize(WindowAndroid windowAndroid, KeyboardAccessoryCoordinator accessoryBar,
-            AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController,
-            BackPressManager backPressManager, SoftKeyboardDelegate keyboardDelegate,
+    void initialize(
+            WindowAndroid windowAndroid,
+            KeyboardAccessoryCoordinator accessoryBar,
+            AccessorySheetCoordinator accessorySheet,
+            BottomSheetController sheetController,
+            BackPressManager backPressManager,
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            SoftKeyboardDelegate keyboardDelegate,
             ConfirmationDialogHelper confirmationHelper) {
-        mMediator.initialize(accessoryBar, accessorySheet, windowAndroid, sheetController,
-                backPressManager, keyboardDelegate, confirmationHelper);
+        mMediator.initialize(
+                accessoryBar,
+                accessorySheet,
+                windowAndroid,
+                sheetController,
+                backPressManager,
+                edgeToEdgeControllerSupplier,
+                keyboardDelegate,
+                confirmationHelper);
     }
 
     @Override
@@ -108,13 +133,16 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void registerActionProvider(WebContents webContents,
+    public void registerActionProvider(
+            WebContents webContents,
             PropertyProvider<KeyboardAccessoryData.Action[]> actionProvider) {
         mMediator.registerActionProvider(webContents, actionProvider);
     }
 
     @Override
-    public void registerSheetDataProvider(WebContents webContents, @AccessoryTabType int sheetType,
+    public void registerSheetDataProvider(
+            WebContents webContents,
+            @AccessoryTabType int sheetType,
             PropertyProvider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider) {
         mMediator.registerSheetDataProvider(webContents, sheetType, sheetDataProvider);
     }
@@ -177,8 +205,9 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void confirmOperation(String title, String message, Runnable confirmedCallback) {
-        mMediator.confirmOperation(title, message, confirmedCallback);
+    public void confirmOperation(
+            String title, String message, Runnable confirmedCallback, Runnable declinedCallback) {
+        mMediator.confirmOperation(title, message, confirmedCallback, declinedCallback);
     }
 
     ManualFillingMediator getMediatorForTesting() {

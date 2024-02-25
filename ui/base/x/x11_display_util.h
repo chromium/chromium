@@ -8,26 +8,22 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
-#include "ui/linux/linux_ui.h"
+#include "ui/display/types/display_config.h"
 
 namespace ui {
 
-// Return the version for xrandr. It multiplies the major number by 100 and
-// adds the minor like MAJOR * 100 + MINOR. It returns zero if no xrandr is
-// present.
-COMPONENT_EXPORT(UI_BASE_X) int GetXrandrVersion();
-
 // Builds a list of displays for fallback.
 COMPONENT_EXPORT(UI_BASE_X)
-std::vector<display::Display> GetFallbackDisplayList(float scale);
+std::vector<display::Display> GetFallbackDisplayList(
+    float scale,
+    size_t* primary_display_index_out);
 
 // Builds a list of displays from the current screen information offered by
 // the X server.
 COMPONENT_EXPORT(UI_BASE_X)
 std::vector<display::Display> BuildDisplaysFromXRandRInfo(
-    int version,
-    const DisplayConfig& display_config,
-    int64_t* primary_display_index_out);
+    const display::DisplayConfig& display_config,
+    size_t* primary_display_index_out);
 
 // Returns the refresh interval of the primary display. If there is no connected
 // primary display, returns the refresh interval of the first connected display.

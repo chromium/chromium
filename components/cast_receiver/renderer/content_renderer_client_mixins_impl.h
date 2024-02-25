@@ -6,10 +6,10 @@
 #define COMPONENTS_CAST_RECEIVER_RENDERER_CONTENT_RENDERER_CLIENT_MIXINS_IMPL_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "components/cast_receiver/renderer/public/content_renderer_client_mixins.h"
 #include "components/cast_receiver/renderer/wrapping_url_loader_throttle_provider.h"
 
@@ -58,16 +58,16 @@ class ContentRendererClientMixinsImpl
  private:
   // Called by UrlRewriteRulesProvider instances as part of frame RenderFrame
   // deletion.
-  void OnRenderFrameRemoved(int render_frame_id);
+  void OnRenderFrameRemoved(const blink::LocalFrameToken& frame_token);
 
   // WrappingURLLoaderThrottleProvider::Client implementation.
   UrlRewriteRulesProvider* GetUrlRewriteRulesProvider(
-      int render_frame_id) override;
-  bool IsCorsExemptHeader(base::StringPiece header) override;
+      const blink::LocalFrameToken& frame_token) override;
+  bool IsCorsExemptHeader(std::string_view header) override;
 
   IsCorsExemptHeadersCallback is_cors_exempt_header_callback_;
 
-  base::flat_map<int /* render_frame_id */,
+  base::flat_map<blink::LocalFrameToken /* frame_token */,
                  std::unique_ptr<UrlRewriteRulesProvider>>
       url_rewrite_rules_providers_;
 };

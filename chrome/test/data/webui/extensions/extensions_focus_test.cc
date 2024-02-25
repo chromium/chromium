@@ -14,12 +14,16 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutInputTest, Basic) {
           "runMochaTest('ExtensionShortcutInputTest', 'Basic')");
 }
 
-using CrExtensionsOptionsPageTest = ExtensionSettingsTestBase;
+class CrExtensionsOptionsPageTest : public ExtensionSettingsTestBase {
+ protected:
+  void OnWebContentsAvailable(content::WebContents* web_contents) override {
+    web_contents->Focus();
+  }
+};
 
 // Disabled due to flakiness, see https://crbug.com/945654
 IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsPageTest, DISABLED_All) {
   set_test_loader_host(chrome::kChromeUIExtensionsHost);
   InstallExtensionWithInPageOptions();
-  RunTest("extensions/extension_options_dialog_test.js", "mocha.run()",
-          /*requires_focus=*/true, /*skip_test_loader=*/false);
+  RunTest("extensions/extension_options_dialog_test.js", "mocha.run()");
 }

@@ -106,4 +106,8 @@ void FakeFileSystemAccessPermissionContext::NotifyEntryMoved(
     const base::FilePath& old_path,
     const base::FilePath& new_path) {}
 
+void FakeFileSystemAccessPermissionContext::OnFileCreatedFromShowSaveFilePicker(
+    const GURL& file_picker_binding_context,
+    const storage::FileSystemURL& url) {}
+
 }  // namespace content

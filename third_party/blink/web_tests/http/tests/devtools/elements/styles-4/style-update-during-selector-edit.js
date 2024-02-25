@@ -5,10 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Elements from 'devtools/panels/elements/elements.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that modification of element styles while editing a selector does not commit the editor.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -37,16 +39,17 @@ import {ElementsTestRunner} from 'elements_test_runner';
   }
 
   function rebuildUpdate() {
-    if (UI.panels.elements.stylesWidget.node === treeOutline.selectedDOMNode())
+    if (Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.node === treeOutline.selectedDOMNode())
       seenRebuildUpdate = true;
   }
 
   function step1() {
-    TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, 'doUpdate', rebuildUpdate);
+    TestRunner.addSniffer(Elements.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', rebuildUpdate);
     TestRunner.domModel.addEventListener(SDK.DOMModel.Events.AttrModified, attributeChanged, this);
     // Click "Add new rule".
-    UI.panels.elements.stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
-        .shadowRoot.querySelector('.largeicon-add')
+    Elements.ElementsPanel.ElementsPanel.instance()
+        .stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
+        .shadowRoot.querySelector('[aria-label="New Style Rule"]')
         .click();
     TestRunner.evaluateInPage('addStyleClass()', step2);
   }

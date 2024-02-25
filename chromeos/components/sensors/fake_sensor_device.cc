@@ -157,14 +157,14 @@ void FakeSensorDevice::GetAttributes(const std::vector<std::string>& attr_names,
                                      GetAttributesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<absl::optional<std::string>> values;
+  std::vector<std::optional<std::string>> values;
   values.reserve(attr_names.size());
   for (const auto& attr_name : attr_names) {
     auto it = attributes_.find(attr_name);
     if (it != attributes_.end())
       values.push_back(it->second);
     else
-      values.push_back(absl::nullopt);
+      values.push_back(std::nullopt);
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -291,12 +291,12 @@ void FakeSensorDevice::GetChannelsAttributes(
     GetChannelsAttributesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<absl::optional<std::string>> attrs;
+  std::vector<std::optional<std::string>> attrs;
 
   for (const ChannelData& channel : channels_) {
     auto it = channel.attrs.find(attr_name);
     if (it == channel.attrs.end()) {
-      attrs.push_back(absl::nullopt);
+      attrs.push_back(std::nullopt);
       continue;
     }
 

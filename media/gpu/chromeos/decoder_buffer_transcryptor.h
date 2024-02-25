@@ -6,6 +6,7 @@
 #define MEDIA_GPU_CHROMEOS_DECODER_BUFFER_TRANSCRYPTOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
@@ -18,7 +19,6 @@
 #include "media/base/decoder_status.h"
 #include "media/base/decryptor.h"
 #include "media/base/video_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -100,7 +100,7 @@ class DecoderBufferTranscryptor {
   // Queue containing all requested transcrypt tasks.
   base::queue<TranscryptTask> transcrypt_task_queue_;
   // The transcrypt task we're currently trying to execute.
-  absl::optional<TranscryptTask> current_transcrypt_task_;
+  std::optional<TranscryptTask> current_transcrypt_task_;
 
   // If true, then a request to the decryptor is in progress which means we
   // should not make another transcryption request until the pending one

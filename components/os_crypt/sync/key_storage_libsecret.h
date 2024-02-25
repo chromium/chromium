@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_OS_CRYPT_SYNC_KEY_STORAGE_LIBSECRET_H_
 #define COMPONENTS_OS_CRYPT_SYNC_KEY_STORAGE_LIBSECRET_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "components/os_crypt/sync/key_storage_linux.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Specialisation of KeyStorageLinux that uses Libsecret.
 class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLibsecret : public KeyStorageLinux {
@@ -24,10 +24,10 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLibsecret : public KeyStorageLinux {
  protected:
   // KeyStorageLinux
   bool Init() override;
-  absl::optional<std::string> GetKeyImpl() override;
+  std::optional<std::string> GetKeyImpl() override;
 
  private:
-  absl::optional<std::string> AddRandomPasswordInLibsecret();
+  std::optional<std::string> AddRandomPasswordInLibsecret();
 
   const std::string application_name_;
 };

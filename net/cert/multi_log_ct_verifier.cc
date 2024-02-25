@@ -4,10 +4,9 @@
 
 #include "net/cert/multi_log_ct_verifier.h"
 
+#include <string_view>
 #include <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
@@ -52,48 +51,30 @@ void AddSCTAndLogStatus(scoped_refptr<ct::SignedCertificateTimestamp> sct,
   sct_list->push_back(SignedCertificateTimestampAndStatus(sct, status));
 }
 
+std::map<std::string, scoped_refptr<const CTLogVerifier>> CreateLogsMap(
+    const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers) {
+  std::map<std::string, scoped_refptr<const CTLogVerifier>> logs;
+  for (const auto& log_verifier : log_verifiers) {
+    std::string key_id = log_verifier->key_id();
+    logs[key_id] = log_verifier;
+  }
+  return logs;
+}
+
 }  // namespace
 
-base::CallbackListSubscription
-MultiLogCTVerifier::CTLogProvider::RegisterLogsListCallback(
-    LogListCallbackList::CallbackType callback) {
-  return callback_list_.Add(std::move(callback));
-}
-
-void MultiLogCTVerifier::CTLogProvider::NotifyCallbacks(
-    const std::vector<scoped_refptr<const net::CTLogVerifier>>& log_verifiers) {
-  callback_list_.Notify(log_verifiers);
-}
-
-MultiLogCTVerifier::CTLogProvider::CTLogProvider() = default;
-MultiLogCTVerifier::CTLogProvider::~CTLogProvider() = default;
-
-MultiLogCTVerifier::MultiLogCTVerifier(CTLogProvider* notifier) {
-  // base::Unretained is safe since we are using a CallbackListSubscription that
-  // won't outlive |this|.
-  log_provider_subscription_ =
-      notifier->RegisterLogsListCallback(base::BindRepeating(
-          &MultiLogCTVerifier::SetLogs, base::Unretained(this)));
-}
+MultiLogCTVerifier::MultiLogCTVerifier(
+    const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers)
+    : logs_(CreateLogsMap(log_verifiers)) {}
 
 MultiLogCTVerifier::~MultiLogCTVerifier() = default;
 
-void MultiLogCTVerifier::SetLogs(
-    const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers) {
-  logs_.clear();
-  for (const auto& log_verifier : log_verifiers) {
-    std::string key_id = log_verifier->key_id();
-    logs_[key_id] = log_verifier;
-  }
-}
-
 void MultiLogCTVerifier::Verify(
-    base::StringPiece hostname,
     X509Certificate* cert,
-    base::StringPiece stapled_ocsp_response,
-    base::StringPiece sct_list_from_tls_extension,
+    std::string_view stapled_ocsp_response,
+    std::string_view sct_list_from_tls_extension,
     SignedCertificateTimestampAndStatusList* output_scts,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log) const {
   DCHECK(cert);
   DCHECK(output_scts);
 
@@ -107,7 +88,7 @@ void MultiLogCTVerifier::Verify(
     if (ct::GetPrecertSignedEntry(cert->cert_buffer(),
                                   cert->intermediate_buffers().front().get(),
                                   &precert_entry)) {
-      VerifySCTs(hostname, embedded_scts, precert_entry,
+      VerifySCTs(embedded_scts, precert_entry,
                  ct::SignedCertificateTimestamp::SCT_EMBEDDED, cert,
                  output_scts);
     }
@@ -130,11 +111,11 @@ void MultiLogCTVerifier::Verify(
 
   ct::SignedEntryData x509_entry;
   if (ct::GetX509SignedEntry(cert->cert_buffer(), &x509_entry)) {
-    VerifySCTs(hostname, sct_list_from_ocsp, x509_entry,
+    VerifySCTs(sct_list_from_ocsp, x509_entry,
                ct::SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE, cert,
                output_scts);
 
-    VerifySCTs(hostname, sct_list_from_tls_extension, x509_entry,
+    VerifySCTs(sct_list_from_tls_extension, x509_entry,
                ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION, cert,
                output_scts);
   }
@@ -145,23 +126,22 @@ void MultiLogCTVerifier::Verify(
 }
 
 void MultiLogCTVerifier::VerifySCTs(
-    base::StringPiece hostname,
-    base::StringPiece encoded_sct_list,
+    std::string_view encoded_sct_list,
     const ct::SignedEntryData& expected_entry,
     ct::SignedCertificateTimestamp::Origin origin,
     X509Certificate* cert,
-    SignedCertificateTimestampAndStatusList* output_scts) {
+    SignedCertificateTimestampAndStatusList* output_scts) const {
   if (logs_.empty())
     return;
 
-  std::vector<base::StringPiece> sct_list;
+  std::vector<std::string_view> sct_list;
 
   if (!ct::DecodeSCTList(encoded_sct_list, &sct_list))
     return;
 
-  for (std::vector<base::StringPiece>::const_iterator it = sct_list.begin();
+  for (std::vector<std::string_view>::const_iterator it = sct_list.begin();
        it != sct_list.end(); ++it) {
-    base::StringPiece encoded_sct(*it);
+    std::string_view encoded_sct(*it);
     LogSCTOriginToUMA(origin);
 
     scoped_refptr<ct::SignedCertificateTimestamp> decoded_sct;
@@ -171,16 +151,15 @@ void MultiLogCTVerifier::VerifySCTs(
     }
     decoded_sct->origin = origin;
 
-    VerifySingleSCT(hostname, decoded_sct, expected_entry, cert, output_scts);
+    VerifySingleSCT(decoded_sct, expected_entry, cert, output_scts);
   }
 }
 
 bool MultiLogCTVerifier::VerifySingleSCT(
-    base::StringPiece hostname,
     scoped_refptr<ct::SignedCertificateTimestamp> sct,
     const ct::SignedEntryData& expected_entry,
     X509Certificate* cert,
-    SignedCertificateTimestampAndStatusList* output_scts) {
+    SignedCertificateTimestampAndStatusList* output_scts) const {
   // Assume this SCT is untrusted until proven otherwise.
   const auto& it = logs_.find(sct->log_id);
   if (it == logs_.end()) {

@@ -8,7 +8,9 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
@@ -19,7 +21,6 @@
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ReadOnlySharedMemoryRegion;
@@ -29,6 +30,8 @@ namespace content {
 class BrowserContext;
 class RenderProcessHost;
 }
+
+class EmbedderUserScriptLoader;
 
 namespace extensions {
 
@@ -42,12 +45,12 @@ namespace extensions {
 class UserScriptLoader : public content::RenderProcessHostCreationObserver {
  public:
   using LoadScriptsCallback =
-      base::OnceCallback<void(std::unique_ptr<UserScriptList>,
+      base::OnceCallback<void(UserScriptList,
                               base::ReadOnlySharedMemoryRegion shared_memory)>;
 
   using ScriptsLoadedCallback =
       base::OnceCallback<void(UserScriptLoader* loader,
-                              const absl::optional<std::string>& error)>;
+                              const std::optional<std::string>& error)>;
 
   class Observer {
    public:
@@ -57,7 +60,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   };
 
   // Parses the includes out of |script| and returns them in |includes|.
-  static bool ParseMetadataHeader(const base::StringPiece& script_text,
+  static bool ParseMetadataHeader(std::string_view script_text,
                                   UserScript* script);
 
   UserScriptLoader(content::BrowserContext* browser_context,
@@ -70,8 +73,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // Add |scripts| to the set of scripts managed by this loader. If provided,
   // |callback| is called when |scripts| have been loaded.
-  void AddScripts(std::unique_ptr<UserScriptList> scripts,
-                  ScriptsLoadedCallback callback);
+  void AddScripts(UserScriptList scripts, ScriptsLoadedCallback callback);
 
   // Add |scripts| to the set of scripts managed by this loader.
   // The fetch of the content of the script starts URL request
@@ -79,7 +81,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // |render_process_id, render_frame_id|.
   // TODO(hanxi): The renderer information doesn't really belong in this base
   // class, but it's not an easy fix.
-  virtual void AddScripts(std::unique_ptr<UserScriptList> scripts,
+  virtual void AddScripts(UserScriptList scripts,
                           int render_process_id,
                           int render_frame_id,
                           ScriptsLoadedCallback callback);
@@ -116,7 +118,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
  protected:
   // Allows the derived classes to have different ways to load user scripts.
   // This may not be synchronous with the calls to Add/Remove/Clear scripts.
-  virtual void LoadScripts(std::unique_ptr<UserScriptList> user_scripts,
+  virtual void LoadScripts(UserScriptList user_scripts,
                            const std::set<std::string>& added_script_ids,
                            LoadScriptsCallback callback) = 0;
 
@@ -127,6 +129,8 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   content::BrowserContext* browser_context() const { return browser_context_; }
 
  private:
+  friend class ::EmbedderUserScriptLoader;
+
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(
       content::RenderProcessHost* process_host) override;
@@ -145,17 +149,31 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void StartLoad();
 
   // Called once we have finished loading the scripts on the file thread.
-  void OnScriptsLoaded(std::unique_ptr<UserScriptList> user_scripts,
+  void OnScriptsLoaded(UserScriptList user_scripts,
                        base::ReadOnlySharedMemoryRegion shared_memory);
 
+  enum class SendUpdateResult {
+    // This result indicates that no IPCs have been sent to the renderer
+    // process.  This may for example happen when the process hasn't fully
+    // launched yet.
+    kNoActionTaken,
+    // This result indicates that an IPC has been send to the renderer process
+    // to notify it about the new scripts.  After this result some follow-up
+    // action may need to be taken by callers of `SendUpdate` (such as notifying
+    // `ScriptInjectionTracker` after all the browser-side state has been
+    // updated).
+    kRendererHasBeenNotified,
+  };
   // Sends the renderer process a new set of user scripts for this
-  // UserScriptLoader's host.
-  void SendUpdate(content::RenderProcessHost* process,
-                  const base::ReadOnlySharedMemoryRegion& shared_memory);
+  // UserScriptLoader's host.  Be sure to update the `ScriptInjectionTracker` if
+  // the renderer was updated.
+  [[nodiscard]] SendUpdateResult SendUpdate(
+      content::RenderProcessHost* process,
+      const base::ReadOnlySharedMemoryRegion& shared_memory);
 
   bool is_loading() const {
     // |loaded_scripts_| is reset when loading.
-    return loaded_scripts_.get() == nullptr;
+    return !loaded_scripts_.has_value();
   }
 
   // Contains the scripts that were found the last time scripts were updated.
@@ -163,7 +181,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // List of scripts that are currently loaded. This is null when a load is in
   // progress.
-  std::unique_ptr<UserScriptList> loaded_scripts_;
+  std::optional<UserScriptList> loaded_scripts_;
 
   // The mutually-exclusive information about sets of scripts that were added or
   // removed since the last script load. These maps are keyed by script ids.

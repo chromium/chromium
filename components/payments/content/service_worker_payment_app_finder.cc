@@ -347,13 +347,10 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     number_of_app_icons_to_update_++;
 
     DCHECK(!icon->empty());
-    std::string string_encoded_icon;
     gfx::Image decoded_image = gfx::Image::CreateFrom1xBitmap(*(icon));
     scoped_refptr<base::RefCountedMemory> raw_data =
         decoded_image.As1xPNGBytes();
-    base::Base64Encode(
-        base::StringPiece(raw_data->front_as<char>(), raw_data->size()),
-        &string_encoded_icon);
+    std::string string_encoded_icon = base::Base64Encode(*raw_data);
 
     content::PaymentAppProvider::GetOrCreateForWebContents(owner_)
         ->UpdatePaymentAppIcon(

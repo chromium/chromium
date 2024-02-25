@@ -124,10 +124,6 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
   }
 }
 
-void LogSigninReason(Reason reason) {
-  base::UmaHistogramEnumeration("Signin.SigninReason", reason);
-}
-
 void LogSignInOffered(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SignIn.Offered", access_point,
                                 AccessPoint::ACCESS_POINT_MAX);
@@ -292,7 +288,7 @@ void RecordSigninAccountType(signin::ConsentLevel consent_level,
       base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
                                     account_type);
       break;
-    // TODO(crbug.com/1462552): Remove kSync usage after phase 3 migration. See
+    // TODO(crbug.com/40066949): Remove kSync usage after phase 3 migration. See
     // ConsentLevel::kSync documentation for more details.
     case signin::ConsentLevel::kSync:
       base::UmaHistogramEnumeration("Signin.AccountType.SyncConsent",
@@ -352,10 +348,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromDevicesPage"));
-      break;
-    case AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signin_FromCloudPrint"));
       break;
     case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
       base::RecordAction(
@@ -419,8 +411,11 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
+    case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
+    case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
@@ -481,6 +476,22 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromPasswordMigrationWarningAndroid"));
       break;
+    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromChromeSigninInterceptBubble"));
+      break;
+    case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromTabOrganization"));
+      break;
+    case AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromTipsNotification"));
+      break;
+    case AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromNotificationsOptInScreenContentToggle"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
       break;
@@ -530,10 +541,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_DEVICES_PAGE:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromDevicesPage"));
-      break;
-    case AccessPoint::ACCESS_POINT_CLOUD_PRINT:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Impression_FromCloudPrint"));
       break;
     case AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
       base::RecordAction(
@@ -611,6 +618,18 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSetUpList"));
       break;
+    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromChromeSigninInterceptBubble"));
+      break;
+    case AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromTipsNotification"));
+      break;
+    case AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromNotificationsOptInScreenContentToggle"));
+      break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
@@ -627,9 +646,13 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
     case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
     case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+    case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
+    case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
+    case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Signin_Impression_From* user actions"
                    << " are not recorded for access point "
@@ -721,7 +744,7 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
       histogram =
           "Signin.AccountConsistencyPromoAction.SuppressedAlreadySignedIn";
       break;
-    case AccountConsistencyPromoAction::SIGN_IN_FAILED:
+    case AccountConsistencyPromoAction::IOS_AUTH_FLOW_CANCELLED_OR_FAILED:
       histogram = "Signin.AccountConsistencyPromoAction.SignInFailed";
       break;
     case AccountConsistencyPromoAction::
@@ -729,6 +752,13 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
       histogram =
           "Signin.AccountConsistencyPromoAction."
           "AddAccountStartedWithNoDeviceAccount";
+      break;
+    case AccountConsistencyPromoAction::CONFIRM_MANAGEMENT_SHOWN:
+      histogram = "Signin.AccountConsistencyPromoAction.ConfirmManagementShown";
+      break;
+    case AccountConsistencyPromoAction::CONFIRM_MANAGEMENT_ACCEPTED:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.ConfirmManagementAccepted";
       break;
   }
 

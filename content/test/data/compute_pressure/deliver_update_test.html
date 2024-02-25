@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Compute Pressure Browser Test</title>
+   </head>
+   <body>
+      <iframe src="valid_token.html" id="same-origin"></iframe>
+      <iframe src="/cross-site/b.com/title1.html" id="cross-origin"></iframe>
+      <video src="../media/tulip2.webm" id="video"></video>
+
+      <script>
+         let dedicated_worker = null;
+         let shared_worker = null;
+         const same_origin_iframe = document.getElementById('same-origin');
+         const cross_origin_iframe = document.getElementById('cross-origin');
+         const video = document.getElementById('video');
+         let stream = null;
+
+         class ResultsTracker {
+            constructor() {
+               this.pendingResolve = null;
+               this.samples = [];
+            }
+
+            processUpdates(updates) {
+               this.samples = this.samples.concat(updates);
+               if (this.pendingResolve !== null) {
+                  this.pendingResolve();
+                  this.pendingResolve = null;
+               }
+            }
+
+            waitForUpdates(num) {
+               if (this.samples.length == num) {
+                  return Promise.resolve();
+               }
+
+               return new Promise((resolve) => {
+                  this.pendingResolve = resolve;
+               });
+            }
+         }
+
+         const datasets = {
+            frame: new ResultsTracker(),
+            dedicatedWorker: new ResultsTracker(),
+            sharedWorker: new ResultsTracker()
+         };
+
+         const observer = new PressureObserver((records) => {
+            datasets.frame.processUpdates(records);
+         });
+
+         function startDedicatedWorker() {
+            dedicated_worker = new Worker('observer-in-dedicated-worker.js');
+            dedicated_worker.addEventListener('message', (e) => {
+               if (e.data.type == 'data') {
+                  datasets.dedicatedWorker.processUpdates(e.data.update);
+               }
+            });
+
+            return new Promise((resolve, reject) => {
+               dedicated_worker.postMessage({ command: 'start' });
+               dedicated_worker.addEventListener('message', (e) => {
+                  if (e.data.result == 'success') {
+                     resolve('success');
+                  } else if (e.data.result == 'fail') {
+                     reject('Observer cannot start.');
+                  } else {
+                     reject('Got unexpected reply.');
+                  }
+               }, { once: true });
+            });
+         }
+
+         function startSharedWorker() {
+            shared_worker = new SharedWorker('observer-in-shared-worker.js');
+            shared_worker.port.addEventListener('message', (e) => {
+               if (e.data.type == 'data') {
+                  datasets.sharedWorker.processUpdates(e.data.update);
+               }
+            });
+
+            return new Promise((resolve, reject) => {
+               shared_worker.port.start();
+               shared_worker.port.postMessage({ command: 'start' });
+               shared_worker.port.addEventListener('message', (e) => {
+                  if (e.data.result == 'success') {
+                     resolve('success');
+                  } else if (e.data.result == 'fail') {
+                     reject('Observer cannot start.');
+                  } else {
+                     reject('Got unexpected reply.');
+                  }
+               }, { once: true });
+            });
+         }
+
+         async function startCapturing() {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+         }
+
+         function stopCapturing() {
+            stream.getTracks().forEach(track => track.stop());
+         }
+      </script>
+   </body>
+</html>

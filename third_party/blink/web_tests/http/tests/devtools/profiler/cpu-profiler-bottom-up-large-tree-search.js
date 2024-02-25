@@ -5,11 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {CPUProfilerTestRunner} from 'cpu_profiler_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that search works for large bottom-up view of CPU profile.\n`);
-  await TestRunner.loadLegacyModule('profiler');
 
   var nodesCount = 200;
   function buildTree(startId, count) {
@@ -56,13 +57,13 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       'endTime': nodesCount * 10e3 + 3e3
     })
   };
-  var view = new Profiler.CPUProfileView(profileAndExpectations);
+  var view = new ProfilerModule.CPUProfileView.CPUProfileView(profileAndExpectations);
   view.viewSelectComboBox.setSelectedIndex(1);
   view.changeView();
   var tree = view.profileDataGridTree;
   if (!tree)
     TestRunner.addResult('no tree');
-  tree.performSearch(new UI.SearchableView.SearchConfig('foo12', true, false), false);
+  tree.performSearch(new UIModule.SearchableView.SearchConfig('foo12', true, false), false);
   for (var item of tree.searchResults) {
     var node = item.profileNode;
     TestRunner.addResult(`${node.callUID}: ${node.functionName} ${node.self} ${node.total}`);

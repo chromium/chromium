@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_USER_POPULATION_HELPER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_USER_POPULATION_HELPER_H_
 
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 

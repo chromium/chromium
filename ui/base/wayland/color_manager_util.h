@@ -111,6 +111,9 @@ constexpr auto kEotfMap = base::MakeFixedFlatMap<
                      kDefaultSinceVersion)},
     {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB,
      TransferVersion(gfx::ColorSpace::TransferID::SRGB, kDefaultSinceVersion)},
+    {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR,
+     TransferVersion(gfx::ColorSpace::TransferID::SRGB_HDR,
+                     ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR_SINCE_VERSION)},
     {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT709,
      TransferVersion(gfx::ColorSpace::TransferID::BT709,
                      ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT709_SINCE_VERSION)},
@@ -195,8 +198,10 @@ constexpr auto kHDRTransferMap =
     base::MakeFixedFlatMap<zcr_color_manager_v1_eotf_names, TransferFnVersion>(
         {{ZCR_COLOR_MANAGER_V1_EOTF_NAMES_LINEAR,
           TransferFnVersion(SkNamedTransferFn::kLinear, kDefaultSinceVersion)},
-         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB,
-          TransferFnVersion(SkNamedTransferFnExt::kSRGB, kDefaultSinceVersion)},
+         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR,
+          TransferFnVersion(
+              SkNamedTransferFnExt::kSRGB,
+              ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR_SINCE_VERSION)},
          {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_PQ,
           TransferFnVersion(SkNamedTransferFn::kPQ, kDefaultSinceVersion)},
          {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_HLG,

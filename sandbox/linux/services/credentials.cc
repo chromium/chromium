@@ -137,7 +137,6 @@ int CapabilityToKernelValue(Credentials::Capability cap) {
   }
 
   LOG(FATAL) << "Invalid Capability: " << static_cast<int>(cap);
-  return 0;
 }
 
 }  // namespace.

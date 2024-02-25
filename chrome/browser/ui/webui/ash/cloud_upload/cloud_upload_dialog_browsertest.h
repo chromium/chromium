@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_BROWSERTEST_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_BROWSERTEST_H_
 
-#include "chrome/test/base/web_ui_browser_test.h"
+#include "chrome/test/base/ash/web_ui_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 
 // |WebUIBrowserTest| for a non-managed user. Used by |CloudUploadDialogTest| to

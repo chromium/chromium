@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -19,12 +20,12 @@
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -34,15 +35,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-using web_app::AppId;
+using webapps::AppId;
 
 namespace {
 
-AppId InstallTestWebApp(Profile* profile) {
+webapps::AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
 
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
@@ -68,12 +68,10 @@ class WebAppUninstallDialogViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionAfterViewCreation) {
-  AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
 
-  web_app::WebAppUiManagerImpl* ui_manager_impl =
-      web_app::WebAppUiManagerImpl::Get(provider());
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
-  ui_manager_impl->PresentUserUninstallDialog(
+  provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       browser()->window()->GetNativeWindow(), test_future.GetCallback());
 
@@ -98,15 +96,13 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionBeforeViewCreation) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   chrome::CloseWindow(browser());
 
-  web_app::WebAppUiManagerImpl* ui_manager_impl =
-      web_app::WebAppUiManagerImpl::Get(provider());
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
-  ui_manager_impl->PresentUserUninstallDialog(
+  provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       app_browser->window()->GetNativeWindow(), test_future.GetCallback());
 
@@ -119,12 +115,10 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TestDialogUserFlow_Cancel) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::CANCEL);
-  AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
 
-  web_app::WebAppUiManagerImpl* ui_manager_impl =
-      web_app::WebAppUiManagerImpl::Get(provider());
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
-  ui_manager_impl->PresentUserUninstallDialog(
+  provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       browser()->window()->GetNativeWindow(), test_future.GetCallback());
 
@@ -137,12 +131,10 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TestDialogUserFlow_Accept) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION);
-  AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
 
-  web_app::WebAppUiManagerImpl* ui_manager_impl =
-      web_app::WebAppUiManagerImpl::Get(provider());
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
-  ui_manager_impl->PresentUserUninstallDialog(
+  provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       browser()->window()->GetNativeWindow(), test_future.GetCallback());
 

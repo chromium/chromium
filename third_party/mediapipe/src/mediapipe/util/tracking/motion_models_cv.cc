@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "mediapipe/util/tracking/motion_models_cv.h"
+
 #include "absl/log/absl_check.h"
 
 namespace mediapipe {

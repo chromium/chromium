@@ -176,10 +176,6 @@ class TargetPage {
 
     const dp = browserSession.protocol();
     const params = {url: 'about:blank'};
-    const createContextOptions = {};
-    params.browserContextId =
-        (await dp.Target.createBrowserContext(createContextOptions))
-            .result.browserContextId;
     targetPage._targetId =
         (await dp.Target.createTarget(params)).result.targetId;
 
@@ -210,9 +206,9 @@ class TargetPage {
             event.params.name === 'load' && event.params.frameId === frameId);
   }
 
-  async close() {
-    const dp = this._session.protocol();
-    dp.Target.closeTarget({targetId: this._targetId});
+  close() {
+    const dp = this._browserSession.protocol();
+    return dp.Target.closeTarget({targetId: this._targetId});
   }
 }
 
@@ -231,10 +227,12 @@ async function dumpDOM(dp) {
 async function printToPDF(dp, params) {
   const displayHeaderFooter = !params.noHeaderFooter;
   const generateTaggedPDF = !params.disablePDFTagging;
+  const generateDocumentOutline = params.generateDocumentOutline;
 
   const printToPDFParams = {
     displayHeaderFooter,
     generateTaggedPDF,
+    generateDocumentOutline,
     printBackground: true,
     preferCSSPageSize: true,
   };

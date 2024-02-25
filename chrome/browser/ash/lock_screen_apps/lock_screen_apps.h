@@ -90,7 +90,7 @@ class LockScreenApps : public KeyedService {
   void OnAllowedLockScreenAppsChanged();
 
   // The profile for which lock screen apps are enabled.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Tracks kNoteTakingAppsLockScreenAllowlist pref for the profile for which
   // lock screen apps are enabled.

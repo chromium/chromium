@@ -9,10 +9,6 @@
 
 namespace feature_engagement {
 
-// Group-related features used by the In-Product Help system.
-
-BASE_FEATURE(kIPHGroups, "IPHGroups", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Group features used by various clients to control their In-Product Help
 // groups.
 
@@ -23,6 +19,12 @@ BASE_FEATURE(kIPHDummyGroup,
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kiOSFullscreenPromosGroup,
              "IPH_iOSFullscreenPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kiOSDefaultBrowserPromosGroup,
+             "IPH_iOSDefaultBrowserPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kiOSTailoredDefaultBrowserPromosGroup,
+             "IPH_iOSTailoredDefaultBrowserPromosGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 

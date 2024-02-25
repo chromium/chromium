@@ -5,10 +5,10 @@
 #include "net/cert/crl_set.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
@@ -54,26 +54,26 @@ namespace {
 // ReadHeader reads the header (including length prefix) from |data| and
 // updates |data| to remove the header on return. Caller takes ownership of the
 // returned pointer.
-absl::optional<base::Value> ReadHeader(base::StringPiece* data) {
+std::optional<base::Value> ReadHeader(std::string_view* data) {
   uint16_t header_len;
   if (data->size() < sizeof(header_len)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Assumes little-endian.
   memcpy(&header_len, data->data(), sizeof(header_len));
   data->remove_prefix(sizeof(header_len));
 
   if (data->size() < header_len) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  const base::StringPiece header_bytes = data->substr(0, header_len);
+  const std::string_view header_bytes = data->substr(0, header_len);
   data->remove_prefix(header_len);
 
-  absl::optional<base::Value> header =
+  std::optional<base::Value> header =
       base::JSONReader::Read(header_bytes, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!header || !header->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return header;
@@ -83,7 +83,7 @@ absl::optional<base::Value> ReadHeader(base::StringPiece* data) {
 // currently implement.
 static const int kCurrentFileVersion = 0;
 
-bool ReadCRL(base::StringPiece* data,
+bool ReadCRL(std::string_view* data,
              std::string* out_parent_spki_hash,
              std::vector<std::string>* out_serials) {
   if (data->size() < crypto::kSHA256Length)
@@ -203,7 +203,7 @@ CRLSet::CRLSet() = default;
 CRLSet::~CRLSet() = default;
 
 // static
-bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
+bool CRLSet::Parse(std::string_view data, scoped_refptr<CRLSet>* out_crl_set) {
   TRACE_EVENT0(NetTracingCategory(), "CRLSet::Parse");
 // Other parts of Chrome assume that we're little endian, so we don't lose
 // anything by doing this.
@@ -215,7 +215,7 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
 #error assumes little endian
 #endif
 
-  absl::optional<base::Value> header_value = ReadHeader(&data);
+  std::optional<base::Value> header_value = ReadHeader(&data);
   if (!header_value) {
     return false;
   }
@@ -229,7 +229,7 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   if (header_dict.FindInt("Version") != kCurrentFileVersion)
     return false;
 
-  absl::optional<int> sequence = header_dict.FindInt("Sequence");
+  std::optional<int> sequence = header_dict.FindInt("Sequence");
   if (!sequence)
     return false;
 
@@ -296,15 +296,15 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   return true;
 }
 
-CRLSet::Result CRLSet::CheckSPKI(base::StringPiece spki_hash) const {
+CRLSet::Result CRLSet::CheckSPKI(std::string_view spki_hash) const {
   if (std::binary_search(blocked_spkis_.begin(), blocked_spkis_.end(),
                          spki_hash))
     return REVOKED;
   return GOOD;
 }
 
-CRLSet::Result CRLSet::CheckSubject(base::StringPiece encoded_subject,
-                                    base::StringPiece spki_hash) const {
+CRLSet::Result CRLSet::CheckSubject(std::string_view encoded_subject,
+                                    std::string_view spki_hash) const {
   const std::string digest(crypto::SHA256HashString(encoded_subject));
   const auto i = limited_subjects_.find(digest);
   if (i == limited_subjects_.end()) {
@@ -320,9 +320,9 @@ CRLSet::Result CRLSet::CheckSubject(base::StringPiece encoded_subject,
   return REVOKED;
 }
 
-CRLSet::Result CRLSet::CheckSerial(base::StringPiece serial_number,
-                                   base::StringPiece issuer_spki_hash) const {
-  base::StringPiece serial(serial_number);
+CRLSet::Result CRLSet::CheckSerial(std::string_view serial_number,
+                                   std::string_view issuer_spki_hash) const {
+  std::string_view serial(serial_number);
 
   if (!serial.empty() && (serial[0] & 0x80) != 0) {
     // This serial number is negative but the process which generates CRL sets
@@ -346,7 +346,7 @@ CRLSet::Result CRLSet::CheckSerial(base::StringPiece serial_number,
   return GOOD;
 }
 
-bool CRLSet::IsKnownInterceptionKey(base::StringPiece spki_hash) const {
+bool CRLSet::IsKnownInterceptionKey(std::string_view spki_hash) const {
   return std::binary_search(known_interception_spkis_.begin(),
                             known_interception_spkis_.end(), spki_hash);
 }
@@ -391,8 +391,8 @@ scoped_refptr<CRLSet> CRLSet::ExpiredCRLSetForTesting() {
 scoped_refptr<CRLSet> CRLSet::ForTesting(
     bool is_expired,
     const SHA256HashValue* issuer_spki,
-    base::StringPiece serial_number,
-    base::StringPiece utf8_common_name,
+    std::string_view serial_number,
+    std::string_view utf8_common_name,
     const std::vector<std::string>& acceptable_spki_hashes_for_cn) {
   std::string subject_hash;
   if (!utf8_common_name.empty()) {
@@ -419,7 +419,7 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
     }
 
     subject_hash.assign(crypto::SHA256HashString(
-        base::StringPiece(reinterpret_cast<char*>(x501_data), x501_len)));
+        std::string_view(reinterpret_cast<char*>(x501_data), x501_len)));
     OPENSSL_free(x501_data);
   }
 

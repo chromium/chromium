@@ -132,7 +132,7 @@ void AddressProfileSaveManager::OfferSavePrompt(
 void AddressProfileSaveManager::OnUserDecision(
     std::unique_ptr<ProfileImportProcess> import_process,
     UserDecision decision,
-    AutofillProfile edited_profile) {
+    base::optional_ref<const AutofillProfile> edited_profile) {
   DCHECK(import_process->prompt_shown());
 
   import_process->SetUserDecision(decision, edited_profile);
@@ -143,20 +143,14 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     std::unique_ptr<ProfileImportProcess> import_process) {
   DCHECK(personal_data_manager_);
 
-  // If the profiles changed at all, reset the full list of AutofillProfiles in
-  // the personal data manager.
-  if (import_process->ProfilesChanged()) {
-    std::vector<AutofillProfile> resulting_profiles =
-        import_process->GetResultingProfiles();
-    personal_data_manager_->SetProfilesForAllSources(&resulting_profiles);
-  }
+  import_process->ApplyImport();
 
   AdjustNewProfileStrikes(*import_process);
   AdjustUpdateProfileStrikes(*import_process);
   AdjustMigrateProfileStrikes(*import_process);
 
   if (import_process->UserAccepted()) {
-    const absl::optional<AutofillProfile>& confirmed_import_candidate =
+    const std::optional<AutofillProfile>& confirmed_import_candidate =
         import_process->confirmed_import_candidate();
     DCHECK(confirmed_import_candidate);
     AddMultiStepComplementCandidate(client_->GetFormDataImporter(),

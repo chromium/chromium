@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
@@ -92,15 +94,17 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/switches.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "components/user_manager/user_manager.h"
 #else
@@ -123,7 +127,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/metrics/jumplist_metrics_win.h"
 #include "chrome/browser/notifications/notification_platform_bridge_win.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
@@ -139,7 +142,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #endif
 
 using content::BrowserThread;
@@ -247,12 +250,12 @@ class ProfileLaunchObserver : public ProfileObserver,
 
   // These are the profiles that get launched by
   // StartupBrowserCreator::LaunchBrowser.
-  std::set<const Profile*> launched_profiles_;
+  std::set<raw_ptr<const Profile, SetExperimental>> launched_profiles_;
   // These are the profiles for which at least one browser window has been
   // opened. This is needed to know when it is safe to activate
   // |profile_to_activate_|, otherwise, new browser windows being opened will
   // be activated on top of it.
-  std::set<const Profile*> opened_profiles_;
+  std::set<raw_ptr<const Profile, SetExperimental>> opened_profiles_;
   // This is null until the profile to activate has been chosen. This value
   // should only be set once all profiles have been launched, otherwise,
   // activation may not happen after the launch of newer profiles.
@@ -471,6 +474,10 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
                                   const base::FilePath& cur_dir,
                                   chrome::startup::IsFirstRun is_first_run,
                                   Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
   if (!command_line.HasSwitch(switches::kApp))
     return false;
 
@@ -494,7 +501,7 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
       if (web_contents) {
         web_app::startup::FinalizeWebAppLaunch(
             web_app::startup::OpenMode::kInWindowByUrl, command_line,
-            is_first_run, chrome::FindBrowserWithWebContents(web_contents),
+            is_first_run, chrome::FindBrowserWithTab(web_contents),
             apps::LaunchContainer::kLaunchContainerWindow);
         return true;
       }
@@ -570,7 +577,8 @@ void OpenNewWindowForFirstRun(
   StartupBrowserCreator browser_creator;
   browser_creator.AddFirstRunTabs(first_run_urls);
   browser_creator.LaunchBrowser(command_line, profile, cur_dir, process_startup,
-                                is_first_run, std::move(launch_mode_recorder));
+                                is_first_run, std::move(launch_mode_recorder),
+                                /*restore_tabbed_browser=*/true);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
 }  // namespace
@@ -638,7 +646,6 @@ bool StartupBrowserCreator::Start(const base::CommandLine& cmd_line,
                                   StartupProfileInfo profile_info,
                                   const Profiles& last_opened_profiles) {
   TRACE_EVENT0("startup", "StartupBrowserCreator::Start");
-  SCOPED_UMA_HISTOGRAM_TIMER("Startup.StartupBrowserCreator_Start");
   return ProcessCmdLineImpl(cmd_line, cur_dir,
                             chrome::startup::IsProcessStartup::kYes,
                             profile_info, last_opened_profiles);
@@ -655,8 +662,11 @@ void StartupBrowserCreator::LaunchBrowser(
     const base::FilePath& cur_dir,
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
-    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder) {
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
+    bool restore_tabbed_browser) {
   TRACE_EVENT0("ui", "StartupBrowserCreator::LaunchBrowser");
+  SCOPED_UMA_HISTOGRAM_TIMER("Startup.StartupBrowserCreator.LaunchBrowser");
+
   DCHECK(profile);
 #if BUILDFLAG(IS_WIN)
   DCHECK(!command_line.HasSwitch(credential_provider::kGcpwSigninSwitch));
@@ -689,7 +699,7 @@ void StartupBrowserCreator::LaunchBrowser(
                in_synchronous_profile_launch_
                    ? chrome::startup::IsProcessStartup::kYes
                    : chrome::startup::IsProcessStartup::kNo,
-               std::move(launch_mode_recorder));
+               std::move(launch_mode_recorder), restore_tabbed_browser);
   }
   in_synchronous_profile_launch_ = false;
   profile_launch_observer.Get().AddLaunched(profile);
@@ -701,7 +711,8 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
     StartupProfileInfo profile_info,
-    const Profiles& last_opened_profiles) {
+    const Profiles& last_opened_profiles,
+    bool restore_tabbed_browser) {
   TRACE_EVENT0("ui", "StartupBrowserCreator::LaunchBrowserForLastProfiles");
   DCHECK_NE(profile_info.mode, StartupProfileMode::kError);
 
@@ -743,20 +754,30 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
                                      : profile;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (process_startup == chrome::startup::IsProcessStartup::kYes) {
-        // If FullRestoreService is available for the profile (i.e. the full
-        // restore feature is enabled and the profile is a regular user
-        // profile), defer the browser launching to FullRestoreService code.
-        auto* full_restore_service =
-            ash::full_restore::FullRestoreService::GetForProfile(
-                profile_to_open);
-        if (full_restore_service) {
-          full_restore_service->LaunchBrowserWhenReady();
-          return;
+        if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
+          ash::FloatingWorkspaceService::GetForProfile(profile_to_open);
+        }
+        // If floating workspace is enabled and safe mode is off, floating
+        // workspace will handle the app restore from user's workspace copy.
+        // Otherwise if safe mode is on, floating workspace will only emit
+        // notification and then delegate the actual work to full restore.
+        if (!ash::floating_workspace_util::ShouldHandleRestartRestore()) {
+          // If FullRestoreService is available for the profile (i.e. the full
+          // restore feature is enabled and the profile is a regular user
+          // profile), defer the browser launching to FullRestoreService code.
+          auto* full_restore_service =
+              ash::full_restore::FullRestoreService::GetForProfile(
+                  profile_to_open);
+          if (full_restore_service) {
+            full_restore_service->LaunchBrowserWhenReady();
+            return;
+          }
         }
       }
 #endif
       LaunchBrowser(command_line, profile_to_open, cur_dir, process_startup,
-                    is_first_run, std::make_unique<OldLaunchModeRecorder>());
+                    is_first_run, std::make_unique<OldLaunchModeRecorder>(),
+                    restore_tabbed_browser);
       return;
     }
 
@@ -988,12 +1009,13 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     Profile* profile = profile_info.profile;
     user_manager::User* user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile);
-    if (user && user->GetType() == user_manager::USER_TYPE_KIOSK_APP) {
+    if (user && user->GetType() == user_manager::UserType::kKioskApp) {
       ash::LaunchAppOrDie(
           profile, ash::KioskAppId::ForChromeApp(
-                       command_line.GetSwitchValueASCII(switches::kAppId)));
+                       command_line.GetSwitchValueASCII(switches::kAppId),
+                       user->GetAccountId()));
     } else if (user &&
-               user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
+               user->GetType() == user_manager::UserType::kWebKioskApp) {
       ash::LaunchAppOrDie(profile,
                           ash::KioskAppId::ForWebApp(user->GetAccountId()));
     } else {
@@ -1075,7 +1097,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     }
   }
 
-  if (web_app::HasIwaInstallSwitch(command_line)) {
+  if (web_app::IsolatedWebAppInstallationManager::HasIwaInstallSwitch(
+          command_line)) {
     if (profile_info.mode == StartupProfileMode::kProfilePicker) {
       auto* profile_manager = g_browser_process->profile_manager();
       LOG(ERROR) << "Command line switches to install IWAs are incompatible "
@@ -1089,8 +1112,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
                  << "').";
       return false;
     } else {
-      web_app::MaybeInstallIwaFromCommandLine(command_line,
-                                              *privacy_safe_profile);
+      web_app::IsolatedWebAppInstallationManager::
+          MaybeInstallIwaFromCommandLine(command_line, *privacy_safe_profile);
     }
   }
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
@@ -1120,8 +1143,9 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     std::string app_id =
         command_line.GetSwitchValueASCII(switches::kUninstallAppId);
 
-    web_app::WebAppUiManagerImpl::Get(
-        web_app::WebAppProvider::GetForWebApps(privacy_safe_profile))
+    web_app::WebAppProvider::GetForWebApps(privacy_safe_profile)
+        ->ui_manager()
+        .AsImpl()
         ->UninstallWebAppFromStartupSwitch(app_id);
 
     // Return true to allow startup to continue and for the main event loop to
@@ -1170,8 +1194,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // `switches::kWinJumplistAction` is expected to be set together with a
     // URL to open and with a specific profile dir.
     if (profile_info.mode == StartupProfileMode::kBrowserWindow) {
-      jumplist::LogJumplistActionFromSwitchValue(
-          command_line.GetSwitchValueASCII(switches::kWinJumplistAction));
       // Use a non-NULL pointer to indicate JumpList has been used. We re-use
       // chrome::kJumpListIconDirname as the key to the data.
       privacy_safe_profile->SetUserData(
@@ -1180,9 +1202,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     } else {
       // TODO(http://crbug.com/1293024): Refactor command line processing logic
       // to validate the flag sets and reliably determine the startup mode.
-      LOG(ERROR) << "Failed start for jumplist action: couldn't pick a profile";
-      NOTREACHED();
-      base::debug::DumpWithoutCrashing();
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Failed start for jumplist action: couldn't pick a profile";
     }
   }
 
@@ -1263,9 +1284,9 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
   // Launch the browser if the profile is unable to open web apps.
   if (!CanOpenWebApp(privacy_safe_profile)) {
-    LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
-                                 is_first_run, profile_info,
-                                 last_opened_profiles);
+    LaunchBrowserForLastProfiles(
+        command_line, cur_dir, process_startup, is_first_run, profile_info,
+        last_opened_profiles, /*restore_tabbed_browser=*/true);
     return true;
   }
 
@@ -1298,8 +1319,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 #endif
 
   LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
-                               is_first_run, profile_info,
-                               last_opened_profiles);
+                               is_first_run, profile_info, last_opened_profiles,
+                               /*restore_tabbed_browser=*/true);
   return true;
 }
 
@@ -1351,7 +1372,8 @@ void StartupBrowserCreator::ProcessLastOpenedProfiles(
                   profile, cur_dir, process_startup, is_first_run,
                   profile == last_used_profile
                       ? std::make_unique<OldLaunchModeRecorder>()
-                      : nullptr);
+                      : nullptr,
+                  /*restore_tabbed_browser=*/true);
     // We've launched at least one browser.
     process_startup = chrome::startup::IsProcessStartup::kNo;
   }

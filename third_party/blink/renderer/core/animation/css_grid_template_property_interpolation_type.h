@@ -31,7 +31,7 @@ class CSSGridTemplatePropertyInterpolationType : public CSSInterpolationType {
                  const InterpolationValue& value,
                  double interpolation_fraction) const final;
 
-  static std::unique_ptr<InterpolableValue> CreateInterpolableGridTrackList(
+  static InterpolableValue* CreateInterpolableGridTrackList(
       const NGGridTrackList& track_list,
       float zoom);
 

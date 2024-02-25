@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, URLParameters) {
   url::Component key;
   url::Component value;
   std::map<std::string, std::string> query_parts;
-  while (url::ExtractQueryKeyValue(query_str.c_str(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(query_str, &query, &key, &value)) {
     query_parts[query_str.substr(key.begin, key.len)] =
         query_str.substr(value.begin, value.len);
   }

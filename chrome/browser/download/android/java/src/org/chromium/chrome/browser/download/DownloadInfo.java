@@ -8,7 +8,8 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -22,9 +23,7 @@ import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.url.GURL;
 
-/**
- * Class representing the state of a single download.
- */
+/** Class representing the state of a single download. */
 public final class DownloadInfo {
     private final @NonNull GURL mUrl;
     private final String mUserAgent;
@@ -58,10 +57,8 @@ public final class DownloadInfo {
     private final boolean mIsTransient;
     private final boolean mIsParallelDownload;
     private final Bitmap mIcon;
-    @PendingState
-    private final int mPendingState;
-    @FailState
-    private final int mFailState;
+    @PendingState private final int mPendingState;
+    @FailState private final int mFailState;
     private final boolean mShouldPromoteOrigin;
 
     private DownloadInfo(Builder builder) {
@@ -309,9 +306,7 @@ public final class DownloadInfo {
                 .setShouldPromoteOrigin(item.promoteOrigin);
     }
 
-    /**
-     * Helper class for building the DownloadInfo object.
-     */
+    /** Helper class for building the DownloadInfo object. */
     public static class Builder {
         private GURL mUrl;
         private String mUserAgent;
@@ -343,10 +338,8 @@ public final class DownloadInfo {
         private boolean mIsTransient;
         private boolean mIsParallelDownload;
         private Bitmap mIcon;
-        @PendingState
-        private int mPendingState;
-        @FailState
-        private int mFailState;
+        @PendingState private int mPendingState;
+        @FailState private int mFailState;
         private boolean mShouldPromoteOrigin;
 
         public Builder setUrl(GURL url) {
@@ -556,16 +549,34 @@ public final class DownloadInfo {
     }
 
     @CalledByNative
-    private static DownloadInfo createDownloadInfo(String downloadGuid, String fileName,
-            String filePath, GURL url, String mimeType, long bytesReceived, long bytesTotalSize,
-            OTRProfileID otrProfileId, int state, int percentCompleted, boolean isPaused,
-            boolean hasUserGesture, boolean isResumable, boolean isParallelDownload,
-            GURL originalUrl, GURL referrerUrl, long timeRemainingInMs, long lastAccessTime,
-            boolean isDangerous, @FailState int failState) {
+    private static DownloadInfo createDownloadInfo(
+            String downloadGuid,
+            String fileName,
+            String filePath,
+            GURL url,
+            String mimeType,
+            long bytesReceived,
+            long bytesTotalSize,
+            OTRProfileID otrProfileId,
+            int state,
+            int percentCompleted,
+            boolean isPaused,
+            boolean hasUserGesture,
+            boolean isResumable,
+            boolean isParallelDownload,
+            GURL originalUrl,
+            GURL referrerUrl,
+            long timeRemainingInMs,
+            long lastAccessTime,
+            boolean isDangerous,
+            @FailState int failState) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url.getSpec(), fileName);
 
-        Progress progress = new Progress(bytesReceived,
-                percentCompleted == -1 ? null : bytesTotalSize, OfflineItemProgressUnit.BYTES);
+        Progress progress =
+                new Progress(
+                        bytesReceived,
+                        percentCompleted == -1 ? null : bytesTotalSize,
+                        OfflineItemProgressUnit.BYTES);
         return new DownloadInfo.Builder()
                 .setBytesReceived(bytesReceived)
                 .setBytesTotalSize(bytesTotalSize)

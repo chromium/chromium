@@ -74,6 +74,14 @@ struct HelpBubbleParams {
   Progress? progress;
   array<HelpBubbleButtonParams> buttons;
 
+  // The caller can specify a preference for the bubble taking focus (true), or
+  // not taking focus (false). This is just a hint and does not force the bubble
+  // to take or not take focus; the bubble may choose to ignore the hint to
+  // avoid potential accessibility issues.
+  //
+  // See also: user_education::HelpBubbleParams::focus_on_show_hint
+  bool? focus_on_show_hint;
+
   // Auto-dismiss timeout as TimeDelta
   mojo_base.mojom.TimeDelta? timeout;
 };

@@ -11,12 +11,13 @@ namespace media {
 
 // A fake implementation of gpu::GpuMemoryBuffer for
 // testing purposes. It emulates a GpuMemoryBuffer that references a dma-buf
-// that uses Intel media compression (with a modifier of
-// I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS).
+// that uses Intel media compression (with a modifier of either
+// I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS or I915_FORMAT_MOD_4_TILED_MTL_MC_CCS).
 class FakeChromeOSIntelCompressedGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
   FakeChromeOSIntelCompressedGpuMemoryBuffer(const gfx::Size& size,
-                                             gfx::BufferFormat format);
+                                             gfx::BufferFormat format,
+                                             uint64_t modifier);
 
   FakeChromeOSIntelCompressedGpuMemoryBuffer(
       const FakeChromeOSIntelCompressedGpuMemoryBuffer&) = delete;
@@ -35,7 +36,6 @@ class FakeChromeOSIntelCompressedGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   gfx::Size GetSize() const override;
   gfx::BufferFormat GetFormat() const override;
   int stride(size_t plane) const override;
-  void SetColorSpace(const gfx::ColorSpace& color_space) override;
   gfx::GpuMemoryBufferId GetId() const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;

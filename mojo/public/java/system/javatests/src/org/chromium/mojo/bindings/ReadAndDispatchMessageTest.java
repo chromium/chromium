@@ -30,13 +30,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Testing {@link Connector#readAndDispatchMessage}.
- */
+/** Testing {@link Connector#readAndDispatchMessage}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ReadAndDispatchMessageTest {
-    @Rule
-    public MojoTestRule mTestRule = new MojoTestRule();
+    @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
     private static final int DATA_SIZE = 1024;
 
@@ -71,14 +68,13 @@ public class ReadAndDispatchMessageTest {
         }
     }
 
-    /**
-     * Testing {@link Connector#readAndDispatchMessage(MessagePipeHandle, MessageReceiver)}
-     */
+    /** Testing {@link Connector#readAndDispatchMessage(MessagePipeHandle, MessageReceiver)} */
     @Test
     @SmallTest
     public void testReadAndDispatchMessage() {
         mHandles.first.writeMessage(mData, mHandlesToSend, MessagePipeHandle.WriteFlags.NONE);
-        Assert.assertEquals(MojoResult.OK,
+        Assert.assertEquals(
+                MojoResult.OK,
                 Connector.readAndDispatchMessage(mHandles.second, mMessageReceiver)
                         .getMojoResult());
         Assert.assertEquals(1, mMessageReceiver.messages.size());
@@ -98,7 +94,8 @@ public class ReadAndDispatchMessageTest {
     @Test
     @SmallTest
     public void testReadAndDispatchMessageOnEmptyHandle() {
-        Assert.assertEquals(MojoResult.SHOULD_WAIT,
+        Assert.assertEquals(
+                MojoResult.SHOULD_WAIT,
                 Connector.readAndDispatchMessage(mHandles.second, mMessageReceiver)
                         .getMojoResult());
         Assert.assertEquals(0, mMessageReceiver.messages.size());

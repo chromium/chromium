@@ -56,10 +56,10 @@ class ExtractorInner {
         return chrome::file_util::mojom::ExtractionResult::kGenericError;
       }
 
-      absl::optional<chrome::file_util::mojom::ExtractionResult> result;
-      ExtractChunk(base::make_span(xz_buffer.data(),
-                                   base::checked_cast<size_t>(bytes_read)),
-                   &result);
+      std::optional<chrome::file_util::mojom::ExtractionResult> result;
+      ExtractChunk(
+          base::span(xz_buffer).first(base::checked_cast<size_t>(bytes_read)),
+          &result);
       if (result.has_value())
         return result.value();
 
@@ -82,7 +82,7 @@ class ExtractorInner {
  private:
   void ExtractChunk(
       base::span<const uint8_t> xz_buffer,
-      absl::optional<chrome::file_util::mojom::ExtractionResult>* result) {
+      std::optional<chrome::file_util::mojom::ExtractionResult>* result) {
     std::vector<uint8_t> tar_buffer(kTarBufferSize);
     // With the size of tar_buffer, XzUnpacker_Code cannot always extract all
     // data in xz_buffer. Repeat extract until it extracts all data in
@@ -102,7 +102,7 @@ class ExtractorInner {
       xz_buffer = xz_buffer.subspan(compressed_size);
 
       base::span<const uint8_t> tar_buffer_span =
-          base::make_span(tar_buffer.data(), decompressed_size);
+          base::span(tar_buffer).first(decompressed_size);
       base::span<const uint8_t> output_file_content;
       if (!tar_reader_.ExtractChunk(tar_buffer_span, output_file_content)) {
         *result = chrome::file_util::mojom::ExtractionResult::kInvalidSrcFile;

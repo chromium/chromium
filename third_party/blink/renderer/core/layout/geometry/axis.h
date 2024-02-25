@@ -49,6 +49,15 @@ inline constexpr PhysicalAxes operator&=(PhysicalAxes& a, PhysicalAxes b) {
   return a;
 }
 
+inline constexpr PhysicalAxes operator^(PhysicalAxes a, PhysicalAxes b) {
+  return PhysicalAxes(a.value() ^ b.value());
+}
+
+inline constexpr PhysicalAxes operator^=(PhysicalAxes& a, PhysicalAxes b) {
+  a.value() ^= b.value();
+  return a;
+}
+
 inline constexpr LogicalAxes kLogicalAxisNone = LogicalAxes(0);
 inline constexpr LogicalAxes kLogicalAxisInline = LogicalAxes(1 << 0);
 inline constexpr LogicalAxes kLogicalAxisBlock = LogicalAxes(1 << 1);

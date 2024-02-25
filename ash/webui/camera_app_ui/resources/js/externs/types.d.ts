@@ -12,8 +12,6 @@
 // still in working draft stage.
 // https://wicg.github.io/file-system-access/
 
-type FileSystemWriteChunkType = Blob|BufferSource|string;
-
 interface FileSystemWritableFileStream extends WritableStream {
   seek(position: number): Promise<void>;
   truncate(size: number): Promise<void>;
@@ -130,30 +128,6 @@ interface HTMLVideoElement {
   cancelVideoFrameCallback(handle: number): undefined;
 }
 
-// Barcode Detection API, this is currently only supported in Chrome on
-// ChromeOS, Android or macOS.
-// https://wicg.github.io/shape-detection-api/
-declare class BarcodeDetector {
-  static getSupportedFormats(): Promise<BarcodeFormat[]>;
-  constructor(barcodeDetectorOptions?: BarcodeDetectorOptions);
-  detect(image: ImageBitmapSource): Promise<DetectedBarcode[]>;
-}
-
-interface BarcodeDetectorOptions {
-  formats?: BarcodeFormat[];
-}
-
-interface DetectedBarcode {
-  boundingBox: DOMRectReadOnly;
-  rawValue: string;
-  format: BarcodeFormat;
-  cornerPoints: readonly Point2D[];
-}
-
-type BarcodeFormat =
-    'aztec'|'codabar'|'code_39'|'code_93'|'code_128'|'data_matrix'|'ean_8'|
-    'ean_13'|'itf'|'pdf417'|'qr_code'|'unknown'|'upc_a'|'upc_e';
-
 // Web Workers API interface. This is included in lib.webworker.d.ts and
 // available if we enable lib: ["webworker"] in tsconfig.json, but it conflicts
 // with the "dom" lib that we also need. For simplicity we're providing a
@@ -165,3 +139,57 @@ type BarcodeFormat =
 interface SharedWorkerGlobalScope {
   onconnect?: ((this: SharedWorkerGlobalScope, ev: MessageEvent) => any)|null;
 }
+
+// Measure Memory API interface. This is currently only supported in
+// Chromium-based browsers. https://wicg.github.io/performance-measure-memory/
+interface MemoryAttributionContainer {
+  id: string;
+  src: string;
+}
+
+interface MemoryAttribution {
+  // Container is absent if the memory attribution is for the same-origin
+  // top-level realm.
+  container?: MemoryAttributionContainer;
+  scope: string;
+  url: string;
+}
+
+interface MemoryBreakdownEntry {
+  attribution: MemoryAttribution[];
+  bytes: number;
+  types: string[];
+}
+
+interface MemoryMeasurement {
+  breakdown: MemoryBreakdownEntry[];
+  bytes: number;
+}
+
+// This interface is only exposed to cross-origin-isolated Window,
+// ServiceWorker, and SharedWorker.
+// https://wicg.github.io/performance-measure-memory/#processing-model
+interface Performance {
+  measureUserAgentSpecificMemory(): Promise<MemoryMeasurement>;
+}
+
+/*
+ * This is the return value for LitElement render function.
+ *
+ * Since the render function can return multiple different renderable types [1],
+ * the type gets really complex if we explicitly list all possible types.
+ * LitElement own typing use `unknown` for render return type, and upstream
+ * discussion [2] also suggests using `unknown`, so we just alias the type to
+ * `unknown` and don't further restrict what types can be returned by render.
+ *
+ * Since directly writing `unknown` as return type of the render function is
+ * a bit confusing to readers, we expose a type alias here makes the code more
+ * readable.
+ *
+ * Also see
+ * https://chromium-review.googlesource.com/c/chromium/src/+/4318288/comment/c7a4600e_6ce078bc/
+ *
+ * [1]: https://lit.dev/docs/components/rendering/#renderable-values
+ * [2]: https://github.com/lit/lit/discussions/2359
+ */
+type RenderResult = unknown;

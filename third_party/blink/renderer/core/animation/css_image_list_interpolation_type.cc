@@ -22,25 +22,30 @@ class UnderlyingImageListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit UnderlyingImageListChecker(const InterpolationValue& underlying)
-      : underlying_(underlying.Clone()) {}
+      : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
   ~UnderlyingImageListChecker() final = default;
+
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_);
+  }
 
  private:
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
     return ListInterpolationFunctions::EqualValues(
-        underlying_, underlying,
+        underlying_->underlying(), underlying,
         CSSImageInterpolationType::EqualNonInterpolableValues);
   }
 
-  const InterpolationValue underlying_;
+  const Member<InterpolationValueGCed> underlying_;
 };
 
 InterpolationValue CSSImageListInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingImageListChecker>(underlying));
+      MakeGarbageCollected<UnderlyingImageListChecker>(underlying));
   return underlying.Clone();
 }
 
@@ -74,6 +79,11 @@ class InheritedImageListChecker final
 
   ~InheritedImageListChecker() final = default;
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(inherited_image_list_);
+  }
+
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
@@ -85,7 +95,7 @@ class InheritedImageListChecker final
   }
 
   const CSSProperty& property_;
-  Persistent<const StyleImageList> inherited_image_list_;
+  Member<const StyleImageList> inherited_image_list_;
 };
 
 InterpolationValue CSSImageListInterpolationType::MaybeConvertInherit(
@@ -97,7 +107,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertInherit(
   StyleImageList* inherited_image_list = MakeGarbageCollected<StyleImageList>();
   ImageListPropertyFunctions::GetImageList(CssProperty(), *state.ParentStyle(),
                                            inherited_image_list);
-  conversion_checkers.push_back(std::make_unique<InheritedImageListChecker>(
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedImageListChecker>(
       CssProperty(), inherited_image_list));
   return MaybeConvertStyleImageList(inherited_image_list);
 }
@@ -118,7 +128,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertValue(
   const auto& value_list = temp_list ? *temp_list : To<CSSValueList>(value);
 
   const wtf_size_t length = value_list.length();
-  auto interpolable_list = std::make_unique<InterpolableList>(length);
+  auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
       length);
   for (wtf_size_t i = 0; i < length; i++) {

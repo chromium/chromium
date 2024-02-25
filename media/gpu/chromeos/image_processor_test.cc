@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/chromeos/image_processor.h"
+
 #include <sys/mman.h>
+#include <sys/poll.h>
 
 #include <memory>
 #include <string>
@@ -20,31 +23,58 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
-#include "media/gpu/chromeos/image_processor.h"
+#include "media/gpu/chromeos/gl_image_processor_backend.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
+#include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/vulkan_image_processor.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/image_processor/image_processor_client.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_frame_validator.h"
 #include "media/gpu/test/video_test_environment.h"
+#if BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_image_processor_backend.h"
+#endif
+#if BUILDFLAG(USE_VAAPI)
+#include "media/gpu/vaapi/vaapi_image_processor_backend.h"
+#endif
 #include "media/gpu/video_frame_mapper.h"
 #include "media/gpu/video_frame_mapper_factory.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 #define MM21_TILE_WIDTH 32
 #define MM21_TILE_HEIGHT 16
@@ -67,11 +97,85 @@ const char* help_msg =
     "  --save_images         write images processed by a image processor to\n"
     "                        the \"<testname>\" folder.\n"
     "  --source_directory    specify the directory that contains test source\n"
-    "                        files. Defaults to the current directory.\n";
+    "                        files. Defaults to the current directory.\n"
+#if defined(ARCH_CPU_ARM_FAMILY)
+    "  --force_gl            use the GL image processor backend.\n"
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+    "  --force_libyuv        use the LibYUV image processor backend.\n"
+#if BUILDFLAG(USE_V4L2_CODEC)
+    "  --force_v4l2          use the V4L2 image processor backend.\n"
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_VAAPI)
+    "  --force_vaapi         use the VA-API image processor backend.\n"
+#endif  // BUILDFLAG(USE_VAAPI)
+    ;
 
 bool g_save_images = false;
 base::FilePath g_source_directory =
     base::FilePath(base::FilePath::kCurrentDirectory);
+
+// BackendType defines an enum for specifying a particular backend.
+enum class BackendType {
+#if defined(ARCH_CPU_ARM_FAMILY)
+  kGL,
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+  kLibYUV,
+#if BUILDFLAG(USE_V4L2_CODEC)
+  kV4L2,
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_VAAPI)
+  kVAAPI,
+#endif  // BUILDFLAG(USE_VAAPI)
+};
+
+const char* ToString(BackendType backend) {
+  switch (backend) {
+#if defined(ARCH_CPU_ARM_FAMILY)
+    case BackendType::kGL:
+      return "GL";
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+    case BackendType::kLibYUV:
+      return "LibYUV";
+#if BUILDFLAG(USE_V4L2_CODEC)
+    case BackendType::kV4L2:
+      return "V4L2";
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_VAAPI)
+    case BackendType::kVAAPI:
+      return "VAAPI";
+#endif  // BUILDFLAG(USE_VAAPI)
+  }
+}
+
+// Creates a CreateBackendCB for the specified BackendType. If backend is not
+// set, then returns std::nullopt.
+std::optional<ImageProcessor::CreateBackendCB> GetCreateBackendCB(
+    std::optional<BackendType> backend) {
+  if (!backend) {
+    return std::nullopt;
+  }
+
+  switch (*backend) {
+#if defined(ARCH_CPU_ARM_FAMILY)
+    case BackendType::kGL:
+      return base::BindRepeating(&media::GLImageProcessorBackend::Create);
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+    case BackendType::kLibYUV:
+      return base::BindRepeating(&media::LibYUVImageProcessorBackend::Create);
+#if BUILDFLAG(USE_V4L2_CODEC)
+    case BackendType::kV4L2:
+      return base::BindRepeating(&media::V4L2ImageProcessorBackend::Create,
+                                 base::MakeRefCounted<media::V4L2Device>(),
+                                 /*num_buffers=*/1);
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_VAAPI)
+    case BackendType::kVAAPI:
+      return base::BindRepeating(&VaapiImageProcessorBackend::Create);
+#endif  // BUILDFLAG(USE_VAAPI)
+  }
+}
+
+std::optional<BackendType> g_backend_type;
 
 base::FilePath BuildSourceFilePath(const base::FilePath& filename) {
   return media::g_source_directory.Append(filename);
@@ -110,6 +214,12 @@ const base::FilePath::CharType* kI420Image360P =
     FILE_PATH_LITERAL("puppets-640x360.i420.yuv");
 const base::FilePath::CharType* kI420Image270P =
     FILE_PATH_LITERAL("puppets-480x270.i420.yuv");
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+// File for MM21 detile and scaling test.
+const base::FilePath::CharType* kMM21Image270P =
+    FILE_PATH_LITERAL("puppets-480x270.mm21.yuv");
+#endif
 
 enum class YuvSubsampling {
   kYuv420,
@@ -188,8 +298,10 @@ scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
 
 scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
                                                 VideoFrame::StorageType type) {
-  DCHECK(size.width() == base::bits::AlignUp(size.width(), MM21_TILE_WIDTH));
-  DCHECK(size.height() == base::bits::AlignUp(size.height(), MM21_TILE_HEIGHT));
+  DCHECK_EQ(size.width(), base::bits::AlignUpDeprecatedDoNotUse(
+                              size.width(), MM21_TILE_WIDTH));
+  DCHECK_EQ(size.height(), base::bits::AlignUpDeprecatedDoNotUse(
+                               size.height(), MM21_TILE_HEIGHT));
 
   scoped_refptr<VideoFrame> ret = CreateNV12Frame(size, type);
   if (!ret) {
@@ -197,10 +309,18 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
     return nullptr;
   }
 
+  // The MM21 path only makes sense for V4L2, so we should never get an Intel
+  // media compressed buffer here.
+  CHECK(!IsIntelMediaCompressedModifier(ret->layout().modifier()));
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, type,
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  if (!frame_mapper) {
+    LOG(ERROR) << "Unable to create a VideoFrameMapper";
+    return nullptr;
+  }
   scoped_refptr<VideoFrame> mapped_ret =
       frame_mapper->Map(ret, PROT_READ | PROT_WRITE);
   if (!mapped_ret) {
@@ -235,14 +355,27 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
     return false;
   }
 
+  // We run this test for the V4L2 path only, so we should never get Intel media
+  // compressed frames here.
+  CHECK(!IsIntelMediaCompressedModifier(test_frame->layout().modifier()));
+  CHECK(!IsIntelMediaCompressedModifier(golden_frame->layout().modifier()));
+
   std::unique_ptr<VideoFrameMapper> test_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, test_frame->storage_type(),
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  if (!test_frame_mapper) {
+    return false;
+  }
   std::unique_ptr<VideoFrameMapper> golden_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, golden_frame->storage_type(),
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  if (!golden_frame_mapper) {
+    return false;
+  }
   scoped_refptr<VideoFrame> mapped_test_frame =
       test_frame_mapper->Map(test_frame, PROT_READ | PROT_WRITE);
   if (!mapped_test_frame) {
@@ -371,7 +504,8 @@ class ImageProcessorParamTest
     }
 
     auto ip_client = test::ImageProcessorClient::Create(
-        input_config, output_config, kNumBuffers, std::move(frame_processors));
+        GetCreateBackendCB(g_backend_type), input_config, output_config,
+        kNumBuffers, std::move(frame_processors));
     return ip_client;
   }
 
@@ -398,6 +532,10 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
   auto ip_client = CreateImageProcessorClient(
       input_image, {VideoFrame::STORAGE_OWNED_MEMORY}, &output_image,
       {VideoFrame::STORAGE_OWNED_MEMORY});
+  if (!ip_client && g_backend_type.has_value()) {
+    GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
+                 << " does not support this test";
+  }
   ASSERT_TRUE(ip_client);
 
   ip_client->Process(input_image, output_image);
@@ -423,6 +561,10 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
   auto ip_client = CreateImageProcessorClient(
       input_image, {VideoFrame::STORAGE_DMABUFS}, &output_image,
       {VideoFrame::STORAGE_OWNED_MEMORY});
+  if (!ip_client && g_backend_type.has_value()) {
+    GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
+                 << " does not support this test";
+  }
   ASSERT_TRUE(ip_client);
 
   ip_client->Process(input_image, output_image);
@@ -448,6 +590,10 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToDmabuf) {
   auto ip_client =
       CreateImageProcessorClient(input_image, {VideoFrame::STORAGE_DMABUFS},
                                  &output_image, {VideoFrame::STORAGE_DMABUFS});
+  if (!ip_client && g_backend_type.has_value()) {
+    GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
+                 << " does not support this test";
+  }
   ASSERT_TRUE(ip_client);
   ip_client->Process(input_image, output_image);
 
@@ -478,6 +624,10 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   auto ip_client = CreateImageProcessorClient(
       input_image, {VideoFrame::STORAGE_GPU_MEMORY_BUFFER}, &output_image,
       {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+  if (!ip_client && g_backend_type.has_value()) {
+    GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
+                 << " does not support this test";
+  }
   ASSERT_TRUE(ip_client);
   ip_client->Process(input_image, output_image);
 
@@ -548,12 +698,12 @@ INSTANTIATE_TEST_SUITE_P(NV12CroppingAndScaling,
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
-  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
-      /*fallback_to_software_gl=*/false);
-
   if (!SupportsNecessaryGLExtension()) {
     GTEST_SKIP() << "Skipping GL Backend test, unsupported platform.";
+  }
+  if (g_backend_type.has_value()) {
+    GTEST_SKIP() << "Skipping test since a particular backend was specified in "
+                    "the command line arguments.";
   }
 
   constexpr gfx::Size kTestImageSize(1920, 1088);
@@ -575,8 +725,8 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
       },
       client_task_runner, quit_closure, &image_processor_error);
   ImageProcessorFactory::PickFormatCB pick_format_cb = base::BindRepeating(
-      [](const std::vector<Fourcc>&, absl::optional<Fourcc>) {
-        return absl::make_optional<Fourcc>(Fourcc::NV12);
+      [](const std::vector<Fourcc>&, std::optional<Fourcc>) {
+        return std::make_optional<Fourcc>(Fourcc::NV12);
       });
 
   std::unique_ptr<ImageProcessor> libyuv_image_processor =
@@ -643,10 +793,243 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
   ASSERT_TRUE(gl_output_frame);
   ASSERT_TRUE(CompareNV12VideoFrames(gl_output_frame, libyuv_output_frame));
 }
+
+#if BUILDFLAG(ENABLE_VULKAN)
+TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
+  test::Image input_image(BuildSourceFilePath(base::FilePath(kMM21Image270P)));
+  ASSERT_TRUE(input_image.Load());
+  gfx::Size coded_size = input_image.Size();
+  gfx::Rect visible_rect = input_image.VisibleRect();
+  scoped_refptr<VideoFrame> mm21_frame = CreateNV12Frame(
+      input_image.Size(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+
+  // The MM21 path only makes sense for V4L2, so we should never get an Intel
+  // media compressed buffer here.
+  ASSERT_FALSE(IsIntelMediaCompressedModifier(mm21_frame->layout().modifier()));
+  std::unique_ptr<VideoFrameMapper> frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          VideoPixelFormat::PIXEL_FORMAT_NV12,
+          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  scoped_refptr<VideoFrame> mapped_mm21_frame =
+      frame_mapper->Map(mm21_frame, PROT_READ | PROT_WRITE);
+  ASSERT_TRUE(mapped_mm21_frame);
+  uint8_t* input_y_plane =
+      (uint8_t*)mapped_mm21_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+  uint8_t* input_uv_plane =
+      (uint8_t*)mapped_mm21_frame->GetWritableVisibleData(VideoFrame::kUVPlane);
+  libyuv::NV12Copy(
+      input_image.Data(), coded_size.width(),
+      input_image.Data() + coded_size.GetArea(), coded_size.width(),
+      input_y_plane, mapped_mm21_frame->stride(VideoFrame::kYPlane),
+      input_uv_plane, mapped_mm21_frame->stride(VideoFrame::kUVPlane),
+      coded_size.width(), coded_size.height());
+
+  gfx::Size output_size(1000, 1000);
+  gfx::Rect output_visible_rect(output_size);
+  constexpr base::TimeDelta kNullTimestamp;
+  Fourcc output_fourcc(Fourcc::AR24);
+  scoped_refptr<VideoFrame> vulkan_output_frame =
+      CreateGpuMemoryBufferVideoFrame(VideoPixelFormat::PIXEL_FORMAT_ARGB,
+                                      output_size, output_visible_rect,
+                                      output_size, kNullTimestamp,
+                                      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+
+  auto input_layout =
+      test::CreateVideoFrameLayout(input_image.PixelFormat(), coded_size);
+  auto output_layout = test::CreateVideoFrameLayout(
+      output_fourcc.ToVideoPixelFormat(), output_size);
+  auto in_gmb = CreateGpuMemoryBufferHandle(mm21_frame.get());
+  auto out_gmb = CreateGpuMemoryBufferHandle(vulkan_output_frame.get());
+
+  // Initialize shared image infrastructure.
+  auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+  auto surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
+  auto context = gl::init::CreateGLContext(share_group.get(), surface.get(),
+                                           gl::GLContextAttribs());
+  context->MakeCurrent(surface.get());
+  auto context_state = base::MakeRefCounted<gpu::SharedContextState>(
+      share_group, surface, context, false, base::DoNothing(),
+      gpu::GpuPreferences().gr_context_type);
+  gpu::SharedImageManager shared_image_manager;
+  gpu::GpuPreferences gpu_preferences;
+  gpu::GpuDriverBugWorkarounds gpu_workarounds;
+  gpu::GpuFeatureInfo gpu_info;
+  gpu::SharedImageFactory shared_image_factory(
+      gpu_preferences, gpu_workarounds, gpu_info, context_state.get(),
+      &shared_image_manager, nullptr, false);
+
+  // Wrap input and output frames in shared images.
+  auto input_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto output_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  viz::SharedImageFormat format_nv12 = viz::SharedImageFormat::MultiPlane(
+      viz::SharedImageFormat::PlaneConfig::kY_UV,
+      viz::SharedImageFormat::Subsampling::k420,
+      viz::SharedImageFormat::ChannelFormat::k8);
+  format_nv12.SetPrefersExternalSampler();
+  shared_image_factory.CreateSharedImage(
+      input_mailbox, format_nv12, coded_size, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+      std::move(in_gmb));
+  shared_image_factory.CreateSharedImage(
+      output_mailbox, viz::SinglePlaneFormat::kRGBA_8888, coded_size,
+      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kUnpremul_SkAlphaType,
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+          gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
+      "TestLabel", std::move(out_gmb));
+
+  auto vulkan_image_processor = VulkanImageProcessor::Create();
+  ASSERT_TRUE(vulkan_image_processor);
+
+  auto input_vulkan_representation = shared_image_manager.ProduceVulkan(
+      input_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
+      vulkan_image_processor->GetVulkanImplementation());
+  auto output_vulkan_representation = shared_image_manager.ProduceVulkan(
+      output_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
+      vulkan_image_processor->GetVulkanImplementation());
+  {
+    std::vector<VkSemaphore> begin_semaphores;
+    std::vector<VkSemaphore> end_semaphores;
+    auto input_access = input_vulkan_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kRead, begin_semaphores, end_semaphores);
+    auto output_access = output_vulkan_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kWrite, begin_semaphores,
+        end_semaphores);
+
+    // TODO(b/251458823): Add tests for more interesting crop and rotation
+    // parameters.
+    vulkan_image_processor->Process(
+        input_access->GetVulkanImage(), visible_rect.size(),
+        output_access->GetVulkanImage(),
+        gfx::RectF(static_cast<float>(output_size.width()),
+                   static_cast<float>(output_size.height())),
+        gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE, begin_semaphores,
+        end_semaphores);
+  }
+
+  // This implicitly waits for all semaphores to signal.
+  vulkan_image_processor->GetVulkanDeviceQueue()
+      ->GetFenceHelper()
+      ->PerformImmediateCleanup();
+
+  // Replicate this operation using LibYUV. Note that we don't use the image
+  // processor since we need to do a very specific conversion and scale
+  // operation that the LibYUV image processor backend doesn't support.
+  size_t i420_y_size = visible_rect.size().GetArea();
+  size_t i420_u_v_size =
+      ((visible_rect.width() + 1) / 2) * ((visible_rect.height() + 1) / 2);
+  uint8_t* i420_y = (uint8_t*)mmap(nullptr, i420_y_size, PROT_READ | PROT_WRITE,
+                                   MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  uint8_t* i420_u =
+      (uint8_t*)mmap(nullptr, i420_u_v_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  uint8_t* i420_v =
+      (uint8_t*)mmap(nullptr, i420_u_v_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  libyuv::MM21ToI420(
+      input_image.Data(), coded_size.width(),
+      input_image.Data() + coded_size.GetArea(),
+      ((coded_size.width() + 1) & (~1)), i420_y, visible_rect.width(), i420_u,
+      (visible_rect.width() + 1) / 2, i420_v, (visible_rect.width() + 1) / 2,
+      visible_rect.width(), visible_rect.height());
+  size_t i420_scaled_y_size = output_size.GetArea();
+  size_t i420_scaled_u_v_size =
+      ((output_size.width() + 1) / 2) * ((output_size.width() + 1) / 2);
+  uint8_t* i420_scaled_y =
+      (uint8_t*)mmap(nullptr, i420_scaled_y_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  uint8_t* i420_scaled_u =
+      (uint8_t*)mmap(nullptr, i420_scaled_u_v_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  uint8_t* i420_scaled_v =
+      (uint8_t*)mmap(nullptr, i420_scaled_u_v_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  libyuv::I420Scale(i420_y, visible_rect.width(), i420_u,
+                    (visible_rect.width() + 1) / 2, i420_v,
+                    (visible_rect.width() + 1) / 2, visible_rect.width(),
+                    visible_rect.height(), i420_scaled_y, output_size.width(),
+                    i420_scaled_u, (output_size.width() + 1) / 2, i420_scaled_v,
+                    (output_size.height() + 1) / 2, output_size.width(),
+                    output_size.height(), libyuv::kFilterBilinear);
+  munmap(i420_y, i420_y_size);
+  munmap(i420_u, i420_u_v_size);
+  munmap(i420_v, i420_u_v_size);
+
+  // Convert the vulkan frame into I420. We really want to scan this out as
+  // ARGB since that's what the display controller supports, but the LibYUV
+  // PSNR calculator only takes I420.
+  uint8_t* vulkan_output_y =
+      (uint8_t*)mmap(nullptr, i420_scaled_y_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  uint8_t* vulkan_output_u =
+      (uint8_t*)mmap(nullptr, i420_scaled_u_v_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  uint8_t* vulkan_output_v =
+      (uint8_t*)mmap(nullptr, i420_scaled_u_v_size, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+
+  // The MM21 de-tiling path only makes sense for V4L2, so we should never get
+  // an Intel media compressed buffer here.
+  ASSERT_FALSE(
+      IsIntelMediaCompressedModifier(vulkan_output_frame->layout().modifier()));
+  std::unique_ptr<VideoFrameMapper> output_frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          VideoPixelFormat::PIXEL_FORMAT_ARGB,
+          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  scoped_refptr<VideoFrame> mapped_output_frame =
+      output_frame_mapper->Map(vulkan_output_frame, PROT_READ | PROT_WRITE);
+  const uint8_t* argb_plane =
+      mapped_output_frame->visible_data(VideoFrame::kARGBPlane);
+  libyuv::ARGBToI420(
+      argb_plane, mapped_output_frame->stride(VideoFrame::kARGBPlane),
+      vulkan_output_y, output_size.width(), vulkan_output_u,
+      (output_size.width() + 1) / 2, vulkan_output_v,
+      (output_size.width() + 1) / 2, output_size.width(), output_size.height());
+
+  // Calculate PSNR. Note that we can't just do a byte by byte comparison
+  // because floating point inacuracies in both the color conversion and the
+  // bilinear filtering will result in small differences between these two
+  // methods.
+  double psnr = libyuv::I420Psnr(
+      i420_scaled_y, output_size.width(), i420_scaled_u,
+      (output_size.width() + 1) / 2, i420_scaled_v,
+      (output_size.width() + 1) / 2, vulkan_output_y, output_size.width(),
+      vulkan_output_u, (output_size.width() + 1) / 2, vulkan_output_v,
+      (output_size.width() + 1) / 2, output_size.width(), output_size.height());
+  constexpr double kPsnrThreshold = 45.0;
+  ASSERT_TRUE(psnr >= kPsnrThreshold);
+
+  munmap(i420_scaled_y, i420_scaled_y_size);
+  munmap(i420_scaled_u, i420_scaled_u_v_size);
+  munmap(i420_scaled_v, i420_scaled_u_v_size);
+  munmap(vulkan_output_y, i420_scaled_y_size);
+  munmap(vulkan_output_u, i420_scaled_u_v_size);
+  munmap(vulkan_output_v, i420_scaled_u_v_size);
+}
+#endif
 #endif
 
 }  // namespace
 }  // namespace media
+
+// Argument handler for setting a forced ImageProcessor backend
+static int HandleForcedBackendArgument(const std::string& arg,
+                                       media::BackendType type) {
+  if (media::g_backend_type.has_value() && *media::g_backend_type != type) {
+    std::cout << "error argument --" << arg
+              << " is invalid. ImageProcessor backend was already set to "
+              << media::ToString(*media::g_backend_type) << std::endl;
+    return EXIT_FAILURE;
+  }
+  media::g_backend_type = type;
+  return 0;
+}
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
@@ -672,6 +1055,32 @@ int main(int argc, char** argv) {
       media::g_save_images = true;
     } else if (it->first == "source_directory") {
       media::g_source_directory = base::FilePath(it->second);
+#if defined(ARCH_CPU_ARM_FAMILY)
+    } else if (it->first == "force_gl") {
+      if (int ret =
+              HandleForcedBackendArgument(it->first, media::BackendType::kGL)) {
+        return ret;
+      }
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+    } else if (it->first == "force_libyuv") {
+      if (int ret = HandleForcedBackendArgument(it->first,
+                                                media::BackendType::kLibYUV)) {
+        return ret;
+      }
+#if BUILDFLAG(USE_V4L2_CODEC)
+    } else if (it->first == "force_v4l2") {
+      if (int ret = HandleForcedBackendArgument(it->first,
+                                                media::BackendType::kV4L2)) {
+        return ret;
+      }
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_VAAPI)
+    } else if (it->first == "force_vaapi") {
+      if (int ret = HandleForcedBackendArgument(it->first,
+                                                media::BackendType::kVAAPI)) {
+        return ret;
+      }
+#endif  // BUILDFLAG(USE_VAAPI)
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::usage_msg;
@@ -684,5 +1093,22 @@ int main(int argc, char** argv) {
   auto* const test_environment = new media::test::VideoTestEnvironment;
   media::g_env = reinterpret_cast<media::test::VideoTestEnvironment*>(
       testing::AddGlobalTestEnvironment(test_environment));
+
+// TODO(b/316374371) Try to remove Ozone and replace with EGL and GL.
+#if BUILDFLAG(IS_OZONE)
+  ui::OzonePlatform::InitParams ozone_param;
+  ozone_param.single_process = true;
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(USE_V4L2_CODEC)
+  ui::OzonePlatform::InitializeForUI(ozone_param);
+#endif
+  ui::OzonePlatform::InitializeForGPU(ozone_param);
+#endif
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      /*fallback_to_software_gl=*/false);
+#endif
+
   return RUN_ALL_TESTS();
 }

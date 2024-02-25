@@ -1,5 +1,8 @@
 
 import {TestRunner} from 'test_runner';
+
+import * as Platform from 'devtools/core/platform/platform.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 (async function () {
   var items = [
     {
@@ -74,12 +77,12 @@ import {TestRunner} from 'test_runner';
     TestRunner.addResult(key);
     element.dispatchEvent(TestRunner.createKeyEvent(key));
   }
-  var model = new UI.ListModel();
-  var dropDown = new UI.SoftDropDown(model, new Delegate());
+  var model = new UI.ListModel.ListModel();
+  var dropDown = new UI.SoftDropDown.SoftDropDown(model, new Delegate());
   for (var i = items.length - 1; i >= 0; i--)
     model.insertWithComparator(items[i], (a, b) => a.index - b.index);
 
-  UI.inspectorView.element.appendChild(dropDown.element);
+  UI.InspectorView.InspectorView.instance().element.appendChild(dropDown.element);
   dropDown.selectItem(items[5]);
   TestRunner.addResult("Showing drop down");
   dropDown.element.dispatchEvent(new Event("mousedown"));

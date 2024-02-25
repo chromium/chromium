@@ -9,5 +9,7 @@ namespace ash {
 const char kChromeUIShortcutCustomizationAppHost[] = "shortcut-customization";
 const char kChromeUIShortcutCustomizationAppURL[] =
     "chrome://shortcut-customization";
-
+// TODO(jimmyxgong): Replace with proper p= link when available.
+const char kShortcutCustomizationLearnMoreURL[] =
+    "https://support.google.com/chromebook/answer/14566025";
 }  // namespace ash

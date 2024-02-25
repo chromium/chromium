@@ -100,8 +100,8 @@ class BASE_EXPORT ThreadPool {
   // to use OnceCallback and remove the CallbackType template.
   template <template <typename> class CallbackType,
             typename TaskReturnType,
-            typename ReplyArgType,
-            typename = EnableIfIsBaseCallback<CallbackType>>
+            typename ReplyArgType>
+    requires(IsBaseCallback<CallbackType<void()>>)
   static bool PostTaskAndReplyWithResult(
       const Location& from_here,
       CallbackType<TaskReturnType()> task,
@@ -150,8 +150,8 @@ class BASE_EXPORT ThreadPool {
   // to use OnceCallback and remove the CallbackType template.
   template <template <typename> class CallbackType,
             typename TaskReturnType,
-            typename ReplyArgType,
-            typename = EnableIfIsBaseCallback<CallbackType>>
+            typename ReplyArgType>
+    requires(IsBaseCallback<CallbackType<void()>>)
   static bool PostTaskAndReplyWithResult(
       const Location& from_here,
       const TaskTraits& traits,

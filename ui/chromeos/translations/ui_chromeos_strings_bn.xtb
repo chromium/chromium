@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1000498691615767391">খুলতে একটি ফোল্ডার বেছে নিন</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> কপি করা যায়নি কারণ এটি এনক্রিপ্ট করা আছে।</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />টি আইটেম মুছে ফেলা হচ্ছে...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1056775291175587022">নেটওয়ার্ক নেই</translation>
 <translation id="1056898198331236512">সতর্কতা</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ব্যবহার করে ফাইল খুলতে, সেগুলি প্রথমে Windows ফাইল ফোল্ডারে সরিয়ে রাখুন।</translation>
 <translation id="1062407476771304334">প্রতিস্থাপন করুন</translation>
+<translation id="1119383441774809183">টেক্সট মেসেজ দেখুন</translation>
 <translation id="1119447706177454957">অভ্যন্তরীণ ত্রুটি</translation>
 <translation id="1120073797882051782">হাঙ্গুল রোমাজা</translation>
 <translation id="112387589102719461">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় প্রোগ্রামার Dvorak কীবোর্ড</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop-এর সাথে ফোল্ডার শেয়ার করুন</translation>
 <translation id="1439919885608649279">ফুলের সাথে ব্যক্তির ছবি</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> সরিয়ে দিন</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" />টি ফাইল কপি করা যায়নি কারণ সেগুলি এনক্রিপ্ট করা আছে।</translation>
 <translation id="1471718551822868769">স্লোভাক</translation>
 <translation id="1482884275703521657">ফিনিশ</translation>
 <translation id="148466539719134488">সুইস</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">পর্তুগিজ ভাষায় ইউএস ইন্টারন্যাশনাল কীবোর্ড</translation>
 <translation id="1629521517399325891">নেটওয়ার্ক যাচাইকরণের জন্য ইউজার সার্টিফিকেট উপলভ্য নেই।</translation>
 <translation id="1641780993263690097">চীনা পিনইন</translation>
-<translation id="1646019627374511909">অফলাইনে দেখার জন্য <ph name="NUMBER_OF_ITEMS" />টি ফাইল ডাউনলোড করা হচ্ছে</translation>
 <translation id="164969095109328410">Chrome ডিভাইস</translation>
 <translation id="1661207570040737402">আপনার সমস্ত শেয়ার্ড ড্রাইভ Google Workspace স্টোরেজ ব্যবহার করেছেন।</translation>
 <translation id="1661867754829461514">পিন হারিয়েছে</translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">উপলভ্য নয়</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ফাইলের জন্য ডিফল্ট অ্যাপ বেছে নিন:</translation>
 <translation id="3255159654094949700">আরবি</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" />টি ফাইল সরানো যায়নি কারণ সেগুলি এনক্রিপ্ট করা আছে।</translation>
 <translation id="3264582393905923483">প্রসঙ্গ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" খোলা যায়নি</translation>
 <translation id="3280431534455935878">প্রস্তুতি</translation>
+<translation id="3280719573299097127">আপনি পরিমাপ করা নেটওয়ার্ক ব্যবহার করছেন। 'ফাইল সিঙ্ক' পজ হয়ে গেছে।</translation>
 <translation id="3280987981688031357">ভিনাইল রেকর্ড</translation>
 <translation id="3290356915286466215">সুরক্ষিত নেই</translation>
 <translation id="3291218047831493686">সিম লক সেটিং পরিবর্তন করতে এই নেটওয়ার্কে কানেক্ট করুন</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">Google স্প্রেডশীট</translation>
 <translation id="3479552764303398839">এখনই নয়</translation>
 <translation id="3486821258960016770">মঙ্গোলিয়ান</translation>
-<translation id="3495304270784461826"><ph name="COUNT" />টি ত্রুটি৷</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" />টি আইটেম সিঙ্ক করার জন্য প্রস্তুত করা হচ্ছে...</translation>
 <translation id="3522708245912499433">পর্তুগিজ</translation>
 <translation id="3523225005467146490"><ph name="VM_NAME" /> দিয়ে ১টি ফোল্ডার শেয়ার করা হয়েছে</translation>
 <translation id="3524311639100184459">সতর্কতা: এই ফাইলগুলি অস্থায়ী এবং ডিস্কের জায়গা খালি করতে হয়ত অটোমেটিক মুছে ফেলা হবে।  <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ফোল্ডার</translation>
+<translation id="3529424493985988200">বিবরণের জন্য অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="3548125359243647069">একটি ভুল পিন অনেকবার লেখা হয়েছে।</translation>
 <translation id="3549797760399244642">drive.google.com এ যান...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ব্যবহার করে ফাইল খুলতে, সেগুলি প্রথমে Windows ফাইল ফোল্ডারে কপি করে রাখুন।</translation>
@@ -327,6 +331,7 @@
 <translation id="3619115746895587757">ক্যাপুচিনো</translation>
 <translation id="3619593063686672873">কোনও সাম্প্রতিক ভিডিও নেই</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
+<translation id="36451918667380448">মোবাইল নেটওয়ার্ক প্রদানকারী লক করা আছে। সহায়তা পেতে, আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />টি আইটেম সরানো হয়েছে।</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" />টি ফাইল বেছে নেওয়া হয়েছে</translation>
 <translation id="3685122418104378273">মোবাইল ডেটা ব্যবহার করার সময় ডিফল্টরূপে Google ড্রাইভ সিঙ্ক বন্ধ করা হয়৷</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">গাজানিয়া ফুল</translation>
 <translation id="4943368462779413526">ফুটবল</translation>
 <translation id="4961158930123534723">১টি ফোল্ডার Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
+<translation id="4965874878399872778">আপনার প্রতিষ্ঠানের নিরাপত্তা সংক্রান্ত নীতি অনুযায়ী ফাইলগুলি চেক করা হচ্ছে...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ফিরিয়ে আনা হয়েছে</translation>
 <translation id="4969785127455456148">অ্যালবাম</translation>
 <translation id="4972330214479971536">ফাইল সিঙ্ক করার প্রসেস সেট-আপ সম্পূর্ণ করা যায়নি</translation>
@@ -552,9 +558,7 @@
 <translation id="5275973617553375938">Google ড্রাইভ থেকে উদ্ধার করা ফাইলগুলি</translation>
 <translation id="5278111733643988471">এই আইটেম ফিরিয়ে আনতে, ট্র্যাশের বাইরে নতুন কোনও ফোল্ডারে এটি টেনে আনুন। এই আইটেমের জন্য থাকা আসল ফোল্ডার "<ph name="PARENT_FOLDER_NAME" />", মুছে ফেলা হয়েছে।</translation>
 <translation id="5283101102242354279">ছদ্মবেশী মোডে এক্সটেনশনটি চালু করুন:</translation>
-<translation id="5286194356314741248">স্ক্যান হচ্ছে</translation>
 <translation id="5288441970121584418">বার্গার</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল সরিয়ে দেওয়ার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="5305688511332277257">কিছুই ইনস্টল নেই</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
@@ -631,6 +635,7 @@
 <translation id="5838451609423551646">সব বেছে নেওয়া এন্ট্রি সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="5838825566232597749">মার্কিন ওয়ার্কম্যান আন্তর্জাতিক</translation>
 <translation id="5845721951356578987">নার্স</translation>
+<translation id="5858478190805449225">'ব্যাটারি সেভার' মোড চালু আছে। 'ব্যাটারি সেভার' মোড বন্ধ করা হলে আবার চেষ্টা করুন।</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
 <translation id="5861477046012235702">গেমার</translation>
 <translation id="5864471791310927901">DHCP লুকআপ ব্যর্থ</translation>
@@ -697,11 +702,13 @@
 <translation id="637062427944097960">এই ফাইলটি একটি আলাদা ডেস্কটপে খোলা রয়েছে৷ এটিকে দেখতে <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) এ সরান৷</translation>
 <translation id="6394388407447716302">রিড-ওনলি</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টি আইটেম</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> সরানো যায়নি কারণ এটি এনক্রিপ্ট করা আছে।</translation>
 <translation id="642282551015776456">ফাইল বা ফোল্ডারের নাম হিসাবে নামটি ব্যবহৃত নাও হতে পারে</translation>
 <translation id="6423031066725912715">ভিয়েতনামি ভাষায় টিসিভিএন (TCVN) কীবোর্ড</translation>
 <translation id="6430271654280079150">আপনি আর ১ বার চেষ্টা করতে পারেন।</translation>
 <translation id="643243556292470964">মুছে ফেলা ফাইলগুলি এখন ট্র্যাশে সরানো হয়েছে</translation>
 <translation id="6438480100790416671">স্টোরেজের জায়গা চেক করা হচ্ছে…</translation>
+<translation id="6451527188465304418">আপনার প্রতিষ্ঠানের নিরাপত্তা সংক্রান্ত নীতি অনুযায়ী ফাইল চেক করা হচ্ছে...</translation>
 <translation id="6485131920355264772">স্থান তথ্য পুনরুদ্ধার করতে ব্যর্থ হয়েছে</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />-এ <ph name="FILE_NAME" /> এক্সট্যাক্ট করা হচ্ছে</translation>
@@ -709,7 +716,6 @@
 <translation id="6503285896705205014">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী <ph name="COUNT" />টি ফাইল কপি করার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="6509122719576673235">নরওয়েয়ীয়</translation>
 <translation id="6528513914570774834">এই ডিভাইসের অন্যান্য ব্যবহারকারীদের এই নেটওয়ার্ক ব্যবহার করতে দিন</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> সিঙ্ক হচ্ছে...</translation>
 <translation id="6549689063733911810">সাম্প্রতিক</translation>
 <translation id="6558280019477628686">একটি ত্রুটি হয়েছে৷ কিছু আইটেম হয়ত মোছা যায়নি।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" মোছা হচ্ছে...</translation>
@@ -843,7 +849,6 @@
 <translation id="7553492409867692754">Linux অ্যাপকে <ph name="FOLDER_NAME" /> ফোল্ডারের ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="7555339735447658365">আপনি বর্তমানে অফলাইন আছেন। আপনি ইন্টারনেটের সাথে কানেক্ট করলে, ফাইল সিঙ্ক করার প্রসেস আবার চালু হবে</translation>
 <translation id="7589661784326793847">এক সেকেন্ড অপেক্ষা করুন</translation>
-<translation id="7592775719802218421">অফলাইনে দেখার জন্য <ph name="FILE_NAME" /> ডাউনলোড করা হচ্ছে</translation>
 <translation id="7600126690270271294">সার্বিয়ান</translation>
 <translation id="7603724359189955920">গ্রিড</translation>
 <translation id="7627790789328695202">ওহো, <ph name="FILE_NAME" /> ইতিমধ্যেই বিদ্যমান রয়েছে৷ এটির পুনঃনামকরণ করুন এবং আবার চেষ্টা করুন৷</translation>
@@ -897,7 +902,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">আমার ড্রাইভে থাকা আপনার ফাইল অটোমেটিক আপনার Chromebook-এ সিঙ্ক করে যাবে, তাই ইন্টারনেট কানেকশন ছাড়াই আপনি সেগুলি অ্যাক্সেস করতে পারবেন।</translation>
 <translation id="7925247922861151263">AAA চেক করা যায়নি</translation>
-<translation id="7925686952655276919">সিঙ্ক-এর জন্য মোবাইল ডেটা ব্যবহার করবেন না</translation>
 <translation id="7928710562641958568">বের করে দেওযার ডিভাইস</translation>
 <translation id="7933875256234974853">Drive ফাইল সিঙ্ক করার জন্য প্রস্তুত হচ্ছে...</translation>
 <translation id="7943385054491506837">মার্কিন যুক্তরাষ্ট্রীয় কোলেম্যাক</translation>
@@ -920,6 +924,7 @@
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />, ডাউনলোড করুন</translation>
 <translation id="8106045200081704138">আমার সাথে শেয়ার করা</translation>
 <translation id="8116072619078571545">বরফ জল</translation>
+<translation id="8120392982188717723">পরিমাপ করা নেটওয়ার্ক সিঙ্ক করতে দিন</translation>
 <translation id="8124093710070495550">সিঙ্ক করা সম্পর্কিত সমস্যা</translation>
 <translation id="8128733386027980860">ইংরেজি (যুক্তরাজ্য) ভাষায় Dvorak কীবোর্ড</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" আপনার সাথে শেয়ার করা হয়েছে৷ আপনি এটিকে মুছে ফেলতে পারবেন না কারণ আপনি এটির মালিক নন৷</translation>
@@ -927,6 +932,7 @@
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
 <translation id="8147028810663464959">অক্ষরের প্রস্থ 'সম্পূর্ণ' হিসেবে সেট করা হয়েছে</translation>
 <translation id="8151638057146502721">কনফিগার করুন</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{১টি সমস্যা।}one{#টি সমস্যা।}other{#টি সমস্যা।}}</translation>
 <translation id="8154842056504218462">সব এন্ট্রি বেছে নেওয়া হয়েছে।</translation>
 <translation id="8157684860301034423">অ্যাপের তথ্য ফিরিয়ে আনা যায়নি।</translation>
 <translation id="8175731104491895765">ফরাসি (বেলজিয়াম)</translation>
@@ -960,6 +966,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" />কে <ph name="FOLDER_NAME" /> ফোল্ডারে থাকা ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="8372369524088641025">খারাপ WEP কী</translation>
 <translation id="8372852072747894550">গ্রিক</translation>
+<translation id="8377269993083688872">ইমেল লেআউট</translation>
 <translation id="8386903983509584791">স্ক্যান করা সম্পন্ন হয়েছে</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> এক্সট্র্যাক্ট করা হয়েছে।</translation>
 <translation id="8395901698320285466">আয়তন</translation>
@@ -998,7 +1005,6 @@
 <translation id="8569764466147087991">খুলতে একটি স্ক্রিপ্ট বেছে নিন</translation>
 <translation id="8577897833047451336">ক্রোয়েশিয়ান</translation>
 <translation id="8578308463707544055">ইন্দোনেশিয়ান</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />টি আইটেম সিঙ্ক করা হচ্ছে...</translation>
 <translation id="8600173386174225982">থাম্বনেল ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
 <translation id="8601932370724196034">Crostini ছবির ফাইল</translation>
 <translation id="8609695766746872526">আইসল্যান্ডিক</translation>
@@ -1011,6 +1017,7 @@
 <translation id="8698877009525468705">এই ফাইলটি গোপনীয় এবং অ্যাডমিনিস্ট্রেটর নীতির মাধ্যমে প্রযোজ্য বিধিনিষেধ পালন করেই এটি শেয়ার করা হয়।</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8713112442029511308">মল্টিজ</translation>
+<translation id="8714138378966541668">পরিষেবা প্রদানকারী লক করে দিয়েছে</translation>
 <translation id="8714406895390098252">সাইকেল</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="872537912056138402">ক্রোয়েশিয়</translation>
@@ -1018,6 +1025,7 @@
 <translation id="8787254343425541995">শেয়ার করে নেওয়া নেটওয়ার্কগুলির জন্য প্রক্সিগুলির অনুমতি দিন</translation>
 <translation id="8790981080411996443">গাছে জল দিচ্ছে এমন ব্যক্তির ছবি</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{১টি সতর্কতা বিজ্ঞপ্তি।}one{#টি সতর্কতা বিজ্ঞপ্তি।}other{#টি সতর্কতা বিজ্ঞপ্তি।}}</translation>
 <translation id="8808686172382650546">বিড়াল</translation>
 <translation id="8810671769985673465">জিপ করা যায়নি, আইটেমটি এখনও আছে: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">স্প্যানিশ (স্পেন)</translation>
@@ -1048,7 +1056,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" নামের ফাইল আগে থেকেই আছে। অন্য একটি নাম লিখুন।</translation>
 <translation id="9046895021617826162">সংযোগ ব্যর্থ হয়েছে</translation>
 <translation id="9065512565307033593">আপনি যাচাই না করলে, আপনার নেটওয়ার্ক অ্যাক্সেস করার সুবিধা বন্ধ হয়ে যাবে।</translation>
-<translation id="9083722265619106011">{0,plural, =1{১টি সতর্কতা।}one{<ph name="COUNT" />টি সতর্কতা।}other{<ph name="COUNT" />টি সতর্কতা।}}</translation>
 <translation id="908378762078012445">রাশিয়ান ভাষায় ফোনেটিক আটসিল (AATSEEL) কীবোর্ড</translation>
 <translation id="9086302186042011942">সিঙ্ক হচ্ছে</translation>
 <translation id="9099674669267916096">পৃষ্ঠার সংখ্যা</translation>

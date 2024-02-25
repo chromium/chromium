@@ -20,13 +20,13 @@ struct ShortcutInfo;
 struct AddToHomescreenParams {
   // This enum backs a UMA histogram, so it should be treated as append-only.
   // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: (
-  //  org.chromium.components.webapps)
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
   enum class AppType {
     NATIVE,
     WEBAPK,
     SHORTCUT,
-    COUNT = SHORTCUT,
+    WEBAPK_DIY,
+    COUNT = WEBAPK_DIY,
   };
 
   AppType app_type;

@@ -1,0 +1,21 @@
+[
+  {
+    "os": [
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebXRImmersiveArEnabled": false
+        },
+        "prefs": {
+          "webxr.immersive_ar_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  }
+]

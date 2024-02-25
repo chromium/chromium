@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,7 +42,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #endif
 
 namespace {
@@ -118,48 +119,61 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
 namespace base {
 
 #if !BUILDFLAG(IS_OPENBSD)
+// static
 int SysInfo::NumberOfProcessors() {
 #if BUILDFLAG(IS_MAC)
-  absl::optional<int> number_of_physical_cores =
+  std::optional<int> number_of_physical_cores =
       internal::NumberOfProcessorsWhenCpuSecurityMitigationEnabled();
-  if (number_of_physical_cores.has_value())
+  if (number_of_physical_cores.has_value()) {
     return number_of_physical_cores.value();
+  }
 #endif  // BUILDFLAG(IS_MAC)
 
-  // sysconf returns the number of "logical" (not "physical") processors on both
-  // Mac and Linux.  So we get the number of max available "logical" processors.
-  //
-  // Note that the number of "currently online" processors may be fewer than the
-  // returned value of NumberOfProcessors(). On some platforms, the kernel may
-  // make some processors offline intermittently, to save power when system
-  // loading is low.
-  //
-  // One common use case that needs to know the processor count is to create
-  // optimal number of threads for optimization. It should make plan according
-  // to the number of "max available" processors instead of "currently online"
-  // ones. The kernel should be smart enough to make all processors online when
-  // it has sufficient number of threads waiting to run.
-  long res = sysconf(_SC_NPROCESSORS_CONF);
-  if (res == -1) {
-    NOTREACHED();
-    return 1;
-  }
+  // This value is cached to avoid computing this value in the sandbox, which
+  // doesn't work on some platforms. The Mac-specific code above is not
+  // included because changing the value at runtime is the best way to unittest
+  // its behavior.
+  static int cached_num_cpus = []() {
+    // sysconf returns the number of "logical" (not "physical") processors on
+    // both Mac and Linux.  So we get the number of max available "logical"
+    // processors.
+    //
+    // Note that the number of "currently online" processors may be fewer than
+    // the returned value of NumberOfProcessors(). On some platforms, the kernel
+    // may make some processors offline intermittently, to save power when
+    // system loading is low.
+    //
+    // One common use case that needs to know the processor count is to create
+    // optimal number of threads for optimization. It should make plan according
+    // to the number of "max available" processors instead of "currently online"
+    // ones. The kernel should be smart enough to make all processors online
+    // when it has sufficient number of threads waiting to run.
+    long res = sysconf(_SC_NPROCESSORS_CONF);
+    if (res == -1) {
+      // `res` can be -1 if this function is invoked under the sandbox, which
+      // should never happen.
+      NOTREACHED();
+      return 1;
+    }
 
-  int num_cpus = static_cast<int>(res);
+    int num_cpus = static_cast<int>(res);
 
 #if BUILDFLAG(IS_LINUX)
-  // Restrict the CPU count based on the process's CPU affinity mask, if
-  // available.
-  cpu_set_t* cpu_set = CPU_ALLOC(num_cpus);
-  size_t cpu_set_size = CPU_ALLOC_SIZE(num_cpus);
-  int ret = sched_getaffinity(0, cpu_set_size, cpu_set);
-  if (ret == 0) {
-    num_cpus = CPU_COUNT_S(cpu_set_size, cpu_set);
-  }
-  CPU_FREE(cpu_set);
+    // Restrict the CPU count based on the process's CPU affinity mask, if
+    // available.
+    cpu_set_t* cpu_set = CPU_ALLOC(num_cpus);
+    size_t cpu_set_size = CPU_ALLOC_SIZE(num_cpus);
+    int ret = sched_getaffinity(0, cpu_set_size, cpu_set);
+    if (ret == 0) {
+      num_cpus = CPU_COUNT_S(cpu_set_size, cpu_set);
+    }
+    CPU_FREE(cpu_set);
 #endif  // BUILDFLAG(IS_LINUX)
 
-  return num_cpus;
+    return num_cpus;
+  }();
+
+  return cached_num_cpus;
 }
 #endif  // !BUILDFLAG(IS_OPENBSD)
 

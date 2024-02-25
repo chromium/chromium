@@ -151,12 +151,12 @@ class MessageAndLinkTextResults
         out_message_translation_(out_message_translation),
         out_link_translation_(out_link_translation) {}
 
-  void OnMessageTranslationsFetched(absl::optional<base::Value> translations) {
+  void OnMessageTranslationsFetched(std::optional<base::Value> translations) {
     is_message_translation_fetched_ = true;
     OnTranslationsFetched(std::move(translations), out_message_translation_);
   }
 
-  void OnLinkTranslationsFetched(absl::optional<base::Value> translations) {
+  void OnLinkTranslationsFetched(std::optional<base::Value> translations) {
     is_link_translation_fetched_ = true;
     OnTranslationsFetched(std::move(translations), out_link_translation_);
   }
@@ -166,7 +166,7 @@ class MessageAndLinkTextResults
 
   ~MessageAndLinkTextResults() = default;
 
-  void OnTranslationsFetched(absl::optional<base::Value> translations,
+  void OnTranslationsFetched(std::optional<base::Value> translations,
                              std::string* string_to_update) {
     if (!done_) {
       LOG(WARNING) << "Received new translations after some translations have "
@@ -287,16 +287,16 @@ void NotificationClient::GetNotification(const std::string& user_email,
 
 void NotificationClient::OnRulesFetched(const std::string& user_email,
                                         NotificationCallback callback,
-                                        absl::optional<base::Value> rules) {
+                                        std::optional<base::Value> rules) {
   if (!rules) {
     LOG(ERROR) << "Rules not found";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   if (!rules->is_list()) {
     LOG(ERROR) << "Rules should be list";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -314,10 +314,10 @@ void NotificationClient::OnRulesFetched(const std::string& user_email,
     }
   }
   // No matching rule is found.
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
-absl::optional<NotificationMessage> NotificationClient::ParseAndMatchRule(
+std::optional<NotificationMessage> NotificationClient::ParseAndMatchRule(
     const base::Value::Dict& rule,
     const std::string& user_email,
     std::string* out_message_text_filename,
@@ -336,32 +336,32 @@ absl::optional<NotificationMessage> NotificationClient::ParseAndMatchRule(
       !FindKeyAndGet(rule, "link_text", &link_text_filename) ||
       !FindKeyAndGet(rule, "link_url", &link_url) ||
       !FindKeyAndGet(rule, "percent", &percent)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (should_ignore_dev_messages_) {
     bool is_dev_mode;
     if (FindKeyAndGet(rule, "dev_mode", &is_dev_mode) && is_dev_mode) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   if (target_platform != current_platform_) {
     VLOG(1) << "Notification ignored. Target platform: " << target_platform
             << "; current platform: " << current_platform_;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VersionRange version_range(version_spec_string);
   if (!version_range.IsValid()) {
     LOG(ERROR) << "Invalid version range: " << version_spec_string;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!version_range.ContainsVersion(current_version_)) {
     VLOG(1) << "Current version " << current_version_ << " not in range "
             << version_spec_string;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // OS version check is not performed if |os_version| is not specified.
@@ -370,21 +370,21 @@ absl::optional<NotificationMessage> NotificationClient::ParseAndMatchRule(
     VersionRange os_version_range(os_version_spec_string);
     if (!os_version_range.IsValid()) {
       LOG(ERROR) << "Invalid OS version range: " << os_version_spec_string;
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!os_version_range.ContainsVersion(current_os_version_)) {
       VLOG(1) << "Current OS version " << current_os_version_
               << " not in range " << os_version_spec_string;
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   if (!ShouldShowNotificationForUser(user_email, percent)) {
     VLOG(1) << "User is not selected for notification";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  auto message = absl::make_optional<NotificationMessage>();
+  auto message = std::make_optional<NotificationMessage>();
   message->message_id = message_id;
   message->link_url = link_url;
   message->allow_silence = false;
@@ -397,9 +397,9 @@ absl::optional<NotificationMessage> NotificationClient::ParseAndMatchRule(
 void NotificationClient::FetchTranslatedTexts(
     const std::string& message_text_filename,
     const std::string& link_text_filename,
-    absl::optional<NotificationMessage> partial_message,
+    std::optional<NotificationMessage> partial_message,
     NotificationCallback done) {
-  // Copy the message into a unique_ptr since moving absl::optional does not
+  // Copy the message into a unique_ptr since moving std::optional does not
   // move the internal storage.
   auto message_copy = std::make_unique<NotificationMessage>(*partial_message);
   std::string* message_text_ptr = &message_copy->message_text;
@@ -408,8 +408,8 @@ void NotificationClient::FetchTranslatedTexts(
       [](std::unique_ptr<NotificationMessage> message,
          NotificationCallback done, bool is_successful) {
         std::move(done).Run(
-            is_successful ? absl::make_optional<NotificationMessage>(*message)
-                          : absl::nullopt);
+            is_successful ? std::make_optional<NotificationMessage>(*message)
+                          : std::nullopt);
       },
       std::move(message_copy), std::move(done));
   auto results = base::MakeRefCounted<MessageAndLinkTextResults>(

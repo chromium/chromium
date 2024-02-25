@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_ASH_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 #include "chrome/browser/extensions/policy_handlers.h"
@@ -72,7 +73,7 @@ class NetworkConfigurationPolicyHandler : public TypeCheckingPolicyHandler {
   // that contains a pretty-printed and sanitized version. In particular, we
   // remove any Passphrases that may be contained in the JSON. Ownership of the
   // return value is transferred to the caller.
-  static absl::optional<base::Value> SanitizeNetworkConfig(
+  static std::optional<base::Value> SanitizeNetworkConfig(
       const base::Value* config);
 
   // The kind of ONC source that this handler represents. ONCSource
@@ -119,6 +120,8 @@ class DefaultHandlersForFileExtensionsPolicyHandler
                            PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+  bool IsValidPolicyId(std::string_view policy_id) const;
 };
 
 class ScreenMagnifierPolicyHandler : public IntRangePolicyHandlerBase {
@@ -248,6 +251,24 @@ class ArcServicePolicyHandler : public IntRangePolicyHandlerBase {
 
  private:
   const std::string pref_;
+};
+
+// Instantiated for the `ArcGoogleLocationServicesEnabled` policy. This
+// overrides the old handling of the `ArcGoogleLocationServicesEnabled` policy
+// when the Privacy Hub location is rolled out.
+class ArcLocationServicePolicyHandler : public ArcServicePolicyHandler {
+ public:
+  explicit ArcLocationServicePolicyHandler(const char* policy,
+                                           const char* pref);
+
+  ArcLocationServicePolicyHandler(const ArcLocationServicePolicyHandler&) =
+      delete;
+  ArcLocationServicePolicyHandler& operator=(
+      const ArcLocationServicePolicyHandler&) = delete;
+
+  // IntRangePolicyHandlerBase:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
 };
 
 }  // namespace policy

@@ -160,16 +160,12 @@ std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori) {
     return std::string();
   }
 
-  std::string encoded_key;
-  base::Base64Encode(encrypted_key, &encoded_key);
-  return encoded_key;
+  return base::Base64Encode(encrypted_key);
 }
 
 }  // namespace
 
-SyncServiceCrypto::State::State()
-    : passphrase_key_derivation_params(KeyDerivationParams::CreateForPbkdf2()) {
-}
+SyncServiceCrypto::State::State() = default;
 
 SyncServiceCrypto::State::~State() = default;
 
@@ -311,7 +307,8 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
   return SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
 }
 
-void SyncServiceCrypto::SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) {
+void SyncServiceCrypto::SetExplicitPassphraseDecryptionNigoriKey(
+    std::unique_ptr<Nigori> nigori) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(nigori);
@@ -333,7 +330,8 @@ void SyncServiceCrypto::SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) {
   }
 }
 
-std::unique_ptr<Nigori> SyncServiceCrypto::GetDecryptionNigoriKey() const {
+std::unique_ptr<Nigori>
+SyncServiceCrypto::GetExplicitPassphraseDecryptionNigoriKey() const {
   return ReadNigoriFromBootstrapToken(delegate_->GetEncryptionBootstrapToken());
 }
 
@@ -353,7 +351,7 @@ bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
   return false;
 }
 
-absl::optional<PassphraseType> SyncServiceCrypto::GetPassphraseType() const {
+std::optional<PassphraseType> SyncServiceCrypto::GetPassphraseType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delegate_->GetPassphraseType();
 }
@@ -554,7 +552,7 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
   state_.cached_explicit_passphrase_time = passphrase_time;
 
   // TODO(crbug.com/1466401): Also pass along the passphrase time?
-  delegate_->SetPassphraseType(type);
+  delegate_->PassphraseTypeChanged(type);
 
   // Clear recoverability degraded state in case a custom passphrase was set.
   // Note that the opposite transition (into degraded recoverability) isn't
@@ -765,6 +763,13 @@ void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
 
 void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
     bool is_recoverability_degraded) {
+  // |engine| could have been reset.
+  if (!state_.engine) {
+    DCHECK_EQ(state_.required_user_action,
+              RequiredUserAction::kUnknownDuringInitialization);
+    return;
+  }
+
   // The passphrase type could have changed.
   if (GetPassphraseType() != PassphraseType::kTrustedVaultPassphrase) {
     DCHECK_NE(state_.required_user_action,

@@ -50,7 +50,7 @@ ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {
   // LayoutTreeBuilderTraversal::parent() is used only for a node which is
   // connected.
   // DCHECK(node.isConnected());
-  if (auto* element = DynamicTo<PseudoElement>(node)) {
+  if (IsA<PseudoElement>(node)) {
     DCHECK(node.parentNode());
     return node.parentNode();
   }
@@ -377,8 +377,8 @@ int LayoutTreeBuilderTraversal::ComparePreorderTreePosition(const Node& node1,
   if (node1 == node2) {
     return 0;
   }
-  HeapVector<const Node*> ancestors1;
-  HeapVector<const Node*> ancestors2;
+  HeapVector<Member<const Node>> ancestors1;
+  HeapVector<Member<const Node>> ancestors2;
   for (const Node* anc1 = &node1; anc1; anc1 = Parent(*anc1)) {
     ancestors1.emplace_back(anc1);
   }
@@ -411,7 +411,8 @@ int LayoutTreeBuilderTraversal::ComparePreorderTreePosition(const Node& node1,
       return 1;
     }
   }
-  return 1;
+  NOTREACHED();
+  return 0;
 }
 
 }  // namespace blink

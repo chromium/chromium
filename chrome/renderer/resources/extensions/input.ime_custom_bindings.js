@@ -46,10 +46,10 @@ apiBridge.registerCustomHook(function(api) {
       return;
     }
     var view;
-    if (windowParams && windowParams.frameId) {
+    if (windowParams && windowParams.frameToken) {
       view = appWindowNatives.GetFrame(
-          windowParams.frameId, false /* notifyBrowser */);
-      view.id = windowParams.frameId;
+          windowParams.frameToken, false /* notifyBrowser */);
+      view.id = windowParams.frameToken;
     }
     callback(view);
   });

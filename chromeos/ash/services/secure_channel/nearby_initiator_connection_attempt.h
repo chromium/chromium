@@ -61,7 +61,10 @@ class NearbyInitiatorConnectionAttempt
       const ConnectToDeviceOperation<NearbyInitiatorFailureType>::
           ConnectionFailedCallback& failure_callback) override;
 
-  raw_ptr<NearbyConnectionManager, ExperimentalAsh> nearby_connection_manager_;
+  raw_ptr<NearbyConnectionManager> nearby_connection_manager_;
+
+  base::WeakPtrFactory<NearbyInitiatorConnectionAttempt> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash::secure_channel

@@ -4,6 +4,8 @@
 
 #include "google_apis/calendar/calendar_api_response_types.h"
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/common/test_util.h"
@@ -13,13 +15,73 @@ namespace google_apis {
 
 namespace calendar {
 
+TEST(CalendarAPIResponseTypesTest, ParseCalendarList) {
+  std::unique_ptr<base::Value> calendars =
+      test_util::LoadJSONFile("calendar/calendar_list.json");
+  ASSERT_TRUE(calendars.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, calendars->type());
+  std::unique_ptr<CalendarList> calendar_list =
+      CalendarList::CreateFrom(*calendars);
+
+  EXPECT_EQ("\"p32gqbiyrr257ya1\"", calendar_list->etag());
+  EXPECT_EQ("calendar#calendarList", calendar_list->kind());
+  EXPECT_EQ(3U, calendar_list->items().size());
+
+  const SingleCalendar& calendar = *calendar_list->items()[0];
+  EXPECT_EQ(calendar.id(), "test1@google.com");
+  EXPECT_EQ(calendar.color_id(), "14");
+  EXPECT_TRUE(calendar.selected());
+  EXPECT_TRUE(calendar.primary());
+}
+
+// Checks that calendar list entries with a missing 'selected' parameter
+// are parsed to have a selected member equal to false.
+TEST(CalendarAPIResponseTypesTest, ParseCalendarListWithUnselectedEntry) {
+  std::unique_ptr<base::Value> calendars =
+      test_util::LoadJSONFile("calendar/calendar_list.json");
+  ASSERT_TRUE(calendars.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, calendars->type());
+  std::unique_ptr<CalendarList> calendar_list =
+      CalendarList::CreateFrom(*calendars);
+
+  EXPECT_EQ(3U, calendar_list->items().size());
+
+  const SingleCalendar& calendar = *calendar_list->items()[1];
+  EXPECT_EQ(calendar.id(),
+            "google.com_zu35dc5syt5k0fddetqqfggb75test@"
+            "group.calendar.google.com");
+  EXPECT_FALSE(calendar.selected());
+}
+
+// Checks that calendar list entries with a missing 'primary' parameter
+// are parsed to have a primary member equal to false.
+TEST(CalendarAPIResponseTypesTest, ParseCalendarListWithNonPrimaryEntry) {
+  std::unique_ptr<base::Value> calendars =
+      test_util::LoadJSONFile("calendar/calendar_list.json");
+  ASSERT_TRUE(calendars.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, calendars->type());
+  std::unique_ptr<CalendarList> calendar_list =
+      CalendarList::CreateFrom(*calendars);
+
+  EXPECT_EQ(3U, calendar_list->items().size());
+
+  const SingleCalendar& calendar = *calendar_list->items()[2];
+  EXPECT_EQ(calendar.id(),
+            "google.com_3edk4wi2oio66fu9l9zh19zsw9test@"
+            "group.calendar.google.com");
+  EXPECT_FALSE(calendar.primary());
+}
+
 TEST(CalendarAPIResponseTypesTest, ParseEventList) {
   std::unique_ptr<base::Value> events =
       test_util::LoadJSONFile("calendar/events.json");
   ASSERT_TRUE(events.get());
 
   ASSERT_EQ(base::Value::Type::DICT, events->type());
-  auto event_list = EventList::CreateFrom(*events);
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ("America/Los_Angeles", event_list->time_zone());
   EXPECT_EQ("calendar#events", event_list->kind());
@@ -53,7 +115,7 @@ TEST(CalendarAPIResponseTypesTest, ParseConferenceDataUri) {
   ASSERT_TRUE(events.get());
 
   ASSERT_EQ(base::Value::Type::DICT, events->type());
-  auto event_list = EventList::CreateFrom(*events);
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ(3U, event_list->items().size());
 
@@ -67,7 +129,7 @@ TEST(CalendarAPIResponseTypesTest, ParseMissingConferenceDataUri) {
   ASSERT_TRUE(events.get());
 
   ASSERT_EQ(base::Value::Type::DICT, events->type());
-  auto event_list = EventList::CreateFrom(*events);
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ(4U, event_list->items().size());
 
@@ -82,7 +144,7 @@ TEST(CalendarAPIResponseTypesTest, ParseInvalidConferenceDataUri) {
   ASSERT_TRUE(events.get());
 
   ASSERT_EQ(base::Value::Type::DICT, events->type());
-  auto event_list = EventList::CreateFrom(*events);
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ(1U, event_list->items().size());
 
@@ -95,7 +157,7 @@ TEST(CalendarAPIResponseTypesTest, ParseMissingConferenceDataEntryPointType) {
   ASSERT_TRUE(events.get());
 
   ASSERT_EQ(base::Value::Type::DICT, events->type());
-  auto event_list = EventList::CreateFrom(*events);
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ(1U, event_list->items().size());
 
@@ -108,7 +170,7 @@ TEST(CalendarAPIResponseTypesTest, ParseEventListWithCorrectEventStatuses) {
   ASSERT_TRUE(events.get());
 
   ASSERT_EQ(base::Value::Type::DICT, events->type());
-  auto event_list = EventList::CreateFrom(*events);
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ(4U, event_list->items().size());
 
@@ -129,7 +191,7 @@ TEST(CalendarAPIResponseTypesTest,
   ASSERT_TRUE(events.get());
 
   ASSERT_EQ(base::Value::Type::DICT, events->type());
-  auto event_list = EventList::CreateFrom(*events);
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ(8U, event_list->items().size());
 
@@ -157,8 +219,65 @@ TEST(CalendarAPIResponseTypesTest, ParseFailed) {
   ASSERT_TRUE(events.get());
 
   ASSERT_EQ(base::Value::Type::DICT, events->type());
-  auto event_list = EventList::CreateFrom(*events);
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
   ASSERT_EQ(event_list, nullptr);
+}
+
+TEST(CalendarAPIResponseTypesTest, ParseAttachments) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/event_with_attachments.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(1U, event_list->items().size());
+
+  const auto attachments = event_list->items()[0]->attachments();
+  EXPECT_EQ(attachments.size(), 2U);
+
+  EXPECT_EQ(attachments[0].file_url(),
+            "https://docs.google.com/document/d/"
+            "1yeRZ9Je4i9XvbnnOygitkXgJQpLvR98_TrfWRec84Bw/"
+            "edit?tab=t.0&resourcekey=0-yNQRr67lHMYKNFyrXmvwBw");
+  EXPECT_EQ(attachments[0].icon_link(),
+            "https://www.gstatic.com/images/branding/product/1x/"
+            "docs_2020q4_48dp.png");
+  EXPECT_EQ(attachments[0].title(), "Google Docs Attachment");
+
+  EXPECT_EQ(attachments[1].file_url(),
+            "https://docs.google.com/presentation/d/"
+            "17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q/edit#slide=id.p");
+  EXPECT_EQ(attachments[1].icon_link(),
+            "https://www.gstatic.com/images/branding/product/1x/"
+            "slides_2020q4_48dp.png");
+  EXPECT_EQ(attachments[1].title(), "Google Slides Attachment");
+}
+
+TEST(CalendarAPIResponseTypesTest, ParseInvalidAttachments) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/event_with_invalid_attachments.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(1U, event_list->items().size());
+
+  const auto attachments = event_list->items()[0]->attachments();
+  EXPECT_EQ(attachments.size(), 2U);
+
+  EXPECT_TRUE(attachments[0].file_url().is_empty());
+  EXPECT_EQ(attachments[0].icon_link(),
+            "https://www.gstatic.com/images/branding/product/1x/"
+            "docs_2020q4_48dp.png");
+  EXPECT_EQ(attachments[0].title(), "Google Docs Attachment");
+
+  EXPECT_EQ(attachments[1].file_url(),
+            "https://docs.google.com/presentation/d/"
+            "17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q/edit#slide=id.p");
+  EXPECT_TRUE(attachments[1].icon_link().is_empty());
+  EXPECT_EQ(attachments[1].title(), "Google Slides Attachment");
 }
 }  // namespace calendar
 }  // namespace google_apis

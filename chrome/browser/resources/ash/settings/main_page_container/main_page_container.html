@@ -1,4 +1,26 @@
 <style include="cr-hidden-style settings-shared">
+  :host-context(body.revamp-wayfinding-enabled):host {
+    --page-backdrop-bg-color: var(--cros-sys-surface1);
+
+    background-color: var(--page-backdrop-bg-color);
+    border-radius: 20px;
+    box-sizing: border-box;
+    padding-bottom: 16px;
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host-context(body.revamp-wayfinding-enabled):host {
+      --page-backdrop-bg-color: var(--cros-sys-app_base);
+    }
+  }
+
+  /* L1 page-specific style */
+  :host-context(body.revamp-wayfinding-enabled):host(:not(.showing-subpage)) {
+    padding-top: 8px;
+  }
+
   :host([is-subpage-animating]) {
     /* Prevent an unwanted horizontal scrollbar when transitioning back from
       * a sub-page. */
@@ -105,6 +127,13 @@
   }
 </style>
 
+<!-- Singleton element for languages data and API. -->
+<settings-languages
+    prefs="{{prefs}}"
+    languages="{{languages_}}"
+    language-helper="{{languageHelper_}}">
+</settings-languages>
+
 <div id="basicPageContainer"
     hidden$="[[!shouldShowBasicPageContainer_]]">
     <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
@@ -180,7 +209,9 @@
         if="[[shouldStampPage_(pageAvailability, Section.kDevice)]]"
         restamp>
       <page-displayer section="[[Section.kDevice]]">
-        <settings-device-page prefs="{{prefs}}">
+        <settings-device-page prefs="{{prefs}}"
+            languages="[[languages_]]"
+            language-helper="[[languageHelper_]]">
         </settings-device-page>
       </page-displayer>
     </template>
@@ -230,7 +261,9 @@
         if="[[shouldStampPage_(pageAvailability, Section.kSystemPreferences)]]"
         restamp>
       <page-displayer section="[[Section.kSystemPreferences]]">
-        <settings-system-preferences-page prefs="{{prefs}}">
+        <settings-system-preferences-page prefs="{{prefs}}"
+            languages="[[languages_]]"
+            language-helper="[[languageHelper_]]">
         </settings-system-preferences-page>
       </page-displayer>
     </template>
@@ -267,7 +300,9 @@
               Section.kLanguagesAndInput)]]"
           restamp>
         <page-displayer section="[[Section.kLanguagesAndInput]]">
-          <os-settings-languages-section prefs="{{prefs}}">
+          <os-settings-languages-section prefs="{{prefs}}"
+              languages="[[languages_]]"
+              language-helper="[[languageHelper_]]">
           </os-settings-languages-section>
         </page-displayer>
       </template>

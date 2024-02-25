@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
@@ -53,12 +54,13 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
-/**
- * Unit tests for the PageZoom view and view binder.
- */
+/** Unit tests for the PageZoom view and view binder. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
-@DisableFeatures({ContentFeatureList.SMART_ZOOM})
+@DisableFeatures({
+    ContentFeatureList.SMART_ZOOM,
+    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS
+})
 @Batch(Batch.PER_CLASS)
 public class PageZoomViewTest {
     @ClassRule
@@ -72,21 +74,15 @@ public class PageZoomViewTest {
     private static Activity sActivity;
     private static ViewGroup sContentView;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private PageZoomCoordinatorDelegate mDelegate;
-    @Mock
-    private HostZoomMapImpl.Natives mHostZoomMapJniMock;
-    @Mock
-    private BrowserContextHandle mBrowserContextHandle;
-    @Mock
-    private WebContents mWebContents;
+    @Mock private PageZoomCoordinatorDelegate mDelegate;
+    @Mock private HostZoomMapImpl.Natives mHostZoomMapJniMock;
+    @Mock private PageZoomMetrics.Natives mPageZoomMetricsJniMock;
+    @Mock private BrowserContextHandle mBrowserContextHandle;
+    @Mock private WebContents mWebContents;
 
     private PageZoomCoordinator mCoordinator;
     private View mPageZoomView;
@@ -94,11 +90,12 @@ public class PageZoomViewTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivity = sActivityTestRule.getActivity();
-            sContentView = new FrameLayout(sActivity);
-            sActivity.setContentView(sContentView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivity = sActivityTestRule.getActivity();
+                    sContentView = new FrameLayout(sActivity);
+                    sActivity.setContentView(sContentView);
+                });
     }
 
     @AfterClass
@@ -112,31 +109,34 @@ public class PageZoomViewTest {
         MockitoAnnotations.initMocks(this);
 
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapJniMock);
+        mJniMocker.mock(PageZoomMetricsJni.TEST_HOOKS, mPageZoomMetricsJniMock);
         when(mHostZoomMapJniMock.getDefaultZoomLevel(any())).thenReturn(0.0);
-        when(mHostZoomMapJniMock.getDesktopSiteZoomScale(any())).thenReturn(1.0);
         when(mHostZoomMapJniMock.getZoomLevel(any())).thenReturn(0.0);
 
-        mDelegate = new PageZoomCoordinatorDelegate() {
-            @Override
-            public View getZoomControlView() {
-                return mPageZoomView;
-            }
+        mDelegate =
+                new PageZoomCoordinatorDelegate() {
+                    @Override
+                    public View getZoomControlView() {
+                        return mPageZoomView;
+                    }
 
-            @Override
-            public BrowserContextHandle getBrowserContextHandle() {
-                return mBrowserContextHandle;
-            }
-        };
+                    @Override
+                    public BrowserContextHandle getBrowserContextHandle() {
+                        return mBrowserContextHandle;
+                    }
+                };
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sContentView.removeAllViews();
-            mPageZoomView = LayoutInflater.from(sActivity).inflate(
-                    R.layout.page_zoom_view, sContentView, false);
-            sContentView.addView(mPageZoomView);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sContentView.removeAllViews();
+                    mPageZoomView =
+                            LayoutInflater.from(sActivity)
+                                    .inflate(R.layout.page_zoom_view, sContentView, false);
+                    sContentView.addView(mPageZoomView);
 
-            mCoordinator = new PageZoomCoordinator(mDelegate);
-            mCoordinator.show(mWebContents);
-        });
+                    mCoordinator = new PageZoomCoordinator(mDelegate);
+                    mCoordinator.show(mWebContents);
+                });
     }
 
     // Test cases.
@@ -146,21 +146,27 @@ public class PageZoomViewTest {
     public void testSetup() {
         // Verify that the view has been drawn.
         assertEquals(View.VISIBLE, mPageZoomView.getVisibility());
-        assertEquals(View.VISIBLE,
+        assertEquals(
+                View.VISIBLE,
                 mPageZoomView.findViewById(R.id.page_zoom_current_zoom_level).getVisibility());
-        assertEquals(View.VISIBLE,
+        assertEquals(
+                View.VISIBLE,
                 mPageZoomView.findViewById(R.id.page_zoom_view_container).getVisibility());
-        assertEquals(View.VISIBLE,
+        assertEquals(
+                View.VISIBLE,
                 mPageZoomView.findViewById(R.id.page_zoom_decrease_zoom_button).getVisibility());
         assertEquals(
                 View.VISIBLE, mPageZoomView.findViewById(R.id.page_zoom_slider).getVisibility());
-        assertEquals(View.VISIBLE,
+        assertEquals(
+                View.VISIBLE,
                 mPageZoomView.findViewById(R.id.page_zoom_increase_zoom_button).getVisibility());
 
         // The 'Reset' button and divider should not be visible by default.
-        assertEquals(View.GONE,
+        assertEquals(
+                View.GONE,
                 mPageZoomView.findViewById(R.id.page_zoom_reset_divider).getVisibility());
-        assertEquals(View.GONE,
+        assertEquals(
+                View.GONE,
                 mPageZoomView.findViewById(R.id.page_zoom_reset_zoom_button).getVisibility());
     }
 
@@ -168,15 +174,21 @@ public class PageZoomViewTest {
     @SmallTest
     public void testContent() {
         // Verify that all content is correct.
-        assertFalse(mPageZoomView.findViewById(R.id.page_zoom_view_container)
-                            .isImportantForAccessibility());
+        assertFalse(
+                mPageZoomView
+                        .findViewById(R.id.page_zoom_view_container)
+                        .isImportantForAccessibility());
         assertTextContent("100");
-        assertTrue(mPageZoomView.findViewById(R.id.page_zoom_decrease_zoom_button)
-                           .getContentDescription()
-                           .equals("Decrease zoom"));
-        assertTrue(mPageZoomView.findViewById(R.id.page_zoom_increase_zoom_button)
-                           .getContentDescription()
-                           .equals("Increase zoom"));
+        assertTrue(
+                mPageZoomView
+                        .findViewById(R.id.page_zoom_decrease_zoom_button)
+                        .getContentDescription()
+                        .equals("Decrease zoom"));
+        assertTrue(
+                mPageZoomView
+                        .findViewById(R.id.page_zoom_increase_zoom_button)
+                        .getContentDescription()
+                        .equals("Increase zoom"));
     }
 
     @Test
@@ -186,10 +198,27 @@ public class PageZoomViewTest {
                 50, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("100", true, true);
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                PageZoomUma.PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_CHANGED_HISTOGRAM,
+                                true)
+                        .expectIntRecord(
+                                PageZoomUma.PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_VALUE_HISTOGRAM,
+                                90)
+                        .build();
+
         onView(withId(R.id.page_zoom_decrease_zoom_button)).perform(click());
         assertEquals(
                 40, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("90", true, true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.hide();
+                });
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -199,15 +228,32 @@ public class PageZoomViewTest {
                 50, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("100", true, true);
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                PageZoomUma.PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_CHANGED_HISTOGRAM,
+                                true)
+                        .expectIntRecord(
+                                PageZoomUma.PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_VALUE_HISTOGRAM,
+                                110)
+                        .build();
+
         onView(withId(R.id.page_zoom_increase_zoom_button)).perform(click());
         assertEquals(
                 60, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
         assertViewState("110", true, true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.hide();
+                });
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
+    @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS})
     public void testResetButton() {
         assertEquals(
                 50, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
@@ -222,25 +268,32 @@ public class PageZoomViewTest {
 
     // Helper methods for simple checks.
 
-    private void assertViewState(String expectedText, boolean expectedDecreaseButtonEnabled,
+    private void assertViewState(
+            String expectedText,
+            boolean expectedDecreaseButtonEnabled,
             boolean expectedIncreaseButtonEnabled) {
         assertTextContent(expectedText);
         assertButtonStates(expectedDecreaseButtonEnabled, expectedIncreaseButtonEnabled);
     }
 
     private void assertTextContent(String expected) {
-        assertTrue(((TextView) mPageZoomView.findViewById(R.id.page_zoom_current_zoom_level))
-                           .getText()
-                           .equals(expected + " %"));
-        assertTrue(mPageZoomView.findViewById(R.id.page_zoom_current_zoom_level)
-                           .getContentDescription()
-                           .equals("Current zoom is " + expected + " %"));
+        assertTrue(
+                ((TextView) mPageZoomView.findViewById(R.id.page_zoom_current_zoom_level))
+                        .getText()
+                        .equals(expected + " %"));
+        assertTrue(
+                mPageZoomView
+                        .findViewById(R.id.page_zoom_current_zoom_level)
+                        .getContentDescription()
+                        .equals("Current zoom is " + expected + " %"));
     }
 
     private void assertButtonStates(boolean decreaseExpected, boolean increaseExpected) {
-        assertEquals(decreaseExpected,
+        assertEquals(
+                decreaseExpected,
                 mPageZoomView.findViewById(R.id.page_zoom_decrease_zoom_button).isEnabled());
-        assertEquals(increaseExpected,
+        assertEquals(
+                increaseExpected,
                 mPageZoomView.findViewById(R.id.page_zoom_increase_zoom_button).isEnabled());
     }
 }

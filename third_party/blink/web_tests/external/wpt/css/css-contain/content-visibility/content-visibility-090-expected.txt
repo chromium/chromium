@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Content Visibility: scrollLeft/scrollTop/scrollWidth/scrollHeight measure correctly
+  assert_equals: left expected 25 but got 0
+Harness: the test ran to completion.
+

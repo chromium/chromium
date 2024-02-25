@@ -74,6 +74,9 @@ def run_serve_cmd(cmd: str, args: argparse.Namespace) -> None:
         assert cmd == 'run'
         catch_sigterm()
         with serve_repository(args):
+            # Clients can assume the repo is up and running once the repo-name
+            # is printed out.
+            print(args.repo_name, flush=True)
             wait_for_sigterm('shutting down the repo server.')
 
 

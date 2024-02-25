@@ -1,14 +1,14 @@
 Document
 ++Group IsControlElement=false
-++++Text
+++++Group IsControlElement=false
 ++++++Text Name='l1'
 ++++Edit Name='l1'
-++++Text
+++++Group IsControlElement=false
 ++++++Text Name='l2'
 ++++Edit Name='l2' Value.Value='value'
 ++++Edit Name='l2'
 ++++Edit Name='l2' Value.Value='value  *'
-++++Text
+++++Group IsControlElement=false
 ++++++Text Name='Email'
 ++++Group IsControlElement=false
 ++++Edit Name='Email'

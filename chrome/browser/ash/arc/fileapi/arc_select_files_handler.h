@@ -28,11 +28,62 @@ class ArcSelectFilesHandler;
 class SelectFileDialogHolder;
 
 // Exposed for testing.
-extern const char kScriptClickOk[];
-extern const char kScriptClickCancel[];
-extern const char kScriptClickDirectory[];
-extern const char kScriptClickFile[];
-extern const char kScriptGetElements[];
+// Script for clicking OK button on the selector.
+inline constexpr char kScriptClickOk[] =
+    "(function() { document.querySelector('#ok-button').click(); })();";
+
+// Script for clicking Cancel button on the selector.
+inline constexpr char kScriptClickCancel[] =
+    "(function() { document.querySelector('#cancel-button').click(); })();";
+
+// Script for clicking a directory element in the left pane of the selector.
+// %s should be replaced by the target directory name wrapped by double-quotes.
+inline constexpr char kScriptClickDirectory[] =
+    "(function() {"
+    "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
+    "  Array.from(dirs).filter(a => a.innerText === %s)[0].click();"
+    "})();";
+
+// Same script as above but execute when FilesNewDirectoryTree flag is on.
+// TODO(b/285977941): Remove the old script once the old tree implementation is
+// removed.
+inline constexpr char kScriptClickDirectoryForNewTree[] =
+    "(function() {"
+    "  var dirs = document.querySelectorAll('#directory-tree xf-tree-item');"
+    "  Array.from(dirs).filter(a => a.getAttribute('label') === %s)[0].click();"
+    "})();";
+
+// Script for clicking a file element in the right pane of the selector.
+// %s should be replaced by the target file name wrapped by double-quotes.
+inline constexpr char kScriptClickFile[] =
+    "(function() {"
+    "  var evt = document.createEvent('MouseEvents');"
+    "  evt.initMouseEvent('mousedown', true, false);"
+    "  var files = document.querySelectorAll('#file-list .file');"
+    "  Array.from(files).filter(a => a.getAttribute('file-name') === %s)[0]"
+    "      .dispatchEvent(evt);"
+    "})();";
+
+// Script for querying UI elements (directories and files) shown on the
+// selector.
+inline constexpr char kScriptGetElements[] =
+    "(function() {"
+    "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
+    "  var files = document.querySelectorAll('#file-list .file');"
+    "  return {dirNames: Array.from(dirs, a => a.innerText),"
+    "          fileNames: Array.from(files, a => a.getAttribute('file-name'))};"
+    "})();";
+
+// Same script as above but execute when FilesNewDirectoryTree flag is on.
+// TODO(b/285977941): Remove the old script once the old tree implementation is
+// removed.
+inline constexpr char kScriptGetElementsForNewTree[] =
+    "(function() {"
+    "  var dirs = document.querySelectorAll('#directory-tree xf-tree-item');"
+    "  var files = document.querySelectorAll('#file-list .file');"
+    "  return {dirNames: Array.from(dirs, a => a.getAttribute('label')),"
+    "          fileNames: Array.from(files, a => a.getAttribute('file-name'))};"
+    "})();";
 
 // Manages multiple ArcSelectFilesHandler instances.
 class ArcSelectFilesHandlersManager {
@@ -72,7 +123,7 @@ class ArcSelectFilesHandlersManager {
       mojom::FileSystemHost::SelectFilesCallback callback,
       mojom::SelectFilesResultPtr result);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Map of Task ID -> ArcSelectFilesHandler.
   std::map<int, std::unique_ptr<ArcSelectFilesHandler>> handlers_by_task_id_;
@@ -102,23 +153,23 @@ class ArcSelectFilesHandler : public ui::SelectFileDialog::Listener {
       mojom::FileSystemHost::GetFileSelectorElementsCallback callback);
 
   // ui::SelectFileDialog::Listener overrides:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
                           void* params) override;
   void FileSelectionCanceled(void* params) override;
 
  private:
   friend class ArcSelectFilesHandlerTest;
 
-  void FilesSelectedInternal(const std::vector<base::FilePath>& files,
+  void FilesSelectedInternal(const std::vector<ui::SelectedFileInfo>& files,
                              void* params);
 
   void SetDialogHolderForTesting(
       std::unique_ptr<SelectFileDialogHolder> dialog_holder);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   mojom::FileSystemHost::SelectFilesCallback callback_;
   std::unique_ptr<SelectFileDialogHolder> dialog_holder_;

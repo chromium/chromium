@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * A simple 2-argument callback with an int and a String as arguments.

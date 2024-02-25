@@ -48,6 +48,20 @@ mojom::PresenceDeviceType DeviceTypeToMojom(
   }
 }
 
+// TODO(b:300510287): Use EnumTrait<> to convert between enums rather than
+// a method call.
+mojom::PublicCredentialType PublicCredentialTypeToMojom(
+    ::nearby::presence::PublicCredentialType public_credential_type) {
+  switch (public_credential_type) {
+    case ::nearby::presence::PublicCredentialType::kLocalPublicCredential:
+      return mojom::PublicCredentialType::kLocalPublicCredential;
+    case ::nearby::presence::PublicCredentialType::kRemotePublicCredential:
+      return mojom::PublicCredentialType::kRemotePublicCredential;
+  }
+
+  NOTREACHED_NORETURN();
+}
+
 mojom::PrivateKeyPtr PrivateKeyToMojom(
     ::nearby::internal::LocalCredential::PrivateKey private_key) {
   return mojom::PrivateKey::New(

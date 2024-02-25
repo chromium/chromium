@@ -93,6 +93,14 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-betty-pi-arc-chrome-accessibility-fyi",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-brya-chrome-skylab",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-eve-chrome",
 )
 
@@ -105,6 +113,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-jacuzzi-chrome-skylab",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-jacuzzi-compile-chrome",
 )
 
@@ -114,6 +126,10 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "chromeos-octopus-compile-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-volteer-chrome-skylab",
 )
 
 chrome_internal_verifier(
@@ -133,7 +149,15 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-fyi-sherlock-qemu",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-internal-images-roller",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-smoke-astro",
 )
 
 chrome_internal_verifier(
@@ -187,6 +211,14 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-chromeos-chrome-with-lacros",
+)
+
+chrome_internal_verifier(
+    builder = "linux-lacros-chrome",
+)
+
+chrome_internal_verifier(
     builder = "linux-nearby-chrome-fyi",
 )
 
@@ -212,6 +244,26 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-pgo",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-linux",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-mac-arm64",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-mac-x64",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-win32",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-win64",
 )
 
 chrome_internal_verifier(

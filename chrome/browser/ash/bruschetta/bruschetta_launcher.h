@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_LAUNCHER_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_LAUNCHER_H_
 
+#include <optional>
 #include <string>
 #include "base/callback_list.h"
 #include "base/files/file.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -41,7 +41,7 @@ class BruschettaLauncher {
  private:
   void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
-                 absl::optional<vm_tools::concierge::StartVmResponse> response);
+                 std::optional<vm_tools::concierge::StartVmResponse> response);
 
   void EnsureToolsDlcInstalled();
   void OnMountToolsDlc(guest_os::GuestOsDlcInstallation::Result install_result);
@@ -56,11 +56,11 @@ class BruschettaLauncher {
   void Finish(BruschettaResult result);
 
   std::string vm_name_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // Callbacks to run once an in-progress launch finishes.
   base::OnceCallbackList<void(BruschettaResult)> callbacks_;
-  absl::optional<base::CallbackListSubscription> subscription_;
+  std::optional<base::CallbackListSubscription> subscription_;
 
   std::unique_ptr<guest_os::GuestOsDlcInstallation> in_progress_dlc_;
 

@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.browsing_data;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,60 +21,63 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
  * Fragment with a {@link TabLayout} containing a basic and an advanced version of the CBD dialog.
  */
-public class ClearBrowsingDataTabsFragment
-        extends Fragment implements FragmentHelpAndFeedbackLauncher {
+public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDependentSetting {
     public static final int CBD_TAB_COUNT = 2;
 
+    private Profile mProfile;
     private ClearBrowsingDataFetcher mFetcher;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-
-        if (savedInstanceState == null) {
-            mFetcher = new ClearBrowsingDataFetcher();
-            mFetcher.fetchImportantSites();
-            mFetcher.requestInfoAboutOtherFormsOfBrowsingHistory();
-        } else {
-            mFetcher = savedInstanceState.getParcelable(
-                    ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_FETCHER);
-        }
-
         RecordUserAction.record("ClearBrowsingData_DialogCreated");
     }
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            mFetcher = new ClearBrowsingDataFetcher();
+            mFetcher.fetchImportantSites(mProfile);
+            mFetcher.requestInfoAboutOtherFormsOfBrowsingHistory(mProfile);
+        } else {
+            mFetcher =
+                    savedInstanceState.getParcelable(
+                            ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_FETCHER);
+        }
+
         // Inflate the layout for this fragment.
         View view = inflater.inflate(R.layout.clear_browsing_data_tabs, container, false);
 
         // Get the ViewPager and set its PagerAdapter so that it can display items.
         ViewPager2 viewPager = view.findViewById(R.id.clear_browsing_data_viewpager);
-        viewPager.setAdapter(new ClearBrowsingDataPagerAdapter(
-                mFetcher, getFragmentManager(), (FragmentActivity) getActivity()));
+        viewPager.setAdapter(
+                new ClearBrowsingDataPagerAdapter(
+                        mFetcher, getFragmentManager(), (FragmentActivity) getActivity()));
 
         // Give the TabLayout the ViewPager.
         TabLayout tabLayout = view.findViewById(R.id.clear_browsing_data_tabs);
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            tab.setText(getTabTitle(position));
-        }).attach();
-        int tabIndex = BrowsingDataBridge.getInstance().getLastSelectedClearBrowsingDataTab();
+        new TabLayoutMediator(
+                        tabLayout,
+                        viewPager,
+                        (tab, position) -> {
+                            tab.setText(getTabTitle(position));
+                        })
+                .attach();
+        int tabIndex =
+                BrowsingDataBridge.getForProfile(mProfile).getLastSelectedClearBrowsingDataTab();
         TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
         if (tab != null) {
             tab.select();
         }
-        tabLayout.addOnTabSelectedListener(new TabSelectListener());
+        tabLayout.addOnTabSelectedListener(new TabSelectListener(mProfile));
 
         // Set outline provider to null to prevent shadow from being drawn between title and tabs.
         SettingsActivity activity = (SettingsActivity) getActivity();
@@ -104,6 +104,12 @@ public class ClearBrowsingDataTabsFragment
         // mFetcher acts as a cache for important sites and history data. If the activity gets
         // suspended, we can save the cached data and reuse it when we are activated again.
         outState.putParcelable(ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_FETCHER, mFetcher);
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        assert profile != null;
+        mProfile = profile;
     }
 
     private static class ClearBrowsingDataPagerAdapter extends FragmentStateAdapter {
@@ -134,18 +140,27 @@ public class ClearBrowsingDataTabsFragment
                     throw new RuntimeException("invalid position: " + position);
             }
             // We supply the fetcher in the next line.
-            fragment.setArguments(ClearBrowsingDataFragment.createFragmentArgs(
-                    /*isFetcherSuppliedFromOutside=*/true));
+            fragment.setArguments(
+                    ClearBrowsingDataFragment.createFragmentArgs(
+                            /* isFetcherSuppliedFromOutside= */ true));
             fragment.setClearBrowsingDataFetcher(mFetcher);
             return fragment;
         }
     }
 
     private static class TabSelectListener implements TabLayout.OnTabSelectedListener {
+        private final Profile mProfile;
+
+        TabSelectListener(Profile profile) {
+            assert profile != null;
+            mProfile = profile;
+        }
+
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
             int tabIndex = tab.getPosition();
-            BrowsingDataBridge.getInstance().setLastSelectedClearBrowsingDataTab(tabIndex);
+            BrowsingDataBridge.getForProfile(mProfile)
+                    .setLastSelectedClearBrowsingDataTab(tabIndex);
             if (tabIndex == ClearBrowsingDataTab.BASIC) {
                 RecordUserAction.record("ClearBrowsingData_SwitchTo_BasicTab");
             } else {
@@ -158,30 +173,5 @@ public class ClearBrowsingDataTabsFragment
 
         @Override
         public void onTabReselected(TabLayout.Tab tab) {}
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        MenuItem help =
-                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(TraceEventVectorDrawableCompat.create(
-                getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
-        help.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_id_targeted_help) {
-            mHelpAndFeedbackLauncher.show(
-                    getActivity(), getString(R.string.help_context_clear_browsing_data), null);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }

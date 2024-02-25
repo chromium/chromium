@@ -24,8 +24,7 @@ namespace extensions {
 namespace errors = manifest_errors;
 namespace keys = manifest_keys;
 
-class ExtensionManifestBackgroundTest : public ChromeManifestTest {
-};
+using ExtensionManifestBackgroundTest = ChromeManifestTest;
 
 // TODO(devlin): Can this file move to //extensions?
 
@@ -36,7 +35,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPermission) {
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
   std::string error;
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       LoadManifest("background_scripts.json", &error);
   ASSERT_TRUE(manifest);
 
@@ -61,7 +60,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundServiceWorkerScript) {
   std::string error;
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       LoadManifest("background_script_sw.json", &error);
   ASSERT_TRUE(manifest);
 
@@ -102,7 +101,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPageWebRequest) {
   ScopedCurrentChannel current_channel(version_info::Channel::DEV);
 
   std::string error;
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       LoadManifest("background_page.json", &error);
   ASSERT_TRUE(manifest);
   manifest->SetByDottedPath("background.persistent", false);
@@ -218,11 +217,6 @@ TEST_F(ExtensionManifestBackgroundTest, ServiceWorkerBasedBackgroundKey) {
 }
 
 TEST_F(ExtensionManifestBackgroundTest, ManifestV3Restrictions) {
-  auto get_expected_error = [](base::StringPiece key) {
-    return ErrorUtils::FormatErrorMessage(
-        errors::kBackgroundSpecificationInvalidForManifestV3, key);
-  };
-
   {
     constexpr char kManifestBackgroundPage[] =
         R"({
@@ -234,9 +228,10 @@ TEST_F(ExtensionManifestBackgroundTest, ManifestV3Restrictions) {
              }
            })";
     base::Value manifest_value = base::test::ParseJson(kManifestBackgroundPage);
-    LoadAndExpectError(
+    scoped_refptr<Extension> extension(LoadAndExpectWarning(
         ManifestData(std::move(manifest_value).TakeDict(), "background page"),
-        get_expected_error(keys::kBackgroundPage));
+        "'background.page' requires manifest version of 2 or lower."));
+    EXPECT_FALSE(BackgroundInfo::HasBackgroundPage(extension.get()));
   }
   {
     constexpr char kManifestBackgroundScripts[] =
@@ -250,9 +245,11 @@ TEST_F(ExtensionManifestBackgroundTest, ManifestV3Restrictions) {
            })";
     base::Value manifest_value =
         base::test::ParseJson(kManifestBackgroundScripts);
-    LoadAndExpectError(ManifestData(std::move(manifest_value).TakeDict(),
-                                    "background scripts"),
-                       get_expected_error(keys::kBackgroundScripts));
+    scoped_refptr<Extension> extension(LoadAndExpectWarning(
+        ManifestData(std::move(manifest_value).TakeDict(),
+                     "background scripts"),
+        "'background.scripts' requires manifest version of 2 or lower."));
+    EXPECT_FALSE(BackgroundInfo::HasBackgroundPage(extension.get()));
   }
   {
     constexpr char kManifestBackgroundPersistent[] =
@@ -267,9 +264,11 @@ TEST_F(ExtensionManifestBackgroundTest, ManifestV3Restrictions) {
            })";
     base::Value manifest_value =
         base::test::ParseJson(kManifestBackgroundPersistent);
-    LoadAndExpectError(ManifestData(std::move(manifest_value).TakeDict(),
-                                    "persistent background"),
-                       get_expected_error(keys::kBackgroundPersistent));
+    scoped_refptr<Extension> extension(LoadAndExpectWarning(
+        ManifestData(std::move(manifest_value).TakeDict(),
+                     "persistent background"),
+        "'background.persistent' requires manifest version of 2 or lower."));
+    EXPECT_FALSE(BackgroundInfo::HasBackgroundPage(extension.get()));
   }
   {
     // An extension with no background key present should still be allowed.
@@ -281,8 +280,57 @@ TEST_F(ExtensionManifestBackgroundTest, ManifestV3Restrictions) {
            })";
     base::Value manifest_value =
         base::test::ParseJson(kManifestBackgroundPersistent);
-    LoadAndExpectSuccess(
-        ManifestData(std::move(manifest_value).TakeDict(), "no background"));
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(
+        ManifestData(std::move(manifest_value).TakeDict(), "no background")));
+    EXPECT_FALSE(BackgroundInfo::HasBackgroundPage(extension.get()));
+  }
+  {
+    // An extension with both a background page and a service worker should
+    // still be allowed, with the page ignored, since other browsers still
+    // support background pages in MV3. This allows a developer to ship a
+    // single extension and for the browser to choose the appropriate key.
+    constexpr char kManifestBackgroundPersistent[] =
+        R"({
+             "name": "MV3 Test",
+             "manifest_version": 3,
+             "version": "0.1",
+             "background": {
+               "service_worker": "worker.js",
+               "page": "background.html"
+             }
+           })";
+    base::Value manifest_value =
+        base::test::ParseJson(kManifestBackgroundPersistent);
+    scoped_refptr<Extension> extension(LoadAndExpectWarning(
+        ManifestData(std::move(manifest_value).TakeDict(),
+                     "background page and service worker"),
+        "'background.page' requires manifest version of 2 or lower."));
+    EXPECT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    EXPECT_FALSE(BackgroundInfo::HasBackgroundPage(extension.get()));
+  }
+  {
+    // An extension with both background scripts and a service worker should
+    // still be allowed, with the scripts ignored, since other browsers still
+    // support background scripts in MV3. This allows a developer to ship a
+    // single extension and for the browser to choose the appropriate key.
+    constexpr char kManifestBackgroundPersistent[] =
+        R"({
+             "name": "MV3 Test",
+             "manifest_version": 3,
+             "version": "0.1",
+             "background": {
+               "service_worker": "worker.js",
+               "scripts": ["background.js"]
+             }
+           })";
+    base::Value manifest_value =
+        base::test::ParseJson(kManifestBackgroundPersistent);
+    scoped_refptr<Extension> extension(LoadAndExpectWarning(
+        ManifestData(std::move(manifest_value).TakeDict(),
+                     "background scripts and service worker"),
+        "'background.scripts' requires manifest version of 2 or lower."));
+    EXPECT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    EXPECT_FALSE(BackgroundInfo::HasBackgroundPage(extension.get()));
   }
 }
 

@@ -43,7 +43,7 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
     void SetPosition(const syncer::StringOrdinal& new_position);
 
    private:
-    const raw_ptr<AppListTestModel, ExperimentalAsh> model_;
+    const raw_ptr<AppListTestModel> model_;
   };
 
   static const char kItemType[];
@@ -68,6 +68,7 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
                            const std::string& new_name) override;
   void RequestAppListSort(AppListSortOrder order) override;
   void RequestAppListSortRevert() override;
+  void RequestCommitTemporarySortOrder() override;
 
   // Raw pointer version convenience versions of AppListModel methods.
   AppListItem* AddItem(AppListItem* item);
@@ -89,6 +90,10 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
   AppListFolderItem* CreateSingleItemFolder(const std::string& folder_id,
                                             const std::string& item_id);
 
+  AppListFolderItem* CreateSingleWebAppShortcutItemFolder(
+      const std::string& folder_id,
+      const std::string& item_id);
+
   // Populate the model with an item titled "Item |id|".
   void PopulateAppWithId(int id);
 
@@ -98,9 +103,22 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
   // Creates an item with id |id|. Caller owns the result.
   AppListTestItem* CreateItem(const std::string& id);
 
+  // Creates a web app shortcut item with id `id`. Caller owns the result.
+  AppListTestItem* CreateWebAppShortcutItem(const std::string& id);
+
   // Creates and adds an item with id |id| to the model. Returns an unowned
   // pointer to the created item.
   AppListTestItem* CreateAndAddItem(const std::string& id);
+
+  // Creates and adds a promise app item with id |id| to the model (i.e. item
+  // will be created with status as AppStatus::kPending). Returns an unowned
+  // pointer to the created item.
+  AppListTestItem* CreateAndAddPromiseItem(const std::string& id);
+
+  // Creates and adds a web app shortcut item with id `id` to the model. Returns
+  // an unowned pointer to the created item.
+  AppListTestItem* CreateAndAddWebAppShortcutItemWithHostBadge(
+      const std::string& id);
 
   int activate_count() { return activate_count_; }
   AppListItem* last_activated() { return last_activated_; }
@@ -112,12 +130,14 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
  private:
   void ItemActivated(AppListTestItem* item);
 
+  syncer::StringOrdinal CalculatePosition();
+
   int activate_count_ = 0;
-  raw_ptr<AppListItem, ExperimentalAsh> last_activated_ = nullptr;
+  raw_ptr<AppListItem> last_activated_ = nullptr;
   int naming_index_ = 0;
 
   // The last sort order requested using `RequestAppListSort()`.
-  absl::optional<AppListSortOrder> requested_sort_order_;
+  std::optional<AppListSortOrder> requested_sort_order_;
 };
 
 }  // namespace test

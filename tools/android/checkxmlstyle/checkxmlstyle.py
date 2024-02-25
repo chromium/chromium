@@ -78,6 +78,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckStringResourceQuotesPunctuations(input_api, output_api))
   result.extend(_CheckStringResourceEllipsisPunctuations(input_api, output_api))
   result.extend(_CheckImportantForAccessibility(input_api, output_api))
+  result.extend(_CheckBadStyleReference(input_api, output_api))
   # Add more checks here
   return result
 
@@ -144,14 +145,17 @@ def _CheckColorReferences(input_api, output_api):
         output_api.PresubmitError(
             '''
   Android Color Reference Check failed:
-    Your new code added new color references that are not color resources from
-    ui/android/java/res/values/color_palette.xml, listed below.
+    Your new code contains hard coded hex color values in a resource file. You
+    likely should be using a @macro or color state list to support dynamic
+    colors, see
+    https://chromium.googlesource.com/chromium/src/+/main/docs/ui/android/dynamic_colors.md
 
-    This is banned, please use the existing color resources or create a new
-    color resource in color_palette.xml, and reference the color by @color/....
+    In the cases where you purposefully want fixed colors (like incognito), at
+    the very least @color references to color_palette.xml or one_off_colors.xml
+    will be necessary.
 
     If the new added color is a one-off color, please contact UX for approval
-    and then add it to ui/android/java/res/values/one_off_colors.xml.
+    and then add it to ui/android/java/res/values/one_off_colors.xml
 
     See https://crbug.com/775198 for more information.
   ''', errors)
@@ -161,11 +165,14 @@ def _CheckColorReferences(input_api, output_api):
         output_api.PresubmitPromptWarning(
             '''
   Android Color Reference Check warning:
-    Your new code added new color references that are not color resources from
-    ui/android/java/res/values/color_palette.xml, listed below.
+    Your new code contains hard coded hex color values in a resource file. You
+    likely should be using a @macro or color state list to support dynamic
+    colors, see
+    https://chromium.googlesource.com/chromium/src/+/main/docs/ui/android/dynamic_colors.md
 
-    This is typically not needed even in vector/shape drawables. Please consider
-    using an existing color resources if possible.
+    In the cases where you purposefully want fixed colors (like incognito), at
+    the very least @color references to color_palette.xml or one_off_colors.xml
+    will be necessary.
 
     Only bypass this check if you are confident that you should be using a HEX
     reference, e.g. you are adding an illustration or a shadow using XML rather
@@ -322,7 +329,6 @@ def _CheckNonDynamicColorReference(
         warnings.append(issue)
 
   if warnings:
-    # TODO(https://crbug.com/1224883): Replace bug with a upstream doc link.
     return [
         output_api.PresubmitPromptWarning(
             '''
@@ -330,9 +336,8 @@ Dynamic Color Reference Check warning:
   Your new code is using @color references. These will not correctly support
   dynamic colors. Instead you should use a @macro that routes into an ?attr.
   Note using color references is currently okay for incognito code, as it should
-  not be dynamically colored.
-
-  See https://crbug.com/1302056 for more information.
+  not be dynamically colored. See
+  https://chromium.googlesource.com/chromium/src/+/main/docs/ui/android/dynamic_colors.md.
           ''', warnings)
     ]
 
@@ -545,6 +550,29 @@ def _CheckImportantForAccessibility(input_api, output_api):
   ''', warnings)
     ]
 
+  return []
+
+
+### bad style reference below ###
+def _CheckBadStyleReference(input_api, output_api):
+  """Checks whether style attribute reference could work."""
+  errors = []
+  for f in IncludedFiles(input_api):
+    for line_number, line in f.ChangedContents():
+      match = helpers.KNOWN_STYLE_ATTRIBUTE.search(line)
+      if match and not helpers.STYLE_REF_PREFIX.search(match.group(2)):
+        errors.append('  %s:%d\n    \t%s' %
+                      (f.LocalPath(), line_number, line.strip()))
+  if errors:
+    return [
+        output_api.PresubmitPromptWarning(
+            '''
+  Style Reference Check failed:
+    Your modified resource file has declared a style attribute, but does not
+    prefix the style reference with a ? (for attributes) or @ (for styles). It's
+    very likely this style is not being resolved correctly at runtime.
+  ''', errors)
+    ]
   return []
 
 

@@ -53,7 +53,7 @@ void MockReportQueueProvider::
     ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(size_t times) {
   CheckOnThread();
 
-  EXPECT_CALL(*this, CreateNewSpeculativeQueueMock())
+  EXPECT_CALL(*this, CreateNewSpeculativeQueueMock(_))
       .Times(times)
       .WillRepeatedly([]() {
         auto report_queue =
@@ -85,9 +85,10 @@ void MockReportQueueProvider::CreateNewQueue(
 }
 
 StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-MockReportQueueProvider::CreateNewSpeculativeQueue() {
+MockReportQueueProvider::CreateNewSpeculativeQueue(
+    const ReportQueue::SpeculativeConfigSettings& config_settings) {
   CheckOnThread();
-  return CreateNewSpeculativeQueueMock();
+  return CreateNewSpeculativeQueueMock(config_settings);
 }
 
 void MockReportQueueProvider::ConfigureReportQueue(

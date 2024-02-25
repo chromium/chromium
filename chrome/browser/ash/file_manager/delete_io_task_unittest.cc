@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using ::base::test::RunClosure;
@@ -49,7 +49,7 @@ MATCHER_P(EntryStatusUrls, matcher, "") {
 }
 
 MATCHER_P(EntryStatusErrors, matcher, "") {
-  std::vector<absl::optional<base::File::Error>> errors;
+  std::vector<std::optional<base::File::Error>> errors;
   for (const auto& status : arg) {
     errors.push_back(status.error);
   }
@@ -112,7 +112,7 @@ TEST_F(DeleteIOTaskTest, Basic) {
                         Field(&ProgressStatus::bytes_transferred, 1),
                         Field(&ProgressStatus::sources,
                               EntryStatusErrors(ElementsAre(base::File::FILE_OK,
-                                                            absl::nullopt))),
+                                                            std::nullopt))),
                         base_matcher)))
       .Times(1);
   // We should get one complete callback when the both files are deleted.

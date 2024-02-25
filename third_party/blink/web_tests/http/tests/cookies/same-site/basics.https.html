@@ -41,7 +41,7 @@ if (window.location.hostname == "127.0.0.1") {
 
     promise_test(_ => {
         return fetch("https://subdomain." + TEST_HOST + ":8443/cookies/resources/echo-json.php", {"credentials": "include"})
-            .then(r => r.json())
+        .then(r => r.json())
             .then(j => {
                 assert_equals(j[STRICT_DOM], "2", "strict");
                 assert_equals(j[LAX_DOM], "2", "lax");
@@ -52,7 +52,7 @@ if (window.location.hostname == "127.0.0.1") {
 
     promise_test(_ => {
         return fetch("https://" + TEST_ROOT + ":8443/cookies/resources/echo-json.php", {"credentials": "include"})
-            .then(r => r.json())
+        .then(r => r.json())
             .then(j => {
                 assert_equals(j[STRICT_DOM], undefined, "strict");
                 assert_equals(j[LAX_DOM], undefined, "lax");
@@ -63,7 +63,7 @@ if (window.location.hostname == "127.0.0.1") {
 
     promise_test(_ => {
         return fetch("https://" + ORIGINAL_HOST + ":8443/cookies/resources/echo-json.php", {"credentials": "include"})
-            .then(r => r.json())
+        .then(r => r.json())
             .then(j => {
                 assert_equals(j[STRICT_DOM], undefined, "strict");
                 assert_equals(j[LAX_DOM], undefined, "lax");

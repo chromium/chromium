@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_web_plugin.h"
 
@@ -40,6 +41,7 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   base::WeakPtr<chrome_pdf::PdfViewWebPlugin::Client> GetWeakPtr() override;
   void SetPluginContainer(blink::WebPluginContainer* container) override;
   blink::WebPluginContainer* PluginContainer() override;
+  v8::Isolate* GetIsolate() override;
   net::SiteForCookies SiteForCookies() const override;
   blink::WebURL CompleteURL(const blink::WebString& partial_url) const override;
   void PostMessage(base::Value::Dict message) override;
@@ -79,17 +81,18 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>
   CreateAccessibilityDataHandler(
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher) override;
+      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
+      blink::WebPluginContainer* plugin_element) override;
 
  private:
   blink::WebLocalFrame* GetFrame() const;
 
-  content::RenderFrame* const render_frame_;
+  const raw_ptr<content::RenderFrame> render_frame_;
 
   const std::unique_ptr<content::V8ValueConverter> v8_value_converter_;
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
 
-  blink::WebPluginContainer* plugin_container_;
+  raw_ptr<blink::WebPluginContainer> plugin_container_;
 
   base::WeakPtrFactory<PdfViewWebPluginClient> weak_factory_{this};
 };

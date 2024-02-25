@@ -11,6 +11,7 @@ found in the LICENSE file.
     android:versionName="1.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <application android:label="CustomTabsBenchmark">
       <activity android:name="org.chromium.customtabs.test.MainActivity"

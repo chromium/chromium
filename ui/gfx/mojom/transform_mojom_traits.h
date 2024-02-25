@@ -13,10 +13,10 @@ namespace mojo {
 
 template <>
 struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
-  static absl::optional<std::array<float, 16>> matrix(
+  static std::optional<std::array<float, 16>> matrix(
       const gfx::Transform& transform) {
     if (transform.IsIdentity())
-      return absl::nullopt;
+      return std::nullopt;
     std::array<float, 16> matrix;
     transform.GetColMajorF(matrix.data());
     return matrix;

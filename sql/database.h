@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
@@ -22,8 +23,8 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -33,7 +34,6 @@
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Forward declaration for SQLite structures. Headers in the public sql:: API
 // must NOT include sqlite3.h.
@@ -336,7 +336,12 @@ class COMPONENT_EXPORT(SQL) Database {
   bool has_error_callback() const { return !error_callback_.is_null(); }
 
   // Developer-friendly database ID used in logging output and memory dumps.
-  void set_histogram_tag(const std::string& tag);
+  void set_histogram_tag(const std::string& histogram_tag) {
+    DCHECK(!is_open());
+    histogram_tag_ = histogram_tag;
+  }
+
+  const std::string& histogram_tag() const { return histogram_tag_; }
 
   // Asks SQLite to perform a full integrity check on the database.
   //
@@ -371,7 +376,10 @@ class COMPONENT_EXPORT(SQL) Database {
   // associated with the database (rollback journal, write-ahead log,
   // shared-memory file) may be created.
   //
-  // Returns true in case of success, false in case of failure.
+  // Returns true in case of success, false in case of failure. If an error
+  // occurs, this function will invoke the error callback if it is present and
+  // then may attempt to open the database a second time. If the second attempt
+  // succeeds, it will return true.
   [[nodiscard]] bool Open(const base::FilePath& db_file_path);
 
   // Alternative to Open() that creates an in-memory database.
@@ -661,7 +669,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns |true| if there is an error expecter (see SetErrorExpecter), and
   // that expecter returns |true| when passed |error|.  Clients which provide an
   // |error_callback| should use IsExpectedSqliteError() to check for unexpected
-  // errors; if one is detected, DLOG(DCHECK) is generally appropriate (see
+  // errors; if one is detected, DLOG(FATAL) is generally appropriate (see
   // OnSqliteError implementation).
   static bool IsExpectedSqliteError(int sqlite_error_code);
 
@@ -727,17 +735,13 @@ class COMPONENT_EXPORT(SQL) Database {
   // Enables a special behavior for OpenInternal().
   enum class OpenMode {
     // No special behavior.
-    kNone = 0,
-
-    // Retry if the database error handler is invoked and closes the database.
-    // Database error handlers that call RazeAndPoison() take advantage of this.
-    kRetryOnPoision = 1,
+    kNone,
 
     // Open an in-memory database. Used by OpenInMemory().
-    kInMemory = 2,
+    kInMemory,
 
     // Open a temporary database. Used by OpenTemporary().
-    kTemporary = 3,
+    kTemporary,
   };
 
   // Implements Open(), OpenInMemory(), and OpenTemporary().
@@ -764,7 +768,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // declare its blocking execution scope (see https://www.crbug/934302).
   void InitScopedBlockingCall(
       const base::Location& from_here,
-      absl::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+      std::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
     if (!in_memory_)
       scoped_blocking_call->emplace(from_here, base::BlockingType::MAY_BLOCK);
   }
@@ -831,7 +835,7 @@ class COMPONENT_EXPORT(SQL) Database {
     // declare its blocking execution scope (see https://www.crbug/934302).
     void InitScopedBlockingCall(
         const base::Location& from_here,
-        absl::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+        std::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
       if (database_)
         database_->InitScopedBlockingCall(from_here, scoped_blocking_call);
     }
@@ -956,9 +960,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // The actual sqlite database. Will be null before Init has been called or if
   // Init resulted in an error.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION sqlite3* db_ = nullptr;
+  raw_ptr<sqlite3> db_ = nullptr;
 
   // TODO(shuagga@microsoft.com): Make `options_` const after removing all
   // setters.
@@ -974,7 +976,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // A list of all StatementRefs we've given out. Each ref must register with
   // us when it's created or destroyed. This allows us to potentially close
   // any open statements when we encounter an error.
-  std::set<StatementRef*> open_statements_;
+  std::set<raw_ptr<StatementRef, SetExperimental>> open_statements_;
 
   // Number of currently-nested transactions.
   int transaction_nesting_ = 0;
@@ -1021,6 +1023,9 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;
+
+  // Vends WeakPtr<Database> for internal scoping helpers.
+  base::WeakPtrFactory<Database> weak_factory_{this};
 };
 
 }  // namespace sql

@@ -30,7 +30,7 @@ class WaylandBufferHandle {
     created_callback_ = std::move(callback);
   }
   void set_buffer_released_callback(
-      base::OnceCallback<void(struct wl_buffer*)> callback,
+      base::OnceCallback<void(wl_buffer*)> callback,
       WaylandSurface* requestor) {
     released_callbacks_.emplace(requestor, std::move(callback));
   }
@@ -41,9 +41,7 @@ class WaylandBufferHandle {
 
   uint32_t id() const { return backing_->id(); }
   gfx::Size size() const { return backing_->size(); }
-  struct wl_buffer* wl_buffer() const {
-    return wl_buffer_.get();
-  }
+  wl_buffer* buffer() const { return wl_buffer_.get(); }
 
   // The existence of |released_callback_| is an indicator of whether the
   // wl_buffer is released, when deciding whether wl_surface should explicitly
@@ -62,18 +60,16 @@ class WaylandBufferHandle {
   }
 
  private:
-  // Called when wl_buffer object is created.
-  void OnWlBufferCreated(wl::Object<struct wl_buffer> wl_buffer);
-
-  void OnWlBufferRelease(struct wl_buffer* wl_buffer);
+  void OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer);
+  void OnWlBufferReleased(wl_buffer* wl_buffer);
 
   // wl_buffer_listener:
-  static void BufferRelease(void* data, struct wl_buffer* wl_buffer);
+  static void OnRelease(void* data, wl_buffer* wl_buffer);
 
   raw_ptr<const WaylandBufferBacking> backing_;
 
   // A wl_buffer backed by the dmabuf/shm |backing_| created on the GPU side.
-  wl::Object<struct wl_buffer> wl_buffer_;
+  wl::Object<wl_buffer> wl_buffer_;
 
   // A callback that runs when the wl_buffer is created.
   base::OnceClosure created_callback_;
@@ -84,7 +80,7 @@ class WaylandBufferHandle {
   // from the wl_compositor.
   // When linux explicit synchronization is adopted, buffer_listener is unset
   // and this callback should be reset by OnExplicitRelease() instead.
-  base::flat_map<WaylandSurface*, base::OnceCallback<void(struct wl_buffer*)>>
+  base::flat_map<WaylandSurface*, base::OnceCallback<void(wl_buffer*)>>
       released_callbacks_;
 
   friend WaylandBufferBacking;

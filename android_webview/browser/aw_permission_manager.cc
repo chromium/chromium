@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/permission_controller.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 using blink::PermissionType;
@@ -31,17 +31,6 @@ using RequestPermissionsCallback =
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>;
 
 namespace android_webview {
-
-namespace {
-
-void PermissionRequestResponseCallbackWrapper(
-    base::OnceCallback<void(PermissionStatus)> callback,
-    const std::vector<PermissionStatus>& vector) {
-  DCHECK_EQ(vector.size(), 1ul);
-  std::move(callback).Run(vector.at(0));
-}
-
-}  // namespace
 
 class LastRequestResultCache {
  public:
@@ -185,8 +174,7 @@ class AwPermissionManager::PendingRequest {
     }
     DCHECK(!IsCompleted());
     results[result->second] = status;
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kBlockMidiByDefault)) {
+    if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
       if (type == PermissionType::MIDI && status == PermissionStatus::GRANTED) {
         content::ChildProcessSecurityPolicy::GetInstance()
             ->GrantSendMidiMessage(render_process_id);
@@ -246,30 +234,18 @@ AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
 }
 
-void AwPermissionManager::RequestPermission(
-    PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
-    base::OnceCallback<void(PermissionStatus)> callback) {
-  RequestPermissions(std::vector<PermissionType>(1, permission),
-                     render_frame_host, requesting_origin, user_gesture,
-                     base::BindOnce(&PermissionRequestResponseCallbackWrapper,
-                                    std::move(callback)));
-}
-
 void AwPermissionManager::RequestPermissions(
-    const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
+  auto const& permissions = request_description.permissions;
   if (permissions.empty()) {
     std::move(callback).Run(std::vector<PermissionStatus>());
     return;
   }
 
   const GURL& embedding_origin = LastCommittedOrigin(render_frame_host);
+  const GURL& requesting_origin = request_description.requesting_origin;
 
   auto pending_request = std::make_unique<PendingRequest>(
       permissions, requesting_origin, embedding_origin,
@@ -343,8 +319,9 @@ void AwPermissionManager::RequestPermissions(
         // the CLIPBOARD_READ_WRITE permission, and that requires an explicit
         // user approval, which is not implemented yet. See crbug.com/1271620
         pending_request_raw->SetPermissionStatus(
-            permissions[i], user_gesture ? PermissionStatus::GRANTED
-                                         : PermissionStatus::DENIED);
+            permissions[i], request_description.user_gesture
+                                ? PermissionStatus::GRANTED
+                                : PermissionStatus::DENIED);
         break;
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
@@ -366,6 +343,10 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
       case PermissionType::DISPLAY_CAPTURE:
+      case PermissionType::CAPTURED_SURFACE_CONTROL:
+      case PermissionType::SMART_CARD:
+      case PermissionType::WEB_PRINTING:
+      case PermissionType::SPEAKER_SELECTION:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionStatus(permissions[i],
@@ -465,13 +446,11 @@ void AwPermissionManager::ResetPermission(PermissionType permission,
 }
 
 void AwPermissionManager::RequestPermissionsFromCurrentDocument(
-    const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    bool user_gesture,
+    const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
-  RequestPermissions(permissions, render_frame_host,
-                     LastCommittedOrigin(render_frame_host), user_gesture,
+  RequestPermissions(render_frame_host, request_description,
                      std::move(callback));
 }
 
@@ -532,7 +511,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 AwPermissionManager::SubscriptionId
-AwPermissionManager::SubscribePermissionStatusChange(
+AwPermissionManager::SubscribeToPermissionStatusChange(
     PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -541,7 +520,7 @@ AwPermissionManager::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void AwPermissionManager::UnsubscribePermissionStatusChange(
+void AwPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {}
 
 void AwPermissionManager::CancelPermissionRequest(int request_id) {
@@ -614,6 +593,10 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
       case PermissionType::DISPLAY_CAPTURE:
+      case PermissionType::CAPTURED_SURFACE_CONTROL:
+      case PermissionType::SMART_CARD:
+      case PermissionType::WEB_PRINTING:
+      case PermissionType::SPEAKER_SELECTION:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "
                          << static_cast<int>(permission);
         break;
@@ -649,10 +632,8 @@ void AwPermissionManager::CancelPermissionRequests() {
 }
 
 void AwPermissionManager::SetOriginCanReadEnumerateDevicesAudioLabels(
-    const GURL& origin,
+    const url::Origin& origin,
     bool audio) {
-  if (origin.spec().empty() || origin.SchemeIsFile())
-    return;
   auto it = enumerate_devices_labels_cache_.find(origin);
   if (it == enumerate_devices_labels_cache_.end()) {
     enumerate_devices_labels_cache_[origin] = std::make_pair(audio, false);
@@ -662,10 +643,8 @@ void AwPermissionManager::SetOriginCanReadEnumerateDevicesAudioLabels(
 }
 
 void AwPermissionManager::SetOriginCanReadEnumerateDevicesVideoLabels(
-    const GURL& origin,
+    const url::Origin& origin,
     bool video) {
-  if (origin.spec().empty() || origin.SchemeIsFile())
-    return;
   auto it = enumerate_devices_labels_cache_.find(origin);
   if (it == enumerate_devices_labels_cache_.end())
     enumerate_devices_labels_cache_[origin] = std::make_pair(false, video);
@@ -674,7 +653,7 @@ void AwPermissionManager::SetOriginCanReadEnumerateDevicesVideoLabels(
 }
 
 bool AwPermissionManager::ShouldShowEnumerateDevicesAudioLabels(
-    const GURL& origin) {
+    const url::Origin& origin) {
   auto it = enumerate_devices_labels_cache_.find(origin);
   if (it == enumerate_devices_labels_cache_.end())
     return false;
@@ -682,7 +661,7 @@ bool AwPermissionManager::ShouldShowEnumerateDevicesAudioLabels(
 }
 
 bool AwPermissionManager::ShouldShowEnumerateDevicesVideoLabels(
-    const GURL& origin) {
+    const url::Origin& origin) {
   auto it = enumerate_devices_labels_cache_.find(origin);
   if (it == enumerate_devices_labels_cache_.end())
     return false;
@@ -690,11 +669,9 @@ bool AwPermissionManager::ShouldShowEnumerateDevicesVideoLabels(
 }
 
 void AwPermissionManager::ClearEnumerateDevicesCachedPermission(
-    const GURL& origin,
+    const url::Origin& origin,
     bool remove_audio,
     bool remove_video) {
-  if (origin.spec().empty())
-    return;
   auto it = enumerate_devices_labels_cache_.find(origin);
   if (it == enumerate_devices_labels_cache_.end())
     return;

@@ -16,7 +16,7 @@ void* ClientTransferCache::MapEntry(MappedMemoryManager* mapped_memory,
   DCHECK(!transfer_buffer_ptr_);
   mapped_ptr_.emplace(size, client_->cmd_buffer_helper(), mapped_memory);
   if (!mapped_ptr_->valid()) {
-    mapped_ptr_ = absl::nullopt;
+    mapped_ptr_ = std::nullopt;
     return nullptr;
   }
   return mapped_ptr_->address();
@@ -30,7 +30,7 @@ void* ClientTransferCache::MapTransferBufferEntry(
   transfer_buffer_ptr_.emplace(size, client_->cmd_buffer_helper(),
                                transfer_buffer);
   if (!transfer_buffer_ptr_->valid()) {
-    transfer_buffer_ptr_ = absl::nullopt;
+    transfer_buffer_ptr_ = std::nullopt;
     return nullptr;
   }
   return transfer_buffer_ptr_->address();
@@ -44,8 +44,8 @@ void ClientTransferCache::UnmapAndCreateEntry(uint32_t type, uint32_t id) {
   if (!handle.IsValid()) {
     // Release any data pointers. Keeping these alive longer can lead to issues
     // with transfer buffer reallocation.
-    mapped_ptr_ = absl::nullopt;
-    transfer_buffer_ptr_ = absl::nullopt;
+    mapped_ptr_ = std::nullopt;
+    transfer_buffer_ptr_ = std::nullopt;
     return;
   }
 
@@ -54,14 +54,14 @@ void ClientTransferCache::UnmapAndCreateEntry(uint32_t type, uint32_t id) {
     client_->IssueCreateTransferCacheEntry(
         type, id, handle.shm_id(), handle.byte_offset(), mapped_ptr_->shm_id(),
         mapped_ptr_->offset(), mapped_ptr_->size());
-    mapped_ptr_ = absl::nullopt;
+    mapped_ptr_ = std::nullopt;
   } else {
     DCHECK(!mapped_ptr_);
     client_->IssueCreateTransferCacheEntry(
         type, id, handle.shm_id(), handle.byte_offset(),
         transfer_buffer_ptr_->shm_id(), transfer_buffer_ptr_->offset(),
         transfer_buffer_ptr_->size());
-    transfer_buffer_ptr_ = absl::nullopt;
+    transfer_buffer_ptr_ = std::nullopt;
   }
 }
 

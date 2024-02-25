@@ -42,14 +42,19 @@ OptionButtonBase::OptionButtonBase(int button_width,
 OptionButtonBase::~OptionButtonBase() = default;
 
 void OptionButtonBase::SetSelected(bool selected) {
-  if (selected_ == selected)
+  if (selected_ == selected) {
     return;
+  }
 
   selected_ = selected;
   UpdateImage();
 
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnButtonSelected(this);
+  }
+
+  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
+                           /*send_native_event=*/true);
 }
 
 void OptionButtonBase::SetLabelStyle(TypographyToken token) {
@@ -71,7 +76,7 @@ void OptionButtonBase::SetLabelColorId(ui::ColorId color_id) {
   label()->SetEnabledColorId(color_id);
 }
 
-void OptionButtonBase::Layout() {
+void OptionButtonBase::Layout(PassKey) {
   gfx::Rect local_bounds = GetLocalBounds();
   gfx::Rect local_content_bounds(local_bounds);
   local_content_bounds.Inset(GetInsets());
@@ -95,10 +100,10 @@ void OptionButtonBase::Layout() {
     image_origin.Offset(local_content_bounds.width() - kIconSize, 0);
   }
 
-  image()->SetBoundsRect(
+  image_container_view()->SetBoundsRect(
       gfx::Rect(image_origin, gfx::Size(kIconSize, kIconSize)));
   label->SetBoundsRect(gfx::Rect(label_origin, label_size));
-  Button::Layout();
+  LayoutSuperclass<Button>(this);
 }
 
 void OptionButtonBase::OnThemeChanged() {
@@ -108,8 +113,9 @@ void OptionButtonBase::OnThemeChanged() {
 }
 
 void OptionButtonBase::NotifyClick(const ui::Event& event) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnButtonClicked(this);
+  }
   views::LabelButton::NotifyClick(event);
 }
 
@@ -145,7 +151,7 @@ void OptionButtonBase::UpdateTextColor() {
                color_provider->GetColor(KColorAshTextDisabledColor));
 }
 
-BEGIN_METADATA(OptionButtonBase, views::LabelButton)
+BEGIN_METADATA(OptionButtonBase)
 END_METADATA
 
 }  // namespace ash

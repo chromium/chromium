@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_BUBBLE_SIGN_IN_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
+#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 
 class Profile;
 
 // Delegate of the bookmark bubble to load the sign in page in a browser
 // when the sign in link is clicked.
-class BookmarkBubbleSignInDelegate : public BubbleSyncPromoDelegate {
+class BookmarkBubbleSignInDelegate : public BubbleSignInPromoDelegate {
  public:
   explicit BookmarkBubbleSignInDelegate(Profile* profile);
 
@@ -22,8 +22,8 @@ class BookmarkBubbleSignInDelegate : public BubbleSyncPromoDelegate {
 
   ~BookmarkBubbleSignInDelegate() override;
 
-  // BubbleSyncPromoDelegate:
-  void OnEnableSync(const AccountInfo& account) override;
+  // BubbleSignInPromoDelegate:
+  void OnSignIn(const AccountInfo& account) override;
 
  private:
   const raw_ptr<Profile> profile_;

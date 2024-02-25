@@ -11,36 +11,32 @@ import android.widget.TextView;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.PreferenceViewHolder;
 
-/**
- * Contains the basic functionality that should be shared by all CheckBoxPreference in Chrome.
- */
+/** Contains the basic functionality that should be shared by all CheckBoxPreference in Chrome. */
 public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     /** Indicates if the preference uses a custom layout. */
     private final boolean mHasCustomLayout;
+
     private ManagedPreferenceDelegate mManagedPrefDelegate;
 
-    /**
-     * Constructor for use in Java.
-     */
+    /** Constructor for use in Java. */
     public ChromeBaseCheckBoxPreference(Context context) {
         this(context, null);
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public ChromeBaseCheckBoxPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }
 
-    /**
-     * Sets the ManagedPreferenceDelegate which will determine whether this preference is managed.
-     */
+    /** Sets the ManagedPreferenceDelegate which will determine whether this preference is managed. */
     public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
-        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this,
-                /*allowManagedIcon=*/true, /*hasCustomLayout=*/mHasCustomLayout);
+        ManagedPreferencesUtils.initPreference(
+                mManagedPrefDelegate,
+                this,
+                /* allowManagedIcon= */ true,
+                /* hasCustomLayout= */ mHasCustomLayout);
     }
 
     @Override

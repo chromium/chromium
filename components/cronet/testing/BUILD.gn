@@ -48,8 +48,4 @@ source_set("test_support") {
     "test_server/test_server.cc",
     "test_server/test_server.h",
   ]
-
-  if (is_ios) {
-    deps += [ ":test_support_bundle_data" ]
-  }
 }

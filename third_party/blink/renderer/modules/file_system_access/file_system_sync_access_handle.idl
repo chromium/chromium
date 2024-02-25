@@ -7,7 +7,7 @@
   Exposed=DedicatedWorker,
   SecureContext
 ] interface FileSystemSyncAccessHandle {
-  [RuntimeEnabled=FileSystemAccessAccessHandleLockingScheme] readonly attribute USVString mode;
+  [RuntimeEnabled=FileSystemAccessLockingScheme] readonly attribute USVString mode;
 
   [Measure] void close();
 
@@ -21,10 +21,10 @@
 
   [
     RaisesException, Measure
-  ] unsigned long long read([AllowShared] ArrayBufferView buffer,
+  ] unsigned long long read(AllowSharedBufferSource buffer,
                             optional FileSystemReadWriteOptions options = {});
   [
     RaisesException, Measure
-  ] unsigned long long write([AllowShared] ArrayBufferView buffer,
+  ] unsigned long long write(AllowSharedBufferSource buffer,
                             optional FileSystemReadWriteOptions options = {});
 };

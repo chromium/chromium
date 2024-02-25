@@ -27,7 +27,7 @@ class PlatformKeysNatives : public ObjectBackedNativeHandler {
   // Expects the following arguments in |call_info|:
   //   |parameters|: An object containing the parameters to normalize.
   //   |operation|: A string describing the operation. Supported operations are
-  //     "GenerateKey", "Sign" and "Verify".
+  //     "ImportKey", "GenerateKey", "Sign" and "Verify".
   // Returns the normalized dictionary on success, or null if some required
   // parameters are missing or not supported. Note that it returns untyped
   // arrays instead of typed arrays (e.g. for RSA publicExponent).

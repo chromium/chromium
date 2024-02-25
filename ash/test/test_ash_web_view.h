@@ -7,15 +7,23 @@
 
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/observer_list.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "url/gurl.h"
 
 namespace views {
 class View;
 }  // namespace views
+
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace ash {
 
 // An implementation of AshWebView for use in unittests.
 class TestAshWebView : public AshWebView {
+  METADATA_HEADER(TestAshWebView, AshWebView)
+
  public:
   explicit TestAshWebView(const AshWebView::InitParams& init_params);
   ~TestAshWebView() override;
@@ -34,6 +42,7 @@ class TestAshWebView : public AshWebView {
   bool HasFocus() const override;
   const GURL& GetVisibleURL() override;
   bool IsErrorDocument() override;
+  void SetCornerRadii(const gfx::RoundedCornersF& corner_radii) override;
 
   const AshWebView::InitParams& init_params_for_testing() const {
     return init_params_;

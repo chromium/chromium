@@ -9,9 +9,7 @@ import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
-/**
- * Native page that displays whether the current profile is managed or not.
- */
+/** Native page that displays whether the current profile is managed or not. */
 public class ManagementPage extends BasicNativePage {
     private final ManagementCoordinator mManagementCoordinator;
     private String mTitle;

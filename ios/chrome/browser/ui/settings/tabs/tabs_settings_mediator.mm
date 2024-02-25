@@ -4,18 +4,29 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/tab_pickup/features.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_navigation_commands.h"
+
+namespace {
+
+bool IsTabSyncEnabled(syncer::SyncService* service) {
+  return service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs);
+}
+
+}  // namespace
 
 @interface TabsSettingsMediator () <PrefObserverDelegate,
                                     SyncObserverModelBridge>
@@ -23,9 +34,9 @@
 
 @implementation TabsSettingsMediator {
   // Preference service from the application context.
-  PrefService* _prefs;
+  raw_ptr<PrefService> _prefs;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Pref observer to track changes to prefs.
@@ -68,7 +79,7 @@
       _prefObserverBridge->ObserveChangesForPreference(prefs::kTabPickupEnabled,
                                                        &_prefChangeRegistrar);
       [_consumer setTabPickupEnabled:!IsTabPickupDisabledByUser() &&
-                                     _syncService->IsSyncFeatureEnabled()];
+                                     IsTabSyncEnabled(_syncService)];
     }
   }
   return self;
@@ -94,7 +105,7 @@
     CHECK(IsTabPickupEnabled());
     [_consumer
         setTabPickupEnabled:_prefs->GetBoolean(prefs::kTabPickupEnabled) &&
-                            _syncService->IsSyncFeatureEnabled()];
+                            IsTabSyncEnabled(_syncService)];
   }
 }
 
@@ -102,7 +113,7 @@
 
 - (void)onSyncStateChanged {
   [_consumer setTabPickupEnabled:_prefs->GetBoolean(prefs::kTabPickupEnabled) &&
-                                 _syncService->IsSyncFeatureEnabled()];
+                                 IsTabSyncEnabled(_syncService)];
 }
 
 #pragma mark - TabsSettingsTableViewControllerDelegate

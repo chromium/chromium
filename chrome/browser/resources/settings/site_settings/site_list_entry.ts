@@ -16,7 +16,7 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -27,7 +27,7 @@ import {Router} from '../router.js';
 import {ChooserType, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {getTemplate} from './site_list_entry.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {SiteException} from './site_settings_prefs_browser_proxy.js';
+import type {SiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteListEntryElement {
   $: {
@@ -239,13 +239,6 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     } else if (this.model.category === ContentSettingsTypes.GEOLOCATION) {
       description = loadTimeData.getString('embeddedOnAnyHost');
     }
-
-    // <if expr="chromeos_ash">
-    if (this.model.category === ContentSettingsTypes.NOTIFICATIONS &&
-        this.model.showAndroidSmsNote) {
-      description = loadTimeData.getString('androidSmsNote');
-    }
-    // </if>
 
     try {
       const url = new URL(this.model.origin);

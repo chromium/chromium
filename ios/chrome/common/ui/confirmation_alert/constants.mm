@@ -18,3 +18,5 @@ NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier =
     @"kConfirmationAlertSecondaryActionAccessibilityIdentifier";
 NSString* const kConfirmationAlertTertiaryActionAccessibilityIdentifier =
     @"kConfirmationAlertTertiaryActionAccessibilityIdentifier";
+NSString* const kConfirmationAlertUnderTitleViewAccessibilityIdentifier =
+    @"kConfirmationAlertUnderTitleViewAccessibilityIdentifier";

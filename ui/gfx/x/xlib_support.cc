@@ -35,8 +35,9 @@ XlibXcbLoader* GetXlibXcbLoader() {
 DISABLE_CFI_DLSYM
 void InitXlib() {
   auto* xlib_loader = GetXlibLoader();
-  if (xlib_loader->loaded())
+  if (xlib_loader->loaded()) {
     return;
+  }
 
   CHECK(xlib_loader->Load("libX11.so.6"));
 
@@ -73,8 +74,9 @@ XlibDisplay::XlibDisplay(const std::string& address) {
 
 DISABLE_CFI_DLSYM
 XlibDisplay::~XlibDisplay() {
-  if (!display_)
+  if (!display_) {
     return;
+  }
 
   auto* loader = GetXlibLoader();
   // Events are not processed on |display_|, so if any client asks to receive
@@ -87,42 +89,7 @@ XlibDisplay::~XlibDisplay() {
 }
 
 DISABLE_CFI_DLSYM
-XlibDisplayWrapper::XlibDisplayWrapper(struct _XDisplay* display,
-                                       XlibDisplayType type)
-    : display_(display), type_(type) {
-  if (!display_)
-    return;
-  if (type == XlibDisplayType::kSyncing)
-    GetXlibLoader()->XSynchronize(display_, true);
-}
-
-DISABLE_CFI_DLSYM
-XlibDisplayWrapper::~XlibDisplayWrapper() {
-  if (!display_)
-    return;
-  if (type_ == XlibDisplayType::kFlushing)
-    GetXlibLoader()->XFlush(display_);
-  else if (type_ == XlibDisplayType::kSyncing)
-    GetXlibLoader()->XSynchronize(display_, false);
-}
-
-XlibDisplayWrapper::XlibDisplayWrapper(XlibDisplayWrapper&& other) {
-  display_ = other.display_;
-  type_ = other.type_;
-  other.display_ = nullptr;
-  other.type_ = XlibDisplayType::kNormal;
-}
-
-XlibDisplayWrapper& XlibDisplayWrapper::operator=(XlibDisplayWrapper&& other) {
-  display_ = other.display_;
-  type_ = other.type_;
-  other.display_ = nullptr;
-  other.type_ = XlibDisplayType::kNormal;
-  return *this;
-}
-
-DISABLE_CFI_DLSYM
-struct xcb_connection_t* XlibDisplayWrapper::GetXcbConnection() {
+struct xcb_connection_t* XlibDisplay::GetXcbConnection() {
   return GetXlibXcbLoader()->XGetXCBConnection(display_);
 }
 

@@ -6,10 +6,12 @@
 #define CONTENT_BROWSER_WORKER_HOST_WORKER_SCRIPT_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,16 +21,12 @@
 #include "net/base/load_timing_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-
-namespace blink {
-class ThrottlingURLLoader;
-}  // namespace blink
 
 namespace net {
 class IsolationInfo;
@@ -43,6 +41,7 @@ namespace content {
 class BrowserContext;
 class NavigationLoaderInterceptor;
 class ServiceWorkerMainResourceHandle;
+class ServiceWorkerMainResourceLoaderInterceptor;
 
 // The URLLoader for loading a shared worker script. Only used for the main
 // script request.
@@ -63,10 +62,9 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   using BrowserContextGetter = base::RepeatingCallback<BrowserContext*(void)>;
 
   // |default_loader_factory| is used to load the script if the load is not
-  // intercepted by a feature like service worker. Typically it will load the
-  // script from the NetworkService. However, it may internally contain
-  // non-NetworkService factories used for non-http(s) URLs, e.g., a
-  // chrome-extension:// URL.
+  // intercepted by a service worker. Typically it will load the script from the
+  // NetworkService. However, it may internally contain non-NetworkService
+  // factories used for non-http(s) URLs, e.g., a chrome-extension:// URL.
   WorkerScriptLoader(
       int process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
@@ -91,7 +89,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -102,7 +100,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;
@@ -112,42 +110,24 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  // Returns a URLLoader client endpoint if an interceptor wants to handle the
-  // response, i.e. return a different response.  For example, service workers.
-  bool MaybeCreateLoaderForResponse(
-      const network::URLLoaderCompletionStatus& status,
-      network::mojom::URLResponseHeadPtr* response_head,
-      mojo::ScopedDataPipeConsumerHandle* response_body,
-      mojo::PendingRemote<network::mojom::URLLoader>* response_url_loader,
-      mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-          response_client_receiver,
-      blink::ThrottlingURLLoader* url_loader);
-
-  absl::optional<SubresourceLoaderParams> TakeSubresourceLoaderParams() {
+  SubresourceLoaderParams TakeSubresourceLoaderParams() {
     return std::move(subresource_loader_params_);
   }
 
   base::WeakPtr<WorkerScriptLoader> GetWeakPtr();
 
-  // Set to true if the default URLLoader (network service) was used for the
-  // current request.
-  bool default_loader_used_ = false;
-
  private:
   void Abort();
   void Start();
   void MaybeStartLoader(
-      NavigationLoaderInterceptor* interceptor,
-      scoped_refptr<network::SharedURLLoaderFactory> single_request_factory);
+      ServiceWorkerMainResourceLoaderInterceptor* interceptor,
+      std::optional<NavigationLoaderInterceptor::Result> interceptor_result);
   void LoadFromNetwork();
   void CommitCompleted(const network::URLLoaderCompletionStatus& status);
 
-  // The order of the interceptors is important. The former interceptor can
-  // preferentially get a chance to intercept a network request.
-  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors_;
-  size_t interceptor_index_ = 0;
+  std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_;
 
-  absl::optional<SubresourceLoaderParams> subresource_loader_params_;
+  SubresourceLoaderParams subresource_loader_params_;
 
   const int32_t request_id_;
   const uint32_t options_;
@@ -159,15 +139,15 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   const ukm::SourceId ukm_source_id_;
 
-  absl::optional<net::RedirectInfo> redirect_info_;
+  std::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_ = net::URLRequest::kMaxRedirects;
 
   mojo::Remote<network::mojom::URLLoader> url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_client_receiver_{
       this};
   // The factory used to request the script. This is the same as
-  // |default_loader_factory_| if a service worker or other interceptor didn't
-  // elect to handle the request.
+  // |default_loader_factory_| if a service worker didn't elect to handle the
+  // request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   bool completed_ = false;

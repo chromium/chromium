@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/crash/core/common/crash_key.h"
@@ -61,6 +62,7 @@ const char kLocalStorageKey[] = "localStorage";
 const char kWebSQLKey[] = "webSQL";
 const char kSinceKey[] = "since";
 const char kLoadFileError[] = "Failed to load file: \"*\". ";
+const char kHostIDError[] = "Failed to generate HostID.";
 const char kViewInstanceIdError[] = "view_instance_id is missing.";
 const char kDuplicatedContentScriptNamesError[] =
     "The given content script name already exists.";
@@ -87,7 +89,7 @@ uint32_t MaskForKey(const char* key) {
   return 0;
 }
 
-extensions::mojom::HostID GenerateHostIDFromEmbedder(
+std::optional<extensions::mojom::HostID> GenerateHostIDFromEmbedder(
     const extensions::Extension* extension,
     content::RenderFrameHost* embedder_rfh) {
   if (extension) {
@@ -100,43 +102,49 @@ extensions::mojom::HostID GenerateHostIDFromEmbedder(
     return extensions::mojom::HostID(
         extensions::mojom::HostID::HostType::kWebUi, url.spec());
   }
-  NOTREACHED();
-  return extensions::mojom::HostID();
+
+  if (embedder_rfh->GetWebExposedIsolationLevel() >=
+      content::WebExposedIsolationLevel::kIsolatedApplication) {
+    const std::string origin =
+        embedder_rfh->GetMainFrame()->GetLastCommittedOrigin().Serialize();
+    return extensions::mojom::HostID(
+        extensions::mojom::HostID::HostType::kControlledFrameEmbedder, origin);
+  }
+  return std::nullopt;
 }
 
 // Creates content script files when parsing InjectionItems of "js" or "css"
-// proterties, and stores them in the |result|.
+// proterties, and stores them in the `contents`.
 void ParseScriptFiles(const GURL& owner_base_url,
                       const extensions::Extension* extension,
                       const InjectionItems& items,
-                      UserScript::FileList* list) {
-  DCHECK(list->empty());
-  list->reserve((items.files ? items.files->size() : 0) + (items.code ? 1 : 0));
+                      UserScript::ContentList* contents) {
+  DCHECK(contents->empty());
+  contents->reserve((items.files ? items.files->size() : 0) +
+                    (items.code ? 1 : 0));
   // files:
   if (items.files) {
     for (const std::string& relative : *items.files) {
       GURL url = owner_base_url.Resolve(relative);
       if (extension) {
         ExtensionResource resource = extension->GetResource(relative);
-
-        list->push_back(std::make_unique<extensions::UserScript::File>(
+        contents->push_back(UserScript::Content::CreateFile(
             resource.extension_root(), resource.relative_path(), url));
       } else {
-        list->push_back(std::make_unique<extensions::UserScript::File>(
+        contents->push_back(UserScript::Content::CreateFile(
             base::FilePath(), base::FilePath(), url));
       }
     }
   }
+
   // code:
   if (items.code) {
     GURL url = owner_base_url.Resolve(base::StringPrintf(
         "%s%s", kGeneratedScriptFilePrefix,
         base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
-    std::unique_ptr<extensions::UserScript::File> file(
-        new extensions::UserScript::File(base::FilePath(), base::FilePath(),
-                                         url));
-    file->set_content(*items.code);
-    list->push_back(std::move(file));
+    auto content = UserScript::Content::CreateInlineCode(url);
+    content->set_content(*items.code);
+    contents->push_back(std::move(content));
   }
 }
 
@@ -310,19 +318,19 @@ ExtensionFunction::ResponseAction
 WebViewInternalCaptureVisibleRegionFunction::Run() {
   using api::extension_types::ImageDetails;
 
-  absl::optional<web_view_internal::CaptureVisibleRegion::Params> params =
+  std::optional<web_view_internal::CaptureVisibleRegion::Params> params =
       web_view_internal::CaptureVisibleRegion::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::unique_ptr<ImageDetails> image_details;
+  std::optional<ImageDetails> image_details;
   if (args().size() > 1) {
-    image_details = ImageDetails::FromValueDeprecated(args()[1]);
+    image_details = ImageDetails::FromValue(args()[1]);
   }
 
   WebViewGuest& guest = GetGuest();
   is_guest_transparent_ = guest.allow_transparency();
   const CaptureResult capture_result = CaptureAsync(
-      guest.web_contents(), image_details.get(),
+      guest.web_contents(), base::OptionalToPtr(image_details),
       base::BindOnce(
           &WebViewInternalCaptureVisibleRegionFunction::CopyFromSurfaceComplete,
           this));
@@ -422,7 +430,7 @@ std::string WebViewInternalCaptureVisibleRegionFunction::GetErrorMessage(
 }
 
 ExtensionFunction::ResponseAction WebViewInternalNavigateFunction::Run() {
-  absl::optional<web_view_internal::Navigate::Params> params =
+  std::optional<web_view_internal::Navigate::Params> params =
       web_view_internal::Navigate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::string src = params->src;
@@ -459,26 +467,20 @@ ExecuteCodeFunction::InitResult WebViewInternalExecuteCodeFunction::Init() {
 
   if (args().size() <= 2 || !args()[2].is_dict())
     return set_init_result(VALIDATION_FAILURE);
-  std::unique_ptr<InjectDetails> details(new InjectDetails());
-  if (!InjectDetails::Populate(args()[2], *details)) {
+  auto details = InjectDetails::FromValue(args()[2]);
+  if (!details) {
     return set_init_result(VALIDATION_FAILURE);
   }
 
   details_ = std::move(details);
 
-  if (extension()) {
-    set_host_id(extensions::mojom::HostID(
-        extensions::mojom::HostID::HostType::kExtensions, extension()->id()));
-    return set_init_result(SUCCESS);
+  std::optional<extensions::mojom::HostID> host_id =
+      GenerateHostIDFromEmbedder(extension(), render_frame_host());
+  if (!host_id) {
+    return set_init_result(VALIDATION_FAILURE);
   }
-
-  if (render_frame_host() && render_frame_host()->GetMainFrame()->GetWebUI()) {
-    const GURL& url = render_frame_host()->GetSiteInstance()->GetSiteURL();
-    set_host_id(extensions::mojom::HostID(
-        extensions::mojom::HostID::HostType::kWebUi, url.spec()));
-    return set_init_result(SUCCESS);
-  }
-  return set_init_result_error("");  // TODO(lazyboy): error?
+  set_host_id(std::move(*host_id));
+  return set_init_result(SUCCESS);
 }
 
 bool WebViewInternalExecuteCodeFunction::ShouldInsertCSS() const {
@@ -512,30 +514,44 @@ const GURL& WebViewInternalExecuteCodeFunction::GetWebViewSrc() const {
   return guest_src_;
 }
 
-bool WebViewInternalExecuteCodeFunction::LoadFileForWebUI(
+bool WebViewInternalExecuteCodeFunction::LoadFileForEmbedder(
     const std::string& file_src,
-    WebUIURLFetcher::WebUILoadFileCallback callback) {
+    LoadFileCallback callback) {
   WebViewGuest* guest =
       WebViewGuest::FromInstanceID(source_process_id(), guest_instance_id_);
-  if (!guest || host_id().type != mojom::HostID::HostType::kWebUi)
+  if (!guest || host_id().type == mojom::HostID::HostType::kExtensions) {
     return false;
+  }
 
   GURL owner_base_url(guest->GetOwnerSiteURL().GetWithEmptyPath());
   GURL file_url(owner_base_url.Resolve(file_src));
 
-  url_fetcher_ = std::make_unique<WebUIURLFetcher>(
-      source_process_id(), render_frame_host()->GetRoutingID(), file_url,
-      std::move(callback));
+  switch (host_id().type) {
+    case mojom::HostID::HostType::kExtensions:
+      NOTREACHED();
+      return false;
+    case mojom::HostID::HostType::kControlledFrameEmbedder:
+      url_fetcher_ = std::make_unique<ControlledFrameEmbedderURLFetcher>(
+          source_process_id(), render_frame_host()->GetRoutingID(), file_url,
+          std::move(callback));
+      break;
+    case mojom::HostID::HostType::kWebUi:
+      url_fetcher_ = std::make_unique<WebUIURLFetcher>(
+          source_process_id(), render_frame_host()->GetRoutingID(), file_url,
+          std::move(callback));
+      break;
+  }
   url_fetcher_->Start();
+
   return true;
 }
 
-void WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI(
+void WebViewInternalExecuteCodeFunction::DidLoadFileForEmbedder(
     const std::string& file,
     bool success,
     std::unique_ptr<std::string> data) {
   std::vector<std::unique_ptr<std::string>> data_list;
-  absl::optional<std::string> error;
+  std::optional<std::string> error;
   if (success) {
     DCHECK(data);
     data_list.push_back(std::move(data));
@@ -549,12 +565,13 @@ void WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI(
 bool WebViewInternalExecuteCodeFunction::LoadFile(const std::string& file,
                                                   std::string* error) {
   if (!extension()) {
-    if (LoadFileForWebUI(
+    if (LoadFileForEmbedder(
             *details_->file,
             base::BindOnce(
-                &WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI, this,
-                file)))
+                &WebViewInternalExecuteCodeFunction::DidLoadFileForEmbedder,
+                this, file))) {
       return true;
+    }
 
     *error = ErrorUtils::FormatErrorMessage(kLoadFileError, file);
     return false;
@@ -582,7 +599,7 @@ WebViewInternalAddContentScriptsFunction::
 
 ExecuteCodeFunction::ResponseAction
 WebViewInternalAddContentScriptsFunction::Run() {
-  absl::optional<web_view_internal::AddContentScripts::Params> params =
+  std::optional<web_view_internal::AddContentScripts::Params> params =
       web_view_internal::AddContentScripts::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -591,13 +608,16 @@ WebViewInternalAddContentScriptsFunction::Run() {
 
   GURL owner_base_url(
       render_frame_host()->GetSiteInstance()->GetSiteURL().GetWithEmptyPath());
-  extensions::mojom::HostID host_id =
+  std::optional<extensions::mojom::HostID> host_id =
       GenerateHostIDFromEmbedder(extension(), render_frame_host());
+  if (!host_id) {
+    return RespondNow(Error(kHostIDError));
+  }
   bool incognito_enabled = browser_context()->IsOffTheRecord();
 
   std::string error;
   std::unique_ptr<UserScriptList> result =
-      ParseContentScripts(params->content_script_list, extension(), host_id,
+      ParseContentScripts(params->content_script_list, extension(), *host_id,
                           incognito_enabled, owner_base_url, &error);
   if (!result)
     return RespondNow(Error(std::move(error)));
@@ -607,7 +627,8 @@ WebViewInternalAddContentScriptsFunction::Run() {
   DCHECK(manager);
 
   manager->AddContentScripts(source_process_id(), render_frame_host(),
-                             params->instance_id, host_id, std::move(result));
+                             params->instance_id, std::move(*host_id),
+                             std::move(*result));
 
   return RespondNow(NoArguments());
 }
@@ -622,7 +643,7 @@ WebViewInternalRemoveContentScriptsFunction::
 
 ExecuteCodeFunction::ResponseAction
 WebViewInternalRemoveContentScriptsFunction::Run() {
-  absl::optional<web_view_internal::RemoveContentScripts::Params> params =
+  std::optional<web_view_internal::RemoveContentScripts::Params> params =
       web_view_internal::RemoveContentScripts::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -633,14 +654,17 @@ WebViewInternalRemoveContentScriptsFunction::Run() {
       WebViewContentScriptManager::Get(browser_context());
   DCHECK(manager);
 
-  extensions::mojom::HostID host_id =
+  std::optional<extensions::mojom::HostID> host_id =
       GenerateHostIDFromEmbedder(extension(), render_frame_host());
+  if (!host_id) {
+    return RespondNow(Error(kHostIDError));
+  }
 
   std::vector<std::string> script_name_list;
   if (params->script_name_list)
     script_name_list.swap(*params->script_name_list);
   manager->RemoveContentScripts(source_process_id(), params->instance_id,
-                                host_id, script_name_list);
+                                std::move(*host_id), script_name_list);
   return RespondNow(NoArguments());
 }
 
@@ -651,7 +675,7 @@ WebViewInternalSetNameFunction::~WebViewInternalSetNameFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalSetNameFunction::Run() {
-  absl::optional<web_view_internal::SetName::Params> params =
+  std::optional<web_view_internal::SetName::Params> params =
       web_view_internal::SetName::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GetGuest().SetName(params->frame_name);
@@ -668,7 +692,7 @@ WebViewInternalSetAllowTransparencyFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalSetAllowTransparencyFunction::Run() {
-  absl::optional<web_view_internal::SetAllowTransparency::Params> params =
+  std::optional<web_view_internal::SetAllowTransparency::Params> params =
       web_view_internal::SetAllowTransparency::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GetGuest().SetAllowTransparency(params->allow);
@@ -685,7 +709,7 @@ WebViewInternalSetAllowScalingFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalSetAllowScalingFunction::Run() {
-  absl::optional<web_view_internal::SetAllowScaling::Params> params =
+  std::optional<web_view_internal::SetAllowScaling::Params> params =
       web_view_internal::SetAllowScaling::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GetGuest().SetAllowScaling(params->allow);
@@ -699,7 +723,7 @@ WebViewInternalSetZoomFunction::~WebViewInternalSetZoomFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalSetZoomFunction::Run() {
-  absl::optional<web_view_internal::SetZoom::Params> params =
+  std::optional<web_view_internal::SetZoom::Params> params =
       web_view_internal::SetZoom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GetGuest().SetZoom(params->zoom_factor);
@@ -713,7 +737,7 @@ WebViewInternalGetZoomFunction::~WebViewInternalGetZoomFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalGetZoomFunction::Run() {
-  absl::optional<web_view_internal::GetZoom::Params> params =
+  std::optional<web_view_internal::GetZoom::Params> params =
       web_view_internal::GetZoom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -728,7 +752,7 @@ WebViewInternalSetZoomModeFunction::~WebViewInternalSetZoomModeFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalSetZoomModeFunction::Run() {
-  absl::optional<web_view_internal::SetZoomMode::Params> params =
+  std::optional<web_view_internal::SetZoomMode::Params> params =
       web_view_internal::SetZoomMode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -758,7 +782,7 @@ WebViewInternalGetZoomModeFunction::~WebViewInternalGetZoomModeFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalGetZoomModeFunction::Run() {
-  absl::optional<web_view_internal::GetZoomMode::Params> params =
+  std::optional<web_view_internal::GetZoomMode::Params> params =
       web_view_internal::GetZoomMode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -791,7 +815,7 @@ void WebViewInternalFindFunction::ForwardResponse(base::Value::Dict results) {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {
-  absl::optional<web_view_internal::Find::Params> params =
+  std::optional<web_view_internal::Find::Params> params =
       web_view_internal::Find::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -821,7 +845,7 @@ WebViewInternalStopFindingFunction::~WebViewInternalStopFindingFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalStopFindingFunction::Run() {
-  absl::optional<web_view_internal::StopFinding::Params> params =
+  std::optional<web_view_internal::StopFinding::Params> params =
       web_view_internal::StopFinding::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -855,7 +879,7 @@ WebViewInternalLoadDataWithBaseUrlFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalLoadDataWithBaseUrlFunction::Run() {
-  absl::optional<web_view_internal::LoadDataWithBaseUrl::Params> params =
+  std::optional<web_view_internal::LoadDataWithBaseUrl::Params> params =
       web_view_internal::LoadDataWithBaseUrl::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -910,7 +934,7 @@ WebViewInternalGoFunction::~WebViewInternalGoFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalGoFunction::Run() {
-  absl::optional<web_view_internal::Go::Params> params =
+  std::optional<web_view_internal::Go::Params> params =
       web_view_internal::Go::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -936,7 +960,7 @@ WebViewInternalSetPermissionFunction::~WebViewInternalSetPermissionFunction() {
 }
 
 ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
-  absl::optional<web_view_internal::SetPermission::Params> params =
+  std::optional<web_view_internal::SetPermission::Params> params =
       web_view_internal::SetPermission::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -983,7 +1007,7 @@ WebViewInternalOverrideUserAgentFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalOverrideUserAgentFunction::Run() {
-  absl::optional<web_view_internal::OverrideUserAgent::Params> params =
+  std::optional<web_view_internal::OverrideUserAgent::Params> params =
       web_view_internal::OverrideUserAgent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1009,11 +1033,11 @@ WebViewInternalSetAudioMutedFunction::~WebViewInternalSetAudioMutedFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebViewInternalSetAudioMutedFunction::Run() {
-  absl::optional<web_view_internal::SetAudioMuted::Params> params =
+  std::optional<web_view_internal::SetAudioMuted::Params> params =
       web_view_internal::SetAudioMuted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  GetGuest().web_contents()->SetAudioMuted(params->mute);
+  GetGuest().SetAudioMuted(params->mute);
   return RespondNow(NoArguments());
 }
 
@@ -1024,12 +1048,11 @@ WebViewInternalIsAudioMutedFunction::~WebViewInternalIsAudioMutedFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebViewInternalIsAudioMutedFunction::Run() {
-  absl::optional<web_view_internal::IsAudioMuted::Params> params =
+  std::optional<web_view_internal::IsAudioMuted::Params> params =
       web_view_internal::IsAudioMuted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  content::WebContents* web_contents = GetGuest().web_contents();
-  return RespondNow(WithArguments(web_contents->IsAudioMuted()));
+  return RespondNow(WithArguments(GetGuest().IsAudioMuted()));
 }
 
 WebViewInternalGetAudioStateFunction::WebViewInternalGetAudioStateFunction() =
@@ -1039,7 +1062,7 @@ WebViewInternalGetAudioStateFunction::~WebViewInternalGetAudioStateFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebViewInternalGetAudioStateFunction::Run() {
-  absl::optional<web_view_internal::GetAudioState::Params> params =
+  std::optional<web_view_internal::GetAudioState::Params> params =
       web_view_internal::GetAudioState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1073,9 +1096,8 @@ WebViewInternalSetSpatialNavigationEnabledFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalSetSpatialNavigationEnabledFunction::Run() {
-  absl::optional<web_view_internal::SetSpatialNavigationEnabled::Params>
-      params = web_view_internal::SetSpatialNavigationEnabled::Params::Create(
-          args());
+  std::optional<web_view_internal::SetSpatialNavigationEnabled::Params> params =
+      web_view_internal::SetSpatialNavigationEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetGuest().SetSpatialNavigationEnabled(params->spatial_nav_enabled);
@@ -1090,7 +1112,7 @@ WebViewInternalIsSpatialNavigationEnabledFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalIsSpatialNavigationEnabledFunction::Run() {
-  absl::optional<web_view_internal::IsSpatialNavigationEnabled::Params> params =
+  std::optional<web_view_internal::IsSpatialNavigationEnabled::Params> params =
       web_view_internal::IsSpatialNavigationEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1129,14 +1151,7 @@ ExtensionFunction::ResponseAction WebViewInternalClearDataFunction::Run() {
 
   // If |ms_since_epoch| isn't set, default it to 0.
   double ms_since_epoch = options.GetDict().FindDouble(kSinceKey).value_or(0);
-
-  // base::Time takes a double that represents seconds since epoch. JavaScript
-  // gives developers milliseconds, so do a quick conversion before populating
-  // the object. Also, Time::FromDoubleT converts double time 0 to empty Time
-  // object. So we need to do special handling here.
-  remove_since_ = (ms_since_epoch == 0)
-                      ? base::Time::UnixEpoch()
-                      : base::Time::FromDoubleT(ms_since_epoch / 1000.0);
+  remove_since_ = base::Time::FromMillisecondsSinceUnixEpoch(ms_since_epoch);
 
   remove_mask_ = GetRemovalMask();
   if (bad_message_)

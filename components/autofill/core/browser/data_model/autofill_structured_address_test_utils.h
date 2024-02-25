@@ -16,7 +16,7 @@ namespace autofill {
 // Defines the type, value and verification status of a structured address
 // component for testing.
 struct AddressComponentTestValue {
-  ServerFieldType type;
+  FieldType type;
   std::string value;
   VerificationStatus status;
 };

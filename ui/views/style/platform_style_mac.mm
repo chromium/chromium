@@ -55,8 +55,9 @@ const Button::KeyClickAction PlatformStyle::kKeyClickActionOnSpace =
 const bool PlatformStyle::kReturnClicksFocusedControl = false;
 
 // static
-std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(bool is_horizontal) {
-  return std::make_unique<CocoaScrollBar>(is_horizontal);
+std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(
+    ScrollBar::Orientation orientation) {
+  return std::make_unique<CocoaScrollBar>(orientation);
 }
 
 // static
@@ -75,7 +76,7 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
           kCFAllocatorDefault, reinterpret_cast<const UniChar*>(text.data()),
           base::checked_cast<CFIndex>(text.size())));
   CFRange range_to_delete = CFStringGetRangeOfCharacterClusterAtIndex(
-      cf_string, base::checked_cast<CFIndex>(cursor_position - 1),
+      cf_string.get(), base::checked_cast<CFIndex>(cursor_position - 1),
       kCFStringBackwardDeletionCluster);
 
   if (range_to_delete.location == NSNotFound)

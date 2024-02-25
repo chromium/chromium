@@ -17,6 +17,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_data_stream.h"
@@ -39,9 +40,11 @@ namespace {
 // Returns the string representation of the HostPortPair of the proxy server
 // that was used to fetch the response.
 std::string GetProxy(const net::HttpResponseInfo& info) {
-  if (!info.proxy_server.is_valid() || info.proxy_server.is_direct())
+  if (!info.proxy_chain.IsValid() || info.proxy_chain.is_direct()) {
     return net::HostPortPair().ToString();
-  return info.proxy_server.host_port_pair().ToString();
+  }
+  CHECK(info.proxy_chain.is_single_proxy());
+  return info.proxy_chain.First().host_port_pair().ToString();
 }
 
 int CalculateLoadFlags(int load_flags,
@@ -332,8 +335,8 @@ void CronetURLRequest::NetworkTasks::GetStatus(
 void CronetURLRequest::NetworkTasks::FollowDeferredRedirect() {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   url_request_->FollowDeferredRedirect(
-      absl::nullopt /* removed_request_headers */,
-      absl::nullopt /* modified_request_headers */);
+      std::nullopt /* removed_request_headers */,
+      std::nullopt /* modified_request_headers */);
 }
 
 void CronetURLRequest::NetworkTasks::ReadData(

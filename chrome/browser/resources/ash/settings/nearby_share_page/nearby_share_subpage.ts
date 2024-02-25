@@ -9,10 +9,10 @@
  */
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import './nearby_share_contact_visibility_dialog.js';
 import './nearby_share_device_name_dialog.js';
@@ -23,29 +23,29 @@ import {getContactManager} from '/shared/nearby_contact_manager.js';
 import {ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/shared/nearby_share.mojom-webui.js';
 import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_browser_proxy.js';
 import {NearbyShareReceiveDialogElement} from './nearby_share_receive_dialog.js';
 import {observeReceiveManager} from './nearby_share_receive_manager.js';
 import {getTemplate} from './nearby_share_subpage.html.js';
-import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
+import {dataUsageStringToEnum} from './types.js';
 
-const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S: number = 300;
+const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 300;
 
 const SettingsNearbyShareSubpageElementBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
-class SettingsNearbyShareSubpageElement extends
+export class SettingsNearbyShareSubpageElement extends
     SettingsNearbyShareSubpageElementBase {
   static get is() {
     return 'settings-nearby-share-subpage' as const;
@@ -330,11 +330,9 @@ class SettingsNearbyShareSubpageElement extends
   }
 
   private getDataUsageLabel_(dataUsageValue: string): string {
-    if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
+    if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOnline) {
       return this.i18n('nearbyShareDataUsageDataLabel');
-    } else if (
-        dataUsageStringToEnum(dataUsageValue) ===
-        NearbyShareDataUsage.OFFLINE) {
+    } else if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOffline) {
       return this.i18n('nearbyShareDataUsageOfflineLabel');
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyLabel');
@@ -342,11 +340,9 @@ class SettingsNearbyShareSubpageElement extends
   }
 
   private getDataUsageSubLabel_(dataUsageValue: string): string {
-    if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
+    if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOnline) {
       return this.i18n('nearbyShareDataUsageDataDescription');
-    } else if (
-        dataUsageStringToEnum(dataUsageValue) ===
-        NearbyShareDataUsage.OFFLINE) {
+    } else if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOffline) {
       return this.i18n('nearbyShareDataUsageOfflineDescription');
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyDescription');
@@ -355,11 +351,9 @@ class SettingsNearbyShareSubpageElement extends
 
   private getEditDataUsageButtonAriaDescription_(dataUsageValue: string):
       string {
-    if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
+    if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOnline) {
       return this.i18n('nearbyShareDataUsageDataEditButtonDescription');
-    } else if (
-        dataUsageStringToEnum(dataUsageValue) ===
-        NearbyShareDataUsage.OFFLINE) {
+    } else if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOffline) {
       return this.i18n('nearbyShareDataUsageOfflineEditButtonDescription');
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyEditButtonDescription');
@@ -414,14 +408,9 @@ class SettingsNearbyShareSubpageElement extends
 
   private getAccountRowLabel(profileName: string, profileLabel: string):
       string {
-    return this.i18n('nearbyShareAccountRowLabel', profileName, profileLabel);
-  }
-
-  private getEnabledToggleClassName_(): string {
-    if (this.getPref('nearby_sharing.enabled').value) {
-      return 'enabled-toggle-on';
-    }
-    return 'enabled-toggle-off';
+    return this.i18n(
+        'nearbyShareAccountRowLabel', this.i18n('nearbyShareFeatureName'),
+        profileName, profileLabel);
   }
 
   private onOnboardingCancelled_(): void {

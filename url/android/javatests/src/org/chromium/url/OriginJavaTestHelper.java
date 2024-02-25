@@ -4,12 +4,10 @@
 
 package org.chromium.url;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Helpers for OriginJavaTest that need to call into native code.
- */
+/** Helpers for OriginJavaTest that need to call into native code. */
 @JNINamespace("url")
 public class OriginJavaTestHelper {
     public static void testOriginEquivalence() {

@@ -17,9 +17,11 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
       "cr_components/app_management",
       "cr_components/certificate_manager",
       "cr_components/color_change_listener",
+      "cr_components/commerce",
       "cr_components/customize_color_scheme_mode",
       "cr_components/customize_themes",
       "cr_components/help_bubble",
+      "cr_components/history_embeddings",
       "cr_components/history_clusters",
       "cr_components/localized_link",
       "cr_components/managed_dialog",
@@ -38,6 +40,13 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
     )]
 
 
+def _add_typescript_definitions_mappings(path_mappings, root_src_dir):
+  path_mappings[f'//tools/typescript/definitions:library'] = [
+      ('/tools/typescript/definitions/*',
+       f'{root_src_dir}/tools/typescript/definitions/*')
+  ]
+
+
 def _add_third_party_polymer_mappings(path_mappings, root_src_dir):
   path_mappings[f'//third_party/polymer/v3_0:library'] = [
       ('//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
@@ -48,12 +57,44 @@ def _add_third_party_polymer_mappings(path_mappings, root_src_dir):
   ]
 
 
+def _add_third_party_lit_mappings(path_mappings, root_gen_dir):
+  path_mappings[f'//third_party/lit/v3_0:build_ts'] = [
+      ('//resources/lit/v3_0/lit.rollup.js',
+       f'{root_gen_dir}/third_party/lit/v3_0/lit.d.ts'),
+  ]
+
+
 # Ash-only
 def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
+  # Note: The path for this target shadows all the paths for |shared_ts_folders|
+  # below. Eventually this target should be removed and everything should reside
+  # in a subfolder, so that missing deps can surface during the build, similar
+  # to how ui/webui/resources/ works.
   path_mappings['//ash/webui/common/resources:build_ts'] = [(
       '//resources/ash/common/*',
       f'{root_gen_dir}/ash/webui/common/resources/preprocessed/*',
   )]
+
+  # Calculate mappings for ash/webui/common/resources/ sub-folders that have a
+  # dedicated ts_library() target. The naming of the ts_library() target is
+  # expected to follow the default "build_ts" naming in the build_webui() rule.
+  # The output folder is expected to be at
+  # '$root_gen_dir/ash/webui/common/resources/preprocessed/'.
+  shared_ts_folders = [
+      "cellular_setup",
+      "cr_elements",
+      "personalization",
+      "sea_pen",
+
+      # List more folders here as they get migrated to use build_webui().
+  ]
+
+  for c in shared_ts_folders:
+    path_mappings[f'//ash/webui/common/resources/{c}:build_ts'] = [(
+        f'//resources/ash/common/{c}/*',
+        f'{root_gen_dir}/ash/webui/common/resources/preprocessed/{c}/*',
+    )]
+
   path_mappings['//third_party/cros-components:cros_components_ts'] = [(
       '//resources/cros_components/*',
       f'{root_gen_dir}/ui/webui/resources/tsc/cros_components/to_be_rewritten/*',
@@ -72,8 +113,10 @@ def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
 def GetDepToPathMappings(root_gen_dir, root_src_dir, platform):
   path_mappings = {}
 
+  _add_typescript_definitions_mappings(path_mappings, root_src_dir)
   _add_ui_webui_resources_mappings(path_mappings, root_gen_dir)
   _add_third_party_polymer_mappings(path_mappings, root_src_dir)
+  _add_third_party_lit_mappings(path_mappings, root_gen_dir)
 
   if platform == 'chromeos_ash':
     _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir)

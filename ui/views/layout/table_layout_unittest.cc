@@ -6,6 +6,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -29,6 +31,8 @@ std::unique_ptr<View> CreateSizedView(const gfx::Size& size) {
 
 // View that lets you set the minimum size.
 class MinSizeView : public View {
+  METADATA_HEADER(MinSizeView, View)
+
  public:
   explicit MinSizeView(const gfx::Size& min_size) : min_size_(min_size) {}
 
@@ -50,6 +54,9 @@ std::unique_ptr<MinSizeView> CreateViewWithMinAndPref(const gfx::Size& min,
   view->SetPreferredSize(pref);
   return view;
 }
+
+BEGIN_METADATA(MinSizeView)
+END_METADATA
 
 }  // namespace
 
@@ -813,6 +820,34 @@ TEST_F(TableLayoutTest, InsufficientChildren) {
   ExpectViewBoundsEquals(0, 0, 10, 20, v1);
   ExpectViewBoundsEquals(10, 0, 20, 20, v2);
   ExpectViewBoundsEquals(0, 20, 10, 20, v3);
+}
+
+TEST_F(TableLayoutTest, DistributeRemainingHeight) {
+  layout()
+      .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
+                 TableLayout::kFixedSize,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
+                 TableLayout::kFixedSize,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(2, 1.0f);
+  auto* v1 = host()->AddChildView(CreateSizedView(gfx::Size(10, 40)));
+  v1->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(1, 2));
+  auto* v2 = host()->AddChildView(CreateSizedView(gfx::Size(10, 18)));
+  auto* v3 = host()->AddChildView(CreateSizedView(gfx::Size(10, 19)));
+
+  // The 3 extra height from v1 (compared to v2 + v3) should be fully
+  // distributed between v2 and v3, so the total height is not less than 40.
+  constexpr gfx::Size kDesiredSize(20, 40);
+  EXPECT_EQ(kDesiredSize, GetPreferredSize());
+
+  host()->SetBoundsRect(gfx::Rect(kDesiredSize));
+  layout().Layout(host());
+  ExpectViewBoundsEquals(0, 0, 10, 40, v1);
+  ExpectViewBoundsEquals(10, 0, 10, 18, v2);
+  // Because 3 extra height doesn't divide evenly, it gets rounded, so v2 gets
+  // an extra dip compared to v3; thus v3 should start at y = 18 + 2 = 20.
+  ExpectViewBoundsEquals(10, 20, 10, 19, v3);
 }
 
 }  // namespace views

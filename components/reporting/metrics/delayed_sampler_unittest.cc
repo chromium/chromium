@@ -5,6 +5,7 @@
 #include "components/reporting/metrics/delayed_sampler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
@@ -14,7 +15,6 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Eq;
 
@@ -43,7 +43,7 @@ TEST_F(DelayedSamplerTest, CollectInternalCalledAfterDelay) {
   EXPECT_THAT(raw_sampler_->GetNumCollectCalls(), Eq(0));
 
   delayed_sampler.MaybeCollect(
-      base::DoNothingAs<void(absl::optional<MetricData>)>());
+      base::DoNothingAs<void(std::optional<MetricData>)>());
 
   // Sampler shouldn't collect since no time has passed
   EXPECT_THAT(raw_sampler_->GetNumCollectCalls(), Eq(0));

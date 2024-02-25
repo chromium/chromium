@@ -71,7 +71,7 @@ class ClientBase {
     bool use_xdg = false;
     bool use_release_fences = false;
     bool use_stylus = false;
-    absl::optional<std::string> wayland_socket = {};
+    std::optional<std::string> wayland_socket = {};
     uint32_t linux_dmabuf_version = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;
   };
 
@@ -210,7 +210,7 @@ class ClientBase {
 #if defined(USE_GBM)
   base::ScopedFD drm_fd_;
   std::unique_ptr<gbm_device> device_;
-  raw_ptr<gl::GLDisplayEGL, ExperimentalAsh> egl_display_ = nullptr;
+  raw_ptr<gl::GLDisplayEGL> egl_display_ = nullptr;
 #if defined(USE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> vk_implementation_;
   std::unique_ptr<ScopedVkInstance> vk_instance_;

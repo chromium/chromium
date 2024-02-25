@@ -7,15 +7,15 @@ import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 
-import {PrivacySandboxCombinedDialogAppElement, PrivacySandboxCombinedDialogStep} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
-import {PrivacySandboxDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
+import type {PrivacySandboxCombinedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
+import {PrivacySandboxCombinedDialogStep} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
+import type {PrivacySandboxDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_browser_proxy.js';
-import {PrivacySandboxDialogConsentStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_consent_step';
+import type {PrivacySandboxDialogConsentStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_consent_step';
 import {PrivacySandboxDialogMixin} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_mixin.js';
-import {PrivacySandboxDialogNoticeStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_notice_step';
-import {PrivacySandboxNoticeDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
-import {PrivacySandboxNoticeRestrictedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {PrivacySandboxDialogNoticeStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_notice_step';
+import type {PrivacySandboxNoticeDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
+import type {PrivacySandboxNoticeRestrictedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -89,7 +89,7 @@ async function verifyActionOccured(
 
 function testClickButton(buttonSelector: string, element: HTMLElement|null) {
   const actionButton =
-      element!.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+      element!.shadowRoot!.querySelector<HTMLElement>(buttonSelector);
   assertTrue(
       !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
   actionButton.click();
@@ -956,9 +956,12 @@ suite('Mixin', function() {
         testElement.wasScrolledToBottom, 'last text element should be visible');
   });
 
-  test('1px of the last text element not shown', async function() {
+  // The 2 pixels vs 1 pixel choice here is due to intersectionRatio being
+  // sometimes reported as 0.99 instead of 1.
+  // See more at crbug.com/1020466 and b/299120185.
+  test('2px of the last text element not shown', async function() {
     container.style.height =
-        `${fullContainerHeight - LAST_BOTTOM_MARGIN - 1}px`;
+        `${fullContainerHeight - LAST_BOTTOM_MARGIN - 2}px`;
     assertTrue(
         doesElemenHaveScrollbar(scrollable), 'content should have a scrollbar');
 

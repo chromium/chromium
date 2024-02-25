@@ -133,14 +133,14 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
 
   aura::test::TestWindowDelegate delegate_;
 
-  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_;
+  raw_ptr<storage::ExternalMountPoints> mount_points_;
   std::string myfiles_mount_name_;
   base::FilePath myfiles_dir_;
   std::string crostini_mount_name_;
   base::FilePath crostini_dir_;
 
-  raw_ptr<FakeSeneschalClient, DanglingUntriaged | ExperimentalAsh>
-      fake_seneschal_client_ = nullptr;
+  raw_ptr<FakeSeneschalClient, DanglingUntriaged> fake_seneschal_client_ =
+      nullptr;
 };
 
 TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {

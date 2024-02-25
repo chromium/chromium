@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 #include "third_party/openscreen/src/util/weak_ptr.h"
 
@@ -91,8 +91,8 @@ class DemuxerStreamAdapter {
   // signal when flush starts and when is done. During flush operation, all
   // fetching data actions will be discarded. The return value indicates frame
   // count in order to signal receiver what frames are in flight before flush,
-  // or absl::nullopt if the flushing state was unchanged.
-  absl::optional<uint32_t> SignalFlush(bool flushing);
+  // or std::nullopt if the flushing state was unchanged.
+  std::optional<uint32_t> SignalFlush(bool flushing);
 
   bool is_processing_read_request() const {
     // |read_until_callback_handle_| is set when RPC_DS_READUNTIL message is

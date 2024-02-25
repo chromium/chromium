@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_REPORTING_COMPRESSION_TEST_COMPRESSION_MODULE_H_
 #define COMPONENTS_REPORTING_COMPRESSION_TEST_COMPRESSION_MODULE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "components/reporting/resources/resource_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace test {
@@ -31,7 +31,7 @@ class TestCompressionModuleStrict : public CompressionModule {
       (std::string record,
        scoped_refptr<ResourceManager> memory_resource,
        base::OnceCallback<void(std::string,
-                               absl::optional<CompressionInformation>)> cb),
+                               std::optional<CompressionInformation>)> cb),
       (const override));
 
  protected:

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "components/policy/test_support/policy_storage.h"
 #include "components/policy/test_support/signature_provider.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -100,6 +100,13 @@ void EmbeddedPolicyTestServerMixin::SetUpCommandLine(
   // Specify device management server URL.
   command_line->AppendSwitchASCII(policy::switches::kDeviceManagementUrl,
                                   policy_test_server_->GetServiceURL().spec());
+
+  // This will change the verification key to be used by the
+  // CloudPolicyValidator. It will allow for the policy provided by the
+  // PolicyBuilder to pass the signature validation.
+  command_line->AppendSwitchASCII(
+      policy::switches::kPolicyVerificationKey,
+      policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
 }
 
 void EmbeddedPolicyTestServerMixin::UpdateDevicePolicy(

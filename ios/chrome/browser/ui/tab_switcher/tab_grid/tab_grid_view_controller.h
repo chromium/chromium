@@ -7,35 +7,39 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 
 @protocol ApplicationCommands;
+@class GridContainerViewController;
 @protocol GridCommands;
-@protocol PriceCardDataSource;
-@protocol GridShareableItemsProvider;
 class GURL;
 @protocol InactiveTabsInfoConsumer;
+@class IncognitoGridViewController;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
 @class LayoutGuideCenter;
-@protocol PopupMenuCommands;
+@class PinnedTabsViewController;
+@protocol PriceCardDataSource;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
+@class RegularGridViewController;
 @class TabGridBottomToolbar;
-@protocol TabCollectionCommands;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
+@protocol TabGridActivityObserver;
 @protocol TabGridConsumer;
 @protocol TabContextMenuProvider;
+@protocol TabGridMediatorProviderWrangler;
 @protocol TabGridMutator;
 @protocol TabGridToolbarsCommandsWrangler;
 @class TabGridTopToolbar;
-@class TabGridViewController;
 
 // Configurations for tab grid pages.
 enum class TabGridPageConfiguration {
@@ -57,15 +61,6 @@ enum class TabGridPageConfiguration {
 
 @protocol TabGridViewControllerDelegate <NSObject>
 
-// Asks the delegate for the page that should currently be active.
-- (TabGridPage)activePageForTabGridViewController:
-    (TabGridViewController*)tabGridViewController;
-
-// Notifies the delegate that the tab grid was dismissed via the
-// ViewRevealingAnimatee.
-- (void)tabGridViewControllerDidDismiss:
-    (TabGridViewController*)tabGridViewController;
-
 // Opens a link when the user clicks on the in-text link.
 - (void)openLinkWithURL:(const GURL&)URL;
 
@@ -79,87 +74,83 @@ enum class TabGridPageConfiguration {
 // Asks the delegate to show the inactive tabs.
 - (void)showInactiveTabs;
 
+// Asks the delegate whether the user is eligible for the swipe-to-incognito
+// in-product help message. This depends on multiple factors, including but not
+// limited to the current tab grid mode and the frequency that the IPH has
+// previously shown.
+- (BOOL)tabGridIsUserEligibleForSwipeToIncognitoIPH;
+
+// Asks the delegate whether the tab grid should present the swipe-to-incognito
+// in-product help message. Once this is invoked, `swipeToIncognitoIPH` must
+// show, and `tabGridDidDismissSwipeToIncognitoIPH` must be invoked on
+// dismissal.
+- (BOOL)tabGridShouldPresentSwipeToIncognitoIPH;
+
+// Notifies the delegate that the tab grid has dismissed the swipe-to-incognito
+// in-product help message.
+- (void)tabGridDidDismissSwipeToIncognitoIPH;
+
 @end
 
 // View controller representing a tab switcher. The tab switcher has an
 // incognito tab grid, regular tab grid, and remote tabs.
 @interface TabGridViewController
-    : UIViewController <IncognitoReauthObserver,
+    : UIViewController <DisabledGridViewControllerDelegate,
+                        GridConsumer,
                         KeyCommandActions,
                         TabGridConsumer,
                         LegacyGridTransitionAnimationLayoutProviding,
                         TabGridPaging,
-                        TabGridToolbarsActionWrangler,
+                        TabGridToolbarsMainTabGridDelegate,
+                        TabGridTransitionLayoutProviding,
                         UISearchBarDelegate>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
-@property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
-@property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
-// Handlers for popup menu commands for the regular and incognito states.
-@property(nonatomic, weak) id<PopupMenuCommands> regularPopupMenuHandler;
-@property(nonatomic, weak) id<PopupMenuCommands> incognitoPopupMenuHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
 
 @property(nonatomic, weak) id<TabGridViewControllerDelegate> delegate;
 
+// Delegate to notify when activity has to be updated.
+@property(nonatomic, weak) id<TabGridActivityObserver> activityObserver;
+
 // Mutator to apply all user change in the model.
 @property(nonatomic, weak) id<TabGridMutator> mutator;
 
+// Temporary provider to determine where the mediator and the view controller
+// lose current page sync.
+// TODO(crbug.com/1457146): Remove once all the flow have been matched.
+@property(nonatomic, weak) id<TabGridMediatorProviderWrangler> provider;
+
 // Consumers send updates from the model layer to the UI layer.
-@property(nonatomic, readonly)
-    id<TabCollectionConsumer, InactiveTabsInfoConsumer>
-        regularTabsConsumer;
-@property(nonatomic, readonly)
-    id<TabCollectionConsumer, IncognitoReauthConsumer>
-        incognitoTabsConsumer;
 @property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
-@property(nonatomic, readonly) id<TabCollectionConsumer> pinnedTabsConsumer;
 
 // Delegates send updates from the UI layer to the model layer.
-@property(nonatomic, weak) id<GridCommands> regularTabsDelegate;
-@property(nonatomic, weak) id<GridCommands> inactiveTabsDelegate;
-@property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
-@property(nonatomic, weak) id<TabCollectionCommands> pinnedTabsDelegate;
-
-// Handles drag and drop interactions that require the model layer.
-@property(nonatomic, weak) id<TabCollectionDragDropHandler>
-    regularTabsDragDropHandler;
-@property(nonatomic, weak) id<TabCollectionDragDropHandler>
-    incognitoTabsDragDropHandler;
-@property(nonatomic, weak) id<TabCollectionDragDropHandler>
-    pinnedTabsDragDropHandler;
+@property(nonatomic, weak) id<GridCommands> regularGridHandler;
+@property(nonatomic, weak) id<GridCommands> inactiveGridHandler;
+@property(nonatomic, weak) id<GridCommands> incognitoGridHandler;
 
 // Data source for acquiring data which power the PriceCardView
 @property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;
-
-@property(nonatomic, weak) id<GridShareableItemsProvider>
-    regularTabsShareableItemsProvider;
-@property(nonatomic, weak) id<GridShareableItemsProvider>
-    incognitoTabsShareableItemsProvider;
 
 // Readwrite override of the UIViewController property. This object will ignore
 // the value supplied by UIViewController.
 @property(nonatomic, weak, readwrite)
     UIViewController* childViewControllerForStatusBarStyle;
 
+// Child view controllers.
+@property(nonatomic, strong)
+    RegularGridViewController* regularTabsViewController;
+@property(nonatomic, strong) PinnedTabsViewController* pinnedTabsViewController;
+@property(nonatomic, strong)
+    IncognitoGridViewController* incognitoTabsViewController;
 // The view controller for remote tabs.
 // TODO(crbug.com/845192) : This was only exposed in the public interface so
 // that TabGridViewController does not need to know about model objects. The
 // model objects used in this view controller should be factored out.
-@property(nonatomic, strong)
+@property(nonatomic, readonly)
     RecentTabsTableViewController* remoteTabsViewController;
-
-// Provides the context menu for the tabs on the grid.
-@property(nonatomic, weak) id<TabContextMenuProvider>
-    regularTabsContextMenuProvider;
-@property(nonatomic, weak) id<TabContextMenuProvider>
-    incognitoTabsContextMenuProvider;
-
-// The view controller that shows below the tab grid as a bottom message. Note
-// that setting this value immediately adds it to the view hierarchy.
-@property(nonatomic, strong) UIViewController* regularTabsBottomMessage;
 
 // The layout guide center to use to refer to the bottom toolbar.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
@@ -171,10 +162,18 @@ enum class TabGridPageConfiguration {
 // Whether the primary signed-in account is subject to parental controls.
 @property(nonatomic, assign) BOOL isSubjectToParentalControls;
 
-// Temporary handler for sending commands to the toolbar.
-// TODO(crbug.com/1456659): Remove this.
-@property(nonatomic, weak) id<TabGridToolbarsCommandsWrangler>
-    toolbarCommandsWrangler;
+// Disabled tab view controllers only available when a certain browser mode is
+// disabled.
+@property(nonatomic, weak) UIViewController* regularDisabledGridViewController;
+@property(nonatomic, weak)
+    UIViewController* incognitoDisabledGridViewController;
+
+// Contains grids (available or disabled one).
+@property(nonatomic, weak) UIViewController* regularGridContainerViewController;
+@property(nonatomic, weak)
+    UIViewController* incognitoGridContainerViewController;
+@property(nonatomic, weak)
+    GridContainerViewController* remoteGridContainerViewController;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.
@@ -186,11 +185,6 @@ enum class TabGridPageConfiguration {
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-
-// Tells the receiver to prepare for its appearance by pre-requesting any
-// resources it needs from data sources. This should be called before any
-// transitions are triggered.
-- (void)prepareForAppearance;
 
 // Notifies the ViewController that its content is being displayed or hidden.
 - (void)contentWillAppearAnimated:(BOOL)animated;

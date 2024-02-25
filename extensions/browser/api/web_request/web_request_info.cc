@@ -5,7 +5,9 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -22,12 +24,10 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/base/upload_file_element_reader.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace keys = extension_web_request_api_constants;
 
@@ -46,7 +46,7 @@ class UploadDataSource {
 
 class BytesUploadDataSource : public UploadDataSource {
  public:
-  BytesUploadDataSource(const base::StringPiece& bytes) : bytes_(bytes) {}
+  BytesUploadDataSource(std::string_view bytes) : bytes_(bytes) {}
 
   BytesUploadDataSource(const BytesUploadDataSource&) = delete;
   BytesUploadDataSource& operator=(const BytesUploadDataSource&) = delete;
@@ -59,7 +59,7 @@ class BytesUploadDataSource : public UploadDataSource {
   }
 
  private:
-  base::StringPiece bytes_;
+  std::string_view bytes_;
 };
 
 class FileUploadDataSource : public UploadDataSource {
@@ -112,12 +112,12 @@ bool CreateUploadDataSourcesFromResourceRequest(
   return true;
 }
 
-absl::optional<base::Value::Dict> CreateRequestBodyData(
+std::optional<base::Value::Dict> CreateRequestBodyData(
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
     const std::vector<std::unique_ptr<UploadDataSource>>& data_sources) {
   if (method != "POST" && method != "PUT")
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Value::Dict request_body_data;
 
@@ -164,8 +164,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     bool is_download,
     bool is_async,
     bool is_service_worker_script,
-    absl::optional<int64_t> navigation_id,
-    ukm::SourceIdObj ukm_source_id)
+    std::optional<int64_t> navigation_id)
     : id(request_id),
       url(request.url),
       render_process_id(render_process_id),
@@ -176,8 +175,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
       is_async(is_async),
       extra_request_headers(request.headers),
       is_service_worker_script(is_service_worker_script),
-      navigation_id(std::move(navigation_id)),
-      ukm_source_id(ukm_source_id) {
+      navigation_id(std::move(navigation_id)) {
   web_request_type = ToWebRequestResourceType(request, is_download);
 
   DCHECK_EQ(is_navigation_request, this->navigation_id.has_value());
@@ -246,7 +244,6 @@ WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
       web_view_embedder_process_id(params.web_view_embedder_process_id),
       is_service_worker_script(params.is_service_worker_script),
       navigation_id(std::move(params.navigation_id)),
-      ukm_source_id(params.ukm_source_id),
       parent_routing_id(params.parent_routing_id) {}
 
 WebRequestInfo::~WebRequestInfo() = default;

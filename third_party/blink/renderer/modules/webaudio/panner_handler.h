@@ -12,14 +12,13 @@
 #include "third_party/blink/renderer/platform/audio/cone_effect.h"
 #include "third_party/blink/renderer/platform/audio/distance_effect.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
 
 class AudioBus;
-class AudioListener;
+class AudioListenerHandler;
 class AudioParamHandler;
 
 class PannerHandler final : public AudioHandler {
@@ -93,9 +92,6 @@ class PannerHandler final : public AudioHandler {
                 AudioParamHandler& orientation_y,
                 AudioParamHandler& orientation_z);
 
-  // BaseAudioContext's listener
-  CrossThreadPersistent<AudioListener> Listener() const;
-
   // Returns true on successful operation.
   bool SetPanningModel(Panner::PanningModel);
   bool SetDistanceModel(unsigned);
@@ -133,8 +129,6 @@ class PannerHandler final : public AudioHandler {
   // (the default).
   bool IsAudioRate() const;
 
-  CrossThreadWeakPersistent<AudioListener> listener_;
-
   std::unique_ptr<Panner> panner_;
 
   Panner::PanningModel panning_model_;
@@ -158,6 +152,8 @@ class PannerHandler final : public AudioHandler {
   scoped_refptr<AudioParamHandler> orientation_x_;
   scoped_refptr<AudioParamHandler> orientation_y_;
   scoped_refptr<AudioParamHandler> orientation_z_;
+
+  scoped_refptr<AudioListenerHandler> listener_handler_;
 
   // To synchronize `Process()` with the setting of this panner's state. (e.g.
   // position, orientation, distance, sound cone, and the listener)

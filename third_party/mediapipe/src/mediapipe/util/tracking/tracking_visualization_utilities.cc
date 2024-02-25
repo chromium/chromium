@@ -14,11 +14,12 @@
 
 #include "mediapipe/util/tracking/tracking_visualization_utilities.h"
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_format.h"
 #include "mediapipe/framework/port/opencv_imgproc_inc.h"
 #include "mediapipe/util/tracking/box_tracker.h"
 #include "mediapipe/util/tracking/tracking.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -130,7 +131,7 @@ void RenderState(const MotionBoxState& box_state, bool print_stats,
   cv::putText(*frame, lock_text, cv::Point(top_left.x(), top_left.y() - 5),
               cv::FONT_HERSHEY_PLAIN, 0.8, lock_color);
 #else
-  LOG(FATAL) << "Code stripped out because of NO_RENDERING";
+  ABSL_LOG(FATAL) << "Code stripped out because of NO_RENDERING";
 #endif
 }
 
@@ -170,7 +171,7 @@ void RenderInternalState(const MotionBoxInternalState& internal,
     cv::circle(*frame, p1, 2.0, color_scaled, 1);
   }
 #else
-  LOG(FATAL) << "Code stripped out because of NO_RENDERING";
+  ABSL_LOG(FATAL) << "Code stripped out because of NO_RENDERING";
 #endif
 }
 
@@ -200,7 +201,7 @@ void RenderTrackingData(const TrackingData& data, cv::Mat* mat,
              antialiasing ? cv::LINE_AA : 8);
   }
 #else
-  LOG(FATAL) << "Code stripped out because of NO_RENDERING";
+  ABSL_LOG(FATAL) << "Code stripped out because of NO_RENDERING";
 #endif
 }
 
@@ -218,7 +219,7 @@ void RenderBox(const TimedBoxProto& box_proto, cv::Mat* mat) {
              4);
   }
 #else
-  LOG(FATAL) << "Code stripped out because of NO_RENDERING";
+  ABSL_LOG(FATAL) << "Code stripped out because of NO_RENDERING";
 #endif
 }
 

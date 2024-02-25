@@ -1,0 +1,18 @@
+<style include="cr-shared-style">
+  #noAppsLabel {
+    text-align: center;
+  }
+</style>
+
+<div id="appNotificationsList" class="hr">
+  <template is="dom-repeat" items="[[filteredAppList_]]" as="app"
+      sort="alphabeticalSort_">
+    <app-notification-row app="[[app]]"></app-notification-row>
+  </template>
+
+  <template is="dom-if" if="[[isAppListEmpty_(filteredAppList_)]]">
+    <div id="noAppsLabel" class="cr-secondary-text">
+      $i18n{appManagementNoAppsFound}
+    </div>
+  </template>
+</div>

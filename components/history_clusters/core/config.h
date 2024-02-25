@@ -174,6 +174,13 @@ struct Config {
   // aren't too many strong navigation matches.
   int omnibox_history_cluster_provider_score = 900;
 
+  // If enabled, will inherit the score from the matched search suggestion
+  // minus 1. This will force the journey suggestion immediately after the
+  // search suggestion, except if there's a tie with another suggestion, in
+  // which case it's indeterminate which is ordered first. If enabled,
+  // `omnibox_history_cluster_provider_score` becomes a no-op.
+  bool omnibox_history_cluster_provider_inherit_search_match_score = false;
+
   // If `omnibox_history_cluster_provider_on_navigation_intents` is false, this
   // threshold helps determine when the user is intending to perform a
   // navigation. Meaningless if either `omnibox_history_cluster_provider` is
@@ -240,38 +247,6 @@ struct Config {
   // The max time a host should be stored in the engagement score cache.
   base::TimeDelta engagement_score_cache_refresh_duration = base::Minutes(120);
 
-  // The `kOnDeviceClusteringContentClustering` feature and child params.
-
-  // Returns whether content clustering is enabled and
-  // should be performed by the clustering backend.
-  bool content_clustering_enabled = false;
-
-  // Returns whether content clustering should only be done across clusters that
-  // contain a search.
-  bool content_clustering_search_visits_only = false;
-
-  // Returns the similarity threshold, between 0 and 1, used to determine if
-  // two clusters are similar enough to be combined into
-  // a single cluster.
-  float content_clustering_similarity_threshold = 0.2;
-
-  // Returns whether we should exclude entities that do not have associated
-  // collections from content clustering.
-  bool exclude_entities_that_have_no_collections_from_content_clustering = true;
-
-  // The set of collections to block from being content clustered.
-  base::flat_set<std::string> collections_to_block_from_content_clustering = {
-      "/collection/it_glossary", "/collection/periodicals",
-      "/collection/software", "/collection/tv_networks",
-      "/collection/websites"};
-
-  // Whether to merge similar clusters using pairwise merge.
-  bool use_pairwise_merge = false;
-
-  // The maximum number of iterations to run for the convergence of pairwise
-  // merging of similar clusters.
-  int max_pairwise_merge_iterations = 40;
-
   // The `kHistoryClustersVisitDeduping` feature and child params.
 
   // Use host instead of heavily-stripped URL as URL for deduping.
@@ -321,7 +296,7 @@ struct Config {
 
   // The `kJourneysZeroStateFiltering` feature and child params.
 
-  bool apply_zero_state_filtering = false;
+  bool apply_zero_state_filtering = true;
 
   // The `kNtpChromeCartInHistoryClusterModule` child params.
 
@@ -371,7 +346,7 @@ struct Config {
   bool include_synced_visits = false;
 
   // Whether keyword caches should be written to and read from prefs.
-  bool persist_caches_to_prefs = false;
+  bool persist_caches_to_prefs = true;
 
   // Order consistently with features.h.
 
@@ -379,17 +354,6 @@ struct Config {
   Config(const Config& other);
   ~Config();
 };
-
-// Returns the set of collections that should not be included for content
-// clustering. If the experiment string is empty or malformed, `default_value`
-// will be used.
-base::flat_set<std::string> JourneysCollectionContentClusteringBlocklist(
-    const base::flat_set<std::string>& default_value);
-
-// Returns the set of mids that should be blocked from being used by the
-// clustering backend, particularly for potential keywords used for omnibox
-// triggering.
-base::flat_set<std::string> JourneysMidBlocklist();
 
 // Returns true if |application_locale| is supported by Journeys.
 // This is a costly check: Should be called only if

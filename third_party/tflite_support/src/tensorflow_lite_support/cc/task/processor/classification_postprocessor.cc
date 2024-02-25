@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow/lite/c/c_api_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -42,14 +42,13 @@ using ::tflite::task::core::ScoreCalibration;
 /* static */
 tflite::support::StatusOr<std::unique_ptr<ClassificationPostprocessor>>
 ClassificationPostprocessor::Create(
-    core::TfLiteEngine* engine,
-    const std::initializer_list<int> output_indices,
+    core::TfLiteEngine* engine, const std::initializer_list<int> output_indices,
     std::unique_ptr<ClassificationOptions> options) {
-  ASSIGN_OR_RETURN(auto processor,
+  TFLITE_ASSIGN_OR_RETURN(auto processor,
                    Processor::Create<ClassificationPostprocessor>(
                        /* num_expected_tensors = */ 1, engine, output_indices));
 
-  RETURN_IF_ERROR(processor->Init(std::move(options)));
+  TFLITE_RETURN_IF_ERROR(processor->Init(std::move(options)));
   return processor;
 }
 
@@ -71,7 +70,7 @@ absl::Status ClassificationPostprocessor::Init(
         TfLiteSupportStatus::kInvalidArgumentError);
   }
 
-  ASSIGN_OR_RETURN(classification_head_,
+  TFLITE_ASSIGN_OR_RETURN(classification_head_,
                    BuildClassificationHead(*engine_->metadata_extractor(),
                                            *GetTensorMetadata(),
                                            options->display_names_locale()));
@@ -200,7 +199,7 @@ absl::Status ClassificationPostprocessor::Init(
           StatusCode::kInternal, "Could not create score calibration object.");
     }
 
-    RETURN_IF_ERROR(score_calibration_->InitializeFromParameters(
+    TFLITE_RETURN_IF_ERROR(score_calibration_->InitializeFromParameters(
         classification_head_.calibration_params.value()));
   }
 

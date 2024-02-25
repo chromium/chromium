@@ -15,9 +15,9 @@ namespace ash {
 // dialog, a user can choose to accept or cancel the Welcome Tour tutorial. Used
 // if and only if the Welcome Tour feature is enabled.
 class ASH_EXPORT WelcomeTourDialog : public SystemDialogDelegateView {
- public:
-  METADATA_HEADER(WelcomeTourDialog);
+  METADATA_HEADER(WelcomeTourDialog, SystemDialogDelegateView)
 
+ public:
   // Creates and shows the Welcome Tour dialog at the center of the primary
   // display. `accept_callback` is the callback that runs when the accept button
   // is clicked. `cancel_callback` is the callback that runs when the cancel

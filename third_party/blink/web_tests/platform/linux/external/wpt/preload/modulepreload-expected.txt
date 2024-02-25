@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] link rel=modulepreload with integrity mismatch3
+  promise_test: Unhandled rejection with value: object "[object Event]"
+Harness: the test ran to completion.
+

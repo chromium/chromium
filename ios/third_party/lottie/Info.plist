@@ -15,6 +15,6 @@
        <key>CFBundleExecutable</key>
        <string>${EXECUTABLE_NAME}</string>
        <key>CFBundleDevelopmentRegion</key>
-       <string>English</string>
+       <string>en</string>
 </dict>
 </plist>

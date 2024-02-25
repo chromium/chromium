@@ -30,7 +30,8 @@ class BoxPainter {
   // This should be called in the background paint phase even if there is no
   // other painted content.
   void RecordScrollHitTestData(const PaintInfo& paint_info,
-                               const DisplayItemClient& background_client);
+                               const DisplayItemClient& background_client,
+                               const FragmentData*);
 
   // Calculates the visual rect (see DisplayItem::VisualRect() for definition)
   // from the self visual overflow of the LayoutBox and |paint_offset|.

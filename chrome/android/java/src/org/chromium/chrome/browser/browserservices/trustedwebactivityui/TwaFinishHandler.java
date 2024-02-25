@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.webapps.WebApkServiceClient;
 
 import javax.inject.Inject;
 
-/**
- * Applies TWA-specific logic when the activity is about to finish.
- */
+/** Applies TWA-specific logic when the activity is about to finish. */
 @ActivityScope
 public class TwaFinishHandler {
     private static final String FINISH_TASK_COMMAND_NAME = "finishAndRemoveTask";
@@ -31,7 +29,9 @@ public class TwaFinishHandler {
     private boolean mShouldAttemptFinishingTask;
 
     @Inject
-    public TwaFinishHandler(Activity activity, BrowserServicesIntentDataProvider intentDataProvider,
+    public TwaFinishHandler(
+            Activity activity,
+            BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabsConnection connection) {
         mActivity = activity;
         mIntentDataProvider = intentDataProvider;
@@ -69,8 +69,9 @@ public class TwaFinishHandler {
         // This is the analogue to IWebApkApi#finishAndRemoveTaskSdk23().
         // Currently we don't make this API public, because there could potentially be a way of
         // avoiding it altogether in the two use cases WebAPKs currently have.
-        Bundle result = mConnection.sendExtraCallbackWithResult(mIntentDataProvider.getSession(),
-                FINISH_TASK_COMMAND_NAME, null);
+        Bundle result =
+                mConnection.sendExtraCallbackWithResult(
+                        mIntentDataProvider.getSession(), FINISH_TASK_COMMAND_NAME, null);
         return result != null && result.getBoolean(SUCCESS_KEY, false);
     }
 }

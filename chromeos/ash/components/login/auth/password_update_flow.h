@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PASSWORD_UPDATE_FLOW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -15,7 +16,6 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) PasswordUpdateFlow {
                                AuthErrorCallback error_callback,
                                bool user_exists,
                                std::unique_ptr<UserContext> user_context,
-                               absl::optional<AuthenticationError> error);
+                               std::optional<AuthenticationError> error);
 
   AuthPerformer auth_performer_;
   AuthFactorEditor auth_factor_editor_;

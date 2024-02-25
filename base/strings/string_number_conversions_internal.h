@@ -9,13 +9,14 @@
 #include <stdlib.h>
 
 #include <limits>
+#include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -56,7 +57,7 @@ static STR IntToStringT(INT value) {
 
 // Utility to convert a character to a digit in a given base
 template <int BASE, typename CHAR>
-absl::optional<uint8_t> CharToDigit(CHAR c) {
+std::optional<uint8_t> CharToDigit(CHAR c) {
   static_assert(1 <= BASE && BASE <= 36, "BASE needs to be in [1, 36]");
   if (c >= '0' && c < '0' + std::min(BASE, 10))
     return static_cast<uint8_t>(c - '0');
@@ -67,7 +68,7 @@ absl::optional<uint8_t> CharToDigit(CHAR c) {
   if (c >= 'A' && c < 'A' + BASE - 10)
     return static_cast<uint8_t>(c - 'A' + 10);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 template <typename Number, int kBase>
@@ -105,7 +106,7 @@ class StringToNumberParser {
       }
 
       for (Iter current = begin; current != end; ++current) {
-        absl::optional<uint8_t> new_digit = CharToDigit<kBase>(*current);
+        std::optional<uint8_t> new_digit = CharToDigit<kBase>(*current);
 
         if (!new_digit) {
           return {value, false};
@@ -152,7 +153,7 @@ class StringToNumberParser {
 };
 
 template <typename Number, int kBase, typename CharT>
-auto StringToNumber(BasicStringPiece<CharT> input) {
+auto StringToNumber(std::basic_string_view<CharT> input) {
   using Parser = StringToNumberParser<Number, kBase>;
   using Result = typename Parser::Result;
 
@@ -261,9 +262,9 @@ static bool HexStringToByteContainer(StringPiece input, OutIter output) {
     return false;
   for (uintptr_t i = 0; i < count / 2; ++i) {
     // most significant 4 bits
-    absl::optional<uint8_t> msb = CharToDigit<16>(input[i * 2]);
+    std::optional<uint8_t> msb = CharToDigit<16>(input[i * 2]);
     // least significant 4 bits
-    absl::optional<uint8_t> lsb = CharToDigit<16>(input[i * 2 + 1]);
+    std::optional<uint8_t> lsb = CharToDigit<16>(input[i * 2 + 1]);
     if (!msb || !lsb) {
       return false;
     }

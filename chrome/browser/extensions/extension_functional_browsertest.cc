@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -51,13 +52,13 @@ class ExtensionFunctionalTest : public ExtensionBrowserTest {
     installer->set_off_store_install_allow_reason(
         CrxInstaller::OffStoreInstallAllowedInTest);
 
-    TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+    TestFuture<std::optional<CrxInstallError>> installer_done_future;
     installer->AddInstallerCallback(
         installer_done_future
-            .GetCallback<const absl::optional<CrxInstallError>&>());
+            .GetCallback<const std::optional<CrxInstallError>&>());
     installer->InstallCrx(path);
 
-    const absl::optional<CrxInstallError>& error = installer_done_future.Get();
+    const std::optional<CrxInstallError>& error = installer_done_future.Get();
     EXPECT_FALSE(error);
 
     size_t num_after = registry->enabled_extensions().size();
@@ -153,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, DownloadExtensionResource) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("download")));
   download_observer.WaitForFinished();
 
-  std::vector<download::DownloadItem*> download_items;
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+      download_items;
   download_manager->GetAllDownloads(&download_items);
 
   base::ScopedAllowBlockingForTesting allow_blocking;

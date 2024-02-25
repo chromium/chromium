@@ -12,7 +12,7 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -31,7 +31,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
-TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
+TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
                                                 int index) {
   content::WebContents* const contents = model->GetWebContentsAt(index);
   // If the tab is showing a lookalike interstitial ("Did you mean example.com"
@@ -49,7 +49,7 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   data.favicon = tab_ui_helper->GetFavicon();
 
   // Tabbed web apps should use the app icon on the home tab.
-  Browser* app_browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* app_browser = chrome::FindBrowserWithTab(contents);
 
   if (app_browser && app_browser->app_controller() &&
       app_browser->app_controller()->ShouldShowAppIconOnTab(index)) {
@@ -99,26 +99,25 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
   data.should_themify_favicon =
       entry && favicon::ShouldThemifyFaviconForEntry(entry);
 
-  absl::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
-      high_efficiency::GetDiscardReason(contents);
+  std::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
+      memory_saver::GetDiscardReason(contents);
 
   // Only show discard status for tabs that were proactively discarded to
   // prevent confusion to users on why a tab was discarded. Also, the favicon
   // discard animation may use resources so the animation should be limited
   // to proactive discards to prevent performance issues.
   data.should_show_discard_status =
-      high_efficiency::IsURLSupported(contents->GetURL()) &&
+      memory_saver::IsURLSupported(contents->GetURL()) &&
       contents->WasDiscarded() && discard_reason.has_value() &&
       discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
 
   if (contents->WasDiscarded()) {
     data.discarded_memory_savings_in_bytes =
-        high_efficiency::GetDiscardedMemorySavingsInBytes(contents);
+        memory_saver::GetDiscardedMemorySavingsInBytes(contents);
   }
 
   const auto* const resource_tab_helper =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          ResourceUsageTabHelper::FromWebContents(contents);
+      TabResourceUsageTabHelper::FromWebContents(contents);
   if (resource_tab_helper) {
     data.tab_resource_usage = resource_tab_helper->resource_usage();
   }

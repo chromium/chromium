@@ -11,9 +11,7 @@ import androidx.annotation.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Boundary interface for WebMessagePayload.
- */
+/** Boundary interface for WebMessagePayload. */
 public interface WebMessagePayloadBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
     @WebMessagePayloadType
     int getType();
@@ -25,7 +23,8 @@ public interface WebMessagePayloadBoundaryInterface extends FeatureFlagHolderBou
     byte[] getAsArrayBuffer();
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef(flag = true,
+    @IntDef(
+            flag = true,
             value = {WebMessagePayloadType.TYPE_STRING, WebMessagePayloadType.TYPE_ARRAY_BUFFER})
     @interface WebMessagePayloadType {
         int TYPE_STRING = 0;

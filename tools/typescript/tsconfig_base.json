@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "useDefineForClassFields": false,
 
     "noEmitOnError": true,
     "pretty": true,

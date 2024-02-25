@@ -27,8 +27,7 @@
 // static
 void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
     const extensions::ExtensionId& app_id,
-    content::WebContents* web_contents,
-    base::OnceClosure launch_anyways) {
+    content::WebContents* web_contents) {
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetModalType(ui::MODAL_TYPE_CHILD);
   delegate->SetShowCloseButton(false);
@@ -40,16 +39,7 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
   std::u16string app_name = base::UTF8ToUTF16(extension->name());
   delegate->SetTitle(l10n_util::GetStringFUTF16(
       IDS_DEPRECATED_APPS_RENDERER_TITLE_WITH_APP_NAME, app_name));
-  bool hide_launch_anyways =
-      features::kChromeAppsDeprecationHideLaunchAnyways.Get();
-  if (hide_launch_anyways) {
-    delegate->SetButtons(ui::DIALOG_BUTTON_OK);
-  } else {
-    delegate->SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
-        l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL));
-    delegate->SetAcceptCallback(std::move(launch_anyways));
-  }
+  delegate->SetButtons(ui::DIALOG_BUTTON_OK);
   delegate->SetContentsView(
       base::WrapUnique<ForceInstalledDeprecatedAppsDialogView>(
           new ForceInstalledDeprecatedAppsDialogView(app_name, web_contents)));
@@ -91,5 +81,5 @@ ForceInstalledDeprecatedAppsDialogView::ForceInstalledDeprecatedAppsDialogView(
   learn_more->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-BEGIN_METADATA(ForceInstalledDeprecatedAppsDialogView, views::View)
+BEGIN_METADATA(ForceInstalledDeprecatedAppsDialogView)
 END_METADATA

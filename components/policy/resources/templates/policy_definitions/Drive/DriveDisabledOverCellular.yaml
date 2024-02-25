@@ -3,10 +3,11 @@ arc_support: This policy has no effect on the Android Google Drive app. If you w
   of the Android Google Drive app.
 caption: Disable Google Drive over cellular connections in the <ph name="PRODUCT_OS_NAME">$2<ex>Google
   ChromeOS</ex></ph> Files app
+default: false
 desc: |-
   Setting the policy to Enabled turns off <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> syncing in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app when on a cellular connection. Data is only synced to Drive when connected through Wi-Fi or Ethernet.
 
-        Setting the policy to Disabled or leaving it unset lets users transfer files to Drive on cellular connections.
+  Setting the policy to Disabled or leaving it unset lets users transfer files to Drive on cellular connections.
 example_value: true
 features:
   dynamic_refresh: true

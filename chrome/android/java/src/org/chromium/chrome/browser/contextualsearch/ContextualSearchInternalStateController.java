@@ -56,24 +56,24 @@ class ContextualSearchInternalStateController {
      * above.
      */
     @IntDef({
-            InternalState.UNDEFINED,
-            InternalState.IDLE,
-            InternalState.LONG_PRESS_RECOGNIZED,
-            InternalState.SHOWING_LITERAL_SEARCH,
-            InternalState.SELECTION_CLEARED_RECOGNIZED,
-            InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS,
-            InternalState.TAP_RECOGNIZED,
-            InternalState.WAITING_FOR_POSSIBLE_TAP_ON_TAP_SELECTION,
-            InternalState.TAP_GESTURE_COMMIT,
-            InternalState.GATHERING_SURROUNDINGS,
-            InternalState.DECIDING_SUPPRESSION,
-            InternalState.START_SHOWING_TAP_UI,
-            InternalState.SHOW_RESOLVING_UI,
-            InternalState.RESOLVING,
-            InternalState.SHOWING_TAP_SEARCH,
-            InternalState.RESOLVING_LONG_PRESS_RECOGNIZED,
-            InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH,
-            InternalState.SEARCH_COMPLETED,
+        InternalState.UNDEFINED,
+        InternalState.IDLE,
+        InternalState.LONG_PRESS_RECOGNIZED,
+        InternalState.SHOWING_LITERAL_SEARCH,
+        InternalState.SELECTION_CLEARED_RECOGNIZED,
+        InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS,
+        InternalState.TAP_RECOGNIZED,
+        InternalState.WAITING_FOR_POSSIBLE_TAP_ON_TAP_SELECTION,
+        InternalState.TAP_GESTURE_COMMIT,
+        InternalState.GATHERING_SURROUNDINGS,
+        InternalState.DECIDING_SUPPRESSION,
+        InternalState.START_SHOWING_TAP_UI,
+        InternalState.SHOW_RESOLVING_UI,
+        InternalState.RESOLVING,
+        InternalState.SHOWING_TAP_SEARCH,
+        InternalState.RESOLVING_LONG_PRESS_RECOGNIZED,
+        InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH,
+        InternalState.SEARCH_COMPLETED,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface InternalState {
@@ -82,18 +82,16 @@ class ContextualSearchInternalStateController {
          * destroyed.
          */
         int UNDEFINED = 0;
-        /**
-         * This start/resting state shows no UI (panel is closed).
-         */
+
+        /** This start/resting state shows no UI (panel is closed). */
         int IDLE = 1;
-        /**
-         * This starts a transition that leads to the SHOWING_LITERAL_SEARCH state.
-         */
+
+        /** This starts a transition that leads to the SHOWING_LITERAL_SEARCH state. */
         int LONG_PRESS_RECOGNIZED = 2;
-        /**
-         * State showing the panel in response to a literal non-resolving search.
-         */
+
+        /** State showing the panel in response to a literal non-resolving search. */
         int SHOWING_LITERAL_SEARCH = 3;
+
         /**
          * This is a start state when the selection is cleared typically due to a tap on the base
          * page. If the previous state wasn't IDLE then it could be a tap near a previous Tap.
@@ -101,64 +99,61 @@ class ContextualSearchInternalStateController {
          * if no tap ever happens.
          */
         int SELECTION_CLEARED_RECOGNIZED = 4;
+
         /**
          * Waits to see if the tap gesture was valid so we can just update the Bar instead of
          * hiding/showing it.
          */
         int WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS = 5;
-        /**
-         * This starts a sequence of states needed to get to the SHOWING_TAP_SEARCH state.
-         */
+
+        /** This starts a sequence of states needed to get to the SHOWING_TAP_SEARCH state. */
         int TAP_RECOGNIZED = 6;
+
         /**
          * Waits to see if the Tap was on a previous tap-selection, which will show the selection
          * manipulation pins and be subsumed by a LONG_PRESS_RECOGNIZED.  If that doesn't happen
          * within the waiting period we'll advance.
          */
         int WAITING_FOR_POSSIBLE_TAP_ON_TAP_SELECTION = 7;
+
         /**
          * The first state in the Tap-gesture processing pipeline where we know we're processing
          * a Tap-gesture that won't be converted into a long-press (from tap on tap-selection).  It
          * may later be suppressed or ignored due to being on an invalid character.
          */
         int TAP_GESTURE_COMMIT = 8;
-        /**
-         * Gathers text surrounding the selection.
-         */
+
+        /** Gathers text surrounding the selection. */
         int GATHERING_SURROUNDINGS = 9;
-        /**
-         * Decides if the gesture should trigger the UX or be suppressed.
-         */
+
+        /** Decides if the gesture should trigger the UX or be suppressed. */
         int DECIDING_SUPPRESSION = 10;
-        /**
-         * Start showing the Tap UI. Currently this means select the word that was tapped.
-         */
+
+        /** Start showing the Tap UI. Currently this means select the word that was tapped. */
         int START_SHOWING_TAP_UI = 11;
-        /**
-         * Show the full Tap UI. Currently this means showing the Overlay Panel.
-         */
+
+        /** Show the full Tap UI. Currently this means showing the Overlay Panel. */
         int SHOW_RESOLVING_UI = 12;
+
         /**
          * Resolving the Search Term using the surrounding text and additional context.
          * Currently this makes a server request, which could take a long time.
          */
         int RESOLVING = 13;
-        /**
-         * State when showing the panel in response to a Tap gesture.
-         */
+
+        /** State when showing the panel in response to a Tap gesture. */
         int SHOWING_TAP_SEARCH = 14;
+
         /**
          * This starts the resolving transition that leads to the
          * SHOWING_RESOLVED_LONG_PRESS_SEARCH.
          */
         int RESOLVING_LONG_PRESS_RECOGNIZED = 15;
-        /**
-         * State when showing the panel in response to a longpress gesture that resolved.
-         */
+
+        /** State when showing the panel in response to a longpress gesture that resolved. */
         int SHOWING_RESOLVED_LONG_PRESS_SEARCH = 16;
-        /**
-         * The final resting state for all searches once they have completed.
-         */
+
+        /** The final resting state for all searches once they have completed. */
         int SEARCH_COMPLETED = 17;
     }
 
@@ -215,7 +210,8 @@ class ContextualSearchInternalStateController {
      * @param state The new starting {@link InternalState} we're now in.
      */
     void enter(@InternalState int state) {
-        assert state == InternalState.UNDEFINED || state == InternalState.IDLE
+        assert state == InternalState.UNDEFINED
+                || state == InternalState.IDLE
                 || state == InternalState.LONG_PRESS_RECOGNIZED
                 || state == InternalState.RESOLVING_LONG_PRESS_RECOGNIZED
                 || state == InternalState.TAP_RECOGNIZED
@@ -406,7 +402,8 @@ class ContextualSearchInternalStateController {
                 reset(StateChangeReason.BASE_PAGE_TAP);
                 break;
             case InternalState.TAP_RECOGNIZED:
-                transitionTo(mPreviousState != InternalState.UNDEFINED
+                transitionTo(
+                        mPreviousState != InternalState.UNDEFINED
                                         && mPreviousState != InternalState.IDLE
                                 ? InternalState.WAITING_FOR_POSSIBLE_TAP_ON_TAP_SELECTION
                                 : InternalState.TAP_GESTURE_COMMIT);
@@ -434,12 +431,14 @@ class ContextualSearchInternalStateController {
                 transitionTo(InternalState.SHOW_RESOLVING_UI);
                 break;
             case InternalState.SHOW_RESOLVING_UI:
-                transitionTo(mPolicy.shouldPreviousGestureResolve()
+                transitionTo(
+                        mPolicy.shouldPreviousGestureResolve()
                                 ? InternalState.RESOLVING
                                 : InternalState.SHOWING_TAP_SEARCH);
                 break;
             case InternalState.RESOLVING:
-                transitionTo(mSelectionType == SelectionType.TAP
+                transitionTo(
+                        mSelectionType == SelectionType.TAP
                                 ? InternalState.SHOWING_TAP_SEARCH
                                 : InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH);
                 break;

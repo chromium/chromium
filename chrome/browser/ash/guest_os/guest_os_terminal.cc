@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
@@ -52,7 +54,7 @@
 
 namespace guest_os {
 
-// web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+// web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
 const char kTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
 
@@ -323,7 +325,7 @@ void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
 }
 
 void RecordTerminalSettingsChangesUMAs(Profile* profile) {
-  static constexpr auto kSettingsMap = base::MakeFixedFlatMap<base::StringPiece,
+  static constexpr auto kSettingsMap = base::MakeFixedFlatMap<std::string_view,
                                                               TerminalSetting>({
       {"alt-gr-mode", TerminalSetting::kAltGrMode},
       {"alt-backspace-is-meta-backspace",
@@ -420,7 +422,7 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
       continue;
     }
     const auto* it = kSettingsMap.find(
-        base::StringPiece(item.first).substr(kSettingPrefixSize));
+        std::string_view(item.first).substr(kSettingPrefixSize));
     base::UmaHistogramEnumeration(
         "Crostini.TerminalSettingsChanged",
         it != kSettingsMap.end() ? it->second : TerminalSetting::kUnknown);
@@ -430,7 +432,7 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
 std::string GetTerminalSettingBackgroundColor(
     Profile* profile,
     GURL url,
-    absl::optional<SkColor> opener_background_color) {
+    std::optional<SkColor> opener_background_color) {
   auto key = [](const std::string& profile) {
     return GetSettingsKey(kSettingsPrefixHterm, profile,
                           kSettingsKeyBackgroundColor);
@@ -591,7 +593,7 @@ void AddTerminalMenuShortcuts(
 bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  absl::optional<base::Value::Dict> shortcut =
+  std::optional<base::Value::Dict> shortcut =
       base::JSONReader::ReadDict(shortcut_id);
   if (!shortcut) {
     return false;

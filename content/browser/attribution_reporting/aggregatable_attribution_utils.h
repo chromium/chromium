@@ -5,11 +5,11 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_AGGREGATABLE_ATTRIBUTION_UTILS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_AGGREGATABLE_ATTRIBUTION_UTILS_H_
 
+#include <optional>
 #include <vector>
 
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 class AggregatableTriggerData;
@@ -37,7 +37,7 @@ CreateAggregatableHistogram(
     const base::Time& trigger_time,
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<attribution_reporting::AggregatableTriggerData>&,
-    const attribution_reporting::AggregatableValues&);
+    const std::vector<attribution_reporting::AggregatableValues>&);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -49,7 +49,7 @@ enum class AssembleAggregatableReportStatus {
   kMaxValue = kAssembleReportFailed,
 };
 
-CONTENT_EXPORT absl::optional<AggregatableReportRequest>
+CONTENT_EXPORT std::optional<AggregatableReportRequest>
 CreateAggregatableReportRequest(const AttributionReport& report);
 
 CONTENT_EXPORT base::Time RoundDownToWholeDaySinceUnixEpoch(base::Time);

@@ -11,6 +11,7 @@
 
 #include <cstring>
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -160,9 +161,9 @@ TEST_F(RegistryTest, TruncatedCharTest) {
 
   RegistryValueIterator iterator(HKEY_CURRENT_USER, root_key().c_str());
   ASSERT_TRUE(iterator.Valid());
-  // Avoid having to use EXPECT_STREQ here by leveraging StringPiece's
+  // Avoid having to use EXPECT_STREQ here by leveraging std::string_view's
   // operator== to perform a deep comparison.
-  EXPECT_EQ(WStringPiece(kName), WStringPiece(iterator.Name()));
+  EXPECT_EQ(std::wstring_view(kName), std::wstring_view(iterator.Name()));
   // ValueSize() is in bytes.
   ASSERT_EQ(std::size(kData), iterator.ValueSize());
   // Value() is NUL terminated.
@@ -183,17 +184,17 @@ TEST_F(RegistryTest, ValueIteratorEmptyKey) {
 
 // Tests that the default value is seen by a value iterator.
 TEST_F(RegistryTest, ValueIteratorDefaultValue) {
-  const WStringPiece kTestString(L"i miss you");
+  const std::wstring_view kTestString(L"i miss you");
   ASSERT_EQ(RegKey(HKEY_CURRENT_USER, root_key().c_str(), KEY_SET_VALUE)
                 .WriteValue(nullptr, kTestString.data()),
             ERROR_SUCCESS);
   RegistryValueIterator iterator(HKEY_CURRENT_USER, root_key().c_str());
   EXPECT_EQ(iterator.ValueCount(), 1U);
   ASSERT_TRUE(iterator.Valid());
-  EXPECT_EQ(WStringPiece(iterator.Name()), WStringPiece());
+  EXPECT_EQ(std::wstring_view(iterator.Name()), std::wstring_view());
   EXPECT_EQ(iterator.ValueSize(), (kTestString.size() + 1) * sizeof(wchar_t));
   EXPECT_EQ(iterator.Type(), REG_SZ);
-  EXPECT_EQ(WStringPiece(iterator.Value()), kTestString);
+  EXPECT_EQ(std::wstring_view(iterator.Value()), kTestString);
   ++iterator;
   EXPECT_FALSE(iterator.Valid());
 }
@@ -332,8 +333,8 @@ class TestChangeDelegate {
   TestChangeDelegate() = default;
   ~TestChangeDelegate() = default;
 
-  void OnKeyChanged() {
-    RunLoop::QuitCurrentWhenIdleDeprecated();
+  void OnKeyChanged(base::OnceClosure quit_closure) {
+    std::move(quit_closure).Run();
     called_ = true;
   }
 
@@ -353,12 +354,16 @@ TEST_F(RegistryTest, ChangeCallback) {
   RegKey key;
   TestChangeDelegate delegate;
   test::TaskEnvironment task_environment;
+  base::RunLoop loop1;
+  base::RunLoop loop2;
+  base::RunLoop loop3;
 
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, root_key().c_str(), KEY_READ));
 
-  ASSERT_TRUE(key.StartWatching(
-      BindOnce(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
+  ASSERT_TRUE(key.StartWatching(BindOnce(&TestChangeDelegate::OnKeyChanged,
+                                         Unretained(&delegate),
+                                         loop1.QuitWhenIdleClosure())));
   EXPECT_FALSE(delegate.WasCalled());
 
   // Make some change.
@@ -370,22 +375,24 @@ TEST_F(RegistryTest, ChangeCallback) {
 
   // Allow delivery of the notification.
   EXPECT_FALSE(delegate.WasCalled());
-  RunLoop().Run();
+  loop1.Run();
 
   ASSERT_TRUE(delegate.WasCalled());
   EXPECT_FALSE(delegate.WasCalled());
 
-  ASSERT_TRUE(key.StartWatching(
-      BindOnce(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
+  ASSERT_TRUE(key.StartWatching(BindOnce(&TestChangeDelegate::OnKeyChanged,
+                                         Unretained(&delegate),
+                                         loop2.QuitWhenIdleClosure())));
 
   // Change something else.
   EXPECT_EQ(ERROR_SUCCESS, key2.WriteValue(L"name2", L"data2"));
-  RunLoop().Run();
+  loop2.Run();
   ASSERT_TRUE(delegate.WasCalled());
 
-  ASSERT_TRUE(key.StartWatching(
-      BindOnce(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
-  RunLoop().RunUntilIdle();
+  ASSERT_TRUE(key.StartWatching(BindOnce(&TestChangeDelegate::OnKeyChanged,
+                                         Unretained(&delegate),
+                                         loop3.QuitWhenIdleClosure())));
+  loop3.RunUntilIdle();
   EXPECT_FALSE(delegate.WasCalled());
 }
 

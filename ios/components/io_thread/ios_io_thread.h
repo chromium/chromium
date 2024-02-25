@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
@@ -73,7 +74,7 @@ class IOSIOThread : public web::WebThreadDelegate {
       ~SystemRequestContextLeakChecker();
 
      private:
-      Globals* const globals_;
+      const raw_ptr<Globals> globals_;
     };
 
     Globals();
@@ -154,7 +155,7 @@ class IOSIOThread : public web::WebThreadDelegate {
 
   // The NetLog is owned by the application context, to allow logging from other
   // threads during shutdown, but is used most frequently on the IO thread.
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
 
   // These member variables are basically global, but their lifetimes are tied
   // to the IOSIOThread.  IOSIOThread owns them all, despite not using
@@ -164,7 +165,7 @@ class IOSIOThread : public web::WebThreadDelegate {
   // These member variables are initialized in Init() and do not change for the
   // lifetime of the IO thread.
 
-  Globals* globals_;
+  raw_ptr<Globals> globals_;
 
   net::HttpNetworkSessionParams params_;
 

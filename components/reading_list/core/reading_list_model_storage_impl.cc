@@ -105,7 +105,7 @@ void ReadingListModelStorageImpl::CommitTransaction() {
 }
 
 void ReadingListModelStorageImpl::OnDatabaseLoad(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -141,7 +141,7 @@ void ReadingListModelStorageImpl::OnDatabaseLoad(
 
 void ReadingListModelStorageImpl::OnReadAllMetadata(
     ReadingListEntries loaded_entries,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("ui", "ReadingListModelStorageImpl::OnReadAllMetadata");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -156,12 +156,12 @@ void ReadingListModelStorageImpl::OnReadAllMetadata(
 }
 
 void ReadingListModelStorageImpl::OnDatabaseSave(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   return;
 }
 
 void ReadingListModelStorageImpl::OnStoreCreated(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {

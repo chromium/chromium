@@ -20,7 +20,7 @@
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/crx_file/crx_verifier.h"
-#include "components/update_client/component_unpacker.h"
+#include "components/update_client/unpacker.h"
 #include "components/update_client/update_client.h"
 
 namespace base {
@@ -115,7 +115,7 @@ class RecoveryComponentActionHandler : public update_client::ActionHandler {
   virtual void Elevate(Callback callback) = 0;
 
   void Unpack();
-  void UnpackComplete(const update_client::ComponentUnpacker::Result& result);
+  void UnpackComplete(const update_client::Unpacker::Result& result);
   void RunCommand(const base::CommandLine& cmdline);
 
   // `process` contains the process object, if the process was successfully

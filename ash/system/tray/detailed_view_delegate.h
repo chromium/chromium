@@ -34,7 +34,7 @@ class ASH_EXPORT DetailedViewDelegate {
 
   // Returns the margin around the scroll view. Most detailed views should use
   // the default implementation. Shelf pods that reuse detailed views may need
-  // custom margins. Only used with feature QsRevamp.
+  // custom margins.
   virtual gfx::Insets GetScrollViewMargin() const;
 
   // Return the back button used in the title row. Caller takes ownership of the
@@ -60,7 +60,7 @@ class ASH_EXPORT DetailedViewDelegate {
       views::Button::PressedCallback callback);
 
  private:
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
 };
 
 }  // namespace ash

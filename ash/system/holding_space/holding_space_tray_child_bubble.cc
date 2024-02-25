@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -35,20 +36,26 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(167);
 // Helpers ---------------------------------------------------------------------
 
 // Returns a callback which deletes the associated animation observer after
-// running another `callback`.
-using AnimationCompletedCallback = base::OnceCallback<void(bool aborted)>;
+// running another `callback` by returning true. This workaround is needed
+// because callbacks that bind to a WeakPtr receiver cannot return a non-void
+// type.
+//
+// TODO(crbug.com/1506856): It would be nice if CallbackLayerAnimationObserver
+// took a OnceCallback and used that as an implicit signal to self-delete the
+// observer on completion. Until then, this needs to use a RepeatingCallback,
+// even though the callback only runs once.
+using AnimationCompletedCallback = base::RepeatingCallback<void(bool aborted)>;
 base::RepeatingCallback<bool(const ui::CallbackLayerAnimationObserver&)>
 DeleteObserverAfterRunning(AnimationCompletedCallback callback) {
   return base::BindRepeating(
-      [](AnimationCompletedCallback callback,
+      [](const AnimationCompletedCallback& callback,
          const ui::CallbackLayerAnimationObserver& observer) {
-        // NOTE: It's safe to move `callback` since this code will only run
-        // once due to deletion of the associated `observer`. The `observer` is
-        // deleted by returning `true`.
-        std::move(callback).Run(/*aborted=*/observer.aborted_count() > 0);
+        callback.Run(/*aborted=*/observer.aborted_count() > 0);
+        // Returning true is load-bearing; when returning true, the observer
+        // self-deletes so this callback will only ever run at most once.
         return true;
       },
-      base::Passed(std::move(callback)));
+      std::move(callback));
 }
 
 // Returns whether the given holding space item views `section` has content
@@ -87,13 +94,13 @@ class TopAlignedBoxLayout : public views::BoxLayout {
 
  private:
   // views::BoxLayout:
-  void Layout(views::View* host) override {
-    if (host->height() >= host->GetPreferredSize().height()) {
-      views::BoxLayout::Layout(host);
+  void LayoutImpl() override {
+    if (host_view()->height() >= host_view()->GetPreferredSize().height()) {
+      views::BoxLayout::LayoutImpl();
       return;
     }
 
-    gfx::Rect contents_bounds(host->GetContentsBounds());
+    gfx::Rect contents_bounds(host_view()->GetContentsBounds());
     contents_bounds.Inset(inside_border_insets());
 
     const int width = contents_bounds.width();
@@ -105,7 +112,7 @@ class TopAlignedBoxLayout : public views::BoxLayout {
     // `available_height` is tracked to later determine if there will be
     // vertical overflow of `contents_bounds`.
     int available_height = contents_bounds.height();
-    for (views::View* child : host->children()) {
+    for (views::View* child : host_view()->children()) {
       if (!child->GetVisible())
         continue;
 
@@ -123,7 +130,7 @@ class TopAlignedBoxLayout : public views::BoxLayout {
 
     // Perform child layouts, ceding height where possible to fit within
     // `contents_bounds`. Note: this does not guarantee that `contents_bounds`
-    // will not be exceeded. Overflow will be clipped by the `host` view.
+    // will not be exceeded. Overflow will be clipped by the `host_view()` view.
     for (auto& [child, height] : children_with_heights) {
       // A `child` view is willing to cede height if it does not specify a
       // minimum size. This is the case for the `PinnedFilesSection` which
@@ -320,10 +327,6 @@ std::unique_ptr<views::View> HoldingSpaceTrayChildBubble::CreatePlaceholder() {
   return nullptr;
 }
 
-const char* HoldingSpaceTrayChildBubble::GetClassName() const {
-  return "HoldingSpaceTrayChildBubble";
-}
-
 void HoldingSpaceTrayChildBubble::ChildPreferredSizeChanged(
     views::View* child) {
   PreferredSizeChanged();
@@ -391,9 +394,10 @@ void HoldingSpaceTrayChildBubble::MaybeAnimateIn() {
 
   // NOTE: `animate_in_observer` is deleted after `OnAnimateInCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_in_observer =
-      new ui::CallbackLayerAnimationObserver(DeleteObserverAfterRunning(
-          base::BindOnce(&HoldingSpaceTrayChildBubble::OnAnimateInCompleted,
-                         weak_factory_.GetWeakPtr())));
+      new ui::CallbackLayerAnimationObserver(
+          DeleteObserverAfterRunning(base::BindRepeating(
+              &HoldingSpaceTrayChildBubble::OnAnimateInCompleted,
+              weak_factory_.GetWeakPtr())));
 
   AnimateIn(animate_in_observer);
   animate_in_observer->SetActive();
@@ -410,9 +414,10 @@ void HoldingSpaceTrayChildBubble::MaybeAnimateOut() {
 
   // NOTE: `animate_out_observer` is deleted after `OnAnimateOutCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_out_observer =
-      new ui::CallbackLayerAnimationObserver(DeleteObserverAfterRunning(
-          base::BindOnce(&HoldingSpaceTrayChildBubble::OnAnimateOutCompleted,
-                         weak_factory_.GetWeakPtr())));
+      new ui::CallbackLayerAnimationObserver(
+          DeleteObserverAfterRunning(base::BindRepeating(
+              &HoldingSpaceTrayChildBubble::OnAnimateOutCompleted,
+              weak_factory_.GetWeakPtr())));
 
   AnimateOut(animate_out_observer);
   animate_out_observer->SetActive();
@@ -503,5 +508,8 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
         }));
   }
 }
+
+BEGIN_METADATA(HoldingSpaceTrayChildBubble)
+END_METADATA
 
 }  // namespace ash

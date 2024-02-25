@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/tflite/tflite_converter_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image_frame.h"
@@ -46,7 +47,6 @@
 #include "mediapipe/gpu/MPPMetalUtil.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 #include "tensorflow/lite/delegates/gpu/metal_delegate.h"
-#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_TFLITE_METAL_INFERENCE
 
 namespace {
@@ -95,7 +95,7 @@ struct GPUData {
 // into a TfLiteTensor (float 32) or a GpuBuffer to a tflite::gpu::GlBuffer
 // or MTLBuffer.
 //
-// This calculator is designed to be used with the TfLiteInferenceCalcualtor,
+// This calculator is designed to be used with the TfLiteInferenceCalculator,
 // as a pre-processing step for calculator inputs.
 //
 // IMAGE and IMAGE_GPU inputs are normalized to [-1,1] (default) or [0,1],

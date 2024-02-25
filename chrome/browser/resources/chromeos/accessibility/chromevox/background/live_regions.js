@@ -5,8 +5,11 @@
 /**
  * @fileoverview Implements support for live regions in ChromeVox.
  */
-import {AutomationUtil} from '../../common/automation_util.js';
-import {CursorRange} from '../../common/cursors/range.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {QueueMode, TtsCategory} from '../common/tts_types.js';
 
 import {ChromeVoxRange} from './chromevox_range.js';
@@ -22,7 +25,8 @@ const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 const TreeChangeType = chrome.automation.TreeChangeType;
 
 /**
- * ChromeVox live region handler.
+ * Handles events and announcements associated with "live regions", which are
+ * regions marked as likely to change and important to announce.
  */
 export class LiveRegions {
   /** @private */
@@ -68,8 +72,9 @@ export class LiveRegions {
 
   /** @param {!AutomationNode} area */
   static announceDesktopLiveRegionChanged(area) {
-    if (area.root.role !== RoleType.DESKTOP &&
-        area.root.role !== RoleType.APPLICATION) {
+    const desktopOrApplication =
+        AutomationPredicate.roles([RoleType.DESKTOP, RoleType.APPLICATION]);
+    if (!area.root || !desktopOrApplication(area.root)) {
       return;
     }
 
@@ -315,3 +320,5 @@ LiveRegions.instance;
  * @const {number}
  */
 const DESKTOP_CHANGE_DELAY_MS = 100;
+
+TestImportManager.exportForTesting(LiveRegions);

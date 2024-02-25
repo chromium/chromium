@@ -47,9 +47,11 @@ class ChromeUsbDelegate : public content::UsbDelegate {
   const device::mojom::UsbDeviceInfo* GetDeviceInfo(
       content::BrowserContext* browser_context,
       const std::string& guid) override;
-  bool HasDevicePermission(content::BrowserContext* browser_context,
-                           const url::Origin& origin,
-                           const device::mojom::UsbDeviceInfo& device) override;
+  bool HasDevicePermission(
+      content::BrowserContext* browser_context,
+      content::RenderFrameHost* frame,
+      const url::Origin& origin,
+      const device::mojom::UsbDeviceInfo& device_info) override;
   void GetDevices(
       content::BrowserContext* browser_context,
       blink::mojom::WebUsbService::GetDevicesCallback callback) override;

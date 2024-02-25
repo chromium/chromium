@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_SECURE_CONTEXT_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_SECURE_CONTEXT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/secure_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -41,7 +41,7 @@ class FakeSecureContext : public SecureContext {
 
  private:
   ProtocolVersion protocol_version_;
-  absl::optional<std::string> channel_binding_data_;
+  std::optional<std::string> channel_binding_data_;
 };
 
 }  // namespace ash::secure_channel

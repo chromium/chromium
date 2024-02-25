@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_SHARE_TARGET_INFO_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/nearby_sharing/payload_tracker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyConnection;
 
@@ -28,15 +28,13 @@ class ShareTargetInfo {
   ShareTargetInfo& operator=(ShareTargetInfo&&);
   virtual ~ShareTargetInfo();
 
-  const absl::optional<std::string>& endpoint_id() const {
-    return endpoint_id_;
-  }
+  const std::optional<std::string>& endpoint_id() const { return endpoint_id_; }
 
   void set_endpoint_id(std::string endpoint_id) {
     endpoint_id_ = std::move(endpoint_id);
   }
 
-  const absl::optional<NearbyShareDecryptedPublicCertificate>& certificate()
+  const std::optional<NearbyShareDecryptedPublicCertificate>& certificate()
       const {
     return certificate_;
   }
@@ -60,7 +58,7 @@ class ShareTargetInfo {
     transfer_update_callback_ = std::move(transfer_update_callback);
   }
 
-  const absl::optional<std::string>& token() const { return token_; }
+  const std::optional<std::string>& token() const { return token_; }
 
   void set_token(std::string token) { token_ = std::move(token); }
 
@@ -89,11 +87,11 @@ class ShareTargetInfo {
   }
 
  private:
-  absl::optional<std::string> endpoint_id_;
-  absl::optional<NearbyShareDecryptedPublicCertificate> certificate_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> connection_ = nullptr;
+  std::optional<std::string> endpoint_id_;
+  std::optional<NearbyShareDecryptedPublicCertificate> certificate_;
+  raw_ptr<NearbyConnection> connection_ = nullptr;
   std::unique_ptr<TransferUpdateCallback> transfer_update_callback_;
-  absl::optional<std::string> token_;
+  std::optional<std::string> token_;
   std::unique_ptr<IncomingFramesReader> frames_reader_;
   std::unique_ptr<PairedKeyVerificationRunner> key_verification_runner_;
   std::unique_ptr<PayloadTracker> payload_tracker_;

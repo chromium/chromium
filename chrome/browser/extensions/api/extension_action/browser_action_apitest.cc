@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -35,7 +34,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
@@ -293,12 +291,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_TRUE(extension) << message_;
 
 #if BUILDFLAG(IS_MAC)
-  // We need this on mac so we don't loose 2x representations from browser icon
+  // We need this on mac so we don't lose 2x representations from browser icon
   // in transformations gfx::ImageSkia -> NSImage -> gfx::ImageSkia.
-  std::vector<ui::ResourceScaleFactor> supported_scale_factors;
-  supported_scale_factors.push_back(ui::k100Percent);
-  supported_scale_factors.push_back(ui::k200Percent);
-  ui::SetSupportedResourceScaleFactors(supported_scale_factors);
+  ui::SetSupportedResourceScaleFactors({ui::k100Percent, ui::k200Percent});
 #endif
 
   // We should not be creating icons asynchronously, so we don't need an
@@ -494,29 +489,21 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
 
   static constexpr char kScript[] = "setIcon(%s);";
 
-  const std::string histogram_name =
-      "Extensions.DynamicExtensionActionIconWasVisible";
   {
-    base::HistogramTester histogram_tester;
     EXPECT_EQ("Icon not sufficiently visible.",
               EvalJs(background_page->host_contents(),
                      base::StringPrintf(kScript, "invisibleImageData")));
     // The icon should not have changed.
     EXPECT_TRUE(gfx::test::AreImagesEqual(
         initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-    EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-                testing::ElementsAre(base::Bucket(0, 1)));
   }
 
   {
-    base::HistogramTester histogram_tester;
     EXPECT_EQ("", EvalJs(background_page->host_contents(),
                          base::StringPrintf(kScript, "visibleImageData")));
     // The icon should have changed.
     EXPECT_FALSE(gfx::test::AreImagesEqual(
         initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
-    EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-                testing::ElementsAre(base::Bucket(1, 1)));
   }
 }
 

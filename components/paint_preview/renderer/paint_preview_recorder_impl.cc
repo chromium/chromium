@@ -5,6 +5,7 @@
 #include "components/paint_preview/renderer/paint_preview_recorder_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -25,7 +26,6 @@
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/renderer/paint_preview_recorder_utils.h"
 #include "content/public/renderer/render_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -97,7 +97,7 @@ void BuildAndSendResponse(std::unique_ptr<PaintPreviewTracker> tracker,
 void RecordToFileOnThreadPool(sk_sp<const SkPicture> skp,
                               base::File skp_file,
                               std::unique_ptr<PaintPreviewTracker> tracker,
-                              absl::optional<size_t> max_capture_size,
+                              std::optional<size_t> max_capture_size,
                               FinishedRecording out,
                               CapturePaintPreviewCallback callback) {
   TRACE_EVENT0("paint_preview", "RecordToFileOnThreadPool");
@@ -116,7 +116,7 @@ void RecordToFileOnThreadPool(sk_sp<const SkPicture> skp,
 void SerializeFileRecording(sk_sp<const SkPicture> skp,
                             base::File skp_file,
                             std::unique_ptr<PaintPreviewTracker> tracker,
-                            absl::optional<size_t> max_capture_size,
+                            std::optional<size_t> max_capture_size,
                             FinishedRecording out,
                             CapturePaintPreviewCallback callback) {
   base::ThreadPool::PostTask(
@@ -132,12 +132,12 @@ void SerializeFileRecording(sk_sp<const SkPicture> skp,
 void SerializeMemoryBufferRecording(
     sk_sp<const SkPicture> skp,
     std::unique_ptr<PaintPreviewTracker> tracker,
-    absl::optional<size_t> max_capture_size,
+    std::optional<size_t> max_capture_size,
     FinishedRecording out,
     CapturePaintPreviewCallback callback) {
   TRACE_EVENT0("paint_preview", "SerializeMemoryBufferRecording");
   size_t serialized_size = 0;
-  absl::optional<mojo_base::BigBuffer> buffer =
+  std::optional<mojo_base::BigBuffer> buffer =
       RecordToBuffer(skp, tracker.get(), max_capture_size, &serialized_size);
   out.status = buffer.has_value() ? mojom::PaintPreviewStatus::kOk
                                   : mojom::PaintPreviewStatus::kCaptureFailed;
@@ -156,7 +156,7 @@ void FinishRecordingOnUIThread(cc::PaintRecord recording,
                                std::unique_ptr<PaintPreviewTracker> tracker,
                                RecordingPersistence persistence,
                                base::File skp_file,
-                               absl::optional<size_t> max_capture_size,
+                               std::optional<size_t> max_capture_size,
                                mojom::PaintPreviewCaptureResponsePtr response,
                                CapturePaintPreviewCallback callback) {
   TRACE_EVENT0("paint_preview", "FinishRecordingOnUIThread");
@@ -381,10 +381,10 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
     return;
   }
 
-  // Convert the special value |0| to |absl::nullopt|.
-  absl::optional<size_t> max_capture_size;
+  // Convert the special value |0| to |std::nullopt|.
+  std::optional<size_t> max_capture_size;
   if (params->max_capture_size == 0) {
-    max_capture_size = absl::nullopt;
+    max_capture_size = std::nullopt;
   } else {
     max_capture_size = params->max_capture_size;
     auto* image_ctx = tracker->GetImageSerializationContext();

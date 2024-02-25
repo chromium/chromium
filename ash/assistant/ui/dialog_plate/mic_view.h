@@ -24,9 +24,9 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MicView
     : public AssistantButton,
       public AssistantControllerObserver,
       public AssistantInteractionModelObserver {
- public:
-  METADATA_HEADER(MicView);
+  METADATA_HEADER(MicView, AssistantButton)
 
+ public:
   MicView(AssistantButtonListener* listener,
           AssistantButtonId button_id);
   MicView(const MicView&) = delete;
@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MicView
   // immediately to the next state regardless of |animate|.
   void UpdateState(bool animate);
 
-  raw_ptr<LogoView, ExperimentalAsh> logo_view_;  // Owned by view hierarchy.
+  raw_ptr<LogoView> logo_view_;  // Owned by view hierarchy.
 
   // True when speech level goes above a threshold and sets LogoView in
   // kUserSpeaks state.

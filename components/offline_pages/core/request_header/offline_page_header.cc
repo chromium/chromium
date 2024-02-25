@@ -181,9 +181,7 @@ std::string OfflinePageHeader::GetHeaderValueString() const {
     value += " ";
     value += kOfflinePageHeaderIntentUrlKey;
     value += "=";
-    std::string encoded_intent_url;
-    base::Base64Encode(intent_url.spec(), &encoded_intent_url);
-    value += encoded_intent_url;
+    value += base::Base64Encode(intent_url.spec());
   }
 
   return value;

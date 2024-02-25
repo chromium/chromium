@@ -4,9 +4,7 @@
 
 package org.chromium.content_public.common;
 
-/**
- * Class for information about the process it is running in.
- */
+/** Class for information about the process it is running in. */
 public final class ContentProcessInfo {
     private static boolean sIsChildProcess;
 

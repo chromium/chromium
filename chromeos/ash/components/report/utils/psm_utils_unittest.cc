@@ -6,6 +6,7 @@
 
 #include "chromeos/ash/components/report/utils/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 namespace psm_rlwe = private_membership::rlwe;
 
@@ -16,7 +17,7 @@ TEST(PsmUtilsTest, GeneratePsmIdentifier) {
       psm_rlwe::RlweUseCase_Name(psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY);
   std::string window_id = "20230101";
 
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_identifier =
+  std::optional<psm_rlwe::RlwePlaintextId> psm_identifier =
       GeneratePsmIdentifier(utils::kFakeHighEntropySeed, psm_use_case_str,
                             window_id);
 
@@ -35,15 +36,15 @@ TEST(PsmUtilsTest, GeneratePsmIdentifierMissingParameters) {
   std::string window_id = "20230101";
 
   // Attempt to generate PSM identifiers with various missing parameters.
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_identifier_missing_parameters =
+  std::optional<psm_rlwe::RlwePlaintextId> psm_identifier_missing_parameters =
       GeneratePsmIdentifier(std::string(), std::string(), std::string());
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_identifier_no_window_id =
+  std::optional<psm_rlwe::RlwePlaintextId> psm_identifier_no_window_id =
       GeneratePsmIdentifier(utils::kFakeHighEntropySeed, psm_use_case_str,
                             std::string());
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_identifier_no_use_case =
+  std::optional<psm_rlwe::RlwePlaintextId> psm_identifier_no_use_case =
       GeneratePsmIdentifier(utils::kFakeHighEntropySeed, std::string(),
                             window_id);
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_identifier_no_seed =
+  std::optional<psm_rlwe::RlwePlaintextId> psm_identifier_no_seed =
       GeneratePsmIdentifier(std::string(), psm_use_case_str, window_id);
 
   EXPECT_FALSE(psm_identifier_missing_parameters.has_value());

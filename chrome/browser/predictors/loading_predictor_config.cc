@@ -6,7 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/predictors/predictors_features.h"
-#include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "third_party/blink/public/common/features.h"
 

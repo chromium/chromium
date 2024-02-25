@@ -5,10 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Timeline from 'devtools/panels/timeline/timeline.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that inspector doesn't force styles recalc on operations with inline element styles that result in no changes.\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
@@ -23,6 +25,6 @@ import {PerformanceTestRunner} from 'performance_test_runner';
       }
   `);
 
-  UI.context.setFlavor(Timeline.TimelinePanel, UI.panels.timeline);
+  UI.Context.Context.instance().setFlavor(Timeline.TimelinePanel.TimelinePanel, Timeline.TimelinePanel.TimelinePanel.instance());
   PerformanceTestRunner.performActionsAndPrint('performActions()', 'RecalculateStyles');
 })();

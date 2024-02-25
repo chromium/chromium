@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL(
       'https://127.0.0.1:8443',
       `Tests that OOPIF CacheStorage can also be can be accessed.`);

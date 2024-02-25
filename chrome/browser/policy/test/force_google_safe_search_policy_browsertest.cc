@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <set>
 
 #include "base/synchronization/lock.h"
@@ -20,7 +21,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -50,18 +50,18 @@ IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, LegacySafeSearch) {
     // Override the default SafeSearch setting using policies.
     ApplySafeSearchPolicy(
         legacy_safe_search == 0
-            ? absl::nullopt
-            : absl::make_optional<base::Value>(legacy_safe_search == 1),
+            ? std::nullopt
+            : std::make_optional<base::Value>(legacy_safe_search == 1),
         google_safe_search == 0
-            ? absl::nullopt
-            : absl::make_optional<base::Value>(google_safe_search == 1),
+            ? std::nullopt
+            : std::make_optional<base::Value>(google_safe_search == 1),
         legacy_youtube == 0
-            ? absl::nullopt
-            : absl::make_optional<base::Value>(legacy_youtube == 1),
+            ? std::nullopt
+            : std::make_optional<base::Value>(legacy_youtube == 1),
         youtube_restrict == 0
-            ? absl::nullopt  // subtracting 1 gives
-                             // 0,1,2, see above
-            : absl::make_optional<base::Value>(youtube_restrict - 1));
+            ? std::nullopt  // subtracting 1 gives
+                            // 0,1,2, see above
+            : std::make_optional<base::Value>(youtube_restrict - 1));
 
     // The legacy ForceSafeSearch policy should only have an effect if none of
     // the other 3 policies are defined.
@@ -138,12 +138,12 @@ IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, ForceGoogleSafeSearch) {
   for (int safe_search = 0; safe_search < 3; safe_search++) {
     // Override the Google safe search policy.
     ApplySafeSearchPolicy(
-        absl::nullopt,    // ForceSafeSearch
+        std::nullopt,     // ForceSafeSearch
         safe_search == 0  // ForceGoogleSafeSearch
-            ? absl::nullopt
-            : absl::make_optional<base::Value>(safe_search == 1),
-        absl::nullopt,   // ForceYouTubeSafetyMode
-        absl::nullopt);  // ForceYouTubeRestrict
+            ? std::nullopt
+            : std::make_optional<base::Value>(safe_search == 1),
+        std::nullopt,   // ForceYouTubeSafetyMode
+        std::nullopt);  // ForceYouTubeRestrict
     // Verify that the safe search pref behaves the way we expect.
     PrefService* prefs = browser()->profile()->GetPrefs();
     EXPECT_EQ(safe_search != 0,

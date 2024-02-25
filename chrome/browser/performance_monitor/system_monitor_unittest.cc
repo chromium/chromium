@@ -39,7 +39,7 @@ class TestMetricEvaluatorsHelper : public MetricEvaluatorsHelper {
 
   ~TestMetricEvaluatorsHelper() override = default;
 
-  absl::optional<int> GetFreePhysicalMemoryMb() override {
+  std::optional<int> GetFreePhysicalMemoryMb() override {
     return kFakeFreePhysMemoryMb;
   }
 };

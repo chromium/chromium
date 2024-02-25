@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/stringprintf.h"
@@ -30,16 +29,14 @@ CreateAssignmentsWithStringForStudents(
         GURL(base::StringPrintf(
             "https://classroom.google.com/c/test/a/test_course_id_%d/details",
             i)),
-        absl::nullopt, base::Time(), absl::nullopt));
+        std::nullopt, base::Time(), std::nullopt));
   }
   return assignments;
 }
 
 }  // namespace
 
-FakeGlanceablesClassroomClient::FakeGlanceablesClassroomClient(
-    GlanceablesClassroomClient* client)
-    : original_client_(client) {}
+FakeGlanceablesClassroomClient::FakeGlanceablesClassroomClient() = default;
 
 FakeGlanceablesClassroomClient::~FakeGlanceablesClassroomClient() = default;
 
@@ -71,28 +68,6 @@ void FakeGlanceablesClassroomClient::GetStudentAssignmentsWithoutDueDate(
     GetAssignmentsCallback callback) {
   std::move(callback).Run(
       true, CreateAssignmentsWithStringForStudents("No Due Date", 3));
-}
-
-void FakeGlanceablesClassroomClient::IsTeacherRoleActive(
-    IsRoleEnabledCallback callback) {
-  std::move(callback).Run(false);
-}
-
-void FakeGlanceablesClassroomClient::
-    GetTeacherAssignmentsWithApproachingDueDate(
-        GetAssignmentsCallback callback) {}
-
-void FakeGlanceablesClassroomClient::GetTeacherAssignmentsRecentlyDue(
-    GetAssignmentsCallback callback) {}
-
-void FakeGlanceablesClassroomClient::GetTeacherAssignmentsWithoutDueDate(
-    GetAssignmentsCallback callback) {}
-
-void FakeGlanceablesClassroomClient::GetGradedTeacherAssignments(
-    GetAssignmentsCallback callback) {}
-
-void FakeGlanceablesClassroomClient::OpenUrl(const GURL& url) const {
-  original_client_->OpenUrl(url);
 }
 
 void FakeGlanceablesClassroomClient::OnGlanceablesBubbleClosed() {}

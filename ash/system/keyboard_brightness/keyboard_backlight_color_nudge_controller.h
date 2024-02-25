@@ -49,8 +49,7 @@ class ASH_EXPORT KeyboardBacklightColorNudgeController {
 
   base::OneShotTimer autoclose_;
 
-  raw_ptr<ContextualNudge, DanglingUntriaged | ExperimentalAsh>
-      education_nudge_ = nullptr;
+  raw_ptr<ContextualNudge, DanglingUntriaged> education_nudge_ = nullptr;
 
   base::WeakPtrFactory<KeyboardBacklightColorNudgeController> weak_factory_{
       this};

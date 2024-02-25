@@ -24,10 +24,10 @@ namespace ash {
 // - Draws the thumb with rounded ends
 // - Becomes brighter when the cursor is over the thumb
 class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
- public:
-  METADATA_HEADER(RoundedScrollBar);
+  METADATA_HEADER(RoundedScrollBar, views::ScrollBar)
 
-  explicit RoundedScrollBar(bool horizontal);
+ public:
+  explicit RoundedScrollBar(Orientation orientation);
   RoundedScrollBar(const RoundedScrollBar&) = delete;
   RoundedScrollBar& operator=(const RoundedScrollBar&) = delete;
   ~RoundedScrollBar() override;
@@ -72,7 +72,7 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   void OnThumbBoundsChanged();
 
   // Equivalent to GetThumb() but typed as the inner class `Thumb`.
-  const raw_ptr<Thumb, ExperimentalAsh> thumb_;
+  const raw_ptr<Thumb> thumb_;
 
   // Insets for the scroll track.
   gfx::Insets insets_;

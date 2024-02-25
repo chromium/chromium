@@ -5,10 +5,10 @@
 #include "chromeos/ash/services/quick_pair/public/cpp/battery_notification.h"
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -19,7 +19,7 @@ constexpr int kBatteryPercentageMask = 0b01111111;
 BatteryInfo::BatteryInfo() = default;
 
 BatteryInfo::BatteryInfo(bool is_charging)
-    : is_charging(is_charging), percentage(absl::nullopt) {}
+    : is_charging(is_charging), percentage(std::nullopt) {}
 
 BatteryInfo::BatteryInfo(bool is_charging, int8_t percentage)
     : is_charging(is_charging), percentage(percentage) {}
@@ -87,22 +87,22 @@ BatteryNotification& BatteryNotification::operator=(BatteryNotification&&) =
 BatteryNotification::~BatteryNotification() = default;
 
 // static
-absl::optional<BatteryNotification> BatteryNotification::FromBytes(
+std::optional<BatteryNotification> BatteryNotification::FromBytes(
     const std::vector<uint8_t>& bytes,
     bool show_ui) {
   // Expecting 3 bytes - Left bud, Right bud and case.
   if (bytes.size() != 3) {
     LOG(WARNING) << __func__
                  << ": Invalid bytes length. Expected 3, got: " << bytes.size();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   BatteryInfo left_bud_info = BatteryInfo::FromByte(bytes[0]);
   BatteryInfo right_bud_info = BatteryInfo::FromByte(bytes[1]);
   BatteryInfo case_info = BatteryInfo::FromByte(bytes[2]);
 
-  return absl::make_optional<BatteryNotification>(show_ui, left_bud_info,
-                                                  right_bud_info, case_info);
+  return std::make_optional<BatteryNotification>(show_ui, left_bud_info,
+                                                 right_bud_info, case_info);
 }
 
 }  // namespace quick_pair

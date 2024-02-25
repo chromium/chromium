@@ -18,11 +18,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLClassificationOptions (Helpers)
-- (BOOL)copyToCOptions:(TfLiteClassificationOptions*)cClassificationOptions
-                 error:(NSError**)error;
+- (BOOL)copyToCOptions:(TfLiteClassificationOptions *)cClassificationOptions
+                 error:(NSError **)error;
 
 - (void)deleteAllocatedMemoryOfClassificationOptions:
-    (TfLiteClassificationOptions*)cClassificationOptions;
+    (TfLiteClassificationOptions *)cClassificationOptions;
 @end
 
 NS_ASSUME_NONNULL_END

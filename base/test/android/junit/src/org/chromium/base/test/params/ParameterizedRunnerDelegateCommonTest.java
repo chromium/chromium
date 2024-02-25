@@ -24,12 +24,13 @@ public class ParameterizedRunnerDelegateCommonTest {
     private static Object createTest(TestClass testClass, ParameterSet classParameterSet)
             throws ParameterizedTestInstantiationException {
         return new ParameterizedRunnerDelegateCommon(
-                testClass, classParameterSet, Collections.emptyList())
+                        testClass, classParameterSet, Collections.emptyList())
                 .createTest();
     }
 
     static class BadTestClassWithMoreThanOneConstructor {
         public BadTestClassWithMoreThanOneConstructor() {}
+
         @SuppressWarnings("unused")
         public BadTestClassWithMoreThanOneConstructor(String argument) {}
     }

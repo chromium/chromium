@@ -15,25 +15,26 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_model_type_controller.h"
-#include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_wallet_credential_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_wallet_offer_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_wallet_usage_data_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/addresses/contact_info_model_type_controller.h"
+#include "components/autofill/core/browser/webdata/addresses/contact_info_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/autofill/core/browser/webdata/contact_info_model_type_controller.h"
-#include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/browser/webdata/payments/autofill_wallet_credential_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/payments/autofill_wallet_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/payments/autofill_wallet_offer_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/payments/autofill_wallet_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
 #include "components/history/core/browser/sync/history_model_type_controller.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_model_type_controller.h"
+#include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_model_type_controller.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
-#include "components/password_manager/core/browser/sync/credential_model_type_controller.h"
+#include "components/password_manager/core/browser/sync/password_model_type_controller.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -53,25 +54,20 @@
 #include "components/sync/service/glue/sync_engine_impl.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/model_type_controller.h"
-#include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/syncable_service_based_model_type_controller.h"
 #include "components/sync_bookmarks/bookmark_model_type_controller.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "components/sync_sessions/proxy_tabs_data_type_controller.h"
 #include "components/sync_sessions/session_model_type_controller.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_model_type_controller.h"
+#include "components/webauthn/core/browser/passkey_model_type_controller.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "components/supervised_user/core/browser/supervised_user_settings_model_type_controller.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USER)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using syncer::DataTypeController;
 using syncer::DataTypeManager;
@@ -356,18 +352,9 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     }
   }
 
-  if (!disabled_types.Has(syncer::TYPED_URLS)) {
-    // HistoryModelTypeController uses a proxy delegate internally, as
-    // provided by HistoryService.
+  if (!disabled_types.Has(syncer::HISTORY)) {
     controllers.push_back(std::make_unique<history::HistoryModelTypeController>(
-        syncer::TYPED_URLS, sync_service, sync_client_->GetIdentityManager(),
-        sync_client_->GetHistoryService(), sync_client_->GetPrefService()));
-  }
-
-  if (!disabled_types.Has(syncer::HISTORY) &&
-      base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-    controllers.push_back(std::make_unique<history::HistoryModelTypeController>(
-        syncer::HISTORY, sync_service, sync_client_->GetIdentityManager(),
+        sync_service, sync_client_->GetIdentityManager(),
         sync_client_->GetHistoryService(), sync_client_->GetPrefService()));
   }
 
@@ -378,14 +365,6 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
             sync_client_->GetHistoryService(), sync_client_->GetPrefService()));
   }
 
-  if (!disabled_types.Has(syncer::PROXY_TABS)) {
-    controllers.push_back(
-        std::make_unique<sync_sessions::ProxyTabsDataTypeController>(
-            sync_service, sync_client_->GetPrefService(),
-            base::BindRepeating(
-                &sync_sessions::SessionSyncService::ProxyTabsStateChanged,
-                base::Unretained(sync_client_->GetSessionSyncService()))));
-  }
   if (!disabled_types.Has(syncer::SESSIONS)) {
     syncer::ModelTypeControllerDelegate* delegate =
         sync_client_->GetSessionSyncService()->GetControllerDelegate().get();
@@ -408,8 +387,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     if (profile_password_store_) {
       // |profile_password_store_| can be null in tests.
       controllers.push_back(
-          std::make_unique<password_manager::CredentialModelTypeController>(
-              syncer::PASSWORDS,
+          std::make_unique<password_manager::PasswordModelTypeController>(
               profile_password_store_->CreateSyncControllerDelegate(),
               account_password_store_
                   ? account_password_store_->CreateSyncControllerDelegate()
@@ -420,30 +398,22 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
       // Couple password sharing invitations with password data type.
       if (!disabled_types.Has(syncer::INCOMING_PASSWORD_SHARING_INVITATION) &&
           sync_client_->GetPasswordReceiverService()) {
-        syncer::ModelTypeControllerDelegate* delegate =
-            sync_client_->GetPasswordReceiverService()
-                ->GetControllerDelegate()
-                .get();
-        controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-            syncer::INCOMING_PASSWORD_SHARING_INVITATION,
-            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-                delegate),
-            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-                delegate)));
+        controllers.push_back(
+            std::make_unique<
+                password_manager::
+                    IncomingPasswordSharingInvitationModelTypeController>(
+                sync_service, sync_client_->GetPasswordReceiverService(),
+                sync_client_->GetPrefService()));
       }
 
       if (!disabled_types.Has(syncer::OUTGOING_PASSWORD_SHARING_INVITATION) &&
           sync_client_->GetPasswordSenderService()) {
-        syncer::ModelTypeControllerDelegate* delegate =
-            sync_client_->GetPasswordSenderService()
-                ->GetControllerDelegate()
-                .get();
-        controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-            syncer::OUTGOING_PASSWORD_SHARING_INVITATION,
-            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-                delegate),
-            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-                delegate)));
+        controllers.push_back(
+            std::make_unique<
+                password_manager::
+                    OutgoingPasswordSharingInvitationModelTypeController>(
+                sync_service, sync_client_->GetPasswordSenderService(),
+                sync_client_->GetPrefService()));
       }
     }
   }
@@ -548,18 +518,16 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
         CreateForwardingControllerDelegate(syncer::USER_CONSENTS)));
   }
 
-#if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       !disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)) {
     controllers.push_back(
-        std::make_unique<password_manager::CredentialModelTypeController>(
-            syncer::WEBAUTHN_CREDENTIAL,
+        std::make_unique<webauthn::PasskeyModelTypeController>(
+            sync_service,
             /*delegate_for_full_sync_mode=*/
             CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
             /*delegate_for_transport_mode=*/
-            CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
-            sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
-            sync_service));
+            CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL)));
   }
 #endif
 
@@ -602,6 +570,14 @@ SyncApiComponentFactoryImpl::CreateSyncEngine(
       engines_and_directory_deletion_thread_,
       base::BindRepeating(&syncer::SyncClient::OnLocalSyncTransportDataCleared,
                           base::Unretained(sync_client_)));
+}
+
+bool SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync() {
+  syncer::SyncTransportDataPrefs sync_transport_data_prefs(
+      sync_client_->GetPrefService());
+  // NOTE: Keep this logic consistent with how SyncEngineImpl reports
+  // is-first-sync.
+  return !sync_transport_data_prefs.GetLastSyncedTime().is_null();
 }
 
 void SyncApiComponentFactoryImpl::ClearAllTransportData() {

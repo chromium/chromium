@@ -36,7 +36,7 @@ AutoSigninFirstRunDialogView::AutoSigninFirstRunDialogView(
   auto call_controller = [](AutoSigninFirstRunDialogView* dialog,
                             ControllerCallbackFn func) {
     if (dialog->controller_) {
-      (dialog->controller_.get()->*func)();
+      (dialog->controller_->*func)();
     }
   };
   SetAcceptCallback(
@@ -84,7 +84,7 @@ void AutoSigninFirstRunDialogView::InitWindow() {
   AddChildView(label.release());
 }
 
-BEGIN_METADATA(AutoSigninFirstRunDialogView, views::DialogDelegateView)
+BEGIN_METADATA(AutoSigninFirstRunDialogView)
 END_METADATA
 
 AutoSigninFirstRunPrompt* CreateAutoSigninPromptView(

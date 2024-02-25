@@ -10,7 +10,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_hashing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -22,22 +22,46 @@
 
 namespace blink::v8_compile_hints {
 
-namespace {
-constexpr int kBloomFilterInt32Count = 2048;
-}
-
 std::atomic<bool>
     V8CrowdsourcedCompileHintsProducer::data_generated_for_this_process_ =
         false;
 
+namespace {
+bool ShouldThisProcessGenerateData() {
+  bool compile_hints_forced =
+      base::FeatureList::IsEnabled(features::kForceProduceCompileHints);
+  if (compile_hints_forced) {
+    return true;
+  }
+
+  // Data collection is only enabled on Windows. TODO(chromium:1406506): enable
+  // on more platforms.
+#if BUILDFLAG(IS_WIN)
+  bool compile_hints_enabled =
+      base::FeatureList::IsEnabled(features::kProduceCompileHints2);
+  if (!compile_hints_enabled) {
+    return false;
+  }
+
+  // Decide whether we collect the data based on client-side randomization.
+  // This is further subject to UKM restrictions: whether the user has enabled
+  // the data collection + downsampling. See crbug.com/1483975 .
+  double data_production_level =
+      features::kProduceCompileHintsDataProductionLevel.Get();
+  return base::RandDouble() < data_production_level;
+#else
+  return false;
+#endif
+}
+}  // namespace
+
 V8CrowdsourcedCompileHintsProducer::V8CrowdsourcedCompileHintsProducer(
     Page* page)
     : page_(page) {
-  // Call FeatureList::IsEnabled only once.
-  static bool compile_hints_enabled =
-      base::FeatureList::IsEnabled(features::kProduceCompileHints);
-  if (!compile_hints_enabled) {
-    state_ = State::kFinishedOrDisabled;
+  // Decide whether to produce the data once per renderer process.
+  static bool should_generate_data = ShouldThisProcessGenerateData();
+  if (should_generate_data && !data_generated_for_this_process_) {
+    state_ = State::kCollectingData;
   }
 }
 
@@ -152,7 +176,6 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
 
   // Create a Bloom filter w/ 16 key bits. This results in a Bloom filter
   // containing 2 ^ 16 bits, which equals to 1024 64-bit ints.
-  constexpr int kBloomFilterKeySize = 16;
   static_assert((1 << kBloomFilterKeySize) / (sizeof(int32_t) * 8) ==
                 kBloomFilterInt32Count);
   WTF::BloomFilter<kBloomFilterKeySize> bloom;

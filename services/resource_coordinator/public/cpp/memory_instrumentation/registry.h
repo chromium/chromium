@@ -5,12 +5,12 @@
 #ifndef SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_REGISTRY_H_
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_REGISTRY_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/process/process_handle.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace memory_instrumentation {
 
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(
       mojo::PendingRemote<mojom::ClientProcess> client_process,
       mojom::ProcessType process_type,
       base::ProcessId process_id,
-      const absl::optional<std::string>& service_name) = 0;
+      const std::optional<std::string>& service_name) = 0;
 };
 
 }  // namespace memory_instrumentation

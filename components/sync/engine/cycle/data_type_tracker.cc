@@ -6,8 +6,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <string>
-#include <utility>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -81,9 +79,9 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case AUTOFILL_WALLET_METADATA:
     case AUTOFILL_WALLET_OFFER:
     case AUTOFILL_WALLET_USAGE:
+    case COLLABORATION_GROUP:
     case CONTACT_INFO:
     case THEMES:
-    case TYPED_URLS:
     case EXTENSIONS:
     case SEARCH_ENGINES:
     case APPS:
@@ -103,13 +101,14 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case USER_CONSENTS:
     case SEND_TAB_TO_SELF:
     case SECURITY_EVENTS:
+    case SHARED_TAB_GROUP_DATA:
     case WIFI_CONFIGURATIONS:
     case WEB_APPS:
+    case WEB_APKS:
     case OS_PREFERENCES:
     case OS_PRIORITY_PREFERENCES:
     case WORKSPACE_DESK:
     case NIGORI:
-    case PROXY_TABS:
     case POWER_BOOKMARK:
     case WEBAUTHN_CREDENTIAL:
       return kMediumLocalChangeNudgeDelay;
@@ -146,7 +145,6 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case AUTOFILL_WALLET_OFFER:
     case AUTOFILL_WALLET_USAGE:
     case THEMES:
-    case TYPED_URLS:
     case EXTENSIONS:
     case SEARCH_ENGINES:
     case APPS:
@@ -166,16 +164,18 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case SECURITY_EVENTS:
     case WIFI_CONFIGURATIONS:
     case WEB_APPS:
+    case WEB_APKS:
     case OS_PREFERENCES:
     case OS_PRIORITY_PREFERENCES:
     case WORKSPACE_DESK:
     case NIGORI:
     case SAVED_TAB_GROUP:
     case POWER_BOOKMARK:
-    case PROXY_TABS:
     case WEBAUTHN_CREDENTIAL:
     case INCOMING_PASSWORD_SHARING_INVITATION:
     case OUTGOING_PASSWORD_SHARING_INVITATION:
+    case SHARED_TAB_GROUP_DATA:
+    case COLLABORATION_GROUP:
       return false;
     case UNSPECIFIED:
       NOTREACHED();
@@ -185,8 +185,6 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
 
 }  // namespace
 
-WaitInterval::WaitInterval() : mode(BlockingMode::kUnknown) {}
-
 WaitInterval::WaitInterval(BlockingMode mode, base::TimeDelta length)
     : mode(mode), length(length) {}
 
@@ -194,19 +192,15 @@ WaitInterval::~WaitInterval() = default;
 
 DataTypeTracker::DataTypeTracker(ModelType type)
     : type_(type),
-      local_nudge_count_(0),
-      local_refresh_request_count_(0),
-      initial_sync_required_(false),
-      sync_required_to_resolve_conflict_(false),
       local_change_nudge_delay_(GetDefaultLocalChangeNudgeDelay(type)),
+      quota_(
+          CanGetCommitsFromExtensions(type)
+              ? std::make_unique<CommitQuota>(kInitialTokensForExtensionTypes,
+                                              kRefillIntervalForExtensionTypes)
+              : nullptr),
       depleted_quota_nudge_delay_(kDepletedQuotaNudgeDelayForExtensionTypes) {
   // Sanity check the hardcode value for kMinLocalChangeNudgeDelay.
   DCHECK_GE(local_change_nudge_delay_, kMinLocalChangeNudgeDelay);
-
-  if (CanGetCommitsFromExtensions(type)) {
-    quota_ = std::make_unique<CommitQuota>(kInitialTokensForExtensionTypes,
-                                           kRefillIntervalForExtensionTypes);
-  }
 }
 
 DataTypeTracker::~DataTypeTracker() = default;
@@ -382,13 +376,19 @@ void DataTypeTracker::UpdateLocalChangeNudgeDelay(base::TimeDelta delay) {
   }
 }
 
-base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay() const {
+base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay(
+    bool is_single_client) const {
   if (quota_ && !quota_->HasTokensAvailable()) {
     base::UmaHistogramEnumeration("Sync.ModelTypeCommitWithDepletedQuota",
                                   ModelTypeHistogramValue(type_));
     return depleted_quota_nudge_delay_;
   }
-  return local_change_nudge_delay_;
+  base::TimeDelta result = local_change_nudge_delay_;
+  if (is_single_client &&
+      base::FeatureList::IsEnabled(kSyncIncreaseNudgeDelayForSingleClient)) {
+    result *= kSyncIncreaseNudgeDelayForSingleClientFactor.Get();
+  }
+  return result;
 }
 
 base::TimeDelta DataTypeTracker::GetRemoteInvalidationDelay() const {
@@ -415,9 +415,9 @@ void DataTypeTracker::SetLocalChangeNudgeDelayIgnoringMinForTest(
 }
 
 void DataTypeTracker::SetQuotaParamsIfExtensionType(
-    absl::optional<int> max_tokens,
-    absl::optional<base::TimeDelta> refill_interval,
-    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {
+    std::optional<int> max_tokens,
+    std::optional<base::TimeDelta> refill_interval,
+    std::optional<base::TimeDelta> depleted_quota_nudge_delay) {
   if (!quota_) {
     return;
   }

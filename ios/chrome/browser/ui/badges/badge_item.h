@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/infobars/badge_state.h"
+#import "ios/chrome/browser/infobars/model/badge_state.h"
 #import "ios/chrome/browser/ui/badges/badge_type.h"
 
 // Holds properties and values the UI needs to configure a badge button.

@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -32,19 +33,19 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 
 class StackTracer {
  public:
-  StackTracer(size_t trace_count) : trace_count(trace_count) {}
+  StackTracer(size_t trace_count) : trace_count_(trace_count) {}
   void Trace() {
-    size_t tmp;
-    base::debug::StackTrace st(trace_count);
-    const void* addresses = st.Addresses(&tmp);
+    StackTrace st(trace_count_);
+    span<const void* const> addresses = st.addresses();
     // make sure a valid array of stack frames is returned
-    EXPECT_NE(addresses, nullptr);
+    ASSERT_FALSE(addresses.empty());
+    EXPECT_TRUE(addresses[0]);
     // make sure the test generates the intended count of stack frames
-    EXPECT_EQ(trace_count, tmp);
+    EXPECT_EQ(trace_count_, addresses.size());
   }
 
  private:
-  const size_t trace_count;
+  const size_t trace_count_;
 };
 
 void MultiObjTest(size_t trace_count) {

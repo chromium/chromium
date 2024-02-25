@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,15 +30,17 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/downloads_resources.h"
 #include "chrome/grit/downloads_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/google/core/common/google_util.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -50,6 +53,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "url/gurl.h"
 
 using content::BrowserContext;
 using content::DownloadManager;
@@ -91,14 +95,12 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"statusRemoved", IDS_DOWNLOAD_FILE_REMOVED},
 
       // Dangerous file.
-      {"dangerFileDesc", IDS_BLOCK_REASON_GENERIC_DOWNLOAD},
       {"dangerSave", IDS_CONFIRM_DOWNLOAD},
       {"dangerRestore", IDS_CONFIRM_DOWNLOAD_RESTORE},
       {"dangerDiscard", IDS_DISCARD_DOWNLOAD},
       {"dangerReview", IDS_REVIEW_DOWNLOAD},
 
       // Deep scanning strings.
-      {"deepScannedSafeDesc", IDS_DEEP_SCANNED_SAFE_DESCRIPTION},
       {"deepScannedFailedDesc", IDS_DEEP_SCANNED_FAILED_DESCRIPTION},
       {"deepScannedOpenedDangerousDesc",
        IDS_DEEP_SCANNED_OPENED_DANGEROUS_DESCRIPTION},
@@ -109,6 +111,15 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"blockedTooLargeDesc", IDS_BLOCKED_TOO_LARGE_DESCRIPTION},
       {"blockedPasswordProtectedDesc",
        IDS_BLOCKED_PASSWORD_PROTECTED_DESCRIPTION},
+      {"asyncScanningDownloadDesc", IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED},
+      {"asyncScanningDownloadDescSecond",
+       IDS_BLOCK_REASON_DEEP_SCANNING_SECOND_UPDATED},
+      {"promptForScanningDesc", IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED},
+      {"promptForLocalPasswordScanningDesc",
+       IDS_BLOCK_REASON_PROMPT_FOR_LOCAL_PASSWORD_SCANNING},
+      {"controlDeepScan", IDS_DOWNLOAD_DEEP_SCAN_UPDATED},
+      {"controlBypassDeepScan", IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED},
+      {"controlLocalPasswordScan", IDS_DOWNLOAD_LOCAL_PASSWORD_SCAN},
 
       // Controls.
       {"controlPause", IDS_DOWNLOAD_LINK_PAUSE},
@@ -123,44 +134,80 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
       {"undo", IDS_DOWNLOAD_UNDO},
+      {"controlKeepDangerous", IDS_DOWNLOAD_KEEP_DANGEROUS_FILE},
+      {"controlKeepSuspicious", IDS_DOWNLOAD_KEEP_SUSPICIOUS_FILE},
+      {"controlKeepUnverified", IDS_DOWNLOAD_KEEP_UNVERIFIED_FILE},
+      {"controlKeepInsecure", IDS_DOWNLOAD_KEEP_INSECURE_FILE},
+
+      // Accessible labels for file icons.
+      {"accessibleLabelDangerous",
+       IDS_DOWNLOAD_DANGEROUS_ICON_ACCESSIBLE_LABEL},
+      {"accessibleLabelSuspicious",
+       IDS_DOWNLOAD_SUSPICIOUS_ICON_ACCESSIBLE_LABEL},
+      {"accessibleLabelInsecure", IDS_DOWNLOAD_INSECURE_ICON_ACCESSIBLE_LABEL},
+      {"accessibleLabelUnverified",
+       IDS_DOWNLOAD_UNVERIFIED_ICON_ACCESSIBLE_LABEL},
+
+      // Screenreader announcements.
+      {"screenreaderSavedDangerous", IDS_DOWNLOAD_SCREENREADER_SAVED_DANGEROUS},
+      {"screenreaderSavedSuspicious",
+       IDS_DOWNLOAD_SCREENREADER_SAVED_SUSPICIOUS},
+      {"screenreaderSavedInsecure", IDS_DOWNLOAD_SCREENREADER_SAVED_INSECURE},
+      {"screenreaderSavedUnverified",
+       IDS_DOWNLOAD_SCREENREADER_SAVED_UNVERIFIED},
+      {"screenreaderPaused", IDS_DOWNLOAD_SCREENREADER_PAUSED},
+      {"screenreaderResumed", IDS_DOWNLOAD_SCREENREADER_RESUMED},
+      {"screenreaderCanceled", IDS_DOWNLOAD_SCREENREADER_CANCELED},
+
+      // Warning bypass dialog.
+      {"warningBypassDialogTitle", IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE},
+      {"warningBypassDialogDescription",
+       IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_DESCRIPTION},
+      {"warningBypassDialogLearnMoreLink",
+       IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_LEARN_MORE_LINK},
+      {"warningBypassDialogCancel", IDS_CANCEL},
   };
   source->AddLocalizedStrings(kStrings);
 
+  // New chrome://downloads icons, colors, strings, etc. to be consistent with
+  // download bubble.
+  bool improved_download_warnings_ux = base::FeatureList::IsEnabled(
+      safe_browsing::kImprovedDownloadPageWarnings);
+  source->AddBoolean("improvedDownloadWarningsUX",
+                     improved_download_warnings_ux);
+  source->AddLocalizedString("dangerFileDesc",
+                             improved_download_warnings_ux
+                                 ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_FILETYPE
+                                 : IDS_BLOCK_REASON_GENERIC_DOWNLOAD);
   source->AddLocalizedString("dangerDownloadDesc",
-                             IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
+                             improved_download_warnings_ux
+                                 ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS
+                                 : IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
   source->AddLocalizedString(
       "dangerUncommonDesc",
       requests_ap_verdicts
           ? IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD_IN_ADVANCED_PROTECTION
-          : IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD);
-  source->AddLocalizedString("dangerSettingsDesc",
-                             IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
+          : (improved_download_warnings_ux
+                 ? IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON
+                 : IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD));
+  source->AddLocalizedString(
+      "dangerSettingsDesc", improved_download_warnings_ux
+                                ? IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED
+                                : IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
   source->AddLocalizedString("insecureDownloadDesc",
-                             IDS_BLOCK_REASON_INSECURE_DOWNLOAD);
-  source->AddLocalizedString("accountCompromiseDownloadDesc",
-                             IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
-
-  bool update_deep_scanning_ux =
-      base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX);
-  source->AddLocalizedString("asyncScanningDownloadDesc",
-                             update_deep_scanning_ux
-                                 ? IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED
-                                 : IDS_BLOCK_REASON_DEEP_SCANNING);
-  source->AddLocalizedString("asyncScanningDownloadDescSecond",
-                             IDS_BLOCK_REASON_DEEP_SCANNING_SECOND_UPDATED);
-  source->AddLocalizedString("promptForScanningDesc",
-                             update_deep_scanning_ux
-                                 ? IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED
-                                 : IDS_BLOCK_REASON_PROMPT_FOR_SCANNING);
-  source->AddLocalizedString("controlDeepScan",
-                             update_deep_scanning_ux
-                                 ? IDS_DOWNLOAD_DEEP_SCAN_UPDATED
-                                 : IDS_DOWNLOAD_DEEP_SCAN);
-  source->AddLocalizedString("controlBypassDeepScan",
-                             update_deep_scanning_ux
-                                 ? IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED
-                                 : IDS_DOWNLOAD_BYPASS_DEEP_SCAN);
-  source->AddBoolean("updateDeepScanningUX", update_deep_scanning_ux);
+                             improved_download_warnings_ux
+                                 ? IDS_BLOCK_DOWNLOAD_REASON_INSECURE
+                                 : IDS_BLOCK_REASON_INSECURE_DOWNLOAD);
+  source->AddLocalizedString(
+      "noSafeBrowsingDesc",
+      IDS_BLOCK_DOWNLOAD_REASON_UNVERIFIED_NO_SAFE_BROWSING);
+  source->AddLocalizedString("controlDeleteFromHistory",
+                             IDS_DOWNLOAD_DELETE_FROM_HISTORY);
+  source->AddLocalizedString(
+      "toastDeletedFromHistoryStillOnDevice",
+      IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE);
+  source->AddLocalizedString("toastDeletedFromHistory",
+                             IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in downloads/downloads.html
@@ -178,17 +225,35 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
 
   source->AddLocalizedString("inIncognito", IDS_DOWNLOAD_IN_INCOGNITO);
 
-  source->AddBoolean(
-      "allowOpenNow",
-      !enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-           profile)
-           ->DelayUntilVerdict(
-               enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED));
+  // The URL to open when the user clicks on "Learn more" for a blocked
+  // dangerous file.
+  source->AddString("blockedLearnMoreUrl",
+                    google_util::AppendGoogleLocaleParam(
+                        GURL(chrome::kDownloadBlockedLearnMoreURL),
+                        g_browser_process->GetApplicationLocale())
+                        .spec());
 
   return source;
 }
 
 }  // namespace
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// DownloadsUIConfig
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DownloadsUIConfig::DownloadsUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIDownloadsHost) {}
+
+DownloadsUIConfig::~DownloadsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+DownloadsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                         const GURL& url) {
+  return std::make_unique<DownloadsUI>(web_ui);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

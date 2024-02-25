@@ -17,8 +17,6 @@ features:
 type: main
 schema:
   type: boolean
-supported_chrome_os_management:
-- google_cloud
 items:
 - caption: Enable Kiosk troubleshooting tools.
   value: true

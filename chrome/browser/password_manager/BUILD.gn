@@ -10,20 +10,25 @@ group("password_manager") {
 }
 
 source_set("backend_factory") {
+  sources = [
+    "password_store_backend_factory.cc",
+    "password_store_backend_factory.h",
+  ]
+
   deps = [
     ":password_manager_buildflags",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/common:common",
     "//components/prefs",
   ]
   if (is_android) {
     deps += [
       "//chrome/browser/password_manager/android:backend",
+      "//chrome/browser/password_manager/android:utils",
       "//components/webauthn/android",
     ]
   }
-
-  sources = [ "password_store_backend_factory.cc" ]
 }
 
 buildflag_header("password_manager_buildflags") {

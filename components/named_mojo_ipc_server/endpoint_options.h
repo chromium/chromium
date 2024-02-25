@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_ENDPOINT_OPTIONS_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_ENDPOINT_OPTIONS_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <string>
@@ -20,8 +21,8 @@ namespace named_mojo_ipc_server {
 struct EndpointOptions {
   // DEPRECATED: New callers should not use an isolated connection. Pass a
   // valid message pipe ID instead.
-  static constexpr absl::optional<uint64_t> kUseIsolatedConnection =
-      absl::nullopt;
+  static constexpr std::optional<uint64_t> kUseIsolatedConnection =
+      std::nullopt;
 
   // The server name to start the NamedPlatformChannel. Must not be empty.
   mojo::NamedPlatformChannel::ServerName server_name;
@@ -31,7 +32,7 @@ struct EndpointOptions {
   // client must connect using an isolated connection.
   // Note that using an isolated connection is DEPRECATED and new callers should
   // always pass a valid message pipe ID.
-  absl::optional<uint64_t> message_pipe_id;
+  std::optional<uint64_t> message_pipe_id;
 
   // Extra flags added when sending the outgoing invitation.
   MojoSendInvitationFlags extra_send_invitation_flags =

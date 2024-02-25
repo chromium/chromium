@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, DuplexOption, DuplexType, Margins, MarginsType, MediaSizeOption, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
+import type {DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -261,6 +262,29 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.set('documentSettings.allPagesHaveCustomSize', true);
     assertFalse(model.settings.mediaSize.available);
     assertFalse(model.settings.color.setFromUi);
+  });
+
+  test('borderless', function() {
+    // Check that borderless setting is unavailable without the feature flag.
+    loadTimeData.overrideValues({isBorderlessPrintingEnabled: false});
+    model.set(
+        'destination.capabilities',
+        getCddTemplate(model.destination.id).capabilities);
+    assertFalse(model.settings.borderless.available);
+
+    // Enable the feature flag and set capabilities again to update borderless
+    // availability.
+    loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
+    model.set(
+        'destination.capabilities',
+        getCddTemplate(model.destination.id).capabilities);
+    assertTrue(model.settings.borderless.available);
+
+    // Remove the only media size with a borderless variant.
+    const capabilities = getCddTemplate(model.destination.id).capabilities!;
+    capabilities.printer!.media_size!.option.splice(1, 1);
+    model.set('destination.capabilities', capabilities);
+    assertFalse(model.settings.borderless.available);
   });
 
   test('mediaType', function() {

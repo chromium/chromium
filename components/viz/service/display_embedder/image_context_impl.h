@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_IMAGE_CONTEXT_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -50,7 +50,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
                    const gfx::Size& size,
                    SharedImageFormat format,
                    bool maybe_concurrent_reads,
-                   const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+                   const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace> color_space,
                    bool is_for_render_pass,
                    bool raw_draw_if_possible = false);

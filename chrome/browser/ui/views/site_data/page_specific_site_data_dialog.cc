@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -14,13 +15,18 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "components/browsing_data/core/features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -38,6 +44,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/origin.h"
@@ -284,21 +291,19 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     DeleteMatchingHostNodeFromModel(allowed_cookies_tree_model_.get(), origin);
     DeleteMatchingHostNodeFromModel(blocked_cookies_tree_model_.get(), origin);
 
-    // Correctly remove partitioned storage (needs to be done separately), since
-    // the existing calls don't apply the necessary filtering.
-    DeletePartitionedStorage(origin);
-
     // Removing origin from Browsing Data Model to support new storage types.
     // The UI assumes deletion completed successfully, so we're passing
     // `base::DoNothing` callback.
     // TODO(crbug.com/1394352): Future tests will need to know when the deletion
     // is completed, this will require a callback to be passed here.
-    // TODO(crbug.com/1468277): Step 7 - This needs to be updated to clear
-    // browsing data where the top-site on a StorageKey matches `origin`.
     allowed_browsing_data_model()->RemoveBrowsingData(origin.host(),
                                                       base::DoNothing());
+    allowed_browsing_data_model()->RemovePartitionedBrowsingData(
+        origin.host(), net::SchemefulSite(origin), base::DoNothing());
     blocked_browsing_data_model()->RemoveBrowsingData(origin.host(),
                                                       base::DoNothing());
+    blocked_browsing_data_model()->RemovePartitionedBrowsingData(
+        origin.host(), net::SchemefulSite(origin), base::DoNothing());
 
     RecordPageSpecificSiteDataDialogAction(
         PageSpecificSiteDataDialogAction::kSiteDeleted);
@@ -321,6 +326,11 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         GetDialogActionForContentSetting(setting));
   }
 
+  void OnManageOnDeviceSiteDataClicked() {
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
+    chrome::ShowSettingsSubPage(browser, chrome::kOnDeviceSiteDataSubpage);
+  }
+
  private:
   // Deletes the host node matching |origin| and all stored objects for it.
   void DeleteMatchingHostNodeFromModel(CookiesTreeModel* model,
@@ -340,9 +350,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
   }
 
-  // TODO(crbug.com/1468277): Step 7 - This function is a shim that clears
-  // partitioned storage as though it were unpartitioned to keep the UI working.
-  // The need for it will go away when Step 7 is completed.
   void DeletePartitionedStorage(const url::Origin& origin) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -388,18 +395,13 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
                          [](const url::Origin& origin) { return origin; }},
         *entry.data_owner);
     return CreateSite(entry_origin, from_allowed_model,
-                      IsBrowsingDataEntryViewFullyPartitioned(entry));
+                      IsBrowsingDataEntryViewFullyPartitioned(entry) &&
+                          IsOnlyPartitionedStorageAccessAllowed(entry_origin));
   }
 
   bool IsBrowsingDataEntryViewFullyPartitioned(
       const BrowsingDataModel::BrowsingDataEntryView& entry) {
-    // We consider the browsing data entry view to be fully partitioned if the
-    // storage is backed by a StorageKey and the StorageKey is third-party.
-    // Unlike for cookies, we can be sure that given context is partitioned if
-    // its storage keys are as that determines the scope of access.
-    const blink::StorageKey* storage_key =
-        absl::get_if<blink::StorageKey>(&entry.data_key.get());
-    return storage_key != nullptr && storage_key->IsThirdPartyContext();
+    return entry.GetThirdPartyPartitioningSite().has_value();
   }
 
   bool IsCookieTreeNodeFullyPartitioned(CookieTreeNode* node) {
@@ -634,16 +636,29 @@ views::Widget* ShowPageSpecificSiteDataDialog(
   auto delegate_unique =
       std::make_unique<PageSpecificSiteDataDialogModelDelegate>(web_contents);
   PageSpecificSiteDataDialogModelDelegate* delegate = delegate_unique.get();
+
+  // Text replacement for on-device site data subtitle text which has an
+  // embedded link to on-device site data settings page.
+  ui::DialogModelLabel::TextReplacement settings_link =
+      ui::DialogModelLabel::CreateLink(
+          IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SETTINGS_LINK,
+          base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::
+                                  OnManageOnDeviceSiteDataClicked,
+                              base::Unretained(delegate)));
   auto builder = ui::DialogModel::Builder(std::move(delegate_unique));
   builder
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_TITLE))
+      .AddParagraph(
+          ui::DialogModelLabel::CreateWithReplacement(
+              IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SUBTITLE, settings_link)
+              .set_is_secondary())
       .SetInternalName("PageSpecificSiteDataDialog")
       .AddOkButton(
           base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::
                                   OnDialogExplicitlyClosed,
                               base::Unretained(delegate)),
-          ui::DialogModelButton::Params().SetLabel(
+          ui::DialogModel::Button::Params().SetLabel(
               l10n_util::GetStringUTF16(IDS_DONE)))
       .SetCloseActionCallback(base::BindOnce(
           &PageSpecificSiteDataDialogModelDelegate::OnDialogExplicitlyClosed,

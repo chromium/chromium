@@ -9,18 +9,15 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Contains the data needed to renderer a answer in the Omnibox suggestions.
- */
+/** Contains the data needed to renderer a answer in the Omnibox suggestions. */
 public class SuggestionAnswer {
-    @AnswerType
-    private final int mType;
+    @AnswerType private final int mType;
     private final ImageLine mFirstLine;
     private final ImageLine mSecondLine;
 
@@ -58,7 +55,8 @@ public class SuggestionAnswer {
     public boolean equals(Object obj) {
         if (!(obj instanceof SuggestionAnswer)) return false;
         SuggestionAnswer other = (SuggestionAnswer) obj;
-        return mType == other.mType && ObjectsCompat.equals(mFirstLine, other.mFirstLine)
+        return mType == other.mType
+                && ObjectsCompat.equals(mFirstLine, other.mFirstLine)
                 && ObjectsCompat.equals(mSecondLine, other.mSecondLine);
     }
 
@@ -73,7 +71,10 @@ public class SuggestionAnswer {
         private final String mImage;
 
         @VisibleForTesting
-        public ImageLine(List<TextField> textFields, TextField additionalText, TextField statusText,
+        public ImageLine(
+                List<TextField> textFields,
+                TextField additionalText,
+                TextField statusText,
                 String imageUrl) {
             mTextFields = textFields;
             mAdditionalText = additionalText;
@@ -81,51 +82,37 @@ public class SuggestionAnswer {
             mImage = imageUrl;
         }
 
-        /**
-         * Return an unnamed list of text fields.  These represent the main content of the line.
-         */
+        /** Return an unnamed list of text fields. These represent the main content of the line. */
         public List<TextField> getTextFields() {
             return mTextFields;
         }
 
-        /**
-         * Returns true if the line contains an "additional text" field.
-         */
+        /** Returns true if the line contains an "additional text" field. */
         public boolean hasAdditionalText() {
             return mAdditionalText != null;
         }
 
-        /**
-         * Return the "additional text" field.
-         */
+        /** Return the "additional text" field. */
         public TextField getAdditionalText() {
             return mAdditionalText;
         }
 
-        /**
-         * Returns true if the line contains an "status text" field.
-         */
+        /** Returns true if the line contains an "status text" field. */
         public boolean hasStatusText() {
             return mStatusText != null;
         }
 
-        /**
-         * Return the "status text" field.
-         */
+        /** Return the "status text" field. */
         public TextField getStatusText() {
             return mStatusText;
         }
 
-        /**
-         * Returns true if the line contains an image.
-         */
+        /** Returns true if the line contains an image. */
         public boolean hasImage() {
             return mImage != null;
         }
 
-        /**
-         * Return the optional image (URL or base64-encoded image data).
-         */
+        /** Return the optional image (URL or base64-encoded image data). */
         public String getImage() {
             return mImage;
         }
@@ -153,15 +140,11 @@ public class SuggestionAnswer {
         }
     }
 
-    /**
-     * Represents one text field of an answer, containing a integer type and a string.
-     */
+    /** Represents one text field of an answer, containing a integer type and a string. */
     public static class TextField {
-        @AnswerTextType
-        private final int mType;
+        @AnswerTextType private final int mType;
         private final String mText;
-        @AnswerTextStyle
-        private final int mStyle;
+        @AnswerTextStyle private final int mStyle;
         private final int mNumLines;
 
         @VisibleForTesting
@@ -204,8 +187,10 @@ public class SuggestionAnswer {
         public boolean equals(Object obj) {
             if (!(obj instanceof TextField)) return false;
             TextField other = (TextField) obj;
-            return mType == other.mType && TextUtils.equals(mText, other.mText)
-                    && mStyle == other.mStyle && mNumLines == other.mNumLines;
+            return mType == other.mType
+                    && TextUtils.equals(mText, other.mText)
+                    && mStyle == other.mStyle
+                    && mNumLines == other.mNumLines;
         }
     }
 
@@ -216,8 +201,11 @@ public class SuggestionAnswer {
     }
 
     @CalledByNative
-    private static ImageLine createImageLine(List<TextField> fields, TextField additionalText,
-            TextField statusText, String imageUrl) {
+    private static ImageLine createImageLine(
+            List<TextField> fields,
+            TextField additionalText,
+            TextField statusText,
+            String imageUrl) {
         return new ImageLine(fields, additionalText, statusText, imageUrl);
     }
 

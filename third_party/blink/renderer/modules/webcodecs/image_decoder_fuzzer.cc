@@ -86,7 +86,8 @@ DEFINE_BINARY_PROTO_FUZZER(
   }();
 
   // Request a full GC upon returning.
-  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+  auto scoped_gc =
+      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below
@@ -142,7 +143,7 @@ DEFINE_BINARY_PROTO_FUZZER(
 
       // Collect what we can after the first fuzzing loop; this keeps memory
       // pressure down during ReadableStream fuzzing.
-      V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
+      script_state->GetIsolate()->RequestGarbageCollectionForTesting(
           v8::Isolate::kFullGarbageCollection);
     }
 
@@ -169,11 +170,9 @@ DEFINE_BINARY_PROTO_FUZZER(
         const size_t current_chunk_size =
             std::min(data_copy->ByteLength() - offset, chunk_size);
 
-        v8::Local<v8::Value> v8_data_array;
-        ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
-                        script_state, DOMUint8Array::Create(data_copy, offset,
-                                                            current_chunk_size))
-                        .ToLocal(&v8_data_array));
+        v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
+            script_state,
+            DOMUint8Array::Create(data_copy, offset, current_chunk_size));
 
         underlying_source->Enqueue(
             ScriptValue(script_state->GetIsolate(), v8_data_array));

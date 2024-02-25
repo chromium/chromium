@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 #include "third_party/icu/source/common/unicode/uniset.h"
 

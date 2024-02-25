@@ -29,7 +29,7 @@ std::string VectorToString(const std::vector<T>& vec) {
 }  // namespace
 
 // static
-absl::optional<GpuBufferLayout> GpuBufferLayout::Create(
+std::optional<GpuBufferLayout> GpuBufferLayout::Create(
     const Fourcc& fourcc,
     const gfx::Size& size,
     const std::vector<ColorPlaneLayout>& planes,
@@ -41,7 +41,7 @@ absl::optional<GpuBufferLayout> GpuBufferLayout::Create(
              << ", size: " << size.ToString()
              << ", planes: " << VectorToString(planes)
              << ", modifier: " << std::hex << modifier;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return GpuBufferLayout(fourcc, size, planes, modifier);

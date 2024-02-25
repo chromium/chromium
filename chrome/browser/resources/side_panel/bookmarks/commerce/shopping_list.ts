@@ -9,15 +9,18 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './icons.html.js';
 
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
-import {BookmarkProductInfo} from '//bookmarks-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
+import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
+import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource} from '../bookmarks.mojom-webui.js';
-import {BookmarksApiProxy, BookmarksApiProxyImpl} from '../bookmarks_api_proxy.js';
+import type {BookmarksApiProxy} from '../bookmarks_api_proxy.js';
+import {BookmarksApiProxyImpl} from '../bookmarks_api_proxy.js';
 
 import {getTemplate} from './shopping_list.html.js';
 
@@ -67,15 +70,14 @@ export class ShoppingListElement extends PolymerElement {
   private open_: boolean;
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingListApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
+  private shoppingServiceApi_: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private retryOperationCallback_: () => void;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    const callbackRouter = this.shoppingListApi_.getCallbackRouter();
+    const callbackRouter = this.shoppingServiceApi_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
             (product: BookmarkProductInfo) =>
@@ -100,7 +102,7 @@ export class ShoppingListElement extends PolymerElement {
     super.disconnectedCallback();
 
     this.listenerIds_.forEach(
-        id => this.shoppingListApi_.getCallbackRouter().removeListener(id));
+        id => this.shoppingServiceApi_.getCallbackRouter().removeListener(id));
   }
 
   private getFaviconUrl_(url: string): string {
@@ -178,12 +180,12 @@ export class ShoppingListElement extends PolymerElement {
     if (this.untrackedItems_.includes(event.model.item)) {
       const index = this.untrackedItems_.indexOf(event.model.item);
       this.splice('untrackedItems_', index, 1);
-      this.shoppingListApi_.trackPriceForBookmark(bookmarkId);
+      this.shoppingServiceApi_.trackPriceForBookmark(bookmarkId);
       chrome.metricsPrivate.recordUserAction(
           'Commerce.PriceTracking.SidePanel.Track.BellButton');
     } else {
       this.push('untrackedItems_', event.model.item);
-      this.shoppingListApi_.untrackPriceForBookmark(bookmarkId);
+      this.shoppingServiceApi_.untrackPriceForBookmark(bookmarkId);
       chrome.metricsPrivate.recordUserAction(
           'Commerce.PriceTracking.SidePanel.Untrack.BellButton');
     }
@@ -259,9 +261,9 @@ export class ShoppingListElement extends PolymerElement {
       product: BookmarkProductInfo, attemptedTrack: boolean) {
     this.retryOperationCallback_ = () => {
       if (attemptedTrack) {
-        this.shoppingListApi_.trackPriceForBookmark(product.bookmarkId);
+        this.shoppingServiceApi_.trackPriceForBookmark(product.bookmarkId);
       } else {
-        this.shoppingListApi_.untrackPriceForBookmark(product.bookmarkId);
+        this.shoppingServiceApi_.untrackPriceForBookmark(product.bookmarkId);
       }
     };
     this.$.errorToast.show();

@@ -42,8 +42,10 @@ enum class AccessibilityAlert {
   WORKSPACE_FULLSCREEN_STATE_EXITED,
 
   // When the user enters saved desks mode.
-  SAVED_DESKS_MODE_ENTERED
+  SAVED_DESKS_MODE_ENTERED,
 
+  // When the user enters faster split screen setup session.
+  FASTER_SPLIT_SCREEN_SETUP
 };
 
 enum class AccessibilityPanelState {
@@ -235,6 +237,7 @@ enum class DictationNotificationType {
 // The types of accessibility-related toasts. This enum should be kept in sync
 // with chrome.accessibilityPrivate.ToastType.
 enum class AccessibilityToastType {
+  kDictationMicMuted,
   kDictationNoFocusedTextField,
 };
 

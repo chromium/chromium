@@ -6,6 +6,8 @@
 
 #include "base/run_loop.h"
 
+#include <optional>
+
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
@@ -25,7 +27,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::InvokeWithoutArgs;
 
@@ -78,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {
   EXPECT_EQ("", attributes_.GetDeviceSerialNumber());
   EXPECT_EQ("", attributes_.GetMachineName());
   EXPECT_EQ("", attributes_.GetDeviceAnnotatedLocation());
-  EXPECT_EQ(absl::nullopt, attributes_.GetDeviceHostname());
+  EXPECT_EQ(std::nullopt, attributes_.GetDeviceHostname());
   EXPECT_EQ("", attributes_.GetDirectoryApiID());
   EXPECT_EQ("", attributes_.GetObfuscatedCustomerID());
   EXPECT_EQ("", attributes_.GetCustomerLogoURL());

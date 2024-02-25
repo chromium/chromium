@@ -5,12 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Common from 'devtools/core/common/common.js';
+import * as Console from 'devtools/panels/console/console.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that console revokes lazily handled promise rejections.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       var p = [];
@@ -31,8 +31,8 @@ import * as Common from 'devtools/core/common/common.js';
   var messageAddedListener = ConsoleTestRunner.wrapListener(messageAdded);
   const consoleModel = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ConsoleModel.ConsoleModel);
   consoleModel.addEventListener(SDK.ConsoleModel.Events.MessageAdded, messageAddedListener);
-  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
-  Common.Settings.moduleSetting('consoleGroupSimilar').set(false);
+  Console.ConsoleView.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
+  Common.Settings.moduleSetting('console-group-similar').set(false);
   TestRunner.addResult('Creating promise');
   TestRunner.evaluateInPageWithTimeout('createPromises()');
 
@@ -62,7 +62,7 @@ import * as Common from 'devtools/core/common/common.js';
 
     // Turn on verbose filter.
     TestRunner.addResult(`\nEnable verbose filter`);
-    Console.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.allLevelsFilterValue());
+    Console.ConsoleView.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.ConsoleFilter.allLevelsFilterValue());
     await ConsoleTestRunner.dumpConsoleCounters();
 
     TestRunner.completeTest();

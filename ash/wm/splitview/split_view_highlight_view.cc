@@ -7,8 +7,10 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -28,7 +30,7 @@ constexpr int kHighlightScreenRoundRectRadius = 12;
 class ClippingObserver : public ui::ImplicitAnimationObserver,
                          public views::ViewObserver {
  public:
-  ClippingObserver(views::View* view, absl::optional<gfx::Rect> bounds)
+  ClippingObserver(views::View* view, std::optional<gfx::Rect> bounds)
       : view_(view), bounds_(bounds) {
     view_->AddObserver(this);
   }
@@ -49,8 +51,8 @@ class ClippingObserver : public ui::ImplicitAnimationObserver,
   }
 
  private:
-  const raw_ptr<views::View, ExperimentalAsh> view_;
-  absl::optional<gfx::Rect> bounds_;
+  const raw_ptr<views::View> view_;
+  std::optional<gfx::Rect> bounds_;
 };
 
 }  // namespace
@@ -72,7 +74,7 @@ SplitViewHighlightView::~SplitViewHighlightView() = default;
 
 void SplitViewHighlightView::SetBounds(
     const gfx::Rect& bounds,
-    const absl::optional<SplitviewAnimationType>& animation_type) {
+    const std::optional<SplitviewAnimationType>& animation_type) {
   if (bounds == this->bounds())
     return;
 
@@ -110,9 +112,7 @@ void SplitViewHighlightView::SetBounds(
     // it is unaffected by RTL and the nix inset animation will supply the
     // current bounds offset.
     if (base::i18n::IsRTL() &&
-        SplitViewController::IsLayoutHorizontal(
-            GetWidget()->GetNativeWindow()) &&
-        !nix_animation) {
+        IsLayoutHorizontal(GetWidget()->GetNativeWindow()) && !nix_animation) {
       clip_offset = gfx::Vector2d(bounds.width() - old_bounds.width(), 0);
     }
 
@@ -128,7 +128,7 @@ void SplitViewHighlightView::SetBounds(
   DoSplitviewClipRectAnimation(
       layer(), *animation_type, gfx::Rect(end_origin, bounds.size()),
       std::make_unique<ClippingObserver>(
-          this, grows ? absl::nullopt : absl::make_optional(bounds)));
+          this, grows ? std::nullopt : std::make_optional(bounds)));
 }
 
 void SplitViewHighlightView::OnWindowDraggingStateChanged(
@@ -150,43 +150,42 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 
-  const SplitViewController::SnapPosition preview_position =
+  const SnapPosition preview_position =
       SplitViewDragIndicators::GetSnapPosition(window_dragging_state);
-  const SplitViewController::SnapPosition previous_preview_position =
+  const SnapPosition previous_preview_position =
       SplitViewDragIndicators::GetSnapPosition(previous_window_dragging_state);
 
   aura::Window* window = GetWidget()->GetNativeWindow();
 
   if (window_dragging_state ==
       SplitViewDragIndicators::WindowDraggingState::kNoDrag) {
-    if (previous_preview_position == SplitViewController::SnapPosition::kNone) {
+    if (previous_preview_position == SnapPosition::kNone) {
       DoSplitviewOpacityAnimation(layer(),
                                   SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT);
       return;
     }
-    if (is_right_or_bottom_ != SplitViewController::IsPhysicalLeftOrTop(
-                                   previous_preview_position, window)) {
+    if (is_right_or_bottom_ !=
+        IsPhysicalLeftOrTop(previous_preview_position, window)) {
       DoSplitviewOpacityAnimation(layer(),
                                   SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_OUT);
     }
     return;
   }
 
-  if (preview_position != SplitViewController::SnapPosition::kNone) {
+  if (preview_position != SnapPosition::kNone) {
     DoSplitviewOpacityAnimation(
         layer(),
-        is_right_or_bottom_ != SplitViewController::IsPhysicalLeftOrTop(
-                                   preview_position, window)
+        is_right_or_bottom_ != IsPhysicalLeftOrTop(preview_position, window)
             ? SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_IN
             : SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_OUT);
     return;
   }
 
-  if (previous_preview_position != SplitViewController::SnapPosition::kNone) {
+  if (previous_preview_position != SnapPosition::kNone) {
     // There was a snap preview showing, but now the user has dragged away from
     // the edge of the screen, so that the preview should go away.
-    if (is_right_or_bottom_ != SplitViewController::IsPhysicalLeftOrTop(
-                                   previous_preview_position, window)) {
+    if (is_right_or_bottom_ !=
+        IsPhysicalLeftOrTop(previous_preview_position, window)) {
       // This code is for the preview. If |previews_only|, just fade out. Else
       // fade in from |kPreviewAreaHighlightOpacity| to |kHighlightOpacity|.
       DoSplitviewOpacityAnimation(
@@ -222,5 +221,8 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 }
+
+BEGIN_METADATA(SplitViewHighlightView)
+END_METADATA
 
 }  // namespace ash

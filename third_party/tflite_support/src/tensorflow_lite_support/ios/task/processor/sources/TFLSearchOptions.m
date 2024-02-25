@@ -19,16 +19,16 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    // maxResults will be 0 at the time of initialization. Setting it to 5 since
-    // max_results defaults to 5 in search_options.proto.
+    // maxResults will be 0 at the time of initialization. Setting it to 5 since max_results
+    // defaults to 5 in search_options.proto.
     _maxResults = 5;
     _indexFile = [[TFLExternalFile alloc] init];
   }
   return self;
 }
 
-- (id)copyWithZone:(NSZone*)zone {
-  TFLSearchOptions* searchOptions = [[TFLSearchOptions alloc] init];
+- (id)copyWithZone:(NSZone *)zone {
+  TFLSearchOptions *searchOptions = [[TFLSearchOptions alloc] init];
 
   searchOptions.indexFile = self.indexFile;
   searchOptions.maxResults = self.maxResults;

@@ -6,10 +6,10 @@
 #define URL_ORIGIN_ABSTRACT_TESTS_H_
 
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -28,10 +28,10 @@ class UrlOriginTestTraits {
   using OriginType = Origin;
 
   // Constructing an origin.
-  static OriginType CreateOriginFromString(base::StringPiece s);
+  static OriginType CreateOriginFromString(std::string_view s);
   static OriginType CreateUniqueOpaqueOrigin();
   static OriginType CreateWithReferenceOrigin(
-      base::StringPiece url,
+      std::string_view url,
       const OriginType& reference_origin);
   static OriginType DeriveNewOpaqueOrigin(const OriginType& reference_origin);
 
@@ -51,7 +51,7 @@ class UrlOriginTestTraits {
   //
   // TODO(lukasza): Consider merging together OriginTraitsBase here and
   // UrlTraitsBase in //url/gurl_abstract_tests.h.
-  static bool IsValidUrl(base::StringPiece str);
+  static bool IsValidUrl(std::string_view str);
 
   // Only static members = no constructors are needed.
   UrlOriginTestTraits() = delete;
@@ -95,13 +95,13 @@ class AbstractOriginTest : public testing::Test {
   // avoid hitting: explicit qualification required to use member 'IsOpaque'
   // from dependent base class.
   using OriginType = typename TOriginTraits::OriginType;
-  OriginType CreateOriginFromString(base::StringPiece s) {
+  OriginType CreateOriginFromString(std::string_view s) {
     return TOriginTraits::CreateOriginFromString(s);
   }
   OriginType CreateUniqueOpaqueOrigin() {
     return TOriginTraits::CreateUniqueOpaqueOrigin();
   }
-  OriginType CreateWithReferenceOrigin(base::StringPiece url,
+  OriginType CreateWithReferenceOrigin(std::string_view url,
                                        const OriginType& reference_origin) {
     return TOriginTraits::CreateWithReferenceOrigin(url, reference_origin);
   }
@@ -132,7 +132,7 @@ class AbstractOriginTest : public testing::Test {
   std::string Serialize(const OriginType& origin) {
     return TOriginTraits::Serialize(origin);
   }
-  bool IsValidUrl(base::StringPiece str) {
+  bool IsValidUrl(std::string_view str) {
     return TOriginTraits::IsValidUrl(str);
   }
 
@@ -213,7 +213,7 @@ class AbstractOriginTest : public testing::Test {
     VerifyOriginInvariants(origin);
   }
 
-  void TestUniqueOpaqueOrigin(base::StringPiece test_input) {
+  void TestUniqueOpaqueOrigin(std::string_view test_input) {
     auto origin = this->CreateOriginFromString(test_input);
     this->VerifyUniqueOpaqueOriginInvariants(origin);
 

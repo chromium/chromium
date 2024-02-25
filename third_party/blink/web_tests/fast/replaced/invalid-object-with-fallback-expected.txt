@@ -1,4 +1,3 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
 This test verifies that an <embed> tag is rendered along with other fallback content when an <object> fails to load. On success, you should see this text, followed by 'PASS'.
 
 PASS

@@ -26,7 +26,7 @@ class MockLogReceiver : public LogReceiver {
 TEST(LogBufferSubmitter, VerifySubmissionOnDestruction) {
   LogBuffer buffer;
   buffer << 42;
-  absl::optional<base::Value::Dict> expected = buffer.RetrieveResult();
+  std::optional<base::Value::Dict> expected = buffer.RetrieveResult();
 
   MockLogReceiver receiver;
   LogRouter router;

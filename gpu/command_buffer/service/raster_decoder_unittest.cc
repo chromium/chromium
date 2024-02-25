@@ -205,7 +205,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
         share_group.get(), surface.get(), gl::GLContextAttribs());
     ASSERT_TRUE(context->MakeCurrent(surface.get()));
 
-    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         kGpuFeatureStatusEnabled;
     auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
         workarounds, gpu_feature_info_);
@@ -295,9 +295,13 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
     gfx::Size size(width, height);
     auto color_space = gfx::ColorSpace::CreateSRGB();
+
+    // Via this function, this test creates mailboxes that are used as both the
+    // sources of reads and destinations of writes via the raster interface.
     shared_image_factory_->CreateSharedImage(
         mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::kNullSurfaceHandle, SHARED_IMAGE_USAGE_RASTER,
+        kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
         "TestLabel");
 
     if (cleared) {

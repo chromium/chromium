@@ -122,7 +122,7 @@ TEST_F(FileSystemAccessCapacityAllocationHostImplTest,
   int64_t granted_capacity =
       RequestCapacityChangeSync(allocation_host_.get(), requested_capacity);
   EXPECT_EQ(granted_capacity, requested_capacity);
-  EXPECT_EQ(quota_manager_proxy_->last_notified_bucket_delta(),
+  EXPECT_EQ(*quota_manager_proxy_->last_notified_bucket_delta(),
             requested_capacity);
 }
 
@@ -134,13 +134,13 @@ TEST_F(FileSystemAccessCapacityAllocationHostImplTest,
   int64_t positive_granted_capacity = RequestCapacityChangeSync(
       allocation_host_.get(), positive_requested_capacity);
   EXPECT_EQ(positive_granted_capacity, positive_requested_capacity);
-  EXPECT_EQ(quota_manager_proxy_->last_notified_bucket_delta(),
+  EXPECT_EQ(*quota_manager_proxy_->last_notified_bucket_delta(),
             positive_requested_capacity);
 
   int64_t negative_granted_capacity = RequestCapacityChangeSync(
       allocation_host_.get(), negative_requested_capacity);
   EXPECT_EQ(negative_granted_capacity, negative_requested_capacity);
-  EXPECT_EQ(quota_manager_proxy_->last_notified_bucket_delta(),
+  EXPECT_EQ(*quota_manager_proxy_->last_notified_bucket_delta(),
             negative_requested_capacity);
 
   EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 2);

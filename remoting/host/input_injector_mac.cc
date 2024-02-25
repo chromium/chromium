@@ -47,13 +47,14 @@ void CreateAndPostKeyEvent(int keycode,
   base::apple::ScopedCFTypeRef<CGEventRef> eventRef(
       CGEventCreateKeyboardEvent(nullptr, keycode, pressed));
   if (eventRef) {
-    CGEventSetFlags(eventRef, static_cast<CGEventFlags>(flags));
+    CGEventSetFlags(eventRef.get(), static_cast<CGEventFlags>(flags));
     if (!unicode.empty()) {
       CGEventKeyboardSetUnicodeString(
-          eventRef, unicode.size(),
+          eventRef.get(), unicode.size(),
           reinterpret_cast<const UniChar*>(unicode.data()));
     }
-    CGEventPost(kCGSessionEventTap, eventRef);
+    VLOG(3) << "Injecting key " << (pressed ? "down" : "up") << " event.";
+    CGEventPost(kCGSessionEventTap, eventRef.get());
   }
 }
 
@@ -89,7 +90,7 @@ void CreateAndPostScrollWheelEvent(int32_t delta_x, int32_t delta_y) {
       CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2,
                                     delta_y, delta_x));
   if (eventRef) {
-    CGEventPost(kCGSessionEventTap, eventRef);
+    CGEventPost(kCGSessionEventTap, eventRef.get());
   }
 }
 
@@ -255,9 +256,6 @@ void InputInjectorMac::Core::InjectKeyEvent(const KeyEvent& event) {
 
   int keycode =
       ui::KeycodeConverter::UsbKeycodeToNativeKeycode(event.usb_keycode());
-
-  VLOG(3) << "Converting USB keycode: " << std::hex << event.usb_keycode()
-          << " to keycode: " << keycode << std::dec;
 
   // If we couldn't determine the Mac virtual key code then ignore the event.
   if (keycode == ui::KeycodeConverter::InvalidNativeKeycode()) {

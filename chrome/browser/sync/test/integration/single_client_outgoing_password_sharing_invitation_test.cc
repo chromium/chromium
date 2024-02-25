@@ -4,11 +4,15 @@
 
 #include <array>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/recipient_info.h"
@@ -128,11 +132,33 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   EXPECT_EQ(specifics.recipient_user_id(), kRecipientUserId);
   EXPECT_FALSE(specifics.guid().empty());
   EXPECT_FALSE(specifics.has_client_only_unencrypted_data());
-  // TODO(crbug.com/1468523): uncomment the following lines once encryption is
-  // fixed.
-  // EXPECT_FALSE(specifics.encrypted_password_sharing_invitation_data()
-  // .empty());
-  // EXPECT_EQ(specifics.recipient_key_version(), kRecipientPublicKeyVersion);
+  EXPECT_FALSE(specifics.encrypted_password_sharing_invitation_data().empty());
+  EXPECT_EQ(specifics.recipient_key_version(), kRecipientPublicKeyVersion);
 }
+
+// The unconsented primary account isn't supported on ChromeOS.
+// TODO(crbug.com/1348950): enable on Android once transport mode for Passwords
+// is supported.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
+                       ShouldCommitSentPasswordInTransportMode) {
+  // First, setup sync (in transport mode) to initialize Nigori node with a
+  // cross user sharing key pair to be able to send passwords.
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  // On Desktop, passwords currently require an opt-in for transport mode.
+  password_manager::features_util::OptInToAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+
+  PasswordRecipient recipient = {.user_id = kRecipientUserId,
+                                 .public_key = GenerateRecipientPublicKey()};
+  GetPasswordSenderService()->SendPasswords({MakePasswordForm()}, recipient);
+
+  EXPECT_TRUE(InvitationCommittedChecker(/*expected_entities_count=*/1).Wait());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

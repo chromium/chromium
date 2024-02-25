@@ -4,7 +4,8 @@
 
 // Utilities that are used in multiple tests.
 
-import {Bookmark, DocumentDimensions, LayoutOptions, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Bookmark, DocumentDimensions, LayoutOptions} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class MockElement {
@@ -160,7 +161,7 @@ export class MockDocumentDimensions implements DocumentDimensions {
   }
 }
 
-export class MockUnseasonedPdfPluginElement extends HTMLEmbedElement {
+export class MockPdfPluginElement extends HTMLEmbedElement {
   private messages_: any[] = [];
 
   get messages(): any[] {
@@ -180,16 +181,14 @@ export class MockUnseasonedPdfPluginElement extends HTMLEmbedElement {
   }
 }
 customElements.define(
-    'mock-unseasoned-pdf-plugin', MockUnseasonedPdfPluginElement,
-    {extends: 'embed'});
+    'mock-pdf-plugin', MockPdfPluginElement, {extends: 'embed'});
 
 /**
- * Creates a fake element simulating the unseasoned PDF plugin.
+ * Creates a fake element simulating the PDF plugin.
  */
-export function createMockUnseasonedPdfPluginForTest():
-    MockUnseasonedPdfPluginElement {
-  return document.createElement('embed', {is: 'mock-unseasoned-pdf-plugin'}) as
-      MockUnseasonedPdfPluginElement;
+export function createMockPdfPluginForTest(): MockPdfPluginElement {
+  return document.createElement('embed', {is: 'mock-pdf-plugin'}) as
+      MockPdfPluginElement;
 }
 
 class TestBookmarksElement extends PolymerElement {

@@ -1,0 +1,16 @@
+include_rules = [
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/search_engines/model",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "ntp_tiles_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  "ios_most_visited_sites_factory\.cc": [
+    "+services/data_decoder/public/cpp/data_decoder.h",
+  ],
+}

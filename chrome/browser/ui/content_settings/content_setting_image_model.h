@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -50,6 +51,7 @@ class ContentSettingImageModel {
     NOTIFICATIONS_QUIET_PROMPT = 17,
     CLIPBOARD_READ_WRITE = 18,
     STORAGE_ACCESS = 19,
+    // MIDI = 20, // Deprecated.
 
     NUM_IMAGE_TYPES
   };
@@ -95,9 +97,14 @@ class ContentSettingImageModel {
 
   bool is_visible() const { return is_visible_; }
 
+  bool is_blocked() const { return is_blocked_; }
+
   // Retrieve the icon that represents this content setting. Blocked content
   // settings icons will have a blocked badge.
   gfx::Image GetIcon(SkColor icon_color) const;
+
+  // Allows overriding the default icon size.
+  void SetIconSize(int icon_size);
 
   // Returns the resource ID of a string to show when the icon appears, or 0 if
   // we don't wish to show anything.
@@ -121,7 +128,11 @@ class ContentSettingImageModel {
 
   bool IsMacRestoreLocationPermissionExperimentActive();
 
-  const gfx::VectorIcon* get_icon_for_testing() const { return icon_; }
+  const gfx::VectorIcon* icon() const { return icon_; }
+
+  bool should_auto_open_bubble() { return should_auto_open_bubble_; }
+
+  bool blocked_on_system_level() { return blocked_on_system_level_; }
 
  protected:
   // Note: image_type_should_notify_accessibility by itself does not guarantee
@@ -147,6 +158,9 @@ class ContentSettingImageModel {
   void set_should_auto_open_bubble(const bool should_auto_open_bubble) {
     should_auto_open_bubble_ = should_auto_open_bubble;
   }
+  void set_blocked_on_system_level(const bool blocked_on_system_level) {
+    blocked_on_system_level_ = blocked_on_system_level;
+  }
   void set_should_show_promo(const bool should_show_promo) {
     should_show_promo_ = should_show_promo;
   }
@@ -162,6 +176,7 @@ class ContentSettingImageModel {
 
  private:
   bool is_visible_ = false;
+  bool is_blocked_ = false;
 
   raw_ptr<const gfx::VectorIcon> icon_;
   raw_ptr<const gfx::VectorIcon> icon_badge_;
@@ -172,6 +187,8 @@ class ContentSettingImageModel {
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
   bool should_show_promo_ = false;
+  bool blocked_on_system_level_ = false;
+  std::optional<int> icon_size_;
 };
 
 // A subclass for an image model tied to a single content type.

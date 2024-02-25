@@ -89,7 +89,7 @@ void CameraPreviewResizeButton::PseudoBlur() {
   camera_preview_view_->ScheduleRefreshResizeButtonVisibility();
 }
 
-BEGIN_METADATA(CameraPreviewResizeButton, IconButton)
+BEGIN_METADATA(CameraPreviewResizeButton)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -130,8 +130,6 @@ CameraPreviewView::CameraPreviewView(
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
   RefreshResizeButtonVisibility();
   UpdateResizeButtonTooltip();
-  capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
-  CaptureModeController::Get()->MaybeUpdateVcPanel();
 }
 
 CameraPreviewView::~CameraPreviewView() {
@@ -140,6 +138,15 @@ CameraPreviewView::~CameraPreviewView() {
     controller->capture_mode_session()->OnCameraPreviewDestroyed();
   capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
   controller->MaybeUpdateVcPanel();
+}
+
+void CameraPreviewView::Initialize() {
+  CHECK(GetWidget()) << "The view should have been added to a widget first.";
+
+  camera_video_renderer_.Initialize();
+
+  capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
+  CaptureModeController::Get()->MaybeUpdateVcPanel();
 }
 
 void CameraPreviewView::SetIsCollapsible(bool value) {
@@ -251,8 +258,6 @@ void CameraPreviewView::AddedToWidget() {
   // `Initialize()` will create a layer tree frame sink for the `host_window()`
   // and we're not allowed to change the event targeting policy after that.
   DisableEventHandlingInCameraVideoHostHierarchy();
-
-  camera_video_renderer_.Initialize();
 }
 
 bool CameraPreviewView::OnMousePressed(const ui::MouseEvent& event) {
@@ -320,7 +325,7 @@ void CameraPreviewView::OnMouseExited(const ui::MouseEvent& event) {
   ScheduleRefreshResizeButtonVisibility();
 }
 
-void CameraPreviewView::Layout() {
+void CameraPreviewView::Layout(PassKey) {
   const gfx::Size resize_button_size = resize_button_->GetPreferredSize();
   const gfx::Rect bounds(
       (width() - resize_button_size.width()) / 2.f,
@@ -464,7 +469,7 @@ void CameraPreviewView::BlurA11yFocus() {
   UpdateA11yOverrideWindow();
 }
 
-BEGIN_METADATA(CameraPreviewView, views::View)
+BEGIN_METADATA(CameraPreviewView)
 END_METADATA
 
 }  // namespace ash

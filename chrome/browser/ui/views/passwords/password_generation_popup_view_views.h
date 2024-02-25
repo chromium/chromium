@@ -14,9 +14,9 @@ class PasswordGenerationPopupController;
 
 class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
                                          public PasswordGenerationPopupView {
- public:
-  METADATA_HEADER(PasswordGenerationPopupViewViews);
+  METADATA_HEADER(PasswordGenerationPopupViewViews, autofill::PopupBaseView)
 
+ public:
   PasswordGenerationPopupViewViews(
       base::WeakPtr<PasswordGenerationPopupController> controller,
       views::Widget* parent_widget);
@@ -33,6 +33,8 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
   void UpdateGeneratedPasswordValue() override;
   [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
+  void EditPasswordSelectionUpdated() override;
+  void NudgePasswordSelectionUpdated() override;
 
  private:
   class GeneratedPasswordBox;
@@ -47,6 +49,12 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
 
   // Sub view that displays the actual generated password.
   raw_ptr<GeneratedPasswordBox> password_view_ = nullptr;
+
+  // Sub view that displays the edit password row.
+  raw_ptr<views::View> edit_password_view_ = nullptr;
+
+  // Sub view that displays the nudge password buttons row.
+  raw_ptr<views::View> nudge_password_buttons_view_ = nullptr;
 
   // Controller for this view. Weak reference.
   base::WeakPtr<PasswordGenerationPopupController> controller_;

@@ -14,7 +14,6 @@
 namespace content {
 
 struct LoadCommittedDetails;
-class WebContents;
 
 // Interface for objects embedding a NavigationController to provide the
 // functionality NavigationController needs.
@@ -41,10 +40,6 @@ class NavigationControllerDelegate {
   // Returns whether URLs for aborted browser-initiated navigations should be
   // preserved in the omnibox.  Defaults to false.
   virtual bool ShouldPreserveAbortedURLs() = 0;
-
-  // TODO(crbug.com/1225205): Remove this. It is a layering violation as
-  // renderer_host/ cannot depend on WebContents.
-  virtual WebContents* DeprecatedGetWebContents() = 0;
 
   virtual void UpdateOverridingUserAgent() = 0;
 };

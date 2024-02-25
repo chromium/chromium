@@ -20,7 +20,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "permission_prompt_chip_model.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -33,10 +32,6 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   DCHECK(delegate_);
   LocationBarView* lbv = GetLocationBarView();
 
-  if (!lbv->chip_controller()->chip()) {
-    lbv->CreateChip();
-  }
-
   // Before showing a chip make sure the LocationBar is in a valid state. That
   // fixes a bug when a chip overlays the padlock icon.
   lbv->InvalidateLayout();
@@ -44,11 +39,15 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   if (delegate->ShouldCurrentRequestUseQuietUI())
     PreemptivelyResolvePermissionRequest(web_contents, delegate);
 
-  chip_controller_ = lbv->chip_controller();
+  chip_controller_ = lbv->GetChipController();
   chip_controller_->ShowPermissionPrompt(delegate->GetWeakPtr());
 }
 
-PermissionPromptChip::~PermissionPromptChip() = default;
+PermissionPromptChip::~PermissionPromptChip() {
+  if (chip_controller_) {
+    chip_controller_->ResetPermissionRequestChip();
+  }
+}
 
 bool PermissionPromptChip::UpdateAnchor() {
   if (UpdateBrowser()) {
@@ -90,13 +89,12 @@ PermissionPromptChip::GetPromptDisposition() const {
       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE;
 }
 
-absl::optional<gfx::Rect> PermissionPromptChip::GetViewBoundsInScreen() const {
+std::optional<gfx::Rect> PermissionPromptChip::GetViewBoundsInScreen() const {
   return chip_controller_->IsPermissionPromptChipVisible() &&
                  chip_controller_->IsBubbleShowing()
-             ? absl::make_optional<gfx::Rect>(
-                   chip_controller_->GetBubbleWidget()
-                       ->GetWindowBoundsInScreen())
-             : absl::nullopt;
+             ? std::make_optional<gfx::Rect>(chip_controller_->GetBubbleWidget()
+                                                 ->GetWindowBoundsInScreen())
+             : std::nullopt;
 }
 
 views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
@@ -104,8 +102,8 @@ views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
   LocationBarView* lbv = GetLocationBarView();
 
   return chip_controller_->IsPermissionPromptChipVisible() &&
-                 lbv->chip_controller()->IsBubbleShowing()
-             ? lbv->chip_controller()->GetBubbleWidget()
+                 lbv->GetChipController()->IsBubbleShowing()
+             ? lbv->GetChipController()->GetBubbleWidget()
              : nullptr;
 }
 
@@ -121,7 +119,7 @@ void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
 
     // If at least one RFH is not subscribed to the PermissionChange event, we
     // should not preemptively resolve a prompt.
-    for (auto* request : delegate->Requests()) {
+    for (permissions::PermissionRequest* request : delegate->Requests()) {
       content::RenderFrameHost* rfh =
           content::RenderFrameHost::FromID(request->get_requesting_frame_id());
       if (rfh == nullptr)

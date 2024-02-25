@@ -4,7 +4,7 @@
 
 /**
  * Must be kept in sync with the C++ enum of the same name (see
- * chrome/browser/prefetch/prefetch_prefs.h).
+ * chrome/browser/preloading/preloading_prefs.h).
  */
 export enum NetworkPredictionOptions {
   STANDARD = 0,

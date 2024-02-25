@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_VERIFY_TRUST_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -54,7 +54,7 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
   // Note: It is safe to delete this object while there are still
   // outstanding operations. However, if this happens, |callback|
   // will NOT be called.
-  void Verify(absl::optional<Params> params,
+  void Verify(std::optional<Params> params,
               const std::string& extension_id,
               VerifyCallback callback);
 

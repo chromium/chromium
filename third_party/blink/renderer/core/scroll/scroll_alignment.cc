@@ -80,11 +80,8 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
     // then treat it as fully visible to avoid unnecessary horizontal scrolling
     scroll_x = align_x.rect_visible;
   } else if (intersect_width == non_zero_visible_rect.Width()) {
-    // If the rect is bigger than the visible area, don't bother trying to
-    // center. Other alignments will work.
+    // The rect is bigger than the visible area.
     scroll_x = align_x.rect_visible;
-    if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kCenter)
-      scroll_x = mojom::blink::ScrollAlignment::Behavior::kNoScroll;
   } else if (intersect_width > 0) {
     // If the rectangle is partially visible, but not above the minimum
     // threshold, use the specified partial behavior
@@ -116,11 +113,8 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
     // If the rectangle is fully visible, use the specified visible behavior.
     scroll_y = align_y.rect_visible;
   } else if (intersect_height == non_zero_visible_rect.Height()) {
-    // If the rect is bigger than the visible area, don't bother trying to
-    // center. Other alignments will work.
+    // The rect is bigger than the visible area.
     scroll_y = align_y.rect_visible;
-    if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kCenter)
-      scroll_y = mojom::blink::ScrollAlignment::Behavior::kNoScroll;
   } else if (intersect_height > 0) {
     // If the rectangle is partially visible, use the specified partial behavior
     scroll_y = align_y.rect_partial;
@@ -372,9 +366,13 @@ mojom::blink::ScrollIntoViewParamsPtr
 ScrollAlignment::CreateScrollIntoViewParams(
     const ScrollIntoViewOptions& options,
     const ComputedStyle& computed_style) {
-  mojom::blink::ScrollBehavior behavior =
-      (options.behavior() == "smooth") ? mojom::blink::ScrollBehavior::kSmooth
-                                       : mojom::blink::ScrollBehavior::kAuto;
+  mojom::blink::ScrollBehavior behavior = mojom::blink::ScrollBehavior::kAuto;
+  if (options.behavior() == "smooth") {
+    behavior = mojom::blink::ScrollBehavior::kSmooth;
+  }
+  if (options.behavior() == "instant") {
+    behavior = mojom::blink::ScrollBehavior::kInstant;
+  }
 
   auto align_x =
       AlignmentFromOptions(options, kHorizontalScroll, computed_style);

@@ -58,7 +58,8 @@ bool IsAllowedSetMetadataChange(
 bool ValidateMetadata(const RTCEncodedVideoFrameMetadata* metadata,
                       String& error_message) {
   if (!metadata->hasWidth() || !metadata->hasHeight() ||
-      !metadata->hasSpatialIndex() || !metadata->hasTemporalIndex()) {
+      !metadata->hasSpatialIndex() || !metadata->hasTemporalIndex() ||
+      !metadata->hasRtpTimestamp()) {
     error_message = "Member(s) missing in RTCEncodedVideoFrameMetadata.";
     return false;
   }
@@ -109,19 +110,19 @@ String RTCEncodedVideoFrame::type() const {
 }
 
 uint32_t RTCEncodedVideoFrame::timestamp() const {
-  return delegate_->Timestamp();
+  return delegate_->RtpTimestamp();
 }
 
 void RTCEncodedVideoFrame::setTimestamp(uint32_t timestamp,
                                         ExceptionState& exception_state) {
-  delegate_->SetTimestamp(timestamp, exception_state);
+  delegate_->SetRtpTimestamp(timestamp, exception_state);
 }
 
 DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
   if (!frame_data_) {
     frame_data_ = delegate_->CreateDataBuffer();
   }
-  return frame_data_;
+  return frame_data_.Get();
 }
 
 RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
@@ -130,14 +131,17 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   if (delegate_->PayloadType()) {
     metadata->setPayloadType(*delegate_->PayloadType());
   }
+  if (delegate_->MimeType()) {
+    metadata->setMimeType(WTF::String::FromUTF8(*delegate_->MimeType()));
+  }
 
   if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled()) {
-    if (delegate_->CaptureTimeIdentifier()) {
-      metadata->setCaptureTimestamp(delegate_->CaptureTimeIdentifier()->us());
+    if (delegate_->PresentationTimestamp()) {
+      metadata->setTimestamp(delegate_->PresentationTimestamp()->us());
     }
   }
 
-  const absl::optional<webrtc::VideoFrameMetadata> webrtc_metadata =
+  const std::optional<webrtc::VideoFrameMetadata> webrtc_metadata =
       delegate_->GetMetadata();
   if (!webrtc_metadata) {
     return metadata;
@@ -163,13 +167,14 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   metadata->setHeight(webrtc_metadata->GetHeight());
   metadata->setSpatialIndex(webrtc_metadata->GetSpatialIndex());
   metadata->setTemporalIndex(webrtc_metadata->GetTemporalIndex());
+  metadata->setRtpTimestamp(delegate_->RtpTimestamp());
 
   return metadata;
 }
 
 void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
                                        ExceptionState& exception_state) {
-  const absl::optional<webrtc::VideoFrameMetadata> original_webrtc_metadata =
+  const std::optional<webrtc::VideoFrameMetadata> original_webrtc_metadata =
       delegate_->GetMetadata();
   if (!original_webrtc_metadata) {
     exception_state.ThrowDOMException(
@@ -234,6 +239,7 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
   }
 
   delegate_->SetMetadata(webrtc_metadata);
+  delegate_->SetRtpTimestamp(metadata->rtpTimestamp(), exception_state);
 }
 
 void RTCEncodedVideoFrame::setData(DOMArrayBuffer* data) {
@@ -254,20 +260,6 @@ String RTCEncodedVideoFrame::toString() const {
   sb.Append(type());
   sb.Append("}");
   return sb.ToString();
-}
-
-RTCEncodedVideoFrame* RTCEncodedVideoFrame::clone(
-    ExceptionState& exception_state) const {
-  std::unique_ptr<webrtc::TransformableVideoFrameInterface> new_webrtc_frame =
-      delegate_->CloneWebRtcFrame();
-  if (new_webrtc_frame == nullptr) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Frames neutered by sending cannot be cloned.");
-    return nullptr;
-  }
-  return MakeGarbageCollected<RTCEncodedVideoFrame>(
-      std::move(new_webrtc_frame));
 }
 
 void RTCEncodedVideoFrame::SyncDelegate() const {

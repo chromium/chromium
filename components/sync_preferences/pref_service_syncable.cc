@@ -36,7 +36,7 @@ PrefServiceSyncable::PrefServiceSyncable(
     scoped_refptr<PersistentPrefStore> user_prefs,
     scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
-    const PrefModelAssociatorClient* pref_model_associator_client,
+    scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
     base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
         read_error_callback,
     bool async)
@@ -71,7 +71,7 @@ PrefServiceSyncable::PrefServiceSyncable(
     scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
     scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
-    const PrefModelAssociatorClient* pref_model_associator_client,
+    scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
     base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
         read_error_callback,
     bool async)
@@ -147,11 +147,13 @@ PrefServiceSyncable::CreateIncognitoPrefService(
     incognito_pref_store->RegisterPersistentPref(persistent_pref_name);
   }
 
+  // Only the primary profile can configure the standalone_browser_store.
+  auto standalone_browser_store = base::MakeRefCounted<InMemoryPrefStore>();
+
   auto pref_value_store = pref_value_store_->CloneAndSpecialize(
       nullptr,  // managed
       nullptr,  // supervised_user
-      incognito_extension_pref_store,
-      nullptr,  // standalone_browser_prefs
+      incognito_extension_pref_store, standalone_browser_store.get(),
       nullptr,  // command_line_prefs
       incognito_pref_store.get(),
       nullptr,  // recommended
@@ -284,8 +286,7 @@ uint32_t PrefServiceSyncable::GetWriteFlags(
 
 void PrefServiceSyncable::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    CHECK(dual_layer_user_prefs_);
+  if (dual_layer_user_prefs_) {
     dual_layer_user_prefs_->OnSyncServiceInitialized(sync_service);
   }
 }

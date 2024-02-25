@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -41,7 +42,7 @@ constexpr SkColor kErrorIconColor = gfx::kGoogleRed300;
 // static
 MessageView* MessageView::Show(DisplayOverlayController* controller,
                                views::View* parent,
-                               const base::StringPiece& message,
+                               std::string_view message,
                                MessageType message_type) {
   auto* view_ptr = parent->AddChildView(std::make_unique<MessageView>(
       controller, parent->size(), message, message_type));
@@ -51,7 +52,7 @@ MessageView* MessageView::Show(DisplayOverlayController* controller,
 
 MessageView::MessageView(DisplayOverlayController* controller,
                          const gfx::Size& parent_size,
-                         const base::StringPiece& message,
+                         std::string_view message,
                          MessageType message_type)
     : views::LabelButton(), display_overlay_controller_(controller) {
   DCHECK(display_overlay_controller_);
@@ -72,23 +73,23 @@ MessageView::MessageView(DisplayOverlayController* controller,
   label()->SetMultiLine(true);
 
   SetImageLabelSpacing(kImageLabelSpace);
-  image()->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   switch (message_type) {
     case MessageType::kInfo:
-      SetImage(views::Button::STATE_NORMAL,
-               gfx::CreateVectorIcon(gfx::IconDescription(
-                   vector_icons::kInfoOutlineIcon, kIconSize, kInfoIconColor)));
+      SetImageModel(
+          views::Button::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineIcon,
+                                         kInfoIconColor, kIconSize));
       break;
     case MessageType::kError:
-      SetImage(
+      SetImageModel(
           views::Button::STATE_NORMAL,
-          gfx::CreateVectorIcon(gfx::IconDescription(
-              vector_icons::kErrorOutlineIcon, kIconSize, kErrorIconColor)));
+          ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineIcon,
+                                         kErrorIconColor, kIconSize));
       break;
     case MessageType::kInfoLabelFocus:
-      SetImage(views::Button::STATE_NORMAL,
-               gfx::CreateVectorIcon(gfx::IconDescription(
-                   vector_icons::kKeyboardIcon, kIconSize, kInfoIconColor)));
+      SetImageModel(views::Button::STATE_NORMAL,
+                    ui::ImageModel::FromVectorIcon(vector_icons::kKeyboardIcon,
+                                                   kInfoIconColor, kIconSize));
       break;
     default:
       NOTREACHED();
@@ -111,5 +112,8 @@ void MessageView::AddShadow() {
   view_shadow_ = std::make_unique<ash::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(kCornerRadius);
 }
+
+BEGIN_METADATA(MessageView)
+END_METADATA
 
 }  // namespace arc::input_overlay

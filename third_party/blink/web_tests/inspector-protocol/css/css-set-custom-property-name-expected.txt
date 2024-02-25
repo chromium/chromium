@@ -1,0 +1,64 @@
+Test that the property name of property rules is editable
+Original values:
+{
+    name : --prop
+    value : 5
+}
+{
+    name : --second-prop
+    value : red
+}
+Set property name:
+{
+    id : <number>
+    result : {
+        propertyName : {
+            range : {
+                endColumn : 25
+                endLine : 7
+                startColumn : 12
+                startLine : 7
+            }
+            text : --second-prop
+        }
+    }
+    sessionId : <string>
+}
+Original values:
+{
+    name : --prop
+    value : red
+}
+{
+    name : --second-prop
+    value : 5
+}
+Revert property name:
+{
+    id : <number>
+    result : {
+        propertyName : {
+            range : {
+                endColumn : 18
+                endLine : 7
+                startColumn : 12
+                startLine : 7
+            }
+            text : --prop
+        }
+    }
+    sessionId : <string>
+}
+Original values:
+{
+    name : --prop
+    value : 5
+}
+{
+    name : --second-prop
+    value : red
+}
+Expected error: SyntaxError Property name text is not valid.
+Expected error: NotFoundError Source range didn't match existing source range
+Expected error: NotFoundError Source range didn't match existing style source range
+

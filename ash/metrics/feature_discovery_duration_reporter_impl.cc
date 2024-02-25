@@ -5,7 +5,6 @@
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 
 #include "ash/public/cpp/feature_discovery_metric_util.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
@@ -13,6 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -78,7 +78,7 @@ const char* FindMappedName(feature_discovery::TrackableFeature feature) {
 // NOTE: if the metric reporting for `feature` is not separated by tablet mode,
 // `in_tablet` is null.
 const char* CalculateHistogram(feature_discovery::TrackableFeature feature,
-                               absl::optional<bool> in_tablet) {
+                               std::optional<bool> in_tablet) {
   const feature_discovery::TrackableFeatureInfo& info =
       FindMappedFeatureInfo(feature);
   if (!info.split_by_tablet_mode)
@@ -134,7 +134,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
     // Record the current tablet mode if `feature`'s discovery duration data
     // should be separated by tablet mode.
     observed_feature_data.Set(kActivatedInTablet,
-                              TabletMode::Get()->IsInTabletMode());
+                              display::Screen::GetScreen()->InTabletMode());
   }
 
   ScopedDictPrefUpdate update(active_pref_service_, kObservedFeatures);
@@ -162,7 +162,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeFinishObservation(
       observed_features.Find(feature_name)->GetIfDict();
   DCHECK(feature_pref_data);
 
-  const absl::optional<base::TimeDelta> accumulated_duration =
+  const std::optional<base::TimeDelta> accumulated_duration =
       base::ValueToTimeDelta(feature_pref_data->Find(kCumulatedDuration));
   DCHECK(accumulated_duration);
 
@@ -171,7 +171,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeFinishObservation(
   // Get the boolean that indicates under which mode (clamshell or tablet) the
   // observation is activated. If the metric data should not be separated, the
   // value is null.
-  absl::optional<bool> activated_in_tablet;
+  std::optional<bool> activated_in_tablet;
   if (FindMappedFeatureInfo(feature).split_by_tablet_mode) {
     activated_in_tablet = feature_pref_data->FindBool(kActivatedInTablet);
     DCHECK(activated_in_tablet);
@@ -259,7 +259,7 @@ void FeatureDiscoveryDurationReporterImpl::Activate() {
       continue;
 
     // Skip the finished observations.
-    absl::optional<bool> is_finished =
+    std::optional<bool> is_finished =
         feature_data->GetDict().FindBool(kIsObservationFinished);
     DCHECK(is_finished);
     if (*is_finished)
@@ -289,7 +289,7 @@ void FeatureDiscoveryDurationReporterImpl::Deactivate() {
       const base::Value* cumulated_duration_value =
           mutable_data_dict.Find(kCumulatedDuration);
       DCHECK(cumulated_duration_value);
-      absl::optional<base::TimeDelta> cumulated_duration =
+      std::optional<base::TimeDelta> cumulated_duration =
           base::ValueToTimeDelta(cumulated_duration_value);
       DCHECK(cumulated_duration);
 

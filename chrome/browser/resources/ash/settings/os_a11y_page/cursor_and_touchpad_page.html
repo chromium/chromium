@@ -64,6 +64,36 @@
       label="$i18n{autoclickRevertToLeftClick}">
   </settings-toggle-button>
 </div>
+<!-- TODO(b/299724949): Add deep link focus ID -->
+<template is="dom-if" if="[[isAccessibilityFaceGazeEnabled_]]">
+  <settings-toggle-button
+      id="faceGazeToggle"
+      pref="{{prefs.settings.a11y.face_gaze.enabled}}"
+      icon="os-settings:face-gaze"
+      label="$i18n{accessibilityFaceGazeLabel}"
+      sub-label="$i18n{accessibilityFaceGazeDescription}">
+  </settings-toggle-button>
+  <iron-collapse opened="[[prefs.settings.a11y.face_gaze.enabled.value]]">
+    <div>
+      <!-- TODO(b/299725221): Open the FaceGaze cursor control settings -->
+      <cr-link-row id="faceGazeCursorControlButton"
+          class="sub-item"
+          label="$i18n{accessibilityFaceGazeSettings}"
+          sub-label="$i18n{accessibilityFaceGazeSettingsDescription}"
+          on-click="onFaceGazeCursorSettingsClick_">
+      </cr-link-row>
+    </div>
+    <div>
+      <!-- TODO(b/299725221): Open the FaceGaze facial expressions settings -->
+      <cr-link-row id="faceGazeFacialExpressionsButton"
+          class="sub-item"
+          label="$i18n{accessibilityFaceGazeFacialExpressionsSettings}"
+          sub-label="$i18n{accessibilityFaceGazeFacialExpressionsSettingsDescription}"
+          on-click="onFaceGazeFacialExpressionsSettingsClick_">
+      </cr-link-row>
+    </div>
+  </iron-collapse>
+</template>
 <settings-toggle-button
     id="largeCursorEnabledControl"
     class="hr"
@@ -80,7 +110,7 @@
     <settings-slider
         id="largeCursorSizeSlider"
         pref="{{prefs.settings.a11y.large_cursor_dip_size}}"
-        min="25" max="64"
+        min="25" max="[[largeCursorMaxSize_]]"
         label-aria="$i18n{largeMouseCursorSizeLabel}"
         label-min="$i18n{largeMouseCursorSizeDefaultLabel}"
         label-max="$i18n{largeMouseCursorSizeLargeLabel}">

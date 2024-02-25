@@ -133,20 +133,19 @@ class OverlayProposedCandidateTest
         /*transform=*/quad_to_target_transform, quad_rect,
         /*visible_layer_rect=*/quad_rect,
         /*filter_info=*/gfx::MaskFilterInfo(),
-        /*clip=*/absl::nullopt,
+        /*clip=*/std::nullopt,
         /*are contents opaque=*/true,
         /*opacity_f=*/1.f,
-        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
+        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
+        /*fast_rounded_corner=*/false);
 
     TextureDrawQuad* texture_quad =
         render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-    constexpr float kVertexOpacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-
     texture_quad->SetNew(
         quad_state, quad_rect, quad_rect,
         /*needs_blending=*/true, CreateResource(is_overlay_candidate),
         /*premultiplied=*/true, gfx::PointF(), gfx::PointF(),
-        /*background=*/SkColors::kTransparent, kVertexOpacity,
+        /*background=*/SkColors::kTransparent,
         /*flipped=*/false,
         /*nearest=*/false,
         /*secure_output=*/false, gfx::ProtectedVideoType::kClear);

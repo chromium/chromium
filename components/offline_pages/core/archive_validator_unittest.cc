@@ -64,7 +64,7 @@ std::string MakeContentOfSize(int size) {
 #if BUILDFLAG(IS_ANDROID)
 base::FilePath GetContentUriPathForTest() {
   base::FilePath test_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &test_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_dir);
   test_dir = test_dir.AppendASCII("net");
   test_dir = test_dir.AppendASCII("data");
   test_dir = test_dir.AppendASCII("file_stream_unittest");

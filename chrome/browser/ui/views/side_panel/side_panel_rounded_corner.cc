@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 
@@ -18,8 +19,8 @@ SidePanelRoundedCorner::SidePanelRoundedCorner(BrowserView* browser_view)
   SetPaintToLayer();
 }
 
-void SidePanelRoundedCorner::Layout() {
-  views::View::Layout();
+void SidePanelRoundedCorner::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
   SkPath path;
   if (features::IsChromeRefresh2023() && browser_view_->unified_side_panel()) {
     bool is_right_aligned =
@@ -83,3 +84,6 @@ void SidePanelRoundedCorner::OnThemeChanged() {
   SchedulePaint();
   View::OnThemeChanged();
 }
+
+BEGIN_METADATA(SidePanelRoundedCorner)
+END_METADATA

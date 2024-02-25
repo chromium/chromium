@@ -7,11 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/svg_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
-#include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -23,15 +20,15 @@ InterpolationValue SVGLengthListInterpolationType::MaybeConvertNeutral(
   wtf_size_t underlying_length =
       UnderlyingLengthChecker::GetUnderlyingLength(underlying);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingLengthChecker>(underlying_length));
+      MakeGarbageCollected<UnderlyingLengthChecker>(underlying_length));
 
   if (underlying_length == 0)
     return nullptr;
 
-  auto result = std::make_unique<InterpolableList>(underlying_length);
+  auto* result = MakeGarbageCollected<InterpolableList>(underlying_length);
   for (wtf_size_t i = 0; i < underlying_length; i++)
     result->Set(i, SVGLengthInterpolationType::NeutralInterpolableValue());
-  return InterpolationValue(std::move(result));
+  return InterpolationValue(result);
 }
 
 InterpolationValue SVGLengthListInterpolationType::MaybeConvertSVGValue(
@@ -40,7 +37,7 @@ InterpolationValue SVGLengthListInterpolationType::MaybeConvertSVGValue(
     return nullptr;
 
   const auto& length_list = To<SVGLengthList>(svg_value);
-  auto result = std::make_unique<InterpolableList>(length_list.length());
+  auto* result = MakeGarbageCollected<InterpolableList>(length_list.length());
   for (wtf_size_t i = 0; i < length_list.length(); i++) {
     InterpolationValue component =
         SVGLengthInterpolationType::MaybeConvertSVGLength(*length_list.at(i));
@@ -48,7 +45,7 @@ InterpolationValue SVGLengthListInterpolationType::MaybeConvertSVGValue(
       return nullptr;
     result->Set(i, std::move(component.interpolable_value));
   }
-  return InterpolationValue(std::move(result));
+  return InterpolationValue(result);
 }
 
 PairwiseInterpolationValue SVGLengthListInterpolationType::MaybeMergeSingles(
@@ -84,26 +81,13 @@ void SVGLengthListInterpolationType::Composite(
 SVGPropertyBase* SVGLengthListInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
-  NOTREACHED();
-  // This function is no longer called, because apply has been overridden.
-  return nullptr;
-}
-
-void SVGLengthListInterpolationType::Apply(
-    const InterpolableValue& interpolable_value,
-    const NonInterpolableValue* non_interpolable_value,
-    InterpolationEnvironment& environment) const {
-  auto& element = To<SVGInterpolationEnvironment>(environment).SvgElement();
-  SVGLengthContext length_context(&element);
-
   auto* result = MakeGarbageCollected<SVGLengthList>(unit_mode_);
   const auto& list = To<InterpolableList>(interpolable_value);
   for (wtf_size_t i = 0; i < list.length(); i++) {
     result->Append(SVGLengthInterpolationType::ResolveInterpolableSVGLength(
-        *list.Get(i), length_context, unit_mode_, negative_values_forbidden_));
+        *list.Get(i), unit_mode_, negative_values_forbidden_));
   }
-
-  element.SetWebAnimatedAttribute(Attribute(), result);
+  return result;
 }
 
 }  // namespace blink

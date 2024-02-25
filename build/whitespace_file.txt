@@ -194,7 +194,7 @@ And you know you're going to fall
 Tell 'em a hookah-smoking caterpillar
 
 Isn't it supposed to be a whitespace file?
-Let's add some "                   ".
+Let's add some "                    ".
 
 I'll join to add my first commit here. P. S. It has stopped being a story long long ago.
 

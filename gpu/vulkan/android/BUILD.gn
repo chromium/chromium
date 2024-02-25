@@ -23,6 +23,8 @@ component("android") {
 
   defines = [ "IS_VULKAN_ANDROID_IMPL" ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//gpu/ipc/common",
     "//gpu/ipc/common:vulkan_ycbcr_info",

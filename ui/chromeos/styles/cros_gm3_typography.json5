@@ -35,6 +35,12 @@
         "font_weight": 500,
         "line_height": 60
       },
+      "display_0-regular": {
+        "font_family": '$font_family_google_sans_regular',
+        "font_size": 52,
+        "font_weight": 400,
+        "line_height": 60
+      },
       "display_1": {
         "font_family": '$font_family_google_sans_medium',
         "font_size": 44,

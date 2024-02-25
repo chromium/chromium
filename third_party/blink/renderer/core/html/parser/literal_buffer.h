@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_LITERAL_BUFFER_H_
 
 #include <algorithm>
+#include <bit>
 #include <memory>
 #include <type_traits>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -131,7 +131,7 @@ class LiteralBufferBase {
     DCHECK_LE(value, size_t{1} << (digits - 1));
     if (value)
       --value;
-    return size_t{1} << (digits - base::bits::CountLeadingZeroBits(value));
+    return size_t{1} << (digits - std::countl_zero(value));
   }
 
   // Grows the backing store by a factor of two. Returns the new end of the used

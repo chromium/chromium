@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html>
-<head>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-1000">
 <script src="../../../resources/js-test.js"></script>
 <script src="../../../resources/testdriver.js"></script>
 <script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
 <script src="resources/calendar-picker-common.js"></script>
-</head>
-<body>
+
 <p id="description"></p>
 <div id="console"></div>
 
@@ -61,7 +59,7 @@ function testDay() {
     shouldBeTrue('new pw.Day(2000, 1, 2).equals(new pw.Day(2000, 1, 2))');
     shouldBeTrue('new pw.Day(2000, 1, 2).equals(new pw.Day(2000, 2, -27))');
     shouldBeTrue('new pw.Day(2000, 1, 2).equals(new pw.Day(2001, 1, -364))');
-    
+
     shouldBeFalse('new pw.Day(2000, 1, 2).equals(new pw.Day(2000, 1, 3))');
     shouldBeFalse('new pw.Day(2000, 1, 2).equals(new pw.Day(2000, 2, 2))');
     shouldBeFalse('new pw.Day(2000, 1, 2).equals(new pw.Day(2001, 1, 2))');
@@ -102,15 +100,15 @@ function testDay() {
     shouldBe('new pw.Day(2000, 2, 1).valueOf()', '951868800000');
     shouldBe('new pw.Day(1, 2, 1).valueOf()', '-62130499200000');
     shouldBe('new pw.Day(20000, 2, 1).valueOf()', '568977004800000');
-    
+
     debug('Test Day.toString');
-    
+
     shouldBeEqualToString('new pw.Day(2000, 2, 1).toString()', '2000-03-01');
     shouldBeEqualToString('new pw.Day(1, 2, 1).toString()', '0001-03-01');
     shouldBeEqualToString('new pw.Day(20000, 2, 1).toString()', '20000-03-01');
 
     debug('Test Day.parse');
-    
+
     shouldBeEqualToString('pw.Day.parse("2000-02-02").toString()', '2000-02-02');
     shouldBeEqualToString('pw.Day.parse("1999-02-02").toString()', '1999-02-02');
     shouldBeEqualToString('pw.Day.parse("2000-01-02").toString()', '2000-01-02');
@@ -153,7 +151,7 @@ function testWeek() {
     shouldBeTrue('new pw.Week(2000, 1).equals(new pw.Week(2000, 1))');
     shouldBeTrue('new pw.Week(2000, 1).equals(new pw.Week(2001, -51))');
     shouldBeTrue('new pw.Week(2000, 1).equals(new pw.Week(1999, 53))');
-    
+
     shouldBeFalse('new pw.Week(2000, 1).equals(new pw.Week(2000, 2))');
     shouldBeFalse('new pw.Week(2000, 1).equals(new pw.Week(2001, 1))');
     shouldBeFalse('new pw.Week(2000, 1).equals(new pw.Week(2001, 2))');
@@ -211,13 +209,13 @@ function testWeek() {
     shouldBe('new pw.Week(20000, 2).valueOf()', '568972598400000');
 
     debug('Test Week.toString');
-    
+
     shouldBeEqualToString('new pw.Week(2000, 2).toString()', '2000-W02');
     shouldBeEqualToString('new pw.Week(1, 50).toString()', '0001-W50');
     shouldBeEqualToString('new pw.Week(20000, 2).toString()', '20000-W02');
 
     debug('Test Week.parse');
-    
+
     shouldBeEqualToString('pw.Week.parse("2000-W02").toString()', '2000-W02');
     shouldBeEqualToString('pw.Week.parse("1999-W10").toString()', '1999-W10');
     shouldBeEqualToString('pw.Week.parse("0001-W23").toString()', '0001-W23');
@@ -235,8 +233,8 @@ function testWeek() {
 }
 
 function testMonth() {
-    
-    
+
+
     debug('Test Month constructor');
 
     shouldBe('new pw.Month(2000, 1).year', '2000');
@@ -259,7 +257,7 @@ function testMonth() {
     shouldBeTrue('new pw.Month(2000, 1).equals(new pw.Month(2000, 1))');
     shouldBeTrue('new pw.Month(2000, 1).equals(new pw.Month(2001, -11))');
     shouldBeTrue('new pw.Month(2000, 1).equals(new pw.Month(1999, 13))');
-    
+
     shouldBeFalse('new pw.Month(2000, 1).equals(new pw.Month(2000, 2))');
     shouldBeFalse('new pw.Month(2000, 1).equals(new pw.Month(2001, 1))');
     shouldBeFalse('new pw.Month(2000, 1).equals(new pw.Month(2001, 2))');
@@ -327,13 +325,13 @@ function testMonth() {
     shouldBe('new pw.Month(20000, 11).valueOf()', '216371');
 
     debug('Test Month.toString');
-    
+
     shouldBeEqualToString('new pw.Month(2000, 0).toString()', '2000-01');
     shouldBeEqualToString('new pw.Month(1, 11).toString()', '0001-12');
     shouldBeEqualToString('new pw.Month(20000, 5).toString()', '20000-06');
 
     debug('Test Month.parse');
-    
+
     shouldBeEqualToString('pw.Month.parse("2000-01").toString()', '2000-01');
     shouldBeEqualToString('pw.Month.parse("1999-10").toString()', '1999-10');
     shouldBeEqualToString('pw.Month.parse("0001-11").toString()', '0001-11');
@@ -350,5 +348,3 @@ function testMonth() {
     shouldBeNull('pw.Month.parse("")');
 }
 </script>
-</body>
-</html>

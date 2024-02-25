@@ -5,6 +5,8 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_CREDENTIAL_STORAGE_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_CREDENTIAL_STORAGE_H_
 
+#include <optional>
+
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
@@ -28,14 +30,14 @@ class CredentialStorage : public nearby::api::CredentialStorage {
   ~CredentialStorage() override;
 
   // nearby::api::CredentialStorage:
-  void SaveCredentials(absl::string_view manager_app_id,
-                       absl::string_view account_name,
+  void SaveCredentials(std::string_view manager_app_id,
+                       std::string_view account_name,
                        const std::vector<LocalCredential>& private_credentials,
                        const std::vector<SharedCredential>& public_credentials,
                        PublicCredentialType public_credential_type,
                        SaveCredentialsResultCallback callback) override;
-  void UpdateLocalCredential(absl::string_view manager_app_id,
-                             absl::string_view account_name,
+  void UpdateLocalCredential(std::string_view manager_app_id,
+                             std::string_view account_name,
                              nearby::internal::LocalCredential credential,
                              SaveCredentialsResultCallback callback) override;
   void GetLocalCredentials(const CredentialSelector& credential_selector,
@@ -50,6 +52,23 @@ class CredentialStorage : public nearby::api::CredentialStorage {
       nearby::presence::SaveCredentialsResultCallback
           on_credentials_saved_callback,
       mojo_base::mojom::AbslStatusCode credential_save_result);
+  void OnPublicCredentialsRetrieved(
+      nearby::presence::GetPublicCredentialsResultCallback
+          on_public_credentials_retrieved_callback,
+      mojo_base::mojom::AbslStatusCode retrieved_status,
+      std::optional<
+          std::vector<ash::nearby::presence::mojom::SharedCredentialPtr>>
+          shared_credentials_mojom);
+  void OnLocalCredentialsRetrieved(
+      nearby::presence::GetLocalCredentialsResultCallback
+          on_local_credentials_retrieved_callback,
+      mojo_base::mojom::AbslStatusCode retrieved_status,
+      std::optional<
+          std::vector<ash::nearby::presence::mojom::LocalCredentialPtr>>
+          local_credentials_mojom);
+  void OnLocalCredentialUpdated(nearby::presence::SaveCredentialsResultCallback
+                                    on_local_credential_updated_callback,
+                                mojo_base::mojom::AbslStatusCode update_status);
 
   const mojo::SharedRemote<
       ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>

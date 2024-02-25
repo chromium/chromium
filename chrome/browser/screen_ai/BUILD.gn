@@ -17,6 +17,22 @@ if (is_chromeos_ash) {
       "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
       "//components/services/screen_ai/public/cpp:utilities",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "screen_ai_dlc_installer_unittest.cc" ]
+    deps = [
+      ":screen_ai_dlc_installer",
+      "//base/test:test_support",
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//chromeos/ash/components/dbus/dlcservice",
+      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
   }
 }
 
@@ -35,6 +51,8 @@ source_set("screen_ai_install_state") {
     "//content/public/browser",
     "//ui/accessibility:ax_base",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("screen_ai_service_router_factory") {
@@ -49,9 +67,12 @@ source_set("screen_ai_service_router_factory") {
     ":screen_ai_install_state",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//components/services/screen_ai/public/mojom",
+    "//components/services/screen_ai/public/mojom:factory",
+    "//components/services/screen_ai/public/mojom:mojom",
     "//content/public/browser",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("prefs") {
@@ -61,4 +82,6 @@ source_set("prefs") {
   ]
 
   deps = [ "//components/prefs" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

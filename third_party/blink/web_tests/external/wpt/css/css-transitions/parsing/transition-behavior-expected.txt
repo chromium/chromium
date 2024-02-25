@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] e.style['transition'] = "allow-discrete display" should set the property value
+  assert_equals: serialization should be canonical expected "display allow-discrete" but got "display 0s ease 0s allow-discrete"
+[FAIL] Property transition value 'allow-discrete display'
+  assert_equals: expected "display allow-discrete" but got "display 0s ease 0s allow-discrete"
+[FAIL] e.style['transition'] = "allow-discrete display 3s" should set the property value
+  assert_equals: serialization should be canonical expected "display 3s allow-discrete" but got "display 3s ease 0s allow-discrete"
+[FAIL] Property transition value 'allow-discrete display 3s'
+  assert_equals: expected "display 3s allow-discrete" but got "display 3s ease 0s allow-discrete"
+[FAIL] e.style['transition'] = "allow-discrete display 3s 1s" should set the property value
+  assert_equals: serialization should be canonical expected "display 3s 1s allow-discrete" but got "display 3s ease 1s allow-discrete"
+[FAIL] Property transition value 'allow-discrete display 3s 1s'
+  assert_equals: expected "display 3s 1s allow-discrete" but got "display 3s ease 1s allow-discrete"
+[FAIL] e.style['transition'] = "allow-discrete display 3s ease-in-out" should set the property value
+  assert_equals: serialization should be canonical expected "display 3s ease-in-out allow-discrete" but got "display 3s ease-in-out 0s allow-discrete"
+[FAIL] Property transition value 'allow-discrete display 3s ease-in-out'
+  assert_equals: expected "display 3s ease-in-out allow-discrete" but got "display 3s ease-in-out 0s allow-discrete"
+[FAIL] e.style['transition'] = "allow-discrete display, normal opacity, color" should set the property value
+  assert_equals: serialization should be canonical expected "display allow-discrete, opacity, color" but got "display 0s ease 0s allow-discrete, opacity 0s ease 0s, color 0s ease 0s"
+[FAIL] Property transition value 'allow-discrete display, normal opacity, color'
+  assert_equals: expected "display allow-discrete, opacity, color" but got "display 0s ease 0s allow-discrete, opacity 0s ease 0s, color 0s ease 0s"
+[FAIL] e.style['transition'] = "normal opacity, color, allow-discrete display" should set the property value
+  assert_equals: serialization should be canonical expected "opacity, color, display allow-discrete" but got "opacity 0s ease 0s, color 0s ease 0s, display 0s ease 0s allow-discrete"
+[FAIL] Property transition value 'normal opacity, color, allow-discrete display'
+  assert_equals: expected "opacity, color, display allow-discrete" but got "opacity 0s ease 0s, color 0s ease 0s, display 0s ease 0s allow-discrete"
+Harness: the test ran to completion.
+

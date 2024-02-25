@@ -19,9 +19,9 @@ limitations under the License.
 #include <string>
 #include <utility>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
-#include "absl/strings/str_split.h"   // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -76,17 +76,17 @@ absl::StatusOr<int> FindTensorIdxByName(
 BertCluAnnotator::CreateFromOptions(
     const BertCluAnnotatorOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the duration of this
   // created BertCluAnnotator object.
   auto options_copy = std::make_unique<BertCluAnnotatorOptions>(options);
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       auto bert_clu_annotator,
       core::TaskAPIFactory::CreateFromBaseOptions<BertCluAnnotator>(
           &options_copy->base_options(), std::move(resolver)));
-  RETURN_IF_ERROR(bert_clu_annotator->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(bert_clu_annotator->Init(std::move(options_copy)));
   return std::move(bert_clu_annotator);
 }
 
@@ -102,7 +102,7 @@ absl::Status BertCluAnnotator::Init(
         "No input process unit found from metadata.",
         support::TfLiteSupportStatus::kMetadataInvalidTokenizerError);
   }
-  ASSIGN_OR_RETURN(tokenizer_,
+  TFLITE_ASSIGN_OR_RETURN(tokenizer_,
                    support::text::tokenizer::CreateTokenizerFromProcessUnit(
                        tokenizer_process_unit, GetMetadataExtractor()));
 
@@ -116,31 +116,31 @@ absl::Status BertCluAnnotator::Init(
 
   tensor_index_map_ = std::make_unique<TensorIndexMap>();
 
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       tensor_index_map_->token_id_idx,
       FindTensorIdxByName(input_tensors_metadata, kTokenIdTensorName));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       tensor_index_map_->token_mask_idx,
       FindTensorIdxByName(input_tensors_metadata, kMaskTensorName));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       tensor_index_map_->token_type_id_idx,
       FindTensorIdxByName(input_tensors_metadata, kTokenTypeIdTensorName));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       tensor_index_map_->domain_names_idx,
       FindTensorIdxByName(output_tensors_metadata, kDomainTaskNamesTensorName));
-  ASSIGN_OR_RETURN(tensor_index_map_->domain_scores_idx,
+  TFLITE_ASSIGN_OR_RETURN(tensor_index_map_->domain_scores_idx,
                    FindTensorIdxByName(output_tensors_metadata,
                                        kDomainTaskScoresTensorName));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       tensor_index_map_->intent_names_idx,
       FindTensorIdxByName(output_tensors_metadata, kIntentTaskNamesTensorName));
-  ASSIGN_OR_RETURN(tensor_index_map_->intent_scores_idx,
+  TFLITE_ASSIGN_OR_RETURN(tensor_index_map_->intent_scores_idx,
                    FindTensorIdxByName(output_tensors_metadata,
                                        kIntentTaskScoresTensorName));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       tensor_index_map_->slot_names_idx,
       FindTensorIdxByName(output_tensors_metadata, kSlotTaskNamesTensorName));
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       tensor_index_map_->slot_scores_idx,
       FindTensorIdxByName(output_tensors_metadata, kSlotTaskScoresTensorName));
 
@@ -150,21 +150,21 @@ absl::Status BertCluAnnotator::Init(
       interpreter, tensor_index_map_.get(), options_.get(),
       static_cast<tflite::support::text::tokenizer::BertTokenizer*>(
           tokenizer_.get()));
-  RETURN_IF_ERROR(m.status());
+  TFLITE_RETURN_IF_ERROR(m.status());
   modules_.emplace_back(*std::move(m));
   // DomainModule.
   m = DomainModule::Create(interpreter, tensor_index_map_.get(),
                            options_.get());
-  RETURN_IF_ERROR(m.status());
+  TFLITE_RETURN_IF_ERROR(m.status());
   modules_.emplace_back(*std::move(m));
   // IntentModule.
   m = IntentModule::Create(interpreter, tensor_index_map_.get(),
                            options_.get());
-  RETURN_IF_ERROR(m.status());
+  TFLITE_RETURN_IF_ERROR(m.status());
   modules_.emplace_back(*std::move(m));
   // SlotModule.
   m = SlotModule::Create(interpreter, tensor_index_map_.get(), options_.get());
-  RETURN_IF_ERROR(m.status());
+  TFLITE_RETURN_IF_ERROR(m.status());
   modules_.emplace_back(*std::move(m));
 
   return absl::OkStatus();
@@ -181,7 +181,7 @@ absl::Status BertCluAnnotator::Preprocess(
   artifacts_.Clear();
   // Preprocess
   for (const auto& module : modules_) {
-    RETURN_IF_ERROR(module->Preprocess(request, &artifacts_));
+    TFLITE_RETURN_IF_ERROR(module->Preprocess(request, &artifacts_));
   }
   return absl::OkStatus();
 }
@@ -191,7 +191,7 @@ tflite::support::StatusOr<CluResponse> BertCluAnnotator::Postprocess(
     const CluRequest& request) {
   CluResponse response;
   for (const auto& module : modules_) {
-    RETURN_IF_ERROR(module->Postprocess(&artifacts_, &response));
+    TFLITE_RETURN_IF_ERROR(module->Postprocess(&artifacts_, &response));
   }
   return response;
 }

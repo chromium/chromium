@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
+#include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -27,11 +28,12 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
+#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 class PrefRegistrySimple;
 class Profile;
-class TrialComparisonCertVerifierController;
 
 namespace net {
 class ClientCertStore;
@@ -39,10 +41,10 @@ class ClientCertStore;
 // Enum that specifies which profiles are allowed to do
 // ambient authentication.
 enum class AmbientAuthAllowedProfileTypes {
-  REGULAR_ONLY = 0,
-  INCOGNITO_AND_REGULAR = 1,
-  GUEST_AND_REGULAR = 2,
-  ALL = 3,
+  kRegularOnly = 0,
+  kIncognitoAndRegular = 1,
+  kGuestAndRegular = 2,
+  kAll = 3,
 };
 
 }  // namespace net
@@ -146,6 +148,17 @@ class ProfileNetworkContextService
 
   void ScheduleUpdateCTPolicy();
 
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  // Get the current certificate policies from preferences.
+  cert_verifier::mojom::AdditionalCertificatesPtr GetCertificatePolicy();
+
+  // Update the certificate policy for all of the profile_'s
+  // CertVerifierServices.
+  void UpdateCertificatePolicy();
+
+  void ScheduleUpdateCertificatePolicy();
+#endif
+
   bool ShouldSplitAuthCacheByNetworkIsolationKey() const;
   void UpdateSplitAuthCacheByNetworkIsolationKey();
 
@@ -171,7 +184,7 @@ class ProfileNetworkContextService
   // authority certificates for |relative_partition_path|.
   void PopulateInitialAdditionalCerts(
       const base::FilePath& relative_partition_path,
-      network::mojom::NetworkContextParams* network_context_params);
+      cert_verifier::mojom::CertVerifierCreationParams* creation_params);
 
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
@@ -181,6 +194,8 @@ class ProfileNetworkContextService
   // content_settings::CookieSettings::Observer:
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override;
+  void OnMitigationsEnabledFor3pcdChanged(bool enable) override;
+  void OnTrackingProtectionEnabledFor3pcdChanged(bool enable) override;
 
   // PrivacySandboxSettings::Observer:
   void OnFirstPartySetsEnabledChanged(bool enabled) override;
@@ -202,14 +217,10 @@ class ProfileNetworkContextService
                           privacy_sandbox::PrivacySandboxSettings::Observer>
       privacy_sandbox_settings_observer_{this};
 
-  // Used to post schedule CT policy updates
+  // Used to post schedule CT and Certificate policy updates
   base::OneShotTimer ct_policy_update_timer_;
-
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  // Controls the cert verification trial. May be null if the trial is disabled
-  // or not allowed for this profile.
-  std::unique_ptr<TrialComparisonCertVerifierController>
-      trial_comparison_cert_verifier_controller_;
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  base::OneShotTimer cert_policy_update_timer_;
 #endif
 
   // Used for testing.

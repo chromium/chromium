@@ -8,7 +8,9 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -17,7 +19,6 @@
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
@@ -28,7 +29,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/functional/callback.h"
@@ -71,7 +71,7 @@ const DuplexMap kDuplexList[]{
     {CUPS_SIDES_TWO_SIDED_LANDSCAPE, mojom::DuplexMode::kShortEdge},
 };
 
-mojom::ColorModel ColorModelFromIppColor(base::StringPiece ippColor) {
+mojom::ColorModel ColorModelFromIppColor(std::string_view ippColor) {
   for (const ColorMap& color : kColorList) {
     if (ippColor.compare(color.color) == 0) {
       return color.model;
@@ -81,7 +81,7 @@ mojom::ColorModel ColorModelFromIppColor(base::StringPiece ippColor) {
   return mojom::ColorModel::kUnknownColorModel;
 }
 
-mojom::DuplexMode DuplexModeFromIpp(base::StringPiece ipp_duplex) {
+mojom::DuplexMode DuplexModeFromIpp(std::string_view ipp_duplex) {
   for (const DuplexMap& entry : kDuplexList) {
     if (base::EqualsCaseInsensitiveASCII(ipp_duplex, entry.name))
       return entry.mode;
@@ -104,9 +104,9 @@ std::vector<mojom::ColorModel> SupportedColorModels(
     const CupsOptionProvider& printer) {
   std::vector<mojom::ColorModel> colors;
 
-  std::vector<base::StringPiece> color_modes =
+  std::vector<std::string_view> color_modes =
       printer.GetSupportedOptionValueStrings(kIppColor);
-  for (base::StringPiece color : color_modes) {
+  for (std::string_view color : color_modes) {
     mojom::ColorModel color_model = ColorModelFromIppColor(color);
     if (color_model != mojom::ColorModel::kUnknownColorModel) {
       colors.push_back(color_model);
@@ -149,9 +149,9 @@ void ExtractColor(const CupsOptionProvider& printer,
 
 void ExtractDuplexModes(const CupsOptionProvider& printer,
                         PrinterSemanticCapsAndDefaults* printer_info) {
-  std::vector<base::StringPiece> duplex_modes =
+  std::vector<std::string_view> duplex_modes =
       printer.GetSupportedOptionValueStrings(kIppDuplex);
-  for (base::StringPiece duplex : duplex_modes) {
+  for (std::string_view duplex : duplex_modes) {
     mojom::DuplexMode duplex_mode = DuplexModeFromIpp(duplex);
     if (duplex_mode != mojom::DuplexMode::kUnknownDuplexMode)
       printer_info->duplex_modes.push_back(duplex_mode);
@@ -192,7 +192,7 @@ void ExtractCopies(const CupsOptionProvider& printer,
 }
 
 // Reads resolution from `attr` and puts into `size` in dots per inch.
-absl::optional<gfx::Size> GetResolution(ipp_attribute_t* attr, int i) {
+std::optional<gfx::Size> GetResolution(ipp_attribute_t* attr, int i) {
   ipp_res_t units;
   int yres;
   int xres = ippGetResolution(attr, i, &yres, &units);
@@ -229,12 +229,12 @@ void ExtractResolutions(const CupsOptionProvider& printer,
 
   int num_options = ippGetCount(attr);
   for (int i = 0; i < num_options; i++) {
-    absl::optional<gfx::Size> size = GetResolution(attr, i);
+    std::optional<gfx::Size> size = GetResolution(attr, i);
     if (size)
       printer_info->dpis.push_back(size.value());
   }
   ipp_attribute_t* def_attr = printer.GetDefaultOptionValue(kIppResolution);
-  absl::optional<gfx::Size> size = GetResolution(def_attr, 0);
+  std::optional<gfx::Size> size = GetResolution(def_attr, 0);
   if (size) {
     printer_info->default_dpi = size.value();
   } else if (!printer_info->dpis.empty()) {
@@ -248,20 +248,20 @@ void ExtractResolutions(const CupsOptionProvider& printer,
   }
 }
 
-absl::optional<PrinterSemanticCapsAndDefaults::Paper>
+std::optional<PrinterSemanticCapsAndDefaults::Paper>
 PaperFromMediaColDatabaseEntry(ipp_t* db_entry) {
   DCHECK(db_entry);
 
-  absl::optional<MediaColData> size = ExtractMediaColData(db_entry);
+  std::optional<MediaColData> size = ExtractMediaColData(db_entry);
   if (!size) {
     LOG(WARNING) << "Unable to create Paper from media-col-database";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (size->HasVariableWidth()) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " variable widths are not supported.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Some PPDs (only ones with a custom height range) have a min height of 0,
@@ -290,7 +290,7 @@ PaperFromMediaColDatabaseEntry(ipp_t* db_entry) {
                  << " media-left-margin=" << size->left_margin
                  << " media-right-margin=" << size->right_margin
                  << " media-top-margin=" << size->top_margin;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   gfx::Size size_um(size->min_width * kMicronsPerPwgUnit,
@@ -330,21 +330,30 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
   int count = ippGetCount(attr);
 
   for (int i = 0; i < count; i++) {
-    absl::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
+    std::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
         PaperFromMediaColDatabaseEntry(ippGetCollection(attr, i));
     if (!paper_opt.has_value()) {
       continue;
     }
 
     const auto& paper = paper_opt.value();
-    if (auto existing_entry = paper_map.find(paper.size_um());
-        existing_entry != paper_map.end()) {
-      // Prefer non-borderless versions of paper sizes.
-      if (PaperIsBorderless(existing_entry->second)) {
-        existing_entry->second = paper;
-      }
-    } else {
+    auto existing_entry = paper_map.find(paper.size_um());
+
+    if (existing_entry == paper_map.end()) {
       paper_map.emplace(paper.size_um(), paper);
+      continue;
+    }
+
+    // When a paper size has both bordered and borderless variants, set the
+    // printable area according to the bordered variant, and set the flag
+    // indicating that a borderless variant exists.
+    if (PaperIsBorderless(existing_entry->second)) {
+      if (!PaperIsBorderless(paper)) {
+        existing_entry->second = paper;
+        existing_entry->second.set_has_borderless_variant(true);
+      }
+    } else if (PaperIsBorderless(paper)) {
+      existing_entry->second.set_has_borderless_variant(true);
     }
   }
 
@@ -356,19 +365,31 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
   return parsed_papers;
 }
 
-// Initializes `printer_info->media_types` with available media types and
-// `printer_info->default_media_type` with default media type provided by
-// `printer`.
+// Overrides the given printer's default media type as needed.
+void CorrectDefaultMediaType(PrinterSemanticCapsAndDefaults*& printer_info) {
+  // Some Canon printers give a proprietary default media type that's frequently
+  // unavailable to users.
+  if (base::StartsWith(printer_info->default_media_type.vendor_id, "com.canon",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    for (const auto& media_type : printer_info->media_types) {
+      if (media_type.vendor_id == "stationery") {
+        printer_info->default_media_type = media_type;
+        break;
+      }
+    }
+  }
+}
+
 void ExtractMediaTypes(const CupsOptionProvider& printer,
                        PrinterSemanticCapsAndDefaults* printer_info) {
-  std::vector<base::StringPiece> names =
+  std::vector<std::string_view> names =
       printer.GetSupportedOptionValueStrings(kIppMediaType);
   if (names.empty()) {
     return;
   }
   printer_info->media_types.reserve(names.size());
 
-  for (base::StringPiece vendor_id : names) {
+  for (std::string_view vendor_id : names) {
     PrinterSemanticCapsAndDefaults::MediaType type;
     type.vendor_id = std::string(vendor_id);
 
@@ -404,10 +425,12 @@ void ExtractMediaTypes(const CupsOptionProvider& printer,
       }
     }
   }
+
+  CorrectDefaultMediaType(printer_info);
 }
 
 bool CollateCapable(const CupsOptionProvider& printer) {
-  std::vector<base::StringPiece> values =
+  std::vector<std::string_view> values =
       printer.GetSupportedOptionValueStrings(kIppCollate);
   return base::Contains(values, kCollated) &&
          base::Contains(values, kUncollated);
@@ -419,7 +442,7 @@ bool CollateDefault(const CupsOptionProvider& printer) {
     return false;
 
   const char* const name = ippGetString(attr, 0, nullptr);
-  return name && !base::StringPiece(name).compare(kCollated);
+  return name && !std::string_view(name).compare(kCollated);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -431,7 +454,7 @@ bool PinSupported(const CupsOptionProvider& printer) {
   if (password_maximum_length_supported < kPinMinimumLength)
     return false;
 
-  std::vector<base::StringPiece> values =
+  std::vector<std::string_view> values =
       printer.GetSupportedOptionValueStrings(kIppPinEncryption);
   return base::Contains(values, kPinEncryptionNone);
 }
@@ -449,7 +472,7 @@ size_t AddAttributes(const CupsOptionProvider& printer,
   static const base::NoDestructor<HandlerMap> handlers(GenerateHandlers());
   // The names of attributes that we know are not supported (b/266573545).
   static constexpr auto kOptionsToIgnore =
-      base::MakeFixedFlatSet<base::StringPiece>(
+      base::MakeFixedFlatSet<std::string_view>(
           {"finishings-col", "ipp-attribute-fidelity", "job-name",
            "number-up-layout"});
   std::vector<std::string> unknown_options;
@@ -543,7 +566,7 @@ gfx::Rect GetPrintableAreaForSize(const CupsPrinter& printer,
   for (int i = 0; i < count; i++) {
     ipp_t* db_entry = ippGetCollection(attr, i);
 
-    absl::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
+    std::optional<PrinterSemanticCapsAndDefaults::Paper> paper_opt =
         PaperFromMediaColDatabaseEntry(db_entry);
     if (!paper_opt.has_value()) {
       continue;
@@ -573,16 +596,16 @@ void IppDeleter::operator()(ipp_t* ipp) const {
   ippDelete(ipp);
 }
 
-absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
+std::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
   if (!db_entry) {
     LOG(WARNING) << "Invalid media-col-database entry: empty entry.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   ipp_t* media_size = ippGetCollection(
       ippFindAttribute(db_entry, kIppMediaSize, IPP_TAG_BEGIN_COLLECTION), 0);
   if (!media_size) {
     LOG(WARNING) << "Invalid media-col-database entry: empty media_size.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ipp_attribute_t* bottom_attr =
@@ -596,7 +619,7 @@ absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
   if (!bottom_attr || !left_attr || !right_attr || !top_attr) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " margins are not present.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   int bottom_margin = ippGetInteger(bottom_attr, 0);
   int left_margin = ippGetInteger(left_attr, 0);
@@ -617,7 +640,7 @@ absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
       (!height_attr && !height_range_attr)) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " media-size needs x and y (or x and y range).";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int min_width = 0;
@@ -641,13 +664,13 @@ absl::optional<MediaColData> ExtractMediaColData(ipp_t* db_entry) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " min_width (" << min_width << ") > max_width ("
                  << max_width << ").";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (min_height > max_height) {
     LOG(WARNING) << "Invalid media-col-database entry:"
                  << " min_height (" << min_height << ") > max_height ("
                  << max_height << ").";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -743,7 +766,7 @@ void FilterMediaColSizes(ScopedIppPtr& attributes) {
   // they can be added later (once all the fixed widths have been discovered).
   for (int i = 0; i < ippGetCount(media_col_db); i++) {
     ipp_t* db_entry = ippGetCollection(media_col_db, i);
-    absl::optional<MediaColData> size = ExtractMediaColData(db_entry);
+    std::optional<MediaColData> size = ExtractMediaColData(db_entry);
     if (!size.has_value()) {
       return;
     }

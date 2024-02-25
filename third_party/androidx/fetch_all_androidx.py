@@ -220,7 +220,7 @@ def _write_cipd_yaml(libs_dir, version, cipd_yaml_path, experimental=False):
     else:
         package = 'chromium/third_party/androidx'
     contents = [
-        '# Copyright 2021 The Chromium Authors. All rights reserved.',
+        '# Copyright 2021 The Chromium Authors',
         '# Use of this source code is governed by a BSD-style license that can be',
         '# found in the LICENSE file.',
         '# version: ' + version,

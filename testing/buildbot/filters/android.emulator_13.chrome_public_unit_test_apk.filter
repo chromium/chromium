@@ -3,3 +3,9 @@
 
 # crbug.com/1347641
 -org.chromium.components.messages.MessageBannerViewTest.testSecondaryActionDirectCallback
+
+# crbug.com/1498188
+-org.chromium.components.messages.MessageBannerViewTest.testPrimaryWidgetAppearanceChangeFromButtonToProgressSpinner
+-org.chromium.components.messages.MessageBannerViewTest.testPrimaryWidgetAppearanceChangeFromProgressSpinnerToButton
+-org.chromium.components.messages.MessageBannerViewTest.testPrimaryWidgetAppearanceProgressSpinner
+-org.chromium.components.messages.MessageBannerViewTest.testPrimaryWidgetAppearanceProgressSpinnerWithNonEmptyButtonText

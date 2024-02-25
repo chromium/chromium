@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/url_fetcher.h"
 
 namespace base {
 class TaskRunner;
@@ -100,6 +101,15 @@ class WebViewInternalNavigateFunction
 class WebViewInternalExecuteCodeFunction
     : public extensions::ExecuteCodeFunction {
  public:
+  // This is called when a file URL request is complete.
+  // Parameters:
+  // - whether the request is success.
+  // - If yes, the content of the file.
+  // This callback should match the associated LoadFileCallback types
+  // specified in WebUIURLFetcher and ControlledFrameEmbedderURLFetcher.
+  using LoadFileCallback =
+      base::OnceCallback<void(bool, std::unique_ptr<std::string>)>;
+
   WebViewInternalExecuteCodeFunction();
 
   WebViewInternalExecuteCodeFunction(
@@ -122,12 +132,12 @@ class WebViewInternalExecuteCodeFunction
   bool LoadFile(const std::string& file, std::string* error) override;
 
  private:
-  // Loads a file url on WebUI.
-  bool LoadFileForWebUI(const std::string& file_src,
-                        WebUIURLFetcher::WebUILoadFileCallback callback);
-  void DidLoadFileForWebUI(const std::string& file,
-                           bool success,
-                           std::unique_ptr<std::string> data);
+  // Loads a file url in embedders such as WebUI and Controlled Frame.
+  bool LoadFileForEmbedder(const std::string& file_src,
+                           LoadFileCallback callback);
+  void DidLoadFileForEmbedder(const std::string& file,
+                              bool success,
+                              std::unique_ptr<std::string> data);
 
   // Contains extension resource built from path of file which is
   // specified in JSON arguments.
@@ -137,7 +147,7 @@ class WebViewInternalExecuteCodeFunction
 
   GURL guest_src_;
 
-  std::unique_ptr<WebUIURLFetcher> url_fetcher_;
+  std::unique_ptr<URLFetcher> url_fetcher_;
 };
 
 class WebViewInternalExecuteScriptFunction

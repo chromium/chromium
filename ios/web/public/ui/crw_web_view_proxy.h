@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class CRWContextMenuItem;
 @class CRWWebViewScrollViewProxy;
 
 // Provides an interface for embedders to access the WebState's web view in a
@@ -70,11 +69,6 @@
 // Notifies the web view controller that the surface size has changed due to
 // multiwindow action or orientation change.
 - (void)surfaceSizeChanged;
-
-// Shows a custom iOS context menu with the given `items` for options targeted
-// to the data visible in given window `rect`.
-- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
-                     rect:(CGRect)rect;
 
 @end
 

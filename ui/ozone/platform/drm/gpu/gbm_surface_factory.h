@@ -66,7 +66,7 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
   void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
                                gpu::VulkanDeviceQueue* device_queue,
                                gfx::Size size,
@@ -104,7 +104,7 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
 
   base::ThreadChecker thread_checker_;
 
-  const raw_ptr<DrmThreadProxy, ExperimentalAsh> drm_thread_proxy_;
+  const raw_ptr<DrmThreadProxy> drm_thread_proxy_;
 
   std::map<gfx::AcceleratedWidget, GbmSurfaceless*> widget_to_surface_map_;
 

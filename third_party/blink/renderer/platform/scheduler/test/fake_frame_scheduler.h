@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_FRAME_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_FRAME_SCHEDULER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
@@ -102,14 +103,14 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
     }
 
    private:
-    PageScheduler* page_scheduler_ = nullptr;
+    raw_ptr<PageScheduler> page_scheduler_ = nullptr;
     bool is_page_visible_ = false;
     bool is_frame_visible_ = false;
     FrameScheduler::FrameType frame_type_ =
         FrameScheduler::FrameType::kMainFrame;
     bool is_cross_origin_to_nearest_main_frame_ = false;
     bool is_exempt_from_throttling_ = false;
-    FrameScheduler::Delegate* delegate_ = nullptr;
+    raw_ptr<FrameScheduler::Delegate> delegate_ = nullptr;
   };
 
   // FrameScheduler implementation:
@@ -121,6 +122,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   bool IsCrossOriginToNearestMainFrame() const override {
     return is_cross_origin_to_nearest_main_frame_;
   }
+  void SetAgentClusterId(const base::UnguessableToken&) override {}
   void TraceUrlChange(const String&) override {}
   FrameScheduler::FrameType GetFrameType() const override {
     return frame_type_;
@@ -139,7 +141,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
       bool is_web_history_inert_commit,
       FrameScheduler::NavigationType navigation_type,
       DidCommitProvisionalLoadParams params) override {}
-  void OnFirstMeaningfulPaint() override {}
+  void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override {}
   // |source_location| is nullptr when JS is not running.
   // |handle| is nullptr when sticky feature starts to be used.
   void OnStartedUsingNonStickyFeature(
@@ -168,7 +170,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   }
 
  private:
-  PageScheduler* page_scheduler_;  // NOT OWNED
+  raw_ptr<PageScheduler> page_scheduler_;  // NOT OWNED
 
   bool is_page_visible_;
   bool is_frame_visible_;

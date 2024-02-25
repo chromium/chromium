@@ -6,7 +6,7 @@
 
 #include "chrome/browser/prefetch/android/jni_headers/PreloadPagesSettingsBridge_jni.h"
 #include "chrome/browser/prefetch/pref_names.h"
-#include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"

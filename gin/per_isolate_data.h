@@ -8,8 +8,10 @@
 #include <map>
 #include <memory>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gin/gin_export.h"
 #include "gin/public/isolate_holder.h"
@@ -29,6 +31,16 @@ class WrappableBase;
 // class stores all the Gin-related data that varies per isolate.
 class GIN_EXPORT PerIsolateData {
  public:
+  class DisposeObserver : public base::CheckedObserver {
+   public:
+    // Called just before the isolate is about to be disposed. The isolate will
+    // be entered before the observer is notified, but there will not be a
+    // handle scope by default.
+    virtual void OnBeforeDispose(v8::Isolate* isolate) = 0;
+    // Called just after the isolate has been disposed.
+    virtual void OnDisposed() = 0;
+  };
+
   PerIsolateData(
       v8::Isolate* isolate,
       v8::ArrayBuffer::Allocator* allocator,
@@ -72,6 +84,11 @@ class GIN_EXPORT PerIsolateData {
       WrappableBase* base);
   NamedPropertyInterceptor* GetNamedPropertyInterceptor(WrappableBase* base);
 
+  void AddDisposeObserver(DisposeObserver* observer);
+  void RemoveDisposeObserver(DisposeObserver* observer);
+  void NotifyBeforeDispose();
+  void NotifyDisposed();
+
   void EnableIdleTasks(std::unique_ptr<V8IdleTaskRunner> idle_task_runner);
 
   v8::Isolate* isolate() { return isolate_; }
@@ -99,6 +116,7 @@ class GIN_EXPORT PerIsolateData {
   FunctionTemplateMap function_templates_;
   IndexedPropertyInterceptorMap indexed_interceptors_;
   NamedPropertyInterceptorMap named_interceptors_;
+  base::ObserverList<DisposeObserver> dispose_observers_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> task_runner_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> low_priority_task_runner_;
 };

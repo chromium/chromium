@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_LOGS_DEBUG_LOG_WRITER_H_
 #define CHROME_BROWSER_ASH_SYSTEM_LOGS_DEBUG_LOG_WRITER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace debug_log_writer {
@@ -19,8 +20,7 @@ namespace debug_log_writer {
 void StoreLogs(
     const base::FilePath& out_dir,
     bool include_chrome_logs,
-    base::OnceCallback<void(absl::optional<base::FilePath> logs_path)>
-        callback);
+    base::OnceCallback<void(std::optional<base::FilePath> logs_path)> callback);
 
 }  // namespace debug_log_writer
 }  // namespace ash

@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that SSP maintains focus if changes occur while editing\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <div id="inspected">Inspected Node</div>
@@ -24,9 +26,9 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   // Trigger a model change that will schedule a pane update.
   // Once editing begins, we expect any scheduled updates to be suppressed.
-  TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, 'doUpdate', onUpdateScheduled);
+  TestRunner.addSniffer(ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', onUpdateScheduled);
   treeElement.applyStyleText('color: red');
-  treeElement.startEditing();
+  treeElement.startEditingName();
 
   TestRunner.addResult('Start editing');
   dumpFocus();

@@ -106,15 +106,15 @@ static InterpolationValue ConvertFontVariationSettings(
     return nullptr;
   }
   wtf_size_t length = settings->size();
-  auto numbers = std::make_unique<InterpolableList>(length);
+  auto* numbers = MakeGarbageCollected<InterpolableList>(length);
   Vector<uint32_t> tags;
   for (wtf_size_t i = 0; i < length; ++i) {
-    numbers->Set(i,
-                 std::make_unique<InterpolableNumber>(settings->at(i).Value()));
+    numbers->Set(
+        i, MakeGarbageCollected<InterpolableNumber>(settings->at(i).Value()));
     tags.push_back(settings->at(i).Tag());
   }
   return InterpolationValue(
-      std::move(numbers),
+      numbers,
       CSSFontVariationSettingsNonInterpolableValue::Create(std::move(tags)));
 }
 
@@ -122,7 +122,7 @@ InterpolationValue
 CSSFontVariationSettingsInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
-  conversion_checkers.push_back(std::make_unique<UnderlyingTagsChecker>(
+  conversion_checkers.push_back(MakeGarbageCollected<UnderlyingTagsChecker>(
       GetTags(*underlying.non_interpolable_value)));
   return InterpolationValue(underlying.interpolable_value->CloneAndZero(),
                             underlying.non_interpolable_value);
@@ -142,7 +142,7 @@ CSSFontVariationSettingsInterpolationType::MaybeConvertInherit(
   const FontVariationSettings* inherited =
       state.ParentStyle()->GetFontDescription().VariationSettings();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontVariationSettingsChecker>(inherited));
+      MakeGarbageCollected<InheritedFontVariationSettingsChecker>(inherited));
   return ConvertFontVariationSettings(inherited);
 }
 

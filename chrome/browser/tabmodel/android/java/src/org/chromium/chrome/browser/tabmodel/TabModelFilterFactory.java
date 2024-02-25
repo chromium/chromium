@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-/**
- * A factory that creates {@link TabModelFilter} instances for {@link TabModel}s.
- */
+/** A factory that creates {@link TabModelFilter} instances for {@link TabModel}s. */
 public interface TabModelFilterFactory {
     /**
      * @param model The {@link TabModel} to serve as base for the new filter.

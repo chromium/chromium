@@ -148,17 +148,19 @@ class FeatureStatusProviderImplTest : public testing::Test {
   }
 
   void SetSyncedDevices(
-      const absl::optional<multidevice::RemoteDeviceRef>& local_device,
-      const std::vector<absl::optional<multidevice::RemoteDeviceRef>>
+      const std::optional<multidevice::RemoteDeviceRef>& local_device,
+      const std::vector<std::optional<multidevice::RemoteDeviceRef>>
           phone_devices) {
     fake_device_sync_client_.set_local_device_metadata(local_device);
 
     multidevice::RemoteDeviceRefList synced_devices;
-    if (local_device)
+    if (local_device) {
       synced_devices.push_back(*local_device);
+    }
     for (const auto& phone_device : phone_devices) {
-      if (phone_device)
+      if (phone_device) {
         synced_devices.push_back(*phone_device);
+      }
     }
     fake_device_sync_client_.set_synced_devices(synced_devices);
 
@@ -188,14 +190,15 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   void SetHostStatusWithDevice(
       HostStatus host_status,
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
+      const std::optional<multidevice::RemoteDeviceRef>& host_device) {
     fake_multidevice_setup_client_.SetHostStatusWithDevice(
         std::make_pair(host_status, host_device));
   }
 
   void SetAdapterPresentState(bool present) {
-    if (is_adapter_present_ == present)
+    if (is_adapter_present_ == present) {
       return;
+    }
 
     is_adapter_present_ = present;
 
@@ -205,8 +208,9 @@ class FeatureStatusProviderImplTest : public testing::Test {
   }
 
   void SetAdapterPoweredState(bool powered) {
-    if (is_adapter_powered_ == powered)
+    if (is_adapter_powered_ == powered) {
       return;
+    }
 
     is_adapter_powered_ = powered;
 
@@ -259,28 +263,28 @@ class FeatureStatusProviderImplTest : public testing::Test {
 // Tests conditions for kNotEligibleForFeature status, including missing local
 // device and/or phone and various missing properties of these devices.
 TEST_F(FeatureStatusProviderImplTest, NotEligibleForFeature) {
-  SetSyncedDevices(/*local_device=*/absl::nullopt,
-                   /*phone_devices=*/{absl::nullopt});
+  SetSyncedDevices(/*local_device=*/std::nullopt,
+                   /*phone_devices=*/{std::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/false,
                                      /*has_bluetooth_address=*/false),
-                   /*phone_devices=*/{absl::nullopt});
+                   /*phone_devices=*/{std::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/false),
-                   /*phone_devices=*/{absl::nullopt});
+                   /*phone_devices=*/{std::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/false,
                                      /*has_bluetooth_address=*/true),
-                   /*phone_devices=*/{absl::nullopt});
+                   /*phone_devices=*/{std::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   /*phone_device=*/{absl::nullopt});
+                   /*phone_device=*/{std::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
@@ -348,7 +352,7 @@ TEST_F(FeatureStatusProviderImplTest, NotEligibleForFeature) {
   // eligible, expect that we return kNotEligibleForFeature.
   SetFeatureState(FeatureState::kEnabledByUser);
   SetHostStatusWithDevice(HostStatus::kEligibleHostExistsButNoHostSet,
-                          /*host_device=*/absl::nullopt);
+                          /*host_device=*/std::nullopt);
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
                    {CreatePhoneDevice(/*supports_better_together_host=*/false,
@@ -417,7 +421,7 @@ TEST_F(FeatureStatusProviderImplTest, MultiPhoneEligibility) {
 
   // Simulate no host device connected and expect to detect one eligible host.
   SetHostStatusWithDevice(HostStatus::kEligibleHostExistsButNoHostSet,
-                          /*host_device=*/absl::nullopt);
+                          /*host_device=*/std::nullopt);
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
 }
 
@@ -655,11 +659,6 @@ TEST_F(FeatureStatusProviderImplTest, HandlePowerSuspend) {
 }
 
 TEST_F(FeatureStatusProviderImplTest, EligiblePhoneHubHostsFound) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHubOnboardingNotifierRevamp,
-                            features::kSystemNudgeV2},
-      /*disabled_features=*/{});
   SetMultiDeviceState(
       HostStatus::kEligibleHostExistsButNoHostSet,
       FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
@@ -693,6 +692,19 @@ TEST_F(FeatureStatusProviderImplTest, EligiblePhoneHubHostsFound) {
 
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
   EXPECT_EQ(GetNumEligibleHostObserverCalls(), 2u);
+}
+
+TEST_F(FeatureStatusProviderImplTest, NotSupportedByChromebook) {
+  SetEligibleSyncedDevices();
+  SetMultiDeviceState(HostStatus::kHostVerified,
+                      FeatureState::kNotSupportedByChromebook,
+                      /*supports_better_together_host=*/true,
+                      /*supports_phone_hub=*/true,
+                      /*has_bluetooth_address=*/true);
+
+  // When the multidevice feature state is kNotSupportedByChromebook, then the
+  // Phonehub status is kNotEligibleForFeature.
+  EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 }
 
 }  // namespace ash::phonehub

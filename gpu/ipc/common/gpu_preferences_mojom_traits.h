@@ -26,6 +26,8 @@ template <>
 struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
   static gpu::mojom::GrContextType ToMojom(gpu::GrContextType input) {
     switch (input) {
+      case gpu::GrContextType::kNone:
+        return gpu::mojom::GrContextType::kNone;
       case gpu::GrContextType::kGL:
         return gpu::mojom::GrContextType::kGL;
       case gpu::GrContextType::kVulkan:
@@ -41,6 +43,9 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
   static bool FromMojom(gpu::mojom::GrContextType input,
                         gpu::GrContextType* out) {
     switch (input) {
+      case gpu::mojom::GrContextType::kNone:
+        *out = gpu::GrContextType::kNone;
+        return true;
       case gpu::mojom::GrContextType::kGL:
         *out = gpu::GrContextType::kGL;
         return true;
@@ -287,6 +292,10 @@ struct GPU_EXPORT
         prefs.enable_gpu_benchmarking_extension();
     out->enable_webgpu = prefs.enable_webgpu();
     out->enable_unsafe_webgpu = prefs.enable_unsafe_webgpu();
+    out->enable_webgpu_developer_features =
+        prefs.enable_webgpu_developer_features();
+    out->enable_webgpu_experimental_features =
+        prefs.enable_webgpu_experimental_features();
     if (!prefs.ReadUseWebgpuAdapter(&out->use_webgpu_adapter))
       return false;
     if (!prefs.ReadUseWebgpuPowerPreference(
@@ -302,8 +311,6 @@ struct GPU_EXPORT
     if (!prefs.ReadDisabledDawnFeaturesList(&out->disabled_dawn_features_list))
       return false;
 
-    out->enable_gpu_blocked_time_metric =
-        prefs.enable_gpu_blocked_time_metric();
     out->enable_perf_data_collection = prefs.enable_perf_data_collection();
 
 #if BUILDFLAG(IS_OZONE)
@@ -472,6 +479,14 @@ struct GPU_EXPORT
   static bool enable_unsafe_webgpu(const gpu::GpuPreferences& prefs) {
     return prefs.enable_unsafe_webgpu;
   }
+  static bool enable_webgpu_developer_features(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.enable_webgpu_developer_features;
+  }
+  static bool enable_webgpu_experimental_features(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.enable_webgpu_experimental_features;
+  }
   static gpu::WebGPUAdapterName use_webgpu_adapter(
       const gpu::GpuPreferences& prefs) {
     return prefs.use_webgpu_adapter;
@@ -494,9 +509,6 @@ struct GPU_EXPORT
   static const std::vector<std::string>& disabled_dawn_features_list(
       const gpu::GpuPreferences& prefs) {
     return prefs.disabled_dawn_features_list;
-  }
-  static bool enable_gpu_blocked_time_metric(const gpu::GpuPreferences& prefs) {
-    return prefs.enable_gpu_blocked_time_metric;
   }
   static bool enable_perf_data_collection(const gpu::GpuPreferences& prefs) {
     return prefs.enable_perf_data_collection;

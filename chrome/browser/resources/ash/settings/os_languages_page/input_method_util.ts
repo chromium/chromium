@@ -6,7 +6,7 @@
  * @fileoverview constants related to input method options.
  */
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {assertExhaustive} from '../assert_extras.js';
@@ -83,7 +83,7 @@ export enum OptionType {
   JAPANESE_SECTION_SHORTCUT = 'JapaneseSectionShortcut',
   JAPANESE_KEYMAP_STYLE = 'JapaneseKeymapStyle',
   JAPANESE_MANAGE_USER_DICTIONARY = 'JapaneseManageUserDictionary',
-  JAPANESE_CLEAR_PERSONALIZATION_DATA = 'JapaneseClearPersonalizationData',
+  JAPANESE_DELETE_PERSONALIZATION_DATA = 'JapaneseClearPersonalizationData',
   JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS = 'JapaneseDisableSuggestions',
   JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE =
       'AutomaticallySendStatisticsToGoogle',
@@ -202,8 +202,8 @@ export const OPTION_DEFAULT = {
   [OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE]: true,
   [OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS]: true,
   [OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT]: false,
-  [OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO]: true,
-  [OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W]: false,
+  [OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO]: false,
+  [OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W]: true,
   [OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE]: true,
 } satisfies Partial<Record<OptionType, unknown>>;
 
@@ -253,7 +253,7 @@ export enum UiType {
  * All possible submenu button types.
  */
 export enum SubmenuButton {
-  JAPANESE_CLEAR_PERSONALIZATION_DATA = 'SubmenuButtonClearPersonalizedData',
+  JAPANESE_DELETE_PERSONALIZATION_DATA = 'SubmenuButtonDeletePersonalizedData',
 }
 
 /**
@@ -333,7 +333,7 @@ const Settings = {
     {
       title: SettingsHeaders.PRIVACY,
       optionNames: [
-        {name: OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA},
+        {name: OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA},
         {name: OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS},
         {name: OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE},
       ],
@@ -614,7 +614,7 @@ export function getOptionUiType(option: OptionType): UiType {
     case OptionType.EDIT_USER_DICT:
     case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return UiType.LINK;
-    case OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA:
+    case OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
       return UiType.SUBMENU_BUTTON;
     case OptionType.PINYIN_FUZZY_CONFIG:
       // Not implemented.
@@ -710,8 +710,8 @@ export function getOptionLabelName(option: OptionType): string {
       return 'inputMethodOptionsJapaneseNumberOfSuggestions';
     case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return 'inputMethodOptionsJapaneseManageUserDictionary';
-    case OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA:
-      return 'inputMethodOptionsJapaneseClearPersonalizationData';
+    case OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
+      return 'inputMethodOptionsJapaneseDeletePersonalizationData';
     case OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS:
       return 'inputMethodOptionsJapaneseDisablePersonalizedSuggestions';
     case OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE:
@@ -1072,8 +1072,8 @@ export function getOptionUrl(option: OptionType): Route|undefined {
  */
 export function getSubmenuButtonType(option: OptionType): SubmenuButton|
     undefined {
-  if (option === OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA) {
-    return SubmenuButton.JAPANESE_CLEAR_PERSONALIZATION_DATA;
+  if (option === OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA) {
+    return SubmenuButton.JAPANESE_DELETE_PERSONALIZATION_DATA;
   }
   return undefined;
 }

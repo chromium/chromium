@@ -135,6 +135,15 @@ CWV_EXPORT
 // CWVWebViewConfiguration instance is initialized.
 @property(nonatomic, class) BOOL chromeContextMenuEnabled;
 
+// Whether or not to use the new session storage. Defaults to NO.
+// This class property setting should only be changed BEFORE any
+// CWVWebViewConfiguration instance is initialized.
+@property(nonatomic, class) BOOL useOptimizedSessionStorage;
+
+// Whether or not to enable debugging by Safari Web Inspector.
+// Defaults to NO.
+@property(nonatomic, class) BOOL webInspectorEnabled;
+
 // Set this to customize the underlying WKWebView's inputAccessoryView. Setting
 // to nil means to use the WKWebView's default inputAccessoryView instead.
 //

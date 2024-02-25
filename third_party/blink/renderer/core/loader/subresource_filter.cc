@@ -43,15 +43,6 @@ SubresourceFilter::SubresourceFilter(
     : execution_context_(execution_context),
       subresource_filter_(std::move(subresource_filter)) {
   DCHECK(subresource_filter_);
-  // Report the main resource as an ad if the subresource filter is
-  // associated with an ad subframe.
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
-    auto* frame = window->GetFrame();
-    if (frame->IsAdFrame()) {
-      ReportAdRequestId(
-          frame->Loader().GetDocumentLoader()->GetResponse().RequestId());
-    }
-  }
 }
 
 SubresourceFilter::~SubresourceFilter() = default;
@@ -118,10 +109,6 @@ bool SubresourceFilter::IsAdResource(
   }
 
   return load_policy != WebDocumentSubresourceFilter::kAllow;
-}
-
-void SubresourceFilter::ReportAdRequestId(int request_id) {
-  subresource_filter_->ReportAdRequestId(request_id);
 }
 
 void SubresourceFilter::ReportLoad(

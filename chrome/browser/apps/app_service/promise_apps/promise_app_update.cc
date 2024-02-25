@@ -6,9 +6,9 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "components/services/app_service/public/cpp/macros.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 namespace apps {
 
@@ -56,6 +56,7 @@ void PromiseAppUpdate::Merge(PromiseApp* state, const PromiseApp* delta) {
   SET_OPTIONAL_VALUE(progress);
   SET_ENUM_VALUE(status, PromiseStatus::kUnknown);
   SET_OPTIONAL_VALUE(should_show);
+  SET_OPTIONAL_VALUE(installed_app_id);
 
   // When adding new fields to the PromiseApp struct, this function should also
   // be updated.
@@ -70,28 +71,28 @@ const PackageId& PromiseAppUpdate::PackageId() const {
   }
 }
 
-absl::optional<std::string> PromiseAppUpdate::Name() const {
+std::optional<std::string> PromiseAppUpdate::Name() const {
   if (delta_ && delta_->name.has_value()) {
     return *delta_->name;
   }
   if (state_ && state_->name.has_value()) {
     return *state_->name;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PromiseAppUpdate::NameChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(name);
 }
 
-absl::optional<float> PromiseAppUpdate::Progress() const {
+std::optional<float> PromiseAppUpdate::Progress() const {
   if (delta_ && delta_->progress.has_value()) {
     return *delta_->progress;
   }
   if (state_ && state_->progress.has_value()) {
     return *state_->progress;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PromiseAppUpdate::ProgressChanged() const {
@@ -104,6 +105,20 @@ PromiseStatus PromiseAppUpdate::Status() const {
 
 bool PromiseAppUpdate::StatusChanged() const {
   IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(status, PromiseStatus::kUnknown);
+}
+
+std::string PromiseAppUpdate::InstalledAppId() const {
+  if (delta_ && delta_->installed_app_id.has_value()) {
+    return *delta_->installed_app_id;
+  }
+  if (state_ && state_->installed_app_id.has_value()) {
+    return *state_->installed_app_id;
+  }
+  return "";
+}
+
+bool PromiseAppUpdate::InstalledAppIdChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(installed_app_id);
 }
 
 bool PromiseAppUpdate::ShouldShow() const {
@@ -128,6 +143,7 @@ std::ostream& operator<<(std::ostream& out, const PromiseAppUpdate& update) {
   out << "- Status: " << EnumToString(update.Status()) << std::endl;
   out << "- Should Show Changed: " << update.ShouldShowChanged() << std::endl;
   out << "- Should Show: " << update.ShouldShow() << std::endl;
+  out << "- Installed App ID " << update.InstalledAppId() << std::endl;
   return out;
 }
 }  // namespace apps

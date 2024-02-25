@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -64,6 +65,8 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   void AddObserver(FullscreenObserver* observer);
   void RemoveObserver(FullscreenObserver* observer);
+
+  static int64_t GetDisplayId(const content::WebContents& web_contents);
 
   // Browser/User Fullscreen ///////////////////////////////////////////////////
 
@@ -156,7 +159,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // Called by BrowserView::FullscreenStateChanged. This is called after
   // fullscreen mode is toggled and after the transition animation completes.
-  void FullscreenTransititionCompleted();
+  void FullscreenTransitionCompleted();
 
   // Runs the given closure unless a fullscreen transition is currently in
   // progress. If a transition is in progress, the execution of the closure is
@@ -202,6 +205,8 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   GURL GetRequestingOrigin() const;
   GURL GetEmbeddingOrigin() const;
 
+  void RecordMetricsOnEnteringFullscreen();
+
   // The origin of the specific frame requesting fullscreen, which may not match
   // the exclusive_access_tab()'s origin, if an embedded frame made the request.
   GURL requesting_origin_;
@@ -245,10 +250,14 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // Tracks related popups that lost activation or were shown without activation
   // during content fullscreen sessions. This also activates the popups when
-  // fullscreen exits, to prevent sites from creating persisent popunders.
+  // fullscreen exits, to prevent sites from creating persistent popunders.
   std::unique_ptr<PopunderPreventer> popunder_preventer_;
 
   base::ObserverList<FullscreenObserver> observer_list_;
+
+  // Recorded when the controller switches to fullscreen or when the fullscreen
+  // window state changes, which ever comes first.
+  std::optional<base::TimeTicks> fullscreen_start_time_;
 
   base::WeakPtrFactory<FullscreenController> ptr_factory_{this};
 };

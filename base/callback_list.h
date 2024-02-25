@@ -12,12 +12,11 @@
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/containers/cxx20_erase_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/is_instantiation.h"
 
 // OVERVIEW:
 //
@@ -132,7 +131,6 @@ class CallbackListBase {
  public:
   using CallbackType =
       typename CallbackListTraits<CallbackListImpl>::CallbackType;
-  static_assert(IsBaseCallback<CallbackType>::value, "");
 
   // TODO(crbug.com/1103086): Update references to use this directly and by
   // value, then remove.
@@ -229,7 +227,7 @@ class CallbackListBase {
     // Any null callbacks remaining in the list were canceled due to
     // Subscription destruction during iteration, and can safely be erased now.
     const size_t erased_callbacks =
-        EraseIf(callbacks_, [](const auto& cb) { return cb.is_null(); });
+        std::erase_if(callbacks_, [](const auto& cb) { return cb.is_null(); });
 
     // Run |removal_callback_| if any callbacks were canceled. Note that we
     // cannot simply compare list sizes before and after iterating, since
@@ -238,8 +236,9 @@ class CallbackListBase {
     // that were executed above have all been removed regardless of whether
     // they're counted in |erased_callbacks_|.
     if (removal_callback_ &&
-        (erased_callbacks || IsOnceCallback<CallbackType>::value))
+        (erased_callbacks || is_instantiation<OnceCallback, CallbackType>)) {
       removal_callback_.Run();  // May delete |this|!
+    }
   }
 
  protected:

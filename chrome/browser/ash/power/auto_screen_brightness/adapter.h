@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_ADAPTER_H_
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_ADAPTER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/monotone_cubic_spline.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -146,9 +146,9 @@ class Adapter : public AlsReader::Observer,
     // |brightness_change_cause| should be non-nullopt.
     // |log_als_avg_stddev| may be set even when brightness should not be
     // changed. It is only nullopt if there is no ALS data in the data cache.
-    absl::optional<NoBrightnessChangeCause> no_brightness_change_cause;
-    absl::optional<BrightnessChangeCause> brightness_change_cause;
-    absl::optional<AlsAvgStdDev> log_als_avg_stddev;
+    std::optional<NoBrightnessChangeCause> no_brightness_change_cause;
+    std::optional<BrightnessChangeCause> brightness_change_cause;
+    std::optional<AlsAvgStdDev> log_als_avg_stddev;
   };
 
   Adapter(Profile* profile,
@@ -181,7 +181,7 @@ class Adapter : public AlsReader::Observer,
   void OnModelInitialized(const Model& model) override;
 
   // ModelConfigLoader::Observer overrides:
-  void OnModelConfigLoaded(absl::optional<ModelConfig> model_config) override;
+  void OnModelConfigLoaded(std::optional<ModelConfig> model_config) override;
 
   // chromeos::PowerManagerClient::Observer overrides:
   void PowerManagerBecameAvailable(bool service_is_ready) override;
@@ -194,17 +194,17 @@ class Adapter : public AlsReader::Observer,
   // Only returns true if Adapter status is success and it's not disabled by
   // user adjustment.
   bool IsAppliedForTesting() const;
-  absl::optional<MonotoneCubicSpline> GetGlobalCurveForTesting() const;
-  absl::optional<MonotoneCubicSpline> GetPersonalCurveForTesting() const;
+  std::optional<MonotoneCubicSpline> GetGlobalCurveForTesting() const;
+  std::optional<MonotoneCubicSpline> GetPersonalCurveForTesting() const;
 
   // Returns the average and std-dev over |log_als_values_|.
-  absl::optional<AlsAvgStdDev> GetAverageAmbientWithStdDevForTesting(
+  std::optional<AlsAvgStdDev> GetAverageAmbientWithStdDevForTesting(
       base::TimeTicks now);
   double GetBrighteningThresholdForTesting() const;
   double GetDarkeningThresholdForTesting() const;
 
   // Returns |average_log_ambient_lux_|.
-  absl::optional<double> GetCurrentAvgLogAlsForTesting() const;
+  std::optional<double> GetCurrentAvgLogAlsForTesting() const;
 
   static std::unique_ptr<Adapter> CreateForTesting(
       Profile* profile,
@@ -266,7 +266,7 @@ class Adapter : public AlsReader::Observer,
   // happens.
   void OnBrightnessChanged(base::TimeTicks now,
                            double new_brightness_percent,
-                           absl::optional<double> new_log_als);
+                           std::optional<double> new_log_als);
 
   // Called by |AdjustBrightness| when brightness should be changed.
   void WriteLogMessages(double new_log_als,
@@ -285,7 +285,7 @@ class Adapter : public AlsReader::Observer,
       double old_brightness_percent,
       double new_brightness_percent) const;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::ScopedObservation<AlsReader, AlsReader::Observer>
       als_reader_observation_{this};
@@ -302,12 +302,12 @@ class Adapter : public AlsReader::Observer,
       power_manager_client_observation_{this};
 
   // Used to report daily metrics to UMA. This may be null in unit tests.
-  raw_ptr<MetricsReporter, ExperimentalAsh> metrics_reporter_;
+  raw_ptr<MetricsReporter> metrics_reporter_;
 
   Params params_;
 
   // This will be replaced by a mock tick clock during tests.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // TODO(jiameng): refactor internal states and flags.
 
@@ -315,21 +315,21 @@ class Adapter : public AlsReader::Observer,
   // log space.
   std::unique_ptr<AmbientLightSampleBuffer> log_als_values_;
 
-  absl::optional<AlsReader::AlsInitStatus> als_init_status_;
+  std::optional<AlsReader::AlsInitStatus> als_init_status_;
   // Time when AlsReader is initialized.
   base::TimeTicks als_init_time_;
 
-  absl::optional<bool> brightness_monitor_success_;
+  std::optional<bool> brightness_monitor_success_;
 
   // |enabled_by_model_configs_| will remain nullopt until |OnModelConfigLoaded|
   // is called. Its value will then be set to true if the input model config
   // exists (not nullopt), and if |InitParams| properly sets params and checks
   // the model is enabled.
-  absl::optional<bool> enabled_by_model_configs_;
+  std::optional<bool> enabled_by_model_configs_;
 
   bool model_initialized_ = false;
 
-  absl::optional<bool> power_manager_service_available_;
+  std::optional<bool> power_manager_service_available_;
 
   // |adapter_status_| should only be set to |kDisabled| or |kSuccess| by
   // |UpdateStatus|.
@@ -352,16 +352,16 @@ class Adapter : public AlsReader::Observer,
   // when |OnUserBrightnessChanged| is called. We use this to ensure we only
   // log the elapsed time between previous model adjustment and the 1st user
   // brightness adjustment action.
-  absl::optional<base::TimeTicks> first_recent_user_brightness_request_time_;
-  absl::optional<AdapterDecision>
+  std::optional<base::TimeTicks> first_recent_user_brightness_request_time_;
+  std::optional<AdapterDecision>
       decision_at_first_recent_user_brightness_request_;
 
   int model_iteration_count_at_user_brightness_change_ = 0;
 
   // The thresholds are calculated from the |average_log_ambient_lux_|.
   // They are only updated when brightness is changed (either by user or model).
-  absl::optional<double> brightening_threshold_;
-  absl::optional<double> darkening_threshold_;
+  std::optional<double> brightening_threshold_;
+  std::optional<double> darkening_threshold_;
 
   Model model_;
 
@@ -374,7 +374,7 @@ class Adapter : public AlsReader::Observer,
 
   // |average_log_ambient_lux_| is only recorded when screen brightness is
   // changed by either model or user. New thresholds will be calculated from it.
-  absl::optional<double> average_log_ambient_lux_;
+  std::optional<double> average_log_ambient_lux_;
 
   // Last time brightness change occurred, either by user or model.
   base::TimeTicks latest_brightness_change_time_;
@@ -384,18 +384,18 @@ class Adapter : public AlsReader::Observer,
 
   // Brightness change triggered by the model. It's only unset if model changes
   // brightness when there's no pior recorded brightness level.
-  absl::optional<double> model_brightness_change_;
+  std::optional<double> model_brightness_change_;
 
   // Current recorded brightness. It can be either the user requested brightness
   // or the model requested brightness.
-  absl::optional<double> current_brightness_;
+  std::optional<double> current_brightness_;
 
   // Used to record number of model-triggered brightness changes.
   int model_brightness_change_counter_ = 1;
 
   // If lid is closed then we do not record any ambient light. If a device
   // has no lid, it is considered as open.
-  absl::optional<bool> is_lid_closed_;
+  std::optional<bool> is_lid_closed_;
 
   // Ignored ALS due to closed lid is only recorded once: the 1st time when
   // ALS changes.

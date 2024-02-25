@@ -72,17 +72,6 @@
 
 namespace blink {
 
-namespace {
-
-// This enum is used to record histograms. Do not reorder.
-enum VideoPersistenceControlsType {
-  kNative = 0,
-  kCustom = 1,
-  kMaxValue = 1,
-};
-
-}  // anonymous namespace
-
 HTMLVideoElement::HTMLVideoElement(Document& document)
     : HTMLMediaElement(html_names::kVideoTag, document),
       remoting_interstitial_(nullptr),
@@ -155,26 +144,21 @@ LayoutObject* HTMLVideoElement::CreateLayoutObject(const ComputedStyle&) {
 
 void HTMLVideoElement::AttachLayoutTree(AttachContext& context) {
   HTMLMediaElement::AttachLayoutTree(context);
-  UpdatePosterImage();
+  // Initiate loading of the poster image if a default poster image is
+  // specified and no poster has been loaded (=> no ImageLoader created).
+  if (!default_poster_url_.empty() && !image_loader_) {
+    UpdatePosterImage();
+  }
+  if (image_loader_ && GetLayoutObject()) {
+    image_loader_->OnAttachLayoutTree();
+  }
 }
 
 void HTMLVideoElement::UpdatePosterImage() {
-  ImageResourceContent* image_content = nullptr;
-
-  // Load the poster if set, |VideoLayout| will decide whether to draw it.
-  if (!PosterImageURL().IsEmpty()) {
-    if (!image_loader_)
-      image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
-    image_loader_->UpdateFromElement();
-    image_content = image_loader_->GetContent();
+  if (!image_loader_) {
+    image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
   }
-
-  if (GetLayoutObject()) {
-    To<LayoutImage>(GetLayoutObject())
-        ->ImageResource()
-        ->SetImageResource(image_content);
-    UpdateLayoutObject();
-  }
+  image_loader_->UpdateFromElement();
 }
 
 void HTMLVideoElement::CollectStyleForPresentationAttribute(
@@ -206,12 +190,16 @@ bool HTMLVideoElement::IsPresentationAttribute(
 void HTMLVideoElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kPosterAttr) {
-    UpdatePosterImage();
-
+    const KURL poster_image_url = PosterImageURL();
+    // Load the poster if set, |VideoPainter| will decide whether to draw
+    // it. Only create an ImageLoader if a non-empty URL is seen.
+    if (image_loader_ || !poster_image_url.IsEmpty()) {
+      UpdatePosterImage();
+    }
     // Notify the player when the poster image URL changes.
-    if (GetWebMediaPlayer())
-      GetWebMediaPlayer()->SetPoster(PosterImageURL());
-
+    if (GetWebMediaPlayer()) {
+      GetWebMediaPlayer()->SetPoster(poster_image_url);
+    }
     // Media remoting and picture in picture doesn't show the original poster
     // image, instead, it shows a grayscaled and blurred copy.
     if (remoting_interstitial_)
@@ -275,14 +263,6 @@ void HTMLVideoElement::SetPersistentStateInternal(bool persistent) {
   is_auto_picture_in_picture_ = persistent;
 
   if (persistent) {
-    // Record the type of video. If it is already fullscreen, it is a video with
-    // native controls, otherwise it is assumed to be with custom controls.
-    // This is only recorded when entering this mode.
-    base::UmaHistogramEnumeration("Media.VideoPersistence.ControlsType",
-                                  IsFullscreen()
-                                      ? VideoPersistenceControlsType::kNative
-                                      : VideoPersistenceControlsType::kCustom);
-
     Element* fullscreen_element =
         Fullscreen::FullscreenElementFrom(GetDocument());
     // Only set the video in persistent mode if it is not using native controls
@@ -350,10 +330,12 @@ void HTMLVideoElement::OnLoadFinished() {
   // element actually becomes visible to complete the load.
   if (web_media_player_->DidLazyLoad() && !PotentiallyPlaying()) {
     lazy_load_intersection_observer_ = IntersectionObserver::Create(
-        {}, {IntersectionObserver::kMinimumThreshold}, &GetDocument(),
+        GetDocument(),
         WTF::BindRepeating(&HTMLVideoElement::OnIntersectionChangedForLazyLoad,
                            WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kMediaIntersectionObserver);
+        LocalFrameUkmAggregator::kMediaIntersectionObserver,
+        IntersectionObserver::Params{
+            .thresholds = {IntersectionObserver::kMinimumThreshold}});
     lazy_load_intersection_observer_->observe(this);
   }
 
@@ -403,9 +385,6 @@ bool HTMLVideoElement::HasReadableVideoFrame() const {
 void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
                                     size_t bytes_to_first_frame) {
   DCHECK(GetWebMediaPlayer());
-  if (!base::FeatureList::IsEnabled(features::kLCPVideoFirstFrame)) {
-    return;
-  }
   LayoutObject* layout_object = GetLayoutObject();
   // HasLocalBorderBoxProperties will be false in some cases, specifically
   // picture-in-picture video may return false here.
@@ -484,6 +463,9 @@ void HTMLVideoElement::DidMoveToNewDocument(Document& old_document) {
 
   wake_lock_->ElementDidMoveToNewDocument();
   HTMLMediaElement::DidMoveToNewDocument(old_document);
+  if (image_loader_) {
+    image_loader_->UpdateFromElement();
+  }
 }
 
 unsigned HTMLVideoElement::webkitDecodedFrameCount() const {
@@ -512,7 +494,8 @@ bool HTMLVideoElement::IsDefaultPosterImageURL() const {
 }
 
 scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
-    bool allow_accelerated_images) {
+    bool allow_accelerated_images,
+    std::optional<gfx::Size> size) {
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
   scoped_refptr<media::VideoFrame> media_video_frame;
   if (auto* wmp = GetWebMediaPlayer()) {
@@ -523,11 +506,16 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   if (!media_video_frame || !video_renderer)
     return nullptr;
 
+  gfx::Size dest_size = size.value_or(media_video_frame->natural_size());
+  if (dest_size.width() <= 0 || dest_size.height() <= 0) {
+    return nullptr;
+  }
+
   // TODO(https://crbug.com/1341235): The choice of color type, alpha type,
   // and color space is inappropriate in many circumstances.
   const auto resource_provider_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(media_video_frame->natural_size()),
-                        kN32_SkColorType, kPremul_SkAlphaType, nullptr);
+      SkImageInfo::Make(gfx::SizeToSkISize(dest_size), kN32_SkColorType,
+                        kPremul_SkAlphaType, nullptr);
   if (!resource_provider_ ||
       allow_accelerated_images != resource_provider_->IsAccelerated() ||
       resource_provider_info != resource_provider_->GetSkImageInfo()) {
@@ -545,18 +533,17 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       return nullptr;
   }
 
-  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
   auto image = CreateImageFromVideoFrame(std::move(media_video_frame),
                                          /*allow_zero_copy_images=*/true,
                                          resource_provider_.get(),
-                                         video_renderer, dest_rect);
+                                         video_renderer, gfx::Rect(dest_size));
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());
   return image;
 }
 
 scoped_refptr<Image> HTMLVideoElement::GetSourceImageForCanvas(
-    CanvasResourceProvider::FlushReason,
+    FlushReason,
     SourceImageStatus* status,
     const gfx::SizeF&,
     const AlphaDisposition alpha_disposition) {
@@ -589,7 +576,7 @@ gfx::Size HTMLVideoElement::BitmapSourceSize() const {
 
 ScriptPromise HTMLVideoElement::CreateImageBitmap(
     ScriptState* script_state,
-    absl::optional<gfx::Rect> crop_rect,
+    std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (getNetworkState() == HTMLMediaElement::kNetworkEmpty) {
@@ -675,8 +662,7 @@ void HTMLVideoElement::OnEnteredPictureInPicture() {
   }
   picture_in_picture_interstitial_->Show();
 
-  if (RuntimeEnabledFeatures::CSSPictureInPictureEnabled())
-    PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
+  PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
 
   DCHECK(GetWebMediaPlayer());
   GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
@@ -686,8 +672,7 @@ void HTMLVideoElement::OnExitedPictureInPicture() {
   if (picture_in_picture_interstitial_)
     picture_in_picture_interstitial_->Hide();
 
-  if (RuntimeEnabledFeatures::CSSPictureInPictureEnabled())
-    PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
+  PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
 
   if (GetWebMediaPlayer())
     GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());

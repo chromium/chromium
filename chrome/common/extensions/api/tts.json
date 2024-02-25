@@ -266,6 +266,11 @@
           }
         ],
         "description": "Used to pass events back to the function calling speak()."
+      },
+      {
+        "name": "onVoicesChanged",
+        "type" : "function",
+        "description": "Called when the list of $(ref:tts.TtsVoice) that would be returned by getVoices has changed."
       }
     ]
   }

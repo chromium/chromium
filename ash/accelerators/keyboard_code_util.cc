@@ -5,6 +5,8 @@
 #include "ash/accelerators/keyboard_code_util.h"
 
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -20,7 +22,7 @@ namespace {
 // description or they require a special one we explicitly specify. For example,
 // ui::VKEY_COMMAND could return a string "Meta", but we want to display it as
 // "Search" or "Launcher".
-absl::optional<std::u16string> GetSpecialStringForKeyboardCode(
+std::optional<std::u16string> GetSpecialStringForKeyboardCode(
     ui::KeyboardCode key_code) {
   int msg_id = 0;
   switch (key_code) {
@@ -62,16 +64,22 @@ absl::optional<std::u16string> GetSpecialStringForKeyboardCode(
       // "VKEY_OEM_PLUS", which is "+" and "VKEY_SPACE", which is "Space".
       return u"+ ";
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
   return l10n_util::GetStringUTF16(msg_id);
+}
+
+bool IsAssistantAvailable() {
+  AssistantStateBase* state = AssistantState::Get();
+  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
+         state->settings_enabled().value_or(false);
 }
 
 }  // namespace
 
 std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
                                         bool remap_positional_key) {
-  const absl::optional<std::u16string> key_label =
+  const std::optional<std::u16string> key_label =
       GetSpecialStringForKeyboardCode(key_code);
   if (key_label)
     return key_label.value();
@@ -116,6 +124,16 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
     default:
       return nullptr;
   }
+}
+
+const gfx::VectorIcon* GetSearchOrLauncherVectorIcon() {
+  if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
+    return IsAssistantAvailable()
+               ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
+               : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+  }
+
+  return &kCaptureModeDemoToolsSearchIcon;
 }
 
 }  // namespace ash

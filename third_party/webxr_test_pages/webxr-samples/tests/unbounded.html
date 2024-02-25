@@ -1,0 +1,216 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <!-- Origin Trial Token, feature = WebXR Device API, origin = https://immersive-web.github.io, expires = 2018-08-28 -->
+<meta http-equiv="origin-trial" data-feature="WebXR Device API" data-expires="2018-08-28" content="AnNpu7ceXvLew05ccD8Zr1OZsdZiB2hLQKK82kTTMDwF7oRKtP3QEJ4RzkeHrmB8Sq0vSV6ZNmszpBCZ0I8p9gAAAABceyJvcmlnaW4iOiJodHRwczovL2ltbWVyc2l2ZS13ZWIuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkRldmljZSIsImV4cGlyeSI6MTUzNTQxNDQwMH0=">
+
+    <title>Unbounded</title>
+
+    <link href='../css/common.css' rel='stylesheet'></link>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
+    <script src='../js/webxr-polyfill.js'></script>
+
+    <script src='../js/webxr-button.js'></script>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>Unbounded</summary>
+        <p>
+          This sample demonstrates use of the unbounded reference space.
+          <a class="back" href="./index.html">Back</a>
+        </p>
+
+        <input id="startArSession" type="checkbox" checked>
+        <label for="startArSession">immersive-ar mode</label><br/>
+
+        <input id="visualizeOrigin" type="checkbox">
+        <label for="visualizeOrigin">Visualize Origin</label><br/>
+
+        <input id="visualizeFloorSpace" type="checkbox">
+        <label for="visualizeFloorSpace">Visualize Floor Space</label><br />
+      </details>
+    </header>
+    <script type="module">
+      import {Scene} from '../js/cottontail/src/scenes/scene.js';
+      import {Renderer, createWebGLContext} from '../js/cottontail/src/core/renderer.js';
+      import {Gltf2Node} from '../js/cottontail/src/nodes/gltf2.js';
+      import {QueryArgs} from '../js/cottontail/src/util/query-args.js';
+      import {Node} from '../js/cottontail/src/core/node.js';
+      import {RayNode} from '../js/cottontail/src/nodes/ray-node.js';
+      import {FallbackHelper} from '../js/cottontail/src/util/fallback-helper.js';
+
+      // If requested, initialize the WebXR polyfill
+      if (QueryArgs.getBool('allowPolyfill', false)) {
+        var polyfill = new WebXRPolyfill();
+      }
+
+      // Debug constants.
+      const startArSession = document.getElementById('startArSession');
+      const visualizeOrigin = document.getElementById('visualizeOrigin');
+      const visualizeFloorSpace = document.getElementById('visualizeFloorSpace');
+
+      // XR globals.
+      let xrButton = null;
+      let xrRefSpace = null;
+      let xrFloorSpace = null;
+
+      // WebGL scene globals.
+      let gl = null;
+      let renderer = null;
+      let scene = new Scene();
+      let solarSystem = new Gltf2Node({url: '../../media/gltf/space/space.gltf'});
+      // The solar system is big (citation needed). Scale it down so that users can
+      // move around the planets more easily.
+      solarSystem.scale = [0.1, 0.1, 0.1];
+      scene.addNode(solarSystem);
+
+      // Visualise the origin.
+      if(visualizeOrigin) {
+        let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+        let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+        let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+        scene.addNode(xRay);
+        scene.addNode(yRay);
+        scene.addNode(zRay);
+      }
+
+      // Visualise the floor space.
+      let floorSpaceNode = new Node();
+      floorSpaceNode.visible = false;
+
+      if(visualizeFloorSpace) {
+        let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+        let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+        let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+        floorSpaceNode.addNode(xRay);
+        floorSpaceNode.addNode(yRay);
+        floorSpaceNode.addNode(zRay);
+      }
+
+      scene.addNode(floorSpaceNode);
+
+      // Don't clear the background to black in AR as we want the real world to
+      // show through.
+      scene.clear = !startArSession;
+
+      function initXR() {
+        xrButton = new XRDeviceButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START XR",
+          textXRNotFoundTitle: "XR NOT FOUND",
+          textExitXRTitle: "EXIT XR",
+          supportedSessionTypes: ['immersive-ar','immersive-vr']
+        });
+        document.querySelector('header').appendChild(xrButton.domElement);
+      }
+
+      function onRequestSession() {
+        let sessionType = startArSession.checked ? 'immersive-ar' : 'immersive-vr';
+
+        let options = {
+          requiredFeatures: ['unbounded','local-floor'],
+        };
+
+        // This will likely prompt the user to allow camera use, so the promise
+        // may remain outstanding for a while.
+        navigator.xr.requestSession(sessionType, options).then((session) => {
+            session.mode = sessionType;
+            xrButton.setSession(session);
+            onSessionStarted(session);
+        });
+      }
+
+      function onSessionStarted(session) {
+        session.addEventListener('end', onSessionEnded);
+
+        if (!gl) {
+          gl = createWebGLContext({
+            xrCompatible: true
+          });
+
+          renderer = new Renderer(gl);
+
+          scene.setRenderer(renderer);
+        }
+
+        session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+
+        session.requestReferenceSpace('unbounded').then((refSpace) => {
+          session.requestReferenceSpace('local-floor').then((floorSpace) => {
+            xrRefSpace = refSpace;
+            xrFloorSpace = floorSpace;
+
+            session.requestAnimationFrame(onXRFrame);
+          });
+        });
+      }
+
+      function onEndSession(session) {
+        session.end();
+      }
+
+      function onSessionEnded(event) {
+        xrButton.setSession(null);
+      }
+
+      // Called every time a XRSession requests that a new frame be drawn.
+      function onXRFrame(t, frame) {
+        let session = frame.session;
+        let pose = frame.getViewerPose(xrRefSpace);
+
+        let floorSpacePose = xrFloorSpace ? frame.getPose(xrFloorSpace, xrRefSpace) : null;
+
+        if(floorSpacePose && visualizeFloorSpace) {
+          floorSpaceNode.matrix = floorSpacePose.transform.matrix;
+          floorSpaceNode.visible = true;
+        } else {
+          floorSpaceNode.visible = false;
+        }
+
+        scene.startFrame();
+
+        session.requestAnimationFrame(onXRFrame);
+
+        scene.drawXRFrame(frame, pose);
+
+        scene.endFrame();
+      }
+
+      // Start the XR application.
+      initXR();
+    </script>
+  </body>
+</html>

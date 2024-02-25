@@ -7,6 +7,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/harmonized_colors.h"
+#include "ash/style/sparkle_colors.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -18,6 +19,8 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
+#include "ui/color/dynamic_color/palette.h"
+#include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
@@ -432,6 +435,7 @@ void AddRefPalette(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
   mixer[cros_tokens::kCrosRefNeutral0] = {ui::kColorRefNeutral0};
   mixer[cros_tokens::kCrosRefNeutral8] = {ui::kColorRefNeutral8};
   mixer[cros_tokens::kCrosRefNeutral10] = {ui::kColorRefNeutral10};
+  mixer[cros_tokens::kCrosRefNeutral15] = {ui::kColorRefNeutral15};
   mixer[cros_tokens::kCrosRefNeutral20] = {ui::kColorRefNeutral20};
   mixer[cros_tokens::kCrosRefNeutral25] = {ui::kColorRefNeutral25};
   mixer[cros_tokens::kCrosRefNeutral30] = {ui::kColorRefNeutral30};
@@ -593,6 +597,29 @@ void RemapIllustrationColors(ui::ColorMixer& mixer) {
   mixer[ui::kColorNativeSecondaryColor] = {cros_tokens::kCrosSysIlloSecondary};
 }
 
+// Maps colors specific to gaming features. Colors are specified in
+// cros_sys_colors.json5 but are remapped here because they are generated in a
+// specific color scheme (independent of what's in ColorProviderKey).
+void AddGamingColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
+  if (!key.user_color.has_value()) {
+    // Colors are not meaningful without a seed color let these fallback to the
+    // defaults in cros_sys_colors.json5.
+    return;
+  }
+
+  // The gaming palette matches the user_color except that its always Vibrant.
+  std::unique_ptr<ui::Palette> vibrant_palette = GeneratePalette(
+      *key.user_color, ui::ColorProviderKey::SchemeVariant::kVibrant);
+  const ui::TonalPalette& primary = vibrant_palette->primary();
+
+  mixer[cros_tokens::kCrosSysGamingControlButtonDefault] =
+      ui::ColorTransform(primary.get(40));
+  mixer[cros_tokens::kCrosSysGamingControlButtonHover] =
+      ui::ColorTransform(primary.get(50));
+  mixer[cros_tokens::kCrosSysGamingControlButtonBorderHover] =
+      ui::ColorTransform(primary.get(80));
+}
+
 }  // namespace
 
 void AddCrosStylesColorMixer(ui::ColorProvider* provider,
@@ -606,7 +633,11 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
   }
   // Add after ref colors since it needs to override them.
   AddHarmonizedColors(mixer, key);
+  AddSparkleColors(mixer, key);
+
   cros_tokens::AddCrosSysColorsToMixer(mixer, dark_mode);
+  // Gaming colors override sys colors (so need to be added later).
+  AddGamingColors(mixer, key);
   if (!chromeos::features::IsJellyEnabled()) {
     // Overrides some cros.sys colors with pre-Jelly values so they can used in
     // UI with the Jelly flag off.
@@ -787,10 +818,11 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTooltipBackground] = {cros_tokens::kCrosSysOnSurface};
   mixer[ui::kColorTooltipForeground] = {cros_tokens::kCrosSysInverseOnSurface};
 
-  if (is_jelly_enabled && !key.custom_theme && !key.is_grayscale) {
+  if (is_jelly_enabled && !key.custom_theme &&
+      key.user_color_source == ui::ColorProviderKey::UserColorSource::kAccent) {
     // Only override frame color if there's no custom theme or we'll override
     // the value from the theme. Fallback to the default ui/color definition for
-    // grayscale headers.
+    // baseline and grayscale headers.
     mixer[ui::kColorFrameActive] = {cros_tokens::kCrosSysHeader};
     mixer[ui::kColorFrameInactive] = {cros_tokens::kCrosSysHeaderUnfocused};
   }

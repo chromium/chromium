@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -13,9 +14,9 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_mediator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_presenter.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_view_controller.h"
@@ -111,17 +112,18 @@ using password_manager::CredentialLeakType;
 }
 
 - (void)openSavedPasswordsSettings {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SettingsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
   password_manager::LogPasswordCheckReferrer(
       password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kPasswordBreachDialog);
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordBreachOpenPasswordManager"));
 
   [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
-                                       showCancelButton:NO
-                                     startPasswordCheck:YES];
+                                       showCancelButton:NO];
 }
 
 @end

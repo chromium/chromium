@@ -28,15 +28,26 @@ class CanonicalCookie {
     private final boolean mHttpOnly;
     private final int mSameSite;
     private final int mPriority;
-    private final boolean mSameParty;
     private final String mPartitionKey;
     private final int mSourceScheme;
     private final int mSourcePort;
 
     /** Constructs a CanonicalCookie */
-    CanonicalCookie(String name, String value, String domain, String path, long creation,
-            long expiration, long lastAccess, long lastUpdate, boolean secure, boolean httpOnly,
-            int sameSite, int priority, boolean sameParty, String partitionKey, int sourceScheme,
+    CanonicalCookie(
+            String name,
+            String value,
+            String domain,
+            String path,
+            long creation,
+            long expiration,
+            long lastAccess,
+            long lastUpdate,
+            boolean secure,
+            boolean httpOnly,
+            int sameSite,
+            int priority,
+            String partitionKey,
+            int sourceScheme,
             int sourcePort) {
         mName = name;
         mValue = value;
@@ -50,7 +61,6 @@ class CanonicalCookie {
         mHttpOnly = httpOnly;
         mSameSite = sameSite;
         mPriority = priority;
-        mSameParty = sameParty;
         mPartitionKey = partitionKey;
         mSourceScheme = sourceScheme;
         mSourcePort = sourcePort;
@@ -69,11 +79,6 @@ class CanonicalCookie {
     /** @return SameSite enum */
     int getSameSite() {
         return mSameSite;
-    }
-
-    /** @return True if the cookie has the SameParty attribute. */
-    boolean isSameParty() {
-        return mSameParty;
     }
 
     /** @return True if the cookie is secure. */
@@ -205,14 +210,14 @@ class CanonicalCookie {
         out.writeBoolean(mHttpOnly);
         out.writeInt(mSameSite);
         out.writeInt(mPriority);
-        out.writeBoolean(mSameParty);
         out.writeUTF(mPartitionKey);
         out.writeInt(mSourceScheme);
         out.writeInt(mSourcePort);
     }
 
     private static CanonicalCookie createFromStream(DataInputStream in) throws IOException {
-        return new CanonicalCookie(in.readUTF(), // name
+        return new CanonicalCookie(
+                in.readUTF(), // name
                 in.readUTF(), // value
                 in.readUTF(), // domain
                 in.readUTF(), // path
@@ -224,7 +229,6 @@ class CanonicalCookie {
                 in.readBoolean(), // httponly
                 in.readInt(), // samesite
                 in.readInt(), // priority
-                in.readBoolean(), // sameparty
                 in.readUTF(), // partition key
                 in.readInt(), // source scheme
                 in.readInt()); // source port

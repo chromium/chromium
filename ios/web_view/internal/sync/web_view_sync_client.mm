@@ -11,7 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
-#import "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
+#import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/user_demographics.h"
@@ -25,7 +25,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
-#import "ios/web_view/internal/passwords/web_view_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_device_info_sync_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
@@ -57,7 +57,7 @@ std::unique_ptr<WebViewSyncClient> WebViewSyncClient::Create(
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS)
           .get(),
-      WebViewPasswordStoreFactory::GetForBrowserState(
+      WebViewProfilePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS)
           .get(),
       WebViewAccountPasswordStoreFactory::GetForBrowserState(
@@ -197,8 +197,8 @@ WebViewSyncClient::GetSyncApiComponentFactory() {
   return component_factory_.get();
 }
 
-syncer::SyncTypePreferenceProvider* WebViewSyncClient::GetPreferenceProvider() {
-  return nullptr;
+bool WebViewSyncClient::IsCustomPassphraseAllowed() {
+  return true;
 }
 
 void WebViewSyncClient::OnLocalSyncTransportDataCleared() {

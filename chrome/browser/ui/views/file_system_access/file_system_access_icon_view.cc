@@ -29,7 +29,7 @@ FileSystemAccessIconView::FileSystemAccessIconView(
                          "FileSystemAccess") {
   SetVisible(false);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP));
 }
@@ -107,5 +107,5 @@ const gfx::VectorIcon& FileSystemAccessIconView::GetVectorIcon() const {
                            : vector_icons::kInsertDriveFileOutlineIcon;
 }
 
-BEGIN_METADATA(FileSystemAccessIconView, PageActionIconView)
+BEGIN_METADATA(FileSystemAccessIconView)
 END_METADATA

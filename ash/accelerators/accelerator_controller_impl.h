@@ -12,12 +12,16 @@
 #include <set>
 #include <vector>
 
+#include "ash/accelerators/accelerator_capslock_state_machine.h"
 #include "ash/accelerators/accelerator_history_impl.h"
+#include "ash/accelerators/accelerator_launcher_state_machine.h"
+#include "ash/accelerators/accelerator_prefs.h"
+#include "ash/accelerators/accelerator_shift_disable_capslock_state_machine.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/exit_warning_handler.h"
 #include "ash/accelerators/tablet_volume_controller.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
@@ -37,18 +41,7 @@ namespace ash {
 
 struct AcceleratorData;
 class ExitWarningHandler;
-
-/**
-Encode a shortcut as an int.
-- The low 16 bits represent the key code.
-- The high 16 bits represent the modififers.
-  - The 31 bit: Command key
-  - The 30 bit: Alt key
-  - The 29 bit: Control key
-  - The 28 bit: Shift key
-  - All other bits are 0
-*/
-ASH_EXPORT int GetEncodedShortcut(const ui::Accelerator& accelerator);
+class DebugDelegate;
 
 // AcceleratorControllerImpl provides functions for registering or unregistering
 // global keyboard accelerators, which are handled earlier than any windows. It
@@ -57,7 +50,8 @@ class ASH_EXPORT AcceleratorControllerImpl
     : public ui::AcceleratorTarget,
       public AcceleratorController,
       public input_method::InputMethodManager::Observer,
-      public AshAcceleratorConfiguration::Observer {
+      public AshAcceleratorConfiguration::Observer,
+      public AcceleratorPrefs::Observer {
  public:
   // TestApi is used for tests to get internal implementation details.
   class TestApi {
@@ -99,8 +93,11 @@ class ASH_EXPORT AcceleratorControllerImpl
     void SetSideVolumeButtonLocation(const std::string& region,
                                      const std::string& side);
 
+    void SetCanHandleLauncher(bool can_handle);
+    void SetCanHandleCapsLock(bool can_handle);
+
    private:
-    raw_ptr<AcceleratorControllerImpl, DanglingUntriaged | ExperimentalAsh>
+    raw_ptr<AcceleratorControllerImpl, DanglingUntriaged>
         controller_;  // Not owned.
   };
 
@@ -133,6 +130,9 @@ class ASH_EXPORT AcceleratorControllerImpl
   // AshAcceleratorConfiguration::Observer overrides:
   void OnAcceleratorsUpdated() override;
 
+  // AcceleratorPrefs::Observer overrides:
+  void OnShortcutPolicyUpdated() override;
+
   // Registers global keyboard accelerators for the specified target. If
   // multiple targets are registered for any given accelerator, a target
   // registered later has higher priority.
@@ -156,6 +156,7 @@ class ASH_EXPORT AcceleratorControllerImpl
   AcceleratorHistoryImpl* GetAcceleratorHistory() override;
   bool DoesAcceleratorMatchAction(const ui::Accelerator& accelerator,
                                   AcceleratorAction action) override;
+  void ApplyAcceleratorForTesting(const ui::Accelerator& accelerator) override;
 
   // Returns true if the |accelerator| is preferred. A preferred accelerator
   // is handled before being passed to an window/web contents, unless
@@ -183,6 +184,9 @@ class ASH_EXPORT AcceleratorControllerImpl
     return accelerator_configuration_;
   }
 
+  // Sets |DebugDelegate| which is implemented by lacros-chrome.
+  void SetDebugDelegate(DebugDelegate* delegate);
+
  private:
   // A map for looking up actions from accelerators.
   using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;
@@ -208,6 +212,10 @@ class ASH_EXPORT AcceleratorControllerImpl
   // data the action needs.
   void PerformAction(AcceleratorAction action,
                      const ui::Accelerator& accelerator);
+
+  // Performs |action| on |DebugDelegate|s if registered and debug accelerators
+  // are enabled.
+  void PerformDebugActionOnDelegateIfEnabled(AcceleratorAction action);
 
   // Returns whether performing |action| should consume the key event.
   bool ShouldActionConsumeKeyEvent(AcceleratorAction action);
@@ -235,10 +243,13 @@ class ASH_EXPORT AcceleratorControllerImpl
 
   // A tracker for the current and previous accelerators.
   std::unique_ptr<AcceleratorHistoryImpl> accelerator_history_;
+  std::unique_ptr<AcceleratorLauncherStateMachine> launcher_state_machine_;
+  std::unique_ptr<AcceleratorCapslockStateMachine> capslock_state_machine_;
+  std::unique_ptr<AcceleratorShiftDisableCapslockStateMachine>
+      shift_disable_state_machine_;
 
   // Manages all accelerator mappings.
-  raw_ptr<AshAcceleratorConfiguration, ExperimentalAsh>
-      accelerator_configuration_;
+  raw_ptr<AshAcceleratorConfiguration> accelerator_configuration_;
 
   // Handles the exit accelerator which requires a double press to exit and
   // shows a popup with an explanation.
@@ -276,6 +287,10 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Timer used to prevent the input gain from recording each time the user
   // presses a volume key while setting the desired volume.
   base::DelayTimer output_volume_metric_delay_timer_;
+
+  // Please refer to the comment on |DebugInterfaceAsh| for the lifetime of this
+  // pointer.
+  raw_ptr<DebugDelegate> debug_delegate_ = nullptr;
 };
 
 }  // namespace ash

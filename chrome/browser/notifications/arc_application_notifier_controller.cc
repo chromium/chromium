@@ -61,7 +61,7 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
         return;
       }
       notifier_dataset.emplace_back(
-          update.AppId() /*app_id*/, update.ShortName() /*app_name*/,
+          update.AppId() /*app_id*/, update.Name() /*app_name*/,
           update.PublisherId() /*publisher_id*/,
           permission->IsPermissionEnabled() /*enabled*/);
     }
@@ -119,7 +119,7 @@ void ArcApplicationNotifierController::CallLoadIcon(
       last_used_profile_));
 
   apps::AppServiceProxyFactory::GetForProfile(last_used_profile_)
-      ->LoadIcon(apps::AppType::kArc, app_id, apps::IconType::kStandard,
+      ->LoadIcon(app_id, apps::IconType::kStandard,
                  message_center::kQuickSettingIconSizeInDp,
                  allow_placeholder_icon,
                  base::BindOnce(&ArcApplicationNotifierController::OnLoadIcon,

@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -23,7 +26,6 @@
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
-#include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
@@ -241,7 +243,7 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
     // Avoid copying the encoded data unless the caller needs it.
     if (should_keep_encoded_data_) {
       encoded_data_copy = std::make_unique<char[]>(size);
-      memcpy(encoded_data_copy.get(), encoded_data, size);
+      std::copy_n(encoded_data, size, encoded_data_copy.get());
     }
 
     bool post_task;
@@ -319,7 +321,7 @@ class NavigationBodyLoader::MainThreadBodyReader : public BodyReader {
   }
 
  private:
-  NavigationBodyLoader* loader_;
+  raw_ptr<NavigationBodyLoader, DanglingUntriaged> loader_;
 };
 
 NavigationBodyLoader::NavigationBodyLoader(
@@ -360,7 +362,7 @@ void NavigationBodyLoader::OnReceiveEarlyHints(
 void NavigationBodyLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
   NOTREACHED();
 }
@@ -526,7 +528,7 @@ void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
 
   handle_watcher_.Cancel();
 
-  absl::optional<WebURLError> error;
+  std::optional<WebURLError> error;
   if (status_.error_code != net::OK) {
     error = WebURLError::Create(status_, original_url_);
   }
@@ -590,7 +592,8 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
     bool is_main_frame,
-    WebNavigationParams* navigation_params) {
+    WebNavigationParams* navigation_params,
+    bool is_ad_frame) {
   // Use the original navigation url to start with. We'll replay the
   // redirects afterwards and will eventually arrive to the final url.
   const KURL original_url = !commit_params->original_url.is_empty()
@@ -602,16 +605,15 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
       !commit_params->original_method.empty() ? commit_params->original_method
                                               : common_params->method,
       common_params->referrer->url, common_params->request_destination,
-      is_main_frame ? net::HIGHEST : net::LOWEST);
+      is_main_frame ? net::HIGHEST : net::LOWEST, is_ad_frame);
   size_t redirect_count = commit_params->redirect_response.size();
 
   if (redirect_count != commit_params->redirects.size()) {
     // We currently incorrectly send empty redirect_response and redirect_infos
-    // on frame reloads and some cases involving throttles.
+    // on frame reloads and some cases involving throttles. There are also other
+    // reports of non-empty cases, so further investigation is still needed.
     // TODO(https://crbug.com/1171225): Fix this.
-    DCHECK_EQ(0u, redirect_count);
-    DCHECK_EQ(0u, commit_params->redirect_infos.size());
-    DCHECK_NE(0u, commit_params->redirects.size());
+    redirect_count = std::min(redirect_count, commit_params->redirects.size());
   }
   navigation_params->redirects.reserve(redirect_count);
   navigation_params->redirects.resize(redirect_count);

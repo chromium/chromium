@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
@@ -18,6 +17,7 @@
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"

@@ -1,0 +1,52 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "lacros_launch_switch": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosAvailability": "user_choice"
+        },
+        "prefs": {
+          "lacros_launch_switch": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosAvailability": "lacros_disallowed"
+        },
+        "prefs": {
+          "lacros_launch_switch": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosAvailability": "lacros_only"
+        },
+        "prefs": {
+          "lacros_launch_switch": {
+            "location": "local_state",
+            "value": 4
+          }
+        }
+      }
+    ]
+  }
+]

@@ -43,7 +43,7 @@ class BarcodeDetectionProviderMac
   void EnumerateSupportedFormats(
       EnumerateSupportedFormatsCallback callback) override;
 
-  absl::optional<std::vector<mojom::BarcodeFormat>> supported_formats_;
+  std::optional<std::vector<mojom::BarcodeFormat>> supported_formats_;
   std::unique_ptr<VisionAPIInterface> vision_api_;
 };
 

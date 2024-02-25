@@ -17,11 +17,11 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/payments/core/features.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -106,7 +106,7 @@ class PaymentRequestLacrosBrowserTest
           });
     } else {
       EXPECT_CALL(service_, GetAssociatedAndroidPackage(_, _))
-          .WillRepeatedly(RunOnceCallback<1>(nullptr));
+          .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(nullptr));
     }
 
     InstallTestApp();
@@ -121,7 +121,7 @@ class PaymentRequestLacrosBrowserTest
     return https_server()->GetURL(kTestAppHost, "/simple.html");
   }
 
-  const web_app::AppId& app_id() const { return app_id_; }
+  const webapps::AppId& app_id() const { return app_id_; }
 
  protected:
   const bool has_associated_package_;
@@ -152,11 +152,11 @@ class PaymentRequestLacrosBrowserTest
   testing::NiceMock<MockWebAppService> service_;
   mojo::Receiver<crosapi::mojom::WebAppService> receiver_{&service_};
 
-  web_app::AppId app_id_;
+  webapps::AppId app_id_;
 };
 
 IN_PROC_BROWSER_TEST_P(PaymentRequestLacrosBrowserTest, BrowserTab) {
-  web_app::NavigateToURLAndWait(browser(), GetAppURL());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetAppURL());
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* render_frame_host = contents->GetPrimaryMainFrame();
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestLacrosBrowserTest, AppWindow) {
 IN_PROC_BROWSER_TEST_P(PaymentRequestLacrosBrowserTest, OutOfScope) {
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id());
-  web_app::NavigateToURLAndWait(
+  web_app::NavigateViaLinkClickToURLAndWait(
       app_browser, https_server()->GetURL("another.test.site", "/"));
   content::WebContents* contents =
       app_browser->tab_strip_model()->GetActiveWebContents();

@@ -1,0 +1,129 @@
+{
+  "$build/chromium_orchestrator": {
+    "compilator": "chromeos-amd64-generic-rel-gtest-compilator",
+    "compilator_watcher_git_revision": "27c191f304c8d7329a393d8a69020fc14032c3c3"
+  },
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/chromeos-amd64-generic-rel-gtest/gn-args.json"
+      ],
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "chromeos-amd64-generic-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-chromiumos-archive",
+              "builder_group": "chromium.chromiumos",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "cros_boards_with_qemu_images": [
+                  "amd64-generic-vm"
+                ],
+                "target_arch": "intel",
+                "target_bits": 64,
+                "target_cros_boards": [
+                  "amd64-generic"
+                ],
+                "target_platform": "chromeos"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "chromeos",
+                  "checkout_lacros_sdk"
+                ],
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "chromeos-amd64-generic-rel-gtest",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-chromiumos-archive",
+              "builder_group": "chromium.chromiumos",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "cros_boards_with_qemu_images": [
+                  "amd64-generic-vm"
+                ],
+                "target_arch": "intel",
+                "target_bits": 64,
+                "target_cros_boards": [
+                  "amd64-generic"
+                ],
+                "target_platform": "chromeos"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "chromeos",
+                  "checkout_lacros_sdk"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "chromeos-amd64-generic-rel",
+                "project": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "chromeos-amd64-generic-rel",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "chromeos-amd64-generic-rel-gtest",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "tryserver.chromium.chromiumos",
+  "cq": "required",
+  "recipe": "chromium/orchestrator"
+}

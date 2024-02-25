@@ -20,12 +20,14 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-using base::android::AttachCurrentThread;
+using base::android::AppendJavaStringArrayToStringVector;
+using base::android::JavaArrayOfByteArrayToStringVector;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfByteArray;
 using base::android::ToJavaArrayOfStrings;
+using jni_zero::AttachCurrentThread;
 
 namespace usage_stats {
 
@@ -89,7 +91,8 @@ void UsageStatsBridge::QueryEventsInRange(JNIEnv* j_env,
   ScopedJavaGlobalRef<jobject> callback(j_callback);
 
   usage_stats_database_->QueryEventsInRange(
-      base::Time::FromJavaTime(j_start), base::Time::FromJavaTime(j_end),
+      base::Time::FromMillisecondsSinceUnixEpoch(j_start),
+      base::Time::FromMillisecondsSinceUnixEpoch(j_end),
       base::BindOnce(&UsageStatsBridge::OnGetEventsDone,
                      weak_ptr_factory_.GetWeakPtr(), callback));
 }
@@ -136,7 +139,8 @@ void UsageStatsBridge::DeleteEventsInRange(JNIEnv* j_env,
   ScopedJavaGlobalRef<jobject> callback(j_callback);
 
   usage_stats_database_->DeleteEventsInRange(
-      base::Time::FromJavaTime(j_start), base::Time::FromJavaTime(j_end),
+      base::Time::FromMillisecondsSinceUnixEpoch(j_start),
+      base::Time::FromMillisecondsSinceUnixEpoch(j_end),
       base::BindOnce(&UsageStatsBridge::OnUpdateDone,
                      weak_ptr_factory_.GetWeakPtr(), callback));
 }
@@ -256,7 +260,7 @@ void UsageStatsBridge::OnGetAllSuspensionsDone(
       isSuccess(error) ? ToJavaArrayOfStrings(env, suspensions)
                        : ToJavaArrayOfStrings(env, std::vector<std::string>());
 
-  RunObjectCallbackAndroid(callback, j_suspensions);
+  base::android::RunObjectCallbackAndroid(callback, j_suspensions);
 }
 
 void UsageStatsBridge::OnGetAllTokenMappingsDone(
@@ -293,7 +297,7 @@ void UsageStatsBridge::OnGetAllTokenMappingsDone(
 
 void UsageStatsBridge::OnUpdateDone(ScopedJavaGlobalRef<jobject> callback,
                                     UsageStatsDatabase::Error error) {
-  RunBooleanCallbackAndroid(callback, isSuccess(error));
+  base::android::RunBooleanCallbackAndroid(callback, isSuccess(error));
 }
 
 // static
@@ -319,7 +323,7 @@ void UsageStatsBridge::OnURLsDeleted(
 
   history::DeletionTimeRange time_range = deletion_info.time_range();
   if (time_range.IsValid()) {
-    const absl::optional<std::set<GURL>>& urls = deletion_info.restrict_urls();
+    const std::optional<std::set<GURL>>& urls = deletion_info.restrict_urls();
     if (urls.has_value() && urls.value().size() > 0) {
       std::vector<std::string> domains;
       domains.reserve(urls.value().size());
@@ -329,8 +333,8 @@ void UsageStatsBridge::OnURLsDeleted(
       Java_UsageStatsBridge_onHistoryDeletedForDomains(
           env, j_this_, ToJavaArrayOfStrings(env, domains));
     } else {
-      int64_t startTimeMs = time_range.begin().ToJavaTime();
-      int64_t endTimeMs = time_range.end().ToJavaTime();
+      int64_t startTimeMs = time_range.begin().InMillisecondsSinceUnixEpoch();
+      int64_t endTimeMs = time_range.end().InMillisecondsSinceUnixEpoch();
 
       Java_UsageStatsBridge_onHistoryDeletedInRange(env, j_this_, startTimeMs,
                                                     endTimeMs);

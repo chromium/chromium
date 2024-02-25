@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "v8/include/v8.h"
 
@@ -43,7 +44,7 @@ class ModuleRecordResolverImplTestModulator final : public DummyModulator {
 
  private:
   // Implements Modulator:
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   KURL ResolveModuleSpecifier(const String& module_request,
                               const KURL& base_url,
@@ -116,6 +117,7 @@ class ModuleRecordResolverImplTest : public testing::Test,
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   Persistent<ModuleRecordResolverImplTestModulator> modulator_;

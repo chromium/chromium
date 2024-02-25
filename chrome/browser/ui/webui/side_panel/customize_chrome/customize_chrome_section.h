@@ -10,6 +10,7 @@ enum class CustomizeChromeSection {
   kAppearance,
   kShortcuts,
   kModules,
+  kWallpaperSearch,
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_SECTION_H_

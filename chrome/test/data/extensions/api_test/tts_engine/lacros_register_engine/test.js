@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // TTS api test for Lacros Chrome.
-// lacros_chrome_browsertests_run_in_series --gtest_filter="LacrosTtsApiTest.*"
+// lacros_chrome_browsertests --gtest_filter="LacrosTtsApiTest.*"
 
 chrome.test.runTests([
   function testGetVoices() {

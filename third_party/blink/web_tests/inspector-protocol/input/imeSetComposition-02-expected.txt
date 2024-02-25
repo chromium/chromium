@@ -21,12 +21,12 @@ value: abcd
 selectionStart: 3
 selectionEnd: 3
 
-event: beforeinput
+event: compositionupdate
 value: abcd
 selectionStart: 3
 selectionEnd: 3
 
-event: compositionupdate
+event: beforeinput
 value: abcd
 selectionStart: 3
 selectionEnd: 3
@@ -36,12 +36,12 @@ value: abcｓd
 selectionStart: 4
 selectionEnd: 4
 
-event: beforeinput
+event: compositionupdate
 value: abcｓd
 selectionStart: 3
 selectionEnd: 4
 
-event: compositionupdate
+event: beforeinput
 value: abcｓd
 selectionStart: 3
 selectionEnd: 4
@@ -51,12 +51,12 @@ value: abcすd
 selectionStart: 4
 selectionEnd: 4
 
-event: beforeinput
+event: compositionupdate
 value: abcすd
 selectionStart: 3
 selectionEnd: 4
 
-event: compositionupdate
+event: beforeinput
 value: abcすd
 selectionStart: 3
 selectionEnd: 4

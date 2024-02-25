@@ -59,7 +59,7 @@ device::mojom::blink::SmartCardProtocol ToMojoSmartCardProtocol(
   }
 }
 
-absl::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
+std::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
     SmartCardConnectionState state,
     SmartCardProtocol protocol) {
   switch (state) {
@@ -78,7 +78,7 @@ absl::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
         case SmartCardProtocol::kUndefined:
           LOG(ERROR)
               << "Invalid Status result: (state=specific, protocol=undefined)";
-          return absl::nullopt;
+          return std::nullopt;
         case SmartCardProtocol::kT0:
           return V8SmartCardConnectionState::Enum::kT0;
         case SmartCardProtocol::kT1:
@@ -95,12 +95,12 @@ class TransactionFulfilledFunction : public ScriptFunction::Callable {
       : connection_(connection) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    ExceptionState exception_state(v8::Isolate::GetCurrent(),
-                                   ExceptionState::kExecutionContext,
+    ExceptionState exception_state(script_state->GetIsolate(),
+                                   ExceptionContextType::kOperationInvoke,
                                    "SmartCardConnection", "startTransaction");
 
     if (value.IsUndefined()) {
-      connection_->OnTransactionCallbackDone(SmartCardDisposition::kLeave);
+      connection_->OnTransactionCallbackDone(SmartCardDisposition::kReset);
       return ScriptValue();
     }
 
@@ -178,7 +178,7 @@ class SmartCardConnection::TransactionState final
       base::OnceCallback<void(device::mojom::blink::SmartCardResultPtr)>);
 
   ScriptPromiseResolver* GetStartTransactionRequest() const {
-    return start_transaction_request_;
+    return start_transaction_request_.Get();
   }
 
  private:
@@ -186,7 +186,7 @@ class SmartCardConnection::TransactionState final
   HeapMojoAssociatedRemote<device::mojom::blink::SmartCardTransaction>
       transaction_;
   ScriptValue callback_exception_;
-  absl::optional<device::mojom::blink::SmartCardDisposition> pending_end_;
+  std::optional<device::mojom::blink::SmartCardDisposition> pending_end_;
 };
 
 SmartCardConnection::TransactionState::~TransactionState() = default;
@@ -214,8 +214,8 @@ void SmartCardConnection::TransactionState::SetCallbackException(
   ScriptState* script_state = start_transaction_request_->GetScriptState();
   v8::Isolate* isolate = script_state->GetIsolate();
 
-  callback_exception_ = ScriptValue::From(
-      script_state, V8ThrowDOMException::CreateOrEmpty(isolate, code, message));
+  callback_exception_ = ScriptValue(
+      isolate, V8ThrowDOMException::CreateOrEmpty(isolate, code, message));
 }
 
 void SmartCardConnection::TransactionState::SetCallbackException(
@@ -230,8 +230,8 @@ void SmartCardConnection::TransactionState::SettleStartTransaction(
   if (!callback_exception_.IsEmpty()) {
     start_transaction_request_->Reject(callback_exception_);
   } else if (end_transaction_result->is_error()) {
-    SmartCardError::Reject(start_transaction_request_,
-                           end_transaction_result->get_error());
+    SmartCardError::MaybeReject(start_transaction_request_,
+                                end_transaction_result->get_error());
   } else {
     start_transaction_request_->Resolve();
   }
@@ -524,9 +524,9 @@ void SmartCardConnection::OnTransactionCallbackFailed(
   transaction_state_->SetCallbackException(exception);
 
   if (smart_card_context_->IsOperationInProgress()) {
-    transaction_state_->SetPendingEnd(SmartCardDisposition::kLeave);
+    transaction_state_->SetPendingEnd(SmartCardDisposition::kReset);
   } else {
-    EndTransaction(SmartCardDisposition::kLeave);
+    EndTransaction(SmartCardDisposition::kReset);
   }
 }
 
@@ -574,7 +574,7 @@ void SmartCardConnection::OnDisconnectDone(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 
@@ -590,7 +590,7 @@ void SmartCardConnection::OnPlainResult(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 
@@ -603,7 +603,7 @@ void SmartCardConnection::OnDataResult(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 
@@ -618,17 +618,17 @@ void SmartCardConnection::OnStatusDone(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 
   const SmartCardStatusPtr& mojo_status = result->get_status();
 
-  absl::optional<V8SmartCardConnectionState::Enum> connection_state =
+  std::optional<V8SmartCardConnectionState::Enum> connection_state =
       ToV8ConnectionState(mojo_status->state, mojo_status->protocol);
 
   if (!connection_state.has_value()) {
-    SmartCardError::Reject(
+    SmartCardError::MaybeReject(
         resolver, device::mojom::blink::SmartCardError::kInternalError);
     return;
   }
@@ -663,7 +663,7 @@ void SmartCardConnection::OnBeginTransactionDone(
             device::mojom::blink::SmartCardError::kCancelled) {
       RejectWithAbortionReason(resolver, signal);
     } else {
-      SmartCardError::Reject(resolver, result->get_error());
+      SmartCardError::MaybeReject(resolver, result->get_error());
     }
     return;
   }

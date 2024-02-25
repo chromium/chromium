@@ -5,9 +5,10 @@
 #ifndef CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_BACKEND_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_BACKEND_DELEGATE_H_
 
+#include <optional>
+
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -26,7 +27,7 @@ class FakeHostBackendDelegate : public HostBackendDelegate {
   // Changes the backend host to |host_device_on_backend| and notifies
   // observers.
   void NotifyHostChangedOnBackend(
-      const absl::optional<multidevice::RemoteDeviceRef>&
+      const std::optional<multidevice::RemoteDeviceRef>&
           host_device_on_backend);
 
   void NotifyBackendRequestFailed();
@@ -35,18 +36,18 @@ class FakeHostBackendDelegate : public HostBackendDelegate {
 
   // HostBackendDelegate:
   void AttemptToSetMultiDeviceHostOnBackend(
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device) override;
+      const std::optional<multidevice::RemoteDeviceRef>& host_device) override;
   bool HasPendingHostRequest() override;
-  absl::optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
+  std::optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
       const override;
-  absl::optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
+  std::optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
       const override;
 
  private:
   size_t num_attempt_to_set_calls_ = 0u;
-  absl::optional<absl::optional<multidevice::RemoteDeviceRef>>
+  std::optional<std::optional<multidevice::RemoteDeviceRef>>
       pending_host_request_;
-  absl::optional<multidevice::RemoteDeviceRef> host_device_on_backend_;
+  std::optional<multidevice::RemoteDeviceRef> host_device_on_backend_;
 };
 
 // Test HostBackendDelegate::Observer implementation.

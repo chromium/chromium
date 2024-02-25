@@ -9,6 +9,8 @@ source_set("browser") {
 
   sources = [ "system_signals_service_host_impl.cc" ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//components/device_signals/core/browser",
     "//components/device_signals/core/common/mojom",

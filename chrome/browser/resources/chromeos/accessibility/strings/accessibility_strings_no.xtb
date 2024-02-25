@@ -99,6 +99,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1559739829547075274">Naviger bakover</translation>
 <translation id="1565432156062359693">Det finnes ingen flere lister</translation>
 <translation id="1571643229714746283">ChromeVox er klar</translation>
+<translation id="1588252353131492116">Videresending er ikke tilgjengelig når trege taster er på</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">Bytt til 6-punkts punktskrift</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -165,7 +166,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2100350898815792233">All tegnsetting</translation>
 <translation id="2110480898214777136">Gå fra begynnelsen til slutten eller fra slutten til begynnelsen av en side, dialogboks eller annen beholder</translation>
 <translation id="2119965627982867824">spnbtn</translation>
-<translation id="2121067395472282800">tilgangsnøkkel: <ph name="KEY" /></translation>
+<translation id="2121067395472282800">passnøkkel: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Ingen tekst er tilgjengelig for dette elementet</translation>
 <translation id="2127747486437921899">Kursiv</translation>
 <translation id="2152179395627233441">Lukk øvelsesområdet</translation>
@@ -194,6 +195,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2318372665160196757">Hovedelement</translation>
 <translation id="2329324941084714723">Fanepanel</translation>
 <translation id="2347456970887948350">En link</translation>
+<translation id="2363753371702255035">punkttegn</translation>
 <translation id="2365384324219615024">Du kan også trykke på Enter for å aktivere elementer. Enter kan for eksempel brukes til å sende inn tekst i skjemaer. For å fortsette, trykk på Enter.</translation>
 <translation id="2381733276052567791">Slå tale på eller av</translation>
 <translation id="2390264819538553347">Trykk på Enter for å gå videre eller på tilbaketasten for å gå tilbake.</translation>

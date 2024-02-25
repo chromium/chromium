@@ -3,15 +3,24 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+
 #include <memory>
 
 #include "base/scoped_observation.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_video_picture_in_picture_window_controller_impl.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -41,8 +50,9 @@ class MockPictureInPictureWindowController
   MOCK_METHOD(void, CloseAndFocusInitiator, (), (override));
   MOCK_METHOD(void, OnWindowDestroyed, (bool), (override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (override));
-  MOCK_METHOD(absl::optional<gfx::Rect>, GetWindowBounds, (), (override));
+  MOCK_METHOD(std::optional<gfx::Rect>, GetWindowBounds, (), (override));
   MOCK_METHOD(content::WebContents*, GetChildWebContents, (), (override));
+  MOCK_METHOD(std::optional<url::Origin>, GetOrigin, (), (override));
 };
 
 class PictureInPictureWindowManagerTest
@@ -53,9 +63,18 @@ class PictureInPictureWindowManagerTest
 
     SetContents(CreateTestWebContents());
     child_web_contents_ = CreateTestWebContents();
+
+    auto mock_video_picture_in_picture_controller = std::make_unique<
+        content::MockVideoPictureInPictureWindowControllerImpl>(web_contents());
+    mock_video_picture_in_picture_controller_ =
+        mock_video_picture_in_picture_controller.get();
+    web_contents()->SetUserData(
+        mock_video_picture_in_picture_controller->UserDataKey(),
+        std::move(mock_video_picture_in_picture_controller));
   }
 
   void TearDown() override {
+    mock_video_picture_in_picture_controller_ = nullptr;
     DeleteContents();
     child_web_contents_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -65,8 +84,15 @@ class PictureInPictureWindowManagerTest
     return child_web_contents_.get();
   }
 
+  content::MockVideoPictureInPictureWindowControllerImpl*
+  mock_video_picture_in_picture_controller() const {
+    return mock_video_picture_in_picture_controller_.get();
+  }
+
  private:
   std::unique_ptr<content::WebContents> child_web_contents_;
+  raw_ptr<content::MockVideoPictureInPictureWindowControllerImpl>
+      mock_video_picture_in_picture_controller_;
 };
 
 }  // namespace
@@ -83,18 +109,18 @@ TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
   pip_options.height = 900;
   EXPECT_EQ(
       gfx::Size(800, 800),
-      PictureInPictureWindowManager::
-          CalculateInitialPictureInPictureWindowBounds(pip_options, display)
-              .size());
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
 
   // The minimum size should also be respected.
   pip_options.width = 100;
   pip_options.height = 500;
   EXPECT_EQ(
-      gfx::Size(300, 500),
-      PictureInPictureWindowManager::
-          CalculateInitialPictureInPictureWindowBounds(pip_options, display)
-              .size());
+      gfx::Size(240, 500),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
 
   // An extremely small aspect ratio should still respect minimum width and
   // maximum height.
@@ -102,19 +128,19 @@ TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
   pip_options.height = 0;
   pip_options.initial_aspect_ratio = 0.00000001;
   EXPECT_EQ(
-      gfx::Size(300, 800),
-      PictureInPictureWindowManager::
-          CalculateInitialPictureInPictureWindowBounds(pip_options, display)
-              .size());
+      gfx::Size(240, 800),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
 
   // An extremely large aspect ratio should still respect maximum width and
   // minimum height.
   pip_options.initial_aspect_ratio = 100000;
   EXPECT_EQ(
-      gfx::Size(800, 300),
-      PictureInPictureWindowManager::
-          CalculateInitialPictureInPictureWindowBounds(pip_options, display)
-              .size());
+      gfx::Size(800, 52),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
 }
 
 TEST_F(PictureInPictureWindowManagerTest,
@@ -136,11 +162,9 @@ TEST_F(PictureInPictureWindowManagerTest,
 TEST_F(PictureInPictureWindowManagerTest, OnEnterVideoPictureInPicture) {
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
-  MockPictureInPictureWindowManagerObserver observer;
-  PictureInPictureWindowManagerdObservation observation{&observer};
-  observation.Observe(picture_in_picture_window_manager);
-  EXPECT_CALL(observer, OnEnterPictureInPicture).Times(1);
 
+  EXPECT_CALL(*mock_video_picture_in_picture_controller(),
+              SetOnWindowCreatedNotifyObserversCallback);
   picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());
 }
 
@@ -155,5 +179,61 @@ TEST_F(PictureInPictureWindowManagerTest, OnEnterDocumentPictureInPicture) {
 
   picture_in_picture_window_manager->EnterDocumentPictureInPicture(
       web_contents(), child_web_contents());
+}
+
+TEST_F(PictureInPictureWindowManagerTest, DontShowAutoPipSettingUiWithoutPip) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  // There's no pip open, so expect no setting UI.
+  EXPECT_FALSE(picture_in_picture_window_manager->GetOverlayView(
+      gfx::Rect(), /* anchor_view = */ nullptr,
+      views::BubbleBorder::TOP_CENTER));
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       DontShowAutoPipSettingUiForNonAutoPip) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  picture_in_picture_window_manager->EnterDocumentPictureInPicture(
+      web_contents(), child_web_contents());
+  // This isn't auto-pip, so expect no overlay view.
+  EXPECT_FALSE(picture_in_picture_window_manager->GetOverlayView(
+      gfx::Rect(), /* anchor_view = */ nullptr,
+      views::BubbleBorder::TOP_CENTER));
+}
+
+TEST_F(PictureInPictureWindowManagerTest, CorrectTypesAreSupported) {
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("https://foo.com")));
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("http://foo.com")));
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("http://localhost")));
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("https://localhost")));
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("file://foo/com")));
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("blob://foo.com")));
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("")));
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("about:blank")));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("chrome-extension://foocom")));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("chrome://newtab")));
 }
 #endif

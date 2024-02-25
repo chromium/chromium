@@ -11,6 +11,10 @@
 #include "components/policy/policy_export.h"
 #include "components/version_info/channel.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/functional/callback_forward.h"
+#endif
+
 namespace enterprise_management {
 class BrowserDeviceIdentifier;
 enum Channel : int;
@@ -47,6 +51,15 @@ POLICY_EXPORT std::string GetDeviceName();
 // several identifiers we collect from the device.
 POLICY_EXPORT std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>
 GetBrowserDeviceIdentifier();
+
+#if BUILDFLAG(IS_WIN)
+// Get browser device identifier for non-CrOS platforms, in a background thread.
+// It includes several identifiers we collect from the device.
+POLICY_EXPORT void GetBrowserDeviceIdentifierAsync(
+    base::OnceCallback<
+        void(std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>)>
+        callback);
+#endif  // BUILDFLAG(IS_WIN)
 
 // Returns true if the given policy type corresponds to the machine-level user
 // cloud policy type of the current platform.

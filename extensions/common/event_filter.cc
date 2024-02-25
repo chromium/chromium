@@ -145,8 +145,7 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
     return matchers;
 
   const EventMatcherMap& matcher_map = it->second;
-  const GURL& url_to_match_against =
-      event_info.url ? *event_info.url : GURL::EmptyGURL();
+  const GURL& url_to_match_against = event_info.url ? *event_info.url : GURL();
   std::set<base::MatcherStringPattern::ID> matching_condition_set_ids =
       url_matcher_.MatchURL(url_to_match_against);
   for (const auto& id_key : matching_condition_set_ids) {

@@ -317,7 +317,7 @@ WITH
       AND status != "SKIP"
       tfc
   )
-SELECT *
+SELECT id, test_id, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -382,7 +382,7 @@ WITH
       AND status != "SKIP"
       tfc
   )
-SELECT *
+SELECT id, test_id, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -462,7 +462,7 @@ WITH
       AND status != "SKIP"
       tfc
   )
-SELECT *
+SELECT id, test_id, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -542,7 +542,7 @@ WITH
       AND status != "SKIP"
       tfc
   )
-SELECT *
+SELECT id, test_id, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)

@@ -1,4 +1,4 @@
-import { RequestTokenStatus, LogoutRpsStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
+import { RequestTokenStatus, LogoutRpsStatus, DisconnectStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
 
 function toMojoTokenStatus(status) {
   return RequestTokenStatus["k" + status];
@@ -17,6 +17,7 @@ export class MockFederatedAuthRequest {
     this.selected_identity_provider_config_url_ = null;
     this.status_ = RequestTokenStatus.kError;
     this.logoutRpsStatus_ = LogoutRpsStatus.kError;
+    this.disconnectStatus_ = DisconnectStatus.kError;
     this.returnPending_ = false;
     this.pendingPromiseResolve_ = null;
   }
@@ -50,6 +51,15 @@ export class MockFederatedAuthRequest {
     if (validated === undefined)
       throw new Error("Invalid status: " + status);
     this.logoutRpsStatus_ = validated;
+  }
+
+  // Causes the subsequent `FederatedCredential.disconnect` to reject with this
+  // status.
+  disconnectReturn(status) {
+    let validated = DisconnectStatus[status];
+    if (validated === undefined)
+      throw new Error("Invalid status: " + status);
+    this.disconnectStatus_ = validated;
   }
 
   // Implements
@@ -96,6 +106,12 @@ export class MockFederatedAuthRequest {
     });
   }
 
+  async disconnect(provider, client_id, account_id) {
+    return Promise.resolve({
+      status: this.disconnectStatus_
+    });
+  }
+
   async setIdpSigninStatus(origin, status) {
   }
 
@@ -119,6 +135,7 @@ export class MockFederatedAuthRequest {
     this.selected_identity_provider_config_url_ = null;
     this.status_ = RequestTokenStatus.kError;
     this.logoutRpsStatus_ = LogoutRpsStatus.kError;
+    this.disconnectStatus_ = DisconnectStatus.kError;
     this.receiver_.$.close();
     this.interceptor_.stop();
 

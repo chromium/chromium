@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1324575488877808473">Open Chrome om hier je meest bezochte sites te bekijken.</translation>
 <translation id="2513892053093488070">Gesproken zoekopdracht</translation>
 <translation id="2535710892645968259">Open de Chrome Dino-game vanaf je vergrendelscherm.</translation>
 <translation id="2542770169955243077">Chrome Dino-game</translation>
-<translation id="2803429804752388720">Wachtwoorden zoeken</translation>
 <translation id="2922313168575194078">Zoek beveiligd naar je opgeslagen wachtwoorden in Google Wachtwoordmanager</translation>
 <translation id="302608144225178783">Open de Chrome Dino-game vanaf je startscherm.</translation>
 <translation id="3296938369177810197">Gesproken zoekopdracht</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Start een nieuwe zoekopdracht of open je meest bezochte sites vanaf je iPad-homepage.</translation>
 <translation id="6721566127904256183">Je meest bezochte sites worden hier getoond.</translation>
 <translation id="6855322554930231468">Zoeken</translation>
+<translation id="6973491011026415905">Wachtwoorden zoeken in Google Wachtwoordmanager</translation>
 <translation id="7010831364920321713">Incognito zoeken</translation>
 <translation id="7048549665319929185">Zoek of typ een URL</translation>
 <translation id="7317302007099170473">QR-code scannen</translation>

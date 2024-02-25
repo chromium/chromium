@@ -9,9 +9,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
@@ -34,15 +31,12 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
-#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -59,7 +53,6 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/feature_switch.h"
@@ -68,7 +61,6 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -84,63 +76,6 @@ namespace extensions {
 
 namespace {
 
-bool AreAllExtensionsAllowedForBFCache() {
-  static base::FeatureParam<bool> all_extensions_allowed(
-      &features::kBackForwardCache, "all_extensions_allowed", true);
-  return all_extensions_allowed.Get();
-}
-
-std::string BlockedExtensionListForBFCache() {
-  static base::FeatureParam<std::string> extensions_blocked(
-      &features::kBackForwardCache, "blocked_extensions", "");
-  return extensions_blocked.Get();
-}
-
-// Check `enabled_extensions` if any of them are specified in the
-// `blocked_extensions` or not.
-bool ProcessDisabledExtensions(const std::string& feature,
-                               const ExtensionSet& enabled_extensions,
-                               content::BrowserContext* context,
-                               bool all_allowed,
-                               const std::string& blocked_extensions) {
-  // If we allow all extensions and there aren't any blocked, then just return.
-  if (all_allowed && blocked_extensions.empty())
-    return false;
-
-  std::vector<std::string> blocked_extensions_list =
-      base::SplitString(blocked_extensions, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-
-  // Compute whether we need to disable it.
-  bool disabled_feature = false;
-  for (const auto& extension : enabled_extensions) {
-    // Skip component extensions, apps, themes, shared modules and the google
-    // docs pre-installed extension.
-    if (Manifest::IsComponentLocation(extension->location()) ||
-        extension->is_app() || extension->is_theme() ||
-        extension->is_shared_module() ||
-        extension->id() == extension_misc::kDocsOfflineExtensionId) {
-      continue;
-    }
-    if (util::IsExtensionVisibleToContext(*extension, context)) {
-      // If we are allowing all extensions with a block filter set, and this
-      // extension is not in it then continue.
-      if (all_allowed &&
-          !base::Contains(blocked_extensions_list, extension->id())) {
-        continue;
-      }
-
-      VLOG(1) << "Disabled " << feature << " due to " << extension->short_name()
-              << "," << extension->id();
-      disabled_feature = true;
-      // TODO(dtapuska): Early termination disabled for now to capture VLOG(1)
-      // break;
-    }
-  }
-
-  return disabled_feature;
-}
-
 void DisableBackForwardCacheIfNecessary(
     const ExtensionSet& enabled_extensions,
     content::BrowserContext* context,
@@ -152,23 +87,6 @@ void DisableBackForwardCacheIfNecessary(
   if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ||
       context->GetUserData(kIsBFCacheDisabledKey)) {
     return;
-  }
-
-  if (ProcessDisabledExtensions("bfcache", enabled_extensions, context,
-                                AreAllExtensionsAllowedForBFCache(),
-                                BlockedExtensionListForBFCache())) {
-    // Set a user data key indicating we've disabled bfcache for this
-    // context.
-    context->SetUserData(kIsBFCacheDisabledKey,
-                         std::make_unique<base::SupportsUserData::Data>());
-
-    // We do not care if GetPreviousRenderFrameHostId returns a reused
-    // RenderFrameHost since disabling the cache multiple times has no side
-    // effects.
-    content::BackForwardCache::DisableForRenderFrameHost(
-        navigation_handle->GetPreviousRenderFrameHostId(),
-        back_forward_cache::DisabledReason(
-            back_forward_cache::DisabledReasonId::kExtensions));
   }
 }
 
@@ -267,8 +185,8 @@ void TabHelper::SetReloadRequired(
       // it.
       content::WebContents* web_contents = GetVisibleWebContents();
       SitePermissionsHelper permissions_helper(profile_);
-      const extensions::ExtensionSet& extensions =
-          extensions::ExtensionRegistry::Get(profile_)->enabled_extensions();
+      const ExtensionSet& extensions =
+          ExtensionRegistry::Get(profile_)->enabled_extensions();
       reload_required_ = base::ranges::any_of(
           extensions, [&permissions_helper,
                        web_contents](scoped_refptr<const Extension> extension) {
@@ -359,7 +277,7 @@ void TabHelper::DidFinishNavigation(
   DisableBackForwardCacheIfNecessary(enabled_extensions, context,
                                      navigation_handle);
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
     const Extension* extension = registry->GetInstalledExtension(
         web_app::GetAppIdFromApplicationName(browser->app_name()));
@@ -386,17 +304,6 @@ void TabHelper::ClearDismissedExtensions() {
   dismissed_extensions_.clear();
 }
 
-bool TabHelper::OnMessageReceived(const IPC::Message& message,
-                                  content::RenderFrameHost* sender) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(TabHelper, message, sender)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_ContentScriptsExecuting,
-                        OnContentScriptsExecuting)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
 void TabHelper::DidCloneToNewWebContents(WebContents* old_web_contents,
                                          WebContents* new_web_contents) {
   // When the WebContents that this is attached to is cloned, give the new clone
@@ -415,14 +322,6 @@ void TabHelper::WebContentsDestroyed() {
 
   reload_required_ = false;
   ClearDismissedExtensions();
-}
-
-void TabHelper::OnContentScriptsExecuting(
-    content::RenderFrameHost* host,
-    const ExecutingScriptsMap& executing_scripts_map,
-    const GURL& on_url) {
-  ActivityLog::GetInstance(profile_)->OnScriptsExecuted(
-      web_contents(), executing_scripts_map, on_url);
 }
 
 const Extension* TabHelper::GetExtension(const ExtensionId& extension_app_id) {
@@ -504,9 +403,13 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   if (render_frame_host->IsRenderFrameLive()) {
     SessionID id = sessions::SessionTabHelper::IdForTab(web_contents());
     CHECK(id.is_valid());
-    ExtensionWebContentsObserver::GetForWebContents(web_contents())
-        ->GetLocalFrame(render_frame_host)
-        ->SetTabId(id.id());
+    auto* local_frame =
+        ExtensionWebContentsObserver::GetForWebContents(web_contents())
+            ->GetLocalFrame(render_frame_host);
+    if (!local_frame) {
+      return;
+    }
+    local_frame->SetTabId(id.id());
   }
 }
 

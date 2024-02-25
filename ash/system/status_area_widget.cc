@@ -27,9 +27,6 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/media/media_tray.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
-#include "ash/system/model/clock_model.h"
-#include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
@@ -56,6 +53,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
 
@@ -87,13 +85,12 @@ void StatusAreaWidget::Initialize() {
   // Create the child views, left to right.
   overflow_button_tray_ =
       AddTrayButton(std::make_unique<StatusAreaOverflowButtonTray>(shelf_));
-  if (features::IsFocusModeEnabled()) {
-    // TODO(b/297445628): Get approval for order of focus mode tray in shelf.
-    focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
-  }
   if (features::IsVideoConferenceEnabled()) {
     video_conference_tray_ =
         AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
+  }
+  if (features::IsFocusModeEnabled()) {
+    focus_mode_tray_ = AddTrayButton(std::make_unique<FocusModeTray>(shelf_));
   }
   holding_space_tray_ =
       AddTrayButton(std::make_unique<HoldingSpaceTray>(shelf_));
@@ -130,14 +127,11 @@ void StatusAreaWidget::Initialize() {
         AddTrayButton(std::make_unique<WmModeButtonTray>(shelf_));
   }
 
-  if (features::IsQsRevampEnabled()) {
     notification_center_tray_ =
         AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
     notification_center_tray_->AddObserver(this);
     animation_controller_ = std::make_unique<StatusAreaAnimationController>(
         notification_center_tray());
-  }
-
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
   unified_system_tray_ = unified_system_tray.get();
   date_tray_ =
@@ -175,18 +169,10 @@ void StatusAreaWidget::Initialize() {
 
 StatusAreaWidget::~StatusAreaWidget() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  // If QsRevamp flag is enabled, `notification_center_tray_` may be null in
-  // some unittests. During the test environment tear-down, removing the
-  // observer will lead to a crash.
-  if (features::IsQsRevampEnabled() && notification_center_tray_) {
-    notification_center_tray_->RemoveObserver(this);
-  }
 
-  // If QsRevamp flag is enabled, reset `animation_controller_` before
-  // destroying `notification_center_tray_` so that we don't run into a UaF.
-  if (features::IsQsRevampEnabled()) {
-    animation_controller_.reset(nullptr);
-  }
+  // Resets `animation_controller_` before destroying
+  // `notification_center_tray_` so that we don't run into a UaF.
+  animation_controller_.reset(nullptr);
 
   // `TrayBubbleView` might be deleted after `StatusAreaWidget`, so we reset the
   // pointer here to avoid dangling pointer.
@@ -214,10 +200,7 @@ void StatusAreaWidget::UpdateAfterLoginStatusChange(LoginStatus login_status) {
 void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
   unified_system_tray_->SetVisiblePreferred(visible);
   date_tray_->SetVisiblePreferred(visible);
-
-  if (features::IsQsRevampEnabled()) {
-    notification_center_tray_->OnSystemTrayVisibilityChanged(visible);
-  }
+  notification_center_tray_->OnSystemTrayVisibilityChanged(visible);
 
   if (visible) {
     Show();
@@ -272,7 +255,7 @@ void StatusAreaWidget::UpdateCollapseState() {
 
 void StatusAreaWidget::LogVisiblePodCountMetric() {
   int visible_pod_count = 0;
-  for (auto* tray_button : tray_buttons_) {
+  for (ash::TrayBackgroundView* tray_button : tray_buttons_) {
     switch (tray_button->catalog_name()) {
       case TrayBackgroundViewCatalogName::kUnifiedSystem:
       case TrayBackgroundViewCatalogName::kStatusAreaOverflowButton:
@@ -312,7 +295,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
     }
   }
 
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.Tablet.ShelfPodCount",
                              visible_pod_count);
   } else {
@@ -403,19 +386,11 @@ void StatusAreaWidget::HandleLocaleChange() {
   // needed).
   status_area_widget_delegate_->RemoveAllChildViewsWithoutDeleting();
 
-  for (auto* tray_button : tray_buttons_) {
+  for (ash::TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->HandleLocaleChange();
     status_area_widget_delegate_->AddChildView(tray_button);
   }
   EnsureTrayOrder();
-}
-
-void StatusAreaWidget::NotifyAnyBubbleVisibilityChanged(
-    views::Widget* bubble_widget,
-    bool visible) {
-  for (auto* tray_button : tray_buttons_) {
-    tray_button->OnAnyBubbleVisibilityChanged(bubble_widget, visible);
-  }
 }
 
 void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
@@ -514,9 +489,8 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
     return CollapseState::NOT_COLLAPSIBLE;
   }
 
-  bool is_collapsible =
-      Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      ShelfConfig::Get()->is_in_app();
+  bool is_collapsible = display::Screen::GetScreen()->InTabletMode() &&
+                        ShelfConfig::Get()->is_in_app();
 
   bool force_collapsible = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAshForceStatusAreaCollapsible);
@@ -570,61 +544,6 @@ TrayBackgroundView* StatusAreaWidget::GetSystemTrayAnchor() const {
   }
 
   return unified_system_tray_;
-}
-
-gfx::Rect StatusAreaWidget::GetMediaTrayAnchorRect() const {
-  if (!media_tray_) {
-    return gfx::Rect();
-  }
-
-  // Calculate anchor rect of media tray bubble. This is required because the
-  // bubble can be visible while the tray button is hidden. (e.g. when user
-  // clicks the unpin button in the dialog, which will not close the dialog)
-  bool found_media_tray = false;
-  int offset = 0;
-
-  // Accumulate the width/height of all visible tray buttons after media tray.
-  for (views::View* tray_button : tray_buttons_) {
-    if (tray_button == media_tray_) {
-      found_media_tray = true;
-      continue;
-    }
-
-    if (!found_media_tray || !tray_button->GetVisible()) {
-      continue;
-    }
-
-    offset += shelf_->IsHorizontalAlignment() ? tray_button->width()
-                                              : tray_button->height();
-  }
-
-  // Use system tray anchor view (system tray or overview button tray if
-  // visible) to find media tray button's origin.
-  gfx::Rect system_tray_bounds = GetSystemTrayAnchor()->GetBoundsInScreen();
-
-  switch (shelf_->alignment()) {
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-      if (base::i18n::IsRTL()) {
-        return gfx::Rect(system_tray_bounds.origin() + gfx::Vector2d(offset, 0),
-                         gfx::Size());
-      } else {
-        return gfx::Rect(
-            system_tray_bounds.top_right() - gfx::Vector2d(offset, 0),
-            gfx::Size());
-      }
-    case ShelfAlignment::kLeft:
-      return gfx::Rect(
-          system_tray_bounds.bottom_right() - gfx::Vector2d(0, offset),
-          gfx::Size());
-    case ShelfAlignment::kRight:
-      return gfx::Rect(
-          system_tray_bounds.bottom_left() - gfx::Vector2d(0, offset),
-          gfx::Size());
-  }
-
-  NOTREACHED();
-  return gfx::Rect();
 }
 
 bool StatusAreaWidget::ShouldShowShelf() const {
@@ -700,16 +619,6 @@ void StatusAreaWidget::SetOpenShelfPodBubble(
   }
 
   DCHECK(unified_system_tray_);
-  // We will ignore the message center bubble, since this bubble is on top of
-  // the Quick Settings and will be consider a "secondary bubble". As a result,
-  // it should not be set to be `open_shelf_pod_bubble_`. Note that this bubble
-  // will be removed when `kQsRevamp` is enabled.
-  if (unified_system_tray_->message_center_bubble() &&
-      open_shelf_pod_bubble ==
-          unified_system_tray_->message_center_bubble()->GetBubbleView()) {
-    DCHECK(!features::IsQsRevampEnabled());
-    return;
-  }
 
   if (open_shelf_pod_bubble) {
     DCHECK(open_shelf_pod_bubble->GetBubbleType() ==
@@ -719,9 +628,12 @@ void StatusAreaWidget::SetOpenShelfPodBubble(
     // widget.
     DCHECK(open_shelf_pod_bubble->IsAnchoredToStatusArea());
 
-    // There should not be 2 tray bubbles that are open at the same time (with
-    // the exception of message center bubble mentioned above).
-    DCHECK(!open_shelf_pod_bubble_);
+    // There should be only one shelf pod bubble open at a time, so we will
+    // close the current bubble for the new one to come in.
+    if (open_shelf_pod_bubble_) {
+      open_shelf_pod_bubble_->CloseBubbleView();
+      open_shelf_pod_bubble_ = nullptr;
+    }
   }
 
   open_shelf_pod_bubble_ = open_shelf_pod_bubble;
@@ -729,12 +641,14 @@ void StatusAreaWidget::SetOpenShelfPodBubble(
       /*bubble_shown=*/open_shelf_pod_bubble_);
 }
 
+void StatusAreaWidget::OnViewIsDeleting(views::View* observed_view) {
+  CHECK(observed_view == notification_center_tray_);
+  notification_center_tray_->RemoveObserver(this);
+}
+
 void StatusAreaWidget::OnViewVisibilityChanged(views::View* observed_view,
                                                views::View* starting_view) {
-  if (observed_view != notification_center_tray_) {
-    return;
-  }
-
+  CHECK(observed_view == notification_center_tray_);
   UpdateDateTrayRoundedCorners();
 }
 
@@ -816,7 +730,7 @@ StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {
 }
 
 void StatusAreaWidget::UpdateDateTrayRoundedCorners() {
-  if (!features::IsQsRevampEnabled() || !date_tray_) {
+  if (!date_tray_) {
     return;
   }
 
@@ -843,7 +757,7 @@ int StatusAreaWidget::GetCollapseAvailableWidth(bool force_collapsible) const {
 }
 
 void StatusAreaWidget::OnLockStateChanged(bool locked) {
-  for (auto* tray_button : tray_buttons_) {
+  for (ash::TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->UpdateAfterLockStateChange(locked);
   }
 }

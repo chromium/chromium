@@ -7,15 +7,14 @@
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
 MockIdentityRegistry::MockIdentityRegistry(
     content::WebContents* web_contents,
     base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-    const url::Origin& registry_origin)
-    : IdentityRegistry(web_contents, delegate, registry_origin) {}
+    const GURL& idp_config_url)
+    : IdentityRegistry(web_contents, delegate, idp_config_url) {}
 
 MockIdentityRegistry::~MockIdentityRegistry() = default;
 

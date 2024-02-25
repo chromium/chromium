@@ -23,9 +23,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/type_entities_count.h"
-#include "components/sync/protocol/sync_protocol_error.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync_user_events/user_event_service.h"
@@ -318,21 +318,16 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, EncryptionObsoleteErrorTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
-  const syncer::ModelType history_type =
-      base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)
-          ? syncer::HISTORY
-          : syncer::TYPED_URLS;
-
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   syncer::ModelTypeSet synced_datatypes =
       GetSyncService(0)->GetActiveDataTypes();
-  ASSERT_TRUE(synced_datatypes.Has(history_type));
+  ASSERT_TRUE(synced_datatypes.Has(syncer::HISTORY));
   ASSERT_TRUE(synced_datatypes.Has(syncer::SESSIONS));
   GetProfile(0)->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled,
                                         true);
 
   // Wait for reconfigurations.
-  ASSERT_TRUE(TypeDisabledChecker(GetSyncService(0), history_type).Wait());
+  ASSERT_TRUE(TypeDisabledChecker(GetSyncService(0), syncer::HISTORY).Wait());
   ASSERT_TRUE(TypeDisabledChecker(GetSyncService(0), syncer::SESSIONS).Wait());
 
   const BookmarkNode* node1 = AddFolder(0, 0, "title1");

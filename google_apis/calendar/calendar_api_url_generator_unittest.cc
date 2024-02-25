@@ -4,6 +4,8 @@
 
 #include "google_apis/calendar/calendar_api_url_generator.h"
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
@@ -25,16 +27,18 @@ TEST(CalendarApiUrlGeneratorTest, GetEventListUrl) {
   base::Time end;
   EXPECT_TRUE(base::Time::FromString("16 Jun 2021 10:00 PST", &end));
   EXPECT_EQ(
-      "https://www.googleapis.com/calendar/v3/calendars/primary/"
+      "https://www.googleapis.com/calendar/v3/calendars/test1@google.com/"
       "events?timeMin=2021-06-13T18%3A00%3A00.000Z"
       "&timeMax=2021-06-16T18%3A00%3A00.000Z"
       "&singleEvents=true"
       "&maxAttendees=1"
       "&maxResults=123",
       url_generator_
-          .GetCalendarEventListUrl(start, end, /*single_events=*/true,
-                                   /*max_attendees=*/1,
-                                   /*max_results=*/123)
+          .GetCalendarEventListUrl(
+              /*calendar_id=*/"test1@google.com", start, end,
+              /*single_events=*/true,
+              /*max_attendees=*/1,
+              /*max_results=*/123)
           .spec());
 }
 
@@ -46,16 +50,33 @@ TEST(CalendarApiUrlGeneratorTest,
   base::Time end;
   EXPECT_TRUE(base::Time::FromString("16 Jun 2021 10:00 PST", &end));
   EXPECT_EQ(
-      "https://www.googleapis.com/calendar/v3/calendars/primary/"
+      "https://www.googleapis.com/calendar/v3/calendars/test1@google.com/"
       "events?timeMin=2021-06-13T18%3A00%3A00.000Z"
       "&timeMax=2021-06-16T18%3A00%3A00.000Z"
       "&singleEvents=true",
       url_generator_
-          .GetCalendarEventListUrl(start, end, /*single_events=*/true,
-                                   /*max_attendees=*/absl::nullopt,
-                                   /*max_results=*/absl::nullopt)
+          .GetCalendarEventListUrl(
+              /*calendar_id=*/"test1@google.com", start, end,
+              /*single_events=*/true,
+              /*max_attendees=*/std::nullopt,
+              /*max_results=*/std::nullopt)
           .spec());
 }
 
+TEST(CalendarApiUrlGeneratorTest, GetCalendarListUrl) {
+  CalendarApiUrlGenerator url_generator_;
+  EXPECT_EQ(
+      "https://www.googleapis.com/calendar/v3/users/me/calendarList"
+      "?maxResults=50",
+      url_generator_.GetCalendarListUrl(/*max_results=*/50).spec());
+}
+
+TEST(CalendarApiUrlGeneratorTest,
+     GetCalendarListUrlWithDefaultOptionalParameters) {
+  CalendarApiUrlGenerator url_generator_;
+  EXPECT_EQ(
+      "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+      url_generator_.GetCalendarListUrl(/*max_results=*/std::nullopt).spec());
+}
 }  // namespace calendar
 }  // namespace google_apis

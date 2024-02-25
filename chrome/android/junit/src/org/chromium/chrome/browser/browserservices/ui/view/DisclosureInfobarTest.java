@@ -31,18 +31,13 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
-/**
- * Tests for {@link DisclosureInfobar}.
- */
+/** Tests for {@link DisclosureInfobar}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DisclosureInfobarTest {
-    @Mock
-    public ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock
-    public SnackbarManager mSnackbarManager;
-    @Mock
-    public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
+    @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock public SnackbarManager mSnackbarManager;
+    @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
 
     private TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosureInfobar mInfobar;
@@ -52,8 +47,12 @@ public class DisclosureInfobarTest {
         MockitoAnnotations.initMocks(this);
 
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
-        mInfobar = new DisclosureInfobar(RuntimeEnvironment.application.getResources(),
-                new FilledLazy<>(mSnackbarManager), mModel, mLifecycleDispatcher);
+        mInfobar =
+                new DisclosureInfobar(
+                        RuntimeEnvironment.application.getResources(),
+                        new FilledLazy<>(mSnackbarManager),
+                        mModel,
+                        mLifecycleDispatcher);
     }
 
     @Test

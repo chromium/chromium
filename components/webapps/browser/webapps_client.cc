@@ -4,6 +4,12 @@
 
 #include "components/webapps/browser/webapps_client.h"
 
+#include <algorithm>
+#include <memory>
+
+#include "base/auto_reset.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
+
 namespace webapps {
 
 namespace {
@@ -23,6 +29,14 @@ WebappsClient::~WebappsClient() {
 // static
 WebappsClient* WebappsClient::Get() {
   return g_instance;
+}
+
+WebappsClient::ScopedSegmentationServiceOverride
+WebappsClient::OverrideSegmentationServiceForTesting(
+    std::unique_ptr<segmentation_platform::SegmentationPlatformService>
+        service) {
+  return ScopedSegmentationServiceOverride(&segmentation_platform_for_testing_,
+                                           std::move(service));
 }
 
 }  // namespace webapps

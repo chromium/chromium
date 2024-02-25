@@ -6,6 +6,7 @@
 #define GOOGLE_APIS_GAIA_OAUTH_MULTILOGIN_RESULT_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
@@ -77,7 +78,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
 
   // Response body that has a form of JSON contains protection characters
   // against XSSI that have to be removed. See go/xssi.
-  static base::StringPiece StripXSSICharacters(const std::string& data);
+  static std::string_view StripXSSICharacters(const std::string& data);
 
   void TryParseCookiesFromValue(const base::Value::Dict& json_value);
 

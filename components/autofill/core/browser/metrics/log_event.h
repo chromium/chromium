@@ -7,9 +7,10 @@
 
 #include "base/time/time.h"
 #include "base/types/id_type.h"
+#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
+#include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
@@ -21,7 +22,7 @@ using FieldPrediction =
 using FillEventId = base::IdTypeU32<class FillEventIdClass>;
 FillEventId GetNextFillEventId();
 
-enum class OptionalBoolean {
+enum class OptionalBoolean : uint8_t {
   kFalse = 0,
   kTrue = 1,
   kUndefined = 2,
@@ -30,30 +31,10 @@ OptionalBoolean& operator|=(OptionalBoolean& a, OptionalBoolean b);
 OptionalBoolean ToOptionalBoolean(bool value);
 bool OptionalBooleanToBool(OptionalBoolean value);
 
-// Whether and why filling for a field was skipped during autofill.
-enum class SkipStatus {
-  // Values are recorded as metrics and must not change or be reused.
-  kUnknown = 0,
-  kNotSkipped = 1,
-  kNotInFilledSection = 2,
-  kNotFocused = 3,
-  kFormChanged = 4,
-  kInvisibleField = 5,
-  kValuePrefilled = 6,
-  kUserFilledFields = 7,
-  kAutofilledFieldsNotRefill = 8,
-  kNoFillableGroup = 9,
-  kRefillNotInInitialFill = 10,
-  kExpiredCards = 11,
-  kFillingLimitReachedType = 12,
-  kUnrecognizedAutocompleteAttribute = 13,
-  kMaxValue = kUnrecognizedAutocompleteAttribute
-};
-
 // Enum for different data types filled during autofill filling events,
 // including those of the SingleFieldFormFiller.
 // Values are recorded as metrics and must not change or be reused.
-enum class FillDataType {
+enum class FillDataType : uint8_t {
   kUndefined = 0,
   kAutofillProfile = 1,
   kCreditCard = 2,
@@ -69,115 +50,128 @@ enum class FillDataType {
 bool AreCollapsible(const absl::monostate& event1,
                     const absl::monostate& event2);
 
-// Log the field that shows a dropdown list of suggestions for autofill.
-template <typename IsRequired = void>
-struct AskForValuesToFillFieldLogEventImpl {
-  OptionalBoolean has_suggestion = IsRequired();
-  OptionalBoolean suggestion_is_shown = IsRequired();
+namespace internal {
+
+// Auxiliary type to mark members of a struct as required.
+struct IsRequired {
+  // This function is not defined and consteval. Therefore, any evaluation will
+  // fail and fail at compile time.
+  template <typename T>
+  consteval operator T();  // NOLINT
 };
-using AskForValuesToFillFieldLogEvent = AskForValuesToFillFieldLogEventImpl<>;
+
+}  // namespace internal
+
+// Log the field that shows a dropdown list of suggestions for autofill.
+struct AskForValuesToFillFieldLogEvent {
+  OptionalBoolean has_suggestion = internal::IsRequired();
+  OptionalBoolean suggestion_is_shown = internal::IsRequired();
+};
 
 bool AreCollapsible(const AskForValuesToFillFieldLogEvent& event1,
                     const AskForValuesToFillFieldLogEvent& event2);
 
 // Log the field that triggers the suggestion that the user selects to fill.
-template <typename IsRequired = void>
-struct TriggerFillFieldLogEventImpl {
+struct TriggerFillFieldLogEvent {
   FillEventId fill_event_id = GetNextFillEventId();
-  // The type of filled data for the autofil event.
-  FillDataType data_type = IsRequired();
+  // The type of filled data for the Autofill event.
+  FillDataType data_type = internal::IsRequired();
   // The country_code associated with the information filled. Only present for
   // autofill addresses (i.e. `AutofillEventType::kAutofillProfile`).
-  std::string associated_country_code = IsRequired();
+  std::string associated_country_code = internal::IsRequired();
   // The time at which the event occurred.
-  base::Time timestamp = IsRequired();
+  base::Time timestamp = internal::IsRequired();
 };
-using TriggerFillFieldLogEvent = TriggerFillFieldLogEventImpl<>;
 
 bool AreCollapsible(const TriggerFillFieldLogEvent& event1,
                     const TriggerFillFieldLogEvent& event2);
 
 // Log the fields on the form that are autofilled.
-template <typename IsRequired = void>
-struct FillFieldLogEventImpl {
+struct FillFieldLogEvent {
   // This refers to `TriggleFillFieldLogEvent::fill_event_id`.
-  FillEventId fill_event_id = IsRequired();
-  OptionalBoolean had_value_before_filling = IsRequired();
-  SkipStatus autofill_skipped_status = IsRequired();
+  FillEventId fill_event_id = internal::IsRequired();
+  OptionalBoolean had_value_before_filling = internal::IsRequired();
+  FieldFillingSkipReason autofill_skipped_status = internal::IsRequired();
   // The two attributes below are only valid if |autofill_skipped_status| has a
   // value of "kNotSkipped".
   // Whether the field was autofilled during this fill operation. If a fill
   // operation did not change the value of a field because the old value
   // matches the filled value, this is still recorded as a
-  // was_autofilled = true.
-  OptionalBoolean was_autofilled = IsRequired();
+  // was_autofilled = true before checking the iframe security policy.
+  OptionalBoolean was_autofilled_before_security_policy =
+      internal::IsRequired();
   // Whether the field had a value after this fill operation.
-  OptionalBoolean had_value_after_filling = IsRequired();
+  OptionalBoolean had_value_after_filling = internal::IsRequired();
+  // The `AutofillFillingMethod` used to fill the field. This represents the
+  // different popup surfaces a user can use to interact with Autofill, which
+  // may lead to a different set of fields being filled. These sets/groups can
+  // be either the full form, a group of related fields or a single field.
+  AutofillFillingMethod filling_method = AutofillFillingMethod::kNone;
+  // Records whether filling was ever prevented because of the cross c
+  // autofill security policy that applies to credit cards.
+  OptionalBoolean filling_prevented_by_iframe_security_policy =
+      OptionalBoolean::kUndefined;
+  // The hash of the value that would have been filled if the field wasn't
+  // skipped because it was pre-filled on page load. In all other cases this
+  // member is set to `std::nullopt`.
+  std::optional<size_t>
+      value_that_would_have_been_filled_in_a_prefilled_field_hash =
+          std::nullopt;
 };
-using FillFieldLogEvent = FillFieldLogEventImpl<>;
 
 bool AreCollapsible(const FillFieldLogEvent& event1,
                     const FillFieldLogEvent& event2);
 
 // Log the field that the user types in.
-template <typename IsRequired = void>
-struct TypingFieldLogEventImpl {
-  OptionalBoolean has_value_after_typing = IsRequired();
+struct TypingFieldLogEvent {
+  OptionalBoolean has_value_after_typing = internal::IsRequired();
 };
-using TypingFieldLogEvent = TypingFieldLogEventImpl<>;
 
 bool AreCollapsible(const TypingFieldLogEvent& event1,
                     const TypingFieldLogEvent& event2);
 
 // Events recorded after local heuristic prediction happened.
-template <typename IsRequired = void>
-struct HeuristicPredictionFieldLogEventImpl {
-  ServerFieldType field_type = IsRequired();
-  PatternSource pattern_source = IsRequired();
-  bool is_active_pattern_source = IsRequired();
-  size_t rank_in_field_signature_group = IsRequired();
+struct HeuristicPredictionFieldLogEvent {
+  FieldType field_type = internal::IsRequired();
+  PatternSource pattern_source = internal::IsRequired();
+  bool is_active_pattern_source = internal::IsRequired();
+  size_t rank_in_field_signature_group = internal::IsRequired();
 };
-using HeuristicPredictionFieldLogEvent = HeuristicPredictionFieldLogEventImpl<>;
 
 bool AreCollapsible(const HeuristicPredictionFieldLogEvent& event1,
                     const HeuristicPredictionFieldLogEvent& event2);
 
 // Events recorded after parsing autocomplete attribute.
-template <typename IsRequired = void>
-struct AutocompleteAttributeFieldLogEventImpl {
-  HtmlFieldType html_type = IsRequired();
-  HtmlFieldMode html_mode = IsRequired();
-  size_t rank_in_field_signature_group = IsRequired();
+struct AutocompleteAttributeFieldLogEvent {
+  HtmlFieldType html_type = internal::IsRequired();
+  HtmlFieldMode html_mode = internal::IsRequired();
+  size_t rank_in_field_signature_group = internal::IsRequired();
 };
-using AutocompleteAttributeFieldLogEvent =
-    AutocompleteAttributeFieldLogEventImpl<>;
 
 bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
                     const AutocompleteAttributeFieldLogEvent& event2);
 
 // Events recorded after autofill server prediction happened.
-template <typename IsRequired = void>
-struct ServerPredictionFieldLogEventImpl {
-  ServerFieldType server_type1 = IsRequired();
-  FieldPrediction::Source prediction_source1 = IsRequired();
-  ServerFieldType server_type2 = IsRequired();
-  FieldPrediction::Source prediction_source2 = IsRequired();
-  bool server_type_prediction_is_override = IsRequired();
-  size_t rank_in_field_signature_group = IsRequired();
+struct ServerPredictionFieldLogEvent {
+  std::optional<FieldType> server_type1 =
+      static_cast<FieldType>(internal::IsRequired());
+  FieldPrediction::Source prediction_source1 = internal::IsRequired();
+  std::optional<FieldType> server_type2 =
+      static_cast<FieldType>(internal::IsRequired());
+  FieldPrediction::Source prediction_source2 = internal::IsRequired();
+  bool server_type_prediction_is_override = internal::IsRequired();
+  size_t rank_in_field_signature_group = internal::IsRequired();
 };
-using ServerPredictionFieldLogEvent = ServerPredictionFieldLogEventImpl<>;
 
 bool AreCollapsible(const ServerPredictionFieldLogEvent& event1,
                     const ServerPredictionFieldLogEvent& event2);
 
 // Events recorded after rationalization happened.
-template <typename IsRequired = void>
-struct RationalizationFieldLogEventImpl {
-  ServerFieldType field_type = IsRequired();
-  size_t section_id = IsRequired();
-  bool type_changed = IsRequired();
+struct RationalizationFieldLogEvent {
+  FieldType field_type = internal::IsRequired();
+  size_t section_id = internal::IsRequired();
+  bool type_changed = internal::IsRequired();
 };
-using RationalizationFieldLogEvent = RationalizationFieldLogEventImpl<>;
 
 bool AreCollapsible(const RationalizationFieldLogEvent& event1,
                     const RationalizationFieldLogEvent& event2);

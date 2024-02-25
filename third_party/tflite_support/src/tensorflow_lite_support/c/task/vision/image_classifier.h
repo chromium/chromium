@@ -158,8 +158,7 @@ TfLiteImageClassifierOptions TfLiteImageClassifierOptionsCreate(void);
 // TfLiteSupportErrorDelete(error)
 //
 TfLiteImageClassifier* TfLiteImageClassifierFromOptions(
-    const TfLiteImageClassifierOptions* options,
-    TfLiteSupportError** error);
+    const TfLiteImageClassifierOptions* options, TfLiteSupportError** error);
 
 // Invokes the encapsulated TFLite model and classifies the frame_buffer.
 // Returns a pointer to the created classification result in case of success or
@@ -187,8 +186,7 @@ TfLiteImageClassifier* TfLiteImageClassifierFromOptions(
 //
 TfLiteClassificationResult* TfLiteImageClassifierClassify(
     const TfLiteImageClassifier* classifier,
-    const TfLiteFrameBuffer* frame_buffer,
-    TfLiteSupportError** error);
+    const TfLiteFrameBuffer* frame_buffer, TfLiteSupportError** error);
 
 // Invokes the encapsulated TFLite model and classifies the region of the
 // frame_buffer specified by the bounding box. Same as TfLiteImageClassifier*
@@ -200,8 +198,7 @@ TfLiteClassificationResult* TfLiteImageClassifierClassify(
 // operations.
 TfLiteClassificationResult* TfLiteImageClassifierClassifyWithRoi(
     const TfLiteImageClassifier* classifier,
-    const TfLiteFrameBuffer* frame_buffer,
-    const TfLiteBoundingBox* roi,
+    const TfLiteFrameBuffer* frame_buffer, const TfLiteBoundingBox* roi,
     TfLiteSupportError** error);
 
 // Disposes off the image classifier.

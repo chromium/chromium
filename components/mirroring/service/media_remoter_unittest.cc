@@ -10,14 +10,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
+#include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
-#include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/mirror_settings.h"
-#include "components/mirroring/service/rpc_dispatcher_impl.h"
+#include "components/mirroring/service/rpc_dispatcher.h"
 #include "components/openscreen_platform/task_runner.h"
-#include "media/base/media_switches.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/test/mock_cast_transport.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -122,6 +120,16 @@ class MockRemotingSource : public media::mojom::RemotingSource {
   mojo::Receiver<media::mojom::RemotingSource> receiver_{this};
 };
 
+class MockRpcDispatcher : public RpcDispatcher {
+ public:
+  MockRpcDispatcher() = default;
+  ~MockRpcDispatcher() override = default;
+
+  MOCK_METHOD1(Subscribe, void(ResponseCallback));
+  MOCK_METHOD0(Unsubscribe, void());
+  MOCK_METHOD1(SendOutboundMessage, bool(base::span<const uint8_t> message));
+};
+
 RemotingSinkMetadata DefaultSinkMetadata() {
   RemotingSinkMetadata metadata;
   metadata.features.push_back(media::mojom::RemotingSinkFeature::RENDERING);
@@ -137,16 +145,14 @@ RemotingSinkMetadata DefaultSinkMetadata() {
 
 class MediaRemoterTest : public mojom::CastMessageChannel,
                          public MediaRemoter::Client,
-                         public ::testing::TestWithParam<bool> {
+                         public ::testing::Test {
  public:
-  MediaRemoterTest()
-      : message_dispatcher_(receiver_.BindNewPipeAndPassRemote(),
-                            inbound_channel_.BindNewPipeAndPassReceiver(),
-                            error_callback_.Get()),
-        rpc_dispatcher_(message_dispatcher_),
-        sink_metadata_(DefaultSinkMetadata()) {}
+  MediaRemoterTest() : sink_metadata_(DefaultSinkMetadata()) {}
+
+  MediaRemoterTest(MediaRemoterTest&&) = delete;
   MediaRemoterTest(const MediaRemoterTest&) = delete;
   MediaRemoterTest& operator=(const MediaRemoterTest&) = delete;
+  MediaRemoterTest& operator=(MediaRemoterTest&&) = delete;
   ~MediaRemoterTest() override { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -191,6 +197,7 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     ASSERT_TRUE(remoter_);
     EXPECT_CALL(remoting_source_, OnStopped(RemotingStopReason::USER_DISABLED));
     EXPECT_CALL(remoting_source_, OnSinkGone());
+    EXPECT_CALL(rpc_dispatcher_, Unsubscribe());
     EXPECT_CALL(*this, RestartMirroringStreaming());
     remoter_->Stop(media::mojom::RemotingStopReason::USER_DISABLED);
     task_environment_.RunUntilIdle();
@@ -198,13 +205,8 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     Mock::VerifyAndClear(&remoting_source_);
   }
 
-  // Should only be called once per test.
-  void EnableOpenscreenCastStreamingSession() {
-    feature_list_.InitAndEnableFeature(media::kOpenscreenCastStreamingSession);
-  }
-
   // Signals that a remoting streaming session starts successfully.
-  void RemotingStreamingStarted(bool should_use_openscreen_senders) {
+  void RemotingStreamingStarted() {
     ASSERT_TRUE(media_remoter_);
     scoped_refptr<media::cast::CastEnvironment> cast_environment =
         new media::cast::CastEnvironment(
@@ -213,21 +215,14 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
             task_environment_.GetMainThreadTaskRunner(),
             task_environment_.GetMainThreadTaskRunner());
 
-    if (should_use_openscreen_senders) {
-      openscreen_test_senders_ = std::make_unique<OpenscreenTestSenders>();
-      media_remoter_->StartRpcMessaging(
-          cast_environment, std::move(openscreen_test_senders_->audio_sender),
-          std::move(openscreen_test_senders_->video_sender),
-          MirrorSettings::GetDefaultAudioConfig(RtpPayloadType::REMOTE_AUDIO,
-                                                Codec::kAudioRemote),
-          MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,
-                                                Codec::kVideoRemote));
-    } else {
-      media_remoter_->StartRpcMessaging(
-          cast_environment, &mock_transport_, media::cast::FrameSenderConfig(),
-          MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,
-                                                Codec::kVideoRemote));
-    }
+    openscreen_test_senders_ = std::make_unique<OpenscreenTestSenders>();
+    media_remoter_->StartRpcMessaging(
+        cast_environment, std::move(openscreen_test_senders_->audio_sender),
+        std::move(openscreen_test_senders_->video_sender),
+        MirrorSettings::GetDefaultAudioConfig(RtpPayloadType::REMOTE_AUDIO,
+                                              Codec::kAudioRemote),
+        MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,
+                                              Codec::kVideoRemote));
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(&remoting_source_);
   }
@@ -291,18 +286,19 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     return remoting_source_;
   }
 
+  testing::StrictMock<MockRpcDispatcher>& rpc_dispatcher() {
+    return rpc_dispatcher_;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   mojo::Receiver<mojom::CastMessageChannel> receiver_{this};
-  base::MockCallback<MessageDispatcher::ErrorCallback> error_callback_;
   mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
-  MessageDispatcher message_dispatcher_;
-  RpcDispatcherImpl rpc_dispatcher_;
+  testing::StrictMock<MockRpcDispatcher> rpc_dispatcher_;
   const media::mojom::RemotingSinkMetadata sink_metadata_;
   testing::StrictMock<MockRemotingSource> remoting_source_;
   mojo::Remote<media::mojom::Remoter> remoter_;
-  testing::NiceMock<media::cast::MockCastTransport> mock_transport_;
 
   // Configured for use by the media remoter.
   std::unique_ptr<OpenscreenTestSenders> openscreen_test_senders_;
@@ -310,53 +306,44 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
   std::unique_ptr<MediaRemoter> media_remoter_;
 };
 
-TEST_P(MediaRemoterTest, StartAndStopRemoting) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
+TEST_F(MediaRemoterTest, StartAndStopRemoting) {
   CreateRemoter();
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_));
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
   StopRemoting();
 }
 
-TEST_P(MediaRemoterTest, StartAndStopRemotingAudioOnly) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
+TEST_F(MediaRemoterTest, StartAndStopRemotingAudioOnly) {
   CreateRemoter();
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_));
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_ONLY);
   StopRemoting();
 }
 
-TEST_P(MediaRemoterTest, StartAndStopRemotingVideoOnly) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
+TEST_F(MediaRemoterTest, StartAndStopRemotingVideoOnly) {
   CreateRemoter();
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_));
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::VIDEO_ONLY);
   StopRemoting();
 }
 
-TEST_P(MediaRemoterTest, StartRemotingWithoutCallingStart) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
+TEST_F(MediaRemoterTest, StartRemotingWithoutCallingStart) {
   CreateRemoter();
   // Should fail since we didn't call `StartRemoting().`
   EXPECT_CALL(remoting_source(), OnStarted()).Times(0);
-  RemotingStreamingStarted(GetParam());
+  RemotingStreamingStarted();
 }
 
-TEST_P(MediaRemoterTest, StopRemotingWhileStarting) {
+TEST_F(MediaRemoterTest, StopRemotingWhileStarting) {
   CreateRemoter();
   // Starts a remoting session.
   StartRemoting();
@@ -367,26 +354,32 @@ TEST_P(MediaRemoterTest, StopRemotingWhileStarting) {
   MirroringResumed(/* is_remoting_disabled */ false);
   // Now remoting can be started again.
   StartRemoting();
+  EXPECT_CALL(*this, RestartMirroringStreaming());
+
+  // Called when MediaRemoter is destroyed.
+  EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
 }
 
-TEST_P(MediaRemoterTest, RemotingStartFailed) {
+TEST_F(MediaRemoterTest, RemotingStartFailed) {
   CreateRemoter();
   StartRemoting();
   RemotingStartFailed();
   StopRemoting();
+  EXPECT_CALL(*this, RestartMirroringStreaming());
   MirroringResumed(/* is_remoting_disabled */ true);
+
+  // Called when MediaRemoter is destroyed.
+  EXPECT_CALL(rpc_dispatcher(), Unsubscribe());
 }
 
-TEST_P(MediaRemoterTest, SwitchBetweenMultipleSessions) {
-  if (GetParam()) {
-    EnableOpenscreenCastStreamingSession();
-  }
+TEST_F(MediaRemoterTest, SwitchBetweenMultipleSessions) {
   CreateRemoter();
 
   // Start a remoting session.
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_));
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
 
   // Stop the remoting session and switch to mirroring.
@@ -396,16 +389,13 @@ TEST_P(MediaRemoterTest, SwitchBetweenMultipleSessions) {
   // Switch to remoting again.
   StartRemoting();
   EXPECT_CALL(remoting_source(), OnStarted());
-  RemotingStreamingStarted(GetParam());
+  EXPECT_CALL(rpc_dispatcher(), Subscribe(_));
+  RemotingStreamingStarted();
   StartDataStreams(SessionType::AUDIO_AND_VIDEO);
 
   // Switch to mirroring again.
   StopRemoting();
   MirroringResumed(/* is_remoting_disabled */ false);
 }
-
-INSTANTIATE_TEST_SUITE_P(MediaRemoter,
-                         MediaRemoterTest,
-                         ::testing::Values(true, false));
 
 }  // namespace mirroring

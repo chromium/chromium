@@ -40,6 +40,10 @@ class LocalPasswordsMigrationWarningUtilTest : public testing::Test {
   base::test::TaskEnvironment* task_env() { return &task_env_; }
 
   void SetUp() override {
+    pref_service()->SetInteger(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
     fake_sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
@@ -143,4 +147,18 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest, TestShouldNotShowInIncognito) {
 
   EXPECT_FALSE(
       local_password_migration::ShouldShowWarning(off_the_record_profile));
+}
+
+TEST_F(LocalPasswordsMigrationWarningUtilTest,
+       ShouldNotShowWarningIfActiveInLocalUPM) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /* sync_everything = */ false, {});
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
 }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -14,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -34,7 +36,7 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -203,6 +205,86 @@ apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
   return std::make_unique<apps::ConditionValue>(path.pattern(), match_type);
 }
 
+std::string ExtractExtensionType(std::string path) {
+  // Look for a valid set of characters at the end of the string that directly
+  // follow the characters ".*\.", e.g. the regex should capture "tar.gz" in
+  // this string: ".*\..*\..*\..*\.tar.gz".
+  // TODO(b/270483199): Make this regex stricter to check for invalid characters
+  // at the start and middle of the path, and any invalid characters at the
+  // start of the extension.
+  re2::RE2 extension_regex_pattern("\\.\\*\\\\.([a-zA-Z0-9_\\-.]*)$");
+  std::string extension_capture;
+  RE2::PartialMatch(path, extension_regex_pattern, &extension_capture);
+  return extension_capture;
+}
+
+apps::ConditionValues ConvertPathToExtensionConditionValues(
+    apps::ConditionValues path_condition_values) {
+  base::flat_set<std::string> unique_extensions;
+  // Go through all the path values and extract any file extensions.
+  for (auto& path_condition_value : path_condition_values) {
+    if (path_condition_value->match_type != apps::PatternMatchType::kGlob) {
+      continue;
+    }
+    std::string extension_type =
+        ExtractExtensionType(path_condition_value->value);
+    if (extension_type.empty()) {
+      continue;
+    }
+    // If we found an extension type, save it in the set.
+    unique_extensions.insert(extension_type);
+  }
+  // Convert all the unique extension types into condition values.
+  apps::ConditionValues ext_condition_values;
+  for (const std::string& ext : unique_extensions) {
+    ext_condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        ext, apps::PatternMatchType::kFileExtension));
+  }
+  return ext_condition_values;
+}
+
+bool IsFileExtensionFilter(const arc::IntentFilter& arc_intent_filter) {
+  // Check that we have the correct fields available.
+  if (arc_intent_filter.paths().size() == 0 ||
+      arc_intent_filter.schemes().size() == 0) {
+    return false;
+  }
+
+  // Check that the filter has a view action.
+  if (!base::Contains(arc_intent_filter.actions(), arc::kIntentActionView)) {
+    return false;
+  }
+
+  // Check that the scheme is generic or has a value related to files.
+  bool has_generic_scheme = base::ranges::any_of(
+      arc_intent_filter.schemes(), [](const std::string& scheme) {
+        return scheme == "content" || scheme == "file" || scheme == "*";
+      });
+  if (!has_generic_scheme) {
+    return false;
+  }
+
+  // Check that the host is generic or doesn't exist.
+  bool has_generic_host = base::ranges::any_of(
+      arc_intent_filter.authorities(),
+      [](const arc::IntentFilter::AuthorityEntry& authority) {
+        return authority.wild();
+      });
+  if (arc_intent_filter.authorities().size() != 0 && !has_generic_host) {
+    return false;
+  }
+
+  // Check that the mime type is generic or doesn't exist.
+  bool has_generic_mime = base::ranges::any_of(
+      arc_intent_filter.mime_types(), [](const std::string& mime_type) {
+        return mime_type == "*" || mime_type == "*/*";
+      });
+  if (arc_intent_filter.mime_types().size() != 0 && !has_generic_mime) {
+    return false;
+  }
+  return true;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
@@ -325,12 +407,12 @@ apps::IntentFilters CreateIntentFiltersForExtension(
       extensions::WebFileHandlers::GetFileHandlers(*extension);
   if (intent_filter_data && !intent_filter_data->empty()) {
     apps::IntentFilters filters;
-    for (const auto& file_handler : *intent_filter_data) {
+    for (const auto& web_file_handler : *intent_filter_data) {
       // Flatten mime_types and file_extensions.
       std::vector<std::string> mime_types;
       std::vector<std::string> file_extensions;
       for (const auto [mime_type, file_extension_list] :
-           file_handler.accept.additional_properties) {
+           web_file_handler.file_handler.accept.additional_properties) {
         mime_types.emplace_back(mime_type);
         for (const auto& file_extension : file_extension_list.GetList()) {
           file_extensions.emplace_back(file_extension.GetString());
@@ -338,7 +420,8 @@ apps::IntentFilters CreateIntentFiltersForExtension(
       }
 
       filters.push_back(CreateFileFilter({kIntentActionView}, mime_types,
-                                         file_extensions, file_handler.action));
+                                         file_extensions,
+                                         web_file_handler.file_handler.action));
     }
     return filters;
   }
@@ -610,8 +693,6 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
   bool has_view_action = false;
-  bool is_file_filter = arc_intent_filter.mime_types().size() > 0;
-
   apps::ConditionValues action_condition_values;
   for (auto& arc_action : arc_intent_filter.actions()) {
     const char* action = ConvertArcToAppServiceIntentAction(arc_action);
@@ -630,8 +711,12 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
     intent_filter->conditions.push_back(std::move(action_condition));
   }
 
-  // Some ARC file filters will have schemes, but we don't want them visible in
-  // App Service filters since they are irrelevant.
+  bool is_mime_file_filter =
+      has_view_action && arc_intent_filter.mime_types().size() > 0;
+  bool is_file_extension_filter = IsFileExtensionFilter(arc_intent_filter);
+  bool is_file_filter = is_mime_file_filter || is_file_extension_filter;
+
+  // Don't allow scheme/ host for ARC view file filters.
   if (!is_file_filter) {
     apps::ConditionValues scheme_condition_values;
     for (auto& scheme : arc_intent_filter.schemes()) {
@@ -643,37 +728,38 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
           apps::ConditionType::kScheme, std::move(scheme_condition_values));
       intent_filter->conditions.push_back(std::move(scheme_condition));
     }
-  }
 
-  apps::ConditionValues host_condition_values;
-  for (auto& authority : arc_intent_filter.authorities()) {
-    auto match_type = authority.wild() ? apps::PatternMatchType::kSuffix
-                                       : apps::PatternMatchType::kLiteral;
-    host_condition_values.push_back(
-        std::make_unique<apps::ConditionValue>(authority.host(), match_type));
-  }
+    apps::ConditionValues host_condition_values;
+    for (auto& authority : arc_intent_filter.authorities()) {
+      auto match_type = authority.wild() ? apps::PatternMatchType::kSuffix
+                                         : apps::PatternMatchType::kLiteral;
+      host_condition_values.push_back(
+          std::make_unique<apps::ConditionValue>(authority.host(), match_type));
+    }
 
-  if (!host_condition_values.empty()) {
-    // It's common for Android apps to include duplicate host conditions, we can
-    // de-duplicate these to reduce time/space usage down the line.
-    std::sort(
-        host_condition_values.begin(), host_condition_values.end(),
-        [](const apps::ConditionValuePtr& v1,
-           const apps::ConditionValuePtr& v2) -> bool {
-          return v1->value < v2->value ||
-                 (v1->value == v2->value && v1->match_type < v2->match_type);
-        });
-    host_condition_values.erase(
-        std::unique(host_condition_values.begin(), host_condition_values.end(),
-                    [](const apps::ConditionValuePtr& v1,
-                       const apps::ConditionValuePtr& v2) -> bool {
-                      return *v1 == *v2;
-                    }),
-        host_condition_values.end());
+    if (!host_condition_values.empty()) {
+      // It's common for Android apps to include duplicate host conditions, we
+      // can de-duplicate these to reduce time/space usage down the line.
+      std::sort(
+          host_condition_values.begin(), host_condition_values.end(),
+          [](const apps::ConditionValuePtr& v1,
+             const apps::ConditionValuePtr& v2) -> bool {
+            return v1->value < v2->value ||
+                   (v1->value == v2->value && v1->match_type < v2->match_type);
+          });
+      host_condition_values.erase(
+          std::unique(host_condition_values.begin(),
+                      host_condition_values.end(),
+                      [](const apps::ConditionValuePtr& v1,
+                         const apps::ConditionValuePtr& v2) -> bool {
+                        return *v1 == *v2;
+                      }),
+          host_condition_values.end());
 
-    auto host_condition = std::make_unique<apps::Condition>(
-        apps::ConditionType::kAuthority, std::move(host_condition_values));
-    intent_filter->conditions.push_back(std::move(host_condition));
+      auto host_condition = std::make_unique<apps::Condition>(
+          apps::ConditionType::kAuthority, std::move(host_condition_values));
+      intent_filter->conditions.push_back(std::move(host_condition));
+    }
   }
 
   apps::ConditionValues path_condition_values;
@@ -706,32 +792,53 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
     path_condition_values.push_back(std::make_unique<apps::ConditionValue>(
         "/", apps::PatternMatchType::kPrefix));
   }
-  if (!path_condition_values.empty()) {
+
+  // For path file filters, extract the desired file extension from the path
+  // fields listed in the intent filter and add it to the new filter as a
+  // general kFile condition.
+  if (is_file_extension_filter) {
+    // Convert the path condition values into extension condition values.
+    apps::ConditionValues ext_condition_values =
+        ConvertPathToExtensionConditionValues(std::move(path_condition_values));
+    // If this is a path file filter without any valid file extensions, then the
+    // entire intent filter is invalid.
+    if (ext_condition_values.size() == 0) {
+      return nullptr;
+    }
+    // Wrap any found extension condition values into one file condition.
+    auto file_condition = std::make_unique<apps::Condition>(
+        apps::ConditionType::kFile, std::move(ext_condition_values));
+    intent_filter->conditions.push_back(std::move(file_condition));
+  } else if (!path_condition_values.empty()) {
     auto path_condition = std::make_unique<apps::Condition>(
         apps::ConditionType::kPath, std::move(path_condition_values));
     intent_filter->conditions.push_back(std::move(path_condition));
   }
 
-  apps::ConditionValues mime_type_condition_values;
-  for (auto& mime_type : arc_intent_filter.mime_types()) {
-    mime_type_condition_values.push_back(std::make_unique<apps::ConditionValue>(
-        mime_type, apps::PatternMatchType::kMimeType));
-  }
-  if (!mime_type_condition_values.empty()) {
-    // For ARC view file intents, save the mime type conditions under kFile
-    // instead of kMimeType to maintain consistency with view file intents of
-    // other app types.
-    if (has_view_action) {
-      auto file_type_condition = std::make_unique<apps::Condition>(
-          apps::ConditionType::kFile, std::move(mime_type_condition_values));
-      intent_filter->conditions.push_back(std::move(file_type_condition));
-    } else {
-      auto mime_type_condition = std::make_unique<apps::Condition>(
-          apps::ConditionType::kMimeType,
-          std::move(mime_type_condition_values));
-      intent_filter->conditions.push_back(std::move(mime_type_condition));
+  if (!is_file_extension_filter) {
+    apps::ConditionValues mime_type_condition_values;
+    for (auto& mime_type : arc_intent_filter.mime_types()) {
+      mime_type_condition_values.push_back(
+          std::make_unique<apps::ConditionValue>(
+              mime_type, apps::PatternMatchType::kMimeType));
+    }
+    if (!mime_type_condition_values.empty()) {
+      // For ARC view file intents, save the mime type conditions under kFile
+      // instead of kMimeType to maintain consistency with view file intents of
+      // other app types.
+      if (is_mime_file_filter) {
+        auto file_type_condition = std::make_unique<apps::Condition>(
+            apps::ConditionType::kFile, std::move(mime_type_condition_values));
+        intent_filter->conditions.push_back(std::move(file_type_condition));
+      } else {
+        auto mime_type_condition = std::make_unique<apps::Condition>(
+            apps::ConditionType::kMimeType,
+            std::move(mime_type_condition_values));
+        intent_filter->conditions.push_back(std::move(mime_type_condition));
+      }
     }
   }
+
   if (!arc_intent_filter.activity_name().empty()) {
     intent_filter->activity_name = arc_intent_filter.activity_name();
   }

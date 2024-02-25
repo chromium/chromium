@@ -9,7 +9,7 @@ PASS nonNumericPolicy('document.createTextNode("a").deleteData(x, 0)') is 'any t
 PASS nonNumericPolicy('document.createTextNode("a").deleteData(0, x)') is 'any type allowed (but not omitted)'
 PASS nonNumericPolicy('document.createTextNode("a").replaceData(x, 0, "b")') is 'any type allowed'
 PASS nonNumericPolicy('document.createTextNode("a").replaceData(0, x, "b")') is 'any type allowed'
-PASS nonNumericPolicy('createCSSMediaRule().insertRule(ruleText, x)') is 'any type allowed (but not omitted)'
+PASS nonNumericPolicy('createCSSMediaRule().insertRule(ruleText, x)') is 'any type allowed'
 PASS nonNumericPolicy('createCSSMediaRule().deleteRule(x)') is 'any type allowed (but not omitted)'
 PASS nonNumericPolicy('createCSSRuleList().item(x)') is 'any type allowed (but not omitted)'
 PASS nonNumericPolicy('createCSSStyleDeclaration().item(x)') is 'any type allowed (but not omitted)'

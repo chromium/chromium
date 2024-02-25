@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Удалить страницу <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Режим камеры</translation>
 <translation id="1153190633558910465">Без сетки</translation>
-<translation id="1175958423215084756">Обнаружена ссылка <ph name="HOSTNAME" />.</translation>
 <translation id="1197694886744716213">Страница <ph name="PAGE_NUMBER" /> удалена</translation>
 <translation id="1258009455399840361">Повернуть на 90 градусов по часовой стрелке</translation>
 <translation id="1417314334557041815">Изменить страницу <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Панорамировать вправо</translation>
 <translation id="3081586908890909590">Переключиться на видеосъемку</translation>
 <translation id="313467653172006084">30 кадров/с</translation>
+<translation id="3158534262962737808">Подключиться к сети "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Готово</translation>
 <translation id="3354465018370944241">Настройки фотографий</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Обработка видео…</translation>
 <translation id="3789724198583203151">Повернуть на 90 градусов против часовой стрелки</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3892148308691398805">Копировать текст</translation>
 <translation id="4060608699153044055">В хранилище недостаточно свободного места. Удалите ненужные файлы, чтобы начать запись.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mпкс</translation>
 <translation id="4118525110028899586">Приостановить запись</translation>
 <translation id="4121305183798804752">Обнаружен документ</translation>
 <translation id="414641094616694804">Разрешение этой камеры нельзя изменить</translation>
 <translation id="4176463684765177261">Отключено</translation>
-<translation id="4269820728363426813">Копировать адрес ссылки</translation>
 <translation id="428234092390943511">Уменьшенное изображение страницы</translation>
 <translation id="4349714250734879769">Масштабировать фреймы с помощью Chrome</translation>
 <translation id="4383571725254449280">Распечатать журнал производительности</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Исходное разрешение</translation>
 <translation id="4864143361253542638">Список отсканированных страниц</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Копировать адрес ссылки <ph name="URL" /></translation>
 <translation id="491895758387112773">Многопотоковая видеозапись</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Соотношение сторон</translation>
 <translation id="5057360777601936059">Камера недоступна.
         Проверьте, правильно ли подключена камера.</translation>
+<translation id="5157591164390831335">Обнаружен URL.</translation>
 <translation id="5163387177077603948">Перемещение вправо</translation>
-<translation id="5219374179772385066">Теперь доступен режим "Ускорение".</translation>
 <translation id="5235304959032763950">16 на 9</translation>
 <translation id="5266635337630551423">Левый верхний угол документа</translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Спасибо за отзыв о приложении "Камера".
 
 Если ваш отзыв касается качества фото или видео, прикрепите файл с примером проблемы (например, слишком темный или размытый снимок).</translation>
+<translation id="6519884562954018934">Подключиться к сети "<ph name="WIFINAME" />"</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="6617916774429601017">Показать все разрешения</translation>
 <translation id="6631515515009660915">Зеркальный режим отключен</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">Текст скопирован.</translation>
 <translation id="7488619942230388918">Записать видео в формате GIF</translation>
 <translation id="7557677699350329807">Переключиться на следующую камеру</translation>
+<translation id="7562584071994185503">Копировать текст "<ph name="TEXT" />"</translation>
 <translation id="7607002721634913082">Приостановлен</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="761421184377987513">Перемещение вниз и влево</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Масштабировать фреймы с помощью камеры HAL</translation>
 <translation id="8425673304802773841">Наклонить вниз</translation>
 <translation id="8428213095426709021">Настройки</translation>
+<translation id="8609951387004618906">Открыть страницу <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Микрофон отключен.</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Просмотр метаданных</translation>
+<translation id="874854738381978209">Обнаружена сеть Wi-Fi.</translation>
 <translation id="8815966864175525708">Перейти к созданию портрета</translation>
 <translation id="8828441885228359828">Продолжить запись</translation>
 <translation id="8870695351537079478">Не удалось начать запись</translation>

@@ -235,31 +235,36 @@ String SmartClip::ExtractTextFromNode(Node* node) {
 
   StringBuilder result;
   for (Node& current_node : NodeTraversal::InclusiveDescendantsOf(*node)) {
-    const ComputedStyle* style = current_node.GetComputedStyle();
-    if (!style || style->UsedUserSelect() == EUserSelect::kNone)
+    LayoutObject* layout_object = current_node.GetLayoutObject();
+
+    if (!layout_object ||
+        layout_object->StyleRef().UsedUserSelect() == EUserSelect::kNone) {
       continue;
-
-    if (Node* node_from_frame = NodeInsideFrame(&current_node))
-      result.Append(ExtractTextFromNode(node_from_frame));
-
-    gfx::Rect node_rect = current_node.PixelSnappedBoundingBox();
-    if (current_node.GetLayoutObject() && !node_rect.IsEmpty()) {
-      if (current_node.IsTextNode()) {
-        String node_value = current_node.nodeValue();
-
-        // It's unclear why we disallowed solitary "\n" node values.
-        // Maybe we're trying to ignore <br> tags somehow?
-        if (node_value == "\n")
-          node_value = "";
-
-        if (node_rect.y() != prev_y_pos) {
-          prev_y_pos = node_rect.y();
-          result.Append('\n');
-        }
-
-        result.Append(node_value);
-      }
     }
+    if (Node* node_from_frame = NodeInsideFrame(&current_node)) {
+      result.Append(ExtractTextFromNode(node_from_frame));
+      continue;
+    }
+    if (!layout_object->IsText()) {
+      continue;
+    }
+    gfx::Rect node_rect = current_node.PixelSnappedBoundingBox();
+    if (node_rect.IsEmpty()) {
+      continue;
+    }
+
+    String node_value = current_node.nodeValue();
+
+    // It's unclear why we disallowed solitary "\n" node values.
+    // Maybe we're trying to ignore <br> tags somehow?
+    if (node_value == "\n") {
+      node_value = "";
+    }
+    if (node_rect.y() != prev_y_pos) {
+      prev_y_pos = node_rect.y();
+      result.Append('\n');
+    }
+    result.Append(node_value);
   }
 
   return result.ToString();

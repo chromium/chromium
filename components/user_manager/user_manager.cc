@@ -10,8 +10,6 @@
 
 namespace user_manager {
 
-const char kRegularUsersPref[] = "LoggedInUsers";
-
 UserManager* UserManager::instance = nullptr;
 
 UserManager::Observer::~Observer() = default;
@@ -115,21 +113,21 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
                                         const bool browser_restart,
                                         const bool is_child) const {
   if (account_id == GuestAccountId()) {
-    return USER_TYPE_GUEST;
+    return UserType::kGuest;
   }
 
   // This may happen after browser crash after device account was marked for
   // removal, but before clean exit.
   if (browser_restart && IsDeviceLocalAccountMarkedForRemoval(account_id))
-    return USER_TYPE_PUBLIC_ACCOUNT;
+    return UserType::kPublicAccount;
 
   // If user already exists
   if (user) {
     // This branch works for any other user type, including PUBLIC_ACCOUNT.
     const UserType user_type = user->GetType();
-    if (user_type == USER_TYPE_CHILD || user_type == USER_TYPE_REGULAR) {
+    if (user_type == UserType::kChild || user_type == UserType::kRegular) {
       const UserType new_user_type =
-          is_child ? USER_TYPE_CHILD : USER_TYPE_REGULAR;
+          is_child ? UserType::kChild : UserType::kRegular;
       if (new_user_type != user_type) {
         LOG(WARNING) << "Child user type has changed: " << user_type << " => "
                      << new_user_type;
@@ -150,11 +148,11 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
 
   // User is new
   if (is_child)
-    return USER_TYPE_CHILD;
+    return UserType::kChild;
 
   CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
 
-  return USER_TYPE_REGULAR;
+  return UserType::kRegular;
 }
 
 }  // namespace user_manager

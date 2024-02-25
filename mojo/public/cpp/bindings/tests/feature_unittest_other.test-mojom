@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo.test.feature_unittest_other.mojom;
+
+// Validate that cross-module features work as expected.
+feature OtherFeatureOn {
+  const string name = "TestFeatureOn";
+  const bool default_state = true;
+};
+
+feature OtherFeatureOff {
+  const string name = "TestFeatureOff";
+  const bool default_state = false;
+};

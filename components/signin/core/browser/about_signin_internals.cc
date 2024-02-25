@@ -12,10 +12,10 @@
 
 #include "base/command_line.h"
 #include "base/hash/hash.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -215,7 +215,7 @@ std::string GetSigninStatusDescription(
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return "Not Signed In";
   } else if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    // TODO(crbug.com/1462978): Delete when ConsentLevel::kSync is deleted from
+    // TODO(crbug.com/40067058): Delete when ConsentLevel::kSync is deleted from
     // the codebase. See ConsentLevel::kSync documentation for details.
     return "Signed In, Consented for Sync";
   } else {
@@ -252,11 +252,12 @@ AboutSigninInternals::AboutSigninInternals(
       account_reconcilor_(account_reconcilor),
       account_consistency_(account_consistency) {
   RefreshSigninPrefs();
-  client_->AddContentSettingsObserver(this);
-  signin_error_controller_->AddObserver(this);
-  identity_manager_->AddObserver(this);
-  identity_manager_->AddDiagnosticsObserver(this);
-  account_reconcilor_->AddObserver(this);
+
+  identity_manager_observeration_.Observe(identity_manager_);
+  diganostics_observeration_.Observe(identity_manager_);
+  client_observeration_.Observe(client_);
+  signin_error_observeration_.Observe(signin_error_controller_);
+  account_reconcilor_observeration_.Observe(account_reconcilor_);
 }
 
 AboutSigninInternals::~AboutSigninInternals() {}
@@ -296,12 +297,12 @@ void AboutSigninInternals::RegisterPrefs(PrefRegistrySimple* user_prefs) {
   }
 }
 
-void AboutSigninInternals::AddSigninObserver(
+void AboutSigninInternals::AddObserver(
     AboutSigninInternals::Observer* observer) {
   signin_observers_.AddObserver(observer);
 }
 
-void AboutSigninInternals::RemoveSigninObserver(
+void AboutSigninInternals::RemoveObserver(
     AboutSigninInternals::Observer* observer) {
   signin_observers_.RemoveObserver(observer);
 }
@@ -314,7 +315,7 @@ void AboutSigninInternals::NotifyTimedSigninFieldValueChanged(
          field_index < signin_status_.timed_signin_fields.size());
 
   base::Time now = base::Time::NowFromSystemTime();
-  std::string time_as_str = base::TimeToISO8601(now);
+  std::string time_as_str = base::TimeFormatAsIso8601(now);
   TimedSigninStatusValue timed_value(value, time_as_str);
 
   signin_status_.timed_signin_fields[field_index] = timed_value;
@@ -356,11 +357,11 @@ void AboutSigninInternals::RefreshSigninPrefs() {
 }
 
 void AboutSigninInternals::Shutdown() {
-  client_->RemoveContentSettingsObserver(this);
-  signin_error_controller_->RemoveObserver(this);
-  identity_manager_->RemoveObserver(this);
-  identity_manager_->RemoveDiagnosticsObserver(this);
-  account_reconcilor_->RemoveObserver(this);
+  identity_manager_observeration_.Reset();
+  diganostics_observeration_.Reset();
+  client_observeration_.Reset();
+  signin_error_observeration_.Reset();
+  account_reconcilor_observeration_.Reset();
 }
 
 void AboutSigninInternals::OnContentSettingChanged(
@@ -560,14 +561,15 @@ base::Value::Dict AboutSigninInternals::TokenInfo::ToValue() const {
     scopes_str += *it + "\n";
   }
   token_info.Set("scopes", scopes_str);
-  token_info.Set("request_time", base::TimeToISO8601(request_time));
+  token_info.Set("request_time", base::TimeFormatAsIso8601(request_time));
 
   if (removed_) {
     token_info.Set("status", "Token was revoked.");
   } else if (!receive_time.is_null()) {
     if (error == GoogleServiceAuthError::AuthErrorNone()) {
       bool token_expired = expiration_time < base::Time::Now();
-      std::string expiration_time_string = base::TimeToISO8601(expiration_time);
+      std::string expiration_time_string =
+          base::TimeFormatAsIso8601(expiration_time);
       if (expiration_time.is_null()) {
         token_expired = false;
         expiration_time_string = "Expiration time not available";
@@ -577,7 +579,7 @@ base::Value::Dict AboutSigninInternals::TokenInfo::ToValue() const {
       if (token_expired)
         expire_string = "Expired";
       base::StringAppendF(&status_str, "Received token at %s. %s at %s",
-                          base::TimeToISO8601(receive_time).c_str(),
+                          base::TimeFormatAsIso8601(receive_time).c_str(),
                           expire_string.c_str(),
                           expiration_time_string.c_str());
       // JS code looks for `Expired at` string in order to mark
@@ -730,7 +732,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
       base::Time next_retry_time =
           base::Time::NowFromSystemTime() + cookie_requests_delay;
       AddSectionEntry(detailed_info, "Cookie Manager Next Retry",
-                      base::TimeToISO8601(next_retry_time), "");
+                      base::TimeFormatAsIso8601(next_retry_time), "");
     }
 
     base::TimeDelta token_requests_delay =
@@ -741,7 +743,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
       base::Time next_retry_time =
           base::Time::NowFromSystemTime() + token_requests_delay;
       AddSectionEntry(detailed_info, "Token Service Next Retry",
-                      base::TimeToISO8601(next_retry_time), "");
+                      base::TimeFormatAsIso8601(next_retry_time), "");
     }
 
     AddSection(signin_info, std::move(detailed_info), "Last Signin Details");
@@ -793,7 +795,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
   for (const auto& event : refresh_token_events) {
     base::Value::Dict entry;
     entry.Set("accountId", event.account_id.ToString());
-    entry.Set("timestamp", base::TimeToISO8601(event.timestamp));
+    entry.Set("timestamp", base::TimeFormatAsIso8601(event.timestamp));
     entry.Set("type", event.GetTypeAsString());
     entry.Set("source", event.source);
     refresh_token_events_value.Append(std::move(entry));

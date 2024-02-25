@@ -1,0 +1,61 @@
+<!doctype html>
+<html dir="$i18n{textdirection}"
+      hascustombackground="$i18n{hasCustomBackground}"
+      lang="$i18n{language}"
+      class="md">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<title>$i18n{title}</title>
+<link rel="icon" type="image/svg+xml" href="../../../../ui/webui/resources/images/incognito_icon.svg">
+<meta name="viewport" content="width=device-width">
+<link id="incognitothemecss" rel="stylesheet">
+<script>
+// Until themes can clear the cache, force-reload the theme stylesheet.
+document.querySelector('#incognitothemecss').href =
+    'chrome://theme/css/incognito_tab_theme.css?' + Date.now();
+</script>
+<link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+<link rel="stylesheet" href="incognito_tab.css">
+</head>
+<body>
+<div class="content">
+  <div class="icon" role="presentation" alt=""></div>
+  <h1>$i18n{incognitoTabHeading}</h1>
+  <p id="subtitle">
+    <span>$i18n{incognitoTabDescription}</span>
+    <a class="learn-more-button"
+        href="$i18n{learnMoreLink}"
+        aria-label="$i18nPolymer{learnMoreA11yLabel}">$i18n{learnMore}</a>
+  </p>
+  <div id="bulletpoints-wrapper">
+    <div class="bulletpoints first">$i18nRaw{incognitoTabFeatures}</div>
+    <div class="bulletpoints">$i18nRaw{incognitoTabWarning}</div>
+  </div>
+  <div id="cookie-controls">
+    <div id="cookie-controls-description">
+      <em>$i18n{cookieControlsTitle}</em>
+      <span>$i18nRaw{cookieControlsDescription}</span>
+    </div>
+    <div $i18n{hideTooltipIcon}>
+      <cr-tooltip-icon id="cookie-controls-tooltip-icon"
+          icon-aria-label="$i18n{cookieControlsTitle}"
+          icon-class="$i18n{cookieControlsToolTipIcon}"
+          tooltip-text="$i18n{cookieControlsTooltipText}"
+          role="link" style="cursor: pointer;">
+      </cr-tooltip-icon>
+    </div>
+    <cr-toggle id="cookie-controls-toggle"
+               aria-label="$i18n{cookieControlsTitle}"
+               $i18n{hideBlockCookiesToggle}
+               $i18n{cookieControlsToggleChecked} dark></cr-toggle>
+  </div>
+  <a class="learn-more-button" href="$i18n{learnMoreLink}"
+      aria-label="$i18nPolymer{learnMoreA11yLabel}">$i18n{learnMore}</a>
+</div>
+<script type="module" src="incognito_tab.js"></script>
+<!-- Lazy-load cr_elements to avoid performance penalty introduced by loading Polymer -->
+<script type="module" src="chrome://resources/cr_elements/cr_toggle/cr_toggle.js" async></script>
+<script type="module" src="chrome://resources/cr_elements/policy/cr_tooltip_icon.js" async></script>
+</body>
+</html>

@@ -19,8 +19,6 @@ this build script on Mac:
 3. sudo xcode-select --switch /Applications/Xcode.app
 """
 
-from __future__ import print_function
-
 import argparse
 import glob
 import io
@@ -86,7 +84,7 @@ def GetWinSDKDir():
     return win_sdk_dir
 
   # Don't let vs_toolchain overwrite our environment.
-  environ_bak = os.environ
+  environ_bak = dict(os.environ)
 
   sys.path.append(os.path.join(CHROMIUM_DIR, 'build'))
   import vs_toolchain
@@ -102,7 +100,8 @@ def GetWinSDKDir():
       vs_path = os.environ['GYP_MSVS_OVERRIDE_PATH']
     dia_path = os.path.join(vs_path, 'DIA SDK', 'bin', 'amd64')
 
-  os.environ = environ_bak
+  os.environ.clear()
+  os.environ.update(environ_bak)
   return win_sdk_dir
 
 
@@ -162,9 +161,10 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   # Try updating the current repo if it exists and has no local diff.
   if os.path.isdir(dir):
     os.chdir(dir)
-    # git diff-index --quiet returns success when there is no diff.
+    # git diff-index --exit-code returns 0 when there is no diff.
     # Also check that the first commit is reachable.
-    if (RunCommand(['git', 'diff-index', '--quiet', 'HEAD'], fail_hard=False)
+    if (RunCommand(['git', 'diff-index', '--exit-code', 'HEAD'],
+                   fail_hard=False)
         and RunCommand(['git', 'fetch'], fail_hard=False)
         and RunCommand(['git', 'checkout', commit], fail_hard=False)
         and RunCommand(['git', 'clean', '-f'], fail_hard=False)):
@@ -576,7 +576,7 @@ def VerifyZStdSupport():
     print('OK')
 
 
-def DownloadDebianSysroot(platform_name):
+def DownloadDebianSysroot(platform_name, skip_download=False):
   # Download sysroots. This uses basically Chromium's sysroots, but with
   # minor changes:
   # - glibc version bumped to 2.18 to make __cxa_thread_atexit_impl
@@ -602,7 +602,8 @@ def DownloadDebianSysroot(platform_name):
   output = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
   U = toolchain_bucket + hashes[platform_name] + '/' + toolchain_name + \
       '.tar.xz'
-  DownloadAndUnpack(U, output)
+  if not skip_download:
+    DownloadAndUnpack(U, output)
 
   return output
 
@@ -699,9 +700,8 @@ def main():
                       type=gn_arg,
                       nargs='?',
                       const=True,
-                      help='build the Fuchsia runtimes (linux and mac only)',
-                      default=sys.platform.startswith('linux')
-                      or sys.platform.startswith('darwin'))
+                      help='build the Fuchsia runtimes (linux only)',
+                      default=sys.platform.startswith('linux'))
   parser.add_argument('--without-android', action='store_false',
                       help='don\'t build Android ASan runtime (linux only)',
                       dest='with_android')
@@ -712,15 +712,14 @@ def main():
   parser.add_argument('--with-goma',
                       action='store_true',
                       help='Use goma to build the stage 1 compiler')
+  parser.add_argument('--without-zstd',
+                      dest='with_zstd',
+                      action='store_false',
+                      help='Disable zstd in the build')
 
   args = parser.parse_args()
 
   global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
-
-  # TODO(crbug.com/1467585): Remove in next Clang roll.
-  if args.llvm_force_head_revision:
-    global RELEASE_VERSION
-    RELEASE_VERSION = '18'
 
   if (args.pgo or args.thinlto) and not args.bootstrap:
     print('--pgo/--thinlto requires --bootstrap')
@@ -843,13 +842,19 @@ def main():
       '-DLLVM_ENABLE_CURL=OFF',
       # Build libclang.a as well as libclang.so
       '-DLIBCLANG_BUILD_STATIC=ON',
+      # The Rust build (on Mac ARM at least if not others) depends on the
+      # FileCheck tool which is built but not installed by default, this
+      # puts it in the path for the Rust build to find and matches the
+      # `bootstrap` tool:
+      # https://github.com/rust-lang/rust/blob/021861aea8de20c76c7411eb8ada7e8235e3d9b5/src/bootstrap/src/core/build_steps/llvm.rs#L348
+      '-DLLVM_INSTALL_UTILS=ON',
+      '-DLLVM_ENABLE_ZSTD=%s' % ('ON' if args.with_zstd else 'OFF'),
   ]
 
   if sys.platform == 'darwin':
     isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
                                        universal_newlines=True).rstrip()
-  else:
-    base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
+  base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
 
   # See https://crbug.com/1302636#c49 - #c56 -- intercepting crypt_r() does not
   # work with the sysroot for not fully understood reasons. Disable it.
@@ -874,7 +879,8 @@ def main():
     cc = args.host_cc
     cxx = args.host_cxx
   else:
-    DownloadPinnedClang()
+    if not args.skip_checkout:
+      DownloadPinnedClang()
     if sys.platform == 'win32':
       cc = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang-cl.exe')
       cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang-cl.exe')
@@ -892,10 +898,10 @@ def main():
       base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
 
   if sys.platform.startswith('linux'):
-    sysroot_amd64 = DownloadDebianSysroot('amd64')
-    sysroot_i386 = DownloadDebianSysroot('i386')
-    sysroot_arm = DownloadDebianSysroot('arm')
-    sysroot_arm64 = DownloadDebianSysroot('arm64')
+    sysroot_amd64 = DownloadDebianSysroot('amd64', args.skip_checkout)
+    sysroot_i386 = DownloadDebianSysroot('i386', args.skip_checkout)
+    sysroot_arm = DownloadDebianSysroot('arm', args.skip_checkout)
+    sysroot_arm64 = DownloadDebianSysroot('arm64', args.skip_checkout)
 
     # Add the sysroot to base_cmake_args.
     if platform.machine() == 'aarch64':
@@ -907,7 +913,7 @@ def main():
   if sys.platform == 'win32':
     AddGnuWinToPath()
 
-    base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
+    base_cmake_args.append('-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded')
 
     # Require zlib compression.
     zlib_dir = AddZlibToPath()
@@ -931,11 +937,12 @@ def main():
   cflags += libxml_cflags
   cxxflags += libxml_cflags
 
-  # Statically link zstd to make lld support zstd compression for debug info.
-  zstd_cmake_args, zstd_cflags = BuildZStd()
-  base_cmake_args += zstd_cmake_args
-  cflags += zstd_cflags
-  cxxflags += zstd_cflags
+  if args.with_zstd:
+    # Statically link zstd to make lld support zstd compression for debug info.
+    zstd_cmake_args, zstd_cflags = BuildZStd()
+    base_cmake_args += zstd_cmake_args
+    cflags += zstd_cflags
+    cxxflags += zstd_cflags
 
   if args.bootstrap:
     print('Building bootstrap compiler')
@@ -1282,10 +1289,8 @@ def main():
       target_triple = target_arch
       if target_arch == 'arm':
         target_triple = 'armv7'
-      api_level = '19'
-      if target_arch == 'aarch64' or target_arch == 'x86_64':
-        api_level = '21'
-      elif target_arch == 'riscv64':
+      api_level = '21'
+      if target_arch == 'riscv64':
         api_level = '35'
         toolchain_dir = ANDROID_NDK_CANARY_TOOLCHAIN_DIR
       target_triple += '-linux-android' + api_level
@@ -1494,7 +1499,8 @@ def main():
   if not args.build_mac_arm:
     VerifyVersionOfBuiltClangMatchesVERSION()
     VerifyZlibSupport()
-  VerifyZStdSupport()
+  if args.with_zstd:
+    VerifyZStdSupport()
 
   # Run tests.
   if (not args.build_mac_arm and
@@ -1512,7 +1518,9 @@ def main():
           # fstat and sunrpc tests fail due to sysroot/host mismatches
           # (crbug.com/1459187).
           '^MemorySanitizer-.* f?stat(at)?(64)?.cpp$',
-          '^.*Sanitizer-.*sunrpc.*cpp$'
+          '^.*Sanitizer-.*sunrpc.*cpp$',
+          # sysroot/host glibc version mismatch, crbug.com/1506551
+          '^.*Sanitizer.*mallinfo2.cpp$'
       ]
       env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],

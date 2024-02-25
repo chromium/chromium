@@ -11,13 +11,16 @@ I  ~zero                            0 ms   {"data":{"navigationId":"xNavIdx","st
 I  @500                           500 ms   {"data":{"navigationId":"xNavIdx","startTime":500}}
 I  @1000                         1000 ms   {"data":{"navigationId":"xNavIdx","startTime":1000}}
 I  @1200                         1200 ms   {"data":{"navigationId":"xNavIdx","startTime":1200}}
+I  @1500                         1500 ms   {"data":{"navigationId":"xNavIdx","startTime":1500}}
 
 Measures:
 ph name                offset from ~zero   args
 b  ~zero to @500                    0 ms   {"startTime":0}
 e  ~zero to @500                  500 ms   {}
-b  @1000 to @1200                1000 ms   {"startTime":1000}
+b  @1000 to @1200                1000 ms   {"detail":"\"its @1000 to @1200\"","startTime":1000}
 e  @1000 to @1200                1200 ms   {}
+b  @1500 for 200                 1500 ms   {"detail":"{\"key\":\"val\",\"num\":123}","startTime":1500}
+e  @1500 for 200                 1700 ms   {}
 b  @2000 for 300                 2000 ms   {"startTime":2000}
 e  @2000 for 300                 2300 ms   {}
 

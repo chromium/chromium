@@ -147,7 +147,8 @@ void DawnClientMemoryTransferService::MarkHandleFree(void* ptr) {
 }
 
 void DawnClientMemoryTransferService::FreeHandles(CommandBufferHelper* helper) {
-  std::vector<void*> to_free = std::move(free_blocks_);
+  std::vector<raw_ptr<void, VectorExperimental>> to_free =
+      std::move(free_blocks_);
   if (to_free.size() > 0) {
     int32_t token = helper->InsertToken();
     for (void* ptr : to_free) {

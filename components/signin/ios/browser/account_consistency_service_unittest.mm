@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -32,7 +33,7 @@
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
-#include "net/base/mac/url_conversions.h"
+#include "net/base/apple/url_conversions.h"
 #include "net/cookies/cookie_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -153,7 +154,7 @@ class FakeWebState : public web::FakeWebState {
   }
 
  private:
-  web::WebStatePolicyDecider* decider_;
+  raw_ptr<web::WebStatePolicyDecider> decider_;
 };
 
 }  // namespace
@@ -174,13 +175,13 @@ class AccountConsistencyServiceTest : public PlatformTest {
     signin_client_.reset(
         new TestSigninClient(&prefs_, &test_url_loader_factory_));
     identity_test_env_.reset(new signin::IdentityTestEnvironment(
-        /*test_url_loader_factory=*/nullptr, &prefs_,
-        signin::AccountConsistencyMethod::kDisabled, signin_client_.get()));
+        /*test_url_loader_factory=*/nullptr, &prefs_, signin_client_.get()));
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
-    cookie_settings_ = new content_settings::CookieSettings(settings_map_.get(),
-                                                            &prefs_, false, "");
+    cookie_settings_ = new content_settings::CookieSettings(
+        settings_map_.get(), &prefs_, /*tracking_protection_settings=*/nullptr,
+        false, "");
     // Use a NiceMock here to suppress "uninteresting call" warnings.
     account_reconcilor_ =
         std::make_unique<NiceMock<MockAccountReconcilor>>(signin_client_.get());
@@ -304,7 +305,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
     network::mojom::CookieDeletionFilterPtr filter =
         network::mojom::CookieDeletionFilter::New();
     filter->including_domains =
-        absl::optional<std::vector<std::string>>({kGoogleDomain});
+        std::optional<std::vector<std::string>>({kGoogleDomain});
     cookie_manager->DeleteCookies(std::move(filter),
                                   base::OnceCallback<void(uint)>());
   }
@@ -321,8 +322,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   // Properties available for tests.
-  // Creates test threads, necessary for ActiveStateManager that needs a UI
-  // thread.
   web::WebTaskEnvironment task_environment_;
   web::FakeBrowserState browser_state_;
   sync_preferences::TestingPrefServiceSyncable prefs_;

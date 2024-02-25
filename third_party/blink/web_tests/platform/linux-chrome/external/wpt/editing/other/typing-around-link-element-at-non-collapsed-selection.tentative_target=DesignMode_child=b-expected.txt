@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+[FAIL] Inserting "XY" after deleting first character of a link containing <b> (Direct typing) in <p><a href="about:blank"><b>[z]abc</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>zabc</b></a></p>" not in array ["<p><a href=\"about:blank\"><b>XYabc</b></a></p>", "<p><a href=\"about:blank\"><b>XYabc</b></a><br></p>"]
+[FAIL] Inserting "XY" after deleting last character in a non-collapsed range of a link containing <b> (Direct typing) in <p><a href="about:blank"><b>abc[d]</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abcd</b></a></p>" not in array ["<p><a href=\"about:blank\"><b>abcXY</b></a></p>", "<p><a href=\"about:blank\"><b>abcXY</b></a><br></p>"]
+[FAIL] Inserting "XY" after deleting text after middle of a link containing <b> (Direct typing) in <p><a href="about:blank"><b>ab[cd</b></a>de]f</p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abcd</b></a>def</p>" not in array ["<p><b><a href=\"about:blank\">ab</a>XY</b>f</p>", "<p><b><a href=\"about:blank\">ab</a>XY</b>f<br></p>"]
+[FAIL] Inserting "XY" after deleting text before middle of a link containing <b> (Direct typing) in <p>a[bc<a href="about:blank"><b>de]f</b></a></p>
+  assert_in_array: value "<p>YXabc<a href=\"about:blank\"><b>def</b></a></p>" not in array ["<p>aXY<a href=\"about:blank\"><b>f</b></a></p>", "<p>aXY<a href=\"about:blank\"><b>f</b></a><br></p>"]
+[FAIL] Inserting "XY" after deleting first character of a link containing <b> (Backspace) in <p><a href="about:blank"><b>[z]abc</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>zabc</b></a></p>" not in array ["<p><b>XY<a href=\"about:blank\">abc</a></b></p>", "<p><b>XY<a href=\"about:blank\">abc</a></b><br></p>"]
+[FAIL] Inserting "XY" after deleting last character in a non-collapsed range of a link containing <b> (Backspace) in <p><a href="about:blank"><b>abc[d]</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abcd</b></a></p>" not in array ["<p><b><a href=\"about:blank\">abc</a>XY</b></p>", "<p><b><a href=\"about:blank\">abc</a>XY</b><br></p>"]
+[FAIL] Inserting "XY" after deleting text after middle of a link containing <b> (Backspace) in <p><a href="about:blank"><b>ab[cd</b></a>de]f</p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abcd</b></a>def</p>" not in array ["<p><b><a href=\"about:blank\">ab</a>XY</b>f</p>", "<p><b><a href=\"about:blank\">ab</a>XY</b>f<br></p>"]
+[FAIL] Inserting "XY" after deleting text before middle of a link containing <b> (Backspace) in <p>a[bc<a href="about:blank"><b>de]f</b></a></p>
+  assert_in_array: value "<p>YXabc<a href=\"about:blank\"><b>def</b></a></p>" not in array ["<p>aXY<a href=\"about:blank\"><b>f</b></a></p>", "<p>aXY<a href=\"about:blank\"><b>f</b></a><br></p>"]
+[FAIL] Inserting "XY" after deleting first character of a link containing <b> (Delete) in <p><a href="about:blank"><b>[z]abc</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abc</b></a></p>" not in array ["<p><b>XY<a href=\"about:blank\">abc</a></b></p>", "<p><b>XY<a href=\"about:blank\">abc</a></b><br></p>"]
+[FAIL] Inserting "XY" after deleting last character in a non-collapsed range of a link containing <b> (Delete) in <p><a href="about:blank"><b>abc[d]</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>bcd</b></a></p>" not in array ["<p><b><a href=\"about:blank\">abc</a>XY</b></p>", "<p><b><a href=\"about:blank\">abc</a>XY</b><br></p>"]
+[FAIL] Inserting "XY" after deleting text after middle of a link containing <b> (Delete) in <p><a href="about:blank"><b>ab[cd</b></a>de]f</p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>bcd</b></a>def</p>" not in array ["<p><b><a href=\"about:blank\">ab</a>XY</b>f</p>", "<p><b><a href=\"about:blank\">ab</a>XY</b>f<br></p>"]
+[FAIL] Inserting "XY" after deleting text before middle of a link containing <b> (Delete) in <p>a[bc<a href="about:blank"><b>de]f</b></a></p>
+  assert_in_array: value "<p>YXbc<a href=\"about:blank\"><b>def</b></a></p>" not in array ["<p>aXY<a href=\"about:blank\"><b>f</b></a></p>", "<p>aXY<a href=\"about:blank\"><b>f</b></a><br></p>"]
+[FAIL] Inserting "XY" after deleting first character of a link containing <b> (execCommand("delete")) in <p><a href="about:blank"><b>[z]abc</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abc</b></a></p>" not in array ["<p><b>XY<a href=\"about:blank\">abc</a></b></p>", "<p><b>XY<a href=\"about:blank\">abc</a></b><br></p>"]
+[FAIL] Inserting "XY" after deleting last character in a non-collapsed range of a link containing <b> (execCommand("delete")) in <p><a href="about:blank"><b>abc[d]</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abc</b></a></p>" not in array ["<p><b><a href=\"about:blank\">abc</a>XY</b></p>", "<p><b><a href=\"about:blank\">abc</a>XY</b><br></p>"]
+[FAIL] Inserting "XY" after deleting text after middle of a link containing <b> (execCommand("delete")) in <p><a href="about:blank"><b>ab[cd</b></a>de]f</p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>ab</b></a>f</p>" not in array ["<p><b><a href=\"about:blank\">ab</a>XY</b>f</p>", "<p><b><a href=\"about:blank\">ab</a>XY</b>f<br></p>"]
+[FAIL] Inserting "XY" after deleting text before middle of a link containing <b> (execCommand("delete")) in <p>a[bc<a href="about:blank"><b>de]f</b></a></p>
+  assert_in_array: value "<p>YXa<a href=\"about:blank\"><b>f</b></a></p>" not in array ["<p>aXY<a href=\"about:blank\"><b>f</b></a></p>", "<p>aXY<a href=\"about:blank\"><b>f</b></a><br></p>"]
+[FAIL] Inserting "XY" after deleting first character of a link containing <b> (execCommand("forwarddelete")) in <p><a href="about:blank"><b>[z]abc</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abc</b></a></p>" not in array ["<p><b>XY<a href=\"about:blank\">abc</a></b></p>", "<p><b>XY<a href=\"about:blank\">abc</a></b><br></p>"]
+[FAIL] Inserting "XY" after deleting last character in a non-collapsed range of a link containing <b> (execCommand("forwarddelete")) in <p><a href="about:blank"><b>abc[d]</b></a></p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>abc</b></a></p>" not in array ["<p><b><a href=\"about:blank\">abc</a>XY</b></p>", "<p><b><a href=\"about:blank\">abc</a>XY</b><br></p>"]
+[FAIL] Inserting "XY" after deleting text after middle of a link containing <b> (execCommand("forwarddelete")) in <p><a href="about:blank"><b>ab[cd</b></a>de]f</p>
+  assert_in_array: value "<p>YX<a href=\"about:blank\"><b>ab</b></a>f</p>" not in array ["<p><b><a href=\"about:blank\">ab</a>XY</b>f</p>", "<p><b><a href=\"about:blank\">ab</a>XY</b>f<br></p>"]
+[FAIL] Inserting "XY" after deleting text before middle of a link containing <b> (execCommand("forwarddelete")) in <p>a[bc<a href="about:blank"><b>de]f</b></a></p>
+  assert_in_array: value "<p>YXa<a href=\"about:blank\"><b>f</b></a></p>" not in array ["<p>aXY<a href=\"about:blank\"><b>f</b></a></p>", "<p>aXY<a href=\"about:blank\"><b>f</b></a><br></p>"]
+Harness: the test ran to completion.

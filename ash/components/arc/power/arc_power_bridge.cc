@@ -33,6 +33,8 @@ constexpr base::TimeDelta kNotifyBrightnessDelay = base::Milliseconds(200);
 
 }  // namespace
 
+using mojom::IdleState;
+
 // static
 ArcPowerBridgeFactory* ArcPowerBridgeFactory::GetInstance() {
   return base::Singleton<ArcPowerBridgeFactory>::get();
@@ -93,7 +95,7 @@ class ArcPowerBridge::WakeLockRequestor {
   const device::mojom::WakeLockType type_;
 
   // The WakeLockProvider implementation we use to request WakeLocks. Not owned.
-  const raw_ptr<device::mojom::WakeLockProvider, ExperimentalAsh> provider_;
+  const raw_ptr<device::mojom::WakeLockProvider> provider_;
 
   // Number of outstanding Android requests.
   int num_android_requests_ = 0;
@@ -163,8 +165,17 @@ void ArcPowerBridge::OnConnectionReady() {
     ash::Shell::Get()->display_configurator()->AddObserver(this);
     // Whether display is on is the same signal as whether Android is interactive
     // or not.
-    IsDisplayOn(base::BindOnce(&ArcPowerBridge::NotifyAndroidInteractiveState,
-                              arc_bridge_service_));
+    IsDisplayOn(base::BindOnce(
+        [](base::WeakPtr<ArcPowerBridge> power_bridge,
+           ArcBridgeService* bridge_service, bool display_on) {
+          if (!bridge_service) {
+            return;
+          }
+          power_bridge->NotifyAndroidIdleState(
+              bridge_service,
+              display_on ? IdleState::ACTIVE : IdleState::INACTIVE);
+        },
+        weak_ptr_factory_.GetWeakPtr(), arc_bridge_service_));
   }
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->GetScreenBrightnessPercent(
@@ -185,14 +196,18 @@ void ArcPowerBridge::SuspendImminent(
   is_suspending_ = true;
   mojom::PowerInstance* power_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->power(), Suspend);
-  if (!power_instance)
+  if (!power_instance) {
+    LOG(WARNING) << "ArcPower: ignoring request due to no bridge.";
     return;
+  }
 
+  VLOG(1) << "ArcPower: will request android suspend.";
   auto token = base::UnguessableToken::Create();
   chromeos::PowerManagerClient::Get()->BlockSuspend(token, "ArcPowerBridge");
   power_instance->Suspend(base::BindOnce(&ArcPowerBridge::OnAndroidSuspendReady,
                                          weak_ptr_factory_.GetWeakPtr(),
                                          token));
+  ash::PatchPanelClient::Get()->NotifyAndroidInteractiveState(false);
 }
 
 void ArcPowerBridge::OnAndroidSuspendReady(base::UnguessableToken token) {
@@ -216,7 +231,7 @@ void ArcPowerBridge::OnAndroidSuspendReady(base::UnguessableToken token) {
 
 void ArcPowerBridge::OnConciergeSuspendVmResponse(
     base::UnguessableToken token,
-    absl::optional<vm_tools::concierge::SuspendVmResponse> reply) {
+    std::optional<vm_tools::concierge::SuspendVmResponse> reply) {
   if (!reply.has_value())
     LOG(ERROR) << "Failed to suspend arcvm, no reply received.";
   else if (!reply.value().success())
@@ -225,6 +240,7 @@ void ArcPowerBridge::OnConciergeSuspendVmResponse(
 }
 
 void ArcPowerBridge::SuspendDone(base::TimeDelta sleep_duration) {
+  VLOG(1) << "ArcPower: Host waking up.";
   is_suspending_ = false;
   if (arc::IsArcVmEnabled()) {
     vm_tools::concierge::ResumeVmRequest request;
@@ -239,7 +255,7 @@ void ArcPowerBridge::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void ArcPowerBridge::OnConciergeResumeVmResponse(
-    absl::optional<vm_tools::concierge::ResumeVmResponse> reply) {
+    std::optional<vm_tools::concierge::ResumeVmResponse> reply) {
   if (!reply.has_value()) {
     LOG(ERROR) << "Failed to resume arcvm, no reply received.";
     return;
@@ -260,8 +276,11 @@ void ArcPowerBridge::DispatchAndroidResume() {
 
   mojom::PowerInstance* power_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->power(), Resume);
-  if (!power_instance)
+  if (!power_instance) {
+    LOG(WARNING) << "ArcPower: Ignoring ARC resume due to no bridge.";
     return;
+  }
+  VLOG(1) << "ArcPower: Requesting Android resume.";
   power_instance->Resume();
 }
 
@@ -310,23 +329,41 @@ void ArcPowerBridge::OnPowerStateChanged(
   if (android_idle_control_disabled_)
     return;
 
-  bool enabled = (power_state != chromeos::DISPLAY_POWER_ALL_OFF);
-  NotifyAndroidInteractiveState(arc_bridge_service_, enabled);
+  NotifyAndroidIdleState(arc_bridge_service_,
+                         power_state != chromeos::DISPLAY_POWER_ALL_OFF
+                             ? IdleState::ACTIVE
+                             : IdleState::INACTIVE);
 }
 
-void ArcPowerBridge::NotifyAndroidInteractiveState(ArcBridgeService* bridge,
-                                                   bool enabled) {
+void ArcPowerBridge::NotifyAndroidIdleState(ArcBridgeService* bridge,
+                                            IdleState state) {
   if (!bridge) {
     return;
   }
-  mojom::PowerInstance* power_instance =
-      ARC_GET_INSTANCE_FOR_METHOD(bridge->power(), SetInteractive);
-  if (!power_instance)
+  if (state != IdleState::ACTIVE && is_suspending_) {
+    LOG(WARNING) << "Suspend is in progress, avoiding display disable";
     return;
-  power_instance->SetInteractive(enabled);
-  // Display power state is the same signal as Android interactive state. When
+  }
+
+  auto* power_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(bridge->power(), SetIdleState);
+  if (power_instance) {
+    VLOG(1) << "ArcPower: SetIdleState to " << state;
+    power_instance->SetIdleState(state);
+  } else if ((power_instance = ARC_GET_INSTANCE_FOR_METHOD(
+                  bridge->power(), SetInteractiveDeprecated))) {
+    VLOG(1) << "ArcPower: SetInteractiveDeprecated to "
+            << (state == IdleState::ACTIVE);
+    power_instance->SetInteractiveDeprecated(state == IdleState::ACTIVE);
+  } else {
+    LOG(WARNING) << "ArcPower: Avoiding display change due to no bridge.";
+    return;
+  }
+
+  // Display power state is the same signal as Android Idle state. When
   // power state changes, notify Android interactive state change as well.
-  ash::PatchPanelClient::Get()->NotifyAndroidInteractiveState(enabled);
+  ash::PatchPanelClient::Get()->NotifyAndroidInteractiveState(
+      state == IdleState::ACTIVE);
 }
 
 void ArcPowerBridge::OnAcquireDisplayWakeLock(mojom::DisplayWakeLockType type) {
@@ -402,7 +439,7 @@ ArcPowerBridge::WakeLockRequestor* ArcPowerBridge::GetWakeLockRequestor(
 }
 
 void ArcPowerBridge::OnGetScreenBrightnessPercent(
-    absl::optional<double> percent) {
+    std::optional<double> percent) {
   if (!percent.has_value()) {
     LOG(ERROR)
         << "PowerManagerClient::GetScreenBrightnessPercent reports an error";
@@ -435,7 +472,7 @@ void ArcPowerBridge::GetBatterySaverModeState(
 
 void ArcPowerBridge::OnBatterySaverModeStateReceived(
     GetBatterySaverModeStateCallback callback,
-    absl::optional<power_manager::BatterySaverModeState> state) {
+    std::optional<power_manager::BatterySaverModeState> state) {
   mojom::BatterySaverModeStatePtr mojo_state =
       mojom::BatterySaverModeState::New();
   if (state.has_value()) {

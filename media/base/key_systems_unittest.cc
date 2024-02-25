@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/key_systems.h"
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,13 +15,11 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
-#include "media/base/key_systems.h"
 #include "media/base/media.h"
 #include "media/base/media_client.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 namespace media {
@@ -242,7 +243,7 @@ class TestMediaClient : public MediaClient {
   // test the key system update case.
   void DisableExternalKeySystemSupport();
 
-  absl::optional<AudioRendererAlgorithmParameters>
+  std::optional<AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) final;
 
  private:
@@ -279,10 +280,10 @@ void TestMediaClient::DisableExternalKeySystemSupport() {
   get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal());
 }
 
-absl::optional<AudioRendererAlgorithmParameters>
+std::optional<AudioRendererAlgorithmParameters>
 TestMediaClient::GetAudioRendererAlgorithmParameters(
     AudioParameters audio_parameters) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 KeySystemInfos TestMediaClient::GetSupportedKeySystemsInternal() {

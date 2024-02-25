@@ -29,11 +29,11 @@ PASS a.href is 'file://mydomain.com/path/'
 Set host containing slashes in it
 PASS a.href is 'https://www.otherdom:8080/path/'
 Set host to a malformed URL
-PASS a.href is 'https://ww.my@www.other%21domain.com:15/path/'
+PASS a.href is 'https://ww.my@domain.com:8080/path/'
 Set host that starts with ':'
 PASS a.href is 'https://domain.com:8080/path/'
 Set host to URL containing username and ..
-PASS a.href is 'https://rwwmy@www.other%21domain.com:25/pa..th/'
+PASS a.href is 'https://rwwmy@domain.com:8080/pa..th/'
 Set host to a URL with tel: protocol
 PASS a.href is 'tel:+1-816-555-1212'
 PASS successfullyParsed is true

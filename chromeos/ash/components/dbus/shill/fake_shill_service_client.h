@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -160,13 +160,13 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   std::map<std::string, base::RepeatingClosure> connect_behavior_;
 
   // If set the next Connect call will fail with this error_name.
-  absl::optional<std::string> connect_error_name_;
+  std::optional<std::string> connect_error_name_;
 
   // If set the next SetProperties call will fail with this error_name.
-  absl::optional<std::string> set_properties_error_name_;
+  std::optional<std::string> set_properties_error_name_;
 
   // Optional state to set after a call to RequestPortalDetection.
-  absl::optional<std::string> request_portal_state_;
+  std::optional<std::string> request_portal_state_;
 
   // Observer list for each service.
   std::map<dbus::ObjectPath, std::unique_ptr<PropertyObserverList>>

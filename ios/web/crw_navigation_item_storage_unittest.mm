@@ -11,10 +11,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
-#import "base/test/metrics/histogram_tester.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#import "ios/web/navigation/navigation_item_storage_test_util.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +52,7 @@ TEST_F(CRWNavigationItemStorageTest, EncodeDecode) {
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
   id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
-  EXPECT_TRUE(web::ItemStoragesAreEqual(item_storage(), decoded));
+  EXPECT_NSEQ(item_storage(), decoded);
 }
 
 // Tests that converting CRWNavigationItemStorage to proto and back results in
@@ -66,43 +63,7 @@ TEST_F(CRWNavigationItemStorageTest, EncodeDecodeToProto) {
 
   CRWNavigationItemStorage* decoded =
       [[CRWNavigationItemStorage alloc] initWithProto:storage];
-  EXPECT_TRUE(web::ItemStoragesAreEqual(item_storage(), decoded));
-}
-
-// Tests histograms recording.
-TEST_F(CRWNavigationItemStorageTest, Histograms) {
-  CRWNavigationItemStorage* storage = [[CRWNavigationItemStorage alloc] init];
-
-  [storage setURL:GURL("http://" + std::string(2048, 'a') + ".test")];
-  [storage setVirtualURL:GURL("http://" + std::string(3072, 'b') + ".test")];
-  [storage setReferrer:web::Referrer(
-                           GURL("http://" + std::string(4096, 'c') + ".test"),
-                           web::ReferrerPolicyDefault)];
-  [storage setTimestamp:base::Time::Now()];
-  [storage setTitle:base::UTF8ToUTF16(std::string(5120, 'd'))];
-  [storage setHTTPRequestHeaders:@{
-    @"HeaderKey1" : @"HeaderValue1",
-    @"HeaderKey2" : @"HeaderValue2",
-    @"HeaderKey3" : @"HeaderValue3",
-  }];
-  [storage setUserAgentType:web::UserAgentType::DESKTOP];
-
-  base::HistogramTester histogram_tester;
-  [NSKeyedArchiver archivedDataWithRootObject:storage
-                        requiringSecureCoding:NO
-                                        error:nil];
-  histogram_tester.ExpectBucketCount(
-      web::kNavigationItemSerializedSizeHistogram, 16 /*KB*/, 1);
-  histogram_tester.ExpectBucketCount(
-      web::kNavigationItemSerializedVirtualURLSizeHistogram, 3 /*KB*/, 1);
-  histogram_tester.ExpectBucketCount(
-      web::kNavigationItemSerializedURLSizeHistogram, 2 /*KB*/, 1);
-  histogram_tester.ExpectBucketCount(
-      web::kNavigationItemSerializedReferrerURLSizeHistogram, 4 /*KB*/, 1);
-  histogram_tester.ExpectBucketCount(
-      web::kNavigationItemSerializedTitleSizeHistogram, 5 /*KB*/, 1);
-  histogram_tester.ExpectBucketCount(
-      web::kNavigationItemSerializedRequestHeadersSizeHistogram, 1 /*KB*/, 1);
+  EXPECT_NSEQ(item_storage(), decoded);
 }
 
 // CRWNavigationItemStorage does not store "virtualURL" if the it's the same

@@ -8,26 +8,55 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
 
 namespace ash {
 
+// Enable storing a newly created owner key in the private slot.
+BASE_FEATURE(kStoreOwnerKeyInPrivateSlot,
+             "StoreOwnerKeyInPrivateSlot",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable migration of the owner key from the public to the private slot. This
+// experiment represents the second stage of `kStoreOwnerKeyInPrivateSlot` and
+// is only respected if kStoreOwnerKeyInPrivateSlot is enabled.
+BASE_FEATURE(kMigrateOwnerKeyToPrivateSlot,
+             "MigrateOwnerKeyToPrivateSlot",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsStoreOwnerKeyInPrivateSlotEnabled() {
+  return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
+}
+
+bool ShouldMigrateOwnerKeyToPrivateSlot() {
+  return IsStoreOwnerKeyInPrivateSlotEnabled() &&
+         base::FeatureList::IsEnabled(kMigrateOwnerKeyToPrivateSlot);
+}
+
 namespace {
 
 // Max number of attempts to generate a new owner key.
 constexpr int kMaxGenerateAttempts = 5;
+
+using WorkerTask =
+    base::OnceCallback<void(crypto::ScopedPK11Slot /*public_slot*/,
+                            crypto::ScopedPK11Slot /*private_slot*/)>;
 
 void LoadPublicKeyOnlyOnWorkerThread(
     scoped_refptr<ownership::OwnerKeyUtil> owner_key_util,
@@ -42,24 +71,33 @@ void LoadPublicKeyOnlyOnWorkerThread(
 void LoadPrivateKeyOnWorkerThread(
     scoped_refptr<ownership::OwnerKeyUtil> owner_key_util,
     scoped_refptr<ownership::PublicKey> public_key,
-    base::OnceCallback<void(scoped_refptr<ownership::PrivateKey>)>
-        ui_thread_callback,
-    net::NSSCertDatabase* database) {
+    base::OnceCallback<void(scoped_refptr<ownership::PrivateKey>,
+                            bool found_in_public_slot)> ui_thread_callback,
+    crypto::ScopedPK11Slot public_slot,
+    crypto::ScopedPK11Slot private_slot) {
   // TODO(davidben): FindPrivateKeyInSlot internally checks for a null slot if
   // needbe. The null check should be in the caller rather than internally in
   // the OwnerKeyUtil implementation. The tests currently get a null
   // private_slot and expect the mock OwnerKeyUtil to still be called.
   scoped_refptr<ownership::PrivateKey> private_key =
       base::MakeRefCounted<ownership::PrivateKey>(
-          owner_key_util->FindPrivateKeyInSlot(
-              public_key->data(), database->GetPrivateSlot().get()));
+          owner_key_util->FindPrivateKeyInSlot(public_key->data(),
+                                               private_slot.get()));
+  bool found_in_public_slot = false;
+
   if (!private_key->key()) {
     private_key = base::MakeRefCounted<ownership::PrivateKey>(
         owner_key_util->FindPrivateKeyInSlot(public_key->data(),
-                                             database->GetPublicSlot().get()));
+                                             public_slot.get()));
+    if (private_key->key()) {
+      // If the key is stored in the public slot, it might need to be migrated
+      // (depending on the experiment).
+      found_in_public_slot = true;
+    }
   }
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(ui_thread_callback), private_key));
+      FROM_HERE, base::BindOnce(std::move(ui_thread_callback), private_key,
+                                found_in_public_slot));
 }
 
 void GenerateNewOwnerKeyOnWorkerThread(
@@ -67,9 +105,19 @@ void GenerateNewOwnerKeyOnWorkerThread(
     base::OnceCallback<void(scoped_refptr<ownership::PublicKey>,
                             scoped_refptr<ownership::PrivateKey>)>
         ui_thread_callback,
-    net::NSSCertDatabase* nss_db) {
-  crypto::ScopedSECKEYPrivateKey sec_priv_key =
-      owner_key_util->GenerateKeyPair(nss_db->GetPublicSlot().get());
+    crypto::ScopedPK11Slot public_slot,
+    crypto::ScopedPK11Slot private_slot) {
+  crypto::ScopedSECKEYPrivateKey sec_priv_key;
+  if (private_slot && IsStoreOwnerKeyInPrivateSlotEnabled()) {
+    sec_priv_key = owner_key_util->GenerateKeyPair(private_slot.get());
+    RecordOwnerKeyEvent(OwnerKeyEvent::kPrivateSlotKeyGeneration,
+                        bool(sec_priv_key));
+  } else if (public_slot) {
+    sec_priv_key = owner_key_util->GenerateKeyPair(public_slot.get());
+    RecordOwnerKeyEvent(OwnerKeyEvent::kPublicSlotKeyGeneration,
+                        bool(sec_priv_key));
+  }
+
   if (!sec_priv_key) {
     LOG(ERROR) << "Failed to generate owner key";
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -103,10 +151,10 @@ void GenerateNewOwnerKeyOnWorkerThread(
                                 std::move(public_key), std::move(private_key)));
 }
 
-void PostOnWorkerThreadWithCertDb(
-    base::OnceCallback<void(net::NSSCertDatabase*)> worker_task,
-    net::NSSCertDatabase* nss_db) {
+void PostOnWorkerThreadWithCertDb(WorkerTask worker_task,
+                                  net::NSSCertDatabase* nss_db) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK(nss_db);
 
   // TODO(eseckler): It seems loading the key is important for the UsersPrivate
   // extension API to work correctly during startup, which is why we cannot
@@ -115,12 +163,12 @@ void PostOnWorkerThreadWithCertDb(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(std::move(worker_task), nss_db));
+      base::BindOnce(std::move(worker_task), nss_db->GetPublicSlot(),
+                     nss_db->GetPrivateSlot()));
 }
 
-void GetCertDbAndPostOnWorkerThreadOnIO(
-    NssCertDatabaseGetter nss_getter,
-    base::OnceCallback<void(net::NSSCertDatabase*)> worker_task) {
+void GetCertDbAndPostOnWorkerThreadOnIO(NssCertDatabaseGetter nss_getter,
+                                        WorkerTask worker_task) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // Running |nss_getter| may either return a non-null pointer
@@ -136,9 +184,7 @@ void GetCertDbAndPostOnWorkerThreadOnIO(
   }
 }
 
-void GetCertDbAndPostOnWorkerThread(
-    Profile* profile,
-    base::OnceCallback<void(net::NSSCertDatabase*)> worker_task) {
+void GetCertDbAndPostOnWorkerThread(Profile* profile, WorkerTask worker_task) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&GetCertDbAndPostOnWorkerThreadOnIO,
@@ -161,6 +207,23 @@ inline bool AreKeysPresent(
     const scoped_refptr<ownership::PublicKey>& public_key,
     const scoped_refptr<ownership::PrivateKey>& private_key) {
   return IsKeyPresent(public_key) && IsKeyPresent(private_key);
+}
+
+bool UserCanBecomeOwner(const user_manager::User* user) {
+  if (!user) {
+    return false;
+  }
+  switch (user->GetType()) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+      return true;
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+      return false;
+  }
 }
 
 }  // namespace
@@ -189,6 +252,12 @@ OwnerKeyLoader::~OwnerKeyLoader() = default;
 void OwnerKeyLoader::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_) << "Run() can only be called once.";
+
+  if (g_browser_process && g_browser_process->IsShuttingDown()) {
+    return std::move(callback_).Run(/*public_key=*/nullptr,
+                                    /*private_key=*/nullptr);
+    // `this` might be deleted here.
+  }
 
   if (!device_settings_service_) {
     CHECK_IS_TEST();
@@ -243,11 +312,43 @@ void OwnerKeyLoader::OnPublicKeyLoaded(
 }
 
 void OwnerKeyLoader::OnPrivateKeyLoaded(
-    scoped_refptr<ownership::PrivateKey> private_key) {
+    scoped_refptr<ownership::PrivateKey> private_key,
+    bool found_in_public_slot) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (IsKeyPresent(private_key)) {
     RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerHasKeys,
                         /*success=*/AreKeysPresent(public_key_, private_key));
+    RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerKeyInPublicSlot,
+                        /*success=*/found_in_public_slot);
+
+    if (ShouldMigrateOwnerKeyToPrivateSlot() && found_in_public_slot) {
+      // If the key was found in the public slot and the migration is enabled,
+      // then replace it by generating a new one in the private slot. The old
+      // key will be deleted by OwnerSettingsServiceAsh when the new key is
+      // saved as the owner key.
+      LOG(WARNING) << "Found owner key in public slot, migrating to "
+                      "private slot.";
+      old_owner_key_ = private_key->ExtractKey();
+      GenerateNewKey();
+      RecordOwnerKeyEvent(OwnerKeyEvent::kMigrationToPrivateSlotStarted,
+                          /*success=*/true);
+      return;
+    }
+
+    if (!ShouldMigrateOwnerKeyToPrivateSlot() &&
+        !IsStoreOwnerKeyInPrivateSlotEnabled() && !found_in_public_slot) {
+      // If all experiments are disabled but the key is in the private slot, it
+      // means they were reverted and it's probably better to migrate the owner
+      // key back to the public slot.
+      LOG(WARNING) << "Found owner key in private slot while the private slot "
+                      "experiments are disabled, migrating to public slot.";
+      old_owner_key_ = private_key->ExtractKey();
+      GenerateNewKey();
+      RecordOwnerKeyEvent(OwnerKeyEvent::kMigrationToPublicSlotStarted,
+                          /*success=*/true);
+      return;
+    }
+
     // Success: both keys were loaded, the current user is the owner.
     return std::move(callback_).Run(std::move(public_key_),
                                     std::move(private_key));
@@ -263,7 +364,7 @@ void OwnerKeyLoader::OnPrivateKeyLoaded(
 void OwnerKeyLoader::MaybeGenerateNewKey() {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (!user || (user->GetType() != user_manager::USER_TYPE_REGULAR)) {
+  if (!UserCanBecomeOwner(user)) {
     RecordOwnerKeyEvent(OwnerKeyEvent::kUserNotAnOwnerBasedOnUserType,
                         /*success=*/IsKeyPresent(public_key_));
     return std::move(callback_).Run(public_key_, nullptr);
@@ -302,7 +403,7 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
   }
 
   // If the policies are empty, check the local state PrefService.
-  absl::optional<std::string> owner_email =
+  std::optional<std::string> owner_email =
       user_manager::UserManager::Get()->GetOwnerEmail();
 
   if (owner_email.has_value() &&
@@ -412,6 +513,10 @@ void OwnerKeyLoader::OnNewKeyGenerated(
   // private key, it should be not null.
   return std::move(callback_).Run(std::move(public_key_), nullptr);
   // `this` might be deleted here.
+}
+
+crypto::ScopedSECKEYPrivateKey OwnerKeyLoader::ExtractOldOwnerKey() {
+  return std::move(old_owner_key_);
 }
 
 }  // namespace ash

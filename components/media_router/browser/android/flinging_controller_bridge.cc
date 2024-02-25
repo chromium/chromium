@@ -27,21 +27,21 @@ FlingingControllerBridge::FlingingControllerBridge(
 FlingingControllerBridge::~FlingingControllerBridge() = default;
 
 void FlingingControllerBridge::Play() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(env);
 
   Java_FlingingControllerBridge_play(env, j_flinging_controller_bridge_);
 }
 
 void FlingingControllerBridge::Pause() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(env);
 
   Java_FlingingControllerBridge_pause(env, j_flinging_controller_bridge_);
 }
 
 void FlingingControllerBridge::SetMute(bool mute) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(env);
 
   Java_FlingingControllerBridge_setMute(env, j_flinging_controller_bridge_,
@@ -49,7 +49,7 @@ void FlingingControllerBridge::SetMute(bool mute) {
 }
 
 void FlingingControllerBridge::SetVolume(float volume) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(env);
 
   Java_FlingingControllerBridge_setVolume(env, j_flinging_controller_bridge_,
@@ -57,7 +57,7 @@ void FlingingControllerBridge::SetVolume(float volume) {
 }
 
 void FlingingControllerBridge::Seek(base::TimeDelta time) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(env);
 
   Java_FlingingControllerBridge_seek(env, j_flinging_controller_bridge_,
@@ -73,7 +73,7 @@ void FlingingControllerBridge::AddMediaStatusObserver(
   DCHECK(!observer_);
   observer_ = observer;
 
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(env);
 
   Java_FlingingControllerBridge_addNativeFlingingController(
@@ -85,7 +85,7 @@ void FlingingControllerBridge::RemoveMediaStatusObserver(
   DCHECK_EQ(observer_, observer);
   observer_ = nullptr;
 
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(env);
 
   Java_FlingingControllerBridge_clearNativeFlingingController(
@@ -140,7 +140,7 @@ void FlingingControllerBridge::OnMediaStatusUpdated(
 }
 
 base::TimeDelta FlingingControllerBridge::GetApproximateCurrentTime() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(env);
 
   long time_in_ms = Java_FlingingControllerBridge_getApproximateCurrentTime(

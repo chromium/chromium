@@ -53,7 +53,11 @@ public class SafeModeVariationsSeedContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         throw new UnsupportedOperationException();
     }
@@ -70,10 +74,11 @@ public class SafeModeVariationsSeedContentProvider extends ContentProvider {
         }
 
         try {
-            ParcelFileDescriptor pfd = ParcelFileDescriptor
-                                               .open(VariationsUtils.getSeedFile(),
-                                                       ParcelFileDescriptor.MODE_READ_ONLY)
-                                               .dup();
+            ParcelFileDescriptor pfd =
+                    ParcelFileDescriptor.open(
+                                    VariationsUtils.getSeedFile(),
+                                    ParcelFileDescriptor.MODE_READ_ONLY)
+                            .dup();
             return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
         } catch (IOException e) {
             Log.e(TAG, "Failure opening seed file");
@@ -83,8 +88,11 @@ public class SafeModeVariationsSeedContentProvider extends ContentProvider {
 
     private Boolean awaitSeedResults() {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        VariationsSeedHolder.getInstance().hasSeedUpdateCompletedAsync(
-                () -> { countDownLatch.countDown(); });
+        VariationsSeedHolder.getInstance()
+                .hasSeedUpdateCompletedAsync(
+                        () -> {
+                            countDownLatch.countDown();
+                        });
         try {
             return countDownLatch.await(TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {

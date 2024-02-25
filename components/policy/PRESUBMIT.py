@@ -22,10 +22,11 @@ import pyyaml
 
 _CACHED_FILES = {}
 _CACHED_POLICY_CHANGE_LIST = []
+_CACHED_POLICY_DEFINITION_MAP = {}
 
 _COMPONENTS_POLICY_PATH = os.path.join('components', 'policy')
 _TEST_CASES_DEPOT_PATH = os.path.join(
-    _COMPONENTS_POLICY_PATH, 'test' , 'data', 'policy_test_cases.json')
+    _COMPONENTS_POLICY_PATH, 'test' , 'data', 'pref_mapping')
 _PRESUBMIT_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'PRESUBMIT.py')
 _TOOLS_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'tools')
 _SYNTAX_CHECK_SCRIPT_PATH = os.path.join(_TOOLS_PATH,
@@ -36,8 +37,8 @@ _MESSAGES_PATH = os.path.join(_TEMPLATES_PATH, 'messages.yaml')
 _COMMON_SCHEMAS_PATH = os.path.join(_TEMPLATES_PATH, 'common_schemas.yaml')
 _POLICIES_DEFINITIONS_PATH = os.path.join(_TEMPLATES_PATH, 'policy_definitions')
 _POLICIES_YAML_PATH = os.path.join(_TEMPLATES_PATH, 'policies.yaml')
-_HISTOGRAMS_PATH = os.path.join(
-      'tools', 'metrics', 'histograms', 'enums.xml')
+_ENUMS_PATH = os.path.join(
+      'tools', 'metrics', 'histograms', 'metadata', 'enterprise', 'enums.xml')
 _DEVICE_POLICY_PROTO_PATH = os.path.join(
       _COMPONENTS_POLICY_PATH, 'proto', 'chrome_device_policy.proto')
 _DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
@@ -52,6 +53,14 @@ _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
 # device policy, but be aware that too heavy policies could result in user
 # profiles not having enough space on the device.
 TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE = 1024 * 1024 * 100
+
+
+def _SafeListDir(directory):
+  '''Wrapper around os.listdir() that ignores files created by Finder.app.'''
+  # On macOS, Finder.app creates .DS_Store files when a user visit a
+  # directory causing failure of the script laters on because there
+  # are no such group as .DS_Store. Skip the file to prevent the error.
+  return filter(lambda name:(name != '.DS_Store'),os.listdir(directory))
 
 
 def _SkipPresubmitChecks(input_api, files_watchlist):
@@ -114,12 +123,29 @@ def _GetCurrentVersion(input_api):
   return _CACHED_FILES['version']
 
 
+def _GetPolicyDefinitionMap(input_api):
+  '''Returns a dict of policy definitions as they are in this changelist.
+     Args:
+       input_api
+     Returns:
+       Dictionary of policies loaded from their yaml files with the policy name
+       as the key.
+  '''
+  global _CACHED_POLICY_DEFINITION_MAP
+  if not _CACHED_POLICY_DEFINITION_MAP:
+    policy_definitions = GetPolicyTemplates()['policy_definitions']
+    _CACHED_POLICY_DEFINITION_MAP = \
+        {policy['name']: policy for policy in policy_definitions}
+
+  return _CACHED_POLICY_DEFINITION_MAP
+
+
 def _GetUnchangedPolicyList(input_api):
   '''Returns a list of policies NOT modified in the changelist
      Args:
        input_api
-      Returns:
-        The list of policies loaded from their yaml files with the 'name' added.
+     Returns:
+       The list of policies loaded from their yaml files with the 'name' added.
   '''
   changed_policy_names = {
       policy['policy'] for policy in _GetPolicyChangeList(input_api)
@@ -143,15 +169,16 @@ def _GetUnchangedPolicyList(input_api):
     results.append(policy)
   return results
 
+
 def _GetPolicyChangeList(input_api):
   '''Returns a list of policies modified in the changelist with their old schema
      next to their new schemas.
      Args:
        input_api
-      Returns:
-        object with the following schema:
-        { 'name': 'string', 'old_policy': dict, 'new_policy': dict }
-        The policies are the values loaded from their yaml files.
+     Returns:
+       List of objects with the following schema:
+       { 'name': 'string', 'old_policy': dict, 'new_policy': dict }
+       The policies are the values loaded from their yaml files.
   '''
   if _CACHED_POLICY_CHANGE_LIST:
     return _CACHED_POLICY_CHANGE_LIST
@@ -172,7 +199,9 @@ def _GetPolicyChangeList(input_api):
     filename = os.path.basename(path)
     policy_name = os.path.splitext(filename)[0]
     if (filename == '.group.details.yaml' or
-        filename == 'policy_atomic_groups.yaml'):
+        filename == 'policy_atomic_groups.yaml' or
+        filename == 'OWNERS' or
+        filename == 'DIR_METADATA'):
       continue
     old_policy = None
     new_policy = None
@@ -215,6 +244,27 @@ def _GetPolicyChangeList(input_api):
   return _CACHED_POLICY_CHANGE_LIST
 
 
+def _IsPolicyUnsupported(input_api, policy):
+  '''Returns true if `policy` is unsupported on the current Chrome version on
+     all platforms. These policies may not have any prefs and tests associated
+     with them.'''
+  if len(policy.get('future_on', [])) > 0:
+    # If the policy will be released in the future, it is supported.
+    return False
+
+  current_version = _GetCurrentVersion(input_api)
+  policy_platforms = _GetPlatformSupportMap(policy)
+  for _, supported_versions in policy_platforms.items():
+    if not supported_versions['to']:
+      # Policy doesn't have an end of support version.
+      return False
+
+    if supported_versions['to'] >= current_version:
+      return False
+
+  return True
+
+
 def CheckPolicyTestCases(input_api, output_api):
   '''Verifies that the all defined policies have a test case.
   This is ran when policy_test_cases.json, policies.yaml or this PRESUBMIT.py
@@ -223,38 +273,47 @@ def CheckPolicyTestCases(input_api, output_api):
   results = []
   if _SkipPresubmitChecks(
       input_api,
-      [_TEST_CASES_DEPOT_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
+      [_TEST_CASES_DEPOT_PATH, _POLICIES_YAML_PATH, _POLICIES_DEFINITIONS_PATH,
+       _PRESUBMIT_PATH]):
     return results
 
-  # Read list of policies in components/policy/test/data/policy_test_cases.json.
   root = input_api.change.RepositoryRoot()
-  with open(os.path.join(root, _TEST_CASES_DEPOT_PATH), encoding='utf-8') as f:
-    test_names = input_api.json.load(f).keys()
-  tested_policies = frozenset(name.partition('.')[0]
-                              for name in test_names
-                              if name[:2] != '--')
+
+  # Gather expected test files
   policies_yaml = _LoadYamlFile(root, _POLICIES_YAML_PATH)
   policies = policies_yaml['policies']
-  policy_names = frozenset(name for name in policies.values() if name)
+  policy_names = set(name for name in policies.values() if name)
 
-  # Finally check if any policies are missing.
-  missing = policy_names - tested_policies
+  test_case_depot_path = os.path.join(
+    root, _TEST_CASES_DEPOT_PATH)
+
+  # Gather actual test files
+  tested_policies = set()
+  for file in _SafeListDir(test_case_depot_path):
+    filename = os.fsdecode(file)
+    policy_name = os.path.splitext(filename)[0]
+    tested_policies.add(policy_name)
+
+  # Finally check if any policies or tests are missing.
+  policies_with_missing_tests = policy_names - tested_policies
   extra = tested_policies - policy_names
-  error_missing = ("Policy '%s' was added to "
-                   "//components/policy/resources/templates/policy_definitions/"
-                   " but not to "
-                   "//components/policy/test/data/policy_test_cases.json. "
-                   "Please update both places.")
-  error_extra = ("Policy '%s' is tested by "
-                 "//components/policy/test/policy_test_cases.json but is not"
-                 " defined in "
-                 "//components/policy/resources/templates/policy_definitions/."
-                 " Please update both places.")
+  error_missing = ("Policy '%s' is declared but its test file '%s' was not "
+                  "found. Please update the test accordingly.")
+  error_extra = ("Policy '%s' is tested at '%s' but its policy definition was "
+                 "not found. Please update the policy definition accordingly.")
   results = []
-  for policy in missing:
-    results.append(output_api.PresubmitError(error_missing % policy))
+  for policy in policies_with_missing_tests:
+    policy_definition = _GetPolicyDefinitionMap(input_api).get(policy, {})
+    if _IsPolicyUnsupported(input_api, policy_definition):
+      # Unsupported policies won't have tests.
+      continue
+    results.append(output_api.PresubmitError(
+      error_missing % (
+        policy, os.path.join(test_case_depot_path, f'{policy}.json'))))
   for policy in extra:
-    results.append(output_api.PresubmitError(error_extra % policy))
+    results.append(output_api.PresubmitError(
+      error_extra % (
+        policy, os.path.join(test_case_depot_path, f'{policy}.json'))))
 
   results.extend(
       input_api.canned_checks.CheckChangeHasNoTabs(
@@ -269,12 +328,12 @@ def CheckPolicyHistograms(input_api, output_api):
   results = []
   if _SkipPresubmitChecks(
       input_api,
-      [_HISTOGRAMS_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
+      [_ENUMS_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
     return results
 
   root = input_api.change.RepositoryRoot()
 
-  with open(os.path.join(root, _HISTOGRAMS_PATH), encoding='utf-8') as f:
+  with open(os.path.join(root, _ENUMS_PATH), encoding='utf-8') as f:
     tree = minidom.parseString(f.read())
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
@@ -290,17 +349,13 @@ def CheckPolicyHistograms(input_api, output_api):
   missing_ids = policy_ids - policy_enum_ids
   extra_ids = policy_enum_ids - policy_ids
 
-  error_missing = ("Policy '%s' (id %d) was added to "
-                   "policy_templates.json but not to "
-                   "src/tools/metrics/histograms/enums.xml. Please update "
-                   "both files. To regenerate the policy part of enums.xml, "
-                   "run:\n"
-                   "python tools/metrics/histograms/update_policies.py")
-  error_extra = ("Policy id %d was found in "
-                 "src/tools/metrics/histograms/enums.xml, but no policy with "
-                 "this id exists in policy_templates.json. To regenerate the "
-                 "policy part of enums.xml, run:\n"
-                 "python tools/metrics/histograms/update_policies.py")
+  error_common = ("To regenerate the policy part of enums.xml, run:\n"
+                  "python3 tools/metrics/histograms/update_policies.py")
+  error_missing = (f"Policy '%s' (id %d) was added to policy_templates.json "
+                   f"but not to {_ENUMS_PATH}. Please update both files. "
+                   f"{error_common}")
+  error_extra = (f"Policy id %d was found in {_ENUMS_PATH}, but no policy with "
+                 f"this id exists in policy_templates.json. {error_common}")
   results = []
   for policy_id in missing_ids:
     results.append(
@@ -308,58 +363,6 @@ def CheckPolicyHistograms(input_api, output_api):
                                   (policies[policy_id], policy_id)))
   for policy_id in extra_ids:
     results.append(output_api.PresubmitError(error_extra % policy_id))
-  return results
-
-
-def CheckPolicyAtomicGroupsHistograms(input_api, output_api):
-  '''Verifies that the all policy atomic groups have a histogram entry.
-  This is ran when policies.yaml, tools/metrics/histograms/enums.xml or this
-  PRESUBMIT.py file are modified.
-  '''
-  results = []
-  if _SkipPresubmitChecks(
-      input_api,
-      [_HISTOGRAMS_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
-    return results
-
-  root = input_api.change.RepositoryRoot()
-
-  with open(os.path.join(root, _HISTOGRAMS_PATH), encoding='utf-8') as f:
-    tree = minidom.parseString(f.read())
-  enums = (tree.getElementsByTagName('histogram-configuration')[0]
-               .getElementsByTagName('enums')[0]
-               .getElementsByTagName('enum'))
-  atomic_group_enum = [e for e in enums
-                 if e.getAttribute('name') == 'PolicyAtomicGroups'][0]
-  atomic_group_enum_ids = frozenset(int(e.getAttribute('value'))
-                              for e in atomic_group_enum
-                                .getElementsByTagName('int'))
-  policies_yaml = _LoadYamlFile(root, _POLICIES_YAML_PATH)
-  atomic_groups = policies_yaml['atomic_groups']
-  atomic_group_ids = frozenset(
-    [id for id, name in atomic_groups.items() if name])
-
-  missing_ids = atomic_group_ids - atomic_group_enum_ids
-  extra_ids = atomic_group_enum_ids - atomic_group_ids
-
-  error_missing = ("Policy atomic group '%s' (id %d) was added to "
-                   "policy_templates.json but not to "
-                   "src/tools/metrics/histograms/enums.xml. Please update "
-                   "both files. To regenerate the policy part of enums.xml, "
-                   "run:\n"
-                   "python tools/metrics/histograms/update_policies.py")
-  error_extra = ("Policy atomic group id %d was found in "
-                 "src/tools/metrics/histograms/enums.xml, but no policy with "
-                 "this id exists in policy_templates.json. To regenerate the "
-                 "policy part of enums.xml, run:\n"
-                 "python tools/metrics/histograms/update_policies.py")
-  results = []
-  for atomic_group_id in missing_ids:
-    results.append(output_api.PresubmitError(error_missing %
-                              (atomic_groups[atomic_group_id],
-                              atomic_group_id)))
-  for atomic_group_id in extra_ids:
-    results.append(output_api.PresubmitError(error_extra % atomic_group_id))
   return results
 
 
@@ -638,7 +641,8 @@ def CheckPoliciesYamlOrdering(input_api, output_api):
     return results
 
   root = input_api.change.RepositoryRoot()
-  with open(os.path.join(root, _POLICIES_YAML_PATH), 'r', encoding='utf-8') as f:
+  with open(os.path.join(root, _POLICIES_YAML_PATH),
+            'r', encoding='utf-8') as f:
     policies_yaml_lines = f.readlines()
 
   previous_id = 0
@@ -765,12 +769,12 @@ def CheckDevicePolicies(input_api, output_api):
   root = input_api.change.RepositoryRoot()
   policy_changelist = _GetPolicyChangeList(input_api)
   if not any(policy_change['new_policy'].get('device_only', False)
-             and policy_change['new_policy']['type'] == 'external'
+             or policy_change['new_policy']['type'] == 'external'
              for policy_change in policy_changelist
              if policy_change['new_policy'] != None):
     return results
 
-  policy_definitions = GetPolicyTemplates()['policy_definitions']
+  policy_definitions = list(_GetPolicyDefinitionMap(input_api).values())
 
   proto_map = _LoadYamlFile(root, _DEVICE_POLICY_PROTO_MAP_PATH)
   legacy_proto_map = _LoadYamlFile(root, _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH)
@@ -796,6 +800,23 @@ def CheckDevicePolicies(input_api, output_api):
       results.append(output_api.PresubmitError(
           f"Please add '{policy_name}' to device_policy_proto_map.yaml and map "
           "it to the corresponding field in chrome_device_policy.proto."))
+
+  # Check that the proto field is equal to the policy name for new policies
+  for policy_change in policy_changelist:
+    if not policy_change['new_policy'].get('device_only', False):
+      continue
+    if ('old_policy' in policy_change and
+        policy_change['old_policy'] is not None):
+      # Ignore existing policies
+      continue
+    policy_name = policy_change['policy']
+
+    field_name = policy_name + ".value"
+
+    if proto_map[policy_name] != field_name:
+      results.append(output_api.PresubmitError(
+        f"The proto field in chrome_device_policy.proto for '{policy_name}' "
+        "must equal the policy name itself."))
 
   # Check external data max size
   total_device_policy_external_data_max_size = 0

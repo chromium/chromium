@@ -182,8 +182,7 @@ void VizMainImpl::CreateGpuService(
     mojo::PendingRemote<
         discardable_memory::mojom::DiscardableSharedMemoryManager>
         discardable_memory_manager,
-    base::UnsafeSharedMemoryRegion use_shader_cache_shm_region,
-    gfx::FontRenderParams::SubpixelRendering subpixel_rendering) {
+    base::UnsafeSharedMemoryRegion use_shader_cache_shm_region) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
 
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
@@ -212,10 +211,6 @@ void VizMainImpl::CreateGpuService(
         discardable_shared_memory_manager_.get());
   }
 
-  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
-      gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
-          subpixel_rendering));
-
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),
       gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
@@ -231,6 +226,13 @@ void VizMainImpl::CreateGpuService(
   }
   if (delegate_)
     delegate_->OnGpuServiceConnection(gpu_service_.get());
+}
+
+void VizMainImpl::SetSubpixelRendering(
+    gfx::FontRenderParams::SubpixelRendering subpixel_rendering) {
+  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
+      gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+          subpixel_rendering));
 }
 
 #if BUILDFLAG(IS_WIN)

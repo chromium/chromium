@@ -42,7 +42,7 @@ inline const ComputedStyle* Node::GetComputedStyle() const {
   return nullptr;
 }
 
-inline const ComputedStyle& Node::ComputedStyleRef() const {
+inline const ComputedStyle& Element::ComputedStyleRef() const {
   const ComputedStyle* style = GetComputedStyle();
   DCHECK(style);
   return *style;

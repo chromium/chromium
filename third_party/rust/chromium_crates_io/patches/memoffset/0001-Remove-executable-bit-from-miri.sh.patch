@@ -1,0 +1,17 @@
+From 8b4c46ae7310ca0872566d73238891388e30317e Mon Sep 17 00:00:00 2001
+From: danakj <danakj@chromium.org>
+Date: Tue, 14 Nov 2023 15:58:45 -0500
+Subject: [PATCH] Remove executable bit from miri.sh
+
+Presubmit error: Has executable bit but not shebang or ELF or Mach-O header
+---
+ .../rust/chromium_crates_io/vendor/memoffset-0.6.5/ci/miri.sh     | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ mode change 100755 => 100644 third_party/rust/chromium_crates_io/vendor/memoffset-0.6.5/ci/miri.sh
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/memoffset-0.6.5/ci/miri.sh b/third_party/rust/chromium_crates_io/vendor/memoffset-0.6.5/ci/miri.sh
+old mode 100755
+new mode 100644
+-- 
+2.43.0.rc0.421.g78406f8d94-goog
+

@@ -113,10 +113,11 @@ bool FakeNetwork::HandleRequest(URLLoaderInterceptor::RequestParams* params) {
   producer_handle->WriteData(response_info.body.data(), &bytes_written,
                              MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
   client->OnReceiveResponse(std::move(response), std::move(consumer_handle),
-                            absl::nullopt);
+                            std::nullopt);
 
   network::URLLoaderCompletionStatus status;
   status.error_code = response_info.error_code;
+  status.decoded_body_length = response_info.body.size();
   client->OnComplete(status);
   return true;
 }

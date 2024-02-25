@@ -55,7 +55,7 @@ class BorealisApps
   void OnPermissionChanged();
 
   // Re-create borealis' "special apps", called when one of the preferences
-  // which control these changes (i.e for insert_coin, install and uninstall).
+  // which control these changes (i.e for install and uninstall).
   void RefreshSpecialApps();
 
   // GuestOsApps overrides.

@@ -13,18 +13,19 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
-#include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 
 namespace media_router {
 
-SinkIconType GetCastSinkIconType(uint8_t capabilities) {
-  if (capabilities & cast_channel::CastDeviceCapability::VIDEO_OUT)
+SinkIconType GetCastSinkIconType(
+    cast_channel::CastDeviceCapabilitySet capabilities) {
+  if (capabilities.Has(cast_channel::CastDeviceCapability::kVideoOut)) {
     return SinkIconType::CAST;
+  }
 
-  return capabilities & cast_channel::CastDeviceCapability::MULTIZONE_GROUP
+  return capabilities.Has(cast_channel::CastDeviceCapability::kMultizoneGroup)
              ? SinkIconType::CAST_AUDIO_GROUP
              : SinkIconType::CAST_AUDIO;
 }
@@ -63,11 +64,14 @@ CreateCastMediaSinkResult CreateCastMediaSink(const DnsSdService& service,
   extra_data.ip_endpoint =
       net::IPEndPoint(ip_address, service.service_host_port.port());
   extra_data.model_name = service_data["md"];
-  extra_data.capabilities = cast_channel::CastDeviceCapability::NONE;
 
-  unsigned capacities;
-  if (base::StringToUint(service_data["ca"], &capacities))
-    extra_data.capabilities = capacities;
+  {
+    uint64_t capabilities = 0;
+    if (base::StringToUint64(service_data["ca"], &capabilities)) {
+      extra_data.capabilities =
+          cast_channel::CastDeviceCapabilitySet::FromEnumBitmask(capabilities);
+    }
+  }
 
   std::string processed_uuid = MediaSinkInternal::ProcessDeviceUUID(unique_id);
   std::string sink_id = base::StringPrintf("cast:%s", processed_uuid.c_str());

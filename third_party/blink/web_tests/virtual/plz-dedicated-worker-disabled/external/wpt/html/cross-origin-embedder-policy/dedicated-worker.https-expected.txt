@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] COEP: require-corp worker in COEP: none frame
+  assert_equals: expected "FAILED" but got "LOADED"
+[FAIL] COEP: require-corp module worker in COEP: none frame
+  assert_equals: expected "FAILED" but got "LOADED"
+[FAIL] COEP: worker inherits COEP from blob URL creator, not owner.
+  assert_equals: expected "FAILED" but got "LOADED"
+[FAIL] COEP: worker inherits COEP for filesystem URL.
+  assert_unreached: Worker.onerror should not be called Reached unreachable code
+[FAIL] COEP: worker inherits COEP from filesystem URL creator, not owner.
+  assert_equals: expected "FAILED" but got "LOADED"
+Harness: the test ran to completion.
+

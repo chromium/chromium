@@ -5,14 +5,17 @@
 #include "chrome/browser/ui/views/autofill/payments/autofill_progress_dialog_views.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
@@ -24,7 +27,7 @@
 namespace autofill {
 
 AutofillProgressDialogViews::AutofillProgressDialogViews(
-    AutofillProgressDialogController* controller)
+    base::WeakPtr<AutofillProgressDialogController> controller)
     : controller_(controller) {
   SetButtons(ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_->GetCancelButtonLabel());
@@ -82,16 +85,6 @@ AutofillProgressDialogViews::~AutofillProgressDialogViews() {
   }
 }
 
-// static
-AutofillProgressDialogView* AutofillProgressDialogView::CreateAndShow(
-    AutofillProgressDialogController* controller) {
-  AutofillProgressDialogViews* dialog_view =
-      new AutofillProgressDialogViews(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view,
-                                              controller->GetWebContents());
-  return dialog_view;
-}
-
 void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
                                           bool is_canceled_by_user) {
   is_canceled_by_user_ = is_canceled_by_user;
@@ -101,9 +94,13 @@ void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
   // true implies that the user did not cancel the dialog, as it is only set to
   // true once this step in the current flow is completed without any user
   // interaction.
-  if (show_confirmation_before_closing) {
+  if (show_confirmation_before_closing && controller_) {
     progress_throbber_->Stop();
     label_->SetText(controller_->GetConfirmationMessage());
+    // For accessibility consideration, announce the confirmation message when
+    // unmasking is finished.
+    label_->GetViewAccessibility().AnnouncePolitely(
+        controller_->GetConfirmationMessage());
     progress_throbber_->SetChecked(true);
     GetBubbleFrameView()->SetTitleView(
         CreateTitleView(controller_->GetConfirmationTitle(),
@@ -120,6 +117,15 @@ void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
   CloseWidget();
 }
 
+void AutofillProgressDialogViews::InvalidateControllerForCallbacks() {
+  controller_ = nullptr;
+}
+
+base::WeakPtr<AutofillProgressDialogView>
+AutofillProgressDialogViews::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void AutofillProgressDialogViews::AddedToWidget() {
   DCHECK(progress_throbber_);
   progress_throbber_->Start();
@@ -128,12 +134,8 @@ void AutofillProgressDialogViews::AddedToWidget() {
       GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
-void AutofillProgressDialogViews::InvalidateControllerForCallbacks() {
-  controller_ = nullptr;
-}
-
 std::u16string AutofillProgressDialogViews::GetWindowTitle() const {
-  return controller_->GetLoadingTitle();
+  return controller_ ? controller_->GetLoadingTitle() : u"";
 }
 
 void AutofillProgressDialogViews::CloseWidget() {
@@ -142,6 +144,15 @@ void AutofillProgressDialogViews::CloseWidget() {
 
 void AutofillProgressDialogViews::OnDialogCanceled() {
   is_canceled_by_user_ = true;
+}
+
+base::WeakPtr<AutofillProgressDialogView> CreateAndShowProgressDialog(
+    base::WeakPtr<AutofillProgressDialogController> controller,
+    content::WebContents* web_contents) {
+  AutofillProgressDialogViews* dialog_view =
+      new AutofillProgressDialogViews(controller);
+  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  return dialog_view->GetWeakPtr();
 }
 
 }  // namespace autofill

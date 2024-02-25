@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image text:"x" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {alt="x"}, {height="200"}, {sizes="100vw"}, {src="./200.jpg"}, {srcset="./200.jpg 200w,./400.jpg 400w"}, {width="200"}]
+++++Image text:"  " textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {alt=" "}, {height="200"}, {sizes="100vw"}, {src="./200.jpg"}, {srcset="./200.jpg 200w,./400.jpg 400w"}, {width="200"}]
+++++Image text:"400" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {height="200"}, {sizes="100vw"}, {src="./200.jpg"}, {srcset="./200.jpg 200w,./400.jpg 400w"}, {width="200"}]

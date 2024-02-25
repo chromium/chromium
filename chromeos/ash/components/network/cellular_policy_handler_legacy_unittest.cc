@@ -87,7 +87,7 @@ void CheckShillConfiguration(bool is_installed) {
 
 std::string GenerateCellularPolicy(
     const std::string& smdp_address,
-    absl::optional<std::string> iccid = absl::nullopt) {
+    std::optional<std::string> iccid = std::nullopt) {
   if (!iccid) {
     return base::StringPrintf(
         R"({"GUID": "%s", "Type": "Cellular",
@@ -215,11 +215,10 @@ class CellularPolicyHandlerLegacyTest : public testing::Test {
                          const std::string& activation_code,
                          bool expect_install_success,
                          bool auto_connect = false) {
-    absl::optional<base::Value::Dict> policy =
+    std::optional<base::Value::Dict> policy =
         chromeos::onc::ReadDictionaryFromJson(onc_json);
     ASSERT_TRUE(policy.has_value());
     cellular_policy_handler_->InstallESim(activation_code, *policy);
-    FastForwardProfileRefreshDelay();
     base::RunLoop().RunUntilIdle();
 
     if (!expect_install_success) {
@@ -346,6 +345,12 @@ class CellularPolicyHandlerLegacyTest : public testing::Test {
 };
 
 TEST_F(CellularPolicyHandlerLegacyTest, InstallProfileSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
@@ -366,6 +371,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, InstallProfileSuccess) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, InstallWaitForDeviceState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
   ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
   base::RunLoop().RunUntilIdle();
@@ -392,6 +403,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, InstallWaitForDeviceState) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, InstallWaitForEuicc) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
@@ -414,6 +431,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, InstallWaitForEuicc) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, RetryInstallProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
 
   const std::string policy =
@@ -485,6 +508,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, RetryInstallProfile) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, InstallProfileFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
 
   // Make the first installation attempt fail, resulting in an immediate retry
@@ -528,7 +557,10 @@ TEST_F(CellularPolicyHandlerLegacyTest, InstallOnSecondEUICC) {
   // Verify esim profile get installed successfully when installing policy
   // on the external EUICC.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCellularUseSecondEuicc);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kCellularUseSecondEuicc},
+      /*disabled_features=*/{features::kSmdsSupport});
+
   SetupEuicc2();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
@@ -544,6 +576,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, InstallOnSecondEUICC) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, InstallNoEUICCAvailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
   // Verify esim profile doesn't get installed when installing policy esim
   // with no available EUICC.
@@ -563,6 +601,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, InstallNoEUICCAvailable) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, UpdateSMDPAddress) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
   // Verify that the first request should be invalidated when the second
   // request is queued.
@@ -584,6 +628,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, UpdateSMDPAddress) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, InstallExistingESimProfileSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
   SetupESimProfile();
 
@@ -602,6 +652,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, InstallExistingESimProfileSuccess) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, InstallExistingESimProfileFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
   SetupESimProfile();
   ShillManagerClient::Get()->GetTestInterface()->SetSimulateConfigurationResult(
@@ -622,6 +678,12 @@ TEST_F(CellularPolicyHandlerLegacyTest, InstallExistingESimProfileFailure) {
 }
 
 TEST_F(CellularPolicyHandlerLegacyTest, NoInternetConnection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kCellularUseSecondEuicc,
+                             features::kSmdsSupport});
+
   SetupEuicc();
   auto* shill_service = ShillServiceClient::Get()->GetTestInterface();
   shill_service->ClearServices();

@@ -16,6 +16,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -72,8 +73,9 @@ void ClientGpuMemoryBufferManager::TearDownThread() {
 void ClientGpuMemoryBufferManager::DisconnectGpuOnThread() {
   gpu_.reset();
   gpu_direct_.reset();
-  for (auto* waiter : pending_allocation_waiters_)
+  for (base::WaitableEvent* waiter : pending_allocation_waiters_) {
     waiter->Signal();
+  }
   pending_allocation_waiters_.clear();
 }
 
@@ -222,12 +224,14 @@ bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
   CopyGpuMemoryBufferAsync(
       std::move(buffer_handle), std::move(memory_region),
-      base::BindOnce(
-          [](base::WaitableEvent* event, bool* result_ptr, bool result) {
-            *result_ptr = result;
-            event->Signal();
-          },
-          &event, &mapping_result));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              [](base::WaitableEvent* event, bool* result_ptr, bool result) {
+                *result_ptr = result;
+                event->Signal();
+              },
+              &event, &mapping_result),
+          /*result=*/false));
   event.Wait();
   return mapping_result;
 }

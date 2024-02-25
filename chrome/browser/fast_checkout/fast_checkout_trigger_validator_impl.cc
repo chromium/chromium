@@ -5,7 +5,6 @@
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
-#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -32,13 +31,6 @@ FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
   LogAutofillInternals(
       "Start of checking whether a Fast Checkout run should be permitted.");
 
-  // Trigger only on supported platforms.
-  if (!base::FeatureList::IsEnabled(::features::kFastCheckout)) {
-    LogAutofillInternals(
-        "not triggered because FastCheckout flag is disabled.");
-    return FastCheckoutTriggerOutcome::kUnsupportedFieldType;
-  }
-
   // Trigger only if there is no ongoing run.
   if (is_running) {
     LogAutofillInternals(
@@ -58,6 +50,11 @@ FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
   // Trigger only if the form is a trigger form for Fast Checkout.
   if (!IsTriggerForm(form, field)) {
     return FastCheckoutTriggerOutcome::kUnsupportedFieldType;
+  }
+
+  if (autofill_client_->GetVariationConfigCountryCode() !=
+      GeoIpCountryCode("US")) {
+    return FastCheckoutTriggerOutcome::kUnsupportedCountry;
   }
 
   // UMA drop out metrics are recorded after this point only to avoid collecting
@@ -130,7 +127,7 @@ FastCheckoutTriggerValidatorImpl::HasValidPersonalData() const {
     return FastCheckoutTriggerOutcome::kFailureAutofillProfileDisabled;
   }
 
-  if (!pdm->IsAutofillCreditCardEnabled()) {
+  if (!pdm->IsAutofillPaymentMethodsEnabled()) {
     LogAutofillInternals(
         "not triggered because Autofill credit card is disabled.");
     return FastCheckoutTriggerOutcome::kFailureAutofillCreditCardDisabled;

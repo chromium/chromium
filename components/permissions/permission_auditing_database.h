@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_AUDITING_DATABASE_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_AUDITING_DATABASE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_usage_session.h"
 #include "sql/database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace base {
@@ -61,7 +61,7 @@ class PermissionAuditingDatabase {
   // Returns when the given permission `type` was last used on a given `origin`.
   // Returns nullopt if no permission usages match the given constraints. The
   // `origin` must not be opaque.
-  absl::optional<base::Time> GetLastPermissionUsageTime(
+  std::optional<base::Time> GetLastPermissionUsageTime(
       ContentSettingsType type,
       const url::Origin& origin);
 

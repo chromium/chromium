@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerenderer_impl.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
@@ -63,6 +64,16 @@ class PrerendererTest : public RenderViewHostTestHarness {
     candidate->action = blink::mojom::SpeculationAction::kPrerender;
     candidate->url = url;
     candidate->referrer = blink::mojom::Referrer::New();
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+    return candidate;
+  }
+
+  blink::mojom::SpeculationCandidatePtr CreatePrerenderCandidateWithEagerness(
+      const GURL& url,
+      blink::mojom::SpeculationEagerness eagerness) {
+    blink::mojom::SpeculationCandidatePtr candidate =
+        CreatePrerenderCandidate(url);
+    candidate->eagerness = eagerness;
     return candidate;
   }
 
@@ -115,6 +126,53 @@ TEST_F(PrerendererTest, ProcessFirstSameOriginPrerenderCandidate) {
       registry->FindHostByUrlForTesting(kSecondPrerenderingUrlSameOrigin));
 }
 
+class PrerenderHostRegistryObserver : public PrerenderHostRegistry::Observer {
+ public:
+  explicit PrerenderHostRegistryObserver(
+      PrerenderHostRegistry* prerender_host_registry) {
+    observation_.Observe(prerender_host_registry);
+  }
+
+  void OnTrigger(const GURL& url) override { trigger_sequence_.push_back(url); }
+
+  void OnRegistryDestroyed() override { observation_.Reset(); }
+
+  const std::vector<GURL>& GetTriggerSequence() { return trigger_sequence_; }
+
+ private:
+  base::ScopedObservation<PrerenderHostRegistry,
+                          PrerenderHostRegistry::Observer>
+      observation_{this};
+
+  std::vector<GURL> trigger_sequence_;
+};
+
+// Test that ProcessCandidatesForPrerender will trigger candidates in the same
+// order as the input of the candidate list (crbug.com/1505301).
+TEST_F(PrerendererTest, TriggerPrerenderWithInsertionOrder) {
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistryObserver observer{registry};
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
+
+  std::vector<GURL> urls = {
+      GetSameOriginUrl("/empty.html?a"),
+      GetSameOriginUrl("/empty.html?c"),
+      GetSameOriginUrl("/empty.html?b"),
+  };
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  for (const auto& url : urls) {
+    candidates.push_back(CreatePrerenderCandidate(url));
+  }
+
+  prerenderer.ProcessCandidatesForPrerender(std::move(candidates));
+
+  for (const auto& url : urls) {
+    ASSERT_TRUE(registry->FindHostByUrlForTesting(url));
+  }
+  EXPECT_EQ(observer.GetTriggerSequence(), urls);
+}
+
 // Tests that Prerenderer will remove the rendered host, if the url is removed
 // from candidates list.
 TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
@@ -141,6 +199,73 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
       std::vector<blink::mojom::SpeculationCandidatePtr>{});
   EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[0]));
   EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[1]));
+}
+
+class PrerendererNewLimitAndSchedulerTest : public PrerendererTest {
+ public:
+  PrerendererNewLimitAndSchedulerTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrerender2NewLimitAndScheduler,
+          {{"max_num_of_running_speculation_rules_non_eager_prerenders",
+            base::NumberToString(
+                MaxNumOfRunningSpeculationRulesNonEagerPrerenders())}}}},
+        {});
+  }
+
+  int MaxNumOfRunningSpeculationRulesNonEagerPrerenders() { return 2; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that Prerenderer will remove the host if the host is canceled with
+// non-eager limit, and the canceled host can be reprocessed.
+TEST_F(PrerendererNewLimitAndSchedulerTest,
+       RemoveRendererHostAfterNonEagerLimitCancel) {
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
+
+  std::vector<GURL> urls;
+
+  // Prerender as many times as limit + 1. All prerenders should be started
+  // once.
+  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+       i++) {
+    const GURL url = GetSameOriginUrl("/empty.html?" + base::ToString(i));
+    urls.push_back(url);
+    blink::mojom::SpeculationCandidatePtr candidate =
+        CreatePrerenderCandidateWithEagerness(
+            url, blink::mojom::SpeculationEagerness::kConservative);
+    prerenderer.MaybePrerender(std::move(candidate));
+
+    EXPECT_TRUE(registry->FindHostByUrlForTesting(url));
+  }
+
+  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+       i++) {
+    if (i == 0) {
+      // The first (= oldest) prerender should be removed since the (limit +
+      // 1)-th prerender was started.
+      EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[i]));
+    } else {
+      EXPECT_TRUE(registry->FindHostByUrlForTesting(urls[i]));
+    }
+  }
+
+  // Retrigger canceled host. It should be started and instead the second oldest
+  // prerender should be canceled.
+  blink::mojom::SpeculationCandidatePtr candidate =
+      CreatePrerenderCandidateWithEagerness(
+          urls[0], blink::mojom::SpeculationEagerness::kConservative);
+  prerenderer.MaybePrerender(std::move(candidate));
+  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+       i++) {
+    if (i == 1) {
+      EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[i]));
+    } else {
+      EXPECT_TRUE(registry->FindHostByUrlForTesting(urls[i]));
+    }
+  }
 }
 
 // Tests that it is possible to start a prerender using MaybePrerender and

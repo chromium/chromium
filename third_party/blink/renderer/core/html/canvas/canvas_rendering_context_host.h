@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -27,9 +28,7 @@ class CanvasRenderingContext;
 class CanvasResource;
 class CanvasResourceDispatcher;
 class FontSelector;
-class ImageEncodeOptions;
 class KURL;
-class ScriptState;
 class StaticBitmapImage;
 
 class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
@@ -41,9 +40,9 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
     kCanvasHost,
     kOffscreenCanvasHost,
   };
-  explicit CanvasRenderingContextHost(HostType host_type);
+  CanvasRenderingContextHost(HostType host_type, const gfx::Size& size);
 
-  void RecordCanvasSizeToUMA(const gfx::Size&);
+  void RecordCanvasSizeToUMA();
 
   virtual void DetachContext() = 0;
 
@@ -51,12 +50,11 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   void DidDraw() { DidDraw(SkIRect::MakeWH(width(), height())); }
 
   virtual void PreFinalizeFrame() = 0;
-  virtual void PostFinalizeFrame(CanvasResourceProvider::FlushReason) = 0;
+  virtual void PostFinalizeFrame(FlushReason) = 0;
   virtual bool PushFrame(scoped_refptr<CanvasResource>&& frame,
                          const SkIRect& damage_rect) = 0;
   virtual bool OriginClean() const = 0;
   virtual void SetOriginTainted() = 0;
-  virtual const gfx::Size& Size() const = 0;
   virtual CanvasRenderingContext* RenderingContext() const = 0;
   virtual CanvasResourceDispatcher* GetOrCreateResourceDispatcher() = 0;
 
@@ -82,13 +80,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
 
   virtual UkmParameters GetUkmParameters() = 0;
 
-  // For deferred canvases this will have the side effect of drawing recorded
-  // commands in order to finalize the frame.
-  ScriptPromise convertToBlob(ScriptState*,
-                              const ImageEncodeOptions*,
-                              ExceptionState&,
-                              const CanvasRenderingContext* const context);
-
   bool IsPaintable() const;
 
   bool PrintedInCurrentTask() const final;
@@ -98,11 +89,12 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   int height() const { return Size().height(); }
 
   // Partial CanvasResourceHost implementation
-  void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const final;
+  void InitializeForRecording(cc::PaintCanvas*) const final;
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
       RasterModeHint hint) final;
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
+  void PageVisibilityChanged() override;
 
   bool IsWebGL() const;
   bool IsWebGPU() const;
@@ -125,6 +117,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   void CreateCanvasResourceProvider2D(RasterModeHint hint);
   void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();
+
+  bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
 
   // Computes the digest that corresponds to the "input" of this canvas,
   // including the context type, and if applicable, canvas digest, and taint

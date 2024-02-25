@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/range/range.h"
@@ -55,7 +55,7 @@ class TabStripController {
   virtual bool IsActiveTab(int index) const = 0;
 
   // Returns the index of the active tab, or nullopt if no tab is active.
-  virtual absl::optional<int> GetActiveIndex() const = 0;
+  virtual std::optional<int> GetActiveIndex() const = 0;
 
   // Returns true if the selected index is selected.
   virtual bool IsTabSelected(int index) const = 0;
@@ -123,7 +123,7 @@ class TabStripController {
   virtual int HasAvailableDragActions() const = 0;
 
   // Notifies controller of a drop index update.
-  virtual void OnDropIndexUpdate(absl::optional<int> index,
+  virtual void OnDropIndexUpdate(std::optional<int> index,
                                  bool drop_before) = 0;
 
   // Creates the new tab.
@@ -146,7 +146,7 @@ class TabStripController {
 
   // Notifies controller that the index of the tab with keyboard focus changed
   // to |index|.
-  virtual void OnKeyboardFocusedTabChanged(absl::optional<int> index) = 0;
+  virtual void OnKeyboardFocusedTabChanged(std::optional<int> index) = 0;
 
   // Returns the title of the given |group|.
   virtual std::u16string GetGroupTitle(
@@ -172,7 +172,7 @@ class TabStripController {
   // Gets the first tab index in |group|, or nullopt if the group is
   // currently empty. This is always safe to call unlike
   // ListTabsInGroup().
-  virtual absl::optional<int> GetFirstTabInGroup(
+  virtual std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const = 0;
 
   // Returns the range of tabs in the given |group|. This must not be
@@ -206,7 +206,7 @@ class TabStripController {
 
   // For non-transparent windows, returns the background tab image resource ID
   // if the image has been customized, directly or indirectly, by the theme.
-  virtual absl::optional<int> GetCustomBackgroundId(
+  virtual std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const = 0;
 
   // Returns the accessible tab name.

@@ -73,9 +73,7 @@ public abstract class ConnectedTask<T extends ChromeGoogleApiClient> implements 
      */
     protected abstract void doWhenConnected(T client);
 
-    /**
-     * Returns a name of a task (for debug logging).
-     */
+    /** Returns a name of a task (for debug logging). */
     @CheckDiscard("getName() is only for debug logging")
     protected abstract String getName();
 

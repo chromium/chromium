@@ -13,6 +13,9 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/viz/service/display_embedder/output_presenter.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "components/viz/service/viz_service_export.h"
@@ -32,7 +35,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       SkiaOutputSurfaceDependency* deps,
       gpu::SharedImageRepresentationFactory* representation_factory,
       gpu::MemoryTracker* memory_tracker,
-      const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback);
+      const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
+      const ReleaseOverlaysCallback& release_overlays_callback);
 
   ~SkiaOutputDeviceBufferQueue() override;
 
@@ -42,7 +46,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   // SkiaOutputDevice overrides.
   void Submit(bool sync_cpu, base::OnceClosure callback) override;
-  void Present(const absl::optional<gfx::Rect>& update_rect,
+  void Present(const std::optional<gfx::Rect>& update_rect,
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
   bool Reshape(const SkImageInfo& image_info,
@@ -58,14 +62,19 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   bool IsPrimaryPlaneOverlay() const override;
   void SchedulePrimaryPlane(
-      const absl::optional<
-          OverlayProcessorInterface::OutputSurfaceOverlayPlane>& plane)
-      override;
+      const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
+          plane) override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
 
   // SkiaOutputDevice override
-  void SetGpuVSyncEnabled(bool enabled) override;
   void SetVSyncDisplayID(int64_t display_id) override;
+
+  base::OneShotTimer& OverlaysReclaimTimerForTesting() {
+    return reclaim_overlays_timer_;
+  }
+  void SetSwapTimeClockForTesting(base::TickClock* clock) {
+    swap_time_clock_ = clock;
+  }
 
  private:
   friend class SkiaOutputDeviceBufferQueueTest;
@@ -84,6 +93,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
                            const base::WeakPtr<OutputPresenter::Image>& image,
                            std::vector<gpu::Mailbox> overlay_mailboxes,
                            gfx::SwapCompletionResult result);
+  void PostReleaseOverlays();
+  void ReleaseOverlays();
 
   gfx::Size GetSwapBuffersSize();
   bool RecreateImages();
@@ -149,6 +160,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // Whether |SchedulePrimaryPlane| needs to wait for a paint before scheduling
   // This works around an edge case for unpromoting fullscreen quads.
   bool primary_plane_waiting_on_paint_ = false;
+
+  bool has_overlays_scheduled_but_swap_not_finished_ = false;
+  raw_ptr<const base::TickClock> swap_time_clock_ =
+      base::DefaultTickClock::GetInstance();
+  base::TimeTicks last_swap_time_;
+  base::OneShotTimer reclaim_overlays_timer_;
+  static constexpr base::TimeDelta kDelayForOverlaysReclaim = base::Seconds(1);
 };
 
 }  // namespace viz

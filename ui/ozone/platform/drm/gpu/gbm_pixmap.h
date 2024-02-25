@@ -54,7 +54,7 @@ class GbmPixmap : public gfx::NativePixmap {
  private:
   ~GbmPixmap() override;
 
-  const raw_ptr<GbmSurfaceFactory, ExperimentalAsh> surface_manager_;
+  const raw_ptr<GbmSurfaceFactory> surface_manager_;
   const std::unique_ptr<GbmBuffer> buffer_;
   const scoped_refptr<DrmFramebuffer> framebuffer_;
 };

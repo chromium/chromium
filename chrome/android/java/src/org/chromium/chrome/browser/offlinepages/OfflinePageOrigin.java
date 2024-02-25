@@ -25,9 +25,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-/**
- * Class encapsulating the application origin of a particular offline page request.
- */
+/** Class encapsulating the application origin of a particular offline page request. */
 public class OfflinePageOrigin {
     private final String mAppName;
     private final String[] mSignatures;

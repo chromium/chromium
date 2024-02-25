@@ -16,6 +16,14 @@ const NO_END_TAGS_NODE_NAMES = new Set([
 ]);
 
 /**
+ * Returns count of <chrome_annotation>s.
+ */
+function countAnnotations(): number {
+  let nodes = document.querySelectorAll("chrome_annotation");
+  return nodes.length;
+}
+
+/**
  * Simulate clicking annotation at given `index`.
  */
 function clickAnnotation(index: number): boolean {
@@ -39,7 +47,8 @@ function clickAnnotation(index: number): boolean {
     if (length >= maxChars) return;
     if (node.nodeType === Node.ELEMENT_NODE) {
       // Reject non-text nodes such as scripts.
-      if (NON_TEXT_NODE_NAMES.has(node.nodeName)) {
+      if (NON_TEXT_NODE_NAMES.has(node.nodeName) &&
+          node.nodeName !== 'CHROME_ANNOTATION') {
         return;
       }
       const element = node as Element;
@@ -73,5 +82,6 @@ function clickAnnotation(index: number): boolean {
 
 gCrWeb.annotationsTest = {
   getPageTaggedText,
+  countAnnotations,
   clickAnnotation,
 };

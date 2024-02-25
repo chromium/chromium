@@ -11,14 +11,27 @@
 #include "components/user_manager/user_type.h"
 
 namespace ash {
+namespace {
+UserImageManagerRegistry* g_instance = nullptr;
+}  // namespace
+
+// static
+UserImageManagerRegistry* UserImageManagerRegistry::Get() {
+  return g_instance;
+}
 
 UserImageManagerRegistry::UserImageManagerRegistry(
     user_manager::UserManager* user_manager)
     : user_manager_(user_manager) {
+  CHECK(!g_instance);
+  g_instance = this;
   observation_.Observe(user_manager);
 }
 
-UserImageManagerRegistry::~UserImageManagerRegistry() = default;
+UserImageManagerRegistry::~UserImageManagerRegistry() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 UserImageManager* UserImageManagerRegistry::GetManager(
     const AccountId& account_id) {
@@ -38,13 +51,13 @@ void UserImageManagerRegistry::Shutdown() {
 }
 
 void UserImageManagerRegistry::OnUserListLoaded() {
-  for (const auto* user : user_manager_->GetUsers()) {
+  for (const user_manager::User* user : user_manager_->GetUsers()) {
     GetManager(user->GetAccountId())->LoadUserImage();
   }
 }
 
 void UserImageManagerRegistry::OnDeviceLocalUserListUpdated() {
-  for (const auto* user : user_manager_->GetUsers()) {
+  for (const user_manager::User* user : user_manager_->GetUsers()) {
     if (user->IsDeviceLocalAccount()) {
       GetManager(user->GetAccountId())->LoadUserImage();
     }
@@ -56,26 +69,23 @@ void UserImageManagerRegistry::OnUserLoggedIn(const user_manager::User& user) {
   bool user_is_new = false;
   bool user_is_local = false;
   switch (user_type) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
       user_is_new = user_manager_->IsCurrentUserNew();
       user_is_local = false;
       break;
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       // The UserImageManager chooses a random avatar picture when a user logs
       // in for the first time. Tell the UserImageManager that this user is not
       // new to prevent the avatar from getting changed.
       user_is_new = false;
       user_is_local = true;
       break;
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       // Ignore these users.
-      return;
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
       return;
   }
 

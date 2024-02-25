@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.ui_metrics.SadTabEvent;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -69,17 +70,25 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
         mTab.addObserver(this);
     }
 
-    /**
-     * Constructs and shows a sad tab (Aw, Snap!).
-     */
+    /** Constructs and shows a sad tab (Aw, Snap!). */
     public void show(Context context, Runnable suggestionAction, Runnable buttonAction) {
         if (mTab.getWebContents() == null) return;
 
-        // Make sure we are not adding the "Aw, snap" view over an existing one.
-        assert mView == null;
+        if (mView != null) {
+            assert !mTab.getTabViewManager().isShowing(this);
+            // SadTab was requested to show but TabContentManager may have queued it in favor
+            // of a tab view of other type such as |TabViewProvider.Type.SUSPENDED_TAB| or
+            // |PAINT_PREVIEW}|. Just return and wait for the SadTab's turn to show up.
+            return;
+        }
         mSadTabSuccessiveRefreshCounter++;
-        mView = createView(context, suggestionAction, buttonAction, showSendFeedbackView(),
-                mTab.isIncognito());
+        mView =
+                createView(
+                        context,
+                        suggestionAction,
+                        buttonAction,
+                        showSendFeedbackView(),
+                        mTab.isIncognito());
 
         mTab.getTabViewManager().addTabViewProvider(this);
     }
@@ -93,9 +102,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
         return mSadTabSuccessiveRefreshCounter >= 2;
     }
 
-    /**
-     * Removes the sad tab view if present.
-     */
+    /** Removes the sad tab view if present. */
     @VisibleForTesting
     public void removeIfPresent() {
         mTab.getTabViewManager().removeTabViewProvider(this);
@@ -112,7 +119,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     // TabObserver
 
     @Override
-    public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+    public void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
         removeIfPresent();
     }
 
@@ -145,8 +152,12 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
      * @param isIncognito Whether the Sad Tab view is being showin in an incognito tab.
      * @return A {@link View} instance which is used in place of a crashed renderer.
      */
-    protected View createView(Context context, final Runnable suggestionAction,
-            Runnable buttonAction, boolean showSendFeedbackView, boolean isIncognito) {
+    protected View createView(
+            Context context,
+            final Runnable suggestionAction,
+            Runnable buttonAction,
+            boolean showSendFeedbackView,
+            boolean isIncognito) {
         // Inflate Sad tab and initialize.
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -166,16 +177,19 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
         messageText.setMovementMethod(LinkMovementMethod.getInstance());
 
         Button button = (Button) sadTabView.findViewById(R.id.sad_tab_button);
-        int buttonTextId = showSendFeedbackView ? R.string.sad_tab_send_feedback_label
-                                                : R.string.sad_tab_reload_label;
+        int buttonTextId =
+                showSendFeedbackView
+                        ? R.string.sad_tab_send_feedback_label
+                        : R.string.sad_tab_reload_label;
         button.setText(buttonTextId);
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordEvent(showSendFeedbackView, SadTabEvent.BUTTON_CLICKED);
-                buttonAction.run();
-            }
-        });
+        button.setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        recordEvent(showSendFeedbackView, SadTabEvent.BUTTON_CLICKED);
+                        buttonAction.run();
+                    }
+                });
 
         recordEvent(showSendFeedbackView, SadTabEvent.DISPLAYED);
 
@@ -191,10 +205,13 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
      */
     private static CharSequence getHelpMessage(
             Context context, final Runnable suggestionAction, final boolean showSendFeedback) {
-        NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(context, (view) -> {
-            recordEvent(showSendFeedback, SadTabEvent.HELP_LINK_CLICKED);
-            suggestionAction.run();
-        });
+        NoUnderlineClickableSpan linkSpan =
+                new NoUnderlineClickableSpan(
+                        context,
+                        (view) -> {
+                            recordEvent(showSendFeedback, SadTabEvent.HELP_LINK_CLICKED);
+                            suggestionAction.run();
+                        });
 
         if (showSendFeedback) {
             SpannableString learnMoreLink =
@@ -202,8 +219,10 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
             learnMoreLink.setSpan(linkSpan, 0, learnMoreLink.length(), 0);
             return learnMoreLink;
         } else {
-            String helpMessage = context.getString(R.string.sad_tab_message) + "\n\n"
-                    + context.getString(R.string.sad_tab_suggestions);
+            String helpMessage =
+                    context.getString(R.string.sad_tab_message)
+                            + "\n\n"
+                            + context.getString(R.string.sad_tab_suggestions);
             return SpanApplier.applySpans(helpMessage, new SpanInfo("<link>", "</link>", linkSpan));
         }
     }

@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "LayoutNGView #document",
+      "name": "LayoutView #document",
       "bounds": [585, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [585, 3016],
       "drawsContent": false
     },
@@ -25,7 +25,7 @@
 {
   "layers": [
     {
-      "name": "LayoutNGView #document",
+      "name": "LayoutView #document",
       "bounds": [385, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [385, 3016],
       "drawsContent": false
     },
@@ -49,7 +49,7 @@
 {
   "layers": [
     {
-      "name": "LayoutNGView #document",
+      "name": "LayoutView #document",
       "bounds": [385, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -58,7 +58,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [385, 3016],
       "drawsContent": false
     },
@@ -73,7 +73,7 @@
 {
   "layers": [
     {
-      "name": "LayoutNGView #document",
+      "name": "LayoutView #document",
       "bounds": [785, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -82,7 +82,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 3016],
       "drawsContent": false
     },

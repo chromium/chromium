@@ -66,7 +66,7 @@ class CameraVideoFrameRenderer
 
   // cc::LayerTreeFrameSinkClient:
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
-  absl::optional<viz::HitTestRegionList> BuildHitTestData() override;
+  std::optional<viz::HitTestRegionList> BuildHitTestData() override;
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void SetTreeActivationCallback(base::RepeatingClosure callback) override;
   void DidReceiveCompositorFrameAck() override;
@@ -125,7 +125,7 @@ class CameraVideoFrameRenderer
 
   // The currently observed `BeginFrameSource` which will notify us with
   // `OnBeginFrameDerivedImpl()`.
-  raw_ptr<viz::BeginFrameSource, ExperimentalAsh> begin_frame_source_ = nullptr;
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
 
   // A callback used for tests to be called after `frame` has been rendered.
   base::OnceCallback<void(scoped_refptr<media::VideoFrame> frame)>

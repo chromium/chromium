@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
@@ -39,7 +40,6 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "third_party/nearby/src/internal/platform/nsd_service_info.h"
 
@@ -325,8 +325,7 @@ class WifiLanMediumTest : public ::testing::Test {
   base::OnceClosure on_listen_calls_finished_;
 
   // TCP socket factory:
-  raw_ptr<ash::nearby::FakeTcpSocketFactory, ExperimentalAsh>
-      fake_socket_factory_;
+  raw_ptr<ash::nearby::FakeTcpSocketFactory> fake_socket_factory_;
   mojo::SharedRemote<sharing::mojom::TcpSocketFactory>
       socket_factory_shared_remote_;
 
@@ -347,8 +346,7 @@ class WifiLanMediumTest : public ::testing::Test {
   NsdServiceInfo nsd_service_info_;
 
   // Firewall hole factory:
-  raw_ptr<ash::nearby::FakeFirewallHoleFactory, ExperimentalAsh>
-      fake_firewall_hole_factory_;
+  raw_ptr<ash::nearby::FakeFirewallHoleFactory> fake_firewall_hole_factory_;
   mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_shared_remote_;
 
@@ -622,7 +620,7 @@ TEST_F(WifiLanMediumTest, Listen_DestroyWhileWaiting) {
 TEST_F(WifiLanMediumTest, GetDynamicPortRange) {
   Initialize(WifiInitState::kComplete);
 
-  absl::optional<std::pair<std::int32_t, std::int32_t>> port_range =
+  std::optional<std::pair<std::int32_t, std::int32_t>> port_range =
       wifi_lan_medium_->GetDynamicPortRange();
 
   EXPECT_EQ(ash::nearby::TcpServerSocketPort::kMin, port_range->first);

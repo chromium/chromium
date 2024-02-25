@@ -13,6 +13,7 @@ import "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom";
 import "chromeos/ash/services/nearby/public/mojom/webrtc.mojom";
 import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
 import "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom";
+import "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom";
 import "device/bluetooth/public/mojom/adapter.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
@@ -39,6 +40,9 @@ struct NearbyDependencies {
 
   // Null if the WifiLan feature flag is disabled.
   WifiLanDependencies? wifilan_dependencies;
+
+  pending_remote<ash.nearby.presence.mojom.NearbyPresenceCredentialStorage>?
+      nearby_presence_credential_storage;
 
   nearby.connections.mojom.LogSeverity min_log_severity =
       nearby.connections.mojom.LogSeverity.kInfo;

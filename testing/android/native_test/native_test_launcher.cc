@@ -11,6 +11,7 @@
 
 #include <android/log.h>
 #include <errno.h>
+#include <pthread.h>
 #include <signal.h>
 #include <string.h>
 
@@ -37,7 +38,7 @@
 #include "base/test/clang_profiling.h"
 #endif
 
-using base::android::JavaParamRef;
+using jni_zero::JavaParamRef;
 
 // The main function of the program to be wrapped as a test apk.
 extern int main(int argc, char** argv);
@@ -83,6 +84,9 @@ static void JNI_NativeTest_RunTests(
     const JavaParamRef<jobject>& app_context,
     const JavaParamRef<jstring>& jtest_data_dir) {
   base::ScopedAllowBlockingForTesting allow;
+
+  // Required for DEATH_TESTS.
+  pthread_atfork(nullptr, nullptr, jni_zero::DisableJvmForTesting);
 
   // Command line initialized basically, will be fully initialized later.
   static const char* const kInitialArgv[] = { "ChromeTestActivity" };

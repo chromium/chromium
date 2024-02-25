@@ -6,12 +6,12 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/boringssl_trust_token_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
 
@@ -44,11 +44,11 @@ TEST_F(BoringsslVerificationCryptographerTest, IssuanceAndRedemption) {
         verification_key.value.size())));
   }
 
-  absl::optional<std::string> maybe_blind_message =
+  std::optional<std::string> maybe_blind_message =
       cryptographer_->BeginIssuance(kMessage);
   ASSERT_TRUE(maybe_blind_message.has_value());
 
-  absl::optional<std::string> maybe_issuance_response =
+  std::optional<std::string> maybe_issuance_response =
       issuer_->Issue(*maybe_blind_message);
   ASSERT_TRUE(maybe_issuance_response.has_value());
 
@@ -58,7 +58,7 @@ TEST_F(BoringsslVerificationCryptographerTest, IssuanceAndRedemption) {
                        /*response_header=*/"some invalid data")
                    .has_value());
 
-  absl::optional<std::string> maybe_verification_string =
+  std::optional<std::string> maybe_verification_string =
       cryptographer_->ConfirmIssuanceAndBeginRedemption(
           /*response_header=*/maybe_issuance_response.value());
 

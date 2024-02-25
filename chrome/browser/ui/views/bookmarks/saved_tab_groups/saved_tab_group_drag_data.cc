@@ -72,26 +72,26 @@ const ui::ClipboardFormatType& SavedTabGroupDragData::GetFormatType() {
 }
 
 // static
-absl::optional<SavedTabGroupDragData>
+std::optional<SavedTabGroupDragData>
 SavedTabGroupDragData::ReadFromOSExchangeData(const ui::OSExchangeData* data) {
   if (!data->HasCustomFormat(GetFormatType())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Pickle drag_data_pickle;
   if (!data->GetPickledData(GetFormatType(), &drag_data_pickle)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::PickleIterator data_iterator(drag_data_pickle);
   std::string guid_str;
   if (!data_iterator.ReadString(&guid_str)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Uuid guid = base::Uuid::ParseCaseInsensitive(guid_str);
   if (!guid.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return SavedTabGroupDragData(guid);
@@ -108,6 +108,4 @@ void SavedTabGroupDragData::WriteToOSExchangeData(
   base::Pickle data_pickle;
   data_pickle.WriteString(button->guid().AsLowercaseString());
   data->SetPickledData(GetFormatType(), data_pickle);
-
-  // TODO(tbergquist): Save profile too so we can prevent cross-profile drops.
 }

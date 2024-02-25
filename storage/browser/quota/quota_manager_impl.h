@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -45,7 +46,6 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -315,9 +315,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //
   // Quota-managed storage backends must call this method when they have made
   // any modifications that change the amount of data stored in a bucket.
+  // If `delta` is non-null, the cached usage for the bucket and the give client
+  // type will be updated by that amount. A null `delta` value will cause the
+  // cache to instead be discarded, after which it will be lazily recalculated.
   void NotifyBucketModified(QuotaClientType client_id,
                             const BucketLocator& bucket,
-                            int64_t delta,
+                            std::optional<int64_t> delta,
                             base::Time modification_time,
                             base::OnceClosure callback);
 
@@ -449,7 +452,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   int GetOverrideHandleId();
   void OverrideQuotaForStorageKey(int handle_id,
                                   const blink::StorageKey& storage_key,
-                                  absl::optional<int64_t> quota_size);
+                                  std::optional<int64_t> quota_size);
   // Called when a DevTools client releases all overrides, however, overrides
   // will not be disabled for any storage keys for which there are other
   // DevTools clients/QuotaOverrideHandle with an active override.
@@ -650,7 +653,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Called when the quota database or a quota client run into low disk space
   // errors.
-  void OnFullDiskError(absl::optional<blink::StorageKey> storage_key);
+  void OnFullDiskError(std::optional<blink::StorageKey> storage_key);
 
   // Notifies the embedder that space is too low. This ends up showing a
   // user-facing dialog in Chrome.
@@ -695,7 +698,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       GetBucketsCallback callback,
       QuotaErrorOr<std::set<BucketLocator>> result);
   void GetQuotaSettings(QuotaSettingsCallback callback);
-  void DidGetSettings(absl::optional<QuotaSettings> settings);
+  void DidGetSettings(std::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
   void ContinueIncognitoGetStorageCapacity(const QuotaSettings& settings);
   void DidGetStorageCapacity(const QuotaAvailability& total_and_available);
@@ -721,11 +724,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForDeletion(StatusCallback callback,
                                QuotaErrorOr<BucketInfo> result);
-  void DidGetBucketForUsage(QuotaClientType client_type,
-                            int64_t delta,
-                            base::Time modification_time,
-                            base::OnceClosure callback,
-                            QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForUsageAndQuota(UsageAndQuotaCallback callback,
                                     QuotaErrorOr<BucketInfo> result);
   void DidGetStorageKeys(GetStorageKeysCallback callback,
@@ -750,7 +748,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // to use DetermineStoragePressure().
   void DetermineStoragePressure(int64_t free_space, int64_t total_space);
 
-  absl::optional<int64_t> GetQuotaOverrideForStorageKey(
+  std::optional<int64_t> GetQuotaOverrideForStorageKey(
       const blink::StorageKey&);
 
   template <typename ValueType>
@@ -781,7 +779,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   bool eviction_disabled_ = false;
   bool bootstrap_disabled_for_testing_ = false;
 
-  absl::optional<blink::StorageKey>
+  std::optional<blink::StorageKey>
       storage_key_for_pending_storage_pressure_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;
@@ -812,7 +810,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // The storage key for the last time a bucket was opened. This is used as an
   // imperfect estimate of which site may have encountered the last quota
   // database full disk error.
-  absl::optional<blink::StorageKey> last_opened_bucket_site_;
+  std::optional<blink::StorageKey> last_opened_bucket_site_;
 
   // The last time that an eviction round was started due to a full disk error.
   base::TimeTicks last_full_disk_eviction_time_;

@@ -44,6 +44,7 @@ class RecyclableCompositorMac;
 
 namespace views {
 
+class ImmersiveModeRevealClient;
 class NativeWidgetMac;
 class NativeWidgetMacEventMonitor;
 class TextInputHost;
@@ -175,6 +176,11 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // Return the id through which the NSView for |root_view_| may be looked up.
   uint64_t GetRootViewNSViewId() const { return root_view_id_; }
 
+  void set_immersive_mode_reveal_client(
+      ImmersiveModeRevealClient* reveal_client) {
+    immersive_mode_reveal_client_ = reveal_client;
+  }
+
   // Initialize the ui::Compositor and ui::Layer.
   void CreateCompositor(const Widget::InitParams& params);
 
@@ -230,6 +236,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool IsWindowKey() const { return is_window_key_; }
   bool IsMouseCaptureActive() const { return is_mouse_capture_active_; }
   bool IsZoomed() const { return is_zoomed_; }
+
+  void SetVisibilityState(remote_cocoa::mojom::WindowVisibilityState new_state);
 
   // Add a NSEvent local event monitor, which will send events to `client`
   // before they are dispatched to their ordinary target. Clients may specify
@@ -324,6 +332,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override;
   void OnWindowParentChanged(uint64_t new_parent_id) override;
+  void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override;
+  void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override;
+  void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override;
   void DoDialogButtonAction(ui::DialogButton button) override;
   bool GetDialogButtonInfo(ui::DialogButton type,
                            bool* button_exists,
@@ -341,7 +352,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void SetRemoteAccessibilityTokens(
       const std::vector<uint8_t>& window_token,
       const std::vector<uint8_t>& view_token) override;
-  bool GetRootViewAccessibilityToken(int64_t* pid,
+  bool GetRootViewAccessibilityToken(base::ProcessId* pid,
                                      std::vector<uint8_t>* token) override;
   bool ValidateUserInterfaceItem(
       int32_t command,
@@ -479,6 +490,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   std::unique_ptr<TooltipManager> tooltip_manager_;
   std::unique_ptr<TextInputHost> text_input_host_;
+
+  raw_ptr<ImmersiveModeRevealClient> immersive_mode_reveal_client_;
 
   std::u16string window_title_;
 

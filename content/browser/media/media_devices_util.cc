@@ -18,15 +18,16 @@
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "crypto/hmac.h"
 #include "media/base/media_switches.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/origin.h"
 
@@ -37,76 +38,11 @@ using ::blink::mojom::MediaStreamType;
 
 namespace {
 
-std::string GetDefaultMediaDeviceIDOnUIThread(MediaDeviceType device_type,
-                                              int render_process_id,
-                                              int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHostImpl* frame_host =
-      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
-  if (!frame_host)
-    return std::string();
-
-  RenderFrameHostDelegate* delegate = frame_host->delegate();
-  if (!delegate)
-    return std::string();
-
-  MediaStreamType media_stream_type;
-  switch (device_type) {
-    case MediaDeviceType::MEDIA_AUDIO_INPUT:
-      media_stream_type = MediaStreamType::DEVICE_AUDIO_CAPTURE;
-      break;
-    case MediaDeviceType::MEDIA_VIDEO_INPUT:
-      media_stream_type = MediaStreamType::DEVICE_VIDEO_CAPTURE;
-      break;
-    default:
-      return std::string();
-  }
-
-  return delegate->GetDefaultMediaDeviceID(media_stream_type);
-}
-
-// This function is intended for testing purposes. It returns an empty string
-// if no default device is supplied via the command line.
-std::string GetDefaultMediaDeviceIDFromCommandLine(
-    MediaDeviceType device_type) {
-  DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kUseFakeDeviceForMediaStream));
-  const std::string option =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kUseFakeDeviceForMediaStream);
-  // Optional comma delimited parameters to the command line can specify values
-  // for the default device IDs.
-  // Examples: "video-input-default-id=mycam, audio-input-default-id=mymic"
-  base::StringTokenizer option_tokenizer(option, ", ");
-  option_tokenizer.set_quote_chars("\"");
-
-  while (option_tokenizer.GetNext()) {
-    std::vector<base::StringPiece> param = base::SplitStringPiece(
-        option_tokenizer.token_piece(), "=", base::TRIM_WHITESPACE,
-        base::SPLIT_WANT_NONEMPTY);
-    if (param.size() != 2u) {
-      DLOG(WARNING) << "Forgot a value '" << option << "'? Use name=value for "
-                    << switches::kUseFakeDeviceForMediaStream << ".";
-      return std::string();
-    }
-
-    if (device_type == MediaDeviceType::MEDIA_AUDIO_INPUT &&
-        param.front() == "audio-input-default-id") {
-      return std::string(param.back());
-    } else if (device_type == MediaDeviceType::MEDIA_VIDEO_INPUT &&
-               param.front() == "video-input-default-id") {
-      return std::string(param.back());
-    }
-  }
-
-  return std::string();
-}
-
 void GotSalt(const std::string& frame_salt,
              const url::Origin& origin,
              bool has_focus,
              bool is_background,
-             absl::optional<ukm::SourceId> source_id,
+             std::optional<ukm::SourceId> source_id,
              MediaDeviceSaltAndOriginCallback callback,
              bool are_persistent_device_ids_allowed,
              const std::string& salt) {
@@ -132,7 +68,7 @@ void FinalizeGetRawMediaDeviceIDForHMAC(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& source_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+    base::OnceCallback<void(const std::optional<std::string>&)> callback,
     const MediaDeviceEnumeration& enumeration) {
   for (const auto& device : enumeration[static_cast<size_t>(type)]) {
     if (DoesRawMediaDeviceIDMatchHMAC(salt_and_origin, source_id,
@@ -143,20 +79,20 @@ void FinalizeGetRawMediaDeviceIDForHMAC(
     }
   }
   task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(callback), absl::nullopt));
+                        base::BindOnce(std::move(callback), std::nullopt));
 }
 
 MediaDeviceType ConvertToMediaDeviceType(MediaStreamType stream_type) {
   switch (stream_type) {
     case MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      return MediaDeviceType::MEDIA_AUDIO_INPUT;
+      return MediaDeviceType::kMediaAudioInput;
     case MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      return MediaDeviceType::MEDIA_VIDEO_INPUT;
+      return MediaDeviceType::kMediaVideoInput;
     default:
       NOTREACHED();
   }
 
-  return MediaDeviceType::NUM_MEDIA_DEVICE_TYPES;
+  return MediaDeviceType::kNumMediaDeviceTypes;
 }
 
 }  // namespace
@@ -167,7 +103,7 @@ MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(
     std::string group_id_salt,
     bool has_focus,
     bool is_background,
-    absl::optional<ukm::SourceId> ukm_source_id)
+    std::optional<ukm::SourceId> ukm_source_id)
     : device_id_salt_(std::move(device_id_salt)),
       group_id_salt_(std::move(group_id_salt)),
       origin_(std::move(origin)),
@@ -192,27 +128,6 @@ MediaDeviceSaltAndOrigin MediaDeviceSaltAndOrigin::Empty() {
                                   /*origin=*/url::Origin());
 }
 
-void GetDefaultMediaDeviceID(MediaDeviceType device_type,
-                             int render_process_id,
-                             int render_frame_id,
-                             DeviceIdCallback callback) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseFakeDeviceForMediaStream)) {
-    std::string command_line_default_device_id =
-        GetDefaultMediaDeviceIDFromCommandLine(device_type);
-    if (!command_line_default_device_id.empty()) {
-      std::move(callback).Run(command_line_default_device_id);
-      return;
-    }
-  }
-
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GetDefaultMediaDeviceIDOnUIThread, device_type,
-                     render_process_id, render_frame_id),
-      std::move(callback));
-}
-
 void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
                                  MediaDeviceSaltAndOriginCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -233,7 +148,7 @@ void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
   net::SiteForCookies site_for_cookies = frame_host->ComputeSiteForCookies();
   url::Origin origin = frame_host->GetLastCommittedOrigin();
   bool has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
-  absl::optional<ukm::SourceId> source_id = frame_host->GetPageUkmSourceId();
+  std::optional<ukm::SourceId> source_id = frame_host->GetPageUkmSourceId();
   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
   bool is_background =
       web_contents && web_contents->GetDelegate() &&
@@ -251,36 +166,31 @@ blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfo& device_info) {
-  bool should_show_device_ids =
-      has_permission ||
-      !base::FeatureList::IsEnabled(features::kEnumerateDevicesHideDeviceIDs);
-  return blink::WebMediaDeviceInfo(
-      should_show_device_ids
-          ? GetHMACForRawMediaDeviceID(salt_and_origin, device_info.device_id)
-          : std::string(),
-      has_permission ? device_info.label : std::string(),
-      should_show_device_ids && !device_info.group_id.empty()
-          ? GetHMACForRawMediaDeviceID(salt_and_origin, device_info.group_id,
-                                       /*use_group_salt=*/true)
-          : std::string(),
-      has_permission ? device_info.video_control_support
-                     : media::VideoCaptureControlSupport(),
-      has_permission ? device_info.video_facing
-                     : blink::mojom::FacingMode::NONE);
+  if (has_permission) {
+    return blink::WebMediaDeviceInfo(
+        GetHMACForRawMediaDeviceID(salt_and_origin, device_info.device_id),
+        device_info.label,
+        device_info.group_id.empty()
+            ? std::string()
+            : GetHMACForRawMediaDeviceID(salt_and_origin, device_info.group_id,
+                                         /*use_group_salt=*/true),
+        device_info.video_control_support, device_info.video_facing,
+        device_info.availability);
+  }
+  return blink::WebMediaDeviceInfo(std::string(), std::string(), std::string(),
+                                   media::VideoCaptureControlSupport(),
+                                   blink::mojom::FacingMode::kNone);
 }
 
 blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfoArray& device_infos) {
-  const bool should_hide_device_ids_with_no_permission =
-      base::FeatureList::IsEnabled(features::kEnumerateDevicesHideDeviceIDs);
   blink::WebMediaDeviceInfoArray result;
   for (const auto& device_info : device_infos) {
     result.push_back(
         TranslateMediaDeviceInfo(has_permission, salt_and_origin, device_info));
-    if (should_hide_device_ids_with_no_permission && !has_permission &&
-        result.back().device_id.empty()) {
+    if (!has_permission && result.back().device_id.empty()) {
       break;
     }
   }
@@ -332,14 +242,8 @@ std::string GetHMACForRawMediaDeviceID(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& raw_device_id,
     bool use_group_salt) {
-  // TODO(crbug.com/1215532): DCHECKs are disabled during automated testing on
-  // CrOS and this check failed when tested on an experimental builder. Revert
-  // https://crrev.com/c/2932244 to enable it. See go/chrome-dcheck-on-cros
-  // or http://crbug.com/1113456 for more details.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(!raw_device_id.empty());
-#endif
-  if (raw_device_id == media::AudioDeviceDescription::kDefaultDeviceId ||
+  if (raw_device_id.empty() ||
+      raw_device_id == media::AudioDeviceDescription::kDefaultDeviceId ||
       raw_device_id == media::AudioDeviceDescription::kCommunicationsDeviceId) {
     return raw_device_id;
   }
@@ -354,14 +258,13 @@ std::string GetHMACForRawMediaDeviceID(
                                           : salt_and_origin.device_id_salt()),
           &digest[0], digest.size());
   DCHECK(result);
-  return base::ToLowerASCII(base::HexEncode(&digest[0], digest.size()));
+  return base::ToLowerASCII(base::HexEncode(digest));
 }
 
 bool DoesRawMediaDeviceIDMatchHMAC(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& hmac_device_id,
     const std::string& raw_device_id) {
-  DCHECK(!raw_device_id.empty());
   return GetHMACForRawMediaDeviceID(salt_and_origin, raw_device_id) ==
          hmac_device_id;
 }

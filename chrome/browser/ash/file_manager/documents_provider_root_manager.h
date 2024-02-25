@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_DOCUMENTS_PROVIDER_ROOT_MANAGER_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_DOCUMENTS_PROVIDER_ROOT_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -63,10 +63,8 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
     // Called when an existing root is not available anymore. When an existing
     // root is modified, both RootRemoved() and RootAdded() will be called in
     // this order.
-    virtual void OnDocumentsProviderRootRemoved(
-        const std::string& authority,
-        const std::string& root_id,
-        const std::string& document_id) = 0;
+    virtual void OnDocumentsProviderRootRemoved(const std::string& authority,
+                                                const std::string& root_id) = 0;
   };
   DocumentsProviderRootManager(Profile* profile,
                                arc::ArcFileSystemOperationRunner* runner);
@@ -112,7 +110,7 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
   void RequestGetRoots();
 
   // Called when retrieving available roots from ARC container is done.
-  void OnGetRoots(absl::optional<std::vector<arc::mojom::RootPtr>> maybe_roots);
+  void OnGetRoots(std::optional<std::vector<arc::mojom::RootPtr>> maybe_roots);
 
   // Updates this class's internal list of available roots.
   void UpdateRoots(std::vector<RootInfo> roots);
@@ -126,8 +124,8 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
   // Notifies observers that an existing root is removed.
   void NotifyRootRemoved(const RootInfo& root_info);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<arc::ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<arc::ArcFileSystemOperationRunner> runner_;
   bool is_enabled_ = false;
   base::ObserverList<Observer>::Unchecked observer_list_;
   std::vector<RootInfo> current_roots_;

@@ -42,18 +42,11 @@ bool WebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
   return false;
 }
 
-bool WebAuthenticationDelegate::IsSecurityLevelAcceptableForWebAuthn(
-    content::RenderFrameHost* rfh,
-    const url::Origin& caller_origin) {
-  return true;
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-absl::optional<std::string>
+std::optional<std::string>
 WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool WebAuthenticationDelegate::ShouldPermitIndividualAttestation(
@@ -76,11 +69,15 @@ bool WebAuthenticationDelegate::SupportsResidentKeys(
   return false;
 }
 
+bool WebAuthenticationDelegate::SupportsPasskeyMetadataSyncing() {
+  return false;
+}
+
 bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
   return true;
 }
 
-absl::optional<bool> WebAuthenticationDelegate::
+std::optional<bool> WebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
         RenderFrameHost* render_frame_host) {
   FrameTreeNode* frame_tree_node =
@@ -90,7 +87,7 @@ absl::optional<bool> WebAuthenticationDelegate::
     return AuthenticatorEnvironment::GetInstance()
         ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
@@ -98,13 +95,17 @@ WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
     const url::Origin& caller_origin) {
   return nullptr;
 }
-#endif  // !IS_ANDROID
+
+bool WebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
+    BrowserContext* browser_context) {
+  return false;
+}
 
 #if BUILDFLAG(IS_MAC)
-absl::optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
+std::optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
 WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
     BrowserContext* browser_context) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -115,15 +116,6 @@ WebAuthenticationDelegate::GetGenerateRequestIdCallback(
   return base::NullCallback();
 }
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
-WebAuthenticationDelegate::GetIntentSender(WebContents* web_contents) {
-  return nullptr;
-}
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 
 AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =
     default;
@@ -164,9 +156,13 @@ void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     const std::string& rp_id,
     RequestSource request_source,
     device::FidoRequestType request_type,
-    absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
+    std::optional<device::ResidentKeyRequirement> resident_key_requirement,
+    device::UserVerificationRequirement user_verification_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
+    bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* fido_discovery_factory) {}
+
+void AuthenticatorRequestClientDelegate::SetHints(const Hints& hints) {}
 
 void AuthenticatorRequestClientDelegate::SelectAccount(
     std::vector<device::AuthenticatorGetAssertionResponse> responses,
@@ -241,7 +237,5 @@ void AuthenticatorRequestClientDelegate::FinishCollectToken() {}
 
 void AuthenticatorRequestClientDelegate::OnRetryUserVerification(int attempts) {
 }
-
-#endif  // !IS_ANDROID
 
 }  // namespace content

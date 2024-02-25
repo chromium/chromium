@@ -6,6 +6,7 @@
 <title>$i18n{title}</title>
 
 <link rel="stylesheet" href="./policy.css">
+<link rel="stylesheet" href="./policy_shared_vars.css">
 <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
 
 </head>
@@ -36,18 +37,29 @@
         <button id="reload-policies" class="action-row-button">
           $i18n{reloadPolicies}
         </button>
-        <div id="more-actions-dropdown">
-          <button id="more-actions-button" class="action-row-button">
+        <div id="more-actions-dropdown" role="button" aria-haspopup="true">
+          <button
+            id="more-actions-button" class="action-row-button"
+            aria-haspopup="true">
             $i18n{moreActions}
             <div id="dropdown-icon"></div>
           </button>
-          <div id="more-actions-list" class="more-actions-visibility">
-              <button id="export-policies">$i18n{exportPoliciesJSON}</button>
-              <button id="copy-policies">$i18n{copyPoliciesJSON}</button>
+          <div
+            id="more-actions-list" class="more-actions-visibility" role="menu">
+              <button id="export-policies" role="menuitem">
+                $i18n{exportPoliciesJSON}
+              </button>
+              <button id="copy-policies" role="menuitem">
+                $i18n{copyPoliciesJSON}
+              </button>
               <if expr="not is_chromeos">
-                <button id="upload-report">$i18n{uploadReport}</button>
+                <button id="upload-report" role="menuitem">
+                  $i18n{uploadReport}
+                </button>
               </if>
-              <a href="chrome://policy/logs" id="view-logs">$i18n{viewLogs}</a>
+              <a href="chrome://policy/logs" id="view-logs" role="menuitem">
+                $i18n{viewLogs}
+              </a>
           </div>
         </div>
       </div>
@@ -58,7 +70,6 @@
         </label>
       </div>
     </div>
-    <div aria-live="polite" id="screen-reader-message"></div>
   </header>
   <main id="policy-ui">
     <section id="status-section" class="status-box-section" hidden>
@@ -69,6 +80,7 @@
       <!--  This is where policy tables get dynamically added. -->
     </section>
   </main>
+  <div id="toast-container" role="alert" aria-live="polite"></div>
 </body>
 
 <script type="module" src="policy.js"></script>

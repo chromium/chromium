@@ -37,6 +37,8 @@ class AppDragIconProxy {
  public:
   // `root_window` - The root window to which the proxy should be added.
   // `icon` - The icon to be used for the app icon.
+  // `badge_icon` - If non-empty, the badge icon to be overlaied over the app
+  //     icon.
   // `pointer_location_in_screen` - The initial pointer location.
   // `pointer_offset_from_center` - The pointer offset from the center of the
   //     drag image. The drag icon position will be offset from the pointer
@@ -48,6 +50,7 @@ class AppDragIconProxy {
   // center of the icon proxy.
   AppDragIconProxy(aura::Window* root_window,
                    const gfx::ImageSkia& icon,
+                   const gfx::ImageSkia& badge_icon,
                    const gfx::Point& pointer_location_in_screen,
                    const gfx::Vector2d& pointer_offset_from_center,
                    float scale_factor,

@@ -1,0 +1,134 @@
+This is a testharness.js-based test.
+Found 65 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] URL's constructor's base argument: http://a.b.c.xn--pokxncvks should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: http://a.b.c.xn--pokxncvks should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: http://a.b.c.xn--pokxncvks should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): http://a.b.c.xn--pokxncvks should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: http://a.b.c.xn--pokxncvks should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): http://a.b.c.xn--pokxncvks should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: http://10.0.0.xn--pokxncvks should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: http://10.0.0.xn--pokxncvks should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: http://10.0.0.xn--pokxncvks should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): http://10.0.0.xn--pokxncvks should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: http://10.0.0.xn--pokxncvks should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): http://10.0.0.xn--pokxncvks should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: http://a.b.c.XN--pokxncvks should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: http://a.b.c.XN--pokxncvks should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: http://a.b.c.XN--pokxncvks should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): http://a.b.c.XN--pokxncvks should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: http://a.b.c.XN--pokxncvks should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): http://a.b.c.XN--pokxncvks should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: http://a.b.c.Xn--pokxncvks should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: http://a.b.c.Xn--pokxncvks should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: http://a.b.c.Xn--pokxncvks should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): http://a.b.c.Xn--pokxncvks should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: http://a.b.c.Xn--pokxncvks should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): http://a.b.c.Xn--pokxncvks should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: http://10.0.0.XN--pokxncvks should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: http://10.0.0.XN--pokxncvks should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: http://10.0.0.XN--pokxncvks should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): http://10.0.0.XN--pokxncvks should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: http://10.0.0.XN--pokxncvks should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): http://10.0.0.XN--pokxncvks should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: http://10.0.0.xN--pokxncvks should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: http://10.0.0.xN--pokxncvks should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: http://10.0.0.xN--pokxncvks should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): http://10.0.0.xN--pokxncvks should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: http://10.0.0.xN--pokxncvks should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): http://10.0.0.xN--pokxncvks should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: https://x x:12 should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: https://x x:12 should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: https://x x:12 should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): https://x x:12 should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: https://x x:12 should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): https://x x:12 should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: http://a b/ should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: http://a b/ should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: http://a b/ should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): http://a b/ should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: http://a b/ should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): http://a b/ should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: http://ho%20st/ should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: http://ho%20st/ should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: http://ho%20st/ should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): http://ho%20st/ should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: http://ho%20st/ should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): http://ho%20st/ should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+[FAIL] URL's constructor's base argument: file://xn--/p should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: file://xn--/p should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: file://xn--/p should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] Location's href: file://xn--/p should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): file://xn--/p should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: Cannot read properties of null (reading 'close')" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+[FAIL] URL's constructor's base argument: https://xn--/ should throw
+  assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+[FAIL] URL's href: https://xn--/ should throw
+  assert_throws_js: function "() => url.href = test.input" did not throw
+[FAIL] XHR: https://xn--/ should throw
+  assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+[FAIL] sendBeacon(): https://xn--/ should throw
+  assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+[FAIL] Location's href: https://xn--/ should throw
+  assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+[FAIL] window.open(): https://xn--/ should throw
+  assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+Harness: the test ran to completion.
+

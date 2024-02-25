@@ -11,13 +11,13 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -315,11 +315,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool allow_solid_color_layers_ = true;
   id<MTLDevice> __strong metal_device_ = nil;
-
-  // Used for uma.
-  int changed_io_surfaces_during_commit_ = 0;
-  int unchanged_io_surfaces_during_commit_ = 0;
-  int total_updated_io_surface_size_during_commit_ = 0;
 
   // Enable CALayerTree optimization that will try to reuse the CALayer with a
   // matched CALayer from the old CALayerTree in the previous frame.

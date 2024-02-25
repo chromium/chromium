@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests that inspect mode works after profiling start/stop.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="width:100px;height:100px;"></div>
@@ -30,13 +31,13 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function clickAtInspected() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, dumpAndFinish);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, dumpAndFinish);
     TestRunner.evaluateInPage('click()');
   }
 
   function dumpAndFinish() {
     ElementsTestRunner.firstElementsTreeOutline().removeEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, dumpAndFinish);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, dumpAndFinish);
     var selectedElement = ElementsTestRunner.firstElementsTreeOutline().selectedTreeElement;
     TestRunner.addResult('Node selected: ' + selectedElement.node().getAttribute('id'));
     TestRunner.completeTest();

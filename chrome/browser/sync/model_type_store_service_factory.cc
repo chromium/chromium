@@ -35,5 +35,6 @@ ModelTypeStoreServiceFactory::~ModelTypeStoreServiceFactory() = default;
 KeyedService* ModelTypeStoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new syncer::ModelTypeStoreServiceImpl(profile->GetPath());
+  return new syncer::ModelTypeStoreServiceImpl(profile->GetPath(),
+                                               profile->GetPrefs());
 }

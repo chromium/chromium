@@ -5,12 +5,12 @@
 #include "components/viz/service/display/overlay_processor_surface_control.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/build_info.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform_utils.h"
@@ -116,7 +116,7 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
 }
 
 void OverlayProcessorSurfaceControl::AdjustOutputSurfaceOverlay(
-    absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
   // For surface control, we should always have a valid |output_surface_plane|
   // here.
   DCHECK(output_surface_plane && output_surface_plane->has_value());
@@ -168,7 +168,7 @@ void OverlayProcessorSurfaceControl::SetViewportSize(
   viewport_size_ = viewport_size;
 }
 
-absl::optional<gfx::ColorSpace>
+std::optional<gfx::ColorSpace>
 OverlayProcessorSurfaceControl::GetOverrideColorSpace() {
   // Historically, android media was hardcoding color space to srgb and it
   // wasn't possible to overlay with arbitrary colorspace on pre-S devices, so
@@ -180,7 +180,7 @@ OverlayProcessorSurfaceControl::GetOverrideColorSpace() {
     return gfx::ColorSpace::CreateSRGB();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace viz

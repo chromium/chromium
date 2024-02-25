@@ -5,11 +5,12 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processor.h"
 
 #include <memory>
+#include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/aec_dump_agent_impl.h"
@@ -39,7 +40,7 @@ class MediaStreamAudioProcessor::PlayoutListener {
  private:
   // TODO(crbug.com/704136): Replace with Member at some point.
   scoped_refptr<WebRtcAudioDeviceImpl> const playout_data_source_;
-  WebRtcPlayoutDataSource::Sink* const sink_;
+  const raw_ptr<WebRtcPlayoutDataSource::Sink> sink_;
 };
 
 MediaStreamAudioProcessor::MediaStreamAudioProcessor(

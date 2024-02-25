@@ -20,7 +20,7 @@ Applied the following patches:
   -DUNICODE.
 - patches/adjacency_graphs.diff: Removes static initializers in
   adjacency_graphs.hpp and adjacency_graphs.cpp and greatly reduces binary size
-  impact by replacing optional std::strings with base::StringPiece.
+  impact by replacing optional std::strings with std::string_view.
 - patches/no_static_initializers.diff: Removes static initializers elsewhere by
   either inlining the expression, or making use of static base::NoDestructors.
 - patches/dictionary_component.diff: Adds a ParseRankedDictionary API to

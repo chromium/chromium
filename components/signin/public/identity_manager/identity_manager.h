@@ -171,7 +171,7 @@ class IdentityManager : public KeyedService,
   // documentation.
   // Returns a non-empty struct if the primary account exists and was granted
   // the required consent level.
-  // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is
+  // TODO(crbug.com/40067058): revisit this once `ConsentLevel::kSync` is
   // removed.
   // TODO(1046746): Update (./README.md).
   CoreAccountInfo GetPrimaryAccountInfo(ConsentLevel consent_level) const;
@@ -185,7 +185,7 @@ class IdentityManager : public KeyedService,
   // account for sync.
   // Note that `ConsentLevel::kSync` is deprecated, see the `ConsentLevel`
   // documentation.
-  // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is
+  // TODO(crbug.com/40067058): revisit this once `ConsentLevel::kSync` is
   // removed.
   bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
@@ -358,10 +358,10 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
     AccountConsistencyMethod account_consistency =
         AccountConsistencyMethod::kDisabled;
+    // TODO(crbug.com/325904258): Reconsider whether completely disabling the
+    // scope checking is the right approach in the long run.
     bool should_verify_scope_access = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
     raw_ptr<SigninClient> signin_client = nullptr;
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
     raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
         account_manager_facade = nullptr;
@@ -409,6 +409,15 @@ class IdentityManager : public KeyedService,
     return account_consistency_;
   }
 
+  // Calling this method provides a hint that a new account may be added in the
+  // near future, and front-loads some processing to speed that up.
+  //
+  // Calling this API is an optional optimization (particularly for cases where
+  // latency of async processing is user-visible). It is OK to call this even
+  // if a new account is not then added, and it is OK to not call this even if a
+  // new account is later added.
+  void PrepareForAddingNewAccount();
+
 #if BUILDFLAG(IS_ANDROID)
   // Returns a pointer to the AccountTrackerService Java instance associated
   // with this object.
@@ -423,11 +432,10 @@ class IdentityManager : public KeyedService,
   // Provide the reference on the java IdentityMutator.
   base::android::ScopedJavaLocalRef<jobject> GetIdentityMutatorJavaObject();
 
-  // This method refreshes the AccountInfo associated with |account_id|,
-  // when the existing account info is stale, otherwise it doesn't fetch the
-  // account info if it is valid.
-  // This method triggers an OnExtendedAccountInfoUpdated()
-  // callback if the info was successfully fetched.
+  // This method refreshes the AccountInfo associated with |account_id| when
+  // the existing account info is stale. Otherwise it's a no-op.
+  // This method triggers an OnExtendedAccountInfoUpdated() callback if the
+  // info was successfully fetched.
   void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
 
   // Overloads for calls from java:
@@ -448,10 +456,16 @@ class IdentityManager : public KeyedService,
   base::android::ScopedJavaLocalRef<jobjectArray> GetAccountsWithRefreshTokens(
       JNIEnv* env) const;
 
-  // Refreshes account info with image for the given core account id.
+  // Refreshes account associated with |j_core_account_id| if it's not null.
+  // Else refreshes all accounts with refresh tokens if they are stale. See
+  // RefreshAccountInfoIfStale(const CoreAccountId&).
+  // TODO(crbug.com/1491005): Remove |j_core_account_id| from parameters.
   void RefreshAccountInfoIfStale(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_core_account_id);
+
+  // Returns true if the browser allows the primary account to be cleared.
+  jboolean IsClearPrimaryAccountAllowed(JNIEnv* env) const;
 #endif
 
  private:
@@ -647,15 +661,13 @@ class IdentityManager : public KeyedService,
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service_;
   std::unique_ptr<PrimaryAccountManager> primary_account_manager_;
   std::unique_ptr<AccountFetcherService> account_fetcher_service_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   const raw_ptr<SigninClient> signin_client_;
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
   const raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
       account_manager_facade_;
 #endif
 
-  IdentityMutator identity_mutator_;
+  std::unique_ptr<IdentityMutator> identity_mutator_;
 
   // DiagnosticsProvider instance.
   std::unique_ptr<DiagnosticsProvider> diagnostics_provider_;
@@ -677,7 +689,7 @@ class IdentityManager : public KeyedService,
   AccountConsistencyMethod account_consistency_ =
       AccountConsistencyMethod::kDisabled;
 
-  // TODO(crbug.com/1462858): Remove this field once
+  // TODO(crbug.com/40067025): Remove this field once
   // kReplaceSyncPromosWithSignInPromos launches.
   const bool should_verify_scope_access_;
 

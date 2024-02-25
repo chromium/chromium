@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/ui_scene_creator.h"
 
 #include <memory>
+#include <numbers>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -36,10 +36,8 @@
 #include "chrome/browser/vr/model/model.h"
 #include "chrome/browser/vr/target_property.h"
 #include "chrome/browser/vr/ui.h"
-#include "chrome/browser/vr/ui_browser_interface.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
-#include "chrome/browser/vr/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -103,12 +101,14 @@ std::unique_ptr<TransientElement> CreateTransientParent(UiElementName name,
   return element;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<UiElement> CreateSpacer(float width, float height) {
   auto spacer = Create<UiElement>(kNone, kPhaseNone);
   spacer->SetType(kTypeSpacer);
   spacer->SetSize(width, height);
   return spacer;
 }
+#endif
 
 void BindIndicatorText(Model* model, Text* text, const IndicatorSpec& spec) {
   text->AddBinding(std::make_unique<Binding<std::pair<bool, bool>>>(
@@ -133,7 +133,6 @@ void BindIndicatorText(Model* model, Text* text, const IndicatorSpec& spec) {
 }
 
 std::unique_ptr<UiElement> CreateWebVrIndicator(Model* model,
-                                                UiBrowserInterface* browser,
                                                 IndicatorSpec spec,
                                                 DrawPhase phase) {
   auto container = Create<Rect>(spec.webvr_name, phase);
@@ -189,7 +188,7 @@ void ApplyFloorTransform(Rect* floor) {
   floor->SetSize(1.0f, 1.0f);
   floor->SetScale(kSceneSize, kSceneSize, kSceneSize);
   floor->SetTranslate(0.0, kFloorHeight, 0.0);
-  floor->SetRotate(1, 0, 0, -base::kPiFloat / 2);
+  floor->SetRotate(1, 0, 0, -std::numbers::pi_v<float> / 2);
 }
 
 void SetVisibleInLayout(UiElement* e, bool v) {
@@ -202,7 +201,7 @@ void BindIndicatorTranscienceForWin(
     TransientElement* e,
     Model* model,
     UiScene* scene,
-    const absl::optional<
+    const std::optional<
         std::tuple<bool, CapturingStateModel, CapturingStateModel>>& last_value,
     const std::tuple<bool, CapturingStateModel, CapturingStateModel>& value) {
   const bool in_web_vr_presentation = model->web_vr.IsImmersiveWebXrVisible() &&
@@ -218,9 +217,6 @@ void BindIndicatorTranscienceForWin(
 
   e->SetVisible(true);
   e->RefreshVisible();
-
-  SetVisibleInLayout(scene->GetUiElementByName(kWebVrExclusiveScreenToast),
-                     model->gvr_input_support);
 
   for (const auto& spec : GetIndicatorSpecs()) {
     SetVisibleInLayout(
@@ -266,32 +262,17 @@ void BindIndicatorTranscienceForWin(
 
 #else
 
-void BindIndicatorTranscience(
-    TransientElement* e,
-    Model* model,
-    UiScene* scene,
-    const absl::optional<std::tuple<bool, bool>>& last_value,
-    const std::tuple<bool, bool>& value) {
-  const bool in_web_vr_presentation = std::get<0>(value);
-  const bool in_long_press = std::get<1>(value);
-  const bool was_in_long_press = last_value && std::get<1>(last_value.value());
-
+void BindIndicatorTranscience(TransientElement* e,
+                              Model* model,
+                              UiScene* scene,
+                              const bool& in_web_vr_presentation) {
   if (!in_web_vr_presentation) {
     e->SetVisibleImmediately(false);
     return;
   }
 
-  // The reason we need the previous state is to disguish the
-  // situation where the app button has been released after a long
-  // press, and the situation when we want to initially show the
-  // indicators.
-  if (was_in_long_press && !in_long_press)
-    return;
-
   e->SetVisible(true);
   e->RefreshVisible();
-  SetVisibleInLayout(scene->GetUiElementByName(kWebVrExclusiveScreenToast),
-                     model->gvr_input_support && !in_long_press);
 
   auto specs = GetIndicatorSpecs();
   for (const auto& spec : specs) {
@@ -302,12 +283,6 @@ void BindIndicatorTranscience(
   }
 
   e->RemoveKeyframeModels(TRANSFORM);
-  if (in_long_press) {
-    // We do not do a translation animation for long press.
-    e->SetTranslate(0, 0, 0);
-    return;
-  }
-
   e->SetTranslate(0, kWebVrPermissionOffsetStart, 0);
 
   // Build up a keyframe model for the initial transition.
@@ -354,23 +329,10 @@ int GetIndicatorsTimeout() {
 #endif
 }
 
-NOINLINE void CrashIntentionally() {
-  LOG(ERROR) << "Crashing VR browser";
-
-  static int static_variable_to_make_this_function_unique = 0;
-  base::debug::Alias(&static_variable_to_make_this_function_unique);
-
-  volatile int* zero = nullptr;
-  *zero = 0;
-}
-
 }  // namespace
 
-UiSceneCreator::UiSceneCreator(UiBrowserInterface* browser,
-                               UiScene* scene,
-                               Ui* ui,
-                               Model* model)
-    : browser_(browser), scene_(scene), ui_(ui), model_(model) {}
+UiSceneCreator::UiSceneCreator(UiScene* scene, Ui* ui, Model* model)
+    : scene_(scene), ui_(ui), model_(model) {}
 
 UiSceneCreator::~UiSceneCreator() {}
 
@@ -384,12 +346,7 @@ void UiSceneCreator::CreateWebVrRoot() {
   auto element = std::make_unique<UiElement>();
   element->SetName(kWebVrRoot);
   element->SetVisible(true);
-  // TODO(https://crbug.com/913607): floor_height appears to be removable here,
-  // since it's always set to 0 and it looks to only be used as a getter. In
-  // this case, the translate is always returned as 0,0,0.
-  element->AddBinding(VR_BIND(
-      float, Model, model_, model->floor_height, UiElement, element.get(),
-      view->SetTranslate(0, value ? value - kFloorHeight : 0.0, 0.0)));
+  element->SetTranslate(0, 0, 0);
   scene_->AddUiElement(kRoot, std::move(element));
 }
 
@@ -620,19 +577,9 @@ void UiSceneCreator::CreateWebVrOverlayElements() {
 
   DrawPhase phase = kPhaseOverlayForeground;
 
-  IndicatorSpec app_button_spec = {kNone,
-                                   kWebVrExclusiveScreenToast,
-                                   kRemoveCircleOutlineIcon,
-                                   IDS_PRESS_APP_TO_EXIT,
-                                   0,
-                                   0,
-                                   nullptr};
-  indicators->AddChild(
-      CreateWebVrIndicator(model_, browser_, app_button_spec, phase));
-
   auto specs = GetIndicatorSpecs();
   for (const auto& spec : specs) {
-    indicators->AddChild(CreateWebVrIndicator(model_, browser_, spec, phase));
+    indicators->AddChild(CreateWebVrIndicator(model_, spec, phase));
   }
 
   auto parent = CreateTransientParent(kWebVrIndicatorTransience,
@@ -656,13 +603,12 @@ void UiSceneCreator::CreateWebVrOverlayElements() {
                          base::Unretained(parent.get()),
                          base::Unretained(model_), base::Unretained(scene_))));
 #else
-  parent->AddBinding(std::make_unique<Binding<std::tuple<bool, bool>>>(
+
+  parent->AddBinding(std::make_unique<Binding<bool>>(
       VR_BIND_LAMBDA(
           [](Model* model) {
-            return std::tuple<bool, bool>(
-                model->web_vr.IsImmersiveWebXrVisible() &&
-                    model->web_vr.has_received_permissions,
-                model->menu_button_long_pressed);
+            return model->web_vr.IsImmersiveWebXrVisible() &&
+                   model->web_vr.has_received_permissions;
           },
           base::Unretained(model_)),
       VR_BIND_LAMBDA(BindIndicatorTranscience, base::Unretained(parent.get()),

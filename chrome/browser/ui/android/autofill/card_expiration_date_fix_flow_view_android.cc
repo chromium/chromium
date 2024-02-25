@@ -47,6 +47,11 @@ void CardExpirationDateFixFlowViewAndroid::PromptDismissed(
 }
 
 void CardExpirationDateFixFlowViewAndroid::Show() {
+  if (!web_contents_->GetNativeView() ||
+      !web_contents_->GetNativeView()->GetWindowAndroid()) {
+    return;  // No window attached (yet or anymore).
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
 
   ScopedJavaLocalRef<jstring> dialog_title =
@@ -70,8 +75,10 @@ void CardExpirationDateFixFlowViewAndroid::Show() {
 
 void CardExpirationDateFixFlowViewAndroid::ControllerGone() {
   controller_ = nullptr;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutofillExpirationDateFixFlowBridge_dismiss(env, java_object_);
+  if (java_object_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AutofillExpirationDateFixFlowBridge_dismiss(env, java_object_);
+  }
 }
 
 CardExpirationDateFixFlowViewAndroid::~CardExpirationDateFixFlowViewAndroid() {

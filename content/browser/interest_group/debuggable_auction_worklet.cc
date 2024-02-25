@@ -82,13 +82,13 @@ DebuggableAuctionWorklet::~DebuggableAuctionWorklet() {
   }
 }
 
-absl::optional<base::ProcessId> DebuggableAuctionWorklet::GetPid(
+std::optional<base::ProcessId> DebuggableAuctionWorklet::GetPid(
     PidCallback callback) {
   return process_handle_->GetPid(std::move(callback));
 }
 
 void DebuggableAuctionWorklet::RequestPid() {
-  absl::optional<base::ProcessId> maybe_pid = process_handle_->GetPid(
+  std::optional<base::ProcessId> maybe_pid = process_handle_->GetPid(
       base::BindOnce(&DebuggableAuctionWorklet::OnHavePid,
                      weak_ptr_factory_.GetWeakPtr()));
   if (maybe_pid.has_value())

@@ -93,17 +93,17 @@ bool GetStyleSheet(const base::Value::Dict& dict,
 
 }  // namespace safe_html
 
-absl::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
+std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
   if (!value.is_dict()) {
     DVLOG(1) << "Parse error: top-level dictionary not found";
-    return absl::nullopt;
+    return std::nullopt;
   }
   const base::Value::Dict& dict = value.GetDict();
 
   const base::Value::Dict* update = dict.FindDict("update");
   if (!update) {
     DVLOG(1) << "Parse error: no update";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* maybe_language = update->FindString("language_code");
@@ -115,7 +115,7 @@ absl::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
   const base::Value::Dict* one_google_bar = update->FindDict("ogb");
   if (!one_google_bar) {
     DVLOG(1) << "Parse error: no ogb";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   OneGoogleBarData result;
@@ -123,13 +123,13 @@ absl::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
 
   if (!safe_html::GetHtml(*one_google_bar, "html", &result.bar_html)) {
     DVLOG(1) << "Parse error: no html";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::Dict* page_hooks = one_google_bar->FindDict("page_hooks");
   if (!page_hooks) {
     DVLOG(1) << "Parse error: no page_hooks";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   safe_html::GetScript(*page_hooks, "in_head_script", &result.in_head_script);
@@ -351,7 +351,7 @@ void OneGoogleBarLoaderImpl::LoadDone(
     // This represents network errors (i.e. the server did not provide a
     // response).
     DVLOG(1) << "Request failed with error: " << simple_loader->NetError();
-    Respond(Status::TRANSIENT_ERROR, absl::nullopt);
+    Respond(Status::TRANSIENT_ERROR, std::nullopt);
     return;
   }
 
@@ -373,17 +373,17 @@ void OneGoogleBarLoaderImpl::JsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
     DVLOG(1) << "Parsing JSON failed: " << result.error();
-    Respond(Status::FATAL_ERROR, absl::nullopt);
+    Respond(Status::FATAL_ERROR, std::nullopt);
     return;
   }
 
-  absl::optional<OneGoogleBarData> data = JsonToOGBData(*result);
+  std::optional<OneGoogleBarData> data = JsonToOGBData(*result);
   Respond(data.has_value() ? Status::OK : Status::FATAL_ERROR, data);
 }
 
 void OneGoogleBarLoaderImpl::Respond(
     Status status,
-    const absl::optional<OneGoogleBarData>& data) {
+    const std::optional<OneGoogleBarData>& data) {
   for (auto& callback : callbacks_) {
     std::move(callback).Run(status, data);
   }

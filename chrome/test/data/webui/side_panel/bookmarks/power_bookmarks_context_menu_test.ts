@@ -5,7 +5,7 @@
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
 
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
-import {PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
+import type {PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -63,7 +63,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(JSON.parse(JSON.stringify(folders)));
+    bookmarksApi.setFolders(structuredClone(folders));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     delegate = new TestPowerBookmarksDelegate();
@@ -242,6 +242,46 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         true);
     assertEquals(
         menuItems[6]!.textContent!.includes(
+            loadTimeData.getString('tooltipDelete')),
+        true);
+  });
+
+  test('ShowsMenuItemsForUserWithIncognitoDisabled', async () => {
+    loadTimeData.overrideValues({
+      isIncognitoModeAvailable: false,
+    });
+
+    const selection = [service.findBookmarkWithId('5')!];
+    powerBookmarksContextMenu.showAtPosition(
+        new MouseEvent('click'), selection, false, false);
+
+    await waitAfterNextRender(powerBookmarksContextMenu);
+
+    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
+        '.dropdown-item');
+    assertEquals(menuItems.length, 6);
+    assertEquals(
+        menuItems[0]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewTab')),
+        true);
+    assertEquals(
+        menuItems[1]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewWindow')),
+        true);
+    assertEquals(
+        menuItems[2]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewTabGroup')),
+        true);
+    assertEquals(
+        menuItems[3]!.textContent!.includes(
+            loadTimeData.getString('menuMoveToBookmarksBar')),
+        true);
+    assertEquals(
+        menuItems[4]!.textContent!.includes(
+            loadTimeData.getString('menuRename')),
+        true);
+    assertEquals(
+        menuItems[5]!.textContent!.includes(
             loadTimeData.getString('tooltipDelete')),
         true);
   });

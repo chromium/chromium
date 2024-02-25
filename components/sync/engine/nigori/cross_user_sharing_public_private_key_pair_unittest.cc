@@ -64,7 +64,7 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
 TEST(CrossUserSharingPublicPrivateKeyPairTest, CreateByImportShouldSucceed) {
   std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN, 0xDE);
 
-  absl::optional<CrossUserSharingPublicPrivateKeyPair> key =
+  std::optional<CrossUserSharingPublicPrivateKeyPair> key =
       CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
 
   ASSERT_TRUE(key.has_value());
@@ -79,7 +79,7 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
      CreateByImportShouldFailOnShorterKey) {
   std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN - 1, 0xDE);
 
-  absl::optional<CrossUserSharingPublicPrivateKeyPair> key =
+  std::optional<CrossUserSharingPublicPrivateKeyPair> key =
       CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
 
   EXPECT_FALSE(key.has_value());
@@ -89,7 +89,7 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
      CreateByImportShouldFailOnLongerKey) {
   std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN + 1, 0xDE);
 
-  absl::optional<CrossUserSharingPublicPrivateKeyPair> key =
+  std::optional<CrossUserSharingPublicPrivateKeyPair> key =
       CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
 
   EXPECT_FALSE(key.has_value());
@@ -103,14 +103,14 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest, ShouldEncryptAndDecrypt) {
 
   const std::string plaintext = "Sharing is caring";
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       sender_key_pair.HpkeAuthEncrypt(
           base::as_bytes(base::make_span(plaintext)),
           recipient_key_pair.GetRawPublicKey(), {});
 
   EXPECT_TRUE(encrypted_message.has_value());
 
-  absl::optional<std::vector<uint8_t>> decrypted_message =
+  std::optional<std::vector<uint8_t>> decrypted_message =
       recipient_key_pair.HpkeAuthDecrypt(encrypted_message.value(),
                                          sender_key_pair.GetRawPublicKey(), {});
 
@@ -128,7 +128,7 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
 
   std::vector<uint8_t> encrypted_message = {0, 1, 2, 3};
 
-  absl::optional<std::vector<uint8_t>> decrypted_message =
+  std::optional<std::vector<uint8_t>> decrypted_message =
       recipient_key_pair.HpkeAuthDecrypt(encrypted_message,
                                          sender_key_pair.GetRawPublicKey(), {});
 
@@ -143,7 +143,7 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
   const std::vector<uint8_t> recipient_public_key(X25519_PUBLIC_VALUE_LEN,
                                                   0x00);
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       sender_key_pair.HpkeAuthEncrypt(
           base::as_bytes(base::make_span("Sharing is caring")),
           recipient_public_key, {});
@@ -161,14 +161,14 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
 
   const std::vector<uint8_t> sender_public_key(X25519_PUBLIC_VALUE_LEN, 0xDE);
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       sender_key_pair.HpkeAuthEncrypt(
           base::as_bytes(base::make_span("Sharing is caring")),
           recipient_key_pair.GetRawPublicKey(), {});
 
   ASSERT_TRUE(encrypted_message.has_value());
 
-  absl::optional<std::vector<uint8_t>> decrypted_message =
+  std::optional<std::vector<uint8_t>> decrypted_message =
       recipient_key_pair.HpkeAuthDecrypt(encrypted_message.value(),
                                          sender_public_key, {});
 
@@ -183,7 +183,7 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
   CrossUserSharingPublicPrivateKeyPair recipient_key_pair =
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 
-  absl::optional<std::vector<uint8_t>> encrypted_message =
+  std::optional<std::vector<uint8_t>> encrypted_message =
       sender_key_pair.HpkeAuthEncrypt(
           base::as_bytes(base::make_span("Sharing is caring")),
           recipient_key_pair.GetRawPublicKey(), {});
@@ -192,7 +192,7 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
 
   encrypted_message.value()[5] = encrypted_message.value()[5] ^ 0xDE;
 
-  absl::optional<std::vector<uint8_t>> decrypted_message =
+  std::optional<std::vector<uint8_t>> decrypted_message =
       recipient_key_pair.HpkeAuthDecrypt(encrypted_message.value(),
                                          sender_key_pair.GetRawPublicKey(), {});
 

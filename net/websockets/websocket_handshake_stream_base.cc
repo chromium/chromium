@@ -4,9 +4,12 @@
 
 #include "net/websockets/websocket_handshake_stream_base.h"
 
+#include <stddef.h>
+
 #include <unordered_set>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -19,8 +22,9 @@ namespace net {
 // static
 std::string WebSocketHandshakeStreamBase::MultipleHeaderValuesMessage(
     const std::string& header_name) {
-  return std::string("'") + header_name +
-         "' header must not appear more than once in a response";
+  return base::StrCat(
+      {"'", header_name,
+       "' header must not appear more than once in a response"});
 }
 
 // static
@@ -64,10 +68,10 @@ bool WebSocketHandshakeStreamBase::ValidateSubProtocol(
         MultipleHeaderValuesMessage(websockets::kSecWebSocketProtocol);
     return false;
   } else if (count > 0 && requested_sub_protocols.size() == 0) {
-    *failure_message = std::string(
-                           "Response must not include 'Sec-WebSocket-Protocol' "
-                           "header if not present in request: ") +
-                       value;
+    *failure_message =
+        base::StrCat({"Response must not include 'Sec-WebSocket-Protocol' "
+                      "header if not present in request: ",
+                      value});
     return false;
   } else if (has_invalid_protocol) {
     *failure_message = "'Sec-WebSocket-Protocol' header value '" + value +

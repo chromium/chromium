@@ -6,10 +6,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/common/shell_switches.h"
 #include "media/base/media_switches.h"
@@ -48,8 +48,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
       return true;
 
     case PermissionType::MIDI:
-      if (base::FeatureList::IsEnabled(
-              permissions::features::kBlockMidiByDefault)) {
+      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
         return false;
       }
       return true;
@@ -69,6 +68,10 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::WINDOW_MANAGEMENT:
     case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
+    case PermissionType::CAPTURED_SURFACE_CONTROL:
+    case PermissionType::SMART_CARD:
+    case PermissionType::WEB_PRINTING:
+    case PermissionType::SPEAKER_SELECTION:
       return false;
   }
 
@@ -83,35 +86,19 @@ ShellPermissionManager::ShellPermissionManager() = default;
 ShellPermissionManager::~ShellPermissionManager() {
 }
 
-void ShellPermissionManager::RequestPermission(
-    PermissionType permission,
-    RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  if (render_frame_host->IsNestedWithinFencedFrame()) {
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
-    return;
-  }
-  std::move(callback).Run(IsAllowlistedPermissionType(permission)
-                              ? blink::mojom::PermissionStatus::GRANTED
-                              : blink::mojom::PermissionStatus::DENIED);
-}
-
 void ShellPermissionManager::RequestPermissions(
-    const std::vector<PermissionType>& permissions,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    RenderFrameHost* render_frame_host,
+    const PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
-        permissions.size(), blink::mojom::PermissionStatus::DENIED));
+        request_description.permissions.size(),
+        blink::mojom::PermissionStatus::DENIED));
     return;
   }
   std::vector<blink::mojom::PermissionStatus> result;
-  for (const auto& permission : permissions) {
+  for (const auto& permission : request_description.permissions) {
     result.push_back(IsAllowlistedPermissionType(permission)
                          ? blink::mojom::PermissionStatus::GRANTED
                          : blink::mojom::PermissionStatus::DENIED);
@@ -126,18 +113,18 @@ void ShellPermissionManager::ResetPermission(
 }
 
 void ShellPermissionManager::RequestPermissionsFromCurrentDocument(
-    const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
-    bool user_gesture,
+    const PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
-        permissions.size(), blink::mojom::PermissionStatus::DENIED));
+        request_description.permissions.size(),
+        blink::mojom::PermissionStatus::DENIED));
     return;
   }
   std::vector<blink::mojom::PermissionStatus> result;
-  for (const auto& permission : permissions) {
+  for (const auto& permission : request_description.permissions) {
     result.push_back(IsAllowlistedPermissionType(permission)
                          ? blink::mojom::PermissionStatus::GRANTED
                          : blink::mojom::PermissionStatus::DENIED);
@@ -212,7 +199,7 @@ ShellPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 ShellPermissionManager::SubscriptionId
-ShellPermissionManager::SubscribePermissionStatusChange(
+ShellPermissionManager::SubscribeToPermissionStatusChange(
     PermissionType permission,
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
@@ -221,7 +208,7 @@ ShellPermissionManager::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void ShellPermissionManager::UnsubscribePermissionStatusChange(
+void ShellPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {}
 
 }  // namespace content

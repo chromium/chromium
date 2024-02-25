@@ -23,6 +23,8 @@ class View;
 
 namespace ash {
 
+class LoginShelfButton;
+
 // The implementation of tooltip bubbles for the shelf.
 class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
  public:
@@ -42,7 +44,7 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
     kMaxValue = kDismissed
   };
 
-  ShelfShutdownConfirmationBubble(views::View* anchor,
+  ShelfShutdownConfirmationBubble(LoginShelfButton* anchor,
                                   ShelfAlignment alignment,
                                   base::OnceClosure on_confirm_callback,
                                   base::OnceClosure on_cancel_callback);
@@ -74,10 +76,11 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   // Report bubble action metrics
   void ReportBubbleAction(BubbleAction action);
 
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> cancel_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> confirm_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::LabelButton> cancel_ = nullptr;
+  raw_ptr<views::LabelButton> confirm_ = nullptr;
+  raw_ptr<LoginShelfButton, DanglingUntriaged> anchor_ = nullptr;
 
   enum class DialogResult { kNone, kCancelled, kConfirmed };
 

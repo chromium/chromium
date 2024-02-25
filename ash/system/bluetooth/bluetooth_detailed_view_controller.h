@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -78,14 +79,16 @@ class ASH_EXPORT BluetoothDetailedViewController
   mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       cros_system_properties_observer_receiver_{this};
 
+  mojo::Remote<mojom::HidPreservingBluetoothStateController>
+      remote_hid_preserving_bluetooth_;
+
   bluetooth_config::mojom::BluetoothSystemState system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
-  raw_ptr<BluetoothDetailedView, DanglingUntriaged | ExperimentalAsh> view_ =
-      nullptr;
+  raw_ptr<BluetoothDetailedView, DanglingUntriaged> view_ = nullptr;
   std::unique_ptr<BluetoothDeviceListController> device_list_controller_;
   PairedBluetoothDevicePropertiesPtrs connected_devices_;
   PairedBluetoothDevicePropertiesPtrs previously_connected_devices_;
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  raw_ptr<UnifiedSystemTrayController> tray_controller_;
 };
 
 }  // namespace ash

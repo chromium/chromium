@@ -91,6 +91,16 @@ class TestAuditNonBlinkUsageTest(unittest.TestCase):
                 'allowed': True,
                 'path': 'third_party/blink/renderer/modules/mediarecorder/'
             },
+            {
+                'type': 'isolate->GetContinuationPreservedEmbedderData',
+                'allowed': False,
+                'path': 'third_party/blink/renderer/'
+            },
+            {
+                'type': 'isolate->GetContinuationPreservedEmbedderData',
+                'allowed': True,
+                'path': 'third_party/blink/renderer/modules/scheduler/'
+            },
         ]
         for item in check_list:
             # Make sure that the identifier we're testing is parsed

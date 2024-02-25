@@ -7,12 +7,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome {
 
@@ -124,6 +124,12 @@ class MenuItemBuilder {
     return *this;
   }
 
+  // Marks the item as a section header menu item.
+  MenuItemBuilder& is_section_header() {
+    is_section_header_ = true;
+    return *this;
+  }
+
   // Builds a NSMenuItem instance from the properties set on the Builder.
   NSMenuItem* Build() const;
 
@@ -145,9 +151,11 @@ class MenuItemBuilder {
 
   bool is_removed_ = false;
 
-  absl::optional<std::vector<MenuItemBuilder>> submenu_;
+  std::optional<std::vector<MenuItemBuilder>> submenu_;
 
   bool is_hidden_ = false;
+
+  bool is_section_header_ = false;
 
   // Copy and assign allowed.
 };

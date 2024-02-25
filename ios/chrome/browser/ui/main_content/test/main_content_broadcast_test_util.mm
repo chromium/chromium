@@ -17,30 +17,19 @@ const CGFloat kOffsetDelta = 100.0;
 class TestMainContentUIStateModifier {
  public:
   TestMainContentUIStateModifier(TestMainContentUIState* state)
-      : state_(state),
-        original_offset_(state.yContentOffset),
-        was_scrolling_(state.scrolling),
-        was_dragging_(state.dragging) {
+      : state_(state), original_offset_(state.yContentOffset) {
     state_.yContentOffset += kOffsetDelta;
-    state_.scrolling = !was_scrolling_;
-    state_.dragging = !was_dragging_;
   }
   ~TestMainContentUIStateModifier() {
     state_.yContentOffset = original_offset_;
-    state_.scrolling = was_scrolling_;
-    state_.dragging = was_dragging_;
   }
 
   // The original values of the UI state.
   CGFloat original_offset() { return original_offset_; }
-  bool was_scrolling() { return was_scrolling_; }
-  bool was_dragging() { return was_dragging_; }
 
  private:
   __strong TestMainContentUIState* state_ = nil;
   CGFloat original_offset_ = 0.0;
-  bool was_scrolling_ = false;
-  bool was_dragging_ = false;
 };
 }  // namespace
 
@@ -57,12 +46,8 @@ void VerifyMainContentUIBroadcast(TestMainContentUIState* ui_state,
   // Verify whether the changed or original UI elements are observed.
   if (should_broadcast) {
     EXPECT_TRUE(AreCGFloatsEqual(observer.yOffset, ui_state.yContentOffset));
-    EXPECT_EQ(observer.scrolling, ui_state.scrolling);
-    EXPECT_EQ(observer.dragging, ui_state.dragging);
   } else {
     EXPECT_TRUE(AreCGFloatsEqual(observer.yOffset, modifier.original_offset()));
-    EXPECT_EQ(observer.scrolling, modifier.was_scrolling());
-    EXPECT_EQ(observer.dragging, modifier.was_dragging());
   }
   // Stop observing `broadcaster`.
   observer.broadcaster = nil;

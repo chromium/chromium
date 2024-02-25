@@ -41,7 +41,9 @@ enum class CloseStatus {
   kSuccess = 0,
   kGetToastHistoryFailed = 1,
   kRemovingToastFailed = 2,
-  kMaxValue = kRemovingToastFailed,
+  kEmptyAumi = 3,
+  kNotificationNotFound = 4,
+  kMaxValue = kNotificationNotFound,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

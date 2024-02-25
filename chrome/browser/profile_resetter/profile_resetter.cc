@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -48,7 +49,6 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths.h"
@@ -177,7 +177,7 @@ void ProfileResetter::ResetDefaultSearchEngine() {
     DCHECK(prefs);
     TemplateURLPrepopulateData::ClearPrepopulatedEnginesInPrefs(
         profile_->GetPrefs());
-    absl::optional<base::Value::List> search_engines(
+    std::optional<base::Value::List> search_engines(
         master_settings_->GetSearchProviderOverrides());
     if (search_engines.has_value()) {
       // This Chrome distribution channel provides a custom search engine. We
@@ -208,14 +208,13 @@ void ProfileResetter::ResetHomepage() {
   if (master_settings_->GetHomepage(&homepage))
     prefs->SetString(prefs::kHomePage, homepage);
 
-  absl::optional<bool> homepage_is_ntp =
-      master_settings_->GetHomepageIsNewTab();
+  std::optional<bool> homepage_is_ntp = master_settings_->GetHomepageIsNewTab();
   if (homepage_is_ntp.has_value())
     prefs->SetBoolean(prefs::kHomePageIsNewTabPage, *homepage_is_ntp);
   else
     prefs->ClearPref(prefs::kHomePageIsNewTabPage);
 
-  absl::optional<bool> show_home_button = master_settings_->GetShowHomeButton();
+  std::optional<bool> show_home_button = master_settings_->GetShowHomeButton();
   if (show_home_button.has_value())
     prefs->SetBoolean(prefs::kShowHomeButton, *show_home_button);
   else
@@ -296,7 +295,7 @@ void ProfileResetter::ResetStartupPages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
-  absl::optional<base::Value::List> url_list(
+  std::optional<base::Value::List> url_list(
       master_settings_->GetUrlsToRestoreOnStartup());
   if (url_list.has_value()) {
     prefs->SetList(prefs::kURLsToRestoreOnStartup, std::move(url_list).value());
@@ -313,7 +312,7 @@ void ProfileResetter::ResetStartupPages() {
 
 void ProfileResetter::ResetPinnedTabs() {
   // Unpin all the tabs.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->is_type_normal() && browser->profile() == profile_) {
       TabStripModel* tab_model = browser->tab_strip_model();
       // Here we assume that indexof(any mini tab) < indexof(any normal tab).

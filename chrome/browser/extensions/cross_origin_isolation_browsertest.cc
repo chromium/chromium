@@ -17,6 +17,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -62,7 +63,7 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
     CHECK(!options.is_platform_app || !options.use_service_worker)
         << "Platform apps cannot use 'service_worker' key.";
 
-    constexpr char kManifestTemplate[] = R"(
+    static constexpr char kManifestTemplate[] = R"(
       {
         %s,
         %s
@@ -187,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
   auto test_image_load = [](content::RenderFrameHost* render_frame_host,
                             const GURL& image_url) -> std::string {
-    constexpr char kScript[] = R"(
+    static constexpr char kScript[] = R"(
       (() => {
         let img = document.createElement('img');
         return new Promise(resolve => {
@@ -335,11 +336,11 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
 
     GURL* url = nullptr;
     EXPECT_EQ(
-        Feature::BLESSED_EXTENSION_CONTEXT,
+        mojom::ContextType::kPrivilegedExtension,
         process_map->GetMostLikelyContextType(
             coi_extension,
             coi_background_render_frame_host->GetProcess()->GetID(), url));
-    EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT,
+    EXPECT_EQ(mojom::ContextType::kPrivilegedExtension,
               process_map->GetMostLikelyContextType(
                   coi_extension, extension_iframe->GetProcess()->GetID(), url));
   }
@@ -348,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   // contexts inherit extension's cross-origin privileges.
   {
     auto execute_fetch = [](content::RenderFrameHost* host, const GURL& url) {
-      const char* kScript = R"(
+      static constexpr char kScript[] = R"(
         fetch('%s')
           .then(response => response.text())
           .catch(err => "Fetch error: " + err);
@@ -399,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
   RestrictProcessCount();
 
-  constexpr char kServiceWorkerScript[] = R"(
+  static constexpr char kServiceWorkerScript[] = R"(
     const readyMessage = crossOriginIsolated ?
         'crossOriginIsolated' : 'notCrossOriginIsolated';
     chrome.test.sendMessage(readyMessage, () => {});
@@ -444,10 +445,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
                                     service_worker_process->GetID()));
 
   GURL* url = nullptr;
-  EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(mojom::ContextType::kPrivilegedExtension,
             process_map->GetMostLikelyContextType(
                 coi_extension, extension_tab->GetProcess()->GetID(), url));
-  EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(mojom::ContextType::kPrivilegedExtension,
             process_map->GetMostLikelyContextType(
                 coi_extension, service_worker_process->GetID(), url));
 }
@@ -488,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   {
     auto test_get_background_page = [](content::RenderFrameHost* host,
                                        bool expect_background_page) {
-      constexpr char kScript[] = R"(
+      static constexpr char kScript[] = R"(
         const expectBackgroundPage = %s;
         const hasBackgroundPage = !!chrome.extension.getBackgroundPage();
         hasBackgroundPage === expectBackgroundPage;
@@ -513,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   {
     auto verify_get_tabs = [](content::RenderFrameHost* host,
                               int num_tabs_expected) {
-      constexpr char kScript[] = R"(
+      static constexpr char kScript[] = R"(
         const numTabsExpected = %d;
         const tabs = chrome.extension.getViews({type: 'tab'});
         tabs.length === numTabsExpected;
@@ -537,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   RestrictProcessCount();
 
-  constexpr char kTestJs[] = R"(
+  static constexpr char kTestJs[] = R"(
       function inIframe () {
         try {
           // Accessing `window.top` may raise an error due to the same origin
@@ -595,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   auto test_messaging = [](content::RenderFrameHost* source,
                            content::RenderFrameHost* destination,
                            const char* expected_response) {
-    constexpr char kScript[] = R"(
+    static constexpr char kScript[] = R"(
       chrome.runtime.sendMessage('hello', response => {
         chrome.test.assertNoLastError();
         chrome.test.assertEq($1, response);
@@ -627,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        ExtensionMessaging_ServiceWorker) {
   RestrictProcessCount();
 
-  constexpr char kTestJs[] = R"(
+  static constexpr char kTestJs[] = R"(
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       console.log('message received');
       if (message !== 'hello-from-service-worker') {
@@ -639,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
     });
   )";
 
-  constexpr char kServiceWorkerScript[] = R"(
+  static constexpr char kServiceWorkerScript[] = R"(
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message !== 'hello-from-tab') {
         sendResponse('Invalid message received by service worker ' + message);
@@ -685,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
   {
     SCOPED_TRACE("Message from tab to service worker.");
-    constexpr char kScript[] = R"(
+    static constexpr char kScript[] = R"(
       chrome.runtime.sendMessage('hello-from-tab', response => {
         chrome.test.assertNoLastError();
         chrome.test.assertEq('ack-from-service-worker', response);

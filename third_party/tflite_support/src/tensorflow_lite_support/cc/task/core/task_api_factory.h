@@ -18,10 +18,11 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/base/macros.h"    // from @com_google_absl
+#include "absl/base/macros.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
 #include "tensorflow/lite/kernels/op_macros.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -48,15 +49,14 @@ class TaskAPIFactory {
       "Use CreateFromBaseOptions and configure model input from "
       "tensorflow_lite_support/cc/task/core/proto/base_options.proto")
   static tflite::support::StatusOr<std::unique_ptr<T>> CreateFromBuffer(
-      const char* buffer_data,
-      size_t buffer_size,
+      const char* buffer_data, size_t buffer_size,
       std::unique_ptr<tflite::OpResolver> resolver =
           absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
       int num_threads = 1,
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
-    RETURN_IF_ERROR(engine->BuildModelFromFlatBuffer(buffer_data, buffer_size,
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFlatBuffer(buffer_data, buffer_size,
                                                      compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
@@ -74,7 +74,7 @@ class TaskAPIFactory {
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
-    RETURN_IF_ERROR(engine->BuildModelFromFile(file_name, compute_settings));
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFile(file_name, compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
   }
@@ -91,7 +91,7 @@ class TaskAPIFactory {
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
-    RETURN_IF_ERROR(engine->BuildModelFromFileDescriptor(file_descriptor,
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFileDescriptor(file_descriptor,
                                                          compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
@@ -104,13 +104,13 @@ class TaskAPIFactory {
   static tflite::support::
       StatusOr<std::unique_ptr<T>> CreateFromExternalFileProto(
           const ExternalFile* external_file,
-          std::unique_ptr<tflite::OpResolver> resolver =
-              absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
+          std::unique_ptr<tflite::OpResolver> resolver = absl::make_unique<
+              tflite::ops::builtin::BuiltinOpResolver>(),
           int num_threads = 1,
           const tflite::proto::ComputeSettings& compute_settings =
               tflite::proto::ComputeSettings()) {
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
-    RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(external_file,
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(external_file,
                                                             compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
@@ -146,10 +146,10 @@ class TaskAPIFactory {
     tflite::proto::ComputeSettings compute_settings(
         base_options->compute_settings());
     if (compute_settings.has_settings_to_test_locally()) {
-      RETURN_IF_ERROR(SetMiniBenchmarkFileNameFromBaseOptions(compute_settings,
+      TFLITE_RETURN_IF_ERROR(SetMiniBenchmarkFileNameFromBaseOptions(compute_settings,
                                                               base_options));
     }
-    RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(
+    TFLITE_RETURN_IF_ERROR(engine->BuildModelFromExternalFileProto(
         &base_options->model_file(), compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), compute_settings);
   }
@@ -157,8 +157,7 @@ class TaskAPIFactory {
  private:
   template <typename T, EnableIfBaseUntypedTaskApiSubclass<T> = nullptr>
   static tflite::support::StatusOr<std::unique_ptr<T>> CreateFromTfLiteEngine(
-      std::unique_ptr<TfLiteEngine> engine,
-      int num_threads,
+      std::unique_ptr<TfLiteEngine> engine, int num_threads,
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
     tflite::proto::ComputeSettings settings_copy =
@@ -174,7 +173,7 @@ class TaskAPIFactory {
       std::unique_ptr<TfLiteEngine> engine,
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
-    RETURN_IF_ERROR(engine->InitInterpreter(compute_settings));
+    TFLITE_RETURN_IF_ERROR(engine->InitInterpreter(compute_settings));
     return absl::make_unique<T>(std::move(engine));
   }
 

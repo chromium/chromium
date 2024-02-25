@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -41,6 +42,7 @@ MediaStream* CreateMediaStream(V8TestingScope* scope) {
 // This is a regression test for crbug.com/1040339
 TEST(MediaRecorderTest,
      AcceptsAllTracksEndedEventWhenExecutionContextDestroyed) {
+  test::TaskEnvironment task_environment;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   {
     V8TestingScope scope;
@@ -58,6 +60,7 @@ TEST(MediaRecorderTest,
 
 // This is a regression test for crbug.com/1179312
 TEST(MediaRecorderTest, ReturnsNoPendingActivityAfterRecorderStopped) {
+  test::TaskEnvironment task_environment;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   V8TestingScope scope;
   MediaStream* stream = CreateMediaStream(&scope);

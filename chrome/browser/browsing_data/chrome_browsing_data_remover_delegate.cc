@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/navigation_entry_remover.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -49,15 +49,13 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
-#include "chrome/browser/media/history/media_history_keyed_service.h"
-#include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
@@ -67,6 +65,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -74,6 +73,7 @@
 #include "chrome/browser/share/share_ranking.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
@@ -109,16 +109,20 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
@@ -290,10 +294,11 @@ std::vector<std::string>
 ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
     content::StoragePartition* storage_partition,
     uint64_t remove_mask) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return {};
-  }
+#if BUILDFLAG(IS_ANDROID)
+  // On Android the identity model isn't based on Gaia cookies, so they can be
+  // wiped immediately without influencing the wiping of account-scoped data.
+  return {};
+#else
   // The Google/Gaia cookies we care about live in the default StoragePartition.
   if (!storage_partition->GetConfig().is_default() ||
       (remove_mask & constants::DEFERRED_COOKIE_DELETION_DATA_TYPES) == 0) {
@@ -313,6 +318,7 @@ ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
     domains.insert(domain);
   }
   return {domains.begin(), domains.end()};
+#endif
 }
 
 void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
@@ -326,7 +332,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
            ~content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS &
            ~constants::FILTERABLE_DATA_TYPES) == 0) ||
          filter_builder->MatchesAllOriginsAndDomains());
-  DCHECK(!should_clear_password_account_storage_settings_);
+#if !BUILDFLAG(IS_ANDROID)
+  DCHECK(!should_clear_sync_account_settings_);
+#endif
 
   TRACE_EVENT0("browsing_data",
                "ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData");
@@ -424,7 +432,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       base::RecordAction(UserMetricsAction("ClearBrowsingData_History"));
       history_service->DeleteLocalAndRemoteHistoryBetween(
           WebHistoryServiceFactory::GetForProfile(profile_), delete_begin_,
-          delete_end_, CreateTaskCompletionClosure(TracingDataType::kHistory),
+          delete_end_, history::kNoAppIdFilter,
+          CreateTaskCompletionClosure(TracingDataType::kHistory),
           &history_task_tracker_);
     }
     if (ClipboardRecentContent::GetInstance())
@@ -663,13 +672,15 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #endif
     }
 
+#if !BUILDFLAG(IS_ANDROID)
     if (nullable_filter.is_null() ||
         (!filter_builder->IsCrossSiteClearSiteDataForCookies() &&
          nullable_filter.Run(GaiaUrls::GetInstance()->google_url()))) {
       // Set a flag to clear account storage settings later instead of clearing
       // it now as we can not reset this setting before passwords are deleted.
-      should_clear_password_account_storage_settings_ = true;
+      should_clear_sync_account_settings_ = true;
     }
+#endif
 
     // Persistent Origin Trial tokens are only saved until the next page
     // load from the same origin. For that reason, they are not saved with
@@ -733,6 +744,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetDefaultForBrowserContext(profile_);
     zoom_map->ClearZoomLevels(delete_begin, delete_end_);
+
+    // Discard exceptions weren't stored with timestamps, so they all must be
+    // cleared.
+    performance_manager::user_tuning::prefs::ClearTabDiscardExceptions(
+        prefs, delete_begin_, delete_end_);
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
@@ -761,6 +777,20 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       auto* dict = spellcheck->GetCustomDictionary();
       if (dict)
         dict->Clear();
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // DATA_TYPE_READING_LIST
+  if (remove_mask & constants::DATA_TYPE_READING_LIST) {
+    auto* reading_list_model =
+        ReadingListModelFactory::GetForBrowserContext(profile_);
+    if (reading_list_model) {
+      if (delete_begin_.is_null() && delete_end_.is_max()) {
+        reading_list_model->DeleteAllEntries();
+      } else {
+        NOTIMPLEMENTED();
+      }
     }
   }
 
@@ -857,7 +887,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // Password manager
   if (remove_mask & constants::DATA_TYPE_PASSWORDS) {
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Passwords"));
-    auto password_store = PasswordStoreFactory::GetForProfile(
+    auto password_store = ProfilePasswordStoreFactory::GetForProfile(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (password_store) {
@@ -875,6 +905,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ->ClearHttpAuthCache(
             delete_begin_.is_null() ? base::Time::Min() : delete_begin_,
             delete_end_.is_null() ? base::Time::Max() : delete_end_,
+            filter_builder->BuildNetworkServiceFilter(),
             CreateTaskCompletionClosureForMojo(
                 TracingDataType::kHttpAuthCache));
 
@@ -919,37 +950,40 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (account_store) {
-      // A sync completion callback is passed in for account
-      // passwords, in order to ensure that the passwords are cleared before the
-      // user is signed out via cookie deletion.
-      // TODO:(crbug.com/1167715) - Test that associated compromised credentials
-      // are removed.
+      // Desktop must wait for DATA_TYPE_ACCOUNT_PASSWORDS deletions to be
+      // uploaded to the sync server before deleting any other types (because
+      // deleting DATA_TYPE_COOKIES first would revoke the account storage
+      // opt-in and prevent the upload).
+      // On Android, the account storage doesn't depend on cookies, so there's
+      // no need to wait.
+      base::OnceCallback<void(bool)> sync_completion;
+#if !BUILDFLAG(IS_ANDROID)
+      sync_completion =
+          CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
+                                       constants::DATA_TYPE_ACCOUNT_PASSWORDS);
+#endif
       account_store->RemoveLoginsByURLAndTime(
           filter, delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
-          CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
-                                       constants::DATA_TYPE_ACCOUNT_PASSWORDS));
+          std::move(sync_completion));
     }
   }
 
-  if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) {
-    password_manager::PasswordStoreInterface* password_store =
-        PasswordStoreFactory::GetForProfile(profile_,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
-            .get();
-
-    if (password_store &&
-        !filter_builder->IsCrossSiteClearSiteDataForCookies()) {
-      password_store->DisableAutoSignInForOrigins(
-          filter,
-          CreateTaskCompletionClosure(TracingDataType::kDisableAutoSignin));
-    }
+  CHECK(deferred_disable_passwords_auto_signin_cb_.is_null(),
+        base::NotFatalUntil::M125);
+  if ((remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) &&
+      !filter_builder->IsCrossSiteClearSiteDataForCookies()) {
+    // Unretained() is safe, this is only executed in OnTasksComplete() if the
+    // object is still alive. Also, see the field docs for motivation.
+    deferred_disable_passwords_auto_signin_cb_ = base::BindOnce(
+        &ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin,
+        base::Unretained(this), filter);
   }
 
   if (remove_mask & constants::DATA_TYPE_HISTORY) {
     password_manager::PasswordStoreInterface* password_store =
-        PasswordStoreFactory::GetForProfile(profile_,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
+        ProfilePasswordStoreFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
 
     if (password_store) {
@@ -1377,22 +1411,36 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   if (!pending_sub_tasks_.empty())
     return;
 
-  // Explicitly clear any opt-ins to the account-scoped password storage
-  // when cookies are being cleared. This needs to happen after passwords
-  // have been deleted, so it is performed when all other tasks are completed.
+  if (deferred_disable_passwords_auto_signin_cb_) {
+    std::move(deferred_disable_passwords_auto_signin_cb_).Run();
+
+    // Might have added new tasks.
+    if (!pending_sub_tasks_.empty()) {
+      return;
+    }
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Explicitly clear any per account sync settings when cookies are being
+  // cleared. This needs to happen after the corresponding data has been
+  // deleted, so it is performed when all other tasks are completed.
   // Note: These usually get cleared automatically when the Google cookies are
   // deleted, but there is one edge case where that doesn't work: If the user
   // clears cookies via CBD while they are already signed out (but their
   // account is still present in the account chooser). In that case, without the
   // code below, the settings-clearing would only happen when the Google cookies
   // are refreshed the next time, typically on the next browser restart.
-  if (should_clear_password_account_storage_settings_) {
-    should_clear_password_account_storage_settings_ = false;
-#if !BUILDFLAG(IS_ANDROID)
-    password_manager::features_util::ClearAccountStorageSettingsForAllUsers(
-        profile_->GetPrefs());
-#endif  // !BUILDFLAG(IS_ANDROID)
+  if (should_clear_sync_account_settings_) {
+    should_clear_sync_account_settings_ = false;
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(profile_);
+    if (sync_service) {
+      sync_service->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers({});
+    }
+    password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
+        profile_->GetPrefs(), {});
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   slow_pending_tasks_closure_.Cancel();
 
@@ -1407,8 +1455,6 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "Synchronous";
     case TracingDataType::kHistory:
       return "History";
-    case TracingDataType::kHostNameResolution:
-      return "HostNameResolution";
     case TracingDataType::kNaclCache:
       return "NaclCache";
     case TracingDataType::kPnaclCache:
@@ -1417,8 +1463,6 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "AutofillData";
     case TracingDataType::kAutofillOrigins:
       return "AutofillOrigins";
-    case TracingDataType::kPluginData:
-      return "PluginData";
     case TracingDataType::kDomainReliability:
       return "DomainReliability";
     case TracingDataType::kWebrtcLogs:
@@ -1431,24 +1475,18 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "Passwords";
     case TracingDataType::kHttpAuthCache:
       return "HttpAuthCache";
-    case TracingDataType::kDisableAutoSignin:
-      return "DisableAutoSignin";
+    case TracingDataType::kDisableAutoSigninForProfilePasswords:
+      return "DisableAutoSigninForProfilePasswords";
+    case TracingDataType::kDisableAutoSigninForAccountPasswords:
+      return "DisableAutoSigninForAccountPasswords";
     case TracingDataType::kPasswordsStatistics:
       return "PasswordsStatistics";
-    case TracingDataType::kKeywordsModel:
-      return "KeywordsModel";
     case TracingDataType::kReportingCache:
       return "ReportingCache";
     case TracingDataType::kNetworkErrorLogging:
       return "NetworkErrorLogging";
-    case TracingDataType::kFlashDeauthorization:
-      return "FlashDeauthorization";
     case TracingDataType::kOfflinePages:
       return "OfflinePages";
-    case TracingDataType::kExploreSites:
-      return "ExploreSites";
-    case TracingDataType::kLegacyStrikes:
-      return "LegacyStrikes";
     case TracingDataType::kWebrtcEventLogs:
       return "WebrtcEventLogs";
     case TracingDataType::kCdmLicenses:
@@ -1457,20 +1495,12 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "HostCache";
     case TracingDataType::kTpmAttestationKeys:
       return "TpmAttestationKeys";
-    case TracingDataType::kStrikes:
-      return "Strikes";
-    case TracingDataType::kCompromisedCredentials:
-      return "CompromisedCredentials";
     case TracingDataType::kUserDataSnapshot:
       return "UserDataSnapshot";
-    case TracingDataType::kMediaFeeds:
-      return "MediaFeeds";
     case TracingDataType::kAccountPasswords:
       return "AccountPasswords";
     case TracingDataType::kAccountPasswordsSynced:
       return "AccountPasswordsSynced";
-    case TracingDataType::kAccountCompromisedCredentials:
-      return "AccountCompromisedCredentials";
     case TracingDataType::kFaviconCacheExpiration:
       return "FaviconCacheExpiration";
     case TracingDataType::kSecurePaymentConfirmationCredentials:
@@ -1499,9 +1529,11 @@ void ChromeBrowsingDataRemoverDelegate::OnDoneRemoving() {
 base::OnceClosure
 ChromeBrowsingDataRemoverDelegate::CreateTaskCompletionClosure(
     TracingDataType data_type) {
-  return base::BindOnce(
-      CreateTaskCompletionCallback(data_type, /*data_type_mask=*/0),
-      /*success=*/true);
+  OnTaskStarted(data_type);
+  return base::BindOnce(&ChromeBrowsingDataRemoverDelegate::OnTaskComplete,
+                        weak_ptr_factory_.GetWeakPtr(), data_type,
+                        /*data_type_mask=*/0, base::TimeTicks::Now(),
+                        /*success=*/true);
 }
 
 base::OnceCallback<void(bool)>
@@ -1575,4 +1607,30 @@ ChromeBrowsingDataRemoverDelegate::MakeCredentialStore() {
 #else
       nullptr;
 #endif
+}
+
+void ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin(
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter) {
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface> account_store =
+      AccountPasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (profile_store) {
+    profile_store->DisableAutoSignInForOrigins(
+        url_filter,
+        CreateTaskCompletionClosure(
+            TracingDataType::kDisableAutoSigninForProfilePasswords));
+  }
+  if (account_store &&
+      password_manager::features_util::IsOptedInForAccountStorage(
+          profile_->GetPrefs(), sync_service)) {
+    account_store->DisableAutoSignInForOrigins(
+        url_filter,
+        CreateTaskCompletionClosure(
+            TracingDataType::kDisableAutoSigninForAccountPasswords));
+  }
 }

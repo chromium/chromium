@@ -113,15 +113,18 @@ class NET_EXPORT ProxyConfig {
     // Returns true if |*this| describes the same configuration as |other|.
     bool Equals(const ProxyRules& other) const;
 
+    static ProxyRules CreateForTesting(const ProxyList& proxy_list) {
+      ProxyRules proxy_rules;
+      proxy_rules.type = Type::PROXY_LIST;
+      proxy_rules.single_proxies = proxy_list;
+      return proxy_rules;
+    }
+
     // Exceptions for when not to use a proxy.
     ProxyBypassRules bypass_rules;
 
     // Reverse the meaning of |bypass_rules|.
     bool reverse_bypass = false;
-
-    // Only proxy resources in NetworkServiceProxyAllowList if they are used in
-    // a 3P context. 1P resources will bypass the proxy.
-    bool restrict_to_network_service_proxy_allow_list = false;
 
     Type type = Type::EMPTY;
 
@@ -224,6 +227,12 @@ class NET_EXPORT ProxyConfig {
     config.set_pac_url(pac_url);
     // By default fall back to direct connection in case PAC script fails.
     config.set_pac_mandatory(false);
+    return config;
+  }
+
+  static ProxyConfig CreateForTesting(const ProxyList& proxy_list) {
+    ProxyConfig config;
+    config.proxy_rules_ = ProxyRules::CreateForTesting(proxy_list);
     return config;
   }
 

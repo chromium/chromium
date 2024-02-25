@@ -12,6 +12,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/window_info.h"
 
 namespace base {
 class Value;
@@ -20,7 +21,6 @@ class Value;
 namespace app_restore {
 
 struct AppLaunchInfo;
-struct WindowInfo;
 
 // This class is responsible for saving all app launch and app windows
 // information. It can be converted to JSON format to be written to the

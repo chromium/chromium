@@ -23,7 +23,7 @@
 #include "url/gurl.h"
 
 using apps::GetAppTypeName;
-using web_app::AppId;
+using webapps::AppId;
 
 class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
  public:

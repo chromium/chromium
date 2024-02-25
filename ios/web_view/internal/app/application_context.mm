@@ -136,9 +136,9 @@ PrefService* ApplicationContext::GetLocalState() {
     int max_normal_socket_pool_count =
         net::ClientSocketPoolManager::max_sockets_per_group(
             net::HttpNetworkSession::NORMAL_SOCKET_POOL);
-    int socket_count = std::max<int>(net::kDefaultMaxSocketsPerProxyServer,
+    int socket_count = std::max<int>(net::kDefaultMaxSocketsPerProxyChain,
                                      max_normal_socket_pool_count);
-    net::ClientSocketPoolManager::set_max_sockets_per_proxy_server(
+    net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
         net::HttpNetworkSession::NORMAL_SOCKET_POOL, socket_count);
   }
   return local_state_.get();
@@ -155,7 +155,7 @@ ApplicationContext::GetSharedURLLoaderFactory() {
     auto url_loader_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
     url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-    url_loader_factory_params->is_corb_enabled = false;
+    url_loader_factory_params->is_orb_enabled = false;
     GetSystemNetworkContext()->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(),
         std::move(url_loader_factory_params));

@@ -5,11 +5,10 @@
 #ifndef SERVICES_DEVICE_USB_USB_SERVICE_IMPL_H_
 #define SERVICES_DEVICE_USB_USB_SERVICE_IMPL_H_
 
-#include "services/device/usb/usb_service.h"
-
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,7 +20,7 @@
 #include "services/device/usb/scoped_libusb_device_ref.h"
 #include "services/device/usb/usb_context.h"
 #include "services/device/usb/usb_device_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "services/device/usb/usb_service.h"
 #include "third_party/libusb/src/libusb/libusb.h"
 
 struct libusb_context;
@@ -50,7 +49,7 @@ class UsbServiceImpl final : public UsbService {
   // Enumerate USB devices from OS and update devices_ map.
   void RefreshDevices();
   void OnDeviceList(
-      absl::optional<std::vector<ScopedLibusbDeviceRef>> platform_devices);
+      std::optional<std::vector<ScopedLibusbDeviceRef>> platform_devices);
   void RefreshDevicesComplete();
 
   // Creates a new UsbDevice based on the given libusb device.

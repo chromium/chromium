@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -57,7 +58,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
                              InfoBarObserver::Type::kInfoBarAdded);
     InstallExtension("theme.crx");
     observer.Wait();
-    EXPECT_EQ(1u, infobar_manager1->infobar_count());
+    EXPECT_EQ(1u, infobar_manager1->infobars().size());
   }
 
   infobars::ContentInfoBarManager* infobar_manager2 = nullptr;
@@ -149,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
     InstallExtension("theme2.crx");
     observer_removed.Wait();
     observer_added.Wait();
-    EXPECT_EQ(0u, infobar_manager1->infobar_count());
-    EXPECT_EQ(1u, infobar_manager2->infobar_count());
+    EXPECT_EQ(0u, infobar_manager1->infobars().size());
+    EXPECT_EQ(1u, infobar_manager2->infobars().size());
   }
 
   // Switching back to the default theme should close the infobar.
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
                              InfoBarObserver::Type::kInfoBarRemoved);
     ThemeServiceFactory::GetForProfile(browser()->profile())->UseDefaultTheme();
     observer.Wait();
-    EXPECT_EQ(0u, infobar_manager2->infobar_count());
+    EXPECT_EQ(0u, infobar_manager2->infobars().size());
   }
 }
 
@@ -370,7 +370,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           /*shared_tab=*/false,
           /*share_this_tab_instead_button_state=*/
           TabSharingInfoBarDelegate::ButtonState::ENABLED,
-          /*focus_target=*/absl::nullopt, /*ui=*/nullptr,
+          /*focus_target=*/std::nullopt, /*ui=*/nullptr,
           TabSharingInfoBarDelegate::TabShareType::CAPTURE);
       break;
 
@@ -386,7 +386,7 @@ bool InfoBarUiTest::VerifyUi() {
   return TestInfoBar::VerifyUi() &&
          (VerifyPixelUi(BrowserView::GetBrowserViewForBrowser(browser())
                             ->infobar_container(),
-                        test_info->test_case_name(),
+                        test_info->test_suite_name(),
                         test_info->name()) != ui::test::ActionResult::kFailed);
 }
 

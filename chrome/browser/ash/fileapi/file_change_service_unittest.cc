@@ -15,10 +15,11 @@
 #include "chrome/browser/ash/fileapi/file_change_service_factory.h"
 #include "chrome/browser/ash/fileapi/file_change_service_observer.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
@@ -26,10 +27,12 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/mock_blob_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace ash {
@@ -84,6 +87,11 @@ class MockFileChangeServiceObserver : public FileChangeServiceObserver {
               OnFileMoved,
               (const storage::FileSystemURL& src,
                const storage::FileSystemURL& dst),
+              (override));
+  MOCK_METHOD(void,
+              OnFileCreatedFromShowSaveFilePicker,
+              (const GURL& file_picker_binding_context,
+               const storage::FileSystemURL& url),
               (override));
 };
 
@@ -213,7 +221,7 @@ class TempFileSystem {
   }
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const url::Origin origin_;
   const std::string name_;
   base::ScopedTempDir temp_dir_;
@@ -223,32 +231,23 @@ class TempFileSystem {
 
 class FileChangeServiceTest : public BrowserWithTestWindowTest {
  public:
-  FileChangeServiceTest()
-      : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
+  FileChangeServiceTest() = default;
 
   FileChangeServiceTest(const FileChangeServiceTest& other) = delete;
   FileChangeServiceTest& operator=(const FileChangeServiceTest& other) = delete;
   ~FileChangeServiceTest() override = default;
 
   // Creates and returns a new profile for the specified `name`.
-  TestingProfile* CreateProfileWithName(const std::string& name) {
-    const AccountId account_id(AccountId::FromUserEmail(name));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    return profile_manager()->CreateTestingProfile(name);
+  TestingProfile* CreateLoggedInUserProfile(const std::string& name) {
+    LogIn(name);
+    return CreateProfile(name);
   }
 
  private:
   // BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
-    constexpr char kPrimaryProfileName[] = "primary_profile@test";
-    return CreateProfileWithName(kPrimaryProfileName);
+  std::string GetDefaultProfileName() override {
+    return "promary_profile@test";
   }
-
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
 };
 
 }  // namespace
@@ -267,7 +266,7 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
 
   // `FileChangeService` should be created as needed for additional profiles.
   constexpr char kSecondaryProfileName[] = "secondary_profile@test";
-  auto* secondary_profile = CreateProfileWithName(kSecondaryProfileName);
+  auto* secondary_profile = CreateLoggedInUserProfile(kSecondaryProfileName);
   auto* secondary_profile_service = factory->GetService(secondary_profile);
   ASSERT_TRUE(secondary_profile_service);
 
@@ -330,7 +329,7 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstanceForOTRGuestProfile) {
   ASSERT_NE(otr_guest_profile_service, guest_profile_service);
 }
 
-// Verifies `OnFileCopied` events are propagated to observers.
+// Verifies `OnFileCopied()` events are propagated to observers.
 TEST_F(FileChangeServiceTest, PropagatesOnFileCopiedEvents) {
   auto* profile = GetProfile();
   auto* service = FileChangeServiceFactory::GetInstance()->GetService(profile);
@@ -406,7 +405,7 @@ TEST_F(FileChangeServiceTest, PropagatesOnFileCopiedEvents) {
   }
 }
 
-// Verifies `OnFileMoved` events are propagated to observers.
+// Verifies `OnFileMoved()` events are propagated to observers.
 TEST_F(FileChangeServiceTest, PropagatesOnFileMovedEvents) {
   auto* profile = GetProfile();
   auto* service = FileChangeServiceFactory::GetInstance()->GetService(profile);
@@ -469,7 +468,7 @@ TEST_F(FileChangeServiceTest, PropagatesOnFileMovedEvents) {
   }
 }
 
-// Verifies `OnFileModified` events are propagated to observers.
+// Verifies `OnFileModified()` events are propagated to observers.
 TEST_F(FileChangeServiceTest, PropagatesOnFileModifiedEvents) {
   auto* profile = GetProfile();
   auto* service = FileChangeServiceFactory::GetInstance()->GetService(profile);
@@ -534,6 +533,30 @@ TEST_F(FileChangeServiceTest, PropagatesOnFileModifiedEvents) {
               base::File::FILE_OK);
     modify_run_loop.Run();
   }
+}
+
+// Verifies `OnFileCreatedFromShowSaveFilePicker()` events are propagated to
+// observers.
+TEST_F(FileChangeServiceTest,
+       PropagatesOnFileCreatedFromShowSaveFilePickerEvents) {
+  auto* profile = GetProfile();
+  auto* service = FileChangeServiceFactory::GetInstance()->GetService(profile);
+  ASSERT_TRUE(service);
+
+  testing::NiceMock<MockFileChangeServiceObserver> mock_observer;
+  base::ScopedObservation<FileChangeService, FileChangeServiceObserver>
+      scoped_observation(&mock_observer);
+  scoped_observation.Observe(service);
+
+  const GURL file_picker_binding_context;
+  const storage::FileSystemURL url;
+
+  EXPECT_CALL(mock_observer, OnFileCreatedFromShowSaveFilePicker(
+                                 testing::Ref(file_picker_binding_context),
+                                 testing::Ref(url)));
+
+  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
+      ->OnFileCreatedFromShowSaveFilePicker(file_picker_binding_context, url);
 }
 
 }  // namespace ash

@@ -31,7 +31,7 @@ class SideSearchPageLoadMetricsObserverTest
 TEST_F(SideSearchPageLoadMetricsObserverTest, PageLoadMetricsNonBackgrounded) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(10);
   timing.paint_timing->first_paint = base::Milliseconds(20);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(30);
@@ -82,19 +82,19 @@ TEST_F(SideSearchPageLoadMetricsObserverTest,
        HiddenContentsDoesNotEmitMetrics) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(1);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(1);
 
   page_load_metrics::mojom::PageLoadTiming timing2;
   page_load_metrics::InitPageLoadTimingForTest(&timing2);
-  timing2.navigation_start = base::Time::FromDoubleT(2);
+  timing2.navigation_start = base::Time::FromSecondsSinceUnixEpoch(2);
   timing2.parse_timing->parse_start = base::Milliseconds(100);
   timing2.paint_timing->first_contentful_paint = base::Milliseconds(100);
 
   page_load_metrics::mojom::PageLoadTiming timing3;
   page_load_metrics::InitPageLoadTimingForTest(&timing3);
-  timing3.navigation_start = base::Time::FromDoubleT(3);
+  timing3.navigation_start = base::Time::FromSecondsSinceUnixEpoch(3);
   timing3.parse_timing->parse_start = base::Milliseconds(1000);
   timing3.paint_timing->first_contentful_paint = base::Milliseconds(1000);
 
@@ -124,7 +124,7 @@ TEST_F(SideSearchPageLoadMetricsObserverTest,
        MetricsEmittedCorrectlyWhenAppBackgrounded) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(10);
   timing.paint_timing->first_paint = base::Milliseconds(20);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(30);

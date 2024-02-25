@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS CanvasCaptureMediaStream-imagebitmaprenderingcontext
-FAIL CanvasCaptureMediaStream-imagebitmaprenderingcontext 1 Cannot read properties of null (reading 'clearColor')
-Harness: the test ran to completion.
-

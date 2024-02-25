@@ -28,14 +28,10 @@ abstract class AudioDeviceSelector {
         mDeviceListener = new AudioDeviceListener(mDeviceStates);
     }
 
-    /**
-     * Initialized the AudioDeviceSelector.
-     */
+    /** Initialized the AudioDeviceSelector. */
     public abstract void init();
 
-    /**
-     * Closes the AudioDeviceSelector. Must be called before destruction if init() was called.
-     */
+    /** Closes the AudioDeviceSelector. Must be called before destruction if init() was called. */
     public abstract void close();
 
     /**
@@ -45,9 +41,7 @@ abstract class AudioDeviceSelector {
      */
     public abstract void setCommunicationAudioModeOn(boolean on);
 
-    /**
-     * Gets whether the speakerphone is currently active.
-     */
+    /** Gets whether the speakerphone is currently active. */
     public abstract boolean isSpeakerphoneOn();
 
     /**
@@ -116,13 +110,14 @@ abstract class AudioDeviceSelector {
         // TODO(henrika): add support for proper detection of device names and
         // localize the name strings by using resource strings.
         // See http://crbug.com/333208 for details.
-        public static final String[] DEVICE_NAMES = new String[] {
-                "Speakerphone",
-                "Wired headset", // With or without microphone.
-                "Headset earpiece", // Only available on mobile phones.
-                "Bluetooth headset", // Requires BLUETOOTH permission.
-                "USB audio",
-        };
+        public static final String[] DEVICE_NAMES =
+                new String[] {
+                    "Speakerphone",
+                    "Wired headset", // With or without microphone.
+                    "Headset earpiece", // Only available on mobile phones.
+                    "Bluetooth headset", // Requires BLUETOOTH permission.
+                    "USB audio",
+                };
 
         private static final int ID_VALID_LOWER_BOUND = Devices.ID_SPEAKERPHONE;
         private static final int ID_VALID_UPPER_BOUND = Devices.ID_USB_AUDIO;
@@ -210,9 +205,7 @@ abstract class AudioDeviceSelector {
             }
         }
 
-        /**
-         * Called when an available device maybe became invalid or vice versa.
-         */
+        /** Called when an available device maybe became invalid or vice versa. */
         public void onPotentialDeviceStatusChange() {
             maybeUpdateSelectedDevice();
         }
@@ -260,9 +253,7 @@ abstract class AudioDeviceSelector {
             }
         }
 
-        /**
-         * Returns the list of currently available devices, to be used by the native side.
-         */
+        /** Returns the list of currently available devices, to be used by the native side. */
         public AudioManagerAndroid.AudioDeviceName[] getAudioInputDeviceNames() {
             boolean devices[] = null;
             synchronized (mLock) {
@@ -278,8 +269,9 @@ abstract class AudioDeviceSelector {
             int i = 0;
             for (int id = 0; id < devices.length; ++id) {
                 if (devices[id]) {
-                    array[i] = new AudioManagerAndroid.AudioDeviceName(
-                            id, DeviceHelpers.DEVICE_NAMES[id]);
+                    array[i] =
+                            new AudioManagerAndroid.AudioDeviceName(
+                                    id, DeviceHelpers.DEVICE_NAMES[id]);
                     list.add(DeviceHelpers.DEVICE_NAMES[id]);
                     i++;
                 }

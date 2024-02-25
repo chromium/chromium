@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <optional>
 #include <utility>
 
 #include "ipcz/ipcz.h"
@@ -1423,8 +1424,8 @@ void Router::Flush(const OperationContext& context, FlushBehavior behavior) {
   Ref<RouterLink> dead_inward_link;
   Ref<RouterLink> dead_outward_link;
   Ref<RouterLink> dead_bridge_link;
-  absl::optional<SequenceNumber> final_inward_sequence_length;
-  absl::optional<SequenceNumber> final_outward_sequence_length;
+  std::optional<SequenceNumber> final_inward_sequence_length;
+  std::optional<SequenceNumber> final_outward_sequence_length;
   bool on_central_link = false;
   bool inward_link_decayed = false;
   bool outward_link_decayed = false;
@@ -1841,6 +1842,11 @@ void Router::MaybeStartBridgeBypass(const OperationContext& context) {
   if (!first_local_peer && !second_local_peer) {
     {
       MultiMutexLock lock(&mutex_, &second_bridge->mutex_);
+      if (!bridge_ || !second_bridge->bridge_) {
+        // If another thread raced to sever this link, we can give up
+        // immediately.
+        return;
+      }
       outward_edge_.BeginPrimaryLinkDecay();
       second_bridge->outward_edge_.BeginPrimaryLinkDecay();
       bridge_->BeginPrimaryLinkDecay();
@@ -1875,6 +1881,11 @@ void Router::MaybeStartBridgeBypass(const OperationContext& context) {
   {
     MultiMutexLock lock(&mutex_, &second_bridge->mutex_,
                         &first_local_peer->mutex_, &second_local_peer->mutex_);
+    if (!bridge_ || !second_bridge->bridge_) {
+      // If another thread raced to sever this link, we can give up immediately.
+      return;
+    }
+
     const SequenceNumber length_from_first_peer =
         first_local_peer->outbound_parcels_.current_sequence_number();
     const SequenceNumber length_from_second_peer =
@@ -1981,6 +1992,10 @@ void Router::StartBridgeBypassFromLocalPeer(
       local_peer);
   {
     MultiMutexLock lock(&mutex_, &other_bridge->mutex_, &local_peer->mutex_);
+    if (!bridge_ || !other_bridge->bridge_) {
+      // If another thread raced to sever this link, we can give up immediately.
+      return;
+    }
 
     length_from_local_peer =
         local_peer->outbound_parcels_.current_sequence_number();

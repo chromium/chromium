@@ -10,10 +10,9 @@
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -52,8 +51,9 @@ XDragContext::XDragContext(x11::Window local_window,
     bool get_types_from_property = ((event.data.data32[1] & 1) != 0);
 
     if (get_types_from_property) {
-      if (!GetArrayProperty(source_window_, x11::GetAtom(kXdndTypeList),
-                            &unfetched_targets_)) {
+      if (!x11::Connection::Get()->GetArrayProperty(source_window_,
+                                                    x11::GetAtom(kXdndTypeList),
+                                                    &unfetched_targets_)) {
         return;
       }
     } else {
@@ -68,8 +68,9 @@ XDragContext::XDragContext(x11::Window local_window,
 
 #if DCHECK_IS_ON()
     DVLOG(1) << "XdndEnter has " << unfetched_targets_.size() << " data types";
-    for (x11::Atom target : unfetched_targets_)
+    for (x11::Atom target : unfetched_targets_) {
       DVLOG(1) << "XdndEnter data type: " << static_cast<uint32_t>(target);
+    }
 #endif  // DCHECK_IS_ON()
 
     // We must perform a full sync here because we could be racing
@@ -141,8 +142,9 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
 
     scoped_refptr<base::RefCountedMemory> data;
     x11::Atom type = x11::Atom::None;
-    if (GetRawBytesOfProperty(local_window_, property, &data, &type))
+    if (GetRawBytesOfProperty(local_window_, property, &data, &type)) {
       fetched_targets_.Insert(target, data);
+    }
   } else {
     // The source failed to convert the drop data to the format (target in X11
     // parlance) that we asked for. This happens, even though we only ask for
@@ -165,8 +167,8 @@ void XDragContext::ReadActions() {
       XDragDropClient::GetForWindow(source_window_);
   if (!source_client) {
     std::vector<x11::Atom> atom_array;
-    if (!GetArrayProperty(source_window_, x11::GetAtom(kXdndActionList),
-                          &atom_array)) {
+    if (!x11::Connection::Get()->GetArrayProperty(
+            source_window_, x11::GetAtom(kXdndActionList), &atom_array)) {
       actions_.clear();
     } else {
       actions_.swap(atom_array);
@@ -181,8 +183,9 @@ void XDragContext::ReadActions() {
 
 int XDragContext::GetDragOperation() const {
   int drag_operation = DragDropTypes::DRAG_NONE;
-  for (const auto& action : actions_)
+  for (const auto& action : actions_) {
     MaskOperation(action, &drag_operation);
+  }
 
   MaskOperation(suggested_action_, &drag_operation);
 
@@ -191,12 +194,13 @@ int XDragContext::GetDragOperation() const {
 
 void XDragContext::MaskOperation(x11::Atom xdnd_operation,
                                  int* drag_operation) const {
-  if (xdnd_operation == x11::GetAtom(kXdndActionCopy))
+  if (xdnd_operation == x11::GetAtom(kXdndActionCopy)) {
     *drag_operation |= DragDropTypes::DRAG_COPY;
-  else if (xdnd_operation == x11::GetAtom(kXdndActionMove))
+  } else if (xdnd_operation == x11::GetAtom(kXdndActionMove)) {
     *drag_operation |= DragDropTypes::DRAG_MOVE;
-  else if (xdnd_operation == x11::GetAtom(kXdndActionLink))
+  } else if (xdnd_operation == x11::GetAtom(kXdndActionLink)) {
     *drag_operation |= DragDropTypes::DRAG_LINK;
+  }
 }
 
 bool XDragContext::DispatchPropertyNotifyEvent(

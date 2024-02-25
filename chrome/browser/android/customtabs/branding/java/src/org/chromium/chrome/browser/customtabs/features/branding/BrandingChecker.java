@@ -19,16 +19,18 @@ import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 
-/**
- * Class that maintain the data for the client app id -> last time branding is shown.
- */
+/** Class that maintain the data for the client app id -> last time branding is shown. */
 class BrandingChecker extends AsyncTask<Integer> {
     public static final int BRANDING_TIME_NOT_FOUND = -1;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
-    @IntDef({BrandingAppIdType.INVALID, BrandingAppIdType.PACKAGE_NAME, BrandingAppIdType.REFERRER,
-            BrandingAppIdType.NUM_ENTRIES})
+    @IntDef({
+        BrandingAppIdType.INVALID,
+        BrandingAppIdType.PACKAGE_NAME,
+        BrandingAppIdType.REFERRER,
+        BrandingAppIdType.NUM_ENTRIES
+    })
     @interface BrandingAppIdType {
         int INVALID = 0;
         int PACKAGE_NAME = 1;
@@ -66,10 +68,8 @@ class BrandingChecker extends AsyncTask<Integer> {
 
     private final String mAppId;
     private final long mBrandingCadence;
-    @BrandingDecision
-    private final Callback<Integer> mBrandingCheckCallback;
-    @BrandingDecision
-    private final int mDefaultBrandingDecision;
+    @BrandingDecision private final Callback<Integer> mBrandingCheckCallback;
+    @BrandingDecision private final int mDefaultBrandingDecision;
 
     private BrandingLaunchTimeStorage mStorage;
 
@@ -82,9 +82,12 @@ class BrandingChecker extends AsyncTask<Integer> {
      *                        clients with branding info.
      * @param defaultBrandingDecision Default branding decision when task is canceled.
      */
-    BrandingChecker(String appId, BrandingLaunchTimeStorage storage,
+    BrandingChecker(
+            String appId,
+            BrandingLaunchTimeStorage storage,
             @NonNull @BrandingDecision Callback<Integer> brandingCheckCallback,
-            long brandingCadence, @BrandingDecision int defaultBrandingDecision) {
+            long brandingCadence,
+            @BrandingDecision int defaultBrandingDecision) {
         mAppId = appId;
         mStorage = storage;
         mBrandingCheckCallback = brandingCheckCallback;
@@ -95,22 +98,18 @@ class BrandingChecker extends AsyncTask<Integer> {
     @WorkerThread
     @Override
     protected @Nullable @BrandingDecision Integer doInBackground() {
-        @BrandingDecision
-        Integer brandingDecision = null;
+        @BrandingDecision Integer brandingDecision = null;
         long startTime = SystemClock.elapsedRealtime();
         if (!TextUtils.isEmpty(mAppId)) {
             long timeLastBranding = mStorage.get(mAppId);
             brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, timeLastBranding);
         }
-        @BrandingAppIdType
-        int appIdType = getAppIdType(mAppId);
-        boolean isPackageValid = appIdType == BrandingAppIdType.PACKAGE_NAME;
-        RecordHistogram.recordTimesHistogram("CustomTabs.Branding.BrandingCheckDuration",
+        @BrandingAppIdType int appIdType = getAppIdType(mAppId);
+        RecordHistogram.recordTimesHistogram(
+                "CustomTabs.Branding.BrandingCheckDuration",
                 SystemClock.elapsedRealtime() - startTime);
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.Branding.AppIdType", appIdType, BrandingAppIdType.NUM_ENTRIES);
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.Branding.IsPackageNameValid", isPackageValid);
 
         return brandingDecision;
     }
@@ -157,11 +156,10 @@ class BrandingChecker extends AsyncTask<Integer> {
             mStorage.put(mAppId, taskFinishedTime);
         }
 
-        RecordHistogram.recordEnumeratedHistogram("CustomTabs.Branding.BrandingDecision",
-                brandingDecision, BrandingDecision.NUM_ENTRIES);
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.Branding.BrandingCheckCanceled", isCancelled());
-
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.Branding.BrandingDecision",
+                brandingDecision,
+                BrandingDecision.NUM_ENTRIES);
         // Remove the storage from reference.
         mStorage = null;
     }

@@ -18,8 +18,8 @@ namespace {
 
 // Computes a SHA-1 hash of |data| and returns it as a hex string.
 std::string ComputeSHA1(const std::string& data) {
-  const std::string sha1 = base::SHA1HashString(data);
-  return base::HexEncode(sha1.data(), sha1.size());
+  return base::HexEncode(
+      base::SHA1HashSpan(base::as_bytes(base::make_span(data))));
 }
 
 }  // namespace
@@ -32,11 +32,11 @@ EnvironmentRecorder::~EnvironmentRecorder() = default;
 std::string EnvironmentRecorder::SerializeAndRecordEnvironmentToPrefs(
     const SystemProfileProto& system_profile) {
   std::string serialized_system_profile;
-  std::string base64_system_profile;
   if (system_profile.SerializeToString(&serialized_system_profile)) {
     // Persist the system profile to disk. In the event of an unclean shutdown,
     // it will be used as part of the initial stability report.
-    base::Base64Encode(serialized_system_profile, &base64_system_profile);
+    const std::string base64_system_profile =
+        base::Base64Encode(serialized_system_profile);
     local_state_->SetString(prefs::kStabilitySavedSystemProfile,
                             base64_system_profile);
     local_state_->SetString(prefs::kStabilitySavedSystemProfileHash,

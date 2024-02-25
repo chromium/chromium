@@ -4,23 +4,26 @@
 
 package org.chromium.android_webview;
 
+import org.jni_zero.CalledByNativeUnchecked;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.base.annotations.CalledByNativeUnchecked;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.util.concurrent.Executor;
 
-/**
- * Manages proxy override functionality in WebView.
- */
+/** Manages proxy override functionality in WebView. */
 @Lifetime.Singleton
 @JNINamespace("android_webview")
 public class AwProxyController {
     public AwProxyController() {}
 
-    public void setProxyOverride(String[][] proxyRules, String[] bypassRules, Runnable listener,
-            Executor executor, boolean reverseBypass) {
+    public void setProxyOverride(
+            String[][] proxyRules,
+            String[] bypassRules,
+            Runnable listener,
+            Executor executor,
+            boolean reverseBypass) {
         int length = (proxyRules == null ? 0 : proxyRules.length);
         String[] urlSchemes = new String[length];
         String[] proxyUrls = new String[length];
@@ -48,8 +51,16 @@ public class AwProxyController {
             throw new IllegalArgumentException("Executor must not be null");
         }
 
-        String result = AwProxyControllerJni.get().setProxyOverride(AwProxyController.this,
-                urlSchemes, proxyUrls, bypassRules, listener, executor, reverseBypass);
+        String result =
+                AwProxyControllerJni.get()
+                        .setProxyOverride(
+                                AwProxyController.this,
+                                urlSchemes,
+                                proxyUrls,
+                                bypassRules,
+                                listener,
+                                executor,
+                                reverseBypass);
         if (!result.isEmpty()) {
             throw new IllegalArgumentException(result);
         }
@@ -71,8 +82,15 @@ public class AwProxyController {
 
     @NativeMethods
     interface Natives {
-        String setProxyOverride(AwProxyController caller, String[] urlSchemes, String[] proxyUrls,
-                String[] bypassRules, Runnable listener, Executor executor, boolean reverseBypass);
+        String setProxyOverride(
+                AwProxyController caller,
+                String[] urlSchemes,
+                String[] proxyUrls,
+                String[] bypassRules,
+                Runnable listener,
+                Executor executor,
+                boolean reverseBypass);
+
         void clearProxyOverride(AwProxyController caller, Runnable listener, Executor executor);
     }
 }

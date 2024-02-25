@@ -12,7 +12,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -31,37 +30,15 @@ bool CaptureModeFeaturePodController::CalculateButtonVisibility() {
   return !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
-FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
-  DCHECK(!button_);
-  DCHECK(!features::IsQsRevampEnabled());
-  button_ = new FeaturePodButton(this, /*is_togglable=*/false);
-  button_->SetVectorIcon(kCaptureModeIcon);
-  const auto label_text =
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL);
-  button_->SetLabel(label_text);
-  button_->icon_button()->SetTooltipText(label_text);
-  button_->SetLabelTooltip(label_text);
-  const bool target_visibility = CalculateButtonVisibility();
-  button_->SetVisible(target_visibility);
-
-  if (target_visibility) {
-    TrackVisibilityUMA();
-  }
-
-  button_->DisableLabelButtonFocus();
-  return button_;
-}
-
 std::unique_ptr<FeatureTile> CaptureModeFeaturePodController::CreateTile(
     bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   auto feature_tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()),
       /*is_togglable=*/false,
       compact ? FeatureTile::TileType::kCompact
               : FeatureTile::TileType::kPrimary);
-  feature_tile->SetID(VIEW_ID_SCREEN_CAPTURE_FEATURE_TILE);
+  feature_tile->SetID(VIEW_ID_FEATURE_TILE_SCREEN_CAPTURE);
 
   const bool target_visibility = CalculateButtonVisibility();
   feature_tile->SetVisible(target_visibility);

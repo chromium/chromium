@@ -130,7 +130,7 @@ class POLICY_EXPORT CombinedSchemaRegistry
  private:
   void Combine(bool has_new_schemas);
 
-  std::set<SchemaRegistry*> registries_;
+  std::set<raw_ptr<SchemaRegistry, SetExperimental>> registries_;
   scoped_refptr<SchemaMap> own_schema_map_;
 };
 

@@ -10,20 +10,19 @@
 #include <cmath>
 #include <limits>
 #include <utility>
-#include <vector>
 
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -32,11 +31,13 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/background.h"
-#include "ui/views/cascading_property.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/selection_controller.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace {
 
@@ -76,7 +77,8 @@ Label::Label(const std::u16string& text,
     : text_context_(text_context),
       text_style_(text_style),
       context_menu_contents_(this) {
-  Init(text, style::GetFont(text_context, text_style), directionality_mode);
+  Init(text, TypographyProvider::Get().GetFont(text_context, text_style),
+       directionality_mode);
 }
 
 Label::Label(const std::u16string& text, const CustomFont& font)
@@ -90,7 +92,8 @@ Label::~Label() = default;
 
 // static
 const gfx::FontList& Label::GetDefaultFontList() {
-  return style::GetFont(style::CONTEXT_LABEL, style::STYLE_PRIMARY);
+  return TypographyProvider::Get().GetFont(style::CONTEXT_LABEL,
+                                           style::STYLE_PRIMARY);
 }
 
 void Label::SetFontList(const gfx::FontList& font_list) {
@@ -135,7 +138,8 @@ void Label::SetTextContext(int text_context) {
   if (text_context == text_context_)
     return;
   text_context_ = text_context;
-  full_text_->SetFontList(style::GetFont(text_context_, text_style_));
+  full_text_->SetFontList(
+      TypographyProvider::Get().GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();
   if (GetWidget())
@@ -161,7 +165,8 @@ void Label::SetTextStyle(int style) {
 }
 
 void Label::ApplyBaselineTextStyle() {
-  full_text_->SetFontList(style::GetFont(text_context_, text_style_));
+  full_text_->SetFontList(
+      TypographyProvider::Get().GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();
   if (GetWidget())
@@ -175,13 +180,16 @@ void Label::SetTextStyleRange(int style, const gfx::Range& range) {
     return;
   }
 
-  const auto details = style::GetFontDetails(text_context_, style);
+  const auto& typography_provider = TypographyProvider::Get();
+  const auto details = typography_provider.GetFontDetails(text_context_, style);
   // This function is not prepared to handle style requests that vary by
   // anything other than weight.
-  DCHECK_EQ(details.typeface,
-            style::GetFontDetails(text_context_, text_style_).typeface);
+  DCHECK_EQ(
+      details.typeface,
+      typography_provider.GetFontDetails(text_context_, text_style_).typeface);
   DCHECK_EQ(details.size_delta,
-            style::GetFontDetails(text_context_, text_style_).size_delta);
+            typography_provider.GetFontDetails(text_context_, text_style_)
+                .size_delta);
   full_text_->ApplyWeight(details.weight, range);
   ClearDisplayText();
   PreferredSizeChanged();
@@ -215,11 +223,11 @@ void Label::SetEnabledColor(SkColor color) {
   OnPropertyChanged(&requested_enabled_color_, kPropertyEffectsPaint);
 }
 
-absl::optional<ui::ColorId> Label::GetEnabledColorId() const {
+std::optional<ui::ColorId> Label::GetEnabledColorId() const {
   return enabled_color_id_;
 }
 
-void Label::SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id) {
+void Label::SetEnabledColorId(std::optional<ui::ColorId> enabled_color_id) {
   if (enabled_color_id_ == enabled_color_id)
     return;
 
@@ -249,7 +257,7 @@ void Label::SetBackgroundColor(SkColor color) {
 }
 
 void Label::SetBackgroundColorId(
-    absl::optional<ui::ColorId> background_color_id) {
+    std::optional<ui::ColorId> background_color_id) {
   if (background_color_id_ == background_color_id)
     return;
 
@@ -357,9 +365,9 @@ void Label::SetVerticalAlignment(gfx::VerticalAlignment alignment) {
 int Label::GetLineHeight() const {
   // TODO(pkasting): If we can replace SetFontList() with context/style setter
   // calls, we can eliminate the reference to font_list().GetHeight() here.
-  return line_height_.value_or(
-      std::max(style::GetLineHeight(text_context_, text_style_),
-               font_list().GetHeight()));
+  return line_height_.value_or(std::max(
+      TypographyProvider::Get().GetLineHeight(text_context_, text_style_),
+      font_list().GetHeight()));
 }
 
 void Label::SetLineHeight(int line_height) {
@@ -488,6 +496,10 @@ void Label::SetHandlesTooltips(bool enabled) {
   OnPropertyChanged(&handles_tooltips_, kPropertyEffectsNone);
 }
 
+int Label::GetFixedWidth() const {
+  return fixed_width_;
+}
+
 void Label::SizeToFit(int fixed_width) {
   DCHECK(GetMultiLine());
   DCHECK_EQ(0, max_width_);
@@ -534,7 +546,7 @@ size_t Label::GetRequiredLines() const {
   return full_text_->GetNumLines();
 }
 
-std::u16string Label::GetDisplayTextForTesting() {
+const std::u16string Label::GetDisplayTextForTesting() const {
   MaybeBuildDisplayText();
   return display_text_ ? display_text_->GetDisplayText() : std::u16string();
 }
@@ -977,6 +989,42 @@ bool Label::CanHandleAccelerators() const {
          View::CanHandleAccelerators();
 }
 
+void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  View::GetAccessibleNodeData(node_data);
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // If the accessible name changed since the last time we computed the text
+  // offsets, we need to recompute them.
+  if (::features::IsUiaProviderEnabled() &&
+      ax_name_used_to_compute_offsets_ != GetAccessibleName()) {
+    GetViewAccessibility().ClearTextOffsets();
+    ax_name_used_to_compute_offsets_.clear();
+    if (RefreshAccessibleTextOffsets()) {
+      ax_name_used_to_compute_offsets_ = GetAccessibleName();
+    }
+  }
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+}
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+bool Label::RefreshAccessibleTextOffsets() {
+  MaybeBuildDisplayText();
+  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  if (!display_text_ || display_text_->multiline()) {
+    return false;
+  }
+
+  GetViewAccessibility().OverrideCharacterOffsets(
+      ComputeTextOffsets(display_text_.get()));
+
+  WordBoundaries boundaries = ComputeWordBoundaries(GetText());
+  GetViewAccessibility().OverrideWordStarts(boundaries.starts);
+  GetViewAccessibility().OverrideWordEnds(boundaries.ends);
+
+  return true;
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
 void Label::OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                        float new_device_scale_factor) {
   View::OnDeviceScaleFactorChanged(old_device_scale_factor,
@@ -1008,20 +1056,20 @@ void Label::ShowContextMenuForViewImpl(View* source,
 
 bool Label::GetWordLookupDataAtPoint(const gfx::Point& point,
                                      gfx::DecoratedText* decorated_word,
-                                     gfx::Point* baseline_point) {
+                                     gfx::Rect* rect) {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
-  return render_text ? render_text->GetWordLookupDataAtPoint(
-                           point, decorated_word, baseline_point)
-                     : false;
+  if (render_text && !render_text->obscured()) {
+    return render_text->GetWordLookupDataAtPoint(point, decorated_word, rect);
+  }
+  return false;
 }
 
 bool Label::GetWordLookupDataFromSelection(gfx::DecoratedText* decorated_text,
-                                           gfx::Point* baseline_point) {
+                                           gfx::Rect* rect) {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
-  return render_text
-             ? render_text->GetLookupDataForRange(
-                   render_text->selection(), decorated_text, baseline_point)
-             : false;
+  return render_text ? render_text->GetLookupDataForRange(
+                           render_text->selection(), decorated_text, rect)
+                     : false;
 }
 
 gfx::RenderText* Label::GetRenderTextForSelectionController() {
@@ -1161,6 +1209,7 @@ void Label::Init(const std::u16string& text,
   // GetCanProcessEventsWithinSubtree().
   BuildContextMenuContents();
   set_context_menu_controller(this);
+  GetViewAccessibility().set_needs_ax_tree_manager(true);
 
   // This allows the BrowserView to pass the copy command from the Chrome menu
   // to the Label.
@@ -1257,11 +1306,11 @@ void Label::UpdateColorsFromTheme() {
   if (enabled_color_id_.has_value()) {
     requested_enabled_color_ = color_provider->GetColor(*enabled_color_id_);
   } else if (!enabled_color_set_) {
-    const absl::optional<SkColor> cascading_color =
+    const std::optional<SkColor> cascading_color =
         GetCascadingProperty(this, kCascadingLabelEnabledColor);
     requested_enabled_color_ =
         cascading_color.value_or(GetColorProvider()->GetColor(
-            style::GetColorId(text_context_, text_style_)));
+            TypographyProvider::Get().GetColorId(text_context_, text_style_)));
   }
 
   if (background_color_id_.has_value()) {
@@ -1331,7 +1380,7 @@ void Label::UpdateFullTextElideBehavior() {
                                                           : gfx::NO_ELIDE);
 }
 
-BEGIN_METADATA(Label, View)
+BEGIN_METADATA(Label)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, TextStyle)

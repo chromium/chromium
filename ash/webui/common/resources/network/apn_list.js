@@ -7,20 +7,21 @@
  * APNs
  */
 
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import './network_shared.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/ash/common/network/apn_list_item.js';
 import 'chrome://resources/ash/common/network/apn_detail_dialog.js';
-import '//resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/network/apn_selection_dialog.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {ApnDetailDialog} from '//resources/ash/common/network/apn_detail_dialog.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ApnProperties, ApnState, ApnType, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './apn_list.html.js';
 
@@ -56,6 +57,11 @@ export class ApnList extends ApnListBase {
 
       errorState: String,
 
+      /** @type {?PortalState} */
+      portalState: {
+        type: Object,
+      },
+
       shouldOmitLinks: {
         type: Boolean,
         value: false,
@@ -82,6 +88,12 @@ export class ApnList extends ApnListBase {
       apnDetailDialogMode_: {
         type: Object,
         value: ApnDetailDialogMode.CREATE,
+      },
+
+      /** @private */
+      shouldShowApnSelectionDialog_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -171,11 +183,15 @@ export class ApnList extends ApnListBase {
     const connectedApnIndex =
         customApnList.findIndex((apn) => apn.id === connectedApn.id);
 
-    if (connectedApnIndex != -1) {
-      customApnList.splice(connectedApnIndex, 1);
+    // Create a copy of customApnList, moving the connectedApn, if it exists, to
+    // the front of the list.
+    const apns = [connectedApn];
+    for (let i = 0; i < customApnList.length; i++) {
+      if (i !== connectedApnIndex) {
+        apns.push(customApnList[i]);
+      }
     }
-
-    return [connectedApn, ...customApnList];
+    return apns;
   }
 
   /**
@@ -252,13 +268,6 @@ export class ApnList extends ApnListBase {
   }
 
   /**
-   * Redirects to "Lean more about APN" page.
-   * TODO(b/162365553): Implement.
-   * @private
-   */
-  onLearnMoreClicked_() {}
-
-  /**
    * @param {!Event} event
    * @private
    */
@@ -295,6 +304,15 @@ export class ApnList extends ApnListBase {
    */
   onApnDetailDialogClose_(event) {
     this.shouldShowApnDetailDialog_ = false;
+  }
+
+  /**
+   *
+   * @param event {!Event}
+   * @private
+   */
+  onApnSelectionDialogClose_(event) {
+    this.shouldShowApnSelectionDialog_ = false;
   }
 
   /**

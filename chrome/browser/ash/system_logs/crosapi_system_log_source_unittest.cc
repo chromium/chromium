@@ -7,6 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,16 +16,25 @@ namespace system_logs {
 
 class CrosapiSystemLogSourceTest : public ::testing::Test {
  public:
-  CrosapiSystemLogSourceTest()
-      : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()) {}
+  CrosapiSystemLogSourceTest() = default;
   CrosapiSystemLogSourceTest(const CrosapiSystemLogSourceTest&) = delete;
   CrosapiSystemLogSourceTest& operator=(const CrosapiSystemLogSourceTest&) =
       delete;
   ~CrosapiSystemLogSourceTest() override = default;
 
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
     // Set Lacros in running state by default.
+    browser_manager_ = std::make_unique<crosapi::FakeBrowserManager>();
     browser_manager_->StartRunning();
+  }
+
+  void TearDown() override {
+    browser_manager_.reset();
+    profile_manager_.reset();
   }
 
  protected:
@@ -55,6 +66,8 @@ class CrosapiSystemLogSourceTest : public ::testing::Test {
  private:
   // Creates the necessary browser threads.
   content::BrowserTaskEnvironment task_environment_;
+
+  std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
 

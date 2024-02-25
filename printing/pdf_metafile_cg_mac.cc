@@ -7,11 +7,11 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <numbers>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/numerics/math_constants.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "printing/mojom/print.mojom.h"
@@ -32,7 +32,7 @@ void RotatePage(CGContextRef context, const CGRect& rect, int num_rotations) {
       // content is now "off screen". Shift it right to move it back on screen.
       CGContextTranslateCTM(context, rect.size.width, 0);
       // Rotates counter-clockwise by 90 degrees.
-      CGContextRotateCTM(context, base::kPiDouble / 2);
+      CGContextRotateCTM(context, std::numbers::pi / 2);
       break;
     case 2:
       // After rotating by 180 degrees with the axis at the origin, the page
@@ -40,14 +40,14 @@ void RotatePage(CGContextRef context, const CGRect& rect, int num_rotations) {
       // screen.
       CGContextTranslateCTM(context, rect.size.width, rect.size.height);
       // Rotates counter-clockwise by 90 degrees.
-      CGContextRotateCTM(context, base::kPiDouble);
+      CGContextRotateCTM(context, std::numbers::pi);
       break;
     case 3:
       // After rotating by 270 degrees with the axis at the origin, the page
       // content is now "off screen". Shift it right to move it back on screen.
       CGContextTranslateCTM(context, 0, rect.size.height);
       // Rotates counter-clockwise by 90 degrees.
-      CGContextRotateCTM(context, -base::kPiDouble / 2);
+      CGContextRotateCTM(context, -std::numbers::pi / 2);
       break;
     default:
       NOTREACHED();
@@ -74,13 +74,13 @@ bool PdfMetafileCg::Init() {
     return false;
   }
   ScopedCFTypeRef<CGDataConsumerRef> pdf_consumer(
-      CGDataConsumerCreateWithCFData(pdf_data_));
+      CGDataConsumerCreateWithCFData(pdf_data_.get()));
   if (!pdf_consumer.get()) {
     LOG(ERROR) << "Failed to create data consumer for metafile";
     pdf_data_.reset();
     return false;
   }
-  context_.reset(CGPDFContextCreate(pdf_consumer, nullptr, nullptr));
+  context_.reset(CGPDFContextCreate(pdf_consumer.get(), nullptr, nullptr));
   if (!context_.get()) {
     LOG(ERROR) << "Failed to create pdf context for metafile";
     pdf_data_.reset();
@@ -100,7 +100,7 @@ bool PdfMetafileCg::InitFromData(base::span<const uint8_t> data) {
     return false;
 
   pdf_data_.reset(CFDataCreateMutable(kCFAllocatorDefault, data.size()));
-  CFDataAppendBytes(pdf_data_, data.data(), data.size());
+  CFDataAppendBytes(pdf_data_.get(), data.data(), data.size());
   return true;
 }
 
@@ -118,23 +118,23 @@ void PdfMetafileCg::StartPage(const gfx::Size& page_size,
   float width = page_size.width();
 
   CGRect bounds = CGRectMake(0, 0, width, height);
-  CGContextBeginPage(context_, &bounds);
-  CGContextSaveGState(context_);
+  CGContextBeginPage(context_.get(), &bounds);
+  CGContextSaveGState(context_.get());
 
   // Move to the context origin.
-  CGContextTranslateCTM(context_, content_area.x(), -content_area.y());
+  CGContextTranslateCTM(context_.get(), content_area.x(), -content_area.y());
 
   // Flip the context.
-  CGContextTranslateCTM(context_, 0, height);
-  CGContextScaleCTM(context_, scale_factor, -scale_factor);
+  CGContextTranslateCTM(context_.get(), 0, height);
+  CGContextScaleCTM(context_.get(), scale_factor, -scale_factor);
 }
 
 bool PdfMetafileCg::FinishPage() {
-  DCHECK(context_.get());
+  DCHECK(context_);
   DCHECK(page_is_open_);
 
-  CGContextRestoreGState(context_);
-  CGContextEndPage(context_);
+  CGContextRestoreGState(context_.get());
+  CGContextEndPage(context_.get());
   page_is_open_ = false;
   return true;
 }
@@ -267,7 +267,7 @@ uint32_t PdfMetafileCg::GetDataSize() const {
 
   if (!pdf_data_)
     return 0;
-  return static_cast<uint32_t>(CFDataGetLength(pdf_data_));
+  return static_cast<uint32_t>(CFDataGetLength(pdf_data_.get()));
 }
 
 bool PdfMetafileCg::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
@@ -282,7 +282,7 @@ bool PdfMetafileCg::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
     return false;
   }
 
-  CFDataGetBytes(pdf_data_, CFRangeMake(0, dst_buffer_size),
+  CFDataGetBytes(pdf_data_.get(), CFRangeMake(0, dst_buffer_size),
                  static_cast<UInt8*>(dst_buffer));
   return true;
 }
@@ -307,8 +307,8 @@ CGPDFDocumentRef PdfMetafileCg::GetPDFDocument() const {
 
   if (!pdf_doc_.get()) {
     ScopedCFTypeRef<CGDataProviderRef> pdf_data_provider(
-        CGDataProviderCreateWithCFData(pdf_data_));
-    pdf_doc_.reset(CGPDFDocumentCreateWithProvider(pdf_data_provider));
+        CGDataProviderCreateWithCFData(pdf_data_.get()));
+    pdf_doc_.reset(CGPDFDocumentCreateWithProvider(pdf_data_provider.get()));
   }
   return pdf_doc_.get();
 }

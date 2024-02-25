@@ -41,31 +41,41 @@ public class RenameDialogManager {
     private RenameCallback mRenameCallback;
     private @RenameDialogState int mCurState;
 
-    @IntDef({RenameDialogState.NO_DIALOG, RenameDialogState.RENAME_DIALOG_DEFAULT,
-            RenameDialogState.RENAME_DIALOG_CANCEL, RenameDialogState.RENAME_DIALOG_COMMIT_ERROR,
-            RenameDialogState.RENAME_EXTENSION_DIALOG_DEFAULT,
-            RenameDialogState.RENAME_EXTENSION_DIALOG_CANCEL,
-            RenameDialogState.RENAME_EXTENSION_DIALOG_COMMIT_ERROR})
+    @IntDef({
+        RenameDialogState.NO_DIALOG,
+        RenameDialogState.RENAME_DIALOG_DEFAULT,
+        RenameDialogState.RENAME_DIALOG_CANCEL,
+        RenameDialogState.RENAME_DIALOG_COMMIT_ERROR,
+        RenameDialogState.RENAME_EXTENSION_DIALOG_DEFAULT,
+        RenameDialogState.RENAME_EXTENSION_DIALOG_CANCEL,
+        RenameDialogState.RENAME_EXTENSION_DIALOG_COMMIT_ERROR
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface RenameDialogState {
         /** Initial State, should not show any dialog. */
         int NO_DIALOG = 0;
+
         /** Should show the rename dialog, asking user to input. */
         int RENAME_DIALOG_DEFAULT = 1;
+
         /** Rename dialog intent is aborted. */
         int RENAME_DIALOG_CANCEL = 2;
+
         /**
-           Get error message after rename attempt, should show the rename dialog with error
-           message.
+         * Get error message after rename attempt, should show the rename dialog with error
+         * message.
          */
         int RENAME_DIALOG_COMMIT_ERROR = 3;
+
         /**
-           Should show the rename extension dialog, asking user to confirm the intent of changing
-           extension.
+         * Should show the rename extension dialog, asking user to confirm the intent of changing
+         * extension.
          */
         int RENAME_EXTENSION_DIALOG_DEFAULT = 4;
+
         /** Cancel the intent of changing the extension. */
         int RENAME_EXTENSION_DIALOG_CANCEL = 5;
+
         /**
          * Get error message after rename attempt after confirming the change of extension,
          * should show the rename dialog with error message.
@@ -78,8 +88,11 @@ public class RenameDialogManager {
                 new RenameDialogCoordinator(context, modalDialogManager, this::onRenameDialogClick);
 
         mRenameExtensionDialogCoordinator =
-                new RenameExtensionDialogCoordinator(context, modalDialogManager,
-                        this::onRenameExtensionDialogClick, this::onRenameExtensionDialogDismiss);
+                new RenameExtensionDialogCoordinator(
+                        context,
+                        modalDialogManager,
+                        this::onRenameExtensionDialogClick,
+                        this::onRenameExtensionDialogDismiss);
 
         mLastRenameAttemptResult = RenameResult.FAILURE_UNKNOWN;
         mCurState = RenameDialogState.NO_DIALOG;
@@ -151,18 +164,22 @@ public class RenameDialogManager {
     }
 
     private void runRenameCallback() {
-        mRenameCallback.attemptRename(mLastAttemptedName, result -> {
-            mLastRenameAttemptResult = result;
-            if (result == RenameResult.SUCCESS) {
-                processDialogState(
-                        RenameDialogState.NO_DIALOG, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-            } else {
-                processDialogState(mCurState == RenameDialogState.RENAME_EXTENSION_DIALOG_DEFAULT
-                                ? RenameDialogState.RENAME_EXTENSION_DIALOG_COMMIT_ERROR
-                                : RenameDialogState.RENAME_DIALOG_COMMIT_ERROR,
-                        DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-            }
-        });
+        mRenameCallback.attemptRename(
+                mLastAttemptedName,
+                result -> {
+                    mLastRenameAttemptResult = result;
+                    if (result == RenameResult.SUCCESS) {
+                        processDialogState(
+                                RenameDialogState.NO_DIALOG,
+                                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                    } else {
+                        processDialogState(
+                                mCurState == RenameDialogState.RENAME_EXTENSION_DIALOG_DEFAULT
+                                        ? RenameDialogState.RENAME_EXTENSION_DIALOG_COMMIT_ERROR
+                                        : RenameDialogState.RENAME_DIALOG_COMMIT_ERROR,
+                                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                    }
+                });
     }
 
     private void onRenameDialogClick(boolean isPositiveButton) {
@@ -170,14 +187,16 @@ public class RenameDialogManager {
             mLastAttemptedName = mRenameDialogCoordinator.getCurSuggestedName();
 
             if (TextUtils.equals(mLastAttemptedName, mOriginalName)) {
-                processDialogState(RenameDialogState.RENAME_DIALOG_CANCEL,
+                processDialogState(
+                        RenameDialogState.RENAME_DIALOG_CANCEL,
                         DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 return;
             }
 
             if (!RenameUtils.getFileExtension(mLastAttemptedName)
-                            .equalsIgnoreCase(RenameUtils.getFileExtension(mOriginalName))) {
-                processDialogState(RenameDialogState.RENAME_EXTENSION_DIALOG_DEFAULT,
+                    .equalsIgnoreCase(RenameUtils.getFileExtension(mOriginalName))) {
+                processDialogState(
+                        RenameDialogState.RENAME_EXTENSION_DIALOG_DEFAULT,
                         DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 return;
             }
@@ -191,7 +210,8 @@ public class RenameDialogManager {
         if (isPositiveButton) {
             runRenameCallback();
         } else {
-            processDialogState(RenameDialogState.RENAME_EXTENSION_DIALOG_CANCEL,
+            processDialogState(
+                    RenameDialogState.RENAME_EXTENSION_DIALOG_CANCEL,
                     DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }
     }

@@ -60,10 +60,11 @@ void MenuModelAdapter::BuildMenu(MenuItemView* menu) {
   menu->ChildrenChanged();
 }
 
-MenuItemView* MenuModelAdapter::CreateMenu() {
-  menu_ = new MenuItemView(this);
-  BuildMenu(menu_);
-  return menu_;
+std::unique_ptr<MenuItemView> MenuModelAdapter::CreateMenu() {
+  auto menu = std::make_unique<MenuItemView>(/*delegate=*/this);
+  menu_ = menu.get();
+  BuildMenu(menu.get());
+  return menu;
 }
 
 // Static.
@@ -72,7 +73,7 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
                                                        MenuItemView* menu,
                                                        size_t menu_index,
                                                        int item_id) {
-  absl::optional<MenuItemView::Type> type;
+  std::optional<MenuItemView::Type> type;
   const auto menu_type = model->GetTypeAt(model_index);
   switch (menu_type) {
     case ui::MenuModel::TYPE_TITLE:

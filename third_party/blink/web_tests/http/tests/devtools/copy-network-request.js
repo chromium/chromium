@@ -5,15 +5,15 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Network from 'devtools/panels/network/network.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests curl command generation\n`);
   await TestRunner.showPanel('network');
 
-  var logView = UI.panels.network.networkLogView;
+  var logView = Network.NetworkPanel.NetworkPanel.instance().networkLogView;
   const BROWSER = 0;
   const NODE_JS = 1;
 

@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANNOTATION_ANNOTATION_TEST_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANNOTATION_ANNOTATION_TEST_UTILS_H_
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
@@ -129,7 +130,7 @@ class MockAnnotationAgentHost : public mojom::blink::AnnotationAgentHost {
   // Public to allow inspection.
   mojo::Receiver<mojom::blink::AnnotationAgentHost> receiver_;
   mojo::Remote<mojom::blink::AnnotationAgent> agent_;
-  absl::optional<gfx::Rect> did_finish_attachment_rect_;
+  std::optional<gfx::Rect> did_finish_attachment_rect_;
   bool did_disconnect_ = false;
 };
 

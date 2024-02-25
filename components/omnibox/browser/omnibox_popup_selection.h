@@ -10,6 +10,7 @@
 #include "components/prefs/pref_service.h"
 
 class AutocompleteResult;
+class TemplateURLService;
 
 struct OmniboxPopupSelection {
   // Directions for stepping through selections. These may apply for going
@@ -106,16 +107,19 @@ struct OmniboxPopupSelection {
                                PrefService* pref_service) const;
 
   // Returns the next selection after this one in given `result`.
-  OmniboxPopupSelection GetNextSelection(const AutocompleteResult& result,
-                                         PrefService* pref_service,
-                                         Direction direction,
-                                         Step step) const;
+  OmniboxPopupSelection GetNextSelection(
+      const AutocompleteResult& result,
+      PrefService* pref_service,
+      TemplateURLService* template_url_service,
+      Direction direction,
+      Step step) const;
 
  private:
-  // This is a utility function to support `GetNextSelection`.
+  //  This is a utility function to support `GetNextSelection`.
   static std::vector<OmniboxPopupSelection> GetAllAvailableSelectionsSorted(
       const AutocompleteResult& result,
       PrefService* pref_service,
+      TemplateURLService* template_url_service,
       Direction direction,
       Step step);
 };

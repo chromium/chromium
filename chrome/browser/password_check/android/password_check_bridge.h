@@ -67,6 +67,9 @@ class PasswordCheckBridge : public PasswordCheckManager::Observer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& credentials);
 
+  // Checks if user is signed into their account to perform the check.
+  bool HasAccountForRequest(JNIEnv* env);
+
   // Called by Java when the bridge is no longer needed. Destructs itself.
   void Destroy(JNIEnv* env);
 

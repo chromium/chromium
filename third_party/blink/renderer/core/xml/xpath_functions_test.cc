@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/xml/xpath_functions.h"
 
+#include <cmath>
+#include <limits>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -12,10 +15,8 @@
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"  // HeapVector, Member, etc.
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-#include <cmath>
-#include <limits>
 
 namespace blink {
 
@@ -67,6 +68,7 @@ static String Substring(const char* string, double pos, double len) {
 }  // namespace
 
 TEST(XPathFunctionsTest, substring_specExamples) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(" car", Substring("motor car", 6.0))
       << "should select characters staring at position 6 to the end";
   EXPECT_EQ("ada", Substring("metadata", 4.0, 3.0))
@@ -97,15 +99,18 @@ TEST(XPathFunctionsTest, substring_specExamples) {
 }
 
 TEST(XPathFunctionsTest, substring_emptyString) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ("", Substring("", 0.0, 1.0))
       << "substring of an empty string should be the empty string";
 }
 
 TEST(XPathFunctionsTest, substring) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ("hello", Substring("well hello there", 6.0, 5.0));
 }
 
 TEST(XPathFunctionsTest, substring_negativePosition) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ("hello", Substring("hello, world!", -4.0, 10.0))
       << "negative start positions should impinge on the result length";
   // Try to underflow the length adjustment for negative positions.
@@ -114,6 +119,7 @@ TEST(XPathFunctionsTest, substring_negativePosition) {
 }
 
 TEST(XPathFunctionsTest, substring_negativeLength) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ("", Substring("hello, world!", 1.0, -3.0))
       << "negative lengths should result in an empty string";
 
@@ -123,6 +129,7 @@ TEST(XPathFunctionsTest, substring_negativeLength) {
 }
 
 TEST(XPathFunctionsTest, substring_extremePositionLength) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ("", Substring("no way", 1e100, 7.0))
       << "extremely large positions should result in the empty string";
 

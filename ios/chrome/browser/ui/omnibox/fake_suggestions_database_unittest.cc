@@ -12,7 +12,9 @@
 
 class FakeSuggestionsDatabaseTest : public testing::Test {
  public:
-  FakeSuggestionsDatabaseTest() : template_url_service_(nullptr, 0) {
+  FakeSuggestionsDatabaseTest()
+      : template_url_service_(/*prefs=*/nullptr,
+                              /*search_engine_choice_service=*/nullptr) {
     fake_suggestions_database_ =
         std::make_unique<FakeSuggestionsDatabase>(&template_url_service_);
   }

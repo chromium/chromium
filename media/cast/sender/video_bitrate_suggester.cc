@@ -30,12 +30,6 @@ VideoBitrateSuggester::VideoBitrateSuggester(
 VideoBitrateSuggester::~VideoBitrateSuggester() = default;
 
 int VideoBitrateSuggester::GetSuggestedBitrate() {
-  // Skip the more complicated calculation if the feature is not enabled.
-  if (!base::FeatureList::IsEnabled(
-          media::kOpenscreenVideoBitrateFactorInFrameDrops)) {
-    return get_bitrate_cb_.Run();
-  }
-
   // The bitrate retrieved from the callback is based on network usage, however
   // we also need to consider how well this device is handling encoding at
   // this bitrate overall.
@@ -47,17 +41,45 @@ int VideoBitrateSuggester::GetSuggestedBitrate() {
 }
 
 void VideoBitrateSuggester::RecordShouldDropNextFrame(bool should_drop) {
-  // Nothing to do if frame drop logic is disabled.
-  if (!base::FeatureList::IsEnabled(
-          media::kOpenscreenVideoBitrateFactorInFrameDrops)) {
-    return;
-  }
-
   ++number_of_frames_requested_;
   if (should_drop) {
     ++number_of_frames_dropped_;
   }
 
+  if (base::FeatureList::IsEnabled(
+          media::kCastStreamingExponentialVideoBitrateAlgorithm)) {
+    UpdateSuggestionUsingExponentialAlgorithm();
+  } else {
+    UpdateSuggestionUsingLinearAlgorithm();
+  }
+}
+
+void VideoBitrateSuggester::UpdateSuggestionUsingExponentialAlgorithm() {
+  // We don't want to change the bitrate too frequently in order to give
+  // things time to adjust, so only adjust roughly once a second.
+  constexpr int kWindowSize = 30;
+  if (number_of_frames_requested_ == kWindowSize) {
+    DCHECK_GE(max_bitrate_, min_bitrate_);
+
+    // We want to be more conservative about increasing the frame rate than
+    // decreasing it.
+    constexpr double kIncrease = 1.1;
+    constexpr double kDecrease = 0.8;
+
+    // Generally speaking we shouldn't be dropping any frames, so even one is
+    // a bad sign.
+    suggested_max_bitrate_ =
+        (number_of_frames_dropped_ > 0)
+            ? std::max<int>(min_bitrate_, suggested_max_bitrate_ * kDecrease)
+            : std::min<int>(max_bitrate_, suggested_max_bitrate_ * kIncrease);
+
+    // Reset the recorded frame drops to start a new window.
+    number_of_frames_requested_ = 0;
+    number_of_frames_dropped_ = 0;
+  }
+}
+
+void VideoBitrateSuggester::UpdateSuggestionUsingLinearAlgorithm() {
   // We don't want to change the bitrate too frequently in order to give
   // things time to adjust, so only adjust every 100 frames (about 3 seconds
   // at 30FPS).
@@ -82,4 +104,5 @@ void VideoBitrateSuggester::RecordShouldDropNextFrame(bool should_drop) {
     number_of_frames_dropped_ = 0;
   }
 }
+
 }  // namespace media::cast

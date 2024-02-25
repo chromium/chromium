@@ -35,6 +35,14 @@ gfx::ImageSkiaRep ImageSkiaRepOfScaleFromUIImage(UIImage* image, float scale) {
   SkBitmap bitmap(skia::CGImageToSkBitmap(image.CGImage,
                                           desired_size_for_scale,
                                           false));
+
+  // Resizing the image can fail.
+  // https://crbug.com/1184688, https://crbug.com/41495327
+  if (bitmap.empty()) {
+    return gfx::ImageSkiaRep();
+  }
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
   return gfx::ImageSkiaRep(bitmap, scale);
 }
 
@@ -51,7 +59,7 @@ UIImage* UIImageFromImageSkiaRep(const gfx::ImageSkiaRep& image_skia_rep) {
   base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
   return skia::SkBitmapToUIImageWithColorSpace(image_skia_rep.GetBitmap(),
-                                               scale, color_space);
+                                               scale, color_space.get());
 }
 
 }  // namespace gfx

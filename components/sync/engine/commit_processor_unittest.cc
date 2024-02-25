@@ -39,7 +39,7 @@ class FakeCommitContribution : public CommitContribution {
   SyncerError ProcessCommitResponse(
       const sync_pb::ClientToServerResponse& response,
       StatusController* status) override {
-    return SyncerError();
+    return SyncerError::Success();
   }
   void ProcessCommitFailure(SyncCommitError commit_error) override {}
   size_t GetNumEntries() const override { return num_entries_; }

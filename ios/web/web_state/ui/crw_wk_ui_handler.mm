@@ -6,6 +6,7 @@
 
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/web/common/features.h"
@@ -14,19 +15,17 @@
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/web_state/ui/crw_media_capture_permission_request.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "ios/web/web_view/wk_security_origin_util.h"
 #import "ios/web/webui/mojo_facade.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
 namespace {
-
-// Histogram name that logs permission requests.
-const char kPermissionRequestsHistogram[] = "IOS.Permission.Requests";
 
 // Values for UMA permission histograms. These values are based on
 // WKMediaCaptureType and persisted to logs. Entries should not be renumbered
@@ -38,11 +37,32 @@ enum class PermissionRequest {
   kMaxValue = RequestCameraAndMicrophone,
 };
 
+// Records permission histogram enum for `media_capture_type` on UMA.
+void RecordHistogramForPermissionRequestForWKMediaCaptureType(
+    WKMediaCaptureType media_capture_type) {
+  PermissionRequest type;
+  switch (media_capture_type) {
+    case WKMediaCaptureTypeCamera:
+      type = PermissionRequest::RequestCamera;
+      break;
+    case WKMediaCaptureTypeMicrophone:
+      type = PermissionRequest::RequestMicrophone;
+      break;
+    case WKMediaCaptureTypeCameraAndMicrophone:
+      type = PermissionRequest::RequestCameraAndMicrophone;
+      break;
+  }
+  base::UmaHistogramEnumeration("IOS.Permission.Requests", type);
+}
+
 }  // namespace
 
-@interface CRWWKUIHandler () {
+@interface CRWWKUIHandler () <CRWMediaCapturePermissionPresenter> {
   // Backs up property with the same name.
   std::unique_ptr<web::MojoFacade> _mojoFacade;
+
+  // Check that public API is called from the correct sequence.
+  SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 @property(nonatomic, assign, readonly) web::WebStateImpl* webStateImpl;
@@ -50,9 +70,21 @@ enum class PermissionRequest {
 // Facade for Mojo API.
 @property(nonatomic, readonly) web::MojoFacade* mojoFacade;
 
+// Task runner that creates this object.
+@property(nonatomic, readonly) scoped_refptr<base::SequencedTaskRunner>
+    mainTaskRunner;
+
 @end
 
 @implementation CRWWKUIHandler
+
+- (instancetype)init {
+  if (self = [super init]) {
+    _mainTaskRunner = base::SequencedTaskRunner::GetCurrentDefault();
+    CHECK(_mainTaskRunner);
+  }
+  return self;
+}
 
 #pragma mark - CRWWebViewHandler
 
@@ -81,39 +113,26 @@ enum class PermissionRequest {
                                       type:(WKMediaCaptureType)type
                            decisionHandler:
                                (void (^)(WKPermissionDecision decision))
-                                   decisionHandler API_AVAILABLE(ios(15.0)) {
-  PermissionRequest request;
-  NSArray<NSNumber*>* permissionsRequested;
-  switch (type) {
-    case WKMediaCaptureTypeCamera:
-      request = PermissionRequest::RequestCamera;
-      permissionsRequested = @[ @(web::PermissionCamera) ];
-      break;
-    case WKMediaCaptureTypeMicrophone:
-      request = PermissionRequest::RequestMicrophone;
-      permissionsRequested = @[ @(web::PermissionMicrophone) ];
-      break;
-    case WKMediaCaptureTypeCameraAndMicrophone:
-      request = PermissionRequest::RequestCameraAndMicrophone;
-      permissionsRequested =
-          @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ];
-      break;
-  }
-  base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
+                                   decisionHandler {
+  RecordHistogramForPermissionRequestForWKMediaCaptureType(type);
+  CRWMediaCapturePermissionRequest* request =
+      [[CRWMediaCapturePermissionRequest alloc]
+          initWithDecisionHandler:decisionHandler
+                     onTaskRunner:self.mainTaskRunner];
+  request.presenter = self;
+  GURL securityOrigin = web::GURLOriginWithWKSecurityOrigin(origin);
   if (web::GetWebClient()->EnableFullscreenAPI()) {
     if (@available(iOS 16, *)) {
       if (webView.fullscreenState == WKFullscreenStateInFullscreen ||
           webView.fullscreenState == WKFullscreenStateEnteringFullscreen) {
         [webView closeAllMediaPresentationsWithCompletionHandler:^{
-          [self displayPromptForPermissions:permissionsRequested
-                        withDecisionHandler:decisionHandler];
+          [request displayPromptForMediaCaptureType:type origin:securityOrigin];
         }];
         return;
       }
     }
   }
-  [self displayPromptForPermissions:permissionsRequested
-                withDecisionHandler:decisionHandler];
+  [request displayPromptForMediaCaptureType:type origin:securityOrigin];
 }
 
 - (WKWebView*)webView:(WKWebView*)webView
@@ -175,13 +194,13 @@ enum class PermissionRequest {
     // -webViewDidClose will typically trigger another webState to activate,
     // which may in turn also close. To prevent reentrant modificationre in
     // WebStateList, trigger a PostTask here.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          web::WebStateImpl* webStateImpl = weakSelf.webStateImpl;
-          if (webStateImpl) {
-            webStateImpl->CloseWebState();
-          }
-        }));
+    self.mainTaskRunner->PostTask(FROM_HERE, base::BindOnce(^{
+                                    web::WebStateImpl* webStateImpl =
+                                        weakSelf.webStateImpl;
+                                    if (webStateImpl) {
+                                      webStateImpl->CloseWebState();
+                                    }
+                                  }));
   }
 }
 
@@ -276,52 +295,20 @@ enum class PermissionRequest {
   delegate->ContextMenuWillCommitWithAnimator(self.webStateImpl, animator);
 }
 
-#pragma mark - Helper
+#pragma mark - CRWMediaCapturePermissionPresenter
 
-// Helper that displays a prompt to the user that asks for access to
-// `permissions`.
-- (void)displayPromptForPermissions:(NSArray<NSNumber*>*)permissions
-                withDecisionHandler:
-                    (void (^)(WKPermissionDecision decision))handler
-    API_AVAILABLE(ios(15.0)) {
-  // Calling WillDisplayMediaCapturePermissionPrompt(...) may
-  // cause the WebState to be closed and the last reference to
-  // the current object to be destroyed (e.g. if the WebState
-  // is used to pre-render).
-  //
-  // Use a local variable with precise lifetime to force the
-  // current object to be kept alive till the end of the method
-  // to prevent UaF.
-  __attribute__((objc_precise_lifetime)) CRWWKUIHandler* selfRetain = self;
-  if (!selfRetain.isBeingDestroyed) {
-    DCHECK(selfRetain.webStateImpl);
-    // This call may destroy the web state.
-    web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
-        selfRetain.webStateImpl);
-  }
-
-  // By this point, the WebState may have been destroyed. If
-  // this is the case, then `-isBeingDestroyed` will be YES.
-  if (selfRetain.isBeingDestroyed) {
-    // If the web state doesn't exist, it is likely that the web view isn't
-    // visible to the user, or that some other issue has happened. Deny
-    // permission.
-    handler(WKPermissionDecisionDeny);
-    return;
-  }
-
-  // The WebState must be valid if the object is not destroyed.
-  DCHECK(selfRetain.webStateImpl);
-
-  // Request permission.
-  selfRetain.webStateImpl->RequestPermissionsWithDecisionHandler(permissions,
-                                                                 handler);
+- (web::WebStateImpl*)presentingWebState {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return self.webStateImpl;
 }
+
+#pragma mark - Helper
 
 // Helper that returns whether or not a dialog should be presented for a
 // frame with `requestURL`.
 - (BOOL)shouldPresentJavaScriptDialogForRequestURL:(const GURL&)requestURL
                                        isMainFrame:(BOOL)isMainFrame {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   // JavaScript dialogs should not be presented if there is no information about
   // the requesting page's URL.
   if (!requestURL.is_valid()) {

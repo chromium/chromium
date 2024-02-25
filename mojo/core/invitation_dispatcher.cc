@@ -4,7 +4,6 @@
 
 #include "mojo/core/invitation_dispatcher.h"
 
-#include "base/strings/string_piece.h"
 #include "mojo/core/core.h"
 
 namespace mojo {
@@ -31,7 +30,7 @@ MojoResult InvitationDispatcher::Close() {
 }
 
 MojoResult InvitationDispatcher::AttachMessagePipe(
-    base::StringPiece name,
+    std::string_view name,
     ports::PortRef remote_peer_port) {
   base::AutoLock lock(lock_);
   auto result = attached_ports_.emplace(std::string(name), remote_peer_port);
@@ -43,7 +42,7 @@ MojoResult InvitationDispatcher::AttachMessagePipe(
 }
 
 MojoResult InvitationDispatcher::ExtractMessagePipe(
-    base::StringPiece name,
+    std::string_view name,
     MojoHandle* message_pipe_handle) {
   ports::PortRef remote_peer_port;
   {

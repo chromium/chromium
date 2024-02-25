@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_
 
-#include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/scripting.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -19,13 +19,16 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "ui/base/pointer/pointer_device.h"
+#include "ui/base/ui_base_types.h"
 
 namespace blink {
 
 class CORE_EXPORT MediaValuesCached final : public MediaValues {
  public:
   struct CORE_EXPORT MediaValuesCachedData final {
-    DISALLOW_NEW();
+    USING_FAST_MALLOC(MediaValuesCachedData);
+
+   public:
     // Members variables must be thread safe, since they're copied to the parser
     // thread
     double viewport_width = 0;
@@ -65,6 +68,9 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     String media_type;
     mojom::blink::DisplayMode display_mode =
         mojom::blink::DisplayMode::kBrowser;
+    ui::WindowShowState window_show_state =
+        ui::WindowShowState::SHOW_STATE_DEFAULT;
+    bool resizable = true;
     ColorSpaceGamut color_gamut = ColorSpaceGamut::kUnknown;
     mojom::blink::PreferredColorScheme preferred_color_scheme =
         mojom::blink::PreferredColorScheme::kLight;
@@ -77,52 +83,12 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     NavigationControls navigation_controls = NavigationControls::kNone;
     int horizontal_viewport_segments = 0;
     int vertical_viewport_segments = 0;
-    device::mojom::blink::DevicePostureType device_posture =
-        device::mojom::blink::DevicePostureType::kContinuous;
+    mojom::blink::DevicePostureType device_posture =
+        mojom::blink::DevicePostureType::kContinuous;
     Scripting scripting = Scripting::kNone;
 
     MediaValuesCachedData();
     explicit MediaValuesCachedData(Document&);
-
-    MediaValuesCachedData DeepCopy() const {
-      MediaValuesCachedData data;
-      data.viewport_width = viewport_width;
-      data.viewport_height = viewport_height;
-      data.device_width = device_width;
-      data.device_height = device_height;
-      data.device_pixel_ratio = device_pixel_ratio;
-      data.device_supports_hdr = device_supports_hdr;
-      data.color_bits_per_component = color_bits_per_component;
-      data.monochrome_bits_per_component = monochrome_bits_per_component;
-      data.primary_pointer_type = primary_pointer_type;
-      data.available_pointer_types = available_pointer_types;
-      data.primary_hover_type = primary_hover_type;
-      data.output_device_update_ability_type =
-          output_device_update_ability_type;
-      data.available_hover_types = available_hover_types;
-      data.em_size = em_size;
-      data.ex_size = ex_size;
-      data.ch_size = ch_size;
-      data.ch_size = ic_size;
-      data.three_d_enabled = three_d_enabled;
-      data.strict_mode = strict_mode;
-      data.media_type = media_type;
-      data.display_mode = display_mode;
-      data.color_gamut = color_gamut;
-      data.preferred_color_scheme = preferred_color_scheme;
-      data.preferred_contrast = preferred_contrast;
-      data.prefers_reduced_motion = prefers_reduced_motion;
-      data.prefers_reduced_data = prefers_reduced_data;
-      data.prefers_reduced_transparency = prefers_reduced_transparency;
-      data.forced_colors = forced_colors;
-      data.navigation_controls = navigation_controls;
-      data.horizontal_viewport_segments = horizontal_viewport_segments;
-      data.vertical_viewport_segments = vertical_viewport_segments;
-      data.device_posture = device_posture;
-      data.inverted_colors = inverted_colors;
-      data.scripting = scripting;
-      return data;
-    }
   };
 
   MediaValuesCached();
@@ -150,6 +116,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   bool HasValues() const override;
   const String MediaType() const override;
   blink::mojom::DisplayMode DisplayMode() const override;
+  ui::WindowShowState WindowShowState() const override;
+  bool Resizable() const override;
   ColorSpaceGamut ColorGamut() const override;
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;
   mojom::blink::PreferredContrast GetPreferredContrast() const override;
@@ -160,7 +128,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   NavigationControls GetNavigationControls() const override;
   int GetHorizontalViewportSegments() const override;
   int GetVerticalViewportSegments() const override;
-  device::mojom::blink::DevicePostureType GetDevicePosture() const override;
+  mojom::blink::DevicePostureType GetDevicePosture() const override;
   Scripting GetScripting() const override;
 
   void OverrideViewportDimensions(double width, double height);
@@ -197,15 +165,5 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
 };
 
 }  // namespace blink
-
-namespace WTF {
-
-template <>
-struct CrossThreadCopier<blink::MediaValuesCached::MediaValuesCachedData> {
-  typedef blink::MediaValuesCached::MediaValuesCachedData Type;
-  static Type Copy(const Type& data) { return data.DeepCopy(); }
-};
-
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_

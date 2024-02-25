@@ -19,12 +19,12 @@ Resources Tree:
 Frames
     top
         resource-tree-reload-iframe.html
-            Scripts
-                script-initial.js
-            Stylesheets
+            CSS
                 styles-initial-2.css
+            JavaScript
+                script-initial.js
             resource-tree-reload-iframe.html
-        Stylesheets
+        CSS
             styles-initial.css
         resource-tree-reload.html
 Sources:

@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image text:"pipe" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {alt="pipe"}, {height="126"}, {src="pipe.jpg"}, {usemap="#pipe"}, {width="145"}]
+++++++View text:"pipe1" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="area"}, {display="inline"}, {alt="pipe1"}, {coords="0,0,145,126"}, {href="fake.htm"}, {shape="rect"}]

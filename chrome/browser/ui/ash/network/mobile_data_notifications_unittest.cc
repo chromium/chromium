@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -57,6 +58,7 @@ class NetworkConnectTestDelegate : public ash::NetworkConnect::Delegate {
   }
   void ShowMobileSetupDialog(const std::string& network_id) override {}
   void ShowCarrierAccountDetail(const std::string& network_id) override {}
+  void ShowCarrierUnlockNotification() override {}
   void ShowPortalSignin(const std::string& network_id,
                         ash::NetworkConnect::Source source) override {}
   void ShowNetworkConnectError(const std::string& error_name,
@@ -77,6 +79,7 @@ class MobileDataNotificationsTest : public testing::Test {
   void SetUp() override {
     session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
     testing::Test::SetUp();
+    ash::LoginState::Initialize();
     SetupUserManagerAndProfileManager();
     SetupSystemNotifications();
     AddUserAndSetActive(kTestUserName);
@@ -93,6 +96,7 @@ class MobileDataNotificationsTest : public testing::Test {
     network_connect_delegate_.reset();
     profile_manager_.reset();
     user_manager_enabler_.reset();
+    ash::LoginState::Shutdown();
     testing::Test::TearDown();
   }
 
@@ -166,8 +170,7 @@ class MobileDataNotificationsTest : public testing::Test {
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };

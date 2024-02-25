@@ -295,15 +295,6 @@ class IncidentReportingService : public ProfileManagerObserver,
   // The time at which the initial incident is reported.
   base::Time first_incident_time_;
 
-  // The time at which the last incident is reported.
-  base::TimeTicks last_incident_time_;
-
-  // The time at which environmental data collection was initiated.
-  base::TimeTicks environment_collection_begin_;
-
-  // The time at which download collection was initiated.
-  base::TimeTicks last_download_begin_;
-
   // Context data for all on-the-record profiles plus the process-wide (NULL)
   // context. A mapping of profiles to contexts holding state about received
   // incidents.

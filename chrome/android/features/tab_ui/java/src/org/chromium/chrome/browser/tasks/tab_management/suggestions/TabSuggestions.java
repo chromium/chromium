@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.suggestions;
 
-/**
- * Interface for the Tab Suggestions framework.
- */
+/** Interface for the Tab Suggestions framework. */
 public interface TabSuggestions {
     /**
      * Adds an observer

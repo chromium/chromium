@@ -37,7 +37,7 @@ namespace test {
 std::unique_ptr<webrtc::DesktopFrame> LoadDesktopFrameFromPng(
     const char* name) {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path = file_path.AppendASCII("remoting");
   file_path = file_path.AppendASCII("test");
   file_path = file_path.AppendASCII("data");

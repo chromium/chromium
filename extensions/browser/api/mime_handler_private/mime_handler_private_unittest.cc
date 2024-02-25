@@ -11,6 +11,7 @@
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +22,7 @@ namespace extensions {
 class MimeHandlerServiceImplTest : public testing::Test {
  public:
   void SetUp() override {
-    const std::string extension_id =
+    const ExtensionId extension_id =
         extension_misc::kMimeHandlerPrivateTestExtensionId;
     auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
     transferrable_loader->url = GURL("stream://url");
@@ -51,38 +52,32 @@ TEST_F(MimeHandlerServiceImplTest, SetValidPdfPluginAttributes) {
   {
     const double kBackgroundColor = 4292533472.0f;
     service_->SetPdfPluginAttributes(mime_handler::PdfPluginAttributes::New(
-        /*background_color=*/kBackgroundColor, /*allow_javascript=*/true,
-        /*use_skia=*/true));
+        /*background_color=*/kBackgroundColor, /*allow_javascript=*/true));
     ASSERT_TRUE(stream_container_->pdf_plugin_attributes());
 
     EXPECT_EQ(kBackgroundColor,
               stream_container_->pdf_plugin_attributes()->background_color);
     EXPECT_TRUE(stream_container_->pdf_plugin_attributes()->allow_javascript);
-    EXPECT_TRUE(stream_container_->pdf_plugin_attributes()->use_skia);
   }
 
   {
     service_->SetPdfPluginAttributes(mime_handler::PdfPluginAttributes::New(
-        /*background_color=*/0.0f, /*allow_javascript=*/true,
-        /*use_skia=*/false));
+        /*background_color=*/0.0f, /*allow_javascript=*/true));
     ASSERT_TRUE(stream_container_->pdf_plugin_attributes());
 
     EXPECT_EQ(0.0f,
               stream_container_->pdf_plugin_attributes()->background_color);
     EXPECT_TRUE(stream_container_->pdf_plugin_attributes()->allow_javascript);
-    EXPECT_FALSE(stream_container_->pdf_plugin_attributes()->use_skia);
   }
 
   {
     service_->SetPdfPluginAttributes(mime_handler::PdfPluginAttributes::New(
-        /*background_color=*/UINT32_MAX, /*allow_javascript=*/false,
-        /*use_skia=*/true));
+        /*background_color=*/UINT32_MAX, /*allow_javascript=*/false));
     ASSERT_TRUE(stream_container_->pdf_plugin_attributes());
 
     EXPECT_EQ(static_cast<double>(UINT32_MAX),
               stream_container_->pdf_plugin_attributes()->background_color);
     EXPECT_FALSE(stream_container_->pdf_plugin_attributes()->allow_javascript);
-    EXPECT_TRUE(stream_container_->pdf_plugin_attributes()->use_skia);
   }
 }
 
@@ -91,8 +86,7 @@ TEST_F(MimeHandlerServiceImplTest,
   {
     // Background is not an integer.
     service_->SetPdfPluginAttributes(mime_handler::PdfPluginAttributes::New(
-        /*background_color=*/12.34, /*allow_javascript=*/true,
-        /*use_skia=*/true));
+        /*background_color=*/12.34, /*allow_javascript=*/true));
     EXPECT_FALSE(stream_container_->pdf_plugin_attributes());
   }
 
@@ -100,8 +94,7 @@ TEST_F(MimeHandlerServiceImplTest,
     // Background color is beyond the range of an uint32_t.
     uint64_t color_beyond_range = UINT32_MAX + static_cast<uint64_t>(1);
     service_->SetPdfPluginAttributes(mime_handler::PdfPluginAttributes::New(
-        static_cast<double>(color_beyond_range), /*allow_javascript=*/true,
-        /*use_skia=*/true));
+        static_cast<double>(color_beyond_range), /*allow_javascript=*/true));
     EXPECT_FALSE(stream_container_->pdf_plugin_attributes());
   }
 }

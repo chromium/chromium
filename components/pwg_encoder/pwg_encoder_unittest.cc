@@ -65,8 +65,7 @@ TEST(PwgRasterTest, Encode) {
   EXPECT_EQ(2970U, output.size());
 
   std::string sha1 = base::SHA1HashString(output);
-  EXPECT_EQ("4AD7442998C8FEAE94BC9C8B177A7C94766CC9FB",
-            base::HexEncode(sha1.data(), sha1.size()));
+  EXPECT_EQ("4AD7442998C8FEAE94BC9C8B177A7C94766CC9FB", base::HexEncode(sha1));
 
   // Encode again in monochrome.
   header_info.color_space = PwgHeaderInfo::SGRAY;
@@ -76,8 +75,7 @@ TEST(PwgRasterTest, Encode) {
   EXPECT_EQ(2388U, output.size());
 
   sha1 = base::SHA1HashString(output);
-  EXPECT_EQ("4E718B0A69AC26A366A2E23AE1ECA6055079A1FF",
-            base::HexEncode(sha1.data(), sha1.size()));
+  EXPECT_EQ("4E718B0A69AC26A366A2E23AE1ECA6055079A1FF", base::HexEncode(sha1));
 }
 
 }  // namespace pwg_encoder

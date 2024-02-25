@@ -2,17 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -52,6 +59,17 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
       return false;
     }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings. which
+    // need to be enabled for this test.
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      syncer::SyncServiceImpl* service = GetSyncService(0);
+      syncer::SyncUserSettings* settings = service->GetUserSettings();
+      settings->SetAppsSyncEnabledByOs(true);
+    }
+#endif
+
     for (Profile* profile : GetAllProfiles()) {
       auto* web_app_provider = WebAppProvider::GetForTest(profile);
       base::RunLoop loop;
@@ -74,30 +92,23 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
   void InjectWebAppEntityToFakeServer(
       const std::string& app_id,
       const GURL& url,
-      absl::optional<std::string> relative_manifest_id = absl::nullopt) {
-    WebApp app(app_id);
-    app.SetName(app_id);
-    app.SetStartUrl(url);
-    app.SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-
-    WebApp::SyncFallbackData sync_fallback_data;
-    sync_fallback_data.name = app_id;
-    app.SetSyncFallbackData(std::move(sync_fallback_data));
-
+      std::optional<std::string> relative_manifest_id = std::nullopt) {
     sync_pb::EntitySpecifics entity_specifics;
-
-    *(entity_specifics.mutable_web_app()) = WebAppToSyncProto(app);
+    entity_specifics.mutable_web_app()->set_name(app_id);
+    entity_specifics.mutable_web_app()->set_start_url(url.spec());
     if (relative_manifest_id) {
       entity_specifics.mutable_web_app()->set_relative_manifest_id(
           relative_manifest_id.value());
-    } else {
-      entity_specifics.mutable_web_app()->clear_relative_manifest_id();
     }
 
     fake_server_->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/"", app_id, entity_specifics, kDefaultTime,
             kDefaultTime));
+  }
+
+  int GetNumWebAppsInSync() {
+    return GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS).size();
   }
 };
 
@@ -122,7 +133,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Apps sync is controlled by a dedicated preference on Lacros,
+  // corresponding to the Apps toggle in OS Sync settings if
+  // kSyncChromeOSAppsToggleSharing is enabled. Disabling Apps sync requires
+  // disabling Apps toggle in OS.
+  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+    settings->SetAppsSyncEnabledByOs(false);
+  } else {
+    settings->SetSelectedTypes(false, UserSelectableTypeSet());
+  }
+#else
   settings->SetSelectedTypes(false, UserSelectableTypeSet());
+#endif
+
   ASSERT_FALSE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 #endif
@@ -131,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithValidIdSyncInstalled) {
   GURL url("https://example.com/");
-  const std::string app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
+  const std::string app_id = GenerateAppId(/*manifest_id=*/std::nullopt, url);
   InjectWebAppEntityToFakeServer(app_id, url);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
@@ -177,11 +201,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.start_url = url;
   info.scope = url;
   info.manifest_id = GenerateManifestId(relative_manifest_id, url);
-  const AppId installed_app_id =
+  const webapps::AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
   const std::string expected_app_id = GenerateAppId(
-      /*manifest_id=*/absl::nullopt, GURL("https://example.com/explicit_id"));
+      /*manifest_id=*/std::nullopt, GURL("https://example.com/explicit_id"));
   EXPECT_EQ(expected_app_id, installed_app_id);
 }
 
@@ -207,12 +231,128 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.start_url = url;
   info.scope = url;
   info.manifest_id = GenerateManifestId(relative_manifest_id, url);
-  const AppId installed_app_id =
+  const webapps::AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
   const std::string expected_app_id = GenerateAppId(
-      /*manifest_id=*/absl::nullopt, GURL("https://example.com/"));
+      /*manifest_id=*/std::nullopt, GURL("https://example.com/"));
   EXPECT_EQ(expected_app_id, installed_app_id);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
+                       NoDisplayModeMeansStandalone) {
+  GURL url("https://example.com/start");
+  const std::string app_id =
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
+
+  InjectWebAppEntityToFakeServer(app_id, url);
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  auto& web_app_registrar =
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
+
+  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_EQ(web_app_registrar.GetAppUserDisplayMode(app_id),
+            mojom::UserDisplayMode::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {
+  ASSERT_TRUE(SetupClients());
+  EXPECT_EQ(0, GetNumWebAppsInSync());
+
+  GURL url("https://example.com/start");
+  const std::string app_id =
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
+  InjectWebAppEntityToFakeServer(app_id, GURL());
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  auto& web_app_registrar =
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
+
+  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
+              base::BucketsAre(
+                  base::Bucket(StorageKeyParseResult::kInvalidStartUrl, 1)));
+  // Since this makes the entity not parse-able for an AppId, the entity cannot
+  // be deleted yet from Sync.
+  EXPECT_EQ(1, GetNumWebAppsInSync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, NoStartUrl) {
+  ASSERT_TRUE(SetupClients());
+  EXPECT_EQ(0, GetNumWebAppsInSync());
+
+  GURL url("https://example.com/start");
+  const std::string app_id =
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
+
+  sync_pb::EntitySpecifics entity_specifics;
+  entity_specifics.mutable_web_app()->set_name(app_id);
+  fake_server_->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/"", app_id, entity_specifics, kDefaultTime,
+          kDefaultTime));
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  auto& web_app_registrar =
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
+
+  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
+
+  std::vector<sync_pb::SyncEntity> server_apps =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
+      base::BucketsAre(base::Bucket(StorageKeyParseResult::kNoStartUrl, 1)));
+  // Since this makes the entity not parse-able for an AppId, the entity cannot
+  // be deleted yet from Sync.
+  EXPECT_EQ(1, GetNumWebAppsInSync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidManifestId) {
+  ASSERT_TRUE(SetupClients());
+  EXPECT_EQ(0, GetNumWebAppsInSync());
+
+  GURL url("https://example.com/start");
+  const std::string app_id =
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
+
+  sync_pb::EntitySpecifics entity_specifics;
+  entity_specifics.mutable_web_app()->set_name(app_id);
+  entity_specifics.mutable_web_app()->set_start_url("about:blank");
+  entity_specifics.mutable_web_app()->set_relative_manifest_id("");
+  fake_server_->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/"", app_id, entity_specifics, kDefaultTime,
+          kDefaultTime));
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  auto& web_app_registrar =
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
+
+  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
+
+  std::vector<sync_pb::SyncEntity> server_apps =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
+              base::BucketsAre(
+                  base::Bucket(StorageKeyParseResult::kInvalidManifestId, 1)));
+  // Since this makes the entity not parse-able for an AppId, the entity cannot
+  // be deleted yet from Sync.
+  EXPECT_EQ(1, GetNumWebAppsInSync());
 }
 
 }  // namespace

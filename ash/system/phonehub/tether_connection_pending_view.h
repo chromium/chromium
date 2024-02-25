@@ -18,9 +18,9 @@ class PhoneHubInterstitialView;
 // A connecting to tether hotspot view shown when resuming an interrupted
 // connection to PhoneHub as a result of an in progress tether connection.
 class ASH_EXPORT TetherConnectionPendingView : public PhoneHubContentView {
- public:
-  METADATA_HEADER(TetherConnectionPendingView);
+  METADATA_HEADER(TetherConnectionPendingView, PhoneHubContentView)
 
+ public:
   TetherConnectionPendingView();
   TetherConnectionPendingView(const TetherConnectionPendingView&) = delete;
   TetherConnectionPendingView& operator=(const TetherConnectionPendingView&) =
@@ -33,7 +33,7 @@ class ASH_EXPORT TetherConnectionPendingView : public PhoneHubContentView {
  private:
   // Responsible for displaying the connecting UI contents.
   // Owned by view hierarchy.
-  raw_ptr<PhoneHubInterstitialView, ExperimentalAsh> content_view_ = nullptr;
+  raw_ptr<PhoneHubInterstitialView> content_view_ = nullptr;
 };
 
 }  // namespace ash

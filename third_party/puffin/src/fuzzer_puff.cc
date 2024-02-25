@@ -32,7 +32,7 @@ class Environment {
  public:
   Environment() {
     // To turn off the logging.
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 

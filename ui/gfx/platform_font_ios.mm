@@ -62,7 +62,7 @@ PlatformFontIOS::PlatformFontIOS(const std::string& font_name, int font_size) {
 PlatformFontIOS::PlatformFontIOS(
     sk_sp<SkTypeface> typeface,
     int font_size_pixels,
-    const absl::optional<FontRenderParams>& params) {
+    const std::optional<FontRenderParams>& params) {
   InitWithNameSizeAndStyle(GetFamilyNameFromTypeface(typeface),
                            font_size_pixels,
                            (typeface->isItalic() ? Font::ITALIC : Font::NORMAL),
@@ -214,7 +214,7 @@ PlatformFont* PlatformFont::CreateFromNameAndSize(const std::string& font_name,
 PlatformFont* PlatformFont::CreateFromSkTypeface(
     sk_sp<SkTypeface> typeface,
     int font_size_pixels,
-    const absl::optional<FontRenderParams>& params) {
+    const std::optional<FontRenderParams>& params) {
   return new PlatformFontIOS(typeface, font_size_pixels, params);
 }
 

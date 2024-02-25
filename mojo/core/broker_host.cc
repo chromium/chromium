@@ -4,6 +4,7 @@
 
 #include "mojo/core/broker_host.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -99,7 +100,7 @@ bool BrokerHost::SendChannel(PlatformHandle handle) {
 
 #if BUILDFLAG(IS_WIN)
 
-void BrokerHost::SendNamedChannel(base::WStringPiece pipe_name) {
+void BrokerHost::SendNamedChannel(std::wstring_view pipe_name) {
   InitData* data;
   wchar_t* name_data;
   Channel::MessagePtr message = CreateBrokerMessage(

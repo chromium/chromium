@@ -53,6 +53,7 @@ enum XRReflectionFormat {
   [SameObject] readonly attribute XRDOMOverlayState domOverlayState;
   readonly attribute XRReflectionFormat preferredReflectionFormat;
   [RuntimeEnabled=WebXREnabledFeatures] readonly attribute FrozenArray<DOMString> enabledFeatures;
+  [RuntimeEnabled=WebXRSpecParity] readonly attribute boolean isSystemKeyboardSupported;
 
   attribute EventHandler onend;
   attribute EventHandler onselect;

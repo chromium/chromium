@@ -7,6 +7,10 @@ package org.chromium.android_webview;
 import android.content.Context;
 import android.net.Uri;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.Lifetime;
@@ -15,9 +19,6 @@ import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -42,9 +43,7 @@ public class AwContentsStatics {
     private static final String sSafeBrowsingWarmUpHelper =
             "com.android.webview.chromium.SafeBrowsingWarmUpHelper";
 
-    /**
-     * Return the client certificate lookup table.
-     */
+    /** Return the client certificate lookup table. */
     public static ClientCertLookupTable getClientCertLookupTable() {
         ThreadUtils.assertOnUiThread();
         if (sClientCertLookupTable == null) {
@@ -53,9 +52,7 @@ public class AwContentsStatics {
         return sClientCertLookupTable;
     }
 
-    /**
-     * Clear client cert lookup table. Should only be called from UI thread.
-     */
+    /** Clear client cert lookup table. Should only be called from UI thread. */
     public static void clearClientCertPreferences(Runnable callback) {
         ThreadUtils.assertOnUiThread();
         getClientCertLookupTable().clear();
@@ -91,11 +88,6 @@ public class AwContentsStatics {
         return AwContentsStaticsJni.get().getProductVersion();
     }
 
-    public static void setServiceWorkerIoThreadClient(
-            AwContentsIoThreadClient ioThreadClient, AwBrowserContext browserContext) {
-        AwContentsStaticsJni.get().setServiceWorkerIoThreadClient(ioThreadClient, browserContext);
-    }
-
     @CalledByNative
     private static void safeBrowsingAllowlistAssigned(Callback<Boolean> callback, boolean success) {
         if (callback == null) return;
@@ -105,8 +97,7 @@ public class AwContentsStatics {
     public static void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
         String[] urlArray = urls.toArray(new String[urls.size()]);
         if (callback == null) {
-            callback = b -> {
-            };
+            callback = b -> {};
         }
         AwContentsStaticsJni.get().setSafeBrowsingAllowlist(urlArray, callback);
     }
@@ -115,19 +106,20 @@ public class AwContentsStatics {
     public static void initSafeBrowsing(Context context, final Callback<Boolean> callback) {
         // Wrap the callback to make sure we always invoke it on the UI thread, as guaranteed by the
         // API.
-        Callback<Boolean> wrapperCallback = b -> {
-            if (callback != null) {
-                PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, callback.bind(b));
-            }
-        };
+        Callback<Boolean> wrapperCallback =
+                b -> {
+                    if (callback != null) {
+                        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, callback.bind(b));
+                    }
+                };
 
         if (AwSafeBrowsingSafeModeAction.isSafeBrowsingDisabled()) {
             wrapperCallback.onResult(PlatformServiceBridge.getInstance().canUseGms());
             return;
         }
 
-        PlatformServiceBridge.getInstance().warmUpSafeBrowsing(
-                context.getApplicationContext(), wrapperCallback);
+        PlatformServiceBridge.getInstance()
+                .warmUpSafeBrowsing(context.getApplicationContext(), wrapperCallback);
     }
 
     public static Uri getSafeBrowsingPrivacyPolicyUrl() {
@@ -144,25 +136,29 @@ public class AwContentsStatics {
 
     public static void logFlagOverridesWithNative(Map<String, Boolean> flagOverrides) {
         // Do work asynchronously to avoid blocking startup.
-        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
-            FlagOverrideHelper helper =
-                    new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
-            ArrayList<String> switches = new ArrayList<>();
-            ArrayList<String> features = new ArrayList<>();
-            for (Map.Entry<String, Boolean> entry : flagOverrides.entrySet()) {
-                Flag flag = helper.getFlagForName(entry.getKey());
-                boolean enabled = entry.getValue();
-                if (flag.isBaseFeature()) {
-                    features.add(flag.getName() + (enabled ? ":enabled" : ":disabled"));
-                } else if (enabled) {
-                    switches.add("--" + flag.getName());
-                }
-                // Only insert enabled switches; ignore explicitly disabled switches since this is
-                // usually a NOOP.
-            }
-            AwContentsStaticsJni.get().logFlagMetrics(
-                    switches.toArray(new String[0]), features.toArray(new String[0]));
-        });
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT,
+                () -> {
+                    FlagOverrideHelper helper =
+                            new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
+                    ArrayList<String> switches = new ArrayList<>();
+                    ArrayList<String> features = new ArrayList<>();
+                    for (Map.Entry<String, Boolean> entry : flagOverrides.entrySet()) {
+                        Flag flag = helper.getFlagForName(entry.getKey());
+                        boolean enabled = entry.getValue();
+                        if (flag.isBaseFeature()) {
+                            features.add(flag.getName() + (enabled ? ":enabled" : ":disabled"));
+                        } else if (enabled) {
+                            switches.add("--" + flag.getName());
+                        }
+                        // Only insert enabled switches; ignore explicitly disabled switches since
+                        // this is usually a NOOP.
+                    }
+                    AwContentsStaticsJni.get()
+                            .logFlagMetrics(
+                                    switches.toArray(new String[0]),
+                                    features.toArray(new String[0]));
+                });
     }
 
     /**
@@ -179,16 +175,12 @@ public class AwContentsStatics {
         return FindAddress.findAddress(addr);
     }
 
-    /**
-     * Returns true if WebView is running in multi process mode.
-     */
+    /** Returns true if WebView is running in multi process mode. */
     public static boolean isMultiProcessEnabled() {
         return AwContentsStaticsJni.get().isMultiProcessEnabled();
     }
 
-    /**
-     * Returns the variations header used with the X-Client-Data header.
-     */
+    /** Returns the variations header used with the X-Client-Data header. */
     public static String getVariationsHeader() {
         String header = AwContentsStaticsJni.get().getVariationsHeader();
         RecordHistogram.recordCount100Histogram(
@@ -199,17 +191,23 @@ public class AwContentsStatics {
     @NativeMethods
     interface Natives {
         void logCommandLineForDebugging();
+
         void logFlagMetrics(String[] switches, String[] features);
 
         String getSafeBrowsingPrivacyPolicyUrl();
+
         void clearClientCertPreferences(Runnable callback);
+
         String getUnreachableWebDataUrl();
+
         String getProductVersion();
-        void setServiceWorkerIoThreadClient(
-                AwContentsIoThreadClient ioThreadClient, AwBrowserContext browserContext);
+
         void setSafeBrowsingAllowlist(String[] urls, Callback<Boolean> callback);
+
         void setCheckClearTextPermitted(boolean permitted);
+
         boolean isMultiProcessEnabled();
+
         String getVariationsHeader();
     }
 }

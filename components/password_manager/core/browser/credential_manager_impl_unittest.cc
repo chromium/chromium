@@ -18,15 +18,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_move_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/to_vector.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
@@ -34,8 +32,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -46,6 +44,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/os_crypt/sync/os_crypt_mocker.h"
+#endif
 
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -96,13 +98,14 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const url::Origin& origin,
                CredentialsCallback callback),
               ());
-  MOCK_METHOD(void,
-              PasswordWasAutofilled,
-              (const std::vector<const PasswordForm*>&,
-               const url::Origin&,
-               const std::vector<const PasswordForm*>*,
-               bool was_autofilled_on_pageload),
-              (override));
+  MOCK_METHOD(
+      void,
+      PasswordWasAutofilled,
+      (const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&,
+       const url::Origin&,
+       const std::vector<vector_experimental_raw_ptr<const PasswordForm>>*,
+       bool was_autofilled_on_pageload),
+      (override));
 
   explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
                                      PasswordStoreInterface* account_store)
@@ -118,6 +121,11 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                                             true);
     prefs_->registry()->RegisterBooleanPref(::prefs::kSafeBrowsingEnhanced,
                                             false);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    OSCryptMocker::SetUp();
+    prefs_->registry()->RegisterIntegerPref(
+        password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
+#endif
   }
   MockPasswordManagerClient(const MockPasswordManagerClient&) = delete;
   MockPasswordManagerClient& operator=(const MockPasswordManagerClient&) =
@@ -201,9 +209,9 @@ void RespondCallback(bool* called) {
 
 void GetCredentialCallback(bool* called,
                            CredentialManagerError* out_error,
-                           absl::optional<CredentialInfo>* out_info,
+                           std::optional<CredentialInfo>* out_info,
                            CredentialManagerError error,
-                           const absl::optional<CredentialInfo>& info) {
+                           const std::optional<CredentialInfo>& info) {
   *called = true;
   *out_error = error;
   *out_info = info;
@@ -221,28 +229,20 @@ GURL HttpURLFromHttps(const GURL& https_url) {
 class CredentialManagerImplTest : public testing::Test,
                                   public testing::WithParamInterface<bool> {
  public:
-  CredentialManagerImplTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          password_manager::features::kEnablePasswordsAccountStorage);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          password_manager::features::kEnablePasswordsAccountStorage);
-    }
-  }
+  CredentialManagerImplTest() = default;
 
   void SetUp() override {
     store_ = new TestPasswordStore;
 
-    fake_affiliation_service_ = std::make_unique<FakeAffiliationService>();
+    fake_affiliation_service_ =
+        std::make_unique<affiliations::FakeAffiliationService>();
     auto owning_mock_match_helper =
         std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
             fake_affiliation_service_.get());
     mock_match_helper_ = owning_mock_match_helper.get();
     store_->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
 
-    if (base::FeatureList::IsEnabled(
-            features::kEnablePasswordsAccountStorage)) {
+    if (GetParam()) {
       account_store_ = new TestPasswordStore(IsAccountStore(true));
       account_store_->Init(/*prefs=*/nullptr,
                            /*affiliated_match_helper=*/nullptr);
@@ -331,7 +331,7 @@ class CredentialManagerImplTest : public testing::Test,
                                     const std::vector<GURL>& federations) {
     bool called = false;
     CredentialManagerError error;
-    absl::optional<CredentialInfo> credential;
+    std::optional<CredentialInfo> credential;
     EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
     EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(0);
     CallGet(
@@ -351,7 +351,7 @@ class CredentialManagerImplTest : public testing::Test,
                                     CredentialType type) {
     bool called = false;
     CredentialManagerError error;
-    absl::optional<CredentialInfo> credential;
+    std::optional<CredentialInfo> credential;
     EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
     EXPECT_CALL(*client_, NotifyUserAutoSigninPtr);
     CallGet(
@@ -371,7 +371,7 @@ class CredentialManagerImplTest : public testing::Test,
                             CredentialType type) {
     bool called = false;
     CredentialManagerError error;
-    absl::optional<CredentialInfo> credential;
+    std::optional<CredentialInfo> credential;
     CallGet(
         mediation, include_passwords, federations,
         base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
@@ -405,7 +405,6 @@ class CredentialManagerImplTest : public testing::Test,
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   PasswordForm form_;
   PasswordForm affiliated_form1_;
@@ -416,7 +415,8 @@ class CredentialManagerImplTest : public testing::Test,
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
   std::unique_ptr<testing::NiceMock<MockPasswordManagerClient>> client_;
-  std::unique_ptr<FakeAffiliationService> fake_affiliation_service_;
+  std::unique_ptr<affiliations::FakeAffiliationService>
+      fake_affiliation_service_;
   raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_ = nullptr;
   std::unique_ptr<CredentialManagerImpl> cm_service_impl_;
 };
@@ -744,7 +744,7 @@ TEST_P(CredentialManagerImplTest, CredentialManagerGetOverwriteZeroClick) {
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -845,7 +845,7 @@ TEST_P(CredentialManagerImplTest,
   bool called = false;
   CredentialManagerError error;
   std::vector<GURL> federations;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
   RunAllPendingTasks();
@@ -1003,7 +1003,7 @@ TEST_P(CredentialManagerImplTest,
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   std::vector<GURL> federations;
   federations.emplace_back("https://google.com/");
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
@@ -1036,7 +1036,7 @@ TEST_P(CredentialManagerImplTest,
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -1289,14 +1289,14 @@ TEST_P(CredentialManagerImplTest,
   // 1st request.
   bool called_1 = false;
   CredentialManagerError error_1;
-  absl::optional<CredentialInfo> credential_1;
+  std::optional<CredentialInfo> credential_1;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called_1, &error_1,
                          &credential_1));
   // 2nd request.
   bool called_2 = false;
   CredentialManagerError error_2;
-  absl::optional<CredentialInfo> credential_2;
+  std::optional<CredentialInfo> credential_2;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called_2, &error_2,
                          &credential_2));
@@ -1352,7 +1352,7 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInProfileStoreAfterPrompt) {
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, federations,
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -1391,7 +1391,7 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInAccountStoreAfterPrompt) {
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, /*federations=*/{},
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -1432,7 +1432,7 @@ TEST_P(CredentialManagerImplTest,
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   CallGet(CredentialMediationRequirement::kOptional, true, /*federations=*/{},
           base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
 
@@ -1590,7 +1590,7 @@ TEST_P(CredentialManagerImplTest, MediationRequiredPreventsAutoSignIn) {
   std::vector<GURL> federations;
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
 
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
   EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(0);
@@ -1737,7 +1737,7 @@ TEST_P(CredentialManagerImplTest,
 
   bool called = false;
   CredentialManagerError error;
-  absl::optional<CredentialInfo> credential;
+  std::optional<CredentialInfo> credential;
   std::vector<GURL> federations;
   federations.emplace_back("https://google.com/");
 

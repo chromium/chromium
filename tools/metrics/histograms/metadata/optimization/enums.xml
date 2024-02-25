@@ -1,0 +1,670 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanAnnotated">
+  <int value="0" label="Not Annotated"/>
+  <int value="1" label="Annotated"/>
+</enum>
+
+<enum name="BooleanStored">
+  <int value="0" label="Not Stored"/>
+  <int value="1" label="Stored"/>
+</enum>
+
+<enum name="FeatureCurrentlyEnabledResult">
+  <summary>Records whether a feature is currently enabled.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not enabled because user is not signed-in"/>
+  <int value="2"
+      label="Returned result as enabled because feature was enabled at
+             startup"/>
+  <int value="3"
+      label="Returned result as not enabled because feature was not enabled
+             at startup"/>
+  <int value="4"
+      label="Returned result as not enabled because feature was disabled by
+             enterprise policy"/>
+  <int value="5"
+      label="Returned result as not enabled because model execution
+             capability was disabled for the user account"/>
+</enum>
+
+<enum name="FeaturesSettingsVisibilityResult">
+  <summary>Records visibility of different features.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not visible because user is not signed-in"/>
+  <int value="2" label="Visible because feature is already enabled"/>
+  <int value="3" label="Not visible because field trial is disabled"/>
+  <int value="4" label="Visible because field trial is enabled"/>
+  <int value="5"
+      label="Not visible because feature was disabled by enterprise policy"/>
+  <int value="6"
+      label="Not visible because model execution capability was disabled for
+             the user account"/>
+</enum>
+
+<enum name="HintCacheStoreEntryType">
+  <summary>
+    Possible store entry types contained within the HintCacheStore.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Metadata"/>
+  <int value="2" label="Component Hint"/>
+  <int value="3" label="Fetched Hint"/>
+  <int value="4" label="Prediction Model"/>
+  <int value="5" label="[Deprecated] Host Model Features"/>
+</enum>
+
+<enum name="OnDeviceModelLoadResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="GPU blocked"/>
+  <int value="3" label="Failed to load library"/>
+</enum>
+
+<enum name="OnDeviceModelPerformanceClass">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Very Low"/>
+  <int value="3" label="Low"/>
+  <int value="4" label="Medium"/>
+  <int value="5" label="High"/>
+  <int value="6" label="Very High"/>
+  <int value="7" label="Service Crash"/>
+  <int value="8" label="GPU blocked"/>
+  <int value="9" label="Failed to load library"/>
+</enum>
+
+<enum name="OnDeviceTextSafetyModelMetadataValidity">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No metadata"/>
+  <int value="2" label="Wrong metadata type"/>
+  <int value="3" label="No feature configs"/>
+  <int value="4" label="Valid"/>
+</enum>
+
+<enum name="OptimizationGuideAccessTokenResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="User not signed-in"/>
+  <int value="3" label="Failed with transient error"/>
+  <int value="4" label="Failed with persistent error"/>
+</enum>
+
+<enum name="OptimizationGuideExecutionStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Pending"/>
+  <int value="3" label="ErrorModelFileNotAvailable"/>
+  <int value="4" label="ErrorModelFileNotValid"/>
+  <int value="5" label="ErrorEmptyOrInvalidInput"/>
+  <int value="6" label="ErrorUnknown"/>
+  <int value="7" label="ErrorCancelled"/>
+</enum>
+
+<enum name="OptimizationGuideFetcherRequestStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">Request sent and received response.</int>
+  <int value="2" label="Response Error">
+    Request sent but response not received.
+  </int>
+  <int value="3" label="DEPRECATED - Network Offline">
+    Request not sent because network offline. Deprecated as of 1/2022.
+  </int>
+  <int value="4" label="Fetcher Busy">
+    Request not sent because fetcher busy with another request.
+  </int>
+  <int value="5" label="No Hosts or URLs to Fetch hints">
+    Hints request not sent because no hosts or URLs left after filtering.
+  </int>
+  <int value="6" label="No Supported Optimization Types to Fetch hints">
+    Hints request not sent because there were no supported optimizations types.
+  </int>
+  <int value="7" label="Fetch was canceled">
+    Fetch request was canceled before completion.
+  </int>
+  <int value="8" label="User not signed-in">
+    Request was not started because user was not signed-in.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="LoadMetadataFailed"/>
+  <int value="2" label="SchemaMetadataMissing"/>
+  <int value="3" label="SchemaMetadataWrongVersion"/>
+  <int value="4" label="ComponentMetadataMissing"/>
+  <int value="5" label="FetchedMetadataMissing"/>
+  <int value="6" label="ComponentAndFetchedMetadataMissing"/>
+</enum>
+
+<enum name="OptimizationGuideHintCacheLevelDBStoreStatus">
+  <int value="0" label="Unitialized"/>
+  <int value="1" label="Initializing"/>
+  <int value="2" label="Available"/>
+  <int value="3" label="Failed"/>
+</enum>
+
+<enum name="OptimizationGuideModelDeliveryEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ModelDeliveredAtRegistration">
+    The model was delivered immediately at registration.
+  </int>
+  <int value="2" label="ModelDelivered">
+    The model was delivered after loading from store or downloading from server.
+  </int>
+  <int value="3" label="GetModelsRequest">
+    GetModelsRequest was sent to the optimization guide server.
+  </int>
+  <int value="4" label="DownloadServiceRequest">
+    Model was requested to be downloaded using download service.
+  </int>
+  <int value="5" label="ModelDownloadStarted">
+    Download service started the model download.
+  </int>
+  <int value="6" label="ModelDownloaded">
+    Model got downloaded from the download service.
+  </int>
+  <int value="7" label="DownloadServiceUnavailable">
+    Download service was unavailable.
+  </int>
+  <int value="8" label="GetModelsResponseFailure">
+    GetModelsResponse failed.
+  </int>
+  <int value="9" label="DownloadURLInvalid">Download URL invalid.</int>
+  <int value="10" label="ModelDownloadFailure">
+    Model download failed due to download service or verifying the downloaded
+    model.
+  </int>
+  <int value="11" label="ModelLoadFailed">
+    Loading the model from store failed.
+  </int>
+  <int value="12" label="ModelDownloadDueToModelLoadFailure">
+    Model download was attempted after the model load failed.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideModelExecutionError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="The request was invalid"/>
+  <int value="2" label="The request was throttled"/>
+  <int value="3"
+      label="User permission errors such as not signed-in or not allowed to
+             execute model"/>
+  <int value="4" label="Other generic failures"/>
+  <int value="5" label="Retryable error occurred in server"/>
+  <int value="6" label="Non-retryable error occurred in server"/>
+  <int value="7" label="Unsupported language"/>
+  <int value="8" label="Request was filtered"/>
+  <int value="9" label="Response was disabled"/>
+  <int value="10" label="The request was cancelled"/>
+</enum>
+
+<enum name="OptimizationGuideModelQualityLogsUploadStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="UploadSuccessful">Logs upload was successful.</int>
+  <int value="2" label="Logging Not Enabled">
+    Upload is disabled due to logging feature not enabled.
+  </int>
+  <int value="3" label="Net Error">
+    Upload was not successful because of network error.
+  </int>
+  <int value="4" label="No User Metrics Consent">
+    Upload was not allowed due to user metrics consent.
+  </int>
+  <int value="5" label="Disabled due to Enterprise Policy">
+    Upload was disabled due to enterprise policy.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideOnDeviceAddContextResult">
+  <int value="0" label="Used Server"/>
+  <int value="1" label="Used on-device">
+    Context was sent to on-device model.
+  </int>
+  <int value="2" label="Failed creating message">
+    Failed to create the message, and as a result will use server.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideOnDeviceExecuteModelResult">
+  <int value="0" label="Used Server"/>
+  <int value="1" label="Used on-device">
+    On-device model was used and it completed successfully.
+  </int>
+  <int value="2" label="Failed creating message">
+    Failed to create the message, and as a result used server.
+  </int>
+  <int value="3" label="Failed creating response">
+    Failed to create the response message.
+  </int>
+  <int value="4" label="Timed out">Timed out, and a result used server.</int>
+  <int value="5" label="Disconnect and fallback">
+    Received a disconnect and as a result used server.
+  </int>
+  <int value="6" label="Disconnect and cancel">
+    Received a disconnect and cancelled.
+  </int>
+  <int value="7" label="Cancelled">
+    Execution was cancelled because either AddContext or ExecuteModel was called
+    again.
+  </int>
+  <int value="8" label="Destroyed while waiting">
+    The Session was destroyed while waiting for a response. This likely means
+    the user closed the bubble before the response completed.
+  </int>
+  <int value="9" label="Used on-device, but output considered unsafe">
+    On-device model was used, it completed successfully, but considered unsafe.
+  </int>
+  <int value="10" label="Used on-device, but output contained PII">
+    On-device model was used, but was cancelled because it surfaced PII.
+  </int>
+  <int value="11" label="Used on-device, but output contained repeats">
+    On-device was used, but the output was rejected because it had repeats.
+  </int>
+  <int value="12"
+      label="Used on-device, but completed output did not have required safety
+             scores">
+    On-device was used, but the output was rejected because the completed
+    response did not have safety scores.
+  </int>
+  <int value="13"
+      label="Used on-device and got output, but the detected output language
+             is not supported by the safety model">
+    Used on-device and got output, but the detected output language is not
+    supported by the safety model
+  </int>
+</enum>
+
+<enum name="OptimizationGuideOnDeviceModelEligibilityReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Feature not enabled">
+    The feature gating use of the on-device model is not enabled.
+  </int>
+  <int value="3" label="Model not available">
+    The on-device model is not available.
+  </int>
+  <int value="4" label="Config not available for feature">
+    The configuration used to execute the on-device model for the feature is not
+    available.
+  </int>
+  <int value="5" label="GPU blocked">The GPU is blocked.</int>
+  <int value="6" label="Too many recent crashes">
+    The service running the on-device model has experienced too many crashes in
+    a row.
+  </int>
+  <int value="7" label="Too many recent timeouts">
+    The service took too long to respond too many times in a row.
+  </int>
+  <int value="8" label="Safety model not available">
+    The on-device safety model is required but not available.
+  </int>
+  <int value="9" label="Safety config not available for feature">
+    The on-device safety model was available but did not contain a config for
+    the feature.
+  </int>
+  <int value="10" label="Language detection model not available for feature">
+    The on-device safety model is available, but it requires specific output
+    languages and the language detection model is unavailable.
+  </int>
+  <int value="11" label="On-device execution is not enabled for this feature">
+    The feature is enabled, and on-device execution is available, but it is not
+    enabled for this feature.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideOnDeviceModelStatus">
+  <int value="0" label="Ready">The model is ready to use.</int>
+  <int value="1" label="Not eligible for installation">
+    The model is not eligible for installation.
+  </int>
+  <int value="2" label="Install not done">
+    The model installation has not been completed.
+  </int>
+  <int value="3" label="Model not registered">
+    The model installer was not registered, even though the client would be
+    eligible to install right now. This likely means the state of the system has
+    changed recently.
+  </int>
+  <int value="4" label="Installed too late">
+    The model is ready, but it wasn't ready early enough for
+    OnDeviceModelServiceController to use it.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideOptimizationFilterStatus">
+  <int value="0" label="Found a server filter configuration">
+    Found configuration data for a server filter.
+  </int>
+  <int value="1" label="Created a server filter">
+    Successfully created a server filter.
+  </int>
+  <int value="2" label="Bad configuration details">
+    Failed to create a server filter per bad configuration.
+  </int>
+  <int value="3" label="Data size too large">
+    Failed to create a server filter because it would use too much RAM.
+  </int>
+  <int value="4" label="Found duplicate config">
+    Failed to create a server filter because it has more than one configuration.
+  </int>
+  <int value="5" label="Invalid regular expression">
+    There was an invalid RE2 in the regexps field.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideOptimizationTypeDecision">
+  <int value="0" label="Unknown">
+    There was no hint or optimization filter consulted for the optimization
+    type, so the type decision is unknown.
+  </int>
+  <int value="1" label="Page load allowed by optimization filter">
+    An optimization filter for the optimization type was consulted and the page
+    load was allowed by the filter.
+  </int>
+  <int value="2" label="Page load not allowed by optimization filter">
+    An optimization filter for the optimization type was consulted and the page
+    load was not allowed by the filter.
+  </int>
+  <int value="3" label="Optimization filter on device but not loaded yet">
+    An optimization filter for the optimization type was on the device but was
+    not loaded in time to make a decision. There is no guarantee that had the
+    filter been loaded that the page load would have been allowed for the
+    optimization type.
+  </int>
+  <int value="4" label="Page load allowed by hint">
+    The optimization type was allowed to be applied based on information from a
+    hint.
+  </int>
+  <int value="5" label="Page load not allowed by hint">
+    The optimization type was not allowed to be applied based on information
+    from a hint.
+  </int>
+  <int value="6" label="DEPRECATED: No matching page hint for page load">
+    There was a hint loaded that matched the page load, but no matching page
+    hint for the page load. Deprecated as of 01/2020. Page loads that used to
+    match this decision are now recorded as &quot;Page load not allowed by
+    hint&quot;.
+  </int>
+  <int value="7" label="Hint on device but not loaded yet">
+    A hint for the page load was on the device but was not loaded in time to
+    make a decision. There is no guarantee that had the hint been loaded that
+    the page load would have been allowed for the optimization type.
+  </int>
+  <int value="8" label="No hint available for page load">
+    There was no hint on the device that matched the page load.
+  </int>
+  <int value="9" label="Optimization Guide Decider not initialized">
+    The OptimizationGuideDecider was not initialized yet.
+  </int>
+  <int value="10" label="Hint was being fetched but was not available yet">
+    A fetch for a hint that matches the page load from the remote Optimization
+    Guide Service was started but was not available in time to make a decision.
+    (Added in M80, Previously, this was combined with &quot;No hint available
+    for page load&quot;.)
+  </int>
+  <int value="11" label="Hint was being fetched but was not registered">
+    A fetch to get the hint for the page load from the remote Optimization Guide
+    Service was started, but requested optimization type was not registered.
+    (Added in M115, Previously, this was combined with &quot;No hint available
+    for page load&quot;.)
+  </int>
+  <int value="12" label="Hint requested for an invalid URL">
+    A fetch to get the hint for the page load from the remote Optimization Guide
+    Service was started, but requested URL was invalid. (Added in M115,
+    Previously, this was combined with &quot;No hint available for page
+    load&quot;.)
+  </int>
+</enum>
+
+<enum name="OptimizationGuidePageContentAnnotationsStorageStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">
+    The specific visit that we wanted to annotate content for was found in the
+    History Service and the content annotations for the visit were required to
+    be stored in the History Service.
+  </int>
+  <int value="2" label="No visits for URL found">
+    There were no visits found in the History Service for the URL that the
+    content annotations are associated with.
+  </int>
+  <int value="3" label="Specific visit for URL not found">
+    Visits for the URL the content annotations are for were found, but not the
+    specific visit we were annotating for.
+  </int>
+</enum>
+
+<enum name="OptimizationGuidePageTopicsOverrideListFileLoadResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Could not read file"/>
+  <int value="3" label="Could not uncompress file"/>
+  <int value="4" label="Could not unmarshal the encoded protobuf"/>
+</enum>
+
+<enum name="OptimizationGuidePredictionModelDownloadState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Requested">Model was requested to be downloaded.</int>
+  <int value="2" label="Started">
+    Download service started the model download.
+  </int>
+</enum>
+
+<enum name="OptimizationGuidePredictionModelDownloadStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">
+    The download was successfully verified and processed.
+  </int>
+  <int value="2" label="Failed to verify download">
+    The download failed verification.
+  </int>
+  <int value="3" label="Failed to create unzip directory">
+    The download was successfully verified but a directory to unzip the file to
+    could not be created.
+  </int>
+  <int value="4" label="Failed to unzip file">
+    The download was successfully verified but it failed to be unzipped.
+  </int>
+  <int value="5" label="Failed to read model info file">
+    The download was successfully verified, but the expected model info file
+    could not be read.
+  </int>
+  <int value="6" label="Failed to parse model info file">
+    The download was successfully verified, but the expected model info file
+    could not be parsed.
+  </int>
+  <int value="7" label="Failed to find expected model file">
+    The download and model info files were successfully verified and processed,
+    but the expected model file was not found.
+  </int>
+  <int value="8" label="Failed to process expected model file">
+    The download and model info files were successfully verified and processed,
+    but the expected model file failed to be processed.
+  </int>
+  <int value="9" label="Failed to validate model info file">
+    The download was successfully verified, but the model info contained in the
+    model info file was invalid.
+  </int>
+  <int value="10" label="Failed to verify download publisher">
+    The download was a valid CRX file but came from a publisher that is
+    untrusted.
+  </int>
+  <int value="11" label="OptGuide parent directory does not exist">
+    The parent directory used to store models does not exist.
+  </int>
+  <int value="12" label="Model directory could not be created">
+    The directory needed to store this model version could not be created.
+  </int>
+  <int value="13" label="Failed to save model info">
+    The model info was not saved to model store file.
+  </int>
+  <int value="14" label="Invalid additional file found">
+    The additional file was not found in the CRX file.
+  </int>
+</enum>
+
+<enum name="OptimizationGuidePredictionModelStoreModelRemovalReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ModelExpired">Model was expired.</int>
+  <int value="2" label="ModelExpiredOnLoadModel">
+    Model was found to be expired when the model is loaded.
+  </int>
+  <int value="3" label="InvalidModelDir">Model dirs were invalid.</int>
+  <int value="4" label="ModelLoadFailed">
+    Failed when loading the model files from the store.
+  </int>
+  <int value="5" label="ModelUpdateFilePathVerifyFailed">
+    Model file path verification failed on a model update.
+  </int>
+  <int value="6" label="ModelVersionInvalid">Model version is invalid.</int>
+  <int value="7" label="NoModelInGetModelsResponse">
+    Remote optimization guide service returned no model in the
+    GetModelsResponse.
+  </int>
+  <int value="8" label="ModelInKillSwitchList">
+    Model was in killswitch list of versions to be removed.
+  </int>
+  <int value="9" label="NewModelUpdate">
+    Old model was removed due to new model update.
+  </int>
+  <int value="10" label="InconsistentModelDir">
+    Model dir was inconsistent with local_state and removed at startup.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideProcessHintsResult">
+  <int value="0" label="Success">
+    Hints were processed and at least one supported hint was stored.
+  </int>
+  <int value="1" label="Failed with invalid parameters">
+    Component was sent for processing but there was either no component file to
+    read or the version was invalid.
+  </int>
+  <int value="2" label="Failed reading component file">
+    Component file was received but there was an error reading the file
+    containing the hints.
+  </int>
+  <int value="3" label="Component file contained invalid configuration">
+    Component file was received and read successfully but did not contain a
+    valid configuration.
+  </int>
+  <int value="4" label="Failed processing">
+    Failed to finish processing same version previously so skipping to avoid
+    potential crash loop.
+  </int>
+  <int value="5" label="Skipped hints processing">
+    Skipped processing hints, likely because the hint cache already contains the
+    same version.
+  </int>
+  <int value="6" label="No supported hints found">
+    Hints processed but no supported hints found.
+  </int>
+  <int value="7" label="Failed to read previously-attempted version">
+    Previous version for which processing did not complete could not be read so
+    clearing the state and skipping for the session. Will try again next
+    session.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideReadCacheResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Invalid protobuf"/>
+  <int value="3" label="Base64 decoding error"/>
+</enum>
+
+<enum name="OptimizationGuideTextSafetyInferenceResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Encoding failed"/>
+  <int value="2" label="Model creation failed"/>
+  <int value="3" label="Model execution failed"/>
+  <int value="4" label="Regression failed"/>
+</enum>
+
+<enum name="OptimizationGuideUserFeedback">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Thumbs Down"/>
+  <int value="2" label="Thumbs Up"/>
+</enum>
+
+<enum name="OptimizationType">
+  <int value="0" label="TYPE_UNSPECIFIED"/>
+  <int value="1" label="NOSCRIPT"/>
+  <int value="2" label="RESOURCE_LOADING"/>
+  <int value="3" label="LITE_PAGE_REDIRECT"/>
+  <int value="4" label="METADATA_FETCH_VALIDATION"/>
+  <int value="5" label="DEFER_ALL_SCRIPT"/>
+  <int value="6" label="PERFORMANCE_HINTS"/>
+  <int value="7" label="LITE_PAGE"/>
+  <int value="8" label="COMPRESS_PUBLIC_IMAGES"/>
+  <int value="9" label="LOADING_PREDICTOR"/>
+  <int value="10" label="FAST_HOST_HINTS"/>
+  <int value="11" label="Deprecated"/>
+  <int value="12" label="Deprecated0"/>
+  <int value="13" label="LITE_VIDEO"/>
+  <int value="14" label="LINK_PERFORMANCE"/>
+  <int value="15" label="SHOPPING_PAGE_PREDICTOR"/>
+  <int value="16" label="LOGIN_DETECTION"/>
+  <int value="17" label="MERCHANT_TRUST_SIGNALS"/>
+  <int value="18" label="PRICE_TRACKING"/>
+  <int value="19" label="BLOOM_FILTER_VALIDATION"/>
+  <int value="20" label="ABOUT_THIS_SITE"/>
+  <int value="21" label="MERCHANT_TRUST_SIGNALS_V2"/>
+  <int value="22" label="PAGE_ENTITIES"/>
+  <int value="23" label="HISTORY_CLUSTERS"/>
+  <int value="24" label="THANK_CREATOR_ELIGIBLE"/>
+  <int value="25" label="IBAN_AUTOFILL_BLOCKED"/>
+  <int value="26" label="SALIENT_IMAGE"/>
+  <int value="27" label="AUTOFILL_SAMPLING_RATE"/>
+  <int value="28" label="VCN_MERCHANT_OPT_OUT_VISA"/>
+  <int value="29" label="Deprecated1"/>
+  <int value="30" label="PRICE_INSIGHTS"/>
+  <int value="31" label="V8_COMPILE_HINTS"/>
+  <int value="32" label="PAGE_INSIGHTS"/>
+  <int value="33" label="SHOPPING_PAGE_TYPES"/>
+  <int value="34" label="SHOPPING_DISCOUNTS"/>
+  <int value="35" label="COMPOSE"/>
+  <int value="36" label="PIX_PAYMENT_MERCHANT_ALLOWLIST"/>
+  <int value="37" label="SHARED_CREDIT_CARD_FLIGHT_BENEFITS"/>
+  <int value="38" label="SHARED_CREDIT_CARD_DINING_BENEFITS"/>
+  <int value="39" label="SHARED_CREDIT_CARD_GROCERY_BENEFITS"/>
+  <int value="40" label="SHARED_CREDIT_CARD_ENTERTAINMENT_BENEFITS"/>
+  <int value="41" label="SHARED_CREDIT_CARD_STREAMING_BENEFITS"/>
+  <int value="42" label="SHARED_CREDIT_CARD_SUBSCRIPTION_BENEFITS"/>
+  <int value="43" label="CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS"/>
+  <int value="44" label="CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS"/>
+  <int value="45" label="CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS"/>
+  <int value="46" label="CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS"/>
+  <int value="47" label="AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS"/>
+  <int value="48" label="AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

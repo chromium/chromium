@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/synced_session_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_sessions {
 
@@ -40,7 +40,7 @@ class SessionStore {
   };
 
   using OpenCallback = base::OnceCallback<void(
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<SessionStore> store,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch)>;
 
@@ -150,14 +150,14 @@ class SessionStore {
 
   static void OnStoreCreated(
       std::unique_ptr<Builder> builder,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore> underlying_store);
   static void OnReadAllMetadata(
       std::unique_ptr<Builder> builder,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   static void OnReadAllData(std::unique_ptr<Builder> builder,
-                            const absl::optional<syncer::ModelError>& error);
+                            const std::optional<syncer::ModelError>& error);
 
   // |sessions_client| must not be null and must outlive this object.
   SessionStore(const SessionInfo& local_session_info,

@@ -14,6 +14,7 @@
 
 #include "mediapipe/framework/tool/template_parser.h"
 
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <set>
@@ -21,6 +22,8 @@
 #include <vector>
 
 #include "absl/container/flat_hash_set.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/numbers.h"
@@ -30,14 +33,11 @@
 #include "mediapipe/framework/calculator.pb.h"
 #include "mediapipe/framework/deps/proto_descriptor.pb.h"
 #include "mediapipe/framework/port/canonical_errors.h"
-#include "mediapipe/framework/port/integral_types.h"
-#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/map_util.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/calculator_graph_template.pb.h"
 #include "mediapipe/framework/tool/proto_util_lite.h"
-#include "absl/log/absl_check.h"
 
 using mediapipe::proto_ns::Descriptor;
 using mediapipe::proto_ns::DynamicMessageFactory;
@@ -182,11 +182,11 @@ void CheckFieldIndex(const FieldDescriptor* field, int index) {
   }
 
   if (field->is_repeated() && index == -1) {
-    LOG(DFATAL) << "Index must be in range of repeated field values. "
-                << "Field: " << field->name();
+    ABSL_LOG(ERROR) << "Index must be in range of repeated field values. "
+                    << "Field: " << field->name();
   } else if (!field->is_repeated() && index != -1) {
-    LOG(DFATAL) << "Index must be -1 for singular fields."
-                << "Field: " << field->name();
+    ABSL_LOG(ERROR) << "Index must be -1 for singular fields."
+                    << "Field: " << field->name();
   }
 }
 
@@ -306,7 +306,7 @@ class TemplateParser::Parser::ParserImpl {
   // Parses the ASCII representation specified in input and saves the
   // information into the output pointer (a Message). Returns
   // false if an error occurs (an error will also be logged to
-  // LOG(ERROR)).
+  // ABSL_LOG(ERROR)).
   virtual bool Parse(Message* output) {
     // Consume fields until we cannot do so anymore.
     while (true) {
@@ -336,12 +336,12 @@ class TemplateParser::Parser::ParserImpl {
     had_errors_ = true;
     if (error_collector_ == NULL) {
       if (line >= 0) {
-        LOG(ERROR) << "Error parsing text-format "
-                   << root_message_type_->full_name() << ": " << (line + 1)
-                   << ":" << (col + 1) << ": " << message;
+        ABSL_LOG(ERROR) << "Error parsing text-format "
+                        << root_message_type_->full_name() << ": " << (line + 1)
+                        << ":" << (col + 1) << ": " << message;
       } else {
-        LOG(ERROR) << "Error parsing text-format "
-                   << root_message_type_->full_name() << ": " << message;
+        ABSL_LOG(ERROR) << "Error parsing text-format "
+                        << root_message_type_->full_name() << ": " << message;
       }
     } else {
       error_collector_->AddError(line, col, std::string(message));
@@ -351,12 +351,12 @@ class TemplateParser::Parser::ParserImpl {
   void ReportWarning(int line, int col, absl::string_view message) {
     if (error_collector_ == NULL) {
       if (line >= 0) {
-        LOG(WARNING) << "Warning parsing text-format "
-                     << root_message_type_->full_name() << ": " << (line + 1)
-                     << ":" << (col + 1) << ": " << message;
+        ABSL_LOG(WARNING) << "Warning parsing text-format "
+                          << root_message_type_->full_name() << ": "
+                          << (line + 1) << ":" << (col + 1) << ": " << message;
       } else {
-        LOG(WARNING) << "Warning parsing text-format "
-                     << root_message_type_->full_name() << ": " << message;
+        ABSL_LOG(WARNING) << "Warning parsing text-format "
+                          << root_message_type_->full_name() << ": " << message;
       }
     } else {
       error_collector_->AddWarning(line, col, std::string(message));
@@ -566,7 +566,8 @@ class TemplateParser::Parser::ParserImpl {
 
     // Skips unknown or reserved fields.
     if (field == NULL) {
-      ABSL_CHECK(allow_unknown_field_ || allow_unknown_extension_ || reserved_field);
+      ABSL_CHECK(allow_unknown_field_ || allow_unknown_extension_ ||
+                 reserved_field);
 
       // Try to guess the type of this field.
       // If this field is not a message, there should be a ":" between the
@@ -768,28 +769,30 @@ class TemplateParser::Parser::ParserImpl {
     switch (field->cpp_type()) {
       case FieldDescriptor::CPPTYPE_INT32: {
         int64_t value;
-        DO(ConsumeSignedInteger(&value, kint32max));
+        DO(ConsumeSignedInteger(&value, std::numeric_limits<int32_t>::max()));
         SET_FIELD(Int32, static_cast<int32_t>(value));
         break;
       }
 
       case FieldDescriptor::CPPTYPE_UINT32: {
         uint64_t value;
-        DO(ConsumeUnsignedInteger(&value, kuint32max));
+        DO(ConsumeUnsignedInteger(&value,
+                                  std::numeric_limits<uint32_t>::max()));
         SET_FIELD(UInt32, static_cast<uint32_t>(value));
         break;
       }
 
       case FieldDescriptor::CPPTYPE_INT64: {
         int64_t value;
-        DO(ConsumeSignedInteger(&value, kint64max));
+        DO(ConsumeSignedInteger(&value, std::numeric_limits<int64_t>::max()));
         SET_FIELD(Int64, value);
         break;
       }
 
       case FieldDescriptor::CPPTYPE_UINT64: {
         uint64_t value;
-        DO(ConsumeUnsignedInteger(&value, kuint64max));
+        DO(ConsumeUnsignedInteger(&value,
+                                  std::numeric_limits<uint64_t>::max()));
         SET_FIELD(UInt64, value);
         break;
       }
@@ -838,7 +841,7 @@ class TemplateParser::Parser::ParserImpl {
 
       case FieldDescriptor::CPPTYPE_ENUM: {
         std::string value;
-        int64_t int_value = kint64max;
+        int64_t int_value = std::numeric_limits<int64_t>::max();
         const EnumDescriptor* enum_type = field->enum_type();
         const EnumValueDescriptor* enum_value = NULL;
 
@@ -849,7 +852,8 @@ class TemplateParser::Parser::ParserImpl {
 
         } else if (LookingAt("-") ||
                    LookingAtType(io::Tokenizer::TYPE_INTEGER)) {
-          DO(ConsumeSignedInteger(&int_value, kint32max));
+          DO(ConsumeSignedInteger(&int_value,
+                                  std::numeric_limits<int32_t>::max()));
           value = absl::StrCat(int_value);  // for error reporting
           enum_value = enum_type->FindValueByNumber(int_value);
         } else {
@@ -859,7 +863,7 @@ class TemplateParser::Parser::ParserImpl {
         }
 
         if (enum_value == NULL) {
-          if (int_value != kint64max &&
+          if (int_value != std::numeric_limits<int64_t>::max() &&
               reflection->SupportsUnknownEnumValues()) {
             SET_FIELD(EnumValue, int_value);
             return true;
@@ -885,7 +889,7 @@ class TemplateParser::Parser::ParserImpl {
       case FieldDescriptor::CPPTYPE_MESSAGE: {
         // We should never get here. Put here instead of a default
         // so that if new types are added, we get a nice compiler warning.
-        LOG(FATAL) << "Reached an unintended state: CPPTYPE_MESSAGE";
+        ABSL_LOG(FATAL) << "Reached an unintended state: CPPTYPE_MESSAGE";
         break;
       }
     }
@@ -1082,8 +1086,9 @@ class TemplateParser::Parser::ParserImpl {
     DO(ConsumeUnsignedInteger(&unsigned_value, max_value));
 
     if (negative) {
-      if ((static_cast<uint64_t>(kint64max) + 1) == unsigned_value) {
-        *value = kint64min;
+      if ((static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) + 1) ==
+          unsigned_value) {
+        *value = std::numeric_limits<int64_t>::min();
       } else {
         *value = -static_cast<int64_t>(unsigned_value);
       }
@@ -1134,7 +1139,8 @@ class TemplateParser::Parser::ParserImpl {
     if (LookingAtType(io::Tokenizer::TYPE_INTEGER)) {
       // We have found an integer value for the double.
       uint64_t integer_value;
-      DO(ConsumeUnsignedDecimalInteger(&integer_value, kuint64max));
+      DO(ConsumeUnsignedDecimalInteger(&integer_value,
+                                       std::numeric_limits<uint64_t>::max()));
 
       *value = static_cast<double>(integer_value);
     } else if (LookingAtType(io::Tokenizer::TYPE_FLOAT)) {

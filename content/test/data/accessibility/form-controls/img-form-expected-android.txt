@@ -2,6 +2,8 @@ android.webkit.WebView focusable focused scrollable
 ++android.widget.TextView name='Welcome to my example page!'
 ++android.widget.TextView name='Lengthy instructions on filling out the form.'
 ++android.widget.TextView name='Imagine hundreds of nodes that are simple content...'
+++android.widget.TextView name='Enter your name: '
 ++android.widget.EditText clickable editable_text focusable hint='Enter your name:' input_type=1
+++android.widget.TextView name='Enter your email: '
 ++android.widget.EditText clickable editable_text focusable hint='Enter your email:' input_type=209
 ++android.widget.Button role_description='button' clickable focusable name='Subscribe!'

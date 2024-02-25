@@ -5,11 +5,13 @@
 #include "device/fido/mac/authenticator.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,7 +28,6 @@
 #include "device/fido/mac/make_credential_operation.h"
 #include "device/fido/mac/util.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device::fido::mac {
 
@@ -56,7 +57,7 @@ void TouchIdAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
     GetPlatformCredentialInfoForRequestCallback callback) {
-  absl::optional<std::list<Credential>> credentials =
+  std::optional<std::list<Credential>> credentials =
       request.allow_list.empty()
           ? credential_store_.FindResidentCredentials(request.rp_id)
           : credential_store_.FindCredentialsFromCredentialDescriptorList(
@@ -121,7 +122,7 @@ std::string TouchIdAuthenticator::GetId() const {
   return "TouchIdAuthenticator";
 }
 
-absl::optional<FidoTransportProtocol>
+std::optional<FidoTransportProtocol>
 TouchIdAuthenticator::AuthenticatorTransport() const {
   return FidoTransportProtocol::kInternal;
 }
@@ -142,9 +143,9 @@ AuthenticatorSupportedOptions TouchIdAuthenticatorOptions() {
 }  // namespace
 
 const AuthenticatorSupportedOptions& TouchIdAuthenticator::Options() const {
-  static const AuthenticatorSupportedOptions options =
-      TouchIdAuthenticatorOptions();
-  return options;
+  static const base::NoDestructor<AuthenticatorSupportedOptions> options(
+      TouchIdAuthenticatorOptions());
+  return *options;
 }
 
 void TouchIdAuthenticator::GetTouch(base::OnceClosure callback) {

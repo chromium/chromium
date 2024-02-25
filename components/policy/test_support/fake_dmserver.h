@@ -2,6 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
+#define COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
+
+#include <memory>
+#include <optional>
+#include <set>
+#include <string>
+
+#include "base/command_line.h"
+#include "base/containers/unique_ptr_adapters.h"
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/values.h"
+#include "chromecast/cast_core/grpc/grpc_server.h"
+#include "chromecast/cast_core/grpc/grpc_unary_handler.h"
+#include "components/policy/test_support/client_storage.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/remote_commands_service.castcore.pb.h"  // NOLINT(build/include_directory)
+#include "components/policy/test_support/remote_commands_state.h"
+
 /*
 A bare-bones test server for testing cloud policy support.
 
@@ -74,36 +95,16 @@ Example:
 }
 */
 
-#ifndef COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
-#define COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
-
-#include <set>
-#include <string>
-
-#include "base/command_line.h"
-#include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/timer/timer.h"
-#include "base/values.h"
-#include "chromecast/cast_core/grpc/grpc_server.h"
-#include "chromecast/cast_core/grpc/grpc_unary_handler.h"
-#include "components/policy/test_support/client_storage.h"
-#include "components/policy/test_support/embedded_policy_test_server.h"
-#include "components/policy/test_support/remote_commands_service.castcore.pb.h"  // NOLINT(build/include_directory)
-#include "components/policy/test_support/remote_commands_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
 namespace fakedms {
 
-void InitLogging(const absl::optional<std::string>& log_path,
+void InitLogging(const std::optional<std::string>& log_path,
                  bool log_to_console,
                  int min_log_level);
 void ParseFlags(const base::CommandLine& command_line,
                 std::string& policy_blob_path,
                 std::string& client_state_path,
                 std::string& grpc_unix_socket_path,
-                absl::optional<std::string>& log_path,
+                std::optional<std::string>& log_path,
                 base::ScopedFD& startup_pipe,
                 bool& log_to_console,
                 int& min_log_level);
@@ -146,6 +147,10 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   bool SetExternalPolicyPayload(const std::string* policy_type,
                                 const std::string* entity_id,
                                 const std::string* serialized_raw_policy);
+
+  // Parses regular and external policy from the JSON dict.
+  bool ParsePolicies(const base::Value::Dict* dict);
+
   // Reads and sets the values in the policy blob file, it will return true if
   // the policy blob file doesn't exist yet or all the values are read
   // correctly, and false otherwise.
@@ -169,7 +174,7 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   static base::Value::Dict GetValueFromClient(
       const policy::ClientStorage::ClientInfo& c);
   // Converts the value to Client.
-  static absl::optional<policy::ClientStorage::ClientInfo> GetClientFromValue(
+  static std::optional<policy::ClientStorage::ClientInfo> GetClientFromValue(
       const base::Value& v);
 
   // Starts the gRPC server on the same thread as the fake_dmserver_main thread.
@@ -184,6 +189,23 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // Triggers Shutting down the fake_dmserver_main and the grpc server.
   void TriggerShutdown();
 
+  // Writes the remote command result to the reactor, it will be triggered
+  // from RemoteCommandsWaitOperation::OnRemoteCommandResultAvailable.
+  void OnWaitRemoteCommandResultDone(
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
+          Reactor*,
+      int64_t,
+      RemoteCommandsWaitOperation*,
+      bool);
+  // Writes the ack to the reactor, it will be triggered
+  // from RemoteCommandsWaitOperation::OnRemoteCommandAcked.
+  void OnWaitRemoteCommandAckDone(
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked::
+          Reactor*,
+      int64_t,
+      RemoteCommandsWaitOperation*,
+      bool);
+
   // Handles the RemoteCommandsService gRPC request SendRemoteCommand.
   void HandleSendRemoteCommand(
       remote_commands::SendRemoteCommandRequest request,
@@ -197,12 +219,19 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
       remote_commands::WaitRemoteCommandResultRequest request,
       remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
           Reactor* reactor);
+  // Handles the RemoteCommandsService gRPC request WaitRemoteCommandAcked. If
+  // the result isn't available withing 10 seconds, the grpc call will be
+  // cancelled.
+  void HandleWaitRemoteCommandAcked(
+      remote_commands::WaitRemoteCommandAckedRequest request,
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandAcked::
+          Reactor* reactor);
 
   // Erase the wait operation from the waiters_ set.
   void EraseWaitOperation(RemoteCommandsWaitOperation*);
 
-  std::string policy_blob_path_;
-  std::string client_state_path_;
+  const base::FilePath policy_blob_path_;
+  const base::FilePath client_state_path_;
   std::string grpc_unix_socket_uri_;
 
   // Sequence checker for fake_dmserver main IO thread.
@@ -211,7 +240,7 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // functions called by HandleRequest
   SEQUENCE_CHECKER(embedded_server_sequence_checker_);
 
-  absl::optional<cast::utils::GrpcServer> grpc_server_;
+  std::optional<cast::utils::GrpcServer> grpc_server_;
   // Callback to shut down the grpc server.
   base::OnceClosure shut_down_on_main_task_runner_;
   // Callback to reset the grpc server then shut down the fake_dmserver main.

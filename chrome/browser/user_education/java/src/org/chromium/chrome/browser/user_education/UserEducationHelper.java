@@ -11,6 +11,7 @@ import android.view.View;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -46,6 +47,8 @@ public class UserEducationHelper {
     private final Handler mHandler;
 
     public UserEducationHelper(Activity activity, Handler handler) {
+        assert activity != null : "Trying to show an IPH for a null activity.";
+
         mActivity = activity;
         mHandler = handler;
     }
@@ -64,7 +67,7 @@ public class UserEducationHelper {
             // incognito profile) instead of always using regular profile. Currently always original
             // profile is used not to start popping IPH messages as soon as opening an incognito
             // tab.
-            Profile profile = Profile.getLastUsedRegularProfile();
+            Profile profile = ProfileManager.getLastUsedRegularProfile();
             final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
         }
@@ -73,7 +76,10 @@ public class UserEducationHelper {
     private void showIPH(Tracker tracker, IPHCommand iphCommand) {
         // Activity was destroyed; don't show IPH.
         View anchorView = iphCommand.anchorView;
-        if (mActivity.isFinishing() || mActivity.isDestroyed() || anchorView == null) {
+        if (mActivity == null
+                || mActivity.isFinishing()
+                || mActivity.isDestroyed()
+                || anchorView == null) {
             iphCommand.onBlockedCallback.run();
             return;
         }
@@ -90,8 +96,9 @@ public class UserEducationHelper {
 
         HighlightParams highlightParams = iphCommand.highlightParams;
         TextBubble textBubble = null;
-        TriggerDetails triggerDetails = new TriggerDetails(
-                tracker.shouldTriggerHelpUI(featureName), /*shouldShowSnooze=*/false);
+        TriggerDetails triggerDetails =
+                new TriggerDetails(
+                        tracker.shouldTriggerHelpUI(featureName), /* shouldShowSnooze= */ false);
 
         assert (triggerDetails != null);
         if (!triggerDetails.shouldTriggerIph) {
@@ -108,18 +115,28 @@ public class UserEducationHelper {
         assert (!contentString.isEmpty());
         assert (!accessibilityString.isEmpty());
 
-        textBubble = new TextBubble(mActivity, anchorView, contentString, accessibilityString,
-                !iphCommand.removeArrow, viewRectProvider != null ? viewRectProvider : rectProvider,
-                ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        textBubble =
+                new TextBubble(
+                        mActivity,
+                        anchorView,
+                        contentString,
+                        accessibilityString,
+                        !iphCommand.removeArrow,
+                        viewRectProvider != null ? viewRectProvider : rectProvider,
+                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
-        textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {
-            if (featureName != null) tracker.dismissed(featureName);
-            iphCommand.onDismissCallback.run();
-            if (highlightParams != null) {
-                ViewHighlighter.turnOffHighlight(anchorView);
-            }
-        }, ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
+        textBubble.addOnDismissListener(
+                () ->
+                        mHandler.postDelayed(
+                                () -> {
+                                    if (featureName != null) tracker.dismissed(featureName);
+                                    iphCommand.onDismissCallback.run();
+                                    if (highlightParams != null) {
+                                        ViewHighlighter.turnOffHighlight(anchorView);
+                                    }
+                                },
+                                ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
         textBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
 
         if (highlightParams != null) {

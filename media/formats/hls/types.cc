@@ -26,10 +26,10 @@ bool IsOneOf(char c, base::StringPiece set) {
 
 // Returns the substring matching a valid AttributeName, advancing `source_str`
 // to the following character. If no such substring exists, returns
-// `absl::nullopt` and leaves `source_str` untouched. This is like matching the
+// `std::nullopt` and leaves `source_str` untouched. This is like matching the
 // regex `^[A-Z0-9-]+`.
-absl::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
-  auto str = *source_str;
+std::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
+  SourceString str = *source_str;
 
   // Returns whether the given char is permitted in an AttributeName
   const auto is_char_valid = [](char c) -> bool {
@@ -37,12 +37,12 @@ absl::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
   };
 
   // Extract the substring where `is_char_valid` succeeds
-  const char* end = base::ranges::find_if_not(str.Str(), is_char_valid);
+  auto end = base::ranges::find_if_not(str.Str(), is_char_valid);
   const auto name = str.Consume(end - str.Str().cbegin());
 
   // At least one character must have matched
   if (name.Empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   *source_str = str;
@@ -51,19 +51,19 @@ absl::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
 
 // Returns the substring matching a valid AttributeValue, advancing `source_str`
 // to the following character. If no such substring exists, returns
-// `absl::nullopt` and leaves `source_str` untouched.
+// `std::nullopt` and leaves `source_str` untouched.
 // Attribute values may either be quoted or unquoted.
 // Quoted attribute values begin and end with a double-quote ("), and may
 // contain internal whitespace and commas. Unquoted attribute values must not
 // begin with a double-quote, but may contain any character excluding whitespace
 // and commas.
-absl::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
+std::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
   // Cache string to stack so we don't modify it unless its valid
   auto str = *source_str;
 
   // Empty strings are not allowed
   if (str.Empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If this is a quoted attribute value, get everything between the matching
@@ -73,7 +73,7 @@ absl::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
 
     // If match wasn't found, value isn't valid
     if (matching_quote == base::StringPiece::npos) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const auto result = str.Consume(matching_quote + 1);
@@ -86,7 +86,7 @@ absl::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
   const auto end = str.Str().find_first_of(", \t");
   const auto result = str.Consume(end);
   if (result.Empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   *source_str = str;
@@ -200,7 +200,7 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
   }
 
   // If the offset was present, try to parse it
-  absl::optional<types::DecimalInteger> offset;
+  std::optional<types::DecimalInteger> offset;
   if (at_index != base::StringPiece::npos) {
     source_str.Consume(1);
     auto offset_result = ParseDecimalInteger(source_str);
@@ -217,15 +217,15 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
 }
 
 // static
-absl::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
-                                              DecimalInteger offset) {
+std::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
+                                             DecimalInteger offset) {
   if (length == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Ensure that `length+offset` won't overflow `DecimalInteger`
   if (std::numeric_limits<DecimalInteger>::max() - offset < length) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ByteRange(length, offset);

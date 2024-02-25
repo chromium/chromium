@@ -27,7 +27,7 @@ class CastMirroringServiceHostFactory : public MirroringServiceHostFactory {
   // Returns CastMirroringServiceHost instance if `media_id` has a value,
   // otherwise returns nullptr.
   std::unique_ptr<MirroringServiceHost> GetForDesktop(
-      const absl::optional<std::string>& media_id) override;
+      const std::optional<std::string>& media_id) override;
 
   // Returns CastMirroringServiceHost instance if there exist a WebContents
   // connected to `frame_tree_node_id` and `presentation_url` is a valid URL,

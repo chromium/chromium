@@ -6,11 +6,12 @@
 
 #include <memory>
 
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -34,11 +35,6 @@ constexpr gfx::Insets kLeftButtonInsets = gfx::Insets::TLBR(4, 4, 4, 2);
 constexpr gfx::Insets kTopButtonInsets = gfx::Insets::TLBR(4, 4, 2, 4);
 constexpr gfx::Insets kRightButtonInsets = gfx::Insets::TLBR(4, 2, 4, 4);
 constexpr gfx::Insets kBottomButtonInsets = gfx::Insets::TLBR(2, 4, 4, 4);
-
-// Change to secondary hover color when the other button on the same
-// `SplitButtonView` is hovered.
-constexpr SkColor kSplitButtonSecondaryHoverColor =
-    SkColorSetA(gfx::kGoogleBlue600, SK_AlphaOPAQUE * 0.4);
 
 bool IsHoveredOrPressedState(views::Button::ButtonState button_state) {
   return button_state == views::Button::STATE_PRESSED ||
@@ -85,12 +81,13 @@ std::u16string GetA11yName(SplitButtonView::SplitButtonType type,
 // SplitButton:
 // A button used for SplitButtonView to trigger snapping.
 class SplitButtonView::SplitButton : public views::Button {
+  METADATA_HEADER(SplitButton, views::Button)
+
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
               base::RepeatingClosure hovered_pressed_callback,
               const gfx::Insets& insets)
       : views::Button(std::move(pressed_callback)),
-        button_color_(kMultitaskButtonDefaultColor),
         insets_(insets),
         hovered_pressed_callback_(std::move(hovered_pressed_callback)) {
     // Subtract by the preferred insets so that the focus ring is drawn around
@@ -107,31 +104,35 @@ class SplitButtonView::SplitButton : public views::Button {
   void set_button_color(SkColor color) { button_color_ = color; }
 
   // views::Button:
-  void OnPaintBackground(gfx::Canvas* canvas) override {
-    cc::PaintFlags pattern_flags;
-    pattern_flags.setAntiAlias(true);
-    pattern_flags.setColor(
-        GetEnabled() ? button_color_
-                     : (features::IsJellyEnabled()
-                            ? SkColorSetA(GetColorProvider()->GetColor(
-                                              ui::kColorSysOnSurface),
-                                          kMultitaskDisabledButtonOpacity)
-                            : kMultitaskButtonDisabledColor));
-    pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
-    gfx::Rect pattern_bounds = GetLocalBounds();
-    pattern_bounds.Inset(insets_);
-    canvas->DrawRoundRect(pattern_bounds, kButtonCornerRadius, pattern_flags);
-  }
+  void StateChanged(views::Button::ButtonState old_state) override {
+    if (GetState() == views::Button::STATE_HOVERED) {
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kSnap,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
 
-  void StateChanged(ButtonState old_state) override {
     if (IsHoveredOrPressedState(old_state) ||
         IsHoveredOrPressedState(GetState())) {
       hovered_pressed_callback_.Run();
     }
   }
 
+  void OnPaintBackground(gfx::Canvas* canvas) override {
+    cc::PaintFlags pattern_flags;
+    pattern_flags.setAntiAlias(true);
+    pattern_flags.setColor(
+        GetEnabled()
+            ? button_color_
+            : SkColorSetA(GetColorProvider()->GetColor(ui::kColorSysOnSurface),
+                          kMultitaskDisabledButtonOpacity));
+    pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
+    gfx::Rect pattern_bounds = GetLocalBounds();
+    pattern_bounds.Inset(insets_);
+    canvas->DrawRoundRect(pattern_bounds, kButtonCornerRadius, pattern_flags);
+  }
+
  private:
-  SkColor button_color_;
+  SkColor button_color_ = SK_ColorTRANSPARENT;
   // The inset between the button window pattern and the border.
   gfx::Insets insets_;
   // Callback to `SplitButtonView` to change button color. When one split button
@@ -139,6 +140,9 @@ class SplitButtonView::SplitButton : public views::Button {
   // color.
   base::RepeatingClosure hovered_pressed_callback_;
 };
+
+BEGIN_METADATA(SplitButtonView, SplitButton)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 // SplitButtonView:
@@ -152,8 +156,6 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
   SetMirrored(false);
   SetOrientation(is_portrait_mode ? views::BoxLayout::Orientation::kVertical
                                   : views::BoxLayout::Orientation::kHorizontal);
-  SetPreferredSize(is_portrait_mode ? kMultitaskButtonPortraitSize
-                                    : kMultitaskButtonLandscapeSize);
 
   auto on_hover_pressed = base::BindRepeating(
       &SplitButtonView::OnButtonHoveredOrPressed, base::Unretained(this));
@@ -214,17 +216,13 @@ views::Button* SplitButtonView::GetRightBottomButton() {
 
 void SplitButtonView::OnButtonHoveredOrPressed() {
   const auto* color_provider = GetColorProvider();
-  const bool is_jelly = features::IsJellyEnabled();
-  const auto primary_hover_color =
-      is_jelly ? color_provider->GetColor(ui::kColorSysPrimary)
-               : kMultitaskButtonPrimaryHoverColor;
+  const SkColor primary_hover_color =
+      color_provider->GetColor(ui::kColorSysPrimary);
   border_color_ = primary_hover_color;
-  const auto secondary_hover_color =
-      is_jelly ? SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
-                             kMultitaskHoverButtonOpacity)
-               : kSplitButtonSecondaryHoverColor;
-  fill_color_ = SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
-                            kMultitaskHoverBackgroundOpacity);
+  const SkColor secondary_hover_color =
+      SkColorSetA(primary_hover_color, kMultitaskHoverButtonOpacity);
+  fill_color_ =
+      SkColorSetA(primary_hover_color, kMultitaskHoverBackgroundOpacity);
 
   if (IsHoveredOrPressedState(right_bottom_button_->GetState())) {
     right_bottom_button_->set_button_color(primary_hover_color);
@@ -236,9 +234,8 @@ void SplitButtonView::OnButtonHoveredOrPressed() {
     // Reset color.
     fill_color_ = SK_ColorTRANSPARENT;
     border_color_ =
-        is_jelly ? SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
-                               kMultitaskDefaultButtonOpacity)
-                 : kMultitaskButtonDefaultColor;
+        SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
+                    kMultitaskDefaultButtonOpacity);
     right_bottom_button_->set_button_color(border_color_);
     left_top_button_->set_button_color(border_color_);
   }
@@ -274,7 +271,7 @@ void SplitButtonView::OnThemeChanged() {
   left_top_button_->set_button_color(border_color_);
 }
 
-BEGIN_METADATA(SplitButtonView, View)
+BEGIN_METADATA(SplitButtonView)
 END_METADATA
 
 }  // namespace chromeos

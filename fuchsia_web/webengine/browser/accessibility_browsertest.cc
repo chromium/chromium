@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <zircon/types.h>
 
 #include "base/command_line.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
@@ -145,7 +146,7 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
 
  protected:
   // TODO(crbug.com/1038786): Maybe move to WebEngineBrowserTest.
-  absl::optional<base::TestComponentContextForProcess> test_context_;
+  std::optional<base::TestComponentContextForProcess> test_context_;
 
   FrameForTest frame_;
   FrameImpl* frame_impl_;
@@ -153,7 +154,7 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
 
   // Binding to the fake semantics manager.
   // Optional so that it can be instantiated outside the constructor.
-  absl::optional<base::ScopedServiceBinding<
+  std::optional<base::ScopedServiceBinding<
       fuchsia::accessibility::semantics::SemanticsManager>>
       semantics_manager_binding_;
 };

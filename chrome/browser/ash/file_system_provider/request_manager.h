@@ -21,31 +21,30 @@
 
 class Profile;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Request type, passed to RequestManager::CreateRequest. For logging purposes.
 enum class RequestType {
-  kAbort,
-  kAddWatcher,
-  kCloseFile,
-  kConfigure,
-  kCopyEntry,
-  kCreateDirectory,
-  kCreateFile,
-  kDeleteEntry,
-  kExecuteAction,
-  kGetActions,
-  kGetMetadata,
-  kMount,
-  kMoveEntry,
-  kOpenFile,
-  kReadDirectory,
-  kReadFile,
-  kRemoveWatcher,
-  kTruncate,
-  kUnmount,
-  kWriteFile,
+  kAbort = 0,
+  kAddWatcher = 1,
+  kCloseFile = 2,
+  kConfigure = 3,
+  kCopyEntry = 4,
+  kCreateDirectory = 5,
+  kCreateFile = 6,
+  kDeleteEntry = 7,
+  kExecuteAction = 8,
+  kGetActions = 9,
+  kGetMetadata = 10,
+  kMount = 11,
+  kMoveEntry = 12,
+  kOpenFile = 13,
+  kReadDirectory = 14,
+  kReadFile = 15,
+  kRemoveWatcher = 16,
+  kTruncate = 17,
+  kUnmount = 18,
+  kWriteFile = 19,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -66,7 +65,7 @@ class RequestManager {
   // this interface.
   class HandlerInterface {
    public:
-    virtual ~HandlerInterface() {}
+    virtual ~HandlerInterface() = default;
 
     // Called when the request is created. Executes the request implementation.
     // Returns false in case of a execution failure.
@@ -94,7 +93,7 @@ class RequestManager {
   // Observes activities in the request manager.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when the request is created.
     virtual void OnRequestCreated(int request_id, RequestType type) = 0;
@@ -212,7 +211,6 @@ class RequestManager {
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_MANAGER_H_

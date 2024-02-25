@@ -49,7 +49,7 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
   void SetWindowAutoManaged();
 
   // The BrowserView is our ClientView. This is a pointer to it.
-  raw_ptr<BrowserView, ExperimentalAsh> browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 
   // Set true when dragging a tab to create a browser window.
   bool created_from_drag_ = false;

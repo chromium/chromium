@@ -326,7 +326,7 @@ crypto::SymmetricKey* OSCryptImpl::GetPasswordV11() {
     std::unique_ptr<KeyStorageLinux> key_storage =
         std::move(storage_provider_factory_).Run();
     if (key_storage) {
-      absl::optional<std::string> key = key_storage->GetKey();
+      std::optional<std::string> key = key_storage->GetKey();
       if (key.has_value()) {
         password_v11_cache_ = GenerateEncryptionKey(*key);
       }

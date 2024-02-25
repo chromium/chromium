@@ -7,8 +7,8 @@
 #include <math.h>
 #include <string.h>
 
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "remoting/base/cpu_utils.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
@@ -16,7 +16,7 @@
 
 namespace remoting {
 
-enum { kBytesPerPixelRGB32 = 4 };
+constexpr int kBytesPerPixelRGB32 = 4;
 
 static int CalculateRGBOffset(int x, int y, int stride) {
   return stride * y + kBytesPerPixelRGB32 * x;
@@ -25,11 +25,8 @@ static int CalculateRGBOffset(int x, int y, int stride) {
 // Do not write LOG messages in this routine since it is called from within
 // our LOG message handler. Bad things will happen.
 std::string GetTimestampString() {
-  base::Time t = base::Time::NowFromSystemTime();
-  base::Time::Exploded tex;
-  t.LocalExplode(&tex);
-  return base::StringPrintf("%02d%02d/%02d%02d%02d:", tex.month,
-                            tex.day_of_month, tex.hour, tex.minute, tex.second);
+  return base::UnlocalizedTimeFormatWithPattern(base::Time::NowFromSystemTime(),
+                                                "MMdd/HHmmss:");
 }
 
 int RoundToTwosMultiple(int x) {

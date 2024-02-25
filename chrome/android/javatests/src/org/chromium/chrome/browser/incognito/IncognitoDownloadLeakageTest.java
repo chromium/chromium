@@ -26,6 +26,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -36,11 +37,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -64,12 +64,12 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
 // TODO(crbug.com/1360906) remove INCOGNITO_DOWNLOADS_WARNING from the disabled features and fix
 // the test accordingly
 @DisableFeatures(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=UseDownloadOfflineContentProvider"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+})
 public class IncognitoDownloadLeakageTest {
     private String mDownloadTestPage;
     private final String mDownloadedFileName = "test.gzip";
@@ -138,26 +138,30 @@ public class IncognitoDownloadLeakageTest {
 
     @Before
     public void setUp() throws Exception {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mDownloadTestPage = mTestServer.getURL(DOWNLOAD_TEST_PAGE_PATH);
 
-        // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
+        // Ensuring native is initialized, as code below requires it.
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
-        assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO));
 
         // Download related setUp steps.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DownloadManagerService.getDownloadManagerService().addDownloadObserver(
-                    mTestDownloadManagerServiceObserver);
-            OfflineContentAggregatorFactory.get().addObserver(mTestDownloadBackendObserver);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DownloadManagerService.getDownloadManagerService()
+                            .addDownloadObserver(mTestDownloadManagerServiceObserver);
+                    OfflineContentAggregatorFactory.get().addObserver(mTestDownloadBackendObserver);
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // This skips the download prompt dialog for tests.
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setInteger(Pref.PROMPT_FOR_DOWNLOAD_ANDROID, DownloadPromptStatus.DONT_SHOW);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // This skips the download prompt dialog for tests.
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setInteger(
+                                    Pref.PROMPT_FOR_DOWNLOAD_ANDROID,
+                                    DownloadPromptStatus.DONT_SHOW);
+                });
 
         deleteFilesInDownloadDirectory(mDownloadedFileName);
     }
@@ -166,9 +170,9 @@ public class IncognitoDownloadLeakageTest {
     public void tearDown() {
         deleteFilesInDownloadDirectory(mDownloadedFileName);
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> DownloadManagerService.getDownloadManagerService()
-                                   .removeDownloadObserver(mTestDownloadManagerServiceObserver));
+                () ->
+                        DownloadManagerService.getDownloadManagerService()
+                                .removeDownloadObserver(mTestDownloadManagerServiceObserver));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
     }
@@ -217,20 +221,21 @@ public class IncognitoDownloadLeakageTest {
                 IncognitoDataTestUtils.ActivityType.valueOf(regularActivityType);
 
         // Initiate download from incognito context.
-        Tab incognitoTab = incognitoActivity.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mDownloadTestPage);
+        Tab incognitoTab =
+                incognitoActivity.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mDownloadTestPage);
         startDownload(incognitoTab);
 
         // Check the file is downloaded
         assertTrue(hasFileDownloaded(mDownloadedFileName));
 
         // Retrieve downloads from the incognito DownloadService.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = IncognitoUtils.getIncognitoProfileFromWindowAndroid(
-                    incognitoTab.getWindowAndroid());
-            DownloadManagerService.getDownloadManagerService().getAllDownloads(
-                    profile.getOTRProfileID());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = incognitoTab.getProfile();
+                    DownloadManagerService.getDownloadManagerService()
+                            .getAllDownloads(profile.getOTRProfileID());
+                });
         mRetrieveDownloadsCallback.waitForCallback(0);
 
         // One download item should be visible.
@@ -262,36 +267,38 @@ public class IncognitoDownloadLeakageTest {
 
         // Initiate download from the first incognito Activity. This returns either a CCT or a
         // Chrome incognito tab.
-        Tab incognitoTab1 = incognitoActivity1.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mDownloadTestPage);
+        Tab incognitoTab1 =
+                incognitoActivity1.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mDownloadTestPage);
         startDownload(incognitoTab1);
 
         // Check the file is downloaded
         assertTrue(hasFileDownloaded(mDownloadedFileName));
 
         // Retrieve downloads from the incognito DownloadService.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = IncognitoUtils.getIncognitoProfileFromWindowAndroid(
-                    incognitoTab1.getWindowAndroid());
-            DownloadManagerService.getDownloadManagerService().getAllDownloads(
-                    profile.getOTRProfileID());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = incognitoTab1.getProfile();
+                    DownloadManagerService.getDownloadManagerService()
+                            .getAllDownloads(profile.getOTRProfileID());
+                });
         mRetrieveDownloadsCallback.waitForCallback(0);
 
         // One download item should be visible.
         assertEquals(1, mOffTheRecordDownloadItems.size());
 
         // Load "about:blank" in the second incognito Activity.
-        Tab incognitoTab2 = incognitoActivity2.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, "about:blank");
+        Tab incognitoTab2 =
+                incognitoActivity2.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, "about:blank");
 
         // Retrieve downloads for the second incognito profile.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = IncognitoUtils.getIncognitoProfileFromWindowAndroid(
-                    incognitoTab2.getWindowAndroid());
-            DownloadManagerService.getDownloadManagerService().getAllDownloads(
-                    profile.getOTRProfileID());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = incognitoTab2.getProfile();
+                    DownloadManagerService.getDownloadManagerService()
+                            .getAllDownloads(profile.getOTRProfileID());
+                });
         mRetrieveDownloadsCallback.waitForCallback(1);
 
         // No download entries should leak to/from an incognito CCT.

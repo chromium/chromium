@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -28,7 +30,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
@@ -44,12 +45,10 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
-#include "base/strings/string_number_conversions_win.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/test/base/process_inspector_win.h"
 #include "chrome/updater/util/win_util.h"
@@ -145,7 +144,7 @@ void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
 void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
                                    const base::Version& version,
                                    bool should_create_updater_executable) {
-  absl::optional<base::FilePath> folder_path =
+  std::optional<base::FilePath> folder_path =
       GetVersionedInstallDirectory(scope, version);
   ASSERT_TRUE(folder_path);
   const base::FilePath updater_executable_path(
@@ -223,7 +222,7 @@ std::string GetTestName() {
 }
 
 bool DeleteFileAndEmptyParentDirectories(
-    const absl::optional<base::FilePath>& file_path) {
+    const std::optional<base::FilePath>& file_path) {
   struct Local {
     // Deletes recursively `dir` and its parents up, if dir is empty
     // and until one non-empty parent directory is found.
@@ -250,11 +249,11 @@ base::FilePath GetLogDestinationDir() {
 }
 
 void InitLoggingForUnitTest(const base::FilePath& log_base_path) {
-  const absl::optional<base::FilePath> log_file_path = [&log_base_path]() {
+  const std::optional<base::FilePath> log_file_path = [&log_base_path] {
     const base::FilePath dest_dir = GetLogDestinationDir();
     return dest_dir.empty()
-               ? absl::nullopt
-               : absl::make_optional(dest_dir.Append(log_base_path));
+               ? std::nullopt
+               : std::make_optional(dest_dir.Append(log_base_path));
   }();
   if (log_file_path) {
     logging::LoggingSettings settings;
@@ -351,12 +350,9 @@ base::FilePath StartProcmonLogging() {
   const base::FilePath pmc_path(GetTestFilePath("ProcmonConfiguration.pmc"));
   CHECK(base::PathExists(pmc_path));
 
-  base::Time::Exploded start_time;
-  base::Time::Now().LocalExplode(&start_time);
-  const base::FilePath pml_file(dest_dir.Append(base::StringPrintf(
-      L"%02d%02d%02d-%02d%02d%02d.PML", start_time.year, start_time.month,
-      start_time.day_of_month, start_time.hour, start_time.minute,
-      start_time.second)));
+  const base::FilePath pml_file(
+      dest_dir.Append(base::ASCIIToWide(base::UnlocalizedTimeFormatWithPattern(
+          base::Time::Now(), "yyMMdd-HHmmss.'PML'"))));
 
   const std::wstring& cmdline = base::StrCat(
       {kProcmonPath, L" /AcceptEula /LoadConfig ",

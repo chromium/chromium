@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_CONSUMER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_consumer.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_consumer.h"
 
 @class BookmarksHomeMediator;
 @class NSIndexPath;
@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 };
 
 // BookmarksHomeConsumer provides methods that allow mediators to update the UI.
-@protocol BookmarksHomeConsumer <ChromeTableViewConsumer>
+@protocol BookmarksHomeConsumer <LegacyChromeTableViewConsumer>
 
 // The model backing the table view.
 @property(nonatomic, readonly) TableViewModel* tableViewModel;
@@ -68,6 +68,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 
 // Called when the set of edit nodes is cleared.
 - (void)mediatorDidClearEditNodes:(BookmarksHomeMediator*)mediator;
+
+// Displays the account settings.
+- (void)showAccountSettings;
 
 @end
 

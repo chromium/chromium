@@ -1,40 +1,18 @@
-/*
- * Copyright (C) 2010 Google Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1.  Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- * 2.  Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- * 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
- *     its contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL APPLE OR ITS CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2010 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 
 #include <string.h>
 
+#include <utility>
+
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -147,7 +125,7 @@ void UpdateWebPFileFormatUMA(const sk_sp<SkData>& blob) {
     return;
   }
 
-  WebPBitstreamFeatures features{};
+  WebPBitstreamFeatures features;
   if (WebPGetFeatures(blob->bytes(), blob->size(), &features) !=
       VP8_STATUS_OK) {
     return;
@@ -184,15 +162,7 @@ WEBPImageDecoder::WEBPImageDecoder(AlphaOption alpha_option,
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
-                   max_decoded_bytes),
-      decoder_(nullptr),
-      format_flags_(0),
-      frame_background_has_alpha_(false),
-      demux_(nullptr),
-      demux_state_(WEBP_DEMUX_PARSING_HEADER),
-      have_parsed_current_data_(false),
-      repetition_count_(kAnimationLoopOnce),
-      decoded_height_(0) {
+                   max_decoded_bytes) {
   blend_function_ = (alpha_option == kAlphaPremultiplied)
                         ? alphaBlendPremultiplied
                         : alphaBlendNonPremultiplied;
@@ -244,21 +214,12 @@ WEBP_CSP_MODE WEBPImageDecoder::RGBOutputMode() {
 #endif
 }
 
-bool WEBPImageDecoder::CanAllowYUVDecodingForWebP() {
-  if (!consolidated_data_) {
-    return false;
-  }
+bool WEBPImageDecoder::CanAllowYUVDecodingForWebP() const {
   // Should have been updated with a recent call to UpdateDemuxer().
-  WebPBitstreamFeatures features;
-  if (RuntimeEnabledFeatures::DecodeLossyWebPImagesToYUVEnabled() &&
-      (demux_state_ == WEBP_DEMUX_PARSED_HEADER ||
-       demux_state_ == WEBP_DEMUX_DONE) &&
-      WebPGetFeatures(consolidated_data_->bytes(), consolidated_data_->size(),
-                      &features) == VP8_STATUS_OK) {
-    bool is_animated = !!(format_flags_ & ANIMATION_FLAG);
-    constexpr int kLossyFormat = ImageDecoder::CompressionFormat::kLossyFormat;
+  if (demux_state_ >= WEBP_DEMUX_PARSED_HEADER &&
+      WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT)) {
     // TODO(crbug/910276): Change after alpha support.
-    if (features.format != kLossyFormat || features.has_alpha || is_animated) {
+    if (!is_lossy_not_animated_no_alpha_) {
       return false;
     }
 
@@ -272,7 +233,7 @@ bool WEBPImageDecoder::CanAllowYUVDecodingForWebP() {
   return false;
 }
 
-void WEBPImageDecoder::OnSetData(SegmentReader* data) {
+void WEBPImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   have_parsed_current_data_ = false;
   // TODO(crbug.com/943519): Modify this approach for incremental YUV (when
   // we don't require IsAllDataReceived() to be true before decoding).
@@ -287,7 +248,7 @@ int WEBPImageDecoder::RepetitionCount() const {
 }
 
 bool WEBPImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
-  if (!demux_ || demux_state_ <= WEBP_DEMUX_PARSING_HEADER) {
+  if (!demux_ || demux_state_ < WEBP_DEMUX_PARSED_HEADER) {
     return false;
   }
   if (!(format_flags_ & ANIMATION_FLAG)) {
@@ -367,7 +328,7 @@ bool WEBPImageDecoder::UpdateDemuxer() {
     return truncated_file ? SetFailed() : false;
   }
 
-  DCHECK_GT(demux_state_, WEBP_DEMUX_PARSING_HEADER);
+  DCHECK_GE(demux_state_, WEBP_DEMUX_PARSED_HEADER);
   if (!WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT)) {
     return false;  // Wait until the encoded image frame data arrives.
   }
@@ -402,6 +363,21 @@ bool WEBPImageDecoder::UpdateDemuxer() {
 
     if ((format_flags_ & ICCP_FLAG) && !IgnoresColorSpace()) {
       ReadColorProfile();
+    }
+
+    // Record bpp information only for lossy still images that do not have
+    // alpha.
+    if (!(format_flags_ & (ANIMATION_FLAG | ALPHA_FLAG))) {
+      WebPBitstreamFeatures features;
+      CHECK_EQ(WebPGetFeatures(consolidated_data_->bytes(),
+                               consolidated_data_->size(), &features),
+               VP8_STATUS_OK);
+      if (features.format == CompressionFormat::kLossyFormat) {
+        is_lossy_not_animated_no_alpha_ = true;
+        static constexpr char kType[] = "WebP";
+        update_bpp_histogram_callback_ =
+            base::BindOnce(&UpdateBppHistogram<kType>);
+      }
     }
   }
 
@@ -772,6 +748,9 @@ bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
   // supports multiplanar formats.
   ClearDecoder();
   image_planes->SetHasCompleteScan();
+  if (IsAllDataReceived() && update_bpp_histogram_callback_) {
+    std::move(update_bpp_histogram_callback_).Run(Size(), data_->size());
+  }
   return true;
 }
 
@@ -827,6 +806,9 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
                          frame_background_has_alpha_);
       buffer.SetStatus(ImageFrame::kFrameComplete);
       ClearDecoder();
+      if (IsAllDataReceived() && update_bpp_histogram_callback_) {
+        std::move(update_bpp_histogram_callback_).Run(Size(), data_->size());
+      }
       return true;
     case VP8_STATUS_SUSPENDED:
       if (!IsAllDataReceived() && !FrameIsReceivedAtIndex(frame_index)) {

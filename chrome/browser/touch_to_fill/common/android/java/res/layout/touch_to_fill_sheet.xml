@@ -36,5 +36,5 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/touch_to_fill_sheet_margin"
         android:clipToPadding="false"
         android:divider="@null"
-        tools:listitem="@layout/touch_to_fill_credential_item"/>
+        tools:listitem="@layout/touch_to_fill_list_item"/>
 </RelativeLayout>

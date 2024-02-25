@@ -6,6 +6,7 @@
 #define BASE_FILES_IMPORTANT_FILE_WRITER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -16,7 +17,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -43,7 +43,7 @@ class BASE_EXPORT ImportantFileWriter {
   // data to be written. This callback is invoked on the sequence where I/O
   // operations are executed. Returning false indicates an error.
   using BackgroundDataProducerCallback =
-      base::OnceCallback<absl::optional<std::string>()>;
+      base::OnceCallback<std::optional<std::string>()>;
 
   // Used by ScheduleSave to lazily provide the data to be saved. Allows us
   // to also batch data serializations.
@@ -52,7 +52,7 @@ class BASE_EXPORT ImportantFileWriter {
     // Returns a string for serialisation when successful, or a nullopt in case
     // it failed to generate the data. Will be called on the same thread on
     // which ImportantFileWriter has been created.
-    virtual absl::optional<std::string> SerializeData() = 0;
+    virtual std::optional<std::string> SerializeData() = 0;
 
    protected:
     virtual ~DataSerializer() = default;

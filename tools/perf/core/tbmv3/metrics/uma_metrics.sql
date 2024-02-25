@@ -44,117 +44,97 @@ SELECT UMAMetrics(
   'graphics_smoothness_checkerboarding_compositor_animation', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.CompositorAnimation'
+    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding3.CompositorAnimation'
   ),
   'graphics_smoothness_checkerboarding_main_thread_animation', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.MainThreadAnimation'
+    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding3.MainThreadAnimation'
   ),
   'graphics_smoothness_checkerboarding_pinch_zoom', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.PinchZoom'
+    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding3.PinchZoom'
   ),
   'graphics_smoothness_checkerboarding_raf', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.RAF'
+    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding3.RAF'
   ),
   'graphics_smoothness_checkerboarding_touch_scroll', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.TouchScroll'
-  ),
-  'graphics_smoothness_checkerboarding_video', (
-    SELECT RepeatedField(sample / 1e2)
-    FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.Video'
+    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding3.TouchScroll'
   ),
   'graphics_smoothness_checkerboarding_wheel_scroll', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.WheelScroll'
+    WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding3.WheelScroll'
   ),
   'graphics_smoothness_percent_dropped_frames_all_animations', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.AllAnimations'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.AllAnimations'
   ),
   'graphics_smoothness_percent_dropped_frames_all_interactions', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.AllInteractions'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.AllInteractions'
   ),
   'graphics_smoothness_percent_dropped_frames_all_sequences', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.AllSequences'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.AllSequences'
   ),
   'graphics_smoothness_percent_dropped_frames_main_thread_main_thread_animation', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.MainThread.MainThreadAnimation'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.MainThread.MainThreadAnimation'
   ),
   'graphics_smoothness_percent_dropped_frames_main_thread_raf', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.MainThread.RAF'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.MainThread.RAF'
   ),
   'graphics_smoothness_percent_dropped_frames_main_thread_touch_scroll', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.MainThread.TouchScroll'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.MainThread.TouchScroll'
   ),
   'graphics_smoothness_percent_dropped_frames_main_thread_wheel_scroll', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.MainThread.WheelScroll'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.MainThread.WheelScroll'
   ),
   'graphics_smoothness_percent_dropped_frames_compositor_thread_compositor_animation', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.CompositorAnimation'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.CompositorThread.CompositorAnimation'
   ),
   'graphics_smoothness_percent_dropped_frames_compositor_thread_pinch_zoom', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.PinchZoom'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.CompositorThread.PinchZoom'
   ),
   'graphics_smoothness_percent_dropped_frames_compositor_thread_touch_scroll', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.CompositorThread.TouchScroll'
   ),
   'graphics_smoothness_percent_dropped_frames_compositor_thread_wheel_scroll', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.WheelScroll'
-  ),
-  'graphics_smoothness_percent_dropped_frames_main_thread_universal', (
-    SELECT RepeatedField(sample / 1e2)
-    FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.MainThread.Universal'
-  ),
-  'graphics_smoothness_percent_dropped_frames_compositor_thread_universal', (
-    SELECT RepeatedField(sample / 1e2)
-    FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.Universal'
-  ),
-  'graphics_smoothness_percent_dropped_frames_slower_thread_universal', (
-    SELECT RepeatedField(sample / 1e2)
-    FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.SlowerThread.Universal'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.CompositorThread.WheelScroll'
   ),
   'graphics_smoothness_percent_dropped_frames_scrolling_thread_touch_scroll', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.ScrollingThread.TouchScroll'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.ScrollingThread.TouchScroll'
   ),
   'graphics_smoothness_percent_dropped_frames_scrolling_thread_wheel_scroll', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
-    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames.ScrollingThread.WheelScroll'
+    WHERE histogram_name = 'Graphics.Smoothness.PercentDroppedFrames3.ScrollingThread.WheelScroll'
   ),
   'memory_gpu_peak_memory_usage_scroll', (
     SELECT RepeatedField(sample * 1e3)

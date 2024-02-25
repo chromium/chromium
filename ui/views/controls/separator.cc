@@ -103,7 +103,7 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
   canvas->FillRect({x, y, w, h}, color);
 }
 
-BEGIN_METADATA(Separator, View)
+BEGIN_METADATA(Separator)
 ADD_PROPERTY_METADATA(ui::ColorId, ColorId)
 ADD_PROPERTY_METADATA(int, PreferredLength)
 ADD_PROPERTY_METADATA(Separator::Orientation, Orientation)

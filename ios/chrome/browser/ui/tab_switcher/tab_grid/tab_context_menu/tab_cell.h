@@ -7,15 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+namespace web {
+class WebStateID;
+}  // namespace web
+
 // UICollectionViewCell that represents a tab cell.
 @interface TabCell : UICollectionViewCell
 
 // Unique identifier for the cell's contents. This is used to ensure that
 // updates in an asynchronous callback are only made if the item is the same.
-@property(nonatomic, copy) NSString* itemIdentifier;
-
-// Checks if cell has a specific identifier.
-- (BOOL)hasIdentifier:(NSString*)identifier;
+@property(nonatomic, assign) web::WebStateID itemIdentifier;
 
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 

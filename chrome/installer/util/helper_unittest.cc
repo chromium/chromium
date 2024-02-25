@@ -6,6 +6,9 @@
 
 #include <windows.h>
 
+#include <optional>
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -20,7 +23,6 @@
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace installer {
 
@@ -30,7 +32,7 @@ namespace {
 // instance.
 class ScopedEnvironmentOverride {
  public:
-  ScopedEnvironmentOverride(base::WStringPiece name, const wchar_t* new_value)
+  ScopedEnvironmentOverride(std::wstring_view name, const wchar_t* new_value)
       : name_(name) {
     std::array<wchar_t, MAX_PATH> value;
     value[0] = L'\0';
@@ -48,7 +50,7 @@ class ScopedEnvironmentOverride {
 
  private:
   const std::wstring name_;
-  absl::optional<std::wstring> old_value_;
+  std::optional<std::wstring> old_value_;
 };
 
 }  // namespace
@@ -257,9 +259,9 @@ class GetDefaultChromeInstallPathTest : public testing::TestWithParam<bool> {
   base::ScopedTempDir program_files_;
   base::ScopedTempDir program_files_x86_;
   base::ScopedTempDir local_app_data_;
-  absl::optional<base::ScopedPathOverride> program_files_override_;
-  absl::optional<base::ScopedPathOverride> program_files_x86_override_;
-  absl::optional<base::ScopedPathOverride> local_data_app_override_;
+  std::optional<base::ScopedPathOverride> program_files_override_;
+  std::optional<base::ScopedPathOverride> program_files_x86_override_;
+  std::optional<base::ScopedPathOverride> local_data_app_override_;
 };
 
 // Tests that the PathService is used to get the default install path.
@@ -304,10 +306,10 @@ INSTANTIATE_TEST_SUITE_P(SystemLevelTest,
                          testing::Values(true));
 
 struct Params {
-  Params(bool system_level, absl::optional<int> target_dir_key)
+  Params(bool system_level, std::optional<int> target_dir_key)
       : system_level(system_level), target_dir_key(target_dir_key) {}
   bool system_level;
-  absl::optional<int> target_dir_key;
+  std::optional<int> target_dir_key;
 };
 
 // Tests GetChromeInstallPath with a params object that contains a boolean
@@ -398,9 +400,9 @@ class GetChromeInstallPathWithPrefsTest
   base::ScopedTempDir random_;
   base::ScopedTempDir local_app_data_;
   registry_util::RegistryOverrideManager registry_override_manager_;
-  absl::optional<base::ScopedPathOverride> program_files_override_;
-  absl::optional<base::ScopedPathOverride> program_files_x86_override_;
-  absl::optional<base::ScopedPathOverride> local_data_app_override_;
+  std::optional<base::ScopedPathOverride> program_files_override_;
+  std::optional<base::ScopedPathOverride> program_files_x86_override_;
+  std::optional<base::ScopedPathOverride> local_data_app_override_;
 };
 
 TEST_P(GetChromeInstallPathWithPrefsTest, NoRegistryValue) {
@@ -484,7 +486,7 @@ INSTANTIATE_TEST_SUITE_P(UserLevelUnsupportedPathSetupTest,
 
 INSTANTIATE_TEST_SUITE_P(UserLevelEmptyPathSetupTest,
                          GetChromeInstallPathWithPrefsTest,
-                         testing::Values<Params>(Params(false, absl::nullopt)));
+                         testing::Values<Params>(Params(false, std::nullopt)));
 
 INSTANTIATE_TEST_SUITE_P(
     MachineLevelX86SetupTest,
@@ -502,6 +504,6 @@ INSTANTIATE_TEST_SUITE_P(MachineLevelUnsupportedPathSetupTest,
 
 INSTANTIATE_TEST_SUITE_P(MachineLevelEmptyPathSetupTest,
                          GetChromeInstallPathWithPrefsTest,
-                         testing::Values<Params>(Params(true, absl::nullopt)));
+                         testing::Values<Params>(Params(true, std::nullopt)));
 
 }  // namespace installer

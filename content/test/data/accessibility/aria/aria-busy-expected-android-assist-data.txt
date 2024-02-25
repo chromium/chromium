@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"Busy log" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-busy="true"}, {aria-label="Busy log"}, {role="log"}, {tabindex="0"}]
+++View text:"Not-busy log" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-busy="false"}, {aria-label="Not-busy log"}, {role="log"}, {tabindex="1"}]
+++View text:"plain div" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-busy="true"}, {aria-description="plain div"}, {name="plain div"}]

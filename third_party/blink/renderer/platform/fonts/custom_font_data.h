@@ -22,8 +22,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_CUSTOM_FONT_DATA_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -34,13 +34,11 @@ namespace blink {
 //  * `BinaryDataFontFaceSource` as loaded font resource
 //  * `LocalFontFaceSource` as derived class `CSSCustomFontData`
 //  * `RemoteFontFaceSource` as derived class `CSSCustomFontData`
-class PLATFORM_EXPORT CustomFontData : public RefCounted<CustomFontData> {
+class PLATFORM_EXPORT CustomFontData : public GarbageCollected<CustomFontData> {
  public:
-  static scoped_refptr<CustomFontData> Create() {
-    return base::AdoptRef(new CustomFontData());
-  }
-
+  CustomFontData() = default;
   virtual ~CustomFontData() = default;
+  virtual void Trace(Visitor*) const {}
 
   virtual void BeginLoadIfNeeded() const {}
   virtual bool IsLoading() const { return false; }
@@ -48,9 +46,6 @@ class PLATFORM_EXPORT CustomFontData : public RefCounted<CustomFontData> {
   virtual bool ShouldSkipDrawing() const { return false; }
   virtual void ClearFontFaceSource() {}
   virtual bool IsPendingDataUrl() const { return false; }
-
- protected:
-  CustomFontData() = default;
 };
 
 }  // namespace blink

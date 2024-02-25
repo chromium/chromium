@@ -1,0 +1,109 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// The serialization format of the message.
+enum SerializationFormat {
+  kStructuredCloned,
+  kJson
+};
+
+// The type of messaging channel.
+enum ChannelType {
+  // A message channel associated with `runtime.sendMessage()` or
+  // `tabs.sendMessage()`.
+  kSendMessage,
+  // A message channel associated with `extension.sendRequest()`.
+  kSendRequest,
+  // A longer-lived message channel associated with `runtime.connect()`
+  // or `tabs.connect()`.
+  kConnect,
+  // A native message channel. Note that unlike above, both one-time and
+  // long-lived native message channels use the same type (because they don't
+  // have associated channel names).
+  kNative
+};
+
+// Type of the messaging source or destination - i.e., the type of the
+// component which talks to a messaging channel.
+enum MessagingEndpointType {
+  // An extension.
+  kExtension,
+  // A web page or a hosted app.
+  kWebPage,
+  // A content script.
+  kContentScript,
+  // A user script.
+  kUserScript,
+  // A native application.
+  kNativeApp
+};
+
+// Definition of a port. This struct will eventually go away when all
+// legacy IPC messages have been removed to use the targeted
+// MessagePort/MessagePortHost below.
+struct PortId {
+  mojo_base.mojom.UnguessableToken context_id;
+  int32 port_number;
+  bool is_opener;
+  SerializationFormat serialization_format;
+};
+
+// Definition of an endpoint.
+struct MessagingEndpoint {
+  MessagingEndpointType type;
+  string? extension_id;
+  string? native_app_name;
+};
+
+// Definition of the tab that is being connected.
+struct TabConnectionInfo {
+  mojo_base.mojom.DictionaryValue tab;
+  int32 frame_id;
+  string document_id;
+  string document_lifecycle;
+};
+
+// Connection information.
+struct ExternalConnectionInfo {
+  MessagingEndpoint source_endpoint;
+  string target_id;
+  url.mojom.Url source_url;
+  url.mojom.Origin? source_origin;
+  int32 guest_process_id;
+  int32 guest_render_frame_routing_id;
+};
+
+// A message that is serialized across the channel.
+struct Message {
+  string data;
+  SerializationFormat format;
+  bool user_gesture;
+  bool from_privileged_context;
+};
+
+// The renderer interface to a message port.
+interface MessagePort {
+  // Dispatch the Port.onDisconnect event for message channels.
+  DispatchDisconnect(string error);
+  // Deliver a message sent with MessagePortHost.PostMessage.
+  DeliverMessage(Message message);
+};
+
+// The browser interface to a message port.
+interface MessagePortHost {
+  // Indicate the port should be closed.
+  ClosePort(bool close_channel);
+  // Send a message to an extension process.
+  PostMessage(Message message);
+  // Send a message to tell the browser that one of the listeners for a message
+  // indicated they are intending to reply later.
+  ResponsePending();
+};

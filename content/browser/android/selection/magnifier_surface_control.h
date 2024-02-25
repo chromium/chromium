@@ -5,14 +5,14 @@
 #ifndef CONTENT_BROWSER_ANDROID_SELECTION_MAGNIFIER_SURFACE_CONTROL_H_
 #define CONTENT_BROWSER_ANDROID_SELECTION_MAGNIFIER_SURFACE_CONTROL_H_
 
-#include "ui/gl/android/scoped_java_surface_control.h"
-
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_client.h"
+#include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -23,7 +23,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gl/android/scoped_java_surface_control.h"
 
 namespace content {
 
@@ -39,10 +39,14 @@ class MagnifierSurfaceControl : public viz::HostDisplayClient,
                           int width,
                           int height,
                           float corner_radius,
-                          float zoom);
+                          float zoom,
+                          int top_shadow_height,
+                          int bottom_shadow_height,
+                          int bottom_shadow_width_reduction);
   ~MagnifierSurfaceControl() override;
 
   void SetReadbackOrigin(JNIEnv* env, jfloat x, jfloat y);
+  void ChildLocalSurfaceIdChanged(JNIEnv* env);
 
   // viz::mojom::DisplayClient implementation:
   void DidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
@@ -67,13 +71,15 @@ class MagnifierSurfaceControl : public viz::HostDisplayClient,
 
  private:
   void CreateDisplayAndFrameSink();
+  void UpdateLayers();
 
   const raw_ptr<WebContentsImpl> web_contents_;
   const gpu::SurfaceHandle surface_handle_;
   const viz::FrameSinkId frame_sink_id_;
 
-  const gfx::Size size_;
+  const gfx::Size surface_size_;  // Includes shadow.
   const scoped_refptr<cc::slim::Layer> root_layer_;
+  const scoped_refptr<cc::slim::SolidColorLayer> rounded_corner_layer_;
   const scoped_refptr<cc::slim::Layer> zoom_layer_;
   const scoped_refptr<cc::slim::SurfaceLayer> surface_layer_;
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;

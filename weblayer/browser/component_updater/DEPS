@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/component_updater/installer_policies",
-]

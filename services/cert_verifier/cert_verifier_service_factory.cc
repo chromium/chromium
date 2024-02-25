@@ -14,26 +14,37 @@
 #include "base/task/thread_pool.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "crypto/sha2.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
+#include "services/cert_verifier/cert_verifier_creation.h"
 #include "services/cert_verifier/cert_verifier_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+#include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
+#include "services/network/public/mojom/ct_log_info.mojom.h"
+#endif
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include <optional>
+
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/cert/internal/trust_store_chrome.h"
-#include "net/cert/pki/parse_name.h"
-#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/parse_name.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 #endif
 
 namespace net {
@@ -43,10 +54,11 @@ namespace cert_verifier {
 namespace {
 
 internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
-    mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+    mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
-    const net::CertVerifyProcFactory::ImplParams& impl_params,
+    const net::CertVerifyProc::ImplParams& impl_params,
     scoped_refptr<CertNetFetcherURLLoader>* out_cert_net_fetcher) {
   scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher;
 
@@ -57,8 +69,63 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
     cert_net_fetcher = base::MakeRefCounted<CertNetFetcherURLLoader>();
   }
 
+  // Populate initial instance params from creation params.
+  net::CertVerifyProc::InstanceParams instance_params;
+  if (creation_params->initial_additional_certificates) {
+    instance_params
+        .additional_trust_anchors = net::x509_util::ParseAllValidCerts(
+        net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+            creation_params->initial_additional_certificates->trust_anchors));
+
+    instance_params.additional_untrusted_authorities =
+        net::x509_util::ParseAllValidCerts(
+            net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+                creation_params->initial_additional_certificates
+                    ->all_certificates));
+
+    instance_params.additional_trust_anchors_with_enforced_constraints =
+        net::x509_util::ParseAllValidCerts(
+            net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+                creation_params->initial_additional_certificates
+                    ->trust_anchors_with_enforced_constraints));
+
+    instance_params.additional_distrusted_spkis =
+        creation_params->initial_additional_certificates->distrusted_spkis;
+    instance_params.include_system_trust_store =
+        creation_params->initial_additional_certificates
+            ->include_system_trust_store;
+
+    for (const auto& cert_with_constraints_mojo :
+         creation_params->initial_additional_certificates
+             ->trust_anchors_with_additional_constraints) {
+      bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
+          net::x509_util::CreateCryptoBuffer(
+              base::as_byte_span(cert_with_constraints_mojo->certificate));
+      std::shared_ptr<const bssl::ParsedCertificate> cert =
+          bssl::ParsedCertificate::Create(
+              std::move(cert_buffer),
+              net::x509_util::DefaultParseCertificateOptions(), nullptr);
+      if (!cert) {
+        continue;
+      }
+
+      net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+      cert_with_constraints.certificate = std::move(cert);
+      cert_with_constraints.permitted_dns_names =
+          cert_with_constraints_mojo->permitted_dns_names;
+
+      for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
+        cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
+      }
+
+      instance_params.additional_trust_anchors_with_constraints.push_back(
+          std::move(cert_with_constraints));
+    }
+  }
+
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =
-      CreateCertVerifier(creation_params.get(), cert_net_fetcher, impl_params);
+      CreateCertVerifier(creation_params.get(), cert_net_fetcher, impl_params,
+                         instance_params);
 
   // As an optimization, if the CertNetFetcher isn't used by the CertVerifier,
   // shut it down immediately.
@@ -73,27 +140,28 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 
   // The service will delete itself upon disconnection.
   return new internal::CertVerifierServiceImpl(
-      std::move(cert_verifier), std::move(receiver), std::move(client),
-      std::move(cert_net_fetcher));
+      std::move(cert_verifier), std::move(service_receiver),
+      std::move(updater_receiver), std::move(client),
+      std::move(cert_net_fetcher), std::move(instance_params));
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-std::string GetName(const net::ParsedCertificate& cert) {
-  net::RDNSequence subject_rdn;
-  if (!net::ParseName(cert.subject_tlv(), &subject_rdn)) {
+std::string GetName(const bssl::ParsedCertificate& cert) {
+  bssl::RDNSequence subject_rdn;
+  if (!bssl::ParseName(cert.subject_tlv(), &subject_rdn)) {
     return "UNKNOWN";
   }
   std::string subject_string;
-  if (!net::ConvertToRFC2253(subject_rdn, &subject_string)) {
+  if (!bssl::ConvertToRFC2253(subject_rdn, &subject_string)) {
     return "UNKNOWN";
   }
   return subject_string;
 }
 
-std::string GetHash(const net::ParsedCertificate& cert) {
+std::string GetHash(const bssl::ParsedCertificate& cert) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert.cert_buffer());
-  return base::HexEncode(hash.data, std::size(hash.data));
+  return base::HexEncode(hash.data);
 }
 #endif
 
@@ -112,6 +180,33 @@ scoped_refptr<net::CRLSet> ParseCRLSet(mojo_base::BigBuffer crl_set) {
   return result;
 }
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+// Filters `log_list` for disqualified logs, returning them as sorted vectors
+// in `disqualified_logs`, and stores the operator history of all logs in
+// `operator_history`, suitable for use with a `CTPolicyEnforcer`.
+void GetCTPolicyConfigForCTLogInfo(
+    const std::vector<network::mojom::CTLogInfoPtr>& log_list,
+    std::vector<std::pair<std::string, base::Time>>* disqualified_logs,
+    std::map<std::string, certificate_transparency::OperatorHistoryEntry>*
+        operator_history) {
+  for (const auto& log : log_list) {
+    std::string log_id = crypto::SHA256HashString(log->public_key);
+    if (log->disqualified_at) {
+      disqualified_logs->emplace_back(log_id, log->disqualified_at.value());
+    }
+    certificate_transparency::OperatorHistoryEntry entry;
+    entry.current_operator_ = log->current_operator;
+    for (const auto& previous_operator : log->previous_operators) {
+      entry.previous_operators_.emplace_back(previous_operator->name,
+                                             previous_operator->end_time);
+    }
+    (*operator_history)[log_id] = entry;
+  }
+
+  std::sort(std::begin(*disqualified_logs), std::end(*disqualified_logs));
+}
+#endif
+
 }  // namespace
 
 CertVerifierServiceFactoryImpl::CertVerifierServiceFactoryImpl(
@@ -121,24 +216,27 @@ CertVerifierServiceFactoryImpl::CertVerifierServiceFactoryImpl(
 CertVerifierServiceFactoryImpl::~CertVerifierServiceFactoryImpl() = default;
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
-    mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+    mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params) {
-  internal::CertVerifierServiceImpl* service_impl =
-      GetNewCertVerifierImpl(std::move(receiver), std::move(client),
-                             std::move(creation_params), proc_params_,
-                             /*out_cert_net_fetcher=*/nullptr);
+  internal::CertVerifierServiceImpl* service_impl = GetNewCertVerifierImpl(
+      std::move(service_receiver), std::move(updater_receiver),
+      std::move(client), std::move(creation_params), proc_params_,
+      /*out_cert_net_fetcher=*/nullptr);
 
   verifier_services_.insert(service_impl);
   service_impl->SetCertVerifierServiceFactory(weak_factory_.GetWeakPtr());
 }
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
-    mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+    mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
     mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
-  GetNewCertVerifierImpl(std::move(receiver), std::move(client),
+  GetNewCertVerifierImpl(std::move(service_receiver),
+                         std::move(updater_receiver), std::move(client),
                          std::move(creation_params), proc_params_,
                          cert_net_fetcher_ptr);
 }
@@ -146,6 +244,14 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
 void CertVerifierServiceFactoryImpl::UpdateCRLSet(
     mojo_base::BigBuffer crl_set,
     mojom::CertVerifierServiceFactory::UpdateCRLSetCallback callback) {
+  // Posting to thread pool might fail if the browser is in shutdown. Wrap the
+  // callback so that it will be invoked anyway to avoid violating Mojo
+  // expectations. This is a little misleading since the CRLSet was not
+  // actually updated, but if the browser is shutting down then it doesn't
+  // really matter. (If it actually mattered the callback could get passed a
+  // boolean success value or something.)
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback));
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ParseCRLSet, std::move(crl_set)),
@@ -153,6 +259,41 @@ void CertVerifierServiceFactoryImpl::UpdateCRLSet(
                      weak_factory_.GetWeakPtr())
           .Then(std::move(callback)));
 }
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+void CertVerifierServiceFactoryImpl::UpdateCtLogList(
+    std::vector<network::mojom::CTLogInfoPtr> log_list,
+    base::Time update_time,
+    UpdateCtLogListCallback callback) {
+  std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
+  for (auto& log : log_list) {
+    scoped_refptr<const net::CTLogVerifier> log_verifier =
+        net::CTLogVerifier::Create(log->public_key, log->name);
+    if (!log_verifier) {
+      // TODO(crbug.com/1211056): Signal bad configuration (such as bad key).
+      continue;
+    }
+    ct_logs.push_back(std::move(log_verifier));
+  }
+
+  proc_params_.ct_logs = std::move(ct_logs);
+
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
+  std::map<std::string, certificate_transparency::OperatorHistoryEntry>
+      log_operator_history;
+  GetCTPolicyConfigForCTLogInfo(log_list, &disqualified_logs,
+                                &log_operator_history);
+
+  proc_params_.ct_policy_enforcer =
+      base::MakeRefCounted<certificate_transparency::ChromeCTPolicyEnforcer>(
+          update_time, std::move(disqualified_logs),
+          std::move(log_operator_history));
+
+  UpdateVerifierServices();
+
+  std::move(callback).Run();
+}
+#endif
 
 void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
     scoped_refptr<net::CRLSet> parsed_crl_set) {
@@ -199,7 +340,7 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
     return;
   }
 
-  absl::optional<net::ChromeRootStoreData> root_store_data =
+  std::optional<net::ChromeRootStoreData> root_store_data =
       net::ChromeRootStoreData::CreateChromeRootStoreData(proto);
   if (!root_store_data) {
     LOG(ERROR) << "error interpreting proto for Chrome Root Store";

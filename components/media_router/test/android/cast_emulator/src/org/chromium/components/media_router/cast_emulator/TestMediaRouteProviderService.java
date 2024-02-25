@@ -9,9 +9,7 @@ import androidx.mediarouter.media.MediaRouteProviderService;
 
 import org.chromium.base.Log;
 
-/**
- * Service for registering {@link TestMediaRouteProvider} using the support library.
- */
+/** Service for registering {@link TestMediaRouteProvider} using the support library. */
 public class TestMediaRouteProviderService extends MediaRouteProviderService {
     private static final String TAG = "TestMRPService";
 

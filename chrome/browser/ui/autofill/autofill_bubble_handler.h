@@ -14,11 +14,8 @@ class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
 class SaveUpdateAddressProfileBubbleController;
-class EditAddressProfileDialogController;
 class SaveCardBubbleController;
 class IbanBubbleController;
-class SaveUPIBubble;
-class SaveUPIBubbleController;
 class VirtualCardManualFallbackBubbleController;
 class VirtualCardEnrollBubbleController;
 class MandatoryReauthBubbleController;
@@ -60,10 +57,6 @@ class AutofillBubbleHandler {
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) = 0;
 
-  virtual SaveUPIBubble* ShowSaveUPIBubble(
-      content::WebContents* contents,
-      SaveUPIBubbleController* controller) = 0;
-
   virtual AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* web_contents,
       SaveUpdateAddressProfileBubbleController* controller,
@@ -73,10 +66,6 @@ class AutofillBubbleHandler {
       content::WebContents* web_contents,
       SaveUpdateAddressProfileBubbleController* controller,
       bool is_user_gesture) = 0;
-
-  virtual AutofillBubbleBase* ShowEditAddressProfileDialog(
-      content::WebContents* web_contents,
-      EditAddressProfileDialogController* controller) = 0;
 
   virtual AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
       content::WebContents* web_contents,
@@ -88,16 +77,19 @@ class AutofillBubbleHandler {
       VirtualCardEnrollBubbleController* controller,
       bool is_user_gesture) = 0;
 
+  virtual AutofillBubbleBase* ShowVirtualCardEnrollConfirmationBubble(
+      content::WebContents* web_contents,
+      VirtualCardEnrollBubbleController* controller) = 0;
+
   virtual AutofillBubbleBase* ShowMandatoryReauthBubble(
       content::WebContents* web_contents,
       MandatoryReauthBubbleController* controller,
       bool is_user_gesture,
       MandatoryReauthBubbleType bubble_type) = 0;
 
-  // TODO(crbug.com/964127): Wait for the integration with sign in after local
-  // save to be landed to see if we need to merge password saved and credit card
-  // saved functions.
-  virtual void OnPasswordSaved() = 0;
+  virtual AutofillBubbleBase* ShowSaveCardConfirmationBubble(
+      content::WebContents* web_contents,
+      SaveCardBubbleController* controller) = 0;
 };
 
 }  // namespace autofill

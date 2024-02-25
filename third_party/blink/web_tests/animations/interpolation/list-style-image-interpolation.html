@@ -30,9 +30,9 @@ function assertCrossfadeInterpolation(options) {
   }, [
     {at: -0.3, is: fromComputed},
     {at: 0, is: fromComputed},
-    {at: 0.3, is: '-webkit-cross-fade(' + fromComputed + ', ' + options.to + ', 0.3)'},
-    {at: 0.5, is: '-webkit-cross-fade(' + fromComputed + ', ' + options.to + ', 0.5)'},
-    {at: 0.6, is: '-webkit-cross-fade(' + fromComputed + ', ' + options.to + ', 0.6)'},
+    {at: 0.3, is: 'cross-fade(70% ' + fromComputed + ', ' + options.to + ')'},
+    {at: 0.5, is: 'cross-fade(50% ' + fromComputed + ', ' + options.to + ')'},
+    {at: 0.6, is: 'cross-fade(40% ' + fromComputed + ', ' + options.to + ')'},
     {at: 1, is: options.to},
     {at: 1.5, is: options.to},
   ]);

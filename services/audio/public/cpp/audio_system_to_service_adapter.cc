@@ -30,7 +30,7 @@ int64_t ToTraceId(base::TimeTicks time) {
   return (time - base::TimeTicks()).InNanoseconds();
 }
 
-std::string ParamsToString(absl::optional<AudioParameters> params) {
+std::string ParamsToString(std::optional<AudioParameters> params) {
   return params ? params->AsHumanReadableString() : "nullopt";
 }
 
@@ -84,7 +84,7 @@ OnAudioParamsCallback WrapGetStreamParametersReply(
   return base::BindOnce(
       [](const char* name, base::TimeTicks start_time,
          OnAudioParamsCallback on_params_callback,
-         const absl::optional<media::AudioParameters>& params) {
+         const std::optional<media::AudioParameters>& params) {
         TRACE_EVENT_NESTABLE_ASYNC_END1(
             "audio", name, TRACE_ID_WITH_SCOPE(name, ToTraceId(start_time)),
             "params", ParamsToString(params));
@@ -147,7 +147,7 @@ OnDeviceIdCallback WrapGetAssociatedOutputDeviceIDReply(
   return base::BindOnce(
       [](const char* name, base::TimeTicks start_time,
          OnDeviceIdCallback on_device_id_callback,
-         const absl::optional<std::string>& answer) {
+         const std::optional<std::string>& answer) {
         TRACE_EVENT_NESTABLE_ASYNC_END1(
             "audio", name, TRACE_ID_WITH_SCOPE(name, ToTraceId(start_time)),
             "answer", answer.value_or("nullopt"));
@@ -168,8 +168,8 @@ OnInputDeviceInfoCallback WrapGetInputDeviceInfoReply(
   return base::BindOnce(
       [](const char* name, base::TimeTicks start_time,
          OnInputDeviceInfoCallback on_input_device_info_callback,
-         const absl::optional<AudioParameters>& params,
-         const absl::optional<std::string>& associated_output_device_id) {
+         const std::optional<AudioParameters>& params,
+         const std::optional<std::string>& associated_output_device_id) {
         TRACE_EVENT_NESTABLE_ASYNC_END2(
             "audio", name, TRACE_ID_WITH_SCOPE(name, ToTraceId(start_time)),
             "params", ParamsToString(params), "associated_output_device_id",
@@ -217,7 +217,7 @@ void AudioSystemToServiceAdapter::GetInputStreamParameters(
       device_id, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                      WrapGetStreamParametersReply(
                          kInput, device_id, std::move(on_params_callback)),
-                     absl::nullopt));
+                     std::nullopt));
 }
 
 void AudioSystemToServiceAdapter::GetOutputStreamParameters(
@@ -227,7 +227,7 @@ void AudioSystemToServiceAdapter::GetOutputStreamParameters(
       device_id, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                      WrapGetStreamParametersReply(
                          kOutput, device_id, std::move(on_params_callback)),
-                     absl::nullopt));
+                     std::nullopt));
 }
 
 void AudioSystemToServiceAdapter::HasInputDevices(
@@ -272,7 +272,7 @@ void AudioSystemToServiceAdapter::GetAssociatedOutputDeviceID(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           WrapGetAssociatedOutputDeviceIDReply(
               input_device_id, std::move(on_device_id_callback)),
-          absl::nullopt));
+          std::nullopt));
 }
 
 void AudioSystemToServiceAdapter::GetInputDeviceInfo(
@@ -283,7 +283,7 @@ void AudioSystemToServiceAdapter::GetInputDeviceInfo(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           WrapGetInputDeviceInfoReply(input_device_id,
                                       std::move(on_input_device_info_callback)),
-          absl::nullopt, absl::nullopt));
+          std::nullopt, std::nullopt));
 }
 
 mojom::SystemInfo* AudioSystemToServiceAdapter::GetSystemInfo() {

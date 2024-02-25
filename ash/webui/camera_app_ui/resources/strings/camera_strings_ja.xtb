@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> ページを削除</translation>
 <translation id="1113173431709655881">カメラモード</translation>
 <translation id="1153190633558910465">グリッド線をオフにする</translation>
-<translation id="1175958423215084756">リンクが検出されました。<ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> ページを削除しました</translation>
 <translation id="1258009455399840361">時計回りに 90 度回転</translation>
 <translation id="1417314334557041815">ページ <ph name="INDEX" /> を編集</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">右にパン</translation>
 <translation id="3081586908890909590">動画の撮影に切り替え</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">「<ph name="WIFINAME" />」に参加</translation>
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3240426699337459095">リンクをコピーしました</translation>
 <translation id="3354465018370944241">写真の設定</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">動画を処理しています...</translation>
 <translation id="3789724198583203151">反時計回りに 90 度回転</translation>
 <translation id="3810838688059735925">動画</translation>
-<translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="4060608699153044055">デバイスの空き容量が不足しているため、録画できません。録画を開始するには、デバイスの空き容量を増やしてください。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">録画を一時停止</translation>
 <translation id="4121305183798804752">ドキュメントを検出しました</translation>
 <translation id="414641094616694804">このカメラでは解像度を変更できません</translation>
 <translation id="4176463684765177261">停止中</translation>
-<translation id="4269820728363426813">リンクアドレスをコピー</translation>
 <translation id="428234092390943511">ページのサムネイル</translation>
 <translation id="4349714250734879769">Chrome でフレームをスケーリング</translation>
 <translation id="4383571725254449280">パフォーマンス ログを印刷する</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">解像度: 高</translation>
 <translation id="4864143361253542638">スキャンしたページのリスト</translation>
 <translation id="4890010094662541459">3x3</translation>
+<translation id="4892746741161549733">リンクのアドレス <ph name="URL" /> をコピー</translation>
 <translation id="491895758387112773">マルチストリーム動画の録画</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4984613436295737187">クアッド HD（1440p）</translation>
 <translation id="5034763830503483128">写真のアスペクト比</translation>
 <translation id="5057360777601936059">カメラを使用できません。
         カメラが正しく接続されているかご確認ください。</translation>
+<translation id="5157591164390831335">URL が検出されました。</translation>
 <translation id="5163387177077603948">右側に移動しています</translation>
-<translation id="5219374179772385066">タイムラプス モードをご利用いただけるようになりました。</translation>
 <translation id="5235304959032763950">16 対 9</translation>
 <translation id="5266635337630551423">ドキュメントの左上の角</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">カメラアプリに関するフィードバックをお送りいただきありがとうございます。
 
 画質に関するフィードバックの場合は、サンプルの写真や動画を添付し、問題の内容を詳しくご説明ください（写真が暗すぎる、ピントが合わないなど）。</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> に参加</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6617916774429601017">すべての解像度を表示</translation>
 <translation id="6631515515009660915">ミラーをオフにする</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">テキストをコピーしました</translation>
 <translation id="7488619942230388918">GIF 動画を録画する</translation>
 <translation id="7557677699350329807">次のカメラに切り替え</translation>
+<translation id="7562584071994185503">テキスト <ph name="TEXT" /> をコピー</translation>
 <translation id="7607002721634913082">一時停止中</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="761421184377987513">左下に移動しています</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Camera HAL でフレームをスケーリング</translation>
 <translation id="8425673304802773841">下にティルト</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8609951387004618906"><ph name="URL" /> を開く</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">マイクのミュートを切り替えます。ミュートはオンです</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8732462232047530626">メタデータのプレビュー</translation>
+<translation id="874854738381978209">Wi-Fi ネットワークが検出されました。</translation>
 <translation id="8815966864175525708">ポートレート写真の撮影に切り替え</translation>
 <translation id="8828441885228359828">録画を再開</translation>
 <translation id="8870695351537079478">録画を開始できません</translation>

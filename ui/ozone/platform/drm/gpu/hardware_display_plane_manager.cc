@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -111,7 +112,7 @@ std::unique_ptr<HardwareDisplayPlane> HardwareDisplayPlaneManager::CreatePlane(
   return std::make_unique<HardwareDisplayPlane>(id);
 }
 
-absl::optional<int> HardwareDisplayPlaneManager::LookupCrtcIndex(
+std::optional<int> HardwareDisplayPlaneManager::LookupCrtcIndex(
     uint32_t crtc_id) const {
   for (size_t i = 0; i < crtc_state_.size(); ++i) {
     if (crtc_state_[i].properties.id == crtc_id)
@@ -120,7 +121,7 @@ absl::optional<int> HardwareDisplayPlaneManager::LookupCrtcIndex(
   return {};
 }
 
-absl::optional<int> HardwareDisplayPlaneManager::LookupConnectorIndex(
+std::optional<int> HardwareDisplayPlaneManager::LookupConnectorIndex(
     uint32_t connector_id) const {
   for (size_t i = 0; i < connectors_props_.size(); ++i) {
     if (connectors_props_[i].id == connector_id)
@@ -239,6 +240,7 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     hw_plane->set_owning_crtc(crtc_id);
     hw_plane->set_in_use(true);
   }
+
   return true;
 }
 
@@ -297,28 +299,24 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
   return valid_ids;
 }
 
-bool HardwareDisplayPlaneManager::SetColorMatrix(
+void HardwareDisplayPlaneManager::SetColorTemperatureAdjustment(
     uint32_t crtc_id,
-    const std::vector<float>& color_matrix) {
-  if (color_matrix.empty()) {
-    // TODO: Consider allowing an empty matrix to disable the color transform
-    // matrix.
-    LOG(ERROR) << "CTM is empty. Expected a 3x3 matrix.";
-    return false;
-  }
-
+    const display::ColorTemperatureAdjustment& cta) {
   const auto crtc_index = LookupCrtcIndex(crtc_id);
   DCHECK(crtc_index.has_value());
   CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->color_temperature_adjustment = cta;
+  UpdateAndCommitCrtcState(crtc_id, crtc_state);
+}
 
-  ScopedDrmColorCtmPtr ctm_blob_data = CreateCTMBlob(color_matrix);
-  if (!crtc_state->properties.ctm.id)
-    return SetColorCorrectionOnAllCrtcPlanes(crtc_id, std::move(ctm_blob_data));
-
-  crtc_state->ctm_blob =
-      drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
-  crtc_state->properties.ctm.value = crtc_state->ctm_blob->id();
-  return CommitColorMatrix(crtc_state->properties);
+void HardwareDisplayPlaneManager::SetGammaAdjustment(
+    uint32_t crtc_id,
+    const display::GammaAdjustment& adjustment) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->gamma_adjustment = adjustment;
+  UpdateAndCommitCrtcState(crtc_id, crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetBackgroundColor(
@@ -329,58 +327,6 @@ void HardwareDisplayPlaneManager::SetBackgroundColor(
   CrtcState* crtc_state = &crtc_state_[*crtc_index];
 
   crtc_state->properties.background_color.value = background_color;
-}
-
-bool HardwareDisplayPlaneManager::SetGammaCorrection(
-    uint32_t crtc_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  if (!crtc_index) {
-    LOG(ERROR) << "Unknown CRTC ID=" << crtc_id;
-    return false;
-  }
-
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-  CrtcProperties* crtc_props = &crtc_state->properties;
-
-  if (!degamma_lut.empty() &&
-      (!crtc_props->degamma_lut.id || !crtc_props->degamma_lut_size.id))
-    return false;
-
-  if (!crtc_props->gamma_lut.id || !crtc_props->gamma_lut_size.id) {
-    if (degamma_lut.empty())
-      return drm_->SetGammaRamp(crtc_id, gamma_lut);
-
-    // We're missing either degamma or gamma lut properties. We shouldn't try to
-    // set just one of them.
-    return false;
-  }
-
-  ScopedDrmColorLutPtr degamma_blob_data = CreateLutBlob(
-      ResampleLut(degamma_lut, crtc_props->degamma_lut_size.value));
-  ScopedDrmColorLutPtr gamma_blob_data =
-      CreateLutBlob(ResampleLut(gamma_lut, crtc_props->gamma_lut_size.value));
-
-  if (degamma_blob_data) {
-    crtc_state->degamma_lut_blob = drm_->CreatePropertyBlob(
-        degamma_blob_data.get(),
-        sizeof(drm_color_lut) * crtc_props->degamma_lut_size.value);
-    crtc_props->degamma_lut.value = crtc_state->degamma_lut_blob->id();
-  } else {
-    crtc_props->degamma_lut.value = 0;
-  }
-
-  if (gamma_blob_data) {
-    crtc_state->gamma_lut_blob = drm_->CreatePropertyBlob(
-        gamma_blob_data.get(),
-        sizeof(drm_color_lut) * crtc_props->gamma_lut_size.value);
-    crtc_props->gamma_lut.value = crtc_state->gamma_lut_blob->id();
-  } else {
-    crtc_props->gamma_lut.value = 0;
-  }
-
-  return CommitGammaCorrection(*crtc_props);
 }
 
 bool HardwareDisplayPlaneManager::InitializeCrtcState() {
@@ -534,7 +480,7 @@ void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
 
 HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
     uint32_t crtc_id) {
-  absl::optional<std::string> driver = drm_->GetDriverName();
+  std::optional<std::string> driver = drm_->GetDriverName();
   if (!driver.has_value())
     return {.is_valid = false};
 
@@ -552,6 +498,67 @@ HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
   // final presentation. For more info, see b/194335274.
   hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
   return hc;
+}
+
+void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
+    uint32_t crtc_id,
+    CrtcState* crtc_state) {
+  CrtcProperties* crtc_props = &crtc_state->properties;
+
+  // Set the CTM to the concatenation of the color profile matrix and the color
+  // temperature adjustment matrix.
+  // TODO(https://crbug.com/1505062): This is incorrect if the color profile
+  // DEGAMMA/GAMMA curves are ever not the identity.
+  const skcms_Matrix3x3 ctm = skcms_Matrix3x3_concat(
+      &crtc_state->color_calibration.srgb_to_device_matrix,
+      &crtc_state->color_temperature_adjustment.srgb_matrix);
+  if (crtc_state->properties.ctm.id) {
+    ScopedDrmColorCtmPtr ctm_blob_data = CreateCTMBlob(ctm);
+    crtc_state->pending_ctm_blob =
+        drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
+  }
+
+  // Set the DEGAMMA curve to the one specified in the color profile, only if
+  // we will also be setting the GAMMA curve.
+  // TODO(https://crbug.com/1505062): This always has to be the identity because
+  // many devices have broken implementations. Identitify devices where this
+  // functionality is not broken.
+  if (crtc_props->gamma_lut.id && crtc_props->gamma_lut_size.id &&
+      crtc_props->degamma_lut.id && crtc_props->degamma_lut_size.id) {
+    const auto& degamma_curve = crtc_state->color_calibration.srgb_to_linear;
+    if (degamma_curve.IsDefaultIdentity()) {
+      crtc_state->pending_degamma_lut_blob = nullptr;
+    } else {
+      ScopedDrmColorLutPtr degamma_blob_data =
+          CreateLutBlob(degamma_curve, crtc_props->degamma_lut_size.value);
+      crtc_state->pending_degamma_lut_blob = drm_->CreatePropertyBlob(
+          degamma_blob_data.get(),
+          sizeof(drm_color_lut) * crtc_props->degamma_lut_size.value);
+    }
+  }
+
+  // Set the GAMMA curve to the concatenation of the color profile with the
+  // gamma adjustment.
+  // TODO(https://crbug.com/1505062):
+  const auto gamma_curve = display::GammaCurve::MakeConcat(
+      crtc_state->color_calibration.linear_to_device,
+      crtc_state->gamma_adjustment.curve);
+  if (crtc_props->gamma_lut.id && crtc_props->gamma_lut_size.id) {
+    if (gamma_curve.IsDefaultIdentity()) {
+      crtc_state->pending_gamma_lut_blob = nullptr;
+    } else {
+      ScopedDrmColorLutPtr gamma_blob_data =
+          CreateLutBlob(gamma_curve, crtc_props->gamma_lut_size.value);
+      crtc_state->pending_gamma_lut_blob = drm_->CreatePropertyBlob(
+          gamma_blob_data.get(),
+          sizeof(drm_color_lut) * crtc_props->gamma_lut_size.value);
+    }
+  } else {
+    // Fall back to legacy gamma if needed.
+    drm_->SetGammaRamp(crtc_id, gamma_curve);
+  }
+
+  CommitPendingCrtcState(crtc_state);
 }
 
 }  // namespace ui

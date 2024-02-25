@@ -10,22 +10,6 @@ DictationMacrosTest = class extends DictationE2ETestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      importModule(
-          'MacroError', '/accessibility_common/dictation/macros/macro.js'),
-      importModule(
-          'StopListeningMacro',
-          '/accessibility_common/dictation/macros/stop_listening_macro.js'),
-      importModule(
-          'InputController',
-          '/accessibility_common/dictation/input_controller.js'),
-      importModule(
-          'UnselectTextMacro',
-          '/accessibility_common/dictation/macros/repeatable_key_press_macro.js'),
-      importModule(
-          'Context', '/accessibility_common/dictation/context_checker.js'),
-    ]);
-
     this.mockAccessibilityPrivate.enableFeatureForTest(
         'dictationContextChecking', true);
   }
@@ -87,8 +71,8 @@ AX_TEST_F('DictationMacrosTest', 'StopListeningMacro', async function() {
   this.toggleDictationOn();
   assertTrue(this.getDictationActive());
   assertTrue(this.getSpeechRecognitionActive());
-  const macro = new StopListeningMacro();
-  assertEquals('STOP_LISTENING', macro.getNameAsString());
+  const macro = new ToggleDictationMacro();
+  assertEquals('TOGGLE_DICTATION', macro.getNameAsString());
   const checkContextResult = macro.checkContext();
   assertTrue(checkContextResult.canTryAction);
   assertEquals(undefined, checkContextResult.error);
@@ -123,7 +107,7 @@ SYNC_TEST_F('DictationMacrosTest', 'SmartMacros', async function() {
 
 AX_TEST_F(
     'DictationMacrosTest', 'UnselectInactiveInputController', async function() {
-      const macro = new UnselectTextMacro(new InputController());
+      const macro = new UnselectTextMacro(new InputControllerImpl());
       assertEquals('UNSELECT_TEXT', macro.getNameAsString());
       const contextResult = macro.checkContext();
       assertFalse(contextResult.canTryAction);

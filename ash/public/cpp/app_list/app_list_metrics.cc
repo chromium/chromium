@@ -72,6 +72,18 @@ constexpr char kAppListSortDiscoveryDurationAfterNudgeClamshell[] =
 constexpr char kAppListSortDiscoveryDurationAfterNudgeTablet[] =
     "Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2.TabletMode";
 
+std::string SearchSessionConclusionToString(
+    SearchSessionConclusion conclusion) {
+  switch (conclusion) {
+    case SearchSessionConclusion::kQuit:
+      return "Quit";
+    case SearchSessionConclusion::kLaunch:
+      return "Launch";
+    case SearchSessionConclusion::kAnswerCardSeen:
+      return "AnswerCardSeen";
+  }
+}
+
 bool IsAppListShowSourceUserTriggered(AppListShowSource show_source) {
   switch (show_source) {
     case AppListShowSource::kScrollFromShelf:
@@ -94,7 +106,7 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
                                          SearchResultType type,
                                          bool is_tablet_mode) {
   if (type == SEARCH_RESULT_TYPE_BOUNDARY) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 
@@ -134,7 +146,7 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
 
 void RecordDefaultSearchResultOpenTypeHistogram(SearchResultType type) {
   if (type == SEARCH_RESULT_TYPE_BOUNDARY) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
   UMA_HISTOGRAM_ENUMERATION(kAppListDefaultSearchResultOpenTypeHistogram, type,

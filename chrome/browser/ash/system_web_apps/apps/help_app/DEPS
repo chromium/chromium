@@ -1,5 +1,5 @@
 specific_include_rules = {
   "help_app_integration_browsertest.cc": [
-    "+chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h",
+    "+chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h",
   ],
 }

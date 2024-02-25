@@ -28,6 +28,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace crostini {
 
@@ -62,10 +63,10 @@ class CrostiniExportImportTest : public testing::Test {
     const message_center::Notification* controller_notification =
         controller->get_notification();
     [&] { ASSERT_NE(controller_notification, nullptr); }();
-    const absl::optional<message_center::Notification>& ui_notification =
+    const std::optional<message_center::Notification>& ui_notification =
         notification_display_service_->GetNotification(
             controller_notification->id());
-    [&] { ASSERT_NE(ui_notification, absl::nullopt); }();
+    [&] { ASSERT_NE(ui_notification, std::nullopt); }();
     // The controller notification is stored on the
     // CrostiniExportImportNotificationController, but copied into the
     // message_center's storage whenever it changes. If they could share the
@@ -186,17 +187,15 @@ class CrostiniExportImportTest : public testing::Test {
  protected:
   Profile* profile() { return profile_.get(); }
 
-  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
-      fake_cicerone_client_;
-  raw_ptr<ash::FakeSeneschalClient, DanglingUntriaged | ExperimentalAsh>
-      fake_seneschal_client_;
+  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
+  raw_ptr<ash::FakeSeneschalClient, DanglingUntriaged> fake_seneschal_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniExportImport> crostini_export_import_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester>
       notification_display_service_tester_;
-  raw_ptr<StubNotificationDisplayService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<StubNotificationDisplayService, DanglingUntriaged>
       notification_display_service_;
 
   guest_os::GuestId default_container_id_;
@@ -223,7 +222,7 @@ TEST_F(CrostiniExportImportTest, TestNotAllowed) {
 
 TEST_F(CrostiniExportImportTest, TestExportSuccess) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_seneschal_client_->share_path_called());
@@ -309,9 +308,9 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg("Linux apps & files have been successfully backed up");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
@@ -324,7 +323,7 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
 
 TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT,
                                                 custom_container_id_));
   task_environment_.RunUntilIdle();
@@ -391,9 +390,9 @@ TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
   EXPECT_EQ(GetController(custom_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg("Linux apps & files have been successfully backed up");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
@@ -406,7 +405,7 @@ TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
 
 TEST_F(CrostiniExportImportTest, TestExportFail) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -430,9 +429,9 @@ TEST_F(CrostiniExportImportTest, TestExportFail) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg("Backup couldn't be completed due to an error");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
@@ -445,7 +444,7 @@ TEST_F(CrostiniExportImportTest, TestExportFail) {
 
 TEST_F(CrostiniExportImportTest, TestExportCancelled) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT,
                                                 custom_container_id_));
   task_environment_.RunUntilIdle();
@@ -506,9 +505,9 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
   EXPECT_EQ(GetController(custom_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    EXPECT_EQ(ui_notification, absl::nullopt);
+    EXPECT_EQ(ui_notification, std::nullopt);
   }
 
   task_environment_.RunUntilIdle();
@@ -517,7 +516,7 @@ TEST_F(CrostiniExportImportTest, TestExportCancelled) {
 
 TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -556,9 +555,9 @@ TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    EXPECT_EQ(ui_notification, absl::nullopt);
+    EXPECT_EQ(ui_notification, std::nullopt);
   }
 
   task_environment_.RunUntilIdle();
@@ -567,7 +566,7 @@ TEST_F(CrostiniExportImportTest, TestExportDoneBeforeCancelled) {
 
 TEST_F(CrostiniExportImportTest, TestImportSuccess) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_seneschal_client_->share_path_called());
@@ -644,9 +643,9 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg("Linux apps & files have been successfully replaced");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
@@ -655,7 +654,7 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
 
 TEST_F(CrostiniExportImportTest, TestImportCustomVmContainerSuccess) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT,
                                                 custom_container_id_));
   task_environment_.RunUntilIdle();
@@ -716,9 +715,9 @@ TEST_F(CrostiniExportImportTest, TestImportCustomVmContainerSuccess) {
   EXPECT_EQ(GetController(custom_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg("Linux apps & files have been successfully replaced");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
@@ -727,7 +726,7 @@ TEST_F(CrostiniExportImportTest, TestImportCustomVmContainerSuccess) {
 
 TEST_F(CrostiniExportImportTest, TestImportFail) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -751,9 +750,9 @@ TEST_F(CrostiniExportImportTest, TestImportFail) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg("Restoring couldn't be completed due to an error");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
@@ -762,7 +761,7 @@ TEST_F(CrostiniExportImportTest, TestImportFail) {
 
 TEST_F(CrostiniExportImportTest, TestImportCancelled) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -817,15 +816,15 @@ TEST_F(CrostiniExportImportTest, TestImportCancelled) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    EXPECT_EQ(ui_notification, absl::nullopt);
+    EXPECT_EQ(ui_notification, std::nullopt);
   }
 }
 
 TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -863,9 +862,9 @@ TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg("Linux apps & files have been successfully replaced");
     EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
@@ -874,7 +873,7 @@ TEST_F(CrostiniExportImportTest, TestImportDoneBeforeCancelled) {
 
 TEST_F(CrostiniExportImportTest, TestImportFailArchitecture) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -899,9 +898,9 @@ TEST_F(CrostiniExportImportTest, TestImportFailArchitecture) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg(
         "Cannot import container architecture type arch_con with this device "
@@ -914,7 +913,7 @@ TEST_F(CrostiniExportImportTest, TestImportFailArchitecture) {
 
 TEST_F(CrostiniExportImportTest, TestImportFailSpace) {
   crostini_export_import_->FileSelected(
-      tarball_, 0,
+      ui::SelectedFileInfo(tarball_), 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
@@ -942,9 +941,9 @@ TEST_F(CrostiniExportImportTest, TestImportFailSpace) {
   EXPECT_EQ(GetController(default_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
   {
-    const absl::optional<message_center::Notification> ui_notification =
+    const std::optional<message_center::Notification> ui_notification =
         notification_display_service_->GetNotification(notification_id);
-    ASSERT_NE(ui_notification, absl::nullopt);
+    ASSERT_NE(ui_notification, std::nullopt);
     EXPECT_FALSE(ui_notification->pinned());
     std::string msg =
         "Cannot restore due to lack of storage space. Free up 15.0 GB from the "

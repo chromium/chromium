@@ -32,7 +32,7 @@ class ModelTypeConfigurer {
 
     ~ConfigureParams();
 
-    ConfigureReason reason;
+    ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
     ModelTypeSet to_download;
     ModelTypeSet to_purge;
 
@@ -40,7 +40,7 @@ class ModelTypeConfigurer {
         ready_task;
 
     // Whether full sync (or sync the feature) is enabled;
-    bool is_sync_feature_enabled;
+    bool is_sync_feature_enabled = false;
   };
 
   ModelTypeConfigurer();
@@ -61,10 +61,6 @@ class ModelTypeConfigurer {
   // propagating changes between the server and the processor. No-op if the
   // type is not connected.
   virtual void DisconnectDataType(ModelType type) = 0;
-
-  // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
-  // the server during commits.
-  virtual void SetProxyTabsDatatypeEnabled(bool enabled) = 0;
 };
 
 }  // namespace syncer

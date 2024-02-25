@@ -73,10 +73,6 @@ bool HTMLScriptElement::HasLegalLinkAttribute(const QualifiedName& name) const {
          HTMLElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLScriptElement::SubResourceAttributeName() const {
-  return html_names::kSrcAttr;
-}
-
 void HTMLScriptElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
   if (change.IsChildInsertion())
@@ -323,7 +319,7 @@ V8HTMLOrSVGScriptElement* HTMLScriptElement::AsV8HTMLOrSVGScriptElement() {
 }
 
 DOMNodeId HTMLScriptElement::GetDOMNodeId() {
-  return DOMNodeIds::IdForNode(this);
+  return this->GetDomNodeId();
 }
 
 void HTMLScriptElement::DispatchLoadEvent() {
@@ -332,14 +328,6 @@ void HTMLScriptElement::DispatchLoadEvent() {
 
 void HTMLScriptElement::DispatchErrorEvent() {
   DispatchEvent(*Event::Create(event_type_names::kError));
-}
-
-bool HTMLScriptElement::HasLoadEventHandler() {
-  return EventPath(*this).HasEventListenersInPath(event_type_names::kLoad);
-}
-
-bool HTMLScriptElement::HasErrorEventHandler() {
-  return EventPath(*this).HasEventListenersInPath(event_type_names::kError);
 }
 
 ScriptElementBase::Type HTMLScriptElement::GetScriptElementType() {
@@ -374,9 +362,7 @@ bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {
 }
 
 // static
-bool HTMLScriptElement::supports(ScriptState* script_state,
-                                 const AtomicString& type) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+bool HTMLScriptElement::supports(const AtomicString& type) {
   if (type == script_type_names::kClassic)
     return true;
   if (type == script_type_names::kModule)
@@ -384,8 +370,7 @@ bool HTMLScriptElement::supports(ScriptState* script_state,
   if (type == script_type_names::kImportmap)
     return true;
 
-  if ((type == script_type_names::kSpeculationrules) &&
-      RuntimeEnabledFeatures::SpeculationRulesEnabled(execution_context)) {
+  if (type == script_type_names::kSpeculationrules) {
     return true;
   }
   if (type == script_type_names::kWebbundle)

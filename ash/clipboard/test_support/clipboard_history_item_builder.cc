@@ -10,7 +10,6 @@
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -39,22 +38,22 @@ ui::ClipboardData ClipboardHistoryItemBuilder::BuildData() const {
   if (png_.has_value())
     data.SetPngData(png_.value());
   if (custom_format_.has_value() && custom_data_.has_value())
-    data.SetCustomData(custom_format_.value(), custom_data_.value());
+    data.SetCustomData(*custom_format_, custom_data_.value());
   if (web_smart_paste_.has_value())
     data.set_web_smart_paste(web_smart_paste_.value());
   return data;
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::Clear() {
-  text_ = absl::nullopt;
-  markup_ = absl::nullopt;
-  rtf_ = absl::nullopt;
+  text_ = std::nullopt;
+  markup_ = std::nullopt;
+  rtf_ = std::nullopt;
   filenames_.clear();
-  bookmark_title_ = absl::nullopt;
-  png_ = absl::nullopt;
-  custom_format_ = absl::nullopt;
-  custom_data_ = absl::nullopt;
-  web_smart_paste_ = absl::nullopt;
+  bookmark_title_ = std::nullopt;
+  png_ = std::nullopt;
+  custom_format_ = std::nullopt;
+  custom_data_ = std::nullopt;
+  web_smart_paste_ = std::nullopt;
   return *this;
 }
 
@@ -77,7 +76,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFormat(
     case ui::ClipboardInternalFormat::kPng:
       return SetPng(gfx::test::CreatePNGBytes(10));
     case ui::ClipboardInternalFormat::kCustom:
-      return SetCustomData("Custom Format", "Custom Data");
+      return SetCustomData(
+          ui::ClipboardFormatType::Deserialize("Custom Format"), "Custom Data");
     case ui::ClipboardInternalFormat::kWeb:
       return SetWebSmartPaste(true);
   }
@@ -117,7 +117,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetText(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearText() {
-  text_ = absl::nullopt;
+  text_ = std::nullopt;
   return *this;
 }
 
@@ -128,7 +128,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetMarkup(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearMarkup() {
-  markup_ = absl::nullopt;
+  markup_ = std::nullopt;
   return *this;
 }
 
@@ -139,7 +139,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetSvg(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearSvg() {
-  svg_ = absl::nullopt;
+  svg_ = std::nullopt;
   return *this;
 }
 
@@ -150,7 +150,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetRtf(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearRtf() {
-  rtf_ = absl::nullopt;
+  rtf_ = std::nullopt;
   return *this;
 }
 
@@ -172,7 +172,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetBookmarkTitle(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearBookmarkTitle() {
-  bookmark_title_ = absl::nullopt;
+  bookmark_title_ = std::nullopt;
   return *this;
 }
 
@@ -189,12 +189,12 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetPng(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearPng() {
-  png_ = absl::nullopt;
+  png_ = std::nullopt;
   return *this;
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetCustomData(
-    const std::string& custom_format,
+    const ui::ClipboardFormatType& custom_format,
     const std::string& custom_data) {
   custom_format_ = custom_format;
   custom_data_ = custom_data;
@@ -202,8 +202,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetCustomData(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearCustomData() {
-  custom_format_ = absl::nullopt;
-  custom_data_ = absl::nullopt;
+  custom_format_ = std::nullopt;
+  custom_data_ = std::nullopt;
   return *this;
 }
 
@@ -218,7 +218,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFileSystemData(
       &custom_data);
 
   return SetCustomData(
-      ui::ClipboardFormatType::WebCustomDataType().GetName(),
+      ui::ClipboardFormatType::WebCustomDataType(),
       std::string(custom_data.data_as_char(), custom_data.size()));
 }
 
@@ -229,7 +229,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetWebSmartPaste(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearWebSmartPaste() {
-  web_smart_paste_ = absl::nullopt;
+  web_smart_paste_ = std::nullopt;
   return *this;
 }
 

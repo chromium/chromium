@@ -11,6 +11,7 @@
 #include <memory>
 
 #import "base/apple/scoped_nsautorelease_pool.h"
+#include "base/memory/stack_allocated.h"
 #include "testing/platform_test.h"
 #include "ui/display/screen.h"
 
@@ -86,6 +87,7 @@ class CocoaTestHelper {
 
   display::ScopedNativeScreen screen_;
 
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
   base::apple::ScopedNSAutoreleasePool pool_;
 
   // Windows which existed at the beginning of the test.

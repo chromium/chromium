@@ -6,9 +6,10 @@
 
 #include <memory>
 
+#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/login/login_handler_test_utils.h"
+#include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "content/public/browser/web_contents.h"
@@ -40,9 +41,8 @@ IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, HttpAuthWebDialog) {
   dialog->Init();
 
   // Wait for http auth login view to show up. No crash should happen.
-  content::WebContents* contents = dialog->GetActiveWebContents();
-  content::NavigationController* controller = &contents->GetController();
-  WindowedAuthNeededObserver(controller).Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 }
 
 }  // namespace ash

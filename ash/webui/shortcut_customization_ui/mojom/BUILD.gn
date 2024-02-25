@@ -9,12 +9,10 @@ assert(is_chromeos_ash)
 
 mojom("mojom") {
   disable_variants = true
-  use_typescript_sources = true
-  generate_legacy_js_bindings = true
 
   sources = [ "shortcut_customization.mojom" ]
 
-  webui_module_path = "/ash/webui/shortcut_customization_ui/mojom"
+  webui_module_path = "/"
 
   public_deps = [
     "//ash/public/mojom:accelerator_configuration",

@@ -4,7 +4,10 @@
 
 #include "chrome/installer/util/registry_test_data.h"
 
+#include <windows.h>
+
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/win/registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,68 +15,44 @@ using base::win::RegKey;
 
 RegistryTestData::RegistryTestData() : root_key_(nullptr) {}
 
-RegistryTestData::~RegistryTestData() {
-  Reset();
-}
-
-// static
-bool RegistryTestData::DeleteKey(HKEY root_key, const wchar_t* path) {
-  LONG result = ERROR_SUCCESS;
-  if (root_key != nullptr && path != nullptr && *path != L'\0') {
-    result = RegKey(root_key, L"", KEY_QUERY_VALUE).DeleteKey(path);
-    if (result == ERROR_FILE_NOT_FOUND) {
-      result = ERROR_SUCCESS;
-    } else {
-      DLOG_IF(DFATAL, result != ERROR_SUCCESS)
-          << "Failed to delete registry key " << path << ", result: " << result;
-    }
-  }
-  return result == ERROR_SUCCESS;
-}
-
-void RegistryTestData::Reset() {
-  // Clean up behind a previous use (ignore failures).
-  DeleteKey(root_key_, base_path_.c_str());
-
-  // Forget state.
-  root_key_ = nullptr;
-  base_path_.clear();
-  empty_key_path_.clear();
-  non_empty_key_path_.clear();
-}
+RegistryTestData::~RegistryTestData() = default;
 
 bool RegistryTestData::Initialize(HKEY root_key, const wchar_t* base_path) {
+  if (root_key_) {
+    return false;
+  }
+
+  registry_override_manager_.OverrideRegistry(root_key);
+  if (::testing::Test::HasFatalFailure()) {
+    return false;
+  }
   LONG result = ERROR_SUCCESS;
 
-  Reset();
+  root_key_ = root_key;
+  base_path_.assign(base_path);
 
-  // Take over the new registry location.
-  if (DeleteKey(root_key, base_path)) {
-    // Take on the new values.
-    root_key_ = root_key;
-    base_path_.assign(base_path);
+  // Create our data.
+  empty_key_path_ = base::StrCat({base_path_, L"\\EmptyKey"});
+  non_empty_key_path_ = base::StrCat({base_path_, L"\\NonEmptyKey"});
 
-    // Create our data.
-    empty_key_path_.assign(base_path_).append(L"\\EmptyKey");
-    non_empty_key_path_.assign(base_path_).append(L"\\NonEmptyKey");
+  RegKey key;
 
-    RegKey key;
-
-    result = key.Create(root_key_, empty_key_path_.c_str(), KEY_QUERY_VALUE);
-    if (result == ERROR_SUCCESS)
-      result = key.Create(root_key_, non_empty_key_path_.c_str(), KEY_WRITE);
-    if (result == ERROR_SUCCESS)
-      result = key.WriteValue(nullptr, non_empty_key_path_.c_str());
-    if (result == ERROR_SUCCESS)
-      result = key.CreateKey(L"SubKey", KEY_WRITE);
-    if (result == ERROR_SUCCESS)
-      result = key.WriteValue(L"SomeValue", 1UL);
-    DLOG_IF(DFATAL, result != ERROR_SUCCESS)
-        << "Failed to create test registry data based at " << base_path_
-        << ", result: " << result;
-  } else {
-    result = ERROR_INVALID_PARAMETER;
+  result = key.Create(root_key_, empty_key_path_.c_str(), KEY_QUERY_VALUE);
+  if (result == ERROR_SUCCESS) {
+    result = key.Create(root_key_, non_empty_key_path_.c_str(), KEY_WRITE);
   }
+  if (result == ERROR_SUCCESS) {
+    result = key.WriteValue(nullptr, non_empty_key_path_.c_str());
+  }
+  if (result == ERROR_SUCCESS) {
+    result = key.CreateKey(L"SubKey", KEY_WRITE);
+  }
+  if (result == ERROR_SUCCESS) {
+    result = key.WriteValue(L"SomeValue", 1UL);
+  }
+  DLOG_IF(DFATAL, result != ERROR_SUCCESS)
+      << "Failed to create test registry data based at " << base_path_
+      << ", result: " << result;
 
   return result == ERROR_SUCCESS;
 }

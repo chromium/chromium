@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Validate Enter, Up/Down Arrow, and Space keyboard accessibility support for <selectlist>
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+[FAIL] Validate Enter, Up/Down Arrow keyboard accessibility support for disabled <selectlist>
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+Harness: the test ran to completion.

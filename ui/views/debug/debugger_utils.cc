@@ -48,7 +48,7 @@ void AddAttributeString(AttributeStrings& attributes,
 
 void AddPtrAttributeString(AttributeStrings& attributes,
                            const std::string& name,
-                           const absl::optional<intptr_t>& value) {
+                           const std::optional<intptr_t>& value) {
   if (!value)
     return;
 
@@ -67,7 +67,7 @@ AttributeStrings GetAttributeStrings(ViewDebugWrapper* view, bool verbose) {
   } else {
     AddPtrAttributeString(attributes, "address", view->GetAddress());
     AddAttributeString(attributes, "bounds", view->GetBounds());
-    AddAttributeString(attributes, "enabled", view->GetNeedsLayout());
+    AddAttributeString(attributes, "enabled", view->GetEnabled());
     AddAttributeString(attributes, "id", view->GetID());
     AddAttributeString(attributes, "needs-layout", view->GetNeedsLayout());
     AddAttributeString(attributes, "visible", view->GetVisible());
@@ -130,8 +130,8 @@ void PrintViewHierarchyImpl(std::ostream* out,
 
 }  // namespace
 
-absl::optional<intptr_t> ViewDebugWrapper::GetAddress() {
-  return absl::nullopt;
+std::optional<intptr_t> ViewDebugWrapper::GetAddress() {
+  return std::nullopt;
 }
 
 void PrintViewHierarchy(std::ostream* out,

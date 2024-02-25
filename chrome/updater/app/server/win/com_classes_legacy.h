@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <wrl/implements.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -154,8 +155,8 @@ class IDispatchImpl
     if (HRESULT hr =
             type_lib->GetTypeInfoOfGuid(__uuidof(TDualInterface), &type_info_);
         FAILED(hr)) {
-      LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
-                 << ", " << std::hex << hr << ", IID: "
+      LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed" << ", "
+                 << std::hex << hr << ", IID: "
                  << base::win::WStringFromGUID(__uuidof(TDualInterface));
       return hr;
     }
@@ -261,7 +262,8 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
   // invalid formatting, or if the type information could not be initialized.
   HRESULT RuntimeClassInitialize(UpdaterScope scope,
                                  const std::wstring& app_id,
-                                 const std::wstring& command_id);
+                                 const std::wstring& command_id,
+                                 bool send_pings = true);
 
   // Overrides for IAppCommandWeb.
   IFACEMETHODIMP get_status(UINT* status) override;
@@ -291,6 +293,9 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
 
   base::Process process_;
   HResultOr<AppCommandRunner> app_command_runner_;
+  UpdaterScope scope_ = UpdaterScope::kSystem;
+  std::string app_id_;
+  bool send_pings_ = true;
 
   friend class LegacyAppCommandWebImplTest;
 };

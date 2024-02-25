@@ -29,6 +29,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
+#include "extensions/common/utils/extension_types_utils.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -84,10 +85,9 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // identity is its namespace+name, so we hash that to create a public key.
   // There will be no corresponding private key, which means user scripts cannot
   // be auto-updated, or claimed in the gallery.
-  char raw[crypto::kSHA256Length] = {0};
-  std::string key;
+  uint8_t raw[crypto::kSHA256Length] = {0};
   crypto::SHA256HashString(script_name, raw, crypto::kSHA256Length);
-  base::Base64Encode(base::StringPiece(raw, crypto::kSHA256Length), &key);
+  std::string key = base::Base64Encode(raw);
 
   // The script may not have a name field, but we need one for an extension. If
   // it is missing, use the filename of the original URL.
@@ -135,14 +135,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   content_script.js.emplace();
   content_script.js->push_back("script.js");
 
-  if (script.run_location() == mojom::RunLocation::kDocumentStart) {
-    content_script.run_at = api::content_scripts::RunAt::kDocumentStart;
-  } else if (script.run_location() == mojom::RunLocation::kDocumentEnd) {
-    content_script.run_at = api::content_scripts::RunAt::kDocumentEnd;
-  } else if (script.run_location() == mojom::RunLocation::kDocumentIdle) {
-    // This is the default, but store it just in case we change that.
-    content_script.run_at = api::content_scripts::RunAt::kDocumentIdle;
-  }
+  content_script.run_at = ConvertRunLocationForAPI(script.run_location());
 
   base::Value::List content_scripts;
   content_scripts.Append(content_script.ToValue());

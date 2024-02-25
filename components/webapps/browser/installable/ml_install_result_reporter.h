@@ -5,20 +5,19 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALL_RESULT_REPORTER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALL_RESULT_REPORTER_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/types/pass_key.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace webapps {
-class AppBannerManager;
-enum class MlInstallUserResponse;
+namespace content {
+class BrowserContext;
+}
 
-extern const base::FeatureParam<double> kGuardrailResultReportProb;
-extern const base::FeatureParam<double> kModelDeclineUserDeclineReportProb;
+namespace webapps {
+enum class MlInstallUserResponse;
 
 // This class is responsible for reporting the result of the Ml installation
 // classification prediction and updating any guardrail metrics if applicable.
@@ -45,7 +44,7 @@ class MlInstallResultReporter {
   };
 
   MlInstallResultReporter(
-      base::WeakPtr<AppBannerManager> app_banner_manager,
+      base::WeakPtr<content::BrowserContext> browser_context,
       segmentation_platform::TrainingRequestId training_request,
       std::string ml_output_label,
       const GURL& manifest_id,
@@ -67,16 +66,16 @@ class MlInstallResultReporter {
                     MlInstallUserResponse response);
 
  private:
-  void ReportResultInternal(absl::optional<WebappInstallSource> source,
+  void ReportResultInternal(std::optional<WebappInstallSource> source,
                             MlInstallResponse response);
 
-  const base::WeakPtr<AppBannerManager> app_banner_manager_;
+  const base::WeakPtr<content::BrowserContext> browser_context_;
   const segmentation_platform::TrainingRequestId training_request_;
   std::string ml_output_label_;
   const GURL manifest_id_;
   bool ml_promotion_blocked_by_guardrail_;
   bool reported_ = false;
-  absl::optional<WebappInstallSource> install_source_attached_ = absl::nullopt;
+  std::optional<WebappInstallSource> install_source_attached_ = std::nullopt;
 };
 
 }  // namespace webapps

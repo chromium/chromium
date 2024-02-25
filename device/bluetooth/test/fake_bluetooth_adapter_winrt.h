@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 
-#include "base/strings/string_piece_forward.h"
+#include <string_view>
 
 namespace device {
 
@@ -23,7 +23,7 @@ class FakeBluetoothAdapterWinrt
           ABI::Windows::Devices::Bluetooth::IBluetoothAdapter> {
  public:
   FakeBluetoothAdapterWinrt(
-      base::StringPiece address,
+      std::string_view address,
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadio> radio);
 
   FakeBluetoothAdapterWinrt(const FakeBluetoothAdapterWinrt&) = delete;
@@ -32,7 +32,7 @@ class FakeBluetoothAdapterWinrt
 
   ~FakeBluetoothAdapterWinrt() override;
 
-  static uint64_t ToRawBluetoothAddress(base::StringPiece address);
+  static uint64_t ToRawBluetoothAddress(std::string_view address);
 
   // IBluetoothAdapter:
   IFACEMETHODIMP get_DeviceId(HSTRING* value) override;

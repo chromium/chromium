@@ -13,6 +13,7 @@
 #include "device/vr/android/cardboard/cardboard_sdk.h"
 #include "device/vr/android/compositor_delegate_provider.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
+#include "device/vr/android/xr_activity_state_handler.h"
 #include "device/vr/android/xr_java_coordinator.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/vr_device_base.h"
@@ -29,7 +30,9 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDevice : public VRDeviceBase {
       std::unique_ptr<MailboxToSurfaceBridgeFactory>
           mailbox_to_surface_bridge_factory,
       std::unique_ptr<XrJavaCoordinator> xr_java_coordinator,
-      std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider);
+      std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider,
+      std::unique_ptr<XrActivityStateHandlerFactory>
+          activity_state_handler_factory);
 
   ~CardboardDevice() override;
 
@@ -43,6 +46,10 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDevice : public VRDeviceBase {
   void ShutdownSession(mojom::XRRuntime::ShutdownSessionCallback) override;
 
  private:
+  void OnCardboardParametersAcquired(mojom::XRRuntimeSessionOptionsPtr options,
+                                     int render_process_id,
+                                     int render_frame_id);
+
   // OnDrawingSurface* methods are used as callbacks from XrJavaCoordinator and
   // notify us of the state of things on the Java side of things.
   void OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
@@ -70,6 +77,9 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDevice : public VRDeviceBase {
       mailbox_to_surface_bridge_factory_;
   std::unique_ptr<XrJavaCoordinator> xr_java_coordinator_;
   std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider_;
+
+  std::unique_ptr<XrActivityStateHandlerFactory>
+      activity_state_handler_factory_;
 
   // Outstanding Session Request Data
   mojom::XRRuntime::RequestSessionCallback pending_session_request_callback_;

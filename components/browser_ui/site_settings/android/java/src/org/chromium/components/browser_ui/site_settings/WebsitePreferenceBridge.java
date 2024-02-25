@@ -4,11 +4,13 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -18,15 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Utility class that interacts with native to retrieve and set website settings.
- */
+/** Utility class that interacts with native to retrieve and set website settings. */
 public class WebsitePreferenceBridge {
     public static final String SITE_WILDCARD = "*";
 
-    /**
-     * Interface for an object that listens to storage info is cleared callback.
-     */
+    /** Interface for an object that listens to storage info is cleared callback. */
     public interface StorageInfoClearedCallback {
         @CalledByNative("StorageInfoClearedCallback")
         public void onStorageInfoCleared();
@@ -37,7 +35,7 @@ public class WebsitePreferenceBridge {
      */
     @SuppressWarnings("unchecked")
     public List<PermissionInfo> getPermissionInfo(
-            BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
+            BrowserContextHandle browserContextHandle, @ContentSettingsType.EnumType int type) {
         ArrayList<PermissionInfo> list = new ArrayList<>();
         boolean managedOnly = false;
         // Camera, Location & Microphone can be managed by the custodian
@@ -48,14 +46,19 @@ public class WebsitePreferenceBridge {
             case ContentSettingsType.MEDIASTREAM_MIC:
                 managedOnly = !isContentSettingUserModifiable(browserContextHandle, type);
         }
-        WebsitePreferenceBridgeJni.get().getOriginsForPermission(
-                browserContextHandle, type, list, managedOnly);
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .getOriginsForPermission(browserContextHandle, type, list, managedOnly);
         return list;
     }
 
     @CalledByNative
-    private static void insertPermissionInfoIntoList(@ContentSettingsType int type,
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
+    private static void insertPermissionInfoIntoList(
+            @ContentSettingsType.EnumType int type,
+            ArrayList<PermissionInfo> list,
+            String origin,
+            String embedder,
+            boolean isEmbargoed,
+            @SessionModel.EnumType int sessionModel) {
         if (type == ContentSettingsType.MEDIASTREAM_CAMERA
                 || type == ContentSettingsType.MEDIASTREAM_MIC) {
             for (PermissionInfo info : list) {
@@ -64,7 +67,7 @@ public class WebsitePreferenceBridge {
                 }
             }
         }
-        list.add(new PermissionInfo(type, origin, embedder, isEmbargoed));
+        list.add(new PermissionInfo(type, origin, embedder, isEmbargoed, sessionModel));
     }
 
     @CalledByNative
@@ -120,10 +123,11 @@ public class WebsitePreferenceBridge {
 
     public List<ContentSettingException> getContentSettingsExceptions(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         List<ContentSettingException> exceptions = new ArrayList<>();
-        WebsitePreferenceBridgeJni.get().getContentSettingsExceptions(
-                browserContextHandle, contentSettingsType, exceptions);
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .getContentSettingsExceptions(
+                        browserContextHandle, contentSettingsType, exceptions);
         if (!isContentSettingManaged(browserContextHandle, contentSettingsType)) {
             return exceptions;
         }
@@ -137,57 +141,65 @@ public class WebsitePreferenceBridge {
         return managedExceptions;
     }
 
-    public void fetchLocalStorageInfo(BrowserContextHandle browserContextHandle,
-            Callback<HashMap> callback, boolean fetchImportant) {
-        WebsitePreferenceBridgeJni.get().fetchLocalStorageInfo(
-                browserContextHandle, callback, fetchImportant);
+    public void fetchLocalStorageInfo(
+            BrowserContextHandle browserContextHandle,
+            Callback<HashMap> callback,
+            boolean fetchImportant) {
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .fetchLocalStorageInfo(browserContextHandle, callback, fetchImportant);
     }
 
     public void fetchStorageInfo(
             BrowserContextHandle browserContextHandle, Callback<ArrayList> callback) {
-        WebsitePreferenceBridgeJni.get().fetchStorageInfo(browserContextHandle, callback);
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .fetchStorageInfo(browserContextHandle, callback);
     }
 
     public void fetchSharedDictionaryInfo(
             BrowserContextHandle browserContextHandle, Callback<ArrayList> callback) {
-        WebsitePreferenceBridgeJni.get().fetchSharedDictionaryInfo(browserContextHandle, callback);
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .fetchSharedDictionaryInfo(browserContextHandle, callback);
     }
 
-    public void fetchCookiesInfo(BrowserContextHandle browserContextHandle,
+    public void fetchCookiesInfo(
+            BrowserContextHandle browserContextHandle,
             Callback<Map<String, CookiesInfo>> callback) {
-        WebsitePreferenceBridgeJni.get().fetchCookiesInfo(browserContextHandle, callback);
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .fetchCookiesInfo(browserContextHandle, callback);
     }
 
     /**
      * Returns the list of all chosen object permissions for the given ContentSettingsType.
      *
-     * There will be one ChosenObjectInfo instance for each granted permission. That means that if
-     * two origin/embedder pairs have permission for the same object there will be two
+     * <p>There will be one ChosenObjectInfo instance for each granted permission. That means that
+     * if two origin/embedder pairs have permission for the same object there will be two
      * ChosenObjectInfo instances.
      */
-    public List<ChosenObjectInfo> getChosenObjectInfo(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+    public List<ChosenObjectInfo> getChosenObjectInfo(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType) {
         ArrayList<ChosenObjectInfo> list = new ArrayList<ChosenObjectInfo>();
-        WebsitePreferenceBridgeJni.get().getChosenObjects(
-                browserContextHandle, contentSettingsType, list);
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .getChosenObjects(browserContextHandle, contentSettingsType, list);
         return list;
     }
 
-    /**
-     * Inserts a ChosenObjectInfo into a list.
-     */
+    /** Inserts a ChosenObjectInfo into a list. */
     @CalledByNative
-    private static void insertChosenObjectInfoIntoList(ArrayList<ChosenObjectInfo> list,
-            @ContentSettingsType int contentSettingsType, String origin, String name, String object,
+    private static void insertChosenObjectInfoIntoList(
+            ArrayList<ChosenObjectInfo> list,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String origin,
+            String name,
+            String object,
             boolean isManaged) {
         list.add(new ChosenObjectInfo(contentSettingsType, origin, name, object, isManaged));
     }
 
-    /**
-     * Returns whether the DSE (Default Search Engine) origin matches the given origin.
-     */
+    /** Returns whether the DSE (Default Search Engine) origin matches the given origin. */
     public static boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin) {
-        return WebsitePreferenceBridgeJni.get().isDSEOrigin(browserContextHandle, origin);
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .isDSEOrigin(browserContextHandle, origin);
     }
 
     /**
@@ -196,40 +208,55 @@ public class WebsitePreferenceBridge {
      */
     public static boolean getAdBlockingActivated(
             BrowserContextHandle browserContextHandle, String origin) {
-        return WebsitePreferenceBridgeJni.get().getAdBlockingActivated(
-                browserContextHandle, origin);
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .getAdBlockingActivated(browserContextHandle, origin);
     }
 
     @CalledByNative
-    private static void addContentSettingExceptionToList(ArrayList<ContentSettingException> list,
-            @ContentSettingsType int contentSettingsType, String primaryPattern,
-            String secondaryPattern, int contentSetting, String source, final boolean hasExpiration,
-            final int expirationInDays, boolean isEmbargoed) {
+    private static void addContentSettingExceptionToList(
+            ArrayList<ContentSettingException> list,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String primaryPattern,
+            String secondaryPattern,
+            int contentSetting,
+            String source,
+            final boolean hasExpiration,
+            final int expirationInDays,
+            boolean isEmbargoed) {
         String nonNullSource = (source == null) ? "" : source;
-        ContentSettingException exception = new ContentSettingException(contentSettingsType,
-                primaryPattern, secondaryPattern, contentSetting, nonNullSource,
-                hasExpiration ? expirationInDays : null, isEmbargoed);
+        ContentSettingException exception =
+                new ContentSettingException(
+                        contentSettingsType,
+                        primaryPattern,
+                        secondaryPattern,
+                        contentSetting,
+                        nonNullSource,
+                        hasExpiration ? expirationInDays : null,
+                        isEmbargoed);
         list.add(exception);
     }
 
     /**
      * Returns whether a particular content setting type is enabled.
+     *
      * @param contentSettingsType The content setting type to check.
      */
-    public static boolean isContentSettingEnabled(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
-        return WebsitePreferenceBridgeJni.get().isContentSettingEnabled(
-                browserContextHandle, contentSettingsType);
+    public static boolean isContentSettingEnabled(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType) {
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .isContentSettingEnabled(browserContextHandle, contentSettingsType);
     }
 
     /**
      * @return Whether a particular content setting type is managed by policy.
      * @param contentSettingsType The content setting type to check.
      */
-    public static boolean isContentSettingManaged(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
-        return WebsitePreferenceBridgeJni.get().isContentSettingManaged(
-                browserContextHandle, contentSettingsType);
+    public static boolean isContentSettingManaged(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType) {
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .isContentSettingManaged(browserContextHandle, contentSettingsType);
     }
 
     /**
@@ -238,27 +265,28 @@ public class WebsitePreferenceBridge {
      */
     public static boolean isContentSettingManagedByCustodian(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
-        return WebsitePreferenceBridgeJni.get().isContentSettingManagedByCustodian(
-                browserContextHandle, contentSettingsType);
+            @ContentSettingsType.EnumType int contentSettingsType) {
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .isContentSettingManagedByCustodian(browserContextHandle, contentSettingsType);
     }
 
     /**
      * Sets a default value for content setting type.
+     *
      * @param contentSettingsType The content setting type to check.
      * @param enabled Whether the default value should be disabled or enabled.
      */
-    public static void setContentSettingEnabled(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType, boolean enabled) {
-        WebsitePreferenceBridgeJni.get().setContentSettingEnabled(
-                browserContextHandle, contentSettingsType, enabled);
+    public static void setContentSettingEnabled(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            boolean enabled) {
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .setContentSettingEnabled(browserContextHandle, contentSettingsType, enabled);
     }
 
-    /**
-     * Whether the setting type requires tri-state (Allowed/Ask/Blocked) setting.
-     */
+    /** Whether the setting type requires tri-state (Allowed/Ask/Blocked) setting. */
     public static boolean requiresTriStateContentSetting(
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         switch (contentSettingsType) {
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
                 return true;
@@ -267,41 +295,46 @@ public class WebsitePreferenceBridge {
         }
     }
 
-    /**
-     * Sets the preferences on whether to enable/disable given setting.
-     */
-    public static void setCategoryEnabled(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType, boolean allow) {
+    /** Sets the preferences on whether to enable/disable given setting. */
+    public static void setCategoryEnabled(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            boolean allow) {
         assert !requiresTriStateContentSetting(contentSettingsType);
         setContentSettingEnabled(browserContextHandle, contentSettingsType, allow);
     }
 
-    public static boolean isCategoryEnabled(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+    public static boolean isCategoryEnabled(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType) {
         assert !requiresTriStateContentSetting(contentSettingsType);
         return isContentSettingEnabled(browserContextHandle, contentSettingsType);
     }
 
     /**
-     * Gets the default ContentSetting for a settings type. Should only be used for more
-     * complex settings where a binary on/off value is not sufficient.
-     * Otherwise, use isCategoryEnabled() above.
+     * Gets the default ContentSetting for a settings type. Should only be used for more complex
+     * settings where a binary on/off value is not sufficient. Otherwise, use isCategoryEnabled()
+     * above.
+     *
      * @param contentSettingsType The settings type to get setting for.
      * @return The ContentSetting for |contentSettingsType|.
      */
-    public static int getDefaultContentSetting(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
-        return WebsitePreferenceBridgeJni.get().getDefaultContentSetting(
-                browserContextHandle, contentSettingsType);
+    public static int getDefaultContentSetting(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType) {
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .getDefaultContentSetting(browserContextHandle, contentSettingsType);
     }
 
     /**
      * @param setting New default ContentSetting to set for |contentSettingsType|.
      */
-    public static void setDefaultContentSetting(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType, int setting) {
-        WebsitePreferenceBridgeJni.get().setDefaultContentSetting(
-                browserContextHandle, contentSettingsType, setting);
+    public static void setDefaultContentSetting(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            int setting) {
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .setDefaultContentSetting(browserContextHandle, contentSettingsType, setting);
     }
 
     /**
@@ -311,20 +344,17 @@ public class WebsitePreferenceBridge {
      */
     public static boolean isCookieDeletionDisabled(
             BrowserContextHandle browserContextHandle, String origin) {
-        return WebsitePreferenceBridgeJni.get().isCookieDeletionDisabled(
-                browserContextHandle, origin);
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .isCookieDeletionDisabled(browserContextHandle, origin);
     }
 
-    /**
-     * @return Whether geolocation information access is set to be shared with all sites, by policy.
-     */
+    /** @return Whether geolocation information access is set to be shared with all sites, by policy. */
     public static boolean isLocationAllowedByPolicy(BrowserContextHandle browserContextHandle) {
-        return WebsitePreferenceBridgeJni.get().getLocationAllowedByPolicy(browserContextHandle);
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .getLocationAllowedByPolicy(browserContextHandle);
     }
 
-    /**
-     * @return Whether location is enabled system-wide and the Chrome location setting is enabled.
-     */
+    /** @return Whether location is enabled system-wide and the Chrome location setting is enabled. */
     public static boolean areAllLocationSettingsEnabled(BrowserContextHandle browserContextHandle) {
         return isContentSettingEnabled(browserContextHandle, ContentSettingsType.GEOLOCATION)
                 && LocationUtils.getInstance().isSystemLocationSettingEnabled();
@@ -333,63 +363,92 @@ public class WebsitePreferenceBridge {
     /**
      * @return Whether the camera permission is editable by the user.
      */
-    public static boolean isContentSettingUserModifiable(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
-        return WebsitePreferenceBridgeJni.get().isContentSettingUserModifiable(
-                browserContextHandle, contentSettingsType);
+    public static boolean isContentSettingUserModifiable(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType) {
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .isContentSettingUserModifiable(browserContextHandle, contentSettingsType);
     }
 
     /**
-     * Returns the ContentSetting for a specific site.
-     * See HostContentSettingsMap::GetContentSetting() for more details.
+     * Returns the ContentSetting for a specific site. See
+     * HostContentSettingsMap::GetContentSetting() for more details.
      */
     public static @ContentSettingValues int getContentSetting(
-            BrowserContextHandle browserContextHandle, @ContentSettingsType int contentSettingType,
-            GURL primaryUrl, GURL secondaryUrl) {
-        return WebsitePreferenceBridgeJni.get().getContentSetting(
-                browserContextHandle, contentSettingType, primaryUrl, secondaryUrl);
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingType,
+            GURL primaryUrl,
+            GURL secondaryUrl) {
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .getContentSetting(
+                        browserContextHandle, contentSettingType, primaryUrl, secondaryUrl);
     }
 
     /**
      * @return Whether the ContentSettings is global setting.
      */
-    public static boolean isContentSettingGlobal(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl) {
-        return WebsitePreferenceBridgeJni.get().isContentSettingGlobal(
-                browserContextHandle, contentSettingType, primaryUrl, secondaryUrl);
+    public static boolean isContentSettingGlobal(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingType,
+            GURL primaryUrl,
+            GURL secondaryUrl) {
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .isContentSettingGlobal(
+                        browserContextHandle, contentSettingType, primaryUrl, secondaryUrl);
     }
 
     /**
-     * Sets the content setting for the default scope of the url that is appropriate for the
-     * given contentSettingType.
-     * See HostContentSettingsMap::SetContentSettingDefaultScope() for more details.
+     * Sets the content setting for the default scope of the url that is appropriate for the given
+     * contentSettingType. See HostContentSettingsMap::SetContentSettingDefaultScope() for more
+     * details.
      */
-    public static void setContentSettingDefaultScope(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl,
+    public static void setContentSettingDefaultScope(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingType,
+            GURL primaryUrl,
+            GURL secondaryUrl,
             @ContentSettingValues int setting) {
-        WebsitePreferenceBridgeJni.get().setContentSettingDefaultScope(
-                browserContextHandle, contentSettingType, primaryUrl, secondaryUrl, setting);
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .setContentSettingDefaultScope(
+                        browserContextHandle,
+                        contentSettingType,
+                        primaryUrl,
+                        secondaryUrl,
+                        setting);
     }
+
     /**
      * Sets the ContentSetting for a specific pattern combination.Unless adding a custom-scoped
-     * setting, most developers will want to use setContentSettingDefaultScope()
-     * instead.
-     * See HostContentSettingsMap::SetContentSettingCustomScope() for more details.
+     * setting, most developers will want to use setContentSettingDefaultScope() instead. See
+     * HostContentSettingsMap::SetContentSettingCustomScope() for more details.
      */
-    public static void setContentSettingCustomScope(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingType, String primaryPattern,
-            String secondaryPattern, @ContentSettingValues int setting) {
-        // Currently only Cookie Settings support a non-empty, non-wildcard secondaryPattern.
-        // In addition, if a Cookie Setting uses secondaryPattern, the primaryPattern must be
-        // the wildcard.
-        if (contentSettingType != ContentSettingsType.COOKIES) {
-            assert secondaryPattern.equals(SITE_WILDCARD) || secondaryPattern.isEmpty();
-        } else if (!secondaryPattern.equals(SITE_WILDCARD) && !secondaryPattern.isEmpty()) {
+    public static void setContentSettingCustomScope(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingType,
+            String primaryPattern,
+            String secondaryPattern,
+            @ContentSettingValues int setting) {
+        if (contentSettingType == ContentSettingsType.STORAGE_ACCESS) {
+            // StorageAccess exceptions should always specify a primary pattern. The secondary
+            // pattern might or not be empty depending if the exception is normal or embargoed.
+            assert !primaryPattern.isEmpty() && !primaryPattern.equals(SITE_WILDCARD);
+        } else if (contentSettingType == ContentSettingsType.COOKIES
+                && !secondaryPattern.equals(SITE_WILDCARD)) {
+            // Currently only Cookie Settings support a non-empty, non-wildcard secondaryPattern.
+            // In addition, if a Cookie Setting uses secondaryPattern, the primaryPattern must be
+            // the wildcard.
             assert primaryPattern.equals(SITE_WILDCARD);
+        } else {
+            assert secondaryPattern.equals(SITE_WILDCARD) || secondaryPattern.isEmpty();
         }
 
-        WebsitePreferenceBridgeJni.get().setContentSettingCustomScope(browserContextHandle,
-                contentSettingType, primaryPattern, secondaryPattern, setting);
+        org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .setContentSettingCustomScope(
+                        browserContextHandle,
+                        contentSettingType,
+                        primaryPattern,
+                        secondaryPattern,
+                        setting);
     }
 
     /**
@@ -399,7 +458,8 @@ public class WebsitePreferenceBridge {
      * @return The domain wildcard pattern.
      */
     public static String toDomainWildcardPattern(String pattern) {
-        return WebsitePreferenceBridgeJni.get().toDomainWildcardPattern(pattern);
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .toDomainWildcardPattern(pattern);
     }
 
     /**
@@ -408,77 +468,160 @@ public class WebsitePreferenceBridge {
      * @return The host only pattern.
      */
     public static String toHostOnlyPattern(String pattern) {
-        return WebsitePreferenceBridgeJni.get().toHostOnlyPattern(pattern);
+        return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
+                .toHostOnlyPattern(pattern);
     }
 
     @NativeMethods
     public interface Natives {
         boolean isNotificationEmbargoedForOrigin(
                 BrowserContextHandle browserContextHandle, String origin);
+
         void reportNotificationRevokedForOrigin(
                 BrowserContextHandle browserContextHandle, String origin, int newSettingValue);
+
         void clearBannerData(BrowserContextHandle browserContextHandle, String origin);
+
         void clearMediaLicenses(BrowserContextHandle browserContextHandle, String origin);
+
         void clearCookieData(BrowserContextHandle browserContextHandle, String path);
+
         void clearLocalStorageData(
                 BrowserContextHandle browserContextHandle, String path, Object callback);
-        void clearSharedDictionary(BrowserContextHandle browserContextHandle, String origin,
-                String topLevelSite, Object callback);
-        void clearStorageData(BrowserContextHandle browserContextHandle, String origin, int type,
+
+        void clearSharedDictionary(
+                BrowserContextHandle browserContextHandle,
+                String origin,
+                String topLevelSite,
                 Object callback);
-        void getChosenObjects(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int type, Object list);
+
+        void clearStorageData(
+                BrowserContextHandle browserContextHandle,
+                String origin,
+                int type,
+                Object callback);
+
+        void getChosenObjects(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int type,
+                Object list);
+
         void resetNotificationsSettingsForTest(BrowserContextHandle browserContextHandle);
-        void revokeObjectPermission(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int type, String origin, String object);
+
+        void revokeObjectPermission(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int type,
+                String origin,
+                String object);
+
         boolean isContentSettingsPatternValid(String pattern);
+
         boolean urlMatchesContentSettingsPattern(String url, String pattern);
+
         void fetchCookiesInfo(BrowserContextHandle browserContextHandle, Object callback);
+
         void fetchStorageInfo(BrowserContextHandle browserContextHandle, Object callback);
+
         void fetchSharedDictionaryInfo(BrowserContextHandle browserContextHandle, Object callback);
-        void fetchLocalStorageInfo(BrowserContextHandle browserContextHandle, Object callback,
+
+        void fetchLocalStorageInfo(
+                BrowserContextHandle browserContextHandle,
+                Object callback,
                 boolean includeImportant);
-        void getOriginsForPermission(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType, Object list, boolean managedOnly);
+
+        void getOriginsForPermission(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingsType,
+                Object list,
+                boolean managedOnly);
+
         @ContentSettingValues
-        int getPermissionSettingForOrigin(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType, String origin, String embedder);
-        void setPermissionSettingForOrigin(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType, String origin, String embedder,
+        int getPermissionSettingForOrigin(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingsType,
+                String origin,
+                String embedder);
+
+        void setPermissionSettingForOrigin(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingsType,
+                String origin,
+                String embedder,
                 @ContentSettingValues int value);
+
+        void setEphemeralGrantForTesting( // IN-TEST
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingsType,
+                GURL origin,
+                GURL embedder);
+
         boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin);
+
         boolean getAdBlockingActivated(BrowserContextHandle browserContextHandle, String origin);
+
         boolean isContentSettingEnabled(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
+
         boolean isContentSettingManaged(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
+
         boolean isCookieDeletionDisabled(BrowserContextHandle browserContextHandle, String origin);
+
         void setContentSettingEnabled(
                 BrowserContextHandle browserContextHandle, int contentSettingType, boolean allow);
-        void getContentSettingsExceptions(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType, List<ContentSettingException> list);
+
+        void getContentSettingsExceptions(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingsType,
+                List<ContentSettingException> list);
+
         @ContentSettingValues
-        int getContentSetting(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl);
-        boolean isContentSettingGlobal(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl);
-        void setContentSettingDefaultScope(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl,
+        int getContentSetting(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingType,
+                GURL primaryUrl,
+                GURL secondaryUrl);
+
+        boolean isContentSettingGlobal(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingType,
+                GURL primaryUrl,
+                GURL secondaryUrl);
+
+        void setContentSettingDefaultScope(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingType,
+                GURL primaryUrl,
+                GURL secondaryUrl,
                 @ContentSettingValues int setting);
-        void setContentSettingCustomScope(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType, String primaryPattern,
-                String secondaryPattern, @ContentSettingValues int setting);
+
+        void setContentSettingCustomScope(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingType,
+                String primaryPattern,
+                String secondaryPattern,
+                @ContentSettingValues int setting);
+
         @ContentSettingValues
-        int getDefaultContentSetting(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType);
-        void setDefaultContentSetting(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType, @ContentSettingValues int setting);
+        int getDefaultContentSetting(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingType);
+
+        void setDefaultContentSetting(
+                BrowserContextHandle browserContextHandle,
+                @ContentSettingsType.EnumType int contentSettingType,
+                @ContentSettingValues int setting);
+
         boolean isContentSettingUserModifiable(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
+
         boolean isContentSettingManagedByCustodian(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
+
         boolean getLocationAllowedByPolicy(BrowserContextHandle browserContextHandle);
+
         String toDomainWildcardPattern(String pattern);
+
         String toHostOnlyPattern(String pattern);
     }
 }

@@ -6,8 +6,11 @@
 #define DEVICE_FIDO_WIN_WEBAUTHN_API_H_
 
 #include <windows.h>
+
 #include <functional>
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
@@ -18,7 +21,6 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
@@ -109,7 +111,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApi {
 };
 
 std::pair<CtapDeviceResponseCode,
-          absl::optional<AuthenticatorMakeCredentialResponse>>
+          std::optional<AuthenticatorMakeCredentialResponse>>
 AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     HWND h_wnd,
                                     GUID cancellation_id,
@@ -117,7 +119,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     MakeCredentialOptions request_options);
 
 std::pair<CtapDeviceResponseCode,
-          absl::optional<AuthenticatorGetAssertionResponse>>
+          std::optional<AuthenticatorGetAssertionResponse>>
 AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                                   HWND h_wnd,
                                   GUID cancellation_id,
@@ -133,7 +135,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
 // any.
 std::pair<bool, std::vector<DiscoverableCredentialMetadata>>
 AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
-                                          base::StringPiece16 rp_id,
+                                          std::u16string_view rp_id,
                                           bool is_incognito);
 
 }  // namespace device

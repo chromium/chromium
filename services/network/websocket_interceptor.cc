@@ -12,7 +12,7 @@ namespace network {
 
 WebSocketInterceptor::WebSocketInterceptor(
     uint32_t net_log_source_id,
-    const absl::optional<base::UnguessableToken>& throttling_profile_id)
+    const std::optional<base::UnguessableToken>& throttling_profile_id)
     : net_log_source_id_(net_log_source_id),
       throttling_token_(
           network::ScopedThrottlingToken::MaybeCreate(net_log_source_id_,

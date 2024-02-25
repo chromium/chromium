@@ -8,7 +8,7 @@ import("//tools/grit/grit_rule.gni")
 
 group("strings") {
   public_deps = [
-    ":ios_chromium_strings",
+    ":ios_branded_strings",
     ":ios_strings",
   ]
 }
@@ -22,10 +22,10 @@ grit("ios_strings") {
   }
 }
 
-grit("ios_chromium_strings") {
+grit("ios_branded_strings") {
   source = "ios_${branding_path_product}_strings.grd"
   output_dir = "$root_gen_dir/ios/chrome"
-  outputs = [ "grit/ios_chromium_strings.h" ]
+  outputs = [ "grit/ios_branded_strings.h" ]
   foreach(locale, all_chrome_locales) {
     outputs += [ "ios_${branding_path_product}_strings_$locale.pak" ]
   }

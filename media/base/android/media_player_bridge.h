@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -85,7 +86,8 @@ class MEDIA_EXPORT MediaPlayerBridge {
                     bool hide_url_log,
                     Client* client,
                     bool allow_credentials,
-                    bool is_hls);
+                    bool is_hls,
+                    const base::flat_map<std::string, std::string> headers);
 
   MediaPlayerBridge(const MediaPlayerBridge&) = delete;
   MediaPlayerBridge& operator=(const MediaPlayerBridge&) = delete;
@@ -281,6 +283,9 @@ class MEDIA_EXPORT MediaPlayerBridge {
   bool is_hls_;
   SimpleWatchTimer watch_timer_;
 
+  // HTTP Request Headers
+  base::flat_map<std::string, std::string> headers_;
+
   // A reference to the owner of `this`.
   raw_ptr<Client> client_;
 
@@ -288,7 +293,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
   std::unique_ptr<MediaPlayerListener> listener_;
 
   // Pending playback rate while player is preparing.
-  absl::optional<double> pending_playback_rate_;
+  std::optional<double> pending_playback_rate_;
 
   // Weak pointer passed to `listener_` for callbacks.
   // NOTE: Weak pointers must be invalidated before all other member variables.

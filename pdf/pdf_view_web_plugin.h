@@ -17,7 +17,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -123,7 +123,10 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
     // Returns the plugin container set by `SetPluginContainer()`.
     virtual blink::WebPluginContainer* PluginContainer() = 0;
 
-    // Returrns the document's site for cookies.
+    // Returns the current V8 isolate, if any.
+    virtual v8::Isolate* GetIsolate() = 0;
+
+    // Returns the document's site for cookies.
     virtual net::SiteForCookies SiteForCookies() const = 0;
 
     // Resolves `partial_url` relative to the document's base URL.
@@ -222,7 +225,8 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
-        PdfAccessibilityImageFetcher* image_fetcher);
+        PdfAccessibilityImageFetcher* image_fetcher,
+        blink::WebPluginContainer* plugin_container);
   };
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,
@@ -331,6 +335,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
                   const void* data,
                   int length) override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
+  v8::Isolate* GetIsolate() override;
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
@@ -762,8 +767,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   std::unique_ptr<UrlLoader> form_loader_;
 
   // Handler for accessibility data updates.
-  std::unique_ptr<PdfAccessibilityDataHandler> const
-      pdf_accessibility_data_handler_;
+  std::unique_ptr<PdfAccessibilityDataHandler> pdf_accessibility_data_handler_;
 
   // The URL currently under the cursor.
   std::string link_under_cursor_;
@@ -801,7 +805,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   std::vector<int> pages_to_print_;
 
   // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
-  absl::optional<blink::WebPrintParams> print_params_;
+  std::optional<blink::WebPrintParams> print_params_;
 
   // For identifying actual print operations to avoid double logging of UMA.
   bool print_pages_called_;

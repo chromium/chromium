@@ -110,7 +110,10 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
       return;
     }
     std::string make_and_model = GuessEffectiveMakeAndModel(device_info);
-    PRINTER_LOG(EVENT) << "USB printer was detected: " << make_and_model;
+    PRINTER_LOG(EVENT) << "USB printer "
+                       << base::StringPrintf("%04x:%04x", device_info.vendor_id,
+                                             device_info.product_id)
+                       << " was detected: " << make_and_model;
 
     entry.ppd_search_data.usb_vendor_id = device_info.vendor_id;
     entry.ppd_search_data.usb_product_id = device_info.product_id;
@@ -133,8 +136,10 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
   void OnGetDeviceId(DetectedPrinter entry,
                      std::string guid,
                      chromeos::UsbPrinterId printer_id) {
-    PRINTER_LOG(EVENT) << "USB printer returned ID: " << printer_id.make()
-                       << " " << printer_id.model();
+    PRINTER_LOG(EVENT) << entry.printer.make_and_model()
+                       << " returned USB device ID: " << printer_id.raw_id();
+
+    UpdateSearchDataFromDeviceId(printer_id, &entry);
     entry.ppd_search_data.printer_id = std::move(printer_id);
 
     // Add detected printer.

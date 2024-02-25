@@ -39,13 +39,12 @@ class ContactInfoEditorViewController : public EditorViewController {
   // EditorViewController:
   bool IsEditingExistingItem() override;
   std::vector<EditorField> GetFieldDefinitions() override;
-  std::u16string GetInitialValueForType(
-      autofill::ServerFieldType type) override;
+  std::u16string GetInitialValueForType(autofill::FieldType type) override;
   bool ValidateModelAndSave() override;
   std::unique_ptr<ValidationDelegate> CreateValidationDelegate(
       const EditorField& field) override;
   std::unique_ptr<ui::ComboboxModel> GetComboboxModelForType(
-      const autofill::ServerFieldType& type) override;
+      const autofill::FieldType& type) override;
 
  protected:
   // PaymentRequestSheetController:
@@ -58,7 +57,7 @@ class ContactInfoEditorViewController : public EditorViewController {
   void PopulateProfile(autofill::AutofillProfile* profile);
   bool GetSheetId(DialogViewID* sheet_id) override;
   std::u16string GetValueForType(const autofill::AutofillProfile& profile,
-                                 autofill::ServerFieldType type);
+                                 autofill::FieldType type);
 
   raw_ptr<autofill::AutofillProfile> profile_to_edit_;
 

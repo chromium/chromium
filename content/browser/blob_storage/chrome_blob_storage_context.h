@@ -83,9 +83,9 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   // Creates a FileSystem File blob accessible by the renderer via the blob
   // remote corresponding to `blob_receiver`. The callback can grant or deny the
   // read access to the file. The callback `file_access` is used to grant or
-  // deny access to files under dlp restrictions. Leaving it at NullCallback
-  // will lead to default behaviour, which currently is granting it (until
-  // b/265908846 is done).
+  // deny access to files under dlp restrictions. Passing a NullCallback
+  // will lead to default behaviour of
+  // ScopedFileAccessDelegate::RequestDefaultFilesAccessIO.
   void CreateFileSystemBlobWithFileAccess(
       scoped_refptr<storage::FileSystemContext> file_system_context,
       mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,

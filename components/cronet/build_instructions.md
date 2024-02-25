@@ -15,14 +15,13 @@ To build Cronet for development and debugging purposes:
 First, `gn` is used to create ninja files targeting the intended platform, then
 `ninja` executes the ninja files to run the build.
 
-### Android / iOS builds
+### Android builds
 
 ```shell
 $ ./components/cronet/tools/cr_cronet.py gn --out_dir=out/Cronet
 ```
 
-If the build host is Linux, Android binaries will be built. If the build host is
-macOS, iOS binaries will be built.
+Android binaries will be built irrespective of the platform.
 
 Note: these commands clobber output of previously executed gn commands in
 `out/Cronet`. If `--out_dir` is left out, the output directory defaults to

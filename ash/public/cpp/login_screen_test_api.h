@@ -33,7 +33,6 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static bool IsRestartButtonShown();
   static bool IsShutdownButtonShown();
   static bool IsAppsButtonShown();
-  static bool IsAuthErrorBubbleShown();
   static bool IsGuestButtonShown();
   static bool IsAddUserButtonShown();
   static bool IsCancelButtonShown();
@@ -59,6 +58,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static void ClickChallengeResponseButton(const AccountId& account_id);
   static int64_t GetUiUpdateCount();
   static bool LaunchApp(const std::string& app_id);
+  static bool LaunchApp(const AccountId& account_id);
   static bool ClickAppsButton();
   static bool ClickAddUserButton();
   static bool ClickCancelButton();
@@ -104,6 +104,19 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static std::u16string GetPinRequestWidgetTitle();
   static void SubmitPinRequestWidget(const std::string& pin);
   static void CancelPinRequestWidget();
+
+  // Local authentication dialog methods.
+  static bool IsLocalAuthenticationDialogVisible();
+  static void CancelLocalAuthenticationDialog();
+  static void SubmitPasswordLocalAuthenticationDialog(
+      const std::string& password);
+
+  // AuthErrorBubble methods.
+  static bool IsAuthErrorBubbleShown();
+  static void ShowAuthError(int unlock_attempt);
+  static void HideAuthError();
+  static void PressAuthErrorRecoveryButton();
+  static void PressAuthErrorLearnMoreButton();
 };
 
 }  // namespace ash

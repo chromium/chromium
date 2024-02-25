@@ -19,15 +19,6 @@ if (use_pulseaudio && !link_pulseaudio) {
   }
 }
 
-if (is_android) {
-  generate_stubs("aaudio_stubs") {
-    extra_header = "android/aaudio_stub_header.fragment"
-    sigs = [ "android/aaudio.sigs" ]
-    output_name = "android/aaudio_stubs"
-    deps = [ "//base" ]
-  }
-}
-
 config("platform_config") {
   defines = []
   if (use_alsa) {
@@ -58,8 +49,6 @@ source_set("audio") {
     "agc_audio_stream.h",
     "alive_checker.cc",
     "alive_checker.h",
-    "audio_bus_pool.cc",
-    "audio_bus_pool.h",
     "audio_debug_file_writer.cc",
     "audio_debug_file_writer.h",
     "audio_debug_recording_helper.cc",
@@ -168,14 +157,16 @@ source_set("audio") {
 
   if (is_apple) {
     sources += [
-      "mac/audio_auhal_mac.cc",
-      "mac/audio_auhal_mac.h",
-      "mac/audio_input_mac.cc",
-      "mac/audio_input_mac.h",
-      "mac/core_audio_util_mac.cc",
-      "mac/core_audio_util_mac.h",
-      "mac/scoped_audio_unit.cc",
-      "mac/scoped_audio_unit.h",
+      "apple/audio_auhal.cc",
+      "apple/audio_auhal.h",
+      "apple/audio_input.cc",
+      "apple/audio_input.h",
+      "apple/audio_low_latency_input.cc",
+      "apple/audio_low_latency_input.h",
+      "apple/audio_manager_apple.cc",
+      "apple/audio_manager_apple.h",
+      "apple/scoped_audio_unit.cc",
+      "apple/scoped_audio_unit.h",
     ]
 
     deps += [ "//media/base/mac" ]
@@ -191,14 +182,23 @@ source_set("audio") {
     sources += [
       "mac/audio_device_listener_mac.cc",
       "mac/audio_device_listener_mac.h",
-      "mac/audio_low_latency_input_mac.cc",
-      "mac/audio_low_latency_input_mac.h",
+      "mac/audio_loopback_input_mac.h",
+      "mac/audio_loopback_input_mac_impl.h",
+      "mac/audio_loopback_input_mac_impl.mm",
       "mac/audio_manager_mac.cc",
       "mac/audio_manager_mac.h",
+      "mac/core_audio_util_mac.cc",
+      "mac/core_audio_util_mac.h",
       "mac/coreaudio_dispatch_override.cc",
       "mac/coreaudio_dispatch_override.h",
+      "mac/screen_capture_kit_swizzler.h",
+      "mac/screen_capture_kit_swizzler.mm",
     ]
-    frameworks += [ "AudioUnit.framework" ]
+    frameworks += [
+      "AudioUnit.framework",
+      "CoreMedia.framework",
+    ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 13.0
   }
 
   if (is_ios) {
@@ -265,18 +265,9 @@ source_set("audio") {
       "android/opensles_util.h",
       "android/opensles_wrapper.cc",
     ]
+    libs += [ "aaudio" ]
 
-    deps += [
-      ":aaudio_stubs",
-      "//media/base/android:media_jni_headers",
-    ]
-
-    defines += [
-      # media/audio includes functions from NDK API levels beyond the one Chromium compiles
-      # with by default.
-      # Therefore relax the verification of functions <=> API level introduced with NDK 23.
-      "__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-    ]
+    deps += [ "//media/base/android:media_jni_headers" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -321,6 +312,10 @@ source_set("audio") {
       "pulse/audio_manager_pulse.h",
       "pulse/pulse_input.cc",
       "pulse/pulse_input.h",
+      "pulse/pulse_loopback.cc",
+      "pulse/pulse_loopback.h",
+      "pulse/pulse_loopback_manager.cc",
+      "pulse/pulse_loopback_manager.h",
       "pulse/pulse_output.cc",
       "pulse/pulse_output.h",
       "pulse/pulse_util.cc",
@@ -377,7 +372,6 @@ static_library("test_support") {
     "audio_device_info_accessor_for_tests.h",
     "audio_system_test_util.cc",
     "audio_system_test_util.h",
-    "audio_unittest_util.cc",
     "audio_unittest_util.h",
     "mock_aecdump_recording_manager.cc",
     "mock_aecdump_recording_manager.h",
@@ -419,7 +413,6 @@ source_set("unit_tests") {
   sources = [
     "aecdump_recording_manager_unittest.cc",
     "alive_checker_unittest.cc",
-    "audio_bus_pool_unittest.cc",
     "audio_debug_file_writer_unittest.cc",
     "audio_debug_recording_helper_unittest.cc",
     "audio_debug_recording_manager_unittest.cc",
@@ -458,19 +451,28 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "android/audio_android_unittest.cc" ]
-    deps += [ "//ui/gl" ]
+    deps += [
+      "//media/gpu:gpu",
+      "//ui/gl",
+    ]
   }
 
   if (is_apple) {
-    sources += [ "mac/audio_auhal_mac_unittest.cc" ]
+    sources += [
+      "apple/audio_auhal_unittest.cc",
+      "apple/audio_low_latency_input_unittest.cc",
+    ]
   }
 
   if (is_mac) {
     sources += [
       "mac/audio_device_listener_mac_unittest.cc",
-      "mac/audio_low_latency_input_mac_unittest.cc",
+      "mac/audio_loopback_input_mac_unittest.mm",
       "mac/audio_manager_mac_unittest.cc",
     ]
+    deps += [ "//third_party/ocmock" ]
+    frameworks = [ "CoreMedia.framework" ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 13.0
   }
 
   if (is_chromeos_ash || is_castos || is_cast_android) {

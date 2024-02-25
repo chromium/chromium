@@ -214,25 +214,25 @@ void SetPropertiesForExistingNetwork(const std::string& guid,
 
 base::Value::Dict GetProperties(const std::string userhash,
                                 const std::string& guid) {
-  base::test::TestFuture<const std::string&, absl::optional<base::Value::Dict>,
-                         absl::optional<std::string>>
+  base::test::TestFuture<const std::string&, std::optional<base::Value::Dict>,
+                         std::optional<std::string>>
       result;
   managed_network_configuration_handler()->GetProperties(
       userhash, GetServicePath(guid), result.GetCallback());
-  absl::optional<base::Value::Dict> properties = std::get<1>(result.Take());
+  std::optional<base::Value::Dict> properties = std::get<1>(result.Take());
   EXPECT_TRUE(properties.has_value());
   return std::move(properties.value());
 }
 
 base::Value::Dict GetManagedProperties(const std::string userhash,
                                        const std::string& guid) {
-  base::test::TestFuture<const std::string&, absl::optional<base::Value::Dict>,
-                         absl::optional<std::string>>
+  base::test::TestFuture<const std::string&, std::optional<base::Value::Dict>,
+                         std::optional<std::string>>
       result;
   managed_network_configuration_handler()->GetManagedProperties(
       userhash, GetServicePath(guid), result.GetCallback());
 
-  absl::optional<base::Value::Dict> properties = std::get<1>(result.Take());
+  std::optional<base::Value::Dict> properties = std::get<1>(result.Take());
   EXPECT_TRUE(properties.has_value());
   return std::move(properties.value());
 }

@@ -22,8 +22,9 @@
 #include "services/tracing/public/cpp/perfetto/system_producer.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
+#include <optional>
+
 #include "services/tracing/public/cpp/perfetto/fuchsia_perfetto_producer_connector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace tracing {

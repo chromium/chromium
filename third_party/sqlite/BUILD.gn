@@ -247,7 +247,13 @@ component("chromium_sqlite3") {
 
 # Similar to component("chromium_sqlite") above, but uses the developer tools
 # options at config("dev_sqlite3_compile_options").
-component("dev_sqlite3") {
+#
+# This target uses source_set instead of component intentionally because turning
+# it into a shared library will result in symbol collisions with "chromium_sqlite".
+# Given that this config is effectively test-only, we should link it statically
+# and allow "chromium_sqlite" to be the only shared library.
+# TODO(altimin): mark this component as testonly = true.
+source_set("dev_sqlite3") {
   visibility = [ ":*" ]
 
   public = [ "dev/sqlite3.h" ]
@@ -267,14 +273,6 @@ component("dev_sqlite3") {
 
   cflags = []
   defines = []
-
-  if (is_component_build) {
-    if (is_win) {
-      defines += [ "SQLITE_API=__declspec(dllexport)" ]
-    } else {
-      defines += [ "SQLITE_API=__attribute__((visibility(\"default\")))" ]
-    }
-  }
 
   if (is_linux || is_chromeos || is_android) {
     defines += [
@@ -344,10 +342,7 @@ group("sqlite") {
 
 group("sqlite_dev") {
   public_deps = [ ":dev_sqlite3" ]
-  public_configs = [
-    ":dev_sqlite3_compile_options",
-    ":sqlite_export",
-  ]
+  public_configs = [ ":dev_sqlite3_compile_options" ]
 }
 
 if (is_win || is_mac || is_linux || is_chromeos) {
@@ -441,6 +436,14 @@ source_set("sqlite3_lpm_fuzzer_core") {
     ":lpm_fuzzer_omit_non_websql",
     ":chromium_sqlite3_compile_options",
   ]
+}
+
+source_set("sql_query_proto_to_string") {
+  sources = [
+    "fuzz/sql_query_proto_to_string.cc",
+    "fuzz/sql_query_proto_to_string.h",
+  ]
+  deps = [ ":sqlite3_lpm_fuzzer_input" ]
 }
 
 # LPM-based fuzzer test.

@@ -6,7 +6,9 @@
  * @fileoverview Common page for reading and writing preferences from
  * the background context (background page or options page).
  */
-import {LocalStorage} from '../../common/local_storage.js';
+import {LocalStorage} from '/common/local_storage.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Msgs} from '../common/msgs.js';
@@ -22,9 +24,8 @@ const Action = BridgeConstants.ChromeVoxPrefs.Action;
 const TARGET = BridgeConstants.ChromeVoxPrefs.TARGET;
 
 /**
- * This object has default values of preferences and contains the common
- * code for working with preferences shared by the Options and Background
- * pages.
+ * Handles access and setting of preferences, regardless of whether they live in
+ * system Settings or the ChromeVox Options page.
  */
 export class ChromeVoxPrefs {
   constructor() {
@@ -213,3 +214,5 @@ ChromeVoxPrefs.stickyOverride = null;
  * @private {boolean}
  */
 ChromeVoxPrefs.darkScreen_ = false;
+
+TestImportManager.exportForTesting(ChromeVoxPrefs);

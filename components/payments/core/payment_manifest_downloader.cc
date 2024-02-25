@@ -4,11 +4,13 @@
 
 #include "components/payments/core/payment_manifest_downloader.h"
 
+#include <optional>
 #include <unordered_map>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -17,6 +19,7 @@
 #include "components/link_header_util/link_header_util.h"
 #include "components/payments/core/csp_checker.h"
 #include "components/payments/core/error_logger.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/url_util.h"
 #include "net/base/load_flags.h"
@@ -32,7 +35,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace payments {
@@ -286,8 +288,8 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   DCHECK(download->IsLinkHeaderDownload());
 
   if (!headers) {
-    // Fallback to HTTP GET when HTTP HEAD response has no headers.
-    FallbackToDownloadingResponseBody(final_url, std::move(download));
+    // HTTP HEAD response has no headers; possibly fallback to HTTP GET.
+    TryFallbackToDownloadingResponseBody(final_url, std::move(download));
     return;
   }
 
@@ -302,15 +304,14 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   std::string link_header;
   headers->GetNormalizedHeader("link", &link_header);
   if (link_header.empty()) {
-    // Fallback to HTTP GET when HTTP HEAD response does not contain a Link
-    // header.
-    FallbackToDownloadingResponseBody(final_url, std::move(download));
+    // HTTP HEAD response has no Link header; possibly fallback to HTTP GET.
+    TryFallbackToDownloadingResponseBody(final_url, std::move(download));
     return;
   }
 
   for (const auto& value : link_header_util::SplitLinkHeader(link_header)) {
     std::string link_url;
-    std::unordered_map<std::string, absl::optional<std::string>> params;
+    std::unordered_map<std::string, std::optional<std::string>> params;
     if (!link_header_util::ParseLinkHeaderValue(value.first, value.second,
                                                 &link_url, &params)) {
       continue;
@@ -356,22 +357,33 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
     }
   }
 
-  // Fallback to HTTP GET when HTTP HEAD response does not contain a Link header
-  // with rel="payment-method-manifest".
-  FallbackToDownloadingResponseBody(final_url, std::move(download));
+  // HTTP HEAD response has no Link header that has a
+  // rel="payment-method-manifest" entry; possibly fallback to HTTP GET.
+  TryFallbackToDownloadingResponseBody(final_url, std::move(download));
 }
 
-void PaymentManifestDownloader::FallbackToDownloadingResponseBody(
+void PaymentManifestDownloader::TryFallbackToDownloadingResponseBody(
     const GURL& url_to_download,
     std::unique_ptr<Download> download_info) {
-  InitiateDownload(
-      /*request_initiator=*/download_info->request_initiator,
-      /*url=*/url_to_download,
-      /*url_before_redirects=*/download_info->url_before_redirects,
-      /*did_follow_redirect=*/download_info->did_follow_redirect,
-      /*download_type=*/Download::Type::FALLBACK_TO_RESPONSE_BODY,
-      /*allowed_number_of_redirects=*/0,
-      /*callback=*/std::move(download_info->callback));
+  if (base::FeatureList::IsEnabled(
+          features::kPaymentHandlerRequireLinkHeader)) {
+    // Not allowed to fallback, because the payment method manifest load must
+    // have a Link header.
+    std::string error_message = base::ReplaceStringPlaceholders(
+        errors::kNoLinkHeader, {url_to_download.spec()}, nullptr);
+    log_->Error(error_message);
+    std::move(download_info->callback)
+        .Run(url_to_download, std::string(), error_message);
+  } else {
+    InitiateDownload(
+        /*request_initiator=*/download_info->request_initiator,
+        /*url=*/url_to_download,
+        /*url_before_redirects=*/download_info->url_before_redirects,
+        /*did_follow_redirect=*/download_info->did_follow_redirect,
+        /*download_type=*/Download::Type::FALLBACK_TO_RESPONSE_BODY,
+        /*allowed_number_of_redirects=*/0,
+        /*callback=*/std::move(download_info->callback));
+  }
 }
 
 network::SimpleURLLoader* PaymentManifestDownloader::GetLoaderForTesting() {

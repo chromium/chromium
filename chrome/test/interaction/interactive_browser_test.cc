@@ -4,13 +4,18 @@
 
 #include "chrome/test/interaction/interactive_browser_test.h"
 
+#include <ostream>
+#include <sstream>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -19,21 +24,46 @@
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/update_user_activation_state_interceptor.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/views_delegate.h"
 
 namespace {
+
 // Since we enforce a 1:1 correspondence between ElementIdentifiers and
 // WebContents defaulting to ContextMode::kAny prevents accidentally missing the
 // correct context, which is a common mistake that causes tests to mysteriously
 // time out looking in the wrong place.
 constexpr ui::InteractionSequence::ContextMode kDefaultWebContentsContextMode =
     ui::InteractionSequence::ContextMode::kAny;
+
+// Matcher that determines whether a particular value is truthy.
+class IsTruthyMatcher : public testing::MatcherInterface<const base::Value&> {
+ public:
+  using is_gtest_matcher = void;
+
+  bool MatchAndExplain(const base::Value& x,
+                       testing::MatchResultListener* listener) const override {
+    return WebContentsInteractionTestUtil::IsTruthy(x);
+  }
+
+  void DescribeTo(std::ostream* os) const override { *os << "is truthy"; }
+
+  void DescribeNegationTo(std::ostream* os) const override {
+    *os << "is falsy";
+  }
+};
+
 }  // namespace
 
 InteractiveBrowserTestApi::InteractiveBrowserTestApi()
@@ -82,7 +112,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::InstrumentTab(
     ui::ElementIdentifier id,
-    absl::optional<int> tab_index,
+    std::optional<int> tab_index,
     BrowserSpecifier in_browser,
     bool wait_for_ready) {
   const auto desc =
@@ -131,7 +161,7 @@ InteractiveBrowserTestApi::InstrumentNextTab(ui::ElementIdentifier id,
 InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::AddInstrumentedTab(ui::ElementIdentifier id,
                                               GURL url,
-                                              absl::optional<int> at_index,
+                                              std::optional<int> at_index,
                                               BrowserSpecifier in_browser) {
   const auto desc = base::StringPrintf("AddInstrumentedTab( %s, %s, %d, )",
                                        id.GetName().c_str(), url.spec().c_str(),
@@ -199,7 +229,7 @@ InteractiveBrowserTestApi::InstrumentNonTabWebView(
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTestApi::WaitForWebContentsReady(
     ui::ElementIdentifier webcontents_id,
-    absl::optional<GURL> expected_url) {
+    std::optional<GURL> expected_url) {
   StepBuilder builder;
   builder.SetDescription(
       base::StringPrintf("WaitForWebContentsReady( %s )",
@@ -227,7 +257,7 @@ InteractiveBrowserTestApi::WaitForWebContentsReady(
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTestApi::WaitForWebContentsNavigation(
     ui::ElementIdentifier webcontents_id,
-    absl::optional<GURL> expected_url) {
+    std::optional<GURL> expected_url) {
   StepBuilder builder;
   builder.SetDescription(
       base::StringPrintf("WaitForWebContentsNavigation( %s )",
@@ -283,6 +313,40 @@ InteractiveBrowserTestApi::NavigateWebContents(
                     .FormatDescription(base::StrCat({desc, ": %s"}))));
 }
 
+InteractiveBrowserTestApi::StepBuilder
+InteractiveBrowserTestApi::FocusWebContents(
+    ui::ElementIdentifier webcontents_id) {
+  StepBuilder builder;
+  builder.SetElementID(webcontents_id);
+  builder.SetDescription("FocusWebContents()");
+  builder.SetStartCallback(base::BindLambdaForTesting(
+      [this](ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        auto* const tracked_el = AsInstrumentedWebContents(el);
+        if (!tracked_el) {
+          LOG(ERROR) << "Element is not an instrumented WebContents.";
+          seq->FailForTesting();
+          return;
+        }
+        const auto result = test_util().ActivateSurface(el);
+        test_impl().HandleActionResult(seq, el, "ActivateSurface", result);
+        if (result != ui::test::ActionResult::kSucceeded) {
+          return;
+        }
+        auto* const contents = tracked_el->web_contents();
+        if (!contents || !contents->GetPrimaryMainFrame()) {
+          LOG(ERROR) << "WebContents not present or no main frame.";
+          seq->FailForTesting();
+          return;
+        }
+        content::UpdateUserActivationStateInterceptor
+            user_activation_interceptor(contents->GetPrimaryMainFrame());
+        user_activation_interceptor.UpdateUserActivationState(
+            blink::mojom::UserActivationUpdateType::kNotifyActivation,
+            blink::mojom::UserActivationNotificationType::kTest);
+      }));
+  return builder;
+}
+
 // static
 InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::WaitForStateChange(
@@ -292,13 +356,16 @@ InteractiveBrowserTestApi::WaitForStateChange(
   ui::CustomElementEventType event_type =
       expect_timeout ? state_change.timeout_event : state_change.event;
   CHECK(event_type);
-  const auto desc =
-      base::StringPrintf("WaitForStateChange( %d )", expect_timeout);
+  std::ostringstream desc;
+  desc << "WaitForStateChange( " << state_change << ", "
+       << (expect_timeout ? "true" : "false") << " )";
+  const bool fail_on_close = !state_change.continue_across_navigation;
   return Steps(
       std::move(StepBuilder()
-                    .SetDescription(base::StrCat({desc, ": Queue Event"}))
+                    .SetDescription(base::StrCat({desc.str(), ": Queue Event"}))
                     .SetElementID(webcontents_id)
                     .SetContext(kDefaultWebContentsContextMode)
+                    .SetMustRemainVisible(fail_on_close)
                     .SetStartCallback(base::BindOnce(
                         [](StateChange state_change, ui::TrackedElement* el) {
                           el->AsA<TrackedElementWebContents>()
@@ -306,13 +373,15 @@ InteractiveBrowserTestApi::WaitForStateChange(
                               ->SendEventOnStateChange(state_change);
                         },
                         state_change))),
-      std::move(StepBuilder()
-                    .SetDescription(base::StrCat({desc, ": Wait For Event"}))
-                    .SetElementID(webcontents_id)
-                    .SetContext(
-                        ui::InteractionSequence::ContextMode::kFromPreviousStep)
-                    .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                             event_type)));
+      std::move(
+          StepBuilder()
+              .SetDescription(base::StrCat({desc.str(), ": Wait For Event"}))
+              .SetElementID(webcontents_id)
+              .SetContext(
+                  ui::InteractionSequence::ContextMode::kFromPreviousStep)
+              .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                       event_type)
+              .SetMustBeVisibleAtStart(fail_on_close)));
 }
 
 // static
@@ -365,17 +434,38 @@ InteractiveBrowserTestApi::EnsureNotPresent(
 // static
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJs(
     ui::ElementIdentifier webcontents_id,
-    const std::string& function) {
+    const std::string& function,
+    ExecuteJsMode mode) {
   StepBuilder builder;
   builder.SetDescription(
       base::StringPrintf("ExecuteJs(\"\n%s\n\")", function.c_str()));
   builder.SetElementID(webcontents_id);
   builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetStartCallback(base::BindOnce(
-      [](std::string function, ui::TrackedElement* el) {
-        AsInstrumentedWebContents(el)->Execute(function);
-      },
-      function));
+  switch (mode) {
+    case ExecuteJsMode::kFireAndForget:
+      builder.SetMustRemainVisible(false);
+      builder.SetStartCallback(base::BindOnce(
+          [](std::string function, ui::TrackedElement* el) {
+            AsInstrumentedWebContents(el)->Execute(function);
+          },
+          function));
+      break;
+    case ExecuteJsMode::kWaitForCompletion:
+      builder.SetStartCallback(base::BindOnce(
+          [](std::string function, ui::InteractionSequence* seq,
+             ui::TrackedElement* el) {
+            const auto full_function = base::StringPrintf(
+                "() => { (%s)(); return false; }", function.c_str());
+            std::string error_msg;
+            AsInstrumentedWebContents(el)->Evaluate(full_function, &error_msg);
+            if (!error_msg.empty()) {
+              LOG(ERROR) << "ExecuteJsAt() failed: " << error_msg;
+              seq->FailForTesting();
+            }
+          },
+          function));
+      break;
+  }
   return builder;
 }
 
@@ -383,7 +473,8 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJs(
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
     ui::ElementIdentifier webcontents_id,
     const DeepQuery& where,
-    const std::string& function) {
+    const std::string& function,
+    ExecuteJsMode mode) {
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf(
       "ExecuteJsAt( %s, \"\n%s\n\")",
@@ -391,11 +482,41 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
       function.c_str()));
   builder.SetElementID(webcontents_id);
   builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetStartCallback(base::BindOnce(
-      [](DeepQuery where, std::string function, ui::TrackedElement* el) {
-        AsInstrumentedWebContents(el)->ExecuteAt(where, function);
-      },
-      where, function));
+  switch (mode) {
+    case ExecuteJsMode::kFireAndForget:
+      builder.SetMustRemainVisible(false);
+      builder.SetStartCallback(base::BindOnce(
+          [](DeepQuery where, std::string function, ui::TrackedElement* el) {
+            AsInstrumentedWebContents(el)->ExecuteAt(where, function);
+          },
+          where, function));
+      break;
+    case ExecuteJsMode::kWaitForCompletion:
+      builder.SetStartCallback(base::BindOnce(
+          [](DeepQuery where, std::string function,
+             ui::InteractionSequence* seq, ui::TrackedElement* el) {
+            const auto full_function = base::StringPrintf(
+                R"(
+              (el, err) => {
+                if (err) {
+                  throw err;
+                }
+                (%s)(el);
+                return false;
+              }
+            )",
+                function.c_str());
+            std::string error_msg;
+            AsInstrumentedWebContents(el)->EvaluateAt(where, full_function,
+                                                      &error_msg);
+            if (!error_msg.empty()) {
+              LOG(ERROR) << "ExecuteJsAt() failed: " << error_msg;
+              seq->FailForTesting();
+            }
+          },
+          where, function));
+      break;
+  }
   return builder;
 }
 
@@ -403,23 +524,8 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
     ui::ElementIdentifier webcontents_id,
     const std::string& function) {
-  StepBuilder builder;
-  builder.SetDescription(
-      base::StringPrintf("CheckJsResult(\"\n%s\n\")", function.c_str()));
-  builder.SetElementID(webcontents_id);
-  builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetStartCallback(base::BindOnce(
-      [](std::string function, ui::InteractionSequence* seq,
-         ui::TrackedElement* el) {
-        const auto result = AsInstrumentedWebContents(el)->Evaluate(function);
-        if (!WebContentsInteractionTestUtil::IsTruthy(result)) {
-          LOG(ERROR) << "CheckJsResult(): result of function is falsy: "
-                     << result;
-          seq->FailForTesting();
-        }
-      },
-      function));
-  return builder;
+  return CheckJsResult(webcontents_id, function,
+                       testing::Matcher<base::Value>(IsTruthyMatcher()));
 }
 
 // static
@@ -427,26 +533,8 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
     ui::ElementIdentifier webcontents_id,
     const DeepQuery& where,
     const std::string& function) {
-  StepBuilder builder;
-  builder.SetDescription(base::StringPrintf(
-      "CheckJsResultAt( %s, \"\n%s\n\")",
-      internal::InteractiveBrowserTestPrivate::DeepQueryToString(where).c_str(),
-      function.c_str()));
-  builder.SetElementID(webcontents_id);
-  builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetStartCallback(base::BindOnce(
-      [](DeepQuery where, std::string function, ui::InteractionSequence* seq,
-         ui::TrackedElement* el) {
-        const auto result =
-            AsInstrumentedWebContents(el)->EvaluateAt(where, function);
-        if (!WebContentsInteractionTestUtil::IsTruthy(result)) {
-          LOG(ERROR) << "CheckJsResultAt(): result of function is falsy: "
-                     << result;
-          seq->FailForTesting();
-        }
-      },
-      where, function));
-  return builder;
+  return CheckJsResultAt(webcontents_id, where, function,
+                         testing::Matcher<base::Value>(IsTruthyMatcher()));
 }
 
 InteractiveBrowserTestApi::StepBuilder InteractiveBrowserTestApi::MoveMouseTo(
@@ -492,7 +580,7 @@ InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& query) {
             << " are outside the screen bounds of the containing WebView, "
             << container_bounds.ToString()
             << ". Did you forget to scroll the element into view? See "
-               "ScrollToVisible().";
+               "ScrollIntoView().";
         return intersect_bounds.CenterPoint();
       },
       query);

@@ -24,7 +24,7 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   // RemoteFrameClient overrides:
   void CreateRemoteChild(
       const RemoteFrameToken& token,
-      const absl::optional<FrameToken>& opener_frame_token,
+      const std::optional<FrameToken>& opener_frame_token,
       mojom::blink::TreeScopeType tree_scope_type,
       mojom::blink::FrameReplicationStatePtr replication_state,
       mojom::blink::FrameOwnerPropertiesPtr owner_properties,
@@ -36,12 +36,12 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   void CreateRemoteChildren(
       const Vector<mojom::blink::CreateRemoteChildParamsPtr>& params) override;
 
-  WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }
+  WebRemoteFrameImpl* GetWebFrame() const { return web_frame_.Get(); }
 
  private:
   WebRemoteFrameImpl* CreateRemoteChildImpl(
       const RemoteFrameToken& token,
-      const absl::optional<FrameToken>& opener_frame_token,
+      const std::optional<FrameToken>& opener_frame_token,
       mojom::blink::TreeScopeType tree_scope_type,
       mojom::blink::FrameReplicationStatePtr replication_state,
       mojom::blink::FrameOwnerPropertiesPtr owner_properties,

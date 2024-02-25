@@ -6,13 +6,13 @@
 #define SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_DEVICE_ENUMERATOR_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -36,7 +36,7 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
       const BluetoothSerialDeviceEnumerator&) = delete;
   ~BluetoothSerialDeviceEnumerator() override;
 
-  void DeviceAdded(base::StringPiece device_address,
+  void DeviceAdded(std::string_view device_address,
                    base::StringPiece16 device_name,
                    BluetoothDevice::UUIDSet service_class_ids);
   void DeviceRemoved(const std::string& device_address);
@@ -50,7 +50,7 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
 
   // This method will search the map of Bluetooth ports and find the
   // address with the matching token.
-  absl::optional<std::string> GetAddressFromToken(
+  std::optional<std::string> GetAddressFromToken(
       const base::UnguessableToken& token) const;
 
   // Return the service class ID for the port's `token`. If `token` is not found
@@ -61,6 +61,8 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   void OnGotAdapterForTesting(base::OnceClosure closure);
   void DeviceAddedForTesting(BluetoothAdapter* adapter,
                              BluetoothDevice* device);
+  void DeviceChangedForTesting(BluetoothAdapter* adapter,
+                               BluetoothDevice* device);
   void SynchronouslyResetHelperForTesting();
 
  private:
@@ -73,7 +75,7 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   using DevicePortsMap =
       base::flat_map<DeviceServiceInfo, base::UnguessableToken>;
 
-  void AddService(base::StringPiece device_address,
+  void AddService(std::string_view device_address,
                   base::StringPiece16 device_name,
                   const BluetoothUUID& service_class_id);
 

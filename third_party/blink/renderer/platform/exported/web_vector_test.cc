@@ -66,7 +66,7 @@ TEST(WebVectorTest, Swap) {
   WebVector<int> second(kSecondData, kSecondDataLength);
   ASSERT_EQ(kFirstDataLength, first.size());
   ASSERT_EQ(kSecondDataLength, second.size());
-  first.Swap(second);
+  first.swap(second);
   ASSERT_EQ(kSecondDataLength, first.size());
   ASSERT_EQ(kFirstDataLength, second.size());
   for (size_t i = 0; i < first.size(); ++i)
@@ -135,9 +135,10 @@ TEST(WebVectorTest, EmplaceBackArgumentForwarding) {
   WebVector<WebString> vector;
   vector.reserve(1);
   WebUChar buffer[] = {'H', 'e', 'l', 'l', 'o', ' ', 'b', 'l', 'i', 'n', 'k'};
-  vector.emplace_back(buffer, std::size(buffer));
+  std::u16string_view view(buffer, std::size(buffer));
+  vector.emplace_back(view);
   ASSERT_EQ(1U, vector.size());
-  EXPECT_EQ(WebString(buffer, std::size(buffer)), vector[0]);
+  EXPECT_EQ(WebString(view), vector[0]);
 }
 
 TEST(WebVectorTest, EmplaceBackElementPlacement) {

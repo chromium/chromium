@@ -39,7 +39,7 @@ ScopedLogMessage::~ScopedLogMessage() {
 
   // Don't emit VERBOSE-level logging to the standard logging system unless
   // verbose logging is enabled for the source file.
-  if (severity_ <= logging::LOG_VERBOSE &&
+  if (severity_ <= logging::LOGGING_VERBOSE &&
       logging::GetVlogLevelHelper(file_, strlen(file_) + 1) <= 0) {
     return;
   }

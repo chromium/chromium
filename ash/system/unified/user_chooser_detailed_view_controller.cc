@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/multi_profile_uma.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -38,7 +37,7 @@ bool UserChooserDetailedViewController::IsUserChooserEnabled() {
 
   // Only allow for regular user session.
   if (session->GetPrimaryUserSession()->user_info.type !=
-      user_manager::USER_TYPE_REGULAR) {
+      user_manager::UserType::kRegular) {
     return false;
   }
 
@@ -61,8 +60,6 @@ void UserChooserDetailedViewController::HandleUserSwitch(int user_index) {
   DCHECK_GT(user_index, 0);
   DCHECK_LT(user_index, controller->NumberOfLoggedInUsers());
 
-  MultiProfileUMA::RecordSwitchActiveUser(
-      MultiProfileUMA::SWITCH_ACTIVE_USER_BY_TRAY);
   tray_controller_->CloseBubble();
   controller->SwitchActiveUser(
       controller->GetUserSession(user_index)->user_info.account_id);

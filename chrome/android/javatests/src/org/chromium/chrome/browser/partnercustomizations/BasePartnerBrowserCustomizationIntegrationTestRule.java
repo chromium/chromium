@@ -10,24 +10,24 @@ import org.junit.runners.model.Statement;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 
-/**
- * Basic shared functionality for partner customization integration tests.
- */
+/** Basic shared functionality for partner customization integration tests. */
 public class BasePartnerBrowserCustomizationIntegrationTestRule
         extends ChromeTabbedActivityTestRule {
     public BasePartnerBrowserCustomizationIntegrationTestRule() {}
 
     @Override
     public Statement apply(final Statement base, Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                CustomizationProviderDelegateUpstreamImpl
-                        .ignoreBrowserProviderSystemPackageCheckForTesting(true);
-                CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
-                        TestPartnerBrowserCustomizationsProvider.class.getName());
-                base.evaluate();
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        CustomizationProviderDelegateUpstreamImpl
+                                .ignoreBrowserProviderSystemPackageCheckForTesting(true);
+                        CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
+                                TestPartnerBrowserCustomizationsProvider.class.getName());
+                        base.evaluate();
+                    }
+                },
+                desc);
     }
 }

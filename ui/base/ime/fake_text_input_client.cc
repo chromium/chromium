@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -15,7 +16,20 @@ namespace ui {
 FakeTextInputClient::FakeTextInputClient(TextInputType text_input_type)
     : text_input_type_(text_input_type) {}
 
-FakeTextInputClient::~FakeTextInputClient() = default;
+FakeTextInputClient::FakeTextInputClient(Options options)
+    : FakeTextInputClient(/*input_method=*/nullptr, std::move(options)) {}
+
+FakeTextInputClient::FakeTextInputClient(InputMethod* input_method,
+                                         Options options)
+    : input_method_(input_method),
+      text_input_type_(options.type),
+      mode_(options.mode),
+      flags_(options.flags),
+      can_insert_image_(options.can_insert_image) {}
+
+FakeTextInputClient::~FakeTextInputClient() {
+  Blur();
+}
 
 void FakeTextInputClient::set_text_input_type(TextInputType text_input_type) {
   text_input_type_ = text_input_type;
@@ -30,6 +44,18 @@ void FakeTextInputClient::SetTextAndSelection(const std::u16string& text,
   DCHECK_LE(selection_.end(), text.length());
   text_ = text;
   selection_ = selection;
+}
+
+void FakeTextInputClient::Focus() {
+  if (input_method_ != nullptr) {
+    input_method_->SetFocusedTextInputClient(this);
+  }
+}
+
+void FakeTextInputClient::Blur() {
+  if (input_method_ != nullptr) {
+    input_method_->SetFocusedTextInputClient(nullptr);
+  }
 }
 
 void FakeTextInputClient::SetCompositionText(
@@ -65,12 +91,20 @@ void FakeTextInputClient::InsertText(
 
 void FakeTextInputClient::InsertChar(const KeyEvent& event) {}
 
+bool FakeTextInputClient::CanInsertImage() {
+  return can_insert_image_;
+}
+
+void FakeTextInputClient::InsertImage(const GURL& src) {
+  last_inserted_image_url_ = src;
+}
+
 TextInputType FakeTextInputClient::GetTextInputType() const {
   return text_input_type_;
 }
 
 TextInputMode FakeTextInputClient::GetTextInputMode() const {
-  return TEXT_INPUT_MODE_NONE;
+  return mode_;
 }
 
 base::i18n::TextDirection FakeTextInputClient::GetTextDirection() const {
@@ -201,8 +235,8 @@ bool FakeTextInputClient::SetAutocorrectRange(const gfx::Range& range) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void FakeTextInputClient::GetActiveTextInputControlLayoutBounds(
-    absl::optional<gfx::Rect>* control_bounds,
-    absl::optional<gfx::Rect>* selection_bounds) {}
+    std::optional<gfx::Rect>* control_bounds,
+    std::optional<gfx::Rect>* selection_bounds) {}
 #endif
 
 #if BUILDFLAG(IS_WIN)

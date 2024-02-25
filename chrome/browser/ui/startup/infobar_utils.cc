@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/startup/infobar_utils.h"
 
 #include "base/command_line.h"
+#include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,12 +21,14 @@
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/startup/test_third_party_cookie_phaseout_infobar_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "services/network/public/cpp/network_switches.h"
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
 #include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
@@ -101,6 +103,11 @@ void AddInfoBarsIfNecessary(Browser* browser,
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kProtectedAudiencesConsentedDebugToken)) {
       BiddingAndAuctionConsentedDebuggingDelegate::Create(web_contents);
+    }
+
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            network::switches::kTestThirdPartyCookiePhaseout)) {
+      TestThirdPartyCookiePhaseoutInfoBarDelegate::Create(web_contents);
     }
   }
 

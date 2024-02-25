@@ -297,7 +297,7 @@ void AdaptiveScreenBrightnessManager::OnTimerFired() {
 }
 
 void AdaptiveScreenBrightnessManager::OnReceiveSwitchStates(
-    const absl::optional<chromeos::PowerManagerClient::SwitchStates>
+    const std::optional<chromeos::PowerManagerClient::SwitchStates>
         switch_states) {
   if (switch_states.has_value()) {
     lid_state_ = switch_states->lid_state;
@@ -306,25 +306,25 @@ void AdaptiveScreenBrightnessManager::OnReceiveSwitchStates(
 }
 
 void AdaptiveScreenBrightnessManager::OnReceiveScreenBrightnessPercent(
-    const absl::optional<double> screen_brightness_percent) {
+    const std::optional<double> screen_brightness_percent) {
   if (screen_brightness_percent.has_value()) {
     previous_screen_brightness_percent_ = screen_brightness_percent_;
     screen_brightness_percent_ = *screen_brightness_percent;
   }
 }
 
-const absl::optional<int>
+const std::optional<int>
 AdaptiveScreenBrightnessManager::GetNightLightTemperaturePercent() const {
   const Profile* const profile = ProfileManager::GetActiveUserProfile();
   if (!profile)
-    return absl::nullopt;
+    return std::nullopt;
 
   const PrefService* const pref_service = profile->GetPrefs();
   if (!pref_service)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!pref_service->GetBoolean(ash::prefs::kNightLightEnabled))
-    return absl::nullopt;
+    return std::nullopt;
   return std::floor(
       pref_service->GetDouble(ash::prefs::kNightLightTemperature) * 100);
 }
@@ -341,7 +341,7 @@ void AdaptiveScreenBrightnessManager::LogEvent() {
   event->set_brightness(*screen_brightness_percent_);
   if (reason_.has_value()) {
     event->set_reason(*reason_);
-    reason_ = absl::nullopt;
+    reason_ = std::nullopt;
   }
   if (last_event_time_since_boot_.has_value()) {
     event->set_time_since_last_event_sec(
@@ -416,7 +416,7 @@ void AdaptiveScreenBrightnessManager::LogEvent() {
         ScreenBrightnessEvent::Features::EnvData::UNKNOWN_MODE);
   }
 
-  const absl::optional<int> temperature = GetNightLightTemperaturePercent();
+  const std::optional<int> temperature = GetNightLightTemperaturePercent();
   if (temperature.has_value()) {
     features->mutable_env_data()->set_night_light_temperature_percent(
         *temperature);

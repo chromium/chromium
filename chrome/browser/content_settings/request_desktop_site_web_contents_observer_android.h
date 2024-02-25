@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_REQUEST_DESKTOP_SITE_WEB_CONTENTS_OBSERVER_ANDROID_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_REQUEST_DESKTOP_SITE_WEB_CONTENTS_OBSERVER_ANDROID_H_
 
-#include "chrome/browser/android/tab_android.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -38,7 +37,6 @@ class RequestDesktopSiteWebContentsObserverAndroid
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   raw_ptr<PrefService> pref_service_ = nullptr;
-  raw_ptr<TabAndroid> tab_android_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

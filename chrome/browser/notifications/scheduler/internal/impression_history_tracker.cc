@@ -90,7 +90,7 @@ void ImpressionHistoryTrackerImpl::AddImpression(
     const std::string& guid,
     const Impression::ImpressionResultMap& impression_mapping,
     const Impression::CustomData& custom_data,
-    absl::optional<base::TimeDelta> ignore_timeout_duration) {
+    std::optional<base::TimeDelta> ignore_timeout_duration) {
   DCHECK(initialized_);
   auto it = client_states_.find(type);
   if (it == client_states_.end())

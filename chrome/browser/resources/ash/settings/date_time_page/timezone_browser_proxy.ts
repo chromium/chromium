@@ -26,23 +26,23 @@ export class TimeZoneBrowserProxyImpl implements TimeZoneBrowserProxy {
     return instance || (instance = new TimeZoneBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: TimeZoneBrowserProxy) {
+  static setInstanceForTesting(obj: TimeZoneBrowserProxy): void {
     instance = obj;
   }
 
-  showParentAccessForTimeZone() {
+  showParentAccessForTimeZone(): void {
     chrome.send('handleShowParentAccessForTimeZone');
   }
 
-  dateTimePageReady() {
+  dateTimePageReady(): void {
     chrome.send('dateTimePageReady');
   }
 
-  showSetDateTimeUi() {
+  showSetDateTimeUi(): void {
     chrome.send('showSetDateTimeUI');
   }
 
-  getTimeZones() {
+  getTimeZones(): Promise<string[][]> {
     return sendWithPromise('getTimeZones');
   }
 }

@@ -18,7 +18,7 @@
 
 namespace enterprise_connectors {
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -157,7 +157,7 @@ void UploadToReportingServer(
   if (reports.empty() || !reporting_client) {
     return;
   }
-  absl::optional<ReportingSettings> settings =
+  std::optional<ReportingSettings> settings =
       reporting_client->GetReportingSettings();
   const std::string version(version_info::GetVersionNumber());
   const std::string channel(
@@ -207,7 +207,7 @@ RealtimeReportingClient* CrashReportingContext::GetCrashReportingClient()
     if (!reporting_client) {
       continue;
     }
-    absl::optional<ReportingSettings> settings =
+    std::optional<ReportingSettings> settings =
         reporting_client->GetReportingSettings();
     if (settings.has_value() &&
         settings->enabled_event_names.count(
@@ -253,7 +253,7 @@ void CrashReportingContext::RemoveProfile(BrowserCrashEventRouter* router) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS)
 
 CrashReportingContext::~CrashReportingContext() = default;
 

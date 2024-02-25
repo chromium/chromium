@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 
+#include <optional>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -13,7 +15,6 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -53,7 +54,7 @@ PolicyCheckResult CheckSafeBrowsingEnabled(
 // Returns the target value of the Safe Browsing Protection Level derived only
 // from the legacy SafeBrowsingEnabled policy. If this policy is not set or
 // does not have a valid value, returns |nullopt|.
-absl::optional<ProtectionLevel> GetValueFromSafeBrowsingEnabledPolicy(
+std::optional<ProtectionLevel> GetValueFromSafeBrowsingEnabledPolicy(
     const policy::PolicyMap& policies) {
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
@@ -62,7 +63,7 @@ absl::optional<ProtectionLevel> GetValueFromSafeBrowsingEnabledPolicy(
 
   if (CheckSafeBrowsingEnabled(safe_browsing_enabled, nullptr /*error*/) !=
       PolicyCheckResult::kValid) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return safe_browsing_enabled->GetBool() ? ProtectionLevel::kStandardProtection
@@ -107,7 +108,7 @@ PolicyCheckResult CheckSafeBrowsingProtectionLevel(
 // Returns the target value of Safe Browsing protection level derived only
 // from the SafeBrowsingProtectionLevel policy. If this policy is not set or
 // does not have a valid value, returns |nullopt|.
-absl::optional<ProtectionLevel> GetValueFromSafeBrowsingProtectionLevelPolicy(
+std::optional<ProtectionLevel> GetValueFromSafeBrowsingProtectionLevelPolicy(
     const policy::PolicyMap& policies) {
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
@@ -117,7 +118,7 @@ absl::optional<ProtectionLevel> GetValueFromSafeBrowsingProtectionLevelPolicy(
   if (CheckSafeBrowsingProtectionLevel(safe_browsing_protection_level,
                                        nullptr /*error*/) !=
       PolicyCheckResult::kValid) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return static_cast<ProtectionLevel>(safe_browsing_protection_level->GetInt());
@@ -127,9 +128,9 @@ absl::optional<ProtectionLevel> GetValueFromSafeBrowsingProtectionLevelPolicy(
 // both the SafeBrowsingEnabled policy and the
 // SafeBrowsingProtectionLevel policy. If both policies are set,
 // SafeBrowsingProtectionLevel wins.
-absl::optional<ProtectionLevel> GetValueFromBothPolicies(
+std::optional<ProtectionLevel> GetValueFromBothPolicies(
     const policy::PolicyMap& policies) {
-  const absl::optional<ProtectionLevel> safe_browsing_protection_level =
+  const std::optional<ProtectionLevel> safe_browsing_protection_level =
       GetValueFromSafeBrowsingProtectionLevelPolicy(policies);
 
   if (safe_browsing_protection_level.has_value()) {
@@ -175,7 +176,7 @@ bool SafeBrowsingPolicyHandler::CheckPolicySettings(
 void SafeBrowsingPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const absl::optional<ProtectionLevel> value =
+  const std::optional<ProtectionLevel> value =
       GetValueFromBothPolicies(policies);
 
   if (!value.has_value())

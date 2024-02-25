@@ -97,7 +97,8 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
 }
 
 // static
-ScriptPromise BarcodeDetector::getSupportedFormats(ScriptState* script_state) {
+ScriptPromiseTyped<IDLSequence<V8BarcodeFormat>>
+BarcodeDetector::getSupportedFormats(ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   return BarcodeDetectorStatics::From(context)->EnumerateSupportedFormats(
       script_state);
@@ -138,27 +139,40 @@ String BarcodeDetector::BarcodeFormatToString(
   }
 }
 
-ScriptPromise BarcodeDetector::DoDetect(ScriptState* script_state,
-                                        SkBitmap bitmap,
-                                        ExceptionState& exception_state) {
-  if (!service_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Barcode detection service unavailable.");
-    return ScriptPromise();
+ScriptPromiseTyped<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
+    ScriptState* script_state,
+    const V8ImageBitmapSource* image_source,
+    ExceptionState& exception_state) {
+  std::optional<SkBitmap> bitmap =
+      GetBitmapFromSource(script_state, image_source, exception_state);
+  if (!bitmap) {
+    return ScriptPromiseTyped<IDLSequence<DetectedBarcode>>();
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<DetectedBarcode>>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
+  if (bitmap->isNull()) {
+    resolver->Resolve(HeapVector<Member<DetectedBarcode>>());
+    return promise;
+  }
+
+  if (!service_.is_bound()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                     "Barcode detection service unavailable.");
+    return promise;
+  }
   detect_requests_.insert(resolver);
   service_->Detect(
-      std::move(bitmap),
+      std::move(*bitmap),
       WTF::BindOnce(&BarcodeDetector::OnDetectBarcodes, WrapPersistent(this),
                     WrapPersistent(resolver)));
   return promise;
 }
 
 void BarcodeDetector::OnDetectBarcodes(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<DetectedBarcode>>* resolver,
     Vector<shape_detection::mojom::blink::BarcodeDetectionResultPtr>
         barcode_detection_results) {
   DCHECK(detect_requests_.Contains(resolver));

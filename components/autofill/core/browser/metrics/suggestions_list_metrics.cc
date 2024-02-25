@@ -6,25 +6,26 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 
 namespace autofill::autofill_metrics {
 namespace {
 
-ManageSuggestionType ToManageSuggestionType(PopupType popup_type) {
+ManageSuggestionType ToManageSuggestionType(FillingProduct popup_type) {
   switch (popup_type) {
-    case PopupType::kPersonalInformation:
-      return ManageSuggestionType::kPersonalInformation;
-    case PopupType::kAddresses:
+    case FillingProduct::kAddress:
       return ManageSuggestionType::kAddresses;
-    case PopupType::kCreditCards:
+    case FillingProduct::kCreditCard:
       return ManageSuggestionType::kPaymentMethodsCreditCards;
-    case PopupType::kIbans:
+    case FillingProduct::kIban:
       return ManageSuggestionType::kPaymentMethodsIbans;
-    case PopupType::kPasswords:
-      ABSL_FALLTHROUGH_INTENDED;
-    case PopupType::kUnspecified:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kCompose:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kPassword:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kNone:
       return ManageSuggestionType::kOther;
   }
 }
@@ -32,30 +33,31 @@ ManageSuggestionType ToManageSuggestionType(PopupType popup_type) {
 }  // anonymous namespace
 
 void LogAutofillSuggestionAcceptedIndex(int index,
-                                        PopupType popup_type,
+                                        FillingProduct filling_product,
                                         bool off_the_record) {
   const int uma_index = std::min(index, kMaxBucketsCount);
   base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex", uma_index);
 
-  switch (popup_type) {
-    case PopupType::kCreditCards:
+  switch (filling_product) {
+    case FillingProduct::kCreditCard:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.CreditCard",
                                uma_index);
       break;
-    case PopupType::kAddresses:
-    case PopupType::kPersonalInformation:
+    case FillingProduct::kAddress:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Profile",
                                uma_index);
       break;
-    case PopupType::kPasswords:
-    case PopupType::kUnspecified:
+    case FillingProduct::kPassword:
+    case FillingProduct::kNone:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Other",
                                uma_index);
       break;
-    case PopupType::kIbans:
-      // It is NOTREACHED because it's a single field form fill type (the above
-      // types are all multi fields main Autofill type), and thus the logging
-      // will be handled separately by SingleFieldFormFiller.
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kIban:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kMerchantPromoCode:
+      // It is NOTREACHED because all other types should be handled separately.
       NOTREACHED_NORETURN();
   }
 
@@ -65,10 +67,17 @@ void LogAutofillSuggestionAcceptedIndex(int index,
                             off_the_record);
 }
 
-void LogAutofillSelectedManageEntry(PopupType popup_type) {
-  const ManageSuggestionType uma_type = ToManageSuggestionType(popup_type);
+void LogAutofillSelectedManageEntry(FillingProduct filling_product) {
+  const ManageSuggestionType uma_type = ToManageSuggestionType(filling_product);
   base::UmaHistogramEnumeration("Autofill.SuggestionsListManageClicked",
                                 uma_type);
+}
+
+void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
+    ShowCardsFromGoogleAccountButtonEvent event) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents",
+      event);
 }
 
 }  // namespace autofill::autofill_metrics

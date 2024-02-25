@@ -76,7 +76,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
       extension_misc::EXTENSION_ICON_BITTY;
 
   AppIconLoader(Profile* profile,
-                absl::optional<std::string> app_id,
+                std::optional<std::string> app_id,
                 IconType icon_type,
                 int size_hint_in_dip,
                 bool is_placeholder_icon,
@@ -85,7 +85,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
                 LoadIconCallback callback);
 
   AppIconLoader(Profile* profile,
-                absl::optional<std::string> app_id,
+                std::optional<std::string> app_id,
                 IconType icon_type,
                 int size_hint_in_dip,
                 bool is_placeholder_icon,
@@ -108,11 +108,11 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
   AppIconLoader(int size_hint_in_dip, LoadIconCallback callback);
 
   void ApplyIconEffects(IconEffects icon_effects,
-                        const absl::optional<std::string>& app_id,
+                        const std::optional<std::string>& app_id,
                         IconValuePtr iv);
 
   void ApplyBadges(IconEffects icon_effects,
-                   const absl::optional<std::string>& app_id,
+                   const std::optional<std::string>& app_id,
                    IconValuePtr iv);
 
   void LoadWebAppIcon(const std::string& web_app_id,
@@ -226,7 +226,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
   raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
-  absl::optional<std::string> app_id_ = absl::nullopt;
+  std::optional<std::string> app_id_ = std::nullopt;
 
   const IconType icon_type_ = IconType::kUnknown;
 

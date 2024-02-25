@@ -10,7 +10,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests conversion of Inspector's resource representation into HAR format.\n`);
-  await TestRunner.loadLegacyModule('console');
 
   await TestRunner.NetworkAgent.setCacheDisabled(true);
   await TestRunner.reloadPagePromise();
@@ -31,9 +30,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     c1.addAttribute('domain', 'example.com');
     request.addExtraRequestInfo({
       includedRequestCookies: [
-        c1,
-        new SDK.Cookie.Cookie('a1', 'b1'),
-        new SDK.Cookie.Cookie('c1', 'd1'),
+        {cookie: c1},
+        {cookie: new SDK.Cookie.Cookie('a1', 'b1')},
+        {cookie: new SDK.Cookie.Cookie('c1', 'd1')},
       ],
       blockedRequestCookies: [],
       requestHeaders: [{name: 'version', value: 'HTTP/1.1'}],

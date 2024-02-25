@@ -18,12 +18,14 @@ namespace media {
 
 V4L2DecodeSurface::V4L2DecodeSurface(V4L2WritableBufferRef input_buffer,
                                      V4L2WritableBufferRef output_buffer,
-                                     scoped_refptr<VideoFrame> frame)
+                                     scoped_refptr<FrameResource> frame,
+                                     uint64_t secure_handle)
     : input_buffer_(std::move(input_buffer)),
       output_buffer_(std::move(output_buffer)),
-      video_frame_(std::move(frame)),
+      frame_(std::move(frame)),
       output_record_(output_buffer_.BufferId()),
-      decoded_(false) {
+      decoded_(false),
+      secure_handle_(secure_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -44,10 +46,6 @@ void V4L2DecodeSurface::SetDecoded() {
   // We can now drop references to all reference surfaces for this surface
   // as we are done with decoding.
   reference_surfaces_.clear();
-
-  // And finally execute and drop the decode done callback, if set.
-  if (done_cb_)
-    std::move(done_cb_).Run();
 }
 
 void V4L2DecodeSurface::SetVisibleRect(const gfx::Rect& visible_rect) {
@@ -73,13 +71,6 @@ void V4L2DecodeSurface::SetReferenceSurfaces(
 #endif
 
   reference_surfaces_ = std::move(ref_surfaces);
-}
-
-void V4L2DecodeSurface::SetDecodeDoneCallback(base::OnceClosure done_cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!done_cb_);
-
-  done_cb_ = std::move(done_cb);
 }
 
 void V4L2DecodeSurface::SetReleaseCallback(base::OnceClosure release_cb) {
@@ -131,7 +122,12 @@ bool V4L2RequestDecodeSurface::Submit() {
   };
   input_buffer().SetTimeStamp(timestamp);
 
-  if (!std::move(input_buffer()).QueueMMap(&request_ref_)) {
+  if (input_buffer().Memory() == V4L2_MEMORY_DMABUF) {
+    if (!std::move(input_buffer())
+             .QueueDMABuf(secure_handle(), &request_ref_)) {
+      return false;
+    }
+  } else if (!std::move(input_buffer()).QueueMMap(&request_ref_)) {
     return false;
   }
 
@@ -141,7 +137,7 @@ bool V4L2RequestDecodeSurface::Submit() {
       result = std::move(output_buffer()).QueueMMap();
       break;
     case V4L2_MEMORY_DMABUF:
-      result = std::move(output_buffer()).QueueDMABuf(video_frame());
+      result = std::move(output_buffer()).QueueDMABuf(frame());
       break;
     default:
       NOTREACHED() << "We should only use MMAP or DMABUF.";

@@ -11,6 +11,7 @@
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -57,9 +58,6 @@ class EchePresenceManagerTest : public testing::Test {
   ~EchePresenceManagerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
     fake_multidevice_setup_client_.SetHostStatusWithDevice(
         std::make_pair(multidevice_setup::mojom::HostStatus::kHostVerified,
                        test_remote_device_));
@@ -104,9 +102,9 @@ class EchePresenceManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeEcheConnector> fake_eche_connector_;
   std::unique_ptr<FakeEcheMessageReceiver> fake_eche_message_receiver_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
@@ -118,7 +116,10 @@ class EchePresenceManagerTest : public testing::Test {
   std::unique_ptr<EchePresenceManager> eche_presence_manager_;
 };
 
-TEST_F(EchePresenceManagerTest, StopMonitoring) {
+TEST_F(EchePresenceManagerTest, StopMonitoring_PersistentScan) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kEcheShorterScanningDutyCycle});
   // Test feature status change to kIneligible
   Reset();
   SetFeatureStatus(FeatureStatus::kConnected);
@@ -181,6 +182,64 @@ TEST_F(EchePresenceManagerTest, StartMonitoring) {
   SetFeatureStatus(FeatureStatus::kConnected);
   SetStreamStatus(proto::StatusChangeType::TYPE_STREAM_START);
   EXPECT_EQ(1u, num_start_monitor_calls_);
+}
+
+TEST_F(EchePresenceManagerTest, StartMonitoring_PeriodicalScanning) {
+  Reset();
+  SetFeatureStatus(FeatureStatus::kConnected);
+  SetStreamStatus(proto::StatusChangeType::TYPE_STREAM_START);
+  EXPECT_EQ(1u, num_start_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, monitoring stopped.
+  EXPECT_EQ(1u, num_stop_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, started monioring again.
+  EXPECT_EQ(2u, num_start_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, monitoring stopped.
+  EXPECT_EQ(2u, num_stop_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, started monioring again.
+  EXPECT_EQ(3u, num_start_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, monitoring stopped.
+  EXPECT_EQ(3u, num_stop_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, started monioring again.
+  EXPECT_EQ(4u, num_start_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, monitoring stopped.
+  EXPECT_EQ(4u, num_stop_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, started monioring again.
+  EXPECT_EQ(5u, num_start_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, monitoring stopped.
+  EXPECT_EQ(5u, num_stop_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, started monioring again.
+  EXPECT_EQ(6u, num_start_monitor_calls_);
+
+  // 5 minutes passed since last proximity check passed.
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 30 seconds, monitoring stopped.
+  EXPECT_EQ(6u, num_stop_monitor_calls_);
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+  // After 5 minutesof last proximity check, monitoering should not be started
+  // again.
+  EXPECT_EQ(6u, num_start_monitor_calls_);
 }
 
 }  // namespace eche_app

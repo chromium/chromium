@@ -5,18 +5,28 @@
 #ifndef IOS_CHROME_BROWSER_UI_APP_STORE_RATING_FEATURES_H_
 #define IOS_CHROME_BROWSER_UI_APP_STORE_RATING_FEATURES_H_
 
+#include <vector>
+
 #import "base/feature_list.h"
 
-// Feature flag to enable the App Store Rating feature.
+// Feature controlling the App Store rating prompt.
 BASE_DECLARE_FEATURE(kAppStoreRating);
 
-// Feature flag to enable the App Store Rating loosened triggers feature.
-BASE_DECLARE_FEATURE(kAppStoreRatingLoosenedTriggers);
+// Feature controlling whether the default browser condition is used when
+// determining eligibility for the App Store rating in specific countries.
+BASE_DECLARE_FEATURE(kAppStoreRatingDBExclusionJan2024);
 
-// Returns true if App Store Rating feature is enabled.
+// Returns true if the App Store rating feature is enabled.
 bool IsAppStoreRatingEnabled();
 
-// Returns true if App Store Rating loosened triggers feature is enabled.
-bool IsAppStoreRatingLoosenedTriggersEnabled();
+// Returns true if the App Store default browser country exclusion feature is
+// enabled.
+bool IsDefaultBrowserConditionExclusionInEffect();
+
+// Returns the list of countries for which the default browser condition
+// exclusion applies. Returns an empty vector if the exclusion feature is not
+// enabled.
+const std::vector<std::string>
+GetCountriesExcludedFromDefaultBrowserCondition();
 
 #endif  // IOS_CHROME_BROWSER_UI_APP_STORE_RATING_FEATURES_H_

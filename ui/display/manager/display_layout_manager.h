@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/types/display_constants.h"
@@ -36,14 +37,15 @@ class DisplayLayoutManager {
   // configure the hardware. The requested configuration is stored in
   // |requests|.
   virtual bool GetDisplayLayout(
-      const std::vector<DisplaySnapshot*>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       RefreshRateThrottleState new_throttle_state,
       bool new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const = 0;
 
-  virtual std::vector<DisplaySnapshot*> GetDisplayStates() const = 0;
+  virtual std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>
+  GetDisplayStates() const = 0;
 
   virtual bool IsMirroring() const = 0;
 };

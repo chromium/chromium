@@ -98,62 +98,30 @@ out/Default/bin/run_chrome_junit_tests --wait-for-java-debugger  # Specify custo
 *   Run your debug configuration, and switch to the Debug perspective.
 
 ## Debugging C/C++
-While the app is running, use the wrapper script's `gdb` command to enter into a
-gdb shell.
+While the app is running, use the wrapper script's `lldb` command to enter into a
+lldb shell.
 
-When running with gdb attached, the app runs **extremely slowly**.
+When running with `lldb` attached, the app runs **extremely slowly**.
 
 ```shell
 # Attaches to browser process.
-out/Default/bin/content_shell_apk gdb
-out/Default/bin/chrome_public_apk gdb
+out/Default/bin/content_shell_apk lldb
+out/Default/bin/chrome_public_apk lldb
 
 # Attaches to gpu process.
-out/Default/bin/chrome_public_apk gdb --debug-process-name privileged_process0
+out/Default/bin/chrome_public_apk lldb --debug-process-name privileged_process0
 
 # Attach to other processes ("chrome_public_apk ps" to show pids).
-out/Default/bin/chrome_public_apk gdb --pid $PID
-```
-
-When connecting, gdb will complain of not being able to load a lot of libraries.
-This happens because of java code. The following messages are all expected:
-```
-Connecting to :5039...
-warning: Could not load shared library symbols for 211 libraries, e.g. /system/framework/arm/boot.oat.
-Use the "info sharedlibrary" command to see the complete listing.
-Do you need "set solib-search-path" or "set sysroot"?
-Failed to read a valid object file image from memory.
-```
-
-If you have ever run an ASAN build of chromium on the device, you may get
-an error like the following when you start up gdb:
-```
-/tmp/<username>-adb-gdb-tmp-<pid>/gdb.init:11: Error in sourced command file:
-"/tmp/<username>-adb-gdb-tmp-<pid>/app_process32": not in executable format: file format not recognized
-```
-If this happens, run the following command and try again:
-```shell
-$ src/android/asan/third_party/asan_device_setup.sh --revert
+out/Default/bin/chrome_public_apk lldb --pid $PID
 ```
 
 ### Using Visual Studio Code
-While the app is running, run the `gdb` command with `--ide`:
 
-```shell
-out/Default/bin/content_shell_apk gdb --ide
-```
+**NOT WORKING**
 
-Once the script has done its thing (generally ~1 second after the initial
-time its used), open [vscode.md](vscode.md) and ensure you have the
-[Android launch entry](vscode.md#Launch-Commands).
-
-Connect via the IDE's launch entry. Connecting takes 30-40 seconds.
-
-When troubleshooting, it's helpful to enable
-[engine logging](https://github.com/Microsoft/vscode-cpptools/blob/master/launch.md#enginelogging).
-
-Known Issues:
- * Pretty printers are not working properly.
+This used to work with GDB, but the LLDB instructions have not been written. If
+you would like to take this on, please use:
+[crbug/1266055](https://bugs.chromium.org/p/chromium/issues/detail?id=1266055).
 
 ### Waiting for Debugger on Early Startup
 ```shell
@@ -165,12 +133,8 @@ out/Default/bin/chrome_public_apk launch --args="--wait-for-debugger-children=gp
 out/Default/bin/chrome_public_apk launch --args="--wait-for-debugger-children=renderer"
 ```
 
-#### With an IDE
-Once `gdb` attaches, the app will resume execution, so you must set your
-breakpoint before attaching.
-
-#### With Command-line GDB
-Once attached, gdb will drop into a prompt. Set your breakpoints and run "c" to
+#### With Command-line LLDB
+Once attached, `lldb` will drop into a prompt. Set your breakpoints and run "c" to
 continue.
 
 ## Symbolizing Crash Stacks and Tombstones (C++)
@@ -250,7 +214,7 @@ adb shell start
 In the source itself, use `fprintf(stderr, "message");` whenever you need to
 output a message.
 
-## Debug unit tests with GDB
+## Debug unit tests with LLDB
 
 To run unit tests use the following command:
 
@@ -263,15 +227,7 @@ That command will cause the test process to wait until a debugger is attached.
 To attach a debugger:
 
 ```shell
-build/android/adb_gdb --output-directory=out/Default --package-name=org.chromium.native_test
-```
-
-After attaching gdb to the process you can use it normally. For example:
-
-```
-(gdb) break main
-Breakpoint 1 at 0x9750793c: main. (2 locations)
-(gdb) continue
+build/android/connect_lldb.sh --output-directory=out/Default --package-name=org.chromium.native_test
 ```
 
 ## Examine app data on a non-rooted device

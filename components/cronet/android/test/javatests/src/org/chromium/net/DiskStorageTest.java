@@ -21,7 +21,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.PathUtils;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,13 +31,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 
-/**
- * Test CronetEngine disk storage.
- */
+/** Test CronetEngine disk storage. */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support on-disk caches")
 public class DiskStorageTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private String mReadOnlyStoragePath;
 
@@ -43,7 +46,8 @@ public class DiskStorageTest {
     public void setUp() throws Exception {
         System.loadLibrary("cronet_tests");
         assertThat(
-                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                        NativeTestServer.startNativeTestServer(
+                                mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }
 
@@ -57,7 +61,6 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Crashing on Android Cronet Builder, see crbug.com/601409.
     public void testReadOnlyStorageDirectory() throws Exception {
         mReadOnlyStoragePath = PathUtils.getDataDirectory() + "/read_only";
@@ -65,10 +68,14 @@ public class DiskStorageTest {
         assertThat(readOnlyStorage.mkdir()).isTrue();
         // Setting the storage directory as readonly has no effect.
         assertThat(readOnlyStorage.setReadOnly()).isTrue();
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            builder.setStoragePath(mReadOnlyStoragePath);
-            builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
-        });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            builder.setStoragePath(mReadOnlyStoragePath);
+                            builder.enableHttpCache(
+                                    CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
+                        });
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -102,7 +109,6 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Crashing on Android Cronet Builder, see crbug.com/601409.
     public void testPurgeOldVersion() throws Exception {
         String testStorage = getTestStorage(mTestRule.getTestFramework().getContext());
@@ -128,10 +134,15 @@ public class DiskStorageTest {
             }
         }
 
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
-            builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
-        });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            builder.setStoragePath(
+                                    getTestStorage(mTestRule.getTestFramework().getContext()));
+                            builder.enableHttpCache(
+                                    CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
+                        });
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
@@ -166,13 +177,13 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Tests that if cache version is current, Cronet does not purge the directory.
     public void testCacheVersionCurrent() throws Exception {
         // Initialize a CronetEngine and shut it down.
         ExperimentalCronetEngine.Builder builder =
-                mTestRule.getTestFramework().createNewSecondaryBuilder(
-                        mTestRule.getTestFramework().getContext());
+                mTestRule
+                        .getTestFramework()
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
         builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024);
 
@@ -229,16 +240,20 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Tests that enableHttpCache throws if storage path not set
     public void testEnableHttpCacheThrowsIfStoragePathNotSet() throws Exception {
         // Initialize a CronetEngine and shut it down.
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            assertThrows(IllegalArgumentException.class,
-                    ()
-                            -> builder.enableHttpCache(
-                                    CronetEngine.Builder.HTTP_CACHE_DISK, 1024 * 1024));
-        });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            assertThrows(
+                                    IllegalArgumentException.class,
+                                    () ->
+                                            builder.enableHttpCache(
+                                                    CronetEngine.Builder.HTTP_CACHE_DISK,
+                                                    1024 * 1024));
+                        });
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -260,13 +275,13 @@ public class DiskStorageTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Tests that prefs file is created even if httpcache isn't enabled
     public void testPrefsFileCreatedWithoutHttpCache() throws Exception {
         // Initialize a CronetEngine and shut it down.
         String testStorage = getTestStorage(mTestRule.getTestFramework().getContext());
-        mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder) -> builder.setStoragePath(testStorage));
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch((builder) -> builder.setStoragePath(testStorage));
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();

@@ -120,10 +120,10 @@ void MachPortRendezvousServer::RegisterPortsForPid(
       dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,
                              static_cast<uintptr_t>(pid), DISPATCH_PROC_EXIT,
                              dispatch_source_->Queue()));
-  dispatch_source_set_event_handler(exit_watcher, ^{
+  dispatch_source_set_event_handler(exit_watcher.get(), ^{
     OnClientExited(pid);
   });
-  dispatch_resume(exit_watcher);
+  dispatch_resume(exit_watcher.get());
 
   auto it =
       client_data_.emplace(pid, ClientData{std::move(exit_watcher), ports});

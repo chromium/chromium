@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2009-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2009-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -29,30 +29,37 @@ static NSHashTable *gPointerTable = nil;
 
 - (id)initWithValue:(id)aValue
 {
-    if ((self = [super init]))
+    if((self = [super init]))
     {
         value = [aValue retain];
         @synchronized(gPointerTable) {
             NSHashInsertKnownAbsent(gPointerTable, self);
         }
     }
-	
-	return self;
+
+    return self;
 }
 
 - (void)dealloc
 {
-	[value release];
-	@synchronized(gPointerTable) {
-		NSAssert(NSHashGet(gPointerTable, self) != NULL, @"self should be in the hash table");
-		NSHashRemove(gPointerTable, self);
-	}
-	[super dealloc];
+    [value release];
+    @synchronized(gPointerTable) {
+        NSAssert(NSHashGet(gPointerTable, self) != NULL, @"self should be in the hash table");
+        NSHashRemove(gPointerTable, self);
+    }
+    [super dealloc];
 }
 
-- (id)value
+- (void)handleArgument:(id)arg
 {
-	return value;
+    void *pointerValue = [arg pointerValue];
+    if(pointerValue != NULL)
+    {
+        if([value isKindOfClass:[NSValue class]])
+            [(NSValue *)value getValue:pointerValue];
+        else
+            *(id *)pointerValue = value;
+    }
 }
 
 + (BOOL)ptrIsPassByRefSetter:(void*)ptr {

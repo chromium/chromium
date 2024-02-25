@@ -49,9 +49,9 @@ class ASH_EXPORT AssistantDialogPlate
       public AssistantInteractionModelObserver,
       public AssistantUiModelObserver,
       public AssistantButtonListener {
- public:
-  METADATA_HEADER(AssistantDialogPlate);
+  METADATA_HEADER(AssistantDialogPlate, views::View)
 
+ public:
   explicit AssistantDialogPlate(AssistantViewDelegate* delegate);
   AssistantDialogPlate(const AssistantDialogPlate&) = delete;
   AssistantDialogPlate& operator=(const AssistantDialogPlate&) = delete;
@@ -80,8 +80,8 @@ class ASH_EXPORT AssistantDialogPlate
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
   // Returns the first focusable view or nullptr to defer to views::FocusSearch.
   views::View* FindFirstFocusableView();
@@ -99,18 +99,17 @@ class ASH_EXPORT AssistantDialogPlate
 
   InputModality input_modality() const;
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AssistantViewDelegate> delegate_;
 
   // The following views are all owned by the view hierarchy
-  raw_ptr<views::ImageView, ExperimentalAsh> molecule_icon_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> input_modality_layout_container_ =
-      nullptr;
-  raw_ptr<views::View, ExperimentalAsh> keyboard_layout_container_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> voice_layout_container_ = nullptr;
-  raw_ptr<views::ImageButton, ExperimentalAsh> keyboard_input_toggle_ = nullptr;
-  raw_ptr<views::ImageButton, ExperimentalAsh> voice_input_toggle_ = nullptr;
-  raw_ptr<MicView, ExperimentalAsh> animated_voice_input_toggle_ = nullptr;
-  raw_ptr<views::Textfield, ExperimentalAsh> textfield_ = nullptr;
+  raw_ptr<views::ImageView> molecule_icon_ = nullptr;
+  raw_ptr<views::View> input_modality_layout_container_ = nullptr;
+  raw_ptr<views::View> keyboard_layout_container_ = nullptr;
+  raw_ptr<views::View> voice_layout_container_ = nullptr;
+  raw_ptr<views::ImageButton> keyboard_input_toggle_ = nullptr;
+  raw_ptr<views::ImageButton> voice_input_toggle_ = nullptr;
+  raw_ptr<MicView> animated_voice_input_toggle_ = nullptr;
+  raw_ptr<views::Textfield> textfield_ = nullptr;
 
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
   std::unique_ptr<AssistantQueryHistory::Iterator> query_history_iterator_;

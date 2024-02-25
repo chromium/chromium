@@ -20,6 +20,10 @@ HelpBubbleWebUI::~HelpBubbleWebUI() {
   Close();
 }
 
+content::WebContents* HelpBubbleWebUI::GetWebContents() {
+  return is_open() ? handler_->GetWebContents() : nullptr;
+}
+
 bool HelpBubbleWebUI::ToggleFocusForAccessibility() {
   return handler_->ToggleHelpBubbleFocusForAccessibility(anchor_id_);
 }

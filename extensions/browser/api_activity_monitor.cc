@@ -5,6 +5,7 @@
 #include "extensions/browser/api_activity_monitor.h"
 
 #include "base/values.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 namespace activity_monitor {
@@ -42,7 +43,7 @@ void SetWebRequestMonitor(WebRequestMonitor web_request_monitor) {
 }
 
 void OnApiEventDispatched(content::BrowserContext* browser_context,
-                          const std::string& extension_id,
+                          const ExtensionId& extension_id,
                           const std::string& event_name,
                           const base::Value::List& event_args) {
   if (g_event_monitor)
@@ -51,7 +52,7 @@ void OnApiEventDispatched(content::BrowserContext* browser_context,
 
 // Called when an extension calls an API function.
 void OnApiFunctionCalled(content::BrowserContext* browser_context,
-                         const std::string& extension_id,
+                         const ExtensionId& extension_id,
                          const std::string& api_name,
                          const base::Value::List& args) {
   if (g_function_monitor)
@@ -59,7 +60,7 @@ void OnApiFunctionCalled(content::BrowserContext* browser_context,
 }
 
 void OnWebRequestApiUsed(content::BrowserContext* browser_context,
-                         const std::string& extension_id,
+                         const ExtensionId& extension_id,
                          const GURL& url,
                          bool is_incognito,
                          const std::string& api_call,

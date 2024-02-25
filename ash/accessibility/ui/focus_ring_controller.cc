@@ -5,11 +5,11 @@
 #include "ash/accessibility/ui/focus_ring_controller.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/accessibility/ui/focus_ring_layer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
-#include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
@@ -59,18 +59,10 @@ void FocusRingController::UpdateFocusRing() {
   gfx::Rect view_bounds = view->GetContentsBounds();
 
   // Workarounds that attempts to pick a better bounds.
-  if (view->GetClassName() == views::LabelButton::kViewClassName) {
+  if (std::string_view(view->GetClassName()) ==
+      std::string_view(views::LabelButton::kViewClassName)) {
     view_bounds = view->GetLocalBounds();
     view_bounds.Inset(2);
-  }
-
-  // Workarounds for system tray items that have customized focus borders.  The
-  // insets here must be consistent with the ones used by those classes.
-  if (view->GetClassName() == ActionableView::kViewClassName) {
-    view_bounds = view->GetLocalBounds();
-    view_bounds.Inset(gfx::Insets::TLBR(1, 1, 3, 3));
-  } else if (view->GetClassName() == TrayBackgroundView::kViewClassName) {
-    view_bounds.Inset(gfx::Insets::TLBR(1, 1, 3, 3));
   }
 
   // Convert view bounds to widget/window coordinates.

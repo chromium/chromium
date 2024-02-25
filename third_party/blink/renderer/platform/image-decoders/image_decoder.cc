@@ -25,6 +25,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "skia/ext/cicp.h"
@@ -38,8 +39,6 @@
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -81,11 +80,10 @@ cc::ImageType FileExtensionToImageType(String image_extension) {
 
 wtf_size_t CalculateMaxDecodedBytes(
     ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option,
-    const SkISize& desired_size) {
+    const SkISize& desired_size,
+    size_t platform_max_decoded_bytes) {
   const wtf_size_t max_decoded_bytes =
-      Platform::Current()
-          ? static_cast<wtf_size_t>(Platform::Current()->MaxDecodedImageBytes())
-          : ImageDecoder::kNoDecodedImageByteLimit;
+      base::saturated_cast<wtf_size_t>(platform_max_decoded_bytes);
   if (desired_size.isEmpty()) {
     return max_decoded_bytes;
   }
@@ -197,6 +195,27 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
   return String();
 }
 
+// Checks to see if a mime type is an image type with lossy compression, whose
+// size will be restricted via the 'lossy-images-max-bpp' document
+// policy. (JPEG)
+bool IsLossyImageMIMEType(const String& mime_type) {
+  return EqualIgnoringASCIICase(mime_type, "image/jpeg") ||
+         EqualIgnoringASCIICase(mime_type, "image/jpg") ||
+         EqualIgnoringASCIICase(mime_type, "image/pjpeg");
+}
+
+// Checks to see if a mime type is an image type with lossless (or no)
+// compression, whose size may be restricted via the
+// 'lossless-images-max-bpp' document policy. (BMP, GIF, PNG, WEBP)
+bool IsLosslessImageMIMEType(const String& mime_type) {
+  return EqualIgnoringASCIICase(mime_type, "image/bmp") ||
+         EqualIgnoringASCIICase(mime_type, "image/gif") ||
+         EqualIgnoringASCIICase(mime_type, "image/png") ||
+         EqualIgnoringASCIICase(mime_type, "image/webp") ||
+         EqualIgnoringASCIICase(mime_type, "image/x-xbitmap") ||
+         EqualIgnoringASCIICase(mime_type, "image/x-png");
+}
+
 }  // namespace
 
 ImageDecoder::ImageDecoder(
@@ -213,15 +232,13 @@ ImageDecoder::ImageDecoder(
 
 ImageDecoder::~ImageDecoder() = default;
 
-const wtf_size_t ImageDecoder::kNoDecodedImageByteLimit =
-    static_cast<wtf_size_t>(-1);
-
 std::unique_ptr<ImageDecoder> ImageDecoder::Create(
     scoped_refptr<SegmentReader> data,
     bool data_complete,
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     ColorBehavior color_behavior,
+    size_t platform_max_decoded_bytes,
     const SkISize& desired_size,
     AnimationOption animation_option) {
   auto type = SniffMimeTypeInternal(data);
@@ -231,7 +248,8 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
 
   return CreateByMimeType(type, std::move(data), data_complete, alpha_option,
                           high_bit_depth_decoding_option, color_behavior,
-                          desired_size, animation_option);
+                          platform_max_decoded_bytes, desired_size,
+                          animation_option);
 }
 
 std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
@@ -241,10 +259,11 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     ColorBehavior color_behavior,
+    size_t platform_max_decoded_bytes,
     const SkISize& desired_size,
     AnimationOption animation_option) {
-  const wtf_size_t max_decoded_bytes =
-      CalculateMaxDecodedBytes(high_bit_depth_decoding_option, desired_size);
+  const wtf_size_t max_decoded_bytes = CalculateMaxDecodedBytes(
+      high_bit_depth_decoding_option, desired_size, platform_max_decoded_bytes);
 
   // Note: The mime types below should match those supported by
   // MimeUtil::IsSupportedImageMimeType() (which forces lowercase).
@@ -405,10 +424,10 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
   }
 #endif
 
-  if (MIMETypeRegistry::IsLossyImageMIMEType(mime_type)) {
+  if (IsLossyImageMIMEType(mime_type)) {
     return kLossyFormat;
   }
-  if (MIMETypeRegistry::IsLosslessImageMIMEType(mime_type)) {
+  if (IsLosslessImageMIMEType(mime_type)) {
     return kLosslessFormat;
   }
 
@@ -488,8 +507,8 @@ uint8_t ImageDecoder::GetYUVBitDepth() const {
   return 8;
 }
 
-absl::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
-  return absl::nullopt;
+std::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
+  return std::nullopt;
 }
 
 gfx::Size ImageDecoder::FrameSizeAtIndex(wtf_size_t) const {
@@ -573,9 +592,9 @@ bool ImageDecoder::FrameIsDecodedAtIndex(wtf_size_t index) const {
          frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete;
 }
 
-absl::optional<base::TimeDelta> ImageDecoder::FrameTimestampAtIndex(
+std::optional<base::TimeDelta> ImageDecoder::FrameTimestampAtIndex(
     wtf_size_t) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::TimeDelta ImageDecoder::FrameDurationAtIndex(wtf_size_t) const {
@@ -1025,6 +1044,8 @@ ColorProfileTransform* ImageDecoder::ColorTransform() {
   UpdateSkImageColorSpaceAndTransform();
   return embedded_to_sk_image_transform_.get();
 }
+
+ColorProfileTransform::~ColorProfileTransform() = default;
 
 sk_sp<SkColorSpace> ImageDecoder::ColorSpaceForSkImages() {
   UpdateSkImageColorSpaceAndTransform();

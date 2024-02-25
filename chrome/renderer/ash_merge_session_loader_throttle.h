@@ -17,9 +17,7 @@
 
 // This is used to throttle XHR resource requests on Chrome OS while the
 // merge session is running (or a timeout).
-class AshMergeSessionLoaderThrottle
-    : public blink::URLLoaderThrottle,
-      public base::SupportsWeakPtr<AshMergeSessionLoaderThrottle> {
+class AshMergeSessionLoaderThrottle final : public blink::URLLoaderThrottle {
  public:
   static base::TimeDelta GetMergeSessionTimeout();
 
@@ -33,11 +31,6 @@ class AshMergeSessionLoaderThrottle
 
   ~AshMergeSessionLoaderThrottle() override;
 
- private:
-  bool MaybeDeferForMergeSession(
-      const GURL& url,
-      DelayedCallbackGroup::Callback resume_callback);
-
   // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
@@ -48,6 +41,11 @@ class AshMergeSessionLoaderThrottle
       std::vector<std::string>* to_be_removed_headers,
       net::HttpRequestHeaders* modified_headers,
       net::HttpRequestHeaders* modified_cors_exempt_headers) override;
+
+ private:
+  bool MaybeDeferForMergeSession(
+      const GURL& url,
+      DelayedCallbackGroup::Callback resume_callback);
   void DetachFromCurrentSequence() override;
   void ResumeLoader(DelayedCallbackGroup::RunReason run_reason);
 

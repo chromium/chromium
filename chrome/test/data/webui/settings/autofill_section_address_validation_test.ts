@@ -5,14 +5,15 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {CountryDetailManagerImpl, CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
+import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
+import {CountryDetailManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createAddressEntry, createEmptyAddressEntry, makeGuid, STUB_USER_ACCOUNT_INFO} from './autofill_fake_data.js';
 import {CountryDetailManagerTestImpl, createAddressDialog, expectEvent} from './autofill_section_test_utils.js';
 // clang-format on
 
-const ServerFieldType = chrome.autofillPrivate.ServerFieldType;
+const FieldType = chrome.autofillPrivate.FieldType;
 
 suite('AutofillSectionAddressValidationTests', () => {
   setup(() => {
@@ -21,8 +22,7 @@ suite('AutofillSectionAddressValidationTests', () => {
 
   test('verifyRequiredFields', async () => {
     const address = createEmptyAddressEntry();
-    address.fields.push(
-        {type: ServerFieldType.ADDRESS_HOME_COUNTRY, value: 'US'});
+    address.fields.push({type: FieldType.ADDRESS_HOME_COUNTRY, value: 'US'});
 
     const components =
         await CountryDetailManagerImpl.getInstance().getAddressFormat('US');
@@ -153,7 +153,7 @@ suite('AutofillSectionAddressValidationTests', () => {
 
     // This field is required.
     const entry = address.fields.find(
-        entry => entry.type === ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
+        entry => entry.type === FieldType.ADDRESS_HOME_STREET_ADDRESS);
     assertTrue(!!entry);
     address.fields.splice(address.fields.indexOf(entry), 1);
 
@@ -166,8 +166,7 @@ suite('AutofillSectionAddressValidationTests', () => {
   test('verifyInvalidatingInitiallyInvalid', async () => {
     const address = createEmptyAddressEntry();
     address.guid = makeGuid();
-    address.fields.push(
-        {type: ServerFieldType.ADDRESS_HOME_COUNTRY, value: 'US'});
+    address.fields.push({type: FieldType.ADDRESS_HOME_COUNTRY, value: 'US'});
     address.metadata = {
       summaryLabel: '',
       source: chrome.autofillPrivate.AddressSource.ACCOUNT,

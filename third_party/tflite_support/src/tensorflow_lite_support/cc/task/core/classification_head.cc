@@ -44,7 +44,7 @@ StatusOr<ClassificationHead> BuildClassificationHead(
           output_tensor_metadata,
           tflite::AssociatedFileType_TENSOR_AXIS_LABELS);
   if (!labels_filename.empty()) {
-    ASSIGN_OR_RETURN(absl::string_view labels_file,
+    TFLITE_ASSIGN_OR_RETURN(absl::string_view labels_file,
                      metadata_extractor.GetAssociatedFile(labels_filename));
     const std::string display_names_filename =
         ModelMetadataExtractor::FindFirstAssociatedFileName(
@@ -53,15 +53,15 @@ StatusOr<ClassificationHead> BuildClassificationHead(
             display_names_locale);
     absl::string_view display_names_file;
     if (!display_names_filename.empty()) {
-      ASSIGN_OR_RETURN(display_names_file, metadata_extractor.GetAssociatedFile(
+      TFLITE_ASSIGN_OR_RETURN(display_names_file, metadata_extractor.GetAssociatedFile(
                                                display_names_filename));
     }
-    ASSIGN_OR_RETURN(head.label_map_items,
+    TFLITE_ASSIGN_OR_RETURN(head.label_map_items,
                      BuildLabelMapFromFiles(labels_file, display_names_file));
   }
 
   // Set score threshold, if present.
-  ASSIGN_OR_RETURN(const tflite::ProcessUnit* score_thresholding_process_unit,
+  TFLITE_ASSIGN_OR_RETURN(const tflite::ProcessUnit* score_thresholding_process_unit,
                    ModelMetadataExtractor::FindFirstProcessUnit(
                        output_tensor_metadata,
                        tflite::ProcessUnitOptions_ScoreThresholdingOptions));
@@ -72,7 +72,7 @@ StatusOr<ClassificationHead> BuildClassificationHead(
   }
 
   // Build score calibration parameters, if present.
-  ASSIGN_OR_RETURN(const tflite::ProcessUnit* score_calibration_process_unit,
+  TFLITE_ASSIGN_OR_RETURN(const tflite::ProcessUnit* score_calibration_process_unit,
                    ModelMetadataExtractor::FindFirstProcessUnit(
                        output_tensor_metadata,
                        tflite::ProcessUnitOptions_ScoreCalibrationOptions));
@@ -95,10 +95,10 @@ StatusOr<ClassificationHead> BuildClassificationHead(
           "parameters file with type TENSOR_AXIS_SCORE_CALIBRATION.",
           TfLiteSupportStatus::kMetadataAssociatedFileNotFoundError);
     }
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         absl::string_view score_calibration_file,
         metadata_extractor.GetAssociatedFile(score_calibration_filename));
-    ASSIGN_OR_RETURN(SigmoidCalibrationParameters sigmoid_params,
+    TFLITE_ASSIGN_OR_RETURN(SigmoidCalibrationParameters sigmoid_params,
                      BuildSigmoidCalibrationParams(
                          *score_calibration_process_unit
                               ->options_as_ScoreCalibrationOptions(),

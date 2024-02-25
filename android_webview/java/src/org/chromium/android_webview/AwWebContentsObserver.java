@@ -20,9 +20,7 @@ import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Routes notifications from WebContents to AwContentsClient and other listeners.
- */
+/** Routes notifications from WebContents to AwContentsClient and other listeners. */
 @Lifetime.WebView
 public class AwWebContentsObserver extends WebContentsObserver {
     // TODO(tobiasjs) similarly to WebContentsObserver.mWebContents, mAwContents
@@ -57,8 +55,11 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId rfhId, GURL url,
-            boolean isKnownValid, @LifecycleState int rfhLifecycleState) {
+    public void didFinishLoadInPrimaryMainFrame(
+            GlobalRenderFrameHostId rfhId,
+            GURL url,
+            boolean isKnownValid,
+            @LifecycleState int rfhLifecycleState) {
         if (rfhLifecycleState != LifecycleState.ACTIVE) return;
         String validatedUrl = isKnownValid ? url.getSpec() : url.getPossiblyInvalidSpec();
         if (getClientIfNeedToFireCallback(validatedUrl) != null) {
@@ -85,7 +86,10 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFailLoad(boolean isInPrimaryMainFrame, @NetError int errorCode, GURL failingGurl,
+    public void didFailLoad(
+            boolean isInPrimaryMainFrame,
+            @NetError int errorCode,
+            GURL failingGurl,
             @LifecycleState int frameLifecycleState) {
         processFailedLoad(isInPrimaryMainFrame, errorCode, failingGurl);
     }
@@ -137,34 +141,39 @@ public class AwWebContentsObserver extends WebContentsObserver {
             // OnPageStarted is not called for in-page navigations, which include fragment
             // navigations and navigation from history.push/replaceState.
             // Error page is handled by AwContentsClientBridge.onReceivedError.
-            if (!navigation.isSameDocument() && !navigation.isErrorPage()
+            if (!navigation.isSameDocument()
+                    && !navigation.isErrorPage()
                     && AwComputedFlags.pageStartedOnCommitEnabled(
                             navigation.isRendererInitiated())) {
                 client.getCallbackHelper().postOnPageStarted(url);
             }
 
-            boolean isReload = (navigation.pageTransition() & PageTransition.CORE_MASK)
-                    == PageTransition.RELOAD;
+            boolean isReload =
+                    (navigation.pageTransition() & PageTransition.CORE_MASK)
+                            == PageTransition.RELOAD;
             client.getCallbackHelper().postDoUpdateVisitedHistory(url, isReload);
         }
 
         // Only invoke the onPageCommitVisible callback when navigating to a different document,
         // but not when navigating to a different fragment within the same document.
         if (!navigation.isSameDocument()) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                AwContents awContents = mAwContents.get();
-                if (awContents != null) {
-                    awContents.insertVisualStateCallbackIfNotDestroyed(
-                            0, new VisualStateCallback() {
-                                @Override
-                                public void onComplete(long requestId) {
-                                    AwContentsClient client1 = mAwContentsClient.get();
-                                    if (client1 == null) return;
-                                    client1.onPageCommitVisible(url);
-                                }
-                            });
-                }
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        AwContents awContents = mAwContents.get();
+                        if (awContents != null) {
+                            awContents.insertVisualStateCallbackIfNotDestroyed(
+                                    0,
+                                    new VisualStateCallback() {
+                                        @Override
+                                        public void onComplete(long requestId) {
+                                            AwContentsClient client1 = mAwContentsClient.get();
+                                            if (client1 == null) return;
+                                            client1.onPageCommitVisible(url);
+                                        }
+                                    });
+                        }
+                    });
         }
 
         if (client != null && navigation.isPrimaryMainFrameFragmentNavigation()) {

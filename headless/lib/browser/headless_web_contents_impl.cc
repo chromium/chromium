@@ -195,10 +195,10 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     DirectoryEnumerator::Start(path, std::move(listener));
   }
 
-  void RequestToLockMouse(content::WebContents* web_contents,
+  void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override {
-    web_contents->GotResponseToLockMouseRequest(
+    web_contents->GotResponseToPointerLockRequest(
         blink::mojom::PointerLockResult::kSuccess);
   }
 

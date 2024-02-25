@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] unsupported_scheme
+  Failed to construct 'SharedWorker': Script at 'unsupported:' cannot be accessed from origin 'http://web-platform.test:8001'.
+[FAIL] javascript_url
+  Failed to construct 'SharedWorker': Script at 'javascript:""' cannot be accessed from origin 'http://web-platform.test:8001'.
+[FAIL] about_blank
+  Failed to construct 'SharedWorker': Script at 'about:blank' cannot be accessed from origin 'http://web-platform.test:8001'.
+[FAIL] opera_com
+  Failed to construct 'SharedWorker': Script at 'http://www.opera.com/' cannot be accessed from origin 'http://web-platform.test:8001'.
+[FAIL] port_81
+  Failed to construct 'SharedWorker': Script at 'http://web-platform.test:81/' cannot be accessed from origin 'http://web-platform.test:8001'.
+[FAIL] https_port_80
+  Failed to construct 'SharedWorker': Script at 'https://web-platform.test:80/' cannot be accessed from origin 'http://web-platform.test:8001'.
+[FAIL] https_port_8000
+  Failed to construct 'SharedWorker': Script at 'https://web-platform.test:8000/' cannot be accessed from origin 'http://web-platform.test:8001'.
+[FAIL] http_port_8012
+  Failed to construct 'SharedWorker': Script at 'http://web-platform.test:8012/' cannot be accessed from origin 'http://web-platform.test:8001'.
+Harness: the test ran to completion.
+

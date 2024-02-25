@@ -14,6 +14,7 @@ export class TestThemeProvider extends TestBrowserProxy implements
       'setThemeObserver',
       'setColorModePref',
       'setColorModeAutoScheduleEnabled',
+      'enableGeolocationForSystemServices',
       'setColorScheme',
       'setStaticColor',
       'generateSampleColorSchemes',
@@ -21,12 +22,17 @@ export class TestThemeProvider extends TestBrowserProxy implements
       'getStaticColor',
       'isDarkModeEnabled',
       'isColorModeAutoScheduleEnabled',
+      'isGeolocationEnabledForSystemServices',
+      'getSunriseTime',
+      'getSunsetTime',
     ]);
     this.staticColor = null;
   }
 
   isDarkModeEnabledResponse = true;
   isColorModeAutoScheduleEnabledResponse = true;
+  isGeolocationPermissionEnabledResponse = true;
+
   staticColor: SkColor|null;
   colorScheme = ColorScheme.kTonalSpot;
 
@@ -46,6 +52,10 @@ export class TestThemeProvider extends TestBrowserProxy implements
 
   setColorModeAutoScheduleEnabled(enabled: boolean) {
     this.methodCalled('setColorModeAutoScheduleEnabled', enabled);
+  }
+
+  enableGeolocationForSystemServices() {
+    this.methodCalled('enableGeolocationForSystemServices');
   }
 
   setColorScheme(colorScheme: ColorScheme) {
@@ -97,5 +107,11 @@ export class TestThemeProvider extends TestBrowserProxy implements
     this.methodCalled('isColorModeAutoScheduleEnabled');
     return Promise.resolve(
         {enabled: this.isColorModeAutoScheduleEnabledResponse});
+  }
+
+  isGeolocationEnabledForSystemServices() {
+    this.methodCalled('isGeolocationEnabledForSystemServices');
+    return Promise.resolve(
+        {geolocationEnabled: this.isGeolocationPermissionEnabledResponse});
   }
 }

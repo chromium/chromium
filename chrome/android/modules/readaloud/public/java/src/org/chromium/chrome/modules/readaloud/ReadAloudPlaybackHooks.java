@@ -4,7 +4,15 @@
 
 package org.chromium.chrome.modules.readaloud;
 
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
+import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
+import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /** Interface for creating ReadAloud playback. */
 public interface ReadAloudPlaybackHooks {
@@ -12,6 +20,7 @@ public interface ReadAloudPlaybackHooks {
     interface CreatePlaybackCallback {
         /** Called if createPlayback() succeeds. */
         void onSuccess(Playback playback);
+
         /** Called if createPlayback() fails. */
         void onFailure(Throwable t);
     }
@@ -39,11 +48,60 @@ public interface ReadAloudPlaybackHooks {
     default void createPlayback(PlaybackArgs playbackArgs, CreatePlaybackCallback callback) {}
 
     /**
-     * Create the expanded player UI component.
-     * @param bottomSheetController BottomSheetController for showing the expanded player sheet.
-     * @return a new ExpandedPlayer.
+     * Create the player UI.
+     *
+     * @param delegate Delegate providing the UI with outside dependencies.
+     * @return a Player.
      */
-    default ExpandedPlayer createExpandedPlayer(BottomSheetController bottomSheetController) {
-        return new ExpandedPlayer() {};
+    default Player createPlayer(Player.Delegate delegate) {
+        return new Player() {};
+    }
+
+    /** Creates the Highlighter. */
+    default Highlighter createHighlighter() {
+        return new Highlighter() {};
+    }
+
+    /** Creates the Extractor. */
+    default Extractor createExtractor() {
+        return new Extractor() {};
+    }
+
+    /// Voices methods
+
+    /**
+     * Check whether initVoices() has been called and the voice methods are ready to use.
+     *
+     * @return True if initVoices() was called.
+     */
+    default boolean voicesInitialized() {
+        return false;
+    }
+
+    /**
+     * Initialize the voice list. Should be called once before using getVoicesFor() and
+     * getPlaybackVoiceList().
+     */
+    default void initVoices() {}
+
+    /**
+     * Get the list of all voices in the given language. Returns an empty list if
+     * currentPageLanguage is null or invalid.
+     *
+     * @param currentPageLanguage A language.
+     * @return All voices for currentPageLanguage.
+     */
+    default List<PlaybackVoice> getVoicesFor(@Nullable String currentPageLanguage) {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Get the list of voices that should be sent when requesting playback.
+     *
+     * @param voiceOverrides A map from languages to voice IDs (see ReadAloudPrefs.getVoices()).
+     * @return A voice list to attach to a playback request.
+     */
+    default List<PlaybackVoice> getPlaybackVoiceList(Map<String, String> voiceOverrides) {
+        return new ArrayList<>();
     }
 }

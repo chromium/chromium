@@ -6,9 +6,9 @@
  * @fileoverview Polymer element for displaying and modifying cellular sim info.
  */
 
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
@@ -124,6 +124,14 @@ Polymer({
       value: false,
       computed: 'computeIsSimPinLockRestricted_(globalPolicy,' +
           'globalPolicy.*, lockEnabled_)',
+    },
+
+    isCellularCarrierLockEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+      },
     },
   },
 
@@ -322,6 +330,25 @@ Polymer({
     // Note that if this is not the active SIM, we cannot read to lock state, so
     // we default to showing the "unlocked" UI unless we know otherwise.
     return State.SIM_UNLOCKED;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isSimCarrierLocked_() {
+    if (!this.isCellularCarrierLockEnabled_) {
+      return false;
+    }
+
+    const simLockStatus = this.deviceState && this.deviceState.simLockStatus;
+
+    if (this.isActiveSim_ && simLockStatus &&
+        simLockStatus.lockType === 'network-pin') {
+      return true;
+    }
+
+    return false;
   },
 
   /**

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/slider_track_element.h"
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 
 namespace blink {
 

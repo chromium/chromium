@@ -60,6 +60,7 @@ enum class UMATextToSpeechSource {
 
 namespace events {
 const char kOnEvent[] = "tts.onEvent";
+const char kOnVoicesChanged[] = "tts.onVoicesChanged";
 }  // namespace events
 
 const char* TtsEventTypeToString(content::TtsEventType event_type) {
@@ -430,9 +431,16 @@ TtsAPI::TtsAPI(content::BrowserContext* context) {
   TtsEngineExtensionObserverChromeOS::GetInstance(
       Profile::FromBrowserContext(context));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  content::TtsController::GetInstance()->AddVoicesChangedDelegate(this);
+
+  event_router_ = EventRouter::Get(context);
+  event_router_->RegisterObserver(this, ::events::kOnVoicesChanged);
 }
 
 TtsAPI::~TtsAPI() {
+  content::TtsController::GetInstance()->RemoveVoicesChangedDelegate(this);
+  event_router_->UnregisterObserver(this);
 }
 
 static base::LazyInstance<
@@ -441,6 +449,29 @@ static base::LazyInstance<
 
 BrowserContextKeyedAPIFactory<TtsAPI>* TtsAPI::GetFactoryInstance() {
   return g_factory.Pointer();
+}
+
+void TtsAPI::OnVoicesChanged() {
+  if (!broadcast_events_) {
+    return;
+  }
+  auto event = std::make_unique<extensions::Event>(
+      events::TTS_ON_VOICES_CHANGED, ::events::kOnVoicesChanged,
+      base::Value::List());
+  event_router_->BroadcastEvent(std::move(event));
+}
+
+void TtsAPI::OnListenerAdded(const EventListenerInfo& details) {
+  StartOrStopListeningForVoicesChanged();
+}
+
+void TtsAPI::OnListenerRemoved(const EventListenerInfo& details) {
+  StartOrStopListeningForVoicesChanged();
+}
+
+void TtsAPI::StartOrStopListeningForVoicesChanged() {
+  broadcast_events_ =
+      event_router_->HasEventListener(::events::kOnVoicesChanged);
 }
 
 }  // namespace extensions

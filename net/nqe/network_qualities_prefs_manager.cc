@@ -4,6 +4,7 @@
 
 #include "net/nqe/network_qualities_prefs_manager.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/nqe/network_quality_estimator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -40,7 +40,7 @@ ParsedPrefs ConvertDictionaryValueToMap(const base::Value::Dict& value) {
 
     if (!it.second.is_string())
       continue;
-    absl::optional<EffectiveConnectionType> effective_connection_type =
+    std::optional<EffectiveConnectionType> effective_connection_type =
         GetEffectiveConnectionTypeForName(it.second.GetString());
     DCHECK(effective_connection_type.has_value());
 

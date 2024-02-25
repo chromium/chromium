@@ -52,7 +52,7 @@ am::ArcPackageInfoPtr CreateArcPackage(const std::string& package_name,
   return am::ArcPackageInfo::New(
       package_name, package_version, 1 /* last_backup_android_id */,
       1 /* last_backup_time */, true /* sync */, false /* system */,
-      false /* vpn_provider */, nullptr /* web_app_info */, absl::nullopt,
+      false /* vpn_provider */, nullptr /* web_app_info */, std::nullopt,
       std::move(permissions) /* permission states */);
 }
 

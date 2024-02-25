@@ -23,16 +23,12 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class provides package checking related methods.
- */
+/** This class provides package checking related methods. */
 public class PackageUtils {
     private static final String TAG = "PackageUtils";
     private static final char[] HEX_CHAR_LOOKUP = "0123456789ABCDEF".toCharArray();
 
-    /**
-     * Retrieves the PackageInfo for the given package, or null if it is not installed.
-     */
+    /** Retrieves the PackageInfo for the given package, or null if it is not installed. */
     public static @Nullable PackageInfo getPackageInfo(String packageName, int flags) {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         try {
@@ -69,9 +65,7 @@ public class PackageUtils {
         return getPackageInfo(packageName, 0) != null;
     }
 
-    /**
-     * Returns the PackageInfo for the current app, as retrieve by PackageManager.
-     */
+    /** Returns the PackageInfo for the current app, as retrieve by PackageManager. */
     public static PackageInfo getApplicationPackageInfo(int flags) {
         PackageInfo ret = getPackageInfo(BuildInfo.getInstance().packageName, flags);
         assert ret != null;
@@ -99,10 +93,12 @@ public class PackageUtils {
             String hexString = null;
             try {
                 X509Certificate certificate =
-                        (X509Certificate) CertificateFactory.getInstance("X509")
-                                .generateCertificate(input);
-                hexString = byteArrayToHexString(
-                        MessageDigest.getInstance("SHA256").digest(certificate.getEncoded()));
+                        (X509Certificate)
+                                CertificateFactory.getInstance("X509").generateCertificate(input);
+                hexString =
+                        byteArrayToHexString(
+                                MessageDigest.getInstance("SHA256")
+                                        .digest(certificate.getEncoded()));
             } catch (CertificateException | NoSuchAlgorithmException e) {
                 Log.w(TAG, "Exception", e);
                 return null;

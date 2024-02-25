@@ -61,11 +61,8 @@ unsigned ContainerSelector::Type(WritingMode writing_mode) const {
   if ((axes & kLogicalAxisBlock).value()) {
     type |= kContainerTypeBlockSize;
   }
-  if (has_sticky_query_) {
-    type |= kContainerTypeSticky;
-  }
-  if (has_snap_query_) {
-    type |= kContainerTypeSnap;
+  if (has_sticky_query_ || has_snap_query_) {
+    type |= kContainerTypeScrollState;
   }
   return type;
 }

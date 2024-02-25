@@ -46,7 +46,9 @@ media::VideoCaptureFormats LocalVideoCapturerSource::GetPreferredFormats() {
 void LocalVideoCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
-    const VideoCaptureCropVersionCB& crop_version_callback,
+    const VideoCaptureSubCaptureTargetVersionCB&
+        sub_capture_target_version_callback,
+    const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
     const RunningCallback& running_callback) {
   DCHECK(params.requested_format.IsValid());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -58,7 +60,8 @@ void LocalVideoCapturerSource::StartCapture(
           task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                             &LocalVideoCapturerSource::OnStateUpdate,
                             weak_factory_.GetWeakPtr()))),
-      new_frame_callback, crop_version_callback);
+      new_frame_callback, sub_capture_target_version_callback,
+      frame_dropped_callback);
 }
 
 media::VideoCaptureFeedbackCB LocalVideoCapturerSource::GetFeedbackCallback()
@@ -88,12 +91,6 @@ void LocalVideoCapturerSource::StopCapture() {
   // Immediately make sure we don't provide more frames.
   if (stop_capture_cb_)
     std::move(stop_capture_cb_).Run();
-}
-
-void LocalVideoCapturerSource::OnFrameDropped(
-    media::VideoCaptureFrameDropReason reason) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  manager_->OnFrameDropped(session_id_, reason);
 }
 
 void LocalVideoCapturerSource::OnLog(const std::string& message) {

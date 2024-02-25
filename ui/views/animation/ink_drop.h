@@ -159,8 +159,9 @@ class VIEWS_EXPORT InkDrop {
 // TODO(pbos): Replace with a function that returns unique_ptr<View>, this only
 // calls SetProcessEventsWithinSubtree(false) right now.
 class VIEWS_EXPORT InkDropContainerView : public View {
+  METADATA_HEADER(InkDropContainerView, View)
+
  public:
-  METADATA_HEADER(InkDropContainerView);
   InkDropContainerView();
   InkDropContainerView(const InkDropContainerView&) = delete;
   InkDropContainerView& operator=(const InkDropContainerView&) = delete;

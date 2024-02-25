@@ -32,20 +32,25 @@ import fnmatch
 import optparse
 import os
 import re
+import shlex
 import sys
 from copy import deepcopy
+from typing import List
 
 from blinkpy.common.path_finder import PathFinder
 
 
-class PortFactory(object):
+class PortFactory:
     PORT_CLASSES = (
         'android.AndroidPort',
+        'chrome.ChromePort',
         'fuchsia.FuchsiaPort',
+        'ios.IOSPort',
         'linux.LinuxPort',
         'mac.MacPort',
         'mock_drt.MockDRTPort',
         'test.TestPort',
+        'webview.WebviewPort',
         'win.WinPort',
     )
 
@@ -189,6 +194,14 @@ def add_platform_options_group(parser: argparse.ArgumentParser):
     group.add_argument('--platform', help='Platform to use (e.g., "mac-lion")')
 
 
+def add_common_wpt_options(parser: argparse.ArgumentParser):
+    parser.add_argument('--no-manifest-update',
+                        dest='manifest_update',
+                        action='store_false',
+                        help=('Do not update the web-platform-tests '
+                              'MANIFEST.json unless it does not exist.'))
+
+
 def add_configuration_options_group(parser: argparse.ArgumentParser,
                                     rwt: bool = True,
                                     product_choices: list = None):
@@ -207,30 +220,26 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        const='Release',
                        dest='configuration',
                        help='Set the configuration to Release')
-    group.add_argument('--no-manifest-update',
-                       dest='manifest_update',
+    group.add_argument('--chrome-branded',
+                       action='store_true',
+                       help='Set the configuration as chrome_branded.')
+    group.add_argument('--no-xvfb',
                        action='store_false',
-                       help=('Do not update the web-platform-tests '
-                             'MANIFEST.json unless it does not exist.'))
-    if rwt:
-        group.add_argument('--no-xvfb',
-                           action='store_false',
-                           dest='use_xvfb',
-                           help='Do not run tests with Xvfb')
-    else:
+                       dest='use_xvfb',
+                       help='Do not run tests with Xvfb')
+    add_common_wpt_options(group)
+    if not rwt:
         group.add_argument(
             '-p',
             '--product',
-            default='content_shell',
+            default='chrome',
             choices=(product_choices or []),
             metavar='PRODUCT',
             help='Product (browser or browser component) to test.')
-        group.add_argument(
-            '--no-headless',
-            action='store_false',
-            dest='headless',
-            help=('Do not run the browser headlessly; pause after each test '
-                  'until the window is closed. On Linux, do not start Xvfb.'))
+        group.add_argument('--no-headless',
+                           action='store_false',
+                           dest='headless',
+                           help=('Do not run browser in headless mode.'))
         group.add_argument('--webdriver-binary',
                            metavar='PATH',
                            type=str,
@@ -350,7 +359,12 @@ def add_results_options_group(parser: argparse.ArgumentParser,
         results_group.add_argument(
             '--reset-results',
             action='store_true',
-            help='Reset test metadata to the generated results.')
+            help=('Reset expectations in test metadata to the generated '
+                  'results. Without existing platform-specific expectations, '
+                  'extend local results to all platforms. If `--product` or '
+                  '`--flag-specific` is specified, only reset expectations '
+                  'for that product or flag. Virtual expectations are always '
+                  'updated per-suite.'))
 
 
 def add_testing_options_group(parser: argparse.ArgumentParser,
@@ -468,6 +482,34 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
         action='store_true',
         help=('If set, exit with a success code when no tests are run. '
               'Used on trybots when web tests are retried without patch.'))
+    testing_group.add_argument(
+        '--wrapper',
+        type=command_wrapper,
+        default=[],
+        help=('Wrapper command to insert before invocations of the driver; '
+              'option is split on whitespace before running. (Example: '
+              '--wrapper="valgrind --smc-check=all")'))
+    testing_group.add_argument('-f',
+                               '--fully-parallel',
+                               action='store_true',
+                               help='run all tests in parallel')
+    testing_group.add_argument(
+        '--skipped',
+        help=('Control how tests marked SKIP are run. '
+              '"default" == Skip tests unless explicitly listed on the '
+              'command line, "ignore" == Run them anyway, '
+              '"only" == only run the SKIP tests, '
+              '"always" == always skip, even if listed on the command line.'))
+    testing_group.add_argument(
+        '--skip-failing-tests',
+        action='store_true',
+        help=('Skip tests that are expected to fail. Note: When using this '
+              'option, you might miss new crashes in these tests.'))
+    testing_group.add_argument(
+        '--skip-timeouts',
+        action='store_true',
+        help=('Skip tests marked TIMEOUT. Use it to speed up running the '
+              'entire test suite.'))
     if rwt:
         testing_group.add_argument(
             '--build',
@@ -495,7 +537,16 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             help=(
                 'Capture and write a trace file with the specified '
                 'categories for each test. Passes appropriate --trace-startup '
-                'flags to the driver. If in doubt, use "*".'))
+                'flags to the driver. If in doubt, use "*". '
+                'This implies --restart-shell-between-tests=always.'))
+        testing_group.add_argument(
+            '--enable-per-test-tracing',
+            action='store_true',
+            help=(
+                'Capture and write a trace file with all tracing '
+                'categories enabled for each test. Unlike --enable-tracing, '
+                'this excludes driver startup/shutdown in the trace, and does '
+                'not imply --restart-shell-between-tests=always.'))
         testing_group.add_argument(
             '--fuzzy-diff',
             action='store_true',
@@ -564,14 +615,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             help=('Seed to use for random test order (default: %(default)s). '
                   'Only applicable in combination with --order=random.'))
         testing_group.add_argument(
-            '--skipped',
-            help=
-            ('Control how tests marked SKIP are run. '
-             '"default" == Skip tests unless explicitly listed on the command '
-             'line, "ignore" == Run them anyway, '
-             '"only" == only run the SKIP tests, '
-             '"always" == always skip, even if listed on the command line.'))
-        testing_group.add_argument(
             '--isolated-script-test-also-run-disabled-tests',
             # TODO(crbug.com/893235): Remove the gtest alias when FindIt no longer uses it.
             '--gtest_also_run_disabled_tests',
@@ -579,17 +622,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             const='ignore',
             dest='skipped',
             help=('Equivalent to --skipped=ignore.'))
-        testing_group.add_argument(
-            '--skip-failing-tests',
-            action='store_true',
-            help=(
-                'Skip tests that are expected to fail. Note: When using this '
-                'option, you might miss new crashes in these tests.'))
-        testing_group.add_argument(
-            '--skip-timeouts',
-            action='store_true',
-            help=('Skip tests marked TIMEOUT. Use it to speed up running the '
-                  'entire test suite.'))
         testing_group.add_argument('--timeout-ms',
                                    type=float,
                                    help='Set the timeout for each test')
@@ -602,17 +634,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             '--initialize-webgpu-adapter-at-startup-timeout-ms',
             type=float,
             help='Initialize WebGPU adapter before running any tests.')
-        testing_group.add_argument(
-            '--wrapper',
-            help=(
-                'wrapper command to insert before invocations of the driver; '
-                'option is split on whitespace before running. (Example: '
-                '--wrapper="valgrind --smc-check=all")'))
-        # FIXME: Display the default number of child processes that will run.
-        testing_group.add_argument('-f',
-                                   '--fully-parallel',
-                                   action='store_true',
-                                   help='run all tests in parallel')
         testing_group.add_argument(
             '--virtual-parallel',
             action='store_true',
@@ -656,10 +677,17 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             'manual',
         ]
         testing_group.add_argument(
+            '--timeout-multiplier',
+            type=float,
+            help='Multiplier relative to standard test timeouts to use')
+        testing_group.add_argument(
             '--test-types',
             nargs='*',
             choices=test_types,
-            default=['testharness', 'reftest', 'crashtest', 'print-reftest'],
+            default=[
+                'testharness', 'reftest', 'crashtest', 'print-reftest',
+                'wdspec'
+            ],
             metavar='TYPE',
             help=f'Test types to run (choices: {", ".join(test_types)})')
         testing_group.add_argument('--no-wpt-internal',
@@ -805,6 +833,16 @@ def _read_configuration_from_gn(fs, options):
         if re.match(r'^\s*is_debug\s*=\s*false(\s*$|\s*#.*$)', line):
             return 'Release'
 
+    # If is_debug is not set, the default is based on if is_official_build
+    # is set to true.
+    for line in args.splitlines():
+        if re.match(r'^\s*is_official_build\s*=\s*true(\s*$|\s*#.*$)', line):
+            return 'Release'
+
     # If is_debug is set to anything other than false, or if it
     # does not exist at all, we should use the default value (True).
     return 'Debug'
+
+
+def command_wrapper(wrapper: str) -> List[str]:
+    return shlex.split(wrapper)

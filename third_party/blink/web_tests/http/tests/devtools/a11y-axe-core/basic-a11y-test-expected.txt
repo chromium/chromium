@@ -1,4 +1,4 @@
-Tests accessibility in the elements.domProperties view using the axe-core linter.
+Tests accessibility in the elements.dom-properties view using the axe-core linter.
 aXe violations: []
 
 Tests accessibility in the performance.monitor view using the axe-core linter.

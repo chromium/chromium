@@ -71,15 +71,15 @@ class AddSupervisionHandler
                                   signin::AccessTokenInfo access_token_info);
 
   // The AddSupervisionUI that this AddSupervisionHandler belongs to.
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;
+  raw_ptr<content::WebUI> web_ui_;
 
   // Used to fetch OAuth2 access tokens.
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
 
   mojo::Receiver<add_supervision::mojom::AddSupervisionHandler> receiver_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<AddSupervisionHandler> weak_ptr_factory_{this};
 };

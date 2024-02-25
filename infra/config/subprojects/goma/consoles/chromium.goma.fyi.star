@@ -28,51 +28,12 @@ luci.console_view(
             category = "rbe|cros|rel",
         ),
         luci.console_view_entry(
-            builder = "goma/android-archive-dbg-goma-rbe-canary",
-            category = "rbe|android|dbg",
-        ),
-        luci.console_view_entry(
-            builder = "goma/android-archive-dbg-goma-rbe-ats-canary",
-            category = "rbe|android|dbg",
-            short_name = "ats",
-        ),
-        luci.console_view_entry(
-            builder = "goma/mac-archive-rel-goma-rbe-canary",
-            category = "rbe|mac|rel",
-            short_name = "clb",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Mac Builder (dbg) Goma RBE Canary (clobber)",
-            category = "rbe|mac|dbg",
-            short_name = "clb",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Mac M1 Builder (dbg) Goma RBE Canary (clobber)",
-            category = "rbe|mac|dbg",
-            short_name = "m1",
-        ),
-        luci.console_view_entry(
-            builder = "goma/ios-device-goma-rbe-canary-clobber",
-            category = "rbe|ios",
-            short_name = "clb",
-        ),
-        luci.console_view_entry(
             builder = "goma/Win Builder Goma RBE Canary",
             category = "rbe|win|rel",
         ),
         luci.console_view_entry(
             builder = "goma/Win Builder (dbg) Goma RBE Canary",
             category = "rbe|win|dbg",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Win Builder Goma RBE ATS Canary",
-            category = "rbe|win|rel",
-            short_name = "ats",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Win Builder (dbg) Goma RBE ATS Canary",
-            category = "rbe|win|dbg",
-            short_name = "ats",
         ),
     ],
     include_experimental_builds = True,

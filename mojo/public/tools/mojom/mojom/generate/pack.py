@@ -48,16 +48,13 @@ class PackedField:
   @classmethod
   def GetSizeForKind(cls, kind):
     if isinstance(kind, (mojom.Array, mojom.Map, mojom.Struct, mojom.Interface,
-                         mojom.AssociatedInterface, mojom.PendingRemote,
-                         mojom.PendingAssociatedRemote)):
+                         mojom.PendingRemote, mojom.PendingAssociatedRemote)):
       return 8
     if isinstance(kind, mojom.Union):
       return 16
-    if isinstance(kind, (mojom.InterfaceRequest, mojom.PendingReceiver)):
+    if isinstance(kind, mojom.PendingReceiver):
       kind = mojom.MSGPIPE
-    if isinstance(
-        kind,
-        (mojom.AssociatedInterfaceRequest, mojom.PendingAssociatedReceiver)):
+    if isinstance(kind, mojom.PendingAssociatedReceiver):
       return 4
     if isinstance(kind, mojom.Enum):
       # TODO(mpcomplete): what about big enums?
@@ -69,8 +66,9 @@ class PackedField:
 
   @classmethod
   def GetAlignmentForKind(cls, kind):
-    if isinstance(kind, (mojom.Interface, mojom.AssociatedInterface,
-                         mojom.PendingRemote, mojom.PendingAssociatedRemote)):
+    if isinstance(
+        kind,
+        (mojom.Interface, mojom.PendingRemote, mojom.PendingAssociatedRemote)):
       return 4
     if isinstance(kind, mojom.Union):
       return 8
@@ -208,12 +206,13 @@ class PackedStruct:
       # ease the transition from legacy mojom syntax where nullable value types
       # were not supported.
       if isinstance(field.kind, mojom.ValueKind) and field.kind.is_nullable:
-        # The suffixes intentionally use Unicode codepoints which are considered
-        # valid C++/Java/JavaScript identifiers, yet are unlikely to be used in
-        # actual user code.
+        # The suffixes start with a '$' to avoid collision with user defined
+        # identifiers.
         has_value_field = copy.copy(field)
         has_value_field.name = f'{field.mojom_name}_$flag'
         has_value_field.kind = mojom.BOOL
+        if field.default:
+          has_value_field.default = 'true'
 
         value_field = copy.copy(field)
         value_field.name = f'{field.mojom_name}_$value'
@@ -255,7 +254,7 @@ class PackedStruct:
         raise Exception(
             "Non-nullable reference fields are only allowed in version 0 of a "
             "struct. %s.%s is defined with [MinVersion=%d]." %
-            (self.struct.name, packed_field.field.name,
+            (self.struct.mojom_name, packed_field.field.mojom_name,
              packed_field.min_version))
 
     src_field = src_fields[0]
@@ -312,9 +311,10 @@ def GetByteLayout(packed_struct):
 
 
 class VersionInfo:
-  def __init__(self, version, num_fields, num_bytes):
+  def __init__(self, version, num_fields, num_packed_fields, num_bytes):
     self.version = version
     self.num_fields = num_fields
+    self.num_packed_fields = num_packed_fields
     self.num_bytes = num_bytes
 
 
@@ -332,24 +332,35 @@ def GetVersionInfo(packed_struct):
   versions = []
   last_version = 0
   last_num_fields = 0
+  last_num_packed_fields = 0
   last_payload_size = 0
 
   for packed_field in packed_struct.packed_fields_in_ordinal_order:
     if packed_field.min_version != last_version:
       versions.append(
-          VersionInfo(last_version, last_num_fields,
+          VersionInfo(last_version, last_num_fields, last_num_packed_fields,
                       last_payload_size + HEADER_SIZE))
       last_version = packed_field.min_version
 
-    last_num_fields += 1
+    # Nullable numeric fields (e.g. `int32?`) expand to two packed fields, so to
+    # avoid double-counting, only increment if the field is:
+    # - not used for representing a nullable value kind field, or
+    # - the primary field representing the nullable value kind field.
+    last_num_fields += 1 if (
+        not IsNullableValueKindPackedField(packed_field)
+        or IsPrimaryNullableValueKindPackedField(packed_field)) else 0
+
+    last_num_packed_fields += 1
+
     # The fields are iterated in ordinal order here. However, the size of a
     # version is determined by the last field of that version in pack order,
     # instead of ordinal order. Therefore, we need to calculate the max value.
-    last_payload_size = max(
-        GetPayloadSizeUpToField(packed_field), last_payload_size)
+    last_payload_size = max(GetPayloadSizeUpToField(packed_field),
+                            last_payload_size)
 
-  assert len(versions) == 0 or last_num_fields != versions[-1].num_fields
+  assert len(
+      versions) == 0 or last_num_packed_fields != versions[-1].num_packed_fields
   versions.append(
-      VersionInfo(last_version, last_num_fields,
+      VersionInfo(last_version, last_num_fields, last_num_packed_fields,
                   last_payload_size + HEADER_SIZE))
   return versions

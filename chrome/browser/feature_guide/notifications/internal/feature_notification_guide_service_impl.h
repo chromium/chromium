@@ -70,7 +70,7 @@ class FeatureNotificationGuideServiceImpl
   Config config_;
 
   std::set<std::string> scheduled_feature_guids_;
-  absl::optional<base::Time> last_notification_schedule_time_;
+  std::optional<base::Time> last_notification_schedule_time_;
   bool is_low_engaged_user_{false};
 
   base::WeakPtrFactory<FeatureNotificationGuideServiceImpl> weak_ptr_factory_{

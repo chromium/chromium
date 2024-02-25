@@ -44,7 +44,7 @@ GURL ChromePopupNavigationDelegate::GetURL() {
 blocked_content::PopupNavigationDelegate::NavigateResult
 ChromePopupNavigationDelegate::NavigateWithGesture(
     const blink::mojom::WindowFeatures& window_features,
-    absl::optional<WindowOpenDisposition> updated_disposition) {
+    std::optional<WindowOpenDisposition> updated_disposition) {
   params_.user_gesture = true;
   if (updated_disposition)
     params_.disposition = updated_disposition.value();

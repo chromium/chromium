@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_METADATA_SYNCER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
 class BetterTogetherDeviceMetadata;
@@ -74,8 +74,8 @@ class CryptAuthMetadataSyncer {
   using SyncMetadataAttemptFinishedCallback = base::OnceCallback<void(
       const IdToDeviceMetadataPacketMap&,
       std::unique_ptr<CryptAuthKey>,
-      const absl::optional<cryptauthv2::EncryptedGroupPrivateKey>&,
-      const absl::optional<cryptauthv2::ClientDirective>&,
+      const std::optional<cryptauthv2::EncryptedGroupPrivateKey>&,
+      const std::optional<cryptauthv2::ClientDirective>&,
       CryptAuthDeviceSyncResult::ResultCode)>;
 
   CryptAuthMetadataSyncer(const CryptAuthMetadataSyncer&) = delete;
@@ -101,9 +101,9 @@ class CryptAuthMetadataSyncer {
   void OnAttemptFinished(
       const IdToDeviceMetadataPacketMap& id_to_device_metadata_packet_map,
       std::unique_ptr<CryptAuthKey> new_group_key,
-      const absl::optional<cryptauthv2::EncryptedGroupPrivateKey>&
+      const std::optional<cryptauthv2::EncryptedGroupPrivateKey>&
           encrypted_group_private_key,
-      const absl::optional<cryptauthv2::ClientDirective>& new_client_directive,
+      const std::optional<cryptauthv2::ClientDirective>& new_client_directive,
       CryptAuthDeviceSyncResult::ResultCode device_sync_result_code);
 
  private:

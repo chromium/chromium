@@ -39,7 +39,7 @@ ExtensionFunction::ResponseAction SharedStoragePrivateGetFunction::Run() {
   return RespondLater();
 }
 
-void SharedStoragePrivateGetFunction::OnGet(absl::optional<base::Value> items) {
+void SharedStoragePrivateGetFunction::OnGet(std::optional<base::Value> items) {
   if (!items) {
     LOG(ERROR) << kErrorFetching;
     return Respond(Error(kErrorFetching));
@@ -51,7 +51,7 @@ SharedStoragePrivateSetFunction::SharedStoragePrivateSetFunction() = default;
 SharedStoragePrivateSetFunction::~SharedStoragePrivateSetFunction() = default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateSetFunction::Run() {
-  absl::optional<shared_api::Set::Params> params =
+  std::optional<shared_api::Set::Params> params =
       shared_api::Set::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -68,7 +68,7 @@ ExtensionFunction::ResponseAction SharedStoragePrivateSetFunction::Run() {
 }
 
 void SharedStoragePrivateSetFunction::OnGet(base::Value::Dict to_add,
-                                            absl::optional<base::Value> items) {
+                                            std::optional<base::Value> items) {
   if (!items) {
     LOG(ERROR) << kErrorFetching;
     return Respond(Error(kErrorFetching));
@@ -95,7 +95,7 @@ SharedStoragePrivateRemoveFunction::~SharedStoragePrivateRemoveFunction() =
     default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
-  absl::optional<shared_api::Remove::Params> params =
+  std::optional<shared_api::Remove::Params> params =
       shared_api::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -113,7 +113,7 @@ ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
 
 void SharedStoragePrivateRemoveFunction::OnGet(
     std::vector<std::string> keys,
-    absl::optional<base::Value> items) {
+    std::optional<base::Value> items) {
   if (!items || !items->is_dict()) {
     LOG(ERROR) << kErrorFetching;
     return Respond(Error(kErrorFetching));

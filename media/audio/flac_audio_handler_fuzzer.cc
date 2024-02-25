@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/logging.h"
 #include "media/audio/audio_handler.h"
@@ -13,12 +14,12 @@
 #include "media/base/audio_bus.h"
 
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_FATAL); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
-  base::StringPiece flac_data(reinterpret_cast<const char*>(data), size);
+  std::string_view flac_data(reinterpret_cast<const char*>(data), size);
   std::unique_ptr<media::FlacAudioHandler> handler =
       std::make_unique<media::FlacAudioHandler>(flac_data);
 

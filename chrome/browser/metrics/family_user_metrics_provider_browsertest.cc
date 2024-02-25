@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -26,7 +28,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -49,7 +50,7 @@ ash::LoggedInUserMixin::LogInType GetPrimaryLogInType(
 }
 
 // Returns the account id for the primary test account for logging in.
-absl::optional<AccountId> GetPrimaryAccountId(
+std::optional<AccountId> GetPrimaryAccountId(
     FamilyUserMetricsProvider::FamilyUserLogSegment log_segment) {
   if (log_segment ==
       FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome) {
@@ -64,7 +65,7 @@ absl::optional<AccountId> GetPrimaryAccountId(
         FakeGaiaMixin::kEnterpriseUser1, FakeGaiaMixin::kEnterpriseUser1GaiaId);
   }
   // Use the default FakeGaiaMixin::kFakeUserEmail consumer test account id.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ProvideHistograms() {

@@ -25,9 +25,9 @@ std::string RemoveAppShortcutLabel(const std::string& id) {
   return result;
 }
 
-absl::optional<std::string> GetDriveId(const GURL& url) {
+std::optional<std::string> GetDriveId(const GURL& url) {
   if (url.host() != "docs.google.com")
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string path = url.path();
 
@@ -36,7 +36,7 @@ absl::optional<std::string> GetDriveId(const GURL& url) {
   std::string kPrefix = "/d/";
   size_t id_start = path.find(kPrefix);
   if (id_start == std::string::npos)
-    return absl::nullopt;
+    return std::nullopt;
   id_start += kPrefix.size();
 
   size_t id_end = path.find("/", id_start);

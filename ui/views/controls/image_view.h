@@ -30,9 +30,9 @@ namespace views {
 //
 /////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT ImageView : public ImageViewBase {
- public:
-  METADATA_HEADER(ImageView);
+  METADATA_HEADER(ImageView, ImageViewBase)
 
+ public:
   ImageView();
   explicit ImageView(const ui::ImageModel& image_model);
 

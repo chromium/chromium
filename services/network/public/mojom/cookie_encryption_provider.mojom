@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "components/os_crypt/async/common/encryptor.mojom";
+
+// An interface that permits obtaining the OSCryptNg instance from the browser
+// process. The receiver is hosted in the browser process, and the remote is
+// typically passed to a process that should be permitted to perform OSCrypt
+// operations, such as the Network Service during network service context
+// initialization.
+interface CookieEncryptionProvider {
+  // Obtain an instance of Encryptor that can be used for cookie encryption.
+  GetEncryptor() => (os_crypt_async.mojom.Encryptor encryptor);
+};

@@ -674,6 +674,7 @@ TEST_F(MetadataUtilsTest, HasExpiredOrUnavailableResult) {
   base::Time result_time = base::Time::Now() - base::Days(3);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  prediction_result->add_result(1);
   EXPECT_FALSE(
       metadata_utils::HasExpiredOrUnavailableResult(segment_info, now));
 
@@ -721,6 +722,20 @@ TEST_F(MetadataUtilsTest, SignalTypeToSignalKind) {
   EXPECT_EQ(SignalKey::Kind::UNKNOWN,
             metadata_utils::SignalTypeToSignalKind(
                 proto::SignalType::UNKNOWN_SIGNAL_TYPE));
+}
+
+TEST_F(MetadataUtilsTest, SignalKindToSignalType) {
+  EXPECT_EQ(
+      proto::SignalType::USER_ACTION,
+      metadata_utils::SignalKindToSignalType(SignalKey::Kind::USER_ACTION));
+  EXPECT_EQ(
+      proto::SignalType::HISTOGRAM_ENUM,
+      metadata_utils::SignalKindToSignalType(SignalKey::Kind::HISTOGRAM_ENUM));
+  EXPECT_EQ(
+      proto::SignalType::HISTOGRAM_VALUE,
+      metadata_utils::SignalKindToSignalType(SignalKey::Kind::HISTOGRAM_VALUE));
+  EXPECT_EQ(proto::SignalType::UNKNOWN_SIGNAL_TYPE,
+            metadata_utils::SignalKindToSignalType(SignalKey::Kind::UNKNOWN));
 }
 
 TEST_F(MetadataUtilsTest, CheckDiscreteMapping) {
@@ -903,7 +918,7 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithUMAOutput) {
 TEST_F(MetadataUtilsTest, ConfigUsesLegacyOutput) {
   auto config = test_utils::CreateTestConfig(
       "test_key", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
-  EXPECT_TRUE(metadata_utils::ConfigUsesLegacyOutput(config.get()));
+  EXPECT_FALSE(metadata_utils::ConfigUsesLegacyOutput(config.get()));
 
   config = test_utils::CreateTestConfig(
       "test_key", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER);

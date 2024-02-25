@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include <cstdint>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
@@ -21,8 +23,18 @@ HistogramSignalHandler::~HistogramSignalHandler() {
 
 void HistogramSignalHandler::SetRelevantHistograms(
     const RelevantHistograms& histograms) {
-  histogram_observers_.clear();
+  auto it = histogram_observers_.begin();
+  while (it != histogram_observers_.end()) {
+    if (!base::Contains(histograms, it->first)) {
+      it = histogram_observers_.erase(it);
+    } else {
+      ++it;
+    }
+  }
   for (const auto& pair : histograms) {
+    if (base::Contains(histogram_observers_, pair)) {
+      continue;
+    }
     const auto& histogram_name = pair.first;
     proto::SignalType signal_type = pair.second;
     auto histogram_observer = std::make_unique<

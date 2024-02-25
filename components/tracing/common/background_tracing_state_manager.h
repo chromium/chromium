@@ -7,18 +7,13 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 
-namespace android_webview {
-class AwTracingDelegateTest;
-}
-
 namespace tracing {
-
-class BackgroundTracingStateManagerTest;
 
 // Do not remove or change the order of enum fields since it is stored in
 // preferences.
@@ -37,8 +32,6 @@ enum class BackgroundTracingState : int {
 // UI thread.
 class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
  public:
-  using ScenarioUploadTimestampMap = base::flat_map<std::string, base::Time>;
-
   static BackgroundTracingStateManager& GetInstance();
 
   // Initializes state from previous session and writes current state to
@@ -54,32 +47,23 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
   // background tracing in current session.
   bool DidLastSessionEndUnexpectedly() const;
 
-  // True if the embedder uploaded a trace for the given |config| recently, and
-  // uploads should be throttled for the |config|.
-  bool DidRecentlyUploadForScenario(const std::string& scenario_name) const;
-
   // The embedder should call this method every time background tracing starts
   // so that the state in prefs is updated. Posts a timer task to the current
   // sequence to update the state once more to denote no crashes after a
   // reasonable time (see DidLastSessionEndUnexpectedly()).
-  void NotifyTracingStarted();
+  void OnTracingStarted();
 
-  // The embedder should call this method every time background tracing finishes
-  // so that the state in prefs is updated.
-  void NotifyFinalizationStarted();
-
-  // Updates the state to include the upload time for |scenario_name|, and
-  // saves it to prefs.
-  void OnScenarioUploaded(const std::string& scenario_name);
+  void OnTracingStopped();
 
   // Saves the given state to prefs, public for testing.
-  void SaveState(const ScenarioUploadTimestampMap& upload_times,
-                 BackgroundTracingState state);
+  void SaveState(BackgroundTracingState state);
+
+  // Used in tests to reset the state since a singleton instance is never
+  // destroyed.
+  void ResetForTesting();
 
  private:
   friend base::NoDestructor<BackgroundTracingStateManager>;
-  friend class tracing::BackgroundTracingStateManagerTest;
-  friend class android_webview::AwTracingDelegateTest;
 
   BackgroundTracingStateManager();
   ~BackgroundTracingStateManager();
@@ -89,21 +73,15 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
   // Updates the current tracing state and saves it to prefs.
   void SetState(BackgroundTracingState new_state);
 
-  // Used in tests to reset the state since a singleton instance is never
-  // destroyed.
-  void Reset();
-
   BackgroundTracingState state_ = BackgroundTracingState::NOT_ACTIVATED;
 
   bool initialized_ = false;
 
-  raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Following are valid only when |initialized_| = true.
   BackgroundTracingState last_session_end_state_ =
       BackgroundTracingState::NOT_ACTIVATED;
-
-  ScenarioUploadTimestampMap scenario_last_upload_timestamp_;
 };
 
 }  // namespace tracing

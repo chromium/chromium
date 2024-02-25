@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINTING_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chrome/common/extensions/api/printing.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -28,10 +28,9 @@ class PrintingSubmitJobFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnPrintJobSubmitted(
-      absl::optional<api::printing::SubmitJobStatus> status,
-      absl::optional<std::string> job_id,
-      absl::optional<std::string> error);
+  void OnPrintJobSubmitted(std::optional<api::printing::SubmitJobStatus> status,
+                           std::optional<std::string> job_id,
+                           std::optional<std::string> error);
   DECLARE_EXTENSION_FUNCTION("printing.submitJob", PRINTING_SUBMITJOB)
 };
 
@@ -71,9 +70,9 @@ class PrintingGetPrinterInfoFunction : public ExtensionFunction {
 
  private:
   void OnPrinterInfoRetrieved(
-      absl::optional<base::Value> capabilities,
-      absl::optional<api::printing::PrinterStatus> status,
-      absl::optional<std::string> error);
+      std::optional<base::Value> capabilities,
+      std::optional<api::printing::PrinterStatus> status,
+      std::optional<std::string> error);
   DECLARE_EXTENSION_FUNCTION("printing.getPrinterInfo", PRINTING_GETPRINTERINFO)
 };
 

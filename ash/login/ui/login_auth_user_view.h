@@ -6,7 +6,9 @@
 #define ASH_LOGIN_UI_LOGIN_AUTH_USER_VIEW_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/auth_factor_model.h"
@@ -22,7 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -49,6 +51,8 @@ enum class SmartLockState;
 // receive some events about the results of those mojo
 // authentication attempts (ie, success/failure).
 class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
+  METADATA_HEADER(LoginAuthUserView, NonAccessibleView)
+
  public:
   // Flags which describe the set of currently visible auth methods.
   enum AuthMethods {
@@ -85,7 +89,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     // User's pin length to use for autosubmit.
     size_t autosubmit_pin_length = 0;
     // Only present when the TPM is locked.
-    absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
+    std::optional<base::TimeDelta> time_until_tpm_unlock = std::nullopt;
   };
 
   // Possible states that the input fields (PasswordView & PinInputView)
@@ -111,7 +115,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     LoginPinView* pin_view() const;
     LoginPinInputView* pin_input_view() const;
     views::Button* pin_password_toggle() const;
-    views::Button* online_sign_in_message() const;
+    views::LabelButton* online_sign_in_message() const;
     views::View* disabled_auth_message() const;
     views::Button* challenge_response_button();
     views::Label* challenge_response_label();
@@ -125,7 +129,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     void ShowDialog();
 
    private:
-    const raw_ptr<LoginAuthUserView, DanglingUntriaged | ExperimentalAsh> view_;
+    const raw_ptr<LoginAuthUserView, DanglingUntriaged> view_;
   };
 
   using OnAuthCallback =
@@ -224,10 +228,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Called with the result of the request started in |OnAuthSubmit| or
   // |AttemptAuthenticateWithExternalBinary|.
   void OnAuthComplete(bool authenticated_by_pin,
-                      absl::optional<bool> auth_success);
+                      std::optional<bool> auth_success);
   // Called with the result of the request started in
   // |AttemptAuthenticateWithChallengeResponse|.
-  void OnChallengeResponseAuthComplete(absl::optional<bool> auth_success);
+  void OnChallengeResponseAuthComplete(std::optional<bool> auth_success);
 
   // Create a new LoginRemoveAccountDialog for the user and make ot visible.
   // Existing dialog has to be deleted before this call.
@@ -311,34 +315,27 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Controls which input field is currently being shown.
   InputFieldMode input_field_mode_ = InputFieldMode::NONE;
 
-  raw_ptr<LoginUserView, ExperimentalAsh> user_view_ = nullptr;
-  raw_ptr<LoginPasswordView, ExperimentalAsh> password_view_ = nullptr;
-  raw_ptr<LoginPinInputView, ExperimentalAsh> pin_input_view_ = nullptr;
-  raw_ptr<PillButton, ExperimentalAsh> pin_password_toggle_ = nullptr;
-  raw_ptr<LoginPinView, ExperimentalAsh> pin_view_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> online_sign_in_button_ = nullptr;
-  raw_ptr<DisabledAuthMessageView, ExperimentalAsh> disabled_auth_message_ =
-      nullptr;
-  raw_ptr<LoginAuthFactorsView, ExperimentalAsh> auth_factors_view_ = nullptr;
-  raw_ptr<FingerprintAuthFactorModel, ExperimentalAsh>
-      fingerprint_auth_factor_model_ = nullptr;
-  raw_ptr<SmartLockAuthFactorModel, ExperimentalAsh>
-      smart_lock_auth_factor_model_ = nullptr;
-  raw_ptr<ChallengeResponseView, ExperimentalAsh> challenge_response_view_ =
-      nullptr;
-  raw_ptr<LockedTpmMessageView, ExperimentalAsh> locked_tpm_message_view_ =
-      nullptr;
+  raw_ptr<LoginUserView> user_view_ = nullptr;
+  raw_ptr<LoginPasswordView> password_view_ = nullptr;
+  raw_ptr<LoginPinInputView> pin_input_view_ = nullptr;
+  raw_ptr<PillButton> pin_password_toggle_ = nullptr;
+  raw_ptr<LoginPinView> pin_view_ = nullptr;
+  raw_ptr<views::LabelButton> online_sign_in_button_ = nullptr;
+  raw_ptr<DisabledAuthMessageView> disabled_auth_message_ = nullptr;
+  raw_ptr<LoginAuthFactorsView> auth_factors_view_ = nullptr;
+  raw_ptr<FingerprintAuthFactorModel> fingerprint_auth_factor_model_ = nullptr;
+  raw_ptr<SmartLockAuthFactorModel> smart_lock_auth_factor_model_ = nullptr;
+  raw_ptr<ChallengeResponseView> challenge_response_view_ = nullptr;
+  raw_ptr<LockedTpmMessageView> locked_tpm_message_view_ = nullptr;
 
   // Padding below the user view. Grows when there isn't an input field
   // or smart card login.
-  raw_ptr<NonAccessibleView, ExperimentalAsh> padding_below_user_view_ =
-      nullptr;
+  raw_ptr<NonAccessibleView> padding_below_user_view_ = nullptr;
   // Displays padding between:
   // 1. Password field and pin keyboard
   // 2. Password field and fingerprint view, when pin is not available.
   // Preferred size will change base on current auth method.
-  raw_ptr<NonAccessibleView, ExperimentalAsh> padding_below_password_view_ =
-      nullptr;
+  raw_ptr<NonAccessibleView> padding_below_password_view_ = nullptr;
 
   // Bubble used for displaying the user remove account dialog. Its parent is
   // the top level view, either LockContentsView or LockDebugView. This allows

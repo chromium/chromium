@@ -14,12 +14,12 @@
 
 #include "mediapipe/framework/input_stream_handler.h"
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/collection_item_id.h"
 #include "mediapipe/framework/mediapipe_profiling.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 using SyncSet = InputStreamHandler::SyncSet;
@@ -322,9 +322,11 @@ void InputStreamHandler::SetBatchSize(int batch_size) {
       << "Batching cannot be combined with parallel execution.";
   ABSL_CHECK(!late_preparation_ || batch_size == 1)
       << "Batching cannot be combined with late preparation.";
-  ABSL_CHECK_GE(batch_size, 1) << "Batch size has to be greater than or equal to 1.";
+  ABSL_CHECK_GE(batch_size, 1)
+      << "Batch size has to be greater than or equal to 1.";
   // Source nodes shouldn't specify batch_size even if it's set to 1.
-  ABSL_CHECK_GE(NumInputStreams(), 0) << "Source nodes cannot batch input packets.";
+  ABSL_CHECK_GE(NumInputStreams(), 0)
+      << "Source nodes cannot batch input packets.";
   batch_size_ = batch_size;
 }
 

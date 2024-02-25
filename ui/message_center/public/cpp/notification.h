@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
@@ -40,9 +39,24 @@ class ColorProvider;
 namespace message_center {
 
 // Represents an individual item in NOTIFICATION_TYPE_MULTIPLE notifications.
-struct MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
-  std::u16string title;
-  std::u16string message;
+class MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
+ public:
+  NotificationItem(const std::u16string& title,
+                   const std::u16string& message,
+                   ui::ImageModel icon = ui::ImageModel());
+  NotificationItem(const NotificationItem& other);
+  NotificationItem();
+  ~NotificationItem();
+  NotificationItem& operator=(const NotificationItem& other);
+
+  const std::u16string& title() const { return title_; }
+  const std::u16string& message() const { return message_; }
+  const std::optional<ui::ImageModel>& icon() const { return icon_; }
+
+ private:
+  std::u16string title_;
+  std::u16string message_;
+  std::optional<ui::ImageModel> icon_;
 };
 
 enum class SettingsButtonHandler {
@@ -72,6 +86,8 @@ enum class ButtonType {
 // Represents a button to be shown as part of a notification.
 struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   explicit ButtonInfo(const std::u16string& title);
+  ButtonInfo(const gfx::VectorIcon* vector_icon,
+             const std::u16string& accessible_name);
   ButtonInfo(const ButtonInfo& other);
   ButtonInfo();
   ~ButtonInfo();
@@ -80,16 +96,25 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   // Title that should be displayed on the notification button.
   std::u16string title;
 
+  // TODO(b/324953777): Consider removing this member variable in favor of
+  // replacing it with `vector_icon`.
   // Icon that should be displayed on the notification button. Optional. On some
   // platforms, a mask will be applied to the icon, to match the visual
   // requirements of the notification. As with Android, MD notifications don't
   // display this icon.
   gfx::Image icon;
 
+  // Vector icon to that's used for icon-only notification buttons.
+  raw_ptr<const gfx::VectorIcon> vector_icon = &gfx::kNoneIcon;
+
+  // Accessible name to be used for the button's tooltip. Required when creating
+  // an icon-only notification button.
+  std::u16string accessible_name;
+
   // The placeholder string that should be displayed in the input field for
   // text input type buttons until the user has entered a response themselves.
   // If the value is null, there is no input field associated with the button.
-  absl::optional<std::u16string> placeholder;
+  std::optional<std::u16string> placeholder;
 
   // Describes the button intended usage. This is used by the underlying
   // platform to take behavioral and stylistic decisions.
@@ -129,7 +154,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The path to the file that backs `image`. Set if `image` is file backed.
-  absl::optional<base::FilePath> image_path;
+  std::optional<base::FilePath> image_path;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Small badge to display on the notification to illustrate the source of the
@@ -159,16 +184,16 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // and only pass globally defined constants.
   // TODO(tetsui): Remove the pointer, after fixing VectorIconSource not to
   // retain VectorIcon reference.  https://crbug.com/760866
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+  // global), so there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION const gfx::VectorIcon* vector_small_image = &gfx::kNoneIcon;
 
   // Vector image to display on the parent notification of this notification,
   // illustrating the source of the group notification that this notification
   // belongs to. Optional. Note that all notification belongs to the same group
   // should have the same `parent_vector_small_image`.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+  // global), so there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION const gfx::VectorIcon* parent_vector_small_image =
       &gfx::kNoneIcon;
 
@@ -198,6 +223,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Flag if the notification is pinned. If true, the notification is pinned
   // and the user can't remove it.
   bool pinned = false;
+
+  // Presents a shortcut that will dismiss the notification when performed.
+  // Only used in in ash pinned notifications. See `PinnedNotificationView`.
+  std::u16string shortcut_text;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Vibration pattern to play when displaying the notification. There must be
@@ -220,13 +249,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Usually, it should not be set directly.
   // For system notification, ash::CreateSystemNotification with
   // SystemNotificationWarningLevel should be used.
-  absl::optional<SkColor> accent_color;
+  std::optional<SkColor> accent_color;
 
   // Similar to `accent_color`, but store a ColorId instead of SkColor so that
   // the notification view can use this id to correctly handle theme change. In
   // CrOS notification, if `accent_color_id` is provided, `accent_color` will
   // not be used.
-  absl::optional<ui::ColorId> accent_color_id;
+  std::optional<ui::ColorId> accent_color_id;
 
   // Controls whether a settings button should appear on the notification. See
   // enum definition. TODO(estade): turn this into a boolean. See
@@ -334,6 +363,9 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 
   // A display string for the source of the notification.
   const std::u16string& display_source() const { return display_source_; }
+  void set_display_source(const std::u16string display_source) {
+    display_source_ = display_source;
+  }
 
   bool allow_group() const { return allow_group_; }
   void set_allow_group(bool allow_group) { allow_group_ = allow_group; }
@@ -493,19 +525,27 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   void set_pinned(bool pinned) { optional_fields_.pinned = pinned; }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  const std::u16string shortcut_text() const {
+#if BUILDFLAG(IS_CHROMEOS)
+    return optional_fields_.shortcut_text;
+#else
+    return std::u16string();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
   // Gets a text for spoken feedback.
   const std::u16string& accessible_name() const {
     return optional_fields_.accessible_name;
   }
 
-  absl::optional<SkColor> accent_color() const {
+  std::optional<SkColor> accent_color() const {
     return optional_fields_.accent_color;
   }
   void set_accent_color(SkColor accent_color) {
     optional_fields_.accent_color = accent_color;
   }
 
-  absl::optional<ui::ColorId> accent_color_id() const {
+  std::optional<ui::ColorId> accent_color_id() const {
     return optional_fields_.accent_color_id;
   }
   void set_accent_color_id(ui::ColorId accent_color_id) {

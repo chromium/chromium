@@ -27,16 +27,16 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   bool HasValidSymbols() const;
 
   AtomicString GetName() const { return name_; }
-  const CSSValue* GetSystem() const { return system_; }
-  const CSSValue* GetNegative() const { return negative_; }
-  const CSSValue* GetPrefix() const { return prefix_; }
-  const CSSValue* GetSuffix() const { return suffix_; }
-  const CSSValue* GetRange() const { return range_; }
-  const CSSValue* GetPad() const { return pad_; }
-  const CSSValue* GetFallback() const { return fallback_; }
-  const CSSValue* GetSymbols() const { return symbols_; }
-  const CSSValue* GetAdditiveSymbols() const { return additive_symbols_; }
-  const CSSValue* GetSpeakAs() const { return speak_as_; }
+  const CSSValue* GetSystem() const { return system_.Get(); }
+  const CSSValue* GetNegative() const { return negative_.Get(); }
+  const CSSValue* GetPrefix() const { return prefix_.Get(); }
+  const CSSValue* GetSuffix() const { return suffix_.Get(); }
+  const CSSValue* GetRange() const { return range_.Get(); }
+  const CSSValue* GetPad() const { return pad_.Get(); }
+  const CSSValue* GetFallback() const { return fallback_.Get(); }
+  const CSSValue* GetSymbols() const { return symbols_.Get(); }
+  const CSSValue* GetAdditiveSymbols() const { return additive_symbols_.Get(); }
+  const CSSValue* GetSpeakAs() const { return speak_as_.Get(); }
 
   // Returns false if the new value is invalid or equivalent to the old value.
   bool NewValueInvalidOrEqual(AtRuleDescriptorID, const CSSValue*);
@@ -57,7 +57,7 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   }
 
   void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
-  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

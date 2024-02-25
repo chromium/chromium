@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,14 +43,15 @@ class KAnonymityServiceClientTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(network::features::kPrivateStateTokens);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::kPrivateStateTokens},
+        /*disabled_features=*/{features::kKAnonymityServiceOHTTPRequests});
     TestingProfile::Builder builder;
     builder.SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            builder, signin::AccountConsistencyMethod::kMirror);
+        CreateProfileForIdentityTestEnvironment(builder);
   }
 
   void InitializeIdentity(bool signed_on) {
@@ -484,9 +485,9 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
   }
 
  private:
-  absl::optional<net::Error> error_;
-  absl::optional<int> outer_response_error_code_;
-  absl::optional<int> inner_response_code_;
+  std::optional<net::Error> error_;
+  std::optional<int> outer_response_error_code_;
+  std::optional<int> inner_response_code_;
   bool drop_requests_ = false;
   network::mojom::ObliviousHttpRequestPtr pending_request_;
   mojo::Remote<network::mojom::ObliviousHttpClient> remote_;
@@ -519,8 +520,7 @@ class KAnonymityServiceClientJoinQueryTest
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(
-            builder, signin::AccountConsistencyMethod::kMirror);
+        CreateProfileForIdentityTestEnvironment(builder);
     profile_->GetDefaultStoragePartition()->SetNetworkContextForTesting(
         network_context_receiver_.BindNewPipeAndPassRemote());
   }

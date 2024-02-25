@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_TEST_UTILS_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view_observer.h"
 
 class Profile;
@@ -108,7 +109,7 @@ class ProfileManagementStepTestView : public ProfilePickerView {
   ~ProfileManagementStepTestView() override;
 
   // Returns when the content of the step reached the first non-empty paint.
-  void ShowAndWait(absl::optional<gfx::Size> view_size = absl::nullopt);
+  void ShowAndWait(std::optional<gfx::Size> view_size = std::nullopt);
 
  protected:
   std::unique_ptr<ProfileManagementFlowController> CreateFlowController(

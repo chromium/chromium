@@ -21,6 +21,10 @@ namespace syncer {
 class SyncService;
 }
 
+namespace feature_engagement {
+class Tracker;
+}
+
 // This mediator fetches and organises the passwords for its consumer.
 @interface PasswordsMediator : NSObject <PasswordManagerViewControllerDelegate,
                                          SuccessfulReauthTimeAccessor,
@@ -39,7 +43,14 @@ class SyncService;
 // Disconnect the observers.
 - (void)disconnect;
 
+// Ask the Feature Engagement Tracker whether or not the Password Manager widget
+// promo can be shown.
+- (void)askFETToShowPasswordManagerWidgetPromo;
+
 @property(nonatomic, weak) id<PasswordsConsumer> consumer;
+
+// Feature Engagement Tracker used to handle promo events.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
 @end
 

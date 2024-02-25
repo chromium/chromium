@@ -14,12 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/distiller_url_fetcher.h"
@@ -155,14 +153,6 @@ void DistillerImpl::OnPageDistillationFinished(
     started_pages_index_.erase(page_num);
     RunDistillerCallbackIfDone();
     return;
-  }
-
-  if (distiller_result->has_statistics_info() && page_num == 0) {
-    if (distiller_result->statistics_info().has_word_count()) {
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "DomDistiller.Statistics.FirstPageWordCount",
-          distiller_result->statistics_info().word_count(), 1, 4000, 50);
-    }
   }
 
   DCHECK(distiller_result);

@@ -25,6 +25,7 @@ enum SingleplanarFormat {
   BGRX_8888,
   RGBX_1010102,
   BGRX_1010102,
+  R_F16,
 
   // Legacy multiplanar formats (used before Multiplanar SharedImage was
   // introduced).

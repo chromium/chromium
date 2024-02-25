@@ -73,21 +73,20 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
   gtk_context_ = gtk_im_multicontext_new();
   gtk_simple_context_ = gtk_im_context_simple_new();
 
-  g_signal_connect(gtk_context_, "commit", G_CALLBACK(OnCommitThunk), this);
-  g_signal_connect(gtk_simple_context_, "commit", G_CALLBACK(OnCommitThunk),
-                   this);
-  g_signal_connect(gtk_context_, "preedit-changed",
-                   G_CALLBACK(OnPreeditChangedThunk), this);
-  g_signal_connect(gtk_simple_context_, "preedit-changed",
-                   G_CALLBACK(OnPreeditChangedThunk), this);
-  g_signal_connect(gtk_context_, "preedit-end", G_CALLBACK(OnPreeditEndThunk),
-                   this);
-  g_signal_connect(gtk_simple_context_, "preedit-end",
-                   G_CALLBACK(OnPreeditEndThunk), this);
-  g_signal_connect(gtk_context_, "preedit-start",
-                   G_CALLBACK(OnPreeditStartThunk), this);
-  g_signal_connect(gtk_simple_context_, "preedit-start",
-                   G_CALLBACK(OnPreeditStartThunk), this);
+  auto connect = [&](const char* detailed_signal, auto receiver) {
+    for (auto context : {gtk_context_, gtk_simple_context_}) {
+      // Unretained() is safe since InputMethodContextImplGtk will own the
+      // ScopedGSignal.
+      signals_.emplace_back(
+          context, detailed_signal,
+          base::BindRepeating(receiver, base::Unretained(this)));
+    }
+  };
+
+  connect("commit", &InputMethodContextImplGtk::OnCommit);
+  connect("preedit-changed", &InputMethodContextImplGtk::OnPreeditChanged);
+  connect("preedit-end", &InputMethodContextImplGtk::OnPreeditEnd);
+  connect("preedit-start", &InputMethodContextImplGtk::OnPreeditStart);
   // TODO(shuchen): Handle operations on surrounding text.
   // "delete-surrounding" and "retrieve-surrounding" signals should be
   // handled.
@@ -233,8 +232,8 @@ void InputMethodContextImplGtk::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& text_range,
     const gfx::Range& selection_range,
-    const absl::optional<ui::GrammarFragment>& fragment,
-    const absl::optional<ui::AutocorrectInfo>& autocorrect) {}
+    const std::optional<ui::GrammarFragment>& fragment,
+    const std::optional<ui::AutocorrectInfo>& autocorrect) {}
 
 // private:
 

@@ -57,10 +57,9 @@ class GenericFileSystemTests(object):
         fs.chdir(self.orig_cwd)
 
     def teardown_generic_test_dir(self):
-        success = self.fs.remove_contents(self.generic_test_dir)
+        self.fs.rmtree(self.generic_test_dir)
         self.fs.chdir(self.orig_cwd)
         self.generic_test_dir = None
-        self.assertTrue(success)
 
     def test_glob__trailing_asterisk(self):
         self.fs.chdir(self.generic_test_dir)

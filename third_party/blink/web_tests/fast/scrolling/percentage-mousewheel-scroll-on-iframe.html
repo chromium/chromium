@@ -22,19 +22,15 @@
 "use strict";
 internals.settings.setHideScrollbars(true);
 
-function waitForLoad() {
-  return new Promise((resolve, reject) => {
-    window.addEventListener("load", resolve);
-  });
-}
-
 function isNear(actual, expected, tolerance) {
   console.log(actual + " : " + expected);
   return Math.abs(actual - expected) <= tolerance;
 }
 
+window.onload = () => {
+
 promise_test(async () => {
-  await waitForLoad();
+  await waitForCompositorCommit();
 
   const SCROLL_PERCENTAGE = 0.4;
   await percentScroll(SCROLL_PERCENTAGE, SCROLL_PERCENTAGE, 200, 150,
@@ -82,4 +78,7 @@ promise_test(async () => {
                 -WHEEL_DELTA,
                 "Wheel event deltaY must be negative constant");
 }, "Using the mousewheel to scroll by a percentage on an empty iframe.");
+
+}
+
 </script>

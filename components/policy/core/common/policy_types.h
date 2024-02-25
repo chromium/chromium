@@ -51,16 +51,16 @@ enum PolicySource {
   // The policy was set by an Active Directory source.
   POLICY_SOURCE_ACTIVE_DIRECTORY,
 
+  // Deprecated. Not removed to avoid disturbing the reporting enum mapping.
   // Any non-platform policy was overridden because we are running in a
   // public session or kiosk mode.
-  // TODO(crbug.com/1225922): Remove deprecated policy source.
   POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
 
   // The policy was set by a platform source.
   POLICY_SOURCE_PLATFORM,
 
+  // Deprecated. Not removed to avoid disturbing the reporting enum mapping.
   // The policy was set by a cloud source that has higher priroity.
-  // TODO(crbug.com/1249611): Remove deprecated policy source.
   POLICY_SOURCE_PRIORITY_CLOUD_DEPRECATED,
 
   // The policy coming from multiple sources and its value has been merged.
@@ -113,6 +113,45 @@ enum PolicyPriorityBrowser {
 
   // The policy coming from multiple sources and its value has been merged.
   POLICY_PRIORITY_BROWSER_MERGED,
+};
+
+// The `PolicyFetchReason` enum is used to tag requests to DMServer. This allows
+// for more targeted monitoring and alerting.
+enum class PolicyFetchReason {
+  kUnspecified,
+  // Policy fetched at browser start, e.g. device policies at Ash start.
+  kBrowserStart,
+  // Policy fetches triggered by the Chrome Remote Desktop policy watcher.
+  kCrdHostPolicyWatcher,
+  // Required policy fetch during device enrollment.
+  kDeviceEnrollment,
+  // Policy fetch triggered by incoming FCM invalidation.
+  kInvalidation,
+  // ChromeOS policy fetch request from Lacros to Ash.
+  kLacros,
+  // CloudPolicyClient registration changed (e.g. during startup).
+  kRegistrationChanged,
+  // Various retry reasons based on DMServer status, see
+  // `CloudPolicyRefreshScheduler`.
+  kRetryAfterStatusServiceActivationPending,
+  kRetryAfterStatusServicePolicyNotFound,
+  kRetryAfterStatusServiceTooManyRequests,
+  kRetryAfterStatusRequestFailed,
+  kRetryAfterStatusTemporaryUnavailable,
+  kRetryAfterStatusCannotSignRequest,
+  kRetryAfterStatusRequestInvalid,
+  kRetryAfterStatusHttpStatusError,
+  kRetryAfterStatusResponseDecodingError,
+  kRetryAfterStatusServiceManagementNotSupported,
+  kRetryAfterStatusRequestTooLarge,
+  // Scheduled policy refresh (e.g. once per day).
+  kScheduled,
+  // Policy fetch triggered by sign-in.
+  kSignin,
+  // A placeholder reason used for tests (should not occur in production).
+  kTest,
+  // Policy fetched as requested by the user, e.g. through chrome://policy.
+  kUserRequest,
 };
 
 }  // namespace policy

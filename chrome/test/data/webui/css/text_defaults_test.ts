@@ -109,25 +109,3 @@ suite('TextDefaults', function() {
         'chrome://resources/css/text_defaults_md.css', expectingSystemFont);
   });
 });
-
-// <if expr="not is_linux">
-// Test that text_defaults_md.css uses Roboto  when the WebUiSystemFont flag is
-// disabled.
-suite('TextDefaultsNoSystemFont', function() {
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  });
-
-  test('text_defaults.css', function() {
-    return testFontFamily(
-        'chrome://resources/css/text_defaults.css',
-        true /*expectingSystemFont*/);
-  });
-
-  test('text_defaults_md.css', function() {
-    return testFontFamily(
-        'chrome://resources/css/text_defaults_md.css',
-        false /*expectingSystemFont*/);
-  });
-});
-// </if>

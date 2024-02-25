@@ -4,7 +4,8 @@
 
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://resources/js/metrics_reporter/browser_proxy.js';
-import {MetricsReporter, MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
+import type {MetricsReporter} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
+import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 

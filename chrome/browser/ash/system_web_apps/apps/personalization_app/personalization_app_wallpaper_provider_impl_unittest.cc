@@ -9,12 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -40,6 +43,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/manta/proto/manta.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -80,7 +84,6 @@ void AddAndLoginUser(const AccountId& account_id) {
   ash::FakeChromeUserManager* user_manager =
       static_cast<ash::FakeChromeUserManager*>(
           user_manager::UserManager::Get());
-
   user_manager->AddUser(account_id);
   user_manager->LoginUser(account_id);
   user_manager->SwitchActiveUser(account_id);
@@ -133,6 +136,15 @@ class TestWallpaperObserver
 
     wallpaper_observer_receiver_.FlushForTesting();
     return current_wallpaper_.get();
+  }
+
+  ash::personalization_app::mojom::CurrentAttribution* current_attribution() {
+    if (!wallpaper_observer_receiver_.is_bound()) {
+      return nullptr;
+    }
+
+    wallpaper_observer_receiver_.FlushForTesting();
+    return current_attribution_.get();
   }
 
  private:
@@ -241,6 +253,11 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     return test_wallpaper_observer_.current_wallpaper();
   }
 
+  ash::personalization_app::mojom::CurrentAttribution* current_attribution() {
+    wallpaper_provider_remote_.FlushForTesting();
+    return test_wallpaper_observer_.current_attribution();
+  }
+
  private:
   // Note: `scoped_feature_list_` should be destroyed after `task_environment_`
   // (see crbug.com/846380).
@@ -256,7 +273,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
       RegisterPrefs(&pref_service_)};
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   TestWallpaperController test_wallpaper_controller_;
   // |wallpaper_controller_client_| must be destructed before
   // |test_wallpaper_controller_|.
@@ -289,12 +306,11 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
   EXPECT_TRUE(
       test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
           ash::WallpaperInfo(
-              {GetTestAccountId(), image_info.asset_id, image_info.image_url,
-               "collection_id",
+              {GetTestAccountId(), "collection_id",
                ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                /*preview_mode=*/false, /*from_user=*/true,
-               /*daily_refresh_enabled=*/false, image_info.unit_id,
-               variants})));
+               /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
+              variants.front())));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaperWhenBanned) {
@@ -336,12 +352,11 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   EXPECT_TRUE(
       test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
           ash::WallpaperInfo(
-              {GetTestAccountId(), image_info.asset_id, image_info.image_url,
-               "collection_id",
+              {GetTestAccountId(), "collection_id",
                ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                /*preview_mode=*/true, /*from_user=*/true,
-               /*daily_refresh_enabled=*/false, image_info.unit_id,
-               variants})));
+               /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
+              variants.front())));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest,
@@ -357,8 +372,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
   AddWallpaperImage(image_info);
 
   test_wallpaper_controller()->SetOnlineWallpaper(
-      {GetTestAccountId(), image_info.asset_id, image_info.image_url,
-       "collection_id", ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      {GetTestAccountId(), "collection_id",
+       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
        /*preview_mode=*/false, /*from_user=*/true,
        /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
       base::DoNothing());
@@ -376,11 +391,94 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
             current->layout);
 }
 
+TEST_F(PersonalizationAppWallpaperProviderImplTest, SendsSeaPenWallpaper) {
+  SetWallpaperObserver();
+
+  test_wallpaper_controller()->SetSeaPenWallpaper(
+      GetTestAccountId(), {/*jpg_bytes=*/std::string(), /*id=*/111},
+      ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
+          "search_query"),
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentWallpaper* current =
+      current_wallpaper();
+  EXPECT_EQ(ash::WallpaperType::kSeaPen, current->type);
+  EXPECT_EQ(std::string(), current->description_content);
+  EXPECT_EQ(std::string(), current->description_title);
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       SendsSeaPenWallpaperFromFile) {
+  SetWallpaperObserver();
+
+  test_wallpaper_controller()->SetSeaPenWallpaperFromFile(
+      GetTestAccountId(), base::FilePath("/sea_pen/111.jpg"),
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentWallpaper* wallpaper =
+      current_wallpaper();
+  EXPECT_EQ(ash::WallpaperType::kSeaPen, wallpaper->type);
+  EXPECT_EQ(std::string(), wallpaper->description_content);
+  EXPECT_EQ(std::string(), wallpaper->description_title);
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       GetValidSeaPenMetadataNotifyAttribution) {
+  SetWallpaperObserver();
+  test_wallpaper_controller()->set_sea_pen_metadata(
+      R"({"creation_time":"13349580387513653",
+      "user_visible_query_text":"test template query",
+      "user_visible_query_template":"test template title",
+      "options":{"4":"55","5":"64"},"template_id":"2"})");
+
+  test_wallpaper_controller()->SetSeaPenWallpaperFromFile(
+      GetTestAccountId(), base::FilePath("/sea_pen/111.jpg"),
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentAttribution* current_attr =
+      current_attribution();
+  EXPECT_EQ("/sea_pen/111.jpg", current_attr->key);
+  std::vector<std::string> expected_attr{"test template query",
+                                         "test template title"};
+  EXPECT_EQ(expected_attr, current_attr->attribution);
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       GetInvalidFormatSeaPenMetadataNotifyEmptyAttribution) {
+  SetWallpaperObserver();
+  test_wallpaper_controller()->set_sea_pen_metadata(
+      R"({"creation_time":"13349580387513653"})");
+
+  test_wallpaper_controller()->SetSeaPenWallpaperFromFile(
+      GetTestAccountId(), base::FilePath("/sea_pen/111.jpg"),
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentAttribution* current_attr =
+      current_attribution();
+  EXPECT_EQ("/sea_pen/111.jpg", current_attr->key);
+  EXPECT_EQ(std::vector<std::string>(), current_attr->attribution);
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       GetMissingFieldSeaPenMetadataNotifyEmptyAttribution) {
+  SetWallpaperObserver();
+  test_wallpaper_controller()->set_sea_pen_metadata("invalid format metadata");
+
+  test_wallpaper_controller()->SetSeaPenWallpaperFromFile(
+      GetTestAccountId(), base::FilePath("/sea_pen/111.jpg"),
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentAttribution* current_attr =
+      current_attribution();
+  EXPECT_EQ("/sea_pen/111.jpg", current_attr->key);
+  EXPECT_EQ(std::vector<std::string>(), current_attr->attribution);
+}
+
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
   auto* ctrl = test_wallpaper_controller();
 
   EXPECT_EQ(ctrl->update_current_wallpaper_layout_count(), 0);
-  EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), absl::nullopt);
+  EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), std::nullopt);
 
   auto layout = ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER;
   wallpaper_provider_remote()->SetCurrentWallpaperLayout(layout);
@@ -444,6 +542,52 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {
             bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       ShouldShowTimeOfDayWallpaperDialog) {
+  test_wallpaper_controller()->ClearCounts();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kFeatureManagementTimeOfDayWallpaper,
+                             features::kTimeOfDayWallpaperForcedAutoSchedule},
+                            {});
+
+  auto image_info = GetDefaultImageInfo();
+  image_info.collection_id =
+      wallpaper_constants::kTimeOfDayWallpaperCollectionId;
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  variants.emplace_back(image_info.asset_id, image_info.image_url,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
+
+  AddWallpaperImage(image_info);
+
+  base::test::TestFuture<bool> should_show_dialog_future;
+  wallpaper_provider_remote()->ShouldShowTimeOfDayWallpaperDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return true before time of day wallpaper is set.
+  EXPECT_TRUE(should_show_dialog_future.Take());
+
+  base::test::TestFuture<bool> success_future;
+  wallpaper_provider_remote()->SelectWallpaper(image_info.asset_id,
+                                               /*preview_mode=*/false,
+                                               success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
+  EXPECT_TRUE(
+      test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
+          ash::WallpaperInfo(
+              {GetTestAccountId(),
+               wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+               ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+               /*preview_mode=*/false, /*from_user=*/true,
+               /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
+              variants.front())));
+
+  wallpaper_provider_remote()->ShouldShowTimeOfDayWallpaperDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return false after time of day wallpaper is set.
+  EXPECT_FALSE(should_show_dialog_future.Take());
+}
+
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
     : public PersonalizationAppWallpaperProviderImplTest {
  protected:
@@ -497,12 +641,12 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
   EXPECT_CALL(*google_photos_albums_fetcher,
-              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+              AddRequestAndStartIfNecessary(std::make_optional(kResumeToken),
                                             ::testing::_))
       .Times(kNumFetches);
 
   EXPECT_CALL(*google_photos_shared_albums_fetcher,
-              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+              AddRequestAndStartIfNecessary(std::make_optional(kResumeToken),
                                             ::testing::_))
       .Times(kNumFetches);
 
@@ -570,8 +714,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
   const std::string album_id = "albumId";
   EXPECT_CALL(*google_photos_photos_fetcher,
               AddRequestAndStartIfNecessary(
-                  absl::make_optional(item_id), absl::make_optional(album_id),
-                  absl::make_optional(kResumeToken), false, ::testing::_))
+                  std::make_optional(item_id), std::make_optional(album_id),
+                  std::make_optional(kResumeToken), false, ::testing::_))
       .Times(kNumFetches);
 
   // Test fetching Google Photos photos after fetching the enterprise setting.

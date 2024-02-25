@@ -111,6 +111,8 @@ out_manifest: Specifies a file where the list of output files and their
               preprocessed files are instead passed to ts_library in WebUIs
               that have been migrated to TypeScript, this is only used by
               WebUIs that have not been migrated to TypeScript yet.
+defines: Optional parameter. Specifies additional variables that can be used in
+         conditional expressions.
 ```
 #### **Example:**
 ```
@@ -130,6 +132,7 @@ preprocess_if_expr("preprocess_generated") {
     "my_web_component.html.ts",
   ]
   out_folder = "$target_gen_dir/$preprocess_folder"
+  defines = [ "foo_enabled=false" ]
 }
 
 # Preprocess "my_web_component.ts" and "my_webui.ts" in the src dir into
@@ -141,6 +144,7 @@ preprocess_if_expr("preprocess_src") {
     "my_webui.ts",
   ]
   out_folder = "$target_gen_dir/$preprocess_folder"
+  defines = [ "foo_enabled=true" ]
 }
 ```
 
@@ -159,7 +163,7 @@ preprocessed, if necessary. It also means that e.g. HTML or image files
 shouldn't be passed to ts_library.
 
 All files that aren't imported with an absolute path (e.g.
-`import {assert} from 'chrome://resources/js/assert_ts.js'; `) need to exist
+`import {assert} from 'chrome://resources/js/assert.js'; `) need to exist
 inside the TypeScript root directory, at the expected location. For example,
 if foo.ts in the top level directory contains the import statement
 `import {Baz} from './bar/baz.js';`, then the folder structure when ts_library
@@ -262,6 +266,12 @@ js_module_in_files: The names of the root files to bundle. These files should
                     located at the same relative path as the inputs.
 out_manifest: File location to write the manifest of all output files created
               by bundle_js(). Useful for generating grds.
+rollup_config: Optional parameter. The path to a custom Rollup configuration
+               file. When specified it overrides the default auto-generated
+               configuration file.
+               Note: The custom configuration should not refer to other files
+               (like plugin files), because such files are not automatically
+               declared as `inputs`.
 deps: Targets generating any files being bundled. Note that this should include
       targets generating shared resources that are expected to be bundled in
       the UI, e.g. //ui/webui/resources/js:build_ts.
@@ -568,6 +578,7 @@ extra_grdp_deps: List of external generate_grd() targets that generate .grdp
                  resources.grd file. Optional parameter.
 extra_grdp_files: Output .grdp files of external generate_grd() targets. Must be
                   defined if |extra_grdp_deps| is defined.
+preprocessor_defines: Optional parameter. See |defines| in preprocess_if_expr().
 grit_output_dir: See |output_dir| in grit(). Optional parameter, defaults to
                  "$root_gen_dir/chrome"
 enable_source_maps: Defaults to "false". Incompatible with |optimize=true|.
@@ -620,6 +631,8 @@ build_webui("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  preprocessor_defines = [ "foo_enabled=false" ]
 }
 
 ```
@@ -650,6 +663,10 @@ to from other parts of the build.
 
 #### **Arguments**
 ```
+is_chrome_untrusted: Set to true if testing a chrome-untrusted:// UI. Optional
+                     parameter. Allows importing shared test files from
+                     chrome-untrusted://webui-test/ instead of
+                     chrome://webui-test.
 
 List of files params:
 files: Required parameter. List of all test related files.
@@ -662,9 +679,10 @@ ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Required parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
 
-Other params:
-resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required
-                      parameter.
+Grit (generate_grd()) related params:
+resource_path_prefix: See |resource_path_prefix| in generate_grd(). Optional
+                      parameter. Only specify it for targets residing outside of
+                      //chrome/test/data/webui.
 ```
 
 #### **Example**
@@ -672,8 +690,6 @@ resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required
 import("//chrome/test/data/webui/settings/tools/build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "settings"
-
   files = [
     "checkbox_tests.ts",
     "collapse_radio_button_tests.ts",

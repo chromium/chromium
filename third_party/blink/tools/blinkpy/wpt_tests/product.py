@@ -4,12 +4,14 @@
 """Product classes that encapsulate the interfaces for the testing targets"""
 
 import contextlib
-import subprocess
 import logging
 
 from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
 
+_log = logging.getLogger(__name__)
+IOS_VERSION = '17.0'
+IOS_DEVICE = 'iPhone 14 Pro'
 
 def do_delay_imports():
     global devil_chromium, devil_env, apk_helper
@@ -67,10 +69,12 @@ class Product:
         """Product-specific wptrunner parameters needed to run tests."""
         processes = self._options.child_processes
         if not processes:
-            if self._options.headless:
-                processes = self._port.default_child_processes()
-            else:
+            if self._options.wrapper:
+                _log.info('Defaulting to 1 worker because of debugging '
+                          'option `--wrapper`')
                 processes = 1
+            else:
+                processes = self._port.default_child_processes()
         return {'processes': processes}
 
     def additional_webdriver_args(self):
@@ -123,13 +127,10 @@ class ContentShell(Product):
 
 class ChromeiOS(Product):
 
-    IOS_VERSION = '17.0'
-    DEVICE = 'iPhone 14 Pro'
     name = 'chrome_ios'
 
     def __init__(self, port, options):
         super().__init__(port, options)
-        self.xcode_build_version = options.xcode_build_version
 
     def product_specific_options(self):
         """Product-specific wptrunner parameters needed to run tests."""
@@ -146,34 +147,9 @@ class ChromeiOS(Product):
         output_dir = self._host.filesystem.join(
             self._port.artifacts_directory(), "xcode-output")
         return [
-            '--out-dir=' + output_dir, '--os=' + self.IOS_VERSION,
-            '--device=' + self.DEVICE
+            '--out-dir=' + output_dir, '--os=' + IOS_VERSION,
+            '--device=' + IOS_DEVICE
         ]
-
-    @contextlib.contextmanager
-    def test_env(self):
-        path_finder.add_build_ios_to_sys_path()
-        import xcode_util as xcode
-        with super().test_env():
-            # Install xcode.
-            if self.xcode_build_version:
-                try:
-                    xcode.install_xcode('../../mac_toolchain',
-                                        self._options.xcode_build_version,
-                                        '../../Xcode.app',
-                                        '../../Runtime-ios-', self.IOS_VERSION)
-                except subprocess.CalledProcessError as e:
-                    logging.error(
-                        'Xcode build version %s failed to install: %s ',
-                        self.xcode_build_version, e)
-                else:
-                    logging.info(
-                        'Xcode build version %s successfully installed.',
-                        self.xcode_build_version)
-            else:
-                logging.warning('Skip the Xcode installation, no '
-                                '--xcode-build-version')
-            yield
 
 
 class ChromeAndroidBase(Product):
@@ -201,7 +177,7 @@ class ChromeAndroidBase(Product):
         instances = []
         try:
             if self._options.avd_config:
-                logging.info(
+                _log.info(
                     f'Installing emulator from {self._options.avd_config}')
                 config = avd.AvdConfig(self._options.avd_config)  # pylint: disable=undefined-variable;
                 config.Install()
@@ -251,13 +227,12 @@ class ChromeAndroidBase(Product):
             device = self.devices[0]
             try:
                 version = device.GetApplicationVersion(version_provider)
-                logging.info('Product version: %s %s (package: %r)', self.name,
-                             version, version_provider)
+                _log.info('Product version: %s %s (package: %r)', self.name,
+                          version, version_provider)
                 return version
             except CommandFailedError:  # pylint: disable=undefined-variable;
-                logging.warning(
-                    'Failed to retrieve version of %s (package: %r)',
-                    self.name, version_provider)
+                _log.warning('Failed to retrieve version of %s (package: %r)',
+                             self.name, version_provider)
         return None
 
     @property
@@ -317,7 +292,7 @@ class ChromeAndroidBase(Product):
                 exit_stack.enter_context(self._install_apk(device, apk))
             exit_stack.enter_context(
                 self._install_apk(device, self.browser_apk))
-            logging.info('Provisioned device (serial: %s)', device.serial)
+            _log.info('Provisioned device (serial: %s)', device.serial)
             yield
 
 

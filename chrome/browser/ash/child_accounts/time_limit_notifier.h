@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_NOTIFIER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_NOTIFIER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -40,7 +41,7 @@ class TimeLimitNotifier {
 
   // Shows a notification informing that the provided limit was updated.
   void ShowPolicyUpdateNotification(LimitType limit_type,
-                                    absl::optional<base::Time> lock_time);
+                                    std::optional<base::Time> lock_time);
 
   // Cancels any scheduled notification timers.
   void UnscheduleNotifications();
@@ -52,7 +53,7 @@ class TimeLimitNotifier {
   TimeLimitNotifier(content::BrowserContext* context,
                     scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Called to show warning and exit notifications.
   base::OneShotTimer warning_notification_timer_;

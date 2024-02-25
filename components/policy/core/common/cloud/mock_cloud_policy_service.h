@@ -20,11 +20,12 @@ class MockCloudPolicyService : public CloudPolicyService {
   MockCloudPolicyService& operator=(const MockCloudPolicyService&) = delete;
   ~MockCloudPolicyService() override;
 
-  MOCK_METHOD1(RefreshPolicy, void(RefreshPolicyCallback));
+  MOCK_METHOD2(RefreshPolicy, void(RefreshPolicyCallback, PolicyFetchReason));
 
  private:
   // Invokes real RefreshPolicy() method.
-  void InvokeRefreshPolicy(RefreshPolicyCallback callback);
+  void InvokeRefreshPolicy(RefreshPolicyCallback callback,
+                           PolicyFetchReason reason);
 };
 
 class MockCloudPolicyServiceObserver : public CloudPolicyService::Observer {

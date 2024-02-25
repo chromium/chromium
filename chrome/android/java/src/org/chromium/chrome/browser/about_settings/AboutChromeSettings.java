@@ -13,19 +13,17 @@ import android.text.format.DateUtils;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.ui.widget.Toast;
 
 import java.util.Calendar;
 
-/**
- * Settings fragment that displays information about Chrome.
- */
-public class AboutChromeSettings
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+/** Settings fragment that displays information about Chrome. */
+public class AboutChromeSettings extends PreferenceFragmentCompat
+        implements Preference.OnPreferenceClickListener {
     private static final int TAPS_FOR_DEVELOPER_SETTINGS = 7;
 
     private static final String PREF_APPLICATION_VERSION = "application_version";
@@ -77,8 +75,9 @@ public class AboutChromeSettings
         } catch (NameNotFoundException e) {
             return version;
         }
-        CharSequence updateTimeString = DateUtils.getRelativeTimeSpanString(
-                info.lastUpdateTime, System.currentTimeMillis(), 0);
+        CharSequence updateTimeString =
+                DateUtils.getRelativeTimeSpanString(
+                        info.lastUpdateTime, System.currentTimeMillis(), 0);
         return context.getString(R.string.version_with_update_time, version, updateTimeString);
     }
 

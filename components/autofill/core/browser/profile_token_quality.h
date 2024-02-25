@@ -7,8 +7,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -43,20 +45,18 @@ class PersonalDataManager;
 // an observation for a derived type, it is stored as an observation for the
 // corresponding stored type.
 // See `components/autofill/README.md` for details on stored and derived types.
-//
-// TODO(crbug.com/1453650): Interface + logic to reset observations for
-// `kAccount` profiles and for edits via settings.
-// TODO(crbug.com/1453650): Interface + logic to initialize the class with
-// existing observations (when loading it from the DB).
-// TODO(crbug.com/1453650): Treat values entered through settings as `kAccepted`
-// observations.
 class ProfileTokenQuality {
  public:
   // Describes the different types of observations, derived from an autofilled
   // field at form submission.
-  enum class ObservationType {
-    // Default value. Not used for actual observations.
-    kNone = 0,
+  // Keep in sync with AutofillProfileTokenQualityObservationType in
+  // tools/metrics/histograms/enums.xml.
+  enum class ObservationType : uint8_t {
+    // An observation type that this client doesn't understand. This is possible
+    // if a newer client synced a new enum value that this client doesn't
+    // understand. Internally, the unknown value is stored as it's underlying
+    // type - but it is exposed as `kUnknown`. See `Observation`.
+    kUnknown = 0,
     // The autofilled value of a stored type was accepted as-filled.
     kAccepted = 1,
     // The autofilled value of a derived type was accepted as-filled. This is
@@ -101,9 +101,7 @@ class ProfileTokenQuality {
   ProfileTokenQuality(const ProfileTokenQuality& other);
   ~ProfileTokenQuality();
 
-  // Determines if a `type` is considered stored. Observations are only tracked
-  // for stored types.
-  static bool IsStoredType(ServerFieldType type);
+  bool operator==(const ProfileTokenQuality& other) const;
 
   // Derives an observation from every field of the `form_structure` that was
   // autofilled with the `profile_`. Only fields with no existing observation
@@ -132,12 +130,13 @@ class ProfileTokenQuality {
       PersonalDataManager& pdm);
 
   // Returns all `ObservationType`s available for the `type`. The resulting
-  // vector has at most `kMaxNumberOfObservations` items. It is guaranteed that
-  // no observation type is `kNone`.
+  // vector has at most `kMaxNumberOfObservations` items. It can contain
+  // observations of type `kUnknown`, if a newer client synced observation types
+  // that this client doesn't understand.
   // `type` must be a supported type of `AutofillProfile`. For a derived `type`,
   // the observations of the corresponding stored type are returned.
   std::vector<ObservationType> GetObservationTypesForFieldType(
-      ServerFieldType type) const;
+      FieldType type) const;
 
   // Observations are stored together with their stored `type` in the database.
   // The observations for each stored type are serialized as a sequence of
@@ -146,10 +145,9 @@ class ProfileTokenQuality {
   // `FormSignatureHash`.
   // Changing the encoding requires adding migration logic to `AutofillTable`.
   // Tested by autofill_table_unittest.cc.
-  std::vector<uint8_t> SerializeObservationsForStoredType(
-      ServerFieldType type) const;
+  std::vector<uint8_t> SerializeObservationsForStoredType(FieldType type) const;
   void LoadSerializedObservationsForStoredType(
-      ServerFieldType type,
+      FieldType type,
       base::span<const uint8_t> serialized_data);
 
   void set_profile(AutofillProfile* profile) {
@@ -158,16 +156,16 @@ class ProfileTokenQuality {
   }
 
   // Copy the observations for the `type` from `other`.
-  void CopyObservationsForStoredType(ServerFieldType type,
+  void CopyObservationsForStoredType(FieldType type,
                                      const ProfileTokenQuality& other);
 
   // Resets all observations for the `type`.
-  void ResetObservationsForStoredType(ServerFieldType type);
+  void ResetObservationsForStoredType(FieldType type);
 
-  // Returns true if `a` and `b` are within Levenshtein distance `k`.
-  static bool IsWithinLevenshteinDistanceForTesting(std::u16string_view a,
-                                                    std::u16string_view b,
-                                                    size_t k);
+  // Resets the observations for all tokens in which `profile_` and `other`
+  // differ. This is used as a mechanism to reset outdated observations, by
+  // setting `other` to the profile before modifications took place.
+  void ResetObservationsForDifferingTokens(const AutofillProfile& other);
 
   void disable_randomization_for_testing() {
     diable_randomization_for_testing_ = true;
@@ -175,6 +173,11 @@ class ProfileTokenQuality {
 
  private:
   friend class ProfileTokenQualityTestApi;
+  // To send/receive observations to/from Sync, the entire `Observation`s need
+  // to be accessed, not just the `ObservationType`. This is implemented in
+  // terms of friend classes to keep the `form_hash`es private.
+  friend class ContactInfoEntryDataSetter;
+  friend class ContactInfoProfileSetter;
 
   // For every form and stored type, at most a single observation is stored
   // (among the `kMaxObservationsPerToken` observations stored in total).
@@ -193,8 +196,21 @@ class ProfileTokenQuality {
   // An observation, describing the type of observed observation and the form-
   // field it was collected from.
   struct Observation {
-    ObservationType type = ObservationType::kNone;
+    // Internally, observation types are not stored as an `ObservationType`, but
+    // as their underlying type. This way, new (future) observation types,
+    // synced in from newer clients can be handled:
+    // - Since the sync code uses proto2, the `ObservationType`s are synced as
+    //   ints. Otherwise old clients would lose future observation types.
+    // - Casting the int from sync to the enum class `ObservationType` would
+    //   technically preserve it's value. But it would come at the downside of
+    //   making switch statements with all cases non-exhaustive.
+    // For this reason, it is preferred to store the `ObservationType`s as their
+    // underlying type in the data model as well.
+    // Getters expose unknown values as `kUnknown`.
+    std::underlying_type_t<ObservationType> type;
     FormSignatureHash form_hash = FormSignatureHash(0);
+
+    bool operator==(const Observation& other) const = default;
   };
 
   // Returns a low-entry hash of the `form_signature`.
@@ -203,7 +219,7 @@ class ProfileTokenQuality {
   // Adds the `observation` to the `observations_` for the stored type of
   // `type`. The oldest existing observation for that type is discarded, if
   // the limit of `kMaxObservationsPerToken` is exceeded.
-  void AddObservation(ServerFieldType type, Observation observation);
+  void AddObservation(FieldType type, Observation observation);
 
   // The set of types of the form is form identifying. To avoid tracking
   // browsing history, this function randomly drops 3 observations from all
@@ -213,7 +229,7 @@ class ProfileTokenQuality {
   // most 8 are added.
   // Returns the number of observations added.
   size_t AddSubsetOfObservations(
-      std::vector<std::pair<ServerFieldType, Observation>> observations);
+      std::vector<std::pair<FieldType, Observation>> observations);
 
   // Deduces the `ObservationType` from a `field` that was autofilled with
   // `profile_`. `other_profiles` are all the other profiles that the user has
@@ -231,15 +247,13 @@ class ProfileTokenQuality {
   // The profile for which observations are collected.
   raw_ref<AutofillProfile> profile_;
 
-  // Maps from `AutofillTable::GetStoredTypesForAutofillProfile()` to the
+  // Maps from `AutofillTable::GetDatabaseStoredTypesOfAutofillProfile()` to the
   // observations for this stored type. The following invariants hold for the
   // `circular_deque`:
   // - The observations are ordered from oldest (`front()`) to newest
   //   (`back()`).
-  // - No stored observation has type `kNone`.
   // - No more than `kMaxObservationsPerToken` elements are stored.
-  base::flat_map<ServerFieldType, base::circular_deque<Observation>>
-      observations_;
+  base::flat_map<FieldType, base::circular_deque<Observation>> observations_;
 
   // When true, `AddSubsetOfObservations()` adds all observations.
   bool diable_randomization_for_testing_ = false;

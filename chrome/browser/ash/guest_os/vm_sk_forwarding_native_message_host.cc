@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file has been duplicated for lacros in
+// //chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.cc and
+// should eventually be removed.
+
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
 
 #include <utility>
@@ -23,10 +27,9 @@
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -119,9 +122,9 @@ void VmSKForwardingNativeMessageHost::DeliverMessageToExtensionByID(
     const std::string& extension_id,
     const std::string& json_message,
     base::OnceCallback<void(const std::string& response)> response_callback) {
-  const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   1 /* port_number */, true /* is_opener */,
-                                   extensions::SerializationFormat::kJson);
+  const extensions::PortId port_id(
+      base::UnguessableToken::Create(), 1 /* port_number */,
+      true /* is_opener */, extensions::mojom::SerializationFormat::kJson);
 
   extensions::MessageService* const message_service =
       extensions::MessageService::Get(profile);
@@ -138,7 +141,8 @@ void VmSKForwardingNativeMessageHost::DeliverMessageToExtensionByID(
       extensions::MessagingEndpoint::ForNativeApp(
           VmSKForwardingNativeMessageHost::kHostName),
       std::move(native_message_port), extension_id, GURL(),
-      extensions::ChannelType::kNative, std::string() /* channel_name */);
+      extensions::mojom::ChannelType::kNative,
+      std::string() /* channel_name */);
 }
 
 void VmSKForwardingNativeMessageHost::DeliverMessageToSKForwardingExtension(

@@ -26,6 +26,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_unit_tests",
     "//chrome/test:test_support",
     "//components/services/app_service",
+    "//components/webapps/common",
     "//content/test:test_support",
     "//storage/browser:test_support",
   ]
@@ -36,9 +37,10 @@ source_set("browser_tests") {
 
   sources = [
     "app_browser_controller_browsertest.cc",
-    "commands/launch_web_app_command_browsertest.cc",
     "create_shortcut_browsertest.cc",
     "pwa_mixed_content_browsertest.cc",
+    "status_bar_browsertest.cc",
+    "sub_apps_permissions_policy_browsertest.cc",
     "sub_apps_service_impl_browsertest.cc",
     "web_app_browsertest.cc",
     "web_app_dark_mode_browsertest.cc",
@@ -49,14 +51,20 @@ source_set("browser_tests") {
     "web_app_menu_model_browsertest.cc",
     "web_app_metrics_browsertest.cc",
     "web_app_navigate_browsertest.cc",
+    "web_app_title_browsertest.cc",
     "web_app_ui_manager_impl_browsertest.cc",
     "web_app_uninstall_browsertest.cc",
   ]
 
+  if (is_chromeos) {
+    sources += [ "sub_apps_admin_policy_browsertest.cc" ]
+  }
+
   if (!is_chromeos_lacros) {
     sources += [
-      # This is not valid on Lacros as web apps are only enabled in the main
+      # Tests are not valid on Lacros as web apps are only enabled in the main
       # profile which can never be deleted.
+      "web_app_link_capturing_browsertest.cc",
       "web_app_profile_deletion_browsertest.cc",
     ]
   }
@@ -64,8 +72,8 @@ source_set("browser_tests") {
   if (is_chromeos_ash) {
     sources += [
       "app_browser_controller_browsertest_chromeos.cc",
+      "sub_apps_install_dialog_controller_browsertest.cc",
       "web_app_guest_session_browsertest_chromeos.cc",
-      "web_app_link_capturing_browsertest.cc",
     ]
   }
 
@@ -79,17 +87,24 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/apps/link_capturing",
+    "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
+    "//chrome/browser/metrics/structured:features",
+    "//chrome/browser/metrics/structured:test_support",
+    "//chrome/browser/permissions",
+    "//chrome/browser/web_applications:prevent_close_test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/app_service:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/embedder_support",
+    "//components/metrics/structured:structured_events",
     "//components/page_load_metrics/browser:test_support",
     "//components/services/app_service",
     "//components/site_engagement/content",
     "//components/webapps/browser",
+    "//components/webapps/common",
   ]
 
   if (is_chromeos_ash) {
@@ -97,21 +112,19 @@ source_set("browser_tests") {
       "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//components/session_manager/core:core",
+      "//components/user_manager:user_manager",
     ]
   }
 
   if (is_chromeos) {
-    deps += [
-      "//chrome/browser/metrics/structured:features",
-      "//chrome/browser/metrics/structured:test_support",
-      "//chromeos/constants",
-      "//components/metrics/structured:structured_events",
-    ]
+    deps += [ "//chromeos/constants" ]
   }
 }
 
-# On Lacros, these browser tests require Ash to be running, as they rely on
-# web apps being registered with the App Service.
+# On Lacros, these browser tests require Ash to be running, as they rely on web
+# apps being registered with the App Service. So runs in the
+# "lacros_chrome_browsertests" target on Lacros.
 source_set("app_service_browser_tests") {
   testonly = true
 
@@ -127,6 +140,7 @@ source_set("app_service_browser_tests") {
   if (is_chromeos) {
     sources += [
       "share_to_target_browsertest.cc",
+      "web_app_relaunch_notification_browsertest.cc",
       "web_share_target_browsertest.cc",
     ]
   }
@@ -135,6 +149,7 @@ source_set("app_service_browser_tests") {
     sources += [
       "lacros_web_app_browsertest.cc",
       "lacros_web_app_shelf_browsertest.cc",
+      "sub_apps_install_dialog_controller_browsertest.cc",
       "web_app_link_capturing_browsertest.cc",
     ]
   }
@@ -146,6 +161,7 @@ source_set("app_service_browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/link_capturing",
+    "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/ui/web_applications/diagnostics:app_service_browser_tests",
     "//chrome/browser/web_applications",
@@ -157,6 +173,7 @@ source_set("app_service_browser_tests") {
     "//components/page_load_metrics/browser:test_support",
     "//components/services/app_service",
     "//components/webapps/browser:test_support",
+    "//components/webapps/common",
   ]
 
   if (is_chromeos_lacros) {
@@ -165,6 +182,7 @@ source_set("app_service_browser_tests") {
       "//chromeos/constants",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
+      "//chromeos/startup",
     ]
   }
 }

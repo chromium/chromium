@@ -9,12 +9,12 @@
 
 #include <stdio.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/qr_code_generator/qr_code_generator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // kTerminalBackgroundIsBright controls the output polarity. Many QR scanners
 // will cope with inverted bright / dark but, if you have a bright terminal
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
   const uint8_t* const input = reinterpret_cast<const uint8_t*>(argv[1]);
   const size_t input_len = strlen(argv[1]);
 
-  absl::optional<uint8_t> mask;
+  std::optional<uint8_t> mask;
   if (argc == 3) {
     unsigned mask_unsigned;
     if (!base::StringToUint(argv[2], &mask_unsigned) || mask_unsigned > 7) {
@@ -60,10 +60,9 @@ int main(int argc, char** argv) {
     std::swap(black, white);
   }
 
-  qr_code_generator::QRCodeGenerator generator;
-  absl::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> code =
-      generator.Generate(base::span<const uint8_t>(input, input_len), mask);
-  if (!code) {
+  auto code = qr_code_generator::GenerateCode(
+      base::span<const uint8_t>(input, input_len), mask);
+  if (!code.has_value()) {
     fprintf(STDERR, "Input too long to be encoded.\n");
     return 2;
   }

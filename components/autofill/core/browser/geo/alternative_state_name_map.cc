@@ -37,7 +37,7 @@ AlternativeStateNameMap::StateName AlternativeStateNameMap::NormalizeStateName(
 }
 
 // static
-absl::optional<AlternativeStateNameMap::CanonicalStateName>
+std::optional<AlternativeStateNameMap::CanonicalStateName>
 AlternativeStateNameMap::GetCanonicalStateName(
     const std::string& country_code,
     const std::u16string& state_name) {
@@ -48,7 +48,7 @@ AlternativeStateNameMap::GetCanonicalStateName(
 
 AlternativeStateNameMap::AlternativeStateNameMap() = default;
 
-absl::optional<AlternativeStateNameMap::CanonicalStateName>
+std::optional<AlternativeStateNameMap::CanonicalStateName>
 AlternativeStateNameMap::GetCanonicalStateName(
     const CountryCode& country_code,
     const StateName& state_name,
@@ -78,15 +78,15 @@ AlternativeStateNameMap::GetCanonicalStateName(
   if (it != localized_state_names_reverse_lookup_map_.end())
     return it->second;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<StateEntry> AlternativeStateNameMap::GetEntry(
+std::optional<StateEntry> AlternativeStateNameMap::GetEntry(
     const CountryCode& country_code,
     const StateName& state_string_from_profile) const {
   StateName normalized_state_string_from_profile =
       NormalizeStateName(state_string_from_profile);
-  absl::optional<CanonicalStateName> canonical_state_name =
+  std::optional<CanonicalStateName> canonical_state_name =
       GetCanonicalStateName(country_code, normalized_state_string_from_profile,
                             /*is_state_name_normalized=*/true);
 
@@ -98,7 +98,7 @@ absl::optional<StateEntry> AlternativeStateNameMap::GetEntry(
       return it->second;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AlternativeStateNameMap::AddEntry(

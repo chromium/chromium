@@ -12,16 +12,14 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 #import "ui/base/device_form_factor.h"
@@ -263,16 +261,6 @@ CGFloat const kContentOptimalWidth = 327;
                              forBarMetrics:UIBarMetricsDefault];
     self.navigationBar.shadowImage = nil;
     self.navigationBar.translucent = NO;
-
-    // Revert navigation bar style for iOS 14 and under to workaround bug that
-    // navigation bar height not adjusting consistently across subviews. Should
-    // be removed once iOS 14 is deprecated.
-    if (!base::ios::IsRunningOnIOS15OrLater()) {
-      self.navigationBar.standardAppearance = self.defaultAppearance;
-      self.navigationBar.compactAppearance = self.defaultAppearance;
-      self.navigationBar.scrollEdgeAppearance = self.defaultAppearance;
-    }
-
     self.navigationBar = nil;
   }
 }
@@ -288,20 +276,6 @@ CGFloat const kContentOptimalWidth = 327;
     self.navigationItem.rightBarButtonItem = doneButton;
 
     self.navigationBar = self.navigationController.navigationBar;
-
-    // Set navigation bar to transparent for iOS 14 and under to workaround bug
-    // that navigation bar height not adjusting consistently across subviews.
-    // Should be removed once iOS 14 is deprecated.
-    if (!base::ios::IsRunningOnIOS15OrLater()) {
-      UINavigationBarAppearance* transparentAppearance =
-          [[UINavigationBarAppearance alloc] init];
-      [transparentAppearance configureWithTransparentBackground];
-      self.defaultAppearance = self.navigationBar.standardAppearance;
-      self.navigationBar.standardAppearance = transparentAppearance;
-      self.navigationBar.compactAppearance = transparentAppearance;
-      self.navigationBar.scrollEdgeAppearance = transparentAppearance;
-    }
-
     [self.navigationBar setBackgroundImage:[[UIImage alloc] init]
                              forBarMetrics:UIBarMetricsDefault];
     self.navigationBar.shadowImage = [[UIImage alloc] init];
@@ -432,41 +406,22 @@ CGFloat const kContentOptimalWidth = 327;
   if (!_actionButton) {
     _actionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
 
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
-          kButtonHorizontalMargin);
-      buttonConfiguration.background.backgroundColor =
-          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
+        kButtonHorizontalMargin);
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+    buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
 
-      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      NSAttributedString* attributedTitle = [[NSAttributedString alloc]
-          initWithString:self.actionString
-              attributes:@{NSFontAttributeName : font}];
-      buttonConfiguration.attributedTitle = attributedTitle;
-      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-      _actionButton.configuration = buttonConfiguration;
-    } else {
-      UIEdgeInsets contentEdgeInsets =
-          UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-      UIEdgeInsets titleEdgeInsets = UIEdgeInsetsMake(
-          0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
-      SetContentEdgeInsets(_actionButton, contentEdgeInsets);
-      SetTitleEdgeInsets(_actionButton, titleEdgeInsets);
-      [_actionButton
-          setBackgroundColor:[UIColor
-                                 colorNamed:kGroupedSecondaryBackgroundColor]];
-      UIColor* titleColor = [UIColor colorNamed:kBlueColor];
-      [_actionButton setTitleColor:titleColor forState:UIControlStateNormal];
-      _actionButton.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      [_actionButton setTitle:self.actionString forState:UIControlStateNormal];
-      _actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-      _actionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    }
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+        initWithString:self.actionString
+            attributes:@{NSFontAttributeName : font}];
+    buttonConfiguration.attributedTitle = attributedTitle;
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+    _actionButton.configuration = buttonConfiguration;
 
     _actionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
     _actionButton.translatesAutoresizingMaskIntoConstraints = NO;

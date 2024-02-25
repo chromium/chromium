@@ -17,6 +17,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++IMAGE
 ++++++++++STATIC_TEXT label='First image button in a form is a valid default button'
 ++++++++++++UNKNOWN label='First image button in a form is a valid default button'
+++++++++STATIC_TEXT label=' '
 ++++++++BUTTON focusable label='Second image button in a form not a valid default button' actions='{DEFAULT}'
 ++++++++++IMAGE
 ++++++++++STATIC_TEXT label='Second image button in a form not a valid default button'

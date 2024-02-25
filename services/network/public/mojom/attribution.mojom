@@ -16,6 +16,8 @@ struct TriggerVerification {
 
 // Indicates whether web or OS-level Attribution Reporting is supported.
 // See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum AttributionSupport {
   kWeb,
   kWebAndOs,

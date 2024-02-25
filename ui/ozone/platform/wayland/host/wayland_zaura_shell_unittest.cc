@@ -14,39 +14,24 @@ namespace ui {
 
 using WaylandZAuraShellTest = WaylandTestSimpleWithAuraShell;
 
-TEST_F(WaylandZAuraShellTest, BugFix) {
-  ASSERT_FALSE(connection_->zaura_shell()->HasBugFix(1));
-  ASSERT_FALSE(connection_->zaura_shell()->HasBugFix(3));
-  ASSERT_FALSE(connection_->zaura_shell()->HasBugFix(2));
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    server->zaura_shell()->SetBugFixes({1, 3});
-  });
-
-  ASSERT_TRUE(connection_->zaura_shell()->HasBugFix(1));
-  ASSERT_TRUE(connection_->zaura_shell()->HasBugFix(3));
-  ASSERT_FALSE(connection_->zaura_shell()->HasBugFix(2));
-}
-
 TEST_F(WaylandZAuraShellTest, CompositorVersion) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     server->zaura_shell()->SetCompositorVersion("INVALID.VERSION");
   });
-  ASSERT_FALSE(connection_->zaura_shell()->compositor_version().IsValid());
+  ASSERT_FALSE(connection_->GetServerVersion().IsValid());
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     server->zaura_shell()->SetCompositorVersion("1.2.3.4");
   });
 
-  const base::Version& received_version =
-      connection_->zaura_shell()->compositor_version();
+  base::Version received_version = connection_->GetServerVersion();
   ASSERT_TRUE(received_version.IsValid());
   ASSERT_EQ(received_version, base::Version("1.2.3.4"));
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     server->zaura_shell()->SetCompositorVersion("1NV4L1D.2");
   });
-  ASSERT_FALSE(connection_->zaura_shell()->compositor_version().IsValid());
+  ASSERT_FALSE(connection_->GetServerVersion().IsValid());
 }
 
 }  // namespace ui

@@ -15,4 +15,7 @@ include_rules = [
   # included directly by embedders of content/.  It must however be
   # available to code in content/public.
   "+content/common/content_export.h",
+
+  # Allow anyone to import the buildflags
+  "+content/common/buildflags.h",
 ]

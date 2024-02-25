@@ -167,12 +167,22 @@ scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9Picture() {
   return new V4L2VP9Picture(std::move(dec_surface));
 }
 
+scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9PictureSecure(
+    uint64_t secure_handle) {
+  scoped_refptr<V4L2DecodeSurface> dec_surface =
+      surface_handler_->CreateSecureSurface(secure_handle);
+  if (!dec_surface) {
+    return nullptr;
+  }
+
+  return new V4L2VP9Picture(std::move(dec_surface));
+}
+
 DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
     const Vp9LoopFilterParams& lf_params,
-    const Vp9ReferenceFrameVector& ref_frames,
-    base::OnceClosure done_cb) {
+    const Vp9ReferenceFrameVector& ref_frames) {
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
   DCHECK(frame_hdr);
   struct v4l2_ctrl_vp9_frame v4l2_frame_params;
@@ -296,6 +306,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
       VP9PictureToV4L2DecodeSurface(pic.get());
   dec_surface->PrepareSetCtrls(&ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls) != 0) {
+    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return DecodeStatus::kFail;
   }
@@ -310,11 +321,11 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   }
   dec_surface->SetReferenceSurfaces(std::move(ref_surfaces));
 
-  dec_surface->SetDecodeDoneCallback(std::move(done_cb));
-
   // Copy the frame data into the V4L2 buffer.
-  if (!surface_handler_->SubmitSlice(dec_surface.get(), frame_hdr->data,
-                                     frame_hdr->frame_size)) {
+  if (!surface_handler_->SubmitSlice(
+          dec_surface.get(),
+          dec_surface->secure_handle() ? nullptr : frame_hdr->data,
+          frame_hdr->frame_size)) {
     return DecodeStatus::kFail;
   }
 
@@ -333,18 +344,8 @@ bool V4L2VideoDecoderDelegateVP9::OutputPicture(scoped_refptr<VP9Picture> pic) {
   return true;
 }
 
-bool V4L2VideoDecoderDelegateVP9::GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                                  Vp9FrameContext* frame_ctx) {
-  NOTIMPLEMENTED() << "Frame context update not supported";
-  return false;
-}
-
 bool V4L2VideoDecoderDelegateVP9::NeedsCompressedHeaderParsed() const {
   return supports_compressed_header_;
-}
-
-bool V4L2VideoDecoderDelegateVP9::SupportsContextProbabilityReadback() const {
-  return false;
 }
 
 }  // namespace media

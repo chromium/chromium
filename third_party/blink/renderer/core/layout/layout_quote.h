@@ -44,7 +44,7 @@ class LayoutQuote final : public LayoutInline {
 
   PseudoElement* GetOwningPseudo() const {
     NOT_DESTROYED();
-    return owning_pseudo_;
+    return owning_pseudo_.Get();
   }
   bool IsInScope() const {
     NOT_DESTROYED();
@@ -52,7 +52,7 @@ class LayoutQuote final : public LayoutInline {
   }
   StyleContainmentScope* GetScope() const {
     NOT_DESTROYED();
-    return scope_;
+    return scope_.Get();
   }
   void SetScope(StyleContainmentScope* scope) {
     NOT_DESTROYED();
@@ -83,9 +83,9 @@ class LayoutQuote final : public LayoutInline {
 
  private:
   void WillBeDestroyed() override;
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsQuote() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectQuote || LayoutInline::IsOfType(type);
+    return true;
   }
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
   void WillBeRemovedFromTree() override;

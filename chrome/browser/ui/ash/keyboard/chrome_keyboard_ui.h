@@ -61,7 +61,7 @@ class ChromeKeyboardUI : public keyboard::KeyboardUI,
 
   // The BrowserContext to use for creating the WebContents hosting the
   // keyboard.
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<ChromeKeyboardWebContents> keyboard_contents_;
   std::unique_ptr<ui::Shadow> shadow_;

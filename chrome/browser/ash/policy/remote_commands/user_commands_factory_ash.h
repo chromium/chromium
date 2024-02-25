@@ -29,7 +29,7 @@ class UserCommandsFactoryAsh : public RemoteCommandsFactory {
       RemoteCommandsService* service) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace policy

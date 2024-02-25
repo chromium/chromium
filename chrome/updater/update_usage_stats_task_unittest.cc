@@ -5,6 +5,7 @@
 #include "chrome/updater/update_usage_stats_task.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/updater/util/mac_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/registry.h"
@@ -43,7 +43,7 @@ namespace {
 
 #if BUILDFLAG(IS_MAC)
 base::FilePath AppIDToPath(const std::string& app_id) {
-  absl::optional<base::FilePath> application_support_dir =
+  std::optional<base::FilePath> application_support_dir =
       GetApplicationSupportDirectory(UpdaterScope::kUser);
   EXPECT_TRUE(application_support_dir);
   return (*application_support_dir)
@@ -117,6 +117,7 @@ TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
   ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+  ASSERT_FALSE(AreRawUsageStatsEnabled(GetTestScope()));
 }
 
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
@@ -126,6 +127,7 @@ TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
     SetAppUsageStats(key_path, "app1", true);
     SetAppUsageStats(key_path, "app2", false);
     ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+    ASSERT_TRUE(AreRawUsageStatsEnabled(GetTestScope()));
   }
 }
 
@@ -136,6 +138,7 @@ TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
     SetAppUsageStats(key_path, "app1", false);
     SetAppUsageStats(key_path, "app2", false);
     ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+    ASSERT_FALSE(AreRawUsageStatsEnabled(GetTestScope()));
   }
 }
 
@@ -151,6 +154,7 @@ TEST_F(UpdateUsageStatsTaskTest,
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", true);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", false);
   ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1"}, GetTestScope()));
+  ASSERT_TRUE(AreRawUsageStatsEnabled(GetTestScope()));
 }
 #elif !BUILDFLAG(IS_MAC) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Mac Google-branded builds may pick up Chrome or other Google software
@@ -162,7 +166,7 @@ TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
 }
 
-// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux.
+// TODO(crbug.com/1296311): Enable tests once the feature is implemented.
 #if !BUILDFLAG(IS_LINUX)
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
   SetAppUsageStats("app1", true);

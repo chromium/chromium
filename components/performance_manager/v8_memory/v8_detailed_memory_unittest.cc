@@ -98,10 +98,17 @@ using MockV8DetailedMemoryObserverAnySeq =
 using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
 
 // An arbitrary object used to test object lifetimes with WeakPtr.
-class LifetimeTestObject : public base::SupportsWeakPtr<LifetimeTestObject> {
+class LifetimeTestObject final {
  public:
   LifetimeTestObject() = default;
   ~LifetimeTestObject() = default;
+
+  base::WeakPtr<LifetimeTestObject> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<LifetimeTestObject> weak_ptr_factory_{this};
 };
 
 constexpr base::TimeDelta kMinTimeBetweenRequests = base::Seconds(30);
@@ -581,12 +588,16 @@ TEST_F(V8DetailedMemoryDecoratorTest, MultipleIsolatesInRenderer) {
   auto page = CreateNode<PageNodeImpl>();
 
   blink::LocalFrameToken frame1_id = blink::LocalFrameToken();
-  auto frame1 = CreateNode<FrameNodeImpl>(process.get(), page.get(), nullptr,
-                                          /*render_frame_id=*/1, frame1_id);
+  auto frame1 = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr, /*render_frame_id=*/1,
+      frame1_id);
 
   blink::LocalFrameToken frame2_id = blink::LocalFrameToken();
-  auto frame2 = CreateNode<FrameNodeImpl>(process.get(), page.get(), nullptr,
-                                          /*render_frame_id=*/2, frame2_id);
+  auto frame2 = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
+      /*render_frame_id=*/2, frame2_id);
   {
     auto data = NewPerProcessV8MemoryUsage(2);
     AddIsolateMemoryUsage(frame1_id, 1001u, data->isolates[0].get());
@@ -635,12 +646,16 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   auto page = CreateNode<PageNodeImpl>();
 
   blink::LocalFrameToken frame1_id = blink::LocalFrameToken();
-  auto frame1 = CreateNode<FrameNodeImpl>(process.get(), page.get(), nullptr,
-                                          /*render_frame_id=*/1, frame1_id);
+  auto frame1 = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
+      /*render_frame_id=*/1, frame1_id);
 
   blink::LocalFrameToken frame2_id = blink::LocalFrameToken();
-  auto frame2 = CreateNode<FrameNodeImpl>(process.get(), page.get(), nullptr,
-                                          /*render_frame_id=*/2, frame2_id);
+  auto frame2 = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
+      /*render_frame_id=*/2, frame2_id);
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     AddIsolateMemoryUsage(frame1_id, 1001u, data->isolates[0].get());
@@ -1959,13 +1974,15 @@ TEST_F(V8DetailedMemoryDecoratorTest, DedicatedWorkers) {
   auto page = CreateNode<PageNodeImpl>();
 
   blink::LocalFrameToken frame_id = blink::LocalFrameToken();
-  auto frame = CreateNode<FrameNodeImpl>(process.get(), page.get(), nullptr,
-                                         /*render_frame_id=*/1, frame_id);
+  auto frame = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
+      /*render_frame_id=*/1, frame_id);
 
   blink::DedicatedWorkerToken worker_id = blink::DedicatedWorkerToken();
   auto worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, process.get(),
-      page->browser_context_id(), worker_id);
+      page->GetBrowserContextID(), worker_id);
 
   worker->AddClientFrame(frame.get());
   {
@@ -2002,8 +2019,10 @@ TEST_F(V8DetailedMemoryDecoratorTest, CanvasMemory) {
   auto page = CreateNode<PageNodeImpl>();
 
   blink::LocalFrameToken frame_id = blink::LocalFrameToken();
-  auto frame = CreateNode<FrameNodeImpl>(process.get(), page.get(), nullptr,
-                                         /*render_frame_id=*/1, frame_id);
+  auto frame = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
+      /*render_frame_id=*/1, frame_id);
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);

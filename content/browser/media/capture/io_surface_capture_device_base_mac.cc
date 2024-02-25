@@ -57,8 +57,7 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
   gfx::GpuMemoryBufferHandle handle;
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface.reset(last_received_io_surface_,
-                          base::scoped_policy::RETAIN);
+  handle.io_surface = last_received_io_surface_;
 
   const auto now = base::TimeTicks::Now();
   if (first_frame_time_.is_null())
@@ -68,7 +67,7 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
       media::CapturedExternalVideoBuffer(std::move(handle),
                                          last_received_capture_format_,
                                          gfx::ColorSpace::CreateREC709()),
-      {}, now, now - first_frame_time_, last_visible_rect_);
+      now, now - first_frame_time_, last_visible_rect_);
 }
 
 void IOSurfaceCaptureDeviceBase::ComputeFrameSizeAndDestRect(

@@ -33,7 +33,7 @@ class VirtualKeyboardContainerLayoutManager : public aura::LayoutManager {
                       const gfx::Rect& requested_bounds) override;
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> ime_window_parent_container_;
+  raw_ptr<aura::Window> ime_window_parent_container_;
 };
 
 }  // namespace ash

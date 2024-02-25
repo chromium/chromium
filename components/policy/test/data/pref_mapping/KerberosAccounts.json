@@ -1,0 +1,54 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "KerberosAccounts": [
+            {
+              "password": "password1",
+              "principal": "user1@realm",
+              "remember_password_from_policy": true
+            },
+            {
+              "principal": "${LOGIN_EMAIL}"
+            },
+            {
+              "krb5conf": [
+                "line1",
+                "line2"
+              ],
+              "password": "${PASSWORD}",
+              "principal": "${LOGIN_ID}"
+            }
+          ]
+        },
+        "prefs": {
+          "kerberos.accounts": {
+            "location": "local_state",
+            "value": [
+              {
+                "password": "password1",
+                "principal": "user1@realm",
+                "remember_password_from_policy": true
+              },
+              {
+                "principal": "${LOGIN_EMAIL}"
+              },
+              {
+                "krb5conf": [
+                  "line1",
+                  "line2"
+                ],
+                "password": "${PASSWORD}",
+                "principal": "${LOGIN_ID}"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

@@ -99,6 +99,8 @@ ASH_EXPORT bool CanToggleMultitaskMenu();
 
 ASH_EXPORT bool CanToggleOverview();
 
+ASH_EXPORT bool CanTogglePicker();
+
 ASH_EXPORT bool CanTogglePrivacyScreen();
 
 ASH_EXPORT bool CanToggleProjectorMarker();
@@ -270,16 +272,15 @@ ASH_EXPORT void RotateScreen();
 ASH_EXPORT void ShiftPrimaryDisplay();
 
 // Opens Emoji Picker.
-ASH_EXPORT void ShowEmojiPicker();
+// `accelerator_timestamp` is the timestamp associated with the accelerator that
+// triggered the emoji picker.
+ASH_EXPORT void ShowEmojiPicker(base::TimeTicks accelerator_timestamp);
 
 // Sees keyboard shortcut helper.
 ASH_EXPORT void ShowKeyboardShortcutViewer();
 
 // Opens Shortcut Customization.
 ASH_EXPORT void ShowShortcutCustomizationApp();
-
-// Shows stylus tools.
-ASH_EXPORT void ShowStylusTools();
 
 // Brings up task manager.
 ASH_EXPORT void ShowTaskManager();
@@ -292,6 +293,9 @@ ASH_EXPORT void Suspend();
 
 // Switches to next language.
 ASH_EXPORT void SwitchToNextIme();
+
+// Switches to the previous language.
+ASH_EXPORT void SwitchToLastUsedIme(bool key_pressed);
 
 // Takes screenshot.
 ASH_EXPORT void TakeScreenshot(bool from_snapshot_key);
@@ -314,6 +318,11 @@ ASH_EXPORT void ToggleCapsLock();
 
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
+
+// Toggles Picker.
+// `accelerator_timestamp` is the timestamp associated with the accelerator that
+// triggered Picker.
+ASH_EXPORT void TogglePicker(base::TimeTicks accelerator_timestamp);
 
 // Enables Dictation if the feature is currently disabled. Toggles (either
 // starts or stops) Dictation if the feature is currently enabled.
@@ -382,6 +391,9 @@ ASH_EXPORT void ToggleResizeLockMenu();
 // Turns ChromeVox (spoken feedback) on or off.
 ASH_EXPORT void ToggleSpokenFeedback();
 
+// Toggles the stylus tools bubble on or off.
+ASH_EXPORT void ToggleStylusTools();
+
 // Turns the system tray on or off.
 ASH_EXPORT void ToggleSystemTrayBubble();
 
@@ -409,6 +421,9 @@ ASH_EXPORT void VolumeDown();
 
 // Volume mute.
 ASH_EXPORT void VolumeMute();
+
+// Volume mute toggle.
+ASH_EXPORT void VolumeMuteToggle();
 
 // Volume up.
 ASH_EXPORT void VolumeUp();

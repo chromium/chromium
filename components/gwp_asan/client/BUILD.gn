@@ -5,15 +5,44 @@
 import("//base/allocator/allocator.gni")
 import("//base/allocator/partition_allocator/partition_alloc.gni")
 
+config("gwp_asan_implementation") {
+  defines = [ "GWP_ASAN_IMPLEMENTATION" ]
+}
+
+source_set("export") {
+  sources = [ "export.h" ]
+}
+
+source_set("features") {
+  sources = [
+    "gwp_asan_features.cc",
+    "gwp_asan_features.h",
+  ]
+  deps = [
+    ":export",
+    "//base",
+  ]
+  configs += [ ":gwp_asan_implementation" ]
+
+  if (is_android) {
+    sources += [ "feature_map.cc" ]
+    deps += [ "android:gwp_asan_headers" ]
+  }
+}
+
 component("client") {
   output_name = "gwp_asan_client"
   sources = [
-    "export.h",
     "guarded_page_allocator.cc",
     "guarded_page_allocator.h",
     "gwp_asan.cc",
     "gwp_asan.h",
+    "lightweight_detector/poison_metadata_recorder.cc",
+    "lightweight_detector/poison_metadata_recorder.h",
+    "lightweight_detector/shared_state.h",
     "sampling_state.h",
+    "thread_local_random_bit_generator.h",
+    "thread_local_state.h",
   ]
 
   if (is_win) {
@@ -26,6 +55,12 @@ component("client") {
 
   if (use_allocator_shim) {
     sources += [
+      "extreme_lightweight_detector_malloc_shims.cc",
+      "extreme_lightweight_detector_malloc_shims.h",
+      "lightweight_detector/malloc_shims.cc",
+      "lightweight_detector/malloc_shims.h",
+      "lightweight_detector/random_eviction_quarantine.cc",
+      "lightweight_detector/random_eviction_quarantine.h",
       "sampling_malloc_shims.cc",
       "sampling_malloc_shims.h",
     ]
@@ -33,20 +68,24 @@ component("client") {
 
   if (use_partition_alloc) {
     sources += [
+      "lightweight_detector/partitionalloc_shims.cc",
+      "lightweight_detector/partitionalloc_shims.h",
       "sampling_partitionalloc_shims.cc",
       "sampling_partitionalloc_shims.h",
     ]
   }
 
-  defines = [ "GWP_ASAN_IMPLEMENTATION" ]
-
   deps = [
+    ":export",
+    ":features",
     "//base",
     "//base/allocator:buildflags",
     "//components/crash/core/common:crash_key",
     "//components/gwp_asan/common",
     "//components/gwp_asan/common:crash_keys",
   ]
+
+  configs += [ ":gwp_asan_implementation" ]
 
   if (is_android) {
     deps += [ "//components/crash/core/app" ]
@@ -58,14 +97,23 @@ source_set("unit_tests") {
   sources = [
     "guarded_page_allocator_unittest.cc",
     "gwp_asan_unittest.cc",
+    "lightweight_detector/poison_metadata_recorder_unittest.cc",
   ]
 
   if (use_allocator_shim) {
-    sources += [ "sampling_malloc_shims_unittest.cc" ]
+    sources += [
+      "extreme_lightweight_detector_malloc_shims_unittest.cc",
+      "lightweight_detector/malloc_shims_unittest.cc",
+      "lightweight_detector/random_eviction_quarantine_unittest.cc",
+      "sampling_malloc_shims_unittest.cc",
+    ]
   }
 
   if (use_partition_alloc) {
-    sources += [ "sampling_partitionalloc_shims_unittest.cc" ]
+    sources += [
+      "lightweight_detector/partitionalloc_shims_unittest.cc",
+      "sampling_partitionalloc_shims_unittest.cc",
+    ]
   }
 
   deps = [

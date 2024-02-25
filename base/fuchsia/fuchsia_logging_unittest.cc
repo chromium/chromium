@@ -49,7 +49,7 @@ TEST(FuchsiaLoggingTest, SystemLogging) {
   // test listener.
   LOG(ERROR) << kLogMessage;
 
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(kLogMessage);
 
   ASSERT_TRUE(logged_message.has_value());
@@ -82,7 +82,7 @@ TEST(FuchsiaLoggingTest, SystemLoggingMultipleTags) {
       std::move(log_sink_client_end.value()), kTags);
   logger.LogMessage("", 0, kLogMessage, FUCHSIA_LOG_ERROR);
 
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(kLogMessage);
 
   ASSERT_TRUE(logged_message.has_value());
@@ -157,7 +157,7 @@ TEST(FuchsiaLoggingTest, FidlBindingClosureWarningLogger) {
   base::FidlBindingClosureWarningLogger<base_testfidl::TestInterface>()(
       fidl::UnbindInfo::PeerClosed(ZX_ERR_PEER_CLOSED));
 
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(
           "base.testfidl.TestInterface unbound: ZX_ERR_PEER_CLOSED (-24)");
 

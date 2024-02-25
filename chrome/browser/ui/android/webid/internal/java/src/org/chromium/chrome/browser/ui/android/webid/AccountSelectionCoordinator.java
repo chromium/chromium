@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,9 +29,11 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -39,6 +42,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
@@ -76,8 +80,11 @@ public class AccountSelectionCoordinator
     private AccountSelectionMediator mMediator;
     private RecyclerView mSheetItemListView;
 
-    public AccountSelectionCoordinator(Tab tab, WindowAndroid windowAndroid,
-            BottomSheetController sheetController, AccountSelectionComponent.Delegate delegate) {
+    public AccountSelectionCoordinator(
+            Tab tab,
+            WindowAndroid windowAndroid,
+            BottomSheetController sheetController,
+            AccountSelectionComponent.Delegate delegate) {
         mBottomSheetController = sheetController;
         mWindowAndroid = windowAndroid;
         mDelegate = delegate;
@@ -92,39 +99,56 @@ public class AccountSelectionCoordinator
         mSheetItemListView = contentView.findViewById(R.id.sheet_item_list);
 
         // Setup the bottom sheet content view.
-        mBottomSheetContent = new AccountSelectionBottomSheetContent(
-                contentView, mSheetItemListView::computeVerticalScrollOffset);
+        mBottomSheetContent =
+                new AccountSelectionBottomSheetContent(
+                        contentView, mSheetItemListView::computeVerticalScrollOffset);
 
         // TODO(crbug.com/1199088): This is currently using the regular profile which is incorrect
         // if the API is being used in an incognito tabs. We should instead use the profile
         // associated with the RP's web contents.
-        Profile profile = Profile.getLastUsedRegularProfile();
-        ImageFetcher imageFetcher = ImageFetcherFactory.createImageFetcher(
-                ImageFetcherConfig.IN_MEMORY_ONLY, profile.getProfileKey(),
-                GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        ImageFetcher imageFetcher =
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_ONLY,
+                        profile.getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool(),
+                        MAX_IMAGE_CACHE_SIZE);
 
         @Px
-        int avatarSize = context.getResources().getDimensionPixelSize(
-                R.dimen.account_selection_account_avatar_size);
-        mMediator = new AccountSelectionMediator(tab, delegate, model, sheetItems,
-                mBottomSheetController, mBottomSheetContent, imageFetcher, avatarSize);
+        int avatarSize =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.account_selection_account_avatar_size);
+        mMediator =
+                new AccountSelectionMediator(
+                        tab,
+                        delegate,
+                        model,
+                        sheetItems,
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        imageFetcher,
+                        avatarSize);
     }
 
     static View setupContentView(Context context, PropertyModel model, ModelList sheetItems) {
-        View contentView = (LinearLayout) LayoutInflater.from(context).inflate(
-                R.layout.account_selection_sheet, null);
+        View contentView =
+                (LinearLayout)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.account_selection_sheet, null);
 
         PropertyModelChangeProcessor.create(
                 model, contentView, AccountSelectionViewBinder::bindContentView);
 
         RecyclerView sheetItemListView = contentView.findViewById(R.id.sheet_item_list);
-        sheetItemListView.setLayoutManager(new LinearLayoutManager(
-                sheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
+        sheetItemListView.setLayoutManager(
+                new LinearLayoutManager(
+                        sheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
         sheetItemListView.setItemAnimator(null);
 
         // Setup the recycler view to be updated as we update the sheet items.
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(sheetItems);
-        adapter.registerType(AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+        adapter.registerType(
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
                 AccountSelectionCoordinator::buildAccountView,
                 AccountSelectionViewBinder::bindAccountView);
         sheetItemListView.setAdapter(adapter);
@@ -153,18 +177,49 @@ public class AccountSelectionCoordinator
     }
 
     @Override
-    public void showAccounts(String topFrameEtldPlusOne, String iframeEtldPlusOne,
-            String idpEtldPlusOne, List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext) {
-        mMediator.showAccounts(topFrameEtldPlusOne, iframeEtldPlusOne, idpEtldPlusOne, accounts,
-                idpMetadata, clientMetadata, isAutoReauthn, rpContext);
+    public void showAccounts(
+            String topFrameEtldPlusOne,
+            String iframeEtldPlusOne,
+            String idpEtldPlusOne,
+            List<Account> accounts,
+            IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientMetadata,
+            boolean isAutoReauthn,
+            String rpContext,
+            boolean requestPermission) {
+        mMediator.showAccounts(
+                topFrameEtldPlusOne,
+                iframeEtldPlusOne,
+                idpEtldPlusOne,
+                accounts,
+                idpMetadata,
+                clientMetadata,
+                isAutoReauthn,
+                rpContext,
+                requestPermission);
     }
 
     @Override
-    public void showFailureDialog(String topFrameForDisplay, String iframeForDisplay,
-            String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext) {
+    public void showFailureDialog(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            IdentityProviderMetadata idpMetadata,
+            String rpContext) {
         mMediator.showFailureDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
+    }
+
+    @Override
+    public void showErrorDialog(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            IdentityProviderMetadata idpMetadata,
+            String rpContext,
+            IdentityCredentialTokenError error) {
+        mMediator.showErrorDialog(
+                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext, error);
     }
 
     @Override
@@ -186,18 +241,27 @@ public class AccountSelectionCoordinator
     }
 
     @Override
+    public void showUrl(@IdentityRequestDialogLinkType int linkType, GURL url) {
+        Context context = mWindowAndroid.getContext().get();
+        mMediator.showUrl(context, linkType, url);
+    }
+
+    @Override
     public WebContents showModalDialog(GURL url) {
         Context context = mWindowAndroid.getContext().get();
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder()
                         .setShowTitle(true)
-                        .setColorScheme(ColorUtils.inNightMode(context) ? COLOR_SCHEME_DARK
-                                                                        : COLOR_SCHEME_LIGHT)
+                        .setColorScheme(
+                                ColorUtils.inNightMode(context)
+                                        ? COLOR_SCHEME_DARK
+                                        : COLOR_SCHEME_LIGHT)
                         .build();
         customTabIntent.intent.setData(Uri.parse(url.getSpec()));
 
-        Intent intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
-                context, customTabIntent.intent);
+        Intent intent =
+                LaunchIntentDispatcher.createCustomTabActivityIntent(
+                        context, customTabIntent.intent);
         intent.setPackage(context.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         assert context instanceof Activity;
@@ -224,8 +288,9 @@ public class AccountSelectionCoordinator
             return;
         }
         ChromeActivity chromeActivity = (ChromeActivity) activity;
-        int fedcmId = IntentUtils.safeGetIntExtra(
-                chromeActivity.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1);
+        int fedcmId =
+                IntentUtils.safeGetIntExtra(
+                        chromeActivity.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1);
         // Close the current tab by finishing the activity, if we know it was initiated
         // by the FedCM API.
         if (fedcmId == -1) return;
@@ -262,4 +327,9 @@ public class AccountSelectionCoordinator
 
     @Override
     public void onActivityDestroyed() {}
+
+    @VisibleForTesting
+    AccountSelectionMediator getMediator() {
+        return mMediator;
+    }
 }

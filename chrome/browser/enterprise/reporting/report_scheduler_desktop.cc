@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -19,7 +21,6 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -111,7 +112,7 @@ void ReportSchedulerDesktop::OnBrowserVersionUploaded() {
 }
 
 policy::DMToken ReportSchedulerDesktop::GetProfileDMToken() {
-  absl::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
+  std::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
   if (!dm_token || dm_token->empty())
     return policy::DMToken::CreateEmptyToken();
   return policy::DMToken::CreateValidToken(*dm_token);

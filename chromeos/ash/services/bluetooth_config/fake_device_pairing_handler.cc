@@ -25,7 +25,7 @@ FakeDevicePairingHandler::~FakeDevicePairingHandler() {
 }
 
 void FakeDevicePairingHandler::SimulatePairDeviceFinished(
-    absl::optional<device::ConnectionFailureReason> failure_reason) {
+    std::optional<device::ConnectionFailureReason> failure_reason) {
   DCHECK(!current_pairing_device_id().empty());
   FinishCurrentPairingRequest(failure_reason);
   base::RunLoop().RunUntilIdle();
@@ -88,7 +88,7 @@ void FakeDevicePairingHandler::PerformPairDevice(const std::string& device_id) {
 }
 
 void FakeDevicePairingHandler::PerformFinishCurrentPairingRequest(
-    absl::optional<device::ConnectionFailureReason> failure_reason,
+    std::optional<device::ConnectionFailureReason> failure_reason,
     base::TimeDelta duration) {}
 
 void FakeDevicePairingHandler::CancelPairing() {
@@ -104,7 +104,7 @@ void FakeDevicePairingHandler::OnRequestPasskey(const std::string& passkey) {}
 void FakeDevicePairingHandler::OnConfirmPairing(bool confirmed) {
   last_confirm_ = confirmed;
   if (confirmed) {
-    FinishCurrentPairingRequest(/*failure_reason=*/absl::nullopt);
+    FinishCurrentPairingRequest(/*failure_reason=*/std::nullopt);
   } else {
     FinishCurrentPairingRequest(device::ConnectionFailureReason::kAuthFailed);
   }

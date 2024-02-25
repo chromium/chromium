@@ -169,19 +169,6 @@ void ToolbarIconContainerView::RemoveObserver(const Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void ToolbarIconContainerView::SetIconColor(SkColor color) {
-  if (icon_color_ == color)
-    return;
-  icon_color_ = color;
-  UpdateAllIcons();
-  OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
-}
-
-SkColor ToolbarIconContainerView::GetIconColor() const {
-  return icon_color_.value_or(
-      GetColorProvider()->GetColor(kColorToolbarButtonIcon));
-}
-
 bool ToolbarIconContainerView::GetHighlighted() const {
   if (!uses_highlight_)
     return false;
@@ -287,7 +274,6 @@ void ToolbarIconContainerView::OnButtonHighlightedChanged(
   UpdateHighlight();
 }
 
-BEGIN_METADATA(ToolbarIconContainerView, views::View)
-ADD_PROPERTY_METADATA(SkColor, IconColor, ui::metadata::SkColorConverter)
+BEGIN_METADATA(ToolbarIconContainerView)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
 END_METADATA

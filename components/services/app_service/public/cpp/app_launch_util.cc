@@ -95,6 +95,12 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
     case LaunchSource::kFromSysTrayCalendar:
       return ApplicationLaunchSource::
           APPLICATION_LAUNCH_SOURCE_SYSTEM_TRAY_CALENDAR;
+    case LaunchSource::kFromInstaller:
+      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_INSTALLER;
+    case LaunchSource::kFromFirstRun:
+      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_FIRST_RUN;
+    case LaunchSource::kFromWelcomeTour:
+      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_WELCOME_TOUR;
   }
 }
 

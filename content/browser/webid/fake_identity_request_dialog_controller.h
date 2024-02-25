@@ -5,11 +5,13 @@
 #ifndef CONTENT_BROWSER_WEBID_FAKE_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
 #define CONTENT_BROWSER_WEBID_FAKE_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+using TokenError = content::IdentityCredentialTokenError;
 
 namespace content {
 class WebContents;
@@ -22,28 +24,44 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       public WebContentsObserver {
  public:
   explicit FakeIdentityRequestDialogController(
-      absl::optional<std::string> selected_account,
+      std::optional<std::string> selected_account,
       WebContents* web_contents = nullptr);
   ~FakeIdentityRequestDialogController() override;
 
   void ShowAccountsDialog(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
-      bool show_auto_reauthn_checkbox,
+      blink::mojom::RpMode rp_mode,
+      const std::optional<content::IdentityProviderData>& new_account_idp,
       AccountSelectionCallback on_selected,
-      DismissCallback dismmiss_callback) override;
+      LoginToIdPCallback on_add_account,
+      DismissCallback dismmiss_callback,
+      AccountsDisplayedCallback accounts_displayed_callback) override;
 
   void ShowFailureDialog(const std::string& top_frame_for_display,
-                         const absl::optional<std::string>& iframe_for_display,
+                         const std::optional<std::string>& iframe_for_display,
                          const std::string& idp_for_display,
-                         const blink::mojom::RpContext& rp_context,
+                         blink::mojom::RpContext rp_context,
+                         blink::mojom::RpMode rp_mode,
                          const IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback,
-                         SigninToIdPCallback signin_callback) override;
+                         LoginToIdPCallback login_callback) override;
+
+  void ShowErrorDialog(const std::string& top_frame_for_display,
+                       const std::optional<std::string>& iframe_for_display,
+                       const std::string& idp_for_display,
+                       blink::mojom::RpContext rp_context,
+                       blink::mojom::RpMode rp_mode,
+                       const IdentityProviderMetadata& idp_metadata,
+                       const std::optional<TokenError>& error,
+                       DismissCallback dismiss_callback,
+                       MoreDetailsCallback more_details_callback) override;
 
   std::string GetTitle() const override;
+
+  void ShowUrl(LinkType link_type, const GURL& url) override;
 
   content::WebContents* ShowModalDialog(
       const GURL& url,
@@ -54,7 +72,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
   void WebContentsDestroyed() override;
 
  private:
-  absl::optional<std::string> selected_account_;
+  std::optional<std::string> selected_account_;
   std::string title_;
   // The caller ensures that this object does not outlive the web_contents_.
   raw_ptr<WebContents> web_contents_;

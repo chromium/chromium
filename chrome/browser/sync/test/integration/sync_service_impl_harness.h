@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SERVICE_IMPL_HARNESS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -56,10 +56,8 @@ class SyncServiceImplHarness {
   SyncServiceImplHarness& operator=(const SyncServiceImplHarness&) = delete;
 
   // Signs in to a primary account without actually enabling sync the feature.
-  // TODO(crbug.com/1455032): This actually sets up an account with
-  // ConsentLevel::kSync (should probably be kSignin instead), and on Android it
-  // also explicitly enables Sync-the-feature.
-  [[nodiscard]] bool SignInPrimaryAccount();
+  [[nodiscard]] bool SignInPrimaryAccount(
+      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin);
 
   // This is similar to click the reset button on chrome.google.com/sync.
   void ResetSyncForPrimaryAccount();
@@ -104,20 +102,6 @@ class SyncServiceImplHarness {
   // Typically SetupSync does this automatically, but if that returned false,
   // then setup may have been left incomplete.
   void FinishSyncSetup();
-
-  // Methods to stop and restart the sync service.
-  //
-  // For example, this can be used to simulate a sign-in/sign-out or can be
-  // useful to recover from a lost birthday.
-  // To start from a clear slate, clear server data first, then call
-  // StopSyncServiceAndClearData() followed by EnableSyncFeature().
-
-  // Stops the sync service and clears all local sync data.
-  void StopSyncServiceAndClearData();
-
-  // Turns on sync-the-feature and waits until sync-the-feature is active.
-  // Returns true if and only if sync setup completed successfully.
-  [[nodiscard]] bool EnableSyncFeature();
 
   // Calling this acts as a barrier and blocks the caller until |this| and
   // |partner| have both completed a sync cycle.  When calling this method,

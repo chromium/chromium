@@ -16,7 +16,6 @@ source_set("test") {
     "//base",
     "//base/test:test_support",
     "//ios/web",
-    "//ios/web/common:features",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/navigation",

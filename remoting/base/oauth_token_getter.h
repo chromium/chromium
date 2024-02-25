@@ -6,6 +6,7 @@
 #define REMOTING_BASE_OAUTH_TOKEN_GETTER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 
@@ -42,7 +43,8 @@ class OAuthTokenGetter {
     // to be used.
     OAuthAuthorizationCredentials(const std::string& login,
                                   const std::string& refresh_token,
-                                  bool is_service_account);
+                                  bool is_service_account,
+                                  std::vector<std::string> scopes = {});
 
     ~OAuthAuthorizationCredentials();
 
@@ -54,6 +56,10 @@ class OAuthTokenGetter {
 
     // Whether these credentials belong to a service account.
     bool is_service_account;
+
+    // The scopes for the token to be fetched. If unset, the scopes from the
+    // refresh token will be used.
+    std::vector<std::string> scopes;
   };
 
   // This structure contains information required to perform authentication
@@ -65,7 +71,8 @@ class OAuthTokenGetter {
     // service account, False for a user account, to allow the correct client-ID
     // to be used.
     OAuthIntermediateCredentials(const std::string& authorization_code,
-                                 bool is_service_account);
+                                 bool is_service_account,
+                                 std::vector<std::string> scopes = {});
 
     ~OAuthIntermediateCredentials();
 
@@ -78,6 +85,10 @@ class OAuthTokenGetter {
 
     // Whether these credentials belong to a service account.
     bool is_service_account;
+
+    // The scopes for the token to be fetched. If unset, the scopes from the
+    // access token will be used.
+    std::vector<std::string> scopes;
   };
 
   OAuthTokenGetter() {}

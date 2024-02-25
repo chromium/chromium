@@ -9,15 +9,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Handles property updates to the suggestion list component.
- */
+/** Handles property updates to the suggestion list component. */
 class SuggestionListViewBinder {
     /** Holds the view components needed to renderer the suggestion list. */
     public static class SuggestionListViewHolder {
@@ -31,9 +30,7 @@ class SuggestionListViewBinder {
     }
 
     /**
-     * @see
-     * PropertyModelChangeProcessor.ViewBinder#bind(Object,
-     * Object, Object)
+     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(
             PropertyModel model, SuggestionListViewHolder view, PropertyKey propertyKey) {
@@ -75,25 +72,40 @@ class SuggestionListViewBinder {
             }
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
             ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
-            listItems.addObserver(new ListObservable.ListObserver<Void>() {
-                @Override
-                public void onItemRangeChanged(
-                        ListObservable<Void> source, int index, int count, @Nullable Void payload) {
-                    view.dropdown.resetSelection();
-                }
+            listItems.addObserver(
+                    new ListObservable.ListObserver<Void>() {
+                        @Override
+                        public void onItemRangeChanged(
+                                ListObservable<Void> source,
+                                int index,
+                                int count,
+                                @Nullable Void payload) {
+                            view.dropdown.resetSelection();
+                        }
 
-                @Override
-                public void onItemRangeInserted(ListObservable source, int index, int count) {
-                    updateContainerVisibility(model, view.container);
-                }
+                        @Override
+                        public void onItemRangeInserted(
+                                ListObservable source, int index, int count) {
+                            updateContainerVisibility(model, view.container);
+                        }
 
-                @Override
-                public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                    updateContainerVisibility(model, view.container);
-                }
-            });
+                        @Override
+                        public void onItemRangeRemoved(
+                                ListObservable source, int index, int count) {
+                            updateContainerVisibility(model, view.container);
+                        }
+                    });
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
             view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
+        } else if (SuggestionListProperties.DRAW_OVER_ANCHOR == propertyKey) {
+            boolean drawOver = model.get(SuggestionListProperties.DRAW_OVER_ANCHOR);
+            // Note: this assumes the anchor view's z hasn't been modified. If this changes, we'll
+            // need to wire that z value so that we choose the correct one here.
+            view.container.setZ(drawOver ? 1.0f : 0.0f);
+            view.dropdown.setElevation(
+                    view.dropdown
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_elevation));
         }
     }
 

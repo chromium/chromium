@@ -4,33 +4,23 @@
 
 #include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_converters.h"
 
+#include <optional>
+
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
+#include "chrome/browser/ash/telemetry_extension/diagnostics/mojo_utils.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters::diagnostics {
 
 namespace unchecked {
 
-namespace {
-
-std::string GetStringFromMojoHandle(mojo::ScopedHandle handle) {
-  base::ReadOnlySharedMemoryMapping shared_memory;
-  return std::string(MojoUtils::GetStringPieceFromMojoHandle(std::move(handle),
-                                                             &shared_memory));
-}
-
-}  // namespace
-
 crosapi::mojom::DiagnosticsRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdatePtr input) {
   return crosapi::mojom::DiagnosticsRoutineUpdate::New(
       input->progress_percent,
-      GetStringFromMojoHandle(std::move(input->output)),
+      MojoUtils::GetStringFromMojoHandle(std::move(input->output)),
       ConvertDiagnosticsPtr(std::move(input->routine_update_union)));
 }
 
@@ -72,7 +62,7 @@ cros_healthd::mojom::NullableUint32Ptr UncheckedConvertPtr(
 }
 }  // namespace unchecked
 
-absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
+std::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input) {
   switch (input) {
     case cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown:
@@ -139,8 +129,10 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothScanning;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPairing:
       return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPairing;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kFan:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kFan;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -148,7 +140,7 @@ std::vector<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
     const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input) {
   std::vector<crosapi::mojom::DiagnosticsRoutineEnum> output;
   for (const auto element : input) {
-    absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> converted =
+    std::optional<crosapi::mojom::DiagnosticsRoutineEnum> converted =
         Convert(element);
     if (converted.has_value()) {
       output.push_back(converted.value());

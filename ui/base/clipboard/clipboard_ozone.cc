@@ -6,12 +6,14 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -22,10 +24,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_util.h"
 #include "base/types/variant_util.h"
 #include "build/build_config.h"
 #include "clipboard_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -49,14 +51,15 @@ namespace {
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(1);
 
 // Checks if DLP rules allow the clipboard read.
-bool IsReadAllowed(const DataTransferEndpoint* data_src,
+bool IsReadAllowed(std::optional<DataTransferEndpoint> data_src,
                    const DataTransferEndpoint* data_dst,
                    const base::span<uint8_t> data) {
   DataTransferPolicyController* policy_controller =
       DataTransferPolicyController::Get();
 
-  if (!policy_controller || !data_src || data.empty())
+  if (!policy_controller || !data_src.has_value() || data.empty()) {
     return true;
+  }
 
   bool is_allowed = policy_controller->IsClipboardReadAllowed(
       data_src, data_dst, data.size());
@@ -129,6 +132,8 @@ class ClipboardOzone::AsyncClipboardOzone {
   AsyncClipboardOzone(const AsyncClipboardOzone&) = delete;
   AsyncClipboardOzone& operator=(const AsyncClipboardOzone&) = delete;
   ~AsyncClipboardOzone() = default;
+
+  void OnPreShutdown() { platform_clipboard_ = nullptr; }
 
   bool IsSelectionBufferAvailable() const {
     return platform_clipboard_->IsSelectionBufferAvailable();
@@ -345,7 +350,7 @@ class ClipboardOzone::AsyncClipboardOzone {
   base::flat_map<ClipboardBuffer, PlatformClipboard::DataMap> offered_data_;
 
   // Provides communication to a system clipboard under ozone level.
-  const raw_ptr<PlatformClipboard> platform_clipboard_ = nullptr;
+  raw_ptr<PlatformClipboard> platform_clipboard_ = nullptr;
 
   // Reference to the ClipboardOzone object instantiating this
   // ClipboardOzone::AsyncClipboardOzone object. It is used to set
@@ -377,11 +382,13 @@ ClipboardOzone::ClipboardOzone() {
 
 ClipboardOzone::~ClipboardOzone() = default;
 
-void ClipboardOzone::OnPreShutdown() {}
+void ClipboardOzone::OnPreShutdown() {
+  async_clipboard_ozone_->OnPreShutdown();
+}
 
-DataTransferEndpoint* ClipboardOzone::GetSource(ClipboardBuffer buffer) const {
-  auto it = data_src_.find(buffer);
-  return it == data_src_.end() ? nullptr : it->second.get();
+std::optional<DataTransferEndpoint> ClipboardOzone::GetSource(
+    ClipboardBuffer buffer) const {
+  return base::OptionalFromPtr(base::FindPtrOrNull(data_src_, buffer));
 }
 
 const ClipboardSequenceNumberToken& ClipboardOzone::GetSequenceNumber(
@@ -457,7 +464,7 @@ void ClipboardOzone::ReadAvailableTypes(
                         data_dst)) {
     auto data = async_clipboard_ozone_->ReadClipboardDataSetSourceAndWait(
         buffer, ClipboardFormatType::WebCustomDataType().GetName());
-    ReadCustomDataTypes(data.data(), data.size(), types);
+    ReadCustomDataTypes(data, types);
   }
 }
 
@@ -586,7 +593,11 @@ void ClipboardOzone::ReadCustomData(ClipboardBuffer buffer,
     return;
 
   RecordRead(ClipboardFormatMetric::kCustomData);
-  ReadCustomDataForType(custom_data.data(), custom_data.size(), type, result);
+  if (std::optional<std::u16string> maybe_data =
+          ReadCustomDataForType(custom_data, type);
+      maybe_data) {
+    *result = std::move(*maybe_data);
+  }
 }
 
 void ClipboardOzone::ReadFilenames(ClipboardBuffer buffer,
@@ -688,16 +699,11 @@ void ClipboardOzone::WriteText(base::StringPiece text) {
                         kMimeTypeTextUtf8, kMimeTypeLinuxUtf8String});
 }
 
-void ClipboardOzone::WriteHTML(base::StringPiece markup,
-                               absl::optional<base::StringPiece> source_url) {
+void ClipboardOzone::WriteHTML(
+    base::StringPiece markup,
+    std::optional<base::StringPiece> /* source_url */) {
   std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
-}
-
-void ClipboardOzone::WriteUnsanitizedHTML(
-    base::StringPiece markup,
-    absl::optional<base::StringPiece> source_url) {
-  WriteHTML(markup, source_url);
 }
 
 void ClipboardOzone::WriteSvg(base::StringPiece markup) {
@@ -756,7 +762,7 @@ void ClipboardOzone::WriteData(const ClipboardFormatType& format,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ClipboardOzone::AddClipboardSourceToDataOffer(
     const ClipboardBuffer buffer) {
-  DataTransferEndpoint* data_src = GetSource(buffer);
+  std::optional<DataTransferEndpoint> data_src = GetSource(buffer);
 
   if (!data_src)
     return;

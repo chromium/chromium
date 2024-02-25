@@ -6,19 +6,19 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_OFFSET_PATH_OPERATION_H_
 
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class OffsetPathOperation : public RefCounted<OffsetPathOperation> {
-  USING_FAST_MALLOC(OffsetPathOperation);
-
+class OffsetPathOperation : public GarbageCollected<OffsetPathOperation> {
  public:
   enum OperationType { kReference, kShape, kCoordBox };
 
   OffsetPathOperation(const OffsetPathOperation&) = delete;
   OffsetPathOperation& operator=(const OffsetPathOperation&) = delete;
   virtual ~OffsetPathOperation() = default;
+
+  virtual void Trace(Visitor*) const {}
 
   bool operator==(const OffsetPathOperation& o) const {
     return IsSameType(o) && IsEqualAssumingSameType(o) &&

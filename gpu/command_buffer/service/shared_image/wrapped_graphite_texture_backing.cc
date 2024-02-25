@@ -9,20 +9,42 @@
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image/gl_texture_passthrough_fallback_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Recording.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "gpu/command_buffer/service/shared_image/dawn_fallback_image_representation.h"
+#endif
+
 namespace gpu {
+namespace {
+struct ReadPixelsContext {
+  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
+  bool finished = false;
+};
+
+void OnReadPixelsDone(
+    void* raw_ctx,
+    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
+  ReadPixelsContext* context = reinterpret_cast<ReadPixelsContext*>(raw_ctx);
+  context->async_result = std::move(async_result);
+  context->finished = true;
+}
+}  // namespace
 
 class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     : public SkiaGraphiteImageRepresentation {
@@ -52,7 +74,7 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
           graphite_textures[plane], backing_impl()->GetSkColorType(plane),
           color_space().ToSkColorSpace(), &surface_props);
       if (!surface) {
-        DLOG(ERROR) << "MakeGraphiteFromBackendTexture() failed.";
+        LOG(ERROR) << "MakeGraphiteFromBackendTexture() failed.";
         write_surfaces_.clear();
         return {};
       }
@@ -99,6 +121,7 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
+    std::string debug_label,
     scoped_refptr<SharedContextState> context_state,
     const bool thread_safe)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -108,6 +131,7 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
                                       surface_origin,
                                       alpha_type,
                                       usage,
+                                      std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       thread_safe),
       context_state_(std::move(context_state)) {
@@ -129,14 +153,19 @@ bool WrappedGraphiteTextureBacking::Initialize() {
   const int num_planes = format().NumberOfPlanes();
   graphite_textures_.resize(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {
-    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
-        context_state_->gr_context_type(), format(), plane,
-        /*is_yuv_plane=*/false, mipmapped);
+    // is_yuv_plane is false here because the planes are separate single plane
+    // textures, not planes of a multi-planar YUV texture.
+    constexpr bool is_yuv_plane = false;
+    skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
+        context_state_->gr_context_type(), format(), /*readonly=*/false, plane,
+        is_yuv_plane, mipmapped, /*scanout_dcomp_surface=*/false,
+        /*supports_multiplanar_rendering=*/false,
+        /*supports_multiplanar_copy=*/false);
     auto sk_size = gfx::SizeToSkISize(format().GetPlaneSize(plane, size()));
     auto texture = recorder()->createBackendTexture(sk_size, texture_info);
     if (!texture.isValid()) {
-      DLOG(ERROR) << "createBackendTexture() failed with format:"
-                  << format().ToString();
+      LOG(ERROR) << "createBackendTexture() failed with format:"
+                 << format().ToString();
       graphite_textures_.clear();
       return false;
     }
@@ -159,25 +188,29 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
   graphite_textures_.resize(1);
   auto image_info = AsSkImageInfo();
   if (pixels.size() != image_info.computeMinByteSize()) {
-    DLOG(ERROR) << "Invalid initial pixel data size";
+    LOG(ERROR) << "Invalid initial pixel data size";
     return false;
   }
   SkPixmap pixmap(image_info, pixels.data(), image_info.minRowBytes());
 
   auto& texture = graphite_textures_[0];
-  skgpu::graphite::TextureInfo texture_info =
-      gpu::GetGraphiteTextureInfo(context_state_->gr_context_type(), format());
+  skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
+      context_state_->gr_context_type(), format(), /*readonly=*/false,
+      /*plane_index=*/0, /*is_yuv_plane=*/false,
+      /*mipmapped=*/false, /*scanout_dcomp_surface=*/false,
+      /*supports_multiplanar_rendering=*/false,
+      /*supports_multiplanar_copy=*/false);
   texture = recorder()->createBackendTexture(gfx::SizeToSkISize(size()),
                                              texture_info);
   if (!texture.isValid()) {
-    DLOG(ERROR) << "Graphite createBackendTexture() failed with format: "
-                << format().ToString();
+    LOG(ERROR) << "Graphite createBackendTexture() failed with format: "
+               << format().ToString();
     return false;
   }
 
   if (!recorder()->updateBackendTexture(texture, &pixmap, /*numLevels=*/1)) {
-    DLOG(ERROR) << "Graphite updateBackendTexture() failed for format: "
-                << format().ToString();
+    LOG(ERROR) << "Graphite updateBackendTexture() failed for format: "
+               << format().ToString();
     return false;
   }
 
@@ -211,27 +244,73 @@ bool WrappedGraphiteTextureBacking::UploadFromMemory(
                        graphite_textures_[i], &pixmaps[i], /*numLevels=*/1);
   }
   if (!updated) {
-    DLOG(ERROR) << "Graphite updateBackendTexture() failed";
+    LOG(ERROR) << "Graphite updateBackendTexture() failed";
     return false;
   }
 
   return InsertRecordingAndSubmit();
 }
 
+bool WrappedGraphiteTextureBacking::ReadbackToMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  CHECK_EQ(pixmaps.size(), graphite_textures_.size());
+  if (context_state_->context_lost()) {
+    return false;
+  }
+
+  std::vector<ReadPixelsContext> contexts(format().NumberOfPlanes());
+  for (int i = 0; i < format().NumberOfPlanes(); i++) {
+    const auto color_type =
+        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format(), i);
+    sk_sp<SkImage> sk_image = SkImages::AdoptTextureFrom(
+        context_state_->gpu_main_graphite_recorder(), graphite_textures_[i],
+        color_type, kOpaque_SkAlphaType, /*colorSpace=*/nullptr);
+    if (!sk_image) {
+      return false;
+    }
+    const gfx::Size plane_size = format().GetPlaneSize(i, size());
+    const SkIRect src_rect =
+        SkIRect::MakeWH(plane_size.width(), plane_size.height());
+    context_state_->graphite_context()->asyncRescaleAndReadPixels(
+        sk_image.get(), pixmaps[i].info(), src_rect,
+        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+        &OnReadPixelsDone, &contexts[i]);
+  }
+
+  if (!context_state_->graphite_context()->submit(
+          skgpu::graphite::SyncToCpu::kYes)) {
+    LOG(ERROR) << "Graphite context submit() failed";
+    return false;
+  }
+
+  for (int i = 0; i < format().NumberOfPlanes(); i++) {
+    CHECK(contexts[i].finished);
+    const gfx::Size plane_size = format().GetPlaneSize(i, size());
+    libyuv::CopyPlane(
+        static_cast<const uint8_t*>(contexts[i].async_result->data(0)),
+        contexts[i].async_result->rowBytes(0),
+        static_cast<uint8_t*>(pixmaps[i].writable_addr()),
+        pixmaps[i].rowBytes(), pixmaps[i].info().minRowBytes(),
+        plane_size.height());
+  }
+
+  return true;
+}
+
 bool WrappedGraphiteTextureBacking::InsertRecordingAndSubmit() {
   auto recording = recorder()->snap();
   if (!recording) {
-    DLOG(ERROR) << "Graphite failed to snap recording from GPU main recorder";
+    LOG(ERROR) << "Graphite failed to snap recording from GPU main recorder";
     return false;
   }
   skgpu::graphite::InsertRecordingInfo info = {};
   info.fRecording = recording.get();
   if (!context_state_->graphite_context()->insertRecording(info)) {
-    DLOG(ERROR) << "Graphite insertRecording() failed";
+    LOG(ERROR) << "Graphite insertRecording() failed";
     return false;
   }
   if (!context_state_->graphite_context()->submit()) {
-    DLOG(ERROR) << "Graphite context submit() failed";
+    LOG(ERROR) << "Graphite context submit() failed";
     return false;
   }
   return true;
@@ -262,5 +341,37 @@ WrappedGraphiteTextureBacking::ProduceSkiaGraphite(
   return std::make_unique<SkiaGraphiteImageRepresentationImpl>(
       manager, this, tracker, std::move(context_state));
 }
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+std::unique_ptr<GLTexturePassthroughImageRepresentation>
+WrappedGraphiteTextureBacking::ProduceGLTexturePassthrough(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  CHECK(context_state_->IsGraphiteDawnVulkan());
+  if (context_state_->context_lost()) {
+    return nullptr;
+  }
+  return std::make_unique<GLTexturePassthroughFallbackImageRepresentation>(
+      manager, this, tracker, context_state_->progress_reporter(),
+      context_state_->GetGLFormatCaps());
+}
+
+std::unique_ptr<DawnImageRepresentation>
+WrappedGraphiteTextureBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
+  CHECK(context_state_->IsGraphiteDawnVulkan());
+  if (context_state_->context_lost()) {
+    return nullptr;
+  }
+  return std::make_unique<DawnFallbackImageRepresentation>(
+      manager, this, tracker, device, ToDawnFormat(format()),
+      std::move(view_formats));
+}
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
 }  // namespace gpu

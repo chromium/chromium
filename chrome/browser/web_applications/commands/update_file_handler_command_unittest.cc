@@ -62,12 +62,12 @@ class UpdateFileHandlerCommandTest
   WebAppProvider* provider() { return provider_; }
 
  private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {
-  const AppId app_id =
+  const webapps::AppId app_id =
       test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
   EXPECT_EQ(
       provider()->registrar_unsafe().GetAppFileHandlerApprovalState(app_id),
@@ -87,7 +87,7 @@ TEST_P(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {
 }
 
 TEST_P(UpdateFileHandlerCommandTest, UserChoiceDisallowPersisted) {
-  const AppId app_id =
+  const webapps::AppId app_id =
       test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
   EXPECT_EQ(
       provider()->registrar_unsafe().GetAppFileHandlerApprovalState(app_id),

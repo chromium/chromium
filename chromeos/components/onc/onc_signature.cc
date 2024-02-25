@@ -289,6 +289,7 @@ const OncFieldSignature cellular_provider_fields[] = {
     {nullptr}};
 
 const OncFieldSignature cellular_apn_fields[] = {
+    {::onc::kRecommended, &kRecommendedSignature},
     {::onc::cellular_apn::kAccessPointName, &kStringSignature},
     {::onc::cellular_apn::kName, &kStringSignature},
     {::onc::cellular_apn::kUsername, &kStringSignature},
@@ -322,6 +323,7 @@ const OncFieldSignature cellular_fields[] = {
     {::onc::cellular::kAllowRoaming, &kBoolSignature},
     {::onc::cellular::kAPN, &kCellularApnSignature},
     {::onc::cellular::kAPNList, &kCellularApnListSignature},
+    {::onc::cellular::kAdminAssignedAPNIds, &kStringListSignature},
     {::onc::cellular::kAutoConnect, &kBoolSignature},
     {::onc::cellular::kCustomAPNList, &kCellularApnListSignature},
     {::onc::cellular::kICCID, &kStringSignature},
@@ -414,6 +416,17 @@ const OncFieldSignature global_network_configuration_fields[] = {
      &kStringListSignature},
     {::onc::global_network_config::kBlockedHexSSIDs, &kStringListSignature},
     {::onc::global_network_config::kDisableNetworkTypes, &kStringListSignature},
+    {::onc::global_network_config::kRecommendedValuesAreEphemeral,
+     &kBoolSignature},
+    {::onc::global_network_config::
+         kUserCreatedNetworkConfigurationsAreEphemeral,
+     &kBoolSignature},
+    {::onc::global_network_config::kAllowAPNModification, &kBoolSignature,
+     []() { return base::Value(true); }},
+    {::onc::global_network_config::kPSIMAdminAssignedAPNIds,
+     &kStringListSignature},
+    {::onc::global_network_config::kPSIMAdminAssignedAPNs,
+     &kCellularApnListSignature},
     {nullptr}};
 
 const OncFieldSignature certificate_fields[] = {
@@ -437,6 +450,7 @@ const OncFieldSignature toplevel_configuration_fields[] = {
      &kNetworkConfigurationListSignature},
     {::onc::toplevel_config::kGlobalNetworkConfiguration,
      &kGlobalNetworkConfigurationSignature},
+    {::onc::toplevel_config::kAdminAPNList, &kCellularApnListSignature},
     {::onc::toplevel_config::kType, &kStringSignature},
     {::onc::encrypted::kCipher, &kStringSignature},
     {::onc::encrypted::kCiphertext, &kStringSignature},

@@ -57,8 +57,8 @@ class BASE_EXPORT TrackEventHandle {
   }
 
  private:
-  // These fields not raw_ptr<> for performance reasons: based on this sampling
-  // profiler result on ChromeOS. go/brp-cros-prof-diff-20230403
+  // RAW_PTR_EXCLUSION: Performance reasons: based on this sampling profiler
+  // result on ChromeOS. go/brp-cros-prof-diff-20230403
   RAW_PTR_EXCLUSION TrackEvent* event_;
   RAW_PTR_EXCLUSION IncrementalState* incremental_state_;
   RAW_PTR_EXCLUSION CompletionListener* listener_;

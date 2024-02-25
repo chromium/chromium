@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -30,6 +31,15 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+namespace features {
+// Defers device selection until after permission is granted.
+MODULES_EXPORT BASE_DECLARE_FEATURE(
+    kGetUserMediaDeferredDeviceSettingsSelection);
+}  // namespace features
+#endif
+
 class AudioCaptureSettings;
 class LocalFrame;
 class MediaStreamAudioSource;
@@ -92,7 +102,7 @@ class MODULES_EXPORT UserMediaProcessor
 
   bool HasActiveSources() const;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void FocusCapturedSurface(const String& label, bool focus);
 #endif
 
@@ -104,7 +114,7 @@ class MODULES_EXPORT UserMediaProcessor
       const mojom::blink::MediaStreamStateChange new_state);
   void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
-
+  void OnZoomLevelChange(const MediaStreamDevice& device, int zoom_level);
   void set_media_stream_dispatcher_host_for_testing(
       mojo::PendingRemote<blink::mojom::blink::MediaStreamDispatcherHost>
           dispatcher_host) {
@@ -207,10 +217,10 @@ class MODULES_EXPORT UserMediaProcessor
   void StartTracks(const String& label);
 
   blink::MediaStreamComponent* CreateVideoTrack(
-      const absl::optional<blink::MediaStreamDevice>& device);
+      const std::optional<blink::MediaStreamDevice>& device);
 
   blink::MediaStreamComponent* CreateAudioTrack(
-      const absl::optional<blink::MediaStreamDevice>& device);
+      const std::optional<blink::MediaStreamDevice>& device);
 
   // Callback function triggered when all native versions of the
   // underlying media sources and tracks have been created and started.
@@ -291,19 +301,21 @@ class MODULES_EXPORT UserMediaProcessor
       const blink::VideoCaptureSettings& settings);
   void SelectVideoContentSettings();
 
-  absl::optional<base::UnguessableToken> DetermineExistingAudioSessionId();
+  std::optional<base::UnguessableToken> DetermineExistingAudioSessionId(
+      const blink::AudioCaptureSettings& settings);
+
+  WTF::HashMap<String, base::UnguessableToken>
+  DetermineExistingAudioSessionIds();
 
   void GenerateStreamForCurrentRequestInfo(
-      absl::optional<base::UnguessableToken>
-          requested_audio_capture_session_id = absl::nullopt,
-      blink::mojom::StreamSelectionStrategy strategy =
-          blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID);
+      WTF::HashMap<String, base::UnguessableToken>
+          requested_audio_capture_session_ids = {});
 
   WebMediaStreamDeviceObserver* GetMediaStreamDeviceObserver();
 
   // Owned by the test.
-  WebMediaStreamDeviceObserver* media_stream_device_observer_for_testing_ =
-      nullptr;
+  raw_ptr<WebMediaStreamDeviceObserver, DanglingUntriaged>
+      media_stream_device_observer_for_testing_ = nullptr;
 
   LocalStreamSources local_sources_;
   LocalStreamSources pending_local_sources_;

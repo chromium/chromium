@@ -1,0 +1,66 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.web_app.policy_settings": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebAppSettings": [
+            {
+              "manifest_id": "https://foo.example/index.html",
+              "run_on_os_login": "allowed"
+            },
+            {
+              "manifest_id": "https://bar.example/index.html",
+              "run_on_os_login": "blocked"
+            },
+            {
+              "manifest_id": "https://foobar.example/index.html",
+              "run_on_os_login": "run_windowed"
+            },
+            {
+              "manifest_id": "*",
+              "run_on_os_login": "blocked"
+            }
+          ]
+        },
+        "prefs": {
+          "profile.web_app.policy_settings": {
+            "value": [
+              {
+                "manifest_id": "https://foo.example/index.html",
+                "run_on_os_login": "allowed"
+              },
+              {
+                "manifest_id": "https://bar.example/index.html",
+                "run_on_os_login": "blocked"
+              },
+              {
+                "manifest_id": "https://foobar.example/index.html",
+                "run_on_os_login": "run_windowed"
+              },
+              {
+                "manifest_id": "*",
+                "run_on_os_login": "blocked"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

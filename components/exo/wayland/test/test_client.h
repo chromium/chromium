@@ -59,11 +59,13 @@ class TestClient {
   wl_shell* shell() { return globals().shell.get(); }
   wl_seat* seat() { return globals().seat.get(); }
   wl_subcompositor* subcompositor() { return globals().subcompositor.get(); }
-  wl_touch* touch() { return globals().touch.get(); }
   zaura_shell* aura_shell() { return globals().aura_shell.get(); }
   zaura_output* aura_output() { return globals().aura_outputs.back().get(); }
   zaura_output_manager* aura_output_manager() {
     return globals().aura_output_manager.get();
+  }
+  zaura_output_manager_v2* aura_output_manager_v2() {
+    return globals().aura_output_manager_v2.get();
   }
   xdg_wm_base* xdg_wm_base() { return globals().xdg_wm_base.get(); }
   zwp_fullscreen_shell_v1* fullscreen_shell() {
@@ -113,9 +115,12 @@ class TestClient {
     virtual ~CustomData() = default;
   };
 
-  void set_data(std::unique_ptr<CustomData> data) {
+  template <std::derived_from<CustomData> T>
+  T* set_data(std::unique_ptr<T> data) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    auto* r = data.get();
     data_ = std::move(data);
+    return r;
   }
 
   template <class DataType>
@@ -123,6 +128,8 @@ class TestClient {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     return static_cast<DataType*>(data_.get());
   }
+
+  void DestroyData() { data_.reset(); }
 
  protected:
   THREAD_CHECKER(thread_checker_);

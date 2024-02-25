@@ -24,13 +24,15 @@ go to https://bugs.chromium.org and use the
 
 ## Staged / Incremental Rollout
 
-An initial version of the Sanitizer API is enabled by default. Additional
-features are scheduled to be launched in stages. The API availability
+The Sanitizer API is scheduled to be launched in stages. The API availability
 can be controlled via flags:
 
-* `--enable-blink-features=SanitizerAPI`: This includes the sanitization
-  methods of the `Sanitizer` object, as specified as of 04/2022.
-These APIs are likely to change.
+* `--enable-blink-features=SanitizerAPIv0`: This includes the basic Sanitizer
+  API with configuration and the `Element.setHTML` method, but not the
+  `.sanitizeFor` or `.sanitize` methods. This flag is on by default.
+* `--enable-blink-features=SanitizerAPI`: This includes `SanitizerAPv0`
+  plus the sanitization methods of the `Sanitizer` object, as specified
+  as of 04/2022. These APIs are likely to change.
 
 The general `--enable-experimental-web-platform-features` flag implies the full
 `--enable-blink-features=SanitizerAPI` feature set.

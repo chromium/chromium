@@ -25,6 +25,10 @@ const char kEnableNativeGpuMemoryBuffers[] = "enable-native-gpu-memory-buffers";
 // settings.
 const char kForcePrefersReducedMotion[] = "force-prefers-reduced-motion";
 
+// Forces whether the user desires no reduced motion, regardless of system
+// settings.
+const char kForcePrefersNoReducedMotion[] = "force-prefers-no-reduced-motion";
+
 // Run in headless mode, i.e., without a UI or display server dependencies.
 const char kHeadless[] = "headless";
 
@@ -57,14 +61,19 @@ BASE_FEATURE(kOddWidthMultiPlanarBuffers,
 #endif
 );
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kVariableGoogleSansFont,
-             "VariableGoogleSansFont",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseSmartRefForGPUFenceHandle,
+             "UseSmartRefForGPUFenceHandle",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
-GFX_SWITCHES_EXPORT bool UseVariableGoogleSansFont() {
-  return base::FeatureList::IsEnabled(kVariableGoogleSansFont);
-}
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kEnableIntelMediaCompression,
+             "EnableIntelMediaCompression",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features

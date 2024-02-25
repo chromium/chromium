@@ -15,7 +15,7 @@
 namespace ui {
 
 X11CanvasSurface::X11CanvasSurface(gfx::AcceleratedWidget widget)
-    : x11_software_bitmap_presenter_(x11::Connection::Get(), widget, true) {}
+    : x11_software_bitmap_presenter_(*x11::Connection::Get(), widget, true) {}
 
 X11CanvasSurface::~X11CanvasSurface() = default;
 

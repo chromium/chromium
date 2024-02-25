@@ -501,6 +501,8 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInputRecord() {
   qbuf.m.planes = planes;
 
   const auto& frame = job_record->input_frame;
+  const auto num_fds = frame->NumDmabufFds();
+  DCHECK(num_fds > 0);
   for (size_t i = 0; i < input_buffer_num_planes_; i++) {
     if (device_input_layout_->is_multi_planar()) {
       qbuf.m.planes[i].bytesused = base::checked_cast<__u32>(
@@ -512,9 +514,11 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInputRecord() {
           frame->format(), device_input_layout_->coded_size());
     }
 
-    const auto& fds = frame->DmabufFds();
+    // If there are fewer FD's than planes, then re-use the last FD for the
+    // additional planes.
+    const size_t dmabuf_index = std::min<size_t>(i, num_fds - 1);
     const auto& layout_planes = frame->layout().planes();
-    qbuf.m.planes[i].m.fd = (i < fds.size()) ? fds[i].get() : fds.back().get();
+    qbuf.m.planes[i].m.fd = frame->GetDmabufFd(dmabuf_index);
     qbuf.m.planes[i].data_offset = layout_planes[i].offset;
     qbuf.m.planes[i].bytesused += qbuf.m.planes[i].data_offset;
     qbuf.m.planes[i].length =
@@ -545,7 +549,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueOutputRecord() {
 
   auto& job_record = running_job_queue_.back();
   for (size_t i = 0; i < qbuf.length; i++) {
-    planes[i].m.fd = job_record->output_frame->DmabufFds()[i].get();
+    planes[i].m.fd = job_record->output_frame->GetDmabufFd(i);
   }
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QBUF, &qbuf);
   free_output_buffers_.pop_back();

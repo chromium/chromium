@@ -33,8 +33,7 @@ namespace subresource_filter {
 class SubresourceFilterSafeBrowsingActivationThrottle;
 class SubresourceFilterSafeBrowsingClientRequest;
 
-// Created on the UI thread but used on the IO thread to communicate with the
-// safe browsing service.
+// This is used to communicate with the safe browsing service.
 //
 // The class is expected to accompany a single navigation, and can maintain many
 // database requests. It will cancel any outgoing requests when it is destroyed.
@@ -69,9 +68,7 @@ class SubresourceFilterSafeBrowsingClient {
 
   ~SubresourceFilterSafeBrowsingClient();
 
-  void CheckUrlOnIO(const GURL& url,
-                    size_t request_id,
-                    base::TimeTicks start_time);
+  void CheckUrl(const GURL& url, size_t request_id, base::TimeTicks start_time);
 
   void OnCheckBrowseUrlResult(
       SubresourceFilterSafeBrowsingClientRequest* request,

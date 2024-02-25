@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ASH_PRINTING_OAUTH2_STATUS_CODE_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 
 namespace ash::printing::oauth2 {
 
@@ -51,7 +51,7 @@ enum class StatusCode {
 // Returns the given `status` as strings that can be used in device-log.
 // Returned string equals C++ name of `status` without leading 'k', e.g.:
 // kClientNotRegistered is converted to "ClientNotRegistered".
-base::StringPiece ToStringPiece(StatusCode status);
+std::string_view ToStringPiece(StatusCode status);
 
 // This is the standard callback used in oauth2 namespace. When `status` equals
 // StatusCode::kOK, `data` may contain an access token or authorization URL.

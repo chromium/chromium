@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_TEST_ENVIRONMENT_WIN_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_TEST_ENVIRONMENT_WIN_H_
 
-#include "base/test/test_reg_util_win.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
@@ -28,14 +27,12 @@ class DeviceTrustTestEnvironmentWin : public DeviceTrustTestEnvironment,
 
   // DeviceTrustTestEnvironment:
   void SetUpExistingKey() override;
+  void ClearExistingKey() override;
 
   // DeviceTrustTestEnvironment:
   std::vector<uint8_t> GetWrappedKey() override;
 
  private:
-  // RegistryOverrideManager for testing with registry
-  registry_util::RegistryOverrideManager registry_override_manager_;
-
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
 
   // Used to fake that the browser was a system-level installation.

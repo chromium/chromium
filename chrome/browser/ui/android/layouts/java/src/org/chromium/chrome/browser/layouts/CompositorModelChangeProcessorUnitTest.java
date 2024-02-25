@@ -26,9 +26,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Unit tests for {@link CompositorModelChangeProcessor}.
- */
+/** Unit tests for {@link CompositorModelChangeProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CompositorModelChangeProcessorUnitTest {
@@ -37,10 +35,8 @@ public class CompositorModelChangeProcessorUnitTest {
 
     private final CallbackHelper mRequestRenderCallbackHelper = new CallbackHelper();
 
-    @Mock
-    private SceneLayer mView;
-    @Mock
-    private PropertyModelChangeProcessor.ViewBinder mViewBinder;
+    @Mock private SceneLayer mView;
+    @Mock private PropertyModelChangeProcessor.ViewBinder mViewBinder;
 
     private CompositorModelChangeProcessor.FrameRequestSupplier mFrameSupplier;
     private CompositorModelChangeProcessor mCompositorMCP;
@@ -51,12 +47,14 @@ public class CompositorModelChangeProcessorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mFrameSupplier = new CompositorModelChangeProcessor.FrameRequestSupplier(
-                mRequestRenderCallbackHelper::notifyCalled);
+        mFrameSupplier =
+                new CompositorModelChangeProcessor.FrameRequestSupplier(
+                        mRequestRenderCallbackHelper::notifyCalled);
         mModel = new PropertyModel(PROPERTY_CHANGED);
 
-        mCompositorMCP = CompositorModelChangeProcessor.create(
-                mModel, mView, mViewBinder, mFrameSupplier, false);
+        mCompositorMCP =
+                CompositorModelChangeProcessor.create(
+                        mModel, mView, mViewBinder, mFrameSupplier, false);
     }
 
     @Test
@@ -75,7 +73,9 @@ public class CompositorModelChangeProcessorUnitTest {
         mFrameSupplier.set(System.currentTimeMillis());
 
         verify(mViewBinder).bind(eq(mModel), eq(mView), eq(null));
-        Assert.assertEquals("A render should not have been requested!", callCount,
+        Assert.assertEquals(
+                "A render should not have been requested!",
+                callCount,
                 mRequestRenderCallbackHelper.getCallCount());
     }
 

@@ -61,7 +61,7 @@ TEST(NetworkSettingsTranslationTest, NetProxyToCrosapiProxyManual) {
       "http=http://proxy:80;https=https://secure_proxy:81;socks=socks4://"
       "socks_proxy:82;"
       "http=invalid://proxy2:83;http=direct://proxy3:84;"
-      "http=socks5://proxy4:85;http=quic://proxy5:86;");
+      "http=socks5://proxy4:85;");
   config.proxy_rules().bypass_rules.ParseFromString("localhost;google.com;");
 
   crosapi::mojom::ProxyConfigPtr actual = NetProxyToCrosapiProxy(
@@ -69,7 +69,7 @@ TEST(NetworkSettingsTranslationTest, NetProxyToCrosapiProxyManual) {
   ASSERT_TRUE(actual->proxy_settings->is_manual());
   std::vector<crosapi::mojom::ProxyLocationPtr> proxy_ptr =
       std::move(actual->proxy_settings->get_manual()->http_proxies);
-  ASSERT_EQ(proxy_ptr.size(), 3u);
+  ASSERT_EQ(proxy_ptr.size(), 2u);
   EXPECT_EQ(proxy_ptr[0]->host, "proxy");
   EXPECT_EQ(proxy_ptr[0]->port, 80);
   EXPECT_EQ(proxy_ptr[0]->scheme, crosapi::mojom::ProxyLocation::Scheme::kHttp);
@@ -77,9 +77,6 @@ TEST(NetworkSettingsTranslationTest, NetProxyToCrosapiProxyManual) {
   EXPECT_EQ(proxy_ptr[1]->port, 85);
   EXPECT_EQ(proxy_ptr[1]->scheme,
             crosapi::mojom::ProxyLocation::Scheme::kSocks5);
-  EXPECT_EQ(proxy_ptr[2]->host, "proxy5");
-  EXPECT_EQ(proxy_ptr[2]->port, 86);
-  EXPECT_EQ(proxy_ptr[2]->scheme, crosapi::mojom::ProxyLocation::Scheme::kQuic);
 
   proxy_ptr =
       std::move(actual->proxy_settings->get_manual()->secure_http_proxies);
@@ -211,11 +208,11 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyManual) {
 
   auto actual = CrosapiProxyToNetProxy(std::move(ptr));
 
-  EXPECT_EQ(actual.value().proxy_rules().proxies_for_http.ToPacString(),
+  EXPECT_EQ(actual.value().proxy_rules().proxies_for_http.ToDebugString(),
             "PROXY proxy:80");
-  EXPECT_EQ(actual.value().proxy_rules().proxies_for_https.ToPacString(),
+  EXPECT_EQ(actual.value().proxy_rules().proxies_for_https.ToDebugString(),
             "HTTPS secure_proxy:81;PROXY secure_proxy2:82");
-  EXPECT_EQ(actual.value().proxy_rules().fallback_proxies.ToPacString(),
+  EXPECT_EQ(actual.value().proxy_rules().fallback_proxies.ToDebugString(),
             "SOCKS socks_proxy:82");
   EXPECT_EQ(actual.value().proxy_rules().bypass_rules.ToString(),
             "localhost;google.com;");

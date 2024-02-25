@@ -164,6 +164,10 @@ BASE_FEATURE(kEnableHangWatcher,
              "EnableHangWatcher",
              FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableHangWatcherInZygoteChildren,
+             "EnableHangWatcherInZygoteChildren",
+             FEATURE_ENABLED_BY_DEFAULT);
+
 // Browser process.
 constexpr base::FeatureParam<int> kIOThreadLogLevel{
     &kEnableHangWatcher, "io_thread_log_level",
@@ -318,13 +322,23 @@ WatchHangsInScope::~WatchHangsInScope() {
 }
 
 // static
-void HangWatcher::InitializeOnMainThread(ProcessType process_type) {
+void HangWatcher::InitializeOnMainThread(ProcessType process_type,
+                                         bool is_zygote_child,
+                                         bool emit_crashes) {
   DCHECK(!g_use_hang_watcher);
   DCHECK(g_io_thread_log_level == LoggingLevel::kNone);
   DCHECK(g_main_thread_log_level == LoggingLevel::kNone);
   DCHECK(g_threadpool_log_level == LoggingLevel::kNone);
 
   bool enable_hang_watcher = base::FeatureList::IsEnabled(kEnableHangWatcher);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (is_zygote_child) {
+    enable_hang_watcher =
+        enable_hang_watcher &&
+        base::FeatureList::IsEnabled(kEnableHangWatcherInZygoteChildren);
+  }
+#endif
 
   // Do not start HangWatcher in the GPU process until the issue related to
   // invalid magic signature in the GPU WatchDog is fixed
@@ -343,57 +357,57 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type) {
     return;
 
   // Retrieve thread-specific config for hang watching.
-  switch (process_type) {
-    case HangWatcher::ProcessType::kUnknownProcess:
-      break;
-
-    case HangWatcher::ProcessType::kBrowserProcess:
-      g_threadpool_log_level.store(
-          static_cast<LoggingLevel>(kThreadPoolLogLevel.Get()),
+  if (process_type == HangWatcher::ProcessType::kBrowserProcess) {
+    // Crashes are set to always emit. Override any feature flags.
+    if (emit_crashes) {
+      g_io_thread_log_level.store(
+          static_cast<LoggingLevel>(LoggingLevel::kUmaAndCrash),
           std::memory_order_relaxed);
+      g_main_thread_log_level.store(
+          static_cast<LoggingLevel>(LoggingLevel::kUmaAndCrash),
+          std::memory_order_relaxed);
+    } else {
       g_io_thread_log_level.store(
           static_cast<LoggingLevel>(kIOThreadLogLevel.Get()),
           std::memory_order_relaxed);
       g_main_thread_log_level.store(
           static_cast<LoggingLevel>(kUIThreadLogLevel.Get()),
           std::memory_order_relaxed);
-      break;
+    }
 
-    case HangWatcher::ProcessType::kGPUProcess:
-      g_threadpool_log_level.store(
-          static_cast<LoggingLevel>(kGPUProcessThreadPoolLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_io_thread_log_level.store(
-          static_cast<LoggingLevel>(kGPUProcessIOThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_main_thread_log_level.store(
-          static_cast<LoggingLevel>(kGPUProcessMainThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      break;
-
-    case HangWatcher::ProcessType::kRendererProcess:
-      g_threadpool_log_level.store(
-          static_cast<LoggingLevel>(kRendererProcessThreadPoolLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_io_thread_log_level.store(
-          static_cast<LoggingLevel>(kRendererProcessIOThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_main_thread_log_level.store(
-          static_cast<LoggingLevel>(kRendererProcessMainThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      break;
-
-    case HangWatcher::ProcessType::kUtilityProcess:
-      g_threadpool_log_level.store(
-          static_cast<LoggingLevel>(kUtilityProcessThreadPoolLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_io_thread_log_level.store(
-          static_cast<LoggingLevel>(kUtilityProcessIOThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_main_thread_log_level.store(
-          static_cast<LoggingLevel>(kUtilityProcessMainThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      break;
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+  } else if (process_type == HangWatcher::ProcessType::kGPUProcess) {
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kGPUProcessThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_io_thread_log_level.store(
+        static_cast<LoggingLevel>(kGPUProcessIOThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_main_thread_log_level.store(
+        static_cast<LoggingLevel>(kGPUProcessMainThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+  } else if (process_type == HangWatcher::ProcessType::kRendererProcess) {
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kRendererProcessThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_io_thread_log_level.store(
+        static_cast<LoggingLevel>(kRendererProcessIOThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_main_thread_log_level.store(
+        static_cast<LoggingLevel>(kRendererProcessMainThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+  } else if (process_type == HangWatcher::ProcessType::kUtilityProcess) {
+    g_threadpool_log_level.store(
+        static_cast<LoggingLevel>(kUtilityProcessThreadPoolLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_io_thread_log_level.store(
+        static_cast<LoggingLevel>(kUtilityProcessIOThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_main_thread_log_level.store(
+        static_cast<LoggingLevel>(kUtilityProcessMainThreadLogLevel.Get()),
+        std::memory_order_relaxed);
   }
 }
 
@@ -544,12 +558,14 @@ HangWatcher::~HangWatcher() {
 
 void HangWatcher::Start() {
   thread_.Start();
+  thread_started_ = true;
 }
 
 void HangWatcher::Stop() {
   g_keep_monitoring.store(false, std::memory_order_relaxed);
   should_monitor_.Signal();
   thread_.Join();
+  thread_started_ = false;
 
   // In production HangWatcher is always leaked but during testing it's possibly
   // stopped and restarted using a new instance. This makes sure the next call
@@ -992,7 +1008,7 @@ void HangWatcher::UnregisterThread() {
       &std::unique_ptr<internal::HangWatchState>::get);
 
   // Thread should be registered to get unregistered.
-  DCHECK(it != watch_states_.end());
+  CHECK(it != watch_states_.end(), base::NotFatalUntil::M125);
 
   watch_states_.erase(it);
 }

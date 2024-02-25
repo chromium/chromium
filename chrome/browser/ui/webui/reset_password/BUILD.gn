@@ -7,5 +7,4 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "reset_password.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }

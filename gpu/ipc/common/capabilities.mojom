@@ -6,3 +6,6 @@ module gpu.mojom;
 
 [Native]
 struct Capabilities;
+
+[Native]
+struct GLCapabilities;

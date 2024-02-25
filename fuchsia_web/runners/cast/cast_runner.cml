@@ -6,7 +6,12 @@
     "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
     "inspect/client.shard.cml",
     "syslog/client.shard.cml",
-    "trace/client.shard.cml",
+
+    // `main()` intantiates tracing directly.
+    // Although the protocol is technically optional, as in this shard, not
+    // providing it will result in log spam.
+    "trace/use.shard.cml",
+
     "vulkan/client.shard.cml",
   ],
   program: {
@@ -59,6 +64,11 @@
       availability: "optional",
     },
     {
+      directory: "tzdata-icu",
+      rights: [ "r*" ],
+      path: "/config/tzdata/icu",
+    },
+    {
       // Capabilities used by the Runner itself.
       protocol: [
         "chromium.cast.ApplicationConfigManager",
@@ -74,25 +84,5 @@
       storage: "cache",
       path: "/cache",
     },
-  ],
-  environments: [
-    {
-      name: "cast-capable-env",
-      extends: "none",
-      __stop_timeout_ms: 1000,
-      resolvers: [
-        {
-          resolver: "cast-resolver",
-          from: "self",
-          scheme: "cast",
-	},
-      ],
-      runners: [
-        {
-          runner: "cast-runner",
-          from: "self",
-        },
-      ],
-   },
   ],
 }

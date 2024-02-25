@@ -1,0 +1,85 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BatterySaverModeAvailability": 0
+        },
+        "prefs": {
+          "performance_tuning.battery_saver_mode.state": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "BatterySaverModeAvailability": 1
+        },
+        "prefs": {
+          "performance_tuning.battery_saver_mode.state": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "BatterySaverModeAvailability": 2
+        },
+        "prefs": {
+          "performance_tuning.battery_saver_mode.state": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BatterySaverModeAvailability": 0
+        },
+        "prefs": {
+          "power.cros_battery_saver_active": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "BatterySaverModeAvailability": 1
+        },
+        "prefs": {
+          "power.cros_battery_saver_active": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "BatterySaverModeAvailability": 2
+        },
+        "prefs": {
+          "power.cros_battery_saver_active": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_REFRESHER_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -13,7 +14,6 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "content/public/browser/push_messaging_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 
 // This class enables push subscription refreshes as defined in the docs:
@@ -53,7 +53,7 @@ class PushMessagingRefresher {
 
   // If a subscription was refreshed, we accept the old subscription for
   // a moment after refresh
-  absl::optional<PushMessagingAppIdentifier> FindActiveAppIdentifier(
+  std::optional<PushMessagingAppIdentifier> FindActiveAppIdentifier(
       const std::string& app_id);
 
   base::WeakPtr<PushMessagingRefresher> GetWeakPtr();

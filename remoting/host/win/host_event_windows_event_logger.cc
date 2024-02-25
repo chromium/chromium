@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "remoting/host/win/event_trace_data.h"
 #include "remoting/host/win/remoting_host_messages.h"
@@ -21,13 +23,13 @@ WORD SeverityToEventLogType(logging::LogSeverity severity) {
   // The Windows event log only has 3 log levels so some severity levels will
   // need to be combined (info and verbose, error and fatal).
   switch (severity) {
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       return EVENTLOG_WARNING_TYPE;
-    case logging::LOG_FATAL:
-    case logging::LOG_ERROR:
+    case logging::LOGGING_ERROR:
+    case logging::LOGGING_FATAL:
       // Fatal or Error event.
       return EVENTLOG_ERROR_TYPE;
-    case logging::LOG_INFO:
+    case logging::LOGGING_INFO:
     default:
       // Info or Verbose event.
       return EVENTLOG_INFORMATION_TYPE;
@@ -54,16 +56,15 @@ void HostEventWindowsEventLogger::LogEvent(const EventTraceData& data) {
   // If having a stable query is important in the future, then we will need to
   // change from a MOF based provider to a manifest based provider and define an
   // event schema.
+  base::Time::Exploded exploded;
+  data.time_stamp.LocalExplode(&exploded);
   std::vector<std::string> payload(
-      {data.message.c_str(), base::StringPrintf("pid: %d", data.process_id),
-       base::StringPrintf("tid: %d", data.thread_id),
+      {data.message, "pid: " + base::NumberToString(data.process_id),
+       "tid: " + base::NumberToString(data.thread_id),
        EventTraceData::SeverityToString(data.severity),
        base::StringPrintf("%s(%d)", data.file_name.c_str(), data.line),
-       base::StringPrintf("%4d-%02d-%02d - %02d:%02d:%02d.%03d",
-                          data.time_stamp.year, data.time_stamp.month,
-                          data.time_stamp.day_of_month, data.time_stamp.hour,
-                          data.time_stamp.minute, data.time_stamp.second,
-                          data.time_stamp.millisecond)});
+       base::UnlocalizedTimeFormatWithPattern(data.time_stamp,
+                                              "yyyy-MM-dd - HH:mm:ss.SSS")});
 
   WORD type = SeverityToEventLogType(data.severity);
   if (!event_logger_.Log(type, MSG_HOST_LOG_EVENT, payload)) {

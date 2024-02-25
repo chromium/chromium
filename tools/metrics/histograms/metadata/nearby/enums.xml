@@ -1,0 +1,409 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanUpgraded">
+  <int value="0" label="Not upgraded"/>
+  <int value="1" label="Upgraded"/>
+</enum>
+
+<enum name="NearbyConnectionsMedium">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="mDNS"/>
+  <int value="2" label="Bluetooth"/>
+  <int value="3" label="WiFi hotspot"/>
+  <int value="4" label="BLE"/>
+  <int value="5" label="WiFi LAN"/>
+  <int value="6" label="WiFi Aware"/>
+  <int value="7" label="NFC"/>
+  <int value="8" label="WiFi Direct"/>
+  <int value="9" label="WebRTC"/>
+</enum>
+
+<enum name="NearbyConnectionsUtilityProcessMojoDependencyName">
+  <int value="0" label="Nearby Connections"/>
+  <int value="1" label="Bluetooth Adapter"/>
+  <int value="2" label="Socket Manager"/>
+  <int value="3" label="MDNS Responder"/>
+  <int value="4" label="ICE Config Fetcher"/>
+  <int value="5" label="WebRTC Signaling Messenger"/>
+  <int value="6" label="Cros Network Config"/>
+  <int value="7" label="Firewall Hole Factory"/>
+  <int value="8" label="TCP Socket Factory"/>
+  <int value="9" label="Nearby Presence"/>
+  <int value="10" label="Nearby Share Decoder"/>
+  <int value="11" label="Quick Start Decoder"/>
+</enum>
+
+<enum name="NearbyConnectionsUtilityProcessShutdownReason">
+  <int value="0" label="Normal"/>
+  <int value="1" label="Crash"/>
+  <int value="2" label="Mojo pipe disconnection (deprecated)"/>
+  <int value="3" label="Utility process disconnected Decoder mojo pipe"/>
+  <int value="4" label="Utility process disconnected Connections mojo pipe"/>
+</enum>
+
+<enum name="NearbyConnectionsWifiLanConnectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Error: Failed to create TCP socket"/>
+</enum>
+
+<enum name="NearbyConnectionsWifiLanListenResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Error: Invalid port"/>
+  <int value="3" label="Error fetching IP: Failed to get network state list"/>
+  <int value="4" label="Error fetching IP: Failed to get managed properties"/>
+  <int value="5" label="Error fetching IP: Missing IP configs"/>
+  <int value="6" label="Error fetching IP: No valid local IP address"/>
+  <int value="7" label="Error: Failed to create TCP server socket"/>
+  <int value="8" label="Error: Unexpected TCP server socket IP endpoint"/>
+  <int value="9" label="Error: Failed to create firewall hole"/>
+</enum>
+
+<enum name="NearbyHttpResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Offline"/>
+  <int value="3" label="Endpoint Not Found"/>
+  <int value="4" label="Authentication Error"/>
+  <int value="5" label="Bad Request"/>
+  <int value="6" label="Response Malformed"/>
+  <int value="7" label="Internal Server Error"/>
+  <int value="8" label="Unknown"/>
+</enum>
+
+<enum name="NearbyPresenceFirstTimeRegistrationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Registration With Server Failure"/>
+  <int value="2" label="Credential Generation Failure"/>
+  <int value="3" label="Upload Local Credentials Failure"/>
+  <int value="4" label="Download Remote Credentials Failure"/>
+  <int value="5" label="Save Remote Credentials Failure"/>
+</enum>
+
+<enum name="NearbyShareAttachmentType">
+  <int value="0" label="Unknown File Type"/>
+  <int value="1" label="Unknown Text Type"/>
+  <int value="2" label="Image"/>
+  <int value="3" label="Video"/>
+  <int value="4" label="App"/>
+  <int value="5" label="Audio"/>
+  <int value="6" label="Text"/>
+  <int value="7" label="URL"/>
+  <int value="8" label="Address"/>
+  <int value="9" label="Phone number"/>
+  <int value="10" label="Wi-Fi Credentials"/>
+</enum>
+
+<enum
+    name="NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent">
+  <int value="1" label="Background Notification Shown"/>
+  <int value="12" label="Enable"/>
+  <int value="13" label="Dismiss"/>
+  <int value="14" label="Clicked on 'x'"/>
+</enum>
+
+<enum name="NearbyShareBackgroundScanningDevicesDetectedEvent">
+  <int value="1" label="Nearby Devices Detected"/>
+</enum>
+
+<enum name="NearbyShareBackgroundScanningSetupNotificationFlowEvent">
+  <int value="1" label="Background Notification Shown"/>
+  <int value="12" label="Setup"/>
+  <int value="13" label="Dismiss"/>
+  <int value="14" label="Clicked on 'x'"/>
+</enum>
+
+<enum name="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No Match"/>
+  <int value="2" label="Storage Failure"/>
+</enum>
+
+<enum name="NearbyShareCertificateStorageInitializationResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Not Initialized"/>
+  <int value="2" label="Error"/>
+  <int value="3" label="Corrupt"/>
+  <int value="4" label="Invalid Operation"/>
+</enum>
+
+<enum name="NearbyShareDeviceType">
+  <int value="0" label="Unknown device type"/>
+  <int value="1" label="Phone"/>
+  <int value="2" label="Tablet"/>
+  <int value="3" label="Laptop"/>
+</enum>
+
+<enum name="NearbyShareDiscoveryProgress">
+  <int value="0" label="Discovery not attempted"/>
+  <int value="1" label="Failed to start discovery"/>
+  <int value="2" label="Started discovery; nothing found"/>
+  <int value="3" label="Discovered share target; nothing sent"/>
+  <int value="4" label="Failed to look up selected share target"/>
+  <int value="5" label="Failed to start send"/>
+  <int value="6" label="Started send"/>
+</enum>
+
+<enum name="NearbyShareEnabledState">
+  <int value="0" label="Enabled and onboarded"/>
+  <int value="1" label="Enabled and not onboarded"/>
+  <int value="2" label="Disabled and onboarded"/>
+  <int value="3" label="Disabled and not onboarded"/>
+  <int value="4" label="Disallowed by policy"/>
+</enum>
+
+<enum name="NearbyShareError">
+  <int value="0" label="kPublicCertificateHasNoBluetoothMacAddress"/>
+  <int value="1" label="kPublicCertificateHasInvalidBluetoothMacAddress"/>
+  <int value="2" label="kRegisterSendSurfaceAlreadyRegistered"/>
+  <int value="3" label="kRegisterSendSurfaceNoAvailableConnectionMedium"/>
+  <int value="4" label="kUnregisterSendSurfaceUnknownTransferUpdateCallback"/>
+  <int value="5" label="kRegisterReceiveSurfaceNoAvailableConnectionMedium"/>
+  <int value="6"
+      label="kRegisterReceiveSurfaceTransferCallbackAlreadyRegisteredDifferentState"/>
+  <int value="7" label="kSendAttachmentsNotScanning"/>
+  <int value="8" label="kSendAttachmentsUnknownShareTarget"/>
+  <int value="9" label="kSendAttachmentsNoAttachments"/>
+  <int value="10" label="kSendAttachmentsCouldNotCreateLocalEndpointInfo"/>
+  <int value="11" label="kAcceptUnknownShareTarget"/>
+  <int value="12" label="kAcceptNotAwaitingLocalConfirmation"/>
+  <int value="13" label="kRejectUnknownShareTarget"/>
+  <int value="14" label="kCancelUnknownShareTarget"/>
+  <int value="15" label="kMaxNearbyProcessRestart"/>
+  <int value="16" label="kBindToNearbyProcessReferenceExistsOrDisabled"/>
+  <int value="17" label="kBindToNearbyProcessFailedToGetReference"/>
+  <int value="18" label="kOnIncomingConnectionAcceptedFailedToGetDecoder"/>
+  <int value="19" label="kGetBluetoothAdapterUnsupported"/>
+  <int value="20" label="kStartFastInitiationAdvertisingFailed"/>
+  <int value="21" label="HandleEndpointDiscoveredFailedToGetDecoder"/>
+  <int value="22" label="kOutgoingAdvertisementDecodedFailedToParse"/>
+  <int value="23"
+      label="kOutgoingDecryptedCertificateFailedToCreateShareTarget"/>
+  <int value="24" label="kSendPayloadsMissingConnection"/>
+  <int value="25" label="kSendPayloadsMissingTransferUpdateCallback"/>
+  <int value="26" label="kSendPayloadsMissingEndpointId"/>
+  <int value="27" label="kPayloadPathsRegisteredFailed"/>
+  <int value="28" label="kPayloadPathsRegisteredUnknownShareTarget"/>
+  <int value="29" label="kPayloadPathsRegisteredMissingTransferUpdateCallback"/>
+  <int value="30" label="kPayloadPathsRegisteredMissingEndpointId"/>
+  <int value="31" label="kOutgoingConnectionFailedtoInitiateConnection"/>
+  <int value="32" label="kSendIntroductionFailedToGetShareTarget"/>
+  <int value="33" label="kSendIntroductionMissingTransferUpdateCallback"/>
+  <int value="34" label="kSendIntroductionNoSendTransferCallbacks"/>
+  <int value="35" label="kSendIntroductionNoPayloads"/>
+  <int value="36" label="kCreatePayloadsNoAttachments"/>
+  <int value="37" label="kCreatePayloadsNoFileOrTextPayloads"/>
+  <int value="38" label="kCreatePayloadsFilePayloadWithoutPath"/>
+  <int value="39" label="kOnCreatePayloadsFailed"/>
+  <int value="40" label="kOnOpenFilesFailed"/>
+  <int value="41" label="kFailUnknownShareTarget"/>
+  <int value="42" label="kIncomingAdvertisementDecodedInvalidConnection"/>
+  <int value="43" label="kIncomingAdvertisementDecodedFailedToParse"/>
+  <int value="44" label="kCloseConnectionInvalidConnection"/>
+  <int value="45" label="kIncomingDecryptedCertificateInvalidConnection"/>
+  <int value="46"
+      label="kIncomingDecryptedCertificateFailedToCreateShareTarget"/>
+  <int value="47"
+      label="kRunPairedKeyVerificationFailedToReadAuthenticationToken"/>
+  <int value="48"
+      label="kIncomingConnectionKeyVerificationInvalidConnectionOrEndpointId"/>
+  <int value="49" label="kIncomingConnectionKeyVerificationFailed"/>
+  <int value="50" label="kIncomingConnectionKeyVerificationUnknownResult"/>
+  <int value="51" label="kOutgoingConnectionKeyVerificationMissingConnection"/>
+  <int value="52"
+      label="kOutgoingConnectionKeyVerificationMissingTransferUpdateCallback"/>
+  <int value="53" label="kOutgoingConnectionKeyVerificationFailed"/>
+  <int value="54" label="kOutgoingConnectionKeyVerificationUnknownResult"/>
+  <int value="55" label="kReceivedIntroductionMissingConnection"/>
+  <int value="56" label="kReceivedIntroductionInvalidFrame"/>
+  <int value="57" label="kReceivedIntroductionInvalidAttachmentSize"/>
+  <int value="58" label="kReceivedIntroductionTotalFileSizeOverflow"/>
+  <int value="59" label="kReceivedIntroductionInvalidTextAttachmentSize"/>
+  <int value="60" label="kReceivedIntroductionInvalidWifiSSID"/>
+  <int value="61" label="kReceivedIntroductionShareTargetNoAttachment"/>
+  <int value="62" label="kReceiveConnectionResponseMissingConnection"/>
+  <int value="63"
+      label="kReceiveConnectionResponseMissingTransferUpdateCallback"/>
+  <int value="64" label="kReceiveConnectionResponseInvalidFrame"/>
+  <int value="65" label="kReceiveConnectionResponseNotEnoughSpace"/>
+  <int value="66" label="kReceiveConnectionResponseUnsupportedAttachmentType"/>
+  <int value="67" label="kReceiveConnectionResponseTimedOut"/>
+  <int value="68" label="kReceiveConnectionResponseConnectionFailed"/>
+  <int value="69" label="kStorageCheckCompletedNotEnoughSpace"/>
+  <int value="70" label="kStorageCheckCompletedMissingConnection"/>
+  <int value="71" label="kStorageCheckCompletedMissingTransferUpdateCallback"/>
+  <int value="72" label="kStorageCheckCompletedNoIncomingShareTarget"/>
+  <int value="73" label="kStorageCheckCompletedNoFramesReader"/>
+  <int value="74" label="kFrameReadNoFrameReader"/>
+  <int value="75" label="kIncomingMutualAcceptanceTimeout"/>
+  <int value="76" label="kOutgoingMutualAcceptanceTimeout"/>
+  <int value="77" label="kCreateShareTargetFailedToRetreivePublicCertificate"/>
+  <int value="78" label="kCreateShareTargetFailedToRetreiveDeviceName"/>
+  <int value="79" label="kIncomingPayloadsCompleteMissingConnection"/>
+  <int value="80" label="kIncomingPayloadsCompleteMissingPayloadId"/>
+  <int value="81" label="kIncomingPayloadsCompleteMissingPayload"/>
+  <int value="82" label="kIncomingPayloadsCompleteMissingTextPayloadId"/>
+  <int value="83" label="kIncomingPayloadsCompleteMissingTextPayload"/>
+  <int value="84" label="kIncomingPayloadsCompleteTextPayloadEmptyBytes"/>
+  <int value="85" label="kIncomingPayloadsCompleteMissingWifiPayloadId"/>
+  <int value="86" label="kIncomingPayloadsCompleteMissingWifiPayload"/>
+  <int value="87" label="kIncomingPayloadsCompleteWifiPayloadEmptyBytes"/>
+  <int value="88" label="kIncomingPayloadsCompleteWifiFailedToParse"/>
+  <int value="89" label="kIncomingPayloadsCompleteWifiNoPassword"/>
+  <int value="90" label="kIncomingPayloadsCompleteWifiHiddenNetwork"/>
+  <int value="91" label="kDisconnectFailedToGetShareTargetInfo"/>
+  <int value="92" label="kDisconnectMissingEndpointId"/>
+  <int value="93"
+      label="kGetBluetoothMacAddressForShareTargetNoShareTargetInfo"/>
+  <int value="94"
+      label="kGetBluetoothMacAddressForShareTargetNoDecryptedPublicCertificate"/>
+  <int value="95" label="kStartAdvertisingFailed"/>
+  <int value="96" label="kStopAdvertisingFailed"/>
+  <int value="97" label="kStartDiscoveryFailed"/>
+</enum>
+
+<enum name="NearbyShareFinalStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2" label="Canceled"/>
+</enum>
+
+<enum name="NearbyShareOnboardingEntryPoint">
+  <int value="0" label="Settings"/>
+  <int value="1" label="Tray icon/label"/>
+  <int value="2" label="Share Sheet"/>
+  <int value="3" label="Nearby Device is Trying to Share Notification"/>
+</enum>
+
+<enum name="NearbyShareOnboardingFinalState">
+  <int value="0" label="Cancelled on Device Name Page"/>
+  <int value="1" label="Candelled on Set Visibility Page"/>
+  <int value="2" label="Onboarding Complete"/>
+  <int value="3" label="Cancelled on initial page"/>
+</enum>
+
+<enum name="NearbyShareOnboardingFlowEvent">
+  <int value="1" label="Onboarding shown"/>
+  <int value="12" label="Confirm on initial page"/>
+  <int value="13" label="Cancel on initial page"/>
+  <int value="14" label="Visibility button on initial page clicked"/>
+  <int value="141" label="Device visibility page shown"/>
+  <int value="1412" label="All contacts visibility selected and confirmed"/>
+  <int value="1413" label="Some contacts visibility selected and confirmed"/>
+  <int value="1414" label="Hidden visibility selected and confirmed"/>
+  <int value="1415" label="Manage contacts selected"/>
+  <int value="1416" label="Cancel selected on visibility page"/>
+</enum>
+
+<enum name="NearbySharePairedKeyVerificationError">
+  <int value="0"
+      label="IncomingFramesReader timed out or failed to parse Encryption
+             frame"/>
+  <int value="1"
+      label="IncomingFramesReader timed out or failed to parse Result frame"/>
+  <int value="2"
+      label="Unable to verify remote public certificate while restricted to
+             contacts"/>
+  <int value="3"
+      label="Unable to verify main signature and optional signature missing"/>
+  <int value="4" label="Unable to verify both main and optional signatures"/>
+</enum>
+
+<enum name="NearbyShareServiceStatusCode">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Out-of-order API call"/>
+  <int value="3" label="Already stopped"/>
+  <int value="4" label="Transfer already in progress"/>
+  <int value="5" label="No available connection medium"/>
+</enum>
+
+<enum name="NearbyShareStartAdvertisingFailureReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Out-of-order API call"/>
+  <int value="3" label="Already have active strategy"/>
+  <int value="4" label="Already advertising"/>
+  <int value="5" label="Bluetooth error"/>
+  <int value="6" label="BLE error"/>
+  <int value="7" label="WiFiLAN error"/>
+</enum>
+
+<enum name="NearbyShareTransferFinalStatus">
+  <int value="0" label="Complete"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Awaiting remote acceptance failed"/>
+  <int value="3" label="Failed"/>
+  <int value="4" label="Rejected"/>
+  <int value="5" label="Cancelled"/>
+  <int value="6" label="Timed out"/>
+  <int value="7" label="Media unavailable"/>
+  <int value="8" label="Not enough space"/>
+  <int value="9" label="Unsupported attachment type"/>
+  <int value="10" label="Decode advertisement failed"/>
+  <int value="11" label="Missing transfer update callback"/>
+  <int value="12" label="Missing share target"/>
+  <int value="13" label="Missing endpoint id"/>
+  <int value="14" label="Missing payloads"/>
+  <int value="15" label="Paired key verification failed"/>
+  <int value="16" label="Invalid introduction frame"/>
+  <int value="17" label="Incomplete payloads"/>
+  <int value="18" label="Failed to create share target"/>
+  <int value="19" label="Failed to initiate outgoing connection"/>
+  <int value="20" label="Failed to read outgoing connection response"/>
+  <int value="21" label="Unexpected disconnection"/>
+</enum>
+
+<enum name="NearbyShareUpgradedMedium">
+  <int value="0" label="Unknown upgraded medium"/>
+  <int value="1" label="mDNS"/>
+  <int value="2" label="Bluetooth"/>
+  <int value="3" label="WiFi hotspot"/>
+  <int value="4" label="BLE"/>
+  <int value="5" label="WiFi LAN"/>
+  <int value="6" label="WiFi Aware"/>
+  <int value="7" label="NFC"/>
+  <int value="8" label="WiFi Direct"/>
+  <int value="9" label="WebRTC"/>
+  <int value="10" label="No upgrade"/>
+  <int value="11" label="BLE L2CAP"/>
+</enum>
+
+<enum name="NearbyShareVisibility">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No one"/>
+  <int value="2" label="All contacts"/>
+  <int value="3" label="Selected contacts"/>
+  <int value="4" label="Your devices"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

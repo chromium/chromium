@@ -23,8 +23,7 @@ import org.chromium.ui.base.ViewUtils;
  * and control the visibility of browser control when message is being shown.
  */
 public class MessageContainerCoordinator implements BrowserControlsStateProvider.Observer {
-    @Nullable
-    private MessageContainer mContainer;
+    @Nullable private MessageContainer mContainer;
     private BrowserControlsManager mControlsManager;
 
     /** The list of observers for the message container. */
@@ -101,8 +100,12 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     }
 
     @Override
-    public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-            int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+    public void onControlsOffsetChanged(
+            int topOffset,
+            int topControlsMinHeightOffset,
+            int bottomOffset,
+            int bottomControlsMinHeightOffset,
+            boolean needsAnimate) {
         updateMargins();
     }
 

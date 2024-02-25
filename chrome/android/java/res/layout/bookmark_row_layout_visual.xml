@@ -31,7 +31,7 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/drag_handle"
         android:visibility="gone"
-        android:src="@drawable/ic_drag_handle_grey600_24dp"
+        android:src="@drawable/ic_drag_handle_24dp"
         android:tint="@color/default_icon_color_tint_list"
         style="@style/ListItemEndIconV2" />
 </LinearLayout>

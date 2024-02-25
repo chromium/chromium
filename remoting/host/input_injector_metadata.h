@@ -6,7 +6,7 @@
 #define REMOTING_HOST_INPUT_INJECTOR_METADATA_H_
 
 #if defined(WEBRTC_USE_PIPEWIRE)
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 
 namespace remoting {

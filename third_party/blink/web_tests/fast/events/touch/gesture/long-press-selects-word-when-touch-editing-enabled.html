@@ -1,35 +1,28 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../../../../resources/js-test.js"></script>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../..//resources/testdriver-vendor.js"></script>
 </head>
-<body onload="test()">
+<body onload="runTest()">
 <p>This test checks that a long press gesture selects word when touch editing is enabled.</p>
-<div id="text">Testing</div>
-<div id="result">FAIL</div>
-<div id="textDiv">Some text</div>
+<div><span id="target">Some selectable text</span></div>
 <script>
-function test()
-{
-    if (window.testRunner)
-        testRunner.dumpAsText();
-
-    var textDiv = document.getElementById("textDiv");
-
-    var x = textDiv.offsetParent.offsetLeft + textDiv.offsetLeft + 4;
-    var y = textDiv.offsetParent.offsetTop + textDiv.offsetTop + textDiv.offsetHeight / 2;
-
-    if (!window.eventSender)
-        return;
-    if (eventSender.gestureLongPress) {
-        eventSender.gestureLongPress(x, y);
-        var selectedText = document.getSelection();
-        if (selectedText.toString().length > 0)
-            document.getElementById("result").innerHTML = "PASS";
-    } else {
-        debug("gestureLongPress not implemented by this platform");
-        return;
-    }
+function runTest() {
+  promise_test(async t => {
+    preventContextMenu(t);
+    const target = document.getElementById("target");
+    await touchLongPressElement(target, {
+        // Touch based text editing requires a hefty longpress duration.
+        duration: 1200
+    });
+    const selectedText = document.getSelection();
+    assert_equals(selectedText.toString(), "selectable");
+  }, 'Long press gesture selects word when touch editing is enabled');
 }
 </script>
 </body>

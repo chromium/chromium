@@ -25,7 +25,7 @@ class TestDriveIdResult : public TestResult {
  public:
   TestDriveIdResult(const std::string& id,
                     ResultType type,
-                    const absl::optional<std::string>& drive_id)
+                    const std::optional<std::string>& drive_id)
       : TestResult(id, type), drive_id_(drive_id) {}
 
   ~TestDriveIdResult() override = default;
@@ -33,16 +33,16 @@ class TestDriveIdResult : public TestResult {
   // ChromeSearchResult:
   void Open(int event_flags) override {}
 
-  absl::optional<std::string> DriveId() const override { return drive_id_; }
+  std::optional<std::string> DriveId() const override { return drive_id_; }
 
  private:
-  absl::optional<std::string> drive_id_;
+  std::optional<std::string> drive_id_;
 };
 
 Results MakeDriveIdResults(
     const std::vector<std::string>& ids,
     const std::vector<ResultType>& types,
-    const std::vector<absl::optional<std::string>>& drive_ids) {
+    const std::vector<std::optional<std::string>>& drive_ids) {
   CHECK_EQ(ids.size(), types.size());
   CHECK_EQ(ids.size(), drive_ids.size());
 
@@ -79,14 +79,14 @@ TEST_F(FilteringRankerTest, DeduplicateDriveFilesAndTabs) {
 
   ResultsMap results;
   results[web] = MakeDriveIdResults({"a", "b", "c", "d"}, {web, tab, tab, tab},
-                                    {absl::nullopt, "B", "C", absl::nullopt});
+                                    {std::nullopt, "B", "C", std::nullopt});
   results[drive] = MakeDriveIdResults({"a", "b", "d", "e", "f"},
                                       {drive, drive, drive, drive, drive},
-                                      {"A", "B", "D", "E", absl::nullopt});
+                                      {"A", "B", "D", "E", std::nullopt});
 
   FilteringRanker ranker;
   CategoriesList categories;
-  ranker.Start(u"query", results, categories);
+  ranker.Start(u"query", categories);
   ranker.UpdateResultRanks(results, ProviderType::kKeyboardShortcut);
 
   EXPECT_FALSE(results[drive][0]->scoring().filtered());
@@ -115,7 +115,7 @@ TEST_F(FilteringRankerTest, FilterOmniboxResults) {
   // Start with a query that is one character too short.
   ASSERT_GT(kMinQueryLengthForCommonAnswers, 0u);
   ranker.Start(std::u16string(kMinQueryLengthForCommonAnswers - 1, 'a'),
-               results, categories);
+               categories);
   ranker.UpdateResultRanks(results, ProviderType::kOmnibox);
 
   // All results except dictionary and translate answers are allowed.

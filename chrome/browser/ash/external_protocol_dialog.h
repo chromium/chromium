@@ -43,7 +43,7 @@ class ExternalProtocolNoHandlersTelSchemeDialog : public views::DialogDelegate {
 
  private:
   // The message box view whose commands we handle.
-  raw_ptr<views::MessageBoxView, ExperimentalAsh> message_box_view_;
+  raw_ptr<views::MessageBoxView> message_box_view_;
 
   // The time at which this dialog was created.
   base::TimeTicks creation_time_;

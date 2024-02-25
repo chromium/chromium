@@ -34,6 +34,9 @@ class ConnectorsInternalsPageHandler
  private:
   // connectors_internals::mojom::ConnectorsInternalsPageHandler
   void GetDeviceTrustState(GetDeviceTrustStateCallback callback) override;
+  void DeleteDeviceTrustKey(DeleteDeviceTrustKeyCallback callback) override;
+  void GetClientCertificateState(
+      GetClientCertificateStateCallback callback) override;
 
   void OnSignalsCollected(GetDeviceTrustStateCallback callback,
                           bool is_device_trust_enabled,

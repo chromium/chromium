@@ -42,7 +42,7 @@ bool GbmPixmapWayland::InitializeBuffer(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    absl::optional<gfx::Size> visible_area_size) {
+    std::optional<gfx::Size> visible_area_size) {
   DCHECK(!visible_area_size ||
          ((visible_area_size.value().width() <= size.width()) &&
           (visible_area_size.value().height() <= size.height())));
@@ -233,7 +233,6 @@ void GbmPixmapWayland::CreateDmabufBasedWlBuffer() {
   base::ScopedFD fd(HANDLE_EINTR(dup(GetDmaBufFd(0))));
   if (!fd.is_valid()) {
     PLOG(FATAL) << "dup";
-    return;
   }
 
   // The wl_buffer must be destroyed once this pixmap is destroyed.

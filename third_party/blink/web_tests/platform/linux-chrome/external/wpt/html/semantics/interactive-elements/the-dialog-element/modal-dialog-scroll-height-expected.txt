@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] dialogs should be centered before computing overflow.
+  assert_equals: expected 493 but got 500
+Harness: the test ran to completion.

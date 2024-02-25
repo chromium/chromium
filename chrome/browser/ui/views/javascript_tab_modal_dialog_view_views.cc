@@ -50,7 +50,7 @@ void JavaScriptTabModalDialogViewViews::AddedToWidget() {
       GetWidget()->non_client_view()->frame_view());
   bubble_frame_view->SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
   if (!message_text_.empty()) {
-    GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
+    GetWidget()->GetRootView()->GetViewAccessibility().SetDescription(
         message_text_);
   }
   // On some platforms, the platform accessibility API automatically
@@ -137,7 +137,7 @@ JavaScriptTabModalDialogViewViews::CreateAlertDialogForTesting(
       base::NullCallback(), base::NullCallback());
 }
 
-BEGIN_METADATA(JavaScriptTabModalDialogViewViews, views::DialogDelegateView)
+BEGIN_METADATA(JavaScriptTabModalDialogViewViews)
 END_METADATA
 
 // Creates a new JS dialog. Note the two callbacks; |dialog_callback| is for

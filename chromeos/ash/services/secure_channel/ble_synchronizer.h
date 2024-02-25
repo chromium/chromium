@@ -99,7 +99,7 @@ class BleSynchronizer : public BleSynchronizerBase {
 
   std::unique_ptr<Command> current_command_;
   std::unique_ptr<base::OneShotTimer> timer_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
   scoped_refptr<base::TaskRunner> task_runner_;
   base::Time last_command_end_timestamp_;
   base::WeakPtrFactory<BleSynchronizer> weak_ptr_factory_{this};

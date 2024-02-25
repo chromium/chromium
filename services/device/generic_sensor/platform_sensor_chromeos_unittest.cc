@@ -31,6 +31,8 @@ constexpr char kGyroscopeChannels[][10] = {"anglvel_x", "anglvel_y",
 constexpr char kMagnetometerChannels[][10] = {"magn_x", "magn_y", "magn_z"};
 constexpr char kGravityChannels[][10] = {"gravity_x", "gravity_y", "gravity_z"};
 
+constexpr double kScaleValueLightSensor = device::kAlsRoundingMultiple;
+
 constexpr double kScaleValue = 10.0;
 
 // The number of axes for which there are accelerometer readings.
@@ -78,7 +80,7 @@ class PlatformSensorChromeOSTestBase {
   mojo::PendingReceiver<chromeos::sensors::mojom::SensorDevice>
       pending_receiver_;
 
-  absl::optional<uint32_t> custom_reason_code_;
+  std::optional<uint32_t> custom_reason_code_;
 
   base::test::SingleThreadTaskEnvironment task_environment;
 };
@@ -99,7 +101,7 @@ class PlatformSensorChromeOSOneChannelTest
         base::BindOnce(
             &PlatformSensorChromeOSOneChannelTest::OnSensorDeviceDisconnect,
             base::Unretained(this)),
-        kScaleValue, std::move(sensor_device_remote_));
+        kScaleValueLightSensor, std::move(sensor_device_remote_));
 
     EXPECT_EQ(sensor_->GetReportingMode(),
               type == mojom::SensorType::AMBIENT_LIGHT
@@ -129,16 +131,15 @@ class PlatformSensorChromeOSOneChannelTest
         return reading.als;
       default:
         LOG(FATAL) << "Invalid type: " << GetParam().first;
-        return reading.als;
     }
   }
 
   void GetRoundedSensorReadingSingle(SensorReadingSingle* reading_single) {
-    reading_single->value = kFakeSampleData * kScaleValue;
+    reading_single->value = kFakeSampleData * kScaleValueLightSensor;
     reading_single->timestamp =
         base::Nanoseconds(kFakeTimestampData).InSecondsF();
 
-    // No need to do rounding for these types of sensors.
+    RoundIlluminanceReading(reading_single);
   }
 
   void WaitForAndCheckReading(
@@ -309,7 +310,6 @@ class PlatformSensorChromeOSAxesTest
         return reading.magn;
       default:
         LOG(FATAL) << "Invalid type: " << GetParam().first;
-        return reading.accel;
     }
   }
 
@@ -331,7 +331,6 @@ class PlatformSensorChromeOSAxesTest
         break;
       default:
         LOG(FATAL) << "Invalid type: " << GetParam().first;
-        break;
     }
   }
 

@@ -34,8 +34,8 @@ class GLTextureHolder {
   ~GLTextureHolder();
 
   gles2::Texture* texture() { return texture_; }
-  gles2::TexturePassthrough* passthrough_texture() {
-    return passthrough_texture_.get();
+  const scoped_refptr<gles2::TexturePassthrough>& passthrough_texture() {
+    return passthrough_texture_;
   }
 
   // Returns the service GL texture id.

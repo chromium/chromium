@@ -7,9 +7,9 @@
 #include <cstdint>
 
 #include "components/metrics/structured/enums.h"
+#include "project_validator.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 ProjectValidator::ProjectValidator(uint64_t project_hash,
                                    IdType id_type,
@@ -24,5 +24,22 @@ ProjectValidator::ProjectValidator(uint64_t project_hash,
 
 ProjectValidator::~ProjectValidator() = default;
 
-}  // namespace structured
-}  // namespace metrics
+const EventValidator* ProjectValidator::GetEventValidator(
+    base::StringPiece event_name) const {
+  const auto it = event_validators_.find(event_name);
+  if (it == event_validators_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
+}
+
+std::optional<base::StringPiece> ProjectValidator::GetEventName(
+    uint64_t event_name_hash) const {
+  const auto it = event_name_map_.find(event_name_hash);
+  if (it == event_name_map_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
+}  // namespace metrics::structured

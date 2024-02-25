@@ -27,10 +27,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_HISTORY_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_HISTORY_ITEM_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/platform/web_scroll_anchor_data.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -87,7 +87,7 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
     ScrollAnchorData scroll_anchor_data_;
   };
 
-  const absl::optional<ViewState>& GetViewState() const { return view_state_; }
+  const std::optional<ViewState>& GetViewState() const { return view_state_; }
   void ClearViewState() { view_state_.reset(); }
   void CopyViewStateFrom(HistoryItem* other) {
     view_state_ = other->GetViewState();
@@ -151,7 +151,7 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   void Trace(Visitor*) const;
 
  private:
-  std::vector<absl::optional<std::u16string>>
+  std::vector<std::optional<std::u16string>>
   GetReferencedFilePathsForSerialization() const;
 
   String url_string_;
@@ -168,7 +168,7 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   mutable Vector<String> document_state_vector_;
   Member<DocumentState> document_state_;
 
-  absl::optional<ViewState> view_state_;
+  std::optional<ViewState> view_state_;
 
   // If two HistoryItems have the same item sequence number, then they are
   // clones of one another. Traversing history from one such HistoryItem to

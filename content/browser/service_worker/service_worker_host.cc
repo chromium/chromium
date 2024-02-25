@@ -41,6 +41,7 @@ ServiceWorkerHost::ServiceWorkerHost(
     ServiceWorkerVersion* version,
     base::WeakPtr<ServiceWorkerContextCore> context)
     : version_(version),
+      token_(blink::ServiceWorkerToken()),
       broker_(this),
       container_host_(std::make_unique<content::ServiceWorkerContainerHost>(
           std::move(context))),
@@ -182,8 +183,9 @@ void ServiceWorkerHost::CreateCodeCacheHost(
   // 3) Renderer gets the Stop() IPC and realize it should try to stop the
   // worker.
   // Given the worker is stopping it is safe to ignore these messages.
-  if (embedded_worker_status == EmbeddedWorkerStatus::STOPPING)
+  if (embedded_worker_status == blink::EmbeddedWorkerStatus::kStopping) {
     return;
+  }
 
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   StoragePartition* storage_partition = GetStoragePartition();

@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Requires this allow since cxx generates unsafe code.
-//
-// TODO(crbug.com/1422745): patch upstream cxx to generate compatible code.
-#[allow(unsafe_op_in_unsafe_fn)]
+use std::alloc::{alloc, dealloc, Layout};
+
 #[cxx::bridge]
 mod ffi {
     pub struct SomeStruct {
@@ -13,6 +11,7 @@ mod ffi {
     }
     extern "Rust" {
         fn say_hello();
+        fn alloc_aligned();
         fn allocate_via_rust() -> Box<SomeStruct>;
         fn add_two_ints_via_rust(x: i32, y: i32) -> i32;
     }
@@ -23,6 +22,13 @@ pub fn say_hello() {
         "Hello, world - from a Rust library. Calculations suggest that 3+4={}",
         add_two_ints_via_rust(3, 4)
     );
+}
+
+pub fn alloc_aligned() {
+    let layout = unsafe { Layout::from_size_align_unchecked(1024, 512) };
+    let ptr = unsafe { alloc(layout) };
+    println!("Alloc aligned ptr: {:p}", ptr);
+    unsafe { dealloc(ptr, layout) };
 }
 
 #[test]

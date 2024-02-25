@@ -9,7 +9,12 @@
 #include "chrome/browser/ui/chrome_pages.h"
 
 HidConnectionTracker::HidConnectionTracker(Profile* profile)
-    : DeviceConnectionTracker(profile) {}
+    : DeviceConnectionTracker(profile) {
+  whitelisted_origins_.push_back(url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok")));
+  whitelisted_origins_.push_back(url::Origin::Create(
+      GURL("chrome-extension://lfboplenmmjcmpbkeemecobbadnmpfhi")));
+}
 
 HidConnectionTracker::~HidConnectionTracker() = default;
 

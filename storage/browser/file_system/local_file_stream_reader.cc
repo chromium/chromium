@@ -113,9 +113,7 @@ void LocalFileStreamReader::Open(net::CompletionOnceCallback callback) {
     return;
   }
 
-  // TODO(b/265908846): Replace with getting access through a
-  // callback.
-  file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+  file_access::ScopedFileAccessDelegate::RequestDefaultFilesAccessIO(
       {file_path_}, std::move(open_cb));
 }
 

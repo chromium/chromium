@@ -20,9 +20,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -231,8 +231,8 @@ void EjectDeviceInThreadPool(
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));
     return;
   }
-  base::FilePath::StringType volume_name =
-      base::StringPrintf(L"\\\\.\\%lc:", drive_letter);
+  std::wstring volume_name =
+      base::StrCat({L"\\\\.\\", std::wstring(1, drive_letter), L":"});
 
   base::win::ScopedHandle volume_handle(CreateFile(
       volume_name.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,

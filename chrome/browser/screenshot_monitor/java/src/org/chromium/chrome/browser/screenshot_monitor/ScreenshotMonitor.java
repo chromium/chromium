@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.screenshot_monitor;
 
 import org.chromium.base.ThreadUtils;
 
-/**
- * Base class for detecting screenshots and notifying the {@code ScreenshotMonitorDelegate}.
- */
+/** Base class for detecting screenshots and notifying the {@code ScreenshotMonitorDelegate}. */
 public abstract class ScreenshotMonitor {
     private final ScreenshotMonitorDelegate mDelegate;
     private boolean mIsMonitoring;

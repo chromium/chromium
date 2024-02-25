@@ -46,11 +46,16 @@ class TabSearchUI : public ui::MojoBubbleWebUIController,
     return page_handler_.get();
   }
 
+  static constexpr std::string GetWebUIName() { return "TabSearch"; }
+
  private:
   // tab_search::mojom::PageHandlerFactory
   void CreatePageHandler(
       mojo::PendingRemote<tab_search::mojom::Page> page,
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) override;
+
+  bool ShowTabOrganizationFRE();
+  int TabIndex();
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<TabSearchPageHandler> page_handler_;
@@ -63,7 +68,7 @@ class TabSearchUI : public ui::MojoBubbleWebUIController,
 
   // A timer used to track the duration between when the WebUI is constructed
   // and when the TabSearchPageHandler is constructed.
-  absl::optional<base::ElapsedTimer> page_handler_timer_;
+  std::optional<base::ElapsedTimer> page_handler_timer_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

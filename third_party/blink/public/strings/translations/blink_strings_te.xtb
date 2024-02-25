@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1012241361789814178">డీబగ్గర్ మరొక ట్యాబ్‌లో పాజ్ చేయబడింది, ఆ ట్యాబ్‌కు స్విచ్ అవ్వడానికి క్లిక్ చేయండి.</translation>
 <translation id="1088086359088493902">సెకన్లు</translation>
 <translation id="1142001580032786438">వారం పికర్‌ను చూపుతుంది</translation>
 <translation id="1171774979989969504">దయచేసి ఈమెయిల్‌ అడ్రస్‌ను ఎంటర్ చేయండి.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">దయచేసి ఖాళీ-కాని ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి.</translation>
 <translation id="1758486001363313524">ఇతర...</translation>
 <translation id="1787192514241997742">మొత్తం సమయం: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">కెమెరాను అనుమతించండి</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">రిమోట్ పరికరంలో ప్లే చేస్తుంది</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">మిర్రరింగ్‌కు మార్చబడింది</translation>
 <translation id="2031987842108996681">రెడ్ ఛానెల్</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'లో '<ph name="DOT" />' తప్పు స్థానంలో ఉపయోగించబడింది.</translation>
+<translation id="2068711044993563745">కనిష్ఠ విలువ (<ph name="MINIMUM" />) తప్పనిసరిగా గరిష్ఠ విలువ (<ph name="MAXIMUM" />) కంటే తక్కువగా ఉండాలి.</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2226276347425096477">దయచేసి ఈ వచనాన్ని <ph name="MAX_CHARACTERS" /> అక్షరాలకు లేదా అంతకంటే తక్కువకు తగ్గించండి (మీరు ప్రస్తుతం <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />వ వారం, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ట్రాక్ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">కెమెరా మరియు మైక్రోఫోన్ అనుమతించబడ్డాయి</translation>
 <translation id="2393030564806080191">హెక్సాడెసిమల్ రంగు విలువ</translation>
 <translation id="2398813069815436052">డైలాగ్ తెరవబడింది.</translation>
 <translation id="245932805758469625">వీడియోలో మిగిలి ఉన్న సెకన్లు</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">మీరు కొనసాగాలనుకుంటే దయచేసి ఈ బాక్స్‌కి టిక్కు పెట్టండి.</translation>
 <translation id="2908441821576996758">దయచేసి కామాతో వేరు చేసిన ఈమెయిల్‌ అడ్రస్‌ల లిస్ట్‌ను నమోదు చేయండి.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">ఆడియో వివరణల మెనూను చూపించండి</translation>
 <translation id="3075154866155599887">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. ఫీల్డ్ అసంపూర్ణంగా ఉంది లేదా ఇందులోని తేదీ చెల్లదు.</translation>
 <translation id="310520048233152454">దయచేసి ఒక URLని ఎంటర్ చేయండి.</translation>
 <translation id="3220661731597678625">ప్రస్తుత దశ</translation>
 <translation id="3321030238473337787">ప్లేబ్యాక్ వేగం</translation>
 <translation id="3329013043687509092">సంతృప్తత</translation>
+<translation id="3377518164566272702">మైక్రోఫోన్, కెమెరాలను అనుమతించండి</translation>
 <translation id="3450233048674729344">విలువ ఖచ్చితంగా <ph name="MAXIMUM" /> కంటే తగ్గువగా లేదా సమానంగా ఉండాలి.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">చిత్రంలో చిత్రం మోడ్ నుండి నిష్క్రమింపజేయి</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />'కి ముందు ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="3846214748874656680">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
+<translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4103419683916926126">మిల్లీసెకన్లు</translation>
 <translation id="4201051445878709314">మునుపటి నెలను చూపుతుంది</translation>
 <translation id="4360991593054037559">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. <ph name="VALID_VALUE_LOW" /> మరియు <ph name="VALID_VALUE_HIGHER" /> అనేవి రెండు సమీప చెల్లుబాటు విలువలు.</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
+<translation id="4663373278480897665">కెమెరా అనుమతించబడింది</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'కి తర్వాత ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="4718048029184481307">చిత్రంలో చిత్రం మోడ్‌లో ప్లే అవుతోంది</translation>
 <translation id="4748357248530471599">డిస్‌ప్లే కత్తిరింపు ఫుల్-స్క్రీన్‌ను సక్రియం చేస్తుంది</translation>
 <translation id="4763480195061959176">వీడియో</translation>
+<translation id="4792862212177489858">లొకేషన్‌ను షేర్ చేయండి</translation>
 <translation id="4812940957355064477">దయచేసి సంఖ్యను నమోదు చేయండి.</translation>
 <translation id="4912200001568447310">ప్రస్తుత ఐటెమ్</translation>
 <translation id="4915360478455618802">టైమ్ పికర్‌ను చూపుతుంది</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ఎంచుకోబడ్డాయి</translation>
 <translation id="4992066212339426712">అన్‌మ్యూట్ చేయి</translation>
 <translation id="49969490063480558">దయచేసి '<ph name="ATSIGN" />'కి తర్వాత ఉన్న భాగాన్ని నమోదు చేయండి. '<ph name="INVALIDADDRESS" />' అసంపూర్ణంగా ఉంది.</translation>
+<translation id="5037575921016181960">శక్తివంతమైన పాస్‌వర్డ్</translation>
 <translation id="5090250355906949916">వీడియో సమయ స్క్రబ్బర్</translation>
 <translation id="509897012892853729">బ్లూ ఛానెల్</translation>
 <translation id="5117590920725113268">తర్వాత నెలను చూపుతుంది</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">మీడియా అంశం డౌన్‌లోడ్ చేయి</translation>
 <translation id="698788488269350478">విస్తరించబడింది.</translation>
 <translation id="6989848892321993519">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు 1 అక్షరాన్ని ఉపయోగిస్తున్నారు).</translation>
+<translation id="7080893216867146095">లొకేషన్ షేరింగ్ అనుమతించబడింది</translation>
 <translation id="709897737746224366">దయచేసి రిక్వెస్ట్ చేసిన ఫార్మాటింగ్‌ను సరిపోల్చండి.</translation>
 <translation id="7102274145889307184">ప్రస్తుత లొకేషన్</translation>
 <translation id="7263440858009898357">దయచేసి లిస్ట్‌లోని ఒక అంశాన్ని ఎంచుకోండి.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">ఇతర...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> నుండి ప్రారంభమవుతుంది</translation>
 <translation id="916607977885256133">చిత్రంలో చిత్రం</translation>
+<translation id="918430632320614861">మైక్రోఫోన్‌ను అనుమతించండి</translation>
 <translation id="945780513535800434">పాక్షికంగా టిక్ గుర్తు పెట్టబడింది</translation>
 <translation id="954003015749068518">చిత్రంలో చిత్రం మోడ్‌లోకి ప్రవేశిస్తుంది</translation>
 </translationbundle>

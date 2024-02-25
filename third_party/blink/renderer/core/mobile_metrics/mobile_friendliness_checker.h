@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_MOBILE_METRICS_MOBILE_FRIENDLINESS_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MOBILE_METRICS_MOBILE_FRIENDLINESS_CHECKER_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -105,8 +106,8 @@ class CORE_EXPORT MobileFriendlinessChecker
   AreaSizes area_sizes_;
   bool viewport_device_width_ = false;
   bool allow_user_zoom_ = true;
-  absl::optional<int32_t> viewport_initial_scale_x10_;
-  absl::optional<int32_t> viewport_hardcoded_width_;
+  std::optional<int32_t> viewport_initial_scale_x10_;
+  std::optional<int32_t> viewport_hardcoded_width_;
   uint32_t ignore_beyond_viewport_scope_count_ = 0;
   bool is_painting_ = false;
 };

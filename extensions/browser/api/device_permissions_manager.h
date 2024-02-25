@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/common/extension_id.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 
@@ -129,7 +130,7 @@ class DevicePermissions {
 
   // Reads permissions out of ExtensionPrefs.
   DevicePermissions(content::BrowserContext* context,
-                    const std::string& extension_id);
+                    const ExtensionId& extension_id);
 
   std::set<scoped_refptr<DevicePermissionEntry>> entries_;
   std::map<std::string, scoped_refptr<DevicePermissionEntry>>
@@ -158,25 +159,25 @@ class DevicePermissionsManager : public KeyedService {
       bool always_include_manufacturer);
 
   // The DevicePermissions object for a given extension.
-  DevicePermissions* GetForExtension(const std::string& extension_id);
+  DevicePermissions* GetForExtension(const ExtensionId& extension_id);
 
   // Equivalent to calling GetForExtension and extracting the permission string
   // for each entry.
   std::vector<std::u16string> GetPermissionMessageStrings(
-      const std::string& extension_id) const;
+      const ExtensionId& extension_id) const;
 
-  void AllowUsbDevice(const std::string& extension_id,
+  void AllowUsbDevice(const ExtensionId& extension_id,
                       const device::mojom::UsbDeviceInfo& device_info);
-  void AllowHidDevice(const std::string& extension_id,
+  void AllowHidDevice(const ExtensionId& extension_id,
                       const device::mojom::HidDeviceInfo& device);
 
   // Updates the "last used" timestamp on the given device entry and writes it
   // out to ExtensionPrefs.
-  void UpdateLastUsed(const std::string& extension_id,
+  void UpdateLastUsed(const ExtensionId& extension_id,
                       scoped_refptr<DevicePermissionEntry> entry);
 
   // Revokes permission for the extension to access the given device.
-  void RemoveEntry(const std::string& extension_id,
+  void RemoveEntry(const ExtensionId& extension_id,
                    scoped_refptr<DevicePermissionEntry> entry);
 
   // Revokes permission for an ephemeral hid/USB device by its guid.
@@ -184,13 +185,13 @@ class DevicePermissionsManager : public KeyedService {
                                const std::string& guid);
 
   // Revokes permission for the extension to access all allowed devices.
-  void Clear(const std::string& extension_id);
+  void Clear(const ExtensionId& extension_id);
 
  private:
   friend class DevicePermissionsManagerFactory;
   FRIEND_TEST_ALL_PREFIXES(DevicePermissionsManagerTest, SuspendExtension);
 
-  DevicePermissions* GetInternal(const std::string& extension_id) const;
+  DevicePermissions* GetInternal(const ExtensionId& extension_id) const;
 
   base::ThreadChecker thread_checker_;
   raw_ptr<content::BrowserContext> context_;

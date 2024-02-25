@@ -19,9 +19,6 @@
 
 namespace android_webview {
 
-using AppPackageNameLoggingRuleStatus =
-    AwMetricsServiceClient::AppPackageNameLoggingRuleStatus;
-
 using InstallerPackageType =
     metrics::AndroidMetricsServiceClient::InstallerPackageType;
 

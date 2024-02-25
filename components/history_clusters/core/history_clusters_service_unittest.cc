@@ -172,7 +172,6 @@ class HistoryClustersServiceTestBase : public testing::Test {
   void ResetHistoryClustersServiceWithLocale(const std::string& locale) {
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
         locale, history_service_.get(),
-        /*entity_metadata_provider=*/nullptr,
         /*url_loader_factory=*/nullptr,
         /*engagement_score_provider=*/nullptr,
         /*template_url_service=*/nullptr,
@@ -210,6 +209,8 @@ class HistoryClustersServiceTestBase : public testing::Test {
     add_page_args.context_id = context_id;
     add_page_args.nav_entry_id = next_navigation_id_;
     add_page_args.url = visit.url_row.url();
+    EXPECT_TRUE(add_page_args.url.is_valid())
+        << " for URL \"" << add_page_args.url.possibly_invalid_spec() << "\"";
     add_page_args.title = visit.url_row.title();
     add_page_args.time = visit.visit_row.visit_time;
     add_page_args.visit_source = visit.source;
@@ -238,6 +239,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
   void AddCompleteVisit(history::VisitID visit_id, base::Time visit_time) {
     history::AnnotatedVisit visit;
     visit.url_row.set_id(1);
+    visit.url_row.set_url(GURL("https://foo.com"));
     visit.visit_row.visit_id = visit_id;
     visit.visit_row.visit_time = visit_time;
     visit.source = history::VisitSource::SOURCE_BROWSED;
@@ -1220,7 +1222,7 @@ TEST_P(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
           GetHardcodedClusterVisit(2),
       },
       {{u"apples", history::ClusterKeywordData(
-                       history::ClusterKeywordData::kEntity, 5.0f, {})},
+                       history::ClusterKeywordData::kEntity, 5.0f)},
        {u"oranges", history::ClusterKeywordData()},
        {u"z", history::ClusterKeywordData()},
        {u"apples bananas", history::ClusterKeywordData()}},
@@ -1232,9 +1234,8 @@ TEST_P(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
           GetHardcodedClusterVisit(2),
       },
       {
-          {u"apples",
-           history::ClusterKeywordData(
-               history::ClusterKeywordData::kSearchTerms, 100.0f, {})},
+          {u"apples", history::ClusterKeywordData(
+                          history::ClusterKeywordData::kSearchTerms, 100.0f)},
       },
       /*should_show_on_prominent_ui_surfaces=*/true));
   clusters.push_back(
@@ -1274,7 +1275,7 @@ TEST_P(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   // Its keyword data type is kSearchTerms as it has a higher score.
   EXPECT_EQ(keyword_data,
             history::ClusterKeywordData(
-                history::ClusterKeywordData::kSearchTerms, 100.0f, {}));
+                history::ClusterKeywordData::kSearchTerms, 100.0f));
 
   // Check that clusters that shouldn't be shown on prominent UI surfaces don't
   // have their keywords inserted into the keyword bag.
@@ -1454,11 +1455,10 @@ TEST_F(HistoryClustersServicePrefPersistenceTest, LoadCachesFromPrefs) {
           GetHardcodedClusterVisit(5),
           GetHardcodedClusterVisit(2),
       },
-      {{u"apples",
-        history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 5.0f,
-                                    {"fuji", "honeycrisp"})},
+      {{u"apples", history::ClusterKeywordData(
+                       history::ClusterKeywordData::kEntity, 5.0f)},
        {u"oranges", history::ClusterKeywordData(
-                        history::ClusterKeywordData::kSearchTerms, 100.0f, {})},
+                        history::ClusterKeywordData::kSearchTerms, 100.0f)},
        {u"z", history::ClusterKeywordData()},
        {u"apples bananas", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
@@ -1478,15 +1478,15 @@ TEST_F(HistoryClustersServicePrefPersistenceTest, LoadCachesFromPrefs) {
   const auto apples_keyword_data =
       history_clusters_service_->DoesQueryMatchAnyCluster("apples");
   EXPECT_TRUE(apples_keyword_data);
-  EXPECT_EQ(apples_keyword_data,
-            history::ClusterKeywordData(history::ClusterKeywordData::kEntity,
-                                        5.0f, {"fuji", "honeycrisp"}));
+  EXPECT_EQ(
+      apples_keyword_data,
+      history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 5.0f));
   const auto oranges_keyword_data =
       history_clusters_service_->DoesQueryMatchAnyCluster("oranges");
   EXPECT_TRUE(oranges_keyword_data);
   EXPECT_EQ(oranges_keyword_data,
             history::ClusterKeywordData(history::ClusterKeywordData(
-                history::ClusterKeywordData::kSearchTerms, 100.0f, {})));
+                history::ClusterKeywordData::kSearchTerms, 100.0f)));
   EXPECT_TRUE(
       history_clusters_service_->DoesQueryMatchAnyCluster("apples bananas"));
 }
@@ -1525,9 +1525,8 @@ TEST_F(HistoryClustersServicePrefPersistenceTest,
           GetHardcodedClusterVisit(1),
           GetHardcodedClusterVisit(2),
       },
-      {{u"peach",
-        history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 13.0f,
-                                    {"georgia"})},
+      {{u"peach", history::ClusterKeywordData(
+                      history::ClusterKeywordData::kEntity, 13.0f)},
        {u"", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
   test_clustering_backend_->FulfillCallback(clusters2);
@@ -1547,7 +1546,7 @@ TEST_F(HistoryClustersServicePrefPersistenceTest,
       history_clusters_service_->DoesQueryMatchAnyCluster("peach");
   EXPECT_EQ(peach_keyword_data,
             history::ClusterKeywordData(history::ClusterKeywordData(
-                history::ClusterKeywordData::kEntity, 13.0f, {"georgia"})));
+                history::ClusterKeywordData::kEntity, 13.0f)));
 }
 
 class HistoryClustersServiceJourneysDisabledTest

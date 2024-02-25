@@ -127,11 +127,11 @@ void AudioBufferSourceNode::setBuffer(AudioBuffer* new_buffer,
 }
 
 AudioParam* AudioBufferSourceNode::playbackRate() const {
-  return playback_rate_;
+  return playback_rate_.Get();
 }
 
 AudioParam* AudioBufferSourceNode::detune() const {
-  return detune_;
+  return detune_.Get();
 }
 
 bool AudioBufferSourceNode::loop() const {

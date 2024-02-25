@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_FAKE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_FAKE_OBSERVER_H_
 
-#include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"
 
 namespace ash {
 namespace power {
@@ -38,7 +38,7 @@ class FakeObserver : public AlsReader::Observer {
  private:
   int ambient_light_ = -1;
   int num_received_ambient_lights_ = 0;
-  absl::optional<AlsReader::AlsInitStatus> status_;
+  std::optional<AlsReader::AlsInitStatus> status_;
 };
 
 }  // namespace auto_screen_brightness

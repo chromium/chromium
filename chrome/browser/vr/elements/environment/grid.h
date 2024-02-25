@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_VR_ELEMENTS_ENVIRONMENT_GRID_H_
 
 #include "chrome/browser/vr/elements/rect.h"
-#include "chrome/browser/vr/renderers/base_quad_renderer.h"
+#include "chrome/browser/vr/model/camera_model.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace vr {
+
+class UiElementRenderer;
 
 // Draws a quad with a radial gradient and grid lines.
 class Grid : public Rect {
@@ -35,29 +37,6 @@ class Grid : public Rect {
   void set_gridline_count(int gridline_count) {
     gridline_count_ = gridline_count;
   }
-
-  class Renderer : public BaseQuadRenderer {
-   public:
-    Renderer();
-
-    Renderer(const Renderer&) = delete;
-    Renderer& operator=(const Renderer&) = delete;
-
-    ~Renderer() override;
-
-    void Draw(const gfx::Transform& model_view_proj_matrix,
-              SkColor grid_color,
-              int gridline_count,
-              float opacity);
-
-    static void CreateBuffers();
-
-   private:
-    GLuint model_view_proj_matrix_handle_;
-    GLuint grid_color_handle_;
-    GLuint opacity_handle_;
-    GLuint lines_count_handle_;
-  };
 
  private:
   SkColor grid_color_ = SK_ColorWHITE;

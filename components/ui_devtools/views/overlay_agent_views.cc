@@ -5,6 +5,7 @@
 #include "components/ui_devtools/views/overlay_agent_views.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -120,7 +121,7 @@ void DrawSizeOfRectangle(const gfx::Rect& hovered_rect,
     // If both width() and height() are empty, canvas won't draw size.
     return;
   }
-  render_text_->SetText(utf16_text);
+  render_text_->SetText(std::move(utf16_text));
   render_text_->SetColor(SK_ColorRED);
 
   const gfx::Size& text_size = render_text_->GetStringSize();

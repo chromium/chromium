@@ -71,10 +71,6 @@ GPU_EXPORT void CollectHardwareOverlayInfo(OverlayInfo* overlay_info);
 
 // Identify the active GPU based on LUIDs.
 bool IdentifyActiveGPUWithLuid(GPUInfo* gpu_info);
-
-// Post process GPUInfo's vendor_id, gl_vendor, and gl_renderer based on the
-// assumption that on Windows ARM devices, it's always Qualcomm GPUs.
-GPU_EXPORT void PostProcessForWinARM(GPUInfo* gpu_info);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Create a GL context and collect GL strings and versions.

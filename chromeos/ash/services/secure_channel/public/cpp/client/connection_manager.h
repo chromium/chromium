@@ -48,8 +48,9 @@ class ConnectionManager {
 
   // Initiates a connection to the multidevice host with medium priority using
   // nearby. The local device (e.g. this chromebook) must have Bluetooth
-  // enabled in order to bootstrap the connection.
-  virtual void AttemptNearbyConnection() = 0;
+  // enabled in order to bootstrap the connection. Return true if the attempt is
+  // Initiated.
+  virtual bool AttemptNearbyConnection() = 0;
 
   // Cancels an ongoing connection attempt. Is a no-op is there is currently no
   // connection attempt.
@@ -72,7 +73,7 @@ class ConnectionManager {
       base::OnceCallback<void(bool)> registration_result_callback) = 0;
 
   virtual void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

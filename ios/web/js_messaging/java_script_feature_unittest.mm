@@ -43,6 +43,22 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureScript) {
       [feature_script2.GetScriptString() containsString:@"__gCrWeb.common"]);
 }
 
+// Tests the creation of FeatureScripts with a script string.
+TEST_F(JavaScriptFeatureTest, CreateFeatureScriptWithScriptString) {
+  auto document_start_injection_time =
+      web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart;
+  auto target_frames_all =
+      web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames;
+  auto feature_script = web::JavaScriptFeature::FeatureScript::CreateWithString(
+      "window.__scriptStringObject = {};", document_start_injection_time,
+      target_frames_all);
+
+  EXPECT_EQ(document_start_injection_time, feature_script.GetInjectionTime());
+  EXPECT_EQ(target_frames_all, feature_script.GetTargetFrames());
+  EXPECT_TRUE([feature_script.GetScriptString()
+      containsString:@"__scriptStringObject"]);
+}
+
 // Tests the creation of FeatureScripts with different reinjection behaviors.
 TEST_F(JavaScriptFeatureTest, FeatureScriptReinjectionBehavior) {
   auto once_feature_script =

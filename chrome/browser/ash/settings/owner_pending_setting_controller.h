@@ -57,8 +57,8 @@ class OwnerPendingSettingController
 
   // Returns the latest value - regardless of whether this has been successfully
   // signed and persisted, or if it is still stored as a pending write. Can
-  // return absl::nullopt if there is no pending write and no signed value.
-  absl::optional<base::Value> GetValue() const;
+  // return std::nullopt if there is no pending write and no signed value.
+  std::optional<base::Value> GetValue() const;
 
   // Add an observer |callback| for changes to the setting.
   [[nodiscard]] base::CallbackListSubscription AddObserver(
@@ -112,8 +112,8 @@ class OwnerPendingSettingController
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
-  absl::optional<base::Value> value_notified_to_observers_;
+  raw_ptr<PrefService> local_state_;
+  std::optional<base::Value> value_notified_to_observers_;
   base::RepeatingClosureList callback_list_;
   base::CallbackListSubscription setting_subscription_;
 
@@ -144,10 +144,10 @@ class OwnerPendingSettingController
 
   // Return the value waiting to be written (stored in local_state), if one
   // exists.
-  absl::optional<base::Value> GetPendingValue() const;
+  std::optional<base::Value> GetPendingValue() const;
 
   // Return the value signed and stored in CrosSettings, if one exists.
-  absl::optional<base::Value> GetSignedStoredValue() const;
+  std::optional<base::Value> GetSignedStoredValue() const;
 
   // Returns whether pending value should be used when determining the value
   // of `GetValue`.

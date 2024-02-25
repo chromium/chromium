@@ -25,9 +25,9 @@ limitations under the License.
 #include <iostream>
 #include <memory>
 
-#include "absl/flags/flag.h"          // from @com_google_absl
-#include "absl/flags/parse.h"         // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/flags/parse.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -42,35 +42,23 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' image embedder model.");
-ABSL_FLAG(std::string,
-          index_path,
-          "",
+ABSL_FLAG(std::string, index_path, "",
           "Absolute path to the index to search into. Mandatory only if the "
           "index is not attached to the output tensor metadata of the embedder "
           "model as an AssociatedFile with type SCANN_INDEX_FILE.");
-ABSL_FLAG(std::string,
-          image_path,
-          "",
+ABSL_FLAG(std::string, image_path, "",
           "Absolute path to the image to search. The image must be RGB or "
           "RGBA (grayscale is not supported). The image EXIF orientation "
           "flag, if any, is NOT taken into account.");
-ABSL_FLAG(int32,
-          max_results,
-          5,
+ABSL_FLAG(int32, max_results, 5,
           "Maximum number of nearest-neighbor results to display.");
-ABSL_FLAG(bool,
-          l2_normalize,
-          false,
+ABSL_FLAG(bool, l2_normalize, false,
           "If true, the raw feature vectors returned by the image embedder "
           "will be normalized with L2-norm. Generally only needed if the model "
           "doesn't already contain a L2_NORMALIZATION TFLite Op.");
-ABSL_FLAG(bool,
-          use_coral,
-          false,
+ABSL_FLAG(bool, use_coral, false,
           "If true, inference will be delegated to a connected Coral Edge TPU "
           "device.");
 
@@ -118,11 +106,11 @@ void DisplayResult(const processor::SearchResult& result) {
 absl::Status Search() {
   // Build ImageSearcher.
   const ImageSearcherOptions options = BuildOptions();
-  ASSIGN_OR_RETURN(std::unique_ptr<ImageSearcher> image_searcher,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<ImageSearcher> image_searcher,
                    ImageSearcher::CreateFromOptions(options));
 
   // Load image in a FrameBuffer.
-  ASSIGN_OR_RETURN(ImageData image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_image_path)));
   std::unique_ptr<FrameBuffer> frame_buffer;
   if (image.channels == 3) {
@@ -139,7 +127,7 @@ absl::Status Search() {
 
   // Run search and display results.
   auto start_search = steady_clock::now();
-  ASSIGN_OR_RETURN(processor::SearchResult result,
+  TFLITE_ASSIGN_OR_RETURN(processor::SearchResult result,
                    image_searcher->Search(*frame_buffer));
   auto end_search = steady_clock::now();
   std::string delegate =

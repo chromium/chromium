@@ -9,15 +9,19 @@ enum RunningStatusEnum { "running", "not-running" };
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 dictionary RouterCondition {
   // For the URLPattern condition.
-  // https://wicg.github.io/urlpattern/#typedefdef-urlpatterninput
-  URLPatternInput urlPattern;
+  // https://wicg.github.io/urlpattern/#typedefdef-urlpatterncompatible
+  URLPatternCompatible urlPattern;
 
   // For the Request condition.
-  USVString requestMethod;
+  ByteString requestMethod;
   RequestMode requestMode;
   RequestDestination requestDestination;
 
   // For the running status.
   RunningStatusEnum runningStatus;
-};
 
+  // For the `or` condition.
+  // `ImplementedAs` is necessary to avoid conflicts with C++ keyword `or`.
+  // Chrome WebIDL compiler emits error without the leading underscore.
+  [ImplementedAs=orConditions] sequence<RouterCondition> _or;
+};

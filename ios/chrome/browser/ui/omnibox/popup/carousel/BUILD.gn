@@ -1,0 +1,66 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("carousel") {
+  sources = [
+    "carousel_item.h",
+    "carousel_item.mm",
+    "carousel_item_menu_provider.h",
+    "omnibox_popup_carousel_cell.h",
+    "omnibox_popup_carousel_cell.mm",
+    "omnibox_popup_carousel_control.h",
+    "omnibox_popup_carousel_control.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
+    "//ios/chrome/browser/ui/omnibox/popup/resources",
+    "//ios/chrome/browser/ui/omnibox/popup/row",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "omnibox_popup_carousel_control_unittest.mm",
+    "omnibox_popup_carousel_control_unittest_util.h",
+    "omnibox_popup_carousel_control_unittest_util.mm",
+  ]
+  deps = [
+    ":carousel",
+    "//base",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
+    "//ios/chrome/common/ui/favicon",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "omnibox_popup_carousel_egtest.mm" ]
+  deps = [
+    "//base",
+    "//components/omnibox/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/omnibox:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/strings",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

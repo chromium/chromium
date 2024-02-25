@@ -33,7 +33,7 @@ class SourceExtras {
 class Result {
  public:
   Result(AppSource app_source,
-         const std::string& app_id,
+         const std::string& icon_id,
          const std::u16string& app_title,
          std::unique_ptr<SourceExtras> source_extras);
   Result(const Result&);
@@ -45,8 +45,10 @@ class Result {
   // The endpoint from which the app was fetched from.
   AppSource GetAppSource() const;
 
-  // The identifier used by the AppSource to identify the app.
-  const std::string& GetAppId() const;
+  // The identifier used by the AppSource to identify an app icon.
+  // For the Almanac fetcher this is an icon url.
+  // For the legacy game fetcher this is a uuid.
+  const std::string& GetIconId() const;
 
   // The title of the app to display to users.
   const std::u16string& GetAppTitle() const;
@@ -60,7 +62,7 @@ class Result {
 
  private:
   AppSource app_source_;
-  std::string app_id_;
+  std::string icon_id_;
   std::u16string app_title_;
   std::unique_ptr<SourceExtras> source_extras_;
 };

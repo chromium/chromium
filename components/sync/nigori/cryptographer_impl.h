@@ -41,9 +41,7 @@ class CryptographerImpl : public Cryptographer {
           KeyDerivationParams::CreateForPbkdf2());
   // Returns null in case of error (e.g. default key not present in keybag).
   static std::unique_ptr<CryptographerImpl> FromProto(
-      const sync_pb::CryptographerData& proto,
-      absl::optional<uint32_t> cross_user_sharing_key_pair_version =
-          absl::nullopt);
+      const sync_pb::CryptographerData& proto);
 
   CryptographerImpl& operator=(const CryptographerImpl&) = delete;
 
@@ -65,20 +63,20 @@ class CryptographerImpl : public Cryptographer {
   // Does NOT set or change the default encryption key.
   void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
 
-  // Adds all keys from |keys| that weren't previously known.
-  void EmplaceCrossUserSharingKeysFrom(const CrossUserSharingKeys& keys);
+  // Drops any pre-existing key pairs and adds all keys from |keys|.
+  void ReplaceCrossUserSharingKeys(CrossUserSharingKeys keys);
 
-  // Adds the given Public-private key-pair associated with |version|.
-  void EmplaceKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
-                      uint32_t version);
+  // Adds the given Public-private key-pair associated with |version|. Replaces
+  // any pre-existing key pair for the given version if exists.
+  void SetKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
+                  uint32_t version);
 
   // Sets or changes the default encryption key, which causes CanEncrypt() to
   // return true. |key_name| must not be empty and must represent a known key.
   void SelectDefaultEncryptionKey(const std::string& key_name);
 
-  // Adds all keys in |other| that weren't previously known, and selects the
-  // same default key. |other| must have selected a default key.
-  void EmplaceKeysAndSelectDefaultKeyFrom(const CryptographerImpl& other);
+  // Adds all Nigori keys in |other| that weren't previously known.
+  void EmplaceAllNigoriKeysFrom(const CryptographerImpl& other);
 
   // Clears the default encryption key, which causes CanEncrypt() to return
   // false.
@@ -97,7 +95,15 @@ class CryptographerImpl : public Cryptographer {
 
   // Determines whether |key_pair_version| represents a known Public-private
   // key-pair.
-  bool HasKeyPair(const uint32_t key_pair_version) const;
+  bool HasKeyPair(uint32_t key_pair_version) const;
+
+  // Returns a key pair for a given `version`. The key pair with the given
+  // `version` must exist.
+  const CrossUserSharingPublicPrivateKeyPair& GetCrossUserSharingKeyPair(
+      uint32_t version) const;
+
+  // Sets or changes the version of the default cross user sharing key.
+  void SelectDefaultCrossUserSharingKey(const uint32_t version);
 
   // Returns a proto representation of the default encryption key. |*this| must
   // have a default encryption key set, as reflected by CanEncrypt().
@@ -107,22 +113,6 @@ class CryptographerImpl : public Cryptographer {
 
   size_t KeyBagSizeForTesting() const;
 
-  // Encrypts |plaintext| using Auth HPKE using |recipient_public_key|
-  // authentication is added with the current sender's authentication key.
-  // Empty optional is returned upon failure.
-  absl::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
-      base::span<const uint8_t> plaintext,
-      base::span<const uint8_t> recipient_public_key) const override;
-
-  // Decrypts |encrypted_data| using Auth HPKE using the keys corresponding
-  // to |recipient_key_version| and authenticates that the sender actually used
-  // |sender_public_key| upon auth encryption.
-  //  Empty optional is returned upon failure.
-  absl::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
-      base::span<const uint8_t> encrypted_data,
-      base::span<const uint8_t> sender_public_key,
-      const uint32_t recipient_key_version) const override;
-
   // Cryptographer overrides.
   bool CanEncrypt() const override;
   bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const override;
@@ -131,8 +121,13 @@ class CryptographerImpl : public Cryptographer {
                      sync_pb::EncryptedData* encrypted) const override;
   bool DecryptToString(const sync_pb::EncryptedData& encrypted,
                        std::string* decrypted) const override;
-  const CrossUserSharingPublicPrivateKeyPair&
-  GetCrossUserSharingKeyPairForTesting(uint32_t version) const override;
+  std::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
+      base::span<const uint8_t> plaintext,
+      base::span<const uint8_t> recipient_public_key) const override;
+  std::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
+      base::span<const uint8_t> encrypted_data,
+      base::span<const uint8_t> sender_public_key,
+      const uint32_t recipient_key_version) const override;
 
  private:
   CryptographerImpl(NigoriKeyBag key_bag,
@@ -146,6 +141,10 @@ class CryptographerImpl : public Cryptographer {
   // must correspond to a key within |key_bag_|. May be empty even if |key_bag_|
   // is not.
   std::string default_encryption_key_name_;
+
+  // The version of the default cross user sharing key to be used for
+  // encryption.
+  std::optional<uint32_t> default_cross_user_sharing_key_version_;
 
   // Cross user sharing keys we know about.
   CrossUserSharingKeys cross_user_sharing_keys_;

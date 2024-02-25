@@ -66,7 +66,6 @@ class TetherService
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      NetworkStateHandler* network_state_handler,
       session_manager::SessionManager* session_manager);
   TetherService(const TetherService&) = delete;
   TetherService& operator=(const TetherService&) = delete;
@@ -157,7 +156,12 @@ class TetherService
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestProhibitedByPolicy);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestIsBluetoothPowered);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestCellularIsUnavailable);
-  FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestCellularIsAvailable);
+  FRIEND_TEST_ALL_PREFIXES(
+      TetherServiceTest,
+      TestCellularIsAvailable_InstantHotspotRebrandDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      TetherServiceTest,
+      TestCellularIsAvailable_InstantHotspotRebrandEnabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestDisabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestEnabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest,
@@ -263,19 +267,16 @@ class TetherService
   TetherFeatureState previous_feature_state_ =
       TetherFeatureState::TETHER_FEATURE_STATE_MAX;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_;
-  raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged | ExperimentalAsh>
-      device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<Profile> profile_;
+  raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
+  raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, DanglingUntriaged>
       multidevice_setup_client_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
+  raw_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<NotificationPresenter> notification_presenter_;
   std::unique_ptr<GmsCoreNotificationsStateTrackerImpl>
       gms_core_notifications_state_tracker_;

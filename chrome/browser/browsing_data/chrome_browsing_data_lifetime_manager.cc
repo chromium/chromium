@@ -151,7 +151,7 @@ class BrowsingDataRemoverObserver
 uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
-    absl::optional<browsing_data::PolicyDataType> policy_data_type =
+    std::optional<browsing_data::PolicyDataType> policy_data_type =
         browsing_data::NameToPolicyDataType(data_type.GetString());
     if (!policy_data_type.has_value()) {
       continue;
@@ -173,7 +173,7 @@ uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
 uint64_t GetRemoveMask(const base::Value::List& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
-    absl::optional<browsing_data::PolicyDataType> policy_data_type =
+    std::optional<browsing_data::PolicyDataType> policy_data_type =
         browsing_data::NameToPolicyDataType(data_type.GetString());
     if (!policy_data_type.has_value()) {
       continue;
@@ -231,7 +231,7 @@ base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
   base::flat_set<GURL> result;
   // TODO (crbug/1288416): Enable this for android.
 #if !BUILDFLAG(IS_ANDROID)
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile) {
       continue;
     }
@@ -423,10 +423,8 @@ bool ChromeBrowsingDataLifetimeManager::
     IsConditionSatisfiedForBrowsingDataRemoval(
         const syncer::UserSelectableTypeSet sync_types) {
   bool sync_disabled = !SyncServiceFactory::IsSyncAllowed(profile_);
-  // Return the state of sync if
-  // `features::kDataRetentionPoliciesDisableSyncTypesNeeded` is disabled or if
-  // sync is already disabled.
-  if (!browsing_data::IsPolicyDependencyEnabled() || sync_disabled) {
+  // Condition is satisfied if sync is fully disabled by policy.
+  if (sync_disabled) {
     return sync_disabled;
   }
 

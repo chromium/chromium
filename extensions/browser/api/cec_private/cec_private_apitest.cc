@@ -49,7 +49,7 @@ class CecPrivateKioskApiTest : public ShellApiTest {
   }
 
  protected:
-  raw_ptr<ash::FakeCecServiceClient, ExperimentalAsh> cec_ = nullptr;
+  raw_ptr<ash::FakeCecServiceClient> cec_ = nullptr;
 
  private:
   std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> session_type_;

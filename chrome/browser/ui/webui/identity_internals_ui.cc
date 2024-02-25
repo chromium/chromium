@@ -318,6 +318,9 @@ IdentityInternalsUI::IdentityInternalsUI(content::WebUI* web_ui)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   web_ui->AddMessageHandler(
       std::make_unique<IdentityInternalsUIMessageHandler>());

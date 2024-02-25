@@ -39,7 +39,7 @@ using ::testing::Pointee;
 struct ReadResponseHeadResult {
   int result;
   network::mojom::URLResponseHeadPtr response_head;
-  absl::optional<mojo_base::BigBuffer> metadata;
+  std::optional<mojo_base::BigBuffer> metadata;
 };
 
 struct GetStorageUsageForStorageKeyResult {
@@ -125,8 +125,7 @@ int WriteStringResponse(
     int64_t id,
     const std::string& headers,
     const std::string& body) {
-  mojo_base::BigBuffer buffer(
-      base::as_bytes(base::make_span(body.data(), body.length())));
+  mojo_base::BigBuffer buffer(base::as_byte_span(body));
   return WriteResponse(storage, id, headers, std::move(buffer));
 }
 
@@ -149,7 +148,7 @@ ReadResponseHeadResult ReadResponseHead(
   base::RunLoop loop;
   reader->ReadResponseHead(base::BindLambdaForTesting(
       [&](int result, network::mojom::URLResponseHeadPtr response_head,
-          absl::optional<mojo_base::BigBuffer> metadata) {
+          std::optional<mojo_base::BigBuffer> metadata) {
         out.result = result;
         out.response_head = std::move(response_head);
         out.metadata = std::move(metadata);
@@ -211,8 +210,7 @@ int WriteResponseMetadata(
     mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
     int64_t id,
     const std::string& metadata) {
-  mojo_base::BigBuffer buffer(
-      base::as_bytes(base::make_span(metadata.data(), metadata.length())));
+  mojo_base::BigBuffer buffer(base::as_byte_span(metadata));
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter>
       metadata_writer;
@@ -537,7 +535,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
 
   blink::ServiceWorkerStatusCode GetAllRegistrationsInfos(
       std::vector<ServiceWorkerRegistrationInfo>* registrations) {
-    absl::optional<blink::ServiceWorkerStatusCode> result;
+    std::optional<blink::ServiceWorkerStatusCode> result;
     base::RunLoop loop;
     registry()->GetAllRegistrationsInfos(base::BindLambdaForTesting(
         [&](blink::ServiceWorkerStatusCode status,
@@ -1945,7 +1943,8 @@ TEST_F(ServiceWorkerRegistryTest, ScriptResponseTime) {
   network::mojom::URLResponseHead response_head;
   response_head.headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-  response_head.response_time = base::Time::FromJsTime(19940123);
+  response_head.response_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(19940123);
   version->SetMainScriptResponse(
       std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
           response_head));

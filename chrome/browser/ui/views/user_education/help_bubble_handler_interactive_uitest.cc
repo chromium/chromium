@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
+#include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -25,37 +30,49 @@ constexpr char kUserEducationInternalsUrl[] =
 
 class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  HelpBubbleHandlerInteractiveUiTest() = default;
+  HelpBubbleHandlerInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
+  }
   ~HelpBubbleHandlerInteractiveUiTest() override = default;
 
   // Opens the side panel and instruments the Read Later WebContents as
   // kReadLaterWebContentsElementId.
   auto OpenReadingListSidePanel() {
+      return Steps(
+          // Remove delays in switching side panels to prevent possible race
+          // conditions when selecting items from the side panel dropdown.
+          Do([this]() {
+            SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+                ->SetNoDelaysForTesting(true);
+          }),
+          PressButton(kToolbarAppMenuButtonElementId),
+          SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+          SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
+          SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
+          WaitForShow(kSidePanelElementId),
+          WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
+          // Ensure that the Reading List side panel loads properly.
+          InstrumentNonTabWebView(kReadLaterWebContentsElementId,
+                                  kReadLaterSidePanelWebViewElementId));
+  }
+
+  auto OpenBookmarksSidePanel() {
     return Steps(
-        // Remove delays in switching side panels to prevent possible race
-        // conditions when selecting items from the side panel dropdown.
-        Do([this]() {
-          SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
-              ->SetNoDelaysForTesting(true);
-        }),
-        // Click the Side Panel button and wait for the side panel to appear.
-        PressButton(kToolbarSidePanelButtonElementId),
-        WaitForShow(kSidePanelElementId), FlushEvents(),
-        // Select the Reading List side panel and wait for the WebView to
-        // appear.
-        SelectDropdownItem(kSidePanelComboboxElementId,
-                           static_cast<int>(SidePanelEntry::Id::kReadingList)),
-        WaitForShow(kReadLaterSidePanelWebViewElementId),
-        // Ensure that the Reading List side panel loads properly.
-        InstrumentNonTabWebView(kReadLaterWebContentsElementId,
-                                kReadLaterSidePanelWebViewElementId));
+        PressButton(kToolbarAppMenuButtonElementId),
+        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+        SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
+        WaitForShow(kSidePanelElementId), FlushEvents());
   }
 
   auto CloseSidePanel() {
     return Steps(EnsurePresent(kSidePanelElementId),
-                 PressButton(kToolbarSidePanelButtonElementId),
+                 PressButton(kSidePanelCloseButtonElementId),
                  WaitForHide(kSidePanelElementId));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleHandlerInteractiveUiTest,
@@ -98,7 +115,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleHandlerInteractiveUiTest,
   RunTestSequence(
       OpenReadingListSidePanel(),
       InAnyContext(WaitForShow(kAddCurrentTabToReadingListElementId)),
-      SelectDropdownItem(kSidePanelComboboxElementId,
-                         static_cast<int>(SidePanelEntry::Id::kBookmarks)),
+      OpenBookmarksSidePanel(),
       InAnyContext(WaitForHide(kAddCurrentTabToReadingListElementId)));
 }

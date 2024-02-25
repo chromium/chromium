@@ -73,8 +73,8 @@ bool ContentThreadImpl::CurrentlyOn(ID identifier) {
 }
 
 // static
-std::string ContentThreadImpl::GetDCheckCurrentlyOnErrorMessage(ID expected) {
-  return content::BrowserThread::GetDCheckCurrentlyOnErrorMessage(
+std::string ContentThreadImpl::GetCurrentlyOnErrorMessage(ID expected) {
+  return content::BrowserThread::GetCurrentlyOnErrorMessage(
       MapWebToBrowserID(expected));
 }
 

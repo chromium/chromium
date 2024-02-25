@@ -26,7 +26,6 @@ class ExtensionTelemetryServiceFactory : public ProfileKeyedServiceFactory {
   // Creates the service if it doesn't exist already for the given |profile|.
   // If the service already exists, return its pointer.
   // Returns nullptr if the profile is in Incognito/Guest mode
-  // or if base::Feature::kExtensionTelemetry is disabled.
   static ExtensionTelemetryService* GetForProfile(Profile* profile);
 
   static ExtensionTelemetryServiceFactory* GetInstance();

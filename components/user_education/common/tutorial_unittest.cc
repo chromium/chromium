@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/tutorial.h"
 
+#include <optional>
 #include <string>
 
 #include "base/test/bind.h"
@@ -12,6 +13,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -20,7 +22,6 @@
 #include "components/user_education/common/tutorial_service.h"
 #include "components/user_education/test/test_help_bubble.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -60,6 +61,19 @@ class TestTutorialService : public TutorialService {
   std::u16string GetBodyIconAltText(bool is_last_step) const override {
     return std::u16string();
   }
+};
+
+class ScopedTestTutorialState : public user_education::ScopedTutorialState {
+ public:
+  explicit ScopedTestTutorialState(ui::test::TestElement* element)
+      : user_education::ScopedTutorialState(element->context()),
+        element_(element) {
+    element_->Show();
+  }
+  ~ScopedTestTutorialState() override { element_->Hide(); }
+
+ private:
+  raw_ptr<ui::test::TestElement> element_;
 };
 
 std::unique_ptr<HelpBubbleFactoryRegistry>
@@ -892,6 +906,90 @@ TEST_F(TutorialTest, RegisterTutorialWithCreateFromVector) {
   EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial1));
 }
 
+TEST_F(TutorialTest, SetupTemporaryStateCallback) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // Build and show test element.
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Create another test element which will be shown during the tutorial.
+  ui::test::TestElement element_2(kTestIdentifier2, kTestContext1);
+  ASSERT_FALSE(element_2.IsVisible());
+
+  // Build the tutorial `description`.
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK));
+  description.temporary_state_callback = base::BindRepeating(
+      [](ui::test::TestElement* element, ui::ElementContext context)
+          -> std::unique_ptr<user_education::ScopedTutorialState> {
+        return base::WrapUnique(new ScopedTestTutorialState(element));
+      },
+      base::Unretained(&element_2));
+
+  // Register and start the tutorial.
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+
+  auto* bubble = service.currently_displayed_bubble_for_testing();
+  // Verify that the element is shown when the tutorial is active.
+  ASSERT_TRUE(element_2.IsVisible());
+  // Close the bubble to complete the tutorial.
+  EXPECT_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
+  // Verify that the element is hidden when the tutorial is completed.
+  ASSERT_FALSE(element_2.IsVisible());
+}
+
+TEST_F(TutorialTest, CleanupTemporaryStateOnAbort) {
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // Build and show test element.
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Create another test element which will be shown during the tutorial.
+  ui::test::TestElement element_2(kTestIdentifier2, kTestContext1);
+  ASSERT_FALSE(element_2.IsVisible());
+
+  // Build the tutorial `description`.
+  TutorialDescription description;
+  description.steps.emplace_back(
+      TutorialDescription::BubbleStep(kTestIdentifier1)
+          .SetBubbleBodyText(IDS_OK));
+  description.temporary_state_callback = base::BindRepeating(
+      [](ui::test::TestElement* element, ui::ElementContext context)
+          -> std::unique_ptr<user_education::ScopedTutorialState> {
+        return base::WrapUnique(new ScopedTestTutorialState(element));
+      },
+      base::Unretained(&element_2));
+
+  // Register and start the tutorial.
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+  service.StartTutorial(kTestTutorial1, element_1.context());
+
+  // Verify that the bubble is shown to the user.
+  EXPECT_TRUE(service.currently_displayed_bubble_for_testing());
+  // Verify that the element is shown when the tutorial is active.
+  ASSERT_TRUE(element_2.IsVisible());
+
+  // Verify the tutorial is aborted when the anchor visibility is lost.
+  element_1.Hide();
+  EXPECT_FALSE(service.currently_displayed_bubble_for_testing());
+  EXPECT_FALSE(service.IsRunningTutorial());
+  // Verify that the state is reset when the tutorial is aborted.
+  ASSERT_FALSE(element_2.IsVisible());
+}
+
 // Test where the parameter is a bitfield describing choices the test will make
 // at each branch.
 class ConditionalTutorialTest : public ui::test::InteractiveTestT<TutorialTest>,
@@ -943,7 +1041,7 @@ class ConditionalTutorialTest : public ui::test::InteractiveTestT<TutorialTest>,
   }
 
   auto VerifyHelpBubble(std::map<int, int> expected_strings,
-                        absl::optional<std::pair<int, int>> progress) {
+                        std::optional<std::pair<int, int>> progress) {
     const int id = expected_strings.size() == 1U
                        ? expected_strings.begin()->second
                        : expected_strings[GetParam()];
@@ -1013,7 +1111,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalAtStartOfTutorial) {
       Do([&]() { el2.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, std::nullopt), CloseHelpBubble());
 }
 
 TEST_P(ConditionalTutorialTest1, ConditionalInMiddleOfTutorial) {
@@ -1036,7 +1134,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalInMiddleOfTutorial) {
       Do([&]() { el3.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, std::nullopt), CloseHelpBubble());
 }
 
 TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorial) {
@@ -1054,7 +1152,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorial) {
       Do([&]() { el2.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, absl::nullopt),
+      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, std::nullopt),
       CloseHelpBubble());
 }
 
@@ -1080,7 +1178,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorialUnevenSteps) {
       Do([&]() { el3.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, absl::nullopt),
+      VerifyHelpBubble({{0, IDS_CANCEL}, {1, IDS_OK}}, std::nullopt),
       CloseHelpBubble());
 }
 
@@ -1104,7 +1202,7 @@ TEST_P(ConditionalTutorialTest1, OptionalStep) {
       Do([&]() { el3.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, std::nullopt), CloseHelpBubble());
 }
 
 TEST_P(ConditionalTutorialTest1, WaitForAnyOf) {
@@ -1135,7 +1233,7 @@ TEST_P(ConditionalTutorialTest1, WaitForAnyOf) {
       Do([&]() { el4.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, std::nullopt), CloseHelpBubble());
 }
 
 using ConditionalTutorialTest2 = ConditionalTutorialTest;
@@ -1174,7 +1272,7 @@ TEST_P(ConditionalTutorialTest2, NestedConditionals) {
       Do([&]() { el3.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
-      VerifyHelpBubble({{-1, IDS_SAVE}}, absl::nullopt), CloseHelpBubble());
+      VerifyHelpBubble({{-1, IDS_SAVE}}, std::nullopt), CloseHelpBubble());
 }
 
 }  // namespace user_education

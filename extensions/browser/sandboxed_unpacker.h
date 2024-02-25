@@ -6,14 +6,15 @@
 #define EXTENSIONS_BROWSER_SANDBOXED_UNPACKER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
@@ -28,7 +29,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SkBitmap;
 
@@ -155,7 +155,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // requires the id and base64-encoded public key (for insertion into the
   // 'key' field of the manifest.json file).
   void StartWithCrx(const CRXFileInfo& crx_info);
-  void StartWithDirectory(const std::string& extension_id,
+  void StartWithDirectory(const ExtensionId& extension_id,
                           const std::string& public_key_base64,
                           const base::FilePath& directory);
 
@@ -200,12 +200,12 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   // Unpacks the extension in directory and returns the manifest.
   void Unpack(const base::FilePath& directory);
-  void ReadManifestDone(absl::optional<base::Value> manifest,
-                        const absl::optional<std::string>& error);
+  void ReadManifestDone(std::optional<base::Value> manifest,
+                        const std::optional<std::string>& error);
   void UnpackExtensionSucceeded(base::Value::Dict manifest);
 
   // Helper which calls ReportFailure.
-  void ReportUnpackExtensionFailed(base::StringPiece error);
+  void ReportUnpackExtensionFailed(std::string_view error);
 
   // Implementation of ImageSanitizer::Client:
   data_decoder::DataDecoder* GetDataDecoder() override;
@@ -231,7 +231,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   // Overwrites original manifest with safe result from utility process.
   // Returns nullopt on error.
-  absl::optional<base::Value::Dict> RewriteManifestFile(
+  std::optional<base::Value::Dict> RewriteManifestFile(
       const base::Value::Dict& manifest);
 
   // Cleans up temp directory artifacts.
@@ -281,7 +281,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // Parsed original manifest of the extension. Set after unpacking the
   // extension and working with its manifest, so after UnpackExtensionSucceeded
   // is called.
-  absl::optional<base::Value::Dict> manifest_;
+  std::optional<base::Value::Dict> manifest_;
 
   // Install prefs needed for the Declarative Net Request API.
   declarative_net_request::RulesetInstallPrefs ruleset_install_prefs_;
@@ -307,7 +307,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   int creation_flags_;
 
   // Overridden value of VerifierFormat that is used from StartWithCrx().
-  absl::optional<crx_file::VerifierFormat> format_verifier_override_;
+  std::optional<crx_file::VerifierFormat> format_verifier_override_;
 
   // Sequenced task runner where file I/O operations will be performed.
   scoped_refptr<base::SequencedTaskRunner> unpacker_io_task_runner_;

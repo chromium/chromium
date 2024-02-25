@@ -26,6 +26,7 @@ build_webui("build") {
     "demos/cr_a11y_announcer/cr_a11y_announcer_demo.ts",
     "demos/cr_action_menu/cr_action_menu_demo.ts",
     "demos/cr_checkbox/cr_checkbox_demo.ts",
+    "demos/cr_chip/cr_chip_demo.ts",
     "demos/cr_dialog/cr_dialog_demo.ts",
     "demos/cr_icons/cr_icons_demo.ts",
     "demos/cr_input/cr_input_demo.ts",

@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {PerformanceTestRunner} from 'performance_test_runner';
 
+import * as TimelineModule from 'devtools/panels/timeline/timeline.js';
+
 (async function() {
   TestRunner.addResult(`Test the set of visible records is correctly update when category filter changes\n`);
-  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '4.20';
@@ -96,9 +97,9 @@ import {PerformanceTestRunner} from 'performance_test_runner';
   ];
 
   const model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  const view = new Timeline.EventsTimelineTreeView(null);
+  const view = new TimelineModule.EventsTimelineTreeView.EventsTimelineTreeView(null);
   view.setModel(model, PerformanceTestRunner.mainTrack());
-  view.updateContents(Timeline.TimelineSelection.fromRange(
+  view.updateContents(TimelineModule.TimelineSelection.TimelineSelection.fromRange(
       model.timelineModel().minimumRecordTime(), model.timelineModel().maximumRecordTime()));
   const filtersControl = view.filtersControl;
 
@@ -107,12 +108,12 @@ import {PerformanceTestRunner} from 'performance_test_runner';
   await dumpVisibleRecords();
 
   TestRunner.addResult(`Visible records when 'loading' is disabled`);
-  Timeline.TimelineUIUtils.categories().loading.hidden = true;
+  TimelineModule.TimelineUIUtils.TimelineUIUtils.categories().loading.hidden = true;
   filtersControl.notifyFiltersChanged();
   await dumpVisibleRecords();
 
   TestRunner.addResult(`Visible records when 'scripting' is disabled`);
-  Timeline.TimelineUIUtils.categories().scripting.hidden = true;
+  TimelineModule.TimelineUIUtils.TimelineUIUtils.categories().scripting.hidden = true;
   filtersControl.notifyFiltersChanged();
   await dumpVisibleRecords();
 

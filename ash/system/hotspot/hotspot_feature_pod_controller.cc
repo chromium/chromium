@@ -28,7 +28,6 @@ HotspotFeaturePodController::HotspotFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : hotspot_info_(Shell::Get()->hotspot_info_cache()->GetHotspotInfo()),
       tray_controller_(tray_controller) {
-  DCHECK(features::IsQsRevampEnabled());
   DCHECK(features::IsHotspotEnabled());
   GetHotspotConfigService(
       remote_cros_hotspot_config_.BindNewPipeAndPassReceiver());
@@ -40,10 +39,6 @@ HotspotFeaturePodController::~HotspotFeaturePodController() {
   Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
 }
 
-FeaturePodButton* HotspotFeaturePodController::CreateButton() {
-  NOTREACHED();
-  return nullptr;
-}
 
 std::unique_ptr<FeatureTile> HotspotFeaturePodController::CreateTile(
     bool compact) {
@@ -89,7 +84,8 @@ void HotspotFeaturePodController::OnLabelPressed() {
     return;
   }
 
-  EnableHotspotIfAllowedAndDiveIn();
+  TrackDiveInUMA();
+  tray_controller_->ShowHotspotDetailedView();
 }
 
 void HotspotFeaturePodController::OnHotspotInfoChanged() {

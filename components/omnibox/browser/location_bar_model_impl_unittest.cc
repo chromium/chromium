@@ -17,6 +17,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -195,9 +196,11 @@ TEST_F(LocationBarModelImplTest, MAYBE_PreventElisionWorks) {
 TEST_F(LocationBarModelImplTest, GetVectorIcon) {
   delegate()->SetSecurityLevel(security_state::SecurityLevel::WARNING);
 
-  gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(vector_icons::kNotSecureWarningIcon,
-                            gfx::kFaviconSize, gfx::kPlaceholderColor);
+  gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+      features::IsChromeRefresh2023()
+          ? vector_icons::kNotSecureWarningChromeRefreshIcon
+          : vector_icons::kNotSecureWarningIcon,
+      gfx::kFaviconSize, gfx::kPlaceholderColor);
 
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
       model()->GetVectorIcon(), gfx::kFaviconSize, gfx::kPlaceholderColor);

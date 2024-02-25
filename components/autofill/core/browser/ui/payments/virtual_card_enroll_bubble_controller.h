@@ -6,6 +6,8 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/save_card_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #include "url/gurl.h"
 
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_H_
@@ -14,6 +16,7 @@
 namespace autofill {
 
 class AutofillBubbleBase;
+enum class VirtualCardEnrollmentBubbleSource;
 enum class VirtualCardEnrollmentState;
 
 // Interface that exposes controller functionality to virtual card enrollment
@@ -33,22 +36,13 @@ class VirtualCardEnrollBubbleController {
   static VirtualCardEnrollBubbleController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Returns the title displayed in the bubble.
-  virtual std::u16string GetWindowTitle() const = 0;
+  // Returns the UI assets needed to display the virtual card enrollment view.
+  virtual const VirtualCardEnrollUiModel& GetUiModel() const = 0;
 
-  // Returns the main text displayed in the bubble.
-  virtual std::u16string GetExplanatoryMessage() const = 0;
-
-  // Returns the button label text for virtual card enroll bubbles.
-  virtual std::u16string GetAcceptButtonText() const = 0;
-  virtual std::u16string GetDeclineButtonText() const = 0;
-
-  // Returns the text used in the learn more link.
-  virtual std::u16string GetLearnMoreLinkText() const = 0;
-
-  // Returns the enrollment fields for the virtual card.
-  virtual const VirtualCardEnrollmentFields GetVirtualCardEnrollmentFields()
-      const = 0;
+  // Returns the "source" of the virtual card number enrollment flow, e.g.,
+  // "upstream", "downstream", "settings".
+  virtual VirtualCardEnrollmentBubbleSource
+  GetVirtualCardEnrollmentBubbleSource() const = 0;
 
   // Returns the currently active virtual card enroll bubble view. Can be
   // nullptr if no bubble is visible.
@@ -57,14 +51,27 @@ class VirtualCardEnrollBubbleController {
 #if !BUILDFLAG(IS_ANDROID)
   // Hides the bubble and icon if it is showing.
   virtual void HideIconAndBubble() = 0;
+
+  // Returns true if bubble is already accepted and the virtual card enrollment
+  // process is in progress.
+  virtual bool IsEnrollmentInProgress() const = 0;
 #endif
 
   // Virtual card enroll button takes card information to enroll into a VCN.
-  virtual void OnAcceptButton() = 0;
+  // `did_switch_to_loading_state` denotes if bubble is waiting for enrollment
+  // to finish on server before closing.
+  virtual void OnAcceptButton(bool did_switch_to_loading_state = false) = 0;
   virtual void OnDeclineButton() = 0;
   virtual void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                              const GURL& url) = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+  virtual base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  GetOnBubbleClosedCallback() = 0;
+
+  // Returns the UI parameters needed to display the virtual card enroll
+  // confirmation view.
+  virtual const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+  GetConfirmationUiParams() const = 0;
 
   // Returns whether the omnibox icon should be visible.
   virtual bool IsIconVisible() const = 0;

@@ -33,15 +33,82 @@ namespace content {
 GinJavaBridgeDispatcherHost::GinJavaBridgeDispatcherHost(
     WebContents* web_contents,
     const base::android::JavaRef<jobject>& retained_object_set)
-    : WebContentsObserver(web_contents),
-      next_object_id_(1),
+    : RefCountedDeleteOnSequence<GinJavaBridgeDispatcherHost>(
+          base::SequencedTaskRunner::GetCurrentDefault()),
+      WebContentsObserver(web_contents),
       retained_object_set_(base::android::AttachCurrentThread(),
                            retained_object_set),
-      allow_object_contents_inspection_(true) {
+      mojo_enabled_(
+          base::FeatureList::IsEnabled(features::kGinJavaBridgeMojo)) {
   DCHECK(!retained_object_set.is_null());
 }
 
 GinJavaBridgeDispatcherHost::~GinJavaBridgeDispatcherHost() {
+}
+
+void GinJavaBridgeDispatcherHost::BindNewHostOnBackgroundThread(
+    GlobalRenderFrameHostId routing_id,
+    mojo::PendingReceiver<mojom::GinJavaBridgeHost> host) {
+  DCHECK(JavaBridgeThread::CurrentlyOn());
+  receivers_.Add(this, std::move(host), routing_id);
+}
+
+void GinJavaBridgeDispatcherHost::ClearAllReceivers() {
+  DCHECK(JavaBridgeThread::CurrentlyOn());
+  receivers_.set_disconnect_handler({});
+  receivers_.Clear();
+  object_receivers_.set_disconnect_handler({});
+  object_receivers_.Clear();
+}
+
+mojom::GinJavaBridge* GinJavaBridgeDispatcherHost::GetJavaBridge(
+    RenderFrameHost* frame_host,
+    bool should_create) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(mojo_enabled_);
+
+  auto routing_id = frame_host->GetGlobalId();
+  auto it = remotes_.find(routing_id);
+  if (it == remotes_.end()) {
+    if (!should_create) {
+      return nullptr;
+    }
+    CHECK(frame_host->IsRenderFrameLive());
+    auto& bound_remote = remotes_[routing_id];
+    frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+        bound_remote.BindNewEndpointAndPassReceiver());
+    bound_remote.set_disconnect_handler(
+        base::BindOnce(&GinJavaBridgeDispatcherHost::RemoteDisconnected,
+                       base::Unretained(this), routing_id));
+
+    mojo::PendingReceiver<mojom::GinJavaBridgeHost> host_receiver;
+    bound_remote->SetHost(host_receiver.InitWithNewPipeAndPassRemote());
+    JavaBridgeThread::GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &GinJavaBridgeDispatcherHost::BindNewHostOnBackgroundThread, this,
+            routing_id, std::move(host_receiver)));
+
+    // Initialize with all the current named objects.
+    for (auto& object : named_objects_) {
+      bound_remote->AddNamedObject(object.first, object.second);
+    }
+
+    return bound_remote.get();
+  }
+  return it->second.get();
+}
+
+void GinJavaBridgeDispatcherHost::RemoteDisconnected(
+    const content::GlobalRenderFrameHostId& routing_id) {
+  remotes_.erase(routing_id);
+
+  auto* frame_host = RenderFrameHost::FromID(routing_id);
+  // If the RenderHost is still alive try to reconnect.
+  if (frame_host->IsRenderFrameLive()) {
+    LOG(ERROR) << "Reconnecting to RenderFrame";
+    GetJavaBridge(frame_host, true);
+  }
 }
 
 // GinJavaBridgeDispatcherHost gets created earlier than RenderProcessHost
@@ -50,33 +117,39 @@ GinJavaBridgeDispatcherHost::~GinJavaBridgeDispatcherHost() {
 // postponed until the first named object is created.
 void GinJavaBridgeDispatcherHost::InstallFilterAndRegisterAllRoutingIds() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!mojo_enabled_);
+
   if (named_objects_.empty() ||
       !web_contents()->GetPrimaryMainFrame()->GetProcess()->GetChannel()) {
     return;
   }
 
-  web_contents()
-      ->GetPrimaryMainFrame()
-      ->ForEachRenderFrameHost(
-          [this](RenderFrameHostImpl* frame) {
-            AgentSchedulingGroupHost& agent_scheduling_group =
-                frame->GetAgentSchedulingGroup();
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [this](RenderFrameHostImpl* frame) {
+        InstallFilterAndRegisterRoutingId(frame);
+      });
+}
 
-            scoped_refptr<GinJavaBridgeMessageFilter> per_asg_filter =
-                GinJavaBridgeMessageFilter::FromHost(
-                    agent_scheduling_group,
-                    /*create_if_not_exists=*/true);
-            if (base::FeatureList::IsEnabled(features::kMBIMode)) {
-              scoped_refptr<GinJavaBridgeObjectDeletionMessageFilter>
-                  process_global_filter =
-                      GinJavaBridgeObjectDeletionMessageFilter::FromHost(
-                          agent_scheduling_group.GetProcess(),
-                          /*create_if_not_exists=*/true);
-              process_global_filter->AddRoutingIdForHost(this, frame);
-            }
+void GinJavaBridgeDispatcherHost::InstallFilterAndRegisterRoutingId(
+    RenderFrameHost* render_frame_host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!mojo_enabled_);
+  AgentSchedulingGroupHost& agent_scheduling_group =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)
+          ->GetAgentSchedulingGroup();
+  scoped_refptr<GinJavaBridgeMessageFilter> per_asg_filter =
+      GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
+                                           /*create_if_not_exists=*/true);
+  if (base::FeatureList::IsEnabled(features::kMBIMode)) {
+    scoped_refptr<GinJavaBridgeObjectDeletionMessageFilter>
+        process_global_filter =
+            GinJavaBridgeObjectDeletionMessageFilter::FromHost(
+                agent_scheduling_group.GetProcess(),
+                /*create_if_not_exists=*/true);
+    process_global_filter->AddRoutingIdForHost(this, render_frame_host);
+  }
 
-            per_asg_filter->AddRoutingIdForHost(this, frame);
-          });
+  per_asg_filter->AddRoutingIdForHost(this, render_frame_host);
 }
 
 WebContentsImpl* GinJavaBridgeDispatcherHost::web_contents() const {
@@ -86,64 +159,76 @@ WebContentsImpl* GinJavaBridgeDispatcherHost::web_contents() const {
 void GinJavaBridgeDispatcherHost::RenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  AgentSchedulingGroupHost& agent_scheduling_group =
-      static_cast<RenderFrameHostImpl*>(render_frame_host)
-          ->GetAgentSchedulingGroup();
-  if (scoped_refptr<GinJavaBridgeMessageFilter> filter =
-          GinJavaBridgeMessageFilter::FromHost(
-              agent_scheduling_group, /*create_if_not_exists=*/false)) {
-    filter->AddRoutingIdForHost(this, render_frame_host);
+  if (named_objects_.empty()) {
+    return;
+  }
+
+  if (mojo_enabled_) {
+    GetJavaBridge(render_frame_host, /*should_create=*/true);
+    // Named objects will be sent in GetJavaBridge when it is first connected.
   } else {
-    InstallFilterAndRegisterAllRoutingIds();
+    InstallFilterAndRegisterRoutingId(render_frame_host);
+    for (NamedObjectMap::const_iterator iter = named_objects_.begin();
+         iter != named_objects_.end(); ++iter) {
+      render_frame_host->Send(new GinJavaBridgeMsg_AddNamedObject(
+          render_frame_host->GetRoutingID(), iter->first, iter->second));
+    }
   }
-  for (NamedObjectMap::const_iterator iter = named_objects_.begin();
-       iter != named_objects_.end();
-       ++iter) {
-    render_frame_host->Send(new GinJavaBridgeMsg_AddNamedObject(
-        render_frame_host->GetRoutingID(), iter->first, iter->second));
+}
+
+void GinJavaBridgeDispatcherHost::RenderFrameDeleted(
+    RenderFrameHost* render_frame_host) {
+  if (!mojo_enabled_) {
+    AgentSchedulingGroupHost& agent_scheduling_group =
+        static_cast<RenderFrameHostImpl*>(render_frame_host)
+            ->GetAgentSchedulingGroup();
+    scoped_refptr<GinJavaBridgeMessageFilter> filter =
+        GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
+                                             /*create_if_not_exists=*/false);
+
+    if (filter) {
+      filter->RemoveRoutingIdForHost(render_frame_host);
+    }
   }
+  remotes_.erase(render_frame_host->GetGlobalId());
 }
 
 void GinJavaBridgeDispatcherHost::WebContentsDestroyed() {
-  // Unretained() is safe because ForEachRenderFrameHost() is synchronous.
-  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      [this](RenderFrameHostImpl* frame) {
-        AgentSchedulingGroupHost& agent_scheduling_group =
-            frame->GetAgentSchedulingGroup();
-        scoped_refptr<GinJavaBridgeMessageFilter> filter =
-            GinJavaBridgeMessageFilter::FromHost(
-                agent_scheduling_group, /*create_if_not_exists=*/false);
-
-        if (filter)
-          filter->RemoveHost(this);
-      });
+  if (mojo_enabled_) {
+    JavaBridgeThread::GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GinJavaBridgeDispatcherHost::ClearAllReceivers, this));
+  }
 }
 
 void GinJavaBridgeDispatcherHost::PrimaryPageChanged(Page& page) {
-  AgentSchedulingGroupHost& agent_scheduling_group =
-      static_cast<PageImpl&>(page).GetMainDocument().GetAgentSchedulingGroup();
-  scoped_refptr<GinJavaBridgeMessageFilter> filter =
-      GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
-                                           /*create_if_not_exists=*/false);
-  if (!filter)
-    InstallFilterAndRegisterAllRoutingIds();
+  if (!mojo_enabled_) {
+    AgentSchedulingGroupHost& agent_scheduling_group =
+        static_cast<PageImpl&>(page)
+            .GetMainDocument()
+            .GetAgentSchedulingGroup();
+    scoped_refptr<GinJavaBridgeMessageFilter> filter =
+        GinJavaBridgeMessageFilter::FromHost(agent_scheduling_group,
+                                             /*create_if_not_exists=*/false);
+    if (!filter) {
+      InstallFilterAndRegisterAllRoutingIds();
+    }
+  }
 }
 
 GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::AddObject(
     const base::android::JavaRef<jobject>& object,
     const base::android::JavaRef<jclass>& safe_annotation_clazz,
-    bool is_named,
-    int32_t holder) {
+    std::optional<GlobalRenderFrameHostId> holder) {
   // Can be called on any thread. Calls come from the UI thread via
   // AddNamedObject, and from the background thread, when injected Java
   // object's method returns a Java object.
-  DCHECK(is_named || holder);
   JNIEnv* env = base::android::AttachCurrentThread();
   JavaObjectWeakGlobalRef ref(env, object.obj());
   scoped_refptr<GinJavaBoundObject> new_object =
-      is_named ? GinJavaBoundObject::CreateNamed(ref, safe_annotation_clazz)
-               : GinJavaBoundObject::CreateTransient(ref, safe_annotation_clazz,
-                                                     holder);
+      !holder ? GinJavaBoundObject::CreateNamed(ref, safe_annotation_clazz)
+              : GinJavaBoundObject::CreateTransient(ref, safe_annotation_clazz,
+                                                    holder.value());
   GinJavaBoundObject::ObjectID object_id;
   {
     base::AutoLock locker(objects_lock_);
@@ -192,9 +277,8 @@ JavaObjectWeakGlobalRef GinJavaBridgeDispatcherHost::GetObjectWeakRef(
     return JavaObjectWeakGlobalRef();
 }
 
-JavaObjectWeakGlobalRef
-GinJavaBridgeDispatcherHost::RemoveHolderLocked(
-    int32_t holder,
+JavaObjectWeakGlobalRef GinJavaBridgeDispatcherHost::RemoveHolderLocked(
+    const GlobalRenderFrameHostId& holder,
     ObjectMap::iterator* iter_ptr) {
   objects_lock_.AssertAcquired();
   JavaObjectWeakGlobalRef result;
@@ -240,24 +324,37 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
     base::AutoLock locker(objects_lock_);
     objects_[object_id]->AddName();
   } else {
-    object_id = AddObject(object, safe_annotation_clazz, true, 0);
+    object_id = AddObject(object, safe_annotation_clazz, std::nullopt);
   }
   named_objects_[name] = object_id;
 
-  // As GinJavaBridgeDispatcherHost can be created later than WebContents has
-  // notified the observers about new RenderFrame, it is necessary to ensure
-  // here that all render frame IDs are registered with the filter.
-  InstallFilterAndRegisterAllRoutingIds();
-  // We should include pending RenderFrameHosts, otherwise they will miss the
-  // chance when calling add or remove methods when they are created but not
-  // committed. See: http://crbug.com/1087806
-  web_contents()
-      ->GetPrimaryMainFrame()
-      ->ForEachRenderFrameHostIncludingSpeculative(
-          [&name, object_id](RenderFrameHostImpl* render_frame_host) {
-            render_frame_host->Send(new GinJavaBridgeMsg_AddNamedObject(
-                render_frame_host->GetRoutingID(), name, object_id));
-          });
+  if (mojo_enabled_) {
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->ForEachRenderFrameHostIncludingSpeculative(
+            [&name, object_id, this](RenderFrameHostImpl* render_frame_host) {
+              if (!render_frame_host->IsRenderFrameLive()) {
+                return;
+              }
+              GetJavaBridge(render_frame_host, /*should_create=*/true)
+                  ->AddNamedObject(name, object_id);
+            });
+  } else {
+    // As GinJavaBridgeDispatcherHost can be created later than WebContents has
+    // notified the observers about new RenderFrame, it is necessary to ensure
+    // here that all render frame IDs are registered with the filter.
+    InstallFilterAndRegisterAllRoutingIds();
+    // We should include pending RenderFrameHosts, otherwise they will miss the
+    // chance when calling add or remove methods when they are created but not
+    // committed. See: http://crbug.com/1087806
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->ForEachRenderFrameHostIncludingSpeculative(
+            [&name, object_id](RenderFrameHostImpl* render_frame_host) {
+              render_frame_host->Send(new GinJavaBridgeMsg_AddNamedObject(
+                  render_frame_host->GetRoutingID(), name, object_id));
+            });
+  }
 }
 
 void GinJavaBridgeDispatcherHost::RemoveNamedObject(
@@ -277,21 +374,40 @@ void GinJavaBridgeDispatcherHost::RemoveNamedObject(
   }
   named_objects_.erase(iter);
 
-  // As the object isn't going to be removed from the JavaScript side until the
-  // next page reload, calls to it must still work, thus we should continue to
-  // hold it. All the transient objects and removed named objects will be purged
-  // during the cleansing caused by PrimaryMainDocumentElementAvailable event.
+  if (mojo_enabled_) {
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->ForEachRenderFrameHostIncludingSpeculative(
+            [&copied_name, this](RenderFrameHostImpl* render_frame_host) {
+              if (!render_frame_host->IsRenderFrameLive()) {
+                return;
+              }
 
-  // We should include pending RenderFrameHosts, otherwise they will miss the
-  // chance when calling add or remove methods when they are created but not
-  // committed. See: http://crbug.com/1087806
-  web_contents()
-      ->GetPrimaryMainFrame()
-      ->ForEachRenderFrameHostIncludingSpeculative(
-          [&copied_name](RenderFrameHostImpl* render_frame_host) {
-            render_frame_host->Send(new GinJavaBridgeMsg_RemoveNamedObject(
-                render_frame_host->GetRoutingID(), copied_name));
-          });
+              auto* bridge =
+                  GetJavaBridge(render_frame_host, /*should_create=*/false);
+              if (!bridge) {
+                return;
+              }
+              bridge->RemoveNamedObject(copied_name);
+            });
+  } else {
+    // As the object isn't going to be removed from the JavaScript side until
+    // the next page reload, calls to it must still work, thus we should
+    // continue to hold it. All the transient objects and removed named objects
+    // will be purged during the cleansing caused by
+    // PrimaryMainDocumentElementAvailable event.
+
+    // We should include pending RenderFrameHosts, otherwise they will miss the
+    // chance when calling add or remove methods when they are created but not
+    // committed. See: http://crbug.com/1087806
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->ForEachRenderFrameHostIncludingSpeculative(
+            [&copied_name](RenderFrameHostImpl* render_frame_host) {
+              render_frame_host->Send(new GinJavaBridgeMsg_RemoveNamedObject(
+                  render_frame_host->GetRoutingID(), copied_name));
+            });
+  }
 }
 
 void GinJavaBridgeDispatcherHost::SetAllowObjectContentsInspection(bool allow) {
@@ -345,13 +461,15 @@ scoped_refptr<GinJavaBoundObject> GinJavaBridgeDispatcherHost::FindObject(
 
 void GinJavaBridgeDispatcherHost::OnGetMethods(
     GinJavaBoundObject::ObjectID object_id,
-    std::set<std::string>* returned_method_names) {
+    std::vector<std::string>* returned_method_names) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
   if (!allow_object_contents_inspection_)
     return;
   scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
-  if (object.get())
-    *returned_method_names = object->GetMethodNames();
+  if (object.get()) {
+    std::set<std::string> result = object->GetMethodNames();
+    *returned_method_names = {result.begin(), result.end()};
+  }
 }
 
 void GinJavaBridgeDispatcherHost::OnHasMethod(
@@ -365,18 +483,18 @@ void GinJavaBridgeDispatcherHost::OnHasMethod(
 }
 
 void GinJavaBridgeDispatcherHost::OnInvokeMethod(
-    int routing_id,
+    const GlobalRenderFrameHostId& routing_id,
     GinJavaBoundObject::ObjectID object_id,
     const std::string& method_name,
     const base::Value::List& arguments,
     base::Value::List* wrapped_result,
-    content::GinJavaBridgeError* error_code) {
+    content::mojom::GinJavaBridgeError* error_code) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
-  DCHECK(routing_id != MSG_ROUTING_NONE);
+  DCHECK(routing_id);
   scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
   if (!object.get()) {
     wrapped_result->Append(base::Value());
-    *error_code = kGinJavaBridgeUnknownObjectId;
+    *error_code = mojom::GinJavaBridgeError::kGinJavaBridgeUnknownObjectId;
     return;
   }
   auto result = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
@@ -395,7 +513,6 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
     } else {
       returned_object_id = AddObject(result->GetObjectResult(),
                                      result->GetSafeAnnotationClass(),
-                                     false,
                                      routing_id);
     }
     wrapped_result->Append(base::Value::FromUniquePtrValue(
@@ -405,12 +522,10 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
   }
 }
 
-void GinJavaBridgeDispatcherHost::OnObjectWrapperDeleted(
-    int routing_id,
+void GinJavaBridgeDispatcherHost::DeleteObjectForRouteLocked(
+    const GlobalRenderFrameHostId& routing_id,
     GinJavaBoundObject::ObjectID object_id) {
-  DCHECK(JavaBridgeThread::CurrentlyOn());
-  DCHECK(routing_id != MSG_ROUTING_NONE);
-  base::AutoLock locker(objects_lock_);
+  objects_lock_.AssertAcquired();
   auto iter = objects_.find(object_id);
   if (iter == objects_.end())
     return;
@@ -418,6 +533,80 @@ void GinJavaBridgeDispatcherHost::OnObjectWrapperDeleted(
   if (!ref.is_uninitialized()) {
     RemoveFromRetainedObjectSetLocked(ref);
   }
+}
+
+void GinJavaBridgeDispatcherHost::OnObjectWrapperDeleted(
+    const GlobalRenderFrameHostId& routing_id,
+    GinJavaBoundObject::ObjectID object_id) {
+  CHECK(JavaBridgeThread::CurrentlyOn());
+  DCHECK(routing_id);
+  base::AutoLock locker(objects_lock_);
+  DeleteObjectForRouteLocked(routing_id, object_id);
+}
+
+void GinJavaBridgeDispatcherHost::GetObject(
+    int32_t object_id,
+    mojo::PendingReceiver<mojom::GinJavaBridgeRemoteObject> receiver) {
+  CHECK(JavaBridgeThread::CurrentlyOn());
+  if (object_receivers_.empty()) {
+    object_receivers_.set_disconnect_handler(base::BindRepeating(
+        &GinJavaBridgeDispatcherHost::ObjectDisconnected, this));
+  }
+  object_receivers_.Add(
+      this, std::move(receiver),
+      std::make_pair(receivers_.current_context(), object_id));
+}
+
+void GinJavaBridgeDispatcherHost::ObjectWrapperDeleted(int32_t object_id) {
+  CHECK(JavaBridgeThread::CurrentlyOn());
+  base::AutoLock locker(objects_lock_);
+  DeleteObjectForRouteLocked(receivers_.current_context(), object_id);
+}
+
+void GinJavaBridgeDispatcherHost::GetMethods(GetMethodsCallback callback) {
+  CHECK(JavaBridgeThread::CurrentlyOn());
+  if (!allow_object_contents_inspection_) {
+    std::move(callback).Run({});
+    return;
+  }
+  scoped_refptr<GinJavaBoundObject> object =
+      FindObject(object_receivers_.current_context().second);
+  if (object.get()) {
+    std::set<std::string> result = object->GetMethodNames();
+    std::move(callback).Run({result.begin(), result.end()});
+  } else {
+    std::move(callback).Run({});
+  }
+}
+
+void GinJavaBridgeDispatcherHost::HasMethod(const std::string& method_name,
+                                            HasMethodCallback callback) {
+  CHECK(JavaBridgeThread::CurrentlyOn());
+  scoped_refptr<GinJavaBoundObject> object =
+      FindObject(object_receivers_.current_context().second);
+  bool result = false;
+  if (object.get()) {
+    result = object->HasMethod(method_name);
+  }
+  std::move(callback).Run(result);
+}
+
+void GinJavaBridgeDispatcherHost::InvokeMethod(const std::string& method_name,
+                                               base::Value::List arguments,
+                                               InvokeMethodCallback callback) {
+  CHECK(JavaBridgeThread::CurrentlyOn());
+  base::Value::List wrapped_result;
+  content::mojom::GinJavaBridgeError error_code;
+  OnInvokeMethod(object_receivers_.current_context().first,
+                 object_receivers_.current_context().second, method_name,
+                 arguments, &wrapped_result, &error_code);
+  std::move(callback).Run(error_code, std::move(wrapped_result));
+}
+
+void GinJavaBridgeDispatcherHost::ObjectDisconnected() {
+  CHECK(JavaBridgeThread::CurrentlyOn());
+  OnObjectWrapperDeleted(object_receivers_.current_context().first,
+                         object_receivers_.current_context().second);
 }
 
 }  // namespace content

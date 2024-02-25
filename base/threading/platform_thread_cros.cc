@@ -4,6 +4,8 @@
 // Description: ChromeOS specific Linux code layered on top of
 // base/threading/platform_thread_linux{,_base}.cc.
 
+#include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/platform_thread_internal_posix.h"
 
@@ -12,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/process/internal_linux.h"
+#include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 
 #include <sys/resource.h>
@@ -22,10 +25,19 @@ BASE_FEATURE(kSchedUtilHints,
              "SchedUtilHints",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSetThreadBgForBgProcess,
+             "SetThreadBgForBgProcess",
+             FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSetRtForDisplayThreads,
+             "SetRtForDisplayThreads",
+             FEATURE_DISABLED_BY_DEFAULT);
 namespace {
 
 std::atomic<bool> g_use_sched_util(true);
 std::atomic<bool> g_scheduler_hints_adjusted(false);
+std::atomic<bool> g_threads_bg_enabled(false);
+std::atomic<bool> g_display_threads_rt(false);
 
 // When a device doesn't specify uclamp values via chrome switches,
 // default boosting for urgent tasks is hardcoded here as 20%.
@@ -200,10 +212,101 @@ void SetThreadLatencySensitivity(ProcessId process_id,
   }
 }
 
+// Get the type by reading through kThreadTypeToNiceValueMap
+std::optional<ThreadType> GetThreadTypeForNiceValue(int nice_value) {
+  for (auto i : internal::kThreadTypeToNiceValueMap) {
+    if (nice_value == i.nice_value) {
+      return i.thread_type;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<int> GetNiceValueForThreadId(PlatformThreadId thread_id) {
+  // Get the current nice value of the thread_id
+  errno = 0;
+  int nice_value = getpriority(PRIO_PROCESS, static_cast<id_t>(thread_id));
+  if (nice_value == -1 && errno != 0) {
+    // The thread may disappear for any reason so ignore ESRCH.
+    DVPLOG_IF(1, errno != ESRCH)
+        << "Failed to call getpriority for thread id " << thread_id
+        << ", performance may be effected.";
+    return std::nullopt;
+  }
+  return nice_value;
+}
+
 } // namespace
+
+void SetThreadTypeOtherAttrs(ProcessId process_id,
+                             PlatformThreadId thread_id,
+                             ThreadType thread_type) {
+  // For cpuset and legacy schedtune interface
+  PlatformThreadLinux::SetThreadCgroupsForThreadType(thread_id, thread_type);
+
+  // For upstream uclamp interface. We try both legacy (schedtune, as done
+  // earlier) and upstream (uclamp) interfaces, and whichever succeeds wins.
+  SetThreadLatencySensitivity(process_id, thread_id, thread_type);
+}
+
+// Set or reset the RT priority of a thread based on its type
+// and whether the process it is in is backgrounded.
+// Setting an RT task to CFS retains the task's nice value.
+void SetThreadRTPrioFromType(ProcessId process_id,
+                             PlatformThreadId thread_id,
+                             ThreadType thread_type,
+                             bool proc_bg) {
+  struct sched_param prio;
+  int policy;
+
+  switch (thread_type) {
+    case ThreadType::kRealtimeAudio:
+      prio = PlatformThreadChromeOS::kRealTimeAudioPrio;
+      policy = SCHED_RR;
+      break;
+    case ThreadType::kCompositing:
+      [[fallthrough]];
+    case ThreadType::kDisplayCritical:
+      if (!PlatformThreadChromeOS::IsDisplayThreadsRtFeatureEnabled()) {
+        return;
+      }
+      if (proc_bg) {
+        // Per manpage, must be 0. Otherwise could have passed nice value here.
+        // Note that even though the prio.sched_priority passed to the
+        // sched_setscheduler() syscall is 0, the old nice value (which holds the
+        // ThreadType of the thread) is retained.
+        prio.sched_priority = 0;
+        policy = SCHED_OTHER;
+      } else {
+        prio = PlatformThreadChromeOS::kRealTimeDisplayPrio;
+        policy = SCHED_RR;
+      }
+      break;
+    default:
+      return;
+  }
+
+  PlatformThreadId syscall_tid = thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
+  if (sched_setscheduler(syscall_tid, policy, &prio) != 0) {
+    DVPLOG(1) << "Failed to set policy/priority for thread " << thread_id;
+  }
+}
+
+void SetThreadNiceFromType(ProcessId process_id,
+                           PlatformThreadId thread_id,
+                           ThreadType thread_type) {
+  PlatformThreadId syscall_tid = thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
+  const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
+  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
+    DVPLOG(1) << "Failed to set nice value of thread " << thread_id << " to "
+              << nice_setting;
+  }
+}
 
 void PlatformThreadChromeOS::InitFeaturesPostFieldTrial() {
   DCHECK(FeatureList::GetInstance());
+  g_threads_bg_enabled.store(FeatureList::IsEnabled(kSetThreadBgForBgProcess));
+  g_display_threads_rt.store(FeatureList::IsEnabled(kSetRtForDisplayThreads));
   if (!FeatureList::IsEnabled(kSchedUtilHints)) {
     g_use_sched_util.store(false);
     return;
@@ -237,36 +340,88 @@ void PlatformThreadChromeOS::InitFeaturesPostFieldTrial() {
 }
 
 // static
+bool PlatformThreadChromeOS::IsThreadsBgFeatureEnabled() {
+  return g_threads_bg_enabled.load();
+}
+
+// static
+bool PlatformThreadChromeOS::IsDisplayThreadsRtFeatureEnabled() {
+  return g_display_threads_rt.load();
+}
+
+// static
+std::optional<ThreadType> PlatformThreadChromeOS::GetThreadTypeFromThreadId(
+    ProcessId process_id,
+    PlatformThreadId thread_id) {
+  // Get the current nice_value of the thread_id
+  std::optional<int> nice_value = GetNiceValueForThreadId(thread_id);
+  if (!nice_value.has_value()) {
+    return std::nullopt;
+  }
+  return GetThreadTypeForNiceValue(nice_value.value());
+}
+
+// static
 void PlatformThreadChromeOS::SetThreadType(ProcessId process_id,
                                            PlatformThreadId thread_id,
-                                           ThreadType thread_type) {
-  // TODO(b/262267726): Call PlatformThreadLinux::SetThreadType for common code.
-  PlatformThreadId syscall_tid = thread_id;
-  if (thread_id == PlatformThread::CurrentId()) {
-    syscall_tid = 0;
+                                           ThreadType thread_type,
+                                           IsViaIPC via_ipc) {
+  // TODO(b/262267726): Re-use common code with PlatformThreadLinux::SetThreadType
+  // Should not be called concurrently with other functions
+  // like SetThreadBackgrounded.
+  if (via_ipc) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        PlatformThread::GetCrossProcessThreadPrioritySequenceChecker());
   }
 
-  // For legacy schedtune interface
-  PlatformThreadLinux::SetThreadCgroupsForThreadType(thread_id, thread_type);
-
-  // For upstream uclamp interface. We try both legacy (schedtune, as done
-  // earlier) and upstream (uclamp) interfaces, and whichever succeeds wins.
-  SetThreadLatencySensitivity(process_id, thread_id, thread_type);
-
-  if (thread_type == ThreadType::kRealtimeAudio) {
-    if (sched_setscheduler(syscall_tid, SCHED_RR, &kRealTimePrio) == 0) {
-      return;
-    }
-    // If failed to set to RT, fallback to setting nice value.
-    DVPLOG(1) << "Failed to set realtime priority for thread (" << thread_id
-              << ")";
+  auto proc = Process::Open(process_id);
+  bool backgrounded = false;
+  if (IsThreadsBgFeatureEnabled() &&
+      thread_type != ThreadType::kRealtimeAudio && proc.IsValid() &&
+      proc.GetPriority() == base::Process::Priority::kBestEffort) {
+    backgrounded = true;
   }
 
-  const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
-    DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
-              << nice_setting;
+  SetThreadTypeOtherAttrs(process_id, thread_id,
+                          backgrounded ? ThreadType::kBackground : thread_type);
+
+  SetThreadRTPrioFromType(process_id, thread_id, thread_type, backgrounded);
+  SetThreadNiceFromType(process_id, thread_id, thread_type);
+}
+
+void PlatformThreadChromeOS::SetThreadBackgrounded(ProcessId process_id,
+                                                   PlatformThreadId thread_id,
+                                                   bool backgrounded) {
+  // Get the current nice value of the thread_id
+  std::optional<int> nice_value = GetNiceValueForThreadId(thread_id);
+  if (!nice_value.has_value()) {
+    return;
   }
+
+  std::optional<ThreadType> type =
+      GetThreadTypeForNiceValue(nice_value.value());
+  if (!type.has_value()) {
+    return;
+  }
+
+  // kRealtimeAudio threads are not backgrounded or foregrounded.
+  if (type == ThreadType::kRealtimeAudio) {
+    return;
+  }
+
+  SetThreadTypeOtherAttrs(
+      process_id, thread_id,
+      backgrounded ? ThreadType::kBackground : type.value());
+  SetThreadRTPrioFromType(process_id, thread_id, type.value(), backgrounded);
+}
+
+SequenceCheckerImpl&
+PlatformThreadChromeOS::GetCrossProcessThreadPrioritySequenceChecker() {
+  // In order to use a NoDestructor instance, use SequenceCheckerImpl instead of
+  // SequenceCheckerDoNothing because SequenceCheckerImpl is trivially
+  // destructible but SequenceCheckerDoNothing isn't.
+  static NoDestructor<SequenceCheckerImpl> instance;
+  return *instance;
 }
 
 }  // namespace base

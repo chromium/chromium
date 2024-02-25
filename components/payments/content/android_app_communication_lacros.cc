@@ -43,13 +43,13 @@ class AndroidAppCommunicationLacros : public AndroidAppCommunication {
       // Chrome OS supports Android app payment only through a TWA. An empty
       // `twa_package_name` indicates that Chrome was not launched from a TWA,
       // so there're no payment apps available.
-      std::move(callback).Run(/*error_message=*/absl::nullopt,
+      std::move(callback).Run(/*error_message=*/std::nullopt,
                               /*app_descriptions=*/{});
       return;
     }
     if (!package_name_for_testing_.empty()) {
       std::move(callback).Run(
-          /*error_message=*/absl::nullopt,
+          /*error_message=*/std::nullopt,
           CreateAppForTesting(package_name_for_testing_, method_for_testing_));
       return;
     }
@@ -79,7 +79,7 @@ class AndroidAppCommunicationLacros : public AndroidAppCommunication {
                               /*is_ready_to_pay=*/false);
       return;
     }
-    absl::optional<std::string> error_message;
+    std::optional<std::string> error_message;
     auto parameters = CreatePaymentParameters(
         package_name, service_name, stringified_method_data, top_level_origin,
         payment_request_origin, payment_request_id, &error_message);
@@ -101,12 +101,12 @@ class AndroidAppCommunicationLacros : public AndroidAppCommunication {
       const std::string& payment_request_id,
       const base::UnguessableToken& request_token,
       content::WebContents* web_contents,
-      const absl::optional<base::UnguessableToken>& twa_instance_identifier,
+      const std::optional<base::UnguessableToken>& twa_instance_identifier,
       InvokePaymentAppCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // TODO(crbug.com/1385989): Ensure the Android Play Billing interface is
     // overlaid on top of the browser window.
-    absl::optional<std::string> error_message;
+    std::optional<std::string> error_message;
     if (package_name_for_testing_ == package_name) {
       std::move(callback).Run(error_message,
                               /*is_activity_result_ok=*/true,

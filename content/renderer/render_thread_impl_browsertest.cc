@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/discardable_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -60,6 +61,7 @@
 
 // IPC messages for testing ----------------------------------------------------
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // TODO(mdempsky): Fix properly by moving into a separate
 // browsertest_message_generator.cc file.
 #undef IPC_IPC_MESSAGE_MACROS_H_
@@ -72,6 +74,8 @@
 #undef IPC_MESSAGE_START
 #define IPC_MESSAGE_START TestMsgStart
 IPC_MESSAGE_CONTROL0(TestMsg_QuitRunLoop)
+
+#endif
 
 // -----------------------------------------------------------------------------
 
@@ -121,6 +125,7 @@ class TestTaskCounter : public base::SingleThreadTaskRunner {
   int count_;
 };
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 class QuitOnTestMsgFilter : public IPC::MessageFilter {
  public:
   explicit QuitOnTestMsgFilter(base::OnceClosure quit_closure)
@@ -146,6 +151,7 @@ class QuitOnTestMsgFilter : public IPC::MessageFilter {
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   base::OnceClosure quit_closure_;
 };
+#endif
 
 class RenderThreadImplBrowserTest : public testing::Test,
                                     public ChildProcessHostDelegate {
@@ -205,9 +211,11 @@ class RenderThreadImplBrowserTest : public testing::Test,
     cmd->InitFromArgv(old_argv);
 
     run_loop_ = std::make_unique<base::RunLoop>();
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
     test_msg_filter_ = base::MakeRefCounted<QuitOnTestMsgFilter>(
         run_loop_->QuitWhenIdleClosure());
     thread_->AddFilter(test_msg_filter_.get());
+#endif
 
     main_thread_scheduler_ =
         static_cast<blink::scheduler::WebMockThreadScheduler*>(
@@ -215,6 +223,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
   }
 
   void TearDown() override {
+    SetRendererClientForTesting(nullptr);
     CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kSingleProcessTests));
     // In a single-process mode, we need to avoid destructing `process_`
@@ -278,18 +287,21 @@ class RenderThreadImplBrowserTest : public testing::Test,
   std::unique_ptr<ChildProcessHost> process_host_;
 
   std::unique_ptr<RenderProcess> process_;
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   scoped_refptr<QuitOnTestMsgFilter> test_msg_filter_;
+#endif
 
-  blink::scheduler::WebMockThreadScheduler* main_thread_scheduler_;
+  raw_ptr<blink::scheduler::WebMockThreadScheduler> main_thread_scheduler_;
 
   // RenderThreadImpl doesn't currently support a proper shutdown sequence
   // and it's okay when we're running in multi-process mode because renderers
   // get killed by the OS. Memory leaks aren't nice but it's test-only.
-  RenderThreadImpl* thread_;
+  raw_ptr<RenderThreadImpl> thread_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // Disabled under LeakSanitizer due to memory leaks.
 TEST_F(RenderThreadImplBrowserTest,
        WILL_LEAK(NonResourceDispatchIPCTasksDontGoThroughScheduler)) {
@@ -310,6 +322,7 @@ TEST_F(RenderThreadImplBrowserTest,
 
   EXPECT_EQ(0, test_task_counter_->NumTasksPosted());
 }
+#endif
 
 TEST_F(RenderThreadImplBrowserTest, RendererIsBackgrounded) {
   SetBackgroundState(mojom::RenderProcessBackgroundState::kBackgrounded);
@@ -456,7 +469,7 @@ class RenderThreadImplGpuMemoryBufferBrowserTest
         base::Unretained(this)));
   }
 
-  gpu::GpuMemoryBufferManager* memory_buffer_manager_ = nullptr;
+  raw_ptr<gpu::GpuMemoryBufferManager> memory_buffer_manager_ = nullptr;
 };
 
 // https://crbug.com/652531

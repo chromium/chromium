@@ -13,10 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-
-namespace ash {
-class SessionManagerClient;
-}
+#include "base/types/expected.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 namespace base {
 class TimeDelta;
@@ -31,6 +29,7 @@ class ServerBackedStateKeysBroker {
  public:
   using UpdateCallbackList = base::RepeatingClosureList;
   using UpdateCallback = UpdateCallbackList::CallbackType;
+  using ErrorType = ash::SessionManagerClient::StateKeyErrorType;
   using StateKeysCallbackList =
       base::OnceCallbackList<void(const std::vector<std::string>&)>;
   using StateKeysCallback = StateKeysCallbackList::CallbackType;
@@ -66,6 +65,9 @@ class ServerBackedStateKeysBroker {
   // or pending retrieval.
   const std::vector<std::string>& state_keys() const { return state_keys_; }
 
+  // Returns latest state key retrieval error.
+  virtual ErrorType error_type() const;
+
   // Returns the state key for the current point in time. Returns an empty
   // string if state keys are unavailable or pending retrieval.
   std::string current_state_key() const {
@@ -81,13 +83,14 @@ class ServerBackedStateKeysBroker {
   void FetchStateKeys();
 
   // Stores newly-received state keys and notifies consumers.
-  void StoreStateKeys(const std::vector<std::string>& state_keys);
+  void StoreStateKeys(
+      const base::expected<std::vector<std::string>, ErrorType>& state_keys);
 
-  raw_ptr<ash::SessionManagerClient, DanglingUntriaged | ExperimentalAsh>
-      session_manager_client_;
+  raw_ptr<ash::SessionManagerClient, DanglingUntriaged> session_manager_client_;
 
   // The current set of state keys.
   std::vector<std::string> state_keys_;
+  ErrorType error_type_ = ErrorType::kNoError;
 
   // Whether a request for state keys is pending.
   bool requested_;

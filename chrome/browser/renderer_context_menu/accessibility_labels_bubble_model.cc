@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -73,8 +73,10 @@ void AccessibilityLabelsBubbleModel::Accept() {
     SetPref(true);
     return;
   }
-  AccessibilityLabelsServiceFactory::GetForProfile(profile_)
-      ->EnableLabelsServiceOnce();
+  if (auto* const web_contents = web_contents_.get(); web_contents) {
+    AccessibilityLabelsServiceFactory::GetForProfile(profile_)
+        ->EnableLabelsServiceOnce(web_contents);
+  }
 }
 
 void AccessibilityLabelsBubbleModel::Cancel() {

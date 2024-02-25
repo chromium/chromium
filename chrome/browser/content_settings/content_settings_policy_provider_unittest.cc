@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -23,14 +24,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/cookies/cookie_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using ::testing::_;
 
 namespace content_settings {
-
-typedef std::vector<Rule> Rules;
 
 class PolicyProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
@@ -42,16 +42,18 @@ TEST_F(PolicyProviderTest, DefaultGeolocationContentSetting) {
       profile.GetTestingPrefService();
   PolicyProvider provider(prefs);
 
-  std::unique_ptr<RuleIterator> rule_iterator(
-      provider.GetRuleIterator(ContentSettingsType::GEOLOCATION, false));
+  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
+      ContentSettingsType::GEOLOCATION, false,
+      content_settings::PartitionKey::GetDefaultForTesting()));
   EXPECT_FALSE(rule_iterator);
 
   // Change the managed value of the default geolocation setting
   prefs->SetManagedPref(prefs::kManagedDefaultGeolocationSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
-  rule_iterator =
-      provider.GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+  rule_iterator = provider.GetRuleIterator(
+      ContentSettingsType::GEOLOCATION, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   ASSERT_TRUE(rule_iterator);
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<Rule> rule = rule_iterator->Next();
@@ -59,7 +61,7 @@ TEST_F(PolicyProviderTest, DefaultGeolocationContentSetting) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value));
 
   provider.ShutdownOnUIThread();
 }
@@ -73,15 +75,16 @@ TEST_F(PolicyProviderTest, ManagedDefaultContentSettings) {
   prefs->SetManagedPref(prefs::kManagedDefaultCookiesSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
-  std::unique_ptr<RuleIterator> rule_iterator(
-      provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
+  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
+      ContentSettingsType::COOKIES, false,
+      content_settings::PartitionKey::GetDefaultForTesting()));
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value));
 
   provider.ShutdownOnUIThread();
 }
@@ -146,9 +149,10 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   // The PolicyProvider does not allow setting content settings as they are
   // enforced via policies and not set by the user or extension. So a call to
   // SetWebsiteSetting does nothing.
-  bool owned = provider.SetWebsiteSetting(yt_url_pattern, yt_url_pattern,
-                                          ContentSettingsType::COOKIES,
-                                          base::Value(CONTENT_SETTING_BLOCK));
+  bool owned = provider.SetWebsiteSetting(
+      yt_url_pattern, yt_url_pattern, ContentSettingsType::COOKIES,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(owned);
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(&provider, youtube_url, youtube_url,
@@ -267,11 +271,102 @@ TEST_F(PolicyProviderTest, InvalidManagedDefaultContentSetting) {
 
   // The setting provided in the cookies pref is not valid for cookies. It
   // should be ignored.
-  std::unique_ptr<RuleIterator> rule_iterator(
-      provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
+  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
+      ContentSettingsType::COOKIES, false,
+      content_settings::PartitionKey::GetDefaultForTesting()));
   EXPECT_FALSE(rule_iterator);
 
   provider.ShutdownOnUIThread();
+}
+
+TEST_F(PolicyProviderTest, CookiesAllowedForUrlsUsageHistogram) {
+  const struct TestCase {
+    std::string desc;
+    base::Value::List managed_pref;
+    std::optional<net::CookiesAllowedForUrlsUsage> expected_bucket;
+  } test_cases[] = {
+      {
+          "NoRules",
+          base::Value::List(),
+          std::nullopt,
+      },
+      {
+          "WildcardPrimaryOnly",
+          base::Value::List().Append("*,https://www.a.com/"),
+          net::CookiesAllowedForUrlsUsage::kWildcardPrimaryOnly,
+      },
+      {
+          "WildcardSecondaryOnly",
+          base::Value::List().Append("https://www.a.com/"),
+          net::CookiesAllowedForUrlsUsage::kWildcardSecondaryOnly,
+      },
+      {"ExplicitOnly",
+       base::Value::List().Append("https://www.a.com/,https://www.b.com/"),
+       net::CookiesAllowedForUrlsUsage::kExplicitOnly},
+      {
+          "ExplicitAndPrimaryWildcard",
+          base::Value::List()
+              .Append("*,https://www.a.com/")
+              .Append("https://www.a.com/,https://www.b.com/"),
+          net::CookiesAllowedForUrlsUsage::kExplicitAndPrimaryWildcard,
+      },
+      {
+          "ExplicityAndSecondaryWildcard",
+          base::Value::List()
+              .Append("https://www.a.com/")
+              .Append("https://www.a.com/,https://www.b.com/"),
+          net::CookiesAllowedForUrlsUsage::kExplicitAndSecondaryWildcard,
+      },
+      {
+          "WildcardOnly",
+          base::Value::List()
+              .Append("*,https://www.a.com/")
+              .Append("https://www.a.com/"),
+          net::CookiesAllowedForUrlsUsage::kWildcardOnly,
+      },
+      {
+          "AllPresent",
+          base::Value::List()
+              .Append("*,https://www.a.com/")
+              .Append("https://www.a.com/")
+              .Append("https://www.a.com/,https://www.b.com/"),
+          net::CookiesAllowedForUrlsUsage::kAllPresent,
+      },
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.desc);
+    TestingProfile profile;
+    sync_preferences::TestingPrefServiceSyncable* prefs =
+        profile.GetTestingPrefService();
+    prefs->SetManagedPref(prefs::kManagedCookiesAllowedForUrls,
+                          test_case.managed_pref.Clone());
+    // Set some other cookie-related prefs to make sure they do not impact
+    // results.
+    prefs->SetManagedPref(prefs::kManagedCookiesBlockedForUrls,
+                          base::Value::List()
+                              .Append("https://www.c.com/")
+                              .Append("*,https://www.c.com/"));
+    prefs->SetManagedPref(prefs::kManagedCookiesSessionOnlyForUrls,
+                          base::Value::List()
+                              .Append("https://www.d.com/")
+                              .Append("https://www.d.com/,https://www.e.com/"));
+    base::HistogramTester histogram_tester;
+
+    PolicyProvider provider(prefs);
+
+    histogram_tester.ExpectTotalCount(
+        "Cookie.Experimental.CookiesAllowedForUrlsUsage",
+        test_case.expected_bucket ? 1 : 0);
+    if (test_case.expected_bucket) {
+      histogram_tester.ExpectUniqueSample(
+          "Cookie.Experimental.CookiesAllowedForUrlsUsage",
+          *test_case.expected_bucket,
+          /*expected_bucket_count=*/1);
+    }
+
+    provider.ShutdownOnUIThread();
+  }
 }
 
 }  // namespace content_settings

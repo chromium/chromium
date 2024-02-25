@@ -33,8 +33,10 @@ void DatabaseMemoryDumpProvider::ResetDatabase() {
 bool DatabaseMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (args.level_of_detail == base::trace_event::MemoryDumpLevelOfDetail::LIGHT)
+  if (args.level_of_detail ==
+      base::trace_event::MemoryDumpLevelOfDetail::kLight) {
     return true;
+  }
 
   MemoryUsageResult memory_usage = GetDbMemoryUsage();
   if (!memory_usage.is_valid)

@@ -20,17 +20,16 @@ namespace {
 // kill switches for extension features. Note any such feature flags must
 // generally be removed once the API has been stable for a few releases.
 const base::Feature* kFeatureFlags[] = {
-    &extensions_features::kApiAccessibilityServicePrivate,
+    &extensions_features::kApiContentSettingsClipboard,
+    &extensions_features::kApiEnterpriseKioskInput,
     &extensions_features::kApiReadingList,
-    &extensions_features::kApiRuntimeGetContexts,
-    &extensions_features::kApiSidePanelOpen,
     &extensions_features::kApiUserScripts,
+    &extensions_features::kApiOdfsConfigPrivate,
     &extensions_features::kNewWebstoreDomain,
-    &extensions_features::kRestrictFileURLNavigation,
     &extensions_features::kTelemetryExtensionPendingApprovalApi,
 };
 
-CONSTINIT base::span<const base::Feature*> g_feature_flags_test_override;
+constinit base::span<const base::Feature*> g_feature_flags_test_override;
 
 const base::Feature* GetFeature(const std::string& feature_flag) {
   if (UNLIKELY(!g_feature_flags_test_override.empty())) {

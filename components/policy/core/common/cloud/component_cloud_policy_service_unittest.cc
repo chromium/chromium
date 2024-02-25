@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -29,6 +31,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
+#include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
@@ -38,10 +41,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
+using testing::_;
 using testing::AtLeast;
 using testing::Mock;
 using testing::Return;
@@ -92,6 +95,19 @@ class MockComponentCloudPolicyDelegate
   MOCK_METHOD0(OnComponentCloudPolicyUpdated, void());
 };
 
+struct ComponentCloudPolicyServiceObserverImpl
+    : ComponentCloudPolicyServiceObserver {
+  void OnComponentPolicyUpdated(
+      const ComponentPolicyMap& component_policy) override {
+    observed_component_policy = CopyComponentPolicyMap(component_policy);
+  }
+
+  void OnComponentPolicyServiceDestruction(
+      ComponentCloudPolicyService* service) override {}
+
+  ComponentPolicyMap observed_component_policy;
+};
+
 }  // namespace
 
 class ComponentCloudPolicyServiceTest : public testing::Test {
@@ -124,7 +140,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
 
     owned_cache_ = std::make_unique<ResourceCache>(
         temp_dir_.GetPath(), base::SingleThreadTaskRunner::GetCurrentDefault(),
-        /* max_cache_size */ absl::nullopt);
+        /* max_cache_size */ std::nullopt);
     cache_ = owned_cache_.get();
   }
 
@@ -153,7 +169,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
     // Also initialize the refresh scheduler, so that calls to
     // core()->RefreshSoon() trigger a FetchPolicy() call on the mock |client_|.
     // The |service_| should never trigger new fetches.
-    EXPECT_CALL(*client_, FetchPolicy());
+    EXPECT_CALL(*client_, FetchPolicy(_));
     core_.StartRefreshScheduler();
     RunUntilIdle();
     Mock::VerifyAndClearExpectations(client_);
@@ -243,14 +259,14 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeStoreThenRegistry) {
   Connect();
 
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated()).Times(0);
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   LoadStore();
   Mock::VerifyAndClearExpectations(client_);
   Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_FALSE(service_->is_initialized());
 
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   InitializeRegistry();
   RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_);
@@ -265,7 +281,7 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeRegistryThenStore) {
   Connect();
 
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated()).Times(0);
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   InitializeRegistry();
   RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_);
@@ -273,7 +289,7 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeRegistryThenStore) {
   EXPECT_FALSE(service_->is_initialized());
 
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   LoadStore();
   Mock::VerifyAndClearExpectations(client_);
   Mock::VerifyAndClearExpectations(&delegate_);
@@ -288,7 +304,7 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeWithCachedPolicy) {
   Connect();
 
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   InitializeRegistry();
   LoadStore();
   Mock::VerifyAndClearExpectations(client_);
@@ -312,7 +328,7 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeWithCachedPolicy) {
   // Register extension 2. Its policy gets loaded without any additional
   // policy fetches.
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   registry_.RegisterComponent(kTestExtensionNS2, CreateTestSchema());
   Mock::VerifyAndClearExpectations(client_);
   Mock::VerifyAndClearExpectations(&delegate_);
@@ -327,7 +343,7 @@ TEST_F(ComponentCloudPolicyServiceTest, FetchPolicy) {
   // Initialize the store. A refresh is not needed, because no components are
   // registered yet.
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   registry_.SetAllDomainsReady();
   LoadStore();
   Mock::VerifyAndClearExpectations(client_);
@@ -336,7 +352,7 @@ TEST_F(ComponentCloudPolicyServiceTest, FetchPolicy) {
 
   // Register the components to fetch. The |service_| issues a new update
   // because the new schema may filter different policies from the store.
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
   registry_.RegisterComponent(kTestExtensionNS, CreateTestSchema());
   RunUntilIdle();
@@ -363,6 +379,43 @@ TEST_F(ComponentCloudPolicyServiceTest, FetchPolicy) {
   EXPECT_TRUE(service_->policy().Equals(expected_bundle));
 }
 
+TEST_F(ComponentCloudPolicyServiceTest, ComponentPolicyMapIsSetAndObserved) {
+  Connect();
+  registry_.SetAllDomainsReady();
+  registry_.RegisterComponent(kTestExtensionNS, CreateTestSchema());
+  LoadStore();
+
+  ComponentCloudPolicyServiceObserverImpl observer;
+
+  // Start observing and check that the observer is called on policy change.
+  service_->AddObserver(&observer);
+  builder_.payload().set_secure_hash(
+      crypto::SHA256HashString(kInvalidTestPolicy));
+  client_->SetPolicy(dm_protocol::kChromeExtensionPolicyType, kTestExtension,
+                     *CreateResponse());
+  service_->OnPolicyFetched(client_);
+  loader_factory_.AddResponse(kTestDownload, kInvalidTestPolicy);
+  RunUntilIdle();
+
+  ComponentPolicyMap expected;
+  expected[kTestExtensionNS] = base::test::ParseJson(kInvalidTestPolicy);
+  EXPECT_EQ(expected, observer.observed_component_policy);
+  EXPECT_EQ(expected, service_->component_policy_map());
+
+  // Stop observing and check that observer is no longer called on policy
+  // change.
+  observer.observed_component_policy = ComponentPolicyMap();
+  service_->RemoveObserver(&observer);
+  builder_.payload().set_secure_hash(crypto::SHA256HashString(kTestPolicy));
+  client_->SetPolicy(dm_protocol::kChromeExtensionPolicyType, kTestExtension,
+                     *CreateResponse());
+  service_->OnPolicyFetched(client_);
+  loader_factory_.AddResponse(kTestDownload, kTestPolicy);
+  RunUntilIdle();
+
+  EXPECT_EQ(ComponentPolicyMap(), observer.observed_component_policy);
+}
+
 TEST_F(ComponentCloudPolicyServiceTest, FetchPolicyBeforeStoreLoaded) {
   Connect();
   // A fake policy is fetched.
@@ -374,7 +427,7 @@ TEST_F(ComponentCloudPolicyServiceTest, FetchPolicyBeforeStoreLoaded) {
   // Initialize the store. A refresh is not needed, because no components are
   // registered yet.
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   registry_.SetAllDomainsReady();
   LoadStore();
   Mock::VerifyAndClearExpectations(client_);
@@ -383,7 +436,7 @@ TEST_F(ComponentCloudPolicyServiceTest, FetchPolicyBeforeStoreLoaded) {
 
   // Register the components to fetch. The |service_| issues a new update
   // because the new schema may filter different policies from the store.
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
   registry_.RegisterComponent(kTestExtensionNS, CreateTestSchema());
   RunUntilIdle();
@@ -416,7 +469,7 @@ TEST_F(ComponentCloudPolicyServiceTest,
 
   // Initialize the store.
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated()).Times(AtLeast(1));
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   InitializeRegistry();
   LoadStore();
   RunUntilIdle();
@@ -440,7 +493,7 @@ TEST_F(ComponentCloudPolicyServiceTest, LoadCacheAndDeleteExtensions) {
 
   // Load the initial cache.
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   LoadStore();
   Mock::VerifyAndClearExpectations(client_);
   Mock::VerifyAndClearExpectations(&delegate_);
@@ -592,7 +645,7 @@ TEST_F(ComponentCloudPolicyServiceTest, PurgeWhenServerRemovesPolicy) {
   Connect();
 
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
-  EXPECT_CALL(*client_, FetchPolicy()).Times(0);
+  EXPECT_CALL(*client_, FetchPolicy(_)).Times(0);
   registry_.RegisterComponent(kTestExtensionNS2, CreateTestSchema());
   InitializeRegistry();
   LoadStore();

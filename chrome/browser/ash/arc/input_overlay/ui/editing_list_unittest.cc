@@ -6,13 +6,29 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
+#include "ash/style/icon_button.h"
+#include "ash/system/toast/anchored_nudge.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "base/check.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
+#include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
 
@@ -21,101 +37,141 @@ class EditingListTest : public OverlayViewTestBase {
   EditingListTest() = default;
   ~EditingListTest() override = default;
 
-  size_t GetActionListItemsSize() {
-    DCHECK(editing_list_->scroll_content_);
-    DCHECK(editing_list_);
-    if (editing_list_->HasControls()) {
-      return editing_list_->scroll_content_->children().size();
-    }
-    return 0;
-  }
-
-  size_t GetActionViewSize() {
-    DCHECK(input_mapping_view_);
-    return input_mapping_view_->children().size();
-  }
-
   size_t GetTouchInjectorActionSize() {
     DCHECK(touch_injector_);
     return touch_injector_->actions().size();
   }
 
-  void PressAddButton() {
-    DCHECK(editing_list_);
-    editing_list_->OnAddButtonPressed();
+  void LeftClickAtActionViewListItem(int index) {
+    if (!editing_list_ || index < 0) {
+      return;
+    }
+    views::View* scroll_content = editing_list_->scroll_content_;
+    DCHECK(scroll_content);
+    if (index >= static_cast<int>(scroll_content->children().size())) {
+      return;
+    }
+
+    auto* event_generator = GetEventGenerator();
+    const auto view_bounds =
+        scroll_content->children()[index]->GetBoundsInScreen();
+    // `ButtonOptionsMenu` may cover `EditingList`, so left-click on the left
+    // side of the list item to avoid UI overlapping.
+    event_generator->MoveMouseTo(view_bounds.x() + view_bounds.width() / 4,
+                                 view_bounds.y() + view_bounds.height() / 2);
+    event_generator->ClickLeftButton();
   }
 
-  void PressLeftMouseAtEditingList() {
-    // Press down at the center of the editing list.
-    local_location_ = editing_list_->bounds().CenterPoint();
-    local_location_.set_y(editing_list_->bounds().y() + 10);
-    auto press =
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, local_location_, local_location_,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-    editing_list_->OnMousePressed(press);
+  void MouseDragEditingListBy(int x, int y) {
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(
+        editing_list_->editing_header_label_->GetBoundsInScreen()
+            .CenterPoint());
+    event_generator->PressLeftButton();
+    event_generator->MoveMouseBy(x, y);
+    event_generator->ReleaseLeftButton();
   }
 
-  void MouseDragEditingListBy(const gfx::Vector2d& delta_move) {
-    local_location_ += delta_move;
-    auto drag =
-        ui::MouseEvent(ui::ET_MOUSE_DRAGGED, local_location_, local_location_,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
-    editing_list_->OnMouseDragged(drag);
+  // Mouse dragging `action` view by `(x, y)` without releasing mouse left
+  // button.
+  void MouseDraggingActionViewBy(Action* action, int x, int y) {
+    auto* event_generator = GetEventGenerator();
+    const auto* touch_point = action->action_view()->touch_point();
+    if (!touch_point) {
+      LOG(WARNING) << "Mouse dragging has no valid touch point.";
+      return;
+    }
+    event_generator->MoveMouseTo(
+        touch_point->GetBoundsInScreen().CenterPoint());
+    event_generator->PressLeftButton();
+    event_generator->MoveMouseBy(x, y);
   }
 
-  void ReleaseLeftMouse() {
-    auto release =
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, local_location_, local_location_,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-    editing_list_->OnMouseReleased(release);
+  void TouchDragEditingListBy(int x, int y) {
+    auto* event_generator = GetEventGenerator();
+
+    event_generator->PressTouch(
+        editing_list_->editing_header_label_->GetBoundsInScreen()
+            .CenterPoint());
+    event_generator->MoveTouchBy(x, y);
+    event_generator->ReleaseTouch();
   }
 
-  void TouchPressAtEditingList() {
-    // Press down at the center of the editing list.
-    local_location_ = editing_list_->bounds().CenterPoint();
-    // Offset to the rough location of the "Editing" text block.
-    local_location_.set_y(editing_list_->bounds().y() + 10);
-
-    auto scroll_begin =
-        ui::GestureEvent(local_location_.x(), local_location_.y(), ui::EF_NONE,
-                         base::TimeTicks::Now(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN,
-                                                 /*delta_x=*/0, /*delta_y=*/0));
-    editing_list_->OnGestureEvent(&scroll_begin);
+  void ScrollTo(bool top) {
+    if (!editing_list_ || !editing_list_->GetVisible()) {
+      return;
+    }
+    views::View* scroll_content = editing_list_->scroll_content_;
+    DCHECK(scroll_content);
+    const int scroll_height = scroll_content->GetPreferredSize().height();
+    editing_list_->scroll_view_->ScrollByOffset(
+        gfx::PointF(0, top ? -scroll_height : scroll_height));
   }
 
-  void TouchMoveEditingListBy(const gfx::Vector2d& delta_move) {
-    local_location_ += delta_move;
-    auto scroll_update = ui::GestureEvent(
-        local_location_.x(), local_location_.y(), ui::EF_NONE,
-        base::TimeTicks::Now(),
-        ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, delta_move.x(),
-                                delta_move.y()));
-    editing_list_->OnGestureEvent(&scroll_update);
+  bool GetScrollBarVisible() {
+    return editing_list_->scroll_view_->vertical_scroll_bar()->GetVisible();
   }
 
-  void TouchReleaseAtEditingList() {
-    auto scroll_end =
-        ui::GestureEvent(local_location_.x(), local_location_.y(), ui::EF_NONE,
-                         base::TimeTicks::Now(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
-    editing_list_->OnGestureEvent(&scroll_end);
+  views::Widget* GetEditingListWidget() {
+    return controller_->editing_list_widget_.get();
   }
 
-  gfx::Point GetEditingListOrigin() { return editing_list_->origin(); }
+  views::Widget* GetInputMappingWidget() {
+    return controller_->input_mapping_widget_.get();
+  }
+
+  bool IsActionHighlightVisible() {
+    DCHECK(controller_);
+    if (const auto* highlight_widget =
+            controller_->action_highlight_widget_.get()) {
+      return highlight_widget->IsVisible();
+    }
+    return false;
+  }
+
+  bool IsButtonOptionsMenuVisible() {
+    const auto* menu_widget = controller_->button_options_widget_.get();
+    return menu_widget && menu_widget->IsVisible();
+  }
+
+  bool IsEditingListVisible() {
+    DCHECK(controller_);
+    if (auto* editing_list_widget = controller_->editing_list_widget_.get()) {
+      return editing_list_widget->IsVisible();
+    }
+    return false;
+  }
+
+  bool IsKeyEditNudgeShown() const {
+    DCHECK(controller_);
+    auto* editing_list = controller_->GetEditingList();
+    DCHECK(editing_list);
+    return editing_list->IsKeyEditNudgeShownForTesting();
+  }
+
+  ash::AnchoredNudge* GetKeyEditNudge() const {
+    DCHECK(controller_);
+    auto* editing_list = controller_->GetEditingList();
+    DCHECK(editing_list);
+    return editing_list->GetKeyEditNudgeForTesting();
+  }
 };
 
-TEST_F(EditingListTest, TestEditingListAddNewAction) {
+TEST_F(EditingListTest, TestAddNewAction) {
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
                {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
                /*expect_ids=*/{0, 1, 2});
   EXPECT_EQ(3u, GetActionListItemsSize());
   EXPECT_EQ(3u, GetActionViewSize());
   EXPECT_EQ(3u, GetTouchInjectorActionSize());
-  // Add a new action by pressing add button.
+  EXPECT_FALSE(GetButtonOptionsMenu());
+  // Press add button and it enters into the button placement mode.
   PressAddButton();
+  auto* target_view = GetTargetView();
+  EXPECT_TRUE(target_view);
+  // Click on the `target_widget` and then the new action is added.
+  LeftClickOn(target_view);
+  EXPECT_FALSE(GetTargetView());
   CheckActions(
       touch_injector_, /*expect_size=*/4u, /*expect_types=*/
       {ActionType::TAP, ActionType::TAP, ActionType::MOVE, ActionType::TAP},
@@ -123,36 +179,265 @@ TEST_F(EditingListTest, TestEditingListAddNewAction) {
   EXPECT_EQ(4u, GetActionListItemsSize());
   EXPECT_EQ(4u, GetActionViewSize());
   EXPECT_EQ(4u, GetTouchInjectorActionSize());
+  EXPECT_TRUE(GetButtonOptionsMenu());
+
+  // Make sure `Action::touch_down_positions_` is not empty for the new action.
+  auto* new_action = touch_injector_->actions()[3].get();
+  EXPECT_FALSE(new_action->touch_down_positions().empty());
 }
 
-TEST_F(EditingListTest, TestEditingListReposition) {
-  // Drag move by mouse.
-  auto updated_pos = GetEditingListOrigin();
-  PressLeftMouseAtEditingList();
-  auto origin_mouse_pos = local_location_;
-  MouseDragEditingListBy(gfx::Vector2d(50, 60));
-  auto mouse_moved_delta = local_location_ - origin_mouse_pos;
-  updated_pos += mouse_moved_delta;
-  auto final_pos = GetEditingListOrigin();
-  ReleaseLeftMouse();
-  // With the magnetic feature, the final position should
-  // be different than the final dragged position.
-  EXPECT_EQ(updated_pos, final_pos);
-  EXPECT_NE(updated_pos, GetEditingListOrigin());
+TEST_F(EditingListTest, TestVisibilityForButtonPlacementMode) {
+  EXPECT_TRUE(IsEditingListVisible());
+  // Enter into the button placement mode and press key `esc` to give up adding
+  // a new action.
+  PressAddButton();
+  EXPECT_FALSE(IsEditingListVisible());
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  EXPECT_TRUE(IsEditingListVisible());
 
-  // Drag move by touch.
-  updated_pos = GetEditingListOrigin();
-  TouchPressAtEditingList();
-  origin_mouse_pos = local_location_;
-  TouchMoveEditingListBy(gfx::Vector2d(60, 100));
-  mouse_moved_delta = local_location_ - origin_mouse_pos;
-  updated_pos += mouse_moved_delta;
-  final_pos = GetEditingListOrigin();
-  TouchReleaseAtEditingList();
-  // With the magnetic feature, the final position should
-  // be different than the final dragged position.
-  EXPECT_EQ(updated_pos, final_pos);
-  EXPECT_NE(updated_pos, GetEditingListOrigin());
+  // Enter into the button placement mode and press key `enter` to add a new
+  // action.
+  PressAddButton();
+  EXPECT_FALSE(IsEditingListVisible());
+  event_generator->PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_FALSE(IsEditingListVisible());
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(IsEditingListVisible());
+
+  // Enter into the button placement mode and press key `enter` to add a new
+  // action.
+  PressAddButton();
+  EXPECT_FALSE(IsEditingListVisible());
+  event_generator->PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_FALSE(IsEditingListVisible());
+  PressDeleteButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(IsEditingListVisible());
+
+  // Shows any button options menu and the editing list is hidden.
+  const auto& actions = touch_injector_->actions();
+  DCHECK_GT(actions.size(), 1u);
+  EXPECT_TRUE(ShowButtonOptionsMenu(actions[actions.size() - 1].get()));
+  EXPECT_FALSE(IsEditingListVisible());
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(IsEditingListVisible());
+}
+
+TEST_F(EditingListTest, TestDragAtNewAction) {
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  AddNewActionInCenter();
+  EXPECT_TRUE(IsButtonOptionsMenuVisible());
+  auto* action = GetButtonOptionsMenuAction();
+  EXPECT_TRUE(action->is_new());
+  MouseDraggingActionViewBy(action, /*x=*/10, /*y=*/10);
+  EXPECT_FALSE(IsButtonOptionsMenuVisible());
+  EXPECT_TRUE(action->is_new());
+  GetEventGenerator()->ReleaseLeftButton();
+  EXPECT_TRUE(IsButtonOptionsMenuVisible());
+  EXPECT_TRUE(action->is_new());
+}
+
+TEST_F(EditingListTest, TestPressAtActionViewListItem) {
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  // Test action view list press.
+  AddNewActionInCenter();
+  EXPECT_TRUE(GetButtonOptionsMenu());
+  auto* action_1 = GetButtonOptionsMenuAction();
+  PressDoneButtonOnButtonOptionsMenu();
+  // Scroll back to top to click the first list item.
+  ScrollTo(/*top=*/true);
+  LeftClickAtActionViewListItem(/*index=*/0);
+  EXPECT_TRUE(GetButtonOptionsMenu());
+  auto* action_2 = GetButtonOptionsMenuAction();
+  EXPECT_NE(action_1, action_2);
+  PressDoneButtonOnButtonOptionsMenu();
+  LeftClickAtActionViewListItem(/*index=*/1);
+  EXPECT_TRUE(GetButtonOptionsMenu());
+  auto* action_3 = GetButtonOptionsMenuAction();
+  EXPECT_NE(action_3, action_2);
+}
+
+TEST_F(EditingListTest, TestHoverAtListItem) {
+  EXPECT_FALSE(IsActionHighlightVisible());
+
+  HoverAtActionViewListItem(/*index=*/0u);
+  EXPECT_TRUE(IsActionHighlightVisible());
+
+  HoverAtActionViewListItem(/*index=*/1u);
+  EXPECT_TRUE(IsActionHighlightVisible());
+
+  // Hover outside of the list item and the view highlight is also removed.
+  auto* list_item = GetEditingListItem(/*index=*/1u);
+  DCHECK(list_item);
+  auto item_origin = list_item->GetBoundsInScreen().origin();
+  item_origin.Offset(-2, -2);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(item_origin);
+  EXPECT_FALSE(IsActionHighlightVisible());
+}
+
+TEST_F(EditingListTest, TestReposition) {
+  // 1. There is enough space on left and right of the sibling game window
+  // outside.
+  auto* editing_list_widget = GetEditingListWidget();
+  auto initial_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
+  auto game_window_bounds = widget_->GetNativeWindow()->bounds();
+  // It should be magnetic to the left side the sibling game window initially.
+  EXPECT_EQ(
+      gfx::Point(game_window_bounds.x() - kEditingListSpaceBetweenMainWindow,
+                 initial_list_bounds.y()),
+      initial_list_bounds.top_right());
+  // Drag move `editing_list_widget` to the right. EditingList should be
+  // magnetic to the right side of the sibling game window outside. No change on
+  // y-axis.
+  MouseDragEditingListBy(game_window_bounds.width() / 2 +
+                             initial_list_bounds.width() / 2 +
+                             kEditingListSpaceBetweenMainWindow,
+                         60);
+  auto final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
+  EXPECT_EQ(gfx::Point(
+                game_window_bounds.right() + kEditingListSpaceBetweenMainWindow,
+                initial_list_bounds.y()),
+            final_list_bounds.origin());
+
+  // 2. Move game window position so there is no enough space on right outside.
+  // It should be magnetic to the left side the sibling game window.
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(600, 350, 300, 200));
+  initial_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
+  game_window_bounds = widget_->GetNativeWindow()->bounds();
+  EXPECT_EQ(
+      gfx::Point(game_window_bounds.x() - kEditingListSpaceBetweenMainWindow,
+                 initial_list_bounds.y()),
+      initial_list_bounds.top_right());
+  // Drag move `editing_list_widget` to the right. EditingList should be still
+  // magnetic to the left side of the sibling game window outside.
+  MouseDragEditingListBy(game_window_bounds.width() / 2 +
+                             initial_list_bounds.width() / 2 +
+                             kEditingListSpaceBetweenMainWindow,
+                         60);
+  final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
+  EXPECT_EQ(
+      gfx::Point(game_window_bounds.x() - kEditingListSpaceBetweenMainWindow,
+                 initial_list_bounds.y()),
+      final_list_bounds.top_right());
+
+  // 3. Set game window bounds so there is no enough space on both left and
+  // right outside. `editing_list_widget` is magnetic to the left side and
+  // inside of the sibling game window.
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(100, 300, 800, 400));
+  game_window_bounds = widget_->GetNativeWindow()->bounds();
+  initial_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
+  const auto content_bounds =
+      GetTouchInjector(widget_->GetNativeWindow())->content_bounds();
+  auto content_bounds_origin = content_bounds.origin();
+  content_bounds_origin.Offset(24, 24);
+  EXPECT_EQ(content_bounds_origin, initial_list_bounds.origin());
+  // Drag move `editing_list_widget` to the right. EditingList should be
+  // magnetic to the right side of the sibling game window outside.
+  TouchDragEditingListBy(game_window_bounds.width() / 2 +
+                             initial_list_bounds.width() / 2 +
+                             kEditingListSpaceBetweenMainWindow,
+                         30);
+  final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
+  auto content_bounds_top_right = content_bounds.top_right();
+  content_bounds_top_right.Offset(-24, 24);
+  EXPECT_EQ(content_bounds_top_right, final_list_bounds.top_right());
+  // Drag move `editing_list_widget` to the left. EditingList should be
+  // magnetic to the left side of the sibling game window outside.
+  TouchDragEditingListBy(
+      -(game_window_bounds.width() / 2 + initial_list_bounds.width() / 2 +
+        kEditingListSpaceBetweenMainWindow),
+      40);
+  final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
+  EXPECT_EQ(content_bounds_origin, final_list_bounds.origin());
+}
+
+TEST_F(EditingListTest, TestKeyEditNudge) {
+  // Key edit nudge shows up after the first action's `ButtonOptionsMenu`.
+  EXPECT_FALSE(IsKeyEditNudgeShown());
+
+  // Remove all actions.
+  for (const auto& action : touch_injector_->actions()) {
+    controller_->RemoveAction(action.get());
+  }
+
+  // Add the first action.
+  AddNewActionInCenter();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(IsKeyEditNudgeShown());
+
+  // Click on key edit nudge and it still shows GC UIs.
+  auto* key_edit_nudge = GetKeyEditNudge();
+  EXPECT_TRUE(key_edit_nudge);
+  LeftClickOn(key_edit_nudge->GetContentsView());
+  EXPECT_TRUE(GetEditingListWidget());
+
+  // Move mouse outside of the nudge and it will close in 10 seconds.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  task_environment()->FastForwardBy(
+      ash::AnchoredNudgeManagerImpl::kNudgeDefaultDuration);
+  EXPECT_TRUE(IsKeyEditNudgeShown());
+  task_environment()->FastForwardBy(
+      ash::AnchoredNudgeManagerImpl::kNudgeMediumDuration);
+  EXPECT_FALSE(IsKeyEditNudgeShown());
+
+  // Open the button options menu and close it again, it won't show eidt nudge
+  // again because it only shows once.
+  const auto& actions = touch_injector_->actions();
+  EXPECT_EQ(1u, GetActionListItemsSize());
+  ShowButtonOptionsMenu(actions[actions.size() - 1].get());
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_FALSE(IsKeyEditNudgeShown());
+
+  // No key edit nudge after adding another action.
+  AddNewActionInCenter();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_FALSE(IsKeyEditNudgeShown());
+}
+
+TEST_F(EditingListTest, TestScrollView) {
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(310, 10, 300, 500));
+
+  auto* list_window = GetEditingListWidget()->GetNativeWindow();
+  int original_height = list_window->bounds().height();
+  int window_content_height = touch_injector_->content_bounds().height();
+  EXPECT_LE(list_window->bounds().height(), window_content_height);
+  EXPECT_FALSE(GetScrollBarVisible());
+  // Add new actions until it shows scroll bar.
+  AddNewActionInCenter();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_GT(list_window->bounds().height(), original_height);
+  AddNewActionInCenter();
+  PressDoneButtonOnButtonOptionsMenu();
+  AddNewActionInCenter();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(GetScrollBarVisible());
+  EXPECT_EQ(window_content_height, list_window->bounds().height());
+  AddNewActionInCenter();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(GetScrollBarVisible());
+  EXPECT_EQ(window_content_height, list_window->bounds().height());
+  AddNewActionInCenter();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(GetScrollBarVisible());
+  EXPECT_EQ(window_content_height, list_window->bounds().height());
+
+  // Add the game window height by 50, EditingList height is also added by 50.
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(310, 20, 300, 550));
+  EXPECT_EQ(window_content_height + 50,
+            touch_injector_->content_bounds().height());
+  EXPECT_EQ(window_content_height + 50, list_window->bounds().height());
+
+  // Make the game window bounds larger so EditingList will be placed inside.
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(100, 300, 800, 400));
+  window_content_height = touch_injector_->content_bounds().height();
+  EXPECT_EQ(window_content_height, list_window->bounds().height() +
+                                       kEditingListOffsetInsideMainWindow);
 }
 
 }  // namespace arc::input_overlay

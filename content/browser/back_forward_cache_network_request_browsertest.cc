@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 
 #include "base/task/single_thread_task_runner.h"
@@ -63,8 +64,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
 
 // Eviction is triggered when a normal fetch request gets redirected while the
 // page is in back-forward cache.
+// TODO(https://crbug.com/1494692): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       FetchRedirectedWhileStoring) {
+                       DISABLED_FetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   net::test_server::ControllableHttpResponse fetch2_response(
@@ -168,10 +170,83 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     {}, FROM_HERE);
 }
 
+class BackForwardCacheDrainedAsBytesConsumerTest
+    : public BackForwardCacheBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  static constexpr int kMaxBufferedBytesPerProcess = 10000;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(
+        blink::features::kAllowDatapipeDrainedAsBytesConsumerInBFCache, "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kLoadingTasksUnfreezable,
+          {{"max_buffered_bytes_per_process",
+            base::NumberToString(kMaxBufferedBytesPerProcess)}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests the case when the header was received before the page is frozen,
 // but parts of the response body is received when the page is frozen.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheDrainedAsBytesConsumerTest,
+    PageWithDrainedDatapipeRequestsForFetchShouldBeEvictedOrNot) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Call fetch before navigating away.
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    var fetch_response_promise = my_fetch = fetch('/fetch').then(response => {
+        return response.text();
+    });
+  )"));
+  // Send response header and a piece of the body before navigating away.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "text/plain");
+  fetch_response.Send("hello");
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  fetch_response.Send("world");
+  fetch_response.Done();
+
+  // 3) Go back to A.
+  // Note that we cannot reliably wait for the datapipe to be drained as bytes
+  // consumer, so sometimes this is not testing the case in question, but the
+  // page will be restored in either way, and the test will not be flaky.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  // Ensure that the fetch response is complete, having both of the parts from
+  // before entering back/forward cache and after.
+  EXPECT_EQ("helloworld",
+            content::EvalJs(current_frame_host(), "fetch_response_promise"));
+}
+
+// If too much data is processed while in bfcache, evict the entry.
+// TODO(crbug.com/325558875): Flaky on Mac and ChromeOS bots.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData \
+  DISABLED_PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData
+#else
+#define MAYBE_PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData \
+  PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheDrainedAsBytesConsumerTest,
+    MAYBE_PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -192,18 +267,25 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Send response header and a piece of the body before navigating away.
   fetch_response.WaitForRequest();
   fetch_response.Send(net::HTTP_OK, "text/plain");
-  fetch_response.Send("body");
+  fetch_response.Send("start sending body");
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
 
+  // Complete the response after navigating away.
+  // Data over the limit is processed, so the bfcache entry should be evicted.
+  std::string body(kMaxBufferedBytesPerProcess * 10, '*');
+  fetch_response.Send(body);
+  fetch_response.Done();
   ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to A.
+  // Note that we cannot reliably wait for the datapipe to be drained as bytes
+  // consumer, so sometimes this is not testing the case in question.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kNetworkRequestDatapipeDrainedAsBytesConsumer}, {},
-      {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -246,8 +328,14 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
+enum class BackgroundResourceFetchTestCase {
+  kBackgroundResourceFetchEnabled,
+  kBackgroundResourceFetchDisabled,
+};
+
 class BackForwardCacheNetworkLimitBrowserTest
-    : public BackForwardCacheBrowserTest {
+    : public BackForwardCacheBrowserTest,
+      public testing::WithParamInterface<BackgroundResourceFetchTestCase> {
  public:
   const int kMaxBufferedBytesPerProcess = 10000;
   const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
@@ -261,13 +349,39 @@ class BackForwardCacheNetworkLimitBrowserTest
            {"grace_period_to_finish_loading_in_seconds",
             base::NumberToString(kGracePeriodToFinishLoading.InSeconds())}}}},
         {});
+    if (IsBackgroundResourceFetchEnabled()) {
+      feature_background_resource_fetch_.InitAndEnableFeature(
+          blink::features::kBackgroundResourceFetch);
+    }
   }
 
  private:
+  bool IsBackgroundResourceFetchEnabled() const {
+    return GetParam() ==
+           BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled;
+  }
+
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_background_resource_fetch_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheNetworkLimitBrowserTest,
+    testing::ValuesIn(
+        {BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled,
+         BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled}),
+    [](const testing::TestParamInfo<BackgroundResourceFetchTestCase>& info) {
+      switch (info.param) {
+        case (BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled):
+          return "BackgroundResourceFetchEnabled";
+        case (
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled):
+          return "BackgroundResourceFetchDisabled";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
@@ -317,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheNetworkLimitBrowserTest,
                        ImageStillLoading_ResponseStartedWhileFrozen) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -350,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
   EXPECT_EQ("error", EvalJs(rfh_1.get(), "image_load_status"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction) {
   net::test_server::ControllableHttpResponse image_response(
@@ -400,9 +514,16 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit \
+  DISABLED_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit
+#else
+#define MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit \
+  ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit
+#endif
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
-    ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit) {
+    MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image1.png");
   net::test_server::ControllableHttpResponse image2_response(
@@ -467,9 +588,16 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe \
+  DISABLED_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe
+#else
+#define MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe \
+  ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe
+#endif
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
-    ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe) {
+    MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image1.png");
   net::test_server::ControllableHttpResponse image2_response(
@@ -547,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_ResetOnRestore) {
   net::test_server::ControllableHttpResponse image1_response(
@@ -621,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_ResetOnDetach) {
   net::test_server::ControllableHttpResponse image1_response(
@@ -698,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("error", EvalJs(rfh_2.get(), "image2_load_status"));
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheNetworkLimitBrowserTest,
                        ImageStillLoading_ResponseStartedWhileFrozen_Timeout) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -731,9 +859,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
                     FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit \
+  DISABLED_ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit
+#else
+#define MAYBE_ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit \
+  ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit
+#endif
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
-    ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit) {
+    MAYBE_ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image1.png");
   net::test_server::ControllableHttpResponse image2_response(
@@ -804,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheNetworkLimitBrowserTest,
                        TimeoutNotTriggeredAfterDone) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -847,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     TimeoutNotTriggeredAfterDone_ResponseStartedBeforeFreezing) {
   net::test_server::ControllableHttpResponse image_response(

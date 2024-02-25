@@ -6,7 +6,9 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -18,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/time/time_to_iso8601.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -37,7 +38,6 @@
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -67,19 +67,19 @@ MATCHER_P2(Header,
   return Matches(other_matcher)(header);
 }
 
-SuitableTrustTokenOrigin CreateSuitableOriginOrDie(base::StringPiece spec) {
-  absl::optional<SuitableTrustTokenOrigin> maybe_origin =
+SuitableTrustTokenOrigin CreateSuitableOriginOrDie(std::string_view spec) {
+  std::optional<SuitableTrustTokenOrigin> maybe_origin =
       SuitableTrustTokenOrigin::Create(GURL(spec));
   CHECK(maybe_origin) << "Failed to create a SuitableTrustTokenOrigin!";
   return *maybe_origin;
 }
 
 bool ExtractRedemptionRecordsFromHeader(
-    base::StringPiece sec_redemption_record_header,
+    std::string_view sec_redemption_record_header,
     std::map<SuitableTrustTokenOrigin, std::string>*
         redemption_records_per_issuer_out,
     std::string* error_out) {
-  absl::optional<net::structured_headers::List> maybe_list =
+  std::optional<net::structured_headers::List> maybe_list =
       net::structured_headers::ParseList(sec_redemption_record_header);
 
   std::string dummy;
@@ -122,7 +122,7 @@ bool ExtractRedemptionRecordsFromHeader(
       return false;
     }
 
-    absl::optional<SuitableTrustTokenOrigin> maybe_issuer =
+    std::optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(issuer_item.GetString()));
     if (!maybe_issuer) {
       *error_out = "Unsuitable Trust Tokens issuer origin in RR header item";

@@ -91,8 +91,9 @@ class SessionControllerClientImpl
   void EmitAshInitialized() override;
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
+  base::FilePath GetProfilePath(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
-  absl::optional<int> GetExistingUsersCount() const override;
+  std::optional<int> GetExistingUsersCount() const override;
 
   // Returns true if a multi-profile user can be added to the session or if
   // multiple users are already signed in.
@@ -163,15 +164,14 @@ class SessionControllerClientImpl
   void OnStateChanged() override;
 
   // SessionController instance in ash.
-  raw_ptr<ash::SessionController, ExperimentalAsh> session_controller_ =
-      nullptr;
+  raw_ptr<ash::SessionController> session_controller_ = nullptr;
 
   // Tracks users whose profiles are being loaded.
   std::set<AccountId> pending_users_;
 
   // If the session is for a supervised user, the profile of that user.
   // Chrome OS only supports a single supervised user in a session.
-  raw_ptr<Profile, ExperimentalAsh> supervised_user_profile_ = nullptr;
+  raw_ptr<Profile> supervised_user_profile_ = nullptr;
 
   base::CallbackListSubscription subscription_;
 

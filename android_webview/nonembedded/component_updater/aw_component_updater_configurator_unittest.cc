@@ -16,6 +16,7 @@
 #include "components/component_updater/component_updater_url_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/configurator.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_query_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -48,6 +49,7 @@ class AwComponentUpdaterConfiguratorTest : public testing::Test {
 
 void AwComponentUpdaterConfiguratorTest::SetUp() {
   pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref_service_->registry());
   cmdline_ = std::make_unique<base::CommandLine>(
       *base::CommandLine::ForCurrentProcess());
 }

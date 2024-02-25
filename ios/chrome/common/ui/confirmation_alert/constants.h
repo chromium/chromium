@@ -15,5 +15,6 @@ extern NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertTertiaryActionAccessibilityIdentifier;
+extern NSString* const kConfirmationAlertUnderTitleViewAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_COMMON_UI_CONFIRMATION_ALERT_CONSTANTS_H_

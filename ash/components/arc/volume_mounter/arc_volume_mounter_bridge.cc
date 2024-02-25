@@ -379,8 +379,8 @@ void ArcVolumeMounterBridge::OnSetUpExternalStorageMountPoints(
     const std::string& job_name,
     SetUpExternalStorageMountPointsCallback callback,
     bool result,
-    absl::optional<std::string> error_name,
-    absl::optional<std::string> error_message) {
+    std::optional<std::string> error_name,
+    std::optional<std::string> error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!external_storage_mount_points_are_ready_);
   if (!result) {

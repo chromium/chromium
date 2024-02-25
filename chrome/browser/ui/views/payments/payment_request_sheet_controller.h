@@ -12,6 +12,10 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "ui/views/controls/button/button.h"
 
+namespace ui {
+class Event;
+}
+
 namespace views {
 class MdTextButton;
 class View;
@@ -27,7 +31,7 @@ class PaymentRequestState;
 // views shown in the PaymentRequestDialog.
 class PaymentRequestSheetController {
  public:
-  using ButtonCallback = views::Button::PressedCallback;
+  using ButtonCallback = views::Button::PressedCallback::Callback;
 
   // Objects of this class are owned by |dialog|, so it's a non-owned pointer
   // that should be valid throughout this object's lifetime.
@@ -78,7 +82,7 @@ class PaymentRequestSheetController {
   void BackButtonPressed();
 
   // Called when the close button is pressed on the dialog.
-  void CloseButtonPressed();
+  void CloseButtonPressed(const ui::Event& event);
 
  protected:
   // Clears the content part of the view represented by this view controller and

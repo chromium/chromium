@@ -22,7 +22,7 @@
 namespace apps {
 
 void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia) {
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     // Force the icon to be loaded.
     output_image_skia.GetRepresentation(
         ui::GetScaleForResourceScaleFactor(scale_factor));
@@ -32,7 +32,7 @@ void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia) {
 void LoadDefaultIcon(gfx::ImageSkia& output_image_skia, int resource_id) {
   base::RunLoop run_loop;
   apps::LoadIconFromResource(
-      /*profile=*/nullptr, /*app_id=*/absl::nullopt,
+      /*profile=*/nullptr, /*app_id=*/std::nullopt,
       apps::IconType::kUncompressed, kSizeInDip, resource_id,
       /*is_placeholder_icon=*/false, apps::IconEffects::kNone,
       base::BindOnce(
@@ -54,7 +54,7 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
       ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
-  for (auto& scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     ASSERT_TRUE(src.HasRepresentation(scale));
     ASSERT_TRUE(dst.HasRepresentation(scale));
@@ -72,20 +72,13 @@ void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
   ASSERT_EQ(src_data, icon.compressed);
 }
 
-SkBitmap CreateSquareIconBitmap(int size_px, SkColor solid_color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(size_px, size_px);
-  bitmap.eraseColor(solid_color);
-  return bitmap;
-}
-
 gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color) {
   gfx::ImageSkia image;
-  for (auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     int icon_size_in_px =
         gfx::ScaleToFlooredSize(gfx::Size(size_dp, size_dp), scale_factor)
             .width();
-    SkBitmap bitmap = CreateSquareIconBitmap(icon_size_in_px, solid_color);
+    SkBitmap bitmap = gfx::test::CreateBitmap(icon_size_in_px, solid_color);
     image.AddRepresentation(gfx::ImageSkiaRep(bitmap, scale_factor));
   }
   return image;
@@ -95,16 +88,16 @@ gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color) {
 FakeIconLoader::FakeIconLoader(apps::AppServiceProxy* proxy) : proxy_(proxy) {}
 
 std::unique_ptr<apps::IconLoader::Releaser> FakeIconLoader::LoadIconFromIconKey(
-    apps::AppType app_type,
-    const std::string& app_id,
+    const std::string& id,
     const apps::IconKey& icon_key,
     apps::IconType icon_type,
     int32_t size_in_dip,
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
   if (proxy_) {
-    proxy_->ReadIconsForTesting(app_type, app_id, size_in_dip, icon_key,
-                                icon_type, std::move(callback));
+    proxy_->ReadIconsForTesting(proxy_->AppRegistryCache().GetAppType(id), id,
+                                size_in_dip, icon_key, icon_type,
+                                std::move(callback));
   }
   return nullptr;
 }

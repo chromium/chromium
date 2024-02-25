@@ -121,6 +121,7 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
       static_cast<gpu::raster::MsaaMode>(c.msaa_mode);
   GLboolean can_use_lcd_text = static_cast<GLboolean>(c.can_use_lcd_text);
   GLboolean visible = static_cast<GLboolean>(c.visible);
+  GLfloat hdr_headroom = static_cast<GLfloat>(c.hdr_headroom);
   uint32_t mailbox_size;
   if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 16>(1, &mailbox_size)) {
     return error::kOutOfBounds;
@@ -135,7 +136,7 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
     return error::kOutOfBounds;
   }
   DoBeginRasterCHROMIUM(r, g, b, a, needs_clear, msaa_sample_count, msaa_mode,
-                        can_use_lcd_text, visible, mailbox);
+                        can_use_lcd_text, visible, hdr_headroom, mailbox);
   return error::kNoError;
 }
 
@@ -457,6 +458,10 @@ RasterDecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   const volatile raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate& c =
       *static_cast<const volatile raster::cmds::
                        ConvertYUVAMailboxesToRGBINTERNALImmediate*>(cmd_data);
+  GLint src_x = static_cast<GLint>(c.src_x);
+  GLint src_y = static_cast<GLint>(c.src_y);
+  GLsizei width = static_cast<GLsizei>(c.width);
+  GLsizei height = static_cast<GLsizei>(c.height);
   GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
   GLenum plane_config = static_cast<GLenum>(c.plane_config);
   GLenum subsampling = static_cast<GLenum>(c.subsampling);
@@ -470,10 +475,21 @@ RasterDecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   volatile const GLbyte* mailboxes =
       gles2::GetImmediateDataAs<volatile const GLbyte*>(c, mailboxes_size,
                                                         immediate_data_size);
+  if (width < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
+                       "width < 0");
+    return error::kNoError;
+  }
+  if (height < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
+                       "height < 0");
+    return error::kNoError;
+  }
   if (mailboxes == nullptr) {
     return error::kOutOfBounds;
   }
-  DoConvertYUVAMailboxesToRGBINTERNAL(planes_yuv_color_space, plane_config,
+  DoConvertYUVAMailboxesToRGBINTERNAL(src_x, src_y, width, height,
+                                      planes_yuv_color_space, plane_config,
                                       subsampling, mailboxes);
   return error::kNoError;
 }

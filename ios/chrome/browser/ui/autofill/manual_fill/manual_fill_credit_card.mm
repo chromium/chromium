@@ -14,7 +14,8 @@
                       number:(NSString*)number
             obfuscatedNumber:(NSString*)obfuscatedNumber
               expirationYear:(NSString*)expirationYear
-             expirationMonth:(NSString*)expirationMonth {
+             expirationMonth:(NSString*)expirationMonth
+                  recordType:(autofill::CreditCard::RecordType)recordType {
   self = [super init];
   if (self) {
     _GUID = [GUID copy];
@@ -26,6 +27,7 @@
     _obfuscatedNumber = [obfuscatedNumber copy];
     _expirationYear = [expirationYear copy];
     _expirationMonth = [expirationMonth copy];
+    _recordType = recordType;
   }
   return self;
 }

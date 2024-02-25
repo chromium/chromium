@@ -1,0 +1,24 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NtlmV2Enabled": true
+        },
+        "prefs": {
+          "auth.ntlm_v2_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -13,11 +13,12 @@
 #include "ui/base/win/hidden_window.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gl/dc_layer_tree.h"
+#include "ui/gl/dcomp_presenter.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/gl/test/gl_test_helper.h"
 
 namespace gl {
 namespace {
@@ -29,9 +30,9 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
  public:
   DelegatedInkPointRendererGpuTest() : parent_window_(ui::GetHiddenWindow()) {}
 
-  DirectCompositionSurfaceWin* surface() { return surface_.get(); }
+  DCompPresenter* presenter() { return presenter_.get(); }
 
-  DCLayerTree* layer_tree() { return surface()->GetLayerTreeForTesting(); }
+  DCLayerTree* layer_tree() { return presenter()->GetLayerTreeForTesting(); }
 
   DCLayerTree::DelegatedInkRenderer* ink_renderer() {
     return layer_tree()->GetInkRendererForTesting();
@@ -60,7 +61,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   }
 
   void SendMetadata(const gfx::DelegatedInkMetadata& metadata) {
-    surface()->SetDelegatedInkTrailStartPoint(
+    presenter()->SetDelegatedInkTrailStartPoint(
         std::make_unique<gfx::DelegatedInkMetadata>(metadata));
   }
 
@@ -108,56 +109,52 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
       return;
     }
 
-    CreateDirectCompositionSurfaceWin();
-    if (!surface_->SupportsDelegatedInk()) {
+    std::tie(gl_surface_, context_) =
+        GLTestHelper::CreateOffscreenGLSurfaceAndContext();
+
+    CreateDCompPresenter();
+
+    if (!presenter_->SupportsDelegatedInk()) {
       LOG(WARNING) << "Delegated ink unsupported, skipping test.";
       return;
     }
 
-    CreateGLContext();
-    surface_->SetEnableDCLayers(true);
-
     // Create the swap chain
     constexpr gfx::Size window_size(100, 100);
-    EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-    EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
+    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
   }
 
   void TearDown() override {
-    context_ = nullptr;
-    if (surface_)
-      DestroySurface(std::move(surface_));
+    context_.reset();
+    gl_surface_.reset();
+    if (presenter_) {
+      DestroyPresenter(std::move(presenter_));
+    }
     gl::init::ShutdownGL(display_, false);
   }
 
  private:
-  void CreateDirectCompositionSurfaceWin() {
-    DirectCompositionSurfaceWin::Settings settings;
-    surface_ = base::MakeRefCounted<DirectCompositionSurfaceWin>(
-        gl::GLSurfaceEGL::GetGLDisplayEGL(),
-        DirectCompositionSurfaceWin::VSyncCallback(), settings);
-    EXPECT_TRUE(surface_->Initialize(GLSurfaceFormat()));
+  void CreateDCompPresenter() {
+    DCompPresenter::Settings settings;
+    presenter_ = base::MakeRefCounted<DCompPresenter>(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), settings);
+    EXPECT_TRUE(presenter_->Initialize());
 
     // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in
     // production code here. However, to remove dependency from
     // gpu/ipc/service/image_transport_surface_delegate.h, here we directly
     // executes the required minimum code.
     if (parent_window_)
-      ::SetParent(surface_->window(), parent_window_);
+      ::SetParent(presenter_->window(), parent_window_);
   }
 
-  void CreateGLContext() {
-    context_ =
-        gl::init::CreateGLContext(nullptr, surface_.get(), GLContextAttribs());
-    EXPECT_TRUE(context_->MakeCurrent(surface_.get()));
-  }
-
-  void DestroySurface(scoped_refptr<DirectCompositionSurfaceWin> surface) {
+  void DestroyPresenter(scoped_refptr<DCompPresenter> presenter) {
     scoped_refptr<base::TaskRunner> task_runner =
-        surface->GetWindowTaskRunnerForTesting();
-    DCHECK(surface->HasOneRef());
+        presenter->GetWindowTaskRunnerForTesting();
+    EXPECT_TRUE(presenter->HasOneRef());
 
-    surface = nullptr;
+    presenter = nullptr;
 
     base::RunLoop run_loop;
     task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
@@ -165,7 +162,8 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   }
 
   HWND parent_window_;
-  scoped_refptr<DirectCompositionSurfaceWin> surface_;
+  scoped_refptr<GLSurface> gl_surface_;
+  scoped_refptr<DCompPresenter> presenter_;
   scoped_refptr<GLContext> context_;
   raw_ptr<GLDisplay> display_ = nullptr;
 
@@ -177,8 +175,9 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
 // Test to confirm that points and tokens are stored and removed correctly based
 // on when the metadata and points arrive.
 TEST_F(DelegatedInkPointRendererGpuTest, StoreAndRemovePointsAndTokens) {
-  if (!surface() || !surface()->SupportsDelegatedInk())
+  if (!presenter() || !presenter()->SupportsDelegatedInk()) {
     return;
+  }
 
   // Send some points and make sure they are all stored even with no metadata.
   const int32_t kPointerId = 1;
@@ -235,8 +234,9 @@ TEST_F(DelegatedInkPointRendererGpuTest, StoreAndRemovePointsAndTokens) {
 // Basic test to confirm that points are drawn as they arrive if they are in the
 // presentation area and after the metadata's timestamp.
 TEST_F(DelegatedInkPointRendererGpuTest, DrawPointsAsTheyArrive) {
-  if (!surface() || !surface()->SupportsDelegatedInk())
+  if (!presenter() || !presenter()->SupportsDelegatedInk()) {
     return;
+  }
 
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(12, 12), /*diameter=*/3, SK_ColorBLACK,
@@ -288,8 +288,9 @@ TEST_F(DelegatedInkPointRendererGpuTest, DrawPointsAsTheyArrive) {
 
 // Confirm that points with different pointer ids are handled correctly.
 TEST_F(DelegatedInkPointRendererGpuTest, MultiplePointerIds) {
-  if (!surface() || !surface()->SupportsDelegatedInk())
+  if (!presenter() || !presenter()->SupportsDelegatedInk()) {
     return;
+  }
 
   const int32_t kPointerId1 = 1;
   const int32_t kPointerId2 = 2;
@@ -384,8 +385,9 @@ TEST_F(DelegatedInkPointRendererGpuTest, MultiplePointerIds) {
 // Make sure that the DelegatedInkPoint with the earliest timestamp is removed
 // if we have reached the maximum number of pointer ids.
 TEST_F(DelegatedInkPointRendererGpuTest, MaximumPointerIds) {
-  if (!surface() || !surface()->SupportsDelegatedInk())
+  if (!presenter() || !presenter()->SupportsDelegatedInk()) {
     return;
+  }
 
   // First add DelegatedInkPoints with unique pointer ids up to the limit and
   // make sure they are all correctly added separately.

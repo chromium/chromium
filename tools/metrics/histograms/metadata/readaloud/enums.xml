@@ -1,0 +1,96 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ReadAloudErrorCode">
+  <int value="0" label="Message successfully sent"/>
+  <int value="1" label="CANCELLED"/>
+  <int value="2" label="UNKNOWN"/>
+  <int value="3" label="INVALID_ARGUMENT"/>
+  <int value="4" label="DEADLINE_EXCEEDED"/>
+  <int value="5" label="NOT_FOUND"/>
+  <int value="6" label="ALREADY_EXISTS"/>
+  <int value="7" label="PERMISSION_DENIED"/>
+  <int value="8" label="RESOURCE_EXHAUSTED"/>
+  <int value="9" label="FAILED_PRECONDITION"/>
+  <int value="10" label="ABORTED"/>
+  <int value="11" label="OUT_OF_RANGE"/>
+  <int value="12" label="UNIMPLEMENTED"/>
+  <int value="13" label="INTERNAL"/>
+  <int value="14" label="UNAVAILABLE"/>
+  <int value="15" label="DATA_LOSS"/>
+  <int value="16" label="UNAUTHENTICATED"/>
+</enum>
+
+<enum name="ReadAloudIneligibilityReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Feature flag disabled"/>
+  <int value="2" label="Incognito mode"/>
+  <int value="3" label="MSBB disabled"/>
+  <int value="4" label="Policy disabled"/>
+  <int value="5" label="Default search engine is not Google"/>
+</enum>
+
+<enum name="ReadAloudSpeed">
+  <int value="0" label="0.5x"/>
+  <int value="1" label="0.8x"/>
+  <int value="2" label="1.0x"/>
+  <int value="3" label="1.2x"/>
+  <int value="4" label="1.5x"/>
+  <int value="5" label="2.0x"/>
+  <int value="6" label="3.0x"/>
+  <int value="7" label="4.0x"/>
+</enum>
+
+<enum name="RejectionReason">
+  <int value="0" label="UNKNOWN_REJECTION_REASON"/>
+  <int value="1" label="PAGE_DOWNLOAD_FAILURE"/>
+  <int value="2" label="UNSUPPORTED_VOICE"/>
+  <int value="3" label="UNSUPPORTED_LANGUAGE"/>
+  <int value="4" label="PAYWALL"/>
+  <int value="5" label="PORN"/>
+  <int value="6" label="VIDEO"/>
+  <int value="7" label="NON_ARTICLE"/>
+  <int value="8" label="TEXT_TOO_SHORT"/>
+  <int value="9" label="NON_TEXTUAL"/>
+  <int value="10" label="UNSUPPORTED_ARTICLE_QUALITY"/>
+  <int value="11" label="URL_BLACKLISTED"/>
+  <int value="12" label="CONTENT_TOO_LARGE"/>
+  <int value="13" label="INVALID_URL"/>
+  <int value="14" label="DISALLOWED_FOR_READOUT"/>
+  <int value="15" label="BAD_REQUEST"/>
+  <int value="16" label="EXPIRED_CONTENT_VERSION"/>
+  <int value="17" label="UNSUPPORTED_EMAIL_FORMAT"/>
+  <int value="18" label="UNSUPPORTED_TUPLE_DATA_EXTRACTION"/>
+  <int value="19" label="UNSUPPORTED_LATTICE_REVIEW_DATA_EXTRACTION"/>
+  <int value="20" label="DISALLOWED_FOR_TRANSLATION"/>
+  <int value="21" label="COUNT"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

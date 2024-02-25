@@ -5,6 +5,7 @@
 #include "base/observer_list_threadsafe.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -254,16 +254,16 @@ class FooRemover : public Foo {
   void AddFooToRemove(Foo* foo) { foos_.push_back(foo); }
 
   void Observe(int x) override {
-    std::vector<Foo*> tmp;
+    std::vector<raw_ptr<Foo, VectorExperimental>> tmp;
     tmp.swap(foos_);
-    for (auto* it : tmp) {
+    for (Foo* it : tmp) {
       list_->RemoveObserver(it);
     }
   }
 
  private:
   const scoped_refptr<ObserverListThreadSafe<Foo>> list_;
-  std::vector<Foo*> foos_;
+  std::vector<raw_ptr<Foo, VectorExperimental>> foos_;
 };
 
 TEST(ObserverListThreadSafeTest, RemoveMultipleObservers) {
@@ -369,7 +369,7 @@ TEST(ObserverListThreadSafeDeathTest, CrossThreadRemovalRestricted) {
 }
 
 TEST(ObserverListThreadSafeTest, OutlivesTaskEnvironment) {
-  absl::optional<test::TaskEnvironment> task_environment(absl::in_place);
+  std::optional<test::TaskEnvironment> task_environment(std::in_place);
   auto observer_list = base::MakeRefCounted<ObserverListThreadSafe<Foo>>();
 
   Adder a(1);
@@ -381,7 +381,7 @@ TEST(ObserverListThreadSafeTest, OutlivesTaskEnvironment) {
 }
 
 TEST(ObserverListThreadSafeTest, OutlivesTaskEnvironmentRemovalRestricted) {
-  absl::optional<test::TaskEnvironment> task_environment(absl::in_place);
+  std::optional<test::TaskEnvironment> task_environment(std::in_place);
   auto observer_list = base::MakeRefCounted<
       ObserverListThreadSafe<Foo, RemoveObserverPolicy::kAddingSequenceOnly>>();
 

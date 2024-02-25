@@ -5,13 +5,13 @@
 #ifndef CONTENT_BROWSER_WEBID_TEST_FEDERATED_AUTH_REQUEST_REQUEST_TOKEN_CALLBACK_HELPER_H_
 #define CONTENT_BROWSER_WEBID_TEST_FEDERATED_AUTH_REQUEST_REQUEST_TOKEN_CALLBACK_HELPER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
@@ -29,13 +29,14 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   FederatedAuthRequestRequestTokenCallbackHelper& operator=(
       const FederatedAuthRequestRequestTokenCallbackHelper&) = delete;
 
-  absl::optional<blink::mojom::RequestTokenStatus> status() const {
+  std::optional<blink::mojom::RequestTokenStatus> status() const {
     return status_;
   }
-  absl::optional<GURL> selected_idp_config_url() const {
+  std::optional<GURL> selected_idp_config_url() const {
     return selected_idp_config_url_;
   }
-  absl::optional<std::string> token() const { return token_; }
+  std::optional<std::string> token() const { return token_; }
+  bool is_auto_selected() const { return is_auto_selected_; }
 
   // Returns base::OnceClosure which quits base::RunLoop started by
   // WaitForCallback().
@@ -61,18 +62,20 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
 
  private:
   void ReceiverMethod(blink::mojom::RequestTokenStatus status,
-                      const absl::optional<GURL>& selected_idp_config_url,
-                      const absl::optional<std::string>& token,
-                      bool is_auto_reauthn);
+                      const std::optional<GURL>& selected_idp_config_url,
+                      const std::optional<std::string>& token,
+                      blink::mojom::TokenErrorPtr error,
+                      bool is_auto_selected);
 
   void Quit();
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
-  absl::optional<blink::mojom::RequestTokenStatus> status_;
-  absl::optional<GURL> selected_idp_config_url_;
-  absl::optional<std::string> token_;
-  bool is_auto_reauthn_{false};
+  std::optional<blink::mojom::RequestTokenStatus> status_;
+  std::optional<GURL> selected_idp_config_url_;
+  std::optional<std::string> token_;
+  blink::mojom::TokenErrorPtr error_;
+  bool is_auto_selected_{false};
 };
 
 }  // namespace content

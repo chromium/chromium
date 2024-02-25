@@ -1,0 +1,47 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Checking default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "auth.disable_negotiate_cname_lookup": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisableAuthNegotiateCnameLookup": true
+        },
+        "prefs": {
+          "auth.disable_negotiate_cname_lookup": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisableAuthNegotiateCnameLookup": false
+        },
+        "prefs": {
+          "auth.disable_negotiate_cname_lookup": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

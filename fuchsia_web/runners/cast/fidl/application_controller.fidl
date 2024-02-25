@@ -8,26 +8,26 @@ using fuchsia.media.sessions2;
 
 /// Allows clients to access and modify certain aspects of the Cast receiver
 /// application runtime.
-protocol ApplicationController {
+closed protocol ApplicationController {
     /// Enables or disables touch event processing.
-    SetTouchInputEnabled(struct {
+    strict SetTouchInputEnabled(struct {
         enable bool;
     });
 
     /// Sets whether to block all HTMLMediaElements in the frame from fetching and
     /// loading media resources.
     /// See fuchsia.web.Frame for usage details.
-    SetBlockMediaLoading(struct {
+    strict SetBlockMediaLoading(struct {
         blocked bool;
     });
 
     /// Connects to the application's media control & observation API.
-    GetMediaPlayer(resource struct {
+    strict GetMediaPlayer(resource struct {
         request server_end:fuchsia.media.sessions2.Player;
     });
 
     /// Gets the private memory footprint of the application's main frame.
-    GetPrivateMemorySize() -> (struct {
+    strict GetPrivateMemorySize() -> (struct {
         size_bytes uint64;
     });
 };

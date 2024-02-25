@@ -22,16 +22,16 @@ limitations under the License.
 #include <optional>
 #include <vector>
 
+#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/types/span.h"           // from @com_google_absl
+#include "absl/types/span.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/embedding.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_options.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/index.h"
 #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
 
@@ -72,14 +72,12 @@ class EmbeddingSearcher {
       std::unique_ptr<SearchOptions> options,
       std::optional<absl::string_view> optional_index_file_content);
 
-  absl::Status QuantizedSearch(
-      Eigen::Ref<Eigen::MatrixXf> query,
-      std::vector<int> leaves_to_search,
-      absl::Span<tflite::scann_ondevice::core::TopN> top_n);
-  absl::Status LinearSearch(
-      Eigen::Ref<Eigen::MatrixXf> query,
-      std::vector<int> leaves_to_search,
-      absl::Span<tflite::scann_ondevice::core::TopN> top_n);
+  absl::Status QuantizedSearch(Eigen::Ref<Eigen::MatrixXf> query,
+                               std::vector<int> leaves_to_search,
+                               absl::Span<tflite::scann_ondevice::core::TopN> top_n);
+  absl::Status LinearSearch(Eigen::Ref<Eigen::MatrixXf> query,
+                            std::vector<int> leaves_to_search,
+                            absl::Span<tflite::scann_ondevice::core::TopN> top_n);
 
   std::unique_ptr<SearchOptions> options_;
 
@@ -91,10 +89,8 @@ class EmbeddingSearcher {
   // ScaNN management.
   int num_leaves_to_search_;
   tflite::scann_ondevice::core::DistanceMeasure distance_measure_;
-  std::unique_ptr<tflite::scann_ondevice::core::PartitionerInterface>
-      partitioner_;
-  std::shared_ptr<tflite::scann_ondevice::core::AsymmetricHashQuerier>
-      quantizer_;
+  std::unique_ptr<tflite::scann_ondevice::core::PartitionerInterface> partitioner_;
+  std::shared_ptr<tflite::scann_ondevice::core::AsymmetricHashQuerier> quantizer_;
 };
 
 }  // namespace processor

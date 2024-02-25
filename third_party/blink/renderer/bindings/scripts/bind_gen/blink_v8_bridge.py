@@ -100,6 +100,7 @@ def blink_type_info(idl_type):
             self._is_move_effective = is_move_effective
             self._is_traceable = (is_gc_type or is_heap_vector_type
                                   or is_traceable)
+            self._is_member_t_cppgc_member = member_fmt == "Member<{}>"
             self._clear_member_var_fmt = clear_member_var_fmt
 
             self._ref_t = ref_fmt.format(typename)
@@ -133,8 +134,8 @@ def blink_type_info(idl_type):
         @property
         def value_t(self):
             """
-            Returns the type of a variable that behaves as a value.  E.g. String =>
-            String
+            Returns the type of a variable that behaves as a value. E.g. String
+            => String
             """
             return self._value_t
 
@@ -157,7 +158,7 @@ def blink_type_info(idl_type):
         def has_null_value(self):
             """
             Returns True if the Blink implementation type can represent IDL
-            null value without use of absl::optional<T>.  E.g. pointer type =>
+            null value without use of std::optional<T>.  E.g. pointer type =>
             True and int32_t => False
             """
             return self._has_null_value
@@ -197,6 +198,15 @@ def blink_type_info(idl_type):
             E.g. ScriptValue => True and int32_t => False
             """
             return self._is_traceable
+
+        def member_var_to_ref_expr(self, var_name):
+            """
+            Returns an expression to convert the given member variable into
+            a reference type. E.g. Member<T> => var_name.Get()
+            """
+            if self._is_member_t_cppgc_member:
+                return "{}.Get()".format(var_name)
+            return var_name
 
         def clear_member_var_expr(self, var_name):
             """
@@ -287,8 +297,8 @@ def blink_type_info(idl_type):
                         has_null_value=True,
                         is_traceable=True)
 
-    if real_type.is_void:
-        assert False, "Blink does not support/accept IDL void type."
+    if real_type.is_undefined:
+        assert False, "Blink does not support/accept IDL undefined type."
 
     if real_type.type_definition_object:
         typename = blink_class_name(real_type.type_definition_object)
@@ -369,7 +379,11 @@ def blink_type_info(idl_type):
                             clear_member_var_fmt="{}.clear()")
 
     if real_type.is_promise:
-        return TypeInfo("ScriptPromise",
+        if "IDLTypeImplementedAsV8Promise" in real_type.extended_attributes:
+            type_name = "v8::Local<v8::Promise>"
+        else:
+            type_name = "ScriptPromise"
+        return TypeInfo(type_name,
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         is_traceable=True)
@@ -399,7 +413,7 @@ def blink_type_info(idl_type):
                             is_move_effective=False,
                             is_heap_vector_type=False)
         assert not inner_type.is_traceable
-        return TypeInfo("absl::optional<{}>".format(inner_type.value_t),
+        return TypeInfo("std::optional<{}>".format(inner_type.value_t),
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         is_move_effective=inner_type.is_move_effective,
@@ -451,8 +465,8 @@ def _native_value_tag_impl(idl_type):
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
 
-    if real_type.is_void:
-        assert False, "Blink does not support/accept IDL void type."
+    if real_type.is_undefined:
+        assert False, "Blink does not support/accept IDL undefined type."
 
     if real_type.type_definition_object:
         return blink_class_name(real_type.type_definition_object)
@@ -513,13 +527,11 @@ def make_blink_to_v8_value(
             "native_value_tag": native_value_tag(idl_type, argument=argument),
             "v8_var_name": v8_var_name,
         }
-        pattern = ("!ToV8Traits<{native_value_tag}>::ToV8("
-                   "{creation_context_script_state}, {blink_value_expr})"
-                   ".ToLocal(&{v8_var_name})")
+        pattern = ("{v8_var_name} = ToV8Traits<{native_value_tag}>::ToV8("
+                   "{creation_context_script_state}, {blink_value_expr});")
         nodes = [
             F("v8::Local<v8::Value> {v8_var_name};", **binds),
-            CxxUnlikelyIfNode(cond=F(pattern, **binds),
-                              body=T(error_exit_return_statement)),
+            F(pattern, **binds)
         ]
         return SymbolDefinitionNode(symbol_node, nodes)
 
@@ -623,8 +635,8 @@ def make_default_value_expr(idl_type, default_value):
     assignment_deps = []
     if default_value.idl_type.is_nullable:
         if not type_info.has_null_value:
-            initializer_expr = None  # !absl::optional::has_value() by default
-            assignment_value = "absl::nullopt"
+            initializer_expr = None  # !std::optional::has_value() by default
+            assignment_value = "std::nullopt"
         elif idl_type.unwrap().type_definition_object is not None:
             initializer_expr = "nullptr"
             is_initialization_lightweight = True
@@ -752,8 +764,9 @@ def make_v8_to_blink_value(blink_var_name,
         # A key point of this fast path is that it doesn't require an
         # ExceptionState.
         fast_path_cond = "LIKELY({}->IsString())".format(v8_value_expr)
-        fast_path_body_text = "{}.Init({}.As<v8::String>());".format(
-            blink_var_name, v8_value_expr)
+        fast_path_body_text = _format(
+            "{}.Init(${isolate}, {}.As<v8::String>());", blink_var_name,
+            v8_value_expr)
     elif idl_type.unwrap(typedef=True).is_callback_function:
         # A key point of this fast path is that it doesn't require an
         # ExceptionState.

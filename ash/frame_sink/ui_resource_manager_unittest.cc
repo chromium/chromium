@@ -28,7 +28,7 @@ std::unique_ptr<UiResource> MakeResource(const gfx::Size& resource_size,
   resource->ui_source_id = ui_source_id;
   resource->format = format;
   resource->resource_size = resource_size;
-  resource->mailbox = gpu::Mailbox::GenerateForSharedImage();
+  resource->SetExternallyOwnedMailbox(gpu::Mailbox::GenerateForSharedImage());
   return resource;
 }
 

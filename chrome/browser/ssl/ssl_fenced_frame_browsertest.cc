@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -61,7 +62,7 @@ class SSLFencedFrameBrowserTest : public InProcessBrowserTest {
 
     Profile* profile = browser()->profile();
 
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
 
     Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
@@ -109,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(SSLFencedFrameBrowserTest,
   ASSERT_TRUE(ExecJs(web_contents(), javascript));
 
   Browser* app_browser = InstallAndOpenTestWebApp(
-      embedded_test_server()->GetURL("/fenced_frames/basic.html"));
+      embedded_test_server()->GetURL("/fenced_frames/title2.html"));
   WebContents* app_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(IsShowingSSLInterstitial(app_contents));

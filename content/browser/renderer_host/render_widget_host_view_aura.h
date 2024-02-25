@@ -18,6 +18,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -27,6 +28,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/compositor/image_transport_factory.h"
+#include "content/browser/device_posture/device_posture_platform_provider.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/text_input_manager.h"
@@ -34,7 +36,6 @@
 #include "content/common/cursors/webcursor.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/visibility.h"
-#include "services/device/public/mojom/device_posture_provider.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -52,28 +53,29 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/renderer_host/virtual_keyboard_controller_win.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #endif
 
 namespace aura_extra {
 class WindowPositionInRootMonitor;
 }
 
-namespace wm {
-class ScopedTooltipDisabler;
-}
+namespace display {
+class Display;
+}  // namespace display
 
 namespace gfx {
-class Display;
 class Point;
 class Rect;
 }
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 class InputMethod;
 class LocatedEvent;
+}
+
+namespace wm {
+class ScopedTooltipDisabler;
 }
 
 namespace content {
@@ -103,7 +105,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       public wm::ActivationDelegate,
       public aura::client::FocusChangeObserver,
       public aura::client::CursorClientObserver,
-      public device::mojom::DeviceViewportSegmentsClient {
+      public DevicePosturePlatformProvider::Observer {
  public:
   explicit RenderWidgetHostViewAura(RenderWidgetHost* host);
   RenderWidgetHostViewAura(const RenderWidgetHostViewAura&) = delete;
@@ -122,7 +124,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void WasUnOccluded() override;
   void WasOccluded() override;
   gfx::Rect GetViewBounds() override;
-  bool IsMouseLocked() override;
+  bool IsPointerLocked() override;
   gfx::Size GetVisibleViewportSize() override;
   void SetInsets(const gfx::Insets& insets) override;
   TouchSelectionControllerClientManager*
@@ -160,10 +162,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::Rect GetBoundsInRootWindow() override;
   void WheelEventAck(const blink::WebMouseWheelEvent& event,
                      blink::mojom::InputEventResultState ack_result) override;
-  void GestureEventAck(
-      const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result,
-      blink::mojom::ScrollResultDataPtr scroll_result_data) override;
+  void GestureEventAck(const blink::WebGestureEvent& event,
+                       blink::mojom::InputEventResultState ack_result) override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override;
   void ProcessAckedTouchEvent(
       const TouchEventWithLatencyInfo& touch,
@@ -175,13 +175,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   void SetMainFrameAXTreeID(ui::AXTreeID id) override;
-  blink::mojom::PointerLockResult LockMouse(
+  blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) override;
-  blink::mojom::PointerLockResult ChangeMouseLock(
+  blink::mojom::PointerLockResult ChangePointerLock(
       bool request_unadjusted_movement) override;
-  void UnlockMouse() override;
-  bool GetIsMouseLockedUnadjustedMovementForTesting() override;
-  bool LockKeyboard(absl::optional<base::flat_set<ui::DomCode>> codes) override;
+  void UnlockPointer() override;
+  bool GetIsPointerLockedUnadjustedMovementForTesting() override;
+  bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes) override;
   void UnlockKeyboard() override;
   bool IsKeyboardLocked() override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
@@ -190,7 +190,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void ResetFallbackToFirstNavigationSurface() override;
   bool RequestRepaintForTesting() override;
   void DidStopFlinging() override;
-  void DidNavigateMainFramePreCommit() override;
+  void OnOldViewDidNavigatePreCommit() override;
+  void OnNewViewDidNavigatePostCommit() override;
   void DidEnterBackForwardCache() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
@@ -267,7 +268,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
+  std::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
       const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
@@ -279,8 +280,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // bounds of the active editable element. This is used to report the layout
   // bounds of the text input control to TSF on Windows.
   void GetActiveTextInputControlLayoutBounds(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) override;
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) override;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -418,6 +419,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   ui::Compositor* GetCompositor() override;
 
+  void AllocateLocalSurfaceIdOnNextShow() {
+    allocate_local_surface_id_on_next_show_ = true;
+  }
+
   DelegatedFrameHost* GetDelegatedFrameHostForTesting() const {
     return delegated_frame_host_.get();
   }
@@ -433,9 +438,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   }
 
   // RenderWidgetHostViewBase:
+  void UpdateFrameSinkIdRegistration() override;
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
-  absl::optional<DisplayFeature> GetDisplayFeature() override;
+  std::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
   void NotifyHostAndDelegateOnWasShown(
@@ -573,7 +579,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   bool SynchronizeVisualProperties(
       const cc::DeadlinePolicy& deadline_policy,
-      const absl::optional<viz::LocalSurfaceId>& child_local_surface_id);
+      const std::optional<viz::LocalSurfaceId>& child_local_surface_id);
 
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
@@ -591,8 +597,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // the bounds of the webcontents. It is needed for accessibility and
   // for scrolling to work in legacy drivers for trackpoints/trackpads, etc.
   void UpdateLegacyWin();
-
-  bool UsesNativeWindowFrame() const;
 #endif
 
   ui::InputMethod* GetInputMethod() const;
@@ -672,14 +676,18 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void SetTooltipText(const std::u16string& tooltip_text);
 
 #if BUILDFLAG(IS_WIN)
-  // Ensure that we're connecting to the device posture provider to
-  // get the DisplayFeatures.
-  void EnsureDevicePostureServiceConnection();
+  // Ensure that we're observing the device posture platform provider to
+  // get the display feature changes.
+  void ObserveDevicePosturePlatformProvider();
 #endif
 
-  // DeviceViewportSegmentClient.
-  void OnViewportSegmentsChanged(
-      const std::vector<gfx::Rect>& segments) override;
+  // DevicePosturePlatformProvider::Observer.
+  void OnDisplayFeatureBoundsChanged(
+      const gfx::Rect& display_feature_bounds) override;
+
+  // Provided a list of viewport segments, calculate and set the
+  // DisplayFeature.
+  void ComputeDisplayFeature();
 
   raw_ptr<aura::Window> window_;
 
@@ -734,21 +742,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   CursorVisibilityState cursor_visibility_state_in_renderer_;
 
 #if BUILDFLAG(IS_WIN)
-  // The LegacyRenderWidgetHostHWND class provides a dummy HWND which is used
-  // for accessibility, as the container for windowless plugins like
-  // Flash/Silverlight, etc and for legacy drivers for trackpoints/trackpads,
-  // etc.
-  // The LegacyRenderWidgetHostHWND instance is created during the first call
-  // to RenderWidgetHostViewAura::InternalSetBounds. The instance is destroyed
-  // when the LegacyRenderWidgetHostHWND hwnd is destroyed.
-  raw_ptr<content::LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_;
+  // Provides a dummy HWND for legacy accessibility tools and drivers.
+  raw_ptr<LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_ = nullptr;
 
-  // Set to true if the legacy_render_widget_host_HWND_ instance was destroyed
-  // by Windows. This could happen if the browser window was destroyed by
-  // DestroyWindow for e.g. This flag helps ensure that we don't try to create
-  // the LegacyRenderWidgetHostHWND instance again as that would be a futile
-  // exercise.
-  bool legacy_window_destroyed_;
+  // Whether Windows destroyed the legacy HWND, e.g. via browser DestroyWindow.
+  // Indicates that recreating the HWND instance again would be futile.
+  bool legacy_window_destroyed_ = false;
 
   // Contains a copy of the last context menu request parameters. Only set when
   // we receive a request to show the context menu on a long press.
@@ -815,15 +814,20 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Represents a feature of the physical display whose offset and mask_length
   // are expressed in DIPs relative to the view. See display_feature.h for more
   // details.
-  absl::optional<DisplayFeature> display_feature_;
+  std::optional<DisplayFeature> display_feature_;
+  bool display_feature_overridden_for_testing_ = false;
+  // Display feature bounds returned by the OS.
+  gfx::Rect display_feature_bounds_;
 
 #if BUILDFLAG(IS_WIN)
-  mojo::Remote<device::mojom::DevicePostureProvider> device_posture_provider_;
-  mojo::Receiver<device::mojom::DeviceViewportSegmentsClient>
-      device_posture_receiver_{this};
+  base::ScopedObservation<DevicePosturePlatformProvider,
+                          DevicePosturePlatformProvider::Observer>
+      device_posture_observation_{this};
 #endif
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
+
+  bool allocate_local_surface_id_on_next_show_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewAura> weak_ptr_factory_{this};
 };

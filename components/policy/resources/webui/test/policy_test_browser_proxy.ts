@@ -1,6 +1,11 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
@@ -35,8 +40,21 @@ export enum Presets {
   PRESET_CLOUD_ACCOUNT,
 }
 
+export type PolicyType =
+    'boolean'|'integer'|'number'|'string'|'list'|'dictionary';
+
+export interface PolicyNamespace {
+  [policyName: string]: PolicyType;
+}
+
+export interface PolicySchema {
+  chrome: PolicyNamespace;
+  [extensionId: string]: PolicyNamespace;
+}
+
 // Object mapping policy information types to their values.
 export interface PolicyInfo {
+  namespace: string;
   name: string;
   source: PolicySource;
   scope: PolicyScope;
@@ -77,8 +95,13 @@ export const LevelNamesToValues: {[key: string]: PolicyLevel} = {
 let instance: PolicyTestBrowserProxy|null = null;
 
 export class PolicyTestBrowserProxy {
-  applyTestPolicies(jsonString: string) {
-    return sendWithPromise('setLocalTestPolicies', jsonString);
+  applyTestPolicies(policies: string, profileSeparationResponse: string) {
+    return sendWithPromise(
+        'setLocalTestPolicies', policies, profileSeparationResponse);
+  }
+
+  listenPoliciesUpdates() {
+    return sendWithPromise('listenPoliciesUpdates');
   }
 
   revertTestPolicies() {
@@ -91,6 +114,14 @@ export class PolicyTestBrowserProxy {
 
   setUserAffiliation(affiliation: boolean) {
     return sendWithPromise('setUserAffiliation', affiliation);
+  }
+
+  async getAppliedTestPolicies(): Promise<PolicyInfo[]> {
+    const policies: string = await sendWithPromise('getAppliedTestPolicies');
+    if (!policies.length) {
+      return [];
+    }
+    return JSON.parse(policies);
   }
 
   static getInstance(): PolicyTestBrowserProxy {

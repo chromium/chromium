@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -38,7 +38,7 @@ namespace policy {
 class AppInfoGenerator : public apps::InstanceRegistry::Observer,
                          public ManagedSessionService::Observer {
  public:
-  using Result = absl::optional<std::vector<enterprise_management::AppInfo>>;
+  using Result = std::optional<std::vector<enterprise_management::AppInfo>>;
 
   explicit AppInfoGenerator(
       ManagedSessionService* managed_session_service,
@@ -98,7 +98,7 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
     ~AppInfoProvider();
 
     ActivityStorage activity_storage;
-    const raw_ref<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy;
+    const raw_ref<apps::AppServiceProxy> app_service_proxy;
   };
 
   const enterprise_management::AppInfo ConvertToAppInfo(
@@ -129,7 +129,7 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
   // This is kept in case status uploads fail for a number of days.
   base::TimeDelta max_stored_past_activity_interval_;
 
-  const raw_ref<const base::Clock, ExperimentalAsh> clock_;
+  const raw_ref<const base::Clock> clock_;
 
   base::ScopedObservation<ManagedSessionService,
                           ManagedSessionService::Observer>

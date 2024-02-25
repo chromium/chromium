@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -29,9 +31,7 @@ namespace ash {
 
 class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
  public:
-  ShowFeedbackPageBrowserTest() {
-    scope_feature_list_.InitAndEnableFeature(ash::features::kOsFeedback);
-  }
+  ShowFeedbackPageBrowserTest() {}
   ~ShowFeedbackPageBrowserTest() override = default;
 
  protected:
@@ -276,6 +276,18 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                                ->GetVisibleURL();
   EXPECT_TRUE(visible_url.has_query());
   EXPECT_EQ(expected_url, visible_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, FeedbackFlowAI) {
+  std::string unused;
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAI,
+                           /*description_template=*/unused,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/unused,
+                           /*extra_diagnostics=*/unused,
+                           /*autofill_metadata=*/base::Value::Dict());
+  EXPECT_EQ(chrome::kChromeUIFeedbackURL,
+            FeedbackDialog::GetInstanceForTest()->GetDialogContentURL());
 }
 
 }  // namespace ash

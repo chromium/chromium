@@ -40,8 +40,7 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImplTestApi {
   }
 
  private:
-  raw_ptr<LockScreenActionBackgroundControllerImpl, ExperimentalAsh>
-      controller_;
+  raw_ptr<LockScreenActionBackgroundControllerImpl> controller_;
 };
 
 }  // namespace ash

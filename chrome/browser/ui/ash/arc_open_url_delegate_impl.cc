@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -41,7 +42,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/webui_url_constants.h"
@@ -54,12 +54,12 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -240,12 +240,11 @@ apps::IntentPtr ConvertLaunchIntent(
 }
 
 // Finds the best matching web app that can handle the |url|.
-absl::optional<std::string> FindWebAppForURL(Profile* profile,
-                                             const GURL& url) {
+std::optional<std::string> FindWebAppForURL(Profile* profile, const GURL& url) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (!proxy) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> app_ids = proxy->GetAppIdsForUrl(
@@ -274,7 +273,7 @@ absl::optional<std::string> FindWebAppForURL(Profile* profile,
     }
   }
   if (best_match.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return best_match;
 }
@@ -341,7 +340,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   if (!profile)
     return;
 
-  absl::optional<web_app::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       web_app::IsWebAppsCrosapiEnabled()
           ? FindWebAppForURL(profile, url)
           : web_app::FindInstalledAppWithUrlInScope(profile, url,
@@ -380,7 +379,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   if (!prefs)
     return;
 
-  absl::optional<std::string> package_name =
+  std::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id.value());
   if (!package_name.has_value())
     return;
@@ -476,8 +475,8 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
   if (!profile)
     return;
 
-  web_app::AppId app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  webapps::AppId app_id =
+      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
 
   bool app_installed = false;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);

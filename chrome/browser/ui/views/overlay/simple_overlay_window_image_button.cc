@@ -47,5 +47,5 @@ void SimpleOverlayWindowImageButton::UpdateImage() {
                     *icon_, kColorPipWindowForeground, icon_size));
 }
 
-BEGIN_METADATA(SimpleOverlayWindowImageButton, OverlayWindowImageButton)
+BEGIN_METADATA(SimpleOverlayWindowImageButton)
 END_METADATA

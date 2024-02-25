@@ -110,7 +110,7 @@ class BidirectionalStreamTestURLRequestContextGetter
     if (!host_resolver())
       return;
     host_resolver()->SetRulesFromString(
-        base::StringPrintf("MAP notfound.example.com ~NOTFOUND,"
+        base::StringPrintf("MAP notfound.example.com ^NOTFOUND,"
                            "MAP test.example.com 127.0.0.1:%d",
                            test_server_port_));
   }

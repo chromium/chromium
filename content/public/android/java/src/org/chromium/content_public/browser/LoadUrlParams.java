@@ -8,9 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.UserDataHost;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
@@ -38,8 +39,7 @@ public class LoadUrlParams {
     private int mTransitionType;
     private Referrer mReferrer;
     private Map<String, String> mExtraHeaders;
-    @Nullable
-    private UserDataHost mNavigationHandleUserDataHost;
+    @Nullable private UserDataHost mNavigationHandleUserDataHost;
     private String mVerbatimHeaders;
     private int mUaOverrideOption;
     private ResourceRequestBody mPostData;
@@ -53,9 +53,9 @@ public class LoadUrlParams {
     private long mInputStartTimestamp;
     private boolean mHasUserGesture;
     private boolean mShouldClearHistoryList;
-    @Nullable
-    private AdditionalNavigationParams mAdditionalNavigationParams;
+    @Nullable private AdditionalNavigationParams mAdditionalNavigationParams;
     private Supplier<Long> mNavigationUIDataSupplier;
+    private boolean mIsPdf;
 
     /**
      * Creates an instance with default page transition type.
@@ -156,8 +156,8 @@ public class LoadUrlParams {
      */
     public static LoadUrlParams createLoadDataParams(
             String data, String mimeType, boolean isBase64Encoded, String charset) {
-        LoadUrlParams params = new LoadUrlParams(
-                buildDataUri(data, mimeType, isBase64Encoded, charset));
+        LoadUrlParams params =
+                new LoadUrlParams(buildDataUri(data, mimeType, isBase64Encoded, charset));
         params.setLoadType(LoadURLType.DATA);
         params.setTransitionType(PageTransition.TYPED);
         return params;
@@ -192,10 +192,13 @@ public class LoadUrlParams {
      *                   if null.
      */
     public static LoadUrlParams createLoadDataParamsWithBaseUrl(
-            String data, String mimeType, boolean isBase64Encoded,
-            String baseUrl, String historyUrl) {
-        return createLoadDataParamsWithBaseUrl(data, mimeType, isBase64Encoded,
-                baseUrl, historyUrl, null);
+            String data,
+            String mimeType,
+            boolean isBase64Encoded,
+            String baseUrl,
+            String historyUrl) {
+        return createLoadDataParamsWithBaseUrl(
+                data, mimeType, isBase64Encoded, baseUrl, historyUrl, null);
     }
 
     /**
@@ -214,8 +217,12 @@ public class LoadUrlParams {
      *                does not require a special charset.
      */
     public static LoadUrlParams createLoadDataParamsWithBaseUrl(
-            String data, String mimeType, boolean isBase64Encoded,
-            String baseUrl, String historyUrl, String charset) {
+            String data,
+            String mimeType,
+            boolean isBase64Encoded,
+            String baseUrl,
+            String historyUrl,
+            String charset) {
         LoadUrlParams params;
         // For WebView compatibility, when the base URL has the 'data:'
         // scheme, we treat it as a regular data URL load and skip setting
@@ -239,8 +246,7 @@ public class LoadUrlParams {
      * @param postData Post data of the load. Can be null.
      */
     @VisibleForTesting
-    public static LoadUrlParams createLoadHttpPostParams(
-            String url, byte[] postData) {
+    public static LoadUrlParams createLoadHttpPostParams(String url, byte[] postData) {
         LoadUrlParams params = new LoadUrlParams(url);
         params.setLoadType(LoadURLType.HTTP_POST);
         params.setTransitionType(PageTransition.TYPED);
@@ -248,37 +254,27 @@ public class LoadUrlParams {
         return params;
     }
 
-    /**
-     * Sets the url.
-     */
+    /** Sets the url. */
     public void setUrl(String url) {
         mUrl = url;
     }
 
-    /**
-     * Return the url.
-     */
+    /** Return the url. */
     public String getUrl() {
         return mUrl;
     }
 
-    /**
-     * Sets the initiator origin.
-     */
+    /** Sets the initiator origin. */
     public void setInitiatorOrigin(@Nullable Origin initiatorOrigin) {
         mInitiatorOrigin = initiatorOrigin;
     }
 
-    /**
-     * Return the initiator origin.
-     */
+    /** Return the initiator origin. */
     public @Nullable Origin getInitiatorOrigin() {
         return mInitiatorOrigin;
     }
 
-    /**
-     * Return the base url for a data url, otherwise null.
-     */
+    /** Return the base url for a data url, otherwise null. */
     public String getBaseUrl() {
         return mBaseUrlForDataUrl;
     }
@@ -299,16 +295,12 @@ public class LoadUrlParams {
         mTransitionType = transitionType;
     }
 
-    /**
-     * Return the transition type.
-     */
+    /** Return the transition type. */
     public int getTransitionType() {
         return mTransitionType;
     }
 
-    /**
-     * Sets the referrer of this load.
-     */
+    /** Sets the referrer of this load. */
     public void setReferrer(Referrer referrer) {
         mReferrer = referrer;
     }
@@ -330,9 +322,7 @@ public class LoadUrlParams {
         verifyHeaders();
     }
 
-    /**
-     * Return the extra headers as a map.
-     */
+    /** Return the extra headers as a map. */
     public Map<String, String> getExtraHeaders() {
         return mExtraHeaders;
     }
@@ -358,6 +348,7 @@ public class LoadUrlParams {
         mNavigationHandleUserDataHost = null;
         return returnValue;
     }
+
     /**
      * Return the extra headers as a single String separated by "\n", or null if no extra header is
      * set. This form is suitable for passing to native
@@ -640,6 +631,18 @@ public class LoadUrlParams {
     /** Returns the supplier for {@link NavigationUIData} or null. */
     public Supplier<Long> getNavigationUIDataSupplier() {
         return mNavigationUIDataSupplier;
+    }
+
+    /**
+     * @return Whether the URL is a pdf file.
+     */
+    public boolean getIsPdf() {
+        return mIsPdf;
+    }
+
+    /** Sets whether the URL is a pdf file. */
+    public void setIsPdf(boolean isPdf) {
+        mIsPdf = isPdf;
     }
 
     @NativeMethods

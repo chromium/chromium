@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/osauth/auth_policy_enforcer.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
@@ -12,7 +13,6 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/known_user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -33,7 +33,7 @@ void AuthPolicyEnforcer::CheckAndEnforcePolicies(
   AuthFactorsSet policy_controlled_factors;
   DetermineAffectedFactors(context->GetAccountId(), policy_controlled_factors);
   if (policy_controlled_factors.Empty()) {
-    std::move(callback).Run(std::move(context), absl::nullopt);
+    std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }
 
@@ -58,7 +58,7 @@ void AuthPolicyEnforcer::DetermineAffectedFactors(const AccountId& account_id,
 void AuthPolicyEnforcer::OnAuthFactorConfigurationLoaded(
     AuthOperationCallback callback,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     std::move(callback).Run(std::move(context), error);
     return;
@@ -111,7 +111,7 @@ void AuthPolicyEnforcer::EnforceRecoveryPolicies(
 void AuthPolicyEnforcer::OnRecoveryUpdated(
     AuthOperationCallback callback,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to enforce recovery factor policy "
                << error->ToDebugString();
@@ -124,7 +124,7 @@ void AuthPolicyEnforcer::OnRecoveryUpdated(
 
 void AuthPolicyEnforcer::OnPolicesApplied(std::unique_ptr<UserContext> context,
                                           AuthOperationCallback callback) {
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 }  // namespace ash

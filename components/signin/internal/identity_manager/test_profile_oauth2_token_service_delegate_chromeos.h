@@ -43,7 +43,8 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) override;
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge) override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
   void UpdateAuthError(const CoreAccountId& account_id,
                        const GoogleServiceAuthError& error,
@@ -60,7 +61,7 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   void RevokeCredentials(const CoreAccountId& account_id) override;
   void RevokeAllCredentials() override;
   const net::BackoffEntry* BackoffEntry() const override;
-  void ClearAuthError(const absl::optional<CoreAccountId>& account_id) override;
+  void ClearAuthError(const std::optional<CoreAccountId>& account_id) override;
   GoogleServiceAuthError BackOffError() const override;
   void ResetBackOffEntry() override;
 

@@ -26,13 +26,15 @@ class WebThemeEngineDefault : public WebThemeEngine {
              const gfx::Rect& rect,
              const WebThemeEngine::ExtraParams* extra_params,
              mojom::ColorScheme color_scheme,
-             const absl::optional<SkColor>& accent_color) override;
+             const ui::ColorProvider* color_provider,
+             const std::optional<SkColor>& accent_color) override;
   void GetOverlayScrollbarStyle(WebThemeEngine::ScrollbarStyle*) override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size NinePatchCanvasSize(Part part) const override;
   gfx::Rect NinePatchAperture(Part part) const override;
-  absl::optional<SkColor> GetSystemColor(
+  std::optional<SkColor> GetSystemColor(
       WebThemeEngine::SystemThemeColor system_theme_color) const override;
+  std::optional<SkColor> GetAccentColor() const override;
 #if BUILDFLAG(IS_WIN)
   // Caches the scrollbar metrics. These are retrieved in the browser and passed
   // to the renderer in RendererPreferences because the required Windows
@@ -48,31 +50,9 @@ class WebThemeEngineDefault : public WebThemeEngine {
   void ResetToSystemColors(
       WebThemeEngine::SystemColorInfoState system_color_info_state) override;
   WebThemeEngine::SystemColorInfoState GetSystemColorInfo() override;
-  bool UpdateColorProviders(const ui::RendererColorMap& light_colors,
-                            const ui::RendererColorMap& dark_colors) override;
-  void EmulateForcedColors(bool is_dark_theme) override;
+  bool IsFluentOverlayScrollbarEnabled() const override;
+  int GetPaintedScrollbarTrackInset() const override;
 
- protected:
-  const ui::ColorProvider* GetColorProviderForPainting(
-      mojom::ColorScheme color_scheme) const;
-
- private:
-  void SetEmulateForcedColors(bool emulate_forced_colors) {
-    emulate_forced_colors_ = emulate_forced_colors;
-  }
-  bool emulate_forced_colors_ = false;
-  // These providers are kept in sync with ColorProviders in the browser and
-  // will be updated when the theme changes.
-  // TODO(crbug.com/1251637): Currently these reflect the ColorProviders
-  // corresponding to the global NativeTheme for web instance in the browser. We
-  // should instead update blink to use ColorProviders that correspond to their
-  // hosting Page.
-  ui::ColorProvider light_color_provider_;
-  ui::ColorProvider dark_color_provider_;
-
-  // This provider is used when forced color emulation is enabled, overriding
-  // the light or dark color providers.
-  ui::ColorProvider emulated_forced_colors_provider_;
 };
 
 }  // namespace blink

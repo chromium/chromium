@@ -29,7 +29,7 @@ class DragDropControllerTestApi {
   }
 
  private:
-  raw_ptr<DragDropController, ExperimentalAsh> controller_;
+  raw_ptr<DragDropController> controller_;
 };
 
 }  // namespace ash

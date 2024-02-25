@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,19 @@ package org.chromium.components.messages;
 public abstract class MessageFeatureList {
     public static final String MESSAGES_FOR_ANDROID_STACKING_ANIMATION =
             "MessagesForAndroidStackingAnimation";
+    public static final String MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK =
+            "MessagesForAndroidFullyVisibleCallback";
+    public static final String MESSAGES_ANDROID_EXTRA_HISTOGRAMS = "MessagesAndroidExtraHistograms";
 
     public static boolean isStackAnimationEnabled() {
         return MessageFeatureMap.isEnabled(MESSAGES_FOR_ANDROID_STACKING_ANIMATION);
+    }
+
+    public static boolean isFullyVisibleCallbackEnabled() {
+        return MessageFeatureMap.isEnabled(MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK);
+    }
+
+    public static boolean areExtraHistogramsEnabled() {
+        return MessageFeatureMap.isEnabled(MESSAGES_ANDROID_EXTRA_HISTOGRAMS);
     }
 }

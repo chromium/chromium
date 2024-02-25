@@ -4,6 +4,8 @@
 
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 
+#include <optional>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -14,7 +16,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -61,7 +62,7 @@ bool ShouldDisplayNotification() {
 
 void OnCableNotificationClicked(const std::string& notification_id,
                                 const std::string& landing_page,
-                                absl::optional<int> button_index) {
+                                std::optional<int> button_index) {
   if (notification_id == kUsbPeripheralSpeedLimitingCableNotificationId)
     SetCableSpeedNotificationShownPref(true);
 

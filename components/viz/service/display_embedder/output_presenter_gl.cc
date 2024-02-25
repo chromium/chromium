@@ -151,6 +151,17 @@ void OutputPresenterGL::InitializeCapabilities(
 #if BUILDFLAG(IS_ANDROID)
   capabilities->supports_dynamic_frame_buffer_allocation = true;
 #endif
+  // MakeCurrent needs to be called if we:
+  //
+  // * allocate and bind buffers to GL in the SkiaOutputDevice instance - ie
+  // when `renderer_allocates_images` is false.
+  //
+  // * the platform can not rely on kernel (GPU fences) to sync.
+  // In configurations like this, the Presenter commonly waits on CPU for GPU
+  // to finish with a (EGL) fence + a worker thread.
+  capabilities->present_requires_make_current =
+      !capabilities->renderer_allocates_images ||
+      !presenter_->SupportsPlaneGpuFences();
 
   // TODO(https://crbug.com/1108406): only add supported formats base on
   // platform, driver, etc.
@@ -256,7 +267,7 @@ void OutputPresenterGL::SchedulePrimaryPlane(
           plane.damage_rect.value_or(gfx::Rect(plane.resource_size)),
           plane.opacity, plane.priority_hint, plane.rounded_corners,
           presenter_image->color_space(),
-          /*hdr_metadata=*/absl::nullopt));
+          /*hdr_metadata=*/std::nullopt));
 }
 
 void OutputPresenterGL::ScheduleOverlayPlane(
@@ -276,8 +287,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       access ? access->GetAHardwareBufferFenceSync() : nullptr;
 #endif
   // TODO(msisov): Once shared image factory allows creating a non backed
-  // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
-  // condition that checks if this is a solid color overlay plane.
+  // images, remove the if condition that checks if this is a solid color
+  // overlay plane.
   //
   // Solid color overlays can be non-backed and are delegated for processing
   // to underlying backend. The only backend that uses them is Wayland - it
@@ -345,14 +356,6 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       overlay_plane_candidate.is_render_pass_draw_quad));
 
 #endif
-}
-
-bool OutputPresenterGL::SupportsGpuVSync() const {
-  return presenter_->SupportsGpuVSync();
-}
-
-void OutputPresenterGL::SetGpuVSyncEnabled(bool enabled) {
-  presenter_->SetGpuVSyncEnabled(enabled);
 }
 
 void OutputPresenterGL::SetVSyncDisplayID(int64_t display_id) {

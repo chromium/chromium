@@ -50,7 +50,7 @@ TEST_F(GpuDriverBugListTest, AppendSingleWorkaround) {
       DISABLE_CHROMIUM_FRAMEBUFFER_MULTISAMPLE));
   std::set<int> workarounds;
   workarounds.insert(EXIT_ON_CONTEXT_LOST);
-  workarounds.insert(INIT_VERTEX_ATTRIBUTES);
+  workarounds.insert(GL_CLEAR_BROKEN);
   EXPECT_EQ(2u, workarounds.size());
   GpuDriverBugList::AppendWorkaroundsFromCommandLine(
       &workarounds, command_line);

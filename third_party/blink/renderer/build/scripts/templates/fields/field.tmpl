@@ -44,10 +44,17 @@ static_cast<{{field.type_name}}>({{value}})
 {{field.internal_mutable_method_name}}
 {%- endmacro %}
 
-{% macro accessor_expression_prefix(field) %}
-{% if field.builder -%}
-style_->
-{%- endif %}
+{% macro bitfield_prefix() -%}
+  data_.
+{%- endmacro %}
+
+{% macro accessor_expression_prefix(field) -%}
+{#- Top-level non-tracable fields reside in the `data_` struct. -#}
+{#- Derived flags should not be prefixed here, because they must always be read
+    via a function. -#}
+{%- if not field.group.parent and not field.requires_tracing and not field.derived_from -%}
+  {{bitfield_prefix()}}
+{%- endif -%}
 {%- endmacro %}
 
 {% macro getter_expression_without_prefix(field) %}
@@ -66,10 +73,26 @@ style_->
   access_.{{group.member_name}}
 {%- endmacro %}
 
+{#
+  Generates nested calls to Access in preparation of modifying a field.
+
+  Example: accessing the group of the 'baseline_shift_' field:
+
+    Access(Access(svg_data_, access_.svg_data_)->misc_data_, access_.misc_data_)->baseline_shift_
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#}
+{% macro nested_group_access(group) %}
+{% if group.parent.name -%}
+Access({{nested_group_access(group.parent)}}->{{group.member_name}}, {{access_flag(group)}})
+{%- else -%}
+Access({{group.member_name}}, {{access_flag(group)}})
+{%- endif -%}
+{%- endmacro %}
+
 {% macro setter_expression_without_prefix(field) %}
-{% for group in field.group.path_without_root() -%}
-{{group.member_name}}.Access({{access_flag(group)}})->
-{%- endfor -%}
+{% if field.group.name -%}
+{{nested_group_access(field.group)}}->
+{%- endif -%}
 {{field.name}}
 {%- endmacro %}
 
@@ -125,13 +148,6 @@ const {{field.type_name}}&
 {%- endfor -%}
 {% endmacro %}
 
-{% macro group_setter_expression(group) %}
-{% for group in group.path_without_root()[:-1] -%}
-{{group.member_name}}.Access({{access_flag(group)}})->
-{%- endfor -%}
-{{group.member_name}}
-{%- endmacro %}
-
 {% macro declare_storage(field) %}
 {% if field.is_bit_field %}
 {{print_if(field.mutable, "mutable ")}}unsigned {{field.name}} : {{field.size}}; // {{field.type_name}}
@@ -160,7 +176,7 @@ const {{field.type_name}}&
      group pointer instead. #}
   {% set group_expression = group_getter_expression(subgroup) %}
   {% if subgroup.all_fields|rejectattr("custom_compare")|reject("in", fields_to_compare)|list|length == 0 -%}
-    {{boolean_and()}}{{group_expression}} == o.{{group_expression}}
+    {{boolean_and()}}base::ValuesEquivalent({{group_expression}}, o.{{group_expression}})
   {# Otherwise, we would have to recursively generate comparison operations
      on fields in the subgroup. If the objects are the same, we can skip the
      per-field comparisons. #}
@@ -197,34 +213,67 @@ const {{field.type_name}}&
   {%- endfor %}
 {%- endmacro %}
 
-{% macro fieldwise_initialize(group) -%}
-{% set comma = joiner(", ") %}
-{% for subgroup in group.subgroups %}
-  {% set member = subgroup.member_name %}
-  {% set noninherited = "source_for_noninherited." + subgroup.member_name %}
-  {% set parent = "parent_style." + subgroup.member_name %}
-  {% if subgroup.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
-    {{comma()}}{{member}}({{parent}})
-  {% elif subgroup.all_fields|selectattr("is_inherited")|list|length == 0 -%}
-    {{comma()}}{{member}}({{noninherited}})
-  {% else -%}
-    {{comma()}}{{member}}({{parent}} == {{noninherited}}
-        ? {{parent}}
-        : DataRef(MakeGarbageCollected<{{subgroup.type_name}}>(*{{noninherited}}, *{{parent}})))
-  {% endif %}
-{% endfor %}
-{% for field in group.fields %}
-  {% if field.reset_on_new_style -%}
-    {{comma()}}{{field.name}}({{encode(field, field.default_value)}})
-  {% elif field.is_inherited -%}
-    {{comma()}}{{field.name}}(parent_style.{{field.name}})
-  {% else -%}
-    {{comma()}}{{field.name}}(source_for_noninherited.{{field.name}})
-  {% endif %}
-{% endfor %}
+{#
+  The `field_source_expression` and `group_source_expression` are used
+  for the special two-argument constructor of ComputedStyleBuilderBase,
+  and provide expressions suited to initialize the given field/group from
+  one of two sources:
+
+   - Non-inherited fields/groups are copied from `non_inherited_source`.
+   - Inherited fields/groups are copied from `inherited_source`.
+   - Fields with reset_on_new_style are instead set to their initial values.
+
+  Subgroups with a mix of non-inherited and inherited fields are also
+  initialized in the two-source fashion described above.
+#}
+
+{% macro field_source_expression(field, non_inherited_source, inherited_source) -%}
+  {%- if field.reset_on_new_style -%}
+    {{encode(field, field.default_value)}} /* {{field.name}}{{print_if(field.mutable, " (mutable)")}} */
+  {%- elif field.is_inherited -%}
+    {{inherited_source}}.{{accessor_expression_prefix(field)}}{{field.name}}
+  {%- else -%}
+    {{non_inherited_source}}.{{accessor_expression_prefix(field)}}{{field.name}}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro group_source_expression(group, non_inherited_source, inherited_source) -%}
+  {% set non_inherited = non_inherited_source + "." + group.member_name %}
+  {% set inherited = inherited_source + "." + group.member_name %}
+  {%- if group.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
+    {{inherited}}
+  {%- elif group.all_fields|selectattr("is_inherited")|list|length == 0 -%}
+    {{non_inherited}}
+  {%- else -%}
+    {#- Mix of non-inherited and inherited fields. -#}
+    {{inherited}} == {{non_inherited}}
+        ? {{inherited}}.Get()
+        : MakeGarbageCollected<{{group.type_name}}>(*{{non_inherited}}, *{{inherited}})
+  {%- endif -%}
 {%- endmacro %}
 
 {% macro fieldwise_pointer_compare_inherited(group, boolean_and=None) %}
+{% set boolean_and = boolean_and or joiner('&& ') %}
+{% for subgroup in group.subgroups %}
+  {# If every field in this subgroup is inherited, we directly compare the
+     group instead, delegating to operator== (with direct pointer comparison
+     as a fast path). #}
+  {% set group_expression = group_getter_expression(subgroup) %}
+  {% if subgroup.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
+    {{boolean_and()}}base::ValuesEquivalent({{group_expression}}.Get(), o.{{group_expression}}.Get())
+  {# Otherwise, we would have to recursively generate comparison operations
+     on fields in the subgroup. #}
+  {% elif subgroup.all_fields|selectattr("is_inherited")|list|length > 0 -%}
+    {{boolean_and()}}(base::ValuesEquivalent({{group_expression}}.Get(), o.{{group_expression}}.Get())
+|| ({{fieldwise_pointer_compare_inherited(subgroup)}}))
+  {% endif %}
+{% endfor %}
+{% for field in group.fields if field.is_inherited -%}
+  {{boolean_and()}}{{getter_expression(field)}} == o.{{getter_expression(field)}}
+{% endfor %}
+{% endmacro %}
+
+{% macro fieldwise_pointer_compare_inherited_old(group, boolean_and=None) %}
 {% set boolean_and = boolean_and or joiner('&& ') %}
 {% for subgroup in group.subgroups %}
   {# If every field in this subgroup is inherited, we directly compare the
@@ -236,7 +285,7 @@ const {{field.type_name}}&
      on fields in the subgroup. #}
   {% elif subgroup.all_fields|selectattr("is_inherited")|list|length > 0 -%}
     {{boolean_and()}}({{group_expression}}.Get() == o.{{group_expression}}.Get()
-|| ({{fieldwise_pointer_compare_inherited(subgroup)}}))
+|| ({{fieldwise_pointer_compare_inherited_old(subgroup)}}))
   {% endif %}
 {% endfor %}
 {% for field in group.fields if field.is_inherited -%}

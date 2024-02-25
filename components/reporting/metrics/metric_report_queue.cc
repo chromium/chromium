@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "components/reporting/client/report_queue.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -56,6 +57,11 @@ void MetricReportQueue::Upload() {
     rate_controller_->Stop();
     rate_controller_->Start();
   }
+}
+
+Destination MetricReportQueue::GetDestination() const {
+  CHECK(report_queue_);
+  return report_queue_->GetDestination();
 }
 
 void MetricReportQueue::Flush() {

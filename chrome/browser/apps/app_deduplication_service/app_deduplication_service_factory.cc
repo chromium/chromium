@@ -72,13 +72,14 @@ AppDeduplicationServiceFactory::AppDeduplicationServiceFactory()
 
 AppDeduplicationServiceFactory::~AppDeduplicationServiceFactory() = default;
 
-KeyedService* AppDeduplicationServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AppDeduplicationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
   if (!IsAppDeduplicationServiceAvailableForProfile(profile)) {
     return nullptr;
   }
-  return new AppDeduplicationService(profile);
+  return std::make_unique<AppDeduplicationService>(profile);
 }
 
 content::BrowserContext* AppDeduplicationServiceFactory::GetBrowserContextToUse(

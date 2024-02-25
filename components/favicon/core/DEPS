@@ -12,6 +12,5 @@ include_rules = [
   "+sql",
   "+third_party/skia",
   "+third_party/skia/include",
-  "+third_party/sqlite",
   "+ui/gfx",
 ]

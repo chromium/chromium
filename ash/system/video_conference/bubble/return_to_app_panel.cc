@@ -25,6 +25,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -69,15 +70,15 @@ void StartReportLayerAnimationSmoothness(
 
 void StartRecordAnimationSmoothness(
     views::Widget* widget,
-    absl::optional<ui::ThroughputTracker>& tracker) {
+    std::optional<ui::ThroughputTracker>& tracker) {
   // `widget` may not exist in tests.
   if (!widget) {
     return;
   }
 
   tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
-  tracker->Start(
-      ash::metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+  tracker->Start(ash::metrics_util::ForSmoothnessV3(
+      base::BindRepeating([](int smoothness) {
         base::UmaHistogramPercentage(
             "Ash.VideoConference.ReturnToAppPanel.BoundsChange."
             "AnimationSmoothness",
@@ -102,7 +103,7 @@ void FadeInView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &StartReportLayerAnimationSmoothness, animation_histogram_name)));
 
   views::AnimationBuilder()
@@ -136,7 +137,7 @@ void FadeOutView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &StartReportLayerAnimationSmoothness, animation_histogram_name)));
 
   view->SetVisible(true);
@@ -155,6 +156,8 @@ void FadeOutView(views::View* view,
 // depending on the expand state.
 class ReturnToAppExpandButton : public views::ImageView,
                                 ReturnToAppButton::Observer {
+  METADATA_HEADER(ReturnToAppExpandButton, views::ImageView)
+
  public:
   explicit ReturnToAppExpandButton(ReturnToAppButton* return_to_app_button)
       : return_to_app_button_(return_to_app_button) {
@@ -199,8 +202,11 @@ class ReturnToAppExpandButton : public views::ImageView,
 
   // Owned by the views hierarchy. Will be destroyed after this view since it is
   // the parent.
-  const raw_ptr<ReturnToAppButton, ExperimentalAsh> return_to_app_button_;
+  const raw_ptr<ReturnToAppButton> return_to_app_button_;
 };
+
+BEGIN_METADATA(ReturnToAppExpandButton)
+END_METADATA
 
 }  // namespace
 
@@ -326,6 +332,9 @@ void ReturnToAppButton::UpdateAccessibleName() {
   SetAccessibleName(accessible_name);
 }
 
+BEGIN_METADATA(ReturnToAppButton)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // ReturnToAppContainer:
 
@@ -416,6 +425,9 @@ gfx::Size ReturnToAppPanel::ReturnToAppContainer::CalculatePreferredSize()
   return size;
 }
 
+BEGIN_METADATA(ReturnToAppPanel, ReturnToAppContainer)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // ReturnToAppPanel:
 
@@ -503,7 +515,7 @@ void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
       container_view_->GetPreferredSize().height());
   container_view_->AdjustLayoutForExpandCollapseState(expanded);
 
-  for (auto* child : container_view_->children()) {
+  for (views::View* child : container_view_->children()) {
     // Skip the first child since we always show the summary row. Otherwise,
     // show the other rows if `expanded` and vice versa.
     if (child == container_view_->children().front()) {
@@ -538,5 +550,8 @@ void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
 void ReturnToAppPanel::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
+
+BEGIN_METADATA(ReturnToAppPanel)
+END_METADATA
 
 }  // namespace ash::video_conference

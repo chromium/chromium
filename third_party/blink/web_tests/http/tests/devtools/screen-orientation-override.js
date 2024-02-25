@@ -9,7 +9,6 @@ import * as ProtocolClient from 'devtools/core/protocol_client/protocol_client.j
 
 (async function() {
   TestRunner.addResult(`Test screen orientation override.\n`);
-  await TestRunner.loadLegacyModule('console');
 
   await TestRunner.navigatePromise('resources/screen-orientation-resource.html');
 

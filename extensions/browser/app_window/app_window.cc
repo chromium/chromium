@@ -44,9 +44,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/suggest_permission_util.h"
 #include "extensions/browser/view_type_utils.h"
-#include "extensions/common/draggable_region.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -344,7 +342,7 @@ void AppWindow::RequestMediaAccessPermission(
 
 bool AppWindow::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   DCHECK_EQ(web_contents(),
             content::WebContents::FromRenderFrameHost(render_frame_host)
@@ -414,11 +412,11 @@ bool AppWindow::HandleKeyboardEvent(
   return native_app_window_->HandleKeyboardEvent(event);
 }
 
-void AppWindow::RequestToLockMouse(WebContents* web_contents,
+void AppWindow::RequestPointerLock(WebContents* web_contents,
                                    bool user_gesture,
                                    bool last_unlocked_by_target) {
   DCHECK_EQ(AppWindow::web_contents(), web_contents);
-  helper_->RequestToLockMouse();
+  helper_->RequestPointerLock();
 }
 
 bool AppWindow::PreHandleGestureEvent(WebContents* source,
@@ -445,16 +443,6 @@ bool AppWindow::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-bool AppWindow::OnMessageReceived(const IPC::Message& message,
-                                  content::RenderFrameHost* render_frame_host) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(AppWindow, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AppWindowReady, OnAppWindowReady)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
 }
 
 void AppWindow::RenderFrameCreated(content::RenderFrameHost* frame_host) {
@@ -596,8 +584,12 @@ void AppWindow::UpdateShape(std::unique_ptr<ShapeRects> rects) {
 }
 
 void AppWindow::UpdateDraggableRegions(
-    const std::vector<DraggableRegion>& regions) {
+    const std::vector<mojom::DraggableRegionPtr>& regions) {
   native_app_window_->UpdateDraggableRegions(regions);
+
+  if (on_update_draggable_regions_callback_for_testing_) {
+    std::move(on_update_draggable_regions_callback_for_testing_).Run();
+  }
 }
 
 void AppWindow::UpdateAppIcon(const gfx::Image& image) {
@@ -912,7 +904,7 @@ void AppWindow::ExitFullscreenModeForTab(content::WebContents* source) {
   ToggleFullscreenModeForTab(source, false);
 }
 
-void AppWindow::OnAppWindowReady() {
+void AppWindow::AppWindowReady() {
   window_ready_ = true;
 
   if (app_icon_url_.is_valid())
@@ -1065,14 +1057,13 @@ AppWindow::CreateParams AppWindow::LoadDefaults(CreateParams params) const {
 
 // static
 SkRegion* AppWindow::RawDraggableRegionsToSkRegion(
-    const std::vector<DraggableRegion>& regions) {
+    const std::vector<mojom::DraggableRegionPtr>& regions) {
   SkRegion* sk_region = new SkRegion;
-  for (auto iter = regions.cbegin(); iter != regions.cend(); ++iter) {
-    const DraggableRegion& region = *iter;
+  for (const auto& region : regions) {
     sk_region->op(
-        SkIRect::MakeLTRB(region.bounds.x(), region.bounds.y(),
-                          region.bounds.right(), region.bounds.bottom()),
-        region.draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
+                          region->bounds.right(), region->bounds.bottom()),
+        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
   }
   return sk_region;
 }

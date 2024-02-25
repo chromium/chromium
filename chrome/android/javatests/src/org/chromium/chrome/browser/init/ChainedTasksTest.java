@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for {@link ChainedTasks}.
- */
+/** Tests for {@link ChainedTasks}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ChainedTasksTest {
@@ -57,10 +55,11 @@ public class ChainedTasksTest {
             tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, message));
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tasks.start(true);
-            Assert.assertEquals(expectedMessages, messages);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tasks.start(true);
+                    Assert.assertEquals(expectedMessages, messages);
+                });
     }
 
     @Test
@@ -70,28 +69,32 @@ public class ChainedTasksTest {
         final Semaphore finished = new Semaphore(0);
         final ChainedTasks tasks = new ChainedTasks();
 
-        tasks.add(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    waitForIt.acquire();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException();
-                }
-            }
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            waitForIt.acquire();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException();
+                        }
+                    }
+                });
 
         List<String> expectedMessages = Arrays.asList(new String[] {"First", "Second", "Third"});
         final List<String> messages = new ArrayList<>();
         for (String message : expectedMessages) {
             tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, message));
         }
-        tasks.add(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                finished.release();
-            }
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        finished.release();
+                    }
+                });
 
         tasks.start(true);
         // If start() were blocking, then this would be a deadlock, as the first task acquires a
@@ -112,17 +115,20 @@ public class ChainedTasksTest {
         for (String message : expectedMessages) {
             tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, message));
         }
-        tasks.add(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                finished.release();
-            }
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        finished.release();
+                    }
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tasks.start(false);
-            Assert.assertTrue("No task should run synchronously", messages.isEmpty());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tasks.start(false);
+                    Assert.assertTrue("No task should run synchronously", messages.isEmpty());
+                });
         Assert.assertTrue(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(expectedMessages, messages);
     }
@@ -142,24 +148,28 @@ public class ChainedTasksTest {
         // carries on.
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "First"));
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Second"));
-        tasks.add(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    secondTaskFinished.release();
-                    waitForHighPriorityTask.acquire();
-                } catch (InterruptedException e) {
-                    Assert.fail();
-                }
-            }
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            secondTaskFinished.release();
+                            waitForHighPriorityTask.acquire();
+                        } catch (InterruptedException e) {
+                            Assert.fail();
+                        }
+                    }
+                });
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Third"));
-        tasks.add(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                finished.release();
-            }
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        finished.release();
+                    }
+                });
 
         tasks.start(false);
         Assert.assertTrue(secondTaskFinished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
@@ -180,19 +190,23 @@ public class ChainedTasksTest {
 
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "First"));
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Second"));
-        tasks.add(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                tasks.cancel();
-            }
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        tasks.cancel();
+                    }
+                });
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Third"));
-        tasks.add(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                finished.release();
-            }
-        });
+        tasks.add(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        finished.release();
+                    }
+                });
         tasks.start(false);
         Assert.assertFalse(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(expectedMessages, messages);

@@ -8,17 +8,13 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 
-/**
- * A custom ActionMode.Callback that handles copy, paste selection in omnibox and toolbar.
- */
+/** A custom ActionMode.Callback that handles copy, paste selection in omnibox and toolbar. */
 public class ToolbarActionModeCallback implements ActionMode.Callback {
     private ActionModeController mActionModeController;
 
     private boolean mMovedToolbar;
 
-    /**
-     * Sets the {@link #mActionModeController}.
-     */
+    /** Sets the {@link #mActionModeController}. */
     public void setActionModeController(ActionModeController actionModeController) {
         mActionModeController = actionModeController;
     }

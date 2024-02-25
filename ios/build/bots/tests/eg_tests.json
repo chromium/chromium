@@ -29,11 +29,6 @@
       "app": "ios_chrome_reading_list_egtests",
       "xcode parallelization": true,
       "xctest": true
-    },
-    {
-      "app": "ios_showcase_egtests",
-      "xctest": true,
-      "xcode parallelization": true
     }
   ]
 }

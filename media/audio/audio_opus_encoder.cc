@@ -41,7 +41,7 @@ inline void OpusEncoderDeleter(OpusEncoder* encoder_ptr) {
 }
 
 base::TimeDelta GetFrameDuration(
-    const absl::optional<AudioEncoder::OpusOptions> opus_options) {
+    const std::optional<AudioEncoder::OpusOptions> opus_options) {
   return opus_options.has_value() ? opus_options.value().frame_duration
                                   : kDefaultOpusBufferDuration;
 }
@@ -119,11 +119,8 @@ void AudioOpusEncoder::Initialize(const Options& options,
     return;
   }
 
-  // Unretained is safe here, because |this| owns |fifo_|.
-  fifo_ = std::make_unique<ConvertingAudioFifo>(
-      input_params_, converted_params_,
-      base::BindRepeating(&AudioOpusEncoder::OnFifoOutput,
-                          base::Unretained(this)));
+  fifo_ =
+      std::make_unique<ConvertingAudioFifo>(input_params_, converted_params_);
 
   timestamp_tracker_ =
       std::make_unique<AudioTimestampHelper>(converted_params_.sample_rate());
@@ -203,12 +200,13 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
 
   DCHECK(timestamp_tracker_);
 
-  if (timestamp_tracker_->base_timestamp() == kNoTimestamp)
+  if (timestamp_tracker_->base_timestamp() == kNoTimestamp) {
     timestamp_tracker_->SetBaseTimestamp(capture_time - base::TimeTicks());
+  }
 
-  // This might synchronously call OnFifoOutput().
   fifo_->Push(std::move(audio_bus));
   fifo_has_data_ = true;
+  DrainFifoOutput();
 
   if (current_done_cb_) {
     // Is |current_done_cb_| is null, it means OnFifoOutput() has already
@@ -247,6 +245,7 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
     }
 
     fifo_->Flush();
+    DrainFifoOutput();
     fifo_has_data_ = false;
   }
 
@@ -258,7 +257,14 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
   }
 }
 
-void AudioOpusEncoder::OnFifoOutput(AudioBus* audio_bus) {
+void AudioOpusEncoder::DrainFifoOutput() {
+  while (fifo_->HasOutput()) {
+    DoEncode(fifo_->PeekOutput());
+    fifo_->PopOutput();
+  }
+}
+
+void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
   audio_bus->ToInterleaved<Float32SampleTypeTraits>(audio_bus->frames(),
                                                     buffer_.data());
   // We already reported an error. Don't attempt to encode any further inputs.
@@ -282,7 +288,7 @@ void AudioOpusEncoder::OnFifoOutput(AudioBus* audio_bus) {
   // If |result| in {0,1}, do nothing; the documentation says that a return
   // value of zero or one means the packet does not need to be transmitted.
   if (encoded_data_size > 1) {
-    absl::optional<CodecDescription> desc;
+    std::optional<CodecDescription> desc;
     if (need_to_emit_extra_data_) {
       desc = PrepareExtraData();
       need_to_emit_extra_data_ = false;
@@ -314,7 +320,7 @@ void AudioOpusEncoder::OnFifoOutput(AudioBus* audio_bus) {
 // Creates and returns the libopus encoder instance. Returns nullptr if the
 // encoder creation fails.
 EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
-    const absl::optional<AudioEncoder::OpusOptions>& opus_options) {
+    const std::optional<AudioEncoder::OpusOptions>& opus_options) {
   int opus_result;
   OwnedOpusEncoder encoder(
       opus_encoder_create(converted_params_.sample_rate(),

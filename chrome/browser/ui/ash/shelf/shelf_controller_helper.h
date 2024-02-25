@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_SHELF_CONTROLLER_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
 class ArcAppListPrefs;
 class ExtensionEnableFlow;
@@ -35,10 +36,25 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
 
   ~ShelfControllerHelper() override;
 
+  // Get the item label that should be shown for the specified promise app
+  // status.
+  static std::u16string GetLabelForPromiseStatus(apps::PromiseStatus status);
+
+  // Get the accessible label that should be announced by the screenreader for
+  // the specified promise app name and status.
+  static std::u16string GetAccessibleLabelForPromiseStatus(
+      std::optional<std::string> app_name,
+      apps::PromiseStatus status);
+
   // Helper function to return the title associated with |app_id|.
   // Returns an empty title if no matching extension can be found.
   static std::u16string GetAppTitle(Profile* profile,
                                     const std::string& app_id);
+
+  // Helper function to return the package id associated with |app_id|.
+  // Returns an empty string if no matching extension can be found.
+  static std::string GetAppPackageId(Profile* profile,
+                                     const std::string& app_id);
 
   // Helper function to return the app status associated with |app_id|. if the
   // app is blocked, return AppStatus::kBlocked. Otherwise, if the app is
@@ -49,6 +65,12 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   // Returns the app id of the specified tab, or an empty string if there is
   // no app. All known profiles will be queried for this.
   virtual std::string GetAppID(content::WebContents* tab);
+
+  // Get the accessible label that should be announced by the screenreader for
+  // the specified promise shelf item.
+  static std::u16string GetPromiseAppAccessibleName(
+      Profile* profile,
+      const std::string& package_id);
 
   // Retrieve the label for a registered promise app. If there isn't a promise
   // app with the specified package ID, return an empty string.
@@ -68,6 +90,15 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   static ash::AppStatus ConvertPromiseStatusToAppStatus(
       apps::PromiseStatus promise_status);
 
+  // Check whether this item is an app service shortcut.
+  static bool IsAppServiceShortcut(Profile* profile, const std::string& id);
+
+  // Get the accessible label that should be announced by the scrrenreader for
+  // the specific app service shortcut shelf item.
+  static std::u16string GetAppServiceShortcutAccessibleLabel(
+      Profile* profile,
+      const apps::ShortcutId& shortcut_id);
+
   // Returns true if |id| is valid for the currently active profile.
   // Used during restore to ignore no longer valid extensions.
   // Note that already running applications are ignored by the restore process.
@@ -76,13 +107,17 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   void LaunchApp(const ash::ShelfID& id,
                  ash::ShelfLaunchSource source,
                  int event_flags,
-                 int64_t display_id);
+                 int64_t display_id,
+                 bool new_window);
 
   virtual ArcAppListPrefs* GetArcAppListPrefs() const;
 
   Profile* profile() { return profile_; }
   const Profile* profile() const { return profile_; }
   void set_profile(Profile* profile) { profile_ = profile; }
+
+  bool IsValidPromisePackageIdFromAppService(
+      const std::string& promise_package_id) const;
 
  private:
   // ExtensionEnableFlowDelegate:
@@ -97,7 +132,7 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   bool IsValidIDFromAppService(const std::string& app_id) const;
 
   // The currently active profile for the usage of |GetAppID|.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<ExtensionEnableFlow> extension_enable_flow_;
 };
 

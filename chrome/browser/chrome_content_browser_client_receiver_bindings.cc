@@ -22,13 +22,14 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_web_request_reporter_impl.h"
 #include "chrome/browser/signin/google_accounts_private_api_host.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
-#include "components/metrics/call_stack_profile_collector.h"
+#include "components/metrics/call_stacks/call_stack_profile_collector.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
@@ -58,16 +59,9 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_extensions/api/hid/hid_impl.h"
-#include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context.h"
-#include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
-#include "chrome/browser/ash/system_extensions/system_extension.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
+#include "chrome/browser/ash/mojo_service_manager/utility_process_bridge.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "third_party/blink/public/mojom/chromeos/system_extensions/hid/cros_hid.mojom.h"
-#include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #if defined(ARCH_CPU_X86_64)
 #include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
 #endif  // defined(ARCH_CPU_X86_64)
@@ -95,6 +89,7 @@
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
+#include "chrome/browser/spellchecker/spell_check_initialization_host_impl.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #include "chrome/browser/spellchecker/spell_check_panel_host_impl.h"
@@ -164,32 +159,35 @@ void MaybeCreateSafeBrowsingForRenderer(
   bool safe_browsing_enabled =
       safe_browsing::IsSafeBrowsingEnabled(*pref_service);
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-        process_id, std::move(resource_context),
-        base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
-                            // Navigation initiated from renderer should never
-                            // check when safe browsing is disabled, because
-                            // enterprise check only supports mainframe URL.
-                            /*should_check_on_sb_disabled=*/false,
-                            allowlist_domains),
-        std::move(receiver));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &safe_browsing::MojoSafeBrowsingImpl::MaybeCreate, process_id,
-            std::move(resource_context),
-            base::BindRepeating(
-                get_checker_delegate, safe_browsing_enabled,
-                // Navigation initiated from renderer should never
-                // check when safe browsing is disabled, because
-                // enterprise check only supports mainframe URL.
-                /*should_check_on_sb_disabled=*/false, allowlist_domains),
-            std::move(receiver)));
-  }
+  safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
+      process_id, std::move(resource_context),
+      base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
+                          // Navigation initiated from renderer should never
+                          // check when safe browsing is disabled, because
+                          // enterprise check only supports mainframe URL.
+                          /*should_check_on_sb_disabled=*/false,
+                          allowlist_domains),
+      std::move(receiver));
 }
-#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void MaybeCreateExtensionWebRequestReporterForRenderer(
+    int process_id,
+    mojo::PendingReceiver<safe_browsing::mojom::ExtensionWebRequestReporter>
+        receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  content::RenderProcessHost* render_process_host =
+      content::RenderProcessHost::FromID(process_id);
+  if (!render_process_host) {
+    return;
+  }
+
+  safe_browsing::ExtensionWebRequestReporterImpl::Create(render_process_host,
+                                                         std::move(receiver));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 // BadgeManager is not used for Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -207,82 +205,6 @@ void BindBadgeServiceForServiceWorker(
       render_process_host, info, std::move(receiver));
 }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Helper method to perform some checks before binding a System Extension
-// interface.
-template <typename Interface>
-base::RepeatingCallback<void(const content::ServiceWorkerVersionBaseInfo&,
-                             mojo::PendingReceiver<Interface>)>
-SystemExtensionServiceWorkerBinder(
-    void (*method)(Profile*,
-                   const content::ServiceWorkerVersionBaseInfo&,
-                   mojo::PendingReceiver<Interface>)) {
-  return base::BindRepeating(
-      [](void (*method)(Profile*, const content::ServiceWorkerVersionBaseInfo&,
-                        mojo::PendingReceiver<Interface>),
-         const content::ServiceWorkerVersionBaseInfo& info,
-         mojo::PendingReceiver<Interface> receiver) {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-        const auto& origin = info.storage_key.origin();
-        CHECK(ash::SystemExtension::IsSystemExtensionOrigin(origin));
-
-        content::RenderProcessHost* render_process_host =
-            content::RenderProcessHost::FromID(info.process_id);
-        if (!render_process_host)
-          return;
-
-        CHECK(content::ChildProcessSecurityPolicy::GetInstance()
-                  ->CanAccessDataForOrigin(info.process_id,
-                                           info.storage_key.origin()));
-
-        auto* profile = Profile::FromBrowserContext(
-            render_process_host->GetBrowserContext());
-        if (!profile)
-          return;
-
-        (*method)(profile, info, std::move(receiver));
-      },
-      method);
-}
-
-void RegisterSystemExtensionServiceWorkerBinders(
-    Profile* profile,
-    const content::ServiceWorkerVersionBaseInfo& version_info,
-    mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
-        map) {
-  if (!ash::IsSystemExtensionsEnabled(profile))
-    return;
-
-  if (!ash::SystemExtension::IsSystemExtensionOrigin(
-          version_info.storage_key.origin())) {
-    return;
-  }
-
-  auto& registry = ash::SystemExtensionsProvider::Get(profile).registry();
-  auto* system_extension = registry.GetByUrl(version_info.scope);
-  if (!system_extension)
-    return;
-
-  // Only register interfaces corresponding to the System Extension type.
-  switch (system_extension->type) {
-    case ash::SystemExtensionType::kWindowManagement:
-      map->Add<blink::mojom::CrosWindowManagementFactory>(
-          SystemExtensionServiceWorkerBinder(
-              &ash::CrosWindowManagementContext::BindFactory));
-      return;
-    case ash::SystemExtensionType::kPeripheralPrototype:
-      map->Add<blink::mojom::CrosHID>(
-          SystemExtensionServiceWorkerBinder(&ash::HIDImpl::Bind));
-      return;
-    case ash::SystemExtensionType::kManagedDeviceHealthServices:
-      // Don't register interfaces for the kManagedDeviceHealthServices
-      // extension type for now.
-      return;
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -320,8 +242,14 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
                 &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
                 base::Unretained(this))),
         ui_task_runner);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    registry->AddInterface<safe_browsing::mojom::ExtensionWebRequestReporter>(
+        base::BindRepeating(&MaybeCreateExtensionWebRequestReporterForRenderer,
+                            render_process_host->GetID()),
+        ui_task_runner);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(IS_WIN)
   // Add the ModuleEventSink interface. This is the interface used by renderer
@@ -403,6 +331,15 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   chrome::internal::PopulateChromeFrameBinders(map, render_frame_host);
   chrome::internal::PopulateChromeWebUIFrameBinders(map, render_frame_host);
 
+#if BUILDFLAG(ENABLE_SPELLCHECK)
+  map->Add<spellcheck::mojom::SpellCheckHost>(base::BindRepeating(
+      [](content::RenderFrameHost* frame_host,
+         mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
+        SpellCheckHostChromeImpl::Create(frame_host->GetProcess()->GetID(),
+                                         std::move(receiver));
+      }));
+#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
   if (!site.SchemeIs(extensions::kExtensionScheme))
@@ -437,26 +374,31 @@ void ChromeContentBrowserClient::
   map->Add<blink::mojom::BadgeService>(
       base::BindRepeating(&BindBadgeServiceForServiceWorker));
 #endif
+}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* profile = Profile::FromBrowserContext(browser_context);
-  RegisterSystemExtensionServiceWorkerBinders(profile,
-                                              service_worker_version_info, map);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForServiceWorker(
+        const content::ServiceWorkerVersionBaseInfo&
+            service_worker_version_info,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  for (auto& ep : extra_parts_) {
+    ep->ExposeInterfacesToRendererForServiceWorker(service_worker_version_info,
+                                                   associated_registry);
+  }
 }
 
 void ChromeContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
+  for (auto& ep : extra_parts_) {
+    ep->ExposeInterfacesToRendererForRenderFrameHost(render_frame_host,
+                                                     associated_registry);
+  }
+
   associated_registry.AddInterface<autofill::mojom::AutofillDriver>(
       base::BindRepeating(
-          [](content::RenderFrameHost* render_frame_host,
-             mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
-                 receiver) {
-            autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-                std::move(receiver), render_frame_host);
-          },
+          &autofill::ContentAutofillDriverFactory::BindAutofillDriver,
           &render_frame_host));
   associated_registry.AddInterface<autofill::mojom::PasswordGenerationDriver>(
       base::BindRepeating(
@@ -681,8 +623,19 @@ void ChromeContentBrowserClient::BindGpuHostReceiver(
 
 void ChromeContentBrowserClient::BindUtilityHostReceiver(
     mojo::GenericPendingReceiver receiver) {
-  if (auto r = receiver.As<metrics::mojom::CallStackProfileCollector>())
+  if (auto r = receiver.As<metrics::mojom::CallStackProfileCollector>()) {
     metrics::CallStackProfileCollector::Create(std::move(r));
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (auto service_manager_receiver =
+          receiver
+              .As<chromeos::mojo_service_manager::mojom::ServiceManager>()) {
+    ash::mojo_service_manager::EstablishUtilityProcessBridge(
+        std::move(service_manager_receiver));
+    return;
+  }
+#endif
 }
 
 void ChromeContentBrowserClient::BindHostReceiverForRenderer(
@@ -697,9 +650,10 @@ void ChromeContentBrowserClient::BindHostReceiverForRenderer(
   }
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
-  if (auto host_receiver = receiver.As<spellcheck::mojom::SpellCheckHost>()) {
-    SpellCheckHostChromeImpl::Create(render_process_host->GetID(),
-                                     std::move(host_receiver));
+  if (auto host_receiver =
+          receiver.As<spellcheck::mojom::SpellCheckInitializationHost>()) {
+    SpellCheckInitializationHostImpl::Create(render_process_host->GetID(),
+                                             std::move(host_receiver));
     return;
   }
 

@@ -18,9 +18,9 @@ class BubbleDialogDelegateView;
 
 // The location bar icon to show the sharing features bubble.
 class SharingIconView : public PageActionIconView {
- public:
-  METADATA_HEADER(SharingIconView);
+  METADATA_HEADER(SharingIconView, PageActionIconView)
 
+ public:
   using GetControllerCallback =
       base::RepeatingCallback<SharingUiController*(content::WebContents*)>;
 

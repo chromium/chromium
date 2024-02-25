@@ -22,10 +22,12 @@
 #include "cc/test/pixel_test_utils.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_skcanvas.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/gfx/geometry/rect.h"
@@ -125,7 +127,7 @@ TEST_F(DisplayItemListTest, TraceEmptyVisualRect) {
   EXPECT_TRACED_RECT(0, 0, 0, 0, visual_rect);
   name = item_dict->FindString("name");
   ASSERT_NE(nullptr, name);
-  EXPECT_EQ("DrawRect", *name);
+  EXPECT_EQ("DrawRectOp", *name);
 
   item_dict = ((*items)[1]).GetIfDict();
   ASSERT_NE(nullptr, item_dict);
@@ -134,7 +136,7 @@ TEST_F(DisplayItemListTest, TraceEmptyVisualRect) {
   EXPECT_TRACED_RECT(8, 9, 10, 10, visual_rect);
   name = item_dict->FindString("name");
   ASSERT_NE(nullptr, name);
-  EXPECT_EQ("DrawRect", *name);
+  EXPECT_EQ("DrawRectOp", *name);
 }
 
 TEST_F(DisplayItemListTest, SingleUnpairedRange) {
@@ -568,9 +570,9 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       ASSERT_NE(nullptr, items);
       ASSERT_EQ(7u, items->size());
 
-      const char* expected_names[] = {"Save",      "Concat",   "SaveLayer",
-                                      "Translate", "DrawRect", "Restore",
-                                      "Restore"};
+      const char* expected_names[] = {
+          "SaveOp",     "ConcatOp",  "SaveLayerOp", "TranslateOp",
+          "DrawRectOp", "RestoreOp", "RestoreOp"};
       bool expected_has_skp[] = {false, true, true, true, true, false, false};
 
       for (int i = 0; i < 7; ++i) {
@@ -1149,11 +1151,12 @@ TEST_F(DisplayItemListTest, AreaOfDrawText) {
   auto list = base::MakeRefCounted<DisplayItemList>();
   auto sub_list = base::MakeRefCounted<DisplayItemList>();
 
-  auto text_blob1 = SkTextBlob::MakeFromString("ABCD", SkFont());
+  SkFont font = skia::DefaultFont();
+  auto text_blob1 = SkTextBlob::MakeFromString("ABCD", font);
   gfx::Size text_blob1_size(ceilf(text_blob1->bounds().width()),
                             ceilf(text_blob1->bounds().height()));
   auto text_blob1_area = text_blob1_size.width() * text_blob1_size.height();
-  auto text_blob2 = SkTextBlob::MakeFromString("EFG", SkFont());
+  auto text_blob2 = SkTextBlob::MakeFromString("EFG", font);
   gfx::Size text_blob2_size(ceilf(text_blob2->bounds().width()),
                             ceilf(text_blob2->bounds().height()));
   auto text_blob2_area = text_blob2_size.width() * text_blob2_size.height();

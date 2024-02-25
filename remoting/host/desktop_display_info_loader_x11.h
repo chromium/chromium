@@ -8,8 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "remoting/host/desktop_display_info_loader.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/event_observer.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/window_event_manager.h"
 
 namespace remoting {
 
@@ -30,14 +31,11 @@ class DesktopDisplayInfoLoaderX11 : public DesktopDisplayInfoLoader,
   // Queries the X server and updates |monitors_|.
   void LoadMonitors();
 
-  // XRANDR version as MAJOR * 100 + MINOR, or 0 if XRANDR is not present.
-  int xrandr_version_ = 0;
-
   raw_ptr<x11::Connection> connection_ = nullptr;
   raw_ptr<x11::RandR> randr_ = nullptr;
 
   // Selector for root window events.
-  std::unique_ptr<x11::XScopedEventSelector> root_window_events_;
+  x11::ScopedEventSelector root_window_events_;
 
   std::vector<x11::RandR::MonitorInfo> monitors_;
 };

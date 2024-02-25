@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
+#include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
@@ -20,13 +22,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator_map.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -49,11 +51,22 @@ enum class ShortcutCustomizationAction {
   kMaxValue = kResetAll,
 };
 
+// Enum for histograms, must be kept in sync with the equivalent enum in
+// enums.xml - `ShortcutCustomizationModificationType`.
+enum class ModificationType {
+  kAdd,
+  kEdit,
+  kRemove,
+  kReset,
+  kMaxValue = kReset,
+};
+
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
       public ui::InputDeviceEventObserver,
       public input_method::InputMethodManager::Observer,
-      public InputDeviceSettingsController::Observer {
+      public InputDeviceSettingsController::Observer,
+      public AcceleratorPrefs::Observer {
  public:
   using ActionIdToAcceleratorsInfoMap =
       base::flat_map<AcceleratorActionId,
@@ -85,6 +98,8 @@ class AcceleratorConfigurationProvider
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
   void IsMutable(ash::mojom::AcceleratorSource source,
                  IsMutableCallback callback) override;
+  void IsCustomizationAllowedByPolicy(
+      IsCustomizationAllowedByPolicyCallback callback) override;
   void HasLauncherButton(HasLauncherButtonCallback callback) override;
   void GetConflictAccelerator(mojom::AcceleratorSource source,
                               uint32_t action_id,
@@ -97,6 +112,9 @@ class AcceleratorConfigurationProvider
   void AddObserver(mojo::PendingRemote<
                    shortcut_customization::mojom::AcceleratorsUpdatedObserver>
                        observer) override;
+  void AddPolicyObserver(
+      mojo::PendingRemote<shortcut_customization::mojom::PolicyUpdatedObserver>
+          observer) override;
   void GetAcceleratorLayoutInfos(
       GetAcceleratorLayoutInfosCallback callback) override;
   void PreventProcessingAccelerators(
@@ -119,6 +137,17 @@ class AcceleratorConfigurationProvider
                       uint32_t action_id,
                       RestoreDefaultCallback callback) override;
   void RestoreAllDefaults(RestoreAllDefaultsCallback callback) override;
+  void RecordUserAction(
+      shortcut_customization::mojom::UserAction user_action) override;
+  void RecordMainCategoryNavigation(
+      mojom::AcceleratorCategory category) override;
+  void RecordAddOrEditSubactions(
+      bool is_add,
+      shortcut_customization::mojom::Subactions subactions) override;
+
+  void RecordEditDialogCompletedActions(
+      shortcut_customization::mojom::EditDialogCompletedActions
+          completed_actions) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
@@ -132,6 +161,9 @@ class AcceleratorConfigurationProvider
   void OnKeyboardConnected(const mojom::Keyboard& keyboard) override;
   void OnKeyboardDisconnected(const mojom::Keyboard& keyboard) override;
   void OnKeyboardSettingsUpdated(const mojom::Keyboard& keyboard) override;
+
+  // AcceleratorPrefs::Observer:
+  void OnShortcutPolicyUpdated() override;
 
   AcceleratorConfigurationMap GetAcceleratorConfig();
   std::vector<mojom::AcceleratorLayoutInfoPtr> GetAcceleratorLayoutInfos()
@@ -148,6 +180,9 @@ class AcceleratorConfigurationProvider
     return non_configurable_actions_mapping_;
   }
 
+  std::vector<ui::Accelerator> GetDefaultAcceleratorsForId(
+      uint32_t action_id) const;
+
   mojom::AcceleratorInfoPtr CreateTextAcceleratorInfo(
       const NonConfigurableAcceleratorDetails& details) const;
 
@@ -159,6 +194,8 @@ class AcceleratorConfigurationProvider
                            SetLayoutDetailsMapForTesting);
   friend class AcceleratorConfigurationProviderTest;
   using NonConfigAcceleratorActionMap = ui::AcceleratorMap<AcceleratorActionId>;
+  using AccessibilityAcceleratorActionMap =
+      ui::AcceleratorMap<AcceleratorActionId>;
 
   // Represents the different states the current pending accelerator can be
   // in.
@@ -200,6 +237,10 @@ class AcceleratorConfigurationProvider
   void PopulateAmbientAcceleratorConfig(
       AcceleratorConfigurationMap& accelerator_config_output);
 
+  // Creating/updating the configuration mappings are posted task due to
+  // dependencies with the keyboard state.
+  void ScheduleNotifyAcceleratorsUpdated();
+
   void NotifyAcceleratorsUpdated();
 
   void CreateAndAppendAliasedAccelerators(
@@ -211,7 +252,7 @@ class AcceleratorConfigurationProvider
 
   // Returns a non-null value if there was an error with pre-processing the
   // accelerator to be added.
-  absl::optional<shortcut_customization::mojom::AcceleratorResultDataPtr>
+  std::optional<shortcut_customization::mojom::AcceleratorResultDataPtr>
   PreprocessAddAccelerator(mojom::AcceleratorSource source,
                            AcceleratorActionId action_id,
                            const ui::Accelerator& accelerator);
@@ -224,11 +265,18 @@ class AcceleratorConfigurationProvider
       mojom::AcceleratorSource source,
       AcceleratorActionId action_id);
 
+  std::vector<uint32_t> FindNonConfigurableIdFromAccelerator(
+      const ui::Accelerator& accelerator);
+
   void SetLayoutDetailsMapForTesting(
       const std::vector<AcceleratorLayoutDetails>& layouts);
 
   // Set only for testing purposes, this will ignore the default layouts.
   bool ignore_layouts_for_testing_ = false;
+
+  // If true, prevents new requests to create the configuration mappings.
+  // Resets to false after configuration mappings are updated.
+  bool pending_notify_accelerators_updated_ = false;
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
   // A lookup map that provides a way to lookup a shortcut's layout details.
@@ -253,7 +301,7 @@ class AcceleratorConfigurationProvider
       shortcut_customization::mojom::AcceleratorConfigurationProvider>
       receiver_{this};
 
-  raw_ptr<AshAcceleratorConfiguration, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<AshAcceleratorConfiguration, DanglingUntriaged>
       ash_accelerator_configuration_;
 
   // One accelerator action ID can potentially have multiple accelerators
@@ -263,6 +311,11 @@ class AcceleratorConfigurationProvider
   // A map from accelerators to AcceleratorActions, used as a reverse lookup for
   // standard non-configurable accelerators.
   NonConfigAcceleratorActionMap non_configurable_accelerator_to_id_;
+
+  // A map from accelerators to accessibility actions, used as a reverse lookup.
+  // This is separate from `non_configurable_accelerator_to_id_` since shortcuts
+  // between browser and accessibility are allowed to overlap.
+  AccessibilityAcceleratorActionMap accessibility_accelerator_to_id_;
 
   std::unique_ptr<PendingAccelerator> pending_accelerator_;
 
@@ -274,6 +327,12 @@ class AcceleratorConfigurationProvider
   base::ObserverList<AcceleratorsUpdatedObserver>
       accelerators_updated_observers_;
 
+  // Policy update mojo observer:
+  mojo::Remote<shortcut_customization::mojom::PolicyUpdatedObserver>
+      policy_updated_mojo_observer;
+
+  // Hold a task runner used to schedule updating the configuration mappings.
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   base::WeakPtrFactory<AcceleratorConfigurationProvider> weak_ptr_factory_{
       this};
 };

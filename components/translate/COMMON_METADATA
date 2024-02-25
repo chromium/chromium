@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "UI>Browser>Language>Translate"
+}
+buganizer_public: {
+  component_id: 1457298
 }

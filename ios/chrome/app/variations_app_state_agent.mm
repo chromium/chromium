@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
+#import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 
 // Name of trial and experiment groups.
 const char kIOSChromeVariationsTrialName[] = "kIOSChromeVariationsTrial";
@@ -63,7 +63,7 @@ enum class IOSChromeVariationsGroup {
 base::Time GetLastVariationsSeedFetchTime() {
   double timestamp = [[NSUserDefaults standardUserDefaults]
       doubleForKey:kLastVariationsSeedFetchTimeKey];
-  return base::Time::FromDoubleT(timestamp);
+  return base::Time::FromSecondsSinceUnixEpoch(timestamp);
 }
 
 // Records metric for `kIOSSeedExpiryHistogram` according whether there is a
@@ -152,7 +152,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
           local_state);
   if (!seed_fetch_time.is_null()) {
     [[NSUserDefaults standardUserDefaults]
-        setDouble:seed_fetch_time.ToDoubleT()
+        setDouble:seed_fetch_time.InSecondsFSinceUnixEpoch()
            forKey:kLastVariationsSeedFetchTimeKey];
   }
 }

@@ -46,10 +46,15 @@ std::string FormSignatureToDebugString(FormSignature form_signature) {
 void SavePasswordProgressLogger::LogFormData(
     SavePasswordProgressLogger::StringID label,
     const FormData& form_data) {
+  CHECK(!form_data.url.is_empty());
   std::string message = GetStringFromID(label) + ": {\n";
   message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
              FormSignatureToDebugString(CalculateFormSignature(form_data)) +
              "\n";
+  message +=
+      GetStringFromID(STRING_ALTERNATIVE_FORM_SIGNATURE) + ": " +
+      FormSignatureToDebugString(CalculateAlternativeFormSignature(form_data)) +
+      "\n";
   message +=
       GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url) + "\n";
   message +=
@@ -60,12 +65,10 @@ void SavePasswordProgressLogger::LogFormData(
   message += GetStringFromID(STRING_FORM_NAME) + ": " +
              ScrubElementID(form_data.name) + "\n";
 
-  message += GetStringFromID(STRING_IS_FORM_TAG) + ": " +
-             (form_data.is_form_tag ? "true" : "false") + "\n";
-
-  if (form_data.is_form_tag) {
-    message += "Form renderer id: " +
-               NumberToString(form_data.unique_renderer_id.value()) + "\n";
+  if (!form_data.renderer_id.is_null()) {
+    message +=
+        "Form renderer id: " + NumberToString(form_data.renderer_id.value()) +
+        "\n";
   }
 
   // Log fields.
@@ -129,8 +132,10 @@ std::string SavePasswordProgressLogger::GetFormFieldDataLogString(
       "%s: signature=%s, type=%s, renderer_id=%s, %s, %s%s",
       ScrubElementID(field.name).c_str(),
       base::NumberToString(*CalculateFieldSignatureForField(field)).c_str(),
-      ScrubElementID(field.form_control_type).c_str(),
-      NumberToString(*field.unique_renderer_id).c_str(), is_visible, is_empty,
+      ScrubElementID(std::string(autofill::FormControlTypeToString(
+                         field.form_control_type)))
+          .c_str(),
+      NumberToString(*field.renderer_id).c_str(), is_visible, is_empty,
       autocomplete.c_str());
 }
 
@@ -326,6 +331,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "The new state of the UI";
     case SavePasswordProgressLogger::STRING_FORM_SIGNATURE:
       return "Signature of form";
+    case SavePasswordProgressLogger::STRING_ALTERNATIVE_FORM_SIGNATURE:
+      return "Alternative signature of form";
     case SavePasswordProgressLogger::STRING_FORM_FETCHER_STATE:
       return "FormFetcherImpl::state_";
     case SavePasswordProgressLogger::STRING_UNOWNED_INPUTS_VISIBLE:
@@ -357,6 +364,9 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Password reused from ";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_SAVING_DISABLED:
       return "Generation disabled: saving disabled";
+    case SavePasswordProgressLogger::
+        STRING_GENERATION_DISABLED_NOT_ABLE_TO_SAVE_PASSWORDS:
+      return "Generation disabled: not able to save passwords";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_NO_SYNC:
       return "Generation disabled: no sync";
     case STRING_GENERATION_RENDERER_AUTOMATIC_GENERATION_AVAILABLE:

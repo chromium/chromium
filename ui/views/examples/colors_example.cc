@@ -15,6 +15,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/background.h"
@@ -165,6 +167,8 @@ void CreateAllColorsView(ScrollView* scroll_view) {
 }
 
 class AllColorsScrollView : public ScrollView {
+  METADATA_HEADER(AllColorsScrollView, ScrollView)
+
  public:
   AllColorsScrollView() {
     constexpr int kMaxHeight = 300;
@@ -177,6 +181,9 @@ class AllColorsScrollView : public ScrollView {
     CreateAllColorsView(this);
   }
 };
+
+BEGIN_METADATA(AllColorsScrollView)
+END_METADATA
 
 }  // namespace
 

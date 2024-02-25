@@ -44,6 +44,5 @@ found in the LICENSE file.
     <color name="text_highlight_color_incognito">@color/baseline_primary_80_alpha_20</color>
 
     <color name="omnibox_suggestion_bg_incognito">@color/default_bg_color_dark</color>
-    <color name="omnibox_dropdown_bg_incognito">@color/default_bg_color_dark_elev_1_baseline</color>
-
+    <color name="omnibox_dropdown_bg_incognito">@color/default_bg_color_dark_elev_3_baseline</color>
 </resources>

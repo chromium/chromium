@@ -75,7 +75,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
   SkiaOutputSurfaceDependency* const dependency_;
 
   // The next frame to be submitted by SwapBuffers().
-  absl::optional<PendingFrame> next_frame_;
+  std::optional<PendingFrame> next_frame_;
 };
 
 }  // namespace viz

@@ -116,7 +116,7 @@ suite('<os-settings-menu> reset', () => {
     const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
         '#advancedSubmenu');
     assertTrue(!!submenu);
-    const path = new window.URL(submenu.selected as string).pathname;
+    const path = submenu.selected;
     assertEquals('/osReset', path);
   });
 
@@ -124,13 +124,13 @@ suite('<os-settings-menu> reset', () => {
     const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
         '#advancedSubmenu');
     assertTrue(!!submenu);
-    let path = new window.URL(submenu.selected as string).pathname;
+    let path = submenu.selected;
     assertEquals('/osReset', path);
 
     Router.getInstance().navigateTo(routes.BLUETOOTH);
     flush();
 
-    path = new window.URL(submenu.selected as string).pathname;
+    path = submenu.selected;
     assertEquals('/bluetooth', path);
   });
 
@@ -138,7 +138,7 @@ suite('<os-settings-menu> reset', () => {
     const submenu = settingsMenu.shadowRoot!.querySelector<IronSelectorElement>(
         '#advancedSubmenu');
     assertTrue(!!submenu);
-    const path = new window.URL(submenu.selected as string).pathname;
+    const path = submenu.selected;
     assertEquals('/osReset', path);
 
     Router.getInstance().navigateTo(routes.BASIC);
@@ -167,100 +167,99 @@ suite('<os-settings-menu> menu item visibility', () => {
     settingsMenu.remove();
   });
 
-  function queryMenuItemByHref(href: string): HTMLElement|null {
+  function queryMenuItemByPath(path: string): HTMLElement|null {
     return settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-        `a.item[href="${href}"]`);
+        `os-settings-menu-item[path="${path}"]`);
   }
 
   test('About page menu item should always be visible', () => {
-    const href = `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`;
-    const menuItem = queryMenuItemByHref(href);
+    const path = `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`;
+    const menuItem = queryMenuItemByPath(path);
     assertTrue(isVisible(menuItem));
   });
 
   interface MenuItemData {
     sectionName: SectionName;
-    href: string;
+    path: string;
   }
 
   const menuItemData: MenuItemData[] = [
     // Basic pages
     {
       sectionName: 'kNetwork',
-      href: `/${routesMojom.NETWORK_SECTION_PATH}`,
+      path: `/${routesMojom.NETWORK_SECTION_PATH}`,
     },
     {
       sectionName: 'kBluetooth',
-      href: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
+      path: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
     },
     {
       sectionName: 'kMultiDevice',
-      href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
+      path: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
     },
     {
       sectionName: 'kPeople',
-      href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
+      path: `/${routesMojom.PEOPLE_SECTION_PATH}`,
     },
     {
       sectionName: 'kKerberos',
-      href: `/${routesMojom.KERBEROS_SECTION_PATH}`,
+      path: `/${routesMojom.KERBEROS_SECTION_PATH}`,
     },
     {
       sectionName: 'kDevice',
-      href: `/${routesMojom.DEVICE_SECTION_PATH}`,
+      path: `/${routesMojom.DEVICE_SECTION_PATH}`,
     },
     {
       sectionName: 'kPersonalization',
-      href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
+      path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
     },
     {
       sectionName: 'kSearchAndAssistant',
-      href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
+      path: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
     },
     {
       sectionName: 'kPrivacyAndSecurity',
-      href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
+      path: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
     },
     {
       sectionName: 'kApps',
-      href: `/${routesMojom.APPS_SECTION_PATH}`,
+      path: `/${routesMojom.APPS_SECTION_PATH}`,
     },
     {
       sectionName: 'kAccessibility',
-      href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
+      path: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
     },
 
     // Advanced pages
     {
       sectionName: 'kDateAndTime',
-      href: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
+      path: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
     },
     {
       sectionName: 'kLanguagesAndInput',
-      href: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
+      path: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
     },
     {
       sectionName: 'kFiles',
-      href: `/${routesMojom.FILES_SECTION_PATH}`,
+      path: `/${routesMojom.FILES_SECTION_PATH}`,
     },
     {
       sectionName: 'kPrinting',
-      href: `/${routesMojom.PRINTING_SECTION_PATH}`,
+      path: `/${routesMojom.PRINTING_SECTION_PATH}`,
     },
     {
       sectionName: 'kCrostini',
-      href: `/${routesMojom.CROSTINI_SECTION_PATH}`,
+      path: `/${routesMojom.CROSTINI_SECTION_PATH}`,
     },
     {
       sectionName: 'kReset',
-      href: `/${routesMojom.RESET_SECTION_PATH}`,
+      path: `/${routesMojom.RESET_SECTION_PATH}`,
     },
   ];
 
-  for (const {sectionName, href} of menuItemData) {
+  for (const {sectionName, path} of menuItemData) {
     test(
-        `${sectionName} menu item is visible if corresponding page is available`,
-        () => {
+        `${sectionName} menu item is visible if page is available`, () => {
           // Make page available
           settingsMenu.pageAvailability = {
             ...settingsMenu.pageAvailability,
@@ -268,11 +267,14 @@ suite('<os-settings-menu> menu item visibility', () => {
           };
           flush();
 
-          let menuItem = queryMenuItemByHref(href);
-          assertTrue(
-              isVisible(menuItem),
-              `Menu item for ${sectionName} should be visible.`);
+          const menuItem = queryMenuItemByPath(path);
+          assertTrue(isVisible(menuItem));
+        });
 
+
+    test(
+        `${sectionName} menu item is not visible if page is unavailable`,
+        () => {
           // Make page unavailable
           settingsMenu.pageAvailability = {
             ...settingsMenu.pageAvailability,
@@ -280,10 +282,8 @@ suite('<os-settings-menu> menu item visibility', () => {
           };
           flush();
 
-          menuItem = queryMenuItemByHref(href);
-          assertFalse(
-              isVisible(menuItem),
-              `Menu item for ${sectionName} should not be visible.`);
+          const menuItem = queryMenuItemByPath(path);
+          assertFalse(isVisible(menuItem));
         });
   }
 });

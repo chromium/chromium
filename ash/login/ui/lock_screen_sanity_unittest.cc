@@ -39,14 +39,8 @@ namespace {
 // Returns the widget contents view that contains login shelf in the same root
 // window as `native_window`.
 views::View* GetLoginShelfContentsView(gfx::NativeWindow native_window) {
-  // TODO(https://crbug.com/1343114): refactor the code below after the login
-  // shelf widget is ready.
   Shelf* shelf = Shelf::ForWindow(native_window);
-  if (features::IsUseLoginShelfWidgetEnabled()) {
-    return shelf->login_shelf_widget()->GetContentsView();
-  }
-
-  return shelf->shelf_widget()->GetContentsView();
+  return shelf->login_shelf_widget()->GetContentsView();
 }
 
 class LockScreenAppFocuser {
@@ -68,7 +62,7 @@ class LockScreenAppFocuser {
 
  private:
   bool reversed_tab_order_ = false;
-  raw_ptr<views::Widget, ExperimentalAsh> lock_screen_app_widget_;
+  raw_ptr<views::Widget> lock_screen_app_widget_;
 };
 
 testing::AssertionResult VerifyFocused(views::View* view) {

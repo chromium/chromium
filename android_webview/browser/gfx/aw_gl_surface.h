@@ -52,6 +52,7 @@ class AwGLSurface : public gl::GLSurfaceEGL {
   // Returns true if this GLSurface created fbo to implement stencil clipping.
   // This doesn't take into account if fbo was created by Android.
   virtual bool IsDrawingToFBO();
+  virtual void DestroyExternalStencilFramebuffer() {}
 
   bool is_angle() { return is_angle_; }
 

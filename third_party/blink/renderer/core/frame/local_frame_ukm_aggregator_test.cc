@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 
 #include "base/metrics/statistics_recorder.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
@@ -12,11 +13,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/intersection_observer_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
 namespace blink {
 
@@ -55,7 +58,6 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   void RestartAggregator() {
     source_id_ = ukm::UkmRecorder::GetNewSourceID();
     aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>();
-    // ukm::UkmRecorder::GetNewSourceID(), &recorder_, true);
     aggregator_->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
   }
 
@@ -109,7 +111,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     auto entries = recorder().GetEntriesByName("Blink.UpdateTime");
     EXPECT_GT(entries.size(), index);
 
-    auto* entry = entries[index];
+    auto* entry = entries[index].get();
     EXPECT_TRUE(
         ukm::TestUkmRecorder::EntryHasMetric(entry, GetPrimaryMetricName()));
     const int64_t* primary_metric_value =
@@ -154,7 +156,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     auto entries = recorder().GetEntriesByName("Blink.PageLoad");
 
     EXPECT_EQ(entries.size(), expected_num_entries);
-    for (auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       EXPECT_TRUE(
           ukm::TestUkmRecorder::EntryHasMetric(entry, GetPrimaryMetricName()));
       const int64_t* primary_metric_value =
@@ -223,7 +225,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     EXPECT_EQ(recorder().entries_count(), expected_num_entries);
     auto entries = recorder().GetEntriesByName("Blink.UpdateTime");
     EXPECT_GT(entries.size(), expected_num_entries - 1);
-    auto* entry = entries[expected_num_entries - 1];
+    auto* entry = entries[expected_num_entries - 1].get();
 
     EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
         entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout)));
@@ -258,7 +260,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
 
  private:
   // Deterministically record metrics in test.
-  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
 
   int64_t source_id_;
   scoped_refptr<LocalFrameUkmAggregator> aggregator_;
@@ -691,6 +693,8 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
     // Create internal observer
     IntersectionObserverInit* observer_init =
         IntersectionObserverInit::Create();
+    observer_init->setRoot(
+        MakeGarbageCollected<V8UnionDocumentOrElement>(&document));
     TestIntersectionObserverDelegate* internal_delegate =
         MakeGarbageCollected<TestIntersectionObserverDelegate>(
             document, LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
@@ -734,7 +738,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0,
         root_document->UkmSourceID(), root_document->UkmRecorder());
 
-    target1->setAttribute(html_names::kStyleAttr, AtomicString("width: 60px"));
+    target1->setAttribute(html_names::kStyleAttr, AtomicString("height: 60px"));
     Compositor().BeginFrame();
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
@@ -756,7 +760,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
 
  private:
   // Deterministically record metrics in test.
-  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
 };
 
 TEST_F(LocalFrameUkmAggregatorSimTest, GetUkmAggregator) {
@@ -1034,5 +1038,298 @@ TEST_F(LocalFrameUkmAggregatorSimTest, SVGImageMetricsAreNotRecorded) {
   histogram_tester.ExpectTotalCount("Blink.Style.UpdateTime.PreFCP", 1);
   histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 1);
 }
+
+enum SyncScrollMutation {
+  kSyncScrollMutatesPosition,
+  kSyncScrollMutatesTransform,
+  kSyncScrollMutatesScrollOffset,
+  kSyncScrollMutatesPositionBeforeAccess,
+  kSyncScrollMutatesNothing,
+};
+
+enum SyncScrollPositionAccess {
+  kSyncScrollAccessScrollOffset,
+  kSyncScrollDoesNotAccessScrollOffset,
+};
+
+enum SyncScrollHandlerStrategy {
+  kSyncScrollWithEventHandler,
+  kSyncScrollWithEventHandlerSchedulingRAF,
+  kSyncScrollNoEventHandlerWithRAF,
+  kSyncScrollNoEventHandler,
+};
+
+using SyncScrollHeuristicTestConfig =
+    ::testing::tuple<SyncScrollMutation,
+                     SyncScrollPositionAccess,
+                     SyncScrollHandlerStrategy>;
+
+class LocalFrameUkmAggregatorSyncScrollTest
+    : public LocalFrameUkmAggregatorSimTest,
+      public ::testing::WithParamInterface<SyncScrollHeuristicTestConfig> {
+ public:
+  static std::string PrintTestName(
+      const ::testing::TestParamInfo<SyncScrollHeuristicTestConfig>& info) {
+    std::stringstream ss;
+    switch (GetSyncScrollMutation(info.param)) {
+      case SyncScrollMutation::kSyncScrollMutatesPosition:
+        ss << "MutatesPosition";
+        break;
+      case SyncScrollMutation::kSyncScrollMutatesPositionBeforeAccess:
+        ss << "MutatesPositionBeforeAccess";
+        break;
+      case SyncScrollMutation::kSyncScrollMutatesTransform:
+        ss << "MutatesTransform";
+        break;
+      case SyncScrollMutation::kSyncScrollMutatesScrollOffset:
+        ss << "MutatesScrollOffset";
+        break;
+      case SyncScrollMutation::kSyncScrollMutatesNothing:
+        ss << "MutatesNothing";
+        break;
+    }
+    ss << "_";
+    switch (GetSyncScrollPositionAccess(info.param)) {
+      case SyncScrollPositionAccess::kSyncScrollAccessScrollOffset:
+        ss << "AccessScrollOffset";
+        break;
+      case SyncScrollPositionAccess::kSyncScrollDoesNotAccessScrollOffset:
+        ss << "DoesNotAccessScrollOffset";
+        break;
+    }
+    ss << "_";
+    switch (GetSyncScrollHandlerStrategy(info.param)) {
+      case SyncScrollHandlerStrategy::kSyncScrollWithEventHandler:
+        ss << "WithEventHandler";
+        break;
+      case SyncScrollHandlerStrategy::kSyncScrollWithEventHandlerSchedulingRAF:
+        ss << "WithEventHandlerSchedulingRAF";
+        break;
+      case SyncScrollHandlerStrategy::kSyncScrollNoEventHandler:
+        ss << "NoEventHandler";
+        break;
+      case SyncScrollHandlerStrategy::kSyncScrollNoEventHandlerWithRAF:
+        ss << "NoEventHandlerWithRAF";
+        break;
+    }
+    return ss.str();
+  }
+
+ protected:
+  static SyncScrollMutation GetSyncScrollMutation(
+      const SyncScrollHeuristicTestConfig& config) {
+    return ::testing::get<0>(config);
+  }
+
+  static SyncScrollPositionAccess GetSyncScrollPositionAccess(
+      const SyncScrollHeuristicTestConfig& config) {
+    return ::testing::get<1>(config);
+  }
+
+  static SyncScrollHandlerStrategy GetSyncScrollHandlerStrategy(
+      const SyncScrollHeuristicTestConfig& config) {
+    return ::testing::get<2>(config);
+  }
+
+  bool ShouldTriggerSyncScrollHeuristic() const {
+    // We would only attempt to synchronize scrolling if we had a scroll handler
+    // and, provided this is the case, we look for both mutating a property and
+    // accessing scroll offset. Note: it's also ok to mutate via rAF, provided
+    // that rAF was scheduled during the scroll handler.
+    return GetSyncScrollMutation(GetParam()) !=
+               SyncScrollMutation::kSyncScrollMutatesNothing &&
+           GetSyncScrollMutation(GetParam()) !=
+               SyncScrollMutation::kSyncScrollMutatesPositionBeforeAccess &&
+           GetSyncScrollPositionAccess(GetParam()) ==
+               SyncScrollPositionAccess::kSyncScrollAccessScrollOffset &&
+           (GetSyncScrollHandlerStrategy(GetParam()) ==
+                SyncScrollHandlerStrategy::kSyncScrollWithEventHandler ||
+            GetSyncScrollHandlerStrategy(GetParam()) ==
+                SyncScrollHandlerStrategy::
+                    kSyncScrollWithEventHandlerSchedulingRAF);
+  }
+
+  std::string GenerateNewScrollPosition() {
+    switch (GetSyncScrollPositionAccess(GetParam())) {
+      case SyncScrollPositionAccess::kSyncScrollAccessScrollOffset:
+        return "document.scrollingElement.scrollTop";
+      case SyncScrollPositionAccess::kSyncScrollDoesNotAccessScrollOffset:
+        return "100";
+    }
+    NOTREACHED();
+  }
+
+  std::string GenerateMutation() {
+    std::string pos = GenerateNewScrollPosition();
+    switch (GetSyncScrollMutation(GetParam())) {
+      case SyncScrollMutation::kSyncScrollMutatesPosition:
+        return base::StringPrintf("card.style.top = %s + 'px'", pos.c_str());
+      case SyncScrollMutation::kSyncScrollMutatesTransform:
+        return base::StringPrintf(
+            "card.style.transform = 'translateY(' + %s + 'px)'", pos.c_str());
+      case SyncScrollMutation::kSyncScrollMutatesScrollOffset:
+        return base::StringPrintf("subscroller.scrollTop = %s + 'px'",
+                                  pos.c_str());
+      case SyncScrollMutation::kSyncScrollMutatesPositionBeforeAccess:
+        return base::StringPrintf(
+            "card.style.top = Math.floor(Math.random() * 100) + 'px'; var "
+            "unused = %s",
+            pos.c_str());
+      case SyncScrollMutation::kSyncScrollMutatesNothing:
+        return "";
+    }
+    NOTREACHED();
+  }
+
+  std::string GenerateScrollHandler() {
+    switch (GetSyncScrollHandlerStrategy(GetParam())) {
+      case SyncScrollHandlerStrategy::kSyncScrollWithEventHandler:
+        return base::StringPrintf(R"HTML(
+          document.addEventListener('scroll', (e) => {
+            %s;
+          });
+        )HTML",
+                                  GenerateMutation().c_str());
+      case SyncScrollHandlerStrategy::kSyncScrollWithEventHandlerSchedulingRAF:
+        return base::StringPrintf(R"HTML(
+          document.addEventListener('scroll', (e) => {
+            window.requestAnimationFrame((t) => { %s; });
+          });
+        )HTML",
+                                  GenerateMutation().c_str());
+      case SyncScrollHandlerStrategy::kSyncScrollNoEventHandlerWithRAF:
+        return base::StringPrintf(R"HTML(
+          function doSyncEffect(t) {
+            %s;
+            window.requestAnimationFrame(doSyncEffect);
+          }
+          window.requestAnimationFrame(doSyncEffect);
+        )HTML",
+                                  GenerateMutation().c_str());
+      case SyncScrollHandlerStrategy::kSyncScrollNoEventHandler:
+        return "";
+    }
+    NOTREACHED();
+  }
+
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
+      platform_;
+};
+
+TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
+  base::HistogramTester histogram_tester;
+  const bool should_trigger = ShouldTriggerSyncScrollHeuristic();
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  std::string html = base::StringPrintf(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #card {
+        background: green;
+        width: 100px;
+        height: 100px;
+        position: absolute;
+      }
+      #subscroller {
+        width: 100px;
+        height: 100px;
+        position: fixed;
+        top:0;
+        overflow: scroll;
+      }
+    </style>
+    <div id='card'></div>
+    <div id='subscroller'>
+      <div style='background:blue;width50px;height:10000px'></div>
+    </div>
+    <div style='background:orange;width:100px;height:10000px'></div>
+    <script>
+      %s
+    </script>
+  )HTML",
+                                        GenerateScrollHandler().c_str());
+  main_resource.Complete(html.c_str());
+
+  // Wait until the script has had time to run.
+  platform_->RunForPeriodSeconds(5.);
+  base::RunLoop().RunUntilIdle();
+
+  // Do a pre-FCP frame.
+  Compositor().BeginFrame();
+
+  // We haven't scrolled at this point, so we should never have a count.
+  histogram_tester.ExpectTotalCount(
+      "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PreFCP", 0);
+
+  // Cause a pre-FCP scroll.
+  auto* scrolling_element =
+      LocalFrameRoot().GetFrame()->GetDocument()->scrollingElement();
+  scrolling_element->setScrollTop(100.0);
+
+  // Do another pre-FCP frame.
+  Compositor().BeginFrame();
+
+  // Now that we'ev scrolled, we should have an update if triggering conditions
+  // are met.
+  histogram_tester.ExpectTotalCount(
+      "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PreFCP",
+      should_trigger ? 1 : 0);
+
+  // Cause FCP on the next frame.
+  Element* target = GetDocument().getElementById(AtomicString("card"));
+  target->setInnerHTML("hello world");
+
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(IsBeforeFCPForTesting());
+
+  scrolling_element =
+      LocalFrameRoot().GetFrame()->GetDocument()->scrollingElement();
+  scrolling_element->setScrollTop(200.0);
+
+  // Do another post-FCP frame.
+  Compositor().BeginFrame();
+
+  if (should_trigger) {
+    // Should only have triggered for the one pre FCP scroll.
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Blink.PossibleSynchronizedScrollCount2."
+                                       "UpdateTime.AggregatedPreFCP"),
+        base::BucketsAre(base::Bucket(1, 1)));
+    // Should only have triggered for the one post FCP scroll.
+    histogram_tester.ExpectTotalCount(
+        "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PostFCP", 1);
+  } else {
+    // Should never trigger.
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Blink.PossibleSynchronizedScrollCount2."
+                                       "UpdateTime.AggregatedPreFCP"),
+        base::BucketsAre(base::Bucket(0, 1)));
+    histogram_tester.ExpectTotalCount(
+        "Blink.PossibleSynchronizedScrollCount2.UpdateTime.PostFCP", 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    P,
+    LocalFrameUkmAggregatorSyncScrollTest,
+    ::testing::Combine(
+        ::testing::Values(
+            SyncScrollMutation::kSyncScrollMutatesPosition,
+            SyncScrollMutation::kSyncScrollMutatesTransform,
+            SyncScrollMutation::kSyncScrollMutatesScrollOffset,
+            SyncScrollMutation::kSyncScrollMutatesPositionBeforeAccess,
+            SyncScrollMutation::kSyncScrollMutatesNothing),
+        ::testing::Values(
+            SyncScrollPositionAccess::kSyncScrollAccessScrollOffset,
+            SyncScrollPositionAccess::kSyncScrollDoesNotAccessScrollOffset),
+        ::testing::Values(
+            SyncScrollHandlerStrategy::kSyncScrollWithEventHandler,
+            SyncScrollHandlerStrategy::kSyncScrollWithEventHandlerSchedulingRAF,
+            SyncScrollHandlerStrategy::kSyncScrollNoEventHandlerWithRAF,
+            SyncScrollHandlerStrategy::kSyncScrollNoEventHandler)),
+    LocalFrameUkmAggregatorSyncScrollTest::PrintTestName);
 
 }  // namespace blink

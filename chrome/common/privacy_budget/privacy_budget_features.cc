@@ -6,9 +6,18 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace features {
+
+BASE_FEATURE(kIdentifiabilityStudyMetaExperiment,
+             "IdentifiabilityStudyMetaExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<double>
+    kIdentifiabilityStudyMetaExperimentActivationProbability = {
+        &kIdentifiabilityStudyMetaExperiment, "ActivationProbability", -1};
 
 BASE_FEATURE(kIdentifiabilityStudy,
              "IdentifiabilityStudy",
@@ -47,24 +56,5 @@ const base::FeatureParam<std::string> kIdentifiabilityStudyBlocks = {
 
 const base::FeatureParam<std::string> kIdentifiabilityStudyBlockWeights = {
     &kIdentifiabilityStudy, "BlockWeights", ""};
-
-const base::FeatureParam<std::string> kIdentifiabilityStudyReidSurfaceBlocks = {
-    &kIdentifiabilityStudy, "ReidBlocks", ""};
-
-const base::FeatureParam<bool> kIdentifiabilityStudyEnableActiveSampling = {
-    &kIdentifiabilityStudy, "EnableActiveSampling", false};
-
-const base::FeatureParam<std::string>
-    kIdentifiabilityStudyActivelySampledFonts = {&kIdentifiabilityStudy,
-                                                 "ActivelySampledFonts", ""};
-const base::FeatureParam<std::string>
-    kIdentifiabilityStudyReidSurfaceBlocksSaltsRanges = {
-        &kIdentifiabilityStudy, "ReidBlocksSaltsRanges", ""};
-const base::FeatureParam<std::string>
-    kIdentifiabilityStudyReidSurfaceBlocksBits = {&kIdentifiabilityStudy,
-                                                  "ReidBlocksBits", ""};
-const base::FeatureParam<std::string>
-    kIdentifiabilityStudyReidBlocksNoiseProbabilities = {
-        &kIdentifiabilityStudy, "ReidBlocksNoiseProbabilities", ""};
 
 }  // namespace features

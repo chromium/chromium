@@ -114,7 +114,7 @@ void GrandfatheredEasyUnlockHostDisabler::OnHostChangedOnBackend() {
 void GrandfatheredEasyUnlockHostDisabler::DisableEasyUnlockHostIfNecessary() {
   timer_->Stop();
 
-  absl::optional<multidevice::RemoteDeviceRef> host_to_disable =
+  std::optional<multidevice::RemoteDeviceRef> host_to_disable =
       GetEasyUnlockHostToDisable();
 
   if (!host_to_disable)
@@ -171,7 +171,7 @@ void GrandfatheredEasyUnlockHostDisabler::OnDisableEasyUnlockHostResult(
     return;
 
   if (success) {
-    SetPotentialEasyUnlockHostToDisable(absl::nullopt);
+    SetPotentialEasyUnlockHostToDisable(std::nullopt);
     return;
   }
 
@@ -184,7 +184,7 @@ void GrandfatheredEasyUnlockHostDisabler::OnDisableEasyUnlockHostResult(
 }
 
 void GrandfatheredEasyUnlockHostDisabler::SetPotentialEasyUnlockHostToDisable(
-    absl::optional<multidevice::RemoteDeviceRef> device) {
+    std::optional<multidevice::RemoteDeviceRef> device) {
   pref_service_->SetString(kEasyUnlockHostIdToDisablePrefName,
                            !device || device->GetDeviceId().empty()
                                ? kNoDevice
@@ -195,14 +195,14 @@ void GrandfatheredEasyUnlockHostDisabler::SetPotentialEasyUnlockHostToDisable(
                                : device->instance_id());
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 GrandfatheredEasyUnlockHostDisabler::GetEasyUnlockHostToDisable() {
   std::string legacy_device_id =
       pref_service_->GetString(kEasyUnlockHostIdToDisablePrefName);
   std::string instance_id =
       pref_service_->GetString(kEasyUnlockHostInstanceIdToDisablePrefName);
   if (legacy_device_id == kNoDevice && instance_id == kNoDevice)
-    return absl::nullopt;
+    return std::nullopt;
 
   multidevice::RemoteDeviceRefList synced_devices =
       device_sync_client_->GetSyncedDevices();
@@ -222,8 +222,8 @@ GrandfatheredEasyUnlockHostDisabler::GetEasyUnlockHostToDisable() {
   //   - the device is the BetterTogether host.
   if (it == synced_devices.end() || !IsEasyUnlockHost(*it) ||
       *it == current_better_together_host_) {
-    SetPotentialEasyUnlockHostToDisable(absl::nullopt);
-    return absl::nullopt;
+    SetPotentialEasyUnlockHostToDisable(std::nullopt);
+    return std::nullopt;
   }
 
   return *it;

@@ -10,17 +10,18 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/memory/singleton.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -29,6 +30,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler.h"
@@ -73,8 +75,9 @@ bool ContainsReservedCharacters(const base::FilePath& path) {
   // Extensions are cross-platform.
   // Since FilePath uses backslash '\\' as file path separator on Windows, so we
   // need to check manually.
-  if (path.value().find('\\') != path.value().npos)
+  if (base::Contains(path.value(), '\\')) {
     return true;
+  }
   return !net::IsSafePortableRelativePath(path);
 }
 
@@ -240,7 +243,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
                                            const base::Value::Dict& value,
                                            int flags,
-                                           const std::string& explicit_id,
+                                           const ExtensionId& explicit_id,
                                            std::string* utf8_error) {
   base::ElapsedTimer timer;
   DCHECK(utf8_error);
@@ -264,9 +267,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   }
 
   std::vector<InstallWarning> install_warnings;
-  if (!manifest->ValidateManifest(utf8_error, &install_warnings)) {
-    return nullptr;
-  }
+  manifest->ValidateManifest(&install_warnings);
 
   scoped_refptr<Extension> extension = new Extension(path, std::move(manifest));
   extension->install_warnings_.swap(install_warnings);
@@ -300,8 +301,7 @@ bool Extension::ResourceMatches(const URLPatternSet& pattern_set,
   return pattern_set.MatchesURL(extension_url_.Resolve(resource));
 }
 
-ExtensionResource Extension::GetResource(
-    base::StringPiece relative_path) const {
+ExtensionResource Extension::GetResource(std::string_view relative_path) const {
   // We have some legacy data where resources have leading slashes.
   // See: http://crbug.com/121164
   if (!relative_path.empty() && relative_path[0] == '/')
@@ -368,7 +368,7 @@ bool Extension::ProducePEM(const std::string& input, std::string* output) {
   DCHECK(output);
   if (input.empty())
     return false;
-  base::Base64Encode(input, output);
+  *output = base::Base64Encode(input);
   return true;
 }
 
@@ -403,7 +403,7 @@ bool Extension::FormatPEMForFileOutput(const std::string& input,
 }
 
 // static
-GURL Extension::GetBaseURLFromExtensionId(const std::string& extension_id) {
+GURL Extension::GetBaseURLFromExtensionId(const ExtensionId& extension_id) {
   return GURL(base::StrCat({extensions::kExtensionScheme,
                             url::kStandardSchemeSeparator, extension_id}));
 }
@@ -468,7 +468,7 @@ ManifestLocation Extension::location() const {
   return manifest_->location();
 }
 
-const std::string& Extension::id() const {
+const ExtensionId& Extension::id() const {
   return manifest_->extension_id();
 }
 
@@ -725,7 +725,7 @@ bool Extension::LoadExtent(const char* key,
 
     // We do not allow authors to put wildcards in their paths. Instead, we
     // imply one at the end.
-    if (pattern.path().find('*') != std::string::npos) {
+    if (base::Contains(pattern.path(), '*')) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           value_error, base::NumberToString(i), errors::kNoWildCardsInPaths);
       return false;
@@ -810,7 +810,7 @@ bool Extension::LoadShortName(std::u16string* error) {
 }
 
 ExtensionInfo::ExtensionInfo(const base::Value::Dict* manifest,
-                             const std::string& id,
+                             const ExtensionId& id,
                              const base::FilePath& path,
                              ManifestLocation location)
     : extension_id(id), extension_path(path), extension_location(location) {

@@ -18,14 +18,18 @@
  * See README.md for more information.
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {debounceEnd, HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
-import {HelpBubbleClientCallbackRouter, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
-import {HelpBubbleController, Trackable} from './help_bubble_controller.js';
+import type {HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
+import {debounceEnd, HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT} from './help_bubble.js';
+import type {HelpBubbleClientCallbackRouter, HelpBubbleHandlerInterface, HelpBubbleParams} from './help_bubble.mojom-webui.js';
+import {HelpBubbleClosedReason} from './help_bubble.mojom-webui.js';
+import type {Trackable} from './help_bubble_controller.js';
+import {HelpBubbleController} from './help_bubble_controller.js';
 import {HelpBubbleProxyImpl} from './help_bubble_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -131,6 +135,7 @@ export const HelpBubbleMixin = dedupingMixin(
           assert(this.helpBubbleFixedAnchorObserver_);
           this.helpBubbleFixedAnchorObserver_.disconnect();
           this.helpBubbleFixedAnchorObserver_ = null;
+          this.helpBubbleDismissedEventTracker_.removeAll();
           this.helpBubbleControllerById_.clear();
           if (this.debouncedAnchorMayHaveChangedCallback_) {
             document.removeEventListener(
@@ -419,8 +424,8 @@ export const HelpBubbleMixin = dedupingMixin(
             this.helpBubbleHandler_.helpBubbleClosed(
                 nativeId, HelpBubbleClosedReason.kPageChanged);
           }
-          const bounds =
-              isVisible ? this.getElementBounds_(target) : new RectF();
+          const bounds: RectF = isVisible ? this.getElementBounds_(target) :
+                                            {x: 0, y: 0, width: 0, height: 0};
           if (!ctrl || ctrl.updateAnchorVisibility(isVisible, bounds)) {
             this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
                 nativeId, isVisible, bounds);
@@ -447,7 +452,7 @@ export const HelpBubbleMixin = dedupingMixin(
          * Returns bounds of the anchor element
          */
         private getElementBounds_(element: HTMLElement) {
-          const rect = new RectF();
+          const rect: RectF = {x: 0, y: 0, width: 0, height: 0};
           const bounds = element.getBoundingClientRect();
           rect.x = bounds.x;
           rect.y = bounds.y;
@@ -586,7 +591,7 @@ export interface Options {
 }
 
 export function parseOptions(options: Options) {
-  const padding = new InsetsF();
+  const padding: InsetsF = {top: 0, bottom: 0, left: 0, right: 0};
   padding.top = clampPadding(options.anchorPaddingTop);
   padding.left = clampPadding(options.anchorPaddingLeft);
   padding.bottom = clampPadding(options.anchorPaddingBottom);

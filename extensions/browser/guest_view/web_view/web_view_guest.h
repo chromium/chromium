@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "extensions/browser/script_executor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
@@ -98,6 +98,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Sets the transparency of the guest.
   void SetAllowTransparency(bool allow);
   bool allow_transparency() const { return allow_transparency_; }
+
+  // Sets the audio muted state of the guest.
+  void SetAudioMuted(bool mute);
+  bool IsAudioMuted();
 
   // Begin or continue a find request.
   void StartFind(const std::u16string& search_text,
@@ -193,9 +197,11 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void GuestViewDidStopLoading() final;
   void GuestZoomChanged(double old_zoom_level, double new_zoom_level) final;
   bool IsAutoSizeSupported() const final;
+  void OnOwnerAudioMutedStateUpdated(bool muted) final;
   void SignalWhenReady(base::OnceClosure callback) final;
   void WillAttachToEmbedder() final;
   bool RequiresSslInterstitials() const final;
+  bool IsPermissionRequestable(ContentSettingsType type) const final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
@@ -216,13 +222,14 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) final;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) final;
   void CanDownload(const GURL& url,
                    const std::string& request_method,
                    base::OnceCallback<void(bool)> callback) final;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) final;
+  bool ShouldResumeRequestsForCreatedWindow() override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
@@ -245,7 +252,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ExitFullscreenModeForTab(content::WebContents* web_contents) final;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) final;
-  void RequestToLockMouse(content::WebContents* web_contents,
+  void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
 
@@ -267,7 +274,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) final;
+      const std::optional<std::u16string>& untrusted_stack_trace) final;
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) final;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) final;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
@@ -314,7 +321,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       std::unique_ptr<GuestViewBase> owned_this,
       const base::Value::Dict& create_params,
       WebContentsCreatedCallback callback,
-      absl::optional<content::StoragePartitionConfig> storage_partition_config);
+      std::optional<content::StoragePartitionConfig> storage_partition_config);
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;
@@ -331,6 +338,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // Stores whether the contents of the guest can be transparent.
   bool allow_transparency_ = false;
+
+  // Stores whether the guest has been muted by the webview.setAudioMuted API.
+  bool is_audio_muted_ = false;
 
   // Handles the JavaScript dialog requests.
   JavaScriptDialogHelper javascript_dialog_helper_;

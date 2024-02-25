@@ -43,7 +43,7 @@
 
 namespace {
 
-web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
@@ -89,7 +89,7 @@ class BrowserLauncherTest : public InProcessBrowserTest {
     browser_service()->NewWindow(
         incognito, should_trigger_session_restore,
         display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
-        new_window_future.GetCallback());
+        /*profile_id=*/std::nullopt, new_window_future.GetCallback());
     ASSERT_TRUE(new_window_future.Wait())
         << "NewWindow did not trigger the callback.";
   }
@@ -288,6 +288,52 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, FullRestoreWithTwoProfiles) {
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    BrowserLauncherTest,
+    PRE_FullRestoreDoesNotRestoreNormalBrowserIfOnlyPWAsPreviouslyOpen) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+
+  // Install and launch a PWA.
+  webapps::AppId app_id = InstallPWA(profile, GetWebAppStartUrl());
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  ASSERT_NE(app_browser, nullptr);
+  ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  SetSkipUninstall(true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserLauncherTest,
+    FullRestoreDoesNotRestoreNormalBrowserIfOnlyPWAsPreviouslyOpen) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+
+  // Trigger Lacros full restore.
+  EXPECT_FALSE(profile->restored_last_session());
+  base::test::TestFuture<void> restore_waiter_future;
+  testing::SessionsRestoredWaiter restore_waiter(
+      restore_waiter_future.GetCallback(), 1);
+  browser_service()->OpenForFullRestore(/*skip_crash_restore=*/true);
+  ASSERT_TRUE(restore_waiter_future.Wait())
+      << "restore_waiter did not trigger the callback.";
+
+  // The last session should be logged as restored.
+  EXPECT_TRUE(profile->restored_last_session());
+
+  // An app browser should have been restored.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::FindAllTabbedBrowsersWithProfile(profile).size(), 0u);
+  Browser* app_browser = BrowserList::GetInstance()->get(0);
+  EXPECT_TRUE(app_browser->type() == Browser::Type::TYPE_APP);
+  ASSERT_TRUE(app_browser);
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
                        PRE_FullRestoreWillRestoreWebAppsIfPreviouslyOpen) {
   // Browser launch should be suppressed with the kNoStartupWindow switch.
@@ -308,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
   profile.GetPrefs()->CommitPendingWrite();
 
   // Install and launch a PWA.
-  web_app::AppId app_id = InstallPWA(&profile, GetWebAppStartUrl());
+  webapps::AppId app_id = InstallPWA(&profile, GetWebAppStartUrl());
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(&profile, app_id);
   ASSERT_NE(app_browser, nullptr);
   ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
@@ -374,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   Browser* app_browser = nullptr;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->type() != Browser::Type::TYPE_APP)
       continue;
     EXPECT_FALSE(app_browser);
@@ -406,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(
       &profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Install and launch a PWA.
-  web_app::AppId app_id = InstallPWA(&profile, GetWebAppStartUrl());
+  webapps::AppId app_id = InstallPWA(&profile, GetWebAppStartUrl());
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(&profile, app_id);
   ASSERT_NE(app_browser, nullptr);
   ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
@@ -642,7 +688,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
 
   // Launch the browser.
   base::test::TestFuture<crosapi::mojom::CreationResult> launch_future;
-  browser_service()->Launch(0, launch_future.GetCallback());
+  browser_service()->Launch(0, /*profile_id=*/std::nullopt,
+                            launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
 
   // Make sure 2 windows are preserved, one for each profile.
@@ -759,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
   // First launch the app. Only the app browser should exist.
-  web_app::AppId app_id = InstallPWA(&profile1, GetWebAppStartUrl());
+  webapps::AppId app_id = InstallPWA(&profile1, GetWebAppStartUrl());
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(&profile1, app_id);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_NE(app_browser, nullptr);
@@ -769,7 +816,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
   // Launch the browser. A browser window for each last profile should be
   // restored.
   base::test::TestFuture<crosapi::mojom::CreationResult> launch_future;
-  browser_service()->Launch(0, launch_future.GetCallback());
+  browser_service()->Launch(0, /*profile_id=*/std::nullopt,
+                            launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
 
   // Make sure 2 windows are preserved, one for each profile.

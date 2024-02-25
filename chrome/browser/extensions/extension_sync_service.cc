@@ -20,9 +20,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/model/sync_change.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -33,11 +31,6 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#endif
 
 using extensions::AppSorting;
 using extensions::Extension;
@@ -158,7 +151,7 @@ void ExtensionSyncService::WaitUntilReadyToSync(base::OnceClosure done) {
   system_->ready().Post(FROM_HERE, std::move(done));
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 ExtensionSyncService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -198,7 +191,7 @@ ExtensionSyncService::MergeDataAndStartSyncing(
   if (type == syncer::APPS)
     system_->app_sorting()->FixNTPOrdinalCollisions();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ExtensionSyncService::StopSyncing(syncer::ModelType type) {
@@ -223,7 +216,7 @@ syncer::SyncDataList ExtensionSyncService::GetAllSyncDataForTesting(
   return ToSyncerSyncDataList(sync_data_list);
 }
 
-absl::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
+std::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   for (const syncer::SyncChange& sync_change : change_list) {
@@ -235,7 +228,11 @@ absl::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
 
   system_->app_sorting()->FixNTPOrdinalCollisions();
 
-  return absl::nullopt;
+  return std::nullopt;
+}
+
+base::WeakPtr<syncer::SyncableService> ExtensionSyncService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 ExtensionSyncData ExtensionSyncService::CreateSyncData(

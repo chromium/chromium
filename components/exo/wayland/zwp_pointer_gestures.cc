@@ -71,8 +71,8 @@ class WaylandPointerGesturePinchDelegate : public PointerGesturePinchDelegate {
   }
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<Pointer, ExperimentalAsh> pointer_;
+  const raw_ptr<wl_resource> resource_;
+  raw_ptr<Pointer> pointer_;
 };
 
 void pointer_gesture_pinch_destroy(wl_client* client, wl_resource* resource) {

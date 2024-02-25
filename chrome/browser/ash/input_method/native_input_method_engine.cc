@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
-#include "chrome/browser/ash/input_method/editor_mediator.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/get_current_window_properties.h"
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
@@ -81,7 +81,9 @@ void NativeInputMethodEngine::Initialize(
           : nullptr;
 
   EditorMediator* editor_event_sink =
-      chromeos::features::IsOrcaEnabled() ? EditorMediator::Get() : nullptr;
+      chromeos::features::IsOrcaEnabled()
+          ? EditorMediatorFactory::GetInstance()->GetForProfile(profile)
+          : nullptr;
 
   chrome_keyboard_controller_client_observer_.Observe(
       ChromeKeyboardControllerClient::Get());

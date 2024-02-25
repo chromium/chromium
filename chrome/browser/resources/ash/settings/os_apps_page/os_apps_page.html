@@ -1,32 +1,44 @@
 <style include="settings-shared">
-  #appManagementRow,
-  #appNotificationsRow {
-    border-bottom: var(--cr-separator-line);
+  :host-context(body.revamp-wayfinding-enabled) #androidAppsRowIcon {
+    margin-inline-end: 16px;
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
+
+  #androidApps[actionable]:hover {
+    background-color: var(--cr-hover-background-color);
+    cursor: pointer;
   }
 </style>
 
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{appsPageTitle}">
-      <cr-link-row id="appManagementRow"
+      <cr-link-row id="appManagementRow" class="settings-box first"
+          start-icon="[[rowIcons_.manageApps]]"
           label="$i18n{appManagementTitle}"
           on-click="onClickAppManagement_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <template is="dom-if" if="[[showAppNotificationsRow_]]">
-        <cr-link-row id="appNotificationsRow"
+        <cr-link-row id="appNotificationsRow" class="settings-box"
+            start-icon="[[rowIcons_.notifications]]"
             label="$i18n{appNotificationsTitle}"
             on-click="onClickAppNotifications_"
             role-description="$i18n{subpageArrowRoleDescription}"
-            sub-label= "[[getAppListCountDescription_(
+            sub-label="[[getAppNotificationsRowSublabel_(
                 appsWithNotifications_.*, isDndEnabled_)]]">
         </cr-link-row>
       </template>
       <template is="dom-if" if="[[showAndroidApps_]]">
         <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
-          <div id="androidApps" class="settings-box first"
+          <div id="androidApps" class="settings-box"
               actionable$="[[androidAppsInfo.playStoreEnabled]]"
               on-click="onAndroidAppsSubpageClick_">
+            <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+              <iron-icon id="androidAppsRowIcon"
+                  icon="[[rowIcons_.googlePlayPreferences]]">
+              </iron-icon>
+            </template>
             <div class="start settings-box-text">
               $i18n{androidAppsPageLabel}
               <div class="secondary" id="secondaryText">
@@ -59,25 +71,37 @@
           </div>
         </template>
         <template is="dom-if" if="[[!isPlayStoreAvailable_]]" restamp>
-          <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
+          <cr-link-row id="manageApps" class="settings-box"
+              start-icon="[[rowIcons_.androidSettings]]"
+              label="$i18n{androidAppsManageApps}"
               on-click="onManageAndroidAppsClick_"
               external
               deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
           </cr-link-row>
         </template>
       </template>
-      <template is="dom-if" if="[[showStartup_]]">
-        <div class="settings-box">
-          <div class="start settings-box-text" aria-hidden="true">
+      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+        <template is="dom-if" if="[[shouldShowStartup_]]">
+          <div class="settings-box">
+            <div class="start settings-box-text" aria-hidden="true">
               $i18n{onStartupTitle}
+            </div>
+            <settings-dropdown-menu id="onStartupDropdown"
+                label="$i18n{onStartupTitle}"
+                pref="{{prefs.settings.restore_apps_and_pages}}"
+                menu-options="[[onStartupOptions_]]"
+                deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
+            </settings-dropdown-menu>
           </div>
-          <settings-dropdown-menu id="onStartupDropdown"
-              label="$i18n{onStartupTitle}"
-              pref="{{prefs.settings.restore_apps_and_pages}}"
-              menu-options="[[onStartupOptions_]]"
-              deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
-          </settings-dropdown-menu>
-        </div>
+        </template>
+      </template>
+      <template is="dom-if" if="[[showManageIsolatedWebAppsRow_]]">
+        <cr-link-row id="manageIsoalatedWebAppsRow" class="settings-box"
+            start-icon="[[rowIcons_.manageIsolatedWebApps]]"
+            label="$i18n{manageIsolatedWebAppsLinkText}"
+            on-click="onClickManageIsolatedWebApps_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
       </template>
     </settings-card>
   </div>
@@ -87,6 +111,18 @@
     <os-settings-subpage page-title="$i18n{appNotificationsTitle}">
       <settings-app-notifications-subpage prefs="{{prefs}}">
       </settings-app-notifications-subpage>
+    </os-settings-subpage>
+  </template>
+
+  <!-- APP NOTIFICATION MANAGEMENT -->
+  <template is="dom-if" route-path="/app-notifications-manager">
+    <os-settings-subpage
+        page-title="$i18n{appNotificationsManagerLabel}"
+        search-label="$i18n{appManagementSearchPrompt}"
+        search-term="{{searchTerm}}">
+      <settings-app-notifications-manager-subpage
+          prefs="{{prefs}}" search-term="[[searchTerm]]">
+      </settings-app-notifications-manager-subpage>
     </os-settings-subpage>
   </template>
 
@@ -110,7 +146,7 @@
           uninstall-label="$i18n{appManagementUninstallLabel}"
           policy-label="$i18n{appManagementAppInstalledByPolicyLabel}">
       </app-management-uninstall-button>
-      <app-management-app-detail-view>
+      <app-management-app-detail-view prefs="{{prefs}}">
       </app-management-app-detail-view>
     </os-settings-subpage>
   </template>
@@ -154,4 +190,15 @@
       </os-settings-subpage>
     </template>
   </template>
+
+  <!-- Manage Isolated Web Apps -->
+  <template is="dom-if" if="[[showManageIsolatedWebAppsRow_]]">
+    <template is="dom-if" route-path="/manage-isolated-web-apps">
+      <os-settings-subpage page-title="$i18n{manageIsolatedWebAppsTitle}">
+        <settings-manage-isolated-web-apps-subpage prefs="{{prefs}}">
+        </settings-manage-isolated-web-apps-subpage>
+      </os-settings-subpage>
+    </template>
+  </template>
+
 </os-settings-animated-pages>

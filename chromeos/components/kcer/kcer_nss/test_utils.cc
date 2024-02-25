@@ -4,19 +4,38 @@
 
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
 
+#include <pk11pub.h>
+
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
+#include "chromeos/components/kcer/kcer_token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/signature_verifier.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 using SignatureAlgorithm = crypto::SignatureVerifier::SignatureAlgorithm;
 
 namespace kcer {
+namespace {
+std::string ToString(const std::optional<chaps::KeyPermissions>& val) {
+  if (!val.has_value()) {
+    return "<empty>";
+  }
+  // Should be updated if `KeyPermissions` struct is changed.
+  return base::StringPrintf("[arc:%d corp:%d]", val->key_usages().arc(),
+                            val->key_usages().corporate());
+}
+}  // namespace
 
-TokenHolder::TokenHolder(Token token, bool initialize) {
-  io_token_ = std::make_unique<internal::KcerTokenImplNss>(token);
+TokenHolder::TokenHolder(Token token,
+                         HighLevelChapsClient* chaps_client,
+                         bool initialize) {
+  io_token_ = std::make_unique<internal::KcerTokenImplNss>(token, chaps_client);
   io_token_->SetAttributeTranslationForTesting(/*is_enabled=*/true);
   weak_ptr_ = io_token_->GetWeakPtr();
   // After this point `io_token_` should only be used on the IO thread.
@@ -39,7 +58,7 @@ void TokenHolder::Initialize() {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &internal::KcerTokenImplNss::Initialize, weak_ptr_,
+          &internal::KcerToken::InitializeForNss, weak_ptr_,
           crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_slot_.slot()))));
 }
 
@@ -49,18 +68,30 @@ void TokenHolder::FailInitialization() {
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&internal::KcerTokenImplNss::Initialize, weak_ptr_,
+      base::BindOnce(&internal::KcerToken::InitializeForNss, weak_ptr_,
                      /*nss_slot=*/nullptr));
+}
+
+uint32_t TokenHolder::GetSlotId() {
+  return PK11_GetSlotID(nss_slot_.slot());
 }
 
 //==============================================================================
 
-bool KeyPermissionsEqual(const absl::optional<chaps::KeyPermissions>& a,
-                         const absl::optional<chaps::KeyPermissions>& b) {
+[[nodiscard]] bool ExpectKeyPermissionsEqual(
+    const std::optional<chaps::KeyPermissions>& a,
+    const std::optional<chaps::KeyPermissions>& b) {
+  bool result = true;
   if (!a.has_value() || !b.has_value()) {
-    return (a.has_value() == b.has_value());
+    result = (a.has_value() == b.has_value());
+  } else {
+    result = (a->SerializeAsString() == b->SerializeAsString());
   }
-  return (a->SerializeAsString() == b->SerializeAsString());
+  if (!result) {
+    LOG(ERROR) << "ERROR: key_permissions: a: " << ToString(a)
+               << ", b: " << ToString(b);
+  }
+  return result;
 }
 
 bool VerifySignature(SigningScheme signing_scheme,
@@ -111,6 +142,20 @@ std::vector<uint8_t> PrependSHA256DigestInfo(base::span<const uint8_t> hash) {
                 kDigestInfoSha256DerData.end());
   result.insert(result.end(), hash.begin(), hash.end());
   return result;
+}
+
+std::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
+    const base::FilePath& path) {
+  std::string pem_data;
+  if (!base::ReadFileToString(path, &pem_data)) {
+    return std::nullopt;
+  }
+
+  bssl::PEMTokenizer tokenizer(pem_data, {"CERTIFICATE", "PRIVATE KEY"});
+  if (!tokenizer.GetNext()) {
+    return std::nullopt;
+  }
+  return std::vector<uint8_t>(tokenizer.data().begin(), tokenizer.data().end());
 }
 
 }  // namespace kcer

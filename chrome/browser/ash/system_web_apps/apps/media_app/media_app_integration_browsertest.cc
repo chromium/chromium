@@ -271,9 +271,8 @@ class MediaAppIntegrationPhotosIntegrationTest
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakePhotosApp(photos_version));
-    proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
-                                     apps::AppType::kUnknown,
-                                     /*should_notify_initialized=*/false);
+    proxy->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
+                  /*should_notify_initialized=*/false);
   }
 
   static bool GetFlagInApp(content::WebContents* web_ui, const char* flag) {
@@ -317,7 +316,7 @@ class NotificationWatcher : public NotificationDisplayService::Observer {
   }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::RunLoop run_loop_;
   std::string seen_notification_id_;
 
@@ -388,19 +387,13 @@ std::string FindAnyTTF() {
   return base::JoinString(slice, "/");
 }
 
-void PrepareAppForTest(content::WebContents* web_ui) {
-  EXPECT_TRUE(WaitForLoadStop(web_ui));
-  EXPECT_EQ(nullptr, MediaAppUiBrowserTest::EvalJsInAppFrame(
-                         web_ui, MediaAppUiBrowserTest::AppJsTestLibrary()));
-}
-
 content::WebContents* PrepareActiveBrowserForTest(
     int expected_browser_count = 2) {
   WaitForBrowserCount(expected_browser_count);
   Browser* app_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* web_ui =
       app_browser->tab_strip_model()->GetActiveWebContents();
-  PrepareAppForTest(web_ui);
+  MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
   return web_ui;
 }
 
@@ -479,7 +472,7 @@ content::WebContents* MediaAppIntegrationTest::LaunchWithOneTestFile(
 
 content::WebContents* MediaAppIntegrationTest::LaunchWithNoFiles() {
   content::WebContents* web_ui = LaunchApp(MediaAppLaunchParams());
-  PrepareAppForTest(web_ui);
+  MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
   return web_ui;
 }
 
@@ -518,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   // Launch the App for the first time.
   content::WebContents* app = DirectlyLaunchWithFile(TestFile(kFilePng800x600));
   Browser* first_browser = chrome::FindBrowserWithActiveWindow();
-  PrepareAppForTest(app);
+  MediaAppUiBrowserTest::PrepareAppForTest(app);
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
   ExpectProductSurveyData({.open_image = "1"});
@@ -526,7 +519,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   // Launch with a different file in a new window.
   app = DirectlyLaunchWithFile(TestFile(kFileJpeg640x480));
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
-  PrepareAppForTest(app);
+  MediaAppUiBrowserTest::PrepareAppForTest(app);
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
   EXPECT_NE(first_browser, second_browser);
@@ -639,33 +632,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppHandlesIntents) {
   }
 }
 
-// Regression test for b/172881869.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
-  LaunchWithNoFiles();
-  content::WebContents* app = PrepareActiveBrowserForTest();
-  // TODO(crbug/1148090): To fully load PDFs, "frame-src" needs to be set, this
-  // test doesn't provide coverage for that.
-  // Note: If "object-src" is not set in the CSP, the `<embed>` element fails to
-  // load and times out.
-  constexpr char kLoadPdf[] = R"(
-      (function loadPdf() {
-        const embedBlob =  document.createElement('embed');
-        embedBlob.type ='application/pdf';
-        embedBlob.height = '100%';
-        embedBlob.width = '100%';
-        const loadPromise = new Promise((resolve, reject) => {
-          embedBlob.addEventListener('load', () => resolve(true));
-          embedBlob.addEventListener('error', () => reject(false));
-        });
-        document.body.appendChild(embedBlob);
-        embedBlob.src = 'blob:chrome-untrusted://media-app/fake-pdf-blob-hash';
-        return loadPromise;
-      })();
-  )";
-
-  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, kLoadPdf));
-}
-
 namespace {
 // icon-button ids are calculated from a hash of the button labels. Id is used
 // because the UI toolkit has loose guarantees about where the actual label
@@ -725,7 +691,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        MAYBE_LoadsInkForImageAnnotation) {
   content::WebContents* app =
       DirectlyLaunchWithFile(TestFile(kFileJpeg640x480));
-  PrepareAppForTest(app);
+  MediaAppUiBrowserTest::PrepareAppForTest(app);
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 
@@ -757,7 +723,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MAYBE_InformationPanel) {
   content::WebContents* app =
       DirectlyLaunchWithFile(TestFile(kFileJpeg640x480));
-  PrepareAppForTest(app);
+  MediaAppUiBrowserTest::PrepareAppForTest(app);
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 
   // Expect info panel to not be open on first load.
@@ -1038,7 +1004,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
   // Check system_web_app_manager has the correct attributes for Media App.
   auto* system_app = GetManager().GetSystemApp(ash::SystemWebAppType::MEDIA);
   EXPECT_TRUE(system_app->ShouldShowInLauncher());
-  EXPECT_TRUE(system_app->ShouldShowInSearch());
+  EXPECT_TRUE(system_app->ShouldShowInSearchAndShelf());
 }
 
 // Note: Error reporting tests are limited to one per test instance otherwise we
@@ -1179,7 +1145,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   Browser* app_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* web_ui =
       app_browser->tab_strip_model()->GetActiveWebContents();
-  PrepareAppForTest(web_ui);
+  MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
 
   EXPECT_EQ(open_result, platform_util::OPEN_SUCCEEDED);
 
@@ -1222,7 +1188,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        HasCorrectThemeAndBackgroundColor) {
-  web_app::AppId app_id = MediaAppAppId();
+  webapps::AppId app_id = MediaAppAppId();
 
   web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
@@ -1250,7 +1216,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   Browser* audio_app_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* audio_web_ui =
       audio_app_browser->tab_strip_model()->GetActiveWebContents();
-  PrepareAppForTest(audio_web_ui);
+  MediaAppUiBrowserTest::PrepareAppForTest(audio_web_ui);
 
   // Launch with the image file.
   EXPECT_EQ(folder.Open(TestFile(kFileJpeg640x480)),
@@ -1259,7 +1225,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   Browser* image_app_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* image_web_ui =
       image_app_browser->tab_strip_model()->GetActiveWebContents();
-  PrepareAppForTest(image_web_ui);
+  MediaAppUiBrowserTest::PrepareAppForTest(image_web_ui);
 
   EXPECT_NE(image_app_browser, audio_app_browser);
   EXPECT_TRUE(ash::IsBrowserForSystemWebApp(image_app_browser,
@@ -1310,7 +1276,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
 // Ensures the autoplay on audio file launch updates the global media controls
 // with an appropriate media source name.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaControls) {
-  using absl::optional;
+  using std::optional;
   class MediaControlsObserver
       : public media_session::mojom::MediaControllerObserver {
    public:

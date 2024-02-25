@@ -13,10 +13,6 @@
 
 namespace cc {
 
-namespace proto {
-class ManagedMemoryPolicy;
-}  // namespace proto
-
 struct CC_EXPORT ManagedMemoryPolicy {
   static const size_t kDefaultNumResourcesLimit;
 

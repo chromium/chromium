@@ -424,7 +424,7 @@ void SystemClipboard::ReadUnsanitizedCustomFormat(
   // reject promises if the context is detached.
   if (!clipboard_.is_bound())
     return;
-  // The format size restriction is added in `ClipboardWriter::IsValidType`.
+  // The format size restriction is added in `ClipboardItem::supports`.
   DCHECK_LT(type.length(), mojom::blink::ClipboardHost::kMaxFormatSize);
   clipboard_->ReadUnsanitizedCustomFormat(type, std::move(callback));
 }
@@ -437,7 +437,7 @@ void SystemClipboard::WriteUnsanitizedCustomFormat(const String& type,
       data.size() >= mojom::blink::ClipboardHost::kMaxDataSize) {
     return;
   }
-  // The format size restriction is added in `ClipboardWriter::IsValidType`.
+  // The format size restriction is added in `ClipboardItem::supports`.
   DCHECK_LT(type.length(), mojom::blink::ClipboardHost::kMaxFormatSize);
   clipboard_->WriteUnsanitizedCustomFormat(type, std::move(data));
 }
@@ -561,8 +561,7 @@ mojo_base::BigBuffer SystemClipboard::Snapshot::Png(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasPng(buffer));
   // Make an owning copy of the png to return to user.
-  base::span<const uint8_t> span =
-      base::make_span(png_.value().data(), png_.value().size());
+  base::span<const uint8_t> span = base::make_span(png_.value());
   return mojo_base::BigBuffer(span);
 }
 
@@ -571,7 +570,7 @@ void SystemClipboard::Snapshot::SetPng(mojom::blink::ClipboardBuffer buffer,
                                        const mojo_base::BigBuffer& png) {
   BindToBuffer(buffer);
   // Make an owning copy of the png to save locally.
-  base::span<const uint8_t> span = base::make_span(png.data(), png.size());
+  base::span<const uint8_t> span = base::make_span(png);
   png_ = mojo_base::BigBuffer(span);
 }
 
@@ -617,6 +616,10 @@ void SystemClipboard::Snapshot::SetCustomData(
 // static
 mojom::blink::ClipboardFilesPtr SystemClipboard::Snapshot::CloneFiles(
     mojom::blink::ClipboardFilesPtr& files) {
+  if (!files) {
+    return {};
+  }
+
   WTF::Vector<mojom::blink::DataTransferFilePtr> vec;
   for (auto& dtf : files->files) {
     auto clones = CloneFsaToken(std::move(dtf->file_system_access_token));

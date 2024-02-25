@@ -50,17 +50,14 @@ import java.util.regex.Pattern;
 public class CrashFileManager {
     private static final String TAG = "CrashFileManager";
 
-    /**
-     * The name of the crash directory.
-     */
+    /** The name of the crash directory. */
     public static final String CRASH_DUMP_DIR = "Crash Reports";
 
     private static final String CRASHPAD_DIR = "Crashpad";
     private static final String ANR_DIR = "ANRs";
 
     // This should mirror the C++ CrashUploadList::kReporterLogFilename variable.
-    @VisibleForTesting
-    public static final String CRASH_DUMP_LOGFILE = "uploads.log";
+    @VisibleForTesting public static final String CRASH_DUMP_LOGFILE = "uploads.log";
 
     // Local ID is the segment after the last hyphen and before the extensions part. It's usually an
     // alphanumeric value but there is not restriction of having other characters like `_`. So we
@@ -104,16 +101,14 @@ public class CrashFileManager {
     // A delimiter between uid and the rest of a minidump filename. Only used for WebView minidumps.
     private static final String UID_DELIMITER = "_";
 
-    @VisibleForTesting
-    protected static final String TMP_SUFFIX = ".tmp";
+    @VisibleForTesting protected static final String TMP_SUFFIX = ".tmp";
 
     private static final Pattern TMP_PATTERN = Pattern.compile("\\.tmp\\z");
 
     // The maximum number of non-uploaded crashes that may be kept in the crash reports directory.
     // Chosen to attempt to balance between keeping a generous number of crashes, and not using up
     // too much filesystem storage space for obsolete crash reports.
-    @VisibleForTesting
-    protected static final int MAX_CRASH_REPORTS_TO_KEEP = 10;
+    @VisibleForTesting protected static final int MAX_CRASH_REPORTS_TO_KEEP = 10;
 
     // The maximum age, in days, considered acceptable for a crash report. Reports older than this
     // age will be removed. The constant is chosen to be quite conservative, while still allowing
@@ -125,8 +120,8 @@ public class CrashFileManager {
     // when we clean out the crash directory - the TO_UPLOAD value is checked every time we try to
     // copy a minidump - to ensure we don't store too many minidumps before they are cleaned out
     // after being uploaded.
-    @VisibleForTesting
-    static final int MAX_CRASH_REPORTS_TO_UPLOAD = MAX_CRASH_REPORTS_TO_KEEP * 2;
+    @VisibleForTesting static final int MAX_CRASH_REPORTS_TO_UPLOAD = MAX_CRASH_REPORTS_TO_KEEP * 2;
+
     // Same as above except this value is enforced per UID, so that one single app can't hog all
     // storage/uploading resources.
     @VisibleForTesting
@@ -137,22 +132,21 @@ public class CrashFileManager {
      * @return Comparator for prioritizing the more recently modified file
      */
     @VisibleForTesting
-    protected static final Comparator<File> sFileComparator = new Comparator<File>() {
-        @Override
-        public int compare(File lhs, File rhs) {
-            if (lhs.lastModified() == rhs.lastModified()) {
-                return lhs.compareTo(rhs);
-            } else if (lhs.lastModified() < rhs.lastModified()) {
-                return 1;
-            } else {
-                return -1;
-            }
-        }
-    };
+    protected static final Comparator<File> sFileComparator =
+            new Comparator<File>() {
+                @Override
+                public int compare(File lhs, File rhs) {
+                    if (lhs.lastModified() == rhs.lastModified()) {
+                        return lhs.compareTo(rhs);
+                    } else if (lhs.lastModified() < rhs.lastModified()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            };
 
-    /**
-     * Delete the file {@param fileToDelete}.
-     */
+    /** Delete the file {@param fileToDelete}. */
     public static boolean deleteFile(File fileToDelete) {
         boolean isSuccess = fileToDelete.delete();
         if (!isSuccess) {
@@ -179,9 +173,7 @@ public class CrashFileManager {
         return mFileToUpload.renameTo(new File(newName)) ? newName : null;
     }
 
-    /**
-     * @return The file name to rename to after an addition attempt to upload
-     */
+    /** @return The file name to rename to after an addition attempt to upload */
     @VisibleForTesting
     public static String filenameWithIncrementedAttemptNumber(String filename) {
         int numTried = readAttemptNumberInternal(filename);
@@ -211,9 +203,7 @@ public class CrashFileManager {
         return fileToUpload.renameTo(renamedFile) ? renamedFile : null;
     }
 
-    /**
-     * @return True iff the provided File was ready be uploaded for the first time.
-     */
+    /** @return True iff the provided File was ready be uploaded for the first time. */
     public static boolean isReadyUploadForFirstTime(File fileToUpload) {
         return fileToUpload.getName().contains(READY_FOR_UPLOAD_SUFFIX);
     }
@@ -226,17 +216,18 @@ public class CrashFileManager {
      */
     public static File trySetForcedUpload(File fileToUpload) {
         if (fileToUpload.getName().contains(UPLOADED_MINIDUMP_SUFFIX)) {
-            Log.w(TAG, "Refusing to reset upload attempt state for a file that has already been "
-                            + "successfully uploaded: " + fileToUpload.getName());
+            Log.w(
+                    TAG,
+                    "Refusing to reset upload attempt state for a file that has already been "
+                            + "successfully uploaded: "
+                            + fileToUpload.getName());
             return null;
         }
         File renamedFile = new File(filenameWithForcedUploadState(fileToUpload.getPath()));
         return fileToUpload.renameTo(renamedFile) ? renamedFile : null;
     }
 
-    /**
-     * @return True iff the provided File was manually forced (by the user) to be uploaded.
-     */
+    /** @return True iff the provided File was manually forced (by the user) to be uploaded. */
     public static boolean isForcedUpload(File fileToUpload) {
         return fileToUpload.getName().contains(UPLOAD_FORCED_MINIDUMP_SUFFIX);
     }
@@ -249,8 +240,9 @@ public class CrashFileManager {
     protected static String filenameWithForcedUploadState(String filename) {
         int numTried = readAttemptNumber(filename);
         if (numTried > 0) {
-            filename = filename.replace(
-                    UPLOAD_ATTEMPT_DELIMITER + numTried, UPLOAD_ATTEMPT_DELIMITER + 0);
+            filename =
+                    filename.replace(
+                            UPLOAD_ATTEMPT_DELIMITER + numTried, UPLOAD_ATTEMPT_DELIMITER + 0);
         }
         filename = filename.replace(UPLOAD_SKIPPED_MINIDUMP_SUFFIX, UPLOAD_FORCED_MINIDUMP_SUFFIX);
         return filename.replace(NOT_YET_UPLOADED_MINIDUMP_SUFFIX, UPLOAD_FORCED_MINIDUMP_SUFFIX);
@@ -318,9 +310,11 @@ public class CrashFileManager {
      */
     private static void renameCrashDumpFollowingUpload(File crashDumpFile, String suffix) {
         // The pre-upload filename might have been either "foo.dmpN.tryM" or "foo.forcedN.tryM".
-        String newName = crashDumpFile.getPath()
-                                 .replace(NOT_YET_UPLOADED_MINIDUMP_SUFFIX, suffix)
-                                 .replace(UPLOAD_FORCED_MINIDUMP_SUFFIX, suffix);
+        String newName =
+                crashDumpFile
+                        .getPath()
+                        .replace(NOT_YET_UPLOADED_MINIDUMP_SUFFIX, suffix)
+                        .replace(UPLOAD_FORCED_MINIDUMP_SUFFIX, suffix);
         boolean renamed = crashDumpFile.renameTo(new File(newName));
         if (!renamed) {
             Log.w(TAG, "Failed to rename " + crashDumpFile);
@@ -352,9 +346,7 @@ public class CrashFileManager {
         return crashDir.mkdir() || crashDir.isDirectory();
     }
 
-    /**
-     * @return whether the crash directory already exists.
-     */
+    /** @return whether the crash directory already exists. */
     public boolean crashDirectoryExists() {
         return getCrashDirectory().isDirectory();
     }
@@ -401,8 +393,7 @@ public class CrashFileManager {
             return null;
         }
         File crashDir = getCrashDirectory();
-        return CrashReportMimeWriter.rewriteMinidumpsAsMIMEsAndGetCrashKeys(
-                crashpadDir, crashDir);
+        return CrashReportMimeWriter.rewriteMinidumpsAsMIMEsAndGetCrashKeys(crashpadDir, crashDir);
     }
 
     /**
@@ -412,8 +403,8 @@ public class CrashFileManager {
      */
     public File getMinidumpSansLogcatForPid(int pid) {
         importCrashpadMinidumps();
-        File[] foundFiles = listCrashFiles(
-            Pattern.compile("\\.dmp" + Integer.toString(pid) + "\\z"));
+        File[] foundFiles =
+                listCrashFiles(Pattern.compile("\\.dmp" + Integer.toString(pid) + "\\z"));
         return foundFiles.length > 0 ? foundFiles[0] : null;
     }
 
@@ -458,9 +449,7 @@ public class CrashFileManager {
         return listCrashFiles(MINIDUMP_READY_FOR_UPLOAD_PATTERN);
     }
 
-    /**
-     * Returns all minidump files that could still be uploaded, sorted by modification time stamp.
-     */
+    /** Returns all minidump files that could still be uploaded, sorted by modification time stamp. */
     public File[] getMinidumpsSkippedUpload() {
         return listCrashFiles(MINIDUMP_SKIPPED_UPLOAD_PATTERN);
     }
@@ -473,9 +462,7 @@ public class CrashFileManager {
         return listCrashFiles(MINIDUMP_FORCED_UPLOAD_PATTERN);
     }
 
-    /**
-     * Returns all minidump files with the uid {@param uid} from {@param minidumpFiles}.
-     */
+    /** Returns all minidump files with the uid {@param uid} from {@param minidumpFiles}. */
     public static List<File> filterMinidumpFilesOnUid(File[] minidumpFiles, int uid) {
         List<File> uidMinidumps = new ArrayList<>();
         for (File minidump : minidumpFiles) {
@@ -537,21 +524,20 @@ public class CrashFileManager {
         return filesBelowMaxTries.toArray(new File[filesBelowMaxTries.size()]);
     }
 
-    /**
-     * Returns a sorted and filtered list of files within the crash directory.
-     */
+    /** Returns a sorted and filtered list of files within the crash directory. */
     @VisibleForTesting
     File[] listCrashFiles(@Nullable final Pattern pattern) {
         File crashDir = getCrashDirectory();
 
         FilenameFilter filter = null;
         if (pattern != null) {
-            filter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String filename) {
-                    return pattern.matcher(filename).find();
-                }
-            };
+            filter =
+                    new FilenameFilter() {
+                        @Override
+                        public boolean accept(File dir, String filename) {
+                            return pattern.matcher(filename).find();
+                        }
+                    };
         }
         File[] foundFiles = crashDir.listFiles(filter);
         if (foundFiles == null) {
@@ -588,9 +574,7 @@ public class CrashFileManager {
         return f;
     }
 
-    /**
-     * @return the crash file named {@param filename}.
-     */
+    /** @return the crash file named {@param filename}. */
     public File getCrashFile(String filename) {
         return new File(getCrashDirectory(), filename);
     }
@@ -640,9 +624,7 @@ public class CrashFileManager {
         return null;
     }
 
-    /**
-     * @return the file used for logging crash upload events.
-     */
+    /** @return the file used for logging crash upload events. */
     public File getCrashUploadLogFile() {
         return new File(getCrashDirectory(), CRASH_DUMP_LOGFILE);
     }
@@ -755,9 +737,7 @@ public class CrashFileManager {
         return null;
     }
 
-    /**
-     * Returns whether the {@param minidump} belongs to the uid {@param uid}.
-     */
+    /** Returns whether the {@param minidump} belongs to the uid {@param uid}. */
     private static boolean belongsToUid(File minidump, int uid) {
         return minidump.getName().startsWith(uid + UID_DELIMITER);
     }
@@ -770,7 +750,10 @@ public class CrashFileManager {
      * some entity. A uid, on the other hand, is a unique identifier for Android packages.
      */
     private static String createUniqueMinidumpNameForUid(int uid) {
-        return uid + UID_DELIMITER + UUID.randomUUID() + NOT_YET_UPLOADED_MINIDUMP_SUFFIX
+        return uid
+                + UID_DELIMITER
+                + UUID.randomUUID()
+                + NOT_YET_UPLOADED_MINIDUMP_SUFFIX
                 + READY_FOR_UPLOAD_SUFFIX;
     }
 

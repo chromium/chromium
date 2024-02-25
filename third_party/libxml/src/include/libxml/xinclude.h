@@ -116,6 +116,12 @@ XMLPUBFUN int
 		xmlXIncludeSetFlags	(xmlXIncludeCtxtPtr ctxt,
 					 int flags);
 XMLPUBFUN void
+		xmlXIncludeSetErrorHandler(xmlXIncludeCtxtPtr ctxt,
+					 xmlStructuredErrorFunc handler,
+					 void *data);
+XMLPUBFUN int
+		xmlXIncludeGetLastError	(xmlXIncludeCtxtPtr ctxt);
+XMLPUBFUN void
 		xmlXIncludeFreeContext	(xmlXIncludeCtxtPtr ctxt);
 XMLPUBFUN int
 		xmlXIncludeProcessNode	(xmlXIncludeCtxtPtr ctxt,

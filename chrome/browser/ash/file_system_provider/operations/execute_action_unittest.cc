@@ -20,9 +20,7 @@
 #include "storage/browser/file_system/async_file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -38,8 +36,8 @@ const char kActionId[] = "SHARE";
 
 class FileSystemProviderOperationsExecuteActionTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsExecuteActionTest() {}
-  ~FileSystemProviderOperationsExecuteActionTest() override {}
+  FileSystemProviderOperationsExecuteActionTest() = default;
+  ~FileSystemProviderOperationsExecuteActionTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
@@ -78,15 +76,15 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  ExecuteActionRequestedOptions options;
-  ASSERT_TRUE(ExecuteActionRequestedOptions::Populate(
-      options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  ASSERT_EQ(entry_paths_.size(), options.entry_paths.size());
-  EXPECT_EQ(entry_paths_[0].value(), options.entry_paths[0]);
-  EXPECT_EQ(entry_paths_[1].value(), options.entry_paths[1]);
-  EXPECT_EQ(kActionId, options.action_id);
+  auto options =
+      ExecuteActionRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  ASSERT_EQ(entry_paths_.size(), options->entry_paths.size());
+  EXPECT_EQ(entry_paths_[0].value(), options->entry_paths[0]);
+  EXPECT_EQ(entry_paths_[1].value(), options->entry_paths[1]);
+  EXPECT_EQ(kActionId, options->action_id);
 }
 
 TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute_NoListener) {
@@ -131,6 +129,4 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, OnError) {
   EXPECT_EQ(base::File::FILE_ERROR_TOO_MANY_OPENED, callback_log[0]);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

@@ -20,9 +20,9 @@ namespace message_center {
 // will also allow for buttons whose touch areas extend beyond their clickable
 // area (<http://crbug.com/168856>).
 class MESSAGE_CENTER_EXPORT PaddedButton : public views::ImageButton {
- public:
-  METADATA_HEADER(PaddedButton);
+  METADATA_HEADER(PaddedButton, views::ImageButton)
 
+ public:
   explicit PaddedButton(PressedCallback callback);
   PaddedButton(const PaddedButton&) = delete;
   PaddedButton& operator=(const PaddedButton&) = delete;

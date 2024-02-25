@@ -15,7 +15,7 @@ class AccountInfoGetter {
   // Returns the account info that should be used when communicating with the
   // Payments server. The AccountInfo could be empty if there is no account to
   // be used by the Payments server.
-  // TODO(crbug.com/1411720): Make it return absl::optional.
+  // TODO(crbug.com/1411720): Make it return std::optional.
   virtual CoreAccountInfo GetAccountInfoForPaymentsServer() const = 0;
 
   // Returns true - When user is both signed-in and enabled sync.
@@ -23,7 +23,7 @@ class AccountInfoGetter {
   // feature enabled. This value should be exclusively used for metrics only
   // or in the communication with the payments server, if this communication
   // only influences metrics.
-  // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   virtual bool IsSyncFeatureEnabledForPaymentsServerMetrics() const = 0;
 

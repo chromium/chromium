@@ -6,7 +6,7 @@
 #include "ui/android/ui_android_jni_headers/ResourceFactory_jni.h"
 #include "ui/gfx/geometry/rect.h"
 
-using base::android::JavaParamRef;
+using jni_zero::JavaParamRef;
 
 namespace ui {
 

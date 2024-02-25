@@ -6,8 +6,10 @@
 
 #include "android_webview/browser/page_load_metrics/aw_page_load_metrics_memory_tracker_factory.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
+#include "components/page_load_metrics/browser/page_load_tracker.h"
 
 namespace content {
 class BrowserContext;
@@ -36,6 +38,7 @@ class PageLoadMetricsEmbedder
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
   bool IsSidePanel(content::WebContents* web_contents) override;
+  bool IsNonTabWebUI() override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
@@ -53,7 +56,9 @@ PageLoadMetricsEmbedder::PageLoadMetricsEmbedder(
 PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;
 
 void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
-    page_load_metrics::PageLoadTracker* tracker) {}
+    page_load_metrics::PageLoadTracker* tracker) {
+  tracker->AddObserver(std::make_unique<ThirdPartyMetricsObserver>());
+}
 
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {
   return false;
@@ -70,6 +75,12 @@ bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
 
 bool PageLoadMetricsEmbedder::IsSidePanel(content::WebContents* web_contents) {
   // The side panel is not supported on Android so this always returns false.
+  return false;
+}
+
+bool PageLoadMetricsEmbedder::IsNonTabWebUI() {
+  // Android web view doesn't have non-tab webUI surfaces (such as desktop tab
+  // search, side panel, etc).
   return false;
 }
 

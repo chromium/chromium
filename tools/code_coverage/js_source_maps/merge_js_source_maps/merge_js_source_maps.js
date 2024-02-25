@@ -20,6 +20,24 @@ const SOURCEMAPPING_DATA_URL_PREFIX =
     '//# sourceMappingURL=data:application/json;base64,';
 
 /**
+ * The token in the supplied argument files that indicates the start of the
+ * manifest files block.
+ */
+const MANIFEST_FILES_TOKEN = '--manifest-files';
+
+/**
+ * The token in the supplied argument files that indicates the start of the
+ * msources block.
+ */
+const SOURCES_TOKEN = '--sources';
+
+/**
+ * The token in the supplied argument files that indicates the start of the
+ * outputs block.
+ */
+const OUTPUTS_TOKEN = '--outputs';
+
+/**
  * Decode a base64 encoded string representing a sourcemap to its utf-8
  * equivalent.
  * @param {string} contents Base64 encoded string.
@@ -130,22 +148,57 @@ async function processFiles(inputFiles, outputFiles) {
   }
 }
 
+/**
+ * Take in an arguments string output by GN and convert it into the arguments
+ * to be read.
+ */
+function parseArguments(argumentsString) {
+  const args = argumentsString.split(' ');
+  const isToken =
+      line => [MANIFEST_FILES_TOKEN, OUTPUTS_TOKEN, SOURCES_TOKEN].some(
+          token => token === line);
+  const tokenToFiles = {
+    [MANIFEST_FILES_TOKEN]: [],
+    [OUTPUTS_TOKEN]: [],
+    [SOURCES_TOKEN]: [],
+  };
+  let currentToken = null;
+  for (const line of args) {
+    const trimmedLine = line.trim();
+    if (!trimmedLine.length) {
+      continue;
+    }
+    if (isToken(trimmedLine)) {
+      currentToken = trimmedLine;
+      continue;
+    }
+    tokenToFiles[currentToken].push(trimmedLine);
+  }
+  return tokenToFiles;
+}
+
 async function main() {
   const parser =
       new ArgumentParser({description: 'Merge multiple inlined sourcemaps'});
 
   parser.add_argument(
       '--out-dir', {help: 'Dir where all output files reside', required: true});
-  parser.add_argument('--sources', {help: 'Input files', nargs: '*'});
-  parser.add_argument('--outputs', {help: 'Output files', nargs: '*'});
   parser.add_argument(
-      '--manifest-files', {help: 'Output files', nargs: '*', required: false});
+      '--response-file-name',
+      {help: 'Arguments supplied via command line', nargs: '*'});
 
   const argv = parser.parse_args();
-  await processFiles(argv.sources, argv.outputs);
+  const responseFileContents =
+      fs.readFileSync(argv.response_file_name[0]).toString();
+  const {
+    [MANIFEST_FILES_TOKEN]: manifestFiles,
+    [OUTPUTS_TOKEN]: outputs,
+    [SOURCES_TOKEN]: sources
+  } = parseArguments(responseFileContents);
 
-  if (argv.manifest_files) {
-    for (const manifestFile of argv.manifest_files) {
+  await processFiles(sources, outputs);
+  if (manifestFiles) {
+    for (const manifestFile of manifestFiles) {
       try {
         const manifestFileContents =
             fs.readFileSync(manifestFile).toString('utf-8');

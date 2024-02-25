@@ -29,8 +29,10 @@
 
 class AutocompleteScoringModelService;
 class OnDeviceTailModelService;
+class OmniboxTriggeredFeatureService;
 
 struct AutocompleteMatch;
+struct ProviderStateService;
 
 class MockAutocompleteProviderClient
     : public testing::NiceMock<AutocompleteProviderClient> {
@@ -57,8 +59,7 @@ class MockAutocompleteProviderClient
   }
   scoped_refptr<history::TopSites> GetTopSites() override { return nullptr; }
 
-  MOCK_METHOD0(GetLocalOrSyncableBookmarkModel, bookmarks::BookmarkModel*());
-  MOCK_METHOD0(GetAccountBookmarkModel, bookmarks::BookmarkModel*());
+  MOCK_METHOD0(GetBookmarkModel, bookmarks::CoreBookmarkModel*());
   MOCK_METHOD0(GetInMemoryDatabase, history::URLDatabase*());
   MOCK_METHOD0(GetInMemoryURLIndex, InMemoryURLIndex*());
 
@@ -119,6 +120,16 @@ class MockAutocompleteProviderClient
     return nullptr;
   }
 
+  ProviderStateService* GetProviderStateService() const override {
+    return provider_state_service_.get();
+  }
+
+  bool in_background_state() const override { return in_background_state_; }
+
+  void set_in_background_state(bool in_background_state) override {
+    in_background_state_ = in_background_state;
+  }
+
   MOCK_CONST_METHOD0(GetAcceptLanguages, std::string());
   MOCK_CONST_METHOD0(GetEmbedderRepresentationOfAboutScheme, std::string());
   MOCK_METHOD0(GetBuiltinURLs, std::vector<std::u16string>());
@@ -170,6 +181,7 @@ class MockAutocompleteProviderClient
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 
+  bool in_background_state_ = false;
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<DocumentSuggestionsService> document_suggestions_service_;
   std::unique_ptr<RemoteSuggestionsService> remote_suggestions_service_;
@@ -177,6 +189,7 @@ class MockAutocompleteProviderClient
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
+  std::unique_ptr<ProviderStateService> provider_state_service_;
   MockTabMatcher tab_matcher_;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;  // Not owned.
 };

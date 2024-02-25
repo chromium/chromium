@@ -8,13 +8,9 @@ import org.chromium.base.Callback;
 
 import java.util.List;
 
-/**
- * Provides methods needed for querying and managing browsing history.
- */
+/** Provides methods needed for querying and managing browsing history. */
 public interface HistoryProvider {
-    /**
-     * Observer to be notified of browsing history events.
-     */
+    /** Observer to be notified of browsing history events. */
     public interface BrowsingHistoryObserver {
         /**
          * Called after {@link BrowsingHistoryBridge#queryHistory(String, long)} is complete.
@@ -23,8 +19,7 @@ public interface HistoryProvider {
          *                                This will be false once the entire local history database
          *                                and remote web history has been searched.
          */
-        void onQueryHistoryComplete(List<HistoryItem> items,
-                boolean hasMorePotentialMatches);
+        void onQueryHistoryComplete(List<HistoryItem> items, boolean hasMorePotentialMatches);
 
         /**
          * Called when history has been deleted through something other than a call to
@@ -42,17 +37,18 @@ public interface HistoryProvider {
         void hasOtherFormsOfBrowsingData(boolean hasOtherForms);
     }
 
-    /**
-     * Sets the {@link BrowsingHistoryObserver} to be notified of browsing history events.
-     */
+    /** Sets the {@link BrowsingHistoryObserver} to be notified of browsing history events. */
     void setObserver(BrowsingHistoryObserver observer);
 
     /**
      * Query browsing history. Only one query may be in-flight at any time. See
      * BrowsingHistoryService::QueryHistory.
+     *
      * @param query The query search text. May be empty.
+     * @param appId The package name of the app to filter the query result visited by CCT. Can be
+     *     null for the results visited by BrApp.
      */
-    void queryHistory(String query);
+    void queryHistory(String query, String appId);
 
     /**
      * Query browsing history for a particular host. Only one query may be in-flight at any time.
@@ -82,13 +78,9 @@ public interface HistoryProvider {
      */
     void markItemForRemoval(HistoryItem item);
 
-    /**
-     * Removes all items that have been marked for removal through #markItemForRemoval().
-     */
+    /** Removes all items that have been marked for removal through #markItemForRemoval(). */
     void removeItems();
 
-    /**
-     * Destroys the HistoryProvider.
-     */
+    /** Destroys the HistoryProvider. */
     void destroy();
 }

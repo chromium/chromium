@@ -16,6 +16,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
@@ -29,19 +31,16 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for AwContentsClient.onRenderProcessGone callback.
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientOnRendererUnresponsiveTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/** Tests for AwContentsClient.onRenderProcessGone callback. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedTest {
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String TAG = "AwRendererUnresponsive";
 
     private static class JSBlocker {
-        // The Blink thread waits on this in block(),
-        // until the test thread calls releaseBlock().
+        // The Blink thread waits on this in block(), until the test thread calls releaseBlock().
         private CountDownLatch mBlockingLatch;
         // The test thread waits on this in waitUntilBlocked(),
         // until the Blink thread calls block().
@@ -81,8 +80,11 @@ public class AwContentsClientOnRendererUnresponsiveTest {
         }
 
         void transientlyBlockBlinkThread(final AwContents awContents) throws Exception {
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                    () -> { awContents.evaluateJavaScript("blocker.block();", null); });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        awContents.evaluateJavaScript("blocker.block();", null);
+                    });
             mBlocker.waitUntilBlocked();
         }
 
@@ -129,14 +131,20 @@ public class AwContentsClientOnRendererUnresponsiveTest {
         }
 
         void permanentlyBlockBlinkThread(final AwContents awContents) throws Exception {
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                    () -> { awContents.evaluateJavaScript("blocker.block();", null); });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        awContents.evaluateJavaScript("blocker.block();", null);
+                    });
             mBlocker.waitUntilBlocked();
         }
 
         void awaitRendererTermination() throws Exception {
-            mUnresponsiveCallbackHelper.waitForCallback(0, UNRESPONSIVE_CALLBACK_COUNT,
-                    AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            mUnresponsiveCallbackHelper.waitForCallback(
+                    0,
+                    UNRESPONSIVE_CALLBACK_COUNT,
+                    AwActivityTestRule.WAIT_TIMEOUT_MS,
+                    TimeUnit.MILLISECONDS);
             Assert.assertEquals(
                     UNRESPONSIVE_CALLBACK_COUNT, mUnresponsiveCallbackHelper.getCallCount());
 
@@ -164,12 +172,23 @@ public class AwContentsClientOnRendererUnresponsiveTest {
         }
     }
 
+    public AwContentsClientOnRendererUnresponsiveTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
     private void sendInputEvent(final AwContents awContents) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            long eventTime = SystemClock.uptimeMillis();
-            awContents.dispatchKeyEvent(new KeyEvent(
-                    eventTime, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0));
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    long eventTime = SystemClock.uptimeMillis();
+                    awContents.dispatchKeyEvent(
+                            new KeyEvent(
+                                    eventTime,
+                                    eventTime,
+                                    KeyEvent.ACTION_DOWN,
+                                    KeyEvent.KEYCODE_ENTER,
+                                    0));
+                });
     }
 
     private void addJsBlockerInterface(final AwContents awContents, final JSBlocker blocker)
@@ -192,7 +211,9 @@ public class AwContentsClientOnRendererUnresponsiveTest {
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         addJsBlockerInterface(awContents, contentsClient.getBlocker());
-        mActivityTestRule.loadUrlSync(awContents, contentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         contentsClient.permanentlyBlockBlinkThread(awContents);
@@ -214,7 +235,9 @@ public class AwContentsClientOnRendererUnresponsiveTest {
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         addJsBlockerInterface(awContents, contentsClient.getBlocker());
-        mActivityTestRule.loadUrlSync(awContents, contentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                contentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         contentsClient.transientlyBlockBlinkThread(awContents);
         sendInputEvent(awContents);

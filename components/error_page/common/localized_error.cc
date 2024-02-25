@@ -28,7 +28,7 @@
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "components/strings/grit/components_chromium_strings.h"
+#include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/net_errors.h"
@@ -69,6 +69,7 @@ enum NAV_SUGGESTIONS {
   SUGGEST_NAVIGATE_TO_ORIGIN = 1 << 12,
   SUGGEST_SECURE_DNS_CONFIG = 1 << 13,
   SUGGEST_CAPTIVE_PORTAL_SIGNIN = 1 << 14,
+  SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS = 1 << 15,
 };
 
 enum SHOW_BUTTONS {
@@ -291,6 +292,12 @@ const LocalizedErrorMap net_error_options[] = {
    SUGGEST_NONE,
    SHOW_BUTTON_RELOAD,
   },
+  {net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+   IDS_ERRORPAGES_HEADING_BLOCKED,
+   IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+   SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS,
+   SHOW_BUTTON_RELOAD,
+  },
   {net::ERR_BLOCKED_BY_CSP,
    IDS_ERRORPAGES_HEADING_BLOCKED,
    IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_SECURITY,
@@ -465,6 +472,16 @@ const LocalizedErrorMap dns_probe_error_options[] = {
     },
 };
 
+const LocalizedErrorMap link_preview_error_options[] = {
+    {
+        error_page::LinkPreviewErrorCode::kNonHttpsForbidden,
+        IDS_ERRORPAGES_HEADING_LINKPREVIEW_NON_HTTPS_FORBIDDEN,
+        IDS_ERRORPAGES_SUMMARY_LINKPREVIEW_NON_HTTPS_FORBIDDEN,
+        SUGGEST_NONE,
+        SHOW_NO_BUTTONS,
+    },
+};
+
 const LocalizedErrorMap* FindErrorMapInArray(const LocalizedErrorMap* maps,
                                                    size_t num_maps,
                                                    int error_code) {
@@ -505,9 +522,14 @@ const LocalizedErrorMap* LookupErrorMap(const std::string& error_domain,
                             std::size(dns_probe_error_options), error_code);
     DCHECK(map);
     return map;
+  } else if (error_domain == Error::kLinkPreviewErrorDomain) {
+    const LocalizedErrorMap* map =
+        FindErrorMapInArray(link_preview_error_options,
+                            std::size(link_preview_error_options), error_code);
+    CHECK(map);
+    return map;
   } else {
-    NOTREACHED();
-    return nullptr;
+    NOTREACHED_NORETURN();
   }
 }
 
@@ -556,7 +578,7 @@ void AddLinkedSuggestionToList(const int error_code,
     case net::ERR_TOO_MANY_REDIRECTS:
       learn_more_url = GURL(kRedirectLoopLearnMoreUrl);
       suggestion_string = l10n_util::GetStringUTF16(
-          IDS_ERRORPAGES_SUGGESTION_CLEAR_COOKIES_SUMMARY);
+          IDS_ERRORPAGES_SUGGESTION_DELETE_COOKIES_SUMMARY);
       break;
     default:
       NOTREACHED();
@@ -635,6 +657,11 @@ void GetSuggestionsSummaryList(int error_code,
     return;
   }
   DCHECK(!IsSuggested(suggestions, SUGGEST_REPOST_RELOAD));
+
+  if (IsSuggested(suggestions, SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS)) {
+    suggestions_summary_list.Append(SingleEntryDictionary(
+        "summary", IDS_ERRORPAGES_SUGGESTION_RELOAD_PRIVATE_NETWORK_ACCESS));
+  }
 
   if (IsOnlySuggestion(suggestions, SUGGEST_NAVIGATE_TO_ORIGIN)) {
     DCHECK(suggestions_summary_list.empty());
@@ -1034,21 +1061,25 @@ LocalizedError::PageState LocalizedError::GetPageState(
                                         IDS_ERRORPAGE_NET_BUTTON_HIDE_DETAILS));
   result.strings.Set("summary", std::move(summary));
 
-  std::u16string error_string;
+  std::u16string error_code_string;
   if (error_domain == Error::kNetErrorDomain) {
     // Non-internationalized error string, for debugging Chrome itself.
     if (error_code != net::ERR_BLOCKED_BY_ADMINISTRATOR) {
-      error_string = base::ASCIIToUTF16(net::ErrorToShortString(error_code));
+      error_code_string =
+          base::ASCIIToUTF16(net::ErrorToShortString(error_code));
     }
+  } else if (error_domain == Error::kHttpErrorDomain) {
+    error_code_string = base::ASCIIToUTF16(HttpErrorCodeToString(error_code));
   } else if (error_domain == Error::kDnsProbeErrorDomain) {
-    std::string ascii_error_string =
-        error_page::DnsProbeStatusToString(error_code);
-    error_string = base::ASCIIToUTF16(ascii_error_string);
+    error_code_string =
+        base::ASCIIToUTF16(error_page::DnsProbeStatusToString(error_code));
+  } else if (error_domain == Error::kLinkPreviewErrorDomain) {
+    // NOP. Link Preview doesn't show error code and describes an error with
+    // text only.
   } else {
-    DCHECK_EQ(Error::kHttpErrorDomain, error_domain);
-    error_string = base::ASCIIToUTF16(HttpErrorCodeToString(error_code));
+    NOTREACHED_NORETURN();
   }
-  result.strings.Set("errorCode", error_string);
+  result.strings.Set("errorCode", error_code_string);
 
   base::Value::List suggestions_details;
   base::Value::List suggestions_summary_list;

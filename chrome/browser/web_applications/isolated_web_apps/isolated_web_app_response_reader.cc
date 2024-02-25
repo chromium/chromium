@@ -29,15 +29,15 @@ network::ResourceRequest RemoveQuery(
 
 }  // namespace
 
-IsolatedWebAppResponseReader::IsolatedWebAppResponseReader(
+IsolatedWebAppResponseReaderImpl::IsolatedWebAppResponseReaderImpl(
     std::unique_ptr<SignedWebBundleReader> reader)
     : reader_(std::move(reader)) {
   CHECK_EQ(reader_->GetState(), SignedWebBundleReader::State::kInitialized);
 }
 
-IsolatedWebAppResponseReader::~IsolatedWebAppResponseReader() = default;
+IsolatedWebAppResponseReaderImpl::~IsolatedWebAppResponseReaderImpl() = default;
 
-void IsolatedWebAppResponseReader::ReadResponse(
+void IsolatedWebAppResponseReaderImpl::ReadResponse(
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
   // Remove query parameters from the request URL, if it has any. Resources
@@ -55,13 +55,13 @@ void IsolatedWebAppResponseReader::ReadResponse(
   reader_->ReadResponse(
       resource_request.url.has_query() ? RemoveQuery(resource_request)
                                        : resource_request,
-      base::BindOnce(&IsolatedWebAppResponseReader::OnResponseRead,
+      base::BindOnce(&IsolatedWebAppResponseReaderImpl::OnResponseRead,
                      // `base::Unretained` is safe to use here, since `this`
                      // owns `reader_`.
                      base::Unretained(this), std::move(callback)));
 }
 
-void IsolatedWebAppResponseReader::OnResponseRead(
+void IsolatedWebAppResponseReaderImpl::OnResponseRead(
     ReadResponseCallback callback,
     base::expected<web_package::mojom::BundleResponsePtr, Error>
         response_head) {
@@ -73,6 +73,15 @@ void IsolatedWebAppResponseReader::OnResponseRead(
         // invalid.
         return Response(std::move(ptr), reader_->AsWeakPtr());
       }));
+}
+
+void IsolatedWebAppResponseReaderImpl::Close(base::OnceClosure callback) {
+  reader_->Close(base::BindOnce(&IsolatedWebAppResponseReaderImpl::OnClosed,
+                                base::Unretained(this), std::move(callback)));
+}
+
+void IsolatedWebAppResponseReaderImpl::OnClosed(base::OnceClosure callback) {
+  std::move(callback).Run();
 }
 
 IsolatedWebAppResponseReader::Response::Response(
@@ -90,9 +99,10 @@ IsolatedWebAppResponseReader::Response::~Response() = default;
 void IsolatedWebAppResponseReader::Response::ReadBody(
     mojo::ScopedDataPipeProducerHandle producer_handle,
     base::OnceCallback<void(net::Error net_error)> callback) {
-  if (!reader_) {
+  if (!reader_ ||
+      reader_->GetState() != SignedWebBundleReader::State::kInitialized) {
     // The weak pointer to `reader_` might no longer be valid when this is
-    // called.
+    // called. Also the reader might be closed.
     std::move(callback).Run(net::ERR_FAILED);
     return;
   }

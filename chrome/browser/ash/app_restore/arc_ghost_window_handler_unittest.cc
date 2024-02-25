@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include <memory>
+#include <optional>
 
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/wm_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::full_restore {
 
@@ -57,7 +57,7 @@ TEST_F(ArcGhostWindowHandlerTest, NotUpdateOverrideBoundsIfStateIsDefault) {
   EXPECT_EQ(handler()->session_id_to_pending_window_info_[SESSION_ID]->state,
             static_cast<int32_t>(chromeos::WindowStateType::kDefault));
   EXPECT_EQ(handler()->session_id_to_pending_window_info_[SESSION_ID]->bounds,
-            absl::nullopt);
+            std::nullopt);
 }
 
 }  // namespace ash::full_restore

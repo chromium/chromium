@@ -7,11 +7,12 @@ package org.chromium.ui.base;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,9 +32,7 @@ public final class ResourceBundle {
 
     private ResourceBundle() {}
 
-    /**
-     * Called when there are no locale pak files available.
-     */
+    /** Called when there are no locale pak files available. */
     @CalledByNative
     public static void setNoAvailableLocalePaks() {
         assert sAvailableLocales == null;
@@ -88,8 +87,9 @@ public final class ResourceBundle {
             if (locale.equals("en-US")) {
                 pathPrefix = "assets/fallback-locales/";
             } else {
-                String lang = LocalizationUtils.getSplitLanguageForAndroid(
-                        LocaleUtils.toBaseLanguage(locale));
+                String lang =
+                        LocalizationUtils.getSplitLanguageForAndroid(
+                                LocaleUtils.toBaseLanguage(locale));
                 pathPrefix = "assets/locales#lang_" + lang + "/";
             }
         }

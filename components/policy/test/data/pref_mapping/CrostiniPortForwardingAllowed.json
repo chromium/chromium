@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "crostini.port_forwarding_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniPortForwardingAllowed": false
+        },
+        "prefs": {
+          "crostini.port_forwarding_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CrostiniPortForwardingAllowed": true
+        },
+        "prefs": {
+          "crostini.port_forwarding_allowed_by_policy": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

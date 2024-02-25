@@ -69,7 +69,7 @@ void GetMetadataOnIOThread(const base::FilePath& path,
                            GetNecessaryFreeSpaceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   context->operation_runner()->GetMetadata(
-      url, storage::FileSystemOperation::GET_METADATA_FIELD_SIZE,
+      url, {storage::FileSystemOperation::GetMetadataField::kSize},
       base::BindOnce(&ComputeSpaceNeedToBeFreedAfterGetMetadata, path,
                      std::move(callback)));
 }

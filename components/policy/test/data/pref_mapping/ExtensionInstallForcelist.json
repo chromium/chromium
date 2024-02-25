@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ExtensionInstallForcelist": [
+            "lcncmkcnkcdbbanbjakcencbaoegdjlp;https://clients2.google.com/service/update2/crx"
+          ]
+        },
+        "prefs": {
+          "extensions.install.forcelist": {
+            "value": {
+              "lcncmkcnkcdbbanbjakcencbaoegdjlp": {
+                "external_update_url": "https://clients2.google.com/service/update2/crx"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+]

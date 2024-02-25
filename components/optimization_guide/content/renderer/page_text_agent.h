@@ -6,7 +6,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_RENDERER_PAGE_TEXT_AGENT_H_
 
 #include <stdint.h>
+
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -17,7 +19,6 @@
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 
 namespace content {
@@ -59,7 +60,7 @@ class PageTextAgent
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
   void DidStartNavigation(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type) override;
+      std::optional<blink::WebNavigationType> navigation_type) override;
   void DidFinishLoad() override;
 
   PageTextAgent(const PageTextAgent&) = delete;

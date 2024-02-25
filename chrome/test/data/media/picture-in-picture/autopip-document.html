@@ -12,19 +12,17 @@
 const video = document.getElementById('video');
 
 function playVideo() {
+  navigator.mediaSession.playbackState = "playing";
   video.play();
 }
 
 function pauseVideo() {
   video.pause();
+  navigator.mediaSession.playbackState = "paused";
 }
 
 function openPip(details) {
-  // These tests should have `automatic` set to true in the
-  // MediaSessionActionDetails, so only proceed if they do.
-  if (details.automatic) {
-    documentPictureInPicture.requestWindow();
-  }
+  documentPictureInPicture.requestWindow();
 }
 
 navigator.mediaSession.setActionHandler('enterpictureinpicture', openPip);

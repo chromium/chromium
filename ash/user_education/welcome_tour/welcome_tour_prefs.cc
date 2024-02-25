@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/user_education/user_education_types.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
@@ -28,6 +30,20 @@ static constexpr char kReasonForFirstTourPrevention[] =
 
 // Helpers ---------------------------------------------------------------------
 
+bool TourWasPreventedCounterfactually(PrefService* prefs) {
+  return GetReasonForFirstTourPrevention(prefs) ==
+         welcome_tour_metrics::PreventedReason::kCounterfactualExperimentArm;
+}
+
+std::optional<base::Time> GetTimeOfFirstCompletionOrCounterfactualPrevention(
+    PrefService* prefs) {
+  if (TourWasPreventedCounterfactually(prefs)) {
+    return GetTimeOfFirstTourPrevention(prefs);
+  } else {
+    return GetTimeOfFirstTourCompletion(prefs);
+  }
+}
+
 std::string GetTimeOfFirstInteractionPrefName(
     welcome_tour_metrics::Interaction interaction) {
   return base::StrCat({kTimeOfFirstInteractionPrefPrefix,
@@ -35,10 +51,10 @@ std::string GetTimeOfFirstInteractionPrefName(
                        ".first_time"});
 }
 
-absl::optional<base::Time> GetTimePrefIfSet(PrefService* prefs,
-                                            const char* pref_name) {
+std::optional<base::Time> GetTimePrefIfSet(PrefService* prefs,
+                                           const char* pref_name) {
   auto* pref = prefs->FindPreference(pref_name);
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 
@@ -46,17 +62,26 @@ absl::optional<base::Time> GetTimePrefIfSet(PrefService* prefs,
 
 // Utilities -------------------------------------------------------------------
 
-absl::optional<base::Time> GetTimeOfFirstTourCompletion(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstInteraction(
+    PrefService* prefs,
+    welcome_tour_metrics::Interaction interaction) {
+  auto pref_name = GetTimeOfFirstInteractionPrefName(interaction);
+  auto* pref = prefs->FindPreference(pref_name);
+  return pref->IsDefaultValue() ? std::nullopt
+                                : base::ValueToTime(pref->GetValue());
+}
+
+std::optional<base::Time> GetTimeOfFirstTourCompletion(PrefService* prefs) {
   CHECK(features::IsWelcomeTourEnabled());
   return GetTimePrefIfSet(prefs, kTimeOfFirstTourCompletion);
 }
 
-absl::optional<base::Time> GetTimeOfFirstTourPrevention(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstTourPrevention(PrefService* prefs) {
   CHECK(features::IsWelcomeTourEnabled());
   return GetTimePrefIfSet(prefs, kTimeOfFirstTourPrevention);
 }
 
-absl::optional<welcome_tour_metrics::PreventedReason>
+std::optional<welcome_tour_metrics::PreventedReason>
 GetReasonForFirstTourPrevention(PrefService* prefs) {
   using welcome_tour_metrics::PreventedReason;
 
@@ -64,7 +89,7 @@ GetReasonForFirstTourPrevention(PrefService* prefs) {
 
   auto* pref = prefs->FindPreference(kReasonForFirstTourPrevention);
   if (!pref || pref->IsDefaultValue() || !pref->GetValue()->is_int()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto reason = static_cast<PreventedReason>(pref->GetValue()->GetInt());
@@ -91,11 +116,23 @@ bool MarkFirstTourPrevention(PrefService* prefs,
 bool MarkTimeOfFirstInteraction(PrefService* prefs,
                                 welcome_tour_metrics::Interaction interaction) {
   CHECK(features::IsWelcomeTourEnabled());
-  const auto pref_name = GetTimeOfFirstInteractionPrefName(interaction);
-  if (prefs->FindPreference(pref_name)->IsDefaultValue()) {
-    prefs->SetTime(pref_name, base::Time::Now());
+
+  const auto now = base::Time::Now();
+  const auto time_to_measure_from =
+      GetTimeOfFirstCompletionOrCounterfactualPrevention(prefs);
+
+  // This function should only be called if the tour has been compeleted or
+  // prevented counterfactually, so that we always have a time to measure the
+  // delta from.
+  CHECK(time_to_measure_from.has_value());
+
+  // Set the continuous time pref.
+  const auto time_pref_name = GetTimeOfFirstInteractionPrefName(interaction);
+  if (prefs->FindPreference(time_pref_name)->IsDefaultValue()) {
+    prefs->SetTime(time_pref_name, now);
     return true;
   }
+
   return false;
 }
 

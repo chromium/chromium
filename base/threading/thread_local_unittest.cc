@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/threading/thread_local.h"
+
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -11,7 +14,6 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -86,8 +88,8 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerFreedOnThreadExit) {
 }
 
 TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
-  absl::optional<ThreadLocalOwnedPointer<SetTrueOnDestruction>>
-      tls_owned_pointer(absl::in_place);
+  std::optional<ThreadLocalOwnedPointer<SetTrueOnDestruction>>
+      tls_owned_pointer(std::in_place);
   bool tls_was_destroyed_other = false;
 
   Thread thread("TestThread");
@@ -126,10 +128,9 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
 }
 
 TEST(ThreadLocalTest, ThreadLocalOwnedPointerDeathIfDestroyedWithActiveThread) {
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
-  absl::optional<ThreadLocalOwnedPointer<int>> tls_owned_pointer(
-      absl::in_place);
+  std::optional<ThreadLocalOwnedPointer<int>> tls_owned_pointer(std::in_place);
 
   Thread thread("TestThread");
   thread.Start();

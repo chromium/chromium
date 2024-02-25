@@ -62,10 +62,6 @@ class DownloadStatusUpdater
   // in-progress downloads, and the browser is not tearing down yet.
   void UpdateProfileKeepAlive(content::DownloadManager* manager);
 
-  // Updates the download prefs when downloads are updated.
-  void UpdatePrefsOnDownloadUpdated(content::DownloadManager* manager,
-                                    download::DownloadItem* download);
-
  private:
   std::vector<std::unique_ptr<download::AllDownloadItemNotifier>> notifiers_;
   std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>

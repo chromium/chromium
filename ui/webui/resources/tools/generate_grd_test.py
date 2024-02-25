@@ -50,7 +50,7 @@ class GenerateGrdTest(unittest.TestCase):
   def _read_out_file(self, file_name):
     assert self._out_folder
     file_path = os.path.join(self._out_folder, file_name)
-    with open(file_path, 'r', newline='') as f:
+    with open(file_path, 'r', newline='', encoding='utf-8') as f:
       return f.read()
 
   def _run_test_(self, grd_expected,
@@ -100,7 +100,7 @@ class GenerateGrdTest(unittest.TestCase):
     if (grd_expected.endswith('.grd') or grd_expected.endswith('.grdp')):
       expected_grd_path = os.path.join(_HERE_DIR, 'tests', 'generate_grd',
                                        grd_expected)
-      with open(expected_grd_path, 'r', newline='') as f:
+      with open(expected_grd_path, 'r', newline='', encoding='utf-8') as f:
         expected_grd_content = f.read()
       self.assertMultiLineEqual(expected_grd_content, actual_grd)
     else:

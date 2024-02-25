@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2007-2015 Erik Doernenburg and contributors
+ *  Copyright (c) 2007-2021 Erik Doernenburg and contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
  *  not use these files except in compliance with the License. You may obtain
@@ -16,8 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-
-@interface OCMConstraint : NSObject 
+@interface OCMConstraint : NSObject
 
 + (instancetype)constraint;
 - (BOOL)evaluate:(id)value;
@@ -43,29 +42,30 @@
 
 @interface OCMIsNotEqualConstraint : OCMConstraint
 {
-	@public
-	id testValue;
+@public
+    id testValue;
 }
 
 @end
 
 @interface OCMInvocationConstraint : OCMConstraint
 {
-	@public
-	NSInvocation *invocation;
+@public
+    NSInvocation *invocation;
 }
 
 @end
 
 @interface OCMBlockConstraint : OCMConstraint
 {
-	BOOL (^block)(id);
+    BOOL (^block)(id);
 }
 
 - (instancetype)initWithConstraintBlock:(BOOL (^)(id))block;
 
 @end
 
-
+#ifndef OCM_DISABLE_SHORT_SYNTAX
 #define CONSTRAINT(aSelector) [OCMConstraint constraintWithSelector:aSelector onObject:self]
 #define CONSTRAINTV(aSelector, aValue) [OCMConstraint constraintWithSelector:aSelector onObject:self withValue:(aValue)]
+#endif

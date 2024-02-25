@@ -18,16 +18,15 @@
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "android_webview/browser_jni_headers/AwSafeBrowsingConfigHelper_jni.h"
 #include "android_webview/browser_jni_headers/AwSafeBrowsingSafeModeAction_jni.h"
-#include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/security_interstitials/core/urls.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -113,27 +112,27 @@ void AwUrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
 bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
-    int render_process_id,
-    int render_frame_id,
+    int child_id,
+    base::optional_ref<const base::UnguessableToken> render_frame_token,
     bool originated_from_service_worker) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewSafeBrowsingSafeMode)) {
-    if (Java_AwSafeBrowsingSafeModeAction_isSafeBrowsingDisabled(env)) {
-      return true;
-    }
+  if (Java_AwSafeBrowsingSafeModeAction_isSafeBrowsingDisabled(env)) {
+    return true;
   }
-
-  const content::GlobalRenderFrameHostId rfh_id(render_process_id,
-                                                render_frame_id);
 
   std::unique_ptr<AwContentsIoThreadClient> client;
   if (originated_from_service_worker) {
-    client = AwContentsIoThreadClient::GetServiceWorkerIoThreadClient();
-  } else if (!rfh_id) {
+    if (!Java_AwSafeBrowsingConfigHelper_getSafeBrowsingEnabledByManifest(
+            env)) {
+      // Skip the check if safe browsing is disabled in the app's manifest.
+      return true;
+    }
+  } else if (!render_frame_token.has_value()) {
     client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
   } else {
-    client = AwContentsIoThreadClient::FromID(rfh_id);
+    client =
+        AwContentsIoThreadClient::FromToken(content::GlobalRenderFrameHostToken(
+            child_id, blink::LocalFrameToken(render_frame_token.value())));
   }
 
   // If Safe Browsing is disabled by the app, skip the check. Default to
@@ -154,6 +153,17 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
       original_url.host() == safe_browsing::kChromeUISafeBrowsingHost;
   if (is_hardcoded_url)
     return false;
+
+  // Proceed with the request iff GMS is present, enabled, accessible to
+  // WebView and has minimum version to support safe browsing
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck) ||
+      base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
+    bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
+    if (!can_use_gms) {
+      return true;
+    }
+  }
 
   // For other requests, follow user consent.
   bool safe_browsing_user_consent =
@@ -185,7 +195,7 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
     const security_interstitials::UnsafeResource& resource,
     const AwWebResourceRequest& request) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource);
 
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
@@ -194,9 +204,9 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     // In this case we are about to leave an interstitial due to the user
     // clicking proceed on it, we shouldn't call OnSafeBrowsingHit again.
-    resource.callback_sequence->PostTask(
-        FROM_HERE, base::BindOnce(resource.callback, true /* proceed */,
-                                  false /* showed_interstitial */));
+    resource.DispatchCallback(FROM_HERE, true /* proceed */,
+                              false /* showed_interstitial */,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -221,7 +231,7 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     SafeBrowsingAction action,
     bool reporting) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource);
   // |web_contents| can be null after RenderFrameHost is destroyed.
   if (!web_contents)
     return;
@@ -232,7 +242,9 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     browser_context->SetExtendedReportingAllowed(false);
   }
 
-  content::NavigationEntry* entry = GetNavigationEntryForResource(resource);
+  content::NavigationEntry* entry =
+      safe_browsing::unsafe_resource_util::GetNavigationEntryForResource(
+          resource);
 
   // TODO(ntfschr): fully handle reporting once we add support (crbug/688629)
   bool proceed;
@@ -295,29 +307,16 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
     scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource);
   if (web_contents) {
     ui_manager->DisplayBlockingPage(resource);
     return;
   }
 
   // Reporting back that it is not okay to proceed with loading the URL.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(resource.callback, false /* proceed */,
-                                false /* showed_interstitial */));
-}
-
-void AwUrlCheckerDelegateImpl::CheckLookupMechanismExperimentEligibility(
-    const security_interstitials::UnsafeResource& resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  NOTREACHED();
-}
-void AwUrlCheckerDelegateImpl::CheckExperimentEligibilityAndStartBlockingPage(
-    const security_interstitials::UnsafeResource& resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  NOTREACHED();
+  resource.DispatchCallback(FROM_HERE, false /* proceed */,
+                            false /* showed_interstitial */,
+                            false /* has_post_commit_interstitial_skipped */);
 }
 
 }  // namespace android_webview

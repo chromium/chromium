@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -31,8 +32,8 @@ using user_education::HelpBubbleParams;
 
 // Helpers ---------------------------------------------------------------------
 
-std::u16string Repeat(base::StringPiece16 str, size_t times) {
-  std::vector<base::StringPiece16> strs(times);
+std::u16string Repeat(std::u16string_view str, size_t times) {
+  std::vector<std::u16string_view> strs(times);
   base::ranges::fill(strs, str);
   return base::JoinString(strs, u" ");
 }
@@ -92,7 +93,7 @@ HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
 }
 
 HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
-    const absl::optional<HelpBubbleStyle>& style) {
+    const std::optional<HelpBubbleStyle>& style) {
   HelpBubbleParams params;
   params.arrow = HelpBubbleArrow::kNone;
 

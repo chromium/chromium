@@ -19,8 +19,8 @@ limitations under the License.
 #include <cstddef>
 #include <cstdint>
 
-#include "leveldb/env.h"     // from @com_google_leveldb
-#include "leveldb/slice.h"   // from @com_google_leveldb
+#include "leveldb/env.h"  // from @com_google_leveldb
+#include "leveldb/slice.h"  // from @com_google_leveldb
 #include "leveldb/status.h"  // from @com_google_leveldb
 
 namespace tflite {
@@ -32,8 +32,7 @@ MemRandomAccessFile::MemRandomAccessFile(const char* buffer_data,
 
 MemRandomAccessFile::~MemRandomAccessFile() {}
 
-leveldb::Status MemRandomAccessFile::Read(uint64_t offset,
-                                          size_t n,
+leveldb::Status MemRandomAccessFile::Read(uint64_t offset, size_t n,
                                           leveldb::Slice* result,
                                           char* scratch) const {
   // Sanity check.

@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.provider;
 
-/**
- * Copy of android.provider.Browser.BookmarkColumns.
- */
+/** Copy of android.provider.Browser.BookmarkColumns. */
 public class BookmarkColumns implements BaseColumns {
     /**
      * The URL of the bookmark or history item.

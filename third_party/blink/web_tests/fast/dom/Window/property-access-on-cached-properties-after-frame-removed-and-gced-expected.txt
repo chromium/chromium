@@ -17,6 +17,7 @@ PASS window.cached_location.search is ''
 FAIL window.cached_location_ancestorOrigins.length should be 0. Was 1.
 PASS window.cached_locationbar.visible is false
 PASS window.cached_menubar.visible is false
+PASS window.cached_navigation.activation is null
 PASS window.cached_navigation.canGoBack is false
 PASS window.cached_navigation.canGoForward is false
 PASS window.cached_navigation.currentEntry is null
@@ -29,7 +30,7 @@ PASS window.cached_navigator.appCodeName is window.navigator.appCodeName
 PASS window.cached_navigator.appName is window.navigator.appName
 PASS window.cached_navigator.appVersion is ''
 PASS window.cached_navigator.cookieEnabled is false
-PASS window.cached_navigator.deprecatedRunAdAuctionEnforcesKAnonymity is false
+FAIL window.cached_navigator.deprecatedRunAdAuctionEnforcesKAnonymity should be false. Was true.
 PASS window.cached_navigator.deviceMemory is window.navigator.deviceMemory
 PASS window.cached_navigator.doNotTrack is null
 PASS window.cached_navigator.hardwareConcurrency is window.navigator.hardwareConcurrency
@@ -54,13 +55,23 @@ PASS window.cached_navigator_connection.saveData is false
 PASS window.cached_navigator_connection.type is window.navigator.connection.type
 PASS window.cached_navigator_devicePosture.onchange is null
 PASS window.cached_navigator_devicePosture.type is window.navigator.devicePosture.type
-PASS window.cached_navigator_gpu_wgslLanguageFeatures.size is 0
+PASS window.cached_navigator_gpu_wgslLanguageFeatures.size is window.navigator.gpu.wgslLanguageFeatures.size
 PASS window.cached_navigator_hid.onconnect is null
 PASS window.cached_navigator_hid.ondisconnect is null
 PASS window.cached_navigator_managed.onmanagedconfigurationchange is null
 PASS window.cached_navigator_mediaDevices.ondevicechange is null
 PASS window.cached_navigator_mediaSession.metadata is null
 PASS window.cached_navigator_mediaSession.playbackState is 'none'
+PASS window.cached_navigator_preferences_colorScheme.override is null
+PASS window.cached_navigator_preferences_colorScheme.value is ''
+PASS window.cached_navigator_preferences_contrast.override is null
+PASS window.cached_navigator_preferences_contrast.value is ''
+PASS window.cached_navigator_preferences_reducedData.override is null
+PASS window.cached_navigator_preferences_reducedData.value is ''
+PASS window.cached_navigator_preferences_reducedMotion.override is null
+PASS window.cached_navigator_preferences_reducedMotion.value is ''
+PASS window.cached_navigator_preferences_reducedTransparency.override is null
+PASS window.cached_navigator_preferences_reducedTransparency.value is ''
 PASS window.cached_navigator_presentation.defaultRequest is null
 PASS window.cached_navigator_presentation.receiver is null
 PASS window.cached_navigator_serial.onconnect is null

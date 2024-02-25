@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -19,7 +18,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -130,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
 
   content::WebContents* web_contents = chrome::AddRestoredTab(
       browser(), navigations, /* tab_index=*/1, /* selected_navigation=*/0,
-      /* extension_app_id=*/std::string(), /* group=*/absl::nullopt,
+      /* extension_app_id=*/std::string(), /* group=*/std::nullopt,
       /* select=*/true, /* pin=*/false,
       /* last_active_time=*/base::TimeTicks::Now(),
       /* storage_namespace=*/nullptr,
@@ -153,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
 
   content::WebContents* web_contents = chrome::AddRestoredTab(
       browser(), navigations, /* tab_index=*/1, /* selected_navigation=*/0,
-      /* extension_app_id=*/std::string(), /* group=*/absl::nullopt,
+      /* extension_app_id=*/std::string(), /* group=*/std::nullopt,
       /* select=*/false, /* pin=*/false,
       /* last_active_time=*/base::TimeTicks::Now(),
       /* storage_namespace=*/nullptr,

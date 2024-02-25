@@ -43,6 +43,25 @@ bool CheckOtherPolicySet(const policy::PolicyMap& policies,
   return false;
 }
 
+bool CheckPolicyScopeSupported(const policy::PolicyMap& policies,
+                               const std::string& policy_name,
+                               policy::PolicyErrorMap* errors) {
+// The policies will not be supported as user policies on iOS until we clear
+// data on sign out for managed users which requires new UI.
+#if BUILDFLAG(IS_IOS)
+  bool is_user_policy =
+      policies.Get(policy_name)->scope == policy::POLICY_SCOPE_USER;
+  if (is_user_policy) {
+    errors->AddError(policy_name,
+                     IDS_POLICY_NOT_SUPPORTED_AS_USER_POLICY_ON_IOS);
+  }
+  return !is_user_policy;
+#else
+  // Return true on all other platforms.
+  return true;
+#endif  // BUILDFLAG(IS_IOS)
+}
+
 }  // namespace
 
 IdleTimeoutPolicyHandler::IdleTimeoutPolicyHandler()
@@ -85,6 +104,10 @@ bool IdleTimeoutPolicyHandler::CheckPolicySettings(
     return false;
   }
 
+  if (!CheckPolicyScopeSupported(policies, policy_name(), errors)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -110,7 +133,7 @@ void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
     if (!action.is_string()) {
       continue;
     }
-    if (absl::optional<ActionType> action_type =
+    if (std::optional<ActionType> action_type =
             NameToActionType(action.GetString())) {
       converted_actions.Append(static_cast<int>(action_type.value()));
     }
@@ -118,14 +141,20 @@ void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
   prefs->SetValue(prefs::kIdleTimeoutActions,
                   base::Value(std::move(converted_actions)));
 
-  if (browsing_data::IsPolicyDependencyEnabled()) {
-    std::string log_message;
-    browsing_data::DisableSyncTypes(forced_disabled_sync_types_, prefs,
-                                    policy_name(), log_message);
-    if (log_message != std::string()) {
-      LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
-    }
+  std::string log_message = browsing_data::DisableSyncTypes(
+      forced_disabled_sync_types_, prefs, policy_name());
+  if (!log_message.empty()) {
+    LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
   }
+
+#if BUILDFLAG(IS_IOS)
+  // Set the `kIdleTimeoutPolicyAppliesToUserOnly`pref if the policy is set as a
+  // user policy. This will determine whether data should be cleared for
+  // `TimePeriod::ALL_TIME` or only for the time the user was signed in.
+  bool user_policy =
+      policies.Get(policy_name())->scope == policy::POLICY_SCOPE_USER;
+  prefs->SetBoolean(prefs::kIdleTimeoutPolicyAppliesToUserOnly, user_policy);
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
@@ -149,34 +178,14 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
     return false;
   }
 
+  if (!CheckPolicyScopeSupported(policies, policy_name(), errors)) {
+    return false;
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   const base::Value* sync_disabled =
       policies.GetValue(policy::key::kSyncDisabled, base::Value::Type::BOOLEAN);
   if (sync_disabled && sync_disabled->GetBool()) {
-    return true;
-  }
-
-  if (!browsing_data::IsPolicyDependencyEnabled()) {
-    std::vector<std::string> invalid_actions;
-    const base::Value* value =
-        policies.GetValue(policy_name(), base::Value::Type::LIST);
-    DCHECK(value);
-    for (const base::Value& action : value->GetList()) {
-      if (action.is_string() && !AllowsSyncEnabled(action.GetString())) {
-        invalid_actions.push_back(action.GetString());
-      }
-    }
-    if (!invalid_actions.empty()) {
-      errors->AddError(
-          policy_name(), IDS_POLICY_IDLE_TIMEOUT_ACTIONS_DEPENDENCY_ERROR,
-          std::vector<std::string>{policy::key::kSyncDisabled, "Enabled",
-                                   base::JoinString(invalid_actions, ", ")});
-      return false;
-    }
-    return true;
-  }
-#else
-  if (!browsing_data::IsPolicyDependencyEnabled()) {
     return true;
   }
 #endif  //! BUILDFLAG(IS_ANDROID)

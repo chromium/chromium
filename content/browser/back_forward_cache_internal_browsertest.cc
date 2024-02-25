@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/navigation_handle.h"
@@ -32,6 +33,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -535,8 +537,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-  // 3) Post IPC tasks to the page, testing both mojo remote and associated
-  // remote objects.
+  // 3) Post IPC tasks to the page, testing mojo remote objects.
 
   // Send a message via an associated interface - which will post a task with an
   // IPC hash and will be routed to the per-thread task queue.
@@ -549,33 +550,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       1);
   run_loop.Run();
 
-  // Post a non-associated interface. Will be routed to a frame-specific task
-  // queue with IPC set in SimpleWatcher.
-  base::RunLoop run_loop2;
-  rfh_a->GetHighPriorityLocalFrame()->DispatchBeforeUnload(
-      false,
-      base::BindOnce([](base::RepeatingClosure quit_closure, bool proceed,
-                        base::TimeTicks start_time,
-                        base::TimeTicks end_time) { quit_closure.Run(); },
-                     run_loop2.QuitClosure()));
-  run_loop2.Run();
-
   // 4) Check the histogram.
-  std::vector<base::HistogramBase::Sample> samples = {
-      base::HistogramBase::Sample(
-          base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
-              "blink.mojom.HighPriorityLocalFrame")),
-      base::HistogramBase::Sample(
-          base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
-              "blink.mojom.LocalFrame"))};
+  base::HistogramBase::Sample sample = base::HistogramBase::Sample(
+      base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
+          "blink.mojom.LocalFrame"));
 
-  for (base::HistogramBase::Sample sample : samples) {
-    FetchHistogramsFromChildProcesses();
-    EXPECT_TRUE(HistogramContainsIntValue(
-        sample, histogram_tester().GetAllSamples(
-                    "BackForwardCache.Experimental."
-                    "UnexpectedIPCMessagePostedToCachedFrame.MethodHash")));
-  }
+  FetchHistogramsFromChildProcesses();
+  EXPECT_TRUE(HistogramContainsIntValue(
+      sample, histogram_tester().GetAllSamples(
+                  "BackForwardCache.Experimental."
+                  "UnexpectedIPCMessagePostedToCachedFrame.MethodHash")));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -3401,6 +3385,43 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+// Test that when two back navigations are created to the same history entry one
+// after another without waiting for the first one to commit, the second one
+// should be committed as a normal back navigation without restoring the BFCache
+// entry.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       TwoBackNavigationsToTheSameEntry) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to a cacheable page A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_b);
+
+  // Page A should be in BFCache.
+  EXPECT_FALSE(rfh_a.IsDestroyed());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Navigate back to A, but before the `CommitDeferringCondition` check
+  // happens, start another navigation back to the same entry A.
+  TestActivationManager activation_manager(web_contents(), url_a);
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(activation_manager.WaitForAfterChecks());
+  ASSERT_TRUE(HistoryGoToIndex(web_contents(), 0));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_a);
+
+  // 4) Page A should not be restored from BFCache because the first navigation
+  // is cancelled and the second navigation should be a non-BFCache navigation.
+  ExpectNotRestored({NotRestoredReason::kNavigationCancelledWhileRestoring}, {},
+                    {}, {}, {}, FROM_HERE);
+}
+
 // Injects a blank subframe into the current document just before processing
 // DidCommitNavigation for a specified URL.
 class InjectCreateChildFrame : public DidCommitNavigationInterceptor {
@@ -3531,7 +3552,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   BackForwardCacheDisabledTester tester;
 
   // Use Screen Reader.
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   // Navigate to Page A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -3594,7 +3616,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   // Use Screen Reader.
-  EnableAccessibilityForWebContents(shell()->web_contents());
+  ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
 
   // Wait until we receive the kLoadComplete AX event. This means that the
   // kLoadStart event has definitely already passed and any kLoadStart we see
@@ -3630,8 +3653,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   // in the same task of |HandleAXEventsForTests()| and and result in a test
   // fail.
   rfh_a->HandleAXEventsForTests(rfh_a->GetAXTreeID(),
-                                std::move(updates_and_events),
-                                /*reset_token=*/0);
+                                std::move(updates_and_events));
 
   // Reset the callback before restoring the page so that we will not fail when
   // events are generated.
@@ -3652,6 +3674,114 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
     // LOAD_START event.
     EXPECT_EQ(current_frame_host(), rfh_a.get());
     ExpectRestored(FROM_HERE);
+
+    ASSERT_TRUE(waiter_start.WaitForNotification());
+    auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
+        waiter_start.event_browser_accessibility_manager()->delegate());
+    EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
+  }
+}
+
+class BackForwardCacheBrowserTestWithFlagForAXLocationChange
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kEnableBackForwardCacheForScreenReader,
+                              "", "true");
+    if (ShouldEvictOnAXLocationChange()) {
+      DisableFeature(features::kDoNotEvictOnAXLocationChange);
+    } else {
+      EnableFeatureAndSetParams(features::kDoNotEvictOnAXLocationChange, "",
+                                "");
+    }
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  bool ShouldEvictOnAXLocationChange() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheBrowserTestWithFlagForAXLocationChange,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
+                       EvictOnAXLocationChangeOrNot) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Use Screen Reader.
+  ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      shell()->web_contents(), ui::kAXModeComplete);
+
+  // Wait until we receive the kLoadComplete AX event. This means that the
+  // kLoadStart event has definitely already passed and any kLoadStart we see
+  // from this frame in the future is newly generated.
+  AccessibilityNotificationWaiter waiter_complete(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(waiter_complete.WaitForNotification());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  ASSERT_TRUE(rfh_a.get());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Set the callback for location change.
+  BrowserAccessibilityManager* manager =
+      rfh_a->GetOrCreateBrowserAccessibilityManager();
+  // This callback will count the number of times location change happens.
+  // Note that this callback runs even when the page is in back/forward cache.
+  int location_change_counter_for_testing = 0;
+  manager->SetLocationChangeCallbackForTesting(base::BindRepeating(
+      [](int* location_change_counter_for_testing) {
+        // Increment the location change count.
+        *location_change_counter_for_testing += 1;
+      },
+      &location_change_counter_for_testing));
+
+  // Generate a location change event.
+  std::vector<blink::mojom::LocationChangesPtr> changes_1;
+  ui::AXRelativeBounds relative_bounds_1;
+  relative_bounds_1.bounds =
+      gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
+  changes_1.push_back(blink::mojom::LocationChanges::New(0, relative_bounds_1));
+  rfh_a->HandleAXLocationChanges(rfh_a->GetAXTreeID(), std::move(changes_1),
+                                 /*reset_token=*/1);
+
+  // Generate another location change event.
+  std::vector<blink::mojom::LocationChangesPtr> changes_2;
+  ui::AXRelativeBounds relative_bounds_2;
+  relative_bounds_2.bounds =
+      gfx::RectF(/*x=*/2, /*y=*/3, /*width=*/4, /*height=*/5);
+  changes_2.push_back(blink::mojom::LocationChanges::New(0, relative_bounds_2));
+  rfh_a->HandleAXLocationChanges(rfh_a->GetAXTreeID(), std::move(changes_2),
+                                 /*reset_token=*/1);
+
+  // 4) Navigate back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  if (ShouldEvictOnAXLocationChange()) {
+    const uint64_t reason = DisallowActivationReasonId::kAXLocationChange;
+    ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+                      {reason}, FROM_HERE);
+    EXPECT_EQ(0, location_change_counter_for_testing);
+  } else {
+    AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
+                                                 ui::kAXModeComplete,
+                                                 ax::mojom::Event::kLoadStart);
+    // Ensure that |rfh_a| is successfully restored from bfcache and that we see
+    // LOAD_START event.
+    EXPECT_EQ(current_frame_host(), rfh_a.get());
+    ExpectRestored(FROM_HERE);
+
+    // Location change should have happened twice.
+    EXPECT_EQ(2, location_change_counter_for_testing);
 
     ASSERT_TRUE(waiter_start.WaitForNotification());
     auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
@@ -4287,7 +4417,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr web_reasons =
       can_store_result.tree_reasons->GetWebExposedNotRestoredReasons();
   EXPECT_TRUE(web_reasons->same_origin_details);
-  EXPECT_EQ(web_reasons->blocked, blink::mojom::BFCacheBlocked::kNo);
   EXPECT_EQ(2u, web_reasons->same_origin_details->children.size());
   EXPECT_FALSE(
       web_reasons->same_origin_details->children.at(0)->same_origin_details);

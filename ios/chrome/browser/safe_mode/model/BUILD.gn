@@ -1,0 +1,39 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/public/provider/chrome/browser/build_config.gni")
+
+source_set("model") {
+  sources = [
+    "safe_mode_crashing_modules_config.h",
+    "safe_mode_crashing_modules_config.mm",
+    "safe_mode_util.cc",
+    "safe_mode_util.h",
+  ]
+
+  deps = [
+    ":resources",
+    "//base",
+    "//ios/chrome/app/resources:packed_resources",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+bundle_data("resources") {
+  visibility = [ ":model" ]
+  sources = [ "resources/SafeModeCrashingModules.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safe_mode_util_unittest.cc" ]
+  deps = [
+    ":model",
+    "//base",
+    "//testing/gtest",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

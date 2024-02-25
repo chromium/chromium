@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/tooltip_client.h"
 #include "ui/wm/public/tooltip_observer.h"
@@ -127,5 +128,8 @@ TooltipTestView::~TooltipTestView() = default;
 std::u16string TooltipTestView::GetTooltipText(const gfx::Point& p) const {
   return tooltip_text_;
 }
+
+BEGIN_METADATA(TooltipTestView)
+END_METADATA
 
 }  // namespace views::corewm::test

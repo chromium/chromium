@@ -66,7 +66,7 @@ class CONTENT_EXPORT BatchedProxyIPCSender {
   void AddNewChildProxyCreationTask(
       base::SafeRef<RenderFrameProxyHost> proxy_host,
       const ::blink::RemoteFrameToken& token,
-      const absl::optional<::blink::FrameToken>& opener_frame_token,
+      const std::optional<::blink::FrameToken>& opener_frame_token,
       ::blink::mojom::TreeScopeType tree_scope_type,
       ::blink::mojom::FrameReplicationStatePtr replication_state,
       ::blink::mojom::FrameOwnerPropertiesPtr owner_properties,

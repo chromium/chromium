@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -28,7 +28,7 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_CreditCard) {
 
   base::HistogramTester histogram_tester;
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kCreditCards,
+                                     FillingProduct::kCreditCard,
                                      /*off_the_record=*/false);
   EXPECT_EQ(1u, GetTotalCountForPrefix(histogram_tester,
                                        "Autofill.SuggestionAcceptedIndex."));
@@ -42,27 +42,24 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Profile) {
 
   base::HistogramTester histogram_tester;
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kPersonalInformation,
-                                     /*off_the_record=*/false);
-  LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kAddresses,
+                                     FillingProduct::kAddress,
                                      /*off_the_record=*/false);
 
-  EXPECT_EQ(2u, GetTotalCountForPrefix(histogram_tester,
+  EXPECT_EQ(1u, GetTotalCountForPrefix(histogram_tester,
                                        "Autofill.SuggestionAcceptedIndex."));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.SuggestionAcceptedIndex.Profile"),
-              BucketsAre(base::Bucket(selected_suggestion_index, 2)));
+              BucketsAre(base::Bucket(selected_suggestion_index, 1)));
 }
 
 TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Other) {
   const int selected_suggestion_index = 0;
   base::HistogramTester histogram_tester;
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kUnspecified,
+                                     FillingProduct::kNone,
                                      /*off_the_record=*/false);
   LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     PopupType::kPasswords,
+                                     FillingProduct::kPassword,
                                      /*off_the_record=*/false);
 
   EXPECT_EQ(2u, GetTotalCountForPrefix(histogram_tester,
@@ -72,18 +69,9 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Other) {
       BucketsAre(base::Bucket(selected_suggestion_index, 2)));
 }
 
-TEST(SuggestionsListMetricsTest,
-     LogAutofillSelectedManageEntry_PersonalInformation) {
-  base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kPersonalInformation);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
-      BucketsAre(base::Bucket(ManageSuggestionType::kPersonalInformation, 1)));
-}
-
 TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Addresses) {
   base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kAddresses);
+  LogAutofillSelectedManageEntry(FillingProduct::kAddress);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
       BucketsAre(base::Bucket(ManageSuggestionType::kAddresses, 1)));
@@ -92,7 +80,7 @@ TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Addresses) {
 TEST(SuggestionsListMetricsTest,
      LogAutofillSelectedManageEntry_PaymentMethodsCreditCards) {
   base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kCreditCards);
+  LogAutofillSelectedManageEntry(FillingProduct::kCreditCard);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
       BucketsAre(
@@ -102,7 +90,7 @@ TEST(SuggestionsListMetricsTest,
 TEST(SuggestionsListMetricsTest,
      LogAutofillSelectedManageEntry_PaymentMethodsIbans) {
   base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kIbans);
+  LogAutofillSelectedManageEntry(FillingProduct::kIban);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
       BucketsAre(base::Bucket(ManageSuggestionType::kPaymentMethodsIbans, 1)));
@@ -110,8 +98,8 @@ TEST(SuggestionsListMetricsTest,
 
 TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Other) {
   base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(PopupType::kUnspecified);
-  LogAutofillSelectedManageEntry(PopupType::kPasswords);
+  LogAutofillSelectedManageEntry(FillingProduct::kNone);
+  LogAutofillSelectedManageEntry(FillingProduct::kPassword);
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
       BucketsAre(base::Bucket(ManageSuggestionType::kOther, 2)));

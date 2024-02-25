@@ -6,13 +6,12 @@ package org.chromium.components.ukm;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * An interface and classes to record User Keyed Metrics.
- */
+/** An interface and classes to record User Keyed Metrics. */
 public abstract class UkmRecorder {
     /**
      * Records the occurrence of a (boolean) UKM event with name |eventName|.
@@ -51,9 +50,7 @@ public abstract class UkmRecorder {
     abstract void recordEventWithIntegerMetric(
             WebContents webContents, String eventName, String metricName, int metricValue);
 
-    /**
-     * The actual recorder.
-     */
+    /** The actual recorder. */
     @JNINamespace("metrics")
     public static class Bridge extends UkmRecorder {
         @Override
@@ -65,8 +62,8 @@ public abstract class UkmRecorder {
         @Override
         public void recordEventWithIntegerMetric(
                 WebContents webContents, String eventName, String metricName, int metricValue) {
-            UkmRecorderJni.get().recordEventWithIntegerMetric(
-                    webContents, eventName, metricName, metricValue);
+            UkmRecorderJni.get()
+                    .recordEventWithIntegerMetric(webContents, eventName, metricName, metricValue);
         }
     }
 
@@ -75,6 +72,7 @@ public abstract class UkmRecorder {
     public interface Natives {
         void recordEventWithBooleanMetric(
                 WebContents webContents, String eventName, String metricName);
+
         void recordEventWithIntegerMetric(
                 WebContents webContents, String eventName, String metricName, int metricValue);
     }

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,8 +23,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -45,8 +47,6 @@ constexpr const char kCrosUdcEnabled[] = "dev_enable_udc";
 constexpr const char kAdbdJson[] = "/etc/arc/adbd.json";
 
 bool g_enable_adb_over_usb_for_testing = false;
-constexpr const char kSerialNumberInTesting[] = "AAAABBBBCCCCDDDD1234";
-constexpr int64_t kCidInTesting = 123;
 
 // Singleton factory for ArcAdbdMonitorBridge.
 class ArcAdbdMonitorBridgeFactory
@@ -94,34 +94,36 @@ bool IsAdbOverUsbEnabled() {
 }
 
 // Returns cid from vm info. Otherwise, return nullopt.
-absl::optional<int64_t> GetCid() {
-  if (g_enable_adb_over_usb_for_testing)
-    return kCidInTesting;
-
-  const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
+std::optional<int64_t> GetCid() {
+  Profile* const profile = arc::ArcSessionManager::Get()->profile();
+  if (!profile) {
+    LOG(ERROR) << "Profile is not ready";
+    return std::nullopt;
+  }
+  const auto& vm_info =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+          kArcVmName);
   if (!vm_info) {
     LOG(ERROR) << "ARCVM is NOT ready";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return vm_info->cid();
 }
 
 std::string GetSerialNumber() {
-  if (g_enable_adb_over_usb_for_testing)
-    return kSerialNumberInTesting;
   return arc::ArcSessionManager::Get()->GetSerialNumber();
 }
 
-absl::optional<std::vector<std::string>> CreateAndGetAdbdUpstartEnvironment() {
+std::optional<std::vector<std::string>> CreateAndGetAdbdUpstartEnvironment() {
   auto cid = GetCid();
   if (!cid) {
     LOG(ERROR) << "ARCVM cid is empty";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto serial_number = GetSerialNumber();
   if (serial_number.empty()) {
     LOG(ERROR) << "Serial number is empty";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> environment = {
@@ -174,13 +176,12 @@ void ArcAdbdMonitorBridge::EnableAdbOverUsbForTesting() {
   g_enable_adb_over_usb_for_testing = true;
 }
 
-void ArcAdbdMonitorBridge::OnStartArcVmAdbdTesting(
+void ArcAdbdMonitorBridge::OnAdbdStartedForTesting(
     chromeos::VoidDBusMethodCallback callback) {
-  VLOG(1) << "Starting arcvm-adbd";
   StartArcVmAdbd(std::move(callback));
 }
 
-void ArcAdbdMonitorBridge::OnStopArcVmAdbdTesting(
+void ArcAdbdMonitorBridge::OnAdbdStoppedForTesting(
     chromeos::VoidDBusMethodCallback callback) {
   StopArcVmAdbd(std::move(callback));
 }

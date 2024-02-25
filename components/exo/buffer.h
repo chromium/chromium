@@ -30,7 +30,7 @@ class FrameSinkResourceManager;
 // This class provides the content for a Surface. The mechanism by which a
 // client provides and updates the contents is the responsibility of the client
 // and not defined as part of this class.
-class Buffer : public base::SupportsWeakPtr<Buffer> {
+class Buffer {
  public:
   explicit Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
   Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
@@ -42,6 +42,20 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
   virtual ~Buffer();
+
+  // Clients can use this method to create Buffer using GMBHandles. This is
+  // required to move away clients from using GMB directly as a part of
+  // MappableSI work.
+  static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
+      gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
+      const gfx::Size& buffer_size,
+      gfx::BufferFormat buffer_format,
+      gfx::BufferUsage buffer_usage,
+      unsigned texture_target,
+      unsigned query_type,
+      bool use_zero_copy,
+      bool is_overlay_candidate,
+      bool y_invert);
 
   const gfx::GpuMemoryBuffer* gfx_buffer() const {
     return gpu_memory_buffer_.get();
@@ -104,6 +118,8 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
       base::TimeDelta wait_for_release_delay) {
     wait_for_release_delay_ = wait_for_release_delay;
   }
+
+  virtual base::WeakPtr<Buffer> AsWeakPtr();
 
  private:
   class Texture;
@@ -224,6 +240,8 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   ProtectedBufferState protected_buffer_state_ = ProtectedBufferState::UNKNOWN;
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+
+  base::WeakPtrFactory<Buffer> weak_ptr_factory_{this};
 };
 
 class SolidColorBuffer : public Buffer {
@@ -245,9 +263,13 @@ class SolidColorBuffer : public Buffer {
       PerCommitExplicitReleaseCallback per_commit_explicit_release_callback)
       override;
 
+  base::WeakPtr<Buffer> AsWeakPtr() override;
+
  private:
   SkColor4f color_;
   gfx::Size size_;
+
+  base::WeakPtrFactory<SolidColorBuffer> weak_ptr_factory_{this};
 };
 
 }  // namespace exo

@@ -43,8 +43,8 @@ TEST(IdentifiableTokenBuilderTest, TwoBytesInTwoTakes) {
   auto bytes_span = base::as_bytes(base::span<const char>(kBytes));
   IdentifiableTokenBuilder whole_span_token(bytes_span);
   IdentifiableTokenBuilder two_parts_token;
-  two_parts_token.AddBytes(bytes_span.first(1));
-  two_parts_token.AddBytes(bytes_span.last(1));
+  two_parts_token.AddBytes(bytes_span.first(1u));
+  two_parts_token.AddBytes(bytes_span.last(1u));
   EXPECT_EQ(whole_span_token.GetToken(), two_parts_token.GetToken());
 }
 

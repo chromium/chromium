@@ -8,13 +8,17 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.gpu.fyi",
     pool = ci.gpu.POOL,
     sheriff_rotations = sheriff_rotations.CHROMIUM_GPU,
+    contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = 6 * time.hour,
+    health_spec = health_spec.DEFAULT,
     properties = {
         "perf_dashboard_machine_group": "ChromiumGPUFYI",
     },
@@ -197,6 +201,39 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Android FYI Experimental Release (Pixel 6)",
+    description_html = "Runs standard GPU tests on experimental Pixel 6 configs",
+    triggered_by = ["GPU FYI Android arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_xr_test_apks",
+            ],
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        run_tests_serially = True,
+    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|S64|ARM",
+        short_name = "exp",
+    ),
+    list_view = "chromium.gpu.experimental",
+)
+
+# TODO(crbug.com/1485734): Add a trybot for this builder when there's capacity.
+ci.thin_tester(
     name = "Android FYI Release (Samsung A13)",
     triggered_by = ["GPU FYI Android arm Builder"],
     builder_spec = builder_config.builder_spec(
@@ -214,6 +251,7 @@ ci.thin_tester(
         android_config = builder_config.android_config(
             config = "main_builder_rel_mb",
         ),
+        run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|S32|ARM",
@@ -221,6 +259,7 @@ ci.thin_tester(
     ),
 )
 
+# TODO(crbug.com/1485734): Add a trybot for this builder when there's capacity.
 ci.thin_tester(
     name = "Android FYI Release (Samsung A23)",
     triggered_by = ["GPU FYI Android arm Builder"],
@@ -239,6 +278,7 @@ ci.thin_tester(
         android_config = builder_config.android_config(
             config = "main_builder_rel_mb",
         ),
+        run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|S32|QCOM",
@@ -270,6 +310,19 @@ ci.gpu.linux_builder(
         ),
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "chromeos_device",
+            "amd64-generic-vm",
+            "ozone_headless",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "dcheck_off",
+            "no_symbols",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ChromeOS|LLVM",
         short_name = "gen",
@@ -281,12 +334,12 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
-    name = "ChromeOS FYI Release (kevin)",
+    name = "ChromeOS FYI Release Skylab (volteer)",
+    description_html = "Runs standard GPU tests on Skylab-hosted volteer devices",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "arm",
                 "chromeos",
             ],
         ),
@@ -296,47 +349,11 @@ ci.gpu.linux_builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
-                "kevin",
-            ],
-        ),
-        run_tests_serially = True,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ChromeOS|ARM",
-        short_name = "kvn",
-    ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.gpu.linux_builder(
-    name = "ChromeOS FYI Release Skylab (kevin)",
-    # Kevin is a busy board in OS lab. As this is an FYI builder,
-    # we try to avoid peak hours and run it from 8PM TO 4AM PST.
-    # It is 3 AM to 11 AM UTC.
-    schedule = "0 3,6,9 * * *",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "arm",
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = [
-                "kevin",
+                "volteer",
             ],
         ),
         run_tests_serially = True,
@@ -345,13 +362,24 @@ ci.gpu.linux_builder(
             gs_extra = "chromeos_gpu",
         ),
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ChromeOS|ARM",
-        short_name = "kvn",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "chromeos_device",
+            "volteer",
+            "ozone_headless",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "dcheck_off",
+            "no_symbols",
+            "is_skylab",
+        ],
     ),
-    # Given the capacity constraints, the default 6 hour timeout is not
-    # sufficient.
-    execution_timeout = 12 * time.hour,
+    console_view_entry = consoles.console_view_entry(
+        category = "ChromeOS|Intel",
+        short_name = "vlt",
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -404,6 +432,16 @@ ci.gpu.linux_builder(
             config = "main_builder_rel_mb",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "static_angle",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|Builder",
         short_name = "arm",
@@ -432,6 +470,17 @@ ci.gpu.linux_builder(
             config = "arm64_builder_rel_mb",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "arm64",
+            "static_angle",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|Builder",
         short_name = "arm64",
@@ -452,7 +501,18 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "ozone_linux",
+            "ozone_linux_non_x11",
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Lacros|Builder",
@@ -476,7 +536,16 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Builder",
@@ -498,7 +567,15 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "debug_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Builder",
@@ -520,8 +597,18 @@ ci.gpu.linux_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "tsan",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
@@ -545,6 +632,15 @@ ci.gpu.mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "x64",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Builder",
         short_name = "rel",
@@ -567,6 +663,16 @@ ci.gpu.mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "asan",
+            "x64",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Builder",
         short_name = "asn",
@@ -588,6 +694,14 @@ ci.gpu.mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "debug_builder",
+            "reclient",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Builder",
@@ -612,6 +726,15 @@ ci.gpu.mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "arm64",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Builder",
         short_name = "arm",
@@ -633,6 +756,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -657,6 +781,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -681,6 +806,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -705,6 +831,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -731,6 +858,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -757,6 +885,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -781,6 +910,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -805,6 +935,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         run_tests_serially = True,
     ),
@@ -885,10 +1016,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Intel",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Mac|Intel",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -912,10 +1043,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|AMD|Retina",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Mac|AMD|Retina",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -939,10 +1070,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Nvidia",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Mac|Nvidia",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
     # This bot has one machine backing its tests at the moment.
     # If it gets more, this can be removed.
@@ -1191,6 +1322,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1215,6 +1347,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1239,6 +1372,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1263,14 +1397,15 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Windows|10|x64|Intel",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|10|x64|Intel",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -1289,14 +1424,15 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Windows|10|x64|Nvidia",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|10|x64|Nvidia",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -1315,6 +1451,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1339,6 +1476,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1363,6 +1501,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1387,6 +1526,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1411,6 +1551,7 @@ ci.thin_tester(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
         run_tests_serially = True,
     ),
@@ -1418,6 +1559,66 @@ ci.thin_tester(
         category = "Windows|10|x86|Nvidia",
         short_name = "rel",
     ),
+)
+
+ci.thin_tester(
+    name = "Win11 FYI arm64 Release (Qualcomm Adreno 690)",
+    description_html = "Triggers GPU tests on Windows arm64 devices with Adreno 690 GPUs",
+    triggered_by = ["GPU FYI Win arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|11|arm64|Qualcomm",
+        short_name = "rel",
+    ),
+)
+
+gpu_fyi_windows_builder(
+    name = "GPU FYI Win arm64 Builder",
+    description_html = "Parent GPU builder for Windows arm64 release builds",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|Release",
+        short_name = "a64",
+    ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -1433,7 +1634,17 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "x86",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Release",
@@ -1455,7 +1666,19 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            # Remove this once the decision to use cross-compilation or not in
+            # crbug.com/1510985 is made.
+            "win_cross",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Release",
@@ -1477,7 +1700,15 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "debug_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Debug",
@@ -1499,7 +1730,17 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "dx12vk",
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|dx12vk",
@@ -1521,7 +1762,16 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "dx12vk",
+            "debug_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|dx12vk",
@@ -1543,6 +1793,7 @@ gpu_fyi_windows_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
         # This causes the builder to upload isolates to a location where
         # Pinpoint can access them in addition to the usual isolate
@@ -1551,6 +1802,14 @@ gpu_fyi_windows_builder(
         # results, and Pinpoint may trigger additional builds on this
         # builder during a bisect.
         perf_isolate_upload = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|XR",

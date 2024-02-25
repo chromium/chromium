@@ -8,11 +8,11 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_switches.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 
 namespace base {
 
@@ -75,7 +75,7 @@ void XmlUnitTestResultPrinter::AddLink(const std::string& name,
   fprintf(output_file_.get(),
           "    <link name=\"%s\" classname=\"%s\" "
           "link_name=\"%s\">%s</link>\n",
-          info->name(), info->test_case_name(), name.c_str(),
+          info->name(), info->test_suite_name(), name.c_str(),
           escaped_url.c_str());
   fflush(output_file_);
 }
@@ -97,7 +97,7 @@ void XmlUnitTestResultPrinter::AddTag(const std::string& name,
   fprintf(output_file_.get(),
           "    <tag name=\"%s\" classname=\"%s\" "
           "tag_name=\"%s\">%s</tag>\n",
-          info->name(), info->test_case_name(), name.c_str(),
+          info->name(), info->test_suite_name(), name.c_str(),
           escaped_value.c_str());
   fflush(output_file_);
 }
@@ -131,8 +131,8 @@ void XmlUnitTestResultPrinter::OnAssert(const char* file,
                       summary, message);
 }
 
-void XmlUnitTestResultPrinter::OnTestCaseStart(
-    const testing::TestCase& test_case) {
+void XmlUnitTestResultPrinter::OnTestSuiteStart(
+    const testing::TestSuite& test_suite) {
   fprintf(output_file_.get(), "  <testsuite>\n");
   fflush(output_file_);
 }
@@ -144,22 +144,22 @@ void XmlUnitTestResultPrinter::OnTestStart(
   // <testcase> tag here - it requires e.g. run time of the test to be known.
   fprintf(output_file_.get(),
           "    <x-teststart name=\"%s\" classname=\"%s\" timestamp=\"%s\" />\n",
-          test_info.name(), test_info.test_case_name(),
-          TimeToISO8601(Time::Now()).c_str());
+          test_info.name(), test_info.test_suite_name(),
+          TimeFormatAsIso8601(Time::Now()).c_str());
   fflush(output_file_);
 }
 
 void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
-  fprintf(
-      output_file_.get(),
-      "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
-      " classname=\"%s\" timestamp=\"%s\">\n",
-      test_info.name(),
-      static_cast<double>(test_info.result()->elapsed_time()) /
-          Time::kMillisecondsPerSecond,
-      test_info.test_case_name(),
-      TimeToISO8601(Time::FromJavaTime(test_info.result()->start_timestamp()))
-          .c_str());
+  fprintf(output_file_.get(),
+          "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
+          " classname=\"%s\" timestamp=\"%s\">\n",
+          test_info.name(),
+          static_cast<double>(test_info.result()->elapsed_time()) /
+              Time::kMillisecondsPerSecond,
+          test_info.test_suite_name(),
+          TimeFormatAsIso8601(Time::FromMillisecondsSinceUnixEpoch(
+                                  test_info.result()->start_timestamp()))
+              .c_str());
   if (test_info.result()->Failed()) {
     fprintf(output_file_.get(),
             "      <failure message=\"\" type=\"\"></failure>\n");
@@ -195,8 +195,8 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
   fflush(output_file_);
 }
 
-void XmlUnitTestResultPrinter::OnTestCaseEnd(
-    const testing::TestCase& test_case) {
+void XmlUnitTestResultPrinter::OnTestSuiteEnd(
+    const testing::TestSuite& test_suite) {
   fprintf(output_file_.get(), "  </testsuite>\n");
   fflush(output_file_);
 }
@@ -222,10 +222,8 @@ void XmlUnitTestResultPrinter::WriteTestPartResult(
       type = "skip";
       break;
   }
-  std::string summary_encoded;
-  Base64Encode(summary, &summary_encoded);
-  std::string message_encoded;
-  Base64Encode(message, &message_encoded);
+  std::string summary_encoded = base::Base64Encode(summary);
+  std::string message_encoded = base::Base64Encode(message);
   fprintf(output_file_.get(),
           "      <x-test-result-part type=\"%s\" file=\"%s\" line=\"%d\">\n"
           "        <summary>%s</summary>\n"

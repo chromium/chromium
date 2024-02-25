@@ -16,6 +16,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -50,7 +51,7 @@ class WorkletLoaderTest : public testing::Test {
   ~WorkletLoaderTest() override { task_environment_.RunUntilIdle(); }
 
   void LoadWorkletCallback(WorkletLoaderBase::Result result,
-                           absl::optional<std::string> error_msg) {
+                           std::optional<std::string> error_msg) {
     result_ = std::move(result);
     error_msg_ = std::move(error_msg);
     EXPECT_EQ(result_.success(), !error_msg_.has_value());
@@ -76,20 +77,23 @@ class WorkletLoaderTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 
+  TestAuctionNetworkEventsHandler auction_network_events_handler_;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
   GURL url_ = GURL("https://foo.test/");
   base::RunLoop run_loop_;
   WorkletLoaderBase::Result result_;
-  absl::optional<std::string> error_msg_;
+  std::optional<std::string> error_msg_;
 };
 
 TEST_F(WorkletLoaderTest, NetworkError) {
   // Make this look like a valid response in all ways except the response code.
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, std::nullopt,
               kValidScript, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
   WorkletLoader worklet_loader(
-      &url_loader_factory_, url_, v8_helper_,
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
@@ -102,7 +106,9 @@ TEST_F(WorkletLoaderTest, NetworkError) {
 TEST_F(WorkletLoaderTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
   WorkletLoader worklet_loader(
-      &url_loader_factory_, url_, v8_helper_,
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
@@ -125,7 +131,9 @@ TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
 
   AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
   WorkletLoader worklet_loader(
-      &url_loader_factory_, url_, v8_helper_, id,
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/mojo::NullRemote(), url_, v8_helper_,
+      id,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -138,7 +146,9 @@ TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
 TEST_F(WorkletLoaderTest, Success) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   WorkletLoader worklet_loader(
-      &url_loader_factory_, url_, v8_helper_,
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
@@ -160,6 +170,16 @@ TEST_F(WorkletLoaderTest, Success) {
         EXPECT_FALSE(result.success());
       },
       v8_helper_, std::move(result_)));
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::ElementsAre("Sent URL: "
+                                   "https://foo.test/",
+                                   "Received URL: "
+                                   "https://foo.test/",
+                                   "Completion Status: net::OK"));
 }
 
 // Make sure the V8 isolate is released before the callback is invoked on
@@ -171,18 +191,19 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
   base::RunLoop run_loop;
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
-          &url_loader_factory_, url_, v8_helper.get(),
+          &url_loader_factory_,
+          /*auction_network_events_handler=*/
+          auction_network_events_handler_.CreateRemote(), url_, v8_helper.get(),
           scoped_refptr<AuctionV8Helper::DebugId>(),
-          base::BindLambdaForTesting(
-              [&](WorkletLoader::Result worklet_script,
-                  absl::optional<std::string> error_msg) {
-                EXPECT_TRUE(worklet_script.success());
-                EXPECT_FALSE(error_msg.has_value());
-                worklet_script = WorkletLoader::Result();
-                worklet_loader.reset();
-                v8_helper.reset();
-                run_loop.Quit();
-              }));
+          base::BindLambdaForTesting([&](WorkletLoader::Result worklet_script,
+                                         std::optional<std::string> error_msg) {
+            EXPECT_TRUE(worklet_script.success());
+            EXPECT_FALSE(error_msg.has_value());
+            worklet_script = WorkletLoader::Result();
+            worklet_loader.reset();
+            v8_helper.reset();
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 
@@ -195,20 +216,20 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
   base::RunLoop run_loop;
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
-          &url_loader_factory_, url_, v8_helper.get(),
+          &url_loader_factory_,
+          /*auction_network_events_handler=*/
+          auction_network_events_handler_.CreateRemote(), url_, v8_helper.get(),
           scoped_refptr<AuctionV8Helper::DebugId>(),
-          base::BindLambdaForTesting(
-              [&](WorkletLoader::Result worklet_script,
-                  absl::optional<std::string> error_msg) {
-                EXPECT_FALSE(worklet_script.success());
-                ASSERT_TRUE(error_msg.has_value());
-                EXPECT_THAT(error_msg.value(),
-                            StartsWith("https://foo.test/:1 "));
-                EXPECT_THAT(error_msg.value(), HasSubstr("SyntaxError"));
-                worklet_loader.reset();
-                v8_helper.reset();
-                run_loop.Quit();
-              }));
+          base::BindLambdaForTesting([&](WorkletLoader::Result worklet_script,
+                                         std::optional<std::string> error_msg) {
+            EXPECT_FALSE(worklet_script.success());
+            ASSERT_TRUE(error_msg.has_value());
+            EXPECT_THAT(error_msg.value(), StartsWith("https://foo.test/:1 "));
+            EXPECT_THAT(error_msg.value(), HasSubstr("SyntaxError"));
+            worklet_loader.reset();
+            v8_helper.reset();
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 
@@ -230,10 +251,12 @@ TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
 
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   auto worklet_loader = std::make_unique<WorkletLoader>(
-      &url_loader_factory_, url_, v8_helper,
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper,
       scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce([](WorkletLoader::Result worklet_script,
-                        absl::optional<std::string> error_msg) {
+                        std::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";
       }));
   run_loop_.RunUntilIdle();
@@ -249,10 +272,12 @@ TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
 TEST_F(WorkletLoaderTest, LoadWasmSuccess) {
   AddResponse(
       &url_loader_factory_, url_, "application/wasm",
-      /*charset=*/absl::nullopt,
+      /*charset=*/std::nullopt,
       std::string(kMinimalWasmModuleBytes, std::size(kMinimalWasmModuleBytes)));
   WorkletWasmLoader worklet_loader(
-      &url_loader_factory_, url_, v8_helper_,
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
@@ -282,9 +307,11 @@ TEST_F(WorkletLoaderTest, LoadWasmSuccess) {
 
 TEST_F(WorkletLoaderTest, LoadWasmError) {
   AddResponse(&url_loader_factory_, url_, "application/wasm",
-              /*charset=*/absl::nullopt, "not wasm");
+              /*charset=*/std::nullopt, "not wasm");
   WorkletWasmLoader worklet_loader(
-      &url_loader_factory_, url_, v8_helper_,
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));

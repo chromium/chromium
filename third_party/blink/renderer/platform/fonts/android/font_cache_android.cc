@@ -32,6 +32,7 @@
 
 #include "base/feature_list.h"
 
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -69,7 +70,7 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
 static AtomicString DefaultFontFamily() {
   if (sk_sp<SkFontMgr> font_manager = FontCache::Get().FontManager())
     return DefaultFontFamily(font_manager);
-  return DefaultFontFamily(SkFontMgr::RefDefault());
+  return DefaultFontFamily(skia::DefaultFontMgr());
 }
 
 // static
@@ -97,7 +98,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
   const char* bcp47 = locale.LocaleForSkFontMgr();
   DCHECK(bcp47);
   SkFontMgr* font_manager =
-      font_manager_ ? font_manager_.get() : SkFontMgr::RefDefault().get();
+      font_manager_ ? font_manager_.get() : skia::DefaultFontMgr().get();
   sk_sp<SkTypeface> typeface(font_manager->matchFamilyStyleCharacter(
       locale_family_name, font_description.SkiaFontStyle(), &bcp47,
       /* bcp47Count */ 1,
@@ -126,12 +127,12 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
   return nullptr;
 }
 
-scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
+const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 c,
     const SimpleFontData*,
     FontFallbackPriority fallback_priority) {
-  sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
+  sk_sp<SkFontMgr> fm(skia::DefaultFontMgr());
 
   // Pass "serif" to |matchFamilyStyleCharacter| if the `font-family` list
   // contains `serif`, so that it fallbacks to i18n serif fonts that has the
@@ -157,7 +158,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji &&
       base::FeatureList::IsEnabled(features::kGMSCoreEmoji)) {
     auto skia_fallback_is_noto_color_emoji = [&]() {
-      FontPlatformData* skia_fallback_result = GetFontPlatformData(
+      const FontPlatformData* skia_fallback_result = GetFontPlatformData(
           font_description, FontFaceCreationParams(family_name));
 
       // Determining the PostScript name is required as Skia on Android gives
@@ -174,15 +175,14 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     };
 
     if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
-      FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
+      const FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(AtomicString(kNotoColorEmojiCompat)));
       if (emoji_gms_core_font) {
         SkTypeface* probe_coverage_typeface = emoji_gms_core_font->Typeface();
         if (probe_coverage_typeface &&
             probe_coverage_typeface->unicharToGlyph(c)) {
-          return FontDataFromFontPlatformData(emoji_gms_core_font,
-                                              kDoNotRetain);
+          return FontDataFromFontPlatformData(emoji_gms_core_font);
         }
       }
     }
@@ -192,12 +192,10 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // font was not found or an OEM emoji font was not to be overridden.
 
   if (family_name.empty())
-    return GetLastResortFallbackFont(font_description, kDoNotRetain);
+    return GetLastResortFallbackFont(font_description);
 
-  return FontDataFromFontPlatformData(
-      GetFontPlatformData(font_description,
-                          FontFaceCreationParams(family_name)),
-      kDoNotRetain);
+  return FontDataFromFontPlatformData(GetFontPlatformData(
+      font_description, FontFaceCreationParams(family_name)));
 }
 
 // static
@@ -243,7 +241,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
       return generic_family_name_fallback;
   }
 
-  sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());
+  sk_sp<SkFontMgr> font_manager(skia::DefaultFontMgr());
   return GetFamilyNameForCharacter(font_manager.get(), exampler_char,
                                    font_description, nullptr,
                                    FontFallbackPriority::kText);

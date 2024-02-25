@@ -60,7 +60,7 @@ class SessionStorageAreaImplTest : public testing::Test {
         test_namespace_id2_(
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {
     leveldb_database_ = AsyncDomStorageDatabase::OpenInMemory(
-        absl::nullopt, "SessionStorageAreaImplTestDatabase",
+        std::nullopt, "SessionStorageAreaImplTestDatabase",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::DoNothing());
     leveldb_database_->Put(StdStringToUint8Vector("map-0-key1"),
@@ -243,8 +243,7 @@ TEST_F(SessionStorageAreaImplTest, Cloning) {
   EXPECT_CALL(listener_, OnCommitResult(OKStatus()))
       .Times(testing::AnyNumber());
   EXPECT_TRUE(test::PutSync(ss_leveldb2.get(), StdStringToUint8Vector("key2"),
-                            StdStringToUint8Vector("data2"), absl::nullopt,
-                            ""));
+                            StdStringToUint8Vector("data2"), std::nullopt, ""));
 
   // The maps were forked on the above put.
   EXPECT_NE(ss_leveldb_impl1->data_map(), ss_leveldb_impl2->data_map());

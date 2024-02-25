@@ -1,4 +1,0 @@
-CONSOLE MESSAGE: line 722: Value complete does not allow function calls.
-CONSOLE MESSAGE: line 722: Value complete does not allow function calls.
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLFrameElement09
-Status	Success

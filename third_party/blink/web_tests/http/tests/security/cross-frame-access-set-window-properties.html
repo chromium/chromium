@@ -13,7 +13,8 @@
         window.onload = function () {
             iWindow = document.querySelector('iframe').contentWindow;
 
-            var ex = '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."';
+            var ex1 = '"SecurityError: Failed to set a named property \'';
+            var ex2 = '\' on \'Window\': Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."';
 
             // 'DoNotCheckSecurity' methods.
             var DoNotCheckSecurityMethods = [
@@ -24,7 +25,7 @@
                 'toString'
             ];
             for (var i = 0; i < DoNotCheckSecurityMethods.length; i++) {
-                shouldThrow('iWindow.' + DoNotCheckSecurityMethods[i] + ' = function () {};', ex);
+                shouldThrow('iWindow.' + DoNotCheckSecurityMethods[i] + ' = function () {};', ex1 + DoNotCheckSecurityMethods[i] + ex2);
             }
 
             // 'Replacable' properties (not an exhaustive list).

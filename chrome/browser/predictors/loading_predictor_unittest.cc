@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/predictors/loading_test_util.h"
-#include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -441,8 +441,6 @@ TEST_F(LoadingPredictorPreconnectTest,
   GURL main_frame_url("http://search.com/kittens");
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkanonymization_key(main_frame_url);
-  EXPECT_CALL(*mock_predictor_, PredictPreconnectOrigins(main_frame_url, _))
-      .WillOnce(Return(false));
   PreconnectPrediction prediction = CreatePreconnectPrediction(
       "search.com", true,
       {{url::Origin::Create(GURL("http://cdn1.search.com")), 1,
@@ -471,8 +469,6 @@ TEST_F(LoadingPredictorPreconnectTest,
   GURL main_frame_url("http://nopredictions.com/");
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkanonymization_key(main_frame_url);
-  EXPECT_CALL(*mock_predictor_, PredictPreconnectOrigins(main_frame_url, _))
-      .WillOnce(Return(false));
   PreconnectPrediction prediction;
   EXPECT_FALSE(predictor_->PrepareForPageLoad(
       main_frame_url, HintOrigin::OPTIMIZATION_GUIDE, false, prediction));

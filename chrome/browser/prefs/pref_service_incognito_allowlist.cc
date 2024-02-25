@@ -67,6 +67,13 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityColorCorrectionEnabled,
     ash::prefs::kAccessibilityColorVisionCorrectionAmount,
     ash::prefs::kAccessibilityColorVisionCorrectionType,
+    ash::prefs::kAccessibilityFaceGazeEnabled,
+    ash::prefs::kAccessibilityFaceGazeCursorSpeedUp,
+    ash::prefs::kAccessibilityFaceGazeCursorSpeedDown,
+    ash::prefs::kAccessibilityFaceGazeCursorSpeedLeft,
+    ash::prefs::kAccessibilityFaceGazeCursorSpeedRight,
+    ash::prefs::kAccessibilityFaceGazeCursorSmoothing,
+    ash::prefs::kAccessibilityFaceGazeCursorUseAcceleration,
     ash::prefs::kAccessibilityHighContrastEnabled,
     ash::prefs::kAccessibilityScreenMagnifierCenterFocus,
     ash::prefs::kAccessibilityScreenMagnifierEnabled,
@@ -136,7 +143,6 @@ const char* const kPersistentPrefNames[] = {
     prefs::kBrowserSuppressDefaultBrowserPrompt,
     prefs::kDefaultBrowserLastDeclined,
     prefs::kDefaultBrowserSettingEnabled,
-    prefs::kResetCheckDefaultBrowser,
 
     // Devtools preferences are stored cross profiles as they are not storing
     // user data and just keep debugging environment settings.

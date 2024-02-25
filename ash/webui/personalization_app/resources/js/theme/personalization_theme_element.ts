@@ -6,24 +6,27 @@
  * @fileoverview This component displays color mode settings.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
-import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../../css/common.css.js';
-import '../../css/cros_button_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import '../geolocation_dialog.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
+import {isCrosPrivacyHubLocationEnabled, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isSelectionEvent} from '../utils.js';
 
 import {getTemplate} from './personalization_theme_element.html.js';
-import {initializeData, setColorModeAutoSchedule, setColorModePref} from './theme_controller.js';
+import {enableGeolocationForSystemServices, initializeData, setColorModeAutoSchedule, setColorModePref} from './theme_controller.js';
 import {getThemeProvider} from './theme_interface_provider.js';
 import {ThemeObserver} from './theme_observer.js';
 
@@ -54,6 +57,18 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         type: Boolean,
         value: null,
       },
+      geolocationPermissionEnabled_: {
+        type: Boolean,
+        value: null,
+      },
+      sunriseTime_: {
+        type: String,
+        value: null,
+      },
+      sunsetTime_: {
+        type: String,
+        value: null,
+      },
       isPersonalizationJellyEnabled_: {
         type: Boolean,
         value() {
@@ -66,12 +81,40 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         type: Object,
         notify: true,
       },
+
+      shouldShowGeolocationWarningText_: {
+        type: Boolean,
+        computed: 'computeShouldShowGeolocationWarningText_(' +
+            'colorModeAutoScheduleEnabled_, ' +
+            'geolocationPermissionEnabled_, ' +
+            'sunriseTime_, sunsetTime_),',
+        value: false,
+      },
+
+      geolocationWarningText_: {
+        type: String,
+        computed: 'computeGeolocationWarningText_(' +
+            'colorModeAutoScheduleEnabled_, ' +
+            'sunriseTime_, sunsetTime_),',
+        value: '',
+      },
+
+      shouldShowGeolocationDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private darkModeEnabled_: boolean|null;
   private colorModeAutoScheduleEnabled_: boolean|null;
+  private geolocationPermissionEnabled_: boolean|null;
+  private geolocationWarningText_: string;
+  private sunriseTime_: string|null;
+  private sunsetTime_: string|null;
   private selectedButton_: CrButtonElement;
+  private shouldShowGeolocationDialog_: boolean;
+  private shouldShowGeolocationWarningText_: boolean;
 
   override ready() {
     super.ready();
@@ -86,6 +129,14 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     this.watch<PersonalizationThemeElement['colorModeAutoScheduleEnabled_']>(
         'colorModeAutoScheduleEnabled_',
         state => state.theme.colorModeAutoScheduleEnabled);
+    this.watch<PersonalizationThemeElement['geolocationPermissionEnabled_']>(
+        'geolocationPermissionEnabled_',
+        state => state.theme.geolocationPermissionEnabled);
+    this.watch<PersonalizationThemeElement['sunriseTime_']>(
+        'sunriseTime_', state => state.theme.sunriseTime);
+    this.watch<PersonalizationThemeElement['sunsetTime_']>(
+        'sunsetTime_', state => state.theme.sunsetTime);
+
     this.updateFromStore();
     initializeData(getThemeProvider(), this.getStore());
   }
@@ -163,6 +214,49 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     }
     setColorModeAutoSchedule(
         /*enabled=*/ true, getThemeProvider(), this.getStore());
+  }
+
+
+  private computeShouldShowGeolocationWarningText_(): boolean {
+    return (
+        isCrosPrivacyHubLocationEnabled() && this.sunriseTime_ !== null &&
+        this.sunsetTime_ !== null &&
+        this.colorModeAutoScheduleEnabled_ === true &&
+        this.geolocationPermissionEnabled_ === false);
+  }
+
+  private computeGeolocationWarningText_(): string {
+    // Not using i18n, as it removes the anchor tags from the link.
+    return loadTimeData.getStringF(
+        'geolocationWarningTextForWallpaper', this.sunriseTime_!,
+        this.sunsetTime_!);
+  }
+
+  private openGeolocationDialog_(e: CustomEvent<{event: Event}>): void {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#".
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+
+    // Geolocation Dialog only exists in the Privacy Hub context.
+    if (!isCrosPrivacyHubLocationEnabled()) {
+      console.error(
+          'Geolocation Dialog triggered when the Privacy Hub flag is disabled');
+      return;
+    }
+
+    // Show the dialog to let users enable system location inline.
+    this.shouldShowGeolocationDialog_ = true;
+  }
+
+  private onGeolocationDialogClose_(): void {
+    this.shouldShowGeolocationDialog_ = false;
+  }
+
+  // Callback for user clicking 'Allow' on the geolocation dialog.
+  private onGeolocationEnabled_(): void {
+    // Enable system geolocation permission for all system services.
+    enableGeolocationForSystemServices(getThemeProvider(), this.getStore());
   }
 }
 

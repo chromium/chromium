@@ -15,6 +15,7 @@ class AuthenticationService;
 class ChromeAccountManagerService;
 class PrefService;
 @protocol SigninPresenter;
+@protocol AccountSettingsPresenter;
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewConsumer;
 @protocol SystemIdentity;
@@ -56,8 +57,13 @@ enum class SigninPromoAction {
   // Secondary button opens a floating dialog with the available accounts. When
   // an account is tapped, it is signed in instantly.
   kInstantSignin,
+  // Single button. If there is an account, ask which account to use. Otherwise,
+  // add the add account dialog, and then sign-in directly.
+  kSigninWithNoDefaultIdentity,
   // Performs AuthenticationOperationSigninOnly.
   kSigninSheet,
+  // Shows account settings.
+  kReviewAccountSettings,
 };
 
 // Class that monitors the available identities and creates
@@ -70,11 +76,15 @@ enum class SigninPromoAction {
 // Consumer to handle identity update notifications.
 @property(nonatomic, weak) id<SigninPromoViewConsumer> consumer;
 
-// Chrome identity used to configure the view in the following modes:
-//  - SigninPromoViewModeSigninWithAccount
-//  - SigninPromoViewModeSyncWithPrimaryAccount
-// Otherwise contains nil.
-@property(nonatomic, strong, readonly) id<SystemIdentity> identity;
+// The identity whose avatar is shown by the promo and which will be signed-in
+// if the user taps the primary button.
+// When the user is signed-out with no accounts on the device, this is nil
+// (in that case the button opens a dialog to add an account instead).
+// When the user is signed-out and has accounts on the device, this is the
+// default identity.
+// when the user is signed-in and not syncing, this is the signed-in identity
+// (not necessarily the default one).
+@property(nonatomic, strong, readonly) id<SystemIdentity> displayedIdentity;
 
 // Sign-in promo view state.
 @property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
@@ -104,6 +114,8 @@ enum class SigninPromoAction {
 // of times it has been displayed and if the user closed the sign-in promo view.
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
+                                  signinPromoAction:
+                                      (SigninPromoAction)signinPromoAction
                               authenticationService:
                                   (AuthenticationService*)authenticationService
                                         prefService:(PrefService*)prefService;
@@ -121,8 +133,9 @@ enum class SigninPromoAction {
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
-                        presenter:(id<SigninPresenter>)presenter
-               baseViewController:(UIViewController*)baseViewController
+                  signinPresenter:(id<SigninPresenter>)signinPresenter
+         accountSettingsPresenter:
+             (id<AccountSettingsPresenter>)accountSettingsPresenter
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;

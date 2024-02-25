@@ -75,7 +75,7 @@ void FaviconDriverImpl::OnUpdateCandidates(
         (handler->icon_types().count(
              favicon_base::IconType::kWebManifestIcon) != 0)
             ? manifest_url
-            : GURL::EmptyGURL());
+            : GURL());
   }
 }
 

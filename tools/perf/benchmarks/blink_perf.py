@@ -392,7 +392,7 @@ class BlinkPerfAccessibility(_BlinkPerfBenchmark):
     return 'blink_perf.accessibility'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--force-renderer-accessibility'])
+    options.AppendExtraBrowserArgs(['--force-renderer-accessibility=complete'])
 
 
 @benchmark.Info(
@@ -620,7 +620,7 @@ class BlinkPerfPaint(_BlinkPerfBenchmark):
     return 'blink_perf.paint'
 
 
-@benchmark.Info(emails=['yoavweiss@chromium.org'],
+@benchmark.Info(emails=['sullivan@chromium.org'],
                 component='Blink>PerformanceAPIs',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfPerformanceAPIs(_BlinkPerfBenchmark):

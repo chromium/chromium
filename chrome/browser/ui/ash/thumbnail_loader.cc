@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/image_downloader.h"
@@ -25,18 +26,16 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "net/base/data_url.h"
 #include "net/base/mime_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
@@ -55,7 +54,7 @@ constexpr char kNativeMessageHostName[] = "com.google.ash_thumbnail_loader";
 
 // Returns whether the given `file_path` is supported by the `ThumbnailLoader`.
 bool IsSupported(const base::FilePath& file_path) {
-  constexpr std::array<std::pair<const char*, const char*>, 24>
+  constexpr std::array<std::pair<const char*, const char*>, 25>
       kFileMatchPatterns = {{
           // Document types ----------------------------------------------------
           {
@@ -94,6 +93,10 @@ bool IsSupported(const base::FilePath& file_path) {
           {
               /*extension=*/"(?i)\\.svg$",
               /*mime_type=*/"(?i)image\\/svg\\+xml",
+          },
+          {
+              /*extension=*/"(?i)\\.avif$",
+              /*mime_type=*/"(?i)image\\/avif",
           },
           // Raw types ---------------------------------------------------------
           {
@@ -160,8 +163,10 @@ bool IsSupported(const base::FilePath& file_path) {
       }};
 
   // First attempt to match based on `mime_type`.
+  std::string ext = file_path.Extension();
   std::string mime_type;
-  if (net::GetMimeTypeFromFile(file_path, &mime_type)) {
+  if (!ext.empty() &&
+      net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type)) {
     for (const auto& file_match_pattern : kFileMatchPatterns) {
       if (file_match_pattern.second &&
           re2::RE2::FullMatch(mime_type, file_match_pattern.second)) {
@@ -259,7 +264,7 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
   const std::string message_;
   ThumbnailDataCallback callback_;
 
-  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   bool response_received_ = false;
 
@@ -346,8 +351,8 @@ void ThumbnailLoader::Load(const ThumbnailRequest& request,
       file_manager::util::GetFileSystemContextForSourceURL(profile_,
                                                            source_url),
       request.file_path,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(&ThumbnailLoader::LoadForFileWithMetadata,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)));
 }
@@ -425,9 +430,9 @@ void ThumbnailLoader::LoadForFileWithMetadata(
       request_id.ToString(), request_message,
       base::BindOnce(&ThumbnailLoader::OnThumbnailLoaded,
                      weak_factory_.GetWeakPtr(), request_id, request.size));
-  const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   1 /* port_number */, true /* is_opener */,
-                                   extensions::SerializationFormat::kJson);
+  const extensions::PortId port_id(
+      base::UnguessableToken::Create(), 1 /* port_number */,
+      true /* is_opener */, extensions::mojom::SerializationFormat::kJson);
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
       message_service->GetChannelDelegate(), port_id,
       std::move(native_message_host));
@@ -435,7 +440,7 @@ void ThumbnailLoader::LoadForFileWithMetadata(
       extensions::ChannelEndpoint(profile_), port_id,
       extensions::MessagingEndpoint::ForNativeApp(kNativeMessageHostName),
       std::move(native_message_port), file_manager::kImageLoaderExtensionId,
-      GURL(), extensions::ChannelType::kNative,
+      GURL(), extensions::mojom::ChannelType::kNative,
       std::string() /* channel_name */);
 }
 

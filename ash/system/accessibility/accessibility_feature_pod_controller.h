@@ -19,7 +19,9 @@ namespace ash {
 class FeatureTile;
 class UnifiedSystemTrayController;
 
-// Controller of accessibility feature pod button.
+// Controller of accessibility feature tile.
+// TODO(b/251724646):  rename to `AccessibilityFeatureTileController` same for
+// the other feature pod controllers.
 class ASH_EXPORT AccessibilityFeaturePodController
     : public FeaturePodControllerBase,
       public AccessibilityObserver {
@@ -38,7 +40,6 @@ class ASH_EXPORT AccessibilityFeaturePodController
   void OnAccessibilityStatusChanged() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -50,12 +51,11 @@ class ASH_EXPORT AccessibilityFeaturePodController
   void UpdateTileStateIfExists();
 
   // Unowned.
-  const raw_ptr<UnifiedSystemTrayController,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<UnifiedSystemTrayController, DanglingUntriaged>
       tray_controller_;
 
   // Owned by views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<AccessibilityFeaturePodController> weak_ptr_factory_{
       this};

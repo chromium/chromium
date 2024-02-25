@@ -70,7 +70,9 @@ enum class WallpaperType {
   kOnceGooglePhotos = 11,   // `WallpaperInfo.location` contains the Google
                             // Photos photo id.
   kOobe = 12,               // Wallpaper shown during OOBE if not overridden.
-  kCount = 13
+  kSeaPen = 13,             // User selected wallpaper from the Manta API.
+                            // @see //components/manta
+  kCount = 14
 };
 
 // The color profile type, ordered as the color profiles applied in

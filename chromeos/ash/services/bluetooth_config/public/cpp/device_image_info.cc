@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 
+#include <optional>
+
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::bluetooth_config {
 
@@ -36,26 +37,26 @@ DeviceImageInfo& DeviceImageInfo::operator=(const DeviceImageInfo&) = default;
 DeviceImageInfo::~DeviceImageInfo() = default;
 
 // static
-absl::optional<DeviceImageInfo> DeviceImageInfo::FromDictionaryValue(
+std::optional<DeviceImageInfo> DeviceImageInfo::FromDictionaryValue(
     const base::Value::Dict& value) {
   const std::string* default_image = value.FindString(kDefaultImageKey);
   if (!default_image) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* left_bud_image = value.FindString(kLeftBudImageKey);
   if (!left_bud_image) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* right_bud_image = value.FindString(kRightBudImageKey);
   if (!right_bud_image) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* case_image = value.FindString(kCaseImageKey);
   if (!case_image) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return DeviceImageInfo(*default_image, *left_bud_image, *right_bud_image,

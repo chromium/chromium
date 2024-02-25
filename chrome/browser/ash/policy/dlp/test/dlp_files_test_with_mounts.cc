@@ -12,7 +12,8 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -82,7 +83,8 @@ void DlpFilesTestWithMounts::MountExternalComponents() {
 void DlpFilesTestWithMounts::SetUp() {
   DlpFilesTestBase::SetUp();
   ASSERT_TRUE(rules_manager_);
-  files_controller_ = std::make_unique<DlpFilesControllerAsh>(*rules_manager_);
+  files_controller_ =
+      std::make_unique<DlpFilesControllerAsh>(*rules_manager_, profile_.get());
 
   event_storage_ = files_controller_->GetEventStorageForTesting();
   DCHECK(event_storage_);
@@ -90,9 +92,14 @@ void DlpFilesTestWithMounts::SetUp() {
   task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   event_storage_->SetTaskRunnerForTesting(task_runner_);
 
-  reporting_manager_ = std::make_unique<DlpReportingManager>();
+  // Reporting test environment needs to be created before the browser
+  // creation is completed.
+  reporting_test_enviroment_ =
+      reporting::ReportingClient::TestEnvironment::CreateWithStorageModule();
+
+  reporting_manager_ = std::make_unique<data_controls::DlpReportingManager>();
   SetReportQueueForReportingManager(
-      reporting_manager_.get(), events,
+      reporting_manager_.get(), events_,
       base::SequencedTaskRunner::GetCurrentDefault());
   ON_CALL(*rules_manager_, GetReportingManager)
       .WillByDefault(::testing::Return(reporting_manager_.get()));
@@ -130,8 +137,12 @@ void DlpFilesTestWithMounts::SetUp() {
 }
 
 void DlpFilesTestWithMounts::TearDown() {
+  event_storage_ = nullptr;
+  files_controller_.reset();
   DlpFilesTestBase::TearDown();
   reporting_manager_.reset();
+
+  reporting_test_enviroment_.reset();
 
   if (chromeos::DlpClient::Get()) {
     chromeos::DlpClient::Shutdown();

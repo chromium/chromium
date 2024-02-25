@@ -1,0 +1,28 @@
+diff --git a/node_modules/typescript/lib/lib.dom.d.ts b/node_modules/typescript/lib/lib.dom.d.ts
+index 91596a00aee3e..aaa71bbf139d5 100644
+--- a/node_modules/typescript/lib/lib.dom.d.ts
++++ b/node_modules/typescript/lib/lib.dom.d.ts
+@@ -12308,7 +12308,10 @@ interface HTMLScriptElement extends HTMLElement {
+     /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLScriptElement/referrerPolicy) */
+     referrerPolicy: string;
+     /** Retrieves the URL to an external file that contains the source code or data. */
+-    src: string;
++    // Chromium modification to work around
++    // https://github.com/microsoft/TypeScript/issues/30024.
++    get src(): string;
++    set src(url: string|TrustedScriptURL);
+     /** Retrieves or sets the text of the object as a string. */
+     text: string;
+     /** Sets or retrieves the MIME type for the associated scripting engine. */
+@@ -14274,7 +14277,10 @@ declare var ImageData: {
+ 
+ interface InnerHTML {
+     /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Element/innerHTML) */
+-    innerHTML: string;
++    // Chromium modification to work around
++    // https://github.com/microsoft/TypeScript/issues/30024.
++    get innerHTML(): string;
++    set innerHTML(html: string|TrustedHTML);
+ }
+ 
+ /**

@@ -18,6 +18,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -42,8 +43,8 @@ RichHoverButton::RichHoverButton(
     const std::u16string& secondary_text,
     const std::u16string& tooltip_text,
     const std::u16string& subtitle_text,
-    absl::optional<ui::ImageModel> action_image_icon,
-    absl::optional<ui::ImageModel> state_icon)
+    std::optional<ui::ImageModel> action_image_icon,
+    std::optional<ui::ImageModel> state_icon)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -91,13 +92,13 @@ RichHoverButton::RichHoverButton(
       .AddRows(1, views::TableLayout::kFixedSize,
                // Force row to have sufficient height for full line-height of
                // the title.
-               views::style::GetLineHeight(text_context,
-                                           views::style::STYLE_PRIMARY));
+               views::TypographyProvider::Get().GetLineHeight(
+                   text_context, views::style::STYLE_PRIMARY));
 
   // TODO(pkasting): This class should subclass Button, not HoverButton.
-  table_layout->SetChildViewIgnoredByLayout(image(), true);
-  table_layout->SetChildViewIgnoredByLayout(label(), true);
-  table_layout->SetChildViewIgnoredByLayout(ink_drop_container(), true);
+  image_container_view()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  label()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  ink_drop_container()->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   AddChildView(CreateIconView(main_image_icon));
   auto title_label = std::make_unique<views::Label>();
@@ -116,6 +117,7 @@ RichHoverButton::RichHoverButton(
   if (features::IsChromeRefresh2023()) {
     title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
     secondary_label_->SetTextStyle(views::style::STYLE_BODY_5);
+    secondary_label_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   }
 
   // State icon is optional and column is created only when it is set.
@@ -144,6 +146,7 @@ RichHoverButton::RichHoverButton(
         views::style::STYLE_SECONDARY));
     if (features::IsChromeRefresh2023()) {
       subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
+      subtitle_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
     }
     subtitle_->SetMultiLine(true);
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -159,7 +162,7 @@ RichHoverButton::RichHoverButton(
   SetTooltipText(tooltip_text);
   UpdateAccessibleName();
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void RichHoverButton::SetTitleText(const std::u16string& title_text) {
@@ -222,5 +225,5 @@ views::View* RichHoverButton::GetTooltipHandlerForPoint(
   return Button::GetTooltipHandlerForPoint(point);
 }
 
-BEGIN_METADATA(RichHoverButton, HoverButton)
+BEGIN_METADATA(RichHoverButton)
 END_METADATA

@@ -43,13 +43,11 @@ void SelectFileDialogImpl::OnFileSelected(
   std::string path = ConvertJavaStringToUTF8(env, filepath);
   std::string file_name = ConvertJavaStringToUTF8(env, display_name);
   base::FilePath file_path = base::FilePath(path);
-  ui::SelectedFileInfo file_info;
-  file_info.file_path = file_path;
-  file_info.local_path = file_path;
+  ui::SelectedFileInfo file_info(file_path);
   if (!file_name.empty())
     file_info.display_name = file_name;
 
-  listener_->FileSelectedWithExtraInfo(file_info, 0, nullptr);
+  listener_->FileSelected(file_info, 0, nullptr);
 }
 
 void SelectFileDialogImpl::OnMultipleFilesSelected(
@@ -76,15 +74,13 @@ void SelectFileDialogImpl::OnMultipleFilesSelected(
     std::string display_name =
         ConvertJavaStringToUTF8(env, display_name_ref.obj());
 
-    ui::SelectedFileInfo file_info;
-    file_info.file_path = file_path;
-    file_info.local_path = file_path;
+    ui::SelectedFileInfo file_info(file_path);
     file_info.display_name = display_name;
 
     selected_files.push_back(file_info);
   }
 
-  listener_->MultiFilesSelectedWithExtraInfo(selected_files, nullptr);
+  listener_->MultiFilesSelected(selected_files, nullptr);
 }
 
 void SelectFileDialogImpl::OnFileNotSelected(
@@ -99,8 +95,7 @@ void SelectFileDialogImpl::OnContactsSelected(
     const JavaParamRef<jobject>& java_object,
     const JavaParamRef<jstring>& java_contacts) {
   std::string data = ConvertJavaStringToUTF8(env, java_contacts.obj());
-  listener_->FileSelectedWithExtraInfo(ui::SelectedFileInfo(), 0,
-                                       (void*)data.c_str());
+  listener_->FileSelected(ui::SelectedFileInfo(), 0, (void*)data.c_str());
 }
 
 bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow) const {

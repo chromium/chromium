@@ -201,10 +201,6 @@ bool FakeStreamSocket::WasEverUsed() const {
   return false;
 }
 
-bool FakeStreamSocket::WasAlpnNegotiated() const {
-  return false;
-}
-
 net::NextProto FakeStreamSocket::GetNegotiatedProtocol() const {
   return net::kProtoUnknown;
 }

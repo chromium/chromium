@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_navigation_view.h"
 
-#import "base/check.h"
+#import <numbers>
 
+#import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/numerics/math_constants.h"
@@ -189,11 +190,11 @@ UIColor* SelectionCircleColor() {
   [_selectionCircleLayer setPosition:center];
   [CATransaction commit];
 
-  CGFloat rotationStart = -CGFloat(base::kPiDouble) / 2;
+  CGFloat rotationStart = -CGFloat(std::numbers::pi) / 2;
   CGFloat rotationEnd = 0;
   if (gesture.direction == UISwipeGestureRecognizerDirectionLeft) {
-    rotationStart = CGFloat(base::kPiDouble) * 1.5;
-    rotationEnd = CGFloat(base::kPiDouble);
+    rotationStart = CGFloat(std::numbers::pi) * 1.5;
+    rotationEnd = CGFloat(std::numbers::pi);
   }
   CGAffineTransform rotation = CGAffineTransformMakeRotation(MapValueToRange(
       {0, kArrowThreshold}, {rotationStart, rotationEnd}, distance));

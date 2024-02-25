@@ -9,12 +9,14 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/oauth_token_getter.h"
+#include "remoting/base/url_loader_network_service_observer.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -65,6 +67,7 @@ class ProtobufHttpClient final {
 
   std::string server_endpoint_;
   raw_ptr<OAuthTokenGetter> token_getter_;
+  std::optional<UrlLoaderNetworkServiceObserver> service_observer_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   PendingRequestList pending_requests_;
 

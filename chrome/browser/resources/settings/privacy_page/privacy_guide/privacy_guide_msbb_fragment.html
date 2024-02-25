@@ -16,11 +16,11 @@
         on-change="onMsbbToggleClick_">
     </settings-toggle-button>
   </div>
-  <div class="description-wrapper two-column">
-    <div class="description-column description-column-first">
-      <div class="description-header">
+  <div class="settings-columned-section">
+    <div class="column">
+      <h3 class="description-header">
         $i18n{privacyGuideFeatureDescriptionHeader}
-      </div>
+      </h3>
       <div role="list">
         <privacy-guide-description-item
             role="listitem"
@@ -39,10 +39,8 @@
         </privacy-guide-description-item>
       </div>
     </div>
-    <div class="description-column">
-      <div class="description-header">
-        $i18n{privacyGuideThingsToConsider}
-      </div>
+    <div class="column">
+      <h3 class="description-header">$i18n{privacyGuideThingsToConsider}</h3>
       <div role="list">
         <privacy-guide-description-item
             role="listitem"

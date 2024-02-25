@@ -4,20 +4,84 @@
   "Fake Tester": {
     "skylab_tests": [
       {
+        "autotest_name": "unique_autotest_name",
         "cros_board": "octopus",
         "cros_img": "octopus-release/R89-13655.0.0",
-        "name": "tast.basic OCTOPUS_TOT",
-        "suite": "tast.basic",
-        "test": "tast.basic",
+        "name": "autotest_suite OCTOPUS_TOT",
+        "test": "autotest_suite",
+        "variant_id": "OCTOPUS_TOT"
+      },
+      {
+        "autotest_name": "chromium_Telemetry",
+        "benchmark": "something",
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R89-13655.0.0",
+        "name": "benchmark_suite OCTOPUS_TOT",
+        "test": "benchmark_suite",
+        "variant_id": "OCTOPUS_TOT"
+      },
+      {
+        "autotest_name": "chromium_Telemetry",
+        "benchmark": "something",
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R88-13597.23.0",
+        "name": "benchmark_suite OCTOPUS_TOT-1",
+        "test": "benchmark_suite",
+        "variant_id": "OCTOPUS_TOT-1"
+      },
+      {
+        "autotest_name": "tast.chrome-from-gcs",
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R89-13655.0.0",
+        "name": "chrome_all_tast_tests OCTOPUS_TOT",
+        "tast_expr": "dummy expr",
+        "test": "chrome_all_tast_tests",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT"
       },
       {
+        "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "octopus",
         "cros_img": "octopus-release/R88-13597.23.0",
-        "name": "tast.basic OCTOPUS_TOT-1",
-        "suite": "tast.basic",
-        "test": "tast.basic",
+        "name": "chrome_all_tast_tests OCTOPUS_TOT-1",
+        "tast_expr": "dummy expr",
+        "test": "chrome_all_tast_tests",
+        "timeout": 3600,
+        "variant_id": "OCTOPUS_TOT-1"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R89-13655.0.0",
+        "name": "gtest_suite OCTOPUS_TOT",
+        "test": "gtest_suite",
+        "variant_id": "OCTOPUS_TOT"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R88-13597.23.0",
+        "name": "gtest_suite OCTOPUS_TOT-1",
+        "test": "gtest_suite",
+        "variant_id": "OCTOPUS_TOT-1"
+      },
+      {
+        "autotest_name": "tast.lacros-from-gcs",
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R89-13655.0.0",
+        "name": "lacros_all_tast_tests OCTOPUS_TOT",
+        "tast_expr": "lacros expr",
+        "test": "lacros_all_tast_tests",
+        "timeout": 3600,
+        "variant_id": "OCTOPUS_TOT"
+      },
+      {
+        "autotest_name": "tast.lacros-from-gcs",
+        "cros_board": "octopus",
+        "cros_img": "octopus-release/R88-13597.23.0",
+        "name": "lacros_all_tast_tests OCTOPUS_TOT-1",
+        "tast_expr": "lacros expr",
+        "test": "lacros_all_tast_tests",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT-1"
       }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {css, customElement, html, XfBase} from './xf_base.js';
 
@@ -89,7 +89,7 @@ export class XfSplitter extends XfBase {
         this.afterResizingElement_.clientWidth;
     this.classList.add('splitter-active');
     this.isRTLlayout_ =
-        window.getComputedStyle(this).getPropertyValue('direction') == 'rtl';
+        window.getComputedStyle(this).getPropertyValue('direction') === 'rtl';
   }
 
   private finishDrag_() {
@@ -147,7 +147,9 @@ export class XfSplitter extends XfBase {
   private onTouchstart_(event: TouchEvent) {
     if (event.touches.length === 1) {
       this.setupDrag_(event.touches[0]!.clientX, true);
-      event.preventDefault();
+      if (event.cancelable) {
+        event.preventDefault();
+      }
     }
   }
 

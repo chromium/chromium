@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,7 +46,9 @@ bool CloudProfileReportingServiceFactory::ServiceIsCreatedWithBrowserContext()
 
 CloudProfileReportingServiceFactory::CloudProfileReportingServiceFactory()
     : ProfileKeyedServiceFactory("CloudProfileReporting",
-                                 ProfileSelections::BuildForRegularProfile()) {}
+                                 ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
+}
 
 CloudProfileReportingServiceFactory::~CloudProfileReportingServiceFactory() =
     default;

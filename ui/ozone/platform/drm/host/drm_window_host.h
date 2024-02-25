@@ -105,16 +105,12 @@ class DrmWindowHost : public PlatformWindow,
  private:
   void SendBoundsChange();
 
-  const raw_ptr<PlatformWindowDelegate, ExperimentalAsh>
-      delegate_;                                             // Not owned.
-  const raw_ptr<GpuThreadAdapter, ExperimentalAsh> sender_;  // Not owned.
-  const raw_ptr<EventFactoryEvdev, ExperimentalAsh>
-      event_factory_;                                 // Not owned.
-  const raw_ptr<DrmCursor, ExperimentalAsh> cursor_;  // Not owned.
-  const raw_ptr<DrmWindowHostManager, ExperimentalAsh>
-      window_manager_;  // Not owned.
-  const raw_ptr<DrmDisplayHostManager, ExperimentalAsh>
-      display_manager_;  // Not owned.
+  const raw_ptr<PlatformWindowDelegate> delegate_;        // Not owned.
+  const raw_ptr<GpuThreadAdapter> sender_;                // Not owned.
+  const raw_ptr<EventFactoryEvdev> event_factory_;        // Not owned.
+  const raw_ptr<DrmCursor> cursor_;                       // Not owned.
+  const raw_ptr<DrmWindowHostManager> window_manager_;    // Not owned.
+  const raw_ptr<DrmDisplayHostManager> display_manager_;  // Not owned.
 
   gfx::Rect bounds_;
   const gfx::AcceleratedWidget widget_;

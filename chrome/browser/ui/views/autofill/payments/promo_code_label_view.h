@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_PROMO_CODE_LABEL_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace autofill {
 class PromoCodeLabelView : public views::FlexLayoutView {
+  METADATA_HEADER(PromoCodeLabelView, views::FlexLayoutView)
+
  public:
   PromoCodeLabelView(
       gfx::Size& preferred_size,
@@ -25,9 +28,11 @@ class PromoCodeLabelView : public views::FlexLayoutView {
   void OnThemeChanged() override;
 
   raw_ptr<views::LabelButton> GetCopyButtonForTesting();
+  const std::u16string& GetPromoCodeLabelTextForTesting() const;
 
  private:
   raw_ptr<views::MdTextButton> copy_button_ = nullptr;
+  raw_ptr<views::Label> promo_code_label_ = nullptr;
 };
 }  // namespace autofill
 

@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {SharePasswordRecipientElement} from 'chrome://password-manager/password_manager.js';
+import type {SharePasswordRecipientElement} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -66,7 +66,7 @@ suite('SharePasswordRecipientTest', function() {
         loadTimeData.getString('sharePasswordNotAvailable'));
   });
 
-  test('Non-disabled element is selectable', function() {
+  test('Non-disabled element is selectable', async function() {
     const recipient = makeRecipientInfo(/*isEligible=*/ true);
     element.recipient = recipient;
     flush();
@@ -74,12 +74,13 @@ suite('SharePasswordRecipientTest', function() {
     assertFalse(element.selected);
     assertFalse(element.$.checkbox.checked);
     element.click();
+    await element.$.checkbox.updateComplete;
 
     assertTrue(element.selected);
     assertTrue(element.$.checkbox.checked);
   });
 
-  test('Disabled element is not selectable', function() {
+  test('Disabled element is not selectable', async function() {
     const recipient = makeRecipientInfo(/*isEligible=*/ false);
     element.recipient = recipient;
     element.disabled = true;
@@ -88,6 +89,7 @@ suite('SharePasswordRecipientTest', function() {
     assertFalse(element.selected);
     assertFalse(element.$.checkbox.checked);
     element.click();
+    await element.$.checkbox.updateComplete;
 
     assertFalse(element.selected);
     assertFalse(element.$.checkbox.checked);

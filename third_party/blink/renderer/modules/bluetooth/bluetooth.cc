@@ -323,37 +323,38 @@ void ConvertRequestDeviceOptions(
 
 }  // namespace
 
-ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,
-                                         ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLBoolean> Bluetooth::getAvailability(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
   // If Bluetooth is disallowed by Permissions Policy, getAvailability should
   // return false.
   if (!IsFeatureEnabled(window)) {
-    return ScriptPromise::Cast(script_state,
-                               ScriptValue::From(script_state, false));
+    return ScriptPromiseTyped<IDLBoolean>::Cast(
+        script_state, v8::Boolean::New(script_state->GetIsolate(), false));
   }
 
   CHECK(window->IsSecureContext());
   EnsureServiceConnection(window);
 
   // Subsequent steps are handled in the browser process.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   service_->GetAvailability(
-      WTF::BindOnce([](ScriptPromiseResolver* resolver,
+      WTF::BindOnce([](ScriptPromiseResolverTyped<IDLBoolean>* resolver,
                        bool result) { resolver->Resolve(result); },
                     WrapPersistent(resolver)));
   return promise;
 }
 
 void Bluetooth::GetDevicesCallback(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<BluetoothDevice>>* resolver,
     Vector<mojom::blink::WebBluetoothDevicePtr> devices) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {
@@ -387,26 +388,28 @@ void Bluetooth::RequestDeviceCallback(
   }
 }
 
-ScriptPromise Bluetooth::getDevices(ScriptState* script_state,
-                                    ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<BluetoothDevice>> Bluetooth::getDevices(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
 
   if (IsRequestDenied(window, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<BluetoothDevice>>();
   }
 
   if (!IsFeatureEnabled(window)) {
     exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<BluetoothDevice>>();
   }
 
   AddUnsupportedPlatformConsoleMessage(window);
   CHECK(window->IsSecureContext());
 
   EnsureServiceConnection(window);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<BluetoothDevice>>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   service_->GetDevices(WTF::BindOnce(&Bluetooth::GetDevicesCallback,
                                      WrapPersistent(this),
@@ -656,7 +659,7 @@ BluetoothDevice* Bluetooth::GetBluetoothDeviceRepresentingDevice(
   auto it =
       device_instance_map_.find(device_ptr->id.DeviceIdInBase64().c_str());
   if (it != device_instance_map_.end()) {
-    return it->value;
+    return it->value.Get();
   }
 
   BluetoothDevice* device = MakeGarbageCollected<BluetoothDevice>(

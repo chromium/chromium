@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "crypto/openssl_util.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -283,8 +284,14 @@ TEST_P(SocketBIOAdapterTest, ReadEOFSync) {
   ExpectReadError(adapter->bio(), ERR_CONNECTION_CLOSED, tracer);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 // Test that asynchronous EOF is mapped to ERR_CONNECTION_CLOSED.
-TEST_P(SocketBIOAdapterTest, ReadEOFAsync) {
+// TODO(crbug.com/1480024): Test is flaky on Android.
+#define MAYBE_ReadEOFAsync DISABLED_ReadEOFAsync
+#else
+#define MAYBE_ReadEOFAsync ReadEOFAsync
+#endif
+TEST_P(SocketBIOAdapterTest, MAYBE_ReadEOFAsync) {
   crypto::OpenSSLErrStackTracer tracer(FROM_HERE);
 
   MockRead reads[] = {

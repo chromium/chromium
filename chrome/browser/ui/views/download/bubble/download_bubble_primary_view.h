@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_PRIMARY_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -23,15 +24,16 @@ struct ContentId;
 
 namespace views {
 class ScrollView;
+class View;
 }  // namespace views
 
 // Base class for either type of primary view (partial or main). Consists of
 // an optional header, a scrolling view for the download rows, and an optional
 // footer.
 class DownloadBubblePrimaryView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(DownloadBubblePrimaryView);
+  METADATA_HEADER(DownloadBubblePrimaryView, views::FlexLayoutView)
 
+ public:
   DownloadBubblePrimaryView();
   ~DownloadBubblePrimaryView() override;
 
@@ -42,8 +44,17 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
   // Gets the row view with the given id. Returns nullptr if not found.
   DownloadBubbleRowView* GetRow(const offline_items_collection::ContentId& id);
 
+  // The view to focus first when the bubble is created. By default, returns
+  // the transparent button (main button) of the first row in the row list.
+  virtual views::View* GetInitiallyFocusedView();
+
   // Gets the row view at the given index.
   DownloadBubbleRowView* GetRowForTesting(size_t index);
+
+  views::ScrollView* scroll_view_for_testing() { return scroll_view_; }
+
+  // Whether this primary view is a partial view.
+  virtual bool IsPartialView() const = 0;
 
  protected:
   // TODO(crbug.com/1344515): Add support for refreshing the scroll view
@@ -52,7 +63,7 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
       base::WeakPtr<Browser> browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-      std::vector<DownloadUIModel::DownloadUIModelPtr> models,
+      const DownloadBubbleRowListViewInfo& info,
       int fixed_width);
 
   int DefaultPreferredWidth() const;

@@ -40,10 +40,12 @@ std::string DataWithTimestamp::ToDebugString(
   for (const DataWithTimestamp& data : data_with_timestamps) {
     ss << "\n  (data: " << data.DataInHex() << ", start: "
        << base::UTF16ToUTF8(base::TimeFormatShortDateAndTimeWithTimeZone(
-              base::Time::FromJavaTime(data.start_timestamp_ms)))
+              base::Time::FromMillisecondsSinceUnixEpoch(
+                  data.start_timestamp_ms)))
        << ", end: "
        << base::UTF16ToUTF8(base::TimeFormatShortDateAndTimeWithTimeZone(
-              base::Time::FromJavaTime(data.end_timestamp_ms)))
+              base::Time::FromMillisecondsSinceUnixEpoch(
+                  data.end_timestamp_ms)))
        << "),";
   }
   ss << "\n]";
@@ -55,7 +57,7 @@ bool DataWithTimestamp::ContainsTime(const int64_t timestamp_ms) const {
 }
 
 std::string DataWithTimestamp::DataInHex() const {
-  return "0x" + base::HexEncode(data.data(), data.size());
+  return "0x" + base::HexEncode(data);
 }
 
 bool DataWithTimestamp::operator==(const DataWithTimestamp& other) const {

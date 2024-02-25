@@ -5,7 +5,6 @@
 import SwiftUI
 
 /// A view that displays a list of actions in the overflow menu.
-@available(iOS 15, *)
 struct OverflowMenuActionList: View {
   /// The list of action groups for this view.
   var actionGroups: [OverflowMenuActionGroup]
@@ -18,9 +17,18 @@ struct OverflowMenuActionList: View {
 
   var body: some View {
     List {
-      ForEach(actionGroups) { actionGroup in
+      let nonEmpty = actionGroups.filter({ !$0.actions.isEmpty })
+      ForEach(nonEmpty) { actionGroup in
+        let isLast = actionGroup == nonEmpty.last
         OverflowMenuActionSection(
-          actionGroup: actionGroup, metricsHandler: metricsHandler)
+          actionGroup: actionGroup, metricsHandler: metricsHandler,
+          footerBackground: {
+            if isLast {
+              Color.clear.onAppear {
+                metricsHandler?.popupMenuUserScrolledToEndOfActions()
+              }
+            }
+          })
       }
     }
     .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/insert_text_command.h"
 
+#include "build/buildflag.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
@@ -213,8 +214,9 @@ TEST_F(InsertTextCommandTest, WhitespaceFixupAfterParagraph) {
 TEST_F(InsertTextCommandTest, NoVisibleSelectionAfterDeletingSelection) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   InsertStyleElement(
-      "ruby {display: inline-block; height: 100%}"
-      "navi {float: left}");
+      ":root { font-size: 10px; }"
+      "ruby { display: inline-block; height: 100%; }"
+      "navi { float: left; }");
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>"
                              "  <ruby><strike>"

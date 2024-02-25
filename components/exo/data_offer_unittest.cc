@@ -24,7 +24,9 @@
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
+#include "components/exo/test/test_data_offer_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -37,49 +39,14 @@
 namespace exo {
 namespace {
 
+using test::TestDataOfferDelegate;
+
 class DataOfferTest : public test::ExoTestBase {
  public:
   void TearDown() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
     test::ExoTestBase::TearDown();
   }
-};
-
-class TestDataOfferDelegate : public DataOfferDelegate {
- public:
-  TestDataOfferDelegate() {}
-
-  TestDataOfferDelegate(const TestDataOfferDelegate&) = delete;
-  TestDataOfferDelegate& operator=(const TestDataOfferDelegate&) = delete;
-
-  // Called at the top of the data device's destructor, to give observers a
-  // chance to remove themselves.
-  void OnDataOfferDestroying(DataOffer* offer) override {}
-
-  // Called when |mime_type| is offered by the client.
-  void OnOffer(const std::string& mime_type) override {
-    mime_types_.insert(mime_type);
-  }
-
-  // Called when possible |source_actions| is offered by the client.
-  void OnSourceActions(
-      const base::flat_set<DndAction>& source_actions) override {
-    source_actions_ = source_actions;
-  }
-
-  // Called when current |action| is offered by the client.
-  void OnAction(DndAction dnd_action) override { dnd_action_ = dnd_action; }
-
-  const base::flat_set<std::string>& mime_types() const { return mime_types_; }
-  const base::flat_set<DndAction>& source_actions() const {
-    return source_actions_;
-  }
-  DndAction dnd_action() const { return dnd_action_; }
-
- private:
-  base::flat_set<std::string> mime_types_;
-  base::flat_set<DndAction> source_actions_;
-  DndAction dnd_action_ = DndAction::kNone;
 };
 
 class TestDataTransferPolicyController : ui::DataTransferPolicyController {
@@ -94,24 +61,28 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
 
  private:
   // ui::DataTransferPolicyController:
-  bool IsClipboardReadAllowed(const ui::DataTransferEndpoint* const data_src,
-                              const ui::DataTransferEndpoint* const data_dst,
-                              const absl::optional<size_t> size) override {
-    if (data_src)
+  bool IsClipboardReadAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      const std::optional<size_t> size) override {
+    if (data_src.has_value()) {
       last_src_type_ = data_src->type();
+    }
     last_dst_type_ = data_dst->type();
     return true;
   }
 
-  void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
-                      const ui::DataTransferEndpoint* const data_dst,
-                      const absl::optional<size_t> size,
-                      content::RenderFrameHost* web_contents,
-                      base::OnceCallback<void(bool)> callback) override {}
+  void PasteIfAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+      content::RenderFrameHost* web_contents,
+      base::OnceCallback<void(bool)> callback) override {}
 
-  void DropIfAllowed(const ui::OSExchangeData* const drag_data,
-                     const ui::DataTransferEndpoint* const data_dst,
-                     base::OnceClosure drop_cb) override {
+  void DropIfAllowed(
+      const ui::OSExchangeData* const drag_data,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      base::OnceClosure drop_cb) override {
     std::move(drop_cb).Run();
   }
 
@@ -499,7 +470,7 @@ TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacros) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
-        (GURL("https://www.google.com"))));
+        GURL("https://www.google.com"), /*off_the_record=*/false));
     writer.WriteText(u"Test data");
   }
 
@@ -531,8 +502,11 @@ TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacros) {
                      std::move(write_pipe));
   std::string dte_json_result;
   ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
-  EXPECT_EQ(R"({"endpoint_type":"url","url":"https://www.google.com/"})",
-            dte_json_result);
+  EXPECT_EQ(
+      "{\"endpoint_type\":\"url\","
+      "\"off_the_record\":false,"
+      "\"url\":\"https://www.google.com/\"}",
+      dte_json_result);
 }
 
 TEST_F(DataOfferTest, SetClipboardDataDoNotOfferDteToNonLacros) {
@@ -544,7 +518,7 @@ TEST_F(DataOfferTest, SetClipboardDataDoNotOfferDteToNonLacros) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
-        (GURL("https://www.google.com"))));
+        GURL("https://www.google.com"), /*off_the_record=*/false));
     writer.WriteText(u"Test data");
   }
 
@@ -590,7 +564,7 @@ TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacrosSourceChanged) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
-        (GURL("https://www.google.com"))));
+        GURL("https://www.google.com"), /*off_the_record=*/false));
     writer.WriteText(u"Test data");
   }
 
@@ -649,7 +623,7 @@ TEST_F(DataOfferTest, SetDropDataOfferDteToLacros) {
   ui::OSExchangeData data;
   data.SetString(std::u16string(u"Test data"));
   data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      (GURL("https://www.google.com"))));
+      GURL("https://www.google.com"), /*off_the_record=*/false));
 
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -690,8 +664,11 @@ TEST_F(DataOfferTest, SetDropDataOfferDteToLacros) {
                      std::move(write_pipe));
   std::string dte_json_result;
   ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
-  EXPECT_EQ(R"({"endpoint_type":"url","url":"https://www.google.com/"})",
-            dte_json_result);
+  EXPECT_EQ(
+      "{\"endpoint_type\":\"url\","
+      "\"off_the_record\":false,"
+      "\"url\":\"https://www.google.com/\"}",
+      dte_json_result);
 }
 
 TEST_F(DataOfferTest, SetDropDataDoNotOfferDteToNonLacros) {
@@ -702,7 +679,7 @@ TEST_F(DataOfferTest, SetDropDataDoNotOfferDteToNonLacros) {
   ui::OSExchangeData data;
   data.SetString(std::u16string(u"Test data"));
   data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      (GURL("https://www.google.com"))));
+      GURL("https://www.google.com"), /*off_the_record=*/false));
 
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -754,7 +731,7 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
   TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteHTML(u"Test data", "", ui::ClipboardContentType::kSanitized);
+    writer.WriteHTML(u"Test data", "");
   }
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());

@@ -152,8 +152,7 @@ class SystemPropertiesProviderImplTest : public testing::Test {
   FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};
   FakeFastPairDelegate fake_fast_pair_delegate_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList feature_list;
 

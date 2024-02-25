@@ -10,6 +10,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 class PermissionIcon : public NonAccessibleImageView {
+  METADATA_HEADER(PermissionIcon, NonAccessibleImageView)
+
  public:
   explicit PermissionIcon(const PageInfo::PermissionInfo& permission_info);
 

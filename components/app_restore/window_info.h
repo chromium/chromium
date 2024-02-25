@@ -5,15 +5,46 @@
 #ifndef COMPONENTS_APP_RESTORE_WINDOW_INFO_H_
 #define COMPONENTS_APP_RESTORE_WINDOW_INFO_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace app_restore {
+
+// Browser specific info. It is used for creating new browsers for saved desks,
+// or displaying browser info in the pine dialog.
+struct COMPONENT_EXPORT(APP_RESTORE) BrowserExtraInfo {
+  BrowserExtraInfo();
+  BrowserExtraInfo(BrowserExtraInfo&&);
+  BrowserExtraInfo(const BrowserExtraInfo&);
+  BrowserExtraInfo& operator=(BrowserExtraInfo&&);
+  BrowserExtraInfo& operator=(const BrowserExtraInfo&);
+  ~BrowserExtraInfo();
+
+  bool operator==(const BrowserExtraInfo& other) const;
+
+  std::vector<GURL> urls;
+  std::optional<int32_t> active_tab_index;
+  std::optional<int32_t> first_non_pinned_tab_index;
+  // True if the browser was `Browser::TYPE_APP` or `Browser::TYPE_APP_POPUP`.
+  // (PWA or SWA).
+  std::optional<bool> app_type_browser;
+  std::optional<std::string> app_name;
+  // Represents tab groups associated with this browser instance if there are
+  // any. This is only used in Desks Storage, tab groups in full restore are
+  // persisted by sessions. This field is not converted to base::Value in base
+  // value conversions.
+  std::vector<tab_groups::TabGroupInfo> tab_group_infos;
+  // Lacros only, the ID of the lacros profile that this browser uses.
+  std::optional<uint64_t> lacros_profile_id;
+};
 
 // This struct is the parameter for the interface SaveWindowInfo, to save the
 // window information.
@@ -21,62 +52,60 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
  public:
   // This struct is the ARC specific window info.
   struct ArcExtraInfo {
-    ArcExtraInfo();
-    ArcExtraInfo(const WindowInfo::ArcExtraInfo&);
-    ArcExtraInfo& operator=(const WindowInfo::ArcExtraInfo&);
-    ~ArcExtraInfo();
-
-    absl::optional<gfx::Size> maximum_size;
-    absl::optional<gfx::Size> minimum_size;
-    absl::optional<gfx::Rect> bounds_in_root;
+    bool operator==(const ArcExtraInfo& other) const = default;
+    std::optional<gfx::Size> maximum_size;
+    std::optional<gfx::Size> minimum_size;
+    std::optional<gfx::Rect> bounds_in_root;
   };
 
   WindowInfo();
-  WindowInfo(const WindowInfo&) = delete;
-  WindowInfo& operator=(const WindowInfo&) = delete;
+  WindowInfo(WindowInfo&&);
+  WindowInfo(const WindowInfo&);
+  WindowInfo& operator=(WindowInfo&&);
+  WindowInfo& operator=(const WindowInfo&);
   ~WindowInfo();
 
-  WindowInfo* Clone();
+  bool operator==(const WindowInfo& other) const;
 
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window;
+  raw_ptr<aura::Window, DanglingUntriaged> window;
 
   // Index in MruWindowTracker to restore window stack. A lower index
   // indicates a more recently used window.
-  absl::optional<int32_t> activation_index;
+  std::optional<int32_t> activation_index;
 
   // Virtual desk id.
-  absl::optional<int32_t> desk_id;
+  std::optional<int32_t> desk_id;
 
-  // Virtual desk guid.
+  // The GUID of the virtual desk that this window was on.
   base::Uuid desk_guid;
 
   // Current bounds in screen in coordinates. If the window has restore bounds,
   // then this contains the restore bounds.
-  absl::optional<gfx::Rect> current_bounds;
+  std::optional<gfx::Rect> current_bounds;
 
   // Window state, minimized, maximized, inactive, etc.
-  absl::optional<chromeos::WindowStateType> window_state_type;
+  std::optional<chromeos::WindowStateType> window_state_type;
 
   // Show state of a window before it was minimized. Empty for non-minimized
   // windows.
-  absl::optional<ui::WindowShowState> pre_minimized_show_state_type;
+  std::optional<ui::WindowShowState> pre_minimized_show_state_type;
 
   // The snap percentage of a window, if it is snapped. For instance a snap
   // percentage of 75 means the window takes up three quarters of the work area.
   // The primary axis is determined when restoring; if it is portrait, it will
   // be three quarters of the height.
-  absl::optional<uint32_t> snap_percentage;
+  std::optional<uint32_t> snap_percentage;
 
   // Display id to launch an app.
-  absl::optional<int64_t> display_id;
+  std::optional<int64_t> display_id;
 
   // The title of the app window. Used for saved desks in case one of the
   // windows in the template is uninstalled, we can show a nice error message.
   // Also used for the ARC ghost window.
-  absl::optional<std::u16string> app_title;
+  std::optional<std::u16string> app_title;
 
   // Extra window info of ARC app window.
-  absl::optional<ArcExtraInfo> arc_extra_info;
+  std::optional<ArcExtraInfo> arc_extra_info;
 
   std::string ToString() const;
 };

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Tests download is canceled when behavior is set to deny.');
   await dp.Browser.setDownloadBehavior({
     behavior: 'deny'

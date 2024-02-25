@@ -41,6 +41,14 @@ void CacheTestFillBuffer(char* buffer, size_t len, bool no_nulls) {
     buffer[0] = 'g';
 }
 
+scoped_refptr<net::IOBufferWithSize> CacheTestCreateAndFillBuffer(
+    size_t len,
+    bool no_nulls) {
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(len);
+  CacheTestFillBuffer(buffer->data(), len, no_nulls);
+  return buffer;
+}
+
 bool CreateCacheTestFile(const base::FilePath& name) {
   int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
               base::File::FLAG_WRITE;

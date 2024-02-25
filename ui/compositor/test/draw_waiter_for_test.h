@@ -10,9 +10,9 @@
 #include "base/run_loop.h"
 #include "ui/compositor/compositor_observer.h"
 
-class Compositor;
-
 namespace ui {
+
+class Compositor;
 
 // This is only to be used for test. It allows execution of other tasks on
 // the current message loop before the current task finishs (there is a

@@ -31,14 +31,9 @@ using ::tflite::support::utils::StringListToVector;
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_support_text_tokenizers_BertTokenizer_nativeLoadResource(  // NOLINT
-    JNIEnv* env,
-    jobject thiz,
-    jobject vocab_list,
-    jint max_bytes_per_token,
-    jint max_chars_per_sub_token,
-    jstring jsuffix_indicator,
-    jboolean use_unknown_token,
-    jstring junknown_token,
+    JNIEnv* env, jobject thiz, jobject vocab_list, jint max_bytes_per_token,
+    jint max_chars_per_sub_token, jstring jsuffix_indicator,
+    jboolean use_unknown_token, jstring junknown_token,
     jboolean split_unknown_chars) {
   // Convert java.util.List<String> into std::vector<string>
   std::vector<std::string> vocab = StringListToVector(env, vocab_list);
@@ -71,28 +66,20 @@ Java_org_tensorflow_lite_support_text_tokenizers_BertTokenizer_nativeLoadResourc
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_support_text_tokenizers_BertTokenizer_nativeUnloadResource(  // NOLINT
-    JNIEnv* env,
-    jobject thiz,
-    jlong handle) {
+    JNIEnv* env, jobject thiz, jlong handle) {
   delete reinterpret_cast<BertTokenizer*>(handle);
   return 0;
 }
 
 extern "C" JNIEXPORT jobjectArray JNICALL
 Java_org_tensorflow_lite_support_text_tokenizers_BertTokenizer_nativeTokenize(
-    JNIEnv* env,
-    jobject thiz,
-    jlong handle,
-    jstring jtext) {
+    JNIEnv* env, jobject thiz, jlong handle, jstring jtext) {
   return nativeTokenize(env, handle, jtext);
 }
 
 extern "C" JNIEXPORT jintArray JNICALL
 Java_org_tensorflow_lite_support_text_tokenizers_BertTokenizer_nativeConvertTokensToIds(  // NOLINT
-    JNIEnv* env,
-    jobject thiz,
-    jlong handle,
-    jobjectArray jtokens) {
+    JNIEnv* env, jobject thiz, jlong handle, jobjectArray jtokens) {
   return nativeConvertTokensToIds(env, handle, jtokens);
 }
 

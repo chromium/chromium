@@ -22,6 +22,7 @@ declare namespace chrome {
       LOGIN = 'login',
       SAD_TAB_CRASH = 'sadTabCrash',
       GOOGLE_INTERNAL = 'googleInternal',
+      AI = 'ai',
     }
 
     export interface FeedbackInfo {
@@ -49,6 +50,8 @@ declare namespace chrome {
       showQuestionnaire?: boolean;
       fromAutofill?: boolean;
       autofillMetadata?: string;
+      isOffensiveOrUnsafe?: boolean;
+      aiMetadata?: string;
     }
 
     enum Status {

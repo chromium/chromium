@@ -16,7 +16,7 @@ void BarPersistedTabDataAndroid::From(
     TabAndroid* tab_android,
     PersistedTabDataAndroid::FromCallback from_callback) {
   PersistedTabDataAndroid::From(
-      tab_android, BarPersistedTabDataAndroid::UserDataKey(),
+      tab_android->GetWeakPtr(), BarPersistedTabDataAndroid::UserDataKey(),
       base::BindOnce(
           [](TabAndroid* tab_android)
               -> std::unique_ptr<PersistedTabDataAndroid> {

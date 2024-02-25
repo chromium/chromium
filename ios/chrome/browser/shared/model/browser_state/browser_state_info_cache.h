@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 
@@ -69,7 +70,7 @@ class BrowserStateInfoCache {
       const base::FilePath& browser_state_path) const;
   void AddBrowserStateCacheKey(const std::string& key);
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
   std::vector<std::string> sorted_keys_;
   base::FilePath user_data_dir_;
   base::ObserverList<BrowserStateInfoCacheObserver, true> observer_list_;

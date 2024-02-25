@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.locale;
-import org.chromium.base.annotations.NativeMethods;
+
+import org.jni_zero.NativeMethods;
 
 /**
  * A loader class for changes of template url in a given special locale. This is a JNI bridge and
@@ -24,9 +25,7 @@ public class LocaleTemplateUrlLoader {
         mNativeLocaleTemplateUrlLoader = LocaleTemplateUrlLoaderJni.get().init(localeId);
     }
 
-    /**
-     * This *must* be called after the {@link LocaleTemplateUrlLoader} is not used anymore.
-     */
+    /** This *must* be called after the {@link LocaleTemplateUrlLoader} is not used anymore. */
     public void destroy() {
         assert mNativeLocaleTemplateUrlLoader != 0;
         LocaleTemplateUrlLoaderJni.get().destroy(mNativeLocaleTemplateUrlLoader);
@@ -58,18 +57,14 @@ public class LocaleTemplateUrlLoader {
         }
     }
 
-    /**
-     * Overrides the default search provider in special locale.
-     */
+    /** Overrides the default search provider in special locale. */
     public void overrideDefaultSearchProvider() {
         assert mNativeLocaleTemplateUrlLoader != 0;
-        LocaleTemplateUrlLoaderJni.get().overrideDefaultSearchProvider(
-                mNativeLocaleTemplateUrlLoader);
+        LocaleTemplateUrlLoaderJni.get()
+                .overrideDefaultSearchProvider(mNativeLocaleTemplateUrlLoader);
     }
 
-    /**
-     * Sets the default search provider back to Google.
-     */
+    /** Sets the default search provider back to Google. */
     public void setGoogleAsDefaultSearch() {
         assert mNativeLocaleTemplateUrlLoader != 0;
         LocaleTemplateUrlLoaderJni.get().setGoogleAsDefaultSearch(mNativeLocaleTemplateUrlLoader);
@@ -78,10 +73,15 @@ public class LocaleTemplateUrlLoader {
     @NativeMethods
     interface Natives {
         long init(String localeId);
+
         void destroy(long nativeLocaleTemplateUrlLoader);
+
         boolean loadTemplateUrls(long nativeLocaleTemplateUrlLoader);
+
         void removeTemplateUrls(long nativeLocaleTemplateUrlLoader);
+
         void overrideDefaultSearchProvider(long nativeLocaleTemplateUrlLoader);
+
         void setGoogleAsDefaultSearch(long nativeLocaleTemplateUrlLoader);
     }
 }

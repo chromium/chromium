@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 
@@ -112,6 +113,34 @@ std::string GetOtpAuthType(CardUnmaskChallengeOptionType type) {
     return "EmailOtp";
   }
   NOTREACHED_NORETURN();
+}
+
+void LogRiskBasedAuthAttempt(CreditCard::RecordType card_type) {
+  std::string card_type_histogram_string =
+      AutofillMetrics::GetHistogramStringForCardType(card_type);
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Autofill.RiskBasedAuth", card_type_histogram_string, ".Attempt"}),
+      true);
+}
+
+void LogRiskBasedAuthResult(CreditCard::RecordType card_type,
+                            RiskBasedAuthEvent event) {
+  std::string card_type_histogram_string =
+      AutofillMetrics::GetHistogramStringForCardType(card_type);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Autofill.RiskBasedAuth", card_type_histogram_string, ".Result"}),
+      event);
+}
+
+void LogRiskBasedAuthLatency(base::TimeDelta duration,
+                             CreditCard::RecordType card_type) {
+  base::UmaHistogramLongTimes(
+      "Autofill.RiskBasedAuth" +
+          AutofillMetrics::GetHistogramStringForCardType(card_type) +
+          ".Latency",
+      duration);
 }
 
 }  // namespace autofill::autofill_metrics

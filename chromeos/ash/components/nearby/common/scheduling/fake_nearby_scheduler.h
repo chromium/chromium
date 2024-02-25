@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SCHEDULER_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SCHEDULER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::nearby {
 
@@ -26,13 +26,13 @@ class FakeNearbyScheduler : public NearbyScheduler {
   void MakeImmediateRequest() override;
   void HandleResult(bool success) override;
   void Reschedule() override;
-  absl::optional<base::Time> GetLastSuccessTime() const override;
-  absl::optional<base::TimeDelta> GetTimeUntilNextRequest() const override;
+  std::optional<base::Time> GetLastSuccessTime() const override;
+  std::optional<base::TimeDelta> GetTimeUntilNextRequest() const override;
   bool IsWaitingForResult() const override;
   size_t GetNumConsecutiveFailures() const override;
 
-  void SetLastSuccessTime(absl::optional<base::Time> time);
-  void SetTimeUntilNextRequest(absl::optional<base::TimeDelta> time_delta);
+  void SetLastSuccessTime(std::optional<base::Time> time);
+  void SetTimeUntilNextRequest(std::optional<base::TimeDelta> time_delta);
   void SetIsWaitingForResult(bool is_waiting);
   void SetNumConsecutiveFailures(size_t num_failures);
   void SetHandleResultCallback(base::OnceClosure callback);
@@ -52,8 +52,8 @@ class FakeNearbyScheduler : public NearbyScheduler {
   size_t num_immediate_requests_ = 0;
   size_t num_reschedule_calls_ = 0;
   std::vector<bool> handled_results_;
-  absl::optional<base::Time> last_success_time_;
-  absl::optional<base::TimeDelta> time_until_next_request_;
+  std::optional<base::Time> last_success_time_;
+  std::optional<base::TimeDelta> time_until_next_request_;
   bool is_waiting_for_result_ = false;
   size_t num_consecutive_failures_ = 0;
   base::OnceClosure handle_result_callback_;

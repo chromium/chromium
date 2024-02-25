@@ -40,6 +40,13 @@ symbolset("custom_platter_filled_top_and_arrow_up_iphone") {
   ]
 }
 
+symbolset("dangerous_omnibox") {
+  sources = [
+    "dangerous_omnibox.symbolset/Contents.json",
+    "dangerous_omnibox.symbolset/dangerous.omnibox.cr.svg",
+  ]
+}
+
 symbolset("dino") {
   sources = [
     "dino.symbolset/Contents.json",
@@ -202,6 +209,13 @@ symbolset("line_downtrend") {
   ]
 }
 
+symbolset("line_uptrend") {
+  sources = [
+    "line_uptrend.symbolset/Contents.json",
+    "line_uptrend.symbolset/line.uptrend.cr.svg",
+  ]
+}
+
 symbolset("shield") {
   sources = [
     "shield.symbolset/Contents.json",
@@ -243,6 +257,13 @@ symbolset("chrome_product") {
   sources = [
     "chrome_product.symbolset/Contents.json",
     "chrome_product.symbolset/chrome.product.cr.svg",
+  ]
+}
+
+symbolset("multicolor_chromeball") {
+  sources = [
+    "multicolor_chromeball.symbolset/Contents.json",
+    "multicolor_chromeball.symbolset/multicolor.chromeball.cr.svg",
   ]
 }
 

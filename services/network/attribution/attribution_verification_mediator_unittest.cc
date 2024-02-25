@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -53,6 +52,8 @@ class AttributionVerificationMediatorTest : public testing::Test {
         key_commitment_getter_.get(), std::move(cryptographers),
         std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
   }
+
+  void TearDown() override { fake_cryptographer_ = nullptr; }
 
   net::HttpRequestHeaders RunGetHeadersForVerificationWith(
       const GURL& url,
@@ -122,7 +123,7 @@ class AttributionVerificationMediatorTest : public testing::Test {
 
   // We hold onto a raw ptr to configure the call expectations, the helper owns
   // the unique_ptr.
-  raw_ptr<FakeCryptographer, DanglingUntriaged> fake_cryptographer_;
+  raw_ptr<FakeCryptographer> fake_cryptographer_;
   std::unique_ptr<AttributionVerificationMediator> mediator_;
 
   base::HistogramTester histograms_;
@@ -136,7 +137,7 @@ TEST_F(AttributionVerificationMediatorTest,
   std::string verification_header;
   headers.GetHeader("Sec-Attribution-Reporting-Private-State-Token",
                     &verification_header);
-  std::vector<const std::string> verification_headers =
+  const std::vector<std::string> verification_headers =
       DeserializeStructuredHeaderListOfStrings(verification_header);
   // Check that the message was blinded by the Cryptographer before being added
   ASSERT_EQ(verification_headers.size(), 1u);

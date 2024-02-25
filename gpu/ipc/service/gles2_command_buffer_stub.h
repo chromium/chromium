@@ -52,8 +52,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
 #endif
   const gles2::FeatureInfo* GetFeatureInfo() const override;
   const GpuPreferences& GetGpuPreferences() const override;
-  viz::GpuVSyncCallback GetGpuVSyncCallback() override;
-  base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
 
  private:
   // CommandBufferStub overrides:

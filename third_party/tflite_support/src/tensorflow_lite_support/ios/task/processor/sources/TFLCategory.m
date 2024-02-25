@@ -18,8 +18,8 @@
 
 - (instancetype)initWithIndex:(NSInteger)index
                         score:(float)score
-                        label:(nullable NSString*)label
-                  displayName:(nullable NSString*)displayName {
+                        label:(nullable NSString *)label
+                  displayName:(nullable NSString *)displayName {
   self = [super init];
   if (self) {
     _index = index;

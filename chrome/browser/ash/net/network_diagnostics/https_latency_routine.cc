@@ -63,8 +63,9 @@ std::unique_ptr<HttpRequestManager> GetHttpRequestManager() {
 
 }  // namespace
 
-HttpsLatencyRoutine::HttpsLatencyRoutine()
-    : network_context_getter_(base::BindRepeating(&GetNetworkContext)),
+HttpsLatencyRoutine::HttpsLatencyRoutine(mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source),
+      network_context_getter_(base::BindRepeating(&GetNetworkContext)),
       http_request_manager_getter_(base::BindRepeating(&GetHttpRequestManager)),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       hostnames_to_query_dns_(
@@ -152,8 +153,8 @@ void HttpsLatencyRoutine::AttemptNextResolution() {
 void HttpsLatencyRoutine::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo&,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&) {
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&) {
   if (result != net::OK) {
     CHECK(!resolved_addresses);
     successfully_resolved_hosts_ = false;

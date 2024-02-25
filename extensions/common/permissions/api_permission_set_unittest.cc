@@ -4,7 +4,6 @@
 
 #include "base/pickle.h"
 #include "base/values.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "testing/gtest/include/gtest/gtest.h"

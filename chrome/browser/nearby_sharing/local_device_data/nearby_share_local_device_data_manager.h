@@ -5,15 +5,15 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_NEARBY_SHARE_LOCAL_DEVICE_DATA_MANAGER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_NEARBY_SHARE_LOCAL_DEVICE_DATA_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 // The maximum length in bytes allowed for a device name, as encoded in UTF-8 in
 // a std::string, which will not contain a null terminator.
@@ -55,13 +55,13 @@ class NearbyShareLocalDeviceDataManager {
   virtual std::string GetDeviceName() const = 0;
 
   // Returns the user's full name, for example, "Barack Obama". Returns
-  // absl::nullopt if the name has not yet been set from an UpdateDevice RPC
+  // std::nullopt if the name has not yet been set from an UpdateDevice RPC
   // response.
-  virtual absl::optional<std::string> GetFullName() const = 0;
+  virtual std::optional<std::string> GetFullName() const = 0;
 
-  // Returns the URL of the user's image. Returns absl::nullopt if the URL has
+  // Returns the URL of the user's image. Returns std::nullopt if the URL has
   // not yet been set from an UpdateDevice RPC response.
-  virtual absl::optional<std::string> GetIconUrl() const = 0;
+  virtual std::optional<std::string> GetIconUrl() const = 0;
 
   // Validates the provided device name and returns an error if validation
   // fails. This is just a check and the device name is not persisted.
@@ -87,15 +87,16 @@ class NearbyShareLocalDeviceDataManager {
   // selected-contacts visibility mode. This should only be invoked by the
   // contact manager, and the contact manager should handle scheduling, failure
   // retry, etc.
-  virtual void UploadContacts(std::vector<nearbyshare::proto::Contact> contacts,
-                              UploadCompleteCallback callback) = 0;
+  virtual void UploadContacts(
+      std::vector<nearby::sharing::proto::Contact> contacts,
+      UploadCompleteCallback callback) = 0;
 
   // Uses the UpdateDevice RPC to send the local device's public certificates to
   // the Nearby Share server. This should only be invoked by the certificate
   // manager, and the certificate manager should handle scheduling, failure
   // retry, etc.
   virtual void UploadCertificates(
-      std::vector<nearbyshare::proto::PublicCertificate> certificates,
+      std::vector<nearby::sharing::proto::PublicCertificate> certificates,
       UploadCompleteCallback callback) = 0;
 
  protected:

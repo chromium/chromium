@@ -101,9 +101,10 @@ void HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
 
 // static
 void HotspotMetricsHelper::RecordSetHotspotConfigResult(
-    hotspot_config::mojom::SetHotspotConfigResult result) {
+    hotspot_config::mojom::SetHotspotConfigResult result,
+    const std::string& shill_error) {
   base::UmaHistogramEnumeration(kHotspotSetConfigResultHistogram,
-                                GetSetConfigMetricsResult(result));
+                                GetSetConfigMetricsResult(result, shill_error));
 }
 
 // static
@@ -158,6 +159,14 @@ HotspotMetricsHelper::GetCheckReadinessMetricsResult(
   switch (result) {
     case CheckReadinessResult::kReady:
       return HotspotMetricsCheckReadinessResult::kReady;
+    case CheckReadinessResult::kNotAllowedByCarrier:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedByCarrier;
+    case CheckReadinessResult::kNotAllowedOnFW:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedOnFW;
+    case CheckReadinessResult::kNotAllowedOnVariant:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedOnVariant;
+    case CheckReadinessResult::kNotAllowedUserNotEntitled:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedUserNotEntitled;
     case CheckReadinessResult::kNotAllowed:
       return HotspotMetricsCheckReadinessResult::kNotAllowed;
     case CheckReadinessResult::kUpstreamNetworkNotAvailable:
@@ -167,12 +176,14 @@ HotspotMetricsHelper::GetCheckReadinessMetricsResult(
     case CheckReadinessResult::kUnknownResult:
       return HotspotMetricsCheckReadinessResult::kUnknownResult;
   }
+  NOTREACHED() << "Unknown check tethering readiness result.";
 }
 
 // static
 HotspotMetricsHelper::HotspotMetricsSetConfigResult
 HotspotMetricsHelper::GetSetConfigMetricsResult(
-    const hotspot_config::mojom::SetHotspotConfigResult& result) {
+    const hotspot_config::mojom::SetHotspotConfigResult& result,
+    const std::string& shill_error) {
   using hotspot_config::mojom::SetHotspotConfigResult;
 
   switch (result) {
@@ -182,7 +193,19 @@ HotspotMetricsHelper::GetSetConfigMetricsResult(
       return HotspotMetricsSetConfigResult::kFailedNotLogin;
     case SetHotspotConfigResult::kFailedInvalidConfiguration:
       return HotspotMetricsSetConfigResult::kFailedInvalidConfiguration;
+    case SetHotspotConfigResult::kFailedShillOperation:
+      if (shill_error == shill::kErrorResultInvalidArguments) {
+        return HotspotMetricsSetConfigResult::kFailedInvalidArgument;
+      } else if (shill_error == shill::kErrorResultIllegalOperation) {
+        return HotspotMetricsSetConfigResult::kFailedIllegalOperation;
+      } else if (shill_error == shill::kErrorResultPermissionDenied) {
+        return HotspotMetricsSetConfigResult::kFailedPermissionDenied;
+      } else if (shill_error == shill::kErrorResultFailure) {
+        return HotspotMetricsSetConfigResult::kFailedShillOperation;
+      }
+      return HotspotMetricsSetConfigResult::kFailedUnknownShillError;
   }
+  NOTREACHED() << "Unknown set hotspot config result.";
 }
 
 // static
@@ -208,7 +231,14 @@ HotspotMetricsHelper::GetMetricsDisableReason(
       return HotspotMetricsDisableReason::kSuspended;
     case DisableReason::kRestart:
       return HotspotMetricsDisableReason::kRestart;
+    case DisableReason::kUpstreamNoInternet:
+      return HotspotMetricsDisableReason::kUpstreamNoInternet;
+    case DisableReason::kDownstreamLinkDisconnect:
+      return HotspotMetricsDisableReason::kDownstreamLinkDisconnect;
+    case DisableReason::kDownstreamNetworkDisconnect:
+      return HotspotMetricsDisableReason::kDownstreamNetworkDisconnect;
   }
+  NOTREACHED() << "Unknown hotspot disable reason.";
 }
 
 HotspotMetricsHelper::HotspotMetricsHelper() = default;
@@ -275,7 +305,7 @@ void HotspotMetricsHelper::LoggedInStateChanged() {
 }
 
 void HotspotMetricsHelper::LogAllowStatus() {
-  absl::optional<HotspotMetricsAllowStatus> metrics_allow_status =
+  std::optional<HotspotMetricsAllowStatus> metrics_allow_status =
       GetMetricsAllowStatus();
   if (!metrics_allow_status) {
     return;
@@ -290,7 +320,7 @@ void HotspotMetricsHelper::LogAllowStatusAtLogin() {
     return;
   }
 
-  absl::optional<HotspotMetricsAllowStatus> metrics_allow_status =
+  std::optional<HotspotMetricsAllowStatus> metrics_allow_status =
       GetMetricsAllowStatus();
   if (!metrics_allow_status) {
     return;
@@ -301,7 +331,7 @@ void HotspotMetricsHelper::LogAllowStatusAtLogin() {
   is_metrics_logged_ = true;
 }
 
-absl::optional<HotspotMetricsHelper::HotspotMetricsAllowStatus>
+std::optional<HotspotMetricsHelper::HotspotMetricsAllowStatus>
 HotspotMetricsHelper::GetMetricsAllowStatus() {
   using hotspot_config::mojom::HotspotAllowStatus;
 
@@ -324,7 +354,7 @@ HotspotMetricsHelper::GetMetricsAllowStatus() {
     case HotspotAllowStatus::kDisallowedNoCellularUpstream:
       // Do not emit kDisallowedNoCellularUpstream which means the device is
       // not cellular capable. Otherwise, it would drown out the metric.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -383,7 +413,7 @@ void HotspotMetricsHelper::LogDisableReason(
                                 GetMetricsDisableReason(reason));
 }
 
-void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
+void HotspotMetricsHelper::OnHotspotTurnedOn() {
   is_hotspot_active_ = true;
   LogUpstreamStatus();
   LogUsageConfig();

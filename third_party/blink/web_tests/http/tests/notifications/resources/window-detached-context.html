@@ -7,7 +7,7 @@
     <script>
       opener.postMessage('opened', '*');
 
-      window.addEventListener('unload', function() {
+      window.addEventListener('pagehide', function() {
           opener.postMessage('closed', '*');
       });
     </script>

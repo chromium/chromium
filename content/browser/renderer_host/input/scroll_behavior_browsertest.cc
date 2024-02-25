@@ -11,13 +11,13 @@
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "cc/input/scroll_utils.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/input/synthetic_gesture.h"
+#include "content/common/input/synthetic_gesture_controller.h"
 #include "content/common/input/synthetic_gesture_params.h"
+#include "content/common/input/synthetic_gesture_target.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_switches.h"
@@ -136,8 +136,7 @@ namespace content {
 class ScrollBehaviorBrowserTest : public ContentBrowserTest {
  public:
   explicit ScrollBehaviorBrowserTest(
-      const absl::optional<bool> enable_percent_based_scrolling =
-          absl::nullopt) {
+      const std::optional<bool> enable_percent_based_scrolling = std::nullopt) {
     if (enable_percent_based_scrolling.has_value() &&
         *enable_percent_based_scrolling) {
       scoped_feature_list.InitAndEnableFeature(
@@ -326,7 +325,7 @@ class ScrollBehaviorBrowserTestWithPercentBasedScrolling
     : public ScrollBehaviorBrowserTest {
  public:
   ScrollBehaviorBrowserTestWithPercentBasedScrolling()
-      : ScrollBehaviorBrowserTest(absl::optional<bool>(true)) {}
+      : ScrollBehaviorBrowserTest(std::optional<bool>(true)) {}
 };
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element

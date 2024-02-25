@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -21,7 +22,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -96,7 +96,7 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
       UserCloudSigninRestrictionPolicyFetcher* restriction_fetcher,
       std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher) {
     base::test::TestFuture<UserCloudSigninRestrictionPolicyFetcher::Status,
-                           absl::optional<std::string>, const std::string&>
+                           std::optional<std::string>, const std::string&>
         future;
     restriction_fetcher->GetSecondaryGoogleAccountUsage(
         std::move(access_token_fetcher), future.GetCallback());
@@ -116,7 +116,7 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
 
   UserCloudSigninRestrictionPolicyFetcher::Status status_ =
       UserCloudSigninRestrictionPolicyFetcher::Status::kUnknownError;
-  absl::optional<std::string> policy_result_;
+  std::optional<std::string> policy_result_;
   std::string hosted_domain_;
   network::TestURLLoaderFactory url_loader_factory_;
 };

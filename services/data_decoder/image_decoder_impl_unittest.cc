@@ -94,6 +94,7 @@ class BlinkInitializer : public blink::Platform {
 
     mojo::BinderMap binders;
     blink::CreateMainThreadAndInitialize(this, &binders);
+    blink::CreateMainThreadIsolate();
   }
 
   BlinkInitializer(const BlinkInitializer&) = delete;

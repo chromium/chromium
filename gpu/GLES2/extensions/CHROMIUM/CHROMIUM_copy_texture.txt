@@ -16,7 +16,6 @@ Dependencies
 
     EXT_texture_format_BGRA8888 affects the definition of this extension.
     ARB_texture_rg affects the definition of this extension.
-    CHROMIUM_ycbcr_422_image affects the definition of this extension.
 
 Overview
 
@@ -92,7 +91,6 @@ Additions to the OpenGL ES 2.0 Specification
        BGRA_EXT                (R, G, B, A)
        BGRA8_EXT               (R, G, B, A)
        RGB_YCBCR_420V_CHROMIUM (R, G, B, 1)
-       RGB_YCBCR_422_CHROMIUM  (R, G, B, 1)
        RGB_YCBCR_P010_CHROMIUM (R, G, B, 1)
 
     The format type of the destination texture is converted to that specified
@@ -236,18 +234,12 @@ Additions to the OpenGL ES 2.0 Specification
         BGRA_EXT
         BGRA8_EXT
         RGB_YCBCR_420V_CHROMIUM
-        RGB_YCBCR_422_CHROMIUM
         RGB_YCBCR_P010_CHROMIUM
 
 Dependencies on ARB_texture_rg
 
     If ARB_texture_rg is not supported:
      * delete any reference to the R8 format.
-
-Dependencies on CHROMIUM_ycbcr_422_image
-
-    If CHROMIUM_ycbcr_422_image is not supported:
-     * delete any reference to the RGB_YCBCR_422_CHROMIUM format.
 
 Errors
 
@@ -275,4 +267,3 @@ Revision History
     19/1/2017   Added TEXTURE_CUBE_MAP as valid dest_id target.
     24/3/2017   Clean up naming and move formats into tables.
     12/06/2019   Added RGB_YCBCR_P010_CHROMIUM
-

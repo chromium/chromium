@@ -45,12 +45,12 @@
         }
     },
     "extra_infos": {
-        "num_stories": 85,
+        "num_stories": 83,
         "predicted_min_shard_time": 1113.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 1126.0,
+        "predicted_max_shard_time": 1120.0,
         "predicted_max_shard_index": 1,
         "shard #0": 1113.0,
-        "shard #1": 1126.0
+        "shard #1": 1120.0
     }
 }

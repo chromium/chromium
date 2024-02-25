@@ -17,8 +17,10 @@ enum PermissionState : NSUInteger;
 // Consumer for model to push configurations to the permissions UI.
 @protocol PermissionsConsumer <NSObject>
 
-// The list of permission being displayed.
-- (void)setPermissionsInfo:(NSArray<PermissionInfo*>*)permissionsInfo;
+// The list of permissions being displayed. The first NSNumber represents the
+// `web::Permission` int value and the second its associated
+// `web::PermissionState`.
+- (void)setPermissionsInfo:(NSDictionary<NSNumber*, NSNumber*>*)permissionsInfo;
 
 // Called when the state of given permission changed.
 - (void)permissionStateChanged:(PermissionInfo*)info;

@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 
@@ -81,8 +82,7 @@ class AppMenuIconController : public GlobalErrorObserver,
   // Gets the color to be used for the app menu's icon.
   // |severity_none_color|, if provided, will be used when the Severity is NONE.
   // Otherwise the basic toolbar button icon color will be used.
-  SkColor GetIconColor(
-      const absl::optional<SkColor>& severity_none_color) const;
+  SkColor GetIconColor(const std::optional<SkColor>& severity_none_color) const;
 
  private:
   // GlobalErrorObserver:

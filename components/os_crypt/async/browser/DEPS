@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/prefs",
+]
+
 specific_include_rules = {
   ".*_unittest\.cc": [
     "+components/os_crypt/sync",

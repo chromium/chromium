@@ -5,18 +5,22 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.view.View;
 import android.view.Window;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
+import androidx.core.graphics.ColorUtils;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,10 +42,13 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeoutException;
 
@@ -54,11 +61,12 @@ import java.util.concurrent.TimeoutException;
 public class TabbedNavigationBarColorControllerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+
+    @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+
     private Window mWindow;
-    private int mRegularNavigationColor;
-    private int mDarkNavigationColor;
+    private @ColorInt int mRegularNavigationColor;
+    private @ColorInt int mDarkNavigationColor;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -72,47 +80,67 @@ public class TabbedNavigationBarColorControllerTest {
     @Test
     @SmallTest
     public void testToggleOverview() {
-        assertEquals("Navigation bar should be colorSurface before entering overview mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface before entering overview mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
 
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
-        assertEquals("Navigation bar should be colorSurface in overview mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface in overview mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
 
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
 
-        assertEquals("Navigation bar should be colorSurface after exiting overview mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface after exiting overview mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
     }
 
     @Test
     @SmallTest
     public void testToggleIncognito() {
-        assertEquals("Navigation bar should be colorSurface on normal tabs.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface on normal tabs.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
 
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), true, true);
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(),
+                true,
+                true);
 
-        assertEquals("Navigation bar should be dark_elev_3 on incognito tabs.",
-                mDarkNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be dark_elev_3 on incognito tabs.",
+                mDarkNavigationColor,
+                mWindow.getNavigationBarColor());
 
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), false, true);
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(),
+                false,
+                true);
 
-        assertEquals("Navigation bar should be colorSurface after switching back to normal tab.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface after switching back to normal tab.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
     }
 
     @Test
     @MediumTest
     @DisabledTest(message = "crbug.com/1381509")
     public void testToggleFullscreen() throws TimeoutException {
-        assertEquals("Navigation bar should be colorSurface before entering fullscreen mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface before entering fullscreen mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
 
         String url =
                 mTestServerRule.getServer().getURL("/content/test/data/media/video-player.html");
@@ -124,13 +152,47 @@ public class TabbedNavigationBarColorControllerTest {
 
         enterFullscreen(observer, activity.getCurrentWebContents());
 
-        assertEquals("Navigation bar should be dark in fullscreen mode.", mDarkNavigationColor,
+        assertEquals(
+                "Navigation bar should be dark in fullscreen mode.",
+                mDarkNavigationColor,
                 mWindow.getNavigationBarColor());
 
         exitFullscreen(observer, activity.getCurrentWebContents());
 
-        assertEquals("Navigation bar should be colorSurface after exiting fullscreen mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface after exiting fullscreen mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
+    }
+
+    @Test
+    @MediumTest
+    public void testSetNavigationBarScrimFraction() {
+        assertEquals(mRegularNavigationColor, mWindow.getNavigationBarColor());
+
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        View rootView = activity.findViewById(R.id.tab_switcher_view_holder_stub);
+        ScrimCoordinator scrimCoordinator =
+                activity.getRootUiCoordinatorForTesting().getScrimCoordinatorForTesting();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                                    .with(ScrimProperties.ANCHOR_VIEW, rootView)
+                                    .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
+                                    .build();
+                    scrimCoordinator.showScrim(propertyModel);
+                    scrimCoordinator.forceAnimationToFinish();
+                });
+
+        double regularBrightness = ColorUtils.calculateLuminance(mRegularNavigationColor);
+        @ColorInt int withScrim = mWindow.getNavigationBarColor();
+        assertNotEquals(mRegularNavigationColor, withScrim);
+        assertTrue(regularBrightness > ColorUtils.calculateLuminance(withScrim));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> scrimCoordinator.hideScrim(false, 0));
+        assertEquals(mRegularNavigationColor, mWindow.getNavigationBarColor());
     }
 
     private void enterFullscreen(FullscreenToggleObserver observer, WebContents webContents)
@@ -139,21 +201,21 @@ public class TabbedNavigationBarColorControllerTest {
         int onEnterCallCount = observer.getOnEnterFullscreenHelper().getCallCount();
 
         // Start playback to guarantee it's properly loaded.
-        Assert.assertTrue("Failed to load video", DOMUtils.isMediaPaused(webContents, video));
+        assertTrue("Failed to load video", DOMUtils.isMediaPaused(webContents, video));
 
         // Trigger requestFullscreen() via a click on a button.
-        Assert.assertTrue(
+        assertTrue(
                 "Failed to click fullscreen node", DOMUtils.clickNode(webContents, "fullscreen"));
-        observer.getOnEnterFullscreenHelper().waitForCallback(
-                "Failed to enter full screen", onEnterCallCount);
+        observer.getOnEnterFullscreenHelper()
+                .waitForCallback("Failed to enter full screen", onEnterCallCount);
     }
 
     private void exitFullscreen(FullscreenToggleObserver observer, WebContents webContents)
             throws TimeoutException {
         int onExitCallCount = observer.getOnExitFullscreenHelper().getCallCount();
         DOMUtils.exitFullscreen(webContents);
-        observer.getOnExitFullscreenHelper().waitForCallback(
-                "Failed to exit full screen", onExitCallCount);
+        observer.getOnExitFullscreenHelper()
+                .waitForCallback("Failed to exit full screen", onExitCallCount);
     }
 
     private class FullscreenToggleObserver implements FullscreenManager.Observer {

@@ -47,6 +47,11 @@ TEST(FunctionRefTest, Function2) {
   EXPECT_EQ(1337, ref());
 }
 
+TEST(FunctionRefTest, ConstFunction) {
+  FunctionRef<int() const> ref(Function);
+  EXPECT_EQ(1337, ref());
+}
+
 int NoExceptFunction() noexcept { return 1337; }
 
 // TODO(jdennett): Add a test for noexcept member functions.

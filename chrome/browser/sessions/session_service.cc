@@ -269,7 +269,7 @@ void SessionService::DeleteLastSession() {
 
 void SessionService::SetTabGroup(SessionID window_id,
                                  SessionID tab_id,
-                                 absl::optional<tab_groups::TabGroupId> group) {
+                                 std::optional<tab_groups::TabGroupId> group) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -286,7 +286,7 @@ void SessionService::SetTabGroupMetadata(
     SessionID window_id,
     const tab_groups::TabGroupId& group_id,
     const tab_groups::TabGroupVisualData* visual_data,
-    const absl::optional<std::string> saved_guid) {
+    const std::optional<std::string> saved_guid) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -574,7 +574,8 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
       browser_creator.LaunchBrowser(*command_line, profile(), base::FilePath(),
                                     chrome::startup::IsProcessStartup::kYes,
                                     chrome::startup::IsFirstRun::kNo,
-                                    std::make_unique<OldLaunchModeRecorder>());
+                                    std::make_unique<OldLaunchModeRecorder>(),
+                                    /*restore_tabbed_browser=*/true);
       return true;
     } else {
       // If 'browser' is not null, show the crash bubble in the current browser
@@ -592,7 +593,7 @@ void SessionService::BuildCommandsForTab(
     SessionID window_id,
     WebContents* tab,
     int index_in_window,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     bool is_pinned,
     IdToRange* tab_to_available_range) {
   DCHECK(is_saving_enabled());
@@ -623,7 +624,7 @@ void SessionService::BuildCommandsForTab(
   }
 
 #if defined(TOOLKIT_VIEWS)
-  absl::optional<std::pair<std::string, std::string>> tab_restore_data =
+  std::optional<std::pair<std::string, std::string>> tab_restore_data =
       side_search::MaybeGetSideSearchTabRestoreData(tab);
   if (tab_restore_data.has_value()) {
     command_storage_manager()->AppendRebuildCommand(
@@ -672,7 +673,7 @@ bool SessionService::IsOnlyOneTabLeft() const {
     return is_only_one_tab_left_for_test_;
 
   int window_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     const SessionID window_id = browser->session_id();
     if (ShouldTrackBrowser(browser) &&
         window_closing_ids_.find(window_id) == window_closing_ids_.end()) {
@@ -691,7 +692,7 @@ bool SessionService::HasOpenTrackableBrowsers(SessionID window_id) const {
   if (profile()->AsTestingProfile())
     return has_open_trackable_browser_for_test_;
 
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     const SessionID browser_id = browser->session_id();
     if (browser_id != window_id &&
         window_closing_ids_.find(browser_id) == window_closing_ids_.end() &&
@@ -722,7 +723,7 @@ void SessionService::LogExitEvent() {
   RemoveExitEvent();
   int browser_count = 0;
   int tab_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == profile()) {
       ++browser_count;
       tab_count += browser->tab_strip_model()->count();

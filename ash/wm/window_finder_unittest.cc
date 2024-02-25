@@ -37,7 +37,8 @@ TEST_F(WindowFinderTest, ToplevelCanBeNotDrawn) {
   window->Init(ui::LAYER_NOT_DRAWN);
   gfx::Rect bounds(0, 0, 100, 100);
   window->SetBounds(bounds);
-  auto* parent = GetDefaultParentForWindow(window.get(), bounds);
+  auto* parent = GetDefaultParentForWindow(
+      window.get(), Shell::GetPrimaryRootWindow(), bounds);
   parent->AddChild(window.get());
   window->Show();
 
@@ -150,12 +151,11 @@ class WindowDestroyingObserver : public aura::WindowObserver {
   // `window_being_observed_` is destroying.
   const gfx::Point screen_point_;
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_being_observed_;
+  raw_ptr<aura::Window> window_being_observed_;
 
   // This is the window we find as the top-most window while
   // `window_being_observed_` is being destroyed.
-  raw_ptr<aura::Window, ExperimentalAsh> top_most_window_while_destroying_ =
-      nullptr;
+  raw_ptr<aura::Window> top_most_window_while_destroying_ = nullptr;
 };
 
 }  // namespace

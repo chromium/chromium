@@ -20,7 +20,6 @@ items:
 - caption: Disable USB power share
   value: false
 owners:
-- lamzin@google.com
 - bkersting@google.com
 - kerker@chromium.org
 - chungsheng@google.com

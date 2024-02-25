@@ -58,7 +58,6 @@ bool ExpectSiteInstanceChange(SiteInstanceImpl* site_instance) {
 bool ExpectSiteInstanceChangeWithoutBackForwardCache(
     SiteInstanceImpl* site_instance) {
   return AreAllSitesIsolatedForTesting() ||
-         IsProactivelySwapBrowsingInstanceEnabled() ||
          !site_instance->IsDefaultSiteInstance();
 }
 
@@ -479,10 +478,10 @@ TEST_F(NavigatorTest, BeginNavigation) {
   EXPECT_EQ(kUrl2, subframe_request->common_params().url);
   EXPECT_EQ(kUrl2, subframe_loader->request_info()->common_params->url);
   EXPECT_TRUE(
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kSubFrame,
-          url::Origin::Create(kUrl1), url::Origin::Create(kUrl2),
-          net::SiteForCookies::FromUrl(kUrl1), std::set<net::SchemefulSite>())
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
+                                 url::Origin::Create(kUrl1),
+                                 url::Origin::Create(kUrl2),
+                                 net::SiteForCookies::FromUrl(kUrl1))
           .IsEqualForTesting(subframe_loader->request_info()->isolation_info));
 
   EXPECT_FALSE(subframe_loader->request_info()->is_main_frame);
@@ -521,10 +520,10 @@ TEST_F(NavigatorTest, BeginNavigation) {
   EXPECT_EQ(kUrl3, main_request->common_params().url);
   EXPECT_EQ(kUrl3, main_loader->request_info()->common_params->url);
   EXPECT_TRUE(
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kMainFrame,
-          url::Origin::Create(kUrl3), url::Origin::Create(kUrl3),
-          net::SiteForCookies::FromUrl(kUrl3), std::set<net::SchemefulSite>())
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
+                                 url::Origin::Create(kUrl3),
+                                 url::Origin::Create(kUrl3),
+                                 net::SiteForCookies::FromUrl(kUrl3))
           .IsEqualForTesting(main_loader->request_info()->isolation_info));
   EXPECT_TRUE(main_loader->request_info()->is_main_frame);
   EXPECT_TRUE(main_request->browser_initiated());
@@ -572,7 +571,7 @@ TEST_F(NavigatorTest, NoContent) {
   GetLoaderForNavigationRequest(main_request)
       ->CallOnResponseStarted(std::move(response),
                               mojo::ScopedDataPipeConsumerHandle(),
-                              absl::nullopt);
+                              std::nullopt);
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.
@@ -598,7 +597,7 @@ TEST_F(NavigatorTest, NoContent) {
   GetLoaderForNavigationRequest(main_request)
       ->CallOnResponseStarted(std::move(response),
                               mojo::ScopedDataPipeConsumerHandle(),
-                              absl::nullopt);
+                              std::nullopt);
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.

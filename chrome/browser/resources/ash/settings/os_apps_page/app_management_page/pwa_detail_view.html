@@ -41,7 +41,7 @@
   <app-management-more-permissions-item id="moreSettings"
       class="permission-card-row separated-row"
       app="[[app_]]"
-      more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
+      more-permissions-label="[[getAppManagementMorePermissionsLabel_()]]">
   </app-management-more-permissions-item>
   <app-management-file-handling-item
       class="permission-card-row separated-row"
@@ -53,14 +53,14 @@
       app="[[app_]]"
       apps="[[apps_]]">
   </app-management-supported-links-item>
-  <app-management-app-details-item
-      id="appDetails"
-      class="permission-card-row"
-      app="[[app_]]">
-  </app-management-app-details-item>
   <app-management-sub-apps-item
       id="subAppsItem"
       class="permission-card-row"
       parent-app="[[app_]]">
   </app-management-sub-apps-item>
+  <app-management-app-details-item
+      id="appDetails"
+      class="permission-card-row"
+      app="[[app_]]">
+  </app-management-app-details-item>
 </div>

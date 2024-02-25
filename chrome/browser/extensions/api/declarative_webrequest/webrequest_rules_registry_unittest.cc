@@ -538,13 +538,12 @@ TEST_F(WebRequestRulesRegistryTest, IgnoreRulesByTag) {
   base::Value::Dict value1 = base::test::ParseJsonDict(kRule1);
   base::Value::Dict value2 = base::test::ParseJsonDict(kRule2);
 
-  std::vector<const api::events::Rule*> rules;
-  api::events::Rule rule1;
-  api::events::Rule rule2;
-  rules.push_back(&rule1);
-  rules.push_back(&rule2);
-  ASSERT_TRUE(api::events::Rule::Populate(value1, rule1));
-  ASSERT_TRUE(api::events::Rule::Populate(value2, rule2));
+  std::optional<api::events::Rule> rule1 = api::events::Rule::FromValue(value1);
+  std::optional<api::events::Rule> rule2 = api::events::Rule::FromValue(value2);
+  ASSERT_TRUE(rule1);
+  ASSERT_TRUE(rule2);
+  std::vector<const api::events::Rule*> rules = {&rule1.value(),
+                                                 &rule2.value()};
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));
@@ -696,20 +695,20 @@ TEST(WebRequestRulesRegistrySimpleTest, StageChecker) {
 
   base::Value::Dict value = base::test::ParseJsonDict(kRule);
 
-  api::events::Rule rule;
-  ASSERT_TRUE(api::events::Rule::Populate(value, rule));
+  std::optional<api::events::Rule> rule = api::events::Rule::FromValue(value);
+  ASSERT_TRUE(rule);
 
   std::string error;
   URLMatcher matcher;
   std::unique_ptr<WebRequestConditionSet> conditions =
       WebRequestConditionSet::Create(nullptr, matcher.condition_factory(),
-                                     rule.conditions, &error);
+                                     rule->conditions, &error);
   ASSERT_TRUE(error.empty()) << error;
   ASSERT_TRUE(conditions);
 
   bool bad_message = false;
   std::unique_ptr<WebRequestActionSet> actions = WebRequestActionSet::Create(
-      nullptr, nullptr, rule.actions, &error, &bad_message);
+      nullptr, nullptr, rule->actions, &error, &bad_message);
   ASSERT_TRUE(error.empty()) << error;
   ASSERT_FALSE(bad_message);
   ASSERT_TRUE(actions);
@@ -782,10 +781,9 @@ TEST_F(WebRequestRulesRegistryTest, CheckOriginAndPathRegEx) {
 
   base::Value::Dict value = base::test::ParseJsonDict(kRule);
 
-  std::vector<const api::events::Rule*> rules;
-  api::events::Rule rule;
-  rules.push_back(&rule);
-  ASSERT_TRUE(api::events::Rule::Populate(value, rule));
+  std::optional<api::events::Rule> rule = api::events::Rule::FromValue(value);
+  ASSERT_TRUE(rule);
+  std::vector<const api::events::Rule*> rules = {&rule.value()};
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_STANDALONE_BROWSER_EXTENSION_APP_SHELF_ITEM_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -13,13 +14,13 @@
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -125,19 +126,19 @@ class StandaloneBrowserExtensionAppShelfItemController
   // In order to preserve order that menu items show up, we use a vector instead
   // of a set. The order of the windows in the vector is simply the order in
   // which they were tracked by this file.
-  std::vector<aura::Window*> windows_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
 
   // The list of windows that was last shown via a context menu. Windows as they
   // are destroyed are removed from this list. The existing API only returns a
   // command_id as metadata, so there is no way to accurately record the item
   // that was selected, in case windows are destroyed in between.
-  std::vector<aura::Window*> context_menu_windows_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> context_menu_windows_;
 
   // This member lets the IconLoader know that we still need the icon.
   std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;
 
   // Stores the icon.
-  absl::optional<gfx::ImageSkia> icon_;
+  std::optional<gfx::ImageSkia> icon_;
 
   // This class is responsible for displaying a single instance of a context
   // menu. If multiple context menus are requested, only the latest instance

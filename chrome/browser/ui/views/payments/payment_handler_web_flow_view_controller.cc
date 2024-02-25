@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/strings/strcat.h"
@@ -108,8 +109,9 @@ SkColor GetContrastingGoogleColor(SkColor light_mode_color,
 // Note that the back button on the header is drawn instead by the parent
 // PaymentRequestSheetController class in the current UX.
 class ReadOnlyOriginView : public views::View {
+  METADATA_HEADER(ReadOnlyOriginView, views::View)
+
  public:
-  METADATA_HEADER(ReadOnlyOriginView);
   ReadOnlyOriginView(const std::u16string& page_title,
                      const url::Origin& origin,
                      const SkBitmap* icon_bitmap,
@@ -192,18 +194,20 @@ class ReadOnlyOriginView : public views::View {
   ~ReadOnlyOriginView() override = default;
 };
 
-BEGIN_METADATA(ReadOnlyOriginView, views::View)
+BEGIN_METADATA(ReadOnlyOriginView)
 END_METADATA
 
 // The close ('X') button used in the minimal PaymentHandler header UX. See
 // |PopulateSheetHeaderView|.
 class PaymentHandlerCloseButton : public views::ImageButton {
+  METADATA_HEADER(PaymentHandlerCloseButton, views::ImageButton)
+
  public:
   explicit PaymentHandlerCloseButton(
       views::Button::PressedCallback pressed_callback,
       const SkColor enabled_color,
       const SkColor disabled_color)
-      : views::ImageButton(pressed_callback) {
+      : views::ImageButton(std::move(pressed_callback)) {
     ConfigureVectorImageButton(this);
     views::InstallCircleHighlightPathGenerator(this);
     constexpr int kCloseButtonSize = 16;
@@ -218,6 +222,9 @@ class PaymentHandlerCloseButton : public views::ImageButton {
                                            enabled_color, disabled_color);
   }
 };
+
+BEGIN_METADATA(PaymentHandlerCloseButton)
+END_METADATA
 
 PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
     base::WeakPtr<PaymentRequestSpec> spec,
@@ -260,7 +267,8 @@ void PaymentHandlerWebFlowViewController::FillContentView(
     // Add the progress bar to the separator container. The progress bar
     // colors will be set in PopulateSheetHeaderView.
     progress_bar_ = header_content_separator_container()->AddChildView(
-        std::make_unique<views::ProgressBar>(/*preferred_height=*/2));
+        std::make_unique<views::ProgressBar>());
+    progress_bar_->SetPreferredHeight(2);
     if (!spec()->IsPaymentHandlerMinimalHeaderUXEnabled()) {
       // Prior to minimal UX, the separator container used a Separator view,
       // which uses the Chrome theme color which may not match the header color.

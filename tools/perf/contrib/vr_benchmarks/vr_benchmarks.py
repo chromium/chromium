@@ -30,13 +30,6 @@ class _BaseVRBenchmark(perf_benchmark.PerfBenchmark):
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
     parser.add_option(
-        '--shared-prefs-file',
-        help='The path relative to the Chromium source root '
-        'to a file containing a JSON list of shared '
-        'preference files to edit and how to do so. '
-        'See examples in //chrome/android/'
-        'shared_preference_files/test/')
-    parser.add_option(
         '--disable-screen-reset',
         action='store_true',
         default=False,
@@ -44,28 +37,6 @@ class _BaseVRBenchmark(perf_benchmark.PerfBenchmark):
         'This is useful for local testing when turning off the '
         'screen leads to locking the phone, which makes Telemetry '
         'not produce valid results.')
-    parser.add_option(
-        '--disable-vrcore-install',
-        action='store_true',
-        default=False,
-        help='Disables the automatic installation of VrCore during pre-test '
-             'setup. This is useful for local testing on Pixel devices that '
-             'haven\'t had VrCore removed as a system app.')
-    parser.add_option(
-        '--disable-keyboard-install',
-        action='store_true',
-        default=False,
-        help='Disables the automatic installation of the VR keybaord during '
-             'pre-test setup. This is useful for local testing if you want '
-             'to use whatever version is already installed on the device '
-             'instead of installing whatever is in the test APKs directory.')
-    parser.add_option(
-        '--remove-system-vrcore',
-        action='store_true',
-        default=False,
-        help='Removes the system version of VrCore if it is installed. This '
-             'is required if the system version is not already removed and '
-             '--disable-vrcore-install is not passed.')
     parser.add_option(
         '--recording-wpr',
         action='store_true',
@@ -94,9 +65,8 @@ class _BaseVRBenchmark(perf_benchmark.PerfBenchmark):
 
 class _BaseWebVRWebXRBenchmark(_BaseVRBenchmark):
 
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORM_TAGS = [platforms.ANDROID, platforms.WIN10]
   SUPPORTED_PLATFORMS = [
       story.expectations.ALL_ANDROID,
@@ -145,9 +115,8 @@ class XrWebXrStatic(_BaseWebXRBenchmark):
 
 class _BaseBrowsingBenchmark(_BaseVRBenchmark):
 
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORM_TAGS = [platforms.ANDROID]
   SUPPORTED_PLATFORMS = [story.expectations.ALL_ANDROID]
 

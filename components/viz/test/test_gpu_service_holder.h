@@ -143,7 +143,7 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
                                 mojo::ScopedMessagePipeHandle interface_pipe);
 #endif
 
-  absl::optional<base::FeatureList::ScopedDisallowOverrides>
+  std::optional<base::FeatureList::ScopedDisallowOverrides>
       disallow_feature_overrides_;
 
   base::Thread gpu_main_thread_;

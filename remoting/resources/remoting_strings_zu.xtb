@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Inguqulo yephrothokholi engahambisani iye yatholwa. Sicela wenze isiqiniseko sokuthi unenguqulo yakamuva yesofthiwe efakiwe kuwo womabili amakhompyutha uphinde uzame futhi.</translation>
 <translation id="1008557486741366299">Hhayi manje</translation>
 <translation id="1201402288615127009">Okulandelayo</translation>
-<translation id="1296511125400541222">Copyright 2023 Ababhali be-Chromium. Wonke Amalungelo Agodliwe</translation>
 <translation id="1297009705180977556">Iphutha ukuxhuma ku-<ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Into eceliwe ayikho.</translation>
 <translation id="1480046233931937785">Amakhredithi</translation>
@@ -89,7 +88,6 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="4808503597364150972">Sicela ufake iphinikhodi yakho ye-<ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Umsingathi</translation>
 <translation id="4867841927763172006">Thumela u-PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Wonke Amalungelo Agodliwe.</translation>
 <translation id="4974476491460646149">Uxhumo luvalekile ku-<ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Kuzomele uqale usethe ikhompuyutha yakho ngokufinyelela kude</translation>
 <translation id="4987330545941822761">Ideskithophu Yesilawuli Kude ye-Chrome ayikwazi ukunquma isiphequluli ukuvula ama-URL endaweni. Sicela ukhethe ohlwini olungezansi.</translation>
@@ -154,6 +152,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="7693372326588366043">Vuselela uhlu lwabasingathi</translation>
 <translation id="7714222945760997814">Bika lokhu</translation>
 <translation id="7868137160098754906">Sicela ufake iphinikhodi yakho kukhompyutha yesilawuli kude.</translation>
+<translation id="7881455334687220899">I-Copyright 2024 Ababhali be-Chromium. Wonke Amalungelo Agodliwe.</translation>
 <translation id="7895403300744144251">Izinqubomgomo zokuvikela kukhompuyutha yesilawuli kude azivumeli ukuxhumeka kusukela ku-akhawunti yakho.</translation>
 <translation id="7936528439960309876">Dokha ngakwesokudla</translation>
 <translation id="7970576581263377361">Ukuqinisekisa kuhlulekile. Sicela ungene ngemvume ku-Chromium futhi.</translation>
@@ -185,6 +184,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, susa ukuyithikha be
 <translation id="8747048596626351634">Iseshini ikhubazekile noma ihlulekile ukuqala. Uma i-~/.chrome-remote-desktop-session ikhona kukhompuyutha yesilawuli kude, yenza isiqiniseko sokuthi iqala inqubo ebeyidala isebenza ngaphambili efana nemvelo yedeskithophu noma isiphathi sewindi.</translation>
 <translation id="8804164990146287819">Inqubomgomo Yobumfihlo</translation>
 <translation id="8906511416443321782">Ukufinyelela kumakrofoni kuyadingeka ukuthatha umsindo nokuwusakaza kuklayenti yedeskithophu yesilawuli kude ye-Chrome.</translation>
+<translation id="9042277333359847053">I-Copyright 2024 i-Google LLC. Wonke Amalungelo Agodliwe.</translation>
 <translation id="9111855907838866522">Uxhumeke kudivayisi yakho yesilawuli kude. Ukuze uvule imenyu, sicela uthephe isikrini ngeminwe emine.</translation>
 <translation id="9126115402994542723">Ungabuzi iphinikhodi futhi uma uxhumeka kulo msingathi kusuka kule divayisi.</translation>
 <translation id="916856682307586697">Qalisa i-XSession ezenzakalelayo</translation>

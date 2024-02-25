@@ -11,14 +11,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
-/**
- * First privacy guide page.
- */
-public class WelcomeFragment extends Fragment {
+/** First privacy guide page. */
+public class WelcomeFragment extends PrivacyGuideBasePage {
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_welcome, container, false);
     }

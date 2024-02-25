@@ -1,0 +1,91 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_resumption") {
+  sources = [
+    "tab_resumption_commands.h",
+    "tab_resumption_helper_delegate.h",
+    "tab_resumption_item.h",
+    "tab_resumption_item.mm",
+    "tab_resumption_mediator.h",
+    "tab_resumption_mediator.mm",
+    "tab_resumption_view.h",
+    "tab_resumption_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/sessions:session_id",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//components/sync_sessions",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/metrics/model:metrics_internal",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/sessions:session_util",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/browser/tabs/model:tab_sync_util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/start_surface",
+    "//ios/chrome/browser/ui/start_surface:feature_flags",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "tab_resumption_constants.h",
+    "tab_resumption_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tab_resumption_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base/test:test_support",
+    "//components/sync/base:features",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/start_surface:feature_flags",
+    "//ios/chrome/browser/ui/tabs/tests:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/tabs/tests:fake_distant_tab",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

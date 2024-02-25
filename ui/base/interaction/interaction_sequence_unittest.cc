@@ -713,7 +713,18 @@ TEST(InteractionSequenceTest,
                        .Build())
           .Build();
   sequence->Start();
-  EXPECT_CALL_IN_SCOPE(aborted, Run, element1.Hide());
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(test::SequenceAbortedMatcher(
+          1, &element1, element1.identifier(),
+          InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
+          testing::_,
+          testing::ElementsAre(testing::Optional(test::SequenceAbortedMatcher(
+              2, testing::_, element1.identifier(),
+              InteractionSequence::StepType::kCustomEvent,
+              InteractionSequence::AbortedReason::kSequenceDestroyed))))),
+      element1.Hide());
 }
 
 TEST(InteractionSequenceTest, NoInitialElementTransitionsOnActivation) {
@@ -3045,6 +3056,37 @@ TEST(InteractionSequenceTest,
 }
 
 // Named element tests:
+
+TEST(InteractionSequenceTest, CanNameElementInAnyContext) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(kTestContext1)
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .SetElementID(kTestIdentifier1)
+                  .SetType(InteractionSequence::StepType::kShown)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&element2](InteractionSequence* seq, TrackedElement*) {
+                        seq->NameElement(&element2, kElementName1);
+                      }))
+                  .SetContext(InteractionSequence::ContextMode::kAny)
+                  .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
+                       .Build())
+          .Build();
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
 
 TEST(InteractionSequenceTest,
      NameElement_ElementShown_NamedBeforeSequenceStarts) {
@@ -5558,7 +5600,7 @@ TEST_P(InteractionSequenceSubsequenceTest, FirstFailsSecondSucceeds) {
                       InteractionSequence::StepType::kShown,
                       InteractionSequence::AbortedReason::
                           kElementNotVisibleAtStartOfStep)),
-                  testing::Eq(absl::nullopt)))),
+                  testing::Eq(std::nullopt)))),
           FlushEvents());
       break;
     case InteractionSequence::SubsequenceMode::kAtLeastOne:
@@ -5619,7 +5661,7 @@ TEST_P(InteractionSequenceSubsequenceTest, FirstSucceedsSecondFails) {
               InteractionSequence::AbortedReason::kSubsequenceFailed,
               testing::_,
               testing::ElementsAre(
-                  testing::Eq(absl::nullopt),
+                  testing::Eq(std::nullopt),
                   testing::Optional(test::SequenceAbortedMatcher(
                       1, nullptr, element3.identifier(),
                       InteractionSequence::StepType::kShown,

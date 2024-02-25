@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -457,9 +458,11 @@ std::u16string ErrorToString(int error_code) {
       break;
     default:
       // Render small error values as integers, and larger values as hex.
-      error_string = base::StringPrintf(
-          (error_code >= 0 && error_code < 65536) ? "%lu" : "0x%08lX",
-          static_cast<unsigned long>(error_code));
+      error_string =
+          (error_code >= 0 && error_code < 65536)
+              ? base::NumberToString(error_code)
+              : base::StringPrintf("0x%08lX",
+                                   static_cast<unsigned long>(error_code));
   }
 
   return base::UTF8ToUTF16(error_string);
@@ -560,7 +563,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
           base::BindRepeating(&SadTabView::PerformAction,
                               base::Unretained(this), Action::BUTTON),
           l10n_util::GetStringUTF16(GetButtonTitle())));
-  action_button_->SetProminent(true);
+  action_button_->SetStyle(ui::ButtonStyle::kProminent);
   action_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -583,7 +586,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   // Make the accessibility role of this view an alert dialog, and
   // put focus on the action button. This causes screen readers to
   // immediately announce the text of this view.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   if (action_button_->GetWidget() && action_button_->GetWidget()->IsActive())
     action_button_->RequestFocus();
 }
@@ -599,6 +602,11 @@ void SadTabView::ReinstallInWebView() {
     owner_ = nullptr;
   }
   AttachToWebView();
+}
+
+gfx::RoundedCornersF SadTabView::GetBackgroundRadii() const {
+  CHECK(layer());
+  return layer()->rounded_corner_radii();
 }
 
 void SadTabView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
@@ -623,7 +631,7 @@ void SadTabView::RemovedFromWidget() {
 }
 
 void SadTabView::AttachToWebView() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // This can be null during prefetch.
   if (!browser)
     return;
@@ -676,5 +684,5 @@ SadTab* SadTab::Create(content::WebContents* web_contents, SadTabKind kind) {
   return new SadTabView(web_contents, kind);
 }
 
-BEGIN_METADATA(SadTabView, views::View)
+BEGIN_METADATA(SadTabView)
 END_METADATA

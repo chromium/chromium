@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/env_observer.h"
@@ -52,7 +53,7 @@ class DialogWindowWaiter : public aura::EnvObserver,
 
   base::RunLoop run_loop_;
 
-  std::set<aura::Window*> dialog_windows_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> dialog_windows_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 };

@@ -52,11 +52,32 @@ std::string GetImageUploadURLForCompanion() {
   return url;
 }
 
+bool GetShouldIssuePreconnectForCompanion() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      *GetFeatureToUse(), "companion-issue-preconnect", true);
+}
+
+std::string GetPreconnectKeyForCompanion() {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
+  std::string url = base::GetFieldTrialParamValueByFeature(
+      *GetFeatureToUse(), "companion-preconnect-key");
+  if (url.empty()) {
+    return std::string("chrome-untrusted://companion-side-panel.top-chrome");
+  }
+  return url;
+}
+
+bool GetShouldIssueProcessPrewarmingForCompanion() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      *GetFeatureToUse(), "companion-issue-process-prewarming", true);
+}
+
 bool ShouldEnableOpenCompanionForImageSearch() {
   // Allow multiple field trials to control the value. This is needed because
   // companion may be enabled by any of the field trials.
   return base::GetFieldTrialParamByFeatureAsBool(
-      *GetFeatureToUse(), "open-companion-for-image-search", true);
+      *GetFeatureToUse(), "open-companion-for-image-search", false);
 }
 
 bool ShouldEnableOpenCompanionForWebSearch() {
@@ -64,13 +85,13 @@ bool ShouldEnableOpenCompanionForWebSearch() {
   // companion may be enabled by any of the field trials.
 
   return base::GetFieldTrialParamByFeatureAsBool(
-      *GetFeatureToUse(), "open-companion-for-web-search", true);
+      *GetFeatureToUse(), "open-companion-for-web-search", false);
 }
 bool ShouldOpenLinksInCurrentTab() {
   // Allow multiple field trials to control the value. This is needed because
   // companion may be enabled by any of the field trials.
   return base::GetFieldTrialParamByFeatureAsBool(
-      *GetFeatureToUse(), "open-links-in-current-tab", true);
+      *GetFeatureToUse(), "open-links-in-current-tab", false);
 }
 
 std::string GetExpsRegistrationSuccessPageURLs() {
@@ -83,6 +104,13 @@ std::string GetCompanionIPHBlocklistedPageURLs() {
   return base::GetFieldTrialParamValueByFeature(
       features::internal::kCompanionEnabledByObservingExpsNavigations,
       "companion-iph-blocklisted-page-urls");
+}
+
+bool ShouldOpenContextualLensPanel() {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
+  return base::GetFieldTrialParamByFeatureAsBool(
+      *GetFeatureToUse(), "open-contextual-lens-panel", false);
 }
 
 // Checks to see if the page url is a valid one to be sent to companion.

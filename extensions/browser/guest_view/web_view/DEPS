@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/permissions",
+]
+
 specific_include_rules = {
   ".*(test)\.(cc|h)$": [
     "+media", # Tests need to be able to tweak media devices.

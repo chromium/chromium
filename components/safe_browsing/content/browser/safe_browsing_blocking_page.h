@@ -116,6 +116,8 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
       TriggerManager* trigger_manager,
       bool is_proceed_anyway_disabled,
       bool is_safe_browsing_surveys_enabled,
+      base::OnceCallback<void(bool, SBThreatType)>
+          trust_safety_sentiment_service_trigger,
       network::SharedURLLoaderFactory* url_loader_for_testing = nullptr);
 
   // Called when an interstitial is closed, either due to a click through or a
@@ -165,6 +167,11 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   bool is_proceed_anyway_disabled_;
   // Whether the user has SafeBrowsingSurveysEnabled enabled.
   bool is_safe_browsing_surveys_enabled_;
+  // Triggers trust and safety sentiment service when interstitial closes.
+  base::OnceCallback<void(bool, SBThreatType)>
+      trust_safety_sentiment_service_trigger_ = base::NullCallback();
+  // Timestamp of when the safe browsing blocking page was shown to the user.
+  int64_t warning_shown_ts_;
 };
 
 }  // namespace safe_browsing

@@ -66,16 +66,19 @@ DataObject* DataObject::CreateFromClipboard(ExecutionContext* context,
     mojom::blink::ClipboardFilesPtr files;
     if (type == kMimeTypeTextURIList) {
       files = system_clipboard->ReadFiles();
-      // Ignore ReadFiles() result if clipboard sequence number has changed.
-      if (system_clipboard->SequenceNumber() != sequence_number) {
-        files->files.clear();
-      }
-      for (const mojom::blink::DataTransferFilePtr& file : files->files) {
-        data_object->AddFilename(
-            context, FilePathToString(file->path),
-            FilePathToString(file->display_name), files->file_system_id,
-            base::MakeRefCounted<FileSystemAccessDropData>(
-                std::move(file->file_system_access_token)));
+      if (files) {
+        // Ignore ReadFiles() result if clipboard sequence number has changed.
+        if (system_clipboard->SequenceNumber() != sequence_number) {
+          files->files.clear();
+        } else {
+          for (const mojom::blink::DataTransferFilePtr& file : files->files) {
+            data_object->AddFilename(
+                context, FilePathToString(file->path),
+                FilePathToString(file->display_name), files->file_system_id,
+                base::MakeRefCounted<FileSystemAccessDropData>(
+                    std::move(file->file_system_access_token)));
+          }
+        }
       }
     }
     if (files && !files->files.empty()) {
@@ -117,7 +120,7 @@ uint32_t DataObject::length() const {
 DataObjectItem* DataObject::Item(uint32_t index) {
   if (index >= length())
     return nullptr;
-  return item_list_[index];
+  return item_list_[index].Get();
 }
 
 void DataObject::DeleteItem(uint32_t index) {
@@ -125,6 +128,23 @@ void DataObject::DeleteItem(uint32_t index) {
     return;
   item_list_.EraseAt(index);
   NotifyItemListChanged();
+}
+
+void DataObject::ClearStringItems() {
+  if (item_list_.empty()) {
+    return;
+  }
+
+  wtf_size_t num_items_before = item_list_.size();
+  item_list_.erase(std::remove_if(item_list_.begin(), item_list_.end(),
+                                  [](Member<DataObjectItem> item) {
+                                    return item->Kind() ==
+                                           DataObjectItem::kStringKind;
+                                  }),
+                   item_list_.end());
+  if (num_items_before != item_list_.size()) {
+    NotifyItemListChanged();
+  }
 }
 
 void DataObject::ClearAll() {
@@ -285,7 +305,7 @@ DataObject::DataObject() : modifiers_(0) {}
 DataObjectItem* DataObject::FindStringItem(const String& type) const {
   for (const auto& item : item_list_) {
     if (item->Kind() == DataObjectItem::kStringKind && item->GetType() == type)
-      return item;
+      return item.Get();
   }
   return nullptr;
 }

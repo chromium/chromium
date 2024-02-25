@@ -13,8 +13,9 @@
 
 // A Windows app window frame view.
 class AppWindowFrameViewWin : public views::NonClientFrameView {
+  METADATA_HEADER(AppWindowFrameViewWin, views::NonClientFrameView)
+
  public:
-  METADATA_HEADER(AppWindowFrameViewWin);
   explicit AppWindowFrameViewWin(views::Widget* widget);
   AppWindowFrameViewWin(const AppWindowFrameViewWin&) = delete;
   AppWindowFrameViewWin& operator=(const AppWindowFrameViewWin&) = delete;
@@ -35,11 +36,6 @@ class AppWindowFrameViewWin : public views::NonClientFrameView {
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
   int NonClientHitTest(const gfx::Point& point) override;
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
-  void ResetWindowControls() override {}
-  void UpdateWindowIcon() override {}
-  void UpdateWindowTitle() override {}
-  void SizeConstraintsChanged() override {}
 
   // views::View implementation.
   gfx::Size CalculatePreferredSize() const override;

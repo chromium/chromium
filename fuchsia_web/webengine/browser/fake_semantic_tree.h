@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 class FakeSemanticTree
     : public fuchsia::accessibility::semantics::testing::SemanticTree_TestBase {

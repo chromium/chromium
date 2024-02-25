@@ -10,6 +10,7 @@
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -21,17 +22,18 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
@@ -73,18 +75,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   base::WeakPtr<BookmarkModel> _accountBookmarkModel;
   // Observer for `_accountBookmarkModel` changes.
   std::unique_ptr<BookmarkModelBridge> _accountModelBridge;
+  // The authentication service.
+  raw_ptr<AuthenticationService> _authService;
   // Observer for signin status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   // The browser for this view controller.
   base::WeakPtr<Browser> _browser;
-  ChromeBrowserState* _browserState;
+  raw_ptr<ChromeBrowserState> _browserState;
   // Parent folder to `_folder`. Should never be `nullptr`.
-  const BookmarkNode* _parentFolder;
+  raw_ptr<const BookmarkNode> _parentFolder;
   // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
   // the user is editing an existing folder.
-  const BookmarkNode* _folder;
+  raw_ptr<const BookmarkNode> _folder;
 
   BOOL _edited;
   BOOL _editingExistingFolder;
@@ -114,12 +118,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                  browser:(Browser*)browser {
   DCHECK(localOrSyncableBookmarkModel);
   DCHECK(localOrSyncableBookmarkModel->loaded());
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    DCHECK(accountBookmarkModel);
-    DCHECK(accountBookmarkModel->loaded());
-  } else {
-    DCHECK(!accountBookmarkModel);
-  }
+  DCHECK(accountBookmarkModel);
+  DCHECK(accountBookmarkModel->loaded());
   DCHECK(parentFolder);
   if (folder) {
     BookmarkModel* modelForFolder = bookmark_utils_ios::GetBookmarkModelForNode(
@@ -144,6 +144,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _editingExistingFolder = _folder != nullptr;
     _browser = browser->AsWeakPtr();
     _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    _authService = authService;
     _authServiceBridge = std::make_unique<AuthenticationServiceObserverBridge>(
         authService, self);
     _syncService = syncService;
@@ -347,7 +348,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                   bookmarksVector,
                                   _localOrSyncableBookmarkModel.get(),
                                   _accountBookmarkModel.get(), _parentFolder,
-                                  _browserState)];
+                                  _browserState, _authService->GetWeakPtr(),
+                                  _syncService)];
       // Move might change the pointer, grab the updated value.
       CHECK_EQ(bookmarksVector.size(), 1u);
       _folder = bookmarksVector[0];
@@ -359,7 +361,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (_manuallyChangedTheFolder) {
-    bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+    BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
         _parentFolder, _localOrSyncableBookmarkModel.get(),
         _accountBookmarkModel.get());
     SetLastUsedBookmarkFolder(_browserState->GetPrefs(), _parentFolder, type);
@@ -527,15 +529,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   CHECK(_parentFolderItem);
   _parentFolderItem.title =
       bookmark_utils_ios::TitleForBookmarkNode(_parentFolder);
-  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
       _parentFolder, _localOrSyncableBookmarkModel.get(),
       _accountBookmarkModel.get());
   switch (type) {
-    case bookmarks::StorageType::kLocalOrSyncable:
+    case BookmarkModelType::kLocalOrSyncable:
       _parentFolderItem.shouldDisplayCloudSlashIcon =
           bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
       break;
-    case bookmarks::StorageType::kAccount:
+    case BookmarkModelType::kAccount:
       _parentFolderItem.shouldDisplayCloudSlashIcon = NO;
       break;
   }

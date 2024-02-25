@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Web Compatibility requirements for implementation-defined locale-specific JavaScript APIs
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

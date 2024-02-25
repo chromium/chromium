@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_OBSERVER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
@@ -44,7 +45,7 @@ class CORE_EXPORT PerformanceObserver final
                       Performance*,
                       V8PerformanceObserverCallback*);
 
-  void observe(const PerformanceObserverInit*, ExceptionState&);
+  void observe(ScriptState*, const PerformanceObserverInit*, ExceptionState&);
   void disconnect();
   PerformanceEntryVector takeRecords();
   void EnqueuePerformanceEntry(PerformanceEntry&);
@@ -78,7 +79,9 @@ class CORE_EXPORT PerformanceObserver final
   };
   // Deliver the PerformanceObserverCallback. Receives the number of dropped
   // entries to be passed to the callback.
-  void Deliver(absl::optional<int> dropped_entries_count);
+  void Deliver(std::optional<int> dropped_entries_count);
+
+  static PerformanceEntryType supportedEntryTypeMask(ScriptState*);
 
   Member<V8PerformanceObserverCallback> callback_;
   WeakMember<Performance> performance_;

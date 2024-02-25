@@ -22,6 +22,7 @@
 #error "DECLARE_RESOURCE_ID should be defined before including this file"
 #endif
 
+DECLARE_RESOURCE_ID(IDR_ANDROID_GLOBE, R.drawable.ic_globe_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_ACCESSIBILITY_EVENTS,
                     R.drawable.infobar_accessibility_events)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_CLIPBOARD,
@@ -29,6 +30,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_CLIPBOARD,
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_FOLDER, R.drawable.ic_folder_blue_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_GEOLOCATION,
                     R.drawable.gm_filled_location_on_24)
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_IDLE_DETECTION,
+                    R.drawable.gm_filled_devices_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA,
                     R.drawable.gm_filled_videocam_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_MEDIA_STREAM_MIC,
@@ -41,10 +44,9 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_NOTIFICATIONS,
                     R.drawable.gm_filled_notifications_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER,
                     R.drawable.infobar_protected_media_identifier)
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_PERMISSION_COOKIE,
+                    R.drawable.permission_cookie)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_WARNING, R.drawable.infobar_warning)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_VR_HEADSET,
                     R.drawable.gm_filled_cardboard_24)
-DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_PERMISSION_COOKIE,
-                    R.drawable.permission_cookie)
-DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_IDLE_DETECTION,
-                    R.drawable.gm_filled_devices_24)
+DECLARE_RESOURCE_ID(IDR_ANDROID_STORAGE_ACCESS, R.drawable.ic_storage_access_24)

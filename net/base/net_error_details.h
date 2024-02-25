@@ -6,7 +6,7 @@
 #define NET_BASE_NET_ERROR_DETAILS_H_
 
 #include "net/base/net_export.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
 
 namespace net {
@@ -28,8 +28,7 @@ struct NET_EXPORT NetErrorDetails {
   // Early prediction of the connection type that this request attempts to use.
   // Will be discarded by upper layers if the connection type can be fetched
   // from response header from the server.
-  HttpResponseInfo::ConnectionInfo connection_info =
-      HttpResponseInfo::CONNECTION_INFO_UNKNOWN;
+  HttpConnectionInfo connection_info = HttpConnectionInfo::kUNKNOWN;
   // True if receives a GoAway frame from the server due to connection
   // migration with port change.
   bool quic_port_migration_detected = false;

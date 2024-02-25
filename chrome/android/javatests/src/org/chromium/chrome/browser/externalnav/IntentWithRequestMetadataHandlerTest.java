@@ -18,9 +18,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
-/**
- * Instrumentation tests for {@link IntentWithRequestMetadataHandler}.
- */
+/** Instrumentation tests for {@link IntentWithRequestMetadataHandler}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class IntentWithRequestMetadataHandlerTest {
@@ -33,8 +31,8 @@ public class IntentWithRequestMetadataHandlerTest {
     @SmallTest
     public void testCanUseRequestMetadataTokenOnlyOnce() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("content://abc"));
-        IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
-                intent, new RequestMetadata(true, true));
+        IntentWithRequestMetadataHandler.getInstance()
+                .onNewIntentWithRequestMetadata(intent, new RequestMetadata(true, true));
         Assert.assertTrue(
                 intent.hasExtra(IntentWithRequestMetadataHandler.EXTRA_REQUEST_METADATA_TOKEN));
         RequestMetadata metadata =
@@ -49,8 +47,8 @@ public class IntentWithRequestMetadataHandlerTest {
     @SmallTest
     public void testModifiedRequestMetadataToken() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("content://abc"));
-        IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
-                intent, new RequestMetadata(true, true));
+        IntentWithRequestMetadataHandler.getInstance()
+                .onNewIntentWithRequestMetadata(intent, new RequestMetadata(true, true));
         intent.setData(Uri.parse("content://xyz"));
         Assert.assertNull(
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent));
@@ -60,11 +58,11 @@ public class IntentWithRequestMetadataHandlerTest {
     @SmallTest
     public void testPreviousRequestMetadataToken() {
         Intent intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse("content://abc"));
-        IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
-                intent1, new RequestMetadata(true, true));
+        IntentWithRequestMetadataHandler.getInstance()
+                .onNewIntentWithRequestMetadata(intent1, new RequestMetadata(true, true));
         Intent intent2 = new Intent(Intent.ACTION_VIEW, Uri.parse("content://xyz"));
-        IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
-                intent2, new RequestMetadata(true, false));
+        IntentWithRequestMetadataHandler.getInstance()
+                .onNewIntentWithRequestMetadata(intent2, new RequestMetadata(true, false));
         Assert.assertNull(
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent1));
     }

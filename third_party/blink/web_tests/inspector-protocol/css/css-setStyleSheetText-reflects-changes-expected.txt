@@ -1,0 +1,6 @@
+Verify that changes via CSS.setStyleSheetText are reflected in computed styles
+Initial background-color
+rgb(0, 0, 0)
+Then background-color
+rgb(0, 0, 0)
+

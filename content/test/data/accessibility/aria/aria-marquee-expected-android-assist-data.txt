@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-live="off"}, {role="marquee"}, {tabindex="0"}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-live="polite"}, {role="marquee"}, {tabindex="1"}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-live="assertive"}, {role="marquee"}, {tabindex="2"}]

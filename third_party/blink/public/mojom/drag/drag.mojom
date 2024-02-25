@@ -77,6 +77,19 @@ struct DragData {
                            // new isolated file system to access the dropped
                            // files.
 
+  // If true, the renderer always performs the default action for the drop, such
+  // as opening a dragged URL in a new tab. Otherwise, the renderer may give the
+  // drag data to the page if it has overridden the default action.
+  //
+  // This value is calculated using the last drag operation reported from a
+  // dragover response from the document, via the renderer, to the browser.  Due
+  // to the async nature of the browser-renderer interaction, it's possible for
+  // a document's signal of interest in a drop to not be received by the browser
+  // before it starts to finish the drop.  In this case the browser will pass
+  // the drop data to the renderer, but the renderer will take a default action
+  // instead of passing the drop to the document.
+  bool force_default_action;
+
   // Used for DragItemString when string_type == "downloadurl".
   network.mojom.ReferrerPolicy referrer_policy =
       network.mojom.ReferrerPolicy.kDefault;

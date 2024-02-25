@@ -35,8 +35,6 @@ class ShortcutsAppManagerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kSearchInShortcutsApp},
-                                          {});
     ui::ResourceBundle::CleanupSharedInstance();
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
@@ -134,9 +132,9 @@ TEST_F(ShortcutsAppManagerTest, SetSearchConcepts) {
                               std::move(fake_layout_infos));
   base::RunLoop().RunUntilIdle();
 
-  // Test that disabled accelerator info are filtered out.
-  EXPECT_EQ(registry_search_concepts.size(), 3u);
-  EXPECT_FALSE(registry_search_concepts.contains("0-2"));
+  // Disabled accelerator info is included, which will be displayed as 'No
+  // shortcut assigned' in the frontend.
+  EXPECT_EQ(registry_search_concepts.size(), 4u);
 
   // Test that the expected search concepts are present and check a few
   // attributes to be sure.
@@ -144,6 +142,11 @@ TEST_F(ShortcutsAppManagerTest, SetSearchConcepts) {
                             /*search_concept_id=*/"0-1",
                             /*expected_source=*/mojom::AcceleratorSource::kAsh,
                             /*expected_action=*/fake_search_data::kAction1);
+  ValidateSearchConceptById(
+      /*search_concepts_map=*/registry_search_concepts,
+      /*search_concept_id=*/"0-2",
+      /*expected_source=*/mojom::AcceleratorSource::kAsh,
+      /*expected_action=*/fake_search_data::kAction2);
   ValidateSearchConceptById(
       /*search_concepts_map=*/registry_search_concepts,
       /*search_concept_id=*/"2-3",

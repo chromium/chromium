@@ -41,14 +41,10 @@ ParentAccessExtensionApprovalsManager::
 
 // static
 bool ParentAccessExtensionApprovalsManager::ShouldShowExtensionApprovalsV2() {
-  if (!supervised_user::IsLocalExtensionApprovalsV2Enabled()) {
-    return false;
-  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   int version = service->GetInterfaceVersion<crosapi::mojom::ParentAccess>();
-  if (supervised_user::IsLocalExtensionApprovalsV2Enabled() &&
-      version < int{crosapi::mojom::ParentAccess::MethodMinVersions::
+  if (version < int{crosapi::mojom::ParentAccess::MethodMinVersions::
                         kGetExtensionParentApprovalMinVersion}) {
     return false;
   }

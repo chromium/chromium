@@ -7,7 +7,6 @@ import {CoverageTestRunner} from 'coverage_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests the coverage list view after finishing recording in the Coverage view.\n`);
-  await TestRunner.loadLegacyModule('panels/coverage');
   await TestRunner.navigatePromise(TestRunner.url('resources/basic-coverage.html'));
 
   await TestRunner.evaluateInPagePromise('performActions()');

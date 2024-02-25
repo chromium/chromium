@@ -26,12 +26,3 @@ NotificationTriggerSchedulerAndroid::NotificationTriggerSchedulerAndroid() {
 
 NotificationTriggerSchedulerAndroid::~NotificationTriggerSchedulerAndroid() =
     default;
-
-void NotificationTriggerSchedulerAndroid::ScheduleTrigger(
-    base::Time timestamp) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  Java_NotificationTriggerScheduler_schedule(
-      env, java_notification_trigger_scheduler_, timestamp.ToJavaTime());
-}

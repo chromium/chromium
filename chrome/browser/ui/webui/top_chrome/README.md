@@ -1,0 +1,1 @@
+This directory holds files that are used to integrate WebUIs into Top Chrome.

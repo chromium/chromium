@@ -6,9 +6,7 @@ package org.chromium.support_lib_boundary;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- * Boundary interface for WebMessage.
- */
+/** Boundary interface for WebMessage. */
 public interface WebMessageBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
     @Deprecated
     String getData();

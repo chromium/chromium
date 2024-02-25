@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "multidevice.sms_connect_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SmsMessagesAllowed": false
+        },
+        "prefs": {
+          "multidevice.sms_connect_allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SmsMessagesAllowed": true
+        },
+        "prefs": {
+          "multidevice.sms_connect_allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

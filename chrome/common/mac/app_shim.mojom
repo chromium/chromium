@@ -56,6 +56,11 @@ enum AppShimLoginItemRestoreState {
   kHidden,
 };
 
+enum AppShimScreenReaderSupportMode {
+  kPartial,
+  kComplete
+};
+
 // An entry in the profiles NSMenu.
 struct ProfileMenuItem {
   // The name to display.
@@ -112,6 +117,11 @@ interface AppShim {
   // the original notification provider connection.
   BindNotificationProvider(
       pending_receiver<mac_notifications.mojom.MacNotificationProvider> provider);
+
+  // Requests notification permissions from the system. This will ask the user
+  // to accept permissions if not granted or denied already.
+  RequestNotificationPermission()
+      => (mac_notifications.mojom.RequestPermissionResult result);
 };
 
 // Interface through which the a process communicates to the browser process.
@@ -142,9 +152,17 @@ interface AppShimHost {
   // user clicks on an item in the application dock menu).
   OpenAppWithOverrideUrl(url.mojom.Url override_url);
 
+  // Sent when the user activates some mode of Assistive Technology.
+  EnableAccessibilitySupport(AppShimScreenReaderSupportMode mode);
+
   // Sent when the app is about to terminate. Used to persist what profiles
   // where open when the app was terminated.
   ApplicationWillTerminate();
+
+  // Sent any time the app detects a change in the status of its (system level)
+  // notification permission. Also sent shortly after startup.
+  NotificationPermissionStatusChanged(
+      mac_notifications.mojom.PermissionStatus status);
 };
 
 // Properties of an app shim that are specified when it connects to the browser
@@ -171,6 +189,27 @@ struct AppShimInfo {
 
   // The urls that are to be opened by this app.
   array<url.mojom.Url> urls;
+
+  // Interface that will be used by the app shim to inform the browser process
+  // of any notification actions taken. Note that this is included even when
+  // the notification attribution feature is disabled; it is ignored by the
+  // browser process in that case.
+  pending_receiver<mac_notifications.mojom.MacNotificationActionHandler>
+      notification_action_handler;
+};
+
+// Struct used to pass the state of features and field trials from the browser
+// process to app shims when a connection is established between the two.
+// This corresponds to the C++ `variations::VariationsCommandLine` struct.
+// These fields are passed as strings, in the same format as when these would
+// be passed over the command line, as that is the format that is supported
+// by `base::FieldTrialList` and `base::FeatureList` for serialization and
+// deserialization.
+struct FeatureState {
+  string field_trial_states;
+  string field_trial_params;
+  string enable_features;
+  string disable_features;
 };
 
 // The initial interface provided by the browser process. Used to bootstrap to
@@ -180,9 +219,9 @@ interface AppShimHostBootstrap {
   // process is requesting to be associated with the given profile and app_id.
   // Once the profile and app_id are stored, and all future messages from the
   // app shim relate to this app.
-  OnShimConnected(pending_receiver<AppShimHost> host_receiver,
-                  AppShimInfo app_shim_info) =>
-                      (AppShimLaunchResult launch_result,
-                       pending_receiver<AppShim> app_shim_receiver);
+  OnShimConnected(
+      pending_receiver<AppShimHost> host_receiver, AppShimInfo app_shim_info)
+      => (AppShimLaunchResult launch_result,
+          FeatureState feature_state,
+          pending_receiver<AppShim> app_shim_receiver);
 };
-

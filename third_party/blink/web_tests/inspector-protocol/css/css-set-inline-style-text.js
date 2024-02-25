@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <link rel='stylesheet' href='${testRunner.url('resources/set-style-text.css')}'/>
 <div id='inliner' style='color: red;'>`, 'The test verifies functionality of protocol method CSS.setStyleTexts for inline elements.');

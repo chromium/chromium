@@ -7,14 +7,14 @@
  * enabling a user to create a new container.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -23,7 +23,7 @@ import {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_extra_containers_create_dialog.html.js';
 
-interface ExtraContainersCreateDialog {
+export interface ExtraContainersCreateDialog {
   $: {
     dialog: CrDialogElement,
     containerFileInput: CrInputElement,
@@ -34,7 +34,7 @@ interface ExtraContainersCreateDialog {
   };
 }
 
-class ExtraContainersCreateDialog extends PolymerElement {
+export class ExtraContainersCreateDialog extends PolymerElement {
   static get is() {
     return 'settings-crostini-create-container-dialog';
   }
@@ -118,7 +118,7 @@ class ExtraContainersCreateDialog extends PolymerElement {
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.$.dialog.showModal();
     this.$.vmNameInput.value = this.inputVmName_;
@@ -137,7 +137,7 @@ class ExtraContainersCreateDialog extends PolymerElement {
     return true;
   }
 
-  private validateNames_() {
+  private validateNames_(): void {
     this.inputVmName_ = this.$.vmNameInput.value.length === 0 ?
         DEFAULT_CROSTINI_VM :
         this.$.vmNameInput.value;
@@ -161,11 +161,11 @@ class ExtraContainersCreateDialog extends PolymerElement {
         !this.validContainerName_ || !this.isValidVmName(this.inputVmName_);
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private onCreateClick_() {
+  private onCreateClick_(): void {
     if (this.advancedToggleExpanded_) {
       // These elements are part of a dom-if on |advancedToggleExpanded_|
       this.inputImageServer_ = this.$.imageServerInput.value;
@@ -180,12 +180,12 @@ class ExtraContainersCreateDialog extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private async onSelectContainerFileClick_() {
+  private async onSelectContainerFileClick_(): Promise<void> {
     this.$.containerFileInput.value =
         await this.browserProxy_.openContainerFileSelector();
   }
 
-  private advancedToggleClicked_() {
+  private advancedToggleClicked_(): void {
     this.advancedToggleExpanded_ = !this.advancedToggleExpanded_;
     // Force repaint.
     this.$.dialog.getBoundingClientRect();

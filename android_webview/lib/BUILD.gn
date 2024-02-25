@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
-import("//weblayer/variables.gni")
 
 source_set("lib") {
   sources = [
@@ -32,7 +31,6 @@ source_set("lib") {
     "//components/safe_browsing/android:safe_browsing_api_handler",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
-    "//components/translate/core/common",
     "//components/variations",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
@@ -64,10 +62,4 @@ source_set("webview_entry_point") {
     "//base",
   ]
   sources = [ "webview_entry_point.cc" ]
-  defines = []
-
-  if (webview_includes_weblayer) {
-    defines += [ "WEBVIEW_INCLUDES_WEBLAYER" ]
-    deps += [ "//weblayer:weblayer_lib" ]
-  }
 }

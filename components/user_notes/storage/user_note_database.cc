@@ -25,9 +25,7 @@ const int kCompatibleVersionNumber = 1;
 }  // namespace
 
 UserNoteDatabase::UserNoteDatabase(const base::FilePath& path_to_database_dir)
-    : db_(sql::DatabaseOptions{.exclusive_locking = true,
-                               .page_size = 4096,
-                               .cache_size = 128}),
+    : db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128}),
       db_file_path_(path_to_database_dir.Append(kDatabaseName)) {}
 
 UserNoteDatabase::~UserNoteDatabase() {
@@ -104,7 +102,7 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
           !base::HexStringToUInt64(string_piece.substr(16, 16), &low)) {
         continue;
       }
-      absl::optional<base::UnguessableToken> token =
+      std::optional<base::UnguessableToken> token =
           base::UnguessableToken::Deserialize(high, low);
       if (!token.has_value()) {
         continue;

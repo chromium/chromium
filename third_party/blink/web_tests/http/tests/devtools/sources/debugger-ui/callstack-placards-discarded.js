@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that RawSourceCode listeners count won't grow on each script pause. Bug 70996\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -16,7 +18,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
       }
   `);
 
-  SourcesTestRunner.quiet = true;
+  SourcesTestRunner.setQuiet(true);
   SourcesTestRunner.runDebuggerTestSuite([
     function testCallStackPlacardsDiscarded(next) {
       TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.DebuggerPaused, didPause, this);
@@ -56,7 +58,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   function liveLocationsCount() {
     var count = 0;
     var infos = Object.values(TestRunner.debuggerModel.scripts)
-                    .map(script => script[Bindings.DebuggerWorkspaceBinding.ScriptInfoSymbol])
+                    .map(script => script[BindingsModule.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.ScriptInfoSymbol])
                     .filter(info => !!info);
     infos.forEach(function(info) {
       count += info.locations ? info._locations.size : 0;

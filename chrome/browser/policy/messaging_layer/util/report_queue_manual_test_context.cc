@@ -69,21 +69,21 @@ void ReportQueueManualTestContext::OnStart() {
       ReportQueueConfiguration::Create(
           {.event_type = event_type_, .destination = destination_})
           .Build();
-  if (!config_result.ok()) {
-    Complete(config_result.status());
+  if (!config_result.has_value()) {
+    Complete(config_result.error());
     return;
   }
 
   // Build queue by configuration.
   CHECK(queue_builder_) << "Can be only called once";
   auto report_queue_result =
-      std::move(queue_builder_).Run(std::move(config_result.ValueOrDie()));
-  if (!report_queue_result.ok()) {
-    Complete(report_queue_result.status());
+      std::move(queue_builder_).Run(std::move(config_result.value()));
+  if (!report_queue_result.has_value()) {
+    Complete(report_queue_result.error());
     return;
   }
 
-  report_queue_ = std::move(report_queue_result.ValueOrDie());
+  report_queue_ = std::move(report_queue_result.value());
   NextEnqueue();
 }
 

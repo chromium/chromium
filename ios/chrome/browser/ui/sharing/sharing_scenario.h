@@ -8,6 +8,7 @@
 // Enum that contains the list of sharing scenarios. Current values should not
 // be renumbered. Please keep in sync with "IOSActivityScenario" in
 // src/tools/metrics/histograms/enums.xml.
+// LINT.IfChange
 enum class SharingScenario {
   TabShareButton = 0,
   QRCodeImage = 1,
@@ -21,8 +22,10 @@ enum class SharingScenario {
   TabGridSelectionMode = 9,
   ShareChrome = 10,
   OmniboxMostVisitedEntry = 11,
+  TabStripItem = 12,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = OmniboxMostVisitedEntry
+  kMaxValue = TabStripItem
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 #endif  // IOS_CHROME_BROWSER_UI_SHARING_SHARING_SCENARIO_H_

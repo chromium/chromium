@@ -18,6 +18,11 @@ class MockUserEducationDelegate;
 // * Installs a `MockUserEducationDelegate` during `SetUp()`.
 // * Does NOT add user sessions during `SetUp()`.
 class UserEducationAshTestBase : public NoSessionAshTestBase {
+ public:
+  explicit UserEducationAshTestBase(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME);
+
  protected:
   // NoSessionAshTestBase:
   void SetUp() override;
@@ -31,8 +36,7 @@ class UserEducationAshTestBase : public NoSessionAshTestBase {
  private:
   // The mocked delegate which facilitates communication between Ash and user
   // education services in the browser. Created during `SetUp()`.
-  raw_ptr<testing::NiceMock<MockUserEducationDelegate>,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<testing::NiceMock<MockUserEducationDelegate>, DanglingUntriaged>
       user_education_delegate_ = nullptr;
 };
 

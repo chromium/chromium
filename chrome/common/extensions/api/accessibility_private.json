@@ -6,7 +6,7 @@
   {
     "namespace": "accessibilityPrivate",
     "compiler_options": {
-      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
+      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api_ash.h"
     },
     "description": "none",
     "platforms": ["chromeos"],
@@ -240,7 +240,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "googleTtsLanguagePacks", "dictationContextChecking", "chromevoxSettingsMigration", "gameFaceIntegration"],
+        "enum": [ "googleTtsLanguagePacks", "dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices"],
         "description": "Subset of accessibility features."
       },
       {
@@ -296,7 +296,8 @@
         "id": "ToastType",
         "type": "string",
         "enum": [
-          "dictationNoFocusedTextField"
+          "dictationNoFocusedTextField",
+          "dictationMicMuted"
         ]
       },
       {
@@ -328,6 +329,7 @@
           "ttsNlNl",
           "ttsPlPl",
           "ttsPtBr",
+          "ttsPtPt",
           "ttsSiLk",
           "ttsSkSk",
           "ttsSvSe",
@@ -338,6 +340,15 @@
           "ttsYueHk"
         ],
         "description": "Types of accessibility-specific DLCs."
+      },
+      {
+        "id": "TtsVariant",
+        "type": "string",
+        "enum": [
+          "lite",
+          "standard"
+        ],
+        "description": "Variants of TTS voices."
       },
       {
         "id": "PumpkinData",
@@ -394,6 +405,20 @@
           "es_es_pumpkin_config_binarypb": {
             "type": "binary",
             "description": "The contents of the file as a Uint8Array."
+          }
+        }
+      },
+      {
+        "id": "FaceGazeAssets",
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "binary",
+            "description": "The contents of the FaceLandmarker model as a Uint8Array."
+          },
+          "wasm": {
+            "type": "binary",
+            "description": "The contents of the vision_wasm_internal.wasm file as a Uint8Array."
           }
         }
       }
@@ -459,6 +484,22 @@
         }
       },
       {
+        "name": "installFaceGazeAssets",
+        "type": "function",
+        "description": "Called to request an install of the FaceGaze assets DLC, which contains files (e.g. the FaceLandmarker model) required for FaceGaze to work.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Runs when the DLC download finishes.",
+          "parameters": [
+            {
+              "name": "assets",
+              "$ref": "FaceGazeAssets"
+            }
+          ]
+        }
+      },
+      {
         "name": "setNativeAccessibilityEnabled",
         "type": "function",
         "description": "Enables or disables native accessibility support. Once disabled, it is up to the calling extension to provide accessibility for web contents.",
@@ -507,6 +548,18 @@
         ]
       },
       {
+        "name": "setSelectToSpeakFocus",
+        "type": "function",
+        "description": "Informs the system where Select to Speak's reading focus is in screen coordinates. Causes chrome.accessibilityPrivate.onSelectToSpeakFocusChanged to be fired within the AccessibilityCommon component extension.",
+        "parameters": [
+          {
+            "name": "bounds",
+            "$ref": "ScreenRect",
+            "description": "Bounds of currently spoken word (if available) or node (if the spoken node is not a text node)."
+          }
+        ]
+      },
+      {
         "name": "setKeyboardListener",
         "type": "function",
         "description": "Sets the calling extension as a listener of all keyboard events optionally allowing the calling extension to capture/swallow the key event via DOM apis. Returns false via callback when unable to set the listener.",
@@ -530,7 +583,7 @@
         "parameters": [
           {
             "type": "boolean",
-            "name": "enabled",
+            "name": "darken",
             "description": "True to darken screen; false to undarken screen."
           }
         ]
@@ -642,6 +695,18 @@
         ]
       },
       {
+        "name": "setCursorPosition",
+        "type": "function",
+        "description": "Sets the cursor position on the screen in absolute screen coordinates.",
+        "parameters": [
+          {
+            "name": "point",
+            "$ref": "ScreenPoint",
+            "description": "The screen point at which to put the cursor."
+          }
+        ]
+      },
+      {
         "name": "sendSyntheticMouseEvent",
         "type": "function",
         "description": "Sends a fabricated mouse event.",
@@ -661,6 +726,17 @@
           {
             "name": "state",
             "$ref": "SelectToSpeakState"
+          }
+        ]
+      },
+      {
+        "name": "clipboardCopyInActiveLacrosGoogleDoc",
+        "type": "function",
+        "description": "Called by the Select-to-Speak extension to request a clipboard copy in the active Lacros Google Docs tab for the copy-paste fallback.",
+        "parameters": [ {
+            "name": "url",
+            "type": "string",
+            "description": "URL of the Google Docs tab."
           }
         ]
       },
@@ -886,6 +962,52 @@
         }
       },
       {
+        "name": "getTtsDlcContents",
+        "type": "function",
+        "description": "Returns the contents of a TTS DLC.",
+        "parameters": [
+          {
+            "name": "dlc",
+            "$ref": "DlcType",
+            "description": "The DLC of interest."
+          },
+          {
+            "name": "variant",
+            "$ref": "TtsVariant",
+            "description": "The TTS voice variant."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback that is run when the contents are returned.",
+          "parameters": [
+            {
+              "name": "contents",
+              "type": "binary",
+              "description": "The contents of the DLC as a Uint8Array."
+            }
+          ]
+        }
+      },
+      {
+        "name": "getDisplayBounds",
+        "type": "function",
+        "description": "Returns the bounds of the displays in density-independent pixels in screen coordinates.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback that is run when the result is returned.",
+          "parameters": [
+            {
+              "type": "array",
+              "items": { "$ref": "ScreenRect" },
+              "name": "rects",
+              "description": "Array of rects represeting the display bounds in screen coordinates for all displays."
+            }
+          ]
+        }
+      },
+      {
         "name": "isLacrosPrimary",
         "type": "function",
         "description": "Gets whether new browser windows and tabs should be in Lacros browser.",
@@ -955,6 +1077,18 @@
         "type": "function",
         "description": "Fired when the Select to Speak context menu is clicked from outside the context of the Select to Speak extension.",
         "parameters": []
+      },
+      {
+        "name": "onSelectToSpeakFocusChanged",
+        "type": "function",
+        "description": "Fired when the Select to Speak reading focus changes.",
+        "parameters": [
+          {
+            "name": "bounds",
+            "$ref": "ScreenRect",
+            "description": "Select to Speak's focus bounds in global screen coordinates."
+          }
+        ]
       },
       {
         "name": "onSelectToSpeakStateChangeRequested",

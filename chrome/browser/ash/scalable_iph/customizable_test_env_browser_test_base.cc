@@ -147,7 +147,7 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
           &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
           embedded_test_server(), this, /*should_launch_browser=*/false,
-          /*account_id=*/absl::nullopt, /*include_initial_user=*/false);
+          /*account_id=*/std::nullopt, /*include_initial_user=*/false);
       break;
   }
 
@@ -168,7 +168,9 @@ void CustomizableTestEnvBrowserTestBase::SetUpOnMainThread() {
       test::ProfilePreparedWaiter profile_prepared_waiter(
           logged_in_user_mixin_->GetAccountId());
       logged_in_user_mixin_->LogInUser(/*issue_any_scope_token=*/false,
-                                       /*wait_for_active_session=*/false);
+                                       /*wait_for_active_session=*/false,
+                                       /*request_policy_update=*/true,
+                                       /*skip_post_login_screens=*/false);
       profile_prepared_waiter.Wait();
     } else {
       // `LoggedInUserMixin::LogInUser` waits an active session by default.

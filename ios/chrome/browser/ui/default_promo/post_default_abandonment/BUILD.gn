@@ -1,0 +1,34 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/default_browser/model:utils",
+  ]
+}
+
+source_set("post_default_abandonment") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
+    "post_default_abandonment_promo_provider.h",
+    "post_default_abandonment_promo_provider.mm",
+  ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/promos_manager:promos",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
+  ]
+}

@@ -61,9 +61,9 @@ struct UsernameFieldData {
 // "Non-latin" translations are the translations of the words that have custom,
 // country specific characters.
 struct CategoryOfWords {
-  const char* const* const latin_dictionary;
+  const std::u16string_view* latin_dictionary;
   const size_t latin_dictionary_size;
-  const char* const* const non_latin_dictionary;
+  const std::u16string_view* non_latin_dictionary;
   const size_t non_latin_dictionary_size;
 };
 
@@ -77,7 +77,7 @@ void AppendValueAndShortTokens(
     std::u16string* field_data_value,
     base::flat_set<std::u16string>* field_data_short_tokens) {
   const std::u16string lowercase_value = base::i18n::ToLower(raw_value);
-  std::vector<base::StringPiece16> tokens =
+  std::vector<std::u16string_view> tokens =
       base::SplitStringPiece(lowercase_value, kDelimiters,
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -89,7 +89,7 @@ void AppendValueAndShortTokens(
 
   field_data_value->reserve(field_data_value->size() + lowercase_value.size());
   std::vector<std::u16string> short_tokens;
-  for (const base::StringPiece16& token : tokens) {
+  for (const std::u16string_view& token : tokens) {
     if (token.size() < kMinimumWordLength)
       short_tokens.emplace_back(token);
     field_data_value->append(token);
@@ -155,18 +155,19 @@ void InferUsernameFieldData(
 bool CheckFieldWithDictionary(
     const std::u16string& value,
     const base::flat_set<std::u16string>& short_tokens,
-    const char* const* dictionary,
+    const std::u16string_view* dictionary,
     const size_t& dictionary_size) {
   for (size_t i = 0; i < dictionary_size; ++i) {
-    const std::u16string word = base::UTF8ToUTF16(dictionary[i]);
-    if (word.length() < kMinimumWordLength) {
+    if (dictionary[i].length() < kMinimumWordLength) {
       // Treat short words by looking them up in the tokens set.
-      if (short_tokens.find(word) != short_tokens.end())
+      if (short_tokens.find(dictionary[i]) != short_tokens.end()) {
         return true;
+      }
     } else {
       // Treat long words by looking them up as a substring in |value|.
-      if (value.find(word) != std::string::npos)
+      if (value.find(dictionary[i]) != std::string::npos) {
         return true;
+      }
     }
   }
   return false;
@@ -222,8 +223,8 @@ void FindWordsFromCategoryInForm(
   for (const UsernameFieldData& field_data : possible_usernames_data) {
     if (ContainsWordFromCategory(field_data, category)) {
       if (fields_found == 0) {
-        chosen_field_renderer_id = FieldRendererId(
-            field_data.input_element.UniqueRendererFormControlId());
+        chosen_field_renderer_id =
+            form_util::GetFieldRendererId(field_data.input_element);
       }
       fields_found++;
     }
@@ -235,7 +236,7 @@ void FindWordsFromCategoryInForm(
 }
 
 // Find username elements if there is no cached result for the given form and
-// add them to |username_predictions| in the order of decreasing relibility.
+// add them to |username_predictions| in the order of decreasing reliability.
 void FindUsernameFieldInternal(
     const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,

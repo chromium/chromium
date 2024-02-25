@@ -104,8 +104,7 @@ class KeyboardModifierMetricsRecorderTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<KeyboardModifierMetricsRecorder, DanglingUntriaged | ExperimentalAsh>
-      recorder_;
+  raw_ptr<KeyboardModifierMetricsRecorder, DanglingUntriaged> recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -129,7 +128,7 @@ class KeyboardModifierMetricsRecorderPrefChangedTest
   }
 
  protected:
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
 
   KeyboardModifierMetricsRecorderTestData data_;
   ui::mojom::ModifierKey modifier_key_from_;
@@ -281,7 +280,7 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
 // expected.
 struct KeyboardModifierMetricsRecorderHashTestData {
   base::flat_map<std::string, ui::mojom::ModifierKey> modifier_remappings;
-  absl::optional<int32_t> expected_value;
+  std::optional<int32_t> expected_value;
 };
 
 class KeyboardModifierMetricsRecorderHashTest
@@ -305,7 +304,7 @@ INSTANTIATE_TEST_SUITE_P(
     KeyboardModifierMetricsRecorderHashTest,
     testing::ValuesIn(std::vector<KeyboardModifierMetricsRecorderHashTestData>{
         // With only default remappings, no metric is expected.
-        {{}, absl::nullopt},
+        {{}, std::nullopt},
 
         // All keys remapped to `ui::mojom::ModifierKey::kMeta` should hash to
         // 0.

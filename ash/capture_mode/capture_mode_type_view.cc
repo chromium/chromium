@@ -59,7 +59,7 @@ CaptureModeTypeView::CaptureModeTypeView(CaptureModeBehavior* active_behavior)
 
   auto* controller = CaptureModeController::Get();
 
-  if (controller->is_recording_in_progress()) {
+  if (!controller->can_start_new_recording()) {
     // We can't have more than one recording at the same time.
     video_toggle_button_->SetEnabled(false);
   }
@@ -73,12 +73,13 @@ void CaptureModeTypeView::OnCaptureTypeChanged(CaptureModeType new_type) {
   auto* controller = CaptureModeController::Get();
   const bool is_video = new_type == CaptureModeType::kVideo;
 
-  DCHECK(!controller->is_recording_in_progress() || !is_video);
+  DCHECK(controller->can_start_new_recording() || !is_video);
 
   video_toggle_button_->SetSelected(is_video);
 
-  if (image_toggle_button_)
+  if (image_toggle_button_) {
     image_toggle_button_->SetSelected(!is_video);
+  }
 }
 
 void CaptureModeTypeView::OnImageToggle() {
@@ -88,12 +89,12 @@ void CaptureModeTypeView::OnImageToggle() {
 
 void CaptureModeTypeView::OnVideoToggle() {
   auto* controller = CaptureModeController::Get();
-  DCHECK(!controller->is_recording_in_progress());
+  DCHECK(controller->can_start_new_recording());
   RecordCaptureModeBarButtonType(CaptureModeBarButtonType::kScreenRecord);
   controller->SetType(CaptureModeType::kVideo);
 }
 
-BEGIN_METADATA(CaptureModeTypeView, views::View)
+BEGIN_METADATA(CaptureModeTypeView)
 END_METADATA
 
 }  // namespace ash

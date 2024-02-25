@@ -8,12 +8,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/public/cpp/default_user_image.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
@@ -96,7 +96,7 @@ base::Value::List GetCurrentImageSetAsListValue();
 // Returns nullopt if there is no source info.
 // Only a small number of deprecated user images have associated
 // |DeprecatedSourceInfo|, and none of them can be selected by users now.
-absl::optional<DeprecatedSourceInfo> GetDeprecatedDefaultImageSourceInfo(
+std::optional<DeprecatedSourceInfo> GetDeprecatedDefaultImageSourceInfo(
     size_t index);
 
 }  // namespace ash::default_user_image

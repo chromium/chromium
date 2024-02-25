@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/win10-rel-no-external-ip/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

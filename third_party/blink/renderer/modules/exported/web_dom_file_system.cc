@@ -31,6 +31,7 @@
 #include "third_party/blink/public/web/web_dom_file_system.h"
 
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_directory_entry.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_entry.h"
@@ -41,23 +42,23 @@
 #include "third_party/blink/renderer/modules/filesystem/directory_entry.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/filesystem/file_entry.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-WebDOMFileSystem WebDOMFileSystem::FromV8Value(v8::Local<v8::Value> value) {
+WebDOMFileSystem WebDOMFileSystem::FromV8Value(v8::Isolate* isolate,
+                                               v8::Local<v8::Value> value) {
   if (DOMFileSystem* dom_file_system =
-          V8DOMFileSystem::ToWrappable(v8::Isolate::GetCurrent(), value)) {
+          V8DOMFileSystem::ToWrappable(isolate, value)) {
     return WebDOMFileSystem(dom_file_system);
   }
   return WebDOMFileSystem();
 }
 
-WebURL WebDOMFileSystem::CreateFileSystemURL(v8::Local<v8::Value> value) {
-  const Entry* const entry =
-      V8Entry::ToWrappable(v8::Isolate::GetCurrent(), value);
+WebURL WebDOMFileSystem::CreateFileSystemURL(v8::Isolate* isolate,
+                                             v8::Local<v8::Value> value) {
+  const Entry* const entry = V8Entry::ToWrappable(isolate, value);
   if (entry)
     return entry->filesystem()->CreateFileSystemURL(entry);
   return WebURL();
@@ -113,36 +114,33 @@ WebURL WebDOMFileSystem::RootURL() const {
   return private_->RootURL();
 }
 
-v8::Local<v8::Value> WebDOMFileSystem::ToV8Value(
-    v8::Local<v8::Object> creation_context,
-    v8::Isolate* isolate) {
-  // We no longer use |creationContext| because it's often misused and points
-  // to a context faked by user script.
-  DCHECK(creation_context->GetCreationContextChecked() ==
-         isolate->GetCurrentContext());
+v8::Local<v8::Value> WebDOMFileSystem::ToV8Value(v8::Isolate* isolate) {
   if (!private_.Get())
     return v8::Local<v8::Value>();
-  return ToV8(private_.Get(), isolate->GetCurrentContext()->Global(), isolate);
+  return ToV8Traits<DOMFileSystem>::ToV8(
+      ScriptState::From(isolate->GetCurrentContext()), private_.Get());
 }
 
 v8::Local<v8::Value> WebDOMFileSystem::CreateV8Entry(
     const WebString& path,
     EntryType entry_type,
-    v8::Local<v8::Object> creation_context,
     v8::Isolate* isolate) {
-  // We no longer use |creationContext| because it's often misused and points
-  // to a context faked by user script.
-  DCHECK(creation_context->GetCreationContextChecked() ==
-         isolate->GetCurrentContext());
   if (!private_.Get())
     return v8::Local<v8::Value>();
-  if (entry_type == kEntryTypeDirectory) {
-    return ToV8(MakeGarbageCollected<DirectoryEntry>(private_.Get(), path),
-                isolate->GetCurrentContext()->Global(), isolate);
+  v8::Local<v8::Value> value;
+  switch (entry_type) {
+    case kEntryTypeDirectory:
+      value = ToV8Traits<DirectoryEntry>::ToV8(
+          ScriptState::From(isolate->GetCurrentContext()),
+          MakeGarbageCollected<DirectoryEntry>(private_.Get(), path));
+      break;
+    case kEntryTypeFile:
+      value = ToV8Traits<FileEntry>::ToV8(
+          ScriptState::From(isolate->GetCurrentContext()),
+          MakeGarbageCollected<FileEntry>(private_.Get(), path));
+      break;
   }
-  DCHECK_EQ(entry_type, kEntryTypeFile);
-  return ToV8(MakeGarbageCollected<FileEntry>(private_.Get(), path),
-              isolate->GetCurrentContext()->Global(), isolate);
+  return value;
 }
 
 WebDOMFileSystem::WebDOMFileSystem(DOMFileSystem* dom_file_system)

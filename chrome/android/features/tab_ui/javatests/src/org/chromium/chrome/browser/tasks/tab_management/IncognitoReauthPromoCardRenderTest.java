@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -40,14 +41,11 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 
-/**
- * Render tests for incognito re-auth promo message card.
- */
+/** Render tests for incognito re-auth promo message card. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -77,12 +75,13 @@ public class IncognitoReauthPromoCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1376143")
     public void testRenderReauthPromoMessageCard_Portrait() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         createTabs(cta, true, 1);
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
         mRenderTestRule.render(
                 cta.findViewById(R.id.large_message_card_item), "incognito_reauth_promo_portrait");
@@ -99,7 +98,7 @@ public class IncognitoReauthPromoCardRenderTest {
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
 
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
         mRenderTestRule.render(
                 cta.findViewById(R.id.large_message_card_item), "incognito_reauth_promo_landscape");
@@ -108,12 +107,13 @@ public class IncognitoReauthPromoCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1376143")
     public void testRenderReauthPromoMessageCard_Snackbar() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         createTabs(cta, true, 1);
         enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
         onView(withText(R.string.incognito_reauth_lock_action_text)).perform(click());
         onView(withId(R.id.snackbar)).check(matches(isDisplayed()));

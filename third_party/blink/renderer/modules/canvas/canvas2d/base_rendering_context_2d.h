@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -25,8 +26,13 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace blink {
 
@@ -35,17 +41,29 @@ MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
 class BeginLayerOptions;
 class CanvasColorCache;
 class CanvasImageSource;
+class CanvasWebGPUAccessOption;
 class Color;
 class Image;
+class Mesh2DVertexBuffer;
+class Mesh2DUVBuffer;
+class Mesh2DIndexBuffer;
+class OffscreenCanvas;
 class Path2D;
+class TextMetrics;
 struct V8CanvasStyle;
 enum class V8CanvasStyleType;
+class GPUTexture;
 class V8UnionCanvasFilterOrString;
 using cc::UsePaintCache;
 
 class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  public:
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
+
+  // Try to restore context 4 times in the event that the context is lost. If
+  // the context is unable to be restored after 4 attempts, we discard the
+  // backing storage of the context and allocate a new one.
+  static const unsigned kMaxTryRestoreContextAttempts = 4;
 
   BaseRenderingContext2D(const BaseRenderingContext2D&) = delete;
   BaseRenderingContext2D& operator=(const BaseRenderingContext2D&) = delete;
@@ -110,7 +128,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                   ExceptionState& exception_state);
   // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
   void endLayer(ExceptionState& exception_state);
-  void reset();          // Called by the javascript interface
+  int LayerCount() const { return layer_count_; }
+  virtual void reset();  // Called by the javascript interface
   void ResetInternal();  // Called from within blink
 
   void scale(double sx, double sy);
@@ -151,11 +170,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   bool isPointInStroke(const double x, const double y);
   bool isPointInStroke(Path2D*, const double x, const double y);
 
-  void clearRect(double x,
-                 double y,
-                 double width,
-                 double height,
-                 bool for_reset = false);
+  void clearRect(double x, double y, double width, double height);
   void fillRect(double x, double y, double width, double height);
   void strokeRect(double x, double y, double width, double height);
 
@@ -211,6 +226,18 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                                const String& repetition_type,
                                ExceptionState&);
 
+  Mesh2DVertexBuffer* createMesh2DVertexBuffer(NotShared<DOMFloat32Array>,
+                                               ExceptionState&);
+  Mesh2DUVBuffer* createMesh2DUVBuffer(NotShared<DOMFloat32Array>,
+                                       ExceptionState&);
+  Mesh2DIndexBuffer* createMesh2DIndexBuffer(NotShared<DOMUint16Array>,
+                                             ExceptionState&);
+  void drawMesh(const Mesh2DVertexBuffer* vertex_buffer,
+                const Mesh2DUVBuffer* uv_buffer,
+                const Mesh2DIndexBuffer* index_buffer,
+                const V8CanvasImageSource* image,
+                ExceptionState&);
+
   ImageData* createImageData(ImageData*, ExceptionState&) const;
   ImageData* createImageData(int sw, int sh, ExceptionState&) const;
   ImageData* createImageData(int sw,
@@ -249,16 +276,37 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   String imageSmoothingQuality() const;
   void setImageSmoothingQuality(const String&);
 
+  // Transfers a canvas' existing back-buffer to a GPUTexture for use in a
+  // WebGPU pipeline. The canvas' image can be used as a texture, or the texture
+  // can be bound as a color attachment and modified. After beginWebGPUAccess is
+  // called, the Canvas2D context will become unavailable until endWebGPUAccess
+  // is called. All other method calls to the context (including additional
+  // calls to beginWebGPUAccess) will throw InvalidStateError.
+  GPUTexture* beginWebGPUAccess(const CanvasWebGPUAccessOption*,
+                                ExceptionState& exception_state);
+
+  // Returns the canvas' back-buffer texture to Canvas2D after a prior call
+  // to beginWebGPUAccess. The GPUTexture becomes inaccessible to WebGPU; any
+  // modifications made to the texture will be preserved. The Canvas2D context
+  // is restored, and Canvas2D method calls will function normally once more.
+  // Throws InvalidStateError if a matching call to beginWebGPUAccess was not
+  // performed.
+  // TODO(crbug.com/1517367): document the expected behavior if WebGPU continues
+  // to access the GPUTexture after endWebGPUAccess is called.
+  void endWebGPUAccess(ExceptionState& exception_state);
+
+  // Returns the format of the GPUTexture that beginWebGPUAccess will return.
+  // This is useful if you need to create the WebGPU render pipeline before
+  // beginWebGPUAccess is first called.
+  V8GPUTextureFormat getTextureFormat() const;
+
   virtual bool OriginClean() const = 0;
   virtual void SetOriginTainted() = 0;
 
   virtual int Width() const = 0;
   virtual int Height() const = 0;
 
-  virtual bool IsAccelerated() const {
-    NOTREACHED();
-    return false;
-  }
+  bool IsAccelerated() const;
   virtual bool CanCreateCanvas2dResourceProvider() const = 0;
 
   virtual RespectImageOrientationEnum RespectImageOrientation() const = 0;
@@ -268,10 +316,19 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual Color GetCurrentColor() const = 0;
 
   virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
-  const cc::PaintCanvas* GetPaintCanvas() const {
-    return const_cast<BaseRenderingContext2D*>(this)->GetPaintCanvas();
+  virtual const cc::PaintCanvas* GetPaintCanvas() const = 0;
+  cc::PaintCanvas* GetPaintCanvas() {
+    return const_cast<cc::PaintCanvas*>(
+        const_cast<const BaseRenderingContext2D*>(this)->GetPaintCanvas());
   }
-  virtual cc::PaintCanvas* GetPaintCanvas() = 0;
+
+  // Returns the paint ops recorder this context uses. Can be `nullptr` if no
+  // recorder is available.
+  virtual const MemoryManagedPaintRecorder* Recorder() const = 0;
+  MemoryManagedPaintRecorder* Recorder() {
+    return const_cast<MemoryManagedPaintRecorder*>(
+        const_cast<const BaseRenderingContext2D*>(this)->Recorder());
+  }
 
   // Called when about to draw. When this is called GetPaintCanvas() has already
   // been called and returned a non-null value.
@@ -279,9 +336,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                         CanvasPerformanceMonitor::DrawType) = 0;
 
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
-  virtual void SnapshotStateForFilter() = 0;
+  void SnapshotStateForFilter();
 
-  CanvasRenderingContextHost* GetCanvasRenderingContextHost() override {
+  virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() const {
     return nullptr;
   }
 
@@ -306,6 +363,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;
 
+  String direction() const;
+  void setDirection(const String&);
+
   String textAlign() const;
   void setTextAlign(const String&);
 
@@ -313,15 +373,31 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void setTextBaseline(const String&);
 
   String letterSpacing() const;
+  void setLetterSpacing(const String&);
+
   String wordSpacing() const;
+  void setWordSpacing(const String&);
+
   String textRendering() const;
+  void setTextRendering(const String&);
 
   String fontKerning() const;
+  void setFontKerning(const String&);
+
   String fontStretch() const;
+  void setFontStretch(const String&);
+
   String fontVariantCaps() const;
+  void setFontVariantCaps(const String&);
 
   String font() const;
   void setFont(const String& new_font);
+
+  void fillText(const String& text, double x, double y);
+  void fillText(const String& text, double x, double y, double max_width);
+  void strokeText(const String& text, double x, double y);
+  void strokeText(const String& text, double x, double y, double max_width);
+  TextMetrics* measureText(const String& text);
 
   void Trace(Visitor*) const override;
 
@@ -418,9 +494,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
-  virtual void WillUseCurrentFont() const;
+  virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
+  virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
+  virtual FontSelector* GetFontSelector() const;
+  const Font& AccessFont(HTMLCanvasElement* canvas);
+
+  void WillUseCurrentFont() const;
   virtual bool WillSetFont() const;
-  virtual bool ResolveFont(const String& new_font);
+  virtual bool ResolveFont(const String& new_font) = 0;
   virtual bool CurrentFontResolvedAndUpToDate() const;
 
   explicit BaseRenderingContext2D(
@@ -461,8 +542,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     NOTREACHED();
     return false;
   }
-  virtual scoped_refptr<StaticBitmapImage> GetImage(
-      CanvasResourceProvider::FlushReason) {
+  virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) {
     NOTREACHED();
     return nullptr;
   }
@@ -477,7 +557,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   int layer_count_ = 0;
   AntiAliasingMode clip_antialiasing_;
 
-  virtual void FinalizeFrame(CanvasResourceProvider::FlushReason) {}
+  virtual void FinalizeFrame(FlushReason) {}
 
   float GetFontBaseline(const SimpleFontData&) const;
   virtual void DispatchContextLostEvent(TimerBase*);
@@ -523,7 +603,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   virtual bool IsPaint2D() const { return false; }
   void WillOverwriteCanvas(OverdrawOp);
-  virtual void WillOverwriteCanvas() = 0;
 
   void SetColorScheme(mojom::blink::ColorScheme color_scheme) {
     if (color_scheme == color_scheme_) {
@@ -536,11 +615,20 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     color_scheme_ = color_scheme;
   }
 
+  // Returns the color provider stored in the Page via the Document.
+  const ui::ColorProvider* GetColorProvider() const;
+
   bool context_restorable_{true};
   CanvasRenderingContext::LostContextMode context_lost_mode_{
       CanvasRenderingContext::kNotLostContext};
 
  private:
+  void DrawTextInternal(const String& text,
+                        double x,
+                        double y,
+                        CanvasRenderingContext2DState::PaintType paint_type,
+                        double* max_width = nullptr);
+
   // Returns the color from `v8_style`. This may return a cached value as well
   // as updating the cache (if possible).
   bool ExtractColorFromV8ValueAndUpdateCache(const V8CanvasStyle& v8_style,
@@ -548,12 +636,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   CanvasRenderingContext2DState::SaveType SaveLayerForState(
       const CanvasRenderingContext2DState& state,
+      sk_sp<PaintFilter> filter,
       cc::PaintCanvas& canvas) const;
 
   // Pops from the top of the state stack, inverts transform, restores the
   // PaintCanvas, and validates the state stack. Helper for Restore and
   // EndLayer.
-  void PopAndRestore();
+  void PopAndRestore(cc::PaintCanvas& canvas);
 
   void ValidateStateStackImpl(const cc::PaintCanvas* canvas = nullptr) const;
 
@@ -662,7 +751,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return false;
   }
 
-  virtual void FlushCanvas(CanvasResourceProvider::FlushReason) = 0;
+  virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
 
   // Only call if identifiability_study_helper_.ShouldUpdateBuilder() returns
   // true.
@@ -679,6 +768,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // Parses the string as a color and returns the result of parsing.
   ColorParseResult ParseColorOrCurrentColor(const String& color_string,
                                             Color& color) const;
+
+  cc::PaintFlags GetClearFlags() const;
 
   bool origin_tainted_by_content_;
   UsePaintCache path2d_use_paint_cache_;
@@ -778,13 +869,20 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
   if (UNLIKELY(!c))
     return;
 
+  // Overdraw in layers is not currently supported. We would need to be able to
+  // drop draw ops in the current layer only, which is not currently possible.
+  if (layer_count_ != 0) {
+    return;
+  }
+
   if (overdraw_op == OverdrawOp::kDrawImage) {  // static branch
     if (UNLIKELY(flags->getBlendMode() != SkBlendMode::kSrcOver) ||
         UNLIKELY(flags->getLooper()) || UNLIKELY(flags->getImageFilter()) ||
-        UNLIKELY(flags->getMaskFilter()) ||
-        UNLIKELY(flags->getAlpha() < 0xFF) ||
-        UNLIKELY(image_type == CanvasRenderingContext2DState::kNonOpaqueImage))
+        UNLIKELY(flags->getMaskFilter()) || UNLIKELY(!flags->isOpaque()) ||
+        UNLIKELY(image_type ==
+                 CanvasRenderingContext2DState::kNonOpaqueImage)) {
       return;
+    }
   }
 
   if (overdraw_op == OverdrawOp::kClearRect ||
@@ -860,7 +958,7 @@ void BaseRenderingContext2D::DrawInternal(
     // This happens if draw_func called flush() on the PaintCanvas. The flush
     // cannot be performed inside the scope of draw_func because it would break
     // the logic of CompositedDraw.
-    FlushCanvas(CanvasResourceProvider::FlushReason::kVolatileSourceImage);
+    FlushCanvas(FlushReason::kVolatileSourceImage);
   }
 }
 

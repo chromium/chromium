@@ -33,29 +33,19 @@ public class ContextualSearchBarControl {
     /** Transparent opacity -- completely transparent (not visible). */
     private static final float TRANSPARENT_OPACITY = 0.0f;
 
-    /**
-     * The panel used to get information about the panel layout.
-     */
+    /** The panel used to get information about the panel layout. */
     protected ContextualSearchPanel mContextualSearchPanel;
 
-    /**
-     * The {@link ContextualSearchContextControl} used to control the Search Context View.
-     */
+    /** The {@link ContextualSearchContextControl} used to control the Search Context View. */
     private final ContextualSearchContextControl mContextControl;
 
-    /**
-     * The {@link ContextualSearchTermControl} used to control the Search Term View.
-     */
+    /** The {@link ContextualSearchTermControl} used to control the Search Term View. */
     private final ContextualSearchTermControl mSearchTermControl;
 
-    /**
-    * The {@link ContextualSearchCaptionControl} used to control the Caption View.
-    */
+    /** The {@link ContextualSearchCaptionControl} used to control the Caption View. */
     private final ContextualSearchCaptionControl mCaptionControl;
 
-    /**
-     * The {@link ContextualSearchQuickActionControl} used to control quick action behavior.
-     */
+    /** The {@link ContextualSearchQuickActionControl} used to control quick action behavior. */
     private final ContextualSearchQuickActionControl mQuickActionControl;
 
     /**
@@ -67,9 +57,7 @@ public class ContextualSearchBarControl {
     /** The width of our icon, including padding, in pixels. */
     private final float mPaddedIconWidthPx;
 
-    /**
-     * The {@link ContextualSearchImageControl} for the panel.
-     */
+    /** The {@link ContextualSearchImageControl} for the panel. */
     private ContextualSearchImageControl mImageControl;
 
     /**
@@ -91,24 +79,16 @@ public class ContextualSearchBarControl {
     private final float mTextLayerMinHeight;
     private final float mTermCaptionSpacing;
 
-    /**
-     * The width of the end button in px.
-     */
+    /** The width of the end button in px. */
     private final float mEndButtonWidth;
 
-    /**
-     * The percentage the panel is expanded. 1.f is fully expanded and 0.f is peeked.
-     */
+    /** The percentage the panel is expanded. 1.f is fully expanded and 0.f is peeked. */
     private float mExpandedPercent;
 
-    /**
-     * Converts dp dimensions to pixels.
-     */
+    /** Converts dp dimensions to pixels. */
     private final float mDpToPx;
 
-    /**
-     * Whether the panel contents can be promoted to a new tab.
-     */
+    /** Whether the panel contents can be promoted to a new tab. */
     private final boolean mCanPromoteToNewTab;
 
     /** The animator that controls the text opacity. */
@@ -143,14 +123,17 @@ public class ContextualSearchBarControl {
         // -----------------------------------------
         // bar border
         @Px
-        int topTextViewMinHeight = mIsShowingContext ? mContextControl.getTextViewHeight()
-                                                     : mSearchTermControl.getTextViewHeight();
-        @Px
-        int bottomTextViewMinHeight = mCaptionControl.getTextViewHeight();
+        int topTextViewMinHeight =
+                mIsShowingContext
+                        ? mContextControl.getTextViewHeight()
+                        : mSearchTermControl.getTextViewHeight();
+        @Px int bottomTextViewMinHeight = mCaptionControl.getTextViewHeight();
         float TextViewheightDps =
                 (float) Math.ceil((topTextViewMinHeight + bottomTextViewMinHeight) / mDpToPx);
-        return mContextualSearchPanel.getBarMarginTop() + getSearchTermCaptionSpacing()
-                + mContextualSearchPanel.getBarBorderHeight() + TextViewheightDps;
+        return mContextualSearchPanel.getBarMarginTop()
+                + getSearchTermCaptionSpacing()
+                + mContextualSearchPanel.getBarBorderHeight()
+                + TextViewheightDps;
     }
 
     /**
@@ -160,30 +143,34 @@ public class ContextualSearchBarControl {
      * @param container The parent view for the bottom bar views.
      * @param loader    The resource loader that will handle the snapshot capturing.
      */
-    public ContextualSearchBarControl(ContextualSearchPanel panel,
-                                      Context context,
-                                      ViewGroup container,
-                                      DynamicResourceLoader loader) {
+    public ContextualSearchBarControl(
+            ContextualSearchPanel panel,
+            Context context,
+            ViewGroup container,
+            DynamicResourceLoader loader) {
         mContextualSearchPanel = panel;
         mCanPromoteToNewTab = panel.canPromoteToNewTab();
         mImageControl = new ContextualSearchImageControl(panel);
         mContextControl = new ContextualSearchContextControl(panel, context, container, loader);
         mSearchTermControl = new ContextualSearchTermControl(panel, context, container, loader);
-        mCaptionControl = new ContextualSearchCaptionControl(
-                panel, context, container, loader, mCanPromoteToNewTab);
+        mCaptionControl =
+                new ContextualSearchCaptionControl(
+                        panel, context, container, loader, mCanPromoteToNewTab);
         mQuickActionControl = new ContextualSearchQuickActionControl(context, loader);
         mCardIconControl = new ContextualSearchCardIconControl(context, loader);
 
-        mTextLayerMinHeight = context.getResources().getDimension(
-                R.dimen.contextual_search_text_layer_min_height);
-        mTermCaptionSpacing = context.getResources().getDimension(
-                R.dimen.contextual_search_term_caption_spacing);
+        mTextLayerMinHeight =
+                context.getResources()
+                        .getDimension(R.dimen.contextual_search_text_layer_min_height);
+        mTermCaptionSpacing =
+                context.getResources().getDimension(R.dimen.contextual_search_term_caption_spacing);
 
         // Icon attributes.
         mPaddedIconWidthPx =
                 context.getResources().getDimension(R.dimen.contextual_search_padded_button_width);
-        mEndButtonWidth = mPaddedIconWidthPx
-                + context.getResources().getDimension(R.dimen.overlay_panel_button_padding);
+        mEndButtonWidth =
+                mPaddedIconWidthPx
+                        + context.getResources().getDimension(R.dimen.overlay_panel_button_padding);
         mDpToPx = context.getResources().getDisplayMetrics().density;
     }
 
@@ -202,16 +189,12 @@ public class ContextualSearchBarControl {
         return mTextLayerMinHeight;
     }
 
-    /**
-     * Returns the spacing that should be placed between the Search Term and Caption.
-     */
+    /** Returns the spacing that should be placed between the Search Term and Caption. */
     public float getSearchTermCaptionSpacing() {
         return mTermCaptionSpacing;
     }
 
-    /**
-     * Removes the bottom bar views from the parent container.
-     */
+    /** Removes the bottom bar views from the parent container. */
     public void destroy() {
         // Make sure animations are canceled otherwise setting the height can put it into an
         // inconsistent state.
@@ -268,9 +251,7 @@ public class ContextualSearchBarControl {
         resetSearchBarContextOpacity();
     }
 
-    /**
-     * Updates the Bar to display a dictionary definition icon.
-     */
+    /** Updates the Bar to display a dictionary definition icon. */
     void setVectorDrawableDefinitionIcon() {
         mCardIconControl.setVectorDrawableDefinitionIcon();
         mImageControl.setCardIconResourceId(mCardIconControl.getViewId());
@@ -302,16 +283,12 @@ public class ContextualSearchBarControl {
         mCaptionControl.setCaption(caption);
     }
 
-    /**
-     * Hides the caption so it will not be displayed in the control.
-     */
+    /** Hides the caption so it will not be displayed in the control. */
     void hideCaption() {
         mCaptionControl.hide();
     }
 
-    /**
-     * Hides the caption so it will not be displayed in the control.
-     */
+    /** Hides the caption so it will not be displayed in the control. */
     boolean hasCaption() {
         return mCaptionControl.hasCaption();
     }
@@ -394,7 +371,9 @@ public class ContextualSearchBarControl {
      * @param toolbarBackgroundColor The current toolbar background color. This may be used for
      *                               icon tinting.
      */
-    public void setQuickAction(String quickActionUri, @QuickActionCategory int quickActionCategory,
+    public void setQuickAction(
+            String quickActionUri,
+            @QuickActionCategory int quickActionCategory,
             int toolbarBackgroundColor) {
         mQuickActionControl.setQuickAction(
                 quickActionUri, quickActionCategory, toolbarBackgroundColor);
@@ -437,9 +416,7 @@ public class ContextualSearchBarControl {
     // Touch Highlight
     // ============================================================================================
 
-    /**
-     * Whether the touch highlight is visible.
-     */
+    /** Whether the touch highlight is visible. */
     private boolean mTouchHighlightVisible;
 
     /** Where the touch highlight should start, in pixels. */
@@ -505,9 +482,9 @@ public class ContextualSearchBarControl {
             boolean isRtl = LocalizationUtils.isLayoutRtl();
             float paddedIconWithMarginWidth =
                     (mContextualSearchPanel.getBarMarginSide()
-                            + mContextualSearchPanel.getOpenTabIconDimension()
-                            + mContextualSearchPanel.getButtonPaddingDps())
-                    * mDpToPx;
+                                    + mContextualSearchPanel.getOpenTabIconDimension()
+                                    + mContextualSearchPanel.getButtonPaddingDps())
+                            * mDpToPx;
             float contentWidth = panelWidth - paddedIconWithMarginWidth;
             // Adjust the touch point to panel coordinates.
             xPx -= mContextualSearchPanel.getOffsetX() * mDpToPx;
@@ -545,12 +522,13 @@ public class ContextualSearchBarControl {
             mTouchHighlightAnimation =
                     new CompositorAnimator(mContextualSearchPanel.getAnimationHandler());
             mTouchHighlightAnimation.setDuration(OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS);
-            mTouchHighlightAnimation.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mTouchHighlightVisible = false;
-                }
-            });
+            mTouchHighlightAnimation.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mTouchHighlightVisible = false;
+                        }
+                    });
         }
         mTouchHighlightAnimation.cancel();
         mTouchHighlightAnimation.start();
@@ -560,23 +538,22 @@ public class ContextualSearchBarControl {
     // Search Bar Animation
     // ============================================================================================
 
-    /**
-     * Animates the search term resolution.
-     */
+    /** Animates the search term resolution. */
     public void animateSearchTermResolution() {
         if (mTextOpacityAnimation == null) {
-            mTextOpacityAnimation = CompositorAnimator.ofFloat(
-                    mContextualSearchPanel.getAnimationHandler(), TRANSPARENT_OPACITY, FULL_OPACITY,
-                    OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
-                    animator -> updateSearchBarTextOpacity(animator.getAnimatedValue()));
+            mTextOpacityAnimation =
+                    CompositorAnimator.ofFloat(
+                            mContextualSearchPanel.getAnimationHandler(),
+                            TRANSPARENT_OPACITY,
+                            FULL_OPACITY,
+                            OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
+                            animator -> updateSearchBarTextOpacity(animator.getAnimatedValue()));
         }
         mTextOpacityAnimation.cancel();
         mTextOpacityAnimation.start();
     }
 
-    /**
-     * Cancels the search term resolution animation if it is in progress.
-     */
+    /** Cancels the search term resolution animation if it is in progress. */
     public void cancelSearchTermResolutionAnimation() {
         if (mTextOpacityAnimation != null) mTextOpacityAnimation.cancel();
     }
@@ -595,7 +572,7 @@ public class ContextualSearchBarControl {
                 Math.max(1 - (percentage / overlapPercentage), TRANSPARENT_OPACITY);
         float fadingInPercentage =
                 Math.max(percentage - (1 - overlapPercentage), TRANSPARENT_OPACITY)
-                / overlapPercentage;
+                        / overlapPercentage;
 
         // Reverse fading in/out if we're showing the multi-part search term in the context layout.
         mSearchBarContextOpacity = mIsShowingContext ? fadingInPercentage : fadingOutPercentage;
@@ -618,10 +595,14 @@ public class ContextualSearchBarControl {
         if (mInBarRelatedSearchesAnimation == null || mInBarRelatedSearchesAnimation.hasEnded()) {
             float startValue = shouldGrowNotShrink ? 0.f : 1.f;
             float endValue = shouldGrowNotShrink ? 1.f : 0.f;
-            mInBarRelatedSearchesAnimation = CompositorAnimator.ofFloat(
-                    mContextualSearchPanel.getAnimationHandler(), startValue, endValue,
-                    OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
-                    animator -> updateInBarRelatedSearchesSize(animator.getAnimatedValue()));
+            mInBarRelatedSearchesAnimation =
+                    CompositorAnimator.ofFloat(
+                            mContextualSearchPanel.getAnimationHandler(),
+                            startValue,
+                            endValue,
+                            OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
+                            animator ->
+                                    updateInBarRelatedSearchesSize(animator.getAnimatedValue()));
             mInBarRelatedSearchesAnimation.start();
             if (shouldGrowNotShrink) cacheMaxHeightForShrinkAnimation();
         }

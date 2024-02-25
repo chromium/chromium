@@ -6,6 +6,7 @@ License: BSD
 License File: LICENSE
 Security Critical: no
 Shipped: no
+CPEPrefix: cpe:/a:protobuf_project:protobuf
 
 Description:
 protobuf library's protoc compiler (prebuilt release). This is used by the

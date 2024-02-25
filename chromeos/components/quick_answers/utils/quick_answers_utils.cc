@@ -8,6 +8,7 @@
 
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -93,13 +94,6 @@ std::string BuildTranslationTitleText(const IntentInfo& intent_info) {
                                    locale_name);
 }
 
-std::string BuildTranslationTitleText(const std::string& query_text,
-                                      const std::string& locale_name) {
-  return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
-                                   base::UTF8ToUTF16(query_text),
-                                   base::UTF8ToUTF16(locale_name));
-}
-
 std::string BuildUnitConversionResultText(const std::string& result_value,
                                           const std::string& name) {
   return l10n_util::GetStringFUTF8(
@@ -111,11 +105,32 @@ std::string UnescapeStringForHTML(const std::string& string) {
   return base::UTF16ToUTF8(base::UnescapeForHTML(base::UTF8ToUTF16(string)));
 }
 
-absl::optional<double> GetRatio(const double value1, const double value2) {
-  if (value1 == 0 || value2 == 0)
-    return absl::nullopt;
+std::optional<double> GetRatio(const std::optional<double>& value1,
+                               const std::optional<double>& value2) {
+  if (!value1.has_value() || !value2.has_value()) {
+    return std::nullopt;
+  }
 
-  return std::max(value1, value2) / std::min(value1, value2);
+  if (value1.value() == 0 || value2.value() == 0) {
+    return std::nullopt;
+  }
+
+  return std::max(value1.value(), value2.value()) /
+         std::min(value1.value(), value2.value());
+}
+
+std::string BuildRoundedUnitAmountDisplayText(double unit_amount) {
+  // We use |kResultValueTemplate| (i.e. '%.6g') in the `base::StringPrintf`
+  // call below. Precision with `g` is the number of significant digits, not the
+  // number of decimal places.
+  //
+  // We would like to show a conversion term rounded to a maximum of three
+  // decimal places. This rounding calculation here will drop the values of the
+  // fourth decimal place and later, turning them into trailing zeros that
+  // `base::StringPrintf` will remove when formatting.
+  double rounded_unit_amount = std::round(unit_amount * 1000) / 1000.0;
+
+  return base::StringPrintf(kResultValueTemplate, rounded_unit_amount);
 }
 
 }  // namespace quick_answers

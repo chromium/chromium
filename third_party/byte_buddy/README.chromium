@@ -1,11 +1,14 @@
-Name: Byte Buddy
-URL: http://bytebuddy.net/
-Version: 1.8.8
+Name: Byte Buddy Android
+URL: https://github.com/raphw/byte-buddy/tree/master/byte-buddy-android
+Version: 7ed7903954b6cb3f85754eb14fb792ce4dc52b54
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
 Shipped: no
 Description:
-Byte Buddy is a code generation library for creating Java classes at runtime.
+Byte Buddy Android is used by the main ByteBuddy package, to wrap Android APIs to load generated classes (i.e. mocks) at runtime.
 
-Local Modifications: None
+Local Modifications:
+ - Calls BaseDexClassLoader#addDexPath with isTrusted = false (so mockito can be used when debuggable_apks = false on bots).
+ - Delete import + references to edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+ - TargetApi -> RequiresApi from androidx (chromium presubmits require it).

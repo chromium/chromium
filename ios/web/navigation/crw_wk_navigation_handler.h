@@ -31,6 +31,9 @@ class WKBackForwardListItemHolder;
 // CRWWKNavigationHandler uses this protocol to interact with its owner.
 @protocol CRWWKNavigationHandlerDelegate <CRWWebViewHandlerDelegate>
 
+// Returns whether `action` was user initiated.
+- (BOOL)isUserInitiatedAction:(WKNavigationAction*)action;
+
 // Returns associated certificate verificatio controller.
 - (CRWCertVerificationController*)
     certVerificationControllerForNavigationHandler:
@@ -75,8 +78,7 @@ class WKBackForwardListItemHolder;
 
 // Resumes download using `webView`
 - (void)resumeDownloadWithData:(NSData*)data
-             completionHandler:(void (^)(WKDownload*))completionHandler
-    API_AVAILABLE(ios(15));
+             completionHandler:(void (^)(WKDownload*))completionHandler;
 
 @end
 

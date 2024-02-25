@@ -377,13 +377,10 @@ void LinkToTextMenuObserver::CopyTextToClipboard(const std::string& text) {
   auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id_);
   CHECK(rfh);
 
-  std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
-      !rfh->GetBrowserContext()->IsOffTheRecord()
-          ? std::make_unique<ui::DataTransferEndpoint>(
-                rfh->GetMainFrame()->GetLastCommittedURL())
-          : nullptr;
-
-  ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
-                                std::move(data_transfer_endpoint));
+  ui::ScopedClipboardWriter scw(
+      ui::ClipboardBuffer::kCopyPaste,
+      std::make_unique<ui::DataTransferEndpoint>(
+          rfh->GetMainFrame()->GetLastCommittedURL(),
+          rfh->GetBrowserContext()->IsOffTheRecord()));
   scw.WriteText(base::UTF8ToUTF16(text));
 }

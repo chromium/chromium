@@ -1,4 +1,4 @@
-// Copyright 2022 The Abseil Authors
+// Copyright 2024 The Abseil Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,38 +14,27 @@
 
 #ifndef ABSL_STRINGS_INTERNAL_HAS_ABSL_STRINGIFY_H_
 #define ABSL_STRINGS_INTERNAL_HAS_ABSL_STRINGIFY_H_
-#include <string>
-#include <type_traits>
-#include <utility>
 
-#include "absl/strings/string_view.h"
+#include "absl/strings/has_absl_stringify.h"
+
+#include "absl/base/config.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
 namespace strings_internal {
 
-// This is an empty class not intended to be used. It exists so that
-// `HasAbslStringify` can reference a universal class rather than needing to be
-// copied for each new sink.
-class UnimplementedSink {
- public:
-  void Append(size_t count, char ch);
-
-  void Append(string_view v);
-
-  // Support `absl::Format(&sink, format, args...)`.
-  friend void AbslFormatFlush(UnimplementedSink* sink, absl::string_view v);
-};
-
-template <typename T, typename = void>
-struct HasAbslStringify : std::false_type {};
-
-template <typename T>
-struct HasAbslStringify<
-    T, std::enable_if_t<std::is_void<decltype(AbslStringify(
-           std::declval<strings_internal::UnimplementedSink&>(),
-           std::declval<const T&>()))>::value>> : std::true_type {};
+// This exists to fix a circular dependency problem with the GoogleTest release.
+// GoogleTest referenced this internal file and this internal trait.  Since
+// simultaneous releases are not possible since once release must reference
+// another, we will temporarily add this back.
+// https://github.com/google/googletest/blob/v1.14.x/googletest/include/gtest/gtest-printers.h#L119
+//
+// This file can be deleted after the next Abseil and GoogleTest release.
+//
+// https://github.com/google/googletest/pull/4368#issuecomment-1717699895
+// https://github.com/google/googletest/pull/4368#issuecomment-1717699895
+using ::absl::HasAbslStringify;
 
 }  // namespace strings_internal
 

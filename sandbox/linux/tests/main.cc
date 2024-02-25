@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -41,8 +43,8 @@ void RunPostTestsChecks(const base::FilePath& orig_cwd) {
 #if !defined(SANDBOX_USES_BASE_TEST_SUITE)
 void UnitTestAssertHandler(const char* file,
                            int line,
-                           const base::StringPiece message,
-                           const base::StringPiece stack_trace) {
+                           const std::string_view message,
+                           const std::string_view stack_trace) {
   _exit(1);
 }
 #endif
@@ -78,7 +80,7 @@ int main(int argc, char* argv[]) {
   // This makes gtest only marginally slower for us and has the
   // additional side effect of getting rid of gtest warnings about fork()
   // safety.
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 #if !defined(SANDBOX_USES_BASE_TEST_SUITE)
   int tests_result = RUN_ALL_TESTS();
 #else

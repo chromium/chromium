@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -22,6 +23,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
+#include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/browser/allow_service_worker_result.h"
@@ -34,7 +36,6 @@
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -216,9 +217,12 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback loader_callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
+  loader_callback_ = std::move(loader_callback);
+  fallback_callback_ = std::move(fallback_callback);
+
   if (!container_host_) {
     // We can't do anything other than to fall back to network.
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
 
@@ -232,7 +236,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // anyway.
   if (skip_service_worker_ || !context_) {
     ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(true);
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
   ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(false);
@@ -247,7 +251,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // headers between now and when the request handler passed to
   // |loader_callback_| is invoked.
   if (ShouldFallbackToLoadOfflinePage(tentative_resource_request.headers)) {
-    std::move(loader_callback).Run({});
+    CompleteWithoutLoader();
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -261,10 +265,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "URL",
       tentative_resource_request.url.spec());
-
-  loader_callback_ = std::move(loader_callback);
-  fallback_callback_ = std::move(fallback_callback);
-  browser_context_ = browser_context;
 
   // Look up a registration.
   context_->registry()->FindRegistrationForClientUrl(
@@ -293,7 +293,7 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
                               tentative_resource_request.trusted_params
                                   ? tentative_resource_request.trusted_params
                                         ->isolation_info.top_frame_origin()
-                                  : absl::nullopt,
+                                  : std::nullopt,
                               storage_key_);
 }
 
@@ -362,7 +362,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
       GetContentClient()->browser()->AllowServiceWorker(
           registration->scope(), container_host_->site_for_cookies(),
           container_host_->top_frame_origin(), /*script_url=*/GURL(),
-          browser_context_);
+          context_->wrapper()->browser_context());
 
   service_worker_accessed_callback_.Run(registration->scope(),
                                         allow_service_worker);
@@ -526,6 +526,13 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
     container_host_->AddServiceWorkerToUpdate(active_version);
   }
 
+  // If the router evaluation is needed, always forward to the service worker.
+  // Because the router evaluation is done in ServiceWorkerMainResourceLoader.
+  if (active_version->NeedRouterEvaluate()) {
+    CreateLoaderAndStartRequest(std::move(find_registration_start_time));
+    return;
+  }
+
   switch (active_version->EffectiveFetchHandlerType()) {
     case ServiceWorkerVersion::FetchHandlerType::kNoHandler: {
       RecordSkipReason(FetchHandlerSkipReason::kNoFetchHandler);
@@ -604,9 +611,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
               features::ServiceWorkerBypassFetchHandlerTarget::
                   kAllOnlyIfServiceWorkerNotStarted) {
         switch (active_version->running_status()) {
-          case EmbeddedWorkerStatus::STOPPED:
-          case EmbeddedWorkerStatus::STOPPING:
-          case EmbeddedWorkerStatus::STARTING:
+          case blink::EmbeddedWorkerStatus::kStopped:
+          case blink::EmbeddedWorkerStatus::kStopping:
+          case blink::EmbeddedWorkerStatus::kStarting:
             // If the status is STARTING, the Serviceworker is not actually
             // started yet. So it makes sense to skip the fetch handler.
             active_version->set_fetch_handler_bypass_option(
@@ -615,7 +622,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
             CompleteWithoutLoader();
             RecordSkipReason(
                 active_version->running_status() ==
-                        EmbeddedWorkerStatus::STARTING
+                        blink::EmbeddedWorkerStatus::kStarting
                     ? FetchHandlerSkipReason::
                           kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting
                     : FetchHandlerSkipReason::
@@ -629,7 +636,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
                                ServiceWorkerMetrics::EventType::
                                    BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED));
             return;
-          case EmbeddedWorkerStatus::RUNNING:
+          case blink::EmbeddedWorkerStatus::kRunning:
             active_version->set_fetch_handler_bypass_option(
                 blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
             break;
@@ -649,15 +656,23 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
 
   // Finally, we want to forward to the service worker! Make a
   // ServiceWorkerMainResourceLoader which does that work.
+  CreateLoaderAndStartRequest(std::move(find_registration_start_time));
+}
+
+void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
+    base::TimeTicks find_registration_start_time) {
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
           std::move(fallback_callback_), container_host_, frame_tree_node_id_,
           std::move(find_registration_start_time)));
-
+  loader_wrapper_->get()->set_worker_parent_client_uuid(parent_client_uuid_);
   std::move(loader_callback_)
-      .Run(base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-          base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
-                         loader_wrapper_->get()->AsWeakPtr())));
+      .Run(NavigationLoaderInterceptor::Result(
+          base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+              base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
+                             loader_wrapper_->get()->AsWeakPtr())),
+          ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
+              container_host_)));
 }
 
 void ServiceWorkerControlleeRequestHandler::DidStartWorker(
@@ -763,7 +778,9 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
 }
 
 void ServiceWorkerControlleeRequestHandler::CompleteWithoutLoader() {
-  std::move(loader_callback_).Run({});
+  fallback_callback_.Reset();
+  ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
+      std::move(loader_callback_), container_host_);
 }
 
 void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
@@ -771,7 +788,8 @@ void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
     ServiceWorkerMetrics::EventType event_type) {
   // Start service worker if it is not running so that we run the code
   // written in the top level.
-  if (active_version->running_status() == EmbeddedWorkerStatus::RUNNING) {
+  if (active_version->running_status() ==
+      blink::EmbeddedWorkerStatus::kRunning) {
     return;
   }
   active_version->StartWorker(

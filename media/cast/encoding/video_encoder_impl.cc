@@ -46,6 +46,9 @@ void EncodeVideoFrameOnEncoderThread(
   encoder->UpdateRates(dynamic_config.bit_rate);
 
   auto encoded_frame = std::make_unique<SenderEncodedFrame>();
+  encoded_frame->capture_begin_time =
+      video_frame->metadata().capture_begin_time;
+  encoded_frame->capture_end_time = video_frame->metadata().capture_end_time;
   encoder->Encode(std::move(video_frame), reference_time, encoded_frame.get());
   encoded_frame->encode_completion_time = environment->Clock()->NowTicks();
   environment->PostTask(CastEnvironment::MAIN, FROM_HERE,

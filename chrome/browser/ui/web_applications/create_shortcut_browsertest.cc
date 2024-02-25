@@ -4,6 +4,7 @@
 
 #include <initializer_list>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,17 +24,17 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -41,12 +42,12 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -69,13 +70,13 @@ namespace web_app {
 
 class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
  public:
-  AppId InstallShortcutAppForCurrentUrl(bool open_as_window = false) {
-    chrome::SetAutoAcceptWebAppDialogForTesting(true, open_as_window);
+  webapps::AppId InstallShortcutAppForCurrentUrl(bool open_as_window = false) {
+    SetAutoAcceptWebAppDialogForTesting(true, open_as_window);
     WebAppTestInstallObserver observer(profile());
     observer.BeginListening();
     CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-    AppId app_id = observer.Wait();
-    chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+    webapps::AppId app_id = observer.Wait();
+    SetAutoAcceptWebAppDialogForTesting(false, false);
     return app_id;
   }
 
@@ -104,9 +105,9 @@ class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        CreateShortcutForInstallableSite) {
   base::UserActionTester user_action_tester;
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
 
-  AppId app_id = InstallShortcutAppForCurrentUrl();
+  webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppShortName(app_id), GetInstallableAppName());
   // Shortcut apps to PWAs should launch in a tab.
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
@@ -132,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, MAYBE_InstallSourceRecorded) {
         embedded_test_server()->GetURL(
             "/web_apps/get_manifest.html?theme_color_only.json")}) {
     base::HistogramTester histogram_tester;
-    NavigateToURLAndWait(browser(), url);
-    AppId app_id = InstallShortcutAppForCurrentUrl();
+    NavigateViaLinkClickToURLAndWait(browser(), url);
+    webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
 
     EXPECT_EQ(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
               *registrar().GetLatestAppInstallSource(app_id));
@@ -146,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, MAYBE_InstallSourceRecorded) {
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        CanInstallOverTabShortcutApp) {
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   InstallShortcutAppForCurrentUrl();
 
   Browser* new_browser =
@@ -160,8 +161,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        CannotInstallOverWindowShortcutApp) {
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
-  AppId app_id = InstallShortcutAppForCurrentUrl();
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
+  webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   // Change launch container to open in window.
   sync_bridge().SetAppUserDisplayMode(app_id,
                                       mojom::UserDisplayMode::kStandalone,
@@ -201,12 +202,12 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   // Install the shortcut app that links to the extension's popup page.
   const GURL popup_url("chrome-extension://" + extension_id + "/popup.html");
 
-  NavigateToURLAndWait(browser(), popup_url);
+  NavigateViaLinkClickToURLAndWait(browser(), popup_url);
 
   // TODO(crbug.com/1253234): IDC_CREATE_SHORTCUT command must become disabled.
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
 
-  const AppId app_id = InstallShortcutAppForCurrentUrl();
+  const webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
   CHECK(app_browser);
   CHECK(app_browser != browser());
@@ -220,8 +221,9 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 // iframe load. Context: crbug.com/1046883
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateToURLAndWait(browser(), embedded_test_server()->GetURL(
-                                      "/favicon/page_with_favicon.html"));
+  NavigateViaLinkClickToURLAndWait(
+      browser(),
+      embedded_test_server()->GetURL("/favicon/page_with_favicon.html"));
 
   // Append an iframe and wait for it to finish loading.
   const char script[] = R"(
@@ -245,10 +247,10 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        UseNonPromotableManifestData) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateToURLAndWait(
+  NavigateViaLinkClickToURLAndWait(
       browser(), embedded_test_server()->GetURL(
                      "/web_apps/get_manifest.html?theme_color_only.json"));
-  AppId app_id = InstallShortcutAppForCurrentUrl();
+  webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetRGB(0x12, 0x34, 0x56));
 }
@@ -258,8 +260,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
       "/web_apps/get_manifest.html?invalid_start_url.json");
-  NavigateToURLAndWait(browser(), url);
-  AppId app_id = InstallShortcutAppForCurrentUrl();
+  NavigateViaLinkClickToURLAndWait(browser(), url);
+  webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppStartUrl(app_id), url);
 }
 
@@ -267,9 +269,9 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        DISABLED_CreateShortcutAgainOverwriteUserDisplayMode) {
   base::UserActionTester user_action_tester;
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
 
-  AppId app_id = InstallShortcutAppForCurrentUrl();
+  webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppShortName(app_id), GetInstallableAppName());
   // Shortcut apps to PWAs should launch in a tab.
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
@@ -292,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        DISABLED_OpenShortcutWindowOnlyOnce) {
   base::UserActionTester user_action_tester;
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
 
   WebAppTestInstallObserver observer(profile());
   // The "Create shortcut" call is executed twice, but the dialog
@@ -307,9 +309,9 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 // letter icon correctly and does not use the "H" letter from the "https"
 // scheme.
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
-  NavigateToURLAndWait(browser(),
-                       https_server()->GetURL("example.com", "/empty.html"));
-  AppId app_id = InstallShortcutAppForCurrentUrl();
+  NavigateViaLinkClickToURLAndWait(
+      browser(), https_server()->GetURL("example.com", "/empty.html"));
+  webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
 
   base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> future;
   WebAppProvider::GetForTest(profile())->icon_manager().ReadIcons(
@@ -348,8 +350,8 @@ class CreateShortcutBrowserTest_CreateShortcutIgnoresManifest
 IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
                        InstallableSiteDifferentStartUrl) {
   bool create_shortcut_ignores_manifest = GetParam();
-  NavigateToURLAndWait(browser(), PageWithDifferentStartUrl());
-  AppId app_id = InstallShortcutAppForCurrentUrl();
+  NavigateViaLinkClickToURLAndWait(browser(), PageWithDifferentStartUrl());
+  webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
 
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kBrowser);
@@ -377,6 +379,32 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
     EXPECT_EQ(registrar().GetAppById(app_id)->start_url(),
               PageWithDifferentStartUrlManifestStartUrl());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
+                       CanInstallOverTabShortcutApp) {
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
+  webapps::AppId shortcut_app_id = InstallShortcutAppForCurrentUrl();
+
+  bool create_shortcut_ignores_manifest = GetParam();
+  if (create_shortcut_ignores_manifest) {
+    EXPECT_TRUE(registrar().IsShortcutApp(shortcut_app_id));
+  } else {
+    EXPECT_FALSE(registrar().IsShortcutApp(shortcut_app_id));
+  }
+
+  Browser* new_browser =
+      NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
+
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kEnabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, new_browser),
+            kNotPresent);
+
+  webapps::AppId web_app_id = test::InstallPwaForCurrentUrl(new_browser);
+
+  EXPECT_EQ(shortcut_app_id, web_app_id);
+  EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(

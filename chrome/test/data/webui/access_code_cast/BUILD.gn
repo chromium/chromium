@@ -5,7 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "access_code_cast"
   files = [
     "access_code_cast_app_test.ts",
     "browser_proxy_test.ts",

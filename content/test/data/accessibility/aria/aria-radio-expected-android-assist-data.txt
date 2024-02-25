@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++RadioButton textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="radio"}]
+++++TextView text:"Radio1" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

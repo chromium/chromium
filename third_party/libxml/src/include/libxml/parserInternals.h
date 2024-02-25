@@ -16,6 +16,7 @@
 #include <libxml/parser.h>
 #include <libxml/HTMLparser.h>
 #include <libxml/chvalid.h>
+#include <libxml/SAX2.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,11 +25,14 @@ extern "C" {
 /**
  * xmlParserMaxDepth:
  *
+ * DEPRECATED: has no effect
+ *
  * arbitrary depth limit for the XML documents that we allow to
  * process. This is not a limitation of the parser but a safety
  * boundary feature, use XML_PARSE_HUGE option to override it.
  */
-XMLPUBVAR unsigned int xmlParserMaxDepth;
+XML_DEPRECATED
+XMLPUBVAR const unsigned int xmlParserMaxDepth;
 
 /**
  * XML_MAX_TEXT_LENGTH:
@@ -312,9 +316,18 @@ XMLPUBFUN xmlParserCtxtPtr
 			xmlCreateEntityParserCtxt(const xmlChar *URL,
 						 const xmlChar *ID,
 						 const xmlChar *base);
+XMLPUBFUN void
+			xmlCtxtErrMemory	(xmlParserCtxtPtr ctxt);
+XMLPUBFUN void
+			xmlCtxtErrIO		(xmlParserCtxtPtr ctxt,
+						 int code,
+						 const char *uri);
 XMLPUBFUN int
 			xmlSwitchEncoding	(xmlParserCtxtPtr ctxt,
 						 xmlCharEncoding enc);
+XMLPUBFUN int
+			xmlSwitchEncodingName	(xmlParserCtxtPtr ctxt,
+						 const char *encoding);
 XMLPUBFUN int
 			xmlSwitchToEncoding	(xmlParserCtxtPtr ctxt,
 					 xmlCharEncodingHandlerPtr handler);

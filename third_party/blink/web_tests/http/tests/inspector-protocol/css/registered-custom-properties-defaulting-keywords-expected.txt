@@ -1,0 +1,62 @@
+Test reporting of defaulting values for registered custom properties
+[
+    [0] : {
+        name : --unregistered-prop
+        parsedOk : undefined
+    }
+    [1] : {
+        name : --registered-prop
+        parsedOk : false
+    }
+]
+[
+    [0] : {
+        name : --unregistered-prop
+        parsedOk : undefined
+    }
+    [1] : {
+        name : --registered-prop
+        parsedOk : undefined
+    }
+]
+[
+    [0] : {
+        name : --unregistered-prop
+        parsedOk : undefined
+    }
+    [1] : {
+        name : --registered-prop
+        parsedOk : undefined
+    }
+]
+[
+    [0] : {
+        name : --unregistered-prop
+        parsedOk : undefined
+    }
+    [1] : {
+        name : --registered-prop
+        parsedOk : undefined
+    }
+]
+[
+    [0] : {
+        name : --unregistered-prop
+        parsedOk : undefined
+    }
+    [1] : {
+        name : --registered-prop
+        parsedOk : undefined
+    }
+]
+[
+    [0] : {
+        name : --unregistered-prop
+        parsedOk : undefined
+    }
+    [1] : {
+        name : --registered-prop
+        parsedOk : undefined
+    }
+]
+

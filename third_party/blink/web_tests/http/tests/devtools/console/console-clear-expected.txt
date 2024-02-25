@@ -1,8 +1,8 @@
 Tests that console is cleared upon requestClearMessages call.
 
 === Before clear ===
-console-clear.js:14 one
-console-clear.js:15 two
-console-clear.js:16 three
+console-clear.js:16 one
+console-clear.js:17 two
+console-clear.js:18 three
 === After clear ===
 

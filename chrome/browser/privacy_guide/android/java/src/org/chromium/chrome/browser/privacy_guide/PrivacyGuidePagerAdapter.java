@@ -16,13 +16,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Controls the behavior of the ViewPager to navigate between privacy guide steps.
- */
+/** Controls the behavior of the ViewPager to navigate between privacy guide steps. */
 public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
     private final List<Integer> mFragmentTypeList;
 
-    public PrivacyGuidePagerAdapter(Fragment parent, StepDisplayHandler displayHandler,
+    public PrivacyGuidePagerAdapter(
+            Fragment parent,
+            StepDisplayHandler displayHandler,
             List<Integer> allFragmentTypesInOrder) {
         super(parent);
         Set<Integer> fragmentTypesToDisplay = getFragmentTypesToDisplay(displayHandler);
@@ -47,8 +47,11 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
 
     private Set<Integer> getFragmentTypesToDisplay(StepDisplayHandler displayHandler) {
         Set<Integer> fragmentTypesToDisplay = new HashSet<>();
-        fragmentTypesToDisplay.addAll(Arrays.asList(PrivacyGuideFragment.FragmentType.WELCOME,
-                PrivacyGuideFragment.FragmentType.MSBB, PrivacyGuideFragment.FragmentType.DONE));
+        fragmentTypesToDisplay.addAll(
+                Arrays.asList(
+                        PrivacyGuideFragment.FragmentType.WELCOME,
+                        PrivacyGuideFragment.FragmentType.MSBB,
+                        PrivacyGuideFragment.FragmentType.DONE));
 
         if (ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()) {
             // TODO(crbug.com/1215630): This fragment is always displayed and need to be added to
@@ -63,6 +66,11 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
         }
         if (displayHandler.shouldDisplayCookies()) {
             fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.COOKIES);
+        }
+        if (ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
+                && ChromeFeatureList.sPrivacyGuidePreloadAndroid.isEnabled()
+                && displayHandler.shouldDisplayPreload()) {
+            fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.PRELOAD);
         }
 
         return Collections.unmodifiableSet(fragmentTypesToDisplay);
@@ -84,6 +92,8 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                 return new CookiesFragment();
             case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS:
                 return new SearchSuggestionsFragment();
+            case PrivacyGuideFragment.FragmentType.PRELOAD:
+                return new PreloadFragment();
             case PrivacyGuideFragment.FragmentType.DONE:
                 return new DoneFragment();
         }

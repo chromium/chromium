@@ -17,6 +17,8 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -25,6 +27,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
@@ -37,13 +40,8 @@
 #include "net/base/request_priority.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_transaction_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
-
-namespace base::android {
-class ApplicationStatusListener;
-}  // namespace base::android
 
 namespace net {
 
@@ -79,8 +77,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
         base::OnceCallback<void(disk_cache::BackendResult)> callback) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-    virtual void SetAppStatusListener(
-        base::android::ApplicationStatusListener* app_status_listener) {}
+    virtual void SetAppStatusListenerGetter(
+        disk_cache::ApplicationStatusListenerGetter
+            app_status_listener_getter) {}
 #endif
   };
 
@@ -109,8 +108,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
         base::OnceCallback<void(disk_cache::BackendResult)> callback) override;
 
 #if BUILDFLAG(IS_ANDROID)
-    void SetAppStatusListener(
-        base::android::ApplicationStatusListener* app_status_listener) override;
+    void SetAppStatusListenerGetter(disk_cache::ApplicationStatusListenerGetter
+                                        app_status_listener_getter) override;
 #endif
 
    private:
@@ -122,8 +121,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     int max_bytes_;
     bool hard_reset_;
 #if BUILDFLAG(IS_ANDROID)
-    raw_ptr<base::android::ApplicationStatusListener, DanglingUntriaged>
-        app_status_listener_ = nullptr;
+    disk_cache::ApplicationStatusListenerGetter app_status_listener_getter_;
 #endif
   };
 
@@ -188,7 +186,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   disk_cache::Backend* GetCurrentBackend() const;
 
   // Given a header data blob, convert it to a response info object.
-  static bool ParseResponseInfo(const char* data, int len,
+  static bool ParseResponseInfo(const char* data,
+                                int len,
                                 HttpResponseInfo* response_info,
                                 bool* response_truncated);
 
@@ -260,13 +259,13 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // configured to be split by the NetworkIsolationKey, and the
   // NetworkIsolationKey is transient, in which case nothing should generally be
   // stored to disk.
-  static absl::optional<std::string> GenerateCacheKey(
+  static std::optional<std::string> GenerateCacheKey(
       const GURL& url,
       int load_flags,
       const NetworkIsolationKey& network_isolation_key,
       int64_t upload_data_identifier,
       bool is_subframe_document_resource);
-  static absl::optional<std::string> GenerateCacheKeyForRequest(
+  static std::optional<std::string> GenerateCacheKeyForRequest(
       const HttpRequestInfo* request);
 
   // Enable split cache feature if not already overridden in the feature list.
@@ -350,64 +349,151 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // add_to_entry_queue-> headers_transaction -> done_headers_queue -> readers
   // (once the data is written to the cache by writers)
 
-  struct NET_EXPORT_PRIVATE ActiveEntry {
-    ActiveEntry(disk_cache::Entry* entry, bool opened_in);
-    ~ActiveEntry();
+  class NET_EXPORT_PRIVATE ActiveEntry : public base::RefCounted<ActiveEntry> {
+   public:
+    ActiveEntry(base::WeakPtr<HttpCache> cache,
+                disk_cache::Entry* entry,
+                bool opened_in);
 
-    // Returns true if no transactions are associated with this entry.
-    bool HasNoTransactions();
+    ActiveEntry(ActiveEntry const&) = delete;
+    ActiveEntry& operator=(ActiveEntry const&) = delete;
 
-    // Returns true if no transactions are associated with this entry and
-    // writers is not present.
-    bool SafeToDestroy();
+    disk_cache::Entry* GetEntry() { return disk_entry_.get(); }
+
+    bool opened() const { return opened_; }
+
+    void set_opened(bool opened) { opened_ = opened; }
+
+    bool will_process_queued_transactions() {
+      return will_process_queued_transactions_;
+    }
+
+    void set_will_process_queued_transactions(
+        bool will_process_queued_transactions) {
+      will_process_queued_transactions_ = will_process_queued_transactions;
+    }
+
+    TransactionList& add_to_entry_queue() { return add_to_entry_queue_; }
+
+    TransactionList& done_headers_queue() { return done_headers_queue_; }
+
+    TransactionSet& readers() { return readers_; }
+
+    const Transaction* headers_transaction() const {
+      return headers_transaction_;
+    }
+
+    void ClearHeadersTransaction() { headers_transaction_ = nullptr; }
+
+    bool HasWriters() const { return writers_.get(); }
+
+    // Returns true if a transaction is currently writing the response body.
+    bool IsWritingInProgress() const { return writers_.get(); }
+
+    Writers* writers() const { return writers_.get(); }
+
+    void Doom();
+
+    bool IsDoomed() { return doomed_; }
 
     bool TransactionInReaders(Transaction* transaction) const;
 
-    disk_cache::Entry* GetEntry() { return disk_entry.get(); }
+    // Restarts headers_transaction and done_headers_queue transactions.
+    void RestartHeadersPhaseTransactions();
 
-    disk_cache::ScopedEntryPtr disk_entry;
+    // Restarts the headers_transaction by setting its state. Since the
+    // headers_transaction is awaiting an asynchronous operation completion,
+    // it will be restarted when it's Cache IO callback is invoked.
+    void RestartHeadersTransaction();
+
+    // Checks if a transaction can be added to `add_to_entry_queue_`. If yes, it
+    // will invoke the Cache IO callback of the transaction. It will take a
+    // transaction from add_to_entry_queue and make it a headers_transaction, if
+    // one doesn't exist already.
+    void ProcessAddToEntryQueue();
+
+    // Removes `transaction` from the `add_to_entry_queue_`.
+    bool RemovePendingTransaction(Transaction* transaction);
+
+    // Removes and returns all queued transactions in `this` in FIFO order.
+    // This includes transactions that have completed the headers phase and
+    // those that have not been added to the entry yet in that order.
+    TransactionList TakeAllQueuedTransactions();
+
+    void ReleaseWriters();
+
+    void AddTransactionToWriters(
+        Transaction* transaction,
+        ParallelWritingPattern parallel_writing_pattern);
+
+    // Returns true if this transaction can write headers to the entry.
+    bool CanTransactionWriteResponseHeaders(Transaction* transaction,
+                                            bool is_partial,
+                                            bool is_match) const;
+
+   private:
+    friend class base::RefCounted<ActiveEntry>;
+
+    ~ActiveEntry();
+
+    // Destroys `this`.
+    void Deactivate();
+
+    // Destroys `this` using an exhaustive search.
+    void SlowDeactivate();
+
+    // Closes a previously doomed entry.
+    void FinalizeDoomed();
+
+    // The HttpCache that created this.
+    base::WeakPtr<HttpCache> cache_;
+
+    const disk_cache::ScopedEntryPtr disk_entry_;
 
     // Indicates if the disk_entry was opened or not (i.e.: created).
     // It is set to true when a transaction is added to an entry so that other,
     // queued, transactions do not mistake it for a newly created entry.
-    bool opened = false;
+    bool opened_ = false;
 
     // Transactions waiting to be added to entry.
-    TransactionList add_to_entry_queue;
+    TransactionList add_to_entry_queue_;
 
     // Transaction currently in the headers phase, either validating the
     // response or getting new headers. This can exist simultaneously with
     // writers or readers while validating existing headers.
-    raw_ptr<Transaction> headers_transaction = nullptr;
+    raw_ptr<Transaction> headers_transaction_ = nullptr;
 
     // Transactions that have completed their headers phase and are waiting
     // to read the response body or write the response body.
-    TransactionList done_headers_queue;
+    TransactionList done_headers_queue_;
 
     // Transactions currently reading from the network and writing to the cache.
-    std::unique_ptr<Writers> writers;
+    std::unique_ptr<Writers> writers_;
 
     // Transactions that can only read from the cache. Only one of writers or
     // readers can be non-empty at a time.
-    TransactionSet readers;
+    TransactionSet readers_;
 
     // The following variables are true if OnProcessQueuedTransactions is posted
-    bool will_process_queued_transactions = false;
+    bool will_process_queued_transactions_ = false;
 
     // True if entry is doomed.
-    bool doomed = false;
+    bool doomed_ = false;
   };
 
+  // `ActiveEntriesMap` and `ActiveEntriesSet` holding `raw_ref`s to
+  // `ActiveEntry` is safe because `ActiveEntry` removes itself from the map or
+  // set it is in on destruction.
   using ActiveEntriesMap =
-      std::unordered_map<std::string, std::unique_ptr<ActiveEntry>>;
+      std::unordered_map<std::string, base::raw_ref<ActiveEntry>>;
   using PendingOpsMap = std::unordered_map<std::string, PendingOp*>;
-  using ActiveEntriesSet = std::map<ActiveEntry*, std::unique_ptr<ActiveEntry>>;
+  using ActiveEntriesSet = std::set<base::raw_ref<ActiveEntry>>;
 
   // Methods ------------------------------------------------------------------
 
   // Creates a WorkItem and sets it as the |pending_op|'s writer, or adds it to
   // the queue if a writer already exists.
-  net::Error CreateAndSetWorkItem(ActiveEntry** entry,
+  net::Error CreateAndSetWorkItem(scoped_refptr<ActiveEntry>* entry,
                                   Transaction* transaction,
                                   WorkItemOperation operation,
                                   PendingOp* pending_op);
@@ -449,21 +535,17 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                            const NetworkIsolationKey& isolation_key,
                            bool is_subframe_document_resource);
 
-  // Closes a previously doomed entry.
-  void FinalizeDoomedEntry(ActiveEntry* entry);
+  // Returns if there is an entry that is currently in use and not doomed, or
+  // NULL.
+  bool HasActiveEntry(const std::string& key);
 
   // Returns an entry that is currently in use and not doomed, or NULL.
-  ActiveEntry* FindActiveEntry(const std::string& key);
+  scoped_refptr<ActiveEntry> GetActiveEntry(const std::string& key);
 
   // Creates a new ActiveEntry and starts tracking it. |disk_entry| is the disk
   // cache entry.
-  ActiveEntry* ActivateEntry(disk_cache::Entry* disk_entry, bool opened);
-
-  // Deletes an ActiveEntry.
-  void DeactivateEntry(ActiveEntry* entry);
-
-  // Deletes an ActiveEntry using an exhaustive search.
-  void SlowDeactivateEntry(ActiveEntry* entry);
+  scoped_refptr<ActiveEntry> ActivateEntry(disk_cache::Entry* disk_entry,
+                                           bool opened);
 
   // Returns the PendingOp for the desired |key|. If an entry is not under
   // construction already, a new PendingOp structure is created.
@@ -476,36 +558,33 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // does not already exist, returning an ActiveEntry in |*entry|. |transaction|
   // will be notified via its Cache IO callback if this method returns
   // ERR_IO_PENDING. This should not be called if there already is an active
-  // entry associated with |key|, e.g. you should call FindActiveEntry first.
+  // entry associated with |key|, e.g. you should call GetActiveEntry first.
   int OpenOrCreateEntry(const std::string& key,
-                        ActiveEntry** entry,
+                        scoped_refptr<ActiveEntry>* entry,
                         Transaction* transaction);
 
   // Opens the disk cache entry associated with |key|, returning an ActiveEntry
   // in |*entry|. |transaction| will be notified via its Cache IO callback if
   // this method returns ERR_IO_PENDING. This should not be called if there
   // already is an active entry associated with |key|, e.g. you should call
-  // FindActiveEntry first.
+  // GetActiveEntry first.
   int OpenEntry(const std::string& key,
-                ActiveEntry** entry,
+                scoped_refptr<ActiveEntry>* entry,
                 Transaction* transaction);
 
   // Creates the disk cache entry associated with |key|, returning an
   // ActiveEntry in |*entry|. |transaction| will be notified via its Cache IO
   // callback if this method returns ERR_IO_PENDING.
   int CreateEntry(const std::string& key,
-                  ActiveEntry** entry,
+                  scoped_refptr<ActiveEntry>* entry,
                   Transaction* transaction);
-
-  // Destroys an ActiveEntry (active or doomed). Should only be called if
-  // entry->SafeToDestroy() returns true.
-  void DestroyEntry(ActiveEntry* entry);
 
   // Adds a transaction to an ActiveEntry. This method returns ERR_IO_PENDING
   // and the transaction will be notified about completion via a callback to
   // cache_io_callback().
   // In a failure case, the callback will be invoked with ERR_CACHE_RACE.
-  int AddTransactionToEntry(ActiveEntry* entry, Transaction* transaction);
+  int AddTransactionToEntry(scoped_refptr<ActiveEntry>& entry,
+                            Transaction* transaction);
 
   // Transaction invokes this when its response headers phase is complete
   // If the transaction is responsible for writing the response body,
@@ -513,14 +592,14 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // returned and the transaction will be notified about completion via its
   // Cache IO callback. In a failure case, the callback will be invoked with
   // ERR_CACHE_RACE.
-  int DoneWithResponseHeaders(ActiveEntry* entry,
+  int DoneWithResponseHeaders(scoped_refptr<ActiveEntry>& entry,
                               Transaction* transaction,
                               bool is_partial);
 
   // Called when the transaction has finished working with this entry.
   // |entry_is_complete| is true if the transaction finished reading/writing
   // from the entry successfully, else it's false.
-  void DoneWithEntry(ActiveEntry* entry,
+  void DoneWithEntry(scoped_refptr<ActiveEntry>& entry,
                      Transaction* transaction,
                      bool entry_is_complete,
                      bool is_partial);
@@ -536,7 +615,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // |entry| is the owner of writers.
   // |should_keep_entry| indicates if the entry should be doomed/destroyed.
   // Virtual so that it can be extended in tests.
-  virtual void WritersDoneWritingToEntry(ActiveEntry* entry,
+  virtual void WritersDoneWritingToEntry(scoped_refptr<ActiveEntry> entry,
                                          bool success,
                                          bool should_keep_entry,
                                          TransactionSet make_readers);
@@ -544,39 +623,25 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Called when the transaction has received a non-matching response to
   // validation and it's not the transaction responsible for writing the
   // response body.
-  void DoomEntryValidationNoMatch(ActiveEntry* entry);
-
-  // Removes and returns all queued transactions in |entry| in FIFO order. This
-  // includes transactions that have completed the headers phase and those that
-  // have not been added to the entry yet in that order. |list| is the output
-  // argument.
-  void RemoveAllQueuedTransactions(ActiveEntry* entry, TransactionList* list);
+  void DoomEntryValidationNoMatch(scoped_refptr<ActiveEntry> entry);
 
   // Processes either writer's failure to write response body or
   // headers_transactions's failure to write headers.
   void ProcessEntryFailure(ActiveEntry* entry);
 
-  // Restarts headers_transaction and done_headers_queue transactions.
-  void RestartHeadersPhaseTransactions(ActiveEntry* entry);
-
-  // Restarts the headers_transaction by setting its state. Since the
-  // headers_transaction is awaiting an asynchronous operation completion,
-  // it will be restarted when it's Cache IO callback is invoked.
-  void RestartHeadersTransaction(ActiveEntry* entry);
-
   // Resumes processing the queued transactions of |entry|.
-  void ProcessQueuedTransactions(ActiveEntry* entry);
+  void ProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry);
 
   // Checks if a transaction can be added to the entry. If yes, it will
   // invoke the Cache IO callback of the transaction. This is a helper function
   // for OnProcessQueuedTransactions. It will take a transaction from
   // add_to_entry_queue and make it a headers_transaction, if one doesn't exist
   // already.
-  void ProcessAddToEntryQueue(ActiveEntry* entry);
+  void ProcessAddToEntryQueue(scoped_refptr<ActiveEntry> entry);
 
   // The implementation is split into a separate function so that it can be
   // called with a delay for testing.
-  void ProcessAddToEntryQueueImpl(ActiveEntry* entry);
+  void ProcessAddToEntryQueueImpl(scoped_refptr<ActiveEntry> entry);
 
   // Returns if the transaction can join other transactions for writing to
   // the cache simultaneously. It is only supported for non-Read only,
@@ -588,21 +653,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // phase can resume reading/writing the response body. It will invoke the IO
   // callback of the transaction. This is a helper function for
   // OnProcessQueuedTransactions.
-  void ProcessDoneHeadersQueue(ActiveEntry* entry);
-
-  // Adds a transaction to writers.
-  void AddTransactionToWriters(ActiveEntry* entry,
-                               Transaction* transaction,
-                               ParallelWritingPattern parallel_writing_pattern);
-
-  // Returns true if this transaction can write headers to the entry.
-  bool CanTransactionWriteResponseHeaders(ActiveEntry* entry,
-                                          Transaction* transaction,
-                                          bool is_partial,
-                                          bool is_match) const;
-
-  // Returns true if a transaction is currently writing the response body.
-  bool IsWritingInProgress(ActiveEntry* entry) const;
+  void ProcessDoneHeadersQueue(scoped_refptr<ActiveEntry> entry);
 
   // Returns the LoadState of the provided pending transaction.
   LoadState GetLoadStateForPendingTransaction(const Transaction* transaction);
@@ -611,10 +662,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // (PendingOp, active or doomed entry).
   void RemovePendingTransaction(Transaction* transaction);
 
-  // Removes the transaction |transaction|, from the pending list of |entry|.
-  bool RemovePendingTransactionFromEntry(ActiveEntry* entry,
-                                         Transaction* transaction);
-
   // Removes the transaction |transaction|, from the pending list of
   // |pending_op|.
   bool RemovePendingTransactionFromPendingOp(PendingOp* pending_op,
@@ -622,7 +669,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Events (called via PostTask) ---------------------------------------------
 
-  void OnProcessQueuedTransactions(ActiveEntry* entry);
+  void OnProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry);
 
   // Callbacks ----------------------------------------------------------------
 

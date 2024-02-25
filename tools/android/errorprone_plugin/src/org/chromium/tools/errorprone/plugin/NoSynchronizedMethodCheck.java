@@ -16,14 +16,15 @@ import com.sun.tools.javac.code.Symbol;
 
 import javax.lang.model.element.Modifier;
 
-/**
- * Triggers an error for public methods that use "synchronized" in their signature.
- */
+/** Triggers an error for public methods that use "synchronized" in their signature. */
 @AutoService(BugChecker.class)
-@BugPattern(name = "NoSynchronizedMethodCheck",
+@BugPattern(
+        name = "NoSynchronizedMethodCheck",
         summary = "Use of synchronized in public method signature disallowed.",
-        severity = BugPattern.SeverityLevel.ERROR, linkType = BugPattern.LinkType.CUSTOM,
-        link = "https://stackoverflow.com/questions/20906548/why-is-synchronized-block-better-than-synchronized-method")
+        severity = BugPattern.SeverityLevel.ERROR,
+        linkType = BugPattern.LinkType.CUSTOM,
+        link =
+                "https://stackoverflow.com/questions/20906548/why-is-synchronized-block-better-than-synchronized-method")
 public class NoSynchronizedMethodCheck extends BugChecker implements BugChecker.MethodTreeMatcher {
     @Override
     public Description matchMethod(MethodTree methodTree, VisitorState visitorState) {
@@ -48,10 +49,13 @@ public class NoSynchronizedMethodCheck extends BugChecker implements BugChecker.
             return Description.NO_MATCH;
         }
         return buildDescription(methodTree)
-                .addFix(SuggestedFixes.removeModifiers(
-                        methodTree, visitorState, Modifier.SYNCHRONIZED))
-                .setMessage(String.format(
-                        "Used synchronized modifier in public method %s", method.getSimpleName()))
+                .addFix(
+                        SuggestedFixes.removeModifiers(
+                                methodTree, visitorState, Modifier.SYNCHRONIZED))
+                .setMessage(
+                        String.format(
+                                "Used synchronized modifier in public method %s",
+                                method.getSimpleName()))
                 .build();
     }
 }

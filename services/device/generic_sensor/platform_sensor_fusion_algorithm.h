@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
+#include "services/device/public/mojom/sensor.mojom-shared.h"
 
 namespace device {
 

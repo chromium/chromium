@@ -19,18 +19,10 @@ namespace aura {
 ScreenOzone::ScreenOzone() {
   DCHECK(!display::Screen::HasScreen());
   display::Screen::SetScreenInstance(this);
-}
 
-ScreenOzone::~ScreenOzone() {
-  display::Screen::SetScreenInstance(nullptr);
-}
-
-void ScreenOzone::Initialize() {
   auto* platform = ui::OzonePlatform::GetInstance();
   platform_screen_ = platform->CreateScreen();
   if (platform_screen_) {
-    // Gives a chance to the derived classes to do pre-early initialization.
-    OnBeforePlatformScreenInit();
     // Separate `CreateScreen` from `InitScreen` so that synchronous observers
     // that call into `Screen` functions below have a valid `platform_screen_`.
     platform->InitScreen(platform_screen_.get());
@@ -38,6 +30,10 @@ void ScreenOzone::Initialize() {
     NOTREACHED()
         << "PlatformScreen is not implemented for this ozone platform.";
   }
+}
+
+ScreenOzone::~ScreenOzone() {
+  display::Screen::SetScreenInstance(nullptr);
 }
 
 // static
@@ -175,21 +171,6 @@ gfx::AcceleratedWidget ScreenOzone::GetAcceleratedWidgetForWindow(
     return gfx::kNullAcceleratedWidget;
 
   return host->GetAcceleratedWidget();
-}
-
-void ScreenOzone::OnBeforePlatformScreenInit() {}
-
-ScopedScreenOzone::ScopedScreenOzone(const base::Location& location)
-    : ScopedNativeScreen(/*call_maybe_init=*/false, location) {
-  MaybeInit();
-}
-
-ScopedScreenOzone::~ScopedScreenOzone() = default;
-
-display::Screen* ScopedScreenOzone::CreateScreen() {
-  auto* screen = new ScreenOzone();
-  screen->Initialize();
-  return screen;
 }
 
 }  // namespace aura

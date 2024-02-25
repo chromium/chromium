@@ -4,19 +4,23 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_data.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -62,7 +66,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   NSLayoutConstraint* _heightConstraint;
 
   // List of credit cards and icon for the bottom sheet.
-  NSArray<id<PaymentsSuggestionBottomSheetData>>* _creditCardData;
+  NSArray<CreditCardData*>* _creditCardData;
 
   // URL of the current page the bottom sheet is being displayed on.
   GURL _URL;
@@ -81,7 +85,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 @property(nonatomic, assign) BOOL expandSizeTooLarge;
 
 // Keep track of the minimized state height.
-@property(nonatomic, assign) absl::optional<CGFloat> minimizedStateHeight;
+@property(nonatomic, assign) std::optional<CGFloat> minimizedStateHeight;
 
 @end
 
@@ -106,7 +110,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // minimized bottom sheet.
   _tableViewIsMinimized = _creditCardData.count > 2;
 
+  self.view.accessibilityViewIsModal = YES;
   self.image = [self titleImage];
+  self.imageViewAccessibilityLabel = [NSString
+      stringWithFormat:@"%@. %@",
+                       l10n_util::GetNSString(
+                           self.showGooglePayLogo
+                               ? IDS_IOS_AUTOFILL_WALLET_SERVER_NAME
+                               : IDS_IOS_PRODUCT_NAME),
+                       l10n_util::GetNSString(
+                           IDS_IOS_PAYMENT_BOTTOM_SHEET_SELECT_PAYMENT_METHOD)];
   self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
   self.customSpacingAfterImage = kSpacingAfterImage;
   self.subtitleTextStyle = UIFontTextStyleFootnote;
@@ -124,12 +137,20 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE);
   self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_NO_THANKS);
+      l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
+  self.secondaryActionImage =
+      DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   [super viewDidLoad];
 
   // Set selection to the first one.
   [self selectFirstRow];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  self.imageViewAccessibilityLabel);
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -143,7 +164,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
   if (self.traitCollection.preferredContentSizeCategory !=
       previousTraitCollection.preferredContentSizeCategory) {
-    self.minimizedStateHeight = absl::nullopt;
+    self.minimizedStateHeight = std::nullopt;
     [self updateHeight];
   }
 }
@@ -157,6 +178,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
   if (self.disableBottomSheetOnExit) {
     [self.delegate disableBottomSheet];
   }
@@ -172,8 +194,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
 
-- (void)setCreditCardData:
-            (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData
+- (void)setCreditCardData:(NSArray<CreditCardData*>*)creditCardData
         showGooglePayLogo:(BOOL)showGooglePayLogo {
   BOOL requiresUpdate = (_creditCardData != nil);
   _creditCardData = creditCardData;
@@ -190,25 +211,53 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 #pragma mark - UITableViewDelegate
 
+// It is called when the table view is about to draw a cell for a particular
+// row.
+- (void)tableView:(UITableView*)tableView
+      willDisplayCell:(UITableViewCell*)cell
+    forRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (_creditCardData.count > 1) {
+    cell.userInteractionEnabled = YES;
+    return;
+  }
+  // If only one suggestion exists, the item should not be selectable,
+  // but mark the cell as selected for the user.
+  cell.userInteractionEnabled = NO;
+  cell.accessoryType = UITableViewCellAccessoryCheckmark;
+}
+
 // Long press open context menu.
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
                                         point:(CGPoint)point {
   __weak __typeof(self) weakSelf = self;
-  UIContextMenuActionProvider actionProvider =
-      ^(NSArray<UIMenuElement*>* suggestedActions) {
-        NSMutableArray<UIMenuElement*>* menuElements =
-            [[NSMutableArray alloc] initWithArray:suggestedActions];
+  UIContextMenuActionProvider actionProvider = ^(
+      NSArray<UIMenuElement*>* suggestedActions) {
+    NSMutableArray<UIMenu*>* menuElements =
+        [[NSMutableArray alloc] initWithArray:suggestedActions];
 
-        PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
-        if (strongSelf) {
-          [menuElements addObject:[strongSelf openPaymentMethodsAction]];
-          [menuElements
-              addObject:[strongSelf openPaymentDetailsForIndexPath:indexPath]];
-        }
-
-        return [UIMenu menuWithTitle:@"" children:menuElements];
-      };
+    PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
+    if (strongSelf) {
+      [menuElements
+          addObject:[UIMenu menuWithTitle:@""
+                                    image:nil
+                               identifier:nil
+                                  options:UIMenuOptionsDisplayInline
+                                 children:@[
+                                   [strongSelf openPaymentMethodsAction]
+                                 ]]];
+      [menuElements
+          addObject:[UIMenu menuWithTitle:@""
+                                    image:nil
+                               identifier:nil
+                                  options:UIMenuOptionsDisplayInline
+                                 children:@[
+                                   [strongSelf
+                                       openPaymentDetailsForIndexPath:indexPath]
+                                 ]]];
+    }
+    return [UIMenu menuWithTitle:@"" children:menuElements];
+  };
 
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
@@ -239,8 +288,13 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.handler primaryButtonTapped:[_creditCardData[[self selectedRow]]
-                                        backendIdentifier]];
+  NSInteger index = [self selectedRow];
+  [self.handler primaryButtonTapped:_creditCardData[index]];
+
+  if (_creditCardData.count > 1) {
+    base::UmaHistogramCounts100("Autofill.TouchToFill.CreditCard.SelectedIndex",
+                                (int)index);
+  }
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -257,7 +311,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kChromeSymbol, kTitleLogoHeight));
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kTitleLogoHeight));
 #else
   image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                              kTitleLogoHeight);
@@ -271,14 +325,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     // Using kTitleLogoHeight (24pt) returns a GPay logo too small, so we are
     // using 28pt to ressemble the mocks.
     CGFloat gPayLogoSize = 28;
-    CGFloat ratio = gPayLogoSize / image.size.height;
-    CGSize imageSize = CGSizeMake(image.size.width * ratio, gPayLogoSize);
-    UIGraphicsImageRenderer* renderer =
-        [[UIGraphicsImageRenderer alloc] initWithSize:imageSize];
-    image =
-        [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-          [image drawInRect:(CGRect){.origin = CGPointZero, .size = imageSize}];
-        }];
+    if (image.size.height > 0.0 && image.size.height < gPayLogoSize &&
+        image.scale > 1.0) {
+      // If the image is smaller than desired, but is scaled, reduce the scale
+      // (to a minimum of 1.0) in order to attempt to achieve the desired size.
+      image = [UIImage
+          imageWithCGImage:[image CGImage]
+                     scale:MAX((image.scale * image.size.height / gPayLogoSize),
+                               1.0)
+               orientation:(image.imageOrientation)];
+    }
   }
 
   return image;
@@ -301,7 +357,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 // Returns an accessible card name at a given row in the table view.
 - (NSString*)accessibleCardNameAtRow:(NSInteger)row {
-  return [_creditCardData[row] accessibleCardName];
+  return l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+      base::SysNSStringToUTF16([_creditCardData[row] accessibleCardName]), u"",
+      base::NumberToString16(row + 1),
+      base::NumberToString16(_creditCardData.count));
 }
 
 // Creates the payments bottom sheet's table view.
@@ -333,7 +393,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
   if (_creditCardData.count) {
     [self.view layoutIfNeeded];
-    CGFloat fullHeight = [self computeTableViewHeightForAllCells];
+    CGFloat fullHeight = [self computeTableViewHeightForAllCells] + kSpacing;
     if (fullHeight > 0) {
       // Update height constraints for the table view.
       _heightConstraint.constant = fullHeight;
@@ -419,12 +479,12 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     weakSelf.disableBottomSheetOnExit = NO;
     [weakSelf.handler displayPaymentMethods];
   };
-  UIImage* listIcon =
-      CustomSymbolWithPointSize(kReadingListSymbol, kSymbolActionPointSize);
+  UIImage* creditCardIcon =
+      DefaultSymbolWithPointSize(kCreditCardSymbol, kSymbolActionPointSize);
   return [UIAction
       actionWithTitle:l10n_util::GetNSString(
                           IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS)
-                image:listIcon
+                image:creditCardIcon
            identifier:nil
               handler:paymentMethodsButtonTapHandler];
 }
@@ -507,6 +567,18 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
+
+  // If we have the potential presence of a virtual card, the textLabel on its
+  // own is no longer a unique identifier, so we include the description.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVirtualCards)) {
+    cell.accessibilityIdentifier =
+        [NSString stringWithFormat:@"%@ %@", cell.textLabel.text,
+                                   [self descriptionAtRow:indexPath.row]];
+  } else {
+    cell.accessibilityIdentifier = cell.textLabel.text;
+  }
+
   [cell setDetailText:[self descriptionAtRow:indexPath.row]];
   [cell setIconImage:[self iconAtRow:indexPath.row]
             tintColor:nil

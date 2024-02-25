@@ -4,35 +4,28 @@
 
 #include "components/attribution_reporting/destination_set.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/overloaded.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
-
-absl::optional<net::SchemefulSite> DeserializeDestination(
-    const std::string& s) {
-  auto destination = SuitableOrigin::Deserialize(s);
-  if (!destination.has_value()) {
-    return absl::nullopt;
-  }
-  return net::SchemefulSite(*destination);
-}
 
 bool DestinationsValid(const DestinationSet::Destinations& destinations) {
   return !destinations.empty() && destinations.size() <= kMaxDestinations &&
@@ -42,10 +35,10 @@ bool DestinationsValid(const DestinationSet::Destinations& destinations) {
 }  // namespace
 
 // static
-absl::optional<DestinationSet> DestinationSet::Create(
+std::optional<DestinationSet> DestinationSet::Create(
     Destinations destinations) {
   if (!DestinationsValid(destinations)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return DestinationSet(std::move(destinations));
 }
@@ -58,39 +51,49 @@ DestinationSet::FromJSON(const base::Value* v) {
   }
 
   std::vector<net::SchemefulSite> destination_sites;
-  if (const std::string* str = v->GetIfString()) {
-    auto destination = DeserializeDestination(*str);
-    if (!destination.has_value()) {
+
+  using AppendIfValidResult = base::expected<void, SourceRegistrationError>;
+
+  const auto append_if_valid =
+      [&](const std::string& str) -> AppendIfValidResult {
+    auto origin = SuitableOrigin::Deserialize(str);
+    if (!origin.has_value()) {
       return base::unexpected(
           SourceRegistrationError::kDestinationUntrustworthy);
     }
+    destination_sites.emplace_back(*origin);
+    return base::ok();
+  };
 
-    destination_sites.push_back(std::move(*destination));
-  } else if (const base::Value::List* list = v->GetIfList()) {
-    if (list->size() > kMaxDestinations) {
-      return base::unexpected(SourceRegistrationError::kDestinationListTooLong);
-    }
-    if (list->empty()) {
-      return base::unexpected(SourceRegistrationError::kDestinationMissing);
-    }
-    destination_sites.reserve(list->size());
+  RETURN_IF_ERROR(v->Visit(base::Overloaded{
+      [&](const std::string& str) { return append_if_valid(str); },
+      [&](const base::Value::List& list) -> AppendIfValidResult {
+        if (list.empty()) {
+          return base::unexpected(SourceRegistrationError::kDestinationMissing);
+        }
+        if (list.size() > kMaxDestinations) {
+          return base::unexpected(
+              SourceRegistrationError::kDestinationListTooLong);
+        }
 
-    for (const auto& item : *list) {
-      const std::string* item_str = item.GetIfString();
-      if (!item_str) {
+        destination_sites.reserve(list.size());
+
+        for (const auto& item : list) {
+          const std::string* str = item.GetIfString();
+          if (!str) {
+            return base::unexpected(
+                SourceRegistrationError::kDestinationWrongType);
+          }
+          RETURN_IF_ERROR(append_if_valid(*str));
+        }
+
+        return base::ok();
+      },
+      [](const auto&) -> AppendIfValidResult {
         return base::unexpected(SourceRegistrationError::kDestinationWrongType);
-      }
-      auto destination = DeserializeDestination(*item_str);
-      if (!destination.has_value()) {
-        return base::unexpected(
-            SourceRegistrationError::kDestinationUntrustworthy);
-      }
+      },
+  }));
 
-      destination_sites.push_back(std::move(*destination));
-    }
-  } else {
-    return base::unexpected(SourceRegistrationError::kDestinationWrongType);
-  }
   return DestinationSet(std::move(destination_sites));
 }
 

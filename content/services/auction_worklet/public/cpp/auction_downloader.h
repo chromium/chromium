@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -56,7 +56,7 @@ class CONTENT_EXPORT AuctionDownloader {
   using AuctionDownloaderCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
                               scoped_refptr<net::HttpResponseHeaders> headers,
-                              absl::optional<std::string> error)>;
+                              std::optional<std::string> error)>;
 
   // This handles how network requests get logged to devtools.
   class CONTENT_EXPORT NetworkEventsDelegate {
@@ -64,14 +64,13 @@ class CONTENT_EXPORT AuctionDownloader {
     NetworkEventsDelegate() = default;
     virtual ~NetworkEventsDelegate();
 
-    virtual void OnSendRequest(const network::ResourceRequest& request) = 0;
-    virtual void OnResponseReceived(
-        const GURL& final_url,
-        scoped_refptr<net::HttpResponseHeaders> headers) = 0;
+    virtual void OnNetworkSendRequest(network::ResourceRequest& request) = 0;
+    virtual void OnNetworkResponseReceived(
+        const GURL& url,
+        const network::mojom::URLResponseHead& head) = 0;
 
-    virtual void OnRequestComplete(
-        const std::string& devtools_request_id,
-        const absl::optional<network::URLLoaderCompletionStatus>& status) = 0;
+    virtual void OnNetworkRequestComplete(
+        const network::URLLoaderCompletionStatus& status) = 0;
   };
 
   // Starts loading `source_url` on construction. Callback will be invoked

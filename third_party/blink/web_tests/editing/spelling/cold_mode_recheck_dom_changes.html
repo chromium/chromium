@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<title>Tests that direct DOM changes are rechecked by cold mode checker</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script src="spellcheck_test.js"></script>
+
+<script>
+// Regression test for https://crbug.com/1472542
+
+const step1 = () => spellcheck_test(
+    `<div contenteditable>zz zz zz.</div>`,
+    document => {
+      let div = document.querySelector('div[contenteditable]');
+      div.focus();
+    },
+    `<div contenteditable>#zz# #zz# #zz#.</div>`,
+    {
+      title: 'Step 1: Cold mode checks full contenteditable for the first pass',
+      needsFullCheck: true,
+      callback: step2,
+    }
+);
+
+const step2 = sample => spellcheck_test(
+    sample,
+    document => {
+      let div = document.querySelector('div[contenteditable]');
+      document.getSelection().collapse(div.firstChild, 7);
+    },
+    `<div contenteditable>#zz# #zz# #zz#.</div>`,
+    {
+      title: 'Step 2: Move caret under misspelled word',
+      needsFullCheck: true,
+      callback: step3,
+    }
+);
+
+const step3 = sample => spellcheck_test(
+    sample,
+    document => {
+      let div = document.querySelector('div[contenteditable]');
+      // Similates a JavaScript text editor that intercepts spelling corrections
+      // and applies them by replacing the text node entirely.
+      div.addEventListener('beforeinput', ev => {
+        ev.preventDefault();
+        div.firstChild.remove();
+        div.appendChild(document.createTextNode('zz zz so good.'));
+      });
+      internals.replaceMisspelled(document, 'good');
+    },
+    `<div contenteditable>#zz# #zz# so good.</div>`,
+    {
+      title: 'Step 3: Cold mode rechecks after DOM changes made by JavaScript',
+      needsFullCheck: true
+    }
+);
+
+step1();
+</script>

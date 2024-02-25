@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 
-#include <string_view>
-
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -28,9 +26,14 @@ void AutocompleteUnrecognizedFallbackEventLogger::OnDidShowSuggestions() {
   }
 }
 
-void AutocompleteUnrecognizedFallbackEventLogger::OnDidFillSuggestion() {
-  CHECK_NE(suggestion_state_, SuggestionState::kNotShown);
-  if (suggestion_state_ != SuggestionState::kFilled) {
+void AutocompleteUnrecognizedFallbackEventLogger::
+    OnDidFillFormFillingSuggestion() {
+  // Since the `AutocompleteUnrecognizedFallbackEventLogger` is only notified
+  // about autocomplete=unrecognized fields, it is possible that to reach
+  // `OnDidFillFormFillingSuggestion()` with `suggestion_state_` kNotShown. This
+  // happens when the website dynamically changes the autocomplete attribute to
+  // unrecognized after triggering (regular) suggestions.
+  if (suggestion_state_ == SuggestionState::kShown) {
     suggestion_state_ = SuggestionState::kFilled;
   }
 }

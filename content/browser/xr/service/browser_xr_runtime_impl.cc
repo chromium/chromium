@@ -22,6 +22,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
+#include "device/vr/public/mojom/xr_device.mojom-shared.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/transform.h"
@@ -40,7 +41,7 @@ bool IsValidTransform(const gfx::Transform& transform) {
   if (!transform.IsInvertible() || transform.HasPerspective())
     return false;
 
-  absl::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
+  std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   if (!decomp)
     return false;
 
@@ -193,9 +194,6 @@ bool BrowserXRRuntimeImpl::SupportsCustomIPD() const {
 #if BUILDFLAG(ENABLE_ARCORE)
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
 #endif  // ENABLE_ARCORE
-#if BUILDFLAG(ENABLE_GVR_SERVICES)
-    case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-#endif  // ENABLE_GVR_SERVICES
 #if BUILDFLAG(ENABLE_CARDBOARD)
     case device::mojom::XRDeviceId::CARDBOARD_DEVICE_ID:
 #endif  // ENABLE_CARDBOARD
@@ -218,10 +216,6 @@ bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
 #endif  // ENABLE_ARCORE
       return false;
-#if BUILDFLAG(ENABLE_GVR_SERVICES)
-    case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-      return true;
-#endif  // ENABLE_GVR_SERVICES
 #if BUILDFLAG(ENABLE_CARDBOARD)
     case device::mojom::XRDeviceId::CARDBOARD_DEVICE_ID:
       return true;
@@ -456,8 +450,13 @@ void BrowserXRRuntimeImpl::BeforeRuntimeRemoved() {
   StopImmersiveSession(base::DoNothing());
 }
 
+std::vector<device::mojom::XRSessionFeature>
+BrowserXRRuntimeImpl::GetSupportedFeatures() {
+  return device_data_->supported_features;
+}
+
 #if BUILDFLAG(IS_WIN)
-absl::optional<CHROME_LUID> BrowserXRRuntimeImpl::GetLuid() const {
+std::optional<CHROME_LUID> BrowserXRRuntimeImpl::GetLuid() const {
   return device_data_->luid;
 }
 #endif

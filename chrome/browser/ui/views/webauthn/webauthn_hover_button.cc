@@ -15,6 +15,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -24,8 +25,9 @@ namespace {
 // internal class of the same name, but the horizontal spacing applied
 // by that class is incompatible with the WebAuthn UI spec.
 class IconWrapper : public views::View {
+  METADATA_HEADER(IconWrapper, views::View)
+
  public:
-  METADATA_HEADER(IconWrapper);
   explicit IconWrapper(std::unique_ptr<views::View> icon) {
     AddChildView(std::move(icon));
     SetUseDefaultFillLayout(true);
@@ -37,7 +39,7 @@ class IconWrapper : public views::View {
   }
 };
 
-BEGIN_METADATA(IconWrapper, views::View)
+BEGIN_METADATA(IconWrapper)
 END_METADATA
 
 }  // namespace
@@ -58,8 +60,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   // ignore the child views created by the LabelButton ancestor. They're not
   // used but must exist to keep things happy. This view should be refactored to
   // descend from views::Button directly.
-  for (auto* child : children())
-    layout->SetChildViewIgnoredByLayout(child, true);
+  for (views::View* child : children()) {
+    child->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  }
 
   const int icon_padding = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -88,7 +91,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
                    /*min_width=*/0);
   }
 
-  const int row_height = views::style::GetLineHeight(
+  const int row_height = views::TypographyProvider::Get().GetLineHeight(
       views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
   const bool is_two_line = !subtitle_text.empty() || force_two_line;
   const int icon_row_span = is_two_line ? 2 : 1;
@@ -145,5 +148,5 @@ WebAuthnHoverButton::WebAuthnHoverButton(
       gfx::Insets::TLBR(vert_inset, left_inset, vert_inset, right_inset)));
 }
 
-BEGIN_METADATA(WebAuthnHoverButton, HoverButton)
+BEGIN_METADATA(WebAuthnHoverButton)
 END_METADATA

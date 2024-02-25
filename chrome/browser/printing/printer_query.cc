@@ -33,8 +33,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/printing/printer_query_oop.h"
-#include "printing/printing_features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -45,12 +45,13 @@ namespace printing {
 
 namespace {
 
-bool ShouldPrintingContextSkipSystemCalls() {
+PrintingContext::ProcessBehavior GetPrintingContextProcessBehavior() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  return features::kEnableOopPrintDriversJobPrint.Get();
-#else
-  return false;
+  if (ShouldPrintJobOop()) {
+    return PrintingContext::ProcessBehavior::kOopEnabledSkipSystemCalls;
+  }
 #endif
+  return PrintingContext::ProcessBehavior::kOopDisabled;
 }
 
 class PrintingContextDelegate : public PrintingContext::Delegate {
@@ -107,8 +108,9 @@ std::unique_ptr<PrinterQuery> PrinterQuery::Create(
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (features::kEnableOopPrintDriversJobPrint.Get())
+  if (ShouldPrintJobOop()) {
     return base::WrapUnique(new PrinterQueryOop(rfh_id));
+  }
 #endif
   return base::WrapUnique(new PrinterQuery(rfh_id));
 }
@@ -118,7 +120,7 @@ PrinterQuery::PrinterQuery(content::GlobalRenderFrameHostId rfh_id)
           std::make_unique<PrintingContextDelegate>(rfh_id)),
       printing_context_(
           PrintingContext::Create(printing_context_delegate_.get(),
-                                  ShouldPrintingContextSkipSystemCalls())),
+                                  GetPrintingContextProcessBehavior())),
       rfh_id_(rfh_id),
       cookie_(PrintSettings::NewCookie()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -130,7 +132,7 @@ PrinterQuery::~PrinterQuery() {
 }
 
 void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
-                                   absl::optional<bool> maybe_is_modifiable,
+                                   std::optional<bool> maybe_is_modifiable,
                                    std::unique_ptr<PrintSettings> new_settings,
                                    mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -150,7 +152,7 @@ void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
 }
 
 void PrinterQuery::PostSettingsDone(base::OnceClosure callback,
-                                    absl::optional<bool> maybe_is_modifiable,
+                                    std::optional<bool> maybe_is_modifiable,
                                     std::unique_ptr<PrintSettings> new_settings,
                                     mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -167,9 +169,7 @@ std::unique_ptr<PrintJobWorker> PrinterQuery::TransferContextToNewWorker(
     PrintJob* print_job) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  return std::make_unique<PrintJobWorker>(std::move(printing_context_delegate_),
-                                          std::move(printing_context_),
-                                          print_job);
+  return CreatePrintJobWorker(print_job);
 }
 
 const PrintSettings& PrinterQuery::settings() const {
@@ -239,7 +239,7 @@ void PrinterQuery::SetSettings(base::Value::Dict new_settings,
       std::move(new_settings),
       base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
                      std::move(callback),
-                     /*maybe_is_modifiable=*/absl::nullopt));
+                     /*maybe_is_modifiable=*/std::nullopt));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -252,7 +252,7 @@ void PrinterQuery::SetSettingsFromPOD(
       std::move(new_settings),
       base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
                      std::move(callback),
-                     /*maybe_is_modifiable=*/absl::nullopt));
+                     /*maybe_is_modifiable=*/std::nullopt));
 }
 #endif
 
@@ -269,14 +269,14 @@ void PrinterQuery::UpdatePrintableArea(
   base::ScopedAllowBlocking allow_blocking;
   std::string printer_name = base::UTF16ToUTF8(print_settings->device_name());
   crash_keys::ScopedPrinterInfo crash_key(
-      print_backend->GetPrinterDriverInfo(printer_name));
+      printer_name, print_backend->GetPrinterDriverInfo(printer_name));
 
   PRINTER_LOG(EVENT) << "Updating paper printable area in-process for "
                      << printer_name;
 
   const PrintSettings::RequestedMedia& media =
       print_settings->requested_media();
-  absl::optional<gfx::Rect> printable_area_um =
+  std::optional<gfx::Rect> printable_area_um =
       print_backend->GetPaperPrintableArea(printer_name, media.vendor_id,
                                            media.size_microns);
   if (!printable_area_um.has_value()) {
@@ -296,8 +296,8 @@ void PrinterQuery::ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
   // The purpose of `print_context` is to set the default printable area. To do
   // so, it doesn't need a RFH, so just default initialize the RFH id.
   PrintingContextDelegate delegate((content::GlobalRenderFrameHostId()));
-  std::unique_ptr<PrintingContext> print_context =
-      PrintingContext::Create(&delegate, /*skip_system_calls=*/false);
+  std::unique_ptr<PrintingContext> print_context = PrintingContext::Create(
+      &delegate, PrintingContext::ProcessBehavior::kOopDisabled);
   print_context->SetPrintSettings(print_settings);
   print_context->SetDefaultPrintableAreaForVirtualPrinters();
   print_settings = print_context->settings();
@@ -339,7 +339,7 @@ void PrinterQuery::UpdatePrintSettings(base::Value::Dict new_settings,
         PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
     std::string printer_name = *new_settings.FindString(kSettingDeviceName);
     crash_key = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        print_backend->GetPrinterDriverInfo(printer_name));
+        printer_name, print_backend->GetPrinterDriverInfo(printer_name));
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
     PrinterBasicInfo basic_info;
@@ -378,6 +378,13 @@ void PrinterQuery::UpdatePrintSettingsFromPOD(
   InvokeSettingsCallback(std::move(callback), result);
 }
 #endif
+
+std::unique_ptr<PrintJobWorker> PrinterQuery::CreatePrintJobWorker(
+    PrintJob* print_job) {
+  return std::make_unique<PrintJobWorker>(std::move(printing_context_delegate_),
+                                          std::move(printing_context_),
+                                          print_job);
+}
 
 void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
                                      bool has_selection,

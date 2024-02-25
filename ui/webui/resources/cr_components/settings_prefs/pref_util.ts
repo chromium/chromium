@@ -4,7 +4,7 @@
 
 /** @fileoverview Utility functions to help use prefs in Polymer controls. */
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 
 /**
  * Converts a string value to a type corresponding to the given preference.

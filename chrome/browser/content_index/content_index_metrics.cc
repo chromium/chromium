@@ -14,7 +14,7 @@
 namespace {
 
 void MaybeRecordUkmContentAdded(blink::mojom::ContentCategory category,
-                                absl::optional<ukm::SourceId> source_id) {
+                                std::optional<ukm::SourceId> source_id) {
   if (!source_id)
     return;
 
@@ -24,7 +24,7 @@ void MaybeRecordUkmContentAdded(blink::mojom::ContentCategory category,
 }
 
 void MaybeRecordUkmContentDeletedByUser(
-    absl::optional<ukm::SourceId> source_id) {
+    std::optional<ukm::SourceId> source_id) {
   if (!source_id)
     return;
 

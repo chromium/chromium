@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Test that Web Inspector can inspect element with pointer-events:none.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -69,26 +70,26 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function step2() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
     TestRunner.evaluateInPage('clickInner(true)');
   }
 
   function step3() {
     ElementsTestRunner.firstElementsTreeOutline().removeEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
     expectSelectedNode('inner');
     TestRunner.overlayModel.setInspectMode(Protocol.Overlay.InspectMode.SearchForNode).then(step4);
   }
 
   function step4() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, step5);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, step5);
     TestRunner.evaluateInPage('clickInner(false)');
   }
 
   function step5() {
     ElementsTestRunner.firstElementsTreeOutline().removeEventListener(
-        Elements.ElementsTreeOutline.Events.SelectedNodeChanged, step5);
+        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, step5);
     expectSelectedNode('outer');
     TestRunner.completeTest();
   }

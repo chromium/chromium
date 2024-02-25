@@ -37,12 +37,6 @@ class BrowserDesktopWindowTreeHostLacros
   void TabDraggingKindChanged(TabDragKind tab_drag_kind);
 
  private:
-  // Sets hints for the WM/compositor that reflect the rounded corners.
-  void UpdateFrameHints();
-
-  // DesktopWindowTreeHost:
-  void OnWidgetInitDone() override;
-
   // BrowserDesktopWindowTreeHost:
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
   int GetMinimizeButtonOffset() const override;
@@ -56,10 +50,10 @@ class BrowserDesktopWindowTreeHostLacros
   void UnlockMouse(aura::Window* window) override;
 
   // ui::PlatformWindowDelegate
-  void OnBoundsChanged(const BoundsChange& change) override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
-  void OnImmersiveModeChanged(bool enabled) override;
+  void OnFullscreenTypeChanged(ui::PlatformFullscreenType old_type,
+                               ui::PlatformFullscreenType new_type) override;
 
   const raw_ptr<BrowserView> browser_view_;
   raw_ptr<DesktopBrowserFrameLacros> native_frame_ = nullptr;

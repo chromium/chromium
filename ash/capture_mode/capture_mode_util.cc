@@ -4,7 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_util.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -21,16 +21,17 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -46,8 +47,8 @@ namespace ash::capture_mode_util {
 
 namespace {
 
-constexpr int kBannerViewTopRadius = 0;
-constexpr int kBannerViewBottomRadius = 8;
+constexpr float kBannerViewTopRadius = 0.0f;
+constexpr float kBannerViewBottomRadius = 8.0f;
 constexpr float kScaleUpFactor = 0.8f;
 
 // The app ID used for the capture mode privacy indicators.
@@ -237,7 +238,7 @@ void TriggerAccessibilityAlertSoon(const std::string& message) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &AccessibilityControllerImpl::TriggerAccessibilityAlertWithMessage,
+          &AccessibilityController::TriggerAccessibilityAlertWithMessage,
           Shell::Get()->accessibility_controller()->GetWeakPtr(), message));
 }
 
@@ -340,8 +341,7 @@ std::unique_ptr<views::View> CreateBannerView() {
           ? cros_tokens::kCrosSysPrimary
           : static_cast<ui::ColorId>(kColorAshControlBackgroundColorActive);
   banner_view->SetBackground(views::CreateThemedRoundedRectBackground(
-      background_color_id, kBannerViewTopRadius, kBannerViewBottomRadius,
-      /*for_border_thickness=*/0));
+      background_color_id, kBannerViewTopRadius, kBannerViewBottomRadius));
 
   views::ImageView* icon =
       banner_view->AddChildView(std::make_unique<views::ImageView>());
@@ -366,7 +366,7 @@ std::unique_ptr<views::View> CreateBannerView() {
                                                *label);
   }
 
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     banner_view->AddChildView(CreateClipboardShortcutView());
     layout->SetFlexForView(label, 1);
 
@@ -467,7 +467,7 @@ bool GetWidgetCurrentVisibility(views::Widget* widget) {
 
 bool SetWidgetVisibility(views::Widget* widget,
                          bool target_visibility,
-                         absl::optional<AnimationParams> animation_params) {
+                         std::optional<AnimationParams> animation_params) {
   DCHECK(widget);
   if (target_visibility == GetWidgetCurrentVisibility(widget))
     return false;
@@ -487,7 +487,7 @@ bool SetWidgetVisibility(views::Widget* widget,
 }
 
 aura::Window* GetPreferredRootWindow(
-    absl::optional<gfx::Point> location_in_screen) {
+    std::optional<gfx::Point> location_in_screen) {
   const int64_t display_id =
       (location_in_screen
            ? display::Screen::GetScreen()->GetDisplayNearestPoint(
@@ -519,7 +519,8 @@ views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
 }
 
 void MaybeUpdateCaptureModePrivacyIndicators() {
-  if (!features::IsPrivacyIndicatorsEnabled()) {
+  // Privacy indicator is only enabled when Video Conference is disabled.
+  if (features::IsVideoConferenceEnabled()) {
     return;
   }
 
@@ -561,6 +562,38 @@ void SetHighlightBorder(views::View* view,
                         views::HighlightBorder::Type type) {
   view->SetBorder(
       std::make_unique<views::HighlightBorder>(corner_radius, type));
+}
+
+chromeos::FrameHeader* GetWindowFrameHeader(aura::Window* window) {
+  CHECK(window);
+
+  if (auto* widget = views::Widget::GetWidgetForNativeWindow(window)) {
+    return chromeos::FrameHeader::Get(widget);
+  }
+
+  return nullptr;
+}
+
+gfx::Rect GetCaptureWindowConfineBounds(aura::Window* window) {
+  CHECK(window);
+  CHECK(!window->IsRootWindow());
+
+  // When the surface being captured is a window, on-capture-surface UI
+  // elements, such as the selfie camera or the demo tools key combo widget,
+  // need to be confined within the *local* bounds of this window, since
+  // they are added as direct children of the window so that they can get
+  // captured.
+  gfx::Rect result(window->bounds().size());
+
+  // Inset from the top by the height of the frame header, in order to avoid for
+  // example having the selfie camera intersecting with the caption buttons.
+  // TODO(afakhry): This will not work for lacros. Fix this if it becomes a
+  // priority.
+  if (auto* frame_header = GetWindowFrameHeader(window)) {
+    result.Inset(gfx::Insets::TLBR(frame_header->GetHeaderHeight(), 0, 0, 0));
+  }
+
+  return result;
 }
 
 }  // namespace ash::capture_mode_util

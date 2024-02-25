@@ -36,7 +36,7 @@ struct EventTraceData {
   uint8_t event_type = 0;
 
   // The severity of the event (e.g. warning, info, error).
-  logging::LogSeverity severity = logging::LOG_INFO;
+  logging::LogSeverity severity = logging::LOGGING_INFO;
 
   // The ID of the process which originally logged the event.
   int process_id = 0;
@@ -45,7 +45,7 @@ struct EventTraceData {
   int thread_id = 0;
 
   // The original timestamp from when the event was logged.
-  base::Time::Exploded time_stamp = {};
+  base::Time time_stamp;
 
   // The name of the file which logged the event.  Note that this may not be
   // present in all builds (it depends on the logging params).

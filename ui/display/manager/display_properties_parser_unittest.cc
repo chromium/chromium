@@ -12,7 +12,7 @@
 namespace display {
 namespace {
 
-absl::optional<base::Value> ReadJsonString(base::StringPiece json) {
+std::optional<base::Value> ReadJsonString(base::StringPiece json) {
   return base::JSONReader::Read(json);
 }
 

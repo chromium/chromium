@@ -15,7 +15,11 @@ source_set("internals") {
     "../:pref_names",
     "../:shopping_service",
     "//base",
+    "//components/bookmarks/browser:browser",
+    "//components/payments/core:core",
+    "//components/power_bookmarks/core:core",
     "//components/prefs",
+    "//components/url_formatter:url_formatter",
     "//mojo/public/cpp/bindings",
     "//ui/base",
     "//url",
@@ -23,7 +27,9 @@ source_set("internals") {
 
   public_deps = [
     "../:commerce_constants",
+    "../webui",
     "./mojom:mojo_bindings",
     "./resources",
+    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
   ]
 }

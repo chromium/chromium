@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image text:"pipe" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {alt="pipe"}, {src="pipe.jpg"}]
+++++TextView text:" " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:" " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++Image text:"  " textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {alt=" "}, {src="pipe.jpg"}]
+++++TextView text:" " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++Image text:"SVG face" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {alt="SVG face"}, {src="svg-face.svg"}]

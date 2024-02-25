@@ -38,9 +38,9 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
                                       public OverviewObserver,
                                       public TabletModeObserver,
                                       public ShelfConfig::Observer {
- public:
-  METADATA_HEADER(OverviewButtonTray);
+  METADATA_HEADER(OverviewButtonTray, TrayBackgroundView)
 
+ public:
   // Second taps within this time will be counted as double taps. Use this
   // instead of ui::Event's click_count and tap_count as those have a minimum
   // time bewtween events before the second tap counts as a double tap.
@@ -61,10 +61,6 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // ActionableView:
-  void HandlePerformActionResult(bool action_performed,
-                                 const ui::Event& event) override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
@@ -80,12 +76,13 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void UpdateAfterLoginStatusChange() override;
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void OnThemeChanged() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
  private:
   friend class OverviewButtonTrayTest;
@@ -100,13 +97,13 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   gfx::ImageSkia GetIconImage();
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_;
+  raw_ptr<views::ImageView> icon_;
 
   ScopedSessionObserver scoped_session_observer_;
 
   // Stores the timestamp of the last tap event time that happened while not
   // in overview mode. Used to check for double taps, which invoke quick switch.
-  absl::optional<base::TimeTicks> last_press_event_time_;
+  std::optional<base::TimeTicks> last_press_event_time_;
 };
 
 }  // namespace ash

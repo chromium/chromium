@@ -1,0 +1,643 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AdSamplerTriggerAction">
+  <int value="0" label="The trigger was activated"/>
+  <int value="1" label="An ad was found and data was collected"/>
+  <int value="2"
+      label="An ad was found but no sample taken to limit frequency"/>
+  <int value="3" label="No ad was found"/>
+  <int value="4" label="An ad was found but data collection was rejected"/>
+</enum>
+
+<enum name="AdvancedProtectionEnabledStatus">
+  <int value="0" label="Advanced Protection enabled status unknown"/>
+  <int value="1" label="User not signed-in or isn't under Advanced Protection"/>
+  <int value="2" label="User is signed in and under Advanced Protection"/>
+  <int value="3"
+      label="User was under Advanced Protection but disabled it or signed out"/>
+  <int value="4"
+      label="User was signed out or wasn't under Advanced Protection but now
+             is"/>
+</enum>
+
+<enum name="AndroidRealTimeIsInAllowlistResult">
+  <int value="0" label="NO"/>
+  <int value="1" label="YES"/>
+  <int value="2" label="ALLOWLIST_UNAVAILABLE"/>
+</enum>
+
+<enum name="AndroidRealTimePopulateAllowlistResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="FAILED_EMPTY"/>
+  <int value="2" label="FAILED_PROTO_PARSE"/>
+  <int value="3" label="FAILED_MISSING_URL_HASHES"/>
+  <int value="4" label="FAILED_MISSING_VERSION_ID"/>
+  <int value="5" label="FAILED_MISSING_SCHEME_ID"/>
+  <int value="6" label="FAILED_EMPTY_URL_HASHES"/>
+  <int value="7" label="FAILED_DANGLING_HASH"/>
+  <int value="8" label="SKIPPED_OLD_VERSION_ID"/>
+  <int value="9" label="SKIPPED_EQUAL_VERSION_ID"/>
+  <int value="10" label="SKIPPED_INVALID_SCHEME_ID"/>
+  <int value="11" label="FAILED_HASH_LENGTH_EXCEEDS_MAX"/>
+  <int value="12" label="FAILED_TOO_FEW_ALLOWLIST_ENTRIES"/>
+</enum>
+
+<enum name="ApkDownloadTelemetryIncompleteReason">
+  <int value="0" label="MISSING_WEB_CONTENTS"/>
+  <int value="1" label="SB_NAVIGATION_MANAGER_NOT_READY"/>
+  <int value="2" label="COMPLETE"/>
+  <int value="3" label="MISSING_RENDER_FRAME_HOST"/>
+  <int value="4" label="RENDER_FRAME_HOST_INVALID_URL"/>
+</enum>
+
+<enum name="ApkDownloadTelemetryOutcome">
+  <int value="0" label="NOT_SENT_SAFE_BROWSING_NOT_ENABLED"/>
+  <int value="1" label="NOT_SENT_MISSING_WEB_CONTENTS"/>
+  <int value="2" label="NOT_SENT_INCOGNITO"/>
+  <int value="3" label="NOT_SENT_EXTENDED_REPORTING_DISABLED"/>
+  <int value="4" label="NOT_SENT_DOWNLOAD_CANCELLED"/>
+  <int value="5" label="NOT_SENT_FAILED_TO_SERIALIZE"/>
+  <int value="6" label="NOT_SENT_FEATURE_NOT_ENABLED"/>
+  <int value="7" label="SENT"/>
+  <int value="8" label="NOT_SENT_UNCONSENTED"/>
+</enum>
+
+<enum name="BackoffReportErrorReason">
+  <int value="0" label="InvalidKey"/>
+  <int value="1" label="ResponseError"/>
+</enum>
+
+<enum name="BooleanBackoff">
+  <int value="0" label="No backoff"/>
+  <int value="1" label="Backoff mode enabled"/>
+</enum>
+
+<enum name="BooleanHasKey">
+  <int value="0" label="Lacks key"/>
+  <int value="1" label="Has key"/>
+</enum>
+
+<enum name="BooleanHasToken">
+  <int value="0" label="Lacks token"/>
+  <int value="1" label="Has token"/>
+</enum>
+
+<enum name="BooleanIneligible">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="Ineligible"/>
+</enum>
+
+<enum name="BooleanIsPrefetch">
+  <int value="0" label="Is not prefetch"/>
+  <int value="1" label="Is prefetch"/>
+</enum>
+
+<enum name="BooleanIsSubresource">
+  <int value="0" label="Mainframe"/>
+  <int value="1" label="Subresource"/>
+</enum>
+
+<enum name="BooleanManagedPref">
+  <int value="0" label="Unmanaged Pref"/>
+  <int value="1" label="Managed Pref"/>
+</enum>
+
+<enum name="BooleanSafeBrowsingApiUnknownException">
+  <int value="0" label="Known exception"/>
+  <int value="1" label="Unknown exception"/>
+</enum>
+
+<enum name="BooleanSentOrReceived">
+  <int value="0" label="Sent"/>
+  <int value="1" label="Received"/>
+</enum>
+
+<enum name="BooleanTransferred">
+  <int value="0" label="Did not transfer"/>
+  <int value="1" label="Transferred"/>
+</enum>
+
+<enum name="BooleanUnavailable">
+  <int value="0" label="Available"/>
+  <int value="1" label="Unavailable"/>
+</enum>
+
+<enum name="ClientSafeBrowsingReportType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="URL phishing"/>
+  <int value="2" label="URL malware"/>
+  <int value="3" label="URL unwanted"/>
+  <int value="4" label="URL client side phishing"/>
+  <int value="5" label="URL client side malware"/>
+  <int value="6" label="dangerous download recovery"/>
+  <int value="7" label="dangerous download warning"/>
+  <int value="10" label="dangerous download by API"/>
+  <int value="12" label="URL password protection phishing"/>
+  <int value="13" label="dangerous download opened"/>
+  <int value="14" label="Ad sample"/>
+  <int value="15" label="URL suspicious"/>
+  <int value="16" label="URL billing"/>
+  <int value="17" label="APK download"/>
+  <int value="19" label="Blocked Ad redirect"/>
+  <int value="20" label="Blocked Ad popup"/>
+  <int value="21" label="Hash-prefix real-time experiment"/>
+</enum>
+
+<enum name="SafeBrowsingAllowlistAsyncMatch">
+  <int value="0" label="ASYNC"/>
+  <int value="1" label="MATCH"/>
+  <int value="2" label="NO_MATCH"/>
+</enum>
+
+<enum name="SafeBrowsingApiExceptionStatusCode">
+  <int value="-1" label="SUCCESS_CACHE"/>
+  <int value="0" label="SUCCESS"/>
+  <int value="4" label="SIGN_IN_REQUIRED"/>
+  <int value="5" label="INVALID_ACCOUNT"/>
+  <int value="6" label="RESOLUTION_REQUIRED"/>
+  <int value="7" label="NETWORK_ERROR"/>
+  <int value="8" label="INTERNAL_ERROR"/>
+  <int value="10" label="DEVELOPER_ERROR"/>
+  <int value="13" label="ERROR"/>
+  <int value="14" label="INTERRUPTED"/>
+  <int value="15" label="TIMEOUT"/>
+  <int value="16" label="CANCELED"/>
+  <int value="17" label="API_NOT_CONNECTED"/>
+  <int value="19" label="REMOTE_EXCEPTION"/>
+  <int value="20" label="CONNECTION_SUSPENDED_DURING_CALL"/>
+  <int value="21" label="RECONNECTION_TIMED_OUT_DURING_UPDATE"/>
+  <int value="22" label="RECONNECTION_TIMED_OUT"/>
+</enum>
+
+<enum name="SafeBrowsingApiJavaValidationResult">
+  <int value="0" label="valid"/>
+  <int value="1" label="valid, but has unrecognized response status"/>
+  <int value="2" label="invalid due to unrecognized lookup result"/>
+  <int value="3" label="invalid due to unrecognized threat type"/>
+  <int value="4" label="invalid due to unrecognized threat attribute"/>
+</enum>
+
+<enum name="SafeBrowsingApiLookupResult">
+  <int value="0" label="success"/>
+  <int value="1" label="general failure"/>
+  <int value="2" label="API call timed out"/>
+  <int value="3" label="API unsupported (GMSCore outdated)"/>
+  <int value="4" label="API not available (API not supported on device)"/>
+  <int value="5"
+      label="API handler is null. Should never happen in production."/>
+</enum>
+
+<enum name="SafeBrowsingApiResponseStatus">
+  <int value="0" label="SUCCESS_WITH_LOCAL_BLOCKLIST"/>
+  <int value="1" label="SUCCESS_WITH_REAL_TIME"/>
+  <int value="2" label="SUCCESS_FALLBACK_REAL_TIME_TIMEOUT"/>
+  <int value="3" label="SUCCESS_FALLBACK_REAL_TIME_THROTTLED"/>
+  <int value="4" label="FAILURE_NETWORK_UNAVAILABLE"/>
+  <int value="5" label="FAILURE_BLOCK_LIST_UNAVAILABLE"/>
+  <int value="6" label="FAILURE_INVALID_URL"/>
+</enum>
+
+<enum name="SafeBrowsingApiThreatAttribute">
+  <int value="1" label="CANARY"/>
+  <int value="2" label="FRAME_ONLY"/>
+</enum>
+
+<enum name="SafeBrowsingApiThreatType">
+  <int value="0" label="NO_THREAT"/>
+  <int value="2" label="SOCIAL_ENGINEERING"/>
+  <int value="3" label="UNWANTED_SOFTWARE"/>
+  <int value="4" label="POTENTIALLY_HARMFUL_APPLICATION"/>
+  <int value="15" label="BILLING"/>
+  <int value="20" label="ABUSIVE_EXPERIENCE_VIOLATION"/>
+  <int value="21" label="BETTER_ADS_VIOLATION"/>
+</enum>
+
+<enum name="SafeBrowsingAppOptIn">
+  <int value="0" label="No opt-in preference in manifest"/>
+  <int value="1" label="Explicit opt-in via manifest"/>
+  <int value="2" label="Explicit opt-out via manifest"/>
+</enum>
+
+<enum name="SafeBrowsingAttributionResultTypes">
+  <int value="1" label="SUCCESS"/>
+  <int value="2" label="SUCCESS_LANDING_PAGE"/>
+  <int value="3" label="SUCCESS_LANDING_REFERRER"/>
+  <int value="4" label="INVALID_URL"/>
+  <int value="5" label="NAVIGATION_EVENT_NOT_FOUND"/>
+  <int value="6" label="SUCCESS_REFERRER"/>
+</enum>
+
+<enum name="SafeBrowsingBinaryUploadResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Upload failure"/>
+  <int value="3" label="Timeout"/>
+  <int value="4" label="File too large"/>
+  <int value="5" label="Failed to get token"/>
+  <int value="6" label="Unauthorized"/>
+  <int value="7" label="File encrypted"/>
+  <int value="8" label="Unsupported file type"/>
+  <int value="9" label="Too many requests"/>
+</enum>
+
+<enum name="SafeBrowsingDelayedWarningEvent">
+  <int value="0" label="User loaded a page with a delayed warning"/>
+  <int value="1" label="User left the page and the warning was never shown"/>
+  <int value="2" label="The warning is shown because the user pressed a key"/>
+  <int value="3"
+      label="User clicked on the page at least once but the feature isn't
+             configured to show warnings on mouse clicks."/>
+  <int value="4" label="User clicked on the page and the warning was shown."/>
+  <int value="5"
+      label="Page tried to enter fullscreen mode and the warning was shown."/>
+  <int value="6"
+      label="Page initiated a download and it was silently cancelled."/>
+  <int value="7"
+      label="The page triggered a permission request. It was denied and the
+             warning was shown."/>
+  <int value="8"
+      label="The page tried to display a JavaScript dialog
+             (alert/confirm/prompt). It was blocked and the warning was
+             shown."/>
+  <int value="9"
+      label="A password or autofill request was denied at least once and the
+             warning was never shown."/>
+  <int value="10"
+      label="The page triggered a desktop capture request. It was denied and
+             the warning was shown."/>
+  <int value="11"
+      label="User pasted something on the page and the warning was shown."/>
+</enum>
+
+<enum name="SafeBrowsingEnhancedProtegoPingType">
+  <int value="0" label="UnknownType"/>
+  <int value="1" label="None"/>
+  <int value="2" label="WithToken"/>
+  <int value="3" label="WithoutToken"/>
+</enum>
+
+<enum name="SafeBrowsingHPRTOperationOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Parse response error"/>
+  <int value="2" label="No cache duration in response"/>
+  <int value="3" label="Incorrect full hash length in response"/>
+  <int value="4" label="Retriable error"/>
+  <int value="5" label="Network error"/>
+  <int value="6" label="HTTP error"/>
+  <int value="7" label="Bug: Reached NOTREACHED code"/>
+  <int value="8" label="Result found in local cache"/>
+  <int value="9" label="Service is in backoff mode"/>
+  <int value="10" label="OHTTP key fetch failed"/>
+</enum>
+
+<enum name="SafeBrowsingOhttpFetchKeyTriggerReason">
+  <int value="0" label="DuringHashRealTimeLookup"/>
+  <int value="1" label="AsyncFetch"/>
+  <int value="2" label="KeyRelatedHttpErrorCode"/>
+  <int value="3" label="KeyRotatedHeader"/>
+</enum>
+
+<enum name="SafeBrowsingPageLoadTokenClearReason">
+  <int value="0" label="Safe Browsing state changed"/>
+  <int value="1" label="Cookies deleted"/>
+  <int value="2" label="Sync state changed"/>
+</enum>
+
+<enum name="SafeBrowsingParseV4HashResult">
+  <int value="0" label="PARSE_FROM_STRING_ERROR"/>
+  <int value="1" label="UNEXPECTED_THREAT_ENTRY_TYPE_ERROR"/>
+  <int value="2" label="UNEXPECTED_THREAT_TYPE_ERROR"/>
+  <int value="3" label="UNEXPECTED_PLATFORM_TYPE_ERROR"/>
+  <int value="4" label="NO_METADATA_ERROR"/>
+  <int value="5" label="INCONSISTENT_THREAT_TYPE_ERROR"/>
+  <int value="6" label="UNEXPECTED_METADATA_VALUE_ERROR"/>
+  <int value="7" label="NO_THREAT_ERROR"/>
+</enum>
+
+<enum name="SafeBrowsingParseV4UpdateResult">
+  <int value="0" label="PARSE_FROM_STRING_ERROR"/>
+  <int value="1" label="NO_PLATFORM_TYPE_ERROR"/>
+  <int value="2" label="NO_THREAT_ENTRY_TYPE_ERROR"/>
+  <int value="3" label="NO_THREAT_TYPE_ERROR"/>
+  <int value="4" label="NO_STATE_ERROR"/>
+</enum>
+
+<enum name="SafeBrowsingReferralMethod">
+  <int value="0" label="SECURITY_INTERSTITIAL"/>
+  <int value="1" label="SAFETY_CHECK"/>
+  <int value="2" label="PROMOSLINGER_REFERRAL"/>
+  <int value="3" label="DOWNLOAD_BUBBLE_SUBPAGE"/>
+</enum>
+
+<enum name="SafeBrowsingRTConsumerVersionReason">
+  <int value="0" label="Total checks"/>
+  <int value="1" label="Off the record"/>
+  <int value="2" label="No valid DM token"/>
+  <int value="3" label="Policy not set"/>
+</enum>
+
+<enum name="SafeBrowsingRTLookupResponseVerdictType">
+  <int value="0" label="VERDICT_TYPE_UNSPECIFIED"/>
+  <int value="1" label="SAFE"/>
+  <int value="100" label="DANGEROUS"/>
+</enum>
+
+<enum name="SafeBrowsingSettingsUserAction">
+  <int value="0" label="Settings page showed."/>
+  <int value="1" label="Enhanced protection button clicked."/>
+  <int value="2" label="Standard protection button clicked."/>
+  <int value="3" label="Disable Safe Browsing button clicked."/>
+  <int value="4" label="Enhanced protection expand arrow clicked."/>
+  <int value="5" label="Standard protection expand arrow clicked."/>
+  <int value="6" label="Disable Safe Browsing dialog confirmed."/>
+  <int value="7" label="Disable Safe Browsing dialog denied."/>
+</enum>
+
+<enum name="SafeBrowsingState">
+  <int value="0" label="Safe Browsing disabled."/>
+  <int value="1" label="Standard protection."/>
+  <int value="2" label="Enhanced protection."/>
+</enum>
+
+<enum name="SafeBrowsingTailoredSecurityNotificationResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Shown"/>
+  <int value="2" label="OBSOLETE_AccountNotConsented"/>
+  <int value="3" label="EnhancedProtectionAlreadyEnabled"/>
+  <int value="4" label="NoWebContentsAvailable"/>
+  <int value="5" label="SafeBrowsingControlledByPolicy"/>
+  <int value="6" label="NoBrowserAvailable"/>
+  <int value="7" label="NoBrowserWindowAvailable"/>
+  <int value="8" label="OBSOLETE_PreferencesNotSynced"/>
+  <int value="9" label="HistoryNotSynced"/>
+</enum>
+
+<enum name="SafeBrowsingTailoredSecurityOutcome">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Settings"/>
+  <int value="3" label="Shown"/>
+  <int value="4" label="Rejected"/>
+  <int value="5" label="ClosedByAnotherDialog"/>
+</enum>
+
+<enum name="SafeBrowsingTailoredSecurityShouldRetryOutcome">
+  <int value="0" label="UnknownType"/>
+  <int value="1" label="RetryNeededDoRetry"/>
+  <int value="2" label="RetryNeededKeepWaiting"/>
+  <int value="3" label="UnsetInitializeWaitingPeriod"/>
+  <int value="4" label="UnsetRetryBecauseDoneWaiting"/>
+  <int value="5" label="UnsetStillWaiting"/>
+</enum>
+
+<enum name="SafeBrowsingUrlScheme">
+  <int value="0" label="Unknown scheme"/>
+  <int value="1" label="about"/>
+  <int value="2" label="blob"/>
+  <int value="3" label="content"/>
+  <int value="4" label="cid"/>
+  <int value="5" label="data"/>
+  <int value="6" label="file"/>
+  <int value="7" label="filesystem"/>
+  <int value="8" label="ftp"/>
+  <int value="9" label="http"/>
+  <int value="10" label="https"/>
+  <int value="11" label="javascript"/>
+  <int value="12" label="mailto"/>
+  <int value="13" label="quic-transport"/>
+  <int value="14" label="tel"/>
+  <int value="15" label="urn"/>
+  <int value="16" label="uuid-in-package"/>
+  <int value="17" label="webcal"/>
+  <int value="18" label="ws"/>
+  <int value="19" label="wss"/>
+  <int value="20" label="isolated-app"/>
+  <int value="21" label="chrome-native"/>
+  <int value="22" label="chrome-search"/>
+  <int value="23" label="devtools"/>
+  <int value="24" label="chrome-error"/>
+  <int value="25" label="chrome"/>
+  <int value="26" label="chrome-untrusted"/>
+  <int value="27" label="chrome-guest"/>
+  <int value="28" label="view-source"/>
+  <int value="29" label="externalfile"/>
+  <int value="30" label="android-app"/>
+  <int value="31" label="googlechrome"/>
+  <int value="32" label="android-webview-video-poster"/>
+  <int value="33" label="chrome-distiller"/>
+  <int value="34" label="chrome-extension"/>
+</enum>
+
+<enum name="SafeBrowsingUserPopulation">
+  <int value="0" label="Unknown user"/>
+  <int value="1" label="Safe browsing user"/>
+  <int value="2" label="Extended reporting user"/>
+  <int value="3" label="Enhanced protection user"/>
+</enum>
+
+<enum name="SafeBrowsingV4ApplyUpdateResult">
+  <int value="0" label="APPLY_UPDATE_SUCCESS"/>
+  <int value="1" label="UNEXPECTED_APPLY_UPDATE_FAILURE"/>
+  <int value="2" label="PREFIX_SIZE_TOO_SMALL_FAILURE"/>
+  <int value="3" label="PREFIX_SIZE_TOO_LARGE_FAILURE"/>
+  <int value="4" label="ADDITIONS_SIZE_UNEXPECTED_FAILURE"/>
+  <int value="5" label="ADDITIONS_HAS_EXISTING_PREFIX_FAILURE"/>
+  <int value="6" label="UNEXPECTED_RESPONSE_TYPE_FAILURE"/>
+  <int value="7" label="REMOVALS_INDEX_TOO_LARGE_FAILURE"/>
+  <int value="8" label="RICE_DECODING_FAILURE"/>
+  <int value="9" label="UNEXPECTED_COMPRESSION_TYPE_ADDITIONS_FAILURE"/>
+  <int value="10" label="UNEXPECTED_COMPRESSION_TYPE_REMOVALS_FAILURE"/>
+  <int value="11" label="CHECKSUM_MISMATCH_FAILURE"/>
+  <int value="12" label="MMAP_FAILURE"/>
+</enum>
+
+<enum name="SafeBrowsingV4DecodeResult">
+  <int value="0" label="DECODE_SUCCESS"/>
+  <int value="1" label="DECODE_NO_MORE_ENTRIES_FAILURE"/>
+  <int value="2" label="DECODE_REQUESTED_TOO_MANY_BITS_FAILURE"/>
+  <int value="3" label="DECODE_RAN_OUT_OF_BITS_FAILURE"/>
+  <int value="4" label="NUM_ENTRIES_NEGATIVE_FAILURE"/>
+  <int value="5" label="RICE_PARAMETER_NON_POSITIVE_FAILURE"/>
+  <int value="6" label="ENCODED_DATA_UNEXPECTED_EMPTY_FAILURE"/>
+  <int value="7" label="DECODED_INTEGER_OVERFLOW_FAILURE"/>
+</enum>
+
+<enum name="SafeBrowsingV4FullHashCacheResult">
+  <int value="0" label="FULL_HASH_CACHE_MISS"/>
+  <int value="1" label="FULL_HASH_CACHE_HIT"/>
+  <int value="2" label="FULL_HASH_NEGATIVE_CACHE_HIT"/>
+</enum>
+
+<enum name="SafeBrowsingV4GetHashCheckResult">
+  <int value="0" label="GET_HASH_CHECK_EMPTY"/>
+  <int value="1" label="GET_HASH_CHECK_HIT"/>
+  <int value="2" label="GET_HASH_CHECK_MISS"/>
+</enum>
+
+<enum name="SafeBrowsingV4OperationResult">
+  <int value="0" label="STATUS_200"/>
+  <int value="1" label="PARSE_ERROR (subset of STATUS_200)"/>
+  <int value="2" label="NETWORK_ERROR"/>
+  <int value="3" label="HTTP_ERROR"/>
+  <int value="4" label="BACKOFF_ERROR"/>
+  <int value="5" label="MIN_WAIT_DURATION_ERROR"/>
+  <int value="6" label="ALREADY_PENDING_ERROR"/>
+  <int value="7" label="RETRIABLE_NETWORK_ERROR"/>
+  <int value="8" label="RETRIABLE_HTTP_ERROR"/>
+</enum>
+
+<enum name="SafeBrowsingV4StoreReadResult">
+  <int value="0" label="READ_SUCCESS"/>
+  <int value="1" label="UNEXPECTED_READ_FAILURE"/>
+  <int value="2" label="FILE_UNREADABLE_FAILURE"/>
+  <int value="3" label="FILE_EMPTY_FAILURE"/>
+  <int value="4" label="PROTO_PARSING_FAILURE"/>
+  <int value="5" label="UNEXPECTED_MAGIC_NUMBER_FAILURE"/>
+  <int value="6" label="FILE_VERSION_TOO_LOW_FAILURE"/>
+  <int value="7" label="HASH_PREFIX_INFO_MISSING_FAILURE"/>
+  <int value="8" label="HASH_PREFIX_MAP_GENERATION_FAILURE"/>
+  <int value="9" label="MIGRATION_FAILURE"/>
+</enum>
+
+<enum name="SafeBrowsingV4StoreWriteResult">
+  <int value="0" label="WRITE_SUCCESS"/>
+  <int value="1" label="UNEXPECTED_WRITE_FAILURE"/>
+  <int value="2" label="INVALID_RESPONSE_TYPE_FAILURE"/>
+  <int value="3" label="UNEXPECTED_BYTES_WRITTEN_FAILURE"/>
+  <int value="4" label="UNABLE_TO_RENAME_FAILURE"/>
+</enum>
+
+<enum name="SBExtensionTelemetryDisableReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Malware"/>
+</enum>
+
+<enum name="SBExtensionTelemetrySignalsSignalType">
+  <int value="0" label="TabsExecuteScript"/>
+  <int value="1" label="RemoteHostsContacted"/>
+  <int value="2" label="PasswordReuse"/>
+  <int value="3" label="PotentialPasswordTheft"/>
+  <int value="4" label="CookiesGetAll"/>
+  <int value="5" label="CookiesGet"/>
+  <int value="6" label="DeclarativeNetRequest"/>
+  <int value="7" label="TabsApi"/>
+</enum>
+
+<enum name="SBFileTypeUpdateResult">
+  <int value="1" label="SUCCESS"/>
+  <int value="2" label="FAILED_EMPTY"/>
+  <int value="3" label="FAILED_PROTO_PARSE"/>
+  <int value="4" label="FAILED_DELTA_CHECK"/>
+  <int value="5" label="FAILED_VERSION_CHECK"/>
+  <int value="6" label="FAILED_DEFAULT_SETTING_SET"/>
+  <int value="7" label="FAILED_WRONG_SETTINGS_COUNT"/>
+  <int value="8" label="SKIPPED_VERSION_CHECK_EQUAL"/>
+</enum>
+
+<enum name="SBMetricsCollectorEventType">
+  <int value="0" label="USER_STATE_DISABLED"/>
+  <int value="1" label="USER_STATE_ENABLED"/>
+  <int value="2" label="DATABASE_INTERSTITIAL_BYPASS"/>
+  <int value="3" label="CSD_INTERSITITAL_BYPASS"/>
+  <int value="4" label="URL_REAL_TIME_INTERSTITIAL_BYPASS"/>
+  <int value="5" label="DANGEROUS_DOWNLOAD_BYPASS"/>
+  <int value="6" label="PASSWORD_REUSE_MODAL_BYPASS"/>
+  <int value="7" label="EXTENSION_ALLOWLIST_INSTALL_BYPASS"/>
+  <int value="8" label="NON_ALLOWLISTED_EXTENSION_RE_ENABLED"/>
+  <int value="9" label="SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL"/>
+  <int value="10" label="SECURITY_SENSITIVE_SSL_INTERSTITIAL"/>
+  <int value="11" label="SECURITY_SENSITIVE_PASSWORD_PROTECTION"/>
+  <int value="12" label="SECURITY_SENSITIVE_DOWNLOAD"/>
+  <int value="13" label="HASH_PREFIX_REAL_TIME_INTERSTITIAL_BYPASS"/>
+  <int value="14" label="ANDROID_SAFEBROWSING_REAL_TIME_INTERSTITIAL_BYPASS"/>
+  <int value="15" label="ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS"/>
+</enum>
+
+<enum name="SBThreatType">
+  <int value="0" label="Unused"/>
+  <int value="1" label="Safe"/>
+  <int value="2" label="URL phishing"/>
+  <int value="3" label="URL malware"/>
+  <int value="4" label="URL unwanted"/>
+  <int value="5" label="URL binary malware"/>
+  <int value="6" label="URL client side phishing"/>
+  <int value="7" label="Extension"/>
+  <int value="8" label="URL client side malware"/>
+  <int value="9" label="Blacklisted resource"/>
+  <int value="10" label="API abuse"/>
+  <int value="11" label="Subresource filter"/>
+  <int value="12" label="CSD allowlist"/>
+  <int value="13" label="URL password protection phishing"/>
+  <int value="14" label="Saved password reuse"/>
+  <int value="15" label="Signed in sync password reuse"/>
+  <int value="16" label="Signed in non sync password reuse"/>
+  <int value="17" label="Blocked ad redirect"/>
+  <int value="18" label="Ad sample"/>
+  <int value="19" label="Blocked ad popup"/>
+  <int value="20" label="Suspicious site"/>
+  <int value="21" label="Enterprise password reuse"/>
+  <int value="22" label="Billing"/>
+  <int value="23" label="Apk download"/>
+  <int value="24" label="High confidence allowlist"/>
+  <int value="25" label="(Obsolete) Accuracy Tips. Deprecated as of 12/2022."/>
+</enum>
+
+<enum name="SuspiciousSiteTriggerEvent">
+  <int value="0" label="A page load started"/>
+  <int value="1" label="A page load finished"/>
+  <int value="2" label="A suspicious site was detected"/>
+  <int value="3" label="The report delay timer fired"/>
+  <int value="4" label="A report was started"/>
+  <int value="5" label="A report was finished and sent"/>
+  <int value="6" label="A pending report was cancelled"/>
+  <int value="7" label="A report failed to start"/>
+  <int value="8" label="An active report failed to finish"/>
+  <int value="9" label="A report was possible but skipped"/>
+</enum>
+
+<enum name="SuspiciousSiteTriggerManagerReason">
+  <int value="0" label="No reason"/>
+  <int value="1" label="The user opted-out of reports"/>
+  <int value="2" label="A report is already running on this page"/>
+  <int value="3" label="No report was started on this page"/>
+  <int value="4" label="The user has exceeded their report quota"/>
+  <int value="5" label="The report type has been deprecated"/>
+</enum>
+
+<enum name="SuspiciousSiteTriggerState">
+  <int value="0" label="The trigger is idle"/>
+  <int value="1" label="A page is loading"/>
+  <int value="2" label="A report will begin when the page loads"/>
+  <int value="3" label="A report has started"/>
+  <int value="4" label="The trigger is in monitoring mode"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

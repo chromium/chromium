@@ -29,6 +29,7 @@ class CrostiniApps;
 class ExtensionAppsChromeOs;
 class PluginVmApps;
 class StandaloneBrowserApps;
+class BrowserShortcutsCrosapiPublisher;
 #else
 class ExtensionApps;
 #endif
@@ -44,6 +45,10 @@ class PublisherHost {
   ~PublisherHost();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  apps::StandaloneBrowserApps* StandaloneBrowserApps();
+
+  apps::BrowserShortcutsCrosapiPublisher* BrowserShortcutsCrosapiPublisher();
+
   void SetArcIsRegistered();
 
   void ReInitializeCrostiniForTesting(AppServiceProxy* proxy);
@@ -67,9 +72,11 @@ class PublisherHost {
   std::unique_ptr<ExtensionAppsChromeOs> chrome_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
-  std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
+  std::unique_ptr<apps::StandaloneBrowserApps> standalone_browser_apps_;
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<web_app::BrowserShortcuts> browser_shortcuts_;
+  std::unique_ptr<apps::BrowserShortcutsCrosapiPublisher>
+      browser_shortcuts_crosapi_publisher_;
 #else
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<ExtensionApps> chrome_apps_;

@@ -7,5 +7,9 @@ include_rules = [
 specific_include_rules = {
   ".*_unittest\.cc": [
     "+services/network/network_context.h",
+  ],
+  "chrome/browser/ash/login/existing_user_controller.cc": [
+    "+ash/shell.h",
+    "+ash/metrics/login_unlock_throughput_recorder.h",
   ]
 }

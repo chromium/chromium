@@ -113,8 +113,7 @@ void DeviceInfoPrefs::GarbageCollectExpiredCacheGuids() {
       return true;
     }
 
-    absl::optional<int> days_since_epoch =
-        dict.GetDict().FindInt(kTimestampKey);
+    std::optional<int> days_since_epoch = dict.GetDict().FindInt(kTimestampKey);
 
     // Avoid crashes if the dictionary contains no timestamp and meanwhile clean
     // up these corrupt entries.

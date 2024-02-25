@@ -38,13 +38,18 @@ class PLATFORM_EXPORT UTF16TextIterator {
   // the range [offset, endOffset].
   // 'length' denotes the maximum length of the UChar array, which might exceed
   // 'endOffset'.
-  UTF16TextIterator(const UChar*, int length);
+  UTF16TextIterator(const UChar* characters, unsigned size)
+      : characters_(characters),
+        characters_end_(characters + size),
+        size_(size) {}
+
   UTF16TextIterator(const UTF16TextIterator&) = delete;
   UTF16TextIterator& operator=(const UTF16TextIterator&) = delete;
 
   inline bool Consume(UChar32& character) {
-    if (offset_ >= length_)
+    if (offset_ >= size_) {
       return false;
+    }
 
     character = *characters_;
     current_glyph_length_ = 1;
@@ -59,7 +64,8 @@ class PLATFORM_EXPORT UTF16TextIterator {
     offset_ += current_glyph_length_;
   }
 
-  int Offset() const { return offset_; }
+  unsigned Offset() const { return offset_; }
+  unsigned Size() const { return size_; }
   const UChar* Characters() const { return characters_; }
   const UChar* GlyphEnd() const { return characters_ + current_glyph_length_; }
 
@@ -69,10 +75,10 @@ class PLATFORM_EXPORT UTF16TextIterator {
   void ConsumeMultipleUChar();
 
   const UChar* characters_;
-  const UChar* characters_end_;
-  int offset_;
-  int length_;
-  unsigned current_glyph_length_;
+  const UChar* const characters_end_;
+  unsigned offset_ = 0;
+  const unsigned size_;
+  unsigned current_glyph_length_ = 0;
 };
 
 }  // namespace blink

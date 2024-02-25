@@ -52,7 +52,6 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
   FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoTrackUnderlyingSourceTest,
                            FrameLimiter);
 
-  scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner();
   static std::string GetDeviceIdForMonitoring(const MediaStreamDevice& device);
   static wtf_size_t GetFramePoolSize(const MediaStreamDevice& device);
 
@@ -66,7 +65,6 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
 
   void OnFrameFromTrack(
       scoped_refptr<media::VideoFrame> media_frame,
-      std::vector<scoped_refptr<media::VideoFrame>> scaled_media_frames,
       base::TimeTicks estimated_capture_time);
 
   // Only used to prevent the gargabe collector from reclaiming the media

@@ -11,12 +11,15 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -24,7 +27,6 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
-#include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -33,12 +35,12 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -51,6 +53,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -159,10 +162,13 @@ void BrowserNonClientFrameViewChromeOS::Init() {
     tab_search_bubble_host_ = tab_search_button->tab_search_bubble_host();
   }
 
+  const bool is_close_button_enabled =
+      !(browser->app_controller() &&
+        browser->app_controller()->IsPreventCloseEnabled());
+
   caption_button_container_ =
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
-          frame(), std::move(tab_search_button)));
-  caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
+          frame(), is_close_button_enabled, std::move(tab_search_button)));
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
@@ -175,6 +181,13 @@ void BrowserNonClientFrameViewChromeOS::Init() {
   UpdateProfileIcons();
 
   window_observation_.Observe(GetFrameWindow());
+
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          browser->profile())) {
+    app_registry_cache_observation_.Observe(
+        &apps::AppServiceProxyFactory::GetForProfile(browser->profile())
+             ->AppRegistryCache());
+  }
 
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
@@ -189,7 +202,7 @@ void BrowserNonClientFrameViewChromeOS::Init() {
     frame_header_ = CreateFrameHeader();
   }
 
-  if (AppIsBorderlessPwa()) {
+  if (AppIsPwaWithBorderlessDisplayMode()) {
     UpdateBorderlessModeEnabled();
   }
 
@@ -274,10 +287,6 @@ int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
              : caption_button_container_->bounds().bottom();
 }
 
-int BrowserNonClientFrameViewChromeOS::GetThemeBackgroundXInset() const {
-  return BrowserFrameHeaderChromeOS::GetThemeBackgroundXInset();
-}
-
 void BrowserNonClientFrameViewChromeOS::UpdateThrobber(bool running) {
   if (window_icon_)
     window_icon_->Update();
@@ -290,7 +299,7 @@ bool BrowserNonClientFrameViewChromeOS::CanUserExitFullscreen() const {
 SkColor BrowserNonClientFrameViewChromeOS::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
   // Web apps apply a theme color if specified by the extension/manifest.
-  absl::optional<SkColor> frame_theme_color =
+  std::optional<SkColor> frame_theme_color =
       browser_view()->browser()->app_controller()->GetThemeColor();
   const SkColor frame_color =
       frame_theme_color.value_or(GetFrameColor(active_state));
@@ -311,7 +320,7 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
   if (!UsePackagedAppHeaderStyle(browser_view()->browser()))
     return BrowserNonClientFrameView::GetFrameColor(active_state);
 
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   if (browser_view()->GetIsWebAppType())
     color = browser_view()->browser()->app_controller()->GetThemeColor();
 
@@ -341,13 +350,6 @@ void BrowserNonClientFrameViewChromeOS::UpdateMinimumSize() {
   GetWidget()->OnSizeConstraintsChanged();
 }
 
-void BrowserNonClientFrameViewChromeOS::OnBrowserViewInitViewsComplete() {
-  // We need to wait till browser views are fully initialized to apply rounded
-  // corners on the frame. This ensure that NativeViewHosts hosting browser's
-  // web contents are initialized.
-  UpdateWindowRoundedCorners();
-}
-
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForClientView() const {
   // The ClientView must be flush with the top edge of the widget so that the
   // web contents can take up the entire screen in immersive fullscreen (with
@@ -375,7 +377,7 @@ int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
   // the tab's shadow to caption.
   if (hit_test == HTCLIENT && !frame()->IsMaximized() &&
       !frame()->IsFullscreen() &&
-      !chromeos::TabletState::Get()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     // TODO(crbug.com/1213133): Tab Strip hit calculation and bounds logic
     // should reside in the TabStrip class.
     gfx::Point client_point(point);
@@ -442,13 +444,13 @@ void BrowserNonClientFrameViewChromeOS::UpdateBorderlessModeEnabled() {
       browser_view()->IsBorderlessModeEnabled());
 }
 
-bool BrowserNonClientFrameViewChromeOS::AppIsBorderlessPwa() const {
+bool BrowserNonClientFrameViewChromeOS::AppIsPwaWithBorderlessDisplayMode()
+    const {
   return browser_view()->GetIsWebAppType() &&
-         browser_view()->AppUsesBorderlessMode() &&
-         browser_view()->IsBorderlessModeEnabled();
+         browser_view()->AppUsesBorderlessMode();
 }
 
-void BrowserNonClientFrameViewChromeOS::Layout() {
+void BrowserNonClientFrameViewChromeOS::Layout(PassKey) {
   // The header must be laid out before computing |painted_height| because the
   // computation of |painted_height| for app and popup windows depends on the
   // position of the window controls.
@@ -466,11 +468,11 @@ void BrowserNonClientFrameViewChromeOS::Layout() {
     LayoutProfileIndicator();
   }
 
-  if (AppIsBorderlessPwa()) {
+  if (AppIsPwaWithBorderlessDisplayMode()) {
     UpdateBorderlessModeEnabled();
   }
 
-  BrowserNonClientFrameView::Layout();
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
   UpdateTopViewInset();
 
   if (frame_header_) {
@@ -552,7 +554,7 @@ void BrowserNonClientFrameViewChromeOS::ChildPreferredSizeChanged(
     views::View* child) {
   if (browser_view()->initialized()) {
     InvalidateLayout();
-    frame()->GetRootView()->Layout();
+    frame()->GetRootView()->DeprecatedLayoutImmediately();
   }
 }
 
@@ -649,19 +651,38 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
 
   ImmersiveModeController* immersive_mode_controller =
       browser_view()->immersive_mode_controller();
-  const bool was_enabled = immersive_mode_controller->IsEnabled();
-  immersive_mode_controller->SetEnabled(ShouldEnableImmersiveModeController());
+  ExclusiveAccessManager* exclusive_access_manager =
+      browser_view()->browser()->exclusive_access_manager();
 
-  // Do not relayout if immersive mode has not changed.
-  if (was_enabled == immersive_mode_controller->IsEnabled())
+  const bool was_immersive = immersive_mode_controller->IsEnabled();
+  const bool was_fullscreen =
+      exclusive_access_manager->context()->IsFullscreen();
+
+  // If fullscreen mode is not what it should be, toggle fullscreen mode.
+  if (ShouldEnableFullscreenMode(enabled) != was_fullscreen) {
+    exclusive_access_manager->fullscreen_controller()
+        ->ToggleBrowserFullscreenMode();
+  }
+
+  // Set immersive mode to what it should be. Note that we need to call this
+  // after updating fullscreen mode since it may override immersive mode to not
+  // wanted state (e.g. Non TabStrip frame with tablet mode enabled).
+  immersive_mode_controller->SetEnabled(
+      ShouldEnableImmersiveModeController(enabled));
+
+  // Do not relayout if neither of immersive mode nor fullscreen mode has
+  // changed because the non client frame area will not change.
+  if (was_immersive == immersive_mode_controller->IsEnabled() &&
+      was_fullscreen == exclusive_access_manager->context()->IsFullscreen()) {
     return;
+  }
 
   InvalidateLayout();
   // Can be null in tests.
   if (frame()->client_view())
     frame()->client_view()->InvalidateLayout();
   if (frame()->GetRootView())
-    frame()->GetRootView()->Layout();
+    frame()->GetRootView()->DeprecatedLayoutImmediately();
 }
 
 bool BrowserNonClientFrameViewChromeOS::ShouldTabIconViewAnimate() const {
@@ -732,13 +753,14 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     if (frame_header_)
       frame_header_->OnFloatStateChanged();
 
-    if (!chromeos::TabletState::Get()->InTabletMode())
+    if (!display::Screen::GetScreen()->InTabletMode()) {
       return;
+    }
 
     // Additionally updates immersive mode for PWA/SWA so that we show the title
     // bar when floated, and hide the title bar otherwise.
     browser_view()->immersive_mode_controller()->SetEnabled(
-        ShouldEnableImmersiveModeController());
+        ShouldEnableImmersiveModeController(false));
 
     return;
   }
@@ -776,12 +798,12 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
   auto* container = browser_view()->top_container();
   container->AddChildViewAt(caption_button_container_.get(), 0);
 
-  container->Layout();
+  container->DeprecatedLayoutImmediately();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // In Lacros, when entering in immersive fullscreen, it is possible
-  // that chromeos::FrameHeader::painted_height_ is set to '0', when
-  // Layout() is called. This is because the tapstrip gets hidden.
+  // that chromeos::FrameHeader::painted_height_ is set to '0', when layout
+  // occurs. This is because the tapstrip gets hidden.
   //
   // When it happens, PaintFrameImagesInRoundRect() has an empty rect
   // to paint onto, and the TabStrip's new theme is not painted.
@@ -794,11 +816,30 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
   ResetWindowControls();
   AddChildViewAt(caption_button_container_.get(), 0);
 
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveFullscreenExited() {
   OnImmersiveRevealEnded();
+}
+
+void BrowserNonClientFrameViewChromeOS::OnAppUpdate(
+    const apps::AppUpdate& update) {
+  Browser* browser = browser_view()->browser();
+
+  if (!browser->app_controller() ||
+      browser->app_controller()->app_id() != update.AppId() ||
+      !caption_button_container_) {
+    return;
+  }
+
+  caption_button_container_->SetCloseButtonEnabled(
+      update.AllowClose().value_or(true));
+}
+
+void BrowserNonClientFrameViewChromeOS::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observation_.Reset();
 }
 
 void BrowserNonClientFrameViewChromeOS::PaintAsActiveChanged() {
@@ -848,7 +889,7 @@ bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
 
   // Browsers in tablet mode still show their caption buttons in float state,
   // even with the webUI tab strip.
-  if (chromeos::TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return IsFloated();
   }
 
@@ -928,7 +969,9 @@ void BrowserNonClientFrameViewChromeOS::UpdateTopViewInset() {
   const bool immersive =
       browser_view()->immersive_mode_controller()->IsEnabled();
   const bool tab_strip_visible = browser_view()->GetTabStripVisible();
-  const int inset = (tab_strip_visible || immersive || AppIsBorderlessPwa())
+  const int inset = (tab_strip_visible || immersive ||
+                     (AppIsPwaWithBorderlessDisplayMode() &&
+                      browser_view()->IsBorderlessModeEnabled()))
                         ? 0
                         : GetTopInset(/*restored=*/false);
   frame()->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, inset);
@@ -981,102 +1024,31 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
     if (needs_layout && root_view) {
       // Adding a child does not invalidate the layout.
       InvalidateLayout();
-      root_view->Layout();
+      root_view->DeprecatedLayoutImmediately();
     }
   } else if (profile_indicator_icon_) {
     RemoveChildViewT(std::exchange(profile_indicator_icon_, nullptr));
     if (root_view)
-      root_view->Layout();
+      root_view->DeprecatedLayoutImmediately();
   }
 #endif
 }
 
 void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
-  using DevToolsDockedPlacement = BrowserView::DevToolsDockedPlacement;
-  const int corner_radius =
-      chromeos::GetFrameCornerRadius(frame()->GetNativeWindow());
+  DCHECK(GetWidget());
+
+  aura::Window* frame_window = GetWidget()->GetNativeWindow();
+
+  const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
+  frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                            corner_radius);
 
   if (frame_header_) {
     frame_header_->SetHeaderCornerRadius(corner_radius);
   }
 
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
-
-  SidePanel* side_panel = browser_view()->unified_side_panel();
-  const bool right_aligned_side_panel_showing =
-      side_panel->GetVisible() && side_panel->IsRightAligned();
-  const bool left_aligned_side_panel_showing =
-      side_panel->GetVisible() && !side_panel->IsRightAligned();
-
-  // If side panel is visible, round one of the bottom two corners of the side
-  // panel based on its alignment w.r.t to web contents.
-  side_panel->SetBackgroundRadii(gfx::RoundedCornersF(
-      0, 0, right_aligned_side_panel_showing ? corner_radius : 0,
-      left_aligned_side_panel_showing ? corner_radius : 0));
-
-  views::WebView* devtools_webview = browser_view()->devtools_web_view();
-  CHECK(devtools_webview);
-  CHECK(devtools_webview->holder());
-
-  // If devtools are visible, round one of the bottom two corners of the
-  // the devtools context based on the alignment of the side panel. Since
-  // devtools cover the full bounds of the web contents container, if the side
-  // panel is not visible, we have to round the bottom two corners of side panel
-  // irrespective of its docked placement.
-  devtools_webview->holder()->SetCornerRadii(gfx::RoundedCornersF(
-      0, 0, right_aligned_side_panel_showing ? 0 : corner_radius,
-      left_aligned_side_panel_showing ? 0 : corner_radius));
-
-  const DevToolsDockedPlacement devtools_placement =
-      browser_view()->devtools_docked_placement();
-  CHECK_NE(devtools_placement, DevToolsDockedPlacement::kUnknown);
-
-  // Rounded the contents webview.
-  ContentsWebView* contents_webview = browser_view()->contents_web_view();
-  const views::View* contents_container = browser_view()->contents_container();
-
-  const bool devtools_showing =
-      contents_webview->bounds() != contents_container->GetLocalBounds();
-
-  const gfx::RoundedCornersF contents_webview_radii(
-      0, 0,
-      right_aligned_side_panel_showing ||
-              (devtools_showing &&
-               devtools_placement != DevToolsDockedPlacement::kLeft)
-          ? 0
-          : corner_radius,
-      left_aligned_side_panel_showing ||
-              (devtools_showing &&
-               devtools_placement != DevToolsDockedPlacement::kRight)
-          ? 0
-          : corner_radius);
-
-  // SideTabView is shown when the renderer crashes. Initially the SabTabView
-  // gets the same corners as the contents webview it gets attached to but its
-  // radii needs to be updated as it is unaware of the client view layout
-  // changes.
-  bool sad_tab_showing = false;
-  if (contents_webview->web_contents()) {
-    if (auto* sad_tab_helper =
-            SadTabHelper::FromWebContents(contents_webview->web_contents());
-        sad_tab_helper->sad_tab()) {
-      static_cast<SadTabView*>(sad_tab_helper->sad_tab())
-          ->SetBackgroundRadii(contents_webview_radii);
-      sad_tab_showing = true;
-    }
-  }
-
-  CHECK(contents_webview);
-  CHECK(contents_webview->holder());
-
-  contents_webview->SetBackgroundRadii(contents_webview_radii);
-
-  // We do not need to round contents_webview, if SadTabView is shown instead of
-  // contents_webview.
-  if (!sad_tab_showing) {
-    contents_webview->holder()->SetCornerRadii(contents_webview_radii);
+  if (chromeos::features::IsRoundedWindowsEnabled()) {
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
   }
 }
 
@@ -1196,8 +1168,8 @@ bool BrowserNonClientFrameViewChromeOS::IsFloated() const {
          chromeos::WindowStateType::kFloated;
 }
 
-bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
-    const {
+bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController(
+    bool on_tablet_enabled) const {
   // Do not support immersive mode in kiosk.
   if (chromeos::IsKioskSession()) {
     return false;
@@ -1209,22 +1181,48 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
     return false;
   }
 
-  if (chromeos::TabletState::Get()->InTabletMode()) {
-    // Tabbed browsers do not support immersive mode in tablet mode. We use the
-    // web ui touchable tabstrip, which has its own sliding mechanism to view
-    // the tabs.
-    if (browser_view()->GetSupportsTabStrip())
-      return false;
+  // If tablet mode is just enabled, we should exit immersive mode for TabStrip.
+  // Note that we can still enter immersive mode if it's toggled after entering
+  // tablet mode.
+  if (on_tablet_enabled && browser_view()->GetSupportsTabStrip()) {
+    return false;
+  }
 
+  if (display::Screen::GetScreen()->InTabletMode()) {
     // No immersive mode for minimized windows as they aren't visible, and
     // floated windows need a permanent header to drag.
-    if (frame()->IsMinimized() || IsFloated())
+    if (frame()->IsMinimized() || IsFloated()) {
       return false;
+    }
 
     return true;
   }
 
   // In clamshell mode, we want immersive mode if fullscreen.
+  return frame()->IsFullscreen();
+}
+
+bool BrowserNonClientFrameViewChromeOS::ShouldEnableFullscreenMode(
+    bool on_tablet_enabled) const {
+  // In kiosk mode, we always want to be fullscreen.
+  if (chromeos::IsKioskSession()) {
+    return true;
+  }
+
+  // If user cannot exit fullscreen, we always want to be fullscreen. This must
+  // comes before the tablet mode condition since there is a case where the user
+  // is not allowed to exit fullscreen while tablet mode (LockedFullscreen).
+  if (!CanUserExitFullscreen()) {
+    return true;
+  }
+
+  // If tablet mode is just enabled, we should exit fullscreen mode for
+  // TabStrip. Note that we can still enter immersive mode if it's toggled after
+  // entering tablet mode.
+  if (on_tablet_enabled && browser_view()->GetSupportsTabStrip()) {
+    return false;
+  }
+
   return frame()->IsFullscreen();
 }
 
@@ -1242,7 +1240,7 @@ aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() {
   return frame()->GetNativeWindow();
 }
 
-BEGIN_METADATA(BrowserNonClientFrameViewChromeOS, BrowserNonClientFrameView)
+BEGIN_METADATA(BrowserNonClientFrameViewChromeOS)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowCaptionButtons)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowCaptionButtonsWhenNotInOverview)
 ADD_READONLY_PROPERTY_METADATA(int, ToolbarLeftInset)

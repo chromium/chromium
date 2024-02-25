@@ -14,7 +14,6 @@
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/feature_list.h"
@@ -55,6 +54,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
@@ -72,26 +72,10 @@ constexpr base::TimeDelta kTimeMetricsMin = base::Seconds(1);
 constexpr base::TimeDelta kTimeMetricsMax = base::Days(7);
 constexpr int kTimeMetricsBucketCount = 100;
 
-constexpr char kSearchBoxIphUrlPlaceholder[] = "https://www.google.com/";
-
-bool IsTabletMode() {
-  return ash::TabletMode::IsInTabletMode();
-}
-
 // Returns whether the session is active.
 bool IsSessionActive() {
   return session_manager::SessionManager::Get()->session_state() ==
          session_manager::SessionState::ACTIVE;
-}
-
-bool CanBeHandledAsSystemUrl(const GURL& sanitized_url,
-                             ui::PageTransition transition) {
-  if (!PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED) &&
-      !PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_GENERATED)) {
-    return false;
-  }
-  return ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
-      sanitized_url);
 }
 
 // IDs passed to ActivateItem are always of the form "<app id>". But app search
@@ -147,7 +131,7 @@ class ScopedIphSessionImpl : public ash::ScopedIphSession {
 
  private:
   raw_ptr<feature_engagement::Tracker> tracker_;
-  const raw_ref<const base::Feature, ExperimentalAsh> iph_feature_;
+  const raw_ref<const base::Feature> iph_feature_;
 };
 
 }  // namespace
@@ -178,7 +162,7 @@ AppListClientImpl::~AppListClientImpl() {
 
     // Prefer the function to the macro because the usage data is recorded no
     // more than once per second.
-    if (IsTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       base::UmaHistogramEnumeration(
           "Apps.AppListUsageByNewUsers.TabletMode",
           AppListUsageStateByNewUsers::kNotUsedBeforeDestruction);
@@ -213,6 +197,11 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
   }
 }
 
+std::vector<ash::AppListSearchControlCategory>
+AppListClientImpl::GetToggleableCategories() const {
+  return search_controller_->GetToggleableCategories();
+}
+
 void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
   if (search_controller_) {
     if (trimmed_query.empty()) {
@@ -226,7 +215,8 @@ void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
       if (!state_for_new_user_->first_search_result_recorded &&
           state_for_new_user_->started_search && trimmed_query.empty()) {
         state_for_new_user_->first_search_result_recorded = true;
-        RecordFirstSearchResult(ash::NO_RESULT, IsTabletMode());
+        RecordFirstSearchResult(ash::NO_RESULT,
+                                display::Screen::GetScreen()->InTabletMode());
       } else if (!trimmed_query.empty()) {
         state_for_new_user_->started_search = true;
       }
@@ -284,7 +274,7 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   }
 
   if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
-    if (IsTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       base::UmaHistogramCounts100("Apps.AppListSearchQueryLengthV2.TabletMode",
                                   last_query_length);
     } else {
@@ -300,8 +290,9 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
       result->display_type(),
       ash::AppListNotifier::Result(result_id, result->metrics_type()));
 
-  RecordSearchResultOpenTypeHistogram(launched_from, result->metrics_type(),
-                                      IsTabletMode());
+  RecordSearchResultOpenTypeHistogram(
+      launched_from, result->metrics_type(),
+      display::Screen::GetScreen()->InTabletMode());
 
   if (launch_as_default) {
     RecordDefaultSearchResultOpenTypeHistogram(result->metrics_type());
@@ -321,7 +312,8 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   if (state_for_new_user_ && state_for_new_user_->started_search &&
       !state_for_new_user_->first_search_result_recorded) {
     state_for_new_user_->first_search_result_recorded = true;
-    RecordFirstSearchResult(result->metrics_type(), IsTabletMode());
+    RecordFirstSearchResult(result->metrics_type(),
+                            display::Screen::GetScreen()->InTabletMode());
   }
 
   // OpenResult may cause |result| to be deleted.
@@ -444,7 +436,8 @@ void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
     if (state_for_new_user_ && state_for_new_user_->started_search &&
         !state_for_new_user_->first_search_result_recorded) {
       state_for_new_user_->first_search_result_recorded = true;
-      RecordFirstSearchResult(ash::NO_RESULT, IsTabletMode());
+      RecordFirstSearchResult(ash::NO_RESULT,
+                              display::Screen::GetScreen()->InTabletMode());
     }
   }
 }
@@ -475,7 +468,7 @@ void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
     if (!state_for_new_user_->showing_recorded) {
       // We assume that the previous user before switching was new if
       // `state_for_new_user_` is not null.
-      if (IsTabletMode()) {
+      if (display::Screen::GetScreen()->InTabletMode()) {
         base::UmaHistogramEnumeration(
             "Apps.AppListUsageByNewUsers.TabletMode",
             AppListUsageStateByNewUsers::kNotUsedBeforeSwitchingAccounts);
@@ -684,10 +677,21 @@ void AppListClientImpl::OpenURL(Profile* profile,
                                 ui::PageTransition transition,
                                 WindowOpenDisposition disposition) {
   if (crosapi::browser_util::IsLacrosEnabled()) {
-    // Send the url to the current primary browser.
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-        ConvertDisposition(disposition));
+    // Handle os:// URLs directly, without involving Lacros.
+    // See comment in OmniboxLacrosProvider::StartWithoutSearchProvider.
+    if (crosapi::gurl_os_handler_utils::HasOsScheme(url)) {
+      const GURL ash_url =
+          crosapi::gurl_os_handler_utils::GetAshUrlFromLacrosUrl(url);
+      if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(ash_url)) {
+        crosapi::UrlHandlerAsh().OpenUrl(ash_url);
+      } else {
+        LOG(WARNING) << "URL not supported: " << url << " (" << ash_url << ")";
+      }
+    } else {
+      ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+          url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+          ConvertDisposition(disposition));
+    }
   } else {
     NavigateParams params(profile, url, transition);
     params.disposition = disposition;
@@ -729,12 +733,6 @@ AppListClientImpl::CreateLauncherSearchIphSession() {
       tracker, feature_engagement::kIPHLauncherSearchHelpUiFeature);
 }
 
-void AppListClientImpl::OpenSearchBoxIphUrl() {
-  OpenURL(profile_, GURL(kSearchBoxIphUrlPlaceholder),
-          ui::PageTransition::PAGE_TRANSITION_LINK,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB);
-}
-
 void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
   auto* requested_model_updater = profile_model_mappings_[profile_id];
   if (requested_model_updater != current_model_updater_ ||
@@ -753,11 +751,6 @@ ash::AppListSortOrder AppListClientImpl::GetPermanentSortingOrder() const {
 
   return app_list::AppListSyncableServiceFactory::GetForProfile(profile_)
       ->GetPermanentSortingOrder();
-}
-
-void AppListClientImpl::CommitTemporarySortOrder() {
-  DCHECK(current_model_updater_);
-  current_model_updater_->CommitTemporarySortOrder();
 }
 
 void AppListClientImpl::RecordViewShown() {
@@ -801,7 +794,8 @@ void AppListClientImpl::RecordViewShown() {
   }
 
   state_for_new_user_->showing_recorded = true;
-  state_for_new_user_->shown_in_tablet_mode = IsTabletMode();
+  state_for_new_user_->shown_in_tablet_mode =
+      display::Screen::GetScreen()->InTabletMode();
 
   CHECK(new_user_session_activation_time_.has_value());
   const base::TimeDelta opening_duration =
@@ -840,7 +834,7 @@ void AppListClientImpl::RecordOpenedResultFromSearchBox(
   // Check whether there is any Chrome non-app browser window open and not
   // minimized.
   bool non_app_browser_open_and_not_minimzed = false;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->type() != Browser::TYPE_NORMAL ||
         browser->window()->IsMinimized()) {
       // Skip if `browser` is not a normal browser or `browser` is minimized.
@@ -885,7 +879,7 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   }
 
   state_for_new_user_->action_recorded = true;
-  if (IsTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     base::UmaHistogramEnumeration("Apps.NewUserFirstLauncherAction.TabletMode",
                                   launched_from);
   } else {
@@ -899,7 +893,7 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   if (launcher_action_duration >= base::TimeDelta()) {
     // `base::Time` may skew. Therefore only record when the time duration is
     // non-negative.
-    if (IsTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           /*name=*/
           "Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction."

@@ -28,13 +28,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PRELOAD_SCANNER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/network/public/cpp/client_hints.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -71,8 +72,9 @@ using MetaCHValues = Vector<MetaCHValue>;
 // the main thread.
 struct PendingPreloadData {
   MetaCHValues meta_ch_values;
-  absl::optional<ViewportDescription> viewport;
+  std::optional<ViewportDescription> viewport;
   bool has_csp_meta_tag = false;
+  bool has_located_potential_lcp_element = false;
   PreloadRequestStream requests;
 };
 
@@ -93,6 +95,10 @@ struct CORE_EXPORT CachedDocumentParameters {
   network::mojom::ReferrerPolicy referrer_policy;
   SubresourceIntegrity::IntegrityFeatures integrity_features;
   LocalFrame::LazyLoadImageSetting lazy_load_image_setting;
+  // Work with the element locators. If the LCP candidate image is found and
+  // that has a lazy loading indicator, ignore it and create preload request.
+  // This will override |lazy_load_image_setting| behavior.
+  features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type;
   HashSet<String> disabled_image_types;
 };
 
@@ -104,7 +110,7 @@ class TokenPreloadScanner {
 
   TokenPreloadScanner(const KURL& document_url,
                       std::unique_ptr<CachedDocumentParameters>,
-                      const MediaValuesCached::MediaValuesCachedData&,
+                      std::unique_ptr<MediaValuesCached::MediaValuesCachedData>,
                       const ScannerType,
                       Vector<ElementLocator>);
   TokenPreloadScanner(const TokenPreloadScanner&) = delete;
@@ -115,28 +121,38 @@ class TokenPreloadScanner {
             const SegmentedString&,
             PreloadRequestStream& requests,
             MetaCHValues& meta_ch_values,
-            absl::optional<ViewportDescription>*,
+            std::optional<ViewportDescription>*,
             bool* is_csp_meta_tag);
 
   void SetPredictedBaseElementURL(const KURL& url) {
     predicted_base_element_url_ = url;
   }
 
+  bool HasLocatedPotentialLcpElement() { return seen_potential_lcp_element_; }
+
  private:
   class StartTagScanner;
 
   void HandleMetaNameAttribute(const HTMLToken& token,
                                MetaCHValues& meta_ch_values,
-                               absl::optional<ViewportDescription>* viewport);
+                               std::optional<ViewportDescription>* viewport);
 
   inline void ScanCommon(const HTMLToken&,
                          const SegmentedString&,
                          PreloadRequestStream& requests,
                          MetaCHValues& meta_ch_values,
-                         absl::optional<ViewportDescription>*,
+                         std::optional<ViewportDescription>*,
                          bool* is_csp_meta_tag);
 
   void UpdatePredictedBaseURL(const HTMLToken&);
+
+  MediaValuesCached* EnsureMediaValues() {
+    if (!media_values_) {
+      media_values_ =
+          MakeGarbageCollected<MediaValuesCached>(*media_values_cached_data_);
+    }
+    return media_values_.Get();
+  }
 
   struct PictureData {
     PictureData() : source_size(0.0), source_size_set(false), picked(false) {}
@@ -156,10 +172,13 @@ class TokenPreloadScanner {
   bool in_script_web_bundle_;
   bool seen_body_;
   bool seen_img_;
+  bool seen_potential_lcp_element_ = false;
   PictureData picture_data_;
   size_t template_count_;
   std::unique_ptr<CachedDocumentParameters> document_parameters_;
-  CrossThreadPersistent<MediaValuesCached> media_values_;
+  std::unique_ptr<MediaValuesCached::MediaValuesCachedData>
+      media_values_cached_data_;
+  Persistent<MediaValuesCached> media_values_;
   ScannerType scanner_type_;
   element_locator::TokenStreamMatcher lcp_element_matcher_;
 };
@@ -196,7 +215,7 @@ class CORE_EXPORT HTMLPreloadScanner
   HTMLPreloadScanner(std::unique_ptr<HTMLTokenizer>,
                      const KURL& document_url,
                      std::unique_ptr<CachedDocumentParameters>,
-                     const MediaValuesCached::MediaValuesCachedData&,
+                     std::unique_ptr<MediaValuesCached::MediaValuesCachedData>,
                      const TokenPreloadScanner::ScannerType,
                      std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
                          script_token_scanner,

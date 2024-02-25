@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_PAGE_HANDLER_H_
 
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
@@ -39,7 +44,11 @@ class Profile;
 enum class NtpChromeWebStoreOpen {
   kAppearance = 0,
   kCollections = 1,
-  kMaxValue = kCollections,
+  kWritingEssentialsCollectionPage = 2,
+  kWorkflowPlanningCategoryPage = 3,
+  kShoppingCategoryPage = 4,
+  kHomePage = 5,
+  kMaxValue = kHomePage,
 };
 
 class CustomizeChromePageHandler
@@ -86,6 +95,11 @@ class CustomizeChromePageHandler
   void UpdateTheme() override;
   void OpenChromeWebStore() override;
   void OpenThirdPartyThemePage(const std::string& theme_id) override;
+  void OpenChromeWebStoreCategoryPage(
+      side_panel::mojom::ChromeWebStoreCategory category) override;
+  void OpenChromeWebStoreCollectionPage(
+      side_panel::mojom::ChromeWebStoreCollection collection) override;
+  void OpenChromeWebStoreHomePage() override;
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
   void UpdateMostVisitedSettings() override;
   void SetModulesVisible(bool visible) override;
@@ -116,7 +130,7 @@ class CustomizeChromePageHandler
   void OnNtpBackgroundServiceShuttingDown() override;
 
   // SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
@@ -134,6 +148,7 @@ class CustomizeChromePageHandler
   base::TimeTicks background_images_request_start_time_;
   raw_ptr<ThemeService> theme_service_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
+
   // Caches a request to scroll to a section in case the front-end queries the
   // last requested section, e.g. during load.
   CustomizeChromeSection last_requested_section_ =
@@ -150,6 +165,8 @@ class CustomizeChromePageHandler
 
   mojo::Remote<side_panel::mojom::CustomizeChromePage> page_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandler> receiver_;
+
+  base::WeakPtrFactory<CustomizeChromePageHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_PAGE_HANDLER_H_

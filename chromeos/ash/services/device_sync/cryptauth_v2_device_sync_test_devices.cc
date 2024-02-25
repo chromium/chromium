@@ -41,7 +41,7 @@ const CryptAuthDevice& GetLocalDeviceForTest() {
     return CryptAuthDevice(
         cryptauthv2::GetClientAppMetadataForTest().instance_id(),
         kLocalDeviceDeviceName, kLocalDeviceDeviceSyncBetterTogetherPublicKey,
-        base::Time::FromJsTime(100), bt_metadata,
+        base::Time::FromMillisecondsSinceUnixEpoch(100), bt_metadata,
         {
             {multidevice::SoftwareFeature::kBetterTogetherHost,
              multidevice::SoftwareFeatureState::kNotSupported},
@@ -103,7 +103,7 @@ const CryptAuthDevice& GetRemoteDeviceNeedsGroupPrivateKeyForTest() {
         kRemoteDeviceNeedsGroupPrivateKeyId,
         kRemoteDeviceNeedsGroupPrivateKeyDeviceName,
         kRemoteDeviceNeedsGroupPrivateKeyDeviceSyncBetterTogetherPublicKey,
-        base::Time::FromJsTime(200), bt_metadata,
+        base::Time::FromMillisecondsSinceUnixEpoch(200), bt_metadata,
         {
             {multidevice::SoftwareFeature::kBetterTogetherHost,
              multidevice::SoftwareFeatureState::kEnabled},
@@ -165,7 +165,7 @@ const CryptAuthDevice& GetRemoteDeviceHasGroupPrivateKeyForTest() {
         kRemoteDeviceHasGroupPrivateKeyId,
         kRemoteDeviceHasGroupPrivateKeyDeviceName,
         kRemoteDeviceHasGroupPrivateKeyDeviceSyncBetterTogetherPublicKey,
-        base::Time::FromJsTime(300), bt_metadata,
+        base::Time::FromMillisecondsSinceUnixEpoch(300), bt_metadata,
         {
             {multidevice::SoftwareFeature::kBetterTogetherHost,
              multidevice::SoftwareFeatureState::kNotSupported},

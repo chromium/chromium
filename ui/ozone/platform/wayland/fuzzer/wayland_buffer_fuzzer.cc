@@ -79,7 +79,7 @@ struct Environment {
       : task_environment((base::CommandLine::Init(0, nullptr),
                           TestTimeouts::Initialize(),
                           base::test::TaskEnvironment::MainThreadType::UI)) {
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
 
     mojo::core::Init();
   }
@@ -194,7 +194,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
           // To ensure, no other buffers are created, test the size of the
           // vector.
-          for (auto* mock_params : params_vector) {
+          for (wl::TestZwpLinuxBufferParamsV1* mock_params : params_vector) {
             zwp_linux_buffer_params_v1_send_created(
                 mock_params->resource(), mock_params->buffer_resource());
           }

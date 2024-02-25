@@ -21,20 +21,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLSearchResult (Helpers)
 /**
- * Creates and retruns a TFLSearchResult from the result of search task returned
- * by TFLite Task C++ Library.
+ * Creates and retruns a TFLSearchResult from the result of search task returned by TFLite Task C++
+ * Library.
  *
- * @param cppSearchResult search result returned by TFLite Task C++ Library
- * Search task.
+ * @param cppSearchResult search result returned by TFLite Task C++ Library Search task.
  *
- * @return A new TFLSearchResult to be returned by inference methods of the iOS
- * TF Lite Task Search task.
+ * @return A new TFLSearchResult to be returned by inference methods of the iOS TF Lite Task Search
+ * task.
  */
-+ (nullable TFLSearchResult*)searchResultWithCppResult:
-                                 (const tflite::support::StatusOr<
-                                     tflite::task::processor::SearchResult>&)
-                                     cppSearchResult
-                                                 error:(NSError**)error;
++ (nullable TFLSearchResult *)
+    searchResultWithCppResult:
+        (const tflite::support::StatusOr<tflite::task::processor::SearchResult> &)cppSearchResult
+                        error:(NSError **)error;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import os
+import tempfile
+import time
 import unittest
 
 import mock
@@ -159,6 +161,68 @@ class _VersionTest(unittest.TestCase):
 
     self.assertEqual(cm.exception.code, 2)
 
+  def testSetExecutable(self):
+    """Assert that -x sets executable on POSIX and is harmless on Windows."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      in_file = os.path.join(tmpdir, "in")
+      out_file = os.path.join(tmpdir, "out")
+      with open(in_file, "w") as f:
+        f.write("")
+      self.assertEqual(version.main(['-i', in_file, '-o', out_file, '-x']), 0)
+
+      # Whether lstat(out_file).st_mode has the executable bits set is
+      # platform-specific. Therefore, test that out_file has the same
+      # permissions that in_file would have after chmod(in_file, 0o755).
+      # On Windows: both files will have 0o666.
+      # On POSIX: both files will have 0o755.
+      os.chmod(in_file, 0o755)  # On Windows, this sets in_file to 0o666.
+      self.assertEqual(os.lstat(in_file).st_mode, os.lstat(out_file).st_mode)
+
+  def testWriteIfChangedUpdateWhenContentChanged(self):
+    """Assert it updates mtime of file when content is changed."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      file_name = os.path.join(tmpdir, "version.h")
+      old_contents = "old contents"
+      with open(file_name, "w") as f:
+        f.write(old_contents)
+      os.chmod(file_name, 0o644)
+      mtime = os.lstat(file_name).st_mtime
+      time.sleep(0.1)
+      contents = "new contents"
+      version.WriteIfChanged(file_name, contents, 0o644)
+      with open(file_name) as f:
+        self.assertEqual(contents, f.read())
+      self.assertNotEqual(mtime, os.lstat(file_name).st_mtime)
+
+  def testWriteIfChangedUpdateWhenModeChanged(self):
+    """Assert it updates mtime of file when mode is changed."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      file_name = os.path.join(tmpdir, "version.h")
+      contents = "old contents"
+      with open(file_name, "w") as f:
+        f.write(contents)
+      os.chmod(file_name, 0o644)
+      mtime = os.lstat(file_name).st_mtime
+      time.sleep(0.1)
+      version.WriteIfChanged(file_name, contents, 0o755)
+      with open(file_name) as f:
+        self.assertEqual(contents, f.read())
+      self.assertNotEqual(mtime, os.lstat(file_name).st_mtime)
+
+  def testWriteIfChangedNoUpdate(self):
+    """Assert it does not update mtime of file when nothing is changed."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      file_name = os.path.join(tmpdir, "version.h")
+      contents = "old contents"
+      with open(file_name, "w") as f:
+        f.write(contents)
+      os.chmod(file_name, 0o644)
+      mtime = os.lstat(file_name).st_mtime
+      time.sleep(0.1)
+      version.WriteIfChanged(file_name, contents, 0o644)
+      with open(file_name) as f:
+        self.assertEqual(contents, f.read())
+      self.assertEqual(mtime, os.lstat(file_name).st_mtime)
 
 if __name__ == '__main__':
   unittest.main()

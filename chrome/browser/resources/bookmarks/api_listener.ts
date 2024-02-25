@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener, removeWebUiListener} from 'chrome://resources/js/cr.js';
-import {Action} from 'chrome://resources/js/store_ts.js';
+import type {Action} from 'chrome://resources/js/store.js';
 
 import {createBookmark, editBookmark, moveBookmark, refreshNodes, removeBookmark, reorderChildren, setCanEditBookmarks, setIncognitoAvailability} from './actions.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {IncognitoAvailability} from './constants.js';
+import type {IncognitoAvailability} from './constants.js';
 import {Debouncer} from './debouncer.js';
 import {Store} from './store.js';
 import {normalizeNodes} from './util.js';

@@ -18,7 +18,7 @@
 #include "base/threading/thread_local.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
+namespace base::internal {
 namespace {
 
 // A thread that runs a callback.
@@ -61,14 +61,10 @@ void ExpectNotCalledOnValidThread(ThreadCheckerImpl* thread_checker) {
   EXPECT_FALSE(thread_checker->CalledOnValidThread());
 }
 
-void ExpectNotCalledOnValidThreadWithSequenceTokenAndThreadTaskRunnerHandle(
+void ExpectNotCalledOnValidThreadWithSequenceTokenThreadBound(
     ThreadCheckerImpl* thread_checker,
     SequenceToken sequence_token) {
-  SingleThreadTaskRunner::CurrentDefaultHandle
-      single_thread_task_runner_current_default_handle(
-          MakeRefCounted<TestSimpleTaskRunner>());
-  ScopedSetSequenceTokenForCurrentThread
-      scoped_set_sequence_token_for_current_thread(sequence_token);
+  TaskScope task_scope(sequence_token, /* is_thread_bound=*/true);
   ExpectNotCalledOnValidThread(thread_checker);
 }
 
@@ -79,49 +75,43 @@ TEST(ThreadCheckerTest, AllowedSameThreadNoSequenceToken) {
   EXPECT_TRUE(thread_checker.CalledOnValidThread());
 }
 
-TEST(ThreadCheckerTest,
-     AllowedSameThreadAndSequenceDifferentTasksWithThreadTaskRunnerHandle) {
-  SingleThreadTaskRunner::CurrentDefaultHandle
-      single_thread_task_runner_current_default_handle(
-          MakeRefCounted<TestSimpleTaskRunner>());
-
+TEST(ThreadCheckerTest, AllowedSameThreadAndSequenceDifferentThreadBoundTasks) {
   std::unique_ptr<ThreadCheckerImpl> thread_checker;
   const SequenceToken sequence_token = SequenceToken::Create();
 
   {
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(sequence_token);
+    TaskScope task_scope(sequence_token,
+                         /* is_thread_bound=*/true);
     thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(sequence_token);
+    TaskScope task_scope(sequence_token,
+                         /* is_thread_bound=*/true);
     EXPECT_TRUE(thread_checker->CalledOnValidThread());
   }
 }
 
-TEST(ThreadCheckerTest,
-     AllowedSameThreadSequenceAndTaskNoThreadTaskRunnerHandle) {
-  ScopedSetSequenceTokenForCurrentThread
-      scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+TEST(ThreadCheckerTest, AllowedSameThreadSequenceAndTaskNotThreadBound) {
+  TaskScope task_scope(SequenceToken::Create(),
+                       /* is_thread_bound=*/false);
   ThreadCheckerImpl thread_checker;
   EXPECT_TRUE(thread_checker.CalledOnValidThread());
 }
 
 TEST(ThreadCheckerTest,
-     DisallowedSameThreadAndSequenceDifferentTasksNoThreadTaskRunnerHandle) {
+     DisallowedSameThreadAndSequenceDifferentTasksNotThreadBound) {
   std::unique_ptr<ThreadCheckerImpl> thread_checker;
 
   {
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+    TaskScope task_scope(SequenceToken::Create(),
+                         /* is_thread_bound=*/false);
     thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+    TaskScope task_scope(SequenceToken::Create(),
+                         /* is_thread_bound=*/false);
     EXPECT_FALSE(thread_checker->CalledOnValidThread());
   }
 }
@@ -138,14 +128,14 @@ TEST(ThreadCheckerTest, DisallowedDifferentThreadsSameSequence) {
           MakeRefCounted<TestSimpleTaskRunner>());
   const SequenceToken sequence_token(SequenceToken::Create());
 
-  ScopedSetSequenceTokenForCurrentThread
-      scoped_set_sequence_token_for_current_thread(sequence_token);
+  TaskScope task_scope(sequence_token,
+                       /* is_thread_bound=*/false);
   ThreadCheckerImpl thread_checker;
   EXPECT_TRUE(thread_checker.CalledOnValidThread());
 
-  RunCallbackOnNewThreadSynchronously(BindOnce(
-      &ExpectNotCalledOnValidThreadWithSequenceTokenAndThreadTaskRunnerHandle,
-      Unretained(&thread_checker), sequence_token));
+  RunCallbackOnNewThreadSynchronously(
+      BindOnce(&ExpectNotCalledOnValidThreadWithSequenceTokenThreadBound,
+               Unretained(&thread_checker), sequence_token));
 }
 
 TEST(ThreadCheckerTest, DisallowedSameThreadDifferentSequence) {
@@ -156,15 +146,15 @@ TEST(ThreadCheckerTest, DisallowedSameThreadDifferentSequence) {
           MakeRefCounted<TestSimpleTaskRunner>());
 
   {
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+    TaskScope task_scope(SequenceToken::Create(),
+                         /* is_thread_bound=*/false);
     thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {
     // Different SequenceToken.
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+    TaskScope task_scope(SequenceToken::Create(),
+                         /* is_thread_bound=*/false);
     EXPECT_FALSE(thread_checker->CalledOnValidThread());
   }
 
@@ -188,8 +178,8 @@ TEST(ThreadCheckerTest, DetachFromThreadWithSequenceToken) {
   SingleThreadTaskRunner::CurrentDefaultHandle
       single_thread_task_runner_current_default_handle(
           MakeRefCounted<TestSimpleTaskRunner>());
-  ScopedSetSequenceTokenForCurrentThread
-      scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
+  TaskScope task_scope(SequenceToken::Create(),
+                       /* is_thread_bound=*/false);
   ThreadCheckerImpl thread_checker;
   thread_checker.DetachFromThread();
 
@@ -297,7 +287,7 @@ TEST(ThreadCheckerTest, MoveFromDetachedRebinds) {
 }
 
 TEST(ThreadCheckerTest, MoveOffThreadBanned) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   ThreadCheckerImpl other_thread;
   other_thread.DetachFromThread();
@@ -341,7 +331,7 @@ class ThreadCheckerMacroTest : public testing::Test {
 }  // namespace
 
 TEST_F(ThreadCheckerMacroTest, Macros) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   THREAD_CHECKER(my_thread_checker);
 
@@ -355,4 +345,4 @@ TEST_F(ThreadCheckerMacroTest, Macros) {
                Unretained(this)));
 }
 
-}  // namespace base
+}  // namespace base::internal

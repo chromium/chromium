@@ -4,13 +4,12 @@
 
 package org.chromium.android_webview;
 
-import org.chromium.base.FeatureMap;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Java accessor for base/feature_map.h state.
- */
+import org.chromium.base.FeatureMap;
+
+/** Java accessor for base/android/feature_map.h state. */
 @JNINamespace("android_webview")
 public final class AwFeatureMap extends FeatureMap {
     private static final AwFeatureMap sInstance = new AwFeatureMap();
@@ -18,16 +17,12 @@ public final class AwFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private AwFeatureMap() {}
 
-    /**
-     * @return the singleton UiAndroidFeatureMap.
-     */
+    /** @return the singleton UiAndroidFeatureMap. */
     public static AwFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

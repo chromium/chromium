@@ -17,10 +17,11 @@
 #include <tuple>
 
 #include "CoreFoundation/CFBase.h"
+#include "absl/log/absl_check.h"
+#include "absl/status/statusor.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/objc/CFHolder.h"
 #include "mediapipe/objc/util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -35,7 +36,8 @@ CvPixelBufferPoolWrapper::CvPixelBufferPoolWrapper(
   texture_caches_ = texture_caches;
 }
 
-CFHolder<CVPixelBufferRef> CvPixelBufferPoolWrapper::GetBuffer() {
+absl::StatusOr<CFHolder<CVPixelBufferRef>>
+CvPixelBufferPoolWrapper::GetBuffer() {
   CVPixelBufferRef buffer;
   int threshold = 1;
   NSMutableDictionary* auxAttributes =
@@ -71,7 +73,8 @@ std::string CvPixelBufferPoolWrapper::GetDebugString() const {
 
 void CvPixelBufferPoolWrapper::Flush() { CVPixelBufferPoolFlush(*pool_, 0); }
 
-CFHolder<CVPixelBufferRef> CvPixelBufferPoolWrapper::CreateBufferWithoutPool(
+absl::StatusOr<CFHolder<CVPixelBufferRef>>
+CvPixelBufferPoolWrapper::CreateBufferWithoutPool(
     const internal::GpuBufferSpec& spec) {
   OSType cv_format = CVPixelFormatForGpuBufferFormat(spec.format);
   ABSL_CHECK_NE(cv_format, -1) << "unsupported pixel format";

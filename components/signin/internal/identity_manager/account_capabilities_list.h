@@ -22,9 +22,10 @@ ACCOUNT_CAPABILITY(kCanHaveEmailAddressDisplayedCapabilityName,
                    CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
                    "accountcapabilities/haytqlldmfya")
 
-ACCOUNT_CAPABILITY(kCanOfferExtendedChromeSyncPromosCapabilityName,
-                   CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
-                   "accountcapabilities/gi2tklldmfya")
+ACCOUNT_CAPABILITY(
+    kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
+    CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
+    "accountcapabilities/gi2tklldmfya")
 
 ACCOUNT_CAPABILITY(kCanRunChromePrivacySandboxTrialsCapabilityName,
                    CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
@@ -41,6 +42,10 @@ ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
 ACCOUNT_CAPABILITY(kCanUseChromeIpProtectionName,
                    CAN_USE_CHROME_IP_PROTECTION_NAME,
                    "accountcapabilities/geydgnznmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseModelExecutionFeaturesName,
+                   CAN_USE_MODEL_EXECUTION_FEATURES_NAME,
+                   "accountcapabilities/gezdcnbnmnqxa")
 
 ACCOUNT_CAPABILITY(kIsAllowedForMachineLearningCapabilityName,
                    IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,

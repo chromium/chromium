@@ -24,18 +24,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * Tests for {@link ClearDataDialogResultRecorder}.
- */
+/** Tests for {@link ClearDataDialogResultRecorder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ClearDataDialogResultRecorderTest {
-    private final SharedPreferencesManager mPrefsManager = SharedPreferencesManager.getInstance();
+    private final SharedPreferencesManager mPrefsManager = ChromeSharedPreferences.getInstance();
     @Mock ChromeBrowserInitializer mBrowserInitializer;
     @Mock TrustedWebActivityUmaRecorder mUmaRecorder;
     @Captor ArgumentCaptor<Runnable> mTaskOnNativeInitCaptor;
@@ -106,8 +105,9 @@ public class ClearDataDialogResultRecorderTest {
         doNothing()
                 .when(mBrowserInitializer)
                 .runNowOrAfterFullBrowserStarted(mTaskOnNativeInitCaptor.capture());
-        mRecorder = new ClearDataDialogResultRecorder(() -> mPrefsManager, mBrowserInitializer,
-                mUmaRecorder);
+        mRecorder =
+                new ClearDataDialogResultRecorder(
+                        () -> mPrefsManager, mBrowserInitializer, mUmaRecorder);
     }
 
     private void finishNativeInit() {
@@ -119,5 +119,4 @@ public class ClearDataDialogResultRecorderTest {
                 .when(mBrowserInitializer)
                 .runNowOrAfterFullBrowserStarted(any());
     }
-
 }

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/client_data_delegate_desktop.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
-#include "chrome/browser/policy/cloud/remote_commands_invalidator_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -32,6 +32,7 @@
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -59,7 +60,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"  // nogncheck
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
@@ -190,6 +190,21 @@ void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
     policy_invalidator_->Shutdown();
   if (commands_invalidator_)
     commands_invalidator_->Shutdown();
+
+  policy_invalidator_.reset();
+  commands_invalidator_.reset();
+  invalidation_service_.reset();
+  device_instance_id_driver_.reset();
+  identity_provider_.reset();
+
+  // In some tests, `DCHECK_CURRENTLY_ON(content::BrowserThread::UI)` fails.
+  // Such tests have not initialized device_oauth2_token_service anyway, so skip
+  // calling Shutdown() for the service.
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    CHECK_IS_TEST();
+    return;
+  }
+  DeviceOAuth2TokenServiceFactory::Shutdown();
 }
 
 MachineLevelUserCloudPolicyManager*
@@ -247,24 +262,23 @@ ChromeBrowserCloudManagementControllerDesktop::CreateClientDataDelegate() {
 std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
 ChromeBrowserCloudManagementControllerDesktop::CreateDeviceTrustKeyManager() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  if (enterprise_connectors::IsDeviceTrustConnectorFeatureEnabled()) {
-    auto* browser_dm_token_storage = BrowserDMTokenStorage::Get();
-    auto* device_management_service = GetDeviceManagementService();
-    auto shared_url_loader_factory = GetSharedURLLoaderFactory();
+  auto* browser_dm_token_storage = BrowserDMTokenStorage::Get();
+  auto* device_management_service = GetDeviceManagementService();
+  auto shared_url_loader_factory = GetSharedURLLoaderFactory();
 
-    auto key_rotation_launcher =
-        enterprise_connectors::KeyRotationLauncher::Create(
-            browser_dm_token_storage, device_management_service,
-            shared_url_loader_factory);
-    auto key_loader = enterprise_connectors::KeyLoader::Create(
-        browser_dm_token_storage, device_management_service,
-        shared_url_loader_factory);
+  auto key_rotation_launcher =
+      enterprise_connectors::KeyRotationLauncher::Create(
+          browser_dm_token_storage, device_management_service,
+          shared_url_loader_factory);
+  auto key_loader = enterprise_connectors::KeyLoader::Create(
+      browser_dm_token_storage, device_management_service,
+      shared_url_loader_factory);
 
-    return std::make_unique<enterprise_connectors::DeviceTrustKeyManagerImpl>(
-        std::move(key_rotation_launcher), std::move(key_loader));
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  return std::make_unique<enterprise_connectors::DeviceTrustKeyManagerImpl>(
+      std::move(key_rotation_launcher), std::move(key_loader));
+#else
   return nullptr;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
@@ -285,6 +299,7 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
           base::BindRepeating(&invalidation::FCMNetworkHandler::Create,
                               g_browser_process->gcm_driver(),
                               device_instance_id_driver_.get()),
+          base::BindRepeating(&invalidation::FCMInvalidationListener::Create),
           base::BindRepeating(
               &invalidation::PerUserTopicSubscriptionManager::Create,
               identity_provider_.get(), g_browser_process->local_state(),

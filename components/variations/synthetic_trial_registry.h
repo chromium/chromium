@@ -12,19 +12,28 @@
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation_traits.h"
 #include "components/variations/synthetic_trials.h"
 
 namespace metrics {
 class MetricsServiceAccessor;
 }  // namespace metrics
 
+namespace content {
+class SyntheticTrialSyncer;
+}  // namespace content
+
+namespace tpcd::experiment {
+class ExperimentManagerImplBrowserTest;
+}  // namespace tpcd::experiment
+
 namespace variations {
 
 struct ActiveGroupId;
 class FieldTrialsProvider;
 class FieldTrialsProviderTest;
+class LimitedEntropySyntheticTrial;
 class SyntheticTrialRegistryTest;
+class LimitedEntropyRandomizationBrowserTest;
 
 namespace internal {
 COMPONENT_EXPORT(VARIATIONS) BASE_DECLARE_FEATURE(kExternalExperimentAllowlist);
@@ -32,22 +41,14 @@ COMPONENT_EXPORT(VARIATIONS) BASE_DECLARE_FEATURE(kExternalExperimentAllowlist);
 
 class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
  public:
-  // Constructor that specifies whether the SyntheticTrialRegistry should use
-  // an allowlist for external experiments. Some embedders such as WebLayer
-  // do not run as Chrome and do not use the allowlist.
-  // Note: The allowlist is enabled only if |kExternalExperimentAllowlist| is
-  // also enabled, even if the parameter value is true. The default constructor
-  // defaults to the feature state.
-  explicit SyntheticTrialRegistry(bool enable_external_experiment_allowlist);
-
   SyntheticTrialRegistry();
   ~SyntheticTrialRegistry();
 
   // Adds an observer to be notified when the synthetic trials list changes.
-  void AddSyntheticTrialObserver(SyntheticTrialObserver* observer);
+  void AddObserver(SyntheticTrialObserver* observer);
 
   // Removes an existing observer of synthetic trials list changes.
-  void RemoveSyntheticTrialObserver(SyntheticTrialObserver* observer);
+  void RemoveObserver(SyntheticTrialObserver* observer);
 
   // Specifies the mode of RegisterExternalExperiments() operation.
   enum OverrideMode {
@@ -80,16 +81,22 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
 
  private:
   friend metrics::MetricsServiceAccessor;
+  friend LimitedEntropySyntheticTrial;
   friend FieldTrialsProvider;
   friend FieldTrialsProviderTest;
   friend SyntheticTrialRegistryTest;
+  friend ::tpcd::experiment::ExperimentManagerImplBrowserTest;
+  friend content::SyntheticTrialSyncer;
+  friend LimitedEntropyRandomizationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, RegisterSyntheticTrial);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialsOlderThanSuffix);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialActiveGroups);
-  FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, NotifyObserver);
+  FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
+  FRIEND_TEST_ALL_PREFIXES(LimitedEntropyRandomizationBrowserTest,
+                           MANUAL_SyntheticTrialAndStudyRegistrationSubTest);
 
   // Registers a field trial name and group to be used to annotate UMA and UKM
   // reports with a particular Chrome configuration state.
@@ -128,14 +135,16 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
       std::vector<ActiveGroupId>* synthetic_trials,
       base::StringPiece suffix = "") const;
 
+  // SyntheticTrialSyncer needs to know all current synthetic trial
+  // groups after launching new child processes.
+  const std::vector<SyntheticTrialGroup>& GetSyntheticTrialGroups() const {
+    return synthetic_trial_groups_;
+  }
+
   // Notifies observers on a synthetic trial list change.
   void NotifySyntheticTrialObservers(
       const std::vector<SyntheticTrialGroup>& trials_updated,
       const std::vector<SyntheticTrialGroup>& trials_removed);
-
-  // Whether the allowlist is enabled. Some configurations, like WebLayer
-  // do not use the allowlist.
-  bool enable_external_experiment_allowlist_ = true;
 
   // Field trial groups that map to Chrome configuration states.
   std::vector<SyntheticTrialGroup> synthetic_trial_groups_;
@@ -146,24 +155,5 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
 };
 
 }  // namespace variations
-
-namespace base {
-
-// TODO(crbug.com/1430486): the methods in SyntheticTrialRegistry to remove
-// these traits.
-template <>
-struct ScopedObservationTraits<variations::SyntheticTrialRegistry,
-                               variations::SyntheticTrialObserver> {
-  static void AddObserver(variations::SyntheticTrialRegistry* source,
-                          variations::SyntheticTrialObserver* observer) {
-    source->AddSyntheticTrialObserver(observer);
-  }
-  static void RemoveObserver(variations::SyntheticTrialRegistry* source,
-                             variations::SyntheticTrialObserver* observer) {
-    source->RemoveSyntheticTrialObserver(observer);
-  }
-};
-
-}  // namespace base
 
 #endif  // COMPONENTS_VARIATIONS_SYNTHETIC_TRIAL_REGISTRY_H_

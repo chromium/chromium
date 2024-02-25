@@ -5,8 +5,9 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_CLIENT_APP_METADATA_PROVIDER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_CLIENT_APP_METADATA_PROVIDER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
 class ClientAppMetadata;
@@ -31,7 +32,7 @@ class ClientAppMetadataProvider {
   virtual ~ClientAppMetadataProvider() = default;
 
   using GetMetadataCallback = base::OnceCallback<void(
-      const absl::optional<cryptauthv2::ClientAppMetadata>&)>;
+      const std::optional<cryptauthv2::ClientAppMetadata>&)>;
 
   // Fetches the ClientAppMetadata for the current device; if the operation
   // fails, null is passed to the callback.

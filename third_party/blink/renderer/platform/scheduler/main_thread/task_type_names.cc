@@ -23,8 +23,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "Networking";
     case TaskType::kNetworkingUnfreezable:
       return "NetworkingUnfreezable";
-    case TaskType::kNetworkingUnfreezableImageLoading:
-      return "NetworkingUnfreezableImageLoading";
+    case TaskType::kNetworkingUnfreezableRenderBlockingLoading:
+      return "NetworkingUnfreezableRenderBlockingLoading";
     case TaskType::kNetworkingControl:
       return "NetworkingControl";
     case TaskType::kLowPriorityScriptExecution:
@@ -83,6 +83,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "WebLocks";
     case TaskType::kStorage:
       return "Storage";
+    case TaskType::kClipboard:
+      return "Clipboard";
     case TaskType::kInternalDefault:
       return "InternalDefault";
     case TaskType::kInternalLoading:

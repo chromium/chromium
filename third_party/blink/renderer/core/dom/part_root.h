@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -34,7 +33,11 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   // Adds a new part to this PartRoot's collection of maintained parts.
   void AddPart(Part& new_part);
   void RemovePart(Part& part);
+  static void CloneParts(const Node& source_node,
+                         Node& destination_node,
+                         NodeCloningData& data);
   void MarkPartsDirty() { cached_parts_list_dirty_ = true; }
+  void SwapPartsList(PartRoot& other);
 
   virtual Document& GetDocument() const = 0;
   virtual bool IsDocumentPartRoot() const = 0;
@@ -49,7 +52,8 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   }
 
   // PartRoot API
-  HeapVector<Member<Part>>& getParts();
+  const HeapVector<Member<Part>>& getParts();
+  Node* getPartNode(unsigned index);
   virtual ContainerNode* rootContainer() const = 0;
 
  protected:
@@ -57,8 +61,8 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   virtual const PartRoot* GetParentPartRoot() const = 0;
 
  private:
-  HeapDeque<Member<Part>>& RebuildPartsList();
-  HeapDeque<Member<Part>> cached_ordered_parts_;
+  void RebuildPartsList();
+  HeapVector<Member<Part>> cached_ordered_parts_;
   bool cached_parts_list_dirty_{false};
 };
 

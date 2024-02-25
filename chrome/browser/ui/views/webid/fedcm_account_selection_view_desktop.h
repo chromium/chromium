@@ -16,13 +16,15 @@
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/widget/widget_observer.h"
 
-class AccountSelectionBubbleViewInterface;
+using TokenError = content::IdentityCredentialTokenError;
+
+class AccountSelectionViewBase;
 
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
 // account chooser to the user.
 class FedCmAccountSelectionView : public AccountSelectionView,
-                                  public AccountSelectionBubbleView::Observer,
+                                  public AccountSelectionViewBase::Observer,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
                                   TabStripModelObserver,
@@ -42,7 +44,20 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     VERIFYING = 1,
     AUTO_REAUTHN = 2,
     SIGN_IN_TO_IDP_STATIC = 3,
-    COUNT = 4
+    SIGN_IN_ERROR = 4,
+    COUNT = 5
+  };
+
+  enum class DialogType {
+    // FedCM dialog inherits a bubble dialog, which is typically shown on the
+    // top-right corner of the browser. The user can switch tabs and interact
+    // with web contents.
+    BUBBLE,
+
+    // FedCM dialog inherits a modal dialog, which is typically shown in the
+    // middle of the browser overlapping the line of death. The user can switch
+    // tabs but cannot interact with web contents.
+    MODAL
   };
 
   explicit FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate);
@@ -51,18 +66,31 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionView:
   void Show(
       const std::string& top_frame_etld_plus_one,
-      const absl::optional<std::string>& iframe_etld_plus_one,
+      const std::optional<std::string>& iframe_etld_plus_one,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
-      bool show_auto_reauthn_checkbox) override;
+      blink::mojom::RpMode rp_mode,
+      const std::optional<content::IdentityProviderData>& new_account_idp)
+      override;
   void ShowFailureDialog(
       const std::string& top_frame_etld_plus_one,
-      const absl::optional<std::string>& iframe_etld_plus_one,
+      const std::optional<std::string>& iframe_etld_plus_one,
       const std::string& idp_etld_plus_one,
-      const blink::mojom::RpContext& rp_context,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
       const content::IdentityProviderMetadata& idp_metadata) override;
+  void ShowErrorDialog(const std::string& top_frame_etld_plus_one,
+                       const std::optional<std::string>& iframe_etld_plus_one,
+                       const std::string& idp_etld_plus_one,
+                       blink::mojom::RpContext rp_context,
+                       blink::mojom::RpMode rp_mode,
+                       const content::IdentityProviderMetadata& idp_metadata,
+                       const std::optional<TokenError>& error) override;
+  void OnAccountsDisplayed() override;
+
+  void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
-  absl::optional<std::string> GetSubtitle() const override;
+  std::optional<std::string> GetSubtitle() const override;
 
   // FedCmModalDialogView::Observer
   void OnPopupWindowDestroyed() override;
@@ -88,19 +116,21 @@ class FedCmAccountSelectionView : public AccountSelectionView,
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 
-  // Creates the bubble. Sets the bubble's accessible title. Registers any
-  // observers. May fail and return nullptr if there is no browser or tab strip
-  // model.
-  virtual views::Widget* CreateBubbleWithAccessibleTitle(
+  // Returns an AccountSelectionViewBase to render bubble dialogs for
+  // widget flows, otherwise returns an AccountSelectionViewBase to render
+  // modal dialogs for button flows. Registers any observers. May fail and
+  // return nullptr if there is no browser or tab strip model. Virtual for
+  // testing purposes.
+  virtual AccountSelectionViewBase* CreateAccountSelectionView(
       const std::u16string& top_frame_etld_plus_one,
-      const absl::optional<std::u16string>& iframe_etld_plus_one,
-      const absl::optional<std::u16string>& idp_title,
+      const std::optional<std::u16string>& iframe_etld_plus_one,
+      const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
-      bool show_auto_reauthn_checkbox);
+      blink::mojom::RpMode rp_mode,
+      bool has_modal_support);
 
-  // Returns AccountSelectionBubbleViewInterface for bubble views::Widget.
-  virtual AccountSelectionBubbleViewInterface* GetBubbleView();
-  virtual const AccountSelectionBubbleViewInterface* GetBubbleView() const;
+  // Gets the type of dialog shown. Virtual for testing purposes.
+  virtual DialogType GetDialogType();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
@@ -132,13 +162,17 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // Dialog has button to sign-in to IdP.
     IDP_SIGNIN_STATUS_MISMATCH,
 
+    // User is shown a single account they have with IDP and is prompted to
+    // continue with the account.
+    SINGLE_ACCOUNT_PICKER,
+
     // User is shown list of accounts they have with IDP and is prompted to
     // select an account.
-    ACCOUNT_PICKER,
+    MULTI_ACCOUNT_PICKER,
 
     // User is prompted to grant permission for specific account they have with
     // IDP to communicate with RP.
-    PERMISSION,
+    REQUEST_PERMISSION,
 
     // Shown after the user has granted permission while the id token is being
     // fetched.
@@ -146,7 +180,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
     // Shown when the user is being shown a dialog that auto re-authn is
     // happening.
-    AUTO_REAUTHN
+    AUTO_REAUTHN,
+
+    // Shown when an error has occurred during the user's sign-in attempt and
+    // IDP has not provided any details on the failure.
+    SIGN_IN_ERROR
   };
 
   // This enum describes the outcome of the mismatch dialog and is used for
@@ -164,7 +202,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome of the pop-up window and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
-  // FedCmPopupWindowResult in tools/metrics/histograms/enums.xml.
+  // FedCmPopupWindowResult in
+  // tools/metrics/histograms/metadata/blink/enums.xml.
   enum class PopupWindowResult {
     kAccountsReceivedAndPopupClosedByIdp,
     kAccountsReceivedAndPopupNotClosedByIdp,
@@ -186,9 +225,15 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                      const ui::Event& event) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
-  void OnSigninToIdP() override;
+  void OnLoginToIdP(const GURL& idp_config_url,
+                    const GURL& idp_login_url,
+                    const ui::Event& event) override;
+  void OnGotIt(const ui::Event& event) override;
+  void OnMoreDetails(const ui::Event& event) override;
 
-  void ShowVerifyingSheet(const Account& account,
+  // Returns false if `this` got deleted. In that case, the caller should not
+  // access any further member variables.
+  bool ShowVerifyingSheet(const Account& account,
                           const IdentityProviderDisplayData& idp_display_data);
 
   // Returns the SheetType to be used for metrics reporting.
@@ -202,22 +247,30 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnDismiss(
       content::IdentityRequestDialogController::DismissReason dismiss_reason);
 
+  // Gets the dialog widget from the account selection view, if available.
+  // Otherwise, return a nullptr.
+  base::WeakPtr<views::Widget> GetDialogWidget();
+
+  // Resets `account_selection_view_`. Typically, to recreate it later to show a
+  // different kind of dialog.
+  void ResetAccountSelectionView();
+
   std::vector<IdentityProviderDisplayData> idp_display_data_list_;
 
   std::u16string top_frame_for_display_;
 
-  absl::optional<std::u16string> iframe_for_display_;
+  std::optional<std::u16string> iframe_for_display_;
 
-  State state_{State::ACCOUNT_PICKER};
+  State state_{State::MULTI_ACCOUNT_PICKER};
+
+  DialogType dialog_type_{DialogType::BUBBLE};
 
   // Whether to notify the delegate when the widget is closed.
   bool notify_delegate_of_dismiss_{true};
 
-  base::WeakPtr<views::Widget> bubble_widget_;
-
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
 
-  std::unique_ptr<FedCmModalDialogView> idp_signin_modal_dialog_;
+  std::unique_ptr<FedCmModalDialogView> popup_window_;
 
   // If dialog has been populated with accounts as a result of the IDP sign-in
   // flow but the IDP sign-in pop-up window has not been closed yet, we use this
@@ -227,19 +280,25 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // is asked to verify phone number, change password, etc.
   base::OnceClosure show_accounts_dialog_callback_;
 
+  // Because the tab that shows the accounts dialog may be invisible initially,
+  // e.g. when a user opens a new tab, we'd delay showing the dialog until the
+  // tab becomes visible. This callback notifies the controller when the dialog
+  // is displayed to the user for the first time.
+  base::OnceClosure accounts_displayed_callback_;
+
   // If dialog has NOT been populated with accounts yet as a result of the IDP
   // sign-in flow and the IDP sign-in pop-up window has been closed, we use this
-  // boolean to let bubble widget know it should unhide itself when the dialog
-  // is ready. This can happen when the accounts fetch has yet to finish but the
+  // boolean to let the widget know it should unhide itself when the dialog is
+  // ready. This can happen when the accounts fetch has yet to finish but the
   // pop-up window has already been closed.
   bool is_modal_closed_but_accounts_fetch_pending_{false};
 
   // If IDP sign-in pop-up window is closed through means other than
   // IdentityProvider.close() such as the user closing the pop-up window or
-  // window.close(), we should destroy the bubble widget and reject the
+  // window.close(), we should destroy the widget and reject the
   // navigator.credentials.get promise. This boolean tracks whether
   // IdentityProvider.close() was called.
-  bool should_destroy_bubble_widget_{true};
+  bool should_destroy_dialog_widget_{true};
 
   // Whether the associated WebContents is visible or not.
   bool is_web_contents_visible_;
@@ -257,7 +316,13 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   base::TimeTicks idp_close_popup_time_;
 
   // The current state of the IDP sign-in pop-up window, if initiated by user.
-  PopupWindowResult popup_window_state_;
+  // This is nullopt when no popup window has been opened.
+  std::optional<PopupWindowResult> popup_window_state_;
+
+  // An AccountSelectionViewBase to render bubble dialogs for widget flows,
+  // otherwise returns an AccountSelectionViewBase to render modal dialogs
+  // for button flows.
+  raw_ptr<AccountSelectionViewBase> account_selection_view_;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

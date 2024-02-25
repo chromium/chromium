@@ -11,12 +11,12 @@ SavedTabGroupTab::SavedTabGroupTab(
     const GURL& url,
     const std::u16string& title,
     const base::Uuid& group_guid,
-    absl::optional<size_t> position,
-    absl::optional<base::Uuid> saved_tab_guid,
-    absl::optional<base::Token> local_tab_id,
-    absl::optional<base::Time> creation_time_windows_epoch_micros,
-    absl::optional<base::Time> update_time_windows_epoch_micros,
-    absl::optional<gfx::Image> favicon)
+    std::optional<size_t> position,
+    std::optional<base::Uuid> saved_tab_guid,
+    std::optional<base::Token> local_tab_id,
+    std::optional<base::Time> creation_time_windows_epoch_micros,
+    std::optional<base::Time> update_time_windows_epoch_micros,
+    std::optional<gfx::Image> favicon)
     : saved_tab_guid_(saved_tab_guid.has_value()
                           ? saved_tab_guid.value()
                           : base::Uuid::GenerateRandomV4()),
@@ -75,7 +75,7 @@ SavedTabGroupTab SavedTabGroupTab::FromSpecifics(
   const base::Time update_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specific.update_time_windows_epoch_micros()));
 
-  return SavedTabGroupTab(url, title, group_guid, position, guid, absl::nullopt,
+  return SavedTabGroupTab(url, title, group_guid, position, guid, std::nullopt,
                           creation_time, update_time);
 }
 

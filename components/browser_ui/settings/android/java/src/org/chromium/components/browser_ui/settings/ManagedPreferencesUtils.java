@@ -26,9 +26,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.util.Locale;
 
-/**
- * Utilities and common methods to handle settings managed by policies.
- */
+/** Utilities and common methods to handle settings managed by policies. */
 public class ManagedPreferencesUtils {
     private static Toast showToastWithResourceId(Context context, @StringRes int resId) {
         Toast toast = Toast.makeText(context, context.getString(resId), Toast.LENGTH_LONG);
@@ -69,16 +67,12 @@ public class ManagedPreferencesUtils {
         return showToastWithResourceId(context, R.string.managed_settings_cannot_be_reset);
     }
 
-    /**
-     * @return The resource ID for the Managed By Enterprise icon.
-     */
+    /** @return The resource ID for the Managed By Enterprise icon. */
     public static @DrawableRes int getManagedByEnterpriseIconId() {
         return R.drawable.ic_business_small;
     }
 
-    /**
-     * @return The resource ID for the Managed by Custodian icon.
-     */
+    /** @return The resource ID for the Managed by Custodian icon. */
     public static @DrawableRes int getManagedByCustodianIconId() {
         return R.drawable.ic_account_child_grey600_36dp;
     }
@@ -90,8 +84,9 @@ public class ManagedPreferencesUtils {
     public static Drawable getManagedIconDrawable(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         int resId = getManagedIconResId(delegate, preference);
-        return resId == 0 ? preference.getIcon()
-                          : SettingsUtils.getTintedIcon(preference.getContext(), resId);
+        return resId == 0
+                ? preference.getIcon()
+                : SettingsUtils.getTintedIcon(preference.getContext(), resId);
     }
 
     /**
@@ -128,16 +123,18 @@ public class ManagedPreferencesUtils {
      * @param hasCustomLayout Whether the preference defines its own layout or should use the
      *         embedder's default layout.
      */
-    public static void initPreference(@Nullable ManagedPreferenceDelegate delegate,
-            Preference preference, boolean allowManagedIcon, boolean hasCustomLayout) {
+    public static void initPreference(
+            @Nullable ManagedPreferenceDelegate delegate,
+            Preference preference,
+            boolean allowManagedIcon,
+            boolean hasCustomLayout) {
         if (delegate == null) return;
 
         // Embedders may define its own default layout for preferences, which can only be applied
         // if the preference doesn't use a custom layout and if the preference is controlled by
         // policy.
         if (!hasCustomLayout && delegate.isPreferenceControlledByPolicy(preference)) {
-            @LayoutRes
-            int layoutResource = delegate.defaultPreferenceLayoutResource();
+            @LayoutRes int layoutResource = delegate.defaultPreferenceLayoutResource();
             if (layoutResource != 0) {
                 preference.setLayoutResource(layoutResource);
             }
@@ -213,8 +210,10 @@ public class ManagedPreferencesUtils {
      * @param preference The ChromeImageViewPreference that owns the view.
      * @param view The View that was bound to the ChromeImageViewPreference.
      */
-    public static void onBindViewToImageViewPreference(@Nullable ManagedPreferenceDelegate delegate,
-            ChromeImageViewPreference preference, View view) {
+    public static void onBindViewToImageViewPreference(
+            @Nullable ManagedPreferenceDelegate delegate,
+            ChromeImageViewPreference preference,
+            View view) {
         if (delegate == null) return;
 
         onBindViewToPreference(delegate, preference, view);
@@ -227,16 +226,20 @@ public class ManagedPreferencesUtils {
         ImageView button = view.findViewById(R.id.image_view_widget);
         button.setImageDrawable(getManagedIconDrawable(delegate, preference));
         if (delegate.isPreferenceControlledByPolicy(preference)) {
-            button.setContentDescription(preference.getContext().getResources().getString(
-                    R.string.managed_by_your_organization));
+            button.setContentDescription(
+                    preference
+                            .getContext()
+                            .getResources()
+                            .getString(R.string.managed_by_your_organization));
         }
-        button.setOnClickListener((View v) -> {
-            if (delegate.isPreferenceControlledByPolicy(preference)) {
-                showManagedByAdministratorToast(preference.getContext());
-            } else if (delegate.isPreferenceControlledByCustodian(preference)) {
-                showManagedByParentToast(preference.getContext(), delegate);
-            }
-        });
+        button.setOnClickListener(
+                (View v) -> {
+                    if (delegate.isPreferenceControlledByPolicy(preference)) {
+                        showManagedByAdministratorToast(preference.getContext());
+                    } else if (delegate.isPreferenceControlledByCustodian(preference)) {
+                        showManagedByParentToast(preference.getContext(), delegate);
+                    }
+                });
     }
 
     /**
@@ -291,8 +294,10 @@ public class ManagedPreferencesUtils {
      * @param managedDisclaimerText The text the indicates that a preference is managed.
      * @param view The view corresponding to a given preference.
      */
-    private static void setSummaryWithManagedInfo(@Nullable CharSequence descriptionText,
-            @Nullable CharSequence managedDisclaimerText, View view) {
+    private static void setSummaryWithManagedInfo(
+            @Nullable CharSequence descriptionText,
+            @Nullable CharSequence managedDisclaimerText,
+            View view) {
         boolean emptyDescription = TextUtils.isEmpty(descriptionText);
         boolean emptyManagedDisclaimer = TextUtils.isEmpty(managedDisclaimerText);
 
@@ -303,8 +308,9 @@ public class ManagedPreferencesUtils {
         } else if (emptyManagedDisclaimer) {
             showSummaryViewWithText(descriptionText, view);
         } else {
-            showSummaryViewWithText(String.format(Locale.getDefault(), "%s\n%s", descriptionText,
-                                            managedDisclaimerText),
+            showSummaryViewWithText(
+                    String.format(
+                            Locale.getDefault(), "%s\n%s", descriptionText, managedDisclaimerText),
                     view);
         }
 
@@ -376,8 +382,9 @@ public class ManagedPreferencesUtils {
         if (delegate != null) {
             hasMultipleCustodians = delegate.doesProfileHaveMultipleCustodians();
         }
-        return hasMultipleCustodians ? R.string.managed_by_your_parents
-                                     : R.string.managed_by_your_parent;
+        return hasMultipleCustodians
+                ? R.string.managed_by_your_parents
+                : R.string.managed_by_your_parent;
     }
 
     /**
@@ -419,8 +426,8 @@ public class ManagedPreferencesUtils {
     private static void showManagedDisclaimerView(View view) {
         TextViewWithCompoundDrawables managedDisclaimerView =
                 view.findViewById(R.id.managed_disclaimer_text);
-        assert managedDisclaimerView
-                != null : "Missing managed disclaimer view; custom layout for a new preference?";
+        assert managedDisclaimerView != null
+                : "Missing managed disclaimer view; custom layout for a new preference?";
         managedDisclaimerView.setVisibility(View.VISIBLE);
         managedDisclaimerView.setEnabled(true);
     }

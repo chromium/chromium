@@ -86,9 +86,7 @@ void SharedBuffer::Iterator::Init(size_t offset) {
   }
 
   if (index_ == 0) {
-    DCHECK_LT(offset, buffer_->buffer_.size());
-    value_ = base::make_span(buffer_->buffer_.data() + offset,
-                             buffer_->buffer_.size() - offset);
+    value_ = base::span(buffer_->buffer_).subspan(offset);
     return;
   }
   const auto segment_index = index_ - 1;
@@ -96,8 +94,7 @@ void SharedBuffer::Iterator::Init(size_t offset) {
   size_t segment_size = segment_index == buffer_->segments_.size() - 1
                             ? buffer_->GetLastSegmentSize()
                             : kSegmentSize;
-  DCHECK_LT(offset, segment_size);
-  value_ = base::make_span(segment.get() + offset, segment_size - offset);
+  value_ = base::make_span(segment.get(), segment_size).subspan(offset);
 }
 
 SharedBuffer::SharedBuffer() : size_(0) {}

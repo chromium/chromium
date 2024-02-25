@@ -5,12 +5,11 @@
 #ifndef DEVICE_GAMEPAD_WGI_DATA_FETCHER_WIN_H_
 #define DEVICE_GAMEPAD_WGI_DATA_FETCHER_WIN_H_
 
-#include "device/gamepad/gamepad_data_fetcher.h"
-
 #include <Windows.Gaming.Input.h>
 #include <wrl/event.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -19,11 +18,11 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "device/gamepad/wgi_gamepad_device.h"
 #include "device/gamepad/xinput_data_fetcher_win.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -121,8 +120,8 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
 
   GetActivationFactoryFunction get_activation_factory_function_;
 
-  absl::optional<EventRegistrationToken> added_event_token_;
-  absl::optional<EventRegistrationToken> removed_event_token_;
+  std::optional<EventRegistrationToken> added_event_token_;
+  std::optional<EventRegistrationToken> removed_event_token_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

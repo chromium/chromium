@@ -11,14 +11,14 @@ import '../settings_shared.css.js';
 import './os_saved_devices_list.js';
 
 import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
@@ -28,7 +28,7 @@ import {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './settings_f
 const SettingsBluetoothSavedDevicesSubpageElementBase =
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
-class SettingsBluetoothSavedDevicesSubpageElement extends
+export class SettingsBluetoothSavedDevicesSubpageElement extends
     SettingsBluetoothSavedDevicesSubpageElementBase {
   static get is() {
     return 'os-settings-bluetooth-saved-devices-subpage' as const;
@@ -88,7 +88,7 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
     this.addWebUiListener(
         'fast-pair-saved-devices-list', this.getSavedDevices_.bind(this));

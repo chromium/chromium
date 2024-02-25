@@ -38,9 +38,9 @@ struct ASH_EXPORT PhotoViewConfig {
 class ASH_EXPORT PhotoView : public views::View,
                              public AmbientBackendModelObserver,
                              public ui::ImplicitAnimationObserver {
- public:
-  METADATA_HEADER(PhotoView);
+  METADATA_HEADER(PhotoView, views::View)
 
+ public:
   explicit PhotoView(AmbientViewDelegateImpl* delegate,
                      PhotoViewConfig view_config = PhotoViewConfig());
 
@@ -77,7 +77,7 @@ class ASH_EXPORT PhotoView : public views::View,
 
   // Note that we should be careful when using |delegate_|, as there is no
   // strong guarantee on the life cycle.
-  const raw_ptr<AmbientViewDelegateImpl, ExperimentalAsh> delegate_ = nullptr;
+  const raw_ptr<AmbientViewDelegateImpl> delegate_ = nullptr;
 
   // Image containers used for animation. Owned by view hierarchy.
   std::array<AmbientBackgroundImageView*, 2> image_views_{nullptr, nullptr};

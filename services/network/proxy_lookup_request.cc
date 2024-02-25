@@ -4,6 +4,7 @@
 
 #include "services/network/proxy_lookup_request.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -33,8 +33,7 @@ ProxyLookupRequest::~ProxyLookupRequest() {
   // |request_| should be non-null only when the network service is being torn
   // down.
   if (request_)
-    proxy_lookup_client_->OnProxyLookupComplete(net::ERR_ABORTED,
-                                                absl::nullopt);
+    proxy_lookup_client_->OnProxyLookupComplete(net::ERR_ABORTED, std::nullopt);
 }
 
 void ProxyLookupRequest::Start(const GURL& url) {
@@ -58,9 +57,9 @@ void ProxyLookupRequest::Start(const GURL& url) {
 void ProxyLookupRequest::OnResolveComplete(int result) {
   if (result == net::OK) {
     proxy_lookup_client_->OnProxyLookupComplete(
-        net::OK, absl::optional<net::ProxyInfo>(std::move(proxy_info_)));
+        net::OK, std::optional<net::ProxyInfo>(std::move(proxy_info_)));
   } else {
-    proxy_lookup_client_->OnProxyLookupComplete(result, absl::nullopt);
+    proxy_lookup_client_->OnProxyLookupComplete(result, std::nullopt);
   }
   DestroySelf();
 }

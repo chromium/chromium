@@ -26,18 +26,13 @@ class SyncServiceObserver {
 
   // Invoked when the state of whether payments integration is enabled or not
   // changed (user setting change or via enterprise policy).
-  // TODO(crbug.com/1459963): Revisit this observer function: either remove or
-  // replace it with a more general-purpose version (e.g. preferred types
-  // changed).
+  // TODO(crbug.com/1497734): Remove this function once payments full server
+  // cards are fully deprecated.
   virtual void OnSyncPaymentsIntegrationEnabledChanged(SyncService* sync) {}
 
   // If a client wishes to handle sync cycle completed events in a special way,
   // they can use this function.  By default, it re-routes to OnStateChanged().
   virtual void OnSyncCycleCompleted(SyncService* sync);
-
-  // Called when the sync service has finished the datatype configuration
-  // process.
-  virtual void OnSyncConfigurationCompleted(SyncService* sync) {}
 
   // Called when the sync service is being shutdown permanently, so that
   // longer-lived observers can drop references to it.

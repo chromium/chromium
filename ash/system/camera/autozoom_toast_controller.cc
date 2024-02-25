@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
@@ -118,6 +118,8 @@ std::u16string AutozoomToastController::GetAccessibleNameForBubble() {
   return toast_view_->GetAccessibleName();
 }
 
+void AutozoomToastController::HideBubble(const TrayBubbleView* bubble_view) {}
+
 void AutozoomToastController::StartAutoCloseTimer() {
   close_timer_.Stop();
 
@@ -125,12 +127,12 @@ void AutozoomToastController::StartAutoCloseTimer() {
   if (toast_view_ && toast_view_->IsButtonFocused())
     return;
 
-  int autoclose_delay = kTrayPopupAutoCloseDelayInSeconds;
-  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
-    autoclose_delay = kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback;
-
-  close_timer_.Start(FROM_HERE, base::Seconds(autoclose_delay), this,
-                     &AutozoomToastController::HideToast);
+  close_timer_.Start(
+      FROM_HERE,
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()
+          ? kSecondaryBubbleWithSpokenFeedbackDuration
+          : kSecondaryBubbleDuration,
+      this, &AutozoomToastController::HideToast);
 }
 
 void AutozoomToastController::OnAutozoomStateChanged(

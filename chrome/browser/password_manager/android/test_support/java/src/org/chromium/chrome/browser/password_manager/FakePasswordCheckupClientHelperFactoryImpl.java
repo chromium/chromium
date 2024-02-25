@@ -11,9 +11,7 @@ package org.chromium.chrome.browser.password_manager;
 public class FakePasswordCheckupClientHelperFactoryImpl extends PasswordCheckupClientHelperFactory {
     private PasswordCheckupClientHelper mHelper;
 
-    /**
-     * Returns the fake implementation of {@link PasswordCheckupClientHelper} used for tests.
-     */
+    /** Returns the fake implementation of {@link PasswordCheckupClientHelper} used for tests. */
     @Override
     public PasswordCheckupClientHelper createHelper() {
         if (mHelper == null) {

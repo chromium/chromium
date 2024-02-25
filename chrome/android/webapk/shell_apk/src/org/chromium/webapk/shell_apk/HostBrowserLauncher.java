@@ -24,14 +24,14 @@ public class HostBrowserLauncher {
     public static final String ACTION_START_WEBAPK =
             "com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP";
 
-    // Must stay in sync with
-    // {@link org.chromium.chrome.browser.ShortcutHelper#REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB}.
+    // Must stay in sync with {@link
+    // org.chromium.chrome.browser.ShortcutHelper#REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB}.
     private static final String REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB =
             "REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB";
 
     /**
-     * Launches host browser in WebAPK mode if the browser is WebAPK-compatible.
-     * Otherwise, launches the host browser in tabbed mode.
+     * Launches host browser in WebAPK mode if the browser is WebAPK-compatible. Otherwise, launches
+     * the host browser in tabbed mode.
      */
     public static void launch(Activity activity, HostBrowserLauncherParams params) {
         if (HostBrowserUtils.shouldLaunchInTab(params)) {
@@ -40,12 +40,16 @@ public class HostBrowserLauncher {
         }
 
         launchBrowserInWebApkMode(
-                activity, params, null, Intent.FLAG_ACTIVITY_NEW_TASK, false /* expectResult */);
+                activity, params, null, Intent.FLAG_ACTIVITY_NEW_TASK, /* expectResult= */ false);
     }
 
     /** Launches host browser in WebAPK mode. */
-    public static void launchBrowserInWebApkMode(Activity activity,
-            HostBrowserLauncherParams params, Bundle extraExtras, int flags, boolean expectResult) {
+    public static void launchBrowserInWebApkMode(
+            Activity activity,
+            HostBrowserLauncherParams params,
+            Bundle extraExtras,
+            int flags,
+            boolean expectResult) {
         ManageDataLauncherActivity.updateSiteSettingsShortcut(
                 activity.getApplicationContext(), params);
         Intent intent = new Intent();
@@ -66,7 +70,8 @@ public class HostBrowserLauncher {
         intent.putExtra(WebApkConstants.EXTRA_URL, params.getStartUrl())
                 .putExtra(WebApkConstants.EXTRA_SOURCE, params.getSource())
                 .putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, activity.getPackageName())
-                .putExtra(WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME,
+                .putExtra(
+                        WebApkConstants.EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME,
                         params.getSelectedShareTargetActivityClassName())
                 .putExtra(WebApkConstants.EXTRA_FORCE_NAVIGATION, params.getForceNavigation());
 
@@ -83,7 +88,8 @@ public class HostBrowserLauncher {
         }
 
         if (params.getSplashShownTimeMs() >= 0) {
-            intent.putExtra(WebApkConstants.EXTRA_NEW_STYLE_SPLASH_SHOWN_TIME,
+            intent.putExtra(
+                    WebApkConstants.EXTRA_NEW_STYLE_SPLASH_SHOWN_TIME,
                     params.getSplashShownTimeMs());
         }
 

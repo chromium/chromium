@@ -4,11 +4,9 @@
 
 #include "chrome/renderer/loadtimes_extension_bindings.h"
 
-#include <math.h>
-
 #include "base/time/time.h"
 #include "extensions/renderer/v8_helpers.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
@@ -88,6 +86,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
       case blink::kWebNavigationTypeFormSubmitted:
         return "FormSubmitted";
       case blink::kWebNavigationTypeBackForward:
+      case blink::kWebNavigationTypeRestore:
         return "BackForward";
       case blink::kWebNavigationTypeReload:
         return "Reload";
@@ -108,6 +107,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
       case blink::kWebNavigationTypeFormResubmittedReload:
         return kTransitionLink;
       case blink::kWebNavigationTypeBackForward:
+      case blink::kWebNavigationTypeRestore:
         return kTransitionForwardBack;
       case blink::kWebNavigationTypeReload:
         return kTransitionReload;
@@ -182,8 +182,8 @@ class LoadTimesExtensionWrapper : public v8::Extension {
         response.AlpnNegotiatedProtocol().Utf8();
     bool was_alternate_protocol_available =
         response.WasAlternateProtocolAvailable();
-    std::string connection_info = net::HttpResponseInfo::ConnectionInfoToString(
-        response.ConnectionInfo());
+    std::string_view connection_info =
+        net::HttpConnectionInfoToString(response.ConnectionInfo());
 
     // Important: |frame| and |document_loader| should not be
     // referred to below this line, as JS setters below can invalidate these
@@ -325,13 +325,24 @@ class LoadTimesExtensionWrapper : public v8::Extension {
                      isolate, "connectionInfo",
                      v8::NewStringType::kInternalized),
                  LoadtimesGetter, nullptr,
-                 v8::String::NewFromUtf8(isolate, connection_info.c_str())
+                 v8::String::NewFromUtf8(isolate, connection_info.data(),
+                                         v8::NewStringType::kNormal,
+                                         connection_info.length())
                      .ToLocalChecked())
              .FromMaybe(false)) {
       return;
     }
 
     args.GetReturnValue().Set(load_times);
+  }
+
+  static void CSIGetter(v8::Local<v8::Name> name,
+                        const v8::PropertyCallbackInfo<v8::Value>& info) {
+    if (WebLocalFrame* frame = WebLocalFrame::FrameForCurrentContext()) {
+      frame->UsageCountChromeCSI(blink::WebString::FromUTF8(
+          *v8::String::Utf8Value(info.GetIsolate(), name)));
+    }
+    info.GetReturnValue().Set(info.Data());
   }
 
   static void GetCSI(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -347,11 +358,11 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     blink::WebPerformanceMetricsForReporting web_performance =
         frame->PerformanceMetricsForReporting();
     base::Time now = base::Time::Now();
-    base::Time start =
-        base::Time::FromDoubleT(web_performance.NavigationStart());
+    base::Time start = base::Time::FromSecondsSinceUnixEpoch(
+        web_performance.NavigationStart());
 
-    base::Time dom_content_loaded_end =
-        base::Time::FromDoubleT(web_performance.DomContentLoadedEventEnd());
+    base::Time dom_content_loaded_end = base::Time::FromSecondsSinceUnixEpoch(
+        web_performance.DomContentLoadedEventEnd());
     base::TimeDelta page = now - start;
     int navigation_type =
         GetCSITransitionType(document_loader->GetNavigationType());
@@ -360,36 +371,43 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     v8::Isolate* isolate = args.GetIsolate();
     v8::Local<v8::Context> ctx = isolate->GetCurrentContext();
     v8::Local<v8::Object> csi = v8::Object::New(isolate);
-    if (!csi->Set(ctx,
-                  v8::String::NewFromUtf8Literal(
-                      isolate, "startE", v8::NewStringType::kInternalized),
-                  v8::Number::New(isolate, floor(start.ToDoubleT() * 1000)))
+    if (!csi->SetAccessor(
+                ctx,
+                v8::String::NewFromUtf8Literal(
+                    isolate, "startE", v8::NewStringType::kInternalized),
+                CSIGetter, nullptr,
+                v8::Number::New(isolate, start.InMillisecondsSinceUnixEpoch()))
              .FromMaybe(false)) {
       return;
     }
     // NOTE: historically, the CSI onload field has reported the time the
     // document finishes parsing, which is DOMContentLoaded. Thus, we continue
     // to report that here, despite the fact that the field is named onloadT.
-    if (!csi->Set(
+    if (!csi->SetAccessor(
                 ctx,
                 v8::String::NewFromUtf8Literal(
                     isolate, "onloadT", v8::NewStringType::kInternalized),
+                CSIGetter, nullptr,
                 v8::Number::New(
-                    isolate, floor(dom_content_loaded_end.ToDoubleT() * 1000)))
+                    isolate,
+                    dom_content_loaded_end.InMillisecondsSinceUnixEpoch()))
              .FromMaybe(false)) {
       return;
     }
-    if (!csi->Set(ctx,
-                  v8::String::NewFromUtf8Literal(
-                      isolate, "pageT", v8::NewStringType::kInternalized),
-                  v8::Number::New(isolate, page.InMillisecondsF()))
+    if (!csi->SetAccessor(
+                ctx,
+                v8::String::NewFromUtf8Literal(
+                    isolate, "pageT", v8::NewStringType::kInternalized),
+                CSIGetter, nullptr,
+                v8::Number::New(isolate, page.InMillisecondsF()))
              .FromMaybe(false)) {
       return;
     }
-    if (!csi->Set(ctx,
-                  v8::String::NewFromUtf8Literal(
-                      isolate, "tran", v8::NewStringType::kInternalized),
-                  v8::Number::New(isolate, navigation_type))
+    if (!csi->SetAccessor(
+                ctx,
+                v8::String::NewFromUtf8Literal(
+                    isolate, "tran", v8::NewStringType::kInternalized),
+                CSIGetter, nullptr, v8::Number::New(isolate, navigation_type))
              .FromMaybe(false)) {
       return;
     }

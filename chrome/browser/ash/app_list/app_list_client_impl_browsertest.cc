@@ -10,10 +10,13 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/test/active_window_waiter.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -30,10 +33,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/app_list_model_updater_observer.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -46,7 +52,6 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -54,6 +59,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -72,8 +78,12 @@
 #include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/package_id.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
@@ -84,13 +94,14 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/wm/core/window_util.h"
-#include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/activation_client.h"
 
 // Browser Test for AppListClientImpl.
 using AppListClientImplBrowserTest = extensions::PlatformAppBrowserTest;
 
 namespace {
+
+const apps::PackageId kTestPackageId =
+    apps::PackageId(apps::AppType::kArc, "com.test.package");
 
 class TestObserver : public app_list::AppListSyncableService::Observer {
  public:
@@ -112,40 +123,6 @@ class TestObserver : public app_list::AppListSyncableService::Observer {
                           app_list::AppListSyncableService::Observer>
       observer_{this};
   size_t add_or_update_count_ = 0;
-};
-
-class ActiveWindowWaiter : public wm::ActivationChangeObserver {
- public:
-  explicit ActiveWindowWaiter(aura::Window* root_window) {
-    observation_.Observe(wm::GetActivationClient(root_window));
-  }
-
-  ActiveWindowWaiter(const ActiveWindowWaiter&) = delete;
-  ActiveWindowWaiter& operator=(const ActiveWindowWaiter&) = delete;
-
-  ~ActiveWindowWaiter() override = default;
-
-  aura::Window* Wait() {
-    run_loop_.Run();
-    return found_window_;
-  }
-
-  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override {
-    if (gained_active) {
-      found_window_ = gained_active;
-      observation_.Reset();
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
-  raw_ptr<aura::Window, ExperimentalAsh> found_window_ = nullptr;
-
-  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
-      observation_{this};
 };
 
 }  // namespace
@@ -293,7 +270,7 @@ class SelfDestroyAppItem : public ChromeAppListItem {
   }
 
  private:
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> updater_;
+  raw_ptr<AppListModelUpdater> updater_;
 };
 
 // Verifies that activating an app item which destroys itself during activation
@@ -409,6 +386,138 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowContextMenu) {
     std::u16string label = menu_model->GetLabelAt(i);
     EXPECT_FALSE(label.empty());
   }
+}
+
+class AppListClientImplBrowserPromiseAppTest
+    : public AppListClientImplBrowserTest,
+      public AppListModelUpdaterObserver {
+ public:
+  AppListClientImplBrowserPromiseAppTest() {
+    feature_list_.InitWithFeatures({ash::features::kPromiseIcons}, {});
+  }
+
+  // extensions::PlatformAppBrowserTest:
+  void SetUpOnMainThread() override {
+    extensions::PlatformAppBrowserTest::SetUpOnMainThread();
+    AppListClientImpl* client = AppListClientImpl::GetInstance();
+    ASSERT_TRUE(client);
+    client->UpdateProfile();
+    test::GetModelUpdater(client)->AddObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    AppListClientImpl* client = AppListClientImpl::GetInstance();
+    ASSERT_TRUE(client);
+    test::GetModelUpdater(client)->RemoveObserver(this);
+    extensions::PlatformAppBrowserTest::TearDownOnMainThread();
+  }
+
+  apps::AppServiceProxy* app_service_proxy() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile());
+  }
+
+  apps::PromiseAppRegistryCache* cache() {
+    return app_service_proxy()->PromiseAppRegistryCache();
+  }
+
+  // AppListModelUpdaterObserver:
+  void OnAppListItemUpdated(ChromeAppListItem* item) override {
+    last_updated_metadata_ = item->CloneMetadata();
+    updates_++;
+  }
+
+  ash::AppListItemMetadata* GetMetadataFromLastUpdate() {
+    return last_updated_metadata_.get();
+  }
+
+  int GetAndResetUpdateCount() {
+    int cached_updates = updates_;
+    updates_ = 0;
+    return cached_updates;
+  }
+
+ private:
+  int updates_ = 0;
+  std::unique_ptr<ash::AppListItemMetadata> last_updated_metadata_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that progress updates from promise apps registry are reflected into the
+// launcher.
+IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
+                       PromiseAppsInLauncher) {
+  std::string app_name = "Long App Name";
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  EXPECT_TRUE(client);
+
+  // Register a promise app in the promise app registry cache.
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<apps::PromiseApp>(kTestPackageId);
+  promise_app->status = apps::PromiseStatus::kPending;
+  promise_app->name = app_name;
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Show the app list to ensure it has loaded a profile.
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  EXPECT_TRUE(model_updater);
+
+  ChromeAppListItem* item = model_updater->FindItem(kTestPackageId.ToString());
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->progress(), 0);
+  EXPECT_EQ(item->app_status(), ash::AppStatus::kPending);
+  ASSERT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kPending)));
+  ASSERT_EQ(item->accessible_name(),
+            base::UTF16ToUTF8(
+                ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+                    app_name, apps::PromiseStatus::kPending)));
+  GetAndResetUpdateCount();
+
+  // Update the promise app in the promise app registry cache.
+  apps::PromiseAppPtr update =
+      std::make_unique<apps::PromiseApp>(kTestPackageId);
+  update->progress = 0.3;
+  update->status = apps::PromiseStatus::kInstalling;
+  cache()->OnPromiseApp(std::move(update));
+
+  // Verify that OnAppListItemUpdated was called four times:
+  // For accessible name, for name, for progress and for app_status.
+  EXPECT_EQ(4, GetAndResetUpdateCount());
+
+  // Promise app item should have updated fields.
+  EXPECT_EQ(item->progress(), 0.3f);
+  EXPECT_EQ(item->app_status(), ash::AppStatus::kInstalling);
+  EXPECT_EQ(item->name(),
+            base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
+                apps::PromiseStatus::kInstalling)));
+  ASSERT_EQ(item->accessible_name(),
+            base::UTF16ToUTF8(
+                ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+                    app_name, apps::PromiseStatus::kInstalling)));
+
+  // Register (i.e. "install") an app with a matching package ID. This should
+  // trigger removal of the promise app.
+  std::string app_id = "asdfghjkl";
+  apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
+  app->publisher_id = kTestPackageId.identifier();
+  app->readiness = apps::Readiness::kReady;
+
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  app_service_proxy()->OnApps(std::move(apps), apps::AppType::kArc,
+                              /*should_notify_initialized=*/false);
+
+  // Verify that the promise app was updated correctly into a successful status
+  // before it was removed.
+  ash::AppListItemMetadata* metadata_before_removal =
+      GetMetadataFromLastUpdate();
+  EXPECT_EQ(1, GetAndResetUpdateCount());
+  EXPECT_EQ(ash::AppStatus::kInstallSuccess,
+            metadata_before_removal->app_status);
+  EXPECT_FALSE(model_updater->FindItem(kTestPackageId.ToString()));
 }
 
 // Test that OpenSearchResult that dismisses app list runs fine without
@@ -553,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   ASSERT_TRUE(model_updater);
 
-  ActiveWindowWaiter window_waiter(primary_root_window);
+  ash::ActiveWindowWaiter window_waiter(primary_root_window);
 
   client->OpenSearchResult(model_updater->model_id(), app_result_id,
                            ui::EF_NONE,
@@ -624,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   ASSERT_TRUE(model_updater);
 
-  ActiveWindowWaiter window_waiter(secondary_root_window);
+  ash::ActiveWindowWaiter window_waiter(secondary_root_window);
 
   client->OpenSearchResult(model_updater->model_id(), app_result_id,
                            ui::EF_NONE,
@@ -858,8 +967,7 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
-  raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
-      model_updater_;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged> model_updater_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,
@@ -921,7 +1029,7 @@ class DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest
     // showing the launcher. Therefore we set the current user to be new
     // explicitly.
     LoginUser(new_user_id_);
-    ash::ChromeUserManager::Get()->SetIsCurrentUserNew(true);
+    user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
     AppListClientImpl::GetInstance()->InitializeAsIfNewUserLoginForTest();
   }
 

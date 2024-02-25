@@ -21,9 +21,7 @@ public class LensIntentParams {
     private int mProactiveQueryId;
     private @LensEntryPoint int mLensEntryPoint;
 
-    /**
-     * Builder class for LensIntentParams.
-     */
+    /** Builder class for LensIntentParams. */
     public static class Builder {
         private Uri mImageUri = Uri.EMPTY;
         private String mSrcUrl;
@@ -116,9 +114,7 @@ public class LensIntentParams {
             return this;
         }
 
-        /**
-         * Build LensIntentParams object from parameters set.
-         */
+        /** Build LensIntentParams object from parameters set. */
         public LensIntentParams build() {
             LensIntentParams lensIntentParams = new LensIntentParams();
             lensIntentParams.mIsIncognito = mIsIncognito;

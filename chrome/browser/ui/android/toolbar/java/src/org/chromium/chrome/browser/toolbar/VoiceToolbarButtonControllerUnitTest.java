@@ -29,14 +29,14 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -48,26 +48,16 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public final class VoiceToolbarButtonControllerUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Mock
-    private Context mContext;
-    @Mock
-    private Resources mResources;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private GURL mUrl;
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock
-    private ModalDialogManager mModalDialogManager;
-    @Mock
-    private VoiceToolbarButtonController.VoiceSearchDelegate mVoiceSearchDelegate;
-    @Mock
-    private Drawable mDrawable;
-    @Mock
-    private Tracker mTracker;
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Mock private Context mContext;
+    @Mock private Resources mResources;
+    @Mock private Tab mTab;
+    @Mock private GURL mUrl;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private VoiceToolbarButtonController.VoiceSearchDelegate mVoiceSearchDelegate;
+    @Mock private Drawable mDrawable;
+    @Mock private Tracker mTracker;
 
     private Configuration mConfiguration = new Configuration();
     private VoiceToolbarButtonController mVoiceToolbarButtonController;
@@ -89,11 +79,14 @@ public final class VoiceToolbarButtonControllerUnitTest {
 
         doReturn(mContext).when(mTab).getContext();
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        // clang-format off
-        mVoiceToolbarButtonController = new VoiceToolbarButtonController(mContext, mDrawable,
-                () -> mTab, () -> mTracker, mModalDialogManager,
-                mVoiceSearchDelegate);
-        // clang-format on
+        mVoiceToolbarButtonController =
+                new VoiceToolbarButtonController(
+                        mContext,
+                        mDrawable,
+                        () -> mTab,
+                        () -> mTracker,
+                        mModalDialogManager,
+                        mVoiceSearchDelegate);
 
         TrackerFactory.setTrackerForTests(mTracker);
     }
@@ -101,9 +94,11 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testIPHCommandHelper() {
-        assertNull(mVoiceToolbarButtonController.get(/*tab*/ null)
-                           .getButtonSpec()
-                           .getIPHCommandBuilder());
+        assertNull(
+                mVoiceToolbarButtonController
+                        .get(/* tab= */ null)
+                        .getButtonSpec()
+                        .getIPHCommandBuilder());
 
         // Verify that IPHCommandBuilder is set just once;
         IPHCommandBuilder builder =
@@ -111,15 +106,19 @@ public final class VoiceToolbarButtonControllerUnitTest {
 
         assertNotNull(
                 mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
-        assertEquals(builder,
+        assertEquals(
+                builder,
                 mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testIPHEvent() {
-        doReturn(true).when(mTracker).shouldTriggerHelpUI(
-                FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE);
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUI(
+                        FeatureConstants
+                                .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE);
 
         View view = Mockito.mock(View.class);
         mVoiceToolbarButtonController.get(mTab).getButtonSpec().getOnClickListener().onClick(view);
@@ -130,9 +129,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    // clang-format off
     public void isToolbarMicEnabled_toolbarMic() {
-        // clang-format on
         assertTrue(VoiceToolbarButtonController.isToolbarMicEnabled());
     }
 }

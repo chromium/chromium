@@ -9,15 +9,19 @@
 #include <stdint.h>
 
 #include "net/base/net_export.h"
-#include "net/der/encode_values.h"
+#include "third_party/boringssl/src/pki/encode_values.h"
 
 namespace base {
 class Time;
 }
 
-namespace net {
-
+namespace bssl {
+namespace der {
 struct GeneralizedTime;
+}  // namespace der
+}  // namespace bssl
+
+namespace net {
 
 // Encodes |time|, a UTC-based time, to DER |generalized_time|, for comparing
 // against other GeneralizedTime objects. Returns true on success or false if
@@ -25,12 +29,13 @@ struct GeneralizedTime;
 // of |time| is discarded.
 NET_EXPORT bool EncodeTimeAsGeneralizedTime(
     const base::Time& time,
-    der::GeneralizedTime* generalized_time);
+    bssl::der::GeneralizedTime* generalized_time);
 
 // Converts a GeneralizedTime struct to a base::Time, returning true on success
 // or false if |generalized| was invalid.
-NET_EXPORT bool GeneralizedTimeToTime(const der::GeneralizedTime& generalized,
-                                      base::Time* result);
+NET_EXPORT bool GeneralizedTimeToTime(
+    const bssl::der::GeneralizedTime& generalized,
+    base::Time* result);
 
 }  // namespace net
 

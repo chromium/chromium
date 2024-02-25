@@ -11,7 +11,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './ambient_zero_state_svg_element.html.js';
 
-export class AmbientZeroStateSvg extends PolymerElement {
+export class AmbientZeroStateSvgElement extends PolymerElement {
   static get is() {
     return 'ambient-zero-state-svg';
   }
@@ -21,4 +21,5 @@ export class AmbientZeroStateSvg extends PolymerElement {
   }
 }
 
-customElements.define(AmbientZeroStateSvg.is, AmbientZeroStateSvg);
+customElements.define(
+    AmbientZeroStateSvgElement.is, AmbientZeroStateSvgElement);

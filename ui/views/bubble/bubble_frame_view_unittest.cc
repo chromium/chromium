@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
@@ -56,14 +58,10 @@ gfx::Size AddAdditionalSize(gfx::Size size) {
 
 class TestBubbleFrameViewWidgetDelegate : public WidgetDelegate {
  public:
-  explicit TestBubbleFrameViewWidgetDelegate(Widget* widget)
-      : widget_(widget) {}
-
+  TestBubbleFrameViewWidgetDelegate() = default;
   ~TestBubbleFrameViewWidgetDelegate() override = default;
 
   // WidgetDelegate:
-  Widget* GetWidget() override { return widget_; }
-  const Widget* GetWidget() const override { return widget_; }
   View* GetContentsView() override {
     if (!contents_view_) {
       StaticSizedView* contents_view =
@@ -74,6 +72,8 @@ class TestBubbleFrameViewWidgetDelegate : public WidgetDelegate {
     }
     return contents_view_;
   }
+  void WindowClosing() override { contents_view_ = nullptr; }
+
   bool ShouldShowCloseButton() const override { return should_show_close_; }
 
   void SetShouldShowCloseButton(bool should_show_close) {
@@ -81,9 +81,7 @@ class TestBubbleFrameViewWidgetDelegate : public WidgetDelegate {
   }
 
  private:
-  const raw_ptr<Widget, DanglingUntriaged> widget_;
-  raw_ptr<View, DanglingUntriaged> contents_view_ =
-      nullptr;  // Owned by |widget_|.
+  raw_ptr<View> contents_view_ = nullptr;  // Owned by the Widget.
   bool should_show_close_ = false;
 };
 
@@ -94,8 +92,7 @@ class TestBubbleFrameView : public BubbleFrameView {
     SetBubbleBorder(
         std::make_unique<BubbleBorder>(kArrow, BubbleBorder::STANDARD_SHADOW));
     widget_ = std::make_unique<Widget>();
-    widget_delegate_ =
-        std::make_unique<TestBubbleFrameViewWidgetDelegate>(widget_.get());
+    widget_delegate_ = std::make_unique<TestBubbleFrameViewWidgetDelegate>();
     Widget::InitParams params =
         test_base->CreateParams(Widget::InitParams::TYPE_BUBBLE);
     params.delegate = widget_delegate_.get();
@@ -957,6 +954,8 @@ TEST_F(BubbleFrameViewTest, MetadataTest) {
 namespace {
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
+  METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
+
  public:
   TestBubbleDialogDelegateView()
       : BubbleDialogDelegateView(nullptr, BubbleBorder::NONE) {
@@ -1012,6 +1011,9 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   bool should_show_close_ = false;
 };
 
+BEGIN_METADATA(TestBubbleDialogDelegateView)
+END_METADATA
+
 class TestAnchor {
  public:
   explicit TestAnchor(Widget::InitParams params) {
@@ -1031,6 +1033,8 @@ class TestAnchor {
 
 // BubbleDialogDelegate with no margins to test width snapping.
 class TestWidthSnapDelegate : public TestBubbleDialogDelegateView {
+  METADATA_HEADER(TestWidthSnapDelegate, TestBubbleDialogDelegateView)
+
  public:
   TestWidthSnapDelegate(TestAnchor* anchor, bool should_snap) {
     DialogDelegate::SetButtons(should_snap ? ui::DIALOG_BUTTON_OK
@@ -1044,6 +1048,9 @@ class TestWidthSnapDelegate : public TestBubbleDialogDelegateView {
   TestWidthSnapDelegate(const TestWidthSnapDelegate&) = delete;
   TestWidthSnapDelegate& operator=(const TestWidthSnapDelegate&) = delete;
 };
+
+BEGIN_METADATA(TestWidthSnapDelegate)
+END_METADATA
 
 }  // namespace
 
@@ -1087,7 +1094,7 @@ TEST_F(BubbleFrameViewTest, WidthSnaps) {
 // Tests edge cases when the frame's title view starts to wrap text. This is to
 // ensure that the calculations BubbleFrameView does to determine the Widget
 // size for a given client view are consistent with the eventual size that the
-// client view takes after Layout().
+// client view takes after layout.
 TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
   test::TestLayoutProvider provider;
   auto delegate_unique = std::make_unique<TestBubbleDialogDelegateView>();
@@ -1229,6 +1236,7 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
   TestBubbleDialogDelegateView* const delegate = delegate_unique.get();
   TestAnchor anchor(CreateParams(Widget::InitParams::TYPE_WINDOW));
   delegate->SetAnchorView(anchor.widget().GetContentsView());
+  delegate->SetSubtitleAllowCharacterBreak(true);
 
   Widget* bubble =
       BubbleDialogDelegateView::CreateBubble(std::move(delegate_unique));
@@ -1258,9 +1266,10 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
 
   // Set the new min bubble height with a Subtitle added.
   min_bubble_height = bubble->GetWindowBoundsInScreen().height();
-  // Grow the subtitle incrementally until word wrap is required.
+  // Grow the subtitle incrementally until a wrap is required.
   while (bubble->GetWindowBoundsInScreen().height() == min_bubble_height) {
-    subtitle += u" j";
+    // Use a single character to check that character breaks are enabled.
+    subtitle += u"j";
     delegate->ChangeSubtitle(subtitle);
   }
 
@@ -1269,6 +1278,12 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
       bubble->GetWindowBoundsInScreen().height() - min_bubble_height;
   EXPECT_GT(line_height_diff, 12);
   EXPECT_LT(line_height_diff, 18);
+
+  // Turn off character breaks and confirm the height has returned to the single
+  // line height.
+  delegate->SetSubtitleAllowCharacterBreak(false);
+  delegate->SizeToContents();
+  EXPECT_EQ(bubble->GetWindowBoundsInScreen().height(), min_bubble_height);
 }
 
 TEST_F(BubbleFrameViewTest, LayoutWithIcon) {

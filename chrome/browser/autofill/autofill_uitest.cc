@@ -113,8 +113,6 @@ void BrowserAutofillManagerTestDelegateImpl::DidHideSuggestions() {
   FireEvent(ObservedUiEvents::kSuggestionsHidden);
 }
 
-void BrowserAutofillManagerTestDelegateImpl::OnTextFieldChanged() {}
-
 void BrowserAutofillManagerTestDelegateImpl::SetExpectations(
     std::list<ObservedUiEvents> expected_events,
     base::TimeDelta timeout,
@@ -292,7 +290,7 @@ BrowserAutofillManager* AutofillUiTest::GetBrowserAutofillManager() {
   // when there is a web page popup during teardown
   if (!driver)
     return nullptr;
-  return static_cast<BrowserAutofillManager*>(driver->autofill_manager());
+  return static_cast<BrowserAutofillManager*>(&driver->GetAutofillManager());
 }
 
 void AutofillUiTest::RenderFrameHostChanged(
@@ -301,9 +299,9 @@ void AutofillUiTest::RenderFrameHostChanged(
   if (current_main_rfh_ != old_frame)
     return;
   current_main_rfh_ = new_frame;
-  BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
-  if (autofill_manager)
-    autofill_manager->SetTestDelegate(test_delegate());
+  if (BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager()) {
+    test_delegate()->Observe(*autofill_manager);
+  }
 }
 
 }  // namespace autofill

@@ -96,6 +96,18 @@ TEST_F(ProtoConversionsTest, DeviceTypeToMojo) {
       DeviceTypeToMojom(::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS));
 }
 
+TEST_F(ProtoConversionsTest, PublicCredentialTypeToMojom) {
+  EXPECT_EQ(
+      mojom::PublicCredentialType::kLocalPublicCredential,
+      PublicCredentialTypeToMojom(
+          ::nearby::presence::PublicCredentialType::kLocalPublicCredential));
+
+  EXPECT_EQ(
+      mojom::PublicCredentialType::kRemotePublicCredential,
+      PublicCredentialTypeToMojom(
+          ::nearby::presence::PublicCredentialType::kRemotePublicCredential));
+}
+
 TEST_F(ProtoConversionsTest, MetadataToMojom) {
   ::nearby::internal::Metadata metadata = BuildMetadata(
       /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_LAPTOP,

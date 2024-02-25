@@ -32,7 +32,13 @@ bool TsSectionCetsPssh::Parse(bool payload_unit_start_indicator,
   RCHECK(bit_reader.SkipBits(31));
   int box_length_bits = bit_reader.bits_available();
   std::string pssh;
+  if (!box_length_bits) {
+    // Ignore if there are no bits to read.
+    return false;
+  }
+  RCHECK(box_length_bits % 8 == 0);
   RCHECK(bit_reader.ReadString(box_length_bits, &pssh));
+  RCHECK(pssh.length() >= 4);
   // Now check that the first 4 bytes are of the form {0x00, 0x00, 0x00, X},
   // where X is the box length in bytes.
   RCHECK(pssh[0] == 0x00 && pssh[1] == 0x00 && pssh[2] == 0x00);

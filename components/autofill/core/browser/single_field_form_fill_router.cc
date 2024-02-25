@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 
+#include "base/check_deref.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 
@@ -13,12 +14,9 @@ SingleFieldFormFillRouter::SingleFieldFormFillRouter(
     AutocompleteHistoryManager* autocomplete_history_manager,
     IbanManager* iban_manager,
     MerchantPromoCodeManager* merchant_promo_code_manager)
-    : autocomplete_history_manager_(autocomplete_history_manager->GetWeakPtr()),
-      iban_manager_(iban_manager ? iban_manager->GetWeakPtr() : nullptr),
-      merchant_promo_code_manager_(
-          merchant_promo_code_manager
-              ? merchant_promo_code_manager->GetWeakPtr()
-              : nullptr) {}
+    : autocomplete_history_manager_(CHECK_DEREF(autocomplete_history_manager)),
+      iban_manager_(iban_manager),
+      merchant_promo_code_manager_(merchant_promo_code_manager) {}
 
 SingleFieldFormFillRouter::~SingleFieldFormFillRouter() = default;
 
@@ -62,40 +60,36 @@ void SingleFieldFormFillRouter::OnWillSubmitForm(
 }
 
 bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
-    AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
-    base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     const SuggestionsContext& context) {
   // Retrieving suggestions for a new field; select the appropriate filler.
   if (merchant_promo_code_manager_ &&
       merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-          trigger_source, field, client, handler, context)) {
+          field, client, on_suggestions_returned, context)) {
     return true;
   }
   if (iban_manager_ && iban_manager_->OnGetSingleFieldSuggestions(
-                           trigger_source, field, client, handler, context)) {
+                           field, client, on_suggestions_returned, context)) {
     return true;
   }
-  if (autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-          trigger_source, field, client, handler, context)) {
-    return true;
-  }
-  return false;
+  return autocomplete_history_manager_->OnGetSingleFieldSuggestions(
+      field, client, std::move(on_suggestions_returned), context);
 }
 
 void SingleFieldFormFillRouter::OnWillSubmitFormWithFields(
     const std::vector<FormFieldData>& fields,
     bool is_autocomplete_enabled) {}
 
-void SingleFieldFormFillRouter::CancelPendingQueries(
-    const SingleFieldFormFiller::SuggestionsHandler* handler) {
-  if (autocomplete_history_manager_)
-    autocomplete_history_manager_->CancelPendingQueries(handler);
-  if (merchant_promo_code_manager_)
-    merchant_promo_code_manager_->CancelPendingQueries(handler);
-  if (iban_manager_)
-    iban_manager_->CancelPendingQueries(handler);
+void SingleFieldFormFillRouter::CancelPendingQueries() {
+  autocomplete_history_manager_->CancelPendingQueries();
+  if (merchant_promo_code_manager_) {
+    merchant_promo_code_manager_->CancelPendingQueries();
+  }
+  if (iban_manager_) {
+    iban_manager_->CancelPendingQueries();
+  }
 }
 
 void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(

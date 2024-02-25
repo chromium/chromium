@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from mojom.generate import module
+from mojom.generate import compatibility_checker
 from mojom_parser_test_case import MojomParserTestCase
 
 
@@ -21,24 +22,31 @@ class VersionCompatibilityTest(MojomParserTestCase):
     self.assertEqual(set(old.keys()), set(new.keys()),
                      'Old and new test mojoms should use the same type names.')
 
-    checker = module.BackwardCompatibilityChecker()
+    checker = compatibility_checker.BackwardCompatibilityChecker()
     compatibility_map = {}
+    errors = []
     for name in old:
-      compatibility_map[name] = checker.IsBackwardCompatible(
-          new[name], old[name])
-    return compatibility_map
+      try:
+        compatibility_map[name] = checker.IsBackwardCompatible(
+            new[name], old[name])
+      except compatibility_checker.CompatibilityError as e:
+        compatibility_map[name] = False
+        errors.append(e)
+    return compatibility_map, errors
 
   def assertBackwardCompatible(self, old_mojom, new_mojom):
-    compatibility_map = self._GetTypeCompatibilityMap(old_mojom, new_mojom)
+    compatibility_map, errors = self._GetTypeCompatibilityMap(
+        old_mojom, new_mojom)
     for name, compatible in compatibility_map.items():
       if not compatible:
         raise AssertionError(
             'Given the old mojom:\n\n    %s\n\nand the new mojom:\n\n    %s\n\n'
             'The new definition of %s should pass a backward-compatibiity '
-            'check, but it does not.' % (old_mojom, new_mojom, name))
+            'check, but it does not. Errors: %s' %
+            (old_mojom, new_mojom, name, errors))
 
   def assertNotBackwardCompatible(self, old_mojom, new_mojom):
-    compatibility_map = self._GetTypeCompatibilityMap(old_mojom, new_mojom)
+    compatibility_map, _ = self._GetTypeCompatibilityMap(old_mojom, new_mojom)
     if all(compatibility_map.values()):
       raise AssertionError(
           'Given the old mojom:\n\n    %s\n\nand the new mojom:\n\n    %s\n\n'
@@ -453,3 +461,51 @@ class VersionCompatibilityTest(MojomParserTestCase):
     method on the old interface definition."""
     self.assertBackwardCompatible('interface F { A(); };',
                                   'interface F { A(); [MinVersion=1] B(); };')
+
+  def testNullableTypeLayoutCompatibility(self):
+    """Nullable value types are backwards (layout) compatible if they follow the
+    pattern:
+      struct Foo {
+        bool has_field;
+        int32 field;
+      };
+    Note that |field|'s ordinal order must immediately follow |has_field|.
+    Therefore, the following is also valid:
+      struct Foo {
+        int32 field@1;
+        bool has_field@0;
+      };
+    This is because |field|'s ordinal order immediately follows |has_field|.
+
+    The following is NOT backwards compatible:
+      struct Foo {
+        bool has_field@1;
+        int32 field@0;
+      };
+    This is because |field|'s ordinal ordering does not immediately follow
+    |has_field|."""
+    self.assertBackwardCompatible('struct S { bool has_foo; int32 foo; };',
+                                  'struct S { int32? foo; };')
+    self.assertNotBackwardCompatible(
+        'struct S { bool has_foo@1; int32 foo@0; };',
+        'struct S { int32? foo; };')
+
+    self.assertBackwardCompatible(
+        'struct S { bool has_foo = true; int32 foo = 2; };',
+        'struct S { int32? foo = 2; };')
+
+    self.assertBackwardCompatible(
+        'struct S { bool has_foo@0; double gap@2; float foo@1; };',
+        'struct S { float? foo; double gap; };')
+    self.assertNotBackwardCompatible(
+        'struct S { bool has_foo; double gap; float foo; };',
+        'struct S { float? foo; double gap; };')
+
+    # Tests layout compat + adding a new field.
+    self.assertBackwardCompatible(
+        'struct S { bool has_foo@0; double gap@2; float foo@1; };',
+        'struct S { float? foo; double gap; [MinVersion=1] int32 foobear;};')
+    # No min version specified, not compatible.
+    self.assertNotBackwardCompatible(
+        'struct S { bool has_foo@0; double gap@2; float foo@1; };',
+        'struct S { float? foo; double gap; int32 foobear;};')

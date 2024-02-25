@@ -27,9 +27,9 @@ from util import build_utils  # pylint: disable=wrong-import-position
 # Filename of dump of current API.
 API_FILENAME = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', 'android', 'api.txt'))
-# Filename of file containing the interface API version number.
-INTERFACE_API_VERSION_FILENAME = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', 'android', 'interface_api_version.txt'))
+# Filename of file containing API version number.
+API_VERSION_FILENAME = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', 'android', 'api_version.txt'))
 
 # Regular expression that catches the beginning of lines that declare classes.
 # The first group returned by a match is the class name.
@@ -173,26 +173,18 @@ def main(args):
     return True
 
   [_, temp_filename] = tempfile.mkstemp()
-  if not generate_api(opts.api_jar, temp_filename):
-    os.remove(temp_filename)
-    return False
-
-  update_ok = check_api_update(API_FILENAME, temp_filename)
-  if not update_ok:
-    if opts.ignore_check_errors:
-      print('ignore_check_errors set, updating API anyway')
-    else:
-      os.remove(temp_filename)
-      return False
-
-  # Update API version number to new version number
-  with open(INTERFACE_API_VERSION_FILENAME, 'r+') as f:
-    version = int(f.read())
-    f.seek(0)
-    f.write(str(version + 1))
-  # Update API file to new API
-  shutil.move(temp_filename, API_FILENAME)
-  return True
+  if (generate_api(opts.api_jar, temp_filename)
+      and check_api_update(API_FILENAME, temp_filename)):
+    # Update API version number to new version number
+    with open(API_VERSION_FILENAME, 'r+') as f:
+      version = int(f.read())
+      f.seek(0)
+      f.write(str(version + 1))
+    # Update API file to new API
+    shutil.move(temp_filename, API_FILENAME)
+    return True
+  os.remove(temp_filename)
+  return False
 
 
 if __name__ == '__main__':

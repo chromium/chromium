@@ -8,9 +8,9 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_state.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 namespace blink {
 
@@ -24,6 +24,7 @@ const unsigned kMaxOffset = std::numeric_limits<unsigned>::max();
 // Resolves kMaxOffset to an actual number. Should simply return |dom_length|
 // when we can handle text-transform correctly.
 unsigned CalculateMaxOffset(const Text& text) {
+  DCHECK(!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled());
   DCHECK(text.GetLayoutObject());
   unsigned dom_length = text.data().length();
   unsigned layout_length;
@@ -31,7 +32,7 @@ unsigned CalculateMaxOffset(const Text& text) {
           DynamicTo<LayoutTextFragment>(text.GetLayoutObject())) {
     layout_length = fragment->Start() + fragment->FragmentLength();
   } else {
-    layout_length = text.GetLayoutObject()->TextLength();
+    layout_length = text.GetLayoutObject()->TransformedTextLength();
   }
   return std::min(dom_length, layout_length);
 }
@@ -56,8 +57,8 @@ struct StringAndOffsetRange {
 };
 
 StringAndOffsetRange ComputeTextAndOffsetsForEmission(
-    const NGOffsetMapping& mapping,
-    const NGOffsetMappingUnit& unit,
+    const OffsetMapping& mapping,
+    const OffsetMappingUnit& unit,
     const TextIteratorBehavior& behavior) {
   StringAndOffsetRange result{mapping.GetText(), unit.TextContentStart(),
                               unit.TextContentEnd()};
@@ -109,7 +110,7 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
 
     // We may go through multiple mappings, which happens when there is
     // ::first-letter and blockifying style.
-    auto* mapping = NGOffsetMapping::ForceGetFor(range_to_emit.StartPosition());
+    auto* mapping = OffsetMapping::ForceGetFor(range_to_emit.StartPosition());
     if (!mapping) {
       offset_ = end_offset_;
       return;
@@ -149,7 +150,7 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
     // Bail if |offset_| isn't advanced; Otherwise we enter a dead loop.
     // However, this shouldn't happen and should be fixed once reached.
     if (offset_ == initial_offset) {
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       offset_ = end_offset_;
       return;
     }
@@ -169,8 +170,8 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
   end_offset_ = end_offset;
   mapping_units_.clear();
 
-  const NGOffsetMapping* const mapping =
-      NGOffsetMapping::ForceGetFor(Position(node, offset_));
+  const OffsetMapping* const mapping =
+      OffsetMapping::ForceGetFor(Position(node, offset_));
   if (UNLIKELY(!mapping)) {
     NOTREACHED() << "We have LayoutText outside LayoutBlockFlow " << text_node_;
     return;
@@ -189,7 +190,11 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
 void TextIteratorTextNodeHandler::HandleTextNodeStartFrom(
     const Text* node,
     unsigned start_offset) {
-  HandleTextNodeInRange(node, start_offset, kMaxOffset);
+  unsigned end_offset =
+      RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled()
+          ? node->data().length()
+          : kMaxOffset;
+  HandleTextNodeInRange(node, start_offset, end_offset);
 }
 
 void TextIteratorTextNodeHandler::HandleTextNodeEndAt(const Text* node,

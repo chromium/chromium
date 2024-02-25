@@ -5,7 +5,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/permissions/features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -25,8 +25,7 @@ class MidiBrowserTest : public ContentBrowserTest {
   ~MidiBrowserTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        permissions::features::kBlockMidiByDefault);
+    feature_list_.InitAndDisableFeature(features::kBlockMidiByDefault);
     ContentBrowserTest::SetUp();
   }
 
@@ -76,8 +75,7 @@ class MidiBrowserTestBlockMidiByDefault : public ContentBrowserTest {
   ~MidiBrowserTestBlockMidiByDefault() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        permissions::features::kBlockMidiByDefault);
+    feature_list_.InitAndEnableFeature(features::kBlockMidiByDefault);
     ContentBrowserTest::SetUp();
   }
 

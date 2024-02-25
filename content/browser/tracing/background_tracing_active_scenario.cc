@@ -124,10 +124,8 @@ class BackgroundTracingActiveScenario::TracingSession {
     }
 
     if (parent_scenario_->delegate_ &&
-        (!parent_scenario_->delegate_->IsAllowedToEndBackgroundScenario(
-            parent_scenario_->GetConfig()->scenario_name(),
-            parent_scenario_->GetConfig()->requires_anonymized_data(),
-            is_crash_scenario))) {
+        (!parent_scenario_->delegate_->OnBackgroundTracingIdle(
+            parent_scenario_->GetConfig()->requires_anonymized_data()))) {
       auto on_failure_cb =
           base::MakeRefCounted<base::RefCountedData<base::OnceClosure>>(
               std::move(on_failure));
@@ -342,12 +340,11 @@ void BackgroundTracingActiveScenario::BeginFinalizing() {
 }
 
 void BackgroundTracingActiveScenario::OnProtoDataComplete(
-    std::string proto_trace) {
+    std::string&& serialized_trace) {
   BackgroundTracingManagerImpl::GetInstance().OnProtoDataComplete(
-      std::move(proto_trace));
-}
-
-void BackgroundTracingActiveScenario::OnFinalizeComplete() {
+      std::move(serialized_trace), config_->scenario_name(),
+      last_triggered_rule_->rule_id(), last_triggered_rule_->is_crash(),
+      base::Token::CreateRandom());
   tracing_session_.reset();
   SetState(State::kIdle);
 
@@ -371,8 +368,13 @@ void BackgroundTracingActiveScenario::AbortScenario() {
     // We can't 'abort' system tracing since we aren't the consumer. Instead we
     // send a trigger into the system tracing so that we can tell the time the
     // scenario stopped.
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    perfetto::Tracing::ActivateTriggers(
+        {"org.chromium.background_tracing.scenario_aborted"}, /*ttl_ms=*/0);
+#else
     tracing::PerfettoTracedProcess::Get()->ActivateSystemTriggers(
         {"org.chromium.background_tracing.scenario_aborted"});
+#endif
   } else {
     // Setting the kAborted state will cause |this| to be destroyed.
     SetState(State::kAborted);
@@ -404,8 +406,13 @@ bool BackgroundTracingActiveScenario::OnRuleTriggered(
       break;
     case BackgroundTracingConfigImpl::SYSTEM:
       BackgroundTracingManagerImpl::RecordMetric(Metrics::SYSTEM_TRIGGERED);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+      perfetto::Tracing::ActivateTriggers({triggered_rule->rule_id()},
+                                          /*ttl_ms=*/0);
+#else
       tracing::PerfettoTracedProcess::Get()->ActivateSystemTriggers(
           {triggered_rule->rule_id()});
+#endif
       if (!rule_triggered_callback_for_testing_.is_null()) {
         rule_triggered_callback_for_testing_.Run();
       }

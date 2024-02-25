@@ -67,7 +67,7 @@ bool LoadFileHandler(const std::string& handler_id,
     if (include_directories->is_bool()) {
       handler.include_directories = include_directories->GetBool();
     } else {
-      *error = base::UTF8ToUTF16(errors::kInvalidFileHandlerIncludeDirectories);
+      *error = errors::kInvalidFileHandlerIncludeDirectories;
       return false;
     }
   }
@@ -148,7 +148,8 @@ FileHandlers::~FileHandlers() = default;
 // static
 const FileHandlersInfo* FileHandlers::GetFileHandlers(
     const Extension* extension) {
-  if (WebFileHandlers::SupportsWebFileHandlers(extension->manifest_version())) {
+  CHECK(extension);
+  if (WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     return nullptr;
   }
   FileHandlers* info = static_cast<FileHandlers*>(

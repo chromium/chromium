@@ -109,9 +109,9 @@ enum class DocumentUpdateReason;
 //
 // |ukm_enum| should be an entry in LocalFrameUkmAggregator's enum of
 // metric names (which in turn corresponds to names from ukm.xml).
-#define SCOPED_UMA_AND_UKM_TIMER(aggregator, ukm_enum)                       \
-  absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer; \
-  if (aggregator)                                                            \
+#define SCOPED_UMA_AND_UKM_TIMER(aggregator, ukm_enum)                      \
+  std::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer; \
+  if (aggregator)                                                           \
     timer.emplace(aggregator->GetScopedTimer(static_cast<size_t>(ukm_enum)));
 
 class CORE_EXPORT LocalFrameUkmAggregator
@@ -150,8 +150,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kUserDrivenDocumentUpdate,
     kParseStyleSheet,
     kAccessibility,
+    kPossibleSynchronizedScrollCount2,
     kCount,
-    kMainFrame
+    kMainFrame,
   };
 
   // For metrics that require it, this converts the input value to use
@@ -201,7 +202,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"Blink.ServiceDocumentUpdate.UpdateTime", true},
         {"Blink.UserDrivenDocumentUpdate.UpdateTime", true},
         {"Blink.ParseStyleSheet.UpdateTime", true},
-        {"Blink.Accessibility.UpdateTime", true}};
+        {"Blink.Accessibility.UpdateTime", true},
+        {"Blink.PossibleSynchronizedScrollCount2.UpdateTime", true}};
     static_assert(std::size(data) == kCount, "Metrics data mismatch");
     return data;
   }
@@ -439,8 +441,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // frequently we collect granular IntersectionObserver metrics.
   size_t intersection_observer_sample_period_ = 10;
 
-  absl::optional<base::TimeTicks> animation_request_timestamp_;
-  absl::optional<base::TimeTicks> request_timestamp_for_current_frame_;
+  std::optional<base::TimeTicks> animation_request_timestamp_;
+  std::optional<base::TimeTicks> request_timestamp_for_current_frame_;
   base::TimeTicks last_frame_request_timestamp_for_test_;
 
   base::MetricsSubSampler metrics_subsampler_;

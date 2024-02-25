@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Shorthand contraction of scroll-timeline-name:--a, --b, --c:undefined;scroll-timeline-axis:inline, inline:undefined
+  assert_equals: Declared value expected "--a inline, --b inline, --c inline" but got ""
+[FAIL] Shorthand contraction of scroll-timeline-name:--a, --b:undefined;scroll-timeline-axis:inline, inline, inline:undefined
+  assert_equals: Declared value expected "--a inline, --b inline" but got ""
+Harness: the test ran to completion.
+

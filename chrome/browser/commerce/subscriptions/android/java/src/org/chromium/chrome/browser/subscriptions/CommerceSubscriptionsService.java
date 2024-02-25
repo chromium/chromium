@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.subscriptions;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -38,26 +39,29 @@ public class CommerceSubscriptionsService implements Destroyable {
     private ShoppingService mShoppingService;
 
     /** Creates a new instance. */
-    CommerceSubscriptionsService(ShoppingService shoppingService,
+    CommerceSubscriptionsService(
+            ShoppingService shoppingService,
             PriceDropNotificationManager priceDropNotificationManager) {
         mShoppingService = shoppingService;
-        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
+        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mPriceDropNotificationManager = priceDropNotificationManager;
     }
 
     /** Performs any deferred startup tasks required by {@link Subscriptions}. */
-    public void initDeferredStartupForActivity(TabModelSelector tabModelSelector,
+    public void initDeferredStartupForActivity(
+            TabModelSelector tabModelSelector,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mPauseResumeWithNativeObserver = new PauseResumeWithNativeObserver() {
-            @Override
-            public void onResumeWithNative() {
-                maybeRecordMetricsAndInitializeSubscriptions();
-            }
+        mPauseResumeWithNativeObserver =
+                new PauseResumeWithNativeObserver() {
+                    @Override
+                    public void onResumeWithNative() {
+                        maybeRecordMetricsAndInitializeSubscriptions();
+                    }
 
-            @Override
-            public void onPauseWithNative() {}
-        };
+                    @Override
+                    public void onPauseWithNative() {}
+                };
         mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
 
         if (CommerceSubscriptionsServiceConfig.isImplicitSubscriptionsEnabled()

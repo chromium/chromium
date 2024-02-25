@@ -12,7 +12,8 @@
 namespace blink {
 
 bool TimelineRange::IsEmpty() const {
-  return LessThanOrEqualToWithinEpsilon(offsets_.end - offsets_.start, 0.0);
+  return TimingCalculations::LessThanOrEqualToWithinEpsilon(
+      offsets_.end - offsets_.start, 0.0);
 }
 
 double TimelineRange::ToFractionalOffset(

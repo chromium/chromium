@@ -275,14 +275,6 @@ NSString* const kDefaultScheme = @"https";
     return nil;
   }
 
-  if (@available(iOS 14, *)) {
-    // On iOS 14, don't actually access the pasteboard in this method. This
-    // prevents the pasteboard access notification from appearing.
-  } else {
-    if (!self.cachedURL) {
-      self.cachedURL = [self URLFromPasteboard:pasteboard];
-    }
-  }
   return self.cachedURL;
 }
 
@@ -295,14 +287,6 @@ NSString* const kDefaultScheme = @"https";
     return nil;
   }
 
-  if (@available(iOS 14, *)) {
-    // On iOS 14, don't actually access the pasteboard in this method. This
-    // prevents the pasteboard access notification from appearing.
-  } else {
-    if (!self.cachedText) {
-      self.cachedText = pasteboard.string;
-    }
-  }
   return self.cachedText;
 }
 
@@ -313,15 +297,6 @@ NSString* const kDefaultScheme = @"https";
 
   if (![self shouldReturnValueOfClipboard:pasteboard]) {
     return nil;
-  }
-
-  if (@available(iOS 14, *)) {
-    // On iOS 14, don't actually access the pasteboard in this method. This
-    // prevents the pasteboard access notification from appearing.
-  } else {
-    if (!self.cachedImage) {
-      self.cachedImage = pasteboard.image;
-    }
   }
 
   return self.cachedImage;
@@ -411,36 +386,21 @@ NSString* const kDefaultScheme = @"https";
     hasRecentURLFromClipboardInternalWithPasteboard:(UIPasteboard*)pasteboard
                                            callback:(void (^)(BOOL))callback {
   DCHECK(callback);
-  if (@available(iOS 14, *)) {
-    // Use cached value if it exists
-    if (self.cachedURL) {
-      callback(YES);
-      return;
-    }
-
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-    NSSet<UIPasteboardDetectionPattern>* urlPattern =
-        [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebURL];
-    [pasteboard
-        detectPatternsForPatterns:urlPattern
-                completionHandler:^(
-                    NSSet<UIPasteboardDetectionPattern>* patterns,
-                    NSError* error) {
-                  callback([patterns
-                      containsObject:
-                          UIPasteboardDetectionPatternProbableWebURL]);
-                }];
-#else
-    // To prevent clipboard notification from appearing on iOS 14 with iOS 13
-    // SDK, use the -hasURLs property to check for URL existence. This will
-    // cause crbug.com/1033935 to reappear in code using this method (also see
-    // the comments in -URLFromPasteboard in this file), but that is preferable
-    // to the notificatio appearing when it shouldn't.
-    callback(pasteboard.hasURLs);
-#endif
-  } else {
-    callback([self recentURLFromPasteboard:pasteboard] != nil);
+  // Use cached value if it exists.
+  if (self.cachedURL) {
+    callback(YES);
+    return;
   }
+
+  NSSet<UIPasteboardDetectionPattern>* urlPattern =
+      [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebURL];
+  [pasteboard
+      detectPatternsForPatterns:urlPattern
+              completionHandler:^(NSSet<UIPasteboardDetectionPattern>* patterns,
+                                  NSError* error) {
+                callback([patterns
+                    containsObject:UIPasteboardDetectionPatternProbableWebURL]);
+              }];
 }
 
 // The underlying logic to check if the clipboard has recent text, with the
@@ -450,31 +410,22 @@ NSString* const kDefaultScheme = @"https";
     hasRecentTextFromClipboardInternalWithPasteboard:(UIPasteboard*)pasteboard
                                             callback:(void (^)(BOOL))callback {
   DCHECK(callback);
-  if (@available(iOS 14, *)) {
-    // Use cached value if it exists
-    if (self.cachedText) {
-      callback(YES);
-      return;
-    }
-
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-    NSSet<UIPasteboardDetectionPattern>* textPattern =
-        [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebSearch];
-    [pasteboard
-        detectPatternsForPatterns:textPattern
-                completionHandler:^(
-                    NSSet<UIPasteboardDetectionPattern>* patterns,
-                    NSError* error) {
-                  callback([patterns
-                      containsObject:
-                          UIPasteboardDetectionPatternProbableWebSearch]);
-                }];
-#else
-    callback(pasteboard.hasStrings);
-#endif
-  } else {
-    callback([self recentTextFromPasteboard:pasteboard] != nil);
+  // Use cached value if it exists.
+  if (self.cachedText) {
+    callback(YES);
+    return;
   }
+
+  NSSet<UIPasteboardDetectionPattern>* textPattern =
+      [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebSearch];
+  [pasteboard
+      detectPatternsForPatterns:textPattern
+              completionHandler:^(NSSet<UIPasteboardDetectionPattern>* patterns,
+                                  NSError* error) {
+                callback([patterns
+                    containsObject:
+                        UIPasteboardDetectionPatternProbableWebSearch]);
+              }];
 }
 
 // The underlying logic to check if the clipboard has a recent image, with the
@@ -484,17 +435,13 @@ NSString* const kDefaultScheme = @"https";
     hasRecentImageFromClipboardInternalWithPasteboard:(UIPasteboard*)pasteboard
                                              callback:(void (^)(BOOL))callback {
   DCHECK(callback);
-  if (@available(iOS 14, *)) {
-    // Use cached value if it exists
-    if (self.cachedImage) {
-      callback(YES);
-      return;
-    }
-
-    callback(pasteboard.hasImages);
-  } else {
-    callback([self recentImageFromPasteboard:pasteboard] != nil);
+  // Use cached value if it exists
+  if (self.cachedImage) {
+    callback(YES);
+    return;
   }
+
+  callback(pasteboard.hasImages);
 }
 
 // The underlying logic to check the recent url, with the addition of a
@@ -502,61 +449,60 @@ NSString* const kDefaultScheme = @"https";
 - (void)recentURLFromClipboardAsyncWithPasteboard:(UIPasteboard*)pasteboard
                                          callback:(void (^)(NSURL*))callback {
   DCHECK(callback);
-  if (@available(iOS 14, *)) {
-    [self updateIfNeededWithPasteboard:pasteboard];
-    if (![self shouldReturnValueOfClipboard:pasteboard]) {
-      callback(nil);
-      return;
-    }
+  [self updateIfNeededWithPasteboard:pasteboard];
+  if (![self shouldReturnValueOfClipboard:pasteboard]) {
+    callback(nil);
+    return;
+  }
 
-    // Use cached value if it exists.
-    if (self.cachedURL) {
-      callback(self.cachedURL);
-      return;
-    }
+  // Use cached value if it exists.
+  if (self.cachedURL) {
+    callback(self.cachedURL);
+    return;
+  }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-    __weak __typeof(self) weakSelf = self;
-    NSSet<UIPasteboardDetectionPattern>* urlPattern =
-        [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebURL];
-    [pasteboard
-        detectValuesForPatterns:urlPattern
-              completionHandler:^(
-                  NSDictionary<UIPasteboardDetectionPattern, id>* values,
-                  NSError* error) {
-                // On iOS 16, users can deny access to the clipboard.
-                if (error) {
-                  weakSelf.cachedURL = nil;
-                  callback(nil);
-                  return;
-                }
-                NSURL* url = [NSURL
-                    URLWithString:
-                        values[UIPasteboardDetectionPatternProbableWebURL]];
+  __weak __typeof(self) weakSelf = self;
+  NSSet<UIPasteboardDetectionPattern>* urlPattern =
+      [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebURL];
+  [pasteboard detectValuesForPatterns:urlPattern
+                    completionHandler:^(
+                        NSDictionary<UIPasteboardDetectionPattern, id>* values,
+                        NSError* error) {
+                      [weakSelf callCompletionHandlerWithValues:values
+                                                       callback:callback
+                                                          error:error];
+                    }];
+}
 
-                // |detectValuesForPatterns:| will return a url even if the url
-                // is missing a scheme. In this case, default to https.
-                if (url && url.scheme == nil) {
-                  NSURLComponents* components =
-                      [[NSURLComponents alloc] initWithURL:url
-                                   resolvingAgainstBaseURL:NO];
-                  components.scheme = kDefaultScheme;
-                  url = components.URL;
-                }
+// Helper method for completion handler block to ensure `self` isn't retained.
+- (void)callCompletionHandlerWithValues:
+            (NSDictionary<UIPasteboardDetectionPattern, id>*)values
+                               callback:(void (^)(NSURL*))callback
+                                  error:(NSError*)error {
+  // On iOS 16, users can deny access to the clipboard.
+  if (error) {
+    self.cachedURL = nil;
+    callback(nil);
+    return;
+  }
+  NSURL* url =
+      [NSURL URLWithString:values[UIPasteboardDetectionPatternProbableWebURL]];
 
-                if (![self.authorizedSchemes containsObject:url.scheme]) {
-                  weakSelf.cachedURL = nil;
-                  callback(nil);
-                } else {
-                  weakSelf.cachedURL = url;
-                  callback(url);
-                }
-              }];
-#else
-    callback([self recentURLFromPasteboard:pasteboard]);
-#endif
+  // |detectValuesForPatterns:| will return a url even if the url
+  // is missing a scheme. In this case, default to https.
+  if (url && url.scheme == nil) {
+    NSURLComponents* components = [[NSURLComponents alloc] initWithURL:url
+                                               resolvingAgainstBaseURL:NO];
+    components.scheme = kDefaultScheme;
+    url = components.URL;
+  }
+
+  if (![self.authorizedSchemes containsObject:url.scheme]) {
+    self.cachedURL = nil;
+    callback(nil);
   } else {
-    callback([self recentURLFromPasteboard:pasteboard]);
+    self.cachedURL = url;
+    callback(url);
   }
 }
 
@@ -566,40 +512,31 @@ NSString* const kDefaultScheme = @"https";
                                           callback:
                                               (void (^)(NSString*))callback {
   DCHECK(callback);
-  if (@available(iOS 14, *)) {
-    [self updateIfNeededWithPasteboard:pasteboard];
-    if (![self shouldReturnValueOfClipboard:pasteboard]) {
-      callback(nil);
-      return;
-    }
-
-    // Use cached value if it exists.
-    if (self.cachedText) {
-      callback(self.cachedText);
-      return;
-    }
-
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-    __weak __typeof(self) weakSelf = self;
-    NSSet<UIPasteboardDetectionPattern>* textPattern =
-        [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebSearch];
-    [pasteboard
-        detectValuesForPatterns:textPattern
-              completionHandler:^(
-                  NSDictionary<UIPasteboardDetectionPattern, id>* values,
-                  NSError* error) {
-                NSString* text =
-                    values[UIPasteboardDetectionPatternProbableWebSearch];
-                weakSelf.cachedText = text;
-
-                callback(text);
-              }];
-#else
-    callback([self recentTextFromPasteboard:pasteboard]);
-#endif
-  } else {
-    callback([self recentTextFromPasteboard:pasteboard]);
+  [self updateIfNeededWithPasteboard:pasteboard];
+  if (![self shouldReturnValueOfClipboard:pasteboard]) {
+    callback(nil);
+    return;
   }
+
+  // Use cached value if it exists.
+  if (self.cachedText) {
+    callback(self.cachedText);
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  NSSet<UIPasteboardDetectionPattern>* textPattern =
+      [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebSearch];
+  [pasteboard detectValuesForPatterns:textPattern
+                    completionHandler:^(
+                        NSDictionary<UIPasteboardDetectionPattern, id>* values,
+                        NSError* error) {
+                      NSString* text =
+                          values[UIPasteboardDetectionPatternProbableWebSearch];
+                      weakSelf.cachedText = text;
+
+                      callback(text);
+                    }];
 }
 
 // The underlying logic to check the recent image, with the addition of a

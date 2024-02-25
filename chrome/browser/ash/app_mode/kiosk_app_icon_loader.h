@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_ICON_LOADER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_ICON_LOADER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
@@ -20,7 +21,7 @@ namespace ash {
 class KioskAppIconLoader {
  public:
   using ResultCallback =
-      base::OnceCallback<void(absl::optional<gfx::ImageSkia>)>;
+      base::OnceCallback<void(std::optional<gfx::ImageSkia>)>;
 
   explicit KioskAppIconLoader(ResultCallback delegate);
   KioskAppIconLoader(const KioskAppIconLoader&) = delete;
@@ -30,7 +31,7 @@ class KioskAppIconLoader {
   void Start(const base::FilePath& icon_path);
 
  private:
-  void OnImageDecodingFinished(absl::optional<gfx::ImageSkia> result);
+  void OnImageDecodingFinished(std::optional<gfx::ImageSkia> result);
 
   ResultCallback callback_;
 

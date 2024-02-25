@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -250,8 +251,9 @@ class RecordActiveViewsObserver {
   RecordActiveViewsObserver& operator=(const RecordActiveViewsObserver&) =
       delete;
 
-  const std::vector<const content::RenderWidgetHostView*>* active_views()
-      const {
+  const std::vector<
+      raw_ptr<const content::RenderWidgetHostView, VectorExperimental>>*
+  active_views() const {
     return &active_views_;
   }
 
@@ -263,7 +265,8 @@ class RecordActiveViewsObserver {
   }
 
   std::unique_ptr<content::TextInputManagerTester> tester_;
-  std::vector<const content::RenderWidgetHostView*> active_views_;
+  std::vector<raw_ptr<const content::RenderWidgetHostView, VectorExperimental>>
+      active_views_;
 };
 
 }  // namespace
@@ -1192,6 +1195,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
     bool GetTextEditCommandsForEvent(
         const ui::Event& event,
+        int text_flags,
         std::vector<ui::TextEditCommandAuraLinux>* commands) override {
       if (commands) {
         commands->emplace_back(ui::TextEditCommand::DELETE_TO_BEGINNING_OF_LINE,

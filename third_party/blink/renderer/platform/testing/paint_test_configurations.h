@@ -19,20 +19,16 @@ namespace blink {
 
 enum {
   kUnderInvalidationChecking = 1 << 0,
-  kSolidColorLayers = 1 << 1,
-  kCompositeScrollAfterPaint = 1 << 2,
-  kUsedColorSchemeRootScrollbars = 1 << 3,
-  kFluentScrollbar = 1 << 4,
-  kSparseObjectPaintProperties = 1 << 5,
-  kHitTestOpaqueness = 1 << 6,
-  kElementCapture = 1 << 7,
+  kUsedColorSchemeRootScrollbars = 1 << 1,
+  kFluentScrollbar = 1 << 2,
+  kSparseObjectPaintProperties = 1 << 3,
+  kHitTestOpaqueness = 1 << 4,
+  kElementCapture = 1 << 5,
 };
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
       private ScopedPaintUnderInvalidationCheckingForTest,
-      private ScopedSolidColorLayersForTest,
-      private ScopedCompositeScrollAfterPaintForTest,
       private ScopedUsedColorSchemeRootScrollbarsForTest,
       private ScopedSparseObjectPaintPropertiesForTest,
       private ScopedHitTestOpaquenessForTest,
@@ -41,9 +37,6 @@ class PaintTestConfigurations
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
                                                     kUnderInvalidationChecking),
-        ScopedSolidColorLayersForTest(GetParam() & kSolidColorLayers),
-        ScopedCompositeScrollAfterPaintForTest(GetParam() &
-                                               kCompositeScrollAfterPaint),
         ScopedUsedColorSchemeRootScrollbarsForTest(
             GetParam() & kUsedColorSchemeRootScrollbars),
         ScopedSparseObjectPaintPropertiesForTest(GetParam() &
@@ -74,15 +67,8 @@ class PaintTestConfigurations
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Note: If a new test fails with kCompositeScrollAfterPaint, please add the
-// following at the beginning of the test to skip it temporarily:
-//  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-//    // TODO(crbug.com/1414885): Fix this test.
-//    return;
-//  }
-#define PAINT_TEST_SUITE_P_VALUES                   \
-  0, kSolidColorLayers, kCompositeScrollAfterPaint, \
-      kUsedColorSchemeRootScrollbars, kFluentScrollbar, kHitTestOpaqueness
+#define PAINT_TEST_SUITE_P_VALUES \
+  0, kUsedColorSchemeRootScrollbars, kFluentScrollbar, kHitTestOpaqueness
 
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
   INSTANTIATE_TEST_SUITE_P(All, test_class,        \

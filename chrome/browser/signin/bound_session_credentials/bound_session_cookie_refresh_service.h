@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,10 +23,22 @@
 // - Preemptively refreshes bound session cookies
 class BoundSessionCookieRefreshService
     : public KeyedService,
-      public chrome::mojom::BoundSessionRequestThrottledListener {
+      public chrome::mojom::BoundSessionRequestThrottledHandler {
  public:
   using RendererBoundSessionThrottlerParamsUpdaterDelegate =
       base::RepeatingClosure;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // TODO(b/314280617): Consider passing
+    // `bound_session_credentials::BoundSessionParams` instead.
+    // - `site` is the top-most origin covered by the terminated session.
+    // - `bound_cookie_names` contains names of short lived cookies required for
+    //   the user to be authenticated.
+    virtual void OnBoundSessionTerminated(
+        const GURL& site,
+        const base::flat_set<std::string>& bound_cookie_names) = 0;
+  };
 
   BoundSessionCookieRefreshService() = default;
 
@@ -38,7 +52,7 @@ class BoundSessionCookieRefreshService
   // Registers a new bound session and starts tracking it immediately. The
   // session persists across browser startups.
   virtual void RegisterNewBoundSession(
-      const bound_session_credentials::RegistrationParams& params) = 0;
+      const bound_session_credentials::BoundSessionParams& params) = 0;
 
   // Terminate the session if the session termination header is set and the
   // `session_id` matches the current bound session's id. This header is
@@ -55,8 +69,12 @@ class BoundSessionCookieRefreshService
 
   virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
 
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
  private:
   friend class RendererUpdater;
+  friend class BoundSessionCookieRefreshServiceImplBrowserTest;
 
   // `RendererUpdater` class that is responsible for pushing updates to all
   // renderers calls this setter to subscribe for bound session throttler params
@@ -64,10 +82,16 @@ class BoundSessionCookieRefreshService
   virtual void SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
       RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater) = 0;
 
+  // Registers a callback for testing to be notified about session parameters
+  // updates.
+  // TODO(http://b/303375108): consider exposing an observer interface instead.
+  virtual void SetBoundSessionParamsUpdatedCallbackForTesting(
+      base::RepeatingClosure updated_callback) = 0;
+
   // Adds a Receiver to `BoundSessionCookieRefreshService` to receive
   // notification when a request is throttled and requires a fresh cookie.
-  virtual void AddBoundSessionRequestThrottledListenerReceiver(
-      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
+  virtual void AddBoundSessionRequestThrottledHandlerReceiver(
+      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledHandler>
           receiver) {}
 };
 

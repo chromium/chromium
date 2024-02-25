@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "content/public/common/process_type.h"
 
 namespace base {
@@ -42,6 +43,7 @@ class BrowserChildProcessHostProxy;
 class ProcessNode : public Node {
  public:
   using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
+  using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
   using Observer = ProcessNodeObserver;
   class ObserverDefaultImpl;
 
@@ -88,12 +90,16 @@ class ProcessNode : public Node {
   // process if it has not yet started, or if it has exited.
   virtual const base::Process& GetProcess() const = 0;
 
+  // Gets the unique token identifying this node for resource attribution. This
+  // token will not be reused after the node is destroyed.
+  virtual resource_attribution::ProcessContext GetResourceContext() const = 0;
+
   // Returns a time captured as early as possible after the process is launched.
   virtual base::TimeTicks GetLaunchTime() const = 0;
 
   // Returns the exit status of this process. This will be empty if the process
   // has not yet exited.
-  virtual absl::optional<int32_t> GetExitStatus() const = 0;
+  virtual std::optional<int32_t> GetExitStatus() const = 0;
 
   // Returns the non-localized name of the process used for metrics reporting
   // metrics as specified in content::ChildProcessData during process creation.
@@ -103,6 +109,11 @@ class ProcessNode : public Node {
   // halted if the visitor returns false. Returns true if every call to the
   // visitor returned true, false otherwise.
   virtual bool VisitFrameNodes(const FrameNodeVisitor& visitor) const = 0;
+
+  // Visits the worker nodes that are hosted in this process. The iteration is
+  // halted if the visitor returns false. Returns true if every call to the
+  // visitor returned true, false otherwise.
+  virtual bool VisitWorkerNodes(const WorkerNodeVisitor& visitor) const = 0;
 
   // Returns the set of frame nodes that are hosted in this process. Note that
   // calling this causes the set of nodes to be generated.

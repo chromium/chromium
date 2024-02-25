@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
-#include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -22,6 +22,9 @@ class PrefRegistrySyncable;
 namespace content_settings {
 
 // PolicyProvider that provides managed content-settings.
+//
+// PartitionKey is ignored by this provider because the content settings should
+// apply across partitions.
 class PolicyProvider : public ObservableProvider {
  public:
   explicit PolicyProvider(PrefService* prefs);
@@ -35,16 +38,24 @@ class PolicyProvider : public ObservableProvider {
   // ProviderInterface implementations.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito) const override;
-
-  bool SetWebsiteSetting(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
+      bool incognito,
+      const PartitionKey& partition_key) const override;
+  std::unique_ptr<Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
       ContentSettingsType content_type,
-      base::Value&& value,
-      const ContentSettingConstraints& constraint = {}) override;
+      bool off_the_record,
+      const PartitionKey& partition_key) const override;
 
-  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
+  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
+                         const ContentSettingsPattern& secondary_pattern,
+                         ContentSettingsType content_type,
+                         base::Value&& value,
+                         const ContentSettingConstraints& constraints,
+                         const PartitionKey& partition_key) override;
+
+  void ClearAllContentSettingsRules(ContentSettingsType content_type,
+                                    const PartitionKey& partition_key) override;
 
   void ShutdownOnUIThread() override;
 
@@ -72,7 +83,7 @@ class PolicyProvider : public ObservableProvider {
 
   void ReadManagedContentSettingsTypes(ContentSettingsType content_type);
 
-  OriginIdentifierValueMap value_map_;
+  OriginValueMap value_map_;
 
   raw_ptr<PrefService> prefs_;
 

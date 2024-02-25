@@ -15,8 +15,10 @@
 #include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/pref_names.h"
@@ -25,6 +27,7 @@
 #include "extensions/browser/api/file_handlers/directory_util.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
+#include "storage/browser/file_system/external_mount_points.h"
 
 ChromeFilesInternalsUIDelegate::ChromeFilesInternalsUIDelegate(
     content::WebUI* web_ui)
@@ -47,6 +50,11 @@ void ChromeFilesInternalsUIDelegate::GetDebugJSON(
       {
           "execute_file_task",
           &file_manager::file_tasks::GetDebugJSONForKeyForExecuteFileTask,
+          nullptr,
+      },
+      {
+          "external_mount_points",
+          &storage::ExternalMountPoints::GetDebugJSONForKey,
           nullptr,
       },
       {
@@ -281,52 +289,59 @@ std::string ChromeFilesInternalsUIDelegate::GetOfficeFileHandlers() const {
 
 void ChromeFilesInternalsUIDelegate::ClearOfficeFileHandlers() {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  if (profile) {
-    ScopedDictPrefUpdate mime_type_pref(profile->GetPrefs(),
-                                        prefs::kDefaultTasksByMimeType);
-    for (const std::string& mime_type :
-         file_manager::file_tasks::WordGroupMimeTypes()) {
-      mime_type_pref->Remove(mime_type);
-    }
-    for (const std::string& mime_type :
-         file_manager::file_tasks::ExcelGroupMimeTypes()) {
-      mime_type_pref->Remove(mime_type);
-    }
-    for (const std::string& mime_type :
-         file_manager::file_tasks::PowerPointGroupMimeTypes()) {
-      mime_type_pref->Remove(mime_type);
-    }
-
-    ScopedDictPrefUpdate extension_pref(profile->GetPrefs(),
-                                        prefs::kDefaultTasksBySuffix);
-    for (const std::string& extension :
-         file_manager::file_tasks::WordGroupExtensions()) {
-      extension_pref->Remove(extension);
-    }
-    for (const std::string& extension :
-         file_manager::file_tasks::ExcelGroupExtensions()) {
-      extension_pref->Remove(extension);
-    }
-    for (const std::string& extension :
-         file_manager::file_tasks::PowerPointGroupExtensions()) {
-      extension_pref->Remove(extension);
-    }
-
-    // Also update the preferences to signal that the move confirmation dialog
-    // has never been shown.
-    file_manager::file_tasks::SetOfficeMoveConfirmationShownForDrive(profile,
-                                                                     false);
-    file_manager::file_tasks::SetOfficeMoveConfirmationShownForOneDrive(profile,
-                                                                        false);
-    file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToDrive(
-        profile, false);
-    file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToOneDrive(
-        profile, false);
-    file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToDrive(
-        profile, false);
-    file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToOneDrive(
-        profile, false);
+  if (!profile) {
+    return;
   }
+  // Do not allow cleaning office handlers when automated Clippy flows are in
+  // place.
+  if (chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile) ||
+      chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(profile)) {
+    return;
+  }
+  ScopedDictPrefUpdate mime_type_pref(profile->GetPrefs(),
+                                      prefs::kDefaultTasksByMimeType);
+  for (const std::string& mime_type :
+       file_manager::file_tasks::WordGroupMimeTypes()) {
+    mime_type_pref->Remove(mime_type);
+  }
+  for (const std::string& mime_type :
+       file_manager::file_tasks::ExcelGroupMimeTypes()) {
+    mime_type_pref->Remove(mime_type);
+  }
+  for (const std::string& mime_type :
+       file_manager::file_tasks::PowerPointGroupMimeTypes()) {
+    mime_type_pref->Remove(mime_type);
+  }
+
+  ScopedDictPrefUpdate extension_pref(profile->GetPrefs(),
+                                      prefs::kDefaultTasksBySuffix);
+  for (const std::string& extension :
+       file_manager::file_tasks::WordGroupExtensions()) {
+    extension_pref->Remove(extension);
+  }
+  for (const std::string& extension :
+       file_manager::file_tasks::ExcelGroupExtensions()) {
+    extension_pref->Remove(extension);
+  }
+  for (const std::string& extension :
+       file_manager::file_tasks::PowerPointGroupExtensions()) {
+    extension_pref->Remove(extension);
+  }
+
+  // Also update the preferences to signal that the move confirmation dialog
+  // has never been shown.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForDrive(profile,
+                                                                   false);
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForOneDrive(profile,
+                                                                      false);
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToDrive(
+      profile, false);
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToOneDrive(
+      profile, false);
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToDrive(
+      profile, false);
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToOneDrive(
+      profile, false);
 }
 
 bool ChromeFilesInternalsUIDelegate::GetMoveConfirmationShownForDrive() const {

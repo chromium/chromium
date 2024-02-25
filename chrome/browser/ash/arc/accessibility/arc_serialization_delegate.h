@@ -15,4 +15,4 @@ class ArcSerializationDelegate
                       ui::AXNodeData& out_data) const override;
 };
 }  // namespace arc
-#endif
+#endif  // CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_SERIALIZATION_DELEGATE_H_

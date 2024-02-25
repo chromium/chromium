@@ -46,7 +46,7 @@ class CORE_EXPORT PromiseRejectionEvent final : public Event {
   void Trace(Visitor*) const override;
 
  private:
-  scoped_refptr<DOMWrapperWorld> world_;
+  const Member<DOMWrapperWorld> world_;
   TraceWrapperV8Reference<v8::Value> promise_;
   TraceWrapperV8Reference<v8::Value> reason_;
 };

@@ -14,7 +14,7 @@ DisplayInfo::DisplayInfo(
     float device_scale_factor,
     float sdr_white_level,
     Display::Rotation rotation,
-    int display_frequency,
+    float display_frequency,
     const gfx::Vector2dF& pixels_per_inch,
     DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology,
     const std::string& label)

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_input_element.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 
 namespace blink {
 
@@ -94,7 +94,7 @@ class MediaControlInputElementTest : public PageTestBase {
 };
 
 TEST_F(MediaControlInputElementTest, MaybeRecordDisplayed_IfNotWantedOrNoFit) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   ControlInputElement().SetIsWanted(false);
   ControlInputElement().SetDoesFit(false);
@@ -112,7 +112,7 @@ TEST_F(MediaControlInputElementTest, MaybeRecordDisplayed_IfNotWantedOrNoFit) {
 }
 
 TEST_F(MediaControlInputElementTest, MaybeRecordDisplayed_WantedAndFit) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   ControlInputElement().SetIsWanted(true);
   ControlInputElement().SetDoesFit(true);
@@ -122,7 +122,7 @@ TEST_F(MediaControlInputElementTest, MaybeRecordDisplayed_WantedAndFit) {
 }
 
 TEST_F(MediaControlInputElementTest, MaybeRecordDisplayed_TwiceDoesNotRecord) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   ControlInputElement().SetIsWanted(true);
   ControlInputElement().SetDoesFit(true);
@@ -133,7 +133,7 @@ TEST_F(MediaControlInputElementTest, MaybeRecordDisplayed_TwiceDoesNotRecord) {
 }
 
 TEST_F(MediaControlInputElementTest, MaybeRecordInteracted_Basic) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   // The element has to be displayed first.
   ControlInputElement().SetIsWanted(true);
@@ -148,7 +148,7 @@ TEST_F(MediaControlInputElementTest, MaybeRecordInteracted_Basic) {
 }
 
 TEST_F(MediaControlInputElementTest, MaybeRecordInteracted_TwiceDoesNotRecord) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   // The element has to be displayed first.
   ControlInputElement().SetIsWanted(true);
@@ -164,7 +164,7 @@ TEST_F(MediaControlInputElementTest, MaybeRecordInteracted_TwiceDoesNotRecord) {
 }
 
 TEST_F(MediaControlInputElementTest, ClickRecordsInteraction) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   // The element has to be displayed first.
   ControlInputElement().SetIsWanted(true);
@@ -180,7 +180,7 @@ TEST_F(MediaControlInputElementTest, ClickRecordsInteraction) {
 }
 
 TEST_F(MediaControlInputElementTest, OverflowElement_DisplayFallback) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   Persistent<HTMLElement> overflow_container =
       ControlInputElement().CreateOverflowElement(
@@ -197,7 +197,7 @@ TEST_F(MediaControlInputElementTest, OverflowElement_DisplayFallback) {
 }
 
 TEST_F(MediaControlInputElementTest, OverflowElement_DisplayRequiresWanted) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   Persistent<HTMLElement> overflow_container =
       ControlInputElement().CreateOverflowElement(
@@ -219,7 +219,7 @@ TEST_F(MediaControlInputElementTest, OverflowElement_DisplayRequiresWanted) {
 }
 
 TEST_F(MediaControlInputElementTest, OverflowElement_DisplayAfterInline) {
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 
   Persistent<HTMLElement> overflow_container =
       ControlInputElement().CreateOverflowElement(

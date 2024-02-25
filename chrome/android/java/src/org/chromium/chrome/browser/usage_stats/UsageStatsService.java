@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
@@ -36,7 +37,6 @@ public class UsageStatsService {
 
     private Profile mProfile;
     private EventTracker mEventTracker;
-    private NotificationSuspender mNotificationSuspender;
     private SuspensionTracker mSuspensionTracker;
     private TokenTracker mTokenTracker;
     private UsageStatsBridge mBridge;
@@ -69,34 +69,38 @@ public class UsageStatsService {
      * @param activityTabProvider The provider of the active tab for the activity.
      * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
      */
-    public static void createPageViewObserverIfEnabled(Activity activity,
+    public static void createPageViewObserverIfEnabled(
+            Activity activity,
             ActivityTabProvider activityTabProvider,
             Supplier<TabContentManager> tabContentManagerSupplier) {
         if (!isEnabled()) return;
 
-        getInstance().createPageViewObserver(
-                activity, activityTabProvider, tabContentManagerSupplier);
+        getInstance()
+                .createPageViewObserver(activity, activityTabProvider, tabContentManagerSupplier);
     }
 
     @VisibleForTesting
     UsageStatsService() {
-        mProfile = Profile.getLastUsedRegularProfile();
+        mProfile = ProfileManager.getLastUsedRegularProfile();
         mBridge = new UsageStatsBridge(mProfile, this);
         mEventTracker = new EventTracker(mBridge);
-        mNotificationSuspender = new NotificationSuspender(mProfile);
-        mSuspensionTracker = new SuspensionTracker(mBridge, mNotificationSuspender);
+        mSuspensionTracker = new SuspensionTracker(mBridge, mProfile);
         mTokenTracker = new TokenTracker(mBridge);
         mPageViewObservers = new ArrayList<>();
         mClient = AppHooks.get().createDigitalWellbeingClient();
 
-        mSuspensionTracker.getAllSuspendedWebsites().then(
-                (suspendedSites) -> { notifyObserversOfSuspensions(suspendedSites, true); });
+        mSuspensionTracker
+                .getAllSuspendedWebsites()
+                .then(
+                        (suspendedSites) -> {
+                            notifyObserversOfSuspensions(suspendedSites, true);
+                        });
 
         mOptInState = getOptInState();
     }
 
-    /* package */ NotificationSuspender getNotificationSuspender() {
-        return mNotificationSuspender;
+    public SuspensionTracker getSuspensionTracker() {
+        return mSuspensionTracker;
     }
 
     /**
@@ -105,12 +109,19 @@ public class UsageStatsService {
      * @param activityTabProvider The provider of the active tab for the activity.
      * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
      */
-    private PageViewObserver createPageViewObserver(Activity activity,
+    private PageViewObserver createPageViewObserver(
+            Activity activity,
             ActivityTabProvider activityTabProvider,
             Supplier<TabContentManager> tabContentManagerSupplier) {
         ThreadUtils.assertOnUiThread();
-        PageViewObserver observer = new PageViewObserver(activity, activityTabProvider,
-                mEventTracker, mTokenTracker, mSuspensionTracker, tabContentManagerSupplier);
+        PageViewObserver observer =
+                new PageViewObserver(
+                        activity,
+                        activityTabProvider,
+                        mEventTracker,
+                        mTokenTracker,
+                        mSuspensionTracker,
+                        tabContentManagerSupplier);
         mPageViewObservers.add(new WeakReference<>(observer));
         return observer;
     }
@@ -131,11 +142,16 @@ public class UsageStatsService {
         mClient.notifyOptInStateChange(mOptInState);
 
         if (!state) {
-            getAllSuspendedWebsitesAsync().then(
-                    (suspendedSites) -> { setWebsitesSuspendedAsync(suspendedSites, false); });
-            getAllTrackedTokensAsync().then((tokens) -> {
-                for (String token : tokens) stopTrackingTokenAsync(token);
-            });
+            getAllSuspendedWebsitesAsync()
+                    .then(
+                            (suspendedSites) -> {
+                                setWebsitesSuspendedAsync(suspendedSites, false);
+                            });
+            getAllTrackedTokensAsync()
+                    .then(
+                            (tokens) -> {
+                                for (String token : tokens) stopTrackingTokenAsync(token);
+                            });
         }
 
         @UsageStatsMetricsEvent
@@ -173,9 +189,7 @@ public class UsageStatsService {
         return mTokenTracker.stopTrackingToken(token);
     }
 
-    /**
-     * Suspend or unsuspend every site in FQDNs, depending on the value of {@code suspended}.
-     */
+    /** Suspend or unsuspend every site in FQDNs, depending on the value of {@code suspended}. */
     public Promise<Void> setWebsitesSuspendedAsync(List<String> fqdns, boolean suspended) {
         ThreadUtils.assertOnUiThread();
         notifyObserversOfSuspensions(fqdns, suspended);
@@ -193,12 +207,22 @@ public class UsageStatsService {
         ThreadUtils.assertOnUiThread();
         UsageStatsMetricsReporter.reportMetricsEvent(UsageStatsMetricsEvent.CLEAR_ALL_HISTORY);
         mClient.notifyAllHistoryCleared();
-        mEventTracker.clearAll().except((exception) -> {
-            // Retry once; if the subsequent attempt fails, log the failure and move on.
-            mEventTracker.clearAll().except((exceptionInner) -> {
-                Log.e(TAG, "Failed to clear all events for history deletion");
-            });
-        });
+        mEventTracker
+                .clearAll()
+                .except(
+                        (exception) -> {
+                            // Retry once; if the subsequent attempt fails, log the failure and move
+                            // on.
+                            mEventTracker
+                                    .clearAll()
+                                    .except(
+                                            (exceptionInner) -> {
+                                                Log.e(
+                                                        TAG,
+                                                        "Failed to clear all events for history"
+                                                                + " deletion");
+                                            });
+                        });
     }
 
     public void onHistoryDeletedInRange(long startTimeMs, long endTimeMs) {
@@ -209,24 +233,44 @@ public class UsageStatsService {
         // reasonably cap endTimeMs at now.
         long effectiveEndTimeMs = Math.min(endTimeMs, System.currentTimeMillis());
         mClient.notifyHistoryDeletion(startTimeMs, effectiveEndTimeMs);
-        mEventTracker.clearRange(startTimeMs, effectiveEndTimeMs).except((exception) -> {
-            // Retry once; if the subsequent attempt fails, log the failure and move on.
-            mEventTracker.clearRange(startTimeMs, endTimeMs).except((exceptionInner) -> {
-                Log.e(TAG, "Failed to clear range of events for history deletion");
-            });
-        });
+        mEventTracker
+                .clearRange(startTimeMs, effectiveEndTimeMs)
+                .except(
+                        (exception) -> {
+                            // Retry once; if the subsequent attempt fails, log the failure and move
+                            // on.
+                            mEventTracker
+                                    .clearRange(startTimeMs, endTimeMs)
+                                    .except(
+                                            (exceptionInner) -> {
+                                                Log.e(
+                                                        TAG,
+                                                        "Failed to clear range of events for"
+                                                                + " history deletion");
+                                            });
+                        });
     }
 
     public void onHistoryDeletedForDomains(List<String> fqdns) {
         ThreadUtils.assertOnUiThread();
         UsageStatsMetricsReporter.reportMetricsEvent(UsageStatsMetricsEvent.CLEAR_HISTORY_DOMAIN);
         mClient.notifyHistoryDeletion(fqdns);
-        mEventTracker.clearDomains(fqdns).except((exception) -> {
-            // Retry once; if the subsequent attempt fails, log the failure and move on.
-            mEventTracker.clearDomains(fqdns).except((exceptionInner) -> {
-                Log.e(TAG, "Failed to clear domain events for history deletion");
-            });
-        });
+        mEventTracker
+                .clearDomains(fqdns)
+                .except(
+                        (exception) -> {
+                            // Retry once; if the subsequent attempt fails, log the failure and move
+                            // on.
+                            mEventTracker
+                                    .clearDomains(fqdns)
+                                    .except(
+                                            (exceptionInner) -> {
+                                                Log.e(
+                                                        TAG,
+                                                        "Failed to clear domain events for history"
+                                                                + " deletion");
+                                            });
+                        });
     }
 
     // The below methods are dummies that are only being retained to avoid breaking the downstream

@@ -86,7 +86,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   std::unique_ptr<SurfaceSavedFrame> saved_frame_;
   base::flat_set<ViewTransitionElementResourceId> empty_resource_ids_;
 
-  absl::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
+  std::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
 };
 
 }  // namespace viz

@@ -147,7 +147,8 @@ TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingDisplayChanged) {
       media::mojom::DisplayMediaInformation::New(
           media::mojom::DisplayCaptureSurfaceType::MONITOR,
           /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
-          /*capture_handle=*/nullptr),
+          /*capture_handle=*/nullptr,
+          /*initial_zoom_level=*/100),
       &PageLiveStateDecorator::Data::IsCapturingDisplay);
 }
 

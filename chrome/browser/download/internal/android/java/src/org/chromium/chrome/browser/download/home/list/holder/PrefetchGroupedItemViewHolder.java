@@ -24,12 +24,11 @@ public class PrefetchGroupedItemViewHolder extends OfflineItemViewHolder {
     private final TextView mTitle;
     private final TextView mTimestamp;
 
-    /**
-     * Creates a new instance of a {@link PrefetchGroupedItemViewHolder}.
-     */
+    /** Creates a new instance of a {@link PrefetchGroupedItemViewHolder}. */
     public static PrefetchGroupedItemViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_prefetch_grouped_item, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_prefetch_grouped_item, null);
         return new PrefetchGroupedItemViewHolder(view);
     }
 
@@ -45,7 +44,7 @@ public class PrefetchGroupedItemViewHolder extends OfflineItemViewHolder {
         super.bind(properties, item);
         ListItem.OfflineItemListItem listItem = (ListItem.OfflineItemListItem) item;
 
-        mTitle.setText(listItem.item.title);
+        mTitle.setText(UiUtils.formatGenericItemTitle(listItem.item));
         mTimestamp.setText(UiUtils.generatePrefetchTimestamp(listItem.date));
 
         OfflineItem offlineItem = ((ListItem.OfflineItemListItem) item).item;

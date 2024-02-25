@@ -255,7 +255,6 @@ scoped_refptr<NodeChannel> NodeChannel::Create(
     const ProcessErrorCallback& process_error_callback) {
 #if BUILDFLAG(IS_NACL)
   LOG(FATAL) << "Multi-process not yet supported on NaCl-SFI";
-  return nullptr;
 #else
   return new NodeChannel(delegate, std::move(connection_params),
                          channel_handle_policy, io_task_runner,

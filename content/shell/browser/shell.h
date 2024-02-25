@@ -140,7 +140,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                                const GURL& url,
                                bool user_gesture) override;
 #endif
-  void RequestToLockMouse(WebContents* web_contents,
+  void RequestPointerLock(WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
   void CloseContents(WebContents* source) override;
@@ -158,7 +158,6 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                               const std::u16string& message,
                               int32_t line_no,
                               const std::u16string& source_id) override;
-  void PortalWebContentsCreated(WebContents* portal_web_contents) override;
   void RendererUnresponsive(
       WebContents* source,
       RenderWidgetHost* render_widget_host,
@@ -180,9 +179,6 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   bool IsBackForwardCacheSupported() override;
   PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents) override;
-  std::unique_ptr<WebContents> ActivatePortalWebContents(
-      WebContents* predecessor_contents,
-      std::unique_ptr<WebContents> portal_contents) override;
   void UpdateInspectedWebContentsIfNecessary(
       WebContents* old_contents,
       WebContents* new_contents,

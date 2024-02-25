@@ -4,8 +4,13 @@
 
 #include "device/fido/mac/icloud_keychain.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_samples.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -15,11 +20,12 @@
 #include "device/fido/mac/fake_icloud_keychain_sys.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device::fido::icloud_keychain {
 
 namespace {
+
+constexpr char kMetricName[] = "WebAuthentication.MacOS.PasskeyPermission";
 
 static const uint8_t kAttestationObjectBytes[] = {
     0xa3, 0x63, 0x66, 0x6d, 0x74, 0x66, 0x70, 0x61, 0x63, 0x6b, 0x65, 0x64,
@@ -125,16 +131,10 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
  public:
   void SetUp() override {
     if (@available(macOS 13.5, *)) {
-      NSWindow* window = [[NSWindow alloc] init];
-      window.releasedWhenClosed = NO;  // Required by ARC.
-
       fake_ = base::MakeRefCounted<FakeSystemInterface>();
       SetSystemInterfaceForTesting(fake_);
 
-      uintptr_t ns_window = (uintptr_t)(__bridge void*)window;
-      static_assert(sizeof(window) == sizeof(ns_window));
-
-      discovery_ = NewDiscovery(ns_window);
+      discovery_ = NewDiscovery(kFakeNSWindowForTesting);
       discovery_->set_observer(this);
       discovery_->Start();
       task_environment_.RunUntilIdle();
@@ -204,7 +204,7 @@ TEST_F(iCloudKeychainTest, RequestAuthorization) {
         if (is_make_credential) {
           test::TestCallbackReceiver<
               CtapDeviceResponseCode,
-              absl::optional<AuthenticatorMakeCredentialResponse>>
+              std::optional<AuthenticatorMakeCredentialResponse>>
               callback;
           authenticator_->MakeCredential(make_credential_request,
                                          make_credential_options,
@@ -243,10 +243,10 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
 
     auto make_credential = [this, &request, &options]()
         -> std::tuple<CtapDeviceResponseCode,
-                      absl::optional<AuthenticatorMakeCredentialResponse>> {
+                      std::optional<AuthenticatorMakeCredentialResponse>> {
       test::TestCallbackReceiver<
           CtapDeviceResponseCode,
-          absl::optional<AuthenticatorMakeCredentialResponse>>
+          std::optional<AuthenticatorMakeCredentialResponse>>
           callback;
       authenticator_->MakeCredential(request, options, callback.callback());
       callback.WaitForCallback();
@@ -332,6 +332,42 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
                                  FidoTransportProtocol::kInternal));
       EXPECT_EQ(response.transport_used, FidoTransportProtocol::kInternal);
     }
+
+    {
+      std::unique_ptr<base::StatisticsRecorder> stats_recorder =
+          base::StatisticsRecorder::CreateTemporaryForTesting();
+
+      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+      fake_->set_next_auth_state(FakeSystemInterface::kAuthDenied);
+      fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
+      make_credential();
+
+      base::HistogramBase* histogram =
+          base::StatisticsRecorder::FindHistogram(kMetricName);
+      std::unique_ptr<base::HistogramSamples> samples(
+          histogram->SnapshotSamples());
+      EXPECT_EQ(samples->GetCount(0), 1);
+      EXPECT_EQ(samples->GetCount(1), 0);
+      EXPECT_EQ(samples->GetCount(2), 1);
+    }
+
+    {
+      std::unique_ptr<base::StatisticsRecorder> stats_recorder =
+          base::StatisticsRecorder::CreateTemporaryForTesting();
+
+      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+      fake_->set_next_auth_state(FakeSystemInterface::kAuthAuthorized);
+      fake_->SetMakeCredentialResult(kAttestationObjectBytes, kCredentialID);
+      make_credential();
+
+      base::HistogramBase* histogram =
+          base::StatisticsRecorder::FindHistogram(kMetricName);
+      std::unique_ptr<base::HistogramSamples> samples(
+          histogram->SnapshotSamples());
+      EXPECT_EQ(samples->GetCount(0), 1);
+      EXPECT_EQ(samples->GetCount(1), 1);
+      EXPECT_EQ(samples->GetCount(2), 0);
+    }
   }
 }
 
@@ -406,6 +442,52 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
       EXPECT_TRUE(response.user_selected);
       EXPECT_EQ(response.transport_used, FidoTransportProtocol::kInternal);
     }
+
+    {
+      fake_->SetGetAssertionError(1001,
+                                  "... No credentials available for login ...");
+      auto result = get_assertion();
+      EXPECT_EQ(std::get<0>(result),
+                CtapDeviceResponseCode::kCtap2ErrNoCredentials);
+    }
+
+    {
+      std::unique_ptr<base::StatisticsRecorder> stats_recorder =
+          base::StatisticsRecorder::CreateTemporaryForTesting();
+
+      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+      fake_->set_next_auth_state(FakeSystemInterface::kAuthDenied);
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      get_assertion();
+
+      base::HistogramBase* histogram =
+          base::StatisticsRecorder::FindHistogram(kMetricName);
+      std::unique_ptr<base::HistogramSamples> samples(
+          histogram->SnapshotSamples());
+      EXPECT_EQ(samples->GetCount(3), 1);
+      EXPECT_EQ(samples->GetCount(4), 0);
+      EXPECT_EQ(samples->GetCount(5), 1);
+    }
+
+    {
+      std::unique_ptr<base::StatisticsRecorder> stats_recorder =
+          base::StatisticsRecorder::CreateTemporaryForTesting();
+
+      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
+      fake_->set_next_auth_state(FakeSystemInterface::kAuthAuthorized);
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      get_assertion();
+
+      base::HistogramBase* histogram =
+          base::StatisticsRecorder::FindHistogram(kMetricName);
+      std::unique_ptr<base::HistogramSamples> samples(
+          histogram->SnapshotSamples());
+      EXPECT_EQ(samples->GetCount(3), 1);
+      EXPECT_EQ(samples->GetCount(4), 1);
+      EXPECT_EQ(samples->GetCount(5), 0);
+    }
   }
 }
 
@@ -415,7 +497,7 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", absl::nullopt}}};
+         {{4, 3, 2, 1}, "name", std::nullopt}}};
     fake_->SetCredentials(creds);
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
                                FidoRequestHandlerBase::RecognizedCredential>
@@ -442,11 +524,11 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadataWithAllowlist) {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", absl::nullopt}},
+         {{4, 3, 2, 1}, "name", std::nullopt}},
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 5},
-         {{4, 3, 2, 2}, "name", absl::nullopt}},
+         {{4, 3, 2, 2}, "name", std::nullopt}},
     };
     fake_->SetCredentials(creds);
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,

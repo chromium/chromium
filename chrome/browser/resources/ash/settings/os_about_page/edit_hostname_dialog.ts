@@ -6,16 +6,16 @@
  * @fileoverview 'edit-hostname-dialog' is a component allowing the
  * user to edit the device hostname.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
@@ -31,7 +31,7 @@ const UNALLOWED_CHARACTERS = '[^0-9A-Za-z-]+';
 const EMOJI_REGEX_EXP =
     /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
 
-interface EditHostnameDialogElement {
+export interface EditHostnameDialogElement {
   $: {
     dialog: CrDialogElement,
   };
@@ -39,9 +39,9 @@ interface EditHostnameDialogElement {
 
 const EditHostnameDialogElementBase = I18nMixin(PolymerElement);
 
-class EditHostnameDialogElement extends EditHostnameDialogElementBase {
+export class EditHostnameDialogElement extends EditHostnameDialogElementBase {
   static get is() {
-    return 'edit-hostname-dialog';
+    return 'edit-hostname-dialog' as const;
   }
 
   static get template() {
@@ -92,7 +92,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
         MAX_INPUT_LENGTH.toLocaleString());
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
@@ -101,7 +101,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
    * Emojis and truncating it to MAX_INPUT_LENGTH. This method will be
    * recursively called until deviceName_ is fully sanitized.
    */
-  private onDeviceNameChanged_(_newValue: string, oldValue: string) {
+  private onDeviceNameChanged_(_newValue: string, oldValue: string): void {
     if (oldValue) {
       const sanitizedOldValue = oldValue.replace(EMOJI_REGEX_EXP, '');
       // If sanitizedOldValue.length > MAX_INPUT_LENGTH, the user attempted to
@@ -124,7 +124,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
     }
   }
 
-  private onDoneClick_() {
+  private onDoneClick_(): void {
     this.deviceNameBrowserProxy_.attemptSetDeviceName(this.deviceName_)
         .then(result => {
           this.handleSetDeviceNameResponse_(result);
@@ -132,7 +132,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
     this.$.dialog.close();
   }
 
-  private handleSetDeviceNameResponse_(result: SetDeviceNameResult) {
+  private handleSetDeviceNameResponse_(result: SetDeviceNameResult): void {
     if (result !== SetDeviceNameResult.UPDATE_SUCCESSFUL) {
       console.error('ERROR IN UPDATE', result);
     }
@@ -141,7 +141,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'edit-hostname-dialog': EditHostnameDialogElement;
+    [EditHostnameDialogElement.is]: EditHostnameDialogElement;
   }
 }
 

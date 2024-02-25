@@ -2,28 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/lacros/app_mode/web_kiosk_installer_lacros.h"
+
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/lacros/app_mode/web_kiosk_installer_lacros.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::TestFuture;
 using WebKioskInstallState = crosapi::mojom::WebKioskInstallState;
@@ -35,8 +37,8 @@ const char kAppLaunchUrl[] = "https://example.com/launch";
 const char kManifestUrl[] = "https://example.com/manifest.json";
 const char16_t kAppTitle[] = u"app-title";
 
-absl::optional<web_app::AppId> app_id() {
-  return web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+std::optional<webapps::AppId> app_id() {
+  return web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
                                 GURL(kAppLaunchUrl));
 }
 
@@ -64,9 +66,9 @@ class FakeWebKioskService : public crosapi::mojom::WebKioskService {
 
   void WaitUntilBound() { ASSERT_TRUE(bound_future_.Wait()); }
 
-  std::tuple<WebKioskInstallState, absl::optional<web_app::AppId>>
+  std::tuple<WebKioskInstallState, std::optional<webapps::AppId>>
   GetWebKioskInstallState(const GURL& url) {
-    TestFuture<WebKioskInstallState, const absl::optional<web_app::AppId>&>
+    TestFuture<WebKioskInstallState, const std::optional<webapps::AppId>&>
         future;
 
     installer_->GetWebKioskInstallState(url, future.GetCallback());
@@ -74,8 +76,8 @@ class FakeWebKioskService : public crosapi::mojom::WebKioskService {
     return future.Get();
   }
 
-  absl::optional<web_app::AppId> InstallWebKiosk(const GURL& url) {
-    TestFuture<const absl::optional<web_app::AppId>&> future;
+  std::optional<webapps::AppId> InstallWebKiosk(const GURL& url) {
+    TestFuture<const std::optional<webapps::AppId>&> future;
     installer_->InstallWebKiosk(url, future.GetCallback());
     return future.Get();
   }
@@ -121,7 +123,7 @@ class WebKioskInstallerLacrosTest : public testing::Test {
     info.title = kAppTitle;
   }
 
-  web_app::AppId CreateWebAppWithManifest() {
+  webapps::AppId CreateWebAppWithManifest() {
     const GURL install_url = GURL(kAppInstallUrl);
     const GURL manifest_url = GURL(kManifestUrl);
     const GURL start_url = GURL(kAppLaunchUrl);
@@ -130,7 +132,7 @@ class WebKioskInstallerLacrosTest : public testing::Test {
         web_contents_manager().GetOrCreatePageState(install_url);
     install_page_state.url_load_result =
         web_app::WebAppUrlLoaderResult::kUrlLoaded;
-    install_page_state.redirection_url = absl::nullopt;
+    install_page_state.redirection_url = std::nullopt;
 
     install_page_state.opt_metadata =
         web_app::FakeWebContentsManager::CreateMetadataWithTitle(
@@ -149,7 +151,7 @@ class WebKioskInstallerLacrosTest : public testing::Test {
         blink::mojom::DisplayMode::kStandalone;
     install_page_state.opt_manifest->short_name = u"Basic app name";
 
-    return web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+    return web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }
 
   bool IsAppInstalledAsPlaceholder() {
@@ -197,6 +199,7 @@ class WebKioskInstallerLacrosTest : public testing::Test {
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> profile_;
+  KioskSessionServiceLacros kiosk_session_service_lacros_;
 };
 
 TEST_F(WebKioskInstallerLacrosTest, CreatingUnboundInstallerShouldNotCrash) {
@@ -208,9 +211,8 @@ TEST_F(WebKioskInstallerLacrosTest, CreatingUnboundInstallerShouldNotCrash) {
 TEST_F(WebKioskInstallerLacrosTest, GetInstallStateShouldWorkForNotInstalled) {
   CreateInstallerAndWaitUntilBound();
 
-  EXPECT_EQ(
-      web_kiosk_service().GetWebKioskInstallState(GURL(kAppInstallUrl)),
-      std::make_tuple(WebKioskInstallState::kNotInstalled, absl::nullopt));
+  EXPECT_EQ(web_kiosk_service().GetWebKioskInstallState(GURL(kAppInstallUrl)),
+            std::make_tuple(WebKioskInstallState::kNotInstalled, std::nullopt));
 }
 
 TEST_F(WebKioskInstallerLacrosTest,
@@ -220,7 +222,7 @@ TEST_F(WebKioskInstallerLacrosTest,
 
   EXPECT_EQ(web_kiosk_service().GetWebKioskInstallState(GURL(kAppInstallUrl)),
             std::make_tuple(WebKioskInstallState::kPlaceholderInstalled,
-                            absl::nullopt));
+                            std::nullopt));
 }
 
 TEST_F(WebKioskInstallerLacrosTest, GetInstallStateShouldWorkForInstalled) {

@@ -26,12 +26,12 @@ TextFinderManager::TextFinderManager(content::Page& page)
 
 TextFinderManager::~TextFinderManager() = default;
 
-absl::optional<base::UnguessableToken> TextFinderManager::CreateTextFinder(
+std::optional<base::UnguessableToken> TextFinderManager::CreateTextFinder(
     const std::string& text_directive,
     TextFinder::FinishedCallback callback) {
   if (text_directive.empty()) {
     std::move(callback).Run(std::make_pair(text_directive, false));
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Generate a unique random id.
   const base::UnguessableToken id = base::UnguessableToken::Create();

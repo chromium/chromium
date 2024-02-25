@@ -5,11 +5,12 @@
 #ifndef BASE_MEMORY_SAFE_REF_H_
 #define BASE_MEMORY_SAFE_REF_H_
 
+#include <concepts>
+#include <utility>
+
 #include "base/check.h"
 #include "base/memory/safe_ref_traits.h"
 #include "base/memory/weak_ptr.h"
-
-#include <utility>
 
 namespace base {
 
@@ -22,7 +23,7 @@ namespace base {
 // benign crash instead of as a Use-after-Free.
 //
 // SafeRef pointers cannot be null (as expressed by the "Ref" suffix instead of
-// "Ptr"). A SafeRef can be wrapped in an absl::optional if it should not always
+// "Ptr"). A SafeRef can be wrapped in an std::optional if it should not always
 // point to something valid. (A SafePtr sibling type can be introduced if this
 // is problematic, or if consuming moves are needed!)
 //
@@ -82,8 +83,8 @@ class SafeRef {
   }
 
   // Copy conversion from SafeRef<U>.
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  template <typename U>
+    requires(std::convertible_to<U*, T*>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   SafeRef(const SafeRef<U>& other)
       : ref_(other.ref_),

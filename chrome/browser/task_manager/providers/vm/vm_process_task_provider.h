@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_VM_VM_PROCESS_TASK_PROVIDER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_VM_VM_PROCESS_TASK_PROVIDER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "chrome/browser/task_manager/providers/vm/vm_process_task.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace task_manager {
 
@@ -48,7 +48,7 @@ class VmProcessTaskProvider : public TaskProvider,
 
   // Called as a response to a ListVms made to the concierge.
   void OnListVms(const base::ProcessIterator::ProcessEntries& snapshot,
-                 absl::optional<vm_tools::concierge::ListVmsResponse> response);
+                 std::optional<vm_tools::concierge::ListVmsResponse> response);
 
   // The time at which the most recent process snapshot was received from the
   // `ash::ProcessSnapshotServer`.

@@ -82,7 +82,7 @@ QueryResultManager::QueryResultManager(MediaRouter* router) : router_(router) {
   DCHECK(router_);
   auto observer = std::make_unique<AnyMediaSinksObserver>(router_, this);
   observer->Init();
-  sinks_observers_[absl::nullopt] = std::move(observer);
+  sinks_observers_[std::nullopt] = std::move(observer);
 }
 
 QueryResultManager::~QueryResultManager() {

@@ -90,18 +90,29 @@ def _GetMachineGroup(build_properties):
 def _upload_perf_results(json_to_upload, name, configuration_name,
     build_properties, output_json_file):
   """Upload the contents of result JSON(s) to the perf dashboard."""
-  args= [
-      '--buildername', build_properties['buildername'],
-      '--buildnumber', build_properties['buildnumber'],
-      '--name', name,
-      '--configuration-name', configuration_name,
-      '--results-file', json_to_upload,
-      '--results-url', RESULTS_URL,
-      '--got-revision-cp', build_properties['got_revision_cp'],
-      '--got-v8-revision', build_properties['got_v8_revision'],
-      '--got-webrtc-revision', build_properties['got_webrtc_revision'],
-      '--output-json-file', output_json_file,
-      '--perf-dashboard-machine-group', _GetMachineGroup(build_properties)
+  args = [
+      '--buildername',
+      build_properties['buildername'],
+      '--buildnumber',
+      str(build_properties['buildnumber']),
+      '--name',
+      name,
+      '--configuration-name',
+      configuration_name,
+      '--results-file',
+      json_to_upload,
+      '--results-url',
+      RESULTS_URL,
+      '--got-revision-cp',
+      build_properties['got_revision_cp'],
+      '--got-v8-revision',
+      build_properties['got_v8_revision'],
+      '--got-webrtc-revision',
+      build_properties['got_webrtc_revision'],
+      '--output-json-file',
+      output_json_file,
+      '--perf-dashboard-machine-group',
+      _GetMachineGroup(build_properties),
   ]
   buildbucket = build_properties.get('buildbucket', {})
   if isinstance(buildbucket, six.string_types):
@@ -481,14 +492,14 @@ def _upload_individual(
     results_size_in_mib = os.path.getsize(results_filename) / (2 ** 20)
     logging.info('Uploading perf results from %s benchmark (size %s Mib)' %
           (benchmark_name, results_size_in_mib))
-    with open(output_json_file, 'w') as oj:
-      upload_return_code = _upload_perf_results(
-        results_filename,
-        benchmark_name, configuration_name, build_properties, oj)
-      upload_end_time = time.time()
-      print_duration(('%s upload time' % (benchmark_name)),
-                     upload_begin_time, upload_end_time)
-      return (benchmark_name, upload_return_code == 0)
+    upload_return_code = _upload_perf_results(results_filename, benchmark_name,
+                                              configuration_name,
+                                              build_properties,
+                                              output_json_file)
+    upload_end_time = time.time()
+    print_duration(('%s upload time' % (benchmark_name)), upload_begin_time,
+                   upload_end_time)
+    return (benchmark_name, upload_return_code == 0)
   finally:
     shutil.rmtree(tmpfile_dir)
 

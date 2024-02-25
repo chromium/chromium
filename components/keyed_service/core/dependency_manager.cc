@@ -12,6 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
@@ -74,12 +75,12 @@ void DependencyManager::AddEdge(KeyedServiceBaseFactory* depended,
 
 void DependencyManager::RegisterPrefsForServices(
     user_prefs::PrefRegistrySyncable* pref_registry) {
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
     NOTREACHED();
   }
 
-  for (auto* dependency_node : construction_order) {
+  for (DependencyNode* dependency_node : construction_order) {
     KeyedServiceBaseFactory* factory =
         static_cast<KeyedServiceBaseFactory*>(dependency_node);
     factory->RegisterPrefs(pref_registry);
@@ -93,7 +94,7 @@ void DependencyManager::CreateContextServices(void* context,
 #endif
   MarkContextLive(context);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
     NOTREACHED();
   }
@@ -102,7 +103,7 @@ void DependencyManager::CreateContextServices(void* context,
   DumpContextDependencies(context);
 #endif
 
-  for (auto* dependency_node : construction_order) {
+  for (DependencyNode* dependency_node : construction_order) {
     KeyedServiceBaseFactory* factory =
         static_cast<KeyedServiceBaseFactory*>(dependency_node);
     if (is_testing_context && factory->ServiceIsNULLWhileTesting() &&
@@ -115,7 +116,8 @@ void DependencyManager::CreateContextServices(void* context,
 }
 
 void DependencyManager::DestroyContextServices(void* context) {
-  std::vector<DependencyNode*> destruction_order = GetDestructionOrder();
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order =
+      GetDestructionOrder();
 
 #ifndef NDEBUG
   DumpContextDependencies(context);
@@ -140,9 +142,9 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
     void* context1,
     DependencyManager* dependency_manager2,
     void* context2) {
-  std::vector<DependencyNode*> destruction_order1 =
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order1 =
       dependency_manager1->GetDestructionOrder();
-  std::vector<DependencyNode*> destruction_order2 =
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order2 =
       dependency_manager2->GetDestructionOrder();
 
 #ifndef NDEBUG
@@ -160,8 +162,9 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
   DestroyFactoriesInOrder(context2, destruction_order2);
 }
 
-std::vector<DependencyNode*> DependencyManager::GetDestructionOrder() {
-  std::vector<DependencyNode*> destruction_order;
+std::vector<raw_ptr<DependencyNode, VectorExperimental>>
+DependencyManager::GetDestructionOrder() {
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   if (!dependency_graph_.GetDestructionOrder(&destruction_order))
     NOTREACHED();
   return destruction_order;
@@ -169,8 +172,8 @@ std::vector<DependencyNode*> DependencyManager::GetDestructionOrder() {
 
 void DependencyManager::ShutdownFactoriesInOrder(
     void* context,
-    std::vector<DependencyNode*>& order) {
-  for (auto* dependency_node : order) {
+    std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order) {
+  for (DependencyNode* dependency_node : order) {
     KeyedServiceBaseFactory* factory =
         static_cast<KeyedServiceBaseFactory*>(dependency_node);
     factory->ContextShutdown(context);
@@ -179,8 +182,8 @@ void DependencyManager::ShutdownFactoriesInOrder(
 
 void DependencyManager::DestroyFactoriesInOrder(
     void* context,
-    std::vector<DependencyNode*>& order) {
-  for (auto* dependency_node : order) {
+    std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order) {
+  for (DependencyNode* dependency_node : order) {
     KeyedServiceBaseFactory* factory =
         static_cast<KeyedServiceBaseFactory*>(dependency_node);
     factory->ContextDestroyed(context);

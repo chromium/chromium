@@ -233,7 +233,7 @@ class ScopedLibcTimeZone {
   static constexpr char kTimeZoneEnvVarName[] = "TZ";
 
   bool success_ = true;
-  absl::optional<std::string> old_timezone_;
+  std::optional<std::string> old_timezone_;
 };
 
 // A duration to let the animation finish and pass the cool down duration in
@@ -279,7 +279,7 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList(
     std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events);
 
 // Checks if the two exploded are in the same month.
-bool IsTheSameMonth(const base::Time& date_a, const base::Time& date_b);
+bool IsTheSameMonth(const base::Time date_a, const base::Time date_b);
 
 // Returns the `base:Time` from the given string.
 base::Time GetTimeFromString(const char* start_time);
@@ -298,10 +298,22 @@ class CalendarClientTestImpl : public CalendarClient {
   ~CalendarClientTestImpl() override;
 
   // CalendarClient:
+  base::OnceClosure GetCalendarList(
+      google_apis::calendar::CalendarListCallback callback) override;
   base::OnceClosure GetEventList(
       google_apis::calendar::CalendarEventListCallback callback,
-      const base::Time& start_time,
-      const base::Time& end_time) override;
+      const base::Time start_time,
+      const base::Time end_time) override;
+  base::OnceClosure GetEventList(
+      google_apis::calendar::CalendarEventListCallback callback,
+      const base::Time start_time,
+      const base::Time end_time,
+      const std::string& calendar_id,
+      const std::string& calendar_color_id) override;
+
+  // Sets `calendars` as the fetched calendar list.
+  void SetCalendarList(
+      std::unique_ptr<google_apis::calendar::CalendarList> calendars);
 
   // Sets `events` as the fetched event list.
   void SetEventList(std::unique_ptr<google_apis::calendar::EventList> events);
@@ -318,7 +330,8 @@ class CalendarClientTestImpl : public CalendarClient {
 
  private:
   google_apis::ApiErrorCode error_ = google_apis::HTTP_SUCCESS;
-  std::unique_ptr<google_apis::calendar::EventList> events_ = nullptr;
+  std::unique_ptr<google_apis::calendar::CalendarList> calendars_;
+  std::unique_ptr<google_apis::calendar::EventList> events_;
   base::TimeDelta task_delay_ = kAnimationSettleDownDuration + base::Seconds(2);
 };
 

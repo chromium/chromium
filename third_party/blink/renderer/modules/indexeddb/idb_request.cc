@@ -35,7 +35,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h"
@@ -137,11 +136,14 @@ void RecordHistogram(IDBRequest::TypeForMetrics type,
                           duration);
       break;
 
+    case IDBRequest::TypeForMetrics::kFactoryOpen:
+      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration.Open", duration);
+      break;
+
     case IDBRequest::TypeForMetrics::kCursorAdvance:
     case IDBRequest::TypeForMetrics::kCursorContinue:
     case IDBRequest::TypeForMetrics::kCursorContinuePrimaryKey:
     case IDBRequest::TypeForMetrics::kCursorDelete:
-    case IDBRequest::TypeForMetrics::kFactoryOpen:
     case IDBRequest::TypeForMetrics::kFactoryDeleteDatabase:
     case IDBRequest::TypeForMetrics::kIndexOpenCursor:
     case IDBRequest::TypeForMetrics::kIndexCount:
@@ -276,8 +278,13 @@ ScriptValue IDBRequest::result(ScriptState* script_state,
     return ScriptValue();
   }
   result_dirty_ = false;
-  ScriptValue value = ScriptValue::From(script_state, result_);
-  return value;
+  v8::Local<v8::Value> value;
+  if (!result_) {
+    value = v8::Null(script_state->GetIsolate());
+  } else {
+    value = result_->ToV8(script_state).ToLocalChecked();
+  }
+  return ScriptValue(script_state->GetIsolate(), value);
 }
 
 DOMException* IDBRequest::error(ExceptionState& exception_state) const {
@@ -287,13 +294,13 @@ DOMException* IDBRequest::error(ExceptionState& exception_state) const {
         IDBDatabase::kRequestNotFinishedErrorMessage);
     return nullptr;
   }
-  return error_;
+  return error_.Get();
 }
 
 const IDBRequest::Source* IDBRequest::source(ScriptState* script_state) const {
   if (!GetExecutionContext())
     return nullptr;
-  return source_;
+  return source_.Get();
 }
 
 const String& IDBRequest::readyState() const {
@@ -390,8 +397,9 @@ bool IDBRequest::CanStillSendResult() const {
   // but before `ContextDestroyed()` has been called. See
   // https://crbug.com/733642
   const ExecutionContext* execution_context = GetExecutionContext();
-  if (!execution_context)
+  if (!execution_context || execution_context->IsContextDestroyed()) {
     return false;
+  }
 
   DCHECK(ready_state_ == PENDING || ready_state_ == DONE);
   if (request_aborted_)
@@ -530,9 +538,6 @@ void IDBRequest::OnOpenCursor(
     return;
   }
 
-  std::unique_ptr<WebIDBCursor> cursor = std::make_unique<WebIDBCursor>(
-      std::move(result->get_value()->cursor), transaction_->Id(),
-      GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess));
   std::unique_ptr<IDBValue> value;
   if (result->get_value()->value) {
     value = std::move(*result->get_value()->value);
@@ -544,7 +549,8 @@ void IDBRequest::OnOpenCursor(
   value->SetIsolate(GetIsolate());
 
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
-      this, std::move(cursor), std::move(result->get_value()->key),
+      this, std::move(result->get_value()->cursor),
+      std::move(result->get_value()->key),
       std::move(result->get_value()->primary_key), std::move(value),
       WTF::BindOnce(&IDBTransaction::OnResultReady,
                     WrapPersistent(transaction_.Get()))));
@@ -631,10 +637,12 @@ void IDBRequest::HandleError(mojom::blink::IDBErrorPtr error) {
                     WrapPersistent(transaction_.Get()))));
 }
 
-void IDBRequest::SendResultCursor(std::unique_ptr<WebIDBCursor> backend,
-                                  std::unique_ptr<IDBKey> key,
-                                  std::unique_ptr<IDBKey> primary_key,
-                                  std::unique_ptr<IDBValue> value) {
+void IDBRequest::SendResultCursor(
+    mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>
+        pending_remote_cursor,
+    std::unique_ptr<IDBKey> key,
+    std::unique_ptr<IDBKey> primary_key,
+    std::unique_ptr<IDBValue> value) {
   if (!CanStillSendResult()) {
     metrics_.RecordAndReset();
     return;
@@ -661,13 +669,13 @@ void IDBRequest::SendResultCursor(std::unique_ptr<WebIDBCursor> backend,
 
   switch (cursor_type_) {
     case indexed_db::kCursorKeyOnly:
-      cursor =
-          MakeGarbageCollected<IDBCursor>(std::move(backend), cursor_direction_,
-                                          this, source, transaction_.Get());
+      cursor = MakeGarbageCollected<IDBCursor>(std::move(pending_remote_cursor),
+                                               cursor_direction_, this, source,
+                                               transaction_.Get());
       break;
     case indexed_db::kCursorKeyAndValue:
       cursor = MakeGarbageCollected<IDBCursorWithValue>(
-          std::move(backend), cursor_direction_, this, source,
+          std::move(pending_remote_cursor), cursor_direction_, this, source,
           transaction_.Get());
       break;
     default:
@@ -715,6 +723,12 @@ void IDBRequest::SetResult(IDBAny* result) {
 }
 
 void IDBRequest::SendResultValue(std::unique_ptr<IDBValue> value) {
+  // See crbug.com/1519989
+  if (!CanStillSendResult()) {
+    metrics_.RecordAndReset();
+    return;
+  }
+
   if (pending_cursor_) {
     // Value should be null, signifying the end of the cursor's range.
     DCHECK(value->IsNull());

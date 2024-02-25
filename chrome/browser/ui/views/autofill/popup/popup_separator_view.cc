@@ -17,14 +17,12 @@
 
 namespace autofill {
 
-PopupSeparatorView::PopupSeparatorView() {
+PopupSeparatorView::PopupSeparatorView(int vertical_padding) {
   SetFocusBehavior(FocusBehavior::NEVER);
   SetUseDefaultFillLayout(true);
-  const int kVerticalPadding = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
   AddChildView(views::Builder<views::Separator>()
                    .SetBorder(views::CreateEmptyBorder(
-                       gfx::Insets::VH(kVerticalPadding, 0)))
+                       gfx::Insets::VH(vertical_padding, 0)))
                    .SetColorId(ui::kColorSeparator)
                    .Build());
   SetBackground(
@@ -38,7 +36,7 @@ void PopupSeparatorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kSplitter;
 }
 
-BEGIN_METADATA(PopupSeparatorView, views::View)
+BEGIN_METADATA(PopupSeparatorView)
 END_METADATA
 
 }  // namespace autofill

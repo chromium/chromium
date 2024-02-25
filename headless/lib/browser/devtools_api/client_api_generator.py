@@ -153,12 +153,12 @@ def CreateEnumTypeDefinition(domain_name, type):
 
 def CreateObjectTypeDefinition():
   return {
-      'return_type': 'absl::optional<base::Value::Dict>',
-      'pass_type': 'absl::optional<base::Value::Dict>',
+      'return_type': 'std::optional<base::Value::Dict>',
+      'pass_type': 'std::optional<base::Value::Dict>',
       'to_raw_type': '*%s',
       'to_raw_return_type': '*%s',
       'to_pass_type': 'std::move(%s)',
-      'type': 'absl::optional<base::Value::Dict>',
+      'type': 'std::optional<base::Value::Dict>',
       'raw_type': 'base::Value::Dict',
       'raw_pass_type': 'base::Value::Dict*',
       'raw_return_type': 'const base::Value::Dict&',

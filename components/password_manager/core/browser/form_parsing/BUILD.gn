@@ -24,6 +24,8 @@ static_library("form_parsing") {
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -46,4 +48,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+group("fuzzers") {
+  deps = [ "//components/password_manager/core/browser/form_parsing/fuzzer" ]
 }

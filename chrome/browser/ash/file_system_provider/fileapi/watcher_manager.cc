@@ -15,8 +15,7 @@
 
 using content::BrowserThread;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 namespace {
 
@@ -110,5 +109,4 @@ void WatcherManager::RemoveWatcher(const storage::FileSystemURL& url,
                                                std::move(callback))));
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

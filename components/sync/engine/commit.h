@@ -13,9 +13,9 @@
 
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/commit_contribution.h"
 #include "components/sync/engine/cycle/nudge_tracker.h"
+#include "components/sync/engine/syncer_error.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
@@ -50,7 +50,6 @@ class Commit {
   // |extensions_activity| may be null.
   static std::unique_ptr<Commit> Init(
       ModelTypeSet enabled_types,
-      bool proxy_tabs_datatype_enabled,
       size_t max_entries,
       const std::string& account_name,
       const std::string& cache_guid,

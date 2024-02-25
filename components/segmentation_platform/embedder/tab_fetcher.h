@@ -50,11 +50,11 @@ class TabFetcher {
   // Represents a local or foreign tab.
   struct Tab {
     // Local tab's webcontents.
-    raw_ptr<content::WebContents, DanglingUntriaged> webcontents{};
+    raw_ptr<content::WebContents, DanglingUntriaged> webcontents = nullptr;
     // Local tab's pointer, only available on Android.
-    raw_ptr<TabAndroid> tab_android{};
+    raw_ptr<TabAndroid> tab_android = nullptr;
     // Foreign tab's session data.
-    raw_ptr<const sessions::SessionTab> session_tab{};
+    raw_ptr<const sessions::SessionTab> session_tab = nullptr;
 
     // URL for the tab.
     GURL tab_url;
@@ -85,7 +85,7 @@ class TabFetcher {
 
   // Returns the modified time for the latest remote sync session if sync is
   // enabled.
-  absl::optional<base::Time> GetLatestRemoteSessionModifiedTime();
+  std::optional<base::Time> GetLatestRemoteSessionModifiedTime();
 
  protected:
   // Fills all the local tabs from the tab models in `tabs`.

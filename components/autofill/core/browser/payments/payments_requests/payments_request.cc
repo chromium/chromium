@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 
 namespace autofill::payments {
 
@@ -80,7 +80,8 @@ base::Value::Dict PaymentsRequest::BuildAddressDictionary(
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, NAME_FULL, app_locale,
-                        PaymentsClient::kRecipientName, postal_address);
+                        PaymentsNetworkInterface::kRecipientName,
+                        postal_address);
   }
 
   base::Value::List address_lines;
@@ -110,7 +111,7 @@ base::Value::Dict PaymentsRequest::BuildAddressDictionary(
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, PHONE_HOME_WHOLE_NUMBER, app_locale,
-                        PaymentsClient::kPhoneNumber, address);
+                        PaymentsNetworkInterface::kPhoneNumber, address);
   }
 
   return address;
@@ -144,7 +145,7 @@ base::Value::Dict PaymentsRequest::BuildCreditCardDictionary(
 
 // static
 void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
-                                             const ServerFieldType& type,
+                                             const FieldType& type,
                                              const std::string& app_locale,
                                              base::Value::List& list) {
   std::u16string value = profile.GetInfo(type, app_locale);
@@ -154,7 +155,7 @@ void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
 
 // static
 void PaymentsRequest::SetStringIfNotEmpty(const AutofillDataModel& profile,
-                                          const ServerFieldType& type,
+                                          const FieldType& type,
                                           const std::string& app_locale,
                                           const std::string& path,
                                           base::Value::Dict& dictionary) {

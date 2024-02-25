@@ -9,10 +9,10 @@ function cycleAccelerationPreferences(codec, expected_success, desc) {
     var config_success;
 
     let decoderInit = {
-      error: t.step_func(e => {
+      error: e => {
         config_success = false;
-      }),
-      output: t.unreached_func("Unexpected output")
+      },
+      output: t.unreached_func('Unexpected output')
     };
 
     for (const [key, value] of Object.entries(expected_success)) {
@@ -36,13 +36,17 @@ function cycleAccelerationPreferences(codec, expected_success, desc) {
       decoder.configure(decoderConfig);
 
       try {
-        // A failed configure might cause flush to throw an exception.
+        // A failed configure will cause flush to throw an exception.
         await decoder.flush();
+        assert_true(value, iteration_name);
       } catch {
-        assert_equals(config_success, value, iteration_name);
+        assert_false(value, iteration_name);
+
+        // The error callback may not have run yet.
+        await t.step_wait(_ => config_success === false);
       }
 
-      if(decoder.state != "closed")
+      if (decoder.state != 'closed')
         decoder.close();
     }
   }, desc);

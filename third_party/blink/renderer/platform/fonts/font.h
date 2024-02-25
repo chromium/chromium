@@ -53,12 +53,12 @@ class PaintFlags;
 
 namespace blink {
 
-class NGShapeCache;
 class FontSelector;
+class NGShapeCache;
 class ShapeCache;
 class TextRun;
+struct TextFragmentPaintInfo;
 struct TextRunPaintInfo;
-struct NGTextFragmentPaintInfo;
 
 class PLATFORM_EXPORT Font {
   DISALLOW_NEW();
@@ -67,10 +67,13 @@ class PLATFORM_EXPORT Font {
   Font();
   explicit Font(const FontDescription&);
   Font(const FontDescription&, FontSelector*);
-  ~Font();
 
-  Font(const Font&);
-  Font& operator=(const Font&);
+  Font(const Font&) = default;
+  Font(Font&&) = default;
+  Font& operator=(const Font&) = default;
+  Font& operator=(Font&&) = default;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(font_fallback_list_); }
 
   bool operator==(const Font& other) const;
   bool operator!=(const Font& other) const { return !(*this == other); }
@@ -98,7 +101,7 @@ class PLATFORM_EXPORT Font {
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
-                const NGTextFragmentPaintInfo&,
+                const TextFragmentPaintInfo&,
                 const gfx::PointF&,
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
@@ -115,12 +118,12 @@ class PLATFORM_EXPORT Font {
                          const gfx::PointF&,
                          const cc::PaintFlags&) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
-                         const NGTextFragmentPaintInfo&,
+                         const TextFragmentPaintInfo&,
                          const AtomicString& mark,
                          const gfx::PointF&,
                          const cc::PaintFlags&) const;
 
-  gfx::RectF TextInkBounds(const NGTextFragmentPaintInfo&) const;
+  gfx::RectF TextInkBounds(const TextFragmentPaintInfo&) const;
 
   struct TextIntercept {
     float begin_, end_;
@@ -136,7 +139,7 @@ class PLATFORM_EXPORT Font {
                          const cc::PaintFlags&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;
-  void GetTextIntercepts(const NGTextFragmentPaintInfo&,
+  void GetTextIntercepts(const TextFragmentPaintInfo&,
                          const cc::PaintFlags&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;
@@ -160,10 +163,6 @@ class PLATFORM_EXPORT Font {
   // in pixels from the left bounding box of the full TextRun to the left bound
   // of the glyph rendered by each character. Values should always be positive.
   Vector<double> IndividualCharacterAdvances(const TextRun&) const;
-
-  void ExpandRangeToIncludePartialGlyphs(const TextRun&,
-                                         int* from,
-                                         int* to) const;
 
   // Metrics that we query the FontFallbackList for.
   float SpaceWidth() const {
@@ -252,11 +251,9 @@ class PLATFORM_EXPORT Font {
   // TODO(xiaochengh): The function not only initializes null FontFallbackList,
   // but also syncs invalid FontFallbackList. Rename it for better readability.
   FontFallbackList* EnsureFontFallbackList() const;
-  void RevalidateFontFallbackList() const;
-  void ReleaseFontFallbackListRef() const;
 
   FontDescription font_description_;
-  mutable scoped_refptr<FontFallbackList> font_fallback_list_;
+  mutable Member<FontFallbackList> font_fallback_list_;
 };
 
 inline const SimpleFontData* Font::PrimaryFont() const {

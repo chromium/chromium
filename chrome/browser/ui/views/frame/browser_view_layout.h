@@ -98,7 +98,7 @@ class BrowserViewLayout : public views::LayoutManager {
   // Note that *whether* the border is drawn is an orthogonal issue;
   // this function only controls where it's drawn when it is in fact drawn.
   void SetContentBorderBounds(
-      const absl::optional<gfx::Rect>& region_capture_rect);
+      const std::optional<gfx::Rect>& region_capture_rect);
 
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost();
 
@@ -115,8 +115,8 @@ class BrowserViewLayout : public views::LayoutManager {
   void Layout(views::View* host) override;
   gfx::Size GetMinimumSize(const views::View* host) const override;
   gfx::Size GetPreferredSize(const views::View* host) const override;
-  std::vector<views::View*> GetChildViewsInPaintOrder(
-      const views::View* host) const override;
+  std::vector<raw_ptr<views::View, VectorExperimental>>
+  GetChildViewsInPaintOrder(const views::View* host) const override;
 
   // Returns the minimum acceptable width for the browser web contents.
   int GetMinWebContentsWidthForTesting() const;
@@ -225,7 +225,7 @@ class BrowserViewLayout : public views::LayoutManager {
   gfx::Rect latest_contents_bounds_;
 
   // Directly tied to SetContentBorderBounds() - more details there.
-  absl::optional<gfx::Rect> dynamic_content_border_bounds_;
+  std::optional<gfx::Rect> dynamic_content_border_bounds_;
 
   // The distance the web contents modal dialog is from the top of the dialog
   // host widget.

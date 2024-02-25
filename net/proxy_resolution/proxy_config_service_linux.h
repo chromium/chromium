@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -173,8 +173,8 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     // Test code can set |setting_getter| and |traffic_annotation|. If left
     // unspecified, reasonable defaults will be used.
     Delegate(std::unique_ptr<base::Environment> env_var_getter,
-             absl::optional<std::unique_ptr<SettingGetter>> setting_getter,
-             absl::optional<NetworkTrafficAnnotationTag> traffic_annotation);
+             std::optional<std::unique_ptr<SettingGetter>> setting_getter,
+             std::optional<NetworkTrafficAnnotationTag> traffic_annotation);
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
@@ -217,18 +217,18 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
 
     ~Delegate();
 
-    // Obtains an environment variable's value. Parses a proxy server
+    // Obtains an environment variable's value. Parses a proxy chain
     // specification from it and puts it in result. Returns true if the
     // requested variable is defined and the value valid.
     bool GetProxyFromEnvVarForScheme(base::StringPiece variable,
                                      ProxyServer::Scheme scheme,
-                                     ProxyServer* result_server);
+                                     ProxyChain* result_chain);
     // As above but with scheme set to HTTP, for convenience.
     bool GetProxyFromEnvVar(base::StringPiece variable,
-                            ProxyServer* result_server);
+                            ProxyChain* result_chain);
     // Returns a proxy config based on the environment variables, or empty value
     // on failure.
-    absl::optional<ProxyConfigWithAnnotation> GetConfigFromEnv();
+    std::optional<ProxyConfigWithAnnotation> GetConfigFromEnv();
 
     // Obtains host and port config settings and parses a proxy server
     // specification from it and puts it in result. Returns true if the
@@ -237,12 +237,12 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
                               ProxyServer* result_server);
     // Returns a proxy config based on the settings, or empty value
     // on failure.
-    absl::optional<ProxyConfigWithAnnotation> GetConfigFromSettings();
+    std::optional<ProxyConfigWithAnnotation> GetConfigFromSettings();
 
     // This method is posted from the glib thread to the main TaskRunner to
     // carry the new config information.
     void SetNewProxyConfig(
-        const absl::optional<ProxyConfigWithAnnotation>& new_config);
+        const std::optional<ProxyConfigWithAnnotation>& new_config);
 
     // This method is run on the getter's notification thread.
     void SetUpNotifications();
@@ -253,12 +253,12 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     // Cached proxy configuration, to be returned by
     // GetLatestProxyConfig. Initially populated from the glib thread, but
     // afterwards only accessed from the main TaskRunner.
-    absl::optional<ProxyConfigWithAnnotation> cached_config_;
+    std::optional<ProxyConfigWithAnnotation> cached_config_;
 
     // A copy kept on the glib thread of the last seen proxy config, so as
     // to avoid posting a call to SetNewProxyConfig when we get a
     // notification but the config has not actually changed.
-    absl::optional<ProxyConfigWithAnnotation> reference_config_;
+    std::optional<ProxyConfigWithAnnotation> reference_config_;
 
     // The task runner for the glib thread, aka main browser thread. This thread
     // is where we run the glib main loop (see

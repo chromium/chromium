@@ -101,15 +101,20 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      * @throws InitializationError if the test class malformed
      */
     public BaseJUnit4ClassRunner(final Class<?> klass) throws InitializationError {
-        super(klass,
-                new AndroidRunnerParams(InstrumentationRegistry.getInstrumentation(),
-                        InstrumentationRegistry.getArguments(), false, 0L, false));
+        super(
+                klass,
+                new AndroidRunnerParams(
+                        InstrumentationRegistry.getInstrumentation(),
+                        InstrumentationRegistry.getArguments(),
+                        false,
+                        0L,
+                        false));
 
         assert InstrumentationRegistry.getInstrumentation()
                         instanceof BaseChromiumAndroidJUnitRunner
-            : "Must use BaseChromiumAndroidJUnitRunner instrumentation with "
-              + "BaseJUnit4ClassRunner, but found: "
-              + InstrumentationRegistry.getInstrumentation().getClass();
+                : "Must use BaseChromiumAndroidJUnitRunner instrumentation with "
+                        + "BaseJUnit4ClassRunner, but found: "
+                        + InstrumentationRegistry.getInstrumentation().getClass();
         String traceOutput = InstrumentationRegistry.getArguments().getString(EXTRA_TRACE_FILE);
 
         if (traceOutput != null) {
@@ -165,8 +170,10 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      */
     @CallSuper
     protected List<SkipCheck> getSkipChecks() {
-        return Arrays.asList(new RestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
-                new AndroidSdkLevelSkipCheck(), new DisableIfSkipCheck());
+        return Arrays.asList(
+                new RestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
+                new AndroidSdkLevelSkipCheck(),
+                new DisableIfSkipCheck());
     }
 
     /**
@@ -202,7 +209,9 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      */
     @CallSuper
     protected List<TestHook> getPreTestHooks() {
-        return Arrays.asList(CommandLineFlags.getPreTestHook(), new UnitTestNoBrowserProcessHook(),
+        return Arrays.asList(
+                CommandLineFlags.getPreTestHook(),
+                new UnitTestNoBrowserProcessHook(),
                 new ResetCachedFlagValuesTestHook());
     }
 
@@ -239,14 +248,14 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      */
     @CallSuper
     protected List<TestRule> getDefaultTestRules() {
-        return Arrays.asList(new BaseJUnit4TestRule(), new MockitoErrorHandler(),
+        return Arrays.asList(
+                new BaseJUnit4TestRule(),
+                new MockitoErrorHandler(),
                 new UnitTestLifetimeAssertRule(),
                 new EspressoIdleTimeoutRule(20, TimeUnit.SECONDS));
     }
 
-    /**
-     * Evaluate whether a FrameworkMethod is ignored based on {@code SkipCheck}s.
-     */
+    /** Evaluate whether a FrameworkMethod is ignored based on {@code SkipCheck}s. */
     @Override
     protected boolean isIgnored(FrameworkMethod method) {
         return super.isIgnored(method) || shouldSkip(method);
@@ -266,9 +275,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         return mergeList(declaredRules, defaultRules);
     }
 
-    /**
-     * Run test with or without execution based on bundle arguments.
-     */
+    /** Run test with or without execution based on bundle arguments. */
     @Override
     public void run(RunNotifier notifier) {
         if (BaseChromiumAndroidJUnitRunner.shouldListTests()) {
@@ -278,6 +285,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
             return;
         }
 
+        ResettersForTesting.beforeClassHooksWillExecute();
         runPreClassHooks(getDescription().getTestClass());
         assert CommandLine.isInitialized();
 
@@ -286,7 +294,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         try {
             runPostClassHooks(getDescription().getTestClass());
         } finally {
-            ResettersForTesting.onAfterClass();
+            ResettersForTesting.afterClassHooksDidExecute();
         }
     }
 
@@ -297,13 +305,13 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
         long start = SystemClock.uptimeMillis();
 
-        ResettersForTesting.setMethodMode();
+        ResettersForTesting.beforeHooksWillExecute();
         runPreTestHooks(method);
 
         super.runChild(method, notifier);
-        ResettersForTesting.onAfterMethod();
 
         runPostTestHooks(method);
+        ResettersForTesting.afterHooksDidExecute();
 
         Bundle b = new Bundle();
         b.putLong(DURATION_BUNDLE_ID, SystemClock.uptimeMillis() - start);
@@ -317,9 +325,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         TestTraceEvent.disable();
     }
 
-    /**
-     * Loop through all the {@code PreTestHook}s to run them
-     */
+    /** Loop through all the {@code PreTestHook}s to run them */
     private void runPreTestHooks(FrameworkMethod frameworkMethod) {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         for (TestHook hook : getPreTestHooks()) {
@@ -348,9 +354,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         }
     }
 
-    /**
-     * Loop through all the {@code SkipCheck}s to confirm whether a test should be ignored
-     */
+    /** Loop through all the {@code SkipCheck}s to confirm whether a test should be ignored */
     private boolean shouldSkip(FrameworkMethod method) {
         for (SkipCheck s : getSkipChecks()) {
             if (s.shouldSkip(method)) {
@@ -360,9 +364,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         return false;
     }
 
-    /**
-     * Overriding this method to take screenshot of failure before tear down functions are run.
-     */
+    /** Overriding this method to take screenshot of failure before tear down functions are run. */
     @Override
     protected Statement withAfters(FrameworkMethod method, Object test, Statement base) {
         return super.withAfters(method, test, new ScreenshotOnFailureStatement(base));

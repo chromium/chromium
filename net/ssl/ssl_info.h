@@ -5,18 +5,14 @@
 #ifndef NET_SSL_SSL_INFO_H_
 #define NET_SSL_SSL_INFO_H_
 
-#include <stdint.h>
-
-#include <vector>
-
 #include "base/memory/scoped_refptr.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/ocsp_verify_result.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "third_party/boringssl/src/pki/ocsp_verify_result.h"
 
 namespace net {
 
@@ -96,11 +92,6 @@ class NET_EXPORT SSLInfo {
   // each certificate in the chain.
   HashValueVector public_key_hashes;
 
-  // pinning_failure_log contains a message produced by
-  // TransportSecurityState::PKPState::CheckPublicKeyPins in the event of a
-  // pinning failure. It is a (somewhat) human-readable string.
-  std::string pinning_failure_log;
-
   // List of SignedCertificateTimestamps and their corresponding validation
   // status.
   SignedCertificateTimestampAndStatusList signed_certificate_timestamps;
@@ -111,7 +102,7 @@ class NET_EXPORT SSLInfo {
       ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
 
   // OCSP stapling details.
-  OCSPVerifyResult ocsp_result;
+  bssl::OCSPVerifyResult ocsp_result;
 
   // True if there was a certificate error which should be treated as fatal,
   // and false otherwise.

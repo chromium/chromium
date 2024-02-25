@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ERROR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ERROR_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -23,22 +24,22 @@ class RTCError final : public DOMException {
   explicit RTCError(webrtc::RTCError);
 
   const String& errorDetail() const;
-  absl::optional<int32_t> sdpLineNumber() const { return sdp_line_number_; }
-  absl::optional<int32_t> httpRequestStatusCode() const {
+  std::optional<int32_t> sdpLineNumber() const { return sdp_line_number_; }
+  std::optional<int32_t> httpRequestStatusCode() const {
     return http_request_status_code_;
   }
-  absl::optional<int32_t> sctpCauseCode() const { return sctp_cause_code_; }
-  absl::optional<uint32_t> receivedAlert() const { return received_alert_; }
-  absl::optional<uint32_t> sentAlert() const { return sent_alert_; }
+  std::optional<int32_t> sctpCauseCode() const { return sctp_cause_code_; }
+  std::optional<uint32_t> receivedAlert() const { return received_alert_; }
+  std::optional<uint32_t> sentAlert() const { return sent_alert_; }
 
  private:
   // idl enum RTCErrorDetailType.
   String error_detail_;
-  absl::optional<int32_t> sdp_line_number_;
-  absl::optional<int32_t> http_request_status_code_;
-  absl::optional<int32_t> sctp_cause_code_;
-  absl::optional<uint32_t> received_alert_;
-  absl::optional<uint32_t> sent_alert_;
+  std::optional<int32_t> sdp_line_number_;
+  std::optional<int32_t> http_request_status_code_;
+  std::optional<int32_t> sctp_cause_code_;
+  std::optional<uint32_t> received_alert_;
+  std::optional<uint32_t> sent_alert_;
 };
 
 }  // namespace blink

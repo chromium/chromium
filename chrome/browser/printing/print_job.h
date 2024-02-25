@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -13,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/global_routing_id.h"
@@ -25,7 +27,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -196,6 +198,13 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // it.
   void UpdatePrintedDocument(scoped_refptr<PrintedDocument> new_document);
 
+#if BUILDFLAG(IS_WIN)
+  // Virtual to support testing.
+  virtual void OnPdfPageConverted(uint32_t page_index,
+                                  float scale_factor,
+                                  std::unique_ptr<MetafilePlayer> metafile);
+#endif
+
  private:
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(PrintJobTest, PageRangeMapping);
@@ -238,9 +247,6 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
       const GURL& url);
 
   void OnPdfConversionStarted(uint32_t page_count);
-  void OnPdfPageConverted(uint32_t page_index,
-                          float scale_factor,
-                          std::unique_ptr<MetafilePlayer> metafile);
 
   // Helper method to do the work for ResetPageMapping(). Split for unit tests.
   static std::vector<uint32_t> GetFullPageMapping(
@@ -259,10 +265,13 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
 
   // The global PrintJobManager. May be null in testing contexts
   // only. Otherwise guaranteed to outlive this object.
-  raw_ptr<PrintJobManager, DanglingUntriaged> print_job_manager_ = nullptr;
+  raw_ptr<PrintJobManager> print_job_manager_ = nullptr;
 
   // The printed document.
   scoped_refptr<PrintedDocument> document_;
+
+  // Time at start of printing.  Used for metrics.
+  std::optional<base::TimeTicks> printing_start_time_;
 
   // Is the worker thread printing.
   bool is_job_pending_ = false;
@@ -275,7 +284,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   class PdfConversionState;
   std::unique_ptr<PdfConversionState> pdf_conversion_state_;
   std::vector<uint32_t> pdf_page_mapping_;
-  absl::optional<bool> use_skia_;
+  std::optional<bool> use_skia_;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

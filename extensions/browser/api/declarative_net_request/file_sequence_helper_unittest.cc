@@ -15,11 +15,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/version.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
-#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
+#include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -30,24 +31,20 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace {
 
 api::declarative_net_request::Rule GetAPIRule(const TestRule& rule) {
-  api::declarative_net_request::Rule result;
   std::u16string error;
-  EXPECT_TRUE(api::declarative_net_request::Rule::Populate(rule.ToValue(),
-                                                           result, error))
-      << error;
-  EXPECT_TRUE(error.empty()) << error;
-  return result;
+  auto result = api::declarative_net_request::Rule::FromValue(rule.ToValue());
+  EXPECT_TRUE(result.has_value()) << result.error();
+  return std::move(result).value_or(api::declarative_net_request::Rule());
 }
 
 struct TestLoadRulesetInfo {
   bool has_new_checksum = false;
-  absl::optional<bool> indexing_successful;
-  absl::optional<LoadRulesetResult> load_result;
+  std::optional<bool> indexing_successful;
+  std::optional<LoadRulesetResult> load_result;
 };
 
 struct TestCase {
@@ -85,13 +82,13 @@ class FileSequenceHelperTest : public ExtensionsTest {
       std::vector<api::declarative_net_request::Rule> rules_to_add,
       ReadJSONRulesResult::Status expected_read_status,
       UpdateDynamicRulesStatus expected_update_status,
-      absl::optional<std::string> expected_error,
+      std::optional<std::string> expected_error,
       bool expected_did_load_successfully) {
     base::RunLoop run_loop;
     auto add_rules_callback = base::BindOnce(
         [](base::RunLoop* run_loop, bool expected_did_load_successfully,
-           absl::optional<std::string> expected_error, LoadRequestData data,
-           absl::optional<std::string> error) {
+           std::optional<std::string> expected_error, LoadRequestData data,
+           std::optional<std::string> error) {
           EXPECT_EQ(1u, data.rulesets.size());
           EXPECT_EQ(expected_error, error) << error.value_or("no actual error");
           EXPECT_EQ(expected_did_load_successfully,
@@ -101,7 +98,7 @@ class FileSequenceHelperTest : public ExtensionsTest {
         &run_loop, expected_did_load_successfully, expected_error);
 
     ExtensionId extension_id = crx_file::id_util::GenerateId("dummy_extension");
-    LoadRequestData data(extension_id);
+    LoadRequestData data(extension_id, base::Version("1.0"));
     data.rulesets.emplace_back(std::move(source));
 
     // Unretained is safe because |helper_| outlives the |add_rules_task|.
@@ -109,7 +106,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
         &FileSequenceHelper::UpdateDynamicRules,
         base::Unretained(helper_.get()), std::move(data),
         /* rule_ids_to_remove */ std::vector<int>(), std::move(rules_to_add),
-        RulesCountPair(GetDynamicAndSessionRuleLimit(), GetRegexRuleLimit()),
+        RuleCounts(GetDynamicRuleLimit(), GetUnsafeDynamicRuleLimit(),
+                   GetRegexRuleLimit()),
         std::move(add_rules_callback));
 
     base::HistogramTester tester;
@@ -123,7 +121,7 @@ class FileSequenceHelperTest : public ExtensionsTest {
   }
 
   void TestLoadRulesets(const std::vector<TestCase>& test_cases) {
-    LoadRequestData data(GenerateDummyExtensionID());
+    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"));
     for (const auto& test_case : test_cases) {
       data.rulesets.emplace_back(test_case.source.Clone());
       data.rulesets.back().set_expected_checksum(test_case.checksum);
@@ -166,7 +164,7 @@ class FileSequenceHelperTest : public ExtensionsTest {
   }
 
   void TestNoRulesetsToLoad() {
-    LoadRequestData data(GenerateDummyExtensionID());
+    LoadRequestData data(GenerateDummyExtensionID(), base::Version("1.0"));
 
     base::RunLoop run_loop;
     auto load_ruleset_callback = base::BindOnce(
@@ -313,7 +311,7 @@ TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
     TestAddDynamicRules(source.Clone(), std::move(api_rules),
                         ReadJSONRulesResult::Status::kFileDoesNotExist,
                         UpdateDynamicRulesStatus::kSuccess,
-                        absl::nullopt /* expected_error */,
+                        std::nullopt /* expected_error */,
                         true /* expected_did_load_successfully*/);
   }
 
@@ -354,11 +352,10 @@ TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
     TestAddDynamicRules(source.Clone(), std::move(api_rules),
                         ReadJSONRulesResult::Status::kJSONParseError,
                         UpdateDynamicRulesStatus::kSuccess,
-                        absl::nullopt /* expected_error */,
+                        std::nullopt /* expected_error */,
                         true /* expected_did_load_successfully*/);
   }
 }
 
 }  // namespace
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

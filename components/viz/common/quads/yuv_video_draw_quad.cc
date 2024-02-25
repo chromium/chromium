@@ -35,7 +35,7 @@ void YUVVideoDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                               float multiplier,
                               uint32_t bits,
                               gfx::ProtectedVideoType video_type,
-                              absl::optional<gfx::HDRMetadata> metadata) {
+                              std::optional<gfx::HDRMetadata> metadata) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kYuvVideoContent,
                    rect, visible_rect, needs_blending);
 
@@ -77,7 +77,7 @@ void YUVVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                               float multiplier,
                               uint32_t bits,
                               gfx::ProtectedVideoType video_type,
-                              absl::optional<gfx::HDRMetadata> metadata) {
+                              std::optional<gfx::HDRMetadata> metadata) {
   SetNew(shared_quad_state, rect, visible_rect, needs_blending,
          video_frame_coded_size, video_frame_visible_rect,
          video_frame_uv_sample_size, y_plane_resource_id, u_plane_resource_id,

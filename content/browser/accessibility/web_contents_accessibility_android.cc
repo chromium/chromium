@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/AccessibilityNodeInfoBuilder_jni.h"
+#include "content/public/android/content_jni_headers/AssistDataBuilder_jni.h"
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 #include "content/public/common/content_features.h"
 #include "net/base/data_url.h"
@@ -221,6 +222,23 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
   connector_ = nullptr;
 }
 
+WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& jassist_data_builder,
+    WebContents* web_contents)
+    : java_ref_(env, obj),
+      java_adb_ref_(env, jassist_data_builder),
+      web_contents_(static_cast<WebContentsImpl*>(web_contents)) {
+  // A Connector is not required for a simple snapshot.
+  connector_ = nullptr;
+
+  // Stubbed method.
+  if (!jassist_data_builder.is_null()) {
+    Java_AssistDataBuilder_stubbed(env, jassist_data_builder);
+  }
+}
+
 WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -260,9 +278,6 @@ void WebContentsAccessibilityAndroid::DeleteEarly(JNIEnv* env) {
 
 void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
     JNIEnv* env) {
-  // This method should only be called if the Auto-Disable feature is enabled.
-  DCHECK(base::FeatureList::IsEnabled(::features::kAutoDisableAccessibilityV2));
-
   // This method should only be called when |snapshot_root_manager_| is null,
   // which means this instance was constructed via a web contents and not an
   // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
@@ -294,9 +309,6 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
 void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
-  // This method should only be called if the Auto-Disable feature is enabled.
-  DCHECK(base::FeatureList::IsEnabled(::features::kAutoDisableAccessibilityV2));
-
   // This method should only be called when |snapshot_root_manager_| is null,
   // which means this instance was constructed via a web contents and not an
   // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
@@ -320,13 +332,6 @@ void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
   if (root_manager) {
     root_manager->set_web_contents_accessibility(GetWeakPtr());
   }
-
-  // The AXMode should have been set when the accessibility state was changed,
-  // so by this method it should be something other than kNone.
-  BrowserAccessibilityStateImpl* accessibility_state =
-      BrowserAccessibilityStateImpl::GetInstance();
-  DCHECK(accessibility_state->GetAccessibilityMode().flags() !=
-         ui::AXMode::kNone);
 }
 
 jboolean WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {
@@ -337,15 +342,6 @@ void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
     JNIEnv* env,
     jboolean allow_image_descriptions) {
   allow_image_descriptions_ = allow_image_descriptions;
-}
-
-void WebContentsAccessibilityAndroid::SetPasswordRules(
-    JNIEnv* env,
-    jboolean should_respect_displayed_password_text,
-    jboolean should_expose_password_text) {
-  should_respect_displayed_password_text_ =
-      should_respect_displayed_password_text;
-  should_expose_password_text_ = should_expose_password_text;
 }
 
 void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
@@ -712,6 +708,214 @@ static size_t ActualUnignoredChildCount(const ui::AXNode* node) {
   return count;
 }
 
+// -----------------------------------------------
+// [EXPERIMENTAL] These methods should only be called when the JNI experiment is
+// running. We unfortunately need to keep these separate since the JNI method
+// signatures do not align.
+
+void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect_exp(
+    JNIEnv* env,
+    const ScopedJavaLocalRef<jobject>& obj,
+    jint unique_id,
+    BrowserAccessibilityAndroid* node) {
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager) {
+    return;
+  }
+
+  ui::AXOffscreenResult offscreen_result = ui::AXOffscreenResult::kOnscreen;
+  float dip_scale = 1 / root_manager->device_scale_factor();
+  gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
+      node->GetUnclippedRootFrameBoundsRect(&offscreen_result), dip_scale,
+      dip_scale);
+  gfx::Rect parent_relative_rect = absolute_rect;
+  if (node->PlatformGetParent()) {
+    gfx::Rect parent_rect = gfx::ScaleToEnclosingRect(
+        node->PlatformGetParent()->GetUnclippedRootFrameBoundsRect(), dip_scale,
+        dip_scale);
+    parent_relative_rect.Offset(-parent_rect.OffsetFromOrigin());
+  }
+  bool is_offscreen = offscreen_result == ui::AXOffscreenResult::kOffscreen;
+
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoLocation_exp(
+      env, obj, unique_id, absolute_rect.x(), absolute_rect.y(),
+      parent_relative_rect.x(), parent_relative_rect.y(), absolute_rect.width(),
+      absolute_rect.height(), is_offscreen);
+}
+
+jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo_exp(
+    JNIEnv* env,
+    jint unique_id) {
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager) {
+    return false;
+  }
+
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return false;
+  }
+
+  ScopedJavaLocalRef<jobject> obj = java_anib_ref_.get(env);
+  if (obj.is_null()) {
+    return false;
+  }
+
+  // Update cached nodes by providing new enclosing Rects
+  UpdateAccessibilityNodeInfoBoundsRect_exp(env, obj, unique_id, node);
+
+  return true;
+}
+
+jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo_exp(
+    JNIEnv* env,
+    jint unique_id) {
+  if (!GetRootBrowserAccessibilityManager()) {
+    return false;
+  }
+
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return false;
+  }
+
+  ScopedJavaLocalRef<jobject> obj = java_anib_ref_.get(env);
+  if (obj.is_null()) {
+    return false;
+  }
+
+  int parent_id = ui::kAXAndroidInvalidViewId;
+  auto* parent_node =
+      static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
+  if (parent_node) {
+    parent_id = parent_node->unique_id();
+  }
+
+  // Build a vector of child ids
+  std::vector<int> child_ids;
+  for (const auto& child : node->PlatformChildren()) {
+    const auto& android_node =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    child_ids.push_back(android_node.unique_id());
+  }
+  if (child_ids.size()) {
+    Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoChildren_exp(
+        env, obj, unique_id, base::android::ToJavaIntArray(env, child_ids));
+  }
+
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBooleanAttributes_exp(
+      env, obj, unique_id, node->IsReportingCheckable(), node->IsChecked(),
+      node->IsClickable(), node->IsContentInvalid(), node->IsEnabled(),
+      node->IsFocusable(), node->IsFocused(), node->HasImage(),
+      node->IsPasswordField(), node->IsScrollable(), node->IsSelected(),
+      node->IsVisibleToUser(), node->HasCharacterLocations());
+
+  Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions_exp(
+      env, obj, unique_id, node->CanScrollForward(), node->CanScrollBackward(),
+      node->CanScrollUp(), node->CanScrollDown(), node->CanScrollLeft(),
+      node->CanScrollRight(), node->IsClickable(), node->IsTextField(),
+      node->IsEnabled(), node->IsFocusable(), node->IsFocused(),
+      node->IsCollapsed(), node->IsExpanded(), node->HasNonEmptyValue(),
+      !node->GetTextContentUTF16().empty(), node->IsSeekControl(),
+      node->IsFormDescendant());
+
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes_exp(
+      env, obj, unique_id, parent_id,
+      GetCanonicalJNIString(env, node->GetClassName()),
+      GetCanonicalJNIString(env, node->GetRoleString()),
+      GetCanonicalJNIString(env, node->GetRoleDescription()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
+      node->CanOpenPopup(), node->IsMultiLine(), node->AndroidInputType(),
+      node->AndroidLiveRegionType(),
+      GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()),
+      node->ClickableScore(), GetCanonicalJNIString(env, node->GetCSSDisplay()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
+      GetCanonicalJNIString(env, node->GetBrailleRoleDescription()));
+
+  ScopedJavaLocalRef<jintArray> suggestion_starts_java;
+  ScopedJavaLocalRef<jintArray> suggestion_ends_java;
+  ScopedJavaLocalRef<jobjectArray> suggestion_text_java;
+  std::vector<int> suggestion_starts;
+  std::vector<int> suggestion_ends;
+  node->GetSuggestions(&suggestion_starts, &suggestion_ends);
+  if (suggestion_starts.size() && suggestion_ends.size()) {
+    suggestion_starts_java = base::android::ToJavaIntArray(
+        env, suggestion_starts.data(), suggestion_starts.size());
+    suggestion_ends_java = base::android::ToJavaIntArray(
+        env, suggestion_ends.data(), suggestion_ends.size());
+
+    // Currently we don't retrieve the text of each suggestion, so
+    // store a blank string for now.
+    std::vector<std::string> suggestion_text(suggestion_starts.size());
+    suggestion_text_java =
+        base::android::ToJavaArrayOfStrings(env, suggestion_text);
+  }
+
+  bool is_link = ui::IsLink(node->GetRole());
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText_exp(
+      env, obj, unique_id,
+      base::android::ConvertUTF16ToJavaString(env, node->GetTextContentUTF16()),
+      is_link
+          ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
+          : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
+      is_link, node->IsTextField(),
+      GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
+                                     ax::mojom::StringAttribute::kLanguage)),
+      suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
+      base::android::ConvertUTF16ToJavaString(env,
+                                              node->GetStateDescription()));
+
+  std::u16string element_id;
+  if (node->GetHtmlAttribute("id", &element_id)) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoViewIdResourceName_exp(
+        env, obj, unique_id,
+        base::android::ConvertUTF16ToJavaString(env, element_id));
+  }
+
+  UpdateAccessibilityNodeInfoBoundsRect_exp(env, obj, unique_id, node);
+
+  if (node->IsCollection()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoCollectionInfo_exp(
+        env, obj, unique_id, node->RowCount(), node->ColumnCount(),
+        node->IsHierarchical());
+  }
+  if (node->IsCollectionItem() || node->IsTableHeader()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoCollectionItemInfo_exp(
+        env, obj, unique_id, node->RowIndex(), node->RowSpan(),
+        node->ColumnIndex(), node->ColumnSpan(), node->IsTableHeader());
+  }
+
+  // For sliders that are numeric, use the AccessibilityNodeInfo.RangeInfo
+  // object as expected. But for non-numeric ranges (e.g. "small", "medium",
+  // "large"), do not set the RangeInfo object and instead rely on announcing
+  // the aria-valuetext value, which will be included in the node's text value.
+  if (node->IsRangeControlWithoutAriaValueText()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoRangeInfo_exp(
+        env, obj, unique_id, node->AndroidRangeType(), node->RangeMin(),
+        node->RangeMax(), node->RangeCurrentValue());
+  }
+
+  if (ui::IsDialog(node->GetRole())) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoPaneTitle_exp(
+        env, obj, unique_id,
+        base::android::ConvertUTF16ToJavaString(
+            env, node->GetDialogModalMessageText()));
+  }
+
+  if (node->IsTextField()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoSelectionAttrs_exp(
+        env, obj, unique_id, node->GetSelectionStart(),
+        node->GetSelectionEnd());
+  }
+
+  return true;
+}
+
+// -----------------------------------------------
+
 void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
     JNIEnv* env,
     const ScopedJavaLocalRef<jobject>& obj,
@@ -796,8 +1000,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
   if (child_ids.size()) {
     Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoChildren(
-        env, obj, info,
-        base::android::ToJavaIntArray(env, child_ids.data(), child_ids.size()));
+        env, obj, info, base::android::ToJavaIntArray(env, child_ids));
   }
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBooleanAttributes(
@@ -805,7 +1008,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->IsChecked(), node->IsClickable(), node->IsContentInvalid(),
       node->IsEnabled(), node->IsFocusable(), node->IsFocused(),
       node->HasImage(), node->IsPasswordField(), node->IsScrollable(),
-      node->IsSelected(), node->IsVisibleToUser());
+      node->IsSelected(), node->IsVisibleToUser(),
+      node->HasCharacterLocations());
 
   Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions(
       env, obj, info, unique_id, node->CanScrollForward(),
@@ -816,42 +1020,20 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->HasNonEmptyValue(), !node->GetTextContentUTF16().empty(),
       node->IsSeekControl(), node->IsFormDescendant());
 
-  // If we are not doing performance testing, then use the cache.
-  if (!base::FeatureList::IsEnabled(
-          ::features::kAccessibilityPerformanceTesting)) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
-        env, obj, info, unique_id, parent_id,
-        GetCanonicalJNIString(env, node->GetClassName()),
-        GetCanonicalJNIString(env, node->GetRoleString()),
-        GetCanonicalJNIString(env, node->GetRoleDescription()),
-        base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
-        base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
-        node->CanOpenPopup(), node->IsMultiLine(), node->AndroidInputType(),
-        node->AndroidLiveRegionType(),
-        GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()),
-        node->ClickableScore(),
-        GetCanonicalJNIString(env, node->GetCSSDisplay()),
-        base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
-        GetCanonicalJNIString(env, node->GetBrailleRoleDescription()));
-  } else {
-    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
-        env, obj, info, unique_id, parent_id,
-        base::android::ConvertUTF8ToJavaString(env, node->GetClassName()),
-        base::android::ConvertUTF8ToJavaString(env, node->GetRoleString()),
-        base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetRoleDescription()),
-        base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
-        base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
-        node->CanOpenPopup(), node->IsMultiLine(), node->AndroidInputType(),
-        node->AndroidLiveRegionType(),
-        base::android::ConvertUTF16ToJavaString(
-            env, node->GetContentInvalidErrorMessage()),
-        node->ClickableScore(),
-        base::android::ConvertUTF8ToJavaString(env, node->GetCSSDisplay()),
-        base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
-        base::android::ConvertUTF16ToJavaString(
-            env, node->GetBrailleRoleDescription()));
-  }
+      env, obj, info, unique_id, parent_id,
+      GetCanonicalJNIString(env, node->GetClassName()),
+      GetCanonicalJNIString(env, node->GetRoleString()),
+      GetCanonicalJNIString(env, node->GetRoleDescription()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
+      node->CanOpenPopup(), node->IsMultiLine(), node->AndroidInputType(),
+      node->AndroidLiveRegionType(),
+      GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()),
+      node->ClickableScore(),
+      GetCanonicalJNIString(env, node->GetCSSDisplay()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
+      GetCanonicalJNIString(env, node->GetBrailleRoleDescription()));
 
   ScopedJavaLocalRef<jintArray> suggestion_starts_java;
   ScopedJavaLocalRef<jintArray> suggestion_ends_java;
@@ -872,32 +1054,19 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         base::android::ToJavaArrayOfStrings(env, suggestion_text);
   }
 
-  // If we are not doing performance testing, then use the cache.
-  if (!base::FeatureList::IsEnabled(
-          ::features::kAccessibilityPerformanceTesting)) {
-    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
-        env, obj, info,
-        base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetTextContentUTF16()),
-        ui::IsLink(node->GetRole()), node->IsTextField(),
-        GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
-                                       ax::mojom::StringAttribute::kLanguage)),
-        suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
-        base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetStateDescription()));
-  } else {
-    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
-        env, obj, info,
-        base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetTextContentUTF16()),
-        ui::IsLink(node->GetRole()), node->IsTextField(),
-        base::android::ConvertUTF16ToJavaString(
-            env, node->GetInheritedString16Attribute(
-                     ax::mojom::StringAttribute::kLanguage)),
-        suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
-        base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetStateDescription()));
-  }
+  bool is_link = ui::IsLink(node->GetRole());
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
+      env, obj, info,
+      base::android::ConvertUTF16ToJavaString(env, node->GetTextContentUTF16()),
+      is_link
+          ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
+          : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
+      is_link, node->IsTextField(),
+      GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
+                                     ax::mojom::StringAttribute::kLanguage)),
+      suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
+      base::android::ConvertUTF16ToJavaString(env,
+                                              node->GetStateDescription()));
 
   std::u16string element_id;
   if (node->GetHtmlAttribute("id", &element_id)) {
@@ -907,10 +1076,6 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
 
   UpdateAccessibilityNodeInfoBoundsRect(env, obj, info, unique_id, node);
-
-  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoOAttributes(
-      env, obj, info, node->HasCharacterLocations(), node->HasImage(),
-      base::android::ConvertUTF16ToJavaString(env, node->GetHint()));
 
   if (node->IsCollection()) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoCollectionInfo(
@@ -961,24 +1126,13 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
   if (obj.is_null())
     return false;
 
-  // If we are not doing performance testing, then use the cache.
-  if (!base::FeatureList::IsEnabled(
-          ::features::kAccessibilityPerformanceTesting)) {
-    // We will always set boolean, classname, list and scroll attributes.
-    Java_WebContentsAccessibilityImpl_setAccessibilityEventBaseAttributes(
-        env, obj, event, node->IsChecked(), node->IsEnabled(),
-        node->IsPasswordField(), node->IsScrollable(), node->GetItemIndex(),
-        node->GetItemCount(), node->GetScrollX(), node->GetScrollY(),
-        node->GetMaxScrollX(), node->GetMaxScrollY(),
-        GetCanonicalJNIString(env, node->GetClassName()));
-  } else {
-    Java_WebContentsAccessibilityImpl_setAccessibilityEventBaseAttributes(
-        env, obj, event, node->IsChecked(), node->IsEnabled(),
-        node->IsPasswordField(), node->IsScrollable(), node->GetItemIndex(),
-        node->GetItemCount(), node->GetScrollX(), node->GetScrollY(),
-        node->GetMaxScrollX(), node->GetMaxScrollY(),
-        base::android::ConvertUTF8ToJavaString(env, node->GetClassName()));
-  }
+  // We will always set boolean, classname, list and scroll attributes.
+  Java_WebContentsAccessibilityImpl_setAccessibilityEventBaseAttributes(
+      env, obj, event, node->IsChecked(), node->IsEnabled(),
+      node->IsPasswordField(), node->IsScrollable(), node->GetItemIndex(),
+      node->GetItemCount(), node->GetScrollX(), node->GetScrollY(),
+      node->GetMaxScrollX(), node->GetMaxScrollY(),
+      GetCanonicalJNIString(env, node->GetClassName()));
 
   switch (event_type) {
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGED: {
@@ -1545,6 +1699,18 @@ void WebContentsAccessibilityAndroid::UpdateFrameInfo(float page_scale) {
   frame_info_initialized_ = true;
 }
 
+void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& view_structure_root,
+    const base::android::JavaParamRef<jobject>& on_done_callback) {
+  // This method should only be called by the unified snapshots feature.
+  CHECK(base::FeatureList::IsEnabled(features::kAccessibilityUnifiedSnapshots));
+
+  on_done_callback_ = std::move(on_done_callback);
+
+  // Stubbed.
+}
+
 base::WeakPtr<WebContentsAccessibilityAndroid>
 WebContentsAccessibilityAndroid::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -1571,6 +1737,18 @@ jlong JNI_WebContentsAccessibilityImpl_Init(
       env, obj, web_contents, jaccessibility_node_info_builder));
 }
 
+jlong JNI_WebContentsAccessibilityImpl_InitForAssistData(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& jassist_data_builder) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);
+
+  return reinterpret_cast<intptr_t>(new WebContentsAccessibilityAndroid(
+      env, obj, jassist_data_builder, web_contents));
+}
+
 void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -1580,10 +1758,10 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
 
-  // The AXMode flags will be set according to enabled feature flag and what is
-  // needed by the current system as indicated by the parameters.
-  if (!accessibility_state->IsPerformanceFilteringAllowed() ||
-      !features::IsAccessibilityPerformanceFilteringEnabled()) {
+  // The AXMode flags will be set according to requirements of the current
+  // system based on running services. This can be disabled with an enterprise
+  // policy, in which case accessibility becomes an all-or-none approach.
+  if (!accessibility_state->IsPerformanceFilteringAllowed()) {
     // When the browser is not yet accessible, then set the AXMode to
     // |ui::kAXModeComplete| for all web contents.
     if (!accessibility_state->IsAccessibleBrowser()) {
@@ -1592,10 +1770,15 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
     return;
   }
 
-  // If the AccessibilityPerformanceFiltering feature flag has been enabled,
-  // then set |ui::kAXModeComplete| if a screen reader is present,
-  // |ui::kAXModeFormControls| if form controls mode is enabled, and
-  // |ui::kAXModeBasic| otherwise.
+  // Set the AXMode based on currently running services, sent from Java-side
+  // code and will fit into one of the below categories:
+  //
+  //    1. Screenreader running - |ui::kAXModeComplete|
+  //    2. Only password manager running - |ui::kAXModeFormControls|
+  //    3. Some accessibility services running that need more information than a
+  //       password manager, but not as much as a screenreader -
+  //       |ui::kAXModeBasic|
+  //
   if (is_screen_reader_enabled) {
     // Remove form controls experimental mode to preserve screen reader mode.
     ui::AXMode flags_to_remove(ui::AXMode::kNone,

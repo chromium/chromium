@@ -11,6 +11,8 @@ namespace web_app {
 
 AllAppsLockDescription::AllAppsLockDescription()
     : LockDescription({}, LockDescription::Type::kAllAppsLock) {}
+AllAppsLockDescription::AllAppsLockDescription(AllAppsLockDescription&&) =
+    default;
 AllAppsLockDescription::~AllAppsLockDescription() = default;
 
 AllAppsLock::AllAppsLock(base::WeakPtr<WebAppLockManager> lock_manager,

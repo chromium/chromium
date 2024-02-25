@@ -27,7 +27,7 @@ class LocalTabGroupListener {
       tab_groups::TabGroupId local_id,
       base::Uuid saved_guid,
       SavedTabGroupModel* model,
-      std::vector<std::pair<content::WebContents*, base::Uuid>> mapping);
+      std::map<content::WebContents*, base::Uuid> web_contents_to_uuid);
   virtual ~LocalTabGroupListener();
 
   // Pauses listening to changes to the local tab group. Call this before
@@ -40,6 +40,8 @@ class LocalTabGroupListener {
   // CHECKed).
   void ResumeTracking();
 
+  bool IsTrackingPaused() const;
+
   void UpdateVisualDataFromLocal(
       const TabGroupChange::VisualsChange* visuals_change);
 
@@ -47,6 +49,10 @@ class LocalTabGroupListener {
   void AddWebContentsFromLocal(content::WebContents* web_contents,
                                TabStripModel* tab_strip_model,
                                int index);
+
+  // Replaces the webcontents associated with the SavedTabGroupTab.
+  void OnReplaceWebContents(content::WebContents* old_web_contents,
+                            content::WebContents* new_web_contents);
 
   // Moves the SavedTab associated with `web_contents` in the TabStripModel to
   // its new relative position in the SavedTabGroup.
@@ -89,9 +95,15 @@ class LocalTabGroupListener {
   void OpenWebContentsFromSync(SavedTabGroupTab tab,
                                Browser* browser,
                                int index_in_tabstrip);
+
   // Removes any tabs in the local group that aren't in the saved group.
   void RemoveLocalWebContentsNotInSavedGroup();
-  void RemoveWebContentsFromSync(content::WebContents* contents);
+
+  // Removes the WebContents from the mapping and removes the corresponding tab
+  // from the group in the Tabstrip then closing it if should_close_tab is true.
+  void RemoveWebContentsFromSync(content::WebContents* contents,
+                                 bool should_close_tab);
+
   const SavedTabGroup* saved_group() const { return model_->Get(saved_guid_); }
 
   // Whether local tab group changes will be ignored (`paused_` is true) or

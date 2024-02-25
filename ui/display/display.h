@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -170,6 +171,9 @@ class DISPLAY_EXPORT Display final {
   const gfx::Size& size() const { return bounds_.size(); }
   const gfx::Size& work_area_size() const { return work_area_.size(); }
 
+  // Returns the work area relative to this display's origin.
+  gfx::Rect GetLocalWorkArea() const;
+
   // Returns the work area insets.
   gfx::Insets GetWorkAreaInsets() const;
 
@@ -267,8 +271,8 @@ class DISPLAY_EXPORT Display final {
   void set_is_monochrome(bool is_monochrome) { is_monochrome_ = is_monochrome; }
 
   // The display frequency of the monitor.
-  int display_frequency() const { return display_frequency_; }
-  void set_display_frequency(int display_frequency) {
+  float display_frequency() const { return display_frequency_; }
+  void set_display_frequency(float display_frequency) {
     display_frequency_ = display_frequency;
   }
 
@@ -325,7 +329,7 @@ class DISPLAY_EXPORT Display final {
   gfx::Rect work_area_;
   float device_scale_factor_;
   Rotation rotation_ = ROTATE_0;
-  absl::optional<Rotation> panel_rotation_;
+  std::optional<Rotation> panel_rotation_;
   TouchSupport touch_support_ = TouchSupport::UNKNOWN;
   AccelerometerSupport accelerometer_support_ = AccelerometerSupport::UNKNOWN;
   gfx::Size maximum_cursor_size_;
@@ -334,7 +338,7 @@ class DISPLAY_EXPORT Display final {
   int depth_per_component_;
   bool is_monochrome_ = false;
   bool detected_ = true;
-  int display_frequency_ = 0;
+  float display_frequency_ = 0;
   std::string label_;
   uint32_t audio_formats_ = 0;
 };

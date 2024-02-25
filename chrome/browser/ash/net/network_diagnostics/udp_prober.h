@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ash::network_diagnostics {
@@ -35,9 +36,6 @@ class UdpProber {
     kTimeout,
     kSuccess,
   };
-
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
   using UdpProbeCompleteCallback =
       base::OnceCallback<void(int result, ProbeExitEnum probe_exit_enum)>;
 
@@ -46,7 +44,7 @@ class UdpProber {
   // Creates a UdpProber instance which resolves |host_port_pair| and starts the
   // UDP probe.  See implementation for more details.
   static std::unique_ptr<UdpProber> Start(
-      NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       base::span<const uint8_t> data,
       net::NetworkTrafficAnnotationTag tag,

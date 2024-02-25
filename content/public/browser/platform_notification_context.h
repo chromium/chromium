@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/notification_resource_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -154,7 +154,7 @@ class PlatformNotificationContext
   // the number of closed notifications when the operation has completed.
   virtual void DeleteAllNotificationDataWithTag(
       const std::string& tag,
-      absl::optional<bool> is_shown_by_browser,
+      std::optional<bool> is_shown_by_browser,
       const GURL& origin,
       DeleteAllResultCallback callback) = 0;
 

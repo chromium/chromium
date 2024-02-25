@@ -11,8 +11,13 @@
 extern NSString* const kVoiceSearchInputAccessoryViewID;
 // Height and width for the paste button.
 extern CGFloat const kPasteButtonSize;
+extern CGFloat const kOmniboxAssistiveKeyboardSymbolPointSize;
 
 @protocol OmniboxAssistiveKeyboardDelegate;
+
+// Updates the appearance of the Lens button after the ui interface environment
+// changes.
+void UpdateLensButtonAppearance(UIButton* button);
 
 // Returns the leading buttons of the assistive view.
 NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(

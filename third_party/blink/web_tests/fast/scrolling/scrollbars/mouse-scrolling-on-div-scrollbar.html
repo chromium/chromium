@@ -6,6 +6,9 @@
 <script src="../../../resources/blink-coordinates-util.js"></script>
 <script src="../../../resources/scrollbar-util.js"></script>
 <script src="resources/mouse-scrolling-on-div-scrollbar.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <style>
   .appearance {
     width: 100px;
@@ -36,23 +39,14 @@
     internals.settings.setScrollAnimatorEnabled(false);
 
   const scroller = document.getElementById("standard");
-  const TRACK_WIDTH = calculateScrollbarThickness();
 
   assert_equals(scroller.clientHeight, scroller.clientWidth,
     "This test assumes that the height and width of the scroller are equivalent. If this changes please update SCROLL_AMOUNT to be X/Y specific");
 
-  const params = {
-    scroller: scroller,
-    TRACK_WIDTH: TRACK_WIDTH,
-    BUTTON_WIDTH: TRACK_WIDTH,
-    SCROLL_CORNER: TRACK_WIDTH,
-    SCROLL_AMOUNT: getScrollbarButtonScrollDelta(scroller).y
-  }
-
   promise_test(async () => {
-    await testArrows(params);
+    await testArrows(scroller);
   }, "Test mouse click on non-custom composited div scrollbar arrows.");
   promise_test(async () => {
-    await testTrackparts(params);
+    await testTrackparts(scroller);
   }, "Test mouse click on non-custom composited div scrollbar empty trackparts.");
 </script>

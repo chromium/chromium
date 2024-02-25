@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gl_workarounds.h"
 
 namespace gl {
 
@@ -26,7 +25,11 @@ GL_EXPORT void ClearBindingsGL();
 bool SetNullDrawGLBindingsEnabled(bool enabled);
 bool GetNullDrawBindingsEnabled();
 
-void SetCurrentGL(CurrentGL* current);
+// This is exported from //ui/gl/gl_bindings.h to retrieve GL bindings.
+GL_EXPORT CurrentGL* GetThreadLocalCurrentGL();
+
+// This is only used internally in //ui/gl to set GL bindings from GLContext.
+void SetThreadLocalCurrentGL(CurrentGL* current);
 
 class GL_EXPORT GLApiBase : public GLApi {
  public:
@@ -126,10 +129,6 @@ class GL_EXPORT RealGLApi : public GLApiBase {
                       void* pixels) override;
 
   void glClearFn(GLbitfield mask) override;
-  void glClearColorFn(GLclampf red,
-                      GLclampf green,
-                      GLclampf blue,
-                      GLclampf alpha) override;
   void glDrawArraysFn(GLenum mode, GLint first, GLsizei count) override;
   void glDrawElementsFn(GLenum mode,
                         GLsizei count,
@@ -141,7 +140,6 @@ class GL_EXPORT RealGLApi : public GLApiBase {
 
   void glUseProgramFn(GLuint program) override;
 
-  void set_gl_workarounds(const GLWorkarounds& workarounds);
   void set_version(std::unique_ptr<GLVersionInfo> version);
   void ClearCachedGLExtensions();
 
@@ -155,7 +153,6 @@ class GL_EXPORT RealGLApi : public GLApiBase {
   std::vector<std::string> filtered_exts_;
   std::string filtered_exts_str_;
 
-  GLWorkarounds gl_workarounds_;
   std::unique_ptr<GLVersionInfo> version_;
 };
 

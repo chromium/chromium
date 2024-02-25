@@ -7,38 +7,38 @@
  * states
  */
 
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icons.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../os_settings_icons.css.js';
 import './esim_install_error_dialog.js';
 
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
-import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/ash/common/cellular_setup/esim_manager_listener_behavior.js';
+import {ESimManagerListenerMixin} from 'chrome://resources/ash/common/cellular_setup/esim_manager_listener_mixin.js';
 import {getEuicc, getPendingESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getSimSlotCount} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {CrosNetworkConfigInterface, GlobalPolicy, InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
 import {MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
 import {MultiDeviceFeatureState, MultiDevicePageContentData} from '../multidevice_page/multidevice_constants.js';
 
@@ -51,13 +51,10 @@ declare global {
 }
 
 const CellularNetworksListElementBase =
-    mixinBehaviors(
-        [ESimManagerListenerBehavior],
-        WebUiListenerMixin(I18nMixin(PolymerElement))) as
-    Constructor<PolymerElement&I18nMixinInterface&WebUiListenerMixinInterface&
-                ESimManagerListenerBehaviorInterface>;
+    ESimManagerListenerMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
-class CellularNetworksListElement extends CellularNetworksListElementBase {
+export class CellularNetworksListElement extends
+    CellularNetworksListElementBase {
   static get is() {
     return 'cellular-networks-list' as const;
   }
@@ -210,6 +207,16 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
             'cellularDeviceState.inhibitReason)',
       },
       /**
+       * Return true if instant hotspot rebrand feature flag is enabled
+       */
+      isInstantHotspotRebrandEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
+              loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
+        },
+      },
+      /**
        * Return true if SmdsSupportEnabled feature flag is enabled.
        */
       smdsSupportEnabled_: {
@@ -236,6 +243,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   private euicc_: EuiccRemote|null;
   private installingESimProfile_: ESimProfileRemote|null;
   private isDeviceInhibited_: boolean;
+  private isInstantHotspotRebrandEnabled_: boolean;
   private multiDevicePageContentData_: MultiDevicePageContentData|null;
   private networkConfig_: CrosNetworkConfigInterface;
   private profilesMap_: Map<string, ESimProfileRemote>;
@@ -281,7 +289,10 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     const response = await profile.getProperties();
 
     const eSimPendingProfileItem = this.eSimPendingProfileItems_.find(item => {
-      return item.customData.iccid === response.properties.iccid;
+      if (typeof item.customData === 'object') {
+        return item.customData!.iccid === response.properties.iccid;
+      }
+      return false;
     });
     if (!eSimPendingProfileItem) {
       return;
@@ -361,9 +372,8 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       customItemType: properties.state === ProfileState.kInstalling ?
           NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
           NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
-      customItemName: String.fromCharCode(...properties.name.data),
-      customItemSubtitle:
-          String.fromCharCode(...properties.serviceProvider.data),
+      customItemName: mojoString16ToString(properties.name),
+      customItemSubtitle: mojoString16ToString(properties.serviceProvider),
       polymerIcon: 'network:cellular-0',
       showBeforeNetworksList: false,
       customData: {
@@ -426,11 +436,14 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     if (!pageContentData) {
       return false;
     }
+    if (this.isInstantHotspotRebrandEnabled_) {
+      return false;
+    }
     return pageContentData.instantTetheringState ===
         MultiDeviceFeatureState.ENABLED_BY_USER;
   }
 
-  private onEsimLearnMoreClicked_(event: CustomEvent<{event: Event}>): void {
+  private onAddEsimLinkClicked_(event: CustomEvent<{event: Event}>): void {
     event.detail.event.preventDefault();
     event.stopPropagation();
 
@@ -574,40 +587,62 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         return this.i18n('cellularNetworRefreshingProfileListProfile');
       case InhibitReason.kResettingEuiccMemory:
         return this.i18n('cellularNetworkResettingESim');
+      case InhibitReason.kRequestingAvailableProfiles:
+        return this.i18n('cellularNetworkRequestingAvailableProfiles');
     }
 
     return '';
   }
 
-  /**
-   * Return true if the "No available eSIM profiles" subtext message or
-   * download eSIM profile link should be shown in eSIM section. This message
-   * should not be shown when adding new eSIM profiles.
-   */
-  private shouldShowNoEsimMessageOrDownloadLink_(
-      inhibitReason: InhibitReason,
-      eSimNetworks: NetworkList.NetworkListItemType[],
-      eSimPendingProfiles: NetworkList.CustomItemState[]): boolean {
-    if (inhibitReason === InhibitReason.kInstallingProfile ||
-        inhibitReason === InhibitReason.kRefreshingProfileList) {
-      return false;
+  private isInhibitedOrAffectedByPolicy_(): boolean {
+    if (this.cellularDeviceState &&
+        this.cellularDeviceState.inhibitReason !== undefined &&
+        this.cellularDeviceState.inhibitReason !==
+            InhibitReason.kNotInhibited) {
+      return true;
     }
-
-    return !this.shouldShowNetworkSublist_(eSimNetworks, eSimPendingProfiles);
+    return !!this.globalPolicy &&
+        this.globalPolicy.allowOnlyPolicyCellularNetworks;
   }
 
   /**
-   * Return true if the "No available eSIM profiles" subtext message should be
-   * shown in eSIM section. This message should not be shown when the download
-   * eSIM profile link is shown.
+   * Return true IFF there are no eSIM profiles installed and we are not
+   * installing a profile, refreshing the profile list, or requesting available
+   * profiles.
    */
-  private shouldShowNoEsimSubtextMessage_(): boolean {
-    if (this.globalPolicy &&
-        this.globalPolicy.allowOnlyPolicyCellularNetworks) {
-      return true;
+  private shouldShowNoEsimNetworksMessage_(): boolean {
+    if (this.cellularDeviceState &&
+        this.cellularDeviceState.inhibitReason !== undefined) {
+      const inhibitReason = this.cellularDeviceState.inhibitReason;
+      if (inhibitReason === InhibitReason.kInstallingProfile ||
+          inhibitReason === InhibitReason.kRefreshingProfileList ||
+          inhibitReason === InhibitReason.kRequestingAvailableProfiles) {
+        return false;
+      }
     }
+    return !this.shouldShowNetworkSublist_(
+        this.eSimNetworks_, this.eSimPendingProfileItems_);
+  }
 
-    return false;
+  /**
+   * Return true IFF there are no eSIM profiles installed, and the cellular
+   * device is inhibited for any reason NOT related to changes to the eSIM
+   * profile list or policy restricts the user from adding an eSIM profile.
+   */
+  private shouldShowNoEsimNetworksMessageWithoutLink_(): boolean {
+    return this.shouldShowNoEsimNetworksMessage_() &&
+        this.isInhibitedOrAffectedByPolicy_();
+  }
+
+  /**
+   * Return true IFF there are no eSIM profiles installed, and the cellular
+   * device is NOT inhibited for any reason related to changes to the eSIM
+   * profile list and policy does NOT restrict the user from adding an eSIM
+   * profile.
+   */
+  private shouldShowAddEsimMessageWithLink(): boolean {
+    return this.shouldShowNoEsimNetworksMessage_() &&
+        !this.isInhibitedOrAffectedByPolicy_();
   }
 }
 

@@ -12,33 +12,33 @@ import "ui/gfx/range/mojom/range.mojom";
 
 // Effect that recognized by Chrome OS.
 enum Effect {
-  NO_EFFECT = 0,
-  PORTRAIT_MODE = 1,
+  kNoEffect = 0,
+  kPortraitMode = 1,
 };
 
 // Stream types that can be observed by camera app device.
 // This is a mirror of the StreamType in camera_device_delegate.h
 enum StreamType {
-  PREVIEW_OUTPUT = 0,
-  JPEG_OUTPUT = 1,
-  JPEG_PORTRAIT_OUTPUT = 2,
-  RECORDIND_OUTPUT = 3,
-  UNKNOWN = 4,
+  kPreviewOutput = 0,
+  kJpegOutput = 1,
+  kJpegPortraitOutput = 2,
+  kRecordingOutput = 3,
+  kUnknown = 4,
 };
 
 // Status code for getting camera app device.
 enum GetCameraAppDeviceStatus {
-  SUCCESS = 0,
-  ERROR_INVALID_ID = 1,
+  kSuccess = 0,
+  kErrorInvalidId = 1,
 };
 
 // The purpose of this capture is to help the camera device decide optimal
 // configurations.
 enum CaptureIntent {
-  DEFAULT = 0,
-  VIDEO_RECORD = 1,
-  STILL_CAPTURE = 2,
-  PORTRAIT_CAPTURE = 3,
+  kDefault = 0,
+  kVideoRecord = 1,
+  kStillCapture = 2,
+  kPortraitCapture = 3,
 };
 
 // Interface to let Chrome Camera App (Remote) get specific CameraAppDevice from
@@ -144,6 +144,15 @@ interface CameraAppDevice {
   // Registers the observer to monitor the camera info update.
   RegisterCameraInfoObserver(
     pending_remote<CameraInfoObserver> observer) => ();
+
+  // Sets the crop region to CameraAppDevice. The value will be consumed by
+  // RequestManager to set it to the capture request repeatedly on every frame,
+  // until the new crop region value is set, or reset to the full crop region.
+  SetCropRegion(gfx.mojom.Rect crop_region) => ();
+
+  // Resets the crop region set by |SetCropRegion|. It is no-ops if there is no
+  // crop region value set.
+  ResetCropRegion() => ();
 };
 
 // Interface for camera device to send camera metadata to Chrome Camera App.

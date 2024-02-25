@@ -16,6 +16,13 @@
 // enough down that the omnibo was already pinned to the top).
 @property(nonatomic, assign, readonly) CGFloat collectionShiftingOffset;
 
+// Indicates that the omnibox has become the first responder to the keyboard.
+- (void)omniboxDidBecomeFirstResponder;
+
+// Indicates that the omnibox will stop being the first responder to the
+// keyboard.
+- (void)omniboxWillResignFirstResponder;
+
 // Indicates that the omnibox stopped being the first responder to the keyboard.
 - (void)omniboxDidResignFirstResponder;
 

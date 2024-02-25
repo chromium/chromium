@@ -46,11 +46,21 @@
 <template is="dom-if" if="[[cvcStorageAvailable_]]">
   <settings-toggle-button id="cvcStorageToggle"
         no-extension-indicator label="$i18n{enableCvcStorageLabel}"
-        sub-label-with-link="$i18n{enableCvcStorageDeleteDataSublabel}"
+        sub-label-with-link="[[getCvcStorageSublabel_(creditCards)]]"
         disabled="[[!prefs.autofill.credit_card_enabled.value]]"
         on-sub-label-link-clicked="onBulkRemoveCvcClick_"
         pref="{{prefs.autofill.payment_cvc_storage}}">
     </settings-toggle-button>
+</template>
+<template is="dom-if" if="[[cardBenefitsFlagEnabled_]]">
+  <!--  TODO(crbug.com/324094766): Handle event when toggle status changes.-->
+  <settings-toggle-button id="cardBenefitsToggle"
+      no-extension-indicator label="$i18n{cardBenefitsToggleLabel}"
+      sub-label-with-link="[[cardBenefitsSublabel_]]"
+      on-sub-label-link-clicked="onCardBenefitsSublabelLinkClick_"
+      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+      pref="{{prefs.autofill.payment_card_benefits}}">
+  </settings-toggle-button>
 </template>
 <settings-toggle-button id="canMakePaymentToggle"
     aria-label="$i18n{canMakePaymentToggleLabel}"
@@ -133,8 +143,9 @@
     sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
 <settings-payments-list id="paymentsList"
     class="list-frame payment-list-margin-start"
-    credit-cards="[[creditCards]]" ibans="[[ibans]]" upi-ids="[[upiIds]]"
+    credit-cards="[[creditCards]]" ibans="[[ibans]]"
     on-dots-iban-menu-click="onDotsIbanMenuClick_"
+    on-remote-iban-menu-click="onRemoteEditIbanMenuClick_"
     on-dots-card-menu-click="onCreditCardDotsMenuClick_"
     on-remote-card-menu-click="onRemoteEditCreditCardClick_"
     aria-label="$i18n{paymentsMethodsTableAriaLabel}">
@@ -184,7 +195,8 @@
 
 <template is="dom-if" if="[[showCreditCardDialog_]]" restamp>
   <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"
-      on-close="onCreditCardDialogClose_" on-save-credit-card="saveCreditCard_">
+      on-close="onCreditCardDialogClose_" on-save-credit-card="saveCreditCard_"
+      prefs="{{prefs}}">
   </settings-credit-card-edit-dialog>
 </template>
 <template is="dom-if" if="[[showIbanDialog_]]" restamp>

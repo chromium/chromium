@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_XFIXES_H_
 #define UI_GFX_X_GENERATED_PROTOS_XFIXES_H_
@@ -45,6 +28,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -53,7 +37,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "render.h"
 #include "shape.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -136,7 +119,7 @@ class COMPONENT_EXPORT(X11) XFixes {
   };
 
   struct SelectionNotifyEvent {
-    static constexpr int type_id = 18;
+    static constexpr uint8_t type_id = 10;
     static constexpr uint8_t opcode = 0;
     SelectionEvent subtype{};
     uint16_t sequence{};
@@ -145,12 +128,10 @@ class COMPONENT_EXPORT(X11) XFixes {
     Atom selection{};
     Time timestamp{};
     Time selection_timestamp{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
   };
 
   struct CursorNotifyEvent {
-    static constexpr int type_id = 19;
+    static constexpr uint8_t type_id = 11;
     static constexpr uint8_t opcode = 1;
     CursorNotify subtype{};
     uint16_t sequence{};
@@ -158,8 +139,6 @@ class COMPONENT_EXPORT(X11) XFixes {
     uint32_t cursor_serial{};
     Time timestamp{};
     Atom name{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
   };
 
   struct BadRegionError : public x11::Error {

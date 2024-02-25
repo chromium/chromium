@@ -40,7 +40,7 @@ void OnIsImplemented(
   if (response->get_valid()->activity_names.empty()) {
     // If a TWA does not implement PAY intent in any of its activities, then
     // |activity_names| is empty, which is not an error.
-    std::move(callback).Run(/*error_message=*/absl::nullopt,
+    std::move(callback).Run(/*error_message=*/std::nullopt,
                             /*app_descriptions=*/{});
     return;
   }
@@ -66,7 +66,7 @@ void OnIsImplemented(
   std::vector<std::unique_ptr<AndroidAppDescription>> app_descriptions;
   app_descriptions.emplace_back(std::move(app));
 
-  std::move(callback).Run(/*error_message=*/absl::nullopt,
+  std::move(callback).Run(/*error_message=*/std::nullopt,
                           std::move(app_descriptions));
 }
 
@@ -89,7 +89,7 @@ void OnIsReadyToPay(AndroidAppCommunication::IsReadyToPayCallback callback,
     return;
   }
 
-  std::move(callback).Run(/*error_message=*/absl::nullopt,
+  std::move(callback).Run(/*error_message=*/std::nullopt,
                           response->get_response());
 }
 
@@ -131,7 +131,7 @@ void OnPaymentAppResponse(
   // Chrome OS TWA currently supports only methods::kGooglePlayBilling payment
   // method identifier.
   std::move(callback).Run(
-      /*error_message=*/absl::nullopt,
+      /*error_message=*/std::nullopt,
       response->get_valid()->is_activity_result_ok,
       /*payment_method_identifier=*/methods::kGooglePlayBilling,
       response->get_valid()->stringified_details);
@@ -144,7 +144,7 @@ chromeos::payments::mojom::PaymentParametersPtr CreatePaymentParameters(
     const GURL& top_level_origin,
     const GURL& payment_request_origin,
     const std::string& payment_request_id,
-    absl::optional<std::string>* error_message) {
+    std::optional<std::string>* error_message) {
   // Chrome OS TWA supports only kGooglePlayBilling payment method identifier
   // at this time.
   auto supported_method_iterator =

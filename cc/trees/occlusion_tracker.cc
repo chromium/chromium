@@ -59,23 +59,27 @@ void OcclusionTracker::EnterLayer(
     const EffectTreeLayerListIterator::Position& iterator) {
   RenderSurfaceImpl* render_target = iterator.target_render_surface;
 
-  if (iterator.state == EffectTreeLayerListIterator::State::LAYER)
+  if (iterator.state == EffectTreeLayerListIterator::State::kLayer) {
     EnterRenderTarget(render_target);
-  else if (iterator.state == EffectTreeLayerListIterator::State::TARGET_SURFACE)
+  } else if (iterator.state ==
+             EffectTreeLayerListIterator::State::kTargetSurface) {
     FinishedRenderTarget(render_target);
+  }
 }
 
 void OcclusionTracker::LeaveLayer(
     const EffectTreeLayerListIterator::Position& iterator) {
   RenderSurfaceImpl* render_target = iterator.target_render_surface;
 
-  if (iterator.state == EffectTreeLayerListIterator::State::LAYER)
+  if (iterator.state == EffectTreeLayerListIterator::State::kLayer) {
     MarkOccludedBehindLayer(iterator.current_layer);
+  }
   // TODO(danakj): This should be done when entering the contributing surface,
   // but in a way that the surface's own occlusion won't occlude itself.
   else if (iterator.state ==
-           EffectTreeLayerListIterator::State::CONTRIBUTING_SURFACE)
+           EffectTreeLayerListIterator::State::kContributingSurface) {
     LeaveToRenderTarget(render_target);
+  }
 }
 
 static gfx::Rect ScreenSpaceClipRectInTargetSurface(

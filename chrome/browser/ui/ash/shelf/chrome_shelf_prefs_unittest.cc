@@ -37,9 +37,9 @@ using SyncItem = app_list::AppListSyncableService::SyncItem;
 std::unique_ptr<SyncItem> MakeSyncItem(
     const std::string& id,
     const syncer::StringOrdinal& pin_ordinal,
-    absl::optional<bool> is_user_pinned = absl::nullopt) {
-  auto item =
-      std::make_unique<SyncItem>(id, sync_pb::AppListSpecifics::TYPE_APP);
+    std::optional<bool> is_user_pinned = std::nullopt) {
+  auto item = std::make_unique<SyncItem>(
+      id, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item->item_pin_ordinal = pin_ordinal;
   item->is_user_pinned = is_user_pinned;
   return item;
@@ -133,7 +133,7 @@ class ChromeShelfPrefsTest : public testing::Test {
                       Profile::FromBrowserContext(browser_context));
                 }))
             .Build();
-    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest();
+    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(true);
     shelf_prefs_ = std::make_unique<ChromeShelfPrefs>(profile_.get());
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
@@ -143,6 +143,7 @@ class ChromeShelfPrefsTest : public testing::Test {
   void TearDown() override {
     shelf_prefs_.reset();
     scoped_user_manager_.reset();
+    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(false);
     profile_.reset();
   }
 

@@ -30,7 +30,8 @@ public class PermissionUpdater {
     private final LocationPermissionUpdater mLocationPermissionUpdater;
 
     @Inject
-    public PermissionUpdater(InstalledWebappPermissionManager permissionManager,
+    public PermissionUpdater(
+            InstalledWebappPermissionManager permissionManager,
             NotificationPermissionUpdater notificationPermissionUpdater,
             LocationPermissionUpdater locationPermissionUpdater) {
         mPermissionManager = permissionManager;

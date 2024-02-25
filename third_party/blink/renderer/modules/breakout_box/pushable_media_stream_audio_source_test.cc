@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -123,7 +125,7 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
   int expected_frames_ = 0;
   int expected_sample_rate_ = 0;
   bool expect_data_on_audio_task_runner_ = true;
-  media::AudioBus* expected_data_ = nullptr;
+  raw_ptr<media::AudioBus, DanglingUntriaged> expected_data_ = nullptr;
   base::TimeTicks expected_time_;
 
   bool did_receive_format_change_ = false;
@@ -213,6 +215,8 @@ class PushableMediaStreamAudioSourceTest
   bool ShouldDeliverAudioOnAudioTaskRunner() const { return GetParam(); }
 
  protected:
+  test::TaskEnvironment task_environment_;
+
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
   Persistent<MediaStreamSource> stream_source_;
@@ -221,7 +225,8 @@ class PushableMediaStreamAudioSourceTest
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
-  PushableMediaStreamAudioSource* pushable_audio_source_;
+  raw_ptr<PushableMediaStreamAudioSource, DanglingUntriaged>
+      pushable_audio_source_;
   scoped_refptr<PushableMediaStreamAudioSource::Broker> broker_;
 };
 

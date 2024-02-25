@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_
 #define CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "components/sync/service/sync_service_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class Profile;
-class PrefService;
 
 namespace signin {
 class IdentityManager;
@@ -101,12 +101,12 @@ SyncStatusLabels GetSyncStatusLabels(Profile* profile);
 SyncStatusMessageType GetSyncStatusMessageType(Profile* profile);
 
 // Gets the error in the sync machinery (if any) that should be exposed to the
-// user through the titlebar avatar button. If absl::nullopt is returned, this
+// user through the titlebar avatar button. If std::nullopt is returned, this
 // does NOT mean sync-the-feature/sync-the-transport is enabled, simply that
 // there's no error. Furthermore, an error may be returned even if only
 // sync-the-transport is running. One such case is when the user wishes to run
 // an encrypted data type on transport mode and must first go through a reauth.
-absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
+std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
 
 // When |error| is present, this returns the string to be shown both as the
 // tooltip of the avatar button, and in the profile menu body (the menu opened
@@ -123,17 +123,6 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service);
 // whether a missing passphrase is preventing Sync from fully starting up.
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service);
 
-// Returns whether missing trusted vault keys is preventing sync from starting
-// up encrypted datatypes.
-bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
-                                    const PrefService* pref_service);
-
-// Returns whether user action is required to improve the recoverability of the
-// trusted vault.
-bool ShouldShowTrustedVaultDegradedRecoverabilityError(
-    const syncer::SyncService* sync_service,
-    const PrefService* pref_service);
-
 // Opens a tab for the purpose of retrieving the trusted vault keys, which
 // usually requires a reauth.
 void OpenTabForSyncKeyRetrieval(
@@ -145,5 +134,21 @@ void OpenTabForSyncKeyRetrieval(
 void OpenTabForSyncKeyRecoverabilityDegraded(
     Browser* browser,
     syncer::TrustedVaultUserActionTriggerForUMA trigger);
+
+#if BUILDFLAG(IS_CHROMEOS)
+// On ChromeOS only, WebUI dialog can be used instead of tab (depending on the
+// feature setup and eventually always).
+// Opens a WebUI dialog for the purpose of retrieving the trusted vault keys,
+// which usually requires a reauth.
+void OpenDialogForSyncKeyRetrieval(
+    Profile* profile,
+    syncer::TrustedVaultUserActionTriggerForUMA trigger);
+
+// Opens a WebUI dialog for the purpose of improving the recoverability of the
+// trusted vault keys, which usually requires a reauth.
+void OpenDialogForSyncKeyRecoverabilityDegraded(
+    Profile* profile,
+    syncer::TrustedVaultUserActionTriggerForUMA trigger);
+#endif
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_

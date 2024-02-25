@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
-#include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/test/fake_scrollbar.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +24,7 @@ class ScrollbarDisplayItemTest : public testing::Test {
 
   CompositorElementId ScrollbarElementId(const cc::Scrollbar& scrollbar) {
     return CompositorElementIdFromUniqueObjectId(
-        13579, scrollbar.Orientation() == cc::ScrollbarOrientation::HORIZONTAL
+        13579, scrollbar.Orientation() == cc::ScrollbarOrientation::kHorizontal
                    ? CompositorElementIdNamespace::kHorizontalScrollbar
                    : CompositorElementIdNamespace::kVerticalScrollbar);
   }
@@ -40,7 +38,7 @@ class ScrollbarDisplayItemTest : public testing::Test {
 
 TEST_F(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
   auto scrollbar = base::MakeRefCounted<cc::FakeScrollbar>();
-  scrollbar->set_orientation(cc::ScrollbarOrientation::HORIZONTAL);
+  scrollbar->set_orientation(cc::ScrollbarOrientation::kHorizontal);
   scrollbar->set_is_solid_color(true);
   scrollbar->set_is_overlay(true);
   scrollbar->set_track_rect(gfx::Rect(2, 90, 96, 10));
@@ -53,6 +51,7 @@ TEST_F(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
       &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kTransparent,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kSolidColor,
@@ -61,7 +60,7 @@ TEST_F(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
 
   auto* scrollbar_layer =
       static_cast<cc::SolidColorScrollbarLayer*>(layer.get());
-  EXPECT_EQ(cc::ScrollbarOrientation::HORIZONTAL,
+  EXPECT_EQ(cc::ScrollbarOrientation::kHorizontal,
             scrollbar_layer->orientation());
   EXPECT_EQ(7, scrollbar_layer->thumb_thickness());
   EXPECT_EQ(2, scrollbar_layer->track_start());
@@ -73,7 +72,7 @@ TEST_F(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
 
 TEST_F(ScrollbarDisplayItemTest, VerticalSolidColorScrollbar) {
   auto scrollbar = base::MakeRefCounted<cc::FakeScrollbar>();
-  scrollbar->set_orientation(cc::ScrollbarOrientation::VERTICAL);
+  scrollbar->set_orientation(cc::ScrollbarOrientation::kVertical);
   scrollbar->set_is_solid_color(true);
   scrollbar->set_is_overlay(true);
   scrollbar->set_track_rect(gfx::Rect(90, 2, 10, 96));
@@ -86,6 +85,7 @@ TEST_F(ScrollbarDisplayItemTest, VerticalSolidColorScrollbar) {
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
       &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kTransparent,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kSolidColor,
@@ -94,7 +94,8 @@ TEST_F(ScrollbarDisplayItemTest, VerticalSolidColorScrollbar) {
 
   auto* scrollbar_layer =
       static_cast<cc::SolidColorScrollbarLayer*>(layer.get());
-  EXPECT_EQ(cc::ScrollbarOrientation::VERTICAL, scrollbar_layer->orientation());
+  EXPECT_EQ(cc::ScrollbarOrientation::kVertical,
+            scrollbar_layer->orientation());
   EXPECT_EQ(7, scrollbar_layer->thumb_thickness());
   EXPECT_EQ(2, scrollbar_layer->track_start());
   EXPECT_EQ(element_id, scrollbar_layer->element_id());
@@ -112,7 +113,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbar) {
   auto element_id = ScrollbarElementId(*scrollbar);
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
-      &scroll_state_.Transform(), element_id,
+      &scroll_state_.Transform(), element_id, cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kPainted, layer->GetScrollbarLayerType());
@@ -132,11 +133,11 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNonNinePatch) {
   auto element_id = ScrollbarElementId(*scrollbar);
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
-      &scroll_state_.Transform(), element_id,
+      &scroll_state_.Transform(), element_id, cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   // We should create PaintedScrollbarLayer instead of
-  // PaintedOverlayScrollbarLayer for non-nine-patch overlay scrollbars.
+  // NinePatchThumbScrollbarLayer for non-nine-patch overlay scrollbars.
   ASSERT_EQ(cc::ScrollbarLayerBase::kPainted, layer->GetScrollbarLayerType());
   EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
 
@@ -155,10 +156,10 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNinePatch) {
   auto element_id = ScrollbarElementId(*scrollbar);
   ScrollbarDisplayItem display_item(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
-      &scroll_state_.Transform(), element_id,
+      &scroll_state_.Transform(), element_id, cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
-  ASSERT_EQ(cc::ScrollbarLayerBase::kPaintedOverlay,
+  ASSERT_EQ(cc::ScrollbarLayerBase::kNinePatchThumb,
             layer->GetScrollbarLayerType());
   EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
 
@@ -175,12 +176,14 @@ TEST_F(ScrollbarDisplayItemTest, CreateOrReuseLayer) {
   ScrollbarDisplayItem display_item1a(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
       scrollbar_rect, &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   auto layer1 = display_item1a.CreateOrReuseLayer(nullptr);
 
   ScrollbarDisplayItem display_item1b(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
       scrollbar_rect, &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   // Should reuse layer for a different display item and the same scrollbar.
   EXPECT_EQ(layer1.get(), display_item1b.CreateOrReuseLayer(layer1.get()));
@@ -189,6 +192,7 @@ TEST_F(ScrollbarDisplayItemTest, CreateOrReuseLayer) {
   ScrollbarDisplayItem display_item2(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar2,
       scrollbar_rect, &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   // Should create new layer for a different scrollbar.
   EXPECT_NE(layer1.get(), display_item2.CreateOrReuseLayer(layer1.get()));
@@ -202,6 +206,7 @@ TEST_F(ScrollbarDisplayItemTest, CreateOrReuseLayer) {
   ScrollbarDisplayItem display_item1c(
       client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
       scrollbar_rect, &scroll_state_.Transform(), element_id,
+      cc::HitTestOpaqueness::kOpaque,
       client.VisualRectOutsetForRasterEffects());
   // Should reuse layer for a different display item and the same scrollbar.
   EXPECT_NE(layer1.get(), display_item1b.CreateOrReuseLayer(layer1.get()));

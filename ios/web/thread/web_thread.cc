@@ -44,11 +44,11 @@ bool WebThread::CurrentlyOn(ID identifier) {
 #endif
 }
 
-std::string WebThread::GetDCheckCurrentlyOnErrorMessage(ID expected) {
+std::string WebThread::GetCurrentlyOnErrorMessage(ID expected) {
 #if BUILDFLAG(USE_BLINK)
-  return ContentThreadImpl::GetDCheckCurrentlyOnErrorMessage(expected);
+  return ContentThreadImpl::GetCurrentlyOnErrorMessage(expected);
 #else
-  return WebThreadImpl::GetDCheckCurrentlyOnErrorMessage(expected);
+  return WebThreadImpl::GetCurrentlyOnErrorMessage(expected);
 #endif
 }
 

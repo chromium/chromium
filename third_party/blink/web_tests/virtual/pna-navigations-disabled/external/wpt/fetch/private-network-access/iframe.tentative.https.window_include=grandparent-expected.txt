@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] public to local, grandparent navigates: failure.
+  timeout adding grandchild
+[FAIL] public to local, grandparent navigates: success.
+  timeout adding grandchild
+Harness: the test ran to completion.
+

@@ -53,7 +53,7 @@ void ValidatingTextfield::Validate() {
   SetInvalid(!delegate_->TextfieldValueChanged(this, was_blurred_));
 }
 
-BEGIN_METADATA(ValidatingTextfield, views::Textfield)
+BEGIN_METADATA(ValidatingTextfield)
 END_METADATA
 
 }  // namespace payments

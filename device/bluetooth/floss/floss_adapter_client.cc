@@ -34,7 +34,11 @@ void HandleExported(const std::string& method_name,
 constexpr char FlossAdapterClient::kErrorUnknownAdapter[] =
     "org.chromium.Error.UnknownAdapter";
 constexpr char FlossAdapterClient::kExportedCallbacksPath[] =
-    "/org/chromium/bluetooth/adapterclient";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "/org/chromium/bluetooth/adapter/callback/lacros";
+#else
+    "/org/chromium/bluetooth/adapter/callback";
+#endif
 static uint32_t callback_path_index_ = 0;
 
 void FlossAdapterClient::SetName(ResponseCallback<Void> callback,
@@ -116,11 +120,24 @@ void FlossAdapterClient::GetRemoteUuids(
       std::move(callback), adapter::kGetRemoteUuids, device);
 }
 
+void FlossAdapterClient::FetchRemoteUuids(ResponseCallback<bool> callback,
+                                          FlossDeviceId device) {
+  CallAdapterMethod<bool>(std::move(callback), adapter::kFetchRemoteUuids,
+                          device);
+}
+
 void FlossAdapterClient::GetRemoteVendorProductInfo(
     ResponseCallback<FlossAdapterClient::VendorProductInfo> callback,
     FlossDeviceId device) {
   CallAdapterMethod<FlossAdapterClient::VendorProductInfo>(
       std::move(callback), adapter::kGetRemoteVendorProductInfo, device);
+}
+
+void FlossAdapterClient::GetRemoteAddressType(
+    ResponseCallback<FlossAdapterClient::BtAddressType> callback,
+    FlossDeviceId device) {
+  CallAdapterMethod<FlossAdapterClient::BtAddressType>(
+      std::move(callback), adapter::kGetRemoteAddressType, device);
 }
 
 void FlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
@@ -202,6 +219,7 @@ void FlossAdapterClient::RemoveSdpRecord(ResponseCallback<bool> callback,
 void FlossAdapterClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const int adapter_index,
+                              base::Version version,
                               base::OnceClosure on_ready) {
   bus_ = bus;
   adapter_path_ = GenerateAdapterPath(adapter_index);
@@ -209,6 +227,7 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
   exported_callback_path_ =
       kExportedCallbacksPath + base::NumberToString(callback_path_index_);
   callback_path_index_++;
+  version_ = version;
 
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, adapter_path_);
@@ -319,6 +338,14 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
       dbus::ObjectPath(exported_callback_path_),
       base::BindRepeating(&FlossAdapterClient::OnDiscoverableChanged,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  property_ext_adv_supported_.Init(this, bus_, service_name_, adapter_path_,
+                                   dbus::ObjectPath(exported_callback_path_),
+                                   base::DoNothing());
+
+  property_roles_.Init(this, bus_, service_name_, adapter_path_,
+                       dbus::ObjectPath(exported_callback_path_),
+                       base::DoNothing());
 
   UpdateDiscoverableTimeout();
 
@@ -486,10 +513,15 @@ void FlossAdapterClient::OnSspRequest(
     return;
   }
 
+  // Block the event in LaCrOS so it won't race with AshChrome. See b/308988818.
+  // TODO(b/274706838): Redesign DBus API so it's only received by the correct
+  // client.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   for (auto& observer : observers_) {
     observer.AdapterSspRequest(
         device, cod, static_cast<BluetoothSspVariant>(variant), passkey);
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -508,9 +540,14 @@ void FlossAdapterClient::OnPinDisplay(
     return;
   }
 
+  // Block the event in LaCrOS so it won't race with AshChrome. See b/308988818.
+  // TODO(b/274706838): Redesign DBus API so it's only received by the correct
+  // client.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   for (auto& observer : observers_) {
     observer.AdapterPinDisplay(device, pincode);
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -530,9 +567,14 @@ void FlossAdapterClient::OnPinRequest(
     return;
   }
 
+  // Block the event in LaCrOS so it won't race with AshChrome. See b/308988818.
+  // TODO(b/274706838): Redesign DBus API so it's only received by the correct
+  // client.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   for (auto& observer : observers_) {
     observer.AdapterPinRequest(device, cod, min_16_digit);
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -722,7 +764,7 @@ void FlossAdapterClient::OnRegisterConnectionCallback(
 
 void FlossAdapterClient::OnUnregisterCallbacks(DBusResult<bool> ret) {
   if (!ret.has_value() || *ret == false) {
-    LOG(WARNING) << __func__ << "Failed to unregister callback";
+    LOG(WARNING) << __func__ << ": Failed to unregister callback";
   }
 }
 

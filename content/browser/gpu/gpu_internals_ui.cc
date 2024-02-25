@@ -50,6 +50,7 @@
 #include "skia/ext/skia_commit_hash.h"
 #include "third_party/angle/src/common/angle_version_info.h"
 #include "third_party/skia/include/core/SkMilestone.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/util/gpu_info_util.h"
@@ -74,7 +75,7 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
       WebUIDataSource::CreateAndAdd(browser_context, kChromeUIGpuHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
@@ -348,7 +349,7 @@ base::Value::List GpuMemoryBufferInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
   base::Value::List gpu_memory_buffer_info;
 
   gpu::GpuMemoryBufferConfigurationSet native_config;
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
   if (ui::OzonePlatform::GetInstance()
           ->GetPlatformProperties()
           .fetch_buffer_formats_for_gmb_on_gpu) {
@@ -356,7 +357,7 @@ base::Value::List GpuMemoryBufferInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
       native_config.emplace(config);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
   if (native_config.empty()) {
     native_config =
         gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
@@ -478,7 +479,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
 
 base::Value::List GetDevicePerfInfo() {
   base::Value::List list;
-  const absl::optional<gpu::DevicePerfInfo> device_perf_info =
+  const std::optional<gpu::DevicePerfInfo> device_perf_info =
       gpu::GetDevicePerfInfo();
   if (device_perf_info.has_value()) {
     list.Append(display::BuildGpuInfoEntry(
@@ -584,8 +585,6 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
       return "vp9 profile3";
     case gpu::DOLBYVISION_PROFILE0:
       return "dolby vision profile 0";
-    case gpu::DOLBYVISION_PROFILE4:
-      return "dolby vision profile 4";
     case gpu::DOLBYVISION_PROFILE5:
       return "dolby vision profile 5";
     case gpu::DOLBYVISION_PROFILE7:
@@ -642,8 +641,7 @@ base::Value::List GetVideoAcceleratorsInfo() {
   base::Value::List info;
 
   struct {
-    const raw_ref<const gpu::VideoDecodeAcceleratorSupportedProfiles,
-                  ExperimentalAsh>
+    const raw_ref<const gpu::VideoDecodeAcceleratorSupportedProfiles>
         capabilities;
     std::string name;
   } kVideoDecoderImplementations[] = {
@@ -715,7 +713,6 @@ base::Value GetDawnInfo() {
 // this class's methods are expected to run on the UI thread.
 class GpuMessageHandler
     : public WebUIMessageHandler,
-      public base::SupportsWeakPtr<GpuMessageHandler>,
       public GpuDataManagerObserver,
       public ui::GpuSwitchingObserver {
  public:

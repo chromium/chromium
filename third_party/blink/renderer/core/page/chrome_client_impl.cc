@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/debug/alias.h"
@@ -40,15 +41,16 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/paint_holding_reason.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -59,6 +61,7 @@
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
@@ -92,6 +95,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
+#include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/popup_opening_observer.h"
@@ -162,6 +166,11 @@ String TruncateDialogMessage(const String& message) {
   return message.Substring(0, kMaxMessageSize);
 }
 
+bool DisplayModeIsBorderless(LocalFrame& frame) {
+  FrameWidget* widget = frame.GetWidgetForLocalRoot();
+  return widget->DisplayMode() == mojom::blink::DisplayMode::kBorderless;
+}
+
 }  // namespace
 
 static bool g_can_browser_handle_focus = false;
@@ -203,10 +212,17 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
                                      LocalFrame& frame) {
   DCHECK(web_view_);
   DCHECK_EQ(&frame, web_view_->MainFrameImpl()->GetFrame());
+
+  int minimum_size = DisplayModeIsBorderless(frame)
+                         ? blink::kMinimumBorderlessWindowSize
+                         : blink::kMinimumWindowSize;
+
+  // TODO(crbug.com/1515106): Refactor so that the limits only live browser-side
+  // instead of now partly being duplicated browser-side and renderer side.
   const gfx::Rect rect_adjusted_for_minimum =
-      AdjustWindowRectForMinimum(requested_rect);
-  const gfx::Rect adjusted_rect =
-      AdjustWindowRectForDisplay(rect_adjusted_for_minimum, frame);
+      AdjustWindowRectForMinimum(requested_rect, minimum_size);
+  const gfx::Rect adjusted_rect = AdjustWindowRectForDisplay(
+      rect_adjusted_for_minimum, frame, minimum_size);
   // Request the unadjusted rect if the browser may honor cross-screen bounds.
   // Permission state is not readily available, so adjusted bounds are clamped
   // to the same-screen, to retain legacy behavior of synchronous pending values
@@ -215,6 +231,34 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
   // store unadjusted pending window rects if that will not break many sites.
   web_view_->MainFrameViewWidget()->SetWindowRect(rect_adjusted_for_minimum,
                                                   adjusted_rect);
+}
+
+void ChromeClientImpl::Minimize(LocalFrame&) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  DCHECK(web_view_);
+  web_view_->Minimize();
+#endif
+}
+
+void ChromeClientImpl::Maximize(LocalFrame&) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  DCHECK(web_view_);
+  web_view_->Maximize();
+#endif
+}
+
+void ChromeClientImpl::Restore(LocalFrame&) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  DCHECK(web_view_);
+  web_view_->Restore();
+#endif
+}
+
+void ChromeClientImpl::SetResizable(bool resizable, LocalFrame& frame) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  DCHECK(web_view_);
+  web_view_->SetResizable(resizable);
+#endif
 }
 
 gfx::Rect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
@@ -261,6 +305,10 @@ void ChromeClientImpl::SetKeyboardFocusURL(Element* new_focus_element) {
   web_view_->SetKeyboardFocusURL(focus_url);
 }
 
+bool ChromeClientImpl::SupportsAppRegion() {
+  return web_view_->SupportsAppRegion();
+}
+
 void ChromeClientImpl::StartDragging(LocalFrame* frame,
                                      const WebDragData& drag_data,
                                      DragOperationsMask mask,
@@ -269,7 +317,7 @@ void ChromeClientImpl::StartDragging(LocalFrame* frame,
                                      const gfx::Rect& drag_obj_rect) {
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
   web_frame->LocalRootFrameWidget()->StartDragging(
-      drag_data, mask, drag_image, cursor_offset, drag_obj_rect);
+      frame, drag_data, mask, drag_image, cursor_offset, drag_obj_rect);
 }
 
 bool ChromeClientImpl::AcceptsLoadDrops() const {
@@ -322,15 +370,14 @@ void ChromeClientImpl::DidOverscroll(
       velocity_in_viewport);
 }
 
-void ChromeClientImpl::InjectGestureScrollEvent(
+void ChromeClientImpl::InjectScrollbarGestureScroll(
     LocalFrame& local_frame,
-    WebGestureDevice device,
     const gfx::Vector2dF& delta,
     ui::ScrollGranularity granularity,
     CompositorElementId scrollable_area_element_id,
     WebInputEvent::Type injected_type) {
-  local_frame.GetWidgetForLocalRoot()->InjectGestureScrollEvent(
-      device, delta, granularity, scrollable_area_element_id, injected_type);
+  local_frame.GetWidgetForLocalRoot()->InjectScrollbarGestureScroll(
+      delta, granularity, scrollable_area_element_id, injected_type);
 }
 
 void ChromeClientImpl::FinishScrollFocusedEditableIntoView(
@@ -358,10 +405,22 @@ void ChromeClientImpl::Show(LocalFrame& frame,
   DCHECK(web_view_);
   const WebWindowFeatures& features = frame.GetPage()->GetWindowFeatures();
   gfx::Rect bounds(features.x, features.y, features.width, features.height);
+
+  // The minimum size from popups opened from borderless apps differs from
+  // normal apps. When window.open is called, display-mode for the new frame is
+  // still undefined as the app hasn't loaded yet, thus opener frame is used.
+  int minimum_size =
+      navigation_policy == NavigationPolicy::kNavigationPolicyNewPopup &&
+              DisplayModeIsBorderless(opener_frame)
+          ? blink::kMinimumBorderlessWindowSize
+          : blink::kMinimumWindowSize;
+
+  // TODO(crbug.com/1515106): Refactor so that the limits only live browser-side
+  // instead of now partly being duplicated browser-side and renderer side.
   const gfx::Rect rect_adjusted_for_minimum =
-      AdjustWindowRectForMinimum(bounds);
-  const gfx::Rect adjusted_rect =
-      AdjustWindowRectForDisplay(rect_adjusted_for_minimum, frame);
+      AdjustWindowRectForMinimum(bounds, minimum_size);
+  const gfx::Rect adjusted_rect = AdjustWindowRectForDisplay(
+      rect_adjusted_for_minimum, frame, minimum_size);
   // Request the unadjusted rect if the browser may honor cross-screen bounds.
   // Permission state is not readily available, so adjusted bounds are clamped
   // to the same-screen, to retain legacy behavior of synchronous pending values
@@ -430,9 +489,9 @@ void ChromeClientImpl::SetBeforeUnloadConfirmPanelResultForTesting(
   before_unload_confirm_panel_result_for_testing_ = result;
 }
 
-void ChromeClientImpl::CloseWindowSoon() {
+void ChromeClientImpl::CloseWindow() {
   DCHECK(web_view_);
-  web_view_->CloseWindowSoon();
+  web_view_->CloseWindow();
 }
 
 bool ChromeClientImpl::OpenJavaScriptAlertDelegate(LocalFrame* frame,
@@ -737,12 +796,12 @@ DateTimeChooser* ChromeClientImpl::OpenDateTimeChooser(
   external_date_time_chooser_ =
       MakeGarbageCollected<ExternalDateTimeChooser>(picker_client);
   external_date_time_chooser_->OpenDateTimeChooser(frame, parameters);
-  return external_date_time_chooser_;
+  return external_date_time_chooser_.Get();
 }
 
 ExternalDateTimeChooser*
 ChromeClientImpl::GetExternalDateTimeChooserForTesting() {
-  return external_date_time_chooser_;
+  return external_date_time_chooser_.Get();
 }
 
 void ChromeClientImpl::OpenFileChooser(
@@ -869,6 +928,10 @@ void ChromeClientImpl::AttachRootLayer(scoped_refptr<cc::Layer> root_layer,
 
 cc::AnimationHost* ChromeClientImpl::GetCompositorAnimationHost(
     LocalFrame& local_frame) const {
+  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(local_frame);
+  if (!web_frame || web_frame->IsProvisional()) {
+    return nullptr;
+  }
   FrameWidget* widget = local_frame.GetWidgetForLocalRoot();
   DCHECK(widget);
   return widget->AnimationHost();
@@ -917,8 +980,10 @@ bool ChromeClientImpl::HasOpenedPopup() const {
 PopupMenu* ChromeClientImpl::OpenPopupMenu(LocalFrame& frame,
                                            HTMLSelectElement& select) {
   NotifyPopupOpeningObservers();
-  if (WebViewImpl::UseExternalPopupMenus())
+
+  if (WebViewImpl::UseExternalPopupMenus()) {
     return MakeGarbageCollected<ExternalPopupMenu>(frame, select);
+  }
 
   DCHECK(RuntimeEnabledFeatures::PagePopupEnabled());
   return MakeGarbageCollected<InternalPopupMenu>(this, select);
@@ -1076,7 +1141,7 @@ std::unique_ptr<cc::ScopedPauseRendering> ChromeClientImpl::PauseRendering(
       ->PauseRendering();
 }
 
-absl::optional<int> ChromeClientImpl::GetMaxRenderBufferBounds(
+std::optional<int> ChromeClientImpl::GetMaxRenderBufferBounds(
     LocalFrame& frame) const {
   return WebLocalFrameImpl::FromFrame(frame)
       ->LocalRootFrameWidget()
@@ -1169,10 +1234,14 @@ void ChromeClientImpl::SetPanAction(LocalFrame* frame,
   widget->SetPanAction(pan_action);
 }
 
-void ChromeClientImpl::DidAddOrRemoveFormRelatedElementsAfterLoad(
-    LocalFrame* frame) {
-  if (auto* fill_client = AutofillClientFromFrame(frame))
-    fill_client->DidAddOrRemoveFormRelatedElementsDynamically();
+void ChromeClientImpl::DidChangeFormRelatedElementDynamically(
+    LocalFrame* frame,
+    HTMLElement* element,
+    WebFormRelatedChangeType form_related_change) {
+  if (auto* fill_client = AutofillClientFromFrame(frame)) {
+    fill_client->DidChangeFormRelatedElementDynamically(element,
+                                                        form_related_change);
+  }
 }
 
 void ChromeClientImpl::ShowVirtualKeyboardOnElementFocus(LocalFrame& frame) {
@@ -1214,6 +1283,23 @@ void ChromeClientImpl::DidChangeValueInTextField(
     // The resource coordinator is not available in some tests.
     if (auto* rc = doc.GetResourceCoordinator())
       rc->SetHadFormInteraction();
+  }
+}
+
+void ChromeClientImpl::DidUserChangeContentEditableContent(Element& element) {
+  Document& doc = element.GetDocument();
+  // Selecting the focused element as we are only interested in changes made by
+  // the user. We assume the user must focus the field to type into it.
+  WebElement focused_element = doc.FocusedElement();
+  // If element argument is not the focused element we can assume the user
+  // was not typing (this covers cases like element.innerText = 'foo').
+  // Value changes caused by |document.execCommand| calls should not be
+  // interpreted as a user action. See https://crbug.com/764760.
+  if (!element.IsFocusedElementInDocument() || doc.IsRunningExecCommand()) {
+    return;
+  }
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->ContentEditableDidChange(focused_element);
   }
 }
 
@@ -1359,23 +1445,27 @@ float ChromeClientImpl::ZoomFactorForViewportLayout() {
 }
 
 gfx::Rect ChromeClientImpl::AdjustWindowRectForMinimum(
-    const gfx::Rect& pending_rect) {
+    const gfx::Rect& pending_rect,
+    int minimum_size) {
   gfx::Rect window = pending_rect;
 
   // Let size 0 pass through, since that indicates default size, not minimum
   // size.
-  if (window.width())
-    window.set_width(std::max(blink::kMinimumWindowSize, window.width()));
-  if (window.height())
-    window.set_height(std::max(blink::kMinimumWindowSize, window.height()));
-
+  if (window.width()) {
+    window.set_width(std::max(minimum_size, window.width()));
+  }
+  if (window.height()) {
+    window.set_height(std::max(minimum_size, window.height()));
+  }
   return window;
 }
 
 gfx::Rect ChromeClientImpl::AdjustWindowRectForDisplay(
     const gfx::Rect& pending_rect,
-    LocalFrame& frame) {
-  DCHECK_EQ(pending_rect, AdjustWindowRectForMinimum(pending_rect))
+    LocalFrame& frame,
+    int minimum_size) {
+  DCHECK_EQ(pending_rect,
+            AdjustWindowRectForMinimum(pending_rect, minimum_size))
       << "Make sure to first use AdjustWindowRectForMinimum to adjust "
          "pending_rect for minimum.";
   gfx::Rect screen = GetScreenInfo(frame).available_rect;

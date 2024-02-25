@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_SYSTEM_PROXY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/auth.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace content {
@@ -218,7 +218,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   // available.
   void LookupProxyAuthCredentialsCallback(
       const system_proxy::ProtectionSpace& protection_space,
-      const absl::optional<net::AuthCredentials>& credentials);
+      const std::optional<net::AuthCredentials>& credentials);
 
   void ShowAuthenticationNotification(
       const system_proxy::ProtectionSpace& protection_space,
@@ -258,20 +258,19 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   std::string last_sent_password_;
 
   // Local state prefs, not owned.
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Notification which informs the user that System-proxy requires credentials
   // for authentication to the remote proxy.
   std::unique_ptr<SystemProxyNotification> notification_handler_;
 
   // Owned by |auth_widget_|.
-  raw_ptr<RequestSystemProxyCredentialsView, ExperimentalAsh>
-      active_auth_dialog_ = nullptr;
+  raw_ptr<RequestSystemProxyCredentialsView> active_auth_dialog_ = nullptr;
   // Owned by the UI code (NativeWidget).
-  raw_ptr<views::Widget, ExperimentalAsh> auth_widget_ = nullptr;
+  raw_ptr<views::Widget> auth_widget_ = nullptr;
 
   // Primary profile, not owned.
-  raw_ptr<Profile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<Profile> primary_profile_ = nullptr;
   std::unique_ptr<extensions::PrefsUtil> extension_prefs_util_;
 
   // Observer for Kerberos-related prefs.

@@ -13,7 +13,7 @@ class PerfTestSuite : public TestSuite {
  public:
   PerfTestSuite(int argc, char** argv);
 
-  // TODO(crbug.com/1404759): Port all perf tests to Google Benchmark and
+  // TODO(crbug.com/40251982): Port all perf tests to Google Benchmark and
   // eliminate gTest dependence from perf tests.
   void Initialize() override;
   void InitializeFromCommandLine(int* argc, char** argv) override;

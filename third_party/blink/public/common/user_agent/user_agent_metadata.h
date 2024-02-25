@@ -5,13 +5,25 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_USER_AGENT_USER_AGENT_METADATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_USER_AGENT_USER_AGENT_METADATA_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
+
+// Values for the Sec-CH-UA-Form-Factor header.
+// https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factor
+// LINT.IfChange
+inline constexpr char kDesktopFormFactor[] = "Desktop";
+inline constexpr char kAutomotiveFormFactor[] = "Automotive";
+inline constexpr char kMobileFormFactor[] = "Mobile";
+inline constexpr char kTabletFormFactor[] = "Tablet";
+inline constexpr char kXRFormFactor[] = "XR";
+inline constexpr char kEInkFormFactor[] = "EInk";
+inline constexpr char kWatchFormFactor[] = "Watch";
+// LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/client_hints/AwUserAgentMetadata.java)
 
 struct BLINK_COMMON_EXPORT UserAgentBrandVersion {
   UserAgentBrandVersion() = default;
@@ -44,11 +56,12 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   // version.
   const std::string SerializeBrandFullVersionList();
   const std::string SerializeBrandMajorVersionList();
+  const std::string SerializeFormFactor();
 
-  static absl::optional<UserAgentMetadata> Demarshal(
-      const absl::optional<std::string>& encoded);
-  static absl::optional<std::string> Marshal(
-      const absl::optional<UserAgentMetadata>& ua_metadata);
+  static std::optional<UserAgentMetadata> Demarshal(
+      const std::optional<std::string>& encoded);
+  static std::optional<std::string> Marshal(
+      const std::optional<UserAgentMetadata>& ua_metadata);
   UserAgentBrandList brand_version_list;
   UserAgentBrandList brand_full_version_list;
 
@@ -60,7 +73,11 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   bool mobile = false;
   std::string bitness;
   bool wow64 = false;
-  std::string form_factor;
+
+  // The form-factor list. It is up to the embedder to ensure that this is
+  // compliant with the w3c draft spec:
+  // https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factor.
+  std::vector<std::string> form_factor;
 };
 
 // Used when customizing the sent User-Agent and Sec-CH-UA-* for
@@ -78,7 +95,7 @@ struct BLINK_COMMON_EXPORT UserAgentOverride {
   // Non-nullopt if custom values for user agent client hint properties
   // should be used. If this is null, and |ua_string_override| is non-empty,
   // no UA client hints will be sent.
-  absl::optional<UserAgentMetadata> ua_metadata_override;
+  std::optional<UserAgentMetadata> ua_metadata_override;
 };
 
 bool BLINK_COMMON_EXPORT operator==(const UserAgentMetadata& a,

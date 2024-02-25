@@ -7,13 +7,11 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -22,7 +20,6 @@ namespace {
 class DisplayDetailedViewTest : public AshTestBase {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kQsRevamp}, {});
     AshTestBase::SetUp();
 
     // Create a widget so tests can click on views.
@@ -43,11 +40,9 @@ class DisplayDetailedViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<DisplayDetailedView, DanglingUntriaged | ExperimentalAsh>
-      detailed_view_ = nullptr;
+  raw_ptr<DisplayDetailedView, DanglingUntriaged> detailed_view_ = nullptr;
 };
 
 TEST_F(DisplayDetailedViewTest, ScrollContentChildren) {
@@ -72,6 +67,28 @@ TEST_F(DisplayDetailedViewTest, ScrollContentChildren) {
       scroll_content->GetViewByID(VIEW_ID_QS_DISPLAY_BRIGHTNESS_SLIDER);
   EXPECT_STREQ(unified_brightness_view->GetClassName(),
                "UnifiedBrightnessView");
+}
+
+TEST_F(DisplayDetailedViewTest, FeatureTileVisibility) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+
+  views::View* scroll_content =
+      detailed_view_->GetViewByID(VIEW_ID_QS_DISPLAY_SCROLL_CONTENT);
+  views::View* tile_container =
+      scroll_content->GetViewByID(VIEW_ID_QS_DISPLAY_TILE_CONTAINER);
+  ASSERT_TRUE(tile_container);
+  ASSERT_EQ(tile_container->children().size(), 2u);
+
+  // Both tiles are visible in the active user session
+  EXPECT_TRUE(tile_container->children()[0]->GetVisible());
+  EXPECT_TRUE(tile_container->children()[1]->GetVisible());
+
+  // Locks the screen and the feature tiles are still visible.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  EXPECT_TRUE(tile_container->children()[0]->GetVisible());
+  EXPECT_TRUE(tile_container->children()[1]->GetVisible());
 }
 
 }  // namespace

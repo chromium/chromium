@@ -5,19 +5,23 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "components/memory_pressure/reclaim_target.h"
+#include "components/memory_pressure/unnecessary_discard_monitor.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url_matcher {
 class URLMatcher;
@@ -49,27 +53,32 @@ class PageNodeSortProxy {
  public:
   PageNodeSortProxy(const PageNode* page_node,
                     bool is_marked,
+                    bool is_visible,
                     bool is_protected,
+                    bool is_focused,
                     base::TimeDelta last_visible)
       : page_node_(page_node),
         is_marked_(is_marked),
+        is_visible_(is_visible),
         is_protected_(is_protected),
+        is_focused_(is_focused),
         last_visible_(last_visible) {}
+
   const PageNode* page_node() const { return page_node_; }
+  bool is_protected() const { return is_protected_; }
+  bool is_visible() const { return is_visible_; }
+  bool is_focused() const { return is_focused_; }
 
   // Returns true if the rhs is more important.
   bool operator<(const PageNodeSortProxy& rhs) const {
-    if (is_marked_ && !rhs.is_marked_) {
-      return false;
+    if (is_marked_ != rhs.is_marked_) {
+      return rhs.is_marked_;
     }
-    if (!is_marked_ && rhs.is_marked_) {
-      return true;
+    if (is_visible_ != rhs.is_visible_) {
+      return rhs.is_visible_;
     }
-    if (is_protected_ && !rhs.is_protected_) {
-      return false;
-    }
-    if (!is_protected_ && rhs.is_protected_) {
-      return true;
+    if (is_protected_ != rhs.is_protected_) {
+      return rhs.is_protected_;
     }
     return last_visible_ > rhs.last_visible_;
   }
@@ -77,7 +86,9 @@ class PageNodeSortProxy {
  private:
   raw_ptr<const PageNode> page_node_;
   bool is_marked_;
+  bool is_visible_;
   bool is_protected_;
+  bool is_focused_;
   // Delta between current time and last visibility change time.
   base::TimeDelta last_visible_;
 };
@@ -124,12 +135,13 @@ class PageDiscardingHelper : public GraphOwned,
   // kProtected) can also be discarded.
   // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
   // there about its usage.
-  void DiscardMultiplePages(absl::optional<uint64_t> reclaim_target_kb,
-                            bool discard_protected_tabs,
-                            base::OnceCallback<void(bool)> post_discard_cb,
-                            DiscardReason discard_reason,
-                            base::TimeDelta minimum_time_in_background =
-                                kNonVisiblePagesUrgentProtectionTime);
+  void DiscardMultiplePages(
+      std::optional<memory_pressure::ReclaimTarget> reclaim_target,
+      bool discard_protected_tabs,
+      base::OnceCallback<void(bool)> post_discard_cb,
+      DiscardReason discard_reason,
+      base::TimeDelta minimum_time_in_background =
+          kNonVisiblePagesUrgentProtectionTime);
 
   void ImmediatelyDiscardSpecificPage(
       const PageNode* page_node,
@@ -177,19 +189,21 @@ class PageDiscardingHelper : public GraphOwned,
   // there's been at least one successful discard or if there's no more discard
   // candidates.
   void PostDiscardAttemptCallback(
-      absl::optional<uint64_t> reclaim_target_kb,
+      std::optional<memory_pressure::ReclaimTarget> reclaim_target,
       bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb,
       DiscardReason discard_reason,
       base::TimeDelta minimum_time_in_background,
-      bool success);
+      const std::vector<mechanism::PageDiscarder::DiscardEvent>&
+          discard_events);
 
   // The mechanism used to do the actual discarding.
-  std::unique_ptr<performance_manager::mechanism::PageDiscarder>
-      page_discarder_;
+  std::unique_ptr<mechanism::PageDiscarder> page_discarder_;
 
   std::map<std::string, std::unique_ptr<url_matcher::URLMatcher>>
       profiles_no_discard_patterns_;
+
+  memory_pressure::UnnecessaryDiscardMonitor unnecessary_discard_monitor_;
 
   raw_ptr<Graph> graph_ = nullptr;
 

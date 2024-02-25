@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -50,7 +51,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -118,7 +118,7 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
     params->Append(base::Value(std::move(request_info)));
   }
 
-  absl::optional<base::Value> InvokeGetSinks() {
+  std::optional<base::Value> InvokeGetSinks() {
     scoped_refptr<WebrtcAudioPrivateGetSinksFunction> function =
         new WebrtcAudioPrivateGetSinksFunction();
     function->set_source_url(source_url_);
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   AudioDeviceDescriptions devices;
   GetAudioDeviceDescriptions(false, &devices);
 
-  absl::optional<base::Value> result = InvokeGetSinks();
+  std::optional<base::Value> result = InvokeGetSinks();
   const base::Value::List& sink_list = result->GetList();
 
   std::string result_string;
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetAssociatedSink) {
     std::string parameter_string;
     JSONWriter::Write(parameters, &parameter_string);
 
-    absl::optional<base::Value> result = RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> result = RunFunctionAndReturnSingleResult(
         function.get(), parameter_string, profile());
     std::string result_string;
     JSONWriter::Write(*result, &result_string);

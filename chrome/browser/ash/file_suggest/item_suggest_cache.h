@@ -35,13 +35,13 @@ class ItemSuggestCache {
   struct Result {
     Result(const std::string& id,
            const std::string& title,
-           const absl::optional<std::string>& prediction_reason);
+           const std::optional<std::string>& prediction_reason);
     Result(const Result& other);
     ~Result();
 
     std::string id;
     std::string title;
-    absl::optional<std::string> prediction_reason;
+    std::optional<std::string> prediction_reason;
   };
 
   // Information on all file suggestion results returned from an ItemSuggest
@@ -76,7 +76,7 @@ class ItemSuggestCache {
 
   // Returns the results currently in the cache. A null result indicates that
   // the cache has not been successfully updated.
-  absl::optional<ItemSuggestCache::Results> GetResults();
+  std::optional<ItemSuggestCache::Results> GetResults();
 
   // Updates the cache by calling ItemSuggest. Virtual for testing.
   virtual void MaybeUpdateCache();
@@ -84,7 +84,7 @@ class ItemSuggestCache {
   // Updates the cache with a json response.
   void UpdateCacheWithJsonForTest(const std::string json_response);
 
-  static absl::optional<ItemSuggestCache::Results> ConvertJsonForTest(
+  static std::optional<ItemSuggestCache::Results> ConvertJsonForTest(
       const base::Value* value);
 
   // Possible outcomes of a call to the ItemSuggest API. These values persist to
@@ -152,7 +152,7 @@ class ItemSuggestCache {
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader(
       const std::string& token);
 
-  absl::optional<Results> results_;
+  std::optional<Results> results_;
 
   // Start time for latency metrics.
   base::TimeTicks update_start_time_;

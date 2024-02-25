@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"graphics-document" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="graphics-document"}, {role="graphics-document"}]
+++View text:"graphics-object" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="graphics-object"}, {role="graphics-object"}]
+++View text:"graphics-symbol" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="graphics-symbol"}, {role="graphics-symbol"}]

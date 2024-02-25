@@ -36,7 +36,7 @@ class WaylandWatcher : public base::MessagePumpForUI::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int fd) override;
 
   base::MessagePumpForUI::FdWatchController controller_;
-  const raw_ptr<wayland::Server, ExperimentalAsh> server_;
+  const raw_ptr<wayland::Server> server_;
 };
 
 }  // namespace wayland

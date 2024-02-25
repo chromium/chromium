@@ -5,13 +5,11 @@
 #include "components/sessions/ios/ios_restore_live_tab.h"
 
 #include "components/sessions/ios/ios_serialized_navigation_builder.h"
-#include "ios/web/public/session/crw_navigation_item_storage.h"
-#include "ios/web/public/session/crw_session_storage.h"
 
 namespace sessions {
 
-RestoreIOSLiveTab::RestoreIOSLiveTab(CRWSessionStorage* session)
-    : session_(session) {}
+RestoreIOSLiveTab::RestoreIOSLiveTab(web::proto::NavigationStorage storage)
+    : storage_(std::move(storage)) {}
 
 RestoreIOSLiveTab::~RestoreIOSLiveTab() {}
 
@@ -20,7 +18,11 @@ bool RestoreIOSLiveTab::IsInitialBlankNavigation() {
 }
 
 int RestoreIOSLiveTab::GetCurrentEntryIndex() {
-  return session_.lastCommittedItemIndex;
+  if (storage_.items_size() == 0) {
+    return -1;
+  }
+
+  return storage_.last_committed_item_index();
 }
 
 int RestoreIOSLiveTab::GetPendingEntryIndex() {
@@ -29,8 +31,7 @@ int RestoreIOSLiveTab::GetPendingEntryIndex() {
 
 sessions::SerializedNavigationEntry RestoreIOSLiveTab::GetEntryAtIndex(
     int index) {
-  NSArray<CRWNavigationItemStorage*>* item_storages = session_.itemStorages;
-  CRWNavigationItemStorage* item = item_storages[index];
+  const web::proto::NavigationItemStorage& item = storage_.items(index);
   return sessions::IOSSerializedNavigationBuilder::FromNavigationStorageItem(
       index, item);
 }
@@ -40,7 +41,7 @@ sessions::SerializedNavigationEntry RestoreIOSLiveTab::GetPendingEntry() {
 }
 
 int RestoreIOSLiveTab::GetEntryCount() {
-  return session_.itemStorages.count;
+  return storage_.items_size();
 }
 
 sessions::SerializedUserAgentOverride

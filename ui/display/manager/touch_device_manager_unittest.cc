@@ -126,7 +126,7 @@ class TouchAssociationTest : public testing::Test {
  protected:
   DisplayInfoList displays_;
   std::unique_ptr<DisplayManager> display_manager_;
-  raw_ptr<TouchDeviceManager, ExperimentalAsh> touch_device_manager_;
+  raw_ptr<TouchDeviceManager> touch_device_manager_;
 };
 
 TEST_F(TouchAssociationTest, NoTouchscreens) {

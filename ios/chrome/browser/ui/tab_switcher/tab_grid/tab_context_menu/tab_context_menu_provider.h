@@ -19,6 +19,11 @@
     contextMenuConfigurationForTabCell:(TabCell*)cell
                           menuScenario:(MenuScenarioHistogram)scenario;
 
+// Returns a context menu configuration instance for the given `group cell`.
+- (UIContextMenuConfiguration*)
+    contextMenuConfigurationForTabGroupCell:(TabCell*)cell
+                               menuScenario:(MenuScenarioHistogram)scenario;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_CONTEXT_MENU_TAB_CONTEXT_MENU_PROVIDER_H_

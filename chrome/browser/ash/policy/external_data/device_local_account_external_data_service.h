@@ -52,7 +52,7 @@ class DeviceLocalAccountExternalDataService
                    scoped_refptr<DeviceLocalAccountExternalDataManager>>
       ExternalDataManagerMap;
 
-  raw_ptr<DeviceLocalAccountPolicyService, ExperimentalAsh> parent_;
+  raw_ptr<DeviceLocalAccountPolicyService> parent_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   std::unique_ptr<ResourceCache> resource_cache_;
 

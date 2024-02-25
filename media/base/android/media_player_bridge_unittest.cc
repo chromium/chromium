@@ -40,7 +40,8 @@ class MediaPlayerBridgeTest : public testing::Test {
                 false,
                 &client_,
                 false,
-                false) {}
+                false,
+                base::flat_map<std::string, std::string>{}) {}
 
   MediaPlayerBridgeTest(const MediaPlayerBridgeTest&) = delete;
   MediaPlayerBridgeTest& operator=(const MediaPlayerBridgeTest&) = delete;

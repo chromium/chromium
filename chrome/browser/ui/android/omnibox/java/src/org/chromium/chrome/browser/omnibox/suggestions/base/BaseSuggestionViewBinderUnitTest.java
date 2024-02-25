@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -25,8 +24,6 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 
-import androidx.appcompat.app.ActionBar.LayoutParams;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,6 +36,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
@@ -47,8 +46,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,9 +54,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for {@link BaseSuggestionViewBinder}.
- */
+/** Tests for {@link BaseSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseSuggestionViewBinderUnitTest {
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
@@ -82,16 +77,24 @@ public class BaseSuggestionViewBinderUnitTest {
         mIconView = mBaseView.decorationIcon;
 
         mModel = new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(mModel, mBaseView,
+        PropertyModelChangeProcessor.create(
+                mModel,
+                mBaseView,
                 new BaseSuggestionViewBinder(
-                        (m, v, p) -> { assertEquals(mBaseView.contentView, v); }));
+                        (m, v, p) -> {
+                            assertEquals(mBaseView.contentView, v);
+                        }));
         BaseSuggestionViewBinder.initializeDimensions(mContext);
     }
 
     @Test
     public void decorIcon_showSquareIcon() {
-        OmniboxDrawableState state = new OmniboxDrawableState(new ColorDrawable(0),
-                /*useRoundedCorners=*/false, /*isLarge=*/false, /*allowTint=*/false);
+        OmniboxDrawableState state =
+                new OmniboxDrawableState(
+                        new ColorDrawable(0),
+                        /* useRoundedCorners= */ false,
+                        /* isLarge= */ false,
+                        /* allowTint= */ false);
         mModel.set(BaseSuggestionViewProperties.ICON, state);
 
         assertFalse(mIconView.getClipToOutline());
@@ -125,8 +128,13 @@ public class BaseSuggestionViewBinderUnitTest {
     @Test
     public void actionIcon_showIcon() {
         Runnable callback = mock(Runnable.class);
-        List<Action> list = Arrays.asList(new Action(mContext, OmniboxDrawableState.forColor(0),
-                R.string.accessibility_omnibox_btn_refine, callback));
+        List<Action> list =
+                Arrays.asList(
+                        new Action(
+                                mContext,
+                                OmniboxDrawableState.forColor(0),
+                                R.string.accessibility_omnibox_btn_refine,
+                                callback));
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
 
         List<ImageView> actionButtons = mBaseView.getActionButtons();
@@ -148,12 +156,23 @@ public class BaseSuggestionViewBinderUnitTest {
         Runnable call2 = mock(Runnable.class);
         Runnable call3 = mock(Runnable.class);
 
-        List<Action> list = Arrays.asList(new Action(mContext, OmniboxDrawableState.forColor(0),
-                                                  R.string.accessibility_omnibox_btn_refine, call1),
-                new Action(mContext, OmniboxDrawableState.forColor(0),
-                        R.string.accessibility_omnibox_btn_refine, call2),
-                new Action(mContext, OmniboxDrawableState.forColor(0),
-                        R.string.accessibility_omnibox_btn_refine, call3));
+        List<Action> list =
+                Arrays.asList(
+                        new Action(
+                                mContext,
+                                OmniboxDrawableState.forColor(0),
+                                R.string.accessibility_omnibox_btn_refine,
+                                call1),
+                        new Action(
+                                mContext,
+                                OmniboxDrawableState.forColor(0),
+                                R.string.accessibility_omnibox_btn_refine,
+                                call2),
+                        new Action(
+                                mContext,
+                                OmniboxDrawableState.forColor(0),
+                                R.string.accessibility_omnibox_btn_refine,
+                                call3));
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
 
         List<ImageView> actionButtons = mBaseView.getActionButtons();
@@ -181,12 +200,22 @@ public class BaseSuggestionViewBinderUnitTest {
     @Test
     public void actionIcon_hideIcons() {
         final List<Action> list =
-                Arrays.asList(new Action(mContext, OmniboxDrawableState.forColor(0),
-                                      R.string.accessibility_omnibox_btn_refine, () -> {}),
-                        new Action(mContext, OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine, () -> {}),
-                        new Action(mContext, OmniboxDrawableState.forColor(0),
-                                R.string.accessibility_omnibox_btn_refine, () -> {}));
+                Arrays.asList(
+                        new Action(
+                                mContext,
+                                OmniboxDrawableState.forColor(0),
+                                R.string.accessibility_omnibox_btn_refine,
+                                () -> {}),
+                        new Action(
+                                mContext,
+                                OmniboxDrawableState.forColor(0),
+                                R.string.accessibility_omnibox_btn_refine,
+                                () -> {}),
+                        new Action(
+                                mContext,
+                                OmniboxDrawableState.forColor(0),
+                                R.string.accessibility_omnibox_btn_refine,
+                                () -> {}));
 
         final List<ImageView> actionButtons = mBaseView.getActionButtons();
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
@@ -229,8 +258,8 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertTrue(mBaseView.getClipToOutline());
         // Expect the RoundedCornerOutlineProvider. Fail if it's anything else.
         var provider = (RoundedCornerOutlineProvider) mBaseView.getOutlineProvider();
-        Assert.assertTrue(provider.isTopEdgeRoundedForTesting());
-        Assert.assertFalse(provider.isBottomEdgeRoundedForTesting());
+        Assert.assertTrue(provider.isTopEdgeRounded());
+        Assert.assertFalse(provider.isBottomEdgeRounded());
     }
 
     @Test
@@ -241,8 +270,8 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertTrue(mBaseView.getClipToOutline());
         // Expect the RoundedCornerOutlineProvider. Fail if it's anything else.
         var provider = (RoundedCornerOutlineProvider) mBaseView.getOutlineProvider();
-        Assert.assertTrue(provider.isTopEdgeRoundedForTesting());
-        Assert.assertTrue(provider.isBottomEdgeRoundedForTesting());
+        Assert.assertTrue(provider.isTopEdgeRounded());
+        Assert.assertTrue(provider.isBottomEdgeRounded());
     }
 
     @Test
@@ -254,23 +283,6 @@ public class BaseSuggestionViewBinderUnitTest {
     }
 
     @Test
-    public void suggestionMargin() {
-        mModel.set(DropdownCommonProperties.BOTTOM_MARGIN, 17);
-        mModel.set(DropdownCommonProperties.TOP_MARGIN, 13);
-
-        verify(mBaseView, times(2)).setLayoutParams(any());
-        int sideSpacing = mBaseView.getContext().getResources().getDimensionPixelOffset(
-                R.dimen.omnibox_suggestion_side_spacing);
-        MarginLayoutParams layoutParams = (MarginLayoutParams) mBaseView.getLayoutParams();
-        Assert.assertNotNull(layoutParams);
-        Assert.assertEquals(sideSpacing, layoutParams.leftMargin);
-        Assert.assertEquals(13, layoutParams.topMargin);
-        Assert.assertEquals(sideSpacing, layoutParams.rightMargin);
-        Assert.assertEquals(17, layoutParams.bottomMargin);
-        Assert.assertEquals(LayoutParams.MATCH_PARENT, layoutParams.width);
-    }
-
-    @Test
     public void applySelectableBackground_incognito() {
         // This is a whitebox test. It currently assumes that the Suggestion background is a
         // LayerDrawable, whose bottom element represents the color.
@@ -279,7 +291,8 @@ public class BaseSuggestionViewBinderUnitTest {
         var backgroundCaptor = ArgumentCaptor.forClass(LayerDrawable.class);
         verify(mBaseView).setBackground(backgroundCaptor.capture());
 
-        Assert.assertEquals(mContext.getColor(R.color.omnibox_suggestion_bg_incognito),
+        Assert.assertEquals(
+                mContext.getColor(R.color.omnibox_suggestion_bg_incognito),
                 ((ColorDrawable) backgroundCaptor.getValue().getDrawable(0)).getColor());
     }
 
@@ -292,8 +305,9 @@ public class BaseSuggestionViewBinderUnitTest {
         var backgroundCaptor = ArgumentCaptor.forClass(LayerDrawable.class);
         verify(mBaseView).setBackground(backgroundCaptor.capture());
 
-        Assert.assertEquals(ChromeColors.getSurfaceColor(mBaseView.getContext(),
-                                    R.dimen.omnibox_suggestion_bg_elevation),
+        Assert.assertEquals(
+                ChromeColors.getSurfaceColor(
+                        mBaseView.getContext(), R.dimen.omnibox_suggestion_bg_elevation),
                 ((ColorDrawable) backgroundCaptor.getValue().getDrawable(0)).getColor());
     }
 
@@ -309,7 +323,7 @@ public class BaseSuggestionViewBinderUnitTest {
         verify(mBaseView).setBackground(bgCaptor1.capture());
 
         // Attempt to re-use the background color.
-        // We do this by instantiating a fully dummy mock which does not deliver Context.
+        // We do this by instantiating a mock which does not deliver Context.
         // This must not crash.
         var viewWithNoContext = mock(View.class);
         BaseSuggestionViewBinder.applySelectableBackground(mModel, viewWithNoContext);
@@ -423,22 +437,6 @@ public class BaseSuggestionViewBinderUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "ldltr")
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void iconStartPadding_smallerMarginsRevamp_ltr() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
-        runDecorationIconPaddingTest();
-    }
-
-    @Test
-    @Config(qualifiers = "ldrtl")
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void iconStartPadding_smallerMarginsRevamp_rtl() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
-        runDecorationIconPaddingTest();
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @Config(qualifiers = "ldltr-sw600dp")
     public void iconStartPadding_tabletRevamp_ltr() {
@@ -466,7 +464,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
         // Variant 1: Small, wide, short icon.
         // Width bound by the edge edge size, height wrapping content.
-        var b = Bitmap.createBitmap(/*width=*/2, /*height=*/1, Bitmap.Config.ALPHA_8);
+        var b = Bitmap.createBitmap(/* width= */ 2, /* height= */ 1, Bitmap.Config.ALPHA_8);
 
         OmniboxDrawableState state = OmniboxDrawableState.forFavIcon(mContext, b);
         mModel.set(BaseSuggestionViewProperties.ICON, state);
@@ -484,7 +482,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
         // Variant 3: Small, narrow, tall icon.
         // Height bound by the edge edge size, width wrapping content.
-        b = Bitmap.createBitmap(/*width=*/1, /*height=*/2, Bitmap.Config.ALPHA_8);
+        b = Bitmap.createBitmap(/* width= */ 1, /* height= */ 2, Bitmap.Config.ALPHA_8);
 
         state = OmniboxDrawableState.forFavIcon(mContext, b);
         mModel.set(BaseSuggestionViewProperties.ICON, state);

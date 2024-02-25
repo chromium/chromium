@@ -13,10 +13,10 @@
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "testing/gtest_mac.h"
@@ -41,12 +41,13 @@ class SaveAddressProfileInfobarBannerOverlayMediatorTest : public PlatformTest {
 // Tests that a SaveAddressProfileInfobarBannerOverlayMediator correctly sets up
 // its consumer.
 TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr,
-          /*user_email=*/absl::nullopt,
+          /*user_email=*/std::nullopt,
           /*locale=*/"en-US",
           autofill::AutofillClient::SaveAddressProfilePromptOptions{},
           base::DoNothing());
@@ -74,19 +75,20 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetDescription()),
               consumer.subtitleText);
   EXPECT_NSEQ(
-      CustomSymbolWithPointSize(kLocationFillSymbol, kInfobarSymbolPointSize),
+      CustomSymbolWithPointSize(kLocationSymbol, kInfobarSymbolPointSize),
       consumer.iconImage);
 }
 
 // Tests that the modal is shown when infobar button is pressed.
 TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
        PresentModalWhenInfobarButtonIsPressed) {
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr,
-          /*user_email=*/absl::nullopt,
+          /*user_email=*/std::nullopt,
           /*locale=*/"en-US",
           autofill::AutofillClient::SaveAddressProfilePromptOptions{},
           base::DoNothing());

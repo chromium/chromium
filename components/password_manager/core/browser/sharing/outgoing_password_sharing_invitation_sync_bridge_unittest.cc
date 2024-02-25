@@ -34,8 +34,10 @@ using testing::IsEmpty;
 using testing::IsNull;
 using testing::Not;
 using testing::NotNull;
+using testing::Property;
 using testing::Return;
 using testing::SaveArg;
+using testing::UnorderedElementsAre;
 
 namespace password_manager {
 namespace {
@@ -50,7 +52,8 @@ ACTION_TEMPLATE(SaveArgPointeeMove,
 
 constexpr char kRecipientUserId[] = "recipient_user_id";
 constexpr char kPasswordValue[] = "password";
-constexpr char kSignonRealm[] = "signon_realm";
+constexpr char kSignonRealm[] = "http://abc.com/";
+constexpr char kPslMatchSignonRealm[] = "http://n.abc.com/";
 constexpr char kOrigin[] = "http://abc.com/";
 constexpr char kUsernameElement[] = "username_element";
 constexpr char kUsernameValue[] = "username";
@@ -175,25 +178,30 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
           DoAll(SaveArg<0>(&storage_key), SaveArgPointeeMove<1>(&entity_data)));
   CreateBridge();
 
-  bridge()->SendPassword(MakePasswordForm(), /*recipient=*/{kRecipientUserId});
+  bridge()->SendPasswordGroup({MakePasswordForm()},
+                              /*recipient=*/{kRecipientUserId});
 
   const OutgoingPasswordSharingInvitationSpecifics& invitation_specifics =
       entity_data.specifics.outgoing_password_sharing_invitation();
   EXPECT_EQ(invitation_specifics.guid(), storage_key);
   EXPECT_EQ(invitation_specifics.recipient_user_id(), kRecipientUserId);
 
-  const sync_pb::PasswordSharingInvitationData::PasswordData& password_data =
-      invitation_specifics.client_only_unencrypted_data().password_data();
-  EXPECT_EQ(password_data.password_value(), kPasswordValue);
-  EXPECT_EQ(password_data.scheme(),
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      password_group_data = invitation_specifics.client_only_unencrypted_data()
+                                .password_group_data();
+  EXPECT_EQ(password_group_data.username_value(), kUsernameValue);
+  EXPECT_EQ(password_group_data.password_value(), kPasswordValue);
+
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupElementData&
+      password_group_element_data = password_group_data.element_data()[0];
+  EXPECT_EQ(password_group_element_data.scheme(),
             static_cast<int>(PasswordForm::Scheme::kHtml));
-  EXPECT_EQ(password_data.signon_realm(), kSignonRealm);
-  EXPECT_EQ(password_data.origin(), kOrigin);
-  EXPECT_EQ(password_data.username_element(), kUsernameElement);
-  EXPECT_EQ(password_data.username_value(), kUsernameValue);
-  EXPECT_EQ(password_data.password_element(), kPasswordElement);
-  EXPECT_EQ(password_data.display_name(), kPasswordDisplayName);
-  EXPECT_EQ(password_data.avatar_url(), kPasswordAvatarUrl);
+  EXPECT_EQ(password_group_element_data.signon_realm(), kSignonRealm);
+  EXPECT_EQ(password_group_element_data.origin(), kOrigin);
+  EXPECT_EQ(password_group_element_data.username_element(), kUsernameElement);
+  EXPECT_EQ(password_group_element_data.password_element(), kPasswordElement);
+  EXPECT_EQ(password_group_element_data.display_name(), kPasswordDisplayName);
+  EXPECT_EQ(password_group_element_data.avatar_url(), kPasswordAvatarUrl);
 }
 
 TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
@@ -201,7 +209,8 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
   std::string storage_key;
   EXPECT_CALL(*mock_processor(), Put).WillOnce(SaveArg<0>(&storage_key));
   CreateBridge();
-  bridge()->SendPassword(MakePasswordForm(), /*recipient=*/{kRecipientUserId});
+  bridge()->SendPasswordGroup({MakePasswordForm()},
+                              /*recipient=*/{kRecipientUserId});
 
   ASSERT_THAT(storage_key, Not(IsEmpty()));
   std::unique_ptr<EntityData> get_data_result = GetDataFromBridge(storage_key);
@@ -214,6 +223,62 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
   EXPECT_EQ(invitation_specifics.guid(), storage_key);
   EXPECT_EQ(invitation_specifics.recipient_user_id(), kRecipientUserId);
 
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      password_group_data = invitation_specifics.client_only_unencrypted_data()
+                                .password_group_data();
+  EXPECT_EQ(password_group_data.username_value(), kUsernameValue);
+  EXPECT_EQ(password_group_data.password_value(), kPasswordValue);
+
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupElementData&
+      password_group_element_data = password_group_data.element_data()[0];
+  EXPECT_EQ(password_group_element_data.scheme(),
+            static_cast<int>(PasswordForm::Scheme::kHtml));
+  EXPECT_EQ(password_group_element_data.signon_realm(), kSignonRealm);
+  EXPECT_EQ(password_group_element_data.origin(), kOrigin);
+  EXPECT_EQ(password_group_element_data.username_element(), kUsernameElement);
+  EXPECT_EQ(password_group_element_data.password_element(), kPasswordElement);
+  EXPECT_EQ(password_group_element_data.display_name(), kPasswordDisplayName);
+  EXPECT_EQ(password_group_element_data.avatar_url(), kPasswordAvatarUrl);
+}
+
+TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
+       ShouldSendEntityForCommitForPasswordGroup) {
+  std::string storage_key;
+  EntityData entity_data;
+  EXPECT_CALL(*mock_processor(), Put)
+      .WillOnce(
+          DoAll(SaveArg<0>(&storage_key), SaveArgPointeeMove<1>(&entity_data)));
+  CreateBridge();
+
+  PasswordForm form = MakePasswordForm();
+  PasswordForm psl_match_form = form;
+  psl_match_form.signon_realm = kPslMatchSignonRealm;
+
+  bridge()->SendPasswordGroup({form, psl_match_form},
+                              /*recipient=*/{kRecipientUserId});
+
+  const OutgoingPasswordSharingInvitationSpecifics& invitation_specifics =
+      entity_data.specifics.outgoing_password_sharing_invitation();
+  EXPECT_EQ(invitation_specifics.guid(), storage_key);
+  EXPECT_EQ(invitation_specifics.recipient_user_id(), kRecipientUserId);
+
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      password_group_data = invitation_specifics.client_only_unencrypted_data()
+                                .password_group_data();
+  EXPECT_EQ(password_group_data.username_value(), kUsernameValue);
+  EXPECT_EQ(password_group_data.password_value(), kPasswordValue);
+
+  EXPECT_THAT(
+      password_group_data.element_data(),
+      UnorderedElementsAre(Property(&sync_pb::PasswordSharingInvitationData::
+                                        PasswordGroupElementData::signon_realm,
+                                    kSignonRealm),
+                           Property(&sync_pb::PasswordSharingInvitationData::
+                                        PasswordGroupElementData::signon_realm,
+                                    kPslMatchSignonRealm)));
+
+  // The legacy proto format should also be populated with the first password in
+  // the group.
   const sync_pb::PasswordSharingInvitationData::PasswordData& password_data =
       invitation_specifics.client_only_unencrypted_data().password_data();
   EXPECT_EQ(password_data.password_value(), kPasswordValue);
@@ -233,7 +298,8 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
   std::string storage_key;
   EXPECT_CALL(*mock_processor(), Put).WillOnce(SaveArg<0>(&storage_key));
   CreateBridge();
-  bridge()->SendPassword(MakePasswordForm(), /*recipient=*/{kRecipientUserId});
+  bridge()->SendPasswordGroup({MakePasswordForm()},
+                              /*recipient=*/{kRecipientUserId});
 
   // Verify that the invitation is still in flight.
   ASSERT_THAT(storage_key, Not(IsEmpty()));
@@ -255,7 +321,8 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
   std::string storage_key;
   EXPECT_CALL(*mock_processor(), Put).WillOnce(SaveArg<0>(&storage_key));
   CreateBridge();
-  bridge()->SendPassword(MakePasswordForm(), /*recipient=*/{kRecipientUserId});
+  bridge()->SendPasswordGroup({MakePasswordForm()},
+                              /*recipient=*/{kRecipientUserId});
 
   // Verify that the invitation is still in flight.
   ASSERT_THAT(storage_key, Not(IsEmpty()));
@@ -274,7 +341,8 @@ TEST_F(OutgoingPasswordSharingInvitationSyncBridgeTest,
   std::string storage_key;
   EXPECT_CALL(*mock_processor(), Put).WillOnce(SaveArg<0>(&storage_key));
   CreateBridge();
-  bridge()->SendPassword(MakePasswordForm(), /*recipient=*/{kRecipientUserId});
+  bridge()->SendPasswordGroup({MakePasswordForm()},
+                              /*recipient=*/{kRecipientUserId});
 
   // Verify that the invitation is still in flight.
   ASSERT_THAT(storage_key, Not(IsEmpty()));

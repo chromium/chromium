@@ -53,9 +53,11 @@ Directions on how to create a self-signed certificate with the special Extended
 Key Usage extension for installer use can be found on
 [security.stackexchange](https://security.stackexchange.com/a/47908).
 
-You will need to explicitly mark the certificate in Keychain Access as trusted.
-Be sure that `security -v find-identity` lists this new certificate as a valid
-identity.
+You will need to explicitly mark the certificate as trusted. This can be done
+with
+`sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain my_installer_cert.crt`.
+Be sure that `sudo security -v find-identity` lists this new certificate as a
+valid identity.
 
 ## Chromium
 

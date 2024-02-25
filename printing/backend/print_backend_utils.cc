@@ -4,11 +4,11 @@
 
 #include "printing/backend/print_backend_utils.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "printing/buildflags/buildflags.h"
@@ -32,11 +32,11 @@ constexpr float kMicronsPerInch = kMmPerInch * kMicronsPerMm;
 // Defines two prefixes of a special breed of media sizes not meant for
 // users' eyes. CUPS incidentally returns these IPP values to us, but
 // we have no use for them.
-constexpr base::StringPiece kMediaCustomMinPrefix = "custom_min";
-constexpr base::StringPiece kMediaCustomMaxPrefix = "custom_max";
+constexpr std::string_view kMediaCustomMinPrefix = "custom_min";
+constexpr std::string_view kMediaCustomMaxPrefix = "custom_max";
 
-bool IsValidMediaName(base::StringPiece& value,
-                      std::vector<base::StringPiece>& pieces) {
+bool IsValidMediaName(std::string_view& value,
+                      std::vector<std::string_view>& pieces) {
   // We expect at least a display string and a dimension string.
   // Additionally, we drop the "custom_min*" and "custom_max*" special
   // "sizes" (not for users' eyes).
@@ -45,20 +45,20 @@ bool IsValidMediaName(base::StringPiece& value,
          !base::StartsWith(value, kMediaCustomMaxPrefix);
 }
 
-std::vector<base::StringPiece> GetStringPiecesIfValid(base::StringPiece value) {
+std::vector<std::string_view> GetStringPiecesIfValid(std::string_view value) {
   // <name>_<width>x<height>{in,mm}
   // e.g. na_letter_8.5x11in, iso_a4_210x297mm
-  std::vector<base::StringPiece> pieces = base::SplitStringPiece(
+  std::vector<std::string_view> pieces = base::SplitStringPiece(
       value, "_", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (!IsValidMediaName(value, pieces)) {
-    return std::vector<base::StringPiece>();
+    return std::vector<std::string_view>();
   }
   return pieces;
 }
 
-gfx::Size DimensionsToMicrons(base::StringPiece value) {
+gfx::Size DimensionsToMicrons(std::string_view value) {
   Unit unit;
-  base::StringPiece dims;
+  std::string_view dims;
   size_t unit_position;
   if ((unit_position = value.find("mm")) != base::StringPiece::npos) {
     unit = Unit::kMillimeters;
@@ -95,13 +95,13 @@ gfx::Size DimensionsToMicrons(base::StringPiece value) {
 
 }  // namespace
 
-gfx::Size ParsePaperSize(base::StringPiece value) {
-  std::vector<base::StringPiece> pieces = GetStringPiecesIfValid(value);
+gfx::Size ParsePaperSize(std::string_view value) {
+  std::vector<std::string_view> pieces = GetStringPiecesIfValid(value);
   if (pieces.empty()) {
     return gfx::Size();
   }
 
-  base::StringPiece dimensions = pieces.back();
+  std::string_view dimensions = pieces.back();
   return DimensionsToMicrons(dimensions);
 }
 

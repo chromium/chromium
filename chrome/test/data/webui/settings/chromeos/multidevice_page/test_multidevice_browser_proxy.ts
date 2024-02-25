@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AndroidSmsInfo, MultiDeviceBrowserProxy, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from 'chrome://os-settings/os_settings.js';
+import {MultiDeviceBrowserProxy, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -10,11 +10,6 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  * Default Host device for PageContentData.
  */
 export const HOST_DEVICE = 'Pixel XL';
-
-/**
- * Test value for messages for web permissions origin.
- */
-export const TEST_ANDROID_SMS_ORIGIN = 'http://foo.com';
 
 /**
  * Builds fake pageContentData for the specified mode. If it is a mode
@@ -45,16 +40,12 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
     MultiDeviceBrowserProxy {
   private data_ =
       createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET);
-  private androidSmsInfo_:
-      AndroidSmsInfo = {origin: TEST_ANDROID_SMS_ORIGIN, enabled: true};
 
   constructor() {
     super([
       'showMultiDeviceSetupDialog',
       'getPageContentData',
       'setFeatureEnabledState',
-      'setUpAndroidSms',
-      'getAndroidSmsInfo',
       'attemptNotificationSetup',
       'cancelNotificationSetup',
       'attemptAppsSetup',
@@ -71,6 +62,16 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
     ]);
   }
 
+  setNotificationAccessStatusForTesting(status: PhoneHubFeatureAccessStatus):
+      void {
+    this.data_.notificationAccessStatus = status;
+  }
+
+  setIsPhoneHubPermissionsDialogSupportedForTesting(isSupported: boolean):
+      void {
+    this.data_.isPhoneHubPermissionsDialogSupported = isSupported;
+  }
+
   getPageContentData(): Promise<MultiDevicePageContentData> {
     this.methodCalled('getPageContentData');
     return Promise.resolve(this.data_);
@@ -84,21 +85,7 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       feature: MultiDeviceFeature, enabled: boolean,
       authToken?: string): Promise<boolean> {
     this.methodCalled('setFeatureEnabledState', [feature, enabled, authToken]);
-    if (feature === MultiDeviceFeature.MESSAGES) {
-      this.androidSmsInfo_.enabled = enabled;
-      webUIListenerCallback(
-          'settings.onAndroidSmsInfoChange', this.androidSmsInfo_);
-    }
     return Promise.resolve(true);
-  }
-
-  setUpAndroidSms(): void {
-    this.methodCalled('setUpAndroidSms');
-  }
-
-  getAndroidSmsInfo(): Promise<AndroidSmsInfo> {
-    this.methodCalled('getAndroidSmsInfo');
-    return Promise.resolve(this.androidSmsInfo_);
   }
 
   attemptNotificationSetup(): void {

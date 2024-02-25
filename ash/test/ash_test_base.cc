@@ -62,6 +62,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/init/input_method_initializer.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -152,7 +153,7 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   params.local_state = local_state();
 
   // Prepare for a pixel test if having pixel init params.
-  absl::optional<pixel_test::InitParams> pixel_test_init_params =
+  std::optional<pixel_test::InitParams> pixel_test_init_params =
       CreatePixelTestInitParams();
   if (pixel_test_init_params) {
     PrepareForPixelDiffTest();
@@ -242,14 +243,16 @@ display::Display::Rotation AshTestBase::GetCurrentInternalDisplayRotation() {
   return GetActiveDisplayRotation(display::Display::InternalDisplayId());
 }
 
-absl::optional<pixel_test::InitParams> AshTestBase::CreatePixelTestInitParams()
+std::optional<pixel_test::InitParams> AshTestBase::CreatePixelTestInitParams()
     const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-void AshTestBase::UpdateDisplay(const std::string& display_specs) {
+void AshTestBase::UpdateDisplay(const std::string& display_specs,
+                                bool from_native_platform,
+                                bool generate_new_ids) {
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
-      .UpdateDisplay(display_specs);
+      .UpdateDisplay(display_specs, from_native_platform, generate_new_ids);
   ScreenOrientationControllerTestApi(
       Shell::Get()->screen_orientation_controller())
       .UpdateNaturalOrientation();
@@ -367,7 +370,8 @@ aura::Window* AshTestBase::CreateTestWindowInShellWithDelegateAndType(
 
 void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {
   aura::client::ParentWindowWithContext(window, Shell::GetPrimaryRootWindow(),
-                                        gfx::Rect());
+                                        gfx::Rect(),
+                                        display::kInvalidDisplayId);
 }
 
 AshPixelDiffer* AshTestBase::GetPixelDiffer() {
@@ -424,19 +428,19 @@ void AshTestBase::SimulateUserLogin(const AccountId& account_id,
 
 void AshTestBase::SimulateNewUserFirstLogin(const std::string& user_email) {
   ash_test_helper_->SimulateUserLogin(AccountId::FromUserEmail(user_email),
-                                      user_manager::UserType::USER_TYPE_REGULAR,
+                                      user_manager::UserType::kRegular,
                                       /*is_new_profile=*/true);
 }
 
 void AshTestBase::SimulateGuestLogin() {
   SimulateUserLogin(AccountId::FromUserEmail(user_manager::kGuestUserName),
-                    user_manager::USER_TYPE_GUEST);
+                    user_manager::UserType::kGuest);
 }
 
 void AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
-  DCHECK(user_type == user_manager::USER_TYPE_ARC_KIOSK_APP ||
-         user_type == user_manager::USER_TYPE_KIOSK_APP ||
-         user_type == user_manager::USER_TYPE_WEB_KIOSK_APP);
+  DCHECK(user_type == user_manager::UserType::kArcKioskApp ||
+         user_type == user_manager::UserType::kKioskApp ||
+         user_type == user_manager::UserType::kWebKioskApp);
 
   GetSessionControllerClient()->SetIsRunningInAppMode(true);
   SimulateUserLogin(AccountId::FromUserEmail(kKioskUserEmail), user_type);
@@ -568,13 +572,13 @@ void AshTestBase::GestureTapOn(const views::View* view) {
 }
 
 bool AshTestBase::EnterOverview(OverviewEnterExitType type) {
-  return Shell::Get()->overview_controller()->StartOverview(
-      OverviewStartAction::kTests, type);
+  return OverviewController::Get()->StartOverview(OverviewStartAction::kTests,
+                                                  type);
 }
 
 bool AshTestBase::ExitOverview(OverviewEnterExitType type) {
-  return Shell::Get()->overview_controller()->EndOverview(
-      OverviewEndAction::kTests, type);
+  return OverviewController::Get()->EndOverview(OverviewEndAction::kTests,
+                                                type);
 }
 
 void AshTestBase::SetShelfAnimationDuration(base::TimeDelta duration) {
@@ -655,6 +659,10 @@ void AshTestBase::PrepareForPixelDiffTest() {
   // are stable.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kStabilizeTimeDependentViewForTests);
+
+  // Enable the dark mode switch to maintain the dark mode before user login.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kForceDarkMode);
 
   DCHECK(!pixel_differ_);
   pixel_differ_ =

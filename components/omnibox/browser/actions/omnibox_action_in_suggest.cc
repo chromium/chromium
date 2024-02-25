@@ -93,7 +93,7 @@ constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
 
 OmniboxActionInSuggest::OmniboxActionInSuggest(
     omnibox::ActionInfo action_info,
-    absl::optional<TemplateURLRef::SearchTermsArgs> search_terms_args)
+    std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args)
     : OmniboxAction(OmniboxAction::LabelStrings(
                         ToActionHint(action_info.action_type()),
                         ToActionContents(action_info.action_type()),

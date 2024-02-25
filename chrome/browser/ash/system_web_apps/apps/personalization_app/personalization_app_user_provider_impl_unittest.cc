@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_user_provider_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/default_user_image.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
@@ -13,18 +14,20 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/avatar/fake_user_image_file_selector.h"
-#include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -41,12 +44,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace ash::personalization_app {
@@ -70,19 +74,6 @@ void AddAndLoginUser(const AccountId& account_id,
                                     base::UTF8ToUTF16(display_name));
   user_manager->LoginUser(account_id);
   user_manager->SwitchActiveUser(account_id);
-}
-
-SkBitmap CreateBitmap(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(SK_ColorGREEN);
-  return bitmap;
-}
-
-gfx::ImageSkia CreateImage(int width, int height) {
-  gfx::ImageSkia image =
-      gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap(width, height));
-  return image;
 }
 
 mojo_base::BigBuffer FakeEncodedPngBuffer() {
@@ -143,6 +134,26 @@ class TestUserImageObserver
   bool is_enterprise_managed_ = false;
 };
 
+// Blocks until LocalState is updated by UserManager.
+class LocalStateUpdateWaiter : public user_manager::UserManager::Observer {
+ public:
+  LocalStateUpdateWaiter() {
+    observation_.Observe(user_manager::UserManager::Get());
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void LocalStateChanged(user_manager::UserManager* user_manager) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      observation_{this};
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 class TestCameraImageDecoder
@@ -153,7 +164,7 @@ class TestCameraImageDecoder
 
   void DecodeCameraImage(base::span<const uint8_t> encoded_bytes,
                          data_decoder::DecodeImageCallback callback) override {
-    std::move(callback).Run(CreateBitmap(10, 10));
+    std::move(callback).Run(gfx::test::CreateBitmap(/*size=*/10));
   }
 };
 
@@ -214,7 +225,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
   ash::UserImageManagerImpl* user_image_manager() {
     return static_cast<ash::UserImageManagerImpl*>(
-        ash::ChromeUserManager::Get()->GetUserImageManager(
+        ash::UserImageManagerRegistry::Get()->GetManager(
             GetAccountId(profile_)));
   }
 
@@ -256,14 +267,23 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  base::FilePath GetTestFilePath() {
+    base::FilePath test_data_dir;
+    EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+    return test_data_dir.AppendASCII("chromeos/avatars/avatar1.jpg");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager scoped_user_manager_;
+  UserImageManagerRegistry user_image_manager_registry_{
+      user_manager::UserManager::Get()};
   TestingProfileManager profile_manager_;
+  data_decoder::test::InProcessDataDecoder data_decoder_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   TestUserImageObserver test_user_image_observer_;
   mojo::Remote<ash::personalization_app::mojom::UserProvider>
       user_provider_remote_;
@@ -285,7 +305,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserAvatarImage) {
   EXPECT_EQ(nullptr, current_user_image());
 
   // Mock out profile image so the test does not try to download a real one.
-  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  const gfx::ImageSkia& profile_image = gfx::test::CreateImageSkia(/*size=*/50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
 
   user_image_manager()->SaveUserImageFromProfileImage();
@@ -325,7 +345,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
   SetUserImageObserver();
 
   // Select a profile image.
-  gfx::ImageSkia profile_image = CreateImage(50, 50);
+  gfx::ImageSkia profile_image = gfx::test::CreateImageSkia(/*size=*/50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
   user_image_manager()->SaveUserImageFromProfileImage();
 
@@ -337,7 +357,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
 TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImage) {
   SetUserImageObserver();
 
-  gfx::ImageSkia profile_image = CreateImage(50, 50);
+  gfx::ImageSkia profile_image = gfx::test::CreateImageSkia(/*size=*/50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
   user_provider_remote()->get()->SelectProfileImage();
   user_provider_remote()->FlushForTesting();
@@ -349,7 +369,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImage) {
 TEST_F(PersonalizationAppUserProviderImplTest, EncodesUserImageToPngBuffer) {
   SetUserImageObserver();
 
-  gfx::ImageSkia test_image = CreateImage(4, 4);
+  gfx::ImageSkia test_image = gfx::test::CreateImageSkia(/*size=*/4);
   test_image.MakeThreadSafe();
 
   // Save a jpg user image. This will trigger the image encoding to png path.
@@ -426,7 +446,7 @@ TEST_F(PersonalizationAppUserProviderImplTest,
 TEST_F(PersonalizationAppUserProviderImplTest,
        RecordsProfileImageChangeHistogram) {
   // Set a fake profile image to skip trying to downloading one.
-  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  const gfx::ImageSkia& profile_image = gfx::test::CreateImageSkia(/*size=*/50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
 
   // No profile image recorded yet.
@@ -514,10 +534,9 @@ TEST_F(PersonalizationAppUserProviderImplTest,
       kDeprecatedImageWithSourceInfoIndex);
   SetUserImageObserver();
 
-  absl::optional<default_user_image::DeprecatedSourceInfo>
-      expected_source_info =
-          default_user_image::GetDeprecatedDefaultImageSourceInfo(
-              kDeprecatedImageWithSourceInfoIndex);
+  std::optional<default_user_image::DeprecatedSourceInfo> expected_source_info =
+      default_user_image::GetDeprecatedDefaultImageSourceInfo(
+          kDeprecatedImageWithSourceInfoIndex);
   ASSERT_TRUE(expected_source_info.has_value())
       << "Image index " << kDeprecatedImageWithSourceInfoIndex
       << " must have associated source info";
@@ -570,41 +589,27 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectImageFromDiskDisabled) {
             "Not allowed to select image file");
 }
 
-class PersonalizationAppUserProviderImplWithMockTest
-    : public PersonalizationAppUserProviderImplTest {
- protected:
-  void SetUp() override {
-    GetFakeUserManager()->SetMockUserImageManagerForTesting();
-    PersonalizationAppUserProviderImplTest::SetUp();
-  }
+TEST_F(PersonalizationAppUserProviderImplTest, SelectImageFromDisk) {
+  ASSERT_EQ(user_manager::UserManager::Get()
+                ->FindUser(GetAccountId(profile()))
+                ->image_index(),
+            user_manager::User::USER_IMAGE_PROFILE);
 
-  ash::MockUserImageManager* mock_user_image_manager() {
-    return static_cast<ash::MockUserImageManager*>(
-        ash::ChromeUserManager::Get()->GetUserImageManager(
-            GetAccountId(profile())));
-  }
-
-  base::FilePath GetTestFilePath() {
-    const base::FilePath base_file_path("/this/is/a/test/directory/Base Name");
-    const base::FilePath dir_path = base_file_path.AppendASCII("dir1");
-    return dir_path.AppendASCII("file1.jpg");
-  }
-};
-
-TEST_F(PersonalizationAppUserProviderImplWithMockTest, SelectImageFromDisk) {
   base::FilePath file_path = GetTestFilePath();
-  EXPECT_CALL(*mock_user_image_manager(), SaveUserImageFromFile(file_path));
-
   auto fake_file_selector =
       std::make_unique<ash::FakeUserImageFileSelector>(web_ui());
   fake_file_selector->SetFilePath(file_path);
   user_provider()->SetUserImageFileSelectorForTesting(
       std::move(fake_file_selector));
   user_provider_remote()->get()->SelectImageFromDisk();
-  user_provider_remote()->FlushForTesting();
+  LocalStateUpdateWaiter().Wait();
+  EXPECT_EQ(user_manager::UserManager::Get()
+                ->FindUser(GetAccountId(profile()))
+                ->image_index(),
+            user_manager::User::USER_IMAGE_EXTERNAL);
 }
 
-TEST_F(PersonalizationAppUserProviderImplWithMockTest,
+TEST_F(PersonalizationAppUserProviderImplTest,
        RecordsSelectImageFromDiskChangeHistogram) {
   // No external image set yet.
   histogram_tester().ExpectBucketCount(

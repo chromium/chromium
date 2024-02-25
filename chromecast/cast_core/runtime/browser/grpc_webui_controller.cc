@@ -4,6 +4,8 @@
 
 #include "chromecast/cast_core/runtime/browser/grpc_webui_controller.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/browser/webui/cast_webui_message_handler.h"
@@ -123,7 +125,7 @@ void GrpcWebUIController::RegisterMessageCallbacks() {
 }
 
 void GrpcWebUIController::CallJavascriptFunction(
-    base::StringPiece function,
+    std::string_view function,
     base::span<const base::ValueView> args) {
   message_handler_->CallJavascriptFunction(function, std::move(args));
 }

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -16,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -37,7 +39,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -65,6 +66,11 @@ class CrosSettingsTest : public testing::Test {
   ~CrosSettingsTest() override {}
 
   void SetUp() override {
+    // Disable owner key migration.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
+
     device_policy_.Build();
 
     fake_session_manager_client_.set_device_policy(device_policy_.GetBlob());
@@ -143,10 +149,11 @@ class CrosSettingsTest : public testing::Test {
   }
 
   bool IsUserAllowed(const std::string& username,
-                     const absl::optional<user_manager::UserType>& user_type) {
+                     const std::optional<user_manager::UserType>& user_type) {
     return CrosSettings::Get()->IsUserAllowlisted(username, nullptr, user_type);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
 
@@ -397,9 +404,9 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithEmptyAllowlist) {
   ExpectPref(kAccountsPrefUsers, base::Value(base::Value::Type::LIST));
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(false));
 
-  EXPECT_FALSE(IsUserAllowed(kUser1, absl::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
+  EXPECT_FALSE(IsUserAllowed(kUser1, std::nullopt));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kChild));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kRegular));
 }
 
 // DeviceFamilyLinkAccountsAllowed should not have any effect if the feature is
@@ -424,10 +431,10 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithFeatureDisabled) {
   ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(false));
 
-  EXPECT_TRUE(IsUserAllowed(kOwner, absl::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, absl::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
+  EXPECT_TRUE(IsUserAllowed(kOwner, std::nullopt));
+  EXPECT_FALSE(IsUserAllowed(kUser1, std::nullopt));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kChild));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kRegular));
 }
 
 TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
@@ -449,10 +456,10 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
   ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(true));
 
-  EXPECT_TRUE(IsUserAllowed(kOwner, absl::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, absl::nullopt));
-  EXPECT_TRUE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
+  EXPECT_TRUE(IsUserAllowed(kOwner, std::nullopt));
+  EXPECT_FALSE(IsUserAllowed(kUser1, std::nullopt));
+  EXPECT_TRUE(IsUserAllowed(kUser1, user_manager::UserType::kChild));
+  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kRegular));
 }
 
 }  // namespace ash

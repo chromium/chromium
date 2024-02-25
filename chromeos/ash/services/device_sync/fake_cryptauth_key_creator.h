@@ -5,13 +5,14 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_KEY_CREATOR_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_KEY_CREATOR_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_creator.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_creator_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -29,7 +30,7 @@ class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
   // CryptAuthKeyCreator:
   void CreateKeys(const base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData>&
                       keys_to_create,
-                  const absl::optional<CryptAuthKey>& server_ephemeral_dh,
+                  const std::optional<CryptAuthKey>& server_ephemeral_dh,
                   CreateKeysCallback create_keys_callback) override;
 
   const base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData>&
@@ -37,7 +38,7 @@ class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
     return keys_to_create_;
   }
 
-  const absl::optional<CryptAuthKey>& server_ephemeral_dh() const {
+  const std::optional<CryptAuthKey>& server_ephemeral_dh() const {
     return server_ephemeral_dh_;
   }
 
@@ -45,7 +46,7 @@ class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
 
  private:
   base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData> keys_to_create_;
-  absl::optional<CryptAuthKey> server_ephemeral_dh_;
+  std::optional<CryptAuthKey> server_ephemeral_dh_;
   CreateKeysCallback create_keys_callback_;
 };
 
@@ -66,8 +67,7 @@ class FakeCryptAuthKeyCreatorFactory : public CryptAuthKeyCreatorImpl::Factory {
   // CryptAuthKeyCreatorImpl::Factory:
   std::unique_ptr<CryptAuthKeyCreator> CreateInstance() override;
 
-  raw_ptr<FakeCryptAuthKeyCreator, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeCryptAuthKeyCreator, DanglingUntriaged> instance_ = nullptr;
 };
 
 }  // namespace device_sync

@@ -75,17 +75,56 @@ TEST(ReadingListEntry, ReadState) {
 }
 
 TEST(ReadingListEntry, SpecificsShouldBeValid) {
-  std::unique_ptr<sync_pb::ReadingListSpecifics> pb_entry =
-      std::make_unique<sync_pb::ReadingListSpecifics>();
-  pb_entry->set_url("http://example.com/");
-  EXPECT_TRUE(ReadingListEntry::IsSpecificsValid(*pb_entry));
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  EXPECT_TRUE(ReadingListEntry::IsSpecificsValid(*specifics));
 }
 
-TEST(ReadingListEntry, SpecificsShouldBeNotValid) {
-  std::unique_ptr<sync_pb::ReadingListSpecifics> pb_entry =
-      std::make_unique<sync_pb::ReadingListSpecifics>();
-  pb_entry->set_url("");
-  EXPECT_FALSE(ReadingListEntry::IsSpecificsValid(*pb_entry));
+TEST(ReadingListEntry, SpecificsWithEmptyIdShouldBeNotValid) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  specifics->set_entry_id("");
+  EXPECT_FALSE(ReadingListEntry::IsSpecificsValid(*specifics));
+}
+
+TEST(ReadingListEntry, SpecificsWithEmptyUrlShouldBeNotValid) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  specifics->set_url("");
+  EXPECT_FALSE(ReadingListEntry::IsSpecificsValid(*specifics));
+}
+
+TEST(ReadingListEntry, SpecificsWithUnequalEntryIdandUrlShouldBeNotValid) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  specifics->set_entry_id("http://UnequalEntryIdAndUrl.com/");
+  EXPECT_FALSE(ReadingListEntry::IsSpecificsValid(*specifics));
+}
+
+TEST(ReadingListEntry, SpecificsWithInvalidUrlShouldBeNotValid) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  specifics->set_url("InvalidUrl");
+  EXPECT_FALSE(ReadingListEntry::IsSpecificsValid(*specifics));
+}
+
+TEST(ReadingListEntry, SpecificsWithTilteContainsNonUTF8ShouldBeNotValid) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", base::Time::FromTimeT(10));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  specifics->set_title("\xFC\x9C\xBF\x80\xBF\x80");
+  EXPECT_FALSE(ReadingListEntry::IsSpecificsValid(*specifics));
 }
 
 TEST(ReadingListEntry, UpdateTitle) {

@@ -22,9 +22,9 @@ enum class CloseRequestResult;
 //  such as non-client hit testing information, sizing etc. Sub-classes of
 //  ClientView are used to create more elaborate contents.
 class VIEWS_EXPORT ClientView : public View {
- public:
-  METADATA_HEADER(ClientView);
+  METADATA_HEADER(ClientView, View)
 
+ public:
   // Constructs a ClientView object for the specified widget with the specified
   // contents. Since this object is created during the process of creating
   // |widget|, |contents_view| must be valid if you want the initial size of
@@ -52,6 +52,14 @@ class VIEWS_EXPORT ClientView : public View {
   // corner of resizable dialog boxes.
   virtual int NonClientHitTest(const gfx::Point& point);
 
+  // Updates and applies the `corner_radius` to the ClientView's contents as
+  // part of rounding the window.
+  // Some platforms, such as ChromeOS, do not have borders surrounding
+  // ClientView part of the NonClientFrameView. Therefore, the
+  // NonClientFrameView has to delegate part of the rounding logic to the
+  // ClientView.
+  virtual void UpdateWindowRoundedCorners(int corner_radius);
+
   // Overridden from View:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
@@ -72,8 +80,17 @@ class VIEWS_EXPORT ClientView : public View {
   }
 
  private:
-  // The View that this ClientView contains.
-  raw_ptr<View, AcrossTasksDanglingUntriaged> contents_view_;
+  // The View that this ClientView contains. This can temporarily dangle during
+  // teardown of the Widget in some hard-to-resolve cases. Specifically, if the
+  // contents view is also a WidgetDelegate (which happens with the
+  // DialogDelegateView subclasses) *and* that WidgetDelegate is marked as owned
+  // by the widget, the WidgetDelegate can be destroyed earlier during Widget
+  // teardown than the View tree is, which can allow `this` to outlive the View
+  // pointed to by `contents_view_`, even though `contents_view_` was previously
+  // a child view of `this`.
+  //
+  // TODO(https://crbug.com/1475438): Fix that. Good luck!
+  raw_ptr<View, DisableDanglingPtrDetection> contents_view_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ClientView, View)

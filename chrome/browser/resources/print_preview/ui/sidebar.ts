@@ -37,11 +37,12 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
-import {Destination} from '../data/destination.js';
-import {Error, State} from '../data/state.js';
+import type {Destination} from '../data/destination.js';
+import type {Error} from '../data/state.js';
+import {State} from '../data/state.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
-import {DestinationState, PrintPreviewDestinationSettingsElement} from './destination_settings.js';
+import type {DestinationState, PrintPreviewDestinationSettingsElement} from './destination_settings.js';
 import {SettingsMixin} from './settings_mixin.js';
 import {getTemplate} from './sidebar.html.js';
 

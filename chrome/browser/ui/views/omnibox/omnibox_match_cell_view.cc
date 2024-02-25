@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -22,7 +23,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/common/color_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -31,6 +32,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -46,14 +48,6 @@ namespace {
 // The edge length of the favicon, answer icon, and entity backgrounds if the
 // kUniformRowHeight flag is enabled.
 static constexpr int kUniformRowHeightIconSize = 28;
-
-// The edge length of favicon backgrounds.
-int GetIconSize() {
-  // When `kSquareSuggestIconIcons` is disabled, icons don't have backgrounds
-  // and aren't resized in `OmniboxMatchCellView`.
-  DCHECK(OmniboxFieldTrial::kSquareSuggestIconIcons.Get());
-  return kUniformRowHeightIconSize;
-}
 
 // The size (edge length or diameter) of the answer icon backgrounds (which may
 // be squares or circles).
@@ -76,7 +70,8 @@ int GetIconAndImageCornerRadius() {
   // backgrounds.
   DCHECK(OmniboxFieldTrial::kSquareSuggestIconAnswers.Get() ||
          OmniboxFieldTrial::kSquareSuggestIconIcons.Get() ||
-         OmniboxFieldTrial::kSquareSuggestIconEntities.Get());
+         OmniboxFieldTrial::kSquareSuggestIconEntities.Get() ||
+         OmniboxFieldTrial::kSquareSuggestIconWeather.Get());
   return 4;
 }
 
@@ -92,6 +87,17 @@ double GetEntityBackgroundScale() {
   return scale;
 }
 
+// Size of weather icon with a round square background.
+int GetWeatherImageSize() {
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconWeather.Get());
+  return 24;
+}
+
+// Size of the weather's round square background.
+int GetWeatherBackgroundSize() {
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconWeather.Get());
+  return 28;
+}
 ////////////////////////////////////////////////////////////////////////////////
 // PlaceholderImageSource:
 
@@ -128,8 +134,9 @@ void PlaceholderImageSource::Draw(gfx::Canvas* canvas) {
 // RoundedCornerImageView:
 
 class RoundedCornerImageView : public views::ImageView {
+  METADATA_HEADER(RoundedCornerImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(RoundedCornerImageView);
   RoundedCornerImageView() = default;
   RoundedCornerImageView(const RoundedCornerImageView&) = delete;
   RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
@@ -152,7 +159,7 @@ void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
   ImageView::OnPaint(canvas);
 }
 
-BEGIN_METADATA(RoundedCornerImageView, views::ImageView)
+BEGIN_METADATA(RoundedCornerImageView)
 END_METADATA
 
 }  // namespace
@@ -206,14 +213,13 @@ void OmniboxMatchCellView::ComputeMatchMaxWidths(
 
     // Give the description the remaining space, unless this makes it too small
     // to display anything meaningful, in which case just hide the description
-    // and let the contents take up the whole width.
+    // and let the contents take up the whole width. However, when action chips
+    // are inlined, we don't hide the description view (in order to match the
+    // behavior of the realbox).
     *description_max_width =
         std::min(description_width, available_width - *contents_max_width);
-    const int kMinimumDescriptionWidth = 75;
-    if (*description_max_width <
-        std::min(description_width, kMinimumDescriptionWidth)) {
-      *description_max_width = 0;
-      // Since we're not going to display the description, the contents can have
+    if (*description_max_width == 0) {
+      // If we're not going to display the description, the contents can have
       // the space we reserved for the separator.
       available_width += separator_width;
       *contents_max_width = std::min(contents_width, available_width);
@@ -291,18 +297,20 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
             : kColorOmniboxAnswerIconBackground;
     const auto& icon = gfx::CreateVectorIcon(
         vector_icon, color_provider->GetColor(foreground_color_id));
+    const int answer_image_size = GetAnswerImageSize();
     answer_image_view_->SetImageSize(
-        gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
+        gfx::Size(answer_image_size, answer_image_size));
     if (OmniboxFieldTrial::kSquareSuggestIconAnswers.Get()) {
-      answer_image_view_->SetImage(
+      answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-              GetAnswerImageSize(), GetIconAndImageCornerRadius(),
-              color_provider->GetColor(background_color_id), icon));
+              gfx::SizeF(answer_image_size, answer_image_size),
+              GetIconAndImageCornerRadius(),
+              color_provider->GetColor(background_color_id), icon)));
     } else {
-      answer_image_view_->SetImage(
+      answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-              GetAnswerImageSize() / 2,
-              color_provider->GetColor(background_color_id), icon));
+              /*radius=*/answer_image_size / 2,
+              color_provider->GetColor(background_color_id), icon)));
     }
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
@@ -311,7 +319,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
       separator_view_->SetSize(gfx::Size());
     }
   } else if (!has_image_) {
-    answer_image_view_->SetImage(gfx::ImageSkia());
+    answer_image_view_->SetImage(ui::ImageModel());
     answer_image_view_->SetSize(gfx::Size());
   } else {
     // Determine if we have a local icon (or else it will be downloaded).
@@ -334,9 +342,9 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
 
       gfx::Size size(size_px, size_px);
       answer_image_view_->SetImageSize(size);
-      answer_image_view_->SetImage(
-          gfx::CanvasImageSource::MakeImageSkia<PlaceholderImageSource>(size,
-                                                                        color));
+      answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
+          gfx::CanvasImageSource::MakeImageSkia<PlaceholderImageSource>(
+              size, color)));
     }
   }
   SetTailSuggestCommonPrefixWidth(
@@ -345,20 +353,37 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
           : std::u16string());
 }
 
-void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image) {
-  if (OmniboxFieldTrial::kSquareSuggestIconIcons.Get()) {
-    icon_view_->SetImage(
+void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
+                                   const AutocompleteMatch& match) {
+  bool is_pedal_suggestion_row = match.type == AutocompleteMatchType::PEDAL;
+  bool is_journeys_suggestion_row =
+      match.type == AutocompleteMatchType::HISTORY_CLUSTER;
+  bool is_instant_keyword_row =
+      match.type == AutocompleteMatchType::STARTER_PACK &&
+      OmniboxFieldTrial::IsKeywordModeRefreshEnabled();
+  if (is_pedal_suggestion_row || is_journeys_suggestion_row ||
+      is_instant_keyword_row ||
+      OmniboxFieldTrial::kSquareSuggestIconIcons.Get()) {
+    // When a PEDAL suggestion has been split out to its own row, apply a square
+    // background with a distinctive color to the respective icon. Journeys
+    // suggestion rows should also receive the same treatment.
+    const auto background_color = is_pedal_suggestion_row ||
+                                          is_journeys_suggestion_row ||
+                                          is_instant_keyword_row
+                                      ? kColorOmniboxAnswerIconGM3Background
+                                      : kColorOmniboxResultsIconGM3Background;
+    icon_view_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            GetIconSize(), GetIconAndImageCornerRadius(),
-            GetColorProvider()->GetColor(kColorOmniboxResultsIconGM3Background),
-            image));
+            gfx::SizeF(kUniformRowHeightIconSize, kUniformRowHeightIconSize),
+            GetIconAndImageCornerRadius(),
+            GetColorProvider()->GetColor(background_color), image)));
   } else {
-    icon_view_->SetImage(image);
+    icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
   }
 }
 
 void OmniboxMatchCellView::ClearIcon() {
-  icon_view_->SetImage({});
+  icon_view_->SetImage(ui::ImageModel());
 }
 
 void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
@@ -373,17 +398,31 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   int height = image.height();
   const int max = std::max(width, height);
 
-  if (OmniboxFieldTrial::kSquareSuggestIconEntities.Get() &&
-      !is_weather_answer) {
-    answer_image_view_->SetImage(
+  // Weather icon square background should be the same color as the pop-up
+  // background.
+  if (OmniboxFieldTrial::kSquareSuggestIconWeather.Get() && is_weather_answer) {
+    // Explicitly resize the weather icon to avoid pixelation.
+    gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
+        image, skia::ImageOperations::RESIZE_GOOD,
+        gfx::Size(GetWeatherImageSize(), GetWeatherImageSize()));
+    answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            max / GetEntityBackgroundScale(), GetIconAndImageCornerRadius(),
+            gfx::SizeF(GetWeatherBackgroundSize(), GetWeatherBackgroundSize()),
+            GetIconAndImageCornerRadius(),
+            GetColorProvider()->GetColor(kColorOmniboxResultsBackground),
+            resized_image)));
+  } else if (OmniboxFieldTrial::kSquareSuggestIconEntities.Get() &&
+             !is_weather_answer) {
+    const float scaled_size = max / GetEntityBackgroundScale();
+    answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+            gfx::SizeF(scaled_size, scaled_size), GetIconAndImageCornerRadius(),
             GetColorProvider()->GetColor(kColorOmniboxResultsIconGM3Background),
             gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-                GetIconAndImageCornerRadius(), image)));
+                GetIconAndImageCornerRadius(), image))));
 
   } else {
-    answer_image_view_->SetImage(image);
+    answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 
     // Usually, answer images are square. But if that's not the case, setting
     // answer_image_view_ size proportional to the image size preserves
@@ -410,12 +449,13 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
     vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
   }
+  const int right_margin = 7;
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
-                           vertical_margin, OmniboxMatchCellView::kMarginRight);
+                           vertical_margin, right_margin);
 }
 
-void OmniboxMatchCellView::Layout() {
-  views::View::Layout();
+void OmniboxMatchCellView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
 
   const bool two_line = layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION;
   const gfx::Rect child_area = GetContentsBounds();
@@ -494,19 +534,21 @@ bool OmniboxMatchCellView::GetCanProcessEventsWithinSubtree() const {
 }
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
-  int height = 0;
-  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
-    height = GetEntityImageSize();
-  } else if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
-    height = GetEntityImageSize() +
-             2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
-  } else {
-    height = content_view_->GetLineHeight() + GetInsets().height();
-  }
+  int height = GetEntityImageSize() +
+               2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
   if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)
     height += description_view_->GetHeightForWidth(width() - GetTextIndent());
-  // Width is not calculated because it's not needed by current callers.
-  return gfx::Size(0, height);
+
+  int width = GetInsets().width() + GetTextIndent() +
+              tail_suggest_common_prefix_width_ +
+              content_view_->GetPreferredSize().width();
+
+  const int description_width = description_view_->GetPreferredSize().width();
+  if (description_width > 0) {
+    width += separator_view_->GetPreferredSize().width() + description_width;
+  }
+
+  return gfx::Size(width, height);
 }
 
 void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
@@ -521,5 +563,5 @@ void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
   tail_suggest_common_prefix_width_ = render_text->GetStringSize().width();
 }
 
-BEGIN_METADATA(OmniboxMatchCellView, views::View)
+BEGIN_METADATA(OmniboxMatchCellView)
 END_METADATA

@@ -6,15 +6,16 @@
 #define ASH_USER_EDUCATION_MOCK_USER_EDUCATION_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -40,13 +41,17 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
                ui::ElementIdentifier element_id,
                ui::ElementContext element_context),
               (override));
-  MOCK_METHOD(absl::optional<ui::ElementIdentifier>,
+  MOCK_METHOD(std::optional<ui::ElementIdentifier>,
               GetElementIdentifierForAppId,
               (const std::string& app_id),
               (const, override));
-  MOCK_METHOD(const absl::optional<bool>&,
+  MOCK_METHOD(const std::optional<bool>&,
               IsNewUser,
               (const AccountId& account_id),
+              (const, override));
+  MOCK_METHOD(bool,
+              IsTutorialRegistered,
+              (const AccountId& account_id, TutorialId tutorial_id),
               (const, override));
   MOCK_METHOD(void,
               RegisterTutorial,
@@ -65,18 +70,19 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
   MOCK_METHOD(void,
               AbortTutorial,
               (const AccountId& account_id,
-               absl::optional<TutorialId> tutorial_id),
+               std::optional<TutorialId> tutorial_id),
               (override));
   MOCK_METHOD(void,
               LaunchSystemWebAppAsync,
               (const AccountId& account_id,
                SystemWebAppType system_web_app_type,
+               apps::LaunchSource launch_source,
                int64_t display_id),
               (override));
   MOCK_METHOD(bool,
               IsRunningTutorial,
               (const AccountId& account_id,
-               absl::optional<TutorialId> tutorial_id),
+               std::optional<TutorialId> tutorial_id),
               (const, override));
 };
 

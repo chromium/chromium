@@ -30,11 +30,11 @@ class FakeAudioDevicesObserver : public AudioDevices::Observer {
   ~FakeAudioDevicesObserver() override = default;
 
   // AudioDevices::Observer implementation
-  void SetDeviceId(const absl::optional<std::string>& device_id) override {
+  void SetDeviceId(const std::optional<std::string>& device_id) override {
     preferred_device_id_ = device_id;
   }
   void SetHotwordDeviceId(
-      const absl::optional<std::string>& device_id) override {
+      const std::optional<std::string>& device_id) override {
     hotword_device_id_ = device_id;
   }
 
@@ -47,8 +47,8 @@ class FakeAudioDevicesObserver : public AudioDevices::Observer {
   }
 
  private:
-  absl::optional<std::string> preferred_device_id_;
-  absl::optional<std::string> hotword_device_id_;
+  std::optional<std::string> preferred_device_id_;
+  std::optional<std::string> hotword_device_id_;
 };
 
 class DeviceBuilder {

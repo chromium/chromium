@@ -13,10 +13,10 @@ import org.chromium.base.test.util.Restriction;
  *   \@Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
  * </code>
  */
-
 public final class DeviceRestriction {
     /** Specifies the test is only valid on automotive form factors. */
     public static final String RESTRICTION_TYPE_AUTO = "Auto";
+
     /** Specifies the test is only valid on non-automotive form factors. */
     public static final String RESTRICTION_TYPE_NON_AUTO = "Non Auto";
 }

@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,62 +19,59 @@ CommandLinePrefStore::CommandLinePrefStore(
     const base::CommandLine* command_line)
     : command_line_(command_line) {}
 
-CommandLinePrefStore::~CommandLinePrefStore() {}
+CommandLinePrefStore::~CommandLinePrefStore() = default;
 
 void CommandLinePrefStore::ApplyStringSwitches(
-    const CommandLinePrefStore::SwitchToPreferenceMapEntry string_switch[],
-    size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-    if (command_line_->HasSwitch(string_switch[i].switch_name)) {
-      SetValue(string_switch[i].preference_path,
-               base::Value(command_line_->GetSwitchValueASCII(
-                   string_switch[i].switch_name)),
-               WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+    base::span<const CommandLinePrefStore::SwitchToPreferenceMapEntry>
+        string_switch_map) {
+  for (const auto& entry : string_switch_map) {
+    if (command_line_->HasSwitch(entry.switch_name)) {
+      SetValue(
+          entry.preference_path,
+          base::Value(command_line_->GetSwitchValueASCII(entry.switch_name)),
+          WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     }
   }
 }
 
 void CommandLinePrefStore::ApplyPathSwitches(
-    const CommandLinePrefStore::SwitchToPreferenceMapEntry path_switch[],
-    size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-    if (command_line_->HasSwitch(path_switch[i].switch_name)) {
-      SetValue(path_switch[i].preference_path,
-               base::Value(
-                   command_line_->GetSwitchValuePath(path_switch[i].switch_name)
-                       .AsUTF8Unsafe()),
+    base::span<const CommandLinePrefStore::SwitchToPreferenceMapEntry>
+        path_switch_map) {
+  for (const auto& entry : path_switch_map) {
+    if (command_line_->HasSwitch(entry.switch_name)) {
+      SetValue(entry.preference_path,
+               base::Value(command_line_->GetSwitchValuePath(entry.switch_name)
+                               .AsUTF8Unsafe()),
                WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     }
   }
 }
 
 void CommandLinePrefStore::ApplyIntegerSwitches(
-    const CommandLinePrefStore::SwitchToPreferenceMapEntry integer_switch[],
-    size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-    if (command_line_->HasSwitch(integer_switch[i].switch_name)) {
-      std::string str_value = command_line_->GetSwitchValueASCII(
-          integer_switch[i].switch_name);
+    base::span<const CommandLinePrefStore::SwitchToPreferenceMapEntry>
+        integer_switch_map) {
+  for (const auto& entry : integer_switch_map) {
+    if (command_line_->HasSwitch(entry.switch_name)) {
+      std::string str_value =
+          command_line_->GetSwitchValueASCII(entry.switch_name);
       int int_value = 0;
       if (!base::StringToInt(str_value, &int_value)) {
-        LOG(ERROR) << "The value " << str_value << " of "
-                   << integer_switch[i].switch_name
+        LOG(ERROR) << "The value " << str_value << " of " << entry.switch_name
                    << " can not be converted to integer, ignoring!";
         continue;
       }
-      SetValue(integer_switch[i].preference_path, base::Value(int_value),
+      SetValue(entry.preference_path, base::Value(int_value),
                WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     }
   }
 }
 
 void CommandLinePrefStore::ApplyBooleanSwitches(
-      const CommandLinePrefStore::BooleanSwitchToPreferenceMapEntry
-      boolean_switch_map[], size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-    if (command_line_->HasSwitch(boolean_switch_map[i].switch_name)) {
-      SetValue(boolean_switch_map[i].preference_path,
-               base::Value(boolean_switch_map[i].set_value),
+    base::span<const CommandLinePrefStore::BooleanSwitchToPreferenceMapEntry>
+        boolean_switch_map) {
+  for (const auto& entry : boolean_switch_map) {
+    if (command_line_->HasSwitch(entry.switch_name)) {
+      SetValue(entry.preference_path, base::Value(entry.set_value),
                WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     }
   }

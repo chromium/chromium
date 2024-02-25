@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
@@ -49,7 +51,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -190,8 +191,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
 
   // Adds a cookie for the |url|. Used in the cookie integration tests.
   void AddCookie(const GURL& url,
-                 const absl::optional<net::CookiePartitionKey>&
-                     cookie_partition_key = absl::nullopt) {
+                 const std::optional<net::CookiePartitionKey>&
+                     cookie_partition_key = std::nullopt) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     network::mojom::CookieManager* cookie_manager =
         storage_partition()->GetCookieManagerForBrowserProcess();
@@ -201,7 +202,7 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
       cookie_line += "; Secure; Partitioned";
     }
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+        url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
         cookie_partition_key));
 
     base::RunLoop run_loop;
@@ -778,18 +779,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   EXPECT_EQ(cookies[1].Domain(), "subdomain.origin2.com");
 }
 
-class PartitionedCookiesClearSiteDataHandlerBrowserTest
-    : public ClearSiteDataHandlerBrowserTest {
- public:
-  PartitionedCookiesClearSiteDataHandlerBrowserTest() {
-    feature_list_.InitAndEnableFeature(net::features::kPartitionedCookies);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PartitionedCookiesClearSiteDataHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
                        ThirdPartyCookieBlocking) {
   // First disable third-party cookie blocking.
   network::mojom::CookieManager* cookie_manager =
@@ -1106,9 +1096,17 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerSharedStorageBrowserTest,
   // There are 15 entries for two origins.
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(kOrigin1, kOrigin2));
-  EXPECT_EQ(10, tester.GetSharedStorageNumEntriesForOrigin(kOrigin1));
-  EXPECT_EQ(5, tester.GetSharedStorageNumEntriesForOrigin(kOrigin2));
-  EXPECT_EQ(15, tester.GetSharedStorageTotalEntries());
+
+  // Note that u"key" concatenated with a single digit has 4 char16_t's and
+  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
+  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
+  // 20 bytes.
+  const int kNumBytesPerEntry = 20;
+  EXPECT_EQ(10 * kNumBytesPerEntry,
+            tester.GetSharedStorageNumBytesForOrigin(kOrigin1));
+  EXPECT_EQ(5 * kNumBytesPerEntry,
+            tester.GetSharedStorageNumBytesForOrigin(kOrigin2));
+  EXPECT_EQ(15 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 
   // Let Clear-Site-Data delete the shared storage of "origin1.com".
   delegate()->ExpectClearSiteDataCall(storage_partition_config(), kOrigin1,
@@ -1121,9 +1119,10 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerSharedStorageBrowserTest,
   // There are now only 5 entries for one origin.
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(kOrigin2));
-  EXPECT_EQ(0, tester.GetSharedStorageNumEntriesForOrigin(kOrigin1));
-  EXPECT_EQ(5, tester.GetSharedStorageNumEntriesForOrigin(kOrigin2));
-  EXPECT_EQ(5, tester.GetSharedStorageTotalEntries());
+  EXPECT_EQ(0, tester.GetSharedStorageNumBytesForOrigin(kOrigin1));
+  EXPECT_EQ(5 * kNumBytesPerEntry,
+            tester.GetSharedStorageNumBytesForOrigin(kOrigin2));
+  EXPECT_EQ(5 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 }
 
 }  // namespace content

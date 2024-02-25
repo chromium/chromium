@@ -84,7 +84,7 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
   bool NeedsUpdateAbsoluteBounds() const;
   void UpdateCachedAbsoluteBoundsIfNeeded() const;
 
-  void DidFinishTextChange(const Position& base, const Position& extent);
+  void DidFinishTextChange(const Position& anchor, const Position& focus);
   void DidFinishDOMMutation();
 
   // Implementation of |SynchronousMutationObsderver| member functions.

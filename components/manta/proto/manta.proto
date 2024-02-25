@@ -1,0 +1,97 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package manta.proto;
+
+enum FeatureName {
+  reserved 1 to 299;
+
+  CHROMEOS_VC_BACKGROUNDS = 300;
+  CHROMEOS_WALLPAPER = 301;
+  TEXT_TEST = 302;
+}
+
+enum ImageResolution {
+  reserved 0, 4, 5, 6, 7, 8, 9, 10, 11;
+
+  RESOLUTION_64 = 1;
+  RESOLUTION_256 = 2;
+  RESOLUTION_1024 = 3;
+  RESOLUTION_LARGE = 12;
+}
+
+message ImageDimensions {
+  optional uint32 width = 1;
+  optional uint32 height = 2;
+}
+
+enum AspectRatio {
+  ASPECT_RATIO_UNSPECIFIED = 0;  // Defaults to 1:1
+  ASPECT_RATIO_16_9 = 1;
+  ASPECT_RATIO_16_10 = 2;
+  ASPECT_RATIO_4_3 = 3;
+}
+
+message RequestConfig {
+  reserved 4, 6;
+
+  optional uint32 generation_seed = 1;
+  optional ImageResolution image_resolution = 2;
+  optional uint32 num_outputs = 3;
+
+  enum Tone {
+    UNSPECIFIED = 0;
+    SHORTEN = 1;
+    ELABORATE = 2;
+    REPHRASE = 3;
+    FORMALIZE = 4;
+    EMOJIFY = 5;
+    FREEFORM_REWRITE = 6;
+    FREEFORM_WRITE = 7;
+  }
+
+  optional Tone tone = 5;
+
+  optional ImageDimensions image_dimensions = 7;
+
+  optional AspectRatio aspect_ratio = 8;
+}
+
+message InputData {
+  reserved 2, 3;
+
+  optional string text = 1;
+  optional string tag = 4;
+}
+
+message Request {
+  reserved 2;
+
+  optional FeatureName feature_name = 1;
+  optional RequestConfig request_config = 3;
+  repeated InputData input_data = 4;
+}
+
+message Image {
+  optional bytes serialized_bytes = 1;
+}
+
+message OutputData {
+  reserved 3, 4, 5;
+  oneof output_data {
+    string text = 1;
+    Image image = 2;
+  }
+
+  optional uint32 generation_seed = 6;
+}
+
+message Response {
+  reserved 2, 3;
+
+  repeated OutputData output_data = 1;
+}

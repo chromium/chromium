@@ -12,9 +12,11 @@
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/public/cpp/features.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
+#include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
@@ -57,13 +59,14 @@ void XrImageTransportBase::DestroySharedBuffers(WebXrPresentationState* webxr) {
   std::vector<std::unique_ptr<WebXrSharedBuffer>> buffers =
       webxr->TakeSharedBuffers();
   for (auto& buffer : buffers) {
-    if (!buffer->mailbox_holder.mailbox.IsZero()) {
+    if (buffer->shared_image) {
       DCHECK(mailbox_bridge_);
       DVLOG(2) << ": DestroySharedImage, mailbox="
-               << buffer->mailbox_holder.mailbox.ToDebugString();
-      // Note: the sync token in mailbox_holder may not be accurate. See
-      // comment in TransferFrame below.
-      mailbox_bridge_->DestroySharedImage(buffer->mailbox_holder);
+               << buffer->shared_image->mailbox().ToDebugString();
+      // Note: the sync token may not be accurate. See comment in TransferFrame
+      // below.
+      mailbox_bridge_->DestroySharedImage(buffer->sync_token,
+                                          std::move(buffer->shared_image));
     }
   }
 }
@@ -178,12 +181,13 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
 
   TRACE_EVENT0("gpu", __func__);
   // Unbind previous image (if any).
-  if (!buffer->mailbox_holder.mailbox.IsZero()) {
+  if (buffer->shared_image) {
     DVLOG(2) << ": DestroySharedImage, mailbox="
-             << buffer->mailbox_holder.mailbox.ToDebugString();
-    // Note: the sync token in mailbox_holder may not be accurate. See comment
-    // in TransferFrame below.
-    mailbox_bridge_->DestroySharedImage(buffer->mailbox_holder);
+             << buffer->shared_image->mailbox().ToDebugString();
+    // Note: the sync token may not be accurate. See comment in TransferFrame
+    // below.
+    mailbox_bridge_->DestroySharedImage(buffer->sync_token,
+                                        std::move(buffer->shared_image));
   }
 
   DVLOG(2) << __func__ << ": width=" << size.width()
@@ -194,25 +198,36 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
   static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
 
-  gfx::GpuMemoryBufferId kBufferId(webxr->next_memory_buffer_id++);
-  buffer->gmb = gpu::GpuMemoryBufferImplAndroidHardwareBuffer::Create(
-      kBufferId, size, format, usage,
-      gpu::GpuMemoryBufferImpl::DestructionCallback());
+  // The SharedImages created here will eventually be transferred to other
+  // processes to have their contents read/written via WebGL for WebXR.
+  uint32_t shared_image_usage =
+      gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
-  uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                gpu::SHARED_IMAGE_USAGE_GLES2;
-  buffer->mailbox_holder = mailbox_bridge_->CreateSharedImage(
-      buffer->gmb.get(), gfx::ColorSpace(), shared_image_usage);
+  // Create a new AHardwareBuffer backed handle.
+  buffer->scoped_ahb_handle =
+      gpu::CreateScopedHardwareBufferHandle(size, format, usage);
+
+  // Create a GMB Handle from AHardwareBuffer handle.
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+  // GpuMemoryBufferId is not used in this case and hence hardcoding it to 1
+  // here.
+  gmb_handle.id = gfx::GpuMemoryBufferId(1);
+  gmb_handle.android_hardware_buffer = buffer->scoped_ahb_handle.Clone();
+
+  buffer->shared_image = mailbox_bridge_->CreateSharedImage(
+      std::move(gmb_handle), format, size, gfx::ColorSpace(),
+      shared_image_usage, buffer->sync_token);
+  CHECK(buffer->shared_image);
+
   DVLOG(2) << ": CreateSharedImage, mailbox="
-           << buffer->mailbox_holder.mailbox.ToDebugString() << ", SyncToken="
-           << buffer->mailbox_holder.sync_token.ToDebugString();
-
-  base::android::ScopedHardwareBufferHandle ahb =
-      buffer->gmb->CloneHandle().android_hardware_buffer;
+           << buffer->shared_image->mailbox().ToDebugString()
+           << ", SyncToken=" << buffer->sync_token.ToDebugString();
 
   // Create an EGLImage for the buffer.
-  auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(ahb.get());
+  auto egl_image =
+      gpu::CreateEGLImageFromAHardwareBuffer(buffer->scoped_ahb_handle.get());
   if (!egl_image.is_valid()) {
     DLOG(WARNING) << __func__ << ": ERROR: failed to initialize image!";
     return false;
@@ -253,7 +268,7 @@ gpu::MailboxHolder XrImageTransportBase::TransferFrame(
       webxr->GetAnimatingFrame()->shared_buffer.get();
   ResizeSharedBuffer(webxr, frame_size, shared_buffer);
   // Sanity check that the lazily created/resized buffer looks valid.
-  DCHECK(!shared_buffer->mailbox_holder.mailbox.IsZero());
+  DCHECK(shared_buffer->shared_image);
   DCHECK(shared_buffer->local_eglimage.is_valid());
   DCHECK_EQ(shared_buffer->size, frame_size);
 
@@ -265,11 +280,10 @@ gpu::MailboxHolder XrImageTransportBase::TransferFrame(
   // it's only eligible for reuse after all reads from it are complete, meaning
   // that it's transitioned through "processing" and "rendering" states back
   // to "animating".
-  DCHECK(shared_buffer->mailbox_holder.sync_token.HasData());
-  DVLOG(2) << ": SyncToken="
-           << shared_buffer->mailbox_holder.sync_token.ToDebugString();
+  DCHECK(shared_buffer->sync_token.HasData());
+  DVLOG(2) << ": SyncToken=" << shared_buffer->sync_token.ToDebugString();
 
-  return shared_buffer->mailbox_holder;
+  return shared_buffer->mailbox_holder();
 }
 
 void XrImageTransportBase::CreateGpuFenceForSyncToken(

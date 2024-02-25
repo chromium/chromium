@@ -14,16 +14,12 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.AccessedByNative;
+
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
-import org.chromium.base.TimeUtils.UptimeMillisTimer;
-import org.chromium.base.annotations.AccessedByNative;
 import org.chromium.base.metrics.RecordHistogram;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -84,6 +80,7 @@ class Linker {
     // Constants used to pass the shared RELRO Bundle through Binder.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String SHARED_RELROS = "org.chromium.base.android.linker.shared_relros";
+
     private static final String BASE_LOAD_ADDRESS =
             "org.chromium.base.android.linker.base_load_address";
 
@@ -150,16 +147,6 @@ class Linker {
     @State
     private int mState = State.UNINITIALIZED;
 
-    private static final String DETAILED_LOAD_TIME_HISTOGRAM_PREFIX =
-            "ChromiumAndroidLinker.ModernLinkerDetailedLoadTime.";
-
-    private static final String DETAILED_LOAD_TIME_HISTOGRAM_PREFIX_BLKIO_CGROUP =
-            "ChromiumAndroidLinker.ModernLinkerDetailedLoadTimeByBlkioCgroup.";
-
-    private static final String SUFFIX_UNKNOWN = "Unknown";
-
-    private static final String SELF_CGROUP_FILE_NAME = "/proc/self/cgroup";
-
     void pretendLibraryIsLoadedForTesting() {
         synchronized (mLock) {
             mState = State.DONE;
@@ -182,6 +169,7 @@ class Linker {
         int RESERVE_HINT = 1;
         int RESERVE_RANDOM = 2;
     }
+
     private String preferAddressToString(@PreferAddress int a) {
         switch (a) {
             case PreferAddress.FIND_RESERVED:
@@ -244,15 +232,16 @@ class Linker {
     final void ensureInitialized(
             boolean asRelroProducer, @PreferAddress int preference, long addressHint) {
         if (DEBUG) {
-            Log.i(TAG,
+            Log.i(
+                    TAG,
                     "ensureInitialized(asRelroProducer=%b, preference=%s, "
                             + "loadAddressHint=0x%x)",
-                    asRelroProducer, preferAddressToString(preference), addressHint);
+                    asRelroProducer,
+                    preferAddressToString(preference),
+                    addressHint);
         }
-        assert !asRelroProducer
-                || preference
-                        != PreferAddress.RESERVE_HINT
-            : "Producer does not accept hints from outside";
+        assert !asRelroProducer || preference != PreferAddress.RESERVE_HINT
+                : "Producer does not accept hints from outside";
         synchronized (mLock) {
             if (mState != State.UNINITIALIZED) return;
             chooseAndReserveMemoryRange(asRelroProducer, preference, addressHint);
@@ -361,8 +350,11 @@ class Linker {
         assert !library.equals(LINKER_JNI_LIBRARY);
         loadLibraryImplLocked(library, relroMode);
         if (DEBUG) {
-            Log.i(TAG, "Attempt to replace RELRO: remotenonnull=%b, state=%d",
-                    mRemoteLibInfo != null, mState);
+            Log.i(
+                    TAG,
+                    "Attempt to replace RELRO: remotenonnull=%b, state=%d",
+                    mRemoteLibInfo != null,
+                    mState);
         }
         if (shouldAtomicallyReplaceRelroAfterLoad()) {
             atomicReplaceRelroLocked(/* relroAvailableImmediately= */ true);
@@ -379,15 +371,16 @@ class Linker {
     final void loadLibrary(String library) {
         synchronized (mLock) {
             try {
-                // Normally Chrome/Webview/Weblayer processes initialize when they choose whether to
-                // produce or consume the shared relocations. Initialization here is the last resort
-                // to choose the load address in tests that forget to decide whether they are a
+                // Normally Chrome/WebView processes initialize when they choose whether to produce
+                // or consume the shared relocations. Initialization here is the last resort to
+                // choose the load address in tests that forget to decide whether they are a
                 // producer or a consumer.
                 ensureInitializedImplicitlyAsLastResort();
 
                 // Load the library. During initialization Linker subclass reserves the address
                 // range where the library will be loaded and keeps it in |mLocalLibInfo|.
-                attemptLoadLibraryLocked(library,
+                attemptLoadLibraryLocked(
+                        library,
                         mRelroProducer ? RelroSharingMode.PRODUCE : RelroSharingMode.CONSUME);
             } catch (UnsatisfiedLinkError e) {
                 Log.w(TAG, "Failed to load native library with shared RELRO, retrying without");
@@ -417,10 +410,12 @@ class Linker {
             }
             bundle.putBundle(SHARED_RELROS, relros);
             if (DEBUG && relros != null) {
-                Log.i(TAG,
+                Log.i(
+                        TAG,
                         "putSharedRelrosToBundle() puts mLoadAddress=0x%x, mLoadSize=%d, "
                                 + "mRelroFd=%d",
-                        mLocalLibInfo.mLoadAddress, mLocalLibInfo.mLoadSize,
+                        mLocalLibInfo.mLoadAddress,
+                        mLocalLibInfo.mLoadSize,
                         mLocalLibInfo.mRelroFd);
             }
         }
@@ -441,10 +436,12 @@ class Linker {
         synchronized (mLock) {
             if (mRemoteLibInfo != null && mRemoteLibInfo.mRelroFd != -1) {
                 if (DEBUG) {
-                    Log.i(TAG,
+                    Log.i(
+                            TAG,
                             "Attempt to replace RELRO a second time "
                                     + "library addr=0x%x, with new library addr=0x%x",
-                            mRemoteLibInfo.mLoadAddress, newRemote.mLoadAddress);
+                            mRemoteLibInfo.mLoadAddress,
+                            newRemote.mLoadAddress);
                 }
                 return;
             }
@@ -455,8 +452,11 @@ class Linker {
         }
     }
 
-    @IntDef({Linker.RelroSharingMode.NO_SHARING, Linker.RelroSharingMode.PRODUCE,
-            Linker.RelroSharingMode.CONSUME})
+    @IntDef({
+        Linker.RelroSharingMode.NO_SHARING,
+        Linker.RelroSharingMode.PRODUCE,
+        Linker.RelroSharingMode.CONSUME
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface RelroSharingMode {
         // Do not attempt to create or use a RELRO region.
@@ -474,7 +474,8 @@ class Linker {
     @GuardedBy("mLock")
     private void loadWithoutProducingRelro(String libFilePath) {
         assert mRemoteLibInfo == null || libFilePath.equals(mRemoteLibInfo.mLibFilePath);
-        if (!getLinkerJni().loadLibrary(libFilePath, mLocalLibInfo, false /* spawnRelroRegion */)) {
+        if (!getLinkerJni()
+                .loadLibrary(libFilePath, mLocalLibInfo, /* spawnRelroRegion= */ false)) {
             resetAndThrow(String.format("Unable to load library: %s", libFilePath), null);
         }
         assert mLocalLibInfo.mRelroFd == -1;
@@ -485,10 +486,13 @@ class Linker {
     @GuardedBy("mLock")
     private void loadAndProduceSharedRelro(String libFilePath) {
         mLocalLibInfo.mLibFilePath = libFilePath;
-        if (getLinkerJni().loadLibrary(libFilePath, mLocalLibInfo, true /* spawnRelroRegion */)) {
+        if (getLinkerJni().loadLibrary(libFilePath, mLocalLibInfo, /* spawnRelroRegion= */ true)) {
             if (DEBUG) {
-                Log.i(TAG, "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
-                        mLocalLibInfo.mLoadAddress, mLocalLibInfo.mLoadSize);
+                Log.i(
+                        TAG,
+                        "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
+                        mLocalLibInfo.mLoadAddress,
+                        mLocalLibInfo.mLoadSize);
             }
         } else {
             Log.e(TAG, "Unable to load with Linker, using the system linker instead");
@@ -521,17 +525,10 @@ class Linker {
         }
         assert mState == State.INITIALIZED; // Only one successful call.
 
-        // Determine whether library loading starts in a foreground or a background cgroup for the
-        // 'blkio' controller.
-        String backgroundStateBeforeLoad = readBackgroundStateFromCgroups();
-
         // Load or declare fallback to System.loadLibrary.
-        UptimeMillisTimer timer = new UptimeMillisTimer();
         String libFilePath = System.mapLibraryName(library);
-        boolean performedModernLoad = true;
         if (relroMode == RelroSharingMode.NO_SHARING) {
             // System.loadLibrary() below implements the fallback.
-            performedModernLoad = false;
             mState = State.DONE;
         } else if (relroMode == RelroSharingMode.PRODUCE) {
             loadAndProduceSharedRelro(libFilePath); // Throws on a failed load.
@@ -545,27 +542,6 @@ class Linker {
             mState = State.DONE;
         }
 
-        // The app can change the bg/fg state while loading the native library, but mostly only
-        // once. To reduce the likelihood of a foreground sample to be affected by partially
-        // backgrounded state, move the mixed samples to a separate category. The data collected may
-        // help proving this hypothesis: "The Linker is not a lot slower than the system
-        // linker when running in foreground".
-        String backgroundStateAfterLoad = readBackgroundStateFromCgroups();
-        if (!backgroundStateBeforeLoad.equals(backgroundStateAfterLoad)) {
-            if (backgroundStateBeforeLoad.equals(SUFFIX_UNKNOWN)
-                    || backgroundStateAfterLoad.equals(SUFFIX_UNKNOWN)) {
-                backgroundStateBeforeLoad = SUFFIX_UNKNOWN;
-            } else {
-                backgroundStateBeforeLoad = "Mixed";
-            }
-        }
-
-        if (performedModernLoad) {
-            recordDetailedLoadTimeSince(timer,
-                    relroMode == RelroSharingMode.PRODUCE ? "Produce" : "Consume",
-                    backgroundStateBeforeLoad);
-        }
-
         // Load the library a second time, in order to keep using lazy JNI registration. When
         // loading the library with the Chromium linker, ART doesn't know about our library, so
         // cannot resolve JNI methods lazily. Loading the library a second time makes sure it
@@ -573,14 +549,11 @@ class Linker {
         //
         // This is not wasteful though, as libraries are reference-counted, and as a consequence the
         // library is not really loaded a second time, and we keep relocation sharing.
-        timer = new UptimeMillisTimer();
         try {
             System.loadLibrary(library);
         } catch (UnsatisfiedLinkError e) {
             resetAndThrow("Failed at System.loadLibrary()", e);
         }
-        recordDetailedLoadTimeSince(
-                timer, performedModernLoad ? "Second" : "NoSharing", backgroundStateBeforeLoad);
     }
 
     /**
@@ -598,8 +571,11 @@ class Linker {
         assert mState == State.DONE;
         if (mRemoteLibInfo.mRelroFd == -1) return;
         if (DEBUG) {
-            Log.i(TAG, "Received mRemoteLibInfo: mLoadAddress=0x%x, mLoadSize=%d",
-                    mRemoteLibInfo.mLoadAddress, mRemoteLibInfo.mLoadSize);
+            Log.i(
+                    TAG,
+                    "Received mRemoteLibInfo: mLoadAddress=0x%x, mLoadSize=%d",
+                    mRemoteLibInfo.mLoadAddress,
+                    mRemoteLibInfo.mLoadSize);
         }
         if (mLocalLibInfo == null) return;
         getLinkerJni().useRelros(mLocalLibInfo.mLoadAddress, mRemoteLibInfo);
@@ -640,56 +616,6 @@ class Linker {
     private void ensureInitializedImplicitlyAsLastResort() {
         ensureInitialized(
                 /* asRelroProducer= */ true, PreferAddress.RESERVE_RANDOM, /* addressHint= */ 0);
-    }
-
-    private static String extractBlkioCgroupFromLine(String line) {
-        // The contents of /proc/self/cgroup for a background app looks like this:
-        // 5:schedtune:/background
-        // 4:memory:/
-        // 3:cpuset:/background
-        // 2:cpu:/system
-        // 1:blkio:/background
-        // 0::/uid_10179/pid_11869
-        //
-        // For a foreground app the relevant line looks like this:
-        // 1:blkio:/
-        int blkioStartsAt = line.indexOf(":blkio:");
-        if (blkioStartsAt == -1) return "";
-        return line.substring(blkioStartsAt + 7);
-    }
-
-    private String readBackgroundStateFromCgroups() {
-        String groupName = null;
-        try (BufferedReader reader = new BufferedReader(
-                     new InputStreamReader(new FileInputStream(SELF_CGROUP_FILE_NAME)));) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                groupName = extractBlkioCgroupFromLine(line);
-                if (!groupName.equals("")) break;
-            }
-            if (groupName == null || groupName.equals("")) return SUFFIX_UNKNOWN;
-        } catch (IOException e) {
-            Log.e(TAG, "IOException while reading %s", SELF_CGROUP_FILE_NAME);
-            return SUFFIX_UNKNOWN;
-        }
-        if (groupName.equals("/")) {
-            return "Foreground";
-        }
-        if (groupName.equals("/background")) {
-            return "Background";
-        }
-        Log.e(TAG, "blkio cgroup with unexpected name: '%s'", groupName);
-        return SUFFIX_UNKNOWN;
-    }
-
-    private void recordDetailedLoadTimeSince(
-            UptimeMillisTimer timer, String suffix, String backgroundStateSuffix) {
-        long durationMs = timer.getElapsedMillis();
-        RecordHistogram.recordTimesHistogram(
-                DETAILED_LOAD_TIME_HISTOGRAM_PREFIX + suffix, durationMs);
-        RecordHistogram.recordTimesHistogram(DETAILED_LOAD_TIME_HISTOGRAM_PREFIX_BLKIO_CGROUP
-                        + suffix + "." + backgroundStateSuffix,
-                durationMs);
     }
 
     @GuardedBy("mLock")
@@ -799,16 +725,11 @@ class Linker {
 
         // IMPORTANT: Don't change these fields without modifying the
         // native code that accesses them directly!
-        @AccessedByNative
-        public long mLoadAddress; // page-aligned library load address.
-        @AccessedByNative
-        public long mLoadSize;    // page-aligned library load size.
-        @AccessedByNative
-        public long mRelroStart;  // page-aligned address in memory, or 0 if none.
-        @AccessedByNative
-        public long mRelroSize;   // page-aligned size in memory, or 0.
-        @AccessedByNative
-        public int mRelroFd = -1; // shared RELRO file descriptor, or -1
+        @AccessedByNative public long mLoadAddress; // page-aligned library load address.
+        @AccessedByNative public long mLoadSize; // page-aligned library load size.
+        @AccessedByNative public long mRelroStart; // page-aligned address in memory, or 0 if none.
+        @AccessedByNative public long mRelroSize; // page-aligned size in memory, or 0.
+        @AccessedByNative public int mRelroFd = -1; // shared RELRO file descriptor, or -1
     }
 
     interface Natives {

@@ -7,6 +7,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
 namespace web {
@@ -27,7 +28,7 @@ class JavaScriptBlockingFakeWebState : public web::FakeWebState {
                                  bool change_last_committed_item);
 
  private:
-  web::FakeNavigationManager* manager_ = nullptr;
+  raw_ptr<web::FakeNavigationManager> manager_ = nullptr;
   std::unique_ptr<web::NavigationItem> last_committed_item_;
 };
 

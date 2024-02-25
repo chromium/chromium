@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
-#import <memory>
-
 #import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -15,13 +13,15 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/constants.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/account_cookie_waiter.h"
+#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
@@ -57,8 +57,6 @@
 @property(nonatomic, strong, readonly) id<SystemIdentity> selectedIdentity;
 // Coordinator to add an account to the device.
 @property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
-// The access point that triggered sign-in.
-@property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 
 @property(nonatomic, strong)
     ConsistencyPromoSigninMediator* consistencyPromoSigninMediator;
@@ -69,16 +67,28 @@
 
 #pragma mark - Public
 
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                               accessPoint:
-                                   (signin_metrics::AccessPoint)accessPoint {
-  self = [super initWithBaseViewController:baseViewController browser:browser];
-  if (self) {
-    _accessPoint = accessPoint;
++ (instancetype)
+    coordinatorWithBaseViewController:(UIViewController*)viewController
+                              browser:(Browser*)browser
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint {
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  BOOL canShowWithZeroIdentities =
+      accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
+      IsConsistencyNewAccountInterfaceEnabled();
+  if (!accountManagerService->HasIdentities() && !canShowWithZeroIdentities) {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS,
+        accessPoint);
+    return nil;
   }
-  return self;
+  return [[ConsistencyPromoSigninCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:browser
+                     accessPoint:accessPoint];
 }
+
 
 #pragma mark - SigninCoordinator
 
@@ -100,6 +110,7 @@
 
 - (void)start {
   [super start];
+  signin_metrics::LogSignInStarted(self.accessPoint);
   base::RecordAction(base::UserMetricsAction("Signin_BottomSheet_Opened"));
   // Create ConsistencyPromoSigninMediator.
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -112,8 +123,7 @@
   self.consistencyPromoSigninMediator = [[ConsistencyPromoSigninMediator alloc]
       initWithAccountManagerService:accountManagerService
               authenticationService:authenticationService
-                accountCookieWaiter:std::make_unique<AccountCookieWaiter>(
-                                        identityManager)
+                    identityManager:identityManager
                     userPrefService:browserState->GetPrefs()
                         accessPoint:self.accessPoint];
   self.consistencyPromoSigninMediator.delegate = self;
@@ -195,12 +205,12 @@
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED,
-        _accessPoint);
+        self.accessPoint);
   } else {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             ADD_ACCOUNT_COMPLETED_WITH_NO_DEVICE_ACCOUNT,
-        _accessPoint);
+        self.accessPoint);
   }
 
   [self.addAccountCoordinator stop];
@@ -227,12 +237,12 @@
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED,
-        _accessPoint);
+        self.accessPoint);
   } else {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT,
-        _accessPoint);
+        self.accessPoint);
   }
   DCHECK(!self.addAccountCoordinator);
   self.addAccountCoordinator = [SigninCoordinator
@@ -462,6 +472,11 @@
                          }];
 }
 
+- (void)consistencyPromoSigninMediatorSignInCancelled:
+    (ConsistencyPromoSigninMediator*)mediator {
+  [self.defaultAccountCoordinator stopSigninSpinner];
+}
+
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
                         errorDidHappen:
                             (ConsistencyPromoSigninMediatorError)error {
@@ -469,7 +484,6 @@
   NSString* errorMessage = nil;
   switch (error) {
     case ConsistencyPromoSigninMediatorErrorGeneric:
-    case ConsistencyPromoSigninMediatorErrorFailedToSignin:
       errorMessage =
           l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR);
       break;
@@ -503,10 +517,13 @@
   return [NSString
       stringWithFormat:
           @"<%@: %p, defaultAccountCoordinator: %p, alertCoordinator: %p, "
-          @"accountChooserCoordinator %p, addAccountCoordinator %p>",
+          @"accountChooserCoordinator %p, addAccountCoordinator %p, presented: "
+          @"%@>",
           self.class.description, self, self.defaultAccountCoordinator,
           self.alertCoordinator, self.accountChooserCoordinator,
-          self.addAccountCoordinator];
+          self.addAccountCoordinator,
+          ViewControllerPresentationStatusDescription(
+              self.navigationController)];
 }
 
 @end

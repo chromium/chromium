@@ -11,11 +11,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
@@ -24,6 +26,7 @@
 #include "components/sessions/core/session_id.h"
 #include "ios/web/public/js_messaging/content_world.h"
 #include "ios/web/public/navigation/referrer.h"
+#include "ios/web/public/web_state_id.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/base/page_transition_types.h"
@@ -41,11 +44,6 @@ class GURL;
 typedef id<CRWWebViewProxy> CRWWebViewProxyType;
 @class UIView;
 typedef UIView<CRWScrollableContent> CRWContentView;
-
-namespace gfx {
-class Image;
-class RectF;
-}
 
 namespace web {
 namespace proto {
@@ -75,8 +73,7 @@ class WebState : public base::SupportsUserData {
  public:
   // Callback used to load the full information for the WebState when
   // it will become realized.
-  using WebStateStorageLoader =
-      base::OnceCallback<void(proto::WebStateStorage&)>;
+  using WebStateStorageLoader = base::OnceCallback<proto::WebStateStorage()>;
 
   // Callback used to fetch the native session for the WebState.
   using NativeSessionFetcher = base::OnceCallback<NSData*()>;
@@ -87,7 +84,7 @@ class WebState : public base::SupportsUserData {
     ~CreateParams();
 
     // The corresponding BrowserState for the new WebState.
-    web::BrowserState* browser_state;
+    raw_ptr<web::BrowserState> browser_state;
 
     // Whether the WebState is created as the result of a window.open or by
     // clicking a link with a blank target.  Used to determine whether the
@@ -104,7 +101,7 @@ class WebState : public base::SupportsUserData {
     // is left default initialized, then the value will not be passed on
     // to the WebState and GetLastActiveTime() will return the WebState's
     // creation time.
-    base::Time last_active_time;
+    std::optional<base::Time> last_active_time;
   };
 
   // Parameters for the OpenURL() method.
@@ -184,7 +181,7 @@ class WebState : public base::SupportsUserData {
         callback.Run(std::move(typed_receiver));
     }
 
-    WebState* const web_state_;
+    const raw_ptr<WebState> web_state_;
     std::map<std::string, Callback> callbacks_;
   };
 
@@ -204,7 +201,7 @@ class WebState : public base::SupportsUserData {
   // when the WebState transition to the realized state.
   static std::unique_ptr<WebState> CreateWithStorage(
       BrowserState* browser_state,
-      SessionID unique_identifier,
+      WebStateID unique_identifier,
       proto::WebStateMetadataStorage metadata,
       WebStateStorageLoader storage_loader,
       NativeSessionFetcher session_fetcher);
@@ -307,15 +304,13 @@ class WebState : public base::SupportsUserData {
   // Loads the web content from the HTML you provide as if the HTML were the
   // response to the request.
   virtual void LoadSimulatedRequest(const GURL& url,
-                                    NSString* response_html_string)
-      API_AVAILABLE(ios(15.0)) = 0;
+                                    NSString* response_html_string) = 0;
 
   // Loads the web content from the data you provide as if the data were the
   // response to the request.
   virtual void LoadSimulatedRequest(const GURL& url,
                                     NSData* response_data,
-                                    NSString* mime_type)
-      API_AVAILABLE(ios(15.0)) = 0;
+                                    NSString* mime_type) = 0;
 
   // Stops any pending navigation.
   virtual void Stop() = 0;
@@ -366,7 +361,7 @@ class WebState : public base::SupportsUserData {
   // It is local to the device and not synchronized (but may be used by
   // the sync code to uniquely identify a session on the current device).
   // It can be used as a key to identify this WebState.
-  virtual SessionID GetUniqueIdentifier() const = 0;
+  virtual WebStateID GetUniqueIdentifier() const = 0;
 
   // Gets the contents MIME type.
   virtual const std::string& GetContentsMimeType() const = 0;
@@ -427,8 +422,8 @@ class WebState : public base::SupportsUserData {
   virtual const GURL& GetLastCommittedURL() const = 0;
 
   // Returns the last committed URL if the correctness of this URL's origin is
-  // trusted, and absl::nullopt otherwise.
-  virtual absl::optional<GURL> GetLastCommittedURLIfTrusted() const = 0;
+  // trusted, and std::nullopt otherwise.
+  virtual std::optional<GURL> GetLastCommittedURLIfTrusted() const = 0;
 
   // Returns the current CRWWebViewProxy object.
   virtual CRWWebViewProxyType GetWebViewProxy() const = 0;
@@ -450,7 +445,7 @@ class WebState : public base::SupportsUserData {
   virtual void SetHasOpener(bool has_opener) = 0;
 
   // Callback used to handle snapshots. The parameter is the snapshot image.
-  typedef base::RepeatingCallback<void(const gfx::Image&)> SnapshotCallback;
+  typedef base::RepeatingCallback<void(UIImage*)> SnapshotCallback;
 
   // Returns whether TakeSnapshot() can be executed.  The API may be disabled if
   // the WKWebView IPC mechanism is blocked due to an outstanding JavaScript
@@ -461,8 +456,7 @@ class WebState : public base::SupportsUserData {
   // in the coordinate system of the view returned by GetView(). `callback` is
   // asynchronously invoked after performing the snapshot. Prior to iOS 11, the
   // callback is invoked with a nil snapshot.
-  virtual void TakeSnapshot(const gfx::RectF& rect,
-                            SnapshotCallback callback) = 0;
+  virtual void TakeSnapshot(const CGRect rect, SnapshotCallback callback) = 0;
 
   // Creates PDF representation of the web page and invokes the `callback` with
   // the NSData of the PDF or nil if a PDF couldn't be generated.
@@ -490,26 +484,24 @@ class WebState : public base::SupportsUserData {
 
   // Gets or sets the web state's permission for a specific type, for example
   // camera or microphone, on the device.
-  virtual PermissionState GetStateForPermission(Permission permission) const
-      API_AVAILABLE(ios(15.0)) = 0;
+  virtual PermissionState GetStateForPermission(
+      Permission permission) const = 0;
   virtual void SetStateForPermission(PermissionState state,
-                                     Permission permission)
-      API_AVAILABLE(ios(15.0)) = 0;
+                                     Permission permission) = 0;
 
   // Gets a mapping of all available permissions and their states.
   // Note that both key and value are in NSNumber format, and should be
   // translated to NSUInteger and casted to web::Permission or
   // web::PermissionState before use.
-  virtual NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const
-      API_AVAILABLE(ios(15.0)) = 0;
+  virtual NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions()
+      const = 0;
 
   // Downloads the displayed webview at `destination_file`. `handler`
   // is used to retrieve the CRWWebViewDownload, so the caller can manage the
   // launched download.
   virtual void DownloadCurrentPage(NSString* destination_file,
                                    id<CRWWebViewDownloadDelegate> delegate,
-                                   void (^handler)(id<CRWWebViewDownload>))
-      API_AVAILABLE(ios(14.5)) = 0;
+                                   void (^handler)(id<CRWWebViewDownload>)) = 0;
 
   // Whether the Find interaction is supported and can be enabled.
   virtual bool IsFindInteractionSupported() = 0;
@@ -533,6 +525,9 @@ class WebState : public base::SupportsUserData {
 
   // Returns the page theme color.
   virtual UIColor* GetThemeColor() = 0;
+
+  // Returns the under page background color.
+  virtual UIColor* GetUnderPageBackgroundColor() = 0;
 
  protected:
   friend class WebStatePolicyDecider;

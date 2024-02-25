@@ -10,6 +10,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace embedder_support {
@@ -21,9 +22,8 @@ constexpr char kDefaultTrustedCDNBaseURL[] = "https://cdn.ampproject.org";
 // Specifies a base URL for the trusted CDN for tests.
 const char kTrustedCDNBaseURLForTests[] = "trusted-cdn-base-url-for-tests";
 
-// Returns whether the given URL is hosted by a trusted CDN. This can be turned
-// off via a Feature, and the base URL to trust can be set via a command line
-// flag for testing.
+// Returns whether the given URL is hosted by a trusted CDN. The base URL to
+// trust can be overridden via a command line flag for testing.
 bool IsTrustedCDN(const GURL& url) {
   // Use a static local (without destructor) to construct the base URL only
   // once. |trusted_cdn_base_url| is initialized with the result of an
@@ -51,23 +51,27 @@ bool IsTrustedCDN(const GURL& url) {
 
 }  // namespace
 
-GURL GetPublisherURL(content::Page& page) {
-  content::RenderFrameHost& rfh = page.GetMainDocument();
-  if (!IsTrustedCDN(rfh.GetLastCommittedURL()))
+GURL GetPublisherURL(content::RenderFrameHost* rfh) {
+  if (!rfh || !rfh->IsInPrimaryMainFrame() ||
+      !IsTrustedCDN(rfh->GetLastCommittedURL())) {
     return GURL();
+  }
 
-  const net::HttpResponseHeaders* headers = rfh.GetLastResponseHeaders();
-  if (!headers) {
+  const network::mojom::URLResponseHead* response_head =
+      rfh->GetLastResponseHead();
+  if (!response_head || !response_head->headers) {
     // TODO(https://crbug.com/829323): In some cases other than offline pages
     // we don't have headers.
     LOG(WARNING) << "No headers for navigation to "
-                 << rfh.GetLastCommittedURL();
+                 << rfh->GetLastCommittedURL();
     return GURL();
   }
 
   std::string publisher_url;
-  if (!headers->GetNormalizedHeader("x-amp-cache", &publisher_url))
+  if (!response_head->headers->GetNormalizedHeader("x-amp-cache",
+                                                   &publisher_url)) {
     return GURL();
+  }
 
   return GURL(publisher_url);
 }

@@ -26,11 +26,13 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="tpc_summary"
-        android:layout="@layout/page_info_summary" />
+        android:layout="@layout/page_info_summary"
+        app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="cookie_switch"
         android:persistent="false"
-        android:title="@string/page_info_cookies_third_party_cookies_label" />
+        android:title="@string/page_info_cookies_third_party_cookies_label"
+        app:allowDividerAbove="false" />
 
 </PreferenceScreen>

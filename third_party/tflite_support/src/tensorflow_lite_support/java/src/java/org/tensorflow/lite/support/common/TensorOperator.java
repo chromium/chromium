@@ -21,7 +21,7 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
  * Applies some operation on TensorBuffers.
  */
 public interface TensorOperator extends Operator<TensorBuffer> {
-    /** @see Operator#apply(Object) . */
-    @Override
-    TensorBuffer apply(TensorBuffer input);
+  /** @see Operator#apply(Object) . */
+  @Override
+  TensorBuffer apply(TensorBuffer input);
 }

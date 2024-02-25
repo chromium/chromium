@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -23,6 +23,10 @@ function getAriaLabel(alertState: TabAlertState): string {
   switch (alertState) {
     case TabAlertState.kMediaRecording:
       return loadTimeData.getStringF('mediaRecording', '');
+    case TabAlertState.kAudioRecording:
+      return loadTimeData.getStringF('audioRecording', '');
+    case TabAlertState.kVideoRecording:
+      return loadTimeData.getStringF('videoRecording', '');
     case TabAlertState.kTabCapturing:
       return loadTimeData.getStringF('tabCapturing', '');
     case TabAlertState.kAudioPlaying:
@@ -50,6 +54,8 @@ function getAriaLabel(alertState: TabAlertState): string {
 
 const ALERT_STATE_MAP: Map<TabAlertState, string> = new Map([
   [TabAlertState.kMediaRecording, 'media-recording'],
+  [TabAlertState.kAudioRecording, 'audio-recording'],
+  [TabAlertState.kVideoRecording, 'video-recording'],
   [TabAlertState.kTabCapturing, 'tab-capturing'],
   [TabAlertState.kAudioPlaying, 'audio-playing'],
   [TabAlertState.kAudioMuting, 'audio-muting'],
@@ -132,6 +138,8 @@ export class AlertIndicatorElement extends CustomElement {
 
 
     if (this.alertState_ === TabAlertState.kMediaRecording ||
+        this.alertState_ === TabAlertState.kAudioRecording ||
+        this.alertState_ === TabAlertState.kVideoRecording ||
         this.alertState_ === TabAlertState.kTabCapturing ||
         this.alertState_ === TabAlertState.kDesktopCapturing) {
       // Fade in and out 2 times and then fade in

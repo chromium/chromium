@@ -15,12 +15,11 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
-#include "chrome/browser/ash/accessibility/html_test_utils.h"
+#include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "ui/events/test/event_generator.h"
@@ -45,13 +44,16 @@ AutoclickTestUtils::AutoclickTestUtils(Profile* profile) {
       prefs::kAccessibilityAutoclickEventType,
       base::BindRepeating(&AutoclickTestUtils::OnEventTypePrefChanged,
                           GetWeakPtr()));
+
+  automation_utils_ = std::make_unique<AutomationTestUtils>(
+      extension_misc::kAccessibilityCommonExtensionId);
 }
 
 AutoclickTestUtils::~AutoclickTestUtils() {
   pref_change_registrar_.reset();
 }
 
-void AutoclickTestUtils::LoadAutoclick() {
+void AutoclickTestUtils::LoadAutoclick(bool install_automation_utils) {
   extensions::ExtensionHostTestHelper host_helper(
       profile_, extension_misc::kAccessibilityCommonExtensionId);
   AccessibilityManager::Get()->EnableAutoclick(true);
@@ -61,6 +63,9 @@ void AutoclickTestUtils::LoadAutoclick() {
       ->SetAnimateForTesting(false);
   host_helper.WaitForHostCompletedFirstLoad();
   WaitForAutoclickReady();
+  if (install_automation_utils) {
+    automation_utils_->SetUpTestSupport();
+  }
 }
 
 void AutoclickTestUtils::SetAutoclickDelayMs(int ms) {
@@ -126,11 +131,19 @@ void AutoclickTestUtils::SetAutoclickEventTypeWithHover(
   SetAutoclickDelayMs(old_delay);
 }
 
+void AutoclickTestUtils::WaitForPageLoad(const std::string& url) {
+  automation_utils_->WaitForPageLoad(url);
+}
+
+void AutoclickTestUtils::WaitForTextSelectionChangedEvent() {
+  automation_utils_->WaitForTextSelectionChangedEvent();
+}
+
 void AutoclickTestUtils::HoverOverHtmlElement(
-    content::WebContents* web_contents,
     ui::test::EventGenerator* generator,
-    const std::string& element) {
-  const gfx::Rect bounds = GetControlBoundsInRoot(web_contents, element);
+    const std::string& name,
+    const std::string& role) {
+  const gfx::Rect bounds = automation_utils_->GetNodeBoundsInRoot(name, role);
   generator->MoveMouseTo(bounds.CenterPoint());
 }
 
@@ -143,6 +156,16 @@ void AutoclickTestUtils::ObserveFocusRings() {
 void AutoclickTestUtils::WaitForFocusRingChanged() {
   loop_runner_ = std::make_unique<base::RunLoop>();
   loop_runner_->Run();
+}
+
+gfx::Rect AutoclickTestUtils::GetNodeBoundsInRoot(const std::string& name,
+                                                  const std::string& role) {
+  return automation_utils_->GetNodeBoundsInRoot(name, role);
+}
+
+gfx::Rect AutoclickTestUtils::GetBoundsForNodeInRootByClassName(
+    const std::string& class_name) {
+  return automation_utils_->GetBoundsForNodeInRootByClassName(class_name);
 }
 
 void AutoclickTestUtils::WaitForAutoclickReady() {

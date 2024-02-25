@@ -6,10 +6,8 @@
 
 #import "base/containers/flat_set.h"
 #import "base/containers/span.h"
-#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/ranges/algorithm.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
@@ -32,8 +30,8 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
   }
 
   // Syncing and signed-out users shouldn't see the icon.
-  // TODO(crbug.com/1462552): Remove usage of IsSyncFeatureEnabled() after kSync
-  // users are migrated to kSignin in phase 3. See ConsentLevel::kSync
+  // TODO(crbug.com/40066949): Remove usage of IsSyncFeatureEnabled() after
+  // kSync users are migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
   if (sync_service->IsSyncFeatureEnabled() ||
       sync_service->HasDisableReason(
@@ -41,8 +39,6 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
     return false;
   }
 
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
   return true;
 }
 

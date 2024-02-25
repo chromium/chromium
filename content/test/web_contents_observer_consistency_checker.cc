@@ -154,15 +154,12 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
     AssertRenderFrameExists(new_host->GetParent());
     // RenderFrameCreated should be called before RenderFrameHostChanged for all
     // the subframes except for those which are the outer delegates for:
-    //  - Portals
     //  - Fenced frames based specifically on MPArch
     // This is because those special-case frames do not have live RenderFrames
     // in the renderer process.
     bool is_render_frame_created_needed_for_child =
-        (new_host->GetFrameOwnerElementType() !=
-             blink::FrameOwnerElementType::kPortal &&
-         new_host->GetFrameOwnerElementType() !=
-             blink::FrameOwnerElementType::kFencedframe);
+        new_host->GetFrameOwnerElementType() !=
+        blink::FrameOwnerElementType::kFencedframe;
     if (is_render_frame_created_needed_for_child) {
       AssertRenderFrameExists(new_host);
     }
@@ -188,10 +185,9 @@ void WebContentsObserverConsistencyChecker::FrameDeleted(
   // Will be nullptr if this is main frame of a non primary FrameTree whose page
   // was moved out (e.g. due Prerender activation).
   if (!render_frame_host) {
-    DCHECK_NE(FrameTreeNode::GloballyFindByID(frame_tree_node_id)
-                  ->frame_tree()
-                  .type(),
-              FrameTree::Type::kPrimary);
+    DCHECK(!FrameTreeNode::GloballyFindByID(frame_tree_node_id)
+                ->frame_tree()
+                .is_primary());
     return;
   }
 
@@ -535,12 +531,12 @@ bool WebContentsObserverConsistencyChecker::TaskChecker::IsRunningInSameTask() {
   return sequence_num_ == GetSequenceNumberOfCurrentTask();
 }
 
-absl::optional<int> WebContentsObserverConsistencyChecker::TaskChecker::
+std::optional<int> WebContentsObserverConsistencyChecker::TaskChecker::
     GetSequenceNumberOfCurrentTask() {
   return base::TaskAnnotator::CurrentTaskForThread()
-             ? absl::make_optional(
+             ? std::make_optional(
                    base::TaskAnnotator::CurrentTaskForThread()->sequence_num)
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 }  // namespace content

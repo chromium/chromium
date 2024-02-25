@@ -8,10 +8,10 @@
 #include <fuchsia/camera3/cpp/fidl.h>
 
 #include <map>
+#include <optional>
 
 #include "base/containers/small_map.h"
 #include "media/capture/video/video_capture_device_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -54,7 +54,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryFuchsia
 
   // Current list of devices. Set to nullopt if the list hasn't been received
   // yet.
-  absl::optional<
+  std::optional<
       base::small_map<std::map<uint64_t, std::unique_ptr<DeviceConfigFetcher>>>>
       devices_;
 

@@ -6,6 +6,8 @@
  * @fileoverview Defines a global object that holds references to the three
  * different output engines.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
@@ -17,6 +19,7 @@ import {BrailleInterface} from './braille/braille_interface.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {TtsInterface} from './tts_interface.js';
 
+/** A central access point for the different modes of output. */
 export const ChromeVox = {
   /** @type {BrailleInterface} */
   braille: null,
@@ -33,12 +36,10 @@ BridgeHelper.registerHandler(
     cells => Promise.resolve(ChromeVox.braille?.backTranslate(cells)));
 
 BridgeHelper.registerHandler(
-    BridgeConstants.Braille.TARGET,
-    BridgeConstants.Braille.Action.ENABLE_COMMAND_HANDLER, async enable => {
+    BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.SET_BYPASS,
+    async bypass => {
       await ChromeVoxState.ready();
-      if (BrailleCommandHandler.instance) {
-        BrailleCommandHandler.setEnabled(enable);
-      }
+      BrailleCommandHandler.setBypass(bypass);
     });
 
 BridgeHelper.registerHandler(
@@ -70,3 +71,5 @@ BridgeHelper.registerHandler(
     BridgeConstants.TtsBackground.Action.SPEAK,
     (text, queueMode, properties) =>
         ChromeVox.tts?.speak(text, queueMode, properties));
+
+TestImportManager.exportForTesting(['ChromeVox', ChromeVox]);

@@ -71,8 +71,9 @@ void ChromeWebContentsViewFocusHelper::ResetStoredFocus() {
 
 views::View* ChromeWebContentsViewFocusHelper::GetStoredFocus() {
   views::View* last_focused_view = last_focused_view_tracker_.view();
-  if (last_focused_view && last_focused_view->IsFocusable() &&
-      GetFocusManager()->ContainsView(last_focused_view)) {
+  views::FocusManager* focus_manager = GetFocusManager();
+  if (last_focused_view && focus_manager && last_focused_view->IsFocusable() &&
+      focus_manager->ContainsView(last_focused_view)) {
     return last_focused_view;
   }
   return nullptr;

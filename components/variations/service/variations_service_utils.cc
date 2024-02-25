@@ -4,9 +4,13 @@
 
 #include "components/variations/service/variations_service_utils.h"
 
+#include <string>
+
 #include "base/build_time.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/country_codes/country_codes.h"
+#include "components/variations/service/variations_service.h"
 
 namespace variations {
 namespace {
@@ -53,4 +57,18 @@ bool HasSeedExpiredSinceTimeHelperForTesting(base::Time fetch_time,
                                              base::Time build_time) {
   return HasSeedExpiredSinceTimeHelper(fetch_time, build_time);
 }
+
+std::string GetCurrentCountryCode(const VariationsService* variations) {
+  std::string country;
+
+  if (variations) {
+    country = variations->GetStoredPermanentCountry();
+  }
+
+  // Since variations doesn't provide a permanent country by default on things
+  // like local builds, we try to fall back to the country_codes component which
+  // should always have one.
+  return country.empty() ? country_codes::GetCurrentCountryCode() : country;
+}
+
 }  // namespace variations

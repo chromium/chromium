@@ -24,8 +24,6 @@ public interface ChromeGoogleApiClient {
      */
     void disconnect();
 
-    /**
-     * Checks if Google Play Services are available.
-     */
+    /** Checks if Google Play Services are available. */
     boolean isGooglePlayServicesAvailable();
 }

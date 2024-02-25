@@ -7,18 +7,18 @@ package org.chromium.chrome.browser.tab;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ObserverList.RewindableIterator;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-/**
- * Fetches a favicon for active WebContents in a Tab.
- */
+/** Fetches a favicon for active WebContents in a Tab. */
 public class TabFavicon extends TabWebContentsUserData {
     private static final Class<TabFavicon> USER_DATA_KEY = TabFavicon.class;
 
@@ -54,7 +54,7 @@ public class TabFavicon extends TabWebContentsUserData {
      * @param tab Tab containing the web contents's favicon.
      * @return {@link Bitmap} of the favicon.
      */
-    public static Bitmap getBitmap(Tab tab) {
+    public static @Nullable Bitmap getBitmap(Tab tab) {
         TabFavicon tabFavicon = get(tab);
         return tabFavicon != null ? tabFavicon.getFavicon() : null;
     }
@@ -150,9 +150,13 @@ public class TabFavicon extends TabWebContentsUserData {
     @NativeMethods
     interface Natives {
         long init(TabFavicon caller);
+
         void onDestroyed(long nativeTabFavicon, TabFavicon caller);
+
         void setWebContents(long nativeTabFavicon, TabFavicon caller, WebContents webContents);
+
         void resetWebContents(long nativeTabFavicon, TabFavicon caller);
+
         Bitmap getFavicon(long nativeTabFavicon, TabFavicon caller);
     }
 }

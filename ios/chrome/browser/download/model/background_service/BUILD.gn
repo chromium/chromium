@@ -1,0 +1,42 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("background_service") {
+  sources = [
+    "background_download_service_factory.cc",
+    "background_download_service_factory.h",
+  ]
+
+  deps = [
+    "//components/download/internal/background_service:common",
+    "//components/download/internal/background_service:storage",
+    "//components/download/internal/background_service/ios:background_service",
+    "//components/download/internal/background_service/proto",
+    "//components/download/public/background_service:public",
+    "//components/keyed_service/ios",
+    "//components/leveldb_proto",
+    "//components/optimization_guide/core",
+    "//ios/chrome/browser/optimization_guide/model:download_client_header",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":background_service",
+    "//base",
+    "//base/test:test_support",
+    "//components/download/internal/background_service/ios:background_service",
+    "//components/download/internal/background_service/test:test_support",
+    "//components/download/public/background_service/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [ "background_download_service_test.cc" ]
+}

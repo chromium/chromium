@@ -10,9 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/format_macros.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
@@ -97,8 +99,8 @@ bool ProfileExist(const std::wstring& package_name) {
 }
 
 std::wstring GenerateRandomPackageName() {
-  return base::StringPrintf(L"%016lX%016lX", base::RandUint64(),
-                            base::RandUint64());
+  return base::ASCIIToWide(base::StringPrintf(
+      "%016" PRIX64 "%016" PRIX64, base::RandUint64(), base::RandUint64()));
 }
 
 base::win::SecurityDescriptor::SelfRelative CreateSdWithSid(
@@ -128,7 +130,7 @@ void AccessCheckFile(AppContainer* container,
       path.value().c_str(), DELETE, FILE_SHARE_READ | FILE_SHARE_DELETE, &sa,
       CREATE_ALWAYS, FILE_FLAG_DELETE_ON_CLOSE, nullptr));
 
-  ASSERT_TRUE(file_handle.IsValid());
+  ASSERT_TRUE(file_handle.is_valid());
   DWORD granted_access;
   BOOL access_status;
   ASSERT_TRUE(container->AccessCheck(
@@ -177,7 +179,7 @@ void CheckLowBoxToken(AppContainerBase* container,
                       const base::win::AccessToken& base_token,
                       bool impersonation,
                       size_t expected_cap_count) {
-  absl::optional<base::win::AccessToken> token =
+  std::optional<base::win::AccessToken> token =
       impersonation ? container->BuildImpersonationToken(base_token)
                     : container->BuildPrimaryToken(base_token);
   ASSERT_TRUE(token);
@@ -416,7 +418,7 @@ TEST(AppContainerTest, BuildImpersonationToken) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
-  absl::optional<base::win::AccessToken> base_token =
+  std::optional<base::win::AccessToken> base_token =
       base::win::AccessToken::FromCurrentProcess(
           /*impersonation=*/false, TOKEN_DUPLICATE);
   ASSERT_TRUE(base_token);
@@ -436,7 +438,7 @@ TEST(AppContainerTest, BuildPrimaryToken) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
-  absl::optional<base::win::AccessToken> base_token =
+  std::optional<base::win::AccessToken> base_token =
       base::win::AccessToken::FromCurrentProcess(
           /*impersonation=*/false, TOKEN_DUPLICATE);
   ASSERT_TRUE(base_token);

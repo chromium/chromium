@@ -132,7 +132,7 @@ blink::OriginTrialPolicy* AwContentClient::GetOriginTrialPolicy() {
   return origin_trial_policy_.get();
 }
 
-jboolean IsDisableOriginTrialsSafeModeActionOn() {
+bool IsDisableOriginTrialsSafeModeActionOn() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_DisableOriginTrialsSafeModeUtils_isDisableOriginTrialsEnabled(
       env);

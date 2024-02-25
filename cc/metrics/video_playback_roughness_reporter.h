@@ -5,6 +5,7 @@
 #ifndef CC_METRICS_VIDEO_PLAYBACK_ROUGHNESS_REPORTER_H_
 #define CC_METRICS_VIDEO_PLAYBACK_ROUGHNESS_REPORTER_H_
 
+#include <optional>
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "cc/cc_export.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -111,10 +111,10 @@ class CC_EXPORT VideoPlaybackRoughnessReporter {
     FrameInfo();
     FrameInfo(const FrameInfo&);
     TokenType token = 0;
-    absl::optional<base::TimeTicks> decode_time;
-    absl::optional<base::TimeTicks> presentation_time;
-    absl::optional<base::TimeDelta> actual_duration;
-    absl::optional<base::TimeDelta> intended_duration;
+    std::optional<base::TimeTicks> decode_time;
+    std::optional<base::TimeTicks> presentation_time;
+    std::optional<base::TimeDelta> actual_duration;
+    std::optional<base::TimeDelta> intended_duration;
     int refresh_rate_hz = 60;
     gfx::Size size;
   };

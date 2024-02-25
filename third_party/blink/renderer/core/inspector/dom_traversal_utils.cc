@@ -11,8 +11,9 @@ Node* FirstChild(const Node& node, bool include_user_agent_shadow_tree) {
   DCHECK(include_user_agent_shadow_tree || !node.IsInUserAgentShadowRoot());
   if (!include_user_agent_shadow_tree) {
     ShadowRoot* shadow_root = node.GetShadowRoot();
-    if (shadow_root && shadow_root->GetType() == ShadowRootType::kUserAgent)
+    if (shadow_root && shadow_root->GetMode() == ShadowRootMode::kUserAgent) {
       return node.firstChild();
+    }
   }
   return FlatTreeTraversal::FirstChild(node);
 }
@@ -27,8 +28,8 @@ Node* NextSibling(const Node& node, bool include_user_agent_shadow_tree) {
   DCHECK(include_user_agent_shadow_tree || !node.IsInUserAgentShadowRoot());
   if (!include_user_agent_shadow_tree) {
     if (node.ParentElementShadowRoot() &&
-        node.ParentElementShadowRoot()->GetType() ==
-            ShadowRootType::kUserAgent) {
+        node.ParentElementShadowRoot()->GetMode() ==
+            ShadowRootMode::kUserAgent) {
       return node.nextSibling();
     }
   }

@@ -236,7 +236,7 @@ TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
   // Token should be cleared when StopListeningPermanently() is called.
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged());
   fcm_handler_.StopListeningPermanently();
-  EXPECT_EQ(absl::nullopt, fcm_handler_.GetFCMRegistrationToken());
+  EXPECT_EQ(std::nullopt, fcm_handler_.GetFCMRegistrationToken());
 
   fcm_handler_.RemoveTokenObserver(&mock_token_observer);
 }

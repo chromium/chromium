@@ -4,22 +4,21 @@
 
 #include "content/public/browser/tracing_delegate.h"
 
+#include <optional>
+
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
-bool TracingDelegate::IsAllowedToBeginBackgroundScenario(
-    const std::string& scenario_name,
-    bool requires_anonymized_data,
-    bool is_crash_scenario) {
+bool TracingDelegate::OnBackgroundTracingActive(bool requires_anonymized_data) {
   return false;
 }
 
-bool TracingDelegate::IsAllowedToEndBackgroundScenario(
-    const std::string& scenario_name,
-    bool requires_anonymized_data,
-    bool is_crash_scenario) {
+bool TracingDelegate::OnBackgroundTracingIdle(bool requires_anonymized_data) {
+  return false;
+}
+
+bool TracingDelegate::ShouldSaveUnuploadedTrace() const {
   return false;
 }
 
@@ -27,8 +26,8 @@ bool TracingDelegate::IsSystemWideTracingEnabled() {
   return false;
 }
 
-absl::optional<base::Value::Dict> TracingDelegate::GenerateMetadataDict() {
-  return absl::nullopt;
+std::optional<base::Value::Dict> TracingDelegate::GenerateMetadataDict() {
+  return std::nullopt;
 }
 
 }  // namespace content

@@ -1656,7 +1656,7 @@ TEST_F(StreamMixerDeathTest, InvalidStreamTypeCrashes) {
 }
 )json";
 
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(mixer_->ResetPostProcessorsForTest(
                    std::make_unique<MockPostProcessorFactory>(), json),
                DeathRegex("foobar is not a stream type"));
@@ -1664,7 +1664,7 @@ TEST_F(StreamMixerDeathTest, InvalidStreamTypeCrashes) {
 
 TEST_F(StreamMixerDeathTest, BadJsonCrashes) {
   const std::string json("{{");
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(mixer_->ResetPostProcessorsForTest(
                    std::make_unique<MockPostProcessorFactory>(), json),
                DeathRegex("Invalid JSON"));

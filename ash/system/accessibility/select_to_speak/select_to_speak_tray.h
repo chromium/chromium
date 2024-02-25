@@ -25,9 +25,9 @@ class Shelf;
 class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
                                      public AccessibilityObserver,
                                      public SessionObserver {
- public:
-  METADATA_HEADER(SelectToSpeakTray);
+  METADATA_HEADER(SelectToSpeakTray, TrayBackgroundView)
 
+ public:
   SelectToSpeakTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
   SelectToSpeakTray(const SelectToSpeakTray&) = delete;
   SelectToSpeakTray& operator=(const SelectToSpeakTray&) = delete;
@@ -41,7 +41,8 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
   // The SelectToSpeakTray does not have a bubble, so these functions are
   // no-ops.
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
-  void ClickedOutsideBubble() override {}
+  void HideBubble(const TrayBubbleView* bubble_view) override {}
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}
   // No need to override since the icon and tray activation state will change
   // and get updated simultaneously in `UpdateUXOnCurrentStatus()`.
   void UpdateTrayItemColor(bool is_active) override {}
@@ -64,7 +65,7 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
   void UpdateIconOnColorChanges();
 
   // Owned by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   ScopedSessionObserver session_observer_{this};
 };

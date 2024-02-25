@@ -5,9 +5,9 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/h265_decoder.h"
 
 namespace media {
@@ -79,6 +79,11 @@ H265Decoder::H265Accelerator::H265Accelerator() = default;
 
 H265Decoder::H265Accelerator::~H265Accelerator() = default;
 
+scoped_refptr<H265Picture>
+H265Decoder::H265Accelerator::CreateH265PictureSecure(uint64_t secure_handle) {
+  return nullptr;
+}
+
 void H265Decoder::H265Accelerator::ProcessVPS(
     const H265VPS* vps,
     base::span<const uint8_t> vps_nalu_data) {}
@@ -95,6 +100,10 @@ H265Decoder::H265Accelerator::Status H265Decoder::H265Accelerator::SetStream(
     base::span<const uint8_t> stream,
     const DecryptConfig* decrypt_config) {
   return H265Decoder::H265Accelerator::Status::kNotSupported;
+}
+
+bool H265Decoder::H265Accelerator::IsAlphaLayerSupported() {
+  return false;
 }
 
 H265Decoder::H265Decoder(std::unique_ptr<H265Accelerator> accelerator,
@@ -152,15 +161,25 @@ void H265Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     parser_.SetStream(ptr, size);
     current_decrypt_config_ = nullptr;
   }
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
+  }
 }
 
 void H265Decoder::Reset() {
+  first_picture_ = true;
+  no_rasl_output_flag_ = true;
+
   curr_pic_ = nullptr;
   curr_nalu_ = nullptr;
   curr_slice_hdr_ = nullptr;
   last_slice_hdr_ = nullptr;
   curr_sps_id_ = -1;
   curr_pps_id_ = -1;
+  aux_alpha_layer_id_ = 0;
 
   prev_tid0_pic_ = nullptr;
   ref_pic_list_.clear();
@@ -173,6 +192,8 @@ void H265Decoder::Reset() {
   dpb_.Clear();
   parser_.Reset();
   accelerator_->Reset();
+
+  secure_handle_ = 0;
 
   state_ = kAfterReset;
 }
@@ -227,11 +248,89 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       DVLOG(4) << "New NALU: " << static_cast<int>(curr_nalu_->nal_unit_type);
     }
 
-    // 8.1.2 We only want nuh_layer_id of zero.
-    // TODO(crbug.com/1331597): Support alpha on macOS.
     if (curr_nalu_->nuh_layer_id) {
-      DVLOG(4) << "Skipping NALU with nuh_layer_id="
-               << curr_nalu_->nuh_layer_id;
+      // For accelerators that support alpha layers, the data is
+      // simply passed through.
+      if (aux_alpha_layer_id_ == curr_nalu_->nuh_layer_id &&
+          accelerator_->IsAlphaLayerSupported()) {
+        switch (curr_nalu_->nal_unit_type) {
+          case H265NALU::BLA_W_LP:
+          case H265NALU::BLA_W_RADL:
+          case H265NALU::BLA_N_LP:
+          case H265NALU::IDR_W_RADL:
+          case H265NALU::IDR_N_LP:
+          case H265NALU::TRAIL_N:
+          case H265NALU::TRAIL_R:
+          case H265NALU::TSA_N:
+          case H265NALU::TSA_R:
+          case H265NALU::STSA_N:
+          case H265NALU::STSA_R:
+          case H265NALU::RADL_N:
+          case H265NALU::RADL_R:
+          case H265NALU::RASL_N:
+          case H265NALU::RASL_R:
+          case H265NALU::CRA_NUT: {
+            if (!curr_slice_hdr_) {
+              curr_slice_hdr_ = std::make_unique<H265SliceHeader>();
+              par_res = parser_.ParseSliceHeader(
+                  *curr_nalu_, curr_slice_hdr_.get(), last_slice_hdr_.get());
+              if (par_res == H265Parser::kMissingParameterSet) {
+                // As with the base layer, we could be trying to start decoding
+                // from a bad frame, and may be able to recover later.
+                curr_slice_hdr_.reset();
+                last_slice_hdr_.reset();
+                break;
+              }
+              if (par_res != H265Parser::kOk) {
+                SET_ERROR_AND_RETURN();
+              }
+            }
+            const H265PPS* pps =
+                parser_.GetPPS(curr_slice_hdr_->slice_pic_parameter_set_id);
+            const H265SPS* sps = parser_.GetSPS(pps->pps_seq_parameter_set_id);
+            H265Picture::Vector empty;
+            CHECK_ACCELERATOR_RESULT(accelerator_->SubmitSlice(
+                sps, pps, curr_slice_hdr_.get(), empty, empty, empty, empty,
+                empty, curr_pic_.get(), curr_slice_hdr_->nalu_data,
+                curr_slice_hdr_->nalu_size, parser_.GetCurrentSubsamples()));
+            last_slice_hdr_.swap(curr_slice_hdr_);
+            curr_slice_hdr_.reset();
+            break;
+          }
+          case H265NALU::SPS_NUT: {
+            int sps_id;
+            par_res = parser_.ParseSPS(&sps_id);
+            if (par_res != H265Parser::kOk) {
+              SET_ERROR_AND_RETURN();
+            }
+            accelerator_->ProcessSPS(
+                parser_.GetSPS(sps_id),
+                base::span<const uint8_t>(
+                    curr_nalu_->data,
+                    base::checked_cast<size_t>(curr_nalu_->size)));
+            break;
+          }
+          case H265NALU::PPS_NUT: {
+            int pps_id;
+            par_res = parser_.ParsePPS(*curr_nalu_, &pps_id);
+            if (par_res != H265Parser::kOk) {
+              SET_ERROR_AND_RETURN();
+            }
+            accelerator_->ProcessPPS(
+                parser_.GetPPS(pps_id),
+                base::span<const uint8_t>(
+                    curr_nalu_->data,
+                    base::checked_cast<size_t>(curr_nalu_->size)));
+            break;
+          }
+          default:
+            break;
+        }
+      } else {
+        // 8.1.2 Otherwise only handle nuh_layer_id of zero.
+        DVLOG(4) << "Skipping NALU with nuh_layer_id="
+                 << curr_nalu_->nuh_layer_id;
+      }
       curr_nalu_.reset();
       continue;
     }
@@ -276,19 +375,14 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           state_ = kTryPreprocessCurrentSlice;
           if (curr_slice_hdr_->irap_pic) {
             bool need_new_buffers = false;
-            bool color_space_changed = false;
             if (!ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
-                            &need_new_buffers, &color_space_changed)) {
+                            &need_new_buffers)) {
               SET_ERROR_AND_RETURN();
             }
 
             if (need_new_buffers) {
               curr_pic_ = nullptr;
               return kConfigChange;
-            }
-            if (color_space_changed) {
-              curr_pic_ = nullptr;
-              return kColorSpaceChange;
             }
           }
         }
@@ -305,7 +399,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           } else {
             // New picture, try to start a new one or tell client we need more
             // surfaces.
-            curr_pic_ = accelerator_->CreateH265Picture();
+            if (secure_handle_) {
+              curr_pic_ = accelerator_->CreateH265PictureSecure(secure_handle_);
+            } else {
+              curr_pic_ = accelerator_->CreateH265Picture();
+            }
             if (!curr_pic_)
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)
@@ -337,6 +435,10 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         if (par_res != H265Parser::kOk) {
           SET_ERROR_AND_RETURN();
         }
+        // TODO(crbug.com/1495665): Technically, we should cache a map of vps_id
+        // to aux_alpha_layer_id, and look up the aux_alpha_layer_id for each
+        // NALU.
+        aux_alpha_layer_id_ = parser_.GetVPS(vps_id)->aux_alpha_layer_id;
         accelerator_->ProcessVPS(
             parser_.GetVPS(vps_id),
             base::span<const uint8_t>(
@@ -374,18 +476,13 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         // active stream.
         if (curr_pps_id_ == -1) {
           bool need_new_buffers = false;
-          bool color_space_changed = false;
-          if (!ProcessPPS(pps_id, &need_new_buffers, &color_space_changed)) {
+          if (!ProcessPPS(pps_id, &need_new_buffers)) {
             SET_ERROR_AND_RETURN();
           }
 
           if (need_new_buffers) {
             curr_nalu_.reset();
             return kConfigChange;
-          }
-          if (color_space_changed) {
-            curr_nalu_.reset();
-            return kColorSpaceChange;
           }
         }
 
@@ -474,7 +571,7 @@ VideoChromaSampling H265Decoder::GetChromaSampling() const {
 VideoColorSpace H265Decoder::GetVideoColorSpace() const {
   return picture_color_space_;
 }
-absl::optional<gfx::HDRMetadata> H265Decoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> H265Decoder::GetHDRMetadata() const {
   return hdr_metadata_;
 }
 
@@ -488,9 +585,7 @@ size_t H265Decoder::GetNumReferenceFrames() const {
   return dpb_.max_num_pics();
 }
 
-bool H265Decoder::ProcessPPS(int pps_id,
-                             bool* need_new_buffers,
-                             bool* color_space_changed) {
+bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
   DVLOG(4) << "Processing PPS id:" << pps_id;
 
   const H265PPS* pps = parser_.GetPPS(pps_id);
@@ -504,10 +599,6 @@ bool H265Decoder::ProcessPPS(int pps_id,
   if (need_new_buffers)
     *need_new_buffers = false;
 
-  if (color_space_changed) {
-    *color_space_changed = false;
-  }
-
   gfx::Size new_pic_size = sps->GetCodedSize();
   gfx::Rect new_visible_rect = sps->GetVisibleRect();
   if (visible_rect_ != new_visible_rect) {
@@ -516,10 +607,6 @@ bool H265Decoder::ProcessPPS(int pps_id,
   }
 
   VideoChromaSampling new_chroma_sampling = sps->GetChromaSampling();
-  if (new_chroma_sampling != chroma_sampling_) {
-    base::UmaHistogramEnumeration("Media.PlatformVideoDecoding.ChromaSampling",
-                                  new_chroma_sampling);
-  }
 
   if (!accelerator_->IsChromaSamplingSupported(new_chroma_sampling)) {
     DVLOG(1) << "Only YUV 4:2:0 is supported";
@@ -553,9 +640,15 @@ bool H265Decoder::ProcessPPS(int pps_id,
     new_color_space = container_color_space_;
   }
 
+  bool is_color_space_change = false;
+  if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {
+    is_color_space_change = new_color_space.IsSpecified() &&
+                            new_color_space != picture_color_space_;
+  }
+
   if (pic_size_ != new_pic_size || dpb_.max_num_pics() != sps->max_dpb_size ||
       profile_ != new_profile || bit_depth_ != new_bit_depth ||
-      chroma_sampling_ != new_chroma_sampling) {
+      chroma_sampling_ != new_chroma_sampling || is_color_space_change) {
     if (!Flush())
       return false;
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
@@ -573,16 +666,6 @@ bool H265Decoder::ProcessPPS(int pps_id,
     dpb_.set_max_num_pics(sps->max_dpb_size);
     if (need_new_buffers)
       *need_new_buffers = true;
-  }
-
-  if (new_color_space.IsSpecified() &&
-      new_color_space != picture_color_space_) {
-    if (!Flush()) {
-      return false;
-    }
-    DVLOG(1) << "Picture color space: " << new_color_space.ToString();
-    picture_color_space_ = new_color_space;
-    *color_space_changed = true;
   }
 
   return true;
@@ -615,6 +698,7 @@ H265Decoder::H265Accelerator::Status H265Decoder::ProcessCurrentSlice() {
 
   const H265PPS* pps = parser_.GetPPS(curr_pps_id_);
   DCHECK(pps);
+
   return accelerator_->SubmitSlice(
       sps, pps, slice_hdr, ref_pic_list0_, ref_pic_list1_, ref_pic_set_lt_curr_,
       ref_pic_set_st_curr_after_, ref_pic_set_st_curr_before_, curr_pic_.get(),
@@ -629,8 +713,9 @@ void H265Decoder::CalcPicOutputFlags(const H265SliceHeader* slice_hdr) {
         (curr_nalu_->nal_unit_type >= H265NALU::BLA_W_LP &&
          curr_nalu_->nal_unit_type <= H265NALU::IDR_N_LP) ||
         curr_pic_->first_picture_;
+    no_rasl_output_flag_ = curr_pic_->no_rasl_output_flag_;
   } else {
-    curr_pic_->no_rasl_output_flag_ = false;
+    curr_pic_->no_rasl_output_flag_ = no_rasl_output_flag_;
   }
 
   // C.5.2.2
@@ -979,6 +1064,7 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
     if (!PerformDpbOperations(sps)) {
       return H265Accelerator::Status::kFail;
     }
+
     curr_pic_->processed_ = true;
   }
 
@@ -1184,6 +1270,8 @@ bool H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic,
   ref_pic_set_lt_curr_.clear();
   ref_pic_set_st_curr_after_.clear();
   ref_pic_set_st_curr_before_.clear();
+
+  secure_handle_ = 0;
 
   return true;
 }

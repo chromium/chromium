@@ -146,9 +146,6 @@ class MockConnectionManager : public ServerConnectionManager {
 
   void FailNonPeriodicGetUpdates() { fail_non_periodic_get_updates_ = true; }
 
-  // Simple inspectors.
-  bool client_stuck() const { return client_stuck_; }
-
   void SetGUClientCommand(std::unique_ptr<sync_pb::ClientCommand> command);
   void SetCommitClientCommand(std::unique_ptr<sync_pb::ClientCommand> command);
 
@@ -313,7 +310,6 @@ class MockConnectionManager : public ServerConnectionManager {
   std::string store_birthday_ = "Store BDay!";
   base::Lock store_birthday_lock_;
   bool store_birthday_sent_ = false;
-  bool client_stuck_ = false;
 
   // On each PostBufferToPath() call, we decrement this counter.  The call fails
   // iff we hit zero at that call.

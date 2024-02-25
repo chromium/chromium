@@ -14,13 +14,14 @@
 #include "content/browser/devtools/protocol/preload.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
 
 class DevToolsAgentHostImpl;
-class NavigationRequest;
 class RenderFrameHostImpl;
+struct PrerenderMismatchedHeaders;
 
 namespace protocol {
 
@@ -34,16 +35,6 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
 
   static std::vector<PreloadHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
-  void DidActivatePrerender(
-      const base::UnguessableToken& initiator_devtools_navigation_token,
-      const NavigationRequest& nav_request);
-  void DidCancelPrerender(
-      const GURL& prerendering_url,
-      const base::UnguessableToken& initiator_devtools_navigation_token,
-      const std::string& initiating_frame_id,
-      PrerenderFinalStatus status,
-      const std::string& disallowed_api_method);
-
   void DidUpdatePrefetchStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
       const std::string& initiating_frame_id,
@@ -54,9 +45,11 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
   void DidUpdatePrerenderStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
       const GURL& prerender_url,
+      std::optional<blink::mojom::SpeculationTargetHint> target_hint,
       PreloadingTriggeringOutcome status,
-      absl::optional<PrerenderFinalStatus> prerender_status,
-      absl::optional<std::string> disallowed_mojo_interface);
+      std::optional<PrerenderFinalStatus> prerender_status,
+      std::optional<std::string> disallowed_mojo_interface,
+      const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
 
  private:
   Response Enable() override;

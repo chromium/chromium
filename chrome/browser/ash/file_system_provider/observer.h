@@ -7,8 +7,7 @@
 
 #include "base/files/file.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInfo;
 
@@ -19,7 +18,7 @@ enum MountContext { MOUNT_CONTEXT_USER, MOUNT_CONTEXT_RESTORE };
 // Observes file_system_provider::Service for mounting and unmounting events.
 class Observer {
  public:
-  virtual ~Observer() {}
+  virtual ~Observer() = default;
 
   // Called when a file system mounting has been invoked. For success, the
   // |error| argument is set to FILE_OK. Otherwise, |error| contains a specific
@@ -37,7 +36,6 @@ class Observer {
       base::File::Error error) = 0;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OBSERVER_H_

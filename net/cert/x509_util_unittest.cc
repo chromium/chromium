@@ -33,8 +33,8 @@ TEST(X509UtilTest, CreateKeyAndSelfSigned) {
 
   ASSERT_TRUE(private_key.get());
 
-  scoped_refptr<X509Certificate> cert(X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_cert))));
+  scoped_refptr<X509Certificate> cert(
+      X509Certificate::CreateFromBytes(base::as_byte_span(der_cert)));
   ASSERT_TRUE(cert.get());
 
   EXPECT_EQ("subject", cert->subject().common_name);
@@ -142,8 +142,8 @@ TEST(X509UtilTest, CreateSelfSigned) {
       private_key->key(), x509_util::DIGEST_SHA256, "CN=subject", 1,
       base::Time::Now(), base::Time::Now() + base::Days(1), {}, &der_cert));
 
-  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_cert)));
+  scoped_refptr<X509Certificate> cert =
+      X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert.get());
 
   EXPECT_EQ("subject", cert->subject().GetDisplayName());

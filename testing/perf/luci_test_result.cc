@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -32,16 +33,6 @@ constexpr char kKeyOutputArtifacts[] = "outputArtifacts";
 constexpr char kKeyTags[] = "tags";
 constexpr char kKeyKey[] = "key";
 constexpr char kKeyValue[] = "value";
-
-// Returns iso timeformat string of |time| in UTC.
-std::string ToUtcIsoTime(base::Time time) {
-  base::Time::Exploded utc_exploded;
-  time.UTCExplode(&utc_exploded);
-  return base::StringPrintf(
-      "%d-%02d-%02dT%02d:%02d:%02d.%03dZ", utc_exploded.year,
-      utc_exploded.month, utc_exploded.day_of_month, utc_exploded.hour,
-      utc_exploded.minute, utc_exploded.second, utc_exploded.millisecond);
-}
 
 std::string ToString(LuciTestResult::Status status) {
   using Status = LuciTestResult::Status;
@@ -94,7 +85,8 @@ base::Value ToValue(const LuciTestResult& result) {
   test_result->Set(kKeyExpected, result.is_expected());
 
   if (!result.start_time().is_null()) {
-    test_result->Set(kKeyStartTime, ToUtcIsoTime(result.start_time()));
+    test_result->Set(kKeyStartTime,
+                     base::TimeFormatAsIso8601(result.start_time()));
   }
   if (!result.duration().is_zero()) {
     test_result->Set(

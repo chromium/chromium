@@ -23,6 +23,7 @@ testing/data/advance_focus_in_form_with_key_event_listeners.html
 testing/data/advance_focus_in_form_with_tabindex_elements.html
 testing/data/autofocus_input_field_iframe.html
 testing/data/back_forward_restore_scroll.html
+testing/data/background_image.png
 testing/data/bad_tap_targets_iframe.html
 testing/data/bar.html
 testing/data/black-and-white.ico
@@ -33,6 +34,7 @@ testing/data/body-overflow-hidden.html
 testing/data/button.html
 testing/data/cancelTest.html
 testing/data/clipped-body.html
+testing/data/close-on-pagehide.html
 testing/data/composited_selection_bounds_basic.html
 testing/data/composited_selection_bounds_basic_rtl.html
 testing/data/composited_selection_bounds_detached_frame.html
@@ -81,6 +83,7 @@ testing/data/div_with_image.html
 testing/data/domfocusout_domfocusin_events.html
 testing/data/double_press_selection.html
 testing/data/dv-size.html
+testing/data/edit_context.html
 testing/data/editable_elements.html
 testing/data/email-form.html
 testing/data/enter_key_hint_default.html
@@ -244,6 +247,8 @@ testing/data/ime-on-focus-after-navigation-within-page.html
 testing/data/ime-on-focus-on-autofocus.html
 testing/data/ime-on-focus-on-load.html
 testing/data/ime-on-focus-on-user-gesture.html
+testing/data/inner_text_test1.html
+testing/data/inner_text_test2.html
 testing/data/input-image-broken.html
 testing/data/input_field_default.html
 testing/data/input_field_email.html
@@ -449,12 +454,14 @@ testing/data/specify_size.html
 testing/data/speculation_rules/single_url_prefetch.json
 testing/data/speculation_rules/single_url_prefetch_invalid_no_vary_search_hint.json
 testing/data/speculation_rules/single_url_prefetch_not_a_string_no_vary_search_hint.json
+testing/data/speculation_rules/single_url_prefetch_relative.json
 testing/data/speedometer_saved_output.json
 testing/data/spell.html
 testing/data/sticky-position.html
 testing/data/subframe-a.html
 testing/data/subframe-b.html
 testing/data/subframe-c.html
+testing/data/subframe-d.html
 testing/data/subframe-hello.html
 testing/data/subtree-layout.html
 testing/data/sv-size.html

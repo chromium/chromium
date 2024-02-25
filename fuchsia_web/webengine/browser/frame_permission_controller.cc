@@ -114,7 +114,6 @@ PermissionStatus FramePermissionController::GetPermissionState(
 void FramePermissionController::RequestPermissions(
     const std::vector<PermissionType>& permissions,
     const url::Origin& requesting_origin,
-    bool user_gesture,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
   std::vector<PermissionStatus> result;
   result.reserve(permissions.size());

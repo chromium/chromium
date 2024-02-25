@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_VIDEO_DEVICE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_VIDEO_DEVICE_H_
 
+#include <optional>
+
+#include "base/types/expected.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -55,7 +57,7 @@ struct MODULES_EXPORT VideoDeviceCaptureCapabilities {
   // VideoInputDeviceCapabilitiesPtr type once dependent types are migrated to
   // Blink.
   Vector<VideoInputDeviceCapabilities> device_capabilities;
-  Vector<absl::optional<bool>> noise_reduction_capabilities;
+  Vector<std::optional<bool>> noise_reduction_capabilities;
 };
 
 // This function performs source, source-settings and track-settings selection
@@ -120,13 +122,23 @@ struct MODULES_EXPORT VideoDeviceCaptureCapabilities {
 // the track_adapter_settings() accessor. For more details about the algorithm
 // for track adapter settings, see the SelectVideoTrackAdapterSettings
 // documentation.
-VideoCaptureSettings MODULES_EXPORT SelectSettingsVideoDeviceCapture(
+MODULES_EXPORT VideoCaptureSettings SelectSettingsVideoDeviceCapture(
     const VideoDeviceCaptureCapabilities& capabilities,
     const MediaConstraints& constraints,
     int default_width,
     int default_height,
     double default_frame_rate);
 
+// Selects settings for each eligible device in `capabilities` in isolation and
+// returns them as a vector. If none of the devices are eligible, then the name
+// of one of the failed constraints is returned.
+MODULES_EXPORT base::expected<Vector<VideoCaptureSettings>, std::string>
+SelectEligibleSettingsVideoDeviceCapture(
+    const VideoDeviceCaptureCapabilities& capabilities,
+    const MediaConstraints& constraints,
+    int default_width,
+    int default_height,
+    double default_frame_rate);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_VIDEO_DEVICE_H_

@@ -129,6 +129,17 @@ template("rust_unit_test") {
       # Consumed by "rust_unit_tests_group" gni template.
       rust_unit_test_executables = [ _crate_name ]
     }
+
+    # Duplicated from rust_target since we didn't use the rust_executable
+    # template as it causes a GN cycle.
+    if (!defined(deps)) {
+      deps = []
+    }
+    if (!defined(invoker.no_chromium_prelude) || !invoker.no_chromium_prelude) {
+      if (enable_chromium_prelude) {
+        deps += [ "//build/rust/chromium_prelude" ]
+      }
+    }
   }
 }
 

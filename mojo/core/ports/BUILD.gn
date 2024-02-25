@@ -30,6 +30,8 @@ component("ports") {
     "user_message.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_MOJO_CORE_PORTS_IMPL" ]
 
   if (target_os == "chromeos") {

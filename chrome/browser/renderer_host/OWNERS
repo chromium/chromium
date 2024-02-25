@@ -1,16 +1,12 @@
-per-file chrome_extension_message_filter.*=file://extensions/OWNERS
-
 # Mac files
 per-file *.mm=avi@chromium.org
 per-file *.mm=ccameron@chromium.org
 per-file *.mm=erikchen@chromium.org
 per-file *.mm=mark@chromium.org
-per-file *.mm=rsesek@chromium.org
 per-file *.mm=thakis@chromium.org
 
 per-file *_mac.h=avi@chromium.org
 per-file *_mac.h=ccameron@chromium.org
 per-file *_mac.h=erikchen@chromium.org
 per-file *_mac.h=mark@chromium.org
-per-file *_mac.h=rsesek@chromium.org
 per-file *_mac.h=thakis@chromium.org

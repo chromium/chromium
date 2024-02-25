@@ -8,12 +8,16 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_answer_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/search/omnibox/open_tab_result.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -24,6 +28,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "url/gurl.h"
@@ -40,21 +45,15 @@ bool IsAnswer(const AutocompleteMatch& match) {
          match.type == AutocompleteMatchType::CALCULATOR;
 }
 
-int ProviderTypes() {
-  // We use all the default providers except for the document provider, which
-  // suggests Drive files on enterprise devices. This is disabled to avoid
-  // duplication with search results from DriveFS.
-  int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
-                  ~AutocompleteProvider::TYPE_DOCUMENT;
-  providers |= AutocompleteProvider::TYPE_OPEN_TAB;
-  return providers;
-}
-
 }  //  namespace
 
+// Control category is kept default intentionally as we always need to get
+// answer cards results from Omnibox.
 OmniboxProvider::OmniboxProvider(Profile* profile,
-                                 AppListControllerDelegate* list_controller)
-    : profile_(profile),
+                                 AppListControllerDelegate* list_controller,
+                                 int provider_types)
+    : SearchProvider(SearchCategory::kOmnibox),
+      profile_(profile),
       list_controller_(list_controller),
       favicon_cache_(FaviconServiceFactory::GetForProfile(
                          profile,
@@ -64,7 +63,7 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
                          ServiceAccessType::EXPLICIT_ACCESS)) {
   controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile),
-      ProviderTypes(), /*is_cros_launcher=*/true),
+      provider_types, /*is_cros_launcher=*/true),
   controller_->AddObserver(this);
 }
 
@@ -121,6 +120,12 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
     }
 
     if (match.type == AutocompleteMatchType::OPEN_TAB) {
+      // Filters out open tab results if web in disabled in launcher search
+      // controls.
+      if (ash::features::IsLauncherSearchControlEnabled() &&
+          !IsControlCategoryEnabled(profile_, ControlCategory::kWeb)) {
+        continue;
+      }
       DCHECK(last_tokenized_query_.has_value());
       new_results.emplace_back(std::make_unique<OpenTabResult>(
           profile_, list_controller_,
@@ -129,6 +134,12 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
               BookmarkModelFactory::GetForBrowserContext(profile_), input_),
           last_tokenized_query_.value()));
     } else if (!IsAnswer(match)) {
+      // Filters out omnibox results if web in disabled in launcher search
+      // controls.
+      if (ash::features::IsLauncherSearchControlEnabled() &&
+          !IsControlCategoryEnabled(profile_, ControlCategory::kWeb)) {
+        continue;
+      }
       list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_,
           crosapi::CreateResult(

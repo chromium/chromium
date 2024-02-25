@@ -1,0 +1,294 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ArchiveAnalysisResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unspecified"/>
+  <int value="2" label="Valid"/>
+  <int value="3" label="Too large"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Failed to open archive"/>
+  <int value="6" label="Failed to open temporary file"/>
+  <int value="7" label="DMG parser found no partitions of interest"/>
+  <int value="8" label="Failed while iterating through the archive"/>
+  <int value="9" label="Disk error"/>
+</enum>
+
+<enum name="BooleanContainsMacros">
+  <int value="0" label="Does not contain macros"/>
+  <int value="1" label="Contains macros"/>
+</enum>
+
+<enum name="BooleanForceRequest">
+  <int value="0" label="No Force Request"/>
+  <int value="1" label="Force CSD-P ping request"/>
+</enum>
+
+<enum name="BooleanHasUserGesture">
+  <int value="0" label="Does not have user gesture"/>
+  <int value="1" label="Has user gesture"/>
+</enum>
+
+<enum name="BooleanHttps">
+  <int value="0" label="HTTP"/>
+  <int value="1" label="HTTPS"/>
+</enum>
+
+<enum name="BooleanIsPhishing">
+  <int value="0" label="Not phishing"/>
+  <int value="1" label="Is phishing"/>
+</enum>
+
+<enum name="BooleanZipHasAES">
+  <int value="0" label="Zip does not have AES"/>
+  <int value="1" label="Zip has AES"/>
+</enum>
+
+<enum name="CancelEphemeralWarningEvent">
+  <int value="0" label="CancellationScheduled"/>
+  <int value="1" label="CancellationTriggered"/>
+  <int value="2" label="CancellationFailedDownloadNotFound"/>
+  <int value="3" label="CancellationFailedDownloadNotEphemeral"/>
+  <int value="4" label="CancellationSucceeded"/>
+</enum>
+
+<enum name="ClientSideDetectionType">
+  <int value="0" label="CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED"/>
+  <int value="1" label="FORCE_REQUEST"/>
+  <int value="2" label="TRIGGER_MODELS"/>
+  <int value="3" label="NOTIFICATION_PERMISSION_PROMPT"/>
+</enum>
+
+<enum name="ClientSidePhishingImageEmbeddingResult">
+  <summary>
+    Enumerates the possible results from client side phishing image embedding
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Image embedder not ready"/>
+  <int value="2" label="Image embedding cancelled"/>
+  <int value="3" label="Forward/back transition"/>
+  <int value="4" label="Image embedding failed"/>
+</enum>
+
+<enum name="ClientSidePhishingResult">
+  <summary>
+    Enumerates the possible results from the client side phishing detector.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Classifier not ready"/>
+  <int value="2" label="Classification cancelled"/>
+  <int value="3" label="Forward/back transition"/>
+  <int value="4" label="Invalid score"/>
+  <int value="5" label="Invalid URL format request"/>
+  <int value="6" label="Invalid document loader"/>
+  <int value="7" label="URL feature extraction failed"/>
+  <int value="8" label="DOM extraction failed"/>
+  <int value="9" label="Term extraction failed"/>
+  <int value="10" label="Visual extraction failed"/>
+</enum>
+
+<enum name="SBClientDetectionClassifyThresholdsResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model size was mismatched"/>
+  <int value="2" label="Model label was not found"/>
+</enum>
+
+<enum name="SBClientDetectionPreClassificationCheckResult">
+  <int value="0" label="PROXY_FETCH"/>
+  <int value="1" label="PRIVATE_IP"/>
+  <int value="2" label="OFF_THE_RECORD"/>
+  <int value="3" label="MATCH_CSD_ALLOWLIST"/>
+  <int value="4" label="TOO_MANY_REPORTS"/>
+  <int value="5" label="UNSUPPORTED_MIME_TYPE"/>
+  <int value="6" label="NO_DATABASE_MANAGER"/>
+  <int value="7" label="KILLSWITCH"/>
+  <int value="8" label="CANCEL"/>
+  <int value="9" label="RESULT_FROM_CACHE"/>
+  <int value="10" label="DEPRECATED: NOT_HTTP_URL"/>
+  <int value="11" label="SCHEME_NOT_SUPPORTED"/>
+  <int value="12" label="ALLOWLISTED_BY_POLICY"/>
+  <int value="13" label="CLASSIFY"/>
+  <int value="14" label="NO_CLASSIFY_HAS_DELAYED_WARNING"/>
+  <int value="15" label="LOCAL_RESOURCE"/>
+  <int value="16" label="CHROME_UI_PAGE"/>
+  <int value="17" label="(Obsolete) NOT_ALLOWED_BY_POLICY"/>
+</enum>
+
+<enum name="SBClientDownloadCheckDownloadStats">
+  <int value="0" label="INVALID_URL"/>
+  <int value="1" label="SB_DISABLED"/>
+  <int value="2" label="ALLOWLISTED_URL"/>
+  <int value="3" label="ALLOWLISTED_REFERRER"/>
+  <int value="4" label="INVALID_REQUEST_PROTO"/>
+  <int value="5" label="SERVER_PING_FAILED"/>
+  <int value="6" label="INVALID_RESPONSE_PROTO"/>
+  <int value="7" label="NOT_BINARY_FILE"/>
+  <int value="8" label="REQUEST_CANCELED"/>
+  <int value="9" label="DOWNLOAD_DANGEROUS"/>
+  <int value="10" label="DOWNLOAD_SAFE"/>
+  <int value="11" label="EMPTY_URL_CHAIN"/>
+  <int value="12" label="HTTPS_URL (deprecated)"/>
+  <int value="13" label="PING_DISABLED"/>
+  <int value="14" label="TRUSTED_EXECUTABLE"/>
+  <int value="15" label="OS_NOT_SUPPORTED"/>
+  <int value="16" label="DOWNLOAD_UNCOMMON"/>
+  <int value="17" label="DOWNLOAD_NOT_SUPPORTED"/>
+  <int value="18" label="INVALID_RESPONSE_VERDICT"/>
+  <int value="19" label="ARCHIVE_WITHOUT_BINARIES"/>
+  <int value="20" label="DOWNLOAD_DANGEROUS_HOST"/>
+  <int value="21" label="DOWNLOAD_POTENTIALLY_UNWANTED"/>
+  <int value="22" label="UNSUPPORTED_URL_SCHEME"/>
+  <int value="23" label="MANUAL_BLACKLIST"/>
+  <int value="24" label="LOCAL_FILE"/>
+  <int value="25" label="REMOTE_FILE"/>
+  <int value="26" label="SAMPLED_UNSUPPORTED_FILE"/>
+  <int value="27" label="VERDICT_UNKNOWN"/>
+  <int value="28" label="DOWNLOAD_DESTROYED"/>
+  <int value="29" label="BLOCKED_PASSWORD_PROTECTED"/>
+  <int value="30" label="BLOCKED_TOO_LARGE"/>
+  <int value="31" label="SENSITIVE_CONTENT_WARNING"/>
+  <int value="32" label="SENSITIVE_CONTENT_BLOCK"/>
+  <int value="33" label="DEEP_SCANNED_SAFE"/>
+  <int value="34" label="DEEP_SCAN_PROMPT"/>
+  <int value="35" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="36" label="ACCOUNT_COMPROMISE"/>
+  <int value="37" label="LOCAL_DECRYPTION_PROMPT"/>
+  <int value="38" label="LOCAL_DECRYPTION_FAILED"/>
+</enum>
+
+<enum name="SBClientDownloadCheckResult">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="SAFE"/>
+  <int value="2" label="DANGEROUS"/>
+  <int value="3" label="UNCOMMON"/>
+  <int value="4" label="DANGEROUS_HOST"/>
+  <int value="5" label="POTENTIALLY_UNWANTED"/>
+  <int value="6" label="ALLOWLISTED_BY_POLICY"/>
+  <int value="7" label="ASYNC_SCANNING"/>
+  <int value="8" label="BLOCKED_PASSWORD_PROTECTED"/>
+  <int value="9" label="BLOCKED_TOO_LARGE"/>
+  <int value="10" label="SENSITIVE_CONTENT_WARNING"/>
+  <int value="11" label="SENSITIVE_CONTENT_BLOCK"/>
+  <int value="12" label="DEEP_SCANNED_SAFE"/>
+  <int value="13" label="PROMPT_FOR_SCANNING"/>
+  <int value="14" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="15" label="DANGEROUS_ACCOUNT_COMPROMISE"/>
+  <int value="16" label="DEEP_SCANNED_FAILED"/>
+  <int value="17" label="PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>
+  <int value="18" label="ASYNC_LOCAL_PASSWORD_SCANNING"/>
+</enum>
+
+<enum name="SBClientDownloadUserGestureFileTypeAttributes">
+  <int value="0" label="Total type checked"/>
+  <int value="1" label="Has user gesture"/>
+  <int value="2" label="Has referrer visit"/>
+  <int value="3" label="Has both user gesture and referrer visit"/>
+  <int value="4" label="Has bypassed download warnings before"/>
+</enum>
+
+<enum name="SBClientPhishingCancelClassificationReason">
+  <int value="0" label="NAVIGATE_AWAY"/>
+  <int value="1" label="NAVIGATE_WITHIN_PAGE"/>
+  <int value="2" label="PAGE_RECAPTURED"/>
+  <int value="3" label="SHUTDOWN"/>
+  <int value="4" label="NEW_PHISHING_SCORER"/>
+  <int value="5" label="SCORER_CLEARED"/>
+</enum>
+
+<enum name="SBClientPhishingCancelImageEmbeddingReason">
+  <int value="0" label="NAVIGATE_AWAY"/>
+  <int value="1" label="NAVIGATE_WITHIN_PAGE"/>
+  <int value="2" label="PAGE_RECAPTURED"/>
+  <int value="3" label="SHUTDOWN"/>
+  <int value="4" label="NEW_PHISHING_SCORER"/>
+</enum>
+
+<enum name="SBClientPhishingScorerCreationStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="MODEL_OPEN_FAIL"/>
+  <int value="2" label="MODEL_FILE_EMPTY"/>
+  <int value="3" label="MODEL_FILE_TOO_LARGE"/>
+  <int value="4" label="MODEL_PARSE_ERROR"/>
+  <int value="5" label="MODEL_MISSING_FIELDS"/>
+</enum>
+
+<enum name="SBDeepScanEvent">
+  <int value="0" label="Prompt shown"/>
+  <int value="1" label="Prompt bypassed"/>
+  <int value="2" label="Prompt accepted"/>
+  <int value="3" label="Scan canceled"/>
+  <int value="4" label="Scan completed"/>
+  <int value="5" label="Scan failed"/>
+  <int value="6" label="Scan deleted"/>
+  <int value="7" label="Prompt accepted from chrome://downloads"/>
+</enum>
+
+<enum name="SBDeepScanTriggers">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Advanced Protection Prompt"/>
+  <int value="2" label="Enterprise policy"/>
+</enum>
+
+<enum name="SBDeepScanType">
+  <int value="0" label="Normal"/>
+  <int value="1" label="Save Package"/>
+</enum>
+
+<enum name="SBPhishingClassifierEvent">
+  <int value="0" label="Phishing detection was requested to start"/>
+  <int value="1" label="Page text was captured"/>
+  <int value="2" label="Page text not loaded"/>
+  <int value="3" label="Url should not be classified"/>
+  <int value="4" label="Phishing classifier was destructed"/>
+  <int value="5"
+      label="Scorer sent update and classifier is ready within timeout"/>
+</enum>
+
+<enum name="SevenZipResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Allocation failure"/>
+  <int value="3" label="CRC failure"/>
+  <int value="4" label="Memory mapping failure"/>
+  <int value="5" label="Malformed archive"/>
+  <int value="6" label="IO error"/>
+  <int value="7" label="Disk full"/>
+  <int value="8" label="No filename"/>
+  <int value="9" label="Unsupported feature in LZMA SDK"/>
+</enum>
+
+<enum name="TailoredWarningType">
+  <int value="0" label="NoTailoredWarning"/>
+  <int value="1" label="CookieTheft"/>
+  <int value="2" label="CookieTheftWithAccountInfo"/>
+  <int value="3" label="SuspiciousArchive"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

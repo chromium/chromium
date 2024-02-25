@@ -70,8 +70,16 @@ class BaseUrlInheritanceIframeTest
       public ::testing::WithParamInterface<bool> {
  public:
   BaseUrlInheritanceIframeTest() {
-    feature_list_.InitWithFeatureState(
-        blink::features::kNewBaseUrlInheritanceBehavior, GetParam());
+    if (GetParam()) {  // Test new base url behavior.
+      feature_list_.InitWithFeatureState(
+          blink::features::kNewBaseUrlInheritanceBehavior, true);
+    } else {
+      // Need to force off kIsolateSandboxedIframes if it's enabled in order to
+      // test the legacy base url behavior.
+      feature_list_.InitWithFeatureStates(
+          {{blink::features::kNewBaseUrlInheritanceBehavior, false},
+           {blink::features::kIsolateSandboxedIframes, false}});
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -89,7 +97,7 @@ class BaseUrlInheritanceIframeTest
 
 // A test to make sure that restoring a session history entry that was saved
 // with an about:blank subframe never results in an initiator_base_url of
-// an empty string. absl::nullopt is expected instead of an empty GURL with
+// an empty string. std::nullopt is expected instead of an empty GURL with
 // legacy base url behavior, or the non-empty initiator base url in the
 // new base url inheritance mode. This test runs in both modes.
 IN_PROC_BROWSER_TEST_P(BaseUrlInheritanceIframeTest,
@@ -133,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(BaseUrlInheritanceIframeTest,
   } else {
     // Make sure the about:blank child has nullopt, and not an empty string, for
     // the initiator_base_url.
-    EXPECT_EQ(absl::nullopt,
+    EXPECT_EQ(std::nullopt,
               exploded_page_state.top.children[0].initiator_base_url_string);
   }
 }
@@ -186,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(BaseUrlLegacyBehaviorIframeTest,
 
   // Restore the altered entry in a new tab and verify the frame loads without
   // hitting any CHECKs.
-  Shell* new_shell = Shell::CreateNewWindow(
-      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  Shell* new_shell = Shell::CreateNewWindow(controller.GetBrowserContext(),
+                                            GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -197,9 +205,8 @@ IN_PROC_BROWSER_TEST_F(BaseUrlLegacyBehaviorIframeTest,
           new_shell->web_contents()->GetController());
   // Create the restored entry.
   std::unique_ptr<NavigationEntryImpl> restored_entry = entry->Clone();
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  restored_entry->SetPageState(page_state, context.get());
+  NavigationEntryRestoreContextImpl context;
+  restored_entry->SetPageState(page_state, &context);
   EXPECT_EQ(main_url, restored_entry->root_node()->frame_entry->url());
   ASSERT_EQ(1U, restored_entry->root_node()->children.size());
   EXPECT_EQ(child_frame_url,
@@ -445,19 +452,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                        CspIsolatedSandbox) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  // The child needs to have the same origin as the parent.
-  GURL child_url(main_url);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create csp-sandboxed child frame, same-origin.
   {
-    std::string js_str = base::StringPrintf(
-        "var frame = document.createElement('iframe'); "
-        "frame.csp = 'sandbox'; "
-        "frame.src = '%s'; "
-        "document.body.appendChild(frame);",
-        child_url.spec().c_str());
-    EXPECT_TRUE(ExecJs(shell(), js_str));
+    EXPECT_TRUE(ExecJs(shell(),
+                       "var frame = document.createElement('iframe'); "
+                       "frame.csp = 'sandbox'; "
+                       "frame.srcdoc = '<b>Hello!</b>'; "
+                       "document.body.appendChild(frame);"));
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
 
@@ -2406,6 +2409,43 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   ASSERT_TRUE(root_frame_entry);
   EXPECT_FALSE(root_frame_entry->initiator_base_url().has_value());
   EXPECT_EQ(GURL(), root->current_frame_host()->GetInheritedBaseUrl());
+}
+
+// This test verifies that a renderer process doesn't crash if a srcdoc calls
+// document.write on a mainframe parent.
+IN_PROC_BROWSER_TEST_F(BaseUrlInheritanceBehaviorIframeTest,
+                       SrcdocWritesMainFrame) {
+  StartEmbeddedServer();
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Create srcdoc child.
+  EXPECT_TRUE(ExecJs(root,
+                     "var frm = document.createElement('iframe'); "
+                     "frm.srcdoc = 'foo'; "
+                     "document.body.appendChild(frm);"));
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+
+  // Have the srcdoc child call document.write on the mainframe-parent.
+  std::string test_str("test-complete");
+  // Since having the child write the parent's document will delete the child,
+  // we use setTimeout to ensure ExecJS returns true, and then wait for the
+  // child's RenderFrameHost to be deleted so we know that the write has
+  // completed. Note: the child's subframe exiting does not mean that its
+  // process, which it shares with the parent, has exited.
+  RenderFrameDeletedObserver observer(child->current_frame_host());
+  EXPECT_TRUE(ExecJs(
+      child, JsReplace("setTimeout(() => { parent.document.write($1); }, 100);",
+                       test_str)));
+  observer.WaitUntilDeleted();
+
+  // But fortunately `root` is still valid.
+  EXPECT_EQ(test_str, EvalJs(root, "document.body.innerText").ExtractString());
+  // If we get here without a crash, we've passed.
 }
 
 // A test to verify that a new about:blank mainframe inherits its base url

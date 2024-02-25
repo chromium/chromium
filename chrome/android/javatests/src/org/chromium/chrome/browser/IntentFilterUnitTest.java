@@ -20,9 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 
-/**
- * Unit tests for Intent Filters in chrome/android/java/AndroidManifest.xml
- */
+/** Unit tests for Intent Filters in chrome/android/java/AndroidManifest.xml */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class IntentFilterUnitTest {

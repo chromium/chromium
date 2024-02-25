@@ -5,15 +5,16 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_APPLY_UPDATE_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_APPLY_UPDATE_COMMAND_H_
 
+#include <iosfwd>
 #include <memory>
-#include <ostream>
+#include <optional>
 #include <string>
 #include <type_traits>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -23,12 +24,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -42,30 +41,25 @@ enum class InstallResultCode;
 
 namespace web_app {
 
-class AppLock;
-class AppLockDescription;
-class LockDescription;
 class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
 
 struct IsolatedWebAppApplyUpdateCommandError {
   std::string message;
-
-  friend std::ostream& operator<<(
-      std::ostream& os,
-      const IsolatedWebAppApplyUpdateCommandError& error) {
-    return os << "IsolatedWebAppApplyUpdateCommandError { "
-                 "message = \""
-              << error.message << "\" }.";
-  }
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const IsolatedWebAppApplyUpdateCommandError& error);
 
 // This command applies a pending update of an Isolated Web App. Information
 // about the pending update is read from
 // `WebApp::IsolationData::pending_update_info`. Both on success, and on
 // failure, the pending update info is removed from the Web App database.
-class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
+class IsolatedWebAppApplyUpdateCommand
+    : public WebAppCommand<
+          AppLock,
+          base::expected<void, IsolatedWebAppApplyUpdateCommandError>> {
  public:
   // This command is safe to run even if the IWA is not installed or already
   // updated, in which case it will gracefully fail.
@@ -90,14 +84,12 @@ class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
 
   ~IsolatedWebAppApplyUpdateCommand() override;
 
-  // WebAppCommandTemplate<AppLock>:
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
-  void OnShutdown() override;
 
  private:
-  void ReportFailure(base::StringPiece message, bool due_to_shutdown = false);
+  void ReportFailure(base::StringPiece message);
   void ReportSuccess();
 
   template <typename T, std::enable_if_t<std::is_void_v<T>, bool> = true>
@@ -151,17 +143,15 @@ class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
 
   void Finalize(WebAppInstallInfo info);
 
-  void OnFinalized(const AppId& app_id,
+  void OnFinalized(const webapps::AppId& app_id,
                    webapps::InstallResultCode update_result_code,
                    OsHooksErrors os_hooks_errors);
 
-  void CleanupUpdateInfoOnFailure(base::OnceClosure next_step_callback);
+  void CleanupOnFailure(base::OnceClosure next_step_callback);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
-  base::Value::Dict debug_log_;
 
   IsolatedWebAppUrlInfo url_info_;
 
@@ -171,13 +161,10 @@ class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
-  raw_ptr<const WebApp> installed_app_;
-
-  base::OnceCallback<void(
-      base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
-      callback_;
+  raw_ptr<const WebApp> installed_app_ = nullptr;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
+  std::optional<IsolatedWebAppLocation> update_location_;
 
   base::WeakPtrFactory<IsolatedWebAppApplyUpdateCommand> weak_factory_{this};
 };

@@ -9,14 +9,14 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
-#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/apps/app_service/publishers/compressed_icon_getter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace {
 
 bool WriteIconFiles(const base::FilePath& base_path,
-                    const std::string& app_id,
+                    const std::string& id,
                     int32_t icon_size_in_px,
                     apps::IconValuePtr iv) {
   if (!iv || iv->icon_type != apps::IconType::kCompressed) {
@@ -28,9 +28,9 @@ bool WriteIconFiles(const base::FilePath& base_path,
     // For the adaptive icon, write the foreground and background icon data to
     // the local files.
     const auto foreground_icon_path =
-        apps::GetForegroundIconPath(base_path, app_id, icon_size_in_px);
+        apps::GetForegroundIconPath(base_path, id, icon_size_in_px);
     const auto background_icon_path =
-        apps::GetBackgroundIconPath(base_path, app_id, icon_size_in_px);
+        apps::GetBackgroundIconPath(base_path, id, icon_size_in_px);
     if (!base::CreateDirectory(foreground_icon_path.DirName()) ||
         !base::CreateDirectory(background_icon_path.DirName())) {
       return false;
@@ -48,8 +48,8 @@ bool WriteIconFiles(const base::FilePath& base_path,
     return false;
   }
 
-  const auto icon_path = apps::GetIconPath(base_path, app_id, icon_size_in_px,
-                                           iv->is_maskable_icon);
+  const auto icon_path =
+      apps::GetIconPath(base_path, id, icon_size_in_px, iv->is_maskable_icon);
   if (!base::CreateDirectory(icon_path.DirName())) {
     return false;
   }
@@ -62,14 +62,14 @@ bool WriteIconFiles(const base::FilePath& base_path,
 
 namespace apps {
 
-AppIconWriter::Key::Key(const std::string& app_id, int32_t size_in_dip)
-    : app_id_(app_id), size_in_dip_(size_in_dip) {}
+AppIconWriter::Key::Key(const std::string& id, int32_t size_in_dip)
+    : id_(id), size_in_dip_(size_in_dip) {}
 
 AppIconWriter::Key::~Key() = default;
 
 bool AppIconWriter::Key::operator<(const Key& other) const {
-  if (this->app_id_ != other.app_id_) {
-    return this->app_id_ < other.app_id_;
+  if (this->id_ != other.id_) {
+    return this->id_ < other.id_;
   }
   return this->size_in_dip_ < other.size_in_dip_;
 }
@@ -84,20 +84,19 @@ AppIconWriter::AppIconWriter(Profile* profile) : profile_(profile) {}
 
 AppIconWriter::~AppIconWriter() = default;
 
-void AppIconWriter::InstallIcon(AppPublisher* publisher,
-                                const std::string& app_id,
+void AppIconWriter::InstallIcon(CompressedIconGetter* compressed_icon_getter,
+                                const std::string& id,
                                 int32_t size_in_dip,
                                 base::OnceCallback<void(bool)> callback) {
-  DCHECK(publisher);
-
-  Key key(app_id, size_in_dip);
+  CHECK(compressed_icon_getter);
+  Key key(id, size_in_dip);
   auto it = pending_results_.find(key);
   if (it != pending_results_.end()) {
     it->second.callbacks.push_back(std::move(callback));
     return;
   }
 
-  pending_results_[Key(app_id, size_in_dip)].callbacks.push_back(
+  pending_results_[Key(id, size_in_dip)].callbacks.push_back(
       std::move(callback));
   it = pending_results_.find(key);
 
@@ -107,12 +106,12 @@ void AppIconWriter::InstallIcon(AppPublisher* publisher,
   // icon with both the foreground and the background icon files. Since we don't
   // know whether the icon is an adaptive icon, we always get the raw icon data
   // for all scale factors.
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     it->second.scale_factors.insert(scale_factor);
     scale_factors.insert(scale_factor);
   }
 
-  for (auto scale_factor : scale_factors) {
+  for (const auto scale_factor : scale_factors) {
     auto pending_results_it = pending_results_.find(key);
     if (pending_results_it == pending_results_.end()) {
       // If the getting icon request has been removed (e.g. the compressed
@@ -121,19 +120,19 @@ void AppIconWriter::InstallIcon(AppPublisher* publisher,
       return;
     }
 
-    publisher->GetCompressedIconData(
-        app_id, size_in_dip, scale_factor,
+    compressed_icon_getter->GetCompressedIconData(
+        id, size_in_dip, scale_factor,
         base::BindOnce(&AppIconWriter::OnIconLoad,
-                       weak_ptr_factory_.GetWeakPtr(), app_id, size_in_dip,
+                       weak_ptr_factory_.GetWeakPtr(), id, size_in_dip,
                        scale_factor));
   }
 }
 
-void AppIconWriter::OnIconLoad(const std::string& app_id,
+void AppIconWriter::OnIconLoad(const std::string& id,
                                int32_t size_in_dip,
                                ui::ResourceScaleFactor scale_factor,
                                IconValuePtr iv) {
-  auto it = pending_results_.find(Key(app_id, size_in_dip));
+  auto it = pending_results_.find(Key(id, size_in_dip));
   if (it == pending_results_.end()) {
     return;
   }
@@ -151,19 +150,19 @@ void AppIconWriter::OnIconLoad(const std::string& app_id,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
-          &WriteIconFiles, profile_->GetPath(), app_id,
+          &WriteIconFiles, profile_->GetPath(), id,
           apps_util::ConvertDipToPxForScale(size_in_dip, scale_factor),
           std::move(iv)),
       base::BindOnce(&AppIconWriter::OnWriteIconFile,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, size_in_dip,
+                     weak_ptr_factory_.GetWeakPtr(), id, size_in_dip,
                      scale_factor));
 }
 
-void AppIconWriter::OnWriteIconFile(const std::string& app_id,
+void AppIconWriter::OnWriteIconFile(const std::string& id,
                                     int32_t size_in_dip,
                                     ui::ResourceScaleFactor scale_factor,
                                     bool ret) {
-  auto it = pending_results_.find(Key(app_id, size_in_dip));
+  auto it = pending_results_.find(Key(id, size_in_dip));
   if (it == pending_results_.end()) {
     return;
   }

@@ -5,10 +5,13 @@
 #include "components/sync/service/sync_policy_handler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -133,6 +136,97 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledAutofill) {
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncPreferences, &enabled));
   EXPECT_TRUE(enabled);
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncThemes, &enabled));
+  EXPECT_TRUE(enabled);
+}
+
+TEST(SyncPolicyHandlerTest, SyncTypesListDisabledInvalidEntry) {
+  // Start with prefs enabled so we can sense that they have changed.
+  PrefValueMap prefs;
+  prefs.SetBoolean(prefs::internal::kSyncBookmarks, true);
+  prefs.SetBoolean(prefs::internal::kSyncReadingList, true);
+  prefs.SetBoolean(prefs::internal::kSyncPreferences, true);
+  prefs.SetBoolean(prefs::internal::kSyncAutofill, true);
+
+  // Create a policy that disables some types, but also contains a non-string
+  // entry in the list.
+  policy::PolicyMap policy;
+  auto disabled_types =
+      base::Value::List().Append("bookmarks").Append(123).Append("preferences");
+  policy.Set(policy::key::kSyncTypesListDisabled,
+             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
+
+  SyncPolicyHandler handler;
+
+  // The invalid value should have produced a warning message.
+  policy::PolicyErrorMap errors;
+  handler.CheckPolicySettings(policy, &errors);
+  std::vector<policy::PolicyErrorMap::Data> error_data =
+      errors.GetErrors(policy::key::kSyncTypesListDisabled);
+  ASSERT_EQ(error_data.size(), 1u);
+  EXPECT_EQ(error_data[0].level, policy::PolicyMap::MessageType::kWarning);
+
+  // But the valid entries should still have been applied.
+  handler.ApplyPolicySettings(policy, &prefs);
+
+  bool enabled;
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncBookmarks, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncPreferences, &enabled));
+  EXPECT_FALSE(enabled);
+
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncAutofill, &enabled));
+  EXPECT_TRUE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncReadingList, &enabled));
+  EXPECT_TRUE(enabled);
+}
+
+TEST(SyncPolicyHandlerTest, SyncTypesListDisabledUnknownEntry) {
+  // Start with prefs enabled so we can sense that they have changed.
+  PrefValueMap prefs;
+  prefs.SetBoolean(prefs::internal::kSyncBookmarks, true);
+  prefs.SetBoolean(prefs::internal::kSyncReadingList, true);
+  prefs.SetBoolean(prefs::internal::kSyncPreferences, true);
+  prefs.SetBoolean(prefs::internal::kSyncAutofill, true);
+
+  // Create a policy that disables some types, but also contains an unrecognized
+  // value (in practice, this could be a previous data type that was deprecated,
+  // or a new data type that this version of the browser doesn't know about yet,
+  // or just a typo in the configuration).
+  policy::PolicyMap policy;
+  auto disabled_types = base::Value::List()
+                            .Append("bookmarks")
+                            .Append("nonexistent")
+                            .Append("preferences");
+  policy.Set(policy::key::kSyncTypesListDisabled,
+             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(std::move(disabled_types)), nullptr);
+
+  SyncPolicyHandler handler;
+
+  // The invalid value should have produced a warning message.
+  policy::PolicyErrorMap errors;
+  handler.CheckPolicySettings(policy, &errors);
+  std::vector<policy::PolicyErrorMap::Data> error_data =
+      errors.GetErrors(policy::key::kSyncTypesListDisabled);
+  ASSERT_EQ(error_data.size(), 1u);
+  EXPECT_NE(error_data[0].message.find(u"nonexistent"), std::string::npos);
+  EXPECT_EQ(error_data[0].level, policy::PolicyMap::MessageType::kWarning);
+
+  // But the valid entries should still have been applied.
+  handler.ApplyPolicySettings(policy, &prefs);
+
+  bool enabled;
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncBookmarks, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncPreferences, &enabled));
+  EXPECT_FALSE(enabled);
+
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncAutofill, &enabled));
+  EXPECT_TRUE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncReadingList, &enabled));
   EXPECT_TRUE(enabled);
 }
 

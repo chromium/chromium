@@ -38,6 +38,8 @@
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "gin/public/v8_platform.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -186,6 +188,18 @@ bool TestingPlatformSupport::IsThreadedAnimationEnabled() {
 
 void TestingPlatformSupport::SetThreadedAnimationEnabled(bool enabled) {
   is_threaded_animation_enabled_ = enabled;
+}
+
+const base::Clock* TestingPlatformSupport::GetClock() const {
+  return base::DefaultClock::GetInstance();
+}
+
+const base::TickClock* TestingPlatformSupport::GetTickClock() const {
+  return base::DefaultTickClock::GetInstance();
+}
+
+base::TimeTicks TestingPlatformSupport::NowTicks() const {
+  return base::TimeTicks::Now();
 }
 
 ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,

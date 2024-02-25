@@ -39,9 +39,9 @@ class LacrosDataBackwardMigrationModePolicyObserver
   // Called when LacrosDataBackwardMigrationMode policy value is updated.
   void OnChanged();
 
-  const raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_;
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
-  raw_ptr<Profile, ExperimentalAsh> primary_profile_ = nullptr;
+  const raw_ptr<ProfileManager> profile_manager_;
+  const raw_ptr<PrefService> local_state_;
+  raw_ptr<Profile> primary_profile_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<LacrosDataBackwardMigrationModePolicyObserver>

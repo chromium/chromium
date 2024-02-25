@@ -16,6 +16,7 @@
 #include "extensions/browser/api/storage/weak_unlimited_settings_storage.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 using content::BrowserThread;
@@ -63,7 +64,7 @@ void LocalValueStoreCache::RunWithValueStoreForExtension(
   }
 }
 
-void LocalValueStoreCache::DeleteStorageSoon(const std::string& extension_id) {
+void LocalValueStoreCache::DeleteStorageSoon(const ExtensionId& extension_id) {
   DCHECK(IsOnBackendSequence());
   storage_map_.erase(extension_id);
 

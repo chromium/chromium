@@ -130,6 +130,8 @@ class StorageStorageAreaGetBytesInUseFunction : public SettingsFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("storage.getBytesInUse", STORAGE_GETBYTESINUSE)
 
+  FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest, GetBytesInUseIntOverflow);
+
  protected:
   ~StorageStorageAreaGetBytesInUseFunction() override {}
 

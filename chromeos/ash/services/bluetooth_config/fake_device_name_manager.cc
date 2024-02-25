@@ -10,12 +10,12 @@ FakeDeviceNameManager::FakeDeviceNameManager() = default;
 
 FakeDeviceNameManager::~FakeDeviceNameManager() = default;
 
-absl::optional<std::string> FakeDeviceNameManager::GetDeviceNickname(
+std::optional<std::string> FakeDeviceNameManager::GetDeviceNickname(
     const std::string& device_id) {
   base::flat_map<std::string, std::string>::iterator it =
       device_id_to_nickname_map_.find(device_id);
   if (it == device_id_to_nickname_map_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return it->second;
 }
@@ -28,7 +28,7 @@ void FakeDeviceNameManager::SetDeviceNickname(const std::string& device_id,
 
 void FakeDeviceNameManager::RemoveDeviceNickname(const std::string& device_id) {
   device_id_to_nickname_map_.erase(device_id);
-  NotifyDeviceNicknameChanged(device_id, /*nickname=*/absl::nullopt);
+  NotifyDeviceNicknameChanged(device_id, /*nickname=*/std::nullopt);
 }
 
 }  // namespace ash::bluetooth_config

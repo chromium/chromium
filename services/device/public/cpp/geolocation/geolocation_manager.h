@@ -35,9 +35,9 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // Sets the global instance of the Geolocation Manager.
   static void SetInstance(std::unique_ptr<GeolocationManager> manager);
 
-  void TrackGeolocationAttempted();
-  void TrackGeolocationRelinquished();
   void RequestSystemPermission();
+  // Opens appropriate system preferences/setting page.
+  void OpenSystemPermissionSetting();
 
 #if !BUILDFLAG(IS_APPLE) && \
     !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
@@ -101,7 +101,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   const mojom::GeopositionResult* GetLastPosition() const;
 #endif
 
- protected:
   SystemGeolocationSource& SystemGeolocationSourceForTest();
 
  private:

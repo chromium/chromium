@@ -67,13 +67,11 @@ internal git repo. Some examples:
 
 To add resources there, `cd` to this repo, add your new assets and `git cl
 upload` to start an internal code review. Once it lands, you will need to create
-a roll CL for the `//../src-internal/DEPS`, using
+a new roll CL for the `//../src/DEPS`, using
 [roll-dep](https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/README.md#:~:text=cl.md.-,roll%2Ddep,-%3A%20A%20gclient%20dependency).
+To do this create a new CL and from your src directory run
+`roll-dep src/[path_to_changed_directory]`. E.g. `roll-dep src/chrome/app/theme/google_chrome` ([example manual roll CL](https://crrev.com/c/4935716))
 
-Once that CL lands, an auto-roller bot will update the main repo's src-internal
-hash reference in `//DEPS` ([example autoroll CL](https://crrev.com/c/4024955))
-and your new internal resources will be available on the bots. The chromium-side
-CL making use of it can then be uploaded.
 
 ## Internal Clank assets
 

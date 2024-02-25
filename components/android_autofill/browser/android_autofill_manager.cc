@@ -11,25 +11,17 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/form_event_logger_weblayer_android.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
 
 using base::TimeTicks;
-
-void AndroidDriverInitHook(AutofillClient* client,
-                           ContentAutofillDriver* driver) {
-  driver->set_autofill_manager(
-      base::WrapUnique(new AndroidAutofillManager(driver, client)));
-  driver->GetAutofillAgent()->SetUserGestureRequired(false);
-  driver->GetAutofillAgent()->SetSecureContextRequired(true);
-  driver->GetAutofillAgent()->SetFocusRequiresScroll(false);
-  driver->GetAutofillAgent()->SetQueryPasswordSuggestion(true);
-}
 
 AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver,
                                                AutofillClient* client)
@@ -38,35 +30,16 @@ AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver,
   autofill_manager_observation.Observe(this);
 }
 
-AndroidAutofillManager::~AndroidAutofillManager() = default;
+AndroidAutofillManager::~AndroidAutofillManager() {
+  Reset();
+}
 
 base::WeakPtr<AutofillManager> AndroidAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-CreditCardAccessManager* AndroidAutofillManager::GetCreditCardAccessManager() {
-  return nullptr;
-}
-
 bool AndroidAutofillManager::ShouldClearPreviewedForm() {
   return false;
-}
-
-void AndroidAutofillManager::FillCreditCardFormImpl(
-    const FormData& form,
-    const FormFieldData& field,
-    const CreditCard& credit_card,
-    const std::u16string& cvc,
-    const AutofillTriggerDetails& trigger_details) {
-  NOTREACHED();
-}
-
-void AndroidAutofillManager::FillProfileFormImpl(
-    const FormData& form,
-    const FormFieldData& field,
-    const autofill::AutofillProfile& profile,
-    const AutofillTriggerDetails& trigger_details) {
-  NOTREACHED();
 }
 
 void AndroidAutofillManager::OnFormSubmittedImpl(
@@ -180,20 +153,20 @@ void AndroidAutofillManager::OnFormProcessed(
   }
 }
 
-void AndroidAutofillManager::OnServerRequestError(
-    FormSignature form_signature,
-    AutofillDownloadManager::RequestType request_type,
-    int http_error) {
-  if (auto* provider = GetAutofillProvider())
-    provider->OnServerQueryRequestError(this, form_signature);
-}
-
 void AndroidAutofillManager::Reset() {
+  // Inform the provider before resetting state in case it needs to access it.
+  if (auto* rfh =
+          static_cast<ContentAutofillDriver&>(driver()).render_frame_host()) {
+    if (auto* web_contents = content::WebContents::FromRenderFrameHost(rfh)) {
+      if (auto* provider = AutofillProvider::FromWebContents(web_contents)) {
+        // Note that this doesn't use `GetAutofillProvider()` because we might
+        // need to reset even when `rfh` is pending deletion.
+        provider->OnManagerResetOrDestroyed(this);
+      }
+    }
+  }
   AutofillManager::Reset();
   forms_with_server_predictions_.clear();
-  if (auto* provider = GetAutofillProvider()) {
-    provider->Reset(this);
-  }
   StartNewLoggingSession();
 }
 
@@ -214,7 +187,7 @@ void AndroidAutofillManager::OnFieldTypesDetermined(AutofillManager& manager,
 
   forms_with_server_predictions_.insert(form);
   if (auto* provider = GetAutofillProvider()) {
-    provider->OnServerPredictionsAvailable(form);
+    provider->OnServerPredictionsAvailable(*this, form);
   }
 }
 
@@ -241,12 +214,13 @@ FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
 }
 
 void AndroidAutofillManager::FillOrPreviewForm(
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     const FormData& form,
     FieldTypeGroup field_type_group,
     const url::Origin& triggered_origin) {
-  DCHECK_EQ(action_persistence, mojom::AutofillActionPersistence::kFill);
-  driver().FillOrPreviewForm(action_persistence, form, triggered_origin, {});
+  DCHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+  driver().ApplyFormAction(mojom::ActionType::kFill, action_persistence, form,
+                           triggered_origin, {});
   // We do not call OnAutofillProfileOrCreditCardFormFilled() because WebView
   // doesn't have AutofillProfile or CreditCard.
   if (auto* logger = GetEventFormLogger(field_type_group)) {

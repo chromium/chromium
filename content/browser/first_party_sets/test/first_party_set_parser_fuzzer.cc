@@ -8,12 +8,15 @@
 #include <memory>
 #include <sstream>
 
+#include "base/version.h"
+
 namespace content {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string string_input(reinterpret_cast<const char*>(data), size);
   std::istringstream stream(string_input);
-  FirstPartySetParser::ParseSetsFromStream(stream, false, false);
+  FirstPartySetParser::ParseSetsFromStream(stream, base::Version("1.0"), false,
+                                           false);
 
   return 0;
 }

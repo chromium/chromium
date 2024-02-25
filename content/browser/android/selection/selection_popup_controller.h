@@ -53,10 +53,16 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   bool ShowSelectionMenu(RenderFrameHost* render_frame_host,
                          const ContextMenuParams& params,
                          int handle_height);
-  void OnSelectAroundCaretAck(blink::mojom::SelectAroundCaretResultPtr result);
+  void OnSelectAroundCaretAck(int startOffset,
+                              int endOffset,
+                              int surroundingTextLength,
+                              blink::mojom::SelectAroundCaretResultPtr result);
   void HidePopupsAndPreserveSelection();
   void RestoreSelectionPopupsIfNecessary();
-  std::unique_ptr<ui::TouchHandleDrawable> CreateTouchHandleDrawable();
+  void ChildLocalSurfaceIdChanged();
+  std::unique_ptr<ui::TouchHandleDrawable> CreateTouchHandleDrawable(
+      gfx::NativeView parent_native_view,
+      cc::slim::Layer* parent_layer);
   void MoveRangeSelectionExtent(const gfx::PointF& extent);
 
   void SelectBetweenCoordinates(const gfx::PointF& base,

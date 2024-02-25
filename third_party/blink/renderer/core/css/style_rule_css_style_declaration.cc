@@ -22,7 +22,9 @@
 
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
+#include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 
@@ -55,6 +57,14 @@ void StyleRuleCSSStyleDeclaration::DidMutate(MutationType type) {
   if (parent_rule_ && parent_rule_->parentStyleSheet()) {
     parent_rule_->parentStyleSheet()->DidMutate(
         CSSStyleSheet::Mutation::kRules);
+    StyleSheetContents* parent_contents =
+        parent_rule_->parentStyleSheet()->Contents();
+    if (parent_rule_->GetType() == CSSRule::kStyleRule) {
+      parent_contents->NotifyRuleChanged(
+          static_cast<CSSStyleRule*>(parent_rule_.Get())->GetStyleRule());
+    } else {
+      parent_contents->NotifyDiffUnrepresentable();
+    }
   }
 }
 

@@ -5,6 +5,9 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests to ensure column names are matching data.\n`);
   await TestRunner.showPanel('network');
@@ -34,7 +37,7 @@ import {NetworkTestRunner} from 'network_test_runner';
       request => request.name() === 'empty.html?xhr');
   var xhrNode = await NetworkTestRunner.waitForNetworkLogViewNodeForRequest(request);
 
-  UI.panels.network.networkLogView.refresh();
+  Network.NetworkPanel.NetworkPanel.instance().networkLogView.refresh();
   for (var columnName of columnsToTest) {
     const cell = xhrNode.createCell(columnName);
     // Cell may contain live locations that are unresolved.

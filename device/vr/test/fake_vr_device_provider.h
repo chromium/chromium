@@ -30,7 +30,8 @@ class DEVICE_VR_EXPORT FakeVRDeviceProvider : public VRDeviceProvider {
   void AddDevice(std::unique_ptr<VRDeviceBase> device);
   void RemoveDevice(mojom::XRDeviceId device_id);
 
-  void Initialize(VRDeviceProviderClient* client) override;
+  void Initialize(VRDeviceProviderClient* client,
+                  content::WebContents* initializing_web_contents) override;
   bool Initialized() override;
 
  private:

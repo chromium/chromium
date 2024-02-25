@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
+#include "ui/base/ui_base_types.h"
 
 namespace blink {
 
@@ -40,6 +41,8 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   bool StrictMode() const override;
   const String MediaType() const override;
   blink::mojom::DisplayMode DisplayMode() const override;
+  ui::WindowShowState WindowShowState() const override;
+  bool Resizable() const override;
   ColorSpaceGamut ColorGamut() const override;
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;
   mojom::blink::PreferredContrast GetPreferredContrast() const override;
@@ -50,7 +53,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   NavigationControls GetNavigationControls() const override;
   int GetHorizontalViewportSegments() const override;
   int GetVerticalViewportSegments() const override;
-  device::mojom::blink::DevicePostureType GetDevicePosture() const override;
+  mojom::blink::DevicePostureType GetDevicePosture() const override;
   Scripting GetScripting() const override;
   Document* GetDocument() const override;
   bool HasValues() const override;

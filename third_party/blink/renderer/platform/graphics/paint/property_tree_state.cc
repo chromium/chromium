@@ -36,12 +36,9 @@ bool InSameTransformCompositingBoundary(
   if (composited_ancestor1 != composited_ancestor2) {
     return false;
   }
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    return true;
-  }
-  // In CompositeScrollAfterPaint, there may be indirectly composited scroll
-  // translations below the common nearest directly composited ancestor.
-  // Check if t1 and t2 have the same nearest composited scroll translation.
+  // There may be indirectly composited scroll translations below the common
+  // nearest directly composited ancestor. Check if t1 and t2 have the same
+  // nearest composited scroll translation.
   const auto& scroll_translation1 = t1.NearestScrollTranslationNode();
   const auto& scroll_translation2 = t2.NearestScrollTranslationNode();
   if (&scroll_translation1 == &scroll_translation2) {
@@ -86,7 +83,7 @@ bool PropertyTreeStateOrAlias::Changed(
          Effect().Changed(change, relative_to, &Transform());
 }
 
-absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
+std::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
     const PropertyTreeState& guest,
     IsCompositedScrollFunction is_composited_scroll) const {
   // A number of criteria need to be met:
@@ -108,11 +105,11 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
   } else {
     if (!InSameTransformCompositingBoundary(Transform(), guest.Transform(),
                                             is_composited_scroll)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (Transform().IsBackfaceHidden() !=
         guest.Transform().IsBackfaceHidden()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     upcast_transform =
         &Transform().LowestCommonAncestor(guest.Transform()).Unalias();
@@ -128,7 +125,7 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
         !ClipChainInTransformCompositingBoundary(guest.Clip(), *upcast_clip,
                                                  *upcast_transform,
                                                  is_composited_scroll)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -136,7 +133,8 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
 }
 
 String PropertyTreeStateOrAlias::ToString() const {
-  return String::Format("t:%p c:%p e:%p", transform_, clip_, effect_);
+  return String::Format("t:%p c:%p e:%p", transform_.get(), clip_.get(),
+                        effect_.get());
 }
 
 #if DCHECK_IS_ON()

@@ -6,6 +6,8 @@
 
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
@@ -32,15 +34,14 @@
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 namespace {
 
-absl::optional<base::FilePath>& GetNetworkTestCertsDirectory() {
+std::optional<base::FilePath>& GetNetworkTestCertsDirectory() {
   // Set by SetNetworkTestCertsDirectoryForTesting().
-  static base::NoDestructor<absl::optional<base::FilePath>>
+  static base::NoDestructor<std::optional<base::FilePath>>
       network_test_certs_dir;
   return *network_test_certs_dir;
 }
@@ -252,6 +253,7 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kUtility:
       SetupCommonSandboxParameters(compiler, command_line);
       break;
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kGpu: {
       SetupGpuSandboxParameters(compiler, command_line);
       break;

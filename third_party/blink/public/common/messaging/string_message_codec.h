@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MESSAGING_STRING_MESSAGE_CODEC_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MESSAGING_STRING_MESSAGE_CODEC_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
@@ -40,7 +40,7 @@ class BLINK_COMMON_EXPORT WebMessageArrayBufferPayload {
   // can't (like Java ByteArray). JNI API does not provide a way to get a
   // pointer to the underlying array memory, so another API |CopyInto| should be
   // used instead to avoid an extra copy.
-  virtual absl::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
+  virtual std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const = 0;
 
   // Copy the underlying buffer into the given destination. The |dest| must be
@@ -54,7 +54,7 @@ class BLINK_COMMON_EXPORT WebMessageArrayBufferPayload {
   // created BigBuffer represents a resizable ArrayBuffer.
   static std::unique_ptr<WebMessageArrayBufferPayload> CreateFromBigBuffer(
       mojo_base::BigBuffer buffer,
-      absl::optional<size_t> max_byte_length);
+      std::optional<size_t> max_byte_length);
 
   // Create a new WebMessageArrayBufferPayload from vector for testing.
   static std::unique_ptr<WebMessageArrayBufferPayload> CreateForTesting(
@@ -80,7 +80,7 @@ using WebMessagePayload =
 BLINK_COMMON_EXPORT TransferableMessage
 EncodeWebMessagePayload(const WebMessagePayload& payload);
 
-BLINK_COMMON_EXPORT absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
+BLINK_COMMON_EXPORT std::optional<WebMessagePayload> DecodeToWebMessagePayload(
     TransferableMessage message);
 
 }  // namespace blink

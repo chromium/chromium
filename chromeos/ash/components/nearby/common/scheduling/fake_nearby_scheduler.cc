@@ -29,11 +29,11 @@ void FakeNearbyScheduler::Reschedule() {
   ++num_reschedule_calls_;
 }
 
-absl::optional<base::Time> FakeNearbyScheduler::GetLastSuccessTime() const {
+std::optional<base::Time> FakeNearbyScheduler::GetLastSuccessTime() const {
   return last_success_time_;
 }
 
-absl::optional<base::TimeDelta> FakeNearbyScheduler::GetTimeUntilNextRequest()
+std::optional<base::TimeDelta> FakeNearbyScheduler::GetTimeUntilNextRequest()
     const {
   return time_until_next_request_;
 }
@@ -59,12 +59,12 @@ void FakeNearbyScheduler::InvokeRequestCallback() {
   NotifyOfRequest();
 }
 
-void FakeNearbyScheduler::SetLastSuccessTime(absl::optional<base::Time> time) {
+void FakeNearbyScheduler::SetLastSuccessTime(std::optional<base::Time> time) {
   last_success_time_ = time;
 }
 
 void FakeNearbyScheduler::SetTimeUntilNextRequest(
-    absl::optional<base::TimeDelta> time_delta) {
+    std::optional<base::TimeDelta> time_delta) {
   time_until_next_request_ = time_delta;
 }
 

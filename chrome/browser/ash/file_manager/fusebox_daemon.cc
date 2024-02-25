@@ -8,6 +8,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 
@@ -15,8 +18,15 @@ namespace file_manager {
 
 // static
 scoped_refptr<FuseBoxDaemon> FuseBoxDaemon::GetInstance() {
-  static auto* fusebox_daemon = new FuseBoxDaemon;
-  return fusebox_daemon;
+  static base::NoDestructor<base::WeakPtr<FuseBoxDaemon>> daemon;
+
+  scoped_refptr<FuseBoxDaemon> p = daemon->get();
+  if (!p) {
+    p = new FuseBoxDaemon();
+    *daemon = p->weak_ptr_factory_.GetWeakPtr();
+  }
+
+  return p;
 }
 
 FuseBoxDaemon::FuseBoxDaemon() {

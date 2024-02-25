@@ -214,9 +214,9 @@ class LinkedHashSet {
   void pop_back();
   void clear();
 
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(
-      VisitorDispatcher visitor) const {
+  void Trace(auto visitor) const
+    requires Allocator::kIsGarbageCollected
+  {
     value_to_index_.Trace(visitor);
     list_.Trace(visitor);
   }

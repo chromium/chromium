@@ -31,7 +31,7 @@ class TransientWindowObserver;
 class COMPONENT_EXPORT(UI_WM) TransientWindowManager
     : public aura::WindowObserver {
  public:
-  using Windows = std::vector<aura::Window*>;
+  using Windows = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
 
   TransientWindowManager(const TransientWindowManager&) = delete;
   TransientWindowManager& operator=(const TransientWindowManager&) = delete;
@@ -59,6 +59,14 @@ class COMPONENT_EXPORT(UI_WM) TransientWindowManager
   // when the transient parent is shown. This is false by default.
   void set_parent_controls_visibility(bool parent_controls_visibility) {
     parent_controls_visibility_ = parent_controls_visibility;
+  }
+
+  // Sets whether the transient parent should control the lifetime of the
+  // transient child or not. `parent_controls_lifetime_` is default set to true
+  // and needs to be set to false when the lifetime of the transient child is
+  // not managed by its transient parent.
+  void set_parent_controls_lifetime(bool parent_controls_lifetime) {
+    parent_controls_lifetime_ = parent_controls_lifetime;
   }
 
   const Windows& transient_children() const { return transient_children_; }
@@ -101,6 +109,7 @@ class COMPONENT_EXPORT(UI_WM) TransientWindowManager
   RAW_PTR_EXCLUSION aura::Window* stacking_target_;
 
   bool parent_controls_visibility_;
+  bool parent_controls_lifetime_;
   bool show_on_parent_visible_;
   bool ignore_visibility_changed_event_;
 

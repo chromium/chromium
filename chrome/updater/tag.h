@@ -6,16 +6,15 @@
 #define CHROME_UPDATER_TAG_H_
 
 #include <cstdint>
+#include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace updater {
-namespace tagging {
+namespace updater::tagging {
 namespace internal {
 
 // Advances the iterator by |distance| and makes sure that it remains valid,
@@ -33,6 +32,17 @@ bool CheckRange(std::vector<uint8_t>::const_iterator it,
 
 }  // namespace internal
 
+// Represents application requirements for admin.
+enum class NeedsAdmin {
+  // The application will install per user.
+  kNo = 0,
+  // The application will install machine-wide.
+  kYes,
+  // The application will install machine-wide if permissions allow, else will
+  // install per-user.
+  kPrefers,
+};
+
 // This struct contains the attributes for a given app parsed from a part of the
 // metainstaller tag. It contains minimal policy and is intended to be a
 // near-direct mapping from tag to memory. See TagArgs, which stores a list of
@@ -41,19 +51,8 @@ bool CheckRange(std::vector<uint8_t>::const_iterator it,
 // An empty string in std::string members indicates that the given attribute did
 // not appear in the tag for this app.
 struct AppArgs {
-  // Represents application requirements for admin.
-  enum class NeedsAdmin {
-    // The application will install per user.
-    kNo = 0,
-    // The application will install machine-wide.
-    kYes,
-    // The application will install machine-wide if permissions allow, else will
-    // install per-user.
-    kPrefers,
-  };
-
   // |app_id| must not be empty and will be made lowercase.
-  explicit AppArgs(base::StringPiece app_id);
+  explicit AppArgs(std::string_view app_id);
 
   ~AppArgs();
   AppArgs(const AppArgs&);
@@ -69,10 +68,15 @@ struct AppArgs {
   std::string install_data_index;
   std::string experiment_labels;
   std::string untrusted_data;
-  absl::optional<NeedsAdmin> needs_admin;
+  std::optional<NeedsAdmin> needs_admin;
 };
 
-std::ostream& operator<<(std::ostream&, const AppArgs::NeedsAdmin&);
+std::ostream& operator<<(std::ostream&, const NeedsAdmin&);
+
+// This struct contains the "runtime mode" parsed from the metainstaller tag.
+struct RuntimeModeArgs {
+  std::optional<NeedsAdmin> needs_admin;
+};
 
 // This struct contains the attributes parsed from a metainstaller tag. An empty
 // string in std::string members indicates that the given attribute did not
@@ -105,12 +109,16 @@ struct TagArgs {
   std::string experiment_labels;
   std::string referral_id;
   std::string language;
-  absl::optional<BrowserType> browser_type;
-  absl::optional<bool> flighting = false;
-  absl::optional<bool> usage_stats_enable;
+  std::optional<BrowserType> browser_type;
+  std::optional<bool> flighting = false;
+  std::optional<bool> usage_stats_enable;
 
   // List of apps to install.
   std::vector<AppArgs> apps;
+
+  // This member is present if the "runtime mode" was provided on the command
+  // line.
+  std::optional<RuntimeModeArgs> runtime_mode;
 
   // The original tag string.
   std::string tag_string;
@@ -176,6 +184,14 @@ enum class ErrorCode {
   // Note: A value of 2 is considered the same as not specifying the usage
   // stats.
   kGlobal_UsageStatsValueIsInvalid,
+
+  // The runtime value must be "true", "persist", or "false". The values
+  // "persist" and "false" are only for backward compatibility in case someone
+  // uses it as an oversight, and are treated the same as "true".
+  kGlobal_RuntimeModeValueIsInvalid,
+
+  // The needsadmin value must be "yes", "no", or "prefers".
+  kRuntimeMode_NeedsAdminValueIsInvalid,
 };
 
 std::ostream& operator<<(std::ostream&, const ErrorCode&);
@@ -241,23 +257,18 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 // - installerdata  Can be any string. Must be specified after appid.
 //
 // Note: This method assumes all attribute names are ASCII.
-ErrorCode Parse(base::StringPiece tag,
-                absl::optional<base::StringPiece> app_installer_data_args,
-                TagArgs* args);
+ErrorCode Parse(std::string_view tag,
+                std::optional<std::string_view> app_installer_data_args,
+                TagArgs& args);
 
 std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
                     std::vector<uint8_t>::const_iterator end);
 std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
-std::string ExeReadTag(const base::FilePath& file);
-bool ExeWriteTag(const base::FilePath& in_file,
-                 const std::string& tag_string,
-                 int padded_length,
-                 const base::FilePath& out_file);
 
-// Utilities for reading and writing tags to MSI files.
+// Utilities for reading and writing tags to Windows PE and MSI files.
 //
 //
-// The tag specification for MSI files is as follows:
+// The tag specification is as follows:
 //   - The tag area begins with a magic signature 'Gact2.0Omaha'.
 //   - The next 2 bytes are the tag string length in big endian.
 //   - Then comes the tag string in the format "key1=value1&key2=value2".
@@ -267,7 +278,7 @@ bool ExeWriteTag(const base::FilePath& in_file,
 // +-------------------------------------+
 // ~    ..............................   ~
 // |    ..............................   |
-// |    Other parts of the MSI file      |
+// |    Other parts of the file          |
 // +-------------------------------------+
 // | Start of the certificate            |
 // ~    ..............................   ~
@@ -283,16 +294,17 @@ bool ExeWriteTag(const base::FilePath& in_file,
 // |  a   n   d   =   C   D   C   D   &   k   e   y   2   =   T   e  |
 // |  s   t                                                          |
 // +-----------------------------------------------------------------+
-// Extracts a tag from the end of the MSI `filename`.
-absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename);
+// Extracts a tag from `filename`.
+std::string BinaryReadTagString(const base::FilePath& file);
+std::optional<tagging::TagArgs> BinaryReadTag(const base::FilePath& file);
 
 // Tags `file` with `tag_string` and writes the result to `file` by default, or
 // to `out_file` if `out_file` is provided.
-bool MsiWriteTag(const base::FilePath& file,
-                 const std::string& tag_string,
-                 base::FilePath out_file = {});
+bool BinaryWriteTag(const base::FilePath& in_file,
+                    const std::string& tag_string,
+                    int padded_length,
+                    base::FilePath out_file);
 
-}  // namespace tagging
-}  // namespace updater
+}  // namespace updater::tagging
 
 #endif  // CHROME_UPDATER_TAG_H_

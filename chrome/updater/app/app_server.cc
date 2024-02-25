@@ -4,6 +4,8 @@
 
 #include "chrome/updater/app/app_server.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +19,7 @@
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -34,7 +37,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -116,6 +118,8 @@ base::OnceClosure AppServer::ModeCheck() {
   CHECK_EQ(base::Version(global_prefs->GetActiveVersion()),
            base::Version(kUpdaterVersion));
 
+  RepairUpdater(updater_scope(), IsInternalService());
+
   if (IsInternalService()) {
     prefs_ = CreateLocalPrefs(updater_scope());
     return base::BindOnce(&AppServer::ActiveDutyInternal, this,
@@ -178,15 +182,15 @@ void AppServer::Uninitialize() {
 }
 
 void AppServer::MaybeUninstall() {
-  if (!prefs_ || IsInternalService()) {
+  if (!config_ || IsInternalService()) {
     return;
   }
 
-  auto persisted_data = base::MakeRefCounted<PersistedData>(
-      updater_scope(), prefs_->GetPrefService());
+  scoped_refptr<PersistedData> persisted_data =
+      config_->GetUpdaterPersistedData();
   if (ShouldUninstall(persisted_data->GetAppIds(), server_starts_,
                       persisted_data->GetHadApps())) {
-    absl::optional<base::FilePath> executable =
+    std::optional<base::FilePath> executable =
         GetUpdaterExecutablePath(updater_scope());
     if (executable) {
       base::CommandLine command_line(*executable);
@@ -226,10 +230,13 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs,
   global_prefs->SetSwapping(true);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
   if (!global_prefs->GetMigratedLegacyUpdaters()) {
-    if (!MigrateLegacyUpdaters(base::BindRepeating(
-            &PersistedData::RegisterApp,
-            base::MakeRefCounted<PersistedData>(
-                updater_scope(), global_prefs->GetPrefService())))) {
+    if (!MigrateLegacyUpdaters(
+            updater_scope(),
+            base::BindRepeating(
+                &PersistedData::RegisterApp,
+                base::MakeRefCounted<PersistedData>(
+                    updater_scope(), global_prefs->GetPrefService(),
+                    std::make_unique<ActivityDataService>(updater_scope()))))) {
       return false;
     }
     global_prefs->SetMigratedLegacyUpdaters();

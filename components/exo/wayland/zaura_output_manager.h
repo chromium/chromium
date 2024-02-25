@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_EXO_WAYLAND_ZAURA_OUTPUT_MANAGER_H_
 #define COMPONENTS_EXO_WAYLAND_ZAURA_OUTPUT_MANAGER_H_
 
+#include <aura-shell-server-protocol.h>
+
 #include <cstdint>
 
 #include "base/memory/raw_ptr.h"
-
-struct wl_client;
-struct wl_resource;
 
 namespace display {
 class Display;
@@ -18,7 +17,8 @@ class Display;
 
 namespace exo::wayland {
 
-inline constexpr uint32_t kZAuraOutputManagerVersion = 3;
+inline constexpr uint32_t kZAuraOutputManagerVersion =
+    ZAURA_OUTPUT_MANAGER_OVERSCAN_INSETS_SINCE_VERSION;
 
 void bind_aura_output_manager(wl_client* client,
                               void* data,
@@ -36,6 +36,10 @@ class AuraOutputManager {
 
   // Returns nullptr if there is no metrics manager bound to `client`.
   static AuraOutputManager* Get(wl_client* client);
+
+  // Returns the display id associated with the `output_resource`. Returns
+  // display::kInvalidDisplayId if `output_resource` is nullptr.
+  static int64_t GetDisplayIdForOutput(wl_resource* outout_resource);
 
   // Dispatches multiple events to the client for the full set of output state
   // required to correctly represent a display. Returns true if any state events

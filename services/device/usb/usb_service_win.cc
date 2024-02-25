@@ -7,6 +7,8 @@
 // windows.h must be included first.
 #include <windows.h>
 
+#include <string_view>
+
 #define INITGUID
 
 #include <devpkey.h>
@@ -22,7 +24,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -57,9 +58,9 @@ std::ostream& operator<<(std::ostream& os, const DEVPROPKEY& value) {
   return os;
 }
 
-absl::optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
-                                                 SP_DEVINFO_DATA* dev_info_data,
-                                                 const DEVPROPKEY& property) {
+std::optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
+                                                SP_DEVINFO_DATA* dev_info_data,
+                                                const DEVPROPKEY& property) {
   // SetupDiGetDeviceProperty() makes an RPC which may block.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -70,20 +71,20 @@ absl::optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
           dev_info, dev_info_data, &property, &property_type,
           reinterpret_cast<PBYTE>(&buffer), sizeof(buffer), nullptr, 0)) {
     USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (property_type != DEVPROP_TYPE_UINT32) {
     USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
                    << ") returned unexpected type (" << property_type
                    << " != " << DEVPROP_TYPE_UINT32 << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return buffer;
 }
 
-absl::optional<std::wstring> GetDeviceStringProperty(
+std::optional<std::wstring> GetDeviceStringProperty(
     HDEVINFO dev_info,
     SP_DEVINFO_DATA* dev_info_data,
     const DEVPROPKEY& property) {
@@ -97,19 +98,19 @@ absl::optional<std::wstring> GetDeviceStringProperty(
                                &property_type, nullptr, 0, &required_size, 0)) {
     USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
                    << ") unexpectedly succeeded";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
     USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (property_type != DEVPROP_TYPE_STRING) {
     USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
                    << ") returned unexpected type (" << property_type
                    << " != " << DEVPROP_TYPE_STRING << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::wstring buffer;
@@ -118,13 +119,13 @@ absl::optional<std::wstring> GetDeviceStringProperty(
           reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
           required_size, nullptr, 0)) {
     USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return buffer;
 }
 
-absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
+std::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
     HDEVINFO dev_info,
     SP_DEVINFO_DATA* dev_info_data,
     const DEVPROPKEY& property) {
@@ -138,7 +139,7 @@ absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
                                &property_type, nullptr, 0, &required_size, 0)) {
     USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
                    << ") unexpectedly succeeded";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (GetLastError() == ERROR_NOT_FOUND) {
@@ -148,14 +149,14 @@ absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
 
   if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
     USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (property_type != DEVPROP_TYPE_STRING_LIST) {
     USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
                    << ") returned unexpected type (" << property_type
                    << " != " << DEVPROP_TYPE_STRING_LIST << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::wstring buffer;
@@ -164,23 +165,23 @@ absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
           reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
           required_size, nullptr, 0)) {
     USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Windows string list properties use a NUL character as the delimiter.
-  return base::SplitString(buffer, base::WStringPiece(L"\0", 1),
+  return base::SplitString(buffer, std::wstring_view(L"\0", 1),
                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
 std::wstring GetServiceName(HDEVINFO dev_info, SP_DEVINFO_DATA* dev_info_data) {
-  absl::optional<std::wstring> property =
+  std::optional<std::wstring> property =
       GetDeviceStringProperty(dev_info, dev_info_data, DEVPKEY_Device_Service);
   if (!property.has_value())
     return std::wstring();
 
   // Windows pads this string with a variable number of NUL bytes for no
   // discernible reason.
-  return std::wstring(base::TrimString(*property, base::WStringPiece(L"\0", 1),
+  return std::wstring(base::TrimString(*property, std::wstring_view(L"\0", 1),
                                        base::TRIM_TRAILING));
 }
 
@@ -378,7 +379,7 @@ UsbDeviceWin::FunctionInfo GetFunctionInfo(const std::wstring& instance_id) {
     return info;
   }
 
-  absl::optional<std::vector<std::wstring>> hardware_ids =
+  std::optional<std::vector<std::wstring>> hardware_ids =
       GetDeviceStringListProperty(dev_info.get(), &dev_info_data,
                                   DEVPKEY_Device_HardwareIds);
   if (!hardware_ids.has_value()) {
@@ -408,12 +409,29 @@ UsbDeviceWin::FunctionInfo GetFunctionInfo(const std::wstring& instance_id) {
   }
   base::win::RegKey scoped_key(key);
 
+  // Devices may either have DeviceInterfaceGUID or DeviceInterfaceGUIDs
+  // registry keys. Read both and only consider it an error if there are no
+  // useful results.
   std::vector<std::wstring> device_interface_guids;
-  LONG result =
+  LONG guids_result =
       scoped_key.ReadValues(L"DeviceInterfaceGUIDs", &device_interface_guids);
-  if (result != ERROR_SUCCESS) {
-    USB_LOG(ERROR) << "Could not read device interface GUIDs: "
-                   << logging::SystemErrorCodeToString(result);
+
+  std::wstring device_interface_guid;
+  LONG guid_result =
+      scoped_key.ReadValue(L"DeviceInterfaceGUID", &device_interface_guid);
+  if (SUCCEEDED(guid_result)) {
+    device_interface_guids.push_back(std::move(device_interface_guid));
+  }
+
+  if (device_interface_guids.empty()) {
+    if (FAILED(guids_result)) {
+      USB_LOG(ERROR) << "Could not read DeviceInterfaceGUIDs: "
+                     << logging::SystemErrorCodeToString(guids_result);
+    }
+    if (FAILED(guid_result)) {
+      USB_LOG(ERROR) << "Could not read DeviceInterfaceGUID: "
+                     << logging::SystemErrorCodeToString(guid_result);
+    }
     return info;
   }
 
@@ -466,7 +484,7 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
                                                   &GUID_DEVINTERFACE_USB_DEVICE,
                                                   i, &device_interface_data);
          ++i) {
-      EnumerateDevice(dev_info.get(), &device_interface_data, absl::nullopt);
+      EnumerateDevice(dev_info.get(), &device_interface_data, std::nullopt);
     }
 
     if (GetLastError() != ERROR_NO_MORE_ITEMS)
@@ -509,7 +527,7 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
  private:
   void EnumerateDevice(HDEVINFO dev_info,
                        SP_DEVICE_INTERFACE_DATA* device_interface_data,
-                       const absl::optional<std::wstring>& opt_device_path) {
+                       const std::optional<std::wstring>& opt_device_path) {
     std::wstring device_path;
     std::wstring* device_path_ptr = &device_path;
     if (opt_device_path) {

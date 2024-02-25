@@ -4,6 +4,8 @@
 
 #include "chrome/common/controlled_frame/controlled_frame_api_provider.h"
 
+#include <string_view>
+
 #include "chrome/common/controlled_frame/api/api_features.h"
 #include "chrome/common/controlled_frame/api/generated_schemas.h"
 #include "chrome/grit/common_resources.h"
@@ -43,7 +45,7 @@ bool ControlledFrameAPIProvider::IsAPISchemaGenerated(const std::string& name) {
   return api::ControlledFrameGeneratedSchemas::IsGenerated(name);
 }
 
-base::StringPiece ControlledFrameAPIProvider::GetAPISchema(
+std::string_view ControlledFrameAPIProvider::GetAPISchema(
     const std::string& name) {
   return api::ControlledFrameGeneratedSchemas::Get(name);
 }

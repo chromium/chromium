@@ -15,6 +15,7 @@ shim_headers("brotli_shim") {
     "brotli/decode.h",
     "brotli/encode.h",
     "brotli/port.h",
+    "brotli/shared_dictionary.h",
     "brotli/types.h",
   ]
 }

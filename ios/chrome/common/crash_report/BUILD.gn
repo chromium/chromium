@@ -10,8 +10,8 @@ source_set("crash_report") {
     "crash_helper.mm",
   ]
 
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//components/crash/core/app",
     "//ios/chrome/common/app_group",
   ]

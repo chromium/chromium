@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_keyboard_backlight_provider_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -23,7 +24,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash::personalization_app {
@@ -61,7 +61,7 @@ class TestKeyboardBacklightObserver
     return current_backlight_state_.get();
   }
 
-  absl::optional<SkColor> wallpaper_color() {
+  std::optional<SkColor> wallpaper_color() {
     keyboard_backlight_observer_receiver_.FlushForTesting();
     return wallpaper_color_;
   }
@@ -71,7 +71,7 @@ class TestKeyboardBacklightObserver
       keyboard_backlight_observer_receiver_{this};
   mojom::CurrentBacklightStatePtr current_backlight_state_ =
       mojom::CurrentBacklightState::NewColor(mojom::BacklightColor::kRed);
-  absl::optional<SkColor> wallpaper_color_;
+  std::optional<SkColor> wallpaper_color_;
 };
 
 }  // namespace
@@ -152,7 +152,7 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     return test_keyboard_backlight_observer_.current_backlight_state();
   }
 
-  absl::optional<SkColor> ObservedWallpaperColor() {
+  std::optional<SkColor> ObservedWallpaperColor() {
     keyboard_backlight_provider_remote_.FlushForTesting();
     return test_keyboard_backlight_observer_.wallpaper_color();
   }
@@ -169,7 +169,7 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<KeyboardBacklightColorController>
       keyboard_backlight_color_controller_;
   mojo::Remote<ash::personalization_app::mojom::KeyboardBacklightProvider>

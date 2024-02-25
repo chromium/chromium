@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -13,19 +14,26 @@
 #import "components/ntp_tiles/ntp_tile_impression.h"
 #import "components/ntp_tiles/tile_visual_type.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
-#import "ios/chrome/browser/ntp/set_up_list_metrics.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 
+namespace {
+
+const float kMaxModuleEngagementIndex = 50;
+
+}
+
 @implementation ContentSuggestionsMetricsRecorder {
-  PrefService* _localState;
+  raw_ptr<PrefService> _localState;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState {
@@ -43,62 +51,119 @@
 
 - (void)recordMagicStackTopModuleImpressionForType:
     (ContentSuggestionsModuleType)type {
+  CHECK(_localState);
   switch (type) {
     case ContentSuggestionsModuleType::kMostVisited: {
-      if (_localState) {
-        // Increment freshness pref since it is an impression of
-        // the latest Most Visited Sites as the top module.
-        int freshness_impression_count = _localState->GetInteger(
-            prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
-        _localState->SetInteger(
-            prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness,
-            freshness_impression_count + 1);
-      }
+      // Increment freshness pref since it is an impression of
+      // the latest Most Visited Sites as the top module.
+      int freshness_impression_count = _localState->GetInteger(
+          prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
+      _localState->SetInteger(
+          prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness,
+          freshness_impression_count + 1);
       break;
     }
     case ContentSuggestionsModuleType::kShortcuts: {
-      if (_localState) {
-        // Increment freshness pref since it is an impression of
-        // the latest Most Visited Sites as the top module.
-        int freshness_impression_count = _localState->GetInteger(
-            prefs::
-                kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness);
-        _localState->SetInteger(
-            prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
-            freshness_impression_count + 1);
-      }
+      // Increment freshness pref since it is an impression of
+      // the latest Most Visited Sites as the top module.
+      int freshness_impression_count = _localState->GetInteger(
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness);
+      _localState->SetInteger(
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
+          freshness_impression_count + 1);
       break;
     }
 
-    case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
-      if (_localState) {
-        // Increment freshness pref since it is an impression of
-        // the latest Safety Check results as the top module.
-        int freshness_impression_count = _localState->GetInteger(
-            prefs::
-                kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
-        _localState->SetInteger(
-            prefs::
-                kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
-            freshness_impression_count + 1);
-      }
+    case ContentSuggestionsModuleType::kSafetyCheck: {
+      // Increment freshness pref since it is an impression of
+      // the latest Safety Check results as the top module.
+      int freshness_impression_count = _localState->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
+      _localState->SetInteger(
+          prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+          freshness_impression_count + 1);
+      break;
+    }
+    case ContentSuggestionsModuleType::kTabResumption: {
+      // Increment freshness pref since it is an impression of
+      // the latest Tab Resumption results as the top module.
+      int freshness_impression_count = _localState->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness);
+      _localState->SetInteger(
+          prefs::
+              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+          freshness_impression_count + 1);
+      break;
+    }
+    case ContentSuggestionsModuleType::kParcelTracking: {
+      // Increment freshness pref since it is an impression of
+      // the latest Tab Resumption results as the top module.
+      int freshness_impression_count = _localState->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
+      _localState->SetInteger(
+          prefs::
+              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
+          freshness_impression_count + 1);
       break;
     }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
+    case ContentSuggestionsModuleType::kPlaceholder:
       break;
   }
   UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, type);
 }
 
 - (void)recordMagicStackModuleEngagementForType:
-    (ContentSuggestionsModuleType)type {
+            (ContentSuggestionsModuleType)type
+                                        atIndex:(int)index {
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleEngagementHistogram, type);
+  switch (type) {
+    case ContentSuggestionsModuleType::kMostVisited:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementMostVisitedIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kShortcuts:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementShortcutsIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kSafetyCheck:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementSafetyCheckIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kTabResumption:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementTabResumptionIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kParcelTracking:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementParcelTrackingIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kSetUpListAllSet:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementSetUpListIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kPlaceholder:
+      break;
+  }
 }
 
 - (void)recordReturnToRecentTabTileShown {
@@ -106,10 +171,6 @@
 }
 
 - (void)recordShortcutTileTapped:(NTPCollectionShortcutType)shortcutType {
-  if (IsMagicStackEnabled()) {
-    [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                      kShortcuts];
-  }
   switch (shortcutType) {
     case NTPCollectionShortcutTypeBookmark:
       base::RecordAction(base::UserMetricsAction(kShowBookmarksAction));
@@ -137,7 +198,7 @@
                             kMaxTrendingQueries);
 }
 
-- (void)recordMostRecentTabOpened {
+- (void)recordTabResumptionTabOpened {
   base::RecordAction(base::UserMetricsAction(kOpenMostRecentTabAction));
 }
 
@@ -154,8 +215,7 @@
 }
 
 - (void)recordMostVisitedTileOpened:(ContentSuggestionsMostVisitedItem*)item
-                            atIndex:(NSInteger)index
-                           webState:(web::WebState*)webState {
+                            atIndex:(NSInteger)index {
   base::RecordAction(base::UserMetricsAction(kMostVisitedAction));
 
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
@@ -163,13 +223,8 @@
       [self getVisualTypeFromAttributes:item.attributes],
       [self getIconTypeFromAttributes:item.attributes], item.URL));
 
-  new_tab_page_uma::RecordAction(
-      false, webState, new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY);
-
-  if (ShouldPutMostVisitedSitesInMagicStack()) {
-    [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                      kMostVisited];
-  }
+  new_tab_page_uma::RecordNTPAction(
+      false, true, new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY);
 }
 
 - (void)recordMostVisitedTileRemoved {
@@ -185,16 +240,16 @@
 }
 
 - (void)recordSetUpListItemSelected:(SetUpListItemType)type {
-  if (IsMagicStackEnabled()) {
-    if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
-      [self recordMagicStackModuleEngagementForType:
-                ContentSuggestionsModuleType::kCompactedSetUpList];
-    } else {
-      [self recordMagicStackModuleEngagementForType:
-                SetUpListModuleTypeForSetUpListType(type)];
-    }
-  }
   set_up_list_metrics::RecordItemSelected(type);
+}
+
+- (void)recordContentNotificationSnackbarEvent:
+    (ContentNotificationSnackbarEvent)event {
+  UMA_HISTOGRAM_ENUMERATION(kContentNotificationSnackbarEventHistogram, event);
+  if (event == ContentNotificationSnackbarEvent::kActionButtonTapped) {
+    base::RecordAction(
+        base::UserMetricsAction(kContentNotificationSnackbarAction));
+  }
 }
 
 #pragma mark - Private

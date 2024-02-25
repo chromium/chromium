@@ -27,7 +27,6 @@
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace arc {
@@ -149,8 +148,9 @@ ArcIntentHelperBridge::~ArcIntentHelperBridge() {
 }
 
 void ArcIntentHelperBridge::Shutdown() {
-  for (auto& observer : observer_list_)
-    observer.OnArcIntentHelperBridgeShutdown();
+  for (auto& observer : observer_list_) {
+    observer.OnArcIntentHelperBridgeShutdown(this);
+  }
 }
 
 void ArcIntentHelperBridge::OnIconInvalidated(const std::string& package_name) {
@@ -169,7 +169,7 @@ void ArcIntentHelperBridge::OnIntentFiltersUpdated(
     intent_filters_[filter.package_name()].push_back(std::move(filter));
 
   for (auto& observer : observer_list_)
-    observer.OnIntentFiltersUpdated(absl::nullopt);
+    observer.OnIntentFiltersUpdated(std::nullopt);
 }
 
 void ArcIntentHelperBridge::OnOpenDownloads() {

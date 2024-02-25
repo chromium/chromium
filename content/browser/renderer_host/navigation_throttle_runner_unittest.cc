@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -13,7 +15,6 @@
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -409,7 +410,7 @@ TEST_P(NavigationThrottleRunnerTestWithEventAndAction, DeferRecordsUKM) {
   const auto& entries = test_ukm_recorder().GetEntriesByName(
       ukm::builders::NavigationThrottleDeferredTime::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(*ukm::TestUkmRecorder::GetEntryMetric(
                   entry, ukm::builders::NavigationThrottleDeferredTime::
                              kNavigationThrottleEventTypeName),
@@ -444,7 +445,7 @@ class NavigationThrottleRunnerTestWithEventAndError
       public testing::WithParamInterface<
           std::tuple<NavigationThrottleRunner::Event,
                      net::Error,
-                     absl::optional<std::string>>> {
+                     std::optional<std::string>>> {
  public:
   NavigationThrottleRunnerTestWithEventAndError()
       : NavigationThrottleRunnerTest() {}
@@ -455,7 +456,7 @@ class NavigationThrottleRunnerTestWithEventAndError
   }
   NavigationThrottleRunner::Event event() const { return event_; }
   net::Error error() const { return error_; }
-  const absl::optional<std::string>& custom_error_page() const {
+  const std::optional<std::string>& custom_error_page() const {
     return custom_error_page_;
   }
 
@@ -466,7 +467,7 @@ class NavigationThrottleRunnerTestWithEventAndError
  private:
   NavigationThrottleRunner::Event event_;
   net::Error error_;
-  absl::optional<std::string> custom_error_page_ = absl::nullopt;
+  std::optional<std::string> custom_error_page_ = std::nullopt;
 };
 
 // Checks that the NavigationThrottleRunner correctly propagates a
@@ -514,6 +515,6 @@ INSTANTIATE_TEST_SUITE_P(
             NavigationThrottleRunner::Event::WillProcessResponse,
             NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader),
         ::testing::Values(net::ERR_BLOCKED_BY_ADMINISTRATOR, net::ERR_ABORTED),
-        ::testing::Values(absl::nullopt, "<html><body>test</body></html>")));
+        ::testing::Values(std::nullopt, "<html><body>test</body></html>")));
 
 }  // namespace content

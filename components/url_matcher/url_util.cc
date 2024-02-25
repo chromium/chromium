@@ -80,7 +80,7 @@ void ProcessQueryToConditions(
       allow ? URLQueryElementMatcherCondition::MATCH_ALL
             : URLQueryElementMatcherCondition::MATCH_ANY;
 
-  while (ExtractQueryKeyValue(query.data(), &query_left, &key, &value)) {
+  while (ExtractQueryKeyValue(query, &query_left, &key, &value)) {
     URLQueryElementMatcherCondition::QueryElementType query_element_type =
         value.len ? URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE
                   : URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY;
@@ -343,6 +343,17 @@ bool FilterToComponents(const std::string& filter,
     std::replace(path->begin(), path->end(), '\\', '/');
     *path = "/" + *path;
 #endif
+    query->clear();
+    return true;
+  }
+
+  if (url_scheme == url::kDataScheme) {
+    *scheme = url::kDataScheme;
+    host->clear();
+    *match_subdomains = true;
+    *port = 0;
+    *path = GURL(filter).GetContent();
+    query->clear();
     return true;
   }
 

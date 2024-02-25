@@ -32,9 +32,9 @@ namespace ash {
 // image, text and buttons in a customized layout. It is reused by the
 // onboarding, loading, disconnected/reconnecting and error state UI.
 class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
- public:
-  METADATA_HEADER(PhoneHubInterstitialView);
+  METADATA_HEADER(PhoneHubInterstitialView, PhoneHubContentView)
 
+ public:
   explicit PhoneHubInterstitialView(bool show_progress, bool show_image = true);
   PhoneHubInterstitialView(const PhoneHubInterstitialView&) = delete;
   PhoneHubInterstitialView& operator=(const PhoneHubInterstitialView&) = delete;
@@ -48,11 +48,11 @@ class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
  private:
   // A progress bar will be shown under the title row if |show_progress| is
   // true.
-  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> image_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> description_ = nullptr;
-  raw_ptr<views::BoxLayoutView, ExperimentalAsh> button_container_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
+  raw_ptr<views::ImageView> image_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> description_ = nullptr;
+  raw_ptr<views::BoxLayoutView> button_container_ = nullptr;
 };
 
 }  // namespace ash

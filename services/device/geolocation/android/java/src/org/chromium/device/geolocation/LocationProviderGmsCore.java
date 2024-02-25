@@ -68,13 +68,15 @@ public class LocationProviderGmsCore implements LocationProvider {
         if (enableHighAccuracy) {
             // With enableHighAccuracy, request a faster update interval and configure the provider
             // for high accuracy mode.
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+            locationRequest
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                     .setInterval(UPDATE_INTERVAL_FAST_MS);
         } else {
             // Use balanced mode by default. In this mode, the API will prefer the network provider
             // but may use sensor data (for instance, GPS) if high accuracy is requested by another
             // app.
-            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+            locationRequest
+                    .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                     .setInterval(UPDATE_INTERVAL_MS);
         }
 
@@ -82,25 +84,28 @@ public class LocationProviderGmsCore implements LocationProvider {
             mClient.removeLocationUpdates(mLocationCallback);
         }
 
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                LocationProviderAdapter.onNewLocationAvailable(locationResult.getLastLocation());
-            }
-        };
+        mLocationCallback =
+                new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        if (locationResult == null) {
+                            return;
+                        }
+                        LocationProviderAdapter.onNewLocationAvailable(
+                                locationResult.getLastLocation());
+                    }
+                };
 
         try {
             // Request updates on UI Thread replicating LocationProviderAndroid's behaviour.
             mClient.requestLocationUpdates(
-                           locationRequest, mLocationCallback, ThreadUtils.getUiThreadLooper())
-                    .addOnFailureListener((e) -> {
-                        Log.e(TAG, "mClient.requestLocationUpdates() " + e);
-                        LocationProviderAdapter.newErrorAvailable(
-                                "Failed to request location updates: " + e.toString());
-                    });
+                            locationRequest, mLocationCallback, ThreadUtils.getUiThreadLooper())
+                    .addOnFailureListener(
+                            (e) -> {
+                                Log.e(TAG, "mClient.requestLocationUpdates() " + e);
+                                LocationProviderAdapter.newErrorAvailable(
+                                        "Failed to request location updates: " + e.toString());
+                            });
         } catch (IllegalStateException e) {
             // IllegalStateException is thrown "If this method is executed in a thread that has not
             // called Looper.prepare()".

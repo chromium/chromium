@@ -72,15 +72,15 @@ void TCPServerReadableStreamWrapper::ErrorStream(int32_t error_code) {
 
   auto* script_state = GetScriptState();
   // Scope is needed because there's no ScriptState* on the call stack for
-  // ScriptValue::From.
+  // ScriptValue.
   ScriptState::Scope scope{script_state};
 
-  auto exception = ScriptValue::From(
-      script_state,
+  auto exception = ScriptValue(
+      script_state->GetIsolate(),
       V8ThrowDOMException::CreateOrDie(
           script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
           String{"Server socket closed: " + net::ErrorToString(error_code)}));
-  Controller()->Error(exception);
+  Controller()->Error(exception.V8Value());
   std::move(on_close_).Run(exception);
 }
 
@@ -93,7 +93,7 @@ void TCPServerReadableStreamWrapper::OnAccept(
     mojo::PendingReceiver<network::mojom::blink::SocketObserver>
         socket_observer,
     int result,
-    const absl::optional<net::IPEndPoint>& remote_addr,
+    const std::optional<net::IPEndPoint>& remote_addr,
     mojo::PendingRemote<network::mojom::blink::TCPConnectedSocket>
         tcp_socket_remote,
     mojo::ScopedDataPipeConsumerHandle receive_stream,

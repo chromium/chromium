@@ -22,6 +22,15 @@ class NetworkProfileHandler;
 
 namespace cellular_utils {
 
+// The activation code for the GSM Association SM-DS server.
+COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kSmdsGsma[];
+// The activation code for the Stork SM-DS server.
+COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kSmdsStork[];
+// The activation code for the Android production SM-DS server.
+COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kSmdsAndroidProduction[];
+// The activation code for the Android staging SM-DS server.
+COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kSmdsAndroidStaging[];
+
 // Generates a list of CellularESimProfile objects for all Hermes esim profile
 // objects available through its dbus clients. Note that this function returns
 // an empty array if CellularESimProfileHandler::RefreshProfileList has not
@@ -57,7 +66,7 @@ const NetworkProfile* GetCellularProfile(
 // Returns the path to the Euicc that is currently used for all eSIM operations
 // in OS Settings and System UI.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-absl::optional<dbus::ObjectPath> GetCurrentEuiccPath();
+std::optional<dbus::ObjectPath> GetCurrentEuiccPath();
 
 // Returns the activation codes that should be used to scan for profiles that
 // are available for installation.

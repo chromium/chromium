@@ -12,9 +12,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "ui/events/android/gesture_event_type.h"
-#include "ui/events/blink/did_overscroll_params.h"
 #include "ui/gfx/geometry/size_f.h"
 
 using blink::WebGestureEvent;
@@ -154,8 +152,7 @@ void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
 
 void GestureListenerManager::GestureEventAck(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   // This is called to fix crash happening while WebContents is being
   // destroyed. See https://crbug.com/803244#c20
   if (web_contents_->IsBeingDestroyed())
@@ -176,14 +173,9 @@ void GestureListenerManager::GestureEventAck(
         env, j_obj, /*isDirectionUp*/ event.data.scroll_begin.delta_y_hint > 0);
     return;
   }
-  float x = -1.f, y = -1.f;
-  if (scroll_result_data && scroll_result_data->root_scroll_offset) {
-    x = scroll_result_data->root_scroll_offset->x();
-    y = scroll_result_data->root_scroll_offset->y();
-  }
 
   Java_GestureListenerManagerImpl_onEventAck(
-      env, j_obj, static_cast<int>(event.GetType()), consumed, x, y);
+      env, j_obj, static_cast<int>(event.GetType()), consumed);
 }
 
 void GestureListenerManager::DidStopFlinging() {
@@ -217,17 +209,6 @@ bool GestureListenerManager::FilterInputEvent(const WebInputEvent& event) {
   return Java_GestureListenerManagerImpl_filterTapOrPressEvent(
       env, j_obj, gesture_type, gesture.PositionInWidget().x() * dip_scale,
       gesture.PositionInWidget().y() * dip_scale);
-}
-
-void GestureListenerManager::DidOverscroll(
-    const ui::DidOverscrollParams& params) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
-  if (j_obj.is_null())
-    return;
-  float x = params.accumulated_overscroll.x();
-  float y = params.accumulated_overscroll.y();
-  return Java_GestureListenerManagerImpl_didOverscroll(env, j_obj, x, y);
 }
 
 // All positions and sizes (except |top_shown_pix|) are in CSS pixels.

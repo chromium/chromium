@@ -40,7 +40,6 @@ void LegacyTechURLMatcher::OnPrefUpdated() {
     // Scheme, port and query in the pattern will be ignored while subdomains
     // must be fully specified.
     components.scheme = "";
-    components.match_subdomains = false;
     components.port = 0;
     components.query = "";
 
@@ -54,13 +53,13 @@ void LegacyTechURLMatcher::OnPrefUpdated() {
   url_matcher_->AddConditionSets(conditions);
 }
 
-absl::optional<std::string> LegacyTechURLMatcher::GetMatchedURL(
+std::optional<std::string> LegacyTechURLMatcher::GetMatchedURL(
     const GURL& url) const {
   std::set<base::MatcherStringPattern::ID> matched_ids =
       url_matcher_->MatchURL(url);
 
   if (matched_ids.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   size_t maximum_path_length = 0;
   base::MatcherStringPattern::ID maximum_path_id;

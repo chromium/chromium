@@ -14,12 +14,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/browser/ui/export_progress_status.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,12 +63,12 @@ PasswordForm CreateTestPassword() {
 }
 
 PasswordExportInfo CreateExportInProgressInfo() {
-  return {.status = ExportProgressStatus::IN_PROGRESS};
+  return {.status = ExportProgressStatus::kInProgress};
 }
 
 PasswordExportInfo CreateSuccessfulExportInfo(const base::FilePath& path) {
   return {
-    .status = ExportProgressStatus::SUCCEEDED,
+    .status = ExportProgressStatus::kSucceeded,
 #if !BUILDFLAG(IS_WIN)
     .file_path = path.value(),
 #else
@@ -78,12 +78,12 @@ PasswordExportInfo CreateSuccessfulExportInfo(const base::FilePath& path) {
 }
 
 PasswordExportInfo CreateFailedExportInfo(const base::FilePath& path) {
-  return {.status = ExportProgressStatus::FAILED_WRITE_FAILED,
+  return {.status = ExportProgressStatus::kFailedWrite,
           .folder_name = path.DirName().BaseName().AsUTF8Unsafe()};
 }
 
 PasswordExportInfo CreateCancelledExportInfo() {
-  return {.status = ExportProgressStatus::FAILED_CANCELLED};
+  return {.status = ExportProgressStatus::kFailedCancelled};
 }
 
 class PasswordManagerExporterTest : public testing::Test {
@@ -123,7 +123,7 @@ class PasswordManagerExporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   base::MockCallback<base::RepeatingCallback<void(const PasswordExportInfo&)>>
@@ -182,7 +182,7 @@ TEST_F(PasswordManagerExporterTest, GetProgressReturnsLastCallbackStatus) {
   SetPasswordList({form});
 
   // The last status seen in the callback.
-  PasswordExportInfo export_info({.status = ExportProgressStatus::NOT_STARTED});
+  PasswordExportInfo export_info({.status = ExportProgressStatus::kNotStarted});
 
   EXPECT_CALL(mock_write_file_, Run).WillOnce(Return(true));
   EXPECT_CALL(mock_on_progress_, Run).WillRepeatedly(SaveArg<0>(&export_info));

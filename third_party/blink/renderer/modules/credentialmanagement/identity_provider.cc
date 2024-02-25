@@ -26,10 +26,11 @@ namespace {
 
 using mojom::blink::RequestUserInfoStatus;
 
-void OnRequestUserInfo(ScriptPromiseResolver* resolver,
-                       RequestUserInfoStatus status,
-                       absl::optional<Vector<mojom::blink::IdentityUserInfoPtr>>
-                           all_user_info_ptr) {
+void OnRequestUserInfo(
+    ScriptPromiseResolverTyped<IDLSequence<IdentityUserInfo>>* resolver,
+    RequestUserInfoStatus status,
+    std::optional<Vector<mojom::blink::IdentityUserInfoPtr>>
+        all_user_info_ptr) {
   switch (status) {
     case RequestUserInfoStatus::kError: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -59,13 +60,14 @@ void OnRequestUserInfo(ScriptPromiseResolver* resolver,
 
 }  // namespace
 
-ScriptPromise IdentityProvider::getUserInfo(
+ScriptPromiseTyped<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
     ScriptState* script_state,
     const blink::IdentityProviderConfig* provider,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<IdentityUserInfo>>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -118,26 +120,6 @@ ScriptPromise IdentityProvider::getUserInfo(
       WTF::BindOnce(&OnRequestUserInfo, WrapPersistent(resolver)));
 
   return promise;
-}
-
-void IdentityProvider::login(ScriptState* script_state) {
-  // TODO(https://crbug.com/1382193): Determine if we should add an origin
-  // parameter.
-  auto* context = ExecutionContext::From(script_state);
-  auto* request =
-      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  request->SetIdpSigninStatus(context->GetSecurityOrigin(),
-                              mojom::blink::IdpSigninStatus::kSignedIn);
-}
-
-void IdentityProvider::logout(ScriptState* script_state) {
-  // TODO(https://crbug.com/1382193): Determine if we should add an origin
-  // parameter.
-  auto* context = ExecutionContext::From(script_state);
-  auto* request =
-      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  request->SetIdpSigninStatus(context->GetSecurityOrigin(),
-                              mojom::blink::IdpSigninStatus::kSignedOut);
 }
 
 void IdentityProvider::close(ScriptState* script_state) {

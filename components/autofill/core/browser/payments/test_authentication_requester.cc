@@ -11,9 +11,9 @@
 
 namespace autofill {
 
-TestAuthenticationRequester::TestAuthenticationRequester() {}
+TestAuthenticationRequester::TestAuthenticationRequester() = default;
 
-TestAuthenticationRequester::~TestAuthenticationRequester() {}
+TestAuthenticationRequester::~TestAuthenticationRequester() = default;
 
 base::WeakPtr<TestAuthenticationRequester>
 TestAuthenticationRequester::GetWeakPtr() {
@@ -70,6 +70,23 @@ void TestAuthenticationRequester::OnOtpAuthenticationComplete(
   if (*did_succeed_) {
     DCHECK(response.card);
     number_ = response.card->number();
+  }
+}
+
+void TestAuthenticationRequester::OnRiskBasedAuthenticationResponseReceived(
+    const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
+        response) {
+  risk_based_authentication_response_ = response;
+}
+
+void TestAuthenticationRequester::
+    OnVirtualCardRiskBasedAuthenticationResponseReceived(
+        AutofillClient::PaymentsRpcResult result,
+        payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+            response_details) {
+  did_succeed_ = (result == AutofillClient::PaymentsRpcResult::kSuccess);
+  if (*did_succeed_) {
+    response_details_ = response_details;
   }
 }
 

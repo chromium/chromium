@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "power.battery_screen_lock_delay_ms": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "ScreenLockDelayBattery": 600000
+        },
+        "prefs": {
+          "power.battery_screen_lock_delay_ms": {
+            "value": 600000
+          }
+        }
+      }
+    ]
+  }
+]

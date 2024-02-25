@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {AddSmbShareDialogElement, SettingsSmbSharesPageElement, SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrInputElement} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -38,12 +38,18 @@ class TestSmbBrowserProxy extends TestBrowserProxy implements SmbBrowserProxy {
   updateCredentials(mountId: string, username: string, password: string): void {
     this.methodCalled('updateCredentials', mountId, username, password);
   }
+
+  hasAnySmbMountedBefore(): Promise<boolean> {
+    this.methodCalled('hasAnySmbMountedBefore');
+    return Promise.resolve(true);
+  }
 }
 
 suite('<settings-smb-shares-page>', () => {
   let page: SettingsSmbSharesPageElement;
   let addDialog: AddSmbShareDialogElement|null;
   let smbBrowserProxy: TestSmbBrowserProxy;
+  let smbSuccessEventDispatched: boolean = false;
 
   setup(() => {
     smbBrowserProxy = new TestSmbBrowserProxy();
@@ -164,6 +170,50 @@ suite('<settings-smb-shares-page>', () => {
     assertEquals(expectedPassword, smbMountArguments[3]);
     assertEquals(expectedAuthMethod, smbMountArguments[4]);
     assertEquals(expectedShouldOpenFileManager, smbMountArguments[5]);
+  });
+
+  test('EventDispatchedAfterClickAddSuccessful', async () => {
+    page.addEventListener('smb-successfully-mounted-once', () => {
+      smbSuccessEventDispatched = true;
+    });
+
+    const expectedSmbUrl = 'smb://192.168.1.1/testshare';
+    const expectedSmbName = 'testname';
+    const expectedUsername = 'username';
+    const expectedPassword = 'password';
+    const expectedAuthMethod = 'credentials';
+    const expectedShouldOpenFileManager = false;
+
+    assert(addDialog);
+    const url = addDialog.shadowRoot!.querySelector('cr-searchable-drop-down');
+    assert(url);
+    url.value = expectedSmbUrl;
+
+    const name = addDialog.shadowRoot!.querySelector<CrInputElement>('#name');
+    assert(name);
+    name.value = expectedSmbName;
+
+    const un = addDialog.shadowRoot!.querySelector<CrInputElement>('#username');
+    assert(un);
+    un.value = expectedUsername;
+
+    const pw = addDialog.shadowRoot!.querySelector<CrInputElement>('#password');
+    assert(pw);
+    pw.value = expectedPassword;
+
+    const addButton =
+        addDialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+    assert(addButton);
+
+    addDialog.set('authenticationMethod_', expectedAuthMethod);
+    addDialog.shouldOpenFileManagerAfterMount = expectedShouldOpenFileManager;
+
+    smbBrowserProxy.resetResolver('smbMount');
+    smbBrowserProxy.smbMountResult = SmbMountResult.SUCCESS;
+    addButton.click();
+    await smbBrowserProxy.whenCalled('smbMount');
+
+    assertTrue(smbSuccessEventDispatched);
   });
 
   test('StartDiscovery', async () => {

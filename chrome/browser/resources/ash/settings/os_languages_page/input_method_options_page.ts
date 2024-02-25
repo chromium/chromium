@@ -6,24 +6,24 @@
  * @fileoverview 'settings-input-method-options-page' is the settings sub-page
  * to allow users to change options for each input method.
  */
-import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import '../settings_shared.css.js';
 import './os_japanese_clear_ime_data_dialog.js';
 import './os_japanese_manage_user_dictionary_page.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExhaustive} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
@@ -102,14 +102,6 @@ export class SettingsInputMethodOptionsPageElement extends
   static get properties() {
     return {
       languageHelper: Object,
-
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in PrefsMixin.
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
 
       /**
        * Input method ID.
@@ -210,7 +202,7 @@ export class SettingsInputMethodOptionsPageElement extends
     const submenuButtonType =
         (e.target as Element).getAttribute('submenu-button-type');
     if (submenuButtonType ===
-        SubmenuButton.JAPANESE_CLEAR_PERSONALIZATION_DATA) {
+        SubmenuButton.JAPANESE_DELETE_PERSONALIZATION_DATA) {
       this.showClearPersonalizedData_ = true;
       return;
     }

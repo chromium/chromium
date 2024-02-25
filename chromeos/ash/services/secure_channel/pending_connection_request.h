@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_REQUEST_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,6 +13,8 @@
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 
 namespace ash::secure_channel {
 
@@ -46,6 +49,15 @@ class PendingConnectionRequest {
   // trying to connect after some number of failures.
   virtual void HandleConnectionFailure(FailureDetailType failure_detail) = 0;
 
+  virtual void HandleBleDiscoveryStateChange(
+      mojom::DiscoveryResult discovery_result,
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) {}
+  virtual void HandleNearbyConnectionChange(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) {}
+  virtual void HandleSecureChannelChanged(
+      mojom::SecureChannelState secure_channel_state) {}
+
   virtual const base::UnguessableToken& GetRequestId() const = 0;
 
  protected:
@@ -65,7 +77,7 @@ class PendingConnectionRequest {
   }
 
  private:
-  raw_ptr<PendingConnectionRequestDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<PendingConnectionRequestDelegate> delegate_;
   ConnectionPriority connection_priority_;
 };
 

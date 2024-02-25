@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that a subresource accessing a SameSite=Lax cookie across schemes triggers a context downgrade inspector issue.\n`);
 

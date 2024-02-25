@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {Action} from 'chrome://resources/js/store_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {Action} from 'chrome://resources/js/store.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -48,6 +48,8 @@ export enum WallpaperActionName {
   SET_SELECTED_IMAGE = 'set_selected_image',
   SET_UPDATED_DAILY_REFRESH_IMAGE = 'set_updated_daily_refreshed_image',
   SET_FULLSCREEN_ENABLED = 'set_fullscreen_enabled',
+  SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG =
+      'set_shoud_show_time_of_day_wallpaper_dialog',
 }
 
 export type WallpaperActions =
@@ -64,7 +66,7 @@ export type WallpaperActions =
     SetGooglePhotosEnabledAction|SetImagesForCollectionAction|
     SetDefaultImageThumbnailAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
-    SetFullscreenEnabledAction;
+    SetFullscreenEnabledAction|SetShouldShowTimeOfDayWallpaperDialog;
 
 export interface AppendGooglePhotosAlbumAction extends Action {
   name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM;
@@ -539,11 +541,29 @@ export function setSelectedImageAction(image: CurrentWallpaper|
 
 
 
+export interface SetShouldShowTimeOfDayWallpaperDialog extends Action {
+  name: WallpaperActionName.SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG;
+  shouldShowDialog: boolean;
+}
+
+
+/**
+ * Sets the boolean that determines whether to show the time of day wallpaper
+ * dialog.
+ */
+export function setShouldShowTimeOfDayWallpaperDialog(
+    shouldShowDialog: boolean): SetShouldShowTimeOfDayWallpaperDialog {
+  assert(typeof shouldShowDialog === 'boolean');
+  return {
+    name: WallpaperActionName.SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG,
+    shouldShowDialog,
+  };
+}
+
 export interface SetFullscreenEnabledAction extends Action {
   name: WallpaperActionName.SET_FULLSCREEN_ENABLED;
   enabled: boolean;
 }
-
 
 /**
  * Enables/disables the fullscreen preview mode for wallpaper.

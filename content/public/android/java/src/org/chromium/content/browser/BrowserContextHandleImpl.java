@@ -4,13 +4,12 @@
 
 package org.chromium.content.browser;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/**
- * An interface that provides access to a native BrowserContext.
- */
+/** An interface that provides access to a native BrowserContext. */
 @JNINamespace("content")
 public class BrowserContextHandleImpl {
     private BrowserContextHandleImpl() {}

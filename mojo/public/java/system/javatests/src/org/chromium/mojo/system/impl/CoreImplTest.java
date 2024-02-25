@@ -32,14 +32,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Testing the core API.
- */
+/** Testing the core API. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class CoreImplTest {
-    @Rule
-    public MojoTestRule mTestRule = new MojoTestRule();
+    @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
     private List<Handle> mHandlesToClose = new ArrayList<Handle>();
 
@@ -150,9 +147,7 @@ public class CoreImplTest {
         out.unmap(buffer2);
     }
 
-    /**
-     * Testing that Core can be retrieved from a handle.
-     */
+    /** Testing that Core can be retrieved from a handle. */
     @Test
     @SmallTest
     public void testGetCore() {
@@ -183,9 +178,7 @@ public class CoreImplTest {
         handles.second.close();
     }
 
-    /**
-     * Testing {@link MessagePipeHandle} creation.
-     */
+    /** Testing {@link MessagePipeHandle} creation. */
     @Test
     @SmallTest
     public void testMessagePipeCreation() {
@@ -195,9 +188,7 @@ public class CoreImplTest {
         createAndCloseMessagePipe(new MessagePipeHandle.CreateOptions());
     }
 
-    /**
-     * Testing {@link MessagePipeHandle}.
-     */
+    /** Testing {@link MessagePipeHandle}. */
     @Test
     @SmallTest
     public void testMessagePipeEmpty() {
@@ -214,9 +205,7 @@ public class CoreImplTest {
         handles.second.close();
     }
 
-    /**
-     * Testing {@link MessagePipeHandle}.
-     */
+    /** Testing {@link MessagePipeHandle}. */
     @Test
     @SmallTest
     public void testMessagePipeSend() {
@@ -228,9 +217,7 @@ public class CoreImplTest {
         checkSendingMessage(handles.second, handles.first);
     }
 
-    /**
-     * Testing {@link MessagePipeHandle}.
-     */
+    /** Testing {@link MessagePipeHandle}. */
     @Test
     @SmallTest
     public void testMessagePipeSendHandles() {
@@ -240,7 +227,9 @@ public class CoreImplTest {
         addHandlePairToClose(handles);
         addHandlePairToClose(handlesToShare);
 
-        handles.first.writeMessage(null, Collections.<Handle>singletonList(handlesToShare.second),
+        handles.first.writeMessage(
+                null,
+                Collections.<Handle>singletonList(handlesToShare.second),
                 MessagePipeHandle.WriteFlags.NONE);
         Assert.assertFalse(handlesToShare.second.isValid());
         ResultAnd<MessagePipeHandle.ReadMessageResult> readMessageResult =
@@ -262,9 +251,7 @@ public class CoreImplTest {
         handles.second.close();
     }
 
-    /**
-     * Testing {@link DataPipe}.
-     */
+    /** Testing {@link DataPipe}. */
     @Test
     @SmallTest
     public void testDataPipeCreation() {
@@ -279,9 +266,7 @@ public class CoreImplTest {
         createAndCloseDataPipe(options);
     }
 
-    /**
-     * Testing {@link DataPipe}.
-     */
+    /** Testing {@link DataPipe}. */
     @Test
     @SmallTest
     public void testDataPipeSend() {
@@ -293,9 +278,7 @@ public class CoreImplTest {
         checkSendingData(handles.first, handles.second);
     }
 
-    /**
-     * Testing {@link DataPipe}.
-     */
+    /** Testing {@link DataPipe}. */
     @Test
     @SmallTest
     public void testDataPipeTwoPhaseSend() {
@@ -323,9 +306,7 @@ public class CoreImplTest {
         handles.second.endReadData(bytes.length);
     }
 
-    /**
-     * Testing {@link DataPipe}.
-     */
+    /** Testing {@link DataPipe}. */
     @Test
     @SmallTest
     public void testDataPipeDiscard() {
@@ -345,7 +326,8 @@ public class CoreImplTest {
 
         // Discard bytes.
         final int nbBytesToDiscard = 4;
-        Assert.assertEquals(nbBytesToDiscard,
+        Assert.assertEquals(
+                nbBytesToDiscard,
                 handles.second.discardData(nbBytesToDiscard, DataPipe.ReadFlags.NONE));
 
         // Read into a buffer.
@@ -358,13 +340,12 @@ public class CoreImplTest {
         Assert.assertEquals(bytes.length - nbBytesToDiscard, receiveBuffer.limit());
         byte[] receivedBytes = new byte[bytes.length - nbBytesToDiscard];
         receiveBuffer.get(receivedBytes);
-        Assert.assertTrue(Arrays.equals(
-                Arrays.copyOfRange(bytes, nbBytesToDiscard, bytes.length), receivedBytes));
+        Assert.assertTrue(
+                Arrays.equals(
+                        Arrays.copyOfRange(bytes, nbBytesToDiscard, bytes.length), receivedBytes));
     }
 
-    /**
-     * Testing {@link SharedBufferHandle}.
-     */
+    /** Testing {@link SharedBufferHandle}. */
     @Test
     @SmallTest
     public void testSharedBufferCreation() {
@@ -375,9 +356,7 @@ public class CoreImplTest {
         core.createSharedBuffer(new SharedBufferHandle.CreateOptions(), 8).close();
     }
 
-    /**
-     * Testing {@link SharedBufferHandle}.
-     */
+    /** Testing {@link SharedBufferHandle}. */
     @Test
     @SmallTest
     public void testSharedBufferDuplication() {
@@ -391,9 +370,7 @@ public class CoreImplTest {
         handle.duplicate(new SharedBufferHandle.DuplicateOptions()).close();
     }
 
-    /**
-     * Testing {@link SharedBufferHandle}.
-     */
+    /** Testing {@link SharedBufferHandle}. */
     @Test
     @SmallTest
     public void testSharedBufferSending() {
@@ -407,9 +384,7 @@ public class CoreImplTest {
         checkSharing(newHandle, handle);
     }
 
-    /**
-     * Testing the pass method on message pipes.
-     */
+    /** Testing the pass method on message pipes. */
     @Test
     @SmallTest
     public void testMessagePipeHandlePass() {
@@ -428,9 +403,7 @@ public class CoreImplTest {
         checkSendingMessage(handles.second, handleClone);
     }
 
-    /**
-     * Testing the pass method on data pipes.
-     */
+    /** Testing the pass method on data pipes. */
     @Test
     @SmallTest
     public void testDataPipeHandlePass() {
@@ -451,9 +424,7 @@ public class CoreImplTest {
         checkSendingData(producerClone, consumerClone);
     }
 
-    /**
-     * Testing the pass method on shared buffers.
-     */
+    /** Testing the pass method on shared buffers. */
     @Test
     @SmallTest
     public void testSharedBufferPass() {
@@ -475,9 +446,7 @@ public class CoreImplTest {
         checkSharing(newHandleClone, handleClone);
     }
 
-    /**
-     * esting handle conversion to native and back.
-     */
+    /** esting handle conversion to native and back. */
     @Test
     @SmallTest
     public void testHandleConversion() {

@@ -33,13 +33,11 @@
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/url_constants.h"
@@ -103,17 +101,6 @@ class TaskObserver : public base::TaskObserver {
  private:
   bool processed_ = false;
 };
-
-// Adapter that makes a WindowedNotificationObserver::ConditionTestCallback from
-// a WindowedNotificationObserver::ConditionTestCallbackWithoutSourceAndDetails
-// by ignoring the notification source and details.
-bool IgnoreSourceAndDetails(
-    WindowedNotificationObserver::ConditionTestCallbackWithoutSourceAndDetails
-        callback,
-    const NotificationSource& source,
-    const NotificationDetails& details) {
-  return std::move(callback).Run();
-}
 
 }  // namespace
 
@@ -231,8 +218,7 @@ bool WillSameSiteNavigationChangeRenderFrameHosts(bool is_main_frame,
 }
 
 bool CanSameSiteMainFrameNavigationsChangeSiteInstances() {
-  return IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() ||
-         IsBackForwardCacheEnabled();
+  return IsBackForwardCacheEnabled();
 }
 
 bool IsNavigationQueueingEnabled() {
@@ -353,56 +339,6 @@ void MessageLoopRunner::Quit() {
     }
     loop_running_ = false;
   }
-}
-
-WindowedNotificationObserver::WindowedNotificationObserver(
-    int notification_type,
-    const NotificationSource& source)
-    : source_(NotificationService::AllSources()) {
-  AddNotificationType(notification_type, source);
-}
-
-WindowedNotificationObserver::WindowedNotificationObserver(
-    int notification_type,
-    ConditionTestCallback callback)
-    : callback_(std::move(callback)),
-      source_(NotificationService::AllSources()) {
-  AddNotificationType(notification_type, source_);
-}
-
-WindowedNotificationObserver::WindowedNotificationObserver(
-    int notification_type,
-    ConditionTestCallbackWithoutSourceAndDetails callback)
-    : callback_(
-          base::BindRepeating(&IgnoreSourceAndDetails, std::move(callback))),
-      source_(NotificationService::AllSources()) {
-  registrar_.Add(this, notification_type, source_);
-}
-
-WindowedNotificationObserver::~WindowedNotificationObserver() = default;
-
-void WindowedNotificationObserver::AddNotificationType(
-    int notification_type,
-    const NotificationSource& source) {
-  registrar_.Add(this, notification_type, source);
-}
-
-void WindowedNotificationObserver::Wait() {
-  if (!seen_)
-    run_loop_.Run();
-  EXPECT_TRUE(seen_);
-}
-
-void WindowedNotificationObserver::Observe(int type,
-                                           const NotificationSource& source,
-                                           const NotificationDetails& details) {
-  source_ = source;
-  details_ = details;
-  if (!callback_.is_null() && !callback_.Run(source, details))
-    return;
-
-  seen_ = true;
-  run_loop_.Quit();
 }
 
 LoadStopObserver::LoadStopObserver(WebContents* web_contents)

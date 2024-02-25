@@ -70,6 +70,9 @@ class AshProxy {
 
   // Requests signing out all users, ending the current session.
   virtual void RequestSignOut() = 0;
+
+  // Returns whether the accessibility screen reader is enabled.
+  virtual bool IsScreenReaderEnabled() const = 0;
 };
 
 }  // namespace remoting

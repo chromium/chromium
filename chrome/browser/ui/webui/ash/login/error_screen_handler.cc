@@ -48,7 +48,11 @@ void ErrorScreenHandler::SetShowConnectingIndicator(bool value) {
 }
 
 void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
-  CallExternalAPI("setUIState", static_cast<int>(ui_state));
+  CallExternalAPI("setUiState", static_cast<int>(ui_state));
+}
+
+base::WeakPtr<ErrorScreenView> ErrorScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ErrorScreenHandler::DeclareLocalizedValues(

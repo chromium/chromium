@@ -27,5 +27,6 @@ const char kAllowed[] = "allowed";
 const char kBlocked[] = "blocked";
 const char kRunWindowed[] = "run_windowed";
 const char kPreventClose[] = "prevent_close_after_run_on_os_login";
+const char kForceUnregisterOsIntegration[] = "force_unregister_os_integration";
 
 }  // namespace web_app

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/scoped_main_thread_overrider.h"
@@ -55,6 +56,10 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   // instead.
   void RunUntilIdle() override;
 
+  const base::Clock* GetClock() const override;
+  const base::TickClock* GetTickClock() const override;
+  base::TimeTicks NowTicks() const override;
+
   // Runs for |seconds| the testing clock is advanced by |seconds|.  Note real
   // time elapsed will typically much less than |seconds| because delays between
   // timers are fast forwarded.
@@ -71,15 +76,12 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   // be advanced to the next timer when there's no more immediate work to do.
   void SetAutoAdvanceNowToPendingTasks(bool);
 
-  // Returns the current mock time.
-  base::TimeTicks NowTicks() const;
-
  protected:
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   bool auto_advance_ = true;
 
   std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
-  base::sequence_manager::SequenceManager*
+  raw_ptr<base::sequence_manager::SequenceManager, DanglingUntriaged>
       sequence_manager_;  // Owned by scheduler_.
   std::unique_ptr<ScopedMainThreadOverrider> main_thread_overrider_;
 };

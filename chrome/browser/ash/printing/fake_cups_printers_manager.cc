@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/observer_list.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,14 +36,19 @@ void FakeCupsPrintersManager::RemoveSavedPrinter(
   printers_.Remove(PrinterClass::kSaved, printer_id);
 }
 
+void FakeCupsPrintersManager::AddLocalPrintersObserver(
+    LocalPrintersObserver* observer) {
+  local_printers_observer_list_.AddObserver(observer);
+}
+
+void FakeCupsPrintersManager::RemoveLocalPrintersObserver(
+    LocalPrintersObserver* observer) {
+  local_printers_observer_list_.RemoveObserver(observer);
+}
+
 bool FakeCupsPrintersManager::IsPrinterInstalled(
     const chromeos::Printer& printer) const {
   return installed_.contains(printer.id());
-}
-
-void FakeCupsPrintersManager::PrinterIsNotAutoconfigurable(
-    const chromeos::Printer& printer) {
-  printers_marked_as_not_autoconf_.insert(printer.id());
 }
 
 void FakeCupsPrintersManager::SetUpPrinter(const chromeos::Printer& printer,
@@ -61,7 +67,7 @@ void FakeCupsPrintersManager::UninstallPrinter(const std::string& printer_id) {
   installed_.erase(printer_id);
 }
 
-absl::optional<Printer> FakeCupsPrintersManager::GetPrinter(
+std::optional<Printer> FakeCupsPrintersManager::GetPrinter(
     const std::string& id) const {
   return printers_.Get(id);
 }
@@ -94,21 +100,28 @@ void FakeCupsPrintersManager::MarkInstalled(const std::string& printer_id) {
   installed_.insert(printer_id);
 }
 
+void FakeCupsPrintersManager::MarkPrinterAsNotAutoconfigurable(
+    const std::string& printer_id) {
+  printers_marked_as_not_autoconf_.insert(printer_id);
+}
+
 void FakeCupsPrintersManager::SetPrinterSetupResult(
     const std::string& printer_id,
     PrinterSetupResult result) {
   assigned_results_[printer_id] = result;
 }
 
-bool FakeCupsPrintersManager::IsMarkedAsNotAutoconfigurable(
-    const chromeos::Printer& printer) {
-  return printers_marked_as_not_autoconf_.contains(printer.id());
-}
-
 void FakeCupsPrintersManager::QueryPrinterForAutoConf(
     const Printer& printer,
     base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(!IsMarkedAsNotAutoconfigurable(printer));
+  std::move(callback).Run(
+      !printers_marked_as_not_autoconf_.contains(printer.id()));
+}
+
+void FakeCupsPrintersManager::TriggerLocalPrintersObserver() {
+  for (auto& observer : local_printers_observer_list_) {
+    observer.OnLocalPrintersUpdated();
+  }
 }
 
 }  // namespace ash

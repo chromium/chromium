@@ -129,7 +129,7 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     // settings."
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kModuleDedicatedWorker);
-    absl::optional<network::mojom::CredentialsMode> credentials_mode =
+    std::optional<network::mojom::CredentialsMode> credentials_mode =
         Request::ParseCredentialsMode(options->credentials());
     DCHECK(credentials_mode);
 
@@ -288,7 +288,7 @@ void DedicatedWorkerMessagingProxy::Trace(Visitor* visitor) const {
   ThreadedMessagingProxyBase::Trace(visitor);
 }
 
-absl::optional<WorkerBackingThreadStartupData>
+std::optional<WorkerBackingThreadStartupData>
 DedicatedWorkerMessagingProxy::CreateBackingThreadStartupData(
     v8::Isolate* isolate) {
   using HeapLimitMode = WorkerBackingThreadStartupData::HeapLimitMode;

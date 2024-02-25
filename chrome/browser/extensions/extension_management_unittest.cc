@@ -358,19 +358,23 @@ class ExtensionManagementServiceTest : public testing::Test {
     extension_management_->cws_info_service_ = cws_info_service;
   }
 
+  bool IsFileUrlNavigationAllowed(const ExtensionId& extension_id) {
+    return extension_management_->IsFileUrlNavigationAllowed(extension_id);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<ExtensionManagement> extension_management_;
 };
 
-class MockCWSInfoService : public extensions::CWSInfoServiceInterface {
+class MockCWSInfoService : public CWSInfoServiceInterface {
  public:
-  MOCK_METHOD(absl::optional<bool>,
+  MOCK_METHOD(std::optional<bool>,
               IsLiveInCWS,
               (const Extension&),
               (const, override));
-  MOCK_METHOD(absl::optional<CWSInfoServiceInterface::CWSInfo>,
+  MOCK_METHOD(std::optional<CWSInfoServiceInterface::CWSInfo>,
               GetCWSInfo,
               (const Extension&),
               (const, override));
@@ -402,18 +406,18 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
 
   void CreateHostedApp(ManifestLocation location) {
     base::Value::Dict values;
-    values.SetByDottedPath(extensions::manifest_keys::kWebURLs,
+    values.SetByDottedPath(manifest_keys::kWebURLs,
                            base::Value(base::Value::Type::LIST));
-    values.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
+    values.SetByDottedPath(manifest_keys::kLaunchWebURL,
                            "http://www.example.com");
     CreateExtensionFromValues(location, &values);
   }
 
   void CreateExtensionFromValues(ManifestLocation location,
                                  base::Value::Dict* values) {
-    values->Set(extensions::manifest_keys::kName, "test");
-    values->Set(extensions::manifest_keys::kVersion, "0.1");
-    values->Set(extensions::manifest_keys::kManifestVersion, 2);
+    values->Set(manifest_keys::kName, "test");
+    values->Set(manifest_keys::kVersion, "0.1");
+    values->Set(manifest_keys::kManifestVersion, 2);
     std::string error;
     extension_ = Extension::Create(base::FilePath(), location, *values,
                                    Extension::NO_FLAGS, &error);
@@ -1363,7 +1367,7 @@ TEST_F(ExtensionManagementServiceTest,
       .WillOnce(testing::Return(cws_info_live))
       .WillOnce(testing::Return(cws_info_malware))
       .WillOnce(testing::Return(cws_info_not_live))
-      .WillOnce(testing::Return(absl::nullopt));
+      .WillOnce(testing::Return(std::nullopt));
   // Verify that the extension is allowed when it is live in CWS.
   EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
       normal_extension.get()));
@@ -1377,6 +1381,21 @@ TEST_F(ExtensionManagementServiceTest,
   EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
       normal_extension.get()));
   SetCWSInfoService(nullptr);
+}
+
+TEST_F(ExtensionManagementServiceTest, IsFileUrlNavigationAllowed) {
+  EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension), false);
+  EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension2), false);
+
+  SetExampleDictPref(base::StringPrintf(
+      R"({
+    "%s": {
+      "file_url_navigation_allowed": true
+    }
+  })",
+      kTargetExtension));
+  EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension), true);
+  EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension2), false);
 }
 
 // Tests the flag value indicating that extensions are blocklisted by default.

@@ -16,7 +16,7 @@ HistoryClustersSidePanelController::~HistoryClustersSidePanelController() =
 
 void HistoryClustersSidePanelController::ShowJourneysSidePanel(
     const std::string& query) {
-  if (Browser* browser = chrome::FindBrowserWithWebContents(web_contents_)) {
+  if (Browser* browser = chrome::FindBrowserWithTab(web_contents_)) {
     auto* coordinator =
         HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser);
     coordinator->Show(query);

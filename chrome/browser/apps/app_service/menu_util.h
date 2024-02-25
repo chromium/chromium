@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "components/services/app_service/public/cpp/menu.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -27,6 +28,10 @@ class SimpleMenuModel;
 }  // namespace ui
 
 namespace apps {
+
+// ElementIdentifier associated with the item added by
+// PopulateLaunchNewItemFromMenuItem() below.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kLaunchNewMenuItem);
 
 // Adds a command menu item to |menu_items|.
 void AddCommandItem(uint32_t command_id,

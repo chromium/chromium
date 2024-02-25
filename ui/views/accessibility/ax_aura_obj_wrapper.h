@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
@@ -35,7 +35,9 @@ class VIEWS_EXPORT AXAuraObjWrapper {
 
   // Traversal and serialization.
   virtual AXAuraObjWrapper* GetParent() = 0;
-  virtual void GetChildren(std::vector<AXAuraObjWrapper*>* out_children) = 0;
+  virtual void GetChildren(
+      std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>*
+          out_children) = 0;
   virtual void Serialize(ui::AXNodeData* out_node_data) = 0;
   virtual ui::AXNodeID GetUniqueId() const = 0;
   virtual std::string ToString() const = 0;
@@ -46,7 +48,8 @@ class VIEWS_EXPORT AXAuraObjWrapper {
   const AXAuraObjCache* cache() const { return aura_obj_cache_; }
 
  protected:
-  absl::optional<std::vector<AXAuraObjWrapper*>> cached_children_;
+  std::optional<std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>>
+      cached_children_;
 
   // The cache associated with this wrapper. Subclasses should initialize this
   // cache on construction.

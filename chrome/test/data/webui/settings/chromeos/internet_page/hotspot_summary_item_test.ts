@@ -312,6 +312,26 @@ suite('<hotspot-summary-item>', () => {
         hotspotDisabledSublabelLink.localizedString);
   });
 
+  test('UI state when no mobile data connection and enabling', async () => {
+    hotspotConfig.setFakeHotspotAllowStatus(
+        HotspotAllowStatus.kDisallowedNoMobileData);
+    hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
+    await flushAsync();
+
+    const subpageArrow = queryHotspotSummaryItemRowArrowIcon();
+    const enableToggle = queryEnableHotspotToggle();
+    assertTrue(!!enableToggle);
+    // Toggle should be enabled, subpage arrow should show.
+    assertFalse(enableToggle.disabled, 'Toggle should not be disabled');
+    assertTrue(!!subpageArrow, 'Subpage arrow should exist');
+
+    const hotspotStateSublabel = queryHotspotStateSublabel();
+    assertTrue(!!hotspotStateSublabel);
+    assertEquals(
+        hotspotSummaryItem.i18n('hotspotSummaryStateTurningOn'),
+        hotspotStateSublabel.textContent!.trim());
+  });
+
   test('Toggle button state', async () => {
     const enableHotspotToggle = queryEnableHotspotToggle();
     assertTrue(!!enableHotspotToggle, 'Hotspot enable toggl should exist');

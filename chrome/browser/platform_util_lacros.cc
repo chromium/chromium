@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
+#include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -72,9 +73,11 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
 }
 
 void OpenExternal(const GURL& url) {
-  // TODO(https://crbug.com/1140585): Add crosapi for opening links with
-  // external protocol handlers.
-  NOTIMPLEMENTED();
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (service->GetInterfaceVersion<crosapi::mojom::UrlHandler>() >=
+      int{crosapi::mojom::UrlHandler::kOpenExternalMinVersion}) {
+    service->GetRemote<crosapi::mojom::UrlHandler>()->OpenExternal(url);
+  }
 }
 
 }  // namespace platform_util

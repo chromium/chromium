@@ -3,19 +3,20 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/services/device_sync/cryptauth_device_activity_getter_impl.h"
-#include "base/memory/raw_ptr.h"
-#include "chromeos/ash/services/device_sync/cryptauth_feature_status_getter_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
+#include "chromeos/ash/services/device_sync/cryptauth_feature_status_getter_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_sync_test_devices.h"
@@ -29,7 +30,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -196,7 +196,7 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
         mojo::ConvertTo<mojom::NetworkRequestResult>(error);
   }
 
-  absl::optional<cryptauthv2::GetDevicesActivityStatusRequest>
+  std::optional<cryptauthv2::GetDevicesActivityStatusRequest>
       get_device_activity_status_request_;
   CryptAuthClient::GetDevicesActivityStatusCallback
       get_device_activity_status_success_callback_;
@@ -206,7 +206,7 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
   mojom::NetworkRequestResult network_request_result_;
 
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
 
   std::unique_ptr<CryptAuthDeviceActivityGetter> device_activity_getter_;
 };

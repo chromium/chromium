@@ -31,7 +31,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   // repeated memory allocations.  This packet writer only ever has a
   // single write in flight, a constraint inherited from the interface
   // of the underlying datagram Socket.
-  class NET_EXPORT_PRIVATE ReusableIOBuffer : public IOBuffer {
+  class NET_EXPORT_PRIVATE ReusableIOBuffer : public IOBufferWithSize {
    public:
     explicit ReusableIOBuffer(size_t capacity);
 
@@ -96,7 +96,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
       const quic::QuicPacketWriterParams& params) override;
   bool IsWriteBlocked() const override;
   void SetWritable() override;
-  absl::optional<int> MessageTooBigErrorCode() const override;
+  std::optional<int> MessageTooBigErrorCode() const override;
   quic::QuicByteCount GetMaxPacketSize(
       const quic::QuicSocketAddress& peer_address) const override;
   bool SupportsReleaseTime() const override;

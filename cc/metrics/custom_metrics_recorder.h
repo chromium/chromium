@@ -17,10 +17,6 @@ class CC_EXPORT CustomMetricRecorder {
  public:
   static CustomMetricRecorder* Get();
 
-  // Invoked to report "PercentDroppedFrames_1sWindow".
-  // Deprecated in favor of "PercentDroppedFrames_1sWindow2".
-  virtual void ReportPercentDroppedFramesInOneSecondWindow(double percent) = 0;
-
   // Invoked to report "PercentDroppedFrames_1sWindow2".
   virtual void ReportPercentDroppedFramesInOneSecondWindow2(double percent) = 0;
 

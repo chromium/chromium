@@ -76,10 +76,13 @@ class WebAppUrlLoader {
       UrlComparison url_comparison,
       ResultCallback callback);
 
- private:
-  void PrepareForLoad(content::WebContents* web_contents,
-                      base::OnceClosure complete);
+  // Used by LoadUrl() to put `web_contents` into a clean state, will noop if
+  // called redundantly. Useful for other uses of `web_contents` e.g.
+  // downloading icons.
+  virtual void PrepareForLoad(content::WebContents* web_contents,
+                              base::OnceClosure complete);
 
+ private:
   void LoadUrlInternal(
       const content::NavigationController::LoadURLParams& load_url_params,
       base::WeakPtr<content::WebContents> web_contents,

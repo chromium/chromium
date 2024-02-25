@@ -13,7 +13,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "cc/base/features.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
@@ -98,8 +100,19 @@ bool TextureLayerImpl::WillDraw(
   if (own_resource_) {
     DCHECK(!resource_id_);
     if (!transferable_resource_.mailbox_holder.mailbox.IsZero()) {
+      // Currently only Canvas supports releases resources in response to
+      // eviction. Other sources will be add once they can support this. Some
+      // complexity arises here from WebGL/WebGPU textures, as they do not
+      // necessarily maintain the data needed to rebuild the resources.
       resource_id_ = resource_provider->ImportResource(
-          transferable_resource_, std::move(release_callback_));
+          transferable_resource_,
+          /* impl_thread_release_callback= */ viz::ReleaseCallback(),
+          /* main_thread_release_callback= */ std::move(release_callback_),
+          transferable_resource_.resource_source ==
+                  viz::TransferableResource::ResourceSource::kCanvas
+              ? base::BindOnce(&TextureLayerImpl::OnResourceEvicted,
+                               base::Unretained(this))
+              : viz::ResourceEvictedCallback());
       DCHECK(resource_id_);
     }
     own_resource_ = false;
@@ -148,19 +161,21 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   if (visible_quad_rect.IsEmpty())
     return;
 
-  float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
                resource_id_, premultiplied_alpha_, uv_top_left_,
-               uv_bottom_right_, bg_color, vertex_opacity, flipped_,
-               nearest_neighbor_, /*secure_output=*/false,
-               gfx::ProtectedVideoType::kClear);
+               uv_bottom_right_, bg_color, flipped_, nearest_neighbor_,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
   quad->set_resource_size_in_pixels(transferable_resource_.size);
   quad->hdr_metadata = hdr_metadata_;
   ValidateQuadResources(quad);
 }
 
 SimpleEnclosedRegion TextureLayerImpl::VisibleOpaqueRegion() const {
+  if (transferable_resource_.is_null()) {
+    return SimpleEnclosedRegion();
+  }
+
   if (contents_opaque())
     return SimpleEnclosedRegion(visible_layer_rect());
 
@@ -300,6 +315,39 @@ void TextureLayerImpl::FreeTransferableResource() {
     auto* resource_provider = layer_tree_impl()->resource_provider();
     resource_provider->RemoveImportedResource(resource_id_);
     resource_id_ = viz::kInvalidResourceId;
+  }
+}
+
+void TextureLayerImpl::OnResourceEvicted() {
+  // Once we are evicted we want to remove it to unlock the memory. This will
+  // allow it to be released upon the next return. We also clear out the
+  // `resource_id_` so we don't attempt to delete it a second time when any
+  // future resource is pushed and ready to be imported.
+  if (resource_id_) {
+    auto* resource_provider = layer_tree_impl()->resource_provider();
+    resource_provider->RemoveImportedResource(resource_id_);
+  }
+  resource_id_ = viz::kInvalidResourceId;
+}
+
+void TextureLayerImpl::SetInInvisibleLayerTree() {
+  // With canvas hibernation, main will release the resource, which will be
+  // recreated once visibility changes. Don't hold onto it.
+  //
+  // Only do it when the resource has not been imported, meaning that it's not
+  // visible.
+  //
+  // In this case, main is responsible for giving us the transferable resource
+  // (and making sure that the layer properties are pushed) next time the tree
+  // becomes visible. See Canvas2DLayerBridge::PageVisibilityChanged().
+  if (base::FeatureList::IsEnabled(
+          features::kClearCanvasResourcesInBackground) &&
+      transferable_resource_.resource_source ==
+          viz::TransferableResource::ResourceSource::kCanvas &&
+      own_resource_) {
+    if (!transferable_resource_.is_software) {
+      FreeTransferableResource();
+    }
   }
 }
 

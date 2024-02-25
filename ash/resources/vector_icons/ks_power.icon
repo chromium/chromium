@@ -1,0 +1,29 @@
+// Copyright 2023 The Chromium Authors
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 20,
+PATH_COLOR_ARGB, 0xFF, 0x1B, 0x1B, 0x1F,
+MOVE_TO, 14.24f, 5.76f,
+CUBIC_TO, 13.85f, 5.37f, 13.85f, 4.73f, 14.24f, 4.34f,
+CUBIC_TO, 14.63f, 3.95f, 15.27f, 3.95f, 15.66f, 4.34f,
+CUBIC_TO, 17.15f, 5.83f, 18, 7.85f, 18, 10,
+CUBIC_TO, 18, 14.42f, 14.42f, 18, 10, 18,
+CUBIC_TO, 5.58f, 18, 2, 14.42f, 2, 10,
+CUBIC_TO, 2, 7.85f, 2.85f, 5.83f, 4.34f, 4.34f,
+CUBIC_TO, 4.73f, 3.95f, 5.37f, 3.95f, 5.76f, 4.34f,
+CUBIC_TO, 6.15f, 4.73f, 6.15f, 5.37f, 5.76f, 5.76f,
+CUBIC_TO, 4.64f, 6.88f, 4, 8.39f, 4, 10,
+CUBIC_TO, 4, 13.31f, 6.69f, 16, 10, 16,
+CUBIC_TO, 13.31f, 16, 16, 13.31f, 16, 10,
+CUBIC_TO, 16, 8.39f, 15.36f, 6.88f, 14.24f, 5.76f,
+CLOSE,
+MOVE_TO, 9, 3,
+CUBIC_TO, 9, 2.45f, 9.45f, 2, 10, 2,
+CUBIC_TO, 10.55f, 2, 11, 2.45f, 11, 3,
+V_LINE_TO, 11,
+CUBIC_TO, 11, 11.55f, 10.55f, 12, 10, 12,
+CUBIC_TO, 9.45f, 12, 9, 11.55f, 9, 11,
+V_LINE_TO, 3,
+CLOSE

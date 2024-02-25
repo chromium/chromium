@@ -15,8 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromecast/common/mojom/service_connector.mojom.h"
-#include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_stream.h"
@@ -24,7 +22,6 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_glitch_info.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -104,8 +101,7 @@ class MockCastAudioManager : public CastAudioManager {
  public:
   MockCastAudioManager(
       CastAudioManagerHelper::Delegate* delegate,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      external_service_support::ExternalConnector* connector)
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
       : CastAudioManager(
             std::make_unique<::media::TestAudioThread>(),
             nullptr,
@@ -114,7 +110,6 @@ class MockCastAudioManager : public CastAudioManager {
                                 base::Unretained(this)),
             media_task_runner,
             media_task_runner,
-            connector,
             true /* use_mixer */) {
     ON_CALL(*this, ReleaseOutputStream(_))
         .WillByDefault(
@@ -144,7 +139,7 @@ class CastAudioMixerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     mock_manager_.reset(new StrictMock<MockCastAudioManager>(
-        &delegate_, task_environment_.GetMainThreadTaskRunner(), &connector_));
+        &delegate_, task_environment_.GetMainThreadTaskRunner()));
     mock_mixer_stream_.reset(new StrictMock<MockMediaAudioOutputStream>());
 
     ON_CALL(*mock_manager_, MakeMixerOutputStream(_))
@@ -168,7 +163,6 @@ class CastAudioMixerTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  external_service_support::FakeExternalConnector connector_;
   std::unique_ptr<MockCastAudioManager> mock_manager_;
   std::unique_ptr<MockMediaAudioOutputStream> mock_mixer_stream_;
 

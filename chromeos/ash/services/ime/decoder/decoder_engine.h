@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_IME_DECODER_DECODER_ENGINE_H_
 #define CHROMEOS_ASH_SERVICES_IME_DECODER_DECODER_ENGINE_H_
 
+#include <optional>
+
 #include "base/scoped_native_library.h"
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
@@ -15,7 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace ime {
@@ -31,7 +32,7 @@ class DecoderEngine : public mojom::InputChannel {
  public:
   explicit DecoderEngine(
       ImeCrosPlatform* platform,
-      absl::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points);
+      std::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points);
 
   DecoderEngine(const DecoderEngine&) = delete;
   DecoderEngine& operator=(const DecoderEngine&) = delete;
@@ -50,7 +51,7 @@ class DecoderEngine : public mojom::InputChannel {
                       ProcessMessageCallback callback) override;
 
  private:
-  absl::optional<ImeSharedLibraryWrapper::EntryPoints> decoder_entry_points_;
+  std::optional<ImeSharedLibraryWrapper::EntryPoints> decoder_entry_points_;
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
 };
 

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_UTILITY_SANDBOX_DELEGATE_H_
 #define CONTENT_BROWSER_UTILITY_SANDBOX_DELEGATE_H_
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -73,7 +74,7 @@ class UtilitySandboxedProcessLauncherDelegate
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)
-  absl::optional<raw_ptr<ZygoteCommunication>> zygote_;
+  std::optional<raw_ptr<ZygoteCommunication>> zygote_;
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
   sandbox::mojom::Sandbox sandbox_type_;

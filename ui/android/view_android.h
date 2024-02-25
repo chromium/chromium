@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_weak_ref.h"
@@ -17,7 +18,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -176,15 +176,15 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // timeout for this resize.
   void OnPhysicalBackingSizeChanged(
       const gfx::Size& size,
-      absl::optional<base::TimeDelta> deadline_override = absl::nullopt);
+      std::optional<base::TimeDelta> deadline_override = std::nullopt);
   void OnCursorChanged(const Cursor& cursor);
   void NotifyHoverActionStylusWritable(bool stylus_writable);
   void OnBackgroundColorChanged(unsigned int color);
-  void OnTopControlsChanged(float top_controls_offset,
-                            float top_content_offset,
-                            float top_controls_min_height_offset);
-  void OnBottomControlsChanged(float bottom_controls_offset,
-                               float bottom_controls_min_height_offset);
+  void OnControlsChanged(float top_controls_offset,
+                         float top_content_offset,
+                         float top_controls_min_height_offset,
+                         float bottom_controls_offset,
+                         float bottom_controls_min_height_offset);
   void OnBrowserControlsHeightChanged();
   // |current_scroll_ratio| is the ratio of vertical scroll in [0, 1] range.
   // Scroll at top of page is 0, and bottom of page is 1. It is defined as 0
@@ -227,8 +227,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   ViewAndroid* parent() const { return parent_; }
 
-  absl::optional<gfx::Rect> GetDisplayFeature();
-
   bool OnTouchEventForTesting(const MotionEventAndroid& event) {
     return OnTouchEvent(event);
   }
@@ -238,6 +236,10 @@ class UI_ANDROID_EXPORT ViewAndroid {
   void SetLayoutForTesting(int x, int y, int width, int height);
 
   EventForwarder* event_forwarder() { return event_forwarder_.get(); }
+
+  size_t GetChildrenCountForTesting() const;
+
+  const ViewAndroid* GetTopMostChildForTesting() const;
 
  protected:
   void RemoveAllChildren(bool attached_to_window);

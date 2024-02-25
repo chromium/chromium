@@ -9,6 +9,7 @@
 #import "base/format_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/NSCoder+Compatibility.h"
+#import "ios/web/public/session/crw_session_storage.h"
 
 namespace {
 // Serialization keys.
@@ -50,6 +51,13 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
   return self;
 }
 
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(NSObject*)object {
+  SessionWindowIOS* other = base::apple::ObjCCast<SessionWindowIOS>(object);
+  return [other cr_isEqualSameClass:self];
+}
+
 #pragma mark - NSCoding
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
@@ -84,6 +92,20 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
   return [NSString stringWithFormat:@"selected index: %" PRIuNS
                                      "\nsessions:\n%@\n",
                                     _selectedIndex, _sessions];
+}
+
+#pragma mark Private
+
+- (BOOL)cr_isEqualSameClass:(SessionWindowIOS*)other {
+  if (_selectedIndex != other.selectedIndex) {
+    return NO;
+  }
+
+  if (_sessions != other.sessions && ![_sessions isEqual:other.sessions]) {
+    return NO;
+  }
+
+  return YES;
 }
 
 @end

@@ -61,7 +61,7 @@ RecordingMap RecordingMapFromPaintPreviewProto(const PaintPreviewProto& proto) {
   if (!root_frame_recording.IsValid())
     return {};
 
-  absl::optional<base::UnguessableToken> root_frame_embedding_token =
+  std::optional<base::UnguessableToken> root_frame_embedding_token =
       base::UnguessableToken::Deserialize(
           proto.root_frame().embedding_token_high(),
           proto.root_frame().embedding_token_low());
@@ -82,7 +82,7 @@ RecordingMap RecordingMapFromPaintPreviewProto(const PaintPreviewProto& proto) {
     if (!frame_recording.IsValid())
       continue;
 
-    absl::optional<base::UnguessableToken> subframe_embedding_token =
+    std::optional<base::UnguessableToken> subframe_embedding_token =
         base::UnguessableToken::Deserialize(subframe.embedding_token_high(),
                                             subframe.embedding_token_low());
     // TODO(https://crbug.com/1406995): Investigate whether a deserialization

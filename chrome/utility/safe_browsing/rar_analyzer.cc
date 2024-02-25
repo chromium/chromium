@@ -86,6 +86,14 @@ void RarAnalyzer::OnGetTempFile(base::File temp_file) {
     return;
   }
 
+  results()->encryption_info.is_encrypted = reader_.HeadersEncrypted();
+  if (reader_.HeaderDecryptionFailed()) {
+    results()->encryption_info.password_status =
+        EncryptionInfo::kKnownIncorrect;
+    InitComplete(ArchiveAnalysisResult::kUnknown);
+    return;
+  }
+
   InitComplete(ArchiveAnalysisResult::kValid);
 }
 

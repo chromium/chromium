@@ -41,6 +41,7 @@ def main():
   parser.add_argument('--config', required=True)
   parser.add_argument('--dict')
   parser.add_argument('--libfuzzer_options', nargs='+', default=[])
+  parser.add_argument('--centipede_options', nargs='+', default=[])
   parser.add_argument('--asan_options', nargs='+', default=[])
   parser.add_argument('--msan_options', nargs='+', default=[])
   parser.add_argument('--ubsan_options', nargs='+', default=[])
@@ -66,6 +67,13 @@ def main():
       option.split('=') for option in args.libfuzzer_options)
 
   AddSectionOptions(config, 'libfuzzer', libfuzzer_options)
+
+  centipede_options = []
+  if args.dict:
+    centipede_options.append(('dictionary', os.path.basename(args.dict)))
+  centipede_options.extend(
+      option.split('=') for option in args.centipede_options)
+  AddSectionOptions(config, 'centipede', centipede_options)
 
   AddSectionOptions(config, 'asan',
                     [option.split('=') for option in args.asan_options])

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/startup/first_run_service.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
@@ -51,7 +53,6 @@
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -318,41 +319,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
       ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
 }
-
-IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
-                       FinishedSilentlyDeviceEphemeralUsersEnabled) {
-  signin::IdentityManager* identity_manager =
-      identity_test_env()->identity_manager();
-  base::HistogramTester histogram_tester;
-
-  // The `DeviceEphemeralUsersEnabled` is read through DeviceSettings provided
-  // on startup.
-  auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
-  init_params->device_settings->deprecated_device_ephemeral_users_enabled =
-      crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
-  auto device_settings = init_params->device_settings.Clone();
-
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-  // TODO(crbug.com/1330310): Ideally this should be done as part of
-  // `SetInitParamsForTests()`.
-  g_browser_process->browser_policy_connector()
-      ->device_settings_lacros()
-      ->UpdateDeviceSettings(std::move(device_settings));
-
-  ASSERT_TRUE(profile()->IsMainProfile());
-  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
-
-  ASSERT_TRUE(fre_service());
-
-  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
-  EXPECT_FALSE(ShouldOpenFirstRun(profile()));
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome",
-      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -374,129 +340,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceNotForYouBrowserTest,
   EXPECT_EQ(nullptr, fre_service());
 }
 
-class FirstRunServiceCohortBrowserTest : public FirstRunServiceBrowserTest {
- public:
-  static constexpr char kStudyTestGroupName1[] = "test_group_1";
-  static constexpr char kStudyTestGroupName2[] = "test_group_2";
-
-  FirstRunServiceCohortBrowserTest() {
-    variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
-        ->ResetForTesting();
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {kForYouFreSyntheticTrialRegistration,
-             {{"group_name", kStudyTestGroupName1}}},
-            {kForYouFre, {}},
-        },
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
-                       PRE_GroupRegisteredAfterFre) {
-  EXPECT_TRUE(ShouldOpenFirstRun(browser()->profile()));
-
-  // We don't expect the synthetic trial to be registered before the FRE runs.
-  PrefService* local_state = g_browser_process->local_state();
-  EXPECT_FALSE(local_state->HasPrefPath(prefs::kFirstRunStudyGroup));
-  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
-
-  base::test::TestFuture<bool> proceed_future;
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
-
-  // Opening the FRE triggers recording of the group.
-  EXPECT_EQ(kStudyTestGroupName1,
-            local_state->GetString(prefs::kFirstRunStudyGroup));
-  EXPECT_TRUE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
-                                                  kStudyTestGroupName1));
-
-  profiles::testing::WaitForPickerWidgetCreated();
-  ProfilePicker::Hide();
-  profiles::testing::WaitForPickerClosed();
-  EXPECT_TRUE(proceed_future.Get());
-}
-IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
-                       GroupRegisteredAfterFre) {
-  EXPECT_FALSE(ShouldOpenFirstRun(browser()->profile()));
-
-  PrefService* local_state = g_browser_process->local_state();
-  EXPECT_EQ(kStudyTestGroupName1,
-            local_state->GetString(prefs::kFirstRunStudyGroup));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
-                                                  kStudyTestGroupName1));
-}
-
-IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
-                       PRE_PRE_GroupViaPrefs) {
-  // Setting the pref, we expect it to get picked up in an upcoming startup.
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kFirstRunStudyGroup, kStudyTestGroupName2);
-
-  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
-}
-IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, PRE_GroupViaPrefs) {
-  // The synthetic group should not be registered yet since we didn't go through
-  // the FRE.
-  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
-
-  // Setting this should make the next run finally register the synthetic trial.
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetBoolean(prefs::kFirstRunFinished, true);
-}
-IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, GroupViaPrefs) {
-  EXPECT_TRUE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
-  // The registered group is read from the prefs, not from the feature param.
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
-                                                  kStudyTestGroupName2));
-}
-
-class FirstRunServiceControlBrowserTest : public FirstRunServiceBrowserTest {
- public:
-  static constexpr char kStudyTestGroupName[] = "control";
-
-  FirstRunServiceControlBrowserTest() {
-    variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
-        ->ResetForTesting();
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {kForYouFreSyntheticTrialRegistration,
-             {{"group_name", kStudyTestGroupName}}},
-        },
-        {kForYouFre});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-IN_PROC_BROWSER_TEST_F(FirstRunServiceControlBrowserTest, PRE_Control) {
-  EXPECT_EQ(nullptr, FirstRunServiceFactory::GetForBrowserContext(profile()));
-
-  // The FRE is directly marked finished and we join the indicated cohort.
-  PrefService* local_state = g_browser_process->local_state();
-  EXPECT_TRUE(local_state->GetBoolean(prefs::kFirstRunFinished));
-  EXPECT_EQ(kStudyTestGroupName,
-            local_state->GetString(prefs::kFirstRunStudyGroup));
-
-  EXPECT_TRUE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
-                                                  kStudyTestGroupName));
-}
-IN_PROC_BROWSER_TEST_F(FirstRunServiceControlBrowserTest, Control) {
-  EXPECT_EQ(nullptr, FirstRunServiceFactory::GetForBrowserContext(profile()));
-
-  // On subsequent startups, we continue the registration.
-  EXPECT_TRUE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
-                                                  kStudyTestGroupName));
-}
-
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 struct PolicyTestParam {
@@ -504,6 +347,8 @@ struct PolicyTestParam {
   const std::string key;
   const std::string value;  // As JSON string, base::Value is not copy-friendly.
   const bool should_open_fre = false;
+  // This param is only effective with BrowserSignin = 2.
+  const bool with_force_signin_in_profile_picker = false;
 };
 
 const PolicyTestParam kPolicyTestParams[] = {
@@ -512,7 +357,12 @@ const PolicyTestParam kPolicyTestParams[] = {
     {.key = policy::key::kBrowserSignin, .value = "0"},
     {.key = policy::key::kBrowserSignin, .value = "1", .should_open_fre = true},
 #if !BUILDFLAG(IS_LINUX)
-    {.key = policy::key::kBrowserSignin, .value = "2"},
+    {.key = policy::key::kBrowserSignin,
+     .value = "2",
+     .with_force_signin_in_profile_picker = false},
+    {.key = policy::key::kBrowserSignin,
+     .value = "2",
+     .with_force_signin_in_profile_picker = true},
 #endif  // BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     {.key = policy::key::kPromotionalTabsEnabled, .value = "false"},
@@ -520,13 +370,28 @@ const PolicyTestParam kPolicyTestParams[] = {
 
 std::string PolicyParamToTestSuffix(
     const ::testing::TestParamInfo<PolicyTestParam>& info) {
-  return info.param.key + "_" + info.param.value;
+  std::string force_signin_profile_picker_feature;
+  return info.param.key + "_" + info.param.value +
+         (info.param.with_force_signin_in_profile_picker
+              ? "_WithForceSigninInProfilePicker"
+              : "");
 }
 
 class FirstRunServicePolicyBrowserTest
     : public FirstRunServiceBrowserTest,
       public testing::WithParamInterface<PolicyTestParam> {
  public:
+  FirstRunServicePolicyBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {kForYouFre};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().with_force_signin_in_profile_picker) {
+      enabled_features.push_back(kForceSigninFlowInProfilePicker);
+    } else {
+      disabled_features.push_back(kForceSigninFlowInProfilePicker);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     FirstRunServiceBrowserTest::SetUpInProcessBrowserTestFixture();
     policy_provider_.SetDefaultReturns(
@@ -554,7 +419,7 @@ class FirstRunServicePolicyBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{kForYouFre};
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
@@ -564,6 +429,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 
   signin_util::ResetForceSigninForTesting();
   SetPolicy(GetParam().key, GetParam().value);
+
+  if (GetParam().with_force_signin_in_profile_picker) {
+    // `with_force_signin_in_profile_picker` should not be set if force signin
+    // is not enabled.
+    ASSERT_TRUE(signin_util::IsForceSigninEnabled());
+  }
 
   // The attempt to run the FRE should not be blocked
   EXPECT_TRUE(ShouldOpenFirstRun(browser()->profile()));
@@ -606,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
   ProfilePicker::Hide();
   run_loop.Run();
 
-  absl::optional<std::u16string> expected_profile_name;
+  std::optional<std::u16string> expected_profile_name;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros we always have an account, the profile name will reflect it.
   signin::IdentityManager* identity_manager =
@@ -616,7 +487,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
   expected_profile_name = base::ASCIIToUTF16(account_info.email);
 #else
   // On Dice platforms, we use a default enterprise name after skipped FREs.
-  if (!GetParam().should_open_fre) {
+  //
+  // If force sign in is active and through the profile picker, the profile
+  // finalisation is not expected to happen, so the default name should remain.
+  if (!GetParam().should_open_fre &&
+      !GetParam().with_force_signin_in_profile_picker) {
     expected_profile_name = l10n_util::GetStringUTF16(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
   }

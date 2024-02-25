@@ -4,23 +4,32 @@
 
 #include "chromeos/startup/browser_postlogin_params.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check_is_test.h"
 #include "base/files/file_util.h"
+#include "base/process/process.h"
 #include "chromeos/startup/startup.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
 namespace {
 
 // Reads and parses the post-login data to BrowserPostLoginParams.
-// If data is missing, or failed to parse, returns a null StructPtr.
+// If the data is missing or empty, we didn't receive it from Ash, likely
+// because Ash is shutting down and closing its end of the pipe. In that case,
+// we terminate Lacros gracefully.
+// If the data failed to parse because of a deserialization error, returns a
+// null StructPtr.
 crosapi::mojom::BrowserPostLoginParamsPtr ReadStartupBrowserPostLoginParams() {
-  absl::optional<std::string> content = ReadPostLoginData();
-  if (!content) {
-    return {};
+  std::optional<std::string> content = ReadPostLoginData();
+  if (!content.has_value() || content->empty()) {
+    // Ash shut down or crashed, so the pipe is broken or empty.
+    // Lacros should shut down gracefully instead of crashing.
+    // See crbug.com/1491478 for additional context.
+    base::Process::TerminateCurrentProcessImmediately(
+        RESULT_CODE_INVALID_POST_LOGIN_PARAMS);
   }
 
   crosapi::mojom::BrowserPostLoginParamsPtr result;
@@ -37,16 +46,28 @@ crosapi::mojom::BrowserPostLoginParamsPtr ReadStartupBrowserPostLoginParams() {
 
 // static
 void BrowserPostLoginParams::WaitForLogin() {
+  // TODO(crbug.com/1475643): added to investigate the cause of this crash.
+  // Please remove once the cause is identified.
+  LOG(WARNING) << "Waiting for login.";
+
   auto* instance = GetInstanceInternal();
   if (!instance->postlogin_params_) {
     // Fetch the postlogin parameters, or wait for them to be available.
     instance->postlogin_params_ = ReadStartupBrowserPostLoginParams();
-    DCHECK(instance->postlogin_params_);
+    CHECK(instance->postlogin_params_);
   } else {
     // This code path should only be reached in tests after calling
     // SetPostLoginParamsForTests.
     CHECK_IS_TEST();
   }
+
+  // Signal that the user has logged in.
+  instance->logged_in_ = true;
+}
+
+// static
+bool BrowserPostLoginParams::IsLoggedIn() {
+  return GetInstanceInternal()->logged_in_;
 }
 
 // static

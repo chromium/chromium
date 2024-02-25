@@ -12,6 +12,12 @@
 
 namespace password_manager {
 
+// Histogram to keep track of the status of handling password form submit
+// events which only concerns the events from buttons that aren't
+// <input type="submit">.
+inline constexpr char kHandleFormSubmitEventHistogram[] =
+    "PasswordManager.iOS.HandleFormSubmitEvent";
+
 // Tab helper which associates password manager's PasswordFormHelper with the
 // given WebState. This allows access to the PasswordFormHelper instance given
 // a WebState.

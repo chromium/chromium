@@ -5,23 +5,21 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_LISTENER_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_LISTENER_H_
 
+#include <map>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
-#include "components/invalidation/impl/unacked_invalidation_set.h"
 #include "components/invalidation/public/ack_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
 namespace invalidation {
 
-class TopicInvalidationMap;
+class Invalidation;
 
 // Receives InstanceID tokens and actual invalidations from FCM via
 // FCMSyncNetworkChannel, and dispatches them to its delegate (in practice, the
@@ -40,9 +38,11 @@ class FCMInvalidationListener
    public:
     virtual ~Delegate() = default;
 
-    virtual void OnInvalidate(const TopicInvalidationMap& invalidations) = 0;
+    virtual void OnInvalidate(const Invalidation& invalidation) = 0;
 
     virtual void OnInvalidatorStateChange(InvalidatorState state) = 0;
+
+    virtual void OnSuccessfullySubscribed(const Topic& topic) = 0;
   };
 
   explicit FCMInvalidationListener(
@@ -52,13 +52,17 @@ class FCMInvalidationListener
       delete;
   ~FCMInvalidationListener() override;
 
+  // Creates a FCMInvalidationListener instance.
+  static std::unique_ptr<FCMInvalidationListener> Create(
+      std::unique_ptr<FCMSyncNetworkChannel> network_channel);
+
   void Start(Delegate* delegate,
              std::unique_ptr<PerUserTopicSubscriptionManager>
                  per_user_topic_subscription_manager);
 
   // Update the set of topics for which we want to get invalidations. May be
   // called at any time.
-  void UpdateInterestedTopics(const Topics& topics);
+  void UpdateInterestedTopics(const TopicMap& topics);
 
   // Called when the InstanceID token is revoked (usually because the InstanceID
   // itself was deleted). Note that while this class receives new tokens
@@ -68,7 +72,6 @@ class FCMInvalidationListener
 
   // AckHandler implementation.
   void Acknowledge(const Topic& topic, const AckHandle& handle) override;
-  void Drop(const Topic& topic, const AckHandle& handle) override;
 
   // FCMSyncNetworkChannel::Observer implementation.
   void OnFCMChannelStateChanged(FcmChannelState state) override;
@@ -76,15 +79,17 @@ class FCMInvalidationListener
   // PerUserTopicSubscriptionManager::Observer implementation.
   void OnSubscriptionChannelStateChanged(
       SubscriptionChannelState state) override;
-  void OnSubscriptionRequestStarted(Topic topic) override;
-  void OnSubscriptionRequestFinished(Topic topic, Status code) override;
+  void OnSubscriptionRequestStarted(
+      Topic topic,
+      PerUserTopicSubscriptionManager::RequestType request_type) override;
+  void OnSubscriptionRequestFinished(
+      Topic topic,
+      PerUserTopicSubscriptionManager::RequestType request_type,
+      Status code) override;
 
-  virtual void RequestDetailedStatus(
-      const base::RepeatingCallback<void(base::Value::Dict)>& callback) const;
-
-  void StartForTest(Delegate* delegate);
   void EmitStateChangeForTest(InvalidatorState state);
-  void EmitSavedInvalidationsForTest(const TopicInvalidationMap& to_emit);
+  void EmitSavedInvalidationForTest(const Invalidation& invalidation);
+  void EmitSuccessfullySubscribedForTest(const Topic& topic);
 
  private:
   // Callbacks for the |network_channel_|.
@@ -106,34 +111,19 @@ class FCMInvalidationListener
 
   void EmitStateChange();
 
-  // Sends invalidations to their appropriate destination.
-  //
-  // If there are no observers registered for them, they will be saved for
-  // later.
-  //
-  // If there are observers registered, they will be saved (to make sure we
-  // don't drop them until they've been acted on) and emitted to the observers.
-  void DispatchInvalidations(const TopicInvalidationMap& invalidations);
+  // Cache `invalidation` and emit it to registered handlers (if any).
+  void DispatchInvalidation(const Invalidation& invalidation);
 
-  // Saves invalidations.
-  //
-  // This call isn't synchronous so we can't guarantee these invalidations will
-  // be safely on disk by the end of the call, but it should ensure that the
-  // data makes it to disk eventually.
-  void SaveInvalidations(const TopicInvalidationMap& to_save);
-  // Emits previously saved invalidations to their registered observers.
-  void EmitSavedInvalidations(const TopicInvalidationMap& to_emit);
-
-  // Generate a Dictionary with all the debugging information.
-  base::Value::Dict CollectDebugData() const;
+  // Emits previously saved invalidation to their registered observers.
+  void EmitSavedInvalidation(const Invalidation& invalidation);
 
   std::unique_ptr<FCMSyncNetworkChannel> network_channel_;
-  UnackedInvalidationsMap unacked_invalidations_map_;
+  std::map<Topic, Invalidation> unacked_invalidations_map_;
   raw_ptr<Delegate> delegate_ = nullptr;
 
   // The set of topics for which we want to receive invalidations. We'll pass
   // these to |per_user_topic_subscription_manager_| for (un)subscription.
-  Topics interested_topics_;
+  TopicMap interested_topics_;
 
   // The states of the HTTP and FCM channel.
   SubscriptionChannelState subscription_channel_state_ =

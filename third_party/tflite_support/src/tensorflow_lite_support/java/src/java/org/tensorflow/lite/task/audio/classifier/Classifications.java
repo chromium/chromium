@@ -16,13 +16,11 @@ limitations under the License.
 package org.tensorflow.lite.task.audio.classifier;
 
 import com.google.auto.value.AutoValue;
-
-import org.tensorflow.lite.support.label.Category;
-import org.tensorflow.lite.task.core.annotations.UsedByReflection;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.tensorflow.lite.support.label.Category;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 
 /**
  * The classification results of one head in a multihead (a.k.a. multi-output) {@link
@@ -33,18 +31,18 @@ import java.util.List;
 @AutoValue
 @UsedByReflection("audio_classifier_jni.cc")
 public abstract class Classifications {
-    @UsedByReflection("audio_classifier_jni.cc")
-    static Classifications create(List<Category> categories, int headIndex, String headName) {
-        return new AutoValue_Classifications(
-                Collections.unmodifiableList(new ArrayList<Category>(categories)), headIndex,
-                headName);
-    }
 
-    // Same reason for not using ImmutableList as stated in
-    // {@link ImageClassifier#ImageClassifierOptions#labelAllowList}.
-    public abstract List<Category> getCategories();
+  @UsedByReflection("audio_classifier_jni.cc")
+  static Classifications create(List<Category> categories, int headIndex, String headName) {
+    return new AutoValue_Classifications(
+        Collections.unmodifiableList(new ArrayList<Category>(categories)), headIndex, headName);
+  }
 
-    public abstract int getHeadIndex();
+  // Same reason for not using ImmutableList as stated in
+  // {@link ImageClassifier#ImageClassifierOptions#labelAllowList}.
+  public abstract List<Category> getCategories();
 
-    public abstract String getHeadName();
+  public abstract int getHeadIndex();
+
+  public abstract String getHeadName();
 }

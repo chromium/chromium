@@ -10,16 +10,18 @@
 import 'chrome://support-tool/support_tool.js';
 import 'chrome://support-tool/url_generator.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {track} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails, PiiDataItem, SupportTokenGenerationResult} from 'chrome://support-tool/browser_proxy.js';
-import {ScreenshotElement} from 'chrome://support-tool/screenshot.js';
-import {DataExportResult, SupportToolElement, SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
-import {UrlGeneratorElement} from 'chrome://support-tool/url_generator.js';
+import type {BrowserProxy, DataCollectorItem, IssueDetails, PiiDataItem, SupportTokenGenerationResult} from 'chrome://support-tool/browser_proxy.js';
+import {BrowserProxyImpl} from 'chrome://support-tool/browser_proxy.js';
+import type {ScreenshotElement} from 'chrome://support-tool/screenshot.js';
+import type {DataExportResult, SupportToolElement} from 'chrome://support-tool/support_tool.js';
+import {SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
+import type {UrlGeneratorElement} from 'chrome://support-tool/url_generator.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -220,7 +222,7 @@ suite('SupportToolTest', function() {
     assertEquals(
         issueDetails.shadowRoot!.querySelector('cr-input')!.value,
         'testcaseid');
-    const emailOptions = issueDetails.shadowRoot!.querySelectorAll('option')!;
+    const emailOptions = issueDetails.shadowRoot!.querySelectorAll('option');
     // IssueDetailsElement adds DONT_INCLUDE_EMAIL string to the email addresses
     // options as for use to give the option to not include email address.
     assertEquals(EMAIL_ADDRESSES.length + 1, emailOptions.length);
@@ -237,6 +239,20 @@ suite('SupportToolTest', function() {
       assertEquals(listItem.name, DATA_COLLECTORS[i]!.name);
       assertEquals(listItem.isIncluded, DATA_COLLECTORS[i]!.isIncluded);
       assertEquals(listItem.protoEnum, DATA_COLLECTORS[i]!.protoEnum);
+    }
+
+    // Verify that the select all functionality works.
+    supportTool.$.dataCollectors.shadowRoot!.getElementById(
+                                                'selectAllButton')!.click();
+    for (let i = 0; i < ironListItems.length; i++) {
+      assertTrue(ironListItems[i].isIncluded);
+    }
+
+    // Verify that the unselect all functionality works.
+    supportTool.$.dataCollectors.shadowRoot!.getElementById(
+                                                'selectAllButton')!.click();
+    for (let i = 0; i < ironListItems.length; i++) {
+      assertFalse(ironListItems[i].isIncluded);
     }
   });
 
@@ -390,6 +406,7 @@ suite('UrlGeneratorTest', function() {
         urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
     // Select the first one of data collectors.
     dataCollectors[0]!.click();
+    await dataCollectors[0]!.updateComplete;
     // Ensure the button is enabled after we select at least one data collector.
     assertFalse(copyLinkButton.disabled);
     const expectedToken = 'chrome://support-tool/?case_id=test123&module=jekhh';
@@ -437,6 +454,7 @@ suite('UrlGeneratorTest', function() {
         urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
     // Select one of data collectors to enable the button.
     dataCollectors[1]!.click();
+    await dataCollectors[1]!.updateComplete;
     // Ensure the button is enabled after we select at least one data collector.
     assertFalse(copyTokenButton.disabled);
     const expectedToken = 'jekhh';

@@ -27,12 +27,13 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -40,10 +41,8 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_content.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
@@ -124,22 +123,10 @@ void LayoutReplaced::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  PhysicalRect old_content_rect = ReplacedContentRect();
-
-  ClearLayoutOverflow();
-  ClearSelfNeedsLayoutOverflowRecalc();
-  ClearChildNeedsLayoutOverflowRecalc();
-
+  ClearScrollableOverflow();
+  ClearSelfNeedsScrollableOverflowRecalc();
+  ClearChildNeedsScrollableOverflowRecalc();
   ClearNeedsLayout();
-
-  if (RuntimeEnabledFeatures::PaintNewReplacedInvalidationEnabled()) {
-    return;
-  }
-
-  if (ReplacedContentRectFrom(PhysicalContentBoxRectFromNG()) !=
-      old_content_rect) {
-    SetShouldDoFullPaintInvalidation();
-  }
 }
 
 void LayoutReplaced::IntrinsicSizeChanged() {
@@ -166,6 +153,20 @@ static inline bool LayoutObjectHasIntrinsicAspectRatio(
          IsA<LayoutViewTransitionContent>(layout_object);
 }
 
+void LayoutReplaced::AddVisualEffectOverflow() {
+  NOT_DESTROYED();
+  if (!StyleRef().HasVisualOverflowingEffect()) {
+    return;
+  }
+
+  // Add in the final overflow with shadows, outsets and outline combined.
+  PhysicalRect visual_effect_overflow = PhysicalBorderBoxRect();
+  PhysicalBoxStrut outsets = ComputeVisualEffectOverflowOutsets();
+  visual_effect_overflow.Expand(outsets);
+  AddSelfVisualOverflow(visual_effect_overflow);
+  UpdateHasSubpixelVisualEffectOutsets(outsets);
+}
+
 void LayoutReplaced::RecalcVisualOverflow() {
   NOT_DESTROYED();
   ClearVisualOverflow();
@@ -186,34 +187,32 @@ void LayoutReplaced::RecalcVisualOverflow() {
     AddContentsVisualOverflow(ReplacedContentRect());
 }
 
-absl::optional<gfx::SizeF>
+std::optional<gfx::SizeF>
 LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
   if (IntrinsicWidthOverride() || IntrinsicHeightOverride())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (auto view_box = ComputeObjectViewBoxRect())
     return static_cast<gfx::SizeF>(view_box->size);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
+std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const PhysicalSize* overridden_intrinsic_size) const {
   const BasicShape* object_view_box = StyleRef().ObjectViewBox();
   if (LIKELY(!object_view_box))
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto& intrinsic_size =
       overridden_intrinsic_size ? *overridden_intrinsic_size : intrinsic_size_;
   if (intrinsic_size.IsEmpty())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!CanApplyObjectViewBox())
-    return absl::nullopt;
+    return std::nullopt;
 
-  DCHECK(object_view_box->GetType() == BasicShape::kBasicShapeRectType ||
-         object_view_box->GetType() == BasicShape::kBasicShapeInsetType ||
-         object_view_box->GetType() == BasicShape::kBasicShapeXYWHType);
+  DCHECK_EQ(object_view_box->GetType(), BasicShape::kBasicShapeInsetType);
 
   Path path;
   gfx::RectF bounding_box(0, 0, intrinsic_size.width.ToFloat(),
@@ -223,11 +222,11 @@ absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   const PhysicalRect view_box_rect =
       PhysicalRect::EnclosingRect(path.BoundingRect());
   if (view_box_rect.IsEmpty())
-    return absl::nullopt;
+    return std::nullopt;
 
   const PhysicalRect intrinsic_rect(PhysicalOffset(), intrinsic_size);
   if (view_box_rect == intrinsic_rect)
-    return absl::nullopt;
+    return std::nullopt;
 
   return view_box_rect;
 }
@@ -377,30 +376,9 @@ PhysicalRect LayoutReplaced::ReplacedContentRectFrom(
   return ComputeReplacedContentRect(base_content_rect);
 }
 
-PhysicalSize LayoutReplaced::SizeFromNG() const {
-  if (!GetBoxLayoutExtraInput()) {
-    return Size();
-  }
-  return GetBoxLayoutExtraInput()->size;
-}
-
-NGPhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
-  if (GetBoxLayoutExtraInput()) {
-    return GetBoxLayoutExtraInput()->border_padding;
-  }
-  return NGPhysicalBoxStrut(
-      BorderTop() + PaddingTop(), BorderRight() + PaddingRight(),
-      BorderBottom() + PaddingBottom(), BorderLeft() + PaddingLeft());
-}
-
 PhysicalRect LayoutReplaced::PhysicalContentBoxRectFromNG() const {
   NOT_DESTROYED();
-  const PhysicalSize size = SizeFromNG();
-  const NGPhysicalBoxStrut border_padding = BorderPaddingFromNG();
-  return PhysicalRect(
-      border_padding.left, border_padding.top,
-      (size.width - border_padding.HorizontalSum()).ClampNegativeToZero(),
-      (size.height - border_padding.VerticalSum()).ClampNegativeToZero());
+  return new_content_rect_ ? *new_content_rect_ : PhysicalContentBoxRect();
 }
 
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(
@@ -440,7 +418,7 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
   if (layout_replaced.IsInline() &&
       layout_replaced.IsInLayoutNGInlineFormattingContext()) {
     // Step 1: Find the line box containing |layout_replaced|.
-    NGInlineCursor line_box;
+    InlineCursor line_box;
     line_box.MoveTo(layout_replaced);
     if (!line_box)
       return fallback;
@@ -508,7 +486,7 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
 
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     PhysicalRect rect;
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
       rect.Unite(cursor.CurrentLocalSelectionRectForReplaced());

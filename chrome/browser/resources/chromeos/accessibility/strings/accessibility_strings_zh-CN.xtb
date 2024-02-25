@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">向后导航</translation>
 <translation id="1565432156062359693">没有下一个列表</translation>
 <translation id="1571643229714746283">ChromeVox已就绪</translation>
+<translation id="1588252353131492116">当粘滞模式处于开启状态时，忽略按键命令不可用</translation>
 <translation id="1594072653727561613">菜单</translation>
 <translation id="1610130962244179598">切换到6点式盲文</translation>
 <translation id="161042844686301425">青色</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">主体内容</translation>
 <translation id="2329324941084714723">标签面板</translation>
 <translation id="2347456970887948350">链接</translation>
+<translation id="2363753371702255035">项目符号</translation>
 <translation id="2365384324219615024">您还可按 Enter 键以启用所需项。例如，Enter 键可用于提交表单中的文字。请按 Enter 键以继续。</translation>
 <translation id="2381733276052567791">开启或关闭语音</translation>
 <translation id="2390264819538553347">要前进，请按 Enter 键；要后退，请按退格键。</translation>
@@ -521,6 +523,7 @@
 <translation id="4457472090507035117">请选择当前的声音：</translation>
 <translation id="4476183483923481720">换行</translation>
 <translation id="4479068155583208887">耐火砖红色</translation>
+<translation id="4481524099194084725">使用系统语音</translation>
 <translation id="4482330759234983253">上一个表格</translation>
 <translation id="4491109536499578614">图片</translation>
 <translation id="4507332368061453500">长按当前内容</translation>

@@ -12,16 +12,14 @@
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 void StoreURLInPasteboard(const GURL& url) {
-  std::vector<const GURL> urls;
-  urls.push_back(url);
-  StoreURLsInPasteboard(urls);
+  StoreURLsInPasteboard({url});
 }
 
-void StoreURLsInPasteboard(const std::vector<const GURL>& urls) {
+void StoreURLsInPasteboard(const std::vector<GURL>& urls) {
   NSMutableArray* pasteboard_items = [[NSMutableArray alloc] init];
   for (const GURL& URL : urls) {
     // Invalid URLs arrive here in production. Prevent crashing by continuing
@@ -31,12 +29,18 @@ void StoreURLsInPasteboard(const std::vector<const GURL>& urls) {
       continue;
     }
 
+    NSMutableDictionary* copiedItem = [[NSMutableDictionary alloc] init];
+
+    NSURL* nsURL = net::NSURLWithGURL(URL);
+    if (nsURL) {
+      copiedItem[UTTypeURL.identifier] = nsURL;
+    }
+
     NSData* plainText = [base::SysUTF8ToNSString(URL.spec())
         dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary* copiedItem = @{
-      UTTypeURL.identifier : net::NSURLWithGURL(URL),
-      UTTypeUTF8PlainText.identifier : plainText,
-    };
+    if (plainText) {
+      copiedItem[UTTypeUTF8PlainText.identifier] = plainText;
+    }
 
     [pasteboard_items addObject:copiedItem];
   }

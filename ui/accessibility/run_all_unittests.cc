@@ -7,12 +7,30 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
+#include "ui/accessibility/platform/provide_ax_platform_for_tests.h"
+
+namespace {
+
+class AccessibilityTestSuite : public base::TestSuite {
+ public:
+  AccessibilityTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+ protected:
+  // base::TestSuite
+  void Initialize() override {
+    base::TestSuite::Initialize();
+    testing::UnitTest::GetInstance()->listeners().Append(
+        new ui::ProvideAXPlatformForTests());
+  }
+};
+
+}  // namespace
 
 int main(int argc, char** argv) {
   mojo::core::Init();
 
-  base::TestSuite test_suite(argc, argv);
-  return base::LaunchUnitTests(
-      argc, argv,
-      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
+  AccessibilityTestSuite test_suite(argc, argv);
+  return base::LaunchUnitTests(argc, argv,
+                               base::BindOnce(&AccessibilityTestSuite::Run,
+                                              base::Unretained(&test_suite)));
 }

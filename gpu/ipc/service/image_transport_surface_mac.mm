@@ -5,7 +5,6 @@
 #include "gpu/ipc/service/image_transport_surface.h"
 
 #include "gpu/ipc/service/image_transport_surface_overlay_mac.h"
-#include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_surface_stub.h"
@@ -16,13 +15,11 @@ namespace gpu {
 scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
-    SurfaceHandle surface_handle,
-    gl::GLSurfaceFormat format) {
+    SurfaceHandle surface_handle) {
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2 ||
       gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    return base::WrapRefCounted<gl::Presenter>(
-        new ImageTransportSurfaceOverlayMacEGL(delegate));
+    return base::MakeRefCounted<ImageTransportSurfaceOverlayMacEGL>();
   }
 
   return nullptr;

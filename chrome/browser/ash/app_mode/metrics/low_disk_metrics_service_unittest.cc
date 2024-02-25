@@ -44,11 +44,11 @@ class LowDiskMetricsServiceTest
   }
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
-  absl::optional<KioskLowDiskSeverity> GetLowDiskSeverityFromLocalState() {
+  std::optional<KioskLowDiskSeverity> GetLowDiskSeverityFromLocalState() {
     const auto& metrics_dict = local_state()->GetDict(prefs::kKioskMetrics);
     const auto severity_value = metrics_dict.FindInt(kKioskLowDiskSeverity);
     if (!severity_value) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return static_cast<KioskLowDiskSeverity>(severity_value.value());

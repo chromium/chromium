@@ -56,6 +56,7 @@ public final class CapturedSitesInstructionsTest {
         action = actions.getNextAction();
         assertNull(actions.getNextAction());
     }
+
     // Creates CapturedSistes insturctions for LoadPage tests.
     private CapturedSitesInstructions loadPageForceHelper(Optional<Boolean> force)
             throws Throwable {
@@ -82,6 +83,7 @@ public final class CapturedSitesInstructionsTest {
         assertTrue(action.toString().contains("myUrl"));
         assertTrue(action.toString().contains("Forcing load of"));
     }
+
     @Test
     @SmallTest
     public void verifyBuild_succeedsWithLoadPageNoForce() throws Throwable {

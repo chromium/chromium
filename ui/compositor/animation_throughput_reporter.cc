@@ -5,6 +5,7 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -13,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "cc/animation/animation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -136,9 +136,9 @@ class AnimationThroughputReporter::AnimationTracker
 
   const raw_ptr<LayerAnimator, DanglingUntriaged> animator_;
 
-  absl::optional<ThroughputTracker> throughput_tracker_;
+  std::optional<ThroughputTracker> throughput_tracker_;
 
-  absl::optional<int> first_animation_group_id_;
+  std::optional<int> first_animation_group_id_;
   bool started_animations_aborted_ = false;
 
   AnimationThroughputReporter::ReportCallback report_callback_;

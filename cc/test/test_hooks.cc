@@ -22,4 +22,8 @@ std::unique_ptr<RasterBufferProvider> TestHooks::CreateRasterBufferProvider(
   return host_impl->LayerTreeHostImpl::CreateRasterBufferProvider();
 }
 
+std::unique_ptr<BeginMainFrameMetrics> TestHooks::GetBeginMainFrameMetrics() {
+  return nullptr;
+}
+
 }  // namespace cc

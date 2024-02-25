@@ -6,11 +6,11 @@
 #define COMPONENTS_FEED_CORE_V2_IOS_SHARED_EXPERIMENTS_TRANSLATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 
@@ -20,7 +20,7 @@ typedef std::map<std::string, std::vector<std::string>> Experiments;
 
 constexpr const char kDiscoverFeedExperiments[] = "DiscoverFeedExperiments";
 
-absl::optional<Experiments> TranslateExperiments(
+std::optional<Experiments> TranslateExperiments(
     const google::protobuf::RepeatedPtrField<feedwire::Experiment>&
         wire_experiments);
 

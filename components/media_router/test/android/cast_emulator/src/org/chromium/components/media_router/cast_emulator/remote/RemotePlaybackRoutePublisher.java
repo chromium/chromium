@@ -105,8 +105,8 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
         controlFilters.add(f2);
 
         MediaRouteDescriptor testRouteDescriptor =
-                new MediaRouteDescriptor
-                        .Builder(VARIABLE_VOLUME_SESSION_ROUTE_ID, "Cast Test Route")
+                new MediaRouteDescriptor.Builder(
+                                VARIABLE_VOLUME_SESSION_ROUTE_ID, "Cast Test Route")
                         .setDescription("Cast Test Route")
                         .addControlFilters(controlFilters)
                         .setPlaybackStream(AudioManager.STREAM_MUSIC)
@@ -127,8 +127,13 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             // Downstream cast uses a different, private, castId; so read this from
             // the manifest.
             ApplicationInfo ai;
-            ai = mProvider.getContext().getPackageManager().getApplicationInfo(
-                    mProvider.getContext().getPackageName(), PackageManager.GET_META_DATA);
+            ai =
+                    mProvider
+                            .getContext()
+                            .getPackageManager()
+                            .getApplicationInfo(
+                                    mProvider.getContext().getPackageName(),
+                                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
             if (bundle != null) {
                 castId = bundle.getString(MANIFEST_CAST_KEY, castId);
@@ -148,12 +153,13 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
 
         public TestMediaController(String routeId) {
             mRouteId = routeId;
-            mSessionManager.setCallback(new LocalSessionManager.Callback() {
-                @Override
-                public void onItemChanged(MediaItem item) {
-                    handleStatusChange(item);
-                }
-            });
+            mSessionManager.setCallback(
+                    new LocalSessionManager.Callback() {
+                        @Override
+                        public void onItemChanged(MediaItem item) {
+                            handleStatusChange(item);
+                        }
+                    });
             setVolumeInternal(mVolume);
             Log.v(TAG, "%s: Controller created", mRouteId);
         }
@@ -250,8 +256,9 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             if (volume >= 0 && volume <= VOLUME_MAX) {
                 mVolume = volume;
                 Log.v(TAG, "%s: New volume is %d", mRouteId, mVolume);
-                AudioManager audioManager = (AudioManager) mProvider.getContext().getSystemService(
-                        Context.AUDIO_SERVICE);
+                AudioManager audioManager =
+                        (AudioManager)
+                                mProvider.getContext().getSystemService(Context.AUDIO_SERVICE);
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
                 publishRoutes();
             }
@@ -274,11 +281,16 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             }
 
             mMetadata = intent.getBundleExtra(MediaControlIntent.EXTRA_ITEM_METADATA);
-            PendingIntent receiver = (PendingIntent) intent.getParcelableExtra(
-                    MediaControlIntent.EXTRA_ITEM_STATUS_UPDATE_RECEIVER);
+            PendingIntent receiver =
+                    (PendingIntent)
+                            intent.getParcelableExtra(
+                                    MediaControlIntent.EXTRA_ITEM_STATUS_UPDATE_RECEIVER);
             long position = intent.getLongExtra(MediaControlIntent.EXTRA_ITEM_CONTENT_POSITION, 0);
 
-            Log.v(TAG, "%s: Received play request {%s}", mRouteId,
+            Log.v(
+                    TAG,
+                    "%s: Received play request {%s}",
+                    mRouteId,
                     getMediaControlIntentDebugString(intent));
             // Add the video to the session manager.
             MediaItem item = mSessionManager.add(uri, intent.getType(), receiver, position);
@@ -376,20 +388,25 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
         }
 
         private boolean handleStartSession(Intent intent, ControlRequestCallback callback) {
-            boolean relaunch = intent.getBooleanExtra(
-                    CastMediaControlIntent.EXTRA_CAST_RELAUNCH_APPLICATION, true);
+            boolean relaunch =
+                    intent.getBooleanExtra(
+                            CastMediaControlIntent.EXTRA_CAST_RELAUNCH_APPLICATION, true);
             String sid = mSessionManager.startSession(relaunch);
             Log.v(TAG, "StartSession returns sessionId %s", sid);
             if (callback != null) {
                 if (sid != null) {
                     Bundle result = new Bundle();
                     result.putString(MediaControlIntent.EXTRA_SESSION_ID, sid);
-                    result.putBundle(MediaControlIntent.EXTRA_SESSION_STATUS,
+                    result.putBundle(
+                            MediaControlIntent.EXTRA_SESSION_STATUS,
                             mSessionManager.getSessionStatus(sid).asBundle());
                     Log.v(TAG, "StartSession sends result of $s", result);
                     callback.onResult(result);
-                    mSessionReceiver = (PendingIntent) intent.getParcelableExtra(
-                            MediaControlIntent.EXTRA_SESSION_STATUS_UPDATE_RECEIVER);
+                    mSessionReceiver =
+                            (PendingIntent)
+                                    intent.getParcelableExtra(
+                                            MediaControlIntent
+                                                    .EXTRA_SESSION_STATUS_UPDATE_RECEIVER);
                     handleSessionStatusChange(sid);
                 } else {
                     callback.onError("Failed to start session.", null);
@@ -405,7 +422,8 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             if (callback != null) {
                 if (sessionStatus != null) {
                     Bundle result = new Bundle();
-                    result.putBundle(MediaControlIntent.EXTRA_SESSION_STATUS,
+                    result.putBundle(
+                            MediaControlIntent.EXTRA_SESSION_STATUS,
                             mSessionManager.getSessionStatus(sid).asBundle());
                     callback.onResult(result);
                 } else {
@@ -417,8 +435,10 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
 
         private boolean handleEndSession(Intent intent, ControlRequestCallback callback) {
             String sid = intent.getStringExtra(MediaControlIntent.EXTRA_SESSION_ID);
-            boolean success = (sid != null) && sid.equals(mSessionManager.getSessionId())
-                    && mSessionManager.endSession();
+            boolean success =
+                    (sid != null)
+                            && sid.equals(mSessionManager.getSessionId())
+                            && mSessionManager.endSession();
             if (callback != null) {
                 if (success) {
                     Bundle result = new Bundle();
@@ -463,7 +483,8 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             if (mSessionReceiver != null) {
                 Intent intent = new Intent();
                 intent.putExtra(MediaControlIntent.EXTRA_SESSION_ID, sid);
-                intent.putExtra(MediaControlIntent.EXTRA_SESSION_STATUS,
+                intent.putExtra(
+                        MediaControlIntent.EXTRA_SESSION_STATUS,
                         mSessionManager.getSessionStatus(sid).asBundle());
                 try {
                     mSessionReceiver.send(mProvider.getContext(), 0, intent);
@@ -476,11 +497,18 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
     }
 
     private String getMediaControlIntentDebugString(Intent intent) {
-        return "uri=" + intent.getData() + ", mime=" + intent.getType()
-                + ", sid=" + intent.getStringExtra(MediaControlIntent.EXTRA_SESSION_ID)
-                + ", pos=" + intent.getLongExtra(MediaControlIntent.EXTRA_ITEM_CONTENT_POSITION, 0)
-                + ", metadata=" + intent.getBundleExtra(MediaControlIntent.EXTRA_ITEM_METADATA)
-                + ", headers=" + intent.getBundleExtra(MediaControlIntent.EXTRA_ITEM_HTTP_HEADERS);
+        return "uri="
+                + intent.getData()
+                + ", mime="
+                + intent.getType()
+                + ", sid="
+                + intent.getStringExtra(MediaControlIntent.EXTRA_SESSION_ID)
+                + ", pos="
+                + intent.getLongExtra(MediaControlIntent.EXTRA_ITEM_CONTENT_POSITION, 0)
+                + ", metadata="
+                + intent.getBundleExtra(MediaControlIntent.EXTRA_ITEM_METADATA)
+                + ", headers="
+                + intent.getBundleExtra(MediaControlIntent.EXTRA_ITEM_HTTP_HEADERS);
     }
 
     private static void addDataTypeUnchecked(IntentFilter filter, String type) {

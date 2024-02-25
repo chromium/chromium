@@ -140,7 +140,7 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, CreateWithDevice) {
           EXPECT_EQ(base::FilePath::FromASCII(kTestDeviceAddress),
                     serial_port_info.path);
           EXPECT_EQ(kTestDeviceName, serial_port_info.display_name);
-          EXPECT_EQ(absl::nullopt, serial_port_info.serial_number);
+          EXPECT_EQ(std::nullopt, serial_port_info.serial_number);
           EXPECT_EQ(mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM,
                     serial_port_info.type);
           EXPECT_FALSE(serial_port_info.has_vendor_id);

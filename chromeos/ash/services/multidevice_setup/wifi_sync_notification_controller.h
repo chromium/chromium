@@ -82,13 +82,11 @@ class WifiSyncNotificationController
   void ShowAnnouncementNotificationIfEligible();
   bool IsWifiSyncSupported();
 
-  raw_ptr<GlobalStateFeatureManager, ExperimentalAsh>
-      wifi_sync_feature_manager_;
-  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<AccountStatusChangeDelegateNotifier, ExperimentalAsh>
-      delegate_notifier_;
+  raw_ptr<GlobalStateFeatureManager> wifi_sync_feature_manager_;
+  raw_ptr<HostStatusProvider> host_status_provider_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<AccountStatusChangeDelegateNotifier> delegate_notifier_;
 
   bool did_register_session_observers_ = false;
 

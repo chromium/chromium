@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
-
 #include <algorithm>
 #include <memory>
 
@@ -12,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,6 +18,7 @@
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/service/copy_shared_image_helper.h"
 #include "gpu/command_buffer/service/decoder_client.h"
+#include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/multi_draw_manager.h"
@@ -2373,7 +2372,13 @@ error::Error GLES2DecoderPassthroughImpl::DoLinkProgram(GLuint program) {
   TRACE_EVENT0("gpu", "GLES2DecoderPassthroughImpl::DoLinkProgram");
   SCOPED_UMA_HISTOGRAM_TIMER("GPU.PassthroughDoLinkProgramTime");
   GLuint program_service_id = GetProgramServiceID(program, resources_);
+
+  // Call report progress to delay GPU Watchdog timeout.
+  group_->ReportProgress();
+
   api()->glLinkProgramFn(program_service_id);
+
+  group_->ReportProgress();
 
   // Program linking can be very slow.  Exit command processing to allow for
   // context preemption and GPU watchdog checks.
@@ -2502,20 +2507,17 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
   ui::ScopedMakeCurrent smc(shared_context_state->context(),
                             shared_context_state->surface());
 
-  if (src_yuv_plane_config < 0 ||
-      src_yuv_plane_config > static_cast<int>(SkYUVAInfo::PlaneConfig::kLast)) {
+  if (src_yuv_plane_config > static_cast<int>(SkYUVAInfo::PlaneConfig::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_plane_config must be a valid PlaneConfig");
     return error::kNoError;
   }
-  if (src_yuv_subsampling < 0 ||
-      src_yuv_subsampling > static_cast<int>(SkYUVAInfo::Subsampling::kLast)) {
+  if (src_yuv_subsampling > static_cast<int>(SkYUVAInfo::Subsampling::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_subsampling must be a valid Subsampling");
     return error::kNoError;
   }
-  if (src_yuv_datatype < 0 ||
-      src_yuv_datatype > static_cast<int>(SkYUVAPixmapInfo::DataType::kLast)) {
+  if (src_yuv_datatype > static_cast<int>(SkYUVAPixmapInfo::DataType::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_datatype must be a valid SkYUVAPixmapInfo::DataType");
     return error::kNoError;
@@ -2626,6 +2628,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
 
   std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
 
+  size_t prev_byte_size = 0;
   for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
     auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
     auto plane_size =
@@ -2635,6 +2638,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
                           SkAlphaType::kPremul_SkAlphaType, nullptr);
 
     if (row_bytes[plane] < src_info.minRowBytes()) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       InsertError(GL_INVALID_VALUE,
                   "row_bytes must be >= "
                   "SkImageInfo::minRowBytes() for source image.");
@@ -2643,15 +2647,17 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
 
     size_t byte_size = src_info.computeByteSize(row_bytes[plane]);
     if (byte_size > UINT32_MAX) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       InsertError(GL_INVALID_VALUE,
                   "Cannot request a memory chunk larger than UINT32_MAX bytes");
       return error::kOutOfBounds;
     }
     if (plane > 0 &&
-        plane_offsets[plane] < plane_offsets[plane - 1] + byte_size) {
+        plane_offsets[plane] < plane_offsets[plane - 1] + prev_byte_size) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       InsertError(GL_INVALID_VALUE,
                   "plane_offsets[plane] must be >= plane_offsets[plane "
-                  "- 1] + byte_size");
+                  "- 1] + prev_byte_size");
       return error::kOutOfBounds;
     }
 
@@ -2660,12 +2666,14 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
     void* pixel_data = GetSharedMemoryAs<void*>(
         shm_id, shm_offset + plane_offsets[plane], byte_size);
     if (!pixel_data) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       InsertError(GL_INVALID_OPERATION, "Couldn't retrieve pixel data.");
       return error::kNoError;
     }
 
     // Create an SkPixmap for the plane.
     pixmaps[plane] = SkPixmap(src_info, pixel_data, row_bytes[plane]);
+    prev_byte_size = byte_size;
   }
 
   // Try a direct texture upload without using SkSurface.
@@ -2704,12 +2712,12 @@ error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
-  if (dst_sk_color_type > kLastEnum_SkColorType || dst_sk_color_type < 0) {
+  if (dst_sk_color_type > kLastEnum_SkColorType) {
     InsertError(GL_INVALID_ENUM,
                 "dst_sk_color_type must be a valid SkColorType");
     return error::kNoError;
   }
-  if (dst_sk_alpha_type > kLastEnum_SkAlphaType || dst_sk_alpha_type < 0) {
+  if (dst_sk_alpha_type > kLastEnum_SkAlphaType) {
     InsertError(GL_INVALID_ENUM,
                 "dst_sk_alpha_type must be a valid SkAlphaType");
     return error::kNoError;
@@ -5255,6 +5263,10 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
     GLenum yuv_color_space,
     GLenum plane_config,
     GLenum subsampling,
@@ -5270,8 +5282,57 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
                                lazy_context_->shared_context_state());
-  auto result = helper.ConvertYUVAMailboxesToRGB(yuv_color_space, plane_config,
+  auto result = helper.ConvertYUVAMailboxesToRGB(src_x, src_y, width, height,
+                                                 yuv_color_space, plane_config,
                                                  subsampling, mailboxes_in);
+  if (!result.has_value()) {
+    InsertError(result.error().gl_error, result.error().msg);
+  }
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in) {
+  if (!lazy_context_) {
+    lazy_context_ = LazySharedContextState::Create(this);
+    if (!lazy_context_) {
+      return error::kNoError;
+    }
+  }
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
+  ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
+                            lazy_context_->shared_context_state()->surface());
+
+  if (GLenumToTextureTarget(target) == TextureTarget::kUnkown) {
+    InsertError(GL_INVALID_VALUE, "Invalid texture target");
+    return error::kNoError;
+  }
+
+  GLuint gl_texture_service_id = GetTextureServiceID(
+      api(), texture, resources_, /*create_if_missing=*/false);
+  if (gl_texture_service_id == 0) {
+    InsertError(GL_INVALID_OPERATION, "Cannot get texture service id");
+    return error::kNoError;
+  }
+
+  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
+                               lazy_context_->shared_context_state());
+  auto result = helper.ConvertYUVAMailboxesToGLTexture(
+      gl_texture_service_id, target, internal_format, type, src_x, src_y, width,
+      height, flip_y, yuv_color_space, plane_config, subsampling, mailboxes_in);
   if (!result.has_value()) {
     InsertError(result.error().gl_error, result.error().msg);
   }
@@ -5567,6 +5628,26 @@ GLES2DecoderPassthroughImpl::DoGetFramebufferPixelLocalStorageParameterivANGLE(
 error::Error GLES2DecoderPassthroughImpl::DoProvokingVertexANGLE(
     GLenum provokeMode) {
   api()->glProvokingVertexANGLEFn(provokeMode);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoClipControlEXT(GLenum origin,
+                                                           GLenum depth) {
+  api()->glClipControlEXTFn(origin, depth);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoPolygonModeANGLE(GLenum face,
+                                                             GLenum mode) {
+  api()->glPolygonModeANGLEFn(face, mode);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoPolygonOffsetClampEXT(
+    GLfloat factor,
+    GLfloat units,
+    GLfloat clamp) {
+  api()->glPolygonOffsetClampEXTFn(factor, units, clamp);
   return error::kNoError;
 }
 

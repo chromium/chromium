@@ -4,9 +4,16 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/containers/contains.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,14 +32,15 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
@@ -110,6 +118,10 @@ void CustomizeChromePageHandler::ScrollToSection(
       break;
     case CustomizeChromeSection::kModules:
       mojo_section = side_panel::mojom::CustomizeChromeSection::kModules;
+      break;
+    case CustomizeChromeSection::kWallpaperSearch:
+      mojo_section =
+          side_panel::mojom::CustomizeChromeSection::kWallpaperSearch;
       break;
   }
   page_->ScrollToSection(mojo_section);
@@ -218,13 +230,15 @@ void CustomizeChromePageHandler::UpdateTheme() {
   auto custom_background =
       ntp_custom_background_service_
           ? ntp_custom_background_service_->GetCustomBackground()
-          : absl::nullopt;
+          : std::nullopt;
   auto background_image = side_panel::mojom::BackgroundImage::New();
   if (custom_background.has_value()) {
     background_image->url = custom_background->custom_background_url;
     background_image->snapshot_url =
         custom_background->custom_background_snapshot_url;
     background_image->is_uploaded_image = custom_background->is_uploaded_image;
+    background_image->local_background_id =
+        custom_background->local_background_id;
     background_image->title =
         custom_background->custom_background_attribution_line_1;
     background_image->collection_id = custom_background->collection_id;
@@ -289,13 +303,70 @@ void CustomizeChromePageHandler::OpenChromeWebStore() {
 void CustomizeChromePageHandler::OpenThirdPartyThemePage(
     const std::string& theme_id) {
   NavigateParams navigate_params(
-      profile_, GURL("https://chrome.google.com/webstore/detail/" + theme_id),
+      profile_,
+      GURL("https://chrome.google.com/webstore/detail/" +
+           base::EscapePath(theme_id)),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
   UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
                             NtpChromeWebStoreOpen::kCollections);
+}
+
+void CustomizeChromePageHandler::OpenChromeWebStoreCategoryPage(
+    side_panel::mojom::ChromeWebStoreCategory category) {
+  std::string path;
+  NtpChromeWebStoreOpen page;
+  switch (category) {
+    case side_panel::mojom::ChromeWebStoreCategory::kWorkflowPlanning:
+      path = "extensions/productivity/workflow";
+      page = NtpChromeWebStoreOpen::kWorkflowPlanningCategoryPage;
+      break;
+    case side_panel::mojom::ChromeWebStoreCategory::kShopping:
+      path = "extensions/lifestyle/shopping";
+      page = NtpChromeWebStoreOpen::kShoppingCategoryPage;
+      break;
+  }
+
+  NavigateParams navigate_params(
+      profile_, GURL("https://chromewebstore.google.com/category/" + path),
+      ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
+  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen", page);
+}
+
+void CustomizeChromePageHandler::OpenChromeWebStoreCollectionPage(
+    side_panel::mojom::ChromeWebStoreCollection collection) {
+  std::string path;
+  NtpChromeWebStoreOpen page;
+  switch (collection) {
+    case side_panel::mojom::ChromeWebStoreCollection::kWrittingEssentials:
+      path = "writing_essentials";
+      page = NtpChromeWebStoreOpen::kWritingEssentialsCollectionPage;
+      break;
+  }
+
+  NavigateParams navigate_params(
+      profile_, GURL("https://chromewebstore.google.com/collection/" + path),
+      ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
+  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen", page);
+}
+
+void CustomizeChromePageHandler::OpenChromeWebStoreHomePage() {
+  NavigateParams navigate_params(profile_,
+                                 GURL("https://chromewebstore.google.com/"),
+                                 ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
+  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
+                            NtpChromeWebStoreOpen::kHomePage);
 }
 
 void CustomizeChromePageHandler::SetMostVisitedSettings(
@@ -363,6 +434,14 @@ void CustomizeChromePageHandler::UpdateScrollToSection() {
 
 void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
   switch (event) {
+    case NTP_BACKGROUND_UPLOAD_CANCEL:
+      base::RecordAction(base::UserMetricsAction(
+          "NTPRicherPicker.Backgrounds.UploadCanceled"));
+      break;
+    case NTP_BACKGROUND_UPLOAD_DONE:
+      base::RecordAction(base::UserMetricsAction(
+          "NTPRicherPicker.Backgrounds.UploadConfirmed"));
+      break;
     case NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE:
       UMA_HISTOGRAM_ENUMERATION(
           "NewTabPage.CustomizeShortcutAction",
@@ -482,23 +561,24 @@ void CustomizeChromePageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_ = nullptr;
 }
 
-void CustomizeChromePageHandler::FileSelected(const base::FilePath& path,
+void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                               int index,
                                               void* params) {
   DCHECK(choose_local_custom_background_callback_);
   if (ntp_custom_background_service_) {
     theme_service_->UseDefaultTheme();
 
-    profile_->set_last_selected_directory(path.DirName());
-    ntp_custom_background_service_->SelectLocalBackgroundImage(path);
+    profile_->set_last_selected_directory(file.path().DirName());
+    ntp_custom_background_service_->SelectLocalBackgroundImage(file.path());
   }
   select_file_dialog_ = nullptr;
+  LogEvent(NTP_BACKGROUND_UPLOAD_DONE);
   std::move(choose_local_custom_background_callback_).Run(true);
 }
 
 void CustomizeChromePageHandler::FileSelectionCanceled(void* params) {
   DCHECK(choose_local_custom_background_callback_);
   select_file_dialog_ = nullptr;
-
+  LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);
   std::move(choose_local_custom_background_callback_).Run(false);
 }

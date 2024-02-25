@@ -49,6 +49,14 @@ class CommonTest(unittest.TestCase):
                     os.path.join(tmp_dir, 'images', 'workstation-product',
                                  'images'))
 
+    def test_images_root_should_not_end_with_path_sep(self):
+        """INTERNAL_IMAGES_ROOT appends -internal at the end of the IMAGES_ROOT,
+        so the later one should not end with a /, otherwise the folder name will
+        become 'images/-internal'."""
+        # Avoid the logic being bypassed.
+        self.assertIsNone(os.environ.get('FUCHSIA_INTERNAL_IMAGES_ROOT'))
+        self.assertFalse(common.IMAGES_ROOT.endswith(os.path.sep))
+
 
 if __name__ == '__main__':
     unittest.main()

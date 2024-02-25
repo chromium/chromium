@@ -49,7 +49,7 @@ class MockMessengerObserver : public MessengerObserver {
 
  private:
   // The messenger that |this| instance observes.
-  const raw_ptr<Messenger, ExperimentalAsh> messenger_;
+  const raw_ptr<Messenger> messenger_;
 };
 
 class TestMessenger : public MessengerImpl {
@@ -96,8 +96,7 @@ class ProximityAuthMessengerImplTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  raw_ptr<ash::secure_channel::FakeClientChannel,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::secure_channel::FakeClientChannel, DanglingUntriaged>
       fake_channel_;
 
   std::unique_ptr<TestMessenger> messenger_;

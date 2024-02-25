@@ -8,7 +8,7 @@
   Test that selection box scrolls to where the focus jumps when pressing an alphanumeric key.
 </p>
 <selectlist id="selectlist">
-  <div popover slot="listbox" behavior="listbox">
+  <listbox>
     <div style="max-height:10vh;overflow:auto" id="selectlist-listbox-scroll">
       <option>aardvark</option>
       <option>blue</option>
@@ -16,7 +16,7 @@
       <option>indigo</option>
       <option>azure</option>
     </div>
-  </div>
+  </listbox>
 </selectlist>
 <div id="result">Cannot run interactively.</div>
 <script>
@@ -26,7 +26,7 @@
         var selectlist = document.getElementById("selectlist");
         var listboxScroll = document.getElementById("selectlist-listbox-scroll");
         selectlist.focus();
-        eventSender.keyDown("\r");
+        eventSender.keyDown(" ");
         shouldBeTrue('selectlist.open');
         eventSender.keyDown("a");
         eventSender.keyDown("z");

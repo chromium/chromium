@@ -7,7 +7,7 @@
 #include <utility>
 
 FakeNearbyShareClient::UpdateDeviceRequest::UpdateDeviceRequest(
-    const nearbyshare::proto::UpdateDeviceRequest& request,
+    const nearby::sharing::proto::UpdateDeviceRequest& request,
     UpdateDeviceCallback&& callback,
     ErrorCallback&& error_callback)
     : request(request),
@@ -20,7 +20,7 @@ FakeNearbyShareClient::UpdateDeviceRequest::UpdateDeviceRequest(
 FakeNearbyShareClient::UpdateDeviceRequest::~UpdateDeviceRequest() = default;
 
 FakeNearbyShareClient::ListContactPeopleRequest::ListContactPeopleRequest(
-    const nearbyshare::proto::ListContactPeopleRequest& request,
+    const nearby::sharing::proto::ListContactPeopleRequest& request,
     ListContactPeopleCallback&& callback,
     ErrorCallback&& error_callback)
     : request(request),
@@ -35,7 +35,7 @@ FakeNearbyShareClient::ListContactPeopleRequest::~ListContactPeopleRequest() =
 
 FakeNearbyShareClient::ListPublicCertificatesRequest::
     ListPublicCertificatesRequest(
-        const nearbyshare::proto::ListPublicCertificatesRequest& request,
+        const nearby::sharing::proto::ListPublicCertificatesRequest& request,
         ListPublicCertificatesCallback&& callback,
         ErrorCallback&& error_callback)
     : request(request),
@@ -59,7 +59,7 @@ void FakeNearbyShareClient::SetAccessTokenUsed(const std::string& token) {
 }
 
 void FakeNearbyShareClient::UpdateDevice(
-    const nearbyshare::proto::UpdateDeviceRequest& request,
+    const nearby::sharing::proto::UpdateDeviceRequest& request,
     UpdateDeviceCallback&& callback,
     ErrorCallback&& error_callback) {
   update_device_requests_.emplace_back(request, std::move(callback),
@@ -67,7 +67,7 @@ void FakeNearbyShareClient::UpdateDevice(
 }
 
 void FakeNearbyShareClient::ListContactPeople(
-    const nearbyshare::proto::ListContactPeopleRequest& request,
+    const nearby::sharing::proto::ListContactPeopleRequest& request,
     ListContactPeopleCallback&& callback,
     ErrorCallback&& error_callback) {
   list_contact_people_requests_.emplace_back(request, std::move(callback),
@@ -75,7 +75,7 @@ void FakeNearbyShareClient::ListContactPeople(
 }
 
 void FakeNearbyShareClient::ListPublicCertificates(
-    const nearbyshare::proto::ListPublicCertificatesRequest& request,
+    const nearby::sharing::proto::ListPublicCertificatesRequest& request,
     ListPublicCertificatesCallback&& callback,
     ErrorCallback&& error_callback) {
   list_public_certificates_requests_.emplace_back(request, std::move(callback),

@@ -1,18 +1,18 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "ui/message_center/views/notification_view.h"
-
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -23,10 +23,13 @@
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
+#include "ui/message_center/views/notification_view.h"
+#include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/native_theme/native_theme.h"
@@ -48,17 +51,7 @@ namespace message_center {
 
 namespace {
 
-// Used to fill bitmaps returned by CreateBitmap().
-static const SkColor kBitmapColor = SK_ColorGREEN;
-
 constexpr char kDefaultNotificationId[] = "notification id";
-
-SkBitmap CreateSolidColorBitmap(int width, int height, SkColor solid_color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(solid_color);
-  return bitmap;
-}
 
 class TestNotificationView : public NotificationViewBase {
  public:
@@ -95,6 +88,11 @@ class TestNotificationView : public NotificationViewBase {
         notification.rich_notification_data().settings_button_handler ==
         message_center::SettingsButtonHandler::INLINE);
   }
+  void CreateOrUpdateSnoozeSettingsViews(
+      const Notification& notification) override {
+    set_snooze_settings_enabled(notification.notifier_id().type ==
+                                message_center::NotifierType::ARC_APPLICATION);
+  }
   bool IsExpandable() const override { return true; }
   std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(
       views::Button::PressedCallback callback,
@@ -109,8 +107,8 @@ class NotificationTestDelegate : public NotificationDelegate {
   NotificationTestDelegate(const NotificationTestDelegate&) = delete;
   NotificationTestDelegate& operator=(const NotificationTestDelegate&) = delete;
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (!button_index && !reply && !expecting_click_)
       ADD_FAILURE() << "Click should not be invoked with a button index.";
     if (button_index && !reply && !expecting_button_click_)
@@ -179,13 +177,15 @@ class NotificationViewBaseTest : public views::ViewsTestBase,
     delete_on_preferred_size_changed_ = delete_on_preferred_size_changed;
   }
 
+  void SetHasMessageCenterView(bool has_message_center_view) {
+    MessageCenter::Get()->SetHasMessageCenterView(has_message_center_view);
+  }
+
   void ToggleExpanded() {
     notification_view_->SetExpanded(!notification_view_->IsExpanded());
   }
 
  protected:
-  const gfx::Image CreateTestImage(int width, int height) const;
-  const SkBitmap CreateBitmap(int width, int height) const;
   std::vector<ButtonInfo> CreateButtons(int number);
   std::unique_ptr<Notification> CreateSimpleNotification() const;
   std::unique_ptr<Notification> CreateSimpleNotificationWithRichData(
@@ -194,6 +194,7 @@ class NotificationViewBaseTest : public views::ViewsTestBase,
   void UpdateNotificationViews(const Notification& notification);
   float GetNotificationSlideAmount() const;
   bool IsRemovedAfterIdle(const std::string& notification_id) const;
+  bool IsPopupRemovedAfterIdle(const std::string& notification_id) const;
   void DispatchGesture(const ui::GestureEventDetails& details);
   void BeginScroll();
   void EndScroll();
@@ -221,11 +222,12 @@ NotificationViewBaseTest::CreateSimpleNotificationWithRichData(
     const RichNotificationData& data) const {
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_SIMPLE, std::string(kDefaultNotificationId), u"title",
-      u"message", ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+      u"message",
+      ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
       u"display source", GURL(),
       NotifierId(NotifierType::APPLICATION, "extension_id"), data, delegate_);
-  notification->set_small_image(CreateTestImage(16, 16));
-  notification->set_image(CreateTestImage(320, 240));
+  notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
+  notification->set_image(gfx::test::CreateImage(320, 240));
 
   return notification;
 }
@@ -263,16 +265,6 @@ void NotificationViewBaseTest::OnViewPreferredSizeChanged(
   }
   notification_view_->GetWidget()->SetSize(
       notification_view()->GetPreferredSize());
-}
-
-const gfx::Image NotificationViewBaseTest::CreateTestImage(int width,
-                                                           int height) const {
-  return gfx::Image::CreateFrom1xBitmap(CreateBitmap(width, height));
-}
-
-const SkBitmap NotificationViewBaseTest::CreateBitmap(int width,
-                                                      int height) const {
-  return CreateSolidColorBitmap(width, height, kBitmapColor);
 }
 
 std::vector<ButtonInfo> NotificationViewBaseTest::CreateButtons(int number) {
@@ -321,6 +313,12 @@ bool NotificationViewBaseTest::IsRemovedAfterIdle(
     const std::string& notification_id) const {
   base::RunLoop().RunUntilIdle();
   return !MessageCenter::Get()->FindVisibleNotificationById(notification_id);
+}
+
+bool NotificationViewBaseTest::IsPopupRemovedAfterIdle(
+    const std::string& notification_id) const {
+  base::RunLoop().RunUntilIdle();
+  return !MessageCenter::Get()->FindPopupNotificationById(notification_id);
 }
 
 void NotificationViewBaseTest::DispatchGesture(
@@ -629,7 +627,7 @@ TEST_F(NotificationViewBaseTest, TestInlineReplyRemovedByUpdate) {
   EXPECT_TRUE(notification_view()->inline_reply_->GetVisible());
   EXPECT_FALSE(notification_view()->action_buttons_row_->GetVisible());
 
-  buttons[1].placeholder = absl::nullopt;
+  buttons[1].placeholder = std::nullopt;
   notification->set_buttons(buttons);
   UpdateNotificationViews(*notification);
 
@@ -681,6 +679,8 @@ TEST_F(NotificationViewBaseTest, TestInlineReplyActivateWithKeyPress) {
 #define MAYBE_SlideOut SlideOut
 #endif
 TEST_F(NotificationViewBaseTest, MAYBE_SlideOut) {
+  SetHasMessageCenterView(/*has_message_center_view=*/false);
+
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -708,6 +708,8 @@ TEST_F(NotificationViewBaseTest, MAYBE_SlideOut) {
 #define MAYBE_SlideOutNested SlideOutNested
 #endif
 TEST_F(NotificationViewBaseTest, MAYBE_SlideOutNested) {
+  SetHasMessageCenterView(/*has_message_center_view=*/false);
+
   notification_view()->SetIsNested();
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -852,7 +854,7 @@ TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NotificationType::NOTIFICATION_TYPE_IMAGE);
   notification->set_icon(
-      ui::ImageModel::FromImage(CreateTestImage(kIconSize, kIconSize)));
+      ui::ImageModel::FromImage(gfx::test::CreateImage(kIconSize)));
 
   // Test normal notification.
   UpdateNotificationViews(*notification);
@@ -909,7 +911,7 @@ TEST_F(NotificationViewBaseTest, UpdateAddingIcon) {
 
   // Update the notification, adding an icon.
   notification->set_icon(
-      ui::ImageModel::FromImage(CreateTestImage(kIconSize, kIconSize)));
+      ui::ImageModel::FromImage(gfx::test::CreateImage(kIconSize)));
   UpdateNotificationViews(*notification);
 
   // Notification should now have an icon.
@@ -995,7 +997,9 @@ TEST_F(NotificationViewBaseTest, TestClick) {
   // Now construct a mouse click event 2 pixel inside from the bottom.
   gfx::Point cursor_location(notification_view()->size().width() / 2,
                              notification_view()->size().height() - 2);
-  generator.MoveMouseTo(cursor_location);
+  gfx::Point cursor_in_screen =
+      views::View::ConvertPointToScreen(notification_view(), cursor_location);
+  generator.MoveMouseTo(cursor_in_screen);
   generator.ClickLeftButton();
 
   EXPECT_TRUE(delegate_->clicked());
@@ -1019,7 +1023,9 @@ TEST_F(NotificationViewBaseTest, TestClickExpanded) {
   // Now construct a mouse click event 2 pixel inside from the bottom.
   gfx::Point cursor_location(notification_view()->size().width() / 2,
                              notification_view()->size().height() - 2);
-  generator.MoveMouseTo(cursor_location);
+  gfx::Point cursor_in_screen =
+      views::View::ConvertPointToScreen(notification_view(), cursor_location);
+  generator.MoveMouseTo(cursor_in_screen);
   generator.ClickLeftButton();
 
   EXPECT_TRUE(delegate_->clicked());
@@ -1117,9 +1123,9 @@ TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
   const GURL web_app_url("http://example.com");
 
   NotifierId notifier_id(web_app_url, /*title=*/u"web app title",
-                         /*web_app_id=*/absl::nullopt);
+                         /*web_app_id=*/std::nullopt);
 
-  SkBitmap small_bitmap = CreateSolidColorBitmap(16, 16, SK_ColorYELLOW);
+  SkBitmap small_bitmap = gfx::test::CreateBitmap(/*size=*/16, SK_ColorYELLOW);
   // Makes the center area transparent.
   small_bitmap.eraseArea(SkIRect::MakeXYWH(4, 4, 8, 8), SK_ColorTRANSPARENT);
 
@@ -1128,10 +1134,11 @@ TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
 
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_SIMPLE, std::string(kDefaultNotificationId), u"title",
-      u"message", ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+      u"message",
+      ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
       u"display source", GURL(), notifier_id, data, delegate_);
   notification->set_small_image(gfx::Image::CreateFrom1xBitmap(small_bitmap));
-  notification->set_image(CreateTestImage(320, 240));
+  notification->set_image(gfx::test::CreateImage(320, 240));
 
   notification->set_origin_url(web_app_url);
 
@@ -1168,6 +1175,78 @@ TEST_F(NotificationViewBaseTest, ShowTimestamp) {
   EXPECT_FALSE(notification_view()
                    ->header_row_->timestamp_view_for_testing()
                    ->GetVisible());
+}
+
+class NotificationViewBaseWithNotificationGestureUpdateTest
+    : public NotificationViewBaseTest {
+ public:
+  NotificationViewBaseWithNotificationGestureUpdateTest() = default;
+  NotificationViewBaseWithNotificationGestureUpdateTest(
+      const NotificationViewBaseTest&) = delete;
+  NotificationViewBaseTest& operator=(const NotificationViewBaseTest&) = delete;
+
+  // Overridden from ViewsTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kNotificationGesturesUpdate}, {});
+
+    NotificationViewBaseTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SlideOutWithMessageCenterView \
+  DISABLED_SlideOutWithMessageCenterView
+#else
+#define MAYBE_SlideOutWithMessageCenterView SlideOutWithMessageCenterView
+#endif
+// Tests slide out behavior when the `MessageCenterView` exists. The
+// notification's popup should be dismissed but the notification should not be
+// removed.
+TEST_F(NotificationViewBaseWithNotificationGestureUpdateTest,
+       MAYBE_SlideOutWithMessageCenterView) {
+  SetHasMessageCenterView(/*has_message_center_view=*/true);
+
+  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+
+  BeginScroll();
+  ScrollBy(-10);
+  EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+  EXPECT_EQ(-10.f, GetNotificationSlideAmount());
+  EndScroll();
+  EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+  EXPECT_EQ(0.f, GetNotificationSlideAmount());
+
+  BeginScroll();
+  ScrollBy(-200);
+  EXPECT_FALSE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+  EXPECT_EQ(-200.f, GetNotificationSlideAmount());
+  EndScroll();
+  EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+  EXPECT_FALSE(IsRemovedAfterIdle(kDefaultNotificationId));
+}
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SlideOutByTrackpad DISABLED_SlideOutByTrackpad
+#else
+#define MAYBE_SlideOutByTrackpad SlideOutByTrackpad
+#endif
+TEST_F(NotificationViewBaseWithNotificationGestureUpdateTest,
+       MAYBE_SlideOutByTrackpad) {
+  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  ui::test::EventGenerator generator(
+      GetRootWindow(notification_view()->GetWidget()));
+  generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/20,
+                           /*y_offset=*/0, /*steps=*/1, /*num_fingers=*/2);
+  EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
 }
 
 }  // namespace message_center

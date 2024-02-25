@@ -1,32 +1,6 @@
-/*
- * Copyright (c) 2008, 2009, Google Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above
- * copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the
- * distribution.
- *     * Neither the name of Google Inc. nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2008 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 
@@ -86,9 +60,9 @@ BMPImageReader::BMPImageReader(ImageDecoder* parent,
 
 BMPImageReader::~BMPImageReader() = default;
 
-void BMPImageReader::SetData(SegmentReader* data) {
+void BMPImageReader::SetData(scoped_refptr<SegmentReader> data) {
   data_ = data;
-  fast_reader_.SetData(data);
+  fast_reader_.SetData(std::move(data));
   if (alternate_decoder_) {
     alternate_decoder_->SetData(data_.get(), parent_->IsAllDataReceived());
   }
@@ -774,36 +748,37 @@ bool BMPImageReader::ProcessColorTable() {
 
   const wtf_size_t header_end = header_offset_ + info_header_.size;
   wtf_size_t colors_in_palette = info_header_.clr_used;
+  CHECK_LE(colors_in_palette, 256u);  // Enforced by ProcessInfoHeader().
   wtf_size_t table_size_in_bytes = colors_in_palette * bytes_per_color;
   const wtf_size_t table_end = header_end + table_size_in_bytes;
   if (table_end < header_end) {
     return parent_->SetFailed();
   }
 
-  // Some BMPs don't contain a complete palette.  Avoid reading off the end.
+  // Some BMPs don't contain a complete palette.  Truncate it instead of reading
+  // off the end of the palette.
   if (img_data_offset_ && (img_data_offset_ < table_end)) {
-    colors_in_palette = (img_data_offset_ - header_end) / bytes_per_color;
+    wtf_size_t colors_in_truncated_palette =
+        (img_data_offset_ - header_end) / bytes_per_color;
+    CHECK_LE(colors_in_truncated_palette, colors_in_palette);
+    colors_in_palette = colors_in_truncated_palette;
     table_size_in_bytes = colors_in_palette * bytes_per_color;
   }
 
-  // Read color table.
+  // If we don't have enough data to read in the whole palette yet, stop here.
   if ((decoded_offset_ > data_->size()) ||
       ((data_->size() - decoded_offset_) < table_size_in_bytes)) {
     return false;
   }
-  color_table_.resize(info_header_.clr_used);
+
+  // Read the color table.
+  color_table_.resize(colors_in_palette);
 
   for (wtf_size_t i = 0; i < colors_in_palette; ++i) {
     color_table_[i].rgb_blue = ReadUint8(0);
     color_table_[i].rgb_green = ReadUint8(1);
     color_table_[i].rgb_red = ReadUint8(2);
     decoded_offset_ += bytes_per_color;
-  }
-  // Explicitly zero any colors past the end of a truncated palette.
-  for (wtf_size_t i = colors_in_palette; i < info_header_.clr_used; ++i) {
-    color_table_[i].rgb_blue = 0;
-    color_table_[i].rgb_green = 0;
-    color_table_[i].rgb_red = 0;
   }
 
   // We've now decoded all the non-image data we care about.  Skip anything
@@ -886,7 +861,8 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
     // the image.
     const uint8_t count = ReadUint8(0);
     const uint8_t code = ReadUint8(1);
-    if ((count || (code != 1)) && PastEndOfImage(0)) {
+    const bool is_past_end_of_image = PastEndOfImage(0);
+    if ((count || (code != 1)) && is_past_end_of_image) {
       return kFailure;
     }
 
@@ -911,7 +887,9 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
                             : (coord_.y() > 0))) {
             buffer_->SetHasAlpha(true);
           }
-          ColorCorrectCurrentRow();
+          if (!is_past_end_of_image) {
+            ColorCorrectCurrentRow();
+          }
           // There's no need to move |coord_| here to trigger the caller
           // to call SetPixelsChanged().  If the only thing that's changed
           // is the alpha state, that will be properly written into the
@@ -989,7 +967,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
         for (wtf_size_t which = 0; coord_.x() < end_x;) {
           // Some images specify color values past the end of the
           // color table; set these pixels to black.
-          if (color_indexes[which] < info_header_.clr_used) {
+          if (color_indexes[which] < color_table_.size()) {
             SetI(color_indexes[which]);
           } else {
             SetRGBA(0, 0, 0, 255);
@@ -1068,7 +1046,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
             }
           } else {
             // See comments near the end of ProcessRLEData().
-            if (color_index < info_header_.clr_used) {
+            if (color_index < color_table_.size()) {
               SetI(color_index);
             } else {
               SetRGBA(0, 0, 0, 255);
@@ -1136,6 +1114,13 @@ void BMPImageReader::ColorCorrectCurrentRow() {
   if (!transform) {
     return;
   }
+  int decoder_width = parent_->Size().width();
+  // Enforce 0 ≤ current row < bitmap height.
+  CHECK_GE(coord_.y(), 0);
+  CHECK_LT(coord_.y(), buffer_->Bitmap().height());
+  // Enforce decoder width == bitmap width exactly. (The bitmap rowbytes might
+  // add a bit of padding, but we are only converting one row at a time.)
+  CHECK_EQ(decoder_width, buffer_->Bitmap().width());
   ImageFrame::PixelData* const row = buffer_->GetAddr(0, coord_.y());
   const skcms_PixelFormat fmt = XformColorFormat();
   const skcms_AlphaFormat alpha =
@@ -1144,7 +1129,7 @@ void BMPImageReader::ColorCorrectCurrentRow() {
           : skcms_AlphaFormat_Unpremul;
   const bool success =
       skcms_Transform(row, fmt, alpha, transform->SrcProfile(), row, fmt, alpha,
-                      transform->DstProfile(), parent_->Size().width());
+                      transform->DstProfile(), decoder_width);
   DCHECK(success);
   buffer_->SetPixelsChanged(true);
 }

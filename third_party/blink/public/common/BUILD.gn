@@ -17,26 +17,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-blink_python_runner("make_generated_origin_trial_feature") {
-  script = "../../renderer/build/scripts/make_origin_trial_feature.py"
-
-  inputs =
-      scripts_for_json5_files + [
-        "../../renderer/build/scripts/make_origin_trial_feature.py",
-        "../../renderer/platform/runtime_enabled_features.json5",
-        "../../renderer/build/scripts/templates/origin_trial_feature.h.tmpl",
-      ]
-  outputs = [ "$root_gen_dir/third_party/blink/public/common/origin_trials/origin_trial_feature.h" ]
-
-  args = [
-    rebase_path("../../renderer/platform/runtime_enabled_features.json5",
-                root_build_dir),
-    "--output_dir",
-    rebase_path("$root_gen_dir/third_party/blink/public/common/origin_trials",
-                root_build_dir),
-  ]
-}
-
 blink_python_runner("make_generated_permissions_policy_helper") {
   script = "../../renderer/build/scripts/make_policy_helper_public.py"
 
@@ -211,9 +191,11 @@ source_set("headers") {
     "interest_group/interest_group_mojom_traits.h",
     "interest_group/seller_capabilities.h",
     "link_to_text/link_to_text_mojom_traits.h",
+    "loader/background_resource_fetch_histograms.h",
     "loader/http_body_element_type.h",
     "loader/inter_process_time_ticks_converter.h",
     "loader/javascript_framework_detection.h",
+    "loader/lcp_critical_path_predictor_util.h",
     "loader/loader_constants.h",
     "loader/loading_behavior_flag.h",
     "loader/mime_sniffing_throttle.h",
@@ -234,6 +216,7 @@ source_set("headers") {
     "media/video_capture.h",
     "media/watch_time_component.h",
     "media/watch_time_reporter.h",
+    "mediastream/media_device_id.h",
     "mediastream/media_devices.h",
     "mediastream/media_devices_mojom_traits.h",
     "mediastream/media_stream_controls.h",
@@ -274,11 +257,14 @@ source_set("headers") {
     "origin_trials/trial_token_validator.h",
     "page/browsing_context_group_info.h",
     "page/browsing_context_group_info_mojom_traits.h",
+    "page/color_provider_color_maps.h",
+    "page/color_provider_color_maps_mojom_traits.h",
     "page/content_to_visible_time_reporter.h",
     "page/drag_mojom_traits.h",
     "page/drag_operation.h",
     "page/launching_process_state.h",
     "page/page_zoom.h",
+    "page/v8_compile_hints_histograms.h",
     "page_state/page_state.h",
     "page_state/page_state_serialization.h",
     "peerconnection/webrtc_ip_handling_policy.h",
@@ -332,12 +318,10 @@ source_set("headers") {
     "widget/visual_properties.h",
   ]
 
-  sources += get_target_outputs(":make_generated_origin_trial_feature")
   sources += get_target_outputs(":make_generated_permissions_policy_helper")
   sources += get_target_outputs(":make_runtime_feature_state_contexts_headers")
 
   public_deps = [
-    ":make_generated_origin_trial_feature",
     ":make_generated_permissions_policy_helper",
     ":make_runtime_feature_state_contexts_headers",
     "//base",
@@ -352,6 +336,7 @@ source_set("headers") {
     "//third_party/blink/public/mojom:mojom_modules_headers",
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_headers",
+    "//third_party/blink/public/mojom/origin_trial_feature",
     "//third_party/liburlpattern",
     "//ui/display/mojom",
     "//ui/events:event_constants",

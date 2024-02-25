@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_
 
-#include <memory>
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -29,8 +27,8 @@ struct VectorIcon;
 //        subclasses, if any,
 //
 //  (3) logic to handle user interactions with:
-//    (a) the `Back`, `Accept`, `Cancel`, buttons, even though the latter two
-//    are actually rendered by the AuthenticatorRequestDialogView,
+//    (a) the `Accept` and `Cancel` buttons, even though thouse are actually
+//        rendered by the AuthenticatorRequestDialogView,
 //    (b) the step-specific contents, if any.
 //
 class AuthenticatorRequestSheetModel {
@@ -47,9 +45,6 @@ class AuthenticatorRequestSheetModel {
   virtual ~AuthenticatorRequestSheetModel() = default;
 
   virtual bool IsActivityIndicatorVisible() const = 0;
-  virtual bool IsBackButtonVisible() const = 0;
-  virtual bool ShouldFocusBackArrow() const;
-  virtual bool IsCloseButtonVisible() const;
 
   virtual bool IsCancelButtonVisible() const = 0;
   virtual std::u16string GetCancelButtonLabel() const = 0;
@@ -73,19 +68,18 @@ class AuthenticatorRequestSheetModel {
   virtual void OnManageDevices();
 
   // Lottie illustrations are represented by their resource ID.
-  absl::optional<IllustrationPair<int>> lottie_illustrations() const {
+  std::optional<IllustrationPair<int>> lottie_illustrations() const {
     return lottie_illustrations_;
   }
 
-  absl::optional<IllustrationPair<const gfx::VectorIcon&>>
-  vector_illustrations() const {
+  std::optional<IllustrationPair<const gfx::VectorIcon&>> vector_illustrations()
+      const {
     return vector_illustrations_;
   }
 
  protected:
-  absl::optional<IllustrationPair<int>> lottie_illustrations_;
-  absl::optional<IllustrationPair<const gfx::VectorIcon&>>
-      vector_illustrations_;
+  std::optional<IllustrationPair<int>> lottie_illustrations_;
+  std::optional<IllustrationPair<const gfx::VectorIcon&>> vector_illustrations_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_

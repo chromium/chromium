@@ -11,11 +11,11 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -89,7 +89,8 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureRequestingUrl) {
       web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId());
   permission_context.RequestPermission(
-      id, url, true,
+      PermissionRequestData(&permission_context, id,
+                            /*user_gesture=*/true, url),
       base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                      base::Unretained(&permission_context)));
 
@@ -188,6 +189,14 @@ TEST_F(MidiSysexPermissionContextTests, TestSynchronizingPermissions) {
                      CONTENT_SETTING_ALLOW);
 
   for (auto test : tests) {
+    // Reset previous settings.
+    settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
+                                                ContentSettingsType::MIDI,
+                                                CONTENT_SETTING_DEFAULT);
+    settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
+                                                ContentSettingsType::MIDI_SYSEX,
+                                                CONTENT_SETTING_DEFAULT);
+
     // First set the MIDI permission, and verify it is set correctly:
     settings_map->SetContentSettingDefaultScope(
         secure_url, secure_url, ContentSettingsType::MIDI, test.midi_set);

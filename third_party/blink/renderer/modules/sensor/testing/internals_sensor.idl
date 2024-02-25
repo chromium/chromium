@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Represents all types supported by Blink. Corresponds to SensorType in
+// browser_protocol.pdl.
+enum VirtualSensorType {
+  "absolute-orientation",
+  "accelerometer",
+  "ambient-light",
+  "gravity",
+  "gyroscope",
+  "linear-acceleration",
+  "magnetometer",
+  "proximity",
+  "relative-orientation",
+};
+
+[
+    ImplementedAs=InternalsSensor
+] partial interface Internals {
+  [CallWith=ScriptState] Promise<undefined> createVirtualSensor(VirtualSensorType type, CreateVirtualSensorOptions options);
+  [CallWith=ScriptState] Promise<undefined> updateVirtualSensor(VirtualSensorType type, VirtualSensorReading reading);
+  [CallWith=ScriptState] Promise<undefined> removeVirtualSensor(VirtualSensorType type);
+  [CallWith=ScriptState] Promise<VirtualSensorInformation> getVirtualSensorInformation(VirtualSensorType type);
+};

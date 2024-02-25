@@ -41,6 +41,8 @@ class ReadWriter {
  public:
   using Close2Callback =
       base::OnceCallback<void(const Close2ResponseProto& response)>;
+  using FlushCallback =
+      base::OnceCallback<void(const FlushResponseProto& response)>;
   using Read2Callback =
       base::OnceCallback<void(const Read2ResponseProto& response)>;
   using Write2Callback =
@@ -66,6 +68,9 @@ class ReadWriter {
   void Close(scoped_refptr<storage::FileSystemContext> fs_context,
              Close2Callback callback);
 
+  void Flush(scoped_refptr<storage::FileSystemContext> fs_context,
+             FlushCallback callback);
+
   void Read(scoped_refptr<storage::FileSystemContext> fs_context,
             int64_t offset,
             int64_t length,
@@ -87,12 +92,17 @@ class ReadWriter {
   // The CallXxx and OnXxx methods are static (but take a WeakPtr) so that the
   // callback will run even if the WeakPtr is invalidated.
 
-  static void OnFlushBeforeActualClose(
+  static void OnDefaultFlush(
       base::WeakPtr<ReadWriter> weak_ptr,
+      FlushCallback callback,
       scoped_refptr<storage::FileSystemContext> fs_context,
+      int flush_posix_error_code);
+
+  static void OnEOFFlushBeforeActualClose(
+      base::WeakPtr<ReadWriter> weak_ptr,
       Close2Callback callback,
+      scoped_refptr<storage::FileSystemContext> fs_context,
       std::unique_ptr<storage::FileStreamWriter> fs_writer,
-      int64_t write_offset,
       int flush_posix_error_code);
 
   static void OnTempFileInitialized(base::WeakPtr<ReadWriter> weak_ptr,
@@ -120,7 +130,7 @@ class ReadWriter {
                               Write2Callback callback,
                               WriteTempFileResult result);
 
-  static void OnFlushBeforeCallWriteDirect(
+  static void OnEOFFlushBeforeCallWriteDirect(
       base::WeakPtr<ReadWriter> weak_ptr,
       Write2Callback callback,
       scoped_refptr<storage::FileSystemContext> fs_context,
@@ -128,7 +138,6 @@ class ReadWriter {
       int64_t offset,
       int length,
       std::unique_ptr<storage::FileStreamWriter> fs_writer,
-      int64_t write_offset,
       int flush_posix_error_code);
 
   void CallWriteDirect(Write2Callback callback,
@@ -180,7 +189,10 @@ class ReadWriter {
   bool is_in_flight_ = false;
   bool closed_ = false;
   bool created_temp_file_ = false;
-  bool fs_writer_needs_flushing_ = false;
+  // storage::FileStreamWriter::Flush takes a storage::FlushMode parameter.
+  // This bool field is about calling with FlushMode::kEndOfFile, not with
+  // FlushMode::kDefault.
+  bool fs_writer_needs_eof_flushing_ = false;
 
   const bool use_temp_file_;
   const bool temp_file_starts_with_copy_;

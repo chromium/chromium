@@ -9,7 +9,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests the way service worker manager manages targets.\n`);
-  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -24,7 +23,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       TestRunner.addResult('Target added: ' + target.name() + '; type: ' + target.type());
       if (target.type() === SDK.Target.Type.ServiceWorker) {
         var serviceWorkerManager = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ServiceWorkerManager.ServiceWorkerManager);
-        // Allow agents to do roundtrips.
+        // Allow agents to do rountrips.
         TestRunner.deprecatedRunAfterPendingDispatches(function() {
           for (var registration of serviceWorkerManager.registrations().values())
             serviceWorkerManager.deleteRegistration(registration.id)

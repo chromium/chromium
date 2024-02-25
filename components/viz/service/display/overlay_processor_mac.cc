@@ -48,10 +48,6 @@ gfx::Rect OverlayProcessorMac::GetAndResetOverlayDamage() {
   return result;
 }
 
-void OverlayProcessorMac::SetIsVideoCaptureEnabled(bool enabled) {
-  ca_layer_overlay_processor_->SetIsVideoCaptureEnabled(enabled);
-}
-
 void OverlayProcessorMac::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_passes,
@@ -84,10 +80,9 @@ void OverlayProcessorMac::ProcessForOverlays(
     // anymore).
     output_surface_already_handled_ = true;
 
-    // Set |last_overlay_damage_| to be everything, so that the next
-    // frame that we draw to the output surface will do a full re-draw.
+    // Set |ca_overlay_damage_rect_| to be everything, so that the next
+    // composite that we draw to the output surface will do a full re-draw.
     ca_overlay_damage_rect_ = render_pass->output_rect;
-    previous_frame_full_bounding_rect_ = ca_overlay_damage_rect_;
 
     // Everything in |render_pass->quad_list| has been moved over to
     // |candidates|. Ideally we would clear |render_pass->quad_list|, but some
@@ -103,7 +98,7 @@ void OverlayProcessorMac::ProcessForOverlays(
 }
 
 void OverlayProcessorMac::AdjustOutputSurfaceOverlay(
-    absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
   if (!output_surface_plane->has_value())
     return;
 

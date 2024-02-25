@@ -6,7 +6,6 @@
 // browser.
 
 [platforms=("chromeos", "lacros"),
-  modernised_enums,
   implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private.h"]
 
 namespace accessibilityServicePrivate {
@@ -16,7 +15,16 @@ namespace accessibilityServicePrivate {
     // Called when Select to Speak in ChromeOS should speak the current
     // text selection; fired when the context menu option was clicked in
     // a selection context.
-    [supportsPromises] static void speakSelectedText(
+    static void speakSelectedText(
       optional VoidCallback callback);
+  };
+
+  interface Events {
+    // Called when Select to Speak in ChromeOS wants a clipboard copy
+    // event to be performed on the active and focused tab with the
+    // given URL. This is fired when Select to Speak is trying to speak
+    // with search+s but cannot find a selection and the focused node
+    // is in a Google Docs page.
+    static void clipboardCopyInActiveGoogleDoc(DOMString url);
   };
 };

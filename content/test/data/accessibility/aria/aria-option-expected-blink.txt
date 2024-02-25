@@ -11,15 +11,18 @@ rootWebArea focusable
 ++++++++listBoxOption focusable name='caterpillar' selected=false
 ++++++++++staticText name='cat'
 ++++++++++++inlineTextBox name='cat'
-++++++++++staticText name='erpillar'
-++++++++++++inlineTextBox name='erpillar'
+++++++++++strong
+++++++++++++staticText name='erpillar'
+++++++++++++++inlineTextBox name='erpillar'
 ++++++++listBoxOption focusable name='catfish' selected=false
 ++++++++++staticText name='cat'
 ++++++++++++inlineTextBox name='cat'
-++++++++++staticText name='fish'
-++++++++++++inlineTextBox name='fish'
+++++++++++emphasis
+++++++++++++staticText name='fish'
+++++++++++++++inlineTextBox name='fish'
 ++++++++listBoxOption focusable name='medusa' selected=false
-++++++++++staticText name='jelly'
-++++++++++++inlineTextBox name='jelly'
+++++++++++emphasis
+++++++++++++staticText name='jelly'
+++++++++++++++inlineTextBox name='jelly'
 ++++++++++staticText name='fish'
 ++++++++++++inlineTextBox name='fish'

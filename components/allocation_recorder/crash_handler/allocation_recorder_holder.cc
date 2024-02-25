@@ -4,13 +4,13 @@
 
 #include "components/allocation_recorder/crash_handler/allocation_recorder_holder.h"
 
+#include <optional>
 #include <sstream>
 #include <string>
 
 #include "base/check.h"
 #include "build/build_config.h"
 #include "components/allocation_recorder/internal/internal.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/snapshot/cpu_context.h"
 #include "third_party/crashpad/crashpad/snapshot/exception_snapshot.h"
@@ -67,7 +67,7 @@ constexpr const char* GetBitnessDescriptor(BitnessType bitness) {
 // in the process_snapshot. Returns an optional containing the exact address.
 // In case of an error, an empty optional is returned and details on the error
 // will be written to the error_stream.
-absl::optional<crashpad::VMAddress> GetRecorderVMAddress(
+std::optional<crashpad::VMAddress> GetRecorderVMAddress(
     const crashpad::ProcessSnapshot& process_snapshot,
     std::ostream& error_stream) {
   for (const auto* module : process_snapshot.Modules()) {

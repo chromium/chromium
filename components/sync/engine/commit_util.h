@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_ENGINE_COMMIT_UTIL_H_
 #define COMPONENTS_SYNC_ENGINE_COMMIT_UTIL_H_
 
-#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -27,7 +26,6 @@ void AddExtensionsActivityToMessage(
 // Fills the config_params field of |message|.
 void AddClientConfigParamsToMessage(
     ModelTypeSet enabled_types,
-    bool proxy_tabs_datatype_enabled,
     bool cookie_jar_mismatch,
     bool single_client,
     bool single_client_with_standalone_invalidations,

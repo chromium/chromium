@@ -69,6 +69,12 @@ enum VideoFacingMode {
 };
 
 [Stable, Extensible]
+enum CameraAvailability {
+  [Default] kAvailable,
+  kUnavailableExclusivelyUsedByOtherApplication,
+};
+
+[Stable, Extensible]
 enum VideoCaptureApi {
   LINUX_V4L2_SINGLE_PLANE,
   WIN_MEDIA_FOUNDATION,
@@ -289,8 +295,9 @@ enum VideoCaptureFrameDropReason {
   kResolutionAdapterHasNoCallbacks,
   kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame,
   kRendererSinkFrameDelivererIsNotStarted,
-  [MinVersion=1] kCropVersionNotCurrent,
-  [MinVersion=5] kGpuMemoryBufferMapFailed
+  [MinVersion=1] kCropVersionNotCurrent_DEPRECATED,
+  [MinVersion=5] kGpuMemoryBufferMapFailed,
+  [MinVersion=12] kSubCaptureTargetVersionNotCurrent,
 };
 
 [Stable]
@@ -378,6 +385,7 @@ struct VideoCaptureDeviceDescriptor {
   VideoCaptureApi capture_api;
   VideoCaptureControlSupport control_support;
   VideoCaptureTransportType transport_type;
+  [MinVersion=1] CameraAvailability? availability;
 };
 
 // Bundles a VideoCaptureDeviceDescriptor with corresponding supported
@@ -388,15 +396,21 @@ struct VideoCaptureDeviceInfo {
   array<VideoCaptureFormat> supported_formats;
 };
 
-// The result of an attempt by the client to start/stop cropping.
+enum SubCaptureTargetType {
+  kCropTarget,
+  kRestrictionTarget
+};
+
+// The result of an attempt by the client to start/stop cropping,
+// restricting or otherwise applying a sub-capture target.
 // TODO(crbug.com/1264849): Remove kNotImplemented.
-enum CropRequestResult {
+enum ApplySubCaptureTargetResult {
   kSuccess,
   kErrorGeneric,
   kUnsupportedCaptureDevice,
   kNotImplemented,
-  kNonIncreasingCropVersion,
-  kInvalidCropTarget,
+  kNonIncreasingVersion,
+  kInvalidTarget,
 };
 
 enum DeviceEnumerationResult {

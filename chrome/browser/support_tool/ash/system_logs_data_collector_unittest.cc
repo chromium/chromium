@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::ContainerEq;
 
@@ -116,20 +116,20 @@ TEST_F(SystemLogsDataCollectorTest, CollectAndExportDataSuccess) {
   SystemLogsDataCollector data_collector(requested_logs);
 
   // Test data collection and PII detection.
-  base::test::TestFuture<absl::optional<SupportToolError>>
+  base::test::TestFuture<std::optional<SupportToolError>>
       test_future_collect_data;
   data_collector.CollectDataAndDetectPII(test_future_collect_data.GetCallback(),
                                          task_runner_for_redaction_tool_,
                                          redaction_tool_container_);
   // Check if CollectDataAndDetectPII call returned an error.
-  absl::optional<SupportToolError> error = test_future_collect_data.Get();
-  EXPECT_EQ(error, absl::nullopt);
+  std::optional<SupportToolError> error = test_future_collect_data.Get();
+  EXPECT_EQ(error, std::nullopt);
 
   EXPECT_THAT(data_collector.GetDetectedPII(),
               ContainerEq(kExpectedPIIInFeedbackLogs));
 
   // Check PII removal and data export.
-  base::test::TestFuture<absl::optional<SupportToolError>>
+  base::test::TestFuture<std::optional<SupportToolError>>
       test_future_export_data;
   base::FilePath output_dir = GetTempDirForOutput();
   // Export collected data to a directory and remove all PII from it.
@@ -138,7 +138,7 @@ TEST_F(SystemLogsDataCollectorTest, CollectAndExportDataSuccess) {
       redaction_tool_container_, test_future_export_data.GetCallback());
   // Check if ExportCollectedDataWithPII call returned an error.
   error = test_future_export_data.Get();
-  EXPECT_EQ(error, absl::nullopt);
+  EXPECT_EQ(error, std::nullopt);
 
   // Read the output file contents. SystemLogsDataCollector opens a
   // "var_log_files" file under target directory and writes the log
@@ -158,7 +158,7 @@ TEST_F(SystemLogsDataCollectorTest, RequestedLogNotFound) {
   SystemLogsDataCollector data_collector(requested_logs);
 
   // Test data collection and PII detection.
-  base::test::TestFuture<absl::optional<SupportToolError>>
+  base::test::TestFuture<std::optional<SupportToolError>>
       test_future_collect_data;
   data_collector.CollectDataAndDetectPII(test_future_collect_data.GetCallback(),
                                          task_runner_for_redaction_tool_,
@@ -171,7 +171,7 @@ TEST_F(SystemLogsDataCollectorTest, RequestedLogNotFound) {
             "SystemLogsDataCollector couldn't retrieve requested logs.");
 
   // Check PII removal and data export.
-  base::test::TestFuture<absl::optional<SupportToolError>>
+  base::test::TestFuture<std::optional<SupportToolError>>
       test_future_export_data;
   base::FilePath output_dir = GetTempDirForOutput();
   // Export collected data to a directory and remove all PII from it.
@@ -179,8 +179,8 @@ TEST_F(SystemLogsDataCollectorTest, RequestedLogNotFound) {
       /*pii_types_to_keep=*/{}, output_dir, task_runner_for_redaction_tool_,
       redaction_tool_container_, test_future_export_data.GetCallback());
   // Check if ExportCollectedDataWithPII call returned an error.
-  absl::optional<SupportToolError> export_error = test_future_export_data.Get();
-  EXPECT_EQ(export_error, absl::nullopt);
+  std::optional<SupportToolError> export_error = test_future_export_data.Get();
+  EXPECT_EQ(export_error, std::nullopt);
 
   // Read the output file contents. SystemLogsDataCollector opens a
   // "var_log_files" file under target directory and writes the log

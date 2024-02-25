@@ -155,7 +155,7 @@ class CORE_EXPORT CSSPropertyValueSet
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
 
  protected:
-  enum { kMaxArraySize = (1 << 28) - 1 };
+  enum { kMaxArraySize = (1 << 27) - 1 };
 
   explicit CSSPropertyValueSet(CSSParserMode css_parser_mode)
       : array_size_(0), css_parser_mode_(css_parser_mode), is_mutable_(true) {}
@@ -170,8 +170,8 @@ class CORE_EXPORT CSSPropertyValueSet
         css_parser_mode_(css_parser_mode),
         is_mutable_(false) {}
 
-  const uint32_t array_size_ : 28;
-  const uint32_t css_parser_mode_ : 3;
+  const uint32_t array_size_ : 27;
+  const uint32_t css_parser_mode_ : 4;
   const uint32_t is_mutable_ : 1;
 
   friend class PropertySetCSSStyleDeclaration;

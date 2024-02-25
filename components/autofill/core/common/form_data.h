@@ -47,9 +47,7 @@ struct FrameTokenWithPredecessor {
   int predecessor = -1;
 
   friend bool operator==(const FrameTokenWithPredecessor& a,
-                         const FrameTokenWithPredecessor& b);
-  friend bool operator!=(const FrameTokenWithPredecessor& a,
-                         const FrameTokenWithPredecessor& b);
+                         const FrameTokenWithPredecessor& b) = default;
 };
 
 // Autofill represents forms and fields as FormData and FormFieldData objects.
@@ -125,7 +123,7 @@ struct FrameTokenWithPredecessor {
 // The unowned fields of the frame constitute that frame's *unowned form*.
 //
 // Forms from different frames of the same WebContents may furthermore be
-// merged. For details, see ContentAutofillRouter.
+// merged. For details, see AutofillDriverRouter.
 //
 // clang-format off
 // [1] https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#reset-the-form-owner
@@ -134,6 +132,7 @@ struct FrameTokenWithPredecessor {
 // [4] https://html.spec.whatwg.org/multipage/input.html#attr-input-type
 // clang-format on
 struct FormData {
+  struct FillData;
   // Returns true if many members of forms |a| and |b| are identical.
   //
   // "Many" is intended to be "all", but currently the following members are not
@@ -159,9 +158,13 @@ struct FormData {
   FormData& operator=(FormData&&);
   ~FormData();
 
-  // An identifier that is unique across all forms in all frames.
-  // Must not be leaked to renderer process. See FieldGlobalId for details.
-  FormGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
+  // Uniquely identifies the DOM element that this form represents.
+  //
+  // It does *not* uniquely identify this FormData object (there is no such kind
+  // of identifier because FormData is a value type).
+  //
+  // Must not be leaked to renderer process. See FormGlobalId for details.
+  FormGlobalId global_id() const { return {host_frame, renderer_id}; }
 
   // TODO(crbug/1211834): This function is deprecated. Use FormData::DeepEqual()
   // instead.
@@ -170,6 +173,8 @@ struct FormData {
   bool SameFormAs(const FormData& other) const;
 
   // Returns a pointer to the field if found, otherwise returns nullptr.
+  // Note that FormFieldData::global_id() is not guaranteed to be unique among
+  // FormData::fields.
   const FormFieldData* FindFieldByGlobalId(
       const FieldGlobalId& global_id) const;
 
@@ -177,28 +182,14 @@ struct FormData {
   // Returns a pointer to the field if found, otherwise returns nullptr.
   FormFieldData* FindFieldByName(const base::StringPiece16 name_or_id);
 
-  // TODO(crbug/1211834): This function is deprecated.
-  // Same as SameFormAs() except calling FormFieldData.SimilarFieldAs() to
-  // compare fields.
-  bool SimilarFormAs(const FormData& other) const;
-
-  // TODO(crbug/1211834): This function is deprecated.
-  // If |form| is the same as this from the POV of dynamic refills.
-  bool DynamicallySameFormAs(const FormData& form) const;
-
-  // TODO(crbug/1211834): This function is deprecated.
-  // Allow FormData to be a key in STL containers.
-  bool operator<(const FormData& form) const;
-
   // The id attribute of the form.
   std::u16string id_attribute;
 
   // The name attribute of the form.
   std::u16string name_attribute;
 
-  // NOTE: update SameFormAs()            if needed when adding new a member.
-  // NOTE: update SimilarFormAs()         if needed when adding new a member.
-  // NOTE: update DynamicallySameFormAs() if needed when adding new a member.
+  // NOTE: Update `SameFormAs()` and `FormDataAndroid::SimilarFormAs()` if
+  // needed when adding new a member.
 
   // The name by which autofill knows this form. This is generally either the
   // name attribute or the id_attribute value, which-ever is non-empty with
@@ -235,17 +226,16 @@ struct FormData {
   // trees. For details, see RenderFrameHost::GetMainFrame().
   url::Origin main_frame_origin;
 
-  // True if this form is a form tag.
-  bool is_form_tag = true;
-
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
+  // See LocalFrameToken for details.
   LocalFrameToken host_frame;
-  // An identifier of the form that is unique among the forms from the same
-  // frame. In the browser process, it should only be used in conjunction with
-  // |host_frame| to identify a field; see global_id(). It is not persistent
-  // between page loads and therefore not used in comparison in SameFieldAs().
-  FormRendererId unique_renderer_id;
+
+  // Uniquely identifies the DOM element that this form represents among the
+  // form DOM elements in the same frame.
+  // In the browser process, use global_id() instead.
+  // See global_id() for details.
+  FormRendererId renderer_id;
 
   // A monotonically increasing counter that indicates the generation of the
   // form: if `f.version < g.version`, then `f` has been received from the
@@ -269,6 +259,22 @@ struct FormData {
       mojom::SubmissionIndicatorEvent::NONE;
 
   // A vector of all the input fields in the form.
+  //
+  // WARNING: `fields` may contain duplicates:
+  //
+  // Usually, FormFieldData::global_id() (in the browser process) and
+  // FormFieldData::renderer_id (in the renderer process) uniquely identify
+  // objects in `fields`. This is reliable enough for practical purposes.
+  //
+  // Collisions are possible in rare cases. Two known scenarios are:
+  // - The renderer is compromised and sends duplicates.
+  // - In the DOM, a field F moves from a form G to a form H and the browser
+  //   still knows an outdated version of G at the time it learns about the
+  //   updated version of H. Then the browser has FormData representations of G
+  //   and H which both include a FormFieldData representation of F. If G and H
+  //   come from subframes, they're flattened into the same FormData, which then
+  //   contains two representations of F; that is, FormData::fields contains two
+  //   fields with the same FormFieldData::global_id().
   std::vector<FormFieldData> fields;
 
   // Contains unique renderer IDs of text elements which are predicted to be
@@ -284,6 +290,23 @@ struct FormData {
 #if BUILDFLAG(IS_IOS)
   std::string frame_id;
 #endif
+};
+
+// Structure containing necessary information to be sent from the browser to the
+// renderer in order to fill a form.
+// See documentation of FormData for more info.
+struct FormData::FillData {
+  FillData();
+  explicit FillData(const FormData& form);
+
+  ~FillData();
+
+  // Uniquely identifies the DOM element that this form represents among the
+  // form DOM elements in the same frame.
+  FormRendererId renderer_id;
+
+  // A vector of all the fields in the form that we want the renderer to fill.
+  std::vector<FormFieldData::FillData> fields;
 };
 
 // Whether any of the fields in |form| is a non-empty password field.

@@ -19,4 +19,4 @@ class FastCheckoutAccessibilityService {
   virtual void Announce(const std::u16string& text);
 };
 
-#endif
+#endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_ACCESSIBILITY_SERVICE_H_

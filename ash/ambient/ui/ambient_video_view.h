@@ -6,6 +6,7 @@
 #define ASH_AMBIENT_UI_AMBIENT_VIDEO_VIEW_H_
 
 #include <memory>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/constants/ambient_video.h"
@@ -40,7 +41,7 @@ class ASH_EXPORT AmbientVideoView : public views::View {
   // (currently hard-coded in the HTML file) must be present in the allowlist in
   // chrome/browser/net/chrome_network_delegate.cc, or the webpage will fail to
   // load.
-  AmbientVideoView(base::StringPiece video_file,
+  AmbientVideoView(std::string_view video_file,
                    const base::FilePath& html_path,
                    AmbientVideo video,
                    AmbientViewDelegate* view_delegate);

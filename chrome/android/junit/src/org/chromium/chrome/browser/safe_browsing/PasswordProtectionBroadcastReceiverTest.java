@@ -20,13 +20,12 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * Unit tests for PasswordProtectionBroadcastReceiver.
- */
+/** Unit tests for PasswordProtectionBroadcastReceiver. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PasswordProtectionBroadcastReceiverTest {
@@ -40,7 +39,7 @@ public class PasswordProtectionBroadcastReceiverTest {
         mContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mContext);
         mReceiver = new PasswordProtectionBroadcastReceiver();
-        mPrefManager = SharedPreferencesManager.getInstance();
+        mPrefManager = ChromeSharedPreferences.getInstance();
     }
 
     @Test
@@ -51,16 +50,21 @@ public class PasswordProtectionBroadcastReceiverTest {
         intent.putExtra(PasswordProtectionBroadcastReceiver.EXTRA_SALT, "salt");
         intent.putExtra(PasswordProtectionBroadcastReceiver.EXTRA_HASHED_PASSWORD, 1L);
         mReceiver.onReceive(mContext, intent);
-        JSONArray entries = new JSONArray(
-                mPrefManager.readString(ChromePreferenceKeys.PASSWORD_PROTECTION_ACCOUNTS, null));
+        JSONArray entries =
+                new JSONArray(
+                        mPrefManager.readString(
+                                ChromePreferenceKeys.PASSWORD_PROTECTION_ACCOUNTS, null));
         Assert.assertEquals(1, entries.length());
-        Assert.assertEquals("user1@gmail.com",
+        Assert.assertEquals(
+                "user1@gmail.com",
                 ((JSONObject) entries.get(0))
                         .getString(PasswordProtectionBroadcastReceiver.EXTRA_ACCOUNT_IDENTIFIER));
-        Assert.assertEquals("salt",
+        Assert.assertEquals(
+                "salt",
                 ((JSONObject) entries.get(0))
                         .getString(PasswordProtectionBroadcastReceiver.EXTRA_SALT));
-        Assert.assertEquals(1L,
+        Assert.assertEquals(
+                1L,
                 ((JSONObject) entries.get(0))
                         .getLong(PasswordProtectionBroadcastReceiver.EXTRA_HASHED_PASSWORD));
     }
@@ -113,25 +117,33 @@ public class PasswordProtectionBroadcastReceiverTest {
         intent.putExtra(PasswordProtectionBroadcastReceiver.EXTRA_SALT, "salt");
         intent.putExtra(PasswordProtectionBroadcastReceiver.EXTRA_HASHED_PASSWORD, 2L);
         mReceiver.onReceive(mContext, intent);
-        JSONArray entries = new JSONArray(
-                mPrefManager.readString(ChromePreferenceKeys.PASSWORD_PROTECTION_ACCOUNTS, null));
+        JSONArray entries =
+                new JSONArray(
+                        mPrefManager.readString(
+                                ChromePreferenceKeys.PASSWORD_PROTECTION_ACCOUNTS, null));
         Assert.assertEquals(2, entries.length());
-        Assert.assertEquals("user1@gmail.com",
+        Assert.assertEquals(
+                "user1@gmail.com",
                 ((JSONObject) entries.get(0))
                         .getString(PasswordProtectionBroadcastReceiver.EXTRA_ACCOUNT_IDENTIFIER));
-        Assert.assertEquals("salt",
+        Assert.assertEquals(
+                "salt",
                 ((JSONObject) entries.get(0))
                         .getString(PasswordProtectionBroadcastReceiver.EXTRA_SALT));
-        Assert.assertEquals(1L,
+        Assert.assertEquals(
+                1L,
                 ((JSONObject) entries.get(0))
                         .getLong(PasswordProtectionBroadcastReceiver.EXTRA_HASHED_PASSWORD));
-        Assert.assertEquals("user2@gmail.com",
+        Assert.assertEquals(
+                "user2@gmail.com",
                 ((JSONObject) entries.get(1))
                         .getString(PasswordProtectionBroadcastReceiver.EXTRA_ACCOUNT_IDENTIFIER));
-        Assert.assertEquals("salt",
+        Assert.assertEquals(
+                "salt",
                 ((JSONObject) entries.get(1))
                         .getString(PasswordProtectionBroadcastReceiver.EXTRA_SALT));
-        Assert.assertEquals(2L,
+        Assert.assertEquals(
+                2L,
                 ((JSONObject) entries.get(1))
                         .getLong(PasswordProtectionBroadcastReceiver.EXTRA_HASHED_PASSWORD));
     }
@@ -149,16 +161,21 @@ public class PasswordProtectionBroadcastReceiverTest {
         intent.putExtra(PasswordProtectionBroadcastReceiver.EXTRA_SALT, "salt2");
         intent.putExtra(PasswordProtectionBroadcastReceiver.EXTRA_HASHED_PASSWORD, 2L);
         mReceiver.onReceive(mContext, intent);
-        JSONArray entries = new JSONArray(
-                mPrefManager.readString(ChromePreferenceKeys.PASSWORD_PROTECTION_ACCOUNTS, null));
+        JSONArray entries =
+                new JSONArray(
+                        mPrefManager.readString(
+                                ChromePreferenceKeys.PASSWORD_PROTECTION_ACCOUNTS, null));
         Assert.assertEquals(1, entries.length());
-        Assert.assertEquals("user1@gmail.com",
+        Assert.assertEquals(
+                "user1@gmail.com",
                 ((JSONObject) entries.get(0))
                         .getString(PasswordProtectionBroadcastReceiver.EXTRA_ACCOUNT_IDENTIFIER));
-        Assert.assertEquals("salt2",
+        Assert.assertEquals(
+                "salt2",
                 ((JSONObject) entries.get(0))
                         .getString(PasswordProtectionBroadcastReceiver.EXTRA_SALT));
-        Assert.assertEquals(2L,
+        Assert.assertEquals(
+                2L,
                 ((JSONObject) entries.get(0))
                         .getLong(PasswordProtectionBroadcastReceiver.EXTRA_HASHED_PASSWORD));
     }

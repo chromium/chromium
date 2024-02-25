@@ -65,8 +65,6 @@ void MockInputMethod::OnFocus() {
     observer.OnFocus();
 }
 
-void MockInputMethod::OnTouch(ui::EventPointerType pointerType) {}
-
 void MockInputMethod::OnBlur() {
   for (InputMethodObserver& observer : observer_list_)
     observer.OnBlur();
@@ -85,6 +83,8 @@ void MockInputMethod::OnInputLocaleChanged() {}
 bool MockInputMethod::IsInputLocaleCJK() const {
   return false;
 }
+
+void MockInputMethod::OnUrlChanged() {}
 #endif
 
 void MockInputMethod::OnTextInputTypeChanged(TextInputClient* client) {
@@ -124,5 +124,8 @@ void MockInputMethod::RemoveObserver(InputMethodObserver* observer) {
 VirtualKeyboardController* MockInputMethod::GetVirtualKeyboardController() {
   return &keyboard_controller_;
 }
+
+void MockInputMethod::SetVirtualKeyboardControllerForTesting(
+    std::unique_ptr<VirtualKeyboardController> controller) {}
 
 }  // namespace ui

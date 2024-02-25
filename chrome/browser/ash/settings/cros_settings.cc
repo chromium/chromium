@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -100,12 +102,12 @@ CrosSettings::~CrosSettings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool CrosSettings::IsCrosSettings(base::StringPiece path) {
+bool CrosSettings::IsCrosSettings(std::string_view path) {
   return base::StartsWith(path, kCrosSettingsPrefix,
                           base::CompareCase::SENSITIVE);
 }
 
-const base::Value* CrosSettings::GetPref(base::StringPiece path) const {
+const base::Value* CrosSettings::GetPref(std::string_view path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CrosSettingsProvider* provider = GetProvider(path);
   if (provider)
@@ -126,7 +128,7 @@ CrosSettingsProvider::TrustedStatus CrosSettings::PrepareTrustedValues(
   return CrosSettingsProvider::TRUSTED;
 }
 
-bool CrosSettings::GetBoolean(base::StringPiece path, bool* bool_value) const {
+bool CrosSettings::GetBoolean(std::string_view path, bool* bool_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
   if (value && value->is_bool()) {
@@ -136,7 +138,7 @@ bool CrosSettings::GetBoolean(base::StringPiece path, bool* bool_value) const {
   return false;
 }
 
-bool CrosSettings::GetInteger(base::StringPiece path, int* out_value) const {
+bool CrosSettings::GetInteger(std::string_view path, int* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
   if (value && value->is_int()) {
@@ -146,10 +148,10 @@ bool CrosSettings::GetInteger(base::StringPiece path, int* out_value) const {
   return false;
 }
 
-bool CrosSettings::GetDouble(base::StringPiece path, double* out_value) const {
+bool CrosSettings::GetDouble(std::string_view path, double* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // `GetIfDouble` incapsulates type check.
-  absl::optional<double> maybe_value = GetPref(path)->GetIfDouble();
+  std::optional<double> maybe_value = GetPref(path)->GetIfDouble();
   if (maybe_value.has_value()) {
     *out_value = maybe_value.value();
     return true;
@@ -157,7 +159,7 @@ bool CrosSettings::GetDouble(base::StringPiece path, double* out_value) const {
   return false;
 }
 
-bool CrosSettings::GetString(base::StringPiece path,
+bool CrosSettings::GetString(std::string_view path,
                              std::string* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
@@ -168,7 +170,7 @@ bool CrosSettings::GetString(base::StringPiece path,
   return false;
 }
 
-bool CrosSettings::GetList(base::StringPiece path,
+bool CrosSettings::GetList(std::string_view path,
                            const base::Value::List** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
@@ -179,7 +181,7 @@ bool CrosSettings::GetList(base::StringPiece path,
   return false;
 }
 
-bool CrosSettings::GetDictionary(base::StringPiece path,
+bool CrosSettings::GetDictionary(std::string_view path,
                                  const base::Value::Dict** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
@@ -193,7 +195,7 @@ bool CrosSettings::GetDictionary(base::StringPiece path,
 bool CrosSettings::IsUserAllowlisted(
     const std::string& username,
     bool* wildcard_match,
-    const absl::optional<user_manager::UserType>& user_type) const {
+    const std::optional<user_manager::UserType>& user_type) const {
   // Skip allowlist check for tests.
   if (switches::ShouldSkipOobePostLogin()) {
     return true;
@@ -209,7 +211,7 @@ bool CrosSettings::IsUserAllowlisted(
 
   bool family_link_allowed = false;
   GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed, &family_link_allowed);
-  return family_link_allowed && user_type == user_manager::USER_TYPE_CHILD;
+  return family_link_allowed && user_type == user_manager::UserType::kChild;
 }
 
 bool CrosSettings::FindEmailInList(const std::string& path,
@@ -319,7 +321,7 @@ base::CallbackListSubscription CrosSettings::AddSettingsObserver(
   return registry->Add(std::move(callback));
 }
 
-CrosSettingsProvider* CrosSettings::GetProvider(base::StringPiece path) const {
+CrosSettingsProvider* CrosSettings::GetProvider(std::string_view path) const {
   for (const auto& provider : providers_) {
     if (provider->HandlesSetting(path)) {
       return provider.get();

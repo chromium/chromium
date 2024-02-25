@@ -98,6 +98,11 @@
 #include "chrome/browser/profiles/guest_profile_creation_logger.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/pref_names.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -148,7 +153,6 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
 
     case profile_metrics::BrowserProfileType::kIncognito:
     case profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile:
-    case profile_metrics::BrowserProfileType::kDeprecatedEphemeralGuest:
       NOTREACHED();
   }
   return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
@@ -206,8 +210,7 @@ void OffTheRecordProfileImpl::Init() {
   content::URLDataSource::Add(
       this, std::make_unique<extensions::ExtensionIconSource>(profile_));
 
-  extensions::ExtensionWebRequestEventRouter::GetInstance()
-      ->OnOTRBrowserContextCreated(profile_, this);
+  extensions::WebRequestEventRouter::OnOTRBrowserContextCreated(profile_, this);
 #endif
 
   // The DomDistillerViewerSource is not a normal WebUI so it must be registered
@@ -233,6 +236,17 @@ void OffTheRecordProfileImpl::Init() {
 #if !BUILDFLAG(IS_ANDROID)
   if (IsGuestSession()) {
     profile::MaybeRecordGuestChildCreation(this);
+  }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
+    if (otr_profile_id_.IsCaptivePortal()) {
+      // Set a pref to indicate that the Profile's PrefService is associated
+      // with a captive portal signin window. We use a pref for this because
+      // proxy configuration is associated with the PrefService, not a Profile.
+      GetPrefs()->SetBoolean(chromeos::prefs::kCaptivePortalSignin, true);
+    }
   }
 #endif
 }
@@ -262,8 +276,8 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
   SimpleKeyMap::GetInstance()->Dissociate(this);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::ExtensionWebRequestEventRouter::GetInstance()
-      ->OnOTRBrowserContextDestroyed(profile_, this);
+  extensions::WebRequestEventRouter::OnOTRBrowserContextDestroyed(profile_,
+                                                                  this);
 #endif
 
   // This must be called before ProfileIOData::ShutdownOnUIThread but after

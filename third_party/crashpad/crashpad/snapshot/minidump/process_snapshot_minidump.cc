@@ -346,7 +346,7 @@ bool ProcessSnapshotMinidump::InitializeMiscInfo() {
   switch (stream_it->second->DataSize) {
     case sizeof(MINIDUMP_MISC_INFO_5):
     case sizeof(MINIDUMP_MISC_INFO_4):
-#if defined(WCHAR_T_IS_UTF16)
+#if defined(WCHAR_T_IS_16_BIT)
       full_version_ = base::WideToUTF8(info.BuildString);
 #else
       full_version_ = base::UTF16ToUTF8(info.BuildString);

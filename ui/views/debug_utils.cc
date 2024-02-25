@@ -12,7 +12,7 @@
 #include "ui/views/widget/widget.h"
 
 #if !defined(NDEBUG)
-#include "ui/gfx/geometry/angle_conversions.h"
+#include "base/numerics/angle_conversions.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/transform.h"
 #endif
@@ -93,7 +93,7 @@ std::string PrintViewGraphImpl(const View* view) {
   result.append(bounds_buffer);
 
   if (!view->GetTransform().IsIdentity()) {
-    if (absl::optional<gfx::DecomposedTransform> decomp =
+    if (std::optional<gfx::DecomposedTransform> decomp =
             view->GetTransform().Decompose()) {
       base::snprintf(bounds_buffer, kBoundsBufferSize,
                      "\\n translation: (%f, %f)", decomp->translate[0],
@@ -101,7 +101,7 @@ std::string PrintViewGraphImpl(const View* view) {
       result.append(bounds_buffer);
 
       base::snprintf(bounds_buffer, kBoundsBufferSize, "\\n rotation: %3.2f",
-                     gfx::RadToDeg(std::acos(decomp->quaternion.w()) * 2));
+                     base::RadToDeg(std::acos(decomp->quaternion.w()) * 2));
       result.append(bounds_buffer);
 
       base::snprintf(bounds_buffer, kBoundsBufferSize,

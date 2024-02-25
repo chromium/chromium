@@ -15,18 +15,18 @@
 namespace device {
 
 // static
-absl::optional<FidoHidMessage> FidoHidMessage::Create(
+std::optional<FidoHidMessage> FidoHidMessage::Create(
     uint32_t channel_id,
     FidoHidDeviceCommand type,
     size_t max_report_size,
     base::span<const uint8_t> data) {
   if (data.size() > kHidMaxMessageSize)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (max_report_size <= kHidInitPacketHeaderSize ||
       max_report_size > kHidMaxPacketSize) {
     NOTREACHED();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   switch (type) {
@@ -35,48 +35,48 @@ absl::optional<FidoHidMessage> FidoHidMessage::Create(
     case FidoHidDeviceCommand::kMsg:
     case FidoHidDeviceCommand::kCbor: {
       if (data.empty())
-        return absl::nullopt;
+        return std::nullopt;
       break;
     }
 
     case FidoHidDeviceCommand::kCancel:
     case FidoHidDeviceCommand::kWink: {
       if (!data.empty())
-        return absl::nullopt;
+        return std::nullopt;
       break;
     }
     case FidoHidDeviceCommand::kLock: {
       if (data.size() != 1 || data[0] > kHidMaxLockSeconds)
-        return absl::nullopt;
+        return std::nullopt;
       break;
     }
     case FidoHidDeviceCommand::kInit: {
       if (data.size() != 8)
-        return absl::nullopt;
+        return std::nullopt;
       break;
     }
     case FidoHidDeviceCommand::kKeepAlive:
     case FidoHidDeviceCommand::kError:
       if (data.size() != 1)
-        return absl::nullopt;
+        return std::nullopt;
   }
 
   return FidoHidMessage(channel_id, type, max_report_size, data);
 }
 
 // static
-absl::optional<FidoHidMessage> FidoHidMessage::CreateFromSerializedData(
+std::optional<FidoHidMessage> FidoHidMessage::CreateFromSerializedData(
     base::span<const uint8_t> serialized_data) {
   size_t remaining_size = 0;
   if (serialized_data.size() > kHidMaxPacketSize ||
       serialized_data.size() < kHidInitPacketHeaderSize)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto init_packet = FidoHidInitPacket::CreateFromSerializedData(
       serialized_data, &remaining_size);
 
   if (init_packet == nullptr)
-    return absl::nullopt;
+    return std::nullopt;
 
   return FidoHidMessage(std::move(init_packet), remaining_size);
 }

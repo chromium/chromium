@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -19,7 +20,6 @@
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 
 class InstanceRegistryTest;
@@ -37,10 +37,10 @@ struct InstanceParams {
   ~InstanceParams();
 
   const std::string app_id;
-  raw_ptr<aura::Window, ExperimentalAsh> window;
-  absl::optional<std::string> launch_id;
-  absl::optional<std::pair<InstanceState, base::Time>> state;
-  absl::optional<content::BrowserContext*> browser_context;
+  raw_ptr<aura::Window> window;
+  std::optional<std::string> launch_id;
+  std::optional<std::pair<InstanceState, base::Time>> state;
+  std::optional<content::BrowserContext*> browser_context;
 };
 
 // An in-memory store of all the Instances (i.e. running apps) seen by
@@ -114,7 +114,8 @@ class InstanceRegistry {
   void OnInstance(InstancePtr delta);
 
   // Returns instances for the |app_id|.
-  std::set<const Instance*> GetInstances(const std::string& app_id);
+  std::set<raw_ptr<const Instance, SetExperimental>> GetInstances(
+      const std::string& app_id);
 
   // Returns one state for the `window`.
   //
@@ -278,7 +279,9 @@ class InstanceRegistry {
   std::map<const base::UnguessableToken, aura::Window*> instance_id_to_window_;
 
   // Maps from app id to instances.
-  std::map<const std::string, std::set<const Instance*>> app_id_to_instances_;
+  std::map<const std::string,
+           std::set<raw_ptr<const Instance, SetExperimental>>>
+      app_id_to_instances_;
 
   std::unique_ptr<Instance> old_state_;
 

@@ -6,9 +6,7 @@
 
 #include "base/trace_event/traced_value.h"
 #include "cc/input/scrollbar.h"
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
-#include "cc/layers/painted_scrollbar_layer.h"
-#include "cc/layers/solid_color_scrollbar_layer.h"
+#include "cc/layers/scrollbar_layer_base.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -25,6 +23,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
     const gfx::Rect& visual_rect,
     scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
     CompositorElementId element_id,
+    cc::HitTestOpaqueness hit_test_opaqueness,
     RasterEffectOutset outset,
     PaintInvalidationReason paint_invalidation_reason)
     : DisplayItem(client_id,
@@ -34,7 +33,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
                   paint_invalidation_reason,
                   /*draws_content*/ true),
       data_(new Data{std::move(scrollbar), std::move(scroll_translation),
-                     element_id}) {
+                     element_id, hit_test_opaqueness}) {
   DCHECK(IsScrollbar());
   CHECK(!data_->scroll_translation_ ||
         data_->scroll_translation_->ScrollNode());
@@ -51,11 +50,19 @@ PaintRecord ScrollbarDisplayItem::Paint() const {
   recorder.beginRecording();
   auto* canvas = recorder.getRecordingCanvas();
   auto* scrollbar = data_->scrollbar_.get();
-  scrollbar->PaintPart(canvas, cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
-                       rect);
+
+  // Skip track and button painting for Minimal mode Fluent scrollbars.
+  if (!scrollbar->IsFluentOverlayScrollbarMinimalMode()) {
+    scrollbar->PaintPart(canvas, cc::ScrollbarPart::kTrackButtonsTickmarks,
+                         rect);
+  }
+
   gfx::Rect thumb_rect = scrollbar->ThumbRect();
   thumb_rect.Offset(rect.OffsetFromOrigin());
-  scrollbar->PaintPart(canvas, cc::ScrollbarPart::THUMB, thumb_rect);
+  if (scrollbar->IsFluentOverlayScrollbarMinimalMode()) {
+    thumb_rect = scrollbar->ShrinkMainThreadedMinimalModeThumbRect(thumb_rect);
+  }
+  scrollbar->PaintPart(canvas, cc::ScrollbarPart::kThumb, thumb_rect);
 
   scrollbar->ClearNeedsUpdateDisplay();
   data_->record_ = recorder.finishRecordingAsPicture();
@@ -77,10 +84,7 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
   auto layer = cc::ScrollbarLayerBase::CreateOrReuse(scrollbar, existing_layer);
   layer->SetIsDrawable(true);
   layer->SetContentsOpaque(IsOpaque());
-  // Android scrollbars can't be interacted with by user input.
-  layer->SetHitTestOpaqueness(scrollbar->IsSolidColor()
-                                  ? cc::HitTestOpaqueness::kTransparent
-                                  : cc::HitTestOpaqueness::kOpaque);
+  layer->SetHitTestOpaqueness(data_->hit_test_opaqueness_);
   layer->SetElementId(data_->element_id_);
   layer->SetScrollElementId(
       data_->scroll_translation_
@@ -102,8 +106,8 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
 
 bool ScrollbarDisplayItem::IsOpaque() const {
   DCHECK(!IsTombstone());
-  // The native themes should ensure opaqueness of non-overlay scrollbars.
-  return !data_->scrollbar_->IsOverlay();
+
+  return data_->scrollbar_->IsOpaque();
 }
 
 bool ScrollbarDisplayItem::EqualsForUnderInvalidationImpl(
@@ -131,15 +135,17 @@ void ScrollbarDisplayItem::Record(
     scoped_refptr<cc::Scrollbar> scrollbar,
     const gfx::Rect& visual_rect,
     scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
-    CompositorElementId element_id) {
+    CompositorElementId element_id,
+    cc::HitTestOpaqueness hit_test_opaqueness) {
   PaintController& paint_controller = context.GetPaintController();
   // Must check PaintController::UseCachedItemIfPossible before this function.
   DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() ||
          !paint_controller.UseCachedItemIfPossible(client, type));
+  CHECK(IsScrollbarElementId(element_id));
 
   paint_controller.CreateAndAppend<ScrollbarDisplayItem>(
       client, type, std::move(scrollbar), visual_rect,
-      std::move(scroll_translation), element_id,
+      std::move(scroll_translation), element_id, hit_test_opaqueness,
       client.VisualRectOutsetForRasterEffects(),
       client.GetPaintInvalidationReason());
 }

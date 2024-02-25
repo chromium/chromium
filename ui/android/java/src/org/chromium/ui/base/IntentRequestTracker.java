@@ -16,9 +16,7 @@ import java.lang.ref.WeakReference;
  * implementation should be hidden in ui/base. No implementation should be made outside of ui/base.
  */
 public interface IntentRequestTracker {
-    /**
-     * A delegate of this class's intent sending.
-     */
+    /** A delegate of this class's intent sending. */
     interface Delegate {
         /**
          * Starts an activity for the provided intent.

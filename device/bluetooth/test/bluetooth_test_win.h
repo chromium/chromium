@@ -5,11 +5,11 @@
 #ifndef DEVICE_BLUETOOTH_TEST_BLUETOOTH_TEST_WIN_H_
 #define DEVICE_BLUETOOTH_TEST_BLUETOOTH_TEST_WIN_H_
 
-#include "device/bluetooth/test/bluetooth_test.h"
-
 #include <Windows.Devices.Enumeration.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -20,7 +20,7 @@
 #include "base/win/scoped_winrt_initializer.h"
 #include "device/bluetooth/bluetooth_classic_win_fake.h"
 #include "device/bluetooth/bluetooth_task_manager_win.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "device/bluetooth/test/bluetooth_test.h"
 
 namespace device {
 
@@ -38,7 +38,7 @@ class BluetoothTestWin : public BluetoothTestBase {
   bool DenyPermission() override;
   void StartLowEnergyDiscoverySession() override;
   BluetoothDevice* SimulateLowEnergyDevice(int device_ordinal) override;
-  absl::optional<BluetoothUUID> GetTargetGattService(
+  std::optional<BluetoothUUID> GetTargetGattService(
       BluetoothDevice* device) override;
   void SimulateGattConnection(BluetoothDevice* device) override;
   void SimulateStatusChangeToDisconnect(BluetoothDevice* device) override;
@@ -151,7 +151,7 @@ class BluetoothTestWinrt
   // for pairing_kind we should promote this function as virtual
   void SimulateConfirmOnly(BluetoothDevice* device);
   void SimulateDisplayPin(BluetoothDevice* device,
-                          base::StringPiece display_pin);
+                          std::string_view display_pin);
   void SimulateAdvertisementStarted(
       BluetoothAdvertisement* advertisement) override;
   void SimulateAdvertisementStopped(

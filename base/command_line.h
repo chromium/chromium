@@ -21,6 +21,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -48,9 +49,18 @@ class BASE_EXPORT CommandLine {
 #endif
 
   using CharType = StringType::value_type;
-  using StringPieceType = base::BasicStringPiece<CharType>;
+  using StringPieceType = std::basic_string_view<CharType>;
   using StringVector = std::vector<StringType>;
   using SwitchMap = std::map<std::string, StringType, std::less<>>;
+
+  // Returns CommandLine object constructed with switches and keys alone.
+  // NOTE: `argv` must NOT include the program path, and the switch arguments
+  // must start from the index 0.
+  static CommandLine FromArgvWithoutProgram(const StringVector& argv);
+
+#if BUILDFLAG(IS_WIN)
+  static CommandLine FromString(StringPieceType command_line);
+#endif
 
   // A constructor for CommandLines that only carry switches and arguments.
   enum NoProgram { NO_PROGRAM };
@@ -69,6 +79,9 @@ class BASE_EXPORT CommandLine {
   //   cl.AppendSwitch(...);
   CommandLine(const CommandLine& other);
   CommandLine& operator=(const CommandLine& other);
+
+  CommandLine(CommandLine&& other) noexcept;
+  CommandLine& operator=(CommandLine&& other) noexcept;
 
   ~CommandLine();
 
@@ -112,10 +125,6 @@ class BASE_EXPORT CommandLine {
 
   // Returns true if the CommandLine has been initialized for the given process.
   static bool InitializedForCurrentProcess();
-
-#if BUILDFLAG(IS_WIN)
-  static CommandLine FromString(StringPieceType command_line);
-#endif
 
   // Initialize from an argv vector.
   void InitFromArgv(int argc, const CharType* const* argv);
@@ -222,7 +231,7 @@ class BASE_EXPORT CommandLine {
   void AppendArgNative(StringPieceType value);
 
   // Append the switches and arguments from another command line to this one.
-  // If |include_program| is true, include |other|'s program as well.
+  // If `include_program` is true, program will be overwritten by other's.
   void AppendArguments(const CommandLine& other, bool include_program);
 
   // Insert a command before the current command.
@@ -263,10 +272,10 @@ class BASE_EXPORT CommandLine {
       return *this;
     }
 
-    // Disallow move.
-    InstanceBoundSequenceChecker(InstanceBoundSequenceChecker&&) = delete;
+    // Allow move as per SequenceChecker.
+    InstanceBoundSequenceChecker(InstanceBoundSequenceChecker&&) = default;
     InstanceBoundSequenceChecker& operator=(InstanceBoundSequenceChecker&&) =
-        delete;
+        default;
 
     void Detach() { DETACH_FROM_SEQUENCE(sequence_checker_); }
     void Check() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
@@ -280,7 +289,8 @@ class BASE_EXPORT CommandLine {
   CommandLine() = delete;
 
   // Append switches and arguments, keeping switches before arguments.
-  void AppendSwitchesAndArguments(const StringVector& argv);
+  // NOTE: `argv` should not include the "program" element.
+  void AppendSwitchesAndArguments(span<const StringType> argv);
 
   // Internal version of GetArgumentsString to support allowing unsafe insert
   // sequences in rare cases (see

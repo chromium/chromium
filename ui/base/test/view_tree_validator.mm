@@ -43,7 +43,7 @@ bool IgnoreChildBoundsChecks(NSView* view) {
 
 namespace ui {
 
-absl::optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root) {
+std::optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root) {
   NSArray* allViews = CollectSubviews(root);
 
   for (NSView* view in allViews) {
@@ -52,7 +52,7 @@ absl::optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root) {
     for (NSView* child in view.subviews) {
       if (!NSContainsRect(view.bounds, child.frame) &&
           !IgnoreChildBoundsChecks(view)) {
-        return absl::optional<ViewTreeProblemDetails>(
+        return std::optional<ViewTreeProblemDetails>(
             {ViewTreeProblemDetails::ProblemType::kViewOutsideParent, child,
              view});
       }
@@ -72,12 +72,12 @@ absl::optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root) {
         continue;
       if ([view isDescendantOf:other] || [other isDescendantOf:view])
         continue;
-      return absl::optional<ViewTreeProblemDetails>(
+      return std::optional<ViewTreeProblemDetails>(
           {ViewTreeProblemDetails::ProblemType::kViewsOverlap, view, other});
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string ViewTreeProblemDetails::ToString() {

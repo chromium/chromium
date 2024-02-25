@@ -1,5 +1,5 @@
 import pytest
-from webdriver.client import Element, ShadowRoot
+from webdriver.client import WebElement, ShadowRoot
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_same_element, assert_success
@@ -149,7 +149,7 @@ def test_find_elements_equivalence(session, get_test_page):
     host = session.find.css("custom-element", all=False)
     shadow_root = host.shadow_root
 
-    expected = session.execute_script("""
+    session.execute_script("""
         return arguments[0].shadowRoot.querySelector('input')
         """, args=(host,))
 
@@ -177,7 +177,7 @@ def test_find_elements(session, get_test_page, using, value, mode):
 
     assert len(value) == 1
 
-    element = Element.from_json(value[0], session)
+    element = WebElement.from_json(value[0], session)
     assert element.text == expected_text
 
 
@@ -256,5 +256,5 @@ def test_find_elements_in_nested_shadow_root(
 
     assert len(value) == 1
 
-    element = Element.from_json(value[0], session)
+    element = WebElement.from_json(value[0], session)
     assert element.text == expected_text

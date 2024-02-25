@@ -59,7 +59,6 @@ CmaAudioOutput::CmaAudioOutput(
     MediaPipelineDeviceParams::MediaSyncType sync_type,
     bool use_hw_av_sync,
     int audio_track_session_id,
-    chromecast::mojom::MultiroomInfoPtr multiroom_info,
     CmaBackendFactory* cma_backend_factory,
     CmaBackend::Decoder::Delegate* delegate)
     : audio_params_(audio_params),
@@ -69,8 +68,7 @@ CmaAudioOutput::CmaAudioOutput(
       timestamp_helper_(audio_params_.sample_rate()) {
   DCHECK(delegate_);
   Initialize(sample_format, device_id, application_session_id, sync_type,
-             audio_track_session_id, std::move(multiroom_info),
-             cma_backend_factory);
+             audio_track_session_id, cma_backend_factory);
 }
 
 CmaAudioOutput::~CmaAudioOutput() = default;
@@ -81,10 +79,8 @@ void CmaAudioOutput::Initialize(
     const std::string& application_session_id,
     MediaPipelineDeviceParams::MediaSyncType sync_type,
     int audio_track_session_id,
-    chromecast::mojom::MultiroomInfoPtr multiroom_info,
     CmaBackendFactory* cma_backend_factory) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
-  DCHECK(multiroom_info);
   DCHECK(cma_backend_factory);
 
   auto cma_backend_task_runner = std::make_unique<TaskRunnerImpl>();
@@ -92,9 +88,6 @@ void CmaAudioOutput::Initialize(
       sync_type, MediaPipelineDeviceParams::kAudioStreamNormal,
       cma_backend_task_runner.get(), GetContentType(device_id), device_id);
   device_params.session_id = application_session_id;
-  device_params.multiroom = multiroom_info->multiroom;
-  device_params.audio_channel = multiroom_info->audio_channel;
-  device_params.output_delay_us = multiroom_info->output_delay.InMicroseconds();
   auto cma_backend = cma_backend_factory->CreateBackend(device_params);
   if (!cma_backend) {
     return;

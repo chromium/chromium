@@ -16,6 +16,13 @@ void FakeBrowsingDataModel::RemoveBrowsingData(const DataOwner& data_owner,
   browsing_data_entries_.erase(data_owner);
 }
 
+void FakeBrowsingDataModel::RemoveBrowsingDataEntriesFromDisk(
+    const DataKeyEntries& browsing_data_entries,
+    base::OnceClosure completed) {
+  // Fake browsing data model only works with in-memory entries.
+  std::move(completed).Run();
+}
+
 void FakeBrowsingDataModel::PopulateFromDisk(
     base::OnceClosure finished_callback) {
   NOTREACHED();

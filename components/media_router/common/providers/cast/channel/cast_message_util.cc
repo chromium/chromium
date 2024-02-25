@@ -120,7 +120,6 @@ constexpr const char* kReservedNamespaces[] = {
     kHeartbeatNamespace,
     kConnectionNamespace,
     kReceiverNamespace,
-    kBroadcastNamespace,
     kMediaNamespace,
 
     // mirroring::mojom::kRemotingNamespace
@@ -183,7 +182,7 @@ int GetVirtualConnectPlatformValue() {
 // messages are passed using a CastInternalMessage object.
 base::StringPiece GetRemappedMediaRequestType(
     base::StringPiece v2_message_type) {
-  absl::optional<V2MessageType> type =
+  std::optional<V2MessageType> type =
       StringToEnum<V2MessageType>(v2_message_type);
   DCHECK(type && IsMediaRequestMessageType(*type));
   switch (*type) {
@@ -436,41 +435,13 @@ CastMessage CreateReceiverStatusRequest(const std::string& source_id,
                            source_id, kPlatformReceiverId);
 }
 
-BroadcastRequest::BroadcastRequest(const std::string& broadcast_namespace,
-                                   const std::string& message)
-    : broadcast_namespace(broadcast_namespace), message(message) {}
-BroadcastRequest::~BroadcastRequest() = default;
-
-bool BroadcastRequest::operator==(const BroadcastRequest& other) const {
-  return broadcast_namespace == other.broadcast_namespace &&
-         message == other.message;
-}
-
-CastMessage CreateBroadcastRequest(const std::string& source_id,
-                                   int request_id,
-                                   const std::vector<std::string>& app_ids,
-                                   const BroadcastRequest& request) {
-  Value::Dict dict;
-  dict.Set("type",
-           EnumToString<CastMessageType, CastMessageType::kBroadcast>());
-  base::Value::List app_ids_value;
-  for (const std::string& app_id : app_ids)
-    app_ids_value.Append(app_id);
-
-  dict.Set("appIds", std::move(app_ids_value));
-  dict.Set("namespace", request.broadcast_namespace);
-  dict.Set("message", request.message);
-  return CreateCastMessage(kBroadcastNamespace, base::Value(std::move(dict)),
-                           source_id, kPlatformReceiverId);
-}
-
 CastMessage CreateLaunchRequest(
     const std::string& source_id,
     int request_id,
     const std::string& app_id,
     const std::string& locale,
     const std::vector<std::string>& supported_app_types,
-    const absl::optional<base::Value>& app_params) {
+    const std::optional<base::Value>& app_params) {
   Value::Dict dict;
   dict.Set("type", EnumToString<CastMessageType, CastMessageType::kLaunch>());
   dict.Set("requestId", request_id);
@@ -578,8 +549,8 @@ const char* ToString(GetAppAvailabilityResult result) {
   return EnumToString(result).value_or("").data();
 }
 
-absl::optional<int> GetRequestIdFromResponse(const Value::Dict& payload) {
-  absl::optional<int> request_id = payload.FindInt("requestId");
+std::optional<int> GetRequestIdFromResponse(const Value::Dict& payload) {
+  std::optional<int> request_id = payload.FindInt("requestId");
   return request_id ? request_id : payload.FindInt("launchRequestId");
 }
 

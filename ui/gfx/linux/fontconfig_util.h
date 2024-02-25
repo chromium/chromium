@@ -18,6 +18,13 @@ struct FcPatternDeleter {
 };
 using ScopedFcPattern = std::unique_ptr<FcPattern, FcPatternDeleter>;
 
+// Initializes FontConfig on a worker thread if a thread pool instance is
+// available, otherwise initializes FontConfig in a blocking fashion on the
+// calling thread.  If this function is not called, the first call to
+// GetGlobalFontConfig() will implicitly initialize FontConfig.  Can be called
+// on any thread.
+GFX_EXPORT void InitializeGlobalFontConfigAsync();
+
 // Retrieve the global font config. Must be called on the main thread.
 GFX_EXPORT FcConfig* GetGlobalFontConfig();
 GFX_EXPORT void OverrideGlobalFontConfigForTesting(FcConfig* config);
@@ -39,6 +46,13 @@ GFX_EXPORT base::FilePath GetFontPath(FcPattern* pattern);
 // font config pattern.
 GFX_EXPORT void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
                                                  FontRenderParams* param_out);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Adds a given directory to the available fonts in the application.
+// Directory must start with `/run/imageloader/` (guaranteed by DLC).
+// Returns whether the fonts were added or not.
+GFX_EXPORT bool AddAppFontDir(base::FilePath dir);
+#endif
 
 }  // namespace gfx
 

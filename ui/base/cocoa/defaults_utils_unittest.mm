@@ -90,7 +90,7 @@ class DefaultsUtilsTest : public CocoaTest {
   }
 
  private:
-  absl::optional<bool> refresh_flag_initial_value_;
+  std::optional<bool> refresh_flag_initial_value_;
   NSInteger orig_blink_period_values_[2];
 };
 

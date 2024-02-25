@@ -18,7 +18,7 @@ base::Value::Dict ProgressMarkerMapToValueDict(
     std::string printable_payload;
     base::EscapeJSONString(progress_marker, false /* put_in_quotes */,
                            &printable_payload);
-    base::Base64Encode(printable_payload, &printable_payload);
+    printable_payload = base::Base64Encode(printable_payload);
     value.Set(ModelTypeToDebugString(model_type), printable_payload);
   }
   return value;

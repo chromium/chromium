@@ -18,9 +18,9 @@
 #include "base/time/time.h"
 #include "remoting/base/logging.h"
 #include "third_party/libei/include/libei.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/portal_request_response.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/scoped_glib.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/portal_request_response.h"
+#include "third_party/webrtc/modules/portal/scoped_glib.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
 
 namespace remoting::xdg_portal {
 

@@ -19,7 +19,6 @@ class RenderViewHost;
 
 namespace content {
 
-class RenderFrameHost;
 class RenderProcessHost;
 class RenderWidgetHost;
 

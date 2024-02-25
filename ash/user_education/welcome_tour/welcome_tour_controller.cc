@@ -4,12 +4,17 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include <string_view>
+
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/cpp/system/scoped_nudge_pause.h"
+#include "ash/public/cpp/system/scoped_toast_pause.h"
+#include "ash/public/cpp/system/system_nudge_pause_manager.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -28,7 +33,9 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_manager/user_type.h"
@@ -38,6 +45,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -83,6 +91,12 @@ views::TrackedElementViews* GetMatchingElementInPrimaryRootWindow(
       GetMatchingViewInPrimaryRootWindow(element_id));
 }
 
+void LaunchExploreAppAsync(UserEducationPrivateApiKey key) {
+  UserEducationController::Get()->LaunchSystemWebAppAsync(
+      key, ash::SystemWebAppType::HELP, apps::LaunchSource::kFromWelcomeTour,
+      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+}
+
 user_education::TutorialDescription::NameElementsCallback
 NameMatchingElementInPrimaryRootWindowCallback(ui::ElementIdentifier element_id,
                                                const char* element_name) {
@@ -90,7 +104,7 @@ NameMatchingElementInPrimaryRootWindowCallback(ui::ElementIdentifier element_id,
       [](ui::ElementIdentifier element_id, const char* element_name,
          ui::InteractionSequence* sequence, ui::TrackedElement*) {
         if (auto* element = GetMatchingElementInPrimaryRootWindow(element_id)) {
-          sequence->NameElement(element, base::StringPiece(element_name));
+          sequence->NameElement(element, std::string_view(element_name));
           return true;
         }
         return false;
@@ -138,17 +152,11 @@ ui::ElementContext WelcomeTourController::GetInitialElementContext() const {
       GetMatchingViewInPrimaryRootWindow(kShelfViewElementId));
 }
 
-std::map<TutorialId, user_education::TutorialDescription>
-WelcomeTourController::GetTutorialDescriptions() {
-  std::map<TutorialId, user_education::TutorialDescription>
-      tutorial_descriptions_by_id;
-
-  user_education::TutorialDescription& tutorial_description =
-      tutorial_descriptions_by_id
-          .emplace(std::piecewise_construct,
-                   std::forward_as_tuple(TutorialId::kWelcomeTourPrototype1),
-                   std::forward_as_tuple())
-          .first->second;
+user_education::TutorialDescription
+WelcomeTourController::GetTutorialDescription() const {
+  user_education::TutorialDescription tutorial_description;
+  tutorial_description.complete_button_text_id =
+      IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT;
 
   // Step 0: Dialog.
   tutorial_description.steps.emplace_back(
@@ -284,11 +292,11 @@ WelcomeTourController::GetTutorialDescriptions() {
   // Step 7: Explore app window.
   // Implemented in `WelcomeTourController::OnWelcomeTourEnded()`.
 
-  return tutorial_descriptions_by_id;
+  return tutorial_description;
 }
 
 void WelcomeTourController::OnAccessibilityControllerShutdown() {
-  accessibility_observation_.Reset();
+  MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kShutdown);
 }
 
 void WelcomeTourController::OnAccessibilityStatusChanged() {
@@ -312,11 +320,16 @@ void WelcomeTourController::OnSessionStateChanged(
   MaybeStartWelcomeTour();
 }
 
-void WelcomeTourController::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
+void WelcomeTourController::OnShellDestroying() {
+  MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kShutdown);
 }
 
-void WelcomeTourController::OnTabletModeStarting() {
+void WelcomeTourController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (state != display::TabletState::kEnteringTabletMode) {
+    return;
+  }
+
   MaybeAbortWelcomeTour(
       welcome_tour_metrics::AbortedReason::kTabletModeEnabled);
 }
@@ -333,7 +346,32 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   session_observation_.Reset();
 
   if (!features::IsWelcomeTourForceUserEligibilityEnabled()) {
-    const absl::optional<bool>& is_new_user =
+    // Welcome Tour is supported for regular users only.
+    const auto* const session_controller = Shell::Get()->session_controller();
+    if (const auto user_type = session_controller->GetUserType();
+        user_type != user_manager::UserType::kRegular) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
+      return;
+    }
+
+    // Welcome Tour is not supported for managed accounts.
+    if (session_controller->IsActiveAccountManaged()) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kManagedAccount);
+      return;
+    }
+
+    // The cross-device proxy for whether the user is "new" or "existing" is
+    // untested out in the wild. For sanity, confirm that the user is also
+    // considered "new" locally in case the proxy check proves to be erroneous.
+    if (!session_controller->IsUserFirstLogin()) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
+      return;
+    }
+
+    const std::optional<bool>& is_new_user =
         UserEducationController::Get()->IsNewUser(UserEducationPrivateApiKey());
 
     // If it is not known whether the user is "new" or "existing" when this code
@@ -351,32 +389,16 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
           welcome_tour_metrics::PreventedReason::kUserNotNewCrossDevice);
       return;
     }
-
-    // The cross-device proxy for whether the user is "new" or "existing" is
-    // untested out in the wild. For sanity, confirm that the user is also
-    // considered "new" locally in case the proxy check proves to be erroneous.
-    const auto* const session_controller = Shell::Get()->session_controller();
-    if (session_controller && !session_controller->IsUserFirstLogin()) {
-      welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
-      return;
-    }
-
-    // Welcome Tour is not supported for managed accounts.
-    if (session_controller && session_controller->IsActiveAccountManaged()) {
-      welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kManagedAccount);
-      return;
-    }
-
-    // Welcome Tour is supported for regular users only.
-    if (const auto user_type = session_controller->GetUserType();
-        user_type != user_manager::UserType::USER_TYPE_REGULAR) {
-      welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
-      return;
-    }
   }
+
+  // We should attempt to launch the Explore app even if the Welcome Tour is
+  // prevented provided that (a) the user is new, and (b) the device is not in
+  // tablet mode. This is in keeping with existing first run behavior.
+  base::ScopedClosureRunner maybe_launch_explore_app_async(
+      display::Screen::GetScreen()->InTabletMode()
+          ? base::DoNothing()
+          : base::BindOnce(&LaunchExploreAppAsync,
+                           UserEducationPrivateApiKey()));
 
   // Welcome Tour is not supported with ChromeVox enabled.
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
@@ -386,7 +408,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   }
 
   // Welcome Tour is not supported in tablet mode.
-  if (TabletMode::IsInTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     welcome_tour_metrics::RecordTourPrevented(
         welcome_tour_metrics::PreventedReason::kTabletModeEnabled);
     return;
@@ -399,10 +421,21 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     return;
   }
 
+  // The Welcome Tour is not being prevented, so hold off on opening the Explore
+  // app until the Welcome Tour is either completed or aborted.
+  std::ignore = maybe_launch_explore_app_async.Release();
+
+  auto* const tutorial_controller = UserEducationTutorialController::Get();
+  if (!tutorial_controller->IsTutorialRegistered(TutorialId::kWelcomeTour)) {
+    tutorial_controller->RegisterTutorial(UserEducationPrivateApiKey(),
+                                          TutorialId::kWelcomeTour,
+                                          GetTutorialDescription());
+  }
+
   // NOTE: It is theoretically possible for the tutorial to outlive `this`
   // controller during the destruction sequence.
-  UserEducationTutorialController::Get()->StartTutorial(
-      UserEducationPrivateApiKey(), TutorialId::kWelcomeTourPrototype1,
+  tutorial_controller->StartTutorial(
+      UserEducationPrivateApiKey(), TutorialId::kWelcomeTour,
       GetInitialElementContext(),
       /*completed_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
@@ -425,30 +458,23 @@ void WelcomeTourController::MaybeAbortWelcomeTour(
   }
 
   UserEducationTutorialController::Get()->AbortTutorial(
-      UserEducationPrivateApiKey(), TutorialId::kWelcomeTourPrototype1);
+      UserEducationPrivateApiKey(), TutorialId::kWelcomeTour);
 }
 
-// TODO(http://b/277091006): Stabilize app launches.
-// TODO(http://b/277091067): Stabilize apps in launcher.
-// TODO(http://b/277091443): Stabilize apps in shelf.
-// TODO(http://b/277091733): Stabilize continue section in launcher.
-// TODO(http://b/277091715): Stabilize pods in shelf.
-// TODO(http://b/277091619): Stabilize wallpaper.
-// TODO(http://b/277091624): Stabilize nudges/toasts.
 void WelcomeTourController::OnWelcomeTourStarted() {
   aborted_reason_ = welcome_tour_metrics::AbortedReason::kUnknown;
   accelerator_handler_ = std::make_unique<WelcomeTourAcceleratorHandler>(
       base::BindRepeating(&WelcomeTourController::MaybeAbortWelcomeTour,
                           weak_ptr_factory_.GetWeakPtr(),
                           welcome_tour_metrics::AbortedReason::kAccelerator));
-
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
-
   notification_blocker_ = std::make_unique<WelcomeTourNotificationBlocker>();
   notification_blocker_->Init();
-
+  nudge_pause_ = SystemNudgePauseManager::Get()->CreateScopedPause();
   scrim_ = std::make_unique<WelcomeTourScrim>();
-  tablet_mode_observation_.Observe(TabletMode::Get());
+  shell_observation_.Observe(Shell::Get());
+  display_observation_.Observe(display::Screen::GetScreen());
+  toast_pause_ = ToastManager::Get()->CreateScopedPause();
   window_minimizer_ = std::make_unique<WelcomeTourWindowMinimizer>();
 
   // NOTE: The accept button doesn't need to be explicitly handled because the
@@ -474,31 +500,20 @@ void WelcomeTourController::OnWelcomeTourStarted() {
   }
 }
 
-// TODO(http://b/277091006): Restore app launches.
-// TODO(http://b/277091067): Restore apps in launcher.
-// TODO(http://b/277091443): Restore apps in shelf.
-// TODO(http://b/277091733): Restore continue section in launcher.
-// TODO(http://b/277091715): Restore pods in shelf.
-// TODO(http://b/277091619): Restore wallpaper.
-// TODO(http://b/277091624): Restore nudges/toasts.
 void WelcomeTourController::OnWelcomeTourEnded(
     bool completed,
     base::ElapsedTimer time_since_start) {
   accelerator_handler_.reset();
   accessibility_observation_.Reset();
   notification_blocker_.reset();
+  nudge_pause_.reset();
   scrim_.reset();
-  tablet_mode_observation_.Reset();
+  shell_observation_.Reset();
+  display_observation_.Reset();
+  toast_pause_.reset();
   window_minimizer_.reset();
 
-  if (completed) {
-    // Attempt to launch the Explore app on successful completion of the tour.
-    UserEducationController::Get()->LaunchSystemWebAppAsync(
-        UserEducationPrivateApiKey(), ash::SystemWebAppType::HELP,
-        display::Screen::GetScreen()->GetPrimaryDisplay().id());
-
-    SetCurrentStep(welcome_tour_metrics::Step::kExploreAppWindow);
-  } else {
+  if (!completed) {
     welcome_tour_metrics::RecordTourAborted(aborted_reason_);
 
     // `current_step_` may not be set in testing.
@@ -519,7 +534,16 @@ void WelcomeTourController::OnWelcomeTourEnded(
     }
   }
 
-  SetCurrentStep(absl::nullopt);
+  // Attempt to launch the Explore app regardless of tour completion so long as
+  // the device is not in tablet mode. This is in keeping with existing first
+  // run behavior.
+  if (!display::Screen::GetScreen()->InTabletMode()) {
+    LaunchExploreAppAsync(UserEducationPrivateApiKey());
+    SetCurrentStep(welcome_tour_metrics::Step::kExploreAppWindow);
+  }
+
+  SetCurrentStep(std::nullopt);
+
   welcome_tour_metrics::RecordTourDuration(time_since_start.Elapsed(),
                                            completed);
 
@@ -529,7 +553,7 @@ void WelcomeTourController::OnWelcomeTourEnded(
 }
 
 void WelcomeTourController::SetCurrentStep(
-    absl::optional<welcome_tour_metrics::Step> step) {
+    std::optional<welcome_tour_metrics::Step> step) {
   if (current_step_) {
     welcome_tour_metrics::RecordStepDuration(current_step_.value(),
                                              current_step_timer_.Elapsed());

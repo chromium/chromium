@@ -36,11 +36,20 @@ namespace {
 
 constexpr base::TimeDelta kExpireInterval = base::Seconds(10);
 
+SurfaceObserver::HandleInteraction GetHandleInteraction(
+    const CompositorFrameMetadata& metadata) {
+  if (metadata.is_handling_interaction) {
+    return SurfaceObserver::HandleInteraction::kYes;
+  } else {
+    return SurfaceObserver::HandleInteraction::kNo;
+  }
+}
+
 }  // namespace
 
 SurfaceManager::SurfaceManager(
     SurfaceManagerDelegate* delegate,
-    absl::optional<uint32_t> activation_deadline_in_frames,
+    std::optional<uint32_t> activation_deadline_in_frames,
     size_t max_uncommitted_frames)
     : delegate_(delegate),
       activation_deadline_in_frames_(activation_deadline_in_frames),
@@ -90,7 +99,7 @@ std::string SurfaceManager::SurfaceReferencesToString() {
 #endif
 
 void SurfaceManager::SetActivationDeadlineInFramesForTesting(
-    absl::optional<uint32_t> activation_deadline_in_frames) {
+    std::optional<uint32_t> activation_deadline_in_frames) {
   activation_deadline_in_frames_ = activation_deadline_in_frames;
 }
 
@@ -357,19 +366,21 @@ void SurfaceManager::RemoveTemporaryReferenceImpl(const SurfaceId& surface_id,
   std::vector<LocalSurfaceId>& frame_sink_temp_refs =
       temporary_reference_ranges_[frame_sink_id];
 
-  // Find the iterator to the range tracking entry for |surface_id|. Use that
-  // iterator to find the right end iterator for the temporary references we
-  // want to remove.
-  auto end_iter = base::ranges::find_if(
-      frame_sink_temp_refs, [&surface_id](const LocalSurfaceId& id) {
-        return id.IsNewerThan(surface_id.local_surface_id());
-      });
-  auto begin_iter = frame_sink_temp_refs.begin();
+  auto iter = frame_sink_temp_refs.begin();
+  while (iter != frame_sink_temp_refs.end()) {
+    const auto& temp_id = SurfaceId(frame_sink_id, *iter);
+    // SurfaceIDs corresponding to the same FrameSinkId can have different embed
+    // tokens for cross SiteInstanceGroup navigations. Only delete older IDs
+    // with the same embed token as `surface_id`.
+    if (!temp_id.HasSameEmbedTokenAs(surface_id) ||
+        temp_id.IsNewerThan(surface_id)) {
+      ++iter;
+      continue;
+    }
 
-  // Remove temporary references and range tracking information.
-  for (auto iter = begin_iter; iter != end_iter; ++iter)
-    temporary_references_.erase(SurfaceId(frame_sink_id, *iter));
-  frame_sink_temp_refs.erase(begin_iter, end_iter);
+    iter = frame_sink_temp_refs.erase(iter);
+    temporary_references_.erase(temp_id);
+  }
 
   // If last temporary reference is removed for |frame_sink_id| then cleanup
   // range tracking map entry.
@@ -448,14 +459,14 @@ Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) const {
   return it->second.get();
 }
 
-bool SurfaceManager::SurfaceModified(const SurfaceId& surface_id,
-                                     const BeginFrameAck& ack,
-                                     bool is_handling_interaction) {
+bool SurfaceManager::SurfaceModified(
+    const SurfaceId& surface_id,
+    const BeginFrameAck& ack,
+    SurfaceObserver::HandleInteraction handle_interaction) {
   CHECK(thread_checker_.CalledOnValidThread());
   bool changed = false;
   for (auto& observer : observer_list_)
-    changed |=
-        observer.OnSurfaceDamaged(surface_id, ack, is_handling_interaction);
+    changed |= observer.OnSurfaceDamaged(surface_id, ack, handle_interaction);
   return changed;
 }
 
@@ -475,7 +486,7 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
   // Trigger a display frame if necessary.
   const CompositorFrameMetadata& metadata = surface->GetActiveFrameMetadata();
   if (!SurfaceModified(surface->surface_id(), metadata.begin_frame_ack,
-                       metadata.is_handling_interaction)) {
+                       GetHandleInteraction(metadata))) {
     TRACE_EVENT_INSTANT0("viz", "Damage not visible.",
                          TRACE_EVENT_SCOPE_THREAD);
     surface->SendAckToClient();
@@ -664,7 +675,7 @@ void SurfaceManager::CommitFramesInRangeRecursively(
                            range.end().local_surface_id().embed_token()) {
     if (auto* allocation_group =
             GetAllocationGroupForSurfaceId(*range.start())) {
-      for (auto* surface : allocation_group->surfaces()) {
+      for (Surface* surface : allocation_group->surfaces()) {
         if (range.IsInRangeInclusive(surface->surface_id()))
           surface->CommitFramesRecursively(predicate);
       }
@@ -673,7 +684,7 @@ void SurfaceManager::CommitFramesInRangeRecursively(
 
   // Process the allocation group of the end of the range.
   if (auto* allocation_group = GetAllocationGroupForSurfaceId(range.end())) {
-    for (auto* surface : allocation_group->surfaces()) {
+    for (Surface* surface : allocation_group->surfaces()) {
       if (range.IsInRangeInclusive(surface->surface_id()))
         surface->CommitFramesRecursively(predicate);
     }

@@ -83,7 +83,7 @@ class TestFocusController : public ui::EventHandler {
     }
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> root_;
+  raw_ptr<aura::Window> root_;
 };
 
 class KeyboardContainerObserver : public aura::WindowObserver {
@@ -106,8 +106,8 @@ class KeyboardContainerObserver : public aura::WindowObserver {
       run_loop_->QuitWhenIdle();
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  const raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;
+  raw_ptr<aura::Window> window_;
+  const raw_ptr<base::RunLoop> run_loop_;
 };
 
 class SetModeCallbackInvocationCounter {

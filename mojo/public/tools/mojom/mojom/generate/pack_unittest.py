@@ -77,7 +77,7 @@ class PackTest(unittest.TestCase):
              mojom.MSGPIPE.MakeNullableKind(),
              mojom.Interface('test_interface').MakeNullableKind(),
              mojom.SHAREDBUFFER.MakeNullableKind(),
-             mojom.InterfaceRequest().MakeNullableKind())
+             mojom.PendingReceiver().MakeNullableKind())
     fields = (1, 2, 4, 3, 5, 6, 8, 7, 9, 10, 11)
     offsets = (0, 8, 12, 16, 24, 32, 36, 40, 48, 56, 60)
     return self._CheckPackSequence(kinds, fields, offsets)
@@ -205,6 +205,34 @@ class PackTest(unittest.TestCase):
     self.assertEqual(4, versions[2].num_fields)
     self.assertEqual(32, versions[2].num_bytes)
 
+  def testGetVersionInfoPackedStruct(self):
+    """Tests that pack.GetVersionInfo() correctly sets version, num_fields,
+    and num_packed_fields for a packed struct.
+    """
+    struct = mojom.Struct('test')
+    struct.AddField('field_0', mojom.BOOL, ordinal=0)
+    struct.AddField('field_1',
+                    mojom.NULLABLE_BOOL,
+                    ordinal=1,
+                    attributes={'MinVersion': 1})
+    struct.AddField('field_2',
+                    mojom.NULLABLE_BOOL,
+                    ordinal=2,
+                    attributes={'MinVersion': 2})
+    ps = pack.PackedStruct(struct)
+    versions = pack.GetVersionInfo(ps)
+
+    self.assertEqual(3, len(versions))
+    self.assertEqual(0, versions[0].version)
+    self.assertEqual(1, versions[1].version)
+    self.assertEqual(2, versions[2].version)
+    self.assertEqual(1, versions[0].num_fields)
+    self.assertEqual(2, versions[1].num_fields)
+    self.assertEqual(3, versions[2].num_fields)
+    self.assertEqual(1, versions[0].num_packed_fields)
+    self.assertEqual(3, versions[1].num_packed_fields)
+    self.assertEqual(5, versions[2].num_packed_fields)
+
   def testInterfaceAlignment(self):
     """Tests that interfaces are aligned on 4-byte boundaries, although the size
     of an interface is 8 bytes.
@@ -214,12 +242,24 @@ class PackTest(unittest.TestCase):
     offsets = (0, 4)
     self._CheckPackSequence(kinds, fields, offsets)
 
-  def testAssociatedInterfaceAlignment(self):
-    """Tests that associated interfaces are aligned on 4-byte boundaries,
-    although the size of an associated interface is 8 bytes.
-    """
-    kinds = (mojom.INT32,
-             mojom.AssociatedInterface(mojom.Interface('test_interface')))
-    fields = (1, 2)
-    offsets = (0, 4)
-    self._CheckPackSequence(kinds, fields, offsets)
+  def testNullablePrimitives(self):
+    """Tests that the nullable primitives are packed correctly"""
+    struct = mojom.Struct('test')
+    # The following struct should be created:
+    # struct {
+    #   bool field_$flag = 'true';
+    #   int32 field_$value = 5;
+    # }
+    struct.AddField('field', mojom.NULLABLE_INT32, ordinal=0, default=5)
+
+    fields = pack.PackedStruct(struct).packed_fields_in_ordinal_order
+
+    self.assertEquals(2, len(fields))
+
+    self.assertEquals('field_$flag', fields[0].field.name)
+    self.assertEquals(mojom.BOOL, fields[0].field.kind)
+    self.assertEquals('true', fields[0].field.default)
+
+    self.assertEquals('field_$value', fields[1].field.name)
+    self.assertEquals(mojom.INT32, fields[1].field.kind)
+    self.assertEquals(5, fields[1].field.default)

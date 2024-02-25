@@ -109,8 +109,8 @@ void TextIteratorTextState::ResetPositionContainerNode(
   position_node_type_ = node_type;
   position_container_node_ = nullptr;
   position_node_ = &node;
-  position_start_offset_ = absl::nullopt;
-  position_end_offset_ = absl::nullopt;
+  position_start_offset_ = std::nullopt;
+  position_end_offset_ = std::nullopt;
 }
 
 void TextIteratorTextState::UpdatePositionOffsets(

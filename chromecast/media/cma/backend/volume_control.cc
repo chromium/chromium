@@ -203,7 +203,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
 
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,
                       AudioContentType::kCommunication}) {
-      absl::optional<double> dbfs =
+      std::optional<double> dbfs =
           stored_values_.FindDouble(ContentTypeToDbFSPath(type));
       CHECK(dbfs);
       volumes_[type] = VolumeControl::DbFSToVolume(*dbfs);
@@ -279,7 +279,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     stored_values_.SetByDottedPath(ContentTypeToDbFSPath(type), dbfs);
     std::string output_js;
     base::JSONWriter::Write(stored_values_, &output_js);
-    saved_volumes_writer_->WriteNow(std::make_unique<std::string>(output_js));
+    saved_volumes_writer_->WriteNow(std::move(output_js));
   }
 
   void SetVolumeMultiplierOnThread(AudioContentType type, float multiplier) {

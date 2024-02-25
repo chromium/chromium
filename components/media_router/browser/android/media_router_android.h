@@ -36,15 +36,13 @@ class MediaRouterAndroid : public MediaRouterBase {
                    const url::Origin& origin,
                    content::WebContents* web_contents,
                    MediaRouteResponseCallback callback,
-                   base::TimeDelta timeout,
-                   bool incognito) override;
+                   base::TimeDelta timeout) override;
   void JoinRoute(const MediaSource::Id& source,
                  const std::string& presentation_id,
                  const url::Origin& origin,
                  content::WebContents* web_contents,
                  MediaRouteResponseCallback callback,
-                 base::TimeDelta timeout,
-                 bool incognito) override;
+                 base::TimeDelta timeout) override;
   void DetachRoute(MediaRoute::Id route_id) override;
   void TerminateRoute(const MediaRoute::Id& route_id) override;
   void SendRouteMessage(const MediaRoute::Id& route_id,
@@ -85,7 +83,7 @@ class MediaRouterAndroid : public MediaRouterBase {
   // Notifies the media router when the route was closed with an optional error.
   // Null error indicates no error.
   void OnRouteClosed(const MediaRoute::Id& route_id,
-                     const absl::optional<std::string>& error);
+                     const std::optional<std::string>& error);
 
   // Notifies the media router about a message received from the media route.
   void OnMessage(const MediaRoute::Id& route_id, const std::string& message);
@@ -157,7 +155,7 @@ class MediaRouterAndroid : public MediaRouterBase {
       const std::string& error_text,
       int route_request_id,
       base::OnceCallback<void(mojom::RouteRequestResultCode,
-                              absl::optional<mojom::MediaRouteProviderId>)>
+                              std::optional<mojom::MediaRouteProviderId>)>
           callback);
 
   void SetMediaRouterBridgeForTest(MediaRouterAndroidBridge* bridge) {

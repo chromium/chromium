@@ -1,9 +1,17 @@
 
 
-static bool UnixSymlink(const char *Target,const wchar *LinkName,RarTime *ftm,RarTime *fta)
-{
-  CreatePath(LinkName,true);
+static bool UnixSymlink(CommandData* Cmd,
+                        const char* Target,
+                        const wchar* LinkName,
+                        RarTime* ftm,
+                        RarTime* fta) {
+  CreatePath(LinkName, true, Cmd->DisableNames);
+
+  // Overwrite prompt was already issued and confirmed earlier, so we can
+  // remove existing symlink or regular file here. PrepareToDelete was also
+  // called earlier inside of uiAskReplaceEx.
   DelFile(LinkName);
+
   char LinkNameA[NM];
   WideToChar(LinkName,LinkNameA,ASIZE(LinkNameA));
   if (symlink(Target,LinkNameA)==-1) // Error.
@@ -38,15 +46,39 @@ static bool UnixSymlink(const char *Target,const wchar *LinkName,RarTime *ftm,Ra
   return true;
 }
 
-
 static bool IsFullPath(const char *PathA) // Unix ASCII version.
 {
   return *PathA==CPATHDIVIDER;
 }
 
+// For security purpose we prefer to be sure that CharToWide completed
+// successfully and even if it truncated a string for some reason,
+// it didn't affect the number of path related characters we analyze
+// in IsRelativeSymlinkSafe later.
+// This check is likely to be excessive, but let's keep it anyway.
+static bool SafeCharToWide(const char* Src, wchar* Dest, size_t DestSize) {
+  if (!CharToWide(Src, Dest, DestSize) || *Dest == 0) {
+    return false;
+  }
+  uint SrcChars = 0, DestChars = 0;
+  for (uint I = 0; Src[I] != 0; I++) {
+    if (Src[I] == '/' || Src[I] == '.') {
+      SrcChars++;
+    }
+  }
+  for (uint I = 0; Dest[I] != 0; I++) {
+    if (Dest[I] == '/' || Dest[I] == '.') {
+      DestChars++;
+    }
+  }
+  return SrcChars == DestChars;
+}
 
-bool ExtractUnixLink30(CommandData *Cmd,ComprDataIO &DataIO,Archive &Arc,const wchar *LinkName)
-{
+static bool ExtractUnixLink30(CommandData* Cmd,
+                              ComprDataIO& DataIO,
+                              Archive& Arc,
+                              const wchar* LinkName,
+                              bool& UpLink) {
   char Target[NM];
   if (IsLink(Arc.FileHead.FileAttr))
   {
@@ -67,22 +99,28 @@ bool ExtractUnixLink30(CommandData *Cmd,ComprDataIO &DataIO,Archive &Arc,const w
       return true;
 
     wchar TargetW[NM];
-    CharToWide(Target,TargetW,ASIZE(TargetW));
-    // Check for *TargetW==0 to catch CharToWide failure.
+    if (!SafeCharToWide(Target, TargetW, ASIZE(TargetW))) {
+      return false;
+    }
     // Use Arc.FileHead.FileName instead of LinkName, since LinkName
     // can include the destination path as a prefix, which can
     // confuse IsRelativeSymlinkSafe algorithm.
-    if (!Cmd->AbsoluteLinks && (*TargetW==0 || IsFullPath(TargetW) ||
-        !IsRelativeSymlinkSafe(Cmd,Arc.FileHead.FileName,LinkName,TargetW)))
+    if (!Cmd->AbsoluteLinks &&
+        (IsFullPath(TargetW) ||
+         !IsRelativeSymlinkSafe(Cmd, Arc.FileHead.FileName, LinkName,
+                                TargetW))) {
       return false;
-    return UnixSymlink(Target,LinkName,&Arc.FileHead.mtime,&Arc.FileHead.atime);
+    }
+    UpLink = strstr(Target, "..") != NULL;
+    return UnixSymlink(Cmd, Target, LinkName, &Arc.FileHead.mtime,
+                       &Arc.FileHead.atime);
   }
   return false;
 }
 
-
-bool ExtractUnixLink50(CommandData *Cmd,const wchar *Name,FileHeader *hd)
-{
+static bool ExtractUnixLink50(CommandData* Cmd,
+                              const wchar* Name,
+                              FileHeader* hd) {
   char Target[NM];
   WideToChar(hd->RedirName,Target,ASIZE(Target));
   if (hd->RedirType==FSREDIR_WINSYMLINK || hd->RedirType==FSREDIR_JUNCTION)
@@ -95,11 +133,18 @@ bool ExtractUnixLink50(CommandData *Cmd,const wchar *Name,FileHeader *hd)
       return false;
     DosSlashToUnix(Target,Target,ASIZE(Target));
   }
+
+  wchar TargetW[NM];
+  if (!SafeCharToWide(Target, TargetW, ASIZE(TargetW))) {
+    return false;
+  }
   // Use hd->FileName instead of LinkName, since LinkName can include
   // the destination path as a prefix, which can confuse
   // IsRelativeSymlinkSafe algorithm.
-  if (!Cmd->AbsoluteLinks && (IsFullPath(Target) ||
-      !IsRelativeSymlinkSafe(Cmd,hd->FileName,Name,hd->RedirName)))
+  if (!Cmd->AbsoluteLinks &&
+      (IsFullPath(TargetW) ||
+       !IsRelativeSymlinkSafe(Cmd, hd->FileName, Name, TargetW))) {
     return false;
-  return UnixSymlink(Target,Name,&hd->mtime,&hd->atime);
+  }
+  return UnixSymlink(Cmd, Target, Name, &hd->mtime, &hd->atime);
 }

@@ -34,16 +34,15 @@ namespace video_conference {
 // label. WARNING: `callback` provided must not destroy the button or the bubble
 // (i.e. close the bubble) as it would result in a crash in `OnButtonClicked()`.
 class ToggleEffectsButton : public views::Button {
- public:
-  METADATA_HEADER(ToggleEffectsButton);
+  METADATA_HEADER(ToggleEffectsButton, views::Button)
 
+ public:
   ToggleEffectsButton(views::Button::PressedCallback callback,
-                      const gfx::VectorIcon* enabled_vector_icon,
-                      const gfx::VectorIcon* disabled_vector_icon,
+                      const gfx::VectorIcon* vector_icon,
                       bool toggle_state,
                       const std::u16string& label_text,
                       const int accessible_name_id,
-                      absl::optional<int> container_id,
+                      std::optional<int> container_id,
                       const VcEffectId effect_id,
                       int num_button_per_row);
 
@@ -72,11 +71,10 @@ class ToggleEffectsButton : public views::Button {
   const VcEffectId effect_id_;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> enabled_vector_icon_;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> disabled_vector_icon_;
+  raw_ptr<const gfx::VectorIcon> vector_icon_;
   const int accessible_name_id_;
 
   raw_ptr<views::FlexLayout> layout_ = nullptr;
@@ -92,9 +90,9 @@ class ToggleEffectsButton : public views::Button {
 // `VideoConferenceTrayEffectsManager`, which is in turn owned by the passed-in
 // controller.
 class ToggleEffectsView : public views::View {
- public:
-  METADATA_HEADER(ToggleEffectsView);
+  METADATA_HEADER(ToggleEffectsView, views::View)
 
+ public:
   explicit ToggleEffectsView(VideoConferenceTrayController* controller);
   ToggleEffectsView(const ToggleEffectsView&) = delete;
   ToggleEffectsView& operator=(const ToggleEffectsView&) = delete;

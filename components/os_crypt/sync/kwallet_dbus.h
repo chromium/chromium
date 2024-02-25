@@ -5,13 +5,16 @@
 #ifndef COMPONENTS_OS_CRYPT_SYNC_KWALLET_DBUS_H_
 #define COMPONENTS_OS_CRYPT_SYNC_KWALLET_DBUS_H_
 
+#include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -109,8 +112,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
                                          const std::string& folder_name,
                                          const std::string& key,
                                          const std::string& app_name,
-                                         const uint8_t* data,
-                                         size_t length,
+                                         base::span<const uint8_t> data,
                                          int* return_code_ptr);
 
   // Determine if the folder |folder_name| exists in the wallet.
@@ -140,7 +142,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
       const std::string& folder_name,
       const std::string& key,
       const std::string& app_name,
-      absl::optional<std::string>* const password_ptr);
+      std::optional<std::string>* const password_ptr);
 
   // Close the wallet. The wallet will only be closed if it is open but not in
   // use (rare), or if it is forced closed.

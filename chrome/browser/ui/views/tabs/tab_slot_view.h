@@ -12,9 +12,9 @@
 
 // View that can be laid out in the tabstrip.
 class TabSlotView : public views::View {
- public:
-  METADATA_HEADER(TabSlotView);
+  METADATA_HEADER(TabSlotView, views::View)
 
+ public:
   enum class ViewType {
     kTab,
     kTabGroupHeader,
@@ -32,10 +32,10 @@ class TabSlotView : public views::View {
   virtual TabSizeInfo GetTabSizeInfo() const = 0;
 
   // Used to set the tab group that this view belongs to.
-  void set_group(absl::optional<tab_groups::TabGroupId> group) {
+  void set_group(std::optional<tab_groups::TabGroupId> group) {
     group_ = group;
   }
-  absl::optional<tab_groups::TabGroupId> group() const { return group_; }
+  std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
   // Used to mark the view as having been detached.  Once this has happened, the
   // view should be invisibly closed.  This is irreversible.
@@ -53,7 +53,7 @@ class TabSlotView : public views::View {
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
  private:
-  absl::optional<tab_groups::TabGroupId> group_;
+  std::optional<tab_groups::TabGroupId> group_;
 
   // True if the view has been detached.
   bool detached_ = false;

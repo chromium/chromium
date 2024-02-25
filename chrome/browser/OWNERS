@@ -24,6 +24,8 @@ per-file *_lacros*=file://chrome/browser/lacros/OWNERS
 per-file browser_resources.grd=file://ui/webui/PLATFORM_OWNERS
 per-file dev_ui_browser_resources.grd=file://ui/webui/PLATFORM_OWNERS
 
+per-file allocation_recorder_browsertest.cc=file://components/allocation_recorder/OWNERS
+
 per-file browser_close_manager_browsertest.cc=creis@chromium.org
 
 per-file browser_navigator_browsertest.*=file://content/OWNERS

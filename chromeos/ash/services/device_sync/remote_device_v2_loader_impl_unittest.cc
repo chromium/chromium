@@ -54,7 +54,7 @@ CryptAuthDevice CreateCryptAuthDevice(const std::string& suffix,
                                       bool has_beto_metadata,
                                       bool has_public_key,
                                       bool has_bluetooth_address) {
-  absl::optional<cryptauthv2::BetterTogetherDeviceMetadata> beto_metadata;
+  std::optional<cryptauthv2::BetterTogetherDeviceMetadata> beto_metadata;
 
   if (has_beto_metadata) {
     beto_metadata = cryptauthv2::BetterTogetherDeviceMetadata();
@@ -74,12 +74,13 @@ CryptAuthDevice CreateCryptAuthDevice(const std::string& suffix,
     }
   }
 
-  return CryptAuthDevice(kInstanceIdPrefix + suffix, kDeviceNamePrefix + suffix,
-                         kDeviceSyncBetterTogetherPublicKeyPrefix + suffix,
-                         base::Time::FromJavaTime(kLastUpdateTimeMs),
-                         beto_metadata,
-                         {{multidevice::SoftwareFeature::kBetterTogetherHost,
-                           multidevice::SoftwareFeatureState::kSupported}});
+  return CryptAuthDevice(
+      kInstanceIdPrefix + suffix, kDeviceNamePrefix + suffix,
+      kDeviceSyncBetterTogetherPublicKeyPrefix + suffix,
+      base::Time::FromMillisecondsSinceUnixEpoch(kLastUpdateTimeMs),
+      beto_metadata,
+      {{multidevice::SoftwareFeature::kBetterTogetherHost,
+        multidevice::SoftwareFeatureState::kSupported}});
 }
 
 // Creates a RemoteDevice with |suffix| appended to each predetermined string
@@ -103,9 +104,10 @@ multidevice::RemoteDevice CreateRemoteDevice(const std::string& suffix,
 
   std::vector<multidevice::BeaconSeed> beacon_seeds;
   if (has_beacon_seeds) {
-    beacon_seeds.emplace_back(kBeaconSeedData + suffix,
-                              base::Time::FromJavaTime(kBeaconSeedStartTimeMs),
-                              base::Time::FromJavaTime(kBeaconSeedEndTimeMs));
+    beacon_seeds.emplace_back(
+        kBeaconSeedData + suffix,
+        base::Time::FromMillisecondsSinceUnixEpoch(kBeaconSeedStartTimeMs),
+        base::Time::FromMillisecondsSinceUnixEpoch(kBeaconSeedEndTimeMs));
   }
 
   return multidevice::RemoteDevice(
@@ -186,7 +188,7 @@ class DeviceSyncRemoteDeviceV2LoaderImplTest : public testing::Test {
 
  protected:
   // Null until Load() finishes.
-  absl::optional<multidevice::RemoteDeviceList> remote_devices_;
+  std::optional<multidevice::RemoteDeviceList> remote_devices_;
 
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;

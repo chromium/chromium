@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_AMBIENT_LIGHT_SENSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_AMBIENT_LIGHT_SENSOR_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/sensor/sensor.h"
 
@@ -22,7 +23,7 @@ class MODULES_EXPORT AmbientLightSensor final : public Sensor {
 
   AmbientLightSensor(ExecutionContext*, const SensorOptions*, ExceptionState&);
 
-  absl::optional<double> illuminance() const;
+  std::optional<double> illuminance() const;
 };
 
 }  // namespace blink

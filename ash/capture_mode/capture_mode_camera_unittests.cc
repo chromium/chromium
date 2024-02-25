@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/a11y_feature_type.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
@@ -49,6 +48,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/window_state.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -59,6 +59,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "chromeos/ui/frame/frame_header.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "media/base/video_facing.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -1100,11 +1102,14 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetBounds) {
   // Verifies the camera preview's alignment with `kTopRight` snap position and
   // `kWindow` capture source.
   StartRecordingFromSource(CaptureModeSource::kWindow);
-  const auto* window_being_recorded =
+  auto* window_being_recorded =
       controller->video_recording_watcher_for_testing()
           ->window_being_recorded();
   DCHECK(window_being_recorded);
-  VerifyPreviewAlignment(window_being_recorded->GetBoundsInScreen());
+  auto window_confine_bounds =
+      capture_mode_util::GetCaptureWindowConfineBounds(window_being_recorded);
+  wm::ConvertRectToScreen(window_being_recorded, &window_confine_bounds);
+  VerifyPreviewAlignment(window_confine_bounds);
 }
 
 TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
@@ -1371,6 +1376,7 @@ TEST_F(CaptureModeCameraTest,
 // events is or is not on capture label, its opacity is updated accordingly.
 TEST_F(CaptureModeCameraTest,
        CaptureLabelOpacityChangeWhenOverlappingWithCameraPreview) {
+  UpdateDisplay("900x800");
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
   auto* capture_session =
@@ -2985,8 +2991,12 @@ class CaptureModeCameraPreviewTest
   }
 
   void ResizeWindowSoCameraPreviewBecomes(CameraPreviewState preview_state) {
-    window()->SetBounds(
-        gfx::Rect(GetMinSurfaceSizeSoCameraBecomes(preview_state)));
+    auto size = GetMinSurfaceSizeSoCameraBecomes(preview_state);
+    if (auto* frame_header =
+            capture_mode_util::GetWindowFrameHeader(window())) {
+      size.Enlarge(0, frame_header->GetHeaderHeight());
+    }
+    window()->SetBounds(gfx::Rect(size));
   }
 
   void ResizeSurfaceSoCameraPreviewBecomes(CameraPreviewState preview_state) {
@@ -3027,7 +3037,10 @@ class CaptureModeCameraPreviewTest
       }
 
       case CaptureModeSource::kWindow:
-        return window()->GetBoundsInScreen();
+        auto bounds =
+            capture_mode_util::GetCaptureWindowConfineBounds(window());
+        wm::ConvertRectToScreen(window(), &bounds);
+        return bounds;
     }
   }
 
@@ -3573,7 +3586,7 @@ TEST_P(CaptureModeCameraPreviewTest, MultiDisplayResize) {
   StartCaptureSessionWithParam();
   auto* controller = CaptureModeController::Get();
   auto* session = controller->capture_mode_session();
-  auto* display_2_root = Shell::GetAllRootWindows()[1];
+  auto* display_2_root = Shell::GetAllRootWindows()[1].get();
 
   // When capturing a window, set its bounds such that it is placed on the
   // secondary display.
@@ -4011,7 +4024,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   auto* event_generator = GetEventGenerator();
 
   for (const bool switch_access_enabled : {false, true}) {
-    AccessibilityControllerImpl* a11y_controller =
+    AccessibilityController* a11y_controller =
         Shell::Get()->accessibility_controller();
     a11y_controller->switch_access().SetEnabled(switch_access_enabled);
     EXPECT_EQ(switch_access_enabled, a11y_controller->IsSwitchAccessRunning());
@@ -4075,7 +4088,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   auto* event_generator = GetEventGenerator();
 
   for (const bool switch_access_enabled : {false, true}) {
-    AccessibilityControllerImpl* a11y_controller =
+    AccessibilityController* a11y_controller =
         Shell::Get()->accessibility_controller();
     a11y_controller->switch_access().SetEnabled(switch_access_enabled);
     EXPECT_EQ(switch_access_enabled, a11y_controller->IsSwitchAccessRunning());
@@ -4112,32 +4125,29 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          CaptureModeSource::kWindow));
 
 // -----------------------------------------------------------------------------
-// CameraPreviewWithQsRevampTest:
+// CameraPreviewWithNotificationTest:
 
-class CameraPreviewWithQsRevampTest : public CaptureModeCameraTest {
+class CameraPreviewWithNotificationTest : public CaptureModeCameraTest {
  public:
-  CameraPreviewWithQsRevampTest() : scoped_feature_list_(features::kQsRevamp) {}
-  CameraPreviewWithQsRevampTest(const CameraPreviewWithQsRevampTest&) = delete;
-  CameraPreviewWithQsRevampTest& operator=(
-      const CameraPreviewWithQsRevampTest&) = delete;
-  ~CameraPreviewWithQsRevampTest() override = default;
+  CameraPreviewWithNotificationTest() = default;
+  CameraPreviewWithNotificationTest(const CameraPreviewWithNotificationTest&) =
+      delete;
+  CameraPreviewWithNotificationTest& operator=(
+      const CameraPreviewWithNotificationTest&) = delete;
+  ~CameraPreviewWithNotificationTest() override = default;
 
   // CaptureModeCameraTest:
   void SetUp() override {
     CaptureModeCameraTest::SetUp();
 
-    auto test_api = std::make_unique<NotificationCenterTestApi>(
-        GetPrimaryNotificationCenterTray());
+    auto test_api = std::make_unique<NotificationCenterTestApi>();
     // Add a notification to show the notification center tray in the shelf.
     test_api->AddNotification();
     ASSERT_TRUE(test_api->IsTrayShown());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CameraPreviewWithQsRevampTest,
+TEST_F(CameraPreviewWithNotificationTest,
        AvoidCollisionWithNotificationBubbleShownFirst) {
   NotificationCenterTray* notification_center_tray =
       GetPrimaryNotificationCenterTray();
@@ -4167,7 +4177,7 @@ TEST_F(CameraPreviewWithQsRevampTest,
             CameraPreviewSnapPosition::kBottomRight);
 }
 
-TEST_F(CameraPreviewWithQsRevampTest,
+TEST_F(CameraPreviewWithNotificationTest,
        AvoidCollisionWithCameraPreviewShownFirst) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
@@ -4539,13 +4549,21 @@ namespace {
 // Waits for several rendered frames and verifies that the content of the
 // received video frames are the same as that of the produced video frames.
 void WaitForAndVerifyRenderedVideoFrame() {
+  // PaintCanvasVideoRenderer needs a context provider that is capable of GPU
+  // raster to copy the video frame to a bitmap.
+  auto context_provider =
+      base::MakeRefCounted<viz::TestInProcessContextProvider>(
+          viz::TestContextType::kGpuRaster, /*support_locking=*/false);
+  auto result = context_provider->BindToCurrentSequence();
+  CHECK_EQ(result, gpu::ContextResult::kSuccess);
+
   // Render a number of frames that are 3 times the size of the buffer pool.
   // This allows us to exercise calls to `OnNewBuffer()` and potentially
   // `OnFrameDropped()`.
   for (size_t i = 0; i < 3 * FakeCameraDevice::kMaxBufferCount; ++i) {
     base::RunLoop loop;
     CaptureModeTestApi().SetOnCameraVideoFrameRendered(
-        base::BindLambdaForTesting([&loop](
+        base::BindLambdaForTesting([&loop, &context_provider](
                                        scoped_refptr<media::VideoFrame> frame) {
           ASSERT_TRUE(frame);
           const gfx::Size frame_size = frame->visible_rect().size();
@@ -4554,15 +4572,10 @@ void WaitForAndVerifyRenderedVideoFrame() {
 
           media::PaintCanvasVideoRenderer renderer;
           SkBitmap received_frame_bitmap;
-
-          scoped_refptr<viz::RasterContextProvider> raster_context_provider =
-              aura::Env::GetInstance()
-                  ->context_factory()
-                  ->SharedMainThreadRasterContextProvider();
           received_frame_bitmap.allocN32Pixels(frame_size.width(),
                                                frame_size.height());
           cc::SkiaPaintCanvas canvas(received_frame_bitmap);
-          renderer.Copy(frame, &canvas, raster_context_provider.get());
+          renderer.Copy(frame, &canvas, context_provider.get());
 
           EXPECT_TRUE(gfx::test::AreBitmapsEqual(produced_frame_bitmap,
                                                  received_frame_bitmap));
@@ -4631,7 +4644,8 @@ TEST_P(CaptureModeCameraFramesTest, SelectAnotherCameraWhileRendering) {
 }
 
 // Regression test for https://crbug.com/1316230.
-TEST_P(CaptureModeCameraFramesTest, CameraFatalErrors) {
+// Flaky (b/323909190)
+TEST_P(CaptureModeCameraFramesTest, DISABLED_CameraFatalErrors) {
   CaptureModeTestApi().StartForFullscreen(/*for_video=*/true);
   auto* camera_controller = GetCameraController();
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
@@ -4674,7 +4688,7 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   {
     base::RunLoop loop;
     camera_controller->SetOnCameraListReceivedForTesting(loop.QuitClosure());
-    SimulateUserLogin("example@gmail.com", user_manager::USER_TYPE_REGULAR);
+    SimulateUserLogin("example@gmail.com", user_manager::UserType::kRegular);
     loop.Run();
   }
 
@@ -4682,14 +4696,11 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   EXPECT_EQ(camera_controller->available_cameras().size(), 1u);
 }
 
-class CaptureModePrivacyIndicatorsTest
-    : public CaptureModeCameraTest,
-      public testing::WithParamInterface<bool> {
+class CaptureModePrivacyIndicatorsTest : public CaptureModeCameraTest {
  public:
   CaptureModePrivacyIndicatorsTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kPrivacyIndicators, true},
-         {features::kQsRevamp, IsQsRevampEnabled()}});
+        {{features::kPrivacyIndicators, true}});
   }
   CaptureModePrivacyIndicatorsTest(const CaptureModePrivacyIndicatorsTest&) =
       delete;
@@ -4713,28 +4724,17 @@ class CaptureModePrivacyIndicatorsTest
 
   PrivacyIndicatorsTrayItemView* GetPrimaryDisplayPrivacyIndicatorsView()
       const {
-    return features::IsQsRevampEnabled()
-               ? Shell::GetPrimaryRootWindowController()
-                     ->GetStatusAreaWidget()
-                     ->notification_center_tray()
-                     ->privacy_indicators_view()
-               : Shell::GetPrimaryRootWindowController()
-                     ->GetStatusAreaWidget()
-                     ->unified_system_tray()
-                     ->privacy_indicators_view();
+    return Shell::GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->notification_center_tray()
+        ->privacy_indicators_view();
   }
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CaptureModePrivacyIndicatorsTest,
-                         testing::Bool());
-
-TEST_P(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
+TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -4782,7 +4782,7 @@ TEST_P(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
       capture_mode_privacy_notification_id));
 }
 
-TEST_P(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
+TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 

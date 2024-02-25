@@ -621,7 +621,8 @@ def make_accessor_functions(cg_context):
         func_def.set_base_template_vars(cg_context.template_bindings())
         func_def.body.extend([
             F("DCHECK_EQ(content_type_, {});", member.content_type()),
-            F("return {};", member.var_name),
+            F("return {};",
+              member.type_info.member_var_to_ref_expr(member.var_name)),
         ])
         return func_def, None
 
@@ -800,18 +801,18 @@ def make_accessor_functions(cg_context):
     return decls, defs
 
 
-def make_tov8value_function(cg_context):
+def make_tov8_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    func_decl = CxxFuncDeclNode(name="ToV8Value",
+    func_decl = CxxFuncDeclNode(name="ToV8",
                                 arg_decls=["ScriptState* script_state"],
-                                return_type="v8::MaybeLocal<v8::Value>",
+                                return_type="v8::Local<v8::Value>",
                                 const=True,
                                 override=True)
 
-    func_def = CxxFuncDefNode(name="ToV8Value",
+    func_def = CxxFuncDefNode(name="ToV8",
                               arg_decls=["ScriptState* script_state"],
-                              return_type="v8::MaybeLocal<v8::Value>",
+                              return_type="v8::Local<v8::Value>",
                               class_name=cg_context.class_name,
                               const=True)
     func_def.set_base_template_vars(cg_context.template_bindings())
@@ -823,8 +824,10 @@ def make_tov8value_function(cg_context):
         if member.is_null:
             text = "return v8::Null(${script_state}->GetIsolate());"
         else:
-            text = _format("return ToV8Traits<{}>::ToV8(${script_state}, {});",
-                           native_value_tag(member.idl_type), member.var_name)
+            text = _format(
+                "return ToV8Traits<{}>::ToV8(${script_state}, {});",
+                native_value_tag(member.idl_type),
+                member.type_info.member_var_to_ref_expr(member.var_name))
         branches.append(case=member.content_type(),
                         body=TextNode(text),
                         should_add_break=False)
@@ -833,7 +836,7 @@ def make_tov8value_function(cg_context):
         branches,
         EmptyNode(),
         TextNode("NOTREACHED();"),
-        TextNode("return v8::MaybeLocal<v8::Value>();"),
+        TextNode("return v8::Local<v8::Value>();"),
     ])
 
     return func_decl, func_def
@@ -986,8 +989,7 @@ def generate_union(union_identifier):
     factory_decls, factory_defs = make_factory_methods(cg_context)
     ctor_decls, ctor_defs = make_constructors(cg_context)
     accessor_decls, accessor_defs = make_accessor_functions(cg_context)
-    tov8value_func_decls, tov8value_func_defs = make_tov8value_function(
-        cg_context)
+    tov8_func_decls, tov8_func_defs = make_tov8_function(cg_context)
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
     clear_func_decls, clear_func_defs = make_clear_function(cg_context)
     name_func_decls, name_func_defs = make_name_function(cg_context)
@@ -1046,11 +1048,14 @@ def generate_union(union_identifier):
         PathManager(idl_type.type_definition_object).api_path(ext="h")
         for idl_type in union.flattened_member_types if idl_type.is_interface
     ])
-    (header_forward_decls, header_include_headers, source_forward_decls,
+    (header_forward_decls, header_include_headers,
+     header_stdcpp_include_headers, source_forward_decls,
      source_include_headers) = collect_forward_decls_and_include_headers(
          union.flattened_member_types)
     header_node.accumulator.add_class_decls(header_forward_decls)
     header_node.accumulator.add_include_headers(header_include_headers)
+    header_node.accumulator.add_stdcpp_include_headers(
+        header_stdcpp_include_headers)
     source_node.accumulator.add_class_decls(source_forward_decls)
     source_node.accumulator.add_include_headers(source_include_headers)
 
@@ -1075,9 +1080,9 @@ def generate_union(union_identifier):
     source_blink_ns.body.append(accessor_defs)
     source_blink_ns.body.append(EmptyNode())
 
-    class_def.public_section.append(tov8value_func_decls)
+    class_def.public_section.append(tov8_func_decls)
     class_def.public_section.append(EmptyNode())
-    source_blink_ns.body.append(tov8value_func_defs)
+    source_blink_ns.body.append(tov8_func_defs)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(trace_func_decls)

@@ -15,17 +15,27 @@ import java.util.List;
 class ContextualSearchInternalStateControllerWrapper
         extends ContextualSearchInternalStateController {
     static final List<Integer> EXPECTED_TAP_RESOLVE_SEQUENCE =
-            Arrays.asList(InternalState.TAP_RECOGNIZED, InternalState.TAP_GESTURE_COMMIT,
-                    InternalState.GATHERING_SURROUNDINGS, InternalState.DECIDING_SUPPRESSION,
-                    InternalState.START_SHOWING_TAP_UI, InternalState.SHOW_RESOLVING_UI,
-                    InternalState.RESOLVING, InternalState.SHOWING_TAP_SEARCH);
+            Arrays.asList(
+                    InternalState.TAP_RECOGNIZED,
+                    InternalState.TAP_GESTURE_COMMIT,
+                    InternalState.GATHERING_SURROUNDINGS,
+                    InternalState.DECIDING_SUPPRESSION,
+                    InternalState.START_SHOWING_TAP_UI,
+                    InternalState.SHOW_RESOLVING_UI,
+                    InternalState.RESOLVING,
+                    InternalState.SHOWING_TAP_SEARCH);
     static final List<Integer> EXPECTED_LONGPRESS_SEQUENCE =
-            Arrays.asList(InternalState.LONG_PRESS_RECOGNIZED, InternalState.GATHERING_SURROUNDINGS,
+            Arrays.asList(
+                    InternalState.LONG_PRESS_RECOGNIZED,
+                    InternalState.GATHERING_SURROUNDINGS,
                     InternalState.SHOWING_LITERAL_SEARCH);
     static final List<Integer> EXPECTED_LONGPRESS_RESOLVE_SEQUENCE =
-            Arrays.asList(InternalState.RESOLVING_LONG_PRESS_RECOGNIZED,
-                    InternalState.GATHERING_SURROUNDINGS, InternalState.SHOW_RESOLVING_UI,
-                    InternalState.RESOLVING, InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH);
+            Arrays.asList(
+                    InternalState.RESOLVING_LONG_PRESS_RECOGNIZED,
+                    InternalState.GATHERING_SURROUNDINGS,
+                    InternalState.SHOW_RESOLVING_UI,
+                    InternalState.RESOLVING,
+                    InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH);
 
     private List<Integer> mStartedStates = new ArrayList<Integer>();
     private List<Integer> mFinishedStates = new ArrayList<Integer>();
@@ -33,6 +43,7 @@ class ContextualSearchInternalStateControllerWrapper
     /**
      * Creates a wrapper around a {@link ContextualSearchInternalStateController} with the given
      * parameters.
+     *
      * @param policy The {@link ContextualSearchPolicy} to construct the controller with.
      * @param handler The {@link ContextualSearchInternalStateHandler} to use for state transitions.
      */
@@ -69,7 +80,7 @@ class ContextualSearchInternalStateControllerWrapper
 
     /**
      * @return A wrapper for a new {@link ContextualSearchInternalStateHandler} created using
-     *         parameters from the given manager.
+     *     parameters from the given manager.
      */
     static ContextualSearchInternalStateControllerWrapper makeNewInternalStateControllerWrapper(
             ContextualSearchManager manager) {

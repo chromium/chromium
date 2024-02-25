@@ -11,10 +11,10 @@
 #include <memory>
 #include <string_view>
 
+#include <optional>
 #include "fuchsia_web/common/test/fake_feedback_service.h"
 #include "fuchsia_web/runners/cast/test/cast_runner_features.h"
 #include "fuchsia_web/runners/cast/test/fake_cast_agent.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace test {
 
@@ -51,7 +51,7 @@ class CastRunnerLauncher {
   FakeCastAgent& fake_cast_agent() { return *fake_cast_agent_; }
 
  private:
-  absl::optional<::component_testing::RealmRoot> realm_root_;
+  std::optional<::component_testing::RealmRoot> realm_root_;
 
   std::unique_ptr<sys::ServiceDirectory> exposed_services_;
 

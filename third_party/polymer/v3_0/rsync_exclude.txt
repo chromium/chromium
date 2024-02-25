@@ -33,6 +33,9 @@ package-lock.json
 # font-roboto
 font-roboto/*
 
+# iron-behaviors
+iron-behaviors/iron-button-state.*
+
 # iron-checked-element-behavior
 iron-checked-element-behavior/*
 
@@ -48,11 +51,6 @@ iron-validatable-behavior/*
 # iron-test-helpers
 iron-test-helpers/iron-test-helpers.*
 iron-test-helpers/test-helpers.*
-
-# paper-behaviors
-paper-behaviors/paper-button-behavior.*
-paper-behaviors/paper-checked-element-behavior.*
-
 
 # paper-ripple
 paper-ripple/paper-ripple.d.ts

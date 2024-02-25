@@ -12,7 +12,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -36,7 +36,7 @@ void ZeroSuggestPrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
   // prefetching that early since the AutocompleteController machinery gets
   // started and stopped multiple times since a new tab is opened and until the
   // New Tab Page is navigated to; invalidating prefetch requests prematurely.
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser && !TabStripModelObserver::IsObservingAny(this)) {
     browser->tab_strip_model()->AddObserver(this);
   }
@@ -63,12 +63,12 @@ void ZeroSuggestPrefetchTabHelper::StartPrefetch() {
     return;
   }
 
-  auto* omnibox_edit_model = omnibox_view->model();
-  if (!omnibox_edit_model) {
+  auto* omnibox_controller = omnibox_view->controller();
+  if (!omnibox_controller) {
     return;
   }
 
-  omnibox_edit_model->StartPrefetch();
+  omnibox_controller->StartZeroSuggestPrefetch();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ZeroSuggestPrefetchTabHelper);

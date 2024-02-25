@@ -5,6 +5,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
@@ -12,8 +13,9 @@
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "chromeos/ui/wm/features.h"
+#include "base/command_line.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -27,15 +29,13 @@ constexpr float kCornerRadius = 2;
 // Cue timing values.
 constexpr base::TimeDelta kCueDismissTimeout = base::Seconds(6);
 constexpr base::TimeDelta kFadeDuration = base::Milliseconds(100);
-constexpr base::TimeDelta kCueResetDuration = base::Milliseconds(250);
 
 constexpr SkColor kCueColor = SK_ColorGRAY;
 
 }  // namespace
 
 TabletModeMultitaskCueController::TabletModeMultitaskCueController() {
-  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
-  DCHECK(Shell::Get()->IsInTabletMode());
+  CHECK(Shell::Get()->IsInTabletMode());
   Shell::Get()->activation_client()->AddObserver(this);
 
   // If an app window is active before switching to tablet mode, show the cue.
@@ -64,6 +64,10 @@ void TabletModeMultitaskCueController::MaybeShowCue(
 
   if (!TabletModeMultitaskMenuController::CanShowMenu(active_window)) {
     return;
+  }
+
+  if (pre_cue_shown_callback_for_test_) {
+    std::move(pre_cue_shown_callback_for_test_).Run();
   }
 
   window_ = active_window;
@@ -102,6 +106,21 @@ void TabletModeMultitaskCueController::MaybeShowCue(
 }
 
 bool TabletModeMultitaskCueController::CanShowCue(aura::Window* window) const {
+  // The cue may interfere with some integration tests.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAshNoNudges)) {
+    return false;
+  }
+
+  // When we go back to clamshell mode while in single split view (only one
+  // window open), overview mode will shutdown and try to restore activation
+  // to the window, and therefore call `MaybeShowCue()`. We do not want the cue
+  // and nudge to show in this case.
+  if (Shell::Get()->display_manager()->GetTabletState() ==
+      display::TabletState::kExitingTabletMode) {
+    return false;
+  }
+
   // Only show or dismiss the cue when activating app windows.
   if (static_cast<AppType>(window->GetProperty(aura::client::kAppType)) ==
       AppType::NON_APP) {
@@ -127,18 +146,6 @@ void TabletModeMultitaskCueController::DismissCue() {
 
   cue_layer_.reset();
   nudge_controller_.DismissNudge();
-}
-
-void TabletModeMultitaskCueController::ResetPosition() {
-  if (!cue_layer_) {
-    return;
-  }
-
-  views::AnimationBuilder()
-      .Once()
-      .SetDuration(kCueResetDuration)
-      .SetTransform(cue_layer_.get(), gfx::Transform(),
-                    gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 void TabletModeMultitaskCueController::OnMenuOpened(

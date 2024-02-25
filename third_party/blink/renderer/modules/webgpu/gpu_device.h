@@ -64,7 +64,6 @@ class V8GPUErrorFilter;
 enum class GPUSingletonWarning {
   kNonPreferredFormat,
   kDepthKey,
-  kTimestampArray,
   kCount,  // Must be last
 };
 
@@ -92,8 +91,8 @@ class GPUDevice final : public EventTarget,
   // gpu_device.idl
   GPUAdapter* adapter() const;
   GPUSupportedFeatures* features() const;
-  GPUSupportedLimits* limits() const { return limits_; }
-  ScriptPromise lost(ScriptState* script_state);
+  GPUSupportedLimits* limits() const { return limits_.Get(); }
+  ScriptPromiseTyped<GPUDeviceLostInfo> lost(ScriptState* script_state);
 
   GPUQueue* queue();
   bool destroyed() const;
@@ -172,8 +171,7 @@ class GPUDevice final : public EventTarget,
   void UntrackMappableBuffer(GPUBuffer* buffer);
 
  private:
-  using LostProperty =
-      ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
+  using LostProperty = ScriptPromiseProperty<GPUDeviceLostInfo, IDLUndefined>;
 
   // Used by USING_PRE_FINALIZER.
   void Dispose();
@@ -188,14 +186,14 @@ class GPUDevice final : public EventTarget,
                                WGPUErrorType type,
                                const char* message);
 
-  void OnCreateRenderPipelineAsyncCallback(ScriptPromiseResolver* resolver,
-                                           absl::optional<String> label,
+  void OnCreateRenderPipelineAsyncCallback(std::optional<String> label,
+                                           ScriptPromiseResolver* resolver,
                                            WGPUCreatePipelineAsyncStatus status,
                                            WGPURenderPipeline render_pipeline,
                                            const char* message);
   void OnCreateComputePipelineAsyncCallback(
+      std::optional<String> label,
       ScriptPromiseResolver* resolver,
-      absl::optional<String> label,
       WGPUCreatePipelineAsyncStatus status,
       WGPUComputePipeline compute_pipeline,
       const char* message);

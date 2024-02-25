@@ -4,26 +4,26 @@
 
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
 // Tests that parsing a field with autocomplete=`autocomplete` and
 // maxlength=`max_length` results in `expected_result`.
 struct AutocompleteAttributeTestcase {
-  base::StringPiece autocomplete;
-  absl::optional<AutocompleteParsingResult> expected_result;
+  std::string_view autocomplete;
+  std::optional<AutocompleteParsingResult> expected_result;
 };
 
 class AutocompleteAttributeProcessingUtilTest
     : public testing::TestWithParam<AutocompleteAttributeTestcase> {};
 
-// In general, `ParseAutocompleteAttribute()` returns absl::nullopt if one of
+// In general, `ParseAutocompleteAttribute()` returns std::nullopt if one of
 // the tokens cannot be parsed. The exception is the field type, which defaults
 // to HtmlFieldType::kUnrecognized.
 const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
@@ -31,15 +31,15 @@ const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
     {"name", {{"", HtmlFieldMode::kNone, HtmlFieldType::kName}}},
     {"autofill", {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnrecognized}}},
     // autocomplete=off is ignored completely.
-    {"off", absl::nullopt},
+    {"off", std::nullopt},
 
     // Type hints:
     // They are parsed and validated, but otherwise unused. Type hints are only
     // valid before tel* and email.
     {"home email", {{"", HtmlFieldMode::kNone, HtmlFieldType::kEmail}}},
     {"work email", {{"", HtmlFieldMode::kNone, HtmlFieldType::kEmail}}},
-    {"work cc-number", absl::nullopt},
-    {"unrecognized_type_hint email", absl::nullopt},
+    {"work cc-number", std::nullopt},
+    {"unrecognized_type_hint email", std::nullopt},
 
     // Billing and shipping modes:
     {"billing country",
@@ -50,8 +50,8 @@ const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
      {{"", HtmlFieldMode::kBilling, HtmlFieldType::kUnrecognized}}},
     {"shipping work tel-local",
      {{"", HtmlFieldMode::kShipping, HtmlFieldType::kTelLocal}}},
-    {"unrecognized_mode country", absl::nullopt},
-    {"unrecognized_mode unrecognized", absl::nullopt},
+    {"unrecognized_mode country", std::nullopt},
+    {"unrecognized_mode unrecognized", std::nullopt},
 
     // Sections:
     {"section-one tel", {{"one", HtmlFieldMode::kNone, HtmlFieldType::kTel}}},
@@ -60,9 +60,9 @@ const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
     {"section-one shipping home tel",
      {{"one", HtmlFieldMode::kShipping, HtmlFieldType::kTel}}},
     {"section- tel", {{"", HtmlFieldMode::kNone, HtmlFieldType::kTel}}},
-    {"section tel", absl::nullopt},
-    {"no_section tel", absl::nullopt},
-    {"no_section work tel", absl::nullopt},
+    {"section tel", std::nullopt},
+    {"no_section tel", std::nullopt},
+    {"no_section work tel", std::nullopt},
     {"section-random",
      {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnrecognized}}},
 
@@ -77,7 +77,7 @@ const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
        /*webauthn=*/true}}},
 
     // Too many tokens.
-    {"hello section-one shipping home tel webauthn", absl::nullopt}};
+    {"hello section-one shipping home tel webauthn", std::nullopt}};
 
 INSTANTIATE_TEST_SUITE_P(,
                          AutocompleteAttributeProcessingUtilTest,

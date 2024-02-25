@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"This test is to check " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++View textSize:16.0 style:0 bgColor:-256 htmlInfo:[{htmlTag="mark"}, {display="inline"}]
+++++++TextView text:"mark tag" textSize:16.0 style:0 bgColor:-256 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:"." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++CheckBox text:"Enabled" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
 ++CheckBox text:"Disabled" checkable clickable disabled actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", roleDescription="checkbox"]
 ++Button text:"Enabled" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]

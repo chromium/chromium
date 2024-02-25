@@ -4,7 +4,14 @@
 
 #include "pdf/pdfium/pdfium_font_linux.h"
 
+#include <stddef.h>
+#include <stdint.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -13,10 +20,12 @@
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/sys_byteorder.h"
 #include "components/services/font/public/cpp/font_loader.h"
-#include "pdf/font_table_linux.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
@@ -24,6 +33,82 @@
 namespace chrome_pdf {
 
 namespace {
+
+// GetFontTable loads a specified font table from an open SFNT file.
+//   fd: a file descriptor to the SFNT file. The position doesn't matter.
+//   table_tag: the table tag in *big-endian* format, or 0 for the entire font.
+//   output: a buffer of size output_length that gets the data.  can be 0, in
+//     which case output_length will be set to the required size in bytes.
+//   output_length: size of output, if it's not 0.
+//
+//   returns: true on success.
+//
+// TODO(drott): This should be should be replaced with using FreeType for the
+// purpose instead of reimplementing table parsing.
+bool GetFontTable(int fd,
+                  uint32_t table_tag,
+                  uint8_t* output,
+                  size_t* output_length) {
+  size_t data_length = 0;  // the length of the file data.
+  off_t data_offset = 0;   // the offset of the data in the file.
+  if (table_tag == 0) {
+    // Get the entire font file.
+    struct stat st;
+    if (fstat(fd, &st) < 0) {
+      return false;
+    }
+    data_length = base::checked_cast<size_t>(st.st_size);
+  } else {
+    // Get a font table. Read the header to find its offset in the file.
+    uint16_t num_tables;
+    ssize_t n = HANDLE_EINTR(
+        pread(fd, &num_tables, sizeof(num_tables), 4 /* skip the font type */));
+    if (n != sizeof(num_tables)) {
+      return false;
+    }
+    // Font data is stored in net (big-endian) order.
+    num_tables = base::NetToHost16(num_tables);
+
+    // Read the table directory.
+    static const size_t kTableEntrySize = 16;
+    const size_t directory_size = num_tables * kTableEntrySize;
+    std::unique_ptr<uint8_t[]> table_entries(new uint8_t[directory_size]);
+    n = HANDLE_EINTR(pread(fd, table_entries.get(), directory_size,
+                           12 /* skip the SFNT header */));
+    if (n != base::checked_cast<ssize_t>(directory_size)) {
+      return false;
+    }
+
+    for (uint16_t i = 0; i < num_tables; ++i) {
+      uint8_t* entry = table_entries.get() + i * kTableEntrySize;
+      uint32_t tag = *reinterpret_cast<uint32_t*>(entry);
+      if (tag == table_tag) {
+        // Font data is stored in net (big-endian) order.
+        data_offset =
+            base::NetToHost32(*reinterpret_cast<uint32_t*>(entry + 8));
+        data_length =
+            base::NetToHost32(*reinterpret_cast<uint32_t*>(entry + 12));
+        break;
+      }
+    }
+  }
+
+  if (!data_length) {
+    return false;
+  }
+
+  if (output) {
+    // 'output_length' holds the maximum amount of data the caller can accept.
+    data_length = std::min(data_length, *output_length);
+    ssize_t n = HANDLE_EINTR(pread(fd, output, data_length, data_offset));
+    if (n != base::checked_cast<ssize_t>(data_length)) {
+      return false;
+    }
+  }
+  *output_length = data_length;
+
+  return true;
+}
 
 // Maps font description and charset to `FontId` as requested by PDFium, with
 // `FontId` as an opaque type that PDFium works with. Based on the `FontId`,
@@ -90,8 +175,7 @@ class BlinkFontMapper {
     base::PlatformFile platform_file =
         FileFromFontId(font_id)->GetPlatformFile();
     size_t size = buf_size;
-    if (!pdf::GetFontTable(platform_file, table_tag, /*offset=*/0, buffer,
-                           &size)) {
+    if (!GetFontTable(platform_file, table_tag, buffer, &size)) {
       return 0;
     }
     return size;

@@ -1,0 +1,26 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification;
+
+/*
+ * A FeatureVectorizer puts one or more features into a single array.
+ *
+ * The ordering of features in the output array is determined by
+ * ``inputList``.
+ *
+ * ``inputDimensions`` is a zero based index.
+ */
+message FeatureVectorizer {
+  message InputColumn {
+    string inputColumn = 1;
+    uint64 inputDimensions = 2;
+  }
+
+  repeated InputColumn inputList = 1;
+}

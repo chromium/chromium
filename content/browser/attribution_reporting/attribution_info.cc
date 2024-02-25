@@ -12,7 +12,7 @@ namespace content {
 
 AttributionInfo::AttributionInfo(
     base::Time time,
-    absl::optional<uint64_t> debug_key,
+    std::optional<uint64_t> debug_key,
     attribution_reporting::SuitableOrigin context_origin)
     : time(time),
       debug_key(debug_key),

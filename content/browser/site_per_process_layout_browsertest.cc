@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/site_per_process_browsertest.h"
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/task/single_thread_task_runner.h"
@@ -11,29 +11,31 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
-#include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/site_per_process_browsertest.h"
 #include "content/common/input/actions_parser.h"
+#include "content/common/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/synchronize_visual_properties_interceptor.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/test/render_document_feature.h"
 #include "content/test/render_widget_host_visibility_observer.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
+#include "content/common/input/synthetic_touchpad_pinch_gesture.h"
 #include "ui/base/test/scoped_preferred_scroller_style_mac.h"
 #endif
 
@@ -119,7 +121,7 @@ class UpdateViewportIntersectionMessageFilter
 
   void UpdateViewportIntersection(
       blink::mojom::ViewportIntersectionStatePtr intersection_state,
-      const absl::optional<blink::FrameVisualProperties>& visual_properties)
+      const std::optional<blink::FrameVisualProperties>& visual_properties)
       override {
     intersection_state_ = std::move(intersection_state);
     msg_received_ = true;
@@ -241,8 +243,8 @@ class TextAutosizerPageInfoInterceptor
     return render_frame_host_;
   }
 
-  void WaitForPageInfo(absl::optional<int> target_main_frame_width,
-                       absl::optional<float> target_device_scale_adjustment) {
+  void WaitForPageInfo(std::optional<int> target_main_frame_width,
+                       std::optional<float> target_device_scale_adjustment) {
     if (remote_page_info_seen_)
       return;
     target_main_frame_width_ = target_main_frame_width;
@@ -281,8 +283,8 @@ class TextAutosizerPageInfoInterceptor
                                                /*main_frame_layout_width=*/0,
                                                /*device_scale_adjustment=*/1.f);
   std::unique_ptr<base::RunLoop> run_loop_;
-  absl::optional<int> target_main_frame_width_;
-  absl::optional<float> target_device_scale_adjustment_;
+  std::optional<int> target_main_frame_width_;
+  std::optional<float> target_device_scale_adjustment_;
   mojo::test::ScopedSwapImplForTesting<
       mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>>
       swapped_impl_;
@@ -794,7 +796,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Convert from CSS to physical pixels
   expected.Scale(device_scale_factor);
   gfx::Transform actual = filter->GetIntersectionState()->main_frame_transform;
-  const absl::optional<gfx::PointF> viewport_offset_source_point =
+  const std::optional<gfx::PointF> viewport_offset_source_point =
       actual.InverseMapPoint(gfx::PointF());
   ASSERT_TRUE(viewport_offset_source_point.has_value());
   const gfx::Vector2dF viewport_offset =
@@ -1284,7 +1286,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
   // Change the device scale adjustment to trigger a RemotePageInfo update.
   web_contents()->SetWebPreferences(prefs);
   // Make sure we receive a ViewHostMsg from the main frame's renderer.
-  interceptor->WaitForPageInfo(absl::optional<int>(),
+  interceptor->WaitForPageInfo(std::optional<int>(),
                                prefs.device_scale_adjustment);
   // Make sure the correct page message is sent to the child.
   base::RunLoop().RunUntilIdle();
@@ -1302,7 +1304,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
 
   view->SetBounds(new_bounds);
   // Make sure we receive a ViewHostMsg from the main frame's renderer.
-  interceptor->WaitForPageInfo(new_bounds.width(), absl::optional<float>());
+  interceptor->WaitForPageInfo(new_bounds.width(), std::optional<float>());
   // Make sure the correct page message is sent to the child.
   base::RunLoop().RunUntilIdle();
   received_page_info = interceptor->GetTextAutosizerPageInfo();
@@ -1670,7 +1672,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
        embedded_test_server()->GetURL("c.com", "/title2.html"), true},
       // Remote to local.
       {"default-src b.com",
-       embedded_test_server()->GetURL("a.com", "/title1.html"), false},
+       embedded_test_server()->GetURL("a.com", "/title1.html"), true},
       // Local to remote.
       {"img-src c.com", embedded_test_server()->GetURL("b.com", "/title2.html"),
        true},
@@ -1780,8 +1782,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MAYBE_CSSVisibilityChanged) {
 // This test verifies that hiding an OOPIF in CSS will stop generating
 // compositor frames for the OOPIF and any nested OOPIFs inside it. This holds
 // even when the whole page is shown.
+#if BUILDFLAG(IS_MAC)
+// Flaky on Mac. https://crbug.com/1505297
+#define MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames \
+  DISABLED_HiddenOOPIFWillNotGenerateCompositorFrames
+#else
+#define MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames \
+  HiddenOOPIFWillNotGenerateCompositorFrames
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       HiddenOOPIFWillNotGenerateCompositorFrames) {
+                       MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_two_frames.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
@@ -2167,7 +2177,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // which is the scale factor for b.com's iframe element in the main frame.
   while (true) {
     auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_b->LastComputedVisualProperties();
     if (properties && cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.5f)) {
@@ -2183,7 +2193,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // parent frame b.com (0.5).
   while (true) {
     auto* rwh_c = child_c->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_c->LastComputedVisualProperties();
     if (properties && cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.5f)) {
@@ -2198,7 +2208,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // scale factor of its parent d.com (0.5).
   while (true) {
     auto* rwh_d = child_d->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_d->LastComputedVisualProperties();
     if (properties && cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.25f)) {
@@ -2238,7 +2248,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // which is the scale factor for b.com's iframe element in the main frame.
   while (true) {
     auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_b->LastComputedVisualProperties();
     if (properties && cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.5f)) {
@@ -2257,7 +2267,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the final value is non-zero.
   while (true) {
     auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_b->LastComputedVisualProperties();
     if (properties && !cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.5f)) {
@@ -2413,7 +2423,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Create touch move sequence with discrete touch moves. Include a brief
   // pause at the end to avoid the scroll flinging.
-  std::string actions_template = R"HTML(
+  static constexpr char kActionsTemplate[] = R"HTML(
       [{
         "source" : "touch",
         "actions" : [
@@ -2425,7 +2435,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       }]
   )HTML";
   std::string touch_move_sequence_json = base::StringPrintf(
-      actions_template.c_str(), scroll_start_location_in_screen.x(),
+      kActionsTemplate, scroll_start_location_in_screen.x(),
       scroll_start_location_in_screen.y(), scroll_end_location_in_screen.x(),
       scroll_end_location_in_screen.y());
   ASSERT_OK_AND_ASSIGN(

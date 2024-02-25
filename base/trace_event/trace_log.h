@@ -11,6 +11,7 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "base/base_export.h"
 #include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,7 +30,6 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
@@ -280,6 +281,7 @@ class BASE_EXPORT TraceLog :
                                    const char* name,
                                    uint64_t id,
                                    PlatformThreadId thread_id,
+                                   const TimeTicks timestamp,
                                    TraceArguments* args);
   TraceEventHandle AddTraceEvent(char phase,
                                  const unsigned char* category_group_enabled,
@@ -387,6 +389,7 @@ class BASE_EXPORT TraceLog :
 
   // Processes can have labels in addition to their names. Use labels, for
   // instance, to list out the web page titles that a process is handling.
+  int GetNewProcessLabelId();
   void UpdateProcessLabel(int label_id, const std::string& current_label);
   void RemoveProcessLabel(int label_id);
 
@@ -567,17 +570,18 @@ class BASE_EXPORT TraceLog :
   // The lock protects observers access.
   mutable Lock observers_lock_;
   bool dispatching_to_observers_ = false;
-  std::vector<EnabledStateObserver*> enabled_state_observers_
-      GUARDED_BY(observers_lock_);
+  std::vector<raw_ptr<EnabledStateObserver, VectorExperimental>>
+      enabled_state_observers_ GUARDED_BY(observers_lock_);
   std::map<AsyncEnabledStateObserver*, RegisteredAsyncObserver> async_observers_
       GUARDED_BY(observers_lock_);
   // Manages ownership of the owned observers. The owned observers will also be
   // added to |enabled_state_observers_|.
   std::vector<std::unique_ptr<EnabledStateObserver>>
       owned_enabled_state_observer_copy_ GUARDED_BY(observers_lock_);
-  std::vector<IncrementalStateObserver*> incremental_state_observers_
-      GUARDED_BY(observers_lock_);
+  std::vector<raw_ptr<IncrementalStateObserver, VectorExperimental>>
+      incremental_state_observers_ GUARDED_BY(observers_lock_);
 
+  int next_process_label_id_ GUARDED_BY(lock_) = 0;
   std::unordered_map<int, std::string> process_labels_;
   int process_sort_index_;
   std::unordered_map<PlatformThreadId, int> thread_sort_indices_;
@@ -641,7 +645,7 @@ class BASE_EXPORT TraceLog :
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 #if BUILDFLAG(IS_ANDROID)
-  absl::optional<TraceConfig> atrace_startup_config_;
+  std::optional<TraceConfig> atrace_startup_config_;
 #endif
 };
 

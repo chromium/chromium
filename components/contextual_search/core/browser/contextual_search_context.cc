@@ -50,6 +50,10 @@ std::string ContextualSearchContext::DetectLanguage() const {
   return language;
 }
 
+base::WeakPtr<ContextualSearchContext> ContextualSearchContext::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 std::string ContextualSearchContext::GetReliableLanguage(
     const std::u16string& contents) const {
   std::string model_detected_language;

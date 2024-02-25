@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       'Tests that Page.setInterceptFileChooserDialog works as expected');
 
@@ -60,6 +60,21 @@
         picker.type = 'file';
         picker.setAttribute('multiple', true);
         picker.click();
+        await new Promise(x => picker.oninput = x);
+        LOG('selected files: ' + getSelectedFiles(picker));
+      });
+    },
+
+    async function testShowPickerAPI() {
+      dp.Page.onceFileChooserOpened(event => {
+        testRunner.log('file chooser mode: ' + event.params.mode);
+        setInputFiles(event.params.backendNodeId, ['path1']);
+        return true;
+      });
+      await session.evaluateAsyncWithUserGesture(async () => {
+        const picker = document.createElement('input');
+        picker.type = 'file';
+        picker.showPicker();
         await new Promise(x => picker.oninput = x);
         LOG('selected files: ' + getSelectedFiles(picker));
       });

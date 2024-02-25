@@ -5,6 +5,7 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_HTTPS_ONLY_MODE_HTTPS_ONLY_MODE_BLOCKING_PAGE_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_HTTPS_ONLY_MODE_HTTPS_ONLY_MODE_BLOCKING_PAGE_H_
 
+#import "base/memory/raw_ptr.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 
@@ -44,8 +45,8 @@ class HttpsOnlyModeBlockingPage
   void HandleCommand(
       security_interstitials::SecurityInterstitialCommand command) override;
 
-  web::WebState* web_state_ = nullptr;
-  HttpsUpgradeService* service_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ptr<HttpsUpgradeService> service_ = nullptr;
   std::unique_ptr<HttpsOnlyModeControllerClient> controller_;
 };
 

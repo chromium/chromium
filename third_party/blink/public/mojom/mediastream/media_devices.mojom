@@ -10,22 +10,25 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/media/capture_handle_config.mojom";
 
 enum MediaDeviceType {
-  MEDIA_AUDIO_INPUT,
-  MEDIA_VIDEO_INPUT,
-  MEDIA_AUDIO_OUTPUT,
-  NUM_MEDIA_DEVICE_TYPES
+  kMediaAudioInput,
+  kMediaVideoInput,
+  kMediaAudioOuput,
+  kNumMediaDeviceTypes
 };
 
 // The values for this enum match the ones defined in
 // https://w3c.github.io/mediacapture-main/#def-constraint-facingMode
-// with the addition of NONE, which would map to the empty string in
+// with the addition of kNone, which would map to the empty string in
 // JavaScript.
-enum FacingMode { NONE, USER, ENVIRONMENT, LEFT, RIGHT };
+enum FacingMode { kNone, kUser, kEnvironment, kLeft, kRight };
 
 struct MediaDeviceInfo {
   string device_id;
   string label;
   string group_id;
+  media.mojom.VideoCaptureControlSupport control_support;
+  FacingMode facing_mode;
+  media.mojom.CameraAvailability? availability;
 };
 
 struct VideoInputDeviceCapabilities {
@@ -34,6 +37,7 @@ struct VideoInputDeviceCapabilities {
   media.mojom.VideoCaptureControlSupport control_support;
   array<media.mojom.VideoCaptureFormat> formats;
   FacingMode facing_mode;
+  media.mojom.CameraAvailability? availability;
 };
 
 struct AudioInputDeviceCapabilities {
@@ -56,7 +60,7 @@ interface MediaDevicesDispatcherHost {
   // Enumerates media devices and capabilities. The reply contains the
   // |enumeration|, |video_input_device_capabilities|, and
   // |audio_input_device_capabilities| arrays. The |enumeration| array always
-  // has NUM_MEDIA_DEVICE_TYPES elements indexed by device type as defined in
+  // has kNumMediaDeviceTypes elements indexed by device type as defined in
   // MediaDeviceType. Each element of |enumeration| is an array with as many
   // elements as devices of the corresponding type exist in the system, or zero
   // if the device types was not requested. Similarly, the number of elements in
@@ -127,14 +131,17 @@ interface MediaDevicesDispatcherHost {
   // of opportunity from the render side.
   // (Note that a timer exists on the browser-side, too. This message serves
   // to close the window early.)
-  [EnableIfNot=is_android]
+  [EnableIfNot=is_android_or_ios]
   CloseFocusWindowOfOpportunity(string label);
 
-  // Mints a new crop-ID, associates it with the browsing context in which
-  // it was produced, and returns it. This crop-ID can later be used as the
-  // input for BrowserCaptureMediaStreamTrack.cropTo().
-  [EnableIfNot=is_android]
-  ProduceCropId() => (string crop_id);
+  // Mints a new ID backing a SubCaptureTarget.
+  // * CropTargetIds back a CropTarget, which is the input type
+  //   for BrowserCaptureMediaStreamTrack.cropTo().
+  // * RestrictionTargetIds back a RestrictionTarget, which is the input type
+  //   for BrowserCaptureMediaStreamTrack.restrictTo().
+  [EnableIfNot=is_android_or_ios]
+  ProduceSubCaptureTargetId(media.mojom.SubCaptureTargetType type)
+      => (string id);
 };
 
 // This object lives in the renderer process and is used by the browser process

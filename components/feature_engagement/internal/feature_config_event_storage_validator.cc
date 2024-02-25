@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/group_constants.h"
 
 namespace feature_engagement {
 

@@ -8,7 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/browser_process.h"
@@ -25,11 +25,11 @@ namespace ash {
 
 KioskAutolaunchScreenHandler::KioskAutolaunchScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  KioskAppManager::Get()->AddObserver(this);
+  KioskChromeAppManager::Get()->AddObserver(this);
 }
 
 KioskAutolaunchScreenHandler::~KioskAutolaunchScreenHandler() {
-  KioskAppManager::Get()->RemoveObserver(this);
+  KioskChromeAppManager::Get()->RemoveObserver(this);
 }
 
 void KioskAutolaunchScreenHandler::Show() {
@@ -37,12 +37,18 @@ void KioskAutolaunchScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void KioskAutolaunchScreenHandler::UpdateKioskApp() {
-  if (!is_visible_)
-    return;
+base::WeakPtr<KioskAutolaunchScreenView>
+KioskAutolaunchScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
-  KioskAppManager* manager = KioskAppManager::Get();
-  KioskAppManager::App app;
+void KioskAutolaunchScreenHandler::UpdateKioskApp() {
+  if (!is_visible_) {
+    return;
+  }
+
+  KioskChromeAppManager* manager = KioskChromeAppManager::Get();
+  KioskChromeAppManager::App app;
   std::string app_id = manager->GetAutoLaunchApp();
   if (app_id.empty() ||
       manager->IsAutoLaunchEnabled() ||
@@ -50,15 +56,14 @@ void KioskAutolaunchScreenHandler::UpdateKioskApp() {
     return;
   }
 
-  base::Value::Dict app_info;
-  app_info.Set("appName", app.name);
-
   std::string icon_url("chrome://theme/IDR_APP_DEFAULT_ICON");
-  if (!app.icon.isNull())
+  if (!app.icon.isNull()) {
     icon_url = webui::GetBitmapDataUrl(*app.icon.bitmap());
+  }
 
-  app_info.Set("appIconUrl", icon_url);
-  CallExternalAPI("updateApp", std::move(app_info));
+  CallExternalAPI(
+      "updateApp",
+      base::Value::Dict().Set("appName", app.name).Set("appIconUrl", icon_url));
 }
 
 void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
@@ -71,13 +76,13 @@ void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
 }
 
 void KioskAutolaunchScreenHandler::HandleOnCancel() {
-  KioskAppManager::Get()->RemoveObserver(this);
-  KioskAppManager::Get()->SetEnableAutoLaunch(false);
+  KioskChromeAppManager::Get()->RemoveObserver(this);
+  KioskChromeAppManager::Get()->SetEnableAutoLaunch(false);
 }
 
 void KioskAutolaunchScreenHandler::HandleOnConfirm() {
-  KioskAppManager::Get()->RemoveObserver(this);
-  KioskAppManager::Get()->SetEnableAutoLaunch(true);
+  KioskChromeAppManager::Get()->RemoveObserver(this);
+  KioskChromeAppManager::Get()->SetEnableAutoLaunch(true);
 }
 
 void KioskAutolaunchScreenHandler::DeclareJSCallbacks() {

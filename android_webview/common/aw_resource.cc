@@ -15,7 +15,7 @@ namespace android_webview {
 namespace AwResource {
 
 std::vector<std::string> GetConfigKeySystemUuidMapping() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   std::vector<std::string> key_system_uuid_mappings;
   ScopedJavaLocalRef<jobjectArray> mappings =
       Java_AwResource_getConfigKeySystemUuidMapping(env);

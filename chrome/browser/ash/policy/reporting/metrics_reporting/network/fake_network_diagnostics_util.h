@@ -17,6 +17,8 @@ using ::chromeos::network_diagnostics::mojom::RoutineResult;
 
 using HttpsLatencyProblemMojom =
     ::chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
+using RoutineCallSourceMojom =
+    ::chromeos::network_diagnostics::mojom::RoutineCallSource;
 
 namespace reporting {
 
@@ -30,7 +32,10 @@ class FakeNetworkDiagnostics : public NetworkDiagnostics {
 
   ~FakeNetworkDiagnostics() override;
 
-  void RunHttpsLatency(RunHttpsLatencyCallback callback) override;
+  void RunHttpsLatency(
+      std::optional<chromeos::network_diagnostics::mojom::RoutineCallSource>
+          source,
+      RunHttpsLatencyCallback callback) override;
 
   void ExecuteCallback();
 
@@ -67,9 +72,9 @@ class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
                                    pending_receiver) override;
 
  private:
-  const raw_ptr<FakeNetworkDiagnostics, ExperimentalAsh> fake_diagnostics_;
+  const raw_ptr<FakeNetworkDiagnostics> fake_diagnostics_;
 };
 
 }  // namespace reporting
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_HTTPS_LATENCY_EVENT_DETECTOR_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_FAKE_NETWORK_DIAGNOSTICS_UTIL_H_

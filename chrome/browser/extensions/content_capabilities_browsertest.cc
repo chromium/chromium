@@ -22,6 +22,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/permissions_test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/switches.h"
@@ -48,10 +49,11 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
     extensions::ExtensionApiTest::SetUpOnMainThread();
     base::FilePath test_data;
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data));
-    embedded_test_server()->ServeFilesFromDirectory(
+    embedded_https_test_server().ServeFilesFromDirectory(
         test_data.AppendASCII("extensions/content_capabilities"));
-    ASSERT_TRUE(embedded_test_server()->Start());
-    host_resolver()->AddRule("*", embedded_test_server()->base_url().host());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    host_resolver()->AddRule("*",
+                             embedded_https_test_server().base_url().host());
   }
 
   // Builds an extension manifest with the given content_capabilities matches
@@ -97,13 +99,61 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
   }
 
   GURL GetTestURLFor(const std::string& host) {
-    std::string port = base::NumberToString(embedded_test_server()->port());
+    std::string port =
+        base::NumberToString(embedded_https_test_server().port());
     GURL::Replacements replacements;
     replacements.SetHostStr(host);
     replacements.SetPortStr(port);
-    return embedded_test_server()
-        ->GetURL("/" + host + ".html")
+    return embedded_https_test_server()
+        .GetURL("/" + host + ".html")
         .ReplaceComponents(replacements);
+  }
+
+  content::RenderFrameHost* GetRenderFrameHost() {
+    return content::ToRenderFrameHost(web_contents()).render_frame_host();
+  }
+
+  void SetPermissionOverrideForAsyncClipboardTests(
+      blink::mojom::PermissionStatus status) {
+    content::PermissionController* permission_controller =
+        GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
+    url::Origin origin = url::Origin::Create(GetTestURLFor("foo.example.com"));
+    SetPermissionControllerOverrideForDevTools(
+        permission_controller, origin,
+        blink::PermissionType::CLIPBOARD_READ_WRITE, status);
+  }
+
+  void SetPermissionOverrideForSanitizedWriteTests(
+      blink::mojom::PermissionStatus status) {
+    content::PermissionController* permission_controller =
+        GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
+    url::Origin origin = url::Origin::Create(GetTestURLFor("foo.example.com"));
+    SetPermissionControllerOverrideForDevTools(
+        permission_controller, origin,
+        blink::PermissionType::CLIPBOARD_SANITIZED_WRITE, status);
+  }
+
+  void LoadExtensionWithCapabilitiesAndNavigateToPage(
+      std::string read_write_permission) {
+    scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
+        MakeJSONList("https://foo.example.com/*"), read_write_permission);
+    content::RenderFrameHost* rfh_tab = ui_test_utils::NavigateToURL(
+        browser(), GetTestURLFor("foo.example.com"));
+    content::WebContents::FromRenderFrameHost(rfh_tab)->Focus();
+  }
+
+  void CheckSiteCanRead(bool expected) {
+    content::WebContents::FromRenderFrameHost(GetRenderFrameHost())->Focus();
+    EXPECT_EQ(expected, content::ExecJs(web_contents(),
+                                        "navigator.clipboard.readText()"));
+  }
+
+  void CheckSiteCanWrite(bool expected) {
+    content::WebContents::FromRenderFrameHost(GetRenderFrameHost())->Focus();
+    EXPECT_EQ(
+        expected,
+        content::ExecJs(web_contents(), "navigator.clipboard.writeText('Test')",
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   }
 
   // Run some script in the context of the given origin and in the presence of
@@ -157,7 +207,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, NoCapabilities) {
   scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
-      MakeJSONList("http://foo.example.com/*"), MakeJSONList());
+      MakeJSONList("https://foo.example.com/*"), MakeJSONList());
   EXPECT_FALSE(
       CanReadClipboard(extension.get(), GetTestURLFor("foo.example.com")));
   // TODO(dcheng): This should be false, but we cannot currently execute testing
@@ -170,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, NoCapabilities) {
 
 IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, ClipboardRead) {
   scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
-      MakeJSONList("http://foo.example.com/*"), MakeJSONList("clipboardRead"));
+      MakeJSONList("https://foo.example.com/*"), MakeJSONList("clipboardRead"));
   EXPECT_TRUE(
       CanReadClipboard(extension.get(), GetTestURLFor("foo.example.com")));
   EXPECT_FALSE(
@@ -188,8 +238,9 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, ClipboardRead) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, ClipboardWrite) {
-  scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
-      MakeJSONList("http://foo.example.com/*"), MakeJSONList("clipboardWrite"));
+  scoped_refptr<const Extension> extension =
+      LoadExtensionWithCapabilities(MakeJSONList("https://foo.example.com/*"),
+                                    MakeJSONList("clipboardWrite"));
   EXPECT_TRUE(
       CanWriteClipboard(extension.get(), GetTestURLFor("foo.example.com")));
   EXPECT_TRUE(
@@ -215,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, ClipboardWrite) {
 
 IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, ClipboardReadWrite) {
   scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
-      MakeJSONList("http://foo.example.com/*"),
+      MakeJSONList("https://foo.example.com/*"),
       MakeJSONList("clipboardRead", "clipboardWrite"));
   EXPECT_TRUE(
       CanReadClipboard(extension.get(), GetTestURLFor("foo.example.com")));
@@ -229,9 +280,52 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, ClipboardReadWrite) {
       CanWriteClipboard(extension.get(), GetTestURLFor("bar.example.com")));
 }
 
+IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest,
+                       AsyncClipboardReadWriteContentCapability) {
+  LoadExtensionWithCapabilitiesAndNavigateToPage(
+      "[\"clipboardRead\",\"clipboardWrite\"]");
+  CheckSiteCanWrite(/*expected=*/true);
+  CheckSiteCanRead(/*expected=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest,
+                       AsyncClipboardWriteContentCapability) {
+  LoadExtensionWithCapabilitiesAndNavigateToPage("[\"clipboardWrite\"]");
+  // Verifies that the extension capability, if any, takes precedence over the
+  // permission setting.
+  SetPermissionOverrideForAsyncClipboardTests(
+      blink::mojom::PermissionStatus::DENIED);
+  CheckSiteCanWrite(/*expected=*/true);
+  CheckSiteCanRead(/*expected=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest,
+                       AsyncClipboardReadContentCapability) {
+  LoadExtensionWithCapabilitiesAndNavigateToPage("[\"clipboardRead\"]");
+  SetPermissionOverrideForAsyncClipboardTests(
+      blink::mojom::PermissionStatus::DENIED);
+  CheckSiteCanWrite(/*expected=*/false);
+  CheckSiteCanRead(/*expected=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest,
+                       AsyncClipboardNoReadWriteContentCapability) {
+  LoadExtensionWithCapabilitiesAndNavigateToPage("[]");
+  SetPermissionOverrideForAsyncClipboardTests(
+      blink::mojom::PermissionStatus::GRANTED);
+  CheckSiteCanWrite(/*expected=*/true);
+  CheckSiteCanRead(/*expected=*/true);
+  SetPermissionOverrideForAsyncClipboardTests(
+      blink::mojom::PermissionStatus::ASK);
+  CheckSiteCanRead(/*expected=*/false);
+  SetPermissionOverrideForSanitizedWriteTests(
+      blink::mojom::PermissionStatus::ASK);
+  CheckSiteCanWrite(/*expected=*/false);
+}
+
 IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, UnlimitedStorage) {
   scoped_refptr<const Extension> extension =
-      LoadExtensionWithCapabilities(MakeJSONList("http://foo.example.com/*"),
+      LoadExtensionWithCapabilities(MakeJSONList("https://foo.example.com/*"),
                                     MakeJSONList("unlimitedStorage"));
   EXPECT_TRUE(
       HasUnlimitedStorage(extension.get(), GetTestURLFor("foo.example.com")));
@@ -243,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, WebUnlimitedStorageIsIsolated) {
   // This extension grants unlimited storage to bar.example.com but does not
   // have unlimitedStorage itself.
   scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
-      MakeJSONList("http://bar.example.com/*"),
+      MakeJSONList("https://bar.example.com/*"),
       MakeJSONList("unlimitedStorage"), MakeJSONList("storage"));
   EXPECT_FALSE(
       HasUnlimitedStorage(extension.get(), extension->GetResourceURL("")));
@@ -255,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest,
                        ExtensionUnlimitedStorageIsIsolated) {
   // This extension has unlimitedStorage but doesn't grant it to foo.example.com
   scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
-      MakeJSONList("http://foo.example.com/*"), MakeJSONList("clipboardRead"),
+      MakeJSONList("https://foo.example.com/*"), MakeJSONList("clipboardRead"),
       MakeJSONList("unlimitedStorage"));
 
   EXPECT_TRUE(

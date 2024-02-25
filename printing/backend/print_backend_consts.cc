@@ -14,6 +14,7 @@ const char kDriverNameTagName[] = "printer-make-and-model";
 const char kLocationTagName[] = "printer-location";
 const char kValueFalse[] = "false";
 const char kValueTrue[] = "true";
+const char kPrinterStatus[] = "printerStatus";
 
 // The following values must match those defined in CUPS.
 const char kCUPSOptDeviceUri[] = "device-uri";

@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View textSize:13.0 style:0 htmlInfo:[{htmlTag="code"}, {display="inline"}]
+++++++TextView text:"A piece of computer code" textSize:13.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

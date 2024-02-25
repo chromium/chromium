@@ -8,7 +8,8 @@ export interface PerformanceBrowserProxy {
   getCurrentOpenSites(): Promise<string[]>;
   getDeviceHasBattery(): Promise<boolean>;
   openBatterySaverFeedbackDialog(): void;
-  openHighEfficiencyFeedbackDialog(): void;
+  openMemorySaverFeedbackDialog(): void;
+  openSpeedFeedbackDialog(): void;
   validateTabDiscardExceptionRule(rule: string): Promise<boolean>;
 }
 
@@ -25,8 +26,12 @@ export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
     chrome.send('openBatterySaverFeedbackDialog');
   }
 
-  openHighEfficiencyFeedbackDialog() {
-    chrome.send('openHighEfficiencyFeedbackDialog');
+  openMemorySaverFeedbackDialog() {
+    chrome.send('openMemorySaverFeedbackDialog');
+  }
+
+  openSpeedFeedbackDialog() {
+    chrome.send('openSpeedFeedbackDialog');
   }
 
   validateTabDiscardExceptionRule(rule: string) {

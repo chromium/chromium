@@ -32,6 +32,7 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/size.h"
@@ -92,18 +93,19 @@ class ImageTransferCacheEntryTest
  public:
   void SetUp() override {
     // Initialize a GL GrContext for Skia.
-    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
-                                                  gfx::Size());
-    ASSERT_TRUE(surface_);
+    auto surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                      gfx::Size());
+    ASSERT_TRUE(surface);
     share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
     gl_context_ = base::MakeRefCounted<gl::GLContextEGL>(share_group_.get());
     ASSERT_TRUE(gl_context_);
-    ASSERT_TRUE(
-        gl_context_->Initialize(surface_.get(), gl::GLContextAttribs()));
-    ASSERT_TRUE(gl_context_->MakeCurrent(surface_.get()));
-    sk_sp<GrGLInterface> gl_interface(gl::init::CreateGrGLInterface(
-        *gl_context_->GetVersionInfo(), false /* use_version_es2 */));
-    gr_context_ = GrDirectContext::MakeGL(std::move(gl_interface));
+    ASSERT_TRUE(gl_context_->Initialize(surface.get(), gl::GLContextAttribs()));
+    //  The surface will be stored by the gl::GLContext.
+    ASSERT_TRUE(gl_context_->default_surface());
+    ASSERT_TRUE(gl_context_->MakeCurrentDefault());
+    sk_sp<GrGLInterface> gl_interface(
+        gl::init::CreateGrGLInterface(*gl_context_->GetVersionInfo()));
+    gr_context_ = GrDirectContexts::MakeGL(std::move(gl_interface));
     ASSERT_TRUE(gr_context_);
   }
 
@@ -161,7 +163,6 @@ class ImageTransferCacheEntryTest
   void TearDown() override {
     DeletePendingTextures();
     gr_context_.reset();
-    surface_.reset();
     gl_context_.reset();
     share_group_.reset();
   }
@@ -203,7 +204,6 @@ class ImageTransferCacheEntryTest
   }
 
   std::vector<GrBackendTexture> textures_to_free_;
-  scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> gl_context_;
   sk_sp<GrDirectContext> gr_context_;
@@ -245,7 +245,7 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
       ClientImageTransferCacheEntry::Image(yuva_pixmaps.planes().data(),
                                            yuva_info,
                                            nullptr /* decoded color space*/),
-      true /* needs_mips */, absl::nullopt));
+      true /* needs_mips */, std::nullopt));
   uint32_t size = client_entry->SerializedSize();
   auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(size);
   ASSERT_TRUE(client_entry->Serialize(
@@ -399,7 +399,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
 
   ClientImageTransferCacheEntry client_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), true,
-      absl::nullopt);
+      std::nullopt);
   const uint32_t storage_size = client_entry.SerializedSize();
   auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
   client_entry.Serialize(base::make_span(storage.get(), storage_size));
@@ -429,7 +429,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
   ClientImageTransferCacheEntry client_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), false,
-      absl::nullopt);
+      std::nullopt);
   const uint32_t storage_size = client_entry.SerializedSize();
   auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
   client_entry.Serialize(base::make_span(storage.get(), storage_size));
@@ -520,23 +520,20 @@ TEST(ImageTransferCacheEntryTestHDR, Gainmap) {
   // Read the resulting image back into a bitmap.
   SkBitmap result;
   {
-    TargetColorParams target_color_params;
-    target_color_params.hdr_max_luminance_relative = 2.f;
-
     ClientImageTransferCacheEntry client_entry(
         ClientImageTransferCacheEntry::Image(&sdr_bitmap.pixmap()),
         ClientImageTransferCacheEntry::Image(&gainmap_bitmap.pixmap()),
-        gainmap_info, false, target_color_params);
+        gainmap_info, false);
 
     std::vector<uint8_t> storage(client_entry.SerializedSize());
-    client_entry.Serialize(base::make_span(storage.data(), storage.size()));
+    client_entry.Serialize(storage);
 
     ServiceImageTransferCacheEntry service_entry;
-    service_entry.Deserialize(gr_context,
-                              /*graphite_recorder=*/nullptr,
-                              base::make_span(storage.data(), storage.size()));
+    service_entry.Deserialize(gr_context, /*graphite_recorder=*/nullptr,
+                              storage);
     ASSERT_TRUE(service_entry.image());
-    auto image = service_entry.image();
+    ASSERT_TRUE(service_entry.NeedsToneMapApplied());
+    auto image = service_entry.GetImageWithToneMapApplied(2.f, false);
 
     SkImageInfo info =
         SkImageInfo::Make(kSdrWidth, kSdrHeight, kRGBA_F32_SkColorType,

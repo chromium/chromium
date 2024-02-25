@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -924,7 +924,13 @@ DrmOverlayPlaneList ScreenManager::GetModesetPlanes(
   }
 
   DrmOverlayPlaneList modeset_planes;
-  modeset_planes.emplace_back(framebuffer, nullptr);
+  modeset_planes.emplace_back(framebuffer, gfx::ColorSpace::CreateSRGB(),
+                              /*z_order=*/0, gfx::OVERLAY_TRANSFORM_NONE,
+                              /*damage_rect=*/gfx::Rect(framebuffer->size()),
+                              /*display_bounds=*/gfx::Rect(framebuffer->size()),
+                              /*crop_rect=*/gfx::RectF(0, 0, 1, 1),
+                              /*enable_blend=*/false,
+                              /*gpu_fence=*/nullptr);
   return modeset_planes;
 }
 

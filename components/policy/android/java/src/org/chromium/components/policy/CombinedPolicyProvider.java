@@ -8,11 +8,13 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +26,8 @@ import java.util.List;
  */
 @JNINamespace("policy::android")
 public class CombinedPolicyProvider {
+    private static final String TAG = "CombinedPProvider";
+
     private static CombinedPolicyProvider sInstance;
 
     private long mNativeCombinedPolicyProvider;
@@ -49,9 +53,11 @@ public class CombinedPolicyProvider {
             return;
         }
 
+        Log.i(TAG, "#linkNativeInternal() " + mPolicyProviders.size());
+
         if (mPolicyProviders.isEmpty()) {
             mPolicyCacheProvider = new PolicyCacheProvider();
-            mPolicyCacheProvider.setManagerAndSource(this, /* source = */ 0);
+            mPolicyCacheProvider.setManagerAndSource(this, /* source= */ 0);
         }
         refreshPolicies();
     }
@@ -70,6 +76,14 @@ public class CombinedPolicyProvider {
      * disambiguating updates.
      */
     public void registerProvider(PolicyProvider provider) {
+        Log.i(
+                TAG,
+                "#registerProvider() provider:"
+                        + provider
+                        + " isPolicyCacheEnabled:"
+                        + isPolicyCacheEnabled()
+                        + " policyProvidersSize:"
+                        + mPolicyProviders.size());
         if (isPolicyCacheEnabled()) {
             mPolicyCacheProvider = null;
         }
@@ -92,6 +106,7 @@ public class CombinedPolicyProvider {
     }
 
     void onSettingsAvailable(int source, Bundle newSettings) {
+        Log.i(TAG, "#onSettingsAvailable() " + source);
         if (mNativeCombinedPolicyProvider == 0) return;
 
         List<Bundle> policies;
@@ -108,9 +123,11 @@ public class CombinedPolicyProvider {
         }
         for (Bundle settings : policies) {
             for (String key : settings.keySet()) {
+                Log.i(TAG, "#setPolicy() " + key + " -> " + settings.get(key));
                 mPolicyConverter.setPolicy(key, settings.get(key));
             }
         }
+        Log.i(TAG, "#flushPolicies()");
         CombinedPolicyProviderJni.get().flushPolicies(mNativeCombinedPolicyProvider, get());
     }
 
@@ -154,13 +171,10 @@ public class CombinedPolicyProvider {
     boolean isPolicyCacheEnabled() {
         return mPolicyCacheProvider != null;
     }
-    /**
-     * Interface to handle actions related with policy changes.
-     */
+
+    /** Interface to handle actions related with policy changes. */
     public interface PolicyChangeListener {
-        /**
-         * Call to notify the listener that incognito browsing is unavailable due to policy.
-         */
+        /** Call to notify the listener that incognito browsing is unavailable due to policy. */
         void terminateIncognitoSession();
     }
 

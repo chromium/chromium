@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -19,6 +20,7 @@
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_migrator.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
@@ -35,7 +37,8 @@ class POLICY_EXPORT PolicyServiceImpl
     : public PolicyService,
       public ConfigurationPolicyProvider::Observer {
  public:
-  using Providers = std::vector<ConfigurationPolicyProvider*>;
+  using Providers =
+      std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>;
   using Migrators = std::vector<std::unique_ptr<PolicyMigrator>>;
 
   // Creates a new PolicyServiceImpl with the list of
@@ -69,7 +72,8 @@ class POLICY_EXPORT PolicyServiceImpl
   const PolicyMap& GetPolicies(const PolicyNamespace& ns) const override;
   bool IsInitializationComplete(PolicyDomain domain) const override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
-  void RefreshPolicies(base::OnceClosure callback) override;
+  void RefreshPolicies(base::OnceClosure callback,
+                       PolicyFetchReason reason) override;
 #if BUILDFLAG(IS_ANDROID)
   android::PolicyServiceAndroid* GetPolicyServiceAndroid() override;
 #endif
@@ -81,11 +85,19 @@ class POLICY_EXPORT PolicyServiceImpl
   // notified yet because it was throttled, will notify observers synchronously.
   // Has no effect if initialization was not throttled.
   void UnthrottleInitialization();
+  void UseLocalTestPolicyProvider(
+      ConfigurationPolicyProvider* provider) override;
 
   // Precedence policies cannot be set at the user cloud level regardless of
   // affiliation status. This is done to prevent cloud users from potentially
   // giving themselves increased priority, causing a security issue.
   static void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies);
+
+  // Merges the policies from `bundles` into one bundle while respecting the
+  // policy priorities and applying the appropriate `migrators`.
+  static PolicyBundle MergePolicyBundles(
+      std::vector<const policy::PolicyBundle*>& bundles,
+      Migrators& migrators);
 
  private:
   enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
@@ -111,6 +123,8 @@ class POLICY_EXPORT PolicyServiceImpl
 
   void NotifyProviderUpdatesPropagated();
 
+  void NotifyPoliciesUpdated(const PolicyBundle& old_bundle);
+
   // Combines the policies from all the providers, and notifies the observers
   // of namespaces whose policies have been modified.
   void MergeAndTriggerUpdates();
@@ -134,6 +148,7 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // The providers, in order of decreasing priority.
   Providers providers_;
+  raw_ptr<ConfigurationPolicyProvider> local_test_policy_provider_ = nullptr;
 
   Migrators migrators_;
 
@@ -150,7 +165,8 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // Set of providers that have a pending update that was triggered by a
   // call to RefreshPolicies().
-  std::set<ConfigurationPolicyProvider*> refresh_pending_;
+  std::set<raw_ptr<ConfigurationPolicyProvider, SetExperimental>>
+      refresh_pending_;
 
   // List of callbacks to invoke once all providers refresh after a
   // RefreshPolicies() call.
@@ -166,7 +182,8 @@ class POLICY_EXPORT PolicyServiceImpl
   // Note that this is intentionally a set - if multiple updates from the same
   // provider come in faster than they can be processed, they should only
   // trigger one notification to |provider_update_observers_|.
-  std::set<ConfigurationPolicyProvider*> provider_update_pending_;
+  std::set<raw_ptr<ConfigurationPolicyProvider, SetExperimental>>
+      provider_update_pending_;
 
   // If this is true, IsInitializationComplete should be returning false for all
   // policy domains because the owner of this PolicyService is delaying the

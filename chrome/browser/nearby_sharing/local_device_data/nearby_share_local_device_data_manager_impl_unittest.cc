@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
+
 #include <locale>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -14,8 +17,6 @@
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
-#include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler.h"
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler_factory.h"
@@ -23,7 +24,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -43,11 +44,11 @@ const char16_t kFakeTooLongGivenName[] = u"this is a 33-byte string in utf-8";
 const char kFakeTooLongTruncatedDeviceName[] =
     "this is a 33-...'s Chrome device";
 
-nearbyshare::proto::UpdateDeviceResponse CreateResponse(
-    const absl::optional<std::string>& full_name,
-    const absl::optional<std::string>& icon_url,
-    const absl::optional<std::string>& icon_token) {
-  nearbyshare::proto::UpdateDeviceResponse response;
+nearby::sharing::proto::UpdateDeviceResponse CreateResponse(
+    const std::optional<std::string>& full_name,
+    const std::optional<std::string>& icon_url,
+    const std::optional<std::string>& icon_token) {
+  nearby::sharing::proto::UpdateDeviceResponse response;
   if (full_name)
     response.set_person_name(*full_name);
 
@@ -60,17 +61,17 @@ nearbyshare::proto::UpdateDeviceResponse CreateResponse(
   return response;
 }
 
-std::vector<nearbyshare::proto::Contact> GetFakeContacts() {
-  nearbyshare::proto::Contact contact1;
-  nearbyshare::proto::Contact contact2;
+std::vector<nearby::sharing::proto::Contact> GetFakeContacts() {
+  nearby::sharing::proto::Contact contact1;
+  nearby::sharing::proto::Contact contact2;
   contact1.mutable_identifier()->set_account_name("account1");
   contact2.mutable_identifier()->set_account_name("account2");
   return {std::move(contact1), std::move(contact2)};
 }
 
-std::vector<nearbyshare::proto::PublicCertificate> GetFakeCertificates() {
-  nearbyshare::proto::PublicCertificate cert1;
-  nearbyshare::proto::PublicCertificate cert2;
+std::vector<nearby::sharing::proto::PublicCertificate> GetFakeCertificates() {
+  nearby::sharing::proto::PublicCertificate cert1;
+  nearby::sharing::proto::PublicCertificate cert2;
   cert1.set_secret_id("id1");
   cert2.set_secret_id("id2");
   return {std::move(cert1), std::move(cert2)};
@@ -141,7 +142,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void DownloadDeviceData(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response) {
     manager_->DownloadDeviceData();
 
@@ -163,17 +164,17 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void UploadContacts(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response) {
-    absl::optional<bool> returned_success;
+    std::optional<bool> returned_success;
     manager_->UploadContacts(
         GetFakeContacts(),
-        base::BindOnce([](absl::optional<bool>* returned_success,
+        base::BindOnce([](std::optional<bool>* returned_success,
                           bool success) { *returned_success = success; },
                        &returned_success));
 
     EXPECT_FALSE(updater()->pending_requests().front().certificates);
-    std::vector<nearbyshare::proto::Contact> expected_fake_contacts =
+    std::vector<nearby::sharing::proto::Contact> expected_fake_contacts =
         GetFakeContacts();
     for (size_t i = 0; i < expected_fake_contacts.size(); ++i) {
       EXPECT_EQ(expected_fake_contacts[i].SerializeAsString(),
@@ -190,17 +191,17 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void UploadCertificates(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response) {
-    absl::optional<bool> returned_success;
+    std::optional<bool> returned_success;
     manager_->UploadCertificates(
         GetFakeCertificates(),
-        base::BindOnce([](absl::optional<bool>* returned_success,
+        base::BindOnce([](std::optional<bool>* returned_success,
                           bool success) { *returned_success = success; },
                        &returned_success));
 
     EXPECT_FALSE(updater()->pending_requests().front().contacts);
-    std::vector<nearbyshare::proto::PublicCertificate>
+    std::vector<nearby::sharing::proto::PublicCertificate>
         expected_fake_certificates = GetFakeCertificates();
     for (size_t i = 0; i < expected_fake_certificates.size(); ++i) {
       EXPECT_EQ(expected_fake_certificates[i].SerializeAsString(),
@@ -283,7 +284,7 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DefaultDeviceName) {
   CreateManager();
 
   // If given name is null, only return the device type.
-  profile_info_provider()->set_given_name(absl::nullopt);
+  profile_info_provider()->set_given_name(std::nullopt);
   EXPECT_EQ(base::UTF16ToUTF8(ui::GetChromeOSDeviceName()),
             manager()->GetDeviceName());
 
@@ -473,11 +474,11 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest,
 
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DownloadDeviceData_Failure) {
   CreateManager();
-  DownloadDeviceData(/*response=*/absl::nullopt);
+  DownloadDeviceData(/*response=*/std::nullopt);
 
   // No full name or icon URL set because response was null.
-  EXPECT_EQ(absl::nullopt, manager()->GetFullName());
-  EXPECT_EQ(absl::nullopt, manager()->GetIconUrl());
+  EXPECT_EQ(std::nullopt, manager()->GetFullName());
+  EXPECT_EQ(std::nullopt, manager()->GetIconUrl());
   EXPECT_TRUE(notifications().empty());
 }
 
@@ -488,7 +489,7 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadContacts_Success) {
 
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadContacts_Failure) {
   CreateManager();
-  UploadContacts(/*response=*/absl::nullopt);
+  UploadContacts(/*response=*/std::nullopt);
 }
 
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadCertificates_Success) {
@@ -499,5 +500,5 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadCertificates_Success) {
 
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadCertificates_Failure) {
   CreateManager();
-  UploadCertificates(/*response=*/absl::nullopt);
+  UploadCertificates(/*response=*/std::nullopt);
 }

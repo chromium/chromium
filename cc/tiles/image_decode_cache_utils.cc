@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "cc/paint/paint_flags.h"
+#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -18,6 +19,38 @@
 #endif
 
 namespace cc {
+
+namespace {
+
+BASE_FEATURE(kImageDecodeConfigurableFeature,
+             "ImageDecodeConfigurableFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+MIRACLE_PARAMETER_FOR_INT(GetDefaultDecodedImageWorkingSetBudgetBytes,
+                          kImageDecodeConfigurableFeature,
+                          "DefaultDecodedImageWorkingSetBudgetBytes",
+                          128 * 1024 * 1024)
+
+#if !BUILDFLAG(IS_ANDROID)
+
+MIRACLE_PARAMETER_FOR_INT(GetDecodedImageWorkingSetBudgetBytesForLowEndDevice,
+                          kImageDecodeConfigurableFeature,
+                          "DecodedImageWorkingSetBudgetBytesForLowEndDevice",
+                          32 * 1024 * 1024)
+
+MIRACLE_PARAMETER_FOR_INT(GetDecodedImageWorkingSetBudgetBytesForAboveThreshold,
+                          kImageDecodeConfigurableFeature,
+                          "DecodedImageWorkingSetBudgetBytesForAboveThreshold",
+                          256 * 1024 * 1024)
+
+MIRACLE_PARAMETER_FOR_INT(GetImageDecodeMemoryThresholdMB,
+                          kImageDecodeConfigurableFeature,
+                          "ImageDecodeMemoryThresholdMB",
+                          4 * 1024)
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
 
 // static
 bool ImageDecodeCacheUtils::ShouldEvictCaches(
@@ -36,18 +69,21 @@ bool ImageDecodeCacheUtils::ShouldEvictCaches(
 // static
 size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
     bool for_renderer) {
-  size_t decoded_image_working_set_budget_bytes = 128 * 1024 * 1024;
+  size_t decoded_image_working_set_budget_bytes =
+      GetDefaultDecodedImageWorkingSetBudgetBytes();
 #if !BUILDFLAG(IS_ANDROID)
   if (for_renderer) {
     const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
-    // If there's over 4GB of RAM, increase the working set size to 256MB for
-    // both gpu and software.
-    const int kImageDecodeMemoryThresholdMB = 4 * 1024;
+    // If there's over `kImageDecodeMemoryThresholdMB` of RAM, increase the
+    // working set size to `kDecodedImageWorkingSetBudgetBytesForAboveThreshold`
+    // for both gpu and software.
     if (using_low_memory_policy) {
-      decoded_image_working_set_budget_bytes = 32 * 1024 * 1024;
+      decoded_image_working_set_budget_bytes =
+          GetDecodedImageWorkingSetBudgetBytesForLowEndDevice();
     } else if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
-               kImageDecodeMemoryThresholdMB) {
-      decoded_image_working_set_budget_bytes = 256 * 1024 * 1024;
+               GetImageDecodeMemoryThresholdMB()) {
+      decoded_image_working_set_budget_bytes =
+          GetDecodedImageWorkingSetBudgetBytesForAboveThreshold();
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

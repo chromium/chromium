@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 
 #include <utility>
+
+#include "net/base/mime_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -28,27 +30,32 @@ Clipboard* Clipboard::clipboard(Navigator& navigator) {
 
 Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
-ScriptPromise Clipboard::read(ScriptState* script_state,
-                              ClipboardUnsanitizedFormats* formats) {
+ScriptPromiseTyped<IDLSequence<ClipboardItem>> Clipboard::read(
+    ScriptState* script_state,
+    ClipboardUnsanitizedFormats* formats,
+    ExceptionState& exception_state) {
   return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
-                                         formats);
+                                         formats, exception_state);
 }
 
-ScriptPromise Clipboard::readText(ScriptState* script_state) {
+ScriptPromise Clipboard::readText(ScriptState* script_state,
+                                  ExceptionState& exception_state) {
   return ClipboardPromise::CreateForReadText(GetExecutionContext(),
-                                             script_state);
+                                             script_state, exception_state);
 }
 
 ScriptPromise Clipboard::write(ScriptState* script_state,
-                               const HeapVector<Member<ClipboardItem>>& data) {
+                               const HeapVector<Member<ClipboardItem>>& data,
+                               ExceptionState& exception_state) {
   return ClipboardPromise::CreateForWrite(GetExecutionContext(), script_state,
-                                          std::move(data));
+                                          std::move(data), exception_state);
 }
 
 ScriptPromise Clipboard::writeText(ScriptState* script_state,
-                                   const String& data) {
-  return ClipboardPromise::CreateForWriteText(GetExecutionContext(),
-                                              script_state, data);
+                                   const String& data,
+                                   ExceptionState& exception_state) {
+  return ClipboardPromise::CreateForWriteText(
+      GetExecutionContext(), script_state, data, exception_state);
 }
 
 const AtomicString& Clipboard::InterfaceName() const {
@@ -61,12 +68,19 @@ ExecutionContext* Clipboard::GetExecutionContext() const {
 
 // static
 String Clipboard::ParseWebCustomFormat(const String& format) {
-  String web_custom_format;
   if (format.StartsWith(ui::kWebClipboardFormatPrefix)) {
-    web_custom_format = format.Substring(
+    String web_custom_format_suffix = format.Substring(
         static_cast<unsigned>(std::strlen(ui::kWebClipboardFormatPrefix)));
+    std::string web_top_level_mime_type;
+    std::string web_mime_sub_type;
+    if (net::ParseMimeTypeWithoutParameter(web_custom_format_suffix.Utf8(),
+                                           &web_top_level_mime_type,
+                                           &web_mime_sub_type)) {
+      return String::Format("%s/%s", web_top_level_mime_type.c_str(),
+                            web_mime_sub_type.c_str());
+    }
   }
-  return web_custom_format;
+  return g_empty_string;
 }
 
 void Clipboard::Trace(Visitor* visitor) const {

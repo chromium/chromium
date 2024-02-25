@@ -1,0 +1,29 @@
+caption: Enable Floating SSO Service
+default: false
+desc: |-
+  When a user switches between <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, the Floating SSO Service will restore the user's web service authentication state from the previous device onto the new device. This is achieved by moving user's cookies across devices.
+
+  Setting the policy to Enabled will restore the user's web service authentication state from the user's last used <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device automatically upon login.
+  Setting the policy to Disabled or leaving it unset will not restore the user's web service authentication state upon login on a different device.
+
+  The web service domains blocked from being restored can be configured using the <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POLICY_NAME">FloatingSsoDomainBlocklist</ph> policy, while exceptions to that policy can be configured using the <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME">FloatingSsoDomainBlocklistExceptions</ph> policy.
+  If both of these policies are unset, all web service authentications, except Google authentications, will be moved.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+items:
+- caption: Enable Floating SSO and move the user's web service authentications to new device
+  value: true
+- caption: Disable Floating SSO and do not move the user's web service authentications to new device
+  value: false
+owners:
+- andreydav@google.com
+- mpetrisor@chromium.org
+- imprivata-eng@google.com
+schema:
+  type: boolean
+tags: []
+type: main

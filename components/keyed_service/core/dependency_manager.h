@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
@@ -117,11 +118,14 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   virtual void DumpContextDependencies(void* context) const = 0;
 #endif  // NDEBUG
 
-  std::vector<DependencyNode*> GetDestructionOrder();
-  static void ShutdownFactoriesInOrder(void* context,
-                                       std::vector<DependencyNode*>& order);
-  static void DestroyFactoriesInOrder(void* context,
-                                      std::vector<DependencyNode*>& order);
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>>
+  GetDestructionOrder();
+  static void ShutdownFactoriesInOrder(
+      void* context,
+      std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order);
+  static void DestroyFactoriesInOrder(
+      void* context,
+      std::vector<raw_ptr<DependencyNode, VectorExperimental>>& order);
 
   DependencyGraph dependency_graph_;
 
@@ -129,7 +133,7 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // These pointers are most likely invalid, but we keep track of their
   // locations in memory so we can nicely assert if we're asked to do anything
   // with them.
-  std::set<void*> dead_context_pointers_;
+  std::set<raw_ptr<void, SetExperimental>> dead_context_pointers_;
 
 #if DCHECK_IS_ON()
   bool context_services_created_ = false;

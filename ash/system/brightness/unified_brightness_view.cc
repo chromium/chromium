@@ -6,13 +6,12 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
@@ -28,7 +27,7 @@ namespace ash {
 UnifiedBrightnessView::UnifiedBrightnessView(
     UnifiedBrightnessSliderController* controller,
     scoped_refptr<UnifiedSystemTrayModel> model,
-    absl::optional<views::Button::PressedCallback> detailed_button_callback)
+    std::optional<views::Button::PressedCallback> detailed_button_callback)
     : UnifiedSliderView(views::Button::PressedCallback(),
                         controller,
                         kUnifiedMenuBrightnessIcon,
@@ -38,16 +37,15 @@ UnifiedBrightnessView::UnifiedBrightnessView(
       night_light_controller_(Shell::Get()->night_light_controller()) {
   model_->AddObserver(this);
 
-  if (features::IsQsRevampEnabled()) {
-    // For QsRevamp: This case applies to the brightness slider in the
-    // `DisplayDetailedView`. If `detailed_button_callback` is not passed in,
-    // both the `night_light_button_` and the drill-in button will not be added.
-    if (!detailed_button_callback.has_value()) {
-      OnDisplayBrightnessChanged(/*by_user=*/false);
-      return;
-    }
+  // This case applies to the brightness slider in the `DisplayDetailedView`. If
+  // `detailed_button_callback` is not passed in, both the `night_light_button_`
+  // and the drill-in button will not be added.
+  if (!detailed_button_callback.has_value()) {
+    OnDisplayBrightnessChanged(/*by_user=*/false);
+    return;
+  }
 
-    const bool toggled = night_light_controller_->GetEnabled();
+    const bool toggled = night_light_controller_->IsNightLightEnabled();
     night_light_button_ = AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(&UnifiedBrightnessView::OnNightLightButtonPressed,
                             base::Unretained(this)),
@@ -64,16 +62,15 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     // Sets the icon, icon color, background color for `night_light_button_`
     // when it's toggled.
     night_light_button_->SetToggledVectorIcon(kUnifiedMenuNightLightIcon);
-    night_light_button_->SetIconToggledColorId(
+    night_light_button_->SetIconToggledColor(
         cros_tokens::kCrosSysSystemOnPrimaryContainer);
-    night_light_button_->SetBackgroundToggledColorId(
+    night_light_button_->SetBackgroundToggledColor(
         cros_tokens::kCrosSysSystemPrimaryContainer);
     // Sets the icon, icon color, background color for `night_light_button_`
     // when it's not toggled.
     night_light_button_->SetVectorIcon(kUnifiedMenuNightLightOffIcon);
-    night_light_button_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
-    night_light_button_->SetBackgroundColorId(
-        cros_tokens::kCrosSysSystemOnBase);
+    night_light_button_->SetIconColor(cros_tokens::kCrosSysOnSurface);
+    night_light_button_->SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase);
     // `night_light_button_` should show the toggled on icon even when disabled.
     night_light_button_->SetButtonBehavior(
         IconButton::DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
@@ -81,14 +78,14 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     // enabled. In the lock screen and sign-in screen, the `night_light_button_`
     // should be disabled.
     night_light_button_->SetEnabled(
-        Shell::Get()->session_controller()->ShouldEnableSettings());
+        TrayPopupUtils::CanShowNightLightFeatureTile());
     night_light_button_->SetToggled(toggled);
 
     more_button_ = AddChildView(std::make_unique<IconButton>(
         std::move(detailed_button_callback.value()),
         IconButton::Type::kMediumFloating, &kQuickSettingsRightArrowIcon,
         IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
-    more_button_->SetIconColorId(cros_tokens::kCrosSysSecondary);
+    more_button_->SetIconColor(cros_tokens::kCrosSysSecondary);
 
     // In the case that there is a trusted pinned window (fullscreen lock mode)
     // and the brightness slider popup is shown, do not allow the more_button to
@@ -97,15 +94,7 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     if (window && WindowState::Get(window)->IsTrustedPinned()) {
       more_button_->SetEnabled(false);
     }
-  } else {
-    button()->SetEnabled(false);
-    // The button is set to disabled but wants to keep the color for an enabled
-    // icon.
-    button()->SetImageModel(
-        views::Button::STATE_DISABLED,
-        ui::ImageModel::FromVectorIcon(kUnifiedMenuBrightnessIcon,
-                                       kColorAshButtonIconColor));
-  }
+
   OnDisplayBrightnessChanged(/*by_user=*/false);
 }
 
@@ -114,13 +103,9 @@ UnifiedBrightnessView::~UnifiedBrightnessView() {
 }
 
 void UnifiedBrightnessView::OnDisplayBrightnessChanged(bool by_user) {
-  float level = model_->display_brightness();
-
-  if (features::IsQsRevampEnabled()) {
-    slider_button()->SetVectorIcon(GetBrightnessIconForLevel(level));
-    slider_button()->SetIconColorId(
-        cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  }
+  float const level = model_->display_brightness();
+  slider_button()->SetVectorIcon(GetBrightnessIconForLevel(level));
+  slider_button()->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   SetSliderValue(level, by_user);
 }
 
@@ -139,8 +124,8 @@ void UnifiedBrightnessView::OnNightLightButtonPressed() {
 
 void UnifiedBrightnessView::UpdateNightLightButton() {
   night_light_button_->SetEnabled(
-      Shell::Get()->session_controller()->ShouldEnableSettings());
-  const bool toggled = night_light_controller_->GetEnabled();
+      TrayPopupUtils::CanShowNightLightFeatureTile());
+  const bool toggled = night_light_controller_->IsNightLightEnabled();
 
   // Sets `night_light_button_` toggle state to update its icon, icon color,
   // and background color.
@@ -163,7 +148,7 @@ void UnifiedBrightnessView::VisibilityChanged(View* starting_from,
   }
 }
 
-BEGIN_METADATA(UnifiedBrightnessView, views::View)
+BEGIN_METADATA(UnifiedBrightnessView)
 END_METADATA
 
 }  // namespace ash

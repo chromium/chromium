@@ -12,6 +12,10 @@ target_cpu = "x86"  # or "x64" if you have an x86_64 emulator
 
 ## Running an Emulator
 
+### Googler-only Emulator Instructions
+
+See http://go/clank-emulator/
+
 ### Using Prebuilt CIPD packages
 
 Chromium has a set of prebuilt images stored as CIPD packages. These are used
@@ -28,14 +32,10 @@ tools/android/avd/avd.py list
 | `generic_android22.textpb` | L | google_apis | N/A |
 | `generic_android23.textpb` | M | google_apis | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
 | `generic_android27.textpb` | O | google_apis | N/A |
-| `generic_playstore_android27.textpb` | O | google_apis_playstore | N/A |
 | `generic_android28.textpb` | P | google_apis | [android-pie-x86-rel][android-pie-x86-rel] |
-| `generic_playstore_android28.textpb` | P | google_apis_playstore | [android-pie-x86-rel][android-pie-x86-rel] |
 | `generic_android29.textpb` | 10 (Q) | google_apis | N/A |
 | `generic_android30.textpb` | 11 (R) | google_apis | [android-11-x86-rel][android-11-x86-rel] |
-| `generic_playstore_android30.textpb` | 11 (R) | google_apis_playstore | [android-11-x86-rel][android-11-x86-rel] |
 | `generic_android31.textpb` | 12 (S) | google_apis | [android-12-x64-rel][android-12-x64-rel] |
-| `generic_playstore_android31.textpb` | 12 (S) | google_apis_playstore | [android-12-x64-rel][android-12-x64-rel] |
 
 You can use these configuration files to run the same emulator images locally.
 
@@ -65,12 +65,7 @@ You can use these configuration files to run the same emulator images locally.
      $ newgrp kvm
    ```
 
-   You need to log out and log back in so the new groups take effect. Or you
-   can use the following on a per-shell basis without logging out:
-
-   ```
-     $ su - $USER
-   ```
+   You need to log out and log back in so the new groups take effect.
 
 #### Running via the test runner
 
@@ -159,14 +154,12 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
  * `--wipe-data`
 
-    Since the prebuilt playstore images use adbkey from the GCE bots that created
-    them, they may appear to be "unauthorized" when used locally. Pass this flag
-    to reset the user data image locally to fix it after installing a prebuilt
-    image:
+    Reset the /data partition to the factory defaults. This removes all user
+    settings from the AVD.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/generic_playstore_android28.textpb \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
           --wipe-data
     ```
 
@@ -184,7 +177,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
     `avd.py` disables the emulator log by default. When this option is used,
     emulator log will be enabled. It is useful when the emulator cannot be
     launched correctly. See `emulator -help-debug-tags` for a full list of tags.
-    Use `--debug-tags="*"` if you want to output all logs (warning: it is quite
+    Use `--debug-tags=all` if you want to output all logs (warning: it is quite
     verbose).
 
     ```

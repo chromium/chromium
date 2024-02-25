@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_NEARBY_SHARE_LOCAL_DEVICE_DATA_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareClientFactory;
 class NearbyShareDeviceDataUpdater;
@@ -64,22 +64,22 @@ class NearbyShareLocalDeviceDataManagerImpl
   // NearbyShareLocalDeviceDataManager:
   std::string GetId() override;
   std::string GetDeviceName() const override;
-  absl::optional<std::string> GetFullName() const override;
-  absl::optional<std::string> GetIconUrl() const override;
+  std::optional<std::string> GetFullName() const override;
+  std::optional<std::string> GetIconUrl() const override;
   nearby_share::mojom::DeviceNameValidationResult ValidateDeviceName(
       const std::string& name) override;
   nearby_share::mojom::DeviceNameValidationResult SetDeviceName(
       const std::string& name) override;
   void DownloadDeviceData() override;
-  void UploadContacts(std::vector<nearbyshare::proto::Contact> contacts,
+  void UploadContacts(std::vector<nearby::sharing::proto::Contact> contacts,
                       UploadCompleteCallback callback) override;
   void UploadCertificates(
-      std::vector<nearbyshare::proto::PublicCertificate> certificates,
+      std::vector<nearby::sharing::proto::PublicCertificate> certificates,
       UploadCompleteCallback callback) override;
   void OnStart() override;
   void OnStop() override;
 
-  absl::optional<std::string> GetIconToken() const;
+  std::optional<std::string> GetIconToken() const;
 
   // Creates a default device name of the form "<given name>'s <device type>."
   // For example, "Josh's Chromebook." If a given name cannot be found, returns
@@ -89,19 +89,22 @@ class NearbyShareLocalDeviceDataManagerImpl
 
   void OnDownloadDeviceDataRequested();
   void OnDownloadDeviceDataFinished(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+          response);
   void OnUploadContactsFinished(
       UploadCompleteCallback callback,
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+          response);
   void OnUploadCertificatesFinished(
       UploadCompleteCallback callback,
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+          response);
   void HandleUpdateDeviceResponse(
-      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+          response);
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
-  raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
-      profile_info_provider_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<NearbyShareProfileInfoProvider> profile_info_provider_ = nullptr;
   std::unique_ptr<NearbyShareDeviceDataUpdater> device_data_updater_;
   std::unique_ptr<ash::nearby::NearbyScheduler> download_device_data_scheduler_;
   std::string default_device_name_;

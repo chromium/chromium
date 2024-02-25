@@ -10,14 +10,8 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/float/float_test_api.h"
 #include "ash/wm/window_state.h"
-#include "base/test/bind.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/launch_result_type.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -48,50 +42,26 @@ void TuckWindow(aura::Window* window) {
                                         base::Milliseconds(10), /*steps=*/1);
 }
 
-void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type) {
-  web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-
-  base::RunLoop launch_wait;
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-      std::move(params),
-      base::BindLambdaForTesting(
-          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
-  launch_wait.Run();
-}
-
 }  // namespace
 
-class FloatControllerBrowserTest : public InProcessBrowserTest {
- public:
-  FloatControllerBrowserTest() = default;
-  FloatControllerBrowserTest(const FloatControllerBrowserTest&) = delete;
-  FloatControllerBrowserTest& operator=(const FloatControllerBrowserTest&) =
-      delete;
-  ~FloatControllerBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::wm::features::kWindowLayoutMenu};
-};
+using FloatControllerBrowserTest = InProcessBrowserTest;
 
 // Tests that repeated tucking of a floated window in tablet mode does not cause
 // the window to freeze. Regression test for b/278917878.
 IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
                        TuckingBrowserDoesNotFreezeWindow) {
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
-      ->InstallSystemAppsForTesting();
+  ash::test::InstallSystemAppsForTesting(browser()->profile());
 
   // Open two SWAs. The bug was a result of the window targeters installed by
   // the window tucker and immersive mode not being reinstalled in the correct
   // order. More details in b/278917878.
-  CreateSystemWebApp(browser()->profile(), ash::SystemWebAppType::FILE_MANAGER);
+  ash::test::CreateSystemWebApp(browser()->profile(),
+                                ash::SystemWebAppType::FILE_MANAGER);
   aura::Window* browser_window1 =
       BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
 
-  CreateSystemWebApp(browser()->profile(), ash::SystemWebAppType::SETTINGS);
+  ash::test::CreateSystemWebApp(browser()->profile(),
+                                ash::SystemWebAppType::SETTINGS);
   aura::Window* browser_window2 =
       BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
 
@@ -106,8 +76,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   // Float and then tuck the background window repeatedly. This emulates the
   // steps listed in the bug.
   ui::test::EventGenerator event_generator(browser_window1->GetRootWindow());
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsFloated());
   TuckWindow(browser_window2);
   ash::ShellTestApi().WaitForWindowFinishAnimating(browser_window2);
@@ -116,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
 
   // Float `browser_window1` using accelerator and tuck it.
   wm::ActivateWindow(browser_window1);
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(browser_window1)->IsFloated());
   ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsMaximized());
   TuckWindow(browser_window1);
@@ -129,8 +99,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   // `TuckWindow` should tuck the window otherwise the window has frozen and the
   // test will hang.
   wm::ActivateWindow(browser_window2);
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(browser_window2)->IsFloated());
   ASSERT_TRUE(ash::WindowState::Get(browser_window1)->IsMaximized());
   TuckWindow(browser_window2);
@@ -148,8 +118,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
   // A floated window is magnetized to the bottom right by default.
   aura::Window* window = browser()->window()->GetNativeWindow();
   ui::test::EventGenerator event_generator(window->GetRootWindow(), window);
-  event_generator.PressAndReleaseKey(ui::VKEY_F,
-                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(ash::WindowState::Get(window)->IsFloated());
   ASSERT_EQ(ash::FloatController::MagnetismCorner::kBottomRight,
             ash::FloatTestApi::GetMagnetismCornerForBounds(

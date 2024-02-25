@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -70,6 +71,7 @@ class FrameResources {
   const gfx::ColorSpace color_space_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   gpu::MailboxHolder mailbox_holders_[VideoFrame::kMaxPlanes];
+  scoped_refptr<gpu::ClientSharedImage> shared_images_[VideoFrame::kMaxPlanes];
 };
 
 // The owner of the RenderableGpuMemoryBufferVideoFramePool::Client needs to be
@@ -151,10 +153,12 @@ FrameResources::FrameResources(scoped_refptr<InternalRefCountedPool> pool,
 
 FrameResources::~FrameResources() {
   auto* context = pool_->GetContext();
-  for (auto& holder : mailbox_holders_) {
-    if (holder.mailbox.IsZero())
+  for (unsigned int i = 0; i < VideoFrame::kMaxPlanes; ++i) {
+    if (!shared_images_[i]) {
       continue;
-    context->DestroySharedImage(holder.sync_token, holder.mailbox);
+    }
+    context->DestroySharedImage(mailbox_holders_[i].sync_token,
+                                std::move(shared_images_[i]));
   }
 }
 
@@ -176,8 +180,9 @@ bool FrameResources::Initialize() {
   // Align buffer stride to 4, because our SharedImage shared memory backing
   // code requires it, since it sometimes treats Y-planes are 4 bytes per pixel
   // textures.
-  gfx::Size buffer_size_in_pixels(base::bits::AlignUp(coded_size_.width(), 4),
-                                  base::bits::AlignUp(coded_size_.height(), 2));
+  gfx::Size buffer_size_in_pixels(
+      base::bits::AlignUpDeprecatedDoNotUse(coded_size_.width(), 4),
+      base::bits::AlignUpDeprecatedDoNotUse(coded_size_.height(), 2));
 
   // Create the GpuMemoryBuffer.
   gpu_memory_buffer_ = context->CreateGpuMemoryBuffer(
@@ -189,13 +194,25 @@ bool FrameResources::Initialize() {
     return false;
   }
 
+#if BUILDFLAG(IS_MAC)
   gpu_memory_buffer_->SetColorSpace(color_space_);
+#endif
 
   constexpr uint32_t kSharedImageUsage =
 #if BUILDFLAG(IS_MAC)
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
 #endif
-      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
+      // These SharedImages, like most/all SharedImages created to back
+      // VideoFrames, can be read both via the raster interface for import into
+      // canvas and/or 2-copy import into WebGL and via the GLES2 interface for
+      // 1-copy import into WebGL.
+      // Unusually for such SharedImages, they are also *written* via raster for
+      // WebGL and WebRTC use cases in which RGBA textures are imported into the
+      // VideoFrames (this is what "renderable" means in this context). Hence,
+      // GLES2_WRITE is required for raster-over-GLES.
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   uint32_t texture_target = GL_TEXTURE_2D;
@@ -205,10 +222,13 @@ bool FrameResources::Initialize() {
 #endif
 
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    context->CreateSharedImage(
+    shared_images_[0] = context->CreateSharedImage(
         gpu_memory_buffer_.get(), viz::MultiPlaneFormat::kNV12, color_space_,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-        mailbox_holders_[0].mailbox, mailbox_holders_[0].sync_token);
+        mailbox_holders_[0].sync_token);
+    if (shared_images_[0]) {
+      mailbox_holders_[0].mailbox = shared_images_[0]->mailbox();
+    }
     mailbox_holders_[0].texture_target = texture_target;
     return true;
   }
@@ -219,10 +239,13 @@ bool FrameResources::Initialize() {
                                                     gfx::BufferPlane::UV};
 
   for (size_t plane = 0; plane < kNumPlanes; ++plane) {
-    context->CreateSharedImage(
+    shared_images_[plane] = context->CreateSharedImage(
         gpu_memory_buffer_.get(), kPlanes[plane], color_space_,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-        mailbox_holders_[plane].mailbox, mailbox_holders_[plane].sync_token);
+        mailbox_holders_[plane].sync_token);
+    if (shared_images_[plane]) {
+      mailbox_holders_[plane].mailbox = shared_images_[plane]->mailbox();
+    }
     mailbox_holders_[plane].texture_target = texture_target;
   }
   return true;

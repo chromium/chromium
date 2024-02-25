@@ -23,7 +23,7 @@
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -346,27 +346,6 @@ bool AuthenticateUser(gfx::NativeWindow window,
   } while (!retval && tries < kMaxPasswordRetries);
 
   return retval;
-}
-
-std::u16string GetMessageForLoginPrompt(
-    password_manager::ReauthPurpose purpose) {
-  switch (purpose) {
-    case password_manager::ReauthPurpose::VIEW_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
-    case password_manager::ReauthPurpose::COPY_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
-    case password_manager::ReauthPurpose::EDIT_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
-    case password_manager::ReauthPurpose::EXPORT:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
-    case password_manager::ReauthPurpose::IMPORT:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT);
-  }
 }
 
 bool CanAuthenticateWithScreenLock() {

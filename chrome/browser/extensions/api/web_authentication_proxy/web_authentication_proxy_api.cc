@@ -107,7 +107,7 @@ WebAuthenticationProxyCompleteCreateRequestFunction::
     ~WebAuthenticationProxyCompleteCreateRequestFunction() = default;
 
 void WebAuthenticationProxyCompleteCreateRequestFunction::DoRespond(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   Respond(error ? Error(std::move(*error)) : NoArguments());
 }
 
@@ -137,7 +137,7 @@ WebAuthenticationProxyCompleteGetRequestFunction::
     ~WebAuthenticationProxyCompleteGetRequestFunction() = default;
 
 void WebAuthenticationProxyCompleteGetRequestFunction::DoRespond(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   Respond(error ? Error(std::move(*error)) : NoArguments());
 }
 

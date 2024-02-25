@@ -5,12 +5,14 @@
 #include "components/reporting/metrics/periodic_collector.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -20,7 +22,7 @@
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
 #include "components/reporting/metrics/sampler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace reporting {
 
@@ -81,9 +83,14 @@ PeriodicCollector::~PeriodicCollector() = default;
 
 void PeriodicCollector::OnMetricDataCollected(
     bool is_event_driven,
-    absl::optional<MetricData> metric_data) {
+    std::optional<MetricData> metric_data) {
   CheckOnSequence();
+  CHECK(metric_report_queue_);
   if (!metric_data.has_value()) {
+    base::UmaHistogramExactLinear(
+        PeriodicCollector::kNoMetricDataMetricsName,
+        static_cast<int>(metric_report_queue_->GetDestination()),
+        Destination_ARRAYSIZE);
     return;
   }
 
@@ -91,7 +98,8 @@ void PeriodicCollector::OnMetricDataCollected(
     CHECK(metric_data->has_telemetry_data());
     metric_data->mutable_telemetry_data()->set_is_event_driven(is_event_driven);
   }
-  metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
+  metric_data->set_timestamp_ms(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   metric_report_queue_->Enqueue(std::move(metric_data.value()));
 }
 

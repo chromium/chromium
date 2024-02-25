@@ -42,7 +42,7 @@
 #include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -56,6 +56,7 @@
 #include "extensions/browser/requirements_checker.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
@@ -202,7 +203,7 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
   }
 }
 
-void CrxInstaller::InstallUnpackedCrx(const std::string& extension_id,
+void CrxInstaller::InstallUnpackedCrx(const ExtensionId& extension_id,
                                       const std::string& public_key,
                                       const base::FilePath& unpacked_dir) {
   ExtensionService* service = service_weak_.get();
@@ -258,7 +259,7 @@ void CrxInstaller::ConvertUserScriptOnSharedFileThread() {
 }
 
 void CrxInstaller::UpdateExtensionFromUnpackedCrx(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& public_key,
     const base::FilePath& unpacked_dir) {
   ExtensionService* service = service_weak_.get();
@@ -300,7 +301,7 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
   InstallUnpackedCrx(extension_id, public_key, unpacked_dir);
 }
 
-absl::optional<CrxInstallError> CrxInstaller::CheckExpectations(
+std::optional<CrxInstallError> CrxInstaller::CheckExpectations(
     const Extension* extension) {
   DCHECK(shared_file_task_runner_->RunsTasksInCurrentSequence());
 
@@ -325,10 +326,10 @@ absl::optional<CrxInstallError> CrxInstaller::CheckExpectations(
             base::ASCIIToUTF16(extension->version().GetString())));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<CrxInstallError> CrxInstaller::AllowInstall(
+std::optional<CrxInstallError> CrxInstaller::AllowInstall(
     const Extension* extension) {
   DCHECK(shared_file_task_runner_->RunsTasksInCurrentSequence());
 
@@ -381,7 +382,7 @@ absl::optional<CrxInstallError> CrxInstaller::AllowInstall(
   // and other uses of install_source_ that are no longer needed now that the
   // SandboxedUnpacker sets extension->location.
   if (extension->is_theme() || Manifest::IsExternalLocation(install_source_)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!extensions_enabled_) {
@@ -459,7 +460,7 @@ absl::optional<CrxInstallError> CrxInstaller::AllowInstall(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CrxInstaller::ShouldComputeHashesOnUI(
@@ -561,7 +562,7 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
   unpacked_extension_root_ = extension_dir;
 
   // Check whether the crx matches the set expectations.
-  absl::optional<CrxInstallError> expectations_error =
+  std::optional<CrxInstallError> expectations_error =
       CheckExpectations(extension.get());
   if (expectations_error) {
     DCHECK_NE(CrxInstallErrorType::NONE, expectations_error->type());
@@ -585,7 +586,7 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
     }
   }
 
-  absl::optional<CrxInstallError> error = AllowInstall(extension.get());
+  std::optional<CrxInstallError> error = AllowInstall(extension.get());
   if (error) {
     DCHECK_NE(CrxInstallErrorType::NONE, error->type());
     ReportFailureFromSharedFileThread(*error);
@@ -943,7 +944,7 @@ void CrxInstaller::ReloadExtensionAfterInstall(
   // lazily and based on the Extension's root path at that moment.
   // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
   // with std::u16string
-  std::string extension_id = extension()->id();
+  ExtensionId extension_id = extension()->id();
   std::string error;
   extension_ = file_util::LoadExtension(
       version_dir, install_source_,
@@ -1037,7 +1038,7 @@ void CrxInstaller::ReportSuccessFromUIThread() {
 
   service_weak_->OnExtensionInstalled(extension(), page_ordinal_,
                                       install_flags_, ruleset_install_prefs_);
-  NotifyCrxInstallComplete(absl::nullopt);
+  NotifyCrxInstallComplete(std::nullopt);
 }
 
 void CrxInstaller::ReportInstallationStage(InstallationStage stage) {
@@ -1072,9 +1073,9 @@ void CrxInstaller::NotifyCrxInstallBegin() {
 }
 
 void CrxInstaller::NotifyCrxInstallComplete(
-    const absl::optional<CrxInstallError>& error) {
+    const std::optional<CrxInstallError>& error) {
   ReportInstallationStage(InstallationStage::kComplete);
-  const std::string extension_id =
+  const ExtensionId extension_id =
       expected_id_.empty() && extension() ? extension()->id() : expected_id_;
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);
@@ -1214,7 +1215,7 @@ void CrxInstaller::AddInstallerCallback(InstallerResultCallback callback) {
 }
 
 void CrxInstaller::RunInstallerCallbacks(
-    const absl::optional<CrxInstallError>& error) {
+    const std::optional<CrxInstallError>& error) {
   for (InstallerResultCallback& callback : installer_callbacks_) {
     if (!content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), error))) {

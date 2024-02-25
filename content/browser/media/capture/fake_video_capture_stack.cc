@@ -216,9 +216,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     return mapped_frame;
   }
 
-  void OnFrameReadyInBuffer(
-      media::ReadyFrameInBuffer frame,
-      std::vector<media::ReadyFrameInBuffer> scaled_frames) override {
+  void OnFrameReadyInBuffer(media::ReadyFrameInBuffer frame) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);
 
     // Unretained is safe since we own the thread to which we're posting.
@@ -280,7 +278,8 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
 
   void OnFrameDropped(media::VideoCaptureFrameDropReason) override {}
 
-  void OnNewCropVersion(uint32_t crop_version) override {}
+  void OnNewSubCaptureTargetVersion(
+      uint32_t sub_capture_target_version) override {}
 
   void OnFrameWithEmptyRegionCapture() override {}
 

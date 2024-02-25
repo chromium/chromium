@@ -12,6 +12,7 @@
 #include "ios/chrome/browser/shared/public/features/features.h"
 #include "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 #include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
+#import "ios/web/common/features.h"
 
 class FullscreenModelObserver;
 
@@ -38,7 +39,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
 
   // Whether the base offset has been recorded after state has been invalidated
   // by navigations or toolbar height changes.
-  bool has_base_offset() const { return !std::isnan(base_offset_); }
+  bool has_base_offset() const {
+    CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
+    return !std::isnan(base_offset_);
+  }
 
   // The base offset against which the fullscreen progress is being calculated.
   CGFloat base_offset() const { return base_offset_; }
@@ -70,7 +74,17 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
 
   // Whether the view is scrolled all the way to the bottom.
   bool is_scrolled_to_bottom() const {
-    return y_content_offset_ + scroll_view_height_ >= content_height_;
+    if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+      return y_content_offset_ + scroll_view_height_ >= content_height_;
+    } else {
+      return y_content_offset_ -
+                 (GetCollapsedTopToolbarHeight() +
+                  GetCollapsedBottomToolbarHeight() + safe_area_insets_.bottom +
+                  safe_area_insets_.top) +
+                 (scroll_view_height_ + GetExpandedTopToolbarHeight() +
+                  GetExpandedBottomToolbarHeight()) >=
+             content_height_;
+    }
   }
 
   // The min, max, and current insets caused by the toolbars.
@@ -178,8 +192,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   void SetWebViewSafeAreaInsets(UIEdgeInsets safe_area_insets);
   UIEdgeInsets GetWebViewSafeAreaInsets() const;
 
-  void SetFreezeToolbarHeight(bool freeze_toolbar_height);
-  bool GetFreezeToolbarHeight() const;
+  // Setter for whether force fullscreen mode is active. The mode is used when
+  // the bottom toolbar is collapsed above the keyboard.
+  void SetForceFullscreenMode(bool force_fullscreen_mode);
+  bool IsForceFullscreenMode() const;
 
  private:
   // Returns how a scroll to the current `y_content_offset_` from `from_offset`
@@ -228,7 +244,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   CGFloat progress_ = 0.0;
   // The base offset from which to calculate fullscreen state.  When `locked_`
   // is false, it is reset to the current offset after each scroll event.
-  CGFloat base_offset_ = NAN;
+  CGFloat base_offset_ = 0.0;
   // The height of the toolbars being shown or hidden by this model.
   CGFloat collapsed_top_toolbar_height_ = 0.0;
   CGFloat expanded_top_toolbar_height_ = 0.0;
@@ -244,6 +260,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   CGFloat top_inset_ = 0.0;
   // How many currently-running features require the toolbar be visible.
   size_t disabled_counter_ = 0;
+  // Whether fullscreen is force enabled. Active when the bottom toolbar is
+  // collapsed above the keyboard. When active, prevents fullscreen exit.
+  // Fullscreen will be reset when exiting this mode.
+  bool is_force_fullscreen_mode_ = false;
   // Whether fullscreen is disabled for short content.
   bool disabled_for_short_content_ = false;
   // Whether the main content is being scrolled.
@@ -260,7 +280,6 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   UIEdgeInsets safe_area_insets_ = UIEdgeInsetsZero;
   // The number of FullscreenModelObserver callbacks currently being executed.
   size_t observer_callback_count_ = 0;
-  bool freeze_toolbar_height_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_

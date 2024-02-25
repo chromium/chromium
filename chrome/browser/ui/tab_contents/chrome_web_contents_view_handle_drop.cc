@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -18,7 +20,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/file_info.h"
 
 namespace {
@@ -39,7 +40,7 @@ void CompletionCallback(
 
   // For text drag-drops, block the drop if any result is negative.
   if (!all_text_results_allowed) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -56,7 +57,7 @@ void CompletionCallback(
     for (size_t i = 0; i < data.paths.size(); ++i)
       result.paths_results[i] = false;
 
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -132,7 +133,7 @@ class HandleDropScanData : public content::WebContentsObserver {
 
 }  // namespace
 
-void HandleOnPerformDrop(
+void HandleOnPerformingDrop(
     content::WebContents* web_contents,
     content::DropData drop_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback) {
@@ -145,6 +146,15 @@ void HandleOnPerformDrop(
           : enterprise_connectors::AnalysisConnector::FILE_ATTACHED;
   if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile, web_contents->GetLastCommittedURL(), &data, connector)) {
+    // If the enterprise policy is not enabled, make sure that the renderer
+    // never forces a default action.
+    drop_data.document_is_handling_drag = true;
+    std::move(callback).Run(std::move(drop_data));
+    return;
+  }
+
+  // If the page will not handle the drop, no need to perform content analysis.
+  if (!drop_data.document_is_handling_drag) {
     std::move(callback).Run(std::move(drop_data));
     return;
   }

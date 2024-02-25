@@ -14,6 +14,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_power_monitor.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -566,6 +567,233 @@ TEST(AudioServiceOutputStreamTest, BindMuters) {
               BindingConnectionError(kTerminatedByClientDisconnectReason, _));
   stream.reset();
   base::RunLoop().RunUntilIdle();
+}
+
+class OutputStreamAudibilityHelperTest : public ::testing::Test {
+ public:
+  OutputStreamAudibilityHelperTest()
+      : helper_(OutputStream::MakeAudibilityHelperForTest()) {}
+
+  MOCK_METHOD0(GetPowerLevel, float());
+  MOCK_METHOD1(OnAudiblityStateChanged, void(bool));
+
+  void VerifyAndClear() { testing::Mock::VerifyAndClear(this); }
+
+  void StartWithMocks() {
+    helper_->StartPolling(
+        base::BindRepeating(&OutputStreamAudibilityHelperTest::GetPowerLevel,
+                            base::Unretained(this)),
+        base::BindRepeating(
+            &OutputStreamAudibilityHelperTest::OnAudiblityStateChanged,
+            base::Unretained(this)));
+  }
+
+  void Stop() { helper_->StopPolling(); }
+
+  bool IsAudible() { return helper_->IsAudible(); }
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+ private:
+  std::unique_ptr<OutputStream::AudibilityHelper> helper_;
+};
+
+TEST_F(OutputStreamAudibilityHelperTest, StartsSilent) {
+  EXPECT_FALSE(IsAudible());
+}
+
+TEST_F(OutputStreamAudibilityHelperTest, StartStop) {
+  StartWithMocks();
+  Stop();
+}
+
+TEST_F(OutputStreamAudibilityHelperTest, StartStopStop) {
+  StartWithMocks();
+  Stop();
+  Stop();
+}
+
+TEST_F(OutputStreamAudibilityHelperTest, Stop) {
+  Stop();
+}
+
+TEST_F(OutputStreamAudibilityHelperTest, Poll_Stop_StopsCallbacks) {
+  EXPECT_CALL(*this, GetPowerLevel())
+      .WillRepeatedly(Return(media::AudioPowerMonitor::zero_power()));
+
+  StartWithMocks();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  Stop();
+
+  // Make sure we don't receive callbacks after stopping.
+  VerifyAndClear();
+  EXPECT_CALL(*this, GetPowerLevel()).Times(0);
+  task_environment_.FastForwardBy(base::Seconds(1));
+}
+
+TEST_F(OutputStreamAudibilityHelperTest, Poll_NeverAudible_NoStateChange) {
+  EXPECT_CALL(*this, OnAudiblityStateChanged(testing::_)).Times(0);
+  EXPECT_CALL(*this, GetPowerLevel())
+      .WillRepeatedly(Return(media::AudioPowerMonitor::zero_power()));
+
+  StartWithMocks();
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  Stop();
+}
+
+TEST_F(OutputStreamAudibilityHelperTest, Poll_Audible_StateChanges) {
+  EXPECT_CALL(*this, OnAudiblityStateChanged(true)).Times(1);
+  EXPECT_CALL(*this, GetPowerLevel())
+      .WillOnce(Return(media::AudioPowerMonitor::max_power()));
+
+  StartWithMocks();
+
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+
+  VerifyAndClear();
+
+  // Expect a return to silence when stopping.
+  EXPECT_CALL(*this, OnAudiblityStateChanged(false)).Times(1);
+  Stop();
+  EXPECT_FALSE(IsAudible());
+}
+
+// Makes sure that starting and stopping multiple time behaves as expected:
+// - The helper should be silent on stops and re-starts
+// - The first aubible audio should trigger the audibility change.
+TEST_F(OutputStreamAudibilityHelperTest, Poll_StartStopTwice_StateChanges) {
+  EXPECT_CALL(*this, OnAudiblityStateChanged(true)).Times(1);
+  EXPECT_CALL(*this, OnAudiblityStateChanged(false)).Times(1);
+  EXPECT_CALL(*this, GetPowerLevel())
+      .WillRepeatedly(Return(media::AudioPowerMonitor::max_power()));
+
+  // Start and stop a loud stream.
+  StartWithMocks();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  Stop();
+
+  VerifyAndClear();
+  EXPECT_FALSE(IsAudible());
+
+  // Re-start, with a silent stream.
+  EXPECT_CALL(*this, OnAudiblityStateChanged(true)).Times(0);
+  EXPECT_CALL(*this, OnAudiblityStateChanged(false)).Times(0);
+  EXPECT_CALL(*this, GetPowerLevel())
+      .WillRepeatedly(Return(media::AudioPowerMonitor::zero_power()));
+
+  StartWithMocks();
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(IsAudible());
+
+  VerifyAndClear();
+
+  // Make the stream loud again.
+  EXPECT_CALL(*this, OnAudiblityStateChanged(true)).Times(1);
+  EXPECT_CALL(*this, OnAudiblityStateChanged(false)).Times(1);
+  EXPECT_CALL(*this, GetPowerLevel())
+      .WillOnce(Return(media::AudioPowerMonitor::max_power()));
+
+  // A single poll of the stream levels should transition to the audible state.
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+  EXPECT_TRUE(IsAudible());
+
+  Stop();
+}
+
+TEST_F(OutputStreamAudibilityHelperTest, Poll_AlternatingAudible_StateChanges) {
+  StartWithMocks();
+
+  constexpr int kIterations = 5;
+  for (int i = 0; i < kIterations; ++i) {
+    // First return loud levels and expect a transition to an audible state.
+    VerifyAndClear();
+    EXPECT_CALL(*this, GetPowerLevel())
+        .WillRepeatedly(Return(media::AudioPowerMonitor::max_power()));
+    EXPECT_CALL(*this, OnAudiblityStateChanged(true)).Times(1);
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+
+    // Then return quiet levels and expect a transition to an silence state.
+    VerifyAndClear();
+    EXPECT_CALL(*this, OnAudiblityStateChanged(false)).Times(1);
+    EXPECT_CALL(*this, GetPowerLevel())
+        .WillRepeatedly(Return(media::AudioPowerMonitor::zero_power()));
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
+
+  Stop();
+}
+
+TEST_F(OutputStreamAudibilityHelperTest, Poll_SmallGlitches_StaysAudible) {
+  // Start the helper, force it into an audible state.
+  EXPECT_CALL(*this, GetPowerLevel())
+      .WillRepeatedly(Return(media::AudioPowerMonitor::max_power()));
+
+  StartWithMocks();
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+  VerifyAndClear();
+  EXPECT_TRUE(IsAudible());
+
+  // Simulate longer and longer glitches, making sure that the audibility helper
+  // doesn't change state for small glitches.
+
+  // These values are taken directly from AudibilityHelper's implementation,
+  // in output_stream.cc.
+  const base::TimeDelta kGlitchTolerance = base::Milliseconds(100);
+  const base::TimeDelta kPollingPeriod = base::Seconds(1) / 15;
+
+  base::TimeDelta glitch_length;
+  std::optional<base::TimeTicks> glitch_start;
+  const auto return_glitch_power_levels = [&glitch_length, &glitch_start]() {
+    const base::TimeTicks now = base::TimeTicks::Now();
+
+    // This is the first call to this lambda. Start a new glitch.
+    if (!glitch_start) {
+      glitch_start = now;
+    }
+
+    if (now - glitch_start.value() <= glitch_length) {
+      return media::AudioPowerMonitor::zero_power();
+    }
+
+    return media::AudioPowerMonitor::max_power();
+  };
+
+  constexpr int kIterations = 5;
+  for (int i = 0; i < kIterations; ++i) {
+    // Force `return_glitch_power_levels` to return silent audio power levels.
+    glitch_start = std::nullopt;
+    glitch_length = (i + 1) * kPollingPeriod;
+
+    EXPECT_CALL(*this, GetPowerLevel())
+        .WillRepeatedly(return_glitch_power_levels);
+
+    if (glitch_length < kGlitchTolerance) {
+      // Expect to stay audible for a small glitch.
+      EXPECT_CALL(*this, OnAudiblityStateChanged(false)).Times(0);
+      EXPECT_CALL(*this, OnAudiblityStateChanged(true)).Times(0);
+    } else {
+      // Expect to become silent, then audible for a longer glitch.
+      EXPECT_CALL(*this, OnAudiblityStateChanged(false)).Times(1);
+      EXPECT_CALL(*this, OnAudiblityStateChanged(true)).Times(1);
+    }
+
+    task_environment_.FastForwardBy(base::Seconds(1));
+    VerifyAndClear();
+  }
+
+  // Expect a return to silence when stopping.
+  EXPECT_CALL(*this, OnAudiblityStateChanged(false)).Times(1);
+  Stop();
 }
 
 }  // namespace audio

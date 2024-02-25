@@ -1,4 +1,4 @@
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -75,9 +75,13 @@ def generate_async_iterator_blink_impl_class(iterator_class_like=None,
     value_type = async_iterator.value_type.unwrap(typedef=True)
     key_value_type_list = tuple(filter(None, [key_type, value_type]))
 
-    (header_forward_decls, header_include_headers, source_forward_decls,
-     source_include_headers
-     ) = collect_forward_decls_and_include_headers(key_value_type_list)
+    (
+        header_forward_decls,
+        header_include_headers,
+        header_stdcpp_include_headers,
+        source_forward_decls,
+        source_include_headers,
+    ) = collect_forward_decls_and_include_headers(key_value_type_list)
     class_def.accumulate(
         CodeGenAccumulator.require_class_decls(
             set.union(header_forward_decls, source_forward_decls)))
@@ -86,10 +90,14 @@ def generate_async_iterator_blink_impl_class(iterator_class_like=None,
     ])
     headers.update(header_include_headers)
     for idl_type in key_value_type_list:
-        if idl_type.is_numeric or idl_type.is_string or idl_type.is_nullable:
+        if (idl_type.is_numeric or idl_type.is_string or idl_type.is_nullable
+                or idl_type.is_any):
             headers.add(
                 "third_party/blink/renderer/bindings/core/v8/idl_types.h")
     class_def.accumulate(CodeGenAccumulator.require_include_headers(headers))
+    class_def.accumulate(
+        CodeGenAccumulator.require_stdcpp_include_headers(
+            header_stdcpp_include_headers))
 
     ctor_decls, ctor_defs = make_constructors(cg_context)
 

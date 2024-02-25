@@ -7,12 +7,14 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,8 +45,9 @@ using TestUuidId = base::StrongAlias<class TestUuidIdTag, int>;
 // found, false if not.
 bool FindUuidInUuidList(
     const base::Uuid& uuid,
-    const std::vector<const ash::DeskTemplate*>& entry_list) {
-  for (auto* entry : entry_list) {
+    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+        entry_list) {
+  for (const ash::DeskTemplate* entry : entry_list) {
     if (entry->uuid() == uuid)
       return true;
   }
@@ -1095,7 +1098,7 @@ TEST_F(LocalDeskDataManagerTest, IngoresUpdateForNonExistantTemplate) {
 
 TEST_F(LocalDeskDataManagerTest, DoesNotUpdateWhenRestoreContentIsTheSame) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
@@ -1115,7 +1118,7 @@ TEST_F(LocalDeskDataManagerTest, DoesNotUpdateWhenRestoreContentIsTheSame) {
 
 TEST_F(LocalDeskDataManagerTest, DoesNotOverwriteOnDifferentPolicy) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());

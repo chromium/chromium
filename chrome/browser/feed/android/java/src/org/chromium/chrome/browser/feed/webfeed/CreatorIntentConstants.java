@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.feed.webfeed;
 
-/**
- * CreatorIntentConstants strings used in the intent of launching CreatorActivity
- */
+/** CreatorIntentConstants strings used in the intent of launching CreatorActivity */
 public final class CreatorIntentConstants {
     public static final String CREATOR_WEB_FEED_ID = "CREATOR_WEB_FEED_ID";
     public static final String CREATOR_URL = "CREATOR_URL";

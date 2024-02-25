@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerRemote} from '/ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom-webui.js';
-
 import {callbackRouter, pageHandler} from './page_handler.js';
+import {PageCallbackRouter, PageHandlerRemote} from './sample_system_web_app_ui.mojom-webui.js';
 
 const first = document.querySelector<HTMLInputElement>('#number1')!;
 const second = document.querySelector<HTMLInputElement>('#number2')!;

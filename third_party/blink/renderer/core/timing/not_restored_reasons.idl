@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/bfcache-not-restored-reason/blob/main/NotRestoredReason.md
+
+[
+    Exposed=Window,
+    RuntimeEnabled=BackForwardCacheNotRestoredReasons
+] interface NotRestoredReasonDetails {
+  readonly attribute DOMString reason;
+  [CallWith=ScriptState] object toJSON();
+};
+[
+    Exposed=Window,
+    RuntimeEnabled=BackForwardCacheNotRestoredReasons
+] interface NotRestoredReasons {
+  readonly attribute DOMString? src;
+  readonly attribute DOMString? id;
+  readonly attribute DOMString? name;
+  readonly attribute DOMString? url;
+  readonly attribute FrozenArray<NotRestoredReasonDetails>? reasons;
+  readonly attribute FrozenArray<NotRestoredReasons>? children;
+  [CallWith=ScriptState] object toJSON();
+};

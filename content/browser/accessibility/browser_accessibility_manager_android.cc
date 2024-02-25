@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
@@ -82,16 +83,6 @@ bool BrowserAccessibilityManagerAndroid::ShouldAllowImageDescriptions() {
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   return (wcax && wcax->should_allow_image_descriptions()) ||
          allow_image_descriptions_for_testing_;
-}
-
-bool BrowserAccessibilityManagerAndroid::ShouldRespectDisplayedPasswordText() {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
-  return wcax ? wcax->should_respect_displayed_password_text() : false;
-}
-
-bool BrowserAccessibilityManagerAndroid::ShouldExposePasswordText() {
-  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
-  return wcax ? wcax->should_expose_password_text() : false;
 }
 
 BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
@@ -532,8 +523,9 @@ void BrowserAccessibilityManagerAndroid::ClearNodeInfoCacheForGivenId(
     return;
 
   // We do not need to clear a node more than once per atomic update.
-  if (nodes_already_cleared_.find(unique_id) != nodes_already_cleared_.end())
+  if (base::Contains(nodes_already_cleared_, unique_id)) {
     return;
+  }
 
   nodes_already_cleared_.emplace(unique_id);
   wcax->ClearNodeInfoCacheForGivenId(unique_id);

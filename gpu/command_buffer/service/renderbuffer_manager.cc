@@ -142,14 +142,9 @@ Renderbuffer::Renderbuffer(RenderbufferManager* manager,
 
 bool Renderbuffer::RegenerateAndBindBackingObjectIfNeeded(
     const GpuDriverBugWorkarounds& workarounds) {
-  // There are two workarounds which need this code path:
-  //   depth_stencil_renderbuffer_resize_emulation
-  //   multisample_renderbuffer_resize_emulation
   bool multisample_workaround =
       workarounds.multisample_renderbuffer_resize_emulation;
-  bool depth_stencil_workaround =
-      workarounds.depth_stencil_renderbuffer_resize_emulation;
-  if (!multisample_workaround && !depth_stencil_workaround) {
+  if (!multisample_workaround) {
     return false;
   }
 
@@ -157,11 +152,7 @@ bool Renderbuffer::RegenerateAndBindBackingObjectIfNeeded(
     return false;
   }
 
-  bool workaround_needed = (multisample_workaround && samples_ > 0) ||
-                           (depth_stencil_workaround &&
-                            TextureManager::ExtractFormatFromStorageFormat(
-                                internal_format_) == GL_DEPTH_STENCIL);
-
+  bool workaround_needed = (multisample_workaround && samples_ > 0);
   if (!workaround_needed) {
     return false;
   }
@@ -330,7 +321,7 @@ bool RenderbufferManager::OnMemoryDump(
   const uint64_t context_group_tracing_id =
       memory_tracker_->ContextGroupTracingId();
 
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name =
         base::StringPrintf("gpu/gl/renderbuffers/context_group_0x%" PRIX64,
                            context_group_tracing_id);

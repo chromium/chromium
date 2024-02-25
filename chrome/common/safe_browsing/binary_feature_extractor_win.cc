@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <wintrust.h>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -125,8 +126,9 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
   base::win::PeImageReader pe_image;
-  if (!pe_image.Initialize(data, data_size))
+  if (!pe_image.Initialize(base::make_span(data, data_size))) {
     return false;
+  }
 
   // Copy the headers.
   ClientDownloadRequest_PEImageHeaders* pe_headers =
@@ -134,15 +136,14 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
   pe_headers->set_dos_header(pe_image.GetDosHeader(), sizeof(IMAGE_DOS_HEADER));
   pe_headers->set_file_header(pe_image.GetCoffFileHeader(),
                               sizeof(IMAGE_FILE_HEADER));
-  size_t optional_header_size = 0;
-  const uint8_t* optional_header_data =
-      pe_image.GetOptionalHeaderData(&optional_header_size);
+  base::span<const uint8_t> optional_header_data =
+      pe_image.GetOptionalHeaderData();
   if (pe_image.GetWordSize() == base::win::PeImageReader::WORD_SIZE_32) {
-    pe_headers->set_optional_headers32(optional_header_data,
-                                       optional_header_size);
+    pe_headers->set_optional_headers32(optional_header_data.data(),
+                                       optional_header_data.size());
   } else {
-    pe_headers->set_optional_headers64(optional_header_data,
-                                       optional_header_size);
+    pe_headers->set_optional_headers64(optional_header_data.data(),
+                                       optional_header_data.size());
   }
   const size_t number_of_sections = pe_image.GetNumberOfSections();
   for (size_t i = 0; i != number_of_sections; ++i) {
@@ -150,25 +151,25 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
                                    sizeof(IMAGE_SECTION_HEADER));
   }
   if (!(options & BinaryFeatureExtractor::kOmitExports)) {
-    size_t export_size = 0;
-    const uint8_t* export_section = pe_image.GetExportSection(&export_size);
-    if (export_section)
-      pe_headers->set_export_section_data(export_section, export_size);
+    base::span<const uint8_t> export_section = pe_image.GetExportSection();
+    if (!export_section.empty()) {
+      pe_headers->set_export_section_data(export_section.data(),
+                                          export_section.size());
+    }
   }
   size_t number_of_debug_entries = pe_image.GetNumberOfDebugEntries();
   for (size_t i = 0; i != number_of_debug_entries; ++i) {
-    const uint8_t* raw_data = NULL;
-    size_t raw_data_size = 0;
+    base::span<const uint8_t> raw_data;
     const IMAGE_DEBUG_DIRECTORY* directory_entry =
-        pe_image.GetDebugEntry(i, &raw_data, &raw_data_size);
+        pe_image.GetDebugEntry(i, raw_data);
     if (directory_entry) {
       ClientDownloadRequest_PEImageHeaders_DebugData* debug_data =
           pe_headers->add_debug_data();
       debug_data->set_directory_entry(directory_entry,
-                                      sizeof(*directory_entry));
-      if (raw_data) {
-        raw_data_size = std::min(raw_data_size, kMaxDebugDataBytes);
-        debug_data->set_raw_data(raw_data, raw_data_size);
+                                      sizeof(IMAGE_DEBUG_DIRECTORY));
+      if (!raw_data.empty()) {
+        size_t raw_data_size = std::min(raw_data.size(), kMaxDebugDataBytes);
+        debug_data->set_raw_data(raw_data.data(), raw_data_size);
       }
     }
   }

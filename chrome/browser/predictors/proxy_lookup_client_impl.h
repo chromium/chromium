@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_PREDICTORS_PROXY_LOOKUP_CLIENT_IMPL_H_
 #define CHROME_BROWSER_PREDICTORS_PROXY_LOOKUP_CLIENT_IMPL_H_
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -48,7 +49,7 @@ class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
   // network::mojom::ProxyLookupClient:
   void OnProxyLookupComplete(
       int32_t net_error,
-      const absl::optional<net::ProxyInfo>& proxy_info) override;
+      const std::optional<net::ProxyInfo>& proxy_info) override;
 
  private:
   base::TimeTicks proxy_lookup_start_time_;

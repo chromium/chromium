@@ -1,0 +1,55 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "bytes"
+  epoch = "1"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/buf_impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/buf_mut.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/chain.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/limit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/reader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/take.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/uninit_slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/vec_deque.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/buf/writer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/bytes_mut.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/fmt/debug.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/fmt/hex.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/fmt/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/loom.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytes-1.5.0/src/serde.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "1.5.0"
+  cargo_pkg_authors =
+      "Carl Lerche <me@carllerche.com>, Sean McArthur <sean@seanmonstar.com>"
+  cargo_pkg_name = "bytes"
+  cargo_pkg_description = "Types and traits for working with bytes"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [ "std" ]
+  testonly = true
+}

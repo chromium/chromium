@@ -24,6 +24,7 @@ source_set("shared_storage") {
     "//services/network/public/mojom",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

@@ -12,9 +12,9 @@
 #endif  // OS_MACOSX
 
 #include <algorithm>
+#include <atomic>
 #include <iomanip>
 
-#include "base/atomicops.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -53,9 +53,8 @@ void (*g_logging_delegate_function)(const std::string&) = NULL;
 void (*g_extra_logging_init_function)(
     void (*logging_delegate_function)(const std::string&)) = NULL;
 #ifndef NDEBUG
-static_assert(sizeof(base::subtle::Atomic32) == sizeof(base::PlatformThreadId),
-              "Atomic32 not same size as PlatformThreadId");
-base::subtle::Atomic32 g_init_logging_delegate_thread_id = 0;
+std::atomic<base::PlatformThreadId> g_init_logging_delegate_thread_id =
+    base::kInvalidThreadId;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -65,17 +64,17 @@ base::subtle::Atomic32 g_init_logging_delegate_thread_id = 0;
 inline int WebRtcSevToChromeSev(LoggingSeverity sev) {
   switch (sev) {
     case LS_ERROR:
-      return ::logging::LOG_ERROR;
+      return ::logging::LOGGING_ERROR;
     case LS_WARNING:
-      return ::logging::LOG_WARNING;
+      return ::logging::LOGGING_WARNING;
     case LS_INFO:
-      return ::logging::LOG_INFO;
+      return ::logging::LOGGING_INFO;
     case LS_VERBOSE:
     case LS_SENSITIVE:
-      return ::logging::LOG_VERBOSE;
+      return ::logging::LOGGING_VERBOSE;
     default:
       NOTREACHED();
-      return ::logging::LOG_FATAL;
+      return ::logging::LOGGING_FATAL;
   }
 }
 
@@ -194,12 +193,12 @@ void InitDiagnosticLoggingDelegateFunction(
     void (*delegate)(const std::string&)) {
 #ifndef NDEBUG
   // Ensure that this function is always called from the same thread.
-  base::subtle::NoBarrier_CompareAndSwap(
-      &g_init_logging_delegate_thread_id, 0,
-      static_cast<base::subtle::Atomic32>(base::PlatformThread::CurrentId()));
-  DCHECK_EQ(
-      g_init_logging_delegate_thread_id,
-      static_cast<base::subtle::Atomic32>(base::PlatformThread::CurrentId()));
+  base::PlatformThreadId expected_thread_id = base::kInvalidThreadId;
+  g_init_logging_delegate_thread_id.compare_exchange_strong(
+      expected_thread_id, base::PlatformThread::CurrentId(),
+      std::memory_order_relaxed, std::memory_order_relaxed);
+  DCHECK_EQ(g_init_logging_delegate_thread_id,
+            base::PlatformThread::CurrentId());
 #endif
   CHECK(delegate);
   // This function may be called with the same argument several times if the

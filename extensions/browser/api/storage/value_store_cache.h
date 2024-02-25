@@ -5,10 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_API_STORAGE_VALUE_STORE_CACHE_H_
 #define EXTENSIONS_BROWSER_API_STORAGE_VALUE_STORE_CACHE_H_
 
-#include <string>
-
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "extensions/common/extension_id.h"
 
 namespace value_store {
 class ValueStore;
@@ -51,7 +50,7 @@ class ValueStoreCache {
       scoped_refptr<const Extension> extension) = 0;
 
   // Requests the cache to delete any storage used by |extension_id|.
-  virtual void DeleteStorageSoon(const std::string& extension_id) = 0;
+  virtual void DeleteStorageSoon(const ExtensionId& extension_id) = 0;
 };
 
 }  // namespace extensions

@@ -6,11 +6,12 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that scripts for dynamically added script elements are shown in sources panel if loaded with inspector open.\n`);
-  await TestRunner.loadLegacyModule('sources');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function appendDynamicScriptElement(src, content)
@@ -52,8 +53,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step3() {
-    var panel = UI.panels.sources;
-    var uiSourceCodes = Workspace.workspace.uiSourceCodesForProjectType(Workspace.projectTypes.Network);
+    var panel = Sources.SourcesPanel.SourcesPanel.instance();
+    var uiSourceCodes = Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodesForProjectType(Workspace.Workspace.projectTypes.Network);
     var urls = uiSourceCodes.map(function(uiSourceCode) {
       return uiSourceCode.name();
     });

@@ -137,20 +137,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   // logs for.
   // |requested_logs|: The list of requested logs. All available logs will be
   // requested if left empty.
-  virtual void GetFeedbackLogsV2(
-      const cryptohome::AccountIdentifier& id,
-      const std::vector<debugd::FeedbackLogType>& requested_logs,
-      GetLogsCallback callback) = 0;
-
-  // Gets feedback logs from debugd that are very large and cannot be
-  // returned directly from D-Bus. These logs will include ARC and cheets
-  // system information. This method is the same as GetFeedbackLogsV2 except
-  // that it tries to gather logs in parallel.
-  // |id|: Cryptohome Account identifier for the user to get
-  // logs for.
-  // |requested_logs|: The list of requested logs. All available logs will be
-  // requested if left empty.
-  virtual void GetFeedbackLogsV3(
+  virtual void GetFeedbackLogs(
       const cryptohome::AccountIdentifier& id,
       const std::vector<debugd::FeedbackLogType>& requested_logs,
       GetLogsCallback callback) = 0;
@@ -255,25 +242,29 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   using CupsAddPrinterCallback = base::OnceCallback<void(int32_t)>;
 
   // Calls CupsAddManuallyConfiguredPrinter.  |name| is the printer
-  // name. |uri| is the device.  |ppd_contents| is the contents of the
-  // PPD file used to drive the device.  |callback| is called with
-  // true if adding the printer to CUPS was successful and false if
-  // there was an error.  |error_callback| will be called if there was
-  // an error in communicating with debugd.
+  // name. |uri| is the device.  |language| is the locale code for the
+  // user's language, e.g., "en-us" or "jp".  |ppd_contents| is the
+  // contents of the PPD file used to drive the device.  |callback| is
+  // called with true if adding the printer to CUPS was successful and
+  // false if there was an error.  |error_callback| will be called if
+  // there was an error in communicating with debugd.
   virtual void CupsAddManuallyConfiguredPrinter(
       const std::string& name,
       const std::string& uri,
+      const std::string& language,
       const std::string& ppd_contents,
       CupsAddPrinterCallback callback) = 0;
 
   // Calls CupsAddAutoConfiguredPrinter.  |name| is the printer
-  // name. |uri| is the device.  |callback| is called with true if
-  // adding the printer to CUPS was successful and false if there was
-  // an error.  |error_callback| will be called if there was an error
+  // name. |uri| is the device.  |language| is the locale code for the
+  // user's language, e.g., "en-us" or "jp".  |callback| is called with
+  // true if adding the printer to CUPS was successful and false if there
+  // was an error.  |error_callback| will be called if there was an error
   // in communicating with debugd.
   virtual void CupsAddAutoConfiguredPrinter(
       const std::string& name,
       const std::string& uri,
+      const std::string& language,
       CupsAddPrinterCallback callback) = 0;
 
   // A callback to handle the result of CupsRemovePrinter.

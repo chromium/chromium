@@ -1,0 +1,16 @@
+{
+  settings: {
+    export_header: "third_party/blink/renderer/core/core_export.h",
+    export_symbol: "",
+    include_path: "third_party/blink/renderer/core/inspector",
+    includes: [
+    ],
+  },
+  observers: {
+    DummyObserver: {
+      probes: [
+        "Frobnicate",
+      ]
+    },
+  }
+}

@@ -36,6 +36,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
@@ -64,10 +65,6 @@
 
 namespace cc {
 class Layer;
-}
-
-namespace gfx {
-class GpuMemoryBuffer;
 }
 
 namespace gpu {
@@ -317,22 +314,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     low_latency_enabled_ = low_latency_enabled;
   }
 
-  // This class helps implement correct semantics for BlitFramebuffer
-  // when the DrawingBuffer is using a CHROMIUM image for its backing
-  // store and RGB emulation is in use (basically, macOS only).
-  class PLATFORM_EXPORT ScopedRGBEmulationForBlitFramebuffer {
-    STACK_ALLOCATED();
-
-   public:
-    ScopedRGBEmulationForBlitFramebuffer(DrawingBuffer*,
-                                         bool is_user_draw_framebuffer_bound);
-    ~ScopedRGBEmulationForBlitFramebuffer();
-
-   private:
-    scoped_refptr<DrawingBuffer> drawing_buffer_;
-    bool doing_work_ = false;
-  };
-
   scoped_refptr<CanvasResource> ExportCanvasResource();
 
   scoped_refptr<CanvasResource> ExportLowLatencyCanvasResource(
@@ -408,7 +389,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
    private:
     scoped_refptr<DrawingBuffer> drawing_buffer_;
     // The previous state restorer, in case restorers are nested.
-    ScopedStateRestorer* previous_state_restorer_ = nullptr;
+    raw_ptr<ScopedStateRestorer> previous_state_restorer_ = nullptr;
     bool clear_state_dirty_ = false;
     bool pixel_pack_parameters_dirty_ = false;
     bool texture_binding_dirty_ = false;
@@ -426,9 +407,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 SkAlphaType alpha_type,
                 GLenum texture_target,
                 GLuint texture_id,
-                std::unique_ptr<gfx::GpuMemoryBuffer>,
                 bool is_overlay_candidate,
-                gpu::Mailbox mailbox);
+                scoped_refptr<gpu::ClientSharedImage> shared_image);
     ColorBuffer(const ColorBuffer&) = delete;
     ColorBuffer& operator=(const ColorBuffer&) = delete;
     ~ColorBuffer();
@@ -447,11 +427,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const SkAlphaType alpha_type;
     const GLenum texture_target;
     const GLuint texture_id;
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
     const bool is_overlay_candidate;
 
-    // The mailbox used to send this buffer to the compositor.
-    gpu::Mailbox mailbox;
+    // The shared image used to send this buffer to the compositor.
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
 
     // The sync token for when this buffer was sent to the compositor.
     gpu::SyncToken produce_sync_token;
@@ -606,14 +585,14 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void ResolveAndPresentSwapChainIfNeeded();
 
   // Weak, reset by beginDestruction.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   const PreserveDrawingBuffer preserve_drawing_buffer_;
   const WebGLVersion webgl_version_;
 
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   // Lifetime is tied to the m_contextProvider.
-  gpu::gles2::GLES2Interface* gl_;
+  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_;
   std::unique_ptr<Extensions3DUtil> extensions_util_;
   gfx::Size size_;
   const bool discard_framebuffer_supported_;
@@ -637,7 +616,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // The current state restorer, which is used to track state dirtying. It is an
   // error to dirty state shared with WebGL while there is no existing state
   // restorer.
-  ScopedStateRestorer* state_restorer_ = nullptr;
+  raw_ptr<ScopedStateRestorer> state_restorer_ = nullptr;
 
   // This is used when the user requests either a depth or stencil buffer.
   GLuint depth_stencil_buffer_ = 0;

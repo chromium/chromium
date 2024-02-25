@@ -12,7 +12,8 @@
 
 #include <cstddef>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "components/variations/proto/study.pb.h"
 
 struct OverrideUIString {
@@ -31,7 +32,7 @@ struct FieldTrialTestingExperiment {
   const size_t platforms_size;
   const Study::FormFactor * form_factors;
   const size_t form_factors_size;
-  const absl::optional<bool> is_low_end_device;
+  const std::optional<bool> is_low_end_device;
   const char* const min_os_version;
   const FieldTrialTestingExperimentParams * params;
   const size_t params_size;
@@ -42,6 +43,10 @@ struct FieldTrialTestingExperiment {
   const char* const forcing_flag;
   const OverrideUIString * override_ui_string;
   const size_t override_ui_string_size;
+  const char* const * hardware_classes;
+  const size_t hardware_classes_size;
+  const char* const * exclude_hardware_classes;
+  const size_t exclude_hardware_classes_size;
 };
 
 struct FieldTrialTestingStudy {

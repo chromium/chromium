@@ -4,15 +4,14 @@
 
 #include "media/filters/hls_rendition.h"
 
-#include "media/filters/hls_live_rendition.h"
-#include "media/filters/hls_vod_rendition.h"
+#include "media/filters/hls_rendition_impl.h"
 #include "media/filters/manifest_demuxer.h"
 
 namespace media {
 
 namespace {
 
-absl::optional<base::TimeDelta> GetPlaylistDuration(
+std::optional<base::TimeDelta> GetPlaylistDuration(
     hls::MediaPlaylist* playlist) {
   if (!playlist->HasMediaSequenceTag()) {
     // Live playbacks have a media sequence tag, so if that's missing, then this
@@ -31,29 +30,24 @@ absl::optional<base::TimeDelta> GetPlaylistDuration(
   }
 
   // Live content doesn't have a defined duration.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
 
+HlsRenditionHost::~HlsRenditionHost() = default;
+
 // Static
-HlsDemuxerStatus::Or<std::unique_ptr<HlsRendition>>
-HlsRendition::CreateRendition(ManifestDemuxerEngineHost* engine_host,
-                              HlsRenditionHost* rendition_host,
-                              std::string role,
-                              scoped_refptr<hls::MediaPlaylist> playlist,
-                              GURL uri) {
-  std::unique_ptr<HlsRendition> rendition;
+std::unique_ptr<HlsRendition> HlsRendition::CreateRendition(
+    ManifestDemuxerEngineHost* engine_host,
+    HlsRenditionHost* rendition_host,
+    std::string role,
+    scoped_refptr<hls::MediaPlaylist> playlist,
+    GURL uri) {
   auto duration = GetPlaylistDuration(playlist.get());
-  if (duration.has_value()) {
-    rendition = std::make_unique<HlsVodRendition>(
-        engine_host, rendition_host, std::move(role), std::move(playlist),
-        duration.value());
-  } else {
-    rendition = std::make_unique<HlsLiveRendition>(
-        engine_host, rendition_host, role, std::move(playlist), uri);
-  }
-  return rendition;
+  return std::make_unique<HlsRenditionImpl>(
+      engine_host, rendition_host, std::move(role), std::move(playlist),
+      duration, std::move(uri));
 }
 
 }  // namespace media

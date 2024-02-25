@@ -3,41 +3,17 @@
 // found in the LICENSE file.
 
 import 'chrome://personalization/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {baseSetup} from './personalization_app_test_utils.js';
+import {baseSetup, filterAndFlattenState} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
-
-/**
- * Get a sub-property in obj. Splits on '.'
- */
-function getProperty(obj: object, key: string): unknown {
-  let ref: any = obj;
-  for (const part of key.split('.')) {
-    ref = ref[part];
-  }
-  return ref;
-}
-
-/**
- * Returns a function that returns only nested subproperties in state.
- */
-function filterAndFlattenState(keys: string[]): (state: any) => any {
-  return (state) => {
-    const result: any = {};
-    for (const key of keys) {
-      result[key] = getProperty(state, key);
-    }
-    return result;
-  };
-}
 
 function getImageKey(image: DisplayableImage): string|undefined {
   if (isDefaultImage(image)) {
@@ -49,7 +25,7 @@ function getImageKey(image: DisplayableImage): string|undefined {
   if (isWallpaperImage(image)) {
     return image.unitId.toString();
   }
-  if (isFilePath(image)) {
+  if (isNonEmptyFilePath(image)) {
     return image.path;
   }
   assertNotReached('unknown wallpaper type');
@@ -898,7 +874,7 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     if (isWallpaperImage(image)) {
       return WallpaperType.kOnline;
     }
-    if (isFilePath(image)) {
+    if (isNonEmptyFilePath(image)) {
       return WallpaperType.kCustomized;
     }
     assertNotReached('unknown wallpaper type');
@@ -1022,7 +998,7 @@ suite('updates default image', () => {
         'wallpaper.local.images is not array');
     assertTrue(
         personalizationStore.data.wallpaper.local.images.every(
-            (image: FilePath|DefaultImageSymbol) => isFilePath(image) &&
+            (image: FilePath|DefaultImageSymbol) => isNonEmptyFilePath(image) &&
                 !!personalizationStore.data.wallpaper.local.data[image.path]),
         'every image is file path with data');
 

@@ -24,6 +24,10 @@ namespace views {
 class Label;
 }
 
+namespace remote_cocoa::mojom {
+enum class ToolbarVisibilityStyle;
+}
+
 @class FullscreenToolbarController;
 
 class CaptionButtonPlaceholderContainer;
@@ -50,7 +54,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
                                views::Label& window_title_label) const override;
   int GetTopInset(bool restored) const override;
-  int GetThemeBackgroundXInset() const override;
   void UpdateFullscreenTopUI() override;
   bool ShouldHideTopUIForFullscreen() const override;
   void UpdateThrobber(bool running) override;
@@ -62,9 +65,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
   int NonClientHitTest(const gfx::Point& point) override;
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
-  void UpdateWindowIcon() override;
-  void SizeConstraintsChanged() override;
   void UpdateMinimumSize() override;
   void WindowControlsOverlayEnabledChanged() override;
 
@@ -73,7 +73,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   void PaintChildren(const views::PaintInfo& info) override;
 
   // web_app::WebAppRegistrarObserver
-  void OnAlwaysShowToolbarInFullscreenChanged(const web_app::AppId& app_id,
+  void OnAlwaysShowToolbarInFullscreenChanged(const webapps::AppId& app_id,
                                               bool show) override;
   void OnAppRegistrarDestroyed() override;
 
@@ -90,7 +90,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
  protected:
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
@@ -119,12 +119,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // toolbar style is changed.
   void ToggleWebAppFrameToolbarViewVisibility();
 
-  // Returns the current value of the "always show toolbar in fullscreen"
-  // preference, either reading the value from the kShowFullscreenToolbar
-  // preference or if this is a window for an app, from the settings for that
-  // app.
-  bool AlwaysShowToolbarInFullscreen() const;
-
   // Emits the duration of the current fullscreen session, if any.
   void EmitFullscreenSessionHistograms();
 
@@ -143,11 +137,15 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
 
   // Mark the start of a fullscreen session. Applies to both immersive and
   // standard fullscreen.
-  absl::optional<base::TimeTicks> fullscreen_session_start_;
+  std::optional<base::TimeTicks> fullscreen_session_start_;
 
   // Fires after 24 hours to emit the duration of the current fullscreen
   // session, if any.
   std::unique_ptr<base::OneShotTimer> fullscreen_session_timer_;
+
+  // Used to track the current toolbar style.
+  std::optional<remote_cocoa::mojom::ToolbarVisibilityStyle>
+      current_toolbar_style_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_

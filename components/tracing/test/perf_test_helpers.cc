@@ -21,7 +21,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& metric) {
   CHECK(test_info != nullptr) << "Must be GTest.";
 
   perf_test::PerfResultReporter reporter(
-      std::string(test_info->test_case_name()) + ".", test_info->name());
+      std::string(test_info->test_suite_name()) + ".", test_info->name());
   reporter.RegisterImportantMetric(metric, "ms");
   return reporter;
 }

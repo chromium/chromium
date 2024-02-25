@@ -39,6 +39,11 @@ enum Sandbox {
   // The network service. May be disabled by policy.
   kNetwork,
 
+  // The on-device model execution service. This sandbox is equivalent to the
+  // GPU process's sandbox, but can be used by service processes to host
+  // trustworthy models that may process untrustworthy inputs.
+  kOnDeviceModelExecution,
+
   // Runs with the same rights as the browser. Usually needed to improve
   // stability by hosting code that interacts with third party code in another
   // process.

@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.mandatory_reauth;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.autofill.PaymentsBubbleClosedReason;
 
-/**
- * JNI wrapper for C++ MandatoryReauthBubbleController. Delegates calls from Java to native.
- */
+/** JNI wrapper for C++ MandatoryReauthBubbleController. Delegates calls from Java to native. */
 @JNINamespace("autofill")
 class MandatoryReauthOptInBottomSheetControllerBridge
         implements MandatoryReauthOptInBottomSheetComponent.Delegate {
@@ -32,14 +31,12 @@ class MandatoryReauthOptInBottomSheetControllerBridge
     @Override
     public void onClosed(@PaymentsBubbleClosedReason int closedReason) {
         if (mNativeMandatoryReauthBubbleControllerImpl != 0) {
-            MandatoryReauthOptInBottomSheetControllerBridgeJni.get().onClosed(
-                    mNativeMandatoryReauthBubbleControllerImpl, closedReason);
+            MandatoryReauthOptInBottomSheetControllerBridgeJni.get()
+                    .onClosed(mNativeMandatoryReauthBubbleControllerImpl, closedReason);
         }
     }
 
-    /**
-     * Marks the current instance as being freed.
-     */
+    /** Marks the current instance as being freed. */
     @CalledByNative
     private void destroy() {
         mNativeMandatoryReauthBubbleControllerImpl = 0;
@@ -47,7 +44,8 @@ class MandatoryReauthOptInBottomSheetControllerBridge
 
     @NativeMethods
     interface Natives {
-        void onClosed(long nativeMandatoryReauthBubbleControllerImpl,
+        void onClosed(
+                long nativeMandatoryReauthBubbleControllerImpl,
                 @PaymentsBubbleClosedReason int closedReason);
     }
 }

@@ -5,6 +5,7 @@
 #include "extensions/common/extension_icon_set.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -55,20 +56,21 @@ const std::string& ExtensionIconSet::Get(int size_in_px,
   return result == map_.cend() ? base::EmptyString() : result->second;
 }
 
-bool ExtensionIconSet::ContainsPath(base::StringPiece path) const {
+bool ExtensionIconSet::ContainsPath(std::string_view path) const {
   return GetIconSizeFromPath(path) != 0;
 }
 
-int ExtensionIconSet::GetIconSizeFromPath(base::StringPiece path) const {
+int ExtensionIconSet::GetIconSizeFromPath(std::string_view path) const {
   if (path.empty())
     return 0;
 
   DCHECK_NE(path[0], '/') <<
       "ExtensionIconSet stores icon paths without leading slash.";
 
-  for (auto iter = map_.cbegin(); iter != map_.cend(); ++iter) {
-    if (iter->second == path)
-      return iter->first;
+  for (const auto& entry : map_) {
+    if (entry.second == path) {
+      return entry.first;
+    }
   }
 
   return 0;

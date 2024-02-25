@@ -27,18 +27,18 @@ void AccessCodeCastPrefUpdater::GetMediaSinkInternalValueBySinkId(
 
 void AccessCodeCastPrefUpdater::GetDeviceAddedTime(
     const MediaSink::Id sink_id,
-    base::OnceCallback<void(absl::optional<base::Time>)>
+    base::OnceCallback<void(std::optional<base::Time>)>
         get_device_added_time_callback) {
   GetDeviceAddedTimeDict(base::BindOnce(
       [](const MediaSink::Id sink_id,
-         base::OnceCallback<void(absl::optional<base::Time>)>
+         base::OnceCallback<void(std::optional<base::Time>)>
              get_device_added_time_callback,
          base::Value::Dict device_added_time_dict) {
         auto* device_added_time_value = device_added_time_dict.Find(sink_id);
         std::move(get_device_added_time_callback)
             .Run(device_added_time_value
                      ? base::ValueToTime(device_added_time_value)
-                     : absl::nullopt);
+                     : std::nullopt);
       },
       sink_id, std::move(get_device_added_time_callback)));
 }

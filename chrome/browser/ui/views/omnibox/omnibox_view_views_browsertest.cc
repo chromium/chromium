@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -40,6 +41,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -56,9 +59,11 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/display/display_switches.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/views_features.h"
@@ -69,7 +74,11 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_bstr.h"
+#include "base/win/scoped_safearray.h"
 #include "chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.h"
+#include "ui/display/win/screen_win.h"
+#include "ui/views/win/hwnd_util.h"
 #endif
 
 namespace {
@@ -156,6 +165,11 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
 
  private:
   // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Some of these tests assume a 1.0 device scale factor.
+    command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "1");
+  }
+
   void SetUpOnMainThread() override {
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
     chrome::FocusLocationBar(browser());
@@ -451,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
@@ -498,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
@@ -611,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   matches.push_back(match);
   AutocompleteInput input(u"g", metrics::OmniboxEventProto::OTHER,
@@ -711,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   matches.push_back(match);
   AutocompleteInput input(u"g", metrics::OmniboxEventProto::OTHER,
@@ -795,9 +809,33 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AlwaysShowFullURLs) {
 // The following set of tests require UIA accessibility support, which only
 // exists on Windows.
 #if BUILDFLAG(IS_WIN)
+using Microsoft::WRL::ComPtr;
+
 class OmniboxViewViewsUIATest : public OmniboxViewViewsTest {
  public:
   OmniboxViewViewsUIATest() {}
+
+  void ExpectUIADoubleSafearrayEQ(
+      SAFEARRAY* safearray,
+      const std::vector<double>& expected_property_values) {
+    EXPECT_EQ(sizeof(V_R8(LPVARIANT(NULL))), ::SafeArrayGetElemsize(safearray));
+    ASSERT_EQ(1u, SafeArrayGetDim(safearray));
+    LONG array_lower_bound;
+    ASSERT_HRESULT_SUCCEEDED(
+        SafeArrayGetLBound(safearray, 1, &array_lower_bound));
+    LONG array_upper_bound;
+    ASSERT_HRESULT_SUCCEEDED(
+        SafeArrayGetUBound(safearray, 1, &array_upper_bound));
+    double* array_data;
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+        safearray, reinterpret_cast<void**>(&array_data)));
+    size_t count = array_upper_bound - array_lower_bound + 1;
+    ASSERT_EQ(expected_property_values.size(), count);
+    for (size_t i = 0; i < count; ++i) {
+      EXPECT_EQ(array_data[i], expected_property_values[i]);
+    }
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(safearray));
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
@@ -832,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   matches.push_back(match);
   AutocompleteInput input(u"e", metrics::OmniboxEventProto::OTHER,
@@ -855,6 +893,91 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   ClickBrowserWindowCenter();
   close_waiter.Wait();
   EXPECT_FALSE(omnibox_view->model()->PopupIsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
+  OmniboxViewViews* omnibox_view_views =
+      static_cast<OmniboxViewViews*>(omnibox_view);
+
+  views::AtomicViewAXTreeManager* ax_tree_manager =
+      omnibox_view_views->GetViewAccessibility()
+          .GetAtomicViewAXTreeManagerForTesting();
+
+  // Set the text and select a substring.
+  gfx::Range selection_range(4, 8);
+
+  omnibox_view_views->SetUserText(u"helloworld");
+  omnibox_view_views->SetSelectedRange(selection_range);
+
+  // Get the UIA providers we need to perform the tests.
+  ui::AXPlatformNode* ax_platform_node =
+      ui::AXPlatformNode::FromNativeViewAccessible(
+          ax_tree_manager->RootDelegate()->GetNativeViewAccessible());
+
+  ComPtr<IRawElementProviderSimple> root_node_raw;
+  ax_platform_node->GetNativeViewAccessible()->QueryInterface(
+      __uuidof(IRawElementProviderSimple), &root_node_raw);
+  ComPtr<ITextProvider> document_provider;
+  ASSERT_HRESULT_SUCCEEDED(
+      root_node_raw->GetPatternProvider(UIA_TextPatternId, &document_provider));
+
+  CComPtr<ITextRangeProvider> selected_text_range_provider;
+  base::win::ScopedSafearray selection;
+  LONG index = 0;
+
+  // The actual testing starts:
+  // 1. Call ITextProvider::GetSelection to get the selected text range.
+  document_provider->GetSelection(selection.Receive());
+  ASSERT_NE(nullptr, selection.Get());
+  ASSERT_HRESULT_SUCCEEDED(SafeArrayGetElement(selection.Get(), &index,
+                                               &selected_text_range_provider));
+
+  // 2. Call ITextRangeProvider::GetText to get the selected text.
+  base::win::ScopedBstr text_content;
+  ASSERT_HRESULT_SUCCEEDED(
+      selected_text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_STREQ(L"owor", text_content.Get());
+
+  // 3. Call ITextRangeProvider::GetBoundingRectangles to get the bounding rect.
+  base::win::ScopedSafearray safearray;
+  ASSERT_HRESULT_SUCCEEDED(
+      selected_text_range_provider->GetBoundingRectangles(safearray.Receive()));
+
+  ComPtr<IRawElementProviderFragment> textfield_fragment;
+  ax_platform_node->GetNativeViewAccessible()->QueryInterface(
+      __uuidof(IRawElementProviderFragment), &textfield_fragment);
+  UiaRect textfield_rect;
+
+  ASSERT_HRESULT_SUCCEEDED(
+      textfield_fragment->get_BoundingRectangle(&textfield_rect));
+
+  // Create the expected bounds for the text range from the bounds of the text
+  // field and the selected range offsets.
+  gfx::Rect bounds_in_screen = omnibox_view_views->GetContentsBounds();
+  omnibox_view_views->ConvertRectToScreen(omnibox_view_views,
+                                          &bounds_in_screen);
+
+  std::vector<int32_t> offsets =
+      ax_tree_manager->GetRoot()->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kCharacterOffsets);
+  int range_start_offset = offsets[selection_range.start()];
+  int range_end_offset = offsets[selection_range.end()];
+
+  int left_bound =
+      display::win::ScreenWin::DIPToScreenRect(
+          HWNDForView(omnibox_view_views),
+          gfx::Rect(range_start_offset + bounds_in_screen.x(), 0, 0, 0))
+          .x();
+
+  std::vector<double> expected_values = std::vector<double>{
+      static_cast<double>(left_bound), textfield_rect.top,
+      static_cast<double>(range_end_offset - range_start_offset),
+      textfield_rect.height};
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUIADoubleSafearrayEQ(safearray.Get(), expected_values));
 }
 
 namespace {
@@ -931,9 +1054,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeInitRespectsIME) {
 // Looks like the same problem as in the SelectAllOnClick().
 // Tracked in: https://crbug.com/915591
 // Test is also flaky on Linux: https://crbug.com/1157250
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HandleExternalProtocolURLs DISABLED_HandleExternalProtocolURLs
 #else
 #define MAYBE_HandleExternalProtocolURLs HandleExternalProtocolURLs

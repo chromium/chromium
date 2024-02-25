@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "skia/public/mojom/skcolor.mojom";
+
+// This interface is implemented by lacros-chrome to receive the selected color
+// from an EyeDropper.
+[Stable, Uuid="f677cd23-91aa-4011-b926-ac0f581f5eff"]
+interface EyeDropperListener {
+  // Called when users selects a color.
+  ColorSelected@0(skia.mojom.SkColor color);
+  // Called if the user cancels selection.
+  ColorSelectionCanceled@1();
+};
+
+// This interface is implemented by ash-chrome. It allows lacros-chrome to
+// request ash-chrome to display an EyeDropper.
+[Stable, Uuid="3802ee0f-f1c0-4e86-8c4e-dc8d3bc98d4b"]
+interface EyeDropper {
+  // Request ash-chrome to show the EyeDropper.
+  ShowEyeDropper@0(pending_remote<EyeDropperListener> listener);
+};

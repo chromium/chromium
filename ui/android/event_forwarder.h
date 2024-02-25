@@ -38,11 +38,18 @@ class UI_ANDROID_EXPORT EventForwarder {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
+  // |oldest_event_time| and |latest_event_time| would be same for a MotionEvent
+  // without any historical events attached to it. For cases when there are
+  // historical events |oldest_event_time| will be the event time of earliest
+  // input i.e. MotionEvent.getHistoricalEventTimeNanos(0) and
+  // |latest_event_time| will be the event time of most recent event i.e.
+  // MotionEvent.getEventTimeNanos().
   jboolean OnTouchEvent(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& motion_event,
-      jlong time_ns,
+      jlong oldest_event_time_ns,
+      jlong latest_event_time_ns,
       jint android_action,
       jint pointer_count,
       jint history_size,
@@ -157,6 +164,11 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  // last_x_pos_ & last_y_pos_ are only used for trace events (see b/315762684
+  // for a relevant investigation). They are useful in debugging but could be
+  // removed easily if needed.
+  float last_x_pos_{-1.0};
+  float last_y_pos_{-1.0};
   const raw_ptr<ViewAndroid> view_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 

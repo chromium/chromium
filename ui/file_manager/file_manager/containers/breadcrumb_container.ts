@@ -4,15 +4,14 @@
 
 import '../widgets/xf_breadcrumb.js';
 
-import {metrics} from '../common/js/metrics.js';
+import {recordUserAction} from '../common/js/metrics.js';
+import {str} from '../common/js/translations.js';
 import {SEARCH_RESULTS_KEY} from '../common/js/url_constants.js';
-import {str, util} from '../common/js/util.js';
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
-import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
-import {FileKey} from '../state/file_key.js';
-import {getStore, Store} from '../state/store.js';
-import {BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
+import type {FileKey} from '../state/file_key.js';
+import {type PathComponent, PropStatus, type State} from '../state/state.js';
+import {getStore, getVolumeType, type Store} from '../state/store.js';
+import {type BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
 
 /**
  * The controller of breadcrumb. The Breadcrumb element only renders a given
@@ -41,20 +40,18 @@ export class BreadcrumbContainer {
       return;
     }
 
-    if (util.isSearchV2Enabled()) {
-      if (search && search.status !== undefined) {
-        // Search results do not have the corresponding directory in the
-        // directory tree. When V2 version of search is active, we short-circuit
-        // the process to show the correct label and exit.
-        this.show_(SEARCH_RESULTS_KEY, [
-          {
-            name: 'search',
-            label: str('SEARCH_RESULTS_LABEL'),
-            key: SEARCH_RESULTS_KEY,
-          },
-        ]);
-        return;
-      }
+    if (search && search.status !== undefined) {
+      // Search results do not have the corresponding directory in the
+      // directory tree. When V2 version of search is active, we short-circuit
+      // the process to show the correct label and exit.
+      this.show_(SEARCH_RESULTS_KEY, [
+        {
+          name: 'search',
+          label: str('SEARCH_RESULTS_LABEL'),
+          key: SEARCH_RESULTS_KEY,
+        },
+      ]);
+      return;
     }
 
     // If the current location is somewhere in Drive, all files in Drive can
@@ -62,8 +59,8 @@ export class BreadcrumbContainer {
     // In this case, showing current location is confusing, so use the Drive
     // root "My Drive" as the current location.
     if (search && search.query && search.status === PropStatus.SUCCESS) {
-      const entry = state.allEntries[currentDirectory.key];
-      if (entry && entry.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+      const fileData = state.allEntries[currentDirectory.key];
+      if (getVolumeType(state, fileData)) {
         const root = currentDirectory.pathComponents[0];
         if (root) {
           key = root.key;
@@ -73,7 +70,7 @@ export class BreadcrumbContainer {
       }
     }
 
-    if (currentDirectory.status == PropStatus.SUCCESS &&
+    if (currentDirectory.status === PropStatus.SUCCESS &&
         this.currentFileKey_ !== key) {
       this.show_(
           state.currentDirectory?.key || '',
@@ -118,6 +115,6 @@ export class BreadcrumbContainer {
 
     const fileKey = this.pathKeys_[index];
     this.store_.dispatch(changeDirectory({toKey: fileKey as FileKey}));
-    metrics.recordUserAction('ClickBreadcrumbs');
+    recordUserAction('ClickBreadcrumbs');
   }
 }

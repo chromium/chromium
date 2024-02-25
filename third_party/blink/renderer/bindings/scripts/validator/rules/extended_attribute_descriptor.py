@@ -1,4 +1,4 @@
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import web_idl
 
 class ExtendedAttributeDescriptor(object):
     class Target(enum.Enum):
+        ASYNC_ITERABLE = web_idl.AsyncIterable
         ATTRIBUTE = web_idl.Attribute
         CALLBACK_FUNCTION = web_idl.CallbackFunction
         CALLBACK_INTERFACE = web_idl.CallbackInterface
@@ -17,6 +18,7 @@ class ExtendedAttributeDescriptor(object):
         DICTIONARY = web_idl.Dictionary
         DICTIONARY_MEMBER = web_idl.DictionaryMember
         INTERFACE = web_idl.Interface
+        ITERABLE = web_idl.Iterable
         LEGACY_WINDOW_ALIAS = web_idl.LegacyWindowAlias
         NAMESPACE = web_idl.Namespace
         OPERATION = web_idl.Operation

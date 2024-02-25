@@ -1,0 +1,11 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "is_asan": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "is_lsan": true,
+    "target_os": "fuchsia",
+    "use_remoteexec": true
+  }
+}

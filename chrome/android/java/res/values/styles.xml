@@ -107,6 +107,19 @@ found in the LICENSE file.
         <item name="actionBarTheme">@style/ManageSpaceActionBarTheme</item>
     </style>
 
+    <!-- Style for the semi-transparent sign-in & history sync opt-in activity.
+    The background is translucent since the parent activity content should be
+    visible when the bottom sheet or the non-full-screen history sync opt-in
+    dialog is shown on tablet. -->
+    <style name="Theme.Chromium.SigninAndHistoryOptInActivity"
+        parent="Theme.Chromium.Activity.Fullscreen">
+        <item name="android:windowBackground">@color/default_scrim_color</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <!-- Trusted Web Activities -->
     <style name="Theme.Chromium.ClearDataDialogActivity"
         parent="Theme.Chromium.Activity.Fullscreen.Transparent">
@@ -317,18 +330,6 @@ found in the LICENSE file.
         <item name="tabSelectedTextColor">@macro/tab_layout_selected_tab_color</item>
     </style>
 
-    <style name="HistoryToggleTabLayoutStyle" parent="TabLayoutStyle">
-        <item name="android:background">@drawable/tab_layout_background</item>
-        <item name="tabGravity">center</item>
-        <item name="tabPaddingEnd">7dp</item>
-        <item name="tabPaddingStart">14dp</item>
-        <item name="tabBackground">@drawable/section_tab_background</item>
-        <item name="tabIndicatorColor">@android:color/transparent</item>
-        <item name="tabSelectedTextColor">@color/default_text_color_list</item>
-        <item name="tabTextColor">@color/default_text_color_list</item>
-        <item name="tabTextAppearance">@style/TextAppearance.TextAccentMediumThick</item>
-    </style>
-
     <!-- Misc styles -->
     <style name="TabBarShadow">
         <item name="android:layout_width">match_parent</item>
@@ -377,6 +378,14 @@ found in the LICENSE file.
         <item name="android:textSize">@dimen/location_bar_url_text_size</item>
         <item name="android:textColorHint">@macro/search_box_hint</item>
     </style>
+    <style name="TextAppearance_SearchBoxText_NewTabPage_SurfacePolishColorful">
+        <item name="android:textSize">@dimen/location_bar_url_text_size_polish</item>
+        <item name="android:textColorHint">@macro/search_box_hint_polish_colorful</item>
+    </style>
+    <style name="TextAppearance_SearchBoxText_NewTabPage_SurfacePolishNeutral">
+        <item name="android:textSize">@dimen/location_bar_url_text_size_polish</item>
+        <item name="android:textColorHint">@macro/search_box_hint_polish_neutral</item>
+    </style>
 
     <!-- Launcher widgets can't use theme attributes, so this should use the baseline colors for
          android:textColorHint -->
@@ -388,6 +397,11 @@ found in the LICENSE file.
     <style name="TextAppearance.BookmarkEditFolderName"
         parent="@style/TextAppearance.AppCompat.Medium">
         <item name="android:textColor">@color/default_icon_color_tint_list</item>
+    </style>
+    <style name="BookmarkSaveFlowContainer">
+        <item name="android:paddingVertical">18dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">8dp</item>
     </style>
 
     <!-- Download Home -->
@@ -473,6 +487,11 @@ found in the LICENSE file.
     <style name="TextAppearance.FolderChildCount" parent="TextAppearance.TextLarge.Primary" tools:ignore="SpUsage">
         <!-- The same as the regular style, but using dp instead of sp. -->
         <item name="android:textSize">16dp</item>
+    </style>
+
+     <!-- Magic Stack styles -->
+    <style name="TextAppearance.ShoppingPriceDropSmallText" parent="TextAppearance.TextSmall.Secondary">
+        <item name="android:textColor">@color/price_drop_annotation_text_green</item>
     </style>
 
     <!--

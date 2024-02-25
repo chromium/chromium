@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/stylus_state.h"
@@ -24,7 +25,7 @@ namespace ui {
 namespace {
 
 TouchpadSettingsEvdev& GetTouchpadSettings(InputDeviceSettingsEvdev& settings,
-                                           absl::optional<int> device_id) {
+                                           std::optional<int> device_id) {
   if (!device_id.has_value()) {
     return settings.GetTouchpadSettings();
   }
@@ -32,7 +33,7 @@ TouchpadSettingsEvdev& GetTouchpadSettings(InputDeviceSettingsEvdev& settings,
 }
 
 MouseSettingsEvdev& GetMouseSettings(InputDeviceSettingsEvdev& settings,
-                                     absl::optional<int> device_id) {
+                                     std::optional<int> device_id) {
   if (!device_id.has_value()) {
     return settings.GetMouseSettings();
   }
@@ -41,7 +42,7 @@ MouseSettingsEvdev& GetMouseSettings(InputDeviceSettingsEvdev& settings,
 
 PointingStickSettingsEvdev& GetPointingStickSettings(
     InputDeviceSettingsEvdev& settings,
-    absl::optional<int> device_id) {
+    std::optional<int> device_id) {
   if (!device_id.has_value()) {
     return settings.GetPointingStickSettings();
   }
@@ -49,6 +50,25 @@ PointingStickSettingsEvdev& GetPointingStickSettings(
 }
 
 }  // namespace
+
+class InputControllerEvdev::ScopedDisableInputDevicesImpl
+    : public ScopedDisableInputDevices {
+ public:
+  explicit ScopedDisableInputDevicesImpl(
+      base::WeakPtr<InputControllerEvdev> parent)
+      : parent_(parent) {
+    parent_->OnScopedDisableInputDevicesCreated();
+  }
+
+  ~ScopedDisableInputDevicesImpl() override {
+    if (parent_) {
+      parent_->OnScopedDisableInputDevicesDestroyed();
+    }
+  }
+
+ private:
+  base::WeakPtr<InputControllerEvdev> parent_;
+};
 
 InputControllerEvdev::InputControllerEvdev(
     KeyboardEvdev* keyboard,
@@ -58,8 +78,7 @@ InputControllerEvdev::InputControllerEvdev(
       mouse_button_map_(mouse_button_map),
       pointing_stick_button_map_(pointing_stick_button_map) {}
 
-InputControllerEvdev::~InputControllerEvdev() {
-}
+InputControllerEvdev::~InputControllerEvdev() = default;
 
 void InputControllerEvdev::SetInputDeviceFactory(
     InputDeviceFactoryEvdevProxy* input_device_factory) {
@@ -71,6 +90,9 @@ void InputControllerEvdev::SetInputDeviceFactory(
 
 void InputControllerEvdev::set_has_mouse(bool has_mouse) {
   has_mouse_ = has_mouse;
+}
+void InputControllerEvdev::set_any_keys_pressed(bool any) {
+  any_keys_are_pressed_ = any;
 }
 
 void InputControllerEvdev::set_has_pointing_stick(bool has_pointing_stick) {
@@ -85,9 +107,34 @@ void InputControllerEvdev::set_has_haptic_touchpad(bool has_haptic_touchpad) {
   has_haptic_touchpad_ = has_haptic_touchpad;
 }
 
-void InputControllerEvdev::SetInputDevicesEnabled(bool enabled) {
-  input_device_settings_.enable_devices = enabled;
-  ScheduleUpdateDeviceSettings();
+void InputControllerEvdev::OnScopedDisableInputDevicesCreated() {
+  num_scoped_input_devices_disablers_++;
+  if (num_scoped_input_devices_disablers_ == 1) {
+    input_device_settings_.enable_devices = false;
+    ScheduleUpdateDeviceSettings();
+  }
+}
+
+void InputControllerEvdev::OnScopedDisableInputDevicesDestroyed() {
+  num_scoped_input_devices_disablers_--;
+  if (num_scoped_input_devices_disablers_ == 0) {
+    input_device_settings_.enable_devices = true;
+    ScheduleUpdateDeviceSettings();
+  }
+}
+
+bool InputControllerEvdev::AreInputDevicesEnabled() const {
+  return input_device_settings_.enable_devices;
+}
+
+std::unique_ptr<ScopedDisableInputDevices>
+InputControllerEvdev::DisableInputDevices() {
+  return std::make_unique<ScopedDisableInputDevicesImpl>(
+      weak_ptr_factory_.GetWeakPtr());
+}
+
+InputDeviceSettingsEvdev InputControllerEvdev::GetInputDeviceSettings() const {
+  return input_device_settings_;
 }
 
 bool InputControllerEvdev::HasMouse() {
@@ -150,8 +197,9 @@ std::vector<uint64_t> InputControllerEvdev::GetKeyboardKeyBits(int id) {
 }
 
 void InputControllerEvdev::SetCurrentLayoutByName(
-    const std::string& layout_name) {
-  keyboard_->SetCurrentLayoutByName(layout_name);
+    const std::string& layout_name,
+    base::OnceCallback<void(bool)> callback) {
+  keyboard_->SetCurrentLayoutByName(layout_name, std::move(callback));
 }
 
 void InputControllerEvdev::SetInternalTouchpadEnabled(bool enabled) {
@@ -187,22 +235,21 @@ void InputControllerEvdev::SetThreeFingerClick(bool enabled) {
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetTouchpadSensitivity(absl::optional<int> device_id,
+void InputControllerEvdev::SetTouchpadSensitivity(std::optional<int> device_id,
                                                   int value) {
   GetTouchpadSettings(input_device_settings_, device_id).sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetTouchpadAcceleration(
-    absl::optional<int> device_id,
-    bool enabled) {
+void InputControllerEvdev::SetTouchpadAcceleration(std::optional<int> device_id,
+                                                   bool enabled) {
   GetTouchpadSettings(input_device_settings_, device_id).acceleration_enabled =
       enabled;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetTouchpadScrollAcceleration(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {
   GetTouchpadSettings(input_device_settings_, device_id)
       .scroll_acceleration_enabled = enabled;
@@ -210,7 +257,7 @@ void InputControllerEvdev::SetTouchpadScrollAcceleration(
 }
 
 void InputControllerEvdev::SetTouchpadScrollSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {
   GetTouchpadSettings(input_device_settings_, device_id).scroll_sensitivity =
       value;
@@ -218,7 +265,7 @@ void InputControllerEvdev::SetTouchpadScrollSensitivity(
 }
 
 void InputControllerEvdev::SetTouchpadHapticFeedback(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {
   GetTouchpadSettings(input_device_settings_, device_id)
       .haptic_feedback_enabled = enabled;
@@ -226,42 +273,42 @@ void InputControllerEvdev::SetTouchpadHapticFeedback(
 }
 
 void InputControllerEvdev::SetTouchpadHapticClickSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {
   GetTouchpadSettings(input_device_settings_, device_id)
       .haptic_click_sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetTapToClick(absl::optional<int> device_id,
+void InputControllerEvdev::SetTapToClick(std::optional<int> device_id,
                                          bool enabled) {
   GetTouchpadSettings(input_device_settings_, device_id).tap_to_click_enabled =
       enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetTapDragging(absl::optional<int> device_id,
+void InputControllerEvdev::SetTapDragging(std::optional<int> device_id,
                                           bool enabled) {
   GetTouchpadSettings(input_device_settings_, device_id).tap_dragging_enabled =
       enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetNaturalScroll(absl::optional<int> device_id,
+void InputControllerEvdev::SetNaturalScroll(std::optional<int> device_id,
                                             bool enabled) {
   GetTouchpadSettings(input_device_settings_, device_id)
       .natural_scroll_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetMouseSensitivity(absl::optional<int> device_id,
+void InputControllerEvdev::SetMouseSensitivity(std::optional<int> device_id,
                                                int value) {
   GetMouseSettings(input_device_settings_, device_id).sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetMouseScrollSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {
   GetMouseSettings(input_device_settings_, device_id).scroll_sensitivity =
       value;
@@ -269,7 +316,7 @@ void InputControllerEvdev::SetMouseScrollSensitivity(
 }
 
 void InputControllerEvdev::SetMouseScrollAcceleration(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {
   GetMouseSettings(input_device_settings_, device_id)
       .scroll_acceleration_enabled = enabled;
@@ -277,14 +324,14 @@ void InputControllerEvdev::SetMouseScrollAcceleration(
 }
 
 void InputControllerEvdev::SetPointingStickSensitivity(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     int value) {
   GetPointingStickSettings(input_device_settings_, device_id).sensitivity =
       value;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetMouseReverseScroll(absl::optional<int> device_id,
+void InputControllerEvdev::SetMouseReverseScroll(std::optional<int> device_id,
                                                  bool enabled) {
   GetMouseSettings(input_device_settings_, device_id).reverse_scroll_enabled =
       enabled;
@@ -292,27 +339,27 @@ void InputControllerEvdev::SetMouseReverseScroll(absl::optional<int> device_id,
 }
 
 void InputControllerEvdev::SetPointingStickAcceleration(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool enabled) {
   GetPointingStickSettings(input_device_settings_, device_id)
       .acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetMouseAcceleration(absl::optional<int> device_id,
+void InputControllerEvdev::SetMouseAcceleration(std::optional<int> device_id,
                                                 bool enabled) {
   GetMouseSettings(input_device_settings_, device_id).acceleration_enabled =
       enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetPrimaryButtonRight(absl::optional<int> device_id,
+void InputControllerEvdev::SetPrimaryButtonRight(std::optional<int> device_id,
                                                  bool right) {
   mouse_button_map_->SetPrimaryButtonRight(device_id, right);
 }
 
 void InputControllerEvdev::SetPointingStickPrimaryButtonRight(
-    absl::optional<int> device_id,
+    std::optional<int> device_id,
     bool right) {
   pointing_stick_button_map_->SetPrimaryButtonRight(device_id, right);
 }
@@ -446,6 +493,16 @@ void InputControllerEvdev::OnInputDeviceRemoved(int device_id) {
   if (pointing_stick_button_map_) {
     pointing_stick_button_map_->RemoveDeviceFromSettings(device_id);
   }
+  ScheduleUpdateDeviceSettings();
+}
+
+bool InputControllerEvdev::AreAnyKeysPressed() {
+  return any_keys_are_pressed_;
+}
+
+void InputControllerEvdev::BlockModifiersOnDevices(
+    std::vector<int> device_ids) {
+  input_device_settings_.blocked_modifiers_devices = device_ids;
   ScheduleUpdateDeviceSettings();
 }
 

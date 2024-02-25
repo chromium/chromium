@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_OFFER_DATA_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_OFFER_DATA_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -60,7 +61,9 @@ class AutofillOfferData {
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
       const DisplayStrings& display_strings,
-      const std::string& promo_code);
+      const std::string& promo_code,
+      bool is_merchant_wide = false,
+      std::optional<std::string> terms_and_conditions = std::nullopt);
   // Returns an AutofillOfferData for a GPay promo code offer.
   static AutofillOfferData GPayPromoCodeOffer(
       int64_t offer_id,
@@ -70,12 +73,13 @@ class AutofillOfferData {
       const DisplayStrings& display_strings,
       const std::string& promo_code);
 
+  // TODO(crbug.com/1483969): Refactor this class to ensure the correct access
+  // specifiers and move constructors and move assignment constructors.
   AutofillOfferData();
   ~AutofillOfferData();
   AutofillOfferData(const AutofillOfferData&);
   AutofillOfferData& operator=(const AutofillOfferData&);
   bool operator==(const AutofillOfferData& other_offer_data) const;
-  bool operator!=(const AutofillOfferData& other_offer_data) const;
 
   // Compares two AutofillOfferData based on their member fields. Returns 0 if
   // the two offer data are exactly same. Otherwise returns the comparison
@@ -100,6 +104,9 @@ class AutofillOfferData {
   // given |origin| in the list of |merchant_origins|.
   bool IsActiveAndEligibleForOrigin(const GURL& origin) const;
 
+  // Returns true if the current offer is a site wide offer.
+  bool IsMerchantWideOffer() const;
+
   OfferType GetOfferType() const { return offer_type_; }
   int64_t GetOfferId() const { return offer_id_; }
   const base::Time& GetExpiry() const { return expiry_; }
@@ -115,6 +122,10 @@ class AutofillOfferData {
     return eligible_instrument_id_;
   }
   const std::string& GetPromoCode() const { return promo_code_; }
+
+  const std::optional<std::string>& GetTermsAndConditions() const {
+    return terms_and_conditions_;
+  }
 
 #ifdef UNIT_TEST
   void SetOfferIdForTesting(int64_t offer_id) { offer_id_ = offer_id; }
@@ -147,13 +158,16 @@ class AutofillOfferData {
                     const std::vector<int64_t>& eligible_instrument_id,
                     const std::string& offer_reward_amount);
   // Constructs an AutofillOfferData for a promo code offer (GPay or FLC).
-  AutofillOfferData(OfferType offer_type,
-                    int64_t offer_id,
-                    const base::Time& expiry,
-                    const std::vector<GURL>& merchant_origins,
-                    const GURL& offer_details_url,
-                    const DisplayStrings& display_strings,
-                    const std::string& promo_code);
+  AutofillOfferData(
+      OfferType offer_type,
+      int64_t offer_id,
+      const base::Time& expiry,
+      const std::vector<GURL>& merchant_origins,
+      const GURL& offer_details_url,
+      const DisplayStrings& display_strings,
+      const std::string& promo_code,
+      bool is_merchant_wide = false,
+      std::optional<std::string> terms_and_conditions = std::nullopt);
 
   // The specific type of offer, which informs decisions made by other classes,
   // such as UI rendering or metrics.
@@ -191,6 +205,13 @@ class AutofillOfferData {
 
   // A promo/gift/coupon code that can be applied at checkout with the merchant.
   std::string promo_code_;
+
+  // This only applies to free-listing offers, and it indicates whether the
+  // offer is a site-wide promo, e.g. 15% off on everything.
+  bool is_merchant_wide_offer_ = false;
+
+  // Additional terms and conditions for the promo code, if any.
+  std::optional<std::string> terms_and_conditions_ = std::nullopt;
 };
 
 }  // namespace autofill

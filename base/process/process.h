@@ -31,16 +31,18 @@
 
 namespace base {
 
-#if BUILDFLAG(IS_APPLE)
-BASE_DECLARE_FEATURE(kMacAllowBackgroundingProcesses);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // OneGroupPerRenderer feature places each foreground renderer process into
 // its own cgroup. This will cause the scheduler to use the aggregate runtime
 // of all threads in the process when deciding on the next thread to schedule.
 // It will help guarantee fairness between renderers.
 BASE_EXPORT BASE_DECLARE_FEATURE(kOneGroupPerRenderer);
+
+// Set all threads of a background process as backgrounded, which changes the
+// thread attributes including c-group, latency sensitivity. But the nice value
+// is unchanged, since background process is under the spell of the background
+// CPU c-group (via cgroup.procs).
+BASE_EXPORT BASE_DECLARE_FEATURE(kSetThreadBgForBgProcess);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -266,9 +268,7 @@ class BASE_EXPORT Process {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
-  // Sets the `task_role_t` of the current task (the calling process) to
-  // TASK_DEFAULT_APPLICATION, if the MacSetDefaultTaskRole feature is
-  // enabled.
+  // Sets the priority of the current process to its default value.
   static void SetCurrentTaskDefaultRole();
 #endif  // BUILDFLAG(IS_MAC)
 

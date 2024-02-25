@@ -4,7 +4,8 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeClientRemote, CustomizeColorSchemeModeHandlerRemote, HomeUrlInputElement, SettingsAppearancePageElement, SettingsToggleButtonElement, SystemTheme} from 'chrome://settings/settings.js';
+import type {AppearanceBrowserProxy, CustomizeColorSchemeModeClientRemote, HomeUrlInputElement, SettingsAppearancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote, SystemTheme} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -402,11 +403,50 @@ suite('HomeUrlInput', function() {
 suite('HoverCardSettings', function() {
   const HOVER_CARD_IMAGES_PREF = 'browser.hovercard.image_previews_enabled';
 
-  setup(function() {
+  function getMemoryUsageToggle(): SettingsToggleButtonElement|null {
+    return appearancePage.shadowRoot!
+        .querySelector<SettingsToggleButtonElement>(
+            '#hoverCardMemoryUsageToggle');
+  }
+
+  function getPreviewImageToggle(): SettingsToggleButtonElement|null {
+    return appearancePage.shadowRoot!
+        .querySelector<SettingsToggleButtonElement>('#hoverCardImagesToggle');
+  }
+
+  test('hover card section not visible in guest mode', function() {
+    loadTimeData.overrideValues({
+      isGuest: true,
+      showHoverCardImagesOption: true,
+    });
+    createAppearancePage();
+
+    const memoryUsageToggle = getMemoryUsageToggle();
+    assertTrue(!!memoryUsageToggle);
+    assertFalse(isVisible(memoryUsageToggle));
+
+    const previewImageToggle = getPreviewImageToggle();
+    assertTrue(!!previewImageToggle);
+    assertFalse(isVisible(previewImageToggle));
+  });
+
+  test('hide hover card image option', function() {
+    loadTimeData.overrideValues({
+      showHoverCardImagesOption: false,
+    });
+    createAppearancePage();
+
+    const memoryUsageToggle = getMemoryUsageToggle();
+    assertTrue(!!memoryUsageToggle);
+
+    const previewImageToggle = getPreviewImageToggle();
+    assertFalse(!!previewImageToggle);
+  });
+
+  test('show hover card image option', async function() {
     loadTimeData.overrideValues({
       showHoverCardImagesOption: true,
     });
-
     createAppearancePage();
     appearancePage.set('prefs.browser', {
       hovercard: {
@@ -415,24 +455,23 @@ suite('HoverCardSettings', function() {
         },
       },
     });
-  });
 
-  test('hover card image preview toggle', async function() {
-    const toggle =
-        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#hoverCardImagesToggle');
-    assertTrue(!!toggle);
-    assertFalse(toggle.checked);
+    const memoryUsageToggle = getMemoryUsageToggle();
+    assertTrue(!!memoryUsageToggle);
 
-    toggle.click();
-    assertTrue(toggle.checked);
+    const previewImageToggle = getPreviewImageToggle();
+    assertTrue(!!previewImageToggle);
+    assertFalse(previewImageToggle.checked);
+
+    previewImageToggle.click();
+    assertTrue(previewImageToggle.checked);
     assertTrue(appearancePage.getPref(HOVER_CARD_IMAGES_PREF).value);
     assertTrue(await appearanceBrowserProxy.whenCalled(
         'recordHoverCardImagesEnabledChanged'));
 
     appearanceBrowserProxy.reset();
-    toggle.click();
-    assertFalse(toggle.checked);
+    previewImageToggle.click();
+    assertFalse(previewImageToggle.checked);
     assertFalse(appearancePage.getPref(HOVER_CARD_IMAGES_PREF).value);
     assertFalse(await appearanceBrowserProxy.whenCalled(
         'recordHoverCardImagesEnabledChanged'));

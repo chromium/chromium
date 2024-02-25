@@ -69,7 +69,7 @@ class CORE_EXPORT AbortSignal : public EventTarget {
     AlgorithmHandle(Algorithm*, AbortSignal*);
     ~AlgorithmHandle();
 
-    Algorithm* GetAlgorithm() { return algorithm_; }
+    Algorithm* GetAlgorithm() { return algorithm_.Get(); }
 
     void Trace(Visitor* visitor) const;
 

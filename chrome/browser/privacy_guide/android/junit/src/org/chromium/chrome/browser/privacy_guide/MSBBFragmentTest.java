@@ -9,7 +9,9 @@ import static org.junit.Assert.assertTrue;
 
 import android.os.Bundle;
 
-import androidx.appcompat.widget.SwitchCompat;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -23,37 +25,31 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
-/**
- * JUnit tests of the class {@link MSBBFragment}.
- */
+/** JUnit tests of the class {@link MSBBFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MSBBFragmentTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private UnifiedConsentServiceBridge.Natives mNativeMock;
+    @Mock private Profile mProfile;
+    @Mock private UnifiedConsentServiceBridge.Natives mNativeMock;
 
     private FragmentScenario mScenario;
-    private SwitchCompat mMSBBButton;
+    private MaterialSwitchWithText mMSBBButton;
     private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
     }
 
@@ -68,8 +64,23 @@ public class MSBBFragmentTest {
     private void initFragmentWithMSBBState(boolean isMSBBOn) {
         Mockito.when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
                 .thenReturn(isMSBBOn);
-        mScenario = FragmentScenario.launchInContainer(
-                MSBBFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        MSBBFragment.class,
+                        Bundle.EMPTY,
+                        R.style.Theme_MaterialComponents,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof MSBBFragment) {
+                                    ((MSBBFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
         mScenario.onFragment(
                 fragment -> mMSBBButton = fragment.getView().findViewById(R.id.msbb_switch));
     }

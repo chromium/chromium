@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_ITEM_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,8 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/themed_vector_icon.h"
@@ -74,9 +75,9 @@ class TestMenuItemView;
 // (show) the menu as well as for details on the life time of the menu.
 
 class VIEWS_EXPORT MenuItemView : public View {
- public:
-  METADATA_HEADER(MenuItemView);
+  METADATA_HEADER(MenuItemView, View)
 
+ public:
   // Different types of menu items.
   enum class Type {
     kNormal,             // Performs an action when selected.
@@ -162,26 +163,24 @@ class VIEWS_EXPORT MenuItemView : public View {
       const ui::ImageModel& icon,
       Type type,
       ui::MenuSeparatorType separator_style,
-      absl::optional<ui::ColorId> submenu_background_color = absl::nullopt,
-      absl::optional<ui::ColorId> foreground_color = absl::nullopt,
-      absl::optional<ui::ColorId> selected_color_id = absl::nullopt);
+      std::optional<ui::ColorId> submenu_background_color = std::nullopt,
+      std::optional<ui::ColorId> foreground_color = std::nullopt,
+      std::optional<ui::ColorId> selected_color_id = std::nullopt);
 
   void SetMenuItemBackground(
-      absl::optional<MenuItemBackground> menu_item_background) {
+      std::optional<MenuItemBackground> menu_item_background) {
     menu_item_background_ = menu_item_background;
   }
 
-  absl::optional<MenuItemBackground> GetMenuItemBackground() {
+  std::optional<MenuItemBackground> GetMenuItemBackground() {
     return menu_item_background_;
   }
 
-  void SetSelectedColorId(absl::optional<ui::ColorId> selected_color_id) {
+  void SetSelectedColorId(std::optional<ui::ColorId> selected_color_id) {
     selected_color_id_ = selected_color_id;
   }
 
-  absl::optional<ui::ColorId> GetSelectedColorId() {
-    return selected_color_id_;
-  }
+  std::optional<ui::ColorId> GetSelectedColorId() { return selected_color_id_; }
 
   void SetHighlightWhenSelectedWithChildViews(
       bool highlight_when_selected_with_child_views) {
@@ -241,6 +240,10 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Returns true if this menu item has a submenu and it is showing
   bool SubmenuIsShowing() const;
+
+  // Sets the identifier of the submenu, if there is one, or to a future submenu
+  // that would be created.
+  void SetSubmenuId(ui::ElementIdentifier submenu_id);
 
   // Returns the parent menu item.
   MenuItemView* GetParentMenuItem() { return parent_menu_item_; }
@@ -367,7 +370,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   void ChildrenChanged();
 
   // Sizes any child views.
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Returns true if the menu has mnemonics. This only useful on the root menu
   // item.
@@ -465,7 +468,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Returns the font list and font color to use for menu text.
   const gfx::FontList GetFontList() const;
-  const absl::optional<SkColor> GetMenuLabelColor() const;
+  const std::optional<SkColor> GetMenuLabelColor() const;
 
   // Ensures the submenu has an empty menu item iff it needs one, then updates
   // its metrics.
@@ -568,7 +571,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // could interact with model state.
   bool IsScheduledForDeletion() const;
 
-  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color_id) {
+  void SetForegroundColorId(std::optional<ui::ColorId> foreground_color_id) {
     foreground_color_id_ = foreground_color_id;
   }
 
@@ -579,7 +582,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
-  raw_ptr<MenuDelegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<MenuDelegate> delegate_ = nullptr;
 
   // The controller for the run operation, or NULL if the menu isn't showing.
   base::WeakPtr<MenuController> controller_;
@@ -588,7 +591,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool canceled_ = false;
 
   // Our parent.
-  raw_ptr<MenuItemView, DanglingUntriaged> parent_menu_item_ = nullptr;
+  const raw_ptr<MenuItemView> parent_menu_item_ = nullptr;
 
   // Type of menu. NOTE: MenuItemView doesn't itself represent SEPARATOR,
   // that is handled by an entirely different view class.
@@ -612,8 +615,11 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Whether the menu item contains user-created text.
   bool may_have_mnemonics_ = true;
 
-  // Submenu, created via CreateSubmenu.
-  raw_ptr<SubmenuView, DanglingUntriaged> submenu_ = nullptr;
+  // Submenu, created via `CreateSubmenu`.
+  std::unique_ptr<SubmenuView> submenu_;
+
+  // Identifier to assign to a submenu if one is created.
+  ui::ElementIdentifier submenu_id_;
 
   std::u16string title_;
   std::u16string secondary_title_;
@@ -628,7 +634,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool show_mnemonics_ = false;
 
   // Pointer to a view with a menu icon.
-  raw_ptr<ImageView, DanglingUntriaged> icon_view_ = nullptr;
+  raw_ptr<ImageView> icon_view_ = nullptr;
 
   // The tooltip to show on hover for this menu item.
   std::u16string tooltip_;
@@ -638,9 +644,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   mutable MenuItemDimensions dimensions_;
 
   // Removed items to be deleted in ChildrenChanged().
-  std::vector<View*> removed_items_;
+  std::vector<raw_ptr<View, VectorExperimental>> removed_items_;
 
-  absl::optional<int> vertical_margin_;
+  std::optional<int> vertical_margin_;
 
   // Corner radius in pixels, for HIGHLIGHTED items placed at the end of a menu.
   int corner_radius_ = 0;
@@ -657,17 +663,17 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool children_use_full_width_ = false;
 
   // Contains an image for the checkbox or radio icon.
-  raw_ptr<ImageView, DanglingUntriaged> radio_check_image_view_ = nullptr;
+  raw_ptr<ImageView> radio_check_image_view_ = nullptr;
 
   // The submenu indicator arrow icon in case the menu item has a Submenu.
-  raw_ptr<ImageView, DanglingUntriaged> submenu_arrow_image_view_ = nullptr;
+  raw_ptr<ImageView> submenu_arrow_image_view_ = nullptr;
 
   // The forced visual selection state of this item, if any.
-  absl::optional<bool> forced_visual_selection_;
+  std::optional<bool> forced_visual_selection_;
 
   // The vertical separator that separates the actionable and submenu regions of
   // an ACTIONABLE_SUBMENU.
-  raw_ptr<Separator, DanglingUntriaged> vertical_separator_ = nullptr;
+  raw_ptr<Separator> vertical_separator_ = nullptr;
 
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;
@@ -695,9 +701,9 @@ class VIEWS_EXPORT MenuItemView : public View {
       features::IsChromeRefresh2023() ? IDS_NEW_BADGE_UPPERCASE
                                       : IDS_NEW_BADGE);
 
-  absl::optional<ui::ColorId> foreground_color_id_;
-  absl::optional<MenuItemBackground> menu_item_background_;
-  absl::optional<ui::ColorId> selected_color_id_;
+  std::optional<ui::ColorId> foreground_color_id_;
+  std::optional<MenuItemBackground> menu_item_background_;
+  std::optional<ui::ColorId> selected_color_id_;
 };
 
 // EmptyMenuMenuItem ----------------------------------------------------------
@@ -705,9 +711,9 @@ class VIEWS_EXPORT MenuItemView : public View {
 // EmptyMenuMenuItem is used when a menu has no menu items.
 
 class VIEWS_EXPORT EmptyMenuMenuItem : public MenuItemView {
- public:
-  METADATA_HEADER(EmptyMenuMenuItem);
+  METADATA_HEADER(EmptyMenuMenuItem, MenuItemView)
 
+ public:
   explicit EmptyMenuMenuItem(MenuItemView* parent);
   EmptyMenuMenuItem(const EmptyMenuMenuItem&) = delete;
   EmptyMenuMenuItem& operator=(const EmptyMenuMenuItem&) = delete;

@@ -1,0 +1,64 @@
+This is a testharness.js-based test.
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] ellipse(at left 50% bottom 70%) serializes as ellipse(at 50% calc(30%)) - inline
+  assert_equals: expected "ellipse(at 50% calc(30%))" but got "ellipse(at 50% 30%)"
+[FAIL] ellipse(at left 50% bottom 70px) serializes as ellipse(at 50% calc(100% - 70px)) - inline
+  assert_equals: expected "ellipse(at 50% calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
+[FAIL] ellipse(at left 50px bottom 70%) serializes as ellipse(at 50px calc(30%)) - inline
+  assert_equals: expected "ellipse(at 50px calc(30%))" but got "ellipse(at 50px 30%)"
+[FAIL] ellipse(at top 50% right 80%) serializes as ellipse(at calc(20%) 50%) - inline
+  assert_equals: expected "ellipse(at calc(20%) 50%)" but got "ellipse(at 20% 50%)"
+[FAIL] ellipse(at top 50% right 80px) serializes as ellipse(at calc(100% - 80px) 50%) - inline
+  assert_equals: expected "ellipse(at calc(100% - 80px) 50%)" but got "ellipse(at right 80px top 50%)"
+[FAIL] ellipse(at top 50px right 80%) serializes as ellipse(at calc(20%) 50px) - inline
+  assert_equals: expected "ellipse(at calc(20%) 50px)" but got "ellipse(at 20% 50px)"
+[FAIL] ellipse(at bottom 70% left 50%) serializes as ellipse(at 50% calc(30%)) - inline
+  assert_equals: expected "ellipse(at 50% calc(30%))" but got "ellipse(at 50% 30%)"
+[FAIL] ellipse(at bottom 70% left 50px) serializes as ellipse(at 50px calc(30%)) - inline
+  assert_equals: expected "ellipse(at 50px calc(30%))" but got "ellipse(at 50px 30%)"
+[FAIL] ellipse(at bottom 70% right 80%) serializes as ellipse(at calc(20%) calc(30%)) - inline
+  assert_equals: expected "ellipse(at calc(20%) calc(30%))" but got "ellipse(at 20% 30%)"
+[FAIL] ellipse(at bottom 70% right 80px) serializes as ellipse(at calc(100% - 80px) calc(30%)) - inline
+  assert_equals: expected "ellipse(at calc(100% - 80px) calc(30%))" but got "ellipse(at right 80px top 30%)"
+[FAIL] ellipse(at bottom 70px left 50%) serializes as ellipse(at 50% calc(100% - 70px)) - inline
+  assert_equals: expected "ellipse(at 50% calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
+[FAIL] ellipse(at bottom 70px right 50%) serializes as ellipse(at calc(50%) calc(100% - 70px)) - inline
+  assert_equals: expected "ellipse(at calc(50%) calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
+[FAIL] ellipse(at bottom 70px right 80px) serializes as ellipse(at calc(100% - 80px) calc(100% - 70px)) - inline
+  assert_equals: expected "ellipse(at calc(100% - 80px) calc(100% - 70px))" but got "ellipse(at right 80px bottom 70px)"
+[FAIL] ellipse(at right 80% top 50%) serializes as ellipse(at calc(20%) 50%) - inline
+  assert_equals: expected "ellipse(at calc(20%) 50%)" but got "ellipse(at 20% 50%)"
+[FAIL] ellipse(at right 80% top 50px) serializes as ellipse(at calc(20%) 50px) - inline
+  assert_equals: expected "ellipse(at calc(20%) 50px)" but got "ellipse(at 20% 50px)"
+[FAIL] ellipse(at right 80% bottom 70%) serializes as ellipse(at calc(20%) calc(30%)) - inline
+  assert_equals: expected "ellipse(at calc(20%) calc(30%))" but got "ellipse(at 20% 30%)"
+[FAIL] ellipse(at right 80% bottom 70px) serializes as ellipse(at calc(20%) calc(100% - 70px)) - inline
+  assert_equals: expected "ellipse(at calc(20%) calc(100% - 70px))" but got "ellipse(at left 20% bottom 70px)"
+[FAIL] ellipse(at right 80px top 50%) serializes as ellipse(at calc(100% - 80px) 50%) - inline
+  assert_equals: expected "ellipse(at calc(100% - 80px) 50%)" but got "ellipse(at right 80px top 50%)"
+[FAIL] ellipse(at right 80px bottom 70%) serializes as ellipse(at calc(100% - 80px) calc(30%)) - inline
+  assert_equals: expected "ellipse(at calc(100% - 80px) calc(30%))" but got "ellipse(at right 80px top 30%)"
+[FAIL] ellipse(at right 80px bottom 70px) serializes as ellipse(at calc(100% - 80px) calc(100% - 70px)) - inline
+  assert_equals: expected "ellipse(at calc(100% - 80px) calc(100% - 70px))" but got "ellipse(at right 80px bottom 70px)"
+[FAIL] ellipse(at left 50% bottom 70px) serializes as ellipse(at 50% calc(100% - 70px)) - computed
+  assert_equals: expected "ellipse(at 50% calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
+[FAIL] ellipse(at top 50% right 80px) serializes as ellipse(at calc(100% - 80px) 50%) - computed
+  assert_equals: expected "ellipse(at calc(100% - 80px) 50%)" but got "ellipse(at right 80px top 50%)"
+[FAIL] ellipse(at bottom 70% right 80px) serializes as ellipse(at calc(100% - 80px) 30%) - computed
+  assert_equals: expected "ellipse(at calc(100% - 80px) 30%)" but got "ellipse(at right 80px top 30%)"
+[FAIL] ellipse(at bottom 70px left 50%) serializes as ellipse(at 50% calc(100% - 70px)) - computed
+  assert_equals: expected "ellipse(at 50% calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
+[FAIL] ellipse(at bottom 70px right 50%) serializes as ellipse(at 50% calc(100% - 70px)) - computed
+  assert_equals: expected "ellipse(at 50% calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
+[FAIL] ellipse(at bottom 70px right 80px) serializes as ellipse(at calc(100% - 80px) calc(100% - 70px)) - computed
+  assert_equals: expected "ellipse(at calc(100% - 80px) calc(100% - 70px))" but got "ellipse(at right 80px bottom 70px)"
+[FAIL] ellipse(at right 80% bottom 70px) serializes as ellipse(at 20% calc(100% - 70px)) - computed
+  assert_equals: expected "ellipse(at 20% calc(100% - 70px))" but got "ellipse(at left 20% bottom 70px)"
+[FAIL] ellipse(at right 80px top 50%) serializes as ellipse(at calc(100% - 80px) 50%) - computed
+  assert_equals: expected "ellipse(at calc(100% - 80px) 50%)" but got "ellipse(at right 80px top 50%)"
+[FAIL] ellipse(at right 80px bottom 70%) serializes as ellipse(at calc(100% - 80px) 30%) - computed
+  assert_equals: expected "ellipse(at calc(100% - 80px) 30%)" but got "ellipse(at right 80px top 30%)"
+[FAIL] ellipse(at right 80px bottom 70px) serializes as ellipse(at calc(100% - 80px) calc(100% - 70px)) - computed
+  assert_equals: expected "ellipse(at calc(100% - 80px) calc(100% - 70px))" but got "ellipse(at right 80px bottom 70px)"
+Harness: the test ran to completion.
+

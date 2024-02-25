@@ -11,9 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EdgeEffect;
 
-/**
- * Handles glow effect using {@link EdgeEffect} API.
- */
+/** Handles glow effect using {@link EdgeEffect} API. */
 public class AndroidUiNavigationGlow extends NavigationGlow {
     /**
      * Amount of time we wait before {@link GlowView} gets detached from parent view
@@ -29,16 +27,15 @@ public class AndroidUiNavigationGlow extends NavigationGlow {
      */
     private final GlowView mGlowView;
 
-    /**
-     * Total amount of pull offset.
-     */
+    /** Total amount of pull offset. */
     private float mTotalPullOffset;
 
     public AndroidUiNavigationGlow(ViewGroup parentView) {
         super(parentView);
         mGlowView = new GlowView(mParentView.getContext());
-        mGlowView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mGlowView.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mRemoveGlowViewRunnable = () -> mParentView.removeView(mGlowView);
     }
 

@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -19,6 +20,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/synced_pref_observer.h"
 
 namespace base {
@@ -44,12 +46,12 @@ class PrefServiceForAssociator {
 };
 
 // Contains all preference sync related logic.
-class PrefModelAssociator : public syncer::SyncableService,
-                            public PrefStore::Observer {
+class PrefModelAssociator final : public syncer::SyncableService,
+                                  public PrefStore::Observer {
  public:
   // The |client| is not owned and must outlive this object.
   // |user_prefs| is the PrefStore to be hooked up to Sync.
-  PrefModelAssociator(const PrefModelAssociatorClient* client,
+  PrefModelAssociator(scoped_refptr<PrefModelAssociatorClient> client,
                       scoped_refptr<WriteablePrefStore> user_prefs,
                       syncer::ModelType type);
 
@@ -58,7 +60,7 @@ class PrefModelAssociator : public syncer::SyncableService,
   // Note: This must be called iff EnablePreferencesAccountStorage feature is
   // enabled.
   PrefModelAssociator(
-      const PrefModelAssociatorClient* client,
+      scoped_refptr<PrefModelAssociatorClient> client,
       scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
       syncer::ModelType type);
 
@@ -81,15 +83,16 @@ class PrefModelAssociator : public syncer::SyncableService,
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
+  std::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   void OnBrowserShutdown(syncer::ModelType type) override;
-  absl::optional<syncer::ModelError> ProcessSyncChanges(
+  std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // PrefStore::Observer implementation.
   void OnPrefValueChanged(const std::string& key) override;
@@ -121,7 +124,7 @@ class PrefModelAssociator : public syncer::SyncableService,
                                 SyncedPrefObserver* observer);
 
   // Returns the PrefModelAssociatorClient for this object.
-  const PrefModelAssociatorClient* client() const { return client_; }
+  scoped_refptr<PrefModelAssociatorClient> client() const { return client_; }
 
   // Returns true if the pref under the given name is pulled down from sync.
   // Note this does not refer to SYNCABLE_PREF.
@@ -159,7 +162,7 @@ class PrefModelAssociator : public syncer::SyncableService,
   // PRIORITY_PREFERENCES or OS_PREFERENCES or OS_PRIORITY_PREFERENCES.
   const syncer::ModelType type_;
 
-  const raw_ptr<const PrefModelAssociatorClient> client_;
+  scoped_refptr<PrefModelAssociatorClient> client_;
 
   // The PrefStore we are syncing to.
   scoped_refptr<WriteablePrefStore> user_prefs_;
@@ -205,6 +208,8 @@ class PrefModelAssociator : public syncer::SyncableService,
       synced_pref_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PrefModelAssociator> weak_ptr_factory_{this};
 };
 
 }  // namespace sync_preferences

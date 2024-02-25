@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
-#include "build/build_config.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -17,12 +18,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -40,7 +41,7 @@ constexpr char kTestDownloadFolder[] = "test_download_folder";
 class ScreensaverImageDownloaderTest : public testing::Test {
  public:
   using ImageListUpdatedFuture =
-      base::test::RepeatingTestFuture<const std::vector<base::FilePath>&>;
+      base::test::TestFuture<const std::vector<base::FilePath>&>;
 
   ScreensaverImageDownloaderTest() = default;
 
@@ -60,7 +61,8 @@ class ScreensaverImageDownloaderTest : public testing::Test {
         std::make_unique<ScreensaverImageDownloader>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &url_loader_factory_),
-            test_download_folder_, image_list_updated_future_.GetCallback());
+            test_download_folder_,
+            image_list_updated_future_.GetRepeatingCallback());
   }
 
   ScreensaverImageDownloader* screensaver_image_downloader() {
@@ -84,14 +86,13 @@ class ScreensaverImageDownloaderTest : public testing::Test {
               screensaver_image_downloader_->downloading_queue_.size());
   }
 
-  void QueueNewImageDownload(const std::string& url) {
-    auto job = std::make_unique<ScreensaverImageDownloader::Job>(url);
-    screensaver_image_downloader_->QueueDownloadJob(std::move(job));
+  void QueueNewImageDownload(const std::string& image_url) {
+    screensaver_image_downloader_->QueueImageDownload(image_url);
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
-    const std::string hash = base::SHA1HashString(url);
-    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+    auto hash = base::SHA1HashSpan(base::as_byte_span(url));
+    const std::string encoded_hash = base::HexEncode(hash);
     return test_download_folder_.AppendASCII(encoded_hash + kCacheFileExt);
   }
 
@@ -106,9 +107,7 @@ class ScreensaverImageDownloaderTest : public testing::Test {
     ASSERT_EQ(expected_images.size(), image_list.size());
 
     for (const auto& [path, file_content] : expected_images) {
-      bool found = std::find(image_list.begin(), image_list.end(), path) !=
-                   image_list.end();
-      ASSERT_TRUE(found);
+      ASSERT_TRUE(base::Contains(image_list, path));
       ASSERT_TRUE(base::PathExists(path));
 
       std::string actual_file_contents;
@@ -235,16 +234,16 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
 }
 
 TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
-  // Push two jobs and check the internal downloading queue
+  // Push two downloads and check the internal downloading queue
   QueueNewImageDownload(kImageUrl1);
   QueueNewImageDownload(kImageUrl2);
 
-  // First job should be executing and expecting the URL response, verify that
-  // the second job is in the queue
+  // First download should be executing and expecting the URL response, verify
+  // that the second download is in the queue
   task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(1u);
 
-  // Resolve the first job
+  // Resolve the first download
   url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
 
   std::vector<std::pair<base::FilePath, std::string>> expected_images;
@@ -252,18 +251,18 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
                                std::string(kFileContents));
   VerifySucessfulImageRequest(expected_images);
 
-  // First job has been resolved, second job should be executing and expecting
-  // the URL response.
+  // First download has been resolved, second download should be executing and
+  // expecting the URL response.
   task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 
-  // Queue a third job while the second job is still waiting
+  // Queue a third download while the second download is still waiting
   QueueNewImageDownload(kImageUrl3);
 
   task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(1u);
 
-  // Resolve the second job
+  // Resolve the second download
   url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
 
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
@@ -273,7 +272,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 
-  // Resolve the third job
+  // Resolve the third download
   url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
 
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl3),

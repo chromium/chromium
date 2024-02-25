@@ -37,7 +37,8 @@ DeskSyncServiceFactory::DeskSyncServiceFactory()
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
-KeyedService* DeskSyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DeskSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   const AccountId account_id =
@@ -48,6 +49,6 @@ KeyedService* DeskSyncServiceFactory::BuildServiceInstanceFor(
 
   // This instance will be wrapped in a |std::unique_ptr|, owned by
   // |KeyedServiceFactory| and associated with the given browser context.
-  return new desks_storage::DeskSyncService(
+  return std::make_unique<desks_storage::DeskSyncService>(
       chrome::GetChannel(), std::move(store_factory), account_id);
 }

@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -124,6 +124,28 @@ TrackedElement* InteractiveTestPrivate::GetPivotElement(
   CHECK(it != pivot_elements_.end())
       << "Tried to reference non-existent context.";
   return it->second.get();
+}
+
+bool InteractiveTestPrivate::RemoveStateObserver(ElementIdentifier id,
+                                                 ElementContext context) {
+  using It = decltype(state_observer_elements_.begin());
+  It found = state_observer_elements_.end();
+  for (It it = state_observer_elements_.begin();
+       it != state_observer_elements_.end(); ++it) {
+    auto& entry = **it;
+    if (entry.identifier() == id && (!context || entry.context() == context)) {
+      CHECK(found == state_observer_elements_.end())
+          << "RemoveStateObserver: Duplicate entries found for " << id;
+      found = it;
+    }
+  }
+  if (found == state_observer_elements_.end()) {
+    LOG(ERROR) << "RemoveStateObserver: Entry not found for " << id;
+    return false;
+  }
+
+  state_observer_elements_.erase(found);
+  return true;
 }
 
 void InteractiveTestPrivate::DoTestSetUp() {}

@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/renderer/console.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
@@ -198,8 +199,11 @@ ModuleSystem::ModuleSystem(ScriptContext* context, const SourceMap* source_map)
   }
 
   if (context_->GetRenderFrame() &&
-      context_->context_type() == Feature::BLESSED_EXTENSION_CONTEXT &&
+      context_->context_type() == mojom::ContextType::kPrivilegedExtension &&
       !context_->IsForServiceWorker() && ContextNeedsMojoBindings(context_)) {
+    // Valid enablement code path, so need to ensure MojoJS is allowed for the
+    // process before attempting to enable it.
+    blink::WebV8Features::AllowMojoJSForProcess();
     blink::WebV8Features::EnableMojoJS(context->v8_context(), true);
   }
 }
@@ -332,10 +336,9 @@ void ModuleSystem::CallModuleMethodSafe(const std::string& module_name,
                        blink::WebScriptExecutionCallback());
 }
 
-void ModuleSystem::CallModuleMethodSafe(
-    const std::string& module_name,
-    const std::string& method_name,
-    std::vector<v8::Local<v8::Value>>* args) {
+void ModuleSystem::CallModuleMethodSafe(const std::string& module_name,
+                                        const std::string& method_name,
+                                        v8::LocalVector<v8::Value>* args) {
   CallModuleMethodSafe(module_name, method_name, args->size(), args->data(),
                        blink::WebScriptExecutionCallback());
 }

@@ -6,8 +6,8 @@
 #define COMPONENTS_POLICY_CORE_COMMON_DEVICE_LOCAL_ACCOUNT_TYPE_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "components/policy/policy_export.h"
 
@@ -34,7 +34,7 @@ enum class DeviceLocalAccountType {
 };
 
 POLICY_EXPORT std::string GenerateDeviceLocalAccountUserId(
-    base::StringPiece account_id,
+    std::string_view account_id,
     DeviceLocalAccountType type);
 
 enum class GetDeviceLocalAccountTypeError {
@@ -45,12 +45,12 @@ enum class GetDeviceLocalAccountTypeError {
 // Returns the type of device-local account.
 POLICY_EXPORT
 base::expected<DeviceLocalAccountType, GetDeviceLocalAccountTypeError>
-GetDeviceLocalAccountType(base::StringPiece user_id);
+GetDeviceLocalAccountType(std::string_view user_id);
 
 // Returns whether |user_id| belongs to a device-local account.
 // This is equivalent to that GetDeviceLocalAccountType does not return
 // kNoDeviceLocalAccountUser error.
-POLICY_EXPORT bool IsDeviceLocalAccountUser(base::StringPiece user_id);
+POLICY_EXPORT bool IsDeviceLocalAccountUser(std::string_view user_id);
 
 }  // namespace policy
 

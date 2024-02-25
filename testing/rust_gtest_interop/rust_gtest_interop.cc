@@ -8,24 +8,25 @@
 
 namespace rust_gtest_interop {
 
-testing::Test* rust_gtest_default_factory(void (*body)(testing::Test*)) {
+extern "C" testing::Test* rust_gtest_default_factory(
+    void (*body)(testing::Test*)) {
   return rust_gtest_factory_for_subclass<testing::Test>(body);
 }
 
-void rust_gtest_add_test(GtestFactoryFunction gtest_factory,
-                         void (*test_function)(testing::Test*),
-                         const char* test_suite_name,
-                         const char* test_name,
-                         const char* file,
-                         int32_t line) {
+extern "C" void rust_gtest_add_test(GtestFactoryFunction gtest_factory,
+                                    void (*test_function)(testing::Test*),
+                                    const char* test_suite_name,
+                                    const char* test_name,
+                                    const char* file,
+                                    int32_t line) {
   auto factory = [=]() { return gtest_factory(test_function); };
   testing::RegisterTest(test_suite_name, test_name, nullptr, nullptr, file,
                         line, factory);
 }
 
-void rust_gtest_add_failure_at(const char* file,
-                               int32_t line,
-                               const char* message) {
+extern "C" void rust_gtest_add_failure_at(const char* file,
+                                          int32_t line,
+                                          const char* message) {
   ADD_FAILURE_AT(reinterpret_cast<const char*>(file), line) << message;
 }
 

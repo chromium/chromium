@@ -31,7 +31,7 @@ class StubLayerTreeViewDelegate : public LayerTreeViewDelegate {
   void OnDeferCommitsChanged(
       bool defer_status,
       cc::PaintHoldingReason reason,
-      absl::optional<cc::PaintHoldingCommitTrigger> trigger) override {}
+      std::optional<cc::PaintHoldingCommitTrigger> trigger) override {}
   void OnCommitRequested() override {}
   void DidBeginMainFrame() override {}
   void DidCommitAndDrawCompositorFrame() override {}
@@ -60,6 +60,10 @@ class StubLayerTreeViewDelegate : public LayerTreeViewDelegate {
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override {}
   void ScheduleAnimationForWebTests() override {}
+  std::unique_ptr<cc::RenderFrameMetadataObserver> CreateRenderFrameObserver()
+      override {
+    return nullptr;
+  }
 };
 
 }  // namespace blink

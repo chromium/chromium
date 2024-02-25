@@ -1,0 +1,64 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("common") {
+  sources = [
+    "infobar_banner_interaction_handler.h",
+    "infobar_banner_interaction_handler.mm",
+    "infobar_banner_overlay_request_callback_installer.h",
+    "infobar_banner_overlay_request_callback_installer.mm",
+    "infobar_modal_interaction_handler.h",
+    "infobar_modal_interaction_handler.mm",
+    "infobar_modal_overlay_request_callback_installer.h",
+    "infobar_modal_overlay_request_callback_installer.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/public/infobar_modal",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "infobar_banner_interaction_handler_unittest.mm",
+    "infobar_banner_overlay_request_callback_installer_unittest.mm",
+    "infobar_modal_overlay_request_callback_installer_unittest.mm",
+  ]
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/common/test",
+    "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/public/infobar_modal",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/passwords/model/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

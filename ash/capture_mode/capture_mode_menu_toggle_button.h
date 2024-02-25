@@ -23,9 +23,9 @@ namespace ash {
 // A view section in the capture mode settings menu that consists of a menu item
 // with a switch (toggle button).
 class CaptureModeMenuToggleButton : public views::View {
- public:
-  METADATA_HEADER(CaptureModeMenuToggleButton);
+  METADATA_HEADER(CaptureModeMenuToggleButton, views::View)
 
+ public:
   CaptureModeMenuToggleButton(const gfx::VectorIcon& icon,
                               const std::u16string& label_text,
                               bool enabled,
@@ -41,11 +41,11 @@ class CaptureModeMenuToggleButton : public views::View {
   void OnThemeChanged() override;
 
  private:
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
-  raw_ptr<views::Label, ExperimentalAsh> label_view_;
+  raw_ptr<views::ImageView> icon_view_;
+  raw_ptr<views::Label> label_view_;
 
   // Toggles between enabling and disabling the capture mode demo tools feature.
-  raw_ptr<Switch, ExperimentalAsh> toggle_button_;
+  raw_ptr<Switch> toggle_button_;
 };
 
 }  // namespace ash

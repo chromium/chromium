@@ -16,6 +16,7 @@ proto_library("proto") {
     "action.proto",
     "audio.proto",
     "control.proto",
+    "empty.proto",
     "event.proto",
     "file_transfer.proto",
     "internal.proto",
@@ -27,5 +28,29 @@ proto_library("proto") {
     "url_forwarder_control.proto",
     "video.proto",
     "video_stats.proto",
+  ]
+}
+
+source_set("internal_structs") {
+  public = [ "session_authz_service.h" ]
+  sources = [
+    "session_authz_service.cc",
+    "session_authz_service.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("internal_stubs") {
+  public = [ "internal_stubs.h" ]
+
+  sources = [
+    "internal_stubs.cc",
+    "internal_stubs.h",
+  ]
+
+  deps = [
+    ":internal_structs",
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }

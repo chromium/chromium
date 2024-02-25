@@ -9,11 +9,11 @@
 #include <istream>
 #include <ostream>
 
+#include <optional>
 #include "base/sequence_checker.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/backend/proxy/audio_channel_push_buffer_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
@@ -47,7 +47,7 @@ class PushBufferQueue : public AudioChannelPushBufferHandler {
   CmaBackend::BufferStatus PushBuffer(
       const PushBufferRequest& request) override;
   bool HasBufferedData() const override;
-  absl::optional<PushBufferRequest> GetBufferedData() override;
+  std::optional<PushBufferRequest> GetBufferedData() override;
 
  private:
   // These classes exist for the following 2 reasons:
@@ -128,7 +128,7 @@ class PushBufferQueue : public AudioChannelPushBufferHandler {
 
   // Helper methods to be used for test hooks.
   bool PushBufferImpl(const PushBufferRequest& request);
-  absl::optional<PushBufferRequest> GetBufferedDataImpl();
+  std::optional<PushBufferRequest> GetBufferedDataImpl();
 
   // Buffer where serialized PushBufferRequest data is stored.
   char buffer_[kBufferSizeBytes];
@@ -168,14 +168,14 @@ class PushBufferQueue : public AudioChannelPushBufferHandler {
   // Input streams backed by this instance. They must be optional so that they
   // can be re-created following a failed read. These should only be used by the
   // CONSUMER.
-  absl::optional<std::istream> consumer_stream_;
-  absl::optional<google::protobuf::io::IstreamInputStream>
+  std::optional<std::istream> consumer_stream_;
+  std::optional<google::protobuf::io::IstreamInputStream>
       protobuf_consumer_stream_;
 
   // Output stream backed by this instance. This must be optional so it can be
   // re-created following a failed write. It should only be used by the
   // PRODUCER.
-  absl::optional<std::ostream> producer_stream_;
+  std::optional<std::ostream> producer_stream_;
 };
 
 }  // namespace media

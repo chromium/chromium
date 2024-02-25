@@ -79,7 +79,7 @@ ChromeDesktopImpl::ChromeDesktopImpl(
     std::unique_ptr<DevToolsClient> websocket_client,
     std::vector<std::unique_ptr<DevToolsEventListener>>
         devtools_event_listeners,
-    absl::optional<MobileDevice> mobile_device,
+    std::optional<MobileDevice> mobile_device,
     std::string page_load_strategy,
     base::Process process,
     const base::CommandLine& command,
@@ -149,7 +149,7 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   if (id.empty())
     return Status(kUnknownError, "page could not be found: " + url);
 
-  absl::optional<MobileDevice> mobile_device = mobile_device_;
+  std::optional<MobileDevice> mobile_device = mobile_device_;
   if (type == WebViewInfo::Type::kApp ||
       type == WebViewInfo::Type::kBackgroundPage) {
     // Apps and extensions don't work on Android, so it doesn't make sense to
@@ -164,12 +164,11 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
                                                    id, &timeout, client);
   if (status.IsError())
     return status;
-  std::unique_ptr<WebViewImpl> web_view_tmp(
-      new WebViewImpl(id, w3c_compliant, nullptr, &browser_info_,
-                      std::move(client), mobile_device, page_load_strategy()));
-  DevToolsClientImpl* parent =
-      static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
-  status = web_view_tmp->AttachTo(parent);
+  std::unique_ptr<WebViewImpl> web_view_tmp =
+      WebViewImpl::CreateTopLevelWebView(id, w3c_compliant, &browser_info_,
+                                         std::move(client), mobile_device,
+                                         page_load_strategy());
+  status = web_view_tmp->AttachTo(devtools_websocket_client_.get());
   if (status.IsError()) {
     return status;
   }

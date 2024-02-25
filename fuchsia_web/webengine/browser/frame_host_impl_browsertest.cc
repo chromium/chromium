@@ -4,6 +4,7 @@
 
 #include <lib/sys/cpp/service_directory.h>
 
+#include "base/run_loop.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"

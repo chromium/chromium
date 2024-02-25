@@ -13,7 +13,7 @@
 #import "components/favicon/core/large_icon_service.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_types.h"
-#import "ios/chrome/browser/favicon/large_icon_cache.h"
+#import "ios/chrome/browser/favicon/model/large_icon_cache.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "url/gurl.h"

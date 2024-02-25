@@ -32,7 +32,7 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
         scripts_to_compare,
     const GURL& main_script_url,
     int64_t main_script_resource_id,
-    const absl::optional<std::string>& main_script_sha256_checksum,
+    const std::optional<std::string>& main_script_sha256_checksum,
     scoped_refptr<ServiceWorkerVersion> version_to_update,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     bool force_bypass_cache,
@@ -85,7 +85,7 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
         failure_info,
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::PausedState>
         paused_state,
-    const absl::optional<std::string>& sha256_checksum) {
+    const std::optional<std::string>& sha256_checksum) {
   TRACE_EVENT_WITH_FLOW2(
       "ServiceWorker", "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished",
       this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "script_url",

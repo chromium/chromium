@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {class="Symbol with role"}]
+++++++Button text:"Click me!" textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {aria-roledescription="fancy button"}, {height="10"}, {id="myRect"}, {role="button"}, {width="10"}]
+++++++Button text:"Click me!" textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {aria-roledescription="fancy button"}, {height="10"}, {id="myRect"}, {role="button"}, {width="10"}]

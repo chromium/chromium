@@ -68,7 +68,6 @@ class KeymasterHost;
 class KeymasterInstance;
 class KioskHost;
 class KioskInstance;
-class LockScreenInstance;
 class MediaSessionInstance;
 class MemoryInstance;
 class MetricsHost;
@@ -260,9 +259,6 @@ class ArcBridgeService {
   ConnectionHolder<mojom::KioskInstance, mojom::KioskHost>* kiosk() {
     return &kiosk_;
   }
-  ConnectionHolder<mojom::LockScreenInstance>* lock_screen() {
-    return &lock_screen_;
-  }
   ConnectionHolder<mojom::MediaSessionInstance>* media_session() {
     return &media_session_;
   }
@@ -392,7 +388,6 @@ class ArcBridgeService {
   ConnectionHolder<mojom::keymint::KeyMintInstance, mojom::keymint::KeyMintHost>
       keymint_;
   ConnectionHolder<mojom::KioskInstance, mojom::KioskHost> kiosk_;
-  ConnectionHolder<mojom::LockScreenInstance> lock_screen_;
   ConnectionHolder<mojom::MediaSessionInstance> media_session_;
   ConnectionHolder<mojom::MemoryInstance> memory_;
   ConnectionHolder<mojom::MetricsInstance, mojom::MetricsHost> metrics_;

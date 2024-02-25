@@ -4,6 +4,7 @@
 
 #include "net/cert/x509_util_apple.h"
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -25,8 +26,8 @@ std::string BytesForSecCert(SecCertificateRef sec_cert) {
     ADD_FAILURE();
     return result;
   }
-  result.assign(reinterpret_cast<const char*>(CFDataGetBytePtr(der_data)),
-                CFDataGetLength(der_data));
+  result.assign(reinterpret_cast<const char*>(CFDataGetBytePtr(der_data.get())),
+                CFDataGetLength(der_data.get()));
   return result;
 }
 
@@ -145,28 +146,24 @@ TEST(X509UtilTest,
       x509_util::CryptoBufferAsStringPiece(certs[3]->cert_buffer()));
 
   base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert0(
-      CreateSecCertificateFromBytes(
-          reinterpret_cast<const uint8_t*>(bytes_cert0.data()),
-          bytes_cert0.length()));
+      CreateSecCertificateFromBytes(base::as_byte_span(bytes_cert0)));
   ASSERT_TRUE(sec_cert0);
-  EXPECT_EQ(bytes_cert0, BytesForSecCert(sec_cert0));
+  EXPECT_EQ(bytes_cert0, BytesForSecCert(sec_cert0.get()));
 
   base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert1(
-      CreateSecCertificateFromBytes(
-          reinterpret_cast<const uint8_t*>(bytes_cert1.data()),
-          bytes_cert1.length()));
+      CreateSecCertificateFromBytes(base::as_byte_span(bytes_cert1)));
   ASSERT_TRUE(sec_cert1);
-  EXPECT_EQ(bytes_cert1, BytesForSecCert(sec_cert1));
+  EXPECT_EQ(bytes_cert1, BytesForSecCert(sec_cert1.get()));
 
   base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert2(
       CreateSecCertificateFromX509Certificate(certs[2].get()));
   ASSERT_TRUE(sec_cert2);
-  EXPECT_EQ(bytes_cert2, BytesForSecCert(sec_cert2));
+  EXPECT_EQ(bytes_cert2, BytesForSecCert(sec_cert2.get()));
 
   base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert3(
       CreateSecCertificateFromX509Certificate(certs[3].get()));
   ASSERT_TRUE(sec_cert3);
-  EXPECT_EQ(bytes_cert3, BytesForSecCert(sec_cert3));
+  EXPECT_EQ(bytes_cert3, BytesForSecCert(sec_cert3.get()));
 
   scoped_refptr<X509Certificate> x509_cert_no_intermediates =
       CreateX509CertificateFromSecCertificate(sec_cert0, {});

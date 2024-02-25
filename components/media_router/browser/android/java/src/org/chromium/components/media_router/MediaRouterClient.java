@@ -13,9 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * An abstraction that allows embedders to implement behavior needed by shared Media Router code.
- */
+/** An abstraction that allows embedders to implement behavior needed by shared Media Router code. */
 public abstract class MediaRouterClient {
     @SuppressLint("StaticFieldLeak")
     private static MediaRouterClient sInstance;
@@ -73,9 +71,4 @@ public abstract class MediaRouterClient {
 
     /** Runs deferredTask on the main thread when the main thread is idle. */
     public abstract void addDeferredTask(Runnable deferredTask);
-
-    /**
-     * @return true if the kCastAnotherContentWhileCasting feature flag is enabled.
-     */
-    public abstract boolean isCastAnotherContentWhileCastingEnabled();
 }

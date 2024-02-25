@@ -170,7 +170,7 @@ void ArcUsbHostBridge::RequestPermission(const std::string& guid,
 }
 
 void ArcUsbHostBridge::OpenDevice(const std::string& guid,
-                                  const absl::optional<std::string>& package,
+                                  const std::optional<std::string>& package,
                                   OpenDeviceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 

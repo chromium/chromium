@@ -5,11 +5,12 @@
 #include "pdf/pdfium/pdfium_engine_exports.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
@@ -17,9 +18,9 @@
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "printing/nup_parameters.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
+#include "third_party/pdfium/public/fpdf_doc.h"
 #include "third_party/pdfium/public/fpdf_ppo.h"
 #include "third_party/pdfium/public/fpdf_structtree.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -108,10 +109,8 @@ int CalculatePosition(FPDF_PAGE page,
 }
 
 ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_buffer) {
-  if (!base::IsValueInRangeForNumericType<int>(pdf_buffer.size()))
-    return nullptr;
-  return ScopedFPDFDocument(
-      FPDF_LoadMemDocument(pdf_buffer.data(), pdf_buffer.size(), nullptr));
+  return ScopedFPDFDocument(FPDF_LoadMemDocument64(
+      pdf_buffer.data(), pdf_buffer.size(), /*password=*/nullptr));
 }
 
 ScopedFPDFDocument CreatePdfDoc(
@@ -152,25 +151,25 @@ int GetRenderFlagsFromSettings(
 base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   int children_count = FPDF_StructElement_CountChildren(struct_elem);
   if (children_count <= 0)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
-  absl::optional<std::u16string> opt_type =
+  std::optional<std::u16string> opt_type =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetType, struct_elem), true);
   if (!opt_type)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   base::Value::Dict result;
   result.Set("type", *opt_type);
 
-  absl::optional<std::u16string> opt_alt =
+  std::optional<std::u16string> opt_alt =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetAltText, struct_elem),
           true);
   if (opt_alt)
     result.Set("alt", *opt_alt);
 
-  absl::optional<std::u16string> opt_lang =
+  std::optional<std::u16string> opt_lang =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetLang, struct_elem), true);
   if (opt_lang)
@@ -224,19 +223,17 @@ PDFEngineExports* PDFEngineExports::Get() {
   return exports.get();
 }
 
-PDFiumEngineExports::PDFiumEngineExports() {}
+PDFiumEngineExports::PDFiumEngineExports() = default;
 
-PDFiumEngineExports::~PDFiumEngineExports() {}
+PDFiumEngineExports::~PDFiumEngineExports() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
-std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
+std::optional<FlattenPdfResult> PDFiumEngineExports::CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(input_buffer);
-  if (!doc)
-    return std::vector<uint8_t>();
-  return PDFiumPrint::CreateFlattenedPdf(std::move(doc));
+  return doc ? PDFiumPrint::CreateFlattenedPdf(std::move(doc)) : std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -322,6 +319,13 @@ bool PDFiumEngineExports::RenderPDFPageToBitmap(
     int page_index,
     const RenderingSettings& settings,
     void* bitmap_buffer) {
+  constexpr int kBgraImageColorChannels = 4;
+  base::CheckedNumeric<int> stride = kBgraImageColorChannels;
+  stride *= settings.bounds.width();
+  if (!stride.IsValid()) {
+    return false;
+  }
+
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
@@ -334,9 +338,9 @@ bool PDFiumEngineExports::RenderPDFPageToBitmap(
   gfx::Rect dest;
   int rotate = CalculatePosition(page.get(), settings, &dest);
 
-  ScopedFPDFBitmap bitmap(FPDFBitmap_CreateEx(
-      settings.bounds.width(), settings.bounds.height(), FPDFBitmap_BGRA,
-      bitmap_buffer, settings.bounds.width() * 4));
+  ScopedFPDFBitmap bitmap(
+      FPDFBitmap_CreateEx(settings.bounds.width(), settings.bounds.height(),
+                          FPDFBitmap_BGRA, bitmap_buffer, stride.ValueOrDie()));
   // Clear the bitmap
   FPDFBitmap_FillRect(bitmap.get(), 0, 0, settings.bounds.width(),
                       settings.bounds.height(), 0xFFFFFFFF);
@@ -414,13 +418,13 @@ bool PDFiumEngineExports::GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
   return true;
 }
 
-absl::optional<bool> PDFiumEngineExports::IsPDFDocTagged(
+std::optional<bool> PDFiumEngineExports::IsPDFDocTagged(
     base::span<const uint8_t> pdf_buffer) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
-    return absl::nullopt;
+    return std::nullopt;
 
   return FPDFCatalog_IsTagged(doc.get());
 }
@@ -432,41 +436,53 @@ base::Value PDFiumEngineExports::GetPDFStructTreeForPage(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   ScopedFPDFPage page(FPDF_LoadPage(doc.get(), page_index));
   if (!page)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   ScopedFPDFStructTree struct_tree(FPDF_StructTree_GetForPage(page.get()));
   if (!struct_tree)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   // We only expect one child of the struct tree - i.e. a single root node.
   int children = FPDF_StructTree_CountChildren(struct_tree.get());
   if (children != 1)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   FPDF_STRUCTELEMENT struct_root_elem =
       FPDF_StructTree_GetChildAtIndex(struct_tree.get(), 0);
   if (!struct_root_elem)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   return RecursiveGetStructTree(struct_root_elem);
 }
 
-absl::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
+std::optional<bool> PDFiumEngineExports::PDFDocHasOutline(
+    base::span<const uint8_t> pdf_buffer) {
+  ScopedUnsupportedFeature scoped_unsupported_feature(
+      ScopedUnsupportedFeature::kNoEngine);
+  ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
+  if (!doc) {
+    return std::nullopt;
+  }
+
+  return FPDFBookmark_GetFirstChild(doc.get(), nullptr);
+}
+
+std::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
-    return absl::nullopt;
+    return std::nullopt;
 
   FS_SIZEF size;
   if (!FPDF_GetPageSizeByIndexF(doc.get(), page_index, &size))
-    return absl::nullopt;
+    return std::nullopt;
 
   return gfx::SizeF(size.width, size.height);
 }

@@ -121,10 +121,10 @@ class PreinstalledWebAppManager {
 
     bool is_start_up_task_complete = false;
     std::vector<std::string> parse_errors;
-    std::vector<ExternalInstallOptions> enabled_configs;
-    using DisabledConfigWithReason =
-        std::pair<ExternalInstallOptions, std::string>;
-    std::vector<DisabledConfigWithReason> disabled_configs;
+    using ConfigWithLog = std::pair<ExternalInstallOptions, std::string>;
+    std::vector<ConfigWithLog> uninstall_configs;
+    std::vector<ConfigWithLog> install_configs;
+    std::vector<ConfigWithLog> ignore_configs;
     std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
         install_results;
     std::map<InstallUrl, bool> uninstall_results;
@@ -149,7 +149,8 @@ class PreinstalledWebAppManager {
                    std::vector<ExternalInstallOptions>);
   void OnExternalWebAppsSynchronized(
       ExternallyManagedAppManager::SynchronizeCallback callback,
-      std::map<InstallUrl, std::vector<AppId>> desired_uninstall_and_replaces,
+      std::map<InstallUrl, std::vector<webapps::AppId>>
+          desired_uninstall_and_replaces,
       std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
           install_results,
       std::map<InstallUrl, bool> uninstall_results);

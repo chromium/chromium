@@ -4,11 +4,17 @@
 
 #include "components/allocation_recorder/crash_handler/payload.h"
 
+#include "base/allocator/dispatcher/notification_data.h"
+#include "base/allocator/dispatcher/subsystem.h"
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/debug/allocation_trace.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::allocator::dispatcher::AllocationNotificationData;
+using base::allocator::dispatcher::AllocationSubsystem;
+using base::allocator::dispatcher::FreeNotificationData;
 using base::debug::tracer::AllocationTraceRecorder;
 using base::debug::tracer::AllocationTraceRecorderStatistics;
 using base::debug::tracer::OperationRecord;
@@ -22,12 +28,13 @@ void CreateFakeAllocationData(AllocationTraceRecorder& recorder,
   for (uint64_t entry_counter = 0; entry_counter < number_of_entries;
        ++entry_counter) {
     if (entry_counter & 0x1) {
-      recorder.OnFree(reinterpret_cast<const void*>(entry_counter));
+      recorder.OnFree(
+          FreeNotificationData(reinterpret_cast<void*>(entry_counter),
+                               AllocationSubsystem::kPartitionAllocator));
     } else {
       recorder.OnAllocation(
-          &recorder, entry_counter,
-          base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator,
-          nullptr);
+          AllocationNotificationData(&recorder, entry_counter, nullptr,
+                                     AllocationSubsystem::kPartitionAllocator));
     }
   }
 }
@@ -66,11 +73,11 @@ void VerifyAllocationEntriesAreEqual(
 
   const auto& report_frames = report_entry.stack_trace().frames();
   std::vector<const void*> converted_frames;
-  std::transform(std::begin(report_frames), std::end(report_frames),
-                 std::back_inserter(converted_frames),
-                 [](const allocation_recorder::StackFrame& frame) {
-                   return reinterpret_cast<const void*>(frame.address());
-                 });
+  base::ranges::transform(
+      report_frames, std::back_inserter(converted_frames),
+      [](const allocation_recorder::StackFrame& frame) {
+        return reinterpret_cast<const void*>(frame.address());
+      });
 
   const auto [converted_call_stack_mismatch, source_call_stack_mismatch] =
       std::mismatch(std::begin(converted_frames), std::end(converted_frames),
@@ -144,7 +151,7 @@ TEST_F(CreatePayloadWithMemoryOperationReportTest, VerifyErrorDataIsNotSet) {
 }
 
 TEST(CreatePayloadWithProcessingFailuresTest, VerifySingleMessage) {
-  const base::StringPiece message = "This is a very important message.";
+  const std::string_view message = "This is a very important message.";
 
   const allocation_recorder::Payload payload =
       CreatePayloadWithProcessingFailures(message);
@@ -155,8 +162,8 @@ TEST(CreatePayloadWithProcessingFailuresTest, VerifySingleMessage) {
 }
 
 TEST(CreatePayloadWithProcessingFailuresTest, VerifyMultipleMessages) {
-  const base::StringPiece messages[] = {"This is a very important message.",
-                                        "You'd better not ignore it."};
+  const std::string_view messages[] = {"This is a very important message.",
+                                       "You'd better not ignore it."};
 
   const allocation_recorder::Payload payload =
       CreatePayloadWithProcessingFailures(base::make_span(messages));
@@ -174,7 +181,7 @@ TEST(CreatePayloadWithProcessingFailuresTest, VerifyMultipleMessages) {
 }
 
 TEST(CreatePayloadWithProcessingFailuresTest, VerifyRegularReportDataIsNotSet) {
-  const base::StringPiece message = "This is a very important message.";
+  const std::string_view message = "This is a very important message.";
 
   const allocation_recorder::Payload payload =
       CreatePayloadWithProcessingFailures(message);

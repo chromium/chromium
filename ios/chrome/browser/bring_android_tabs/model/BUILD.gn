@@ -1,0 +1,92 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "bring_android_tabs_to_ios_service.h",
+    "bring_android_tabs_to_ios_service.mm",
+    "bring_android_tabs_to_ios_service_factory.h",
+    "bring_android_tabs_to_ios_service_factory.mm",
+  ]
+  deps = [
+    ":metrics",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//components/sync/service",
+    "//components/sync_device_info",
+    "//components/url_formatter",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+  ]
+}
+
+source_set("metrics") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_bring_android_tabs_to_ios_service.h",
+    "fake_bring_android_tabs_to_ios_service.mm",
+  ]
+  deps = [
+    ":model",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/synced_sessions/model",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bring_android_tabs_to_ios_service_unittest.mm" ]
+  deps = [
+    ":metrics",
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/sessions:session_id",
+    "//components/sessions:test_support",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
+    "//components/sync_sessions",
+    "//components/sync_sessions:test_support",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

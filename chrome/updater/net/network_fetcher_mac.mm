@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/net/network.h"
-
 #import <Foundation/Foundation.h>
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,9 +25,9 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
-#import "net/base/mac/url_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "net/base/apple/url_conversions.h"
 #include "url/gurl.h"
 
 using ResponseStartedCallback =
@@ -227,8 +226,9 @@ using DownloadToFileCompleteCallback =
 - (void)URLSession:(NSURLSession*)session
                  downloadTask:(NSURLSessionDownloadTask*)downloadTask
     didFinishDownloadingToURL:(NSURL*)location {
-  if (!location)
+  if (!location) {
     return;
+  }
 
   const base::FilePath tempPath =
       base::apple::NSStringToFilePath([location path]);
@@ -298,7 +298,7 @@ class NetworkFetcher : public update_client::NetworkFetcher {
       update_client::NetworkFetcher::PostRequestCompleteCallback
           post_request_complete_callback) override;
 
-  void DownloadToFile(
+  base::OnceClosure DownloadToFile(
       const GURL& url,
       const base::FilePath& file_path,
       update_client::NetworkFetcher::ResponseStartedCallback
@@ -343,6 +343,8 @@ void NetworkFetcher::PostRequest(
   urlRequest.HTTPMethod = @"POST";
   urlRequest.HTTPBody = [[NSData alloc] initWithBytes:post_data.c_str()
                                                length:post_data.size()];
+  [urlRequest setValue:base::SysUTF8ToNSString(GetUpdaterUserAgent())
+      forHTTPHeaderField:@"User-Agent"];
   [urlRequest addValue:base::SysUTF8ToNSString(content_type)
       forHTTPHeaderField:@"Content-Type"];
 
@@ -358,7 +360,7 @@ void NetworkFetcher::PostRequest(
   [dataTask resume];
 }
 
-void NetworkFetcher::DownloadToFile(
+base::OnceClosure NetworkFetcher::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
@@ -382,10 +384,13 @@ void NetworkFetcher::DownloadToFile(
 
   NSMutableURLRequest* urlRequest =
       [[NSMutableURLRequest alloc] initWithURL:net::NSURLWithGURL(url)];
+  [urlRequest setValue:base::SysUTF8ToNSString(GetUpdaterUserAgent())
+      forHTTPHeaderField:@"User-Agent"];
 
   NSURLSessionDownloadTask* downloadTask =
       [session downloadTaskWithRequest:urlRequest];
   [downloadTask resume];
+  return base::DoNothing();
 }
 
 }  // namespace
@@ -393,7 +398,7 @@ void NetworkFetcher::DownloadToFile(
 class NetworkFetcherFactory::Impl {};
 
 NetworkFetcherFactory::NetworkFetcherFactory(
-    absl::optional<PolicyServiceProxyConfiguration>) {}
+    std::optional<PolicyServiceProxyConfiguration>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()

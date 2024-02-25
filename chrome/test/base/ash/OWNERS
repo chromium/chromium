@@ -1,0 +1,10 @@
+file://ash/webui/PLATFORM_OWNERS
+
+# For horizontal changes, usually related to the WebUI toolchain. For any
+# changes that have to do with business logic direct to CrOS OWNERS above.
+file://ui/webui/PLATFORM_OWNERS
+
+per-file javascript_browser_test.*=dtseng@chromium.org
+per-file js2gtest.*=dtseng@chromium.org
+
+per-file v8sh.py=file:v8/v8:main:/INFRA_OWNERS

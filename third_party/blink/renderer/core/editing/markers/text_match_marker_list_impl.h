@@ -48,6 +48,8 @@ class CORE_EXPORT TextMatchMarkerListImpl final : public DocumentMarkerList {
                     unsigned old_length,
                     unsigned new_length) final;
 
+  void MergeOverlappingMarkers() final {}
+
   void Trace(Visitor*) const override;
 
   // TextMatchMarkerListImpl-specific

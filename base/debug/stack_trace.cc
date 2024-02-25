@@ -14,7 +14,7 @@
 #include "build/config/compiler/compiler_buildflags.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <pthread.h>
@@ -259,13 +259,6 @@ bool StackTrace::WillSymbolizeToStreamForTesting() {
 #else
   return true;
 #endif
-}
-
-const void *const *StackTrace::Addresses(size_t* count) const {
-  *count = count_;
-  if (count_)
-    return trace_;
-  return nullptr;
 }
 
 void StackTrace::Print() const {

@@ -203,6 +203,12 @@ bool ExtensionOptionsGuest::HandleContextMenu(
                                                               params);
 }
 
+bool ExtensionOptionsGuest::ShouldResumeRequestsForCreatedWindow() {
+  // Not reached due to the use of `CreateCustomWebContents`.
+  NOTREACHED();
+  return true;
+}
+
 bool ExtensionOptionsGuest::IsWebContentsCreationOverridden(
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,

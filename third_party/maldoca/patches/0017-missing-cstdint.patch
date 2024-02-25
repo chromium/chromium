@@ -1,0 +1,14 @@
+From upstream dc14ae0a5452a2f47a1c28e0aecd691639c097cf
+diff --git a/third_party/maldoca/src/maldoca/ole/header.h b/third_party/maldoca/src/maldoca/ole/header.h
+index 174f704..c4d5665 100644
+--- a/third_party/maldoca/src/maldoca/ole/header.h
++++ b/third_party/maldoca/src/maldoca/ole/header.h
+@@ -43,6 +43,8 @@
+ #ifndef MALDOCA_OLE_HEADER_H_
+ #define MALDOCA_OLE_HEADER_H_
+ 
++#include <cstdint>
++
+ #include "absl/strings/string_view.h"
+ 
+ namespace maldoca {

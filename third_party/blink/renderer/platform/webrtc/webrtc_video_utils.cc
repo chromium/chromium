@@ -51,9 +51,9 @@ media::VideoCodecProfile WebRtcVideoFormatToMediaVideoCodecProfile(
     case webrtc::kVideoCodecVP8:
       return media::VP8PROFILE_ANY;
     case webrtc::kVideoCodecVP9: {
-      const absl::optional<webrtc::VP9Profile> vp9_profile =
+      const std::optional<webrtc::VP9Profile> vp9_profile =
           webrtc::ParseSdpForVP9Profile(format.parameters);
-      // The return value is absl::nullopt if the profile-id is specified
+      // The return value is std::nullopt if the profile-id is specified
       // but its value is invalid.
       if (!vp9_profile) {
         return media::VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -69,9 +69,9 @@ media::VideoCodecProfile WebRtcVideoFormatToMediaVideoCodecProfile(
       }
     }
     case webrtc::kVideoCodecH264: {
-      const absl::optional<webrtc::H264ProfileLevelId> h264_profile_level_id =
+      const std::optional<webrtc::H264ProfileLevelId> h264_profile_level_id =
           webrtc::ParseSdpForH264ProfileLevelId(format.parameters);
-      // The return value is absl::nullopt if the profile-level-id is specified
+      // The return value is std::nullopt if the profile-level-id is specified
       // but its value is invalid.
       if (!h264_profile_level_id) {
         return media::VIDEO_CODEC_PROFILE_UNKNOWN;

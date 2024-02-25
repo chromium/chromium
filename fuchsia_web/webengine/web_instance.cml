@@ -29,7 +29,7 @@
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
-      ]
+      ],
     },
     {
       // Optional capabilities, dependent on `ContextFeatureFlags` and other
@@ -86,8 +86,6 @@
         "fuchsia.accessibility.semantics.SemanticsManager",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
-        // TODO(crbug.com/1427170): Remove Scenic after migration is complete.
-        "fuchsia.ui.scenic.Scenic",
 
         // Required by `ContextFeatureFlags.LEGACY_METRICS`.
         // Only needed in enable_cast_receiver=true builds.
@@ -110,5 +108,5 @@
       ],
       availability: "optional",
     },
-  ]
+  ],
 }

@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
+#include "components/metrics/metrics_log.h"
 
 namespace metrics {
 
@@ -53,6 +54,7 @@ class MetricsLogUploader {
   // doesn't do this validation, then |log_hash| and |log_signature| can be
   // ignored.
   virtual void UploadLog(const std::string& compressed_log_data,
+                         const LogMetadata& log_metadata,
                          const std::string& log_hash,
                          const std::string& log_signature,
                          const ReportingInfo& reporting_info) = 0;

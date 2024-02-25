@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '../assert.js';
-import {AsyncJobQueue} from '../async_job_queue.js';
+import {AsyncJobWithResultQueue} from '../async_job_queue.js';
 import {isFileSystemDirectoryHandle, isFileSystemFileHandle} from '../util.js';
 
 import {AsyncWriter} from './async_writer.js';
@@ -83,7 +83,7 @@ export class FileAccessEntry {
 /**
  * Guards from name collision when creating files.
  */
-const createFileJobs = new AsyncJobQueue();
+const createFileJobs = new AsyncJobWithResultQueue();
 
 /**
  * The abstract interface for the directory entry.
@@ -137,8 +137,8 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
     return this.handle.name;
   }
 
-  async getHandle(): Promise<FileSystemDirectoryHandle> {
-    return this.handle;
+  getHandle(): Promise<FileSystemDirectoryHandle> {
+    return Promise.resolve(this.handle);
   }
 
   async getFiles(): Promise<FileAccessEntry[]> {
@@ -172,11 +172,12 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
       return true;
     } catch (e) {
       assert(e instanceof Error);
+      // File doesn't exist.
       if (e.name === 'NotFoundError') {
         return false;
       }
-      if (e.name === 'TypeMismatchError' || e instanceof TypeError) {
-        // Directory with same name exists.
+      // Directory with same name exists.
+      if (e.name === 'TypeMismatchError') {
         return true;
       }
       throw e;

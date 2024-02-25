@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <link rel="icon" href="data:," />
+    <script src="sub_capture_helpers.js"></script>
+    <script>
+      "use strict";
+
+      setRole("embedded");
+
+      registerEmbeddedListeners();
+
+      function reportEmbeddingSuccess() {
+        window.parent.postMessage({messageType: "embedding-done"}, '*');
+      }
+    </script>
+  </head>
+  <body onload="onLoad();">
+    <div id="div">
+      <!-- This DIV is just a convenient target. -->
+      <p id="p_id">0</p>
+    </div>
+    <iframe id="mailman_frame" hidden></iframe>
+    <script>
+      function onLoad() {
+        animate(document.getElementById('p_id'));
+        reportEmbeddingSuccess();
+      }
+    </script>
+  </body>
+</html>

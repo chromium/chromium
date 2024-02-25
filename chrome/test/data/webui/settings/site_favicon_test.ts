@@ -4,7 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
-import {SiteFaviconElement} from 'chrome://settings/settings.js';
+import type {SiteFaviconElement} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('SiteFavicon', function() {

@@ -75,6 +75,10 @@ int UDPServerSocket::SetDoNotFragment() {
   return socket_.SetDoNotFragment();
 }
 
+int UDPServerSocket::SetRecvTos() {
+  return socket_.SetRecvTos();
+}
+
 void UDPServerSocket::SetMsgConfirm(bool confirm) {
   return socket_.SetMsgConfirm(confirm);
 }
@@ -131,8 +135,16 @@ int UDPServerSocket::SetDiffServCodePoint(DiffServCodePoint dscp) {
   return socket_.SetDiffServCodePoint(dscp);
 }
 
+int UDPServerSocket::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
+  return socket_.SetTos(dscp, ecn);
+}
+
 void UDPServerSocket::DetachFromThread() {
   socket_.DetachFromThread();
+}
+
+DscpAndEcn UDPServerSocket::GetLastTos() const {
+  return socket_.GetLastTos();
 }
 
 void UDPServerSocket::UseNonBlockingIO() {

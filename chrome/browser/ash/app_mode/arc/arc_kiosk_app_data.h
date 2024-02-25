@@ -40,7 +40,7 @@ class ArcKioskAppData : public KioskAppDataBase {
   void SetCache(const std::string& name, const gfx::ImageSkia& icon);
 
  private:
-  void OnIconLoadDone(absl::optional<gfx::ImageSkia> icon);
+  void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
   // Not cached, always provided in ctor.
   const std::string package_name_;

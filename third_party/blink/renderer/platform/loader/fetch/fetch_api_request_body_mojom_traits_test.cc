@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
-#include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -77,7 +76,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFile) {
 
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFileRange) {
   ResourceRequestBody src(EncodedFormData::Create());
-  src.FormBody()->AppendFileRange("abc", 4, 8, absl::nullopt);
+  src.FormBody()->AppendFileRange("abc", 4, 8, std::nullopt);
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
@@ -90,7 +89,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFileRange) {
   EXPECT_EQ(e.filename_, "abc");
   EXPECT_EQ(e.file_start_, 4);
   EXPECT_EQ(e.file_length_, 8);
-  EXPECT_EQ(e.expected_file_modification_time_, absl::nullopt);
+  EXPECT_EQ(e.expected_file_modification_time_, std::nullopt);
 }
 
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBlobWithOpionalHandle) {

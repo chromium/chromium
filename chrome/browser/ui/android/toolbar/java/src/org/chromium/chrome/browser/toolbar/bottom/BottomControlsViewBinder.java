@@ -25,7 +25,8 @@ class BottomControlsViewBinder {
         /**
          * @param bottomControlsRootView The Android View based bottom controls.
          */
-        public ViewHolder(ScrollingBottomViewResourceFrameLayout bottomControlsRootView,
+        public ViewHolder(
+                ScrollingBottomViewResourceFrameLayout bottomControlsRootView,
                 ScrollingBottomViewSceneLayer layer) {
             root = bottomControlsRootView;
             sceneLayer = layer;
@@ -39,6 +40,8 @@ class BottomControlsViewBinder {
                     model.get(BottomControlsProperties.BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX);
         } else if (BottomControlsProperties.Y_OFFSET == propertyKey) {
             view.sceneLayer.setYOffset(model.get(BottomControlsProperties.Y_OFFSET));
+        } else if (BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y == propertyKey) {
+            view.root.setTranslationY(model.get(BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y));
         } else if (BottomControlsProperties.ANDROID_VIEW_VISIBLE == propertyKey
                 || BottomControlsProperties.COMPOSITED_VIEW_VISIBLE == propertyKey) {
             final boolean showAndroidView =
@@ -51,7 +54,8 @@ class BottomControlsViewBinder {
                 view.root.getResourceAdapter().dropCachedBitmap();
             }
         } else if (BottomControlsProperties.IS_OBSCURED == propertyKey) {
-            view.root.setImportantForAccessibility(model.get(BottomControlsProperties.IS_OBSCURED)
+            view.root.setImportantForAccessibility(
+                    model.get(BottomControlsProperties.IS_OBSCURED)
                             ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                             : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
         } else {
@@ -59,7 +63,9 @@ class BottomControlsViewBinder {
         }
     }
 
-    static void bindCompositorMCP(PropertyModel model, ScrollingBottomViewSceneLayer sceneLayer,
+    static void bindCompositorMCP(
+            PropertyModel model,
+            ScrollingBottomViewSceneLayer sceneLayer,
             PropertyKey propertyKey) {
         assert propertyKey == null;
     }

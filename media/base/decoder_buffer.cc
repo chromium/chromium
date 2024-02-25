@@ -118,24 +118,22 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer() {
 }
 
 // static
-bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& encrypted) {
+bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
   // If buffer is at end of stream, no subsamples to verify
-  if (encrypted.end_of_stream()) {
+  if (buffer.end_of_stream()) {
     return true;
   }
 
   // If stream is unencrypted, we do not have to verify subsamples size.
-  const DecryptConfig* decrypt_config = encrypted.decrypt_config();
-  if (decrypt_config == nullptr ||
-      decrypt_config->encryption_scheme() == EncryptionScheme::kUnencrypted) {
+  if (!buffer.is_encrypted()) {
     return true;
   }
 
-  const auto& subsamples = decrypt_config->subsamples();
+  const auto& subsamples = buffer.decrypt_config()->subsamples();
   if (subsamples.empty()) {
     return true;
   }
-  return VerifySubsamplesMatchSize(subsamples, encrypted.data_size());
+  return VerifySubsamplesMatchSize(subsamples, buffer.data_size());
 }
 
 DecoderBufferSideData& DecoderBuffer::WritableSideData() {

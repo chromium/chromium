@@ -1,0 +1,90 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/compile_ts.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
+
+source_set("model") {
+  sources = [
+    "link_to_text_java_script_feature.h",
+    "link_to_text_java_script_feature.mm",
+    "link_to_text_payload.h",
+    "link_to_text_payload.mm",
+    "link_to_text_response.h",
+    "link_to_text_response.mm",
+    "link_to_text_tab_helper.h",
+    "link_to_text_tab_helper.mm",
+  ]
+  deps = [
+    ":internal",
+    ":link_to_text_js",
+    "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/ios",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("internal") {
+  sources = [
+    "link_generation_outcome.h",
+    "link_to_text_constants.h",
+    "link_to_text_utils.h",
+    "link_to_text_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/shared_highlighting/core/common",
+    "//ios/web/public",
+    "//ios/web/public/ui",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "link_to_text_java_script_feature_unittest.mm",
+    "link_to_text_tab_helper_unittest.mm",
+    "link_to_text_utils_unittest.mm",
+  ]
+  deps = [
+    ":internal",
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/shared_highlighting/core/common",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/web/public/test:test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+compile_ts("compile_link_to_text_js") {
+  allow_js = true
+  sources = [
+    "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
+    "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
+    "resources/link_to_text.ts",
+  ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
+optimize_js("link_to_text_js") {
+  visibility = [ ":model" ]
+  _script = filter_include(get_target_outputs(":compile_link_to_text_js"),
+                           [ "*link_to_text.js" ])
+  primary_script = _script[0]
+
+  sources = _script
+
+  deps = [
+    ":compile_link_to_text_js",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}

@@ -1,0 +1,134 @@
+This is a testharness.js-based test.
+Found 65 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<h1>foo<br>bar</h1>"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandValue("defaultparagraphseparator") after
+  assert_equals: Wrong result returned expected "p" but got "div"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandValue("formatblock") after
+  assert_equals: Wrong result returned expected "p" but got "h1"
+[FAIL] [["formatblock","<address>"]] "<h1>[foo]<br>bar</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<address>foo</address><h1>bar</h1>" but got "<h1><address>foo</address>bar</h1>"
+[FAIL] [["formatblock","<address>"]] "<h1>foo<br>[bar]</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1><address>bar</address>" but got "<h1>foo<br><address>bar</address></h1>"
+[FAIL] [["formatblock","<pre>"]] "<h1>[foo]<br>bar</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo</pre><h1>bar</h1>" but got "<h1><pre>foo</pre>bar</h1>"
+[FAIL] [["formatblock","<pre>"]] "<h1>foo<br>[bar]</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1><pre>bar</pre>" but got "<h1>foo<br><pre>bar</pre></h1>"
+[FAIL] [["formatblock","<h2>"]] "<h1>[foo]<br>bar</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h2>foo</h2><h1>bar</h1>" but got "<h1><h2>foo</h2>bar</h1>"
+[FAIL] [["formatblock","<h2>"]] "<h1>foo<br>[bar]</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1><h2>bar</h2>" but got "<h1>foo<br><h2>bar</h2></h1>"
+[FAIL] [["formatblock","<h1>"]] "<p>[foo]<br>bar</p>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1><p>bar</p>" but got "<p><h1>foo</h1>bar</p>"
+[FAIL] [["formatblock","<h1>"]] "<p>foo<br>[bar]</p>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><h1>bar</h1>" but got "<p>foo<br><h1>bar</h1></p>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<h1>"]] "<p>[foo<br>bar]</p>" queryCommandValue("defaultparagraphseparator") before
+  assert_equals: Wrong result returned expected "p" but got "div"
+[FAIL] [["formatblock","<address>"]] "<p>[foo]<br>bar</p>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<address>foo</address><p>bar</p>" but got "<p><address>foo</address>bar</p>"
+[FAIL] [["formatblock","<address>"]] "<p>foo<br>[bar]</p>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><address>bar</address>" but got "<p>foo<br><address>bar</address></p>"
+[FAIL] [["formatblock","<pre>"]] "<p>[foo]<br>bar</p>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo</pre><p>bar</p>" but got "<p><pre>foo</pre>bar</p>"
+[FAIL] [["formatblock","<pre>"]] "<p>foo<br>[bar]</p>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><pre>bar</pre>" but got "<p>foo<br><pre>bar</pre></p>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<address>[foo]<br>bar</address>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><address>bar</address>" but got "<address><p>foo</p>bar</address>"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<address>[foo]<br>bar</address>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><address>bar</address>" but got "<address><p>foo</p>bar</address>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<address>foo<br>[bar]</address>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<address>foo</address><p>bar</p>" but got "<address>foo<br><p>bar</p></address>"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<address>foo<br>[bar]</address>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<address>foo</address><p>bar</p>" but got "<address>foo<br><p>bar</p></address>"
+[FAIL] [["formatblock","<pre>"]] "<address>[foo]<br>bar</address>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo</pre><address>bar</address>" but got "<address><pre>foo</pre>bar</address>"
+[FAIL] [["formatblock","<pre>"]] "<address>foo<br>[bar]</address>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<address>foo</address><pre>bar</pre>" but got "<address>foo<br><pre>bar</pre></address>"
+[FAIL] [["formatblock","<h1>"]] "<address>[foo]<br>bar</address>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1><address>bar</address>" but got "<address><h1>foo</h1>bar</address>"
+[FAIL] [["formatblock","<h1>"]] "<address>foo<br>[bar]</address>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<address>foo</address><h1>bar</h1>" but got "<address>foo<br><h1>bar</h1></address>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<pre>[foo]<br>bar</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><pre>bar</pre>" but got "<pre><p>foo</p>bar</pre>"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<pre>[foo]<br>bar</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><pre>bar</pre>" but got "<pre><p>foo</p>bar</pre>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<pre>foo<br>[bar]</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo</pre><p>bar</p>" but got "<pre>foo<br><p>bar</p></pre>"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<pre>foo<br>[bar]</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo</pre><p>bar</p>" but got "<pre>foo<br><p>bar</p></pre>"
+[FAIL] [["formatblock","<address>"]] "<pre>[foo]<br>bar</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<address>foo</address><pre>bar</pre>" but got "<pre><address>foo</address>bar</pre>"
+[FAIL] [["formatblock","<address>"]] "<pre>foo<br>[bar]</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo</pre><address>bar</address>" but got "<pre>foo<br><address>bar</address></pre>"
+[FAIL] [["formatblock","<h1>"]] "<pre>[foo]<br>bar</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1><pre>bar</pre>" but got "<pre><h1>foo</h1>bar</pre>"
+[FAIL] [["formatblock","<h1>"]] "<pre>foo<br>[bar]</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo</pre><h1>bar</h1>" but got "<pre>foo<br><h1>bar</h1></pre>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<h1>"]] "<p>[foo</p>bar]" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<h1>"]] "<p>[foo</p>bar]" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<h1>"]] "[foo<p>bar]</p>" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<h1>"]] "[foo<p>bar]</p>" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandValue("formatblock") before
+  assert_equals: Wrong result returned expected "" but got "div"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandValue("formatblock") after
+  assert_equals: Wrong result returned expected "p" but got ""
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandValue("formatblock") before
+  assert_equals: Wrong result returned expected "" but got "div"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandValue("formatblock") after
+  assert_equals: Wrong result returned expected "p" but got ""
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><table><tr><td>[foo]</table></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><table><tbody><tr><td><div>foo</div></td></tr></tbody></table></div>" but got "<table><tbody><tr><td><div>foo</div></td></tr></tbody></table>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><table><tr><td>[foo]</table></div>" queryCommandValue("formatblock") before
+  assert_equals: Wrong result returned expected "" but got "div"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><table><tr><td>[foo]</table></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><table><tbody><tr><td><div>foo</div></td></tr></tbody></table></div>" but got "<table><tbody><tr><td><div>foo</div></td></tr></tbody></table>"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><table><tr><td>[foo]</table></div>" queryCommandValue("formatblock") before
+  assert_equals: Wrong result returned expected "" but got "div"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<p>[foo<h1>bar]</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><div>bar</div>" but got "<div>foo<br>bar</div>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<p>[foo<h1>bar]</h1>" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<p>[foo<h1>bar]</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><div>bar</div>" but got "<div>foo<br>bar</div>"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<p>[foo<h1>bar]</h1>" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<h1>[foo</h1><h2>bar]</h2>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><div>bar</div>" but got "<div>foo<br>bar</div>"
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<h1>[foo</h1><h2>bar]</h2>" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<h1>[foo</h1><h2>bar]</h2>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><div>bar</div>" but got "<div>foo<br>bar</div>"
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<h1>[foo</h1><h2>bar]</h2>" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div>[foo</div>bar]" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div>[foo</div>bar]" queryCommandValue("formatblock") after
+  assert_equals: Wrong result returned expected "div" but got ""
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div>[foo</div>bar]" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div>[foo</div>bar]" queryCommandValue("formatblock") after
+  assert_equals: Wrong result returned expected "div" but got ""
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandState("stylewithcss") before
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["defaultparagraphseparator","div"],["formatblock","<h1>"]] "{<p>foo</p>ba]r" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<h1>"]] "{<p>foo</p>ba]r" queryCommandIndeterm("formatblock") before
+  assert_equals: Wrong result returned expected true but got false
+[FAIL] [["formatblock","p"]] "<div><div contenteditable=false><span contenteditable>[foo]</span></div></div>": execCommand("formatblock", false, "p") return value
+  assert_equals: expected false but got true
+[FAIL] [["formatblock","p"]] "<div><div contenteditable=false><span contenteditable>[foo]</span></div></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><div contenteditable=\\"false\\"><span contenteditable=\\"\\">foo</span></div></div>" but got "<div><div contenteditable=\\"false\\"><span contenteditable=\\"\\"><p>foo</p></span></div></div>"
+[FAIL] [["formatblock","p"]] "<div><div contenteditable=false><span contenteditable>[foo]</span></div></div>" queryCommandValue("formatblock") after
+  assert_equals: Wrong result returned expected "" but got "p"
+[FAIL] [["formatblock","p"]] "<div><p contenteditable=false><span contenteditable>[foo]</span></p></div>": execCommand("formatblock", false, "p") return value
+  assert_equals: expected false but got true
+Harness: the test ran to completion.
+

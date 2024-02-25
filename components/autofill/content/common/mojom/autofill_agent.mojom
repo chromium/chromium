@@ -20,16 +20,27 @@ interface AutofillAgent {
   // while another TriggerFormExtractionWithResponse() was ongoing.
   TriggerFormExtractionWithResponse() => (bool success);
 
-  // Instructs the renderer to fill or preview the active form with the given
-  // form data.
-  FillOrPreviewForm(FormData form,
-                    AutofillActionPersistence action);
+  // Fills or previews the form identified by `form` with the data of its
+  // fields. `action_type` denotes if the action is a Fill or Undo.
+  // `action_persistence` denotes if the operation is a Fill or Preview.
+  ApplyFormAction(ActionType action_type,
+                  ActionPersistence action_persistence,
+                  FormData_FillData form);
 
-  // Fill the active form with some of `forms` data. This operation is ran
-  // with the specific intention to "undo" the last autofill operation that
-  // affected the field on which Undo was triggered. `renderer_action` denotes
-  // whether the renderer should actually fill or preview those changes.
-  UndoAutofill(FormData form, AutofillActionPersistence renderer_action);
+  // Fills or previews the field identified by `field` with `value`.
+  // `action_persistence` denotes if the operation is a Fill or Preview.
+  // `text_replacement` indicates whether to replace the field's entire value
+  // or only the current selection. For non-text fields, this parameter has no
+  // effect. This must not be `kReplaceSelection` if `action_persistence` is
+  // `kPreview`. Enabling this is desirable but not implemented, yet.
+  ApplyFieldAction(ActionPersistence action_persistence,
+                   TextReplacement text_replacement,
+                   FieldRendererId field,
+                   mojo_base.mojom.String16 value);
+
+  // Extracts the given form and responds with the FormData if that form can
+  // be found and extracted.
+  ExtractForm(FormRendererId form) => (FormData? form);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
@@ -56,18 +67,13 @@ interface AutofillAgent {
   TriggerSuggestions(FieldRendererId field,
                      AutofillSuggestionTriggerSource trigger_source);
 
-  // Sets the value of |field| (if it is still the currently selected node).
-  FillFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
-
-  // Sets the suggested value of |field| (if it is still the currently selected
-  // node).
-  PreviewFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
-
-  // Sets the autofill/autocomplete suggestion availability of |field| (if it is
+  // Sets the autofill/autocomplete suggestion availability of `field` (if it is
   // still the currently selected node).
-  SetSuggestionAvailability(FieldRendererId field, AutofillState type);
+  SetSuggestionAvailability(
+    FieldRendererId field,
+    AutofillSuggestionAvailability suggestion_availability);
 
-  // Sets the value of |field| (if it is still the currently selected node).
+  // Sets the value of `field` (if it is still the currently selected node).
   // to the given data list value.
   AcceptDataListSuggestion(FieldRendererId field,
                            mojo_base.mojom.String16 value);
@@ -80,31 +86,9 @@ interface AutofillAgent {
   // Tells the renderer to preview the generated password.
   PreviewPasswordGenerationSuggestion(mojo_base.mojom.String16 password);
 
-  // Configures the render to require, or not, a user gesture before notifying
-  // the autofill agent of a field change. The default is true. Bypassing the
-  // user gesture check should only used for Android Webview, which needs to
-  // be notified of every change to the field.
-  // Note: The Android platform autofill framework only sends values to the
-  // autofill service with the user's consent, so the gesture check is
-  // redundant there anyway.
-  SetUserGestureRequired(bool required);
-
-  // Configures the render to require, or not, the secure context to query
-  // autofill suggestion, the default is false.
-  SetSecureContextRequired(bool required);
-
-  // Configures whether scroll is required in order to complete focus. The default is true.
-  SetFocusRequiresScroll(bool require);
-
-  // Configures whether AutofillAgent will query password field autofill suggestions. The default is false.
-  SetQueryPasswordSuggestion(bool query);
-
   // Allows heavy scraping of form data (e.g., button titles for
   // unowned forms).
   EnableHeavyFormDataScraping();
-
-  // Update fields that are eligible to show manual filling on form interaction.
-  SetFieldsEligibleForManualFilling(array<FieldRendererId> fields);
 
   // Returns a vector of four digit combinations present in the DOM of a
   // webpage. Used to check for the presence of the virtual card last four in
@@ -132,10 +116,10 @@ interface PasswordAutofillAgent {
   // This is the "no results" equivalent of SetPasswordFillData.
   InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
-  // Fills the given |credential| into the last focused text input.
+  // Fills the given `credential` into the last focused text input.
   FillIntoFocusedField(bool is_password, mojo_base.mojom.String16 credential);
 
-  // Notification to start (|active| == true) or stop (|active| == false)
+  // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
 
@@ -168,6 +152,10 @@ interface PasswordGenerationAgent {
   TriggeredGeneratePassword() => (PasswordGenerationUIData? data);
 
   // Tells the renderer that a password can be generated on the fields
-  // identified by |form|.
+  // identified by `form`.
   FoundFormEligibleForGeneration(PasswordFormGenerationData form);
+
+  // Tells the renderer to advance focus to the next field after password fields
+  // (assuming that password fields are adjacent in account creation).
+  FocusNextFieldAfterPasswords();
 };

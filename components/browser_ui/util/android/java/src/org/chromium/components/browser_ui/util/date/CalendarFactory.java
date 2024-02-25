@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.util.date;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.DoNotInline;
 
 import java.util.Calendar;
@@ -15,8 +16,9 @@ import java.util.concurrent.TimeoutException;
 
 /** Helper class to simplify querying for a {@link Calendar} instance. */
 public final class CalendarFactory {
+    // USER_BLOCKING since we eventually .get() this.
     private static final AsyncTask<Calendar> sCalendarBuilder =
-            new CalendarBuilder().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new CalendarBuilder().executeWithTaskTraits(TaskTraits.USER_BLOCKING_MAY_BLOCK);
     private static Calendar sCalendarToClone;
 
     private CalendarFactory() {}
@@ -38,7 +40,7 @@ public final class CalendarFactory {
     public static Calendar get() {
         if (sCalendarToClone == null) {
             try {
-                sCalendarToClone = (Calendar) sCalendarBuilder.get(250L, TimeUnit.MILLISECONDS);
+                sCalendarToClone = (Calendar) sCalendarBuilder.get(1L, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 // We've tried our best. If AsyncTask really does not work, we give up. :(
                 sCalendarToClone = Calendar.getInstance();

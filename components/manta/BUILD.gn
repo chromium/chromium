@@ -1,0 +1,52 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+component("manta") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "manta_service.cc",
+    "manta_service.h",
+    "manta_service_callbacks.cc",
+    "manta_service_callbacks.h",
+    "manta_status.h",
+    "orca_provider.cc",
+    "orca_provider.h",
+    "snapper_provider.cc",
+    "snapper_provider.h",
+  ]
+
+  defines = [ "IS_MANTA_IMPL" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "proto",
+    "//components/endpoint_fetcher",
+    "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "orca_provider_unittest.cc",
+    "snapper_provider_unittest.cc",
+  ]
+
+  deps = [
+    ":manta",
+    "proto",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

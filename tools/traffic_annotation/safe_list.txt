@@ -20,11 +20,12 @@ all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
 all,chromeos/geolocation/simple_geolocation_request.cc
 all,components/quirks/quirks_client.cc
 all,chromeos/ash/services/device_sync/cryptauth_client_impl.cc
-all,chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.cc
+all,chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_impl.cc
 all,chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher_impl.cc
 all,chrome/browser/ui/ash/projector/screencast_manager.cc
 all,chrome/services/cups_proxy/socket_manager.cc
-missing,chrome/browser/manta/snapper_provider.cc
+missing,components/manta/orca_provider.cc
+missing,components/manta/snapper_provider.cc
 
 # Android-specific annotations.
 # TODO(crbug.com/995852): Complete these.
@@ -39,6 +40,9 @@ missing,chrome/browser/android/feedback/connectivity_checker.cc
 missing,chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceProxy.java
 missing,chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/StorePersistedTabData.java
 missing,net/proxy_resolution/proxy_config_service_android.cc
+
+# Desktop platform specific annotations.
+missing,components/optimization_guide/core/model_execution/model_execution_fetcher.cc
 
 # Android annotations missing fields internal::contact:email, user_data::type, last_reviewed
 missing_new_fields,missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
@@ -66,6 +70,7 @@ missing_new_fields,components/variations/android/java/src/org/chromium/component
 missing_new_fields,ash/ambient/ambient_photo_cache.cc
 missing_new_fields,ash/ambient/ambient_weather_controller.cc
 missing_new_fields,ash/assistant/assistant_controller_impl.cc
+missing_new_fields,ash/birch/birch_weather_provider.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc
 missing_new_fields,ash/webui/projector_app/projector_xhr_sender.cc
@@ -88,7 +93,6 @@ missing_new_fields,chrome/browser/ash/printing/server_printers_fetcher.cc
 missing_new_fields,chrome/browser/ash/remote_apps/remote_apps_manager.cc
 missing_new_fields,chrome/browser/ash/smb_client/discovery/netbios_client.cc
 missing_new_fields,chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc
-missing_new_fields,chrome/browser/autofill/autofill_gstatic_reader.cc
 missing_new_fields,chrome/browser/autofill/autofill_image_fetcher_impl.cc
 missing_new_fields,chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc
 missing_new_fields,chrome/browser/cart/cart_discount_fetcher.cc
@@ -99,7 +103,6 @@ missing_new_fields,chrome/browser/devtools/device/adb/adb_client_socket.cc
 missing_new_fields,chrome/browser/devtools/device/android_device_manager.cc
 missing_new_fields,chrome/browser/devtools/device/android_web_socket.cc
 missing_new_fields,chrome/browser/devtools/device/port_forwarding_controller.cc
-missing_new_fields,chrome/browser/devtools/devtools_ui_bindings.cc
 missing_new_fields,chrome/browser/download/bubble/download_bubble_ui_controller.cc
 missing_new_fields,chrome/browser/extensions/api/downloads/downloads_api.cc
 missing_new_fields,chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc
@@ -150,7 +153,6 @@ missing_new_fields,chrome/browser/supervised_user/supervised_user_service.cc
 missing_new_fields,chrome/browser/sync_file_system/drive_backend/sync_engine.cc
 missing_new_fields,chrome/browser/ui/ash/ambient/ambient_client_impl.cc
 missing_new_fields,chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.cc
-missing_new_fields,chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.cc
 missing_new_fields,chrome/browser/ui/global_media_controls/cast_media_notification_item.cc
 missing_new_fields,chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc
 missing_new_fields,chrome/browser/ui/passwords/account_avatar_fetcher.cc
@@ -159,7 +161,7 @@ missing_new_fields,chrome/browser/ui/views/qrcode_generator/qrcode_generator_bub
 missing_new_fields,chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.cc
 missing_new_fields,chrome/browser/ui/views/webid/account_selection_bubble_view.cc
 missing_new_fields,chrome/browser/ui/webui/ash/edu_account_login_handler.cc
-missing_new_fields,chrome/browser/ui/webui/devtools_ui_data_source.cc
+missing_new_fields,chrome/browser/ui/webui/devtools/devtools_ui_data_source.cc
 missing_new_fields,chrome/browser/ui/webui/download_internals/download_internals_ui_message_handler.cc
 missing_new_fields,chrome/browser/ui/webui/downloads/downloads_dom_handler.cc
 missing_new_fields,chrome/browser/ui/webui/management/management_ui_handler_chromeos.cc
@@ -175,8 +177,9 @@ missing_new_fields,chromeos/ash/components/fwupd/firmware_update_manager.cc
 missing_new_fields,chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc
 missing_new_fields,chromeos/ash/components/timezone/timezone_request.cc
 missing_new_fields,chromeos/components/quick_answers/result_loader.cc
+missing_new_fields,components/affiliations/core/browser/hash_affiliation_fetcher.cc
 missing_new_fields,components/assist_ranker/ranker_url_fetcher.cc
-missing_new_fields,components/autofill/core/browser/payments/payments_client.cc
+missing_new_fields,components/autofill/core/browser/payments/payments_network_interface.cc
 missing_new_fields,components/captive_portal/content/captive_portal_service.cc
 missing_new_fields,components/commerce/core/account_checker.cc
 missing_new_fields,components/commerce/core/subscriptions/subscriptions_server_proxy.cc
@@ -191,7 +194,6 @@ missing_new_fields,components/feed/core/v2/feed_network_impl.cc
 missing_new_fields,components/feed/core/v2/image_fetcher.cc
 missing_new_fields,components/invalidation/impl/per_user_topic_subscription_request.cc
 missing_new_fields,components/media_router/common/providers/cast/channel/cast_socket.cc
-missing_new_fields,components/metrics/net/net_metrics_log_uploader.cc
 missing_new_fields,components/mirroring/service/udp_socket_client.cc
 missing_new_fields,components/network_time/network_time_tracker.cc
 missing_new_fields,components/ntp_tiles/icon_cacher_impl.cc
@@ -208,7 +210,6 @@ missing_new_fields,components/openscreen_platform/udp_socket.cc
 missing_new_fields,components/optimization_guide/core/hints_fetcher.cc
 missing_new_fields,components/optimization_guide/core/prediction_model_download_manager.cc
 missing_new_fields,components/optimization_guide/core/prediction_model_fetcher_impl.cc
-missing_new_fields,components/password_manager/core/browser/affiliation/hash_affiliation_fetcher.cc
 missing_new_fields,components/password_manager/core/browser/generation/password_requirements_spec_fetcher_impl.cc
 missing_new_fields,components/password_manager/core/browser/well_known_change_password_state.cc
 missing_new_fields,components/payments/core/payment_manifest_downloader.cc
@@ -323,7 +324,7 @@ missing_new_fields,services/image_annotation/annotator.cc
 missing_new_fields,services/network/network_context.cc
 missing_new_fields,services/network/public/cpp/server/http_server.cc
 missing_new_fields,third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.cc
-missing_new_fields,third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.cc
+missing_new_fields,third_party/blink/renderer/platform/loader/fetch/fetch_utils.cc
 missing_new_fields,third_party/libaddressinput/chromium/chrome_metadata_source.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/footprints_fetcher_impl.cc
 missing_new_fields,chrome/browser/ash/printing/oauth2/authorization_server_data.cc
@@ -340,21 +341,18 @@ missing_new_fields,google_apis/gaia/oauth2_mint_token_flow.cc
 missing_new_fields,services/device/geolocation/network_location_provider.cc
 missing_new_fields,chrome/browser/browser_switcher/browser_switcher_service.cc
 missing_new_fields,chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.cc
-missing_new_fields,chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_fetcher_win.cc
 missing_new_fields,chrome/browser/error_reporting/chrome_js_error_report_processor_nonchromeos.cc
 missing_new_fields,chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc
 missing_new_fields,chrome/browser/ui/webui/welcome/ntp_background_fetcher.cc
 missing_new_fields,components/live_caption/live_translate_controller.cc
-missing_new_fields,chrome/chrome_cleaner/components/recovery_component.cc
-missing_new_fields,chrome/chrome_cleaner/logging/cleaner_logging_service.cc
-missing_new_fields,chrome/chrome_cleaner/logging/reporter_logging_service.cc
 missing_new_fields,net/proxy_resolution/win/windows_system_proxy_resolution_request.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/http_request_manager.cc
 missing_new_fields,chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.cc
 missing_new_fields,chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc
 missing_new_fields,chromeos/ash/components/trial_group/trial_group_checker.cc
-missing_new_fields,chrome/browser/apps/app_preload_service/web_app_preload_installer.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
 missing_new_fields,chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.cc
 missing_new_fields,chrome/browser/ash/file_suggest/item_suggest_cache.cc
+missing_new_fields,extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.cc
+missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.cc

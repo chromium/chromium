@@ -1,5 +1,4 @@
 include_rules = [
-  "+chrome/browser/chrome_for_testing/buildflags.h",
   "+chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h",
   "+chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h",
   "+chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h",

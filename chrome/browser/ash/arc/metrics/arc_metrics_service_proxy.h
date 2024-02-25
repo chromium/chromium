@@ -61,8 +61,8 @@ class ArcMetricsServiceProxy : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
-  const raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_;
+  const raw_ptr<ArcAppListPrefs> arc_app_list_prefs_;
+  const raw_ptr<ArcMetricsService> arc_metrics_service_;
 };
 
 }  // namespace arc

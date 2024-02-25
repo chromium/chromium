@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -66,10 +66,10 @@ em::RemoteCommand GenerateCommandProto(
     base::TimeDelta age_of_command,
     base::TimeDelta idleness_cutoff,
     bool terminate_upon_input,
-    absl::optional<int32_t> id,
-    absl::optional<ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum>
+    std::optional<int32_t> id,
+    std::optional<ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum>
         command,
-    absl::optional<bool> include_output) {
+    std::optional<bool> include_output) {
   em::RemoteCommand command_proto;
   command_proto.set_type(
       em::RemoteCommand_Type_DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE);
@@ -93,7 +93,7 @@ em::RemoteCommand GenerateCommandProto(
 
 std::string CreateInteractivePayload(
     uint32_t progress_percent,
-    absl::optional<std::string> output,
+    std::optional<std::string> output,
     ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum user_message) {
   auto root_dict = base::Value::Dict().Set(kProgressPercentFieldName,
                                            static_cast<int>(progress_percent));
@@ -111,7 +111,7 @@ std::string CreateInteractivePayload(
 
 std::string CreateNonInteractivePayload(
     uint32_t progress_percent,
-    absl::optional<std::string> output,
+    std::optional<std::string> output,
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status,
     const std::string& status_message) {
   auto root_dict = base::Value::Dict().Set(kProgressPercentFieldName,
@@ -218,7 +218,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingId) {
           kUniqueID, base::TimeTicks::Now() - test_start_time_,
           base::Seconds(30),
           /*terminate_upon_input=*/false,
-          /*id=*/absl::nullopt,
+          /*id=*/std::nullopt,
           ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kGetStatus,
           /*include_output=*/true),
       em::SignedData()));
@@ -237,7 +237,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingCommand) {
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
                            base::Seconds(30),
                            /*terminate_upon_input=*/false,
-                           /*id=*/1293, /*command=*/absl::nullopt,
+                           /*id=*/1293, /*command=*/std::nullopt,
                            /*include_output=*/true),
       em::SignedData()));
 
@@ -259,7 +259,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
           /*terminate_upon_input=*/false,
           /*id=*/457658,
           ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel,
-          /*include_output=*/absl::nullopt),
+          /*include_output=*/std::nullopt),
       em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
@@ -295,7 +295,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
   EXPECT_TRUE(payload);
   // TODO(crbug.com/1056323): Verify output.
   EXPECT_EQ(CreateInteractivePayload(kProgressPercent,
-                                     /*output=*/absl::nullopt, kUserMessage),
+                                     /*output=*/std::nullopt, kUserMessage),
             *payload);
 }
 
@@ -328,7 +328,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
   EXPECT_TRUE(payload);
   // TODO(crbug.com/1056323): Verify output.
   EXPECT_EQ(CreateNonInteractivePayload(kProgressPercent,
-                                        /*output=*/absl::nullopt, kStatus,
+                                        /*output=*/std::nullopt, kStatus,
                                         kStatusMessage),
             *payload);
 }

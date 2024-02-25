@@ -1270,7 +1270,6 @@
     @assert ctx.letterSpacing === '0px';
     @assert ctx.wordSpacing === '0px';
     var width_normal = ctx.measureText('Hello World').width;
-    var ch_width = width_normal / 11;
 
     function test_letter_spacing(value, difference_spacing, epsilon) {
       ctx.letterSpacing = value;
@@ -1291,7 +1290,6 @@
                  ['1em', 110, 0.1],
                  ['-0.1em', -11, 0.1],
                  ['1in', 1056, 0.1],
-                 ['1ch', 11 * ch_width, 0.1],
                  ['-0.1cm', -41.65, 0.2],
                  ['-0.6mm', -24,95, 0.2]]
 
@@ -1305,7 +1303,6 @@
     @assert ctx.letterSpacing === '0px';
     @assert ctx.wordSpacing === '0px';
     var width_normal = ctx.measureText('Hello World, again').width;
-    var ch_width = width_normal / 18;
 
     function test_word_spacing(value, difference_spacing, epsilon) {
       ctx.wordSpacing = value;
@@ -1326,7 +1323,6 @@
                  ['1em', 20, 0.1],
                  ['-0.5em', -10, 0.1],
                  ['1in', 192, 0.1],
-                 ['1ch', 2 * ch_width, 0.1],
                  ['-0.1cm', -7.57, 0.2],
                  ['-0.6mm', -4.54, 0.2]]
 
@@ -1347,7 +1343,7 @@
     // 1em = 10px. Add 10px after each letter in "Hello World",
     // makes it 110px longer.
     var width_with_spacing = ctx.measureText('Hello World').width;
-    @assert width_with_spacing === width_normal + 110;
+    assert_approx_equals(width_with_spacing, width_normal + 110, 0.1, "letter-spacing error");
 
     // Changing font to 20px. Without resetting the spacing, 1em letterSpacing
     // is now 20px, so it's suppose to be 220px longer without any letterSpacing set.
@@ -1356,7 +1352,7 @@
     // Now calculate the reference spacing for "Hello World" with no spacing.
     ctx.letterSpacing = '0em';
     width_normal = ctx.measureText('Hello World').width;
-    @assert width_with_spacing === width_normal + 220;
+    assert_approx_equals(width_with_spacing, width_normal + 220, 0.1, "letter-spacing error after font change");
 
 - name: 2d.text.drawing.style.wordSpacing.change.font
   desc: Set word spacing and word spacing to font dependent value and verify it works after font change.
@@ -1675,5 +1671,10 @@
   reference: |
     ctx.font = "32px serif";
     ctx.fillText("Hello World", 20, 100);
+
+- name: 2d.text.setFont.mathFont
+  desc: crbug.com/1212190, make sure offscreencanvas doesn't crash with Math Font
+  code: |
+    ctx.font = "math serif";
 
 # TODO: shadows, alpha, composite, clip

@@ -7,14 +7,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/nearby_sharing/logging/log_buffer.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "components/cross_device/logging/log_buffer.h"
+#include "components/cross_device/logging/logging.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // WebUIMessageHandler for the NS_LOG Macro to pass logging messages to the
 // chrome://nearby-internals logging tab.
 class NearbyInternalsLogsHandler : public content::WebUIMessageHandler,
-                                   public LogBuffer::Observer {
+                                   public CrossDeviceLogBuffer::Observer {
  public:
   NearbyInternalsLogsHandler();
   NearbyInternalsLogsHandler(const NearbyInternalsLogsHandler&) = delete;
@@ -28,17 +28,21 @@ class NearbyInternalsLogsHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  // LogBuffer::Observer
-  void OnLogMessageAdded(const LogBuffer::LogMessage& log_message) override;
-  void OnLogBufferCleared() override;
+  int FeatureEnumToInt(Feature feature);
+
+  // CrossDeviceLogBuffer::Observer
+  void OnLogMessageAdded(
+      const CrossDeviceLogBuffer::LogMessage& log_message) override;
+  void OnCrossDeviceLogBufferCleared() override;
 
   // Message handler callback that returns the Log Buffer in dictionary form.
   void HandleGetLogMessages(const base::Value::List& args);
 
   // Message handler callback that clears the Log Buffer.
-  void ClearLogBuffer(const base::Value::List& args);
+  void ClearCrossDeviceLogBuffer(const base::Value::List& args);
 
-  base::ScopedObservation<LogBuffer, LogBuffer::Observer> observation_{this};
+  base::ScopedObservation<CrossDeviceLogBuffer, CrossDeviceLogBuffer::Observer>
+      observation_{this};
   base::WeakPtrFactory<NearbyInternalsLogsHandler> weak_ptr_factory_{this};
 };
 

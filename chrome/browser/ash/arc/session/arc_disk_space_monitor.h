@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_DISK_SPACE_MONITOR_H_
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_DISK_SPACE_MONITOR_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -77,7 +78,7 @@ class ArcDiskSpaceMonitor : public ArcSessionManagerObserver {
   void CheckDiskSpace();
 
   // Used as a callback function.
-  void OnGetFreeDiskSpace(absl::optional<int64_t> reply);
+  void OnGetFreeDiskSpace(std::optional<int64_t> reply);
 
   // Shows a pre-stop warning notification if |is_pre_stop| is true and the
   // same notification was not shown within kPreStopNotificationReshowInterval.

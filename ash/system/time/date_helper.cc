@@ -32,7 +32,7 @@ const std::vector<std::u16string> kDefaultWeekTitle = {u"S", u"M", u"T", u"W",
                                                        u"T", u"F", u"S"};
 
 UDate TimeToUDate(const base::Time& time) {
-  return static_cast<UDate>(time.ToDoubleT() *
+  return static_cast<UDate>(time.InSecondsFSinceUnixEpoch() *
                             base::Time::kMillisecondsPerSecond);
 }
 
@@ -325,6 +325,7 @@ void DateHelper::TimezoneChanged(const icu::TimeZone& timezone) {
 }
 
 void DateHelper::OnLocaleChanged() {
+  ResetFormatters();
   CalculateLocalWeekTitles();
 }
 

@@ -1,2 +1,4 @@
 dpapad@chromium.org
 rbpotter@chromium.org
+
+per-file lit_include.txt=file://third_party/lit/OWNERS

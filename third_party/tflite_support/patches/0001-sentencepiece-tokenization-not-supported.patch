@@ -1,0 +1,51 @@
+From e514c2694ad7a7353c1f29ca86400d23bac17f73 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 30 Nov 2022 10:24:02 -0800
+Subject: [PATCH 01/10] sentencepiece tokenization not supported
+
+---
+ .../cc/text/tokenizers/tokenizer_utils.cc          | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
+index 0ba0f370cc305..bd4f18fca7f08 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
+@@ -23,7 +23,6 @@ limitations under the License.
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/text/tokenizers/bert_tokenizer.h"
+ #include "tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.h"
+-#include "tensorflow_lite_support/cc/text/tokenizers/sentencepiece_tokenizer.h"
+ #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
+ 
+ namespace tflite {
+@@ -32,7 +31,6 @@ namespace text {
+ namespace tokenizer {
+ 
+ using ::tflite::ProcessUnit;
+-using ::tflite::SentencePieceTokenizerOptions;
+ using ::tflite::support::CreateStatusWithPayload;
+ using ::tflite::support::StatusOr;
+ using ::tflite::support::TfLiteSupportStatus;
+@@ -77,14 +75,10 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
+                                               vocab_buffer.size());
+     }
+     case ProcessUnitOptions_SentencePieceTokenizerOptions: {
+-      const tflite::SentencePieceTokenizerOptions* options =
+-          tokenizer_process_unit->options_as<SentencePieceTokenizerOptions>();
+-      ASSIGN_OR_RETURN(absl::string_view model_buffer,
+-                       CheckAndLoadFirstAssociatedFile(
+-                           options->sentencePiece_model(), metadata_extractor));
+-      // TODO(b/160647204): Extract sentence piece model vocabulary
+-      return absl::make_unique<SentencePieceTokenizer>(model_buffer.data(),
+-                                                       model_buffer.size());
++      return CreateStatusWithPayload(
++        absl::StatusCode::kInvalidArgument,
++        "Chromium does not support sentencepiece tokenization",
++        TfLiteSupportStatus::kMetadataInvalidTokenizerError);
+     }
+     case ProcessUnitOptions_RegexTokenizerOptions: {
+       const tflite::RegexTokenizerOptions* options =
+-- 
+2.42.0.515.g380fc7ccd1-goog
+

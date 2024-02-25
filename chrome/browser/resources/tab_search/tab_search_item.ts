@@ -14,9 +14,10 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {get as deepGet, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ariaLabel, TabData, TabItemType} from './tab_data.js';
+import type {TabData} from './tab_data.js';
+import {ariaLabel, TabItemType} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
-import {Tab} from './tab_search.mojom-webui.js';
+import type {Tab} from './tab_search.mojom-webui.js';
 import {getTemplate} from './tab_search_item.html.js';
 import {highlightText, tabHasMediaAlerts} from './tab_search_utils.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
@@ -54,12 +55,25 @@ export class TabSearchItem extends TabSearchItemBase {
       },
 
       index: Number,
+
+      inSuggestedGroup: {
+        type: Boolean,
+        value: false,
+      },
+
+      compact: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
   data: TabData;
   private buttonRipples_: boolean;
   index: number;
+  inSuggestedGroup: boolean;
+  compact: boolean;
 
   /**
    * @return Whether a close action can be performed on the item.
@@ -78,6 +92,13 @@ export class TabSearchItem extends TabSearchItemBase {
         (this.isOpenTabAndHasMediaAlert_(tabData) ?
              ' allocate-space-while-hidden' :
              '');
+  }
+
+  private getCloseButtonRole_(): string {
+    // If this tab search item is an option within a list, the button
+    // should also be treated as an option in a list to ensure the correct
+    // focus traversal behavior when a screenreader is on.
+    return this.role === 'option' ? 'option' : 'button';
   }
 
   private onItemClose_(e: Event) {
@@ -126,6 +147,10 @@ export class TabSearchItem extends TabSearchItemBase {
     switch (alert) {
       case TabAlertState.kMediaRecording:
         return 'media-recording';
+      case TabAlertState.kAudioRecording:
+        return 'audio-recording';
+      case TabAlertState.kVideoRecording:
+        return 'video-recording';
       case TabAlertState.kAudioPlaying:
         return 'audio-playing';
       case TabAlertState.kAudioMuting:
@@ -171,7 +196,17 @@ export class TabSearchItem extends TabSearchItemBase {
   }
 
   private ariaLabelForButton_(title: string): string {
+    if (this.inSuggestedGroup) {
+      return loadTimeData.getStringF('tabOrganizationCloseTabAriaLabel', title);
+    }
     return `${loadTimeData.getString('closeTab')} ${title}`;
+  }
+
+  private tooltipForButton_(): string {
+    if (this.inSuggestedGroup) {
+      return loadTimeData.getString('tabOrganizationCloseTabTooltip');
+    }
+    return loadTimeData.getString('closeTab');
   }
 }
 

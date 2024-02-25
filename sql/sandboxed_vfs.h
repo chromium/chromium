@@ -8,12 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -58,7 +59,7 @@ class COMPONENT_EXPORT(SQL) SandboxedVfs {
 
     // Queries path access information for `file_path`. Returns null if the
     // given path does not exist.
-    virtual absl::optional<PathAccessInfo> GetPathAccess(
+    virtual std::optional<PathAccessInfo> GetPathAccess(
         const base::FilePath& file_path) = 0;
 
     // Resizes a file.

@@ -38,7 +38,8 @@ namespace net {
 
 namespace {
 
-using ReportList = std::vector<const ReportingReport*>;
+using ReportList =
+    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>;
 using ReportingUploadHeaderType =
     ReportingDeliveryAgent::ReportingUploadHeaderType;
 
@@ -81,21 +82,21 @@ class Delivery {
   // Note that |origin| here (which matches the report's |origin|) is not
   // necessarily the same as the |origin| of the ReportingEndpoint's group key
   // (if the endpoint is configured to include subdomains). Reports with
-  // different group keys can be in the same delivery, as long as the NIK,
+  // different group keys can be in the same delivery, as long as the NAK,
   // report origin and reporting source are the same, and they all get assigned
   // to the same endpoint URL.
   // |isolation_info| is the IsolationInfo struct associated with the reporting
   // endpoint, and is used to determine appropriate credentials for the upload.
-  // |network_anonymization_key| is the NIK from the ReportingEndpoint, which
+  // |network_anonymization_key| is the NAK from the ReportingEndpoint, which
   // may have been cleared in the ReportingService if reports are not being
-  // partitioned by NIK. (This is why a separate parameter is used here, rather
-  // than simply using the computed NIK from |isolation_info|.)
+  // partitioned by NAK. (This is why a separate parameter is used here, rather
+  // than simply using the computed NAK from |isolation_info|.)
   struct Target {
     Target(const IsolationInfo& isolation_info,
            const NetworkAnonymizationKey& network_anonymization_key,
            const url::Origin& origin,
            const GURL& endpoint_url,
-           const absl::optional<base::UnguessableToken> reporting_source)
+           const std::optional<base::UnguessableToken> reporting_source)
         : isolation_info(isolation_info),
           network_anonymization_key(network_anonymization_key),
           origin(origin),
@@ -109,7 +110,7 @@ class Delivery {
     ~Target() = default;
 
     bool operator<(const Target& other) const {
-      // Note that sorting by NIK here is required for V0 reports; V1 reports
+      // Note that sorting by NAK here is required for V0 reports; V1 reports
       // should not need this (but it doesn't hurt). We can remove that as a
       // comparison key when V0 reporting endpoints are removed.
       return std::tie(network_anonymization_key, origin, endpoint_url,
@@ -122,7 +123,7 @@ class Delivery {
     NetworkAnonymizationKey network_anonymization_key;
     url::Origin origin;
     GURL endpoint_url;
-    absl::optional<base::UnguessableToken> reporting_source;
+    std::optional<base::UnguessableToken> reporting_source;
   };
 
   explicit Delivery(const Target& target) : target_(target) {}
@@ -330,8 +331,8 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
       if (delivery_it == deliveries.end()) {
         bool inserted;
         auto new_delivery = std::make_unique<Delivery>(target);
-        std::tie(delivery_it, inserted) = deliveries.insert(
-            std::make_pair(std::move(target), std::move(new_delivery)));
+        std::tie(delivery_it, inserted) =
+            deliveries.emplace(std::move(target), std::move(new_delivery));
         DCHECK(inserted);
       }
       delivery_it->second->AddReports(endpoint, bucket_start, bucket_it);
@@ -378,9 +379,9 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
         delivery->network_anonymization_key(), delivery->endpoint_url(),
         success);
 
-    // TODO(chlily): This leaks information across NIKs. If the endpoint URL is
-    // configured for both NIK1 and NIK2, and it responds with a 410 on a NIK1
-    // connection, then the change in configuration will be detectable on a NIK2
+    // TODO(chlily): This leaks information across NAKs. If the endpoint URL is
+    // configured for both NAK1 and NAK2, and it responds with a 410 on a NAK1
+    // connection, then the change in configuration will be detectable on a NAK2
     // connection.
     // TODO(rodneyding): Handle Remove endpoint for Reporting-Endpoints header.
     if (outcome == ReportingUploader::Outcome::REMOVE_ENDPOINT)

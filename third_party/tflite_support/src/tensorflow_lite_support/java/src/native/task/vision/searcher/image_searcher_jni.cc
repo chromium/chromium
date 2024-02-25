@@ -52,8 +52,7 @@ using ::tflite::task::vision::ImageSearcherOptions;
 
 // Creates an ImageSearcherOptions proto based on the Java class.
 ImageSearcherOptions ConvertToProtoOptions(jlong base_options_handle,
-                                           bool l2_normalize,
-                                           bool quantize,
+                                           bool l2_normalize, bool quantize,
                                            int index_descriptor,
                                            int max_results) {
   ImageSearcherOptions proto_options;
@@ -125,9 +124,7 @@ jobject ConvertToSearchResults(JNIEnv* env, const SearchResult& results) {
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_vision_searcher_ImageSearcher_deinitJni(
-    JNIEnv* env,
-    jobject thiz,
-    jlong native_handle) {
+    JNIEnv* env, jobject thiz, jlong native_handle) {
   delete reinterpret_cast<ImageSearcher*>(native_handle);
 }
 
@@ -136,16 +133,10 @@ Java_org_tensorflow_lite_task_vision_searcher_ImageSearcher_deinitJni(
 // values will be ignored.
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_searcher_ImageSearcher_initJniWithModelFdAndOptions(
-    JNIEnv* env,
-    jclass thiz,
-    jint model_descriptor,
-    jlong model_descriptor_length,
-    jlong model_descriptor_offset,
-    jlong base_options_handle,
-    bool l2_normalize,
-    bool quantize,
-    jint index_descriptor,
-    int max_results) {
+    JNIEnv* env, jclass thiz, jint model_descriptor,
+    jlong model_descriptor_length, jlong model_descriptor_offset,
+    jlong base_options_handle, bool l2_normalize, bool quantize,
+    jint index_descriptor, int max_results) {
   ImageSearcherOptions proto_options =
       ConvertToProtoOptions(base_options_handle, l2_normalize, quantize,
                             index_descriptor, max_results);
@@ -165,14 +156,8 @@ Java_org_tensorflow_lite_task_vision_searcher_ImageSearcher_initJniWithModelFdAn
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_searcher_ImageSearcher_initJniWithByteBuffer(
-    JNIEnv* env,
-    jclass thiz,
-    jobject model_buffer,
-    jlong base_options_handle,
-    bool l2_normalize,
-    bool quantize,
-    jlong index_descriptor,
-    int max_results) {
+    JNIEnv* env, jclass thiz, jobject model_buffer, jlong base_options_handle,
+    bool l2_normalize, bool quantize, jlong index_descriptor, int max_results) {
   ImageSearcherOptions proto_options =
       ConvertToProtoOptions(base_options_handle, l2_normalize, quantize,
                             index_descriptor, max_results);
@@ -185,10 +170,7 @@ Java_org_tensorflow_lite_task_vision_searcher_ImageSearcher_initJniWithByteBuffe
 
 extern "C" JNIEXPORT jobject JNICALL
 Java_org_tensorflow_lite_task_vision_searcher_ImageSearcher_searchNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle,
-    jlong frame_buffer_handle,
+    JNIEnv* env, jclass thiz, jlong native_handle, jlong frame_buffer_handle,
     jintArray jroi) {
   auto* searcher = reinterpret_cast<ImageSearcher*>(native_handle);
   // frame_buffer will be deleted after inference is done in

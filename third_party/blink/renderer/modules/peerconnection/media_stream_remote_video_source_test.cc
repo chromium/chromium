@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/webrtc/track_observer.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -172,12 +174,14 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
       ++number_of_failed_track_starts_;
   }
 
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<blink::MockPeerConnectionDependencyFactory> mock_factory_;
   scoped_refptr<webrtc::VideoTrackSourceInterface> webrtc_video_source_;
   scoped_refptr<webrtc::VideoTrackInterface> webrtc_video_track_;
   // |remote_source_| is owned by |source_|.
-  MediaStreamRemoteVideoSourceUnderTest* remote_source_ = nullptr;
+  raw_ptr<MediaStreamRemoteVideoSourceUnderTest, DanglingUntriaged>
+      remote_source_ = nullptr;
   Persistent<MediaStreamSource> source_;
   int number_of_successful_track_starts_ = 0;
   int number_of_failed_track_starts_ = 0;
@@ -533,8 +537,8 @@ class TestEncodedVideoFrame : public webrtc::RecordableEncodedFrame {
       const override {
     return nullptr;
   }
-  absl::optional<webrtc::ColorSpace> color_space() const override {
-    return absl::nullopt;
+  std::optional<webrtc::ColorSpace> color_space() const override {
+    return std::nullopt;
   }
   webrtc::VideoCodecType codec() const override {
     return webrtc::kVideoCodecVP8;

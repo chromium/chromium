@@ -4,6 +4,7 @@
 
 module ash.settings.mojom;
 
+import "chrome/test/data/webui/settings/chromeos/os_people_page/password_settings_api.test-mojom";
 import "chrome/test/data/webui/settings/chromeos/os_people_page/pin_settings_api.test-mojom";
 
 // This file contains the definition of the mojo service that can be used in
@@ -28,6 +29,14 @@ interface LockScreenSettings {
   // Tries to unlock the lock screen page, but expects authentication to fail.
   // Crashes if authentication succeeds.
   AuthenticateIncorrectly(string password) => ();
+
+  // Checks whether a control for changing passwords is visible or not.
+  AssertPasswordControlVisibility(bool is_visible) => ();
+
+  // Navigates to password settings. Crashes if no password settings control is
+  // visible. The return value can be used to interact with password settings.
+  GoToPasswordSettings() =>
+      (pending_remote<PasswordSettingsApi> password_settings);
 
   // Checks whether a control for recovery is available or not.
   AssertRecoveryControlAvailability(bool is_available) => ();
@@ -94,7 +103,7 @@ interface GoogleDriveSettings {
 
   // Asserts the values returned from the Google drive PageHandler match the
   // values returned on the JS element.
-  AssertBulkPinningPinnedSize(string pinned_size) => ();
+  AssertContentCacheSize(string content_cache_size) => ();
 
   // Click the clear offline files button and then wait until the new size has
   // updated correctly.

@@ -25,12 +25,12 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/webapps/common/web_app_id.h"
 
 using web_app::test::CrosapiParam;
 using web_app::test::WithCrosapiParam;
@@ -40,6 +40,7 @@ namespace app_list::test {
 class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
  public:
   HelpAppSearchBrowserTestBase() {
+    // TODO: Remove parameterization on kProductivityLauncher.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ash::features::kProductivityLauncher, {{"enable_continue", "true"}}},
          {{ash::features::kHelpAppLauncherSearch}, {}}},
@@ -77,7 +78,7 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
 
   // Returns the first published continue section result.
   const ChromeSearchResult* FindLeadingContinueSectionResult() {
-    for (const auto* result : PublishedResults()) {
+    for (const ChromeSearchResult* result : PublishedResults()) {
       if (result->display_type() == ash::SearchResultDisplayType::kContinue)
         return result;
     }
@@ -124,9 +125,9 @@ class HelpAppSearchBrowserTest : public HelpAppSearchBrowserTestBase {
                       std::move(drive_continue_section_provider)));
   }
 
-  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged>
       local_continue_section_provider_ = nullptr;
-  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestContinueFilesSearchProvider, DanglingUntriaged>
       drive_continue_section_provider_ = nullptr;
 };
 
@@ -194,9 +195,10 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
 // Test that the number of times the suggestion chip should show decreases when
 // the chip is shown in tablet mode.
+// https://crbug.com/1489431: test is flaky on bots.
 IN_PROC_BROWSER_TEST_F(
     HelpAppSearchBrowserTest,
-    ReleaseNotesDecreasesTimesShownOnAppListOpenInTabletMode) {
+    DISABLED_ReleaseNotesDecreasesTimesShownOnAppListOpenInTabletMode) {
   ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
@@ -376,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
 IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
   Profile* profile = browser()->profile();
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
-  const web_app::AppId app_id = web_app::kHelpAppId;
+  const webapps::AppId app_id = web_app::kHelpAppId;
 
   ShowAppListAndWaitForZeroStateResults(
       {ash::AppListSearchResultType::kZeroStateHelpApp,

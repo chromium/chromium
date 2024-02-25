@@ -2,69 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
-#include "ash/shelf/shelf.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
-#include "ash/system/status_area_widget_delegate.h"
-#include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
 class NotificationCenterTrayPixelTest : public AshTestBase {
  public:
-  NotificationCenterTrayPixelTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  NotificationCenterTrayPixelTest() = default;
+  NotificationCenterTrayPixelTest(const NotificationCenterTrayPixelTest&) =
+      delete;
+  NotificationCenterTrayPixelTest& operator=(
+      const NotificationCenterTrayPixelTest&) = delete;
+  ~NotificationCenterTrayPixelTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
 
-    test_api_ = std::make_unique<NotificationCenterTestApi>(
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->notification_center_tray());
+    test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
 
  private:
   std::unique_ptr<NotificationCenterTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST_F(NotificationCenterTrayPixelTest,
-       NotificationCounterWithSingleCount_ShelfAlignedBottom) {
-  test_api()->AddNotification();
-
-  EXPECT_TRUE(test_api()->GetTray()->GetVisible());
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_view", /*revision_number=*/2, test_api()->GetTray()));
-}
-
-TEST_F(NotificationCenterTrayPixelTest,
-       NotificationCounterWithSingleCount_ShelfAlignedRight) {
-  test_api()->AddNotification();
-
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
-
-  EXPECT_TRUE(test_api()->GetTray()->GetVisible());
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_view",
-      /*revision_number=*/1, test_api()->GetTray()));
-}
 
 // Tests the UI of the notification center tray when connecting a secondary
 // display while two notification icons are present. This was added for
@@ -79,12 +52,18 @@ TEST_F(NotificationCenterTrayPixelTest,
   // Add a secondary display.
   UpdateDisplay("800x799,800x799");
   auto secondary_display_id = display_manager()->GetDisplayAt(1).id();
-  ASSERT_TRUE(test_api()->GetTrayOnDisplay(secondary_display_id));
+  auto* tray = test_api()->GetTrayOnDisplay(secondary_display_id);
+  ASSERT_TRUE(tray);
+
+  // Hide any popups that may be showing to reduce the chance that this test
+  // flakes. See http://b/306483873 for details.
+  tray->ShowBubble();
+  tray->CloseBubble();
+  ASSERT_FALSE(message_center::MessageCenter::Get()->HasPopupNotifications());
 
   // Check the UI of the notification center tray on the secondary display.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnSecondaryScreen(
-      "check_view", /*revision_number=*/2,
-      test_api()->GetTrayOnDisplay(secondary_display_id)));
+      "check_view", /*revision_number=*/3, tray));
 }
 
 }  // namespace ash

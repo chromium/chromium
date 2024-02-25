@@ -14,23 +14,25 @@
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
-#import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
@@ -41,25 +43,24 @@
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using password_manager::features::IsAuthOnEntryV2Enabled;
 
-@interface PasswordDetailsCoordinator () <PasswordDetailsHandler,
-                                          PasswordDetailsMediatorDelegate,
-                                          ReauthenticationCoordinatorDelegate,
-                                          PasswordSharingCoordinatorDelegate> {
-  password_manager::AffiliatedGroup _affiliatedGroup;
-  password_manager::CredentialUIEntry _credential;
-
-  // The context in which the password details are accessed.
-  DetailsContext _context;
-}
+@interface PasswordDetailsCoordinator () <
+    PasswordDetailsHandler,
+    PasswordDetailsMediatorDelegate,
+    ReauthenticationCoordinatorDelegate,
+    PasswordSharingCoordinatorDelegate,
+    PasswordSharingFirstRunCoordinatorDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) PasswordDetailsTableViewController* viewController;
@@ -70,7 +71,8 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 // Module containing the reauthentication mechanism for viewing and copying
 // passwords.
 // Has to be strong for password bottom sheet feature or else it becomes nil.
-@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
+@property(nonatomic, strong) id<ReauthenticationProtocol>
+    reauthenticationModule;
 
 // Modal alert for interactions with password.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
@@ -82,13 +84,26 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 @property(nonatomic, strong)
     PasswordSharingCoordinator* passwordSharingCoordinator;
 
+// Coordinator for the password sharing first run flow.
+@property(nonatomic, strong)
+    PasswordSharingFirstRunCoordinator* passwordSharingFirstRunCoordinator;
+
 // Coordinator for blocking password details until Local Authentication is
 // successful.
 @property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
 
 @end
 
-@implementation PasswordDetailsCoordinator
+@implementation PasswordDetailsCoordinator {
+  password_manager::AffiliatedGroup _affiliatedGroup;
+  password_manager::CredentialUIEntry _credential;
+
+  // The context in which the password details are accessed.
+  DetailsContext _context;
+
+  // For recording visits after successful authentication.
+  IOSPasswordManagerVisitsRecorder* _visitsRecorder;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -99,7 +114,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
                           credential:
                               (const password_manager::CredentialUIEntry&)
                                   credential
-                        reauthModule:(ReauthenticationModule*)reauthModule
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
                              context:(DetailsContext)context {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
@@ -120,7 +135,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
                              browser:(Browser*)browser
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
-                        reauthModule:(ReauthenticationModule*)reauthModule
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
                              context:(DetailsContext)context {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
@@ -151,16 +166,12 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   }
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  self.mediator = [[PasswordDetailsMediator alloc]
-         initWithPasswords:credentials
-               displayName:displayName
-      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
-                               GetForBrowserState(browserState)
-                                   .get()
-               prefService:browserState->GetPrefs()
-               syncService:SyncServiceFactory::GetForBrowserState(browserState)
-                   context:_context
-                  delegate:self];
+  self.mediator =
+      [[PasswordDetailsMediator alloc] initWithPasswords:credentials
+                                             displayName:displayName
+                                            browserState:browserState
+                                                 context:_context
+                                                delegate:self];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
@@ -173,11 +184,22 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     [self.viewController setupLeftCancelButton];
   }
 
+  BOOL requireAuth = [self shouldRequireAuthOnStart];
+
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
-  [self.baseNavigationController
-      pushViewController:self.viewController
-                animated:![self shouldRequireAuthOnStart]];
+  [self.baseNavigationController pushViewController:self.viewController
+                                           animated:!requireAuth];
+
+  _visitsRecorder = [[IOSPasswordManagerVisitsRecorder alloc]
+      initWithPasswordManagerSurface:password_manager::PasswordManagerSurface::
+                                         kPasswordDetails];
+
+  // Wait for authentication to pass before logging a page visit.
+  if (!requireAuth) {
+    [_visitsRecorder maybeRecordVisitMetric];
+  }
+
   if (IsAuthOnEntryV2Enabled()) {
     [self startReauthCoordinator];
   }
@@ -192,6 +214,8 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   self.mediator = nil;
   self.viewController = nil;
   [self dismissAlertCoordinator];
+  [self stopPasswordSharingCoordinator];
+  [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
 }
 
 #pragma mark - PasswordDetailsHandler
@@ -203,44 +227,6 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 - (void)dismissPasswordDetailsTableViewController {
   [self.delegate passwordDetailsCancelButtonWasTapped];
   [self.delegate passwordDetailsCoordinatorDidRemove:self];
-}
-
-- (void)showPasscodeDialog {
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
-  NSString* message =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT);
-  self.alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
-                                                   browser:self.browser
-                                                     title:title
-                                                   message:message];
-
-  __weak __typeof(self) weakSelf = self;
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
-
-  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:^{
-                                     [weakSelf dismissAlertCoordinator];
-                                   }
-                                    style:UIAlertActionStyleCancel];
-
-  [self.alertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
-                action:^{
-                  id<ApplicationCommands> applicationCommandsHandler =
-                      HandlerForProtocol(
-                          weakSelf.browser->GetCommandDispatcher(),
-                          ApplicationCommands);
-                  [applicationCommandsHandler
-                      closeSettingsUIAndOpenURL:command];
-                  [weakSelf dismissAlertCoordinator];
-                }
-                 style:UIAlertActionStyleDefault];
-
-  [self.alertCoordinator start];
 }
 
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin {
@@ -387,12 +373,21 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 }
 
 - (void)onShareButtonPressed {
-  [self.passwordSharingCoordinator stop];
-  self.passwordSharingCoordinator = [[PasswordSharingCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.passwordSharingCoordinator.delegate = self;
-  [self.passwordSharingCoordinator start];
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kPasswordDetailsShareButtonClicked);
+
+  if (self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+          prefs::kPasswordSharingFlowHasBeenEntered)) {
+    [self startPasswordSharingCoordinator];
+  } else {
+    [self.passwordSharingFirstRunCoordinator stop];
+    self.passwordSharingFirstRunCoordinator =
+        [[PasswordSharingFirstRunCoordinator alloc]
+            initWithBaseViewController:self.viewController
+                               browser:self.browser];
+    self.passwordSharingFirstRunCoordinator.delegate = self;
+    [self.passwordSharingFirstRunCoordinator start];
+  }
 }
 
 #pragma mark - PasswordDetailsMediatorDelegate
@@ -432,26 +427,31 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 }
 
 - (void)updateFormManagers {
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  if (!activeWebState) {
-    // PasswordDetailsCoordinator and other settings coordinators always receive
-    // a normal Browser, even if they are started from incognito. So if only
-    // incognito tabs are open, `activeWebState` is null, causing a crash
-    // (crbug.com/1468506).
-    return;
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(browserState);
+
+  for (Browser* browser : browserList->AllRegularBrowsers()) {
+    [self updateFormManagersForBrowser:browser];
   }
-  password_manager::PasswordManagerClient* passwordManagerClient =
-      PasswordTabHelper::FromWebState(activeWebState)
-          ->GetPasswordManagerClient();
-  passwordManagerClient->UpdateFormManagers();
+
+  for (Browser* browser : browserList->AllIncognitoBrowsers()) {
+    [self updateFormManagersForBrowser:browser];
+  }
 }
 
 #pragma mark - ReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
-  // No-op.
+  [_visitsRecorder maybeRecordVisitMetric];
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
 
 - (void)willPushReauthenticationViewController {
@@ -459,7 +459,8 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   // password details.
   [self dismissAlertCoordinator];
   [self dismissActionSheetCoordinator];
-  [self dismissPasswordSharingCoordinator];
+  [self stopPasswordSharingCoordinator];
+  [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
 }
 
 #pragma mark - PasswordSharingCoordinatorDelegate
@@ -467,9 +468,28 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 - (void)passwordSharingCoordinatorDidRemove:
     (PasswordSharingCoordinator*)coordinator {
   if (self.passwordSharingCoordinator == coordinator) {
-    [self.passwordSharingCoordinator stop];
-    self.passwordSharingCoordinator.delegate = nil;
-    self.passwordSharingCoordinator = nil;
+    [self stopPasswordSharingCoordinator];
+  }
+}
+
+#pragma mark - PasswordSharingFirstRunCoordinatorDelegate
+
+- (void)passwordSharingFirstRunCoordinatorDidAccept:
+    (PasswordSharingFirstRunCoordinator*)coordinator {
+  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
+      prefs::kPasswordSharingFlowHasBeenEntered, true);
+
+  if (self.passwordSharingFirstRunCoordinator == coordinator) {
+    [self stopPasswordSharingFirstRunCoordinatorWithCompletion:^{
+      [self startPasswordSharingCoordinator];
+    }];
+  }
+}
+
+- (void)passwordSharingFirstRunCoordinatorWasDismissed:
+    (PasswordSharingFirstRunCoordinator*)coordinator {
+  if (self.passwordSharingFirstRunCoordinator == coordinator) {
+    [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
   }
 }
 
@@ -485,11 +505,6 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   self.alertCoordinator = nil;
 }
 
-- (void)dismissPasswordSharingCoordinator {
-  [_passwordSharingCoordinator stop];
-  _passwordSharingCoordinator = nil;
-}
-
 // Starts reauthCoordinator. If Password Details was opened from outside the
 // Password Manager, Local Authentication is required. Once started
 // reauthCoordinator observes scene state changes and requires authentication
@@ -503,6 +518,34 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
                            authOnStart:[self shouldRequireAuthOnStart]];
   _reauthCoordinator.delegate = self;
   [_reauthCoordinator start];
+}
+
+// Starts the main coordinator for the password sharing flow.
+- (void)startPasswordSharingCoordinator {
+  [self.passwordSharingCoordinator stop];
+  self.passwordSharingCoordinator = [[PasswordSharingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                     credentials:self.mediator.credentials
+         savedPasswordsPresenter:self.mediator.savedPasswordsPresenter];
+  self.passwordSharingCoordinator.delegate = self;
+  [self.passwordSharingCoordinator start];
+}
+
+// Stops the first run coordinator for the password sharing flow and calls
+// `completion` on its vc dismissal.
+- (void)stopPasswordSharingFirstRunCoordinatorWithCompletion:
+    (ProceduralBlock)completion {
+  [self.passwordSharingFirstRunCoordinator stopWithCompletion:completion];
+  self.passwordSharingFirstRunCoordinator.delegate = nil;
+  self.passwordSharingFirstRunCoordinator = nil;
+}
+
+// Stops the main coordinator for the password sharing flow.
+- (void)stopPasswordSharingCoordinator {
+  [self.passwordSharingCoordinator stop];
+  self.passwordSharingCoordinator.delegate = nil;
+  self.passwordSharingCoordinator = nil;
 }
 
 // Whether Local Authentication should be required before displaying the
@@ -524,6 +567,17 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     case DetailsContext::kOutsideSettings:
       return YES;
   }
+}
+
+// Refreshes the password suggestions list for a specific `browser`.
+- (void)updateFormManagersForBrowser:(Browser*)browser {
+  web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    return;
+  }
+  password_manager::PasswordManagerClient* passwordManagerClient =
+      PasswordTabHelper::FromWebState(webState)->GetPasswordManagerClient();
+  passwordManagerClient->UpdateFormManagers();
 }
 
 @end

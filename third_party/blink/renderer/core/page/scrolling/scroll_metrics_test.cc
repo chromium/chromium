@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -109,8 +109,8 @@ int BucketIndex(uint32_t reason) {
 void ScrollMetricsTest::Scroll(Element* element,
                                const WebGestureDevice device) {
   DCHECK(element);
-  DCHECK(element->getBoundingClientRect());
-  DOMRect* rect = element->getBoundingClientRect();
+  DCHECK(element->GetBoundingClientRect());
+  DOMRect* rect = element->GetBoundingClientRect();
   ScrollBeginEventBuilder scroll_begin(
       gfx::PointF(rect->left() + rect->width() / 2,
                   rect->top() + rect->height() / 2),
@@ -150,7 +150,7 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<HistogramTester> histogram_tester;
+  std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   // Test touch scroll.
@@ -196,7 +196,7 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<HistogramTester> histogram_tester;
+  std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
@@ -218,11 +218,6 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
                     AtomicString("composited transform box"));
   Compositor().BeginFrame();
   Scroll(box, WebGestureDevice::kTouchpad);
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    EXPECT_FALSE(To<LayoutBox>(box->GetLayoutObject())
-                     ->GetScrollableArea()
-                     ->GetNonCompositedMainThreadScrollingReasons());
-  }
 
   // Now that #box is composited, cc reports that we do not scroll on main.
   EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
@@ -241,7 +236,7 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<HistogramTester> histogram_tester;
+  std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
@@ -300,7 +295,7 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("inner"));
-  absl::optional<HistogramTester> histogram_tester;
+  std::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);

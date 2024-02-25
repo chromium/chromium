@@ -14,4 +14,12 @@ bool SyncablePrefsDatabase::IsPreferenceSyncable(
   return GetSyncablePrefMetadata(pref_name).has_value();
 }
 
+bool SyncablePrefsDatabase::IsPreferenceMergeable(
+    const std::string& pref_name) const {
+  std::optional<SyncablePrefMetadata> metadata =
+      GetSyncablePrefMetadata(pref_name);
+  CHECK(metadata.has_value());
+  return metadata->merge_behavior() != MergeBehavior::kNone;
+}
+
 }  // namespace sync_preferences

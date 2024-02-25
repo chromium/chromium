@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HSTSPolicyBypassList": [
+            "example"
+          ]
+        },
+        "prefs": {
+          "hsts.policy.upgrade_bypass_list": {
+            "location": "user_profile",
+            "value": [
+              "example"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

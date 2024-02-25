@@ -16,8 +16,11 @@
         </div>
     </template>
     <template is="dom-if" if="[[isSubApp_]]">
-        <div class="permission-text-row secondary-text" id="subAppPermissionExplanation">
-            [[getSubAppPermissionExplanationString_(app)]]
+        <div class="permission-text-row secondary-text">
+            <localized-link id="subAppPermissionExplanation"
+                localized-string="[[getSubAppPermissionExplanationString_(app)]]"
+                on-link-clicked="onManagePermissionsClicked_">
+            </localized-link>
         </div>
     </template>
 </div>

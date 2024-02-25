@@ -10,4 +10,11 @@
         network-state="[[activeNetworkState_]]"
         device-state="[[deviceState_]]">
     </network-icon>
+    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <div id="instantTetheringSummary"
+          class="secondary"
+          slot="feature-summary">
+        [[getInstantTetheringDescription_(deviceState_, activeNetworkState_)]]
+      </div>
+    </template>
 </settings-multidevice-feature-item>

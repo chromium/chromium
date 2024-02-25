@@ -6,13 +6,14 @@
 #define NET_LOG_TEST_NET_LOG_UTIL_H_
 
 #include <stddef.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/strings/string_piece.h"
 #include "net/log/net_log_event_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -73,14 +74,14 @@ size_t ExpectLogContainsSomewhereAfter(const std::vector<NetLogEntry>& entries,
 
 // The following methods return a parameter of the given type at the given path,
 // or nullopt if there is none.
-absl::optional<std::string> GetOptionalStringValueFromParams(
+std::optional<std::string> GetOptionalStringValueFromParams(
     const NetLogEntry& entry,
     base::StringPiece path);
-absl::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
-                                                       base::StringPiece path);
-absl::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
+std::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
                                                       base::StringPiece path);
-absl::optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry);
+std::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
+                                                     base::StringPiece path);
+std::optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry);
 
 // Same as the *Optional* versions above, except will add a Gtest failure if the
 // value was not present, and then return some default.

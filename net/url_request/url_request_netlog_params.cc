@@ -33,7 +33,7 @@ base::Value::Dict NetLogURLRequestStartParams(
     int load_flags,
     const IsolationInfo& isolation_info,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& initiator,
+    const std::optional<url::Origin>& initiator,
     int64_t upload_id) {
   base::Value::Dict dict;
   dict.Set("url", url.possibly_invalid_spec());

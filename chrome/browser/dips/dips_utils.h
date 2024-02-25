@@ -5,16 +5,16 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_UTILS_H_
 #define CHROME_BROWSER_DIPS_DIPS_UTILS_H_
 
+#include <optional>
 #include <ostream>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class ProfileSelections;
@@ -125,7 +125,7 @@ base::StringPiece GetHistogramPiece(DIPSRedirectType type);
 const char* DIPSRedirectTypeToString(DIPSRedirectType type);
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
 
-using TimestampRange = absl::optional<std::pair<base::Time, base::Time>>;
+using TimestampRange = std::optional<std::pair<base::Time, base::Time>>;
 // Expand the range to include `time` if necessary. Returns true iff the range
 // was modified.
 bool UpdateTimestampRange(TimestampRange& range, base::Time time);
@@ -147,7 +147,24 @@ struct StateValue {
 struct PopupsStateValue {
   uint64_t access_id;
   base::Time last_popup_time;
+  bool is_current_interaction;
 };
+
+struct PopupWithTime {
+  std::string opener_site;
+  std::string popup_site;
+  base::Time last_popup_time;
+};
+
+enum class OptionalBool {
+  kUnknown = 0,
+  kFalse = 1,
+  kTrue = 2,
+};
+
+inline OptionalBool ToOptionalBool(bool b) {
+  return b ? OptionalBool::kTrue : OptionalBool::kFalse;
+}
 
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
   return std::tie(lhs.site_storage_times, lhs.user_interaction_times,
@@ -171,8 +188,14 @@ std::string GetSiteForDIPS(const GURL& url);
 // belongs to the same site as `url`.
 bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url);
 
-// Returns `True` iff the `navigation_handle` represents a navigation happening
-// in an iframe of the primary frame tree.
+// Returns whether the provided cookie access was ad-tagged, based on the cookie
+// settings overrides. Returns Unknown if kSkipTpcdMitigationsForAdsHeuristics
+// is false and the override is not set regardless.
+OptionalBool IsAdTaggedCookieForHeuristics(
+    const content::CookieAccessDetails& details);
+
+// Returns `True` iff the `navigation_handle` represents a navigation
+// happening in an iframe of the primary frame tree.
 inline bool IsInPrimaryPageIFrame(
     content::NavigationHandle* navigation_handle) {
   return navigation_handle && navigation_handle->GetParentFrame()
@@ -203,10 +226,10 @@ inline bool IsInPrimaryPage(content::RenderFrameHost* rfh) {
 
 // Returns the last committed or the to be committed url of the main frame of
 // the page containing the `navigation_handle`.
-inline absl::optional<GURL> GetFirstPartyURL(
+inline std::optional<GURL> GetFirstPartyURL(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return navigation_handle->GetParentFrame()
              ? navigation_handle->GetParentFrame()
@@ -217,10 +240,18 @@ inline absl::optional<GURL> GetFirstPartyURL(
 
 // Returns an optional last committed url of the main frame of the page
 // containing the `rfh`.
-inline absl::optional<GURL> GetFirstPartyURL(content::RenderFrameHost* rfh) {
-  return rfh ? absl::optional<GURL>(rfh->GetMainFrame()->GetLastCommittedURL())
-             : absl::nullopt;
+inline std::optional<GURL> GetFirstPartyURL(content::RenderFrameHost* rfh) {
+  return rfh ? std::optional<GURL>(rfh->GetMainFrame()->GetLastCommittedURL())
+             : std::nullopt;
 }
+
+// The amount of time since a page last received user interaction before a
+// subsequent user interaction event may be recorded to DIPS Storage for the
+// same page.
+extern const base::TimeDelta kDIPSTimestampUpdateInterval;
+
+[[nodiscard]] bool UpdateTimestamp(std::optional<base::Time>& last_time,
+                                   base::Time now);
 
 enum class DIPSRecordedEvent {
   kStorage,

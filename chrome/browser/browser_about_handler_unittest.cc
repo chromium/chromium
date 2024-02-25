@@ -63,8 +63,6 @@ TEST_F(BrowserAboutHandlerTest, HandleChromeAboutAndChromeSyncRewrite) {
         GURL(chrome_prefix + chrome::kChromeUISignInInternalsHost)},
        {GURL(chrome_prefix + chrome::kChromeUISyncHost),
         GURL(chrome_prefix + chrome::kChromeUISyncInternalsHost)},
-       {GURL(chrome_prefix + chrome::kChromeUIInvalidationsHost),
-        GURL(chrome_prefix + chrome::kChromeUIInvalidationsHost)},
        {
            GURL(chrome_prefix + "host/path?query#ref"),
            GURL(chrome_prefix + "host/path?query#ref"),
@@ -112,8 +110,8 @@ TEST_F(BrowserAboutHandlerTest, NoVirtualURLForFixup) {
   TestingProfile profile;
   std::unique_ptr<NavigationEntry> entry(
       NavigationController::CreateNavigationEntry(
-          url, Referrer(), /* initiator_origin= */ absl::nullopt,
-          /* initiator_base_url= */ absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
+          url, Referrer(), /* initiator_origin= */ std::nullopt,
+          /* initiator_base_url= */ std::nullopt, ui::PAGE_TRANSITION_RELOAD,
           false, std::string(), &profile,
           nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(expected_virtual_url, entry->GetVirtualURL());

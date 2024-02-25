@@ -9,8 +9,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 namespace {
 
 const char kShareUrl[] = "smb://server/share1";
@@ -28,7 +27,7 @@ class SmbPersistedShareRegistryTest : public testing::Test {
 
 TEST_F(SmbPersistedShareRegistryTest, Empty) {
   SmbPersistedShareRegistry registry(&profile_);
-  absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+  std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   EXPECT_FALSE(info);
 
   std::vector<SmbShareInfo> all_info = registry.GetAll();
@@ -56,7 +55,7 @@ TEST_F(SmbPersistedShareRegistryTest, SaveGet) {
   // SmbPersistedShareRegistry are not the same (and have no hidden state).
   {
     SmbPersistedShareRegistry registry(&profile_);
-    absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+    std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
     ASSERT_TRUE(info);
     EXPECT_EQ(info->share_url().ToString(), kShareUrl);
     EXPECT_EQ(info->display_name(), kDisplayName);
@@ -65,7 +64,7 @@ TEST_F(SmbPersistedShareRegistryTest, SaveGet) {
     EXPECT_FALSE(info->use_kerberos());
     EXPECT_EQ(info->password_salt(), kSalt);
 
-    absl::optional<SmbShareInfo> info2 = registry.Get(SmbUrl(kShareUrl2));
+    std::optional<SmbShareInfo> info2 = registry.Get(SmbUrl(kShareUrl2));
     ASSERT_TRUE(info2);
     EXPECT_EQ(info2->share_url().ToString(), kShareUrl2);
     EXPECT_EQ(info2->display_name(), kDisplayName);
@@ -92,7 +91,7 @@ TEST_F(SmbPersistedShareRegistryTest, Replace) {
   // SmbPersistedShareRegistry are not the same (and have no hidden state).
   {
     SmbPersistedShareRegistry registry(&profile_);
-    absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+    std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
     ASSERT_TRUE(info);
     EXPECT_EQ(info->share_url().ToString(), kShareUrl);
     EXPECT_EQ(info->display_name(), kDisplayName);
@@ -109,7 +108,7 @@ TEST_F(SmbPersistedShareRegistryTest, Replace) {
   }
   {
     SmbPersistedShareRegistry registry(&profile_);
-    absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+    std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
     ASSERT_TRUE(info);
     EXPECT_EQ(info->share_url().ToString(), kShareUrl);
     EXPECT_EQ(info->display_name(), kDisplayName);
@@ -139,7 +138,7 @@ TEST_F(SmbPersistedShareRegistryTest, Delete) {
     SmbPersistedShareRegistry registry(&profile_);
     registry.Delete(SmbUrl(kShareUrl2));
 
-    absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+    std::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
     ASSERT_TRUE(info);
     EXPECT_EQ(info->share_url().ToString(), kShareUrl);
     EXPECT_EQ(info->display_name(), kDisplayName);
@@ -147,7 +146,7 @@ TEST_F(SmbPersistedShareRegistryTest, Delete) {
     EXPECT_EQ(info->workgroup(), kWorkgroup);
     EXPECT_FALSE(info->use_kerberos());
 
-    absl::optional<SmbShareInfo> info2 = registry.Get(SmbUrl(kShareUrl2));
+    std::optional<SmbShareInfo> info2 = registry.Get(SmbUrl(kShareUrl2));
     ASSERT_FALSE(info2);
 
     std::vector<SmbShareInfo> all_info = registry.GetAll();
@@ -156,5 +155,4 @@ TEST_F(SmbPersistedShareRegistryTest, Delete) {
 }
 
 }  // namespace
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

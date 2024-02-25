@@ -14,10 +14,10 @@
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/logging/proto_to_dictionary_conversion.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace {
 
@@ -42,7 +42,8 @@ std::string FormatAsJSON(const base::Value::Dict& value) {
 }
 
 base::Value GetJavascriptTimestamp() {
-  return base::Value(base::Time::Now().ToJsTimeIgnoringNull());
+  return base::Value(
+      base::Time::Now().InMillisecondsFSinceUnixEpochIgnoringNull());
 }
 
 // FireWebUIListener message to notify the JavaScript of HTTP message addition.
@@ -100,7 +101,7 @@ void NearbyInternalsHttpHandler::OnJavascriptAllowed() {
   if (service_) {
     observation_.Observe(service_->GetHttpNotifier());
   } else {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
   }
 }
 
@@ -119,7 +120,7 @@ void NearbyInternalsHttpHandler::UpdateDevice(const base::Value::List& args) {
   if (service_) {
     service_->GetLocalDeviceDataManager()->DownloadDeviceData();
   } else {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
   }
 }
 
@@ -130,7 +131,7 @@ void NearbyInternalsHttpHandler::ListPublicCertificates(
   if (service_) {
     service_->GetCertificateManager()->DownloadPublicCertificates();
   } else {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
   }
 }
 
@@ -141,12 +142,12 @@ void NearbyInternalsHttpHandler::ListContactPeople(
   if (service_) {
     service_->GetContactManager()->DownloadContacts();
   } else {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
   }
 }
 
 void NearbyInternalsHttpHandler::OnUpdateDeviceRequest(
-    const nearbyshare::proto::UpdateDeviceRequest& request) {
+    const nearby::sharing::proto::UpdateDeviceRequest& request) {
   FireWebUIListener(
       kHttpMessageAdded,
       HttpMessageToDictionary(UpdateDeviceRequestToReadableDictionary(request),
@@ -154,7 +155,7 @@ void NearbyInternalsHttpHandler::OnUpdateDeviceRequest(
 }
 
 void NearbyInternalsHttpHandler::OnUpdateDeviceResponse(
-    const nearbyshare::proto::UpdateDeviceResponse& response) {
+    const nearby::sharing::proto::UpdateDeviceResponse& response) {
   FireWebUIListener(kHttpMessageAdded,
                     HttpMessageToDictionary(
                         UpdateDeviceResponseToReadableDictionary(response),
@@ -162,7 +163,7 @@ void NearbyInternalsHttpHandler::OnUpdateDeviceResponse(
 }
 
 void NearbyInternalsHttpHandler::OnListContactPeopleRequest(
-    const nearbyshare::proto::ListContactPeopleRequest& request) {
+    const nearby::sharing::proto::ListContactPeopleRequest& request) {
   FireWebUIListener(kHttpMessageAdded,
                     HttpMessageToDictionary(
                         ListContactPeopleRequestToReadableDictionary(request),
@@ -170,7 +171,7 @@ void NearbyInternalsHttpHandler::OnListContactPeopleRequest(
 }
 
 void NearbyInternalsHttpHandler::OnListContactPeopleResponse(
-    const nearbyshare::proto::ListContactPeopleResponse& response) {
+    const nearby::sharing::proto::ListContactPeopleResponse& response) {
   FireWebUIListener(kHttpMessageAdded,
                     HttpMessageToDictionary(
                         ListContactPeopleResponseToReadableDictionary(response),
@@ -178,7 +179,7 @@ void NearbyInternalsHttpHandler::OnListContactPeopleResponse(
 }
 
 void NearbyInternalsHttpHandler::OnListPublicCertificatesRequest(
-    const nearbyshare::proto::ListPublicCertificatesRequest& request) {
+    const nearby::sharing::proto::ListPublicCertificatesRequest& request) {
   FireWebUIListener(
       kHttpMessageAdded,
       HttpMessageToDictionary(
@@ -187,7 +188,7 @@ void NearbyInternalsHttpHandler::OnListPublicCertificatesRequest(
 }
 
 void NearbyInternalsHttpHandler::OnListPublicCertificatesResponse(
-    const nearbyshare::proto::ListPublicCertificatesResponse& response) {
+    const nearby::sharing::proto::ListPublicCertificatesResponse& response) {
   FireWebUIListener(
       kHttpMessageAdded,
       HttpMessageToDictionary(

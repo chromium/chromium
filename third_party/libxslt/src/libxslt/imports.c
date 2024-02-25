@@ -15,7 +15,7 @@
 #include <string.h>
 
 #include <libxml/xmlmemory.h>
-#include <libxml/tree.h>
+#include <libxml/parser.h>
 #include <libxml/hash.h>
 #include <libxml/xmlerror.h>
 #include <libxml/uri.h>
@@ -53,29 +53,49 @@ static void xsltFixImportedCompSteps(xsltStylesheetPtr master,
     }
 }
 
+#define XSLT_MAX_NESTING 40
+
 static int
-xsltCheckCycle(xsltStylesheetPtr style, const xmlChar *URI) {
+xsltCheckCycle(xsltStylesheetPtr style, xmlNodePtr cur, const xmlChar *URI) {
     xsltStylesheetPtr ancestor;
     xsltDocumentPtr docptr;
+    int depth;
 
     /*
-     * in order to detect recursion, we check all previously included
-     * stylesheets.
+     * Check imported stylesheets.
      */
-    docptr = style->includes;
-    while (docptr != NULL) {
-        if (xmlStrEqual(docptr->doc->URL, URI))
-	    return(-1);
-	docptr = docptr->includes;
-    }
-
-    /*
-     * Also check imported stylesheets.
-     */
+    depth = 0;
     ancestor = style;
     while (ancestor != NULL) {
-	if (xmlStrEqual(ancestor->doc->URL, URI))
+        if (++depth >= XSLT_MAX_NESTING) {
+            xsltTransformError(NULL, style, cur,
+               "maximum nesting depth exceeded: %s\n", URI);
+            return(-1);
+        }
+	if (xmlStrEqual(ancestor->doc->URL, URI)) {
+            xsltTransformError(NULL, style, cur,
+               "recursion detected on imported URL %s\n", URI);
 	    return(-1);
+        }
+
+        /*
+         * Check included stylesheets.
+         */
+        docptr = ancestor->includes;
+        while (docptr != NULL) {
+            if (++depth >= XSLT_MAX_NESTING) {
+                xsltTransformError(NULL, style, cur,
+                   "maximum nesting depth exceeded: %s\n", URI);
+                return(-1);
+            }
+            if (xmlStrEqual(docptr->doc->URL, URI)) {
+                xsltTransformError(NULL, style, cur,
+                   "recursion detected on included URL %s\n", URI);
+                return(-1);
+            }
+            docptr = docptr->includes;
+        }
+
 	ancestor = ancestor->parent;
     }
 
@@ -120,11 +140,8 @@ xsltParseStylesheetImport(xsltStylesheetPtr style, xmlNodePtr cur) {
 	goto error;
     }
 
-    if (xsltCheckCycle(style, URI) < 0) {
-        xsltTransformError(NULL, style, cur,
-           "xsl:import : recursion detected on imported URL %s\n", URI);
+    if (xsltCheckCycle(style, cur, URI) < 0)
         goto error;
-    }
 
     /*
      * Security framework check
@@ -213,11 +230,8 @@ xsltParseStylesheetInclude(xsltStylesheetPtr style, xmlNodePtr cur) {
 	goto error;
     }
 
-    if (xsltCheckCycle(style, URI) < 0) {
-        xsltTransformError(NULL, style, cur,
-            "xsl:include : recursion detected on included URL %s\n", URI);
+    if (xsltCheckCycle(style, cur, URI) < 0)
         goto error;
-    }
 
     include = xsltLoadStyleDocument(style, URI);
     if (include == NULL) {

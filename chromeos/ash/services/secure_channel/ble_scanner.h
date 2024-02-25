@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_SCANNER_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_SCANNER_H_
 
+#include <optional>
 #include <ostream>
 
 #include "base/containers/flat_map.h"
@@ -16,7 +17,7 @@
 #include "chromeos/ash/services/secure_channel/connection_role.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_medium.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 
 namespace device {
 class BluetoothDevice;
@@ -38,6 +39,10 @@ class BleScanner {
         ConnectionMedium connection_medium,
         ConnectionRole connection_role,
         const std::vector<uint8_t>& eid) = 0;
+    virtual void OnDiscoveryFailed(
+        const DeviceIdPair& device_id_pair,
+        mojom::DiscoveryResult discovery_result,
+        std::optional<mojom::DiscoveryErrorCode> error_code) {}
   };
 
   BleScanner(const BleScanner&) = delete;
@@ -60,7 +65,7 @@ class BleScanner {
   // Retrieves the timestamp of the last successful discovery for the given
   // |remote_device_id|, or nullopt if we haven't seen this remote device during
   // the current Chrome session.
-  absl::optional<base::Time> GetLastSeenTimestamp(
+  std::optional<base::Time> GetLastSeenTimestamp(
       const std::string& remote_device_id);
 
   void AddObserver(Observer* observer);
@@ -83,6 +88,11 @@ class BleScanner {
       ConnectionMedium connection_medium,
       ConnectionRole connection_role,
       const std::vector<uint8_t>& eid);
+
+  void NotifyBleDiscoverySessionFailed(
+      const DeviceIdPair& device_id_pair,
+      mojom::DiscoveryResult discovery_state,
+      std::optional<mojom::DiscoveryErrorCode> error_code);
 
  private:
   base::ObserverList<Observer> observer_list_;

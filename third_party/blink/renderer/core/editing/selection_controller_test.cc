@@ -108,15 +108,16 @@ TEST_F(SelectionControllerTest, setNonDirectionalSelectionIfNeeded) {
                                          .Build(),
                                      TextGranularity::kCharacter);
   EXPECT_EQ(VisibleSelectionInDOMTree().Start(),
-            VisibleSelectionInDOMTree().Base());
+            VisibleSelectionInDOMTree().Anchor());
   EXPECT_EQ(VisibleSelectionInDOMTree().End(),
-            VisibleSelectionInDOMTree().Extent());
+            VisibleSelectionInDOMTree().Focus());
   EXPECT_EQ(Position(top, 1), VisibleSelectionInDOMTree().Start());
   EXPECT_EQ(Position(top, 3), VisibleSelectionInDOMTree().End());
 
-  EXPECT_EQ(PositionInFlatTree(top, 1), GetVisibleSelectionInFlatTree().Base());
+  EXPECT_EQ(PositionInFlatTree(top, 1),
+            GetVisibleSelectionInFlatTree().Anchor());
   EXPECT_EQ(PositionInFlatTree(bottom, 3),
-            GetVisibleSelectionInFlatTree().Extent());
+            GetVisibleSelectionInFlatTree().Focus());
   EXPECT_EQ(PositionInFlatTree(top, 1),
             GetVisibleSelectionInFlatTree().Start());
   EXPECT_EQ(PositionInFlatTree(bottom, 3),
@@ -130,16 +131,16 @@ TEST_F(SelectionControllerTest, setNonDirectionalSelectionIfNeeded) {
           .Build(),
       TextGranularity::kCharacter);
   EXPECT_EQ(VisibleSelectionInDOMTree().End(),
-            VisibleSelectionInDOMTree().Base());
+            VisibleSelectionInDOMTree().Anchor());
   EXPECT_EQ(VisibleSelectionInDOMTree().Start(),
-            VisibleSelectionInDOMTree().Extent());
+            VisibleSelectionInDOMTree().Focus());
   EXPECT_EQ(Position(bottom, 0), VisibleSelectionInDOMTree().Start());
   EXPECT_EQ(Position(bottom, 3), VisibleSelectionInDOMTree().End());
 
   EXPECT_EQ(PositionInFlatTree(bottom, 3),
-            GetVisibleSelectionInFlatTree().Base());
+            GetVisibleSelectionInFlatTree().Anchor());
   EXPECT_EQ(PositionInFlatTree(top, 1),
-            GetVisibleSelectionInFlatTree().Extent());
+            GetVisibleSelectionInFlatTree().Focus());
   EXPECT_EQ(PositionInFlatTree(top, 1),
             GetVisibleSelectionInFlatTree().Start());
   EXPECT_EQ(PositionInFlatTree(bottom, 3),
@@ -531,8 +532,6 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithInput) {
     <div id="two">22</div>)HTML");
 
   Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* input = GetDocument().QuerySelector(AtomicString("input"));
-
   const SelectionInFlatTree& selection =
       ExpandWithGranularity(SelectionInFlatTree::Builder()
                                 .Collapse(PositionInFlatTree(one, 0))
@@ -540,9 +539,8 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithInput) {
                             TextGranularity::kParagraph);
   SelectionInFlatTree adjust_selection =
       AdjustSelectionByUserSelect(one, selection);
-  EXPECT_EQ(adjust_selection.Base(),
-            PositionInFlatTree::FirstPositionInNode(*one));
-  EXPECT_EQ(adjust_selection.Extent(), PositionInFlatTree::BeforeNode(*input));
+  EXPECT_EQ(adjust_selection.Anchor(), selection.Anchor());
+  EXPECT_EQ(adjust_selection.Focus(), PositionInFlatTree(one->parentNode(), 2));
 }
 
 // http://crbug.com/1410448
@@ -555,7 +553,6 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithSpan) {
       <span style="user-select:text"> lo </span>
       <span id="two" style="user-select:text">there</span></div>)HTML");
 
-  Element* div = GetDocument().getElementById(AtomicString("div"));
   Element* one = GetDocument().getElementById(AtomicString("one"));
   Element* two = GetDocument().getElementById(AtomicString("two"));
 
@@ -566,8 +563,35 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithSpan) {
                             TextGranularity::kParagraph);
   SelectionInFlatTree adjust_selection =
       AdjustSelectionByUserSelect(one, selection);
-  EXPECT_EQ(adjust_selection.Base(), PositionInFlatTree(div, 0));
-  EXPECT_EQ(adjust_selection.Extent(),
+  EXPECT_EQ(adjust_selection.Anchor(), selection.Anchor());
+  EXPECT_EQ(adjust_selection.Focus(),
+            PositionInFlatTree::LastPositionInNode(*two->firstChild()));
+}
+
+// http://crbug.com/1487484
+TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithComment) {
+  SetBodyContent(R"HTML(
+    <div id="div">
+      <span id="one">Hello World!</span>
+      <b>before comment</b><!---->
+      <span id="two">after comment Hello World!</span>
+    </div>)HTML");
+
+  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* two = GetDocument().getElementById(AtomicString("two"));
+
+  const SelectionInFlatTree& selection =
+      ExpandWithGranularity(SelectionInFlatTree::Builder()
+                                .Collapse(PositionInFlatTree(one, 0))
+                                .Build(),
+                            TextGranularity::kParagraph);
+  SelectionInFlatTree adjust_selection =
+      AdjustSelectionByUserSelect(one, selection);
+  EXPECT_EQ(adjust_selection.Anchor(), selection.Anchor());
+  EXPECT_EQ(adjust_selection.Anchor(),
+            PositionInFlatTree::FirstPositionInNode(*one->firstChild()));
+  EXPECT_EQ(adjust_selection.Focus(), selection.Focus());
+  EXPECT_EQ(adjust_selection.Focus(),
             PositionInFlatTree::LastPositionInNode(*two->firstChild()));
 }
 

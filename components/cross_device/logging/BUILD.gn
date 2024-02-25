@@ -1,0 +1,24 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("logging") {
+  sources = [
+    "log_buffer.cc",
+    "log_buffer.h",
+    "logging.cc",
+    "logging.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "logging_unittest.cc" ]
+
+  deps = [
+    ":logging",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

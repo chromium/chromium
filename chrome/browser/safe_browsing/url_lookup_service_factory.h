@@ -15,6 +15,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace safe_browsing {
 
 class RealTimeUrlLookupService;
@@ -36,15 +40,23 @@ class RealTimeUrlLookupServiceFactory : public ProfileKeyedServiceFactory {
   RealTimeUrlLookupServiceFactory& operator=(
       const RealTimeUrlLookupServiceFactory&) = delete;
 
+  void SetURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
  private:
   friend base::NoDestructor<RealTimeUrlLookupServiceFactory>;
 
   RealTimeUrlLookupServiceFactory();
-  ~RealTimeUrlLookupServiceFactory() override = default;
+  ~RealTimeUrlLookupServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
+      content::BrowserContext* context) const;
+
+  scoped_refptr<network::SharedURLLoaderFactory> testing_url_loader_factory_;
 };
 
 }  // namespace safe_browsing

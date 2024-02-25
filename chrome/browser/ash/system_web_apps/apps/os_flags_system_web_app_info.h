@@ -29,7 +29,7 @@ class OsFlagsSystemWebAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
-  bool ShouldShowInSearch() const override;
+  bool ShouldShowInSearchAndShelf() const override;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_OS_FLAGS_SYSTEM_WEB_APP_INFO_H_

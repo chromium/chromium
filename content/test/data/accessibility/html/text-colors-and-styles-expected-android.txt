@@ -1,0 +1,9 @@
+android.webkit.WebView focusable focused scrollable
+++android.widget.TextView name='color'
+++android.widget.TextView role_description='heading 1' heading name='text size'
+++android.widget.TextView role_description='heading 2' heading name='text style'
+++android.view.View
+++++android.view.View name='strong'
+++android.widget.TextView name='italic'
+++android.widget.TextView name=' '
+++android.widget.TextView name='bold'

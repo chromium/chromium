@@ -23,7 +23,7 @@ namespace {
 
 ScreenDetailed* FindScreenDetailedByDisplayId(
     ScreenDetails* screen_details,
-    absl::optional<int64_t> display_id) {
+    std::optional<int64_t> display_id) {
   if (display_id == display::kInvalidDisplayId) {
     return nullptr;
   }

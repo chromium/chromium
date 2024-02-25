@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -19,6 +20,8 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -130,6 +133,8 @@ class SearchBoxBackground : public views::Background {
 // To paint grey background on mic and back buttons, and close buttons for
 // fullscreen launcher.
 class SearchBoxImageButton : public views::ImageButton {
+  METADATA_HEADER(SearchBoxImageButton, views::ImageButton)
+
  public:
   explicit SearchBoxImageButton(PressedCallback callback)
       : ImageButton(std::move(callback)) {
@@ -139,8 +144,6 @@ class SearchBoxImageButton : public views::ImageButton {
     SetHasInkDropActionOnClick(true);
     views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                  /*highlight_on_hover=*/true);
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
 
     SetPreferredSize(gfx::Size(kBubbleLauncherSearchBoxButtonSizeDip,
                                kBubbleLauncherSearchBoxButtonSizeDip));
@@ -177,9 +180,6 @@ class SearchBoxImageButton : public views::ImageButton {
     SchedulePaint();
   }
 
-  void set_is_showing(bool is_showing) { is_showing_ = is_showing; }
-  bool is_showing() { return is_showing_; }
-
   void UpdateInkDropColorAndOpacity(SkColor background_color) {
     const std::pair<SkColor, float> base_color_and_opacity =
         ash::ColorProvider::Get()->GetInkDropBaseColorAndOpacity(
@@ -191,17 +191,18 @@ class SearchBoxImageButton : public views::ImageButton {
 
  private:
   int GetButtonRadius() const { return width() / 2; }
-
-  // Whether the button is showing/shown or hiding/hidden.
-  bool is_showing_ = false;
-
-  const char* GetClassName() const override { return "SearchBoxImageButton"; }
 };
+
+BEGIN_METADATA(SearchBoxImageButton)
+END_METADATA
 
 // To show context menu of selected view instead of that of focused view which
 // is always this view when the user uses keyboard shortcut to open context
 // menu.
 class SearchBoxTextfield : public views::Textfield {
+  // TODO (kylixrd): Add metadata here once the Tast tests are updated.
+  // METADATA_HEADER(SearchBoxTextfield, views::Textfield)
+
  public:
   explicit SearchBoxTextfield(SearchBoxViewBase* search_box_view)
       : search_box_view_(search_box_view) {}
@@ -271,14 +272,22 @@ class SearchBoxTextfield : public views::Textfield {
   }
 
  private:
-  const raw_ptr<SearchBoxViewBase, ExperimentalAsh> search_box_view_;
+  const raw_ptr<SearchBoxViewBase> search_box_view_;
 };
+
+// TODO (kylixrd): Enable the following once tast-tests are fixed. Metadata
+// on this class causes failures since the return value of GetClassName() no
+// longer lies and returns the correct class name.
+// BEGIN_METADATA(SearchBoxTextfield)
+// END_METADATA
 
 // Used to animate the transition between icon images. When a new icon is set,
 // this view will temporarily store the layer of the previous icon and animate
 // its opacity to fade out, while keeping the correct bounds for the fading out
 // layer. At the same time the new icon will fade in.
 class SearchIconImageView : public views::ImageView {
+  METADATA_HEADER(SearchIconImageView, views::ImageView)
+
  public:
   SearchIconImageView() = default;
 
@@ -340,6 +349,9 @@ class SearchIconImageView : public views::ImageView {
 
   base::WeakPtrFactory<SearchIconImageView> weak_factory_{this};
 };
+
+BEGIN_METADATA(SearchIconImageView)
+END_METADATA
 
 SearchBoxViewBase::InitParams::InitParams() = default;
 
@@ -437,7 +449,7 @@ SearchBoxViewBase::SearchBoxViewBase()
   search_box_button_container_ =
       content_container_->AddChildView(std::make_unique<views::View>());
   search_box_button_container_->SetLayoutManager(
-      std::make_unique<views::BoxLayout>());
+      std::make_unique<views::FillLayout>());
   content_container_->SetFlexForView(search_box_button_container_, 0,
                                      /*use_min_size=*/true);
 }
@@ -468,28 +480,42 @@ void SearchBoxViewBase::Init(const InitParams& params) {
 
 views::ImageButton* SearchBoxViewBase::CreateCloseButton(
     const base::RepeatingClosure& button_callback) {
+  MaybeCreateFilterAndCloseButtonContainer();
+
   DCHECK(!close_button_);
-  close_button_ = search_box_button_container_->AddChildView(
+  close_button_ = filter_and_close_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
-  close_button_->SetVisible(false);
   return close_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::CreateAssistantButton(
     const base::RepeatingClosure& button_callback) {
+  // `assistant_button_container_` is used to align the assistant button to the
+  // end of the `search_box_button_container_`.
+  assistant_button_container_ = search_box_button_container_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  assistant_button_container_->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  assistant_button_container_->SetPaintToLayer();
+  assistant_button_container_->layer()->SetFillsBoundsOpaquely(false);
+  assistant_button_container_->SetVisible(false);
+
   DCHECK(!assistant_button_);
-  assistant_button_ = search_box_button_container_->AddChildView(
+  assistant_button_ = assistant_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
-  assistant_button_->SetVisible(false);
   return assistant_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::CreateFilterButton(
     const base::RepeatingClosure& button_callback) {
+  MaybeCreateFilterAndCloseButtonContainer();
+
   DCHECK(!filter_button_);
-  filter_button_ = search_box_button_container_->AddChildView(
+  filter_button_ = filter_and_close_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
-  filter_button_->SetVisible(false);
+  filter_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
+  filter_button_->GetViewAccessibility().OverrideHasPopup(
+      ax::mojom::HasPopup::kMenu);
   return filter_button_;
 }
 
@@ -508,6 +534,10 @@ views::ImageButton* SearchBoxViewBase::assistant_button() {
   return views::AsViewClass<views::ImageButton>(assistant_button_);
 }
 
+views::View* SearchBoxViewBase::assistant_button_container() {
+  return views::AsViewClass<views::View>(assistant_button_container_);
+}
+
 views::ImageButton* SearchBoxViewBase::close_button() {
   return views::AsViewClass<views::ImageButton>(close_button_);
 }
@@ -516,12 +546,17 @@ views::ImageButton* SearchBoxViewBase::filter_button() {
   return views::AsViewClass<views::ImageButton>(filter_button_);
 }
 
+views::View* SearchBoxViewBase::filter_and_close_button_container() {
+  return views::AsViewClass<views::View>(filter_and_close_button_container_);
+}
+
 views::ImageView* SearchBoxViewBase::search_icon() {
   return search_icon_;
 }
 
-void SearchBoxViewBase::SetIphView(std::unique_ptr<views::View> view) {
-  if (iph_view()) {
+void SearchBoxViewBase::SetIphView(
+    std::unique_ptr<LauncherSearchIphView> view) {
+  if (GetIphView()) {
     DCHECK(false) << "SetIphView gets called with an IPH view being shown.";
 
     DeleteIphView();
@@ -530,16 +565,28 @@ void SearchBoxViewBase::SetIphView(std::unique_ptr<views::View> view) {
   iph_view_tracker_.SetView(main_container_->AddChildView(std::move(view)));
 }
 
+LauncherSearchIphView* SearchBoxViewBase::GetIphView() {
+  views::View* view = iph_view_tracker_.view();
+  if (!view) {
+    return nullptr;
+  }
+
+  CHECK(views::IsViewClass<LauncherSearchIphView>(view))
+      << "Only LaunchserSearchIph view is supported now";
+  return static_cast<LauncherSearchIphView*>(view);
+}
+
 void SearchBoxViewBase::DeleteIphView() {
-  main_container_->RemoveChildViewT(iph_view());
+  main_container_->RemoveChildViewT(GetIphView());
+}
+
+void SearchBoxViewBase::TriggerSearch() {
+  HandleQueryChange(search_box_->GetText(), /*initiated_by_user=*/false);
 }
 
 void SearchBoxViewBase::MaybeSetAutocompleteGhostText(
     const std::u16string& title,
     const std::u16string& category) {
-  if (!features::IsAutocompleteExtendedSuggestionsEnabled())
-    return;
-
   if (title.empty() && category.empty()) {
     ghost_text_container_->SetVisible(false);
     autocomplete_ghost_text_->SetText(std::u16string());
@@ -585,7 +632,7 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
   UpdateButtonsVisibility();
   OnSearchBoxActiveChanged(active);
 
-  content_container_->Layout();
+  content_container_->DeprecatedLayoutImmediately();
   UpdateSearchBoxFocusPaint();
   SchedulePaint();
 }
@@ -619,10 +666,6 @@ void SearchBoxViewBase::OnEnabledChanged() {
   }
 }
 
-const char* SearchBoxViewBase::GetClassName() const {
-  return "SearchBoxView";
-}
-
 void SearchBoxViewBase::OnGestureEvent(ui::GestureEvent* event) {
   HandleSearchBoxEvent(event);
 }
@@ -633,10 +676,8 @@ void SearchBoxViewBase::OnMouseEvent(ui::MouseEvent* event) {
 
 void SearchBoxViewBase::OnThemeChanged() {
   views::View::OnThemeChanged();
-  if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
-    search_box_->SetSelectionBackgroundColor(
-        GetWidget()->GetColorProvider()->GetColor(kColorAshFocusAuraColor));
-  }
+  search_box_->SetSelectionBackgroundColor(
+      GetWidget()->GetColorProvider()->GetColor(kColorAshFocusAuraColor));
   UpdatePlaceholderTextStyle();
 }
 
@@ -646,7 +687,7 @@ void SearchBoxViewBase::NotifyGestureEvent() {
 
 void SearchBoxViewBase::OnSearchBoxFocusedChanged() {
   UpdateSearchBoxBorder();
-  Layout();
+  DeprecatedLayoutImmediately();
   UpdateSearchBoxFocusPaint();
   SchedulePaint();
 }
@@ -699,24 +740,18 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
       (show_close_button_when_active_ && is_search_box_active_);
 
   if (should_show_close_button) {
-    MaybeFadeButtonIn(close_button_);
-    if (filter_button_) {
-      MaybeFadeButtonIn(filter_button_);
-    }
+    MaybeFadeContainerIn(filter_and_close_button_container_);
   } else {
-    MaybeFadeButtonOut(close_button_);
-    if (filter_button_) {
-      MaybeFadeButtonOut(filter_button_);
-    }
+    MaybeFadeContainerOut(filter_and_close_button_container_);
   }
 
   if (assistant_button_) {
     const bool should_show_assistant_button =
         show_assistant_button_ && !should_show_close_button;
     if (should_show_assistant_button) {
-      MaybeFadeButtonIn(assistant_button_);
+      MaybeFadeContainerIn(assistant_button_container_);
     } else {
-      MaybeFadeButtonOut(assistant_button_);
+      MaybeFadeContainerOut(assistant_button_container_);
     }
   }
 
@@ -724,13 +759,12 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
   InvalidateLayout();
 }
 
-void SearchBoxViewBase::MaybeFadeButtonIn(SearchBoxImageButton* button) {
-  CHECK(button);
-  if (button->GetVisible() && button->is_showing())
+void SearchBoxViewBase::MaybeFadeContainerIn(views::View* container) {
+  CHECK(container);
+  if (container->GetVisible() &&
+      container->layer()->GetTargetOpacity() == 1.0f) {
     return;
-
-  if (!button->layer()->GetAnimator()->is_animating())
-    button->layer()->SetOpacity(0.0f);
+  }
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -738,35 +772,34 @@ void SearchBoxViewBase::MaybeFadeButtonIn(SearchBoxImageButton* button) {
       .Once()
       .At(kButtonFadeInDelay)
       .SetDuration(kButtonFadeInDuration)
-      .SetOpacity(button->layer(), 1.0f, gfx::Tween::LINEAR);
+      .SetOpacity(container->layer(), 1.0f, gfx::Tween::LINEAR);
 
-  // Set the button visible after scheduling the animation because scheduling
-  // the animation might abort a fade-out, which sets the button invisible.
-  button->SetVisible(true);
-  button->set_is_showing(true);
+  // Set the container visible after scheduling the animation because scheduling
+  // the animation might abort a fade-out, which sets the container invisible.
+  container->SetVisible(true);
 }
 
-void SearchBoxViewBase::MaybeFadeButtonOut(SearchBoxImageButton* button) {
-  CHECK(button);
-  if (!button->GetVisible() || !button->is_showing())
+void SearchBoxViewBase::MaybeFadeContainerOut(views::View* container) {
+  CHECK(container);
+  if (!container->GetVisible() || container->layer()->GetTargetOpacity() == 0) {
     return;
+  }
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(base::BindOnce(&SearchBoxViewBase::SetVisibilityHidden,
-                              weak_factory_.GetWeakPtr(), button))
-      .OnAborted(base::BindOnce(&SearchBoxViewBase::SetVisibilityHidden,
-                                weak_factory_.GetWeakPtr(), button))
+      .OnEnded(base::BindOnce(&SearchBoxViewBase::SetContainerVisibilityHidden,
+                              weak_factory_.GetWeakPtr(), container))
+      .OnAborted(
+          base::BindOnce(&SearchBoxViewBase::SetContainerVisibilityHidden,
+                         weak_factory_.GetWeakPtr(), container))
       .Once()
       .SetDuration(kButtonFadeOutDuration)
-      .SetOpacity(button->layer(), 0.0f, gfx::Tween::LINEAR);
-
-  button->set_is_showing(false);
+      .SetOpacity(container->layer(), 0.0f, gfx::Tween::LINEAR);
 }
 
-void SearchBoxViewBase::SetVisibilityHidden(SearchBoxImageButton* button) {
-  button->SetVisible(false);
+void SearchBoxViewBase::SetContainerVisibilityHidden(views::View* container) {
+  container->SetVisible(false);
 }
 
 void SearchBoxViewBase::ContentsChanged(views::Textfield* sender,
@@ -840,5 +873,19 @@ void SearchBoxViewBase::UpdateBackgroundColor(SkColor color) {
     filter_button_->UpdateInkDropColorAndOpacity(color);
   }
 }
+
+void SearchBoxViewBase::MaybeCreateFilterAndCloseButtonContainer() {
+  if (!filter_and_close_button_container_) {
+    filter_and_close_button_container_ =
+        search_box_button_container_->AddChildView(
+            std::make_unique<views::BoxLayoutView>());
+    filter_and_close_button_container_->SetPaintToLayer();
+    filter_and_close_button_container_->layer()->SetFillsBoundsOpaquely(false);
+    filter_and_close_button_container_->SetVisible(false);
+  }
+}
+
+BEGIN_METADATA(SearchBoxViewBase)
+END_METADATA
 
 }  // namespace ash

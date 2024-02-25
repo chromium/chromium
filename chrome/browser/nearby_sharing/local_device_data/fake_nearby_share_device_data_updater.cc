@@ -11,7 +11,8 @@ FakeNearbyShareDeviceDataUpdater::FakeNearbyShareDeviceDataUpdater(
 FakeNearbyShareDeviceDataUpdater::~FakeNearbyShareDeviceDataUpdater() = default;
 
 void FakeNearbyShareDeviceDataUpdater::RunNextRequest(
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   FinishAttempt(response);
 }
 

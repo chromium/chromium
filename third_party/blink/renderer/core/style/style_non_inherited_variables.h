@@ -58,9 +58,19 @@ class CORE_EXPORT StyleNonInheritedVariables {
   const StyleVariables::DataMap& Data() const { return variables_.Data(); }
   const StyleVariables::ValueMap& Values() const { return variables_.Values(); }
 
+  friend CORE_EXPORT std::ostream& operator<<(
+      std::ostream& stream,
+      const StyleNonInheritedVariables& variables);
+
  private:
   StyleVariables variables_;
 };
+
+inline CORE_EXPORT std::ostream& operator<<(
+    std::ostream& stream,
+    const StyleNonInheritedVariables& variables) {
+  return stream << variables.variables_;
+}
 
 }  // namespace blink
 

@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++CheckBox text:"Title0" viewIdResName:"c0" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
 ++CheckBox text:"Label1" hint:"Title1" viewIdResName:"c1" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", hint="Title1", roleDescription="checkbox"]
 ++CheckBox text:"AriaLabel2" hint:"Title2" viewIdResName:"c2" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", hint="Title2", roleDescription="checkbox"]

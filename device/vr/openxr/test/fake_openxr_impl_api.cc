@@ -536,7 +536,7 @@ XrResult xrEnumerateViewConfigurationViews(
   RETURN_IF(view_count_output == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "view_count_output is nullptr");
 
-  const std::vector<XrViewConfigurationView>& view_properties =
+  const std::vector<device::OpenXrViewProperties>& view_properties =
       g_test_helper.GetViewConfigInfo(view_configuration_type).Properties();
   *view_count_output = view_properties.size();
   if (view_capacity_input == 0) {
@@ -548,7 +548,7 @@ XrResult xrEnumerateViewConfigurationViews(
   RETURN_IF(views == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrViewConfigurationView is nullptr");
   for (uint32_t i = 0; i < view_properties.size(); i++) {
-    views[i] = view_properties[i];
+    views[i] = view_properties[i].GetPropertiesForTest();
   }
 
   return XR_SUCCESS;

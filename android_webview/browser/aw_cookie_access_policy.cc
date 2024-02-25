@@ -46,16 +46,17 @@ void AwCookieAccessPolicy::SetShouldAcceptCookies(bool allow) {
 }
 
 bool AwCookieAccessPolicy::GetShouldAcceptThirdPartyCookies(
-    int render_process_id,
-    int render_frame_id,
+    base::optional_ref<const content::GlobalRenderFrameHostToken>
+        global_frame_token,
     int frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  const content::GlobalRenderFrameHostId rfh_id(render_process_id,
-                                                render_frame_id);
-  std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
-      (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId)
-          ? AwContentsIoThreadClient::FromID(frame_tree_node_id)
-          : AwContentsIoThreadClient::FromID(rfh_id);
+  std::unique_ptr<AwContentsIoThreadClient> io_thread_client;
+  if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
+    io_thread_client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
+  } else if (global_frame_token.has_value()) {
+    io_thread_client =
+        AwContentsIoThreadClient::FromToken(global_frame_token.value());
+  }
 
   if (!io_thread_client) {
     return false;
@@ -66,19 +67,21 @@ bool AwCookieAccessPolicy::GetShouldAcceptThirdPartyCookies(
 bool AwCookieAccessPolicy::AllowCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    int render_process_id,
-    int render_frame_id) {
+    base::optional_ref<const content::GlobalRenderFrameHostToken>
+        global_frame_token,
+    bool has_storage_access) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   bool third_party = GetShouldAcceptThirdPartyCookies(
-      render_process_id, render_frame_id,
-      content::RenderFrameHost::kNoFrameTreeNodeId);
-  return CanAccessCookies(url, site_for_cookies, third_party);
+      global_frame_token, content::RenderFrameHost::kNoFrameTreeNodeId);
+  return CanAccessCookies(url, site_for_cookies, third_party,
+                          has_storage_access);
 }
 
 bool AwCookieAccessPolicy::CanAccessCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    bool accept_third_party_cookies) {
+    bool accept_third_party_cookies,
+    bool has_storage_access) {
   if (!accept_cookies_)
     return false;
 
@@ -91,6 +94,10 @@ bool AwCookieAccessPolicy::CanAccessCookies(
   // file URLs.
   if (url.SchemeIsFile())
     return true;
+
+  if (has_storage_access) {
+    return true;
+  }
 
   // Otherwise, block third-party cookies.
   return net::StaticCookiePolicy(

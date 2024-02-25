@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/Mac Builder (reclient compare)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -19,7 +22,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "mac"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -46,7 +50,9 @@
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics",
     "rewrapper_env": {
-      "RBE_compare": "true"
+      "RBE_compare": "true",
+      "RBE_num_local_reruns": "1",
+      "RBE_num_remote_reruns": "1"
     },
     "scandeps_server": true
   },

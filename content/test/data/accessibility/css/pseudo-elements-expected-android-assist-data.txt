@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:32.0 style:1 htmlInfo:[{htmlTag="h1"}, {display="block"}, {class="generated"}]
+++++TextView text:"[ " textSize:32.0 style:1 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:"Foo" textSize:32.0 style:1 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:" ]" textSize:32.0 style:1 htmlInfo:[{htmlTag=""}, {display=""}]

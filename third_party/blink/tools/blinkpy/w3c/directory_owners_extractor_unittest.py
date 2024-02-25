@@ -208,8 +208,8 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         extractor = DirectoryOwnersExtractor(self.host)
 
         self.assertEqual(
-            extractor.read_dir_metadata(MOCK_WEB_TESTS + 'a/b').component,
-            'foo')
+            extractor.read_dir_metadata(MOCK_WEB_TESTS +
+                                        'a/b').monorail_component, 'foo')
 
     def test_read_dir_metadata_success(self):
         data = (
@@ -225,7 +225,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         ])
         self.assertEqual(wpt_dir_metadata.team_email, 'bar')
         self.assertEqual(wpt_dir_metadata.should_notify, True)
-        self.assertEqual(wpt_dir_metadata.component, 'foo')
+        self.assertEqual(wpt_dir_metadata.monorail_component, 'foo')
 
     def test_read_dir_metadata_none(self):
         self.host.executive = MockExecutive(output='error')
@@ -246,7 +246,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         wpt_dir_metadata = extractor.read_dir_metadata(MOCK_WEB_TESTS + 'a/b')
         self.assertIsNone(wpt_dir_metadata.team_email)
         self.assertTrue(wpt_dir_metadata.should_notify)
-        self.assertIsNone(wpt_dir_metadata.component)
+        self.assertIsNone(wpt_dir_metadata.monorail_component)
 
     def test_read_dir_all_fields(self):
         data = (
@@ -258,7 +258,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         wpt_dir_metadata = extractor.read_dir_metadata(MOCK_WEB_TESTS + 'a/b')
         self.assertEqual(wpt_dir_metadata.team_email, 'bar')
         self.assertTrue(wpt_dir_metadata.should_notify)
-        self.assertEqual(wpt_dir_metadata.component, 'foo')
+        self.assertEqual(wpt_dir_metadata.monorail_component, 'foo')
 
     def test_read_dir_empty_wpt(self):
         data = ('{"dirs":{"third_party/blink/web_tests/a/b":{"monorail":'
@@ -269,7 +269,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         wpt_dir_metadata = extractor.read_dir_metadata(MOCK_WEB_TESTS + 'a/b')
         self.assertEqual(wpt_dir_metadata.team_email, 'bar')
         self.assertTrue(wpt_dir_metadata.should_notify)
-        self.assertEqual(wpt_dir_metadata.component, 'foo')
+        self.assertEqual(wpt_dir_metadata.monorail_component, 'foo')
 
     def test_read_dir_disable_wpt(self):
         data = (
@@ -281,4 +281,4 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         wpt_dir_metadata = extractor.read_dir_metadata(MOCK_WEB_TESTS + 'a/b')
         self.assertEqual(wpt_dir_metadata.team_email, 'bar')
         self.assertFalse(wpt_dir_metadata.should_notify)
-        self.assertEqual(wpt_dir_metadata.component, 'foo')
+        self.assertEqual(wpt_dir_metadata.monorail_component, 'foo')

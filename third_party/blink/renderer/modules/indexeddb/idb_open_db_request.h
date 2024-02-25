@@ -28,13 +28,14 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -67,11 +68,13 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
   // request cannot be issued after a request that needs processing.
   void OnBlocked(int64_t existing_version);
   void OnUpgradeNeeded(int64_t old_version,
-                       std::unique_ptr<WebIDBDatabase>,
+                       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>,
+                       scoped_refptr<base::SingleThreadTaskRunner>,
                        const IDBDatabaseMetadata&,
                        mojom::blink::IDBDataLoss,
                        String data_loss_message);
-  void OnOpenDBSuccess(std::unique_ptr<WebIDBDatabase>,
+  void OnOpenDBSuccess(mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>,
+                       scoped_refptr<base::SingleThreadTaskRunner>,
                        const IDBDatabaseMetadata&);
   void OnDeleteDBSuccess(int64_t old_version);
   void OnDBFactoryError(DOMException*);
@@ -106,7 +109,7 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
 
   // Pointer back to the IDBFactoryClient that holds a persistent reference
   // to this object.
-  IDBFactoryClient* factory_client_ = nullptr;
+  raw_ptr<IDBFactoryClient> factory_client_ = nullptr;
 };
 
 }  // namespace blink

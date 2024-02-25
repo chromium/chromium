@@ -18,8 +18,9 @@ class POLICY_EXPORT ComponentCloudPolicyServiceObserver
  public:
   ~ComponentCloudPolicyServiceObserver() override = default;
 
-  // Called on changes to store->policy() and/or store->policy_map(). The
-  // values in the `policy` map are the JSON data received from the server.
+  // Called on changes to store->policy(). The
+  // values in the `component_policy` map are the JSON data received from the
+  // server.
   virtual void OnComponentPolicyUpdated(
       const ComponentPolicyMap& component_policy) = 0;
   virtual void OnComponentPolicyServiceDestruction(

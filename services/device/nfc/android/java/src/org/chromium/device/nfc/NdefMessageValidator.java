@@ -7,9 +7,7 @@ package org.chromium.device.nfc;
 import org.chromium.device.mojom.NdefMessage;
 import org.chromium.device.mojom.NdefRecord;
 
-/**
- * Utility class that provides validation of NdefMessage.
- */
+/** Utility class that provides validation of NdefMessage. */
 public final class NdefMessageValidator {
     /**
      * Validates NdefMessage.

@@ -45,14 +45,14 @@ test(function() {
 test(function() {
     var url = new URL('https:/\rww.my@domain.com/path/');
     assert_equals(url.hostname, 'domain.com');
-    url.hostname = 'www.other!domain.com';
-    assert_equals(url.href, 'https://ww.my@www.other%21domain.com/path/');
+    url.hostname = 'www.other^domain.com';
+    assert_equals(url.href, 'https://ww.my@domain.com/path/');
 }, 'Set hostname to a malformed URL');
 
 test(function() {
     var url = new URL('https://rwwmy@domain.com/purl..th/');
-    url.hostname = 'www.other!domain.com';
-    assert_equals(url.href, 'https://rwwmy@www.other%21domain.com/purl..th/');
+    url.hostname = 'www.other^domain.com';
+    assert_equals(url.href, 'https://rwwmy@domain.com/purl..th/');
 }, 'Set hostname to URL containing username and ..');
 
 test(function() {

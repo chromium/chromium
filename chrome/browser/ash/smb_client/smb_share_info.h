@@ -10,8 +10,7 @@
 
 #include "chrome/browser/ash/smb_client/smb_url.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // Common parameters for SMB shares.
 // Note: Password is explicitly excluded here. Due to being sensitive
@@ -49,7 +48,6 @@ class SmbShareInfo {
   std::vector<uint8_t> password_salt_;
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SHARE_INFO_H_

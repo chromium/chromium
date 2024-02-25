@@ -203,6 +203,12 @@ class SideSearchSideContentsHelperBrowsertest : public InteractiveBrowserTest {
 //   5. Navigating backwards from A should skip back to the tab's initial page.
 IN_PROC_BROWSER_TEST_F(SideSearchSideContentsHelperBrowsertest,
                        SidePanelOpenedPagesInTheTabFrameAreNonSkippable) {
+  // TODO(crbug/1512129): Delete tests.
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
+      base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+    GTEST_SKIP() << "Side search feature no longer in use";
+  }
+
   const GURL initial_url = embedded_test_server()->GetURL("/initial.html");
   const GURL a_url = embedded_test_server()->GetURL("/A.html");
   const GURL b1_url = embedded_test_server()->GetURL("/B1.html");
@@ -266,6 +272,12 @@ IN_PROC_BROWSER_TEST_F(SideSearchSideContentsHelperBrowsertest,
 IN_PROC_BROWSER_TEST_F(
     SideSearchSideContentsHelperBrowsertest,
     MAYBE_RedirectedPagesOpenedFromTheSidePanelAreSkippable) {
+  // TODO(crbug/1512129): Delete tests.
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
+      base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+    GTEST_SKIP() << "Side search feature no longer in use";
+  }
+
   const GURL initial_url = embedded_test_server()->GetURL("/initial.html");
   const GURL a1_url = embedded_test_server()->GetURL("/A1.html");
   const GURL a2_url = embedded_test_server()->GetURL("/A2.html");
@@ -324,6 +336,12 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 IN_PROC_BROWSER_TEST_F(SideSearchSideContentsHelperBrowsertest,
                        MAYBE_SidePanelNavigationsRoutedAccordingToConfig) {
+  // TODO(crbug/1512129): Delete tests.
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
+      base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+    GTEST_SKIP() << "Side search feature no longer in use";
+  }
+
   // Navigation should proceed in the side contents.
   const auto matching_url = GetMatchingSearchUrl();
   NavigateInSideContents(matching_url);

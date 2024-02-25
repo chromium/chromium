@@ -241,7 +241,12 @@ class GPU_EXPORT ScopedTransferBufferPtr {
  private:
   raw_ptr<void> buffer_;
   unsigned int size_;
-  raw_ptr<CommandBufferHelper> helper_;
+
+  // Found dangling on `linux-rel` in
+  // `gpu_tests.trace_integration_test.TraceIntegrationTest.
+  // WebGPUCachingTraceTest_ComputePipelineMainThread`.
+  raw_ptr<CommandBufferHelper, DanglingUntriaged> helper_;
+
   raw_ptr<TransferBufferInterface, DanglingUntriaged> transfer_buffer_;
 };
 

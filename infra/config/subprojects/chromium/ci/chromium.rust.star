@@ -7,6 +7,8 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -16,6 +18,7 @@ ci.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.DEFAULT,
     notifies = ["chrome-rust-experiments"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
@@ -46,6 +49,16 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "base_config"),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "enable_all_rust_features",
+            "android_builder",
+            "arm",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android 32bit",
         short_name = "rel",
@@ -70,6 +83,15 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_all_rust_features",
+            "android_builder",
+            "arm64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android 64bit",
@@ -96,6 +118,16 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "base_config"),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "enable_all_rust_features",
+            "android_builder",
+            "arm64",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android 64bit",
         short_name = "rel",
@@ -113,7 +145,16 @@ ci.builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
@@ -134,7 +175,17 @@ ci.builder(
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
@@ -147,7 +198,6 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["checkout_rust"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -156,6 +206,14 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
     ),
     cores = 12,
     os = os.MAC_DEFAULT,
@@ -170,14 +228,22 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["checkout_rust"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
     ),
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
@@ -191,14 +257,23 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["checkout_rust"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
     ),
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(

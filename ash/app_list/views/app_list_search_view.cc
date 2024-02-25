@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_notifier_controller.h"
@@ -28,7 +30,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -38,6 +40,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 using views::BoxLayout;
@@ -76,14 +79,18 @@ AppListSearchView::AppListSearchView(
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
 
+  // Arrow keys are used for focus updating and the result selection handles the
+  // scrolling.
+  scroll_view_->SetAllowKeyboardScrolling(false);
+
   // Don't paint a background. The bubble already has one.
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
 
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  auto vertical_scroll =
-      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  auto vertical_scroll = std::make_unique<RoundedScrollBar>(
+      views::ScrollBar::Orientation::kVertical);
   vertical_scroll->SetInsets(kVerticalScrollInsets);
   scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
 
@@ -98,6 +105,10 @@ AppListSearchView::AppListSearchView(
   search_box_view_->SetResultSelectionController(
       result_selection_controller_.get());
 
+  if (features::IsProductivityLauncherImageSearchEnabled()) {
+    search_notifier_controller_ = std::make_unique<SearchNotifierController>();
+  }
+
   auto add_result_container = [&](SearchResultContainerView* new_container) {
     new_container->SetResults(
         AppListModelProvider::Get()->search_model()->results());
@@ -110,7 +121,7 @@ AppListSearchView::AppListSearchView(
   auto* answer_card_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
           view_delegate, dialog_controller_,
-          SearchResultView::SearchResultViewType::kAnswerCard, absl::nullopt));
+          SearchResultView::SearchResultViewType::kAnswerCard, std::nullopt));
   answer_card_container->SetListType(
       SearchResultListView::SearchResultListType::kAnswerCard);
   add_result_container(answer_card_container);
@@ -119,14 +130,13 @@ AppListSearchView::AppListSearchView(
   auto* best_match_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
           view_delegate, dialog_controller_,
-          SearchResultView::SearchResultViewType::kDefault, absl::nullopt));
+          SearchResultView::SearchResultViewType::kDefault, std::nullopt));
   best_match_container->SetListType(
       SearchResultListView::SearchResultListType::kBestMatch);
   add_result_container(best_match_container);
 
   // Launcher image search container is always the third view shown.
   if (features::IsProductivityLauncherImageSearchEnabled()) {
-    search_notifier_controller_ = std::make_unique<SearchNotifierController>();
     image_search_container_ = scroll_contents->AddChildView(
         std::make_unique<SearchResultImageListView>(view_delegate));
     add_result_container(image_search_container_);
@@ -223,7 +233,7 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
         first_animated_result_view_index;
 
     for (SearchResultContainerView* view : result_container_views_) {
-      absl::optional<AnimationInfo> container_animation_info =
+      std::optional<AnimationInfo> container_animation_info =
           view->ScheduleResultAnimations(aggregate_animation_info);
       if (container_animation_info) {
         aggregate_animation_info.total_views +=
@@ -249,7 +259,7 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
     base::UmaHistogramBoolean("Ash.SearchResultUpdateAnimationShortened",
                               aggregate_animation_info.use_short_animations);
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 
   last_search_result_count_ = result_count;
   last_result_metadata_.swap(search_result_metadata);
@@ -274,10 +284,42 @@ void AppListSearchView::VisibilityChanged(View* starting_from,
                                           bool is_visible) {
   if (!is_visible) {
     result_selection_controller_->ClearSelection();
-    for (auto* container : result_container_views_) {
+    for (ash::SearchResultContainerView* container : result_container_views_) {
       container->ResetAndHide();
     }
   }
+}
+
+void AppListSearchView::OnKeyEvent(ui::KeyEvent* event) {
+  // Only handle the key event that triggers the focus or result selection
+  // traversal here.
+  if (event->type() != ui::ET_KEY_PRESSED ||
+      !(IsUnhandledArrowKeyEvent(*event) ||
+        event->key_code() == ui::VKEY_TAB)) {
+    return;
+  }
+
+  // Only handle the case when the search notifier has the focus.
+  if (!search_notifier_ || !search_notifier_->toast_button()->HasFocus()) {
+    return;
+  }
+
+  // Left/Right key shouldn't update the focus. Set the event to handled to make
+  // left/right keys no-ops.
+  if (IsUnhandledLeftRightKeyEvent(*event)) {
+    event->SetHandled();
+    return;
+  }
+
+  bool moving_down =
+      (event->key_code() == ui::VKEY_TAB && !event->IsShiftDown()) ||
+      event->key_code() == ui::VKEY_DOWN;
+  if (moving_down) {
+    search_box_view_->EnterSearchResultSelection(*event);
+  } else {
+    search_box_view_->close_button()->RequestFocus();
+  }
+  event->SetHandled();
 }
 
 void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -285,6 +327,9 @@ void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     return;
   }
 
+  // Set the role of AppListSearchView to ListBox along with notifying value
+  // change to "interject" the node announcement before the search result is
+  // announced.
   node_data->role = ax::mojom::Role::kListBox;
 
   std::u16string value;
@@ -312,13 +357,26 @@ void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void AppListSearchView::OnActiveAppListModelsChanged(
     AppListModel* model,
     SearchModel* search_model) {
-  for (auto* container : result_container_views_) {
+  for (ash::SearchResultContainerView* container : result_container_views_) {
     container->SetResults(search_model->results());
   }
 }
 
+bool AppListSearchView::OverrideKeyNavigationAboveSearchResults(
+    const ui::KeyEvent& key_event) {
+  // The toast button on the search notifier is the only target to check if the
+  // `key_event` should be handled. Other events will be handled by either the
+  // search box or the SearchBoxViewDelegate.
+  if (!search_notifier_) {
+    return false;
+  }
+
+  search_notifier_->toast_button()->RequestFocus();
+  return true;
+}
+
 void AppListSearchView::UpdateForNewSearch(bool search_active) {
-  for (auto* container : result_container_views_) {
+  for (ash::SearchResultContainerView* container : result_container_views_) {
     container->SetActive(search_active);
   }
 
@@ -337,6 +395,18 @@ void AppListSearchView::UpdateForNewSearch(bool search_active) {
   }
 }
 
+void AppListSearchView::RemoveSearchNotifierView() {
+  // TODO(b/311785210): Remove this function if the category nudge is not
+  // wanted.
+  if (!search_notifier_) {
+    return;
+  }
+
+  auto* scroll_contents = search_notifier_->parent();
+  scroll_contents->RemoveChildViewT(std::exchange(search_notifier_, nullptr));
+  scroll_contents->InvalidateLayout();
+}
+
 void AppListSearchView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   if (image_search_container_ && width() != old_bounds.width()) {
     image_search_container_->ConfigureLayoutForAvailableWidth(width());
@@ -344,6 +414,20 @@ void AppListSearchView::OnBoundsChanged(const gfx::Rect& old_bounds) {
 }
 
 void AppListSearchView::OnSelectedResultChanged() {
+  if (search_notifier_guide_) {
+    // Only announce the guidance to the notifier if the selected result is the
+    // first available one.
+    ui::AXNodeData& notifier_guidance_node_data =
+        search_notifier_guide_->GetCustomData();
+    if (search_notifier_ && search_box_view_->search_box()->HasFocus() &&
+        result_selection_controller_
+            ->IsSelectedResultAtFirstAvailableLocation()) {
+      notifier_guidance_node_data.RemoveState(ax::mojom::State::kIgnored);
+    } else {
+      notifier_guidance_node_data.AddState(ax::mojom::State::kIgnored);
+    }
+  }
+
   if (!result_selection_controller_->selected_result()) {
     return;
   }
@@ -391,19 +475,30 @@ void AppListSearchView::MaybeNotifySelectedResultChanged() {
   }
 
   if (!result_selection_controller_->selected_result()) {
-    search_box_view_->SetA11yActiveDescendant(absl::nullopt);
+    search_box_view_->SetA11yActiveDescendant(std::nullopt);
     return;
   }
 
   views::View* selected_view =
       result_selection_controller_->selected_result()->GetSelectedView();
   if (!selected_view) {
-    search_box_view_->SetA11yActiveDescendant(absl::nullopt);
+    search_box_view_->SetA11yActiveDescendant(std::nullopt);
     return;
   }
 
   search_box_view_->SetA11yActiveDescendant(
       selected_view->GetViewAccessibility().GetUniqueId().Get());
+}
+
+void AppListSearchView::OnSearchNotifierButtonPressed() {
+  // TODO(b/311785210): Remove this function if the category nudge is not
+  // wanted.
+  search_notifier_controller_->SetPrivacyNoticeAcceptedPref();
+  RemoveSearchNotifierView();
+
+  // Update the search results as the image search category should be populated
+  // now.
+  search_box_view()->TriggerSearch();
 }
 
 bool AppListSearchView::CanSelectSearchResults() {
@@ -427,7 +522,7 @@ ui::Layer* AppListSearchView::GetPageAnimationLayer() const {
   return scroll_view_->contents()->layer();
 }
 
-BEGIN_METADATA(AppListSearchView, views::View)
+BEGIN_METADATA(AppListSearchView)
 END_METADATA
 
 }  // namespace ash

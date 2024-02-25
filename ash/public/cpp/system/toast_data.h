@@ -60,8 +60,8 @@ struct ASH_PUBLIC_EXPORT ToastData {
   bool show_on_all_root_windows = false;
   // TODO(b/259100049): We should turn this into a `OnceClosure`.
   base::RepeatingClosure dismiss_callback;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #union
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+  // global), so there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION const gfx::VectorIcon* leading_icon;
   base::OnceClosure expired_callback;
   base::TimeTicks time_created;

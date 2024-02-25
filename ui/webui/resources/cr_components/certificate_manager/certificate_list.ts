@@ -12,13 +12,14 @@ import './certificate_entry.js';
 import './certificate_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_list.html.js';
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
-import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import type {CertificatesError, CertificatesImportError, CertificatesOrgGroup, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import {CertificatesBrowserProxyImpl, CertificateType} from './certificates_browser_proxy.js';
 
 export interface CertificateListElement {
   $: {

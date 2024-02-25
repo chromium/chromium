@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -26,7 +27,6 @@
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -115,7 +115,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   void OnDeviceAccountTokenFetched(bool empty_token) override;
   void OnDeviceAccountTokenStored() override;
   void OnDeviceAccountTokenFetchError(
-      absl::optional<DeviceManagementStatus> dm_status) override;
+      std::optional<DeviceManagementStatus> dm_status) override;
   void OnDeviceAccountTokenStoreError() override;
   void OnDeviceAccountClientError(DeviceManagementStatus status) override;
   enterprise_management::DeviceServiceApiAccessRequest::DeviceType
@@ -141,8 +141,9 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
     STEP_LOCK_DEVICE = 10,       // Writing installation-time attributes.
     STEP_STORE_TOKEN = 11,       // Encrypting and storing DM token.
     STEP_STORE_ROBOT_AUTH = 12,  // Encrypting & writing robot refresh token.
-    STEP_STORE_POLICY = 13,      // Storing policy and API refresh token.
-    STEP_FINISHED = 14,          // Enrollment process done, no further action.
+    STEP_STORE_VERSION = 13,     // Storing OS and browser version.
+    STEP_STORE_POLICY = 14,      // Storing policy and API refresh token.
+    STEP_FINISHED = 15,          // Enrollment process done, no further action.
   };
 
   // Handles the response to a request for server-backed state keys.
@@ -175,7 +176,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
 
   // Invoked after the firmware management partition in TPM is updated.
   void OnFirmwareManagementParametersDataSet(
-      absl::optional<user_data_auth::SetFirmwareManagementParametersReply>
+      std::optional<device_management::SetFirmwareManagementParametersReply>
           reply);
 
   // Calls InstallAttributes::LockDevice() for enterprise enrollment and
@@ -188,6 +189,12 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
 
   // Initiates storing of robot auth token.
   void StartStoreRobotAuth();
+
+  // Store the version related information.
+  void StoreVersion();
+
+  // Store the device policy.
+  void StartStoreDevicePolicy();
 
   std::unique_ptr<DeviceCloudPolicyValidator> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
@@ -202,10 +209,10 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Set |enrollment_step_| to |step|.
   void SetStep(EnrollmentStep step);
 
-  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> store_;
-  raw_ptr<ash::InstallAttributes, ExperimentalAsh> install_attributes_;
-  raw_ptr<ServerBackedStateKeysBroker, ExperimentalAsh> state_keys_broker_;
-  raw_ptr<ash::attestation::AttestationFlow, ExperimentalAsh> attestation_flow_;
+  raw_ptr<DeviceCloudPolicyStoreAsh> store_;
+  raw_ptr<ash::InstallAttributes> install_attributes_;
+  raw_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
+  raw_ptr<ash::attestation::AttestationFlow> attestation_flow_;
   // Factory for SigningService to be used by |client_| to register with.
   std::unique_ptr<SigningServiceProvider> signing_service_provider_;
   std::unique_ptr<CloudPolicyClient> client_;

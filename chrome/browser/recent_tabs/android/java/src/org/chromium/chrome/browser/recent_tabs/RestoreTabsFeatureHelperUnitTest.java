@@ -23,6 +23,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -40,29 +42,22 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Unit tests for RestoreTabsFeatureHelper.
- */
+/** Unit tests for RestoreTabsFeatureHelper. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class RestoreTabsFeatureHelperUnitTest {
     private static final String RESTORE_TABS_FEATURE = FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE;
 
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    ForeignSessionHelper.Natives mForeignSessionHelperJniMock;
-    @Mock
-    private RestoreTabsControllerDelegate mDelegate;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private Tracker mMockTracker;
-    @Mock
-    private TabCreatorManager mTabCreatorManager;
-    @Mock
-    private BottomSheetController mBottomSheetController;
+    @Mock ForeignSessionHelper.Natives mForeignSessionHelperJniMock;
+    @Mock private RestoreTabsControllerDelegate mDelegate;
+    @Mock private Profile mProfile;
+    @Mock private Tracker mMockTracker;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Supplier<Integer> mGTSTabListModelSizeSupplier;
+    @Mock private Callback<Integer> mScrollGTSToRestoredTabsCallback;
 
     private Activity mActivity;
     private RestoreTabsFeatureHelper mHelper;
@@ -84,7 +79,13 @@ public class RestoreTabsFeatureHelperUnitTest {
 
     @Test
     public void testRestoreTabsFeatureHelper_noSyncedDevices() {
-        mHelper.maybeShowPromo(mActivity, mProfile, mTabCreatorManager, mBottomSheetController);
+        mHelper.maybeShowPromo(
+                mActivity,
+                mProfile,
+                mTabCreatorManager,
+                mBottomSheetController,
+                mGTSTabListModelSizeSupplier,
+                mScrollGTSToRestoredTabsCallback);
         verify(mForeignSessionHelperJniMock, times(1))
                 .getMobileAndTabletForeignSessions(1L, new ArrayList<ForeignSession>());
         verify(mForeignSessionHelperJniMock, times(1)).destroy(1L);
@@ -93,8 +94,7 @@ public class RestoreTabsFeatureHelperUnitTest {
     @Test
     public void testRestoreTabsFeatureHelper_hasValidSyncedDevices() {
         // Setup mock data
-        ForeignSessionTab tab = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
+        ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
         tabs.add(tab);
         ForeignSessionWindow window = new ForeignSessionWindow(31L, 1, tabs);
@@ -105,14 +105,21 @@ public class RestoreTabsFeatureHelperUnitTest {
         List<ForeignSession> sessions = new ArrayList<>();
         sessions.add(session);
 
-        doAnswer(invocation -> {
-            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
-            invoked_sessions.addAll(sessions);
-            return true;
-        })
+        doAnswer(
+                        invocation -> {
+                            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
+                            invoked_sessions.addAll(sessions);
+                            return true;
+                        })
                 .when(mForeignSessionHelperJniMock)
                 .getMobileAndTabletForeignSessions(1L, new ArrayList<ForeignSession>());
-        mHelper.maybeShowPromo(mActivity, mProfile, mTabCreatorManager, mBottomSheetController);
+        mHelper.maybeShowPromo(
+                mActivity,
+                mProfile,
+                mTabCreatorManager,
+                mBottomSheetController,
+                mGTSTabListModelSizeSupplier,
+                mScrollGTSToRestoredTabsCallback);
         verify(mDelegate, times(1)).showPromo(anyList());
     }
 }

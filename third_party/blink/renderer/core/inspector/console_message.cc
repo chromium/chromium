@@ -56,7 +56,7 @@ ConsoleMessage::ConsoleMessage(const WebConsoleMessage& message,
   if (local_frame) {
     Vector<DOMNodeId> nodes;
     for (const WebNode& web_node : message.nodes)
-      nodes.push_back(DOMNodeIds::IdForNode(&(*web_node)));
+      nodes.push_back(web_node.GetDomNodeId());
     SetNodes(local_frame, std::move(nodes));
   }
 }
@@ -69,7 +69,7 @@ ConsoleMessage::ConsoleMessage(mojom::blink::ConsoleMessageSource source,
       level_(level),
       message_(message),
       location_(std::move(location)),
-      timestamp_(base::Time::Now().ToDoubleT() * 1000.0),
+      timestamp_(base::Time::Now().InMillisecondsFSinceUnixEpoch()),
       frame_(nullptr) {
   DCHECK(location_);
 }
@@ -88,11 +88,11 @@ double ConsoleMessage::Timestamp() const {
   return timestamp_;
 }
 
-mojom::blink::ConsoleMessageSource ConsoleMessage::Source() const {
+ConsoleMessage::Source ConsoleMessage::GetSource() const {
   return source_;
 }
 
-mojom::blink::ConsoleMessageLevel ConsoleMessage::Level() const {
+ConsoleMessage::Level ConsoleMessage::GetLevel() const {
   return level_;
 }
 
@@ -107,7 +107,7 @@ const String& ConsoleMessage::WorkerId() const {
 LocalFrame* ConsoleMessage::Frame() const {
   // Do not reference detached frames.
   if (frame_ && frame_->Client())
-    return frame_;
+    return frame_.Get();
   return nullptr;
 }
 
@@ -120,7 +120,7 @@ void ConsoleMessage::SetNodes(LocalFrame* frame, Vector<DOMNodeId> nodes) {
   nodes_ = std::move(nodes);
 }
 
-const absl::optional<mojom::blink::ConsoleMessageCategory>&
+const std::optional<mojom::blink::ConsoleMessageCategory>&
 ConsoleMessage::Category() const {
   return category_;
 }

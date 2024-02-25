@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/app/app_startup_parameters.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 
 // Values of the UMA Startup.MobileSessionCallerApp histogram.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -35,6 +35,7 @@ enum MobileSessionCallerApp {
   // An application launched Chrome with an http/https URL as the default
   // browser.
   CALLER_APP_THIRD_PARTY = 17,
+  CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION = 18,
   MOBILE_SESSION_CALLER_APP_COUNT,
 };
 
@@ -87,7 +88,7 @@ enum MobileSessionCallerApp {
 //   the only required parameter is `url` containing the url to open inclusive
 //   of protocol.
 //   For application members of the Chrome Application Group,
-//   "app-group-command" command can be used. In that case, the paramaters are
+//   "app-group-command" command can be used. In that case, the parameters are
 //   sent via the shared NSUserDefault dictionary.
 //
 // Note the protocol isn't hardcoded so we accept anything. Moreover, in iOS 6
@@ -95,8 +96,8 @@ enum MobileSessionCallerApp {
 // to be registered for that protocol.
 // If the string for the parsed URL is malformed (according to RFC 2396),
 // returns nil.
-+ (instancetype)newChromeAppStartupParametersWithURL:(NSURL*)url
-                               fromSourceApplication:(NSString*)appId;
++ (instancetype)startupParametersWithURL:(NSURL*)URL
+                       sourceApplication:(NSString*)appID;
 
 // Returns the MobileSessionCallerApp for the given bundle ID.
 - (MobileSessionCallerApp)callerApp;
@@ -110,13 +111,13 @@ enum MobileSessionCallerApp {
 
 @interface ChromeAppStartupParameters (Testing)
 
-+ (instancetype)newAppStartupParametersForCommand:(NSString*)command
-                                 withExternalText:(NSString*)externalText
-                                 withExternalData:(NSData*)externalData
-                                        withIndex:(NSNumber*)index
-                                          withURL:(NSURL*)url
-                            fromSourceApplication:(NSString*)appId
-                      fromSecureSourceApplication:(NSString*)secureSourceApp;
++ (instancetype)startupParametersForCommand:(NSString*)command
+                           withExternalText:(NSString*)externalText
+                               externalData:(NSData*)externalData
+                                      index:(NSNumber*)index
+                                        URL:(NSURL*)URL
+                          sourceApplication:(NSString*)appID
+                    secureSourceApplication:(NSString*)secureAppID;
 
 @end
 

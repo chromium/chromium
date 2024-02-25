@@ -72,13 +72,13 @@ media::VideoDecoderType CodecFactory::GetVideoDecoderType() {
   return video_decoder_type_;
 }
 
-absl::optional<media::SupportedVideoDecoderConfigs>
+std::optional<media::SupportedVideoDecoderConfigs>
 CodecFactory::GetSupportedVideoDecoderConfigs() {
   base::AutoLock lock(supported_profiles_lock_);
   return supported_decoder_configs_;
 }
 
-absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
+std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
 CodecFactory::GetVideoEncodeAcceleratorSupportedProfiles() {
   base::AutoLock lock(supported_profiles_lock_);
   return supported_vea_profiles_;

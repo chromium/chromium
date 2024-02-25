@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Load api_listener after other assets have initialized.
-
-import './api_listener.js';
 import './main_view.js';
 import '../../settings_shared.css.js';
 

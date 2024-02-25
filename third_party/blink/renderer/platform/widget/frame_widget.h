@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/mojom/delegated_ink_metadata.mojom-blink.h"
 
 namespace cc {
@@ -114,6 +116,12 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns the DisplayMode in use for the widget.
   virtual mojom::blink::DisplayMode DisplayMode() const = 0;
 
+  // Returns the WindowShowState in use for the widget.
+  virtual ui::WindowShowState WindowShowState() const = 0;
+
+  // Returns the CanResize value of the widget.
+  virtual bool Resizable() const = 0;
+
   // Returns the window segments for the widget.
   virtual const WebVector<gfx::Rect>& WindowSegments() const = 0;
 
@@ -127,13 +135,14 @@ class PLATFORM_EXPORT FrameWidget {
                              const gfx::PointF& position,
                              const gfx::Vector2dF& velocity) = 0;
 
-  // Requests that a gesture of |injected_type| be reissued at a later point in
-  // time. |injected_type| is required to be one of
-  // GestureScroll{Begin,Update,End}. The dispatched gesture will scroll the
+  // For a scrollbar scroll action, requests that a gesture of |injected_type|
+  // be reissued at a later point in time. |injected_type| is required to be one
+  // of GestureScroll{Begin,Update,End}. The dispatched gesture will scroll the
   // ScrollableArea identified by |scrollable_area_element_id| by the given
   // delta + granularity.
-  virtual void InjectGestureScrollEvent(
-      mojom::blink::GestureDevice device,
+  // See also InputHandlerProxy::InjectScrollbarGestureScroll() which may
+  // shortcut callers of this function for composited scrollbars.
+  virtual void InjectScrollbarGestureScroll(
       const gfx::Vector2dF& delta,
       ui::ScrollGranularity granularity,
       cc::ElementId scrollable_area_element_id,
@@ -164,8 +173,8 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Return the edit context bounds in window coordinates.
   virtual void GetEditContextBoundsInWindow(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) = 0;
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) = 0;
 
   virtual int32_t ComputeWebTextInputNextPreviousFlags() = 0;
   virtual void ResetVirtualKeyboardVisibilityRequest() = 0;
@@ -279,8 +288,9 @@ class PLATFORM_EXPORT FrameWidget {
   virtual float GetCompositingScaleFactor() = 0;
 
   // Get and set the configuration for the debugging overlay managed by the
-  // underlaying LayerTreeHost.
-  virtual const cc::LayerTreeDebugState& GetLayerTreeDebugState() = 0;
+  // underlying LayerTreeHost. This may return null if the widget does not
+  // composite.
+  virtual const cc::LayerTreeDebugState* GetLayerTreeDebugState() = 0;
   virtual void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) = 0;
 
   // Set whether or not this widget should be throttled if it sends
@@ -302,7 +312,6 @@ class PLATFORM_EXPORT FrameWidget {
 
   virtual void OnTaskCompletedForFrame(base::TimeTicks start_time,
                                        base::TimeTicks end_time,
-                                       base::TimeTicks desired_execution_time,
                                        LocalFrame*) = 0;
 };
 

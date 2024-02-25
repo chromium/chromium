@@ -37,12 +37,12 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
@@ -205,9 +205,9 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
-    case DownloadCommands::MAX:
       NOTREACHED();
       break;
   }
@@ -323,8 +323,8 @@ void DownloadItemNotification::Close(bool by_user) {
 }
 
 void DownloadItemNotification::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   if (!item_)
     return;
 
@@ -366,8 +366,20 @@ void DownloadItemNotification::Click(
     }
 
     if (command == DownloadCommands::REVIEW) {
-      item_->ReviewScanningVerdict(
-          GetBrowser()->tab_strip_model()->GetActiveWebContents());
+      content::WebContents* contents =
+          GetBrowser()->tab_strip_model()->GetActiveWebContents();
+
+      // If there is no currently active web contents, just show the user the
+      // downloads page so they get more context on the warned download needing
+      // to be reviewed.
+      // TODO(b/285119059): Expand this solution by having the review dialog
+      // also open immediately after the download page is available.
+      if (!contents) {
+        chrome::ShowDownloads(GetBrowser());
+        return;
+      }
+
+      item_->ReviewScanningVerdict(contents);
       in_review_ = true;
       Update();
     }
@@ -406,10 +418,7 @@ void DownloadItemNotification::Click(
     case download::DownloadItem::INTERRUPTED:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Click_Stopped"));
-      GetBrowser()->OpenURL(content::OpenURLParams(
-          GURL(chrome::kChromeUIDownloadsURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-          false /* is_renderer_initiated */));
+      chrome::ShowDownloads(GetBrowser());
       CloseNotification();
       break;
     case download::DownloadItem::COMPLETE:
@@ -479,9 +488,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
 
   if (item_->IsDangerous()) {
     notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
-    RecordDangerousDownloadWarningShown(
-        item_->GetDangerType(), item_->GetTargetFilePath(),
-        item_->GetURL().SchemeIs(url::kHttpsScheme), item_->HasUserGesture());
+    MaybeRecordDangerousDownloadWarningShown(*item_);
     if (!item_->MightBeMalicious() &&
         item_->GetDangerType() !=
             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
@@ -542,23 +549,19 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
     }
   }
   SkColor notification_color = GetNotificationIconColor();
-  if (chromeos::features::IsJellyEnabled()) {
-    ui::ColorId color_id = cros_tokens::kCrosSysPrimary;
-    switch (notification_color) {
-      case ash::kSystemNotificationColorNormal:
-        color_id = cros_tokens::kCrosSysPrimary;
-        break;
-      case ash::kSystemNotificationColorWarning:
-        color_id = cros_tokens::kCrosSysWarning;
-        break;
-      case ash::kSystemNotificationColorCriticalWarning:
-        color_id = cros_tokens::kCrosSysError;
-        break;
-    }
-    notification_->set_accent_color_id(color_id);
-  } else {
-    notification_->set_accent_color(notification_color);
+  ui::ColorId color_id = cros_tokens::kCrosSysPrimary;
+  switch (notification_color) {
+    case ash::kSystemNotificationColorNormal:
+      color_id = cros_tokens::kCrosSysPrimary;
+      break;
+    case ash::kSystemNotificationColorWarning:
+      color_id = cros_tokens::kCrosSysWarning;
+      break;
+    case ash::kSystemNotificationColorCriticalWarning:
+      color_id = cros_tokens::kCrosSysError;
+      break;
   }
+  notification_->set_accent_color_id(color_id);
 
   std::vector<message_center::ButtonInfo> notification_actions;
   std::unique_ptr<std::vector<DownloadCommands::Command>> actions(
@@ -721,7 +724,7 @@ DownloadItemNotification::GetExtraActions() const {
       // opened already.
       if (!in_review_) {
         if (enterprise_connectors::ShouldPromptReviewForDownload(
-                profile(), item_->GetDangerType())) {
+                profile(), item_->GetDownloadItem())) {
           actions->push_back(DownloadCommands::REVIEW);
         } else {
           actions->push_back(DownloadCommands::KEEP);
@@ -770,8 +773,14 @@ DownloadItemNotification::GetExtraActions() const {
       break;
     case download::DownloadItem::COMPLETE:
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+      // We disable this functionality for now as the usage is very low, the
+      // feature gets re-written at this time and there is currently no secure
+      // way to determine the caller on the Ash side as the dialog is still
+      // active when |seat::SetSelection| is reached.
       if (!notification_->image().IsEmpty())
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
+#endif
       if (IsGalleryAppPdfEditNotificationEligible())
         actions->push_back(DownloadCommands::PLATFORM_OPEN);
       break;
@@ -803,15 +812,14 @@ bool DownloadItemNotification::IsGalleryAppPdfEditNotificationEligible() const {
     }
   }
 
-  file_manager::file_tasks::TaskDescriptor task_descriptor;
-  if (!file_manager::file_tasks::GetDefaultTaskFromPrefs(
-          *prefs, "application/pdf", ".pdf", &task_descriptor)) {
+  auto task_descriptor = file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *prefs, "application/pdf", ".pdf");
+  if (!task_descriptor) {
     // GetDefaultTaskFromPrefs returns false if no default app is specified. If
     // no default app is specified, a pdf will be opened with Gallery app.
     return true;
   }
-
-  return task_descriptor.app_id == web_app::kMediaAppId;
+  return task_descriptor->app_id == web_app::kMediaAppId;
 #else
   return false;
 #endif
@@ -941,9 +949,9 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
-    case DownloadCommands::MAX:
       // Only for menu.
       NOTREACHED();
       return std::u16string();
@@ -1016,6 +1024,12 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING: {
       return l10n_util::GetStringFUTF16(IDS_PROMPT_DEEP_SCANNING,
                                         elided_filename);
+    }
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING: {
+      // TODO(crbug.com/1491184): Implement UX for this danger type.
+      NOTREACHED();
+      break;
     }
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:

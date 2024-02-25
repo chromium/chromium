@@ -29,7 +29,9 @@
 import hashlib
 import logging
 import re
+from typing import Optional
 
+from blinkpy.web_tests.port.base import FuzzyRange
 from blinkpy.web_tests.port.driver import DeviceFailure, DriverInput, DriverOutput
 from blinkpy.web_tests.models import test_failures, testharness_results
 from blinkpy.web_tests.models.test_results import TestResult, build_test_result
@@ -100,8 +102,12 @@ class SingleTestRunner(object):
         args = self._port.args_for_test(self._test_name)
         test_name = self._port.name_for_test(self._test_name)
         wpt_print_mode = self._port.is_wpt_print_reftest(self._test_name)
+        trace_file = self._port.trace_file_for_test(self._test_name)
+        startup_trace_file = self._port.startup_trace_file_for_test(
+            self._test_name)
         return DriverInput(test_name, self._timeout_ms, image_hash,
-                           wpt_print_mode, args)
+                           wpt_print_mode, trace_file, startup_trace_file,
+                           args)
 
     def run(self):
         # WPT crash tests do not have baselines, so even when re-baselining we
@@ -258,7 +264,7 @@ class SingleTestRunner(object):
         # Note that current_expected_path may change because of the above file removal.
         current_expected_path = port.expected_filename(
             self._test_name, extension, return_default=False)
-        data = data or ''
+        data = data or b''
         if (current_expected_path and fs.sha1(current_expected_path) ==
                 hashlib.sha1(data).hexdigest()):
             if self._options.reset_results:
@@ -389,8 +395,7 @@ class SingleTestRunner(object):
     def _is_all_pass_testharness_text_not_needing_baseline(self, text_result):
         return (
             text_result
-            and testharness_results.is_all_pass_testharness_result(text_result)
-            and
+            and testharness_results.is_all_pass_test_result(text_result) and
             # An all-pass testharness test doesn't need the test baseline unless
             # if it is overriding a fallback one.
             not self._port.fallback_expected_filename(self._test_name, '.txt'))
@@ -475,7 +480,7 @@ class SingleTestRunner(object):
             # Will compare text if there is expected text that is not all-pass
             # (e.g., has "interesting output").
             return False, []
-        if not testharness_results.is_testharness_output_passing(
+        if not testharness_results.is_test_output_passing(
                 self._convert_to_str(driver_output.text)):
             return True, [
                 test_failures.FailureTestHarnessAssertion(
@@ -514,12 +519,8 @@ class SingleTestRunner(object):
 
         def remove_ng_text(results):
             processed = re.sub(
-                r'LayoutNG(BlockFlow|ListItem|TableCell|FlexibleBox|View)',
-                r'Layout\1', results)
-            # LayoutTableCaption doesn't override LayoutBlockFlow::GetName, so
-            # render tree dumps have "LayoutBlockFlow" for captions.
-            processed = re.sub('LayoutNGTableCaption', 'LayoutBlockFlow',
-                               processed)
+                r'LayoutNG(BlockFlow|ListItem|FlexibleBox|View)', r'Layout\1',
+                results)
             return processed
 
         def is_ng_name_mismatch(expected, actual):
@@ -608,9 +609,10 @@ class SingleTestRunner(object):
         if not driver_output.image or not driver_output.image_hash:
             return []
 
-        if driver_output.image_hash != expected_driver_output.image_hash:
-            max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
-                self._test_name)
+        max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
+            self._test_name)
+        if (driver_output.image_hash != expected_driver_output.image_hash or
+                not _allows_exact_matches(max_channel_diff, max_pixels_diff)):
             diff, stats, err_str = self._port.diff_image(
                 expected_driver_output.image,
                 driver_output.image,
@@ -672,13 +674,18 @@ class SingleTestRunner(object):
         args = self._port.args_for_test(self._test_name)
         # sort self._reference_files to put mismatch tests first
         for expectation, reference_filename in sorted(self._reference_files):
-            reference_test_name = self._port.relative_test_filename(
-                reference_filename)
+            if reference_filename.startswith('about:'):
+                reference_test_name = reference_filename
+            else:
+                reference_test_name = self._port.relative_test_filename(
+                    reference_filename)
             reference_test_names.append(reference_test_name)
             driver_input = DriverInput(reference_test_name,
                                        self._timeout_ms,
                                        image_hash=test_output.image_hash,
                                        wpt_print_mode=wpt_print_mode,
+                                       trace_file=None,
+                                       startup_trace_file=None,
                                        args=args)
             expected_output = self._driver.run_test(driver_input)
             total_test_time += expected_output.test_time
@@ -715,10 +722,10 @@ class SingleTestRunner(object):
                                        actual_driver_output,
                                        reference_filename, mismatch):
         failures = []
-
-        # Don't continue any more if we already have crash
-        failures.extend(self._handle_error(actual_driver_output))
-        if failures:
+        # Don't continue any more if we already have crash, timeout, or leak.
+        # The caller should report `actual_driver_output` errors.
+        if (actual_driver_output.crash or actual_driver_output.timeout
+                or actual_driver_output.leak):
             return failures
         failures.extend(
             self._handle_error(
@@ -727,6 +734,8 @@ class SingleTestRunner(object):
         if failures:
             return failures
 
+        max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
+            self._test_name)
         if not actual_driver_output.image_hash:
             failures.append(
                 test_failures.FailureReftestNoImageGenerated(
@@ -743,9 +752,12 @@ class SingleTestRunner(object):
                     test_failures.FailureReftestMismatchDidNotOccur(
                         actual_driver_output, reference_driver_output,
                         reference_filename))
-        elif reference_driver_output.image_hash != actual_driver_output.image_hash:
-            max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
-                self._test_name)
+        elif (reference_driver_output.image_hash !=
+              actual_driver_output.image_hash
+              or not _allows_exact_matches(max_channel_diff, max_pixels_diff)):
+            # When either fuzzy parameter has a nonzero minimum, a diff is
+            # expected. Always diff the images in that case, even if the image
+            # hashes match.
             diff, stats, err_str = self._port.diff_image(
                 reference_driver_output.image,
                 actual_driver_output.image,
@@ -768,7 +780,8 @@ class SingleTestRunner(object):
                         actual_driver_output, reference_driver_output,
                         reference_filename))
             elif err_str:
-                # TODO(rmhasan) Should we include this error message in the artifacts ?
+                # TODO(weizhong) Should we include this error message in the
+                # artifacts ?
                 _log.error('  %s : %s', self._test_name, err_str)
             elif not max_pixels_diff:
                 _log.warning(
@@ -776,3 +789,9 @@ class SingleTestRunner(object):
                     self._test_name)
 
         return failures
+
+
+def _allows_exact_matches(max_channel_diff: Optional[FuzzyRange],
+                          max_pixels_diff: Optional[FuzzyRange]) -> bool:
+    return (not max_channel_diff or max_channel_diff[0] == 0
+            or not max_pixels_diff or max_pixels_diff[0] == 0)

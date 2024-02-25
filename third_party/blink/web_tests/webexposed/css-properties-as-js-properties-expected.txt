@@ -41,8 +41,6 @@ backgroundPosition
 backgroundPositionX
 backgroundPositionY
 backgroundRepeat
-backgroundRepeatX
-backgroundRepeatY
 backgroundSize
 basePalette
 baselineShift
@@ -164,6 +162,7 @@ dominantBaseline
 dynamicRangeLimit
 emptyCells
 fallback
+fieldSizing
 fill
 fillOpacity
 fillRule
@@ -235,6 +234,7 @@ initialLetter
 initialValue
 inlineSize
 inset
+insetArea
 insetBlock
 insetBlockEnd
 insetBlockStart
@@ -273,6 +273,14 @@ markerEnd
 markerMid
 markerStart
 mask
+maskClip
+maskComposite
+maskImage
+maskMode
+maskOrigin
+maskPosition
+maskRepeat
+maskSize
 maskType
 mathDepth
 mathShift
@@ -349,6 +357,9 @@ popoverShowDelay
 position
 positionFallback
 positionFallbackBounds
+positionTry
+positionTryOptions
+positionTryOrder
 prefix
 quotes
 r
@@ -433,6 +444,7 @@ tableLayout
 textAlign
 textAlignLast
 textAnchor
+textAutospace
 textBoxTrim
 textCombineUpright
 textDecoration
@@ -451,16 +463,12 @@ textOverflow
 textRendering
 textShadow
 textSizeAdjust
+textSpacingTrim
 textTransform
 textUnderlineOffset
 textUnderlinePosition
 textWrap
 timelineScope
-toggle
-toggleGroup
-toggleRoot
-toggleTrigger
-toggleVisibility
 top
 touchAction
 transform
@@ -483,6 +491,7 @@ viewTimeline
 viewTimelineAxis
 viewTimelineInset
 viewTimelineName
+viewTransitionClass
 viewTransitionName
 visibility
 webkitAlignContent
@@ -586,8 +595,6 @@ webkitMaskPosition
 webkitMaskPositionX
 webkitMaskPositionY
 webkitMaskRepeat
-webkitMaskRepeatX
-webkitMaskRepeatY
 webkitMaskSize
 webkitMaxLogicalHeight
 webkitMaxLogicalWidth

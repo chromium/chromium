@@ -53,7 +53,8 @@ class BookmarkActivityTest : public BookmarkIOSUnitTestSupport {
     return
         [[BookmarkActivity alloc] initWithURL:URL
                                         title:kTestTitle
-                                bookmarkModel:local_or_syncable_bookmark_model_
+                 localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
+                         accountBookmarkModel:account_bookmark_model_
                                       handler:mocked_handler_
                                   prefService:&testing_pref_service_];
   }
@@ -81,7 +82,8 @@ TEST_F(BookmarkActivityTest, NilBookmarkModel_NoCrash) {
   BookmarkActivity* activity =
       [[BookmarkActivity alloc] initWithURL:GURL("https://example.com/")
                                       title:kTestTitle
-                              bookmarkModel:nil
+               localOrSyncableBookmarkModel:nil
+                       accountBookmarkModel:nil
                                     handler:mocked_handler_
                                 prefService:&testing_pref_service_];
 

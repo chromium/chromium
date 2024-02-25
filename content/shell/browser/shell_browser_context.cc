@@ -41,15 +41,9 @@
 
 namespace content {
 
-ShellBrowserContext::ShellResourceContext::ShellResourceContext() {}
-
-ShellBrowserContext::ShellResourceContext::~ShellResourceContext() {
-}
-
 ShellBrowserContext::ShellBrowserContext(bool off_the_record,
                                          bool delay_services_creation)
-    : resource_context_(std::make_unique<ShellResourceContext>()),
-      off_the_record_(off_the_record) {
+    : off_the_record_(off_the_record) {
   InitWhileIOAllowed();
 #if BUILDFLAG(IS_WIN)
   base::SetExtraNoExecuteAllowedPath(SHELL_DIR_USER_DATA);
@@ -74,14 +68,6 @@ ShellBrowserContext::~ShellBrowserContext() {
 
   SimpleKeyMap::GetInstance()->Dissociate(this);
 
-  // Need to destruct the ResourceContext before posting tasks which may delete
-  // the URLRequestContext because ResourceContext's destructor will remove any
-  // outstanding request while URLRequestContext's destructor ensures that there
-  // are no more outstanding requests.
-  if (resource_context_) {
-    GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                          resource_context_.release());
-  }
   ShutdownStoragePartitions();
 }
 
@@ -89,8 +75,15 @@ void ShellBrowserContext::InitWhileIOAllowed() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(switches::kIgnoreCertificateErrors))
     ignore_certificate_errors_ = true;
+
+  // TODO(b/1295373): We are migrating from '--data-path' to '--user-data-dir'.
+  // Scripts use '--data-path' should be updated to use '--user-data-dir'.
   if (cmd_line->HasSwitch(switches::kContentShellDataPath)) {
-    path_ = cmd_line->GetSwitchValuePath(switches::kContentShellDataPath);
+    CHECK(cmd_line->HasSwitch(switches::kContentShellUserDataDir));
+  }
+
+  if (cmd_line->HasSwitch(switches::kContentShellUserDataDir)) {
+    path_ = cmd_line->GetSwitchValuePath(switches::kContentShellUserDataDir);
     if (base::DirectoryExists(path_) || base::CreateDirectory(path_))  {
       // BrowserContext needs an absolute path, which we would normally get via
       // PathService. In this case, manually ensure the path is absolute.
@@ -138,10 +131,6 @@ DownloadManagerDelegate* ShellBrowserContext::GetDownloadManagerDelegate()  {
   }
 
   return download_manager_delegate_.get();
-}
-
-ResourceContext* ShellBrowserContext::GetResourceContext()  {
-  return resource_context_.get();
 }
 
 BrowserPluginGuestManager* ShellBrowserContext::GetGuestManager() {

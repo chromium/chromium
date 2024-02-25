@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_FILESYSTEM_FILESYSTEM_PROXY_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -17,7 +18,6 @@
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 
@@ -89,10 +89,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
   // base::File::Flags values.
   base::FileErrorOr<base::File> OpenFile(const base::FilePath& path, int flags);
 
-  // Writes a file atomically using the ImportantFileWriter.
-  bool WriteFileAtomically(const base::FilePath& path,
-                           const std::string& contents);
-
   // Creates a new directory at |path|. Any needed parent directories above
   // |path| are also created if they don't already exist.
   base::File::Error CreateDirectory(const base::FilePath& path);
@@ -102,13 +98,9 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
   // will return true if |path| does not exist.
   bool DeleteFile(const base::FilePath& path);
 
-  // Recursively deletes the directory at |path| if it exists and returns true
-  // iff successful.  This will return true if |path| does not exist.
-  bool DeletePathRecursively(const base::FilePath& path);
-
   // Retrieves information about a file or directory at |path|. Returns a valid
   // base::File::Info value on success, or null on failure.
-  absl::optional<base::File::Info> GetFileInfo(const base::FilePath& path);
+  std::optional<base::File::Info> GetFileInfo(const base::FilePath& path);
 
   // Retrieves information about access rights for a path in the filesystem.
   // Returns a valid PathAccessInfo on success, or null on failure.
@@ -116,11 +108,7 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
     bool can_read = false;
     bool can_write = false;
   };
-  absl::optional<PathAccessInfo> GetPathAccess(const base::FilePath& path);
-
-  // Returns the maximum length of path component on the volume containing the
-  // directory |path|, in the number of FilePath::CharType, or -1 on failure.
-  absl::optional<int> GetMaximumPathComponentLength(const base::FilePath& path);
+  std::optional<PathAccessInfo> GetPathAccess(const base::FilePath& path);
 
   // Renames a file from |old_path| to |new_path|. Must be atomic.
   base::File::Error RenameFile(const base::FilePath& old_path,
@@ -144,10 +132,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
 
   // Sets the length of the given file to |length| bytes.
   bool SetOpenedFileLength(base::File* file, uint64_t length);
-
-  // Returns the total number of bytes used by all the files under |path|.
-  // If the path does not exist the function returns 0.
-  int64_t ComputeDirectorySize(const base::FilePath& path);
 
  private:
   // For restricted FilesystemProxy instances, this returns a FilePath

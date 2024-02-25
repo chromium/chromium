@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/stub_notification_platform_bridge.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -32,6 +33,7 @@
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
@@ -140,7 +142,8 @@ void TestingBrowserProcess::TearDownAndDeleteInstance() {
 
 TestingBrowserProcess::TestingBrowserProcess()
     : app_locale_("en"),
-      platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()) {
+      platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
+      os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {
   // TestingBrowserProcess is used in unit_tests which sets this up through
   // content::UnitTestTestSuite but also through other test binaries which don't
   // use that test suite in which case we have to set it up.
@@ -344,6 +347,10 @@ TestingBrowserProcess::safe_browsing_service() {
   return sb_service_.get();
 }
 
+WebRtcLogUploader* TestingBrowserProcess::webrtc_log_uploader() {
+  return webrtc_log_uploader_.get();
+}
+
 subresource_filter::RulesetService*
 TestingBrowserProcess::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
@@ -406,9 +413,10 @@ printing::PrintJobManager* TestingBrowserProcess::print_job_manager() {
 printing::PrintPreviewDialogController*
 TestingBrowserProcess::print_preview_dialog_controller() {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  if (!print_preview_dialog_controller_.get())
+  if (!print_preview_dialog_controller_) {
     print_preview_dialog_controller_ =
-        new printing::PrintPreviewDialogController();
+        std::make_unique<printing::PrintPreviewDialogController>();
+  }
   return print_preview_dialog_controller_.get();
 #else
   NOTIMPLEMENTED();
@@ -465,10 +473,6 @@ MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
 #endif
 }
 
-WebRtcLogUploader* TestingBrowserProcess::webrtc_log_uploader() {
-  return nullptr;
-}
-
 network_time::NetworkTimeTracker*
 TestingBrowserProcess::network_time_tracker() {
   if (!network_time_tracker_) {
@@ -478,7 +482,7 @@ TestingBrowserProcess::network_time_tracker() {
     network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(new base::DefaultClock()),
         std::unique_ptr<base::TickClock>(new base::DefaultTickClock()),
-        local_state_, nullptr);
+        local_state_, nullptr, std::nullopt);
   }
   return network_time_tracker_.get();
 }
@@ -515,6 +519,10 @@ UsbSystemTrayIcon* TestingBrowserProcess::usb_system_tray_icon() {
   return usb_system_tray_icon_.get();
 }
 #endif
+
+os_crypt_async::OSCryptAsync* TestingBrowserProcess::os_crypt_async() {
+  return os_crypt_async_.get();
+}
 
 BuildState* TestingBrowserProcess::GetBuildState() {
 #if !BUILDFLAG(IS_ANDROID)
@@ -571,7 +579,7 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
 
 void TestingBrowserProcess::ShutdownBrowserPolicyConnector() {
   if (browser_policy_connector_) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     // Initial cleanup for ChromeBrowserCloudManagement, shutdown components
     // that depend on profile and notification system. For example,
     // ProfileManager observer and KeyServices observer need to be removed
@@ -595,6 +603,11 @@ TestingBrowserProcess::GetTestPlatformPart() {
 void TestingBrowserProcess::SetSafeBrowsingService(
     safe_browsing::SafeBrowsingService* sb_service) {
   sb_service_ = sb_service;
+}
+
+void TestingBrowserProcess::SetWebRtcLogUploader(
+    std::unique_ptr<WebRtcLogUploader> uploader) {
+  webrtc_log_uploader_ = std::move(uploader);
 }
 
 void TestingBrowserProcess::SetRulesetService(

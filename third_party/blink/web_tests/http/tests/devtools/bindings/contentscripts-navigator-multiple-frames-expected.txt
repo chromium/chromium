@@ -29,5 +29,4 @@ top
         content-script-42.js
 
 Running: detachFrame2
-top
 

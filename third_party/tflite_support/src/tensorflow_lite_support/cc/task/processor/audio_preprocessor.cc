@@ -14,7 +14,7 @@ limitations under the License.
 ==============================================================================*/
 #include "tensorflow_lite_support/cc/task/processor/audio_preprocessor.h"
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -29,8 +29,7 @@ namespace {
 // Looks up AudioProperty from metadata. If no error occurs, the returned value
 // is guaranteed to be valid (not null).
 tflite::support::StatusOr<const AudioProperties*> GetAudioPropertiesSafe(
-    const TensorMetadata* tensor_metadata,
-    int input_index) {
+    const TensorMetadata* tensor_metadata, int input_index) {
   if (tensor_metadata->content() == nullptr ||
       tensor_metadata->content()->content_properties() == nullptr) {
     return CreateStatusWithPayload(
@@ -75,22 +74,22 @@ tflite::support::StatusOr<const AudioProperties*> GetAudioPropertiesSafe(
 tflite::support::StatusOr<std::unique_ptr<AudioPreprocessor>>
 AudioPreprocessor::Create(tflite::task::core::TfLiteEngine* engine,
                           const std::initializer_list<int> input_indices) {
-  ASSIGN_OR_RETURN(auto processor,
+  TFLITE_ASSIGN_OR_RETURN(auto processor,
                    Processor::Create<AudioPreprocessor>(
                        /* num_expected_tensors = */ 1, engine, input_indices));
 
-  RETURN_IF_ERROR(processor->Init());
+  TFLITE_RETURN_IF_ERROR(processor->Init());
   return processor;
 }
 
 absl::Status AudioPreprocessor::Init() {
-  RETURN_IF_ERROR(SetAudioFormatFromMetadata());
-  RETURN_IF_ERROR(CheckAndSetInputs());
+  TFLITE_RETURN_IF_ERROR(SetAudioFormatFromMetadata());
+  TFLITE_RETURN_IF_ERROR(CheckAndSetInputs());
   return absl::OkStatus();
 }
 
 absl::Status AudioPreprocessor::SetAudioFormatFromMetadata() {
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       const AudioProperties* props,
       GetAudioPropertiesSafe(GetTensorMetadata(), tensor_indices_.at(0)));
   audio_format_.channels = props->channels();

@@ -5,9 +5,10 @@
 /**
  * @fileoverview Handles automation events on the currently focused node.
  */
-import {AsyncUtil} from '../../../common/async_util.js';
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {CursorRange} from '../../../common/cursors/range.js';
+import {AsyncUtil} from '/common/async_util.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {CursorRange} from '/common/cursors/range.js';
+
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {QueueMode, TtsSpeechProperties} from '../../common/tts_types.js';
 import {ChromeVoxRange} from '../chromevox_range.js';

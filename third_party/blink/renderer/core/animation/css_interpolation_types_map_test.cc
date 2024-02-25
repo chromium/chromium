@@ -11,10 +11,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(CSSInterpolationTypesMapTest, RegisteredCustomProperty) {
+  test::TaskEnvironment task_environment;
   auto* execution_context = MakeGarbageCollected<NullExecutionContext>();
   execution_context->SetUpSecurityContextForTesting();
   execution_context->GetSecurityContext().SetDocumentPolicy(

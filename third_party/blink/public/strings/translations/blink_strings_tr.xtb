@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1012241361789814178">Hata ayıklayıcı başka bir sekmede duraklatıldı. Söz konusu sekmeye geçmek için tıklayın.</translation>
 <translation id="1088086359088493902">Saniye</translation>
 <translation id="1142001580032786438">Hafta seçiciyi gösterir</translation>
 <translation id="1171774979989969504">Lütfen e-posta adresi girin.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Lütfen e-posta adresini boş bırakmayın.</translation>
 <translation id="1758486001363313524">Diğer...</translation>
 <translation id="1787192514241997742">toplam süre: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Kameraya izin ver</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">uzaktan cihazda oynat</translation>
 <translation id="1921819250265091946">gg</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Yansıtmaya geçildi</translation>
 <translation id="2031987842108996681">Kırmızı kanal</translation>
 <translation id="2060505056492490888">"<ph name="DOT" />", "<ph name="INVALIDDOMAIN" />" adı içinde yanlış bir konumda kullanılmış.</translation>
+<translation id="2068711044993563745">Minimum değer (<ph name="MINIMUM" />), maksimum değerden (<ph name="MAXIMUM" />) küçük olmalıdır.</translation>
 <translation id="2148716181193084225">Bugün</translation>
 <translation id="2226276347425096477">Lütfen bu metni <ph name="MAX_CHARACTERS" /> veya daha az karakter olacak şekilde kısaltın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hafta, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. parça</translation>
+<translation id="2353297238722298836">Kamera ve mikrofona izin verildi</translation>
 <translation id="2393030564806080191">On altılı renk değeri</translation>
 <translation id="2398813069815436052">iletişim kutusu açıldı.</translation>
 <translation id="245932805758469625">saniye olarak videonun kalan süresi</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">İlerlemek istiyorsanız lütfen bu kutuyu işaretleyin.</translation>
 <translation id="2908441821576996758">Lütfen e-posta adreslerinin virgülle ayrılmış listesini girin.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">sesli açıklamaları göster menüsü</translation>
 <translation id="3075154866155599887">Lütfen geçerli bir tarih girin. Alan tam doldurulmamış veya geçersiz bir tarih var.</translation>
 <translation id="310520048233152454">Lütfen bir URL girin.</translation>
 <translation id="3220661731597678625">geçerli adım</translation>
 <translation id="3321030238473337787">Oynatma hızı</translation>
 <translation id="3329013043687509092">Doygunluk</translation>
+<translation id="3377518164566272702">Mikrofon ve kameraya izin ver</translation>
 <translation id="3450233048674729344">Değer <ph name="MAXIMUM" /> veya daha küçük olmalıdır.</translation>
 <translation id="3732799496749320381">aa</translation>
 <translation id="3754210790023674521">Pencere içinde pencere modundan çık</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
 <translation id="383465348367842624">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
 <translation id="3846214748874656680">Tam ekran modundan çık</translation>
+<translation id="4031179711345676612">Mikrofona izin verildi</translation>
 <translation id="4103419683916926126">Milisaniye</translation>
 <translation id="4201051445878709314">Önceki ayı göster</translation>
 <translation id="4360991593054037559">Lütfen geçerli bir değer girin. En yakın iki geçerli değer şunlardır: <ph name="VALID_VALUE_LOW" /> ve <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Ayrıntılar</translation>
+<translation id="4663373278480897665">Kameraya izin veriliyor</translation>
 <translation id="4664250907885839816">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
 <translation id="4718048029184481307">Pencere içinde pencere modunda oynatılıyor</translation>
 <translation id="4748357248530471599">ekran kesimi alanını tam ekran olarak değiştirin</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Konumu paylaş</translation>
 <translation id="4812940957355064477">Lütfen bir sayı girin.</translation>
 <translation id="4912200001568447310">geçerli öğe</translation>
 <translation id="4915360478455618802">Saat seçiciyi gösterir</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> öğe seçildi</translation>
 <translation id="4992066212339426712">Sesi aç</translation>
 <translation id="49969490063480558">Lütfen "<ph name="ATSIGN" />" işaretinden sonra gelen kısmı ekleyin. "<ph name="INVALIDADDRESS" />", tam bir adres değil.</translation>
+<translation id="5037575921016181960">Güçlü şifre</translation>
 <translation id="5090250355906949916">video süresi göstergesi</translation>
 <translation id="509897012892853729">Mavi kanal</translation>
 <translation id="5117590920725113268">Sonraki ayı göster</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">medyayı indir</translation>
 <translation id="698788488269350478">genişletildi.</translation>
 <translation id="6989848892321993519">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda 1 karakter kullanıyorsunuz).</translation>
+<translation id="7080893216867146095">Konum paylaşımına izin veriliyor</translation>
 <translation id="709897737746224366">Lütfen istenen biçimi eşleştirin.</translation>
 <translation id="7102274145889307184">geçerli konum</translation>
 <translation id="7263440858009898357">Lütfen listeden bir öğe seçin.</translation>
@@ -176,7 +187,8 @@
 <translation id="9093215626363556771">pencere içinde pencere modundan çıkın</translation>
 <translation id="9132465097189459683">Diğer...</translation>
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" /> tarihinde başlayan <ph name="WEEK" /></translation>
-<translation id="916607977885256133">Pencere içinde Pencere</translation>
+<translation id="916607977885256133">Pencere İçinde Pencere</translation>
+<translation id="918430632320614861">Mikrofona izin ver</translation>
 <translation id="945780513535800434">Kısmen İşaretlendi</translation>
 <translation id="954003015749068518">pencere içinde pencere moduna gir</translation>
 </translationbundle>

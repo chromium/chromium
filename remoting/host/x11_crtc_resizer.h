@@ -193,7 +193,7 @@ class X11CrtcResizer {
   x11::Window FindAppWindow(x11::Window window,
                             const x11::GetWindowAttributesReply& attributes);
 
-  raw_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
+  x11::RandR::GetScreenResourcesCurrentReply resources_;
   raw_ptr<x11::Connection> connection_;
   raw_ptr<x11::RandR> randr_;
 

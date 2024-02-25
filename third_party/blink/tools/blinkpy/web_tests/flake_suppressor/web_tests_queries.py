@@ -91,8 +91,7 @@ WHERE
 # Gets all failing build culprit results from the past |sample_period| days
 # from CI bots that did not already have an associated test suppression when
 # the test ran, test with one pass in retry will consider as pass.
-# TODO(crbug.com/1382494): Update the query with multiple expectation types
-# such as CRASH.
+# TODO(crbug.com/1382494): Support consistent failure test suppression in a new query.
 CI_FAILED_BUILD_CULPRIT_TEST_QUERY = """\
 WITH
   {sheriff_rotations_ci_builds_subquery}
@@ -101,70 +100,88 @@ WITH
     exported.id,
     test_metadata.name,
     status,
-    ARRAY(
+    TO_JSON_STRING(ARRAY(
           SELECT value
           FROM tr.tags
-          WHERE key = "typ_tag") as typ_tags,
-    ARRAY(
+          WHERE key = "typ_tag")) as typ_tags_string,
+    ANY_VALUE(ARRAY(
           SELECT value
           FROM tr.tags
-          WHERE key = "raw_typ_expectation") as typ_expectations,
-    (SELECT value FROM tr.tags
-     WHERE key = "step_name") as step_name,
+          WHERE key = "typ_tag")) as typ_tags,
+    TO_JSON_STRING(ARRAY(
+          SELECT value
+          FROM tr.tags
+          WHERE key = "raw_typ_expectation")) as typ_expectations_string,
+    ANY_VALUE(ARRAY(
+          SELECT value
+          FROM tr.tags
+          WHERE key = "raw_typ_expectation")) as typ_expectations,
     (SELECT value FROM tr.variant
-     WHERE key = "builder") as builder
+     WHERE key = "test_suite") as test_suite,
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") as builder,
+     DATE(partition_time) AS date
   FROM
-    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
-    sheriff_rotations_ci_builds srcb
+    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
   WHERE
     status != "PASS" AND status != "SKIP" AND
     exported.realm = "chromium:ci" AND
-    builder = srcb.builder AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                    INTERVAL @sample_period DAY)
+  GROUP BY id, name, status, test_suite, builder, date, typ_expectations_string, typ_tags_string
   ),
   passed_tests AS (
   SELECT
     exported.id,
     test_metadata.name,
-    ARRAY(
-          SELECT value
-          FROM tr.tags
-          WHERE key = "typ_tag") as typ_tags,
-    ARRAY(
-          SELECT value
-          FROM tr.tags
-          WHERE key = "raw_typ_expectation") as typ_expectations,
-    (SELECT value FROM tr.tags
-     WHERE key = "step_name") as step_name,
+    (SELECT value FROM tr.variant
+     WHERE key = "test_suite") as test_suite,
     (SELECT value FROM tr.variant
      WHERE key = "builder") as builder
   FROM
-    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
-    sheriff_rotations_ci_builds srcb
+    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
   WHERE
     status = "PASS" AND
     exported.realm = "chromium:ci" AND
-    builder = srcb.builder AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                    INTERVAL @sample_period DAY)
-  )
+  GROUP BY id, name, builder, test_suite
+  ),
+  tests_cause_build_fail AS (
+  SELECT
+    ft.name,
+    ft.id,
+    ft.status,
+    ft.builder,
+    ft.test_suite,
+    ft.typ_expectations,
+    ft.typ_expectations_string,
+    ft.typ_tags,
+    ft.typ_tags_string,
+    ft.date
+  FROM failed_tests ft
+  LEFT JOIN passed_tests pt ON (ft.name = pt.name AND ft.id = pt.id
+    AND ft.test_suite = pt.test_suite)
+  WHERE
+    (ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" OR
+    ARRAY_TO_STRING(ft.typ_expectations, '') = "PassSlow") AND
+    pt.name IS NULL AND
+    ft.builder IN (SELECT builder FROM sheriff_rotations_ci_builds) AND
+    REGEXP_CONTAINS(ft.test_suite, 'blink_w(pt|eb)_tests')
+    AND NOT REGEXP_CONTAINS(ft.test_suite, '^webgpu'))
 SELECT
-  ft.name,
-  ft.id,
-  ft.status,
-  ft.builder,
-  ft.step_name,
-  ft.typ_expectations,
-  ft.typ_tags
-FROM failed_tests ft
-LEFT JOIN passed_tests pt ON (ft.name = pt.name AND ft.id = pt.id)
-WHERE
-  (ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" OR
-   ARRAY_TO_STRING(ft.typ_expectations, '') = "PassSlow") AND
-  pt.name IS NULL AND
-  (STARTS_WITH(step_name, 'blink_wpt_tests') OR
-   STARTS_WITH(step_name, 'blink_web_tests'))
+  bf.name,
+  bf.id,
+  bf.status,
+  bf.builder,
+  bf.test_suite,
+  ANY_VALUE(bf.typ_expectations) AS typ_expectations,
+  ANY_VALUE(bf.typ_tags) AS typ_tags,
+  bf.date
+FROM tests_cause_build_fail bf
+INNER JOIN passed_tests pt
+ON bf.name = pt.name AND bf.builder = pt.builder AND bf.test_suite = pt.test_suite
+GROUP BY bf.name, bf.id, bf.status, bf.builder, bf.test_suite, bf.date, bf.typ_expectations_string, bf.typ_tags_string;
 """.format(
     sheriff_rotations_ci_builds_subquery=SHERIFF_ROTATIONS_CI_BUILDS_SUBQUERY)
 
@@ -179,18 +196,27 @@ WITH
     exported.id,
     test_metadata.name,
     status,
-    ARRAY(
+    TO_JSON_STRING(ARRAY(
           SELECT value
           FROM tr.tags
-          WHERE key = "typ_tag") as typ_tags,
-    ARRAY(
+          WHERE key = "typ_tag")) as typ_tags_string,
+    ANY_VALUE(ARRAY(
           SELECT value
           FROM tr.tags
-          WHERE key = "raw_typ_expectation") as typ_expectations,
-    (SELECT value FROM tr.tags
-     WHERE key = "step_name") as step_name,
+          WHERE key = "typ_tag")) as typ_tags,
+    TO_JSON_STRING(ARRAY(
+          SELECT value
+          FROM tr.tags
+          WHERE key = "raw_typ_expectation")) as typ_expectations_string,
+    ANY_VALUE(ARRAY(
+          SELECT value
+          FROM tr.tags
+          WHERE key = "raw_typ_expectation")) as typ_expectations,
     (SELECT value FROM tr.variant
-     WHERE key = "builder") as builder
+     WHERE key = "test_suite") as test_suite,
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") as builder,
+     DATE(partition_time) AS date
   FROM
     `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
   WHERE
@@ -200,11 +226,16 @@ WITH
     exported.realm = "chromium:ci" AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                    INTERVAL @sample_period DAY)
+  GROUP BY id, name, status, test_suite, builder, date, typ_expectations_string, typ_tags_string
   ),
   passed_tests AS (
   SELECT
     exported.id,
     test_metadata.name,
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") as builder,
+    (SELECT value FROM tr.variant
+     WHERE key = "test_suite") as test_suite,
   FROM
     `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
   WHERE
@@ -214,23 +245,42 @@ WITH
      WHERE key = "builder") IN UNNEST({builder_names}) AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                    INTERVAL @sample_period DAY)
-  )
+  GROUP BY id, name, builder, test_suite
+  ),
+  tests_cause_build_fail AS (
+  SELECT
+    ut.name,
+    ut.id,
+    ut.status,
+    ut.builder,
+    ut.test_suite,
+    ut.typ_expectations,
+    ut.typ_expectations_string,
+    ut.typ_tags,
+    ut.typ_tags_string,
+    ut.date
+  FROM unpassed_tests ut
+  LEFT JOIN passed_tests pt ON (ut.name = pt.name AND ut.id = pt.id AND
+    ut.test_suite = pt.test_suite)
+  WHERE
+    (ARRAY_TO_STRING(ut.typ_expectations, '') = "Pass" OR
+    ARRAY_TO_STRING(ut.typ_expectations, '') = "PassSlow") AND
+    pt.name IS NULL AND
+    REGEXP_CONTAINS(ut.test_suite, "blink_w(pt|eb)_tests")
+    AND NOT REGEXP_CONTAINS(ut.test_suite, "^webgpu"))
 SELECT
-  ut.name,
-  ut.id,
-  ut.status,
-  ut.builder,
-  ut.step_name,
-  ut.typ_expectations,
-  ut.typ_tags
-FROM unpassed_tests ut
-LEFT JOIN passed_tests pt ON (ut.name = pt.name AND ut.id = pt.id)
-WHERE
-  (ARRAY_TO_STRING(ut.typ_expectations, '') = "Pass" OR
-   ARRAY_TO_STRING(ut.typ_expectations, '') = "PassSlow") AND
-  pt.name IS NULL AND
-  (STARTS_WITH(ut.step_name, 'blink_wpt_tests') OR
-   STARTS_WITH(ut.step_name, 'blink_web_tests'))
+  bf.name,
+  bf.id,
+  bf.status,
+  bf.builder,
+  bf.test_suite,
+  ANY_VALUE(bf.typ_expectations) as typ_expectations,
+  ANY_VALUE(bf.typ_tags) as typ_tags,
+  bf.date
+FROM tests_cause_build_fail bf
+INNER JOIN passed_tests pt
+ON bf.name = pt.name AND bf.builder = pt.builder AND bf.test_suite = pt.test_suite
+GROUP BY bf.name, bf.id, bf.status, bf.builder, bf.test_suite, bf.date, bf.typ_expectations_string, bf.typ_tags_string;
 """
 
 # Gets all failures from the past |sample_period| days from trybots that did not
@@ -368,7 +418,7 @@ SELECT
   ANY_VALUE(cr.typ_tags) as typ_tags
 FROM ci_results cr
 WHERE (STARTS_WITH(step_name, 'blink_wpt_tests') OR
-   STARTS_WITH(step_name, 'blink_web_tests'))
+   STARTS_WITH(step_name, 'blink_web_tests')) AND
    builder IN UNNEST({builder_names})
 GROUP BY cr.name, ARRAY_TO_STRING(cr.typ_tags, '')
 """

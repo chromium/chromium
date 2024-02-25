@@ -81,11 +81,14 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  ContentAutofillDriver& autofill_driver() {
+    return *ContentAutofillDriverFactory::FromWebContents(web_contents())
+                ->DriverForFrame(main_rfh());
+  }
+
   BrowserAutofillManager& autofill_manager() {
     return static_cast<BrowserAutofillManager&>(
-        *ContentAutofillDriverFactory::FromWebContents(web_contents())
-             ->DriverForFrame(main_rfh())
-             ->autofill_manager());
+        autofill_driver().GetAutofillManager());
   }
 
   TestAutofillExternalDelegate& autofill_external_delegate() {
@@ -100,7 +103,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowMove) {
-  GenerateTestAutofillPopup(&autofill_external_delegate());
+  GenerateTestAutofillPopup(autofill_driver());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
 
@@ -114,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowResize) {
-  GenerateTestAutofillPopup(&autofill_external_delegate());
+  GenerateTestAutofillPopup(autofill_driver());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
 
@@ -137,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   // Position the popup in the lower right corner so that there is not enough
   // space to display it.
   GenerateTestAutofillPopup(
-      &autofill_external_delegate(), /*element_bounds=*/gfx::RectF(
+      autofill_driver(), /*element_bounds=*/gfx::RectF(
           window_bounds.x() - kSize, window_bounds.y() - kSize, kSize, kSize));
   EXPECT_TRUE(autofill_external_delegate().popup_hidden());
 }
@@ -146,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 // crash (crbug.com/1267047).
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowEnterFullscreen) {
-  GenerateTestAutofillPopup(&autofill_external_delegate());
+  GenerateTestAutofillPopup(autofill_driver());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
 
@@ -167,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   content::WebContentsDelegate* wcd = browser();
   wcd->EnterFullscreenModeForTab(main_rfh(), {});
 
-  GenerateTestAutofillPopup(&autofill_external_delegate());
+  GenerateTestAutofillPopup(autofill_driver());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
 
@@ -184,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 // before the popup is hidden.
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        DeleteDelegateBeforePopupHidden) {
-  GenerateTestAutofillPopup(&autofill_external_delegate());
+  GenerateTestAutofillPopup(autofill_driver());
 
   // Delete the external delegate here so that is gets deleted before popup is
   // hidden. This can happen if the web_contents are destroyed before the popup
@@ -197,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 // crbug.com/965025
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
-  GenerateTestAutofillPopup(&autofill_external_delegate());
+  GenerateTestAutofillPopup(autofill_driver());
 
   auto* client =
       autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents());
@@ -206,19 +209,21 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
   ASSERT_TRUE(controller);
 
   // Push some suggestions and select the line #3.
-  std::vector<std::u16string> rows = {u"suggestion1", u"suggestion2",
-                                      u"suggestion3", u"suggestion4"};
-  client->UpdateAutofillPopupDataListValues(rows, rows);
+  std::vector<SelectOption> rows = {{u"suggestion1", u"suggestion1"},
+                                    {u"suggestion2", u"suggestion2"},
+                                    {u"suggestion3", u"suggestion3"},
+                                    {u"suggestion4", u"suggestion4"}};
+  client->UpdateAutofillPopupDataListValues(rows);
   int original_suggestions_count = controller->GetLineCount();
-  controller->SelectSuggestion(3u);
+  controller->SelectSuggestion(3);
 
   // Replace the list with the smaller one.
-  rows = {u"suggestion1"};
-  client->UpdateAutofillPopupDataListValues(rows, rows);
+  rows = {{u"suggestion1", u"suggestion1"}};
+  client->UpdateAutofillPopupDataListValues(rows);
   // Make sure that previously selected line #3 doesn't exist.
   ASSERT_LT(controller->GetLineCount(), original_suggestions_count);
   // Selecting a new line should not crash.
-  controller->SelectSuggestion(0u);
+  controller->SelectSuggestion(0);
 }
 
 }  // namespace autofill

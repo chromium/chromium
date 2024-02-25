@@ -1,0 +1,69 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SerialAllowUsbDevicesForUrls": [
+            {
+              "devices": [
+                {
+                  "product_id": 19985,
+                  "vendor_id": 6353
+                }
+              ],
+              "urls": [
+                "https://flash.android.com"
+              ]
+            },
+            {
+              "devices": [
+                {
+                  "vendor_id": 6353
+                }
+              ],
+              "urls": [
+                "https://www.google.com"
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "managed.serial_allow_usb_devices_for_urls": {
+            "location": "local_state",
+            "value": [
+              {
+                "devices": [
+                  {
+                    "product_id": 19985,
+                    "vendor_id": 6353
+                  }
+                ],
+                "urls": [
+                  "https://flash.android.com"
+                ]
+              },
+              {
+                "devices": [
+                  {
+                    "vendor_id": 6353
+                  }
+                ],
+                "urls": [
+                  "https://www.google.com"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

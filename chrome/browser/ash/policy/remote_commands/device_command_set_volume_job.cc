@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_set_volume_job.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -15,7 +16,6 @@
 #include "base/values.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -45,11 +45,11 @@ enterprise_management::RemoteCommand_Type DeviceCommandSetVolumeJob::GetType()
 
 bool DeviceCommandSetVolumeJob::ParseCommandPayload(
     const std::string& command_payload) {
-  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
+  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root || !root->is_dict()) {
     return false;
   }
-  absl::optional<int> maybe_volume;
+  std::optional<int> maybe_volume;
   maybe_volume = root->GetDict().FindInt(kVolumeFieldName);
   if (!maybe_volume) {
     return false;
@@ -70,7 +70,7 @@ void DeviceCommandSetVolumeJob::RunImpl(CallbackWithResult result_callback) {
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_callback),
-                                ResultType::kSuccess, absl::nullopt));
+                                ResultType::kSuccess, std::nullopt));
 }
 
 }  // namespace policy

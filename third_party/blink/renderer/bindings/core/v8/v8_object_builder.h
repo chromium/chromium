@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_OBJECT_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_OBJECT_BUILDER_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -29,15 +29,23 @@ class CORE_EXPORT V8ObjectBuilder final {
   V8ObjectBuilder& AddNull(const StringView& name);
   V8ObjectBuilder& AddBoolean(const StringView& name, bool value);
   V8ObjectBuilder& AddNumber(const StringView& name, double value);
+  V8ObjectBuilder& AddInteger(const StringView& name, uint64_t value);
   V8ObjectBuilder& AddString(const StringView& name, const StringView& value);
   V8ObjectBuilder& AddStringOrNull(const StringView& name,
                                    const StringView& value);
+  V8ObjectBuilder& AddV8Value(const StringView& name, v8::Local<v8::Value>);
 
   template <typename T>
-  V8ObjectBuilder& Add(const StringView& name, const T& value) {
-    AddInternal(name, v8::Local<v8::Value>(
-                          ToV8(value, script_state_->GetContext()->Global(),
-                               script_state_->GetIsolate())));
+    requires std::derived_from<T, bindings::DictionaryBase> ||
+             std::derived_from<T, ScriptWrappable>
+  V8ObjectBuilder& Add(const StringView& name, T* value) {
+    AddInternal(name, ToV8Traits<T>::ToV8(script_state_, value));
+    return *this;
+  }
+
+  template <typename T, typename Container>
+  V8ObjectBuilder& AddVector(const StringView& name, const Container& value) {
+    AddInternal(name, ToV8Traits<IDLSequence<T>>::ToV8(script_state_, value));
     return *this;
   }
 

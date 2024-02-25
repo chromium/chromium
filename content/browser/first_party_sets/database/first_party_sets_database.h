@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -32,6 +33,8 @@ class Statement;
 }  // namespace sql
 
 namespace content {
+
+BASE_DECLARE_FEATURE(kFirstPartySetsDatabaseUseBuiltInRecoveryIfSupported);
 
 // Wraps its own `sql::Database` instance on behalf of the First-Party Sets
 // database implementation. This class must be accessed and destroyed on the
@@ -86,7 +89,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool InsertBrowserContextCleared(
       const std::string& browser_context_id);
 
-  // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
+  // TODO(crbug.com/1219656): Consider returning std::nullopt for all the
   // fetching methods when having query errors
 
   // Gets the global First-Party Sets and the config used by

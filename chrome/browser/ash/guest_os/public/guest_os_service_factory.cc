@@ -40,12 +40,13 @@ GuestOsServiceFactory::GuestOsServiceFactory()
 
 GuestOsServiceFactory::~GuestOsServiceFactory() = default;
 
-KeyedService* GuestOsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+GuestOsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile)
     return nullptr;
-  return new GuestOsService(profile);
+  return std::make_unique<GuestOsService>(profile);
 }
 
 }  // namespace guest_os

@@ -23,7 +23,6 @@ class MockSignalStorageConfig : public SignalStorageConfig {
  public:
   using SignalType = proto::SignalType;
   using SignalIdentifier = std::pair<uint64_t, SignalType>;
-  using CleanupItem = std::tuple<uint64_t, SignalType, base::Time>;
 
   MockSignalStorageConfig();
   ~MockSignalStorageConfig() override;

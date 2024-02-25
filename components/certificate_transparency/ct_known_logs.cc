@@ -36,14 +36,6 @@ std::vector<CTLogInfo> GetKnownLogs() {
   return logs;
 }
 
-std::vector<std::string> GetLogsOperatedByGoogle() {
-  std::vector<std::string> result;
-  for (const auto& log_id : kGoogleLogIDs) {
-    result.push_back(std::string(log_id, crypto::kSHA256Length));
-  }
-  return result;
-}
-
 std::vector<std::pair<std::string, base::Time>> GetDisqualifiedLogs() {
   std::vector<std::pair<std::string, base::Time>> result;
   for (const auto& log : kDisqualifiedCTLogList) {

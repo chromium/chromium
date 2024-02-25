@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { dp, session } = await testRunner.startHTML(
     `<div some_attr_name="some_attr_value">some text<h2>some another text</h2></div>
      <script>
@@ -21,72 +21,88 @@
     `,
     'Tests DOM objects serialization');
 
-  await dp.Runtime.enable();
+  const ALL_TEST_LOGS = [];
 
-  // Node.
-  await testExpression("document.querySelector('body > div')")
-  // NodeList.
-  await testExpression("document.querySelector('body > div').childNodes")
-  // HTMLCollection.
-  await testExpression("document.getElementsByTagName('div')")
-  await testExpression("window")
-  await testExpression("new URL('http://example.com')");
-  await testExpression("window.openShadowContainer")
-  await testExpression("window.closedShadowContainer")
-
-  testRunner.completeTest();
-
-  async function testExpression(expression) {
-    await test(expression);
-    await test(expression, { UNKNOWN_PARAMETER_NAME: 'SOME_VALUE' });
-    await test(expression, { maxNodeDepth: 'STRING_INSTEAD_OF_INT' });
-    await test(expression, { INVALID_PARAMETER_TYPE: {} });
-    await test(expression, { maxNodeDepth:0 });
-    await test(expression, { maxNodeDepth:1 });
-    await test(expression, { maxNodeDepth:99 });
-    await test(expression, {
+  function testExpression(expression) {
+    scheduleTest(expression);
+    scheduleTest(expression, { UNKNOWN_PARAMETER_NAME: 'SOME_VALUE' });
+    scheduleTest(expression, { maxNodeDepth: 'STRING_INSTEAD_OF_INT' });
+    scheduleTest(expression, { INVALID_PARAMETER_TYPE: {} });
+    scheduleTest(expression, { maxNodeDepth: 0 });
+    scheduleTest(expression, { maxNodeDepth: 1 });
+    scheduleTest(expression, { maxNodeDepth: 99 });
+    scheduleTest(expression, {
       maxNodeDepth: 99,
-      includeShadowTree: "none"
+      includeShadowTree: 'none'
     }
     );
-    await test(expression, {
-      maxNodeDepth:99 ,
-      includeShadowTree:"open"
-    });
-    await test(expression, {
-      includeShadowTree: "all"
-    }    );
-    await test(expression, {
-      maxNodeDepth: 0,
-      includeShadowTree: "all"
-
-    }    );
-    await test(expression, {
-      maxNodeDepth: 1,
-      includeShadowTree: "all"
-
-    });
-    await test(expression, {
+    scheduleTest(expression, {
       maxNodeDepth: 99,
-      includeShadowTree: "all"
+      includeShadowTree: 'open'
+    });
+    scheduleTest(expression, {
+      includeShadowTree: 'all'
+    });
+    scheduleTest(expression, {
+      maxNodeDepth: 0,
+      includeShadowTree: 'all'
+    });
+    scheduleTest(expression, {
+      maxNodeDepth: 1,
+      includeShadowTree: 'all'
+
+    });
+    scheduleTest(expression, {
+      maxNodeDepth: 99,
+      includeShadowTree: 'all'
     });
   }
 
-  async function test(expression, additionalParameters) {
+  function scheduleTest(expression, additionalParameters) {
+    ALL_TEST_LOGS.push(runTest(expression, additionalParameters));
+  }
+
+  async function runTest(expression, additionalParameters) {
     const serializationOptions = {
-      serialization: "deep",
-        additionalParameters
+      serialization: 'deep',
+      additionalParameters
     }
-    testRunner.log(`Testing '${expression}' with ${JSON.stringify(serializationOptions)}`);
 
     const evalResult = await dp.Runtime.evaluate({
       expression,
       serializationOptions
     })
-    testRunner.log(
-      evalResult?.result?.result?.deepSerializedValue ?? evalResult,
-      undefined,
-      TestRunner.extendStabilizeNames(['context']),
-    );
+
+    return [
+      `Testing '${expression}' with ${JSON.stringify(serializationOptions)}`,
+      evalResult?.result?.result?.deepSerializedValue ?? evalResult]
   }
+
+  async function waitTestsDone() {
+    for await (const logs of ALL_TEST_LOGS) {
+      const [description, result] = logs;
+      testRunner.log(description);
+      testRunner.log(
+        result,
+        undefined,
+        TestRunner.extendStabilizeNames(['context']),
+      );
+    }
+  }
+
+  await dp.Runtime.enable();
+
+  // Node.
+  testExpression('document.querySelector("body > div")')
+  // NodeList.
+  testExpression('document.querySelector("body > div").childNodes')
+  // HTMLCollection.
+  testExpression('document.getElementsByTagName("div")')
+  testExpression('window')
+  testExpression('new URL("http://example.com")');
+  testExpression('window.openShadowContainer')
+  testExpression('window.closedShadowContainer')
+
+  await waitTestsDone();
+  testRunner.completeTest();
 })

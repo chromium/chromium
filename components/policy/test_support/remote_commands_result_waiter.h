@@ -22,16 +22,19 @@ class RemoteCommandsResultWaiter : public RemoteCommandsState::Observer {
 
   ~RemoteCommandsResultWaiter() override;
 
-  void Wait();
-
   enterprise_management::RemoteCommandResult WaitAndGetResult();
+  void WaitAndGetAck();
 
  private:
   void OnRemoteCommandResultAvailable(int64_t command_id) override;
+  void OnRemoteCommandAcked(int64_t command_id) override;
+
+  void WaitForResult();
+  void WaitForAck();
 
   const raw_ptr<RemoteCommandsState> remote_commands_state_;
   const int64_t command_id_;
-  base::RunLoop run_loop_;
+  base::RunLoop result_run_loop_, ack_run_loop_;
 };
 
 }  // namespace policy

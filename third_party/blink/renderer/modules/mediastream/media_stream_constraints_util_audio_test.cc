@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
@@ -170,15 +171,15 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
     return std::make_unique<blink::LocalMediaStreamAudioSource>(
         /*blink::WebLocalFrame=*/nullptr, device, requested_buffer_size,
-        disable_local_echo,
+        enable_system_echo_canceller, disable_local_echo,
         blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   AudioCaptureSettings SelectSettings(
       bool is_reconfigurable = false,
-      absl::optional<AudioDeviceCaptureCapabilities> capabilities =
-          absl::nullopt) {
+      std::optional<AudioDeviceCaptureCapabilities> capabilities =
+          std::nullopt) {
     MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
     if (capabilities) {
       return SelectSettingsAudioCapture(*capabilities, constraints,
@@ -189,6 +190,14 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
                                         GetMediaStreamType(), false,
                                         is_reconfigurable);
     }
+  }
+
+  base::expected<Vector<blink::AudioCaptureSettings>, std::string>
+  SelectEligibleSettings(bool is_reconfigurable = false) {
+    MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
+    return SelectEligibleSettingsAudioCapture(
+        capabilities_, constraints, GetMediaStreamType(),
+        /*should_disable_hardware_noise_suppression=*/false, is_reconfigurable);
   }
 
   // When googExperimentalEchoCancellation is not explicitly set, its default
@@ -449,10 +458,12 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
   blink::MockConstraintFactory constraint_factory_;
   AudioDeviceCaptureCapabilities capabilities_;
-  const AudioDeviceCaptureCapability* default_device_ = nullptr;
-  const AudioDeviceCaptureCapability* system_echo_canceller_device_ = nullptr;
-  const AudioDeviceCaptureCapability* four_channels_device_ = nullptr;
-  const AudioDeviceCaptureCapability* variable_latency_device_ = nullptr;
+  raw_ptr<const AudioDeviceCaptureCapability> default_device_ = nullptr;
+  raw_ptr<const AudioDeviceCaptureCapability> system_echo_canceller_device_ =
+      nullptr;
+  raw_ptr<const AudioDeviceCaptureCapability> four_channels_device_ = nullptr;
+  raw_ptr<const AudioDeviceCaptureCapability> variable_latency_device_ =
+      nullptr;
   std::unique_ptr<ProcessedLocalAudioSource> system_echo_canceller_source_;
   const WTF::Vector<media::Point> kMicPositions = {{8, 8, 8}, {4, 4, 4}};
 
@@ -1655,7 +1666,36 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
       system_echo_canceller_with_source->DeviceID());
   constraint_factory_.basic().echo_cancellation.SetExact(false);
   result = SelectSettings(true, capabilities);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS supports reopening a device with a different system AEC setting.
+  EXPECT_TRUE(result.HasValue());
+#else
   EXPECT_FALSE(result.HasValue());
+#endif
+}
+
+TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
+  constraint_factory_.Reset();
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  constraint_factory_.Reset();
+  constraint_factory_.basic().voice_isolation.SetExact(false);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+  constraint_factory_.Reset();
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDefault);
 }
 
 // Test advanced constraints sets that can be satisfied.
@@ -2015,6 +2055,39 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimentalEcWithSource) {
   auto result = SelectSettingsAudioCapture(
       source.get(), constraint_factory_.CreateMediaConstraints());
   EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationDisabled);
+}
+
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       SelectEligibleSettingsAudioDeviceCapture_NoEligibleDevices) {
+  if (!IsDeviceCapture()) {
+    // This test is irrelevant for non-device captures.
+    return;
+  }
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact("NONEXISTING");
+  auto result = SelectEligibleSettings();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(constraint_factory_.basic().device_id.GetName(), result.error());
+}
+
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       SelectEligibleSettingsAudioDeviceCapture_IncludesEligibleDevices) {
+  if (!IsDeviceCapture()) {
+    // This test is irrelevant for non-device captures.
+    return;
+  }
+  constraint_factory_.Reset();
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::AudioParameters::kAudioCDSampleRate);
+  auto result = SelectEligibleSettings();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(4u, result.value().size());
+  EXPECT_EQ("default_device", result.value()[0].device_id());
+  EXPECT_EQ("system_echo_canceller_device", result.value()[1].device_id());
+  EXPECT_EQ("4_channels_device", result.value()[2].device_id());
+  EXPECT_EQ("variable_latency_device", result.value()[3].device_id());
 }
 
 TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {

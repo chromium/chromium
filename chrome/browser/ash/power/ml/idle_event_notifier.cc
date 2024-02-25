@@ -32,12 +32,12 @@ struct IdleEventNotifier::ActivityDataInternal {
   base::Time last_user_activity_time;
 
   TimeSinceBoot last_activity_since_boot;
-  absl::optional<TimeSinceBoot> earliest_activity_since_boot;
-  absl::optional<TimeSinceBoot> last_key_since_boot;
-  absl::optional<TimeSinceBoot> last_mouse_since_boot;
-  absl::optional<TimeSinceBoot> last_touch_since_boot;
-  absl::optional<TimeSinceBoot> video_start_time;
-  absl::optional<TimeSinceBoot> video_end_time;
+  std::optional<TimeSinceBoot> earliest_activity_since_boot;
+  std::optional<TimeSinceBoot> last_key_since_boot;
+  std::optional<TimeSinceBoot> last_mouse_since_boot;
+  std::optional<TimeSinceBoot> last_touch_since_boot;
+  std::optional<TimeSinceBoot> video_start_time;
+  std::optional<TimeSinceBoot> video_end_time;
 };
 
 IdleEventNotifier::ActivityData::ActivityData() {}
@@ -277,9 +277,9 @@ void IdleEventNotifier::UpdateActivityData(ActivityType type) {
 // time active, which should be reset between idle events.
 void IdleEventNotifier::ResetTimestampsForRecentActivity() {
   internal_data_->last_activity_since_boot = base::TimeDelta();
-  internal_data_->earliest_activity_since_boot = absl::nullopt;
-  internal_data_->video_start_time = absl::nullopt;
-  internal_data_->video_end_time = absl::nullopt;
+  internal_data_->earliest_activity_since_boot = std::nullopt;
+  internal_data_->video_start_time = std::nullopt;
+  internal_data_->video_end_time = std::nullopt;
 }
 
 }  // namespace ml

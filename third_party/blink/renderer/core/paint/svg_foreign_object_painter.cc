@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
+#include <optional>
+
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
@@ -13,7 +14,7 @@
 namespace blink {
 
 SVGForeignObjectPainter::SVGForeignObjectPainter(
-    const LayoutNGSVGForeignObject& layout_svg_foreign_object)
+    const LayoutSVGForeignObject& layout_svg_foreign_object)
     : layout_svg_foreign_object_(layout_svg_foreign_object) {}
 
 void SVGForeignObjectPainter::PaintLayer(const PaintInfo& paint_info) {

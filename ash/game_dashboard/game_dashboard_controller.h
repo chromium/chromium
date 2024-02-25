@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTROLLER_H_
 
 #include <map>
+#include <memory>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_observer.h"
@@ -19,8 +20,11 @@
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
+class PrefRegistrySimple;
+
 namespace aura {
 class Window;
+class WindowTracker;
 }  // namespace aura
 
 namespace ash {
@@ -46,6 +50,12 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Checks whether the `window` can respond to accelerator commands.
   static bool ReadyForAccelerator(aura::Window* window);
 
+  // Registers preferences used by this class in the provided `registry`.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Gets the app name by `app_id`.
+  std::string GetArcAppName(const std::string& app_id) const;
+
   GameDashboardContext* active_recording_context() {
     return active_recording_context_;
   }
@@ -62,6 +72,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // `OnRecordingEnded` or `OnRecordingStartAborted` is called.
   void StartCaptureSession(GameDashboardContext* context,
                            bool record_instantly = false);
+
+  // Shows the compat mode resize toggle menu for the given `window`.
+  void ShowResizeToggleMenu(aura::Window* window);
 
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* new_window) override;
@@ -94,17 +107,25 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
 
   enum class WindowGameState { kGame, kNotGame, kNotYetKnown };
 
-  // Checks to see if the given window is a game. If there's not enough
-  // information, then returns `kNotYetKnown`, otherwise returns `kGame` or
-  // `kNotGame`.
-  WindowGameState GetWindowGameState(aura::Window* window) const;
+  using GetWindowStateCallback = base::OnceCallback<void(WindowGameState)>;
 
-  // Updates the window observation, depending on whether the given window is a
-  // game or not.
-  void RefreshWindowTracking(aura::Window* window);
+  // Checks whether the given window is a game, and then calls
+  // `RefreshWindowTracking`. If there's not enough information, it passes
+  // `kNotYetKnown`, otherwise `kGame` or `kNotGame`, as the `game_state`.
+  void GetWindowGameState(aura::Window* window);
 
-  // Updates the main menu button state for a game window.
-  void RefreshMainMenuButton(aura::Window* window);
+  // Callback when `GetWindowGameState` calls `GameDashboardDelegate` to
+  // retrieve the app category for the given window in `window_tracker`.
+  // This function calls `RefreshWindowTracking`, as long as the window has not
+  // been destroyed.
+  void OnArcWindowIsGame(std::unique_ptr<aura::WindowTracker> window_tracker,
+                         bool is_game);
+
+  // Updates the window observation, dependent on `game_state`.
+  void RefreshWindowTracking(aura::Window* window, WindowGameState game_state);
+
+  // Updates the Game Dashboard button state and toolbar for a game window.
+  void RefreshForGameControlsFlags(aura::Window* window);
 
   std::map<aura::Window*, std::unique_ptr<GameDashboardContext>>
       game_window_contexts_;
@@ -123,8 +144,10 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // recording the game window, or has been requested to record it. Resets
   // when the recording session ends or aborted.
   // Owned by `game_window_contexts_`.
-  raw_ptr<GameDashboardContext, ExperimentalAsh> active_recording_context_ =
+  raw_ptr<GameDashboardContext, DanglingUntriaged> active_recording_context_ =
       nullptr;
+
+  base::WeakPtrFactory<GameDashboardController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

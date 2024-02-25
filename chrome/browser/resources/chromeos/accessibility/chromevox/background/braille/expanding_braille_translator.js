@@ -6,6 +6,8 @@
  * @fileoverview Translates text to braille, optionally with some parts
  * uncontracted.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {Spannable} from '../../common/spannable.js';
 
 import {LibLouis} from './liblouis.js';
@@ -329,3 +331,5 @@ ExpandingBrailleTranslator.ExpansionType = {
  * @private
  */
 ExpandingBrailleTranslator.Range_;
+
+TestImportManager.exportForTesting(ExpandingBrailleTranslator);

@@ -1,0 +1,32 @@
+This is a wdspec test.
+[FAIL] test_accept[capabilities0-beforeunload]
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchAlertException'>
+[FAIL] test_accept_and_notify[capabilities0-beforeunload-None]
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchAlertException'>
+[FAIL] test_accept_and_notify[capabilities0-confirm-True]
+  webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
+[FAIL] test_dismiss[capabilities0-beforeunload]
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchAlertException'>
+[FAIL] test_dismiss[capabilities0-confirm]
+  webdriver.error.NoSuchElementException: no such element (404): no such element: Unable to locate element: {"method":"css selector","selector":"#foo"}
+[FAIL] test_dismiss[capabilities0-prompt]
+  webdriver.error.NoSuchElementException: no such element (404): no such element: Unable to locate element: {"method":"css selector","selector":"#foo"}
+[FAIL] test_dismiss_and_notify[capabilities0-beforeunload-None]
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchAlertException'>
+[FAIL] test_dismiss_and_notify[capabilities0-confirm-False]
+  webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
+[FAIL] test_dismiss_and_notify[capabilities0-prompt-None]
+  webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
+[FAIL] test_ignore[capabilities0-beforeunload]
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchAlertException'>
+[FAIL] test_ignore[capabilities0-confirm]
+  webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
+[FAIL] test_ignore[capabilities0-prompt]
+  webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
+[FAIL] test_default[beforeunload-None]
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchAlertException'>
+[FAIL] test_default[confirm-False]
+  webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
+[FAIL] test_default[prompt-None]
+  webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
+Harness: the test ran to completion.

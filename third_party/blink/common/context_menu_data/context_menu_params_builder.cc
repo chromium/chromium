@@ -47,6 +47,7 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   params.unfiltered_link_url = data.link_url;
   params.src_url = data.src_url;
   params.has_image_contents = data.has_image_contents;
+  params.is_image_media_plugin_document = data.is_image_media_plugin_document;
   params.media_flags = data.media_flags;
   params.selection_text = base::UTF8ToUTF16(data.selected_text);
   params.selection_start_offset = data.selection_start_offset;
@@ -62,8 +63,6 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   params.frame_charset = data.frame_encoding;
   params.referrer_policy = data.referrer_policy;
   params.suggested_filename = base::UTF8ToUTF16(data.suggested_filename);
-  params.input_field_type = data.input_field_type;
-  params.is_password_type_by_heuristics = data.is_password_type_by_heuristics;
   params.opened_from_highlight = data.opened_from_highlight;
 
   for (const auto& suggestion : data.dictionary_suggestions)
@@ -77,11 +76,12 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   if (data.impression)
     params.impression = data.impression;
 
-  if (data.form_renderer_id)
-    params.form_renderer_id = data.form_renderer_id;
-
-  if (data.field_renderer_id)
-    params.field_renderer_id = data.field_renderer_id;
+  params.form_control_type = data.form_control_type;
+  params.is_content_editable_for_autofill =
+      data.is_content_editable_for_autofill;
+  params.field_renderer_id = data.field_renderer_id;
+  params.form_renderer_id = data.form_renderer_id;
+  params.is_password_type_by_heuristics = data.is_password_type_by_heuristics;
 
   params.source_type = static_cast<ui::MenuSourceType>(data.source_type);
 

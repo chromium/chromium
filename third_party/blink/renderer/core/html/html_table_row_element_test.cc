@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -17,6 +18,7 @@ namespace blink {
 // https://html.spec.whatwg.org/C/#dom-tr-rowindex
 
 TEST(HTMLTableRowElementTest, rowIndex_notInTable) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
@@ -26,6 +28,7 @@ TEST(HTMLTableRowElementTest, rowIndex_notInTable) {
 }
 
 TEST(HTMLTableRowElementTest, rowIndex_directChildOfTable) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
@@ -37,6 +40,7 @@ TEST(HTMLTableRowElementTest, rowIndex_directChildOfTable) {
 }
 
 TEST(HTMLTableRowElementTest, rowIndex_inUnrelatedElementInTable) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -29,8 +30,15 @@ class SidePanelToolbarButtonTest : public TestWithBrowserView {
 
 // Verify correct buttons are shown when side panel alignment is changed.
 TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
+  if (features::IsSidePanelPinningEnabled()) {
+    GTEST_SKIP()
+        << "Default sidepanel button is not present with pinning feature.";
+  }
+
   SidePanelToolbarButton* const side_panel_button = GetSidePanelToolbarButton();
   ASSERT_TRUE(side_panel_button != nullptr);
+
+  EXPECT_EQ(side_panel_button->context_menu_controller(), nullptr);
 
   // Set right aligned side panel.
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
@@ -47,7 +55,9 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
   ASSERT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(side_panel_button->GetImage(views::Button::STATE_NORMAL)),
       gfx::Image(gfx::CreateVectorIcon(
-          kSidePanelIcon, color_provider->GetColor(kColorToolbarButtonIcon)))));
+          features::IsChromeRefresh2023() ? kSidePanelChromeRefreshIcon
+                                          : kSidePanelIcon,
+          color_provider->GetColor(kColorToolbarButtonIcon)))));
 
   // Left aligned side panels should use the left aligned icon.
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
@@ -56,18 +66,26 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
   ASSERT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(side_panel_button->GetImage(views::Button::STATE_NORMAL)),
       gfx::Image(gfx::CreateVectorIcon(
-          kSidePanelLeftIcon,
+          features::IsChromeRefresh2023() ? kSidePanelLeftChromeRefreshIcon
+                                          : kSidePanelLeftIcon,
           color_provider->GetColor(kColorToolbarButtonIcon)))));
 }
 
 // Verify correct buttons are shown in RTL mode.
 TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInRTL) {
+  if (features::IsSidePanelPinningEnabled()) {
+    GTEST_SKIP()
+        << "Default sidepanel button is not present with pinning feature.";
+  }
+
   // Enter RTL mode by using an RTL language.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
 
   SidePanelToolbarButton* const side_panel_button = GetSidePanelToolbarButton();
   ASSERT_TRUE(side_panel_button != nullptr);
 
+  EXPECT_EQ(side_panel_button->context_menu_controller(), nullptr);
+
   // Set right aligned side panel.
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, true);
@@ -83,7 +101,9 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInRTL) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(side_panel_button->GetImage(views::Button::STATE_NORMAL)),
       gfx::Image(gfx::CreateVectorIcon(
-          kSidePanelIcon, color_provider->GetColor(kColorToolbarButtonIcon)))));
+          features::IsChromeRefresh2023() ? kSidePanelChromeRefreshIcon
+                                          : kSidePanelIcon,
+          color_provider->GetColor(kColorToolbarButtonIcon)))));
 
   // Left aligned side panels should use the left aligned icon.
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
@@ -92,6 +112,7 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInRTL) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(side_panel_button->GetImage(views::Button::STATE_NORMAL)),
       gfx::Image(gfx::CreateVectorIcon(
-          kSidePanelLeftIcon,
+          features::IsChromeRefresh2023() ? kSidePanelLeftChromeRefreshIcon
+                                          : kSidePanelLeftIcon,
           color_provider->GetColor(kColorToolbarButtonIcon)))));
 }

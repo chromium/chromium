@@ -47,8 +47,10 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(loadingerror, kLoadingerror)
 
   bool check(const String& font, const String& text, ExceptionState&);
-  ScriptPromise load(ScriptState*, const String& font, const String& text);
-  virtual ScriptPromise ready(ScriptState*) = 0;
+  ScriptPromiseTyped<IDLSequence<FontFace>> load(ScriptState*,
+                                                 const String& font,
+                                                 const String& text);
+  virtual ScriptPromiseTyped<FontFaceSet> ready(ScriptState*) = 0;
 
   ExecutionContext* GetExecutionContext() const override {
     return ExecutionContextClient::GetExecutionContext();
@@ -91,8 +93,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
   bool ShouldSignalReady() const;
   void FireDoneEvent();
 
-  using ReadyProperty =
-      ScriptPromiseProperty<Member<FontFaceSet>, Member<DOMException>>;
+  using ReadyProperty = ScriptPromiseProperty<FontFaceSet, DOMException>;
 
   bool is_loading_ = false;
   bool should_fire_loading_event_ = false;
@@ -128,12 +129,16 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
     LoadFontPromiseResolver(FontFaceArray* faces, ScriptState* script_state)
         : num_loading_(faces->size()),
           error_occured_(false),
-          resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)) {
+          resolver_(MakeGarbageCollected<
+                    ScriptPromiseResolverTyped<IDLSequence<FontFace>>>(
+              script_state)) {
       font_faces_.swap(*faces);
     }
 
     void LoadFonts();
-    ScriptPromise Promise() { return resolver_->Promise(); }
+    ScriptPromiseTyped<IDLSequence<FontFace>> Promise() {
+      return resolver_->Promise();
+    }
 
     void NotifyLoaded(FontFace*) override;
     void NotifyError(FontFace*) override;
@@ -144,7 +149,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
     HeapVector<Member<FontFace>> font_faces_;
     int num_loading_;
     bool error_occured_;
-    Member<ScriptPromiseResolver> resolver_;
+    Member<ScriptPromiseResolverTyped<IDLSequence<FontFace>>> resolver_;
   };
 
  private:

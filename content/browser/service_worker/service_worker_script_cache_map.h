@@ -37,7 +37,7 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
       delete;
 
   int64_t LookupResourceId(const GURL& url);
-  absl::optional<std::string> LookupSha256Checksum(const GURL& url);
+  std::optional<std::string> LookupSha256Checksum(const GURL& url);
 
   // Used during the initial run of a new version to build the map
   // of resources ids.

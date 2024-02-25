@@ -44,7 +44,7 @@ class PartialMagnifierControllerTestApi {
   }
 
  private:
-  raw_ptr<PartialMagnifierController, ExperimentalAsh> controller_;
+  raw_ptr<PartialMagnifierController> controller_;
 };
 
 class PartialMagnifierControllerTest : public AshTestBase {
@@ -153,15 +153,6 @@ TEST_F(PartialMagnifierControllerTest, ActivatesOnlyForPointer) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->PressTouch();
   EXPECT_FALSE(GetTestApi().is_active());
-}
-
-// The magnifier activates for mouse events.
-TEST_F(PartialMagnifierControllerTest, ActivatesForMouseEvents) {
-  GetController()->SetEnabled(true);
-  GetController()->set_allow_mouse_following(true);
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->MoveMouseBy(1, 1);
-  EXPECT_TRUE(GetTestApi().is_active());
 }
 
 // The magnifier is always located at pointer.

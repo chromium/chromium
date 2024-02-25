@@ -21,8 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * @enum TFLAudioRecordErrorCode
- * This enum specifies error codes for TFLAudioRecord of the TensorFlow Lite
- * Task Library.
+ * This enum specifies error codes for TFLAudioRecord of the TensorFlow Lite Task Library.
  */
 typedef NS_ENUM(NSUInteger, TFLAudioRecordErrorCode) {
 
@@ -65,7 +64,7 @@ NS_SWIFT_NAME(AudioRecord)
 @interface TFLAudioRecord : NSObject
 
 /** Audio format specifying the number of channels and sample rate supported. */
-@property(nonatomic, readonly) TFLAudioFormat* audioFormat;
+@property(nonatomic, readonly) TFLAudioFormat *audioFormat;
 
 /** Size of the buffer held by `TFLAudioRecord`. It ensures delivery of audio
  * data of length `bufferSize` arrays when you start recording the microphone
@@ -74,35 +73,33 @@ NS_SWIFT_NAME(AudioRecord)
 @property(nonatomic, readonly) NSUInteger bufferSize;
 
 /**
- * Initializes a new `TFLAudioRecord` with the given audio format and buffer
- * size.
+ * Initializes a new `TFLAudioRecord` with the given audio format and buffer size.
  *
  * @param format An audio format of type `TFLAudioFormat`.
  * @param bufferSize Maximum number of elements the internal buffer of
  * `TFLAudioRecord` can hold at any given point of time. The buffer length
  * should be a multiple of `format.channelCount`.
- * @param error An optional error parameter populated if the initialization of
- * `TFLAudioRecord` was not successful.
+ * @param error An optional error parameter populated if the initialization of `TFLAudioRecord` was
+ * not successful.
  *
- * @return An new instance of `TFLAudioRecord` with the given audio format and
- * buffer size. `nil` if there is an error in initializing `TFLAudioRecord`.
+ * @return An new instance of `TFLAudioRecord` with the given audio format and buffer size. `nil` if
+ * there is an error in initializing `TFLAudioRecord`.
  */
-- (nullable instancetype)initWithAudioFormat:(TFLAudioFormat*)format
+- (nullable instancetype)initWithAudioFormat:(TFLAudioFormat *)format
                                   bufferSize:(NSUInteger)bufferSize
-                                       error:(NSError**)error;
+                                       error:(NSError **)error;
 
 /**
- * This function starts recording the audio from the microphone if audio record
- * permissions have been granted by the user.
+ * This function starts recording the audio from the microphone if audio record permissions
+ * have been granted by the user.
  *
  * @discussion Before calling this function, you must call
- * `-[AVAudioSession requestRecordPermission:]` or `+[AVAudioSession
- * sharedInstance]` to acquire record permissions. If the user has denied
- * permission or the permissions are undetermined, the return value will be
- * false and an appropriate error is populated in the error pointer. The
- * internal buffer of `TFLAudioRecord` of length bufferSize will always have the
- * most recent audio samples acquired from the microphhone if this function
- * returns successfully.  Use:
+ * `-[AVAudioSession requestRecordPermission:]` or `+[AVAudioSession sharedInstance]` to acquire
+ * record permissions. If the user has denied permission or the permissions are
+ * undetermined, the return value will be false and an appropriate error is
+ * populated in the error pointer. The internal buffer of `TFLAudioRecord` of
+ * length bufferSize will always have the most recent audio samples acquired
+ * from the microphhone if this function returns successfully.  Use:
  * `-[TFLAudioRecord readAtOffset:withSize:error:]` to get the data from the
  * buffer at any instance, if audio recording has started successfully.
  *
@@ -113,8 +110,7 @@ NS_SWIFT_NAME(AudioRecord)
  *
  * @return Boolean value indicating if audio recording started successfully.
  */
-- (BOOL)startRecordingWithError:(NSError**)error
-    NS_SWIFT_NAME(startRecording());
+- (BOOL)startRecordingWithError:(NSError **)error NS_SWIFT_NAME(startRecording());
 
 /**
  * Stops recording audio from the microphone. All elements in the internal
@@ -128,16 +124,16 @@ NS_SWIFT_NAME(AudioRecord)
  *
  * @param offset Index in the buffer from which elements are to be read.
  * @param size Number of elements to be returned.
- * @param error An optional error parameter populated if the internal buffer
- * could not be read successfully.
+ * @param error An optional error parameter populated if the internal buffer could not be read
+ * successfully.
  *
- * @return A `TFLFloatBuffer` containing the elements of the internal buffer of
- * `TFLAudioRecord` in the range, `buffer[offset:offset+size]`. Returns `nil` if
- * there is an error in reading the internal buffer.
+ * @return A `TFLFloatBuffer` containing the elements of the internal buffer of `TFLAudioRecord` in
+ * the range, `buffer[offset:offset+size]`. Returns `nil` if there is an error in reading the
+ * internal buffer.
  */
-- (nullable TFLFloatBuffer*)readAtOffset:(NSUInteger)offset
-                                withSize:(NSUInteger)size
-                                   error:(NSError**)error;
+- (nullable TFLFloatBuffer *)readAtOffset:(NSUInteger)offset
+                                 withSize:(NSUInteger)size
+                                    error:(NSError **)error;
 
 @end
 

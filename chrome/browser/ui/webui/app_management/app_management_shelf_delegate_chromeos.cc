@@ -14,12 +14,10 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
-
-using app_management::mojom::OptionalBool;
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
 
 AppManagementShelfDelegate::AppManagementShelfDelegate(
-    AppManagementPageHandler* page_handler,
+    AppManagementPageHandlerChromeOs* page_handler,
     Profile* profile)
     : page_handler_(page_handler),
       shelf_controller_helper_(
@@ -79,18 +77,16 @@ bool AppManagementShelfDelegate::IsPolicyPinned(
 }
 
 void AppManagementShelfDelegate::SetPinned(const std::string& app_id,
-                                           OptionalBool pinned) {
+                                           bool pinned) {
   auto* shelf_controller = ChromeShelfController::instance();
   if (!shelf_controller) {
     return;
   }
 
-  if (pinned == OptionalBool::kTrue) {
+  if (pinned) {
     PinAppWithIDToShelf(app_id);
-  } else if (pinned == OptionalBool::kFalse) {
-    UnpinAppWithIDFromShelf(app_id);
   } else {
-    NOTREACHED();
+    UnpinAppWithIDFromShelf(app_id);
   }
 }
 

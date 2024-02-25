@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
@@ -38,6 +39,10 @@ API_AVAILABLE(macos(13.3))
     (ASAuthorizationController*)controller {
   return _window;
 }
+@end
+
+@interface ASAuthorizationPlatformPublicKeyCredentialAssertionRequest (Extras)
+@property(nonatomic) BOOL shouldShowHybridTransport;
 @end
 
 // ICloudKeychainDelegate receives callbacks when an `ASAuthorizationController`
@@ -85,7 +90,7 @@ API_AVAILABLE(macos(13.3))
 @end
 
 @implementation ICloudKeychainCreateController {
-  absl::optional<device::CtapMakeCredentialRequest> request_;
+  std::optional<device::CtapMakeCredentialRequest> request_;
 }
 
 - (void)setRequest:(device::CtapMakeCredentialRequest)request {
@@ -151,7 +156,7 @@ API_AVAILABLE(macos(13.3))
 @end
 
 @implementation ICloudKeychainGetController {
-  absl::optional<device::CtapGetAssertionRequest> request_;
+  std::optional<device::CtapGetAssertionRequest> request_;
 }
 
 - (void)setRequest:(device::CtapGetAssertionRequest)request {
@@ -189,9 +194,10 @@ bool ProcessHasEntitlement() {
 
   base::apple::ScopedCFTypeRef<CFTypeRef> entitlement_value_cftype(
       SecTaskCopyValueForEntitlement(
-          task, CFSTR("com.apple.developer.web-browser.public-key-credential"),
+          task.get(),
+          CFSTR("com.apple.developer.web-browser.public-key-credential"),
           nullptr));
-  return entitlement_value_cftype;
+  return !!entitlement_value_cftype;
 }
 
 API_AVAILABLE(macos(13.3))
@@ -318,6 +324,7 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
                         alloc] initWithCredentialID:ToNSData(cred.id)]];
     }
     get_request.allowedCredentials = allowedCredentials;
+    [get_request setShouldShowHybridTransport:false];
     get_request.userVerificationPreference = Convert(request.user_verification);
     get_controller_ = [[ICloudKeychainGetController alloc]
         initWithAuthorizationRequests:@[ get_request ]];
@@ -363,15 +370,15 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
 
 API_AVAILABLE(macos(13.3))
 scoped_refptr<SystemInterface> GetNativeSystemInterface() {
-  static scoped_refptr<SystemInterface> native_sys_interface =
-      base::MakeRefCounted<NativeSystemInterface>();
-  return native_sys_interface;
+  static base::NoDestructor<scoped_refptr<SystemInterface>>
+      native_sys_interface(base::MakeRefCounted<NativeSystemInterface>());
+  return *native_sys_interface;
 }
 
 API_AVAILABLE(macos(13.3))
 scoped_refptr<SystemInterface>& GetTestInterface() {
-  static scoped_refptr<SystemInterface> test_interface;
-  return test_interface;
+  static base::NoDestructor<scoped_refptr<SystemInterface>> test_interface;
+  return *test_interface;
 }
 
 }  // namespace

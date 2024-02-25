@@ -22,15 +22,14 @@ PageColors::~PageColors() = default;
 void PageColors::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
-      prefs::kPageColors, ui::NativeTheme::PageColors::kOff,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kApplyPageColorsOnlyOnIncreasedContrast, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      prefs::kPageColors,
+      /*default_value=*/ui::NativeTheme::PageColors::kOff);
+  registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
+                                /*default_value=*/false);
+  registry->RegisterListPref(prefs::kPageColorsBlockList);
 #if BUILDFLAG(IS_WIN)
-  registry->RegisterBooleanPref(
-      prefs::kIsDefaultPageColorsOnHighContrast, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kIsDefaultPageColorsOnHighContrast,
+                                /*default_value=*/true);
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -47,7 +46,7 @@ void PageColors::Init() {
   profile_prefs_->SetBoolean(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
                              true);
 #endif  // BUILDFLAG(IS_WIN)
-  OnPageColorsChanged();
+  OnPreferredContrastChanged();
 }
 
 void PageColors::OnPageColorsChanged() {
@@ -70,6 +69,7 @@ void PageColors::OnPageColorsChanged() {
   }
 #endif  // BUILDFLAG(IS_WIN)
   native_theme->set_page_colors(current_page_colors);
+  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 ui::NativeTheme::PageColors PageColors::CalculatePageColors() {

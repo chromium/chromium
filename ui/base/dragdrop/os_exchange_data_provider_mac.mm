@@ -135,14 +135,33 @@ OSExchangeDataProviderMac::CreateProviderWrappingPasteboard(
   return std::make_unique<WrappingProvider>(pasteboard);
 }
 
-void OSExchangeDataProviderMac::MarkOriginatedFromRenderer() {
-  [GetPasteboard() setData:[NSData data]
-                   forType:kUTTypeChromiumRendererInitiatedDrag];
+void OSExchangeDataProviderMac::MarkRendererTaintedFromOrigin(
+    const url::Origin& origin) {
+  NSString* string = origin.opaque()
+                         ? [NSString string]
+                         : base::SysUTF8ToNSString(origin.Serialize());
+  [GetPasteboard() setString:string
+                     forType:kUTTypeChromiumRendererInitiatedDrag];
 }
 
-bool OSExchangeDataProviderMac::DidOriginateFromRenderer() const {
+bool OSExchangeDataProviderMac::IsRendererTainted() const {
   return [GetPasteboard().types
       containsObject:kUTTypeChromiumRendererInitiatedDrag];
+}
+
+std::optional<url::Origin> OSExchangeDataProviderMac::GetRendererTaintedOrigin()
+    const {
+  NSString* item =
+      [GetPasteboard() stringForType:kUTTypeChromiumRendererInitiatedDrag];
+  if (!item) {
+    return std::nullopt;
+  }
+
+  if (0 == [item length]) {
+    return url::Origin();
+  }
+
+  return url::Origin::Create(GURL(base::SysNSStringToUTF8(item)));
 }
 
 void OSExchangeDataProviderMac::MarkAsFromPrivileged() {
@@ -230,25 +249,14 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
   // TODO(avi): What is going on here? This comment and code was written for the
   // old pasteboard code; is this still true with the new pasteboard code? What
   // uses this, and why does it care about titles or path conversion?
-  base::FilePath path;
+  std::vector<ui::FileInfo> files;
   if (policy != FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES &&
-      GetFilename(&path)) {
-    *url = net::FilePathToFileURL(path);
+      GetFilenames(&files) && !files.empty()) {
+    *url = net::FilePathToFileURL(files[0].path);
     return true;
   }
 
   return false;
-}
-
-bool OSExchangeDataProviderMac::GetFilename(base::FilePath* path) const {
-  std::vector<FileInfo> files =
-      clipboard_util::FilesFromPasteboard(GetPasteboard());
-  if (files.empty()) {
-    return false;
-  }
-
-  *path = files[0].path;
-  return true;
 }
 
 bool OSExchangeDataProviderMac::GetFilenames(
@@ -357,9 +365,9 @@ NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
   return @[
     kUTTypeChromiumInitiatedDrag, kUTTypeChromiumPrivilegedInitiatedDrag,
     kUTTypeChromiumRendererInitiatedDrag, kUTTypeChromiumWebCustomData,
-    kUTTypeWebKitWebURLsWithTitles, NSPasteboardTypeFileURL,
-    NSPasteboardTypeHTML, NSPasteboardTypeRTF, NSPasteboardTypeString,
-    NSPasteboardTypeURL
+    kUTTypeWebKitWebURLsWithTitles, kUTTypeChromiumSourceURL,
+    NSPasteboardTypeFileURL, NSPasteboardTypeHTML, NSPasteboardTypeRTF,
+    NSPasteboardTypeString, NSPasteboardTypeURL
   ];
 }
 

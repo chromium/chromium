@@ -9,8 +9,7 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
-
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

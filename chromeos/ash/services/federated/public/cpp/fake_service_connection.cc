@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 
-#include "base/containers/flat_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
-namespace ash {
-namespace federated {
+#include "base/containers/flat_map.h"
+
+namespace ash::federated {
 
 FakeServiceConnectionImpl::FakeServiceConnectionImpl() = default;
 FakeServiceConnectionImpl::~FakeServiceConnectionImpl() = default;
@@ -26,17 +26,30 @@ void FakeServiceConnectionImpl::Clone(
 }
 
 void FakeServiceConnectionImpl::ReportExample(
-    const std::string& client_name,
+    const std::string& table_name,
     chromeos::federated::mojom::ExamplePtr example) {
   LOG(INFO) << "In FakeServiceConnectionImpl::ReportExample, does nothing";
   return;
 }
 
 void FakeServiceConnectionImpl::StartScheduling(
-    const absl::optional<base::flat_map<std::string, std::string>>&
+    const std::optional<base::flat_map<std::string, std::string>>&
         client_launch_stage) {
   return;
 }
 
-}  // namespace federated
-}  // namespace ash
+void FakeServiceConnectionImpl::ReportExampleToTable(
+    chromeos::federated::mojom::FederatedExampleTableId table_id,
+    chromeos::federated::mojom::ExamplePtr example) {
+  LOG(INFO)
+      << "In FakeServiceConnectionImpl::ReportExampleToTable, does nothing";
+  return;
+}
+
+void FakeServiceConnectionImpl::StartSchedulingWithConfig(
+    std::vector<chromeos::federated::mojom::ClientScheduleConfigPtr>
+        client_configs) {
+  return;
+}
+
+}  // namespace ash::federated

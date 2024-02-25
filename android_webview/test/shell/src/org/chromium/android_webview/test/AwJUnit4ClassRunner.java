@@ -28,15 +28,16 @@ import java.util.List;
  * be done if the test case needs this for correctness or to save infrastructure resources for tests
  * which exercise code which cannot depend on single vs. multi process.
  */
-public final class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
+public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     // This should match the definition in Android test runner scripts: bit.ly/3ynoREM
     private static final String MULTIPROCESS_TEST_NAME_SUFFIX = "__multiprocess_mode";
 
-    private final TestHook mWebViewMultiProcessHook = (targetContext, testMethod) -> {
-        if (testMethod instanceof WebViewMultiProcessFrameworkMethod) {
-            CommandLine.getInstance().appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
-        }
-    };
+    private final TestHook mWebViewMultiProcessHook =
+            (targetContext, testMethod) -> {
+                if (testMethod instanceof WebViewMultiProcessFrameworkMethod) {
+                    CommandLine.getInstance().appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
+                }
+            };
 
     /**
      * Create an AwJUnit4ClassRunner to run {@code klass} and initialize values

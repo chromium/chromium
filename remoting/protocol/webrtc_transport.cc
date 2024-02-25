@@ -33,11 +33,10 @@
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/opus/audio_decoder_opus.h"
 #include "third_party/webrtc/api/audio_codecs/opus/audio_encoder_opus.h"
-#include "third_party/webrtc/api/call/call_factory_interface.h"
+#include "third_party/webrtc/api/enable_media.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtc_event_log/rtc_event_log_factory.h"
 #include "third_party/webrtc/api/video_codecs/builtin_video_decoder_factory.h"
-#include "third_party/webrtc/media/engine/webrtc_media_engine.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
@@ -109,35 +108,31 @@ void UpdateCodecParameters(SdpMessage* sdp_message, bool incoming) {
 
 std::string GetTransportProtocol(const cricket::CandidatePair& candidate_pair) {
   const cricket::Candidate& local_candidate = candidate_pair.local_candidate();
-  return (local_candidate.type() == "relay") ? local_candidate.relay_protocol()
-                                             : local_candidate.protocol();
+  return local_candidate.is_relay() ? local_candidate.relay_protocol()
+                                    : local_candidate.protocol();
 }
 
 // Returns true if the selected candidate-pair indicates a relay connection.
-absl::optional<bool> IsConnectionRelayed(
+std::optional<bool> IsConnectionRelayed(
     const cricket::CandidatePair& selected_candidate_pair) {
   const cricket::Candidate& local_candidate =
       selected_candidate_pair.local_candidate();
   const cricket::Candidate& remote_candidate =
       selected_candidate_pair.remote_candidate();
-  return local_candidate.type() == "relay" ||
-         remote_candidate.type() == "relay";
+  return local_candidate.is_relay() || remote_candidate.is_relay();
 }
 
 // Utility function to map a cricket::Candidate string type to a
 // TransportRoute::RouteType enum value.
 TransportRoute::RouteType CandidateTypeToTransportRouteType(
-    const std::string& candidate_type) {
-  if (candidate_type == "local") {
-    return TransportRoute::DIRECT;
-  } else if (candidate_type == "stun" || candidate_type == "prflx") {
+    const cricket::Candidate& candidate) {
+  if (candidate.is_stun() || candidate.is_prflx()) {
     return TransportRoute::STUN;
-  } else if (candidate_type == "relay") {
+  } else if (candidate.is_relay()) {
     return TransportRoute::RELAY;
-  } else {
-    LOG(ERROR) << "Unknown candidate type: " << candidate_type;
-    return TransportRoute::DIRECT;
   }
+  DCHECK(candidate.is_local());
+  return TransportRoute::DIRECT;
 }
 
 void SetSenderParameters(webrtc::RtpSenderInterface& sender,
@@ -282,21 +277,16 @@ class WebrtcTransport::PeerConnectionWrapper
     pcf_deps.worker_thread = worker_thread;
     pcf_deps.signaling_thread = rtc::Thread::Current();
     pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
-    pcf_deps.call_factory = webrtc::CreateCallFactory();
-    pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
-        pcf_deps.task_queue_factory.get());
-    cricket::MediaEngineDependencies media_deps;
-    media_deps.task_queue_factory = pcf_deps.task_queue_factory.get();
-    media_deps.adm = audio_module_;
-    media_deps.audio_encoder_factory =
+    pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
+    pcf_deps.adm = audio_module_;
+    pcf_deps.audio_encoder_factory =
         webrtc::CreateAudioEncoderFactory<webrtc::AudioEncoderOpus>();
-    media_deps.audio_decoder_factory =
+    pcf_deps.audio_decoder_factory =
         webrtc::CreateAudioDecoderFactory<webrtc::AudioDecoderOpus>();
-    media_deps.video_encoder_factory = std::move(encoder_factory);
-    media_deps.video_decoder_factory =
-        webrtc::CreateBuiltinVideoDecoderFactory();
-    media_deps.audio_processing = webrtc::AudioProcessingBuilder().Create();
-    pcf_deps.media_engine = cricket::CreateMediaEngine(std::move(media_deps));
+    pcf_deps.video_encoder_factory = std::move(encoder_factory);
+    pcf_deps.video_decoder_factory = webrtc::CreateBuiltinVideoDecoderFactory();
+    pcf_deps.audio_processing = webrtc::AudioProcessingBuilder().Create();
+    webrtc::EnableMedia(pcf_deps);
     peer_connection_factory_ =
         webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
 
@@ -625,9 +615,8 @@ const SessionOptions& WebrtcTransport::session_options() const {
   return session_options_;
 }
 
-void WebrtcTransport::SetPreferredBitrates(
-    absl::optional<int> min_bitrate_bps,
-    absl::optional<int> max_bitrate_bps) {
+void WebrtcTransport::SetPreferredBitrates(std::optional<int> min_bitrate_bps,
+                                           std::optional<int> max_bitrate_bps) {
   preferred_min_bitrate_bps_ = min_bitrate_bps;
   preferred_max_bitrate_bps_ = max_bitrate_bps;
   if (connected_) {
@@ -746,7 +735,7 @@ void WebrtcTransport::Close(ErrorCode error) {
 void WebrtcTransport::ApplySessionOptions(const SessionOptions& options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   session_options_ = options;
-  absl::optional<std::string> video_codec = options.Get("Video-Codec");
+  std::optional<std::string> video_codec = options.Get("Video-Codec");
   if (video_codec) {
     preferred_video_codec_ = *video_codec;
   }
@@ -819,8 +808,7 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   CHECK(handshake_hmac_.Sign(
       description->type() + " " + sdp_message.NormalizedForSignature(),
       reinterpret_cast<uint8_t*>(&(digest[0])), digest.size()));
-  std::string digest_base64;
-  base::Base64Encode(digest, &digest_base64);
+  std::string digest_base64 = base::Base64Encode(digest);
   offer_tag->SetAttr(QName(std::string(), "signature"), digest_base64);
 
   send_transport_info_callback_.Run(std::move(transport_info));
@@ -988,7 +976,7 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
 
   // Unknown -> direct/relayed is treated as a
   // change, so the correct initial bitrate caps are set.
-  absl::optional<bool> connection_relayed =
+  std::optional<bool> connection_relayed =
       IsConnectionRelayed(event.selected_candidate_pair);
   if (connection_relayed != connection_relayed_) {
     connection_relayed_ = connection_relayed;
@@ -1016,16 +1004,15 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
   static_assert(TransportRoute::DIRECT < TransportRoute::STUN &&
                     TransportRoute::STUN < TransportRoute::RELAY,
                 "Route type enum values are ordered by 'indirectness'");
-  route.type =
-      std::max(CandidateTypeToTransportRouteType(local_candidate.type()),
-               CandidateTypeToTransportRouteType(remote_candidate.type()));
+  route.type = std::max(CandidateTypeToTransportRouteType(local_candidate),
+                        CandidateTypeToTransportRouteType(remote_candidate));
 
   VLOG(0) << "Selected candidate-pair changed, reason = " << event.reason;
   VLOG(0) << "  Local IP = " << local_candidate.address().ToString()
-          << ", type = " << local_candidate.type()
+          << ", type = " << local_candidate.type_name()
           << ", protocol = " << local_candidate.protocol();
   VLOG(0) << "  Remote IP = " << remote_candidate.address().ToString()
-          << ", type = " << remote_candidate.type()
+          << ", type = " << remote_candidate.type_name()
           << ", protocol = " << remote_candidate.protocol();
 
   // Try to convert local and peer addresses. These may sometimes be invalid,

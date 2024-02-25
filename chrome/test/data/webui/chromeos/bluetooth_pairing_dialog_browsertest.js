@@ -5,14 +5,14 @@
 /**
  * @fileoverview Test suite for the Bluetooth pairing dialog.
  */
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
 var BluetoothPairingDialogBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bluetooth-pairing/test_loader.html?module=chromeos/bluetooth_pairing_test.js&host=test';
+    return 'chrome://bluetooth-pairing/test_loader.html?module=chromeos/bluetooth_pairing_test.js';
   }
 };
 

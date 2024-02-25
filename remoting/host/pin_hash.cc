@@ -38,8 +38,7 @@ bool ParsePinHashFromConfig(const std::string& value,
 std::string MakeHostPinHash(const std::string& host_id,
                             const std::string& pin) {
   std::string hash = protocol::GetSharedSecretHash(host_id, pin);
-  std::string hash_base64;
-  base::Base64Encode(hash, &hash_base64);
+  std::string hash_base64 = base::Base64Encode(hash);
   return "hmac:" + hash_base64;
 }
 
@@ -49,7 +48,6 @@ bool VerifyHostPinHash(const std::string& hash,
   std::string hash_parsed;
   if (!ParsePinHashFromConfig(hash, host_id, &hash_parsed)) {
     LOG(FATAL) << "Failed to parse PIN hash.";
-    return false;
   }
   std::string hash_calculated = protocol::GetSharedSecretHash(host_id, pin);
   return hash_calculated == hash_parsed;

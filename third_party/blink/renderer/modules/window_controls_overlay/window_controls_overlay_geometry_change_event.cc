@@ -33,7 +33,7 @@ WindowControlsOverlayGeometryChangeEvent::
       visible_(visible) {}
 
 DOMRect* WindowControlsOverlayGeometryChangeEvent::titlebarAreaRect() const {
-  return bounding_rect_;
+  return bounding_rect_.Get();
 }
 
 bool WindowControlsOverlayGeometryChangeEvent::visible() const {

@@ -12,8 +12,10 @@ import androidx.fragment.app.ListFragment;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.search_engines.TemplateUrlService;
 
 /**
  * A preference fragment for selecting a default search engine.
@@ -52,6 +54,15 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
         ListView listView = getListView();
         listView.setDivider(null);
         listView.setItemsCanFocus(true);
+
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        if (templateUrlService.shouldShowUpdatedSettings()
+                && templateUrlService.isEeaChoiceCountry()) {
+            View headerView =
+                    getLayoutInflater()
+                            .inflate(R.layout.search_engine_choice_header, listView, false);
+            listView.addHeaderView(headerView);
+        }
     }
 
     @Override
@@ -94,5 +105,9 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
+    }
+
+    public void overrideSearchEngineAdapterForTesting(SearchEngineAdapter searchEngineAdapter) {
+        mSearchEngineAdapter = searchEngineAdapter;
     }
 }

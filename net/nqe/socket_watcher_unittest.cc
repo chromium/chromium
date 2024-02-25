@@ -33,7 +33,7 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
   static void OnUpdatedRTTAvailableStoreParams(
       SocketPerformanceWatcherFactory::Protocol protocol,
       const base::TimeDelta& rtt,
-      const absl::optional<IPHash>& host) {
+      const std::optional<IPHash>& host) {
     // Need to verify before another callback is executed, or explicitly call
     // |ResetCallbackParams()|.
     ASSERT_FALSE(callback_executed_);
@@ -45,7 +45,7 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
   static void OnUpdatedRTTAvailable(
       SocketPerformanceWatcherFactory::Protocol protocol,
       const base::TimeDelta& rtt,
-      const absl::optional<IPHash>& host) {
+      const std::optional<IPHash>& host) {
     // Need to verify before another callback is executed, or explicitly call
     // |ResetCallbackParams()|.
     ASSERT_FALSE(callback_executed_);
@@ -61,7 +61,7 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
   }
 
   static void VerifyCallbackParams(const base::TimeDelta& rtt,
-                                   const absl::optional<IPHash>& host) {
+                                   const std::optional<IPHash>& host) {
     ASSERT_TRUE(callback_executed_);
     EXPECT_EQ(rtt, callback_rtt_);
     if (host)
@@ -73,7 +73,7 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
 
   static void ResetExpectedCallbackParams() {
     callback_rtt_ = base::Milliseconds(0);
-    callback_host_ = absl::nullopt;
+    callback_host_ = std::nullopt;
     callback_executed_ = false;
     should_notify_rtt_callback_ = false;
   }
@@ -82,7 +82,7 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
 
  private:
   static base::TimeDelta callback_rtt_;
-  static absl::optional<IPHash> callback_host_;
+  static std::optional<IPHash> callback_host_;
   static bool callback_executed_;
   static bool should_notify_rtt_callback_;
 };
@@ -90,8 +90,8 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
 base::TimeDelta NetworkQualitySocketWatcherTest::callback_rtt_ =
     base::Milliseconds(0);
 
-absl::optional<IPHash> NetworkQualitySocketWatcherTest::callback_host_ =
-    absl::nullopt;
+std::optional<IPHash> NetworkQualitySocketWatcherTest::callback_host_ =
+    std::nullopt;
 
 bool NetworkQualitySocketWatcherTest::callback_executed_ = false;
 

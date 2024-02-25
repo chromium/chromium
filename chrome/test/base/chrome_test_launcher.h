@@ -54,7 +54,7 @@ class ChromeTestChromeMainDelegate
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
 #if !BUILDFLAG(IS_ANDROID)
-  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
+  std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
@@ -78,6 +78,8 @@ class ChromeTestLauncherDelegate : public content::TestLauncherDelegate {
 #if !BUILDFLAG(IS_ANDROID)
   content::ContentMainDelegate* CreateContentMainDelegate() override;
 #endif
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override;
   void PreSharding() override;
   void OnDoneRunningTests() override;
 

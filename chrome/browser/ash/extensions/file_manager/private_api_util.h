@@ -97,7 +97,7 @@ class SingleEntryPropertiesGetterForDriveFs {
   ResultCallback callback_;
   const storage::FileSystemURL file_system_url_;
   base::FilePath relative_path_;
-  const raw_ptr<Profile, ExperimentalAsh> running_profile_;
+  const raw_ptr<Profile> running_profile_;
 
   // Values used in the process.
   std::unique_ptr<extensions::api::file_manager_private::EntryProperties>
@@ -123,8 +123,8 @@ void VolumeToVolumeMetadata(
 // FilePath. |render_frame_host| and |profile| are needed to obtain the
 // FileSystemContext currently in use.
 //
-// Local paths will look like "/home/chronos/user/Downloads/foo/bar.txt" or
-// "/special/drive/foo/bar.txt".
+// Local paths will look like "/home/chronos/user/MyFiles/Downloads/foo/bar.txt"
+// or "/special/drive/foo/bar.txt".
 base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
                                    Profile* profile,
                                    const GURL& url);
@@ -148,10 +148,9 @@ enum GetSelectedFileInfoLocalPathOption {
   NEED_LOCAL_PATH_FOR_SAVING,
 };
 
-// Gets the information for |file_urls|.
-void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
-                         Profile* profile,
-                         const std::vector<GURL>& file_urls,
+// Gets the information for |local_paths|.
+void GetSelectedFileInfo(Profile* profile,
+                         std::vector<base::FilePath> local_paths,
                          GetSelectedFileInfoLocalPathOption local_path_option,
                          GetSelectedFileInfoCallback callback);
 

@@ -34,7 +34,7 @@ namespace blink {
 
 namespace {
 
-// Name, decription, and legacy code name and value of DOMExceptions.
+// Name, description, and legacy code name and value of DOMExceptions.
 // https://webidl.spec.whatwg.org/#idl-DOMException-error-names
 const struct DOMExceptionEntry {
   DOMExceptionCode code;
@@ -168,7 +168,16 @@ const struct DOMExceptionEntry {
     // Media Capture and Streams API
     // https://w3c.github.io/mediacapture-main/#overconstrainederror-interface
     {DOMExceptionCode::kOverconstrainedError, "OverconstrainedError",
-     "The desired set of constraints/capabilities cannot be met."}
+     "The desired set of constraints/capabilities cannot be met."},
+
+    // FedCM API
+    // https://fedidcg.github.io/FedCM/#browser-api-identity-credential-error-interface
+    {DOMExceptionCode::kIdentityCredentialError, "IdentityCredentialError",
+     "An attempt to retrieve an IdentityCredential has failed."},
+
+    // WebSocketStream API https://websockets.spec.whatwg.org/
+    {DOMExceptionCode::kWebSocketError, "WebSocketError",
+     "The WebSocket connection was closed."},
 
     // Extra comment to keep the end of the initializer list on its own line.
 };

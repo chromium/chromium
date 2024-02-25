@@ -28,7 +28,6 @@ class FeatureObserverClient;
 }
 
 namespace performance_manager {
-class BrowserChildProcessWatcher;
 class Graph;
 class PageLiveStateDecoratorHelper;
 class PageLoadMetricsObserver;
@@ -42,6 +41,7 @@ class ExtensionWatcher;
 
 namespace user_tuning {
 class BatterySaverModeManager;
+class PerformanceDetectionManager;
 class ProfileDiscardOptOutListHelper;
 class UserPerformanceTuningManager;
 }  // namespace user_tuning
@@ -97,9 +97,6 @@ class ChromeBrowserMainExtraPartsPerformanceManager
       performance_manager::PerformanceManagerFeatureObserverClient>
       feature_observer_client_;
 
-  std::unique_ptr<performance_manager::BrowserChildProcessWatcher>
-      browser_child_process_watcher_;
-
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};
 
@@ -129,6 +126,8 @@ class ChromeBrowserMainExtraPartsPerformanceManager
       performance_manager::user_tuning::ProfileDiscardOptOutListHelper>
       profile_discard_opt_out_list_helper_;
   std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
+  std::unique_ptr<performance_manager::user_tuning::PerformanceDetectionManager>
+      performance_detection_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

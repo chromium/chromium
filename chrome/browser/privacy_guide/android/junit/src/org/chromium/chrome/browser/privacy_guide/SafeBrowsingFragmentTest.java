@@ -25,38 +25,32 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
-/**
- * JUnit tests of the class {@link SafeBrowsingFragment}
- */
+/** JUnit tests of the class {@link SafeBrowsingFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SafeBrowsingFragmentTest {
     // TODO(crbug.com/1357003): Use Espresso for view interactions.
-    @Rule
-    public JniMocker mMocker = new JniMocker();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private SafeBrowsingBridge.Natives mNativeMock;
-    @Mock
-    private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier;
+    @Mock private SafeBrowsingBridge.Natives mNativeMock;
+    @Mock private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier;
 
     private FragmentScenario mScenario;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtectionButton;
@@ -81,20 +75,30 @@ public class SafeBrowsingFragmentTest {
 
     private void initFragmentWithSBState(@SafeBrowsingState int state) {
         when(mNativeMock.getSafeBrowsingState()).thenReturn(state);
-        mScenario = FragmentScenario.launchInContainer(
-                SafeBrowsingFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
-        mScenario.onFragment(fragment -> {
-            mEnhancedProtectionButton = fragment.getView().findViewById(R.id.enhanced_option);
-            mStandardProtectionButtonFriendlier =
-                    fragment.getView().findViewById(R.id.standard_option_friendlier);
-            mStandardProtectionButton = fragment.getView().findViewById(R.id.standard_option);
-            ((SafeBrowsingFragment) fragment)
-                    .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
-            mFriendlierESBDescription = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_summary_updated);
-            mOriginalESBDescription = fragment.getContext().getString(
-                    R.string.privacy_guide_safe_browsing_enhanced_description);
-        });
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        SafeBrowsingFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario.onFragment(
+                fragment -> {
+                    mEnhancedProtectionButton =
+                            fragment.getView().findViewById(R.id.enhanced_option);
+                    mStandardProtectionButtonFriendlier =
+                            fragment.getView().findViewById(R.id.standard_option_friendlier);
+                    mStandardProtectionButton =
+                            fragment.getView().findViewById(R.id.standard_option);
+                    ((SafeBrowsingFragment) fragment)
+                            .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
+                    mFriendlierESBDescription =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_summary_updated);
+                    mOriginalESBDescription =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .privacy_guide_safe_browsing_enhanced_description);
+                });
     }
 
     @Test
@@ -134,16 +138,20 @@ public class SafeBrowsingFragmentTest {
     public void testSelectEnhanced_changeSafeBrowsingEnhancedUserAction() {
         initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
         mEnhancedProtectionButton.performClick();
-        assertTrue(mActionTester.getActions().contains(
-                "Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced"));
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains("Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced"));
     }
 
     @Test
     public void testSelectStandard_changeSafeBrowsingStandardUserAction() {
         initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
         mStandardProtectionButton.performClick();
-        assertTrue(mActionTester.getActions().contains(
-                "Settings.PrivacyGuide.ChangeSafeBrowsingStandard"));
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains("Settings.PrivacyGuide.ChangeSafeBrowsingStandard"));
     }
 
     @Test
@@ -176,6 +184,29 @@ public class SafeBrowsingFragmentTest {
         assertTrue(mStandardProtectionButton.isChecked());
         assertEquals(View.GONE, mStandardProtectionButtonFriendlier.getVisibility());
         assertFalse(mStandardProtectionButtonFriendlier.isChecked());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
+    public void testDescriptionTextWhenHashRealTimeDisabled() {
+        when(mNativeMock.isHashRealTimeLookupEligibleInSession()).thenReturn(false);
+        initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.safe_browsing_standard_protection_summary_updated),
+                mStandardProtectionButtonFriendlier.getDescriptionText());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION})
+    public void testDescriptionTextWhenHashRealTimeEnabled() {
+        when(mNativeMock.isHashRealTimeLookupEligibleInSession()).thenReturn(true);
+        initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(
+                ContextUtils.getApplicationContext()
+                        .getString(
+                                R.string.safe_browsing_standard_protection_summary_updated_proxy),
+                mStandardProtectionButtonFriendlier.getDescriptionText());
     }
 
     @Test

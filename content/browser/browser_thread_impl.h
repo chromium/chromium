@@ -12,8 +12,9 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_POSIX)
+#include <optional>
+
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace content {
@@ -71,7 +72,7 @@ class CONTENT_EXPORT BrowserThreadImpl : public BrowserThread {
 
 #if BUILDFLAG(IS_POSIX)
   // Allows usage of the FileDescriptorWatcher API on the UI thread.
-  absl::optional<base::FileDescriptorWatcher> file_descriptor_watcher_;
+  std::optional<base::FileDescriptorWatcher> file_descriptor_watcher_;
 #endif
 };
 

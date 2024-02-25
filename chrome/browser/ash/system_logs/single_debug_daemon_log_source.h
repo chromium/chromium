@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_logs {
 
@@ -50,7 +50,7 @@ class SingleDebugDaemonLogSource : public SystemLogsSource {
   // Callback for handling response from DebugDaemonClient.
   void OnFetchComplete(const std::string& log_name,
                        SysLogsSourceCallback callback,
-                       absl::optional<std::string> result) const;
+                       std::optional<std::string> result) const;
 
   base::WeakPtrFactory<SingleDebugDaemonLogSource> weak_ptr_factory_{this};
 };

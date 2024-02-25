@@ -6,11 +6,11 @@
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_GBM_PIXMAP_WAYLAND_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/gbm_buffer.h"
@@ -41,7 +41,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      absl::optional<gfx::Size> visible_area_size = absl::nullopt);
+      std::optional<gfx::Size> visible_area_size = std::nullopt);
 
   // Creates a buffer object from native pixmap handle and initializes the
   // pixmap buffer. If |widget| is provided, browser side wl_buffer is also

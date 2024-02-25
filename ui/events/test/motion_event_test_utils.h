@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "ui/events/gesture_detection/motion_event_generic.h"
+#include "ui/events/velocity_tracker/motion_event_generic.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {

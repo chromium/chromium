@@ -25,6 +25,10 @@ class MockPaletteToolDelegate : public PaletteTool::Delegate {
               RecordPaletteOptionsUsage,
               (PaletteTrayOptions option, PaletteInvocationMethod method),
               (override));
+  MOCK_METHOD(void,
+              RecordPaletteModeCancellation,
+              (PaletteModeCancelType type),
+              (override));
 };
 
 }  // namespace ash

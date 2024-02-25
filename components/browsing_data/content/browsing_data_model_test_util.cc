@@ -94,6 +94,51 @@ DataKeyDebugStringVisitor::operator()<browsing_data::SharedWorkerInfo>(
   return debug_string.str();
 }
 
+template <>
+std::string
+DataKeyDebugStringVisitor::operator()<content::SessionStorageUsageInfo>(
+    const content::SessionStorageUsageInfo& session_storage_usage_info) {
+  std::stringstream debug_string;
+  debug_string << "SessionStorageUsageInfo: ";
+  debug_string << "{namespace_id: " << session_storage_usage_info.namespace_id;
+  debug_string << " blink::StorageKey: ";
+  debug_string << session_storage_usage_info.storage_key.GetDebugString()
+               << "}";
+  return debug_string.str();
+}
+
+template <>
+std::string DataKeyDebugStringVisitor::operator()<net::CanonicalCookie>(
+    const net::CanonicalCookie& cookie) {
+  std::stringstream debug_string;
+  debug_string << "CanonicalCookie: {" << cookie.DebugString();
+  debug_string << " Partitioned: " << cookie.IsPartitioned();
+  if (cookie.IsPartitioned()) {
+    debug_string << " Partitioning site: "
+                 << cookie.PartitionKey()->site().Serialize();
+  }
+  debug_string << "}";
+  return debug_string.str();
+}
+
+template <>
+std::string DataKeyDebugStringVisitor::operator()<
+    webid::FederatedIdentityDataModel::DataKey>(
+    const webid::FederatedIdentityDataModel::DataKey&
+        federated_identity_data_key) {
+  std::stringstream debug_string;
+  debug_string << "FederatedIdentityDataKey: ";
+  debug_string << "{relying_party_requester: "
+               << federated_identity_data_key.relying_party_requester();
+  debug_string << " relying_party_embedder: "
+               << federated_identity_data_key.relying_party_embedder();
+  debug_string << " identity_provider: "
+               << federated_identity_data_key.identity_provider();
+  debug_string << " account_id: " << federated_identity_data_key.account_id()
+               << "}";
+  return debug_string.str();
+}
+
 struct DataOwnerDebugStringVisitor {
   template <class T>
   std::string operator()(const T& data_owner);
@@ -164,7 +209,7 @@ void ValidateBrowsingDataEntries(
 
   std::string model_entries_debug_string = "[";
   for (const auto& entry : model_entries) {
-    model_entries_debug_string += "{";
+    model_entries_debug_string += "\n{";
     model_entries_debug_string += entry.ToDebugString();
     model_entries_debug_string += "},";
   }
@@ -172,14 +217,14 @@ void ValidateBrowsingDataEntries(
 
   std::string expected_entries_debug_string = "[";
   for (const auto& entry : expected_entries) {
-    expected_entries_debug_string += "{";
+    expected_entries_debug_string += "\n{";
     expected_entries_debug_string += entry.ToDebugString();
     expected_entries_debug_string += "},";
   }
   expected_entries_debug_string += "]";
 
-  SCOPED_TRACE("Model Entries: " + model_entries_debug_string +
-               " Expected Entries: " + expected_entries_debug_string);
+  SCOPED_TRACE("\nModel Entries:\n" + model_entries_debug_string +
+               "\nExpected Entries:\n" + expected_entries_debug_string);
 
   EXPECT_THAT(model_entries,
               testing::UnorderedElementsAreArray(expected_entries));

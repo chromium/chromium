@@ -84,8 +84,7 @@ bool TraceConfigCategoryFilter::IsCategoryGroupEnabled(
     const StringPiece& category_group_name) const {
   bool had_enabled_by_default = false;
   DCHECK(!category_group_name.empty());
-  CStringTokenizer category_group_tokens(category_group_name.begin(),
-                                         category_group_name.end(), ",");
+  StringViewTokenizer category_group_tokens(category_group_name, ",");
   while (category_group_tokens.GetNext()) {
     StringPiece category_group_token = category_group_tokens.token_piece();
     // Don't allow empty tokens, nor tokens with leading or trailing space.

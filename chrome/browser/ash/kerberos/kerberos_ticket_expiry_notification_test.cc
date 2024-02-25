@@ -42,7 +42,7 @@ class KerberosTicketExpiryNotificationTest : public testing::Test {
   }
 
  protected:
-  absl::optional<Notification> Notification() {
+  std::optional<Notification> Notification() {
     return display_service_tester_->GetNotification(kNotificationId);
   }
 
@@ -57,7 +57,7 @@ class KerberosTicketExpiryNotificationTest : public testing::Test {
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   // Counts how many times a notification for a given user was clicked.
@@ -82,7 +82,7 @@ TEST_F(KerberosTicketExpiryNotificationTest, Click) {
   EXPECT_EQ(0, notification_click_count_[kUser]);
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationId,
-      absl::nullopt /* action_index */, absl::nullopt /* reply */);
+      std::nullopt /* action_index */, std::nullopt /* reply */);
   EXPECT_EQ(1, notification_click_count_[kUser]);
 }
 

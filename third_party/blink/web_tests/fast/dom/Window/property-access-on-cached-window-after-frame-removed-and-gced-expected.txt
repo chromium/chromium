@@ -27,6 +27,7 @@ PASS childWindow.location.search is ''
 PASS childWindow.locationbar.visible is false
 PASS childWindow.menubar.visible is false
 PASS childWindow.name is ''
+PASS childWindow.navigation.activation is null
 PASS childWindow.navigation.canGoBack is false
 PASS childWindow.navigation.canGoForward is false
 PASS childWindow.navigation.currentEntry is null
@@ -54,6 +55,8 @@ PASS childWindow.navigator.userAgent is ''
 PASS childWindow.navigator.vendor is window.navigator.vendor
 PASS childWindow.navigator.vendorSub is ''
 PASS childWindow.navigator.webdriver is false
+PASS childWindow.navigator.windowControlsOverlay.ongeometrychange is null
+PASS childWindow.navigator.windowControlsOverlay.visible is false
 PASS childWindow.onabort is null
 PASS childWindow.onafterprint is null
 PASS childWindow.onanimationend is null
@@ -120,10 +123,13 @@ PASS childWindow.onmouseout is null
 PASS childWindow.onmouseover is null
 PASS childWindow.onmouseup is null
 PASS childWindow.onmousewheel is null
+PASS childWindow.onmove is null
 PASS childWindow.onoffline is null
 PASS childWindow.ononline is null
 PASS childWindow.onoverscroll is null
+PASS childWindow.onpageconceal is null
 PASS childWindow.onpagehide is null
+PASS childWindow.onpagereveal is null
 PASS childWindow.onpageshow is null
 PASS childWindow.onpause is null
 PASS childWindow.onplay is null
@@ -153,6 +159,8 @@ PASS childWindow.onselect is null
 PASS childWindow.onselectionchange is null
 PASS childWindow.onselectstart is null
 PASS childWindow.onslotchange is null
+PASS childWindow.onsnapchanged is null
+PASS childWindow.onsnapchanging is null
 PASS childWindow.onstalled is null
 PASS childWindow.onstorage is null
 PASS childWindow.onsubmit is null

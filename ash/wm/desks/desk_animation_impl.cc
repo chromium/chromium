@@ -6,7 +6,6 @@
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -14,6 +13,7 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 
@@ -78,7 +78,7 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
       source == DesksSwitchSource::kDeskSwitchTouchpad) {
     type = DeskSwitchAnimationType::kContinuousAnimation;
   }
-  for (auto* root : Shell::GetAllRootWindows()) {
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     desk_switch_animators_.emplace_back(
         std::make_unique<RootWindowDeskSwitchAnimator>(
             root, type, starting_desk_index, ending_desk_index, this,
@@ -173,7 +173,7 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
 
   // If any of the displays need a new screenshot while scrolling, take the
   // ending desk screenshot for all of them to keep them in sync.
-  absl::optional<int> ending_desk_index;
+  std::optional<int> ending_desk_index;
   for (const auto& animator : desk_switch_animators_) {
     if (!ending_desk_index)
       ending_desk_index = animator->UpdateSwipeAnimation(scroll_delta_x);
@@ -190,14 +190,14 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
     visible_desk_index_ = first_animator->GetIndexOfMostVisibleDeskScreenshot();
     if (visible_desk_index_ != old_visible_desk_index) {
       ++visible_desk_changes_;
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kTick,
           ui::HapticTouchpadEffectStrength::kMedium);
     }
 
     const bool reached_edge = first_animator->reached_edge();
     if (reached_edge && !old_reached_edge) {
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kKnock,
           ui::HapticTouchpadEffectStrength::kMedium);
     }
@@ -226,7 +226,7 @@ bool DeskActivationAnimation::EndSwipeAnimation() {
   throughput_tracker_ = desks_util::GetSelectedCompositorForPerformanceMetrics()
                             ->RequestNewThroughputTracker();
   throughput_tracker_->Start(
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kDeskEndGestureSmoothnessHistogramName,
                                  smoothness);
       })));
@@ -290,7 +290,7 @@ DeskActivationAnimation::GetLatencyReportCallback() const {
 
 metrics_util::ReportCallback
 DeskActivationAnimation::GetSmoothnessReportCallback() const {
-  return metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+  return metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
     UMA_HISTOGRAM_PERCENTAGE(kDeskActivationSmoothnessHistogramName,
                              smoothness);
   }));
@@ -329,12 +329,14 @@ DeskRemovalAnimation::DeskRemovalAnimation(DesksController* controller,
   DCHECK_EQ(controller_->active_desk(),
             controller_->desks()[desk_to_remove_index_].get());
 
-  for (auto* root : Shell::GetAllRootWindows()) {
-    desk_switch_animators_.emplace_back(
-        std::make_unique<RootWindowDeskSwitchAnimator>(
-            root, DeskSwitchAnimationType::kQuickAnimation,
-            desk_to_remove_index_, desk_to_activate_index, this,
-            /*for_remove=*/true));
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    auto animator = std::make_unique<RootWindowDeskSwitchAnimator>(
+        root, DeskSwitchAnimationType::kQuickAnimation, desk_to_remove_index_,
+        desk_to_activate_index, this,
+        /*for_remove=*/true);
+    animator->set_is_combine_desks_type(close_type ==
+                                        DeskCloseType::kCombineDesks);
+    desk_switch_animators_.emplace_back(std::move(animator));
   }
 }
 
@@ -384,7 +386,7 @@ DeskRemovalAnimation::GetLatencyReportCallback() const {
 
 metrics_util::ReportCallback DeskRemovalAnimation::GetSmoothnessReportCallback()
     const {
-  return ash::metrics_util::ForSmoothness(
+  return ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kDeskRemovalSmoothnessHistogramName,
                                  smoothness);

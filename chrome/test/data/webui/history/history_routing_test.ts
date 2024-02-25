@@ -4,7 +4,8 @@
 
 import 'chrome://history/history.js';
 
-import {BrowserProxyImpl, BrowserServiceImpl, HistoryAppElement, HistorySideBarElement, MetricsProxyImpl} from 'chrome://history/history.js';
+import type {HistoryAppElement, HistorySideBarElement} from 'chrome://history/history.js';
+import {BrowserProxyImpl, BrowserServiceImpl, MetricsProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -261,5 +262,62 @@ import {navigateTo} from './test_util.js';
             'chrome://history/journeys?q=' + searchTerm, window.location.href);
       }
     });
+  });
+});
+
+suite(`routing-test-with-history-clusters-pref-set`, () => {
+  let app: HistoryAppElement;
+  let testBrowserProxy: TestBrowserProxy;
+  let testMetricsProxy: TestMetricsProxy;
+  let testBrowserService: TestBrowserService;
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      isHistoryClustersEnabled: true,
+      isHistoryClustersVisible: true,
+      renameJourneys: false,
+      lastSelectedTab: 1,
+    });
+  });
+
+  setup(function() {
+    window.history.replaceState({}, '', '/');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testBrowserService = new TestBrowserService();
+    BrowserServiceImpl.setInstance(testBrowserService);
+    testBrowserProxy = new TestBrowserProxy();
+    BrowserProxyImpl.setInstance(testBrowserProxy);
+    testMetricsProxy = new TestMetricsProxy();
+    MetricsProxyImpl.setInstance(testMetricsProxy);
+
+    return flushTasks();
+  });
+
+  async function initialize() {
+    app = document.createElement('history-app');
+    document.body.appendChild(app);
+  }
+
+  test(
+      `route to non default last selected tab when no url params set `,
+      async () => {
+        initialize();
+        assertEquals(`chrome://history/journeys`, window.location.href);
+      });
+
+  test(`route to grouped url when last tab is grouped`, async () => {
+    initialize();
+    assertEquals(`chrome://history/journeys`, window.location.href);
+    navigateTo('/journeys', app);
+    assertEquals(`chrome://history/journeys`, window.location.href);
+    const lastSelectedTab =
+        await testBrowserService.whenCalled('setLastSelectedTab');
+    assertEquals(lastSelectedTab, 1);
+  });
+
+  test(`route to list url when last tab is list`, async () => {
+    loadTimeData.overrideValues({lastSelectedTab: 0});
+    initialize();
+    assertEquals(`chrome://history/`, window.location.href);
   });
 });

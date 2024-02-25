@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] e.style['color'] = "hsl(30 -50% 60)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(153, 153, 153)" but got "rgb(102, 153, 204)"
+[FAIL] e.style['color'] = "hsl(0 -50 40%)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(102, 102, 102)" but got "rgb(51, 153, 153)"
+[FAIL] e.style['color'] = "hsl(30 -50 60)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(153, 153, 153)" but got "rgb(102, 153, 204)"
+Harness: the test ran to completion.
+

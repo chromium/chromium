@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -20,13 +21,12 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
-#import "ios/chrome/browser/web/web_state_container_view_provider.h"
+#import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 
 @protocol ApplicationCommands;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
 @class BubblePresenter;
-@protocol CRWResponderInputView;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
@@ -49,9 +49,7 @@ class TabUsageRecorderBrowserAgent;
 @class LayoutGuideCenter;
 @protocol LoadQueryCommands;
 class UrlLoadingBrowserAgent;
-class UrlLoadingNotifierBrowserAgent;
 @protocol VoiceSearchController;
-class WebStateUpdateBrowserAgent;
 
 typedef struct {
   BubblePresenter* bubblePresenter;
@@ -63,7 +61,7 @@ typedef struct {
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
   SideSwipeMediator* sideSwipeMediator;
   BookmarksCoordinator* bookmarksCoordinator;
-  FullscreenController* fullscreenController;
+  raw_ptr<FullscreenController> fullscreenController;
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
@@ -71,14 +69,12 @@ typedef struct {
   id<FindInPageCommands> findInPageCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   BOOL isOffTheRecord;
-  PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent;
-  UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
-  UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
+  raw_ptr<PagePlaceholderBrowserAgent> pagePlaceholderBrowserAgent;
+  raw_ptr<UrlLoadingBrowserAgent> urlLoadingBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
-  TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
+  raw_ptr<TabUsageRecorderBrowserAgent> tabUsageRecorderBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
-  WebStateUpdateBrowserAgent* webStateUpdateBrowserAgent;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers
@@ -140,9 +136,6 @@ typedef struct {
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;
 
-// Called when the user explicitly opens the tab switcher.
-- (void)userEnteredTabSwitcher;
-
 // Opens a new tab as if originating from `originPoint` and `focusOmnibox`.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
                      focusOmnibox:(BOOL)focusOmnibox
@@ -155,11 +148,6 @@ typedef struct {
 
 // Shows the voice search UI.
 - (void)startVoiceSearch;
-
-// Displays or refreshes the current tab.
-// TODO:(crbug.com/1385847): Remove this when BVC is refactored to not know
-// about model layer objects such as webstates.
-- (void)displayCurrentTab;
 
 @end
 

@@ -27,7 +27,7 @@ namespace ash {
 // only on the first call to UpdateGradientMak().
 //
 // Views using this helper should call UpdateGradientMask() whenever the scroll
-// view bounds or contents bounds change (e.g. from Layout()).
+// view bounds or contents bounds change (e.g. during layout).
 //
 // The gradient is destroyed when this object is destroyed. This does not add
 // extra work in the common views::View teardown case (the layer would be
@@ -56,7 +56,7 @@ class ASH_EXPORT ScrollViewGradientHelper {
   void RemoveMaskLayer();
 
   // The scroll view being decorated.
-  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
+  const raw_ptr<views::ScrollView> scroll_view_;
 
   // The height of the gradient in DIPs.
   const int gradient_height_;

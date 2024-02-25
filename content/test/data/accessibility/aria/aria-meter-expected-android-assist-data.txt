@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++ProgressBar text:"funding" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="funding"}, {aria-valuemax="100"}, {aria-valuemin="0"}, {aria-valuenow="50"}, {aria-valuetext="half-way"}, {role="meter"}]
+++++TextView text:"We're getting there!" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++ProgressBar text:"funding" textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-label="funding"}, {aria-valuemax="100"}, {aria-valuemin="0"}, {aria-valuenow="10"}, {role="meter"}]
+++++TextView text:"Not so great." textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

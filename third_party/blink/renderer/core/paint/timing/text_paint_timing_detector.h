@@ -9,7 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -62,14 +62,16 @@ class CORE_EXPORT LargestTextPaintManager final
 
   inline TextRecord* LargestText() {
     DCHECK(!largest_text_ || !largest_text_->paint_time.is_null());
-    return largest_text_;
+    return largest_text_.Get();
   }
   void MaybeUpdateLargestText(TextRecord* record);
   void MaybeUpdateLargestIgnoredText(const LayoutObject&,
                                      const uint64_t&,
                                      const gfx::Rect& frame_visual_rect,
                                      const gfx::RectF& root_visual_rect);
-  TextRecord* UpdateMetricsCandidate();
+
+  // Return the text LCP candidate and whether the candidate has changed.
+  std::pair<TextRecord*, bool> UpdateMetricsCandidate();
 
   void ReportCandidateToTrace(const TextRecord&);
   void PopulateTraceValue(TracedValue&, const TextRecord& first_text_paint);
@@ -82,6 +84,10 @@ class CORE_EXPORT LargestTextPaintManager final
     count_candidates_ = 0;
     largest_text_.Clear();
     largest_ignored_text_.Clear();
+  }
+  bool IsUnrelatedSoftNavigationPaint(const Node& node) {
+    CHECK(paint_timing_detector_);
+    return paint_timing_detector_->IsUnrelatedSoftNavigationPaint(node);
   }
 
   void Trace(Visitor*) const;
@@ -143,7 +149,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   inline bool IsRecordingLargestTextPaint() const {
     return recording_largest_text_paint_;
   }
-  inline TextRecord* UpdateMetricsCandidate() {
+  inline std::pair<TextRecord*, bool> UpdateMetricsCandidate() {
     return ltp_manager_->UpdateMetricsCandidate();
   }
   void ReportLargestIgnoredText();

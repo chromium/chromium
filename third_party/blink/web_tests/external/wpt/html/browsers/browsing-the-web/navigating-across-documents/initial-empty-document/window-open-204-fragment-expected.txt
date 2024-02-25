@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL location.href assert_equals: history.length should not increase after normal navigation away from initial empty document expected 1 but got 2
-FAIL location.assign assert_equals: history.length should not increase after normal navigation away from initial empty document expected 1 but got 2
-Harness: the test ran to completion.
-

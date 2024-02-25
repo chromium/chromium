@@ -141,15 +141,13 @@ class PluginVmAppsTest : public testing::Test {
     }
   } dbus_clients_;
 
-  raw_ptr<AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
-      app_service_proxy_ = nullptr;
+  raw_ptr<AppServiceProxy, DanglingUntriaged> app_service_proxy_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<plugin_vm::PluginVmTestHelper> test_helper_;
-  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_;
+  raw_ptr<storage::ExternalMountPoints> mount_points_;
   std::string mount_name_;
-  raw_ptr<MockPluginVmManager, DanglingUntriaged | ExperimentalAsh>
-      plugin_vm_manager_;
+  raw_ptr<MockPluginVmManager, DanglingUntriaged> plugin_vm_manager_;
 };
 
 TEST_F(PluginVmAppsTest, AppServiceHasPluginVmIntentFilters) {
@@ -227,7 +225,7 @@ TEST_F(PluginVmAppsTest, LaunchAppWithIntent_FailedDirectoryNotShared) {
       GetMyFilesFileSystemURL("Downloads/file").ToGURL()));
   intent->files = {std::move(files)};
 
-  absl::optional<State> result_state;
+  std::optional<State> result_state;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, /*event_flags=*/0, std::move(intent), LaunchSource::kUnknown,
       std::unique_ptr<WindowInfo>(),
@@ -236,8 +234,8 @@ TEST_F(PluginVmAppsTest, LaunchAppWithIntent_FailedDirectoryNotShared) {
             result_state = callback_result.state;
           }));
 
-  ASSERT_EQ(result_state.value_or(apps::State::SUCCESS),
-            apps::State::FAILED_DIRECTORY_NOT_SHARED);
+  ASSERT_EQ(result_state.value_or(apps::State::kSuccess),
+            apps::State::kFailedDirectoryNotShared);
 }
 
 }  // namespace apps

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "device/vr/openxr/openxr_platform.h"
+#include "third_party/openxr/dev/xr_android.h"
 
 // The actual `OpenXrPlatformHelperAndroid` is implemented in //components/webxr
 // however, in //device/vr, we must provide an implementation for the loose

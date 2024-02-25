@@ -53,7 +53,7 @@ class DefaultState : public BaseState {
   void EnterToNextState(
       WindowState* window_state,
       chromeos::WindowStateType next_state_type,
-      absl::optional<chromeos::FloatStartLocation> float_start_location);
+      std::optional<chromeos::FloatStartLocation> float_start_location);
 
   // Reenters the current state. This is called when migrating from
   // previous desktop mode, and the window's state needs to re-construct the
@@ -66,7 +66,7 @@ class DefaultState : public BaseState {
   void UpdateBoundsFromState(
       WindowState* window_state,
       chromeos::WindowStateType old_state_type,
-      absl::optional<chromeos::FloatStartLocation> float_start_location);
+      std::optional<chromeos::FloatStartLocation> float_start_location);
 
   // Updates the window bounds for display bounds, or display work area bounds
   // changes.
@@ -85,7 +85,7 @@ class DefaultState : public BaseState {
   display::Display stored_display_state_;
 
   // The window state only gets remembered for DCHECK reasons.
-  raw_ptr<WindowState, ExperimentalAsh> stored_window_state_ = nullptr;
+  raw_ptr<WindowState> stored_window_state_ = nullptr;
 };
 
 }  // namespace ash

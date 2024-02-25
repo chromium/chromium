@@ -18,9 +18,9 @@ namespace message_center {
 
 // An image container view for notifications. Exported for tests.
 class MESSAGE_CENTER_EXPORT LargeImageView : public views::View {
- public:
-  METADATA_HEADER(LargeImageView);
+  METADATA_HEADER(LargeImageView, views::View)
 
+ public:
   explicit LargeImageView(const gfx::Size& max_size);
   LargeImageView(const LargeImageView&) = delete;
   LargeImageView& operator=(const LargeImageView&) = delete;

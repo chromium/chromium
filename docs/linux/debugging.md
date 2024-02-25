@@ -169,8 +169,8 @@ gdb -p <pid>
 #### Debugging run_web_tests.py renderers
 
 The `debug_renderer` script can also be used to debug the renderer running
-a web test. To do so, simply call `run_web_tests.py` from `debug_renderer.py`
-with all of the standard arguments for `run_web_tests.py`. For example:
+a web test. To do so, simply call `run_{web,wpt}_tests.py` from `debug_renderer`
+with all of the standard arguments for `run_{web,wpt}_tests.py`. For example:
 
 ```sh
 ./third_party/blink/tools/debug_renderer ./third_party/blink/tools/run_web_tests.py [run_web_test args]

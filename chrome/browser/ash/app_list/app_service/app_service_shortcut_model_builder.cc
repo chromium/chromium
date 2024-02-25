@@ -16,7 +16,7 @@
 
 namespace {
 bool ShouldShowInLauncher(const apps::ShortcutSource& shortcut_source) {
-  return shortcut_source == apps::ShortcutSource::kUser;
+  return shortcut_source != apps::ShortcutSource::kUnknown;
 }
 }  // namespace
 
@@ -33,7 +33,9 @@ void AppServiceShortcutModelBuilder::BuildModel() {
        proxy->ShortcutRegistryCache()->GetAllShortcuts()) {
     if (ShouldShowInLauncher(shortcut->shortcut_source)) {
       auto shortcut_item = std::make_unique<AppServiceShortcutItem>(
-          profile(), model_updater(), shortcut);
+          profile(), model_updater(), shortcut,
+          GetSyncItem(shortcut->shortcut_id.value(),
+                      sync_pb::AppListSpecifics::TYPE_APP));
       InsertApp(std::move(shortcut_item));
     }
   }
@@ -51,12 +53,18 @@ void AppServiceShortcutModelBuilder::OnShortcutUpdated(
     if (show) {
       CHECK(item->GetItemType() == AppServiceShortcutItem::kItemType);
       static_cast<AppServiceShortcutItem*>(item)->OnShortcutUpdate(update);
+      app_list::AppListSyncableService* serv = service();
+      if (serv) {
+        serv->UpdateItem(item);
+      }
     } else {
       RemoveApp(update.ShortcutId().value(), false);
     }
   } else if (show) {
     auto shortcut_item = std::make_unique<AppServiceShortcutItem>(
-        profile(), model_updater(), update);
+        profile(), model_updater(), update,
+        GetSyncItem(update.ShortcutId().value(),
+                    sync_pb::AppListSpecifics::TYPE_APP));
     InsertApp(std::move(shortcut_item));
   }
 }

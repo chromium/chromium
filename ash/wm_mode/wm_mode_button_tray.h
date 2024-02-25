@@ -8,6 +8,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class ImageView;
@@ -20,6 +21,8 @@ class TrayBubbleView;
 
 // Defines a shelf tray button that is used to toggle WM Mode on and off.
 class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
+  METADATA_HEADER(WmModeButtonTray, TrayBackgroundView)
+
  public:
   explicit WmModeButtonTray(Shelf* shelf);
   WmModeButtonTray(const WmModeButtonTray&) = delete;
@@ -36,10 +39,11 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
-  void ClickedOutsideBubble() override {}
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}
   // No need to override since the icon and activation state of this tray will
   // change and get updated simultaneously in `UpdateButtonVisuals()`.
   void UpdateTrayItemColor(bool is_active) override {}
+  void HideBubble(const TrayBubbleView* bubble_view) override {}
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
@@ -52,7 +56,7 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   void UpdateButtonVisibility();
 
   // The view that hosts the button icon.
-  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  const raw_ptr<views::ImageView> image_view_;
 };
 
 }  // namespace ash

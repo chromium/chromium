@@ -85,7 +85,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   uint64_t GetAsMask(const base::Value::Dict* dict,
                      std::string path,
                      uint64_t mask_value) {
-    absl::optional<bool> value = dict->FindBool(path);
+    std::optional<bool> value = dict->FindBool(path);
     DCHECK(value.has_value());
     return *value ? mask_value : 0;
   }
@@ -142,7 +142,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     scoped_refptr<BrowsingDataSettingsFunction> function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings");
-    absl::optional<base::Value> result = RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> result = RunFunctionAndReturnSingleResult(
         function.get(), std::string("[]"), browser()->profile());
     EXPECT_TRUE(result->is_dict());
     ASSERT_TRUE(result->GetDict().FindDoubleByDottedPath("options.since"));
@@ -151,7 +151,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     double expected_since = 0;
     if (since_pref != browsing_data::TimePeriod::ALL_TIME) {
       base::Time time = CalculateBeginDeleteTime(since_pref);
-      expected_since = time.ToJsTime();
+      expected_since = time.InMillisecondsFSinceUnixEpoch();
     }
     // Even a synchronous function takes nonzero time, but the difference
     // between when the function was called and now should be well under a
@@ -219,7 +219,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     scoped_refptr<BrowsingDataSettingsFunction> function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings");
-    absl::optional<base::Value> result = RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> result = RunFunctionAndReturnSingleResult(
         function.get(), std::string("[]"), browser()->profile());
 
     ASSERT_TRUE(result->is_dict());
@@ -356,7 +356,7 @@ TEST_F(BrowsingDataApiTest, RemoveBrowsingDataAll) {
   EXPECT_FALSE(RunFunctionAndReturnSingleResult(
       function.get(), kRemoveEverythingArguments, browser()->profile()));
 
-  EXPECT_EQ(base::Time::FromDoubleT(1.0), GetBeginTime());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1.0), GetBeginTime());
   EXPECT_EQ(
       // TODO(benwells): implement clearing of site usage data via the
       // browsing data API. https://crbug.com/500801.
@@ -460,7 +460,7 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
     scoped_refptr<BrowsingDataSettingsFunction> settings_function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings_json");
-    absl::optional<base::Value> result = RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> result = RunFunctionAndReturnSingleResult(
         settings_function.get(), std::string("[]"), browser()->profile());
 
     EXPECT_TRUE(result->is_dict());

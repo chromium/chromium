@@ -15,41 +15,42 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewMac {
   MockPointerLockRenderWidgetHostView(RenderWidgetHost* host)
       : RenderWidgetHostViewMac(host) {}
   ~MockPointerLockRenderWidgetHostView() override {
-    if (mouse_locked_)
-      UnlockMouse();
+    if (pointer_locked_) {
+      UnlockPointer();
+    }
   }
 
-  blink::mojom::PointerLockResult LockMouse(
+  blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) override {
-    mouse_locked_ = true;
-    mouse_lock_unadjusted_movement_ = request_unadjusted_movement;
+    pointer_locked_ = true;
+    pointer_lock_unadjusted_movement_ = request_unadjusted_movement;
 
     return blink::mojom::PointerLockResult::kSuccess;
   }
 
-  blink::mojom::PointerLockResult ChangeMouseLock(
+  blink::mojom::PointerLockResult ChangePointerLock(
       bool request_unadjusted_movement) override {
-    mouse_lock_unadjusted_movement_ = request_unadjusted_movement;
+    pointer_lock_unadjusted_movement_ = request_unadjusted_movement;
 
     return blink::mojom::PointerLockResult::kSuccess;
   }
 
-  void UnlockMouse() override {
+  void UnlockPointer() override {
     if (RenderWidgetHostImpl* host =
             RenderWidgetHostImpl::From(GetRenderWidgetHost())) {
-      host->LostMouseLock();
+      host->LostPointerLock();
     }
-    mouse_locked_ = false;
-    mouse_lock_unadjusted_movement_ = false;
+    pointer_locked_ = false;
+    pointer_lock_unadjusted_movement_ = false;
   }
 
-  bool IsMouseLocked() override { return mouse_locked_; }
+  bool IsPointerLocked() override { return pointer_locked_; }
 
-  bool GetIsMouseLockedUnadjustedMovementForTesting() override {
-    return mouse_lock_unadjusted_movement_;
+  bool GetIsPointerLockedUnadjustedMovementForTesting() override {
+    return pointer_lock_unadjusted_movement_;
   }
   bool HasFocus() override { return true; }
-  bool CanBeMouseLocked() override { return true; }
+  bool CanBePointerLocked() override { return true; }
 };
 
 void InstallCreateHooksForPointerLockBrowserTests() {

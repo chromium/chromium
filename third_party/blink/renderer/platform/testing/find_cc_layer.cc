@@ -63,6 +63,19 @@ const cc::Layer* CcLayerByCcElementId(const cc::Layer* root,
   return CcLayerByCcElementId(const_cast<cc::Layer*>(root), element_id);
 }
 
+cc::Layer* CcLayerByOwnerNodeId(cc::Layer* root, DOMNodeId id) {
+  for (auto& layer : root->children()) {
+    if (layer->debug_info() && layer->debug_info()->owner_node_id == id) {
+      return layer.get();
+    }
+  }
+  return nullptr;
+}
+
+const cc::Layer* CcLayerByOwnerNodeId(const cc::Layer* root, DOMNodeId id) {
+  return CcLayerByOwnerNodeId(const_cast<cc::Layer*>(root), id);
+}
+
 cc::Layer* ScrollingContentsCcLayerByScrollElementId(
     cc::Layer* root,
     const CompositorElementId& scroll_element_id) {

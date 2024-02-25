@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
-
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,10 +23,10 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "services/device/public/cpp/usb/usb_ids.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -88,7 +88,7 @@ const char* TypeToString(DevicePermissionEntry::Type type) {
 
 // Persists a DevicePermissionEntry in ExtensionPrefs.
 void SaveDevicePermissionEntry(BrowserContext* context,
-                               const std::string& extension_id,
+                               const ExtensionId& extension_id,
                                scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
@@ -105,11 +105,11 @@ bool MatchesDevicePermissionEntry(const base::Value::Dict& value,
   if (!type || *type != TypeToString(entry->type())) {
     return false;
   }
-  absl::optional<int> vendor_id = value.FindInt(kDeviceVendorId);
+  std::optional<int> vendor_id = value.FindInt(kDeviceVendorId);
   if (!vendor_id || vendor_id.value() != entry->vendor_id()) {
     return false;
   }
-  absl::optional<int> product_id = value.FindInt(kDeviceProductId);
+  std::optional<int> product_id = value.FindInt(kDeviceProductId);
   if (!product_id || product_id.value() != entry->product_id()) {
     return false;
   }
@@ -124,7 +124,7 @@ bool MatchesDevicePermissionEntry(const base::Value::Dict& value,
 // Updates the timestamp stored in ExtensionPrefs for the given
 // DevicePermissionEntry.
 void UpdateDevicePermissionEntry(BrowserContext* context,
-                                 const std::string& extension_id,
+                                 const ExtensionId& extension_id,
                                  scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
@@ -144,7 +144,7 @@ void UpdateDevicePermissionEntry(BrowserContext* context,
 
 // Removes the given DevicePermissionEntry from ExtensionPrefs.
 void RemoveDevicePermissionEntry(BrowserContext* context,
-                                 const std::string& extension_id,
+                                 const ExtensionId& extension_id,
                                  scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
@@ -166,19 +166,19 @@ void RemoveDevicePermissionEntry(BrowserContext* context,
 
 // Clears all DevicePermissionEntries for the app from ExtensionPrefs.
 void ClearDevicePermissionEntries(ExtensionPrefs* prefs,
-                                  const std::string& extension_id) {
-  prefs->UpdateExtensionPref(extension_id, kDevices, absl::nullopt);
+                                  const ExtensionId& extension_id) {
+  prefs->UpdateExtensionPref(extension_id, kDevices, std::nullopt);
 }
 
 scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
     const base::Value::Dict& entry) {
-  absl::optional<int> vendor_id = entry.FindInt(kDeviceVendorId);
+  std::optional<int> vendor_id = entry.FindInt(kDeviceVendorId);
   if (!vendor_id || vendor_id.value() < 0 ||
       vendor_id.value() > static_cast<int>(UINT16_MAX)) {
     return nullptr;
   }
 
-  absl::optional<int> product_id = entry.FindInt(kDeviceProductId);
+  std::optional<int> product_id = entry.FindInt(kDeviceProductId);
   if (!product_id || product_id.value() < 0 ||
       product_id.value() > static_cast<int>(UINT16_MAX)) {
     return nullptr;
@@ -231,7 +231,7 @@ scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
 // Returns all DevicePermissionEntries for the app.
 std::set<scoped_refptr<DevicePermissionEntry>> GetDevicePermissionEntries(
     ExtensionPrefs* prefs,
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   std::set<scoped_refptr<DevicePermissionEntry>> result;
   const base::Value::List* devices =
       prefs->ReadPrefAsList(extension_id, kDevices);
@@ -378,7 +378,7 @@ scoped_refptr<DevicePermissionEntry> DevicePermissions::FindHidDeviceEntry(
 }
 
 DevicePermissions::DevicePermissions(BrowserContext* context,
-                                     const std::string& extension_id) {
+                                     const ExtensionId& extension_id) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   entries_ = GetDevicePermissionEntries(prefs, extension_id);
 }
@@ -479,7 +479,7 @@ std::u16string DevicePermissionsManager::GetPermissionMessage(
 }
 
 DevicePermissions* DevicePermissionsManager::GetForExtension(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DevicePermissions* device_permissions = GetInternal(extension_id);
   if (!device_permissions) {
@@ -492,7 +492,7 @@ DevicePermissions* DevicePermissionsManager::GetForExtension(
 
 std::vector<std::u16string>
 DevicePermissionsManager::GetPermissionMessageStrings(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   std::vector<std::u16string> messages;
   const DevicePermissions* device_permissions = GetInternal(extension_id);
@@ -506,7 +506,7 @@ DevicePermissionsManager::GetPermissionMessageStrings(
 }
 
 void DevicePermissionsManager::AllowUsbDevice(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const device::mojom::UsbDeviceInfo& device_info) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DevicePermissions* device_permissions = GetForExtension(extension_id);
@@ -542,7 +542,7 @@ void DevicePermissionsManager::AllowUsbDevice(
 }
 
 void DevicePermissionsManager::AllowHidDevice(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const device::mojom::HidDeviceInfo& device) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DevicePermissions* device_permissions = GetForExtension(extension_id);
@@ -578,7 +578,7 @@ void DevicePermissionsManager::AllowHidDevice(
 }
 
 void DevicePermissionsManager::UpdateLastUsed(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     scoped_refptr<DevicePermissionEntry> entry) {
   DCHECK(thread_checker_.CalledOnValidThread());
   entry->set_last_used(base::Time::Now());
@@ -588,7 +588,7 @@ void DevicePermissionsManager::UpdateLastUsed(
 }
 
 void DevicePermissionsManager::RemoveEntry(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     scoped_refptr<DevicePermissionEntry> entry) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DevicePermissions* device_permissions = GetInternal(extension_id);
@@ -606,7 +606,7 @@ void DevicePermissionsManager::RemoveEntry(
   }
 }
 
-void DevicePermissionsManager::Clear(const std::string& extension_id) {
+void DevicePermissionsManager::Clear(const ExtensionId& extension_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   ClearDevicePermissionEntries(ExtensionPrefs::Get(context_), extension_id);
@@ -629,7 +629,7 @@ DevicePermissionsManager::~DevicePermissionsManager() {
 }
 
 DevicePermissions* DevicePermissionsManager::GetInternal(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   auto it = extension_id_to_device_permissions_.find(extension_id);
   if (it != extension_id_to_device_permissions_.end()) {
     return it->second;

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_cpu_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -20,7 +20,7 @@ CrosHealthdCpuSamplerHandler::~CrosHealthdCpuSamplerHandler() = default;
 void CrosHealthdCpuSamplerHandler::HandleResult(
     OptionalMetricCallback callback,
     cros_healthd::TelemetryInfoPtr result) const {
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
   const auto& cpu_result = result->cpu_result;
 
   if (!cpu_result.is_null()) {
@@ -39,7 +39,7 @@ void CrosHealthdCpuSamplerHandler::HandleResult(
         }
 
         // Gather keylocker info.
-        metric_data = absl::make_optional<MetricData>();
+        metric_data = std::make_optional<MetricData>();
         auto* const keylocker_info_out = metric_data->mutable_info_data()
                                              ->mutable_cpu_info()
                                              ->mutable_keylocker_info();

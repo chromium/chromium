@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PAGE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -16,10 +17,11 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
+#include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/page.h"
+#include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -30,7 +32,9 @@
 
 namespace content {
 
+class NavigationRequest;
 class PageDelegate;
+class PeakGpuMemoryTracker;
 class RenderFrameHostImpl;
 
 // This implements the Page interface that is exposed to embedders of content,
@@ -39,18 +43,28 @@ class RenderFrameHostImpl;
 // Please refer to content/public/browser/page.h for more details.
 class CONTENT_EXPORT PageImpl : public Page {
  public:
-  explicit PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate);
+  enum class ActivationType {
+    kPrerendering,
+    kPreview,
+  };
+  PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate);
 
   ~PageImpl() override;
 
   // Page implementation.
-  const absl::optional<GURL>& GetManifestUrl() const override;
+  const std::optional<GURL>& GetManifestUrl() const override;
   void GetManifest(GetManifestCallback callback) override;
   bool IsPrimary() const override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
   const std::string& GetContentsMimeType() const override;
+  void SetResizableForTesting(std::optional<bool> resizable) override;
+  std::optional<bool> GetResizable() override;
+
+  // Setter for the `window.setResizable(bool)` API's value defining whether the
+  // window can be resized or not. `std::nullopt` means the value is not set.
+  void SetResizable(std::optional<bool> resizable);
 
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
@@ -89,7 +103,7 @@ class CONTENT_EXPORT PageImpl : public Page {
     favicon_urls_ = std::move(favicon_urls);
   }
 
-  void OnThemeColorChanged(const absl::optional<SkColor>& theme_color);
+  void OnThemeColorChanged(const std::optional<SkColor>& theme_color);
 
   void DidChangeBackgroundColor(SkColor4f background_color, bool color_adjust);
 
@@ -98,15 +112,15 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   void NotifyPageBecameCurrent();
 
-  absl::optional<SkColor> theme_color() const {
+  std::optional<SkColor> theme_color() const {
     return main_document_theme_color_;
   }
 
-  absl::optional<SkColor> background_color() const {
+  std::optional<SkColor> background_color() const {
     return main_document_background_color_;
   }
 
-  absl::optional<blink::mojom::PreferredColorScheme> inferred_color_scheme()
+  std::optional<blink::mojom::PreferredColorScheme> inferred_color_scheme()
       const {
     return main_document_inferred_color_scheme_;
   }
@@ -136,13 +150,15 @@ class CONTENT_EXPORT PageImpl : public Page {
   // RenderFrameHostManager::CommitPending and remove this.
   void SetActivationStartTime(base::TimeTicks activation_start);
 
-  // Called during the prerender activation navigation. Sends an IPC to the
-  // RenderViews in the renderers, instructing them to transition their
-  // documents from prerendered to activated. Tells the corresponding
-  // RenderFrameHostImpls that the renderer will be activating their documents.
-  void ActivateForPrerendering(
+  // Called during the activation navigation. Sends an IPC to the RenderViews in
+  // the renderers, instructing them to transition their documents from
+  // prerendered to activated. Tells the corresponding RenderFrameHostImpls that
+  // the renderer will be activating their documents.
+  void Activate(
+      ActivationType type,
       StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate,
-      absl::optional<blink::ViewTransitionState> view_transition_state);
+      std::optional<blink::ViewTransitionState> view_transition_state,
+      base::OnceCallback<void(base::TimeTicks)> completion_callback);
 
   // Prerender2:
   // Dispatches load events that were deferred to be dispatched after
@@ -183,11 +199,39 @@ class CONTENT_EXPORT PageImpl : public Page {
   // `blink::features::kSharedStorageSelectURLLimit` is enabled. If
   // `blink::features::kSharedStorageSelectURLLimit` is disabled, always returns
   // true.
-  bool CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
+  bool CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
                                           double bits_to_charge);
 
+  // See documentation for |credentialless_iframes_nonce_|.
+  const base::UnguessableToken& credentialless_iframes_nonce() const {
+    return credentialless_iframes_nonce_;
+  }
+
+  // Take ownership of the loading memory tracker from the NavigationRequest
+  // that navigated to this page.
+  void TakeLoadingMemoryTracker(NavigationRequest* request);
+  // If we have a loading memory tracker, close it as loading has stopped. It
+  // will asynchronously receive the statistics from the GPU process, and update
+  // UMA stats.
+  void ResetLoadingMemoryTracker();
+  // If we have a loading memory tracker, cancel it as loading hasn't stopped
+  // and the page is being navigated away from. UMA stats will not be recorded.
+  void CancelLoadingMemoryTracker();
+
+  bool is_overriding_user_agent() { return is_overriding_user_agent_; }
+  void set_is_overriding_user_agent(bool is_overriding_user_agent) {
+    is_overriding_user_agent_ = is_overriding_user_agent;
+  }
+
+  // Use to set and release |last_commit_params_|, see documentation of the
+  // member for more details. This is only called for outermost pages.
+  void SetLastCommitParams(
+      mojom::DidCommitProvisionalLoadParamsPtr commit_params);
+  mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();
+
  private:
-  void DidActivateAllRenderViewsForPrerendering();
+  void DidActivateAllRenderViewsForPrerenderingOrPreview(
+      base::OnceCallback<void(base::TimeTicks)> completion_callback);
 
   // This method is needed to ensure that PageImpl can both implement a Page's
   // method and define a new GetMainDocument(). Please refer to page.h for more
@@ -221,7 +265,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   //
   // nullopt indicates that the page did not get an update of the
   // manifest URL, and DidUpdateWebManifestURL() will not be called.
-  absl::optional<GURL> manifest_url_;
+  std::optional<GURL> manifest_url_;
 
   // Candidate favicon URLs. Each page may have a collection and will be
   // displayed when active (i.e., upon activation for prerendering).
@@ -230,15 +274,19 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Whether the first visually non-empty paint has occurred.
   bool did_first_visually_non_empty_paint_ = false;
 
+  // Stores the value set by `window.setResizable(bool)` API for whether the
+  // window can be resized or not. `std::nullopt` means the value is not set.
+  std::optional<bool> resizable_ = std::nullopt;
+
   // The theme color for the underlying document as specified
   // by theme-color meta tag.
-  absl::optional<SkColor> main_document_theme_color_;
+  std::optional<SkColor> main_document_theme_color_;
 
   // The background color for the underlying document as computed by CSS.
-  absl::optional<SkColor> main_document_background_color_;
+  std::optional<SkColor> main_document_background_color_;
 
   // The inferred color scheme of the document.
-  absl::optional<blink::mojom::PreferredColorScheme>
+  std::optional<blink::mojom::PreferredColorScheme>
       main_document_inferred_color_scheme_;
 
   // Contents MIME type for the main document. It can be used to check whether
@@ -251,23 +299,23 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the number
   // of bits of entropy remaining in this pageload's overall budget for calls to
-  // `sharedStorage.selectURL()`. Calls from all origins on this page are
+  // `sharedStorage.selectURL()`. Calls from all sites on this page are
   // charged to this budget. `select_url_overall_budget_` is not renewed until
   // `this` is destroyed, and it does not rely on any assumptions about when
   // specifically `this` is destroyed (e.g. during navigation or not).
-  absl::optional<double> select_url_overall_budget_;
+  std::optional<double> select_url_overall_budget_;
 
   // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the maximum
-  // number of bits of entropy in a single origin's budget.
-  absl::optional<double> select_url_max_bits_per_origin_;
+  // number of bits of entropy in a single site's budget.
+  std::optional<double> select_url_max_bits_per_site_;
 
-  // A map of origins to the number  bits of entropy remaining in this origin's
+  // A map of sites to the number bits of entropy remaining in the site's
   // budget for calls to `sharedStorage.selectURL()` during this pageload.
-  // `select_url_per_origin_budget_` is not cleared until `this` is destroyed,
+  // `select_url_per_site_budget_` is not cleared until `this` is destroyed,
   // and it does not rely on any assumptions about when specifically `this` is
   // destroyed (e.g. during navigation or not). Used only if
   // `blink::features::kSharedStorageSelectURLLimit` is enabled.
-  base::flat_map<url::Origin, double> select_url_per_origin_budget_;
+  base::flat_map<net::SchemefulSite, double> select_url_per_site_budget_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.
@@ -290,9 +338,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   // which is passed to the renderer process, and will be accessible in the
   // prerendered page as PerformanceNavigationTiming.activationStart. Set after
   // navigation commit.
-  // TODO(falken): Plumb NavigationRequest to
+  // TODO(b:291867362): Plumb NavigationRequest to
   // RenderFrameHostManager::CommitPending and remove this.
-  absl::optional<base::TimeTicks> activation_start_time_for_prerendering_;
+  std::optional<base::TimeTicks> activation_start_time_;
 
   // The resizing mode requested by Blink for the virtual keyboard.
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode_ =
@@ -302,6 +350,26 @@ class CONTENT_EXPORT PageImpl : public Page {
   std::string last_reported_encoding_;
   // The canonicalized character encoding.
   std::string canonical_encoding_;
+
+  // Nonce to be used for initializing the storage key and the network isolation
+  // key of credentialless iframes which are children of this page's main
+  // document.
+  const base::UnguessableToken credentialless_iframes_nonce_ =
+      base::UnguessableToken::Create();
+
+  // This is only set for primary pages.
+  // Created by NavigationRequest; ownership is maintained until the frame has
+  // stopped loading, or we navigate away from the page before it finishes
+  // loading.
+  std::unique_ptr<PeakGpuMemoryTracker> loading_memory_tracker_;
+
+  // Whether the page is overriding the user agent or not.
+  bool is_overriding_user_agent_ = false;
+
+  // This is used to re-commit when restoring a page from the BackForwardCache
+  // or when activating a prerendered page, with the same params as the original
+  // navigation.
+  mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

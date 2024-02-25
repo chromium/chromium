@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ForceMaximizeOnFirstRun": true
+        },
+        "prefs": {
+          "ui.force_maximize_on_first_run": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

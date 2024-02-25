@@ -33,8 +33,7 @@ public class ExportErrorDialogFragment extends DialogFragment {
          * An optional detailed description. Will be prefixed with "Details:" and displayed below
          * the main one.
          */
-        @Nullable
-        public String detailedDescription;
+        @Nullable public String detailedDescription;
     }
 
     // This handler is used to answer the user actions on the dialog.

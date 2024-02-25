@@ -288,7 +288,7 @@ CmaBackend::BufferStatus ProxyCallTranslator::PushBuffer(
       ToGrpcTypes(std::move(buffer), buffer_id));
 }
 
-absl::optional<ProxyCallTranslator::PushBufferRequest>
+std::optional<ProxyCallTranslator::PushBufferRequest>
 ProxyCallTranslator::GetBufferedData() {
   return push_buffer_handler_.GetBufferedData();
 }
@@ -339,7 +339,7 @@ void ProxyCallTranslator::HandlePushBufferResponse(
 }
 
 void ProxyCallTranslator::HandleGetMediaTimeResponse(
-    absl::optional<MediaTime> time,
+    std::optional<MediaTime> time,
     CastRuntimeAudioChannelBroker::StatusCode status) {
   NOTREACHED();
 }

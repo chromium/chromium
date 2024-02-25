@@ -97,8 +97,8 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) override;
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) override;
 #endif
 
 #if BUILDFLAG(IS_WIN)

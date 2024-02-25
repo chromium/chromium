@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -37,6 +38,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -150,7 +152,7 @@ class TestServiceWorkerContextObserver
 
   void WaitForWorkerStop() {
     stopped_run_loop_.Run();
-    EXPECT_EQ(running_version_id_, absl::nullopt);
+    EXPECT_EQ(running_version_id_, std::nullopt);
   }
 
   int64_t GetServiceWorkerVersionId() { return running_version_id_.value(); }
@@ -179,7 +181,7 @@ class TestServiceWorkerContextObserver
       return;
     }
     stopped_run_loop_.Quit();
-    running_version_id_ = absl::nullopt;
+    running_version_id_ = std::nullopt;
   }
 
   void OnDestruct(content::ServiceWorkerContext* context) override {
@@ -190,11 +192,48 @@ class TestServiceWorkerContextObserver
   base::RunLoop started_run_loop_;
   base::RunLoop activated_run_loop_;
   base::RunLoop stopped_run_loop_;
-  absl::optional<int64_t> running_version_id_;
+  std::optional<int64_t> running_version_id_;
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
   GURL extension_url_;
+};
+
+class TestServiceWorkerConsoleObserver
+    : public content::ServiceWorkerContextObserver {
+ public:
+  explicit TestServiceWorkerConsoleObserver(
+      content::BrowserContext* browser_context) {
+    content::StoragePartition* partition =
+        browser_context->GetDefaultStoragePartition();
+    scoped_observation_.Observe(partition->GetServiceWorkerContext());
+  }
+  ~TestServiceWorkerConsoleObserver() override = default;
+
+  TestServiceWorkerConsoleObserver(const TestServiceWorkerConsoleObserver&) =
+      delete;
+  TestServiceWorkerConsoleObserver& operator=(
+      const TestServiceWorkerConsoleObserver&) = delete;
+
+  using Message = content::ConsoleMessage;
+  const std::vector<Message>& messages() const { return messages_; }
+
+  void WaitForMessages() { run_loop_.Run(); }
+
+ private:
+  // ServiceWorkerContextObserver:
+  void OnReportConsoleMessage(int64_t version_id,
+                              const GURL& scope,
+                              const Message& message) override {
+    messages_.push_back(message);
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  std::vector<Message> messages_;
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      scoped_observation_{this};
 };
 
 class ChromeWebUsbTest : public InProcessBrowserTest {
@@ -596,7 +635,8 @@ class IsolatedWebAppUsbBrowserTest
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
   // Verifies that non-IWA main frames and cross-origin iframes in an IWA can
   // access normal USB devices, but not devices from a protected class. IWA
-  // frames can access both.
+  // frames without usb-unrestricted permission can only access non-protected
+  // class too.
   GURL frame_url = https_server()->GetURL("/banners/isolated/simple.html");
   auto* non_app_main_frame = ui_test_utils::NavigateToURL(browser(), frame_url);
 
@@ -641,8 +681,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
 
   EXPECT_EQ("Success",
             EvalJs(app_frame, JsReplace(kClaimInterface, kPrinterProductId)));
-  EXPECT_EQ("Success",
-            EvalJs(app_frame, JsReplace(kClaimInterface, kSmartCardProductId)));
+  EXPECT_THAT(
+      EvalJs(app_frame, JsReplace(kClaimInterface, kSmartCardProductId)),
+      FailedWithSubstr("requested interface implements a protected class"));
 
   EXPECT_EQ("Success", EvalJs(non_app_main_frame,
                               JsReplace(kClaimInterface, kPrinterProductId)));
@@ -664,8 +705,6 @@ class IsolatedWebAppPermissionsPolicyBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedWebAppUsbBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "FeaturePolicyReporting");
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
@@ -688,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -723,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -800,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -901,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -954,6 +993,104 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   iframe = ChildFrameAt(app_frame, 1);
 
   EXPECT_EQ("Success", EvalJs(iframe, OpenAndClaimDeviceScript));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
+                       PermissionsPolicy_Usb_Unrestricted_CrossOrigin_Iframe) {
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(
+          FILE_PATH_LITERAL("web_apps/unrestricted_usb_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  // Create a fake device with protected class and grant permission.
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto device_info = device_manager().AddDevice(std::move(fake_device_info));
+  chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
+                                           *device_info);
+
+  // With "usb-unrestricted" permission, when main frame claims protected class
+  // device it should succeed.
+  EXPECT_EQ("Success", EvalJs(app_frame, OpenAndClaimDeviceScript));
+
+  GURL cross_origin_iframe_url =
+      https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
+
+  // Create a cross-origin Iframe without any permission and request to
+  // protected class device should be denied due to "usb" feature is not
+  // enabled on iframe's document.
+  web_app::CreateIframe(app_frame, "child0", cross_origin_iframe_url, "");
+  auto* cross_origin_iframe0 = ChildFrameAt(app_frame, 0);
+  EXPECT_THAT(
+      EvalJs(cross_origin_iframe0, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("permissions policy."));
+
+  // Create a cross-origin Iframe with only "usb-unrestricted" permission,
+  // request to protected class device should be denied due to "usb" feature is
+  // not enabled on iframe's document.
+  web_app::CreateIframe(app_frame, "child1", cross_origin_iframe_url,
+                        "usb-unrestricted");
+  auto* cross_origin_iframe1 = ChildFrameAt(app_frame, 1);
+  EXPECT_THAT(
+      EvalJs(cross_origin_iframe1, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("permissions policy."));
+
+  // Create a cross-origin Iframe with only "usb" permission, request to
+  // protected class device should be denied due to "usb-unrestricted" is not
+  // enabled.
+  web_app::CreateIframe(app_frame, "child2", cross_origin_iframe_url, "usb");
+  auto* cross_origin_iframe2 = ChildFrameAt(app_frame, 2);
+  EXPECT_THAT(
+      EvalJs(cross_origin_iframe2, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("requested interface implements a protected class."));
+
+  // Create a cross-origin Iframe with "usb + usb-unrestricted" and request to
+  // protected class device should be denied due to iframe's isolation level =
+  // 0.
+  web_app::CreateIframe(app_frame, "child3", cross_origin_iframe_url,
+                        "usb; usb-unrestricted");
+  auto* cross_origin_iframe3 = ChildFrameAt(app_frame, 3);
+  EXPECT_THAT(
+      EvalJs(cross_origin_iframe3, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("requested interface implements a protected class."));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
+                       PermissionsPolicy_Usb_Unrestricted_Iframe) {
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(
+          FILE_PATH_LITERAL("web_apps/unrestricted_usb_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  // Create a fake device with protected class and grant permission.
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto device_info = device_manager().AddDevice(std::move(fake_device_info));
+  chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
+                                           *device_info);
+
+  // With "usb + usb-unrestricted" permission, when main frame claims protected
+  // class device it should succeed.
+  EXPECT_EQ("Success", EvalJs(app_frame, OpenAndClaimDeviceScript));
+
+  // Create a same-origin iframe without any permissions in attribute, request
+  // to protected class device should still succeed due to "usb +
+  // usb-unrestricted" feature is inherited from main frame and same-origin
+  // iframe is still isolated.
+  web_app::CreateIframe(app_frame, "child0", GURL("empty.html"), "");
+  auto* iframe0 = ChildFrameAt(app_frame, 0);
+  EXPECT_EQ("Success", EvalJs(iframe0, OpenAndClaimDeviceScript));
+
+  // Create a same-origin iframe with "usb-unrestricted" permissions disabled,
+  // request to protected class device should fail.
+  web_app::CreateIframe(app_frame, "child1", GURL("empty.html"),
+                        "usb-unrestricted 'none'");
+  auto* iframe1 = ChildFrameAt(app_frame, 1);
+  EXPECT_THAT(
+      EvalJs(iframe1, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("requested interface implements a protected class."));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1102,7 +1239,7 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_TRUE(maybe_indicator_notification->pinned());
     display_service_for_system_notification_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
-        /*action_index=*/0, /*reply=*/absl::nullopt);
+        /*action_index=*/0, /*reply=*/std::nullopt);
     auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/usbDevices");
 #else
@@ -1149,16 +1286,6 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
-// Test fixture with kEnableWebUsbOnExtensionServiceWorker enabled.
-class WebUsbExtensionFeatureEnabledBrowserTest
-    : public WebUsbExtensionBrowserTest {
- public:
-  WebUsbExtensionFeatureEnabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableWebUsbOnExtensionServiceWorker}, {});
-  }
-};
-
 // Test fixture with kEnableWebUsbOnExtensionServiceWorker disabled.
 class WebUsbExtensionFeatureDisabledBrowserTest
     : public WebUsbExtensionBrowserTest {
@@ -1169,22 +1296,14 @@ class WebUsbExtensionFeatureDisabledBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, FeatureDefaultDisabled) {
-  constexpr base::StringPiece kBackgroundJs = R"(
-    chrome.test.sendMessage("ready", async () => {
-      try {
-        chrome.test.assertEq(navigator.usb, undefined);
-        chrome.test.notifyPass();
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )";
-  LoadExtensionAndRunTest(kBackgroundJs);
-}
-
+// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
+#else
+#define MAYBE_FeatureDisabled FeatureDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
-                       FeatureDisabled) {
+                       MAYBE_FeatureDisabled) {
   constexpr base::StringPiece kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
@@ -1198,7 +1317,13 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest, GetDevices) {
+// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_GetDevices DISABLED_GetDevices
+#else
+#define MAYBE_GetDevices GetDevices
+#endif
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_GetDevices) {
   constexpr base::StringPiece kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
@@ -1214,8 +1339,13 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest, GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
-                       RequestDevice) {
+// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_RequestDevice DISABLED_RequestDevice
+#else
+#define MAYBE_RequestDevice RequestDevice
+#endif
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_RequestDevice) {
   constexpr base::StringPiece kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
@@ -1229,8 +1359,13 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
-                       UsbConnectionTracker) {
+// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_UsbConnectionTracker DISABLED_UsbConnectionTracker
+#else
+#define MAYBE_UsbConnectionTracker UsbConnectionTracker
+#endif
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
   constexpr char kBackgroundJs[] = R"(
     // |device| is a global variable to store UsbDevice object being tested in
     // case the local one is garbage collected, which can close the connection.
@@ -1259,8 +1394,17 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
 
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
-                       DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
+// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
+  DISABLED_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
+#else
+#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
+  DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebUsbExtensionBrowserTest,
+    MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
   content::ServiceWorkerContext* context = browser()
                                                ->profile()
                                                ->GetDefaultStoragePartition()
@@ -1360,6 +1504,63 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
   // Since we have active USB device session at this point, click the USB system
   // tray icon and check right links are opened by the browser.
   SimulateClickOnSystemTrayIconButton(browser(), extension);
+}
+
+// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
+  DISABLED_EventListenerAddedAfterServiceWorkerIsActivated
+#else
+#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
+  EventListenerAddedAfterServiceWorkerIsActivated
+#endif
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest,
+                       MAYBE_EventListenerAddedAfterServiceWorkerIsActivated) {
+  const char kWarningMessage[] =
+      "Event handler of '%s' event must be added on the initial evaluation "
+      "of worker script. More info: "
+      "https://developer.chrome.com/docs/extensions/mv3/service_workers/"
+      "events/";
+
+  content::ServiceWorkerContext* context = browser()
+                                               ->profile()
+                                               ->GetDefaultStoragePartition()
+                                               ->GetServiceWorkerContext();
+  // Set up an observer for service worker events.
+  TestServiceWorkerContextObserver sw_observer(context, kTestExtensionId);
+  // Set up an observer for console messages reported by service worker
+  TestServiceWorkerConsoleObserver console_observer(browser()
+                                                        ->tab_strip_model()
+                                                        ->GetActiveWebContents()
+                                                        ->GetBrowserContext());
+  TestExtensionDir test_dir;
+  constexpr char kBackgroundJs[] = R"(
+      chrome.test.sendMessage("ready", function() {
+        navigator.usb.addEventListener("connect", () => {});
+      });
+    )";
+  SetUpTestDir(test_dir, kBackgroundJs);
+
+  // Launch the test app.
+  extensions::ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  // TODO(crbug.com/1336400): Grant permission using requestDevice().
+  // Run the test.
+  SetUpPolicy(extension);
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension->id(), kTestExtensionId);
+  sw_observer.WaitForWorkerStart();
+  sw_observer.WaitForWorkerActivated();
+  AddFakeDevice();
+
+  // Warning message will be displayed when event listener is nested inside a
+  // function
+  console_observer.WaitForMessages();
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+  EXPECT_EQ(console_observer.messages().begin()->message_level,
+            blink::mojom::ConsoleMessageLevel::kWarning);
+  EXPECT_EQ(console_observer.messages().begin()->message,
+            base::UTF8ToUTF16(base::StringPrintf(kWarningMessage, "connect")));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

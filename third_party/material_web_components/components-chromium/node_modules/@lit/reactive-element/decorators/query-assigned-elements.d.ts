@@ -5,6 +5,11 @@
  */
 import type { ReactiveElement } from '../reactive-element.js';
 import type { QueryAssignedNodesOptions } from './query-assigned-nodes.js';
+import { type Interface } from './base.js';
+export type QueryAssignedElementsDecorator = {
+    (proto: Interface<ReactiveElement>, name: PropertyKey, descriptor?: PropertyDescriptor): void | any;
+    <C extends Interface<ReactiveElement>, V extends Array<Element>>(value: ClassAccessorDecoratorTarget<C, V>, context: ClassAccessorDecoratorContext<C, V>): ClassAccessorDecoratorResult<C, V>;
+};
 /**
  * Options for the {@linkcode queryAssignedElements} decorator. Extends the
  * options that can be passed into
@@ -46,5 +51,5 @@ export interface QueryAssignedElementsOptions extends QueryAssignedNodesOptions 
  *
  * @category Decorator
  */
-export declare function queryAssignedElements(options?: QueryAssignedElementsOptions): (protoOrDescriptor: import("./base.js").ClassElement | import("./base.js").Interface<ReactiveElement>, name?: PropertyKey | undefined) => any;
+export declare function queryAssignedElements(options?: QueryAssignedElementsOptions): QueryAssignedElementsDecorator;
 //# sourceMappingURL=query-assigned-elements.d.ts.map

@@ -39,9 +39,7 @@ public class PendingTabClosureManager {
          */
         public void finalizeClosure(Tab tab);
 
-        /**
-         * Notify observers about completion of undo action to restore all tabs.
-         */
+        /** Notify observers about completion of undo action to restore all tabs. */
         public void notifyAllTabsClosureUndone();
 
         /**
@@ -51,9 +49,7 @@ public class PendingTabClosureManager {
         public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs);
     }
 
-    /**
-     * Represents a set of tabs closed together.
-     */
+    /** Represents a set of tabs closed together. */
     private class TabClosureEvent {
         private final LinkedList<Tab> mClosingTabs;
         private final HashSet<Tab> mUnhandledTabs;
@@ -75,7 +71,7 @@ public class PendingTabClosureManager {
             final boolean removed = mUnhandledTabs.remove(tab);
             if (removed) {
                 assert !mCancelCalled
-                    : "Committing a tab closure from an event that was partly cancelled.";
+                        : "Committing a tab closure from an event that was partly cancelled.";
                 mReadyToCommitCalled = true;
             }
             return removed;
@@ -89,7 +85,7 @@ public class PendingTabClosureManager {
             if (removed) {
                 mClosingTabs.remove(tab);
                 assert !mReadyToCommitCalled
-                    : "Cancelling a tab closure from an event that was partly ready to commit.";
+                        : "Cancelling a tab closure from an event that was partly ready to commit.";
                 mCancelCalled = true;
             }
             return removed;
@@ -208,21 +204,17 @@ public class PendingTabClosureManager {
         }
     }
 
-    /**
-     * Thread checks to root cause crbug.com/1465745.
-     */
+    /** Thread checks to root cause crbug.com/1465745. */
     private final ThreadChecker mThreadChecker = new ThreadChecker();
+
     private boolean mIsCommittingAllTabClosures;
 
-    /**
-     * The {@link TabList} that this {@link PendingTabClosureManager} operates on.
-     */
+    /** The {@link TabList} that this {@link PendingTabClosureManager} operates on. */
     private TabList mTabList;
+
     private PendingTabClosureDelegate mDelegate;
 
-    /**
-     * Representation of a set of tabs that were closed together.
-     */
+    /** Representation of a set of tabs that were closed together. */
     private LinkedList<TabClosureEvent> mTabClosureEvents = new LinkedList<>();
 
     /**
@@ -250,7 +242,7 @@ public class PendingTabClosureManager {
     public void destroy() {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
-            : "Modifying mTabClosureEvents while committing all tab closures.";
+                : "Modifying mTabClosureEvents while committing all tab closures.";
 
         mRewoundList.destroy();
         mTabClosureEvents.clear();
@@ -259,18 +251,16 @@ public class PendingTabClosureManager {
     public void destroyWhileReparentingInProgress() {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
-            : "Modifying mTabClosureEvents while committing all tab closures.";
+                : "Modifying mTabClosureEvents while committing all tab closures.";
 
         mTabClosureEvents.clear();
     }
 
-    /**
-     * Resets the state of the rewound list based on {@code mTabList}.
-     */
+    /** Resets the state of the rewound list based on {@code mTabList}. */
     public void resetState() {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
-            : "Modifying mTabClosureEvents while committing all tab closures.";
+                : "Modifying mTabClosureEvents while committing all tab closures.";
 
         assert mTabClosureEvents.isEmpty();
         mRewoundList.resetRewoundState();
@@ -283,7 +273,7 @@ public class PendingTabClosureManager {
     public void addTabClosureEvent(List<Tab> tabs) {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
-            : "Modifying mTabClosureEvents while committing all tab closures.";
+                : "Modifying mTabClosureEvents while committing all tab closures.";
 
         mTabClosureEvents.add(new TabClosureEvent(tabs));
     }
@@ -311,7 +301,7 @@ public class PendingTabClosureManager {
     public void commitTabClosure(int tabId) {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
-            : "Modifying mTabClosureEvents while committing all tab closures.";
+                : "Modifying mTabClosureEvents while committing all tab closures.";
 
         Tab tab = mRewoundList.getPendingRewindTab(tabId);
         if (tab == null) return;
@@ -336,7 +326,7 @@ public class PendingTabClosureManager {
     public void cancelTabClosure(int tabId) {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
-            : "Modifying mTabClosureEvents while committing all tab closures.";
+                : "Modifying mTabClosureEvents while committing all tab closures.";
 
         Tab tab = mRewoundList.getPendingRewindTab(tabId);
         if (tab == null) return;
@@ -357,9 +347,7 @@ public class PendingTabClosureManager {
         }
     }
 
-    /**
-     * Notify observers about completion of undo action to restore all tabs.
-     */
+    /** Notify observers about completion of undo action to restore all tabs. */
     public void notifyAllTabsClosureUndone() {
         mDelegate.notifyAllTabsClosureUndone();
     }
@@ -371,7 +359,7 @@ public class PendingTabClosureManager {
     public void commitAllTabClosures() {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
-            : "Modifying mTabClosureEvents while committing all tab closures.";
+                : "Modifying mTabClosureEvents while committing all tab closures.";
 
         mIsCommittingAllTabClosures = true;
 
@@ -403,7 +391,7 @@ public class PendingTabClosureManager {
     boolean openMostRecentlyClosedEntry() {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
-            : "Modifying mTabClosureEvents while committing all tab closures.";
+                : "Modifying mTabClosureEvents while committing all tab closures.";
 
         if (mTabClosureEvents.isEmpty()) return false;
 

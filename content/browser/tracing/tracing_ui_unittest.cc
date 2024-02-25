@@ -17,40 +17,31 @@ namespace content {
 
 class TracingUITest : public testing::Test {
  public:
-  TracingUITest() {}
+  TracingUITest() = default;
 };
 
 std::string GetConfig() {
-  base::Value::Dict dict;
-  base::Value filter1(base::trace_event::MemoryDumpManager::kTraceCategory);
-  base::Value filter2("filter2");
-  base::Value::List included;
-  included.Append(std::move(filter1));
-  base::Value::List excluded;
-  excluded.Append(std::move(filter2));
-
-  dict.Set("included_categories", std::move(included));
-  dict.Set("excluded_categories", std::move(excluded));
-  dict.Set("record_mode", "record-continuously");
-  dict.Set("enable_systrace", true);
-  dict.Set("stream_format", "protobuf");
-
-  base::Value::Dict memory_config;
-  base::Value::Dict trigger;
-  trigger.Set("mode", "detailed");
-  trigger.Set("periodic_interval_ms", 10000);
-  base::Value::List triggers;
-  triggers.Append(std::move(trigger));
-  memory_config.Set("triggers", std::move(triggers));
-  dict.Set("memory_dump_config", std::move(memory_config));
+  auto dict =
+      base::Value::Dict()
+          .Set("included_categories",
+               base::Value::List().Append(base::Value(
+                   base::trace_event::MemoryDumpManager::kTraceCategory)))
+          .Set("excluded_categories",
+               base::Value::List().Append(base::Value("filter2")))
+          .Set("record_mode", "record-continuously")
+          .Set("enable_systrace", true)
+          .Set("stream_format", "protobuf")
+          .Set("memory_dump_config",
+               base::Value::Dict().Set(
+                   "triggers", base::Value::List().Append(
+                                   base::Value::Dict()
+                                       .Set("mode", "detailed")
+                                       .Set("periodic_interval_ms", 10000))));
 
   std::string results;
   if (!base::JSONWriter::Write(dict, &results))
     return "";
-
-  std::string data;
-  base::Base64Encode(results, &data);
-  return data;
+  return base::Base64Encode(results);
 }
 
 TEST_F(TracingUITest, ConfigParsing) {
@@ -69,7 +60,7 @@ TEST_F(TracingUITest, ConfigParsing) {
   EXPECT_EQ(config.memory_dump_config().triggers[0].min_time_between_dumps_ms,
             10000u);
   EXPECT_EQ(config.memory_dump_config().triggers[0].level_of_detail,
-            base::trace_event::MemoryDumpLevelOfDetail::DETAILED);
+            base::trace_event::MemoryDumpLevelOfDetail::kDetailed);
 }
 
 }  // namespace content

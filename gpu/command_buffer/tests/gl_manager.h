@@ -141,6 +141,7 @@ class GLManager : private GpuControl {
   // GpuControl implementation.
   void SetGpuControlClient(GpuControlClient*) override;
   const Capabilities& GetCapabilities() const override;
+  const GLCapabilities& GetGLCapabilities() const override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
   void CancelAllQueries() override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
@@ -184,7 +185,6 @@ class GLManager : private GpuControl {
   scoped_refptr<gl::GLShareGroup> share_group_;
   std::unique_ptr<CommandBufferDirect> command_buffer_;
   std::unique_ptr<gles2::GLES2Decoder> decoder_;
-  scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   std::unique_ptr<gles2::GLES2CmdHelper> gles2_helper_;
   std::unique_ptr<TransferBuffer> transfer_buffer_;
@@ -196,6 +196,7 @@ class GLManager : private GpuControl {
   bool use_native_pixmap_memory_buffers_ = false;
 
   Capabilities capabilities_;
+  GLCapabilities gl_capabilities_;
 
   GLuint fbo_ = 0;
 

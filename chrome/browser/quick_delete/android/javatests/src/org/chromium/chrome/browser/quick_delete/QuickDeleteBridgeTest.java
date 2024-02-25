@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -31,15 +32,16 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link QuickDeleteBridge}.
- */
+/** Tests for {@link QuickDeleteBridge}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class QuickDeleteBridgeTest {
-    private static final List<String> URLS = List.of(
-            "https://www.google.com/", "https://www.example.com/", "https://www.google.com/");
+    private static final List<String> URLS =
+            List.of(
+                    "https://www.google.com/",
+                    "https://www.example.com/",
+                    "https://www.google.com/");
 
     private QuickDeleteBridge mQuickDeleteBridge;
 
@@ -63,10 +65,12 @@ public class QuickDeleteBridgeTest {
     @Before
     public void setUp() throws ExecutionException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = mActivityTestRule.getActivity().getCurrentTabModel().getProfile();
-            mQuickDeleteBridge = new QuickDeleteBridge(profile);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile =
+                            mActivityTestRule.getActivity().getCurrentTabModel().getProfile();
+                    mQuickDeleteBridge = new QuickDeleteBridge(profile);
+                });
     }
 
     @After
@@ -74,10 +78,14 @@ public class QuickDeleteBridgeTest {
         CallbackHelper callbackHelper = new CallbackHelper();
 
         // Clear history.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(callbackHelper::notifyCalled,
-                    new int[] {BrowsingDataType.HISTORY}, TimePeriod.ALL_TIME);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
+                            .clearBrowsingData(
+                                    callbackHelper::notifyCalled,
+                                    new int[] {BrowsingDataType.HISTORY},
+                                    TimePeriod.ALL_TIME);
+                });
 
         callbackHelper.waitForCallback(0);
     }
@@ -91,8 +99,8 @@ public class QuickDeleteBridgeTest {
     public void testLastVisitedDomainAndUniqueDomains_WhenNoVisits() throws TimeoutException {
         DomainVisitsCallback callback = new DomainVisitsCallback();
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
+                () ->
+                        mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
                                 TimePeriod.LAST_15_MINUTES, callback));
 
         callback.mCallbackHelper.waitForCallback(0);
@@ -110,8 +118,8 @@ public class QuickDeleteBridgeTest {
 
         DomainVisitsCallback callback = new DomainVisitsCallback();
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
+                () ->
+                        mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
                                 TimePeriod.LAST_15_MINUTES, callback));
 
         callback.mCallbackHelper.waitForCallback(0);

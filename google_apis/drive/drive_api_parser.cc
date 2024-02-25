@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/json/json_value_converter.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
@@ -38,7 +38,7 @@ bool CreateTeamDriveResourceFromValue(
 // Converts |url_string| to |result|.  Always returns true to be used
 // for JSONValueConverter::RegisterCustomField method.
 // TODO(mukai): make it return false in case of invalid |url_string|.
-bool GetGURLFromString(base::StringPiece url_string, GURL* result) {
+bool GetGURLFromString(std::string_view url_string, GURL* result) {
   *result = GURL(url_string);
   return true;
 }
@@ -653,7 +653,7 @@ bool ChangeResource::Parse(const base::Value& value) {
 }
 
 // static
-bool ChangeResource::GetType(base::StringPiece type_name,
+bool ChangeResource::GetType(std::string_view type_name,
                              ChangeResource::ChangeType* result) {
   for (size_t i = 0; i < std::size(kChangeTypeMap); i++) {
     if (type_name == kChangeTypeMap[i].type_name) {

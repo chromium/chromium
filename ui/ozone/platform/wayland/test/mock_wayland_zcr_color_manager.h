@@ -8,6 +8,7 @@
 #include <chrome-color-management-server-protocol.h>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
@@ -68,12 +69,13 @@ class MockZcrColorManagerV1 : public GlobalObject {
                     wl_resource* surface));
   MOCK_METHOD2(Destroy, void(wl_client* client, wl_resource* resource));
 
-  const std::vector<TestZcrColorManagementOutputV1*> color_management_outputs()
-      const {
+  const std::vector<raw_ptr<TestZcrColorManagementOutputV1, VectorExperimental>>
+  color_management_outputs() const {
     return color_manager_outputs_;
   }
 
-  const std::vector<TestZcrColorManagementSurfaceV1*>
+  const std::vector<
+      raw_ptr<TestZcrColorManagementSurfaceV1, VectorExperimental>>
   color_management_surfaces() const {
     return color_manager_surfaces_;
   }
@@ -88,9 +90,12 @@ class MockZcrColorManagerV1 : public GlobalObject {
   void OnZcrColorSpaceDestroyed(TestZcrColorSpaceV1* params);
 
  private:
-  std::vector<TestZcrColorManagementOutputV1*> color_manager_outputs_;
-  std::vector<TestZcrColorManagementSurfaceV1*> color_manager_surfaces_;
-  std::vector<TestZcrColorSpaceV1*> color_manager_color_spaces_;
+  std::vector<raw_ptr<TestZcrColorManagementOutputV1, VectorExperimental>>
+      color_manager_outputs_;
+  std::vector<raw_ptr<TestZcrColorManagementSurfaceV1, VectorExperimental>>
+      color_manager_surfaces_;
+  std::vector<raw_ptr<TestZcrColorSpaceV1, VectorExperimental>>
+      color_manager_color_spaces_;
 };
 
 }  // namespace wl

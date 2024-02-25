@@ -115,7 +115,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
     tree_data_changed_ = true;
   }
 
-  absl::optional<AXNodeID> unignored_parent_id_before_node_deleted;
+  std::optional<AXNodeID> unignored_parent_id_before_node_deleted;
   void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override {
     // When this observer function is called in an update, the actual node
     // deletion has not happened yet. Verify that node still exists in the tree.
@@ -340,7 +340,7 @@ class AXTreeTestWithMultipleUTFEncodings
 
 using ::testing::ElementsAre;
 
-// A macro for testing that a absl::optional has both a value and that its value
+// A macro for testing that a std::optional has both a value and that its value
 // is set to a particular expectation.
 #define EXPECT_OPTIONAL_EQ(expected, actual) \
   EXPECT_TRUE(actual.has_value());           \
@@ -458,7 +458,7 @@ TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
   AXTree tree(initial_state);
 
   histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.Tree.Unserialize", 1);
+      "Accessibility.Performance.Tree.Unserialize2", 1);
 
   // This should fail because we delete a subtree rooted at id=2
   // but never update it.
@@ -476,7 +476,7 @@ TEST(AXTreeTest, LeaveOrphanedDeletedSubtreeFails) {
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kPendingNodes, 1);
   histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.Tree.Unserialize", 2);
+      "Accessibility.Performance.Tree.Unserialize2", 2);
 #endif
 }
 
@@ -489,7 +489,7 @@ TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
   AXTree tree(initial_state);
 
   histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.Tree.Unserialize", 1);
+      "Accessibility.Performance.Tree.Unserialize2", 1);
 
   // This should fail because we add a new child to the root node
   // but never update it.
@@ -507,7 +507,7 @@ TEST(AXTreeTest, LeaveOrphanedNewChildFails) {
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kPendingNodes, 1);
   histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.Tree.Unserialize", 2);
+      "Accessibility.Performance.Tree.Unserialize2", 2);
 #endif
 }
 
@@ -520,7 +520,7 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
   AXTree tree(initial_state);
 
   histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.Tree.Unserialize", 1);
+      "Accessibility.Performance.Tree.Unserialize2", 1);
 
   // This should fail because a child id appears twice.
   AXTreeUpdate update;
@@ -539,7 +539,7 @@ TEST(AXTreeTest, DuplicateChildIdFails) {
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kDuplicateChild, 1);
   histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.Tree.Unserialize", 1);
+      "Accessibility.Performance.Tree.Unserialize2", 1);
 #endif
 }
 
@@ -557,7 +557,7 @@ TEST(AXTreeTest, InvalidReparentingFails) {
   AXTree tree(initial_state);
 
   histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.Tree.Unserialize", 1);
+      "Accessibility.Performance.Tree.Unserialize2", 1);
 
   // This should fail because node 3 is reparented from node 2 to node 1
   // without deleting node 1's subtree first.
@@ -580,7 +580,7 @@ TEST(AXTreeTest, InvalidReparentingFails) {
       "Accessibility.Reliability.Tree.UnserializeError",
       AXTreeUnserializeError::kReparent, 1);
   histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.Tree.Unserialize", 1);
+      "Accessibility.Performance.Tree.Unserialize2", 1);
 #endif
 }
 
@@ -5239,8 +5239,7 @@ TEST(AXTreeTest, UnserializeErrors) {
       tree.Unserialize(tree_update_3),
       "2 will not be in the tree and is not the new root");
 #else
-  // TODO(crbug.com/1471373) Restore to returning false.
-  EXPECT_TRUE(tree.Unserialize(tree_update_3));
+  EXPECT_FALSE(tree.Unserialize(tree_update_3));
   EXPECT_EQ("2 will not be in the tree and is not the new root", tree.error());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Reliability.Tree.UnserializeError",

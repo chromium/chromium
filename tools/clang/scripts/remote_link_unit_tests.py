@@ -98,14 +98,17 @@ class RemoteLinkUnitTest(unittest.TestCase):
   def test_analyze_expanded_args_params(self):
     with FakeFs(bitcode_files=['foo.o']):
       result = remote_ld.RemoteLinkUnix().analyze_expanded_args([
-          'clang', '-O2', '-flto=thin', '-fsplit-lto-unit',
-          '-fwhole-program-vtables', '-fsanitize=cfi', '-g', '-gsplit-dwarf',
-          '-mllvm', '-generate-type-units', 'foo.o', '-o', 'foo'
+          'clang', '-O2', '--target=arm-none-eabi', '-march=armv7-a',
+          '-flto=thin', '-fsplit-lto-unit', '-fwhole-program-vtables',
+          '-fsanitize=cfi', '-g', '-gsplit-dwarf', '-mllvm',
+          '-generate-type-units', 'foo.o', '-o', 'foo'
       ], 'foo', 'clang', 'lto.foo', 'common', False)
       self.assertIsNotNone(result)
       self.assertIn('-Wl,-plugin-opt=obj-path=lto.foo/foo.split.o',
                     result.index_params)
       self.assertIn('-O2', result.index_params)
+      self.assertIn('--target=arm-none-eabi', result.codegen_params)
+      self.assertIn('-march=armv7-a', result.codegen_params)
       self.assertIn('-g', result.index_params)
       self.assertIn('-gsplit-dwarf', result.index_params)
       self.assertIn('-mllvm -generate-type-units',
@@ -115,7 +118,8 @@ class RemoteLinkUnitTest(unittest.TestCase):
       self.assertIn('-fsanitize=cfi', result.index_params)
 
       self.assertIn('-O2', result.codegen_params)
-      self.assertIn('-g', result.codegen_params)
+      self.assertIn('--target=arm-none-eabi', result.codegen_params)
+      self.assertIn('-march=armv7-a', result.codegen_params)
       self.assertIn('-gsplit-dwarf', result.codegen_params)
       self.assertIn('-mllvm -generate-type-units',
                     ' '.join(result.codegen_params))

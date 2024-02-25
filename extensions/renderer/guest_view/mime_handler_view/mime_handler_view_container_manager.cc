@@ -18,6 +18,7 @@
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_frame_container.h"
 #include "ipc/ipc_sync_channel.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -28,34 +29,21 @@ namespace extensions {
 namespace {
 
 using RenderFrameMap =
-    base::flat_map<int32_t, std::unique_ptr<MimeHandlerViewContainerManager>>;
+    base::flat_map<blink::LocalFrameToken,
+                   std::unique_ptr<MimeHandlerViewContainerManager>>;
 
 RenderFrameMap* GetRenderFrameMap() {
   static base::NoDestructor<RenderFrameMap> instance;
   return instance.get();
 }
 
-mojom::GuestView* GetGuestView() {
-  static base::NoDestructor<mojo::AssociatedRemote<mojom::GuestView>>
-      guest_view;
-  if (!*guest_view) {
-    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        guest_view.get());
-  }
-
-  return guest_view->get();
-}
-
 }  // namespace
 
 // static
 void MimeHandlerViewContainerManager::BindReceiver(
-    int32_t routing_id,
+    content::RenderFrame* render_frame,
     mojo::PendingAssociatedReceiver<mojom::MimeHandlerViewContainerManager>
         receiver) {
-  auto* render_frame = content::RenderFrame::FromRoutingID(routing_id);
-  if (!render_frame)
-    return;
   auto* manager = Get(render_frame, true /* create_if_does_not_exist */);
   manager->receivers_.Add(manager, std::move(receiver));
 }
@@ -63,22 +51,26 @@ void MimeHandlerViewContainerManager::BindReceiver(
 // static
 MimeHandlerViewContainerManager* MimeHandlerViewContainerManager::Get(
     content::RenderFrame* render_frame,
-    bool create_if_does_not_exits) {
+    bool create_if_does_not_exist) {
   if (!render_frame) {
     // Through some |adoptNode| magic, blink could still call this method for
     // a plugin element which does not have a frame (https://crbug.com/966371).
     return nullptr;
   }
-  int32_t routing_id = render_frame->GetRoutingID();
+  auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
   auto& map = *GetRenderFrameMap();
-  if (base::Contains(map, routing_id))
-    return map[routing_id].get();
-  if (create_if_does_not_exits) {
-    map[routing_id] =
-        std::make_unique<MimeHandlerViewContainerManager>(render_frame);
-    return map[routing_id].get();
+  auto it = map.find(frame_token);
+  if (it != map.end()) {
+    return it->second.get();
   }
-  return nullptr;
+  if (!create_if_does_not_exist) {
+    return nullptr;
+  }
+
+  auto& new_entry = map[frame_token];
+  new_entry = std::make_unique<MimeHandlerViewContainerManager>(render_frame);
+
+  return new_entry.get();
 }
 
 bool MimeHandlerViewContainerManager::CreateFrameContainer(
@@ -122,8 +114,7 @@ void MimeHandlerViewContainerManager::
     // This is the one injected by HTML string. Return true so that the
     // HTMLPlugInElement creates a child frame to be used as the outer
     // WebContents frame.
-    GetGuestView()->ReadyToCreateMimeHandlerView(render_frame()->GetRoutingID(),
-                                                 false);
+    remote_->ReadyToCreateMimeHandlerView(false);
   }
 }
 
@@ -142,7 +133,10 @@ v8::Local<v8::Object> MimeHandlerViewContainerManager::GetScriptableObject(
 
 MimeHandlerViewContainerManager::MimeHandlerViewContainerManager(
     content::RenderFrame* render_frame)
-    : content::RenderFrameObserver(render_frame) {}
+    : content::RenderFrameObserver(render_frame),
+      frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()) {
+  render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
+}
 
 MimeHandlerViewContainerManager::~MimeHandlerViewContainerManager() = default;
 
@@ -160,7 +154,7 @@ void MimeHandlerViewContainerManager::ReadyToCommitNavigation(
 void MimeHandlerViewContainerManager::OnDestruct() {
   receivers_.Clear();
   // This will delete the class.
-  GetRenderFrameMap()->erase(routing_id());
+  GetRenderFrameMap()->erase(frame_token_);
 }
 
 void MimeHandlerViewContainerManager::SetInternalId(
@@ -187,7 +181,7 @@ void MimeHandlerViewContainerManager::SelfDeleteIfNecessary() {
 
   // There are no frame containers left, and we're not serving a full-page
   // MimeHandlerView, so we remove ourselves from the map.
-  GetRenderFrameMap()->erase(routing_id());
+  GetRenderFrameMap()->erase(frame_token_);
 }
 
 void MimeHandlerViewContainerManager::DestroyFrameContainer(
@@ -315,8 +309,7 @@ bool MimeHandlerViewContainerManager::IsManagedByContainerManager(
       base::ToUpperASCII(plugin_element.GetAttribute("internalid").Utf8()) ==
           internal_id_) {
     plugin_element_ = plugin_element;
-    GetGuestView()->ReadyToCreateMimeHandlerView(render_frame()->GetRoutingID(),
-                                                 true);
+    remote_->ReadyToCreateMimeHandlerView(true);
   }
   return plugin_element_ == plugin_element;
 }

@@ -51,11 +51,11 @@ void FakeFastPairDelegate::SetDeviceNameManager(
   device_name_manager_ = device_name_manager;
 }
 
-absl::optional<DeviceImageInfo> FakeFastPairDelegate::GetDeviceImageInfo(
+std::optional<DeviceImageInfo> FakeFastPairDelegate::GetDeviceImageInfo(
     const std::string& mac_address) {
   const auto it = mac_address_to_images_.find(mac_address);
   if (it == mac_address_to_images_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
@@ -23,7 +25,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -35,6 +36,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
+#include "content/public/common/prefetch_type_win.h"
 #include "sandbox/win/src/sandbox_types.h"
 #else
 #include "content/public/browser/posix_file_descriptor_info.h"
@@ -121,7 +123,8 @@ class ChildProcessLauncherHelper
 #endif
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
-      std::unique_ptr<ChildProcessLauncherFileData> file_data);
+      std::unique_ptr<ChildProcessLauncherFileData> file_data,
+      base::UnsafeSharedMemoryRegion histogram_memory_region);
 
   // The methods below are defined in the order they are called.
 
@@ -133,15 +136,21 @@ class ChildProcessLauncherHelper
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // Called to give implementors a chance at creating a server pipe. Platform-
-  // specific. Returns |absl::nullopt| if the helper should initialize
+  // specific. Returns |std::nullopt| if the helper should initialize
   // a regular PlatformChannel for communication instead.
-  absl::optional<mojo::NamedPlatformChannel>
+  std::optional<mojo::NamedPlatformChannel>
   CreateNamedPlatformChannelOnLauncherThread();
 #endif
 
   // Returns the list of files that should be mapped in the child process.
   // Platform specific.
   std::unique_ptr<FileMappedForLaunch> GetFilesToMap();
+
+#if BUILDFLAG(IS_WIN)
+  // Returns the Prefetch string for the process type on the OS in use.
+  static std::string_view GetPrefetchSwitch(
+      const AppLaunchPrefetchType prefetch_type);
+#endif
 
   // Returns true if the process will be launched using base::LaunchOptions.
   // If false, all of the base::LaunchOptions* below will be nullptr.
@@ -157,13 +166,13 @@ class ChildProcessLauncherHelper
 
   // Does the actual starting of the process.
   // If IsUsingLaunchOptions() returned false, |options| will be null. In this
-  // case base::LaunchProcess() will not be used, but another platform specific
-  // mechanism for process launching, like Linux's zygote or Android's app
-  // zygote.
-  // |is_synchronous_launch| is set to false if the starting of the process is
-  // asynchonous (this is the case on Android), in which case the returned
-  // Process is not valid (and PostLaunchOnLauncherThread() will provide the
-  // process once it is available). Platform specific.
+  // case base::LaunchProcess() will not be used, but another platform
+  // specific mechanism for process launching, like Linux's zygote or
+  // Android's app zygote. |is_synchronous_launch| is set to false if the
+  // starting of the process is asynchronous (this is the case on Android), in
+  // which case the returned Process is not valid (and
+  // PostLaunchOnLauncherThread() will provide the process once it is
+  // available). Platform specific.
   ChildProcessLauncherHelper::Process LaunchProcessOnLauncherThread(
       const base::LaunchOptions* options,
       std::unique_ptr<FileMappedForLaunch> files_to_register,
@@ -262,23 +271,23 @@ class ChildProcessLauncherHelper
   std::unique_ptr<SandboxedProcessLauncherDelegate> delegate_;
   base::WeakPtr<ChildProcessLauncher> child_process_launcher_;
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The priority of the process. The state is stored to avoid changing the
   // setting repeatedly.
-  base::Process::Priority priority_ = base::Process::Priority::kUserBlocking;
+  std::optional<base::Process::Priority> priority_;
 #endif
 
   // The PlatformChannel that will be used to transmit an invitation to the
   // child process in most cases. Only used if the platform's helper
   // implementation doesn't return a server endpoint from
   // |CreateNamedPlatformChannelOnLauncherThread()|.
-  absl::optional<mojo::PlatformChannel> mojo_channel_;
+  std::optional<mojo::PlatformChannel> mojo_channel_;
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // May be used in exclusion to the above if the platform helper implementation
   // returns a valid server endpoint from
   // |CreateNamedPlatformChannelOnLauncherThread()|.
-  absl::optional<mojo::NamedPlatformChannel> mojo_named_channel_;
+  std::optional<mojo::NamedPlatformChannel> mojo_named_channel_;
 #endif
 
   bool terminate_on_shutdown_;
@@ -305,6 +314,9 @@ class ChildProcessLauncherHelper
 #if BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<sandbox::policy::SandboxPolicyFuchsia> sandbox_policy_;
 #endif
+
+  // Histogram shared memory region metadata.
+  base::UnsafeSharedMemoryRegion histogram_memory_region_;
 };
 
 }  // namespace internal

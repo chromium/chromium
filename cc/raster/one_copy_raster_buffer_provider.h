@@ -22,10 +22,6 @@ namespace base {
 class WaitableEvent;
 }
 
-namespace gpu {
-class GpuMemoryBufferManager;
-}
-
 namespace viz {
 class RasterContextProvider;
 }  // namespace viz
@@ -40,7 +36,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       viz::RasterContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int max_copy_texture_chromium_size,
       bool use_partial_raster,
       int max_staging_buffer_usage_in_bytes,
@@ -73,7 +68,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
 
   // Playback raster source and copy result into |resource|.
   gpu::SyncToken PlaybackAndCopyOnWorkerThread(
-      gpu::Mailbox* mailbox,
+      scoped_refptr<gpu::ClientSharedImage>& shared_image,
       GLenum mailbox_texture_target,
       bool mailbox_texture_is_overlay_candidate,
       const gpu::SyncToken& sync_token,
@@ -86,7 +81,8 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const gfx::ColorSpace& color_space,
       const RasterSource::PlaybackSettings& playback_settings,
       uint64_t previous_content_id,
-      uint64_t new_content_id);
+      uint64_t new_content_id,
+      bool& should_destroy_shared_image);
 
  protected:
   void Flush() override;
@@ -97,7 +93,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   class RasterBufferImpl : public RasterBuffer {
    public:
     RasterBufferImpl(OneCopyRasterBufferProvider* client,
-                     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
                      const ResourcePool::InUsePoolResource& in_use_resource,
                      OneCopyGpuBacking* backing,
                      uint64_t previous_content_id);
@@ -127,15 +122,17 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
     const gfx::ColorSpace color_space_;
     const uint64_t previous_content_id_;
     const gpu::SyncToken before_raster_sync_token_;
-    gpu::Mailbox mailbox_;
+    scoped_refptr<gpu::ClientSharedImage> shared_image_;
     const GLenum mailbox_texture_target_;
     const bool mailbox_texture_is_overlay_candidate_;
     // A SyncToken to be returned from the worker thread, and waited on before
     // using the rastered resource.
     gpu::SyncToken after_raster_sync_token_;
+    bool should_destroy_shared_image_ = false;
   };
 
-  void PlaybackToStagingBuffer(
+  // Returns true if data has successfully put in the staging buffer.
+  bool PlaybackToStagingBuffer(
       StagingBuffer* staging_buffer,
       const RasterSource* raster_source,
       const gfx::Rect& raster_full_rect,
@@ -146,20 +143,20 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const RasterSource::PlaybackSettings& playback_settings,
       uint64_t previous_content_id,
       uint64_t new_content_id);
-  gpu::SyncToken CopyOnWorkerThread(StagingBuffer* staging_buffer,
-                                    const RasterSource* raster_source,
-                                    const gfx::Rect& rect_to_copy,
-                                    viz::SharedImageFormat format,
-                                    const gfx::Size& resource_size,
-                                    gpu::Mailbox* mailbox,
-                                    GLenum mailbox_texture_target,
-                                    bool mailbox_texture_is_overlay_candidate,
-                                    const gpu::SyncToken& sync_token,
-                                    const gfx::ColorSpace& color_space);
+  gpu::SyncToken CopyOnWorkerThread(
+      StagingBuffer* staging_buffer,
+      const RasterSource* raster_source,
+      const gfx::Rect& rect_to_copy,
+      viz::SharedImageFormat format,
+      const gfx::Size& resource_size,
+      scoped_refptr<gpu::ClientSharedImage>& shared_image,
+      GLenum mailbox_texture_target,
+      bool mailbox_texture_is_overlay_candidate,
+      const gpu::SyncToken& sync_token,
+      const gfx::ColorSpace& color_space);
 
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
-  const raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
   const int max_bytes_per_copy_operation_;
   const bool use_partial_raster_;

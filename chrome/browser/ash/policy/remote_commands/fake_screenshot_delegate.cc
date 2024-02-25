@@ -37,7 +37,7 @@ class FakeUploadJob : public policy::UploadJob {
   }
 
  private:
-  raw_ptr<UploadJob::Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<UploadJob::Delegate> delegate_;
 };
 }  // namespace
 

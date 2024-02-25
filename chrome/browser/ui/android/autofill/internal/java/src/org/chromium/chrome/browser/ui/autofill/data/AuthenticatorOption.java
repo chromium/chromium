@@ -16,7 +16,11 @@ public class AuthenticatorOption {
     private final int mIconResId;
     private final @CardUnmaskChallengeOptionType int mType;
 
-    private AuthenticatorOption(String title, String identifier, String description, int iconResId,
+    private AuthenticatorOption(
+            String title,
+            String identifier,
+            String description,
+            int iconResId,
             @CardUnmaskChallengeOptionType int type) {
         this.mTitle = title;
         this.mIdentifier = identifier;
@@ -73,28 +77,29 @@ public class AuthenticatorOption {
             this.mIdentifier = identifier;
             return this;
         }
+
         public Builder setDescription(String description) {
             this.mDescription = description;
             return this;
         }
+
         public Builder setIconResId(int iconResId) {
             this.mIconResId = iconResId;
             return this;
         }
+
         public Builder setType(@CardUnmaskChallengeOptionType int type) {
             this.mType = type;
             return this;
         }
 
         public AuthenticatorOption build() {
-            assert mTitle != null
-                    && !mTitle.isEmpty() : "title for the AuthenticatorOption must be set";
-            assert mIdentifier != null
-                    && !mIdentifier.isEmpty()
-                : "identifier for the AuthenticatorOption must be set";
-            assert mDescription != null
-                    && !mDescription.isEmpty()
-                : "description for the AuthenticatorOption must be set";
+            assert mTitle != null && !mTitle.isEmpty()
+                    : "title for the AuthenticatorOption must be set";
+            assert mIdentifier != null && !mIdentifier.isEmpty()
+                    : "identifier for the AuthenticatorOption must be set";
+            assert mDescription != null && !mDescription.isEmpty()
+                    : "description for the AuthenticatorOption must be set";
             assert mType != 0 : "type for the AuthenticatorOption must be set";
             return new AuthenticatorOption(mTitle, mIdentifier, mDescription, mIconResId, mType);
         }

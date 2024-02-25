@@ -15,14 +15,19 @@ namespace blink {
 
 // Callers should ensure that the ResultEnumType has kOk and kTimedOut as
 // values. This is a sample usage CL: http://crrev.com/c/4053546.
-template <typename ResultEnumType>
+template <typename ResultEnumType, typename IDLResolvedType>
 class CORE_EXPORT ScriptPromiseResolverWithTracker
     : public GarbageCollected<
-          ScriptPromiseResolverWithTracker<ResultEnumType>> {
+          ScriptPromiseResolverWithTracker<ResultEnumType, IDLResolvedType>> {
  public:
-  // If the targeted histograms are "WebRTC.EnumerateDevices.Result" and
-  // "WebRTC.EnumerateDevices.Latency", the input to |metric_name_prefix| should
-  // be "WebRTC.EnumerateDevices".
+  // For a given metric |metric_name_prefix|, this class will record
+  // "|metric_name_prefix|.Result" and "|metric_name_prefix|.Latency",
+  // or "|metric_name_prefix|.|result_suffix_|" if a custom result-suffix
+  // is specified.
+  //
+  // For example, if the targeted histograms are
+  // "WebRTC.EnumerateDevices.Result" and "WebRTC.EnumerateDevices.Latency",
+  // then |metric_name_prefix| should be provided as "WebRTC.EnumerateDevices".
   //
   // |timeout_interval| is the timeout limit after which a
   // ResultEnumType::kTimedOut response is recorded in the Result histogram.
@@ -43,7 +48,9 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
         max_latency_bucket_(max_latency_bucket),
         n_buckets_(n_buckets) {
     DCHECK(!metric_name_prefix_.empty());
-    resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    resolver_ =
+        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLResolvedType>>(
+            script_state);
     if (timeout_interval.is_positive()) {
       ExecutionContext::From(script_state)
           ->GetTaskRunner(TaskType::kInternalDefault)
@@ -54,6 +61,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
               timeout_interval);
     }
   }
+
   ScriptPromiseResolverWithTracker(const ScriptPromiseResolverWithTracker&) =
       delete;
   ScriptPromiseResolverWithTracker& operator=(
@@ -66,10 +74,15 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
     resolver_->Resolve(value);
   }
 
-  template <typename T>
+  template <typename IDLRejectType, typename T>
   void Reject(T value, ResultEnumType result) {
     RecordResultAndLatency(result);
-    resolver_->Reject(value);
+    resolver_->template Reject<IDLRejectType>(value);
+  }
+
+  void SetResultSuffix(std::string result_suffix) {
+    CHECK(!result_suffix.empty());
+    result_suffix_ = std::move(result_suffix);
   }
 
   void RecordAndThrowDOMException(ExceptionState& exception_state,
@@ -78,6 +91,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
                                   ResultEnumType result) {
     RecordResultAndLatency(result);
     exception_state.ThrowDOMException(exception_code, message);
+    resolver_->Detach();
   }
 
   void RecordAndThrowTypeError(ExceptionState& exception_state,
@@ -85,6 +99,12 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
                                ResultEnumType result) {
     RecordResultAndLatency(result);
     exception_state.ThrowTypeError(message);
+    resolver_->Detach();
+  }
+
+  void RecordAndDetach(ResultEnumType result) {
+    RecordResultAndLatency(result);
+    resolver_->Detach();
   }
 
   void Resolve() { Resolve(ToV8UndefinedGenerator()); }
@@ -99,7 +119,8 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
       return;
 
     is_result_recorded_ = true;
-    base::UmaHistogramEnumeration(metric_name_prefix_ + ".Result", result);
+    base::UmaHistogramEnumeration(metric_name_prefix_ + "." + result_suffix_,
+                                  result);
   }
 
   void RecordLatency() {
@@ -115,17 +136,18 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
 
   ScriptState* GetScriptState() const { return resolver_->GetScriptState(); }
 
-  ScriptPromise Promise() { return resolver_->Promise(); }
+  ScriptPromiseTyped<IDLResolvedType> Promise() { return resolver_->Promise(); }
 
   void Trace(Visitor* visitor) const { visitor->Trace(resolver_); }
 
  private:
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLResolvedType>> resolver_;
   const std::string metric_name_prefix_;
   const base::TimeTicks start_time_;
   const base::TimeDelta min_latency_bucket_;
   const base::TimeDelta max_latency_bucket_;
   const size_t n_buckets_;
+  std::string result_suffix_ = "Result";  // Mutable through SetResultSuffix().
   bool is_latency_recorded_ = false;
   bool is_result_recorded_ = false;
 };

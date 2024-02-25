@@ -21,6 +21,7 @@
 #include "services/viz/public/cpp/gpu/gpu.h"
 #endif
 
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
 namespace device {
 class OpenXrDevice;
 }  // namespace device
@@ -28,6 +29,7 @@ class OpenXrDevice;
 namespace viz {
 class Gpu;
 }  // namespace viz
+#endif
 
 class IsolatedXRRuntimeProvider final
     : public device::mojom::IsolatedXRRuntimeProvider {

@@ -5,12 +5,12 @@
 #include "ui/wm/core/cursor_loader.h"
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
@@ -84,7 +84,7 @@ void CursorLoader::SetPlatformCursor(ui::Cursor* cursor) {
   cursor->SetPlatformCursor(CursorFromType(cursor->type()));
 }
 
-absl::optional<ui::CursorData> CursorLoader::GetCursorData(
+std::optional<ui::CursorData> CursorLoader::GetCursorData(
     const ui::Cursor& cursor) const {
   CursorType type = cursor.type();
   if (type == CursorType::kNone)
@@ -109,7 +109,7 @@ absl::optional<ui::CursorData> CursorLoader::GetCursorData(
   // TODO(https://crbug.com/1193775): use the actual `rotation_` if that makes
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
-  return wm::GetCursorData(type, size_, resource_scale_,
+  return wm::GetCursorData(type, size_, resource_scale_, std::nullopt,
                            display::Display::ROTATE_0);
 }
 
@@ -146,8 +146,8 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
 
 scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
     CursorType type) {
-  absl::optional<ui::CursorData> cursor_data =
-      wm::GetCursorData(type, size_, resource_scale_, rotation_);
+  std::optional<ui::CursorData> cursor_data =
+      wm::GetCursorData(type, size_, resource_scale_, std::nullopt, rotation_);
   if (!cursor_data) {
     return nullptr;
   }

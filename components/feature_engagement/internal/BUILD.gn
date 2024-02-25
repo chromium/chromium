@@ -5,12 +5,14 @@
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 static_library("internal") {
   visibility = [
     ":*",
     "//components/feature_engagement",
+    "//components/feature_engagement/internal/test:test_support",
     "//components/feature_engagement/test:test_support",
   ]
 
@@ -69,14 +71,18 @@ static_library("internal") {
     "tracker_impl.h",
   ]
 
-  public_deps = [ "//components/feature_engagement/internal/proto" ]
+  public_deps = [
+    "//base",
+    "//components/feature_engagement/internal/proto",
+  ]
 
   deps = [
-    "//base",
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [
@@ -140,10 +146,10 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//components/feature_engagement/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
     ]
   }

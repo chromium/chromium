@@ -19,21 +19,20 @@ using data_util::bit_field_type_groups::kName;
 using data_util::bit_field_type_groups::kPhone;
 
 TEST(AutofillDataUtilTest, DetermineGroupsForHomeNameAndAddress) {
-  const ServerFieldTypeSet field_types{NAME_HONORIFIC_PREFIX,
-                                       NAME_FULL,
-                                       NAME_FIRST,
-                                       NAME_MIDDLE,
-                                       NAME_MIDDLE_INITIAL,
-                                       NAME_LAST,
-                                       NAME_LAST_FIRST,
-                                       NAME_LAST_CONJUNCTION,
-                                       NAME_LAST_SECOND,
-                                       NAME_FIRST,
-                                       NAME_LAST,
-                                       ADDRESS_HOME_LINE1,
-                                       ADDRESS_HOME_CITY,
-                                       ADDRESS_HOME_STATE,
-                                       ADDRESS_HOME_ZIP};
+  const FieldTypeSet field_types{NAME_FULL,
+                                 NAME_FIRST,
+                                 NAME_MIDDLE,
+                                 NAME_MIDDLE_INITIAL,
+                                 NAME_LAST,
+                                 NAME_LAST_FIRST,
+                                 NAME_LAST_CONJUNCTION,
+                                 NAME_LAST_SECOND,
+                                 NAME_FIRST,
+                                 NAME_LAST,
+                                 ADDRESS_HOME_LINE1,
+                                 ADDRESS_HOME_CITY,
+                                 ADDRESS_HOME_STATE,
+                                 ADDRESS_HOME_ZIP};
 
   const uint32_t expected_group_bitmask = kName | kAddress;
   const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
@@ -41,25 +40,24 @@ TEST(AutofillDataUtilTest, DetermineGroupsForHomeNameAndAddress) {
 }
 
 TEST(AutofillDataUtilTest, DetermineGroupsForHomeNamePhoneAndEmail) {
-  const ServerFieldTypeSet field_types{NAME_FULL, PHONE_HOME_CITY_AND_NUMBER,
-                                       EMAIL_ADDRESS};
+  const FieldTypeSet field_types{NAME_FULL, PHONE_HOME_CITY_AND_NUMBER,
+                                 EMAIL_ADDRESS};
 
   const uint32_t expected_group_bitmask = kName | kPhone | kEmail;
   const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
   EXPECT_EQ(expected_group_bitmask, group_bitmask);
 }
 
-TEST(AutofillDataUtilTest, DetermineGroupsForUnknownServerFieldType) {
-  const ServerFieldTypeSet field_types{UNKNOWN_TYPE, NAME_FULL,
-                                       ADDRESS_HOME_ZIP};
+TEST(AutofillDataUtilTest, DetermineGroupsForUnknownFieldType) {
+  const FieldTypeSet field_types{UNKNOWN_TYPE, NAME_FULL, ADDRESS_HOME_ZIP};
 
   const uint32_t expected_group_bitmask = kName | kAddress;
   const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
   EXPECT_EQ(expected_group_bitmask, group_bitmask);
 }
 
-TEST(AutofillDataUtilTest, DetermineGroupsForNoServerFieldTypes) {
-  const ServerFieldTypeSet field_types;
+TEST(AutofillDataUtilTest, DetermineGroupsForNoFieldTypes) {
+  const FieldTypeSet field_types;
   const uint32_t expected_group_bitmask = 0;
   const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
   EXPECT_EQ(expected_group_bitmask, group_bitmask);

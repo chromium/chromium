@@ -47,9 +47,12 @@ void ConnectionAttemptImpl::OnConnectionAttemptFailure(
 
 void ConnectionAttemptImpl::OnConnection(
     mojo::PendingRemote<mojom::Channel> channel,
-    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+    mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener_receiver) {
   NotifyConnection(ClientChannelImpl::Factory::Create(
-      std::move(channel), std::move(message_receiver_receiver)));
+      std::move(channel), std::move(message_receiver_receiver),
+      std::move(nearby_connection_state_listener_receiver)));
 }
 
 }  // namespace ash::secure_channel

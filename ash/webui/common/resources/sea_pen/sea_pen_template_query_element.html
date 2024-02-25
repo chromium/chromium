@@ -1,0 +1,161 @@
+<style include="common cros-button-style">
+  .main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    margin-inline-start: 8px;
+  }
+
+  #placeholder {
+    height: 40px;
+  }
+
+  #template {
+    align-items: start;
+    border-bottom-color: var(--cros-text-color-primary);
+    color: var(--cros-text-color-primary);
+    display: flex;
+    font: var(--cros-display-6_regular-font);
+    justify-content: center;
+    padding: 12px 0;
+  }
+
+  #template .unselected {
+    border-bottom-color: var(--cros-text-color-disabled);
+    color: var(--cros-text-color-disabled);
+  }
+
+  .chip-container {
+    cursor: pointer;
+    display: grid;
+    grid-template-areas: 'chip';
+  }
+
+  .template-text {
+    padding: 0 4px;
+  }
+
+  .chip-text {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    bottom: 2px;
+    grid-area: chip;
+    padding: 0 4px;
+    position: relative;
+  }
+
+  .chip-text:hover {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  .chip-text:focus {
+    background-color: var(--cros-sys-ripple_primary);
+    border: 2px solid var(--cros-sys-focus_ring);
+  }
+
+  .underline {
+    border-bottom: 2px dotted;
+    grid-area: chip;
+    /* Add one pixel to move the underline below the border. */
+    height: calc(100% + 1px);
+    justify-self: center;
+    /* Subtract 8 pixels so as to not underline the padding from .chip-text. */
+    width: calc(100% - 8px);
+    z-index: -1;
+  }
+
+  #searchButtons {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    height: 56px;
+    justify-content: center;
+    padding: 12px 0;
+  }
+
+  #searchButtons cr-button {
+    margin: 0 4px;
+  }
+
+  #thumbnailsLoadingText {
+    color: var(--cros-text-color-prominent);
+    font: var(--cros-annotation-1-font);
+  }
+
+  cr-button {
+    font: var(--cros-button-2-font);
+  }
+
+  .dropdown-check {
+    margin-inline-end: 16px;
+  }
+
+  button:not([aria-selected='true']) iron-icon.dropdown-check {
+    visibility: hidden;
+  }
+
+  p {
+    padding-inline-end: 3px;
+  }
+
+  button {
+    font: var(--cros-button-2-font);
+    padding: 8px 32px 8px 16px;
+  }
+
+  cr-action-menu::part(dialog) {
+    /* The menu only takes up half of the screen. */
+    max-height: calc(100vh / 2);
+  }
+</style>
+<div class="main">
+  <div id="template">
+    <template is="dom-repeat" items="[[templateTokens_]]" as="token">
+      <template is="dom-if" if="[[isChip_(token)]]">
+        <div class$="chip-container [[getChipClassName_(token, selectedChip_)]]">
+          <div class="underline"></div>
+          <div class="chip-text" tabindex="0" on-click="onClickChip_" on-keypress="onClickChip_">
+            [[token.translation]]
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!isChip_(token)]]">
+        <div class$="template-text [[getTextClassName_(selectedChip_)]]">
+          [[token]]
+        </div>
+      </template>
+    </template>
+  </div>
+  <div id="searchButtons">
+    <template is="dom-if" if="[[thumbnailsLoading_]]">
+      <span id="thumbnailsLoadingText">[[i18n('seaPenThumbnailsLoading')]]</span>
+    </template>
+    <template is="dom-if" if="[[!thumbnailsLoading_]]">
+      <cr-button id="inspire" on-click="onClickInspire_">
+        <iron-icon icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
+        <p>[[i18n('seaPenInspireMeButton')]]</p>
+      </cr-button>
+      <cr-button
+          id="searchButton"
+          class="action-button"
+          on-click="onClickSearchButton_">
+        <iron-icon icon$="[[getSearchButtonIcon_(path, thumbnails_)]]" slot="prefix-icon">
+        </iron-icon>
+        <p>[[getSearchButtonText_(path, thumbnails_)]]</p>
+      </cr-button>
+    </template>
+  </div>
+  <cr-action-menu>
+    <template id="optionList" is="dom-repeat" items="[[options_]]" as="option">
+      <button
+          aria-selected$="[[isOptionSelected_(option, selectedChip_.translation)]]"
+          class="dropdown-item"
+          data-id$="[[template.id]]"
+          on-click="onClickOption_">
+        <iron-icon class="dropdown-check" icon="cr:check"></iron-icon>
+        [[option.translation]]
+      </button>
+    </template>
+  </cr-action-menu>
+</div>

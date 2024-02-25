@@ -29,9 +29,11 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -40,30 +42,29 @@ class Attribute;
 class Element;
 class Node;
 
-class MarkupAccumulator {
+class CORE_EXPORT MarkupAccumulator {
   STACK_ALLOCATED();
 
  public:
   MarkupAccumulator(AbsoluteURLs,
                     SerializationType,
-                    IncludeShadowRoots,
-                    ClosedRootsSet = ClosedRootsSet());
+                    const ShadowRootInclusion&);
   MarkupAccumulator(const MarkupAccumulator&) = delete;
   MarkupAccumulator& operator=(const MarkupAccumulator&) = delete;
   virtual ~MarkupAccumulator();
 
   template <typename Strategy>
-  String SerializeNodes(const Node&, ChildrenOnly);
+  CORE_EXPORT String SerializeNodes(const Node&, ChildrenOnly);
 
  protected:
   // Returns serialized prefix. It should be passed to AppendEndTag().
   virtual AtomicString AppendElement(const Element&);
   virtual void AppendAttribute(const Element&, const Attribute&);
+  virtual bool ShouldIgnoreElement(const Element&) const;
 
   MarkupFormatter formatter_;
   StringBuilder markup_;
-  IncludeShadowRoots include_shadow_roots_;
-  ClosedRootsSet include_closed_roots_;
+  ShadowRootInclusion shadow_root_inclusion_;
 
  private:
   bool SerializeAsHTML() const;
@@ -104,16 +105,14 @@ class MarkupAccumulator {
 
   virtual void AppendCustomAttributes(const Element&);
   virtual bool ShouldIgnoreAttribute(const Element&, const Attribute&) const;
-  virtual bool ShouldIgnoreElement(const Element&) const;
 
-  // Returns an auxiliary DOM tree, i.e. shadow tree, that needs also to be
-  // serialized. The root of auxiliary DOM tree is returned as an 1st element
-  // in the pair. It can be null if no auxiliary DOM tree exists. An additional
-  // element used to enclose the serialized content of auxiliary DOM tree
-  // can be returned as 2nd element in the pair. It can be null if this is not
-  // needed. For shadow tree, a <template> element is needed to wrap the shadow
-  // tree content.
-  virtual std::pair<Node*, Element*> GetAuxiliaryDOMTree(const Element&) const;
+  // Returns a shadow tree that needs also to be serialized. The ShadowRoot is
+  // returned as the 1st element in the pair, and can be null if no shadow tree
+  // exists. To serialize a ShadowRoot, an enclosing <template shadowrootmode>
+  // must be used, and this is returned as the 2nd element in the pair. It can
+  // be null if the first element is null.
+  virtual std::pair<ShadowRoot*, HTMLTemplateElement*> GetShadowTree(
+      const Element&) const;
 
   template <typename Strategy>
   void SerializeNodesWithNamespaces(const Node& target_node,

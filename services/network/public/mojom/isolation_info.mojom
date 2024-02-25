@@ -26,5 +26,4 @@ struct IsolationInfo {
   url.mojom.Origin? frame_origin;
   mojo_base.mojom.UnguessableToken? nonce;
   SiteForCookies site_for_cookies;
-  array<SchemefulSite>? party_context;
 };

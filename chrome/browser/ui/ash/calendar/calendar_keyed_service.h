@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_ASH_CALENDAR_CALENDAR_KEYED_SERVICE_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/ash/calendar/calendar_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -54,7 +56,19 @@ class CalendarKeyedService : public KeyedService {
 
   void Initialize();
 
-  // Fetches calendar events based on the current client's account.
+  // Fetches a list of calendars based on the current client's account.
+  //
+  // `callback` will be called when response or google_apis's ERROR (if the call
+  // is not successful) is returned. `google_apis::OTHER_ERROR` will be passed
+  // in the `callback` if the current client has no valid calendar service,
+  // e.g. a guest user.
+  //
+  // The returned `base::OnceClosure` callback can cancel the api call and get
+  // the `google_apis::CANCEL` error before the response is back.
+  base::OnceClosure GetCalendarList(
+      google_apis::calendar::CalendarListCallback callback);
+
+  // Fetches primary calendar events based on the current client's account.
   //
   // `callback` will be called when response or google_apis's ERROR (if the call
   // is not successful) is returned. `google_apis::OTHER_ERROR` will be passed
@@ -67,8 +81,30 @@ class CalendarKeyedService : public KeyedService {
   // the `google_apis::CANCEL` error before the response is back.
   base::OnceClosure GetEventList(
       google_apis::calendar::CalendarEventListCallback callback,
-      const base::Time& start_time,
-      const base::Time& end_time);
+      const base::Time start_time,
+      const base::Time end_time);
+
+  // Fetches events belonging to the calendar with an ID matching `calendar_id`
+  // for the current client's account.
+  //
+  // `callback` will be called when response or google_apis's ERROR (if the call
+  // is not successful) is returned. `google_apis::OTHER_ERROR` will be passed
+  // in the `callback` if the current client has no valid calendar service,
+  // e.g. a guest user.
+  //
+  // `end_time` must be greater than `start_time`.
+  //
+  // Events in the retrieved list with an empty colorId member will take on the
+  // value of `calendar_color_id`.
+  //
+  // The returned `base::OnceClosure` callback can cancel the api call and get
+  // the `google_apis::CANCEL` error before the response is back.
+  base::OnceClosure GetEventList(
+      google_apis::calendar::CalendarEventListCallback callback,
+      const base::Time start_time,
+      const base::Time end_time,
+      const std::string& calendar_id,
+      const std::string& calendar_color_id);
 
   CalendarClient* client() { return &calendar_client_; }
 
@@ -86,10 +122,10 @@ class CalendarKeyedService : public KeyedService {
 
   // The class is expected to run on UI thread.
   base::ThreadChecker thread_checker_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const AccountId account_id_;
   CalendarClientImpl calendar_client_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   CoreAccountId core_account_id_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<google_apis::RequestSender> sender_;

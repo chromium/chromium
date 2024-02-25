@@ -81,10 +81,10 @@ void NetworkServiceDevToolsObserver::OnRawResponse(
     const std::string& devtools_request_id,
     const net::CookieAndLineAccessResultList& response_cookie_list,
     std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers,
-    const absl::optional<std::string>& response_headers_text,
+    const std::optional<std::string>& response_headers_text,
     network::mojom::IPAddressSpace resource_address_space,
     int32_t http_status_code,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key) {
   auto* host = GetDevToolsAgentHost();
   if (!host)
     return;
@@ -105,7 +105,7 @@ void NetworkServiceDevToolsObserver::OnTrustTokenOperationDone(
 }
 
 void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
-    const absl::optional<std::string>& devtools_request_id,
+    const std::optional<std::string>& devtools_request_id,
     const GURL& url,
     bool is_warning,
     network::mojom::IPAddressSpace resource_address_space,
@@ -196,8 +196,8 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightRequestCompleted(
 }
 
 void NetworkServiceDevToolsObserver::OnCorsError(
-    const absl::optional<std::string>& devtools_request_id,
-    const absl::optional<::url::Origin>& initiator_origin,
+    const std::optional<std::string>& devtools_request_id,
+    const std::optional<::url::Origin>& initiator_origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& url,
     const network::CorsErrorStatus& cors_error_status,
@@ -258,7 +258,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
 }
 
 void NetworkServiceDevToolsObserver::OnCorbError(
-    const absl::optional<std::string>& devtools_request_id,
+    const std::optional<std::string>& devtools_request_id,
     const GURL& url) {
   RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
   if (!rfhi) {
@@ -312,7 +312,7 @@ void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadataError(
 void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponse(
     const std::string& inner_request_devtools_id,
     const GURL& url,
-    const absl::optional<std::string>& bundle_request_devtools_id) {
+    const std::optional<std::string>& bundle_request_devtools_id) {
   auto* host = GetDevToolsAgentHost();
   if (!host)
     return;
@@ -325,7 +325,7 @@ void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponseError(
     const std::string& inner_request_devtools_id,
     const GURL& url,
     const std::string& error_message,
-    const absl::optional<std::string>& bundle_request_devtools_id) {
+    const std::optional<std::string>& bundle_request_devtools_id) {
   auto* host = GetDevToolsAgentHost();
   if (!host)
     return;

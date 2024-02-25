@@ -4,10 +4,10 @@
 
 #include "content/browser/notification_service_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_types.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace  content {
@@ -37,7 +37,7 @@ NotificationService* NotificationService::Create() {
 // static
 bool NotificationServiceImpl::HasKey(const NotificationSourceMap& map,
                                      const NotificationSource& source) {
-  return map.find(source.map_key()) != map.end();
+  return base::Contains(map, source.map_key());
 }
 
 NotificationServiceImpl::NotificationServiceImpl()

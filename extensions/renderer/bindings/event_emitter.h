@@ -6,8 +6,8 @@
 #define EXTENSIONS_RENDERER_BINDINGS_EVENT_EMITTER_H_
 
 #include <map>
-#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/wrappable.h"
@@ -46,7 +46,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // Warning: This can run arbitrary JS code, so the |context| may be
   // invalidated after this!
   void Fire(v8::Local<v8::Context> context,
-            std::vector<v8::Local<v8::Value>>* args,
+            v8::LocalVector<v8::Value>* args,
             mojom::EventFilteringInfoPtr filter,
             JSRunner::ResultCallback callback);
 
@@ -56,7 +56,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // Warning: This can run arbitrary JS code, so the |context| may be
   // invalidated after this!
   v8::Local<v8::Value> FireSync(v8::Local<v8::Context> context,
-                                std::vector<v8::Local<v8::Value>>* args,
+                                v8::LocalVector<v8::Value>* args,
                                 mojom::EventFilteringInfoPtr filter);
 
   // Removes all listeners and marks this object as invalid so that no more
@@ -77,12 +77,12 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
 
   // Dispatches an event synchronously to listeners, returning the result.
   v8::Local<v8::Value> DispatchSync(v8::Local<v8::Context> context,
-                                    std::vector<v8::Local<v8::Value>>* args,
+                                    v8::LocalVector<v8::Value>* args,
                                     mojom::EventFilteringInfoPtr filter);
 
   // Dispatches an event asynchronously to listeners.
   void DispatchAsync(v8::Local<v8::Context> context,
-                     std::vector<v8::Local<v8::Value>>* args,
+                     v8::LocalVector<v8::Value>* args,
                      mojom::EventFilteringInfoPtr filter,
                      JSRunner::ResultCallback callback);
   static void DispatchAsyncHelper(
@@ -98,7 +98,8 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   std::unique_ptr<APIEventListeners> listeners_;
 
   // The associated exception handler; guaranteed to outlive this object.
-  ExceptionHandler* const exception_handler_ = nullptr;
+  const raw_ptr<ExceptionHandler, DanglingUntriaged> exception_handler_ =
+      nullptr;
 
   // The next id to use in the pending_filters_ map.
   int next_filter_id_ = 0;

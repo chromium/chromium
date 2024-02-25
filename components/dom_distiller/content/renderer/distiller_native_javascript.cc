@@ -15,7 +15,8 @@
 #include "gin/arguments.h"
 #include "gin/function_template.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8.h"
 
 namespace {
@@ -56,7 +57,8 @@ void DistillerNativeJavaScript::StoreFloatFontScaling(float float_font_scale) {
 
 void DistillerNativeJavaScript::AddJavaScriptObjectToFrame(
     v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate =
+      render_frame_->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   if (context.IsEmpty())
     return;

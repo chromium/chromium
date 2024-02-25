@@ -44,7 +44,7 @@ class MetricsReportingObserver
   // crosapi::mojom::MetricsObserver:
   void OnMetricsReportingChanged(
       bool enabled,
-      const absl::optional<std::string>& client_id) override;
+      const std::optional<std::string>& client_id) override;
 
  private:
   friend class TestMetricsReportingObserver;

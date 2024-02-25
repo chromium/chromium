@@ -139,8 +139,8 @@ class DTraceParser:
 
       # If the next line is non-empty it's not the last in the stack.
       if next_line.strip():
-        # Matches lines like: "0x17e018987e"
-        if line_content.startswith("0x"):
+        # Matches lines like: "0x17e018987e" or "+0x17e018987e"
+        if line_content.startswith("0x") or line_content.startswith("+0x"):
           function = line_content
           module = "unsymbolized module"
         else:

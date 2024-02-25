@@ -45,7 +45,7 @@ ScreenDetailed* ScreenCaptureMediaStreamTrack::screenDetailed(
         DOMExceptionCode::kInvalidStateError,
         "The ScreenDetailed object could not be created.");
   }
-  return screen_detailed_;
+  return screen_detailed_.Get();
 }
 
 void ScreenCaptureMediaStreamTrack::Trace(Visitor* visitor) const {

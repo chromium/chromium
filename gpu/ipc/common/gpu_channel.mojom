@@ -19,6 +19,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
+import "ui/gfx/mojom/native_handle_types.mojom";
 import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 import "url/mojom/url.mojom";
@@ -52,10 +53,7 @@ struct ContextCreationAttribs {
   gl.mojom.GpuPreference gpu_preference = kLowPower;
 
   // -1 if invalid or unspecified.
-  [EnableIf=is_android] int32 alpha_size = -1;
-  [EnableIf=is_android] int32 blue_size = -1;
-  [EnableIf=is_android] int32 green_size = -1;
-  [EnableIf=is_android] int32 red_size = -1;
+  [EnableIf=is_android] bool need_alpha = false;
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;
@@ -63,14 +61,12 @@ struct ContextCreationAttribs {
   bool enable_grcontext = false;
   bool enable_raster_interface = false;
   bool enable_oop_rasterization = false;
-  bool enable_swap_timestamps_if_supported = false;
 
   ContextType context_type = kOpenGLES2;
-  ContextColorSpace color_space = kUnspecified;
 };
 
 struct CreateCommandBufferParams {
-  SurfaceHandle surface_handle;
+  [EnableIf=is_android] SurfaceHandle surface_handle;
   int32 share_group_id;
   int32 stream_id;
   SchedulingPriority stream_priority;
@@ -152,7 +148,8 @@ interface GpuChannel {
       mojo_base.mojom.UnsafeSharedMemoryRegion shared_state,
       pending_associated_receiver<CommandBuffer> receiver,
       pending_associated_remote<CommandBufferClient> client)
-      => (ContextResult result, Capabilities capabilties);
+      => (ContextResult result, Capabilities capabilties,
+          GLCapabilities gl_capabilities);
 
   // The CommandBufferProxy sends this to the CommandBufferStub in its
   // destructor, so that the stub deletes the actual CommandBufferService
@@ -167,6 +164,13 @@ interface GpuChannel {
 
   // Sends a batch of DeferredRequests to be executed by the service.
   FlushDeferredRequests(array<DeferredRequest> requests);
+
+  // Create a GpuMemoryBuffer on IO thread. Note that this needs to be a
+  // blocking call on calling client's thread in order to return the
+  // GpuMemoryBufferHandle before it's used to create a mailbox from it.
+  [Sync] CreateGpuMemoryBuffer(gfx.mojom.Size size,
+  viz.mojom.SharedImageFormat format, gfx.mojom.BufferUsage buffer_usage)
+  => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
 
   // Gets the GpuMemoryBufferHandle for the corresponding `mailbox` from
   // service side. Note that this needs to be a blocking call on calling
@@ -445,9 +449,6 @@ union DeferredSharedImageRequest {
   // See CreateSharedImageParams.
   CreateSharedImageParams create_shared_image;
 
-  // See CreateSharedImageBackedByBufferParams.
-  CreateSharedImageBackedByBufferParams create_shared_image_backed_by_buffer;
-
   // See CreateSharedImageWithDataParams.
   CreateSharedImageWithDataParams create_shared_image_with_data;
 
@@ -480,6 +481,18 @@ union DeferredSharedImageRequest {
   // See PresentSwapChainParams.
   [EnableIf=is_win]
   PresentSwapChainParams present_swap_chain;
+
+  // See RegisterDxgiFenceParams.
+  [EnableIf=is_win]
+  RegisterDxgiFenceParams register_dxgi_fence;
+
+  // See UpdateDxgiFenceParams.
+  [EnableIf=is_win]
+  UpdateDxgiFenceParams update_dxgi_fence;
+
+  // See UnregisterDxgiFenceParams.
+  [EnableIf=is_win]
+  UnregisterDxgiFenceParams unregister_dxgi_fence;
 };
 
 // Asynchronously synchronize the put and get offsets of both processes.
@@ -514,71 +527,48 @@ struct SetDefaultFramebufferSharedImageParams {
   bool needs_stencil;
 };
 
+// Metadata describing a shared image.
+struct SharedImageMetadata {
+  // The pixel format of the image.
+  viz.mojom.SharedImageFormat format;
+
+  // Size in pixels.
+  gfx.mojom.Size size;
+
+  // Color space.
+  gfx.mojom.ColorSpace color_space;
+
+  // Which corner is considered the origin of the new image.
+  skia.mojom.SurfaceOrigin surface_origin;
+
+  // Indicates how the alpha component of each pixel is interpreted.
+  skia.mojom.AlphaType alpha_type;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+};
+
+// Common params used when creating a new shared image.
+struct SharedImageInfo {
+  // Metadata about the shared image being created.
+  SharedImageMetadata meta;
+
+  // Retained for heap dumps and passed to graphics APIs for tracing tools.
+  // Pick a name that is unique to the allocation site.
+  string debug_label;
+};
+
 // Creates a new shared image.
 struct CreateSharedImageParams {
   // The mailbox used to identify the shared image.
   Mailbox mailbox;
 
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
+  // Information about the shared image.
+  SharedImageInfo si_info;
 
   // The fence to release once the image is created.
   uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
-};
-
-// Creates a new shared image backed by native buffer or shared memory.
-struct CreateSharedImageBackedByBufferParams {
-  // The mailbox used to identify the shared image.
-  Mailbox mailbox;
-
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
-
-  // Usage flags which decides what GPU memory buffer can be supported.
-  gfx.mojom.BufferUsage buffer_usage;
 };
 
 // Creates a new shared image and populates it with pixel data from a shared
@@ -587,22 +577,8 @@ struct CreateSharedImageWithDataParams {
   // The mailbox used to identify the shared image.
   Mailbox mailbox;
 
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
+  // Information about the shared image.
+  SharedImageInfo si_info;
 
   // The fence to release once the image is created.
   uint32 release_id;
@@ -617,12 +593,6 @@ struct CreateSharedImageWithDataParams {
   // If `true`, this is the last usage of the current image upload shared memory
   // region, so the region can be discarded after servicing this request.
   bool done_with_shm;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
 };
 
 // Creates a new shared image with an existing GPU memory buffer.
@@ -631,34 +601,14 @@ struct CreateSharedImageWithBufferParams {
   // The mailbox used to identify the shared image.
   Mailbox mailbox;
 
+  // Information about the shared image.
+  SharedImageInfo si_info;
+
   // A handle to the existing GPU memory buffer.
   gfx.mojom.GpuMemoryBufferHandle buffer_handle;
 
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
-
   // The fence to release once the image is created.
   uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
 };
 
 // Creates a new shared image from an existing GPU memory buffer.
@@ -678,25 +628,11 @@ struct CreateGMBSharedImageParams {
   // Plane for which to create the shared image.
   gfx.mojom.BufferPlane plane;
 
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
+  // Information about the shared image.
+  SharedImageInfo si_info;
 
   // The fence to release once the image is created.
   uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
 };
 
 // Updates the contents of a shared image from whatever is backing it, if
@@ -773,4 +709,38 @@ struct PresentSwapChainParams {
 
   // The fence to release once the swap chain is presented.
   uint32 release_id;
+};
+
+[EnableIf=is_win]
+struct RegisterDxgiFenceParams {
+  // Mailbox identifying the shared image backing to register fence.
+  Mailbox mailbox;
+
+  // The DXGIHandleToken to identifying the registered gpu fence handle.
+  // Use this token to update fence after registration.
+  gfx.mojom.DXGIHandleToken dxgi_token;
+
+  // The fence handle to register.
+  gfx.mojom.GpuFenceHandle fence_handle;
+};
+
+[EnableIf=is_win]
+struct UpdateDxgiFenceParams {
+  // Mailbox identifying the shared image backing to update the fence.
+  Mailbox mailbox;
+
+  // The DXGIHandleToken to identifying the fence to update.
+  gfx.mojom.DXGIHandleToken dxgi_token;
+
+  // The fence value to signal.
+  uint64 fence_value;
+};
+
+[EnableIf=is_win]
+struct UnregisterDxgiFenceParams {
+  // Mailbox identifying the shared image backing to clear the fence.
+  Mailbox mailbox;
+
+  // The DXGIHandleToken to identifying the fence needs to be cleared.
+  gfx.mojom.DXGIHandleToken dxgi_token;
 };

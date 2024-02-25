@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/page_info_ui.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class ChromePageInfoUiDelegate;
@@ -29,6 +30,8 @@ class PageInfoBubbleViewTestApi;
 // allows the user to control via toggle whether that access is granted. Has a
 // button that opens a subpage with more controls.
 class PermissionToggleRowView : public views::View {
+  METADATA_HEADER(PermissionToggleRowView, views::View)
+
  public:
   PermissionToggleRowView(ChromePageInfoUiDelegate* delegate,
                           PageInfoNavigationHandler* navigation_handler,
@@ -46,6 +49,8 @@ class PermissionToggleRowView : public views::View {
   const std::u16string& GetRowTitleForTesting() const {
     return row_view_->GetTitleForTesting();
   }
+
+  bool GetToggleButtonStateForTesting() const;
 
  private:
   friend class test::PageInfoBubbleViewTestApi;

@@ -25,8 +25,7 @@ jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
     base::android::ConvertJavaStringToUTF16(env, j_html_text, &html_text);
     std::string url;
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteHTML(html_text, url,
-                               ClipboardContentType::kSanitized);
+    clipboard_writer.WriteHTML(html_text, url);
     clipboard_writer.WriteText(html_text);
   }
   auto* clipboard = Clipboard::GetForCurrentThread();

@@ -4,6 +4,8 @@
 
 #include "ash/system/accessibility/floating_menu_button.h"
 
+#include <utility>
+
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
@@ -38,7 +40,7 @@ FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
                                        const gfx::VectorIcon& icon,
                                        int accessible_name_id,
                                        bool flip_for_rtl)
-    : FloatingMenuButton(callback,
+    : FloatingMenuButton(std::move(callback),
                          icon,
                          accessible_name_id,
                          flip_for_rtl,
@@ -53,7 +55,7 @@ FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
                                        int size,
                                        bool draw_highlight,
                                        bool is_a11y_togglable)
-    : views::ImageButton(callback),
+    : views::ImageButton(std::move(callback)),
       icon_(&icon),
       size_(size),
       draw_highlight_(draw_highlight),
@@ -72,8 +74,9 @@ FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
 FloatingMenuButton::~FloatingMenuButton() = default;
 
 void FloatingMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
-  if (icon_ == &icon)
+  if (icon_ == &icon) {
     return;
+  }
   icon_ = &icon;
   UpdateImage();
 }
@@ -83,8 +86,9 @@ bool FloatingMenuButton::GetA11yTogglable() const {
 }
 
 void FloatingMenuButton::SetA11yTogglable(bool a11y_togglable) {
-  if (a11y_togglable == is_a11y_togglable_)
+  if (a11y_togglable == is_a11y_togglable_) {
     return;
+  }
   is_a11y_togglable_ = a11y_togglable;
   OnPropertyChanged(&is_a11y_togglable_, views::kPropertyEffectsPaint);
 }
@@ -94,8 +98,9 @@ bool FloatingMenuButton::GetDrawHighlight() const {
 }
 
 void FloatingMenuButton::SetDrawHighlight(bool draw_highlight) {
-  if (draw_highlight_ == draw_highlight)
+  if (draw_highlight_ == draw_highlight) {
     return;
+  }
   draw_highlight_ = draw_highlight;
   OnPropertyChanged(&draw_highlight_, views::kPropertyEffectsPaint);
 }
@@ -105,8 +110,9 @@ bool FloatingMenuButton::GetToggled() const {
 }
 
 void FloatingMenuButton::SetToggled(bool toggled) {
-  if (toggled_ == toggled)
+  if (toggled_ == toggled) {
     return;
+  }
   toggled_ = toggled;
   UpdateImage();
   OnPropertyChanged(&toggled_, views::PropertyEffects::kPropertyEffectsPaint);
@@ -132,11 +138,13 @@ gfx::Size FloatingMenuButton::CalculatePreferredSize() const {
 }
 
 void FloatingMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!GetEnabled())
+  if (!GetEnabled()) {
     return;
+  }
   views::ImageButton::GetAccessibleNodeData(node_data);
-  if (!is_a11y_togglable_)
+  if (!is_a11y_togglable_) {
     return;
+  }
   node_data->role = ax::mojom::Role::kToggleButton;
   node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
                                       : ax::mojom::CheckedState::kFalse);
@@ -153,7 +161,7 @@ void FloatingMenuButton::UpdateImage() {
       ui::ImageModel::FromVectorIcon(*icon_, kColorAshButtonIconDisabledColor));
 }
 
-BEGIN_METADATA(FloatingMenuButton, views::ImageButton)
+BEGIN_METADATA(FloatingMenuButton)
 ADD_PROPERTY_METADATA(bool, A11yTogglable)
 ADD_PROPERTY_METADATA(bool, DrawHighlight)
 ADD_PROPERTY_METADATA(bool, Toggled)

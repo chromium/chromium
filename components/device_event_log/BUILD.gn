@@ -14,6 +14,7 @@ component("device_event_log") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//third_party/icu",
   ]
 }

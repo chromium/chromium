@@ -51,12 +51,12 @@ safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel(
   }
 }
 
-absl::optional<bool> GetThirdPartyBlockingEnabled(PrefService* local_state) {
+std::optional<bool> GetThirdPartyBlockingEnabled(PrefService* local_state) {
   DCHECK(local_state);
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return local_state->GetBoolean(prefs::kThirdPartyBlockingEnabled);
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 
@@ -65,11 +65,11 @@ bool GetBuiltInDnsClientEnabled(PrefService* local_state) {
   return local_state->GetBoolean(prefs::kBuiltInDnsClientEnabled);
 }
 
-absl::optional<safe_browsing::PasswordProtectionTrigger>
+std::optional<safe_browsing::PasswordProtectionTrigger>
 GetPasswordProtectionWarningTrigger(PrefService* profile_prefs) {
   DCHECK(profile_prefs);
   if (!profile_prefs->HasPrefPath(prefs::kPasswordProtectionWarningTrigger))
-    return absl::nullopt;
+    return std::nullopt;
   return static_cast<safe_browsing::PasswordProtectionTrigger>(
       profile_prefs->GetInteger(prefs::kPasswordProtectionWarningTrigger));
 }

@@ -22,7 +22,6 @@ features:
   per_profile: false
 owners:
 - mpetrisor@google.com
-- eariassoto@google.com
 - imprivata-eng@google.com
 schema:
   items:

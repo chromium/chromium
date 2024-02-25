@@ -12,10 +12,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/module_system.h"
@@ -54,10 +57,11 @@ class ScriptContext {
 
   ScriptContext(const v8::Local<v8::Context>& context,
                 blink::WebLocalFrame* frame,
+                const mojom::HostID& host_id,
                 const Extension* extension,
-                Feature::Context context_type,
+                mojom::ContextType context_type,
                 const Extension* effective_extension,
-                Feature::Context effective_context_type);
+                mojom::ContextType effective_context_type);
 
   ScriptContext(const ScriptContext&) = delete;
   ScriptContext& operator=(const ScriptContext&) = delete;
@@ -89,6 +93,8 @@ class ScriptContext {
     return v8::Local<v8::Context>::New(isolate_, v8_context_);
   }
 
+  const mojom::HostID& host_id() const { return host_id_; }
+
   const Extension* extension() const { return extension_.get(); }
 
   const Extension* effective_extension() const {
@@ -97,9 +103,9 @@ class ScriptContext {
 
   blink::WebLocalFrame* web_frame() const { return web_frame_; }
 
-  Feature::Context context_type() const { return context_type_; }
+  mojom::ContextType context_type() const { return context_type_; }
 
-  Feature::Context effective_context_type() const {
+  mojom::ContextType effective_context_type() const {
     return effective_context_type_;
   }
 
@@ -200,8 +206,8 @@ class ScriptContext {
     ~ScopedFrameDocumentLoader();
 
    private:
-    blink::WebLocalFrame* frame_;
-    blink::WebDocumentLoader* document_loader_;
+    raw_ptr<blink::WebLocalFrame> frame_;
+    raw_ptr<blink::WebDocumentLoader> document_loader_;
   };
 
   // TODO(devlin): Move all these Get*URL*() methods out of here? While they are
@@ -290,14 +296,19 @@ class ScriptContext {
 
   // The WebLocalFrame associated with this context. This can be NULL because
   // this object can outlive is destroyed asynchronously.
-  blink::WebLocalFrame* web_frame_;
+  raw_ptr<blink::WebLocalFrame> web_frame_;
+
+  // The HostID associated with this context. For extensions, the HostID
+  // HostType should match kExtensions and the ID should match
+  // |extension()->id()|.
+  const mojom::HostID host_id_;
 
   // The extension associated with this context, or NULL if there is none. This
   // might be a hosted app in the case that this context is hosting a web URL.
   scoped_refptr<const Extension> extension_;
 
   // The type of context.
-  Feature::Context context_type_;
+  mojom::ContextType context_type_;
 
   // The effective extension associated with this context, or NULL if there is
   // none. This is different from the above extension if this context is in an
@@ -305,7 +316,7 @@ class ScriptContext {
   scoped_refptr<const Extension> effective_extension_;
 
   // The type of context.
-  Feature::Context effective_context_type_;
+  mojom::ContextType effective_context_type_;
 
   // A globally-unique ID for the script context.
   base::UnguessableToken context_id_;
@@ -323,7 +334,7 @@ class ScriptContext {
   // invalidation.
   std::vector<base::OnceClosure> invalidate_observers_;
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   GURL url_;
 

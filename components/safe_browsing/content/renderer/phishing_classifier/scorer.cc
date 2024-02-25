@@ -14,6 +14,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -159,6 +160,13 @@ std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
       bitmap, skia::ImageOperations::RESIZE_GOOD, static_cast<int>(width),
       static_cast<int>(height));
 
+  if (downsampled.drawsNothing()) {
+    return std::string();
+  }
+
+  CHECK_EQ(downsampled.width(), width, base::NotFatalUntil::M125);
+  CHECK_EQ(downsampled.height(), height, base::NotFatalUntil::M125);
+
   // Format as an RGB buffer for input into the model
   std::string data;
   for (int y = 0; y < height; ++y) {
@@ -296,6 +304,11 @@ void OnImageEmbedderCreated(
 }
 #endif
 
+int* GetLiveScorerCount() {
+  static int count = 0;
+  return &count;
+}
+
 }  // namespace
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -359,8 +372,14 @@ double Scorer::LogOdds2Prob(const double log_odds) const {
   return odds / (odds + 1.0);
 }
 
-Scorer::Scorer() = default;
-Scorer::~Scorer() = default;
+Scorer::Scorer() {
+  *GetLiveScorerCount() += 1;
+  base::UmaHistogramCounts1000("SBClientPhishing.LiveScorersAtCreation",
+                               *GetLiveScorerCount());
+}
+Scorer::~Scorer() {
+  *GetLiveScorerCount() -= 1;
+}
 
 // static
 ScorerStorage* ScorerStorage::GetInstance() {
@@ -438,13 +457,38 @@ std::unique_ptr<Scorer> Scorer::CreateScorerWithImageEmbeddingModel(
   return scorer;
 }
 
+void Scorer::AttachImageEmbeddingModel(base::File image_embedding_model) {
+  if (image_embedding_model.IsValid()) {
+    if (!image_embedding_model_.Initialize(std::move(image_embedding_model))) {
+      RecordScorerCreationStatus(
+          SCORER_FAIL_FLATBUFFER_INVALID_IMAGE_EMBEDDING_TFLITE_MODEL);
+      return;
+    }
+  }
+}
+
 double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
                                 const FeatureMap& features) const {
+  if (!rule->feature()) {
+    return rule->weight();
+  }
+
+  // If the feature vector exists but there are no hashes, the weight will be 0
+  // ultimately, so we return here.
+  if (!flatbuffer_model_->hashes()) {
+    return 0.0;
+  }
+
   const std::unordered_map<std::string, double>& feature_map =
       features.features();
   double rule_score = 1.0;
   for (int32_t feature : *rule->feature()) {
     const flat::Hash* hash = flatbuffer_model_->hashes()->Get(feature);
+
+    if (!hash->data()) {
+      return 0.0;
+    }
+
     std::string hash_str(reinterpret_cast<const char*>(hash->data()->Data()),
                          hash->data()->size());
     const auto it = feature_map.find(hash_str);
@@ -461,8 +505,11 @@ double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
 
 double Scorer::ComputeScore(const FeatureMap& features) const {
   double logodds = 0.0;
-  for (const flat::ClientSideModel_::Rule* rule : *flatbuffer_model_->rule()) {
-    logodds += ComputeRuleScore(rule, features);
+  if (flatbuffer_model_ && flatbuffer_model_->rule()) {
+    for (const flat::ClientSideModel_::Rule* rule :
+         *flatbuffer_model_->rule()) {
+      logodds += ComputeRuleScore(rule, features);
+    }
   }
   return LogOdds2Prob(logodds);
 }
@@ -473,7 +520,6 @@ void Scorer::ApplyVisualTfLiteModel(
     base::OnceCallback<void(std::vector<double>)> callback) const {
   DCHECK(content::RenderThread::IsMainThread());
   if (visual_tflite_model_.IsValid()) {
-    base::Time start_post_task_time = base::Time::Now();
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
@@ -484,9 +530,6 @@ void Scorer::ApplyVisualTfLiteModel(
                                    visual_tflite_model_.length()),
                        base::SequencedTaskRunner::GetCurrentDefault(),
                        std::move(callback)));
-    base::UmaHistogramTimes(
-        "SBClientPhishing.TfLiteModelLoadTime.FlatbufferScorer",
-        base::Time::Now() - start_post_task_time);
   } else {
     std::move(callback).Run(std::vector<double>());
   }
@@ -592,8 +635,16 @@ int Scorer::image_embedding_tflite_model_version() const {
 
 void ScorerStorage::SetScorer(std::unique_ptr<Scorer> scorer) {
   scorer_ = std::move(scorer);
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnScorerChanged();
+  }
+}
+
+void ScorerStorage::ClearScorer() {
+  scorer_.reset();
+  for (Observer& obs : observers_) {
+    obs.OnScorerChanged();
+  }
 }
 
 Scorer* ScorerStorage::GetScorer() const {

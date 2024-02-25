@@ -31,7 +31,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestPolicyValues) {
   };
   CRUManagedPreferencePolicyManager* policyManager =
       [[CRUManagedPreferencePolicyManager alloc] initWithDictionary:policyDict];
-  EXPECT_NSEQ([policyManager source], @"ManagedPreference");
+  EXPECT_NSEQ([policyManager source], @"Managed Preferences");
   EXPECT_TRUE(policyManager.hasActivePolicy);
 
   // Verify global level policies.
@@ -73,7 +73,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestNoGlobalPolicy) {
   CRUUpdatePolicyDictionary* policyDict = @{@"some.app" : @{}};
   CRUManagedPreferencePolicyManager* policyManager =
       [[CRUManagedPreferencePolicyManager alloc] initWithDictionary:policyDict];
-  EXPECT_NSEQ(policyManager.source, @"ManagedPreference");
+  EXPECT_NSEQ(policyManager.source, @"Managed Preferences");
   EXPECT_TRUE(policyManager.hasActivePolicy);
 
   // Verify global level policies are set to default.
@@ -111,7 +111,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestInvalidPolicyValues) {
   };
   CRUManagedPreferencePolicyManager* policyManager =
       [[CRUManagedPreferencePolicyManager alloc] initWithDictionary:policyDict];
-  EXPECT_NSEQ(policyManager.source, @"ManagedPreference");
+  EXPECT_NSEQ(policyManager.source, @"Managed Preferences");
   EXPECT_TRUE(policyManager.hasActivePolicy);
 
   // Verify global level policies.

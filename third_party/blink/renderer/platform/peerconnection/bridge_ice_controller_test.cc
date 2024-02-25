@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -30,13 +31,13 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
-namespace {
-
 namespace cricket {
 // This is an opaque type for the purposes of this test, so a forward
 // declaration suffices
-class IceConfig;
+struct IceConfig;
 }  // namespace cricket
+
+namespace {
 
 using ::blink::BridgeIceController;
 using ::blink::FakeConnectionFactory;
@@ -89,7 +90,7 @@ static const std::string kIpTwo = "1.3.5.7";
 static const std::string kIpThree = "1.4.7.10";
 static const int kPort = 6745;
 
-static const IceConfig* kIceConfig = reinterpret_cast<const IceConfig*>(0xfefe);
+static const IceConfig kIceConfig;
 
 static const std::vector<const Connection*> kEmptyConnsList{};
 static const IceControllerInterface::SwitchResult kEmptySwitchResult{};
@@ -229,8 +230,8 @@ TEST_F(BridgeIceControllerTest, PassthroughIceControllerInterface) {
   const Connection* conn_three = GetConnection(kIpThree, kPort);
   ASSERT_NE(conn_three, nullptr);
 
-  EXPECT_CALL(*wrapped, SetIceConfig(Ref(*kIceConfig)));
-  controller.SetIceConfig(*kIceConfig);
+  EXPECT_CALL(*wrapped, SetIceConfig(Ref(kIceConfig)));
+  controller.SetIceConfig(kIceConfig);
 
   EXPECT_CALL(*wrapped, GetUseCandidateAttr(conn, NominationMode::AGGRESSIVE,
                                             IceMode::ICEMODE_LITE))
@@ -315,7 +316,8 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
 
   // Set default native ICE controller behaviour.
   const std::vector<const Connection*> connection_set{conn, conn_two};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
   EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
 
   const IceSwitchReason reason = IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE;
@@ -394,7 +396,8 @@ TEST_P(BridgeIceControllerProposalTest, HandlesImmediateSortAndSwitchRequest) {
   // Set default native ICE controller behaviour.
   const std::vector<const Connection*> connection_set{conn, conn_two,
                                                       conn_three};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
   EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
 
   const IceSwitchReason reason =
@@ -500,7 +503,8 @@ TEST_P(BridgeIceControllerProposalTest, HandlesSortAndSwitchRequest) {
 
   // Set default native ICE controller behaviour.
   const std::vector<const Connection*> connection_set{conn, conn_two};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
   EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
 
   const IceSwitchReason reason = IceSwitchReason::NETWORK_PREFERENCE_CHANGE;
@@ -574,7 +578,8 @@ TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
 
   // Set default native ICE controller behaviour.
   const std::vector<const Connection*> connection_set{conn};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
 
   // Pinging does not start automatically, unless triggered through a sort.
   EXPECT_CALL(*wrapped, HasPingableConnection()).Times(0);
@@ -689,7 +694,7 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
 
     // Exclude conn_two to be able to test for unknown connection in proposal.
     const std::vector<const Connection*> connection_set{conn};
-    EXPECT_CALL(*wrapped_controller, connections())
+    EXPECT_CALL(*wrapped_controller, GetConnections())
         .WillRepeatedly(Return(connection_set));
 
     // No expectations set on any mocks. Together with StrictMock, this ensures
@@ -700,8 +705,8 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   void Recheck() { env.FastForwardBy(base::Milliseconds(recheck_delay_ms)); }
 
   const int recheck_delay_ms = 10;
-  const Connection* conn = nullptr;
-  const Connection* conn_two = nullptr;
+  raw_ptr<const Connection> conn = nullptr;
+  raw_ptr<const Connection> conn_two = nullptr;
   // This field is not vector<raw_ptr<...>> due to interaction with third_party
   // api.
   RAW_PTR_EXCLUSION const std::vector<const Connection*>
@@ -712,7 +717,7 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   scoped_refptr<IceInteractionInterface> interaction_agent;
   StrictMock<MockIceAgent> agent;
   StrictMock<MockIceControllerObserver> observer;
-  StrictMock<MockIceController>* wrapped_controller;
+  raw_ptr<StrictMock<MockIceController>, DanglingUntriaged> wrapped_controller;
   std::unique_ptr<BridgeIceController> controller;
 };
 
@@ -753,7 +758,7 @@ TEST_F(BridgeIceControllerNoopTest, AcceptUnknownPingProposal) {
 
 TEST_F(BridgeIceControllerDeathTest, AcceptUnsolicitedSwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      conn, recheck_event, empty_conns_to_forget};
+      conn.get(), recheck_event, empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/false);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptSwitchProposal(proposal),
@@ -762,7 +767,7 @@ TEST_F(BridgeIceControllerDeathTest, AcceptUnsolicitedSwitchProposal) {
 
 TEST_F(BridgeIceControllerDeathTest, RejectUnsolicitedSwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      conn, recheck_event, empty_conns_to_forget};
+      conn.get(), recheck_event, empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/false);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->RejectSwitchProposal(proposal),
@@ -771,7 +776,7 @@ TEST_F(BridgeIceControllerDeathTest, RejectUnsolicitedSwitchProposal) {
 
 TEST_F(BridgeIceControllerDeathTest, AcceptEmptySwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      absl::nullopt, recheck_event, empty_conns_to_forget};
+      std::nullopt, recheck_event, empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/true);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptSwitchProposal(proposal),
@@ -780,7 +785,7 @@ TEST_F(BridgeIceControllerDeathTest, AcceptEmptySwitchProposal) {
 
 TEST_F(BridgeIceControllerDeathTest, AcceptNullSwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      absl::optional<const Connection*>(nullptr), recheck_event,
+      std::optional<const Connection*>(nullptr), recheck_event,
       empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/true);
@@ -790,7 +795,7 @@ TEST_F(BridgeIceControllerDeathTest, AcceptNullSwitchProposal) {
 
 TEST_F(BridgeIceControllerNoopTest, AcceptUnknownSwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      conn_two, recheck_event, empty_conns_to_forget};
+      conn_two.get(), recheck_event, empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/true);
   interaction_agent->AcceptSwitchProposal(proposal);
@@ -840,7 +845,8 @@ TEST_F(BridgeIceControllerTest, HandlesPingRequest) {
 
   // Exclude conn_two to be able to test for unknown connection in request.
   const std::vector<const Connection*> connection_set{conn};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
 
   EXPECT_CALL(agent, SendPingRequest(conn));
   EXPECT_EQ(interaction_agent->PingIceConnection(IceConnection(conn)).type(),
@@ -873,7 +879,8 @@ TEST_F(BridgeIceControllerTest, HandlesSwitchRequest) {
 
   // Exclude conn_two to be able to test for unknown connection in request.
   const std::vector<const Connection*> connection_set{conn};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
 
   EXPECT_CALL(agent, SwitchSelectedConnection(
                          conn, IceSwitchReason::APPLICATION_REQUESTED));
@@ -910,7 +917,8 @@ TEST_F(BridgeIceControllerTest, HandlesPruneRequest) {
 
   // Exclude conn_three to be able to test for unknown connection in request.
   const std::vector<const Connection*> connection_set{conn, conn_two};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
 
   const std::vector<const Connection*> conns_to_prune{conn};
   const std::vector<const IceConnection> valid_ice_conns_to_prune{

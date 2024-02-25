@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/storage/storage_queue.h"
-
 #include <cstdint>
 #include <initializer_list>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -21,19 +20,21 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/test_compression_module.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_configuration.h"
+#include "components/reporting/storage/storage_queue.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Eq;
 
@@ -52,7 +53,7 @@ class TestUploadClient : public UploaderInterface {
   // generation is uploaded without last record digest.
   using LastRecordDigestMap = base::flat_map<
       std::pair<int64_t /*generation id */, int64_t /*sequencing id*/>,
-      absl::optional<std::string /*digest*/>>;
+      std::optional<std::string /*digest*/>>;
 
   explicit TestUploadClient(LastRecordDigestMap* last_record_digest_map)
       : last_record_digest_map_(last_record_digest_map) {
@@ -124,7 +125,7 @@ class TestUploadClient : public UploaderInterface {
  private:
   SEQUENCE_CHECKER(test_uploader_checker_);
 
-  absl::optional<int64_t> generation_id_
+  std::optional<int64_t> generation_id_
       GUARDED_BY_CONTEXT(test_uploader_checker_);
   const raw_ptr<LastRecordDigestMap> last_record_digest_map_
       GUARDED_BY_CONTEXT(test_uploader_checker_);
@@ -163,8 +164,8 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
         storage_queue_create_event.result();
     ASSERT_OK(storage_queue_result) << "Failed to create StorageQueue, error="
-                                    << storage_queue_result.status();
-    storage_queue_ = std::move(storage_queue_result.ValueOrDie());
+                                    << storage_queue_result.error();
+    storage_queue_ = std::move(storage_queue_result.value());
   }
 
   void ResetTestStorageQueue() {
@@ -194,10 +195,10 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
       LOG(ERROR) << "Upload not expected, reason="
                  << UploaderInterface::ReasonToString(reason);
       std::move(start_uploader_cb)
-          .Run(Status(
+          .Run(base::unexpected(Status(
               error::CANCELLED,
               base::StrCat({"Unexpected upload ignored, reason=",
-                            UploaderInterface::ReasonToString(reason)})));
+                            UploaderInterface::ReasonToString(reason)}))));
       return;
     }
     std::move(start_uploader_cb)

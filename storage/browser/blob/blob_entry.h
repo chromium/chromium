@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/blob/blob_memory_controller.h"
@@ -72,7 +73,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
     // We can have trasnport data that's either populated or unpopulated. If we
     // need population, this is populated.
     TransportAllowedCallback transport_allowed_callback;
-    std::vector<ShareableBlobDataItem*> transport_items;
+    std::vector<raw_ptr<ShareableBlobDataItem, VectorExperimental>>
+        transport_items;
 
     BuildAbortedCallback build_aborted_callback;
 

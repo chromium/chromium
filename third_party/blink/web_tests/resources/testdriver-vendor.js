@@ -511,19 +511,29 @@
   }
 
   window.test_driver_internal.minimize_window = async () => {
-    window.testRunner.setMainWindowHidden(true);
+    window.testRunner.setFrameWindowHidden(true);
     // Wait until the new state is reflected in the document
     while (!document.hidden) {
       await new Promise(resolve => setTimeout(resolve, 0));
     }
   };
 
-  window.test_driver_internal.set_window_rect = async () => {
-    window.testRunner.setMainWindowHidden(false);
+  window.test_driver_internal.set_window_rect = async (rect, context) => {
+    window.testRunner.setFrameWindowHidden(false);
     // Wait until the new state is reflected in the document
     while (document.hidden) {
       await new Promise(resolve => setTimeout(resolve, 0));
     }
+    if (rect !== undefined)
+        window.testRunner.setWindowRect(rect);
+  };
+
+  window.test_driver_internal.get_window_rect = async function() {
+      return {'x': window.screenX, 'y': window.screenY, 'width': window.outerWidth, 'height': window.outerHeight};
+  }
+
+  window.test_driver_internal.set_rph_registration_mode = async function (mode, context) {
+      window.testRunner.setRphRegistrationMode(mode);
   };
 
   window.test_driver_internal.get_fedcm_dialog_type = async function() {
@@ -540,6 +550,29 @@
 
   window.test_driver_internal.cancel_fedcm_dialog = async function() {
     return internals.dismissFedCmDialog();
+  }
+
+  window.test_driver_internal.click_fedcm_dialog_button = async function(dialog_button) {
+    return internals.clickFedCmDialogButton(dialog_button);
+  }
+
+  window.test_driver_internal.create_virtual_sensor = function(
+      sensor_type, sensor_params) {
+    return internals.createVirtualSensor(sensor_type, sensor_params);
+  }
+
+  window.test_driver_internal.update_virtual_sensor = function(
+      sensor_type, reading) {
+    return internals.updateVirtualSensor(sensor_type, reading);
+  }
+
+  window.test_driver_internal.remove_virtual_sensor = function(sensor_type) {
+    return internals.removeVirtualSensor(sensor_type);
+  }
+
+  window.test_driver_internal.get_virtual_sensor_information = function(
+      sensor_type) {
+    return internals.getVirtualSensorInformation(sensor_type);
   }
 
   // Enable automation so we don't wait for user input on unimplemented APIs

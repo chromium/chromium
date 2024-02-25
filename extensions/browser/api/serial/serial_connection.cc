@@ -168,7 +168,7 @@ SerialConnection::SerialConnection(const std::string& owner_extension_id)
       receive_timeout_(0),
       send_timeout_(0),
       paused_(true),
-      read_error_(absl::nullopt),
+      read_error_(std::nullopt),
       bytes_written_(0),
       receive_pipe_watcher_(FROM_HERE,
                             mojo::SimpleWatcher::ArmingPolicy::MANUAL),

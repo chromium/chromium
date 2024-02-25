@@ -12,14 +12,12 @@ package org.chromium.net;
  * be cast to a {@link QuicException} which can provide further details.
  */
 public abstract class NetworkException extends CronetException {
-    /**
-     * Error code indicating the host being sent the request could not be resolved to an IP address.
-     */
+    /** Error code indicating the host being sent the request could not be resolved to an IP address. */
     public static final int ERROR_HOSTNAME_NOT_RESOLVED = 1;
-    /**
-     * Error code indicating the device was not connected to any network.
-     */
+
+    /** Error code indicating the device was not connected to any network. */
     public static final int ERROR_INTERNET_DISCONNECTED = 2;
+
     /**
      * Error code indicating that as the request was processed the network configuration changed.
      * When
@@ -27,38 +25,38 @@ public abstract class NetworkException extends CronetException {
      * for more information if <a href="https://www.chromium.org/quic"> QUIC</a> protocol is used.
      */
     public static final int ERROR_NETWORK_CHANGED = 3;
+
     /**
      * Error code indicating a timeout expired. Timeouts expiring while attempting to connect will
      * be reported as the more specific {@link #ERROR_CONNECTION_TIMED_OUT}.
      */
     public static final int ERROR_TIMED_OUT = 4;
-    /**
-     * Error code indicating the connection was closed unexpectedly.
-     */
+
+    /** Error code indicating the connection was closed unexpectedly. */
     public static final int ERROR_CONNECTION_CLOSED = 5;
-    /**
-     * Error code indicating the connection attempt timed out.
-     */
+
+    /** Error code indicating the connection attempt timed out. */
     public static final int ERROR_CONNECTION_TIMED_OUT = 6;
-    /**
-     * Error code indicating the connection attempt was refused.
-     */
+
+    /** Error code indicating the connection attempt was refused. */
     public static final int ERROR_CONNECTION_REFUSED = 7;
-    /**
-     * Error code indicating the connection was unexpectedly reset.
-     */
+
+    /** Error code indicating the connection was unexpectedly reset. */
     public static final int ERROR_CONNECTION_RESET = 8;
+
     /**
      * Error code indicating the IP address being contacted is unreachable, meaning there is no
      * route to the specified host or network.
      */
     public static final int ERROR_ADDRESS_UNREACHABLE = 9;
+
     /**
      * Error code indicating an error related to the <a href="https://www.chromium.org/quic">
      * QUIC</a> protocol. When {@link #getErrorCode} returns this code, this exception can be cast
      * to {@link QuicException} for more information.
      */
     public static final int ERROR_QUIC_PROTOCOL_FAILED = 10;
+
     /**
      * Error code indicating another type of error was encountered. {@link
      * #getCronetInternalErrorCode} can be consulted to get a more specific cause.

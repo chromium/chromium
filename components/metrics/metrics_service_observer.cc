@@ -22,7 +22,8 @@ MetricsServiceObserver::Log::Event CreateEventStruct(
     base::StringPiece message) {
   MetricsServiceObserver::Log::Event event_struct;
   event_struct.event = event;
-  event_struct.timestampMs = base::Time::Now().ToJsTimeIgnoringNull();
+  event_struct.timestampMs =
+      base::Time::Now().InMillisecondsFSinceUnixEpochIgnoringNull();
   if (!message.empty()) {
     event_struct.message = std::string(message);
   }
@@ -152,7 +153,7 @@ void MetricsServiceObserver::OnLogEvent(MetricsLogsEventManager::LogEvent event,
 }
 
 void MetricsServiceObserver::OnLogType(
-    absl::optional<MetricsLog::LogType> log_type) {
+    std::optional<MetricsLog::LogType> log_type) {
   uma_log_type_ = log_type;
 }
 
@@ -167,13 +168,11 @@ bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
       DCHECK_EQ(service_type_, MetricsServiceType::UMA);
       log_dict.Set("type", LogTypeToString(log->type.value()));
     }
-    log_dict.Set("hash", base::HexEncode(log->hash.data(), log->hash.length()));
+    log_dict.Set("hash", base::HexEncode(log->hash));
     log_dict.Set("timestamp", log->timestamp);
 
     if (include_log_proto_data) {
-      std::string base64_encoded_data;
-      base::Base64Encode(log->data, &base64_encoded_data);
-      log_dict.Set("data", base64_encoded_data);
+      log_dict.Set("data", base::Base64Encode(log->data));
     }
 
     log_dict.Set("size", static_cast<int>(log->data.length()));

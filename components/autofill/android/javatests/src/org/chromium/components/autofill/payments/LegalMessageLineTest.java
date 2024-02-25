@@ -7,8 +7,8 @@ package org.chromium.components.autofill.payments;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -20,29 +20,50 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LegalMessageLineTest {
+    private static final String EXAMPLE = "example";
+
     @Test
     public void testConstructor_setsText() {
-        LegalMessageLine line = new LegalMessageLine("example");
+        LegalMessageLine line = new LegalMessageLine(EXAMPLE);
 
-        assertThat(line.text, equalTo("example"));
+        assertEquals(EXAMPLE, line.text);
+    }
+
+    @Test
+    public void testConstructorWithLinks_setsText() {
+        LegalMessageLine line = new LegalMessageLine(EXAMPLE, Collections.emptyList());
+
+        assertEquals(EXAMPLE, line.text);
+    }
+
+    @Test
+    public void testConstructorWithLinks_addsLinks() {
+        LegalMessageLine line =
+                new LegalMessageLine(
+                        EXAMPLE,
+                        Arrays.asList(new Link(/* start= */ 1, /* end= */ 2, /* url= */ "3")));
+
+        assertThat(line.links, contains(equalToLink(/* start= */ 1, /* end= */ 2, /* url= */ "3")));
     }
 
     @Test
     public void testConstructor_createsWithNoLinks() {
-        LegalMessageLine line = new LegalMessageLine("example");
+        LegalMessageLine line = new LegalMessageLine(EXAMPLE);
 
         assertThat(line.links, empty());
     }
 
     @Test
     public void testAddLink_addsOneLinkAfterEmpty() {
-        LegalMessageLine line = new LegalMessageLine("example");
+        LegalMessageLine line = new LegalMessageLine(EXAMPLE);
 
         line.addLink(new LegalMessageLine.Link(1, 2, "3"));
         assertThat(line.links, contains(equalToLink(1, 2, "3")));
@@ -54,7 +75,7 @@ public class LegalMessageLineTest {
                 LegalMessageLine.addToList_createListIfNull(null, "example");
 
         assertThat(list, notNullValue());
-        assertThat(list, contains(equalToLegalMessageLine("example", /*link=*/null)));
+        assertThat(list, contains(equalToLegalMessageLine("example", /* link= */ null)));
     }
 
     @Test
@@ -65,9 +86,11 @@ public class LegalMessageLineTest {
         list = LegalMessageLine.addToList_createListIfNull(list, "second");
 
         assertThat(list, notNullValue());
-        assertThat(list,
-                contains(equalToLegalMessageLine("first", /*link=*/null),
-                        equalToLegalMessageLine("second", /*link=*/null)));
+        assertThat(
+                list,
+                contains(
+                        equalToLegalMessageLine("first", /* link= */ null),
+                        equalToLegalMessageLine("second", /* link= */ null)));
     }
 
     @Test
@@ -78,9 +101,11 @@ public class LegalMessageLineTest {
         LegalMessageLine.addLinkToLastInList(list, 0, 1, "https://example.test");
 
         assertThat(list, notNullValue());
-        assertThat(list,
-                contains(equalToLegalMessageLine(
-                        "example", new Link(0, 1, "https://example.test"))));
+        assertThat(
+                list,
+                contains(
+                        equalToLegalMessageLine(
+                                "example", new Link(0, 1, "https://example.test"))));
     }
 
     private static Matcher<Link> equalToLink(int start, int end, String url) {
@@ -108,7 +133,8 @@ public class LegalMessageLineTest {
 
                 if (line.links.size() != 1) return false;
 
-                return link.start == line.links.get(0).start && link.end == line.links.get(0).end
+                return link.start == line.links.get(0).start
+                        && link.end == line.links.get(0).end
                         && Objects.equals(link.url, line.links.get(0).url);
             }
 
@@ -117,8 +143,10 @@ public class LegalMessageLineTest {
                 if (link == null) {
                     description.appendText(String.format("LegalMessageLine(%s)", text));
                 } else {
-                    description.appendText(String.format("LegalMessageLine(%s, Link(%s, %s, %s))",
-                            text, link.start, link.end, link.url));
+                    description.appendText(
+                            String.format(
+                                    "LegalMessageLine(%s, Link(%s, %s, %s))",
+                                    text, link.start, link.end, link.url));
                 }
             }
         };

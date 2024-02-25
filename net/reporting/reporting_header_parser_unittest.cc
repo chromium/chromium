@@ -4,6 +4,7 @@
 
 #include "net/reporting/reporting_header_parser.h"
 
+#include <optional>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -19,13 +20,13 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -91,7 +92,7 @@ class ReportingHeaderParserTestBase
   const std::string kGroup1_ = "group1";
   const std::string kGroup2_ = "group2";
   // There are 2^3 = 8 of these to test the different combinations of matching
-  // vs mismatching NIK, origin, and group.
+  // vs mismatching NAK, origin, and group.
   const ReportingEndpointGroupKey kGroupKey11_ =
       ReportingEndpointGroupKey(kNak_, kOrigin1_, kGroup1_);
   const ReportingEndpointGroupKey kGroupKey21_ =
@@ -187,8 +188,7 @@ class ReportingHeaderParserTest : public ReportingHeaderParserTestBase {
   void ParseHeader(const NetworkAnonymizationKey& network_anonymization_key,
                    const url::Origin& origin,
                    const std::string& json) {
-    absl::optional<base::Value> value =
-        base::JSONReader::Read("[" + json + "]");
+    std::optional<base::Value> value = base::JSONReader::Read("[" + json + "]");
     if (value) {
       ReportingHeaderParser::ParseReportToHeader(
           context(), network_anonymization_key, origin, value->GetList());
@@ -758,7 +758,7 @@ TEST_P(ReportingHeaderParserTest, MultipleHeadersFromDifferentOrigins) {
   }
 }
 
-// Test that each combination of NIK, origin, and group name is considered
+// Test that each combination of NAK, origin, and group name is considered
 // distinct.
 // See also: ReportingCacheTest.ClientsKeyedByEndpointGroupKey
 TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
@@ -801,7 +801,7 @@ TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
   MockPersistentReportingStore::CommandList expected_commands;
 
   // Set 2 endpoints in each of 2 groups for each of 2x2 combinations of
-  // (NIK, origin).
+  // (NAK, origin).
   for (const auto& source : kHeaderSources) {
     // Verify pre-parsing state
     EXPECT_FALSE(FindEndpointInCache(source.group1_key, kEndpoint1_));
@@ -1783,7 +1783,7 @@ class ReportingHeaderParserStructuredHeaderTest
                    const IsolationInfo& isolation_info,
                    const url::Origin& origin,
                    const std::string& header_string) {
-    absl::optional<base::flat_map<std::string, std::string>> header_map =
+    std::optional<base::flat_map<std::string, std::string>> header_map =
         ParseReportingEndpoints(header_string);
 
     if (header_map) {
@@ -1796,7 +1796,7 @@ class ReportingHeaderParserStructuredHeaderTest
       const base::UnguessableToken& reporting_source,
       const IsolationInfo& isolation_info,
       const url::Origin& origin,
-      const absl::optional<base::flat_map<std::string, std::string>>&
+      const std::optional<base::flat_map<std::string, std::string>>&
           header_map) {
     ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
         context(), reporting_source, isolation_info,

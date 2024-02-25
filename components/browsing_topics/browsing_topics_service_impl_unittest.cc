@@ -23,9 +23,12 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
@@ -68,7 +71,8 @@ EpochTopics CreateTestEpochTopics(
     const std::vector<std::pair<Topic, std::set<HashedDomain>>>& topics,
     base::Time calculation_time,
     size_t padded_top_topics_start_index = 5,
-    int64_t model_version = kModelVersion) {
+    int64_t model_version = kModelVersion,
+    int config_version = kConfigVersion) {
   DCHECK_EQ(topics.size(), 5u);
 
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
@@ -78,7 +82,7 @@ EpochTopics CreateTestEpochTopics(
   }
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
-                     padded_top_topics_start_index, kConfigVersion,
+                     padded_top_topics_start_index, config_version,
                      kTaxonomyVersion, model_version, calculation_time,
                      /*from_manually_triggered_calculation=*/false);
 }
@@ -192,8 +196,13 @@ class BrowsingTopicsServiceImplTest
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false, /*should_record_metrics=*/false);
+    tracking_protection_settings_ =
+        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+            &prefs_,
+            /*onboarding_service=*/nullptr, /*is_incognito=*/false);
     cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
-        host_content_settings_map_.get(), &prefs_, false, "chrome-extension");
+        host_content_settings_map_.get(), &prefs_,
+        tracking_protection_settings_.get(), false, "chrome-extension");
 
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
@@ -204,7 +213,8 @@ class BrowsingTopicsServiceImplTest
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
             std::move(privacy_sandbox_delegate),
-            host_content_settings_map_.get(), cookie_settings_, &prefs_);
+            host_content_settings_map_.get(), cookie_settings_,
+            tracking_protection_settings_.get(), &prefs_);
     privacy_sandbox_settings_->SetAllPrivacySandboxAllowedForTesting();
 
     history_service_ = std::make_unique<history::HistoryService>();
@@ -217,6 +227,14 @@ class BrowsingTopicsServiceImplTest
   ~BrowsingTopicsServiceImplTest() override = default;
 
   void SetUp() override {
+    scoped_attestations_ =
+        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+    // By default turn on the setting that makes all APIs considered attested as
+    // test cases are testing behaviors not related to attestations.
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAllPrivacySandboxAttestedForTesting(true);
+
     content::RenderViewHostTestHarness::SetUp();
 
     content_settings::PageSpecificContentSettings::CreateForWebContents(
@@ -236,7 +254,9 @@ class BrowsingTopicsServiceImplTest
     history_service_->Shutdown();
     run_loop.Run();
 
+    cookie_settings_->ShutdownOnUIThread();
     host_content_settings_map_->ShutdownOnUIThread();
+    tracking_protection_settings_->Shutdown();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -304,6 +324,8 @@ class BrowsingTopicsServiceImplTest
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
 
@@ -312,6 +334,9 @@ class BrowsingTopicsServiceImplTest
   std::unique_ptr<TesterBrowsingTopicsService> browsing_topics_service_;
 
   base::HistogramTester histogram_tester_;
+
+  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
+      scoped_attestations_;
 };
 
 TEST_F(BrowsingTopicsServiceImplTest, EmptyInitialState_CalculationScheduling) {
@@ -901,7 +926,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
       history::DeletionTimeRange(start_time + 5 * kOneTestDay,
                                  start_time + 6 * kOneTestDay),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/absl::nullopt);
+      /*restrict_urls=*/std::nullopt);
 
   browsing_topics_service_->OnURLsDeleted(history_service_.get(),
                                           deletion_info);
@@ -942,7 +967,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(start_time, start_time + 2 * kOneTestDay),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/absl::nullopt);
+      /*restrict_urls=*/std::nullopt);
 
   browsing_topics_service_->OnURLsDeleted(history_service_.get(),
                                           deletion_info);
@@ -980,7 +1005,7 @@ TEST_F(BrowsingTopicsServiceImplTest, Recalculate) {
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(start_time, start_time + 2 * kOneTestDay),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/absl::nullopt);
+      /*restrict_urls=*/std::nullopt);
   browsing_topics_service_->OnURLsDeleted(history_service_.get(),
                                           deletion_info);
 
@@ -1112,6 +1137,106 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
     EXPECT_EQ(result[0]->model_version, "5000000000");
     EXPECT_EQ(result[0]->version, "chrome.1:1:5000000000");
   }
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       HandleTopicsWebApi_EpochConfigVersionDifferentFromCurrent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
+                             {Topic(2), {GetHashedDomain("bar.com")}},
+                             {Topic(3), {GetHashedDomain("bar.com")}},
+                             {Topic(4), {GetHashedDomain("bar.com")}},
+                             {Topic(5), {GetHashedDomain("bar.com")}}},
+                            kTime1));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  NavigateToPage(GURL("https://www.foo.com"));
+
+  // Advance to the time after the epoch switch time.
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
+
+  // Switch to use a non-default prioritized_topics_list, so that the current
+  // configuration version is different from that derived at the epoch topics
+  // calculation time.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"time_period_per_epoch",
+          base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
+         {"max_epoch_introduction_delay",
+          base::StrCat(
+              {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
+               "s"})},
+         {"prioritized_topics_list", "1,57"}}}},
+      /*disabled_features=*/{});
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
+
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0]->topic, 2);
+  EXPECT_EQ(result[0]->config_version, "chrome.1");
+  EXPECT_EQ(result[0]->taxonomy_version, "1");
+  EXPECT_EQ(result[0]->model_version, "5000000000");
+  EXPECT_EQ(result[0]->version, "chrome.1:1:5000000000");
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       HandleTopicsWebApi_TwoEpochsWithDifferentConfigVersions) {
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
+                             {Topic(7), {GetHashedDomain("bar.com")}},
+                             {Topic(8), {GetHashedDomain("bar.com")}},
+                             {Topic(9), {GetHashedDomain("bar.com")}},
+                             {Topic(10), {GetHashedDomain("bar.com")}}},
+                            kTime1));
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
+                             {Topic(2), {GetHashedDomain("bar.com")}},
+                             {Topic(3), {GetHashedDomain("bar.com")}},
+                             {Topic(4), {GetHashedDomain("bar.com")}},
+                             {Topic(5), {GetHashedDomain("bar.com")}}},
+                            kTime1,
+                            /*padded_top_topics_start_index=*/5, kModelVersion,
+                            /*config_version=*/2));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish all calculations.
+  task_environment()->FastForwardBy(2 * kCalculatorDelay + kEpoch);
+
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 2u);
+
+  NavigateToPage(GURL("https://www.foo.com"));
+
+  // Advance to the time after the epoch switch time.
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
+
+  EXPECT_EQ(result.size(), 2u);
+  EXPECT_EQ(result[0]->config_version, "chrome.1");
+  EXPECT_EQ(result[0]->topic, 7);
+  EXPECT_EQ(result[1]->config_version, "chrome.2");
+  EXPECT_EQ(result[1]->topic, 2);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch_Filtered) {
@@ -2150,7 +2275,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_EQ(epoch0->taxonomy_version, "1");
   EXPECT_EQ(epoch0->topics.size(), 5u);
   EXPECT_EQ(epoch0->topics[0]->topic_id, 6);
-  EXPECT_EQ(epoch0->topics[0]->topic_name, u"Entertainment industry");
+  EXPECT_EQ(epoch0->topics[0]->topic_name, u"Entertainment Industry");
   EXPECT_TRUE(epoch0->topics[0]->is_real_topic);
   EXPECT_TRUE(epoch0->topics[0]->observed_by_domains.empty());
   EXPECT_EQ(epoch0->topics[1]->topic_id, 7);
@@ -2158,11 +2283,11 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_TRUE(epoch0->topics[1]->is_real_topic);
   EXPECT_TRUE(epoch0->topics[1]->observed_by_domains.empty());
   EXPECT_EQ(epoch0->topics[2]->topic_id, 8);
-  EXPECT_EQ(epoch0->topics[2]->topic_name, u"Live comedy");
+  EXPECT_EQ(epoch0->topics[2]->topic_name, u"Live Comedy");
   EXPECT_FALSE(epoch0->topics[2]->is_real_topic);
   EXPECT_TRUE(epoch0->topics[2]->observed_by_domains.empty());
   EXPECT_EQ(epoch0->topics[3]->topic_id, 9);
-  EXPECT_EQ(epoch0->topics[3]->topic_name, u"Live sporting events");
+  EXPECT_EQ(epoch0->topics[3]->topic_name, u"Live Sporting Events");
   EXPECT_FALSE(epoch0->topics[3]->is_real_topic);
   EXPECT_TRUE(epoch0->topics[3]->observed_by_domains.empty());
   EXPECT_EQ(epoch0->topics[4]->topic_id, 10);
@@ -2180,7 +2305,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_EQ(epoch2->taxonomy_version, "1");
   EXPECT_EQ(epoch2->topics.size(), 5u);
   EXPECT_EQ(epoch2->topics[0]->topic_id, 1);
-  EXPECT_EQ(epoch2->topics[0]->topic_name, u"Arts & entertainment");
+  EXPECT_EQ(epoch2->topics[0]->topic_name, u"Arts & Entertainment");
   EXPECT_TRUE(epoch2->topics[0]->is_real_topic);
   EXPECT_EQ(epoch2->topics[0]->observed_by_domains.size(), 2u);
   // The unhashed domain for 123 is unavailable, so "123" is used.
@@ -2188,7 +2313,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   // "456.com" is stored in the call to OnBrowsingTopicsApiUsed above.
   EXPECT_EQ(epoch2->topics[0]->observed_by_domains[1], "456.com");
   EXPECT_EQ(epoch2->topics[1]->topic_id, 2);
-  EXPECT_EQ(epoch2->topics[1]->topic_name, u"Acting & theater");
+  EXPECT_EQ(epoch2->topics[1]->topic_name, u"Acting & Theater");
   EXPECT_TRUE(epoch2->topics[1]->is_real_topic);
   EXPECT_TRUE(epoch2->topics[1]->observed_by_domains.empty());
   EXPECT_EQ(epoch2->topics[2]->topic_id, 0);
@@ -2196,7 +2321,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_TRUE(epoch2->topics[2]->is_real_topic);
   EXPECT_TRUE(epoch2->topics[2]->observed_by_domains.empty());
   EXPECT_EQ(epoch2->topics[3]->topic_id, 4);
-  EXPECT_EQ(epoch2->topics[3]->topic_name, u"Concerts & music festivals");
+  EXPECT_EQ(epoch2->topics[3]->topic_name, u"Concerts & Music Festivals");
   EXPECT_TRUE(epoch2->topics[3]->is_real_topic);
   EXPECT_TRUE(epoch2->topics[3]->observed_by_domains.empty());
   EXPECT_EQ(epoch2->topics[4]->topic_id, 5);

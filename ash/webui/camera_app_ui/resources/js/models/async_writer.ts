@@ -12,7 +12,7 @@ import {Awaitable} from '../type.js';
  */
 export interface AsyncOps {
   write(blob: Blob): Awaitable<void>;
-  seek: ((offset: number) => Promise<void>)|null;
+  seek: ((offset: number) => Awaitable<void>)|null;
   close: (() => Promise<void>)|null;
 }
 
@@ -35,22 +35,18 @@ export class AsyncWriter {
 
   /**
    * Writes the |blob| asynchronously.
-   *
-   * @return Resolved when the data is written.
    */
-  async write(blob: Blob): Promise<void> {
+  write(blob: Blob): void {
     assert(!this.closed);
-    await this.queue.push(() => this.ops.write(blob));
+    this.queue.push(() => this.ops.write(blob));
   }
 
   /**
    * Seeks to the specified |offset|.
-   *
-   * @return Resolved when the seek operation is finished.
    */
-  async seek(offset: number): Promise<void> {
+  seek(offset: number): void {
     assert(!this.closed);
-    await this.queue.push(async () => {
+    this.queue.push(async () => {
       assert(this.ops.seek !== null);
       await this.ops.seek(offset);
     });
@@ -66,11 +62,13 @@ export class AsyncWriter {
       return;
     }
     this.closed = true;
-    await this.queue.push(async () => {
-      if (this.ops.close !== null) {
-        await this.ops.close();
-      }
-    });
+    await this.queue
+        .push(async () => {
+          if (this.ops.close !== null) {
+            await this.ops.close();
+          }
+        })
+        .result;
   }
 
   /**
@@ -80,13 +78,17 @@ export class AsyncWriter {
    * @return The combined writer.
    */
   static combine(...writers: AsyncWriter[]): AsyncWriter {
-    async function write(blob: Blob) {
-      await Promise.all(writers.map((writer) => writer.write(blob)));
+    function write(blob: Blob) {
+      for (const writer of writers) {
+        writer.write(blob);
+      }
     }
 
     const allSeekable = writers.every((writer) => writer.seekable());
-    async function seekAll(offset: number) {
-      await Promise.all(writers.map((writer) => writer.seek(offset)));
+    function seekAll(offset: number) {
+      for (const writer of writers) {
+        writer.seek(offset);
+      }
     }
     const seek = allSeekable ? seekAll : null;
 

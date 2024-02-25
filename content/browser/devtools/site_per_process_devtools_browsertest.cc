@@ -42,7 +42,7 @@ class TestClient: public DevToolsAgentHostClient {
                                base::span<const uint8_t> message) override {
     if (waiting_for_reply_) {
       waiting_for_reply_ = false;
-      base::RunLoop::QuitCurrentDeprecated();
+      std::move(quit_closure_).Run();
     }
   }
 
@@ -52,12 +52,15 @@ class TestClient: public DevToolsAgentHostClient {
 
   void WaitForReply() {
     waiting_for_reply_ = true;
-    base::RunLoop().Run();
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitClosure();
+    loop.Run();
   }
 
  private:
   bool closed_;
   bool waiting_for_reply_;
+  base::OnceClosure quit_closure_;
 };
 
 DevToolsAgentHost::List ExtractPageOrFrameTargets(

@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "ui/gfx/geometry/angle_conversions.h"
+#include "base/numerics/angle_conversions.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -140,7 +140,7 @@ bool TransformOperations::IsTranslation() const {
 }
 
 static SkScalar TanDegrees(double degrees) {
-  return SkDoubleToScalar(std::tan(DegToRad(degrees)));
+  return SkDoubleToScalar(std::tan(base::DegToRad(degrees)));
 }
 
 bool TransformOperations::ScaleComponent(SkScalar* scale) const {
@@ -286,7 +286,7 @@ void TransformOperations::AppendSkew(SkScalar x, SkScalar y) {
   decomposed_transforms_.clear();
 }
 
-void TransformOperations::AppendPerspective(absl::optional<SkScalar> depth) {
+void TransformOperations::AppendPerspective(std::optional<SkScalar> depth) {
   TransformOperation to_add;
   to_add.type = TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE;
   if (depth) {
@@ -377,7 +377,7 @@ bool TransformOperations::ComputeDecomposedTransform(
   auto it = decomposed_transforms_.find(start_offset);
   if (it == decomposed_transforms_.end()) {
     Transform transform = ApplyRemaining(start_offset);
-    if (absl::optional<DecomposedTransform> decomp = transform.Decompose()) {
+    if (std::optional<DecomposedTransform> decomp = transform.Decompose()) {
       decomposed_transforms_[start_offset] =
           std::make_unique<DecomposedTransform>(*decomp);
     } else {

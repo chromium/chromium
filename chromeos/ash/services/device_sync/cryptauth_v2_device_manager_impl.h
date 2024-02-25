@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_DEVICE_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -20,7 +21,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_manager.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -102,14 +102,14 @@ class CryptAuthV2DeviceManagerImpl
       const override;
   void ForceDeviceSyncNow(
       const cryptauthv2::ClientMetadata::InvocationReason&,
-      const absl::optional<std::string>& session_id) override;
+      const std::optional<std::string>& session_id) override;
   bool IsDeviceSyncInProgress() const override;
   bool IsRecoveringFromFailure() const override;
   BetterTogetherMetadataStatus GetDeviceSyncerBetterTogetherMetadataStatus()
       const override;
   GroupPrivateKeyStatus GetDeviceSyncerGroupPrivateKeyStatus() const override;
-  absl::optional<base::Time> GetLastDeviceSyncTime() const override;
-  absl::optional<base::TimeDelta> GetTimeToNextAttempt() const override;
+  std::optional<base::Time> GetLastDeviceSyncTime() const override;
+  std::optional<base::TimeDelta> GetTimeToNextAttempt() const override;
 
   // CryptAuthScheduler::DeviceSyncDelegate:
   void OnDeviceSyncRequested(
@@ -117,12 +117,12 @@ class CryptAuthV2DeviceManagerImpl
 
   // CryptAuthGCMManager::Observer:
   void OnResyncMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type) override;
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type) override;
 
   void OnDeviceSyncFinished(CryptAuthDeviceSyncResult device_sync_result);
 
-  absl::optional<cryptauthv2::ClientMetadata> current_client_metadata_;
+  std::optional<cryptauthv2::ClientMetadata> current_client_metadata_;
   std::unique_ptr<SyncedBluetoothAddressTracker>
       synced_bluetooth_address_tracker_;
   std::unique_ptr<AttestationCertificatesSyncer>
@@ -130,12 +130,12 @@ class CryptAuthV2DeviceManagerImpl
   std::unique_ptr<CryptAuthDeviceSyncer> device_syncer_;
 
   cryptauthv2::ClientAppMetadata client_app_metadata_;
-  raw_ptr<CryptAuthDeviceRegistry, ExperimentalAsh> device_registry_ = nullptr;
-  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> key_registry_ = nullptr;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
-  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_ = nullptr;
-  raw_ptr<CryptAuthScheduler, ExperimentalAsh> scheduler_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<CryptAuthDeviceRegistry> device_registry_ = nullptr;
+  raw_ptr<CryptAuthKeyRegistry> key_registry_ = nullptr;
+  raw_ptr<CryptAuthClientFactory> client_factory_ = nullptr;
+  raw_ptr<CryptAuthGCMManager> gcm_manager_ = nullptr;
+  raw_ptr<CryptAuthScheduler> scheduler_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // For sending a weak pointer to the scheduler, whose lifetime exceeds that of
   // CryptAuthV2DeviceManagerImpl.

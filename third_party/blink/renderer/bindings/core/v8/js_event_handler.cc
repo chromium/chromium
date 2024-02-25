@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
@@ -107,19 +108,16 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
     arguments = {
         ScriptValue(isolate,
                     ToV8Traits<IDLString>::ToV8(script_state_of_listener,
-                                                error_event->message())
-                        .ToLocalChecked()),
+                                                error_event->message())),
         ScriptValue(isolate,
                     ToV8Traits<IDLString>::ToV8(script_state_of_listener,
-                                                error_event->filename())
-                        .ToLocalChecked()),
+                                                error_event->filename())),
         ScriptValue(isolate,
                     ToV8Traits<IDLUnsignedLong>::ToV8(script_state_of_listener,
-                                                      error_event->lineno())
-                        .ToLocalChecked()),
-        ScriptValue(isolate, ToV8Traits<IDLUnsignedLong>::ToV8(
-                                 script_state_of_listener, error_event->colno())
-                                 .ToLocalChecked()),
+                                                      error_event->lineno())),
+        ScriptValue(isolate,
+                    ToV8Traits<IDLUnsignedLong>::ToV8(script_state_of_listener,
+                                                      error_event->colno())),
         error_attribute};
   } else {
     arguments.push_back(ScriptValue(isolate, js_event));
@@ -155,20 +153,31 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   if (IsOnBeforeUnloadEventHandler()) {
     event_handler_->EvaluateAsPartOfCallback(WTF::BindOnce(
         [](v8::Local<v8::Value>& v8_return_value,
-           String& result_for_beforeunload) {
-          // TODO(yukiy): use |NativeValueTraits|.
-          V8StringResource<kTreatNullAsNullString> native_result(
-              v8_return_value);
+           String& result_for_beforeunload, ScriptState* script_state) {
+          v8::Isolate* isolate = script_state->GetIsolate();
 
-          // |native_result.Prepare()| throws exception if it fails to convert
-          // |native_result| to String.
-          if (!native_result.Prepare())
+          ExceptionState exception_state(isolate,
+                                         ExceptionContextType::kOperationInvoke,
+                                         "BeforeUnload", "toString");
+          String result =
+              NativeValueTraits<IDLNullable<IDLString>>::NativeValue(
+                  isolate, v8_return_value, exception_state);
+          if (UNLIKELY(exception_state.HadException())) {
+            // TODO(crbug.com/1480485): Understand why we need to explicitly
+            // report the exception. The TryCatch handler that is on the call
+            // stack has setVerbose(true) but doesn't end up dispatching an
+            // ErrorEvent.
+            V8ScriptRunner::ReportException(isolate,
+                                            exception_state.GetException());
+            exception_state.ClearException();
             return;
-          result_for_beforeunload = native_result;
+          }
+          result_for_beforeunload = result;
         },
         std::ref(v8_return_value), std::ref(result_for_beforeunload)));
-    if (!result_for_beforeunload)
+    if (!result_for_beforeunload) {
       return;
+    }
   }
 
   // Step 5. Process return value as follows:

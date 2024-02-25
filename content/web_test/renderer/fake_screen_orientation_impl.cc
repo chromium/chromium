@@ -55,10 +55,10 @@ bool FakeScreenOrientationImpl::UpdateScreenOrientation(
   return false;
 }
 
-absl::optional<display::mojom::ScreenOrientation>
+std::optional<display::mojom::ScreenOrientation>
 FakeScreenOrientationImpl::CurrentOrientationType() const {
   if (is_disabled_)
-    return absl::nullopt;
+    return std::nullopt;
   return current_orientation_;
 }
 

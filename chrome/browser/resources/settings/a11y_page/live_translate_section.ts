@@ -11,18 +11,18 @@
  */
 
 import '//resources/cr_elements/cr_shared_style.css.js';
-import '/shared/settings/controls/settings_dropdown_menu.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_dropdown_menu.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 
 import {getTemplate} from './live_translate_section.html.js';
 

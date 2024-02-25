@@ -51,6 +51,7 @@ TexelBlockInfo GetTexelBlockInfoForCopy(WGPUTextureFormat format,
         case WGPUTextureFormat_RGBA8Sint:
         case WGPUTextureFormat_BGRA8Unorm:
         case WGPUTextureFormat_BGRA8UnormSrgb:
+        case WGPUTextureFormat_RGB10A2Uint:
         case WGPUTextureFormat_RGB10A2Unorm:
         case WGPUTextureFormat_RG11B10Ufloat:
         case WGPUTextureFormat_RGB9E5Ufloat:

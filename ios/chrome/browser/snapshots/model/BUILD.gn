@@ -1,0 +1,149 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/swift_source_set.gni")
+
+source_set("model") {
+  public = [
+    "legacy_image_file_manager.h",
+    "legacy_snapshot_generator.h",
+    "legacy_snapshot_lru_cache.h",
+    "snapshot_browser_agent.h",
+    "snapshot_storage+Testing.h",
+    "snapshot_storage.h",
+    "snapshot_storage_observer.h",
+    "snapshot_tab_helper.h",
+  ]
+  sources = [
+    "legacy_image_file_manager.mm",
+    "legacy_snapshot_generator.mm",
+    "legacy_snapshot_lru_cache.mm",
+    "snapshot_browser_agent.mm",
+    "snapshot_manager.h",
+    "snapshot_manager.mm",
+    "snapshot_storage.mm",
+    "snapshot_tab_helper.mm",
+  ]
+  deps = [
+    ":features",
+    ":model_common",
+    ":model_swift",
+    "//base",
+    "//build:blink_buildflags",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tabs/model:features",
+    "//ios/third_party/webkit",
+    "//ios/web/public",
+    "//ui/gfx",
+  ]
+  frameworks = [
+    "QuartzCore.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("model_common") {
+  sources = [
+    "snapshot_id.h",
+    "snapshot_id_wrapper.h",
+    "snapshot_id_wrapper.mm",
+    "snapshot_scale.h",
+    "snapshot_scale.mm",
+    "web_state_snapshot_info.h",
+    "web_state_snapshot_info.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
+swift_source_set("model_swift") {
+  bridge_header = "snapshot_swift_bridge.h"
+  sources = [
+    "image_file_manager.swift",
+    "snapshot_generator.swift",
+    "snapshot_generator_delegate.swift",
+    "snapshot_lru_cache.swift",
+  ]
+  deps = [
+    ":features",
+    ":model_common",
+    "//base",
+  ]
+}
+
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "fake_snapshot_generator_delegate.h",
+    "fake_snapshot_generator_delegate.mm",
+  ]
+  deps = [
+    ":model",
+    ":model_swift",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "image_file_manager_unittest.mm",
+    "snapshot_browser_agent_unittest.mm",
+    "snapshot_generator_unittest.mm",
+    "snapshot_id_wrapper_unittest.mm",
+    "snapshot_lru_cache_unittest.mm",
+    "snapshot_storage_unittest.mm",
+    "snapshot_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":features",
+    ":model",
+    ":model_common",
+    ":model_swift",
+    ":test_utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/sessions:session_id",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/web",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes:fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base:test_support",
+    "//ui/gfx",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "snapshot_egtest.mm" ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}

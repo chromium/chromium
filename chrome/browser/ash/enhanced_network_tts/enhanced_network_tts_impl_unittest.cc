@@ -32,9 +32,7 @@ namespace {
 class TestServerURLLoaderFactory {
  public:
   TestServerURLLoaderFactory()
-      : shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &loader_factory_)) {}
+      : shared_loader_factory_(loader_factory_.GetSafeWeakWrapper()) {}
   TestServerURLLoaderFactory(const TestServerURLLoaderFactory&) = delete;
   TestServerURLLoaderFactory& operator=(const TestServerURLLoaderFactory&) =
       delete;
@@ -56,8 +54,7 @@ class TestServerURLLoaderFactory {
   // to the second-earliest received request and so on).
   void ExpectRequestAndSimulateResponse(
       const std::string& expected_url,
-      const std::map<std::string, absl::optional<std::string>>&
-          expected_headers,
+      const std::map<std::string, std::optional<std::string>>& expected_headers,
       const std::string& expected_body,
       const std::string& response,
       const net::HttpStatusCode response_code) {
@@ -114,7 +111,7 @@ class TestServerURLLoaderFactory {
 
 // Receives the result of a request and writes the result data into the given
 // variables.
-void UnpackResult(absl::optional<mojom::TtsRequestError>* const error,
+void UnpackResult(std::optional<mojom::TtsRequestError>* const error,
                   std::vector<uint8_t>* const audio_data,
                   std::vector<mojom::TimingInfo>* const timing_data,
                   mojom::TtsResponsePtr result) {
@@ -181,7 +178,7 @@ class EnhancedNetworkTtsImplTest : public testing::Test {
 
   TestAudioDataObserverImpl* GetTestingObserverPtr() { return &observer_; }
 
-  raw_ptr<EnhancedNetworkTtsImpl, ExperimentalAsh> enhanced_network_tts_impl_;
+  raw_ptr<EnhancedNetworkTtsImpl> enhanced_network_tts_impl_;
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
   base::test::TaskEnvironment test_task_env_;
@@ -194,7 +191,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceeds) {
   const std::string input_text = "Hi.";
   const float rate = 1.0;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -203,7 +200,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceeds) {
           GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
-  const std::map<std::string, absl::optional<std::string>> expected_headers = {
+  const std::map<std::string, std::optional<std::string>> expected_headers = {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   const std::string expected_body = CreateCorrectRequest(input_text, rate);
   // |expected_output| here is arbitrary, which is encoded into a fake response
@@ -218,7 +215,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceeds) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
-  absl::optional<mojom::TtsRequestError> error;
+  std::optional<mojom::TtsRequestError> error;
   std::vector<uint8_t> audio_data;
   std::vector<mojom::TimingInfo> timing_data;
   UnpackResult(&error, &audio_data, &timing_data,
@@ -241,7 +238,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataIgnoresWhitespacesAtStart) {
   const std::string input_text_trimmed = "test1 test2";
   const float rate = 1.0;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -250,7 +247,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataIgnoresWhitespacesAtStart) {
           GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
-  const std::map<std::string, absl::optional<std::string>> expected_headers = {
+  const std::map<std::string, std::optional<std::string>> expected_headers = {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   const std::string expected_body =
       CreateCorrectRequest(input_text_trimmed, rate);
@@ -266,7 +263,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataIgnoresWhitespacesAtStart) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
-  absl::optional<mojom::TtsRequestError> error;
+  std::optional<mojom::TtsRequestError> error;
   std::vector<uint8_t> audio_data;
   std::vector<mojom::TimingInfo> timing_data;
   UnpackResult(&error, &audio_data, &timing_data,
@@ -282,7 +279,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithFasterRate) {
   const std::string input_text = "Rate will be capped to kMaxRate";
   const float rate = kMaxRate + 1.0f;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -291,7 +288,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithFasterRate) {
           GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
-  const std::map<std::string, absl::optional<std::string>> expected_headers = {
+  const std::map<std::string, std::optional<std::string>> expected_headers = {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   const std::string expected_body = CreateCorrectRequest(input_text, kMaxRate);
   // |expected_output| here is arbitrary, which is encoded into a fake response
@@ -304,7 +301,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithFasterRate) {
       CreateServerResponse(expected_output), net::HTTP_OK);
   test_task_env_.RunUntilIdle();
 
-  absl::optional<mojom::TtsRequestError> error;
+  std::optional<mojom::TtsRequestError> error;
   std::vector<uint8_t> audio_data;
   std::vector<mojom::TimingInfo> timing_data;
   UnpackResult(&error, &audio_data, &timing_data,
@@ -318,7 +315,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithSlowerRate) {
   const std::string input_text = "Rate will be floored to kMinRate";
   const float rate = kMinRate - 0.1f;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -327,7 +324,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithSlowerRate) {
           GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
-  const std::map<std::string, absl::optional<std::string>> expected_headers = {
+  const std::map<std::string, std::optional<std::string>> expected_headers = {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   const std::string expected_body = CreateCorrectRequest(input_text, kMinRate);
   // |expected_output| here is arbitrary, which is encoded into a fake response
@@ -342,7 +339,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithSlowerRate) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
-  absl::optional<mojom::TtsRequestError> error;
+  std::optional<mojom::TtsRequestError> error;
   std::vector<uint8_t> audio_data;
   std::vector<mojom::TimingInfo> timing_data;
   UnpackResult(&error, &audio_data, &timing_data,
@@ -357,7 +354,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataWithLongUtterance) {
   // sentence.
   GetTestingInstance().SetCharLimitPerRequestForTesting(8);
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -366,7 +363,7 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataWithLongUtterance) {
           GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
-  const std::map<std::string, absl::optional<std::string>> expected_headers = {
+  const std::map<std::string, std::optional<std::string>> expected_headers = {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   // |expected_output| here is arbitrary, which is encoded into a fake response
   // sent by the fake server, |TestServerURLLoaderFactory|. In general, we
@@ -401,7 +398,7 @@ TEST_F(EnhancedNetworkTtsImplTest, EmptyUtteranceError) {
   const std::string input_text("");
   const float rate = 1.0;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -411,7 +408,7 @@ TEST_F(EnhancedNetworkTtsImplTest, EmptyUtteranceError) {
   test_task_env_.RunUntilIdle();
 
   // Over length request will be terminated before sending to server.
-  absl::optional<mojom::TtsRequestError> error;
+  std::optional<mojom::TtsRequestError> error;
   std::vector<uint8_t> audio_data;
   std::vector<mojom::TimingInfo> timing_data;
   UnpackResult(&error, &audio_data, &timing_data,
@@ -423,7 +420,7 @@ TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
   const std::string input_text("request");
   const float rate = 1.0;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -435,7 +432,7 @@ TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
   // replies to the first one.
   TestAudioDataObserverImpl second_observer;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -445,7 +442,7 @@ TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
   test_task_env_.RunUntilIdle();
 
   // Assume the server replies to the requests in sequence.
-  const std::map<std::string, absl::optional<std::string>> expected_headers = {
+  const std::map<std::string, std::optional<std::string>> expected_headers = {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   std::string expected_body = CreateCorrectRequest(input_text, rate);
   const std::vector<uint8_t> expected_output = {1, 2, 5};
@@ -460,7 +457,7 @@ TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
   test_task_env_.RunUntilIdle();
 
   // The first request gets an error message.
-  absl::optional<mojom::TtsRequestError> error_first_request;
+  std::optional<mojom::TtsRequestError> error_first_request;
   std::vector<uint8_t> audio_data_first_request;
   std::vector<mojom::TimingInfo> timing_data_first_request;
   UnpackResult(&error_first_request, &audio_data_first_request,
@@ -471,7 +468,7 @@ TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
   EXPECT_EQ(audio_data_first_request.size(), 0u);
 
   // The second request gets the data.
-  absl::optional<mojom::TtsRequestError> error_second_request;
+  std::optional<mojom::TtsRequestError> error_second_request;
   std::vector<uint8_t> audio_data_second_request;
   std::vector<mojom::TimingInfo> timing_data_second_request;
   UnpackResult(&error_second_request, &audio_data_second_request,
@@ -483,7 +480,7 @@ TEST_F(EnhancedNetworkTtsImplTest, ServerError) {
   const std::string input_text = "Hi.";
   const float rate = 1.0;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -492,7 +489,7 @@ TEST_F(EnhancedNetworkTtsImplTest, ServerError) {
           GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
-  const std::map<std::string, absl::optional<std::string>> expected_headers = {
+  const std::map<std::string, std::optional<std::string>> expected_headers = {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   const std::string expected_body = CreateCorrectRequest(input_text, rate);
   test_url_factory_.ExpectRequestAndSimulateResponse(
@@ -502,7 +499,7 @@ TEST_F(EnhancedNetworkTtsImplTest, ServerError) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
-  absl::optional<mojom::TtsRequestError> error;
+  std::optional<mojom::TtsRequestError> error;
   std::vector<uint8_t> audio_data;
   std::vector<mojom::TimingInfo> timing_data;
   UnpackResult(&error, &audio_data, &timing_data,
@@ -514,7 +511,7 @@ TEST_F(EnhancedNetworkTtsImplTest, JsonDecodingError) {
   const std::string input_text = "Hi.";
   const float rate = 1.0;
   GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
+      mojom::TtsRequest::New(input_text, rate, std::nullopt, std::nullopt),
       base::BindOnce(
           [](TestAudioDataObserverImpl* observer,
              mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
@@ -523,7 +520,7 @@ TEST_F(EnhancedNetworkTtsImplTest, JsonDecodingError) {
           GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
-  const std::map<std::string, absl::optional<std::string>> expected_headers = {
+  const std::map<std::string, std::optional<std::string>> expected_headers = {
       {kGoogApiKeyHeader, google_apis::GetReadAloudAPIKey()}};
   const std::string expected_body = CreateCorrectRequest(input_text, rate);
   const char response[] = R"([{some wired response)";
@@ -534,7 +531,7 @@ TEST_F(EnhancedNetworkTtsImplTest, JsonDecodingError) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
-  absl::optional<mojom::TtsRequestError> error;
+  std::optional<mojom::TtsRequestError> error;
   std::vector<uint8_t> audio_data;
   std::vector<mojom::TimingInfo> timing_data;
   UnpackResult(&error, &audio_data, &timing_data,

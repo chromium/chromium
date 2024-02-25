@@ -7,10 +7,11 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/statistics_table.h"
+#include "components/password_manager/core/browser/password_store/interactions_stats.h"
 
 namespace password_manager {
 
@@ -42,19 +43,25 @@ class FakeFormFetcher : public FormFetcher {
   State GetState() const override;
 
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
-  std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
-  std::vector<const PasswordForm*> GetFederatedMatches() const override;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetInsecureCredentials() const override;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetNonFederatedMatches() const override;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetFederatedMatches() const override;
   bool IsBlocklisted() const override;
   bool IsMovingBlocked(const signin::GaiaIdHash& destination,
                        const std::u16string& username) const override;
-  const std::vector<const PasswordForm*>& GetAllRelevantMatches()
-      const override;
-  const std::vector<const PasswordForm*>& GetBestMatches() const override;
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+  GetAllRelevantMatches() const override;
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+  GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   // Returns a new FakeFormFetcher.
   std::unique_ptr<FormFetcher> Clone() override;
-  absl::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+  std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+      const override;
+  std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const override;
 
   void set_stats(const std::vector<InteractionsStats>& stats) {
@@ -64,37 +71,48 @@ class FakeFormFetcher : public FormFetcher {
 
   void set_scheme(PasswordForm::Scheme scheme) { scheme_ = scheme; }
 
-  void set_federated(const std::vector<const PasswordForm*>& federated) {
+  void set_federated(
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          federated) {
     state_ = State::NOT_WAITING;
     federated_ = federated;
   }
 
   void set_insecure_credentials(
-      const std::vector<const PasswordForm*>& credentials) {
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          credentials) {
     insecure_credentials_ = credentials;
   }
 
-  void SetNonFederated(const std::vector<const PasswordForm*>& non_federated);
+  void SetNonFederated(
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          non_federated);
 
   void SetBlocklisted(bool is_blocklisted);
 
   void NotifyFetchCompleted();
 
   void SetProfileStoreBackendError(
-      absl::optional<PasswordStoreBackendError> error);
+      std::optional<PasswordStoreBackendError> error);
+
+  void SetAccountStoreBackendError(
+      std::optional<PasswordStoreBackendError> error);
 
  private:
   base::ObserverList<Consumer> consumers_;
   State state_ = State::NOT_WAITING;
   PasswordForm::Scheme scheme_ = PasswordForm::Scheme::kHtml;
   std::vector<InteractionsStats> stats_;
-  std::vector<const PasswordForm*> non_federated_;
-  std::vector<const PasswordForm*> federated_;
-  std::vector<const PasswordForm*> non_federated_same_scheme_;
-  std::vector<const PasswordForm*> best_matches_;
-  std::vector<const PasswordForm*> insecure_credentials_;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> non_federated_;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> federated_;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      non_federated_same_scheme_;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches_;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      insecure_credentials_;
   bool is_blocklisted_ = false;
-  absl::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> account_store_backend_error_;
 };
 
 }  // namespace password_manager

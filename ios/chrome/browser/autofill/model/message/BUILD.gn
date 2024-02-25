@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("message") {
+  sources = [
+    "save_card_message_with_links.h",
+    "save_card_message_with_links.mm",
+  ]
+  deps = [
+    "//components/autofill/core/browser:legal_message_line",
+    "//components/strings:components_strings",
+    "//ui/base:base",
+    "//url:url",
+  ]
+}

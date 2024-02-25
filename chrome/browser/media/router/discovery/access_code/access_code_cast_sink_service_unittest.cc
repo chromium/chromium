@@ -324,9 +324,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   EXPECT_TRUE(media_routes_observer()->removed_route_id_.empty());
 
   // Remove the non-access code sink from the list of routes.
-  route_list.erase(
-      std::remove(route_list.begin(), route_list.end(), media_route_cast),
-      route_list.end());
+  std::erase(route_list, media_route_cast);
   SimulateRoutesUpdated(route_list);
   EXPECT_EQ(media_routes_observer()->removed_route_id_,
             media_route_cast.media_route_id());
@@ -341,9 +339,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   task_environment_.FastForwardBy(kRemoveRouteDelay);
 
   // Remove the access code sink from the list of routes.
-  route_list.erase(
-      std::remove(route_list.begin(), route_list.end(), media_route_access),
-      route_list.end());
+  std::erase(route_list, media_route_access);
 
   SimulateRoutesUpdated(route_list);
   EXPECT_EQ(media_routes_observer()->removed_route_id_,
@@ -395,9 +391,9 @@ TEST_F(AccessCodeCastSinkServiceTest, DiscoveryDeviceMissingWithOk) {
   // the device is missing.
   MockAddSinkResultCallback mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(AddSinkResultCode::EMPTY_RESPONSE, Eq(absl::nullopt)));
+              Run(AddSinkResultCode::EMPTY_RESPONSE, Eq(std::nullopt)));
   access_code_cast_sink_service_->OnAccessCodeValidated(
-      mock_callback.Get(), absl::nullopt, AddSinkResultCode::OK);
+      mock_callback.Get(), std::nullopt, AddSinkResultCode::OK);
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, ValidDiscoveryDeviceAndCode) {
@@ -435,7 +431,7 @@ TEST_F(AccessCodeCastSinkServiceTest, InvalidDiscoveryDevice) {
                                               "```````23489:1238:1239");
 
   EXPECT_CALL(mock_callback,
-              Run(AddSinkResultCode::SINK_CREATION_ERROR, Eq(absl::nullopt)));
+              Run(AddSinkResultCode::SINK_CREATION_ERROR, Eq(std::nullopt)));
   access_code_cast_sink_service_->OnAccessCodeValidated(
       mock_callback.Get(), discovery_device_proto, AddSinkResultCode::OK);
 }
@@ -445,9 +441,9 @@ TEST_F(AccessCodeCastSinkServiceTest, NonOKResultCode) {
   MockAddSinkResultCallback mock_callback;
 
   EXPECT_CALL(mock_callback,
-              Run(AddSinkResultCode::AUTH_ERROR, Eq(absl::nullopt)));
+              Run(AddSinkResultCode::AUTH_ERROR, Eq(std::nullopt)));
   access_code_cast_sink_service_->OnAccessCodeValidated(
-      mock_callback.Get(), absl::nullopt, AddSinkResultCode::AUTH_ERROR);
+      mock_callback.Get(), std::nullopt, AddSinkResultCode::AUTH_ERROR);
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedSuccess) {
@@ -455,7 +451,7 @@ TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedSuccess) {
   MockAddSinkResultCallback mock_callback;
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
 
-  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq("cast:<id1>")));
+  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq("cast:id1")));
   access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
                                                         cast_sink1, true);
 }
@@ -466,7 +462,7 @@ TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedFailure) {
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
 
   EXPECT_CALL(mock_callback,
-              Run(AddSinkResultCode::CHANNEL_OPEN_ERROR, Eq(absl::nullopt)));
+              Run(AddSinkResultCode::CHANNEL_OPEN_ERROR, Eq(std::nullopt)));
   access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
                                                         cast_sink1, false);
 }
@@ -883,7 +879,7 @@ TEST_F(AccessCodeCastSinkServiceTest, DiscoverSinkWithNoMediaRouter) {
   access_code_cast_sink_service_->Shutdown();
 
   EXPECT_CALL(mock_callback, Run(AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR,
-                                 Eq(absl::nullopt)));
+                                 Eq(std::nullopt)));
   access_code_cast_sink_service_->DiscoverSink("", mock_callback.Get());
 }
 
@@ -996,7 +992,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestOfflineDiscoverSink) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_NONE);
   EXPECT_CALL(mock_callback,
-              Run(AddSinkResultCode::SERVICE_NOT_PRESENT, Eq(absl::nullopt)));
+              Run(AddSinkResultCode::SERVICE_NOT_PRESENT, Eq(std::nullopt)));
 
   access_code_cast_sink_service_->DiscoverSink("", mock_callback.Get());
   task_environment_.RunUntilIdle();

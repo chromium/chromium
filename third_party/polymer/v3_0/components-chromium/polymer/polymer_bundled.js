@@ -31,6 +31,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+
 // Microtask implemented using Mutation Observer
 let microtaskCurrHandle = 0;
 let microtaskLastHandle = 0;
@@ -672,6 +673,7 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+
 
 // detect native touch action support
 let HAS_NATIVE_TA = typeof document.head.style.touchAction === 'string';
@@ -1916,6 +1918,7 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+
 
 const MODULE_STYLE_LINK_SELECTOR = 'link[rel=import][type~=css]';
 const INCLUDE_ATTR = 'include';
@@ -3988,6 +3991,7 @@ const TemplateStamp = dedupingMixin(
  * Google as part of the polymer project is also subject to an additional IP
  * rights grant found at http://polymer.github.io/PATENTS.txt
  */
+
 
 // Monotonically increasing unique ID used for de-duping effects triggered
 // from multiple properties in the same turn
@@ -7119,6 +7123,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+
 /**
  * Registers a class prototype for telemetry purposes.
  * @param {!PolymerElementConstructor} prototype Element prototype to register
@@ -8343,6 +8348,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+
 /**
  * Base class that provides the core API for Polymer's meta-programming
  * features including template stamping, data-binding, attribute deserialization,
@@ -9121,6 +9127,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+
 let elementsHidden = false;
 
 /**
@@ -9346,6 +9353,7 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+
 
 // Base class for HTMLTemplateElement extension that has property effects
 // machinery for propagating host properties to children. This is an ES5
@@ -11331,6 +11339,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+
 let scheduled = false;
 let beforeRenderQueue = [];
 let afterRenderQueue = [];
@@ -12244,6 +12253,7 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+
 
 const ShadyDOM$1 = window.ShadyDOM;
 const ShadyCSS = window.ShadyCSS;
@@ -13680,6 +13690,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+
 const lifecycleProps = {
   attached: true,
   detached: true,
@@ -14631,6 +14642,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+
 const attr = 'include';
 
 /**
@@ -14735,6 +14747,7 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+
 
 // bc
 const Base = LegacyElementMixin(HTMLElement).prototype;

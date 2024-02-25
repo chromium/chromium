@@ -8,6 +8,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 #include "url/origin.h"
@@ -42,6 +43,8 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kSiteRowMenuItemClicked);
 // fallback icon), a hostname and a menu icon. The menu allows to change the
 // cookies content setting for the site or delete the site data.
 class SiteDataRowView : public views::View {
+  METADATA_HEADER(SiteDataRowView, views::View)
+
  public:
   SiteDataRowView(
       Profile* profile,

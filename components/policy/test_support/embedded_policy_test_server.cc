@@ -38,6 +38,7 @@
 #include "components/policy/test_support/request_handler_for_remote_commands.h"
 #include "components/policy/test_support/request_handler_for_status_upload.h"
 #include "components/policy/test_support/request_handler_for_unregister.h"
+#include "components/policy/test_support/request_handler_for_upload_euicc_info.h"
 #include "components/policy/test_support/test_server_helpers.h"
 #include "crypto/sha2.h"
 #include "net/base/url_util.h"
@@ -135,6 +136,7 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
   RegisterHandler(std::make_unique<RequestHandlerForRemoteCommands>(this));
   RegisterHandler(std::make_unique<RequestHandlerForStatusUpload>(this));
   RegisterHandler(std::make_unique<RequestHandlerForUnregister>(this));
+  RegisterHandler(std::make_unique<RequestHandlerForUploadEuiccInfo>(this));
 
   http_server_.RegisterDefaultHandler(base::BindRepeating(
       &EmbeddedPolicyTestServer::HandleRequest, base::Unretained(this)));

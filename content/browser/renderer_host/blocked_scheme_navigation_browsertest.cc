@@ -18,10 +18,10 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "content/browser/site_per_process_browsertest.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -373,7 +373,7 @@ class BlockedSchemeNavigationBrowserTest
             ? std::string()
             : base::StringPrintf(kNavigationBlockedMessage, scheme.c_str());
 
-    absl::optional<WebContentsConsoleObserver> console_observer;
+    std::optional<WebContentsConsoleObserver> console_observer;
     if (!expected_message.empty()) {
       console_observer.emplace(shell()->web_contents());
       console_observer->SetPattern(expected_message);
@@ -707,8 +707,15 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Tests that opening a new window with a blocked scheme from a subframe is
 // blocked.
+// TODO(crbug.com/1503148): Enable the flaky test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_HTML_WindowOpenFromFrame_Block \
+  DISABLED_HTML_WindowOpenFromFrame_Block
+#else
+#define MAYBE_HTML_WindowOpenFromFrame_Block HTML_WindowOpenFromFrame_Block
+#endif
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       HTML_WindowOpenFromFrame_Block) {
+                       MAYBE_HTML_WindowOpenFromFrame_Block) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(
@@ -950,8 +957,16 @@ IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
 
 // Tests navigation of the main frame to a filesystem URL with a binary mimetype
 // from a subframe. Navigations to filesystem URLs never end up as downloads.
+// TODO(crbug.com/1503148): Enable the flaky test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame \
+  DISABLED_FilesystemUrl_OctetStream_NavigationFromFrame
+#else
+#define MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame \
+  FilesystemUrl_OctetStream_NavigationFromFrame
+#endif
 IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
-                       FilesystemUrl_OctetStream_NavigationFromFrame) {
+                       MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(),
@@ -1079,8 +1094,17 @@ IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
 // Test navigation of the main frame to a filesystem URL with an unknown
 // mimetype from a subframe. Navigations to filesystem URLs don't end up as
 // downloads.
-IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
-                       FilesystemUrl_UnknownMimeType_NavigationFromFrame) {
+// TODO(crbug.com/1503148): Enable the flaky test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame \
+  DISABLED_FilesystemUrl_UnknownMimeType_NavigationFromFrame
+#else
+#define MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame \
+  FilesystemUrl_UnknownMimeType_NavigationFromFrame
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BlockedSchemeNavigationBrowserTest,
+    MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(),
@@ -1100,8 +1124,7 @@ IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
 // mime type is allowed, or initiates a download on Android.
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
                        PDF_BrowserInitiatedNavigation_Allow) {
-  std::string pdf_base64;
-  base::Base64Encode(kPDF, &pdf_base64);
+  std::string pdf_base64 = base::Base64Encode(kPDF);
   const GURL kPDFUrl(CreateURLWithBlockedScheme(
       "test.pdf", IsDataURLTest() ? pdf_base64 : kPDF, "application/pdf"));
 

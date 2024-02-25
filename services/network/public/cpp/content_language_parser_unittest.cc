@@ -13,7 +13,7 @@ using testing::UnorderedElementsAre;
 namespace network {
 
 TEST(ContentLanguageTest, ParseContentLanguages) {
-  absl::optional<std::vector<std::string>> result;
+  std::optional<std::vector<std::string>> result;
 
   // Empty is OK.
   result = ParseContentLanguages(" ");

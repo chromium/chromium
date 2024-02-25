@@ -960,7 +960,7 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
     const auto& media_source =
         static_cast<const webrtc::RTCMediaSourceStats&>(stat);
     DCHECK(media_source.kind.has_value());
-    std::string kind = media_source.kind.ValueOrDefault("");
+    std::string kind = media_source.kind.value_or("");
     if (kind == "audio") {
       v8_stats =
           ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioSourceStats>());
@@ -1040,8 +1040,7 @@ class RTCStatsReportIterationSource final
       return false;
     }
     key = String::FromUTF8(rtc_stats->id());
-    value = ScriptValue(script_state->GetIsolate(),
-                        v8_stat->ToV8Value(script_state));
+    value = ScriptValue::From(script_state, v8_stat);
     return true;
   }
 
@@ -1078,8 +1077,7 @@ bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
   if (!v8_stats) {
     return false;
   }
-  value = ScriptValue(script_state->GetIsolate(),
-                      v8_stats->ToV8Value(script_state));
+  value = ScriptValue::From(script_state, v8_stats);
   return true;
 }
 

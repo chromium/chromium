@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintPostScriptMode": 1
+        },
+        "prefs": {
+          "printing.postscript_mode": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

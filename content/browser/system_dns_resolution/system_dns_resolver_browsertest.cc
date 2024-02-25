@@ -10,9 +10,11 @@
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
@@ -48,17 +50,14 @@ const char kFailHostname[] = "failhostname";
 using ResolveHostFuture = base::test::TestFuture<
     int,
     const net::ResolveErrorInfo&,
-    const absl::optional<net::AddressList>&,
-    const absl::optional<net::HostResolverEndpointResults>&>;
+    const std::optional<net::AddressList>&,
+    const std::optional<net::HostResolverEndpointResults>&>;
 
 }  // namespace
 
 class SystemDnsResolverBrowserTest : public content::ContentBrowserTest {
  public:
-  SystemDnsResolverBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        network::features::kOutOfProcessSystemDnsResolution);
-  }
+  SystemDnsResolverBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -113,13 +112,15 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   ResolveHostFuture future;
   ResolveHostname(kHostname1, future.GetCallback());
 
-  const auto& addr_list1 = future.Get<absl::optional<net::AddressList>>();
+  const auto& addr_list1 = future.Get<std::optional<net::AddressList>>();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-  // If system DNS resolution runs in the browser process, check here that the
-  // resolver received the correct number of resolves.
-  EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname1), 1u);
-#endif
+  if (GetContentClientForTesting()
+          ->browser()
+          ->ShouldRunOutOfProcessSystemDnsResolution()) {
+    // If system DNS resolution runs in the browser process, check here that the
+    // resolver received the correct number of resolves.
+    EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname1), 1u);
+  }
 
   ASSERT_TRUE(addr_list1);
   net::IPAddress address1;
@@ -135,15 +136,17 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   ResolveHostFuture future2;
   ResolveHostname(kHostname2, future2.GetCallback());
 
-  const auto& addr_list1 = future1.Get<absl::optional<net::AddressList>>();
-  const auto& addr_list2 = future2.Get<absl::optional<net::AddressList>>();
+  const auto& addr_list1 = future1.Get<std::optional<net::AddressList>>();
+  const auto& addr_list2 = future2.Get<std::optional<net::AddressList>>();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-  // If system DNS resolution runs in the browser process, check here that the
-  // resolver received the correct number of resolves.
-  EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname1), 1u);
-  EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname2), 1u);
-#endif
+  if (GetContentClientForTesting()
+          ->browser()
+          ->ShouldRunOutOfProcessSystemDnsResolution()) {
+    // If system DNS resolution runs in the browser process, check here that the
+    // resolver received the correct number of resolves.
+    EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname1), 1u);
+    EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname2), 1u);
+  }
 
   ASSERT_TRUE(addr_list1);
   net::IPAddress address1;
@@ -166,11 +169,13 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   auto [result, resolve_error_info, resolved_addresses, endpoints] =
       future.Take();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-  // If system DNS resolution runs in the browser process, check here that
-  // the resolver received the correct number of resolves.
-  EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kFailHostname), 1u);
-#endif
+  if (GetContentClientForTesting()
+          ->browser()
+          ->ShouldRunOutOfProcessSystemDnsResolution()) {
+    // If system DNS resolution runs in the browser process, check here that
+    // the resolver received the correct number of resolves.
+    EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kFailHostname), 1u);
+  }
 
   EXPECT_EQ(resolve_error_info.error, net::ERR_NAME_NOT_RESOLVED);
   EXPECT_EQ(result, net::ERR_NAME_NOT_RESOLVED);
@@ -198,11 +203,14 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
 
   auto [addr_list, os_error_result, net_error_result] = future.Take();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-  // If system DNS resolution runs in the browser process, check here that the
-  // resolver received the correct number of resolves.
-  EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(net::GetHostName()), 1u);
-#endif
+  if (GetContentClientForTesting()
+          ->browser()
+          ->ShouldRunOutOfProcessSystemDnsResolution()) {
+    // If system DNS resolution runs in the browser process, check here that the
+    // resolver received the correct number of resolves.
+    EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(net::GetHostName()),
+              1u);
+  }
 
   ASSERT_EQ(addr_list.size(), 1u);
   net::IPAddress address;
@@ -213,10 +221,6 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
 class SystemDnsResolverPerfTest : public content::ContentBrowserTest {
  public:
   SystemDnsResolverPerfTest() {
-    // If disabling kOutOfProcessSystemDnsResolution, also disable
-    // sandbox::policy::features::kNetworkServiceSandbox.
-    scoped_feature_list_.InitWithFeatures(
-        {network::features::kOutOfProcessSystemDnsResolution}, {});
     SetAllowNetworkAccessToHostResolutions();
   }
 
@@ -292,7 +296,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 // out-of-process system DNS resolution fully launches.
 IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
   std::vector<ResolveHostFuture> futures(kNumResolutions);
-  std::vector<absl::optional<net::AddressList>> results(kNumResolutions);
+  std::vector<std::optional<net::AddressList>> results(kNumResolutions);
 
   // Simulate UI thread busyness:
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -302,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
     ResolveAHost(future.GetCallback());
   }
   for (size_t i = 0; i < kNumResolutions; i++) {
-    results[i] = futures[i].Get<absl::optional<net::AddressList>>();
+    results[i] = futures[i].Get<std::optional<net::AddressList>>();
   }
   base::TimeDelta duration = base::TimeTicks::Now() - start;
 
@@ -312,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
       duration.InMilliseconds() / static_cast<double>(kNumResolutions));
 
   // Verify there are results.
-  for (const absl::optional<net::AddressList>& result : results) {
+  for (const std::optional<net::AddressList>& result : results) {
     ASSERT_TRUE(result);
     ASSERT_GT(result->size(), 0u);
   }

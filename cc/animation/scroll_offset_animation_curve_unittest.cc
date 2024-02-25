@@ -131,7 +131,7 @@ TEST(ScrollOffsetAnimationCurveTest, EaseInOutUpdateTarget) {
   double duration = kConstantDuration / kDurationDivisor;
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
-          target_value, DurationBehavior::CONSTANT));
+          target_value, DurationBehavior::kConstant));
   curve->SetInitialValue(initial_value);
   EXPECT_NEAR(duration, curve->Duration().InSecondsF(), 0.0002f);
   EXPECT_NEAR(1800.0, curve->GetValue(base::Seconds(duration / 2.0)).y(),
@@ -256,7 +256,7 @@ TEST(ScrollOffsetAnimationCurveTest, ImpulseUpdateTargetSwitchDirections) {
 TEST(ScrollOffsetAnimationCurveTest, InverseDeltaDuration) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
-          gfx::PointF(0.f, 100.f), DurationBehavior::INVERSE_DELTA));
+          gfx::PointF(0.f, 100.f), DurationBehavior::kInverseDelta));
 
   curve->SetInitialValue(gfx::PointF());
   double smallDeltaDuration = curve->Duration().InSecondsF();
@@ -324,7 +324,7 @@ TEST(ScrollOffsetAnimationCurveTest, ImpulseDuration) {
 TEST(ScrollOffsetAnimationCurveTest, CurveWithDelay) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
-          gfx::PointF(0.f, 100.f), DurationBehavior::INVERSE_DELTA));
+          gfx::PointF(0.f, 100.f), DurationBehavior::kInverseDelta));
   double duration_in_seconds = kInverseDeltaMaxDuration / kDurationDivisor;
   double delay_in_seconds = 0.02;
   double curve_duration = duration_in_seconds - delay_in_seconds;
@@ -338,7 +338,7 @@ TEST(ScrollOffsetAnimationCurveTest, CurveWithDelay) {
 }
 
 TEST(ScrollOffsetAnimationCurveTest, CurveWithLargeDelay) {
-  DurationBehavior duration_hint = DurationBehavior::INVERSE_DELTA;
+  DurationBehavior duration_hint = DurationBehavior::kInverseDelta;
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           gfx::PointF(0.f, 100.f), duration_hint));
@@ -368,7 +368,7 @@ TEST(ScrollOffsetAnimationCurveTest, CurveWithLargeDelay) {
 // This test verifies that if the last segment duration is zero, ::UpdateTarget
 // simply updates the total animation duration see crbug.com/645317.
 TEST(ScrollOffsetAnimationCurveTest, UpdateTargetZeroLastSegmentDuration) {
-  DurationBehavior duration_hint = DurationBehavior::INVERSE_DELTA;
+  DurationBehavior duration_hint = DurationBehavior::kInverseDelta;
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           gfx::PointF(0.f, 100.f), duration_hint));

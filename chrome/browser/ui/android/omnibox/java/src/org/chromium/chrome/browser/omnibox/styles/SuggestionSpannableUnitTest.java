@@ -30,9 +30,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.test.R;
 
-/**
- * Tests for {@link SuggestionSpannable}.
- */
+/** Tests for {@link SuggestionSpannable}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionSpannableUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -42,8 +40,9 @@ public class SuggestionSpannableUnitTest {
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test
@@ -261,9 +260,15 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan("A", 0, 0, mColor1, mColor1), 3, 5,
+        c1.setSpan(
+                new TextAppearanceSpan("A", 0, 0, mColor1, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan("B", 0, 0, mColor1, mColor1), 3, 5,
+        c2.setSpan(
+                new TextAppearanceSpan("B", 0, 0, mColor1, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertFalse(c1.equals(c2));
@@ -274,9 +279,15 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan("A", 1, 0, mColor1, mColor1), 3, 5,
+        c1.setSpan(
+                new TextAppearanceSpan("A", 1, 0, mColor1, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan("A", 2, 0, mColor1, mColor1), 3, 5,
+        c2.setSpan(
+                new TextAppearanceSpan("A", 2, 0, mColor1, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertFalse(c1.equals(c2));
@@ -287,9 +298,15 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan("A", 0, 1, mColor1, mColor1), 3, 5,
+        c1.setSpan(
+                new TextAppearanceSpan("A", 0, 1, mColor1, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan("A", 0, 2, mColor1, mColor1), 3, 5,
+        c2.setSpan(
+                new TextAppearanceSpan("A", 0, 2, mColor1, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertFalse(c1.equals(c2));
@@ -300,9 +317,15 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan("A", 0, 0, mColor1, mColor1), 3, 5,
+        c1.setSpan(
+                new TextAppearanceSpan("A", 0, 0, mColor1, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan("A", 0, 0, mColor2, mColor1), 3, 5,
+        c2.setSpan(
+                new TextAppearanceSpan("A", 0, 0, mColor2, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertFalse(c1.equals(c2));
@@ -313,9 +336,15 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan("A", 0, 0, mColor1, mColor1), 3, 5,
+        c1.setSpan(
+                new TextAppearanceSpan("A", 0, 0, mColor1, mColor1),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan("A", 0, 0, mColor1, mColor2), 3, 5,
+        c2.setSpan(
+                new TextAppearanceSpan("A", 0, 0, mColor1, mColor2),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertFalse(c1.equals(c2));
@@ -326,9 +355,15 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan(mContext, R.style.TextAppearance_TextLarge_Primary), 3, 5,
+        c1.setSpan(
+                new TextAppearanceSpan(mContext, R.style.TextAppearance_TextLarge_Primary),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan(mContext, R.style.TextAppearance_TextLarge_Primary), 3, 5,
+        c2.setSpan(
+                new TextAppearanceSpan(mContext, R.style.TextAppearance_TextLarge_Primary),
+                3,
+                5,
                 Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertTrue(c1.equals(c2));
@@ -339,10 +374,16 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable c1 = new SuggestionSpannable("test string");
         SuggestionSpannable c2 = new SuggestionSpannable("test string");
 
-        c1.setSpan(new TextAppearanceSpan(mContext, R.style.TextAppearance_TextSmall_Disabled), 3,
-                5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        c2.setSpan(new TextAppearanceSpan(mContext, R.style.TextAppearance_TextMedium_Secondary), 3,
-                5, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c1.setSpan(
+                new TextAppearanceSpan(mContext, R.style.TextAppearance_TextSmall_Disabled),
+                3,
+                5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        c2.setSpan(
+                new TextAppearanceSpan(mContext, R.style.TextAppearance_TextMedium_Secondary),
+                3,
+                5,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
         assertFalse(c1.equals(c2));
     }

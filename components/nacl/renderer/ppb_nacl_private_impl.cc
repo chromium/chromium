@@ -24,6 +24,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -71,10 +72,6 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/scoped_handle.h"
-#endif
 
 namespace nacl {
 namespace {
@@ -452,8 +449,6 @@ void PPBNaClPrivate::LaunchSelLdr(
 #if BUILDFLAG(IS_POSIX)
   if (nexe_file_info->handle != PP_kInvalidFileHandle)
     nexe_for_transit = base::FileDescriptor(nexe_file_info->handle, true);
-#elif BUILDFLAG(IS_WIN)
-  nexe_for_transit = IPC::PlatformFileForTransit(nexe_file_info->handle);
 #else
 # error Unsupported target platform.
 #endif
@@ -1666,8 +1661,8 @@ class PexeDownloader : public blink::WebAssociatedURLLoaderClient {
   std::string pexe_url_;
   int32_t pexe_opt_level_;
   bool use_subzero_;
-  const PPP_PexeStreamHandler* stream_handler_;
-  void* stream_handler_user_data_;
+  raw_ptr<const PPP_PexeStreamHandler> stream_handler_;
+  raw_ptr<void> stream_handler_user_data_;
   bool success_;
   int64_t expected_content_length_;
   base::WeakPtrFactory<PexeDownloader> weak_factory_{this};

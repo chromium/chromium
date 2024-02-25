@@ -127,7 +127,7 @@ impl fmt::Display for MojoResult {
 }
 
 bitflags::bitflags! {
-    #[derive(Default)]
+    #[derive(Clone, Copy, Default)]
     #[repr(transparent)]
     pub struct HandleSignals: MojoHandleSignals {
         const READABLE = 1 << 0;

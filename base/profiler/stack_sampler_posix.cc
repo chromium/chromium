@@ -12,7 +12,8 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && \
+    (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/profiler/frame_pointer_unwinder.h"
@@ -25,7 +26,8 @@ namespace base {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && \
+    (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
 std::vector<std::unique_ptr<Unwinder>> CreateUnwinders() {
   std::vector<std::unique_ptr<Unwinder>> unwinders;
   unwinders.push_back(std::make_unique<FramePointerUnwinder>());
@@ -41,7 +43,8 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && \
+    (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
   DCHECK(!core_unwinders_factory);
   return base::WrapUnique(
       new StackSampler(std::make_unique<StackCopierSignal>(

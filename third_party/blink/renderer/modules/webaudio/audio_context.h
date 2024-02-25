@@ -54,7 +54,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   AudioContext(LocalDOMWindow&,
                const WebAudioLatencyHint&,
-               absl::optional<float> sample_rate,
+               std::optional<float> sample_rate,
                WebAudioSinkDescriptor sink_descriptor);
   ~AudioContext() override;
 
@@ -103,6 +103,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   void HandleAudibility(AudioBus* destination_bus);
 
   AudioCallbackMetric GetCallbackMetric() const;
+
+  // Returns the audio buffer size set for the underlying audio callback in the
+  // AudioDestination under blink/renderer/platform.
+  uint32_t PlatformBufferSize() const;
 
   // mojom::blink::PermissionObserver
   void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
@@ -248,12 +252,12 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // Autoplay status associated with this AudioContext, if any.
   // Will only be set if there is an autoplay policy in place.
   // Will never be set for OfflineAudioContext.
-  absl::optional<AutoplayStatus> autoplay_status_;
+  std::optional<AutoplayStatus> autoplay_status_;
 
   // Autoplay unlock type for this AudioContext.
   // Will only be set if there is an autoplay policy in place.
   // Will never be set for OfflineAudioContext.
-  absl::optional<AutoplayUnlockType> autoplay_unlock_type_;
+  std::optional<AutoplayUnlockType> autoplay_unlock_type_;
 
   // Records if start() was ever called for any source node in this context.
   bool source_node_started_ = false;

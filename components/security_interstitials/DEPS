@@ -15,6 +15,7 @@ include_rules = [
   "+net/base",
   "+net/cert",
   "+net/ssl",
+  "+services/network/public/cpp/is_potentially_trustworthy.h",
   "+services/network/public/mojom",
   "+ui/base"
 ]

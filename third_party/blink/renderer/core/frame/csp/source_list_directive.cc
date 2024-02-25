@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 
+#include "base/feature_list.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -52,7 +53,7 @@ bool IsStyleDirective(CSPDirectiveName directive_type) {
 
 }  // namespace
 
-bool CSPSourceListAllows(
+CSPCheckResult CSPSourceListAllows(
     const network::mojom::blink::CSPSourceList& source_list,
     const network::mojom::blink::CSPSource& self_source,
     const KURL& url,
@@ -63,21 +64,34 @@ bool CSPSourceListAllows(
   // schemes, including custom schemes, must be explicitly listed in a source
   // list.
   if (source_list.allow_star) {
-    if (url.ProtocolIsInHTTPFamily() || url.ProtocolIs("ftp") ||
-        url.ProtocolIs("ws") || url.ProtocolIs("wss") ||
+    if (url.ProtocolIsInHTTPFamily() ||
         (!url.Protocol().empty() &&
-         EqualIgnoringASCIICase(url.Protocol(), self_source.scheme)))
-      return true;
-
-    return HasSourceMatchInList(source_list.sources, self_source.scheme, url,
-                                redirect_status);
+         EqualIgnoringASCIICase(url.Protocol(), self_source.scheme))) {
+      return CSPCheckResult::Allowed();
+    }
   }
+
   if (source_list.allow_self && CSPSourceMatchesAsSelf(self_source, url)) {
-    return true;
+    return CSPCheckResult::Allowed();
   }
 
-  return HasSourceMatchInList(source_list.sources, self_source.scheme, url,
-                              redirect_status);
+  if (HasSourceMatchInList(source_list.sources, self_source.scheme, url,
+                           redirect_status)) {
+    return CSPCheckResult::Allowed();
+  }
+
+  if (source_list.allow_star) {
+    if (url.ProtocolIs("ws") || url.ProtocolIs("wss")) {
+      return CSPCheckResult::AllowedOnlyIfWildcardMatchesWs();
+    }
+    if (url.ProtocolIs("ftp") &&
+        !base::FeatureList::IsEnabled(
+            network::features::kCspStopMatchingWildcardDirectivesToFtp)) {
+      return CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp();
+    }
+  }
+
+  return CSPCheckResult::Blocked();
 }
 
 bool CSPSourceListAllowNonce(

@@ -21,6 +21,7 @@
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 
 namespace ui {
 
@@ -101,7 +102,7 @@ void DirectLayerTreeFrameSink::SubmitCompositorFrame(
         device_scale_factor_);
   }
 
-  absl::optional<viz::HitTestRegionList> hit_test_region_list =
+  std::optional<viz::HitTestRegionList> hit_test_region_list =
       client_->BuildHitTestData();
 
   if (!hit_test_region_list) {
@@ -112,7 +113,7 @@ void DirectLayerTreeFrameSink::SubmitCompositorFrame(
                                         last_hit_test_data_)) {
       DCHECK(!viz::HitTestRegionList::IsEqual(*hit_test_region_list,
                                               viz::HitTestRegionList()));
-      hit_test_region_list = absl::nullopt;
+      hit_test_region_list = std::nullopt;
     } else {
       last_hit_test_data_ = *hit_test_region_list;
     }

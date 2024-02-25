@@ -7,7 +7,7 @@
 test(() => {
     assert_selection(
         [
-            '|<legend style="all: initial">foo</legend>',
+            '|<legend style="all: initial; -webkit-user-modify: initial">foo</legend>',
             '<details style="display: inline"></details>',
             '<textarea></textarea>',
         ].join(''),
@@ -16,7 +16,7 @@ test(() => {
             selection.document.designMode = 'on';
         },
         [
-            '<legend style="all: initial">^foo|</legend>',
+            '<legend style="all: initial; -webkit-user-modify: initial">^foo|</legend>',
             '<details style="display: inline"></details>',
             '<textarea></textarea>',
         ].join(''));

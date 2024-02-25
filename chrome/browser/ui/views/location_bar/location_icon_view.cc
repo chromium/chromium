@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
@@ -53,6 +53,11 @@
 
 using content::WebContents;
 using security_state::SecurityLevel;
+
+std::optional<ui::ColorId>
+LocationIconView::Delegate::GetLocationIconBackgroundColorOverride() const {
+  return std::nullopt;
+}
 
 LocationIconView::LocationIconView(
     const gfx::FontList& font_list,
@@ -232,7 +237,7 @@ void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
   if (!GetAnimateTextVisibilityChange() || suppress_animations)
     ResetSlideAnimation(should_show);
   else if (should_show)
-    AnimateIn(absl::nullopt);
+    AnimateIn(std::nullopt);
   else
     AnimateOut();
 }
@@ -272,16 +277,28 @@ void LocationIconView::UpdateIcon() {
                      icon_fetch_weak_ptr_factory_.GetWeakPtr()));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const bool is_vector_icon = !icon.IsEmpty() && icon.IsVectorIcon() &&
+                              icon.GetVectorIcon().vector_icon();
+  if (is_vector_icon) {
+    const char* const icon_name = icon.GetVectorIcon().vector_icon()->name;
+    if (icon_name == vector_icons::kGoogleSuperGIcon.name ||
+        icon_name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
+      // Remove the inkdrop around the Google G logo since we cannot interact
+      // with it.
+      views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+    } else {
+      views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    }
 
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    bool has_custom_theme =
-        this->GetWidget() && this->GetWidget()->GetCustomTheme();
+    if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+      bool has_custom_theme =
+          this->GetWidget() && this->GetWidget()->GetCustomTheme();
 
-    if (has_custom_theme && !icon.IsEmpty() && icon.IsVectorIcon() &&
-        icon.GetVectorIcon().vector_icon()->name ==
-            vector_icons::kGoogleSuperGIcon.name) {
-      SetBackground(
-          views::CreateRoundedRectBackground(SK_ColorWHITE, height() / 2));
+      if (has_custom_theme &&
+          icon_name == vector_icons::kGoogleSuperGIcon.name) {
+        SetBackground(
+            views::CreateRoundedRectBackground(SK_ColorWHITE, height() / 2));
+      }
     }
   }
 #endif
@@ -297,9 +314,11 @@ void LocationIconView::UpdateBackground() {
     const bool is_text_dangerous =
         display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
 
-    ui::ColorId id = is_text_dangerous
-                         ? kColorOmniboxSecurityChipDangerousBackground
-                         : kColorPageInfoBackground;
+    const ui::ColorId id =
+        delegate_->GetLocationIconBackgroundColorOverride().value_or(
+            is_text_dangerous ? kColorOmniboxSecurityChipDangerousBackground
+                              : kColorPageInfoBackground);
+
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(id), height() / 2));
 
@@ -424,7 +443,7 @@ gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(
   return size;
 }
 
-BEGIN_METADATA(LocationIconView, IconLabelBubbleView)
+BEGIN_METADATA(LocationIconView)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumLabelTextWidth)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Text)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowText)

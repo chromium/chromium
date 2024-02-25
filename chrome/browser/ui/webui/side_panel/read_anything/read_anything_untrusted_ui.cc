@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -17,11 +19,14 @@
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "read_anything_untrusted_ui.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/resources/grit/webui_resources.h"
 #include "ui/views/style/platform_style.h"
 
 ReadAnythingUIUntrustedConfig::ReadAnythingUIUntrustedConfig()
@@ -57,13 +62,14 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"themeTitle", IDS_READING_MODE_COLORS_COMBOBOX_LABEL},
       {"letterSpacingTitle", IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL},
       {"fontSizeTitle", IDS_READING_MODE_FONT_SIZE},
-      {"displaySectionTitle", IDS_READING_MODE_DISPLAY_SETTINGS},
       {"defaultColorTitle", IDS_READING_MODE_DEFAULT_COLOR_LABEL},
       {"lightColorTitle", IDS_READING_MODE_LIGHT_COLOR_LABEL},
       {"darkColorTitle", IDS_READING_MODE_DARK_COLOR_LABEL},
       {"yellowColorTitle", IDS_READING_MODE_YELLOW_COLOR_LABEL},
       {"blueColorTitle", IDS_READING_MODE_BLUE_COLOR_LABEL},
-      {"back", IDS_READING_MODE_BACK},
+      {"fontResetTitle", IDS_READING_MODE_FONT_RESET},
+      {"turnHighlightOff", IDS_READING_MODE_TURN_HIGHLIGHT_OFF},
+      {"turnHighlightOn", IDS_READING_MODE_TURN_HIGHLIGHT_ON},
       {"lineSpacingStandardTitle", IDS_READING_MODE_SPACING_COMBOBOX_STANDARD},
       {"lineSpacingLooseTitle", IDS_READING_MODE_SPACING_COMBOBOX_LOOSE},
       {"lineSpacingVeryLooseTitle",
@@ -73,6 +79,22 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"letterSpacingWideTitle", IDS_READING_MODE_SPACING_COMBOBOX_WIDE},
       {"letterSpacingVeryWideTitle",
        IDS_READING_MODE_SPACING_COMBOBOX_VERY_WIDE},
+      {"playDescription", IDS_READING_MODE_PLAY_DESCRIPTION},
+      {"playLabel", IDS_READING_MODE_PLAY_SPEECH},
+      {"pauseLabel", IDS_READING_MODE_PAUSE_SPEECH},
+      {"previousSentenceLabel", IDS_READING_MODE_NAVIGATE_PREVIOUS_SENTENCE},
+      {"nextSentenceLabel", IDS_READING_MODE_NAVIGATE_NEXT_SENTENCE},
+      {"moreOptionsLabel", IDS_READING_MODE_MORE_OPTIONS},
+      {"voiceSpeedLabel", IDS_READING_MODE_VOICE_SPEED},
+      {"voiceSelectionLabel", IDS_READING_MODE_VOICE_SELECTION},
+      {"increaseFontSizeLabel",
+       IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL},
+      {"decreaseFontSizeLabel",
+       IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL},
+      {"disableLinksLabel", IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL},
+      {"enableLinksLabel", IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL},
+      {"readingModeToolbarLabel", IDS_READING_MODE_TOOLBAR_LABEL},
+      {"readingModeVoicePreviewText", IDS_READING_MODE_VOICE_PREVIEW_STRING},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
@@ -83,6 +105,10 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
   // but not chrome-untrusted://, ReadAnythingUntrustedUI does not inherit them.
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
+  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader_util.js",
+                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+  source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   webui::EnableTrustedTypesCSP(source);
   webui::SetupChromeRefresh2023(source);
   source->AddResourcePaths(base::make_span(
@@ -92,7 +118,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
                                            kSidePanelSharedResourcesSize));
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src 'self' chrome-untrusted://resources;");
+      "script-src 'self' chrome-untrusted://resources "
+      "chrome-untrusted://webui-test;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme "
@@ -103,7 +130,14 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       "https://fonts.gstatic.com;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src 'self' chrome-untrusted://resources;");
+      "img-src 'self' data: chrome-untrusted://resources;");
+  raw_ptr<Profile> profile = Profile::FromWebUI(web_ui);
+
+  // If the ThemeSource isn't added here, since Read Anything is
+  // chrome-untrusted, it will be unable to load stylesheets until a new tab
+  // is opened.
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(
+                                           profile, /*serve_untrusted=*/true));
 }
 
 ReadAnythingUntrustedUI::~ReadAnythingUntrustedUI() = default;
@@ -134,6 +168,10 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
   read_anything_untrusted_page_handler_ =
       std::make_unique<ReadAnythingUntrustedPageHandler>(
           std::move(page), std::move(receiver), web_ui());
+}
+
+void ReadAnythingUntrustedUI::ShouldShowUI() {
+  // Show the UI after the Side Panel content has loaded.
   if (embedder()) {
     embedder()->ShowUI();
   }

@@ -68,7 +68,8 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
       const override;
 
  private:
-  bool SupportsFocus() const final;
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const final;
   int DefaultTabIndex() const final;
   void SetFocused(bool, mojom::blink::FocusType) final;
 

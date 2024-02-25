@@ -1,0 +1,66 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.google_drive.mojom;
+
+import "chromeos/ash/components/drivefs/mojom/pinning_manager_types.mojom";
+
+// Contains the current status of the underlying pin manager as it progress
+// through the various stages.
+struct Status {
+  // The space required to pin all the items that are in a users My drive
+  // directory, this excludes any items that are already available offline or
+  // pinned.
+  string required_space;
+
+  // The free space available on the disk.
+  string free_space;
+
+  // The current stage the pin manager is going through.
+  drivefs.pinning_manager_types.mojom.Stage stage;
+
+  // The number of listed files during the `kListingFiles` stage.
+  uint64 listed_files;
+
+  // Whether the stage returned is an error.
+  bool is_error;
+};
+
+// Lives in the browser process. A renderer uses this to create a page handler
+// that enables communication between a renderer and the browser process.
+interface PageHandlerFactory {
+  // Creates a PageHandler and connects it up to the Page.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. A renderer uses this to invoke methods that
+// are implemented in the browser process.
+interface PageHandler {
+  // Starts calculating the required space, updates will get sent via the `Page`
+  // method exposed below.
+  CalculateRequiredSpace();
+
+  // Returns the current size of the users GCache content_cache, e.g. 500 MB.
+  GetContentCacheSize() => (string? size);
+
+  // Unpins all files then force evicts them from the Drive cache (does not
+  // force evict hosted documents).
+  ClearPinnedFiles() => ();
+
+  // Record metric when bulk pinning is enabled.
+  RecordBulkPinningEnabledMetric();
+};
+
+// Interface for the Google drive settings page. Implemented in Javascript and
+// used by the page handler to send asynchronous updates.
+interface Page {
+  // Invoked when the underlying services (e.g. PinManager or
+  // DriveIntegrationService) go offline or are unavailable.
+  OnServiceUnavailable();
+
+  // Invoked when the status changes whilst pinning or calculating available
+  // storage.
+  OnProgress(Status status);
+};

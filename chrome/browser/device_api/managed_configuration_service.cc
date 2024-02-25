@@ -4,11 +4,13 @@
 
 #include "chrome/browser/device_api/managed_configuration_service.h"
 
+#include <utility>
+
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 // static
 void ManagedConfigurationServiceImpl::Create(
@@ -53,13 +55,14 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
       origin(), keys,
       base::BindOnce(
           [](GetManagedConfigurationCallback callback,
-             absl::optional<base::Value::Dict> result) {
-            if (!result)
-              return std::move(callback).Run(absl::nullopt);
+             std::optional<base::Value::Dict> result) {
+            if (!result) {
+              return std::move(callback).Run(std::nullopt);
+            }
             std::move(callback).Run(base::MakeFlatMap<std::string, std::string>(
                 *result, {},
-                [](const auto& it) -> std::pair<std::string, std::string> {
-                  return {it.first, it.second.GetString()};
+                [](const auto& item) -> std::pair<std::string, std::string> {
+                  return {item.first, item.second.GetString()};
                 }));
           },
           std::move(callback)));

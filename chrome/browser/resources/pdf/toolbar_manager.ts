@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isRTL} from 'chrome://resources/js/util_ts.js';
-import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
+import {isRTL} from 'chrome://resources/js/util.js';
+
+import type {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 
 /**
  * Idle time in ms before the UI is hidden.

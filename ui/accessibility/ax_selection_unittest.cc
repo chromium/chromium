@@ -1,11 +1,11 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accessibility/ax_selection.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/single_ax_tree_manager.h"
+#include "ui/accessibility/test_single_ax_tree_manager.h"
 
 // Helper macro for testing selection values and maintain
 // correct stack tracing and failure causality.
@@ -124,7 +124,7 @@ TEST(AXSelectionTest, UnignoredSelection) {
   tree_update.nodes[15].role = ax::mojom::Role::kStaticText;
   tree_update.nodes[15].SetName("text");
 
-  SingleAXTreeManager test_ax_tree_manager(
+  TestSingleAXTreeManager test_ax_tree_manager(
       std::make_unique<AXTree>(tree_update));
   AXSelection unignored_selection =
       test_ax_tree_manager.GetTree()->GetUnignoredSelection();

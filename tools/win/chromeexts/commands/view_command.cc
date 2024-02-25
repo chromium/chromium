@@ -157,7 +157,7 @@ class VirtualViewDebugWrapper : public views::debug::ViewDebugWrapper {
     return buffer;
   }
 
-  absl::optional<intptr_t> GetAddress() override {
+  std::optional<intptr_t> GetAddress() override {
     return view_block_.address();
   }
 

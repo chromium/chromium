@@ -5,30 +5,31 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller_model_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 // Table view customized header heights.
 CGFloat kAccountSectionHeaderHeightPointSize = 22.17;
-CGFloat kSyncDataTypeSectionHeaderHeightPointSize = 60.;
+CGFloat kSyncDataTypeSectionHeaderHeightPointSize = 48.;
 CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
 CGFloat kSignOutSectionHeaderHeightPointSize = 26.;
 
 // Table view customized footer heights.
-CGFloat kAccountSectionFooterHeightPointSize = 16.;
+CGFloat kAccountSectionFooterHeightPointSize = 28.;
 CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 }  // namespace
@@ -93,6 +94,8 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     [managedCell.trailingButton addTarget:self
                                    action:@selector(didTapManagedUIInfoButton:)
                          forControlEvents:UIControlEventTouchUpInside];
+  } else if ([cell isKindOfClass:[SettingsImageDetailTextCell class]]) {
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   return cell;
 }
@@ -118,7 +121,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   return view;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];
@@ -136,17 +139,24 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                 withRowAnimation:UITableViewRowAnimationNone];
 }
 
-- (void)deleteSections:(NSIndexSet*)sections {
+- (void)deleteSections:(NSIndexSet*)sections
+      withRowAnimation:(BOOL)withRowAnimation {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  [UIView performWithoutAnimation:^{
-    [self.tableView beginUpdates];
+  if (withRowAnimation) {
     [self.tableView deleteSections:sections
-                  withRowAnimation:UITableViewRowAnimationNone];
-    [self.tableView endUpdates];
-  }];
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else {
+    // To avoid animation glitches related to crbug.com/1469539.
+    [UIView performWithoutAnimation:^{
+      [self.tableView beginUpdates];
+      [self.tableView deleteSections:sections
+                    withRowAnimation:UITableViewRowAnimationNone];
+      [self.tableView endUpdates];
+    }];
+  }
 }
 
 - (void)reloadItem:(TableViewItem*)item {
@@ -154,9 +164,26 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     // No need to reload since the model has not been loaded yet.
     return;
   }
+  if (!item) {
+    // No need to reload if the item doesn't exist. indexPathForItem below
+    // should handle nil just fine, but doesn't hurt to early return explicitly.
+    return;
+  }
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
-  [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
-                        withRowAnimation:UITableViewRowAnimationNone];
+  if (!indexPath) {
+    // No need to reload if the item is not in the model. This would also cause
+    // a crash below since NSArrays cannot contain nil.
+    // TODO(crbug.com/1485554): Better understand the crash root cause and CHECK
+    // instead of no-op.
+    return;
+  }
+  // To avoid animation glitches related to crbug.com/1469539.
+  [UIView performWithoutAnimation:^{
+    [self.tableView beginUpdates];
+    [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                          withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView endUpdates];
+  }];
 }
 
 - (void)reloadSections:(NSIndexSet*)sections {

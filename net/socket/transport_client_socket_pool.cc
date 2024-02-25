@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -44,10 +45,9 @@ bool g_connect_backup_jobs_enabled = true;
 base::Value::Dict NetLogCreateConnectJobParams(
     bool backup_job,
     const ClientSocketPool::GroupId* group_id) {
-  base::Value::Dict dict;
-  dict.Set("backup_job", backup_job);
-  dict.Set("group_id", group_id->ToString());
-  return dict;
+  return base::Value::Dict()
+      .Set("backup_job", backup_job)
+      .Set("group_id", group_id->ToString());
 }
 
 }  // namespace
@@ -81,7 +81,7 @@ TransportClientSocketPool::Request::Request(
     RespectLimits respect_limits,
     Flags flags,
     scoped_refptr<SocketParams> socket_params,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const NetLogWithSource& net_log)
     : handle_(handle),
       callback_(std::move(callback)),
@@ -136,7 +136,7 @@ TransportClientSocketPool::TransportClientSocketPool(
     int max_sockets,
     int max_sockets_per_group,
     base::TimeDelta unused_idle_socket_timeout,
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
     bool cleanup_on_ip_address_change)
@@ -144,13 +144,13 @@ TransportClientSocketPool::TransportClientSocketPool(
                                 max_sockets_per_group,
                                 unused_idle_socket_timeout,
                                 ClientSocketPool::used_idle_socket_timeout(),
-                                proxy_server,
+                                proxy_chain,
                                 is_for_websockets,
                                 common_connect_job_params,
                                 cleanup_on_ip_address_change,
                                 std::make_unique<ConnectJobFactory>(),
                                 common_connect_job_params->ssl_client_context,
-                                true /* connect_backup_jobs_enabled */) {}
+                                /*connect_backup_jobs_enabled=*/true) {}
 
 TransportClientSocketPool::~TransportClientSocketPool() {
   // Clean up any idle sockets and pending connect jobs.  Assert that we have no
@@ -176,7 +176,7 @@ TransportClientSocketPool::CreateForTesting(
     int max_sockets_per_group,
     base::TimeDelta unused_idle_socket_timeout,
     base::TimeDelta used_idle_socket_timeout,
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
     std::unique_ptr<ConnectJobFactory> connect_job_factory,
@@ -185,8 +185,8 @@ TransportClientSocketPool::CreateForTesting(
   return base::WrapUnique<TransportClientSocketPool>(
       new TransportClientSocketPool(
           max_sockets, max_sockets_per_group, unused_idle_socket_timeout,
-          used_idle_socket_timeout, proxy_server, is_for_websockets,
-          common_connect_job_params, true /* cleanup_on_ip_address_change */,
+          used_idle_socket_timeout, proxy_chain, is_for_websockets,
+          common_connect_job_params, /*cleanup_on_ip_address_change=*/true,
           std::move(connect_job_factory), ssl_client_context,
           connect_backup_jobs_enabled));
 }
@@ -244,7 +244,7 @@ void TransportClientSocketPool::RemoveHigherLayeredPool(
 int TransportClientSocketPool::RequestSocket(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority priority,
     const SocketTag& socket_tag,
     RespectLimits respect_limits,
@@ -298,7 +298,7 @@ int TransportClientSocketPool::RequestSocket(
 int TransportClientSocketPool::RequestSockets(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     int num_sockets,
     CompletionOnceCallback callback,
     const NetLogWithSource& net_log) {
@@ -449,7 +449,7 @@ int TransportClientSocketPool::RequestSocketInternal(
   // so allocate and connect a new one.
   group = GetOrCreateGroup(group_id);
   std::unique_ptr<ConnectJob> connect_job(
-      CreateConnectJob(group_id, request.socket_params(), proxy_server_,
+      CreateConnectJob(group_id, request.socket_params(), proxy_chain_,
                        request.proxy_annotation_tag(), request.priority(),
                        request.socket_tag(), group));
   connect_job->net_log().AddEvent(
@@ -693,14 +693,14 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
     const std::string& name,
     const std::string& type) const {
   // TODO(mmenke): This currently doesn't return bound Requests or ConnectJobs.
-  base::Value::Dict dict;
-  dict.Set("name", name);
-  dict.Set("type", type);
-  dict.Set("handed_out_socket_count", handed_out_socket_count_);
-  dict.Set("connecting_socket_count", connecting_socket_count_);
-  dict.Set("idle_socket_count", idle_socket_count_);
-  dict.Set("max_socket_count", max_sockets_);
-  dict.Set("max_sockets_per_group", max_sockets_per_group_);
+  auto dict = base::Value::Dict()
+                  .Set("name", name)
+                  .Set("type", type)
+                  .Set("handed_out_socket_count", handed_out_socket_count_)
+                  .Set("connecting_socket_count", connecting_socket_count_)
+                  .Set("idle_socket_count", idle_socket_count_)
+                  .Set("max_socket_count", max_sockets_)
+                  .Set("max_sockets_per_group", max_sockets_per_group_);
 
   if (group_map_.empty())
     return base::Value(std::move(dict));
@@ -708,35 +708,35 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
   base::Value::Dict all_groups_dict;
   for (const auto& entry : group_map_) {
     const Group* group = entry.second;
-    base::Value::Dict group_dict;
-
-    group_dict.Set("pending_request_count",
-                   static_cast<int>(group->unbound_request_count()));
-    if (group->has_unbound_requests()) {
-      group_dict.Set("top_pending_priority",
-                     RequestPriorityToString(group->TopPendingPriority()));
-    }
-
-    group_dict.Set("active_socket_count", group->active_socket_count());
 
     base::Value::List idle_socket_list;
     for (const auto& idle_socket : group->idle_sockets()) {
       int source_id = idle_socket.socket->NetLog().source().id;
       idle_socket_list.Append(source_id);
     }
-    group_dict.Set("idle_sockets", std::move(idle_socket_list));
 
     base::Value::List connect_jobs_list;
     for (const auto& job : group->jobs()) {
       int source_id = job->net_log().source().id;
       connect_jobs_list.Append(source_id);
     }
-    group_dict.Set("connect_jobs", std::move(connect_jobs_list));
 
-    group_dict.Set("is_stalled",
-                   group->CanUseAdditionalSocketSlot(max_sockets_per_group_));
-    group_dict.Set("backup_job_timer_is_running",
-                   group->BackupJobTimerIsRunning());
+    auto group_dict =
+        base::Value::Dict()
+            .Set("pending_request_count",
+                 static_cast<int>(group->unbound_request_count()))
+            .Set("active_socket_count", group->active_socket_count())
+            .Set("idle_sockets", std::move(idle_socket_list))
+            .Set("connect_jobs", std::move(connect_jobs_list))
+            .Set("is_stalled",
+                 group->CanUseAdditionalSocketSlot(max_sockets_per_group_))
+            .Set("backup_job_timer_is_running",
+                 group->BackupJobTimerIsRunning());
+
+    if (group->has_unbound_requests()) {
+      group_dict.Set("top_pending_priority",
+                     RequestPriorityToString(group->TopPendingPriority()));
+    }
 
     all_groups_dict.Set(entry.first.ToString(), std::move(group_dict));
   }
@@ -775,7 +775,7 @@ TransportClientSocketPool::TransportClientSocketPool(
     int max_sockets_per_group,
     base::TimeDelta unused_idle_socket_timeout,
     base::TimeDelta used_idle_socket_timeout,
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
     bool cleanup_on_ip_address_change,
@@ -789,7 +789,7 @@ TransportClientSocketPool::TransportClientSocketPool(
       max_sockets_per_group_(max_sockets_per_group),
       unused_idle_socket_timeout_(unused_idle_socket_timeout),
       used_idle_socket_timeout_(used_idle_socket_timeout),
-      proxy_server_(proxy_server),
+      proxy_chain_(proxy_chain),
       cleanup_on_ip_address_change_(cleanup_on_ip_address_change),
       connect_backup_jobs_enabled_(connect_backup_jobs_enabled &&
                                    g_connect_backup_jobs_enabled),
@@ -840,11 +840,16 @@ void TransportClientSocketPool::OnSSLConfigForServersChanged(
   // interfaces so the parameter is not necessary.
   base::TimeTicks now = base::TimeTicks::Now();
 
-  // If the proxy is |server| and uses SSL settings (HTTPS or QUIC), refresh
-  // every group.
-  bool proxy_matches = proxy_server_.is_http_like() &&
-                       !proxy_server_.is_http() &&
-                       servers.contains(proxy_server_.host_port_pair());
+  // If the proxy chain includes a server from `servers` and uses SSL settings
+  // (HTTPS or QUIC), refresh every group.
+  bool proxy_matches = false;
+  for (const ProxyServer& proxy_server : proxy_chain_.proxy_servers()) {
+    if (proxy_server.is_secure_http_like() &&
+        servers.contains(proxy_server.host_port_pair())) {
+      proxy_matches = true;
+    }
+  }
+
   bool refreshed_any = false;
   for (auto it = group_map_.begin(); it != group_map_.end();) {
     if (proxy_matches ||
@@ -906,7 +911,7 @@ bool TransportClientSocketPool::CloseOneIdleConnectionInHigherLayeredPool() {
   // This pool doesn't have any idle sockets. It's possible that a pool at a
   // higher layer is holding one of this sockets active, but it's actually idle.
   // Query the higher layers.
-  for (auto* higher_pool : higher_pools_) {
+  for (HigherLayeredPool* higher_pool : higher_pools_) {
     if (higher_pool->CloseOneIdleConnection())
       return true;
   }
@@ -1304,7 +1309,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
 
   // Check if the ConnectJob is already bound to a Request. If so, result is
   // returned to that specific request.
-  absl::optional<Group::BoundRequest> bound_request =
+  std::optional<Group::BoundRequest> bound_request =
       group->FindAndRemoveBoundRequestForConnectJob(job);
   Request* request = nullptr;
   std::unique_ptr<Request> owned_request;
@@ -1610,9 +1615,9 @@ void TransportClientSocketPool::Group::OnBackupJobTimerFired(
   Request* request = unbound_requests_.FirstMax().value().get();
   std::unique_ptr<ConnectJob> owned_backup_job =
       client_socket_pool_->CreateConnectJob(
-          group_id, request->socket_params(),
-          client_socket_pool_->proxy_server_, request->proxy_annotation_tag(),
-          request->priority(), request->socket_tag(), this);
+          group_id, request->socket_params(), client_socket_pool_->proxy_chain_,
+          request->proxy_annotation_tag(), request->priority(),
+          request->socket_tag(), this);
   owned_backup_job->net_log().AddEvent(
       NetLogEventType::SOCKET_POOL_CONNECT_JOB_CREATED, [&] {
         return NetLogCreateConnectJobParams(true /* backup_job */, &group_id_);
@@ -1829,7 +1834,7 @@ TransportClientSocketPool::Group::BindRequestToConnectJob(
   return request;
 }
 
-absl::optional<TransportClientSocketPool::Group::BoundRequest>
+std::optional<TransportClientSocketPool::Group::BoundRequest>
 TransportClientSocketPool::Group::FindAndRemoveBoundRequestForConnectJob(
     ConnectJob* connect_job) {
   for (auto bound_pair = bound_requests_.begin();
@@ -1840,7 +1845,7 @@ TransportClientSocketPool::Group::FindAndRemoveBoundRequestForConnectJob(
     bound_requests_.erase(bound_pair);
     return std::move(ret);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<TransportClientSocketPool::Request>

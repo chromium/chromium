@@ -78,6 +78,14 @@ class ASH_EXPORT RasterScaleController : public aura::WindowObserver {
   RasterScaleController& operator=(const RasterScaleController&) = delete;
   ~RasterScaleController() override;
 
+  // With raster slop (see comment on `raster_scale_slop_`), there is degenerate
+  // exponential updating behaviour as raster scale tends towards 0. The
+  // `kMinimumRasterScale` value denotes a minimum value for raster scale. This
+  // is set such that the largest windows we expect (e.g. on 4k displays) can
+  // still have their raster scales reduced down so the width and height of
+  // their buffers is on the order of a few hundred pixels at most.
+  static inline constexpr float kMinimumRasterScale = 0.05;
+
   // Computes the appropriate raster scale given a transform. Normally we expect
   // x and y scaling to be the same, but in case they are not, this takes the
   // larger of the two as the raster scale, to make sure that the scale along
@@ -98,6 +106,15 @@ class ASH_EXPORT RasterScaleController : public aura::WindowObserver {
 
   float ComputeRasterScaleForWindow(aura::Window* window);
 
+  float raster_scale_slop_proportion() const {
+    return raster_scale_slop_proportion_;
+  }
+
+  void set_raster_scale_slop_proportion_for_testing(
+      float raster_scale_slop_proportion) {
+    raster_scale_slop_proportion_ = raster_scale_slop_proportion;
+  }
+
  private:
   friend class ScopedPauseRasterScaleUpdates;
 
@@ -116,6 +133,18 @@ class ASH_EXPORT RasterScaleController : public aura::WindowObserver {
   // Holds a set of windows that have had their raster scales change while
   // RasterScaleController is paused.
   base::flat_set<aura::Window*> pending_windows_;
+
+  // Raster scale won't be updated for a window unless the currently requested
+  // raster scale is more than `raster_scale_slop_proportion_` different by
+  // proportion to the currently set (via the raster scale window property)
+  // value. As a special case, requesting the raster scale to 1.0 will always
+  // update the raster scale window property. This is to prevent windows from
+  // getting stuck in non-1.0f raster scales when all `ScopedSetRasterScale`s
+  // are released. This value was determined by eyeballing the sharpness at a
+  // reduced raster scale. Once the difference in raster scale proportion starts
+  // exceeding around 15%, it starts becoming noticeable. Set this to 10% as a
+  // safe value.
+  float raster_scale_slop_proportion_ = 0.1;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       windows_observation_{this};

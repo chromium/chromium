@@ -35,20 +35,19 @@ import org.chromium.ui.widget.ButtonCompat;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for the Autofill Upstream and Expiration Date Fix Flow.
- */
+/** Integration tests for the Autofill Upstream and Expiration Date Fix Flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=AutofillUpstream"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=AutofillUpstream"
+})
 public class AutofillUpstreamTest {
     private static final String TEST_SERVER_DIR = "components/test/data/autofill";
     private static final String TEST_FORM_URL = "/credit_card_upload_form_address_and_cc.html";
     private static final String SAVE_BUTTON_LABEL = "Save";
     private static final String CONTINUE_BUTTON_LABEL = "Continue";
 
-    @Rule
-    public SyncTestRule mActivityTestRule = new SyncTestRule();
+    @Rule public SyncTestRule mActivityTestRule = new SyncTestRule();
 
     private EmbeddedTestServer mServer;
 
@@ -56,7 +55,8 @@ public class AutofillUpstreamTest {
     public void setUp() {
         mActivityTestRule.setUpAccountAndEnableSyncForTesting();
         mServer = new EmbeddedTestServer();
-        mServer.initializeNative(ApplicationProvider.getApplicationContext(),
+        mServer.initializeNative(
+                ApplicationProvider.getApplicationContext(),
                 EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
         mServer.addDefaultHandlers(TEST_SERVER_DIR);
         mServer.start();
@@ -70,13 +70,13 @@ public class AutofillUpstreamTest {
 
     private void waitForSaveCardInfoBar() {
         CriteriaHelper.pollUiThread(
-                ()
-                        -> hasAutofillSaveCardInfobar(mActivityTestRule.getInfoBars()),
+                () -> hasAutofillSaveCardInfobar(mActivityTestRule.getInfoBars()),
                 "Autofill Save Card Infobar view was never added.");
     }
 
     private boolean hasAutofillSaveCardInfobar(List<InfoBar> infobars) {
-        return (infobars != null && infobars.size() == 1
+        return (infobars != null
+                && infobars.size() == 1
                 && infobars.get(0) instanceof AutofillSaveCardInfoBar);
     }
 
@@ -91,17 +91,19 @@ public class AutofillUpstreamTest {
 
     private PropertyModel getPropertyModelForDialog() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> mActivityTestRule.getActivity()
-                                   .getModalDialogManager()
-                                   .getCurrentDialogForTest());
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .getModalDialogManager()
+                                .getCurrentDialogForTest());
     }
 
     @Test
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
-    @DisableIf.
-    Build(sdk_is_less_than = Build.VERSION_CODES.Q, message = "https://crbug.com/1424178")
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.Q,
+            message = "https://crbug.com/1424178")
     public void testSaveCardInfoBarWithAllFieldsFilled() throws TimeoutException {
         mActivityTestRule.loadUrl(mServer.getURL(TEST_FORM_URL));
         final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
@@ -185,8 +187,9 @@ public class AutofillUpstreamTest {
     @Test
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
-    @DisableIf.
-    Build(sdk_is_less_than = Build.VERSION_CODES.Q, message = "https://crbug.com/1424178")
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.Q,
+            message = "https://crbug.com/1424178")
     public void testSaveCardInfoBarWithEmptyName() throws TimeoutException {
         mActivityTestRule.loadUrl(mServer.getURL(TEST_FORM_URL));
         final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();

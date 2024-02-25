@@ -54,6 +54,9 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   // Handler for "removeBookmark" message.
   void HandleRemoveBookmark(const base::Value::List& args);
 
+  // Handler for "setLastSelectedTab" message.
+  void HandleSetLastSelectedTab(const base::Value::List& args);
+
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(
       const std::vector<history::BrowsingHistoryService::HistoryEntry>& results,
@@ -93,7 +96,7 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
 
   std::vector<base::OnceClosure> deferred_callbacks_;
 
-  absl::optional<base::Value::Dict> initial_results_;
+  std::optional<base::Value::Dict> initial_results_;
 
   std::string query_history_callback_id_;
 

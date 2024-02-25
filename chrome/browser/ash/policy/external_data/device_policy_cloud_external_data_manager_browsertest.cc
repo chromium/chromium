@@ -148,8 +148,7 @@ class DevicePolicyCloudExternalDataManagerTest
   }
 
  private:
-  raw_ptr<PolicyService, DanglingUntriaged | ExperimentalAsh> policy_service_ =
-      nullptr;
+  raw_ptr<PolicyService, DanglingUntriaged> policy_service_ = nullptr;
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   base::test::TestFuture<const base::Value*, const base::Value*>
       policy_changed_repeating_future_;

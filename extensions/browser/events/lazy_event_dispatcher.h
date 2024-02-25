@@ -48,7 +48,7 @@ class LazyEventDispatcher {
   //
   // If [dispatch_context| is for a service worker, it ensures the worker is
   // started before dispatching the  event.
-  void Dispatch(const Event& event,
+  void Dispatch(Event& event,
                 const LazyContextId& dispatch_context,
                 const base::Value::Dict* listener_filter);
 
@@ -60,7 +60,7 @@ class LazyEventDispatcher {
   // Possibly loads given extension's background page or extension Service
   // Worker in preparation to dispatch an event.  Returns true if the event was
   // queued for subsequent dispatch, false otherwise.
-  bool QueueEventDispatch(const Event& event,
+  bool QueueEventDispatch(Event& event,
                           const LazyContextId& dispatch_context,
                           const Extension* extension,
                           const base::Value::Dict* listener_filter);

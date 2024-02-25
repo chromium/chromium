@@ -5,6 +5,7 @@
 #include "device/fido/aoa/android_accessory_device.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -12,7 +13,6 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/device_event_log/device_event_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -37,7 +37,7 @@ FidoDevice::CancelToken AndroidAccessoryDevice::DeviceTransact(
   if (static_cast<uint64_t>(command.size()) >
       std::numeric_limits<uint32_t>::max()) {
     NOTREACHED();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return 0;
   }
 
@@ -61,7 +61,7 @@ void AndroidAccessoryDevice::OnWriteComplete(DeviceCallback callback,
   if (result != mojom::UsbTransferStatus::COMPLETED) {
     FIDO_LOG(ERROR) << "Failed to write to USB device ("
                     << static_cast<int>(result) << ").";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -79,14 +79,14 @@ void AndroidAccessoryDevice::OnReadLengthComplete(
       payload.size() != 1 + sizeof(uint32_t)) {
     FIDO_LOG(ERROR) << "Failed to read reply from USB device ("
                     << static_cast<int>(result) << ")";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   if (payload[0] != kCoaoaMsg) {
     FIDO_LOG(ERROR) << "Reply from USB device with wrong type ("
                     << static_cast<int>(payload[0]) << ")";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -95,7 +95,7 @@ void AndroidAccessoryDevice::OnReadLengthComplete(
   if (length > (1 << 20)) {
     FIDO_LOG(ERROR) << "USB device sent excessive reply containing " << length
                     << " bytes";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -121,7 +121,7 @@ void AndroidAccessoryDevice::OnReadComplete(DeviceCallback callback,
       payload.size() + buffer_.size() > length) {
     FIDO_LOG(ERROR) << "Failed to read from USB device ("
                     << static_cast<int>(result) << ")";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

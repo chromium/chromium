@@ -9,24 +9,23 @@
 #include <string>
 #include <utility>
 
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/scoped_egl_image.h"
 
 namespace gl {
 class GLFence;
 }  // namespace gl
-
-namespace gpu {
-class GpuMemoryBufferImplAndroidHardwareBuffer;
-}  // namespace gpu
 
 namespace viz {
 struct BeginFrameArgs;
@@ -92,13 +91,21 @@ struct WebXrSharedBuffer {
   WebXrSharedBuffer();
   ~WebXrSharedBuffer();
 
+  gpu::MailboxHolder mailbox_holder() const {
+    return gpu::MailboxHolder(shared_image->mailbox(), sync_token,
+                              texture_target());
+  }
+
+  uint32_t texture_target() const { return GL_TEXTURE_2D; }
+
   gfx::Size size = {0, 0};
 
-  // Shared GpuMemoryBuffer
-  std::unique_ptr<gpu::GpuMemoryBufferImplAndroidHardwareBuffer> gmb;
+  // This owns a single reference to an AHardwareBuffer object.
+  base::android::ScopedHardwareBufferHandle scoped_ahb_handle;
 
   // Resources in the remote GPU process command buffer context
-  gpu::MailboxHolder mailbox_holder;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  gpu::SyncToken sync_token;
 
   // Resources in the local GL context
   uint32_t local_texture = 0;
@@ -244,10 +251,6 @@ class WebXrPresentationState {
   // timeout.
   bool last_ui_allows_sending_vsync = false;
 
-  // GpuMemoryBuffer creation needs a buffer ID. We don't really care about
-  // this, but try to keep it unique to avoid confusion.
-  int next_memory_buffer_id = 0;
-
  private:
   // Checks if we're in a valid state for processing the current animating
   // frame. Invalid states include mailbox_bridge_ready_ being false, or an
@@ -265,7 +268,7 @@ class WebXrPresentationState {
   raw_ptr<WebXrFrame> animating_frame_ = nullptr;
   raw_ptr<WebXrFrame> processing_frame_ = nullptr;
   raw_ptr<WebXrFrame> rendering_frame_ = nullptr;
-  std::vector<WebXrFrame*> rendering_frames_;
+  std::vector<raw_ptr<WebXrFrame, VectorExperimental>> rendering_frames_;
   base::queue<WebXrFrame*> idle_frames_;
 
   bool mailbox_bridge_ready_ = false;

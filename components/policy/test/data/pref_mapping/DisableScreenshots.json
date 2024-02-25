@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "disable_screenshots": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisableScreenshots": false
+        },
+        "prefs": {
+          "disable_screenshots": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisableScreenshots": true
+        },
+        "prefs": {
+          "disable_screenshots": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

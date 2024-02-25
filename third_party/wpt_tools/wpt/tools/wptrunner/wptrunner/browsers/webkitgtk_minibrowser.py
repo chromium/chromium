@@ -64,7 +64,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     executor_kwargs["close_after_done"] = True
     executor_kwargs["capabilities"] = capabilities(test_environment.config, **kwargs)
     if test_type == "wdspec":
-        executor_kwargs["binary_args"] = capabilities["webkitgtk:browserOptions"]["args"]
+        executor_kwargs["binary_args"] = executor_kwargs["capabilities"]["webkitgtk:browserOptions"]["args"]
     return executor_kwargs
 
 
@@ -76,7 +76,7 @@ def env_options():
     return {}
 
 
-def run_info_extras(**kwargs):
+def run_info_extras(logger, **kwargs):
     return {"webkit_port": "gtk"}
 
 

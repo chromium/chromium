@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CONFLICTS_CONFLICTS_DATA_FETCHER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
@@ -14,7 +15,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
@@ -67,12 +67,12 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
 
   // Temporarily holds the module list while the modules are being
   // enumerated.
-  absl::optional<base::Value::List> module_list_;
+  std::optional<base::Value::List> module_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  absl::optional<ThirdPartyConflictsManager::State>
+  std::optional<ThirdPartyConflictsManager::State>
       third_party_conflicts_manager_state_;
 
   base::WeakPtrFactory<ConflictsDataFetcher> weak_ptr_factory_;

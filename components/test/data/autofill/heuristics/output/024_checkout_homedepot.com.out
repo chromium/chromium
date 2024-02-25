@@ -12,4 +12,5 @@ PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | altfieldphone1_1 | Alternate Phone: |  
 PHONE_HOME_NUMBER_PREFIX | altfieldphone2_1 | Alternate Phone: |  | firstName_1_1
 PHONE_HOME_NUMBER_SUFFIX | altfieldphone3_1 | Alternate Phone: |  | firstName_1_1
 UNKNOWN_TYPE | isBillingAddress_1 | Check here if the above shipping address is | on | firstName_1_1
+
 UNKNOWN_TYPE | emailInput | Add Shipping Addresses | Enter Email Address | emailInput_1

@@ -29,7 +29,7 @@ class WebGLVertexArrayObjectBase : public WebGLContextObject {
   void SetHasEverBeenBound() { has_ever_been_bound_ = true; }
 
   WebGLBuffer* BoundElementArrayBuffer() const {
-    return bound_element_array_buffer_;
+    return bound_element_array_buffer_.Get();
   }
   void SetElementArrayBuffer(WebGLBuffer*);
 

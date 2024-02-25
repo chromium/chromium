@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Variable font animation</title>
+    <meta name="assert" content="Checks the memory usage during heavy
+    animations of variable fonts. Memory usage should not grow unboundedly
+    and should drop after some time.">
+    <style>
+      @font-face {
+        font-family: rob;
+        src: url('../web_tests/third_party/Homecomputer/Sixtyfour.ttf');
+      }
+
+      body {
+        font-family: rob;
+        font-size: 12px;
+      }
+
+      @keyframes weightanim {
+        0% {
+          font-variation-settings: "wght" 400;
+        }
+        100% {
+          font-variation-settings: "wght" 900;
+        }
+      }
+
+      .anim-story {
+        animation: weightanim 0.5s infinite alternate ease-in-out;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="parent">
+      <div style="column-count: 6" id="anims"></div>
+    </div>
+  </body>
+  <script>
+    el = document.createElement("div");
+    el.classList += "anim-story";
+    increments = 350;
+    for (i = 0; i < increments; i++) {
+      el_insert = el.cloneNode();
+      el_insert.id = "id" + i;
+      el_insert.innerText = "text";
+      stretch = 25 + (75 * i) / increments;
+      el_insert.style.fontStretch = stretch + "%";
+      anims.appendChild(el_insert);
+    }
+  </script>
+</html>

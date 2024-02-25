@@ -27,9 +27,9 @@ limitations under the License.
 namespace tflite {
 namespace task {
 namespace audio {
-class AudioEmbedder : public tflite::task::core::BaseTaskApi<
-                          tflite::task::processor::EmbeddingResult,
-                          const AudioBuffer&> {
+class AudioEmbedder
+    : public tflite::task::core::BaseTaskApi<
+          tflite::task::processor::EmbeddingResult, const AudioBuffer&> {
  public:
   // Use base class constructor.
   using BaseTaskApi::BaseTaskApi;
@@ -41,8 +41,7 @@ class AudioEmbedder : public tflite::task::core::BaseTaskApi<
   //
   // [1]: https://en.wikipedia.org/wiki/Cosine_similarity
   static tflite::support::StatusOr<double> CosineSimilarity(
-      const processor::FeatureVector& u,
-      const processor::FeatureVector& v);
+      const processor::FeatureVector& u, const processor::FeatureVector& v);
 
   // Creates an AudioEmbedder from the provided options. A non-default
   // OpResolver can be specified in order to support custom Ops or specify a
@@ -51,7 +50,7 @@ class AudioEmbedder : public tflite::task::core::BaseTaskApi<
   CreateFromOptions(
       const AudioEmbedderOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Performs actual feature vector extraction on the provided AudioBuffer.
   tflite::support::StatusOr<tflite::task::processor::EmbeddingResult> Embed(

@@ -1,0 +1,19 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "cookie_settings_factory.cc",
+    "cookie_settings_factory.h",
+    "host_content_settings_map_factory.cc",
+    "host_content_settings_map_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/ios",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}

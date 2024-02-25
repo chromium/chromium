@@ -28,7 +28,7 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//base/test:test_support",
     "//components/sync_device_info",
-    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/test/app:test_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//url",

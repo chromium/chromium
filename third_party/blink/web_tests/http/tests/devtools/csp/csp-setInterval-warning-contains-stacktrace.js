@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
     TestRunner.addResult(
       `This test should trigger a CSP violation by attempting to evaluate a string with setInterval.\n`);
-  await TestRunner.loadLegacyModule('console');
 
   await TestRunner.loadHTML(`
     <!DOCTYPE html>

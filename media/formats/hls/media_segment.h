@@ -19,7 +19,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   class MEDIA_EXPORT InitializationSegment
       : public base::RefCounted<InitializationSegment> {
    public:
-    InitializationSegment(GURL uri, absl::optional<types::ByteRange>);
+    InitializationSegment(GURL uri, std::optional<types::ByteRange>);
     InitializationSegment(const InitializationSegment& copy) = delete;
     InitializationSegment(InitializationSegment&& copy) = delete;
     InitializationSegment& operator=(const InitializationSegment& copy) =
@@ -32,16 +32,14 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
 
     // If the initialization segment is a subrange of its resource, this
     // indicates the range.
-    absl::optional<types::ByteRange> GetByteRange() const {
-      return byte_range_;
-    }
+    std::optional<types::ByteRange> GetByteRange() const { return byte_range_; }
 
    private:
     friend class base::RefCounted<InitializationSegment>;
     ~InitializationSegment();
 
     GURL uri_;
-    absl::optional<types::ByteRange> byte_range_;
+    std::optional<types::ByteRange> byte_range_;
   };
 
   MediaSegment(base::TimeDelta duration,
@@ -49,10 +47,11 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
                types::DecimalInteger discontinuity_sequence_number,
                GURL uri,
                scoped_refptr<InitializationSegment> initialization_segment,
-               absl::optional<types::ByteRange> byte_range,
-               absl::optional<types::DecimalInteger> bitrate,
+               std::optional<types::ByteRange> byte_range,
+               std::optional<types::DecimalInteger> bitrate,
                bool has_discontinuity,
-               bool is_gap);
+               bool is_gap,
+               bool has_new_init_segment);
   MediaSegment(const MediaSegment&) = delete;
   MediaSegment(MediaSegment&&) = delete;
   MediaSegment& operator=(const MediaSegment&) = delete;
@@ -83,9 +82,13 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     return initialization_segment_;
   }
 
+  // Returns whether this MediaSegment has a different InitializationSegment
+  // than the MediaSegment which immediately preceded this.
+  bool HasNewInitSegment() const { return has_new_init_segment_; }
+
   // If this media segment is a subrange of its resource, this indicates the
   // range.
-  absl::optional<types::ByteRange> GetByteRange() const { return byte_range_; }
+  std::optional<types::ByteRange> GetByteRange() const { return byte_range_; }
 
   // Whether there is a decoding discontinuity between the previous media
   // segment and this one.
@@ -97,7 +100,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
 
   // Returns the approximate bitrate of this segment (+-10%), expressed in
   // bits-per-second.
-  absl::optional<types::DecimalInteger> GetBitRate() const { return bitrate_; }
+  std::optional<types::DecimalInteger> GetBitRate() const { return bitrate_; }
 
  private:
   friend class base::RefCounted<MediaSegment>;
@@ -108,10 +111,11 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   types::DecimalInteger discontinuity_sequence_number_;
   GURL uri_;
   scoped_refptr<InitializationSegment> initialization_segment_;
-  absl::optional<types::ByteRange> byte_range_;
-  absl::optional<types::DecimalInteger> bitrate_;
+  std::optional<types::ByteRange> byte_range_;
+  std::optional<types::DecimalInteger> bitrate_;
   bool has_discontinuity_;
   bool is_gap_;
+  bool has_new_init_segment_;
 };
 
 }  // namespace media::hls

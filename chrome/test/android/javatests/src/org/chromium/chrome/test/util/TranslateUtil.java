@@ -22,9 +22,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Utility functions for dealing with Translate InfoBars.
- */
+/** Utility functions for dealing with Translate InfoBars. */
 public class TranslateUtil {
 
     public static void assertCompactTranslateInfoBar(InfoBar infoBar) {
@@ -62,18 +60,14 @@ public class TranslateUtil {
         return InfoBarUtil.findButton(infoBar, R.id.translate_infobar_menu_button, true);
     }
 
-    /**
-     * Simulates clicking the menu button and check if overflow menu is shown.
-     */
+    /** Simulates clicking the menu button and check if overflow menu is shown. */
     public static void clickMenuButtonAndAssertMenuShown(final TranslateCompactInfoBar infoBar) {
         clickMenuButton(infoBar);
         CriteriaHelper.pollInstrumentationThread(
                 infoBar::isShowingOverflowMenuForTesting, "Overflow menu did not show");
     }
 
-    /**
-     * Simulates clicking the 'More Language' menu item and check if language menu is shown.
-     */
+    /** Simulates clicking the 'More Language' menu item and check if language menu is shown. */
     public static void clickMoreLanguageButtonAndAssertLanguageMenuShown(
             Instrumentation instrumentation, final TranslateCompactInfoBar infoBar) {
         invokeOverflowMenuActionSync(
@@ -88,12 +82,13 @@ public class TranslateUtil {
      */
     public static void invokeOverflowMenuActionSync(
             Instrumentation instrumentation, final TranslateCompactInfoBar infoBar, final int id) {
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                infoBar.onOverflowMenuItemClicked(id);
-            }
-        });
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        infoBar.onOverflowMenuItemClicked(id);
+                    }
+                });
     }
 
     /**
@@ -102,7 +97,10 @@ public class TranslateUtil {
      */
     public static void clickTargetMenuItem(
             final TranslateCompactInfoBar infoBar, final String code) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { infoBar.onTargetMenuItemClicked(code); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    infoBar.onTargetMenuItemClicked(code);
+                });
     }
 
     /**
@@ -111,20 +109,21 @@ public class TranslateUtil {
      */
     public static void waitForTranslateInfoBarState(
             InfoBarContainer container, boolean expectTranslated) throws TimeoutException {
-        CriteriaHelper.pollUiThread(() -> {
-            ArrayList<InfoBar> infoBars = container.getInfoBarsForTesting();
-            if (infoBars.isEmpty()) {
-                return false;
-            }
-            assertCompactTranslateInfoBar(infoBars.get(0));
-            TranslateCompactInfoBar infoBar = (TranslateCompactInfoBar) infoBars.get(0);
-            if (expectTranslated) {
-                return !infoBar.isSourceTabSelectedForTesting()
-                        && infoBar.isTargetTabSelectedForTesting();
-            } else {
-                return infoBar.isSourceTabSelectedForTesting()
-                        && !infoBar.isTargetTabSelectedForTesting();
-            }
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ArrayList<InfoBar> infoBars = container.getInfoBarsForTesting();
+                    if (infoBars.isEmpty()) {
+                        return false;
+                    }
+                    assertCompactTranslateInfoBar(infoBars.get(0));
+                    TranslateCompactInfoBar infoBar = (TranslateCompactInfoBar) infoBars.get(0);
+                    if (expectTranslated) {
+                        return !infoBar.isSourceTabSelectedForTesting()
+                                && infoBar.isTargetTabSelectedForTesting();
+                    } else {
+                        return infoBar.isSourceTabSelectedForTesting()
+                                && !infoBar.isTargetTabSelectedForTesting();
+                    }
+                });
     }
 }

@@ -47,9 +47,7 @@ bool StartsWith(std::string string, std::string prefix) {
 
 // Encodes the |string| for use as the value of a url parameter.
 std::string EncodeQueryParamValue(std::string string) {
-  std::string encoded_string;
-  base::Base64Encode(string, &encoded_string);
-  return encoded_string;
+  return base::Base64Encode(string);
 }
 
 // Decodes the |encoded_string|. Undoes the encoding performed by

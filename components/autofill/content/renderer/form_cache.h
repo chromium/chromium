@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -84,11 +85,12 @@ class FormCache {
   // Updates |extracted_forms_| to contain the forms that are currently in the
   // DOM.
   UpdateFormCacheResult UpdateFormCache(
-      const FieldDataManager* field_data_manager);
+      const FieldDataManager& field_data_manager);
 
   // Clears the values of all input elements in the section of the form that
   // contains |element|.  Returns false if the form is not found.
-  bool ClearSectionWithElement(const blink::WebFormControlElement& element);
+  bool ClearSectionWithElement(const blink::WebFormControlElement& element,
+                               FieldDataManager& field_data_manager);
 
   // For each field in the |form|, if |attach_predictions_to_dom| is true, sets
   // the title to include the field's heuristic type, server type, and
@@ -98,35 +100,25 @@ class FormCache {
   bool ShowPredictions(const FormDataPredictions& form,
                        bool attach_predictions_to_dom);
 
-  // Stores the FieldRendererId of the fields that are eligible for manual
-  // filling in a set.
-  void SetFieldsEligibleForManualFilling(
-      const std::vector<FieldRendererId>& fields_eligible_for_manual_filling);
-
  private:
   friend class FormCacheTestApi;
 
-  // Iterates through |control_elements| and returns whether there is an
-  // autofillable form control.
-  bool HasAutofillableFormControl(
-      const std::vector<blink::WebFormControlElement>& control_elements);
-
   // Saves initial state of checkbox and select elements.
-  void SaveInitialValues(
-      const std::vector<blink::WebFormControlElement>& control_elements);
+  void SaveInitialValues(base::span<const FormFieldData> fields);
 
   // Clears the value of the |control_element|.
   // |trigger_element| is the element on which the user triggered a request
   // to clear the form.
   void ClearElement(blink::WebFormControlElement& control_element,
-                    const blink::WebFormControlElement& trigger_element);
+                    const blink::WebFormControlElement& trigger_element,
+                    FieldDataManager& field_data_manager);
 
   // Clears all entries from |initial_select_values_| and
   // |initial_checked_state_| whose keys not contained in |ids_to_retain|.
   void PruneInitialValueCaches(const std::set<FieldRendererId>& ids_to_retain);
 
   // The frame this FormCache is associated with. Weak reference.
-  blink::WebLocalFrame* frame_;
+  raw_ptr<blink::WebLocalFrame> frame_;
 
   // The cached forms. Used to prevent re-extraction of forms.
   std::map<FormRendererId, FormData> extracted_forms_;
@@ -144,9 +136,6 @@ class FormCache {
   // The cached initial values for checkable <input> elements. Entries are
   // keyed by the unique_renderer_form_control_id of the WebInputElements.
   std::map<FieldRendererId, bool> initial_checked_state_;
-
-  // Fields that are eligible to show manual filling on form interaction.
-  base::flat_set<FieldRendererId> fields_eligible_for_manual_filling_;
 };
 
 }  // namespace autofill

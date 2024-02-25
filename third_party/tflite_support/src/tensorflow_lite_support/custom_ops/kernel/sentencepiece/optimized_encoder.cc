@@ -31,8 +31,7 @@ const char kSpaceSymbol[] = "\xe2\x96\x81";
 
 template <typename processing_callback>
 std::tuple<std::string, std::vector<int>> process_string(
-    const std::string& input,
-    const std::vector<int>& offsets,
+    const std::string& input, const std::vector<int>& offsets,
     const processing_callback& pc) {
   std::string result_string;
   result_string.reserve(input.size());
@@ -79,9 +78,7 @@ std::tuple<int, utils::string_view> remove_extra_whitespaces(const char* data,
 }
 
 std::tuple<int, utils::string_view> find_replacement(
-    const char* data,
-    int len,
-    const DoubleArrayTrie& dat,
+    const char* data, int len, const DoubleArrayTrie& dat,
     const flatbuffers::Vector<int8_t>& replacements) {
   const auto max_match = dat.LongestPrefixMatch(utils::string_view(data, len));
   if (!max_match.empty()) {
@@ -97,8 +94,7 @@ std::tuple<int, utils::string_view> find_replacement(
 }  // namespace
 
 std::tuple<std::string, std::vector<int>> NormalizeString(
-    const std::string& in_string,
-    const EncoderConfig& config) {
+    const std::string& in_string, const EncoderConfig& config) {
   std::vector<int> output_offsets;
   std::string result = in_string;
   output_offsets.reserve(in_string.length());
@@ -149,10 +145,8 @@ std::tuple<std::string, std::vector<int>> NormalizeString(
 
 EncoderResult EncodeNormalizedString(const std::string& str,
                                      const std::vector<int>& offsets,
-                                     const EncoderConfig& config,
-                                     bool add_bos,
-                                     bool add_eos,
-                                     bool reverse) {
+                                     const EncoderConfig& config, bool add_bos,
+                                     bool add_eos, bool reverse) {
   const DoubleArrayTrie piece_matcher(config.pieces()->nodes());
   const flatbuffers::Vector<float>* piece_scores = config.pieces_scores();
   const int unknown_code = config.unknown_code();
@@ -225,11 +219,8 @@ EncoderResult EncodeNormalizedString(const std::string& str,
   return result;
 }
 
-EncoderResult EncodeString(const std::string& string,
-                           const void* config_buffer,
-                           bool add_bos,
-                           bool add_eos,
-                           bool reverse) {
+EncoderResult EncodeString(const std::string& string, const void* config_buffer,
+                           bool add_bos, bool add_eos, bool reverse) {
   // Get the config from the buffer.
   const EncoderConfig* config = GetEncoderConfig(config_buffer);
   if (config->version() != EncoderVersion::EncoderVersion_SENTENCE_PIECE) {

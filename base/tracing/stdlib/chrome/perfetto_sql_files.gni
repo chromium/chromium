@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files in //base/tracing/stdlib/chrome and subdirectories.
+chrome_stdlib_sql_files = [
+  "chrome_scrolls.sql",
+  "cpu_powerups.sql",
+  "event_latency_description.sql",
+  "histograms.sql",
+  "interactions.sql",
+  "metadata.sql",
+  "page_loads.sql",
+  "speedometer.sql",
+  "startups.sql",
+  "tasks.sql",
+  "vsync_intervals.sql",
+  "web_content_interactions.sql",
+  "scroll_jank/scroll_jank_cause_map.sql",
+  "scroll_jank/scroll_jank_cause_utils.sql",
+  "scroll_jank/scroll_jank_intervals.sql",
+  "scroll_jank/scroll_jank_v3_cause.sql",
+  "scroll_jank/scroll_jank_v3.sql",
+  "scroll_jank/scroll_offsets.sql",
+  "scroll_jank/utils.sql",
+]

@@ -26,6 +26,8 @@ class EmbedderRootsHandler;
 
 namespace blink {
 
+class BlinkGCMemoryDumpProvider;
+
 using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
                                               v8::EmbedderGraph*,
                                               void*);
@@ -59,15 +61,11 @@ class PLATFORM_EXPORT ThreadState final {
   ALWAYS_INLINE cppgc::HeapHandle& heap_handle() const { return heap_handle_; }
   ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return *cpp_heap_; }
 
-  void SafePoint(StackState);
-
   bool IsMainThread() const {
     return this ==
            &ThreadStateStorage::MainThreadStateStorage()->thread_state();
   }
   bool IsCreationThread() const { return thread_id_ == CurrentThread(); }
-
-  void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
 
   bool IsAllocationAllowed() const {
     return cppgc::subtle::DisallowGarbageCollectionScope::
@@ -115,7 +113,8 @@ class PLATFORM_EXPORT ThreadState final {
   cppgc::HeapHandle& heap_handle_;
   v8::Isolate* isolate_ = nullptr;
   base::PlatformThreadId thread_id_;
-  bool forced_scheduled_gc_for_testing_ = false;
+
+  friend class BlinkGCMemoryDumpProvider;
 };
 
 // static

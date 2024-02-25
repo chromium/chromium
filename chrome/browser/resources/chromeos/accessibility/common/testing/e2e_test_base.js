@@ -66,7 +66,7 @@ E2ETestBase = class extends AccessibilityTestBase {
     }
     // For ChromeVoxBackgroundTest.NewWindowWebSpeech:
     // chrome.runtime.openOptionsPage opens a SWA when Lacros is enabled.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();
       `);
   }
@@ -90,7 +90,7 @@ E2ETestBase = class extends AccessibilityTestBase {
     WaitForExtension(extension_misc::${extensionIdName}, std::move(load_cb));
 
     extensions::ExtensionHost* host =
-        extensions::ProcessManager::Get(browser()->profile())
+        extensions::ProcessManager::Get(GetProfile())
             ->GetBackgroundHostForExtension(
                 extension_misc::${extensionIdName});
 
@@ -280,7 +280,7 @@ E2ETestBase = class extends AccessibilityTestBase {
           const focus = await AsyncUtil.getFocus();
           // It's possible focus is elsewhere; wait until it lands on the
           // address bar text field.
-          if (focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
+          if (!focus || focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
             return;
           }
 
@@ -399,6 +399,36 @@ E2ETestBase = class extends AccessibilityTestBase {
     assertNullOrUndefined(
         treeWalker.next().node, 'Found more than one ' + nodeDescription + '.');
     return node;
+  }
+
+  /**
+   * Async function to get a preference value from Settings.
+   * @param {string} name
+   * @return {!Promise<*>}
+   */
+  async getPref(name) {
+    return new Promise(resolve => {
+      chrome.settingsPrivate.getPref(name, ret => {
+        resolve(ret);
+      });
+    });
+  }
+
+  /**
+   * Async function to set a preference value in Settings.
+   * @param {string} name
+   * @return {!Promise}
+   */
+  async setPref(name, value) {
+    return new Promise(resolve => {
+      chrome.settingsPrivate.setPref(name, value, undefined, async () => {
+        // Wait for changes to fully propagate.
+        const result = await (this.getPref(name));
+        assertEquals(result.key, name);
+        assertEquals(result.value, value);
+        resolve();
+      });
+    });
   }
 };
 

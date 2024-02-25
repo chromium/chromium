@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 
@@ -13,11 +14,6 @@ namespace content {
 
 bool IsFedCmAuthzEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAuthz);
-}
-
-bool IsFedCmIdpSignoutEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(
-      features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName, false);
 }
 
 bool IsFedCmMultipleIdentityProvidersEnabled() {
@@ -43,6 +39,10 @@ bool IsFedCmSelectiveDisclosureEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSelectiveDisclosure);
 }
 
+bool IsFedCmSkipWellKnownForSameSiteEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmSkipWellKnownForSameSite);
+}
+
 bool IsFedCmIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }
@@ -52,16 +52,37 @@ bool IsFedCmWithoutWellKnownEnforcementEnabled() {
       features::kFedCmWithoutWellKnownEnforcement);
 }
 
-bool IsWebIdentityMDocsEnabled() {
-  return base::FeatureList::IsEnabled(features::kWebIdentityMDocs);
+bool IsWebIdentityDigitalCredentialsEnabled() {
+  return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
-bool IsFedCmAutoReauthnFlagEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAutoReauthnFlag);
+bool IsFedCmAutoSelectedFlagEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmAutoSelectedFlag);
 }
 
-bool IsFedCmHostedDomainEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmHostedDomain);
+bool IsFedCmDomainHintEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmDomainHint);
+}
+
+bool IsFedCmErrorEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmError);
+}
+
+bool IsFedCmDisconnectEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmDisconnect);
+}
+
+bool IsFedCmUseOtherAccountEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount);
+}
+
+bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmExemptIdpWithThirdPartyCookies);
+}
+
+bool IsFedCmButtonModeEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmButtonMode);
 }
 
 }  // namespace content

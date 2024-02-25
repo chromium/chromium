@@ -5,11 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that inspect request works for nested OOPIF elements.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
 
   // Save time on style updates.
@@ -32,8 +33,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
             includeCommandLineAPI: true
           }, false, false);
 
-          UI.context.addFlavorChangeListener(SDK.DOMModel.DOMNode, (event) => {
-            const treeOutline = Elements.ElementsTreeOutline.forDOMModel(event.data.domModel());
+          UIModule.Context.Context.instance().addFlavorChangeListener(SDK.DOMModel.DOMNode, (event) => {
+            const treeOutline = ElementsModule.ElementsTreeOutline.ElementsTreeOutline.forDOMModel(event.data.domModel());
             TestRunner.addResult(`Selected node has text: ${treeOutline.selectedDOMNode().children()[0].nodeName()}`);
             TestRunner.completeTest();
           });

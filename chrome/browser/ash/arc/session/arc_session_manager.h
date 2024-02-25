@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_SESSION_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -30,7 +31,6 @@
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class ArcAppLauncher;
@@ -242,6 +242,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void OnRetryClicked() override;
   void OnSendFeedbackClicked() override;
   void OnRunNetworkTestsClicked() override;
+  void OnErrorPageShown(bool network_tests_shown) override;
 
   // StopArc(), then restart. Between them data clear may happens.
   // This is a special method to support enterprise device lost case.
@@ -349,10 +350,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void OnVmStopped(
       const vm_tools::concierge::VmStoppedSignal& vm_signal) override;
 
-  // Getter for |vm_info_|.
-  // If ARCVM is not running, return absl::nullopt.
-  const absl::optional<vm_tools::concierge::VmInfo>& GetVmInfo() const;
-
   // Getter for |serialno|.
   std::string GetSerialNumber() const;
 
@@ -360,9 +357,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void StopMiniArcIfNecessary();
 
   // Returns whether ARC activation is delayed by ARC on Demand
-  bool IsActivationDelayed() const {
-    return activation_delay_elapsed_timer_ != nullptr;
-  }
+  bool IsActivationDelayed() const { return activation_is_delayed; }
 
  private:
   // Reports statuses of OptIn flow to UMA.
@@ -374,8 +369,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // RequestEnable() has a check in order not to trigger starting procedure
   // twice. This method can be called to bypass that check when restarting.
-  // Returns true if ARC is started directly.
-  bool RequestEnableImpl();
+  void RequestEnableImpl();
 
   // Called when activation necessity check is done.
   void OnActivationNecessityChecked(bool result);
@@ -431,7 +425,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // If not requested, just skipping the data removal, and moves to
   // MaybeReenableArc() or CheckArcVmDataMigrationNecessity() directly.
   void MaybeStartArcDataRemoval();
-  void OnArcDataRemoved(absl::optional<bool> success);
+  void OnArcDataRemoved(std::optional<bool> success);
 
   // Checks whether /data migration is needed for enabling virtio-blk /data.
   // On completion, OnArcVmDataMigrationNecessityChecked() is called.
@@ -439,7 +433,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // check is finished but before ARC is enabled in MaybeReenableArc().
   void CheckArcVmDataMigrationNecessity(base::OnceClosure callback);
   void OnArcVmDataMigrationNecessityChecked(base::OnceClosure callback,
-                                            absl::optional<bool> result);
+                                            std::optional<bool> result);
 
   // On ARC session stopped and/or data removal completion, this is called
   // so that, if necessary, ARC session is restarted.
@@ -475,7 +469,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
       adb_sideloading_availability_delegate_;
 
   // Unowned pointer. Keeps current profile.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Whether ArcSessionManager is requested to enable (starting to run ARC
   // instance) or not.
@@ -490,6 +484,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   bool provisioning_reported_ = false;
   bool skipped_terms_of_service_negotiation_ = false;
   bool activation_is_allowed_ = false;
+  bool activation_is_delayed = false;
   base::OneShotTimer arc_sign_in_timer_;
 
   std::unique_ptr<ArcSupportHost> support_host_;
@@ -516,9 +511,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // The time when ARC was about to start.
   base::TimeTicks start_time_;
 
-  // Used to measure the activation delay.
-  std::unique_ptr<base::ElapsedTimer> activation_delay_elapsed_timer_;
-
   base::RepeatingClosure attempt_user_exit_callback_;
 
   base::RepeatingClosure attempt_restart_callback_;
@@ -526,15 +518,13 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcAppIdProviderImpl app_id_provider_;
 
   // The content of /var/lib/misc/arc_salt. Empty if the file doesn't exist.
-  absl::optional<std::string> arc_salt_on_disk_;
+  std::optional<std::string> arc_salt_on_disk_;
 
-  absl::optional<bool> property_files_expansion_result_;
-
-  absl::optional<vm_tools::concierge::VmInfo> vm_info_;
+  std::optional<bool> property_files_expansion_result_;
 
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
-  absl::optional<guest_os::GuestOsMountProviderRegistry::Id>
+  std::optional<guest_os::GuestOsMountProviderRegistry::Id>
       arcvm_mount_provider_id_;
 
   // Must be the last member.

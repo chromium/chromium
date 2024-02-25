@@ -17,13 +17,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/features.h"
@@ -42,6 +42,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -51,7 +52,9 @@
 #include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
+#include "content/test/render_document_feature.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -570,8 +573,6 @@ class BFCachedRenderWidgetHostViewBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             /*ignore_outstanding_network_request=*/false);
-    // To evict the main frame's `viz::SurfaceId` while in BFCache.
-    enabled_features.push_back({features::kEvictSubtree, {{}}});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
@@ -1538,6 +1539,7 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   void CreateVisibleTimeRequest(bool show_reason_tab_switching = true,
                                 bool show_reason_bfcache_restore = false) {
     if (show_reason_bfcache_restore) {
+      GetRenderWidgetHostView()->OnOldViewDidNavigatePreCommit();
       GetRenderWidgetHostView()->DidEnterBackForwardCache();
     }
     GetRenderWidgetHostView()
@@ -1735,15 +1737,13 @@ void CheckSurfaceRangeRemovedAfterCopy(viz::SurfaceRange range,
 }
 
 class RenderWidgetHostViewCopyFromSurfaceBrowserTest
-    : public RenderWidgetHostViewBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public RenderWidgetHostViewBrowserTest {
  public:
   RenderWidgetHostViewCopyFromSurfaceBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSlimCompositor);
-    }
+    // Enable `RenderDocument` to guarantee renderer/RFH swap for cross-site
+    // navigations.
+    InitAndEnableRenderDocumentFeature(&scoped_feature_list_render_document_,
+                                       RenderDocumentFeatureFullyEnabled()[0]);
   }
 
   void SetUpOnMainThread() override {
@@ -1760,10 +1760,10 @@ class RenderWidgetHostViewCopyFromSurfaceBrowserTest
   bool SetUpSourceSurface(const char* wait_message) override { return false; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_render_document_;
 };
 
-IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
                        AsyncCopyFromSurface) {
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
@@ -1776,7 +1776,7 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
   const viz::SurfaceRange range_for_copy(rwhv_android->GetCurrentSurfaceId(),
                                          rwhv_android->GetCurrentSurfaceId());
   const viz::SurfaceRange range_for_mainframe(
-      absl::nullopt, rwhv_android->GetCurrentSurfaceId());
+      std::nullopt, rwhv_android->GetCurrentSurfaceId());
   base::RunLoop run_loop;
   GetRenderViewHost()->GetWidget()->GetView()->CopyFromSurface(
       gfx::Rect(), gfx::Size(),
@@ -1801,26 +1801,6 @@ void AssertSnapshotIsPureWhite(base::RepeatingClosure resume_test,
   std::move(resume_test).Run();
 }
 
-void WaitForSurfaceAvailableForCopy(WebContents* web_contents) {
-  {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
-    obs.Wait();
-  }
-  // `InsertVisualStateCallback` replies when a CompositorFrame is submitted.
-  // However, we want to wait until the Viz process has received the new
-  // `CompositorFrame` so that the new frame is available for copy. Waiting for
-  // a second frame to be submitted guarantees this, since the second frame
-  // cannot be sent until the first frame was ACKed by Viz.
-  {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
-    obs.Wait();
-  }
-  ASSERT_TRUE(
-      web_contents->GetRenderWidgetHostView()->IsSurfaceAvailableForCopy());
-}
-
 class ScopedSnapshotWaiter : public WebContentsObserver {
  public:
   ScopedSnapshotWaiter(WebContents* wc, const GURL& destination)
@@ -1841,9 +1821,9 @@ class ScopedSnapshotWaiter : public WebContentsObserver {
     auto* request = NavigationRequest::From(handle);
     request->set_ready_to_commit_callback_for_testing(base::BindOnce(
         [](RenderWidgetHostView* old_view,
-           base::OnceCallback<bool()> is_same_proc_nav,
+           base::OnceCallback<bool()> renderer_swapped,
            base::RepeatingClosure resume) {
-          ASSERT_FALSE(std::move(is_same_proc_nav).Run());
+          ASSERT_TRUE(std::move(renderer_swapped).Run());
           ASSERT_TRUE(old_view);
           static_cast<RenderWidgetHostViewBase*>(old_view)
               ->CopyFromExactSurface(gfx::Rect(), gfx::Size(),
@@ -1852,8 +1832,14 @@ class ScopedSnapshotWaiter : public WebContentsObserver {
         },
         request->frame_tree_node()->current_frame_host()->GetView(),
         // The request must outlive its own callback.
-        base::BindOnce(&NavigationRequest::IsSameProcess,
-                       base::Unretained(request)),
+        base::BindOnce(
+            base::BindLambdaForTesting([](NavigationRequest* request) {
+              return request->GetRenderFrameHost() !=
+                     request->frame_tree_node()
+                         ->render_manager()
+                         ->current_frame_host();
+            }),
+            base::Unretained(request)),
         run_loop_.QuitClosure()));
   }
 
@@ -1865,13 +1851,13 @@ class ScopedSnapshotWaiter : public WebContentsObserver {
 // A "best effort" browser test: issue an exact `CopyOutputRequest` during a
 // cross-renderer navigation, when the navigation is about to commit in the
 // browser. We should always be able to get a desired snapshot back.
-IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
                        CopyExactSurfaceDuringCrossRendererNavigations) {
   ASSERT_TRUE(
       NavigateToURL(shell()->web_contents(),
                     embedded_test_server()->GetURL("a.com", "/empty.html")));
   // Makes sure "empty.html" is in a steady state and ready to be copied.
-  WaitForSurfaceAvailableForCopy(shell()->web_contents());
+  WaitForCopyableViewInWebContents(shell()->web_contents());
 
   const auto cross_renderer_url =
       embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -1879,14 +1865,245 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell()->web_contents(), cross_renderer_url));
   // Force the new renderer for "title1.html" to submit a new compositor frame
   // and ack by viz, such that our `CopyOutputRequest` is fulfilled.
-  WaitForSurfaceAvailableForCopy(shell()->web_contents());
+  WaitForCopyableViewInWebContents(shell()->web_contents());
   // Blocks until we get the desired snapshot of "empty.html".
   waiter.Wait();
 }
-
-INSTANTIATE_TEST_SUITE_P(EnableDisableSlim,
-                         RenderWidgetHostViewCopyFromSurfaceBrowserTest,
-                         ::testing::Bool());
 #endif
+
+namespace {
+
+// When an OOPIF performs a "location.replace" main frame navigation and with
+// BFCache enabled, it can lead to a redundant `ui::ViewAndroid` attached under
+// `WebContentsViewAndroid` (*), even though the OOPIF and its embedding main
+// frame are stored in BFCache, the redundant `ui::ViewAndroid` is not detached
+// properly.
+//
+// *: Also the case for Aura with duplicated `ui::Window`; unclear about other
+//    platforms.
+//
+// The root cause:
+// 1. The "location.replace" first signals the browser that we will not swap the
+//    BrowsingInstance.
+// 2. Since BI is not swapped (yet), the speculative RFH can be in the same
+//    SiteInstanceGroup as the RFH of the OOPIF (i.e., both being b.com). Same
+//    SIGroup means the speculative RFH and the OOPIF RFH ref-count the same
+//    `RenderViewHost`.
+// 3. And since this is a main frame navigation, we create a new RWHV (and a
+//    `gfx::NativeView`) for the speculative RFH. Now OOPIF and the speculative
+//    RFH share the same RVH and RWHV. 2 and 3 happen before the browser hear
+//    back from the server with the header.
+// 4. The server responds with the header "coop=same-site". The browser now
+//    realizes the BI needs to be swapped. The old page and the OOPIF are
+//    BFCached, but the OOPIF still has reference to a RWHV/NativeView that it
+//    shouldn't have.
+//
+// TODO(https://crbug.com/1492600):
+// - A page shouldn't be BFCached if it is no longer reachable via session
+//   history navigations (i.e., if the navigation entry is replaced).
+// - When the browser is in a steady state with no on-going navigations, there
+//   should only be one `RenderWidgetHostView` for the main frame, one only one
+//   `gfx::NativeView` under the WebContents.
+class RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest
+    : public RenderWidgetHostViewBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest() =
+      default;
+  ~RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest()
+      override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // For OOPIF. a.test, b.test etc will be in their respective
+    // `SiteInstanceGroup`s.
+    command_line->AppendSwitch(switches::kSitePerProcess);
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    base::test::FeatureRefAndParams must_enable(
+        /*feature=*/features::kInvalidateLocalSurfaceIdPreCommit,
+        /*params=*/std::map<std::string, std::string>());
+    enabled_features.push_back(std::move(must_enable));
+
+    bool bfcache_enabled = GetParam();
+    if (bfcache_enabled) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          GetDefaultEnabledBackForwardCacheFeaturesForTesting(enabled_features),
+          GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+      command_line->AppendSwitch(switches::kDisableBackForwardCache);
+    }
+
+    RenderWidgetHostViewBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    net::test_server::RegisterDefaultHandlers(https_server());
+
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  bool SetUpSourceSurface(const char* wait_message) override { return false; }
+
+  RenderFrameHostImpl* AddSubframe(WebContentsImpl* web_contents,
+                                   const GURL& url) {
+    auto* main_frame = web_contents->GetPrimaryMainFrame();
+
+    static constexpr char kAddIFrame[] = R"({
+        const iframe = document.createElement('iframe');
+        iframe.src = $1;
+        document.body.appendChild(iframe);
+      })";
+    TestNavigationObserver observer(web_contents);
+    EXPECT_TRUE(ExecJs(main_frame, JsReplace(kAddIFrame, url)));
+    observer.Wait();
+    EXPECT_EQ(main_frame->frame_tree_node()->child_count(), 1U);
+    return main_frame->frame_tree_node()->child_at(0u)->current_frame_host();
+  }
+
+  void NavigateMainFrameFromSubframeAndWait(RenderFrameHost* subframe_rfh,
+                                            const GURL& url) {
+    TestNavigationObserver observer(web_contents());
+    ASSERT_TRUE(ExecJs(subframe_rfh,
+                       JsReplace("window.top.location.replace($1)", url)));
+    observer.Wait();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  WebContentsImpl* web_contents() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+ private:
+  net::EmbeddedTestServer https_server_{
+      net::EmbeddedTestServer::Type::TYPE_HTTPS};
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+std::string DescribeBFCacheFeatureStatus(
+    const ::testing::TestParamInfo<bool>& info) {
+  if (info.param) {
+    return "BFCache_Enabled";
+  } else {
+    return "BFCache_Disabled";
+  }
+}
+
+}  // namespace
+
+// TODO(https://crbug.com/1492600): When fix the BFCache behavior, move this
+// test into "back_forward_cache_basics_browsertest.cc". Temporarily placed here
+// to reuse the testing harness.
+IN_PROC_BROWSER_TEST_P(
+    RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest,
+    NonHistoryTraversablePageShouldNotBeBFCached) {
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            https_server()->GetURL("a.test", "/title1.html")));
+
+  RenderFrameHostWrapper subframe_rfh(AddSubframe(
+      web_contents(), https_server()->GetURL("b.test", "/title2.html")));
+  RenderFrameHostWrapper old_main_frame(web_contents()->GetPrimaryMainFrame());
+
+  NavigateMainFrameFromSubframeAndWait(
+      subframe_rfh.get(),
+      https_server()->GetURL(
+          "b.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+
+  // Location.replace navigaion replaces the navigation entry of the old page.
+  // We can't go back.
+  ASSERT_EQ(web_contents()->GetPrimaryFrameTree().controller().GetEntryCount(),
+            1);
+
+  bool bfcache_enabled = GetParam();
+  if (bfcache_enabled) {
+    // TODO(https://crbug.com/1492600): We shouldn't store the old page and its
+    // OOPIF in the BFCache.
+    ASSERT_FALSE(old_main_frame.IsDestroyed());
+    ASSERT_FALSE(subframe_rfh.IsDestroyed());
+    ASSERT_TRUE(static_cast<RenderFrameHostImpl*>(old_main_frame.get())
+                    ->IsInBackForwardCache());
+    ASSERT_TRUE(static_cast<RenderFrameHostImpl*>(subframe_rfh.get())
+                    ->IsInBackForwardCache());
+  } else {
+    ASSERT_TRUE(old_main_frame.WaitUntilRenderFrameDeleted());
+    ASSERT_TRUE(subframe_rfh.WaitUntilRenderFrameDeleted());
+  }
+}
+
+// Regression test for b/302490197: the touch events should always be forwarded
+// to the main frame's `RenderWidgetHostViewAndroid` and its `ui::ViewAndroid`,
+// no matter if there are redundant RWHVAs / VAs under the same WebContents.
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(
+    RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest,
+    TouchEventsForwardedToTheCorrectRenderWidgetHostView) {
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            https_server()->GetURL("a.test", "/title1.html")));
+
+  RenderFrameHostWrapper subframe_rfh(AddSubframe(
+      web_contents(), https_server()->GetURL("b.test", "/title2.html")));
+  RenderFrameHostWrapper old_main_frame(web_contents()->GetPrimaryMainFrame());
+
+  NavigateMainFrameFromSubframeAndWait(
+      subframe_rfh.get(),
+      https_server()->GetURL(
+          "b.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+
+  bool bfcache_enabled = GetParam();
+  if (!bfcache_enabled) {
+    ASSERT_TRUE(old_main_frame.WaitUntilRenderFrameDeleted());
+    ASSERT_TRUE(subframe_rfh.WaitUntilRenderFrameDeleted());
+  }
+
+  // Three RWHV when BFCache is enabled: old main frame and its OOPIF, and the
+  // new main frame.
+  //
+  // TODO(https://crbug.com/1492600): The number of RWHVs should be one,
+  // regardless of BFCache.
+  size_t num_expected_rwhv = bfcache_enabled ? 3u : 1u;
+  size_t num_actual_rwhv = 0u;
+  static_cast<WebContents*>(web_contents())
+      ->ForEachRenderFrameHost([&num_actual_rwhv](RenderFrameHost* rfh) {
+        if (rfh->GetView()) {
+          ++num_actual_rwhv;
+        }
+      });
+  ASSERT_EQ(num_actual_rwhv, num_expected_rwhv);
+
+  // On Android, when the old main frame is unloaded, we explicitly call
+  // `RWHVA::UpdateNativeViewTree()` to remove the old main frame's native
+  // view from the native view tree. Thus the number of ViewAndroids is two
+  // instead of three, when the old main frame and the OOPIF are BFCached. See
+  // `WebContentsViewAndroid::RenderViewHostChanged()`.
+  //
+  // TODO(https://crbug.com/1492600): The number of `ui::ViewAndroid`s should be
+  // one, regardless of BFCache.
+  size_t num_expected_native_view = bfcache_enabled ? 2u : 1u;
+  auto* web_contents_view_android =
+      static_cast<ui::ViewAndroid*>(web_contents()->GetNativeView());
+
+  ASSERT_EQ(web_contents_view_android->GetChildrenCountForTesting(),
+            num_expected_native_view);
+  // b/302490197: The top-most child `gfx::NativeView` under the WebContents
+  // should be the one of the primary main frame, regardless if any other
+  // siblings exist. This native view of the primary main frame is responsible
+  // for receiving gesture events, thus has to be the top-most.
+  ASSERT_EQ(web_contents_view_android->GetTopMostChildForTesting(),
+            web_contents()->GetPrimaryMainFrame()->GetNativeView());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest,
+    testing::Bool(),
+    &DescribeBFCacheFeatureStatus);
 
 }  // namespace content

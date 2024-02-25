@@ -6,12 +6,14 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -391,18 +393,18 @@ class AssistantOptInFlowBaseTest : public OobeBaseTest {
 
   // Waits for the button specified by IDs in `button_path` to become enabled,
   // and then taps it.
-  void TapWhenEnabled(std::initializer_list<base::StringPiece> button_path) {
+  void TapWhenEnabled(std::initializer_list<std::string_view> button_path) {
     test::OobeJS().CreateEnabledWaiter(true, button_path)->Wait();
     test::OobeJS().TapOnPath(button_path);
   }
 
-  bool ElementHasAttribute(std::initializer_list<base::StringPiece> element,
+  bool ElementHasAttribute(std::initializer_list<std::string_view> element,
                            const std::string& attribute) {
     return test::OobeJS().GetBool(test::GetOobeElementPath(element) +
                                   ".getAttribute('" + attribute + "')");
   }
 
-  void WaitForElementAttribute(std::initializer_list<base::StringPiece> element,
+  void WaitForElementAttribute(std::initializer_list<std::string_view> element,
                                const std::string& attribute) {
     test::OobeJS()
         .CreateWaiter(test::GetOobeElementPath(element) + ".getAttribute('" +
@@ -426,7 +428,7 @@ class AssistantOptInFlowBaseTest : public OobeBaseTest {
 
   std::unique_ptr<ScopedAssistantSettings> assistant_settings_;
 
-  absl::optional<AssistantOptInFlowScreen::Result> screen_result_;
+  std::optional<AssistantOptInFlowScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
   // If set, HandleRequest will return an error for the next value prop URL
@@ -582,7 +584,9 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantStateUpdateAfterShow) {
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, RetryOnWebviewLoadFail) {
+// TODO(crbug.com/1513726): Flaky on ChromeOS.
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
+                       DISABLED_RetryOnWebviewLoadFail) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   SetUpAssistantScreensForTest();

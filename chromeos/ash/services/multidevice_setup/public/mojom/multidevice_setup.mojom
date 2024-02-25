@@ -108,9 +108,7 @@ enum FeatureState {
   // because the entire Better Together suite has been disabled by the user.
   kUnavailableSuiteDisabled = 7,
 
-  // The feature still requires further setup to be ready for use (e.g., Android
-  // Messages requires a separate pairing flow after unified setup).
-  kFurtherSetupRequired = 8,
+  // kFurtherSetupRequired (8) is deprecated.
 
   // The feature has been enabled by the user, but it is still unavailable
   // because it is a sub-feature of a top-level feature, and that top-level

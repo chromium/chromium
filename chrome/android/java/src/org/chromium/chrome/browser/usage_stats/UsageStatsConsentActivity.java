@@ -11,9 +11,7 @@ import android.text.TextUtils;
 
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 
-/**
- * Activity that prompts the user for consent to share browsing activity with Digital Wellbeing.
- */
+/** Activity that prompts the user for consent to share browsing activity with Digital Wellbeing. */
 public class UsageStatsConsentActivity extends SynchronousInitializationActivity {
     public static final String UNAUTHORIZE_ACTION =
             "org.chromium.chrome.browser.usage_stats.action.UNAUTHORIZE";
@@ -38,8 +36,9 @@ public class UsageStatsConsentActivity extends SynchronousInitializationActivity
     public void onAttachedToWindow() {
         String action = getIntent().getAction();
         boolean isRevocation = TextUtils.equals(action, UNAUTHORIZE_ACTION);
-        UsageStatsConsentDialog
-                .create(this, isRevocation,
+        UsageStatsConsentDialog.create(
+                        this,
+                        isRevocation,
                         (didConfirm) -> {
                             setResult(didConfirm ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
                             finish();

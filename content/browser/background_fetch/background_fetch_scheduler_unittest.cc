@@ -87,7 +87,7 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
         storage_partition()->GetBackgroundFetchContext();
     scheduler_ = std::make_unique<BackgroundFetchScheduler>(
         background_fetch_context, data_manager_.get(), nullptr,
-        delegate_proxy_.get(), devtools_context().get(),
+        delegate_proxy_.get(), devtools_context(),
         embedded_worker_test_helper()->context_wrapper());
   }
 
@@ -133,7 +133,7 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
                                         requests.size(),
                                         /* active_fetch_requests= */ {},
                                         /* start_paused= */ false,
-                                        /* isolation_info= */ absl::nullopt);
+                                        /* isolation_info= */ std::nullopt);
     scheduler_->job_controllers_[registration_id.unique_id()] =
         std::move(controller);
     scheduler_->controller_ids_.push_back(registration_id);

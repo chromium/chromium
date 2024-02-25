@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: text/event-stream");
-$url = $_SERVER["REQUEST_URI"];
-$id = $_SERVER["HTTP_LAST_EVENT_ID"];
+$url = $_SERVER["REQUEST_URI"] ?? null;
+$id = $_SERVER["HTTP_LAST_EVENT_ID"] ?? null;
 
 echo "id: 77\n";
 echo "retry: 300\n";

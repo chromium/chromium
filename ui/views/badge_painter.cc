@@ -17,6 +17,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -81,8 +82,8 @@ gfx::Size BadgePainter::GetBadgeSize(const std::u16string& text,
 
 gfx::FontList BadgePainter::GetBadgeFont(const gfx::FontList& context_font) {
   if (features::IsChromeRefresh2023()) {
-    return views::style::GetFont(views::style::CONTEXT_BADGE,
-                                 views::style::STYLE_SECONDARY);
+    return views::TypographyProvider::Get().GetFont(
+        views::style::CONTEXT_BADGE, views::style::STYLE_SECONDARY);
   }
 
   // Preferred font is slightly smaller and slightly more bold than the title

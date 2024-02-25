@@ -306,7 +306,7 @@ bool CastToolbarButton::ShouldShowNewIcons() {
          IsAccessCodeCastFreezeUiEnabled(profile_);
 }
 
-BEGIN_METADATA(CastToolbarButton, ToolbarButton)
+BEGIN_METADATA(CastToolbarButton)
 END_METADATA
 
 }  // namespace media_router

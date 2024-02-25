@@ -131,11 +131,10 @@
     margin-top: 12px;
   }
 
-  #add-account-icon {
+  #addAccountIcon {
     -webkit-mask-image: url(chrome://resources/images/add.svg);
     background-color: currentColor;
     height: 24px;
-    margin-inline-end: 0.5em;
     width: 24px;
   }
 
@@ -220,12 +219,8 @@
     --active-shadow-action-rgb: var(--cros-color-alert-rgb);
     --bg-action: var(--cros-color-alert);
     --focus-shadow-color: var(--cros-highlight-color-error);
-    --hover-bg-action: rgba(var(--cros-color-alert-rgb), .9);
-    --hover-shadow-action-rgb: var(--cros-color-alert-rgb);
-  }
-
-  :host-context(body.jelly-enabled) #removeConfirmationButton {
     --hover-bg-action: var(--cros-sys-hover_on_prominent);
+    --hover-shadow-action-rgb: var(--cros-color-alert-rgb);
   }
 </style>
 <!-- Account management description -->
@@ -303,7 +298,7 @@
       <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
           id="add-account-button" on-click="addAccount_"
           deep-link-focus-id$="[[Setting.kAddAccount]]">
-        <div id="add-account-icon"></div>
+        <div id="addAccountIcon" slot="prefix-icon"></div>
         [[getAddAccountLabel_(isChildUser_,
             isSecondaryGoogleAccountSigninAllowed_)]]
       </cr-button>

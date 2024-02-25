@@ -20,17 +20,19 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/extensions/extensions_hats_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/extensions_resources.h"
 #include "chrome/grit/extensions_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -219,6 +221,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"itemPermissionsEmpty", IDS_EXTENSIONS_ITEM_PERMISSIONS_EMPTY},
     {"itemPermissionsAndSiteAccessEmpty",
      IDS_EXTENSIONS_ITEM_PERMISSIONS_AND_SITE_ACCESS_EMPTY},
+    {"itemPinToToolbar", IDS_EXTENSIONS_ITEM_PIN_TO_TOOLBAR},
     {"itemRemoveExtension", IDS_EXTENSIONS_ITEM_REMOVE_EXTENSION},
     {"itemShowAccessRequestsInToolbar",
      IDS_EXTENSIONS_ITEM_SHOW_ACCESS_REQUESTS_IN_TOOLBAR},
@@ -354,8 +357,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"viewServiceWorker", IDS_EXTENSIONS_SERVICE_WORKER_BACKGROUND},
     {"safetyCheckKeepExtension", IDS_EXTENSIONS_SC_KEEP_EXT},
     {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
-    {"safetyCheckAllDoneForNow", IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW},
     {"safetyCheckAllExtensions", IDS_EXTENSIONS_SC_ALL_EXTENSIONS},
+    {"safetyHubHeader", IDS_SETTINGS_SAFETY_HUB},
     {"safetyCheckRemoveButtonA11yLabel",
      IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
     {"safetyCheckOptionMenuA11yLabel",
@@ -376,6 +379,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
+  // Add localized generic strings that need '&' to be removed from them.
+  webui::AddLocalizedString(source, "edit", IDS_EDIT);
+
   source->AddString("errorLinesNotShownSingular",
                     l10n_util::GetPluralStringFUTF16(
                         IDS_EXTENSIONS_ERROR_LINES_NOT_SHOWN, 1));
@@ -393,9 +399,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                              GURL(chrome::kRemoveNonCWSExtensionURL),
                              g_browser_process->GetApplicationLocale())
                              .spec()));
-  source->AddString(
-      "enhancedSafeBrowsingWarningHelpUrl",
-      base::ASCIIToUTF16(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL));
+  source->AddString("enhancedSafeBrowsingWarningHelpUrl",
+                    chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString(
       "kioskDisableBailoutWarningBody",
@@ -438,11 +443,29 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean(
       "safetyCheckShowReviewPanel",
       base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
+  source->AddBoolean("safetyHubShowReviewPanel",
+                     base::FeatureList::IsEnabled(features::kSafetyHub));
 
   return source;
 }
 
 }  // namespace
+
+ExtensionsUIConfig::ExtensionsUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIExtensionsHost) {}
+
+ExtensionsUIConfig::~ExtensionsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+ExtensionsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                          const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  if (profile->IsGuestSession()) {
+    return std::make_unique<PageNotAvailableForGuestUI>(
+        web_ui, chrome::kChromeUIExtensionsHost);
+  }
+  return std::make_unique<ExtensionsUI>(web_ui);
+}
 
 ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
     : WebUIController(web_ui),
@@ -458,6 +481,10 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
 
   source = CreateAndAddExtensionsSource(profile, *in_dev_mode_);
   ManagedUIHandler::Initialize(web_ui, source);
+
+  auto safety_check_hats_handler =
+      std::make_unique<ExtensionsHatsHandler>(profile);
+  web_ui->AddMessageHandler(std::move(safety_check_hats_handler));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto kiosk_app_handler = std::make_unique<ash::KioskAppsHandler>(
@@ -480,6 +507,8 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
                                             IDS_EXTENSIONS_SC_TITLE);
   plural_string_handler->AddLocalizedString("safetyCheckDescription",
                                             IDS_EXTENSIONS_SC_DESCRIPTION);
+  plural_string_handler->AddLocalizedString("safetyCheckAllDoneForNow",
+                                            IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 

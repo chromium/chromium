@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.readaloud.player.expanded.Menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="32dp"
+    android:paddingBottom="24dp"
+    android:orientation="vertical">
+
+    <!-- Title and back button. -->
+    <LinearLayout
+        android:id="@+id/readaloud_menu_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/readaloud_menu_margin_horizontal"
+        android:paddingBottom="20dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/readaloud_menu_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_arrow_back_24dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/readaloud_menu_back"/>
+        <TextView
+            android:id="@+id/readaloud_menu_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/readaloud_menu_title_margin_start"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+    </LinearLayout>
+
+    <!-- Scroll view in case there are a lot of items. -->
+    <org.chromium.chrome.browser.readaloud.player.expanded.MaxHeightScrollView
+        app:maxHeight="586dp"
+        android:id="@+id/items_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/items_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/readaloud_menu_margin_horizontal"
+            android:orientation="vertical">
+            <!-- Menu items and headings are added programmatically here. -->
+        </LinearLayout>
+    </org.chromium.chrome.browser.readaloud.player.expanded.MaxHeightScrollView>
+
+</org.chromium.chrome.browser.readaloud.player.expanded.Menu>

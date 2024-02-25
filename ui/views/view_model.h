@@ -5,11 +5,11 @@
 #ifndef UI_VIEWS_VIEW_MODEL_H_
 #define UI_VIEWS_VIEW_MODEL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"
 
@@ -28,9 +28,7 @@ class VIEWS_EXPORT ViewModelBase {
   struct Entry {
     Entry() = default;
 
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-ctor-field-initializer
-    RAW_PTR_EXCLUSION View* view = nullptr;
+    raw_ptr<View, DanglingUntriaged> view = nullptr;
     gfx::Rect ideal_bounds;
   };
   using Entries = std::vector<Entry>;
@@ -74,7 +72,7 @@ class VIEWS_EXPORT ViewModelBase {
 
   // Returns the index of the specified view, or nullopt if the view isn't in
   // the model.
-  absl::optional<size_t> GetIndexOfView(const View* view) const;
+  std::optional<size_t> GetIndexOfView(const View* view) const;
 
  protected:
   ViewModelBase();

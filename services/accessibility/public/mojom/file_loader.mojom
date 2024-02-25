@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// Implemented in the Browser process and called by the Accessibility Service.
+interface AccessibilityFileLoader {
+  // Loads a file to be consumed by the service, opened by the browser. Paths
+  // must be relative, where the base path is the default accessibility assets
+  // directory.
+  Load(mojo_base.mojom.RelativeFilePath path)
+    => (mojo_base.mojom.ReadOnlyFile? file);
+};

@@ -13,7 +13,6 @@
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "build/chromecast_buildflags.h"
 #include "content/browser/utility_process_host.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -25,10 +24,6 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
-
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-#include "base/process/process_handle.h"
-#endif
 
 namespace content {
 
@@ -54,7 +49,7 @@ class ServiceProcessTracker {
   ~ServiceProcessTracker() = default;
 
   ServiceProcessInfo AddProcess(base::Process process,
-                                const absl::optional<GURL>& site,
+                                const std::optional<GURL>& site,
                                 const std::string& service_interface_name) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto id = GenerateNextId();
@@ -132,7 +127,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
  public:
   UtilityProcessClient(
       const std::string& service_interface_name,
-      const absl::optional<GURL>& site,
+      const std::optional<GURL>& site,
       base::OnceCallback<void(const base::Process&)> process_callback)
       : service_interface_name_(service_interface_name),
         site_(std::move(site)),
@@ -173,10 +168,10 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   const std::string service_interface_name_;
 
   // Optional site GURL for per-site utility processes.
-  const absl::optional<GURL> site_;
+  const std::optional<GURL> site_;
 
   base::OnceCallback<void(const base::Process&)> process_callback_;
-  absl::optional<ServiceProcessInfo> process_info_;
+  std::optional<ServiceProcessInfo> process_info_;
 };
 
 // TODO(crbug.com/977637): Once UtilityProcessHost is used only by service
@@ -242,29 +237,5 @@ void ServiceProcessHost::Launch(mojo::GenericPendingReceiver receiver,
                                   std::move(options), sandbox));
   }
 }
-
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-void LaunchUtilityProcessServiceDeprecated(
-    const std::string& service_name,
-    const std::u16string& display_name,
-    sandbox::mojom::Sandbox sandbox_type,
-    mojo::ScopedMessagePipeHandle service_pipe,
-    base::OnceCallback<void(base::ProcessId)> callback) {
-  UtilityProcessHost* host = new UtilityProcessHost();
-  host->SetName(display_name);
-  host->SetMetricsName(service_name);
-  host->SetSandboxType(sandbox_type);
-  host->Start();
-  host->RunServiceDeprecated(
-      service_name, std::move(service_pipe),
-      base::BindOnce(
-          [](base::OnceCallback<void(base::ProcessId)> callback,
-             const absl::optional<base::ProcessId> pid) {
-            std::move(callback).Run(pid.value_or(base::kNullProcessId));
-          },
-          std::move(callback)));
-}
-#endif
 
 }  // namespace content

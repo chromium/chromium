@@ -136,7 +136,7 @@ class SourcesBuilder {
   }
 
  private:
-  const raw_ref<const base::ScopedTempDir, ExperimentalAsh> temp_dir_;
+  const raw_ref<const base::ScopedTempDir> temp_dir_;
   StatisticsProviderImpl::StatisticsSources sources_;
 };
 

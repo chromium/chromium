@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
@@ -26,11 +25,12 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -40,6 +40,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 
 namespace ash {
@@ -66,9 +67,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       system::StatisticsProvider::GetInstance();
   // MachineStatistics may not exist for browser tests, but it is fine for these
   // to be empty strings.
-  const absl::optional<base::StringPiece> customization_id =
+  const std::optional<base::StringPiece> customization_id =
       provider->GetMachineStatistic(system::kCustomizationIdKey);
-  const absl::optional<base::StringPiece> hwid =
+  const std::optional<base::StringPiece> hwid =
       provider->GetMachineStatistic(system::kHardwareClassKey);
   source->AddString("customizationId",
                     std::string(customization_id.value_or("")));
@@ -79,32 +80,52 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
                         "device-help-content-id"));
 
   // Add any features that have been enabled.
-  source->AddBoolean("colorThemes", true);
-  source->AddBoolean("HelpAppReleaseNotes", true);
   source->AddBoolean(
       "HelpAppLauncherSearch",
       base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
           base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean(
-      "HelpAppAutoTriggerInstallDialog",
-      base::FeatureList::IsEnabled(features::kHelpAppAutoTriggerInstallDialog));
-  source->AddBoolean(
       "HelpAppSearchServiceIntegration",
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
-  source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
+  // Features the background page does not need to query:
+  if (web_ui->GetWebContents()->GetVisibleURL().path() != "/background") {
+    // By default, querying the feature flag is what marks a Finch study as
+    // active for a client. For features that only happen when the user is
+    // actively browsing the help app (such as UI-only features), avoid querying
+    // them in the background page.
+    source->AddBoolean("HelpAppAppsGamesBannerV2", true);
+    source->AddBoolean(
+        "HelpAppAppDetailPage",
+        base::FeatureList::IsEnabled(ash::features::kHelpAppAppDetailPage));
+    source->AddBoolean("HelpAppAppsList", base::FeatureList::IsEnabled(
+                                              ash::features::kHelpAppAppsList));
+    source->AddBoolean(
+        "HelpAppCrosComponents",
+        base::FeatureList::IsEnabled(ash::features::kHelpAppCrosComponents));
+    source->AddBoolean("HelpAppHomePageAppArticles",
+                       base::FeatureList::IsEnabled(
+                           ash::features::kHelpAppHomePageAppArticles));
+    source->AddBoolean("HelpAppAutoTriggerInstallDialog",
+                       base::FeatureList::IsEnabled(
+                           features::kHelpAppAutoTriggerInstallDialog));
+    // TODO(b/326149929): Disable this feature until the Unified App Installer
+    // feature is ready.
+    source->AddBoolean("AppInstallServiceUri", false);
+  }
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();
 
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(profile);
-  if (scalable_iph) {
+  bool is_scalable_iph_available =
+      ScalableIphFactoryImpl::IsBrowserContextEligible(profile);
+  if (is_scalable_iph_available) {
     source->AddBoolean("HelpAppWelcomeTips",
                        ash::features::AreHelpAppWelcomeTipsEnabled());
+    // Day count starts from 0 with `InDaysFloored`.
     bool first_week_of_profile =
-        ((base::Time::Now() - profile->GetCreationTime()).InDaysFloored() <= 7);
+        ((base::Time::Now() - profile->GetCreationTime()).InDaysFloored() < 7);
     source->AddBoolean("shouldShowWelcomeTipsAtLaunch", first_week_of_profile);
   }
   // Add state from the OOBE flow.
@@ -122,7 +143,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "multiDeviceFeaturesAllowed",
       multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(pref_service));
-  source->AddBoolean("tabletMode", TabletMode::Get()->InTabletMode());
+  source->AddBoolean("tabletMode",
+                     display::Screen::GetScreen()->InTabletMode());
   // Whether or not RGB Keyboard is supported and configurable from the
   // Personalization Hub.
   RgbKeyboardManager* rgb_keyboard_manager =
@@ -139,7 +161,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   // If true, then the user may launch the setup flow for Microsoft 365.
   source->AddBoolean(
       "Microsoft365",
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile));
+      chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile));
 
   // Checks if the Google Assistant is allowed on this device by going through
   // policies.
@@ -158,7 +180,14 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   source->AddBoolean("isManagedDevice",
                      profile->GetProfilePolicyConnector()->IsManaged());
-  source->AddInteger("userType", user_manager->GetActiveUser()->GetType());
+  if (user_manager->GetActiveUser()) {
+    source->AddInteger(
+        "userType", static_cast<int>(user_manager->GetActiveUser()->GetType()));
+  } else {
+    // It's possible that there is no logged-in user. Set to -1 to indicate when
+    // this is the case.
+    source->AddInteger("userType", -1);
+  }
   source->AddBoolean("isEphemeralUser",
                      user_manager->IsCurrentUserNonCryptohomeDataEphemeral());
 }
@@ -169,6 +198,13 @@ HelpAppUntrustedUIConfig::HelpAppUntrustedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme, kChromeUIHelpAppHost) {}
 
 HelpAppUntrustedUIConfig::~HelpAppUntrustedUIConfig() = default;
+
+bool HelpAppUntrustedUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  // TODO(b/300226633): Maybe use `IsUserBrowserContext` to filter all ash
+  // profiles.
+  return !IsShimlessRmaAppBrowserContext(browser_context);
+}
 
 std::unique_ptr<content::WebUIController>
 HelpAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,

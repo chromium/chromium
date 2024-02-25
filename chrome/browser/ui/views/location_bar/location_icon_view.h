@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -22,9 +24,9 @@ enum SecurityLevel;
 // page security status (after navigation has completed), or extension name (if
 // the URL is a chrome-extension:// URL).
 class LocationIconView : public IconLabelBubbleView {
- public:
-  METADATA_HEADER(LocationIconView);
+  METADATA_HEADER(LocationIconView, IconLabelBubbleView)
 
+ public:
   class Delegate {
    public:
     using IconFetchedCallback =
@@ -58,6 +60,11 @@ class LocationIconView : public IconLabelBubbleView {
     // Gets an icon for the location bar icon chip.
     virtual ui::ImageModel GetLocationIcon(
         IconFetchedCallback on_icon_fetched) const = 0;
+
+    // Gets an optional background color override for the location bar icon
+    // chip.
+    virtual std::optional<ui::ColorId> GetLocationIconBackgroundColorOverride()
+        const;
   };
 
   LocationIconView(const gfx::FontList& font_list,

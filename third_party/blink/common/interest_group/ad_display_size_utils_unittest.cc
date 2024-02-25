@@ -35,6 +35,35 @@ TEST(AdDisplaySizeUtilsTest, ConvertAdSizeUnitToString) {
       ConvertAdSizeUnitToString(blink::AdSize::LengthUnit::kInvalid).empty());
 }
 
+TEST(AdDisplaySizeUtilsTest, ConvertAdSizeToString) {
+  // clang-format off
+  const AdSize kAdSize1(10, AdSize::LengthUnit::kPixels,
+                        15, AdSize::LengthUnit::kPixels);
+  EXPECT_EQ(ConvertAdSizeToString(kAdSize1), "10px,15px");
+
+  const AdSize kAdSize2(0.5, AdSize::LengthUnit::kScreenWidth,
+                        0.2, AdSize::LengthUnit::kScreenHeight);
+  EXPECT_EQ(ConvertAdSizeToString(kAdSize2), "0.5sw,0.2sh");
+
+  const AdSize kAdSize3(0.2, AdSize::LengthUnit::kScreenHeight,
+                        0.5, AdSize::LengthUnit::kScreenWidth);
+  EXPECT_EQ(ConvertAdSizeToString(kAdSize3), "0.2sh,0.5sw");
+
+  const AdSize kAdSize4(10.5, AdSize::LengthUnit::kPixels,
+                        11, AdSize::LengthUnit::kScreenWidth);
+  EXPECT_EQ(ConvertAdSizeToString(kAdSize4), "10.5px,11sw");
+  // clang-format on
+}
+
+TEST(AdDisplaySizeUtilsTest, ConvertAdDimensionToString) {
+  EXPECT_EQ(ConvertAdDimensionToString(10, AdSize::LengthUnit::kPixels),
+            "10px");
+  EXPECT_EQ(ConvertAdDimensionToString(0.5, AdSize::LengthUnit::kScreenWidth),
+            "0.5sw");
+  EXPECT_EQ(ConvertAdDimensionToString(0.5, AdSize::LengthUnit::kScreenHeight),
+            "0.5sh");
+}
+
 // Positive test cases.
 TEST(AdDisplaySizeUtilsTest, ParseSizeStringWithUnits) {
   RunTest("100px", 100.0, blink::AdSize::LengthUnit::kPixels);

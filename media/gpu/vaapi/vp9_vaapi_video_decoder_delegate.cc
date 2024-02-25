@@ -51,13 +51,9 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& seg,
     const Vp9LoopFilterParams& lf,
-    const Vp9ReferenceFrameVector& ref_frames,
-    base::OnceClosure done_cb) {
+    const Vp9ReferenceFrameVector& ref_frames) {
   TRACE_EVENT0("media,gpu", "VP9VaapiVideoDecoderDelegate::SubmitDecode");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // |done_cb| should be null as we return false from
-  // NeedsCompressedHeaderParsed().
-  DCHECK(!done_cb);
 
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
   DCHECK(frame_hdr);
@@ -303,14 +299,6 @@ bool VP9VaapiVideoDecoderDelegate::OutputPicture(
 }
 
 bool VP9VaapiVideoDecoderDelegate::NeedsCompressedHeaderParsed() const {
-  return false;
-}
-
-bool VP9VaapiVideoDecoderDelegate::GetFrameContext(
-    scoped_refptr<VP9Picture> pic,
-    Vp9FrameContext* frame_ctx) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED() << "Frame context update not supported";
   return false;
 }
 

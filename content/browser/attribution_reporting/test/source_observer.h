@@ -7,9 +7,10 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 
 namespace content {
@@ -37,7 +38,7 @@ class SourceObserver : public TestNavigationObserver {
  private:
   size_t num_impressions_ = 0u;
   const size_t expected_num_impressions_ = 0u;
-  absl::optional<blink::Impression> last_impression_;
+  std::optional<blink::Impression> last_impression_;
   bool waiting_for_null_impression_ = false;
   base::RunLoop impression_loop_;
 };

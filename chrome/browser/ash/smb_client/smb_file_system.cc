@@ -11,8 +11,7 @@
 #include "chrome/browser/ash/smb_client/smb_file_system_id.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 using file_system_provider::AbortCallback;
 
@@ -20,7 +19,7 @@ SmbFileSystem::SmbFileSystem(
     const file_system_provider::ProvidedFileSystemInfo& file_system_info)
     : file_system_info_(file_system_info) {}
 
-SmbFileSystem::~SmbFileSystem() {}
+SmbFileSystem::~SmbFileSystem() = default;
 
 AbortCallback SmbFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {
@@ -219,7 +218,7 @@ void SmbFileSystem::Configure(storage::AsyncFileUtil::StatusCallback callback) {
 
 base::WeakPtr<file_system_provider::ProvidedFileSystemInterface>
 SmbFileSystem::GetWeakPtr() {
-  return AsWeakPtr();
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 std::unique_ptr<file_system_provider::ScopedUserInteraction>
@@ -228,5 +227,4 @@ SmbFileSystem::StartUserInteraction() {
   return nullptr;
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

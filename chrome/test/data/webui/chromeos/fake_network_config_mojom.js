@@ -152,7 +152,7 @@ export class FakeNetworkConfig {
      'startConnect', 'startDisconnect', 'configureNetwork', 'forgetNetwork',
      'getAlwaysOnVpn', 'getSupportedVpnTypes', 'requestTrafficCounters',
      'resetTrafficCounters', 'setTrafficCountersAutoReset', 'removeCustomApn',
-     'createCustomApn', 'modifyCustomApn']
+     'createCustomApn', 'createExclusivelyEnabledCustomApn', 'modifyCustomApn']
         .forEach((methodName) => {
           this.resolverMap_.set(methodName, new PromiseResolver());
         });
@@ -171,7 +171,6 @@ export class FakeNetworkConfig {
 
   /**
    * @param {string} methodName
-   * @protected
    */
   methodCalled(methodName) {
     this.getResolver_(methodName).resolve();
@@ -369,7 +368,6 @@ export class FakeNetworkConfig {
 
   /**
    * @param {DeviceStateProperties} deviceState
-   * @private
    */
   setDeviceStateForTest(deviceState) {
     assert(deviceState.type !== undefined);
@@ -807,14 +805,28 @@ export class FakeNetworkConfig {
    * @param {!ApnProperties} apn
    */
   createCustomApn(guid, apn) {
-    const properties = this.managedProperties_.get(guid);
-    assert(properties);
-    apn.id = `${this.apnIdCounter_++}`;
-    if (!properties.typeProperties.cellular.customApnList) {
-      properties.typeProperties.cellular.customApnList = [];
-    }
-    properties.typeProperties.cellular.customApnList.unshift(apn);
-    this.methodCalled('createCustomApn');
+    return new Promise(resolve => {
+      const properties = this.managedProperties_.get(guid);
+      assert(properties);
+      apn.id = `${this.apnIdCounter_++}`;
+      if (!properties.typeProperties.cellular.customApnList) {
+        properties.typeProperties.cellular.customApnList = [];
+      }
+      properties.typeProperties.cellular.customApnList.unshift(apn);
+      this.methodCalled('createCustomApn');
+      resolve(true);
+    });
+  }
+
+  /**
+   * @param {!string} guid
+   * @param {!ApnProperties} apn
+   */
+  createExclusivelyEnabledCustomApn(guid, apn) {
+    return new Promise(resolve => {
+      this.methodCalled('createExclusivelyEnabledCustomApn');
+      resolve(true);
+    });
   }
 
   /**

@@ -5,7 +5,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=vars
- * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/ash/common/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
     html {
@@ -238,9 +238,10 @@
       --oobe-welcome-subheader-line-height:
           var(--cros-display-6_regular-line-height);
 
-      --oobe-header-text-color: var(--cros-sys-on_surface);
-      --oobe-subheader-text-color: var(--cros-sys-on_surface_variant);
       --oobe-text-color: var(--cros-sys-on_surface);
+      --oobe-text-color-secondary: var(--cros-sys-on_surface_variant);
+      --oobe-header-text-color: var(--oobe-text-color);
+      --oobe-subheader-text-color: var(--oobe-text-color-secondary);
 
       --oobe-autolaunch-app-name-font-size: var(--cros-button-1-font-size);
 
@@ -320,9 +321,11 @@
       --oobe-adaptive-dialog-icon-fill-color: var(--cros-sys-primary);
     }
 
-    html.simon-enabled {
-      /* TODO(b/289375621): Move to variables when jelly enabled by default. */
-      --oobe-welcome-header-font-size: 52px;
-      --oobe-welcome-header-font-weight: 400; /* regular */
-      --oobe-welcome-header-line-height: 60px;
+    html.boot-animation-enabled {
+      --oobe-welcome-header-font-size:
+          var(--cros-display-0_regular-font-size);
+      --oobe-welcome-header-font-weight:
+          var(--cros-display-0_regular-font-weight);
+      --oobe-welcome-header-line-height:
+          var(--cros-display-0_regular-line-height);
     }

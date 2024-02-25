@@ -43,7 +43,7 @@ TEST(feedstore_util_test, MaybeUpdateSessionId) {
   SetSessionId(metadata, Token1(), kExpiryTime1);
 
   // Updating the token with nullopt is a NOP.
-  MaybeUpdateSessionId(metadata, absl::nullopt);
+  MaybeUpdateSessionId(metadata, std::nullopt);
   EXPECT_EQ(Token1(), metadata.session_id().token());
 
   // Updating the token with the same value is a NOP.
@@ -80,11 +80,13 @@ TEST(feedstore_util_test, StreamTypeFromId) {
       StreamKind::kSingleWebFeed, "A", feed::SingleWebFeedEntryPoint::kMenu);
   StreamType single_web_feed_other = StreamType(
       StreamKind::kSingleWebFeed, "A", feed::SingleWebFeedEntryPoint::kOther);
+  StreamType supervised_feed = StreamType(StreamKind::kSupervisedUser);
 
   StreamType unknown = StreamType();
 
   EXPECT_EQ(StreamKey(for_you), kForYouStreamKey);
   EXPECT_EQ(StreamKey(following), kFollowStreamKey);
+  EXPECT_EQ(StreamKey(supervised_feed), kSupervisedUserStreamKey);
   EXPECT_DCHECK_DEATH(StreamKey(unknown));
 
   EXPECT_TRUE(StreamTypeFromKey(StreamKey(single_web_feed)).IsSingleWebFeed());
@@ -100,6 +102,8 @@ TEST(feedstore_util_test, StreamTypeFromId) {
 
   EXPECT_TRUE(StreamTypeFromKey(StreamKey(following)).IsWebFeed());
   EXPECT_TRUE(StreamTypeFromKey(StreamKey(for_you)).IsForYou());
+  EXPECT_TRUE(
+      StreamTypeFromKey(StreamKey(supervised_feed)).IsForSupervisedUser());
   EXPECT_EQ(StreamTypeFromKey("z"), StreamType());
 }
 

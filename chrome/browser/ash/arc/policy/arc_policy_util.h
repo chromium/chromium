@@ -144,11 +144,11 @@ std::map<std::string, std::set<std::string>> CreateInstallTypeMap(
 InstallType GetInstallTypeEnumFromString(const std::string& install_type);
 
 // Converts a string to its corresponding ArcPolicyKey enum.
-absl::optional<ArcPolicyKey> GetPolicyKeyFromString(
+std::optional<ArcPolicyKey> GetPolicyKeyFromString(
     const std::string& policy_key);
 
 // Parses policy JSON string to a dictionary.
-absl::optional<base::Value> ParsePolicyJson(const std::string& arc_policy);
+std::optional<base::Value> ParsePolicyJson(const std::string& arc_policy);
 
 }  // namespace policy_util
 }  // namespace arc

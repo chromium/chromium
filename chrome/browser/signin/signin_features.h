@@ -47,6 +47,10 @@ extern const base::FeatureParam<std::string> kForYouFreStudyGroup;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_DECLARE_FEATURE(kStableDeviceId);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);
 
 BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
@@ -58,5 +62,18 @@ BASE_DECLARE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders);
 #endif  // BUILDFLAG(ENABLE_MIRROR)
 
 BASE_DECLARE_FEATURE(kProfilesReordering);
+
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kForceSigninFlowInProfilePicker);
+// Default value is false, and the URL used would be /AccountChooser.
+extern const base::FeatureParam<bool>
+    kForceSigninReauthInProfilePickerUseAddSession;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Pre-connectes the network socket for the Account Capabilities fetch, before
+// triggering the sign in flow.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_DECLARE_FEATURE(kPreconnectAccountCapabilitiesBeforeSignIn);
+#endif
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_

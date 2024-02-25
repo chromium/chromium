@@ -4,10 +4,11 @@
 
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/password_manager/core/browser/android_backend_error.h"
+#include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -20,7 +21,8 @@ namespace password_manager {
 
 namespace {
 
-using sync_util::IsPasswordSyncEnabled;
+// TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on Android.
+using sync_util::IsSyncFeatureEnabledIncludingPasswords;
 
 std::string BuildCredentialManagerNotificationMetricName(
     const std::string& suffix) {
@@ -31,16 +33,21 @@ std::string BuildCredentialManagerNotificationMetricName(
 }  // namespace
 
 PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
-    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
-    base::OnceClosure on_sync_shutdown)
-    : bridge_(std::move(bridge)),
-      on_sync_shutdown_(std::move(on_sync_shutdown)) {
+    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge)
+    : bridge_(std::move(bridge)) {
   DCHECK(bridge_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
 
 PasswordSyncControllerDelegateAndroid::
     ~PasswordSyncControllerDelegateAndroid() = default;
+
+void PasswordSyncControllerDelegateAndroid::SetSyncObserverCallbacks(
+    base::RepeatingClosure on_pwd_sync_state_changed,
+    base::OnceClosure on_sync_shutdown) {
+  on_pwd_sync_state_changed_ = std::move(on_pwd_sync_state_changed);
+  on_sync_shutdown_ = std::move(on_sync_shutdown);
+}
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordSyncControllerDelegateAndroid::CreateProxyModelControllerDelegate() {
@@ -54,7 +61,10 @@ PasswordSyncControllerDelegateAndroid::CreateProxyModelControllerDelegate() {
 void PasswordSyncControllerDelegateAndroid::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_observation_.Observe(sync_service);
-  is_sync_enabled_ = IsSyncEnabled(IsPasswordSyncEnabled(sync_service));
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  is_sync_enabled_ =
+      IsPwdSyncEnabled(IsSyncFeatureEnabledIncludingPasswords(sync_service));
   UpdateCredentialManagerSyncStatus(sync_service);
 }
 
@@ -68,13 +78,13 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
   // TODO(crbug.com/1312392): Record whether OnSyncStarting is called before
   // |is_sync_enabled_| holds value.
   if (is_sync_enabled_.has_value() &&
-      is_sync_enabled_.value() == IsSyncEnabled(false)) {
+      is_sync_enabled_.value() == IsPwdSyncEnabled(false)) {
     // TODO(crbug.com/1312392): Sync was enabled. Move passwords from local
     // storage to syncing storage.
     NOTIMPLEMENTED();
   }
 
-  is_sync_enabled_ = IsSyncEnabled(true);
+  is_sync_enabled_ = IsPwdSyncEnabled(true);
 
   // Set |skip_engine_connection| to true to indicate that, actually, this sync
   // datatype doesn't depend on the built-in SyncEngine to communicate changes
@@ -102,7 +112,7 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStopping(
       // TODO(crbug.com/1312392): Sync was disabled. Move passwords from syncing
       // storage to local storage.
       NOTIMPLEMENTED();
-      is_sync_enabled_ = IsSyncEnabled(false);
+      is_sync_enabled_ = IsPwdSyncEnabled(false);
       break;
   }
 }
@@ -162,11 +172,19 @@ void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
 
 void PasswordSyncControllerDelegateAndroid::UpdateCredentialManagerSyncStatus(
     syncer::SyncService* sync_service) {
-  IsSyncEnabled is_enabled = IsSyncEnabled(IsPasswordSyncEnabled(sync_service));
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  IsPwdSyncEnabled is_enabled =
+      IsPwdSyncEnabled(IsSyncFeatureEnabledIncludingPasswords(sync_service));
   if (credential_manager_sync_setting_.has_value() &&
       credential_manager_sync_setting_ == is_enabled) {
     return;
   }
+
+  if (on_pwd_sync_state_changed_) {
+    on_pwd_sync_state_changed_.Run();
+  }
+
   credential_manager_sync_setting_ = is_enabled;
   if (is_enabled) {
     bridge_->NotifyCredentialManagerWhenSyncing(
@@ -181,14 +199,19 @@ PasswordSyncControllerDelegateAndroid::GetWeakPtrToBaseClass() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void PasswordSyncControllerDelegateAndroid::ClearMetadataWhileStopped() {
+void PasswordSyncControllerDelegateAndroid::ClearMetadataIfStopped() {
   // If this method is being called, this means sync was permanently disabled,
   // either fully or specifically for passwords. This also includes more
   // advanced cases like the user having cleared all sync data in the dashboard
   // (birthday reset) or, at least in theory, the sync server reporting that all
   // sync metadata is obsolete (i.e. CLIENT_DATA_OBSOLETE in the sync protocol).
-  is_sync_enabled_ = IsSyncEnabled(false);
+  is_sync_enabled_ = IsPwdSyncEnabled(false);
   // No metadata is managed by PasswordSyncControllerDelegateAndroid.
+}
+
+void PasswordSyncControllerDelegateAndroid::ReportBridgeErrorForTest() {
+  // Not supported for Android.
+  NOTREACHED();
 }
 
 }  // namespace password_manager

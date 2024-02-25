@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_POWER_BACKLIGHTS_FORCED_OFF_SETTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/screen_backlight.h"
@@ -15,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -67,7 +67,7 @@ class ASH_EXPORT BacklightsForcedOffSetter
   void GetInitialBacklightsForcedOff();
 
   // Callback for |GetInitialBacklightsForcedOff()|.
-  void OnGotInitialBacklightsForcedOff(absl::optional<bool> is_forced_off);
+  void OnGotInitialBacklightsForcedOff(std::optional<bool> is_forced_off);
 
   // Removes a force backlights off request from the list of active ones, which
   // effectively cancels the request. This is passed to every
@@ -88,7 +88,7 @@ class ASH_EXPORT BacklightsForcedOffSetter
   bool disable_touchscreen_while_screen_off_ = true;
 
   // Current forced-off state of backlights.
-  absl::optional<bool> backlights_forced_off_;
+  std::optional<bool> backlights_forced_off_;
 
   // Current screen state.
   ScreenBacklightState screen_backlight_state_ = ScreenBacklightState::ON;

@@ -56,7 +56,7 @@ void MemoryAllocatorDump::AddString(const char* name,
                                     const char* units,
                                     const std::string& value) {
   // String attributes are disabled in background mode.
-  if (level_of_detail_ == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (level_of_detail_ == MemoryDumpLevelOfDetail::kBackground) {
     NOTREACHED();
     return;
   }

@@ -1,0 +1,13 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/media_app_ui/media_app_files.gni")
+import("//tools/typescript/ts_library.gni")
+
+assert(is_chromeos_ash)
+
+copy("stage_for_test_tsc") {
+  sources = media_app_test_ts + media_app_test_defs
+  outputs = [ ts_root_dir + "/{{source_file_part}}" ]
+}

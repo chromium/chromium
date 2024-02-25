@@ -11,7 +11,9 @@
 #include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
+#include "extensions/common/mojom/message_port.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 
@@ -19,12 +21,18 @@ namespace base {
 class Uuid;
 }
 
+namespace blink {
+class WebServiceWorkerContextProxy;
+}
+
 namespace extensions {
 
+namespace mojom {
 enum class ChannelType;
+}
+
 class ScriptContext;
 class WorkerThreadDispatcher;
-struct Message;
 struct MessageTarget;
 struct PortId;
 
@@ -82,28 +90,18 @@ class IPCMessageSender {
       mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote) = 0;
 
   // Opens a message channel to the specified target.
-  virtual void SendOpenMessageChannel(ScriptContext* script_context,
-                                      const PortId& port_id,
-                                      const MessageTarget& target,
-                                      ChannelType channel_type,
-                                      const std::string& channel_name) = 0;
-
-  // Sends a message to open/close a mesage port or send a message to an
-  // existing port.
-  virtual void SendOpenMessagePort(int routing_id, const PortId& port_id) = 0;
-  virtual void SendCloseMessagePort(int routing_id,
-                                    const PortId& port_id,
-                                    bool close_channel) = 0;
-  virtual void SendPostMessageToPort(const PortId& port_id,
-                                     const Message& message) = 0;
-
-  // Sends a message indicating that a receiver of a message indicated that it
-  // plans to send a response later.
-  virtual void SendMessageResponsePending(int routing_id,
-                                          const PortId& port_id) = 0;
+  virtual void SendOpenMessageChannel(
+      ScriptContext* script_context,
+      const PortId& port_id,
+      const MessageTarget& target,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      mojo::PendingAssociatedRemote<mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<mojom::MessagePortHost> port_host) = 0;
 
   // Sends activityLog IPC to the browser process.
-  virtual void SendActivityLogIPC(const ExtensionId& extension_id,
+  virtual void SendActivityLogIPC(ScriptContext* context,
+                                  const ExtensionId& extension_id,
                                   ActivityLogCallType call_type,
                                   const std::string& call_name,
                                   base::Value::List args,
@@ -115,6 +113,7 @@ class IPCMessageSender {
   // Creates an IPCMessageSender for use on a worker thread.
   static std::unique_ptr<IPCMessageSender> CreateWorkerThreadIPCMessageSender(
       WorkerThreadDispatcher* dispatcher,
+      blink::WebServiceWorkerContextProxy* context_proxy,
       int64_t service_worker_version_id);
 
  protected:

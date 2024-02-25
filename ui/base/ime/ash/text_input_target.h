@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -55,8 +56,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
       uint32_t end,
       const std::vector<ui::ImeTextSpan>& text_spans) = 0;
   virtual gfx::Range GetAutocorrectRange() = 0;
-  virtual gfx::Rect GetAutocorrectCharacterBounds() = 0;
-  virtual gfx::Rect GetTextFieldBounds() = 0;
 
   // Sets the autocorrect range to be `range`.
   // Actual implementation must call |callback| and notify if the autocorrect
@@ -64,7 +63,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
   virtual void SetAutocorrectRange(
       const gfx::Range& range,
       SetAutocorrectRangeDoneCallback callback) = 0;
-  virtual absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() = 0;
+  virtual std::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() = 0;
   virtual bool ClearGrammarFragments(const gfx::Range& range) = 0;
   virtual bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragements) = 0;
@@ -84,7 +83,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
   // Places the cursor at the end of |replacement_string|.
   virtual void ReplaceSurroundingText(uint32_t length_before_selection,
                                       uint32_t length_after_selection,
-                                      base::StringPiece16 replacement_text) = 0;
+                                      std::u16string_view replacement_text) = 0;
 
   // Called from the extension API.
   // WARNING: This could return a stale cache that doesn't reflect reality, due
@@ -105,8 +104,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
 
   // Returns true if there is any composition text.
   virtual bool HasCompositionText() = 0;
-
-  virtual std::u16string GetCompositionText() = 0;
 
   // Returns the ukm::SourceId that identifies the currently focused client.
   virtual ukm::SourceId GetClientSourceForMetrics() = 0;

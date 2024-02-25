@@ -64,7 +64,7 @@ class MODULES_EXPORT UserMediaClient
 
   static UserMediaClient* From(LocalDOMWindow*);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void FocusCapturedSurface(const String& label, bool focus);
 #endif
 
@@ -83,7 +83,8 @@ class MODULES_EXPORT UserMediaClient
       UserMediaProcessor::KeepDeviceAliveForTransferCallback keep_alive_cb);
 
  protected:
-  // For testing
+  // Production code forwards the main ctor to this one.
+  // Tests use this ctor directly.
   UserMediaClient(LocalFrame* frame,
                   UserMediaProcessor* user_media_processor,
                   UserMediaProcessor* display_user_media_processor,
@@ -103,11 +104,13 @@ class MODULES_EXPORT UserMediaClient
 
     UserMediaRequest* MoveUserMediaRequest();
 
-    UserMediaRequest* user_media_request() const { return user_media_request_; }
-    blink::ApplyConstraintsRequest* apply_constraints_request() const {
-      return apply_constraints_request_;
+    UserMediaRequest* user_media_request() const {
+      return user_media_request_.Get();
     }
-    MediaStreamComponent* track_to_stop() const { return track_to_stop_; }
+    blink::ApplyConstraintsRequest* apply_constraints_request() const {
+      return apply_constraints_request_.Get();
+    }
+    MediaStreamComponent* track_to_stop() const { return track_to_stop_.Get(); }
 
     bool IsUserMedia() const { return !!user_media_request_; }
     bool IsApplyConstraints() const { return !!apply_constraints_request_; }
@@ -139,14 +142,7 @@ class MODULES_EXPORT UserMediaClient
   HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
 
-  // TODO(crbug.com/1373032): Rename pending_requests_ to
-  //   pending_device_requests_ when the kSplitUserMediaQueues feature flag is
-  //   removed and update the comments below accordingly.
-  // Default queue for all requests if kSplitUserMediaQueues is disabled, or
-  // device requests only if kSplitUserMediaQueues is enabled.
-  Member<RequestQueue> pending_requests_;
-  // Queue for display requests if kSplitUserMediaQueues is enabled, or set to
-  // nullptr otherwise.
+  Member<RequestQueue> pending_device_requests_;
   Member<RequestQueue> pending_display_requests_;
 
   THREAD_CHECKER(thread_checker_);

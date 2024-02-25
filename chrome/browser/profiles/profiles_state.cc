@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -104,6 +105,18 @@ void SetLastUsedProfile(const base::FilePath& profile_dir) {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   local_state->SetFilePath(prefs::kProfileLastUsed, profile_dir);
+}
+
+bool IsRegularUserProfile(Profile* profile) {
+  ProfileSelections selections =
+      ProfileSelections::Builder()
+          .WithRegular(ProfileSelection::kOriginalOnly)  // the default
+          // Filter out ChromeOS irregular profiles (login, lock screen...);
+          // they are of type kRegular (returns true for `Profile::IsRegular()`)
+          // but aren't used to browse the web and users can't configure them.
+          .WithAshInternals(ProfileSelection::kNone)
+          .Build();
+  return selections.ApplyProfileSelection(profile);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -276,18 +289,6 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   profile->Wipe();
 }
 
-bool IsManagedGuestSession() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::LoginState::IsInitialized() &&
-         ash::LoginState::Get()->IsManagedGuestSessionUser();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->SessionType() ==
-         crosapi::mojom::SessionType::kPublicSession;
-#else
-  return false;
-#endif
-}
-
 bool IsDemoSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::DemoSession::IsDeviceInDemoMode();
@@ -329,24 +330,36 @@ bool SessionHasGaiaAccount() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::u16string GetDefaultNameForNewEnterpriseProfile(
     const std::string& hosted_domain) {
-  if (AccountInfo::IsManaged(hosted_domain))
-    return base::UTF8ToUTF16(hosted_domain);
-  return l10n_util::GetStringUTF16(
+  if (AccountInfo::IsManaged(hosted_domain)) {
+    std::u16string hosted_domain_name = base::UTF8ToUTF16(hosted_domain);
+    CHECK(!hosted_domain_name.empty());
+    return hosted_domain_name;
+  }
+  std::u16string default_name = l10n_util::GetStringUTF16(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
+  CHECK(!default_name.empty());
+  return default_name;
 }
 
 std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
   DCHECK(account_info.IsValid());
-  if (!account_info.IsManaged())
-    return base::UTF8ToUTF16(account_info.given_name);
-  return GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
+  if (!account_info.IsManaged()) {
+    std::u16string given_name = base::UTF8ToUTF16(account_info.given_name);
+    CHECK(!given_name.empty());
+    return given_name;
+  }
+  std::u16string default_name =
+      GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
+  CHECK(!default_name.empty());
+  return default_name;
 }
 
 std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
     const CoreAccountInfo& account_info) {
   // As a fallback, use the email of the user as the profile name when extended
   // account info is not available.
+  CHECK(!account_info.email.empty());
   return base::UTF8ToUTF16(account_info.email);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

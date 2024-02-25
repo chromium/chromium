@@ -20,8 +20,8 @@ enum class IntroChoice {
 
 // This is also used for logging, so do not remove or reorder existing entries.
 enum class DefaultBrowserChoice {
-  // The user set Chrome as their default browser.
-  kSetAsDefault = 0,
+  // The user clicked to set Chrome as their default browser.
+  kClickSetAsDefault = 0,
   // The user skipped the prompt to set Chrome as their default browser.
   kSkip = 1,
   // The user exited the first run flow while on the prompt to set Chrome as
@@ -30,9 +30,11 @@ enum class DefaultBrowserChoice {
   // The prompt was not shown due to a timeout when checking if the browser is
   // already default.
   kNotShownOnTimeout = 3,
+  // Chrome was successfully set as default browser.
+  kSuccessfullySetAsDefault = 4,
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kNotShownOnTimeout
+  kMaxValue = kSuccessfullySetAsDefault
 };
 
 // Callback specification for `SetSigninChoiceCallback()`.

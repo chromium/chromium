@@ -7,12 +7,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 namespace {
 
 TEST(BoxedV8ModuleTest, equalAndHash) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const KURL js_url_a("https://example.com/a.js");
   const KURL js_url_b("https://example.com/b.js");

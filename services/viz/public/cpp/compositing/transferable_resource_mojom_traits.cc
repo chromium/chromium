@@ -62,7 +62,6 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
       !data.ReadMailboxHolder(&out->mailbox_holder) ||
       !data.ReadColorSpace(&out->color_space) ||
-      !data.ReadColorSpaceWhenSampled(&out->color_space_when_sampled) ||
       !data.ReadHdrMetadata(&out->hdr_metadata) ||
       !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id) ||
       !data.ReadSynchronizationType(&out->synchronization_type)) {
@@ -71,6 +70,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   out->id = id;
   out->is_software = data.is_software();
   out->is_overlay_candidate = data.is_overlay_candidate();
+  out->needs_detiling = data.needs_detiling();
 
 #if BUILDFLAG(IS_ANDROID)
   out->is_backed_by_surface_texture = data.is_backed_by_surface_texture();

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -142,27 +142,37 @@ gfx::Rect Transform(const gfx::Rect& source,
 
 std::string VideoCaptureOverlay::CapturedFrameProperties::ToString() const {
   return base::StringPrintf(
-      "%s from %s into %s, format %s", sub_region.ToString().c_str(),
-      compositor_region.ToString().c_str(), content_region.ToString().c_str(),
+      "%s from %s into %s via transform %s, format %s",
+      region_properties.render_pass_subrect.ToString().c_str(),
+      region_properties.root_render_pass_size.ToString().c_str(),
+      content_rect.ToString().c_str(),
+      region_properties.transform_to_root.ToString().c_str(),
       media::VideoPixelFormatToString(format).c_str());
 }
 
 std::string VideoCaptureOverlay::BlendInformation::ToString() const {
   return base::StringPrintf(
-      "src_rect=%s, src_rect_in_content=%s, dst_rect_in_content=%s",
+      "source_region=%s, source_region_scaled=%s, "
+      "destination_region_content=%s",
       source_region.ToString().c_str(), source_region_scaled.ToString().c_str(),
       destination_region_content.ToString().c_str());
 }
 
-absl::optional<VideoCaptureOverlay::BlendInformation>
+std::optional<VideoCaptureOverlay::BlendInformation>
 VideoCaptureOverlay::CalculateBlendInformation(
     const CapturedFrameProperties& properties) const {
+  const auto& compositor_frame_rect =
+      gfx::Rect(properties.region_properties.root_render_pass_size);
+  const gfx::Rect compositor_frame_subrect =
+      properties.region_properties.transform_to_root.MapRect(
+          properties.region_properties.render_pass_subrect);
+
   // The sub region should always be a subset of the frame region.
-  DCHECK(properties.compositor_region.Contains(properties.sub_region));
+  CHECK(compositor_frame_rect.Contains(compositor_frame_subrect));
 
   // If there's no image set yet, punt.
   if (image_.drawsNothing() || bounds_.IsEmpty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Determine the bounds of the sprite to be blended onto the video frame. The
@@ -177,25 +187,25 @@ VideoCaptureOverlay::CalculateBlendInformation(
   // for calculations such as mouse cursor position (which is retrieved in
   // relationship to the entire tab or window) to be scaled properly.
   const gfx::Rect bounds_in_compositor_space =
-      ToAbsoluteBoundsForI420(bounds_, properties.compositor_region);
+      ToAbsoluteBoundsForI420(bounds_, compositor_frame_rect);
 
   // If the sprite that we want to render does not fall within the subregion
   // that we are capturing, punt.
-  if (!bounds_in_compositor_space.Intersects(properties.sub_region)) {
-    return absl::nullopt;
+  if (!bounds_in_compositor_space.Intersects(compositor_frame_subrect)) {
+    return std::nullopt;
   }
 
   // The bounds are currently in the coordinate space of the captured compositor
   // frame, however blending may be done in the coordinate space of the
   // outputted video frame and must be scaled and translated.
   const gfx::Rect bounds_in_content_space =
-      Transform(bounds_in_compositor_space, properties.sub_region,
-                properties.content_region);
+      Transform(bounds_in_compositor_space, compositor_frame_subrect,
+                properties.content_rect);
 
   // If the sprite's size will be unreasonably large, punt.
   if (bounds_in_content_space.width() > media::limits::kMaxDimension ||
       bounds_in_content_space.height() > media::limits::kMaxDimension) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Now let's see where the scaled sprite will be placed in the video frame.
@@ -203,11 +213,11 @@ VideoCaptureOverlay::CalculateBlendInformation(
   // and if not, we will calculate which part of the sprite will be blended.
   // |blit_rect| is the region of the video frame that we will write into.
   const gfx::Rect blit_rect =
-      gfx::IntersectRects(bounds_in_content_space, properties.content_region);
+      gfx::IntersectRects(bounds_in_content_space, properties.content_rect);
 
   // If the scaled sprite's size is empty, punt.
   if (blit_rect.IsEmpty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Compute the left-most and top-most pixel to source from the transformed
@@ -229,7 +239,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
 
   // If the unscaled source region is empty, punt.
   if (source_region.IsEmpty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return BlendInformation{source_region, source_region_scaled,
@@ -238,7 +248,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
 
 VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
     const CapturedFrameProperties& properties) {
-  absl::optional<VideoCaptureOverlay::BlendInformation> blend_information =
+  std::optional<VideoCaptureOverlay::BlendInformation> blend_information =
       CalculateBlendInformation(properties);
   if (!blend_information) {
     return {};
@@ -259,7 +269,7 @@ VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
                                            properties.format);
   }
 
-  dst_rect.Intersect(properties.content_region);
+  dst_rect.Intersect(properties.content_rect);
   if (dst_rect.IsEmpty())
     return {};
 
@@ -367,8 +377,8 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
       << ", dst_rect=" << dst_rect.ToString();
   DCHECK(frame->ColorSpace().IsValid());
 
-  TRACE_EVENT2("gpu.capture", "VideoCaptureOverlay::Sprite::Blend", "x",
-               dst_rect.x(), "y", dst_rect.y());
+  TRACE_EVENT("gpu.capture", "VideoCaptureOverlay::Sprite::Blend", "x",
+              dst_rect.x(), "y", dst_rect.y());
 
   if (!transformed_image_ || color_space_ != frame->ColorSpace()) {
     color_space_ = frame->ColorSpace();
@@ -508,8 +518,8 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
 }
 
 void VideoCaptureOverlay::Sprite::TransformImage() {
-  TRACE_EVENT2("gpu.capture", "VideoCaptureOverlay::Sprite::TransformImage",
-               "width", size_.width(), "height", size_.height());
+  TRACE_EVENT("gpu.capture", "VideoCaptureOverlay::Sprite::TransformImage",
+              "width", size_.width(), "height", size_.height());
 
   // Scale the source |image_| to match the format and size required. For the
   // purposes of color space conversion, the alpha must not be pre-multiplied.

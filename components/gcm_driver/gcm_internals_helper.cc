@@ -27,7 +27,7 @@ base::Value::List CheckinInfoToList(
   base::Value::List checkin_info;
   for (const gcm::CheckinActivity& checkin : checkins) {
     base::Value::List row;
-    row.Append(checkin.time.ToJsTime());
+    row.Append(checkin.time.InMillisecondsFSinceUnixEpoch());
     row.Append(checkin.event);
     row.Append(checkin.details);
     checkin_info.Append(std::move(row));
@@ -40,7 +40,7 @@ base::Value::List ConnectionInfoToList(
   base::Value::List connection_info;
   for (const gcm::ConnectionActivity& connection : connections) {
     base::Value::List row;
-    row.Append(connection.time.ToJsTime());
+    row.Append(connection.time.InMillisecondsFSinceUnixEpoch());
     row.Append(connection.event);
     row.Append(connection.details);
     connection_info.Append(std::move(row));
@@ -53,7 +53,7 @@ base::Value::List RegistrationInfoToList(
   base::Value::List registration_info;
   for (const gcm::RegistrationActivity& registration : registrations) {
     base::Value::List row;
-    row.Append(registration.time.ToJsTime());
+    row.Append(registration.time.InMillisecondsFSinceUnixEpoch());
     row.Append(registration.app_id);
     row.Append(registration.source);
     row.Append(registration.event);
@@ -68,7 +68,7 @@ base::Value::List ReceivingInfoToList(
   base::Value::List receive_info;
   for (const gcm::ReceivingActivity& receive : receives) {
     base::Value::List row;
-    row.Append(receive.time.ToJsTime());
+    row.Append(receive.time.InMillisecondsFSinceUnixEpoch());
     row.Append(receive.app_id);
     row.Append(receive.from);
     row.Append(base::NumberToString(receive.message_byte_size));
@@ -84,7 +84,7 @@ base::Value::List SendingInfoToList(
   base::Value::List send_info;
   for (const gcm::SendingActivity& send : sends) {
     base::Value::List row;
-    row.Append(send.time.ToJsTime());
+    row.Append(send.time.InMillisecondsFSinceUnixEpoch());
     row.Append(send.app_id);
     row.Append(send.receiver_id);
     row.Append(send.message_id);
@@ -100,7 +100,7 @@ base::Value::List DecryptionFailureInfoToList(
   base::Value::List failure_info;
   for (const gcm::DecryptionFailureActivity& failure : failures) {
     base::Value::List row;
-    row.Append(failure.time.ToJsTime());
+    row.Append(failure.time.InMillisecondsFSinceUnixEpoch());
     row.Append(failure.app_id);
     row.Append(failure.details);
     failure_info.Append(std::move(row));

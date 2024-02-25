@@ -75,11 +75,16 @@ public class HomeScreenViewBinder {
 
             view.mSelectedCreditCardView.setOnClickListener((v) -> delegate.onShowCreditCardList());
 
-            view.mAcceptButton.setOnClickListener((v) -> {
-                view.mAcceptButton.announceForAccessibility(view.mContext.getResources().getString(
-                        R.string.fast_checkout_home_sheet_accept_button_clicked_description));
-                delegate.onOptionsAccepted();
-            });
+            view.mAcceptButton.setOnClickListener(
+                    (v) -> {
+                        view.mAcceptButton.announceForAccessibility(
+                                view.mContext
+                                        .getResources()
+                                        .getString(
+                                                R.string
+                                                        .fast_checkout_home_sheet_accept_button_clicked_description));
+                        delegate.onOptionsAccepted();
+                    });
         } else if (propertyKey == SELECTED_PROFILE) {
             updateProfile(model, view);
         } else if (propertyKey == SELECTED_CREDIT_CARD) {
@@ -120,8 +125,9 @@ public class HomeScreenViewBinder {
         FastCheckoutCreditCard creditCard = model.get(SELECTED_CREDIT_CARD);
         view.mCreditCardHeaderTextView.setText(creditCard.getObfuscatedNumber());
         try {
-            view.mCreditCardImageView.setImageDrawable(AppCompatResources.getDrawable(
-                    view.mContext, creditCard.getIssuerIconDrawableId()));
+            view.mCreditCardImageView.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                            view.mContext, creditCard.getIssuerIconDrawableId()));
         } catch (Resources.NotFoundException e) {
             view.mCreditCardImageView.setImageDrawable(null);
         }

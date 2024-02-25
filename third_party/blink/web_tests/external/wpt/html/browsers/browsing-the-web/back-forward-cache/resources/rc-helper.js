@@ -25,6 +25,45 @@ async function assertImplementsBFCacheOptional(remoteContextHelper) {
   assert_implements_optional(beforeBFCache == true, 'BFCache not supported.');
 }
 
+// Subtracts set `b` from set `a` and returns the result.
+function setMinus(a, b) {
+  const minus = new Set();
+  a.forEach(e => {
+    if (!b.has(e)) {
+      minus.add(e);
+    }
+  });
+  return minus;
+}
+
+// Return a sorted Array from the iterable `s`.
+function sorted(s) {
+  return Array.from(s).sort();
+}
+
+// Assert expected reasons and the reported reasons match.
+function matchReasons(expectedNotRestoredReasonsSet, notRestoredReasonsSet) {
+  const missing = setMinus(
+    expectedNotRestoredReasonsSet, notRestoredReasonsSet, 'Missing reasons');
+  const extra = setMinus(
+      notRestoredReasonsSet, expectedNotRestoredReasonsSet, 'Extra reasons');
+  assert_true(missing.size + extra.size == 0, `Expected: ${sorted(expectedNotRestoredReasonsSet)}\n` +
+    `Got: ${sorted(notRestoredReasonsSet)}\n` +
+    `Missing: ${sorted(missing)}\n` +
+    `Extra: ${sorted(extra)}\n`);
+}
+
+// This function takes a set of reasons and extracts reasons out of it and returns a set of strings.
+// For example, if the input is [{"reason": "error-document"}, {"reason": "masked"}],
+// the output is ["error-document", "masked"].
+function extractReason(reasonSet) {
+  let reasonsExtracted = new Set();
+  for (let reason of reasonSet) {
+    reasonsExtracted.add(reason.reason);
+  }
+  return reasonsExtracted;
+}
+
 // A helper function to assert that the page is not restored from BFCache by
 // checking whether the `beforeBFCache` value from `window` is undefined
 // due to page reload.
@@ -40,7 +79,7 @@ async function assertImplementsBFCacheOptional(remoteContextHelper) {
 async function assertNotRestoredFromBFCache(
     remoteContextHelper, notRestoredReasons) {
   var beforeBFCache = await getBeforeBFCache(remoteContextHelper);
-  assert_equals(beforeBFCache, undefined);
+  assert_equals(beforeBFCache, undefined, 'document unexpectedly BFCached');
 
   // The reason is optional, so skip the remaining test if the
   // `notRestoredReasons` is not set.
@@ -49,7 +88,8 @@ async function assertNotRestoredFromBFCache(
   }
 
   let isFeatureEnabled = await remoteContextHelper.executeScript(() => {
-    return 'notRestoredReasons' in performance.getEntriesByType('navigation')[0];
+    return 'notRestoredReasons' in
+        performance.getEntriesByType('navigation')[0];
   });
 
   // Return if the `notRestoredReasons` API is not available.
@@ -67,20 +107,14 @@ async function assertNotRestoredFromBFCache(
   // Flatten the reasons from the main frame and all the child frames.
   const collectReason = (node) => {
     for (let reason of node.reasons) {
-      notRestoredReasonsSet.add(reason);
+      notRestoredReasonsSet.add(reason.reason);
     }
     for (let child of node.children) {
       collectReason(child);
     }
-  }
+  };
   collectReason(result);
-
-  assert_equals(notRestoredReasonsSet.size,
-      expectedNotRestoredReasonsSet.size);
-
-  for (let reason of expectedNotRestoredReasonsSet) {
-    assert_true(notRestoredReasonsSet.has(reason));
-  }
+  matchReasons(expectedNotRestoredReasonsSet, notRestoredReasonsSet);
 }
 
 // A helper function that combines the steps of setting window property,

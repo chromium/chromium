@@ -39,7 +39,7 @@ class BorealisShutdownMonitor {
   void OnShutdownTimerElapsed();
 
   // The profile which we will shutdown borealis for.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // The length of time we wait before issuing a shutdown after a delayed
   // shutdown is requested.

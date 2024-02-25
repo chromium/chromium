@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -40,6 +40,7 @@ class OobeUI;
 class WebUILoginView;
 class WizardContext;
 class WizardController;
+class OobeMetricsHelper;
 enum class OobeDialogState;
 
 // An interface that defines an out-of-box-experience (OOBE) or login screen
@@ -47,17 +48,17 @@ enum class OobeDialogState;
 //
 // The inheritance graph is as folllows:
 //
-//                               LoginDisplayHost
-//                                   /       |
-//                LoginDisplayHostCommon   MockLoginDisplayHost
-//                      /      |
+//                                   LoginDisplayHost
+//                             /            |            \
+//        LoginDisplayHostCommon   MockLoginDisplayHost  FakeLoginDisplayHost
+//            /               \
 //   LoginDisplayHostMojo    LoginDisplayHostWebUI
 //
 //
 // - LoginDisplayHost defines the generic interface.
 // - LoginDisplayHostCommon is UI-agnostic code shared between the views and
 //   webui hosts.
-// - MockLoginDisplayHost is for tests.
+// - MockLoginDisplayHost and FakeLoginDisplayHost is for tests.
 // - LoginDisplayHostMojo is for the login screen which is implemented in Ash.
 //   TODO(estade): rename LoginDisplayHostMojo since it no longer uses Mojo.
 // - LoginDisplayHostWebUI is for OOBE, which is written in HTML/JS/CSS.
@@ -74,6 +75,17 @@ class LoginDisplayHost {
 
   // Returns the default LoginDisplayHost instance if it has been created.
   static LoginDisplayHost* default_host() { return default_host_; }
+
+  // Called when user enters or returns to browsing session so LoginDisplayHost
+  // instance may delete itself. `completion_callback` will be invoked when the
+  // instance is gone.
+  // `completion_callback` can be null.
+  virtual void Finalize(base::OnceClosure completion_callback);
+
+  // Starts screen for adding user into session.
+  // `completion_callback` is invoked after login display host shutdown.
+  // `completion_callback` can be null.
+  virtual void StartUserAdding(base::OnceClosure completion_callback);
 
   // Returns an unowned pointer to the ExistingUserController instance.
   virtual ExistingUserController* GetExistingUserController() = 0;
@@ -99,11 +111,6 @@ class LoginDisplayHost {
   // Whether the process of deleting LoginDisplayHost has been started.
   virtual bool IsFinalizing() = 0;
 
-  // Called when user enters or returns to browsing session so LoginDisplayHost
-  // instance may delete itself. `completion_callback` will be invoked when the
-  // instance is gone.
-  virtual void Finalize(base::OnceClosure completion_callback) = 0;
-
   // Called when current instance should be replaced with another one. After the
   // call the instance will be gone.
   virtual void FinalizeImmediately() = 0;
@@ -122,14 +129,11 @@ class LoginDisplayHost {
 
   virtual WizardContext* GetWizardContext() = 0;
 
+  virtual OobeMetricsHelper* GetOobeMetricsHelper() = 0;
+
   // Returns current KioskLaunchController, if it exists.
   // Result should not be stored.
   virtual KioskLaunchController* GetKioskLaunchController() = 0;
-
-  // Starts screen for adding user into session.
-  // `completion_callback` is invoked after login display host shutdown.
-  // `completion_callback` can be null.
-  virtual void StartUserAdding(base::OnceClosure completion_callback) = 0;
 
   // Cancel addint user into session.
   virtual void CancelUserAdding() = 0;
@@ -148,6 +152,14 @@ class LoginDisplayHost {
   // Show the gaia dialog. If available, `account` is preloaded in the gaia
   // dialog.
   virtual void ShowGaiaDialog(const AccountId& prefilled_account) = 0;
+
+  // Starts user cryptohome recovery flow (once user indicates that they've
+  // forgot their knowledge key).
+  virtual void StartUserRecovery(const AccountId& account_to_recovery) = 0;
+
+  // Show a notification screen informing the user that an admin user privately
+  // accessed the device using Chrome Remote Desktop.
+  virtual void ShowRemoteActivityNotificationScreen() = 0;
 
   // Show allowlist check failed error. Happens after user completes online
   // signin but allowlist check fails.
@@ -186,7 +198,7 @@ class LoginDisplayHost {
   // Returns true if user is allowed to log in by domain policy.
   virtual bool IsUserAllowlisted(
       const AccountId& account_id,
-      const absl::optional<user_manager::UserType>& user_type) = 0;
+      const std::optional<user_manager::UserType>& user_type) = 0;
 
   // ----- Password change flow methods -----
   // Cancels current password changed flow.
@@ -217,8 +229,6 @@ class LoginDisplayHost {
 
   // Returns if the device has any user after filtering based on policy.
   virtual bool HasUserPods() = 0;
-
-  virtual void VerifyOwnerForKiosk(base::OnceClosure on_success) = 0;
 
   // Used to add an observer for the changes in the web dilaog login view.
   virtual void AddObserver(Observer* observer) = 0;
@@ -262,6 +272,9 @@ class LoginDisplayHost {
  private:
   // Global LoginDisplayHost instance.
   static LoginDisplayHost* default_host_;
+
+  // Called after host deletion. All registered callbacks are non-null.
+  std::vector<base::OnceClosure> completion_callbacks_;
 
   // Callback to be executed when WebUI is started.
   base::RepeatingClosure on_wizard_controller_created_for_tests_;

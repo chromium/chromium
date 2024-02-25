@@ -9,8 +9,7 @@ enum HighlightType {
 };
 
 [
-  RuntimeEnabled = HighlightAPI,
-  Exposed = Window
+  Exposed=Window
 ] interface Highlight {
   constructor(AbstractRange... initRanges);
   setlike<AbstractRange>;

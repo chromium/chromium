@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/ranges.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
@@ -42,9 +43,6 @@ constexpr bool kColorSensitiveStyleBlocks = false;
 constexpr int kFirstValidNegativeId = -2;
 
 ui::AXNodeID next_negative_node_id{kFirstValidNegativeId};
-
-// TODO(crbug.com/1443341): Check if this max count will cover different cases.
-constexpr int kUmaMaxNodesCount = 500;
 
 // Returns the next valid negative ID that can be used for identifying
 // `AXNode`s in the accessibility tree. Using negative IDs here enables
@@ -222,7 +220,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
       word_box.bounding_box().width(), word_box.bounding_box().height()));
 
   std::vector<int32_t> character_offsets;
-  // TODO(crbug.com/1443341): Handle writing directions other than
+  // TODO(crbug.com/1506085): Handle writing directions other than
   // LEFT_TO_RIGHT.
   int32_t line_offset =
       base::ClampRound(inline_text_box.relative_bounds.bounds.x());
@@ -267,7 +265,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
   if (!word_box.language().empty() &&
       inline_text_box.GetStringAttribute(
           ax ::mojom::StringAttribute::kLanguage) != word_box.language()) {
-    // TODO(crbug.com/1423809): Need to test it more with a more diverse set of
+    // TODO(crbug.com/1506085): Need to test it more with a more diverse set of
     // PDF examples that contain from different languages. Design heuristics
     // of verifying language recognition output from OCR.
     VLOG(2) << "A `WordBox` has a different language than its enclosing "
@@ -407,6 +405,36 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
   return 1u + SerializeWordBoxes(line_box.words(),
                                  /* start_from_word_index */ 0, (index + 1u),
                                  line_box_node, node_data);
+}
+
+gfx::Rect ProtoToMojo(const chrome_screen_ai::Rect& source) {
+  gfx::Rect dest;
+  dest.set_x(source.x());
+  dest.set_y(source.y());
+  dest.set_width(source.width());
+  dest.set_height(source.height());
+  return dest;
+}
+
+screen_ai::mojom::Direction ProtoToMojo(chrome_screen_ai::Direction direction) {
+  switch (direction) {
+    case chrome_screen_ai::Direction::DIRECTION_UNSPECIFIED:
+      return screen_ai::mojom::Direction::DIRECTION_UNSPECIFIED;
+
+    case chrome_screen_ai::Direction::DIRECTION_LEFT_TO_RIGHT:
+      return screen_ai::mojom::Direction::DIRECTION_LEFT_TO_RIGHT;
+
+    case chrome_screen_ai::Direction::DIRECTION_RIGHT_TO_LEFT:
+      return screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT;
+
+    case chrome_screen_ai::Direction::DIRECTION_TOP_TO_BOTTOM:
+      return screen_ai::mojom::Direction::DIRECTION_TOP_TO_BOTTOM;
+
+    case chrome_screen_ai::Direction_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case chrome_screen_ai::Direction_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return screen_ai::mojom::Direction::DIRECTION_UNSPECIFIED;
+  }
 }
 
 }  // namespace
@@ -563,9 +591,6 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
                node_data.id != ui::kInvalidAXNodeID;
       });
   update.nodes.resize(std::distance(std::begin(update.nodes), end_node_iter));
-  base::UmaHistogramCustomCounts(
-      "Accessibility.ScreenAI.VisualAnnotator.NodesCount", nodes.size(),
-      /*min=*/1, kUmaMaxNodesCount, /*buckets=*/100);
 
   return update;
 }
@@ -580,12 +605,27 @@ mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
     line_box->block_id = line.block_id();
     line_box->language = line.language();
     line_box->order_within_block = line.order_within_block();
+    line_box->bounding_box = ProtoToMojo(line.bounding_box());
+    line_box->bounding_box_angle = line.bounding_box().angle();
+
+    // `baseline_box` is not available in ChromeScreenAI library prior to
+    // version 122.1.
+    // If it is not provided by the OCR, the library assigns bounding box's
+    // value to it and it's done the same here.
+    auto baseline_box =
+        line.has_baseline_box() ? line.baseline_box() : line.bounding_box();
+    line_box->baseline_box = ProtoToMojo(baseline_box);
+    line_box->baseline_box_angle = baseline_box.angle();
 
     for (const auto& word : line.words()) {
       auto word_box = screen_ai::mojom::WordBox::New();
       word_box->word = word.utf8_string();
       word_box->dictionary_word = word.dictionary_word();
       word_box->language = word.language();
+      word_box->bounding_box = ProtoToMojo(word.bounding_box());
+      word_box->bounding_box_angle = word.bounding_box().angle();
+      word_box->direction = ProtoToMojo(word.direction());
+      word_box->has_space_after = word.has_space_after();
       line_box->words.push_back(std::move(word_box));
     }
     annotation->lines.push_back(std::move(line_box));

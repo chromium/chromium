@@ -12,8 +12,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -80,16 +78,13 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
 
 }  // namespace
 
-// TODO(https://crbug.com/889304): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(HasBeforeUnloadHandlerTest,
-                       DISABLED_NonEmptyBeforeUnloadDetected) {
+                       NonEmptyBeforeUnloadDetected) {
   TestDiscardBeforeUnloadHelper("/beforeunload.html",
                                 true /* has_beforeunload_helper */);
 }
 
-// TODO(https://crbug.com/902355): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(HasBeforeUnloadHandlerTest,
-                       DISABLED_EmptyBeforeUnloadDetected) {
+IN_PROC_BROWSER_TEST_F(HasBeforeUnloadHandlerTest, EmptyBeforeUnloadDetected) {
   TestDiscardBeforeUnloadHelper("/emptybeforeunload.html",
                                 false /* has_beforeunload_helper */);
 }

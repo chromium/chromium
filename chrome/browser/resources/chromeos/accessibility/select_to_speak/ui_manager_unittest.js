@@ -95,12 +95,6 @@ SelectToSpeakUiManagerUnitTest = class extends SelectToSpeakE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      importModule('ParagraphUtils', '/common/paragraph_utils.js'),
-      importModule('UiManager', '/select_to_speak/ui_manager.js'),
-      importModule('PrefsManager', '/select_to_speak/prefs_manager.js'),
-    ]);
-
     this.mockPrefsManager = new MockPrefsManager();
     this.mockListener = new MockUiListener();
     this.uiManager = new UiManager(this.mockPrefsManager, this.mockListener);
@@ -327,6 +321,27 @@ AX_TEST_F(
       assertEquals(wordBounds, highlightRects[0]);
       assertEquals(
           HIGHLIGHT_COLOR, this.mockAccessibilityPrivate.getHighlightColor());
+
+      // AccessibilityPrivate informed of change.
+      assertEquals(
+          wordBounds, this.mockAccessibilityPrivate.getSelectToSpeakFocus());
+
+      // Reset mockAccessibilityPrivate.
+      this.mockAccessibilityPrivate.clearHighlightRects();
+      this.mockAccessibilityPrivate.clearSelectToSpeakFocus();
+
+      // When paused, AccessibilityPrivate is not informed of the change, but
+      // highlights are still drawn visually.
+      this.uiManager.update(
+          nodeGroup, textNode, {start: 0, end: 5},
+          {showPanel: true, paused: true, speechRateMultiplier: 1});
+
+      highlightRects = this.mockAccessibilityPrivate.getHighlightRects();
+      assertEquals(1, highlightRects.length);
+      assertEquals(wordBounds, highlightRects[0]);
+      assertEquals(
+          HIGHLIGHT_COLOR, this.mockAccessibilityPrivate.getHighlightColor());
+      assertEquals(null, this.mockAccessibilityPrivate.getSelectToSpeakFocus());
     });
 
 AX_TEST_F('SelectToSpeakUiManagerUnitTest', 'ClearsUI', function() {

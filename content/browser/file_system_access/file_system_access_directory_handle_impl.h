@@ -90,7 +90,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   // to be exposed to the web.
   // TODO(https://crbug.com/1154757): Merge this with
   // net::IsSafePortablePathComponent.
-  static bool IsSafePathComponent(const std::string& name);
+  static bool IsSafePathComponent(storage::FileSystemType type,
+                                  const std::string& name);
 
  private:
   // This method creates the file if it does not currently exists. I.e. it is
@@ -100,7 +101,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void DoGetFile(bool create,
                  storage::FileSystemURL url,
                  GetFileCallback callback,
-                 bool allowed);
+                 FileSystemAccessPermissionContext::SensitiveEntryResult
+                     sensitive_entry_result);
   void DidGetFile(const storage::FileSystemURL& url,
                   GetFileCallback callback,
                   base::File::Error result);
@@ -126,27 +128,18 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   void ResolveImpl(ResolveCallback callback,
                    FileSystemAccessTransferTokenImpl* possible_child);
 
-#if BUILDFLAG(IS_POSIX)
-  // Optionally checks for the blocklist for symbolic link.
-  void CheckSymbolicLinkAccess(storage::FileSystemURL url,
-                               base::OnceCallback<void(bool)> callback,
-                               const base::FilePath& symbolic_link);
-  void DidCheckSymbolicLinkAccess(
-      base::OnceCallback<void(bool)> callback,
-      FileSystemAccessPermissionContext::SensitiveEntryResult
-          sensitive_entry_result);
-  void AfterSymbolicLinkAccessCheck(
+  void DidVerifySensitiveAccessForFileEntry(
       std::string basename,
       storage::FileSystemURL child_url,
-      FileSystemAccessPermissionContext::HandleType handle_type,
       base::OnceCallback<void(blink::mojom::FileSystemAccessEntryPtr)>
           barrier_callback,
-      bool allowed);
+      FileSystemAccessPermissionContext::SensitiveEntryResult
+          sensitive_entry_result);
+
   void MergeAllEntries(
       base::OnceCallback<void(
           std::vector<blink::mojom::FileSystemAccessEntryPtr>)> final_callback,
       std::vector<blink::mojom::FileSystemAccessEntryPtr> entries);
-#endif
 
   // Helper to create a blink::mojom::FileSystemAccessEntry struct.
   blink::mojom::FileSystemAccessEntryPtr CreateEntry(

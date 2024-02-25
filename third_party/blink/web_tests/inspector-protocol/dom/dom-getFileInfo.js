@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startHTML(`
     <input type="file" id="file" name="avatar" accept="image/png, image/jpeg">`, 'Tests DOM.getFileInfo method.');
 

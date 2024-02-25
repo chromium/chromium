@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/gfx/image/image_skia.h"
 
 class Profile;
@@ -35,15 +34,18 @@ class AppServiceTest {
 
   // Synchronously fetches the icon for |app_id| of type |app_type| for the
   // specified |size_hint_in_dp|, and blocks until the fetching is completed.
-  gfx::ImageSkia LoadAppIconBlocking(AppType app_type,
-                                     const std::string& app_id,
+  gfx::ImageSkia LoadAppIconBlocking(const std::string& app_id,
                                      int32_t size_hint_in_dip);
 
   bool AreIconImageEqual(const gfx::ImageSkia& src, const gfx::ImageSkia& dst);
 
+  AppServiceProxy* proxy() { return app_service_proxy_; }
+
  private:
   raw_ptr<AppServiceProxy, DanglingUntriaged> app_service_proxy_ = nullptr;
 };
+
+void WaitForAppServiceProxyReady(AppServiceProxy* proxy);
 
 }  // namespace apps
 

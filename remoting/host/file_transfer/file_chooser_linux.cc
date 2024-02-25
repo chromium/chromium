@@ -14,7 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "remoting/base/string_resources.h"
-#include "ui/base/glib/glib_signal.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace remoting {
@@ -38,11 +38,7 @@ class GtkFileChooserOnUiThread {
 
  private:
   // Callback for when the user responds to the Open File dialog.
-  CHROMEG_CALLBACK_1(GtkFileChooserOnUiThread,
-                     void,
-                     OnResponse,
-                     GtkWidget*,
-                     int);
+  void OnResponse(GtkWidget* dialog, int response_id);
 
   void RunCallback(FileChooser::Result result);
   void CleanUp();
@@ -52,6 +48,7 @@ class GtkFileChooserOnUiThread {
   RAW_PTR_EXCLUSION GObject* file_dialog_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
   base::WeakPtr<FileChooserLinux> file_chooser_linux_;
+  ScopedGSignal signal_;
 };
 
 class FileChooserLinux : public FileChooser {
@@ -111,7 +108,10 @@ void GtkFileChooserOnUiThread::Show() {
 #endif
 
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_dialog_), false);
-  g_signal_connect(file_dialog_, "response", G_CALLBACK(OnResponseThunk), this);
+  signal_ =
+      ScopedGSignal(GTK_WIDGET(file_dialog_), "response",
+                    base::BindRepeating(&GtkFileChooserOnUiThread::OnResponse,
+                                        base::Unretained(this)));
 
 #if GTK_CHECK_VERSION(3, 90, 0)
   gtk_native_dialog_show(GTK_NATIVE_DIALOG(file_dialog_));

@@ -110,7 +110,7 @@ class IdentifiableToken {
 
   // Integers, big and small. Includes char.
   template <typename T,
-            typename U = base::remove_cvref_t<T>,
+            typename U = std::remove_cvref_t<T>,
             typename std::enable_if_t<std::is_integral<U>::value>* = nullptr>
   constexpr IdentifiableToken(T in)  // NOLINT(google-explicit-constructor)
       : value_(base::IsValueInRangeForNumericType<TokenType, U>(in)
@@ -136,7 +136,7 @@ class IdentifiableToken {
   // resulting digest to be useless.
   template <
       typename T,
-      typename U = base::remove_cvref_t<T>,
+      typename U = std::remove_cvref_t<T>,
       typename std::enable_if_t<std::is_floating_point<U>::value>* = nullptr>
   constexpr IdentifiableToken(T in)  // NOLINT(google-explicit-constructor)
       : value_(internal::DigestOfObjectRepresentation<double>(
@@ -160,7 +160,7 @@ class IdentifiableToken {
   // Span of known trivial types except for BytesSpan, which is the base case.
   template <typename T,
             size_t Extent,
-            typename U = base::remove_cvref_t<T>,
+            typename U = std::remove_cvref_t<T>,
             typename std::enable_if_t<
                 std::is_arithmetic<U>::value &&
                 !std::is_same<ByteSpan::element_type, T>::value>* = nullptr>

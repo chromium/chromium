@@ -11,7 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog.h"
 #include "ui/android/window_android.h"
 
 namespace autofill {

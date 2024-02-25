@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] Permissions interface: operation revoke(object)
+  assert_own_property: self does not have own property "Permissions" expected property "Permissions" missing
+[FAIL] Permissions interface: navigator.permissions must inherit property "revoke(object)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Permissions interface: calling revoke(object) on navigator.permissions with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+Harness: the test ran to completion.

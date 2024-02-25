@@ -9,6 +9,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check_op.h"
 
 namespace remoting {
@@ -38,7 +40,7 @@ const char* ValueToName(const NameMapElement<T> (&map)[N], T value) {
 
 template <typename T, size_t N>
 bool NameToValue(const NameMapElement<T> (&map)[N],
-                 const std::string& name,
+                 std::string_view name,
                  T* result) {
   for (size_t i = 0; i < N; ++i) {
     if (map[i].name == name) {

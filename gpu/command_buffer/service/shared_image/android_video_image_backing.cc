@@ -36,7 +36,11 @@ AndroidVideoImageBacking::AndroidVideoImageBacking(
           color_space,
           surface_origin,
           alpha_type,
-          (SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2),
+          // This SI will be used to back a VideoFrame. As such, it
+          // will potentially be sent to the display compositor and read by the
+          // GL interface for WebGL.
+          SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2_READ,
+          {},
           viz::SinglePlaneFormat::kRGBA_8888.EstimatedSizeInBytes(size),
           is_thread_safe,
           base::ScopedFD()) {}
@@ -67,16 +71,16 @@ std::unique_ptr<AndroidVideoImageBacking> AndroidVideoImageBacking::Create(
 }
 
 // Static.
-absl::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
+std::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
     TextureOwner* texture_owner,
     viz::VulkanContextProvider* vulkan_context_provider) {
   if (!vulkan_context_provider)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Get AHardwareBuffer from the latest frame.
   auto scoped_hardware_buffer = texture_owner->GetAHardwareBuffer();
   if (!scoped_hardware_buffer)
-    return absl::nullopt;
+    return std::nullopt;
 
   DCHECK(scoped_hardware_buffer->buffer());
   VulkanImplementation* vk_implementation =
@@ -88,9 +92,9 @@ absl::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
   if (!vk_implementation->GetSamplerYcbcrConversionInfo(
           vk_device, scoped_hardware_buffer->TakeBuffer(), &ycbcr_info)) {
     LOG(ERROR) << "Failed to get the ycbcr info.";
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::optional<VulkanYCbCrInfo>(ycbcr_info);
+  return std::optional<VulkanYCbCrInfo>(ycbcr_info);
 }
 
 std::unique_ptr<AbstractTextureAndroid>
@@ -117,6 +121,12 @@ void AndroidVideoImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
 void AndroidVideoImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
+}
+
+size_t AndroidVideoImageBacking::GetEstimatedSizeForMemoryDump() const {
+  // None of these images own memory directly, so we report 0. The real memory
+  // will be reported by `TextureOwner`s.
+  return 0;
 }
 
 }  // namespace gpu

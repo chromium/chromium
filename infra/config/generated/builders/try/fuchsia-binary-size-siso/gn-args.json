@@ -1,0 +1,12 @@
+{
+  "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
+  "gn_args": {
+    "dcheck_always_on": false,
+    "is_debug": false,
+    "is_official_build": true,
+    "target_cpu": "arm64",
+    "target_os": "fuchsia",
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

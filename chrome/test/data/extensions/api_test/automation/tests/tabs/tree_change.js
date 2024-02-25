@@ -97,4 +97,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests, 'tree_change.html');
+setUpAndRunTabsTests(allTests, 'tree_change.html');

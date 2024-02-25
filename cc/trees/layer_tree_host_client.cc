@@ -8,8 +8,8 @@
 
 namespace cc {
 
-std::unique_ptr<WebVitalMetrics> LayerTreeHostClient::GetWebVitalMetrics() {
-  return nullptr;
+std::string LayerTreeHostClient::GetPausedDebuggerLocalizedMessage() {
+  return "Debugger paused in another tab, click to switch to that tab.";
 }
 
 }  // namespace cc

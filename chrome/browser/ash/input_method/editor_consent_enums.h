@@ -7,33 +7,79 @@
 
 namespace ash::input_method {
 
+enum class PromoCardAction {
+  // User explicitly hits 'Learn More' button to proceed to use the feature.
+  kAccepted,
+  // User explicitly declines the promo card.
+  kDeclined,
+  // User dismisses the promo card.
+  kDismissed,
+};
+
 enum class ConsentAction : int {
   // User explicitly hits "Yes/Agree" button.
   kApproved,
-  // User dismisses the consent window.
-  kDismissed,
   // User explicitly hits "No/Disagree" button.
   kDeclined
 };
 
 // Defines the status of the consent which we ask the user to provide before
 // we can display the feature to them.
+// Only append new entries to the end of the enum value list and do not reorder
+// the enum value list to maintain compatibility with the integer values saved
+// in the pref storage.
 enum class ConsentStatus : int {
   // User has agreed to consent by pressing "Yes/Agree" button to all dialogs
   // from the consent window.
-  kApproved,
+  kApproved = 0,
   // User has disagreed to consent by pressing "No/Disagree" button to any
   // dialog from the consent window.
-  kDeclined,
-  // User has dismissed the consent page too many times and is deemed to
-  // implicitly decline the consent.
-  kImplicitlyDeclined,
+  kDeclined = 1,
   // Invalid state of the consent result.
-  kInvalid,
+  kInvalid = 2,
   // No explicit consent to use the feature has been received yet.
-  kPending,
+  kPending = 3,
   // No request has been sent to users to collect their consent.
-  kUnset,
+  kUnset = 4,
+};
+
+// TODO: b: - Migrate EditorMode and EditorOpportunityMode out of this file.
+enum class EditorMode { kBlocked, kConsentNeeded, kRewrite, kWrite };
+
+enum class EditorOpportunityMode {
+  kNone,
+  kRewrite,
+  kWrite,
+};
+
+// Defines the reason why the editor is blocked.
+enum class EditorBlockedReason {
+  // Blocked because the consent status does not satisfy.
+  kBlockedByConsent,
+  // Blocked because the setting toggle is switched off.
+  kBlockedBySetting,
+  // Blocked because the text is too long.
+  kBlockedByTextLength,
+  // Blocked because the focused text input residing in a url found in the
+  // url denylist.
+  kBlockedByUrl,
+  // Blocked because the focused text input residing in an app found in the
+  // app denylist.
+  kBlockedByApp,
+  // Blocked because the current active input method is not supported.
+  kBlockedByInputMethod,
+  // Blocked because the current active input type is not allowed.
+  kBlockedByInputType,
+  // Blocked because the current app type is not supported.
+  kBlockedByAppType,
+  // Blocked because current form factor is not supported.
+  kBlockedByInvalidFormFactor,
+  // Blocked because user is not connected to internet.
+  kBlockedByNetworkStatus,
+  // Blocked because user is not in a supported country.
+  kBlockedByUnsupportedRegion,
+  // Blocked because user is using a managed device.
+  kBlockedByManagedStatus,
 };
 
 ConsentStatus GetConsentStatusFromInteger(int status_value);

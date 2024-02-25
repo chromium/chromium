@@ -21,7 +21,13 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "content/web_test/renderer/test_runner.h"
+#include "content/web_test/renderer/web_frame_test_proxy.h"
+#include "gin/handle.h"
+#include "gin/interceptor.h"
+#include "gin/object_template_builder.h"
+#include "gin/wrappable.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -73,34 +79,41 @@ const char* PointState(blink::WebTouchPoint::State state) {
 }
 
 void PrintTouchList(TestRunner* test_runner,
+                    WebFrameTestProxy& frame_proxy,
                     const blink::WebTouchPoint* points,
                     int length) {
   for (int i = 0; i < length; ++i) {
-    test_runner->PrintMessage(base::StringPrintf(
-        "* %.2f, %.2f: %s\n", points[i].PositionInWidget().x(),
-        points[i].PositionInWidget().y(), PointState(points[i].state)));
+    test_runner->PrintMessage(
+        base::StringPrintf(
+            "* %.2f, %.2f: %s\n", points[i].PositionInWidget().x(),
+            points[i].PositionInWidget().y(), PointState(points[i].state)),
+        frame_proxy);
   }
 }
 
 void PrintEventDetails(TestRunner* test_runner,
+                       WebFrameTestProxy& frame_proxy,
                        const blink::WebInputEvent& event) {
   if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
     const blink::WebTouchEvent& touch =
         static_cast<const blink::WebTouchEvent&>(event);
-    PrintTouchList(test_runner, touch.touches, touch.touches_length);
+    PrintTouchList(test_runner, frame_proxy, touch.touches,
+                   touch.touches_length);
   } else if (blink::WebInputEvent::IsMouseEventType(event.GetType()) ||
              event.GetType() == blink::WebInputEvent::Type::kMouseWheel) {
     const blink::WebMouseEvent& mouse =
         static_cast<const blink::WebMouseEvent&>(event);
-    test_runner->PrintMessage(base::StringPrintf("* %.2f, %.2f\n",
-                                                 mouse.PositionInWidget().x(),
-                                                 mouse.PositionInWidget().y()));
+    test_runner->PrintMessage(
+        base::StringPrintf("* %.2f, %.2f\n", mouse.PositionInWidget().x(),
+                           mouse.PositionInWidget().y()),
+        frame_proxy);
   } else if (blink::WebInputEvent::IsGestureEventType(event.GetType())) {
     const blink::WebGestureEvent& gesture =
         static_cast<const blink::WebGestureEvent&>(event);
     test_runner->PrintMessage(
         base::StringPrintf("* %.2f, %.2f\n", gesture.PositionInWidget().x(),
-                           gesture.PositionInWidget().y()));
+                           gesture.PositionInWidget().y()),
+        frame_proxy);
   }
 }
 
@@ -115,24 +128,50 @@ blink::WebPluginContainer::TouchEventRequestType ParseTouchEventRequestType(
   return blink::WebPluginContainer::kTouchEventRequestTypeNone;
 }
 
+class ScriptableObject : public gin::Wrappable<ScriptableObject>,
+                         public gin::NamedPropertyInterceptor {
+ public:
+  static gin::WrapperInfo kWrapperInfo;
+
+  static v8::Local<v8::Object> Create(v8::Isolate* isolate) {
+    ScriptableObject* scriptable_object = new ScriptableObject(isolate);
+    return gin::CreateHandle(isolate, scriptable_object)
+        .ToV8()
+        .As<v8::Object>();
+  }
+
+  // gin::NamedPropertyInterceptor
+  v8::Local<v8::Value> GetNamedProperty(
+      v8::Isolate* isolate,
+      const std::string& identifier) override {
+    if (identifier == "loaded") {
+      return v8::True(isolate);
+    }
+    return v8::Local<v8::Value>();
+  }
+
+ private:
+  explicit ScriptableObject(v8::Isolate* isolate)
+      : gin::NamedPropertyInterceptor(isolate, this) {}
+
+  // gin::Wrappable
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
+      v8::Isolate* isolate) override {
+    return gin::Wrappable<ScriptableObject>::GetObjectTemplateBuilder(isolate)
+        .AddNamedPropertyInterceptor();
+  }
+};
+
+// static
+gin::WrapperInfo ScriptableObject::kWrapperInfo = {gin::kEmbedderNativeGin};
+
 }  // namespace
 
 TestPlugin::TestPlugin(const blink::WebPluginParams& params,
                        TestRunner* test_runner,
                        blink::WebLocalFrame* frame)
     : test_runner_(test_runner),
-      container_(nullptr),
       web_local_frame_(frame),
-      gl_(nullptr),
-      content_changed_(false),
-      framebuffer_(0),
-      touch_event_request_(
-          blink::WebPluginContainer::kTouchEventRequestTypeNone),
-      re_request_touch_events_(false),
-      print_event_details_(false),
-      print_user_gesture_status_(false),
-      can_process_drag_(false),
-      supports_keyboard_focus_(false),
       is_persistent_(params.mime_type == PluginPersistsMimeType()) {
   DCHECK_EQ(params.attribute_names.size(), params.attribute_values.size());
   size_t size = params.attribute_names.size();
@@ -211,6 +250,7 @@ void TestPlugin::Destroy() {
 
   gl_ = nullptr;
   context_provider_.reset();
+  scriptable_object_.Reset();
 
   container_ = nullptr;
 
@@ -238,11 +278,10 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     return;
   rect_ = clip_rect;
 
-  if (!mailbox_.IsZero()) {
+  if (shared_image_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
-    sii->DestroySharedImage(sync_token_, mailbox_);
-    mailbox_ = gpu::Mailbox();
+    sii->DestroySharedImage(sync_token_, std::exchange(shared_image_, nullptr));
     sync_token_ = gpu::SyncToken();
   }
 
@@ -251,15 +290,19 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   } else if (gl_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
-    mailbox_ = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-        "TestLabel", gpu::kNullSurfaceHandle);
+    // We will draw to the SI via GL directly below and then send it off to the
+    // display compositor later.
+    shared_image_ = sii->CreateSharedImage(
+        {viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+         "TestLabel"},
+        gpu::kNullSurfaceHandle);
+    CHECK(shared_image_);
     gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    GLuint color_texture =
-        gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_.name);
+    GLuint color_texture = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
+        shared_image_->mailbox().name);
     gl_->BeginSharedImageAccessDirectCHROMIUM(
         color_texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
@@ -298,6 +341,13 @@ bool TestPlugin::IsPlaceholder() {
   return false;
 }
 
+v8::Local<v8::Object> TestPlugin::V8ScriptableObject(v8::Isolate* isolate) {
+  if (scriptable_object_.IsEmpty()) {
+    scriptable_object_.Reset(isolate, ScriptableObject::Create(isolate));
+  }
+  return scriptable_object_.Get(isolate);
+}
+
 // static
 void TestPlugin::ReleaseSharedMemory(
     scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap,
@@ -308,11 +358,11 @@ void TestPlugin::ReleaseSharedMemory(
 // static
 void TestPlugin::ReleaseSharedImage(
     scoped_refptr<ContextProviderRef> context_provider,
-    const gpu::Mailbox& mailbox,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     bool lost) {
   auto* sii = context_provider->data->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, mailbox);
+  sii->DestroySharedImage(sync_token, std::exchange(shared_image, nullptr));
 }
 
 bool TestPlugin::PrepareTransferableResource(
@@ -322,14 +372,13 @@ bool TestPlugin::PrepareTransferableResource(
   if (!content_changed_)
     return false;
   gfx::Size size(rect_.size());
-  if (!mailbox_.IsZero()) {
+  if (shared_image_) {
     *resource = viz::TransferableResource::MakeGpu(
-        mailbox_, GL_TEXTURE_2D, sync_token_, size,
+        shared_image_, GL_TEXTURE_2D, sync_token_, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     // We pass ownership of the shared image to the callback.
-    *release_callback =
-        base::BindOnce(&ReleaseSharedImage, context_provider_, mailbox_);
-    mailbox_ = gpu::Mailbox();
+    *release_callback = base::BindOnce(&ReleaseSharedImage, context_provider_,
+                                       std::exchange(shared_image_, nullptr));
     sync_token_ = gpu::SyncToken();
   } else if (shared_bitmap_) {
     // The |bitmap_data_| is only used for a single compositor frame, so we know
@@ -339,7 +388,7 @@ bool TestPlugin::PrepareTransferableResource(
                                                  shared_bitmap_);
 
     *resource = viz::TransferableResource::MakeSoftware(
-        shared_bitmap_->id(), shared_bitmap_->size(),
+        shared_bitmap_->id(), gpu::SyncToken(), shared_bitmap_->size(),
         viz::SinglePlaneFormat::kRGBA_8888);
     *release_callback =
         base::BindOnce(&ReleaseSharedMemory, std::move(shared_bitmap_),
@@ -465,10 +514,10 @@ void TestPlugin::DestroyScene() {
     framebuffer_ = 0;
   }
 
-  if (!mailbox_.IsZero()) {
+  if (shared_image_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
-    sii->DestroySharedImage(sync_token_, mailbox_);
+    sii->DestroySharedImage(sync_token_, std::exchange(shared_image_, nullptr));
   }
 }
 
@@ -583,24 +632,28 @@ blink::WebInputEventResult TestPlugin::HandleInputEvent(
   if (blink::WebInputEvent::IsGestureEventType(event.GetType()))
     return blink::WebInputEventResult::kNotHandled;
 
+  auto* frame_proxy = static_cast<WebFrameTestProxy*>(
+      RenderFrame::FromWebFrame(web_local_frame_));
   const char* event_name = blink::WebInputEvent::GetName(event.GetType());
   if (!strcmp(event_name, "") || !strcmp(event_name, "Undefined"))
     event_name = "unknown";
-  test_runner_->PrintMessage(std::string("Plugin received event: ") +
-                             event_name + "\n");
+  test_runner_->PrintMessage(
+      std::string("Plugin received event: ") + event_name + "\n", *frame_proxy);
   if (print_event_details_)
-    PrintEventDetails(test_runner_, event);
+    PrintEventDetails(test_runner_, *frame_proxy, event);
 
   if (print_user_gesture_status_) {
     bool has_transient_user_activation =
         web_local_frame_->HasTransientUserActivation();
-    test_runner_->PrintMessage(std::string("* ") +
-                               (has_transient_user_activation ? "" : "not ") +
-                               "handling user gesture\n");
+    test_runner_->PrintMessage(
+        std::string("* ") + (has_transient_user_activation ? "" : "not ") +
+            "handling user gesture\n",
+        *frame_proxy);
   }
 
   if (is_persistent_)
-    test_runner_->PrintMessage(std::string("TestPlugin: isPersistent\n"));
+    test_runner_->PrintMessage(std::string("TestPlugin: isPersistent\n"),
+                               *frame_proxy);
   return blink::WebInputEventResult::kNotHandled;
 }
 
@@ -609,6 +662,8 @@ bool TestPlugin::HandleDragStatusUpdate(blink::WebDragStatus drag_status,
                                         blink::DragOperationsMask mask,
                                         const gfx::PointF& position,
                                         const gfx::PointF& screen_position) {
+  auto* frame_proxy = static_cast<WebFrameTestProxy*>(
+      RenderFrame::FromWebFrame(web_local_frame_));
   const char* drag_status_name = nullptr;
   switch (drag_status) {
     case blink::kWebDragStatusEnter:
@@ -626,8 +681,9 @@ bool TestPlugin::HandleDragStatusUpdate(blink::WebDragStatus drag_status,
     case blink::kWebDragStatusUnknown:
       NOTREACHED();
   }
-  test_runner_->PrintMessage(std::string("Plugin received event: ") +
-                             drag_status_name + "\n");
+  test_runner_->PrintMessage(
+      std::string("Plugin received event: ") + drag_status_name + "\n",
+      *frame_proxy);
   return false;
 }
 

@@ -7,6 +7,7 @@
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -43,8 +44,9 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
                                    : companion::GetHomepageURLForCompanion();
   // Allow iframing accounts page due to potential redirects.
   std::string frameSrcDirective =
-      std::string("frame-src https://accounts.google.com ") + frameSrcString +
-      ";";
+      std::string(
+          "frame-src https://accounts.google.com https://consent.google.com ") +
+      frameSrcString + ";";
   std::string formActionDirective =
       std::string("form-action ") + frameSrcString + ";";
   html_source->OverrideContentSecurityPolicy(
@@ -104,6 +106,11 @@ CompanionSidePanelUntrustedUI::GetWeakPtr() {
 CompanionSidePanelUntrustedUIConfig::CompanionSidePanelUntrustedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
                   chrome::kChromeUIUntrustedCompanionSidePanelHost) {}
+
+bool CompanionSidePanelUntrustedUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return companion::IsCompanionFeatureEnabled();
+}
 
 std::unique_ptr<content::WebUIController>
 CompanionSidePanelUntrustedUIConfig::CreateWebUIController(

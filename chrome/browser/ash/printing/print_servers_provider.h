@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_PRINTING_PRINT_SERVERS_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/print_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -28,8 +28,7 @@ namespace ash {
 // propagated to Observers.
 // All methods must be called from the same sequence (UI) and all observers'
 // notifications will be called from this sequence.
-class PrintServersProvider
-    : public base::SupportsWeakPtr<PrintServersProvider> {
+class PrintServersProvider {
  public:
   class Observer {
    public:
@@ -69,7 +68,10 @@ class PrintServersProvider
 
   // Returns the list of all print servers given from the data provided in
   // SetData(...) and limited by the allowlist.
-  virtual absl::optional<std::vector<PrintServer>> GetPrintServers() = 0;
+  virtual std::optional<std::vector<PrintServer>> GetPrintServers() = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<PrintServersProvider> AsWeakPtr() = 0;
 
  protected:
   PrintServersProvider() = default;

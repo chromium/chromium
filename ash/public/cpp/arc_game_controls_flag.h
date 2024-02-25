@@ -28,6 +28,8 @@ enum ArcGameControlsFlag : uint32_t {
   // Game controls is in the menu mode if the seventh bit is 1. Menu mode means
   // Game Dashboard related menu is active.
   kMenu = 1 << 6,
+  // Game is optimized for ChromeOS if the eighth bit is 1.
+  kO4C = 1 << 7,
 };
 
 }  // namespace ash

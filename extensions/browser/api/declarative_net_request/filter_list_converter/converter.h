@@ -9,9 +9,7 @@
 
 #include "base/files/file_path.h"
 
-namespace extensions {
-namespace declarative_net_request {
-namespace filter_list_converter {
+namespace extensions::declarative_net_request::filter_list_converter {
 
 enum WriteType {
   kJSONRuleset,
@@ -28,8 +26,6 @@ bool ConvertRuleset(const std::vector<base::FilePath>& filter_list_inputs,
                     WriteType type,
                     bool noisy = true);
 
-}  // namespace filter_list_converter
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request::filter_list_converter
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILTER_LIST_CONVERTER_CONVERTER_H_

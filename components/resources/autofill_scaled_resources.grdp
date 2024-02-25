@@ -5,6 +5,7 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_DISCOVER" file="autofill/discover.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_ELO" file="autofill/elo.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_GENERIC" file="autofill/cc-generic.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_GENERIC_PRIMARY" file="autofill/cc-generic.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_JCB" file="autofill/jcb.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_MASTERCARD" file="autofill/mastercard.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_MIR" file="autofill/mir.png" />

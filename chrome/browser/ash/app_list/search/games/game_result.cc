@@ -6,12 +6,12 @@
 
 #include <cmath>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
@@ -20,7 +20,9 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
+#include "chrome/grit/app_icon_resources.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -30,7 +32,7 @@ namespace {
 
 constexpr char16_t kA11yDelimiter[] = u", ";
 
-constexpr auto kAllowedLaunchAppIds = base::MakeFixedFlatSet<base::StringPiece>(
+constexpr auto kAllowedLaunchAppIds = base::MakeFixedFlatSet<std::string_view>(
     {"egmafekfmcnknbdlbfbhafbllplmjlhn", "pnkcfpnngfokcnnijgkllghjlhkailce"});
 
 void LogIconLoadStatus(apps::DiscoveryError status) {
@@ -45,6 +47,26 @@ int MaxSquareLengthForRadius(const int radius) {
   return floor(hypotenuse);
 }
 
+// Loads the app placeholder icon and treats it as unmaskable.
+ui::ImageModel GetAppPlaceholderIcon(int dimension) {
+  // TODO(b/306561938): Use 20x20 version of the icon instead.
+  const gfx::ImageSkia& image =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_APP_ICON_PLACEHOLDER_CUBE);
+  const int radius = dimension / 2;
+  const int size = MaxSquareLengthForRadius(radius);
+  const gfx::ImageSkia resized_image =
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          image, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+          gfx::Size(size, size));
+  // Sets the background to white to be consistent with the way the game icons
+  // are displayed.
+  // TODO(b/306561938): Use cros_tokens::kCrosSysSystemOnBase for background
+  // here and below instead.
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+          radius, SK_ColorWHITE, resized_image));
+}
 }  // namespace
 
 GameResult::GameResult(Profile* profile,
@@ -76,8 +98,10 @@ GameResult::GameResult(Profile* profile,
   SetCategory(Category::kGames);
 
   UpdateText(game, query);
+  SetIcon(IconInfo(GetAppPlaceholderIcon(dimension_), kAppIconDimension,
+                   IconShape::kCircle));
   app_discovery_service->GetIcon(
-      game.GetAppId(), dimension_, apps::ResultType::kGameSearchCatalog,
+      game.GetIconId(), dimension_, apps::ResultType::kGameSearchCatalog,
       base::BindOnce(&GameResult::OnIconLoaded, weak_factory_.GetWeakPtr()));
   if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
     dark_light_mode_controller->AddObserver(this);

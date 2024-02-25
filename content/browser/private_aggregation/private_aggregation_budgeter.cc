@@ -55,7 +55,7 @@ void RecordBudgetValidity(ValidityStatus status) {
       "BudgetValidityStatus histogram.");
 
   base::UmaHistogramEnumeration(
-      "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus",
+      "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2",
       status);
 }
 
@@ -381,15 +381,13 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     int additional_budget,
     const PrivateAggregationBudgetKey& budget_key,
     base::OnceCallback<void(RequestResult)> on_done) {
+  CHECK_GT(additional_budget, 0);
+
   if (!DidStorageInitializationSucceed()) {
     std::move(on_done).Run(RequestResult::kStorageInitializationFailed);
     return;
   }
 
-  if (additional_budget <= 0) {
-    std::move(on_done).Run(RequestResult::kInvalidRequest);
-    return;
-  }
   static_assert(
       kSmallerScopeValues.max_budget_per_scope <
           kLargerScopeValues.max_budget_per_scope,

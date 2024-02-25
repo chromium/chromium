@@ -9,6 +9,24 @@
 
 namespace extensions {
 
+class PdfViewerPrivateGetStreamInfoFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("pdfViewerPrivate.getStreamInfo",
+                             PDFVIEWERPRIVATE_GETSTREAMINFO)
+
+  PdfViewerPrivateGetStreamInfoFunction();
+  PdfViewerPrivateGetStreamInfoFunction(
+      const PdfViewerPrivateGetStreamInfoFunction&) = delete;
+  PdfViewerPrivateGetStreamInfoFunction& operator=(
+      const PdfViewerPrivateGetStreamInfoFunction&) = delete;
+
+ protected:
+  ~PdfViewerPrivateGetStreamInfoFunction() override;
+
+  // Override from ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class PdfViewerPrivateIsAllowedLocalFileAccessFunction
     : public ExtensionFunction {
  public:
@@ -59,6 +77,25 @@ class PdfViewerPrivateSetPdfOcrPrefFunction : public ExtensionFunction {
 
  protected:
   ~PdfViewerPrivateSetPdfOcrPrefFunction() override;
+
+  // Override from ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class PdfViewerPrivateSetPdfPluginAttributesFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("pdfViewerPrivate.setPdfPluginAttributes",
+                             PDFVIEWERPRIVATE_SETPDFPLUGINATTRIBUTES)
+
+  PdfViewerPrivateSetPdfPluginAttributesFunction();
+  PdfViewerPrivateSetPdfPluginAttributesFunction(
+      const PdfViewerPrivateSetPdfPluginAttributesFunction&) = delete;
+  PdfViewerPrivateSetPdfPluginAttributesFunction& operator=(
+      const PdfViewerPrivateSetPdfPluginAttributesFunction&) = delete;
+
+ protected:
+  ~PdfViewerPrivateSetPdfPluginAttributesFunction() override;
 
   // Override from ExtensionFunction:
   ResponseAction Run() override;

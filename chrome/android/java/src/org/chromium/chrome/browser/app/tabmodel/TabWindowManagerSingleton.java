@@ -10,9 +10,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tabmodel.TabWindowManagerFactory;
 
-/**
- * Glue-level singleton instance of {@link TabWindowManager}.
- */
+/** Glue-level singleton instance of {@link TabWindowManager}. */
 public class TabWindowManagerSingleton {
     private static TabWindowManager sInstance;
     private static TabModelSelectorFactory sSelectorFactoryForTesting;
@@ -24,11 +22,15 @@ public class TabWindowManagerSingleton {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
             int maxSelectors = MultiWindowUtils.getMaxInstances();
-            TabModelSelectorFactory selectorFactory = sSelectorFactoryForTesting == null
-                    ? new DefaultTabModelSelectorFactory()
-                    : sSelectorFactoryForTesting;
-            sInstance = TabWindowManagerFactory.createInstance(
-                    selectorFactory, AsyncTabParamsManagerSingleton.getInstance(), maxSelectors);
+            TabModelSelectorFactory selectorFactory =
+                    sSelectorFactoryForTesting == null
+                            ? new DefaultTabModelSelectorFactory()
+                            : sSelectorFactoryForTesting;
+            sInstance =
+                    TabWindowManagerFactory.createInstance(
+                            selectorFactory,
+                            AsyncTabParamsManagerSingleton.getInstance(),
+                            maxSelectors);
         }
         return sInstance;
     }

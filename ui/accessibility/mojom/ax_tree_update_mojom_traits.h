@@ -10,6 +10,8 @@
 #include "ui/accessibility/mojom/ax_event_intent.mojom.h"
 #include "ui/accessibility/mojom/ax_event_intent_mojom_traits.h"
 #include "ui/accessibility/mojom/ax_node_data_mojom_traits.h"
+#include "ui/accessibility/mojom/ax_tree_checks.mojom-shared.h"
+#include "ui/accessibility/mojom/ax_tree_checks_mojom_traits.h"
 #include "ui/accessibility/mojom/ax_tree_data_mojom_traits.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom-shared.h"
 
@@ -39,6 +41,11 @@ struct StructTraits<ax::mojom::AXTreeUpdateDataView, ui::AXTreeUpdate> {
   static const std::vector<ui::AXEventIntent>& event_intents(
       const ui::AXTreeUpdate& p) {
     return p.event_intents;
+  }
+
+  static const std::optional<ui::AXTreeChecks> tree_checks(
+      const ui::AXTreeUpdate& p) {
+    return p.tree_checks;
   }
 
   static bool Read(ax::mojom::AXTreeUpdateDataView data, ui::AXTreeUpdate* out);

@@ -74,7 +74,7 @@ void CastMessagePortSenderImpl::PostMessage(
 }
 
 bool CastMessagePortSenderImpl::OnMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
   VLOG(3) << __func__;
 

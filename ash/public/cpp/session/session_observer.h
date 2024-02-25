@@ -74,7 +74,7 @@ class ASH_PUBLIC_EXPORT ScopedSessionObserver {
   virtual ~ScopedSessionObserver();
 
  private:
-  const raw_ptr<SessionObserver, ExperimentalAsh> observer_;
+  const raw_ptr<SessionObserver> observer_;
 };
 
 }  // namespace ash

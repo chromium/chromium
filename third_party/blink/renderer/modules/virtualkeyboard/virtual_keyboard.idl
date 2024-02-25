@@ -10,8 +10,12 @@
     Exposed=Window,
     SecureContext
 ] interface VirtualKeyboard : EventTarget {
+    [MeasureAs=VirtualKeyboardShow]
     void show();
+
+    [MeasureAs=VirtualKeyboardHide]
     void hide();
+
     readonly attribute DOMRect boundingRect;
     attribute boolean overlaysContent;
     attribute EventHandler ongeometrychange;

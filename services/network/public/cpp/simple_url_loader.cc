@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -20,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -57,6 +57,18 @@ namespace {
 
 // Used by tests to override the tick clock for the timeout timer.
 const base::TickClock* timeout_tick_clock_ = nullptr;
+
+// A temporary util adapter to wrap the download callback with the response
+// body, and to hop the string content from a unique_ptr<string> into a
+// optional<string>.
+void GetFromUniquePtrToOptional(
+    SimpleURLLoader::BodyAsStringCallback body_as_string_callback,
+    std::unique_ptr<std::string> response_body) {
+  std::move(body_as_string_callback)
+      .Run(response_body
+               ? std::make_optional<std::string>(std::move(*response_body))
+               : std::nullopt);
+}
 
 // This file contains SimpleURLLoaderImpl, several BodyHandler implementations,
 // BodyReader, and StringUploadDataPipeGetter.
@@ -211,8 +223,14 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
   // SimpleURLLoader implementation.
   void DownloadToString(mojom::URLLoaderFactory* url_loader_factory,
+                        BodyAsStringCallbackDeprecated body_as_string_callback,
+                        size_t max_body_size) override;
+  void DownloadToString(mojom::URLLoaderFactory* url_loader_factory,
                         BodyAsStringCallback body_as_string_callback,
                         size_t max_body_size) override;
+  void DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      mojom::URLLoaderFactory* url_loader_factory,
+      BodyAsStringCallbackDeprecated body_as_string_callback) override;
   void DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       mojom::URLLoaderFactory* url_loader_factory,
       BodyAsStringCallback body_as_string_callback) override;
@@ -259,7 +277,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
   int NetError() const override;
   const mojom::URLResponseHead* ResponseInfo() const override;
-  const absl::optional<URLLoaderCompletionStatus>& CompletionStatus()
+  const std::optional<URLLoaderCompletionStatus>& CompletionStatus()
       const override;
   const GURL& GetFinalURL() const override;
   bool LoadedFromCache() const override;
@@ -313,7 +331,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
     mojom::URLResponseHeadPtr response_info;
 
-    absl::optional<URLLoaderCompletionStatus> completion_status;
+    std::optional<URLLoaderCompletionStatus> completion_status;
   };
 
   void AttachStringForUpload(const std::string& upload_data,
@@ -342,7 +360,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   void OnReceiveResponse(
       mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr response_head) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
@@ -681,7 +699,7 @@ class SaveToStringBodyHandler : public BodyHandler,
   SaveToStringBodyHandler(
       SimpleURLLoaderImpl* simple_url_loader,
       bool want_download_progress,
-      SimpleURLLoader::BodyAsStringCallback body_as_string_callback,
+      SimpleURLLoader::BodyAsStringCallbackDeprecated body_as_string_callback,
       int64_t max_body_size)
       : BodyHandler(simple_url_loader, want_download_progress),
         max_body_size_(max_body_size),
@@ -742,7 +760,7 @@ class SaveToStringBodyHandler : public BodyHandler,
   const int64_t max_body_size_;
 
   std::unique_ptr<std::string> body_;
-  SimpleURLLoader::BodyAsStringCallback body_as_string_callback_;
+  SimpleURLLoader::BodyAsStringCallbackDeprecated body_as_string_callback_;
 
   const base::Location url_loader_created_from_;
 
@@ -1168,7 +1186,8 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
 
   void NotifyConsumerOfCompletion(bool destroy_results) override {
     body_reader_.reset();
-    stream_consumer_->OnComplete(simple_url_loader()->NetError() == net::OK);
+    stream_consumer_.ExtractAsDangling()->OnComplete(
+        simple_url_loader()->NetError() == net::OK);
   }
 
   void PrepareToRetry(base::OnceClosure retry_callback) override {
@@ -1184,7 +1203,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     base::WeakPtr<DownloadAsStreamBodyHandler> weak_this(
         weak_ptr_factory_.GetWeakPtr());
     stream_consumer_->OnDataReceived(
-        base::StringPiece(data, length),
+        std::string_view(data, length),
         base::BindOnce(&DownloadAsStreamBodyHandler::Resume,
                        weak_ptr_factory_.GetWeakPtr()));
     // Protect against deletion.
@@ -1217,8 +1236,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     body_reader_->Resume();
   }
 
-  raw_ptr<SimpleURLLoaderStreamConsumer, AcrossTasksDanglingUntriaged>
-      stream_consumer_;
+  raw_ptr<SimpleURLLoaderStreamConsumer> stream_consumer_;
 
   const base::Location url_loader_created_from_;
 
@@ -1260,7 +1278,7 @@ SimpleURLLoaderImpl::~SimpleURLLoaderImpl() {}
 
 void SimpleURLLoaderImpl::DownloadToString(
     mojom::URLLoaderFactory* url_loader_factory,
-    BodyAsStringCallback body_as_string_callback,
+    BodyAsStringCallbackDeprecated body_as_string_callback,
     size_t max_body_size) {
   DCHECK_LE(max_body_size, kMaxBoundedStringDownloadSize);
   body_handler_ = std::make_unique<SaveToStringBodyHandler>(
@@ -1269,9 +1287,19 @@ void SimpleURLLoaderImpl::DownloadToString(
   Start(url_loader_factory);
 }
 
+void SimpleURLLoaderImpl::DownloadToString(
+    mojom::URLLoaderFactory* url_loader_factory,
+    BodyAsStringCallback body_as_string_callback,
+    size_t max_body_size) {
+  DownloadToString(url_loader_factory,
+                   base::BindOnce(GetFromUniquePtrToOptional,
+                                  std::move(body_as_string_callback)),
+                   max_body_size);
+}
+
 void SimpleURLLoaderImpl::DownloadToStringOfUnboundedSizeUntilCrashAndDie(
     mojom::URLLoaderFactory* url_loader_factory,
-    BodyAsStringCallback body_as_string_callback) {
+    BodyAsStringCallbackDeprecated body_as_string_callback) {
   body_handler_ = std::make_unique<SaveToStringBodyHandler>(
       this, !on_download_progress_callback_.is_null(),
       std::move(body_as_string_callback),
@@ -1279,6 +1307,14 @@ void SimpleURLLoaderImpl::DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       // is an int64_t, not a size_t.
       std::numeric_limits<int64_t>::max());
   Start(url_loader_factory);
+}
+
+void SimpleURLLoaderImpl::DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+    mojom::URLLoaderFactory* url_loader_factory,
+    BodyAsStringCallback body_as_string_callback) {
+  DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory, base::BindOnce(GetFromUniquePtrToOptional,
+                                         std::move(body_as_string_callback)));
 }
 
 void SimpleURLLoaderImpl::DownloadHeadersOnly(
@@ -1528,7 +1564,7 @@ const mojom::URLResponseHead* SimpleURLLoaderImpl::ResponseInfo() const {
   return request_state_->response_info.get();
 }
 
-const absl::optional<URLLoaderCompletionStatus>&
+const std::optional<URLLoaderCompletionStatus>&
 SimpleURLLoaderImpl::CompletionStatus() const {
   // Should only be called once the request is complete.
   DCHECK(request_state_->finished);
@@ -1546,7 +1582,7 @@ void SimpleURLLoaderImpl::OnBodyHandlerDone(net::Error error,
     // Reset the completion status since the contained metrics like encoded body
     // length and net error are not reliable when the body itself was not
     // successfully completed.
-    request_state_->completion_status = absl::nullopt;
+    request_state_->completion_status = std::nullopt;
     // When |allow_partial_results_| is true, a valid body|file_path is
     // passed to the completion callback even in the case of failures.
     // For consistency, it makes sense to also hold the actual decompressed
@@ -1704,7 +1740,7 @@ void SimpleURLLoaderImpl::OnReceiveEarlyHints(
 void SimpleURLLoaderImpl::OnReceiveResponse(
     mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (request_state_->response_info) {
     // The final headers have already been received, so the URLLoader is
@@ -1819,7 +1855,7 @@ void SimpleURLLoaderImpl::OnComplete(const URLLoaderCompletionStatus& status) {
   // URLLoader is violating the API contract.
   if (request_state_->net_error == net::OK && !request_state_->body_started) {
     request_state_->net_error = net::ERR_UNEXPECTED;
-    request_state_->completion_status = absl::nullopt;
+    request_state_->completion_status = std::nullopt;
   }
 
   MaybeComplete();
@@ -1838,7 +1874,7 @@ void SimpleURLLoaderImpl::OnMojoDisconnect() {
 
   request_state_->request_completed = true;
   request_state_->net_error = net::ERR_FAILED;
-  request_state_->completion_status = absl::nullopt;
+  request_state_->completion_status = std::nullopt;
 
   // Wait to receive any pending data on the data pipe before reporting the
   // failure.
@@ -1887,14 +1923,14 @@ void SimpleURLLoaderImpl::MaybeComplete() {
         request_state_->received_body_size) {
       // The body pipe was closed before it received the entire body.
       request_state_->net_error = net::ERR_FAILED;
-      request_state_->completion_status = absl::nullopt;
+      request_state_->completion_status = std::nullopt;
     } else {
       // The caller provided more data through the pipe than it reported in
       // URLLoaderCompletionStatus, so the URLLoader is violating the
       // API contract. Just fail the request and delete the retained completion
       // status.
       request_state_->net_error = net::ERR_UNEXPECTED;
-      request_state_->completion_status = absl::nullopt;
+      request_state_->completion_status = std::nullopt;
     }
   }
 

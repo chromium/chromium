@@ -6,12 +6,12 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
     'use strict';
     TestRunner.addResult(`Tests that serviceworker timings are displayed correctly.\n`);
-    await TestRunner.loadLegacyModule('console');
     await TestRunner.showPanel('network');
 
     await TestRunner.reloadPagePromise();
@@ -66,8 +66,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
         'http://example.com/fake-document-url', 1, 1, fakeInitiator);
     setRequestValues(testRequest);
 
-    const calculator = UI.panels.network.calculator;
-    const tableElement = Network.RequestTimingView.createTimingTable(testRequest, calculator);
+    const calculator = Network.NetworkPanel.NetworkPanel.instance().calculator;
+    const tableElement = Network.RequestTimingView.RequestTimingView.createTimingTable(testRequest, calculator);
 
     for (const element of tableElement.getElementsByTagName('td')) {
       const content = element.textContent;

@@ -53,10 +53,6 @@ if (use_bundled_fontconfig) {
 
     defines = [
       "HAVE_CONFIG_H",
-      "FC_CACHEDIR=\"/var/cache/fontconfig\"",
-      "FC_TEMPLATEDIR=\"/usr/share/fontconfig/conf.avail\"",
-      "FONTCONFIG_PATH=\"/etc/fonts\"",
-      "CONFIGDIR=\"/etc/fonts/conf.d\"",
     ]
 
     # Fontconfig symbols should not be exported from chrome, nacl_helper, or

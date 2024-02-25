@@ -12,6 +12,7 @@
 
 #include "base/values.h"
 #include "components/guest_view/common/guest_view.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 class BrowserContext;
@@ -28,9 +29,12 @@ class GuestViewMessageHandler : public mojom::GuestViewHost {
   ~GuestViewMessageHandler() override;
 
  protected:
-  explicit GuestViewMessageHandler(int render_process_id);
+  explicit GuestViewMessageHandler(
+      const content::GlobalRenderFrameHostId& frame_id);
 
-  int render_process_id() const { return render_process_id_; }
+  int render_process_id() const { return frame_id_.child_id; }
+
+  const content::GlobalRenderFrameHostId frame_id_;
 
  private:
   // Returns the GuestViewManager for the BrowserContext of our associated
@@ -49,15 +53,13 @@ class GuestViewMessageHandler : public mojom::GuestViewHost {
   content::BrowserContext* GetBrowserContext() const;
 
   // mojom::GuestViewHost
-  void AttachToEmbedderFrame(int embedder_local_render_frame_id,
-                             int element_instance_id,
+  void AttachToEmbedderFrame(int element_instance_id,
                              int guest_instance_id,
                              base::Value::Dict params,
                              AttachToEmbedderFrameCallback callback) override;
-  void ViewCreated(int view_instance_id, const std::string& view_type) override;
-  void ViewGarbageCollected(int view_instance_id) override;
-
-  const int render_process_id_;
+  void ViewCreated(int view_instance_id,
+                   const std::string& view_type,
+                   mojo::PendingReceiver<mojom::ViewHandle> receiver) override;
 };
 
 }  // namespace guest_view

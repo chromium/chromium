@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/prefs/testing_pref_service.h"
@@ -18,7 +19,6 @@
 #include "media/mojo/services/mojo_media_drm_storage.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -30,6 +30,8 @@ const char kTestOrigin[] = "https://www.testorigin.com:80";
 const char kTestOrigin2[] = "https://www.testorigin2.com:80";
 
 using MediaDrmOriginId = MediaDrmStorageImpl::MediaDrmOriginId;
+using ClearMatchingLicensesFilterCB =
+    MediaDrmStorageImpl::ClearMatchingLicensesFilterCB;
 
 void OnMediaDrmStorageInit(bool expected_success,
                            MediaDrmOriginId* out_origin_id,
@@ -46,7 +48,7 @@ void CreateOriginId(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
 
 void CreateEmptyOriginId(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
   // |callback| has to fail in order to check if empty origin ID allowed.
-  std::move(callback).Run(false, absl::nullopt);
+  std::move(callback).Run(false, std::nullopt);
 }
 
 void CreateOriginIdAsync(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
@@ -123,9 +125,7 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
 
     // Verify the origin dictionary is created.
-    const base::Value::Dict& storage_dict =
-        pref_service_->GetDict(prefs::kMediaDrmStorage);
-    EXPECT_TRUE(storage_dict.Find(kTestOrigin));
+    EXPECT_TRUE(MediaDrmStorageContains(kTestOrigin));
 
     DCHECK(*origin_id);
     return media_drm_storage;
@@ -209,16 +209,23 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
     EXPECT_EQ(expected_session_data->mime_type, session_data->mime_type);
   }
 
+  bool MediaDrmStorageContains(const char* origin) {
+    const base::Value::Dict& storage_dict =
+        pref_service_->GetDict(prefs::kMediaDrmStorage);
+    return storage_dict.contains(origin);
+  }
+
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<media::MediaDrmStorage> media_drm_storage_;
   MediaDrmOriginId origin_id_;
 };
 
+// ClearMatchingLicenses is only available on Android
+#if BUILDFLAG(IS_ANDROID)
 // MediaDrmStorageImpl should write origin ID to persistent storage when
 // Initialize is called. Later call to Initialize should return the same origin
 // ID. The second MediaDrmStorage won't call Initialize until the first one is
 // fully initialized.
-// TODO(yucliu): Test origin ID is re-generated after clearing licenses.
 TEST_F(MediaDrmStorageImplTest, Initialize_OriginIdNotChanged) {
   MediaDrmOriginId original_origin_id = origin_id_;
   ASSERT_TRUE(original_origin_id);
@@ -227,7 +234,23 @@ TEST_F(MediaDrmStorageImplTest, Initialize_OriginIdNotChanged) {
   std::unique_ptr<media::MediaDrmStorage> storage =
       CreateAndInitMediaDrmStorage(GURL(kTestOrigin), &origin_id);
   EXPECT_EQ(origin_id, original_origin_id);
+
+  base::RunLoop loop;
+  MediaDrmStorageImpl::ClearMatchingLicenses(
+      pref_service_.get(), base::Time::Min(), base::Time::Max(),
+      ClearMatchingLicensesFilterCB(), loop.QuitClosure());
+  loop.Run();
+
+  EXPECT_FALSE(MediaDrmStorageContains(kTestOrigin));
+
+  MediaDrmOriginId new_origin_id;
+  std::unique_ptr<media::MediaDrmStorage> new_storage =
+      CreateAndInitMediaDrmStorage(GURL(kTestOrigin), &new_origin_id);
+
+  // Origin id should be regenerated to a new value.
+  EXPECT_NE(new_origin_id, original_origin_id);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Two MediaDrmStorage call Initialize concurrently. The second MediaDrmStorage
 // will NOT wait for the first one to be initialized. Both instances should get
@@ -291,9 +314,7 @@ TEST_F(MediaDrmStorageImplTest, OnProvisioned) {
   base::RunLoop().RunUntilIdle();
 
   // Verify the origin dictionary is created.
-  const base::Value::Dict& storage_dict =
-      pref_service_->GetDict(prefs::kMediaDrmStorage);
-  EXPECT_TRUE(storage_dict.Find(kTestOrigin));
+  EXPECT_TRUE(MediaDrmStorageContains(kTestOrigin));
 }
 
 TEST_F(MediaDrmStorageImplTest, OnProvisioned_Twice) {
@@ -436,5 +457,69 @@ TEST_F(MediaDrmStorageImplTest, DisallowEmptyOriginId) {
 
   EXPECT_FALSE(origin_id);
 }
+
+// ClearMatchingLicenses is only available on Android
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(MediaDrmStorageImplTest, TestClearLicensesMatchingDuration) {
+  OnProvisioned();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the origin dictionary is created.
+  EXPECT_TRUE(MediaDrmStorageContains(kTestOrigin));
+
+  base::Time first_origin_time = base::Time::Now();
+
+  MediaDrmOriginId origin_id;
+  std::unique_ptr<media::MediaDrmStorage> storage =
+      CreateAndInitMediaDrmStorage(GURL(kTestOrigin2), &origin_id);
+  base::RunLoop().RunUntilIdle();
+
+  base::RunLoop loop_one;
+  MediaDrmStorageImpl::ClearMatchingLicenses(
+      pref_service_.get(), base::Time::Min(), first_origin_time,
+      ClearMatchingLicensesFilterCB(), loop_one.QuitClosure());
+
+  loop_one.Run();
+
+  EXPECT_FALSE(MediaDrmStorageContains(kTestOrigin));
+  EXPECT_TRUE(MediaDrmStorageContains(kTestOrigin2));
+
+  base::RunLoop loop_two;
+  MediaDrmStorageImpl::ClearMatchingLicenses(
+      pref_service_.get(), first_origin_time, base::Time::Max(),
+      ClearMatchingLicensesFilterCB(), loop_two.QuitClosure());
+  loop_two.Run();
+
+  EXPECT_FALSE(MediaDrmStorageContains(kTestOrigin2));
+}
+
+TEST_F(MediaDrmStorageImplTest, TestClearLicensesMatchingFilter) {
+  OnProvisioned();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the origin dictionary is created.
+  EXPECT_TRUE(MediaDrmStorageContains(kTestOrigin));
+
+  base::RunLoop loop_one;
+  // With the filter returning false, the origin id should not be destroyed.
+  MediaDrmStorageImpl::ClearMatchingLicenses(
+      pref_service_.get(), base::Time::Min(), base::Time::Max(),
+      base::BindRepeating([](const GURL& url) { return false; }),
+      loop_one.QuitClosure());
+  loop_one.Run();
+  EXPECT_TRUE(MediaDrmStorageContains(kTestOrigin));
+
+  base::RunLoop loop_two;
+  MediaDrmStorageImpl::ClearMatchingLicenses(
+      pref_service_.get(), base::Time::Min(), base::Time::Max(),
+      base::BindRepeating([](const GURL& url) {
+        return url.is_valid() &&
+               base::ContainsOnlyChars(url.spec(), kTestOrigin);
+      }),
+      loop_two.QuitClosure());
+  loop_two.Run();
+  EXPECT_FALSE(MediaDrmStorageContains(kTestOrigin));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace cdm

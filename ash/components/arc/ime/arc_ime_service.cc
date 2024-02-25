@@ -26,8 +26,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/ash/extension_ime_util.h"
-#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/input_method.h"
@@ -45,8 +43,8 @@ namespace arc {
 
 namespace {
 
-absl::optional<double> g_override_default_device_scale_factor;
-absl::optional<gfx::Point> g_override_display_origin;
+std::optional<double> g_override_default_device_scale_factor;
+std::optional<gfx::Point> g_override_display_origin;
 
 // Return true when a rich text editing is available on a text field with the
 // given type.
@@ -144,7 +142,7 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
   }
 
  private:
-  const raw_ptr<ArcImeService, ExperimentalAsh> ime_service_;
+  const raw_ptr<ArcImeService> ime_service_;
 };
 
 // Singleton factory for ArcImeService.
@@ -626,28 +624,17 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
   if (!range.is_empty()) {
     base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
                                   TextInputClient::SubClass::kArcImeService);
-
-    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
-    if (input_method_manager &&
-        ash::extension_ime_util::IsExperimentalMultilingual(
-            input_method_manager->GetActiveIMEState()
-                ->GetCurrentInputMethod()
-                .id())) {
-      base::UmaHistogramEnumeration(
-          "InputMethod.MultilingualExperiment.Autocorrect.Count",
-          TextInputClient::SubClass::kArcImeService);
-    }
   }
   // TODO(https://crbug.com/1091088): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
-absl::optional<ui::GrammarFragment> ArcImeService::GetGrammarFragmentAtCursor()
+std::optional<ui::GrammarFragment> ArcImeService::GetGrammarFragmentAtCursor()
     const {
   // TODO(https://crbug.com/1201454): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ArcImeService::ClearGrammarFragments(const gfx::Range& range) {
@@ -700,13 +687,13 @@ void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
 
 // static
 void ArcImeService::SetOverrideDefaultDeviceScaleFactorForTesting(
-    absl::optional<double> scale_factor) {
+    std::optional<double> scale_factor) {
   g_override_default_device_scale_factor = scale_factor;
 }
 
 // static
 void ArcImeService::SetOverrideDisplayOriginForTesting(
-    absl::optional<gfx::Point> origin) {
+    std::optional<gfx::Point> origin) {
   g_override_display_origin = origin;
 }
 

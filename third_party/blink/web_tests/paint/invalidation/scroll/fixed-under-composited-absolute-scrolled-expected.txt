@@ -1,14 +1,14 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutNGView #document",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 2001],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='absolute'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='absolute'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",

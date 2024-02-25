@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
@@ -39,7 +39,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
-#include "components/history_clusters/ui/query_clusters_state.h"
+#include "components/history_clusters/core/query_clusters_state.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/page_image_service/image_service.h"
 #include "components/prefs/pref_service.h"
@@ -48,7 +48,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -258,7 +257,8 @@ void HistoryClustersHandler::StartQueryClusters(const std::string& query,
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   query_clusters_state_ = std::make_unique<QueryClustersState>(
-      history_clusters_service->GetWeakPtr(), query, recluster);
+      history_clusters_service->GetWeakPtr(), history_service_, query,
+      recluster);
   LoadMoreClusters(query);
 }
 
@@ -342,7 +342,7 @@ void HistoryClustersHandler::RemoveVisits(
 
 void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
     std::vector<mojom::URLVisitPtr> visits,
-    const absl::optional<std::string>& tab_group_name) {
+    const std::optional<std::string>& tab_group_name) {
   auto* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     return;

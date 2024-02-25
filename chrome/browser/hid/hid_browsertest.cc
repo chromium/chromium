@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
@@ -24,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/service_worker_running_info.h"
@@ -105,7 +108,7 @@ class TestServiceWorkerContextObserver
 
   void WaitForWorkerStop() {
     stopped_run_loop_.Run();
-    EXPECT_EQ(running_version_id_, absl::nullopt);
+    EXPECT_EQ(running_version_id_, std::nullopt);
   }
 
   int64_t GetServiceWorkerVersionId() { return running_version_id_.value(); }
@@ -134,7 +137,7 @@ class TestServiceWorkerContextObserver
       return;
     }
     stopped_run_loop_.Quit();
-    running_version_id_ = absl::nullopt;
+    running_version_id_ = std::nullopt;
   }
 
   void OnDestruct(content::ServiceWorkerContext* context) override {
@@ -145,11 +148,48 @@ class TestServiceWorkerContextObserver
   base::RunLoop started_run_loop_;
   base::RunLoop activated_run_loop_;
   base::RunLoop stopped_run_loop_;
-  absl::optional<int64_t> running_version_id_;
+  std::optional<int64_t> running_version_id_;
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
   GURL extension_url_;
+};
+
+class TestServiceWorkerConsoleObserver
+    : public content::ServiceWorkerContextObserver {
+ public:
+  explicit TestServiceWorkerConsoleObserver(
+      content::BrowserContext* browser_context) {
+    content::StoragePartition* partition =
+        browser_context->GetDefaultStoragePartition();
+    scoped_observation_.Observe(partition->GetServiceWorkerContext());
+  }
+  ~TestServiceWorkerConsoleObserver() override = default;
+
+  TestServiceWorkerConsoleObserver(const TestServiceWorkerConsoleObserver&) =
+      delete;
+  TestServiceWorkerConsoleObserver& operator=(
+      const TestServiceWorkerConsoleObserver&) = delete;
+
+  using Message = content::ConsoleMessage;
+  const std::vector<Message>& messages() const { return messages_; }
+
+  void WaitForMessages() { run_loop_.Run(); }
+
+ private:
+  // ServiceWorkerContextObserver:
+  void OnReportConsoleMessage(int64_t version_id,
+                              const GURL& scope,
+                              const Message& message) override {
+    messages_.push_back(message);
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  std::vector<Message> messages_;
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      scoped_observation_{this};
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -315,7 +355,7 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_TRUE(maybe_indicator_notification->pinned());
     display_service_for_system_notification_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
-        /*action_index=*/0, /*reply=*/absl::nullopt);
+        /*action_index=*/0, /*reply=*/std::nullopt);
     auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/hidDevices");
 #else
@@ -371,8 +411,14 @@ class WebHidExtensionFeatureDisabledBrowserTest
   }
 };
 
+// TODO(crbug.com/1521554): Re-enable on linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
+#else
+#define MAYBE_FeatureDisabled FeatureDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
-                       FeatureDisabled) {
+                       MAYBE_FeatureDisabled) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -390,7 +436,13 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureDisabledBrowserTest,
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, GetDevices) {
+// TODO(crbug.com/1521554): Re-enable on ash-chrome.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_GetDevices DISABLED_GetDevices
+#else
+#define MAYBE_GetDevices GetDevices
+#endif
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_GetDevices) {
   extensions::TestExtensionDir test_dir;
 
   auto device = CreateTestDeviceWithInputAndOutputReports();
@@ -411,7 +463,13 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
+// TODO(crbug.com/1521554): Re-enable on ash-chrome.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RequestDevice DISABLED_RequestDevice
+#else
+#define MAYBE_RequestDevice RequestDevice
+#endif
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_RequestDevice) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -430,8 +488,18 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
 
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
-                       DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
+// TODO(crbug.com/1520400): enable the flaky test.
+#if (BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)) || \
+    (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
+#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
+  DISABLED_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
+#else
+#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
+  DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebHidExtensionBrowserTest,
+    MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
   content::ServiceWorkerContext* context = browser()
                                                ->profile()
                                                ->GetDefaultStoragePartition()
@@ -532,5 +600,64 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
   // Since we have active HID device session at this point, click the HID system
   // tray icon and check right links are opened by the browser.
   SimulateClickOnSystemTrayIconButton(browser(), extension);
+}
+
+// TODO(crbug.com/1521554): Flaky on non-Mac release builds.
+#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
+  DISABLED_EventListenerAddedAfterServiceWorkerIsActivated
+#else
+#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
+  EventListenerAddedAfterServiceWorkerIsActivated
+#endif
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
+                       MAYBE_EventListenerAddedAfterServiceWorkerIsActivated) {
+  const char kWarningMessage[] =
+      "Event handler of '%s' event must be added on the initial evaluation "
+      "of worker script. More info: "
+      "https://developer.chrome.com/docs/extensions/mv3/service_workers/"
+      "events/";
+
+  content::ServiceWorkerContext* context = browser()
+                                               ->profile()
+                                               ->GetDefaultStoragePartition()
+                                               ->GetServiceWorkerContext();
+  // Set up an observer for service worker events.
+  TestServiceWorkerContextObserver sw_observer(context, kTestExtensionId);
+  // Set up an observer for console messages reported by service worker
+  TestServiceWorkerConsoleObserver console_observer(browser()
+                                                        ->tab_strip_model()
+                                                        ->GetActiveWebContents()
+                                                        ->GetBrowserContext());
+  TestExtensionDir test_dir;
+  constexpr char kBackgroundJs[] = R"(
+      chrome.test.sendMessage("ready", function() {
+        navigator.hid.addEventListener("connect", () => {});
+      });
+    )";
+  SetUpTestDir(test_dir, kBackgroundJs);
+
+  // Launch the test app.
+  extensions::ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  // TODO(crbug.com/1336400): Grant permission using requestDevice().
+  // Run the test.
+  SetUpPolicy(extension);
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension->id(), kTestExtensionId);
+  sw_observer.WaitForWorkerStart();
+  sw_observer.WaitForWorkerActivated();
+
+  auto device = CreateTestDeviceWithInputAndOutputReports();
+  hid_manager()->AddDevice(device.Clone());
+
+  // Warning message will be displayed when event listener is nested inside a
+  // function
+  console_observer.WaitForMessages();
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+  EXPECT_EQ(console_observer.messages().begin()->message_level,
+            blink::mojom::ConsoleMessageLevel::kWarning);
+  EXPECT_EQ(console_observer.messages().begin()->message,
+            base::UTF8ToUTF16(base::StringPrintf(kWarningMessage, "connect")));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

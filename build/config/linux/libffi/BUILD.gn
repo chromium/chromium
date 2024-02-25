@@ -19,6 +19,6 @@ if (use_system_libffi) {
   }
 } else {
   config("libffi") {
-    libs = [ ":libffi_pic.a" ]
+    libs = [ "ffi_pic" ]
   }
 }

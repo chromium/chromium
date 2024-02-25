@@ -19,7 +19,6 @@ import android.widget.ListView;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 
@@ -78,23 +77,27 @@ class AppMenuDragHelper {
         // If user is dragging and the popup ListView is too big to display at once,
         // mDragScrolling animator scrolls mPopup.getListView() automatically depending on
         // the user's touch position.
-        mDragScrolling.setTimeListener((animation, totalTime, deltaTime) -> {
-            if (mAppMenu.getListView() == null) return;
+        mDragScrolling.setTimeListener(
+                (animation, totalTime, deltaTime) -> {
+                    if (mAppMenu.getListView() == null) return;
 
-            // We keep both mDragScrollOffset and mDragScrollOffsetRounded because
-            // the actual scrolling is by the rounded value but at the same time we also
-            // want to keep the precise scroll value in float.
-            mDragScrollOffset += (deltaTime * 0.001f) * mDragScrollingVelocity;
-            int diff = Math.round(mDragScrollOffset - mDragScrollOffsetRounded);
-            mDragScrollOffsetRounded += diff;
-            mAppMenu.getListView().smoothScrollBy(diff, 0);
+                    // We keep both mDragScrollOffset and mDragScrollOffsetRounded because
+                    // the actual scrolling is by the rounded value but at the same time we also
+                    // want to keep the precise scroll value in float.
+                    mDragScrollOffset += (deltaTime * 0.001f) * mDragScrollingVelocity;
+                    int diff = Math.round(mDragScrollOffset - mDragScrollOffsetRounded);
+                    mDragScrollOffsetRounded += diff;
+                    mAppMenu.getListView().smoothScrollBy(diff, 0);
 
-            // Force touch move event to highlight items correctly for the scrolled position.
-            if (!Float.isNaN(mLastTouchX) && !Float.isNaN(mLastTouchY)) {
-                menuItemAction(
-                        Math.round(mLastTouchX), Math.round(mLastTouchY), ItemAction.HIGHLIGHT);
-            }
-        });
+                    // Force touch move event to highlight items correctly for the scrolled
+                    // position.
+                    if (!Float.isNaN(mLastTouchX) && !Float.isNaN(mLastTouchY)) {
+                        menuItemAction(
+                                Math.round(mLastTouchX),
+                                Math.round(mLastTouchY),
+                                ItemAction.HIGHLIGHT);
+                    }
+                });
 
         // We use medium timeout, the average of tap and long press timeouts. This is consistent
         // with ListPopupWindow#ForwardingListener implementation.
@@ -167,8 +170,6 @@ class AppMenuDragHelper {
         if (eventActionMasked == MotionEvent.ACTION_CANCEL) {
             mAppMenu.dismiss();
             return true;
-        } else if (eventActionMasked == MotionEvent.ACTION_UP) {
-            RecordHistogram.recordTimesHistogram("WrenchMenu.TouchDuration", timeSinceDown);
         }
 
         mIsSingleTapCanceled |= timeSinceDown > mTapTimeout;
@@ -182,8 +183,7 @@ class AppMenuDragHelper {
         if (!mDragScrolling.isRunning()) return false;
 
         boolean didPerformClick = false;
-        @ItemAction
-        int itemAction = ItemAction.CLEAR_HIGHLIGHT_ALL;
+        @ItemAction int itemAction = ItemAction.CLEAR_HIGHLIGHT_ALL;
         switch (eventActionMasked) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
@@ -203,8 +203,10 @@ class AppMenuDragHelper {
         } else if (eventActionMasked == MotionEvent.ACTION_MOVE) {
             // Auto scrolling on the top or the bottom of the listView.
             if (listView.getHeight() > 0) {
-                float autoScrollAreaRatio = Math.min(
-                        AUTO_SCROLL_AREA_MAX_RATIO, mItemRowHeight * 1.2f / listView.getHeight());
+                float autoScrollAreaRatio =
+                        Math.min(
+                                AUTO_SCROLL_AREA_MAX_RATIO,
+                                mItemRowHeight * 1.2f / listView.getHeight());
                 float normalizedY =
                         (rawY - getScreenVisibleRect(listView).top) / listView.getHeight();
                 if (normalizedY < autoScrollAreaRatio) {
@@ -213,8 +215,9 @@ class AppMenuDragHelper {
                             (normalizedY / autoScrollAreaRatio - 1.0f) * mAutoScrollFullVelocity;
                 } else if (normalizedY > 1.0f - autoScrollAreaRatio) {
                     // Bottom
-                    mDragScrollingVelocity = ((normalizedY - 1.0f) / autoScrollAreaRatio + 1.0f)
-                            * mAutoScrollFullVelocity;
+                    mDragScrollingVelocity =
+                            ((normalizedY - 1.0f) / autoScrollAreaRatio + 1.0f)
+                                    * mAutoScrollFullVelocity;
                 } else {
                     // Middle or not scrollable.
                     mDragScrollingVelocity = 0.0f;
@@ -226,7 +229,9 @@ class AppMenuDragHelper {
     }
 
     private boolean pointInView(View view, float x, float y, float slop) {
-        return x >= -slop && y >= -slop && x < (view.getWidth() + slop)
+        return x >= -slop
+                && y >= -slop
+                && x < (view.getWidth() + slop)
                 && y < (view.getHeight() + slop);
     }
 
@@ -259,8 +264,10 @@ class AppMenuDragHelper {
         for (int i = 0; i < itemViews.size(); ++i) {
             View itemView = itemViews.get(i);
 
-            boolean shouldPerform = itemView.isEnabled() && itemView.isShown()
-                    && getScreenVisibleRect(itemView).contains(screenX, screenY);
+            boolean shouldPerform =
+                    itemView.isEnabled()
+                            && itemView.isShown()
+                            && getScreenVisibleRect(itemView).contains(screenX, screenY);
 
             switch (action) {
                 case ItemAction.HIGHLIGHT:
@@ -305,7 +312,9 @@ class AppMenuDragHelper {
         // Unfortunately, there is no available listener for sliding animation finished. Thus the
         // following nasty heuristics.
         final View firstRow = listView.getChildAt(0);
-        if (listView.getFirstVisiblePosition() == 0 && firstRow != null && firstRow.getTop() == 0
+        if (listView.getFirstVisiblePosition() == 0
+                && firstRow != null
+                && firstRow.getTop() == 0
                 && getScreenVisibleRect(firstRow).bottom <= mMenuButtonScreenCenterY) {
             return false;
         }

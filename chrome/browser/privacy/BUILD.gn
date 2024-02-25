@@ -4,6 +4,7 @@
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 
   android_library("java") {
     visibility = [
@@ -23,12 +24,13 @@ if (is_android) {
     deps = [
       ":java_resources",
       ":jni_headers",
-      "//base:jni_java",
+      "//base:base_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/net:secure_dns_management_mode_generated_enum",
       "//chrome/browser/preferences:java",
+      "//chrome/browser/profiles/android:java",
       "//chrome/browser/settings:java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/widget/android:java",
@@ -38,6 +40,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_fragment_fragment_java",
       "//third_party/androidx:androidx_preference_preference_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
     srcjar_deps = [
       ":jni_headers",

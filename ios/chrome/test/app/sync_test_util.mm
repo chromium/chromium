@@ -8,8 +8,10 @@
 #import <string>
 
 #import "base/check.h"
+#import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -40,13 +42,14 @@
 #import "components/sync_device_info/local_device_info_provider.h"
 #import "components/sync_sessions/session_store.h"
 #import "components/sync_sessions/session_sync_test_helper.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/synced_sessions/distant_session.h"
-#import "ios/chrome/browser/synced_sessions/distant_tab.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
@@ -89,7 +92,10 @@ bool IsFakeSyncServerSetUp() {
 
 void SetUpFakeSyncServer() {
   DCHECK(!gSyncFakeServer);
-  gSyncFakeServer = new fake_server::FakeServer();
+  base::FilePath user_data_dir;
+  base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
+  gSyncFakeServer =
+      new fake_server::FakeServer(user_data_dir.AppendASCII("FakeServer"));
   OverrideSyncNetwork(fake_server::CreateFakeServerHttpPostProviderFactory(
       gSyncFakeServer->AsWeakPtr()));
 }
@@ -101,19 +107,24 @@ void TearDownFakeSyncServer() {
   OverrideSyncNetwork(syncer::CreateHttpPostProviderFactory());
 }
 
+void ClearFakeSyncServerData() {
+  // Allow the caller to preventively clear server data.
+  if (gSyncFakeServer) {
+    gSyncFakeServer->ClearServerData();
+  }
+}
+
+void FlushFakeSyncServerToDisk() {
+  DCHECK(gSyncFakeServer);
+  gSyncFakeServer->FlushToDisk();
+}
+
 void TriggerSyncCycle(syncer::ModelType type) {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
   sync_service->TriggerRefresh({type});
-}
-
-void ClearSyncServerData() {
-  // Allow the caller to preventively clear server data.
-  if (gSyncFakeServer) {
-    gSyncFakeServer->ClearServerData();
-  }
 }
 
 int GetNumberOfSyncEntities(syncer::ModelType type) {
@@ -171,7 +182,7 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
 void AddSessionToFakeSyncServer(
     const synced_sessions::DistantSession& session) {
   std::vector<sync_pb::SessionSpecifics> specifics_list;
-  SessionID window_id = SessionID::FromSerializedValue(1);
+  SessionID window_id = SessionID::NewUnique();
   // Tab specifics.
   std::vector<SessionID> tab_list;
   sync_sessions::SessionSyncTestHelper helper;
@@ -180,6 +191,9 @@ void AddSessionToFakeSyncServer(
     sync_pb::SessionSpecifics tab = helper.BuildTabSpecifics(
         session.tag, base::UTF16ToUTF8(distant_tab->title),
         distant_tab->virtual_url.spec(), window_id, distant_tab->tab_id);
+    tab.mutable_tab()->set_last_active_time_unix_epoch_millis(
+        (distant_tab->last_active_time - base::Time::UnixEpoch())
+            .InMilliseconds());
     specifics_list.push_back(tab);
     tab_list.push_back(distant_tab->tab_id);
   }
@@ -361,21 +375,6 @@ void AddTypedURLToClient(const GURL& url) {
                           history::SOURCE_BROWSED, false);
 }
 
-void AddTypedURLToFakeSyncServer(const std::string& url) {
-  sync_pb::EntitySpecifics entitySpecifics;
-  sync_pb::TypedUrlSpecifics* typedUrl = entitySpecifics.mutable_typed_url();
-  typedUrl->set_url(url);
-  typedUrl->set_title(url);
-  typedUrl->add_visits(base::Time::Max().ToInternalValue());
-  typedUrl->add_visit_transitions(sync_pb::SyncEnums::TYPED);
-
-  std::unique_ptr<syncer::LoopbackServerEntity> entity =
-      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          /*non_unique_name=*/std::string(), /*client_tag=*/url,
-          entitySpecifics, 12345, 12345);
-  gSyncFakeServer->InjectEntity(std::move(entity));
-}
-
 void AddHistoryVisitToFakeSyncServer(const GURL& url) {
   sync_pb::EntitySpecifics entitySpecifics;
   sync_pb::HistorySpecifics* history = entitySpecifics.mutable_history();
@@ -475,24 +474,6 @@ void DeleteTypedUrlFromClient(const GURL& url) {
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
 
   history_service->DeleteURLs({url});
-}
-
-void DeleteTypedUrlFromFakeSyncServer(std::string url) {
-  std::vector<sync_pb::SyncEntity> typed_urls =
-      gSyncFakeServer->GetSyncEntitiesByModelType(syncer::TYPED_URLS);
-  std::string entity_id;
-  for (const sync_pb::SyncEntity& typed_url : typed_urls) {
-    if (typed_url.specifics().typed_url().url() == url) {
-      entity_id = typed_url.id_string();
-      break;
-    }
-  }
-  if (!entity_id.empty()) {
-    std::unique_ptr<syncer::LoopbackServerEntity> entity;
-    entity =
-        syncer::PersistentTombstoneEntity::CreateNew(entity_id, std::string());
-    gSyncFakeServer->InjectEntity(std::move(entity));
-  }
 }
 
 void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase) {

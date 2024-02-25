@@ -1,0 +1,740 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanReplaced">
+  <int value="0" label="Did Not Replace"/>
+  <int value="1" label="Replaced"/>
+</enum>
+
+<enum name="ChromeDownloadSource">
+  <int value="0" label="Initiated by Navigation"/>
+  <int value="1" label="Initiated by Context Menu"/>
+  <int value="2" label="Initiated by WebStore Installer"/>
+  <int value="3" label="Initiated by ImageBurner"/>
+  <int value="4" label="Initiated by Plugin Installer"/>
+  <int value="5" label="Initiated by PDF plugin"/>
+  <int value="6" label="Initiated by Extension"/>
+</enum>
+
+<enum name="DangerousDownloadDialogEvent">
+  <int value="0" label="dialog shown"/>
+  <int value="1" label="Dialog confirmed"/>
+  <int value="2" label="Dialog canceled"/>
+  <int value="3" label="Dialog dismissed"/>
+</enum>
+
+<enum name="Download.DragInfo">
+  <int value="0" label="DRAG_STARTED"/>
+  <int value="1" label="DOWNLOAD_COMPLETE"/>
+</enum>
+
+<enum name="Download.Service.CompletionType">
+  <int value="0" label="SUCCEED"/>
+  <int value="1" label="FAIL"/>
+  <int value="2" label="ABORT"/>
+  <int value="3" label="TIMEOUT"/>
+  <int value="4" label="UNKNOWN"/>
+  <int value="5" label="CANCEL"/>
+  <int value="6" label="OUT_OF_RETRIES"/>
+  <int value="7" label="OUT_OF_RESUMPTIONS"/>
+  <int value="8" label="UPLOAD_TIMEOUT"/>
+</enum>
+
+<enum name="Download.Service.EntryEvent">
+  <int value="0" label="START"/>
+  <int value="1" label="RESUME"/>
+  <int value="2" label="RETRY"/>
+  <int value="3" label="SUSPEND"/>
+</enum>
+
+<enum name="Download.Service.ModelAction">
+  <int value="0" label="INITIALIZE"/>
+  <int value="1" label="ADD"/>
+  <int value="2" label="UPDATE"/>
+  <int value="3" label="REMOVE"/>
+</enum>
+
+<enum name="Download.Service.PauseReason">
+  <int value="0" label="ANY"/>
+  <int value="1" label="UNMET_DEVICE_CRITERIA"/>
+  <int value="2" label="PAUSE_BY_CLIENT"/>
+  <int value="3" label="EXTERNAL_DOWNLOAD"/>
+  <int value="4" label="EXTERNAL_NAVIGATION"/>
+</enum>
+
+<enum name="Download.Service.ScheduledTaskStatus">
+  <int value="0" label="ABORTED_ON_FAILED_INIT"/>
+  <int value="1" label="CANCELLED_ON_STOP"/>
+  <int value="2" label="COMPLETED_NORMALLY"/>
+</enum>
+
+<enum name="Download.Service.ServiceApiAction">
+  <int value="0" label="START_DOWNLOAD"/>
+  <int value="1" label="PAUSE_DOWNLOAD"/>
+  <int value="2" label="RESUME_DOWNLOAD"/>
+  <int value="3" label="CANCEL_DOWNLOAD"/>
+  <int value="4" label="CHANGE_CRITERIA"/>
+</enum>
+
+<enum name="Download.Service.StartUpResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="FAILURE"/>
+  <int value="2" label="FAILURE_REASON_DRIVER"/>
+  <int value="3" label="FAILURE_REASON_MODEL"/>
+  <int value="4" label="FAILURE_REASON_FILE_MONITOR"/>
+</enum>
+
+<enum name="DownloadAddWarningActionEventOutcome">
+  <int value="0" label="NOT_ADDED_MISSING_DOWNLOAD"/>
+  <int value="1" label="NOT_ADDED_WARNING_SHOWN_ALREADY_LOGGED"/>
+  <int value="2" label="NOT_ADDED_MISSING_FIRST_WARNING"/>
+  <int value="3" label="NOT_ADDED_EXCEED_MAX_LENGTH"/>
+  <int value="4" label="ADDED_WARNING_FIRST_SHOWN"/>
+  <int value="5" label="ADDED_WARNING_ACTION"/>
+</enum>
+
+<enum name="DownloadARModelState">
+  <int value="0" label="Created">
+    AR model download was created but not yet started.
+  </int>
+  <int value="1" label="Started">AR model download was started.</int>
+  <int value="2" label="Successful">AR model download was successful.</int>
+  <int value="3" label="Unauthorized Failure">
+    AR model download failed due to either a 401 or 403 HTTP response.
+  </int>
+  <int value="4" label="Wrong MIME Type Failure">
+    AR model download did not download the correct MIME type. This can happen in
+    the case of web server redirects.
+  </int>
+  <int value="5" label="Other Failure">
+    AR model download failed for a reason other than 401/403 HTTP response or
+    incorrect MIME type. Does not include items already counted in the more
+    specific buckets, e.g., UnauthorizedFailure and WrongMimeTypeFailure.
+  </int>
+</enum>
+
+<enum name="DownloadAudioType">
+  <int value="0" label="UNRECOGNIZED"/>
+  <int value="1" label="AAC"/>
+  <int value="2" label="MIDI"/>
+  <int value="3" label="OGA"/>
+  <int value="4" label="WAV"/>
+  <int value="5" label="WEBA"/>
+  <int value="6" label="3GP"/>
+  <int value="7" label="3G2"/>
+  <int value="8" label="MP3"/>
+</enum>
+
+<enum name="DownloadBubbleSubpageAction">
+  <int value="0" label="Subpage shown"/>
+  <int value="1" label="(Obsolete) Checkbox shown"/>
+  <int value="2" label="Secondary Button shown"/>
+  <int value="3" label="Primary Button shown"/>
+  <int value="4" label="Back button pressed"/>
+  <int value="5" label="Subpage closed"/>
+  <int value="6" label="(Obsolete) Checkbox clicked"/>
+  <int value="7" label="Secondary button pressed"/>
+  <int value="8" label="Primary button pressed"/>
+</enum>
+
+<enum name="DownloadCalendarFileUI">
+  <int value="0" label="Warning alert is presented"/>
+  <int value="1"
+      label="Warning alert is dismissed without presenting a SFSafariView"/>
+  <int value="2"
+      label="Warning alert is dismissed with presenting a SFSafariView"/>
+</enum>
+
+<enum name="DownloadCancelReason">
+  <int value="0" label="Existing download path"/>
+  <int value="1" label="Target confirmation result"/>
+  <int value="2" label="No valid path"/>
+  <int value="3" label="Mixed content"/>
+  <int value="4" label="Failed path reservation"/>
+  <int value="5" label="Empty local path"/>
+</enum>
+
+<enum name="DownloadCommand">
+  <int value="0" label="Show in folder"/>
+  <int value="1" label="Open when complete"/>
+  <int value="2" label="Always open type"/>
+  <int value="3" label="Platform open"/>
+  <int value="4" label="Cancel"/>
+  <int value="5" label="Pause"/>
+  <int value="6" label="Resume"/>
+  <int value="7" label="Discard"/>
+  <int value="8" label="Keep"/>
+  <int value="9" label="Learn more scanning"/>
+  <int value="10" label="Learn more interrupted"/>
+  <int value="11" label="Learn more insecure download"/>
+  <int value="12" label="Learn more download blocked"/>
+  <int value="13" label="Open Safe Browsing setting"/>
+  <int value="14" label="Copy to clipboard"/>
+  <int value="15" label="Deep scan"/>
+  <int value="16" label="Bypass deep scanning"/>
+  <int value="17" label="Review"/>
+  <int value="18" label="Retry"/>
+  <int value="19" label="Cancel deep scan"/>
+  <int value="20" label="Bypass deep scanning and open"/>
+</enum>
+
+<enum name="DownloadContentType">
+  <int value="0" label="UNRECOGNIZED"/>
+  <int value="1" label="TEXT"/>
+  <int value="2" label="IMAGE"/>
+  <int value="3" label="AUDIO"/>
+  <int value="4" label="VIDEO"/>
+  <int value="5" label="OCTET_STREAM"/>
+  <int value="6" label="PDF"/>
+  <int value="7" label="DOCUMENT"/>
+  <int value="8" label="SPREADSHEET"/>
+  <int value="9" label="PRESENTATION"/>
+  <int value="10" label="ARCHIVE"/>
+  <int value="11" label="EXECUTABLE"/>
+  <int value="12" label="DMG"/>
+  <int value="13" label="CRX"/>
+  <int value="14" label="WEB"/>
+  <int value="15" label="EBOOK"/>
+  <int value="16" label="FONT"/>
+  <int value="17" label="APK"/>
+</enum>
+
+<enum name="DownloadCountType">
+  <int value="0" label="Initiated by Navigation (Obsolete)"/>
+  <int value="1" label="Initiated by Context Menu (Obsolete)"/>
+  <int value="2" label="Initiated by SavePackage Failure (Obsolete)"/>
+  <int value="3" label="Initiated by Drag-n-drop (Obsolete)"/>
+  <int value="4" label="Initiated by Renderer (Obsolete)"/>
+  <int value="5" label="Initiated and Unthrottled"/>
+  <int value="6" label="Completed"/>
+  <int value="7" label="Cancelled"/>
+  <int value="8" label="Started"/>
+  <int value="9" label="Interrupted"/>
+  <int value="10" label="Calls to AppendDataToFile (Size) (Obsolete 8/2013)"/>
+  <int value="11" label="Calls to AppendDataToFile (Count) (Obsolete 8/2013)"/>
+  <int value="12" label="Interrupted at End of Download"/>
+  <int value="13" label="Attempt to Append to Detached File"/>
+  <int value="14" label="File Missing After Successful Scan (Obsolete 6/2016)"/>
+  <int value="15" label="Supports ranges and strong ETag (Obsolete 11/2013)"/>
+  <int value="16" label="No WebContents at interruption"/>
+  <int value="17" label="Supports ranges and strong validation"/>
+  <int value="18" label="Uses parallel requests(Obsolete 3/2017)"/>
+  <int value="19" label="New downloads"/>
+  <int value="20" label="New downloads (normal profile only)"/>
+  <int value="21" label="Completed (normal profile only)"/>
+  <int value="22" label="Completed with content length mismatch"/>
+  <int value="23" label="More bytes received after content length mismatch"/>
+  <int value="24" label="No bytes received after content length mismatch"/>
+  <int value="25" label="Target determination requested"/>
+  <int value="26" label="Target determination completed"/>
+  <int value="27"
+      label="Cross origin download without content disposition headers"/>
+  <int value="28" label="Download attempts before sending the request"/>
+  <int value="29" label="Download attempts for manual download resumption"/>
+  <int value="30" label="Download attempts for auto download resumption"/>
+  <int value="31" label="Dropped download attempts"/>
+</enum>
+
+<enum name="DownloadDOMEvent">
+  <int value="0" label="GetDownloads"/>
+  <int value="1" label="OpenFile"/>
+  <int value="2" label="Drag"/>
+  <int value="3" label="SaveDangerous"/>
+  <int value="4" label="DiscardDangerous"/>
+  <int value="5" label="Show"/>
+  <int value="6" label="Pause"/>
+  <int value="7" label="Remove"/>
+  <int value="8" label="Cancel"/>
+  <int value="9" label="ClearAll"/>
+  <int value="10" label="OpenFolder"/>
+  <int value="11" label="Resume"/>
+  <int value="12" label="RetryDownload"/>
+  <int value="13" label="OpenDuringScanning"/>
+  <int value="14" label="ReviewDangerous"/>
+  <int value="15" label="DeepScan"/>
+  <int value="16" label="BypassDeepScan"/>
+  <int value="17" label="SaveSuspicious"/>
+  <int value="18" label="OpenBypassWarningPrompt"/>
+  <int value="19" label="SaveDangerousFromPrompt"/>
+  <int value="20" label="CancelBypassWarningPrompt"/>
+</enum>
+
+<enum name="DownloadedFileAction">
+  <int value="0" label="Opened in Drive"/>
+  <int value="1" label="Opened in another app"/>
+  <int value="2" label="No action or opened via extension"/>
+</enum>
+
+<enum name="DownloadFileInBackground">
+  <int value="0" label="FailedWithoutBackgrounding">
+    The download failed. This task was running when the app was active.
+  </int>
+  <int value="1" label="FailedWithBackgrounding">
+    The download failed. This task was fully or partially running when the app
+    was not active.
+  </int>
+  <int value="2" label="SucceededWithoutBackgrounding">
+    The download successfully completed. This task was running when the app was
+    active.
+  </int>
+  <int value="3" label="SucceededWithBackgrounding">
+    The download successfully completed. This task was fully or partially
+    running when the app was not active.
+  </int>
+  <int value="4" label="CanceledAfterAppQuit">
+    The download was cancelled, because the app was quit by the user. Some of
+    these downloads can be salvaged by supporting
+    application:handleEventsForBackgroundURLSession:completionHandler:
+    AppDelegate callback.
+  </int>
+</enum>
+
+<enum name="DownloadFileResult">
+  <int value="0" label="Completed">Download has successfully completed.</int>
+  <int value="1" label="Canceled">
+    In progress download was cancelled by the user.
+  </int>
+  <int value="2" label="Failure">Download has completed with error.</int>
+  <int value="3" label="Other">
+    In progress download did no finish because the tab was closed or user has
+    quit the app.
+  </int>
+  <int value="4" label="Not Started">
+    The user closed Download Manager UI without starting the download.
+  </int>
+</enum>
+
+<enum name="DownloadFileUI">
+  <int value="0" label="Download UI is presented"/>
+  <int value="1" label="Download file started"/>
+</enum>
+
+<enum name="DownloadFileUIGoogleDrive">
+  <int value="0" label="Google Drive is already installed"/>
+  <int value="1" label="Google Drive is not installed"/>
+  <int value="2" label="Google Drive installation started"/>
+  <int value="3" label="Google Drive was installed after showing installator"/>
+</enum>
+
+<enum name="DownloadFunctions">
+  <int value="0" label="download"/>
+  <int value="1" label="search"/>
+  <int value="2" label="pause"/>
+  <int value="3" label="resume"/>
+  <int value="4" label="cancel"/>
+  <int value="5" label="erase"/>
+  <int value="6" label="(unused)"/>
+  <int value="7" label="accept_danger"/>
+  <int value="8" label="show"/>
+  <int value="9" label="drag"/>
+  <int value="10" label="get_file_icon"/>
+  <int value="11" label="open"/>
+  <int value="12" label="remove_file"/>
+  <int value="13" label="show_default_folder"/>
+  <int value="14" label="set_shelf_enabled"/>
+  <int value="15" label="determine_filename"/>
+  <int value="16" label="set_ui_options"/>
+</enum>
+
+<enum name="DownloadImageType">
+  <int value="0" label="Unrecognized"/>
+  <int value="1" label="GIF"/>
+  <int value="2" label="JPEG"/>
+  <int value="3" label="PNG"/>
+  <int value="4" label="TIFF"/>
+  <int value="5" label="ICON"/>
+  <int value="6" label="WEBP"/>
+  <int value="7" label="PSD"/>
+  <int value="8" label="SVG"/>
+</enum>
+
+<enum name="DownloadInfoBar.ShownState">
+  <int value="0" label="Any"/>
+  <int value="1" label="Accelerated"/>
+  <int value="2" label="Downloading"/>
+  <int value="3" label="Complete"/>
+  <int value="4" label="Failed"/>
+  <int value="5" label="Pending"/>
+  <int value="6" label="Multiple downloads in progress"/>
+  <int value="7" label="Multiple downloads complete"/>
+  <int value="8" label="Multiple downloads failed"/>
+  <int value="9" label="Multiple downloads pending"/>
+  <int value="10" label="Scheduled"/>
+  <int value="11" label="Multiple downloads scheduled"/>
+</enum>
+
+<enum name="DownloadInputStreamReadErrorType">
+  <int value="0" label="Invalid argument"/>
+  <int value="1" label="Out of range"/>
+  <int value="2" label="Busy"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<enum name="DownloadInterstitialUIAction">
+  <int value="0" label="Interstitial opened"/>
+  <int value="1" label="Download completed"/>
+  <int value="2" label="Download cancelled"/>
+  <int value="3" label="Download paused"/>
+  <int value="4" label="Download resumed"/>
+  <int value="5" label="Download opened"/>
+  <int value="6" label="Download deleted"/>
+  <int value="7" label="Download reinitiated"/>
+  <int value="8" label="Download shared"/>
+  <int value="9" label="Download renamed"/>
+</enum>
+
+<enum name="DownloadItem.DangerType">
+  <int value="0" label="NOT_DANGEROUS"/>
+  <int value="1" label="DANGEROUS_FILE"/>
+  <int value="2" label="DANGEROUS_URL"/>
+  <int value="3" label="DANGEROUS_CONTENT"/>
+  <int value="4" label="MAYBE_DANGEROUS_CONTENT"/>
+  <int value="5" label="UNCOMMON_CONTENT"/>
+  <int value="6" label="USER_VALIDATED"/>
+  <int value="7" label="DANGEROUS_HOST"/>
+  <int value="8" label="POTENTIALLY_UNWANTED"/>
+  <int value="9" label="ALLOWLISTED_BY_POLICY"/>
+  <int value="10" label="ASYNC_SCANNING"/>
+  <int value="11" label="BLOCKED_PASSWORD_PROTECTED"/>
+  <int value="12" label="BLOCKED_TOO_LARGE"/>
+  <int value="13" label="SENSITIVE_CONTENT_WARNING"/>
+  <int value="14" label="SENSITIVE_CONTENT_BLOCK"/>
+  <int value="15" label="DEEP_SCANNED_SAFE"/>
+  <int value="16" label="DEEP_SCANNED_OPENED_DANGEROUS"/>
+  <int value="17" label="PROMPT_FOR_SCANNING"/>
+  <int value="18" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="19" label="DANGEROUS_ACCOUNT_COMPROMISE"/>
+  <int value="20" label="DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED"/>
+  <int value="21"
+      label="DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>
+  <int value="22" label="DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING"/>
+</enum>
+
+<enum name="DownloadLaterDialogChoice">
+  <int value="0" label="Download now"/>
+  <int value="1" label="On WIFI"/>
+  <int value="2" label="Download later"/>
+</enum>
+
+<enum name="DownloadLaterUiEvent">
+  <int value="0" label="DOWNLOAD_LATER_DIALOG_SHOW"/>
+  <int value="1" label="DOWNLOAD_LATER_DIALOG_COMPLETE"/>
+  <int value="2" label="DOWNLOAD_LATER_DIALOG_CANCEL"/>
+  <int value="3" label="DATE_TIME_PICKER_SHOW"/>
+  <int value="4" label="DATE_TIME_PICKER_COMPLETE"/>
+  <int value="5" label="DATE_TIME_PICKER_CANCEL"/>
+  <int value="6" label="DOWNLOAD_HOME_CHANGE_SCHEDULE_CLICKED"/>
+  <int value="7" label="DOWNLOAD_HOME_CHANGE_SCHEDULE_COMPLETE"/>
+  <int value="8" label="DOWNLOAD_HOME_CHANGE_SCHEDULE_CANCEL"/>
+  <int value="9" label="DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_CLICKED"/>
+  <int value="10" label="DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_COMPLETE"/>
+  <int value="11" label="DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_CANCEL"/>
+  <int value="12" label="DOWNLOAD_LATER_DIALOG_EDIT_CLICKED"/>
+</enum>
+
+<enum name="DownloadMobileConfigFileUI">
+  <int value="0" label="Warning alert is presented"/>
+  <int value="1"
+      label="Warning alert is dismissed without presenting a SFSafariView"/>
+  <int value="2"
+      label="Warning alert is dismissed with presenting a SFSafariView"/>
+</enum>
+
+<enum name="DownloadOpenMethod">
+  <int value="0" label="Opened with plaform handler by default"/>
+  <int value="1" label="Opened in browser by default"/>
+  <int value="2" label="Opened with plaform handler by user choice"/>
+  <int value="3" label="Opened with an alternate rename handler"/>
+</enum>
+
+<enum name="DownloadPassKitResult">
+  <int value="0" label="Successful"/>
+  <int value="1" label="Other Failure"/>
+  <int value="2" label="Unauthorized Failure"/>
+  <int value="3" label="Wrong MIME Type Failure"/>
+  <int value="4" label="Parsing Failure"/>
+  <int value="5" label="Partial Failure"/>
+</enum>
+
+<enum name="DownloadPathGenerationEvent">
+  <int value="0" label="Use existing virtual path"/>
+  <int value="1" label="Use force path"/>
+  <int value="2" label="Use last prompt directory"/>
+  <int value="3" label="Use default directory"/>
+  <int value="4" label="No valid path"/>
+</enum>
+
+<enum name="DownloadPathValidationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Path not writable"/>
+  <int value="2" label="Name too long"/>
+  <int value="3" label="Conflict"/>
+  <int value="4" label="Same as source"/>
+  <int value="5" label="Success after resolving conflict"/>
+</enum>
+
+<enum name="DownloadShelfContextMenuAction">
+  <int value="0" label="Drop down shown"/>
+  <int value="1" label="Drop down enabled"/>
+  <int value="2" label="Show in folder enabled"/>
+  <int value="3" label="Show in folder clicked"/>
+  <int value="4" label="Open when complete enabled"/>
+  <int value="5" label="Open when complete clicked"/>
+  <int value="6" label="Always open type enabled"/>
+  <int value="7" label="Always open type clicked"/>
+  <int value="8" label="Open enabled"/>
+  <int value="9" label="Open clicked"/>
+  <int value="10" label="Cancel enabled"/>
+  <int value="11" label="Cancel clicked"/>
+  <int value="12" label="Pause enabled"/>
+  <int value="13" label="Pause clicked"/>
+  <int value="14" label="Resume Enabled"/>
+  <int value="15" label="Resume clicked"/>
+  <int value="16" label="Discard Enabled"/>
+  <int value="17" label="Discard Clicked"/>
+  <int value="18" label="Keep Enabled"/>
+  <int value="19" label="Keep Clicked"/>
+  <int value="20" label="Learn more scanning enabled"/>
+  <int value="21" label="Learn more scanning clicked"/>
+  <int value="22" label="Learn more interrupted enabled"/>
+  <int value="23" label="Learn more interrupted clicked"/>
+  <int value="24" label="Learn more mixed content enabled"/>
+  <int value="25" label="Learn more mixed content clicked"/>
+  <int value="26" label="Copy to clipboard enabled"/>
+  <int value="27" label="Copy to clipboard clicked"/>
+  <int value="28" label="Annotate enabled (obsolete)"/>
+  <int value="29" label="Annotate clicked (obsolete)"/>
+  <int value="30" label="Deep scan enabled"/>
+  <int value="31" label="Deep scan clicked"/>
+  <int value="32" label="Bypass deep scanning enabled"/>
+  <int value="33" label="Bypass deep scanning clicked"/>
+  <int value="34" label="Review enabled (obsolete)"/>
+  <int value="35" label="Review clicked (obsolete)"/>
+  <int value="36" label="Should never be logged"/>
+</enum>
+
+<enum name="DownloadTextType">
+  <int value="0" label="UNRECOGNIZED"/>
+  <int value="1" label="PLAIN"/>
+  <int value="2" label="CSS"/>
+  <int value="3" label="CSV"/>
+  <int value="4" label="HTML"/>
+  <int value="5" label="CALENDAR"/>
+</enum>
+
+<enum name="DownloadVideoType">
+  <int value="0" label="UNRECOGNIZED"/>
+  <int value="1" label="AVI"/>
+  <int value="2" label="MPEG"/>
+  <int value="3" label="OGV"/>
+  <int value="4" label="WEBM"/>
+  <int value="5" label="3GP"/>
+  <int value="6" label="3G2"/>
+  <int value="7" label="MP4"/>
+  <int value="8" label="MOV"/>
+  <int value="9" label="WMV"/>
+</enum>
+
+<enum name="DownloadWarningAction">
+  <int value="0" label="SHOWN"/>
+  <int value="1" label="PROCEED"/>
+  <int value="2" label="DISCARD"/>
+  <int value="3" label="KEEP"/>
+  <int value="4" label="CLOSE"/>
+  <int value="5" label="CANCEL"/>
+  <int value="6" label="DISMISS"/>
+  <int value="7" label="BACK"/>
+  <int value="8" label="OPEN_SUBPAGE"/>
+</enum>
+
+<enum name="DownloadWarningSurface">
+  <int value="1" label="BUBBLE_MAINPAGE"/>
+  <int value="2" label="BUBBLE_SUBPAGE"/>
+  <int value="3" label="DOWNLOADS_PAGE"/>
+  <int value="4" label="DOWNLOAD_PROMPT"/>
+  <int value="5" label="DOWNLOAD_NOTIFICATION"/>
+</enum>
+
+<enum name="IncognitoMessageEvent">
+  <int value="0" label="Download message shown"/>
+  <int value="1" label="Download message accepted"/>
+  <int value="2" label="Download message dismissed with gesture"/>
+  <int value="3" label="Download message dismissed with timer"/>
+  <int value="4" label="Download message dismissed with different reason"/>
+  <int value="5"
+      label="Download message not shown due to null message dispatcher"/>
+</enum>
+
+<enum name="InsecureDownloadExtensions">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kNone"/>
+  <int value="2" label="kImage"/>
+  <int value="3" label="kArchive"/>
+  <int value="4" label="kAudio"/>
+  <int value="5" label="kVideo"/>
+  <int value="6" label="kMSExecutable"/>
+  <int value="7" label="kMacExecutable"/>
+  <int value="8" label="kWeb"/>
+  <int value="9" label="kText"/>
+  <int value="10" label="kMSOffice"/>
+  <int value="11" label="kPDF"/>
+  <int value="12" label="kCRX"/>
+  <int value="13" label="kAPK"/>
+  <int value="14" label="kBIN"/>
+  <int value="15" label="kSH"/>
+  <int value="16" label="kVB"/>
+  <int value="17" label="kSWF"/>
+  <int value="18" label="kICO"/>
+  <int value="19" label="kEPUB"/>
+  <int value="20" label="kICS"/>
+  <int value="21" label="kSVG"/>
+  <int value="22" label="kTest"/>
+</enum>
+
+<enum name="InsecureDownloadSecurityStatus">
+  <int value="0" label="Secure download initiated by unknown source"/>
+  <int value="1" label="Insecure download initiated by unknown source"/>
+  <int value="2" label="Secure download initiated by secure source"/>
+  <int value="3" label="Insecure download initiated by secure source"/>
+  <int value="4" label="Secure download initiated by insecure source"/>
+  <int value="5" label="Insecure download initiated by insecure source"/>
+  <int value="6" label="Secure download initiated by inferred-secure source"/>
+  <int value="7" label="Insecure download initiated by inferred-secure source"/>
+  <int value="8" label="Secure download initiated by inferred-insecure source"/>
+  <int value="9"
+      label="Insecure download initiated by inferred-insecure source"/>
+  <int value="10" label="Download ignored as not relevant for blocking"/>
+  <int value="11"
+      label="Insecure download initiated by insecure non-unique source"/>
+  <int value="12"
+      label="Secure download initiated by insecure non-unique source"/>
+</enum>
+
+<enum name="InterruptReason">
+  <int value="0" label="NONE"/>
+  <int value="1" label="FILE_FAILED"/>
+  <int value="2" label="FILE_ACCESS_DENIED"/>
+  <int value="3" label="FILE_NO_SPACE"/>
+  <int value="5" label="FILE_NAME_TOO_LONG"/>
+  <int value="6" label="FILE_TOO_LARGE"/>
+  <int value="7" label="FILE_VIRUS_INFECTED"/>
+  <int value="10" label="FILE_TRANSIENT_ERROR"/>
+  <int value="11" label="FILE_BLOCKED"/>
+  <int value="12" label="FILE_SECURITY_CHECK_FAILED"/>
+  <int value="13" label="FILE_TOO_SHORT"/>
+  <int value="14" label="FILE_HASH_MISMATCH"/>
+  <int value="15" label="FILE_SAME_AS_SOURCE"/>
+  <int value="20" label="NETWORK_FAILED"/>
+  <int value="21" label="NETWORK_TIMEOUT"/>
+  <int value="22" label="NETWORK_DISCONNECTED"/>
+  <int value="23" label="NETWORK_SERVER_DOWN"/>
+  <int value="24" label="NETWORK_INVALID_REQUEST"/>
+  <int value="30" label="SERVER_FAILED"/>
+  <int value="31" label="SERVER_NO_RANGE"/>
+  <int value="32" label="SERVER_PRECONDITION (Deprecated)"/>
+  <int value="33" label="SERVER_BAD_CONTENT"/>
+  <int value="34" label="SERVER_UNAUTHORIZED"/>
+  <int value="35" label="SERVER_CERT_PROBLEM"/>
+  <int value="36" label="SERVER_FORBIDDEN"/>
+  <int value="37" label="SERVER_UNREACHABLE"/>
+  <int value="38" label="SERVER_CONTENT_LENGTH_MISMATCH"/>
+  <int value="39" label="SERVER_CROSS_ORIGIN_REDIRECT"/>
+  <int value="40" label="USER_CANCELED"/>
+  <int value="41" label="USER_SHUTDOWN"/>
+  <int value="50" label="CRASH"/>
+</enum>
+
+<enum name="MediaMetadataEvent">
+  <int value="0" label="Metadata request started"/>
+  <int value="1" label="Metadata request failed"/>
+  <int value="2" label="Metadata request completed"/>
+</enum>
+
+<enum name="MediaParserEvent">
+  <int value="0" label="Initialize"/>
+  <int value="1" label="Unsupported mime type"/>
+  <int value="2" label="Read file error"/>
+  <int value="3" label="Utility connection error"/>
+  <int value="4" label="Gpu connection error"/>
+  <int value="5" label="Fail to parse metadata"/>
+  <int value="6" label="Fail to retrieve video thumbnail"/>
+  <int value="7" label="Failed to parse media file"/>
+  <int value="8" label="Successfully parsed media file"/>
+  <int value="9" label="Timeout and failed"/>
+</enum>
+
+<enum name="PresentAddPassesDialogResult">
+  <summary>
+    Defines the result of Add Passes dialog presentation. The presentation can
+    be successful or unsuccessful if another view controller is currently
+    presented. Unsuccessful presentation is a bug and if the number of
+    unsuccessful presentations is high, it means that Chrome has to queue the
+    dialogs to present those dialogs for every downloaded pkpass (PassKit file).
+    Currently Chrome simply ignores the download if the dialog is already
+    presented.
+  </summary>
+  <int value="0" label="Successful"/>
+  <int value="1" label="Another Add Passes View Controller Is Presented">
+    The dialog cannot be presented, because another PKAddPassesViewController is
+    already presented.
+  </int>
+  <int value="2" label="Another View Controller Is Presented">
+    The dialog cannot be presented, because another view controller is already
+    presented. Does not include items already counted in the more specific
+    bucket (Another Add Passes View Controller Is Presented).
+  </int>
+</enum>
+
+<enum name="PresentQLPreviewController">
+  <int value="0" label="Successful">
+    The AR model was sucessesfully presented.
+  </int>
+  <int value="1" label="Invalid File">
+    The AR model cannot be presented, because the file is invalid.
+  </int>
+  <int value="2" label="Another QLPreviewController Is Presented">
+    The AR model cannot be presented, because another QLPreviewController is
+    already presented.
+  </int>
+  <int value="3" label="Another View Controller Is Presented">
+    The AR model cannot be presented, because another view controller is already
+    presented. Does not include items already counted in the more specific
+    bucket (Another QLPreviewController Is Presented).
+  </int>
+</enum>
+
+<enum name="VideoThumbnailEvent">
+  <int value="0" label="Video thumbnail request started"/>
+  <int value="1" label="Video frame extraction failed"/>
+  <int value="2" label="Video frame decode failed"/>
+  <int value="3" label="Video thumbnail request completed"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

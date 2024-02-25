@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SerialAllowAllPortsForUrls": [
+            "https://www.google.com"
+          ]
+        },
+        "prefs": {
+          "managed.serial_allow_all_ports_for_urls": {
+            "location": "local_state",
+            "value": [
+              "https://www.google.com"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "managed.serial_allow_all_ports_for_urls": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

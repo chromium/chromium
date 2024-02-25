@@ -4,7 +4,7 @@
 
 class ExternsChecker(object):
   _UPDATE_MESSAGE = """To update the externs, run:
- src/ $ python tools/json_schema_compiler/compiler.py\
+ src/ $ python3 tools/json_schema_compiler/compiler.py\
  %s --root=. --generator=externs > %s"""
 
   def __init__(self, input_api, output_api, api_pairs=None, api_root=None):

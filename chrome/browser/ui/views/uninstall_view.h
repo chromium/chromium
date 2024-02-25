@@ -19,15 +19,16 @@
 namespace views {
 class Checkbox;
 class Combobox;
-}
+}  // namespace views
 
 // UninstallView implements the dialog that confirms Chrome uninstallation
 // and asks whether to delete Chrome profile. Also if currently Chrome is set
 // as default browser, it asks users whether to set another browser as default.
 class UninstallView : public views::DialogDelegateView,
                       public ui::ComboboxModel {
+  METADATA_HEADER(UninstallView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(UninstallView);
   explicit UninstallView(int* user_selection,
                          const base::RepeatingClosure& quit_closure);
   UninstallView(const UninstallView&) = delete;

@@ -1,4 +1,12 @@
 include_rules = [
+  "-ash",
+  "-chrome",
+  "-chromeos",
+  "-content",
+  "-dbus",
+  "-net",
+  "-ui",
+  "-third_party/icu",
   "+chromeos/ash/components/dbus/featured",
-  "+chromeos/crosapi/cpp"
+  "+chromeos/crosapi/cpp",
 ]

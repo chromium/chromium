@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.tasks;
 
 import android.os.SystemClock;
 
-/**
- * Utility class to provide engagement time helper methods.
- */
+/** Utility class to provide engagement time helper methods. */
 public class EngagementTimeUtil {
     // This is the point at which a user has most likely started a clobber or "focused" the tab.
     private static final long TAB_CLOBBER_THRESHOLD_MS = 10000L;

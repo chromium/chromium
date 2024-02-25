@@ -46,18 +46,17 @@ TEST_F(ImageWriterDestroyPartitionsOperationTest, EndToEnd) {
           test_utils_.GetDevicePath().AsUTF8Unsafe(),
           base::FilePath(FILE_PATH_LITERAL("/var/tmp"))));
 
-  EXPECT_CALL(
-      manager,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, _))
-      .Times(AnyNumber());
   EXPECT_CALL(manager, OnProgress(kDummyExtensionId,
-                                  image_writer_api::STAGE_WRITE,
-                                  _)).Times(AnyNumber());
+                                  image_writer_api::Stage::kVerifyWrite, _))
+      .Times(AnyNumber());
   EXPECT_CALL(manager,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_WRITE, 0))
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(manager,
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, 0))
       .Times(AtLeast(1));
-  EXPECT_CALL(manager,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_WRITE, 100))
+  EXPECT_CALL(manager, OnProgress(kDummyExtensionId,
+                                  image_writer_api::Stage::kWrite, 100))
       .Times(AtLeast(1));
   EXPECT_CALL(manager, OnComplete(kDummyExtensionId)).Times(1);
   EXPECT_CALL(manager, OnError(kDummyExtensionId, _, _, _)).Times(0);

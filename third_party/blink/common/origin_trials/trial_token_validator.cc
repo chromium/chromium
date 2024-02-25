@@ -13,11 +13,11 @@
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 
 namespace blink {
 namespace {
@@ -72,7 +72,7 @@ bool IsTokenExpired(const base::StringPiece trial_name,
       // Manual completion trials have an expiry grace period. For these trials
       // the token expiry time is valid if:
       // token_expiry_time + kExpiryGracePeriod > current_time
-      for (OriginTrialFeature feature :
+      for (mojom::OriginTrialFeature feature :
            origin_trials::FeaturesForTrial(trial_name)) {
         if (origin_trials::FeatureHasExpiryGracePeriod(feature)) {
           if (token_expiry_time + kExpiryGracePeriod > current_time) {
@@ -310,16 +310,16 @@ bool TrialTokenValidator::RevalidateTokenAndTrial(
   return status == OriginTrialTokenStatus::kSuccess;
 }
 
-std::vector<OriginTrialFeature> TrialTokenValidator::FeaturesEnabledByTrial(
-    base::StringPiece trial_name) {
-  std::vector<OriginTrialFeature> enabled_features;
-  base::span<const OriginTrialFeature> features =
+std::vector<mojom::OriginTrialFeature>
+TrialTokenValidator::FeaturesEnabledByTrial(base::StringPiece trial_name) {
+  std::vector<mojom::OriginTrialFeature> enabled_features;
+  base::span<const mojom::OriginTrialFeature> features =
       origin_trials::FeaturesForTrial(trial_name);
-  for (const OriginTrialFeature feature : features) {
+  for (const mojom::OriginTrialFeature feature : features) {
     if (origin_trials::FeatureEnabledForOS(feature)) {
       enabled_features.push_back(feature);
       // Also add implied features
-      for (const OriginTrialFeature implied_feature :
+      for (const mojom::OriginTrialFeature implied_feature :
            origin_trials::GetImpliedFeatures(feature)) {
         enabled_features.push_back(implied_feature);
       }

@@ -60,7 +60,9 @@ void SimRequestBase::StartInternal() {
   DCHECK(redirect_url_.empty());  // client_ is nullptr on redirects
   DCHECK(client_);
   started_ = true;
-  client_->DidReceiveResponse(response_);
+  client_->DidReceiveResponse(response_,
+                              /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+                              /*cached_metadata=*/std::nullopt);
 }
 
 void SimRequestBase::Write(const String& data) {
@@ -99,7 +101,7 @@ void SimRequestBase::Finish(bool body_loader_finished) {
     } else {
       client_->DidFinishLoading(
           base::TimeTicks::Now(), total_encoded_data_length_,
-          total_encoded_data_length_, total_encoded_data_length_, false);
+          total_encoded_data_length_, total_encoded_data_length_);
     }
   }
   Reset();

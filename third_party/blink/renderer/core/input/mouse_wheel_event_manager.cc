@@ -109,9 +109,9 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
         (event.delta_units == ui::ScrollGranularity::kScrollByPercentage)
             ? WheelEvent::Create(event,
                                  ResolveMouseWheelPercentToWheelDelta(event),
-                                 wheel_target_->GetDocument().domWindow())
+                                 *wheel_target_->GetDocument().domWindow())
             : WheelEvent::Create(event,
-                                 wheel_target_->GetDocument().domWindow());
+                                 *wheel_target_->GetDocument().domWindow());
 
     // The event handler might remove |wheel_target_| from DOM so we should get
     // this value now (see https://crbug.com/857013).

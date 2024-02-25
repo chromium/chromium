@@ -2,8 +2,6 @@ rootWebArea name='Done'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='aria-hidden'
 ++++++++genericContainer ignored
 ++++++++++staticText name='Unsemantic'
 ++++++++heading name='Semantic'

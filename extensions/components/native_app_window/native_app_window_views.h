@@ -34,8 +34,9 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
                              public content::WebContentsObserver,
                              public views::WidgetDelegateView,
                              public views::WidgetObserver {
+  METADATA_HEADER(NativeAppWindowViews, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(NativeAppWindowViews);
   NativeAppWindowViews();
   NativeAppWindowViews(const NativeAppWindowViews&) = delete;
   NativeAppWindowViews& operator=(const NativeAppWindowViews&) = delete;
@@ -120,7 +121,8 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void UpdateDraggableRegions(
-      const std::vector<extensions::DraggableRegion>& regions) override;
+      const std::vector<extensions::mojom::DraggableRegionPtr>& regions)
+      override;
   SkRegion* GetDraggableRegion() override;
   void UpdateShape(std::unique_ptr<ShapeRects> rects) override;
   bool HandleKeyboardEvent(

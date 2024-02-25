@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
@@ -27,8 +28,12 @@
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 #include "content/common/buildflags.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -149,7 +154,7 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
     devices_.erase(it);
   }
 
-  std::vector<WrappedDevice*> devices_;
+  std::vector<raw_ptr<WrappedDevice, VectorExperimental>> devices_;
 };
 
 // Listener class used to track progress of VideoCaptureManager test.
@@ -187,10 +192,12 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
   void OnBufferDestroyed(const VideoCaptureControllerID& id,
                          int buffer_id) override {}
   void OnBufferReady(const VideoCaptureControllerID& id,
-                     const ReadyBuffer& buffer,
-                     const std::vector<ReadyBuffer>& scaled_buffers) override {}
-  void OnNewCropVersion(const VideoCaptureControllerID& id,
-                        uint32_t crop_version) override {}
+                     const ReadyBuffer& buffer) override {}
+  void OnFrameDropped(const VideoCaptureControllerID& id,
+                      media::VideoCaptureFrameDropReason reason) override {}
+  void OnNewSubCaptureTargetVersion(
+      const VideoCaptureControllerID& id,
+      uint32_t sub_capture_target_version) override {}
   void OnFrameWithEmptyRegionCapture(const VideoCaptureControllerID&) override {
   }
   void OnEnded(const VideoCaptureControllerID& id) override {}
@@ -221,6 +228,19 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
     base::RunLoop().RunUntilIdle();
   }
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+class MockBrowserClient : public content::ContentBrowserClient {
+ public:
+  MOCK_METHOD(void,
+              BindVideoEffectsManager,
+              (const std::string& device_id,
+               content::BrowserContext* browser_context,
+               mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+                   video_effects_manager),
+              (override));
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -265,6 +285,9 @@ class VideoCaptureManagerTest : public testing::Test {
 
  protected:
   void SetUp() override {
+#if !BUILDFLAG(IS_ANDROID)
+    content::SetBrowserClientForTesting(&browser_client_);
+#endif  // !BUILDFLAG(IS_ANDROID)
     listener_ = std::make_unique<MockMediaStreamProviderListener>();
     auto video_capture_device_factory =
         std::make_unique<WrappedDeviceFactory>();
@@ -296,7 +319,10 @@ class VideoCaptureManagerTest : public testing::Test {
     ASSERT_GE(devices_.size(), 2u);
   }
 
-  void TearDown() override { task_environment_.RunUntilIdle(); }
+  void TearDown() override {
+    screenlock_monitor_source_ = nullptr;
+    task_environment_.RunUntilIdle();
+  }
 
   void OnGotControllerCallback(
       VideoCaptureControllerID id,
@@ -321,7 +347,8 @@ class VideoCaptureManagerTest : public testing::Test {
     vcm_->ConnectClient(
         session_id, params, client_id, frame_observer_.get(),
         base::BindOnce(&VideoCaptureManagerTest::OnGotControllerCallback,
-                       base::Unretained(this), client_id, expect_success));
+                       base::Unretained(this), client_id, expect_success),
+        /*browser_context=*/&browser_context_);
     base::RunLoop().RunUntilIdle();
     return client_id;
   }
@@ -361,8 +388,7 @@ class VideoCaptureManagerTest : public testing::Test {
 #endif
 
   BrowserTaskEnvironment task_environment_;
-  raw_ptr<ScreenlockMonitorTestSource, DanglingUntriaged>
-      screenlock_monitor_source_;
+  raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
   std::map<VideoCaptureControllerID, VideoCaptureController*> controllers_;
   scoped_refptr<VideoCaptureManager> vcm_;
@@ -370,12 +396,19 @@ class VideoCaptureManagerTest : public testing::Test {
   std::unique_ptr<MockFrameObserver> frame_observer_;
   raw_ptr<WrappedDeviceFactory> video_capture_device_factory_;
   blink::MediaStreamDevices devices_;
+  content::TestBrowserContext browser_context_;
+#if !BUILDFLAG(IS_ANDROID)
+  MockBrowserClient browser_client_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 // Test cases
 
 // Try to open, start, stop and close a device.
 TEST_F(VideoCaptureManagerTest, CreateAndClose) {
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(browser_client_, BindVideoEffectsManager(_, _, _)).Times(0);
+#endif  // !BUILDFLAG(IS_ANDROID)
   InSequence s;
   EXPECT_CALL(*listener_,
               Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
@@ -393,6 +426,23 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
   base::RunLoop().RunUntilIdle();
   vcm_->UnregisterListener(listener_.get());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+// Try to start and stop a device with an effects manager
+TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsManager) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kCameraMicEffects);
+  mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager> receiver;
+  EXPECT_CALL(browser_client_, BindVideoEffectsManager(devices_.front().id,
+                                                       &browser_context_, _))
+      .Times(1);
+
+  base::UnguessableToken video_session_id = vcm_->Open(devices_.front());
+  auto client_id = StartClient(video_session_id, true);
+  StopClient(client_id);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(VideoCaptureManagerTest, CreateAndCloseMultipleTimes) {
   InSequence s;
@@ -703,7 +753,7 @@ TEST_F(VideoCaptureManagerTest,
 
   // Right after opening the device, we should see no format in use.
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       vcm_->GetDeviceFormatInUse(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, device_id));
 
@@ -711,7 +761,7 @@ TEST_F(VideoCaptureManagerTest,
   VideoCaptureControllerID client_id = StartClient(video_session_id, true);
   base::RunLoop().RunUntilIdle();
   // After StartClient(), device's format in use should be valid.
-  absl::optional<media::VideoCaptureFormat> format_in_use =
+  std::optional<media::VideoCaptureFormat> format_in_use =
       vcm_->GetDeviceFormatInUse(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, device_id);
   EXPECT_TRUE(format_in_use.has_value());
@@ -726,7 +776,7 @@ TEST_F(VideoCaptureManagerTest,
   base::RunLoop().RunUntilIdle();
   // After StopClient(), the device's format in use should be empty again.
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       vcm_->GetDeviceFormatInUse(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, device_id));
 

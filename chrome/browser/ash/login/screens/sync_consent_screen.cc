@@ -28,10 +28,11 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/pref_names.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
@@ -85,8 +86,8 @@ constexpr base::TimeDelta kSyncConsentSettingsShowDelay = base::Seconds(3);
 constexpr base::TimeDelta kWaitTimeout = base::Seconds(10);
 constexpr base::TimeDelta kWaitTimeoutForTest = base::Milliseconds(1);
 
-absl::optional<bool> sync_disabled_by_policy_for_test;
-absl::optional<bool> sync_engine_initialized_for_test;
+std::optional<bool> sync_disabled_by_policy_for_test;
+std::optional<bool> sync_engine_initialized_for_test;
 
 SyncConsentScreen::SyncConsentScreenExitTestDelegate* test_exit_delegate_ =
     nullptr;
@@ -111,7 +112,8 @@ bool IsMinorMode(Profile* profile, const user_manager::User* user) {
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   auto capability =
-      account_info.capabilities.can_offer_extended_chrome_sync_promos();
+      account_info.capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.IsCapabilityKnown",
                             capability != signin::Tribool::kUnknown);
   return capability != signin::Tribool::kTrue;
@@ -198,7 +200,7 @@ void SyncConsentScreen::Finish(Result result) {
   base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.Behavior", behavior_);
   // Record the final state of the sync service.
   syncer::SyncService* service = GetSyncService(profile_);
-  bool sync_enabled = service && service->CanSyncFeatureStart() &&
+  bool sync_enabled = service && service->IsSyncFeatureEnabled() &&
                       service->GetUserSettings()->IsSyncEverythingEnabled();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled", sync_enabled);
   if (test_exit_delegate_) {
@@ -254,9 +256,17 @@ void SyncConsentScreen::ShowImpl() {
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
   if (view_)
     view_->Show(crosapi::browser_util::IsLacrosEnabled());
+
+  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
+    if (context()->extra_factors_token) {
+      session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+          context()->extra_factors_token.value());
+    }
+  }
 }
 
 void SyncConsentScreen::HideImpl() {
+  session_refresher_.reset();
   sync_service_observation_.Reset();
   timeout_waiter_.AbandonAndStop();
 }
@@ -318,8 +328,9 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior(
     return SyncScreenBehavior::kSkipNonGaiaAccount;
 
   // Skip for public user.
-  if (user_->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (user_->GetType() == user_manager::UserType::kPublicAccount) {
     return SyncScreenBehavior::kSkipPublicAccount;
+  }
 
   // Skip for non-branded (e.g. developer) builds. Check this after the account
   // type checks so we don't try to enable sync in browser_tests for those
@@ -331,7 +342,7 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior(
       user_manager::UserManager::Get();
   // Skip for non-regular ephemeral users.
   if (user_manager->IsUserNonCryptohomeDataEphemeral(user_->GetAccountId()) &&
-      (user_->GetType() != user_manager::USER_TYPE_REGULAR)) {
+      (user_->GetType() != user_manager::UserType::kRegular)) {
     return SyncScreenBehavior::kSkipAndEnableEmphemeralUser;
   }
 

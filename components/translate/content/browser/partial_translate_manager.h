@@ -32,7 +32,7 @@ struct PartialTranslateRequest {
 
   // The source language to translate from. If this isn't specified the server
   // will attempt to detect the selection language.
-  absl::optional<std::string> source_language;
+  std::optional<std::string> source_language;
 
   // The desired target language.
   std::string target_language;
@@ -40,7 +40,7 @@ struct PartialTranslateRequest {
   // Whether or not |source_language| should be applied as a hint for backend
   // language detection. Otherwise, backend translation is forced using
   // |source_language|.
-  bool apply_lang_hint;
+  bool apply_lang_hint = false;
 };
 
 // Indicates the outcome of a Partial Translate request.
@@ -87,7 +87,7 @@ class PartialTranslateManager {
   // call |callback| once the request is completed (unless another request
   // subsumes it).
   void StartPartialTranslate(content::WebContents* web_contents,
-                             PartialTranslateRequest request,
+                             const PartialTranslateRequest& request,
                              PartialTranslateCallback callback);
 
  private:

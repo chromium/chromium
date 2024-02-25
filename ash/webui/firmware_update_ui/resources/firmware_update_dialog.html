@@ -1,6 +1,21 @@
-<style include="firmware-fonts firmware-shared">
+<style include="firmware-shared-fonts firmware-shared">
   :host {
     --cr-dialog-width: 416px;
+  }
+
+  /* When there's an update in progress, set a fixed dialog height to avoid
+   * mid-update visual "jitter" when the dialog height would oscillate as the
+   * dialog title wraps (more of an issue with verbose languages). */
+  :host(:not([update-is-done])) ::part(wrapper) {
+    min-height: 300px;
+  }
+
+  :host(:not([update-is-done])) [slot='footer'] {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-bottom: 4px;
   }
 
   [slot='button-container'] {
@@ -10,6 +25,10 @@
 
   [slot='footer'] {
     border: none;
+  }
+
+  #updateDialogBody {
+    min-height: 100px;
   }
 
   #progress {
@@ -28,45 +47,49 @@
   }
 </style>
 <template is="dom-if"
-    if="[[shouldShowUpdateDialog_(installationProgress.*,
-        isInitiallyInflight_)]]" restamp>
+    if="[[shouldShowUpdateDialog(installationProgress.*,
+        isInitiallyInflight)]]" restamp>
   <cr-dialog id="updateDialog" show-on-attach
-      on-close="closeDialog_">
+      on-close="closeDialog">
     <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font"
-        tabindex="0" aria-labelledby="updateDialogTitle">
+        aria-labelledby="updateDialogTitle" aria-live="polite">
       [[dialogContent.title]]
     </div>
     <div slot="body" class="firmware-dialog-body-font">
-      <div id="updateDialogBody" aria-hidden="true" tabindex="0">
+      <div id="updateDialogBody" aria-live="[[getDialogBodyAriaLive(installationProgress.*,
+                                              lastDeviceRequestId)]]">
         [[dialogContent.body]]
       </div>
     </div>
     <div slot="footer"
-        hidden$="[[!shouldShowProgressBar_(installationProgress.*,
-                   isInitiallyInflight_)]]">
+        hidden$="[[!shouldShowProgressBar(installationProgress.*,
+                   isInitiallyInflight, lastDeviceRequestId)]]">
       <label id="progress" class="firmware-dialog-installing-font"
-          aria-live="polite" tabindex="0">
+          aria-live="polite">
         [[dialogContent.footer]]
       </label>
       <template is="dom-if"
-          if="[[!isInIndeterminateState_(installationProgress.*)]]" restamp>
+          if="[[!isInIndeterminateState(installationProgress.*,
+                lastDeviceRequestId)]]" restamp>
         <paper-progress id="updateProgressBar"
-            value="[[computePercentageValue_(installationProgress.percentage)]]"
-            max="100">
+            value="[[computePercentageValue(installationProgress.percentage)]]"
+            max="100" disabled="[[isProgressBarDisabled(installationProgress.*,
+                                  lastDeviceRequestId)]]">
         </paper-progress>
       </template>
       <template is="dom-if"
-          if="[[isInIndeterminateState_(installationProgress.*)]]" restamp>
+          if="[[isInIndeterminateState(installationProgress.*,
+                lastDeviceRequestId)]]" restamp>
         <paper-progress id="indeterminateProgressBar" indeterminate>
         </paper-progress>
       </template>
     </div>
     <div slot="button-container"
-        hidden$="[[!isUpdateDone_(installationProgress.state)]]">
+        hidden$="[[!isUpdateDone(installationProgress.state)]]">
       <cr-button class="action-button"
-          on-click="closeDialog_"
+          on-click="closeDialog"
           id="updateDoneButton">
-        [[computeButtonText_(installationProgress.state)]]
+        [[computeButtonText(installationProgress.state)]]
       </cr-button>
     </div>
   </cr-dialog>

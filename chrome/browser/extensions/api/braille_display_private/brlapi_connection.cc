@@ -55,7 +55,7 @@ class BrlapiConnectionImpl : public BrlapiConnection {
   bool CheckConnected();
   ConnectResult ConnectResultForError();
 
-  raw_ptr<LibBrlapiLoader, ExperimentalAsh> libbrlapi_loader_;
+  raw_ptr<LibBrlapiLoader> libbrlapi_loader_;
   std::unique_ptr<brlapi_handle_t, base::FreeDeleter> handle_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> fd_controller_;
 };

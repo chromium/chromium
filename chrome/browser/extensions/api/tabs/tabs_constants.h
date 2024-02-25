@@ -92,6 +92,7 @@ extern const char kTabNotFoundError[];
 extern const char kCannotDiscardTab[];
 extern const char kCannotDuplicateTab[];
 extern const char kCannotFindTabToDiscard[];
+extern const char kSavedTabGroupNotEditableError[];
 extern const char kTabStripNotEditableError[];
 extern const char kTabStripNotEditableQueryError[];
 extern const char kTabStripDoesNotSupportTabGroupsError[];
@@ -119,6 +120,10 @@ extern const char kCannotNavigateToDevtools[];
 extern const char kCannotNavigateToChromeUntrusted[];
 extern const char kCannotHighlightTabs[];
 extern const char kNotAllowedForDevToolsError[];
+extern const char kWindowCreateSupportsOnlySingleIwaUrlError[];
+extern const char kWindowCreateCannotParseIwaUrlError[];
+extern const char kWindowCreateCannotUseTabIdWithIwaError[];
+extern const char kWindowCreateCannotMoveIwaTabError[];
 
 }  // namespace tabs_constants
 }  // namespace extensions

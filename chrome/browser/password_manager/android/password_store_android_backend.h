@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -18,13 +20,12 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
-#include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
+
+class PrefService;
 
 namespace password_manager {
 
@@ -52,8 +53,8 @@ enum class PasswordStoreOperation {
   kGetAllLoginsAsync = 0,
   kGetAutofillableLoginsAsync = 1,
 
-  // Operation is only used from the migration and should not be retried.
-  kGetAllLoginsForAccountAsync = 2,
+  // Obsolete
+  // kGetAllLoginsForAccountAsync = 2,
 
   // Operation that is non-modifying, but not safe to retry because it is
   // user-visible.
@@ -62,18 +63,23 @@ enum class PasswordStoreOperation {
   // Operations that are not safe to retry because they are modifying.
   kAddLoginAsync = 4,
   kUpdateLoginAsync = 5,
-  kRemoveLoginForAccount = 6,
+
+  // Obsolete
+  // kRemoveLoginForAccount = 6,
+
   kRemoveLoginAsync = 7,
   kRemoveLoginsByURLAndTimeAsync = 8,
   kRemoveLoginsCreatedBetweenAsync = 9,
   kDisableAutoSignInForOriginsAsync = 10,
-  kClearAllLocalPasswords = 11,
+  // Deprecated
+  // kClearAllLocalPasswords = 11,
 
   // Operation that is non-modifying, but not safe to retry because it is
   // user-visible.
   kGetGroupedMatchingLoginsAsync = 12,
+  kGetAllLoginsWithBrandingInfoAsync = 13,
 
-  kMaxValue = kGetGroupedMatchingLoginsAsync,
+  kMaxValue = kGetAllLoginsWithBrandingInfoAsync,
 };
 
 // Android-specific password store backend that delegates every request to
@@ -85,23 +91,97 @@ enum class PasswordStoreOperation {
 // ongoing jobs to the callbacks of the methods that originally required the job
 // since JNI itself can't preserve the callbacks.
 class PasswordStoreAndroidBackend
-    : public PasswordStoreBackend,
-      public PasswordStoreAndroidBackendReceiverBridge::Consumer {
- public:
-  explicit PasswordStoreAndroidBackend(PrefService* prefs);
+    : public PasswordStoreAndroidBackendReceiverBridge::Consumer {
+ protected:
   PasswordStoreAndroidBackend(
-      base::PassKey<class PasswordStoreAndroidBackendTest>,
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-      std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-          sync_controller_delegate,
       PrefService* prefs);
   ~PasswordStoreAndroidBackend() override;
 
+  // Internal methods corresponding to PasswordStoreBackendInterface that take
+  // the account corresponding to the GMS Core storage as a param.
+  void Init(
+      PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received);
+  void Shutdown(base::OnceClosure shutdown_completed);
+  void GetAllLoginsInternal(std::string account,
+                            LoginsOrErrorReply callback,
+                            PasswordStoreOperation operation =
+                                PasswordStoreOperation::kGetAllLoginsAsync,
+                            base::TimeDelta delay = base::Seconds(0));
+  void GetAutofillableLoginsInternal(
+      std::string account,
+      LoginsOrErrorReply callback,
+      PasswordStoreOperation operation =
+          PasswordStoreOperation::kGetAutofillableLoginsAsync,
+      base::TimeDelta delay = base::Seconds(0));
+  void GetAllLoginsWithAffiliationAndBrandingInternal(
+      std::string account,
+      LoginsOrErrorReply callback);
+  void GetLoginsInternal(std::string account,
+                         const PasswordFormDigest& form,
+                         bool include_psl,
+                         LoginsOrErrorReply callback);
+  void AddLoginInternal(std::string account,
+                        const PasswordForm& form,
+                        PasswordChangesOrErrorReply callback);
+  void UpdateLoginInternal(std::string account,
+                           const PasswordForm& form,
+                           PasswordChangesOrErrorReply callback);
+  void RemoveLoginInternal(std::string account,
+                           const PasswordForm& form,
+                           PasswordChangesOrErrorReply callback);
+  void FillMatchingLoginsInternal(std::string account,
+                                  LoginsOrErrorReply callback,
+                                  bool include_psl,
+                                  const std::vector<PasswordFormDigest>& forms);
+  void GetGroupedMatchingLoginsInternal(std::string account,
+                                        const PasswordFormDigest& form_digest,
+                                        LoginsOrErrorReply callback);
+  void RemoveLoginsByURLAndTimeInternal(
+      std::string account,
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      PasswordChangesOrErrorReply callback);
+  void RemoveLoginsCreatedBetweenInternal(std::string account,
+                                          base::Time delete_begin,
+                                          base::Time delete_end,
+                                          PasswordChangesOrErrorReply callback);
+  void DisableAutoSignInForOriginsInternal(
+      std::string account,
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      base::OnceClosure completion);
+
+  // Cancels all the queued jobs because of `reason` and replies to them with
+  // `reply_error`.
+  void ClearAllTasksAndReplyWithReason(
+      const AndroidBackendError& reason,
+      const PasswordStoreBackendError& reply_error);
+
+  PasswordStoreAndroidBackendBridgeHelper* bridge_helper() {
+    return bridge_helper_.get();
+  }
+
+  PrefService* prefs() { return prefs_; }
+
+  // Subclasses can override this method
+  // to have a special handling for different errors. This function returns
+  // whether the error is recoverable or not.
+  virtual PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
+      AndroidBackendAPIErrorCode error) = 0;
+  // Subclasses can override this method to react when GMSCore responds
+  // successfully.
+  virtual void OnCallToGMSCoreSucceeded() = 0;
+  // Subclasses have to provide an account which will be used for retries.
+  virtual std::string GetAccountToRetryOperation() = 0;
+  // Subclasses have to provide a store type that is used for tracking metrics
+  // that are split for local and account.
+  virtual PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+  GetStoreType() = 0;
+
  private:
   SEQUENCE_CHECKER(main_sequence_checker_);
-
-  class ClearAllLocalPasswordsMetricRecorder;
 
   // Wraps the handler for an asynchronous job (if successful or scheduled to be
   // retried) and invokes the supplied metrics recorded upon completion. An
@@ -139,7 +219,7 @@ class PasswordStoreAndroidBackend
       return std::move(absl::get<T>(success_callback_));
     }
 
-    void RecordMetrics(absl::optional<AndroidBackendError> error) const;
+    void RecordMetrics(std::optional<AndroidBackendError> error) const;
     base::TimeDelta GetElapsedTimeSinceStart() const;
 
     base::TimeDelta GetDelay();
@@ -153,89 +233,60 @@ class PasswordStoreAndroidBackend
     PasswordStoreOperation operation_;
   };
 
+  // Wraps the `callback` to retry after the previous attempt to call
+  // the backend failed. Used to be able to cancel a posted delayed
+  // operation while also replying to its `reply_callback` that the
+  // delayed retry was cancelled. In order to cancel the retry, it's
+  // enough to destroy the wrapper object, which will invalidate the weak
+  // pointer bound to the delayed task.
+  class CancellableRetryCallback {
+   public:
+    CancellableRetryCallback(base::OnceCallback<void(LoginsOrErrorReply,
+                                                     PasswordStoreOperation,
+                                                     base::TimeDelta)> callback,
+                             PasswordStoreOperation operation,
+                             LoginsOrErrorReply reply_callback,
+                             base::TimeDelta current_delay);
+    CancellableRetryCallback(CancellableRetryCallback&&) = delete;
+    CancellableRetryCallback& operator=(CancellableRetryCallback&&) = delete;
+    ~CancellableRetryCallback();
+
+    base::WeakPtr<CancellableRetryCallback> AsWeakPtr();
+
+    void Run();
+    LoginsOrErrorReply GetReplyCallbackAndCancel();
+
+   private:
+    base::OnceCallback<
+        void(LoginsOrErrorReply, PasswordStoreOperation, base::TimeDelta)>
+        callback_;
+    PasswordStoreOperation operation_;
+    LoginsOrErrorReply reply_callback_;
+    base::TimeDelta current_delay_;
+    base::WeakPtrFactory<CancellableRetryCallback> weak_ptr_factory_{this};
+  };
+
   using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
   // Using a small_map should ensure that we handle rare cases with many jobs
   // like a bulk deletion just as well as the normal, rather small job load.
   using JobMap = base::small_map<
       std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
 
-  // Implements PasswordStoreBackend interface.
-  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
-                   RemoteChangesReceived remote_form_changes_received,
-                   base::RepeatingClosure sync_enabled_or_disabled_cb,
-                   base::OnceCallback<void(bool)> completion) override;
-  void Shutdown(base::OnceClosure shutdown_completed) override;
-  void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
-  void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
-  void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
-                                   LoginsOrErrorReply callback) override;
-  void FillMatchingLoginsAsync(
-      LoginsOrErrorReply callback,
-      bool include_psl,
-      const std::vector<PasswordFormDigest>& forms) override;
-  void GetGroupedMatchingLoginsAsync(const PasswordFormDigest& form_digest,
-                                     LoginsOrErrorReply callback) override;
-  void AddLoginAsync(const PasswordForm& form,
-                     PasswordChangesOrErrorReply callback) override;
-  void UpdateLoginAsync(const PasswordForm& form,
-                        PasswordChangesOrErrorReply callback) override;
-  void RemoveLoginAsync(const PasswordForm& form,
-                        PasswordChangesOrErrorReply callback) override;
-  void RemoveLoginsByURLAndTimeAsync(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceCallback<void(bool)> sync_completion,
-      PasswordChangesOrErrorReply callback) override;
-  void RemoveLoginsCreatedBetweenAsync(
-      base::Time delete_begin,
-      base::Time delete_end,
-      PasswordChangesOrErrorReply callback) override;
-  void DisableAutoSignInForOriginsAsync(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::OnceClosure completion) override;
-  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-  CreateSyncControllerDelegate() override;
-  void ClearAllLocalPasswords() override;
-  void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  using DelayedRetryId = base::IdType32<CancellableRetryCallback>;
 
-  // Internal method used for implementing the GetAutofillableLoginsAsync method
-  // from the PasswordStoreBackend interface. |operation| is the
-  // PasswordStoreOperation that invoked this method and |delay| is the amount
-  // of time by which the call to this method was delayed. Calls
-  // GetAutofillableLogins from the PasswordStoreAndroidBackendDispatcherBridge.
-  void GetAutofillableLoginsAsyncInternal(LoginsOrErrorReply callback,
-                                          PasswordStoreOperation operation,
-                                          base::TimeDelta delay);
-
-  // Internal method used for implementing the methods from the
-  // PasswordStoreBackend interface. |operation| is the PasswordStoreOperation
-  // that invoked this method and |delay| is the amount of time by which the
-  // call to this method was delayed. Returns the complete list of PasswordForms
-  // (regardless of their blocklist status) for |account| with a |delay|.
-  void GetAllLoginsForAccountInternal(
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      LoginsOrErrorReply callback,
-      PasswordStoreOperation operation,
-      base::TimeDelta delay);
-
-  // Removes |form| from |account|.
-  // |operation| is the PasswordStoreOperation  that invoked this method and
-  // |delay| is the amount of time by which the call to this method was delayed.
-  void RemoveLoginForAccountInternal(
-      const PasswordForm& form,
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      PasswordChangesOrErrorReply callback,
-      PasswordStoreOperation operation,
-      base::TimeDelta delay);
-
+  base::OnceCallback<
+      void(LoginsOrErrorReply, PasswordStoreOperation, base::TimeDelta)>
+  GetRetryCallbackForOperation(PasswordStoreOperation operation);
   // Implements the retry mechanism for the operations that are safe to retry.
-  // The given |delay| comes from the previous attempt to run the operation.
-  // The delay before the next retry will be double the value of |delay|,
-  // except for the first retry that has a delay of 1 second.
-  void RetryOperation(base::OnceCallback<void(base::TimeDelta)> callback,
-                      base::TimeDelta delay);
+  // It attempts to retry the |operation|. The given |delay| comes from the
+  // previous attempt to run the operation. The delay before the next retry will
+  // be double the value of |delay|, except for the first retry that has a delay
+  // of 1 second.
+  void RetryOperation(PasswordStoreOperation operation,
+                      AndroidBackendAPIErrorCode api_error_code,
+                      base::TimeDelta delay,
+                      LoginsOrErrorReply reply);
+  void CleanupRetryAfterRun(DelayedRetryId retry_id);
 
   // Implements PasswordStoreAndroidBackendDispatcherBridge::Consumer interface.
   void OnCompleteWithLogins(
@@ -255,63 +306,49 @@ class PasswordStoreAndroidBackend
   // doesn't introduce any delay.
   void QueueNewJob(JobId job_id,
                    Callback callback,
-                   MetricInfix metric_infix,
+                   MethodName method_name,
                    PasswordStoreOperation operation,
                    base::TimeDelta delay);
-  absl::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
-
-  // Gets logins matching |form|.
-  void GetLoginsAsync(const PasswordFormDigest& form,
-                      bool include_psl,
-                      LoginsOrErrorReply callback,
-                      PasswordStoreOperation operation);
+  std::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
 
   // Filters |logins| created between |delete_begin| and |delete_end| time
   // that match |url_filer| and asynchronously removes them.
   // |operation| is the PasswordStoreOperation  that invoked this method and
   // |delay| is the amount of time by which the call to this method was delayed.
   void FilterAndRemoveLogins(
+      std::string account,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       PasswordChangesOrErrorReply reply,
-      PasswordStoreOperation operation,
-      base::TimeDelta delay,
       LoginsResultOrError result);
 
   // Filters logins that match |origin_filer| and asynchronously disables
   // autosignin by updating stored logins.
   void FilterAndDisableAutoSignIn(
+      std::string account,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       PasswordChangesOrErrorReply completion,
       LoginsResultOrError result);
 
   // Creates a metrics recorder that records latency and success metrics for
-  // logins retrieval operation with |metric_infix| name prior to calling
+  // logins retrieval operation with |method_name| name prior to calling
   // |callback|.
   static LoginsOrErrorReply ReportMetricsAndInvokeCallbackForLoginsRetrieval(
-      const MetricInfix& metric_infix,
-      LoginsOrErrorReply callback);
+      const MethodName& method_name,
+      LoginsOrErrorReply callback,
+      PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+          store_type);
 
   // Creates a metrics recorder that records latency and success metrics for
-  // store modification operation with |metric_infix| name prior to
+  // store modification operation with |method_name| name prior to
   // calling |callback|.
   static PasswordChangesOrErrorReply
   ReportMetricsAndInvokeCallbackForStoreModifications(
-      const MetricInfix& metric_infix,
-      PasswordChangesOrErrorReply callback);
-
-  // Returns the complete list of PasswordForms (regardless of their blocklist
-  // status) for |account|.
-  void GetAllLoginsForAccount(
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      LoginsOrErrorReply callback);
-
-  // Removes |form| from |account|.
-  void RemoveLoginForAccount(
-      const PasswordForm& form,
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      PasswordChangesOrErrorReply callback);
+      const MethodName& method_name,
+      PasswordChangesOrErrorReply callback,
+      PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+          store_type);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the
@@ -324,12 +361,8 @@ class PasswordStoreAndroidBackend
   // each task cleared this way that it could have failed.
   void ClearZombieTasks();
 
-  // Clears |sync_service_| when syncer::SyncServiceObserver::OnSyncShutdown is
-  // called.
-  void SyncShutdown();
-
   // Observer to propagate potential password changes to.
-  RemoteChangesReceived stored_passwords_changed_;
+  PasswordStoreBackend::RemoteChangesReceived stored_passwords_changed_;
 
   // Helper that receives lifecycle events via JNI and synchronously invokes a
   // passed callback, e.g. `OnForegroundSessionStart`.
@@ -346,13 +379,14 @@ class PasswordStoreAndroidBackend
   // requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper_;
 
-  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
+  // Used to store retry callbacks that will be executed as part of a
+  // posted delayed task.
+  std::map<DelayedRetryId, std::unique_ptr<CancellableRetryCallback>>
+      scheduled_retries_ GUARDED_BY_CONTEXT(main_sequence_checker_);
 
-  raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
-
-  // Delegate to handle sync events.
-  std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-      sync_controller_delegate_;
+  // The id of the latest scheduled retry. Incremented when a new retry is
+  // scheduled.
+  DelayedRetryId::Generator delayed_retry_id_generator_;
 
   raw_ptr<PrefService> prefs_ = nullptr;
 

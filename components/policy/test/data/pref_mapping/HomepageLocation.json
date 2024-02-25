@@ -1,0 +1,26 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HomepageLocation": "http://chromium.org"
+        },
+        "prefs": {
+          "homepage": {
+            "value": "http://chromium.org/"
+          }
+        }
+      }
+    ]
+  }
+]

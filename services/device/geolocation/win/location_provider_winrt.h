@@ -41,8 +41,8 @@ class LocationProviderWinrt : public LocationProvider {
 
   bool permission_granted_ = false;
   bool enable_high_accuracy_ = false;
-  absl::optional<EventRegistrationToken> position_changed_token_;
-  absl::optional<EventRegistrationToken> status_changed_token_;
+  std::optional<EventRegistrationToken> position_changed_token_;
+  std::optional<EventRegistrationToken> status_changed_token_;
 
  private:
   // Returns true if `last_result_` contains a valid geoposition.

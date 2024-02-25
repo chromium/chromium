@@ -5,6 +5,7 @@
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -57,7 +58,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -75,10 +75,6 @@ using media::mojom::AudioInputStreamObserver;
 
 // Default resolution constraint.
 constexpr gfx::Size kMaxResolution(1920, 1080);
-
-// The delay before calling PauseVideoCaptureHostOnIO. This allows us to ensure
-// UI elements are hidden before we stop sending frames.
-constexpr base::TimeDelta kPauseDelay = base::Milliseconds(500);
 
 // Command line arguments that should be passed to the mirroring service.
 static const char* kPassthroughSwitches[]{
@@ -166,13 +162,13 @@ bool IsAccessCodeCastTabSwitchingUIEnabled(
   return media_router::IsAccessCodeCastTabSwitchingUiEnabled(profile);
 }
 
-// Returns the size of the primary display in pixels, or absl::nullopt if it
+// Returns the size of the primary display in pixels, or std::nullopt if it
 // cannot be determined.
-absl::optional<gfx::Size> GetScreenResolution() {
+std::optional<gfx::Size> GetScreenResolution() {
   display::Screen* screen = display::Screen::GetScreen();
   if (!screen) {
     DVLOG(1) << "Cannot get the Screen object.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return screen->GetPrimaryDisplay().GetSizeInPixel();
 }
@@ -209,13 +205,6 @@ void CastMirroringServiceHost::Start(
     return;
   }
 
-  // If the target playout delay has not yet been set (from site-initiated
-  // mirroring request) then try to set it from a feature or commandline.
-  if (!session_params->target_playout_delay) {
-    session_params->target_playout_delay =
-        media_router::GetCastMirroringPlayoutDelay();
-  }
-
   // Although the base::Features get propagated to the mirroring service, the
   // command line flags do not.
   const base::CommandLine& command_line =
@@ -248,11 +237,11 @@ void CastMirroringServiceHost::Start(
   ShowCaptureIndicator();
 }
 
-absl::optional<int> CastMirroringServiceHost::GetTabSourceId() const {
+std::optional<int> CastMirroringServiceHost::GetTabSourceId() const {
   if (web_contents()) {
     return web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -272,7 +261,7 @@ content::DesktopMediaID CastMirroringServiceHost::BuildMediaIdForWebContents(
 
 // static
 gfx::Size CastMirroringServiceHost::GetCaptureResolutionConstraint() {
-  absl::optional<gfx::Size> screen_resolution = GetScreenResolution();
+  std::optional<gfx::Size> screen_resolution = GetScreenResolution();
   if (screen_resolution) {
     return GetClampedResolution(screen_resolution.value());
   } else {
@@ -475,7 +464,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
              mojo::PendingRemote<AudioInputStream> stream,
              mojo::PendingReceiver<AudioInputStreamClient> client,
              media::mojom::ReadOnlyAudioDataPipePtr data_pipe, bool,
-             const absl::optional<base::UnguessableToken>&) {
+             const std::optional<base::UnguessableToken>&) {
             mojo::Remote<mojom::AudioStreamCreatorClient>(std::move(requestor))
                 ->StreamCreated(std::move(stream), std::move(client),
                                 std::move(data_pipe));
@@ -638,11 +627,10 @@ void CastMirroringServiceHost::OpenOffscreenTab(
 void CastMirroringServiceHost::Pause(base::OnceClosure on_paused_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_capture_host_) {
-    content::GetIOThreadTaskRunner({})->PostDelayedTask(
+    content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&PauseVideoCaptureHostOnIO, video_capture_host_->impl(),
-                       ignored_token_, std::move(on_paused_callback)),
-        kPauseDelay);
+                       ignored_token_, std::move(on_paused_callback)));
   }
 }
 

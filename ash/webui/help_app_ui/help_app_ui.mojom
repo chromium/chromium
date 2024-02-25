@@ -18,6 +18,9 @@ struct DeviceInfo {
   // The possible values for this can be found at
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/apps/user_type_filter.cc;l=27;drc=0d0b76e40dfff0f4ad58d0640cdf2c4df72030d3.
   string user_type;
+
+  // If Steam is allowed for the device, regardless of install status.
+  bool is_steam_allowed;
 };
 
 /**
@@ -66,11 +69,6 @@ interface PageHandler {
   // Launches the MS365 setup flow (or shows the final screen of the flow if it
   // was already completed).
   LaunchMicrosoft365Setup();
-
-  // Requests that the help app discover notification is shown if the required
-  // heuristics are present and if a notification for the Help App has not yet
-  // been shown in the current milestone.
-  MaybeShowDiscoverNotification();
 
   // Request for the help app release notes notification to be shown, if a
   // notification for the Help App has not yet been shown in the current

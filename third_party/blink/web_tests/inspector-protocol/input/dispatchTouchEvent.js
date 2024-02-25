@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var { session, dp } = await testRunner.startBlank(`Tests Input.dispatchTouchEvent method.`);
   await dp.Runtime.addBinding({ name: 'logEvent' });
   await dp.Runtime.addBinding({ name: 'logString' });

@@ -6,11 +6,11 @@
 
 #include <string>
 
-#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
@@ -28,6 +28,13 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace {
+ash::NotificationCenterTray* GetNotificationTray() {
+  return ash::Shell::Get()
+      ->GetPrimaryRootWindowController()
+      ->GetStatusAreaWidget()
+      ->notification_center_tray();
+}
+
 ash::UnifiedSystemTray* GetTray() {
   return ash::Shell::Get()
       ->GetPrimaryRootWindowController()
@@ -51,24 +58,12 @@ bool SystemTrayTestApi::IsTrayBubbleOpen() {
   return GetTray()->IsBubbleShown();
 }
 
-bool SystemTrayTestApi::IsTrayBubbleExpanded() {
-  return GetTray()->bubble_->controller_->IsExpanded();
-}
-
 void SystemTrayTestApi::ShowBubble() {
   GetTray()->ShowBubble();
 }
 
 void SystemTrayTestApi::CloseBubble() {
   GetTray()->CloseBubble();
-}
-
-void SystemTrayTestApi::CollapseBubble() {
-  GetTray()->EnsureQuickSettingsCollapsed(true /*animate*/);
-}
-
-void SystemTrayTestApi::ExpandBubble() {
-  GetTray()->EnsureBubbleExpanded();
 }
 
 void SystemTrayTestApi::ShowAccessibilityDetailedView() {
@@ -78,7 +73,7 @@ void SystemTrayTestApi::ShowAccessibilityDetailedView() {
 
 void SystemTrayTestApi::ShowNetworkDetailedView() {
   GetTray()->ShowBubble();
-  GetTray()->bubble_->controller_->ShowNetworkDetailedView(true /* force */);
+  GetTray()->bubble_->controller_->ShowNetworkDetailedView();
 }
 
 AccessibilityDetailedView* SystemTrayTestApi::GetAccessibilityDetailedView() {
@@ -135,20 +130,17 @@ std::u16string SystemTrayTestApi::GetBubbleViewTooltip(int view_id) {
 }
 
 std::u16string SystemTrayTestApi::GetShutdownButtonTooltip() {
-  // When the QS revamp is enabled the power button view that has ID
-  // `VIEW_ID_QS_POWER_BUTTON` is not the view that has the tooltip; what we're
-  // looking for is actually the child `ash::IconButton` view.
-  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
-    auto* icon_button = GetTray()
-                            ->bubble()
-                            ->quick_settings_view()
-                            ->footer_for_testing()
-                            ->power_button_for_testing()
-                            ->button_content_for_testing();
-    return icon_button ? icon_button->GetTooltipText(gfx::Point())
-                       : std::u16string();
-  }
-  return GetBubbleViewTooltip(VIEW_ID_QS_POWER_BUTTON);
+  // The power button view that has ID `VIEW_ID_QS_POWER_BUTTON` is not the view
+  // that has the tooltip; what we're looking for is actually the child
+  // `ash::IconButton` view.
+  auto* icon_button = GetTray()
+                          ->bubble()
+                          ->quick_settings_view()
+                          ->footer_for_testing()
+                          ->power_button_for_testing()
+                          ->button_content_for_testing();
+  return icon_button ? icon_button->GetTooltipText(gfx::Point())
+                     : std::u16string();
 }
 
 std::u16string SystemTrayTestApi::GetBubbleViewText(int view_id) {
@@ -163,21 +155,22 @@ bool SystemTrayTestApi::Is24HourClock() {
 }
 
 void SystemTrayTestApi::TapSelectToSpeakTray() {
-  // The Select-to-Speak tray doesn't actually use the event, so construct
-  // a bare bones event to perform the action.
-  ui::TouchEvent event(ui::ET_TOUCH_PRESSED, gfx::Point(),
-                       base::TimeTicks::Now(),
-                       ui::PointerDetails(ui::EventPointerType::kTouch), 0);
   StatusAreaWidget* status_area_widget =
       RootWindowController::ForWindow(GetTray()->GetWidget()->GetNativeWindow())
           ->GetStatusAreaWidget();
-  status_area_widget->select_to_speak_tray()->PerformAction(event);
+  ui::test::EventGenerator generator(GetRootWindow(status_area_widget));
+  generator.MoveMouseTo(status_area_widget->select_to_speak_tray()
+                            ->GetBoundsInScreen()
+                            .CenterPoint());
+  generator.ClickLeftButton();
 }
 
 message_center::MessagePopupView*
 SystemTrayTestApi::GetPopupViewForNotificationID(
     const std::string& notification_id) {
-  return GetTray()->GetPopupViewForNotificationID(notification_id);
+  return GetNotificationTray()
+      ->popup_collection()
+      ->GetPopupViewForNotificationID(notification_id);
 }
 
 // static

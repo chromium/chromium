@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -16,13 +17,17 @@
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/ambient_badge_manager.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
+#include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,14 +42,12 @@ class TestAmbientBadgeManager : public AmbientBadgeManager {
  public:
   explicit TestAmbientBadgeManager(
       content::WebContents* web_contents,
-      base::WeakPtr<AppBannerManagerAndroid> app_banner_manager,
       segmentation_platform::SegmentationPlatformService*
           segmentation_platform_service,
       PrefService* prefs)
-      : AmbientBadgeManager(web_contents,
-                            app_banner_manager,
+      : AmbientBadgeManager(*web_contents,
                             segmentation_platform_service,
-                            prefs) {}
+                            *prefs) {}
 
   TestAmbientBadgeManager(const TestAmbientBadgeManager&) = delete;
   TestAmbientBadgeManager& operator=(const TestAmbientBadgeManager&) = delete;
@@ -73,13 +76,17 @@ class TestAmbientBadgeManager : public AmbientBadgeManager {
 class TestAppBannerManager : public AppBannerManagerAndroid {
  public:
   explicit TestAppBannerManager(content::WebContents* web_contents)
-      : AppBannerManagerAndroid(web_contents) {}
+      : AppBannerManagerAndroid(
+            web_contents,
+            std::make_unique<ChromeAppBannerManagerAndroid>(*web_contents)) {}
 
   explicit TestAppBannerManager(
       content::WebContents* web_contents,
       segmentation_platform::SegmentationPlatformService*
           segmentation_platform_service)
-      : AppBannerManagerAndroid(web_contents),
+      : AppBannerManagerAndroid(
+            web_contents,
+            std::make_unique<ChromeAppBannerManagerAndroid>(*web_contents)),
         mock_segmentation_(segmentation_platform_service) {}
 
   TestAppBannerManager(const TestAppBannerManager&) = delete;
@@ -106,17 +113,32 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
 
   void MaybeShowAmbientBadge() override {
     ambient_badge_test_ = std::make_unique<TestAmbientBadgeManager>(
-        web_contents(), GetAndroidWeakPtr(), mock_segmentation_,
-        profile()->GetPrefs());
+        web_contents(), mock_segmentation_, profile()->GetPrefs());
 
     ambient_badge_test_->WaitForState(target_badge_state_,
                                       std::move(on_badge_done_));
+
+    InstallBannerConfig install_config = GetCurrentInstallBannerConfig();
+    std::unique_ptr<AddToHomescreenParams> a2hs_params =
+        AppBannerManagerAndroid::CreateAddToHomescreenParams(
+            install_config, native_java_app_data_for_testing(),
+            InstallableMetrics::GetInstallSource(
+                &GetWebContents(), InstallTrigger::AMBIENT_BADGE));
+
     ambient_badge_test_->MaybeShow(
-        validated_url_, GetAppName(), GetAppIdentifier(),
-        CreateAddToHomescreenParams(InstallableMetrics::GetInstallSource(
-            web_contents(), InstallTrigger::AMBIENT_BADGE)),
+        install_config.validated_url, install_config.GetWebOrNativeAppName(),
+        install_config.GetWebOrNativeAppIdentifier(), std::move(a2hs_params),
+        // TODO(b/323192242): See if these callbacks can be merged.
         base::BindOnce(&AppBannerManagerAndroid::ShowBannerFromBadge,
-                       AppBannerManagerAndroid::GetAndroidWeakPtr()));
+                       GetAndroidWeakPtr()),
+        // Create the params, then pass them to MaybeShow.
+        base::BindOnce(&AppBannerManagerAndroid::CreateAddToHomescreenParams,
+                       install_config, native_java_app_data_for_testing())
+            .Then(base::BindOnce(
+                &PwaBottomSheetController::MaybeShow, web_contents(),
+                install_config.web_app_data, /*expand_sheet=*/false,
+                base::BindRepeating(&TestAppBannerManager::OnInstallEvent,
+                                    GetAndroidWeakPtr()))));
   }
 
  private:
@@ -159,7 +181,7 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
 
   virtual void SetUpFeatureList() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kBlockInstallPromptIfIgnoreRecently},
+        /*enabled_features=*/{},
         /*disabled_features=*/{features::kAmbientBadgeSuppressFirstVisit,
                                features::kInstallPromptSegmentation});
   }
@@ -231,32 +253,6 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
 
   // Badge can show again after 91 days.
   webapps::AppBannerManager::SetTimeDeltaForTesting(91);
-  RunTest(app_banner_manager.get(),
-          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-          AmbientBadgeManager::State::kShowing);
-}
-
-IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
-                       BlockedIfIgnoredRecently) {
-  auto app_banner_manager =
-      std::make_unique<TestAppBannerManager>(web_contents());
-
-  RunTest(app_banner_manager.get(),
-          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-          AmbientBadgeManager::State::kShowing);
-
-  // Explicitly dismiss the badge.
-  app_banner_manager->GetBadgeManagerForTest()->BadgeIgnored();  // IN-TEST
-  EXPECT_EQ(AmbientBadgeManager::State::kDismissed,
-            app_banner_manager->GetBadgeManagerForTest()->state());  // IN-TEST
-
-  // Badge blocked because it was recently dismissed.
-  RunTest(app_banner_manager.get(),
-          embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-          AmbientBadgeManager::State::kBlocked);
-
-  // Badge can show again after 8 days.
-  webapps::AppBannerManager::SetTimeDeltaForTesting(8);
   RunTest(app_banner_manager.get(),
           embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
           AmbientBadgeManager::State::kShowing);
@@ -352,9 +348,10 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest,
 
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest, BlockedByGuardrail) {
   EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
-      .Times(testing::Exactly(3))
-      .WillRepeatedly(RunOnceCallback<3>(GetClassificationResult(
-          MLInstallabilityPromoter::kShowInstallPromptLabel)));
+      .Times(testing::Exactly(2))
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<3>(GetClassificationResult(
+              MLInstallabilityPromoter::kShowInstallPromptLabel)));
 
   auto app_banner_manager = std::make_unique<TestAppBannerManager>(
       web_contents(), &mock_segmentation_service_);

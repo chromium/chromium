@@ -20,10 +20,16 @@ public class DownloadInterstitialCoordinatorFactory {
      * @param reloadCallback Callback run to reload the tab therefore restarting the download.
      * @return A new {@link DownloadInterstitialCoordinatorImpl} instance.
      */
-    public static DownloadInterstitialCoordinator create(Supplier<Context> contextSupplier,
-            String downloadUrl, WindowAndroid windowAndroid, Runnable reloadCallback) {
-        return new DownloadInterstitialCoordinatorImpl(contextSupplier, downloadUrl,
-                OfflineContentAggregatorFactory.get(), SnackbarManagerProvider.from(windowAndroid),
+    public static DownloadInterstitialCoordinator create(
+            Supplier<Context> contextSupplier,
+            String downloadUrl,
+            WindowAndroid windowAndroid,
+            Runnable reloadCallback) {
+        return new DownloadInterstitialCoordinatorImpl(
+                contextSupplier,
+                downloadUrl,
+                OfflineContentAggregatorFactory.get(),
+                SnackbarManagerProvider.from(windowAndroid),
                 reloadCallback);
     }
 

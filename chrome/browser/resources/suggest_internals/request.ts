@@ -14,7 +14,8 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './request.html.js';
-import {Request, RequestStatus} from './suggest_internals.mojom-webui.js';
+import type {Request} from './suggest_internals.mojom-webui.js';
+import {RequestStatus} from './suggest_internals.mojom-webui.js';
 
 // Displays a suggest request and its response.
 export class SuggestRequestElement extends PolymerElement {

@@ -22,11 +22,16 @@ limitations under the License.
 #include <memory>
 #include <vector>
 
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/types/span.h"           // from @com_google_absl
+#include "absl/types/span.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -34,11 +39,6 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/processor/proto/embedding.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_options.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/index.h"
 #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
 
@@ -50,14 +50,14 @@ namespace {
 
 constexpr int kNoNeighborId = -1;
 
-using ::tflite::scann_ondevice::Index;
-using ::tflite::scann_ondevice::IndexConfig;
 using ::tflite::scann_ondevice::core::AsymmetricHashFindNeighbors;
 using ::tflite::scann_ondevice::core::DistanceMeasure;
 using ::tflite::scann_ondevice::core::FloatFindNeighbors;
 using ::tflite::scann_ondevice::core::QueryInfo;
 using ::tflite::scann_ondevice::core::ScannOnDeviceConfig;
 using ::tflite::scann_ondevice::core::TopN;
+using ::tflite::scann_ondevice::Index;
+using ::tflite::scann_ondevice::IndexConfig;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
@@ -176,15 +176,16 @@ StatusOr<std::unique_ptr<EmbeddingSearcher>> EmbeddingSearcher::Create(
     std::optional<absl::string_view> optional_index_file_content) {
   auto embedding_searcher = std::make_unique<EmbeddingSearcher>();
 
-  RETURN_IF_ERROR(embedding_searcher->Init(std::move(search_options),
-                                           optional_index_file_content));
+  TFLITE_RETURN_IF_ERROR(
+      embedding_searcher->Init(
+          std::move(search_options), optional_index_file_content));
   return embedding_searcher;
 }
 
 StatusOr<SearchResult> EmbeddingSearcher::Search(const Embedding& embedding) {
   // Convert embedding to Eigen matrix, as expected by ScaNN.
   Eigen::MatrixXf query;
-  RETURN_IF_ERROR(ConvertEmbeddingToEigenMatrix(embedding, &query));
+  TFLITE_RETURN_IF_ERROR(ConvertEmbeddingToEigenMatrix(embedding, &query));
 
   // Identify partitions to search.
   std::vector<std::vector<int>> leaves_to_search(
@@ -202,10 +203,10 @@ StatusOr<SearchResult> EmbeddingSearcher::Search(const Embedding& embedding) {
       std::make_pair(std::numeric_limits<float>::max(), kNoNeighborId));
   // Perform search.
   if (quantizer_) {
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         QuantizedSearch(query, leaves_to_search[0], absl::MakeSpan(top_n)));
   } else {
-    RETURN_IF_ERROR(
+    TFLITE_RETURN_IF_ERROR(
         LinearSearch(query, leaves_to_search[0], absl::MakeSpan(top_n)));
   }
 
@@ -215,7 +216,7 @@ StatusOr<SearchResult> EmbeddingSearcher::Search(const Embedding& embedding) {
     if (id == kNoNeighborId) {
       break;
     }
-    ASSIGN_OR_RETURN(auto metadata, index_->GetMetadataAtIndex(id));
+    TFLITE_ASSIGN_OR_RETURN(auto metadata, index_->GetMetadataAtIndex(id));
     NearestNeighbor* nearest_neighbor = search_result.add_nearest_neighbors();
     nearest_neighbor->set_distance(distance);
     nearest_neighbor->set_metadata(std::string(metadata));
@@ -230,13 +231,13 @@ StatusOr<absl::string_view> EmbeddingSearcher::GetUserInfo() {
 absl::Status EmbeddingSearcher::Init(
     std::unique_ptr<SearchOptions> options,
     std::optional<absl::string_view> optional_index_file_content) {
-  RETURN_IF_ERROR(SanityCheckOptions(*options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(*options));
   options_ = std::move(options);
 
   // Initialize index.
   absl::string_view index_file_content;
   if (options_->has_index_file()) {
-    ASSIGN_OR_RETURN(
+    TFLITE_ASSIGN_OR_RETURN(
         index_file_handler_,
         ExternalFileHandler::CreateFromExternalFile(&options_->index_file()));
     index_file_content = index_file_handler_->GetFileContent();
@@ -250,13 +251,13 @@ absl::Status EmbeddingSearcher::Init(
     }
     index_file_content = *optional_index_file_content;
   }
-  ASSIGN_OR_RETURN(index_,
+  TFLITE_ASSIGN_OR_RETURN(index_,
                    Index::CreateFromIndexBuffer(index_file_content.data(),
                                                 index_file_content.size()));
-  ASSIGN_OR_RETURN(index_config_, index_->GetIndexConfig());
-  RETURN_IF_ERROR(SanityCheckIndexConfig(index_config_));
+  TFLITE_ASSIGN_OR_RETURN(index_config_, index_->GetIndexConfig());
+  TFLITE_RETURN_IF_ERROR(SanityCheckIndexConfig(index_config_));
   // Get distance measure once and for all.
-  ASSIGN_OR_RETURN(distance_measure_,
+  TFLITE_ASSIGN_OR_RETURN(distance_measure_,
                    GetDistanceMeasure(index_config_.scann_config()));
 
   // Initialize partitioner.
@@ -269,8 +270,7 @@ absl::Status EmbeddingSearcher::Init(
             index_config_.scann_config().partitioner().search_fraction())),
         partitioner_->NumPartitions());
   } else {
-    partitioner_ =
-        absl::make_unique<tflite::scann_ondevice::core::NoOpPartitioner>();
+    partitioner_ = absl::make_unique<tflite::scann_ondevice::core::NoOpPartitioner>();
     num_leaves_to_search_ = partitioner_->NumPartitions();
   }
 
@@ -284,8 +284,7 @@ absl::Status EmbeddingSearcher::Init(
 }
 
 absl::Status EmbeddingSearcher::QuantizedSearch(
-    Eigen::Ref<Eigen::MatrixXf> query,
-    std::vector<int> leaves_to_search,
+    Eigen::Ref<Eigen::MatrixXf> query, std::vector<int> leaves_to_search,
     absl::Span<TopN> top_n) {
   int dim = index_config_.embedding_dim();
   // Prepare QueryInfo used for all leaves.
@@ -297,7 +296,7 @@ absl::Status EmbeddingSearcher::QuantizedSearch(
   }
   for (int leaf_id : leaves_to_search) {
     // Load partition into Eigen matrix.
-    ASSIGN_OR_RETURN(auto partition, index_->GetPartitionAtIndex(leaf_id));
+    TFLITE_ASSIGN_OR_RETURN(auto partition, index_->GetPartitionAtIndex(leaf_id));
     int partition_size = partition.size() / dim;
     Eigen::Map<const Matrix8u> database(
         reinterpret_cast<const uint8_t*>(partition.data()), dim,
@@ -320,7 +319,7 @@ absl::Status EmbeddingSearcher::LinearSearch(Eigen::Ref<Eigen::MatrixXf> query,
   int dim = index_config_.embedding_dim();
   for (int leaf_id : leaves_to_search) {
     // Load partition into Eigen matrix.
-    ASSIGN_OR_RETURN(auto partition, index_->GetPartitionAtIndex(leaf_id));
+    TFLITE_ASSIGN_OR_RETURN(auto partition, index_->GetPartitionAtIndex(leaf_id));
     int partition_size = partition.size() / (dim * sizeof(float));
     Eigen::Map<const Eigen::MatrixXf> database(
         reinterpret_cast<const float*>(partition.data()), dim, partition_size);

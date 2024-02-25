@@ -22,26 +22,23 @@ import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
-/**
- * ColorProvider implementation used for normal profiles.
- */
+/** ColorProvider implementation used for normal profiles. */
 public final class CustomTabColorProviderImpl implements ColorProvider {
     private static final String TAG = "CustomTabColorPrvdr";
 
     private final boolean mHasCustomToolbarColor;
     private final int mToolbarColor;
     private final int mBottomBarColor;
-    @Nullable
-    private final Integer mNavigationBarColor;
-    @Nullable
-    private final Integer mNavigationBarDividerColor;
+    @Nullable private final Integer mNavigationBarColor;
+    @Nullable private final Integer mNavigationBarDividerColor;
     private final int mInitialBackgroundColor;
 
     private static @NonNull CustomTabColorSchemeParams getColorSchemeParams(
             Intent intent, int colorScheme) {
         if (colorScheme == COLOR_SCHEME_SYSTEM) {
-            assert false : "Color scheme passed to IntentDataProvider should not be "
-                           + "COLOR_SCHEME_SYSTEM";
+            assert false
+                    : "Color scheme passed to IntentDataProvider should not be "
+                            + "COLOR_SCHEME_SYSTEM";
             colorScheme = COLOR_SCHEME_LIGHT;
         }
         try {
@@ -68,27 +65,31 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
         mHasCustomToolbarColor = (params.toolbarColor != null);
         mToolbarColor = retrieveToolbarColor(params, context, mHasCustomToolbarColor);
         mBottomBarColor = retrieveBottomBarColor(params, mToolbarColor);
-        mNavigationBarColor = params.navigationBarColor == null
-                ? null
-                : ColorUtils.getOpaqueColor(params.navigationBarColor);
+        mNavigationBarColor =
+                params.navigationBarColor == null
+                        ? null
+                        : ColorUtils.getOpaqueColor(params.navigationBarColor);
         mNavigationBarDividerColor = params.navigationBarDividerColor;
         mInitialBackgroundColor = retrieveInitialBackgroundColor(intent);
     }
 
-    /**
-     * Returns the color passed from the client app.
-     */
-    private static int retrieveToolbarColor(CustomTabColorSchemeParams schemeParams,
-            Context context, boolean hasCustomToolbarColor) {
-        int defaultColor = ChromeColors.getDefaultThemeColor(context, /*forceDarkBgColor*/ false);
+    /** Returns the color passed from the client app. */
+    private static int retrieveToolbarColor(
+            CustomTabColorSchemeParams schemeParams,
+            Context context,
+            boolean hasCustomToolbarColor) {
+        int defaultColor =
+                ChromeColors.getDefaultThemeColor(context, /* forceDarkBgColor= */ false);
         int color = hasCustomToolbarColor ? schemeParams.toolbarColor : defaultColor;
         return ColorUtils.getOpaqueColor(color);
     }
 
     private static int retrieveBottomBarColor(
             CustomTabColorSchemeParams schemeParams, int toolbarColor) {
-        int color = schemeParams.secondaryToolbarColor != null ? schemeParams.secondaryToolbarColor
-                                                               : toolbarColor;
+        int color =
+                schemeParams.secondaryToolbarColor != null
+                        ? schemeParams.secondaryToolbarColor
+                        : toolbarColor;
         return ColorUtils.getOpaqueColor(color);
     }
 
@@ -98,8 +99,11 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
      */
     private static int retrieveInitialBackgroundColor(Intent intent) {
         int defaultColor = Color.TRANSPARENT;
-        int color = IntentUtils.safeGetIntExtra(
-                intent, CustomTabIntentDataProvider.EXTRA_INITIAL_BACKGROUND_COLOR, defaultColor);
+        int color =
+                IntentUtils.safeGetIntExtra(
+                        intent,
+                        CustomTabIntentDataProvider.EXTRA_INITIAL_BACKGROUND_COLOR,
+                        defaultColor);
         return color == Color.TRANSPARENT ? color : ColorUtils.getOpaqueColor(color);
     }
 

@@ -1,0 +1,48 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check the default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "auth.allow_cross_origin_prompt": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: true",
+        "policies": {
+          "AllowCrossOriginAuthPrompt": true
+        },
+        "prefs": {
+          "auth.allow_cross_origin_prompt": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: false",
+        "policies": {
+          "AllowCrossOriginAuthPrompt": false
+        },
+        "prefs": {
+          "auth.allow_cross_origin_prompt": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

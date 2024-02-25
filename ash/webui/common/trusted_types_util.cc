@@ -16,10 +16,15 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types parse-html-subset sanitize-inner-html static-types "
+      "xml-policy "
       // Add TrustedTypes policies for cr-lottie.
       "lottie-worker-script-loader "
-      // Add TrustedTypes policy for lit.
+      // Add TrustedTypes policy for <cros-lottie-renderer>.
+      "cros-lottie-worker-script-loader "
+      // Add TrustedTypes policies necessary for using CrOS' Lit bundle.
       "lit-html "
+      // Add TrustedTypes policies necessary for using Desktop's Lit bundle.
+      "lit-html-desktop "
       // Add TrustedTypes policies used during tests.
       "webui-test-script webui-test-html "
       // Add TrustedTypes policy used during Ash WebUI tests created in

@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -29,7 +28,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/extension_zoom_request_client.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -55,6 +53,10 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/fullscreen_util_mac.h"
+#endif
 
 namespace {
 
@@ -90,9 +92,9 @@ std::unique_ptr<views::ImageButton> CreateZoomButton(
 }
 
 class ZoomValue : public views::Label {
- public:
-  METADATA_HEADER(ZoomValue);
+  METADATA_HEADER(ZoomValue, views::Label)
 
+ public:
   explicit ZoomValue(const content::WebContents* web_contents)
       : Label(std::u16string(),
               views::style::CONTEXT_LABEL,
@@ -105,7 +107,8 @@ class ZoomValue : public views::Label {
   ~ZoomValue() override = default;
 
   // views::Label:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(max_width_, GetHeightForWidth(max_width_));
   }
 
@@ -130,7 +133,7 @@ class ZoomValue : public views::Label {
   const int max_width_;
 };
 
-BEGIN_METADATA(ZoomValue, views::Label)
+BEGIN_METADATA(ZoomValue)
 END_METADATA
 
 bool IsBrowserFullscreen(Browser* browser) {
@@ -141,6 +144,11 @@ bool IsBrowserFullscreen(Browser* browser) {
 
 views::View* GetAnchorViewForBrowser(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+#if BUILDFLAG(IS_MAC)
+  if (fullscreen_utils::IsInContentFullscreen(browser)) {
+    return nullptr;
+  }
+#endif
   if (!IsBrowserFullscreen(browser) || browser_view->IsToolbarVisible() ||
       browser_view->immersive_mode_controller()->IsRevealed()) {
     return browser_view->toolbar_button_provider()->GetAnchorView(
@@ -192,7 +200,7 @@ ZoomBubbleView* ZoomBubbleView::zoom_bubble_ = nullptr;
 // static
 void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
                                 DisplayReason reason) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   // |web_contents| could have been unloaded if a tab gets closed and a mouse
   // event arrives before the zoom icon gets hidden.
   if (!browser)
@@ -249,7 +257,7 @@ bool ZoomBubbleView::CanRefresh(const content::WebContents* web_contents) {
   if (!zoom_bubble_ || (zoom_bubble_->web_contents() != web_contents))
     return false;
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser ||
       (zoom_bubble_->GetAnchorView() != GetAnchorViewForBrowser(browser)))
     return false;
@@ -293,8 +301,7 @@ ZoomBubbleView::ZoomBubbleView(
       auto_close_duration_(kBubbleCloseDelayDefault),
       auto_close_(reason == AUTOMATIC),
       immersive_mode_controller_(immersive_mode_controller),
-      session_id_(
-          chrome::FindBrowserWithWebContents(web_contents)->session_id()) {
+      session_id_(chrome::FindBrowserWithTab(web_contents)->session_id()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   SetNotifyEnterExitOnChild(true);
@@ -369,9 +376,11 @@ void ZoomBubbleView::Init() {
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const int spacing =
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+  gfx::Insets inset_border_insets =
+      provider->GetInsetsMetric(INSETS_TOAST) - margins();
+  inset_border_insets.set_top_bottom(0, 0);
   auto box_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      provider->GetInsetsMetric(INSETS_TOAST) - margins(), spacing);
+      views::BoxLayout::Orientation::kHorizontal, inset_border_insets, spacing);
   box_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
@@ -488,8 +497,9 @@ void ZoomBubbleView::OnImmersiveModeControllerDestroyed() {
 
 void ZoomBubbleView::OnExtensionIconImageChanged(
     extensions::IconImage* /* image */) {
-  image_button_->SetImage(views::Button::STATE_NORMAL,
-                          &extension_info_.icon_image->image_skia());
+  image_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromImageSkia(extension_info_.icon_image->image_skia()));
   image_button_->SchedulePaint();
 }
 
@@ -594,10 +604,12 @@ void ZoomBubbleView::ImageButtonPressed() {
 }
 
 Browser* ZoomBubbleView::GetBrowser() const {
-  return web_contents() ? chrome::FindBrowserWithWebContents(web_contents())
-                        : nullptr;
+  return web_contents() ? chrome::FindBrowserWithTab(web_contents()) : nullptr;
 }
 
 ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() {}
 
 ZoomBubbleView::ZoomBubbleExtensionInfo::~ZoomBubbleExtensionInfo() {}
+
+BEGIN_METADATA(ZoomBubbleView)
+END_METADATA

@@ -135,19 +135,24 @@ class TestWallpaperObserver : public WallpaperControllerObserver {
   // WallpaperControllerObserver:
   void OnWallpaperChanged() override {
     finished_ = true;
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
   }
 
   // Wait until the wallpaper update is completed.
   void WaitForWallpaperChanged() {
-    while (!finished_)
-      base::RunLoop().Run();
+    while (!finished_) {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      run_loop_->Run();
+    }
   }
 
   void Reset() { finished_ = false; }
 
  private:
   bool finished_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 }  // namespace

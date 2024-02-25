@@ -20,25 +20,25 @@ TEST_F(DOMNodeIdsTest, NonNull) {
   Node* a = GetDocument().getElementById(AtomicString("a"));
   Node* b = GetDocument().getElementById(AtomicString("b"));
 
-  DOMNodeId id_a = DOMNodeIds::IdForNode(a);
+  DOMNodeId id_a = a->GetDomNodeId();
   EXPECT_NE(kInvalidDOMNodeId, id_a);
-  EXPECT_EQ(id_a, DOMNodeIds::IdForNode(a));
+  EXPECT_EQ(id_a, a->GetDomNodeId());
   EXPECT_EQ(a, DOMNodeIds::NodeForId(id_a));
 
-  DOMNodeId id_b = DOMNodeIds::IdForNode(b);
+  DOMNodeId id_b = b->GetDomNodeId();
   EXPECT_NE(kInvalidDOMNodeId, id_b);
   EXPECT_NE(id_a, id_b);
-  EXPECT_EQ(id_b, DOMNodeIds::IdForNode(b));
+  EXPECT_EQ(id_b, b->GetDomNodeId());
   EXPECT_EQ(b, DOMNodeIds::NodeForId(id_b));
 
-  EXPECT_EQ(id_a, DOMNodeIds::IdForNode(a));
+  EXPECT_EQ(id_a, a->GetDomNodeId());
   EXPECT_EQ(a, DOMNodeIds::NodeForId(id_a));
 }
 
 TEST_F(DOMNodeIdsTest, DeletedNode) {
   SetBodyContent("<div id='a'></div>");
   Node* a = GetDocument().getElementById(AtomicString("a"));
-  DOMNodeId id_a = DOMNodeIds::IdForNode(a);
+  DOMNodeId id_a = a->GetDomNodeId();
 
   a->remove();
   ThreadState::Current()->CollectAllGarbageForTesting(
@@ -49,7 +49,7 @@ TEST_F(DOMNodeIdsTest, DeletedNode) {
 TEST_F(DOMNodeIdsTest, UnusedID) {
   SetBodyContent("<div id='a'></div>");
   Node* a = GetDocument().getElementById(AtomicString("a"));
-  DOMNodeId id_a = DOMNodeIds::IdForNode(a);
+  DOMNodeId id_a = a->GetDomNodeId();
   EXPECT_EQ(nullptr, DOMNodeIds::NodeForId(id_a + 1));
 }
 
@@ -66,12 +66,12 @@ TEST_F(DOMNodeIdsTest, ExistingIdForNode) {
   EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(a));
 
   // IdForNode() forces node a to have an ID.
-  DOMNodeId id_a = DOMNodeIds::IdForNode(a);
+  DOMNodeId id_a = a->GetDomNodeId();
   EXPECT_NE(kInvalidDOMNodeId, id_a);
 
   // Both ExistingIdForNode() and IdForNode() still return the same ID.
   EXPECT_EQ(id_a, DOMNodeIds::ExistingIdForNode(a));
-  EXPECT_EQ(id_a, DOMNodeIds::IdForNode(a));
+  EXPECT_EQ(id_a, a->GetDomNodeId());
 }
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />-бетті жою</translation>
 <translation id="1113173431709655881">Камера режимі</translation>
 <translation id="1153190633558910465">Торды өшіру</translation>
-<translation id="1175958423215084756">Сілтеме анықталды. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />-бет жойылды.</translation>
 <translation id="1258009455399840361">Сағат тілімен 90 градус бұру</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />-бет мәліметтерін өзгерту</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Оңға жылжыту</translation>
 <translation id="3081586908890909590">Бейне жазуға ауысу</translation>
 <translation id="313467653172006084">30 кадр/сек</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />" желісіне қосылу</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Сілтеме көшірілді</translation>
 <translation id="3354465018370944241">Фотосурет параметрлері</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Бейне өңделуде…</translation>
 <translation id="3789724198583203151">Сағат тіліне қарсы 90 градус бұру</translation>
 <translation id="3810838688059735925">Бейне</translation>
-<translation id="3892148308691398805">Мәтінді көшіру</translation>
 <translation id="4060608699153044055">Құрылғының жад көлемі аз болғандықтан жазу мүмкін емес. Жазуды бастау үшін құрылғыңызда орын босатуыңыз керек.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксель</translation>
 <translation id="4118525110028899586">Жазуды кідірту</translation>
 <translation id="4121305183798804752">Құжат анықталды</translation>
 <translation id="414641094616694804">Бұл камера ажыратымдылықты өзгерте алмайды.</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
-<translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
 <translation id="428234092390943511">Беттің нобайы</translation>
 <translation id="4349714250734879769">Chrome бойынша масштабты кадрлар</translation>
 <translation id="4383571725254449280">Жұмысты тіркеу журналдарын басып шығару</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Толық ажыратымдылық</translation>
 <translation id="4864143361253542638">Сканерленген нұсқалар тізімі</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Сілтеме мекенжайын (<ph name="URL" />) көшіру</translation>
 <translation id="491895758387112773">Көп ағынды бейне жазу</translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Фотосурет арақатынасы</translation>
 <translation id="5057360777601936059">Камераңыз әзірге қолжетімді емес.
         Камераның дұрыс жалғанғанын тексеріңіз.</translation>
+<translation id="5157591164390831335">URL анықталды.</translation>
 <translation id="5163387177077603948">Оңға қарай жылжыту</translation>
-<translation id="5219374179772385066">Үдету режимі қазір қолжетімді!</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Құжаттың жоғарғы сол жақ бұрышы</translation>
 <translation id="5317780077021120954">Сақтау</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Camera қолданбасында пікір бергеніңізге рақмет.
 
 Егер пікір сурет не бейне сапасы туралы болса, үлгі ретінде суретті не бейнені жіберіп, не дұрыс емес екенін (мысалы, фотосурет тым күңгірт немесе нысан фокусқа алынбаған) көрсетіңіз.</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> желісіне қосылу</translation>
 <translation id="6527303717912515753">Бөлісу</translation>
 <translation id="6617916774429601017">Барлық ажыратымдылықтарды көрсету</translation>
 <translation id="6631515515009660915">Айна көрінісін өшіру</translation>
@@ -124,7 +124,7 @@
 <translation id="6888362557094394345">Төмен қарай жылжыту</translation>
 <translation id="695140971690006676">Барлығын бастапқы күйге қайтару</translation>
 <translation id="6965382102122355670">Жарайды</translation>
-<translation id="6965830616442491568">Портреттік</translation>
+<translation id="6965830616442491568">Портрет</translation>
 <translation id="698156982839284926">3 секунд</translation>
 <translation id="7134221860976209830">10 секундтық таймер</translation>
 <translation id="7191890674911603392">Жазу түрі</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">Мәтін көшірмесі жасалды</translation>
 <translation id="7488619942230388918">GIF бейнесін жазу</translation>
 <translation id="7557677699350329807">Келесі камераға ауысу</translation>
+<translation id="7562584071994185503">Мәтінді (<ph name="TEXT" />) көшіру</translation>
 <translation id="7607002721634913082">Кідіртілген</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="761421184377987513">Төменгі сол жаққа қарай жылжыту</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Камераның HAL режимі бойынша масштабты кадрлар</translation>
 <translation id="8425673304802773841">Төмен қарай еңкейту</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
+<translation id="8609951387004618906"><ph name="URL" /> сілтемесін ашу</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Микрофон дыбысын өшіру/қосу. Дыбыс өшірулі.</translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8732462232047530626">Метадеректі алдын ала көру</translation>
+<translation id="874854738381978209">Wi-Fi желісі анықталды.</translation>
 <translation id="8815966864175525708">Портрет түсіруге ауысу</translation>
 <translation id="8828441885228359828">Жазуды жалғастыру</translation>
 <translation id="8870695351537079478">Бейнеге түсіру мүмкін емес.</translation>

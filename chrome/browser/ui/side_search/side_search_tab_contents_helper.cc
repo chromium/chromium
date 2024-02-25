@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/side_search/unified_side_search_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/uma_browsing_activity_observer.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -301,6 +302,8 @@ void SideSearchTabContentsHelper::CreateSidePanelContents() {
   extensions::TabHelper::CreateForWebContents(side_panel_contents_.get());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   chrome::InitializePageLoadMetricsForWebContents(side_panel_contents_.get());
+  chrome::UMABrowsingActivityObserver::TabHelper::CreateForWebContents(
+      side_panel_contents_.get());
 
   SideSearchSideContentsHelper::CreateForWebContents(
       side_panel_contents_.get());

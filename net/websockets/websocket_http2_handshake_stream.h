@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
@@ -24,24 +26,25 @@
 #include "net/websockets/websocket_basic_stream_adapters.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
-struct LoadTimingInfo;
-class SSLInfo;
-class IOBuffer;
-class SSLCertRequestInfo;
-class IPEndPoint;
 class HttpNetworkSession;
-struct NetErrorDetails;
-class HttpStream;
+class HttpRequestHeaders;
 class HttpResponseHeaders;
-struct HttpRequestInfo;
 class HttpResponseInfo;
+class HttpStream;
+class IOBuffer;
+class IPEndPoint;
+class SSLCertRequestInfo;
+class SSLInfo;
 class SpdySession;
-struct AlternativeService;
+class SpdyStream;
 class SpdyStreamRequest;
+struct AlternativeService;
+struct HttpRequestInfo;
+struct LoadTimingInfo;
+struct NetErrorDetails;
 struct WebSocketExtensionParams;
 
 class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
@@ -127,7 +130,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   void OnFailure(const std::string& message,
                  int net_error,
-                 absl::optional<int> response_code);
+                 std::optional<int> response_code);
 
   HandshakeResult result_ = HandshakeResult::HTTP2_INCOMPLETE;
 

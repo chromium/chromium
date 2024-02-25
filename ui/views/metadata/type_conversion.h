@@ -5,7 +5,8 @@
 #ifndef UI_VIEWS_METADATA_TYPE_CONVERSION_H_
 #define UI_VIEWS_METADATA_TYPE_CONVERSION_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/views_export.h"
 #include "url/gurl.h"
@@ -14,7 +15,7 @@ template <>
 struct VIEWS_EXPORT ui::metadata::TypeConverter<GURL>
     : BaseTypeConverter<true> {
   static std::u16string ToString(const GURL& source_value);
-  static absl::optional<GURL> FromString(const std::u16string& source_value);
+  static std::optional<GURL> FromString(const std::u16string& source_value);
   static ui::metadata::ValidStrings GetValidStrings();
 };
 

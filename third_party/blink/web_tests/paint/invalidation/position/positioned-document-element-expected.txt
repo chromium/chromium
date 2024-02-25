@@ -1,7 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "LayoutView (children-inline) #document",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling background of LayoutView (children-inline) #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

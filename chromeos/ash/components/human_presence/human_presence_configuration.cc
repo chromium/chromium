@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -11,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace hps {
 namespace {
@@ -32,18 +33,18 @@ constexpr int kShouldSendFeedbackIfUndimmed = false;
 
 // Returns either the integer parameter with the given name, or nullopt if the
 // parameter can't be found or parsed.
-absl::optional<int> GetIntParam(const base::FieldTrialParams& params,
-                                const std::string& feature_name,
-                                const std::string& param_name) {
+std::optional<int> GetIntParam(const base::FieldTrialParams& params,
+                               const std::string& feature_name,
+                               const std::string& param_name) {
   const std::string full_param_name =
       base::StrCat({feature_name, "_", param_name});
   const auto it = params.find(full_param_name);
   if (it == params.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   int result;
   if (!base::StringToInt(it->second, &result))
-    return absl::nullopt;
+    return std::nullopt;
 
   return result;
 }
@@ -89,7 +90,7 @@ hps::FeatureConfig GetDefaultLockOnLeaveConfig() {
 //
 // More details can be found at:
 // src/platform2/hps/daemon/filters/filter_factory.h
-absl::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
+std::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
     const base::Feature& feature,
     const hps::FeatureConfig& default_value) {
   // Load current params map for the feature.
@@ -103,12 +104,12 @@ absl::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
 
   const std::string& feature_name = feature.name;
 
-  const absl::optional<int> filter_config_case =
+  const std::optional<int> filter_config_case =
       GetIntParam(params, feature_name, "filter_config_case");
   if (!filter_config_case.has_value()) {
     LOG(ERROR) << "Filter config error: missing param filter_config_case for "
                << feature_name;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   switch (*filter_config_case) {
@@ -119,15 +120,15 @@ absl::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
     }
 
     case hps::FeatureConfig::kConsecutiveResultsFilterConfig: {
-      const absl::optional<int> positive_count_threshold =
+      const std::optional<int> positive_count_threshold =
           GetIntParam(params, feature_name, "positive_count_threshold");
-      const absl::optional<int> negative_count_threshold =
+      const std::optional<int> negative_count_threshold =
           GetIntParam(params, feature_name, "negative_count_threshold");
-      const absl::optional<int> uncertain_count_threshold =
+      const std::optional<int> uncertain_count_threshold =
           GetIntParam(params, feature_name, "uncertain_count_threshold");
-      const absl::optional<int> positive_score_threshold =
+      const std::optional<int> positive_score_threshold =
           GetIntParam(params, feature_name, "positive_score_threshold");
-      const absl::optional<int> negative_score_threshold =
+      const std::optional<int> negative_score_threshold =
           GetIntParam(params, feature_name, "negative_score_threshold");
 
       if (!positive_count_threshold.has_value() ||
@@ -138,7 +139,7 @@ absl::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
         LOG(ERROR) << "Filter config error: missing params for "
                       "ConsecutiveResultsFilterConfig for "
                    << feature_name;
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       hps::FeatureConfig config;
@@ -152,13 +153,13 @@ absl::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
     }
 
     case hps::FeatureConfig::kAverageFilterConfig: {
-      const absl::optional<int> average_window_size =
+      const std::optional<int> average_window_size =
           GetIntParam(params, feature_name, "average_window_size");
-      const absl::optional<int> positive_score_threshold =
+      const std::optional<int> positive_score_threshold =
           GetIntParam(params, feature_name, "positive_score_threshold");
-      const absl::optional<int> negative_score_threshold =
+      const std::optional<int> negative_score_threshold =
           GetIntParam(params, feature_name, "negative_score_threshold");
-      const absl::optional<int> default_uncertain_score =
+      const std::optional<int> default_uncertain_score =
           GetIntParam(params, feature_name, "default_uncertain_score");
 
       if (!average_window_size.has_value() ||
@@ -168,7 +169,7 @@ absl::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
         LOG(ERROR) << "Filter config error: missing params for "
                       "AverageFilterConfig for "
                    << feature_name;
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       hps::FeatureConfig config;
@@ -181,18 +182,18 @@ absl::optional<hps::FeatureConfig> ConstructFilterConfigFromFeatureParams(
     }
 
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 }  // namespace
 
-absl::optional<hps::FeatureConfig> GetEnableLockOnLeaveConfig() {
+std::optional<hps::FeatureConfig> GetEnableLockOnLeaveConfig() {
   return ConstructFilterConfigFromFeatureParams(ash::features::kQuickDim,
                                                 GetDefaultLockOnLeaveConfig());
 }
 
-absl::optional<hps::FeatureConfig> GetEnableSnoopingProtectionConfig() {
+std::optional<hps::FeatureConfig> GetEnableSnoopingProtectionConfig() {
   return ConstructFilterConfigFromFeatureParams(
       ash::features::kSnoopingProtection, GetDefaultSnoopingProtectionConfig());
 }

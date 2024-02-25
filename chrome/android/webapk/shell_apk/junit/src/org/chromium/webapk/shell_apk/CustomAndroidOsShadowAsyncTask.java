@@ -11,8 +11,8 @@ import org.robolectric.shadows.ShadowLegacyAsyncTask;
 import java.util.concurrent.Executor;
 
 /**
- * Forces async tasks to execute with the default executor.
- * This works around Robolectric not working out of the box with custom executors.
+ * Forces async tasks to execute with the default executor. This works around the problem of
+ * Robolectric not working out of the box with custom executors.
  *
  * @param <Params>
  * @param <Progress>

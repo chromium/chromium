@@ -5,13 +5,13 @@
 #include "chromeos/ash/components/tether/fake_active_host.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -47,14 +47,14 @@ void FakeActiveHost::SetActiveHostConnected(
 
 void FakeActiveHost::GetActiveHost(
     ActiveHost::ActiveHostCallback active_host_callback) {
-  absl::optional<multidevice::RemoteDeviceRef> remote_device;
+  std::optional<multidevice::RemoteDeviceRef> remote_device;
   if (GetActiveHostStatus() != ActiveHost::ActiveHostStatus::DISCONNECTED) {
     // Convert the active host ID to a public key.
     std::string public_key;
     ASSERT_TRUE(base::Base64Decode(GetActiveHostDeviceId(), &public_key));
 
     // Create a new RemoteDevice and set its public key.
-    remote_device = absl::make_optional<multidevice::RemoteDeviceRef>(
+    remote_device = std::make_optional<multidevice::RemoteDeviceRef>(
         multidevice::RemoteDeviceRefBuilder().SetPublicKey(public_key).Build());
   }
 

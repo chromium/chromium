@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,9 +39,9 @@ class ProfileTokenQualityTest : public testing::Test {
 
   // Creates a form and registers it with the `bam_` as-if it had the given
   // `types` as predictions.
-  FormData GetFormWithTypes(const std::vector<ServerFieldType>& types) {
+  FormData GetFormWithTypes(const std::vector<FieldType>& types) {
     test::FormDescription form_description;
-    for (ServerFieldType type : types) {
+    for (FieldType type : types) {
       form_description.fields.emplace_back(type);
     }
     FormData form_data = test::GetFormData(form_description);
@@ -58,7 +57,7 @@ class ProfileTokenQualityTest : public testing::Test {
     FormFieldData& field = form.fields[field_index];
     field.value = std::move(new_value);
     bam_.OnTextFieldDidChange(form, field, gfx::RectF(),
-                              AutofillTickClock::NowTicks());
+                              base::TimeTicks::Now());
   }
 
   // Fills the `form` with the `profile`, as-if autofilling was triggered from
@@ -66,8 +65,10 @@ class ProfileTokenQualityTest : public testing::Test {
   void FillForm(const FormData& form,
                 const AutofillProfile& profile,
                 size_t triggering_field_index = 0) {
-    bam_.FillProfileForm(profile, form, form.fields[triggering_field_index],
-                         {.trigger_source = AutofillTriggerSource::kPopup});
+    bam_.FillOrPreviewProfileForm(
+        mojom::ActionPersistence::kFill, form,
+        form.fields[triggering_field_index], profile,
+        {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
  protected:
@@ -81,29 +82,8 @@ class ProfileTokenQualityTest : public testing::Test {
   TestPersonalDataManager pdm_;
 };
 
-// Ensures that `ProfileTokenQualityTest` supports all supported types of
-// `AutofillProfile`. In particular, this test ensures that whenever a new
-// non-stored type is added, the map in `GetStoredTypeOf()` is updated
-// accordingly. If the type is supposed to be stored, it should be added to
-// `AutofillTable::GetStoredTypesForAutofillProfile()`.
-TEST_F(ProfileTokenQualityTest, AllSupportedTypesHandled) {
-  ServerFieldTypeSet supported_types;
-  AutofillProfile profile;
-  profile.GetSupportedTypes(&supported_types);
-  ProfileTokenQuality quality(&profile);
-  for (ServerFieldType type : supported_types) {
-    // See comment above `GetStoredTypeOf()` why this type is special.
-    if (type == ADDRESS_HOME_ADDRESS) {
-      continue;
-    }
-    // `GetObservationTypesForFieldType()` will internally call
-    // `GetStoredTypeOf()`. A `CHECK()` will fail if the mapping is incomplete.
-    EXPECT_TRUE(quality.GetObservationTypesForFieldType(type).empty());
-  }
-}
-
 TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   ProfileTokenQuality quality(&profile);
 
   EXPECT_TRUE(quality.GetObservationTypesForFieldType(NAME_FIRST).empty());
@@ -168,7 +148,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   // Edit field 2 to a value similar to the originally filled one.
   ASSERT_EQ(profile.GetInfo(ADDRESS_HOME_LINE1, pdm_.app_locale()),
             u"666 Erebus St.");
-  EditFieldValue(form, 2, u"666 Erbus Str");
+  EditFieldValue(form, 2, u"666 erbus str");
   // Edit field 3 to a completely different token.
   EditFieldValue(form, 3, u"different value");
 
@@ -240,27 +220,22 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
               UnorderedElementsAre(ObservationType::kAccepted));
 }
 
-TEST_F(ProfileTokenQualityTest, IsWithinLevenshteinDistance) {
-  // Checks if the Levenshtein distance between `a` and `b` is exactly `k`, by
-  // checking that it is <= `k` but not <= `k-1`.
-  auto has_levenshtein_distance = [](std::u16string_view a,
-                                     std::u16string_view b, size_t k) {
-    return ProfileTokenQuality::IsWithinLevenshteinDistanceForTesting(a, b,
-                                                                      k) &&
-           (k == 0 ||
-            !ProfileTokenQuality::IsWithinLevenshteinDistanceForTesting(a, b,
-                                                                        k - 1));
-  };
+// Tests that when the type of a field changes between filling and submission,
+// observations are collected for the type the field had when it was filled.
+TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_DynamicChange) {
+  AutofillProfile profile = test::GetFullProfile();
+  pdm_.AddProfile(profile);
+  ProfileTokenQuality& quality = profile.token_quality();
 
-  EXPECT_TRUE(has_levenshtein_distance(u"aa", u"aa", 0));
-  EXPECT_TRUE(has_levenshtein_distance(u"a", u"aa", 1));
-  EXPECT_TRUE(has_levenshtein_distance(u"ab", u"aa", 1));
-  EXPECT_TRUE(has_levenshtein_distance(u"aba", u"aa", 1));
-  EXPECT_TRUE(has_levenshtein_distance(u"", u"12", 2));
-  EXPECT_TRUE(has_levenshtein_distance(u"street", u"str.", 3));
-  EXPECT_TRUE(has_levenshtein_distance(u"asdf", u"fdsa", 4));
-  EXPECT_TRUE(has_levenshtein_distance(std::u16string(100, 'a'),
-                                       std::u16string(200, 'a'), 100));
+  FormData form = GetFormWithTypes({NAME_FIRST});
+  FillForm(form, profile);
+
+  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  form_structure->field(0)->SetTypeTo(AutofillType(NAME_LAST));
+  EXPECT_TRUE(
+      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
+              UnorderedElementsAre(ObservationType::kAccepted));
 }
 
 // Tests that `SaveObservationsForFilledFormForAllSubmittedProfiles()` collects
@@ -306,7 +281,7 @@ TEST_F(ProfileTokenQualityTest,
 // containing fields of the the given `form_types`, the
 // `expected_number_of_observations` are collected.
 struct DropObservationTest {
-  std::vector<ServerFieldType> form_types;
+  std::vector<FieldType> form_types;
   int expected_number_of_observations;
 };
 
@@ -327,7 +302,7 @@ TEST_P(ProfileTokenQualityObservationDroppingTest,
   EXPECT_TRUE(quality.AddObservationsForFilledForm(
       *bam_.FindCachedFormById(form.global_id()), form, pdm_));
   EXPECT_EQ(test.expected_number_of_observations,
-            base::ranges::count_if(test.form_types, [&](ServerFieldType type) {
+            base::ranges::count_if(test.form_types, [&](FieldType type) {
               return !quality.GetObservationTypesForFieldType(type).empty();
             }));
 }
@@ -347,7 +322,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Large form: Expect that four observations are dropped, such that
         // the limit of eight observations are collected.
         DropObservationTest{
-            {NAME_FIRST, NAME_LAST_FIRST, NAME_LAST_SECOND, COMPANY_NAME,
+            {NAME_FIRST, NAME_MIDDLE, NAME_LAST, COMPANY_NAME,
              ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
              ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP, ADDRESS_HOME_STATE,
              ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},

@@ -46,10 +46,7 @@ class LoginLogoutTestHelper {
     chromeos::PowerManagerClient::InitializeFake();
     session_termination_manager_ =
         std::make_unique<SessionTerminationManager>();
-    auto user_manager = std::make_unique<FakeChromeUserManager>();
-    user_manager_ = user_manager.get();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
   void Shutdown() { chromeos::PowerManagerClient::Shutdown(); }
@@ -60,13 +57,13 @@ class LoginLogoutTestHelper {
     auto profile = profile_builder.Build();
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                             profile.get());
-    user_manager_->LoginUser(user->GetAccountId(), true);
+    fake_user_manager_->LoginUser(user->GetAccountId(), true);
     return profile;
   }
 
   std::unique_ptr<TestingProfile> CreateRegularUserProfile() {
     AccountId account_id = AccountId::FromUserEmail(user_email);
-    auto* const user = user_manager_->AddUser(account_id);
+    auto* const user = fake_user_manager_->AddUser(account_id);
     return CreateProfile(user);
   }
 
@@ -74,12 +71,12 @@ class LoginLogoutTestHelper {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "managed_guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
-    auto* const user = user_manager_->AddPublicAccountUser(account_id);
+    auto* const user = fake_user_manager_->AddPublicAccountUser(account_id);
     return CreateProfile(user);
   }
 
   std::unique_ptr<TestingProfile> CreateGuestProfile() {
-    auto* const user = user_manager_->AddGuestUser();
+    auto* const user = fake_user_manager_->AddGuestUser();
     return CreateProfile(user);
   }
 
@@ -87,7 +84,7 @@ class LoginLogoutTestHelper {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "kiosk", policy::DeviceLocalAccount::TYPE_KIOSK_APP));
-    auto* const user = user_manager_->AddKioskAppUser(account_id);
+    auto* const user = fake_user_manager_->AddKioskAppUser(account_id);
     return CreateProfile(user);
   }
 
@@ -95,7 +92,7 @@ class LoginLogoutTestHelper {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "arc_kiosk", policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP));
-    auto* const user = user_manager_->AddArcKioskAppUser(account_id);
+    auto* const user = fake_user_manager_->AddArcKioskAppUser(account_id);
     return CreateProfile(user);
   }
 
@@ -103,24 +100,24 @@ class LoginLogoutTestHelper {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "webkiosk", policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP));
-    auto* const user = user_manager_->AddWebKioskAppUser(account_id);
+    auto* const user = fake_user_manager_->AddWebKioskAppUser(account_id);
     return CreateProfile(user);
   }
 
   std::unique_ptr<TestingProfile> CreateProfileByType(
       user_manager::UserType user_type) {
     switch (user_type) {
-      case user_manager::USER_TYPE_REGULAR:
+      case user_manager::UserType::kRegular:
         return CreateRegularUserProfile();
-      case user_manager::USER_TYPE_GUEST:
+      case user_manager::UserType::kGuest:
         return CreateGuestProfile();
-      case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+      case user_manager::UserType::kPublicAccount:
         return CreatePublicAccountProfile();
-      case user_manager::USER_TYPE_KIOSK_APP:
+      case user_manager::UserType::kKioskApp:
         return CreateKioskAppProfile();
-      case user_manager::USER_TYPE_ARC_KIOSK_APP:
+      case user_manager::UserType::kArcKioskApp:
         return CreateArcKioskAppProfile();
-      case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      case user_manager::UserType::kWebKioskApp:
         return CreateWebKioskAppProfile();
       default:
         NOTREACHED();
@@ -163,9 +160,8 @@ class LoginLogoutTestHelper {
   int GetReportCount() { return report_count_; }
 
  private:
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
 
@@ -226,8 +222,8 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
 TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
   const auto test_case = GetParam();
   const bool is_guest_session =
-      test_case.user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      test_case.user_type == user_manager::USER_TYPE_GUEST;
+      test_case.user_type == user_manager::UserType::kPublicAccount ||
+      test_case.user_type == user_manager::UserType::kGuest;
 
   policy::ManagedSessionService managed_session_service;
   auto reporter_helper = test_helper_.GetReporterHelper(
@@ -286,8 +282,8 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
 TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
   const auto test_case = GetParam();
   const bool is_guest_session =
-      test_case.user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      test_case.user_type == user_manager::USER_TYPE_GUEST;
+      test_case.user_type == user_manager::UserType::kPublicAccount ||
+      test_case.user_type == user_manager::UserType::kGuest;
 
   policy::ManagedSessionService managed_session_service;
   auto reporter_helper = test_helper_.GetReporterHelper(
@@ -336,17 +332,17 @@ TEST_P(LoginLogoutReporterTest, ReportLoginLogoutDisabled) {
 INSTANTIATE_TEST_SUITE_P(All,
                          LoginLogoutReporterTest,
                          ::testing::ValuesIn<LoginLogoutReporterTestCase>(
-                             {{user_manager::USER_TYPE_REGULAR,
+                             {{user_manager::UserType::kRegular,
                                LoginLogoutSessionType::REGULAR_USER_SESSION},
-                              {user_manager::USER_TYPE_GUEST,
+                              {user_manager::UserType::kGuest,
                                LoginLogoutSessionType::GUEST_SESSION},
-                              {user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                              {user_manager::UserType::kPublicAccount,
                                LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION},
-                              {user_manager::USER_TYPE_KIOSK_APP,
+                              {user_manager::UserType::kKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION},
-                              {user_manager::USER_TYPE_ARC_KIOSK_APP,
+                              {user_manager::UserType::kArcKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION},
-                              {user_manager::USER_TYPE_WEB_KIOSK_APP,
+                              {user_manager::UserType::kWebKioskApp,
                                LoginLogoutSessionType::KIOSK_SESSION}}));
 
 class LoginFailureReporterTest : public ::testing::TestWithParam<AuthFailure> {

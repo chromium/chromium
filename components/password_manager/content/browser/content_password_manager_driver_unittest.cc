@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -167,7 +168,7 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   preferred_match.password_value = u"test";
   preferred_match.match_type = PasswordForm::MatchType::kExact;
 
-  std::vector<const PasswordForm*> matches;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches;
   PasswordForm non_preferred_match = preferred_match;
   non_preferred_match.username_value = u"test1@gmail.com";
   non_preferred_match.password_value = u"test1";

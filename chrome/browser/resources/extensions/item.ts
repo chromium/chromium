@@ -20,13 +20,14 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
-import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ExtensionsHatsBrowserProxyImpl} from './extension_hats_browser_proxy.js';
 import {getTemplate} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
@@ -54,6 +55,7 @@ export interface ItemDelegate {
   removeRuntimeHostPermission(id: string, host: string): Promise<void>;
   setItemSafetyCheckWarningAcknowledged(id: string): void;
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean): void;
+  setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean): void;
 
   // TODO(tjudkins): This function is not specific to items, so should be pulled
   // out to a more generic place when we need to access it from elsewhere.
@@ -135,8 +137,14 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  getDetailsButton() {
+  /** @return The "Details" button. */
+  getDetailsButton(): HTMLElement {
     return this.$.detailsButton;
+  }
+
+  /** @return The "Remove" button, if it exists. */
+  getRemoveButton(): HTMLElement|null {
+    return this.data.mustRemainInstalled ? null : this.$.removeButton;
   }
 
   /** @return The "Errors" button, if it exists. */
@@ -182,6 +190,8 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       const actionToRecord = this.data.safetyCheckText ?
           'SafetyCheck.ReviewPanelRemoveClicked' :
           'SafetyCheck.NonTriggeringExtensionRemoved';
+      ExtensionsHatsBrowserProxyImpl.getInstance()
+          .nonTriggerExtensionRemovedAction();
       chrome.metricsPrivate.recordUserAction(actionToRecord);
     }
     this.delegate.deleteItem(this.data.id);

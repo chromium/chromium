@@ -100,7 +100,7 @@ std::unique_ptr<protocol::Audits::InspectorIssue> CreateLowTextContrastIssue(
           .setFontWeight(info.font_weight)
           .setContrastRatio(info.contrast_ratio)
           .setViolatingNodeSelector(sb.ToString())
-          .setViolatingNodeId(DOMNodeIds::IdForNode(element))
+          .setViolatingNodeId(element->GetDomNodeId())
           .build();
   issue_details.setLowTextContrastIssueDetails(std::move(low_contrast_details));
 
@@ -225,7 +225,6 @@ protocol::Response InspectorAuditsAgent::checkFormsIssues(
               protocol::Audits::GenericIssueDetails::create()
                   .setErrorType(AuditsIssue::GenericIssueErrorTypeToProtocol(
                       form_issue.issue_type))
-                  .setFrameId(form_issue.frame_id)
                   .setViolatingNodeAttribute(
                       form_issue.violating_node_attribute)
                   .setViolatingNodeId(form_issue.violating_node)

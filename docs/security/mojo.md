@@ -551,20 +551,7 @@ struct TokenManager {
 };
 ```
 
-There are some known exceptions to this rule because mojo does not handle
-optional primitives.
-
-**_Allowed because mojo has no support for optional primitives_**
-```c++
-  struct Foo {
-    int32 x;
-    bool has_x;  // does the value of `x` have meaning?
-    int32 y;
-    bool has_y;  // does the value of `y` have meaning?
-  };
-```
-
-Another common case where we tolerate imperfect message semantics is
+A known exception where we tolerate imperfect message semantics is
 with weakly typed integer [bitfields](#handling-bitfields).
 
 ### Handling bitfields

@@ -29,14 +29,9 @@ constexpr uint32_t kPreferencesTabs = 1 << 4;
 constexpr uint32_t kNewTabPageTabs = 1 << 5;
 constexpr uint32_t kPostCrashTabs = 1 << 6;
 constexpr uint32_t kCommandLineTabs = 1 << 7;
-
-#if BUILDFLAG(IS_WIN)
-constexpr uint32_t kWelcomeBackTab = 1 << 8;
-#endif  // BUILDFLAG(IS_WIN)
-
 #if !BUILDFLAG(IS_ANDROID)
-constexpr uint32_t kNewFeaturesTabs = 1 << 9;
-constexpr uint32_t kPrivacySandboxTabs = 1 << 10;
+constexpr uint32_t kNewFeaturesTabs = 1 << 8;
+constexpr uint32_t kPrivacySandboxTabs = 1 << 9;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class FakeStartupTabProvider : public StartupTabProvider {
@@ -90,20 +85,6 @@ class FakeStartupTabProvider : public StartupTabProvider {
       tabs.emplace_back(GURL("https://new-tab"));
     return tabs;
   }
-
-#if BUILDFLAG(IS_WIN)
-  StartupTabs GetWelcomeBackTabs(
-      Profile* profile,
-      StartupBrowserCreator* browser_creator,
-      chrome::startup::IsProcessStartup process_startup) const override {
-    StartupTabs tabs;
-    if (process_startup == chrome::startup::IsProcessStartup::kYes &&
-        (options_ & kWelcomeBackTab)) {
-      tabs.emplace_back(GURL("https://welcome-back"));
-    }
-    return tabs;
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const override {
@@ -507,46 +488,6 @@ TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_PrivacySandbox) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN)
-// The welcome back page should appear before any other session restore tabs.
-TEST_P(StartupBrowserCreatorImplTest, DetermineStartupTabs_WelcomeBackPage) {
-  using LaunchResult = Creator::LaunchResult;
-
-  FakeStartupTabProvider provider_allows_ntp(kPinnedTabs | kPreferencesTabs |
-                                             kWelcomeBackTab);
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  Creator impl(base::FilePath(), command_line,
-               chrome::startup::IsFirstRun::kYes);
-
-  auto output = impl.DetermineStartupTabs(
-      provider_allows_ntp, chrome::startup::IsProcessStartup::kYes, false,
-      false, false, true, true, false, false);
-  EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
-  ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("welcome-back", output.tabs[0].url.host());
-  EXPECT_EQ("prefs", output.tabs[1].url.host());
-  EXPECT_EQ("pinned", output.tabs[2].url.host());
-
-  // No welcome back for non-startup opens.
-  output = impl.DetermineStartupTabs(
-      provider_allows_ntp, chrome::startup::IsProcessStartup::kNo, false, false,
-      false, true, true, false, false);
-  EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
-  ASSERT_EQ(2U, output.tabs.size());
-  EXPECT_EQ("prefs", output.tabs[0].url.host());
-  EXPECT_EQ("pinned", output.tabs[1].url.host());
-
-  // No welcome back for managed starts even if first run.
-  output = impl.DetermineStartupTabs(
-      provider_allows_ntp, chrome::startup::IsProcessStartup::kYes, false,
-      false, false, false, true, false, false);
-  EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
-  ASSERT_EQ(2U, output.tabs.size());
-  EXPECT_EQ("prefs", output.tabs[0].url.host());
-  EXPECT_EQ("pinned", output.tabs[1].url.host());
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 TEST_P(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_Startup) {
   SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);

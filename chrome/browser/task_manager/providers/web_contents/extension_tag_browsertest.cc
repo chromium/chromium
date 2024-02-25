@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,7 +35,8 @@ class ExtensionTagsTest : public extensions::ExtensionBrowserTest {
     return itr != task_manager.tasks().end() ? *itr : nullptr;
   }
 
-  const std::vector<WebContentsTag*>& tracked_tags() const {
+  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>>& tracked_tags()
+      const {
     return WebContentsTagsManager::GetInstance()->tracked_tags();
   }
 };

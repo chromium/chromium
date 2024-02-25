@@ -27,7 +27,7 @@ HDRMetadataHelperWin::~HDRMetadataHelperWin() {
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
 }
 
-absl::optional<DXGI_HDR_METADATA_HDR10>
+std::optional<DXGI_HDR_METADATA_HDR10>
 HDRMetadataHelperWin::GetDisplayMetadata() {
   return hdr_metadata_;
 }

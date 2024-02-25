@@ -77,19 +77,19 @@ enable more verbosity:
 #### See VLOG(1) and VLOG(2) logging:
 
 ```shell
-$ adb shell setprop log.tag.CronetUrlRequestContext VERBOSE
+$ adb shell setprop log.tag.chromium VERBOSE
 ```
 
 #### See VLOG(1) logging:
 
 ```shell
-$ adb shell setprop log.tag.CronetUrlRequestContext DEBUG
+$ adb shell setprop log.tag.chromium DEBUG
 ```
 
 #### See NO (only FATAL) logging:
 
 ```shell
-$ adb shell setprop log.tag.CronetUrlRequestContext NONE
+$ adb shell setprop log.tag.chromium NONE
 ```
 
 ### Network Log

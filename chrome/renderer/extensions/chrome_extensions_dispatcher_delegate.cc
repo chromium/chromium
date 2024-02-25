@@ -39,9 +39,7 @@
 #include "extensions/renderer/script_context.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -109,10 +107,6 @@ void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
           new extensions::LazyBackgroundPageNativeHandler(context)));
 }
 
-void ChromeExtensionsDispatcherDelegate::EnableCustomElementAllowlist() {
-  blink::WebCustomElement::AddEmbedderCustomElementName("controlledframe");
-}
-
 void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
     extensions::ResourceBundleSourceMap* source_map) {
   // Custom bindings.
@@ -152,8 +146,8 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("enterprise.platformKeys",
                              IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("enterprise.platformKeys.KeyPair",
-                             IDR_ENTERPRISE_PLATFORM_KEYS_KEY_PAIR_JS);
+  source_map->RegisterSource("enterprise.platformKeys.CryptoKey",
+                             IDR_ENTERPRISE_PLATFORM_KEYS_CRYPTO_KEY_JS);
   source_map->RegisterSource("enterprise.platformKeys.SubtleCrypto",
                              IDR_ENTERPRISE_PLATFORM_KEYS_SUBTLE_CRYPTO_JS);
   source_map->RegisterSource("enterprise.platformKeys.Token",
@@ -164,8 +158,8 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("platformKeys",
                              IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("platformKeys.getPublicKeyUtil",
-                             IDR_PLATFORM_KEYS_GET_PUBLIC_KEY_JS);
+  source_map->RegisterSource("platformKeys.getCryptoKeyUtil",
+                             IDR_PLATFORM_KEYS_GET_CRYPTO_KEY_UTIL_JS);
   source_map->RegisterSource("platformKeys.Key", IDR_PLATFORM_KEYS_KEY_JS);
   source_map->RegisterSource("platformKeys.SubtleCrypto",
                              IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS);
@@ -221,19 +215,12 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
   source_map->RegisterSource("chromeWebViewInternal",
                              IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("chromeWebView", IDR_CHROME_WEB_VIEW_JS);
-
-  // Controlled Frame API sources
-  source_map->RegisterSource("controlledFrame", IDR_CONTROLLED_FRAME_JS);
 }
 
 void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(
     extensions::ScriptContext* context) {
   DCHECK(context->GetAvailability("webViewInternal").is_available());
-  if (context->GetAvailability("controlledFrameInternal").is_available()) {
-    context->module_system()->Require("controlledFrame");
-  } else {
-    context->module_system()->Require("chromeWebViewElement");
-  }
+  context->module_system()->Require("chromeWebViewElement");
 }
 
 void ChromeExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(

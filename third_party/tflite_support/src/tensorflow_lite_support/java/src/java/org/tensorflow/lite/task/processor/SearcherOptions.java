@@ -16,68 +16,66 @@ limitations under the License.
 package org.tensorflow.lite.task.processor;
 
 import androidx.annotation.Nullable;
-
 import com.google.auto.value.AutoValue;
-
 import java.io.File;
 
 /** Options to configure Searcher API. */
 @AutoValue
 public abstract class SearcherOptions {
-    private static final boolean DEFAULT_L2_NORMALIZE = false;
-    private static final boolean DEFAULT_QUANTIZE = false;
-    private static final int DEFAULT_MAX_RESULTS = 5;
+  private static final boolean DEFAULT_L2_NORMALIZE = false;
+  private static final boolean DEFAULT_QUANTIZE = false;
+  private static final int DEFAULT_MAX_RESULTS = 5;
 
-    public abstract boolean getL2Normalize();
+  public abstract boolean getL2Normalize();
 
-    public abstract boolean getQuantize();
+  public abstract boolean getQuantize();
 
-    @Nullable
-    public abstract File getIndexFile();
+  @Nullable
+  public abstract File getIndexFile();
 
-    public abstract int getMaxResults();
+  public abstract int getMaxResults();
 
-    public static Builder builder() {
-        return new AutoValue_SearcherOptions.Builder()
-                .setL2Normalize(DEFAULT_L2_NORMALIZE)
-                .setQuantize(DEFAULT_QUANTIZE)
-                .setIndexFile(null)
-                .setMaxResults(DEFAULT_MAX_RESULTS);
-    }
+  public static Builder builder() {
+    return new AutoValue_SearcherOptions.Builder()
+        .setL2Normalize(DEFAULT_L2_NORMALIZE)
+        .setQuantize(DEFAULT_QUANTIZE)
+        .setIndexFile(null)
+        .setMaxResults(DEFAULT_MAX_RESULTS);
+  }
 
-    /** Builder for {@link SearcherOptions}. */
-    @AutoValue.Builder
-    public abstract static class Builder {
-        /**
-         * Sets whether to normalize the embedding feature vector with L2 norm. Defaults to false.
-         *
-         * <p>Use this option only if the model does not already contain a native L2_NORMALIZATION
-         * TFLite Op. In most cases, this is already the case and L2 norm is thus achieved through
-         * TFLite inference.
-         */
-        public abstract Builder setL2Normalize(boolean l2Normalize);
+  /** Builder for {@link SearcherOptions}. */
+  @AutoValue.Builder
+  public abstract static class Builder {
+    /**
+     * Sets whether to normalize the embedding feature vector with L2 norm. Defaults to false.
+     *
+     * <p>Use this option only if the model does not already contain a native L2_NORMALIZATION
+     * TFLite Op. In most cases, this is already the case and L2 norm is thus achieved through
+     * TFLite inference.
+     */
+    public abstract Builder setL2Normalize(boolean l2Normalize);
 
-        /**
-         * Sets whether the embedding should be quantized to bytes via scalar quantization. Defaults
-         * to false.
-         *
-         * <p>Embeddings are implicitly assumed to be unit-norm and therefore any dimension is
-         * guaranteed to have a value in {@code [-1.0, 1.0]}. Use the l2_normalize option if this is
-         * not the case.
-         */
-        public abstract Builder setQuantize(boolean quantize);
+    /**
+     * Sets whether the embedding should be quantized to bytes via scalar quantization. Defaults to
+     * false.
+     *
+     * <p>Embeddings are implicitly assumed to be unit-norm and therefore any dimension is
+     * guaranteed to have a value in {@code [-1.0, 1.0]}. Use the l2_normalize option if this is not
+     * the case.
+     */
+    public abstract Builder setQuantize(boolean quantize);
 
-        /**
-         * Sets the index file to search into.
-         *
-         * <p>Required if the model does not come with an index file inside. Otherwise, it can be
-         * ignore by setting to {@code null}.
-         */
-        public abstract Builder setIndexFile(@Nullable File indexFile);
+    /**
+     * Sets the index file to search into.
+     *
+     * <p>Required if the model does not come with an index file inside. Otherwise, it can be ignore
+     * by setting to {@code null}.
+     */
+    public abstract Builder setIndexFile(@Nullable File indexFile);
 
-        /** Sets the maximum number of nearest neighbor results to return. Defaults to {@code 5} */
-        public abstract Builder setMaxResults(int maxResults);
+    /** Sets the maximum number of nearest neighbor results to return. Defaults to {@code 5} */
+    public abstract Builder setMaxResults(int maxResults);
 
-        public abstract SearcherOptions build();
-    }
+    public abstract SearcherOptions build();
+  }
 }

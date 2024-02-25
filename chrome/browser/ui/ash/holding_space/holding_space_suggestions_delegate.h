@@ -53,7 +53,7 @@ class HoldingSpaceSuggestionsDelegate
   // Called when fetching file suggestions finishes.
   void OnSuggestionsFetched(
       FileSuggestionType type,
-      const absl::optional<std::vector<FileSuggestData>>& suggestions);
+      const std::optional<std::vector<FileSuggestData>>& suggestions);
 
   // Updates suggestions in the holding space model. The method ensures that:
   // 1. Drive file suggestions (if any) are always in front of local file

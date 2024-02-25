@@ -7,15 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/password_manager/core/browser/password_store_interface.h"
-#import "ios/chrome/browser/autofill/form_input_navigator.h"
-#import "ios/chrome/browser/autofill/form_suggestion_client.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/web/public/web_state_observer_bridge.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 
-@class ChromeCoordinator;
 @protocol FormInputAccessoryConsumer;
 @protocol FormInputSuggestionsProvider;
+class PrefService;
 @class ReauthenticationModule;
 @protocol SecurityAlertCommands;
 
@@ -70,6 +67,10 @@ class WebStateList;
 @property(nonatomic, readonly, getter=isInputAccessoryViewActive)
     BOOL inputAccessoryViewActive;
 
+// Pref service from the original browser state, used to retrieve preferred
+// omnibox position.
+@property(nonatomic, assign) PrefService* originalPrefService;
+
 // Disables suggestions updates and asks the consumer to remove the current
 // ones.
 - (void)disableSuggestions;
@@ -82,7 +83,10 @@ class WebStateList;
 - (void)disconnect;
 
 // Returns YES if the last focused field is of type 'password'.
-- (BOOL)lastFocusedFieldWasPassword;
+- (BOOL)lastFocusedFieldWasObfuscated;
+
+// Returns the last seen valid params of a form before retrieving suggestions.
+- (const autofill::FormActivityParams&)lastSeenParams;
 
 @end
 

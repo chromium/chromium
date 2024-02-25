@@ -6,9 +6,9 @@
 
 #include <initializer_list>
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,13 +18,13 @@ namespace extensions {
 namespace {
 
 std::string FormatErrorMessageInternal(
-    base::StringPiece format,
-    base::span<const base::StringPiece> args) {
+    std::string_view format,
+    base::span<const std::string_view> args) {
   std::string format_str(format);
   base::StringTokenizer tokenizer(format_str, "*");
   tokenizer.set_options(base::StringTokenizer::RETURN_DELIMS);
 
-  std::vector<base::StringPiece> result_pieces;
+  std::vector<std::string_view> result_pieces;
   auto argument = args.begin();
   while (tokenizer.GetNext()) {
     if (!tokenizer.token_is_delim()) {
@@ -49,14 +49,14 @@ std::string FormatErrorMessageInternal(
 }  // namespace
 
 std::string ErrorUtils::FormatErrorMessage(
-    base::StringPiece format,
-    base::span<const base::StringPiece> args) {
+    std::string_view format,
+    base::span<const std::string_view> args) {
   return FormatErrorMessageInternal(format, args);
 }
 
 std::u16string ErrorUtils::FormatErrorMessageUTF16(
-    base::StringPiece format,
-    base::span<const base::StringPiece> args) {
+    std::string_view format,
+    base::span<const std::string_view> args) {
   return base::UTF8ToUTF16(FormatErrorMessageInternal(format, args));
 }
 

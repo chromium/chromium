@@ -60,6 +60,8 @@ PRIMITIVES = frozenset(_DEFAULT_VALUE_BY_PRIMITIVE_TYPE)
 class JavaClass:
   """Represents a reference type."""
   _fqn: str
+  # This is only meaningful if make_prefix have been called on the original class.
+  _class_without_prefix: 'JavaClass' = None
 
   def __post_init__(self):
     assert '.' not in self._fqn, f'{self._fqn} should have / and $, but not .'
@@ -95,6 +97,10 @@ class JavaClass:
   def full_name_with_dots(self):
     return self._fqn.replace('/', '.').replace('$', '.')
 
+  @property
+  def class_without_prefix(self):
+    return self._class_without_prefix if self._class_without_prefix else self
+
   def to_java(self, type_resolver=None):
     # Empty resolver used to shorted java.lang classes.
     type_resolver = type_resolver or _EMPTY_TYPE_RESOLVER
@@ -107,7 +113,7 @@ class JavaClass:
     if not prefix:
       return self
     prefix = prefix.replace('.', '/')
-    return JavaClass(f'{prefix}/{self._fqn}')
+    return JavaClass(f'{prefix}/{self._fqn}', self)
 
   def make_nested(self, name):
     return JavaClass(f'{self._fqn}${name}')
@@ -152,10 +158,16 @@ class JavaType:
     return lhs < rhs
 
   def is_primitive(self):
-    return self.primitive_name is not None and self.array_dimensions == 0
+    return self.primitive_name is not None and not self.is_array_type()
+
+  def is_primitive_array(self):
+    return self.primitive_name is not None and self.is_array_type()
 
   def is_void(self):
     return self.primitive_name == 'void'
+
+  def is_array_type(self):
+    return self.array_dimensions > 0
 
   def to_descriptor(self):
     """Converts a Java type into a JNI signature type."""
@@ -180,15 +192,17 @@ class JavaType:
       # There is no jstringArray.
       return 'jobjectArray'
 
-    base = _CPP_TYPE_BY_JAVA_TYPE.get(self.non_array_full_name_with_slashes,
-                                      'jobject')
-    return base + ('Array' * self.array_dimensions)
+    cpp_type = _CPP_TYPE_BY_JAVA_TYPE.get(self.non_array_full_name_with_slashes,
+                                          'jobject')
+    if self.array_dimensions:
+      cpp_type = f'{cpp_type}Array'
+    return cpp_type
 
   def to_cpp_default_value(self):
     """Returns a valid C return value for the given java type."""
     if self.is_primitive():
       return _DEFAULT_VALUE_BY_PRIMITIVE_TYPE[self.primitive_name]
-    return 'NULL'
+    return 'nullptr'
 
   def to_proxy(self):
     """Converts to types used over JNI boundary."""
@@ -199,6 +213,11 @@ class JavaType:
 
     # All other types should just be passed as Objects or Object arrays.
     return dataclasses.replace(self, java_class=_OBJECT_CLASS)
+
+  def converted_type(self):
+    """Returns a C datatype listed in the JniType annotation for this type."""
+    return self.annotations.get('JniType', None)
+
 
 
 @dataclasses.dataclass(frozen=True)
@@ -308,6 +327,7 @@ class TypeResolver:
   def resolve(self, name):
     """Return a JavaClass for the given type name."""
     assert name not in PRIMITIVES
+    assert ' ' not in name
 
     if '/' in name:
       # Coming from javap, use the fully qualified name directly.

@@ -80,7 +80,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kTryRule = 23,
     kFontFeatureRule = 24,
     kStartingStyleRule = 25,
-    kViewTransitionsRule = 26,
+    kViewTransitionRule = 26,
   };
 
   virtual Type GetType() const = 0;
@@ -116,6 +116,8 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
 
   // The CSSOM spec states that "setting the cssText attribute must do nothing."
   void setCSSText(const String&) {}
+
+  virtual void UseCountForSignalAffected() {}
 
  protected:
   explicit CSSRule(CSSStyleSheet* parent);

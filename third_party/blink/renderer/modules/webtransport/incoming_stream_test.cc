@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -138,7 +139,8 @@ class IncomingStreamTest : public ::testing::Test {
     return ret;
   }
 
-  base::MockOnceCallback<void(absl::optional<uint8_t>)> mock_on_abort_;
+  base::MockOnceCallback<void(std::optional<uint8_t>)> mock_on_abort_;
+  test::TaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle data_pipe_producer_;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer_;
 };
@@ -198,7 +200,7 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -229,7 +231,7 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -272,7 +274,7 @@ TEST_F(IncomingStreamTest, ClosedWithFinThenRead) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -295,7 +297,7 @@ TEST_F(IncomingStreamTest, ClosedWithFinWithoutRead) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -314,7 +316,7 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -336,7 +338,7 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithoutFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -390,7 +392,7 @@ TEST_F(IncomingStreamTest, Cancel) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(0)));
+  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(0)));
 
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -410,11 +412,11 @@ TEST_F(IncomingStreamTest, CancelWithWebTransportError) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(0)));
+  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(0)));
 
   v8::Local<v8::Value> error =
       WebTransportError::Create(isolate,
-                                /*stream_error_code=*/absl::nullopt, "foobar",
+                                /*stream_error_code=*/std::nullopt, "foobar",
                                 WebTransportError::Source::kStream);
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -435,7 +437,7 @@ TEST_F(IncomingStreamTest, CancelWithWebTransportErrorWithCode) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(19)));
+  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(19)));
 
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate,

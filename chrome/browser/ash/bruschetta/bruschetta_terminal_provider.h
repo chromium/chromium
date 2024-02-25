@@ -31,7 +31,7 @@ class BruschettaTerminalProvider : public guest_os::GuestOsTerminalProvider {
           callback) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   guest_os::GuestId guest_id_;
 };
 

@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.test;
 
+import org.jni_zero.NativeMethods;
 import org.junit.rules.ExternalResource;
 
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** JUnit test rule which enables tests to force certificate verification results. */
@@ -45,8 +45,11 @@ public class MockCertVerifierRuleAndroid extends ExternalResource {
     @NativeMethods
     interface Natives {
         long init();
+
         void setUp(long nativeMockCertVerifierRuleAndroid);
+
         void setResult(long nativeMockCertVerifierRuleAndroid, int result);
+
         void tearDown(long nativeMockCertVerifierRuleAndroid);
     }
 }

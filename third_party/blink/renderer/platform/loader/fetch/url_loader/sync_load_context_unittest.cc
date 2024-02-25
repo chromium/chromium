@@ -79,7 +79,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
   }
 
   void DeletePendingRequest(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
     client_.reset();
   }
 
@@ -140,15 +140,16 @@ class SyncLoadContextTest : public testing::Test {
     mock_resource_request_sender->CreatePendingRequest(context);
     context->resource_request_sender_ = std::move(mock_resource_request_sender);
 
-    // Simulate the response.
-    context->OnReceivedResponse(network::mojom::URLResponseHead::New(),
-                                base::TimeTicks());
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     EXPECT_EQ(MOJO_RESULT_OK,
               mojo::CreateDataPipe(nullptr /* options */, producer_handle,
                                    consumer_handle));
-    context->OnStartLoadingResponseBody(std::move(consumer_handle));
+
+    // Simulate the response.
+    context->OnReceivedResponse(network::mojom::URLResponseHead::New(),
+                                std::move(consumer_handle),
+                                /*cached_metadata=*/std::nullopt);
     context->OnCompletedRequest(network::URLLoaderCompletionStatus(net::OK));
 
     mojo::BlockingCopyFromString(expected_data, producer_handle);

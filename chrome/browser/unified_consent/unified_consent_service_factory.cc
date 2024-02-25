@@ -34,8 +34,8 @@ namespace {
 
 std::vector<std::string> GetSyncedServicePrefNames() {
   return {
-    prefs::kSearchSuggestEnabled, embedder_support::kAlternateErrorPagesEnabled,
-        prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingScoutReportingEnabled,
+    prefs::kSearchSuggestEnabled, prefs::kSafeBrowsingEnabled,
+        prefs::kSafeBrowsingScoutReportingEnabled,
         spellcheck::prefs::kSpellCheckUseSpellingService,
         commerce::kPriceEmailNotificationsEnabled,
 #if BUILDFLAG(IS_ANDROID)

@@ -11,18 +11,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * A test suite for ContentView.getTitle().
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class GetTitleTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/** A test suite for ContentView.getTitle(). */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class GetTitleTest extends AwParameterizedTest {
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String TITLE = "TITLE";
 
@@ -41,6 +41,10 @@ public class GetTitleTest {
             mTitle = title;
             mUrl = url;
         }
+    }
+
+    public GetTitleTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
     @Before
@@ -73,7 +77,8 @@ public class GetTitleTest {
             final String url = webServer.setResponse(filename, html, null);
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            return new PageInfo(mActivityTestRule.getTitleOnUiThread(mAwContents),
+            return new PageInfo(
+                    mActivityTestRule.getTitleOnUiThread(mAwContents),
                     url.replaceAll("http:\\/\\/", ""));
         } finally {
             webServer.shutdown();
@@ -167,9 +172,11 @@ public class GetTitleTest {
         final String expectedTitle = "Expected";
         final String page =
                 "<html><head>"
-                + "<script>document.title=\"" + expectedTitle + "\"</script>"
-                + "</head><body>"
-                + "</body></html>";
+                        + "<script>document.title=\""
+                        + expectedTitle
+                        + "\"</script>"
+                        + "</head><body>"
+                        + "</body></html>";
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
         final String title = loadFromDataAndGetTitle(page);
         Assert.assertEquals("Incorrect title :: ", expectedTitle, title);

@@ -37,9 +37,8 @@ class ArcAccessibilityTreeTrackerTest : public ChromeViewsTestBase {
                                       accessibility_helper_instance,
                                       arc_bridge_service) {}
 
-    raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> focused_window_ =
-        nullptr;
-    absl::optional<bool> last_dispatched_talkback_state_;
+    raw_ptr<aura::Window, DanglingUntriaged> focused_window_ = nullptr;
+    std::optional<bool> last_dispatched_talkback_state_;
 
     void TrackWindow(aura::Window* window) {
       ArcAccessibilityTreeTracker::TrackWindow(window);
@@ -298,7 +297,7 @@ TEST_F(ArcAccessibilityTreeTrackerTest, ToggleTalkBack) {
   tree_tracker.focused_window_ = test_window.get();
   exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
 
-  absl::optional<bool>& last_state =
+  std::optional<bool>& last_state =
       tree_tracker.last_dispatched_talkback_state_;
 
   ASSERT_FALSE(last_state.has_value());

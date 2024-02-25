@@ -11,6 +11,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_xr_runtime.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
+#include "device/vr/public/mojom/xr_device.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"

@@ -14,6 +14,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -24,7 +27,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
@@ -38,30 +42,37 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-/**
- * Test that migrating the old tab state folder structure to the new one works.
- */
+/** Test that migrating the old tab state folder structure to the new one works. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class RestoreMigrateTest {
     private static final String TEST_DIR = "test";
-    private Context mAppContextToRestore;
+
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
+
     private Context mAppContext;
 
     private void writeStateFile(final TabModelSelector selector, int index) throws IOException {
         byte[] data =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<byte[]>() {
-                    @Override
-                    public byte[] call() throws Exception {
-                        return TabPersistentStore.serializeTabModelSelector(selector, null, false)
-                                .listData;
-                    }
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<byte[]>() {
+                            @Override
+                            public byte[] call() throws Exception {
+                                return TabPersistentStore.serializeTabModelSelector(
+                                                selector, null, false)
+                                        .listData;
+                            }
+                        });
         File f = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(new File(
-                    f, TabbedModeTabPersistencePolicy.getStateFileName(index)));
+            fos =
+                    new FileOutputStream(
+                            new File(
+                                    f,
+                                    TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(
+                                            index)));
             fos.write(data);
         } finally {
             StreamUtil.closeQuietly(fos);
@@ -80,11 +91,14 @@ public class RestoreMigrateTest {
 
     @Before
     public void setUp() {
-        mAppContextToRestore = ContextUtils.getApplicationContext();
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
         mAppContext =
-                new AdvancedMockContextWithTestDir(InstrumentationRegistry.getInstrumentation()
-                                                           .getTargetContext()
-                                                           .getApplicationContext());
+                new AdvancedMockContextWithTestDir(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
         TabIdManager.resetInstanceForTesting();
     }
@@ -110,30 +124,30 @@ public class RestoreMigrateTest {
         FileUtils.recursivelyDeleteFile(
                 TabStateDirectory.getOrCreateTabbedModeStateDirectory(), null);
         TabStateDirectory.resetTabbedModeStateDirectoryForTesting();
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
         TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
-        ContextUtils.initApplicationContextForTests(mAppContextToRestore);
     }
 
     private TabPersistentStore buildTabPersistentStore(
             final TabModelSelector selector, final int selectorIndex) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<TabPersistentStore>() {
-            @Override
-            public TabPersistentStore call() {
-                TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(
-                        selectorIndex, false, true,
-                        TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors());
-                TabPersistentStore store =
-                        new TabPersistentStore(persistencePolicy, selector, null);
-                return store;
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                new Callable<TabPersistentStore>() {
+                    @Override
+                    public TabPersistentStore call() {
+                        TabPersistencePolicy persistencePolicy =
+                                new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
+                        TabPersistentStore store =
+                                new TabPersistentStore(persistencePolicy, selector, null);
+                        return store;
+                    }
+                });
     }
 
     /**
      * Test that normal migration of state files works.
+     *
      * @throws IOException
      */
     @Test
@@ -159,17 +173,20 @@ public class RestoreMigrateTest {
         Assert.assertTrue("Could not create tab 3 file", tab3.createNewFile());
 
         // Build the TabPersistentStore which will try to move the files.
-        MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
+        MockTabModelSelector selector =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
         TabPersistentStore store = buildTabPersistentStore(selector, 0);
         store.waitForMigrationToFinish();
 
         // Make sure we don't hit the migration path again.
-        Assert.assertTrue(SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false));
+        Assert.assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false));
 
         // Check that the files were moved.
         File newDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        File newStateFile = new File(newDir, TabbedModeTabPersistencePolicy.getStateFileName(0));
+        File newStateFile =
+                new File(newDir, TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
         File newTab0 = new File(newDir, TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "0");
         File newTab1 = new File(newDir, TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "1");
         File newTab2 =
@@ -192,6 +209,7 @@ public class RestoreMigrateTest {
 
     /**
      * Test that migration skips if it already has files in the new folder.
+     *
      * @throws IOException
      */
     @Test
@@ -218,14 +236,16 @@ public class RestoreMigrateTest {
 
         // Write new state files
         File newDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        File newStateFile = new File(newDir, TabbedModeTabPersistencePolicy.getStateFileName(0));
+        File newStateFile =
+                new File(newDir, TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
         File newTab4 = new File(newDir, TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "4");
 
         Assert.assertTrue("Could not create new tab 4 file", newTab4.createNewFile());
         Assert.assertTrue("Could not create new state file", newStateFile.createNewFile());
 
         // Build the TabPersistentStore which will try to move the files.
-        MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
+        MockTabModelSelector selector =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
         TabPersistentStore store = buildTabPersistentStore(selector, 0);
         store.waitForMigrationToFinish();
 
@@ -248,6 +268,7 @@ public class RestoreMigrateTest {
 
     /**
      * Test that the state file migration skips unrelated files.
+     *
      * @throws IOException
      */
     @Test
@@ -267,7 +288,8 @@ public class RestoreMigrateTest {
         Assert.assertTrue("Could not create other file", otherFile.createNewFile());
 
         // Build the TabPersistentStore which will try to move the files.
-        MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
+        MockTabModelSelector selector =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
         TabPersistentStore store = buildTabPersistentStore(selector, 0);
         store.waitForMigrationToFinish();
 
@@ -277,7 +299,8 @@ public class RestoreMigrateTest {
 
         // Check that the files were moved.
         File newDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        File newStateFile = new File(newDir, TabbedModeTabPersistencePolicy.getStateFileName(0));
+        File newStateFile =
+                new File(newDir, TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
         File newTab0 = new File(newDir, TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX + "0");
         File newOtherFile = new File(newDir, "other.file");
 
@@ -288,6 +311,7 @@ public class RestoreMigrateTest {
 
     /**
      * Tests that the max id returned is the max of all of the tab models.
+     *
      * @throws IOException
      */
     @Test
@@ -295,26 +319,31 @@ public class RestoreMigrateTest {
     @Feature({"TabPersistentStore"})
     @UiThreadTest
     public void testFindsMaxIdProperly() throws IOException {
-        TabModelSelector selector0 = new MockTabModelSelector(1, 1, null);
-        TabModelSelector selector1 = new MockTabModelSelector(1, 1, null);
+        TabModelSelector selector0 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 1, 1, null);
+        TabModelSelector selector1 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 1, 1, null);
 
         writeStateFile(selector0, 0);
         writeStateFile(selector1, 1);
 
-        TabModelSelector selectorIn = new MockTabModelSelector(0, 0, null);
+        TabModelSelector selectorIn =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
         TabPersistentStore storeIn = buildTabPersistentStore(selectorIn, 0);
 
         int maxId = Math.max(getMaxId(selector0), getMaxId(selector1));
-        storeIn.loadState(false /* ignoreIncognitoFiles */);
-        Assert.assertEquals("Invalid next id", maxId + 1,
+        storeIn.loadState(/* ignoreIncognitoFiles= */ false);
+        Assert.assertEquals(
+                "Invalid next id",
+                maxId + 1,
                 TabIdManager.getInstance().generateValidId(Tab.INVALID_TAB_ID));
     }
 
     /**
-     * Tests that each model loads the subset of tabs it is responsible for.  In this case, just
-     * check that the model has the expected number of tabs to load.  Since each model is loading
-     * a different number of tabs we can tell if they are each attempting to load their specific
-     * set.
+     * Tests that each model loads the subset of tabs it is responsible for. In this case, just
+     * check that the model has the expected number of tabs to load. Since each model is loading a
+     * different number of tabs we can tell if they are each attempting to load their specific set.
+     *
      * @throws IOException
      */
     @Test
@@ -322,21 +351,25 @@ public class RestoreMigrateTest {
     @Feature({"TabPersistentStore"})
     @UiThreadTest
     public void testOnlyLoadsSingleModel() throws IOException {
-        TabModelSelector selector0 = new MockTabModelSelector(3, 3, null);
-        TabModelSelector selector1 = new MockTabModelSelector(2, 1, null);
+        TabModelSelector selector0 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 3, 3, null);
+        TabModelSelector selector1 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 2, 1, null);
 
         writeStateFile(selector0, 0);
         writeStateFile(selector1, 1);
 
-        TabModelSelector selectorIn0 = new MockTabModelSelector(0, 0, null);
-        TabModelSelector selectorIn1 = new MockTabModelSelector(0, 0, null);
+        TabModelSelector selectorIn0 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+        TabModelSelector selectorIn1 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
 
         TabPersistentStore storeIn0 = buildTabPersistentStore(selectorIn0, 0);
 
         TabPersistentStore storeIn1 = buildTabPersistentStore(selectorIn1, 1);
 
-        storeIn0.loadState(false /* ignoreIncognitoFiles */);
-        storeIn1.loadState(false /* ignoreIncognitoFiles */);
+        storeIn0.loadState(/* ignoreIncognitoFiles= */ false);
+        storeIn1.loadState(/* ignoreIncognitoFiles= */ false);
 
         Assert.assertEquals("Unexpected number of tabs to load", 6, storeIn0.getRestoredTabCount());
         Assert.assertEquals("Unexpected number of tabs to load", 3, storeIn1.getRestoredTabCount());

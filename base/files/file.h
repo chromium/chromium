@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -220,9 +221,11 @@ class BASE_EXPORT File {
   // normal expectation is that actually |size| bytes are read unless there is
   // an error.
   int Read(int64_t offset, char* data, int size);
+  std::optional<size_t> Read(int64_t offset, base::span<uint8_t> data);
 
   // Same as above but without seek.
   int ReadAtCurrentPos(char* data, int size);
+  std::optional<size_t> ReadAtCurrentPos(base::span<uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset, but does not make any effort to read all data on all
@@ -239,16 +242,18 @@ class BASE_EXPORT File {
   // Ignores the offset and writes to the end of the file if the file was opened
   // with FLAG_APPEND.
   int Write(int64_t offset, const char* data, int size);
+  std::optional<size_t> Write(int64_t offset, base::span<const uint8_t> data);
 
   // Save as above but without seek.
   int WriteAtCurrentPos(const char* data, int size);
+  std::optional<size_t> WriteAtCurrentPos(base::span<const uint8_t> data);
 
   // Save as above but does not make any effort to write all data on all
   // platforms. Returns the number of bytes written, or -1 on error.
   int WriteAtCurrentPosNoBestEffort(const char* data, int size);
 
   // Returns the current size of this file, or a negative number on failure.
-  int64_t GetLength();
+  int64_t GetLength() const;
 
   // Truncates the file to the given length. If |length| is greater than the
   // current size of the file, the file is extended with zeros. If the file

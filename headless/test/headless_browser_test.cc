@@ -41,7 +41,8 @@ HeadlessBrowserTest::HeadlessBrowserTest() {
   base::FilePath dir_exe_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &dir_exe_path));
   dir_exe_path = dir_exe_path.Append("../../");
-  CHECK(base::PathService::Override(base::DIR_SOURCE_ROOT, dir_exe_path));
+  CHECK(
+      base::PathService::Override(base::DIR_SRC_TEST_DATA_ROOT, dir_exe_path));
 #endif  // BUILDFLAG(IS_MAC)
   base::FilePath headless_test_data(FILE_PATH_LITERAL("headless/test/data"));
   CreateTestServer(headless_test_data);
@@ -99,8 +100,8 @@ void HeadlessBrowserTest::CreatedBrowserMainParts(
       std::make_unique<device::FakeGeolocationManager>();
   fake_geolocation_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
-  static_cast<HeadlessBrowserMainParts*>(parts)
-      ->SetGeolocationManagerForTesting(std::move(fake_geolocation_manager));
+  static_cast<HeadlessBrowserImpl*>(browser())->SetGeolocationManagerForTesting(
+      std::move(fake_geolocation_manager));
 }
 #endif
 

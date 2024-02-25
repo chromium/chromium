@@ -12,6 +12,7 @@
 namespace overflow_menu {
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
+// LINT.IfChange(stringToDestination)
 Destination DestinationForStringName(std::string destination) {
   if (destination == "overflow_menu::Destination::Bookmarks") {
     return overflow_menu::Destination::Bookmarks;
@@ -42,9 +43,11 @@ Destination DestinationForStringName(std::string destination) {
     return overflow_menu::Destination::Settings;
   }
 }
+// LINT.ThenChange(:destinationToString)
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
+// LINT.IfChange(destinationToString)
 std::string StringNameForDestination(Destination destination) {
   switch (destination) {
     case overflow_menu::Destination::Bookmarks:
@@ -71,8 +74,11 @@ std::string StringNameForDestination(Destination destination) {
       return "overflow_menu::Destination::SpotlightDebugger";
   }
 }
+// LINT.ThenChange(:stringToDestination)
+
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
+// LINT.IfChange(stringToActionType)
 ActionType ActionTypeForStringName(std::string action) {
   if (action == "Reload") {
     return overflow_menu::ActionType::Reload;
@@ -110,7 +116,9 @@ ActionType ActionTypeForStringName(std::string action) {
     NOTREACHED_NORETURN();
   }
 }
+// LINT.ThenChange(:actionTypeToString)
 
+// LINT.IfChange(actionTypeToString)
 std::string StringNameForActionType(ActionType action) {
   switch (action) {
     case overflow_menu::ActionType::Reload:
@@ -147,6 +155,7 @@ std::string StringNameForActionType(ActionType action) {
       return "EditActions";
   }
 }
+// LINT.ThenChange(:stringToActionType)
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.

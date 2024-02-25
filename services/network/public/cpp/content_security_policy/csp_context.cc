@@ -33,7 +33,7 @@ bool ShouldCheckPolicy(const mojom::ContentSecurityPolicyPtr& policy,
 CSPContext::CSPContext() = default;
 CSPContext::~CSPContext() = default;
 
-bool CSPContext::IsAllowedByCsp(
+CSPCheckResult CSPContext::IsAllowedByCsp(
     const std::vector<mojom::ContentSecurityPolicyPtr>& policies,
     mojom::CSPDirectiveName directive_name,
     const GURL& url,
@@ -44,22 +44,23 @@ bool CSPContext::IsAllowedByCsp(
     CheckCSPDisposition check_csp_disposition,
     bool is_form_submission,
     bool is_opaque_fenced_frame) {
-  bool allow = true;
+  CSPCheckResult result = CSPCheckResult::Allowed();
   for (const auto& policy : policies) {
     if (ShouldCheckPolicy(policy, check_csp_disposition)) {
-      allow &= CheckContentSecurityPolicy(
+      result &= CheckContentSecurityPolicy(
           policy, directive_name, url, url_before_redirects,
           has_followed_redirect, is_response_check, this, source_location,
           is_form_submission, is_opaque_fenced_frame);
     }
   }
 
-  DCHECK(allow || check_csp_disposition != CSPContext::CHECK_REPORT_ONLY_CSP);
+  DCHECK(result.IsAllowed() ||
+         check_csp_disposition != CSPContext::CHECK_REPORT_ONLY_CSP);
 
-  return allow;
+  return result;
 }
 
-bool CSPContext::SchemeShouldBypassCSP(const base::StringPiece& scheme) {
+bool CSPContext::SchemeShouldBypassCSP(std::string_view scheme) {
   // Blink uses its SchemeRegistry to check if a scheme should be bypassed.
   // It can't be used on the browser process. It is used for two things:
   // 1) Bypassing the "chrome-extension" scheme when chrome is built with the

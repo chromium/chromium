@@ -60,7 +60,7 @@ void PassphraseTextfield::ClearFakePassphrase() {
   changed_ = true;
 }
 
-BEGIN_METADATA(PassphraseTextfield, views::Textfield)
+BEGIN_METADATA(PassphraseTextfield)
 ADD_PROPERTY_METADATA(bool, ShowFake)
 ADD_READONLY_PROPERTY_METADATA(bool, Changed)
 END_METADATA

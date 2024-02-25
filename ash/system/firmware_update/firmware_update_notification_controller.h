@@ -46,8 +46,7 @@ class ASH_EXPORT FirmwareUpdateNotificationController
   bool should_show_notification_for_test_ = false;
 
   // MessageCenter for adding notifications.
-  const raw_ptr<message_center::MessageCenter,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<message_center::MessageCenter, DanglingUntriaged>
       message_center_;
 };
 

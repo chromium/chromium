@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_FADE_ANIMATION_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/metadata/view_factory.h"
@@ -18,6 +19,8 @@ class BoxLayoutView;
 namespace examples {
 
 class FadingView : public View {
+  METADATA_HEADER(FadingView, View)
+
  public:
   FadingView();
   FadingView(const FadingView&) = delete;

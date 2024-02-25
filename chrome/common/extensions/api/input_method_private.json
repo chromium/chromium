@@ -64,6 +64,41 @@
         "enum": ["off", "characters", "words", "sentences"]
       },
       {
+        "id": "LanguagePackStatus",
+        "type": "string",
+        "description": "The aggregated status of all language packs for a given input method.",
+        "enum": [
+          // This should only be used when we have uninitialised data.
+          "unknown",
+          "notInstalled",
+          "inProgress",
+          // If there are no language packs associated with an input method,
+          // such as for input methods which aren't Google 1P, installed is
+          // returned.
+          "installed",
+          "errorOther",
+          "errorNeedsReboot"
+        ]
+      },
+      {
+        "id": "LanguagePackStatusChange",
+        "type": "object",
+        "description": "Object returned by callbacks when the status of language packs change.",
+        "properties": {
+          "engineIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "All engine IDs for which this language pack status change applies to."
+          },
+          "status": {
+            "$ref": "LanguagePackStatus",
+            "description": "The new language pack status."
+          }
+        }
+      },
+      {
         "id": "InputContext",
         "type": "object",
         "description": "Describes an input Context",
@@ -511,55 +546,33 @@
         }]
     },
     {
-      "name" : "getTextFieldBounds",
-      "type" : "function",
-      "description" : "Get the bounds of the current text field",
-      "parameters" :[
-        {
-            "name": "parameters",
-            "type": "object",
-            "properties": {
-              "contextID": {
-                "description": "ID of the context.",
-                "type": "integer"
-              }
-            }
-        }
-      ],
-      "returns_async": {
-        "name": "callback",
-        "description": "Called with screen coordinates of the text field when the operation completes. On failure, $(ref:runtime.lastError) is set.",
-        "parameters": [
-          {
-            "name": "textFieldBounds",
-            "type": "object",
-            "properties": {
-              "x": {
-                "description": "The x-coordinate of the text field's bounds.",
-                "type": "integer"
-              },
-              "y": {
-                "description": "The y-coordinate of the text field's bounds.",
-                "type": "integer"
-              },
-              "width": {
-                "description": "The width of the text field's bounds.",
-                "type": "integer"
-              },
-              "height":{
-                "description": "The height of the  bounds.",
-                "type": "integer"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
       "name" : "notifyInputMethodReadyForTesting",
       "type" : "function",
       "description" : "Notifies Chrome that the current input method is ready to accept key events from Tast.",
       "parameters": []
+    },
+    {
+      "name": "getLanguagePackStatus",
+      "type": "function",
+      "description": "Gets the aggregate status of all language packs for a given input method.",
+      "parameters": [
+        {
+          "name": "inputMethodId",
+          "type": "string",
+          "description": "Fully qualified ID of the input method"
+        }
+      ],
+      "returns_async": {
+        "name": "callback",
+        "description": "Called with a LanguagePackStatus when the operation completes.",
+        "parameters": [
+          {
+            "name": "status",
+            "$ref": "LanguagePackStatus",
+            "description": "The aggregated status of all language packs for the given input method, or 'installed' if there are no language packs."
+          }
+        ]
+      }
     }
     ],
     "events": [
@@ -665,17 +678,6 @@
           }
         ]
       }, {
-        "name": "onTouch",
-        "type": "function",
-        "description": "This event is sent when a touch occurs in a text field. Should only happen after onFocus()",
-        "parameters": [
-          {
-            "$ref": "FocusReason",
-            "name": "pointerType",
-            "description": "Pointer type used to touch the text field"
-          }
-        ]
-      }, {
         "name": "onSettingsChanged",
         "type": "function",
         "description": "This event is sent when the settings for any input method changed. It is sent to all extensions that are listening to this event, and enabled by the user.",
@@ -725,6 +727,17 @@
             "name": "engineID",
             "type": "string",
             "description": "The engine ID for the input method being changed."
+          }
+        ]
+      }, {
+        "name": "onLanguagePackStatusChanged",
+        "type": "function",
+        "description": "This event is sent when any IME's language pack status is changed.",
+        "parameters": [
+          {
+            "name": "change",
+            "$ref": "LanguagePackStatusChange",
+            "description": "Information about what changed."
           }
         ]
       }

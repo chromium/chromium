@@ -1,0 +1,61 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("growth") {
+  sources = [
+    "action_performer.h",
+    "campaigns_manager.cc",
+    "campaigns_manager.h",
+    "campaigns_manager_client.h",
+    "campaigns_matcher.cc",
+    "campaigns_matcher.h",
+    "campaigns_model.cc",
+    "campaigns_model.h",
+    "growth_metrics.cc",
+    "growth_metrics.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/demo_mode",
+    "//components/prefs",
+    "//components/version_info",
+  ]
+
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_IMPL" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [ ":growth" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+  ]
+  sources = [
+    "mock_campaigns_manager_client.cc",
+    "mock_campaigns_manager_client.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":growth",
+    ":test_support",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
+    "//components/version_info",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "campaigns_manager_unittest.cc" ]
+}

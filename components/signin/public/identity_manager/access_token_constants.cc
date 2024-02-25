@@ -76,9 +76,19 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Required by k-Anonymity Server (FLEDGE)
       GaiaConstants::kKAnonymityServiceOAuth2Scope,
 
+      // Required by supervision features that verify parent password.
+      GaiaConstants::kAccountsReauthOAuth2Scope,
+
+      // Used by desktop Chrome to talk to passkey enclaves when using Google
+      // Password Manager.
+      GaiaConstants::kPasskeysEnclaveOAuth2Scope,
+
+      // Required by Optimization Guide.
+      GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope,
+      GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      GaiaConstants::kAccountsReauthOAuth2Scope,
       GaiaConstants::kAssistantOAuth2Scope,
       GaiaConstants::kAuditRecordingOAuth2Scope,
       GaiaConstants::kCalendarReadOnlyOAuth2Scope,
@@ -99,7 +109,7 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
   };
 // clang-format on
   std::string plus_address_scope =
-      plus_addresses::kEnterprisePlusAddressOAuthScope.Get();
+      plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get();
   if (!plus_address_scope.empty()) {
     allowlist.insert(plus_address_scope);
   }

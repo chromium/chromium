@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "lock_screen_reauthentication_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "LockScreenReauthenticationEnabled": true
+        },
+        "prefs": {
+          "lock_screen_reauthentication_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "LockScreenReauthenticationEnabled": false
+        },
+        "prefs": {
+          "lock_screen_reauthentication_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

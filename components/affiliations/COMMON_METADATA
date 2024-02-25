@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>Passwords"
+}
+team_email: "chrome-password-manager-team@google.com"
+buganizer_public: {
+  component_id: 1457410
+}

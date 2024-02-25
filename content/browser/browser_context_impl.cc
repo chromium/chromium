@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/speech/tts_controller_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,15 +38,9 @@ namespace content {
 
 namespace {
 
-void ShutdownServiceWorkerContext(StoragePartition* partition) {
-  ServiceWorkerContextWrapper* wrapper =
-      static_cast<ServiceWorkerContextWrapper*>(
-          partition->GetServiceWorkerContext());
-  wrapper->Shutdown();
-}
-
-void ShutdownSharedWorkerContext(StoragePartition* partition) {
-  partition->GetSharedWorkerService()->Shutdown();
+void NotifyContextWillBeDestroyed(StoragePartition* partition) {
+  static_cast<StoragePartitionImpl*>(partition)
+      ->OnBrowserContextWillBeDestroyed();
 }
 
 void RegisterMediaLearningTask(
@@ -98,7 +93,8 @@ BrowserContextImpl::~BrowserContextImpl() {
   if (!rph_crash_key_value.empty()) {
     SCOPED_CRASH_KEY_STRING256("BrowserContext", "dangling_rph",
                                rph_crash_key_value);
-    NOTREACHED() << "rph_with_bc_reference : " << rph_crash_key_value;
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "rph_with_bc_reference : " << rph_crash_key_value;
   }
 
   // Clean up any isolated origins and other security state associated with this
@@ -109,6 +105,11 @@ BrowserContextImpl::~BrowserContextImpl() {
     download_manager_->Shutdown();
 
   TtsControllerImpl::GetInstance()->OnBrowserContextDestroyed(self_);
+
+  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
+    GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                          std::move(resource_context_));
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "shutdown", "BrowserContextImpl::NotifyWillBeDestroyed() called.", this,
@@ -132,13 +133,7 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
     return;
   will_be_destroyed_soon_ = true;
 
-  // Shut down service worker and shared worker machinery because these can keep
-  // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
-  // are destroyed before the BrowserContext is destroyed.
-  self_->ForEachLoadedStoragePartition(
-      base::BindRepeating(ShutdownServiceWorkerContext));
-  self_->ForEachLoadedStoragePartition(
-      base::BindRepeating(ShutdownSharedWorkerContext));
+  self_->ForEachLoadedStoragePartition(&NotifyContextWillBeDestroyed);
 
   // Also forcibly release keep alive refcounts on RenderProcessHosts, to ensure
   // they destruct before the BrowserContext does.

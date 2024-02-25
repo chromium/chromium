@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -75,7 +76,25 @@ void DistillerPage::DistillPage(
     const GURL& gurl,
     const dom_distiller::proto::DomDistillerOptions options,
     DistillerPageCallback callback) {
-  DCHECK(ready_);
+  CHECK(ready_, base::NotFatalUntil::M126);
+  if (!callback) {
+    // Callback should never be nullptr but there are eveidence (crbug/1216307)
+    // that it is sometimes null at the end of the distillation. As it is never
+    // reset, add DWC to gather info about this case.
+    // Also early return as doing a distillation without callback is useless and
+    // will lead to a crash.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+  if (distiller_page_callback_) {
+    // This function should not be called when a distillation is already in
+    // progress as this would result in OnDistillationDone being called twice.
+    // This is a tentative fix for (crbug/1216307). Remove once the bug is
+    // fixed.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   // It is only possible to distill one page at a time. |ready_| is reset when
   // the callback to OnDistillationDone happens.
   ready_ = false;

@@ -40,11 +40,11 @@ PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> Unpad(
 
 // Hash encrypted ID.
 PRIVATE_MEMBERSHIP_EXPORT std::string HashEncryptedId(
-    absl::string_view encrypted_id, private_join_and_compute::Context* ctx);
+    absl::string_view encrypted_id, ::private_join_and_compute::Context* ctx);
 
 // Compute the value encryption key.
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> GetValueEncryptionKey(
-    absl::string_view encrypted_id, private_join_and_compute::Context* ctx);
+    absl::string_view encrypted_id, ::private_join_and_compute::Context* ctx);
 
 // Encrypts the value, first padding it to. The result will be
 // max_value_byte_length+4 bytes long, the first 4 bytes being an encryption of
@@ -53,12 +53,17 @@ PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> GetValueEncryptionKey(
 // Returns an error if the value is longer than max_value_byte_length.
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> EncryptValue(
     absl::string_view encrypted_id, absl::string_view value,
-    uint32_t max_value_byte_length, private_join_and_compute::Context* ctx);
+    uint32_t max_value_byte_length, ::private_join_and_compute::Context* ctx);
 
 // Decrypt the encrypted_value using a key derived from the encrypted_id.
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> DecryptValue(
     absl::string_view encrypted_id, absl::string_view encrypted_value,
-    private_join_and_compute::Context* ctx);
+    ::private_join_and_compute::Context* ctx);
+
+// Decrypt the encrypted_value using the supplied key.
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> DecryptValueWithKey(
+    absl::string_view encryption_key, absl::string_view encrypted_value,
+    ::private_join_and_compute::Context* ctx);
 
 }  // namespace private_membership
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
@@ -11,15 +12,14 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
-#import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
-#import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -36,7 +36,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface FakeAutofillProfileEditConsumer
     : NSObject <AutofillProfileEditConsumer>
 // If YES, denote that the particular field requires a value.
-@property(nonatomic, assign) BOOL nameRequired;
 @property(nonatomic, assign) BOOL line1Required;
 @property(nonatomic, assign) BOOL cityRequired;
 @property(nonatomic, assign) BOOL stateRequired;
@@ -48,7 +47,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, assign) NSString* fullName;
 @property(nonatomic, assign) NSString* homeAddressLine1;
 @property(nonatomic, assign) NSString* homeAddressLine2;
+@property(nonatomic, assign) NSString* homeAddressDependentLocality;
 @property(nonatomic, assign) NSString* homeAddressCity;
+@property(nonatomic, assign) NSString* homeAddressAdminLevel2;
 @property(nonatomic, assign) NSString* homeAddressState;
 @property(nonatomic, assign) NSString* homeAddressZip;
 @property(nonatomic, assign) NSString* homeAddressCountry;
@@ -107,12 +108,8 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
             chrome_browser_state_.get());
     personal_data_manager_->SetSyncServiceForTest(nullptr);
 
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillUseAlternativeStateNameMap)) {
-      personal_data_manager_->personal_data_manager_cleaner_for_testing()
-          ->alternative_state_name_map_updater_for_testing()
-          ->set_local_state_for_testing(local_state_.Get());
-    }
+    personal_data_manager_->get_alternative_state_name_map_updater_for_testing()
+        ->set_local_state_for_testing(local_state_.Get());
 
     fake_autofill_profile_edit_mediator_delegate_ =
         [[FakeAutofillProfileEditMediatorDelegate alloc] init];
@@ -120,7 +117,8 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
   }
 
   void InitializeMediator(bool is_migration_prompt) {
-    autofill::AutofillProfile autofill_profile;
+    autofill::AutofillProfile autofill_profile(
+        autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     autofill_profile_edit_mediator_ = [[AutofillProfileEditMediator alloc]
            initWithDelegate:fake_autofill_profile_edit_mediator_delegate_
         personalDataManager:personal_data_manager_
@@ -151,7 +149,7 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  autofill::PersonalDataManager* personal_data_manager_;
+  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   autofill::CountryComboboxModel country_model_;
 };
 

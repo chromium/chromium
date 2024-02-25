@@ -42,4 +42,4 @@ class TabsApiSignal : public ExtensionSignal {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_TABS_EXECUTE_SCRIPT_SIGNAL_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_TABS_API_SIGNAL_H_

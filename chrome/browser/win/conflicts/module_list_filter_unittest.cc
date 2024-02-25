@@ -4,6 +4,7 @@
 
 #include "chrome/browser/win/conflicts/module_list_filter.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/proto/module_list.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -42,8 +42,8 @@ class ModuleListBuilder {
   ModuleListBuilder& operator=(const ModuleListBuilder&) = delete;
 
   // Adds a module to the allowlist.
-  void AddAllowlistedModule(absl::optional<std::u16string> basename,
-                            absl::optional<std::string> code_id) {
+  void AddAllowlistedModule(std::optional<std::u16string> basename,
+                            std::optional<std::string> code_id) {
     CHECK(basename.has_value() || code_id.has_value());
 
     chrome::conflicts::ModuleGroup* module_group =
@@ -120,7 +120,7 @@ ModuleInfo CreateModuleInfo(const base::FilePath& module_path,
       std::forward_as_tuple());
 
   result.second.inspection_result =
-      absl::make_optional<ModuleInspectionResult>();
+      std::make_optional<ModuleInspectionResult>();
   result.second.inspection_result->basename =
       module_path.BaseName().AsUTF16Unsafe();
 
@@ -235,7 +235,7 @@ TEST_F(ModuleListFilterTest, BasenameOnly) {
 
   ModuleListBuilder module_list_builder(module_list_path());
   module_list_builder.AddAllowlistedModule(
-      original.second.inspection_result->basename, absl::nullopt);
+      original.second.inspection_result->basename, std::nullopt);
   ASSERT_TRUE(module_list_builder.Finalize());
 
   ASSERT_TRUE(module_list_filter().Initialize(module_list_path()));
@@ -260,8 +260,8 @@ TEST_F(ModuleListFilterTest, CodeIdOnly) {
 
   ModuleListBuilder module_list_builder(module_list_path());
   module_list_builder.AddAllowlistedModule(
-      absl::nullopt, GetCodeId(original.first.module_time_date_stamp,
-                               original.first.module_size));
+      std::nullopt, GetCodeId(original.first.module_time_date_stamp,
+                              original.first.module_size));
   ASSERT_TRUE(module_list_builder.Finalize());
 
   ASSERT_TRUE(module_list_filter().Initialize(module_list_path()));

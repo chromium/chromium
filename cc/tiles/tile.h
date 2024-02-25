@@ -29,7 +29,7 @@ class TileManager;
 class CC_EXPORT Tile {
  public:
   struct CreateInfo {
-    // Not a raw_ptr<...> for performance reasons: on-stack pointer + based on
+    // RAW_PTR_EXCLUSION: Performance reasons: on-stack pointer + based on
     // analysis of sampling profiler data
     // (PictureLayerTilingSet::UpdateTilePriorities ->
     // PictureLayerTiling::ComputeTilePriorityRects ->
@@ -155,8 +155,8 @@ class CC_EXPORT Tile {
        int source_frame_number,
        int flags);
 
-  // These are not a raw_ptr<...> for performance reasons: based on analysis of
-  // sampling profiler data (PictureLayerTilingSet::UpdateTilePriorities ->
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+  // profiler data (PictureLayerTilingSet::UpdateTilePriorities ->
   // PictureLayerTiling::ComputeTilePriorityRects ->
   // PictureLayerTiling::SetLiveTilesRect -> PictureLayerTiling::CreateTile ->
   // allocates Tile).
@@ -180,14 +180,14 @@ class CC_EXPORT Tile {
 
   unsigned scheduled_priority_ = 0;
 
-  bool required_for_activation_ : 1;
-  bool required_for_draw_ : 1;
-  bool is_solid_color_analysis_performed_ : 1;
+  bool required_for_activation_ : 1 = false;
+  bool required_for_draw_ : 1 = false;
+  bool is_solid_color_analysis_performed_ : 1 = false;
   const bool can_use_lcd_text_ : 1;
 
   // Set to true if there is a raster task scheduled for this tile that will
   // rasterize a resource with checker images.
-  bool raster_task_scheduled_with_checker_images_ : 1;
+  bool raster_task_scheduled_with_checker_images_ : 1 = false;
 
   Id id_;
 

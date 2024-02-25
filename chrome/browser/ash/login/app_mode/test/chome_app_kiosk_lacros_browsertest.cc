@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_ash_browser_test_starter.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -50,7 +51,14 @@ class ChromeAppKioskLacrosTest : public KioskBaseTest {
   base::HistogramTester histogram;
 };
 
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, RegularOnlineKiosk) {
+// TODO(b/324499540): Disable the test on ci/linux-chromeos-chrome-with-lacros
+// since it is flaky.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_RegularOnlineKiosk DISABLED_RegularOnlineKiosk
+#else
+#define MAYBE_RegularOnlineKiosk RegularOnlineKiosk
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, MAYBE_RegularOnlineKiosk) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
@@ -65,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, RegularOnlineKiosk) {
   EXPECT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, PRE_NonKioskAppLaunchError) {
+IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, NonKioskAppLaunchError) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
@@ -85,11 +93,22 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, PRE_NonKioskAppLaunchError) {
             KioskAppLaunchError::Get());
 }
 
+// TODO(b/324499540): Disable the test on ci/linux-chromeos-chrome-with-lacros
+// since it is flaky.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_ShouldLogPreviousLaunchError DISABLED_ShouldLogPreviousLaunchError
+#else
+#define MAYBE_ShouldLogPreviousLaunchError ShouldLogPreviousLaunchError
+#endif
 // Kiosk launch error is recorded on the next kiosk session run.
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, NonKioskAppLaunchError) {
+IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest,
+                       MAYBE_ShouldLogPreviousLaunchError) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
+
+  KioskAppLaunchError::Save(KioskAppLaunchError::Error::kNotKioskEnabled);
+
   NewAuraWindowWatcher watcher;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);

@@ -21,10 +21,15 @@ class MockAnchorElementPreconnector : public AnchorElementPreconnectDelegate {
   ~MockAnchorElementPreconnector() override = default;
 
   void MaybePreconnect(const GURL& target) override { target_ = target; }
-  absl::optional<GURL>& Target() { return target_; }
+  std::optional<GURL>& Target() { return target_; }
+
+  base::WeakPtr<MockAnchorElementPreconnector> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
-  absl::optional<GURL> target_;
+  std::optional<GURL> target_;
+  base::WeakPtrFactory<MockAnchorElementPreconnector> weak_ptr_factory_{this};
 };
 
 class MockContentBrowserClient : public TestContentBrowserClient {
@@ -41,15 +46,17 @@ class MockContentBrowserClient : public TestContentBrowserClient {
       RenderFrameHost& render_frame_host) override {
     auto delegate =
         std::make_unique<MockAnchorElementPreconnector>(render_frame_host);
-    delegate_ = delegate.get();
+    delegate_ = delegate->AsWeakPtr();
     return delegate;
   }
 
-  MockAnchorElementPreconnector* GetDelegate() { return delegate_; }
+  base::WeakPtr<MockAnchorElementPreconnector> GetDelegate() {
+    return delegate_;
+  }
 
  private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
-  raw_ptr<MockAnchorElementPreconnector, DanglingUntriaged> delegate_;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+  base::WeakPtr<MockAnchorElementPreconnector> delegate_;
 };
 
 class PreconnectorTest : public RenderViewHostTestHarness {
@@ -82,8 +89,9 @@ class PreconnectorTest : public RenderViewHostTestHarness {
 TEST_F(PreconnectorTest, MaybePreconnect) {
   MockContentBrowserClient browser_client;
   auto preconnector = Preconnector(GetPrimaryMainFrame());
-  auto* delegate = browser_client.GetDelegate();
-  EXPECT_TRUE(delegate != nullptr);
+  base::WeakPtr<MockAnchorElementPreconnector> delegate =
+      browser_client.GetDelegate();
+  ASSERT_TRUE(delegate);
 
   const auto url = GURL("https://example.com/page1");
   preconnector.MaybePreconnect(url);

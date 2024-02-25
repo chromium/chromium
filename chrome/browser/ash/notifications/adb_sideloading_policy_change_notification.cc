@@ -110,7 +110,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
 }
 
 void AdbSideloadingPolicyChangeNotification::HandleNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   // Only request restart when the button is clicked, i.e. ignore the clicks
   // on the body of the notification.
   if (!button_index)

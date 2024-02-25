@@ -8,6 +8,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -53,9 +54,6 @@ void FakeLocalFrame::AddMessageToConsole(
     const std::string& message,
     bool discard_duplicates) {}
 
-void FakeLocalFrame::AddInspectorIssue(
-    blink::mojom::InspectorIssueInfoPtr info) {}
-
 void FakeLocalFrame::SwapInImmediately() {}
 
 void FakeLocalFrame::CheckCompleted() {}
@@ -88,12 +86,18 @@ void FakeLocalFrame::MediaPlayerActionAt(
     const gfx::Point& location,
     blink::mojom::MediaPlayerActionPtr action) {}
 
+void FakeLocalFrame::RequestVideoFrameAt(const gfx::Point& window_point,
+                                         const gfx::Size& max_size,
+                                         int max_area,
+                                         RequestVideoFrameAtCallback callback) {
+}
+
 void FakeLocalFrame::PluginActionAt(const gfx::Point& location,
                                     blink::mojom::PluginActionType action) {}
 
 void FakeLocalFrame::AdvanceFocusInFrame(
     blink::mojom::FocusType focus_type,
-    const absl::optional<blink::RemoteFrameToken>& source_frame_token) {}
+    const std::optional<blink::RemoteFrameToken>& source_frame_token) {}
 
 void FakeLocalFrame::AdvanceFocusForIME(blink::mojom::FocusType focus_type) {}
 
@@ -104,7 +108,7 @@ void FakeLocalFrame::DidUpdateFramePolicy(
     const blink::FramePolicy& frame_policy) {}
 
 void FakeLocalFrame::PostMessageEvent(
-    const absl::optional<blink::RemoteFrameToken>& source_frame_token,
+    const std::optional<blink::RemoteFrameToken>& source_frame_token,
     const std::u16string& source_origin,
     const std::u16string& target_origin,
     blink::TransferableMessage message) {}
@@ -150,7 +154,7 @@ void FakeLocalFrame::BindReportingObserver(
     mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver) {}
 
 void FakeLocalFrame::UpdateOpener(
-    const absl::optional<blink::FrameToken>& opener_frame_token) {}
+    const std::optional<blink::FrameToken>& opener_frame_token) {}
 
 void FakeLocalFrame::MixedContentFound(
     const GURL& main_resource_url,
@@ -176,13 +180,14 @@ void FakeLocalFrame::ExtractSmartClipData(
 void FakeLocalFrame::HandleRendererDebugURL(const GURL& url) {}
 
 void FakeLocalFrame::GetCanonicalUrlForSharing(
-    base::OnceCallback<void(const absl::optional<GURL>&)> callback) {}
+    base::OnceCallback<void(const std::optional<GURL>&)> callback) {}
 
 void FakeLocalFrame::GetOpenGraphMetadata(
     base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)>) {}
 
 void FakeLocalFrame::SetNavigationApiHistoryEntriesForRestore(
-    blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) {}
+    blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays,
+    blink::mojom::NavigationApiEntryRestoreReason restore_reason) {}
 
 void FakeLocalFrame::NotifyNavigationApiOfDisposedEntries(
     const std::vector<std::string>& keys) {}
@@ -191,7 +196,13 @@ void FakeLocalFrame::TraverseCancelled(
     const std::string& navigation_api_key,
     blink::mojom::TraverseCancelledReason reason) {}
 
+void FakeLocalFrame::DispatchNavigateEventForCrossDocumentTraversal(
+    const GURL&,
+    const std::string& page_state,
+    bool is_browser_initiated) {}
+
 void FakeLocalFrame::SnapshotDocumentForViewTransition(
+    blink::mojom::PageConcealEventParamsPtr,
     SnapshotDocumentForViewTransitionCallback callback) {}
 
 void FakeLocalFrame::AddResourceTimingEntryForFailedSubframeNavigation(
@@ -204,7 +215,7 @@ void FakeLocalFrame::AddResourceTimingEntryForFailedSubframeNavigation(
     uint32_t response_code,
     const std::string& mime_type,
     const ::net::LoadTimingInfo& load_timing_info,
-    ::net::HttpResponseInfo::ConnectionInfo connection_info,
+    ::net::HttpConnectionInfo connection_info,
     const std::string& alpn_negotiated_protocol,
     bool is_secure_transport,
     bool is_validated,

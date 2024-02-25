@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/task_runner.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -94,11 +95,13 @@ void DownloadFeedbackService::MaybeStorePingsForDownload(
     return;
   }
 
-  if (!upload_requested)
+  if (!upload_requested) {
     return;
+  }
 
-  if (download->GetReceivedBytes() > DownloadFeedback::kMaxUploadSize)
+  if (download->GetReceivedBytes() > DownloadFeedback::kMaxUploadSize) {
     return;
+  }
 
   DownloadFeedbackPings::CreateForDownload(download, ping, response);
 }
@@ -115,8 +118,9 @@ bool DownloadFeedbackService::GetPingsForDownloadForTesting(
     std::string* ping,
     std::string* response) {
   DownloadFeedbackPings* pings = DownloadFeedbackPings::FromDownload(download);
-  if (!pings)
+  if (!pings) {
     return false;
+  }
 
   *ping = pings->ping_request();
   *response = pings->ping_response();
@@ -134,9 +138,11 @@ void DownloadFeedbackService::BeginFeedbackForDownload(
 
   download->StealDangerousDownload(
       download_command == DownloadCommands::DISCARD,
-      base::BindOnce(&DownloadFeedbackService::BeginFeedbackOrDeleteFile,
-                     file_task_runner_, weak_ptr_factory_.GetWeakPtr(), profile,
-                     pings->ping_request(), pings->ping_response()));
+      base::BindOnce(
+          &DownloadFeedbackService::BeginFeedbackOrDeleteFile,
+          file_task_runner_, weak_ptr_factory_.GetWeakPtr(), profile,
+          pings->ping_request(), pings->ping_response(),
+          base::checked_cast<uint64_t>(download->GetReceivedBytes())));
 }
 
 // static
@@ -146,11 +152,14 @@ void DownloadFeedbackService::BeginFeedbackOrDeleteFile(
     Profile* profile,
     const std::string& ping_request,
     const std::string& ping_response,
+    uint64_t file_size,
     const base::FilePath& path) {
   if (service) {
-    if (path.empty())
+    if (path.empty()) {
       return;
-    service->BeginFeedback(profile, ping_request, ping_response, path);
+    }
+    service->BeginFeedback(profile, ping_request, ping_response, path,
+                           file_size);
   } else {
     file_task_runner->PostTask(FROM_HERE, base::GetDeleteFileCallback(path));
   }
@@ -165,15 +174,17 @@ void DownloadFeedbackService::StartPendingFeedback() {
 void DownloadFeedbackService::BeginFeedback(Profile* profile,
                                             const std::string& ping_request,
                                             const std::string& ping_response,
-                                            const base::FilePath& path) {
+                                            const base::FilePath& path,
+                                            uint64_t file_size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<DownloadFeedback> feedback(DownloadFeedback::Create(
-      download_protection_service_->GetURLLoaderFactory(profile),
-      file_task_runner_.get(), path, ping_request, ping_response));
+      download_protection_service_->GetURLLoaderFactory(profile), path,
+      file_size, ping_request, ping_response));
   active_feedback_.push(std::move(feedback));
 
-  if (active_feedback_.size() == 1)
+  if (active_feedback_.size() == 1) {
     StartPendingFeedback();
+  }
 }
 
 void DownloadFeedbackService::FeedbackComplete() {
@@ -181,8 +192,9 @@ void DownloadFeedbackService::FeedbackComplete() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!active_feedback_.empty());
   active_feedback_.pop();
-  if (!active_feedback_.empty())
+  if (!active_feedback_.empty()) {
     StartPendingFeedback();
+  }
 }
 
 }  // namespace safe_browsing

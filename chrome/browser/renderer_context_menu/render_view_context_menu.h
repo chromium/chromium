@@ -18,6 +18,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
+#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
+#include "components/compose/buildflags.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
@@ -37,6 +39,10 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/chrome_compose_client.h"
+#endif
+
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #endif
@@ -48,7 +54,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/common/supervised_user_utils.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #endif
 
 class AccessibilityLabelsMenuObserver;
@@ -109,6 +115,7 @@ class RenderViewContextMenu
       public custom_handlers::ProtocolHandlerRegistry::Observer {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitFullscreenMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeMenuItem);
 
   using ExecutePluginActionCallback =
       base::OnceCallback<void(content::RenderFrameHost*,
@@ -133,7 +140,7 @@ class RenderViewContextMenu
   void ExecuteCommand(int command_id, int event_flags) override;
   void AddSpellCheckServiceItem(bool is_checked) override;
   void AddAccessibilityLabelsServiceItem(bool is_checked) override;
-  void AddPdfOcrMenuItem(bool is_always_active) override;
+  void AddPdfOcrMenuItem() override;
 
   // Registers a one-time callback that will be called the next time a context
   // menu is shown.
@@ -168,6 +175,12 @@ class RenderViewContextMenu
   // Returns the correct IDC for the Region Search context menu string
   int GetRegionSearchIdc() const;
 
+  // Returns the correct IDC for the Video Frame Search context menu string
+  int GetSearchForVideoFrameIdc() const;
+
+  // Returns the provider for image search.
+  const TemplateURL* GetImageSearchProvider() const;
+
   // Returns the correct provider name for the Search by Image context menu
   // string
   std::u16string GetImageSearchProviderName(const TemplateURL* provider) const;
@@ -196,12 +209,19 @@ class RenderViewContextMenu
   virtual const policy::DlpRulesManager* GetDlpRulesManager() const;
 #endif
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+  virtual ChromeComposeClient* GetChromeComposeClient() const;
+#endif
+
   // RenderViewContextMenuBase:
   // If called in Ash when Lacros is the only browser, this open the URL in
   // Lacros. In that case, only the |url| and some values of |disposition| are
-  // respected - other parameters are ignored.
+  // respected - other parameters are ignored. The |initiator| parameter is the
+  // origin that supplied the URL being navigated to; it may be an opaque origin
+  // with no precursor if the URL came from the browser itself or the user.
   void OpenURLWithExtraHeaders(const GURL& url,
                                const GURL& referring_url,
+                               const url::Origin& initiator,
                                WindowOpenDisposition disposition,
                                ui::PageTransition transition,
                                const std::string& extra_headers,
@@ -230,6 +250,10 @@ class RenderViewContextMenu
 
   // Writes the specified text/url to the system clipboard.
   void WriteURLToClipboard(const GURL& url);
+
+  // Issues a preconnection request to the given url.
+  void IssuePreconnectionToUrl(const std::string& anonymization_key_url,
+                               const std::string& preconnect_url);
 
   // RenderViewContextMenuBase:
   void InitMenu() override;
@@ -272,8 +296,9 @@ class RenderViewContextMenu
   void AppendLinkToTextItems();
   void AppendPrintItem();
   void AppendPartialTranslateItem();
+  void AppendTranslateItem();
   void AppendMediaRouterItem();
-  void AppendReadAnythingItem();
+  void AppendReadingModeItem();
   void AppendRotationItems();
   void AppendSpellingAndSearchSuggestionItems();
   void AppendOtherEditableItems();
@@ -338,6 +363,7 @@ class RenderViewContextMenu
   void ExecSearchWebInCompanionSidePanel(const GURL& url);
   void ExecSearchWebInSidePanel(const GURL& url);
   void ExecOpenWebApp();
+  void ExecOpenLinkPreview();
   void ExecProtocolHandler(int event_flags, int handler_index);
   void ExecOpenLinkInProfile(int profile_index);
   void ExecInspectElement();
@@ -355,7 +381,9 @@ class RenderViewContextMenu
   void ExecLoadImage();
   void ExecLoop();
   void ExecControls();
+  void ExecSaveVideoFrameAs();
   void ExecCopyVideoFrame();
+  void ExecSearchForVideoFrame();
   void ExecLiveCaption();
   void ExecRotateCW();
   void ExecRotateCCW();
@@ -368,13 +396,16 @@ class RenderViewContextMenu
   void ExecLanguageSettings(int event_flags);
   void ExecProtocolHandlerSettings(int event_flags);
   void ExecPictureInPicture();
+#if BUILDFLAG(ENABLE_COMPOSE)
+  void ExecOpenCompose();
+#endif
   void ExecOpenInReadAnything();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ExecRunLayoutExtraction();
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-  void MediaPlayerActionAt(const gfx::Point& location,
-                           const blink::mojom::MediaPlayerAction& action);
+  void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
+  void SearchForVideoFrame(const gfx::ImageSkia& image);
   void PluginActionAt(const gfx::Point& location,
                       blink::mojom::PluginActionType plugin_action);
 
@@ -391,12 +422,19 @@ class RenderViewContextMenu
   // or whether the current page can be translated.
   bool CanTranslate(bool menu_logging);
 
+  // Whether or not partial translation is supported for the current target
+  // language.
+  bool CanPartiallyTranslateTargetLanguage();
+
+  // Under the correct conditions, issues a preconnection to the Lens URL and
+  // warms up a renderer process.
+  void MaybePrepareForLensQuery();
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Does not execute "Save link as" if the URL is blocked by the URL filter.
   void CheckSupervisedUserURLFilterAndSaveLinkAs();
   void OnSupervisedUserURLFilterChecked(
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior
-          filtering_behavior,
+      supervised_user::FilteringBehavior filtering_behavior,
       supervised_user::FilteringBehaviorReason reason,
       bool uncertain);
 #endif
@@ -508,6 +546,8 @@ class RenderViewContextMenu
 
   // Responsible for handling autofill related context menu items.
   autofill::AutofillContextMenuManager autofill_context_menu_manager_;
+
+  ScopedNewBadgeTracker new_badge_tracker_;
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };

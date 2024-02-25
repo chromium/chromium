@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_PAGE_IMAGE_SERVICE_IMAGE_SERVICE_CONSENT_HELPER_H_
 #define COMPONENTS_PAGE_IMAGE_SERVICE_IMAGE_SERVICE_CONSENT_HELPER_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -23,6 +25,8 @@ class ConsentThrottle;
 }  // namespace unified_consent
 
 namespace page_image_service {
+
+enum class PageImageServiceConsentStatus;
 
 // Helper class that observes SyncService for when it is appropriate to fetch
 // images for synced entities that have been viewed in the past.
@@ -39,12 +43,14 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
   // If Sync downloads for `model_type_` have already been initialized, this
   // method calls `callback` synchronously with the result. If not, it will hold
   // the request up until the timeout for the consent helper to initialize.
-  void EnqueueRequest(base::OnceCallback<void(bool)> callback);
+  void EnqueueRequest(
+      base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
+      mojom::ClientId client_id);
 
  private:
   // Returns whether it is appropriate to fetch images for synced entities of
   // `model_type_`. Will return nullopt if Sync Service is not ready yet.
-  absl::optional<bool> GetConsentStatus();
+  std::optional<bool> GetConsentStatus();
 
   // Run periodically to sweep away old queued requests.
   void OnTimeoutExpired();
@@ -61,10 +67,15 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
 
   // Requests waiting for the consent throttle to initialize. Requests are
   // stored in the queue in order of their arrival.
-  std::vector<base::OnceCallback<void(bool)>> enqueued_request_callbacks_;
+  std::vector<std::pair<base::OnceCallback<void(PageImageServiceConsentStatus)>,
+                        mojom::ClientId>>
+      enqueued_request_callbacks_;
 
   // Consent throttle to be used if sync service is not being directly observed.
   std::unique_ptr<unified_consent::ConsentThrottle> consent_throttle_;
+
+  // The duration to wait before returning some answer back for the request.
+  const base::TimeDelta timeout_duration_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -16,25 +17,29 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
-#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
+#include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
+#include "components/drive/event_logger.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/auth_service_interface.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-class Profile;
 class PrefService;
 
 namespace base {
-class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -46,9 +51,11 @@ class DriveFs;
 }  // namespace mojom
 }  // namespace drivefs
 
-namespace drive {
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
-class EventLogger;
+namespace drive {
 
 namespace internal {
 class ResourceMetadataStorage;
@@ -71,40 +78,6 @@ struct QuickAccessItem {
   double confidence;
 };
 
-// Interface for classes that need to observe events from
-// DriveIntegrationService.  All events are notified on UI thread.
-class DriveIntegrationServiceObserver : public base::CheckedObserver {
- public:
-  // Triggered when the file system is mounted.
-  virtual void OnFileSystemMounted() {}
-
-  // Triggered when the file system is being unmounted.
-  virtual void OnFileSystemBeingUnmounted() {}
-
-  // Triggered when mounting the filesystem has failed in a fashion that will
-  // not be automatically retried.
-  virtual void OnFileSystemMountFailed() {}
-
-  // Triggered when the `DriveIntegrationService` is being destroyed.
-  virtual void OnDriveIntegrationServiceDestroyed() {}
-
-  // Triggered when the mirroring functionality is enabled.
-  virtual void OnMirroringEnabled() {}
-
-  // Triggered when the mirroring functionality is disabled.
-  virtual void OnMirroringDisabled() {}
-
-  // Triggered when the bulk pinning manager reports progress.
-  virtual void OnBulkPinProgress(const drivefs::pinning::Progress& progress) {}
-
-  // Triggered when the bulk pinning manger is fully initialized.
-  virtual void OnBulkPinInitialized() {}
-
-  // Triggered when the network connection to Drive could have changed.
-  virtual void OnDriveConnectionStatusChanged(
-      util::ConnectionStatusType status) {}
-};
-
 // DriveIntegrationService is used to integrate Drive to Chrome. This class
 // exposes the file system representation built on top of Drive and some
 // other Drive related objects to the file manager, and some other sub
@@ -115,19 +88,18 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 // created per-profile.
 class DriveIntegrationService : public KeyedService,
                                 public drivefs::DriveFsHost::MountObserver,
-                                public drivefs::pinning::PinManager::Observer {
+                                drivefs::pinning::PinningManager::Observer,
+                                ash::NetworkStateHandler::Observer {
  public:
-  class PreferenceWatcher;
-  class BulkPinningPrefUpdater;
   using DriveFsMojoListenerFactory = base::RepeatingCallback<
       std::unique_ptr<drivefs::DriveFsBootstrapListener>()>;
   using GetQuickAccessItemsCallback =
-      base::OnceCallback<void(drive::FileError, std::vector<QuickAccessItem>)>;
+      base::OnceCallback<void(FileError, std::vector<QuickAccessItem>)>;
   using SearchDriveByFileNameCallback =
-      base::OnceCallback<void(drive::FileError,
+      base::OnceCallback<void(FileError,
                               std::vector<drivefs::mojom::QueryItemPtr>)>;
   using GetThumbnailCallback =
-      base::OnceCallback<void(const absl::optional<std::vector<uint8_t>>&)>;
+      base::OnceCallback<void(const std::optional<std::vector<uint8_t>>&)>;
   using GetReadOnlyAuthenticationTokenCallback =
       base::OnceCallback<void(google_apis::ApiErrorCode code,
                               const std::string& access_token)>;
@@ -147,13 +119,13 @@ class DriveIntegrationService : public KeyedService,
 
   ~DriveIntegrationService() override;
 
-  // KeyedService override:
+  // KeyedService override.
   void Shutdown() override;
 
   void SetEnabled(bool enabled);
   bool is_enabled() const { return enabled_; }
 
-  bool IsOnline() const;
+  bool IsOnline() const { return is_online_; }
 
   bool IsMounted() const;
 
@@ -178,22 +150,67 @@ class DriveIntegrationService : public KeyedService,
 
   bool IsSharedDrive(const base::FilePath& local_path) const;
 
-  // Adds and removes the observer.
-  using Observer = DriveIntegrationServiceObserver;
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-  [[nodiscard]] bool HasObserver(Observer* observer);
+  // Base class for classes that need to observe events from
+  // DriveIntegrationService. All events are notified on the UI thread.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override;
+
+    // Triggered when the `DriveIntegrationService` is being destroyed.
+    virtual void OnDriveIntegrationServiceDestroyed() {}
+
+    // Triggered when the file system is mounted.
+    virtual void OnFileSystemMounted() {}
+
+    // Triggered when the file system is being unmounted.
+    virtual void OnFileSystemBeingUnmounted() {}
+
+    // Triggered when mounting the filesystem has failed in a fashion that will
+    // not be automatically retried.
+    virtual void OnFileSystemMountFailed() {}
+
+    // Triggered when the mirroring functionality is enabled.
+    virtual void OnMirroringEnabled() {}
+
+    // Triggered when the mirroring functionality is disabled.
+    virtual void OnMirroringDisabled() {}
+
+    // Triggered when the bulk pinning manager reports progress.
+    virtual void OnBulkPinProgress(const drivefs::pinning::Progress& progress) {
+    }
+
+    // Triggered when the bulk-pinning manager is fully initialized.
+    virtual void OnBulkPinInitialized() {}
+
+    // Triggered when the network connection to Drive could have changed.
+    virtual void OnDriveConnectionStatusChanged(util::ConnectionStatus status) {
+    }
+
+    // Starts observing the given service.
+    void Observe(DriveIntegrationService* service);
+
+    // Stops observing the service.
+    void Reset();
+
+    // Gets a pointer to the service being observed.
+    DriveIntegrationService* GetService() const { return service_; }
+
+   private:
+    // The service being observed.
+    raw_ptr<DriveIntegrationService> service_ = nullptr;
+  };
 
   // MountObserver implementation.
   void OnMounted(const base::FilePath& mount_path) override;
-  void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) override;
+  void OnUnmounted(std::optional<base::TimeDelta> remount_delay) override;
   void OnMountFailed(MountFailure failure,
-                     absl::optional<base::TimeDelta> remount_delay) override;
+                     std::optional<base::TimeDelta> remount_delay) override;
 
-  // PinManager::Observer implementation
-  void OnProgress(const drivefs::pinning::Progress& progress) override;
+  // PinningManager::Observer implementation
+  using Progress = drivefs::pinning::Progress;
+  void OnProgress(const Progress& progress) override;
 
-  EventLogger* event_logger() { return logger_.get(); }
+  EventLogger* GetLogger() { return &logger_; }
 
   // Clears all the local cache folder and remounts the file system. |callback|
   // is called with true when this operation is done successfully. Otherwise,
@@ -203,8 +220,10 @@ class DriveIntegrationService : public KeyedService,
   // Returns the DriveFsHost if it is enabled.
   drivefs::DriveFsHost* GetDriveFsHost() const;
 
-  // Returns the PinManager if DriveFS is mounted and bulk-pinning is enabled.
-  drivefs::pinning::PinManager* GetPinManager() const;
+  // Returns the PinningManager if DriveFS is mounted and bulk-pinning is
+  // enabled.
+  using PinningManager = drivefs::pinning::PinningManager;
+  PinningManager* GetPinningManager() const;
 
   // Returns the mojo interface to the DriveFs daemon if it is enabled and
   // connected.
@@ -296,8 +315,6 @@ class DriveIntegrationService : public KeyedService,
   void GetSyncingPaths(
       drivefs::mojom::DriveFs::GetSyncingPathsCallback callback);
 
-  drivefs::SyncState GetSyncStateForPath(const base::FilePath& drive_path);
-
   // Tells DriveFS to update its cached pin states of hosted files (once).
   void PollHostedFilePinStates();
 
@@ -318,7 +335,7 @@ class DriveIntegrationService : public KeyedService,
   // files.
   void GetTotalPinnedSize(base::OnceCallback<void(int64_t)> callback);
 
-  void ClearOfflineFiles(base::OnceCallback<void(drive::FileError)> callback);
+  void ClearOfflineFiles(base::OnceCallback<void(FileError)> callback);
 
   // Tells Drive to immediately start uploading the file at |path|, which is a
   // relative path in Drive. This avoids queuing delays for newly created files,
@@ -338,18 +355,22 @@ class DriveIntegrationService : public KeyedService,
   void GetDocsOfflineStats(
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback);
 
-  void UpdateNetworkState(bool pause_syncing, bool is_offline);
+  void OnNetworkChanged();
+
+  // Register the drive related profile prefs.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* prefs);
 
  private:
-  enum State {
-    NOT_INITIALIZED,
-    INITIALIZING,
-    INITIALIZED,
-    REMOUNTING,
+  enum class State {
+    kNone,
+    kInitializing,
+    kInitialized,
+    kRemounting,
   };
+
   class DriveFsHolder;
 
-  PrefService* GetPrefs() const;
+  PrefService* GetPrefs() const { return profile_->GetPrefs(); }
 
   // Returns true if Drive is enabled.
   // Must be called on UI thread.
@@ -382,7 +403,7 @@ class DriveIntegrationService : public KeyedService,
   // then tries to add it back after that delay. If |remount_delay| isn't
   // specified, |failed_to_mount| is true and the user is offline, schedules a
   // retry when the user is online.
-  void MaybeRemountFileSystem(absl::optional<base::TimeDelta> remount_delay,
+  void MaybeRemountFileSystem(std::optional<base::TimeDelta> remount_delay,
                               bool failed_to_mount);
 
   // Helper function for ClearCacheAndRemountFileSystem() that deletes the cache
@@ -416,8 +437,14 @@ class DriveIntegrationService : public KeyedService,
   // Pin all the files in |files_to_pin| with DriveFS.
   void PinFiles(const std::vector<base::FilePath>& files_to_pin);
 
-  // Enables or disables DriveFS bulk pinning.
-  void ToggleBulkPinning();
+  // Called when the "drivefs.bulk_pinning_enabled" pref changes value.
+  // Starts or stops DriveFS bulk pinning accordingly.
+  // Does nothing if there is no bulk-pinning manager.
+  void StartOrStopBulkPinning();
+
+  // Called when the "drivefs.bulk_pinning.visible" pref changes value.
+  // Creates or deletes the DriveFS bulk-pinning manager accordingly.
+  void CreateOrDeleteBulkPinningManager();
 
   // Regularly samples the bulk-pinning preference and stores the result in a
   // UMA histogram.
@@ -427,18 +454,18 @@ class DriveIntegrationService : public KeyedService,
       int64_t total_size,
       mojo::Remote<drivefs::mojom::SearchQuery> search_query,
       base::OnceCallback<void(int64_t)> callback,
-      drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
+      FileError error,
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
   void OnGetQuickAccessItems(
       GetQuickAccessItemsCallback callback,
-      drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      FileError error,
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   void OnSearchDriveByFileName(
       SearchDriveByFileNameCallback callback,
-      drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      FileError error,
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   void OnEnableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
 
@@ -452,43 +479,53 @@ class DriveIntegrationService : public KeyedService,
 
   void OnUpdateFromPairedDocComplete(const base::FilePath& drive_path,
                                      base::OnceClosure callback,
-                                     drive::FileError error);
+                                     FileError error);
 
   void OnGetOfflineFilesSpaceUsage(base::OnceCallback<void(int64_t)> callback,
-                                   drive::FileError error,
+                                   FileError error,
                                    int64_t total_size);
+
+  void RegisterPrefs();
+  void OnDrivePrefChanged();
+  void OnMirroringPrefChanged();
+
+  // NetworkStateHandler::Observer implementation.
+  void PortalStateChanged(const ash::NetworkState*,
+                          ash::NetworkState::PortalState portal_state) override;
+  void DefaultNetworkChanged(const ash::NetworkState*) override;
+  void OnShuttingDown() override;
 
   friend class DriveIntegrationServiceFactory;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  State state_;
-  bool enabled_;
+  const raw_ptr<Profile> profile_;
+
+  State state_ = State::kNone;
+  bool enabled_ = false;
   bool mount_failed_ = false;
   bool in_clear_cache_ = false;
 
   // Is the bulk-pinning preference sampling task currently scheduled?
   bool bulk_pinning_pref_sampling_ = false;
+  bool mirroring_enabled_ = false;
+  bool is_online_ = true;
+  bool remount_when_online_ = false;
 
   // Custom mount point name that can be injected for testing in constructor.
   std::string mount_point_name_;
-
-  bool mirroring_enabled_ = false;
-
   base::FilePath cache_root_directory_;
-  std::unique_ptr<EventLogger> logger_;
+  EventLogger logger_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::unique_ptr<internal::ResourceMetadataStorage, util::DestroyHelper>
       metadata_storage_;
 
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<Observer, true> observers_;
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
-  std::unique_ptr<PreferenceWatcher> preference_watcher_;
-  std::unique_ptr<drivefs::pinning::PinManager> pin_manager_;
-  std::unique_ptr<BulkPinningPrefUpdater> bulk_pinning_pref_updater_;
+
+  std::unique_ptr<PinningManager> pinning_manager_;
+
   int drivefs_total_failures_count_ = 0;
   int drivefs_consecutive_failures_count_ = 0;
-  bool remount_when_online_ = false;
 
   // Used to fetch authentication and refresh tokens from Drive.
   std::unique_ptr<google_apis::AuthServiceInterface> auth_service_;
@@ -497,6 +534,12 @@ class DriveIntegrationService : public KeyedService,
 
   base::Time last_offline_storage_size_time_;
   int64_t last_offline_storage_size_result_;
+
+  PrefChangeRegistrar registrar_;
+
+  base::ScopedObservation<ash::NetworkStateHandler,
+                          ash::NetworkStateHandler::Observer>
+      network_state_handler_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
@@ -539,7 +582,7 @@ class DriveIntegrationServiceFactory : public ProfileKeyedServiceFactory {
   ~DriveIntegrationServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   // This is static so it can be set without instantiating the factory. This

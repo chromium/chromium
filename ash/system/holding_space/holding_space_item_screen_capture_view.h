@@ -19,9 +19,9 @@ class RoundedImageView;
 
 class ASH_EXPORT HoldingSpaceItemScreenCaptureView
     : public HoldingSpaceItemView {
- public:
-  METADATA_HEADER(HoldingSpaceItemScreenCaptureView);
+  METADATA_HEADER(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)
 
+ public:
   HoldingSpaceItemScreenCaptureView(HoldingSpaceViewDelegate* delegate,
                                     const HoldingSpaceItem* item);
   HoldingSpaceItemScreenCaptureView(const HoldingSpaceItemScreenCaptureView&) =
@@ -34,14 +34,15 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
   // HoldingSpaceItemView:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   std::u16string GetTooltipText(const gfx::Point& point) const override;
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
-                                 uint32_t updated_fields) override;
+  void OnHoldingSpaceItemUpdated(
+      const HoldingSpaceItem* item,
+      const HoldingSpaceItemUpdatedFields& updated_fields) override;
   void OnThemeChanged() override;
 
   void UpdateImage();
 
   // Owned by view hierarchy.
-  raw_ptr<RoundedImageView, ExperimentalAsh> image_ = nullptr;
+  raw_ptr<RoundedImageView> image_ = nullptr;
 
   base::CallbackListSubscription image_skia_changed_subscription_;
 };

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_multi_source_picker_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_priority_mechanism_sheet_view.h"
@@ -30,6 +31,9 @@
 #include "ui/views/layout/box_layout_view.h"
 
 namespace {
+
+// Number of digits for the GPM Pin.
+constexpr int kPinDigitCount = 6;
 
 // A placeholder sheet to show in place of unimplemented sheets.
 class PlaceholderSheetModel : public AuthenticatorSheetModelBase {
@@ -329,9 +333,27 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorCreatePasskeySheetView>(
           std::make_unique<AuthenticatorCreatePasskeySheetModel>(dialog_model));
       break;
+    case Step::kGPMCreatePin:
+      sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
+          std::make_unique<AuthenticatorGPMPinSheetModel>(
+              dialog_model, kPinDigitCount,
+              AuthenticatorGPMPinSheetModel::Mode::kPinCreate));
+      break;
+    case Step::kGPMEnterPin:
+      sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
+          std::make_unique<AuthenticatorGPMPinSheetModel>(
+              dialog_model, kPinDigitCount,
+              AuthenticatorGPMPinSheetModel::Mode::kPinEntry));
+      break;
     case Step::kNotStarted:
     case Step::kConditionalMediation:
     case Step::kClosed:
+    case Step::kRecoverSecurityDomain:
+    case Step::kTrustThisComputer:
+    case Step::kWaitingForEnclave:
+    case Step::kGPMCreatePasskey:
+    case Step::kGPMTouchID:
+    case Step::kGPMOnboarding:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<PlaceholderSheetModel>(dialog_model));
       break;

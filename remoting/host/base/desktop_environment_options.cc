@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -38,6 +38,12 @@ DesktopEnvironmentOptions& DesktopEnvironmentOptions::operator=(
 
 void DesktopEnvironmentOptions::Initialize() {
   desktop_capture_options_.set_detect_updated_region(true);
+
+  // Enable iosurface in the Mac capturer to work around a recent change to
+  // the Mac screen-capturer - see http://crbug.com/1523038.
+#if BUILDFLAG(IS_MAC)
+  desktop_capture_options_.set_allow_iosurface(true);
+#endif
 }
 
 const DesktopCaptureOptions*
@@ -105,13 +111,12 @@ void DesktopEnvironmentOptions::set_enable_remote_webauthn(bool enabled) {
   enable_remote_webauthn_ = enabled;
 }
 
-const absl::optional<size_t>& DesktopEnvironmentOptions::clipboard_size()
-    const {
+const std::optional<size_t>& DesktopEnvironmentOptions::clipboard_size() const {
   return clipboard_size_;
 }
 
 void DesktopEnvironmentOptions::set_clipboard_size(
-    absl::optional<size_t> clipboard_size) {
+    std::optional<size_t> clipboard_size) {
   clipboard_size_ = std::move(clipboard_size);
 }
 
@@ -134,12 +139,12 @@ void DesktopEnvironmentOptions::set_capture_video_on_dedicated_thread(
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
   // This field is for test purpose. Usually it should not be set to false.
-  absl::optional<bool> detect_updated_region =
+  std::optional<bool> detect_updated_region =
       options.GetBool("Detect-Updated-Region");
   if (detect_updated_region.has_value()) {
     desktop_capture_options_.set_detect_updated_region(*detect_updated_region);
   }
-  absl::optional<bool> capture_video_on_dedicated_thread =
+  std::optional<bool> capture_video_on_dedicated_thread =
       options.GetBool("Capture-Video-On-Dedicated-Thread");
   if (capture_video_on_dedicated_thread.has_value()) {
     set_capture_video_on_dedicated_thread(*capture_video_on_dedicated_thread);

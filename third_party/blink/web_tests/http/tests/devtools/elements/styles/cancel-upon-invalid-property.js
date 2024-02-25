@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Verifies that entering poor property value restores original text.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -24,7 +23,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   async function editProperty() {
     treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
     await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
-    treeElement.startEditing();
+    treeElement.startEditingName();
     treeElement.nameElement.textContent = 'color';
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     treeElement.valueElement.textContent = 'red';

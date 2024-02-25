@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NoteTakingAppsLockScreenAllowlist": []
+        },
+        "prefs": {
+          "settings.note_taking_apps_lock_screen_whitelist": {
+            "value": []
+          }
+        }
+      }
+    ]
+  }
+]

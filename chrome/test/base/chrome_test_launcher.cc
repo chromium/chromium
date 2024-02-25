@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/strings/string_util.h"
-#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
@@ -72,6 +71,36 @@
 #include "chrome/browser/upgrade_detector/installed_version_poller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/test_controller_ash.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class TestControllerSetupMainExtraParts : public ChromeBrowserMainExtraParts {
+ public:
+  TestControllerSetupMainExtraParts() = default;
+
+  void PostBrowserStart() override {
+    crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
+        &test_controller_ash_);
+  }
+
+  void PostMainMessageLoopRun() override {
+    crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
+        nullptr);
+  }
+
+ private:
+  crosapi::TestControllerAsh test_controller_ash_;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}  // namespace
 
 // static
 int ChromeTestSuiteRunner::RunTestSuiteInternal(ChromeTestSuite* test_suite) {
@@ -189,7 +218,7 @@ ChromeTestChromeMainDelegate::CreateContentUtilityClient() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-absl::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
+std::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   auto result = ChromeMainDelegate::PostEarlyInitialization(invoked_in);
   if (absl::get_if<InvokedInBrowserProcess>(&invoked_in)) {
@@ -220,6 +249,14 @@ ChromeTestLauncherDelegate::CreateContentMainDelegate() {
   return new ChromeTestChromeMainDelegate(base::TimeTicks::Now());
 }
 #endif
+
+void ChromeTestLauncherDelegate::CreatedBrowserMainParts(
+    content::BrowserMainParts* browser_main_parts) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static_cast<ChromeBrowserMainParts*>(browser_main_parts)
+      ->AddParts(std::make_unique<TestControllerSetupMainExtraParts>());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 void ChromeTestLauncherDelegate::PreSharding() {
 #if BUILDFLAG(IS_WIN)
@@ -260,8 +297,6 @@ int LaunchChromeTests(size_t parallel_jobs,
                       content::TestLauncherDelegate* delegate,
                       int argc,
                       char** argv) {
-  base::test::AllowCheckIsTestForTesting();
-
 #if BUILDFLAG(IS_MAC)
   // Set up the path to the framework so resources can be loaded. This is also
   // performed in ChromeTestSuite, but in browser tests that only affects the

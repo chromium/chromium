@@ -32,7 +32,7 @@ class CORE_EXPORT SpeculationCandidate
                        mojom::blink::SpeculationTargetHint target_hint,
                        mojom::blink::SpeculationEagerness eagerness,
                        network::mojom::blink::NoVarySearchPtr no_vary_search,
-                       mojom::blink::SpeculationInjectionWorld injection_world,
+                       mojom::blink::SpeculationInjectionType injection_type,
                        SpeculationRuleSet* rule_set,
                        HTMLAnchorElement* anchor);
   virtual ~SpeculationCandidate() = default;
@@ -47,10 +47,10 @@ class CORE_EXPORT SpeculationCandidate
     return target_hint_;
   }
   mojom::blink::SpeculationEagerness eagerness() const { return eagerness_; }
-  SpeculationRuleSet* rule_set() const { return rule_set_; }
+  SpeculationRuleSet* rule_set() const { return rule_set_.Get(); }
   // Only set for candidates derived from a document rule (is null for
   // candidates derived from list rules).
-  HTMLAnchorElement* anchor() const { return anchor_; }
+  HTMLAnchorElement* anchor() const { return anchor_.Get(); }
 
  private:
   const KURL url_;
@@ -60,7 +60,7 @@ class CORE_EXPORT SpeculationCandidate
   const mojom::blink::SpeculationTargetHint target_hint_;
   const mojom::blink::SpeculationEagerness eagerness_;
   const network::mojom::blink::NoVarySearchPtr no_vary_search_;
-  const mojom::blink::SpeculationInjectionWorld injection_world_;
+  const mojom::blink::SpeculationInjectionType injection_type_;
   const Member<SpeculationRuleSet> rule_set_;
   const Member<HTMLAnchorElement> anchor_;
 };

@@ -9,6 +9,7 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
@@ -30,7 +31,6 @@
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptohome {
 class Identification;
@@ -230,7 +230,7 @@ class TestArcSessionObserver : public ArcSession::Observer {
 
   ~TestArcSessionObserver() override { arc_session_->RemoveObserver(this); }
 
-  const absl::optional<OnSessionStoppedArgs>& on_session_stopped_args() const {
+  const std::optional<OnSessionStoppedArgs>& on_session_stopped_args() const {
     return on_session_stopped_args_;
   }
 
@@ -246,10 +246,9 @@ class TestArcSessionObserver : public ArcSession::Observer {
   }
 
  private:
-  const raw_ptr<ArcSession, ExperimentalAsh> arc_session_;  // Not owned.
-  const raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_ =
-      nullptr;  // Not owned.
-  absl::optional<OnSessionStoppedArgs> on_session_stopped_args_;
+  const raw_ptr<ArcSession> arc_session_;            // Not owned.
+  const raw_ptr<base::RunLoop> run_loop_ = nullptr;  // Not owned.
+  std::optional<OnSessionStoppedArgs> on_session_stopped_args_;
 };
 
 // Custom deleter for ArcSession testing.
@@ -280,12 +279,12 @@ class FakeSchedulerConfigurationManager
       obs.OnConfigurationSet(reply_->first, reply_->second);
   }
 
-  absl::optional<std::pair<bool, size_t>> GetLastReply() const override {
+  std::optional<std::pair<bool, size_t>> GetLastReply() const override {
     return reply_;
   }
 
  private:
-  absl::optional<std::pair<bool, size_t>> reply_;
+  std::optional<std::pair<bool, size_t>> reply_;
 };
 
 class FakeAdbSideloadingAvailabilityDelegate
@@ -934,6 +933,14 @@ TEST_F(ArcSessionImplTest, HostUreadaheadGenerationSet) {
       GetClient(arc_session.get())->last_start_params().disable_ureadahead);
 }
 
+// Test that validates arc signed in flag is not set by default.
+TEST_F(ArcSessionImplTest, NotArcSignedInByDefault) {
+  auto arc_session = CreateArcSession();
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetClient(arc_session.get())->last_start_params().arc_signed_in);
+}
+
 // Test that validates use dev caches flag is not set by default.
 TEST_F(ArcSessionImplTest, DoNotUseDevCachesByDefault) {
   auto arc_session = CreateArcSession();
@@ -1015,6 +1022,42 @@ TEST_P(ArcSessionImplDalvikMemoryProfileTest, DalvikMemoryProfiles) {
 INSTANTIATE_TEST_SUITE_P(All,
                          ArcSessionImplDalvikMemoryProfileTest,
                          ::testing::ValuesIn(kDalvikMemoryProfileVariant));
+
+struct HostUreadaheadModeState {
+  const char* mode_switch;
+  const StartParams::HostUreadaheadMode expected_mode;
+};
+
+constexpr HostUreadaheadModeState kHostUreadaheadMode[] = {
+    {"readahead", StartParams::HostUreadaheadMode::MODE_READAHEAD},
+    {"generate", StartParams::HostUreadaheadMode::MODE_GENERATE},
+    {"disabled", StartParams::HostUreadaheadMode::MODE_DISABLED},
+};
+
+class ArcSessionImplHostUreadaheadModeTest
+    : public ArcSessionImplTest,
+      public ::testing::WithParamInterface<HostUreadaheadModeState> {};
+
+TEST_P(ArcSessionImplHostUreadaheadModeTest, HostUreadaheadModes) {
+  auto arc_session = CreateArcSession();
+  const HostUreadaheadModeState state = GetParam();
+
+  if (state.mode_switch) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(ash::switches::kArcHostUreadaheadMode,
+                                    state.mode_switch);
+  }
+
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      state.expected_mode,
+      GetClient(arc_session.get())->last_start_params().host_ureadahead_mode);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcSessionImplHostUreadaheadModeTest,
+                         ::testing::ValuesIn(kHostUreadaheadMode));
 
 }  // namespace
 }  // namespace arc

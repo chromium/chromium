@@ -8,19 +8,23 @@
 
 #include <memory>
 
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/download/download_shelf.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -40,6 +44,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -51,6 +56,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -197,7 +203,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // will no longer be needed.
 
   static constexpr auto kSettingsPathOverrides =
-      base::MakeFixedFlatMap<ContentSettingsType, base::StringPiece>({
+      base::MakeFixedFlatMap<ContentSettingsType, std::string_view>({
           {ContentSettingsType::AUTOMATIC_DOWNLOADS, "automaticDownloads"},
           {ContentSettingsType::BACKGROUND_SYNC, "backgroundSync"},
           {ContentSettingsType::MEDIASTREAM_MIC, "microphone"},
@@ -207,42 +213,80 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
           {ContentSettingsType::HID_CHOOSER_DATA, "hidDevices"},
           {ContentSettingsType::STORAGE_ACCESS, "storageAccess"},
           {ContentSettingsType::USB_CHOOSER_DATA, "usbDevices"},
+          {ContentSettingsType::WEB_PRINTING, "webPrinting"},
       });
 
-  const auto* it = kSettingsPathOverrides.find(type);
+  const std::string_view* override =
+      base::FindOrNull(kSettingsPathOverrides, type);
+  return base::StrCat(
+      {kContentSettingsSubPage, "/",
+       override ? *override
+                : site_settings::ContentSettingsTypeToGroupName(type)});
+}
 
-  return base::StrCat({kContentSettingsSubPage, "/",
-                       (it == kSettingsPathOverrides.end())
-                           ? site_settings::ContentSettingsTypeToGroupName(type)
-                           : it->second});
+bool SiteGURLIsValid(const GURL& url) {
+  url::Origin site_origin = url::Origin::Create(url);
+  // TODO(https://crbug.com/444047): Site Details should work with file:// urls
+  // when this bug is fixed, so add it to the allowlist when that happens.
+  return !site_origin.opaque() && (url.SchemeIsHTTPOrHTTPS() ||
+                                   url.SchemeIs(extensions::kExtensionScheme) ||
+                                   url.SchemeIs(chrome::kIsolatedAppScheme));
 }
 
 void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   // If a valid non-file origin, open a settings page specific to the current
   // origin of the page. Otherwise, open Content Settings.
-  url::Origin site_origin = url::Origin::Create(url);
-  std::string link_destination(chrome::kChromeUIContentSettingsURL);
-  // TODO(https://crbug.com/444047): Site Details should work with file:// urls
-  // when this bug is fixed, so add it to the allowlist when that happens.
-  if (!site_origin.opaque() && (url.SchemeIsHTTPOrHTTPS() ||
-                                url.SchemeIs(extensions::kExtensionScheme) ||
-                                url.SchemeIs(chrome::kIsolatedAppScheme))) {
-    std::string origin_string = site_origin.Serialize();
-    url::RawCanonOutputT<char> percent_encoded_origin;
-    url::EncodeURIComponent(origin_string.c_str(), origin_string.length(),
-                            &percent_encoded_origin);
-    link_destination = chrome::kChromeUISiteDetailsPrefixURL +
-                       std::string(percent_encoded_origin.data(),
-                                   percent_encoded_origin.length());
+  constexpr char kParamRequest[] = "site";
+  GURL link_destination = GetSettingsUrl(chrome::kContentSettingsSubPage);
+  if (SiteGURLIsValid(url)) {
+    std::string origin_string = url::Origin::Create(url).Serialize();
+    link_destination =
+        net::AppendQueryParameter(GetSettingsUrl(chrome::kSiteDetailsSubpage),
+                                  kParamRequest, origin_string);
   }
-  NavigateParams params(profile, GURL(link_destination),
-                        ui::PAGE_TRANSITION_TYPED);
+  NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.browser = browser;
+  Navigate(&params);
+}
+
+// TODO(crbug.com/1011533): Remove `kFileSystemAccessPersistentPermissions`
+// flag after FSA Persistent Permissions feature launch.
+// TODO(crbug.com/1011533): Add a browsertest that parallels the existing site
+// settings browsertests that open the page info button, and click through to
+// the file system site settings page for a given origin.
+void ShowSiteSettingsFileSystemImpl(Browser* browser,
+                                    Profile* profile,
+                                    const GURL& url) {
+  constexpr char kParamRequest[] = "site";
+  GURL link_destination = GetSettingsUrl(chrome::kFileSystemSettingsSubpage);
+
+  // If origin is valid, open a file system site settings page specific to the
+  // current origin of the page. Otherwise, open the File System Site Settings
+  // page.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions) &&
+      SiteGURLIsValid(url)) {
+    // TODO(crbug.com/1505843): Update `origin_string` to remove the encoded
+    // trailing slash, once it's no longer required to correctly navigate to
+    // file system site settings page for the given origin.
+    const std::string origin_string =
+        base::StrCat({url::Origin::Create(url).Serialize(), "/"});
+    link_destination = net::AppendQueryParameter(link_destination,
+                                                 kParamRequest, origin_string);
+  }
+  NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.browser = browser;
   Navigate(&params);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void ShowSystemAppInternal(Profile* profile,
+                           const ash::SystemWebAppType type,
+                           const ash::SystemAppLaunchParams& params) {
+  ash::LaunchSystemWebAppAsync(profile, type, params);
+}
 void ShowSystemAppInternal(Profile* profile, const ash::SystemWebAppType type) {
   ash::SystemAppLaunchParams params;
   params.launch_source = apps::LaunchSource::kUnknown;
@@ -424,6 +468,15 @@ void ShowSiteSettings(Profile* profile, const GURL& url) {
   ShowSiteSettingsImpl(nullptr, profile, url);
 }
 
+void ShowSiteSettingsFileSystem(Browser* browser, const GURL& url) {
+  ShowSiteSettingsFileSystemImpl(browser, browser->profile(), url);
+}
+
+void ShowSiteSettingsFileSystem(Profile* profile, const GURL& url) {
+  DCHECK(profile);
+  ShowSiteSettingsFileSystemImpl(nullptr, profile, url);
+}
+
 void ShowContentSettings(Browser* browser,
                          ContentSettingsType content_settings_type) {
   ShowSettingsSubPage(
@@ -502,35 +555,24 @@ void ShowSearchEngineSettings(Browser* browser) {
 }
 
 void ShowWebStore(Browser* browser, const base::StringPiece& utm_source_value) {
+  GURL webstore_url = extension_urls::GetWebstoreLaunchURL();
+  // TODO(crbug.com/1488136): Refactor this check into
+  // extension_urls::GetWebstoreLaunchURL() and fix tests relying on it.
+  if (base::FeatureList::IsEnabled(extensions_features::kNewWebstoreURL)) {
+    webstore_url = extension_urls::GetNewWebstoreLaunchURL();
+  }
   ShowSingletonTabIgnorePathOverwriteNTP(
-      browser, extension_urls::AppendUtmSource(
-                   extension_urls::GetWebstoreLaunchURL(), utm_source_value));
+      browser, extension_urls::AppendUtmSource(webstore_url, utm_source_value));
 }
 
 void ShowPrivacySandboxSettings(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    ShowSettingsSubPage(browser, kAdPrivacySubPage);
-  } else {
-    ShowSettingsSubPage(browser, kPrivacySandboxSubPage);
-  }
+  ShowSettingsSubPage(browser, kAdPrivacySubPage);
 }
 
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  CHECK(
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4));
   ShowSettingsSubPage(browser, kPrivacySandboxMeasurementSubpage);
-}
-
-void ShowPrivacySandboxAdPersonalization(Browser* browser) {
-  base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  ShowSettingsSubPage(browser, kPrivacySandboxAdPersonalizationSubPage);
-}
-
-void ShowPrivacySandboxLearnMore(Browser* browser) {
-  base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  ShowSettingsSubPage(browser, kPrivacySandboxLearnMoreSubPage);
 }
 
 void ShowAddresses(Browser* browser) {
@@ -637,6 +679,25 @@ void ShowShortcutCustomizationApp(Profile* profile) {
   ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   ShowSystemAppInternal(profile, GURL(kOsUIShortcutCustomizationAppURL));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ShowShortcutCustomizationApp(Profile* profile,
+                                  const std::string& action,
+                                  const std::string& category) {
+  const std::string query_string =
+      base::StrCat({"action=", action, "&category=", category});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::SystemAppLaunchParams params;
+  params.launch_source = apps::LaunchSource::kUnknown;
+  params.url = GURL(base::StrCat(
+      {ash::kChromeUIShortcutCustomizationAppURL, "?", query_string}));
+  ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
+                        params);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const GURL os_shortcuts_app_url{
+      base::StrCat({kOsUIShortcutCustomizationAppURL, "?", query_string})};
+  ShowSystemAppInternal(profile, os_shortcuts_app_url);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

@@ -52,7 +52,7 @@ class DesktopUIStorySet(story.StorySet):
       side_search_story.SideSearchStoryNavigation,
   ]
 
-  def __init__(self):
+  def __init__(self, exhaustive=False):
     super(DesktopUIStorySet,
           self).__init__(archive_data_file=('../data/desktop_ui.json'),
                          cloud_storage_bucket=story.PARTNER_BUCKET)
@@ -64,7 +64,7 @@ class DesktopUIStorySet(story.StorySet):
           ]))
 
     # WebUI Tab Strip is not available on Mac.
-    if not IsMac():
+    if not IsMac() or exhaustive:
       for cls in self.WEBUI_TAB_STRIP_STORIES:
         self.AddStory(
             cls(self, [
@@ -76,13 +76,15 @@ class DesktopUIStorySet(story.StorySet):
       self.AddStory(cls(self))
 
     for cls in self.NEW_TAB_PAGE_STORIES:
+      features = [
+          'NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake',
+          'NtpChromeCartModule:NtpChromeCartModuleDataParam/fake',
+          'NtpDriveModule:NtpDriveModuleDataParam/fake',
+          'NtpPhotosModule:NtpPhotosModuleDataParam/1',
+      ]
       self.AddStory(
           cls(self, [
-              '--enable-features=NtpModules,\
-              NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake,\
-              NtpChromeCartModule:NtpChromeCartModuleDataParam/fake,\
-              NtpDriveModule:NtpDriveModuleDataParam/fake,\
-              NtpPhotosModule:NtpPhotosModuleDataParam/1',
+              '--enable-features=%s' % ','.join(features),
               '--signed-out-ntp-modules',
           ]))
 

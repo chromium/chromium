@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 #include "cc/raster/task_category.h"
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/task_graph_work_queue.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -209,7 +209,7 @@ class CC_EXPORT CategorizedWorkerPoolJob : public CategorizedWorkerPool {
  private:
   ~CategorizedWorkerPoolJob() override;
 
-  absl::optional<TaskGraphWorkQueue::PrioritizedTask>
+  std::optional<TaskGraphWorkQueue::PrioritizedTask>
   GetNextTaskToRunWithLockAcquired(base::span<const TaskCategory> categories);
 
   base::JobHandle* ScheduleTasksWithLockAcquired(NamespaceToken token,

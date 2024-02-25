@@ -11,16 +11,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
@@ -56,29 +56,29 @@ password_manager::PasswordForm CreateTestForm(int index = 1) {
 class ManagePasswordsBubbleControllerTest : public ::testing::Test {
  public:
   ManagePasswordsBubbleControllerTest() {
-    profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment();
+    TestingProfile::Builder builder;
+    builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
+                                    GetIdentityTestEnvironmentFactories());
+    builder.AddTestingFactory(
+        ProfilePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStoreInterface<
+                content::BrowserContext,
+                testing::StrictMock<
+                    password_manager::MockPasswordStoreInterface>>));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
+    profile_ = builder.Build();
     test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
     mock_delegate_ =
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
-
-    PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(
-                       &password_manager::BuildPasswordStoreInterface<
-                           content::BrowserContext,
-                           testing::StrictMock<
-                               password_manager::MockPasswordStoreInterface>>));
-
-    test_sync_service_ = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(),
-            base::BindRepeating(
-                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<syncer::TestSyncService>();
-                })));
   }
 
   ~ManagePasswordsBubbleControllerTest() override = default;
@@ -86,11 +86,14 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
   ManagePasswordsBubbleController* controller() { return controller_.get(); }
   TestingProfile* profile() { return profile_.get(); }
-  syncer::TestSyncService* sync_service() { return test_sync_service_; }
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
 
   password_manager::MockPasswordStoreInterface* GetStore() {
     return static_cast<password_manager::MockPasswordStoreInterface*>(
-        PasswordStoreFactory::GetInstance()
+        ProfilePasswordStoreFactory::GetInstance()
             ->GetForProfile(profile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
@@ -107,7 +110,6 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_enabler_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
@@ -169,7 +171,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnManageClicked) {
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnLocalCredentials) {
   Init();
-  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  base::span<std::unique_ptr<password_manager::PasswordForm> const>
       credentials = controller()->GetCredentials();
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
       expected_credentials =
@@ -197,22 +199,28 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
       /*types=*/syncer::UserSelectableTypeSet());
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kNotSyncing);
+            ManagePasswordsBubbleController::SyncState::kNotActive);
 
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPasswords});
+  ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
   EXPECT_EQ(
       controller()->GetPasswordSyncState(),
-      password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);
+      ManagePasswordsBubbleController::SyncState::kActiveWithAccountPasswords);
 
   sync_service()->SetHasSyncConsent(true);
+  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kSyncingNormalEncryption);
+            ManagePasswordsBubbleController::SyncState::
+                kActiveWithSyncFeatureEnabled);
 
   sync_service()->SetIsUsingExplicitPassphrase(true);
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kSyncingWithCustomPassphrase);
+            ManagePasswordsBubbleController::SyncState::
+                kActiveWithSyncFeatureEnabled);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {
@@ -338,4 +346,31 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnWhetherUsernameExists) {
   Init();
   EXPECT_TRUE(controller()->UsernameExists(u"User1"));
   EXPECT_FALSE(controller()->UsernameExists(u"AnotherUsername"));
+}
+
+TEST_F(ManagePasswordsBubbleControllerTest, OpenMoveBubble) {
+  base::HistogramTester histogram_tester;
+  Init();
+  password_manager::PasswordForm selected_form = CreateTestForm();
+
+  // Used to mock displaying the details view. This is needed to set the
+  // selected_form value to the one that we expect.
+  EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](PasswordsModelDelegate::AvailabilityCallback callback) {
+            // Respond with true to simulate a successful user reauth.
+            std::move(callback).Run(true);
+          })));
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+  controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
+                                                    mock_callback.Get());
+
+  EXPECT_CALL(*delegate(), ShowMovePasswordBubble(selected_form));
+  controller()->OnMovePasswordLinkClicked();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordManagementBubble.UserAction",
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kMovePasswordLinkClicked,
+      1);
 }

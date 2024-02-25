@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/extract_io_task.h"
 
 #include <grp.h>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -26,7 +27,6 @@
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 #include "third_party/zlib/google/redact.h"
 
@@ -61,7 +61,7 @@ ExtractIOTask::ExtractIOTask(
     const base::FilePath source_path = source_url.path();
     if (source_path.MatchesExtension(".zip") &&
         ash::FileSystemBackend::CanHandleURL(source_url)) {
-      progress_.sources.emplace_back(source_url, absl::nullopt);
+      progress_.sources.emplace_back(source_url, std::nullopt);
     }
   }
   sizingCount_ = extractCount_ = progress_.sources.size();
@@ -110,12 +110,12 @@ void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
   }
 }
 
-absl::optional<gid_t> GetDirectoriesOwnerGid() {
+std::optional<gid_t> GetDirectoriesOwnerGid() {
   struct group grp, *result = nullptr;
   std::vector<char> buffer(16384);
   getgrnam_r("chronos-access", &grp, buffer.data(), buffer.size(), &result);
   if (!result) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return grp.gr_gid;
 }
@@ -125,7 +125,7 @@ bool SetDirectoryPermissions(base::FilePath directory, bool success) {
   // Always set permissions in case of error mid-extract.
   base::FileEnumerator traversal(directory, true,
                                  base::FileEnumerator::DIRECTORIES);
-  const absl::optional<gid_t> owner_gid = GetDirectoriesOwnerGid();
+  const std::optional<gid_t> owner_gid = GetDirectoriesOwnerGid();
   for (base::FilePath current = traversal.Next(); !current.empty();
        current = traversal.Next()) {
     base::SetPosixFilePermissions(current,
@@ -188,7 +188,7 @@ bool CreateExtractionDirectory(const base::FilePath& destination_directory) {
                                    base::FILE_PERMISSION_EXECUTE_BY_GROUP |
                                    base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
     // Might not exist in tests.
-    const absl::optional<gid_t> owner_gid = GetDirectoriesOwnerGid();
+    const std::optional<gid_t> owner_gid = GetDirectoriesOwnerGid();
     if (created_ok && owner_gid.has_value()) {
       created_ok = (HANDLE_EINTR(chown(destination_directory.value().c_str(),
                                        -1, owner_gid.value())) == 0);
@@ -205,7 +205,7 @@ void ExtractIOTask::ExtractArchive(
   if (!destination_result.has_value()) {
     ZipExtractCallback(base::FilePath(), false);
   } else {
-    progress_.outputs.emplace_back(destination_result.value(), absl::nullopt,
+    progress_.outputs.emplace_back(destination_result.value(), std::nullopt,
                                    progress_.sources[index].url);
     const base::FilePath destination_directory =
         destination_result.value().path();

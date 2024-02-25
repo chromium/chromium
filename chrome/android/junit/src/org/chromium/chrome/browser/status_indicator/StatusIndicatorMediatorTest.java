@@ -27,37 +27,25 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Unit tests for {@link StatusIndicatorMediator}.
- */
+/** Unit tests for {@link StatusIndicatorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class StatusIndicatorMediatorTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock
-    TabObscuringHandler mTabObscuringHandler;
-    @Mock
-    View mStatusIndicatorView;
-    @Mock
-    StatusIndicatorCoordinator.StatusIndicatorObserver mObserver;
-    @Mock
-    Runnable mRegisterResource;
-    @Mock
-    Runnable mUnregisterResource;
-    @Mock
-    Supplier<Boolean> mCanAnimateNativeBrowserControls;
-    @Mock
-    Callback<Runnable> mInvalidateCompositorView;
-    @Mock
-    Runnable mRequestLayout;
+    @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock TabObscuringHandler mTabObscuringHandler;
+    @Mock View mStatusIndicatorView;
+    @Mock StatusIndicatorCoordinator.StatusIndicatorObserver mObserver;
+    @Mock Runnable mRegisterResource;
+    @Mock Runnable mUnregisterResource;
+    @Mock Supplier<Boolean> mCanAnimateNativeBrowserControls;
+    @Mock Callback<Runnable> mInvalidateCompositorView;
+    @Mock Runnable mRequestLayout;
 
     private PropertyModel mModel;
     private StatusIndicatorMediator mMediator;
@@ -70,14 +58,23 @@ public class StatusIndicatorMediatorTest {
         when(mCanAnimateNativeBrowserControls.get()).thenReturn(true);
         doNothing().when(mInvalidateCompositorView).onResult(any(Runnable.class));
         doNothing().when(mRequestLayout).run();
-        mModel = new PropertyModel.Builder(StatusIndicatorProperties.ALL_KEYS)
-                         .with(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE)
-                         .with(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false)
-                         .build();
-        mMediator = new StatusIndicatorMediator(mBrowserControlsStateProvider, mTabObscuringHandler,
-                () -> Color.WHITE, mCanAnimateNativeBrowserControls);
-        mMediator.initialize(mModel, mRegisterResource, mUnregisterResource,
-                mInvalidateCompositorView, mRequestLayout);
+        mModel =
+                new PropertyModel.Builder(StatusIndicatorProperties.ALL_KEYS)
+                        .with(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE)
+                        .with(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false)
+                        .build();
+        mMediator =
+                new StatusIndicatorMediator(
+                        mBrowserControlsStateProvider,
+                        mTabObscuringHandler,
+                        () -> Color.WHITE,
+                        mCanAnimateNativeBrowserControls);
+        mMediator.initialize(
+                mModel,
+                mRegisterResource,
+                mUnregisterResource,
+                mInvalidateCompositorView,
+                mRequestLayout);
     }
 
     @Test

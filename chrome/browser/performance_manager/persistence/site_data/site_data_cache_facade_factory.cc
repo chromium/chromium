@@ -54,9 +54,10 @@ SiteDataCacheFacadeFactory::SiteDataCacheFacadeFactory()
 
 SiteDataCacheFacadeFactory::~SiteDataCacheFacadeFactory() = default;
 
-KeyedService* SiteDataCacheFacadeFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SiteDataCacheFacadeFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new SiteDataCacheFacade(context);
+  return std::make_unique<SiteDataCacheFacade>(context);
 }
 
 bool SiteDataCacheFacadeFactory::ServiceIsCreatedWithBrowserContext() const {

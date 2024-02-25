@@ -10,13 +10,13 @@
 #import "base/test/scoped_feature_list.h"
 #import "build/build_config.h"
 #import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
-#import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
+#import "ios/chrome/browser/passwords/model/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -48,12 +48,11 @@ class PasswordInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
   void InitInfobar(
-      absl::optional<std::string> account_to_store_password = absl::nullopt) {
+      std::optional<std::string> account_to_store_password = std::nullopt) {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypePasswordSave,
         MockIOSChromeSavePasswordInfoBarDelegate::Create(
-            kUsername, kPassword, GURL::EmptyGURL(),
-            account_to_store_password));
+            kUsername, kPassword, GURL(), account_to_store_password));
     request_ =
         OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
             infobar_.get(), InfobarOverlayType::kBanner);
@@ -156,4 +155,25 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
   infobar_ = nullptr;
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
+}
+
+// Tests that the infobar delegate is called on -finishDismissal when the
+// delegate is set.
+TEST_F(PasswordInfobarBannerOverlayMediatorTest, InfobarDone) {
+  InitInfobar();
+  EXPECT_CALL(mock_delegate(), InfobarGone).Times(1);
+  [mediator_ finishDismissal];
+}
+
+// Tests that the infobar delegate isn't called on -finishDismissal when the
+// infobar delegate is deleted.
+TEST_F(PasswordInfobarBannerOverlayMediatorTest,
+       InfobarDoneWhenInfobarDelegateDeleted) {
+  InitInfobar();
+  EXPECT_CALL(mock_delegate(), InfobarGone).Times(0);
+
+  // Delete the infobar to return a nullptr delegate.
+  infobar_.reset();
+
+  [mediator_ finishDismissal];
 }

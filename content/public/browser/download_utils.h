@@ -9,16 +9,21 @@
 
 #include <string>
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 class GURL;
 namespace net {
 class HttpResponseHeaders;
-}
+}  // namespace net
 
 namespace content {
 namespace download_utils {
 
 // Returns true if the given response must be downloaded because of the headers.
-CONTENT_EXPORT bool MustDownload(const GURL& url,
+CONTENT_EXPORT bool MustDownload(BrowserContext* browser_context,
+                                 const GURL& url,
                                  const net::HttpResponseHeaders* headers,
                                  const std::string& mime_type);
 

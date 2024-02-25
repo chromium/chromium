@@ -38,9 +38,9 @@
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -58,7 +58,8 @@
 
 namespace {
 
-const char kCSSBackgroundImageFormat[] = "-webkit-image-set("
+const char kCSSBackgroundImageFormat[] =
+    "image-set("
     "url(chrome-search://theme/IDR_THEME_NTP_BACKGROUND?%s) 1x, "
     "url(chrome-search://theme/IDR_THEME_NTP_BACKGROUND@2x?%s) 2x)";
 
@@ -73,7 +74,8 @@ const char kCSSBackgroundRepeatX[] = "repeat-x";
 const char kCSSBackgroundRepeatY[] = "repeat-y";
 const char kCSSBackgroundRepeat[] = "repeat";
 
-const char kThemeAttributionFormat[] = "-webkit-image-set("
+const char kThemeAttributionFormat[] =
+    "image-set("
     "url(chrome-search://theme/IDR_THEME_NTP_ATTRIBUTION?%s) 1x, "
     "url(chrome-search://theme/IDR_THEME_NTP_ATTRIBUTION@2x?%s) 2x)";
 
@@ -92,14 +94,14 @@ void Dispatch(blink::WebLocalFrame* frame, const blink::WebString& script) {
 v8::Local<v8::Object> GenerateMostVisitedItem(
     v8::Isolate* isolate,
     float device_pixel_ratio,
-    int render_frame_id,
+    const blink::LocalFrameToken& frame_token,
     InstantRestrictedID restricted_id) {
   return gin::DataObjectBuilder(isolate)
       .Set("rid", restricted_id)
       .Set("faviconUrl",
-           base::StringPrintf("chrome-search://favicon/size/16@%fx/%d/%d",
-                              device_pixel_ratio, render_frame_id,
-                              restricted_id))
+           base::StringPrintf("chrome-search://favicon/size/16@%fx/%s/%d",
+                              device_pixel_ratio,
+                              frame_token.ToString().c_str(), restricted_id))
       .Build();
 }
 
@@ -110,7 +112,6 @@ v8::Local<v8::Object> GenerateMostVisitedItem(
 // to most-visited iframes via getMostVisitedItemData.
 v8::Local<v8::Object> GenerateMostVisitedItemData(
     v8::Isolate* isolate,
-    int render_view_id,
     InstantRestrictedID restricted_id,
     const InstantMostVisitedItem& mv_item) {
   // We set the "dir" attribute of the title, so that in RTL locales, a LTR
@@ -148,12 +149,12 @@ v8::Local<v8::Object> GenerateMostVisitedItemData(
   return builder.Build();
 }
 
-absl::optional<int> CoerceToInt(v8::Isolate* isolate, v8::Value* value) {
+std::optional<int> CoerceToInt(v8::Isolate* isolate, v8::Value* value) {
   DCHECK(value);
   v8::MaybeLocal<v8::Int32> maybe_int =
       value->ToInt32(isolate->GetCurrentContext());
   if (maybe_int.IsEmpty())
-    return absl::nullopt;
+    return std::nullopt;
   return maybe_int.ToLocalChecked()->Value();
 }
 
@@ -533,7 +534,7 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisited(v8::Isolate* isolate) {
       blink::PageZoomLevelToZoomFactor(render_frame->GetWebView()->ZoomLevel());
   float device_pixel_ratio = render_frame->GetDeviceScaleFactor() * zoom_factor;
 
-  int render_frame_id = render_frame->GetRoutingID();
+  auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
 
   std::vector<InstantMostVisitedItemIDPair> instant_mv_items;
   search_box->GetMostVisitedItems(&instant_mv_items);
@@ -543,10 +544,9 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisited(v8::Isolate* isolate) {
   for (size_t i = 0; i < instant_mv_items.size(); ++i) {
     InstantRestrictedID rid = instant_mv_items[i].first;
     v8_mv_items
-        ->CreateDataProperty(
-            context, i,
-            GenerateMostVisitedItem(isolate, device_pixel_ratio,
-                                    render_frame_id, rid))
+        ->CreateDataProperty(context, i,
+                             GenerateMostVisitedItem(
+                                 isolate, device_pixel_ratio, frame_token, rid))
         .Check();
   }
   return v8_mv_items;
@@ -576,7 +576,7 @@ v8::Local<v8::Value> NewTabPageBindings::GetNtpTheme(v8::Isolate* isolate) {
 void NewTabPageBindings::DeleteMostVisitedItem(v8::Isolate* isolate,
                                                v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
-  absl::optional<int> rid = CoerceToInt(isolate, *rid_value);
+  std::optional<int> rid = CoerceToInt(isolate, *rid_value);
   if (!rid.has_value())
     return;
   SearchBox* search_box = GetSearchBoxForCurrentContext();
@@ -599,7 +599,7 @@ void NewTabPageBindings::UndoMostVisitedDeletion(
     v8::Isolate* isolate,
     v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
-  absl::optional<int> rid = CoerceToInt(isolate, *rid_value);
+  std::optional<int> rid = CoerceToInt(isolate, *rid_value);
   if (!rid.has_value())
     return;
   SearchBox* search_box = GetSearchBoxForCurrentContext();
@@ -621,15 +621,14 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisitedItemData(
   if (!search_box->GetMostVisitedItemWithID(rid, &item))
     return v8::Null(isolate);
 
-  int render_frame_id = GetMainRenderFrameForCurrentContext()->GetRoutingID();
-  return GenerateMostVisitedItemData(isolate, render_frame_id, rid, item);
+  return GenerateMostVisitedItemData(isolate, rid, item);
 }
 
 }  // namespace
 
 // static
 void SearchBoxExtension::Install(blink::WebLocalFrame* frame) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
   if (context.IsEmpty())

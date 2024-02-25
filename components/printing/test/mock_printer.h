@@ -8,22 +8,26 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/printing/common/print.mojom-forward.h"
+#include "components/printing/common/print.mojom.h"
 #include "pdf/buildflags.h"
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #define MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 #endif
+
+namespace base {
+class ReadOnlySharedMemoryMapping;
+}  // namespace base
 
 namespace printing {
 
@@ -69,13 +73,6 @@ class MockPrinter {
   MockPrinter& operator=(const MockPrinter&) = delete;
   ~MockPrinter();
 
-  void set_should_print_backgrounds(bool val) {
-    should_print_backgrounds_ = val;
-  }
-  void set_should_display_header_footer(bool val) {
-    display_header_footer_ = val;
-  }
-
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
   void set_should_generate_page_images(bool val) {
     should_generate_page_images_ = val;
@@ -85,7 +82,7 @@ class MockPrinter {
   // Reset the printer, to prepare for another print job.
   void Reset();
 
-  void SetDefaultPrintSettings(const mojom::PrintParams& params);
+  mojom::PrintParams& Params() { return params_; }
 
   // Functions that handle mojo messages.
   mojom::PrintParamsPtr GetDefaultPrintSettings();
@@ -103,6 +100,9 @@ class MockPrinter {
   int GetPageCount() const;
 
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+  // Generate MockPrinterPage objects from the printed metafile.
+  void GeneratePageImages(const base::ReadOnlySharedMemoryMapping& mapping);
+
   // Get a pointer to the printed page, returns NULL if pageno has not been
   // printed.  The pointer is for read only view and should not be deleted.
   const MockPrinterPage* GetPrinterPage(unsigned int pageno) const;
@@ -115,51 +115,18 @@ class MockPrinter {
   // Sets `document_cookie_` based on `use_invalid_settings_`.
   void CreateDocumentCookie();
 
-  // Helper function to fill the fields in |params|.
-  void GetPrintParams(mojom::PrintParams* params) const;
-
   // Set the printer in a finished state after printing.
   void Finish();
 
-  // In pixels according to dpi_x and dpi_y.
-  gfx::SizeF page_size_;
-  gfx::SizeF content_size_;
-  int margin_left_;
-  int margin_top_;
-  gfx::RectF printable_area_;
+  mojom::PrintParams params_;
 
-  // Specifies dots per inch.
-  double dpi_ = kPointsPerInch;
-
-  // Print selection.
-  bool selection_only_ = false;
-
-  // Print css backgrounds.
-  bool should_print_backgrounds_ = false;
-
-  // Cookie for the document to ensure correctness.
-  absl::optional<int> document_cookie_;
+  bool document_cookie_set_ = false;
 
   // The current status of this printer.
   Status printer_status_ = PRINTER_READY;
 
   // The number of pages printed.
   int page_count_ = 0;
-
-  // Used only in the preview sequence.
-  bool is_first_request_ = true;
-  bool print_to_pdf_ = false;
-  int preview_request_id_ = 0;
-
-  // Specifies whether to retain/crop/scale source page size to fit the
-  // given printable area.
-  mojom::PrintScalingOption print_scaling_option_ =
-      mojom::PrintScalingOption::kSourceSize;
-
-  // Used for displaying headers and footers.
-  bool display_header_footer_ = false;
-  std::u16string title_ = u"title";
-  std::u16string url_ = u"url";
 
   // Used for generating invalid settings.
   bool use_invalid_settings_ = false;

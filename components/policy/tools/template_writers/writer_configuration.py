@@ -62,7 +62,13 @@ def GetConfigurationForBuild(defines):
         'linux_policy_path': '/etc/chromium/policies/',
         'bundle_id': 'org.chromium',
     }
-  elif '_google_chrome' in defines:
+  elif '_google_chrome' in defines or '_is_chrome_for_testing_branded' in defines:
+    if '_google_chrome' in defines:
+      linux_policy_path = '/etc/opt/chrome/policies/'
+      win_policy_path = 'Software\\Policies\\Google\\Chrome'
+    else:
+      linux_policy_path = '/etc/opt/chrome_for_testing/policies/'
+      win_policy_path = 'Software\\Policies\\Google\\Chrome for Testing'
     config = {
         'build': 'chrome',
         'app_name': 'Google Chrome',
@@ -73,9 +79,9 @@ def GetConfigurationForBuild(defines):
         'win_config': {
             'win': {
                 'reg_mandatory_key_name':
-                'Software\\Policies\\Google\\Chrome',
+                win_policy_path,
                 'reg_recommended_key_name':
-                'Software\\Policies\\Google\\Chrome\\Recommended',
+                win_policy_path + '\\Recommended',
                 'mandatory_category_path':
                 ['Google:Cat_Google', 'googlechrome'],
                 'recommended_category_path':
@@ -116,7 +122,7 @@ def GetConfigurationForBuild(defines):
         'admx_using_namespaces': {
             'Google': 'Google.Policies'  # prefix: namespace
         },
-        'linux_policy_path': '/etc/opt/chrome/policies/',
+        'linux_policy_path': linux_policy_path,
         'bundle_id': 'com.google.chrome.ios',
     }
   else:

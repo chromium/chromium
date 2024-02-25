@@ -218,6 +218,11 @@ class OzonePlatformWayland : public OzonePlatform,
 #endif
   }
 
+  bool IsWindowCompositingSupported() const override {
+    // Wayland always supports compositing.
+    return true;
+  }
+
   bool ShouldUseCustomFrame() override {
     return connection_->xdg_decoration_manager_v1() == nullptr;
   }
@@ -239,7 +244,23 @@ class OzonePlatformWayland : public OzonePlatform,
     KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
         keyboard_layout_engine_.get());
     connection_ = std::make_unique<WaylandConnection>();
-    if (!connection_->Initialize()) {
+
+    // wl_egl requires single_process and it needs to watch wayland event on gpu
+    // thread. In this case we need thread polling event watcher on browser
+    // process since watching wayland event with glib on ui thread can cause
+    // incomplete state of reading (wl_display_prepare_read is called but
+    // wl_display_cancel_read or wl_display_read_events is not called). This
+    // incomplete state can cause deadlock from gpu thread reading wayland
+    // event.
+    bool use_threaded_polling = args.single_process;
+
+#if defined(WAYLAND_GBM)
+    if (use_threaded_polling) {
+      // If gbm is used, wl_egl is not used so threaded polling is not required.
+      use_threaded_polling = path_finder_.GetDrmRenderNodePath().empty();
+    }
+#endif
+    if (!connection_->Initialize(use_threaded_polling)) {
       LOG(ERROR) << "Failed to initialize Wayland platform";
       return false;
     }
@@ -391,6 +412,8 @@ class OzonePlatformWayland : public OzonePlatform,
           buffer_manager_->supports_affine_transform();
       properties.supports_out_of_window_clip_rect =
           buffer_manager_->supports_out_of_window_clip_rect();
+      properties.has_transformation_fix =
+          buffer_manager_->has_transformation_fix();
     }
     return properties;
   }
@@ -432,10 +455,18 @@ class OzonePlatformWayland : public OzonePlatform,
     connection_->SetShutdownCb(std::move(shutdown_cb));
   }
 
+  void PostMainMessageLoopRun() override {
+    // TODO(b/324294360): This will cause a lot of dangling pointers, which
+    // breaks linux wayland bot. Fix them and enable on linux as well.
+#if BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+    connection_.reset();
+#endif
+  }
+
   std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       PlatformKeyboardHookTypes type,
       base::RepeatingCallback<void(KeyEvent* event)> callback,
-      absl::optional<base::flat_set<DomCode>> dom_codes,
+      std::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget) override {
     DCHECK(connection_);
     auto* seat = connection_->seat();

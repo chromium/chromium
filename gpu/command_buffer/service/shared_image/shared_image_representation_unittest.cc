@@ -27,7 +27,8 @@ class SharedImageRepresentationTest : public ::testing::Test {
     auto color_space = gfx::ColorSpace::CreateSRGB();
     auto surface_origin = kTopLeft_GrSurfaceOrigin;
     auto alpha_type = kPremul_SkAlphaType;
-    uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+    uint32_t usage =
+        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
 
     auto backing = std::make_unique<TestImageBacking>(
         mailbox_, format, size, color_space, surface_origin, alpha_type, usage,
@@ -193,9 +194,9 @@ TEST_F(SharedImageRepresentationTest, DawnClearing) {
   procs.textureRelease = [](WGPUTexture) {};
   dawnProcSetProcs(&procs);
 
-  auto representation =
-      manager_.ProduceDawn(mailbox_, tracker_.get(), /*device=*/nullptr,
-                           wgpu::BackendType::Null, {});
+  auto representation = manager_.ProduceDawn(
+      mailbox_, tracker_.get(), /*device=*/nullptr, wgpu::BackendType::Null, {},
+      /*context_state=*/nullptr);
   EXPECT_FALSE(representation->IsCleared());
 
   // We should not be able to begin access with |allow_uncleared| == false.

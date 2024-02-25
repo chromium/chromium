@@ -206,10 +206,9 @@ base::Time TrafficCountersHandler::GetExpectedLastResetTime(
   // month. Otherwise, we expect that the last reset occurred in the current
   // month.
   if (exploded.day_of_month > current_time_exploded.day_of_month) {
-    if (--exploded.month < 1) {
-      exploded.month = 12;
-      exploded.year--;
-    }
+    // "+ 11) % 12) + 1" wraps the month around if it goes outside 1..12.
+    exploded.month = (((exploded.month - 1) + 11) % 12) + 1;
+    exploded.year -= (exploded.month == 12);
   }
   return GetValidTime(exploded);
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 24
+// Next MinVersion: 25
 
 module arc.mojom;
 
@@ -16,6 +16,10 @@ import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // TODO(b/193097194): Use structured types (e.g., url.mojom.Url for URLs).
+
+// Reminder: The input strings from ARC (e.g., authority, root_id and
+// document_id) cannot be trusted and must NOT be used without appropriate
+// escaping or validation, especially when constructing file paths from them.
 
 // Represents a document in Android DocumentsProvider.
 // See Android docs of DocumentsContract.Document for details.
@@ -202,6 +206,9 @@ struct DocumentPath {
   // List of document ID from the root document to the child document.
   // This should at least contain root document ID.
   array<string> path;
+
+  // Root ID where the path resides.
+  [MinVersion=24] string? root_id;
 };
 
 // Result for SelectFilesRequest.

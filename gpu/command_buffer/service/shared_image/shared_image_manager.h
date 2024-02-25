@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_MANAGER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_MANAGER_H_
 
+#include <optional>
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -14,10 +15,12 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "gpu/vulkan/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <d3d11.h>
+namespace gfx {
+class D3DSharedFence;
+}
 #endif
 
 namespace gpu {
@@ -82,7 +85,8 @@ class GPU_GLES2_EXPORT SharedImageManager
       MemoryTypeTracker* ref,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats);
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state);
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
@@ -101,11 +105,28 @@ class GPU_GLES2_EXPORT SharedImageManager
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 
+#if BUILDFLAG(ENABLE_VULKAN)
+  std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<LegacyOverlayImageRepresentation> ProduceLegacyOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  void UpdateExternalFence(const Mailbox& mailbox,
+                           scoped_refptr<gfx::D3DSharedFence> external_fence);
+#endif
+
+  // Provides the usage flags supported by the given |mailbox|. Returns nullopt
+  // if no backing is registered for `mailbox`.
+  std::optional<uint32_t> GetUsageForMailbox(const Mailbox& mailbox);
 
   // Called by SharedImageRepresentation in the destructor.
   void OnRepresentationDestroyed(const Mailbox& mailbox,
@@ -138,7 +159,7 @@ class GPU_GLES2_EXPORT SharedImageManager
  private:
   class AutoLock;
   // The lock for protecting |images_|.
-  absl::optional<base::Lock> lock_;
+  std::optional<base::Lock> lock_;
 
   base::flat_set<std::unique_ptr<SharedImageBacking>> images_ GUARDED_BY(lock_);
 

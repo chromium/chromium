@@ -1,0 +1,341 @@
+<style include="cr-shared-style cr-icons">
+  :host {
+    display: block;
+    height: 40px;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+        width 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    width: 44px;
+  }
+
+  :host-context([chrome-refresh-2023]):host {
+    --cr-toolbar-search-field-hover-background:
+        var(--color-toolbar-search-field-background-hover,
+            var(--cr-hover-background-color))
+    isolation: isolate;
+  }
+
+  :host([disabled]) {
+    opacity: var(--cr-disabled-opacity);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-size: var(--cr-toolbar-icon-container-size, 32px);
+    margin: var(--cr-toolbar-icon-margin, 6px);
+  }
+
+  :host-context([chrome-refresh-2023]) cr-icon-button {
+    --cr-icon-button-fill-color: var(--cr-toolbar-search-field-icon-color,
+        var(--color-toolbar-search-field-icon,
+        var(--cr-secondary-text-color)));
+    --cr-icon-button-size: var(--cr-toolbar-icon-container-size, 28px);
+    --cr-icon-button-icon-size: 20px;
+    margin: var(--cr-toolbar-icon-margin, 0);
+  }
+
+  @media (prefers-color-scheme: light) {
+    cr-icon-button {
+      --cr-icon-button-fill-color: var(
+          --cr-toolbar-search-field-input-icon-color,
+          var(--google-grey-700));
+      --cr-icon-button-focus-outline-color: var(
+          --cr-toolbar-icon-button-focus-outline-color,
+          var(--cr-focus-outline-color));
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    cr-icon-button {
+      --cr-icon-button-fill-color: var(
+          --cr-toolbar-search-field-input-icon-color,
+          var(--google-grey-500));
+    }
+  }
+
+  #icon {
+    transition: margin 150ms, opacity 200ms;
+  }
+
+  #prompt {
+    color: var(--cr-toolbar-search-field-prompt-color,
+        var(--google-grey-700));
+    opacity: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #prompt {
+      color: var(--cr-toolbar-search-field-prompt-color, white);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #prompt {
+      --cr-toolbar-search-field-prompt-opacity: 1;
+      color: var(--cr-secondary-text-color, white);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) #prompt {
+    color: var(--cr-toolbar-search-field-prompt-color,
+        var(--color-toolbar-search-field-foreground-placeholder,
+        var(--cr-secondary-text-color)));
+  }
+
+  paper-spinner-lite {
+    --paper-spinner-color:
+        var(--cr-toolbar-search-field-input-icon-color,
+            var(--google-grey-700));
+    height: var(--cr-icon-size);
+    margin: var(--cr-toolbar-search-field-paper-spinner-margin, 0 6px);
+    opacity: 0;
+    padding: 6px;
+    position: absolute;
+    width: var(--cr-icon-size);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    paper-spinner-lite {
+      --paper-spinner-color: var(
+          --cr-toolbar-search-field-input-icon-color, white);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) paper-spinner-lite {
+    margin: 0;
+    padding: 2px;
+  }
+
+  paper-spinner-lite[active] {
+    opacity: 1;
+  }
+
+  #prompt,
+  paper-spinner-lite {
+    transition: opacity 200ms;
+  }
+
+  /* Input field. */
+  #searchTerm {
+    -webkit-font-smoothing: antialiased;
+    flex: 1;
+    line-height: 185%;
+    margin: var(--cr-toolbar-search-field-term-margin, 0 2px);
+    position: relative;
+  }
+
+  :host-context([chrome-refresh-2023]) #searchTerm {
+    font-size: 12px;
+    font-weight: 500;
+    margin: var(--cr-toolbar-search-field-term-margin, 0);
+  }
+
+  label {
+    bottom: 0;
+    cursor: var(--cr-toolbar-search-field-cursor, text);
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+    white-space: nowrap;
+  }
+
+  :host([has-search-text]) label {
+    visibility: hidden;
+  }
+
+  input {
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    caret-color: var(--cr-toolbar-search-field-input-caret-color,
+        var(--google-blue-700));
+    color: var(--cr-toolbar-search-field-input-text-color,
+        var(--google-grey-900));
+    cursor: var(--cr-toolbar-search-field-cursor, text);
+    font: inherit;
+    outline: none;
+    padding: 0;
+    position: relative;
+    width: 100%;
+  }
+
+  input::selection {
+    background-color: var(--cros-sys-highlight_text);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    input {
+      color: var(--cr-toolbar-search-field-input-text-color, white);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) input {
+    caret-color: var(--cr-toolbar-search-field-input-caret-color,
+        currentColor);
+    color: var(--cr-toolbar-search-field-input-text-color,
+        var(--color-toolbar-search-field-foreground,
+        var(--cr-fallback-color-on-surface)));
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  input[type='search']::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  :host([narrow]) {
+    border-radius:
+        var(--cr-toolbar-search-field-border-radius, 0);
+  }
+
+  /** Wide layout. */
+  :host(:not([narrow])) {
+    background:
+        var(--cr-toolbar-search-field-background, var(--google-grey-100));
+    border-radius:
+        var(--cr-toolbar-search-field-border-radius, 46px);
+    cursor: var(--cr-toolbar-search-field-cursor, text);
+    max-width: var(--cr-toolbar-field-max-width, none);
+    padding-inline-end: 0;
+    width: var(--cr-toolbar-field-width, 680px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host(:not([narrow])) {
+      background:
+          var(--cr-toolbar-search-field-background, rgba(0, 0, 0, 0.22));
+    }
+  }
+
+  :host-context([chrome-refresh-2023]):host(:not([narrow])) {
+    --cr-toolbar-search-field-border-radius: 100px;
+    background: none;
+    height: 36px;
+    overflow: hidden;
+    padding: 0 6px;
+    position: relative;
+  }
+
+  #background,
+  #stateBackground {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:not([narrow])) #background {
+    background: var(--cr-toolbar-search-field-background,
+        var(--color-toolbar-search-field-background,
+        var(--cr-fallback-color-base-container)));
+    border-radius: inherit;
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  :host-context([chrome-refresh-2023]):host(
+      [search-focused_]:not([narrow])) {
+    outline: 2px solid var(--cr-focus-outline-color);
+    outline-offset: 2px;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:not([narrow]))
+      #stateBackground {
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  :host-context([chrome-refresh-2023]):host(
+      :hover:not([search-focused_], [narrow])) #stateBackground {
+    background: var(--cr-toolbar-search-field-hover-background);
+    z-index: 1;
+  }
+
+  :host(:not([narrow]):not([showing-search])) #icon {
+    opacity: var(--cr-toolbar-search-field-icon-opacity, .7);
+  }
+
+  :host-context([chrome-refresh-2023]):host(
+        :not([narrow]):not([showing-search])) #icon {
+    opacity: var(--cr-toolbar-search-field-icon-opacity, 1);
+  }
+
+  :host(:not([narrow])) #prompt {
+    opacity: var(--cr-toolbar-search-field-prompt-opacity, 1);
+  }
+
+  :host([narrow]) #prompt {
+    opacity: var(--cr-toolbar-search-field-narrow-mode-prompt-opacity, 0);
+  }
+
+  :host([narrow]:not([showing-search])) #searchTerm {
+    display: none;
+  }
+
+  /* Search open. */
+  :host([showing-search][spinner-active]) #icon {
+    opacity: 0;
+  }
+
+  :host([narrow][showing-search]) {
+    width: 100%;
+  }
+
+  :host([narrow][showing-search]) #icon,
+  :host([narrow][showing-search]) paper-spinner-lite {
+    /* 18px to line up with the Menu icon by default. */
+    margin-inline-start:
+        var(--cr-toolbar-search-icon-margin-inline-start, 18px);
+  }
+
+  #content {
+    align-items: center;
+    display: flex;
+    height: 100%;
+  }
+
+  :host-context([chrome-refresh-2023]) #content {
+    position: relative;
+    z-index: 2;
+  }
+</style>
+<div id="background"></div>
+<div id="stateBackground"></div>
+<div id="content">
+  <template is="dom-if" id="spinnerTemplate">
+    <paper-spinner-lite active="[[isSpinnerShown_]]">
+    </paper-spinner-lite>
+  </template>
+  <cr-icon-button id="icon" iron-icon="cr:search" title="[[label]]" dir="ltr"
+      tabindex$="[[computeIconTabIndex_(narrow, hasSearchText)]]"
+      aria-hidden$="[[computeIconAriaHidden_(narrow, hasSearchText)]]"
+      on-click="onSearchIconClicked_" disabled="[[disabled]]">
+  </cr-icon-button>
+  <div id="searchTerm">
+    <label id="prompt" for="searchInput" aria-hidden="true">[[label]]</label>
+    <input id="searchInput"
+        aria-labelledby="prompt"
+        autocapitalize="off"
+        autocomplete="off"
+        type="search"
+        on-input="onSearchTermInput"
+        on-search="onSearchTermSearch"
+        on-keydown="onSearchTermKeydown_"
+        on-focus="onInputFocus_"
+        on-blur="onInputBlur_"
+        autofocus$="[[autofocus]]"
+        spellcheck="false"
+        disabled="[[disabled]]">
+  </div>
+  <template is="dom-if" if="[[hasSearchText]]">
+    <cr-icon-button id="clearSearch" iron-icon="cr:cancel"
+        title="[[clearLabel]]" on-click="clearSearch_"
+        disabled="[[disabled]]"></cr-icon-button>
+  </template>
+</div>

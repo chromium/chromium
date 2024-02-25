@@ -5,11 +5,7 @@
  * @fileoverview Provides Japanese phonetic disambiguation data for ChromeVox.
  */
 
-goog.provide('JaPhoneticData');
-
-JaPhoneticData = class {
-  constructor() {}
-
+export class JaPhoneticData {
   /**
    * Initialize phoneticMap_ by |map|.
    * @param {Map<string, string>} map
@@ -346,7 +342,7 @@ JaPhoneticData = class {
     }
     return false;
   }
-};
+}
 
 /** @enum {number} */
 JaPhoneticData.CharacterSet = {

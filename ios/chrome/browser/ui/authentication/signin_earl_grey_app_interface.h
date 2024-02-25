@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/signin/capabilities_dict.h"
+#import "ios/chrome/browser/signin/model/capabilities_dict.h"
 #import "url/gurl.h"
 
 @class FakeSystemIdentity;
@@ -27,6 +27,7 @@ enum class UserSelectableType;
 @interface SigninEarlGreyAppInterface : NSObject
 
 // Adds `fakeIdentity` to the fake identity service.
+// Does nothing if the fake identity is already added.
 + (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Adds `fakeIdentity` to the fake system identity interaction manager. This
@@ -54,6 +55,11 @@ enum class UserSelectableType;
 // Signs out the current user.
 + (void)signOut;
 
+// Signs in with the fake identity and access point Settings.
+// Adds the fake-identity to the identity manager if necessary.
+// Call `[SigninEarlGrey signinWithFakeIdentity:identity]` instead.
++ (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
+
 // Triggers the reauth dialog. This is done by sending ShowSigninCommand to
 // SceneController, without any UI interaction to open the dialog.
 // TODO(crbug.com/1454101): To be consistent, this method should be renamed to
@@ -65,10 +71,6 @@ enum class UserSelectableType;
 // `url` that triggered the web sign-in/consistency dialog.
 + (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url;
 
-// Clears the signed-in accounts preference, used to verify if the signed-in
-// accounts view should be presented.
-+ (void)clearLastSignedInAccounts;
-
 // Presents the signed-in accounts view controller if it needs to be presented.
 + (void)presentSignInAccountsViewControllerIfNecessary;
 
@@ -79,8 +81,10 @@ enum class UserSelectableType;
                            forIdentity:(FakeSystemIdentity*)fakeIdentity;
 + (void)setCanHaveEmailAddressDisplayed:(BOOL)value
                             forIdentity:(FakeSystemIdentity*)fakeIdentity;
-+ (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
-                                forIdentity:(FakeSystemIdentity*)fakeIdentity;
++ (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
+                                                    forIdentity:
+                                                        (FakeSystemIdentity*)
+                                                            fakeIdentity;
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
 

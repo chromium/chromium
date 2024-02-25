@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <utility>
+#include "build/build_config.h"
 
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -72,11 +73,11 @@ class NotificationButtonClicker : public RequestManager::Observer {
 
  private:
   void ClickButton() {
-    absl::optional<message_center::Notification> notification =
+    std::optional<message_center::Notification> notification =
         NotificationDisplayServiceTester::Get()->GetNotification(
             file_system_info_.mount_path().value());
     if (notification)
-      notification->delegate()->Click(0, absl::nullopt);
+      notification->delegate()->Click(0, std::nullopt);
   }
 
   ProvidedFileSystemInfo file_system_info_;
@@ -124,7 +125,7 @@ class AbortOnUnresponsivePerformer : public Observer {
       base::File::Error error) override {}
 
  private:
-  raw_ptr<Service, ExperimentalAsh> service_;  // Not owned.
+  raw_ptr<Service> service_;  // Not owned.
   std::vector<std::unique_ptr<NotificationButtonClicker>> clickers_;
 };
 
@@ -327,7 +328,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, ExecuteAction) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_Extension) {
+// TODO(b/255698656): Flaky test.
+IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest,
+                       DISABLED_Unresponsive_Extension) {
   AbortOnUnresponsivePerformer performer(browser()->profile());
   ASSERT_TRUE(RunExtensionTest("file_system_provider/unresponsive_extension",
                                {}, {.load_as_component = true}))
@@ -495,8 +498,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Unmount) {
       << message_;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Unresponsive_Extension DISABLED_Unresponsive_Extension
+#else
+#define MAYBE_Unresponsive_Extension Unresponsive_Extension
+#endif
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest,
-                       Unresponsive_Extension) {
+                       MAYBE_Unresponsive_Extension) {
   AbortOnUnresponsivePerformer performer(browser()->profile());
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "file_system_provider/service_worker/unresponsive_extension/provider")));

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef DEVICE_BLUETOOTH_FLOSS_BLUETOOTH_REMOTE_GATT_CHARACTERISTIC_FLOSS_H_
@@ -158,6 +158,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   // because the Service linked here owns a unique_ptr<> to this class instance
   // so the lifetime of the two objects are tied together.
   raw_ptr<BluetoothRemoteGattServiceFloss> service_;
+
+  // Address of the device this characteristic and parent service belongs to.
+  std::string device_address_;
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicFloss>
       weak_ptr_factory_{this};

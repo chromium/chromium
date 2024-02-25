@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "device/vr/public/mojom/xr_session.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -88,9 +89,10 @@ class XRSystem final : public EventTarget,
   ScriptPromise supportsSession(ScriptState*,
                                 const String&,
                                 ExceptionState& exception_state);
-  ScriptPromise isSessionSupported(ScriptState*,
-                                   const String&,
-                                   ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLBoolean> isSessionSupported(
+      ScriptState*,
+      const String&,
+      ExceptionState& exception_state);
   ScriptPromise requestSession(ScriptState*,
                                const String&,
                                XRSessionInit*,
@@ -232,7 +234,7 @@ class XRSystem final : public EventTarget,
     void SetDOMOverlayElement(Element* element) {
       dom_overlay_element_ = element;
     }
-    Element* DOMOverlayElement() { return dom_overlay_element_; }
+    Element* DOMOverlayElement() { return dom_overlay_element_.Get(); }
 
     void SetTrackedImages(
         const Vector<device::mojom::blink::XRTrackedImage>& images) {
@@ -363,10 +365,10 @@ class XRSystem final : public EventTarget,
   void AddConsoleMessage(mojom::blink::ConsoleMessageLevel error_level,
                          const String& message);
 
-  ScriptPromise InternalIsSessionSupported(ScriptState*,
-                                           const String&,
-                                           ExceptionState& exception_state,
-                                           bool throw_on_unsupported);
+  void InternalIsSessionSupported(ScriptPromiseResolver*,
+                                  const String&,
+                                  ExceptionState& exception_state,
+                                  bool throw_on_unsupported);
 
   const char* CheckInlineSessionRequestAllowed(
       LocalFrame* frame,

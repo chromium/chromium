@@ -7,10 +7,10 @@
 #include <mstask.h>
 #include <oleauto.h>
 #include <security.h>
-#include <stdint.h>
 #include <taskschd.h>
 #include <wrl/client.h>
 
+#include <cstdint>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -30,6 +30,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_co_mem.h"
@@ -59,15 +60,18 @@ const size_t kDeleteRetryDelayInMs = 100;
          hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND);
 }
 
-// Return |timestamp| in the following string format YYYY-MM-DDTHH:MM:SS.
+// Returns |timestamp| in the format YYYY-MM-DDTHH:MM:SS.
 std::wstring GetTimestampString(const base::Time& timestamp) {
+  // This intentionally avoids depending on the facilities in
+  // base/i18n/time_formatting.h so the updater will not need to depend on the
+  // ICU data file.
   base::Time::Exploded exploded_time;
   // The Z timezone info at the end of the string means UTC.
   timestamp.UTCExplode(&exploded_time);
-  return base::StringPrintf(L"%04d-%02d-%02dT%02d:%02d:%02dZ",
-                            exploded_time.year, exploded_time.month,
-                            exploded_time.day_of_month, exploded_time.hour,
-                            exploded_time.minute, exploded_time.second);
+  return base::ASCIIToWide(base::StringPrintf(
+      "%04d-%02d-%02dT%02d:%02d:%02dZ", exploded_time.year, exploded_time.month,
+      exploded_time.day_of_month, exploded_time.hour, exploded_time.minute,
+      exploded_time.second));
 }
 
 [[nodiscard]] bool UTCFileTimeToLocalSystemTime(const FILETIME& file_time_utc,
@@ -113,6 +117,13 @@ void PinModule(const wchar_t* module_name) {
                             &module_handle)) {
     PLOG(ERROR) << "Failed to pin '" << module_name << "'.";
   }
+}
+
+// Returns the XML serialization of a task definition.
+[[nodiscard]] std::wstring GetTaskXml(ITaskDefinition* task) {
+  base::win::ScopedBstr task_xml;
+  task->get_XmlText(task_xml.Receive());
+  return task_xml.Get() ? std::wstring(task_xml.Get()) : std::wstring();
 }
 
 // A task scheduler class uses the V2 API of the task scheduler.
@@ -676,9 +687,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    base::win::ScopedBstr task_xml;
-    task->get_XmlText(task_xml.Receive());
-    VLOG(2) << "Registering Task with XML: " << task_xml.Get();
+    DVLOG(2) << "Registering Task with XML: " << GetTaskXml(task.Get());
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
     base::win::ScopedVariant user(user_name.Get());
@@ -692,9 +701,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
           is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
           base::win::ScopedVariant::kEmptyVariant, &registered_task);
       if (FAILED(hr)) {
-        LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr
-                   << ": " << logging::SystemErrorCodeToString(hr)
-                   << ": Task XML: " << task_xml.Get();
+        LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr;
+        LOG(ERROR) << "Task XML: " << GetTaskXml(task.Get());
         return false;
       }
     }

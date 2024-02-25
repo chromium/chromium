@@ -143,7 +143,7 @@ class AshTtsApiTest : public AshRequiresLacrosExtensionApiTest,
     }
 
    private:
-    raw_ptr<extensions::AshTtsApiTest, ExperimentalAsh> owner_;
+    raw_ptr<extensions::AshTtsApiTest> owner_;
     mojo::Receiver<crosapi::mojom::TtsUtteranceClient> receiver_{this};
   };
 

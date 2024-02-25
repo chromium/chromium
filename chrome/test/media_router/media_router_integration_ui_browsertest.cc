@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
   std::string issue_title = test_ui_->GetIssueTextForSink(receiver_);
   ASSERT_EQ(l10n_util::GetStringFUTF8(
                 IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_WITH_HOSTNAME,
-                u"file://"),
+                u"file:///"),
             issue_title);
 
   ASSERT_EQ(test_ui_->GetRouteIdForSink(receiver_), "");

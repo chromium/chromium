@@ -4,35 +4,25 @@
 
 #include "components/safe_search_api/url_checker.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
 namespace safe_search_api {
 
-BASE_FEATURE(kCacheOnlyCertainUrlClassifications,
-             "CacheOnlyCertainUrlClassifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
-bool ShouldCacheUrlClassification(bool is_uncertain) {
-  if (!is_uncertain) {
-    return true;
-  }
-
-  return !base::FeatureList::IsEnabled(kCacheOnlyCertainUrlClassifications);
-}
-
 const size_t kDefaultCacheSize = 1000;
 const size_t kDefaultCacheTimeoutSeconds = 3600;
-
+constexpr std::string_view kCacheHitMetricKey{"Net.SafeSearch.CacheHit"};
 }  // namespace
 
 struct URLChecker::Check {
@@ -66,6 +56,25 @@ URLChecker::URLChecker(std::unique_ptr<URLCheckerClient> async_checker,
 
 URLChecker::~URLChecker() = default;
 
+void URLChecker::MaybeScheduleAsyncCheck(const GURL& url,
+                                         CheckCallback callback) {
+  // See if we already have a check in progress for this URL.
+  for (const auto& check : checks_in_progress_) {
+    if (check->url == url) {
+      DVLOG(1) << "Adding to pending check for " << url.spec();
+      check->callbacks.push_back(std::move(callback));
+      return;
+    }
+  }
+
+  auto it = checks_in_progress_.insert(
+      checks_in_progress_.begin(),
+      std::make_unique<Check>(url, std::move(callback)));
+  async_checker_->CheckURL(url,
+                           base::BindOnce(&URLChecker::OnAsyncCheckComplete,
+                                          weak_factory_.GetWeakPtr(), it));
+}
+
 bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
   auto cache_it = cache_.Get(url);
   if (cache_it != cache_.end()) {
@@ -76,28 +85,22 @@ bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
                << (result.classification == Classification::UNSAFE ? "NOT" : "")
                << " safe; certain: " << !result.uncertain;
       std::move(callback).Run(url, result.classification, result.uncertain);
+
+      base::UmaHistogramEnumeration(std::string(kCacheHitMetricKey),
+                                    CacheAccessStatus::kHit);
       return true;
     }
     DVLOG(1) << "Outdated cache entry for " << url.spec() << ", purging";
     cache_.Erase(cache_it);
+    base::UmaHistogramEnumeration(std::string(kCacheHitMetricKey),
+                                  CacheAccessStatus::kOutdated);
+    MaybeScheduleAsyncCheck(url, std::move(callback));
+    return false;
   }
 
-  // See if we already have a check in progress for this URL.
-  for (const auto& check : checks_in_progress_) {
-    if (check->url == url) {
-      DVLOG(1) << "Adding to pending check for " << url.spec();
-      check->callbacks.push_back(std::move(callback));
-      return false;
-    }
-  }
-
-  auto it = checks_in_progress_.insert(
-      checks_in_progress_.begin(),
-      std::make_unique<Check>(url, std::move(callback)));
-  async_checker_->CheckURL(url,
-                           base::BindOnce(&URLChecker::OnAsyncCheckComplete,
-                                          weak_factory_.GetWeakPtr(), it));
-
+  base::UmaHistogramEnumeration(std::string(kCacheHitMetricKey),
+                                CacheAccessStatus::kNotFound);
+  MaybeScheduleAsyncCheck(url, std::move(callback));
   return false;
 }
 
@@ -116,7 +119,7 @@ void URLChecker::OnAsyncCheckComplete(CheckList::iterator it,
   std::vector<CheckCallback> callbacks = std::move(it->get()->callbacks);
   checks_in_progress_.erase(it);
 
-  if (ShouldCacheUrlClassification(uncertain)) {
+  if (!uncertain) {
     cache_.Put(url, CheckResult(classification, uncertain));
   }
 

@@ -32,7 +32,7 @@ class CSSContainerValuesTest : public PageTestBase {
   CSSContainerValues* CreateStickyValues(ContainerStuckPhysical horizontal,
                                          ContainerStuckPhysical vertical) {
     return MakeGarbageCollected<CSSContainerValues>(
-        GetDocument(), ContainerElement(), absl::nullopt, absl::nullopt,
+        GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
         horizontal, vertical);
   }
 

@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SafeBrowsingExtendedReportingEnabled": true
+        },
+        "prefs": {
+          "safebrowsing.scout_reporting_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SafeBrowsingExtendedReportingEnabled": false
+        },
+        "prefs": {
+          "safebrowsing.scout_reporting_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.scout_reporting_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

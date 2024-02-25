@@ -11,14 +11,27 @@
 
 namespace app_list {
 
-SearchProvider::SearchProvider() {}
-SearchProvider::~SearchProvider() {}
+SearchProvider::SearchProvider(SearchCategory search_category)
+    : search_category_(search_category) {}
+SearchProvider::~SearchProvider() = default;
+
+void SearchProvider::Start(const std::u16string& query,
+                           OnSearchResultsCallback on_search_done) {
+  on_search_done_ = std::move(on_search_done);
+  Start(query);
+}
+
+void SearchProvider::StartZeroState(OnSearchResultsCallback on_search_done) {
+  on_search_done_ = std::move(on_search_done);
+  StartZeroState();
+}
 
 void SearchProvider::SwapResults(Results* new_results) {
   Results results;
   results.swap(*new_results);
-  if (search_controller_)
-    search_controller_->SetResults(this, std::move(results));
+  if (on_search_done_) {
+    on_search_done_.Run(ResultType(), std::move(results));
+  }
 }
 
 }  // namespace app_list

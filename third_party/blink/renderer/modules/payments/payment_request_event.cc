@@ -8,6 +8,7 @@
 
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
@@ -116,7 +117,7 @@ const HeapVector<Member<PaymentMethodData>>& PaymentRequestEvent::methodData()
 }
 
 const ScriptValue PaymentRequestEvent::total(ScriptState* script_state) const {
-  return ScriptValue::From(script_state, total_);
+  return ScriptValue::From(script_state, total_.Get());
 }
 
 const HeapVector<Member<PaymentDetailsModifier>>&
@@ -132,13 +133,13 @@ const ScriptValue PaymentRequestEvent::paymentOptions(
     ScriptState* script_state) const {
   if (!payment_options_)
     return ScriptValue::CreateNull(script_state->GetIsolate());
-  return ScriptValue::From(script_state, payment_options_);
+  return ScriptValue::From(script_state, payment_options_.Get());
 }
 
-absl::optional<HeapVector<Member<PaymentShippingOption>>>
+std::optional<HeapVector<Member<PaymentShippingOption>>>
 PaymentRequestEvent::shippingOptions() const {
   if (shipping_options_.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return shipping_options_;
 }
 
@@ -250,7 +251,8 @@ ScriptPromise PaymentRequestEvent::changeShippingAddress(
   auto shipping_address_ptr =
       payments::mojom::blink::PaymentAddress::From(shipping_address);
   String shipping_address_error;
-  if (!PaymentsValidators::IsValidShippingAddress(shipping_address_ptr,
+  if (!PaymentsValidators::IsValidShippingAddress(script_state->GetIsolate(),
+                                                  shipping_address_ptr,
                                                   &shipping_address_error)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       shipping_address_error);
@@ -354,9 +356,10 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
   ScriptState* script_state =
       change_payment_request_details_resolver_->GetScriptState();
   ScriptState::Scope scope(script_state);
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kConstructionContext,
-                                 "PaymentDetailsModifier");
+  ExceptionState exception_state(
+      script_state->GetIsolate(),
+      ExceptionContextType::kConstructorOperationInvoke,
+      "PaymentDetailsModifier");
 
   if (response->modifiers) {
     HeapVector<Member<PaymentDetailsModifier>> modifiers;

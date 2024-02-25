@@ -1,0 +1,20 @@
+This is a wdspec test.
+[FAIL] test_non_printable_key_sends_events[\\ue00c-ESCAPE]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: ReferenceError: allEvents is not defined
+[FAIL] test_non_printable_key_sends_events[\\ue014-RIGHT]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: ReferenceError: allEvents is not defined
+[FAIL] test_key_printable_sequence[True]
+  AssertionError: assert [{'code': '', 'key': '\\uf6c2', 'type': 'keydown'}, {'code': '', 'key': '\\uf6c2', 'type': 'keypress'}, {'code': '', 'key': '\\uf6c2', 'type': 'keyup'}, {'code': 'KeyA', 'key': 'a', 'type': 'keydown'}, {'code': 'KeyA', 'key': 'a', 'type': 'keypress'}, {'code': 'KeyA', 'key': 'a', 'type': 'keyup'}, {'code': 'KeyB', 'key': 'b', 'type': 'keydown'}, {'code': 'KeyB', 'key': 'b', 'type': 'keypress'}, {'code': 'KeyB', 'key': 'b', 'type': 'keyup'}] == [{'code': 'KeyA', 'key': 'a', 'type': 'keydown'}, {'code': 'KeyA', 'key': 'a', 'type': 'keypress'}, {'code': 'KeyA', 'key': 'a', 'type': 'keyup'}, {'code': 'KeyB', 'key': 'b', 'type': 'keydown'}, {'code': 'KeyB', 'key': 'b', 'type': 'keypress'}, {'code': 'KeyB', 'key': 'b', 'type': 'keyup'}]
+[FAIL] test_key_printable_sequence[False]
+  AssertionError: assert [{'code': '', 'key': '\\uf6c2', 'type': 'keydown'}, {'code': '', 'key': '\\uf6c2', 'type': 'keypress'}, {'code': '', 'key': '\\uf6c2', 'type': 'keyup'}, {'code': 'KeyA', 'key': 'a', 'type': 'keydown'}, {'code': 'KeyA', 'key': 'a', 'type': 'keypress'}, {'code': 'KeyA', 'key': 'a', 'type': 'keyup'}, {'code': 'KeyB', 'key': 'b', 'type': 'keydown'}, {'code': 'KeyB', 'key': 'b', 'type': 'keypress'}, {'code': 'KeyB', 'key': 'b', 'type': 'keyup'}, {'code': 'KeyA', 'key': 'a', 'type': 'keydown'}, {'code': 'KeyA', 'key': 'a', 'type': 'keypress'}, {'code': 'KeyB', 'key': 'b', 'type': 'keydown'}, {'code': 'KeyB', 'key': 'b', 'type': 'keypress'}] == [{'code': 'KeyA', 'key': 'a', 'type': 'keydown'}, {'code': 'KeyA', 'key': 'a', 'type': 'keypress'}, {'code': 'KeyB', 'key': 'b', 'type': 'keydown'}, {'code': 'KeyB', 'key': 'b', 'type': 'keypress'}]
+[FAIL] test_key_special_key_sends_keydown[EQUALS-expected12]
+  AssertionError: assert ({'code': '', 'ctrl': False, 'key': '=', 'location': 0, 'meta': False, 'shift': False} == {'code': 'NumpadEqual', 'ctrl': False, 'key': '=', 'location': 3, 'meta': False, 'shift': False}
+[FAIL] test_key_special_key_sends_keydown[PAUSE-expected45]
+  AssertionError: assert ({'code': '', 'ctrl': False, 'key': 'Pause', 'location': 0, 'meta': False, 'shift': False} == {'code': 'Pause', 'ctrl': False, 'key': 'Pause', 'location': 0, 'meta': False, 'shift': False}
+[FAIL] test_key_special_key_sends_keydown[RETURN-expected46]
+  AssertionError: assert ({'code': 'Enter', 'ctrl': False, 'key': '', 'location': 0, 'meta': False, 'shift': False} == {'code': 'Enter', 'ctrl': False, 'key': 'Enter', 'location': 0, 'meta': False, 'shift': False}
+[FAIL] test_key_space
+  AssertionError: assert 3 == 2
+[FAIL] test_keyup_only_sends_no_events
+  AssertionError: assert 8 == 0
+Harness: the test ran to completion.

@@ -23,49 +23,49 @@ namespace hud_display {
 ////////////////////////////////////////////////////////////////////////////////
 // MemoryGraphPageView, public:
 
-BEGIN_METADATA(MemoryGraphPageView, GraphPageViewBase)
+BEGIN_METADATA(MemoryGraphPageView)
 END_METADATA
 
 MemoryGraphPageView::MemoryGraphPageView(const base::TimeDelta refresh_interval)
     : graph_chrome_rss_private_(kHUDGraphWidth,
-                                Graph::Baseline::BASELINE_BOTTOM,
-                                Graph::Fill::SOLID,
-                                Graph::Style::LINES,
+                                Graph::Baseline::kBaselineBottom,
+                                Graph::Fill::kSolid,
+                                Graph::Style::kLines,
                                 SkColorSetA(SK_ColorRED, kHUDAlpha)),
       graph_mem_free_(kHUDGraphWidth,
-                      Graph::Baseline::BASELINE_BOTTOM,
-                      Graph::Fill::NONE,
-                      Graph::Style::LINES,
+                      Graph::Baseline::kBaselineBottom,
+                      Graph::Fill::kNone,
+                      Graph::Style::kLines,
                       SkColorSetA(SK_ColorDKGRAY, kHUDAlpha)),
       graph_mem_used_unknown_(kHUDGraphWidth,
-                              Graph::Baseline::BASELINE_BOTTOM,
-                              Graph::Fill::SOLID,
-                              Graph::Style::LINES,
+                              Graph::Baseline::kBaselineBottom,
+                              Graph::Fill::kSolid,
+                              Graph::Style::kLines,
                               SkColorSetA(SK_ColorLTGRAY, kHUDAlpha)),
       graph_renderers_rss_private_(kHUDGraphWidth,
-                                   Graph::Baseline::BASELINE_BOTTOM,
-                                   Graph::Fill::SOLID,
-                                   Graph::Style::LINES,
+                                   Graph::Baseline::kBaselineBottom,
+                                   Graph::Fill::kSolid,
+                                   Graph::Style::kLines,
                                    SkColorSetA(SK_ColorCYAN, kHUDAlpha)),
       graph_arc_rss_private_(kHUDGraphWidth,
-                             Graph::Baseline::BASELINE_BOTTOM,
-                             Graph::Fill::SOLID,
-                             Graph::Style::LINES,
+                             Graph::Baseline::kBaselineBottom,
+                             Graph::Fill::kSolid,
+                             Graph::Style::kLines,
                              SkColorSetA(SK_ColorMAGENTA, kHUDAlpha)),
       graph_gpu_rss_private_(kHUDGraphWidth,
-                             Graph::Baseline::BASELINE_BOTTOM,
-                             Graph::Fill::SOLID,
-                             Graph::Style::LINES,
+                             Graph::Baseline::kBaselineBottom,
+                             Graph::Fill::kSolid,
+                             Graph::Style::kLines,
                              SkColorSetA(SK_ColorRED, kHUDAlpha)),
       graph_gpu_kernel_(kHUDGraphWidth,
-                        Graph::Baseline::BASELINE_BOTTOM,
-                        Graph::Fill::SOLID,
-                        Graph::Style::LINES,
+                        Graph::Baseline::kBaselineBottom,
+                        Graph::Fill::kSolid,
+                        Graph::Style::kLines,
                         SkColorSetA(SK_ColorYELLOW, kHUDAlpha)),
       graph_chrome_rss_shared_(kHUDGraphWidth,
-                               Graph::Baseline::BASELINE_BOTTOM,
-                               Graph::Fill::NONE,
-                               Graph::Style::LINES,
+                               Graph::Baseline::kBaselineBottom,
+                               Graph::Fill::kNone,
+                               Graph::Style::kLines,
                                SkColorSetA(SK_ColorBLUE, kHUDAlpha)) {
   const int data_width = graph_arc_rss_private_.max_data_points();
   // Verical ticks are drawn every 10% (10/100 interval).
@@ -191,7 +191,7 @@ void MemoryGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
   used_buckets.push_back(gpu_kernel);
 
   const float mem_used_unknown =
-      1 - std::accumulate(used_buckets.begin(), used_buckets.end(), 0.0f);
+      1 - std::reduce(used_buckets.begin(), used_buckets.end(), 0.0f);
   const float mem_used_unknown_unscaled = mem_used_unknown * total;
 
   if (mem_used_unknown < 0)

@@ -19,12 +19,15 @@ static_library("shortcut_customization_ui") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
-    "//ash/webui/resources:shortcut_customization_app_resources",
+    "//ash/webui/common/backend",
+    "//ash/webui/common/mojom",
     "//ash/webui/shortcut_customization_ui/backend",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//ash/webui/shortcut_customization_ui/mojom",
+    "//ash/webui/shortcut_customization_ui/resources:resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/strings",

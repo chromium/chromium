@@ -79,11 +79,7 @@ class MockPageContextCanvas : public SkCanvas {
   }
 
   MOCK_METHOD2(onDrawRect, void(const SkRect&, const SkPaint&));
-  MOCK_METHOD1(DrawPicture, void(const SkPicture*));
-  MOCK_METHOD1(OnDrawPicture, void(const SkPicture*));
-  MOCK_METHOD3(OnDrawPicture,
-               void(const SkPicture*, const SkMatrix*, const SkPaint*));
-  MOCK_METHOD3(DrawPicture,
+  MOCK_METHOD3(onDrawPicture,
                void(const SkPicture*, const SkMatrix*, const SkPaint*));
   MOCK_METHOD5(onDrawImage2,
                void(const SkImage*,
@@ -969,7 +965,7 @@ class PrintContextAcceleratedCanvasTest : public PrintContextTest {
     accelerated_canvas_scope_ =
         std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
     test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContext(test_context_provider_.get());
+    InitializeSharedGpuContextGLES2(test_context_provider_.get());
 
     PrintContextTest::SetUp();
 
@@ -1013,6 +1009,16 @@ TEST_P(PrintContextAcceleratedCanvasTest, Canvas2DBeforePrint) {
   PrintSinglePage(canvas);
 }
 
+namespace {
+
+class AcceleratedCompositingTestPlatform
+    : public blink::TestingPlatformSupport {
+ public:
+  bool IsGpuCompositingDisabled() const override { return false; }
+};
+
+}  // namespace
+
 // For testing printing behavior when 2d canvas contexts use oop rasterization.
 class PrintContextOOPRCanvasTest : public PrintContextTest {
  public:
@@ -1021,7 +1027,7 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
         std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
     std::unique_ptr<viz::TestGLES2Interface> gl_context =
         std::make_unique<viz::TestGLES2Interface>();
-    gl_context->set_supports_oop_raster(true);
+    gl_context->set_gpu_rasterization(true);
     std::unique_ptr<viz::TestContextSupport> context_support =
         std::make_unique<viz::TestContextSupport>();
     std::unique_ptr<viz::TestRasterInterface> raster_interface =
@@ -1032,9 +1038,11 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
         /*shared_image_interface=*/nullptr,
         /*support_locking=*/false);
 
-    InitializeSharedGpuContext(test_context_provider_.get());
+    InitializeSharedGpuContextGLES2(test_context_provider_.get());
 
     PrintContextTest::SetUp();
+    accelerated_compositing_scope_ = std::make_unique<
+        ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
 
     GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
   }
@@ -1042,16 +1050,19 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
   void TearDown() override {
     // Call base class TeardDown first to ensure Canvas2DLayerBridge is
     // destroyed before the TestContextProvider.
-    PrintContextTest::TearDown();
-
-    SharedGpuContext::ResetForTesting();
+    accelerated_compositing_scope_ = nullptr;
     test_context_provider_ = nullptr;
+    SharedGpuContext::ResetForTesting();
+    PrintContextTest::TearDown();
     accelerated_canvas_scope_ = nullptr;
   }
 
  private:
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   std::unique_ptr<ScopedAccelerated2dCanvasForTest> accelerated_canvas_scope_;
+  std::unique_ptr<
+      ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
+      accelerated_compositing_scope_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(PrintContextOOPRCanvasTest);

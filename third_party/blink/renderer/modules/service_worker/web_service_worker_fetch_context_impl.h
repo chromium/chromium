@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_FETCH_CONTEXT_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_FETCH_CONTEXT_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -57,7 +58,8 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
           preference_watcher_receiver,
       mojo::PendingReceiver<mojom::blink::SubresourceLoaderUpdater>
           pending_subresource_loader_updater,
-      Vector<String> cors_exempt_header_list);
+      Vector<String> cors_exempt_header_list,
+      bool is_third_party_context);
 
   // WebServiceWorkerFetchContext implementation:
   void SetTerminateSyncLoadEvent(base::WaitableEvent*) override;
@@ -68,10 +70,12 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
           url_loader_factory) override;
   URLLoaderFactory* GetScriptLoaderFactory() override;
   void WillSendRequest(WebURLRequest&) override;
+  WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+      const network::ResourceRequest& request) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override;
   net::SiteForCookies SiteForCookies() const override;
-  absl::optional<WebSecurityOrigin> TopFrameOrigin() const override;
+  std::optional<WebSecurityOrigin> TopFrameOrigin() const override;
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   WebString GetAcceptLanguages() const override;
@@ -129,12 +133,14 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
       pending_subresource_loader_updater_;
 
   // This is owned by ThreadedMessagingProxyBase on the main thread.
-  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
+  raw_ptr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
 
-  AcceptLanguagesWatcher* accept_languages_watcher_ = nullptr;
+  raw_ptr<AcceptLanguagesWatcher> accept_languages_watcher_ = nullptr;
 
   Vector<String> cors_exempt_header_list_;
   bool is_offline_mode_ = false;
+
+  bool is_third_party_context_ = false;
 };
 
 }  // namespace blink

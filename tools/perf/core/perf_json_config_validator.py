@@ -137,6 +137,7 @@ def _ValidateBrowserType(builder_name, test_config):
       raise ValueError("%s must use 'lacros-chrome' browser type" %
                        builder_name)
   elif builder_name in ('win-10-perf', 'win-10-perf-pgo',
+                        'win-11-perf', 'win-11-perf-pgo',
                         'Win 7 Nvidia GPU Perf',
                         'win-10_laptop_low_end-perf_HP-Candidate',
                         'win-10_laptop_low_end-perf',
@@ -159,7 +160,7 @@ def ValidateTestingBuilder(builder_name, builder_data):
     _ValidateSwarmingDimension(
         builder_name,
         swarming_dimensions=test_config['swarming'].get('dimension_sets', {}))
-    if test_config['isolate_name'] in _PERFORMANCE_TEST_SUITES:
+    if test_config['test'] in _PERFORMANCE_TEST_SUITES:
       _ValidateShardingData(builder_name, test_config)
       _ValidateBrowserType(builder_name, test_config)
 

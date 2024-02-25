@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/web_request/upload_data_presenter.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -51,7 +52,7 @@ RawDataPresenter::RawDataPresenter() = default;
 
 RawDataPresenter::~RawDataPresenter() = default;
 
-void RawDataPresenter::FeedBytes(base::StringPiece bytes) {
+void RawDataPresenter::FeedBytes(std::string_view bytes) {
   FeedNextBytes(bytes.data(), bytes.size());
 }
 
@@ -63,7 +64,7 @@ bool RawDataPresenter::Succeeded() {
   return true;
 }
 
-absl::optional<base::Value> RawDataPresenter::TakeResult() {
+std::optional<base::Value> RawDataPresenter::TakeResult() {
   return base::Value(std::move(list_));
 }
 
@@ -89,7 +90,7 @@ ParsedDataPresenter::ParsedDataPresenter(
 
 ParsedDataPresenter::~ParsedDataPresenter() = default;
 
-void ParsedDataPresenter::FeedBytes(base::StringPiece bytes) {
+void ParsedDataPresenter::FeedBytes(std::string_view bytes) {
   if (!success_)
     return;
 
@@ -114,9 +115,9 @@ bool ParsedDataPresenter::Succeeded() {
   return success_;
 }
 
-absl::optional<base::Value> ParsedDataPresenter::TakeResult() {
+std::optional<base::Value> ParsedDataPresenter::TakeResult() {
   if (!success_)
-    return absl::nullopt;
+    return std::nullopt;
   return base::Value(std::move(dictionary_.value()));
 }
 

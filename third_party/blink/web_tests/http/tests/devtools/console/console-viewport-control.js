@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Verifies viewport correctly shows and hides messages while logging and scrolling.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function addMessages(count)
@@ -26,7 +28,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     `);
 
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
-  var consoleView = Console.ConsoleView.instance();
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
   var viewport = consoleView.viewport;
   const smallCount = 3;
 
@@ -50,8 +52,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
   function onWillHide() {
     wasRemovedFromDOM.add(this);
   }
-  TestRunner.addSniffer(Console.ConsoleViewMessage.prototype, 'wasShown', onWasShown, true);
-  TestRunner.addSniffer(Console.ConsoleViewMessage.prototype, 'willHide', onWillHide, true);
+  TestRunner.addSniffer(Console.ConsoleViewMessage.ConsoleViewMessage.prototype, 'wasShown', onWasShown, true);
+  TestRunner.addSniffer(Console.ConsoleViewMessage.ConsoleViewMessage.prototype, 'willHide', onWillHide, true);
 
   function resetShowHideCounts() {
     wasAddedToDOM.clear();
@@ -72,14 +74,14 @@ import {ConsoleTestRunner} from 'console_test_runner';
       }
       ConsoleTestRunner.addConsoleSniffer(messageAdded, false);
       if (!repeating)
-        TestRunner.evaluateInPage(String.sprintf('addMessages(%d)', count));
+        TestRunner.evaluateInPage(Platform.StringUtilities.sprintf('addMessages(%d)', count));
       else
-        TestRunner.evaluateInPage(String.sprintf('addRepeatingMessages(%d)', count));
+        TestRunner.evaluateInPage(Platform.StringUtilities.sprintf('addRepeatingMessages(%d)', count));
     });
   }
 
   function reset() {
-    Console.ConsoleView.clearConsole();
+    Console.ConsoleView.ConsoleView.clearConsole();
     resetShowHideCounts();
   }
 

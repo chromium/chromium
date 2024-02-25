@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -36,6 +36,7 @@ class NetworkAnonymizationKey;
 namespace content {
 
 class AuctionSharedStorageHost;
+class AuctionNetworkEventsProxy;
 class RenderFrameHostImpl;
 class SiteInstance;
 class SubresourceUrlAuthorizations;
@@ -74,6 +75,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
       base::OnceCallback<void(FatalErrorType fatal_error_type,
                               const std::vector<std::string>& errors)>;
 
+  int GetFrameTreeNodeID();
+
   // Delegate class to allow dependency injection in tests. Note that passed in
   // URLLoaderFactories can crash and be restarted, so passing in raw pointers
   // would be problematic.
@@ -105,6 +108,9 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // Returns the ClientSecurityState associated with the frame, for use in
     // bidder worklet and signals fetches.
     virtual network::mojom::ClientSecurityStatePtr GetClientSecurityState() = 0;
+
+    // Returns the cookie deprecation label for facilitated testing.
+    virtual std::optional<std::string> GetCookieDeprecationLabel() = 0;
   };
 
   // Internal class that owns and creates worklets. It also tracks pending
@@ -119,28 +125,31 @@ class CONTENT_EXPORT AuctionWorkletManager {
   struct CONTENT_EXPORT WorkletKey {
     WorkletKey(WorkletType type,
                const GURL& script_url,
-               const absl::optional<GURL>& wasm_url,
-               const absl::optional<GURL>& signals_url,
+               const std::optional<GURL>& wasm_url,
+               const std::optional<GURL>& signals_url,
                bool needs_cors_for_additional_bid,
-               absl::optional<uint16_t> experiment_group_id);
+               std::optional<uint16_t> experiment_group_id,
+               const std::string& trusted_bidding_signals_slot_size_param);
     WorkletKey(const WorkletKey&);
     WorkletKey(WorkletKey&&);
     ~WorkletKey();
-
-    WorkletType type;
-    GURL script_url;
-    absl::optional<GURL> wasm_url;
-    absl::optional<GURL> signals_url;
-
-    // `needs_cors_for_additional_bid` is set for buyer reporting for additional
-    // bids; those need to perform a CORS check others don't.
-    bool needs_cors_for_additional_bid;
-    absl::optional<uint16_t> experiment_group_id;
 
     // Fast, non-cryptographic hash to count unique worklets for UKM.
     size_t GetHash() const;
 
     bool operator<(const WorkletKey& other) const;
+
+    WorkletType type;
+    GURL script_url;
+    std::optional<GURL> wasm_url;
+    std::optional<GURL> signals_url;
+
+    // `needs_cors_for_additional_bid` is set for buyer reporting for additional
+    // bids; those need to perform a CORS check others don't.
+    bool needs_cors_for_additional_bid;
+
+    std::optional<uint16_t> experiment_group_id;
+    std::string trusted_bidding_signals_slot_size_param;
   };
 
   // Class that tracks a request for a Worklet, and helps manage the lifetime of
@@ -184,12 +193,17 @@ class CONTENT_EXPORT AuctionWorkletManager {
     const SubresourceUrlAuthorizations&
     GetSubresourceUrlAuthorizationsForTesting();
 
+    // Returns devtools IDs of all auctions that are using the worklet pointed
+    // to by this handle.
+    std::vector<std::string> GetDevtoolsAuctionIdsForTesting();
+
    private:
     friend class AuctionWorkletManager;
     friend class WorkletOwner;
 
     // These are only created by AuctionWorkletManager.
-    explicit WorkletHandle(scoped_refptr<WorkletOwner> worklet_owner,
+    explicit WorkletHandle(std::string devtools_auction_id,
+                           scoped_refptr<WorkletOwner> worklet_owner,
                            base::OnceClosure worklet_available_callback,
                            FatalErrorCallback fatal_error_callback);
 
@@ -203,6 +217,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
     bool worklet_created() const;
 
     scoped_refptr<WorkletOwner> worklet_owner_;
+    std::string devtools_auction_id_;
 
     base::OnceClosure worklet_available_callback_;
     FatalErrorCallback fatal_error_callback_;
@@ -225,13 +240,17 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // RequestBidderWorklet(...) is RequestWorkletByKey(BidderWorkletKey(...))
   static WorkletKey BidderWorkletKey(
       const GURL& bidding_logic_url,
-      const absl::optional<GURL>& wasm_url,
-      const absl::optional<GURL>& trusted_bidding_signals_url,
+      const std::optional<GURL>& wasm_url,
+      const std::optional<GURL>& trusted_bidding_signals_url,
       bool needs_cors_for_additional_bid,
-      absl::optional<uint16_t> experiment_group_id);
+      std::optional<uint16_t> experiment_group_id,
+      const std::string& trusted_bidding_signals_slot_size_param);
 
   // Requests a worklet with the specified properties. The top frame origin and
   // debugging information are obtained from the Delegate's RenderFrameHost.
+  //
+  // `devtools_auction_id` will be used to related network events to given
+  // auction. It serves no other purpose and does not affect worklet sharing.
   //
   // The AuctionWorkletManager will handle requesting a process, hooking up
   // DevTools, and merging requests with the same parameters so they can share a
@@ -258,22 +277,26 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // The callbacks should not delete the AuctionWorkletManager itself, but are
   // free to release any WorkletHandle they wish.
   void RequestBidderWorklet(
+      std::string devtools_auction_id,
       const GURL& bidding_logic_url,
-      const absl::optional<GURL>& wasm_url,
-      const absl::optional<GURL>& trusted_bidding_signals_url,
+      const std::optional<GURL>& wasm_url,
+      const std::optional<GURL>& trusted_bidding_signals_url,
       bool needs_cors_for_additional_bid,
-      absl::optional<uint16_t> experiment_group_id,
+      std::optional<uint16_t> experiment_group_id,
+      const std::string& trusted_bidding_signals_slot_size_param,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
   void RequestSellerWorklet(
+      std::string devtools_auction_id,
       const GURL& decision_logic_url,
-      const absl::optional<GURL>& trusted_scoring_signals_url,
-      absl::optional<uint16_t> experiment_group_id,
+      const std::optional<GURL>& trusted_scoring_signals_url,
+      std::optional<uint16_t> experiment_group_id,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
   void RequestWorkletByKey(WorkletKey worklet_info,
+                           std::string devtools_auction_id,
                            base::OnceClosure worklet_available_callback,
                            FatalErrorCallback fatal_error_callback,
                            std::unique_ptr<WorkletHandle>& out_worklet_handle);
@@ -294,12 +317,12 @@ class CONTENT_EXPORT AuctionWorkletManager {
   const url::Origin& frame_origin() const { return frame_origin_; }
   Delegate* delegate() { return delegate_; }
 
-  const raw_ptr<AuctionProcessManager, DanglingUntriaged>
-      auction_process_manager_;
+  const raw_ptr<AuctionProcessManager> auction_process_manager_;
   const url::Origin top_window_origin_;
   const url::Origin frame_origin_;
   raw_ptr<Delegate> const delegate_;
 
+  std::unique_ptr<AuctionNetworkEventsProxy> auction_network_events_proxy_;
   std::unique_ptr<AuctionSharedStorageHost> auction_shared_storage_host_;
 
   std::map<WorkletKey, WorkletOwner*> worklets_;

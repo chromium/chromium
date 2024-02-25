@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace syncer {
@@ -106,10 +105,11 @@ void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
   }
 }
 
-base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type) {
-  DCHECK(base::Contains(type_trackers_, type));
+base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type,
+                                                bool is_single_client) {
+  DCHECK(type_trackers_.contains(type));
   type_trackers_[type]->RecordLocalChange();
-  return type_trackers_[type]->GetLocalChangeNudgeDelay();
+  return type_trackers_[type]->GetLocalChangeNudgeDelay(is_single_client);
 }
 
 base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {
@@ -319,7 +319,7 @@ void NudgeTracker::SetNextRetryTime(base::TimeTicks retry_time) {
 
 void NudgeTracker::UpdateLocalChangeDelay(ModelType type,
                                           const base::TimeDelta& delay) {
-  if (base::Contains(type_trackers_, type)) {
+  if (type_trackers_.contains(type)) {
     type_trackers_[type]->UpdateLocalChangeNudgeDelay(delay);
   }
 }
@@ -327,14 +327,14 @@ void NudgeTracker::UpdateLocalChangeDelay(ModelType type,
 void NudgeTracker::SetLocalChangeDelayIgnoringMinForTest(
     ModelType type,
     const base::TimeDelta& delay) {
-  DCHECK(base::Contains(type_trackers_, type));
+  DCHECK(type_trackers_.contains(type));
   type_trackers_[type]->SetLocalChangeNudgeDelayIgnoringMinForTest(delay);
 }
 
 void NudgeTracker::SetQuotaParamsForExtensionTypes(
-    absl::optional<int> max_tokens,
-    absl::optional<base::TimeDelta> refill_interval,
-    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {
+    std::optional<int> max_tokens,
+    std::optional<base::TimeDelta> refill_interval,
+    std::optional<base::TimeDelta> depleted_quota_nudge_delay) {
   for (const auto& [type, tracker] : type_trackers_) {
     tracker->SetQuotaParamsIfExtensionType(max_tokens, refill_interval,
                                            depleted_quota_nudge_delay);

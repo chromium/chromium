@@ -8,10 +8,12 @@
 
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
+#include "media/cast/logging/stats_event_subscriber.h"
 
 namespace mirroring {
 
 namespace {
+
 media::cast::StatsEventSubscriber::CastStat StatisticTypeToCastStat(
     const openscreen::cast::StatisticType& stat_type) {
   switch (stat_type) {
@@ -121,10 +123,14 @@ base::Value::Dict OpenscreenStatsClient::ConvertStatisticsListToDict(
     const openscreen::cast::SenderStats::StatisticsList& stats_list) const {
   base::Value::Dict ret;
   for (std::size_t i = 0; i < stats_list.size(); ++i) {
-    ret.Set(media::cast::StatsEventSubscriber::CastStatToString(
-                StatisticTypeToCastStat(
-                    static_cast<openscreen::cast::StatisticType>(i))),
-            stats_list[i]);
+    const char* key = media::cast::StatsEventSubscriber::CastStatToString(
+        StatisticTypeToCastStat(
+            static_cast<openscreen::cast::StatisticType>(i)));
+    if (std::isfinite(stats_list[i])) {
+      ret.Set(key, stats_list[i]);
+    } else {
+      ret.Set(key, "null");
+    }
   }
   return ret;
 }

@@ -8,7 +8,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that invalid rule inside @-rule doesn't break source code matching (http://crbug.com/317499).\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/styles-source-lines-recovery-helper.html');
 

@@ -39,13 +39,13 @@ namespace {
 typedef std::vector<const DisplayMode*> DisplayModeList;
 
 struct DisplayState {
-  raw_ptr<DisplaySnapshot, ExperimentalAsh> display = nullptr;  // Not owned.
+  raw_ptr<DisplaySnapshot> display = nullptr;  // Not owned.
 
   // User-selected mode for the display.
-  raw_ptr<const DisplayMode, ExperimentalAsh> selected_mode = nullptr;
+  raw_ptr<const DisplayMode> selected_mode = nullptr;
 
   // Mode used when displaying the same desktop on multiple displays.
-  raw_ptr<const DisplayMode, ExperimentalAsh> mirror_mode = nullptr;
+  raw_ptr<const DisplayMode> mirror_mode = nullptr;
 };
 
 // Returns whether |display_id| can be found in |display_list|,
@@ -91,21 +91,6 @@ const int DisplayConfigurator::kSetDisplayPowerForceProbe = 1 << 0;
 const int DisplayConfigurator::kSetDisplayPowerOnlyIfSingleInternalDisplay =
     1 << 1;
 
-bool DisplayConfigurator::TestApi::TriggerConfigureTimeout() {
-  if (configurator_->configure_timer_.IsRunning()) {
-    configurator_->configure_timer_.FireNow();
-    return true;
-  } else {
-    return false;
-  }
-}
-
-base::TimeDelta DisplayConfigurator::TestApi::GetConfigureDelay() const {
-  return configurator_->configure_timer_.IsRunning()
-             ? configurator_->configure_timer_.GetCurrentDelay()
-             : base::TimeDelta();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // DisplayConfigurator::DisplayLayoutManagerImpl implementation
 
@@ -125,7 +110,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   MultipleDisplayState GetDisplayState() const override;
   chromeos::DisplayPowerState GetPowerState() const override;
   bool GetDisplayLayout(
-      const std::vector<DisplaySnapshot*>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       RefreshRateThrottleState new_throttle_state,
@@ -144,7 +129,8 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   // TODO(dnicoara): Break this into GetSelectedMode() and GetMirrorMode() and
   // remove DisplayState.
   std::vector<DisplayState> ParseDisplays(
-      const std::vector<DisplaySnapshot*>& displays) const;
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays)
+      const;
 
   const DisplayMode* GetUserSelectedMode(const DisplaySnapshot& display) const;
 
@@ -168,7 +154,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   bool FindExactMatchingMirrorMode(const std::vector<DisplayState*>& displays,
                                    bool preserve_native_aspect_ratio) const;
 
-  raw_ptr<DisplayConfigurator, ExperimentalAsh> configurator_;  // Not owned.
+  raw_ptr<DisplayConfigurator> configurator_;  // Not owned.
 
   bool configure_displays_ = false;
 };
@@ -202,9 +188,10 @@ DisplayConfigurator::DisplayLayoutManagerImpl::GetPowerState() const {
 
 std::vector<DisplayState>
 DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
-    const std::vector<DisplaySnapshot*>& snapshots) const {
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& snapshots)
+    const {
   std::vector<DisplayState> cached_displays;
-  for (auto* snapshot : snapshots) {
+  for (display::DisplaySnapshot* snapshot : snapshots) {
     DisplayState display_state;
     display_state.display = snapshot;
     display_state.selected_mode = GetUserSelectedMode(*snapshot);
@@ -258,7 +245,7 @@ DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
 }
 
 bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
-    const std::vector<DisplaySnapshot*>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     RefreshRateThrottleState new_throttle_state,
@@ -275,7 +262,7 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
   // Framebuffer dimensions.
   gfx::Size size;
 
-  for (auto* display : displays) {
+  for (display::DisplaySnapshot* display : displays) {
     requests->push_back(DisplayConfigureRequest(
         display, display->current_mode(), gfx::Point(),
         new_vrr_enabled_state && display->IsVrrCapable()));
@@ -398,6 +385,10 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
     for (DisplayConfigureRequest& request : *requests) {
       if (request.display->type() != DISPLAY_CONNECTION_TYPE_INTERNAL)
         continue;
+
+      if (request.mode == nullptr) {
+        continue;
+      }
 
       std::vector<const DisplayMode*> modes =
           GetSeamlessRefreshRateModes(*request.display, *request.mode);
@@ -791,6 +782,24 @@ void DisplayConfigurator::ForceInitialConfigure() {
   configuration_task_->Run();
 }
 
+void DisplayConfigurator::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const ColorTemperatureAdjustment& cta) {
+  if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_)) {
+    return;
+  }
+  native_display_delegate_->SetColorTemperatureAdjustment(display_id, cta);
+}
+
+void DisplayConfigurator::SetColorCalibration(
+    int64_t display_id,
+    const ColorCalibration& calibration) {
+  if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_)) {
+    return;
+  }
+  native_display_delegate_->SetColorCalibration(display_id, calibration);
+}
+
 bool DisplayConfigurator::SetColorMatrix(
     int64_t display_id,
     const std::vector<float>& color_matrix) {
@@ -799,14 +808,13 @@ bool DisplayConfigurator::SetColorMatrix(
   return native_display_delegate_->SetColorMatrix(display_id, color_matrix);
 }
 
-bool DisplayConfigurator::SetGammaCorrection(
-    int64_t display_id,
-    const std::vector<GammaRampRGBEntry>& degamma_lut,
-    const std::vector<GammaRampRGBEntry>& gamma_lut) {
+bool DisplayConfigurator::SetGammaCorrection(int64_t display_id,
+                                             const GammaCurve& degamma,
+                                             const GammaCurve& gamma) {
   if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_))
     return false;
-  return native_display_delegate_->SetGammaCorrection(display_id, degamma_lut,
-                                                      gamma_lut);
+  return native_display_delegate_->SetGammaCorrection(display_id, degamma,
+                                                      gamma);
 }
 
 void DisplayConfigurator::SetPrivacyScreen(int64_t display_id,
@@ -1074,8 +1082,8 @@ void DisplayConfigurator::RunPendingConfiguration() {
   pending_power_flags_ = kSetDisplayPowerNoFlags;
   has_pending_power_state_ = false;
   requested_display_state_ = MULTIPLE_DISPLAY_STATE_INVALID;
-  pending_refresh_rate_throttle_state_ = absl::nullopt;
-  pending_vrr_state_ = absl::nullopt;
+  pending_refresh_rate_throttle_state_ = std::nullopt;
+  pending_vrr_state_ = std::nullopt;
 
   DCHECK(in_progress_configuration_callbacks_.empty());
   in_progress_configuration_callbacks_.swap(queued_configuration_callbacks_);
@@ -1085,8 +1093,9 @@ void DisplayConfigurator::RunPendingConfiguration() {
 
 void DisplayConfigurator::OnConfigured(
     bool success,
-    const std::vector<DisplaySnapshot*>& displays,
-    const std::vector<DisplaySnapshot*>& unassociated_displays,
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+        unassociated_displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     bool new_vrr_state_) {
@@ -1156,24 +1165,21 @@ bool DisplayConfigurator::HasPendingFullConfiguration() const {
   if (has_pending_power_state_)
     return true;
 
-  // Schedule if there is a request to change the VRR enabled state.
-  if (ShouldConfigureVrr()) {
-    return true;
-  }
-
-  // TODO(b/221220344): Remove after seamless modesets are fixed.
-  // Schedule if the conditions for seamless configuration are met and VRR is
-  // currently enabled on the internal display.
-  if (HasPendingSeamlessConfiguration() && IsVrrEnabledOnInternalDisplay()) {
-    return true;
-  }
-
   return false;
 }
 
 bool DisplayConfigurator::HasPendingSeamlessConfiguration() const {
   // Schedule if there is a pending request to change the refresh rate.
-  return pending_refresh_rate_throttle_state_.has_value();
+  if (pending_refresh_rate_throttle_state_.has_value()) {
+    return true;
+  }
+
+  // Schedule if there is a request to change the VRR enabled state.
+  if (ShouldConfigureVrr()) {
+    return true;
+  }
+
+  return false;
 }
 
 void DisplayConfigurator::CallAndClearInProgressCallbacks(bool success) {
@@ -1228,7 +1234,7 @@ bool DisplayConfigurator::GetRequestedVrrState() const {
 }
 
 bool DisplayConfigurator::ShouldConfigureVrr() const {
-  for (const auto* display : cached_displays_) {
+  for (const display::DisplaySnapshot* display : cached_displays_) {
     if (!display->IsVrrCapable()) {
       continue;
     }
@@ -1241,18 +1247,27 @@ bool DisplayConfigurator::ShouldConfigureVrr() const {
   return false;
 }
 
-bool DisplayConfigurator::IsVrrEnabledOnInternalDisplay() const {
-  const DisplaySnapshot* internal_display;
-  for (const auto* display : cached_displays_) {
-    if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-      internal_display = display;
-      break;
-    }
-  }
+////////////////////////////////////////////////////////////////////////////////
+// DisplayConfigurator::TestApi implementation
 
-  return internal_display != nullptr &&
-         internal_display->current_mode() != nullptr &&
-         internal_display->IsVrrEnabled();
+bool DisplayConfigurator::TestApi::TriggerConfigureTimeout() {
+  if (configurator_->configure_timer_.IsRunning()) {
+    configurator_->configure_timer_.FireNow();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+base::TimeDelta DisplayConfigurator::TestApi::GetConfigureDelay() const {
+  return configurator_->configure_timer_.IsRunning()
+             ? configurator_->configure_timer_.GetCurrentDelay()
+             : base::TimeDelta();
+}
+
+DisplayLayoutManager* DisplayConfigurator::TestApi::GetDisplayLayoutManager()
+    const {
+  return configurator_->layout_manager_.get();
 }
 
 }  // namespace display

@@ -5,12 +5,12 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -98,7 +98,7 @@ void FormatValidatedNumber(const ::i18n::phonenumbers::PhoneNumber& number,
 // multi-byte UTF-8 characters, every byte has its most significant bit set
 // (i.e., is in the range 128-255, inclusive), so all bytes <=127 are
 // single-byte characters.
-bool IsPrintable(base::StringPiece str) {
+bool IsPrintable(std::string_view str) {
   for (unsigned char c : str) {
     if (c < 32 || c == 127)
       return false;
@@ -242,24 +242,26 @@ std::u16string NormalizePhoneNumber(const std::u16string& value,
   return normalized_number;
 }
 
-bool ConstructPhoneNumber(const std::u16string& country_code,
-                          const std::u16string& city_code,
-                          const std::u16string& number,
+bool ConstructPhoneNumber(const std::u16string& input_whole_number,
                           const std::string& region,
-                          std::u16string* whole_number) {
+                          std::u16string* output_whole_number) {
   DCHECK_EQ(2u, region.size());
-  whole_number->clear();
+  output_whole_number->clear();
 
-  std::u16string unused_country_code, unused_city_code, unused_number;
+  std::u16string parsed_country_code, unused_city_code, unused_number;
   std::string unused_region;
   ::i18n::phonenumbers::PhoneNumber phone_number;
-  if (!ParsePhoneNumber(country_code + city_code + number, region,
-                        &unused_country_code, &unused_city_code, &unused_number,
-                        &unused_region, &phone_number)) {
+  if (!ParsePhoneNumber(input_whole_number, region, &parsed_country_code,
+                        &unused_city_code, &unused_number, &unused_region,
+                        &phone_number)) {
     return false;
   }
 
-  FormatValidatedNumber(phone_number, country_code, whole_number, nullptr);
+  // We pass the parsed_country_code so that if the phone number contained a
+  // country code, the formatted phone number is returned in international
+  // format with a country code as well.
+  FormatValidatedNumber(phone_number, parsed_country_code, output_whole_number,
+                        nullptr);
   return true;
 }
 
@@ -367,8 +369,7 @@ std::string FormatPhoneForResponse(const std::string& phone_number,
 }
 
 PhoneObject::PhoneObject(const std::u16string& number,
-                         const std::string& region,
-                         bool infer_country_code) {
+                         const std::string& region) {
   DCHECK_EQ(2u, region.size());
 
   std::unique_ptr<::i18n::phonenumbers::PhoneNumber> i18n_number(
@@ -379,13 +380,6 @@ PhoneObject::PhoneObject(const std::u16string& number,
     // The formatted and normalized versions will be set on the first call to
     // the coresponding methods.
     i18n_number_ = std::move(i18n_number);
-    // `ParsePhoneNumber()` only sets `country_code_` for internationally
-    // formatted numbers. `i18n_number_`'s country_code defaults to `region` in,
-    // this case. If `infer_country_code` is true, fall back to that.
-    if (infer_country_code && country_code_.empty() &&
-        i18n_number_->has_country_code()) {
-      country_code_ = base::NumberToString16(i18n_number_->country_code());
-    }
     // Autofill doesn't support filling extensions, so we should not store them.
     i18n_number_->clear_extension();
   } else {
@@ -399,9 +393,9 @@ PhoneObject::PhoneObject(const PhoneObject& other) {
   *this = other;
 }
 
-PhoneObject::PhoneObject() {}
+PhoneObject::PhoneObject() = default;
 
-PhoneObject::~PhoneObject() {}
+PhoneObject::~PhoneObject() = default;
 
 const std::u16string& PhoneObject::GetFormattedNumber() const {
   if (i18n_number_ && formatted_number_.empty()) {

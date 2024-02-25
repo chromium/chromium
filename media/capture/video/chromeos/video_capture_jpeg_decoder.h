@@ -25,9 +25,7 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoder {
                    // decode error.
   };
 
-  using DecodeDoneCB =
-      base::RepeatingCallback<void(ReadyFrameInBuffer,
-                                   std::vector<ReadyFrameInBuffer>)>;
+  using DecodeDoneCB = base::RepeatingCallback<void(ReadyFrameInBuffer)>;
 
   virtual ~VideoCaptureJpegDecoder() {}
 

@@ -9,12 +9,13 @@
 
 #include <array>
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -36,17 +37,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationObject {
 
     std::vector<uint8_t> attestation_object_bytes;
     std::vector<uint8_t> authenticator_data;
-    absl::optional<std::vector<uint8_t>> public_key_der;
+    std::optional<std::vector<uint8_t>> public_key_der;
     int32_t public_key_algo;
   };
 
-  static absl::optional<AttestationObject> Parse(const cbor::Value& value);
+  static std::optional<AttestationObject> Parse(const cbor::Value& value);
 
   // ParseForResponseFields parses a serialized attestation object and extracts
   // the fields needed to build a browser's response to a create() call. If
   // `attestation_acceptable` is false any attestation will have been removed
   // in the return value.
-  static absl::optional<ResponseFields> ParseForResponseFields(
+  static std::optional<ResponseFields> ParseForResponseFields(
       std::vector<uint8_t> attestation_object_bytes,
       bool attestation_acceptable);
 
@@ -76,7 +77,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationObject {
 
   // EraseExtension deletes the named extension. It returns true iff the
   // extension was present.
-  bool EraseExtension(base::StringPiece name);
+  bool EraseExtension(std::string_view name);
 
   // Returns true if the attestation is a "self" attestation, i.e. is just the
   // private key signing itself to show that it is fresh. See

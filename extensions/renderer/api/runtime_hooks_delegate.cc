@@ -4,20 +4,20 @@
 
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
@@ -120,8 +120,8 @@ void GetBackgroundPageCallback(
 // Note: This is to allow the promise version of the API to return a single
 // object, while still supporting the previous callback version which expects
 // multiple parameters to be passed to the callback.
-std::vector<v8::Local<v8::Value>> MassageRequestUpdateCheckResults(
-    const std::vector<v8::Local<v8::Value>>& result_args,
+v8::LocalVector<v8::Value> MassageRequestUpdateCheckResults(
+    const v8::LocalVector<v8::Value>& result_args,
     v8::Local<v8::Context> context,
     binding::AsyncResponseType async_type) {
   // If this is not a callback based API call, we don't need to modify anything.
@@ -148,7 +148,7 @@ std::vector<v8::Local<v8::Value>> MassageRequestUpdateCheckResults(
   v8::Local<v8::Object> details = v8::Object::New(isolate);
   auto key = gin::StringToV8(isolate, "version");
   details->CreateDataProperty(context, key, version).Check();
-  return {status, details};
+  return v8::LocalVector<v8::Value>(isolate, {status, details});
 }
 
 }  // namespace
@@ -161,7 +161,7 @@ RuntimeHooksDelegate::~RuntimeHooksDelegate() = default;
 // static
 RequestResult RuntimeHooksDelegate::GetURL(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const v8::LocalVector<v8::Value>& arguments) {
   DCHECK_EQ(1u, arguments.size());
   DCHECK(arguments[0]->IsString());
   DCHECK(script_context->extension());
@@ -192,13 +192,13 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (RuntimeHooksDelegate::*)(
       ScriptContext*, const APISignature::V8ParseResult&);
   static const struct {
     Handler handler;
-    base::StringPiece method;
+    std::string_view method;
   } kHandlers[] = {
       {&RuntimeHooksDelegate::HandleSendMessage, kSendMessage},
       {&RuntimeHooksDelegate::HandleConnect, kConnect},
@@ -289,7 +289,7 @@ RequestResult RuntimeHooksDelegate::HandleGetURL(
 RequestResult RuntimeHooksDelegate::HandleSendMessage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(4u, arguments.size());
 
   std::string target_id;
@@ -325,7 +325,7 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id),
-      ChannelType::kSendMessage, *message, parse_result.async_type,
+      mojom::ChannelType::kSendMessage, *message, parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
@@ -342,7 +342,7 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
 RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
 
   std::string application_name =
@@ -356,7 +356,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   // structured cloning serialization.
   std::unique_ptr<Message> message =
       messaging_util::MessageFromV8(script_context->v8_context(), v8_message,
-                                    SerializationFormat::kJson, &error);
+                                    mojom::SerializationFormat::kJson, &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -369,7 +369,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
-      ChannelType::kNative, *message, parse_result.async_type,
+      mojom::ChannelType::kNative, *message, parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
@@ -386,7 +386,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
 RequestResult RuntimeHooksDelegate::HandleConnect(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(2u, arguments.size());
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
@@ -422,7 +422,7 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
 RequestResult RuntimeHooksDelegate::HandleConnectNative(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(1u, arguments.size());
   DCHECK(arguments[0]->IsString());
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
@@ -432,7 +432,7 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
 
   // Native messaging always uses JSON since a native host doesn't understand
   // structured cloning serialization.
-  auto format = SerializationFormat::kJson;
+  auto format = mojom::SerializationFormat::kJson;
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForNativeApp(application_name),
       std::string(), format);
@@ -481,10 +481,11 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     // allow native code to run in the background page, we'll also need a
     // NativesEnabledScope for that context.
     DCHECK(v8_context == isolate->GetCurrentContext());
-    absl::optional<ModuleSystem::NativesEnabledScope> background_page_natives;
+    std::optional<ModuleSystem::NativesEnabledScope> background_page_natives;
     if (background_page &&
         background_page != script_context->GetRenderFrame() &&
-        blink::WebFrame::ScriptCanAccess(background_page->GetWebFrame())) {
+        blink::WebFrame::ScriptCanAccess(isolate,
+                                         background_page->GetWebFrame())) {
       ScriptContext* background_page_script_context =
           GetScriptContextFromV8Context(
               background_page->GetWebFrame()->MainWorldScriptContext());

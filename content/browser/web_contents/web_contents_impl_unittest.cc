@@ -37,8 +37,6 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_details.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
@@ -60,6 +58,7 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_content_client.h"
+#include "content/test/test_page_broadcast.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -179,7 +178,7 @@ class TestWebContentsObserver : public WebContentsObserver {
 
   const GURL& last_url() const { return last_url_; }
   int theme_color_change_calls() const { return theme_color_change_calls_; }
-  absl::optional<viz::VerticalScrollDirection> last_vertical_scroll_direction()
+  std::optional<viz::VerticalScrollDirection> last_vertical_scroll_direction()
       const {
     return last_vertical_scroll_direction_;
   }
@@ -196,7 +195,7 @@ class TestWebContentsObserver : public WebContentsObserver {
  private:
   GURL last_url_;
   int theme_color_change_calls_ = 0;
-  absl::optional<viz::VerticalScrollDirection> last_vertical_scroll_direction_;
+  std::optional<viz::VerticalScrollDirection> last_vertical_scroll_direction_;
   bool observed_did_first_visually_non_empty_paint_ = false;
   int num_is_connected_to_bluetooth_device_changed_ = 0;
   bool last_is_connected_to_bluetooth_device_ = false;
@@ -250,7 +249,7 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
   }
 
  private:
-  raw_ptr<WebContents, DanglingUntriaged> fullscreened_contents_;
+  raw_ptr<WebContents> fullscreened_contents_;
 };
 
 class FakeWebContentsDelegate : public WebContentsDelegate {
@@ -325,6 +324,46 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
 
   mojo::Receiver<blink::mojom::ImageDownloader> receiver_{this};
   std::map<GURL, FakeResponseData> fake_response_data_per_url_;
+};
+
+class MockPageBroadcast : public TestPageBroadcast {
+ public:
+  using TestPageBroadcast::TestPageBroadcast;
+  MOCK_METHOD(void,
+              UpdateColorProviders,
+              (const blink::ColorProviderColorMaps& color_provider_colors),
+              (override));
+};
+
+class TestColorProviderSource : public ui::ColorProviderSource {
+ public:
+  TestColorProviderSource() { provider_.GenerateColorMap(); }
+
+  const ui::ColorProvider* GetColorProvider() const override {
+    return &provider_;
+  }
+
+  const ui::RendererColorMap GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode color_mode,
+      ui::ColorProviderKey::ForcedColors forced_colors) const override {
+    if (forced_colors == ui::ColorProviderKey::ForcedColors::kActive) {
+      return forced_colors_map;
+    }
+    return color_mode == ui::ColorProviderKey::ColorMode::kLight ? light_colors
+                                                                 : dark_colors;
+  }
+
+  ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
+
+ private:
+  ui::ColorProvider provider_;
+  ui::ColorProviderKey key_;
+  const ui::RendererColorMap light_colors{
+      {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorWHITE}};
+  const ui::RendererColorMap dark_colors{
+      {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorBLACK}};
+  const ui::RendererColorMap forced_colors_map{
+      {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorCYAN}};
 };
 
 }  // namespace
@@ -853,8 +892,8 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredSitelessUrl) {
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   std::unique_ptr<NavigationEntry> new_entry =
       NavigationController::CreateNavigationEntry(
-          native_url, Referrer(), /* initiator_origin= */ absl::nullopt,
-          /* initiator_base_url= */ absl::nullopt, ui::PAGE_TRANSITION_LINK,
+          native_url, Referrer(), /* initiator_origin= */ std::nullopt,
+          /* initiator_base_url= */ std::nullopt, ui::PAGE_TRANSITION_LINK,
           false, std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   entries.push_back(std::move(new_entry));
@@ -893,8 +932,8 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   std::unique_ptr<NavigationEntry> new_entry =
       NavigationController::CreateNavigationEntry(
-          regular_url, Referrer(), /* initiator_origin= */ absl::nullopt,
-          /* initiator_base_url= */ absl::nullopt, ui::PAGE_TRANSITION_LINK,
+          regular_url, Referrer(), /* initiator_origin= */ std::nullopt,
+          /* initiator_base_url= */ std::nullopt, ui::PAGE_TRANSITION_LINK,
           false, std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   entries.push_back(std::move(new_entry));
@@ -1137,8 +1176,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);
-  const bool will_change_site_instance =
-      IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled();
+
   // This test assumes no interaction with the back/forward cache. Indeed, it
   // isn't possible to perform the second back navigation in between the
   // ReadyToCommit and Commit of the first back/forward cache one. Both steps
@@ -1182,21 +1220,14 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   SiteInstance* instance3 = contents()->GetSiteInstance();
 
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
-  if (will_change_site_instance || ShouldCreateNewHostForAllFrames()) {
-    // If same-site ProactivelySwapBrowsingInstance or main-frame RenderDocument
-    // is enabled, the RFH should change.
+  if (ShouldCreateNewHostForAllFrames()) {
+    // If main-frame RenderDocument is enabled, the RFH should change.
     EXPECT_NE(google_rfh, main_test_rfh());
     google_rfh = main_test_rfh();
   } else {
     EXPECT_EQ(google_rfh, main_test_rfh());
   }
-  if (will_change_site_instance) {
-    // When ProactivelySwapBrowsingInstance is enabled on same-site navigations,
-    // the SiteInstance will change.
-    EXPECT_NE(instance2, instance3);
-  } else {
-    EXPECT_EQ(instance2, instance3);
-  }
+
   EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
   EXPECT_EQ(url3, entry3->GetURL());
   EXPECT_EQ(instance3,
@@ -1206,11 +1237,6 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   auto back_navigation1 = NavigationSimulator::CreateHistoryNavigation(
       -1, contents(), false /* is_renderer_initiated */);
   back_navigation1->Start();
-  if (will_change_site_instance) {
-    EXPECT_TRUE(contents()->CrossProcessNavigationPending());
-  } else {
-    EXPECT_FALSE(contents()->CrossProcessNavigationPending());
-  }
   EXPECT_EQ(entry2, controller().GetPendingEntry());
 
   // Before that commits, go back again.
@@ -1549,7 +1575,7 @@ TEST_F(WebContentsImplTest,
   // fullscreen will fail.
   main_test_rfh()->EnterFullscreen(blink::mojom::FullscreenOptions::New(),
                                    base::BindOnce(&ExpectFalse));
-  EXPECT_FALSE(contents()->HasSeenRecentScreenOrientationChange());
+  EXPECT_TRUE(contents()->IsTransientActivationRequiredForHtmlFullscreen());
   EXPECT_FALSE(
       main_test_rfh()->frame_tree_node()->HasTransientUserActivation());
   EXPECT_FALSE(contents()->IsFullscreen());
@@ -1621,7 +1647,7 @@ TEST_F(WebContentsImplTest, PendingContentsShown) {
   int widget_id = widget->GetRoutingID();
 
   // The first call to GetCreatedWindow pops it off the pending list.
-  absl::optional<CreatedWindow> created_window =
+  std::optional<CreatedWindow> created_window =
       contents()->GetCreatedWindow(process_id, widget_id);
   EXPECT_TRUE(created_window.has_value());
   EXPECT_EQ(test_web_contents, created_window->contents.get());
@@ -2491,7 +2517,7 @@ TEST_F(WebContentsImplTest, ThemeColorChangeDependingOnFirstVisiblePaint) {
   TestRenderFrameHost* rfh = main_test_rfh();
   rfh->InitializeRenderFrameIfNeeded();
 
-  EXPECT_EQ(absl::nullopt, contents()->GetThemeColor());
+  EXPECT_EQ(std::nullopt, contents()->GetThemeColor());
   EXPECT_EQ(0, observer.theme_color_change_calls());
 
   // Theme color changes should not propagate past the WebContentsImpl before
@@ -3028,7 +3054,7 @@ class TestCanonicalUrlLocalFrame : public content::FakeLocalFrame,
                                    public WebContentsObserver {
  public:
   explicit TestCanonicalUrlLocalFrame(WebContents* web_contents,
-                                      absl::optional<GURL> canonical_url)
+                                      std::optional<GURL> canonical_url)
       : WebContentsObserver(web_contents), canonical_url_(canonical_url) {}
 
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
@@ -3039,13 +3065,13 @@ class TestCanonicalUrlLocalFrame : public content::FakeLocalFrame,
   }
 
   void GetCanonicalUrlForSharing(
-      base::OnceCallback<void(const absl::optional<GURL>&)> callback) override {
+      base::OnceCallback<void(const std::optional<GURL>&)> callback) override {
     std::move(callback).Run(canonical_url_);
   }
 
  private:
   bool initialized_ = false;
-  absl::optional<GURL> canonical_url_;
+  std::optional<GURL> canonical_url_;
 };
 
 TEST_F(WebContentsImplTest, CanonicalUrlSchemeHttpsIsAllowed) {
@@ -3054,9 +3080,9 @@ TEST_F(WebContentsImplTest, CanonicalUrlSchemeHttpsIsAllowed) {
                                                     GURL("https://site/"));
 
   base::RunLoop run_loop;
-  absl::optional<GURL> canonical_url;
+  std::optional<GURL> canonical_url;
   base::RepeatingClosure quit = run_loop.QuitClosure();
-  auto on_done = [&](const absl::optional<GURL>& result) {
+  auto on_done = [&](const std::optional<GURL>& result) {
     canonical_url = result;
     quit.Run();
   };
@@ -3074,9 +3100,9 @@ TEST_F(WebContentsImplTest, CanonicalUrlSchemeChromeIsNotAllowed) {
                                                     GURL("https://site/"));
 
   base::RunLoop run_loop;
-  absl::optional<GURL> canonical_url;
+  std::optional<GURL> canonical_url;
   base::RepeatingClosure quit = run_loop.QuitClosure();
-  auto on_done = [&](const absl::optional<GURL>& result) {
+  auto on_done = [&](const std::optional<GURL>& result) {
     canonical_url = result;
     quit.Run();
   };
@@ -3090,10 +3116,10 @@ TEST_F(WebContentsImplTest, CanonicalUrlSchemeChromeIsNotAllowed) {
 TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
   MediaStreamRequest dummy_request(
       /*render_process_id=*/0, /*render_frame_id=*/0, /*page_request_id=*/0,
-      /*security_origin=*/GURL(""), /*user_gesture=*/false,
+      /*url_origin=*/url::Origin::Create(GURL("")), /*user_gesture=*/false,
       blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
-      /*requested_audio_device_id=*/"",
-      /*requested_video_device_id=*/"",
+      /*requested_audio_device_ids=*/{},
+      /*requested_video_device_ids=*/{},
       blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
@@ -3112,6 +3138,58 @@ TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
             callback_run = true;
           }));
   ASSERT_TRUE(callback_run);
+}
+
+TEST_F(WebContentsImplTest, IgnoreInputEvents) {
+  // By default, input events should not be ignored.
+  EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
+  std::optional<WebContents::ScopedIgnoreInputEvents> ignore_1 =
+      contents()->IgnoreInputEvents();
+  EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
+
+  // A second request to ignore should continue to ignore events.
+  WebContents::ScopedIgnoreInputEvents ignore_2 =
+      contents()->IgnoreInputEvents();
+  EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
+
+  // Releasing one of them should not change anything.
+  ignore_1.reset();
+  EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
+
+  // Move construction should not allow input.
+  WebContents::ScopedIgnoreInputEvents ignore_3(std::move(ignore_2));
+  EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
+
+  {
+    // Cannot create an empty `ScopedIgnoreInputEvents`, so get a new one and
+    // move-assign over it to verify that we end up with one outstanding token.
+    WebContents::ScopedIgnoreInputEvents ignore_4 =
+        contents()->IgnoreInputEvents();
+    ignore_4 = std::move(ignore_3);
+    EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
+    // `ignore_4` goes out of scope.
+  }
+
+  // Now input should be allowed.
+  EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
+}
+
+TEST_F(WebContentsImplTest, OnColorProviderChangedTriggersPageBroadcast) {
+  TestColorProviderSource color_provider_source;
+  mojo::AssociatedRemote<blink::mojom::PageBroadcast> broadcast_remote;
+  testing::NiceMock<MockPageBroadcast> mock_page_broadcast(
+      broadcast_remote.BindNewEndpointAndPassDedicatedReceiver());
+  contents()->GetRenderViewHost()->BindPageBroadcast(broadcast_remote.Unbind());
+
+  contents()->SetColorProviderSource(&color_provider_source);
+  const auto color_provider_colors = contents()->GetColorProviderColorMaps();
+  color_provider_source.NotifyColorProviderChanged();
+
+  // The page broadcast should have been called twice. Once when first set and
+  // again when the source notified of a ColorProvider change.
+  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_provider_colors))
+      .Times(2);
+  mock_page_broadcast.FlushForTesting();
 }
 
 }  // namespace content

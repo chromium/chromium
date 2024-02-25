@@ -37,26 +37,19 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SceneOverlayTest {
-    @Mock
-    private Context mContext;
+    @Mock private Context mContext;
 
-    @Mock
-    private Resources mResources;
+    @Mock private Resources mResources;
 
-    @Mock
-    private DisplayMetrics mDisplayMetrics;
+    @Mock private DisplayMetrics mDisplayMetrics;
 
-    @Mock
-    private LayoutManagerHost mLayoutManagerHost;
+    @Mock private LayoutManagerHost mLayoutManagerHost;
 
-    @Mock
-    private ViewGroup mContainerView;
+    @Mock private ViewGroup mContainerView;
 
-    @Mock
-    private ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    @Mock private ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
 
-    @Mock
-    private TopUiThemeColorProvider mTopUiThemeColorProvider;
+    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private LayoutManagerImpl mLayoutManager;
 
@@ -68,8 +61,12 @@ public class SceneOverlayTest {
         when(mContext.getResources()).thenReturn(mResources);
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
 
-        mLayoutManager = new LayoutManagerImpl(mLayoutManagerHost, mContainerView,
-                mTabContentManagerSupplier, () -> mTopUiThemeColorProvider);
+        mLayoutManager =
+                new LayoutManagerImpl(
+                        mLayoutManagerHost,
+                        mContainerView,
+                        mTabContentManagerSupplier,
+                        () -> mTopUiThemeColorProvider);
     }
 
     @Test

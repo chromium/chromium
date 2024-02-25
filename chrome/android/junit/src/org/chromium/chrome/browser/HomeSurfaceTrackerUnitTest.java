@@ -19,16 +19,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit tests for {@link HomeSurfaceTracker}.
- */
+/** Unit tests for {@link HomeSurfaceTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HomeSurfaceTrackerUnitTest {
-    @Mock
-    private Tab mNtpTab;
-    @Mock
-    private Tab mLastActiveTab;
+    @Mock private Tab mNtpTab;
+    @Mock private Tab mLastActiveTab;
 
     private HomeSurfaceTracker mHomeSurfaceTracker;
 
@@ -37,7 +33,7 @@ public class HomeSurfaceTrackerUnitTest {
         MockitoAnnotations.initMocks(this);
         mHomeSurfaceTracker = new HomeSurfaceTracker();
 
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mLastActiveTab).getUrl();
+        doReturn(JUnitTestGURLs.URL_1).when(mLastActiveTab).getUrl();
         doReturn(true).when(mNtpTab).isNativePage();
     }
 

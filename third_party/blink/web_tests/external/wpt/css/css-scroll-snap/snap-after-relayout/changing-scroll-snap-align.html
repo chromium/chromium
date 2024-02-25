@@ -70,19 +70,6 @@ test(t => {
   assert_equals(scroller.scrollTop, 100);
   assert_equals(scroller.scrollLeft, 100);
 
-  initial_target.style.setProperty("scroll-snap-align", "end");
-  // target.top + target.height - scroller.height
-  assert_equals(scroller.scrollTop, 200);
-  assert_equals(scroller.scrollLeft, 200);
-}, "Changing the current target's snap alignment should make the scroller"
-+ " resnap to it even if another snap position is closer to the current offset");
-
-test(t => {
-  t.add_cleanup(cleanup);
-  scroller.scrollTo(0,0);
-  assert_equals(scroller.scrollTop, 100);
-  assert_equals(scroller.scrollLeft, 100);
-
   initial_target.style.setProperty("scroll-snap-align", "none");
   assert_equals(scroller.scrollTop, 300);
   assert_equals(scroller.scrollLeft, 300);

@@ -7,18 +7,31 @@
 
 #include <stdint.h>
 
+#include <concepts>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace attribution_reporting {
 
+enum class AggregationKeyPieceError {
+  kWrongType,
+  kWrongFormat,
+};
+
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-absl::optional<absl::uint128> StringToAggregationKeyPiece(const std::string& s);
+base::expected<absl::uint128, AggregationKeyPieceError>
+ParseAggregationKeyPiece(const base::Value&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::string HexEncodeAggregationKey(absl::uint128);
@@ -26,51 +39,67 @@ std::string HexEncodeAggregationKey(absl::uint128);
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 bool AggregationKeyIdHasValidLength(const std::string& key);
 
-// Returns false if `dict` contains `key` but the value is invalid (e.g. not a
-// string, negative), returns true otherwise.
-[[nodiscard]] COMPONENT_EXPORT(ATTRIBUTION_REPORTING) bool ParseUint64(
-    const base::Value::Dict& dict,
-    base::StringPiece key,
-    absl::optional<uint64_t>& out);
+template <typename T>
+  requires(std::integral<T>)
+constexpr T ValueOrZero(std::optional<T> value) {
+  return value.value_or(0);
+}
 
-// Returns false if `dict` contains `key` but the value is invalid (e.g. not a
-// string, int64 overflow), returns true otherwise.
-[[nodiscard]] COMPONENT_EXPORT(ATTRIBUTION_REPORTING) bool ParseInt64(
-    const base::Value::Dict& dict,
-    base::StringPiece key,
-    absl::optional<int64_t>& out);
+struct ParseError {
+  friend bool operator==(ParseError, ParseError) = default;
+};
 
-// Returns false if `dict` contains `priority` key but the value is invalid,
-// returns true otherwise.
-[[nodiscard]] bool ParsePriority(const base::Value::Dict& dict,
-                                 absl::optional<int64_t>& out);
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
+    const base::Value::Dict&,
+    std::string_view key);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<std::optional<int64_t>, ParseError> ParseInt64(
+    const base::Value::Dict&,
+    std::string_view key);
+
+base::expected<int64_t, ParseError> ParsePriority(const base::Value::Dict&);
 
 // Returns `debug_key` value as we do not need to fail the source registration
 // if the value is invalid, see
 // https://github.com/WICG/attribution-reporting-api/issues/793 for context.
-absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
+std::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
 
 // Returns false if `dict` contains `debug_reporting` key but the value is
 // invalid, returns true otherwise.
 [[nodiscard]] bool ParseDebugReporting(const base::Value::Dict& dict);
 
-// Returns false if `dict` contains `deduplication_key` key but the value is
-// invalid, returns true otherwise.
-[[nodiscard]] bool ParseDeduplicationKey(const base::Value::Dict& dict,
-                                         absl::optional<uint64_t>& out);
+base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
+    const base::Value::Dict&);
 
-void SerializeUint64(base::Value::Dict&, base::StringPiece key, uint64_t value);
+base::expected<base::TimeDelta, mojom::SourceRegistrationError>
+ParseLegacyDuration(const base::Value& value,
+                    mojom::SourceRegistrationError error);
 
-void SerializeInt64(base::Value::Dict&, base::StringPiece key, int64_t value);
+void SerializeUint64(base::Value::Dict&, std::string_view key, uint64_t value);
+
+void SerializeInt64(base::Value::Dict&, std::string_view key, int64_t value);
 
 void SerializePriority(base::Value::Dict&, int64_t priority);
 
-void SerializeDebugKey(base::Value::Dict&, absl::optional<uint64_t> debug_key);
+void SerializeDebugKey(base::Value::Dict&, std::optional<uint64_t> debug_key);
 
 void SerializeDebugReporting(base::Value::Dict&, bool debug_reporting);
 
 void SerializeDeduplicationKey(base::Value::Dict&,
-                               absl::optional<uint64_t> dedup_key);
+                               std::optional<uint64_t> dedup_key);
+
+void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
+                                 std::string_view key,
+                                 base::TimeDelta value);
+
+base::expected<uint32_t, mojom::SourceRegistrationError> ParseUint32(
+    const base::Value&,
+    mojom::SourceRegistrationError wrong_type_error,
+    mojom::SourceRegistrationError out_of_range_error);
+
+base::Value Uint32ToJson(uint32_t);
 
 }  // namespace attribution_reporting
 

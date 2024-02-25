@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
@@ -32,6 +33,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -64,7 +66,7 @@ class SoftwareDevice : public viz::SoftwareOutputDevice {
   void EndPaint() override {}
 
  private:
-  SkCanvas** canvas_;
+  raw_ptr<SkCanvas*> canvas_;
 };
 
 // This is used with resourceless software draws.
@@ -94,6 +96,7 @@ class SoftwareCompositorFrameSinkClient
   void OnBeginFramePausedChanged(bool paused) override {}
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
 };
 
 }  // namespace
@@ -230,10 +233,12 @@ bool SynchronousLayerTreeFrameSink::BindToClient(
   // The gpu::GpuTaskSchedulerHelper here is null as the OutputSurface is
   // software only and the overlay processor is a stub.
   display_ = std::make_unique<viz::Display>(
-      &shared_bitmap_manager_, software_renderer_settings, &debug_settings_,
-      kRootFrameSinkId, nullptr /* gpu::GpuTaskSchedulerHelper */,
-      std::move(output_surface), std::move(overlay_processor),
-      nullptr /* scheduler */, nullptr /* current_task_runner */);
+      &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
+      /*sync_point_manager=*/nullptr, software_renderer_settings,
+      &debug_settings_, kRootFrameSinkId,
+      nullptr /* gpu::GpuTaskSchedulerHelper */, std::move(output_surface),
+      std::move(overlay_processor), nullptr /* scheduler */,
+      nullptr /* current_task_runner */);
   display_->Initialize(&display_client_,
                        frame_sink_manager_->surface_manager());
   display_->SetVisible(true);
@@ -275,7 +280,7 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(sync_client_);
 
-  absl::optional<viz::CompositorFrame> submit_frame;
+  std::optional<viz::CompositorFrame> submit_frame;
   gfx::Size child_size = in_software_draw_
                              ? sw_viewport_for_current_draw_.size()
                              : frame.size_in_pixels();
@@ -350,13 +355,14 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
         embed_render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
     shared_quad_state->SetAll(
         child_transform, gfx::Rect(child_size), gfx::Rect(child_size),
-        gfx::MaskFilterInfo(), absl::nullopt /* clip_rect */,
-        are_contents_opaque /* are_contents_opaque */, 1.f /* opacity */,
-        SkBlendMode::kSrcOver, 0 /* sorting_context_id */);
+        gfx::MaskFilterInfo(), /*clip=*/std::nullopt,
+        /*contents_opaque=*/are_contents_opaque, /*opacity_f=*/1.f,
+        SkBlendMode::kSrcOver, /*sorting_context=*/0,
+        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     surface_quad->SetNew(
         shared_quad_state, gfx::Rect(child_size), gfx::Rect(child_size),
         viz::SurfaceRange(
-            absl::nullopt,
+            std::nullopt,
             viz::SurfaceId(kChildFrameSinkId, child_local_surface_id_)),
         SkColors::kWhite, false /* stretch_content_to_fill_bounds */);
 

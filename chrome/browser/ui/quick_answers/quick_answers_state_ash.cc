@@ -33,12 +33,17 @@ void IncrementPrefCounter(PrefService* prefs,
 
 }  // namespace
 
-QuickAnswersStateAsh::QuickAnswersStateAsh() : session_observer_(this) {
+QuickAnswersStateAsh::QuickAnswersStateAsh() {
+  shell_observation_.Observe(ash::Shell::Get());
+
+  auto* session_controller = ash::Shell::Get()->session_controller();
+  CHECK(session_controller);
+
+  session_observation_.Observe(session_controller);
+
   // Register pref changes if use session already started.
-  if (ash::Shell::Get()->session_controller() &&
-      ash::Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
-    PrefService* prefs =
-        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  if (session_controller->IsActiveUserSessionStarted()) {
+    PrefService* prefs = session_controller->GetPrimaryUserPrefService();
     DCHECK(prefs);
     RegisterPrefChanges(prefs);
   }
@@ -50,6 +55,15 @@ void QuickAnswersStateAsh::OnFirstSessionStarted() {
   PrefService* prefs =
       ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   RegisterPrefChanges(prefs);
+}
+
+void QuickAnswersStateAsh::OnChromeTerminating() {
+  session_observation_.Reset();
+}
+
+void QuickAnswersStateAsh::OnShellDestroying() {
+  session_observation_.Reset();
+  shell_observation_.Reset();
 }
 
 void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {

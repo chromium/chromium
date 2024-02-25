@@ -8,14 +8,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 
 import com.google.common.collect.ImmutableMap;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -25,40 +27,46 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /** Tests for FeedActionDelegateImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class FeedActionDelegateImplTest {
-    @Mock
-    private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    private SnackbarManager mMockSnackbarManager;
+    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
-    @Mock
-    private NativePageNavigationDelegate mMockNavigationDelegate;
+    @Mock private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
 
-    @Mock
-    private BookmarkModel mMockBookmarkModel;
+    @Mock private SnackbarManager mMockSnackbarManager;
 
-    @Mock
-    private Context mActivityContext;
+    @Mock private NativePageNavigationDelegate mMockNavigationDelegate;
 
-    @Mock
-    private TabModelSelector mTabModelSelector;
+    @Mock private BookmarkModel mMockBookmarkModel;
 
-    @Captor
-    ArgumentCaptor<Intent> mIntentCaptor;
+    @Mock private Activity mActivity;
+
+    @Mock private TabModelSelector mTabModelSelector;
+
+    @Mock private Profile mProfile;
+
+    @Mock private BottomSheetController mBottomSheetController;
+
+    @Captor ArgumentCaptor<Intent> mIntentCaptor;
 
     private FeedActionDelegateImpl mFeedActionDelegateImpl;
 
@@ -67,9 +75,19 @@ public final class FeedActionDelegateImplTest {
         MockitoAnnotations.initMocks(this);
 
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
-        mFeedActionDelegateImpl = new FeedActionDelegateImpl(mActivityContext, mMockSnackbarManager,
-                mMockNavigationDelegate, mMockBookmarkModel, BrowserUiUtils.HostSurface.NOT_SET,
-                mTabModelSelector);
+        mFeedActionDelegateImpl =
+                new FeedActionDelegateImpl(
+                        mActivity,
+                        mMockSnackbarManager,
+                        mMockNavigationDelegate,
+                        mMockBookmarkModel,
+                        BrowserUiUtils.HostSurface.NOT_SET,
+                        mTabModelSelector,
+                        mProfile,
+                        mBottomSheetController);
+        jniMocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJniMock);
+
+        when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);
     }
 
     @Test
@@ -97,15 +115,18 @@ public final class FeedActionDelegateImplTest {
 
         mFeedActionDelegateImpl.openWebFeed(webFeedName, SingleWebFeedEntryPoint.OTHER);
 
-        verify(mActivityContext).startActivity(mIntentCaptor.capture());
-        Assert.assertArrayEquals("Feed ID not passed correctly.", webFeedName.getBytes(),
+        verify(mActivity).startActivity(mIntentCaptor.capture());
+        Assert.assertArrayEquals(
+                "Feed ID not passed correctly.",
+                webFeedName.getBytes(),
                 mIntentCaptor.getValue().getByteArrayExtra("CREATOR_WEB_FEED_ID"));
     }
 
     @Test
     public void testOpenWebFeed_disabledWhenCormorantFlagDisabled() {
+        when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(false);
         FeatureList.setTestFeatures(ImmutableMap.of(ChromeFeatureList.CORMORANT, false));
         mFeedActionDelegateImpl.openWebFeed("SomeFeedName", SingleWebFeedEntryPoint.OTHER);
-        verify(mActivityContext, never()).startActivity(any());
+        verify(mActivity, never()).startActivity(any());
     }
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+// This test ensures that `Subscriber` is not an `ActiveScriptWrappable`, whose
+// lifetime defies usual garbage collection semantics for weakly-referenced
+// objects.
+promise_test(async t => {
+  let weak_subscriber = null;
+  const controller = new AbortController();
+
+  {
+    // Create a new Observable, subscribe to it, and throw it out.
+    new Observable(subscriber => {
+      weak_subscriber = new WeakRef(subscriber);
+    }).subscribe({signal: controller.signal});
+  }
+
+  assert_true(weak_subscriber.deref() instanceof Subscriber);
+  // Trigger garbage collection, and verify that `weak_subscriber` has been
+  // garbage collected.
+  await gc({type: 'major', execution: 'async'});
+  assert_equals(weak_subscriber.deref(), undefined);
+}, "Subscriber is not arbitrarily kept alive until the subscription ends, " +
+   "but can be garbage collected if it is weakly owned throughout the " +
+   "subscription");
+</script>
+</body>

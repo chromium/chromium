@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "net.compression_dictionary_transport_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "CompressionDictionaryTransportEnabled": false
+        },
+        "prefs": {
+          "net.compression_dictionary_transport_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "CompressionDictionaryTransportEnabled": true
+        },
+        "prefs": {
+          "net.compression_dictionary_transport_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

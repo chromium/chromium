@@ -11,8 +11,6 @@
 
 namespace blink {
 
-struct WrapperTypeInfo;
-
 // BindingSecurityForPlatform provides utility functions that determine access
 // permission between two realms.
 //
@@ -29,47 +27,14 @@ class PLATFORM_EXPORT BindingSecurityForPlatform {
       v8::Local<v8::Context> accessing_context,
       v8::MaybeLocal<v8::Context> target_context);
 
-  // Checks if a wrapper creation of the given wrapper type associated with
-  // |creation_context| is allowed in |accessing_context|.
-  static bool ShouldAllowWrapperCreationOrThrowException(
-      v8::Local<v8::Context> accessing_context,
-      v8::MaybeLocal<v8::Context> creation_context,
-      const WrapperTypeInfo* wrapper_type_info);
-
-  // Rethrows a cross context exception, that is possibly cross origin.
-  // A SecurityError may be rethrown instead of the exception if necessary.
-  static void RethrowWrapperCreationException(
-      v8::Local<v8::Context> accessing_context,
-      v8::MaybeLocal<v8::Context> creation_context,
-      const WrapperTypeInfo* wrapper_type_info,
-      v8::Local<v8::Value> cross_context_exception);
-
  private:
   using ShouldAllowAccessToV8ContextFunction =
       bool (*)(v8::Local<v8::Context> accessing_context,
                v8::MaybeLocal<v8::Context> target_context);
-  using ShouldAllowWrapperCreationOrThrowExceptionFunction =
-      bool (*)(v8::Local<v8::Context> accessing_context,
-               v8::MaybeLocal<v8::Context> creation_context,
-               const WrapperTypeInfo* wrapper_type_info);
-  using RethrowWrapperCreationExceptionFunction =
-      void (*)(v8::Local<v8::Context> accessing_context,
-               v8::MaybeLocal<v8::Context> creation_context,
-               const WrapperTypeInfo* wrapper_type_info,
-               v8::Local<v8::Value> cross_context_exception);
-
   static void SetShouldAllowAccessToV8Context(
       ShouldAllowAccessToV8ContextFunction);
-  static void SetShouldAllowWrapperCreationOrThrowException(
-      ShouldAllowWrapperCreationOrThrowExceptionFunction);
-  static void SetRethrowWrapperCreationException(
-      RethrowWrapperCreationExceptionFunction);
 
   static ShouldAllowAccessToV8ContextFunction should_allow_access_to_v8context_;
-  static ShouldAllowWrapperCreationOrThrowExceptionFunction
-      should_allow_wrapper_creation_or_throw_exception_;
-  static RethrowWrapperCreationExceptionFunction
-      rethrow_wrapper_creation_exception_;
 
   friend class BindingSecurity;
 };

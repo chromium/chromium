@@ -4,6 +4,7 @@
 
 #include "components/update_client/protocol_parser_json.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/update_client/protocol_definition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -92,18 +92,20 @@ bool ParseManifest(const base::Value& manifest_node_val,
     p.hash_sha256 = GetValueString(package, "hash_sha256");
     p.hashdiff_sha256 = GetValueString(package, "hashdiff_sha256");
 
-    const absl::optional<double> size = package.FindDouble("size");
+    const std::optional<double> size = package.FindDouble("size");
     if (size) {
       const double val = size.value();
-      if (0 <= val && val < kProtocolMaxInt)
+      if (0 <= val && val < protocol_request::kProtocolMaxInt) {
         p.size = val;
+      }
     }
 
-    const absl::optional<double> sizediff = package.FindDouble("sizediff");
+    const std::optional<double> sizediff = package.FindDouble("sizediff");
     if (sizediff) {
       const double val = sizediff.value();
-      if (0 <= val && val < kProtocolMaxInt)
+      if (0 <= val && val < protocol_request::kProtocolMaxInt) {
         p.sizediff = val;
+      }
     }
 
     result->manifest.packages.push_back(std::move(p));
@@ -114,8 +116,9 @@ bool ParseManifest(const base::Value& manifest_node_val,
 
 void ParseActions(const base::Value& actions_node,
                   ProtocolParser::Result* result) {
-  if (!actions_node.is_dict())
+  if (!actions_node.is_dict()) {
     return;
+  }
 
   const base::Value::List* action_node =
       actions_node.GetDict().FindList("action");
@@ -124,8 +127,9 @@ void ParseActions(const base::Value& actions_node,
   }
 
   const base::Value::List& action_list = *action_node;
-  if (action_list.empty() || !action_list[0].is_dict())
+  if (action_list.empty() || !action_list[0].is_dict()) {
     return;
+  }
 
   result->action_run = GetValueString(action_list[0].GetDict(), "run");
 }
@@ -196,7 +200,7 @@ bool ParseUpdateCheck(const base::Value& updatecheck_node_val,
   const base::Value::Dict& updatecheck_node = updatecheck_node_val.GetDict();
 
   for (auto kv : updatecheck_node) {
-    if (kv.first.front() == '_' && kv.second.is_string()) {
+    if (!kv.first.empty() && kv.first.front() == '_' && kv.second.is_string()) {
       result->custom_attributes[kv.first] = kv.second.GetString();
     }
   }
@@ -210,15 +214,17 @@ bool ParseUpdateCheck(const base::Value& updatecheck_node_val,
   result->status = *status;
   if (result->status == "noupdate") {
     const auto* actions_node = updatecheck_node.Find("actions");
-    if (actions_node)
+    if (actions_node) {
       ParseActions(*actions_node, result);
+    }
     return true;
   }
 
   if (result->status == "ok") {
     const auto* actions_node = updatecheck_node.Find("actions");
-    if (actions_node)
+    if (actions_node) {
       ParseActions(*actions_node, result);
+    }
 
     const auto* urls_node = updatecheck_node.Find("urls");
     if (!urls_node) {
@@ -226,8 +232,9 @@ bool ParseUpdateCheck(const base::Value& updatecheck_node_val,
       return false;
     }
 
-    if (!ParseUrls(*urls_node, result, error))
+    if (!ParseUrls(*urls_node, result, error)) {
       return false;
+    }
 
     const auto* manifest_node = updatecheck_node.Find("manifest");
     if (!manifest_node) {
@@ -276,8 +283,14 @@ bool ParseApp(const base::Value& app_node_val,
     result->status = *status;
     if (result->status == "restricted" ||
         result->status == "error-unknownApplication" ||
-        result->status == "error-invalidAppId")
+        result->status == "error-invalidAppId" ||
+        result->status == "error-osnotsupported" ||
+        result->status == "error-hwnotsupported" ||
+        result->status == "error-hash" ||
+        result->status == "error-unsupportedprotocol" ||
+        result->status == "error-internal") {
       return true;
+    }
 
     // If the status was not handled above and the status is not "ok", then
     // this must be a status literal that that the parser does not know about.
@@ -343,20 +356,20 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     ParseError("Missing/non-string protocol.");
     return false;
   }
-  if (*protocol != kProtocolVersion) {
+  if (*protocol != protocol_request::kProtocolVersion) {
     ParseError("Incorrect protocol. (expected '%s', found '%s')",
-               kProtocolVersion, protocol->c_str());
+               protocol_request::kProtocolVersion, protocol->c_str());
     return false;
   }
 
   const base::Value::Dict* daystart_node = response_node->FindDict("daystart");
   if (daystart_node) {
-    const absl::optional<int> elapsed_seconds =
+    const std::optional<int> elapsed_seconds =
         daystart_node->FindInt("elapsed_seconds");
     if (elapsed_seconds) {
       results->daystart_elapsed_seconds = elapsed_seconds.value();
     }
-    const absl::optional<int> elapsed_days =
+    const std::optional<int> elapsed_days =
         daystart_node->FindInt("elapsed_days");
     if (elapsed_days) {
       results->daystart_elapsed_days = elapsed_days.value();
@@ -387,10 +400,11 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     for (const auto& app : *app_node) {
       Result result;
       std::string error;
-      if (ParseApp(app, &result, &error))
+      if (ParseApp(app, &result, &error)) {
         results->list.push_back(result);
-      else
+      } else {
         ParseError("%s", error.c_str());
+      }
     }
   }
 

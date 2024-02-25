@@ -33,11 +33,16 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 #include "ui/gfx/color_space.h"
 
 namespace draw_fn {
@@ -566,7 +571,7 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
       vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
       vk_image_info.fProtected = GrProtected::kNo;
       const auto& vk_image_size = vulkan_surface_->image_size();
-      GrBackendRenderTarget render_target(
+      auto render_target = GrBackendRenderTargets::MakeVk(
           vk_image_size.width(), vk_image_size.height(), vk_image_info);
 
       auto sk_color_type = surface_format == VK_FORMAT_B8G8R8A8_UNORM
@@ -580,14 +585,15 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
     } else {
       auto backend = SkSurfaces::GetBackendRenderTarget(
           sk_surface.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
-      backend.setVkImageLayout(scoped_write.image_layout());
+      GrBackendRenderTargets::SetVkImageLayout(&backend,
+                                               scoped_write.image_layout());
     }
 
     {
       VkSemaphore vk_semaphore = scoped_write.begin_semaphore();
       DCHECK(vk_semaphore != VK_NULL_HANDLE);
-      GrBackendSemaphore begin_semaphore;
-      begin_semaphore.initVulkan(vk_semaphore);
+      GrBackendSemaphore begin_semaphore =
+          GrBackendSemaphores::MakeVk(vk_semaphore);
       bool result = sk_surface->wait(1, &begin_semaphore,
                                      /*deleteSemaphoresAfterWait=*/false);
       CHECK(result);
@@ -617,20 +623,21 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
     }
 
     {
-      GrBackendSemaphore end_semaphore;
-      end_semaphore.initVulkan(scoped_write.end_semaphore());
+      GrBackendSemaphore end_semaphore =
+          GrBackendSemaphores::MakeVk(scoped_write.end_semaphore());
       GrFlushInfo flush_info = {
           .fNumSemaphores = 1,
           .fSignalSemaphores = &end_semaphore,
       };
       uint32_t queue_index = device_queue_->GetVulkanQueueIndex();
-      skgpu::MutableTextureState state(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                                       queue_index);
+      skgpu::MutableTextureState state =
+          skgpu::MutableTextureStates::MakeVulkan(
+              VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, queue_index);
       GrSemaphoresSubmitted submitted =
-          gr_context_->flush(sk_surface, flush_info, &state);
+          gr_context_->flush(sk_surface.get(), flush_info, &state);
       CHECK_EQ(GrSemaphoresSubmitted::kYes, submitted);
     }
-    CHECK(gr_context_->submit(/*sync_cpu=*/false));
+    CHECK(gr_context_->submit(GrSyncCpu::kNo));
   }
 
   gfx::SwapResult result = vulkan_surface_->SwapBuffers(
@@ -688,7 +695,7 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
   backend_context.fProtectedContext = GrProtected::kNo;
 
   GrContextOptions options;
-  gr_context_ = GrDirectContext::MakeVulkan(backend_context, options);
+  gr_context_ = GrDirectContexts::MakeVulkan(backend_context, options);
   CHECK(gr_context_);
 
   MaybeCallFunctorInitVk();

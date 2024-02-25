@@ -27,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
+#include "chrome/browser/ash/arc/instance_throttle/arc_active_audio_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -43,6 +44,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/test_screen.h"
 
 namespace arc {
 
@@ -198,6 +200,11 @@ class ArcInstanceThrottleTest : public testing::Test {
     return nullptr;
   }
 
+  ArcInstanceThrottle* CreateArcInstanceThrottle() {
+    return ArcInstanceThrottle::GetForBrowserContextForTesting(
+        testing_profile_.get());
+  }
+
   FakePowerInstance* power_instance() { return power_instance_.get(); }
 
   size_t disable_cpu_restriction_counter() const {
@@ -236,11 +243,13 @@ class ArcInstanceThrottleTest : public testing::Test {
     void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
                                          base::TimeDelta delta) override {}
 
-    raw_ptr<ArcInstanceThrottleTest, ExperimentalAsh> test_;
+    raw_ptr<ArcInstanceThrottleTest> test_;
   };
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   TestingPrefServiceSimple local_state_;
@@ -252,10 +261,8 @@ class ArcInstanceThrottleTest : public testing::Test {
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<FakeIntentHelperInstance> intent_helper_instance_;
 
-  raw_ptr<ArcInstanceThrottle, DanglingUntriaged | ExperimentalAsh>
-      arc_instance_throttle_;
-  raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh>
-      arc_metrics_service_ = nullptr;
+  raw_ptr<ArcInstanceThrottle, DanglingUntriaged> arc_instance_throttle_;
+  raw_ptr<ArcMetricsService, DanglingUntriaged> arc_metrics_service_ = nullptr;
   size_t disable_cpu_restriction_counter_ = 0;
   size_t enable_cpu_restriction_counter_ = 0;
   size_t use_quota_counter_ = 0;
@@ -435,6 +442,30 @@ TEST_F(ArcInstanceThrottleTest, TestPowerNotification) {
   EXPECT_EQ(3, power_instance()->cpu_restriction_state_count());
 }
 
+MATCHER_P(IsObserverNameEquals, name, "") {
+  return arg->name() == name;
+}
+
+TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioFeatureOff) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(arc::kUnthrottleOnActiveAudio);
+
+  auto* arc_instance_throttle = CreateArcInstanceThrottle();
+  EXPECT_THAT(arc_instance_throttle->observers_for_testing(),
+              testing::Not(testing::Contains(
+                  IsObserverNameEquals(kArcActiveAudioThrottleObserverName))));
+}
+
+TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioFeatureOn) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(arc::kUnthrottleOnActiveAudio);
+
+  auto* arc_instance_throttle = CreateArcInstanceThrottle();
+  EXPECT_THAT(arc_instance_throttle->observers_for_testing(),
+              testing::Contains(
+                  IsObserverNameEquals(kArcActiveAudioThrottleObserverName)));
+}
+
 // For testing ARCVM specific part of the class.
 class ArcInstanceThrottleVMTest : public testing::Test {
  public:
@@ -507,15 +538,15 @@ class ArcInstanceThrottleVMTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> testing_profile_;
 
-  raw_ptr<ArcInstanceThrottle, DanglingUntriaged | ExperimentalAsh>
-      arc_instance_throttle_;
-  raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh>
-      arc_metrics_service_ = nullptr;
+  raw_ptr<ArcInstanceThrottle, DanglingUntriaged> arc_instance_throttle_;
+  raw_ptr<ArcMetricsService, DanglingUntriaged> arc_metrics_service_ = nullptr;
 };
 
 TEST_F(ArcInstanceThrottleVMTest, Histograms) {
@@ -535,7 +566,7 @@ TEST_F(ArcInstanceThrottleVMTest, Histograms) {
 
   // No response
   client->set_wait_for_service_to_be_available_response(true);
-  absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response;
+  std::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response;
   client->set_set_vm_cpu_restriction_response(response);
   observer->SetActive(false);
   run_loop()->RunUntilIdle();

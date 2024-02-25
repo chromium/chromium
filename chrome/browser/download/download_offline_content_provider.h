@@ -20,6 +20,10 @@
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/download/android/open_download_dialog_bridge_delegate.h"
+#endif
+
 // TODO(xingliu): Remove using in the header files.
 using DownloadItem = download::DownloadItem;
 using SimpleDownloadManagerCoordinator =
@@ -86,7 +90,7 @@ class DownloadOfflineContentProvider
   // Methods that can be run in reduced mode.
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
-  void ResumeDownload(const ContentId& id, bool has_user_gesture) override;
+  void ResumeDownload(const ContentId& id) override;
 
   // Entry point for associating this class with a download item. Must be called
   // for all new and in-progress downloads, after which this class will start
@@ -115,7 +119,8 @@ class DownloadOfflineContentProvider
   void OnDownloadsInitialized(bool active_downloads_only) override;
   void OnManagerGoingDown(SimpleDownloadManagerCoordinator* manager) override;
 
-  void GetAllDownloads(std::vector<DownloadItem*>* all_items);
+  void GetAllDownloads(
+      std::vector<raw_ptr<DownloadItem, VectorExperimental>>* all_items);
   DownloadItem* GetDownload(const std::string& download_guid);
   void OnThumbnailRetrieved(const ContentId& id,
                             VisualsCallback callback,
@@ -127,7 +132,7 @@ class DownloadOfflineContentProvider
                                     DownloadItem* item,
                                     DownloadItem::DownloadRenameResult result);
   void UpdateObservers(const OfflineItem& item,
-                       const absl::optional<UpdateDelta>& update_delta);
+                       const std::optional<UpdateDelta>& update_delta);
   void CheckForExternallyRemovedDownloads();
 
   // Ensure that download core service is started.
@@ -152,6 +157,10 @@ class DownloadOfflineContentProvider
   base::circular_deque<base::OnceClosure> pending_actions_for_full_browser_;
 
   raw_ptr<Profile> profile_;
+
+#if BUILDFLAG(IS_ANDROID)
+  OpenDownloadDialogBridgeDelegate open_download_dialog_delegate_;
+#endif
 
   base::WeakPtrFactory<DownloadOfflineContentProvider> weak_ptr_factory_{this};
 };

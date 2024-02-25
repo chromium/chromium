@@ -4,22 +4,25 @@
 
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 
-#include "ash/constants/ash_features.h"
+#include <optional>
+#include <string>
+
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "base/containers/adapters.h"
+#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/values_test_util.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "test_wallpaper_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#include "ui/gfx/image/image_skia.h"
 
 TestWallpaperController::TestWallpaperController() : id_cache_(0) {
   ClearCounts();
@@ -40,10 +43,12 @@ void TestWallpaperController::ClearCounts() {
   show_override_wallpaper_count_[/*always_on_top=*/true] = 0;
   remove_override_wallpaper_count_ = 0;
   remove_user_wallpaper_count_ = 0;
-  wallpaper_info_ = absl::nullopt;
+  wallpaper_info_ = std::nullopt;
   update_current_wallpaper_layout_count_ = 0;
-  update_current_wallpaper_layout_layout_ = absl::nullopt;
+  update_current_wallpaper_layout_layout_ = std::nullopt;
   update_daily_refresh_wallpaper_count_ = 0;
+  one_shot_wallpaper_count_ = 0;
+  sea_pen_wallpaper_count_ = 0;
 }
 
 void TestWallpaperController::SetClient(
@@ -103,7 +108,8 @@ void TestWallpaperController::SetOnlineWallpaper(
     const ash::OnlineWallpaperParams& params,
     SetWallpaperCallback callback) {
   ++set_online_wallpaper_count_;
-  wallpaper_info_ = ash::WallpaperInfo(params);
+  CHECK(!params.variants.empty());
+  wallpaper_info_ = ash::WallpaperInfo(params, params.variants.front());
   std::move(callback).Run(/*success=*/true);
 }
 
@@ -209,6 +215,48 @@ bool TestWallpaperController::SetThirdPartyWallpaper(
   return true;
 }
 
+void TestWallpaperController::SetSeaPenWallpaper(
+    const AccountId& account_id,
+    const ash::SeaPenImage& sea_pen_image,
+    const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+    SetWallpaperCallback callback) {
+  ++sea_pen_wallpaper_count_;
+  wallpaper_info_ = ash::WallpaperInfo();
+  wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  sea_pen_query_ = query.Clone();
+  std::move(callback).Run(/*success=*/true);
+}
+
+void TestWallpaperController::SetSeaPenWallpaperFromFile(
+    const AccountId& account_id,
+    const base::FilePath& sea_pen_file_path,
+    SetWallpaperCallback callback) {
+  ++sea_pen_wallpaper_count_;
+  wallpaper_info_ = ash::WallpaperInfo();
+  wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  wallpaper_info_->user_file_path = sea_pen_file_path.value();
+  std::move(callback).Run(/*success=*/true);
+}
+
+void TestWallpaperController::GetSeaPenMetadata(
+    const AccountId& account_id,
+    const base::FilePath& sea_pen_file_path,
+    GetSeaPenMetadataCallback callback) {
+  std::move(callback).Run(std::move(sea_pen_metadata_));
+}
+
+void TestWallpaperController::DeleteRecentSeaPenImage(
+    const AccountId& account_id,
+    const base::FilePath& sea_pen_file_path,
+    DeleteRecentSeaPenImageCallback callback) {
+  if (base::PathExists(sea_pen_file_path) &&
+      base::DeleteFile(sea_pen_file_path)) {
+    std::move(callback).Run(/*success=*/true);
+    return;
+  }
+  std::move(callback).Run(/*success=*/false);
+}
+
 void TestWallpaperController::ConfirmPreviewWallpaper() {
   NOTIMPLEMENTED();
 }
@@ -240,7 +288,8 @@ void TestWallpaperController::ShowSigninWallpaper() {
 
 void TestWallpaperController::ShowOneShotWallpaper(
     const gfx::ImageSkia& image) {
-  NOTIMPLEMENTED();
+  ++one_shot_wallpaper_count_;
+  ShowWallpaperImage(image);
 }
 
 void TestWallpaperController::ShowOverrideWallpaper(
@@ -319,7 +368,7 @@ bool TestWallpaperController::IsWallpaperControlledByPolicy(
   return false;
 }
 
-absl::optional<ash::WallpaperInfo>
+std::optional<ash::WallpaperInfo>
 TestWallpaperController::GetActiveUserWallpaperInfo() const {
   return wallpaper_info_;
 }

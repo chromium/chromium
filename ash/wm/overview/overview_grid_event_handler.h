@@ -50,10 +50,10 @@ class OverviewGridEventHandler : public ui::EventHandler {
 
   // Cached value of the OverviewGrid that handles a series of gesture scroll
   // events. Guaranteed to be alive during the lifetime of |this|.
-  raw_ptr<OverviewGrid, ExperimentalAsh> grid_;
+  raw_ptr<OverviewGrid> grid_;
 
   // Guaranteed to be alive during the lifetime of |this|.
-  const raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
+  const raw_ptr<OverviewSession> overview_session_;
 
   // The cumulative scroll offset. This is used so that tiny scrolls will not
   // make minuscule shifts on the grid, but are not completely ignored.

@@ -15,12 +15,10 @@ limitations under the License.
 package org.tensorflow.lite.support.image;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import static org.tensorflow.lite.support.image.TestImageCreator.createGrayscaleBitmap;
 import static org.tensorflow.lite.support.image.TestImageCreator.createGrayscaleTensorBuffer;
 
 import android.graphics.Bitmap;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -29,21 +27,22 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 @RunWith(JUnit4.class)
 public final class ColorSpaceTypeInstrumentedTest {
-    @Test
-    public void convertTensorBufferToBitmapShouldSuccessWithGrayscaleWithUint8() {
-        TensorBuffer buffer = createGrayscaleTensorBuffer(DataType.UINT8, false);
-        Bitmap bitmap = ColorSpaceType.GRAYSCALE.convertTensorBufferToBitmap(buffer);
 
-        Bitmap expectedBitmap = createGrayscaleBitmap();
-        assertThat(bitmap.sameAs(expectedBitmap)).isTrue();
-    }
+  @Test
+  public void convertTensorBufferToBitmapShouldSuccessWithGrayscaleWithUint8() {
+    TensorBuffer buffer = createGrayscaleTensorBuffer(DataType.UINT8, false);
+    Bitmap bitmap = ColorSpaceType.GRAYSCALE.convertTensorBufferToBitmap(buffer);
 
-    @Test
-    public void convertTensorBufferToBitmapShouldSuccessWithGrayscaleWithFloat() {
-        TensorBuffer buffer = createGrayscaleTensorBuffer(DataType.FLOAT32, false);
-        Bitmap bitmap = ColorSpaceType.GRAYSCALE.convertTensorBufferToBitmap(buffer);
+    Bitmap expectedBitmap = createGrayscaleBitmap();
+    assertThat(bitmap.sameAs(expectedBitmap)).isTrue();
+  }
 
-        Bitmap expectedBitmap = createGrayscaleBitmap();
-        assertThat(bitmap.sameAs(expectedBitmap)).isTrue();
-    }
+  @Test
+  public void convertTensorBufferToBitmapShouldSuccessWithGrayscaleWithFloat() {
+    TensorBuffer buffer = createGrayscaleTensorBuffer(DataType.FLOAT32, false);
+    Bitmap bitmap = ColorSpaceType.GRAYSCALE.convertTensorBufferToBitmap(buffer);
+
+    Bitmap expectedBitmap = createGrayscaleBitmap();
+    assertThat(bitmap.sameAs(expectedBitmap)).isTrue();
+  }
 }

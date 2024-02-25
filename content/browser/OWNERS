@@ -66,3 +66,6 @@ per-file network_sandbox*=file://services/network/OWNERS
 # (BrowserThread, BrowserMainLoop, BrowserMainRunner, etc.)
 per-file browser_main*=gab@chromium.org
 per-file browser_thread*=gab@chromium.org
+
+# Performance metrics.
+per-file largest_contentful_paint*=file://components/page_load_metrics/OWNERS

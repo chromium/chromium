@@ -9,26 +9,37 @@ To work on this app, obtain the following packages:
    instructions were tested with Go 1.14 locally but a Go 1.11 runtime when
    deployed), but if problems are encountered, it would be wise to use the same
    version for both local development and AppEngine deployment.
- - The Google Cloud SDK from, https://cloud.google.com/sdk/docs. This is
-   necessary for both local development and for AppEngine deployment. Unpacking
-   this package produces a google-cloud-sdk directory, whose bin child directory
-   may be added to $PATH for convenience, although this is not strictly
-   necessary.
+ - The Google Cloud SDK (gcloud CLI) from
+   https://cloud.google.com/sdk/docs/install-sdk. This is necessary for both
+   local development and for AppEngine deployment. Unpacking this package
+   produces a google-cloud-sdk directory, whose bin child directory may be
+   added to $PATH for convenience, although this is not strictly necessary.
 
 The commands in this README are expected to be run from the directory containing
-it. $GOPATH must also be set to include this directory:
-
-% export GOPATH="$(go env GOPATH):$(pwd)"
+it.
 
 To test locally:
 
-% go get -d crashpad-home
-% …/google-cloud-sdk/bin/dev_appserver.py src/crashpad-home
+% go get -d ./src/crashpad-home
+% python3 …/google-cloud-sdk/bin/dev_appserver.py src/crashpad-home
+
+dev_appserver.py must be invoked using Python 3, but internally will use Python
+2, and a Python 2 interpreter must be available in the PATH as python2.
 
 Look for the “Starting module "default" running at: http://localhost:8080” line,
 which tells you the URL of the local running instance of the app. Test
-http://localhost:8080/ and http://localhost:8080/doxygen to ensure that they
-work.
+http://localhost:8080/ to ensure that it works.
+
+It would be good to test http://localhost:8080/doxygen as well, but it may fail
+with HTTP status 500 and the following error returned as the HTTP response body
+because memcache seems to not be available in the local dev_appserver
+environment:
+
+service bridge HTTP failed: Post "http://appengine.googleapis.internal:10001/rpc_http": dial tcp: lookup appengine.googleapis.internal: no such host
+
+The /doxygen URL can be tested in a verison of the app that’s been deployed
+before traffic has been migrated to it by visiting the staged deployed version
+from the App Engine console.
 
 To deploy:
 

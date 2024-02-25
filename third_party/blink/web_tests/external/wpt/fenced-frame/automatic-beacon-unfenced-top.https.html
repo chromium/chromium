@@ -8,6 +8,8 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/automatic-beacon-helper.js"></script>
 
 <body>
 <script>
@@ -24,22 +26,18 @@
 async function init() {
   const actions = new test_driver.Actions();
   const fencedframe = await attachFencedFrameContext(
-    {generator_api: 'fledge', automatic_beacon: true});
-  const new_url = new URL("resources/automatic-beacon-unfenced-page.html",
-      location.href);
+    {generator_api: 'fledge', automatic_beacon: true,
+     origin: get_host_info().HTTPS_REMOTE_ORIGIN});
 
-  await fencedframe.execute((new_url) => {
-    const beacon_data = "This is the beacon data!";
-    let beacon_event = {
-      eventType: "reserved.top_navigation",
-      eventData: beacon_data,
-      destination: ["buyer"],
-    }
-    window.fence.setReportEventDataForAutomaticBeacons(beacon_event);
-    addEventListener("click", (event) => {
-      window.open(new_url, "_unfencedTop");
-    });
-  }, [new_url]);
+  const beacon_event = {
+    eventType: "reserved.top_navigation_commit",
+    eventData: "This is the beacon data!",
+    destination: ["buyer"],
+    randomField: "blah",
+  }
+  await setupAutomaticBeacon(fencedframe, [beacon_event],
+      "resources/automatic-beacon-unfenced-page.html", NavigationTrigger.Click,
+      "_unfencedTop");
 
   await actions.setContext(window)
                .pointerMove(0, 0, {origin: fencedframe.element})

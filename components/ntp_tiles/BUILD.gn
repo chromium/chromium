@@ -34,7 +34,6 @@ static_library("ntp_tiles") {
     "popular_sites.h",
     "popular_sites_impl.cc",
     "popular_sites_impl.h",
-    "pref_names.cc",
     "pref_names.h",
     "section_type.h",
     "switches.cc",

@@ -62,17 +62,19 @@
     "dependencies": ["permission:accessibilityServicePrivate"],
     "channel": "stable",
     "contexts": ["blessed_extension"],
-    "platforms": ["chromeos", "lacros"],
-    "feature_flag": "ApiAccessibilityServicePrivate"
+    "platforms": ["chromeos", "lacros"]
   },
   "action": {
     "dependencies": ["manifest:action"],
     "contexts": ["blessed_extension"]
   },
-  "action.openPopup": {
+  "action.openPopup": [{
     // TODO(https://crbug.com/1245093): Upgrade to stable channel.
     "channel": "dev"
-  },
+  }, {
+    "channel": "stable",
+    "location": "policy"
+  }],
   "action.isEnabled": {
     "channel": "stable"
   },
@@ -255,7 +257,7 @@
     // This feature is used by the Controlled Frame API and is specifically
     // enabled by //chrome.
     "internal": true,
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["web_page"],
     // This feature is only enabled if the embedder's delegated check returns
     // true.
@@ -272,6 +274,9 @@
   "contentSettings": {
     "dependencies": ["permission:contentSettings"],
     "contexts": ["blessed_extension"]
+  },
+  "contentSettings.clipboard": {
+    "feature_flag": "ApiContentSettingsClipboard"
   },
   "contextMenus": {
     "dependencies": ["permission:contextMenus"],
@@ -316,8 +321,7 @@
   },
   "debugger": {
     "dependencies": ["permission:debugger"],
-    "contexts": ["blessed_extension"],
-    "developer_mode_only": true
+    "contexts": ["blessed_extension"]
   },
   "declarativeContent": {
     "dependencies": ["permission:declarativeContent"],
@@ -354,6 +358,30 @@
   "documentScan": {
     "dependencies": ["permission:documentScan"],
     "contexts": ["blessed_extension"]
+  },
+  "documentScan.getScannerList": {
+    "channel": "dev"
+  },
+  "documentScan.openScanner": {
+    "channel": "dev"
+  },
+  "documentScan.getOptionGroups": {
+    "channel": "dev"
+  },
+  "documentScan.closeScanner": {
+    "channel": "dev"
+  },
+  "documentScan.setOptions": {
+    "channel": "dev"
+  },
+  "documentScan.startScan": {
+    "channel": "dev"
+  },
+  "documentScan.cancelScan": {
+    "channel": "dev"
+  },
+  "documentScan.readScanData": {
+    "channel": "dev"
   },
   "dom": {
     "channel": "stable",
@@ -394,6 +422,10 @@
   },
   "enterprise.deviceAttributes": {
     "dependencies": ["permission:enterprise.deviceAttributes"],
+    "contexts": ["blessed_extension"]
+  },
+  "enterprise.kioskInput": {
+    "dependencies": ["permission:enterprise.kioskInput"],
     "contexts": ["blessed_extension"]
   },
   "enterprise.networkingAttributes": {
@@ -717,11 +749,13 @@
   },
   "printing": {
     "dependencies": ["permission:printing"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "required_buildflags": ["use_cups"]
   },
   "printingMetrics": {
     "dependencies": ["permission:printingMetrics"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "required_buildflags": ["use_cups"]
   },
   "privacy": {
     "dependencies": ["permission:privacy"],
@@ -806,15 +840,6 @@
     "dependencies": ["permission:sidePanel"],
     "contexts": ["blessed_extension"]
   },
-  "sidePanel.open": [{
-    "feature_flag": "ApiSidePanelOpen"
-  }, {
-    "allowlist": [
-      // Note: this list is also enforced in the sidePanel.open() implementation
-      // as a sanity check.
-      "3CEFE7915CDBD48D769E214807ACAA51581724A0"  // https://crbug.com/1446731
-    ]
-  }],
   "smartCardProviderPrivate": {
     "dependencies": ["permission:smartCardProviderPrivate"],
     "contexts": ["blessed_extension"]

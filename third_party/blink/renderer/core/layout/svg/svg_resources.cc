@@ -20,9 +20,10 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
 #include "base/ranges/algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
@@ -49,14 +50,15 @@ SVGElementResourceClient& SVGResources::EnsureClient(
 
 gfx::RectF SVGResources::ReferenceBoxForEffects(
     const LayoutObject& layout_object,
-    GeometryBox geometry_box) {
+    GeometryBox geometry_box,
+    ForeignObjectQuirk foreign_object_quirk) {
   // Text "sub-elements" (<tspan>, <textpath>, <a>) should use the entire
   // <text>s object bounding box rather then their own.
   // https://svgwg.org/svg2-draft/text.html#ObjectBoundingBoxUnitsTextObjects
   const LayoutObject* obb_layout_object = &layout_object;
   if (layout_object.IsSVGInline()) {
     obb_layout_object =
-        LayoutNGSVGText::LocateLayoutSVGTextAncestor(&layout_object);
+        LayoutSVGText::LocateLayoutSVGTextAncestor(&layout_object);
   }
   DCHECK(obb_layout_object);
 
@@ -81,7 +83,8 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
       NOTREACHED();
   }
 
-  if (obb_layout_object->IsSVGForeignObject()) {
+  if (foreign_object_quirk == ForeignObjectQuirk::kEnabled &&
+      obb_layout_object->IsSVGForeignObject()) {
     // For SVG foreign objects, remove the position part of the bounding box.
     // The position is already baked into the transform, and we don't want to
     // re-apply the offset when, e.g., using "objectBoundingBox" for
@@ -212,9 +215,10 @@ class SVGElementResourceClient::FilterData final
   FilterData(FilterEffect* last_effect, SVGFilterGraphNodeMap* node_map)
       : last_effect_(last_effect), node_map_(node_map) {}
 
-  bool HasEffects() const { return last_effect_; }
+  bool HasEffects() const { return last_effect_ != nullptr; }
   sk_sp<PaintFilter> BuildPaintFilter() {
-    return paint_filter_builder::Build(last_effect_, kInterpolationSpaceSRGB);
+    return paint_filter_builder::Build(last_effect_.Get(),
+                                       kInterpolationSpaceSRGB);
   }
 
   // Perform a finegrained invalidation of the filter chain for the
@@ -356,7 +360,9 @@ void SVGElementResourceClient::UpdateFilterData(
       reference_box == operations.ReferenceBox())
     return;
   const ComputedStyle& style = object.StyleRef();
-  FilterEffectBuilder builder(reference_box, 1);
+  FilterEffectBuilder builder(
+      reference_box, 1, style.VisitedDependentColor(GetCSSPropertyColor()),
+      style.UsedColorScheme());
   builder.SetShorthandScale(1 / style.EffectiveZoom());
   const FilterOperations& filter = style.Filter();
   // If the filter is a single 'url(...)' reference we can optimize some
@@ -427,7 +433,7 @@ void SVGResourceInvalidator::InvalidateEffects() {
     if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
       client->InvalidateFilterData();
   }
-  if (style.HasClipPath() || style.MaskerResource()) {
+  if (style.HasClipPath() || style.HasMaskForSVG()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.SetNeedsPaintPropertyUpdate();
   }

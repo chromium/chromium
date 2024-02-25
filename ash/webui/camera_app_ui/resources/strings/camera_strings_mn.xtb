@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> хуудсыг устгах</translation>
 <translation id="1113173431709655881">Камерын горим</translation>
 <translation id="1153190633558910465">Хүснэгтлэхийг унтраах</translation>
-<translation id="1175958423215084756">Холбоос илэрсэн. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> хуудсыг устгасан</translation>
 <translation id="1258009455399840361">Цагийн зүүний дагуу 90 хэм эргүүлэх</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> хуудсыг засах</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Баруун тийш чиглүүлэх</translation>
 <translation id="3081586908890909590">Видео бичих рүү сэлгэх</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />"-д нэгдэх</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Холбоосыг хуулсан</translation>
 <translation id="3354465018370944241">Зургийн тохиргоо</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Видеог боловсруулж байна...</translation>
 <translation id="3789724198583203151">Цагийн зүүний эсрэг 90 хэм эргүүлэх</translation>
 <translation id="3810838688059735925">Видео</translation>
-<translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="4060608699153044055">Төхөөрөмжийн хадгалах сангийн зай бага байгаа тул та бичлэг хийх боломжгүй. Бичлэг хийж эхлэхийн тулд та төхөөрөмждөө сул зай гаргах хэрэгтэй.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MП</translation>
 <translation id="4118525110028899586">Бичлэгийг түр зогсоох</translation>
 <translation id="4121305183798804752">Документ илэрлээ</translation>
 <translation id="414641094616694804">Энэ камерын нягтралыг өөрчлөх боломжгүй</translation>
 <translation id="4176463684765177261">Хаасан</translation>
-<translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
 <translation id="428234092390943511">Хуудасны өнгөц зураг</translation>
 <translation id="4349714250734879769">Chrome-р фреймийн хэмжээг тохируулах</translation>
 <translation id="4383571725254449280">Хэвлэх гүйцэтгэлийн логууд</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Бүрэн нягтрал</translation>
 <translation id="4864143361253542638">Сканнердсан хуудасны жагсаалт</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733"><ph name="URL" /> холбоосны хаягийг хуулах</translation>
 <translation id="491895758387112773">Олон дамжуулалттай видео бичлэг</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Зургийн харьцаа</translation>
 <translation id="5057360777601936059">Tаны камер одоогоор боломжгүй байна.
         Камераа зөв залгасан эсэхээ шалгана уу.</translation>
+<translation id="5157591164390831335">URL илэрсэн.</translation>
 <translation id="5163387177077603948">Баруун тийш зөөж байна</translation>
-<translation id="5219374179772385066">Цагийн урсцын горим одоо боломжтой байна!</translation>
 <translation id="5235304959032763950">16-г харьцах нь 9</translation>
 <translation id="5266635337630551423">Документын зүүн дээд булан</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Камер аппын талаар санал хүсэлт ирүүлсэнд баярлалаа.
 
 Хэрэв таны санал хүсэлт зургийн эсвэл видеоны чанартай холбоотой бол жишээ зураг эсвэл видеог хавсаргаад ямар алдаа байгааг тодорхойлно уу. (Жишээлбэл, зураг хэт бараан эсвэл субъект фокусгүй байна.)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" />-д нэгдэх</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
 <translation id="6617916774429601017">Бүх нягтралыг харуулах</translation>
 <translation id="6631515515009660915">Тусгал үүсгэхийг унтраах</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">Текстийг хуулсан</translation>
 <translation id="7488619942230388918">GIF видео бичих</translation>
 <translation id="7557677699350329807">Дараагийн камер руу сэлгэх</translation>
+<translation id="7562584071994185503"><ph name="TEXT" /> текстийг хуулах</translation>
 <translation id="7607002721634913082">зогссон</translation>
 <translation id="7608223098072244877">4-г харьцах нь 4</translation>
 <translation id="761421184377987513">Зүүн доош зөөж байна</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Камерын HAL-р фреймийн хэмжээг тохируулах</translation>
 <translation id="8425673304802773841">Доош хазайлгах</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
+<translation id="8609951387004618906"><ph name="URL" />-г нээх</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Микрофоны дууг хаах тохиргоог асаана уу/унтраана уу. Дууг хаах тохиргоо асаалттай байна</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8732462232047530626">Мета өгөгдлийг урьдчилан үзэх</translation>
+<translation id="874854738381978209">Wi-Fi сүлжээ илэрлээ.</translation>
 <translation id="8815966864175525708">Хөрөг зураг авахын тулд сэлгэх</translation>
 <translation id="8828441885228359828">Бичлэгийг үргэлжлүүлэх</translation>
 <translation id="8870695351537079478">Бичиж эхлэх боломжгүй байна</translation>

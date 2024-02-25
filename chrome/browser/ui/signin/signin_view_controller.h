@@ -141,7 +141,7 @@ class SigninViewController {
   // of the |browser_|'s window.
   void ShowModalSyncConfirmationDialog(bool is_signin_intercept = false);
 
-  // Shows the modal enterprise confirmation dialog as a browser-modal dialog on
+  // Shows the modal managed user notice dialog as a browser-modal dialog on
   // top of the `browser_`'s window. `domain_name` is the domain of the
   // enterprise account being shown. `callback` is called with the user's action
   // on the dialog.
@@ -150,7 +150,7 @@ class SigninViewController {
   // otherwise the default wording will be used.
   // When `show_link_data_option` is false, the callback is called with either
   // SIGNIN_CHOICE_CANCEL or SIGNIN_CHOICE_NEW_PROFILE.
-  void ShowModalEnterpriseConfirmationDialog(
+  void ShowModalManagedUserNoticeDialog(
       const AccountInfo& account_info,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,

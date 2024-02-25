@@ -8,6 +8,7 @@ import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/feed/features.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_resources("java_resources") {
   sources = [
@@ -30,6 +31,7 @@ android_resources("java_resources") {
   deps = [
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/features/tab_ui:java_resources",
+    "//chrome/browser/magic_stack/android:java_resources",
   ]
 }
 
@@ -45,7 +47,6 @@ android_library("public_java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/android/lifecycle:java",
@@ -65,6 +66,7 @@ android_library("public_java") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]

@@ -13,8 +13,6 @@
 
 {% block extra_application_definitions_for_test %}
         <uses-library android:name="android.test.runner" />
-        <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
-            android:exported="true"/>
 {% endblock %}
 
 {% block extra_root_definitions %}

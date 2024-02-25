@@ -116,7 +116,7 @@ class RgbkbdClientImpl : public RgbkbdClient {
     if (!response) {
       VLOG(1)
           << "rgbkbd: No Dbus response received for GetRgbKeyboardCapabilities";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
@@ -126,7 +126,7 @@ class RgbkbdClientImpl : public RgbkbdClient {
       LOG(ERROR)
           << "rgbkbd: Error reading GetRgbKeyboardCapabilities response: "
           << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     VLOG(1) << "rgbkbd: Value for keyboard capabilities is: "
@@ -157,7 +157,7 @@ class RgbkbdClientImpl : public RgbkbdClient {
         << "Failed to connect to CapabilityUpdatedForTesting signal.";
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> rgbkbd_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> rgbkbd_proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

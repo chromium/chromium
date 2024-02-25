@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -48,7 +49,7 @@ struct SwitchLanguageData {
   locale_util::LanguageSwitchResult result;
   const bool enable_locale_keyboard_layouts;
   const bool login_layouts_only;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile;
+  raw_ptr<Profile, DanglingUntriaged> profile;
 };
 
 // Runs on ThreadPool thread under PostTaskAndReply().

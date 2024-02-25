@@ -6,6 +6,8 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/ime_info.h"
 #include "ash/shell.h"
+#include "ash/system/ime/ime_detailed_view.h"
+#include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -14,7 +16,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ash {
 namespace {
@@ -22,12 +24,14 @@ namespace {
 class IMEDetailedViewPixelTest : public AshTestBase {
  public:
   IMEDetailedViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
+    feature_list_.InitWithFeatures({::features::kChromeRefresh2023,
+                                    ::features::kChromeRefreshSecondary2023,
+                                    ::features::kChromeRefresh2023NTB},
+                                   {});
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -48,12 +52,9 @@ TEST_F(IMEDetailedViewPixelTest, Basics) {
   ime2.name = u"Spanish";
   ime2.short_name = u"ES";
   available_imes.push_back(ime2);
-  auto* ime_controller = Shell::Get()->ime_controller();
-  ime_controller->RefreshIme(ime1.id, std::move(available_imes),
-                             std::vector<ImeMenuItem>());
 
   // Show the enterprise management icon.
-  ime_controller->SetImesManagedByPolicy(true);
+  Shell::Get()->ime_controller()->SetImesManagedByPolicy(true);
 
   // Show the detailed view.
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
@@ -65,11 +66,20 @@ TEST_F(IMEDetailedViewPixelTest, Basics) {
 
   // Compare pixels.
   TrayDetailedView* detailed_view =
-      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
+      system_tray->bubble()
+          ->quick_settings_view()
+          ->GetDetailedViewForTest<TrayDetailedView>();
+
+  // Show the keyboard toggle with ime list.
+  static_cast<IMEDetailedView*>(detailed_view)
+      ->Update(ime1.id, std::move(available_imes), std::vector<ImeMenuItem>(),
+               /*show_keyboard_toggle=*/true,
+               /*single_ime_behavior=*/ImeListView::SHOW_SINGLE_IME);
+
   ASSERT_TRUE(detailed_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/5, detailed_view));
+      /*revision_number=*/11, detailed_view));
 }
 
 }  // namespace

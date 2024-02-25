@@ -93,7 +93,7 @@ mojom::AudioFocusRequestStatePtr AudioFocusRequest::ToAudioFocusRequestState()
   request->request_id = id_;
   request->source_name = source_name_;
   request->source_id =
-      identity_.is_empty() ? absl::nullopt : absl::make_optional(identity_);
+      identity_.is_empty() ? std::nullopt : std::make_optional(identity_);
   return request;
 }
 

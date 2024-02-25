@@ -5,6 +5,8 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -44,7 +46,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -73,10 +74,8 @@ void RunTasksForDuration(base::TimeDelta delta) {
 
 }  // namespace
 
-class OfflinePageUtilsTest
-    : public testing::Test,
-      public OfflinePageTestArchiver::Observer,
-      public base::SupportsWeakPtr<OfflinePageUtilsTest> {
+class OfflinePageUtilsTest : public testing::Test,
+                             public OfflinePageTestArchiver::Observer {
  public:
   OfflinePageUtilsTest();
   ~OfflinePageUtilsTest() override;
@@ -123,7 +122,7 @@ class OfflinePageUtilsTest
     return result;
   }
 
-  absl::optional<int64_t> GetCachedOfflinePageSizeBetween(
+  std::optional<int64_t> GetCachedOfflinePageSizeBetween(
       const base::Time& begin_time,
       const base::Time& end_time) {
     int64_t result;
@@ -136,7 +135,7 @@ class OfflinePageUtilsTest
     if (!OfflinePageUtils::GetCachedOfflinePageSizeBetween(
             profile(), base::BindLambdaForTesting(on_done), begin_time,
             end_time)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     run_loop.Run();
     return result;

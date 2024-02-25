@@ -9,9 +9,10 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -39,31 +40,23 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
         return sInstance;
     }
 
-    /**
-     * Default constructor.
-     */
+    /** Default constructor. */
     private LocaleManager() {
         mDelegate = new LocaleManagerDelegateImpl();
         mDelegate.setDefaulSearchEngineDelegate(this);
     }
 
-    /**
-     * Starts listening to state changes of the phone.
-     */
+    /** Starts listening to state changes of the phone. */
     public void startObservingPhoneChanges() {
         mDelegate.startObservingPhoneChanges();
     }
 
-    /**
-     * Stops listening to state changes of the phone.
-     */
+    /** Stops listening to state changes of the phone. */
     public void stopObservingPhoneChanges() {
         mDelegate.stopObservingPhoneChanges();
     }
 
-    /**
-     * Starts recording metrics in deferred startup.
-     */
+    /** Starts recording metrics in deferred startup. */
     public void recordStartupMetrics() {
         mDelegate.recordStartupMetrics();
     }
@@ -82,9 +75,7 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
         mDelegate.showSearchEnginePromoIfNeeded(activity, onSearchEngineFinalized);
     }
 
-    /**
-     * Sets whether auto switch for search engine is enabled.
-     */
+    /** Sets whether auto switch for search engine is enabled. */
     public void setSearchEngineAutoSwitch(boolean isEnabled) {
         mDelegate.setSearchEngineAutoSwitch(isEnabled);
     }

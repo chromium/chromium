@@ -250,8 +250,7 @@ void SuggestionWindowView::LearnMoreClicked() {
       .id = ui::ime::ButtonId::kLearnMore, .window_type = type_});
 }
 
-raw_ptr<views::ImageButton, ExperimentalAsh>
-SuggestionWindowView::getLearnMoreButton() {
+raw_ptr<views::ImageButton> SuggestionWindowView::getLearnMoreButton() {
   return learn_more_button_;
 }
 
@@ -327,7 +326,7 @@ void SuggestionWindowView::SetCandidateHighlighted(
     IndexedSuggestionCandidateButton* view,
     bool highlighted) {
   // Clear all highlights if any exists.
-  for (auto* candidate_button : multiple_candidate_area_->children()) {
+  for (views::View* candidate_button : multiple_candidate_area_->children()) {
     static_cast<IndexedSuggestionCandidateButton*>(candidate_button)
         ->SetHighlight(false);
   }
@@ -336,7 +335,7 @@ void SuggestionWindowView::SetCandidateHighlighted(
     view->SetHighlight(highlighted);
 }
 
-BEGIN_METADATA(SuggestionWindowView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(SuggestionWindowView)
 END_METADATA
 
 }  // namespace ime

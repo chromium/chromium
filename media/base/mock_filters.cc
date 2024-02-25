@@ -156,10 +156,6 @@ MockTimeSource::MockTimeSource() = default;
 
 MockTimeSource::~MockTimeSource() = default;
 
-MockTextTrack::MockTextTrack() = default;
-
-MockTextTrack::~MockTextTrack() = default;
-
 MockCdmClient::MockCdmClient() = default;
 
 MockCdmClient::~MockCdmClient() = default;
@@ -172,12 +168,12 @@ MockCdmContext::MockCdmContext() = default;
 
 MockCdmContext::~MockCdmContext() = default;
 
-absl::optional<base::UnguessableToken> MockCdmContext::GetCdmId() const {
+std::optional<base::UnguessableToken> MockCdmContext::GetCdmId() const {
   return cdm_id_;
 }
 
 void MockCdmContext::set_cdm_id(const base::UnguessableToken& cdm_id) {
-  cdm_id_ = absl::make_optional(cdm_id);
+  cdm_id_ = std::make_optional(cdm_id);
 }
 
 MockCdmPromise::MockCdmPromise(bool expect_success) {
@@ -213,13 +209,19 @@ MockCdmSessionPromise::~MockCdmSessionPromise() {
 
 MockCdmKeyStatusPromise::MockCdmKeyStatusPromise(
     bool expect_success,
-    CdmKeyInformation::KeyStatus* key_status) {
+    CdmKeyInformation::KeyStatus* key_status,
+    CdmPromise::Exception* exception) {
   if (expect_success) {
     EXPECT_CALL(*this, resolve(_)).WillOnce(SaveArg<0>(key_status));
     EXPECT_CALL(*this, reject(_, _, _)).Times(0);
   } else {
     EXPECT_CALL(*this, resolve(_)).Times(0);
-    EXPECT_CALL(*this, reject(_, _, NotEmpty()));
+    if (exception) {
+      EXPECT_CALL(*this, reject(_, _, NotEmpty()))
+          .WillOnce(SaveArg<0>(exception));
+    } else {
+      EXPECT_CALL(*this, reject(_, _, NotEmpty()));
+    }
   }
 }
 

@@ -30,9 +30,7 @@ import org.chromium.components.media_router.MediaSink;
 import org.chromium.components.media_router.MediaSource;
 import org.chromium.components.media_router.TestMediaRouterClient;
 
-/**
- * Robolectric tests for BaseNotificationController.
- */
+/** Robolectric tests for BaseNotificationController. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseNotificationControllerTest {
@@ -41,20 +39,13 @@ public class BaseNotificationControllerTest {
     private static final int TAB_ID = 1;
     private static final String DEVICE_NAME = "My Device";
 
-    @Mock
-    private CastDevice mCastDevice;
-    @Mock
-    private BaseSessionController mSessionController;
-    @Mock
-    private MediaSource mSource;
-    @Mock
-    private MediaSink mSink;
-    @Mock
-    private CastSession mCastSession;
-    @Mock
-    private RemoteMediaClient mRemoteMediaClient;
-    @Mock
-    private TestMediaRouterClient mMediaRouterClient;
+    @Mock private CastDevice mCastDevice;
+    @Mock private BaseSessionController mSessionController;
+    @Mock private MediaSource mSource;
+    @Mock private MediaSink mSink;
+    @Mock private CastSession mCastSession;
+    @Mock private RemoteMediaClient mRemoteMediaClient;
+    @Mock private TestMediaRouterClient mMediaRouterClient;
     private BaseNotificationController mController;
     private CreateRouteRequestInfo mRequestInfo;
     private MediaRouterTestHelper mMediaRouterHelper;
@@ -65,8 +56,16 @@ public class BaseNotificationControllerTest {
         mMediaRouterHelper = new MediaRouterTestHelper();
         MediaRouterClient.setInstance(mMediaRouterClient);
         mController = new TestNotificationController(mSessionController);
-        mRequestInfo = new CreateRouteRequestInfo(mSource, mSink, PRESENTATION_ID, ORIGIN, TAB_ID,
-                false, 1, mMediaRouterHelper.getCastRoute());
+        mRequestInfo =
+                new CreateRouteRequestInfo(
+                        mSource,
+                        mSink,
+                        PRESENTATION_ID,
+                        ORIGIN,
+                        TAB_ID,
+                        false,
+                        1,
+                        mMediaRouterHelper.getCastRoute());
 
         doReturn(DEVICE_NAME).when(mCastDevice).getFriendlyName();
         doReturn(mCastDevice).when(mCastSession).getCastDevice();

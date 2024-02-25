@@ -29,7 +29,8 @@ void CopyCopyOutputResultToLayer(
           mailbox_holder.mailbox, mailbox_holder.texture_target,
           mailbox_holder.sync_token, copy_result->size(),
           viz::SinglePlaneFormat::kRGBA_8888,
-          /*is_overlay_candidate=*/false);
+          /*is_overlay_candidate=*/false,
+          viz::TransferableResource::ResourceSource::kUI);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       copy_result->TakeTextureOwnership();
 

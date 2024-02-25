@@ -24,7 +24,7 @@ bool StructTraits<js_injection::mojom::JsWebMessageArrayBufferValueDataView,
   if (!r.ReadArrayBufferValue(&big_buffer_view)) {
     return false;
   }
-  absl::optional<size_t> max_byte_length;
+  std::optional<size_t> max_byte_length;
   if (r.is_resizable_by_user_javascript()) {
     max_byte_length = base::checked_cast<size_t>(r.max_byte_length());
   }

@@ -86,7 +86,7 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
     return ScriptPromise();
   }
 
-  absl::optional<net::HostPortPair> dest_addr;
+  std::optional<net::HostPortPair> dest_addr;
   if (message->hasRemoteAddress() && message->hasRemotePort()) {
     if (mode_ == network::mojom::RestrictedUDPSocketMode::CONNECTED) {
       exception_state.ThrowTypeError(
@@ -176,11 +176,11 @@ void UDPWritableStreamWrapper::ErrorStream(int32_t error_code) {
                            ? write_promise_resolver_->GetScriptState()
                            : GetScriptState();
   // Scope is needed because there's no ScriptState* on the call stack for
-  // ScriptValue::From.
+  // ScriptValue.
   ScriptState::Scope scope{script_state};
 
-  auto exception = ScriptValue::From(
-      script_state,
+  auto exception = ScriptValue(
+      script_state->GetIsolate(),
       V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
                                        DOMExceptionCode::kNetworkError,
                                        String{"Stream aborted by the remote: " +

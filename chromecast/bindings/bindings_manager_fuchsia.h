@@ -11,6 +11,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "chromecast/bindings/bindings_manager.h"
 
@@ -29,8 +30,8 @@ class BindingsManagerFuchsia : public chromium::cast::ApiBindings,
   ~BindingsManagerFuchsia() override;
 
   // BindingsManager implementation:
-  void AddBinding(base::StringPiece binding_name,
-                  base::StringPiece binding_script) override;
+  void AddBinding(std::string_view binding_name,
+                  std::string_view binding_script) override;
 
  protected:
   // chromium::cast::ApiBindings implementation:

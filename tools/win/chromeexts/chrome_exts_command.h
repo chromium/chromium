@@ -55,6 +55,7 @@ class ChromeExtsCommand {
   virtual HRESULT Execute() = 0;
 
   HRESULT Printf(const char* format, ...);
+  HRESULT PrintfWithIndent(int indent_level, const char* format, ...);
   HRESULT PrintV(const char* format, va_list ap);
 
   HRESULT PrintErrorf(const char* format, ...);

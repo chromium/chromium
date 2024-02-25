@@ -1,13 +1,8 @@
 <style include="app-management-cros-shared-style settings-shared">
-  #infoIconTooltip {
-    --paper-tooltip-min-width: max-content;
-  }
 
   #infoIcon {
-    --iron-icon-fill-color: var(--cros-icon-color-secondary);
-    height: var(--help-icon-size);
-    margin-inline-start: 6px;
-    width: var(--help-icon-size);
+    --paper-tooltip-min-width: max-content;
+    margin-inline-start: 3px;
   }
 
   #launchIcon {
@@ -42,21 +37,22 @@
     [[getTypeAndSourceString_(app)]] <!-- Do not delete for testing purposes -->
   </localized-link>
   <template is="dom-if" if="[[shouldShowLaunchIcon_(app)]]">
-    <cr-icon-button id="launchIcon" on-click="onStoreLinkClicked_">
+    <!-- The following button is solely for visual representation and does not
+      need to be shown to a11y. -->
+    <cr-icon-button
+      id="launchIcon"
+      on-click="onStoreLinkClicked_"
+      aria-hidden="true"
+      tabindex="-1">
     </cr-icon-button>
   </template>
   <template is="dom-if" if="[[shouldShowInfoIcon_(app)]]" restamp>
-    <div id="browserLinkInfo">
-      <iron-icon id="infoIcon"
-        icon="app-management:info"
-        aria-label="info icon">
-      </iron-icon>
-      <paper-tooltip id="infoIconTooltip"
-        for="infoIcon">
-        <div id="tooltipText">
-          [[getTooltipText_(app)]]
-        </div>
-      </paper-tooltip>
+    <div id="infoIcon">
+      <cr-tooltip-icon
+        tooltip-text="[[getTooltipText_(app)]]"
+        icon-class="cr:info-outline"
+        icon-aria-label="[[getTooltipA11yText_(app)]]">
+      </cr-tooltip-icon>
     </div>
   </template>
 </div>
@@ -65,18 +61,18 @@
     $i18n{appManagementAppDetailsStorageTitle}
     <template is="dom-if" if="[[shouldShowAppSize_(app)]]" restamp>
       <div class="indented-app-details" id="appSize">
-        [[getAppSizeString_(app)]]
+        [[i18n('appManagementAppDetailsAppSize', app.appSize)]]
       </div>
     </template>
     <template is="dom-if" if="[[shouldShowDataSize_(app)]]" restamp>
       <div class="indented-app-details" id="dataSize">
-        [[getDataSizeString_(app)]]
+        [[i18n('appManagementAppDetailsDataSize', app.dataSize)]]
       </div>
     </template>
   </div>
 </template>
 <template is="dom-if" if="[[shouldShowVersion_(app)]]" restamp>
   <div class="indented-app-details" id="version">
-    [[getVersionString_(app)]]
+    [[i18n('appManagementAppDetailsVersion', app.version)]]
   </div>
 </template>

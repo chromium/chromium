@@ -36,23 +36,26 @@ class FilterView {
         mTabsView = (TabLayout) mView.findViewById(R.id.tabs);
         mContentContainerView = (ViewGroup) mView.findViewById(R.id.content_container);
 
-        mTabsView.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabUnselected(Tab tab) {}
+        mTabsView.setOnTabSelectedListener(
+                new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabUnselected(Tab tab) {}
 
-            @Override
-            public void onTabReselected(Tab tab) {}
+                    @Override
+                    public void onTabReselected(Tab tab) {}
 
-            @Override
-            public void onTabSelected(Tab tab) {
-                if (mTabSelectedCallback == null) return;
+                    @Override
+                    public void onTabSelected(Tab tab) {
+                        if (mTabSelectedCallback == null) return;
 
-                @TabType
-                int tabType = tab.getPosition() == 0 ? FilterCoordinator.TabType.FILES
-                                                     : FilterCoordinator.TabType.PREFETCH;
-                mTabSelectedCallback.onResult(tabType);
-            }
-        });
+                        @TabType
+                        int tabType =
+                                tab.getPosition() == 0
+                                        ? FilterCoordinator.TabType.FILES
+                                        : FilterCoordinator.TabType.PREFETCH;
+                        mTabSelectedCallback.onResult(tabType);
+                    }
+                });
     }
 
     /** The underlying {@link View} that represents this widget. */

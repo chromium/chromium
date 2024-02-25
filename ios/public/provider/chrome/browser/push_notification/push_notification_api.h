@@ -7,7 +7,7 @@
 
 #import <memory>
 
-#import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 
 namespace ios {
 namespace provider {

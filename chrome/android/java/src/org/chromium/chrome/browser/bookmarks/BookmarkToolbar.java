@@ -27,9 +27,10 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+
 /**
- * Main toolbar of bookmark UI. It is responsible for displaying title and buttons
- * associated with the current context.
+ * Main toolbar of bookmark UI. It is responsible for displaying title and buttons associated with
+ * the current context.
  */
 public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         implements OnMenuItemClickListener, OnClickListener {
@@ -49,6 +50,9 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mEditButtonVisible;
     private boolean mNewFolderButtonVisible;
     private boolean mNewFolderButtonEnabled;
+
+    private List<Integer> mSortMenuIds;
+    private boolean mSortMenuIdsEnabled;
 
     private Runnable mNavigateBackRunnable;
     private Function<Integer, Boolean> mMenuIdClickedFunction;
@@ -92,7 +96,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
             if (mBookmarkUiMode == BookmarkUiMode.SEARCHING) {
                 showSearchView(mSoftKeyboardVisible);
             } else {
-                hideSearchView(/*notify=*/false);
+                hideSearchView(/* notify= */ false);
             }
         }
     }
@@ -150,6 +154,19 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         getMenu().findItem(id).setChecked(true);
     }
 
+    void setSortMenuIds(List<Integer> sortMenuIds) {
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
+        mSortMenuIds = sortMenuIds;
+    }
+
+    void setSortMenuIdsEnabled(boolean enabled) {
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
+        mSortMenuIdsEnabled = enabled;
+        for (Integer id : mSortMenuIds) {
+            getMenu().findItem(id).setEnabled(enabled);
+        }
+    }
+
     void setCheckedViewMenuId(@IdRes int id) {
         getMenu().findItem(id).setChecked(true);
     }
@@ -200,6 +217,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setEditButtonVisible(mEditButtonVisible);
         setNewFolderButtonVisible(mNewFolderButtonVisible);
         setNewFolderButtonEnabled(mNewFolderButtonEnabled);
+        setSortMenuIdsEnabled(mSortMenuIdsEnabled);
     }
 
     @Override

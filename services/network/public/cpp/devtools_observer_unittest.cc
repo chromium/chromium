@@ -13,6 +13,8 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +39,8 @@ TEST(DevToolsObserverUtilTest, ExtractURLResponseHead) {
   head.alpn_negotiated_protocol = "alpn";
   head.was_fetched_via_spdy = true;
   head.service_worker_response_source = mojom::FetchResponseSource::kHttpCache;
+  head.service_worker_router_info = mojom::ServiceWorkerRouterInfo::New(
+      /*rule_id_matched*/ 1, mojom::ServiceWorkerRouterSourceType::kNetwork);
   head.ssl_info = net::SSLInfo();
   head.remote_endpoint = net::IPEndPoint(net::IPAddress(1, 2, 3, 4), 99);
 
@@ -57,6 +61,9 @@ TEST(DevToolsObserverUtilTest, ExtractURLResponseHead) {
   EXPECT_EQ(head_info->was_fetched_via_spdy, head.was_fetched_via_spdy);
   EXPECT_EQ(head_info->service_worker_response_source,
             head.service_worker_response_source);
+  ASSERT_TRUE(head_info->service_worker_router_info);
+  EXPECT_EQ(*head_info->service_worker_router_info,
+            *head.service_worker_router_info);
   EXPECT_EQ(head_info->ssl_info.has_value(), head.ssl_info.has_value());
   EXPECT_EQ(head_info->remote_endpoint, head.remote_endpoint);
 }

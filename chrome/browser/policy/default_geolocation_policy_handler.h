@@ -23,6 +23,8 @@ class DefaultGeolocationPolicyHandler : public IntRangePolicyHandlerBase {
   ~DefaultGeolocationPolicyHandler() override;
 
   // IntRangePolicyHandlerBase:
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
 };

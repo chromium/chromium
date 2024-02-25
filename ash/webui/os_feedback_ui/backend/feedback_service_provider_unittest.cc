@@ -60,19 +60,19 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
 
   bool IsChildAccount() override { return false; }
 
-  absl::optional<GURL> GetLastActivePageUrl() override {
-    return GURL(kPageUrl);
+  std::optional<GURL> GetLastActivePageUrl() override { return GURL(kPageUrl); }
+
+  std::optional<std::string> GetLinkedPhoneMacAddress() override {
+    return kHasLinkedCrossDevicePhone ? std::make_optional(kTestMacAddress)
+                                      : std::nullopt;
   }
 
-  absl::optional<std::string> GetLinkedPhoneMacAddress() override {
-    return kHasLinkedCrossDevicePhone ? absl::make_optional(kTestMacAddress)
-                                      : absl::nullopt;
-  }
-
-  absl::optional<std::string> GetSignedInUserEmail() const override {
+  std::optional<std::string> GetSignedInUserEmail() const override {
     return kUseInternalUserEmail ? kSignedInInternalUserEmail
                                  : kSignedInUserEmail;
   }
+
+  bool IsWifiDebugLogsAllowed() const override { return false; }
 
   int GetPerformanceTraceId() override { return kPerformanceTraceId; }
 
@@ -167,6 +167,7 @@ TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
   EXPECT_EQ(kPerformanceTraceId, feedback_context->trace_id);
   EXPECT_EQ(kHasLinkedCrossDevicePhone,
             feedback_context->has_linked_cross_device_phone);
+  EXPECT_FALSE(feedback_context->wifi_debug_logs_allowed);
 }
 
 // Test that GetScreenshotPng returns a response with correct status.

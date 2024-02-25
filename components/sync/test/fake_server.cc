@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -34,40 +35,19 @@ using syncer::ModelTypeSet;
 
 namespace fake_server {
 
+FakeServer::FakeServer(const base::FilePath& loopback_server_dir) {
+  CHECK(!loopback_server_dir.empty());
+  // Needed by syncer::LoopbackServer.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  loopback_server_ = std::make_unique<syncer::LoopbackServer>(
+      loopback_server_dir.AppendASCII("profile.pb"));
+  loopback_server_->set_observer_for_tests(this);
+}
+
 FakeServer::FakeServer()
-    : commit_error_type_(sync_pb::SyncEnums::SUCCESS),
-      error_type_(sync_pb::SyncEnums::SUCCESS),
-      alternate_triggered_errors_(false),
-      request_counter_(0),
-      disallow_sending_encryption_keys_(false) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  loopback_server_storage_ = std::make_unique<base::ScopedTempDir>();
-  if (!loopback_server_storage_->CreateUniqueTempDir()) {
-    NOTREACHED() << "Creating temp dir failed.";
-  }
-  loopback_server_ = std::make_unique<syncer::LoopbackServer>(
-      loopback_server_storage_->GetPath().AppendASCII("profile.pb"));
-  loopback_server_->set_observer_for_tests(this);
-}
+    : FakeServer(base::CreateUniqueTempDirectoryScopedToTest()) {}
 
-FakeServer::FakeServer(const base::FilePath& user_data_dir)
-    : commit_error_type_(sync_pb::SyncEnums::SUCCESS),
-      error_type_(sync_pb::SyncEnums::SUCCESS),
-      alternate_triggered_errors_(false),
-      request_counter_(0),
-      disallow_sending_encryption_keys_(false) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath loopback_server_path =
-      user_data_dir.AppendASCII("FakeSyncServer");
-  loopback_server_ = std::make_unique<syncer::LoopbackServer>(
-      loopback_server_path.AppendASCII("profile.pb"));
-  loopback_server_->set_observer_for_tests(this);
-}
-
-FakeServer::~FakeServer() {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  loopback_server_storage_.reset();
-}
+FakeServer::~FakeServer() = default;
 
 namespace {
 
@@ -365,6 +345,10 @@ void FakeServer::OverrideResponseType(
   loopback_server_->OverrideResponseType(std::move(response_type_override));
 }
 
+void FakeServer::FlushToDisk() {
+  loopback_server_->FlushToDisk();
+}
+
 base::Value::Dict FakeServer::GetEntitiesAsDictForTesting() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return loopback_server_->GetEntitiesAsDictForTesting();
@@ -414,8 +398,7 @@ void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   loopback_server_->SaveEntity(std::move(entity));
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_invalidator_client_id=*/std::string(),
-           /*committed_model_types=*/{model_type});
+  OnCommit(/*committed_model_types=*/{model_type});
 }
 
 base::Time FakeServer::SetWalletData(
@@ -441,8 +424,7 @@ base::Time FakeServer::SetWalletData(
     entity.set_version(version);
   }
 
-  OnCommit(/*committer_invalidator_client_id=*/std::string(),
-           /*committed_model_types=*/{syncer::AUTOFILL_WALLET_DATA});
+  OnCommit(/*committed_model_types=*/{syncer::AUTOFILL_WALLET_DATA});
 
   return now;
 }
@@ -470,8 +452,7 @@ base::Time FakeServer::SetOfferData(
     entity.set_version(version);
   }
 
-  OnCommit(/*committer_id=*/std::string(),
-           /*committed_model_types=*/{syncer::AUTOFILL_WALLET_OFFER});
+  OnCommit(/*committed_model_types=*/{syncer::AUTOFILL_WALLET_OFFER});
 
   return now;
 }
@@ -496,7 +477,6 @@ bool FakeServer::ModifyEntitySpecifics(
 
   // Notify observers so invalidations are mimic-ed.
   OnCommit(
-      /*committer_invalidator_client_id=*/std::string(),
       /*committed_model_types=*/{GetModelTypeFromSpecifics(updated_specifics)});
 
   return true;
@@ -516,8 +496,7 @@ bool FakeServer::ModifyBookmarkEntity(
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_invalidator_client_id=*/std::string(),
-           /*committed_model_types=*/{syncer::BOOKMARKS});
+  OnCommit(/*committed_model_types=*/{syncer::BOOKMARKS});
 
   return true;
 }
@@ -532,8 +511,7 @@ void FakeServer::ClearServerData() {
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_invalidator_client_id=*/std::string(),
-           /*committed_model_types=*/{syncer::NIGORI});
+  OnCommit(/*committed_model_types=*/{syncer::NIGORI});
 }
 
 void FakeServer::DeleteAllEntitiesForModelType(ModelType model_type) {
@@ -550,7 +528,7 @@ void FakeServer::SetHttpError(net::HttpStatusCode http_status_code) {
 
 void FakeServer::ClearHttpError() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  http_error_status_code_ = absl::nullopt;
+  http_error_status_code_ = std::nullopt;
 }
 
 void FakeServer::SetClientCommand(
@@ -641,10 +619,9 @@ void FakeServer::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FakeServer::OnCommit(const std::string& committer_invalidator_client_id,
-                          syncer::ModelTypeSet committed_model_types) {
+void FakeServer::OnCommit(syncer::ModelTypeSet committed_model_types) {
   for (Observer& observer : observers_)
-    observer.OnCommit(committer_invalidator_client_id, committed_model_types);
+    observer.OnCommit(committed_model_types);
 }
 
 void FakeServer::OnHistoryCommit(const std::string& url) {
@@ -690,6 +667,13 @@ void FakeServer::LogForTestFailure(const base::Location& location,
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableFakeServerFailureOutput)) {
     return;
+  }
+  if (gtest_scoped_traces_.empty()) {
+    gtest_scoped_traces_.push_back(std::make_unique<testing::ScopedTrace>(
+        location.file_name(), location.line_number(),
+        base::StringPrintf(
+            "Add --%s to hide verbose logs from the fake server.",
+            switches::kDisableFakeServerFailureOutput)));
   }
   gtest_scoped_traces_.push_back(std::make_unique<testing::ScopedTrace>(
       location.file_name(), location.line_number(),

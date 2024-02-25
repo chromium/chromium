@@ -7,7 +7,6 @@
 
 #import "build/blink_buildflags.h"
 #import "content/public/browser/browser_context.h"
-#import "content/public/browser/resource_context.h"
 #import "ios/web/public/browser_state.h"
 
 #if !BUILDFLAG(USE_BLINK)
@@ -40,7 +39,6 @@ class ContentBrowserContext : public content::BrowserContext {
       const base::FilePath& partition_path) override;
   bool IsOffTheRecord() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   content::PlatformNotificationService* GetPlatformNotificationService()
@@ -69,17 +67,6 @@ class ContentBrowserContext : public content::BrowserContext {
  private:
   friend class BrowserContextHolder;
 
-  // Contains URLRequestContextGetter required for resource loading.
-  class ResourceContext : public content::ResourceContext {
-   public:
-    ResourceContext();
-
-    ResourceContext(const ResourceContext&) = delete;
-    ResourceContext& operator=(const ResourceContext&) = delete;
-
-    ~ResourceContext() override;
-  };
-
   bool ignore_certificate_errors() const { return false; }
 
   // Remove when refactored to depend on browser_start_->GetStatePath()
@@ -89,7 +76,6 @@ class ContentBrowserContext : public content::BrowserContext {
   // allowed on the current thread.
   void InitWhileIOAllowed();
   void FinishInitWhileIOAllowed();
-  std::unique_ptr<ResourceContext> resource_context_;
   web::BrowserState* browser_state_ = nullptr;
 };
 

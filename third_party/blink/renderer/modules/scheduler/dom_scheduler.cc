@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_yield_options.h"
@@ -54,11 +53,6 @@ DOMScheduler::DOMScheduler(ExecutionContext* context)
   CHECK(context->GetScheduler());
   CreateFixedPriorityTaskQueues(context, WebSchedulingQueueType::kTaskQueue,
                                 fixed_priority_task_queues_);
-  if (RuntimeEnabledFeatures::SchedulerYieldEnabled(context)) {
-    CreateFixedPriorityTaskQueues(context,
-                                  WebSchedulingQueueType::kContinuationQueue,
-                                  fixed_priority_continuation_queues_);
-  }
 }
 
 void DOMScheduler::ContextDestroyed() {
@@ -97,9 +91,7 @@ ScriptPromise DOMScheduler::postTask(
           : g_null_atom);
   if (state.abort_source && state.abort_source->aborted()) {
     exception_state.RethrowV8Exception(
-        ToV8Traits<IDLAny>::ToV8(script_state,
-                                 state.abort_source->reason(script_state))
-            .ToLocalChecked());
+        state.abort_source->reason(script_state).V8ValueFor(script_state));
     return ScriptPromise();
   }
 
@@ -120,6 +112,12 @@ ScriptPromise DOMScheduler::yield(ScriptState* script_state,
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current window is detached");
     return ScriptPromise();
+  }
+
+  if (fixed_priority_continuation_queues_.empty()) {
+    CreateFixedPriorityTaskQueues(GetExecutionContext(),
+                                  WebSchedulingQueueType::kContinuationQueue,
+                                  fixed_priority_continuation_queues_);
   }
 
   // Abort and priority can be inherited together or separately. Abort
@@ -154,9 +152,7 @@ ScriptPromise DOMScheduler::yield(ScriptState* script_state,
       script_state, signal_option, priority_option);
   if (state.abort_source && state.abort_source->aborted()) {
     exception_state.RethrowV8Exception(
-        ToV8Traits<IDLAny>::ToV8(script_state,
-                                 state.abort_source->reason(script_state))
-            .ToLocalChecked());
+        state.abort_source->reason(script_state).V8ValueFor(script_state));
     return ScriptPromise();
   }
 
@@ -174,38 +170,37 @@ scheduler::TaskAttributionIdType DOMScheduler::taskId(
     ScriptState* script_state) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
-  DCHECK(scheduler->GetTaskAttributionTracker());
-  absl::optional<scheduler::TaskAttributionId> task_id =
-      scheduler->GetTaskAttributionTracker()->RunningTaskAttributionId(
-          script_state);
-  // task_id cannot be unset here, as a task has presumably already ran in order
+  auto* tracker = scheduler->GetTaskAttributionTracker();
+  if (!tracker) {
+    // Can happen when a feature flag disables TaskAttribution.
+    return 0;
+  }
+  scheduler::TaskAttributionInfo* task =
+      scheduler->GetTaskAttributionTracker()->RunningTask(
+          script_state->GetIsolate());
+  // task cannot be nullptr here, as a task has presumably already ran in order
   // for this API call to be called.
-  DCHECK(task_id);
-  return task_id.value().value();
+  DCHECK(task);
+  return task->Id().value();
 }
 
 AtomicString DOMScheduler::isAncestor(
     ScriptState* script_state,
-    scheduler::TaskAttributionIdType parentId) {
-  scheduler::TaskAttributionTracker::AncestorStatus status =
-      scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor;
+    scheduler::TaskAttributionIdType parent_id) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
-  scheduler::TaskAttributionTracker* tracker =
-      scheduler->GetTaskAttributionTracker();
-  DCHECK(tracker);
-  status =
-      tracker->IsAncestor(script_state, scheduler::TaskAttributionId(parentId));
-  switch (status) {
-    case scheduler::TaskAttributionTracker::AncestorStatus::kAncestor:
-      return AtomicString("ancestor");
-    case scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor:
-      return AtomicString("not ancestor");
-    case scheduler::TaskAttributionTracker::AncestorStatus::kUnknown:
-      return AtomicString("unknown");
+  auto* tracker = scheduler->GetTaskAttributionTracker();
+  if (!tracker) {
+    // Can happen when a feature flag disables TaskAttribution.
+    return AtomicString("unknown");
   }
-  NOTREACHED();
-  return AtomicString("not reached");
+  const scheduler::TaskAttributionInfo* current_task =
+      tracker->RunningTask(script_state->GetIsolate());
+  return current_task &&
+                 tracker->IsAncestor(*current_task,
+                                     scheduler::TaskAttributionId(parent_id))
+             ? AtomicString("ancestor")
+             : AtomicString("not ancestor");
 }
 
 void DOMScheduler::CreateFixedPriorityTaskQueues(
@@ -257,7 +252,7 @@ DOMScheduler::SchedulingState DOMScheduler::GetSchedulingStateFromOptions(
     CHECK(RuntimeEnabledFeatures::SchedulerYieldEnabled(
         ExecutionContext::From(script_state)));
     if (auto* inherited_state =
-            ScriptWrappableTaskState::GetCurrent(script_state)) {
+            ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate())) {
       inherited_abort_source = inherited_state->GetAbortSource();
       inherited_priority_source = inherited_state->GetPrioritySource();
     }
@@ -302,7 +297,7 @@ DOMTaskSignal* DOMScheduler::GetFixedPriorityTaskSignal(
     CHECK(signal->HasFixedPriority());
     fixed_priority_task_signals_[index] = signal;
   }
-  return fixed_priority_task_signals_[index];
+  return fixed_priority_task_signals_[index].Get();
 }
 
 DOMScheduler::DOMTaskQueue* DOMScheduler::GetTaskQueue(

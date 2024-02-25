@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_TEST_UTIL_H_
 
 #include <pk11pub.h>
+#include <stdint.h>
 
 #include <memory>
 #include <string>
@@ -14,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
+#include "crypto/scoped_nss_types.h"
 
 namespace chromeos {
 
@@ -31,11 +33,6 @@ class FakeChapsUtil : public ChapsUtil {
       uint16_t num_bits,
       crypto::ScopedSECKEYPublicKey* out_public_key,
       crypto::ScopedSECKEYPrivateKey* out_private_key) override;
-
-  bool ImportPkcs12Certificate(PK11SlotInfo* slot,
-                               const std::vector<uint8_t>& pkcs12_data,
-                               const std::string& password,
-                               bool is_software_backed) override;
 
  private:
   OnKeyGenerated on_key_generated_;

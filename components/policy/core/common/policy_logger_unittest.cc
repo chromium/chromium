@@ -29,19 +29,7 @@ void AddLogs(const std::string& message, PolicyLogger* policy_logger) {
 
 class PolicyLoggerTest : public PlatformTest {
  public:
-  PolicyLoggerTest() {
-#if BUILDFLAG(IS_ANDROID)
-    scoped_feature_list_.InitWithFeatureState(
-        policy::features::kPolicyLogsPageAndroid, true);
-#elif BUILDFLAG(IS_IOS)
-    scoped_feature_list_.InitWithFeatureState(
-        policy::features::kPolicyLogsPageIOS, true);
-#else
-    scoped_feature_list_.InitWithFeatureState(
-        policy::features::kPolicyLogsPageDesktop, true);
-#endif
-  }
-
+  PolicyLoggerTest() = default;
   ~PolicyLoggerTest() override = default;
 
  protected:
@@ -130,28 +118,6 @@ TEST_F(PolicyLoggerTest, MaxSizeExceededDeletesOldestLog) {
 
   EXPECT_EQ(*(current_logs[current_size - 1].GetDict().FindString("message")),
             "Element added: Last log added and size is exceeded.");
-}
-
-// Checks that no logs are added when the feature is disabled.
-TEST(PolicyLoggerDisabledTest, PolicyLoggingDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-#if BUILDFLAG(IS_ANDROID)
-  scoped_feature_list_.InitWithFeatureState(
-      policy::features::kPolicyLogsPageAndroid, false);
-#elif BUILDFLAG(IS_IOS)
-  scoped_feature_list_.InitWithFeatureState(
-      policy::features::kPolicyLogsPageIOS, false);
-#else
-  scoped_feature_list_.InitWithFeatureState(
-      policy::features::kPolicyLogsPageDesktop, false);
-#endif
-
-  PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
-
-  size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
-  AddLogs("when the feature is disabled.", policy_logger);
-  EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
-            logs_size_before_adding);
 }
 
 }  // namespace policy

@@ -1,0 +1,22 @@
+digraph G {
+  node[shape=box,style="filled,rounded",color=deepskyblue]
+
+  subgraph cluster_tc {
+    label = "Thread Cache"
+    rankdir = LR
+    {rank=same;TLS1,TLS2,TLSn}
+    TLS1->TLS2[style=invisible,dir=none]
+    TLS2->TLSn[style=dotted,dir=none]
+  }
+
+  subgraph cluster_central {
+    label = "Central Allocator (per-partition lock)"
+    fast[label="slot span freelists (fast path)"]
+    slow[label="slot span management (slow path)"]
+    # Forces slow path node beneath fast path node.
+    fast->slow[style=invisible,dir=none]
+  }
+
+  # Forces thread-external subgraph beneath thread cache subgraph.
+  TLS2->fast[style=invisible,dir=none]
+}

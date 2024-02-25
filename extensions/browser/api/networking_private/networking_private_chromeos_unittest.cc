@@ -30,6 +30,7 @@
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace extensions {
@@ -158,13 +159,11 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
         base::Value::Dict()
             .Set("GUID", kManagedUserWifiGuid)
             .Set("Type", "WiFi")
-            .Set("WiFi",
-                 base::Value::Dict()
-                     .Set("Passphrase", "fake")
-                     .Set("SSID", user_policy_ssid)
-                     .Set("HexSSID", base::HexEncode(user_policy_ssid.c_str(),
-                                                     user_policy_ssid.size()))
-                     .Set("Security", "WPA-PSK")));
+            .Set("WiFi", base::Value::Dict()
+                             .Set("Passphrase", "fake")
+                             .Set("SSID", user_policy_ssid)
+                             .Set("HexSSID", base::HexEncode(user_policy_ssid))
+                             .Set("Security", "WPA-PSK")));
 
     config_handler->SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUserHash,
                               user_policy_onc,
@@ -178,8 +177,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
             .Set("WiFi",
                  base::Value::Dict()
                      .Set("SSID", device_policy_ssid)
-                     .Set("HexSSID", base::HexEncode(device_policy_ssid.c_str(),
-                                                     device_policy_ssid.size()))
+                     .Set("HexSSID", base::HexEncode(device_policy_ssid))
                      .Set("Security", "None")));
     config_handler->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, "",
                               device_policy_onc,
@@ -279,10 +277,10 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     return profile_test()->GetService(service_path, profile_path).has_value();
   }
 
-  absl::optional<base::Value::Dict> GetNetworkProperties(
+  std::optional<base::Value::Dict> GetNetworkProperties(
       const std::string& service_path) {
     base::RunLoop run_loop;
-    absl::optional<base::Value::Dict> properties;
+    std::optional<base::Value::Dict> properties;
     ash::NetworkHandler::Get()
         ->network_configuration_handler()
         ->GetShillProperties(
@@ -293,16 +291,16 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                            run_loop.QuitClosure()));
     run_loop.Run();
     if (!properties) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return std::move(*properties);
   }
 
   void OnNetworkProperties(const std::string& expected_path,
-                           absl::optional<base::Value::Dict>* result,
+                           std::optional<base::Value::Dict>* result,
                            base::OnceClosure callback,
                            const std::string& service_path,
-                           absl::optional<base::Value::Dict> properties) {
+                           std::optional<base::Value::Dict> properties) {
     if (!properties) {
       ADD_FAILURE() << "Error calling shill client.";
       std::move(callback).Run();
@@ -313,18 +311,18 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     std::move(callback).Run();
   }
 
-  absl::optional<base::Value::Dict> GetNetworkUiData(
-      absl::optional<base::Value::Dict>& properties) {
+  std::optional<base::Value::Dict> GetNetworkUiData(
+      std::optional<base::Value::Dict>& properties) {
     const std::string* ui_data_json = properties->FindString("UIData");
     if (!ui_data_json) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     JSONStringValueDeserializer deserializer(*ui_data_json);
     auto deserialized = deserializer.Deserialize(nullptr, nullptr);
 
     if (!deserialized || !deserialized->is_dict()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return std::move(*deserialized).TakeDict();
   }
@@ -336,13 +334,13 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                                            ->network_state_handler()
                                            ->GetNetworkStateFromGuid(guid);
 
-    absl::optional<base::Value::Dict> properties =
+    std::optional<base::Value::Dict> properties =
         GetNetworkProperties(network->path());
     if (!properties.has_value()) {
       return false;
     }
 
-    absl::optional<base::Value::Dict> ui_data = GetNetworkUiData(properties);
+    std::optional<base::Value::Dict> ui_data = GetNetworkUiData(properties);
     if (!ui_data) {
       return false;
     }
@@ -386,7 +384,7 @@ TEST_F(NetworkingPrivateApiTest, SetSharedNetworkProperties) {
 TEST_F(NetworkingPrivateApiTest, SetPrivateNetworkPropertiesWebUI) {
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
       new NetworkingPrivateSetPropertiesFunction();
-  set_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  set_properties->set_source_context_type(mojom::ContextType::kWebUi);
 
   RunFunction(
       set_properties.get(),
@@ -493,7 +491,7 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedProperties) {
 TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
       new NetworkingPrivateSetPropertiesFunction();
-  set_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  set_properties->set_source_context_type(mojom::ContextType::kWebUi);
   set_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
 
   const char kCombinedSettings[] =
@@ -542,7 +540,7 @@ TEST_F(NetworkingPrivateApiTest, CreateSharedNetwork) {
 TEST_F(NetworkingPrivateApiTest, CreateSharedNetworkWebUI) {
   scoped_refptr<NetworkingPrivateCreateNetworkFunction> create_network =
       new NetworkingPrivateCreateNetworkFunction();
-  create_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  create_network->set_source_context_type(mojom::ContextType::kWebUi);
 
   const char kNetworkConfig[] =
       R"({
@@ -553,7 +551,7 @@ TEST_F(NetworkingPrivateApiTest, CreateSharedNetworkWebUI) {
              "Security": "None"
            }
          })";
-  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
       create_network.get(), base::StringPrintf("[true, %s]", kNetworkConfig));
 
   ASSERT_TRUE(result);
@@ -578,7 +576,7 @@ TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork) {
              "Security": "WPA-PSK"
            }
          })";
-  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
       new NetworkingPrivateCreateNetworkFunction(),
       base::StringPrintf("[false, %s]", kNetworkConfig));
 
@@ -689,9 +687,9 @@ TEST_F(NetworkingPrivateApiTest, CreateL2TPVpnFromWebUi) {
 
   scoped_refptr<NetworkingPrivateCreateNetworkFunction> create_network =
       new NetworkingPrivateCreateNetworkFunction();
-  create_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  create_network->set_source_context_type(mojom::ContextType::kWebUi);
   create_network->set_source_url(GURL("chrome://os-settings/networkDetail"));
-  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
       create_network.get(),
       base::StringPrintf("[false, %s]", kL2tpIpsecConfig));
 
@@ -721,7 +719,7 @@ TEST_F(NetworkingPrivateApiTest, CreateL2TPVpnFromWebUi) {
   // VPN properties should be settable from Web UI.
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
       new NetworkingPrivateSetPropertiesFunction();
-  set_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  set_properties->set_source_context_type(mojom::ContextType::kWebUi);
   set_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
   result = RunFunctionAndReturnValue(
       set_properties.get(),
@@ -748,9 +746,9 @@ TEST_F(NetworkingPrivateApiTest, CreateOpenVpnFromWebUiAndSetProperties) {
          })";
   scoped_refptr<NetworkingPrivateCreateNetworkFunction> create_network =
       new NetworkingPrivateCreateNetworkFunction();
-  create_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  create_network->set_source_context_type(mojom::ContextType::kWebUi);
   create_network->set_source_url(GURL("chrome://os-settings/networkDetail"));
-  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
       create_network.get(), base::StringPrintf("[false, %s]", kOpenVpnConfig));
 
   ASSERT_TRUE(result);
@@ -780,7 +778,7 @@ TEST_F(NetworkingPrivateApiTest, CreateOpenVpnFromWebUiAndSetProperties) {
   // VPN properties should be settable from Web UI.
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
       new NetworkingPrivateSetPropertiesFunction();
-  set_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  set_properties->set_source_context_type(mojom::ContextType::kWebUi);
   set_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
   result = RunFunctionAndReturnValue(
       set_properties.get(),
@@ -898,9 +896,9 @@ TEST_F(NetworkingPrivateApiTest,
 
   scoped_refptr<NetworkingPrivateCreateNetworkFunction> create_network =
       new NetworkingPrivateCreateNetworkFunction();
-  create_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  create_network->set_source_context_type(mojom::ContextType::kWebUi);
   create_network->set_source_url(GURL("chrome://os-settings/networkDetail"));
-  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
       create_network.get(), base::StringPrintf("[false, %s]", kNetworkConfig));
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_string());
@@ -910,11 +908,11 @@ TEST_F(NetworkingPrivateApiTest,
                                          ->network_state_handler()
                                          ->GetNetworkStateFromGuid(guid);
 
-  absl::optional<base::Value::Dict> properties =
+  std::optional<base::Value::Dict> properties =
       GetNetworkProperties(network->path());
   ASSERT_TRUE(properties.has_value());
 
-  absl::optional<base::Value::Dict> ui_data = GetNetworkUiData(properties);
+  std::optional<base::Value::Dict> ui_data = GetNetworkUiData(properties);
   ASSERT_TRUE(ui_data.has_value());
 
   EXPECT_TRUE(ui_data->FindByDottedPath("user_settings.ProxySettings"));
@@ -923,7 +921,7 @@ TEST_F(NetworkingPrivateApiTest,
 
 TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork_NonMatchingSsids) {
   const std::string ssid = "new_wifi_config";
-  const std::string hex_ssid = base::HexEncode(ssid.c_str(), ssid.size());
+  const std::string hex_ssid = base::HexEncode(ssid);
   const char kNetworkConfig[] =
       R"({
            "Priority": 1,
@@ -935,7 +933,7 @@ TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork_NonMatchingSsids) {
            }
          })";
 
-  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
       new NetworkingPrivateCreateNetworkFunction(),
       base::StringPrintf(
           "[false, %s]",
@@ -1084,7 +1082,7 @@ TEST_F(NetworkingPrivateApiTest,
 TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
   SetUpCellular();
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       RunFunctionAndReturnValue(new NetworkingPrivateGetPropertiesFunction(),
                                 base::StringPrintf(R"(["%s"])", kCellularGuid));
 
@@ -1122,10 +1120,10 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
 
   scoped_refptr<NetworkingPrivateGetPropertiesFunction> get_properties =
       new NetworkingPrivateGetPropertiesFunction();
-  get_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  get_properties->set_source_context_type(mojom::ContextType::kWebUi);
   get_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
 
-  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
       get_properties.get(), base::StringPrintf(R"(["%s"])", kCellularGuid));
 
   ASSERT_TRUE(result);
@@ -1196,7 +1194,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetPrivateNetwork) {
 TEST_F(NetworkingPrivateApiTest, ForgetPrivateNetworkWebUI) {
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
       new NetworkingPrivateForgetNetworkFunction();
-  forget_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  forget_network->set_source_context_type(mojom::ContextType::kWebUi);
 
   RunFunction(forget_network.get(),
               base::StringPrintf(R"(["%s"])", kPrivateWifiGuid));
@@ -1225,7 +1223,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetUserPolicyNetwork) {
 TEST_F(NetworkingPrivateApiTest, ForgetUserPolicyNetworkWebUI) {
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
       new NetworkingPrivateForgetNetworkFunction();
-  forget_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  forget_network->set_source_context_type(mojom::ContextType::kWebUi);
 
   EXPECT_EQ(networking_private::kErrorPolicyControlled,
             RunFunctionAndReturnError(
@@ -1257,7 +1255,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetDevicePolicyNetworkWebUI) {
 
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
       new NetworkingPrivateForgetNetworkFunction();
-  forget_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  forget_network->set_source_context_type(mojom::ContextType::kWebUi);
   RunFunction(forget_network.get(),
               base::StringPrintf(R"(["%s"])", kManagedDeviceWifiGuid));
 
@@ -1290,7 +1288,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetNetworkInMultipleProfilesWebUI) {
 
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
       new NetworkingPrivateForgetNetworkFunction();
-  forget_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  forget_network->set_source_context_type(mojom::ContextType::kWebUi);
 
   RunFunction(forget_network.get(),
               base::StringPrintf(R"(["%s"])", kSharedWifiGuid));

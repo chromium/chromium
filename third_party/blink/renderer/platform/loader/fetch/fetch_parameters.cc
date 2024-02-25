@@ -87,12 +87,12 @@ void FetchParameters::SetCrossOriginAccessControl(
 }
 
 void FetchParameters::SetResourceWidth(
-    const absl::optional<float> resource_width) {
+    const std::optional<float> resource_width) {
   resource_width_ = resource_width;
 }
 
 void FetchParameters::SetResourceHeight(
-    const absl::optional<float> resource_height) {
+    const std::optional<float> resource_height) {
   resource_height_ = resource_height;
 }
 

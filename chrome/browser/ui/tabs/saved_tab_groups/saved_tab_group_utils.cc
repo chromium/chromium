@@ -14,12 +14,22 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
+  // in order to protect from filesystem access or chrome settings page use,
+  // replace the URL with the new tab page, when creating from sync or an
+  // unsaved group.
+  if (!IsURLValidForSavedTabGroups(contents->GetVisibleURL())) {
+    return SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"Unsavable tab",
+                            saved_tab_group_id,
+                            /*position=*/std::nullopt);
+  }
+
   SavedTabGroupTab tab(contents->GetVisibleURL(), contents->GetTitle(),
-                       saved_tab_group_id, /*position=*/absl::nullopt);
+                       saved_tab_group_id, /*position=*/std::nullopt);
   tab.SetFavicon(favicon::TabFaviconFromWebContents(contents));
   return tab;
 }
@@ -29,8 +39,8 @@ content::WebContents* SavedTabGroupUtils::OpenTabInBrowser(
     Browser* browser,
     Profile* profile,
     WindowOpenDisposition disposition,
-    absl::optional<int> tabstrip_index,
-    absl::optional<tab_groups::TabGroupId> local_group_id) {
+    std::optional<int> tabstrip_index,
+    std::optional<tab_groups::TabGroupId> local_group_id) {
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = disposition;
   params.browser = browser;
@@ -85,4 +95,9 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
     contentses.push_back(browser->tab_strip_model()->GetWebContentsAt(index));
   }
   return contentses;
+}
+
+// static
+bool SavedTabGroupUtils::IsURLValidForSavedTabGroups(const GURL& gurl) {
+  return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(chrome::kChromeUINewTabURL);
 }

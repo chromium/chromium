@@ -18,6 +18,8 @@ namespace autofill {
 namespace {
 
 constexpr char16_t kTestEmail[] = u"test@email.com";
+using ::testing::Property;
+using profile_ref = base::optional_ref<const AutofillProfile>;
 
 }  // namespace
 
@@ -29,23 +31,23 @@ class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
   std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS>
   CreateAutofillSaveUpdateAddressProfileDelegate(
       AutofillProfile* original_profile = nullptr,
-      absl::optional<std::u16string> email = absl::nullopt,
+      std::optional<std::u16string> email = std::nullopt,
       bool is_migration_to_account = false,
       bool is_account_profile = false) {
-    profile_ = test::GetFullProfile();
+    profile_ = std::make_unique<AutofillProfile>(test::GetFullProfile());
     if (is_account_profile) {
-      profile_.set_source_for_testing(
+      profile_->set_source_for_testing(
           autofill::AutofillProfile::Source::kAccount);
     }
     return std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-        profile_, original_profile, email,
+        *profile_, original_profile, email,
         /*locale=*/"en-US",
         AutofillClient::SaveAddressProfilePromptOptions{
             .is_migration_to_account = is_migration_to_account},
         callback_.Get());
   }
 
-  AutofillProfile profile_;
+  std::unique_ptr<AutofillProfile> profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       callback_;
 };
@@ -58,7 +60,7 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   EXPECT_CALL(
       callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          profile_));
+          Property(&profile_ref::has_value, false)));
   delegate->Accept();
 }
 
@@ -72,7 +74,7 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   EXPECT_CALL(
       callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          testing::_));
+          Property(&profile_ref::has_value, false)));
   // The callback should run in the destructor.
   delegate.reset();
 }
@@ -84,7 +86,7 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestCallbackOnSave) {
   EXPECT_CALL(
       callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          testing::_));
+          Property(&profile_ref::has_value, false)));
   delegate->Accept();
 }
 
@@ -107,7 +109,7 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
       CreateAutofillSaveUpdateAddressProfileDelegate();
   EXPECT_CALL(callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kNever,
-                  profile_));
+                  Property(&profile_ref::has_value, false)));
   delegate->Never();
 }
 

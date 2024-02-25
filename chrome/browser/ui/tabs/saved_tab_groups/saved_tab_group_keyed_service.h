@@ -43,7 +43,7 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // SavedTabGroupController
   void OpenSavedTabGroupInBrowser(Browser* browser,
-                                  const base::Uuid& saved_group_guid) override;
+                                  const base::Uuid saved_group_guid) override;
   void SaveGroup(const tab_groups::TabGroupId& group_id) override;
   void UnsaveGroup(const tab_groups::TabGroupId& group_id) override;
   void PauseTrackingLocalTabGroup(
@@ -60,7 +60,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   void SavedTabGroupRemovedFromSync(const SavedTabGroup* group) override;
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_guid,
-      const absl::optional<base::Uuid>& tab_guid) override;
+      const std::optional<base::Uuid>& tab_guid) override;
 
  private:
   // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs
@@ -86,15 +86,24 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
   // WebContents in the local TabGroup.
-  std::vector<std::pair<content::WebContents*, base::Uuid>>
+  std::map<content::WebContents*, base::Uuid>
   GetWebContentsToTabGuidMappingForSavedGroup(
       const TabStripModel* const tab_strip_model,
       const SavedTabGroup* const saved_group,
       const gfx::Range& tab_range);
 
+  // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
+  // WebContents that will open.
+  std::map<content::WebContents*, base::Uuid>
+  GetWebContentsToTabGuidMappingForOpening(
+      Browser* browser,
+      const SavedTabGroup* const saved_group,
+      const base::Uuid& saved_group_guid);
+
   // Activates the first tab in saved group that is already opened when its
-  // button is pressed.
-  void FocusFirstTabInOpenGroup(tab_groups::TabGroupId local_group_id);
+  // button is pressed, If active tab exists in saved group, only activates
+  // window.
+  void FocusFirstTabOrWindowInOpenGroup(tab_groups::TabGroupId local_group_id);
 
   // Returns a pointer to the TabStripModel which contains `local_group_id`.
   const TabStripModel* GetTabStripModelWithTabGroupId(

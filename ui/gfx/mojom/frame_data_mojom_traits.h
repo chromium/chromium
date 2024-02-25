@@ -14,9 +14,13 @@ namespace mojo {
 template <>
 struct StructTraits<gfx::mojom::FrameDataDataView, gfx::FrameData> {
   static int64_t seq(const gfx::FrameData& data) { return data.seq; }
+  static int64_t swap_trace_id(const gfx::FrameData& data) {
+    return data.swap_trace_id;
+  }
 
   static bool Read(gfx::mojom::FrameDataDataView data, gfx::FrameData* out) {
     out->seq = data.seq();
+    out->swap_trace_id = data.swap_trace_id();
     return true;
   }
 };

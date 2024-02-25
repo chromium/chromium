@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CRYPTO_H_
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CRYPTO_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "components/trusted_vault/securebox.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace trusted_vault {
 
@@ -17,8 +17,8 @@ class SecureBoxPrivateKey;
 class SecureBoxPublicKey;
 
 // Decrypts |wrapped_key| using securebox. Returns decrypted key if successful
-// and absl::nullopt otherwise.
-absl::optional<std::vector<uint8_t>> DecryptTrustedVaultWrappedKey(
+// and std::nullopt otherwise.
+std::optional<std::vector<uint8_t>> DecryptTrustedVaultWrappedKey(
     const SecureBoxPrivateKey& private_key,
     base::span<const uint8_t> wrapped_key);
 

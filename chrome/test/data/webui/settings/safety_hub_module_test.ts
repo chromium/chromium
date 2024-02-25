@@ -5,12 +5,23 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
+
+function waitUntilVisible(element: HTMLElement, intervalMs: number = 10) {
+  return new Promise<void>((resolve) => {
+    const interval = setInterval(() => {
+      if (isVisible(element)) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, intervalMs);
+  });
+}
 
 suite('SafetyHubModule', function() {
   let testElement: SettingsSafetyHubModuleElement;
@@ -22,6 +33,25 @@ suite('SafetyHubModule', function() {
 
   function getEntries() {
     return testElement.shadowRoot!.querySelectorAll('.site-entry');
+  }
+
+  function assignAndShowTestData() {
+    testElement.sites = mockData;
+    testElement.setModelUpdateDelayMsForTesting(0);
+
+    let callback: Function;
+    const promise = new Promise((resolve) => {
+      callback = resolve;
+    });
+
+    testElement.animateShow(mockData.map(data => data.origin), function() {
+      // The animation delay is set to zero, so the animation will take place
+      // instantaneously; but also asynchronously. Postpone the callback
+      // to the end of the thread.
+      setTimeout(callback, 0);
+    });
+
+    return promise;
   }
 
   setup(function() {
@@ -52,8 +82,10 @@ suite('SafetyHubModule', function() {
   });
 
   test('testItemButton', async function() {
-    testElement.sites = mockData;
+    await assignAndShowTestData();
     testElement.buttonIcon = 'cr20:block';
+    testElement.buttonAriaLabelId =
+        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel';
     flush();
 
     // User clicks the button of the 2nd item in the list.
@@ -71,9 +103,9 @@ suite('SafetyHubModule', function() {
     assertEquals(clickedItem.detail, mockData[1]!.detail);
   });
 
-  test('testItemList', function() {
+  test('testItemList', async function() {
     // Check the item list is filled with the data.
-    testElement.sites = mockData;
+    await assignAndShowTestData();
     flush();
 
     assertTrue(isVisible(testElement.shadowRoot!.querySelector('#line')));
@@ -99,5 +131,34 @@ suite('SafetyHubModule', function() {
 
     assertFalse(isVisible(testElement.shadowRoot!.querySelector('#line')));
     assertFalse(isVisible(testElement.shadowRoot!.querySelector('#siteList')));
+  });
+
+  test('testTooltip', async function() {
+    // Check the item list is filled with the data.
+    const text = 'Dummy tooltip text';
+    await assignAndShowTestData();
+    testElement.buttonIcon = 'cr20:block';
+    testElement.buttonAriaLabelId =
+        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel';
+    testElement.buttonTooltipText = text;
+    flush();
+
+    // Check that the tooltip is not visible.
+    let tooltip = testElement.shadowRoot!.querySelector('paper-tooltip');
+    assertTrue(!!tooltip);
+    assertFalse(isVisible(tooltip));
+
+    // User focuses the button of the 2nd item in the list.
+    const item = getEntries()[1]!;
+    const button = item.querySelector('cr-icon-button');
+    assertTrue(!!button);
+    button.focus();
+
+    // Check that the tooltip gets visible with the correct text.
+    tooltip = testElement.shadowRoot!.querySelector('paper-tooltip');
+    assertTrue(!!tooltip);
+    await waitUntilVisible(tooltip);
+    assertTrue(isVisible(tooltip));
+    assertEquals(text, tooltip!.textContent!.trim());
   });
 });

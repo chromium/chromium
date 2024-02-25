@@ -19,26 +19,26 @@ constexpr CGDirectDisplayID kDummyDisplay = 0xFABBEE;
 
 class TestingMainDisplaySampler : public MainDisplaySampler {
  public:
-  TestingMainDisplaySampler(absl::optional<float> brightness, bool sleeping)
+  TestingMainDisplaySampler(std::optional<float> brightness, bool sleeping)
       : MainDisplaySampler(kDummyDisplay),
         brightness_(brightness),
         sleeping_(sleeping) {}
 
   static std::unique_ptr<TestingMainDisplaySampler> Create(
-      absl::optional<float> brightness,
+      std::optional<float> brightness,
       bool sleeping);
 
  private:
   bool GetIsDisplaySleeping() override { return sleeping_; }
-  absl::optional<float> GetDisplayBrightness() override { return brightness_; }
+  std::optional<float> GetDisplayBrightness() override { return brightness_; }
 
-  const absl::optional<float> brightness_;
+  const std::optional<float> brightness_;
   const bool sleeping_;
 };
 
 // static
 std::unique_ptr<TestingMainDisplaySampler> TestingMainDisplaySampler::Create(
-    absl::optional<float> brightness,
+    std::optional<float> brightness,
     bool sleeping) {
   return std::make_unique<TestingMainDisplaySampler>(brightness, sleeping);
 }
@@ -77,7 +77,7 @@ TEST(MainDisplaySamplerTest, SamplesBrightnessAndSleeping) {
 
 TEST(MainDisplaySamplerTest, ReturnsSampleWhenNoBrightness) {
   std::unique_ptr<MainDisplaySampler> sampler(
-      TestingMainDisplaySampler::Create(absl::nullopt, false));
+      TestingMainDisplaySampler::Create(std::nullopt, false));
   ASSERT_NE(nullptr, sampler.get());
   Sampler::Sample datums = sampler->GetSample(base::TimeTicks::Now());
   EXPECT_THAT(datums, UnorderedElementsAre(std::make_pair("sleeping", 0.0)));

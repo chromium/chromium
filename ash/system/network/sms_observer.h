@@ -30,7 +30,8 @@ class ASH_EXPORT SmsObserver : public NetworkSmsHandler::Observer,
   void MessageReceived(const base::Value::Dict& message) override;
 
   // TextMessageProvider::Observer:
-  void MessageReceived(const TextMessageData& message) override;
+  void MessageReceived(const std::string& guid,
+                       const TextMessageData& message) override;
 
  private:
   // Used to create notification identifier.

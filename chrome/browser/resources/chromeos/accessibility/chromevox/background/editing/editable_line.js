@@ -8,12 +8,14 @@
  * (e.g. start/end offsets) get saved. Line: nodes/offsets at the beginning/end
  * of a line get saved.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
-import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit} from '../../../common/cursors/cursor.js';
-import {CursorRange} from '../../../common/cursors/range.js';
-import {RecoveryStrategy, TreePathRecoveryStrategy} from '../../../common/cursors/recovery_strategy.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit} from '/common/cursors/cursor.js';
+import {CursorRange} from '/common/cursors/range.js';
+import {RecoveryStrategy, TreePathRecoveryStrategy} from '/common/cursors/recovery_strategy.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {Spannable} from '../../common/spannable.js';
 import {LibLouis} from '../braille/liblouis.js';
 import {Output} from '../output/output.js';
@@ -731,3 +733,5 @@ export class EditableLine {
  * @public {boolean}
  */
 EditableLine.includeOffscreen = true;
+
+TestImportManager.exportForTesting(EditableLine);

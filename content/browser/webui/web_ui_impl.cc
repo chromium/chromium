@@ -80,7 +80,8 @@ WebUIImpl::WebUIImpl(WebContents* web_contents)
     : bindings_(BINDINGS_POLICY_WEB_UI),
       requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
       web_contents_(web_contents),
-      web_contents_observer_(new WebUIMainFrameObserver(this, web_contents_)) {
+      web_contents_observer_(
+          std::make_unique<WebUIMainFrameObserver>(this, web_contents_)) {
   DCHECK(web_contents_);
 }
 
@@ -267,8 +268,9 @@ void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
     return;
   }
 
-  NOTREACHED() << "Unhandled chrome.send(\"" << message << "\", " << args
-               << "); from " << source_url;
+  DUMP_WILL_BE_NOTREACHED_NORETURN()
+      << "Unhandled chrome.send(\"" << message << "\", " << args << "); from "
+      << source_url;
 }
 
 std::vector<std::unique_ptr<WebUIMessageHandler>>*

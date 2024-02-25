@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -12,17 +13,21 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
 
 constexpr base::TimeDelta kDefaultExtendedAccountInfoTimeout =
     base::Seconds(10);
 
-absl::optional<base::TimeDelta> g_extended_account_info_timeout_for_testing =
-    absl::nullopt;
+std::optional<base::TimeDelta> g_extended_account_info_timeout_for_testing =
+    std::nullopt;
 
 }  // namespace
 
@@ -46,6 +51,20 @@ void FinalizeNewProfileSetup(Profile* profile,
 #endif
 
   entry->SetLocalProfileName(profile_name, is_default_name);
+
+  if (signin_util::IsForceSigninEnabled() &&
+      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+    // Managed accounts do not need to have Sync consent set.
+    // TODO(https://crbug.com/1478102): Align Managed and Consumer accounts.
+    if (!entry->CanBeManaged()) {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
+          << "A non syncing account should not be able to finalize the "
+             "profile.";
+    }
+    entry->LockForceSigninProfile(/*is_lock=*/false);
+  }
 
   if (!entry->IsOmitted()) {
     // The profile has already been created outside of the classic "profile
@@ -77,18 +96,18 @@ void FinalizeNewProfileSetup(Profile* profile,
 ProfileNameResolver::ScopedInfoFetchTimeoutOverride
 ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(
     base::TimeDelta timeout) {
-  return base::AutoReset<absl::optional<base::TimeDelta>>(
+  return base::AutoReset<std::optional<base::TimeDelta>>(
       &g_extended_account_info_timeout_for_testing, timeout);
 }
 
 ProfileNameResolver::ProfileNameResolver(
     signin::IdentityManager* identity_manager,
-    const CoreAccountId& account_id)
-    : account_id_(account_id) {
-  CHECK(!account_id_.empty());
+    const CoreAccountInfo& core_account_info)
+    : core_account_info_(core_account_info) {
+  CHECK(!core_account_info_.IsEmpty());
 
   auto extended_account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id_);
+      identity_manager->FindExtendedAccountInfo(core_account_info_);
   if (extended_account_info.IsValid()) {
     OnExtendedAccountInfoUpdated(extended_account_info);
     return;
@@ -100,7 +119,8 @@ ProfileNameResolver::ProfileNameResolver(
   // Set up a timeout for extended account info.
   std::u16string fallback_profile_name =
       profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
-          extended_account_info);
+          core_account_info_);
+  CHECK(!fallback_profile_name.empty());
   extended_account_info_timeout_closure_.Reset(
       base::BindOnce(&ProfileNameResolver::OnProfileNameResolved,
                      weak_ptr_factory_.GetWeakPtr(), fallback_profile_name));
@@ -125,17 +145,20 @@ void ProfileNameResolver::RunWithProfileName(NameResolvedCallback callback) {
 
 void ProfileNameResolver::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
-  if (!account_info.IsValid() || account_id_ != account_info.account_id) {
+  if (!account_info.IsValid() ||
+      core_account_info_.account_id != account_info.account_id) {
     return;
   }
 
-  OnProfileNameResolved(
-      profiles::GetDefaultNameForNewSignedInProfile(account_info));
+  std::u16string profile_name =
+      profiles::GetDefaultNameForNewSignedInProfile(account_info);
+  CHECK(!profile_name.empty());
+  OnProfileNameResolved(profile_name);
 }
 
 void ProfileNameResolver::OnProfileNameResolved(
     const std::u16string& profile_name) {
-  DCHECK(!profile_name.empty());
+  CHECK(!profile_name.empty());
   DCHECK(resolved_profile_name_.empty());  // Should be resolved only once.
 
   // Cancel timeout and stop listening to further changes.

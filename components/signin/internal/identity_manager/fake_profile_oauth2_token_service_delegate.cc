@@ -4,10 +4,10 @@
 
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 
+#include <list>
 #include <memory>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -17,9 +17,7 @@
 
 FakeProfileOAuth2TokenServiceDelegate::FakeProfileOAuth2TokenServiceDelegate()
     : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true),
-      shared_factory_(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)) {}
+      shared_factory_(test_url_loader_factory_.GetSafeWeakWrapper()) {}
 
 FakeProfileOAuth2TokenServiceDelegate::
     ~FakeProfileOAuth2TokenServiceDelegate() = default;
@@ -28,7 +26,8 @@ std::unique_ptr<OAuth2AccessTokenFetcher>
 FakeProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    OAuth2AccessTokenConsumer* consumer) {
+    OAuth2AccessTokenConsumer* consumer,
+    const std::string& token_binding_challenge) {
   auto it = refresh_tokens_.find(account_id);
   DCHECK(it != refresh_tokens_.end());
   return GaiaAccessTokenFetcher::
@@ -92,7 +91,7 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     const CoreAccountId& account_id,
     const std::string& token) {
   if (token.empty()) {
-    base::Erase(account_ids_, account_id);
+    std::erase(account_ids_, account_id);
     refresh_tokens_.erase(account_id);
     ClearAuthError(account_id);
     FireRefreshTokenRevoked(account_id);

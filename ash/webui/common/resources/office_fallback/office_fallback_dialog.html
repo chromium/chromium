@@ -1,37 +1,52 @@
 <style>
-  #title {
-    font-family: 'Roboto Medium';
-    font-size: 14px;
-    padding-bottom: 16px;
+  :host {
+    display: block;
+    /**<office-fallback> element takes the full height of the body*/
+    height: 100%;
   }
 
-  #body {
-    font-family: 'Roboto';
-    font-weight: 300;
+  #dialog {
+    padding: 32px 32px 28px 32px;
+    /**dialog takes the full height*/
+    height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #dialog:focus-visible {
+    outline: none;
+  }
+
+  #text {
+    flex: 1;
+  }
+
+  #title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-display-7-font);
+  }
+
+  .normal-text {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-1-font);
+    margin-block-start: 16px;
   }
 
   #button-container {
     display: flex;
-    padding-top: 32px;
+    margin-block-start: 32px;
   }
 
-  #content {
-    outline: none;
-    padding-bottom: 20px;
-    padding-inline-end: 24px;
-    padding-inline-start: 24px;
-    padding-top: 24px;
-  }
-
-  :host-context([theme='refresh23']) cr-button {
+  cr-button {
     --active-bg: transparent;
     --active-shadow: none;
     --active-shadow-action: none;
     --bg-action: var(--cros-sys-primary);
     --cr-button-height: 36px;
     --disabled-bg-action:
-        var(--cros-sys-disabled_container);
-    --disabled-bg: var(--cros-sys-disabled_container);;
+      var(--cros-sys-disabled_container);
+    --disabled-bg: var(--cros-sys-disabled_container);
+    ;
     --disabled-text-color: var(--cros-sys-disabled);
     /* Use the default bg color as hover color because we
         rely on hoverBackground layer below.  */
@@ -47,44 +62,41 @@
     box-shadow: none;
   }
 
-  :host-context([theme='refresh23']) cr-button.cancel-button {
+  cr-button.secondary-button {
     background-color: var(--cros-sys-primary_container);
   }
 
-  :host-context([theme='refresh23'])
-      cr-button.cancel-button:hover::part(hoverBackground) {
+  cr-button.secondary-button:hover::part(hoverBackground) {
     background-color: var(--cros-sys-hover_on_subtle);
     display: block;
   }
 
-  :host-context([theme='refresh23'])
-      cr-button.action-button:hover::part(hoverBackground) {
+  cr-button.action-button:hover::part(hoverBackground) {
     background-color: var(--cros-sys-hover_on_prominent);
     display: block;
   }
 
-  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      cr-button:focus {
+  :host-context(.focus-outline-visible) cr-button:focus {
     outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }
 </style>
 
-<div id="content" role="dialog" autofocus tabindex="-1" aria-labelledby="title" aria-describedby="body">
-  <div id="title">
-  </div>
-  <div id="body">
-    <div id="reason-message" style="margin-bottom: 13px;"></div>
-    <div id="instructions-message"></div>
+<div id="dialog" role="dialog" autofocus tabindex="-1" aria-labelledby="title" aria-describedby="body">
+  <div id="text">
+    <div id="title"></div>
+    <div id="reason-message" class="normal-text"></div>
+    <div id="instructions-message" class="normal-text"></div>
   </div>
   <div id="button-container">
-    <cr-button id="quick-office-button">
+    <cr-button id="quick-office-button" class="secondary-button">
       $i18n{officeFallbackOpenWithOfflineEditor}
     </cr-button>
-    <cr-button id="cancel-button" class="cancel-button" style="margin-left: auto;">
+    <cr-button id="cancel-button" class="secondary-button" style="margin-left: auto;">
       $i18n{officeFallbackCancel}
     </cr-button>
-    <cr-button id="try-again-button" class="action-button">
+    <!-- 8px gap between cancel and try again button -->
+    <cr-button id="try-again-button" class="action-button" style="margin-left: 8px;">
       $i18n{officeFallbackTryAgain}
     </cr-button>
   </div>

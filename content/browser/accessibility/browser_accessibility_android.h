@@ -121,7 +121,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   typedef base::RepeatingCallback<bool(const std::u16string& partial)>
       EarlyExitPredicate;
   std::u16string GetSubstringTextContentUTF16(
-      absl::optional<EarlyExitPredicate>) const;
+      std::optional<EarlyExitPredicate>) const;
   static EarlyExitPredicate NonEmptyPredicate();
   static EarlyExitPredicate LengthAtLeast(size_t length);
 

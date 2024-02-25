@@ -11,15 +11,16 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/win/access_token.h"
 #include "base/win/windows_types.h"
@@ -30,7 +31,6 @@
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/sandbox_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -61,9 +61,10 @@ class ConfigBase final : public TargetConfig {
   ResultCode SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) override;
   JobLevel GetJobLevel() const override;
   void SetJobMemoryLimit(size_t memory_limit) override;
-  ResultCode AddRule(SubSystem subsystem,
-                     Semantics semantics,
-                     const wchar_t* pattern) override;
+  ResultCode AllowFileAccess(FileSemantics semantics,
+                             const wchar_t* pattern) override;
+  ResultCode AllowExtraDlls(const wchar_t* pattern) override;
+  ResultCode SetFakeGdiInit() override;
   void AddDllToUnload(const wchar_t* dll_name) override;
   ResultCode SetIntegrityLevel(IntegrityLevel integrity_level) override;
   IntegrityLevel GetIntegrityLevel() const override;
@@ -78,12 +79,12 @@ class ConfigBase final : public TargetConfig {
   ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                     bool create_profile) override;
   scoped_refptr<AppContainer> GetAppContainer() override;
-  ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
-                                    const wchar_t* handle_name) override;
-  ResultCode SetDisconnectCsrss() override;
+  void AddKernelObjectToClose(HandleToClose handle_info) override;
+  void SetDisconnectCsrss() override;
   void SetDesktop(Desktop desktop) override;
   void SetFilterEnvironment(bool filter) override;
   bool GetEnvironmentFiltered() override;
+  void SetZeroAppShim() override;
 
  private:
   // Can call Freeze()
@@ -100,6 +101,10 @@ class ConfigBase final : public TargetConfig {
   // Use in DCHECK only - returns `true` in non-DCHECK builds.
   bool IsOnCreatingThread() const;
 
+  // Lazily populates the policy_ and policy_maker_ members for internal rules.
+  // Can only be called before the object is fully configured.
+  LowLevelPolicy* PolicyMaker();
+
 #if DCHECK_IS_ON()
   // Used to sequence-check in DCHECK builds.
   uint32_t creating_thread_id_;
@@ -108,13 +113,9 @@ class ConfigBase final : public TargetConfig {
   // Once true the configuration is frozen and can be applied to later policies.
   bool configured_ = false;
 
-  ResultCode AddRuleInternal(SubSystem subsystem,
-                             Semantics semantics,
-                             const wchar_t* pattern);
-
   // Should only be called once the object is configured.
   PolicyGlobal* policy();
-  absl::optional<base::span<const uint8_t>> policy_span();
+  std::optional<base::span<const uint8_t>> policy_span();
   std::vector<std::wstring>& blocklisted_dlls();
   AppContainerBase* app_container();
   IntegrityLevel integrity_level() { return integrity_level_; }
@@ -125,8 +126,8 @@ class ConfigBase final : public TargetConfig {
   size_t memory_limit() { return memory_limit_; }
   uint32_t ui_exceptions() { return ui_exceptions_; }
   Desktop desktop() { return desktop_; }
-  // nullptr if no objects have been added via AddKernelObjectToClose().
-  HandleCloser* handle_closer() { return handle_closer_.get(); }
+  const HandleCloserConfig& handle_closer() { return handle_closer_; }
+  bool zero_appshim() { return zero_appshim_; }
 
   TokenLevel lockdown_level_;
   TokenLevel initial_level_;
@@ -142,17 +143,14 @@ class ConfigBase final : public TargetConfig {
   uint32_t ui_exceptions_;
   Desktop desktop_;
   bool filter_environment_;
+  bool zero_appshim_;
+  HandleCloserConfig handle_closer_;
 
   // Object in charge of generating the low level policy. Will be reset() when
   // Freeze() is called.
   std::unique_ptr<LowLevelPolicy> policy_maker_;
   // Memory structure that stores the low level policy rules for proxied calls.
   raw_ptr<PolicyGlobal> policy_;
-  // This is a map of handle-types to names that we need to close in the
-  // target process. A null set for a given type means we need to close all
-  // handles of the given type. If no entries are added this will be nullptr and
-  // no handles are closed.
-  std::unique_ptr<HandleCloser> handle_closer_;
   // The list of dlls to unload in the target process.
   std::vector<std::wstring> blocklisted_dlls_;
   // AppContainer to be applied to the target process.
@@ -161,7 +159,7 @@ class ConfigBase final : public TargetConfig {
 
 class PolicyBase final : public TargetPolicy {
  public:
-  PolicyBase(base::StringPiece key);
+  PolicyBase(std::string_view key);
   ~PolicyBase() override;
 
   PolicyBase(const PolicyBase&) = delete;
@@ -191,8 +189,8 @@ class PolicyBase final : public TargetPolicy {
 
   // Creates the two tokens with the levels specified in a previous call to
   // SetTokenLevel().
-  ResultCode MakeTokens(absl::optional<base::win::AccessToken>& initial,
-                        absl::optional<base::win::AccessToken>& lockdown);
+  ResultCode MakeTokens(std::optional<base::win::AccessToken>& initial,
+                        std::optional<base::win::AccessToken>& lockdown);
 
   // Applies the sandbox to |target| and takes ownership. Internally a
   // call to TargetProcess::Init() is issued.
@@ -234,13 +232,13 @@ class PolicyBase final : public TargetPolicy {
   // time.
 
   // Returns nullopt if no data has been set, or a view into the data.
-  absl::optional<base::span<const uint8_t>> delegate_data_span();
+  std::optional<base::span<const uint8_t>> delegate_data_span();
 
   // The user-defined global policy settings.
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;
   // An opaque blob of data the delegate uses to prime any pre-sandbox hooks.
-  std::unique_ptr<std::vector<const uint8_t>> delegate_data_;
+  std::unique_ptr<const std::vector<uint8_t>> delegate_data_;
 
   std::unique_ptr<Dispatcher> dispatcher_;
 

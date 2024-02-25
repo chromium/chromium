@@ -134,7 +134,7 @@ bool CheckContentSecurityPolicyForPreload(
   return true;
 }
 
-absl::optional<network::mojom::RequestDestination>
+std::optional<network::mojom::RequestDestination>
 LinkAsAttributeToRequestDestination(const network::mojom::LinkHeaderPtr& link) {
   // https://fetch.spec.whatwg.org/#concept-potential-destination-translate
   switch (link->as) {
@@ -145,7 +145,7 @@ LinkAsAttributeToRequestDestination(const network::mojom::LinkHeaderPtr& link) {
       if (link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
         return network::mojom::RequestDestination::kScript;
       }
-      return absl::nullopt;
+      return std::nullopt;
     case network::mojom::LinkAsAttribute::kImage:
       return network::mojom::RequestDestination::kImage;
     case network::mojom::LinkAsAttribute::kFont:
@@ -301,7 +301,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     if (!head->network_accessed && head->was_fetched_via_cache) {
       // Cancel the client since the response is already stored in the cache.
       result_.was_canceled = true;
@@ -395,10 +395,11 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
   // policies such as CSP are inconsistent among the first and following
   // responses. This behavior is specified by the step 19.5 of
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#create-navigation-params-by-fetching
-  if (was_first_early_hints_received_)
+  if (first_early_hints_receive_time_) {
     return;
+  }
 
-  was_first_early_hints_received_ = true;
+  first_early_hints_receive_time_ = base::TimeTicks::Now();
 
   net::ReferrerPolicy referrer_policy =
       Referrer::ReferrerPolicyForUrlRequest(early_hints->referrer_policy);
@@ -470,7 +471,9 @@ void NavigationEarlyHintsManager::MaybePreconnect(
   bool allow_credentials =
       link->cross_origin != network::mojom::CrossOriginAttribute::kAnonymous;
   network_context->PreconnectSockets(
-      /*num_streams=*/1, link->href, allow_credentials,
+      /*num_streams=*/1, link->href,
+      allow_credentials ? network::mojom::CredentialsMode::kInclude
+                        : network::mojom::CredentialsMode::kOmit,
       isolation_info_.network_anonymization_key());
   preconnect_entries_.insert(std::move(entry));
 }
@@ -491,7 +494,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
 
   // Step 2. If options's destination is not a destination, then return null.
   // https://html.spec.whatwg.org/multipage/semantics.html#create-a-link-request
-  absl::optional<network::mojom::RequestDestination> destination =
+  std::optional<network::mojom::RequestDestination> destination =
       LinkAsAttributeToRequestDestination(link);
   if (!destination) {
     return;
@@ -532,7 +535,8 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
           request, &*browser_context_,
           base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                               frame_tree_node_id_),
-          /*navigation_ui_data=*/nullptr, frame_tree_node_id_);
+          /*navigation_ui_data=*/nullptr, frame_tree_node_id_,
+          /*navigation_id=*/std::nullopt);
 
   auto loader_client = std::make_unique<PreloadURLLoaderClient>(*this, request);
   auto loader = blink::ThrottlingURLLoader::CreateLoaderAndStart(

@@ -11,6 +11,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
@@ -59,7 +60,9 @@ struct ModelExecutorImpl::ExecutionState {
   // https://crbug.com/1021571.
   std::unique_ptr<ModelExecutionTraceEvent> trace_event;
 
-  proto::SegmentInfo segment_info;
+  SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
+  proto::ModelSource model_source = proto::ModelSource::DEFAULT_MODEL_SOURCE;
+  int64_t model_version = 0;
   raw_ptr<ModelProvider, AcrossTasksDanglingUntriaged> model_provider = nullptr;
   bool record_metrics_for_default = false;
   ModelExecutionCallback callback;
@@ -84,24 +87,32 @@ ModelExecutorImpl::ModelExecutionTraceEvent::~ModelExecutionTraceEvent() {
 
 ModelExecutorImpl::ModelExecutorImpl(
     base::Clock* clock,
+    SegmentInfoDatabase* segment_db,
     processing::FeatureListQueryProcessor* feature_list_query_processor)
     : clock_(clock),
+      segment_db_(segment_db),
       feature_list_query_processor_(feature_list_query_processor) {}
 
 ModelExecutorImpl::~ModelExecutorImpl() = default;
 
 void ModelExecutorImpl::ExecuteModel(
     std::unique_ptr<ExecutionRequest> request) {
-  const proto::SegmentInfo& segment_info = *request->segment_info;
-  SegmentId segment_id = segment_info.segment_id();
+  DCHECK_NE(request->segment_id, SegmentId::OPTIMIZATION_TARGET_UNKNOWN);
+  DCHECK_NE(request->model_source, ModelSource::UNKNOWN_MODEL_SOURCE);
+  const proto::SegmentInfo* segment_info = segment_db_->GetCachedSegmentInfo(
+      request->segment_id, request->model_source);
+  SegmentId segment_id = request->segment_id;
 
   // Create an ExecutionState that will stay with this request until it has been
   // fully processed.
   auto state = std::make_unique<ExecutionState>();
-  state->segment_info = segment_info;
+  state->segment_id = request->segment_id;
+  state->model_source = request->model_source;
+  state->model_version = segment_info->model_version();
 
   state->model_provider = request->model_provider;
-  state->record_metrics_for_default = request->record_metrics_for_default;
+  state->record_metrics_for_default =
+      request->model_source == ModelSource::DEFAULT_MODEL_SOURCE;
 
   state->callback = std::move(request->callback);
   state->total_execution_start_time = clock_->Now();
@@ -109,7 +120,8 @@ void ModelExecutorImpl::ExecuteModel(
   ModelExecutionTraceEvent trace_event("ModelExecutorImpl::ExecuteModel",
                                        *state);
 
-  if (!state->model_provider || !state->model_provider->ModelAvailable()) {
+  if (!segment_info || !request->model_provider ||
+      !request->model_provider->ModelAvailable()) {
     RunModelExecutionCallback(*state, std::move(state->callback),
                               std::make_unique<ModelExecutionResult>(
                                   ModelExecutionStatus::kSkippedModelNotReady));
@@ -117,7 +129,7 @@ void ModelExecutorImpl::ExecuteModel(
   }
 
   // It is required to have a valid and well formed segment info.
-  if (metadata_utils::ValidateSegmentInfo(segment_info) !=
+  if (metadata_utils::ValidateSegmentInfo(*segment_info) !=
       metadata_utils::ValidationResult::kValidationSuccess) {
     RunModelExecutionCallback(
         *state, std::move(state->callback),
@@ -127,9 +139,9 @@ void ModelExecutorImpl::ExecuteModel(
   }
 
   state->upload_tensors =
-      SegmentationUkmHelper::GetInstance()->IsUploadRequested(segment_info);
+      SegmentationUkmHelper::GetInstance()->IsUploadRequested(*segment_info);
   feature_list_query_processor_->ProcessFeatureList(
-      segment_info.model_metadata(), request->input_context, segment_id,
+      segment_info->model_metadata(), request->input_context, segment_id,
       clock_->Now(), base::Time(),
       FeatureListQueryProcessor::ProcessOption::kInputsOnly,
       base::BindOnce(&ModelExecutorImpl::OnProcessingFeatureListComplete,
@@ -163,11 +175,10 @@ void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
     for (unsigned i = 0; i < state->input_tensor.size(); ++i)
       log_input << " feature " << i << ": " << state->input_tensor[i];
     VLOG(1) << "Segmentation model input: " << log_input.str()
-            << " for segment "
-            << proto::SegmentId_Name(state->segment_info.segment_id());
+            << " for segment " << proto::SegmentId_Name(state->segment_id);
   }
   const ModelProvider::Request& const_input_tensor = state->input_tensor;
-  stats::RecordModelExecutionZeroValuePercent(state->segment_info.segment_id(),
+  stats::RecordModelExecutionZeroValuePercent(state->segment_id,
                                               const_input_tensor);
   state->model_execution_start_time = clock_->Now();
   ModelProvider* model = state->model_provider;
@@ -179,11 +190,11 @@ void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
 
 void ModelExecutorImpl::OnModelExecutionComplete(
     std::unique_ptr<ExecutionState> state,
-    const absl::optional<ModelProvider::Response>& result) {
+    const std::optional<ModelProvider::Response>& result) {
   ModelExecutionTraceEvent trace_event(
       "ModelExecutorImpl::OnModelExecutionComplete", *state);
   stats::RecordModelExecutionDurationModel(
-      state->segment_info.segment_id(), result.has_value(),
+      state->segment_id, result.has_value(),
       clock_->Now() - state->model_execution_start_time);
   if (result.has_value() && result.value().size() > 0) {
     if (VLOG_IS_ON(1)) {
@@ -192,33 +203,44 @@ void ModelExecutorImpl::OnModelExecutionComplete(
         log_output << " output " << i << ": " << result.value().at(i);
       }
       VLOG(1) << "Segmentation model result: " << log_output.str()
-              << " for segment "
-              << proto::SegmentId_Name(state->segment_info.segment_id());
+              << " for segment " << proto::SegmentId_Name(state->segment_id);
     }
+
+    const SegmentInfo* latest_info = segment_db_->GetCachedSegmentInfo(
+        state->segment_id, state->model_source);
+    // The version could have changed if new model is downloaded during
+    // execution, or if the model was deleted.
+    if (!latest_info || latest_info->model_version() != state->model_version) {
+      VLOG(1) << "Segmentation model was updated during execution "
+              << proto::SegmentId_Name(state->segment_id);
+      RunModelExecutionCallback(
+          *state, std::move(state->callback),
+          std::make_unique<ModelExecutionResult>(
+              ModelExecutionStatus::kSkippedModelNotReady));
+      return;
+    }
+
+
     const proto::SegmentationModelMetadata& model_metadata =
-        state->segment_info.model_metadata();
+        latest_info->model_metadata();
     if (model_metadata.has_output_config()) {
-      stats::RecordModelExecutionResult(state->segment_info.segment_id(),
-                                        result.value(),
+      stats::RecordModelExecutionResult(state->segment_id, result.value(),
                                         model_metadata.output_config());
     } else {
-      stats::RecordModelExecutionResult(state->segment_info.segment_id(),
-                                        result.value().at(0),
+      stats::RecordModelExecutionResult(state->segment_id, result.value().at(0),
                                         model_metadata.return_type());
     }
 
     base::TimeDelta signal_storage_length =
         model_metadata.signal_storage_length() *
         metadata_utils::GetTimeUnit(model_metadata);
-    if (state->segment_info.model_version() &&
-        state->segment_info.model_source() ==
-            proto::ModelSource::SERVER_MODEL_SOURCE &&
+    if (state->model_version &&
+        state->model_source == proto::ModelSource::SERVER_MODEL_SOURCE &&
         SegmentationUkmHelper::AllowedToUploadData(signal_storage_length,
                                                    clock_)) {
       if (state->upload_tensors) {
         SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-            state->segment_info.segment_id(),
-            state->segment_info.model_version(), state->input_tensor,
+            state->segment_id, state->model_version, state->input_tensor,
             result.value());
       }
     }
@@ -228,7 +250,7 @@ void ModelExecutorImpl::OnModelExecutionComplete(
                                   std::move(input_tensor), *result));
   } else {
     VLOG(1) << "Segmentation model returned no result for segment "
-            << proto::SegmentId_Name(state->segment_info.segment_id());
+            << proto::SegmentId_Name(state->segment_id);
     RunModelExecutionCallback(*state, std::move(state->callback),
                               std::make_unique<ModelExecutionResult>(
                                   ModelExecutionStatus::kExecutionError));
@@ -240,11 +262,10 @@ void ModelExecutorImpl::RunModelExecutionCallback(
     ModelExecutionCallback callback,
     std::unique_ptr<ModelExecutionResult> result) {
   stats::RecordModelExecutionDurationTotal(
-      state.segment_info.segment_id(), result->status,
+      state.segment_id, result->status,
       clock_->Now() - state.total_execution_start_time);
-  stats::RecordModelExecutionStatus(state.segment_info.segment_id(),
-                                    state.record_metrics_for_default,
-                                    result->status);
+  stats::RecordModelExecutionStatus(
+      state.segment_id, state.record_metrics_for_default, result->status);
   std::move(callback).Run(std::move(result));
 }
 

@@ -13,27 +13,14 @@ section	.text	code align=64
 %else
 section	.text	code
 %endif
-global	_ChaCha20_ctr32
+global	_ChaCha20_ctr32_nohw
 align	16
-_ChaCha20_ctr32:
-L$_ChaCha20_ctr32_begin:
+_ChaCha20_ctr32_nohw:
+L$_ChaCha20_ctr32_nohw_begin:
 	push	ebp
 	push	ebx
 	push	esi
 	push	edi
-	xor	eax,eax
-	cmp	eax,DWORD [28+esp]
-	je	NEAR L$000no_data
-	call	L$pic_point
-L$pic_point:
-	pop	eax
-	lea	ebp,[_OPENSSL_ia32cap_P]
-	test	DWORD [ebp],16777216
-	jz	NEAR L$001x86
-	test	DWORD [4+ebp],512
-	jz	NEAR L$001x86
-	jmp	NEAR L$ssse3_shortcut
-L$001x86:
 	mov	esi,DWORD [32+esp]
 	mov	edi,DWORD [36+esp]
 	sub	esp,132
@@ -62,13 +49,13 @@ L$001x86:
 	mov	DWORD [116+esp],ebx
 	mov	DWORD [120+esp],ecx
 	mov	DWORD [124+esp],edx
-	jmp	NEAR L$002entry
+	jmp	NEAR L$000entry
 align	16
-L$003outer_loop:
+L$001outer_loop:
 	mov	DWORD [156+esp],ebx
 	mov	DWORD [152+esp],eax
 	mov	DWORD [160+esp],ecx
-L$002entry:
+L$000entry:
 	mov	eax,1634760805
 	mov	DWORD [4+esp],857760878
 	mov	DWORD [8+esp],2036477234
@@ -96,9 +83,9 @@ L$002entry:
 	mov	DWORD [60+esp],edi
 	mov	DWORD [112+esp],edx
 	mov	ebx,10
-	jmp	NEAR L$004loop
+	jmp	NEAR L$002loop
 align	16
-L$004loop:
+L$002loop:
 	add	eax,ebp
 	mov	DWORD [128+esp],ebx
 	mov	ebx,ebp
@@ -252,14 +239,14 @@ L$004loop:
 	xor	ebp,esi
 	rol	ebp,7
 	dec	ebx
-	jnz	NEAR L$004loop
+	jnz	NEAR L$002loop
 	mov	ebx,DWORD [160+esp]
 	add	eax,1634760805
 	add	ebp,DWORD [80+esp]
 	add	ecx,DWORD [96+esp]
 	add	esi,DWORD [100+esp]
 	cmp	ebx,64
-	jb	NEAR L$005tail
+	jb	NEAR L$003tail
 	mov	ebx,DWORD [156+esp]
 	add	edx,DWORD [112+esp]
 	add	edi,DWORD [120+esp]
@@ -322,9 +309,9 @@ L$004loop:
 	mov	DWORD [eax],ebp
 	lea	eax,[64+eax]
 	sub	ecx,64
-	jnz	NEAR L$003outer_loop
-	jmp	NEAR L$006done
-L$005tail:
+	jnz	NEAR L$001outer_loop
+	jmp	NEAR L$004done
+L$003tail:
 	add	edx,DWORD [112+esp]
 	add	edi,DWORD [120+esp]
 	mov	DWORD [esp],eax
@@ -368,31 +355,32 @@ L$005tail:
 	mov	DWORD [60+esp],edi
 	xor	eax,eax
 	xor	edx,edx
-L$007tail_loop:
+L$005tail_loop:
 	mov	al,BYTE [ebp*1+esi]
 	mov	dl,BYTE [esi*1+esp]
 	lea	esi,[1+esi]
 	xor	al,dl
 	mov	BYTE [esi*1+ecx-1],al
 	dec	ebx
-	jnz	NEAR L$007tail_loop
-L$006done:
+	jnz	NEAR L$005tail_loop
+L$004done:
 	add	esp,132
-L$000no_data:
 	pop	edi
 	pop	esi
 	pop	ebx
 	pop	ebp
 	ret
-global	_ChaCha20_ssse3
+global	_ChaCha20_ctr32_ssse3
 align	16
-_ChaCha20_ssse3:
-L$_ChaCha20_ssse3_begin:
+_ChaCha20_ctr32_ssse3:
+L$_ChaCha20_ctr32_ssse3_begin:
 	push	ebp
 	push	ebx
 	push	esi
 	push	edi
-L$ssse3_shortcut:
+	call	L$pic_point
+L$pic_point:
+	pop	eax
 	mov	edi,DWORD [20+esp]
 	mov	esi,DWORD [24+esp]
 	mov	ecx,DWORD [28+esp]
@@ -405,7 +393,7 @@ L$ssse3_shortcut:
 	lea	eax,[(L$ssse3_data-L$pic_point)+eax]
 	movdqu	xmm3,[ebx]
 	cmp	ecx,256
-	jb	NEAR L$0081x
+	jb	NEAR L$0061x
 	mov	DWORD [516+esp],edx
 	mov	DWORD [520+esp],ebx
 	sub	ecx,256
@@ -450,9 +438,9 @@ L$ssse3_shortcut:
 	movdqa	[ebp-80],xmm7
 	lea	esi,[128+esi]
 	lea	edi,[128+edi]
-	jmp	NEAR L$009outer_loop
+	jmp	NEAR L$007outer_loop
 align	16
-L$009outer_loop:
+L$007outer_loop:
 	movdqa	xmm1,[ebp-112]
 	movdqa	xmm2,[ebp-96]
 	movdqa	xmm3,[ebp-80]
@@ -487,7 +475,7 @@ L$009outer_loop:
 	mov	edx,10
 	nop
 align	16
-L$010loop:
+L$008loop:
 	paddd	xmm0,xmm3
 	movdqa	xmm2,xmm3
 	pxor	xmm6,xmm0
@@ -687,7 +675,7 @@ L$010loop:
 	psrld	xmm1,25
 	por	xmm3,xmm1
 	dec	edx
-	jnz	NEAR L$010loop
+	jnz	NEAR L$008loop
 	movdqa	[ebx-64],xmm3
 	movdqa	[ebx],xmm4
 	movdqa	[16+ebx],xmm5
@@ -829,9 +817,9 @@ L$010loop:
 	movdqu	[64+edi],xmm7
 	lea	edi,[208+edi]
 	sub	ecx,256
-	jnc	NEAR L$009outer_loop
+	jnc	NEAR L$007outer_loop
 	add	ecx,256
-	jz	NEAR L$011done
+	jz	NEAR L$009done
 	mov	ebx,DWORD [520+esp]
 	lea	esi,[esi-128]
 	mov	edx,DWORD [516+esp]
@@ -841,7 +829,7 @@ L$010loop:
 	paddd	xmm2,[96+eax]
 	pand	xmm3,[112+eax]
 	por	xmm3,xmm2
-L$0081x:
+L$0061x:
 	movdqa	xmm0,[32+eax]
 	movdqu	xmm1,[edx]
 	movdqu	xmm2,[16+edx]
@@ -853,9 +841,9 @@ L$0081x:
 	movdqa	[32+esp],xmm2
 	movdqa	[48+esp],xmm3
 	mov	edx,10
-	jmp	NEAR L$012loop1x
+	jmp	NEAR L$010loop1x
 align	16
-L$013outer1x:
+L$011outer1x:
 	movdqa	xmm3,[80+eax]
 	movdqa	xmm0,[esp]
 	movdqa	xmm1,[16+esp]
@@ -863,9 +851,9 @@ L$013outer1x:
 	paddd	xmm3,[48+esp]
 	mov	edx,10
 	movdqa	[48+esp],xmm3
-	jmp	NEAR L$012loop1x
+	jmp	NEAR L$010loop1x
 align	16
-L$012loop1x:
+L$010loop1x:
 	paddd	xmm0,xmm1
 	pxor	xmm3,xmm0
 db	102,15,56,0,222
@@ -910,13 +898,13 @@ db	102,15,56,0,223
 	pshufd	xmm1,xmm1,147
 	pshufd	xmm3,xmm3,57
 	dec	edx
-	jnz	NEAR L$012loop1x
+	jnz	NEAR L$010loop1x
 	paddd	xmm0,[esp]
 	paddd	xmm1,[16+esp]
 	paddd	xmm2,[32+esp]
 	paddd	xmm3,[48+esp]
 	cmp	ecx,64
-	jb	NEAR L$014tail
+	jb	NEAR L$012tail
 	movdqu	xmm4,[esi]
 	movdqu	xmm5,[16+esi]
 	pxor	xmm0,xmm4
@@ -932,9 +920,9 @@ db	102,15,56,0,223
 	movdqu	[48+edi],xmm3
 	lea	edi,[64+edi]
 	sub	ecx,64
-	jnz	NEAR L$013outer1x
-	jmp	NEAR L$011done
-L$014tail:
+	jnz	NEAR L$011outer1x
+	jmp	NEAR L$009done
+L$012tail:
 	movdqa	[esp],xmm0
 	movdqa	[16+esp],xmm1
 	movdqa	[32+esp],xmm2
@@ -942,15 +930,15 @@ L$014tail:
 	xor	eax,eax
 	xor	edx,edx
 	xor	ebp,ebp
-L$015tail_loop:
+L$013tail_loop:
 	mov	al,BYTE [ebp*1+esp]
 	mov	dl,BYTE [ebp*1+esi]
 	lea	ebp,[1+ebp]
 	xor	al,dl
 	mov	BYTE [ebp*1+edi-1],al
 	dec	ecx
-	jnz	NEAR L$015tail_loop
-L$011done:
+	jnz	NEAR L$013tail_loop
+L$009done:
 	mov	esp,DWORD [512+esp]
 	pop	edi
 	pop	esi
@@ -972,8 +960,6 @@ db	67,104,97,67,104,97,50,48,32,102,111,114,32,120,56,54
 db	44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32
 db	60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111
 db	114,103,62,0
-segment	.bss
-common	_OPENSSL_ia32cap_P 16
 %else
 ; Work around https://bugzilla.nasm.us/show_bug.cgi?id=3392738
 ret

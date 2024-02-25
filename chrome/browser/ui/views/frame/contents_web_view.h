@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
@@ -23,8 +24,11 @@ class LayerTreeOwner;
 class ContentsWebView
     : public views::WebView,
       public WebContentsCloseHandlerDelegate {
+  METADATA_HEADER(ContentsWebView, views::WebView)
+
  public:
-  METADATA_HEADER(ContentsWebView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kContentsWebViewElementId);
+
   explicit ContentsWebView(content::BrowserContext* browser_context);
   ContentsWebView(const ContentsWebView&) = delete;
   ContentsWebView& operator=(const ContentsWebView&) = delete;

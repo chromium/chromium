@@ -7,6 +7,7 @@
 #include <deque>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -16,16 +17,15 @@
 #include "base/functional/callback.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
 
 namespace {
 
-absl::optional<bool> MojomToAbslOptionalBool(
+std::optional<bool> MojomToAbslOptionalBool(
     network::mojom::OptionalBool opt_bool) {
-  absl::optional<bool> converted;
+  std::optional<bool> converted;
   if (opt_bool == network::mojom::OptionalBool::kTrue) {
     converted = true;
   } else if (opt_bool == network::mojom::OptionalBool::kFalse) {
@@ -35,17 +35,17 @@ absl::optional<bool> MojomToAbslOptionalBool(
 }
 
 std::vector<std::tuple<mojom::SharedStorageOperationType,
-                       absl::optional<std::string>,
-                       absl::optional<std::string>,
-                       absl::optional<bool>>>
+                       std::optional<std::string>,
+                       std::optional<std::string>,
+                       std::optional<bool>>>
 MakeOperationTuples(std::vector<mojom::SharedStorageOperationPtr> operations) {
   std::deque<mojom::SharedStorageOperationPtr> to_process;
   to_process.insert(to_process.end(),
                     std::make_move_iterator(operations.begin()),
                     std::make_move_iterator(operations.end()));
   std::vector<
-      std::tuple<mojom::SharedStorageOperationType, absl::optional<std::string>,
-                 absl::optional<std::string>, absl::optional<bool>>>
+      std::tuple<mojom::SharedStorageOperationType, std::optional<std::string>,
+                 std::optional<std::string>, std::optional<bool>>>
       operation_tuples;
   while (!to_process.empty()) {
     mojom::SharedStorageOperationPtr operation = std::move(to_process.front());

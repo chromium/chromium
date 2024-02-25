@@ -22,14 +22,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Properties defined here reflect the visible state of the ManualFilling-components.
- */
+/** Properties defined here reflect the visible state of the ManualFilling-components. */
 class ManualFillingProperties {
     static final PropertyModel.WritableBooleanPropertyKey SHOW_WHEN_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("show_when_visible");
     static final PropertyModel.WritableBooleanPropertyKey PORTRAIT_ORIENTATION =
             new PropertyModel.WritableBooleanPropertyKey("portrait_orientation");
+    static final PropertyModel.WritableBooleanPropertyKey IS_FULLSCREEN =
+            new PropertyModel.WritableBooleanPropertyKey("is_fullscreen");
     static final PropertyModel.WritableIntPropertyKey KEYBOARD_EXTENSION_STATE =
             new PropertyModel.WritableIntPropertyKey("keyboard_extension_state");
     static final PropertyModel.WritableBooleanPropertyKey SUPPRESSED_BY_BOTTOM_SHEET =
@@ -61,8 +61,14 @@ class ManualFillingProperties {
      * The state FLOATING_BAR must close the sheet but show the bar. To satisfy the FLOATING
      * property, the state will ensure that the keyboard can not affect it.
      */
-    @IntDef({HIDDEN, EXTENDING_KEYBOARD, WAITING_TO_REPLACE, REPLACING_KEYBOARD, FLOATING_BAR,
-            FLOATING_SHEET})
+    @IntDef({
+        HIDDEN,
+        EXTENDING_KEYBOARD,
+        WAITING_TO_REPLACE,
+        REPLACING_KEYBOARD,
+        FLOATING_BAR,
+        FLOATING_SHEET
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface KeyboardExtensionState {
         int HIDDEN = HIDDEN_SHEET; // == 4
@@ -74,12 +80,17 @@ class ManualFillingProperties {
     }
 
     static PropertyModel createFillingModel() {
-        return new PropertyModel
-                .Builder(SHOW_WHEN_VISIBLE, KEYBOARD_EXTENSION_STATE, PORTRAIT_ORIENTATION,
-                        SUPPRESSED_BY_BOTTOM_SHEET, SHOULD_EXTEND_KEYBOARD)
+        return new PropertyModel.Builder(
+                        SHOW_WHEN_VISIBLE,
+                        KEYBOARD_EXTENSION_STATE,
+                        PORTRAIT_ORIENTATION,
+                        IS_FULLSCREEN,
+                        SUPPRESSED_BY_BOTTOM_SHEET,
+                        SHOULD_EXTEND_KEYBOARD)
                 .with(SHOW_WHEN_VISIBLE, false)
                 .with(KEYBOARD_EXTENSION_STATE, HIDDEN)
                 .with(PORTRAIT_ORIENTATION, true)
+                .with(IS_FULLSCREEN, false)
                 .with(SUPPRESSED_BY_BOTTOM_SHEET, false)
                 .with(SHOULD_EXTEND_KEYBOARD, true)
                 .build();

@@ -4,6 +4,8 @@
 
 #include "components/web_package/web_bundle_parser.h"
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,7 +22,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
@@ -30,7 +31,7 @@ constexpr char kPrimaryUrl[] = "https://test.example.com/";
 
 std::string GetTestFileContents(const base::FilePath& path) {
   base::FilePath test_data_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
   test_data_dir = test_data_dir.Append(
       base::FilePath(FILE_PATH_LITERAL("components/test/data/web_package")));
 
@@ -52,7 +53,7 @@ class TestDataSource : public mojom::BundleDataSource {
 
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     if (offset >= data_.size()) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     const uint8_t* start =
@@ -80,10 +81,18 @@ class TestDataSource : public mojom::BundleDataSource {
     receivers_.Add(this, std::move(receiver));
   }
 
+  void Close(CloseCallback callback) override {
+    is_closed_ = true;
+    std::move(callback).Run();
+  }
+
+  bool IsClosed() const { return is_closed_; }
+
  private:
   std::string data_;
   bool is_random_access_context_;
   mojo::ReceiverSet<mojom::BundleDataSource> receivers_;
+  bool is_closed_ = false;
 };
 
 template <typename... T>
@@ -122,7 +131,7 @@ using ParseUnsignedBundleResult =
 ParseUnsignedBundleResult ParseUnsignedBundle(
     TestDataSource* data_source,
     const GURL& base_url = GURL(),
-    absl::optional<uint64_t> offset = absl::nullopt) {
+    std::optional<uint64_t> offset = std::nullopt) {
   mojo::PendingRemote<mojom::BundleDataSource> source_remote;
   data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
@@ -943,7 +952,7 @@ TEST_F(WebBundleParserTest, DisconnectWhileParsingMetadata) {
     WebBundleParser parser_impl(std::move(source_remote), GURL());
     mojom::WebBundleParser& parser = parser_impl;
 
-    parser.ParseMetadata(/*offset=*/absl::nullopt, future.GetCallback());
+    parser.ParseMetadata(/*offset=*/std::nullopt, future.GetCallback());
     // |data_source| and |parser_impl| are deleted here.
   }
 
@@ -994,6 +1003,7 @@ class BlockingDataSource : public mojom::BundleDataSource {
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {}
   void Length(LengthCallback callback) override {}
   void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {}
+  void Close(CloseCallback callback) override {}
 };
 
 TEST_F(WebBundleParserTest, DestructorWhileParsing) {
@@ -1016,7 +1026,7 @@ TEST_F(WebBundleParserTest, DestructorWhileParsing) {
 
     parser.ParseResponse(/*response_offset=*/100, /*response_length=*/1234,
                          response_future.GetCallback());
-    parser.ParseMetadata(/*offset=*/absl::nullopt,
+    parser.ParseMetadata(/*offset=*/std::nullopt,
                          metadata_future.GetCallback());
     parser.ParseIntegrityBlock(integrity_block_future.GetCallback());
     //|parser_impl| are deleted here.
@@ -1045,6 +1055,23 @@ TEST_F(WebBundleParserTest, DestructorWhileParsing) {
               mojom::BundleParseErrorType::kParserInternalError);
     EXPECT_EQ(error_integrity_block->message, "Data source disconnected.");
   }
+}
+
+TEST_F(WebBundleParserTest, Close) {
+  auto unsigned_bundle = CreateSmallBundle();
+  TestDataSource data_source(unsigned_bundle);
+  EXPECT_FALSE(data_source.IsClosed());
+
+  mojo::PendingRemote<mojom::BundleDataSource> source_remote;
+  data_source.AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
+
+  WebBundleParser parser_impl(std::move(source_remote), GURL());
+  mojom::WebBundleParser& parser = parser_impl;
+
+  base::test::TestFuture<void> future;
+  parser.Close(future.GetCallback());
+  future.Get();
+  EXPECT_TRUE(data_source.IsClosed());
 }
 
 }  // namespace web_package

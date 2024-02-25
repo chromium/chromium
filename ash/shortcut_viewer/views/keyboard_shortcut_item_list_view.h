@@ -5,6 +5,7 @@
 #ifndef ASH_SHORTCUT_VIEWER_VIEWS_KEYBOARD_SHORTCUT_ITEM_LIST_VIEW_H_
 #define ASH_SHORTCUT_VIEWER_VIEWS_KEYBOARD_SHORTCUT_ITEM_LIST_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace keyboard_shortcut_viewer {
@@ -14,6 +15,8 @@ namespace keyboard_shortcut_viewer {
 // in a single page. A text label to indicate the ShortcutCategory will be
 // diplayed at the beginning of the group of KeyboardShortcutItemView.
 class KeyboardShortcutItemListView : public views::View {
+  METADATA_HEADER(KeyboardShortcutItemListView, views::View)
+
  public:
   KeyboardShortcutItemListView();
 

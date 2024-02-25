@@ -32,6 +32,7 @@
 #include "components/omnibox/browser/autocomplete_i18n.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
@@ -141,7 +142,7 @@ int CalculateScoreFromFactors(size_t typed_length,
 // Populate scoring signals from the shortcut match to ACMatch.
 void PopulateScoringSignals(const ShortcutMatch& shortcut_match,
                             AutocompleteMatch* match) {
-  match->scoring_signals = absl::make_optional<ScoringSignals>();
+  match->scoring_signals = std::make_optional<ScoringSignals>();
   match->scoring_signals->set_shortcut_visit_count(
       shortcut_match.aggregate_number_of_hits);
   match->scoring_signals->set_shortest_shortcut_len(
@@ -150,6 +151,16 @@ void PopulateScoringSignals(const ShortcutMatch& shortcut_match,
       (base::Time::Now() - shortcut_match.most_recent_access_time).InSeconds());
   match->scoring_signals->set_length_of_url(
       match->destination_url.spec().length());
+
+  // Populate history signals in case the shortcut isn't in the history
+  // in-memory index or doesn't have a history entry (e.g. bookmark shortcuts
+  // with expired history entries or built-in shortcuts).
+  match->scoring_signals->set_typed_count(
+      shortcut_match.aggregate_number_of_hits);
+  match->scoring_signals->set_visit_count(
+      shortcut_match.aggregate_number_of_hits);
+  match->scoring_signals->set_elapsed_time_last_visit_secs(
+      match->scoring_signals->elapsed_time_last_shortcut_visit_sec());
 }
 
 }  // namespace
@@ -197,12 +208,13 @@ void ShortcutsProvider::Start(const AutocompleteInput& input,
   TRACE_EVENT0("omnibox", "ShortcutsProvider::Start");
   matches_.clear();
 
-  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
-      input.type() != metrics::OmniboxInputType::EMPTY &&
-      !input.text().empty() && initialized_) {
-    DoAutocomplete(input,
-                   OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled());
+  if (input.IsZeroSuggest() ||
+      input.type() == metrics::OmniboxInputType::EMPTY ||
+      input.text().empty() || !initialized_) {
+    return;
   }
+  DoAutocomplete(input,
+                 OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled());
 }
 
 void ShortcutsProvider::DeleteMatch(const AutocompleteMatch& match) {
@@ -296,6 +308,14 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
     // Don't return shortcuts with zero relevance.
     if (shortcut_match.relevance == 0)
       continue;
+
+    if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+      // Let builtin provider win for starter pack shortcuts; they should not
+      // allow default or inline autocomplete for the keyword mode refresh.
+      if (shortcut_match.type == AutocompleteMatch::Type::STARTER_PACK) {
+        continue;
+      }
+    }
 
     if (shortcut_match.shortcut->match_core.type ==
         AutocompleteMatch::Type::HISTORY_CLUSTER) {
@@ -412,10 +432,15 @@ ShortcutMatch ShortcutsProvider::CreateScoredShortcutMatch(
   DCHECK_GT(shortcuts.size(), 0u);
 
   const int number_of_hits = SumNumberOfHits(shortcuts);
+  const int number_of_hits_threshold =
+      AutocompleteMatch::IsSearchType(shortcuts[0]->match_core.type)
+          ? omnibox_feature_configs::ShortcutBoosting::Get()
+                .non_top_hit_search_threshold
+          : omnibox_feature_configs::ShortcutBoosting::Get()
+                .non_top_hit_threshold;
+
   int boost_score = 0;
-  if (omnibox_feature_configs::ShortcutBoosting::Get().non_top_hit_threshold &&
-      number_of_hits >= omnibox_feature_configs::ShortcutBoosting::Get()
-                            .non_top_hit_threshold) {
+  if (number_of_hits_threshold && number_of_hits >= number_of_hits_threshold) {
     boost_score =
         AutocompleteMatch::IsSearchType(shortcuts[0]->match_core.type)
             ? omnibox_feature_configs::ShortcutBoosting::Get().search_score
@@ -521,7 +546,15 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   // a fill_into_edit of "http://foo.com".
   const bool is_search_type = AutocompleteMatch::IsSearchType(match.type);
 
-  DCHECK(is_search_type != match.keyword.empty());
+  const bool is_starter_pack = AutocompleteMatch::IsStarterPackType(match.type);
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+    DCHECK(!is_starter_pack);
+    DCHECK(is_search_type != match.keyword.empty())
+        << "type: " << match.type << ", keyword: " << match.keyword;
+  } else {
+    DCHECK(is_search_type != match.keyword.empty() || is_starter_pack)
+        << "type: " << match.type << ", keyword: " << match.keyword;
+  }
 
   const bool keyword_matches =
       base::StartsWith(base::UTF16ToUTF8(input.text()),

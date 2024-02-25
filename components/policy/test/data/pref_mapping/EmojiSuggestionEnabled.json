@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EmojiSuggestionEnabled": false
+        },
+        "prefs": {
+          "assistive_input.emoji_suggestion.enterprise_allowed": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

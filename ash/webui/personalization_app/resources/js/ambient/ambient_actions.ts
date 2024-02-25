@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/js/store_ts.js';
+import {Action} from 'chrome://resources/js/store.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientTheme, AmbientUiVisibility, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change ambient state.
@@ -22,12 +22,14 @@ export enum AmbientActionName {
   SET_TOPIC_SOURCE = 'set_topic_source',
   SET_AMBIENT_UI_VISIBILITY = 'set_ambient_ui_visibility',
   SET_SHOULD_SHOW_TIME_OF_DAY_BANNER = 'set_should_show_time_of_day_banner',
+  SET_GEOLOCATION_PERMISSION_ENABLED = 'set_geolocation_permission_enabled',
 }
 
-export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
-    SetAmbientModeEnabledAction|SetAmbientThemeAction|SetPreviewsAction|
-    SetScreenSaverDurationAction|SetTopicSourceAction|SetTemperatureUnitAction|
-    SetAmbientUiVisibilityAction|SetShouldShowTimeOfDayBannerAction;
+export type AmbientActions =
+    SetAlbumsAction|SetAlbumSelectedAction|SetAmbientModeEnabledAction|
+    SetAmbientThemeAction|SetPreviewsAction|SetScreenSaverDurationAction|
+    SetTopicSourceAction|SetTemperatureUnitAction|SetAmbientUiVisibilityAction|
+    SetShouldShowTimeOfDayBannerAction|SetGeolocationPermissionEnabledAction;
 
 export interface SetAlbumsAction extends Action {
   name: AmbientActionName.SET_ALBUMS;
@@ -48,7 +50,7 @@ export interface SetAmbientModeEnabledAction extends Action {
 
 export interface SetAmbientThemeAction extends Action {
   name: AmbientActionName.SET_AMBIENT_THEME;
-  ambientTheme: AnimationTheme;
+  ambientTheme: AmbientTheme;
 }
 
 
@@ -87,6 +89,11 @@ export interface SetShouldShowTimeOfDayBannerAction extends Action {
   shouldShowTimeOfDayBanner: boolean;
 }
 
+export interface SetGeolocationPermissionEnabledAction extends Action {
+  name: AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED;
+  enabled: boolean;
+}
+
 
 /**
  * Sets the current value of the albums.
@@ -110,7 +117,7 @@ export function setAmbientModeEnabledAction(enabled: boolean):
 /**
  * Sets the current value of the ambient theme.
  */
-export function setAmbientThemeAction(ambientTheme: AnimationTheme):
+export function setAmbientThemeAction(ambientTheme: AmbientTheme):
     SetAmbientThemeAction {
   return {name: AmbientActionName.SET_AMBIENT_THEME, ambientTheme};
 }
@@ -166,4 +173,9 @@ export function setShouldShowTimeOfDayBannerAction(
     name: AmbientActionName.SET_SHOULD_SHOW_TIME_OF_DAY_BANNER,
     shouldShowTimeOfDayBanner,
   };
+}
+
+export function setGeolocationPermissionEnabledAction(enabled: boolean):
+    SetGeolocationPermissionEnabledAction {
+  return {name: AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED, enabled};
 }

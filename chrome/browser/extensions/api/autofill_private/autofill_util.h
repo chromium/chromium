@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -43,17 +43,14 @@ IbanEntryList GenerateIbanList(
     const autofill::PersonalDataManager& personal_data);
 
 // Uses |personal_data| to get primary account info.
-absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
+std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
     const autofill::PersonalDataManager& personal_data);
 
-// Use the available device authentication to auth the user. `callback` is a
-// method which is triggered with the result of the user auth. `prompt_message`
-// stores the text/prompt that will be displayed on the authentication window to
-// the user.
-void AuthenticateUser(
-    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator,
-    const std::u16string& prompt_message,
-    CallbackAfterSuccessfulUserAuth callback);
+// Returns a `CreditCardEntry` object which is UI compatible.
+api::autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
+    const autofill::CreditCard& credit_card,
+    const autofill::PersonalDataManager& personal_data,
+    bool mask_local_cards);
 
 }  // namespace autofill_util
 

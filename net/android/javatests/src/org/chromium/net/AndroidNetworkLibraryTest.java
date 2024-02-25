@@ -23,7 +23,7 @@ public class AndroidNetworkLibraryTest {
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testGetDnsStatus_searchDomains() {
-        DnsStatus dnsStatus = AndroidNetworkLibrary.getDnsStatus(/*network=*/null);
+        DnsStatus dnsStatus = AndroidNetworkLibrary.getDnsStatus(/* network= */ null);
         if (dnsStatus == null) {
             return;
         }

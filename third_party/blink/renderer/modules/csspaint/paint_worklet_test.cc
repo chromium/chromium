@@ -103,9 +103,10 @@ class PaintWorkletTest : public PageTestBase {
     EXPECT_EQ(num_paints_before_switch, expected_num_paints_before_switch);
   }
 
-  void Terminate() {
+  void TearDown() override {
     proxy_->TerminateWorkletGlobalScope();
     proxy_ = nullptr;
+    PageTestBase::TearDown();
   }
 
  private:
@@ -184,9 +185,6 @@ TEST_F(PaintWorkletTest, GlobalScopeSelection) {
   // In the last one where |paints_to_switch| is 20, there is no switching after
   // the first paint call.
   ExpectSwitchGlobalScope(false, 10, 20, 0, paint_worklet_to_test);
-
-  // Delete the page & associated objects.
-  Terminate();
 }
 
 TEST_F(PaintWorkletTest, NativeAndCustomProperties) {

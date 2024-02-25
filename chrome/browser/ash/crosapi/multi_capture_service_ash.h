@@ -28,6 +28,9 @@ class MultiCaptureServiceAsh : public mojom::MultiCaptureService {
   // mojom::MultiCaptureService:
   void MultiCaptureStarted(const std::string& label,
                            const std::string& host) override;
+  void MultiCaptureStartedFromApp(const std::string& label,
+                                  const std::string& app_id,
+                                  const std::string& app_name) override;
   void MultiCaptureStopped(const std::string& label) override;
 
  private:

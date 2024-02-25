@@ -4,11 +4,19 @@
 
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
+#include <cstdint>
+#include <optional>
+
+#include "ash/constants/ash_features.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -19,9 +27,6 @@ using ::testing::_;
 using ::testing::Invoke;
 
 namespace {
-const char kFwupdServiceName[] = "org.freedesktop.fwupd";
-const char kFwupdServicePath[] = "/";
-const char kFwupdDeviceAddedSignalName[] = "DeviceAdded";
 const char kFakeDeviceIdForTesting[] = "0123";
 const char kFakeDeviceNameForTesting[] = "Fake Device";
 const char kFakeUpdateVersionForTesting[] = "1.0.0";
@@ -32,6 +37,7 @@ const char kFakeUpdateUriForTesting[] =
     "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
 const char kFakeSha256ForTesting[] =
     "3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f";
+const uint64_t kFakeReportFlagForTesting = 1llu << 8;
 const char kNameKey[] = "Name";
 const char kIdKey[] = "DeviceId";
 const char kVersionKey[] = "Version";
@@ -39,6 +45,7 @@ const char kDescriptionKey[] = "Description";
 const char kPriorityKey[] = "Urgency";
 const char kUriKey[] = "Uri";
 const char kChecksumKey[] = "Checksum";
+const char kTrustFlagsKey[] = "TrustFlags";
 
 void RunResponseOrErrorCallback(
     dbus::ObjectProxy::ResponseOrErrorCallback callback,
@@ -57,10 +64,13 @@ class MockObserver : public ash::FwupdClient::Observer {
               OnUpdateListResponse,
               (const std::string& device_id, ash::FwupdUpdateList* updates),
               (override));
-  MOCK_METHOD(void, OnInstallResponse, (bool success), (override));
   MOCK_METHOD(void,
               OnPropertiesChangedResponse,
               (ash::FwupdProperties * properties),
+              (override));
+  MOCK_METHOD(void,
+              OnDeviceRequestResponse,
+              (ash::FwupdRequest request),
               (override));
 };
 
@@ -86,7 +96,7 @@ class FwupdClientTest : public testing::Test {
     EXPECT_CALL(*proxy_, DoConnectToSignal(_, _, _, _))
         .WillRepeatedly(Invoke(this, &FwupdClientTest::ConnectToSignal));
 
-    expected_properties_ = std::make_unique<FwupdProperties>(
+    expected_properties_ = std::make_unique<FwupdDbusProperties>(
         bus_->GetObjectProxy(kFwupdServiceName, fwupd_service_path),
         base::DoNothing());
 
@@ -102,6 +112,18 @@ class FwupdClientTest : public testing::Test {
   int GetDeviceSignalCallCount() {
     return fwupd_client_->device_signal_call_count_for_testing_;
   }
+
+  void DisableFeatureFlag(const base::Feature& feature) {
+    scoped_feature_list_.InitAndDisableFeature(feature);
+  }
+
+  void EnableFeatureFlag(const base::Feature& feature) {
+    scoped_feature_list_.InitAndEnableFeature(feature);
+  }
+
+  // This helper method is used to invoke the protected method
+  // SetFwupdFeatureFlags() from this friend class.
+  void CallSetFwupdFeatureFlags() { fwupd_client_->SetFwupdFeatureFlags(); }
 
   void OnMethodCalled(dbus::MethodCall* method_call,
                       int timeout_ms,
@@ -242,14 +264,13 @@ class FwupdClientTest : public testing::Test {
   void SetExpectNoUpdates(bool no_updates) { expect_no_updates_ = no_updates; }
 
   void CheckPropertyChanged(FwupdProperties* properties) {
-    if (properties->percentage.is_valid()) {
-      CHECK_EQ(expected_properties_->percentage.value(),
-               properties->percentage.value());
+    if (properties->IsPercentageValid()) {
+      CHECK_EQ(expected_properties_->GetPercentage(),
+               properties->GetPercentage());
     }
 
-    if (properties->status.is_valid()) {
-      CHECK_EQ(expected_properties_->status.value(),
-               properties->status.value());
+    if (properties->IsStatusValid()) {
+      CHECK_EQ(expected_properties_->GetStatus(), properties->GetStatus());
     }
   }
 
@@ -263,10 +284,16 @@ class FwupdClientTest : public testing::Test {
   FwupdProperties* GetProperties() { return fwupd_client_->properties_.get(); }
 
  protected:
-  // Synchronously passes |signal| to |client_|'s handler, simulating the signal
-  // being emitted by fwupd.
-  void EmitSignal(const std::string& signal_name) {
+  // Creates a signal called |signal_name|, then simulates the signal being
+  // emitted by fwupd.
+  void EmitSignalByName(const std::string& signal_name) {
     dbus::Signal signal(kFwupdServiceName, signal_name);
+    EmitSignal(signal_name, signal);
+  }
+
+  // Synchronously passes |signal| called |signal_name| to |client_|'s handler,
+  // simulating the signal being emitted by fwupd.
+  void EmitSignal(const std::string& signal_name, dbus::Signal& signal) {
     const auto callback = signal_callbacks_.find(signal_name);
     ASSERT_TRUE(callback != signal_callbacks_.end())
         << "Client didn't register for signal " << signal_name;
@@ -274,8 +301,7 @@ class FwupdClientTest : public testing::Test {
   }
 
   scoped_refptr<dbus::MockObjectProxy> proxy_;
-  raw_ptr<FwupdClient, DanglingUntriaged | ExperimentalAsh> fwupd_client_ =
-      nullptr;
+  raw_ptr<FwupdClient, DanglingUntriaged> fwupd_client_ = nullptr;
   std::unique_ptr<FwupdProperties> expected_properties_;
 
  private:
@@ -313,11 +339,13 @@ class FwupdClientTest : public testing::Test {
   std::string expected_checksum_;
   std::string expected_description_;
   int expected_priority_ = kFakeUpdatePriorityForTesting;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO (swifton): Rewrite this test with an observer when it's available.
 TEST_F(FwupdClientTest, AddOneDevice) {
-  EmitSignal(kFwupdDeviceAddedSignalName);
+  EmitSignalByName(kFwupdDeviceAddedSignalName);
   EXPECT_EQ(1, GetDeviceSignalCallCount());
 }
 
@@ -409,6 +437,11 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   device_array_writer.OpenDictEntry(&dict_writer);
   dict_writer.AppendString(kUriKey);
   dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kTrustFlagsKey);
+  dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
   device_array_writer.CloseContainer(&dict_writer);
 
   device_array_writer.OpenDictEntry(&dict_writer);
@@ -600,14 +633,6 @@ TEST_F(FwupdClientTest, BadFormatChecksumOnlyComma) {
 }
 
 TEST_F(FwupdClientTest, Install) {
-  // The observer will check that the update description is parsed and passed
-  // correctly.
-  MockObserver observer;
-  EXPECT_CALL(observer, OnInstallResponse(_))
-      .Times(1)
-      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckInstallState));
-  fwupd_client_->AddObserver(&observer);
-
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
@@ -623,18 +648,22 @@ TEST_F(FwupdClientTest, Install) {
 
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
+  base::RunLoop run_loop;
   fwupd_client_->InstallUpdate(kFakeDeviceIdForTesting, base::ScopedFD(0),
-                               std::map<std::string, bool>());
-
-  base::RunLoop().RunUntilIdle();
+                               std::map<std::string, bool>(),
+                               base::BindLambdaForTesting([&](bool success) {
+                                 EXPECT_TRUE(success);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
 }
 
 TEST_F(FwupdClientTest, PropertiesChanged) {
   const uint32_t expected_percentage = 50u;
   const uint32_t expected_status = 1u;
 
-  expected_properties_->percentage.ReplaceValue(expected_percentage);
-  expected_properties_->status.ReplaceValue(expected_status);
+  expected_properties_->SetPercentage(expected_percentage);
+  expected_properties_->SetStatus(expected_status);
 
   MockObserver observer;
   EXPECT_CALL(observer, OnPropertiesChangedResponse(_))
@@ -642,8 +671,8 @@ TEST_F(FwupdClientTest, PropertiesChanged) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckPropertyChanged));
   fwupd_client_->AddObserver(&observer);
 
-  GetProperties()->percentage.ReplaceValue(expected_percentage);
-  GetProperties()->status.ReplaceValue(expected_status);
+  GetProperties()->SetPercentage(expected_percentage);
+  GetProperties()->SetStatus(expected_status);
 }
 
 TEST_F(FwupdClientTest, NoDescription) {
@@ -663,6 +692,145 @@ TEST_F(FwupdClientTest, NoDescription) {
   SetExpectedDescription("");
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagDisabled) {
+  // Fwupd feature flags should not be set if the v2 flag is disabled.
+  // To test this, verify that no D-Bus method calls are made.
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _)).Times(0);
+  DisableFeatureFlag(ash::features::kFirmwareUpdateUIV2);
+  CallSetFwupdFeatureFlags();
+}
+
+TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
+  // Expect that the D-Bus method "SetFeatureFlags" is called when the Firmware
+  // Updates v2 flag is enabled.
+
+  // Helper function to get the uint64 args passed to the given method_call.
+  auto GetUint64ArgumentOfMethod =
+      [](dbus::MethodCall* method_call) -> std::optional<uint64_t> {
+    dbus::MessageReader reader(method_call);
+    if (!reader.HasMoreData()) {
+      return std::nullopt;
+    }
+    uint64_t feature_flag_arguments;
+    if (!reader.PopUint64(&feature_flag_arguments)) {
+      return std::nullopt;
+    }
+    return feature_flag_arguments;
+  };
+
+  const uint64_t kRequestsFeatureFlag = 1llu << 4;
+
+  EXPECT_CALL(
+      *proxy_,
+      DoCallMethodWithErrorResponse(
+          testing::AllOf(
+              testing::ResultOf("method name",
+                                std::mem_fn(&dbus::MethodCall::GetMember),
+                                testing::StrEq("SetFeatureFlags")),
+              testing::ResultOf("feature flag passed to the method call",
+                                GetUint64ArgumentOfMethod,
+                                testing::Eq(kRequestsFeatureFlag))),
+          _, _))
+      .Times(1);
+
+  EnableFeatureFlag(ash::features::kFirmwareUpdateUIV2);
+  CallSetFwupdFeatureFlags();
+}
+
+struct FwupdClientTest_DeviceRequestParam {
+  std::string device_request_id_key;
+  int expected_index_of_request_id;
+};
+
+class FwupdClientTest_DeviceRequest
+    : public FwupdClientTest,
+      public testing::WithParamInterface<FwupdClientTest_DeviceRequestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    FwupdClientTest_DeviceRequest,
+    testing::ValuesIn<FwupdClientTest_DeviceRequestParam>({
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_DoNotPowerOff,
+         /*expected_index_of_request_id=*/0},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_ReplugInstall,
+         /*expected_index_of_request_id=*/1},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_InsertUSBCable,
+         /*expected_index_of_request_id=*/2},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_RemoveUSBCable,
+         /*expected_index_of_request_id=*/3},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_PressUnlock,
+         /*expected_index_of_request_id=*/4},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_RemoveReplug,
+         /*expected_index_of_request_id=*/5},
+        {/*device_request_id_key=*/kFwupdDeviceRequestId_ReplugPower,
+         /*expected_index_of_request_id=*/6},
+    }));
+
+// Test that the DeviceRequest signal is parsed correctly and the
+// DeviceRequestObserver is called with the correct information.
+TEST_P(FwupdClientTest_DeviceRequest, OnDeviceRequestReceived) {
+  // Create a mock "DeviceRequest" signal
+  dbus::Signal signal(kFwupdServiceName, kFwupdDeviceRequestReceivedSignalName);
+
+  dbus::MessageWriter writer(&signal);
+  dbus::MessageWriter sub_writer(nullptr);
+  writer.OpenArray("{sv}", &sub_writer);
+  dbus::MessageWriter entry_writer(nullptr);
+
+  // Create an entry for each key found in a DeviceRequest signal, and populate
+  // it with fake data
+  sub_writer.OpenDictEntry(&entry_writer);
+  entry_writer.AppendString(kFwupdDeviceRequestKey_AppstreamId);
+  entry_writer.AppendVariantOfString(GetParam().device_request_id_key);
+  sub_writer.CloseContainer(&entry_writer);
+
+  sub_writer.OpenDictEntry(&entry_writer);
+  entry_writer.AppendString(kFwupdDeviceRequestKey_Created);
+  entry_writer.AppendVariantOfUint64(1024);
+  sub_writer.CloseContainer(&entry_writer);
+
+  sub_writer.OpenDictEntry(&entry_writer);
+  entry_writer.AppendString(kFwupdDeviceRequestKey_DeviceId);
+  entry_writer.AppendVariantOfString(kFakeDeviceIdForTesting);
+  sub_writer.CloseContainer(&entry_writer);
+
+  sub_writer.OpenDictEntry(&entry_writer);
+  entry_writer.AppendString(kFwupdDeviceRequestKey_UpdateMessage);
+  entry_writer.AppendVariantOfString("Fake update message");
+  sub_writer.CloseContainer(&entry_writer);
+
+  sub_writer.OpenDictEntry(&entry_writer);
+  entry_writer.AppendString(kFwupdDeviceRequestKey_RequestKind);
+  entry_writer.AppendVariantOfUint32(2);
+  sub_writer.CloseContainer(&entry_writer);
+
+  writer.CloseContainer(&sub_writer);
+
+  MockObserver observer;
+  auto GetRequestId = [](FwupdRequest request) -> std::optional<uint32_t> {
+    return request.id;
+  };
+  auto GetRequestKind = [](FwupdRequest request) -> std::optional<uint32_t> {
+    return request.kind;
+  };
+  EXPECT_CALL(
+      observer,
+      OnDeviceRequestResponse(testing::AllOf(
+          // Ensure that the resulting observer is triggered with the
+          // correctly-parsed DeviceRequestId.
+          testing::ResultOf(
+              "Request ID", GetRequestId,
+              testing::Eq(GetParam().expected_index_of_request_id)),
+          testing::ResultOf("Request Kind", GetRequestKind, testing::Eq(2)))))
+      .Times(1);
+
+  fwupd_client_->AddObserver(&observer);
+
+  EmitSignal(kFwupdDeviceRequestReceivedSignalName, signal);
 
   base::RunLoop().RunUntilIdle();
 }

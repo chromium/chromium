@@ -5,8 +5,10 @@
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager_impl.h"
 
 #include <memory>
+#include <optional>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel_impl.h"
@@ -17,6 +19,8 @@
 #include "chromeos/ash/services/secure_channel/fake_secure_channel_disconnector.h"
 #include "chromeos/ash/services/secure_channel/nearby_connection.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,9 +51,7 @@ class FakeNearbyConnectionFactory : public NearbyConnection::Factory {
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeConnection* last_created_instance_ = nullptr;
+  raw_ptr<FakeConnection, DanglingUntriaged> last_created_instance_ = nullptr;
 };
 
 class FakeSecureChannelFactory : public SecureChannel::Factory {
@@ -73,10 +75,8 @@ class FakeSecureChannelFactory : public SecureChannel::Factory {
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeSecureChannelConnection* last_created_instance_ =
-      nullptr;
+  raw_ptr<FakeSecureChannelConnection, DanglingUntriaged>
+      last_created_instance_ = nullptr;
 };
 
 class FakeAuthenticatedChannelFactory
@@ -111,13 +111,10 @@ class FakeAuthenticatedChannelFactory
     return instance;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeSecureChannelConnection* expected_fake_secure_channel_ =
+  raw_ptr<FakeSecureChannelConnection, DanglingUntriaged>
+      expected_fake_secure_channel_ = nullptr;
+  raw_ptr<FakeAuthenticatedChannel, DanglingUntriaged> last_created_instance_ =
       nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FakeAuthenticatedChannel* last_created_instance_ = nullptr;
 };
 
 }  // namespace
@@ -179,6 +176,15 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
 
     manager_->AttemptNearbyInitiatorConnection(
         device_id_pair,
+        base::BindRepeating(&SecureChannelNearbyConnectionManagerImplTest::
+                                OnBleDiscoveryStateChanged,
+                            base::Unretained(this), device_id_pair),
+        base::BindRepeating(&SecureChannelNearbyConnectionManagerImplTest::
+                                OnNearbyConnectionStateChanged,
+                            base::Unretained(this), device_id_pair),
+        base::BindRepeating(&SecureChannelNearbyConnectionManagerImplTest::
+                                OnSecureChannelAuthenticationStateChanged,
+                            base::Unretained(this), device_id_pair),
         base::BindOnce(
             &SecureChannelNearbyConnectionManagerImplTest::OnConnectionSuccess,
             base::Unretained(this), device_id_pair),
@@ -201,6 +207,17 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
     EXPECT_FALSE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
         device_id_pair, ConnectionMedium::kNearbyConnections,
         ConnectionRole::kInitiatorRole)));
+  }
+
+  void SimulateBleDisvoceryFailed(const DeviceIdPair& device_id_pair) {
+    fake_ble_scanner_->NotifyBleDiscoverySessionFailed(
+        device_id_pair, mojom::DiscoveryResult::kFailure,
+        mojom::DiscoveryErrorCode::kTimeout);
+
+    // As a result of the connection, all ongoing connection attmepts should
+    // have been canceled, since a connection is in progress.
+    EXPECT_EQ(device_discovery_results_[device_id_pair],
+              mojom::DiscoveryResult::kFailure);
   }
 
   // Returns the SecureChannel created by this call.
@@ -275,8 +292,14 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
 
     size_t num_success_callbacks_before_call = successful_connections_.size();
 
+    fake_secure_channel->ChangeNearbyConnectionState(
+        mojom::NearbyConnectionStep::
+            kWaitingForConnectionToBeAcceptedByRemoteDeviceStarted,
+        mojom::NearbyConnectionStepResult::kSuccess);
     fake_secure_channel->ChangeStatus(SecureChannel::Status::CONNECTED);
     fake_secure_channel->ChangeStatus(SecureChannel::Status::AUTHENTICATING);
+    fake_secure_channel->ChangeSecureChannelAuthenticationState(
+        mojom::SecureChannelState::kValidatedResponderAuth);
     fake_secure_channel->ChangeStatus(SecureChannel::Status::AUTHENTICATED);
 
     // Verify that the callback was made. Verification that the provided
@@ -341,6 +364,26 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
     CancelNearbyInitiatorConnectionAttempt(device_id_pair_copy);
   }
 
+  void OnBleDiscoveryStateChanged(
+      const DeviceIdPair& device_id_pair,
+      mojom::DiscoveryResult result,
+      std::optional<mojom::DiscoveryErrorCode> error_code) {
+    device_discovery_results_[device_id_pair] = result;
+  }
+
+  void OnNearbyConnectionStateChanged(
+      const DeviceIdPair& device_id_pair,
+      mojom::NearbyConnectionStep nearby_connection_step,
+      mojom::NearbyConnectionStepResult result) {
+    device_nearby_connection_states_[device_id_pair] = nearby_connection_step;
+  }
+
+  void OnSecureChannelAuthenticationStateChanged(
+      const DeviceIdPair& device_id_pair,
+      mojom::SecureChannelState secure_channel_state) {
+    device_secure_channel_states_[device_id_pair] = secure_channel_state;
+  }
+
   void SetInRemoteDeviceIdToMetadataMap(const DeviceIdPair& device_id_pair) {
     remote_device_id_to_id_pairs_map_[device_id_pair.remote_device_id()].insert(
         device_id_pair);
@@ -366,7 +409,12 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
 
   base::flat_map<std::string, base::flat_set<DeviceIdPair>>
       remote_device_id_to_id_pairs_map_;
-
+  base::flat_map<DeviceIdPair, mojom::DiscoveryResult>
+      device_discovery_results_;
+  base::flat_map<DeviceIdPair, mojom::NearbyConnectionStep>
+      device_nearby_connection_states_;
+  base::flat_map<DeviceIdPair, mojom::SecureChannelState>
+      device_secure_channel_states_;
   std::vector<std::pair<DeviceIdPair, std::unique_ptr<AuthenticatedChannel>>>
       successful_connections_;
   std::vector<std::pair<DeviceIdPair, NearbyInitiatorFailureType>>
@@ -394,6 +442,17 @@ TEST_F(SecureChannelNearbyConnectionManagerImplTest,
                                    /*expected_to_add_request=*/true,
                                    /*should_cancel_attempt_on_failure=*/false);
   CancelNearbyInitiatorConnectionAttempt(pair);
+}
+
+TEST_F(SecureChannelNearbyConnectionManagerImplTest,
+       AttemptAndDiscoveryFailed) {
+  DeviceIdPair pair(test_devices()[1].GetDeviceId(),
+                    test_devices()[0].GetDeviceId());
+
+  AttemptNearbyInitiatorConnection(pair,
+                                   /*expected_to_add_request=*/true,
+                                   /*should_cancel_attempt_on_failure=*/false);
+  SimulateBleDisvoceryFailed(pair);
 }
 
 TEST_F(SecureChannelNearbyConnectionManagerImplTest,

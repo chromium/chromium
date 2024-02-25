@@ -41,8 +41,7 @@ class DrmOverlayValidator {
       const OverlaySurfaceCandidate& param,
       std::vector<scoped_refptr<DrmFramebuffer>>& reusable_buffers);
 
-  const raw_ptr<DrmWindow, DanglingUntriaged | ExperimentalAsh>
-      window_;  // Not owned.
+  const raw_ptr<DrmWindow, DanglingUntriaged> window_;  // Not owned.
 };
 
 }  // namespace ui

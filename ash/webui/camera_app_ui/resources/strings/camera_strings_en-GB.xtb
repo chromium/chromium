@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Delete page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Camera mode</translation>
 <translation id="1153190633558910465">Grid off</translation>
-<translation id="1175958423215084756">Link detected. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> deleted</translation>
 <translation id="1258009455399840361">Rotate 90 degrees clockwise</translation>
 <translation id="1417314334557041815">Edit page <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Pan right</translation>
 <translation id="3081586908890909590">Switch to record video</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Join '<ph name="WIFINAME" />'</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3240426699337459095">Link copied</translation>
 <translation id="3354465018370944241">Photo settings</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Processing video...</translation>
 <translation id="3789724198583203151">Rotate 90 degrees anti-clockwise</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Copy text</translation>
 <translation id="4060608699153044055">You can't record because of low device storage space. To start recording, you need to free up space on your device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pause recording</translation>
 <translation id="4121305183798804752">Document detected</translation>
 <translation id="414641094616694804">This camera cannot change resolution</translation>
 <translation id="4176463684765177261">Disabled</translation>
-<translation id="4269820728363426813">Copy link address</translation>
 <translation id="428234092390943511">Page thumbnail</translation>
 <translation id="4349714250734879769">Scale frames by Chrome</translation>
 <translation id="4383571725254449280">Print performance logs</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Full resolution</translation>
 <translation id="4864143361253542638">Scanned page list</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Copy link address <ph name="URL" /></translation>
 <translation id="491895758387112773">Multistream video recording</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Photo aspect ratio</translation>
 <translation id="5057360777601936059">Your camera is currently unavailable.
         Please check if the camera is properly connected.</translation>
+<translation id="5157591164390831335">URL detected.</translation>
 <translation id="5163387177077603948">Moving in right direction</translation>
-<translation id="5219374179772385066">Time Lapse mode is now available!</translation>
 <translation id="5235304959032763950">16 to 9</translation>
 <translation id="5266635337630551423">Document top-left corner</translation>
 <translation id="5317780077021120954">Save</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Thanks for giving feedback on the Camera app.
 
 If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)</translation>
+<translation id="6519884562954018934">Join <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6617916774429601017">Show all resolutions</translation>
 <translation id="6631515515009660915">Mirror off</translation>
@@ -133,6 +133,7 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="7450541714075000668">Text copied</translation>
 <translation id="7488619942230388918">Record GIF video</translation>
 <translation id="7557677699350329807">Switch to next camera</translation>
+<translation id="7562584071994185503">Copy text <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="761421184377987513">Moving in bottom-left direction</translation>
@@ -155,10 +156,12 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="8346544573713510785">Scale frames by Camera HAL</translation>
 <translation id="8425673304802773841">Tilt down</translation>
 <translation id="8428213095426709021">Settings</translation>
+<translation id="8609951387004618906">Open <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Toggle microphone mute. Mute is on</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8732462232047530626">Preview metadata</translation>
+<translation id="874854738381978209">Wi-Fi network detected.</translation>
 <translation id="8815966864175525708">Switch to take portrait photo</translation>
 <translation id="8828441885228359828">Resume recording</translation>
 <translation id="8870695351537079478">Unable to start recording</translation>

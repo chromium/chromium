@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -23,7 +24,6 @@
 namespace blink {
 
 namespace {
-using Params = webrtc::SdpVideoFormat::Parameters;
 const webrtc::SdpVideoFormat kVideoFormatVp9{"VP9"};
 const webrtc::SdpVideoFormat kVideoFormatFoo{"Foo"};
 
@@ -36,8 +36,9 @@ class MockVideoDecoderFactory : public webrtc::VideoDecoderFactory {
  public:
   // webrtc::VideoDecoderFactory implementation:
   MOCK_METHOD(std::unique_ptr<webrtc::VideoDecoder>,
-              CreateVideoDecoder,
-              (const webrtc::SdpVideoFormat& format),
+              Create,
+              (const webrtc::Environment&,
+               const webrtc::SdpVideoFormat& format),
               (override));
   MOCK_METHOD(std::vector<webrtc::SdpVideoFormat>,
               GetSupportedFormats,
@@ -74,7 +75,7 @@ class MediaCapabilitiesDecodingInfoCallback {
 
 }  // namespace
 
-typedef webrtc::VideoDecoderFactory::CodecSupport CodecSupport;
+using CodecSupport = webrtc::VideoDecoderFactory::CodecSupport;
 
 class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
  public:
@@ -86,8 +87,8 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
   void SetUp() override {}
 
   void VerifyDecodingInfo(
-      const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
-      const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
+      const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
+      const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
       const bool video_spatial_scalability,
       const CodecSupport support) {
     if (sdp_video_format) {
@@ -122,21 +123,22 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
 
  protected:
   std::vector<webrtc::AudioCodecSpec> kSupportedAudioCodecs;
-  MockVideoDecoderFactory* mock_video_decoder_factory_;
+  raw_ptr<MockVideoDecoderFactory, DanglingUntriaged>
+      mock_video_decoder_factory_;
   std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory_;
   rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory_;
 };
 
 TEST_F(WebrtcDecodingInfoHandlerTests, BasicAudio) {
   VerifyDecodingInfo(
-      kAudioFormatOpus, /*sdp_video_format=*/absl::nullopt,
+      kAudioFormatOpus, /*sdp_video_format=*/std::nullopt,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
 TEST_F(WebrtcDecodingInfoHandlerTests, UnsupportedAudio) {
   VerifyDecodingInfo(
-      kAudioFormatFoo, /*sdp_video_format=*/absl::nullopt,
+      kAudioFormatFoo, /*sdp_video_format=*/std::nullopt,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
@@ -147,28 +149,28 @@ TEST_F(WebrtcDecodingInfoHandlerTests, UnsupportedAudio) {
 // callback.
 TEST_F(WebrtcDecodingInfoHandlerTests, BasicVideo) {
   VerifyDecodingInfo(
-      /*sdp _audio_format=*/absl::nullopt, kVideoFormatVp9,
+      /*sdp _audio_format=*/std::nullopt, kVideoFormatVp9,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcDecodingInfoHandlerTests, BasicVideoPowerEfficient) {
   VerifyDecodingInfo(
-      /*sdp _audio_format=*/absl::nullopt, kVideoFormatVp9,
+      /*sdp _audio_format=*/std::nullopt, kVideoFormatVp9,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
 TEST_F(WebrtcDecodingInfoHandlerTests, UnsupportedVideo) {
   VerifyDecodingInfo(
-      /*sdp _audio_format=*/absl::nullopt, kVideoFormatFoo,
+      /*sdp _audio_format=*/std::nullopt, kVideoFormatFoo,
       /*video_spatial_scalability=*/false,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcDecodingInfoHandlerTests, VideoWithReferenceScaling) {
   VerifyDecodingInfo(
-      /*sdp _audio_format=*/absl::nullopt, kVideoFormatVp9,
+      /*sdp _audio_format=*/std::nullopt, kVideoFormatVp9,
       /*video_spatial_scalability=*/true,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }

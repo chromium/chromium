@@ -12,8 +12,9 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
-#import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
+#import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -191,6 +192,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 #pragma mark - Public
 
 - (void)reloadData {
+  [self.tableView.contextMenuInteraction dismissMenu];
   [self loadModel];
   if (self.viewLoaded)
     [self.tableView reloadData];
@@ -232,6 +234,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   // we need to refresh the empty view margin after the layout is done, to apply
   // the correct top margin value according to the promo view's height.
   [self updateEmptyViewTopMargin];
+  [IntentDonationHelper donateIntent:IntentType::kOpenReadingList];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -378,7 +381,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self.delegate dismissReadingListListViewController:self];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];
@@ -678,7 +681,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (void)promoStateChanged:(BOOL)promoEnabled
         promoConfigurator:(SigninPromoViewConfigurator*)promoConfigurator
-            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate {
+            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate
+                promoText:(NSString*)promoText {
   if (promoEnabled) {
     CHECK(![self.tableViewModel
         hasSectionForSectionIdentifier:kSectionIdentifierSignInPromo]);
@@ -688,8 +692,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     TableViewSigninPromoItem* signInPromoItem =
         [[TableViewSigninPromoItem alloc] initWithType:kItemTypeSignInPromo];
     signInPromoItem.configurator = promoConfigurator;
-    signInPromoItem.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_READING_LIST);
+    signInPromoItem.text = promoText;
     signInPromoItem.delegate = promoDelegate;
     [self.tableViewModel addItem:signInPromoItem
          toSectionWithIdentifier:kSectionIdentifierSignInPromo];

@@ -156,7 +156,7 @@ void BrowserFrameMac::GetWindowFrameTitlebarHeight(
     *titlebar_height =
         browser_view_->GetTabStripHeight() +
         browser_view_->frame()->GetFrameView()->GetTopInset(true);
-    if (!browser_view_->GetTabStripVisible()) {
+    if (!browser_view_->ShouldDrawTabStrip()) {
       *titlebar_height +=
           browser_view_->GetWebAppFrameToolbarPreferredSize().height() +
           kWebAppMenuMargin * 2;
@@ -222,7 +222,7 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       // or if the page is distillable.
       content::WebContents* web_contents =
           browser->tab_strip_model()->GetActiveWebContents();
-      absl::optional<dom_distiller::DistillabilityResult> distillability =
+      std::optional<dom_distiller::DistillabilityResult> distillability =
           dom_distiller::GetLatestResult(web_contents);
       bool distillable =
           distillability && distillability.value().is_distillable;

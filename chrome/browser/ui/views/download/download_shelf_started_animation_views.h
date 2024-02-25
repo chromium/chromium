@@ -10,8 +10,10 @@
 
 class DownloadShelfStartedAnimationViews
     : public DownloadStartedAnimationViews {
+  METADATA_HEADER(DownloadShelfStartedAnimationViews,
+                  DownloadStartedAnimationViews)
+
  public:
-  METADATA_HEADER(DownloadShelfStartedAnimationViews);
   explicit DownloadShelfStartedAnimationViews(
       content::WebContents* web_contents);
   DownloadShelfStartedAnimationViews(

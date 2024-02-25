@@ -45,6 +45,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -127,7 +128,7 @@ class PlatformAppPathLauncher
   PlatformAppPathLauncher(const PlatformAppPathLauncher&) = delete;
   PlatformAppPathLauncher& operator=(const PlatformAppPathLauncher&) = delete;
 
-  void set_action_data(absl::optional<app_runtime::ActionData> action_data) {
+  void set_action_data(std::optional<app_runtime::ActionData> action_data) {
     action_data_ = std::move(action_data);
   }
 
@@ -217,7 +218,7 @@ class PlatformAppPathLauncher
 
     // TODO(crbug.com/1354063): This conditional block is being added here
     // temporarily, and should be removed once the underlying type of
-    // |launch_data.action_data| is wrapped with absl::optional<T>.
+    // |launch_data.action_data| is wrapped with std::optional<T>.
     if (action_data_) {
       launch_data.action_data = std::move(*action_data_);
       action_data_.reset();
@@ -295,7 +296,9 @@ class PlatformAppPathLauncher
     // available, or it might be in the process of being unloaded, in which case
     // the lazy background task queue is used to load the extension and then
     // call back to us.
-    const extensions::LazyContextId context_id(context_, extension_id);
+    const auto context_id =
+        extensions::LazyContextId::ForExtension(context_, app);
+    CHECK(context_id.IsForBackgroundPage());
     extensions::LazyContextTaskQueue* const queue = context_id.GetTaskQueue();
     if (queue->ShouldEnqueueTask(context_, app)) {
       queue->AddPendingTask(
@@ -349,10 +352,10 @@ class PlatformAppPathLauncher
   // The id of the extension providing the app. A pointer to the extension is
   // not kept as the extension may be unloaded and deleted during the course of
   // the launch.
-  const std::string extension_id;
+  const extensions::ExtensionId extension_id;
   extensions::AppLaunchSource launch_source_ =
       extensions::AppLaunchSource::kSourceFileHandler;
-  absl::optional<app_runtime::ActionData> action_data_;
+  std::optional<app_runtime::ActionData> action_data_;
   // A list of files and directories to be passed through to the app.
   std::vector<base::FilePath> entry_paths_;
   // A corresponding list with EntryInfo for every base::FilePath in
@@ -505,7 +508,7 @@ void RestartPlatformApp(content::BrowserContext* context,
   if (listening_to_launch && had_windows) {
     AppRuntimeEventRouter::DispatchOnLaunchedEvent(
         context, app, extensions::AppLaunchSource::kSourceRestart,
-        absl::nullopt);
+        std::nullopt);
   }
 }
 

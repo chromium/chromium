@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,8 +16,8 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
+#include "content/common/features.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -47,7 +48,7 @@ class CONTENT_EXPORT SimpleLruCache {
   // Returns the contents of the entry for `key`, if any. The `data` member of
   // GetResult is filled only when features::kInMemoryCodeCache is enabled.
   // This updates the entry access time.
-  absl::optional<GetResult> Get(const std::string& key);
+  std::optional<GetResult> Get(const std::string& key);
   // Returns whether there is an entry for `key`. This updates the entry access
   // time.
   bool Has(const std::string& key);

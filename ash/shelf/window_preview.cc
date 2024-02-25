@@ -10,6 +10,7 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -65,7 +66,7 @@ gfx::Size WindowPreview::CalculatePreferredSize() const {
                    container_size.height() + title_height_with_padding);
 }
 
-void WindowPreview::Layout() {
+void WindowPreview::Layout(PassKey) {
   gfx::Rect content_rect = GetContentsBounds();
 
   gfx::Size title_size = title_->CalculatePreferredSize();
@@ -129,10 +130,6 @@ bool WindowPreview::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
-const char* WindowPreview::GetClassName() const {
-  return "WindowPreview";
-}
-
 void WindowPreview::OnThemeChanged() {
   views::View::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
@@ -145,9 +142,10 @@ void WindowPreview::OnThemeChanged() {
   // The background is not opaque, so we can't do subpixel rendering.
   title_->SetSubpixelRenderingEnabled(false);
 
-  close_button_->SetImage(
+  close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kOverviewWindowCloseIcon, kCloseButtonColor));
+      ui::ImageModel::FromVectorIcon(kOverviewWindowCloseIcon,
+                                     kCloseButtonColor));
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   close_button_->SetMinimumImageSize(
@@ -175,5 +173,8 @@ void WindowPreview::CloseButtonPressed() {
   // This will have the effect of deleting this view.
   delegate_->OnPreviewDismissed(this);
 }
+
+BEGIN_METADATA(WindowPreview)
+END_METADATA
 
 }  // namespace ash

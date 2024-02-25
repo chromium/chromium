@@ -41,10 +41,6 @@ ASH_PUBLIC_EXPORT extern const size_t kAcceleratorDataLength;
 // Accelerators that are enabled/disabled with new accelerator mapping.
 // crbug.com/1067269
 ASH_PUBLIC_EXPORT extern const AcceleratorData
-    kEnableWithNewMappingAcceleratorData[];
-ASH_PUBLIC_EXPORT extern const size_t
-    kEnableWithNewMappingAcceleratorDataLength;
-ASH_PUBLIC_EXPORT extern const AcceleratorData
     kDisableWithNewMappingAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t
     kDisableWithNewMappingAcceleratorDataLength;
@@ -67,16 +63,14 @@ ASH_PUBLIC_EXPORT extern const AcceleratorData
 ASH_PUBLIC_EXPORT extern const size_t
     kEnableWithSameAppWindowCycleAcceleratorDataLength;
 
-// Accelerators that are enabled with the floating windows feature.
-ASH_PUBLIC_EXPORT extern const AcceleratorData
-    kEnableWithFloatWindowAcceleratorData[];
-ASH_PUBLIC_EXPORT extern const size_t
-    kEnableWithFloatWindowAcceleratorDataLength;
-
 // Accelerators that are enabled with the game dashboard feature.
 ASH_PUBLIC_EXPORT extern const AcceleratorData
     kToggleGameDashboardAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t kToggleGameDashboardAcceleratorDataLength;
+
+// Accelerators that are enabled with the Picker feature.
+ASH_PUBLIC_EXPORT extern const AcceleratorData kTogglePickerAcceleratorData[];
+ASH_PUBLIC_EXPORT extern const size_t kTogglePickerAcceleratorDataLength;
 
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.
@@ -136,6 +130,9 @@ class ASH_PUBLIC_EXPORT AcceleratorController {
   // action.
   virtual bool DoesAcceleratorMatchAction(const ui::Accelerator& accelerator,
                                           const AcceleratorAction action) = 0;
+
+  virtual void ApplyAcceleratorForTesting(
+      const ui::Accelerator& accelerator) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

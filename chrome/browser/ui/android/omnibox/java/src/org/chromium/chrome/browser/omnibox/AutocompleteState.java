@@ -10,9 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 
-/**
- * A state to keep track of EditText and autocomplete.
- */
+/** A state to keep track of EditText and autocomplete. */
 class AutocompleteState {
     private String mUserText;
     private String mAutocompleteText;
@@ -50,7 +48,9 @@ class AutocompleteState {
         return !TextUtils.isEmpty(mAutocompleteText);
     }
 
-    /** @return The whole text including autocomplete text. */
+    /**
+     * @return The whole text including autocomplete text.
+     */
     public String getText() {
         return mUserText + mAutocompleteText;
     }
@@ -93,7 +93,8 @@ class AutocompleteState {
      * @return Whether the current state is backward-deleted from prevState.
      */
     public boolean isBackwardDeletedFrom(AutocompleteState prevState) {
-        return isCursorAtEndOfUserText() && prevState.isCursorAtEndOfUserText()
+        return isCursorAtEndOfUserText()
+                && prevState.isCursorAtEndOfUserText()
                 && isPrefix(mUserText, prevState.mUserText);
     }
 
@@ -102,7 +103,8 @@ class AutocompleteState {
      * @return Whether the current state is forward-typed from prevState.
      */
     public boolean isForwardTypedFrom(AutocompleteState prevState) {
-        return isCursorAtEndOfUserText() && prevState.isCursorAtEndOfUserText()
+        return isCursorAtEndOfUserText()
+                && prevState.isCursorAtEndOfUserText()
                 && isPrefix(prevState.mUserText, mUserText);
     }
 
@@ -125,6 +127,7 @@ class AutocompleteState {
      * autocomplete, then the suggestion is still valid if we simply remove one character from the
      * beginning of it. For example, if prev = "a[bc]" and current text is "ab", this method
      * constructs "ab[c]".
+     *
      * @param prevState The previous state.
      * @return Whether the shifting was successful.
      */
@@ -148,19 +151,28 @@ class AutocompleteState {
         if (!(o instanceof AutocompleteState)) return false;
         if (o == this) return true;
         AutocompleteState a = (AutocompleteState) o;
-        return mUserText.equals(a.mUserText) && mAutocompleteText.equals(a.mAutocompleteText)
-                && mSelStart == a.mSelStart && mSelEnd == a.mSelEnd;
+        return mUserText.equals(a.mUserText)
+                && mAutocompleteText.equals(a.mAutocompleteText)
+                && mSelStart == a.mSelStart
+                && mSelEnd == a.mSelEnd;
     }
 
     @Override
     public int hashCode() {
-        return mUserText.hashCode() * 2 + mAutocompleteText.hashCode() * 3 + mSelStart * 5
+        return mUserText.hashCode() * 2
+                + mAutocompleteText.hashCode() * 3
+                + mSelStart * 5
                 + mSelEnd * 7;
     }
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "AutocompleteState {[%s][%s] [%d-%d]}", mUserText,
-                mAutocompleteText, mSelStart, mSelEnd);
+        return String.format(
+                Locale.US,
+                "AutocompleteState {[%s][%s] [%d-%d]}",
+                mUserText,
+                mAutocompleteText,
+                mSelStart,
+                mSelEnd);
     }
 }

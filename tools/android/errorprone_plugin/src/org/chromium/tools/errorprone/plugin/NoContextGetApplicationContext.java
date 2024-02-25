@@ -24,12 +24,14 @@ import com.sun.tools.javac.code.Type;
  * {@link org.chromium.base.ContextUtils}.
  */
 @AutoService(BugChecker.class)
-@BugPattern(name = "NoContextGetApplicationContext",
+@BugPattern(
+        name = "NoContextGetApplicationContext",
         summary = "Do not use Context#getApplicationContext",
-        severity = BugPattern.SeverityLevel.ERROR, linkType = BugPattern.LinkType.CUSTOM,
+        severity = BugPattern.SeverityLevel.ERROR,
+        linkType = BugPattern.LinkType.CUSTOM,
         link = "https://bugs.chromium.org/p/chromium/issues/detail?id=560466")
-public class NoContextGetApplicationContext
-        extends BugChecker implements BugChecker.MethodInvocationTreeMatcher {
+public class NoContextGetApplicationContext extends BugChecker
+        implements BugChecker.MethodInvocationTreeMatcher {
     private static final String CONTEXT_CLASS_NAME = "android.content.Context";
     private static final String CONTEXT_UTILS_CLASS_NAME = "org.chromium.base.ContextUtils";
     private static final String METHOD_NAME = "getApplicationContext";
@@ -55,8 +57,9 @@ public class NoContextGetApplicationContext
         }
 
         return buildDescription(tree)
-                .setMessage("Don't use Context#getApplicationContext - "
-                        + "call ContextUtils.getApplicationContext instead")
+                .setMessage(
+                        "Don't use Context#getApplicationContext - "
+                                + "call ContextUtils.getApplicationContext instead")
                 .build();
     }
 }

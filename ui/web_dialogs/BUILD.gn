@@ -52,7 +52,10 @@ static_library("test_support") {
 source_set("web_dialogs_unittests") {
   testonly = true
 
-  sources = [ "web_dialog_ui_unittest.cc" ]
+  sources = [
+    "web_dialog_delegate_unittest.cc",
+    "web_dialog_ui_unittest.cc",
+  ]
 
   deps = [
     ":web_dialogs",

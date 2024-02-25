@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_PRIVATE_COMPUTING_FAKE_PRIVATE_COMPUTING_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_PRIVATE_COMPUTING_FAKE_PRIVATE_COMPUTING_CLIENT_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/components/dbus/private_computing/private_computing_client.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,8 +39,8 @@ class COMPONENT_EXPORT(PRIVATE_COMPUTING) FakePrivateComputingClient
       private_computing::GetStatusResponse response) override;
 
  private:
-  absl::optional<private_computing::SaveStatusResponse> save_status_response_;
-  absl::optional<private_computing::GetStatusResponse> get_status_response_;
+  std::optional<private_computing::SaveStatusResponse> save_status_response_;
+  std::optional<private_computing::GetStatusResponse> get_status_response_;
 };
 
 }  // namespace ash

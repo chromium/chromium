@@ -16,6 +16,7 @@
 
 #include <tuple>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/match.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_cat.h"
@@ -25,7 +26,6 @@
 #include "mediapipe/framework/port/statusor.h"
 #include "mediapipe/framework/tool/field_data.pb.h"
 #include "mediapipe/framework/type_map.h"
-#include "absl/log/absl_check.h"
 
 #define RET_CHECK_NO_LOG(cond) RET_CHECK(cond).SetNoLogging()
 
@@ -196,7 +196,7 @@ absl::Status ProtoUtilLite::ReplaceFieldRange(
   proto_path.erase(proto_path.begin());
   FieldType type =
       !proto_path.empty() ? WireFormatLite::TYPE_MESSAGE : field_type;
-  ASSIGN_OR_RETURN(auto r, AccessField(entry, type, *message));
+  MP_ASSIGN_OR_RETURN(auto r, AccessField(entry, type, *message));
   FieldAccess& access = r.first;
   int index = r.second;
   std::vector<FieldValue>& v = *access.mutable_field_values();
@@ -223,7 +223,7 @@ absl::Status ProtoUtilLite::GetFieldRange(
   proto_path.erase(proto_path.begin());
   FieldType type =
       !proto_path.empty() ? WireFormatLite::TYPE_MESSAGE : field_type;
-  ASSIGN_OR_RETURN(auto r, AccessField(entry, type, message));
+  MP_ASSIGN_OR_RETURN(auto r, AccessField(entry, type, message));
   FieldAccess& access = r.first;
   int index = r.second;
   std::vector<FieldValue>& v = *access.mutable_field_values();
@@ -252,7 +252,7 @@ absl::Status ProtoUtilLite::GetFieldCount(const FieldValue& message,
   proto_path.erase(proto_path.begin());
   FieldType type =
       !proto_path.empty() ? WireFormatLite::TYPE_MESSAGE : field_type;
-  ASSIGN_OR_RETURN(auto r, AccessField(entry, type, message));
+  MP_ASSIGN_OR_RETURN(auto r, AccessField(entry, type, message));
   FieldAccess& access = r.first;
   int index = r.second;
   std::vector<FieldValue>& v = *access.mutable_field_values();

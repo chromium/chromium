@@ -18,6 +18,14 @@
       #themeRow .separator {
          margin-inline-start: 0;
       }
+
+      .hover-card-toggles {
+        padding-inline-end: 0;
+      }
+
+      .hover-card-toggles settings-toggle-button {
+        padding-inline-start: 0;
+      }
     </style>
     <settings-animated-pages id="pages" section="appearance"
         focus-config="[[focusConfig_]]">
@@ -135,16 +143,31 @@
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
 
-        <template is="dom-if" if="[[showHoverCardImagesOption_]]">
-          <div id="hoverCardImagesHr" class="hr"
-              hidden="[[!pageVisibility.hoverCardImages]]">
-          </div>
-          <settings-toggle-button id="hoverCardImagesToggle"
-              on-settings-boolean-control-change="onHoverCardImagesEnabledChange_"
-              hidden="[[!pageVisibility.hoverCardImages]]"
-              pref="{{prefs.browser.hovercard.image_previews_enabled}}"
-              label="$i18n{showHoverCardImages}">
+        <template is="dom-if" if="[[!showHoverCardImagesOption_]]">
+          <div class="hr" hidden="[[!pageVisibility.hoverCard]]"></div>
+          <settings-toggle-button id="hoverCardMemoryUsageToggle"
+              hidden="[[!pageVisibility.hoverCard]]"
+              pref="{{prefs.browser.hovercard.memory_usage_enabled}}"
+              label="$i18n{showHoverCardMemoryUsageStandalone}">
           </settings-toggle-button>
+        </template>
+        <template is="dom-if" if="[[showHoverCardImagesOption_]]">
+          <div class="cr-row" hidden="[[!pageVisibility.hoverCard]]">
+            $i18n{hoverCardTitle}
+          </div>
+          <div class="list-frame hover-card-toggles">
+            <settings-toggle-button id="hoverCardImagesToggle"
+                hidden="[[!pageVisibility.hoverCard]]"
+                on-settings-boolean-control-change="onHoverCardImagesToggleChange_"
+                pref="{{prefs.browser.hovercard.image_previews_enabled}}"
+                label="$i18n{showHoverCardImages}">
+            </settings-toggle-button>
+            <settings-toggle-button id="hoverCardMemoryUsageToggle" class="hr"
+                hidden="[[!pageVisibility.hoverCard]]"
+                pref="{{prefs.browser.hovercard.memory_usage_enabled}}"
+                label="$i18n{showHoverCardMemoryUsage}">
+            </settings-toggle-button>
+          </div>
         </template>
 
         <template is="dom-if" if="[[showSidePanelOptions_]]">

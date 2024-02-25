@@ -29,10 +29,11 @@
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
 #include "chromeos/ash/components/tether/tether_network_disconnection_handler.h"
 #include "chromeos/ash/components/tether/tether_session_completion_logger.h"
-#include "chromeos/ash/components/tether/timer_factory.h"
 #include "chromeos/ash/components/tether/top_level_host_scan_cache.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_connector.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "components/cross_device/timer_factory/timer_factory.h"
+#include "components/cross_device/timer_factory/timer_factory_impl.h"
 
 namespace ash {
 
@@ -50,26 +51,24 @@ SynchronousShutdownObjectContainerImpl::Factory::Create(
     NotificationPresenter* notification_presenter,
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     PrefService* pref_service,
-    NetworkStateHandler* network_state_handler,
-    TechnologyStateController* technology_state_controller,
+    NetworkHandler* network_handler,
     NetworkConnect* network_connect,
-    NetworkConnectionHandler* network_connection_handler,
     session_manager::SessionManager* session_manager,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client) {
   if (factory_instance_) {
     return factory_instance_->CreateInstance(
         asychronous_container, notification_presenter,
-        gms_core_notifications_state_tracker, pref_service,
-        network_state_handler, network_connect, network_connection_handler,
-        session_manager, device_sync_client, secure_channel_client);
+        gms_core_notifications_state_tracker, pref_service, network_handler,
+        network_connect, session_manager, device_sync_client,
+        secure_channel_client);
   }
 
   return base::WrapUnique(new SynchronousShutdownObjectContainerImpl(
       asychronous_container, notification_presenter,
-      gms_core_notifications_state_tracker, pref_service, network_state_handler,
-      technology_state_controller, network_connect, network_connection_handler,
-      session_manager, device_sync_client, secure_channel_client));
+      gms_core_notifications_state_tracker, pref_service, network_handler,
+      network_connect, session_manager, device_sync_client,
+      secure_channel_client));
 }
 
 // static
@@ -85,14 +84,12 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
     NotificationPresenter* notification_presenter,
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     PrefService* pref_service,
-    NetworkStateHandler* network_state_handler,
-    TechnologyStateController* technology_state_controller,
+    NetworkHandler* network_handler,
     NetworkConnect* network_connect,
-    NetworkConnectionHandler* network_connection_handler,
     session_manager::SessionManager* session_manager,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client)
-    : network_state_handler_(network_state_handler),
+    : network_state_handler_(network_handler->network_state_handler()),
       network_list_sorter_(std::make_unique<NetworkListSorter>()),
       tether_host_response_recorder_(
           std::make_unique<TetherHostResponseRecorder>(pref_service)),
@@ -104,8 +101,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
           std::make_unique<HostScanDevicePrioritizerImpl>(
               tether_host_response_recorder_.get())),
       wifi_hotspot_connector_(
-          std::make_unique<WifiHotspotConnector>(network_state_handler_,
-                                                 technology_state_controller,
+          std::make_unique<WifiHotspotConnector>(network_handler,
                                                  network_connect)),
       active_host_(std::make_unique<ActiveHost>(
           asychronous_container->tether_host_fetcher(),
@@ -121,7 +117,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
           tether_host_response_recorder_.get(),
           device_id_tether_network_guid_map_.get())),
       top_level_host_scan_cache_(std::make_unique<TopLevelHostScanCache>(
-          std::make_unique<TimerFactory>(),
+          cross_device::TimerFactoryImpl::Factory::Create(),
           active_host_.get(),
           network_host_scan_cache_.get(),
           persistent_host_scan_cache_.get())),
@@ -196,7 +192,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
               tether_session_completion_logger_.get())),
       network_connection_handler_tether_delegate_(
           std::make_unique<NetworkConnectionHandlerTetherDelegate>(
-              network_connection_handler,
+              network_handler->network_connection_handler(),
               active_host_.get(),
               tether_connector_.get(),
               tether_disconnector_.get())) {

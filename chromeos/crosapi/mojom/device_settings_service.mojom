@@ -43,13 +43,7 @@ struct DeviceSettings {
   // The value of UsbDetachableAllowlist device policy.
   UsbDetachableAllowlist? usb_detachable_allow_list@2;
 
-  // TODO(b/273237511): Remove direct usage of DeviceEphemeralUsersEnabled
-  // policy in branch M118 in favor of newly added field
-  // `is_current_user_ephemeral` in `BrowserInitParams` and
-  // `BrowserPostLoginParams`.
-  //
-  // The value of DeviceEphemeralUsersEnabled device policy.
-  [MinVersion=1] OptionalBool deprecated_device_ephemeral_users_enabled@3;
+  [MinVersion=1] OptionalBool REMOVED_3@3;
 
   // The value of DeviceRestrictedManagedGuestSessionEnabled device policy.
   [MinVersion=2]

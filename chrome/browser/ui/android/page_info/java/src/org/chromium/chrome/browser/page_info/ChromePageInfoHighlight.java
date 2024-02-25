@@ -20,7 +20,7 @@ public class ChromePageInfoHighlight extends PageInfoHighlight {
     }
 
     public static ChromePageInfoHighlight forPermission(
-            @ContentSettingsType int highlightedPermission) {
+            @ContentSettingsType.EnumType int highlightedPermission) {
         return new ChromePageInfoHighlight(highlightedPermission, false);
     }
 
@@ -30,7 +30,7 @@ public class ChromePageInfoHighlight extends PageInfoHighlight {
     }
 
     private ChromePageInfoHighlight(
-            @ContentSettingsType int highlightedPermission, boolean highlightStoreInfo) {
+            @ContentSettingsType.EnumType int highlightedPermission, boolean highlightStoreInfo) {
         super(highlightedPermission);
         mHighlightStoreInfo = highlightStoreInfo;
     }

@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_SYNC_H_
 #define UI_GFX_X_GENERATED_PROTOS_SYNC_H_
@@ -45,13 +28,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -174,7 +157,7 @@ class COMPONENT_EXPORT(X11) Sync {
   };
 
   struct CounterNotifyEvent {
-    static constexpr int type_id = 16;
+    static constexpr uint8_t type_id = 8;
     static constexpr uint8_t opcode = 0;
     uint8_t kind{};
     uint16_t sequence{};
@@ -184,12 +167,10 @@ class COMPONENT_EXPORT(X11) Sync {
     Time timestamp{};
     uint16_t count{};
     uint8_t destroyed{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct AlarmNotifyEvent {
-    static constexpr int type_id = 17;
+    static constexpr uint8_t type_id = 9;
     static constexpr uint8_t opcode = 1;
     uint8_t kind{};
     uint16_t sequence{};
@@ -198,8 +179,6 @@ class COMPONENT_EXPORT(X11) Sync {
     Int64 alarm_value{};
     Time timestamp{};
     Alarmstate state{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct InitializeRequest {
@@ -307,12 +286,12 @@ class COMPONENT_EXPORT(X11) Sync {
 
   struct CreateAlarmRequest {
     Alarm id{};
-    absl::optional<Counter> counter{};
-    absl::optional<Valuetype> valueType{};
-    absl::optional<Int64> value{};
-    absl::optional<Testtype> testType{};
-    absl::optional<Int64> delta{};
-    absl::optional<uint32_t> events{};
+    std::optional<Counter> counter{};
+    std::optional<Valuetype> valueType{};
+    std::optional<Int64> value{};
+    std::optional<Testtype> testType{};
+    std::optional<Int64> delta{};
+    std::optional<uint32_t> events{};
   };
 
   using CreateAlarmResponse = Response<void>;
@@ -321,21 +300,21 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> CreateAlarm(
       const Alarm& id = {},
-      const absl::optional<Counter>& counter = absl::nullopt,
-      const absl::optional<Valuetype>& valueType = absl::nullopt,
-      const absl::optional<Int64>& value = absl::nullopt,
-      const absl::optional<Testtype>& testType = absl::nullopt,
-      const absl::optional<Int64>& delta = absl::nullopt,
-      const absl::optional<uint32_t>& events = absl::nullopt);
+      const std::optional<Counter>& counter = std::nullopt,
+      const std::optional<Valuetype>& valueType = std::nullopt,
+      const std::optional<Int64>& value = std::nullopt,
+      const std::optional<Testtype>& testType = std::nullopt,
+      const std::optional<Int64>& delta = std::nullopt,
+      const std::optional<uint32_t>& events = std::nullopt);
 
   struct ChangeAlarmRequest {
     Alarm id{};
-    absl::optional<Counter> counter{};
-    absl::optional<Valuetype> valueType{};
-    absl::optional<Int64> value{};
-    absl::optional<Testtype> testType{};
-    absl::optional<Int64> delta{};
-    absl::optional<uint32_t> events{};
+    std::optional<Counter> counter{};
+    std::optional<Valuetype> valueType{};
+    std::optional<Int64> value{};
+    std::optional<Testtype> testType{};
+    std::optional<Int64> delta{};
+    std::optional<uint32_t> events{};
   };
 
   using ChangeAlarmResponse = Response<void>;
@@ -344,12 +323,12 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> ChangeAlarm(
       const Alarm& id = {},
-      const absl::optional<Counter>& counter = absl::nullopt,
-      const absl::optional<Valuetype>& valueType = absl::nullopt,
-      const absl::optional<Int64>& value = absl::nullopt,
-      const absl::optional<Testtype>& testType = absl::nullopt,
-      const absl::optional<Int64>& delta = absl::nullopt,
-      const absl::optional<uint32_t>& events = absl::nullopt);
+      const std::optional<Counter>& counter = std::nullopt,
+      const std::optional<Valuetype>& valueType = std::nullopt,
+      const std::optional<Int64>& value = std::nullopt,
+      const std::optional<Testtype>& testType = std::nullopt,
+      const std::optional<Int64>& delta = std::nullopt,
+      const std::optional<uint32_t>& events = std::nullopt);
 
   struct DestroyAlarmRequest {
     Alarm alarm{};

@@ -9,7 +9,7 @@ FAIL canonicalize('file:UNChost/path') should be file://unchost/path. Was file:/
 FAIL canonicalize('c:\\foo\\bar') should be file:///C:/foo/bar. Was c:\foo\bar.
 FAIL canonicalize('C|/foo/bar') should be file:///C:/foo/bar. Was file:///tmp/mock/C%7C/foo/bar.
 FAIL canonicalize('/C|\\foo\\bar') should be file:///C:/foo/bar. Was file:///C%7C/foo/bar.
-FAIL canonicalize('//C|/foo/bar') should be file:///C:/foo/bar. Was file://c%7C/foo/bar.
+FAIL canonicalize('//C|/foo/bar') should be file:///C:/foo/bar. Was //C|/foo/bar.
 PASS canonicalize('//server/file') is 'file://server/file'
 PASS canonicalize('\\\\server\\file') is 'file://server/file'
 PASS canonicalize('/\\server/file') is 'file://server/file'

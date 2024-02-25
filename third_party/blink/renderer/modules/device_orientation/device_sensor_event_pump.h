@@ -8,7 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/sensor_provider.mojom-blink.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -36,8 +36,7 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
   void HandleSensorProviderError();
 
   void SetSensorProviderForTesting(
-      mojo::PendingRemote<device::mojom::blink::SensorProvider>
-          sensor_provider);
+      mojo::PendingRemote<mojom::blink::WebSensorProvider> sensor_provider);
   PumpState GetPumpStateForTesting();
 
   void Trace(Visitor* visitor) const override;
@@ -70,7 +69,7 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
 
   PumpState state() const { return state_; }
 
-  HeapMojoRemote<device::mojom::blink::SensorProvider> sensor_provider_;
+  HeapMojoRemote<mojom::blink::WebSensorProvider> sensor_provider_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

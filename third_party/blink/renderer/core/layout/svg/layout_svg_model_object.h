@@ -72,12 +72,13 @@ class LayoutSVGModelObject : public LayoutObject {
     return To<SVGElement>(LayoutObject::GetNode());
   }
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVG() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVG || LayoutObject::IsOfType(type);
+    return true;
   }
 
  protected:
+  void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
   void WillBeDestroyed() override;
 
   void InsertedIntoTree() override;
@@ -92,7 +93,7 @@ class LayoutSVGModelObject : public LayoutObject {
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const final;
+                       OutlineType) const final;
 };
 
 }  // namespace blink

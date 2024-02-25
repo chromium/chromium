@@ -7,7 +7,15 @@ html {
   width: 100%;
 }
 
+@media (prefers-color-scheme: dark) {
+  .header-shadow {
+    box-shadow: inset 0 5px 6px -3px var(--header-shadow-color);
+  }
+}
+
 body {
+  background: var(--page-background);
+  color: var(--text-color);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -26,7 +34,7 @@ body > main {
 }
 
 .header-shadow {
-  box-shadow: 0 5px 6px -3px rgba(0, 0, 0, .4);
+  box-shadow: 0 5px 6px -3px var(--header-shadow-color);
   z-index: 1;
 }
 
@@ -73,7 +81,7 @@ body > header {
 
 #more-actions-list {
   position: absolute;
-  background-color: white;
+  background-color: var(--page-background);
   min-width: 130px;
   box-shadow: 0 3px 5px -1px rgba(0,0,0,.2),
               0 6px 10px 0 rgba(0,0,0,.14),
@@ -83,9 +91,9 @@ body > header {
 
 #more-actions-list button,
 #more-actions-list a {
-  background-color: rgb(255, 255, 255);
+  background-color: var(--page-background);
   border: none;
-  color: black;
+  color: var(--text-color);
   display: block;
   float: none;
   padding: 12px 16px;
@@ -99,7 +107,7 @@ body > header {
 
 #more-actions-list button:hover,
 #more-actions-list a:hover {
-  background-color: rgb(247, 248, 248);
+  background-color: var(--element-hover);
 }
 
 .more-actions-visibility {
@@ -120,16 +128,23 @@ body > header {
 .action-row-button {
   align-items: center;
   border-radius: 4px;
-  border: 1px solid rgb(128, 134, 139);
-  background: rgb(241, 243, 244); /* Google grey 100 */
+  border: 1px solid var(--action-row-button-border);
+  background: var(--action-row-button-background);
   box-sizing: border-box;
   cursor: pointer;
   display: inline-flex;
   height: 32px;
   justify-content: center;
-  outline-width: 0;
   padding: 8px 16px;
   user-select: none;
+}
+
+.action-row-button:hover {
+  filter: brightness(var(--action-row-button-hover-brightness));
+}
+
+.action-row-button:active {
+  filter: brightness(var(--action-row-button-active-brightness));
 }
 
 #topbar {
@@ -176,7 +191,7 @@ body > header {
 
 #search-field-container {
   align-items: center;
-  background: rgb(241, 243, 244); /* Google grey 100 */
+  background: var(--search-field-container-background);
   border-radius: 46px;
   display: flex;
   flex: 0 1;
@@ -187,7 +202,7 @@ body > header {
 #search-field-icon {
   background-image: url(chrome://resources/images/dark/icon_search.svg);
   background-size: cover;
-  fill: rgb(95,99,104); /* Google grey 700 */
+  fill: var(--search-field-icon-background);
   height: 20px;
   margin-left: 12px;
   min-width: 20px;
@@ -197,14 +212,15 @@ body > header {
 #search-field-input {
   background: 0 0;
   border: none;
-  caret-color: rgb(25, 103, 210); /* Google blue 700 */
-  color: rgb(32, 33, 36);
+  caret-color: var(--search-field-caret-color);
+  color: var(--search-field-input-text-color);
   margin: 0 12px 0 12px;
   outline: 0;
   padding: 0;
   width: 100%;
   line-height: 185%;
   -webkit-font-smoothing: antialiased;
+  -webkit-appearance: none;
 }
 
 .show-unset-checkbox > label {
@@ -219,14 +235,30 @@ body > header {
 }
 
 a {
-  color: rgb(26, 115, 232);
+  color: var(--link-color);
   cursor: pointer;
   text-decoration: underline;
 }
 
-#screen-reader-message {
-  clip: rect(0,0,0,0);
+#toast-container {
   position: fixed;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+}
+
+.toast {
+  background-color: var(--toast-background);
+  border: 1px solid var(--table-border);
+  border-radius: 15px;
+  color: var(--toast-text-color);
+  margin: 0 auto 5px auto;
+  padding: 20px;
+  text-align: center;
+  width: 240px;
+  max-width: 100%;
+  z-index: 999;
 }
 
 /* Remove the flex gap after the searchbar on smaller width devices. */

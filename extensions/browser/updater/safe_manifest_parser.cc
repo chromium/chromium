@@ -5,8 +5,8 @@
 #include "extensions/browser/updater/safe_manifest_parser.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
-
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -230,7 +229,7 @@ void ParseXmlDone(ParseUpdateManifestCallback callback,
     results->update_list.push_back(manifest_result);
   }
   // Parsing error corresponding to each extension are stored in the results.
-  std::move(callback).Run(std::move(results), absl::nullopt);
+  std::move(callback).Run(std::move(results), std::nullopt);
 }
 
 }  // namespace

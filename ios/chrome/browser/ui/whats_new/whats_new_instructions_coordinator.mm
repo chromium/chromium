@@ -66,13 +66,19 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.actionHandler didTapActionButton:self.item.type];
+  [self.delegate dismissOnlyWhatsNewInstructionsCoordinator:self];
+  [self.actionHandler didTapActionButton:self.item.type
+                           primaryAction:self.item.primaryAction];
 }
 
 - (void)confirmationAlertSecondaryAction {
   [self.actionHandler didTapLearnMoreButton:self.item.learnMoreURL
                                        type:self.item.type];
   [self.delegate dismissWhatsNewInstructionsCoordinator:self];
+}
+
+- (void)confirmationAlertDismissAction {
+  [self.delegate dismissOnlyWhatsNewInstructionsCoordinator:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

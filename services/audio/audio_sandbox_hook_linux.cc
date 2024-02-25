@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/environment.h"
@@ -57,7 +58,7 @@ void AddAlsaFilePermissions(std::vector<BrokerFilePermission>* permissions) {
 // are specified through environment variables. |recursive_only| is used to
 // determine if the path itself should be allowed access or only its content.
 void AllowAccessToEnvSpecifiedPath(
-    base::StringPiece variable_name,
+    std::string_view variable_name,
     std::vector<BrokerFilePermission>* permissions,
     bool recursive_only) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());

@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,7 +141,7 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     mojo::PendingRemote<network::mojom::blink::TCPServerSocket>
         tcp_server_remote,
     int32_t result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const std::optional<net::IPEndPoint>& local_addr) {
   if (result == net::OK) {
     DCHECK(local_addr);
     readable_stream_wrapper_ =

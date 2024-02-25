@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//chrome/version.gni")
 import("//testing/test.gni")
 
 assert(use_blink, "Paint Previews are only supported for blink.")
@@ -41,6 +40,7 @@ source_set("browser") {
     "//components/keyed_service/core",
     "//components/strings:components_strings_grit",
     "//components/ukm/content",
+    "//components/version_info",
     "//content/public/browser",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings",
@@ -61,13 +61,6 @@ source_set("browser") {
     "//components/paint_preview/common/proto",
     "//components/paint_preview/public",
     "//components/services/paint_preview_compositor/public/mojom",
-  ]
-
-  defines = [
-    "CHROME_VERSION_MAJOR=" + chrome_version_major,
-    "CHROME_VERSION_MINOR=" + chrome_version_minor,
-    "CHROME_VERSION_BUILD=" + chrome_version_build,
-    "CHROME_VERSION_PATCH=" + chrome_version_patch,
   ]
 }
 
@@ -106,6 +99,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/paint_preview/common:test_utils",
+    "//components/version_info",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",
@@ -117,13 +111,6 @@ source_set("unit_tests") {
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros:test_support" ]
   }
-
-  defines = [
-    "CHROME_VERSION_MAJOR=" + chrome_version_major,
-    "CHROME_VERSION_MINOR=" + chrome_version_minor,
-    "CHROME_VERSION_BUILD=" + chrome_version_build,
-    "CHROME_VERSION_PATCH=" + chrome_version_patch,
-  ]
 }
 
 test("paint_preview_browser_unit_tests") {

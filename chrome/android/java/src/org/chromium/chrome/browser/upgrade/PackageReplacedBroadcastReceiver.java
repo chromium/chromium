@@ -13,7 +13,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.DexFixer;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 
 /**
  * Triggered when Chrome's package is replaced (e.g. when it is upgraded).
@@ -33,18 +32,19 @@ public final class PackageReplacedBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         if (!Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) return;
-        VrModuleProvider.maybeRequestModuleIfDaydreamReady();
 
         final PendingResult result = goAsync();
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            if (ChannelsUpdater.getInstance().shouldUpdateChannels()) {
-                ChannelsUpdater.getInstance().updateChannels();
-            }
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    if (ChannelsUpdater.getInstance().shouldUpdateChannels()) {
+                        ChannelsUpdater.getInstance().updateChannels();
+                    }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                DexFixer.fixDexInBackground();
-            }
-            result.finish();
-        });
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        DexFixer.fixDexInBackground();
+                    }
+                    result.finish();
+                });
     }
 }

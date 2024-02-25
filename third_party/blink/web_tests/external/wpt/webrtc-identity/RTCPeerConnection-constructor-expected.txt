@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL RTCPeerConnection constructor throws if the given peerIdentity getter throws assert_throws_js: function "() => new RTCPeerConnection({ peerIdentity: toStringThrows })" did not throw
+[FAIL] RTCPeerConnection constructor throws if the given peerIdentity getter throws
+  assert_throws_js: function "() => new RTCPeerConnection({ peerIdentity: toStringThrows })" did not throw
 Harness: the test ran to completion.
 

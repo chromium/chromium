@@ -1,0 +1,143 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AndroidEvictionReason">
+  <int value="0" label="TabUnusedTooLong"/>
+  <int value="1" label="TabUnusedInSession"/>
+  <int value="2" label="LimitOfActiveTabs"/>
+  <int value="3" label="EvictNTabs"/>
+  <int value="4" label="EvictAll"/>
+</enum>
+
+<enum name="AndroidStackUnwinder">
+  <int value="0" label="Not checked (obsolete)">
+    The stack unwinding implementation was not checked. The SamplingHeapProfiler
+    will collect stack samples but they may be invalid. (Starting in Sept 2022,
+    the implementation is always checked on Android so this is obsolete.)
+  </int>
+  <int value="1" label="Default">
+    The SamplingHeapProfiler uses the default unwind tables.
+  </int>
+  <int value="2" label="CFIBackTrace (obsolete)">
+    The SamplingHeapProfiler uses the trace_event::CFIBacktraceAndroid class.
+  </int>
+  <int value="3" label="Unavailable">
+    Stack unwinding is not available. The SamplingHeapProfiler will not collect
+    stack samples.
+  </int>
+  <int value="4" label="FramePointers">
+    The SamplingHeapProfiler uses the TraceStackFramePointers function.
+  </int>
+</enum>
+
+<enum name="BooleanGreaterOrEqualThan200MB">
+  <int value="0" label="lt; 200MB"/>
+  <int value="1" label="gt;= 200MB"/>
+</enum>
+
+<enum name="BooleanLargeAllocationFromFreelist">
+  <int value="0" label="Allocated via IPC"/>
+  <int value="1" label="Allocated via Freelist"/>
+</enum>
+
+<enum name="CachedMetadataHandlerState">
+  <int value="0" label="Present"/>
+  <int value="1" label="DataType mismatch"/>
+  <int value="2" label="Was never present"/>
+  <int value="3" label="Was discarded"/>
+</enum>
+
+<enum name="MappedAndResidentPagesDumpState">
+  <int value="0" label="kAccessPagemapDenied"/>
+  <int value="1" label="kFailure"/>
+  <int value="2" label="kSuccess"/>
+</enum>
+
+<enum name="MemoryPressureLevel">
+  <int value="0" label="No memory pressure"/>
+  <int value="1" label="Moderate memory pressure"/>
+  <int value="2" label="Critical memory pressure"/>
+</enum>
+
+<enum name="MemoryPressureLevelChanges">
+  <int value="0" label="No pressure to moderate pressure"/>
+  <int value="1" label="No pressure to critical pressure"/>
+  <int value="2" label="Moderate pressure to critical pressure"/>
+  <int value="3" label="Critical pressure to moderate pressure"/>
+  <int value="4" label="Critical pressure to no pressure"/>
+  <int value="5" label="Moderate pressure to no pressure"/>
+</enum>
+
+<enum name="VmmmsRequestPriority">
+<!-- This must be kept in sync with enum ResizePriority in ChromeOS
+src/platform2/system_api/non_standard_ipc/vm_memory_management
+vm_memory_management.proto -->
+
+  <int value="0" label="RESIZE_PRIORITY_UNSPECIFIED"/>
+  <int value="1" label="RESIZE_PRIORITY_BALLOON_STALL"/>
+  <int value="2" label="RESIZE_PRIORITY_NO_KILL_CANDIDATES_HOST"/>
+  <int value="3" label="RESIZE_PRIORITY_NO_KILL_CANDIDATES_GUEST"/>
+  <int value="4" label="RESIZE_PRIORITY_FOCUSED_TAB"/>
+  <int value="5" label="RESIZE_PRIORITY_FOCUSED_APP"/>
+  <int value="6" label="RESIZE_PRIORITY_PERCEPTIBLE_TAB"/>
+  <int value="7" label="RESIZE_PRIORITY_PERCEPTIBLE_APP"/>
+  <int value="8" label="RESIZE_PRIORITY_CACHED_TAB"/>
+  <int value="9" label="RESIZE_PRIORITY_CACHED_APP"/>
+  <int value="10" label="RESIZE_PRIORITY_MGLRU_RECLAIM"/>
+</enum>
+
+<enum name="VmmSwapDisableReason">
+  <int value="0" label="VM shutdown while active"/>
+  <int value="1" label="VM shutdown while inactive"/>
+  <int value="2" label="Low disk space while active"/>
+  <int value="3" label="Low disk space while inactive"/>
+  <int value="4" label="Disable request while active"/>
+  <int value="5" label="Disable request while inactive"/>
+</enum>
+
+<enum name="VmmSwapPolicyResult">
+  <int value="0" label="Approve enable request"/>
+  <int value="1" label="Cool down reject on enable request"/>
+  <int value="2" label="Usage reject on enable request"/>
+  <int value="3" label="TBW limit on enable request"/>
+  <int value="4" label="Low disk on enable request"/>
+  <int value="5" label="Approve maintenance request"/>
+  <int value="6" label="Cool down reject on maintenance request"/>
+  <int value="7" label="Usage reject on maintenance request"/>
+  <int value="8" label="TBW limit on maintenance request"/>
+  <int value="9" label="Low disk on maintenance request"/>
+</enum>
+
+<enum name="VmmSwapState">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

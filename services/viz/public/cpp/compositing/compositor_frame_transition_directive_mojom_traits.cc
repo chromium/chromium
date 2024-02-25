@@ -74,7 +74,7 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
          viz::CompositorFrameTransitionDirective* out) {
   uint32_t sequence_id = data.sequence_id();
 
-  absl::optional<viz::NavigationID> navigation_id;
+  std::optional<viz::NavigationID> navigation_id;
   viz::CompositorFrameTransitionDirective::Type type;
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements;

@@ -11,9 +11,10 @@ import android.graphics.Rect;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -57,12 +58,14 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
 
         // If neither the compositor nor the Android view screenshot tasks were kicked off, admit
         // defeat and return a {@code null} screenshot.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                onBitmapReceived(null);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        onBitmapReceived(null);
+                    }
+                });
     }
 
     @Override
@@ -96,8 +99,12 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(rect);
-        EditorScreenshotTaskJni.get().grabWindowSnapshotAsync(
-                this, ((ChromeActivity) activity).getWindowAndroid(), rect.width(), rect.height());
+        EditorScreenshotTaskJni.get()
+                .grabWindowSnapshotAsync(
+                        this,
+                        ((ChromeActivity) activity).getWindowAndroid(),
+                        rect.width(),
+                        rect.height());
 
         return true;
     }
@@ -105,15 +112,19 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
     private boolean takeAndroidViewScreenshot(@Nullable final Activity activity) {
         if (activity == null) return false;
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                Bitmap bitmap = UiUtils.generateScaledScreenshot(
-                        activity.getWindow().getDecorView().getRootView(), 0,
-                        Bitmap.Config.ARGB_8888);
-                onBitmapReceived(bitmap);
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bitmap =
+                                UiUtils.generateScaledScreenshot(
+                                        activity.getWindow().getDecorView().getRootView(),
+                                        0,
+                                        Bitmap.Config.ARGB_8888);
+                        onBitmapReceived(bitmap);
+                    }
+                });
 
         return true;
     }

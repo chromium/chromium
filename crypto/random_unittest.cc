@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Basic functionality tests. Does NOT test the security of the random data.
@@ -26,6 +25,11 @@ bool IsTrivial(const std::string& bytes) {
 
 TEST(RandBytes, RandBytes) {
   std::string bytes(16, '\0');
-  crypto::RandBytes(base::WriteInto(&bytes, bytes.size()), bytes.size());
-  EXPECT_TRUE(!IsTrivial(bytes));
+  crypto::RandBytes(bytes.data(), bytes.size());
+  EXPECT_FALSE(IsTrivial(bytes));
+}
+
+TEST(RandBytes, RandBytesAsVector) {
+  auto vector = crypto::RandBytesAsVector(16);
+  EXPECT_FALSE(IsTrivial(std::string(vector.begin(), vector.end())));
 }

@@ -17,9 +17,11 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluez_bridge.h"
+#include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
@@ -44,6 +46,21 @@ constexpr int kFailureAdvHandle = -1;
 // This unittest defaults to testing BlueZ. For Floss, use |ArcFlossBridgeTest|.
 class ArcBluetoothBridgeTest : public testing::Test {
  protected:
+  void StartDiscovery() {
+    base::RunLoop run_loop;
+    adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
+        base::BindLambdaForTesting(
+            [this, &run_loop](std::unique_ptr<device::BluetoothDiscoverySession>
+                                  discovery_session) {
+              arc_bluetooth_bridge_->discovery_session_ =
+                  std::move(discovery_session);
+              run_loop.Quit();
+            }),
+        base::DoNothing());
+    run_loop.Run();
+  }
+
   void AddTestDevice() {
     bluez::BluezDBusManager* dbus_manager = bluez::BluezDBusManager::Get();
     auto* fake_bluetooth_device_client =
@@ -108,6 +125,12 @@ class ArcBluetoothBridgeTest : public testing::Test {
     fake_bluetooth_device_client->RemoveAllDevices();
     dbus_setter->SetBluetoothDeviceClient(
         std::move(fake_bluetooth_device_client));
+    auto fake_bluetooth_adapter_client =
+        std::make_unique<bluez::FakeBluetoothAdapterClient>();
+    fake_bluetooth_adapter_client->SetDiscoverySimulation(false);
+    fake_bluetooth_adapter_client->SetSimulationIntervalMs(0);
+    dbus_setter->SetBluetoothAdapterClient(
+        std::move(fake_bluetooth_adapter_client));
     dbus_setter->SetBluetoothGattServiceClient(
         std::make_unique<bluez::FakeBluetoothGattServiceClient>());
     dbus_setter->SetBluetoothGattCharacteristicClient(
@@ -231,6 +254,7 @@ TEST_F(ArcBluetoothBridgeTest, DeviceFound) {
   EXPECT_EQ(0u, fake_bluetooth_instance_->device_found_data().size());
   EXPECT_EQ(0u,
             fake_bluetooth_instance_->device_properties_changed_data().size());
+  StartDiscovery();
   AddTestDevice();
   // Only the first one should invoke a device_found callback. The following
   // device change events should invode the remote_device_properties callback.
@@ -283,6 +307,7 @@ TEST_F(ArcBluetoothBridgeTest, LEDeviceFound) {
       "CHROMEOS_ARC_ANDROID_SDK_VERSION=28", base::Time::Now());
 
   EXPECT_EQ(0u, fake_bluetooth_instance_->le_device_found_data().size());
+  StartDiscovery();
   AddTestDevice();
   EXPECT_EQ(3u, fake_bluetooth_instance_->le_device_found_data().size());
 
@@ -306,6 +331,7 @@ TEST_F(ArcBluetoothBridgeTest, LEDeviceFound) {
 // should be invoked when the connection is up/down. OnConnectionStateChanged()
 // should always be invoked when the physical link state changed.
 TEST_F(ArcBluetoothBridgeTest, DeviceConnectStateChangedAfterLEConnectReuqest) {
+  StartDiscovery();
   AddTestDevice();
   arc_bluetooth_bridge_->ConnectLEDevice(mojom::BluetoothAddress::From(
       std::string(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress)));
@@ -359,6 +385,7 @@ TEST_F(ArcBluetoothBridgeTest, DeviceConnectStateChangedAfterLEConnectReuqest) {
 // state changed.
 TEST_F(ArcBluetoothBridgeTest,
        DeviceConnectStateChangedWithoutLEConnectRequest) {
+  StartDiscovery();
   AddTestDevice();
   ChangeTestDeviceConnected(true);
 
@@ -396,6 +423,7 @@ TEST_F(ArcBluetoothBridgeTest,
 
 // Invoke GetGattDB and check correctness of the GattDB sent via arc bridge.
 TEST_F(ArcBluetoothBridgeTest, GetGattDB) {
+  StartDiscovery();
   AddTestDevice();
 
   arc_bluetooth_bridge_->GetGattDB(mojom::BluetoothAddress::From(
@@ -480,6 +508,7 @@ TEST_F(ArcBluetoothBridgeTest, SingleAdvertisement) {
 
 TEST_F(ArcBluetoothBridgeTest, ServiceChanged) {
   // Set up device and service
+  StartDiscovery();
   AddTestDevice();
 
   bluez::BluezDBusManager* dbus_manager = bluez::BluezDBusManager::Get();
@@ -611,6 +640,14 @@ TEST_F(ArcBluetoothBridgeTest, SetDiscoverabilityAndTimeout) {
       mojom::BluetoothProperty::NewAdapterScanMode(
           mojom::BluetoothScanMode::CONNECTABLE_DISCOVERABLE));
   ASSERT_TRUE(adapter_->IsDiscoverable());
+}
+
+// If we are not discovering or scanning, we shouldn't be forwarding
+// LEDeviceFound events.
+TEST_F(ArcBluetoothBridgeTest, NoLEDeviceFoundIfNotScanning) {
+  EXPECT_EQ(0u, fake_bluetooth_instance_->le_device_found_data().size());
+  AddTestDevice();
+  EXPECT_EQ(0u, fake_bluetooth_instance_->le_device_found_data().size());
 }
 
 }  // namespace arc

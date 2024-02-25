@@ -42,6 +42,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    get_args,
 )
 from urllib.parse import urlparse
 
@@ -51,23 +52,23 @@ from blinkpy.common.host import Host
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
-from blinkpy.common.net.web_test_results import Artifact, WebTestResult
+from blinkpy.common.net.web_test_results import (
+    Artifact,
+    BaselineSuffix,
+    WebTestResult,
+)
 from blinkpy.tool.commands.command import (
     Command,
     check_dir_option,
     check_file_option,
 )
+from blinkpy.tool.grammar import pluralize
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
-from blinkpy.web_tests.port import base, factory
+from blinkpy.web_tests.port import factory
 
 _log = logging.getLogger(__name__)
-
-# For CLI compatibility, we would like a list of baseline extensions without
-# the leading dot.
-# TODO(robertma): Investigate changing the CLI.
-BASELINE_SUFFIX_LIST = tuple(ext[1:] for ext in base.Port.BASELINE_EXTENSIONS)
 
 
 class AbstractRebaseliningCommand(Command):
@@ -101,7 +102,7 @@ class AbstractRebaseliningCommand(Command):
         help='Local results directory to use.')
     suffixes_option = optparse.make_option(
         '--suffixes',
-        default=','.join(BASELINE_SUFFIX_LIST),
+        default=','.join(get_args(BaselineSuffix)),
         action='store',
         help='Comma-separated-list of file types to rebaseline.')
     builder_option = optparse.make_option(
@@ -122,12 +123,20 @@ class AbstractRebaseliningCommand(Command):
               'one test per line.'))
 
     def __init__(self, options=None):
-        super(AbstractRebaseliningCommand, self).__init__(options=options)
-        self._baseline_suffix_list = BASELINE_SUFFIX_LIST
+        super().__init__(options=options)
         self.expectation_line_changes = ChangeSet()
         self._tool = None
         self._results_dir = None
         self._dry_run = False
+
+    def check_arguments_and_execute(self,
+                                    options: optparse.Values,
+                                    args: List[str],
+                                    tool: Optional['BlinkTool'] = None) -> int:
+        self._tool = tool
+        for option, value in vars(options).items():
+            self._host_port.set_option_default(option, value)
+        return super().check_arguments_and_execute(options, args, tool)
 
     def baseline_directory(self, builder_name):
         port = self._tool.port_factory.get_from_builder_name(builder_name)
@@ -135,7 +144,11 @@ class AbstractRebaseliningCommand(Command):
 
     @functools.cached_property
     def _host_port(self):
-        return self._tool.port_factory.get()
+        # TODO(crbug.com/1498195): This may be changed to `--no-wdspec`.
+        return self._tool.port_factory.get(options=optparse.Values({
+            'test_types':
+            ['testharness', 'reftest', 'wdspec', 'crashtest', 'print-reftest']
+        }))
 
     def _file_name_for_actual_result(self, test_name, suffix):
         # output_filename takes extensions starting with '.'.
@@ -146,6 +159,31 @@ class AbstractRebaseliningCommand(Command):
         # output_filename takes extensions starting with '.'.
         return self._host_port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.' + suffix)
+
+    def _test_can_have_suffix(self, test_name: str,
+                              suffix: BaselineSuffix) -> bool:
+        wpt_type = self._get_wpt_type(test_name)
+        # Only legacy reftests can dump text output, not WPT reftests.
+        if wpt_type in {'testharness', 'wdspec'} and suffix == 'txt':
+            return True
+        # Some manual tests are run as pixel tests (crbug.com/1114920), so
+        # `png` is allowed in that case.
+        elif wpt_type == 'manual' and suffix == 'png':
+            return True
+        elif self._host_port.reference_files(test_name) and suffix == 'png':
+            return False
+        # No other WPT-suffix combinations are allowed.
+        return not wpt_type
+
+    def _get_wpt_type(self, test_name: str) -> Optional[str]:
+        for wpt_dir, url_base in self._host_port.WPT_DIRS.items():
+            if test_name.startswith(wpt_dir):
+                manifest = self._host_port.wpt_manifest(wpt_dir)
+                file_path = manifest.file_path_for_test_url(
+                    test_name[len(f'{wpt_dir}/'):])
+                assert file_path, f'{test_name!r} not in the {url_base!r} manifest'
+                return manifest.get_test_type(file_path)
+        return None  # Not a WPT.
 
 
 class ChangeSet(object):
@@ -260,8 +298,20 @@ class TestBaselineSet(collections.abc.Set):
             step_name: The name of the build step this test was run for.
             port_name: This specifies what platform the baseline is for.
         """
-        port_name = port_name or self._builders.port_name_for_builder_name(
-            build.builder_name)
+        if not port_name:
+            # TODO(crbug.com/1512219): Remove this special logic by either:
+            #  1. Making port a per-suite, not per-builder, property in
+            #     `BuilderList` (e.g., `linux-blink-rel` is `chrome` for
+            #     `webdriver_wpt_tests` or `linux` for `blink_wpt_tests`).
+            #  2. Replace the `chrome` port with regular platform ports with
+            #     chrome-specific logic (detected via the `driver_name` option).
+            product = self._builders.product_for_build_step(
+                build.builder_name, step_name)
+            if product == 'content_shell':
+                port_name = self._builders.port_name_for_builder_name(
+                    build.builder_name)
+            else:
+                port_name = product
         self._build_steps.add((build.builder_name, step_name))
         build_step = (build, step_name, port_name)
         self._test_map[test].append(build_step)
@@ -292,6 +342,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         super(AbstractParallelRebaselineCommand,
               self).__init__(options=options)
         self.baseline_cache_stats = BaselineCacheStatistics()
+        self._total_commands = self._completed_commands = 0
         self._rebaseline_failures = {}
 
     def _release_builders(self):
@@ -348,30 +399,32 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             else:
                 debug_build_steps.add((builder, step))
 
-        build_steps_to_fallback_paths = collections.defaultdict(dict)
-        #TODO: we should make the selection of (builder, step) deterministic
-        for builder, step in list(release_build_steps) + list(
-                debug_build_steps):
-            if not self._tool.builders.uses_wptrunner(builder):
-                # Some result db related unit tests set step to None
-                is_legacy_step = step is None or 'blink_web_tests' in step
-                flag_spec_option = self._tool.builders.flag_specific_option(
-                    builder, step)
-                port = self._tool.port_factory.get_from_builder_name(builder)
-                port.set_option_default('flag_specific', flag_spec_option)
-                fallback_path = port.baseline_search_path()
-                if fallback_path not in list(
-                        build_steps_to_fallback_paths[is_legacy_step].values()):
-                    build_steps_to_fallback_paths[
-                        is_legacy_step][builder, step] = fallback_path
-        return (set(build_steps_to_fallback_paths[True])
-                | set(build_steps_to_fallback_paths[False]))
+        port_step_pairs, build_steps = set(), set()
+        for builder, step in [
+                *sorted(release_build_steps),
+                *sorted(debug_build_steps),
+        ]:
+            port_name = self._tool.builders.port_name_for_builder_name(builder)
+            # Assume differently named steps provide unique coverage, even if
+            # they have the same fallback path. For example, as of this writing,
+            # there are two cases where a pair of suites run disjoint sets of
+            # tests, so they should both be included:
+            #   * `webdriver_wpt_tests` and `chrome_wpt_tests`
+            #   * `blink_web_tests` and `blink_wpt_tests`
+            if (port_name, step) not in port_step_pairs:
+                port_step_pairs.add((port_name, step))
+                build_steps.add((builder, step))
+        return build_steps
 
     def _copy_baselines(self, groups: Dict[str, TestBaselineSet]) -> None:
-        with self._message_pool(self._worker_factory) as pool:
-            pool.run([('copy_baselines', test, suffix, group)
-                      for test, group in groups.items()
-                      for suffix in self._suffixes_for_group(group)])
+        commands = []
+        for base_test in sorted(groups):
+            group = groups[base_test]
+            for suffix in self._suffixes_for_group(group):
+                if self._test_can_have_suffix(base_test, suffix):
+                    commands.append(
+                        ('copy_baselines', base_test, suffix, group))
+        self._run_in_message_pool(self._worker_factory, commands)
 
     def _group_tests_by_base(
         self,
@@ -403,11 +456,12 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
               for test, build, step_name, _ in test_baseline_set))
 
     def _download_baselines(self, groups: Dict[str, TestBaselineSet]):
-        with self._message_pool(self._worker_factory) as pool:
-            # The same worker should download all the baselines in a group so
-            # that its baseline cache is effective.
-            pool.run([('download_baselines', self._group_with_results(group))
-                      for group in groups.values()])
+        # The same worker should download all the baselines in a group so that
+        # its baseline cache is effective.
+        commands = [('download_baselines', base_test,
+                     self._group_with_results(groups[base_test]))
+                    for base_test in sorted(groups)]
+        self._run_in_message_pool(self._worker_factory, commands)
 
     def _group_with_results(
         self,
@@ -481,13 +535,14 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()
 
-    def _message_pool(self, worker_factory):
+    def _run_in_message_pool(self, worker_factory, commands):
         num_workers = min(self.MAX_WORKERS, self._tool.executive.cpu_count())
-        return message_pool.get(self, worker_factory, num_workers)
+        self._completed_commands, self._total_commands = 0, len(commands)
+        with message_pool.get(self, worker_factory, num_workers) as pool:
+            pool.run(commands)
 
     def _worker_factory(self, worker_connection):
-        return Worker(worker_connection,
-                      dry_run=self._dry_run)
+        return Worker(worker_connection, dry_run=self._dry_run)
 
     def handle(self, name: str, source: str, *args):
         """Handler called when a worker completes a rebaseline task.
@@ -498,9 +553,20 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         if name == 'report_baseline_cache_stats':
             (stats, ) = args
             self.baseline_cache_stats += stats
+        elif name == 'copy_baselines':
+            base_test, suffix = args
+            self._log_command_completion(
+                f'Copied baselines for {base_test!r} ({suffix})')
         elif name == 'download_baselines':
-            (rebaseline_failures, ) = args
+            base_test, rebaseline_failures = args
             self._rebaseline_failures.update(rebaseline_failures)
+            self._log_command_completion(
+                f'Downloaded baselines for {base_test!r}')
+
+    def _log_command_completion(self, message: str):
+        self._completed_commands += 1
+        _log.info(
+            f'{message} ({self._completed_commands}/{self._total_commands})')
 
     def rebaseline(self, options, test_baseline_set):
         """Fetches new baselines and removes related test expectation lines.
@@ -519,10 +585,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             )
             return 1
 
-        for test in test_baseline_set.all_tests():
-            _log.info('Rebaselining %s', test)
-
         rebaselinable_set = self._filter_baseline_set(test_baseline_set)
+        test_count = len(rebaselinable_set.all_tests())
+        if test_count == 0:
+            _log.info('No tests to rebaseline.')
+            return 0
+
+        _log.info('Rebaselining %s.', pluralize('test', test_count))
         groups = self._group_tests_by_base(rebaselinable_set)
         self._copy_baselines(groups)
         self._download_baselines(groups)
@@ -541,7 +610,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 exit_code = exit_code or self._tool.main(optimize_command)
 
         if not self._dry_run:
-            self._tool.git().add_list(self.unstaged_baselines())
+            unstaged_baselines = self.unstaged_baselines()
+            _log.info('Staging %s with git.',
+                      pluralize('baseline', len(unstaged_baselines)))
+            self._tool.git().add_list(unstaged_baselines)
         return exit_code
 
     def _warn_about_rebaseline_failures(self):
@@ -593,12 +665,14 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         results = sorted(set(result.actual_results()))
         result_tags = ' '.join(RESULT_TAGS[result] for result in results)
         reason = self._rebaseline_failures[task].value
-        return f'[ {specifier} ] {task.test} [ {result_tags} ]  # {reason}'
+        line = f'{task.test} [ {result_tags} ]  # {reason}'
+        return f'[ {specifier} ] {line}' if specifier else line
 
     def unstaged_baselines(self):
         """Returns absolute paths for unstaged (including untracked) baselines."""
         baseline_re = re.compile(r'.*[\\/]' + WEB_TESTS_LAST_COMPONENT +
-                                 r'[\\/].*-expected\.(txt|png|wav)$')
+                                 r'[\\/].*-expected\.(' +
+                                 '|'.join(get_args(BaselineSuffix)) + ')$')
         unstaged_changes = self._tool.git().unstaged_changes()
         return sorted(self._tool.git().absolute_path(path)
                       for path in unstaged_changes
@@ -652,7 +726,7 @@ class Rebaseline(AbstractParallelRebaselineCommand):
     argument_names = '[TEST_NAMES]'
 
     def __init__(self):
-        super(Rebaseline, self).__init__(options=[
+        super().__init__(options=[
             self.no_optimize_option,
             self.dry_run_option,
             # FIXME: should we support the platform options in addition to (or instead of) --builders?
@@ -664,6 +738,7 @@ class Rebaseline(AbstractParallelRebaselineCommand):
                 help=
                 ('Comma-separated-list of builders to pull new baselines from '
                  '(can also be provided multiple times).')),
+            *self.wpt_options,
         ])
 
     def _builders_to_pull_from(self):
@@ -673,7 +748,6 @@ class Rebaseline(AbstractParallelRebaselineCommand):
             can_choose_multiple=True)
 
     def execute(self, options, args, tool):
-        self._tool = tool
         self._dry_run = options.dry_run
         if not args:
             _log.error('Must list tests to rebaseline.')
@@ -793,7 +867,7 @@ class BaselineLoader:
         return contents
 
     def choose_valid_baseline(self, artifacts: List[Artifact], test_name: str,
-                              suffix: str) -> bytes:
+                              suffix: BaselineSuffix) -> bytes:
         """Choose a baseline that would have allowed the observed runs to pass.
 
         Usually, this means returning the contents of a non-flaky artifact
@@ -929,22 +1003,25 @@ class Worker:
         response = self._commands[name](*args)
         # Post a message to the managing process to flush this worker's logs.
         if response is not None:
-            self._connection.post(name, response)
+            self._connection.post(name, *response)
         else:
             self._connection.post(name)
 
-    def _copy_baselines(self, test_name: str, suffix: str,
+    def _copy_baselines(self, test_name: str, suffix: BaselineSuffix,
                         group: TestBaselineSet):
         copies = list(
             self._copier.find_baselines_to_copy(test_name, suffix, group))
         if self._dry_run:
             for source, dest in sorted(copies, key=lambda copy: copy[1]):
+                assert source or suffix == 'txt', (
+                    'non-txt baselines cannot be all-pass')
                 _log.debug('Would have copied %s -> %s', source
                            or '<all-pass>', dest)
         else:
             self._copier.write_copies(copies)
+        return test_name, suffix
 
-    def _download_baselines(self,
+    def _download_baselines(self, base_test: str,
                             group: RebaselineGroup) -> RebaselineFailures:
         self._baseline_loader.clear()
         rebaseline_failures = {}
@@ -957,10 +1034,10 @@ class Worker:
                                          contents)
                 except RebaselineFailure as error:
                     rebaseline_failures[task] = error.reason
-        return rebaseline_failures
+        return base_test, rebaseline_failures
 
-    def _write_baseline(self, task: RebaselineTask, suffix: str, source: str,
-                        contents: bytes):
+    def _write_baseline(self, task: RebaselineTask, suffix: BaselineSuffix,
+                        source: str, contents: bytes):
         port = self._host.port_factory.get(task.port_name)
         flag_spec_option = self._host.builders.flag_specific_option(
             task.build.builder_name, task.step_name)

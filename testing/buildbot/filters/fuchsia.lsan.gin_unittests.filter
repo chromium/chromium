@@ -19,3 +19,4 @@
 -WrappableTest.MethodInvocationErrorsOnUnnamedObject
 -WrappableTest.UnwrapFailures
 -WrappableTest.WrapAndUnwrap
+-WrappableTest.CannotConstruct

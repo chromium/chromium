@@ -24,7 +24,7 @@ class ExampleComboboxModel : public ui::ComboboxModel {
   std::u16string GetItemAt(size_t index) const override;
 
  private:
-  const raw_ptr<const char* const> strings_;
+  const raw_ptr<const char* const, AllowPtrArithmetic> strings_;
   const size_t count_;
 };
 

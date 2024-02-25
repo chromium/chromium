@@ -1,0 +1,234 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/optimization_guide/features.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("permissions") {
+  sources = [
+    "adaptive_quiet_notification_permission_ui_enabler.cc",
+    "adaptive_quiet_notification_permission_ui_enabler.h",
+    "chrome_permissions_client.cc",
+    "chrome_permissions_client.h",
+    "contextual_notification_permission_ui_selector.cc",
+    "contextual_notification_permission_ui_selector.h",
+    "crowd_deny_preload_data.cc",
+    "crowd_deny_preload_data.h",
+    "crowd_deny_safe_browsing_request.cc",
+    "crowd_deny_safe_browsing_request.h",
+    "notifications_engagement_service_factory.cc",
+    "notifications_engagement_service_factory.h",
+    "notifications_permission_revocation_config.cc",
+    "notifications_permission_revocation_config.h",
+    "one_time_permissions_tracker.cc",
+    "one_time_permissions_tracker.h",
+    "one_time_permissions_tracker_factory.cc",
+    "one_time_permissions_tracker_factory.h",
+    "one_time_permissions_tracker_helper.cc",
+    "one_time_permissions_tracker_helper.h",
+    "one_time_permissions_tracker_observer.h",
+    "origin_keyed_permission_action_service_factory.cc",
+    "origin_keyed_permission_action_service_factory.h",
+    "permission_actions_history_factory.cc",
+    "permission_actions_history_factory.h",
+    "permission_auditing_service_factory.cc",
+    "permission_auditing_service_factory.h",
+    "permission_decision_auto_blocker_factory.cc",
+    "permission_decision_auto_blocker_factory.h",
+    "permission_manager_factory.cc",
+    "permission_manager_factory.h",
+    "permission_revocation_request.cc",
+    "permission_revocation_request.h",
+    "prediction_based_permission_ui_selector.cc",
+    "prediction_based_permission_ui_selector.h",
+    "prediction_service_factory.cc",
+    "prediction_service_factory.h",
+    "prediction_service_request.cc",
+    "prediction_service_request.h",
+    "pref_based_quiet_permission_ui_selector.cc",
+    "pref_based_quiet_permission_ui_selector.h",
+    "quiet_notification_permission_ui_config.cc",
+    "quiet_notification_permission_ui_config.h",
+    "quiet_notification_permission_ui_state.cc",
+    "quiet_notification_permission_ui_state.h",
+  ]
+
+  deps = [
+    ":permissions_proto",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profiles",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/storage_access_api",
+    "//chrome/browser/top_level_storage_access_api:permissions",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/background_sync",
+    "//components/content_settings/core/browser",
+    "//components/embedder_support:browser_util",
+    "//components/google/core/common",
+    "//components/infobars/content",
+    "//components/keyed_service/content",
+    "//components/optimization_guide/core",
+    "//components/permissions",
+    "//components/permissions/prediction_service",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/site_engagement/content",
+    "//components/subresource_filter/content/browser",
+    "//components/supervised_user/core/common:features",
+    "//components/unified_consent",
+    "//components/vector_icons:vector_icons",
+    "//content/public/browser",
+    "//extensions/buildflags:buildflags",
+    "//services/device/public/cpp/geolocation",
+  ]
+
+  if (is_android) {
+    sources += [
+      "notification_blocked_dialog_controller_android.cc",
+      "notification_blocked_dialog_controller_android.h",
+      "notification_blocked_message_delegate_android.cc",
+      "notification_blocked_message_delegate_android.h",
+      "permission_infobar_delegate_android.cc",
+      "permission_infobar_delegate_android.h",
+      "permission_update_infobar_delegate_android.cc",
+      "permission_update_infobar_delegate_android.h",
+      "permission_update_message_controller_android.cc",
+      "permission_update_message_controller_android.h",
+      "permission_update_message_delegate_android.cc",
+      "permission_update_message_delegate_android.h",
+      "permission_update_requester_android.cc",
+      "permission_update_requester_android.h",
+      "quiet_permission_prompt_model_android.cc",
+      "quiet_permission_prompt_model_android.h",
+    ]
+
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//components/infobars/android",
+      "//components/messages/android",
+      "//components/messages/android:feature_flags",
+      "//ui/android",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash" ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "prediction_model_handler_provider_factory.cc",
+      "prediction_model_handler_provider_factory.h",
+    ]
+    if (!is_android) {
+      deps += [ "//third_party/tflite_support" ]
+    }
+    deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
+  }
+}
+
+proto_library("permissions_proto") {
+  sources = [ "crowd_deny.proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "adaptive_quiet_notification_permission_ui_enabler_unittest.cc",
+    "chrome_permission_manager_unittest.cc",
+    "chrome_permission_request_manager_unittest.cc",
+    "contextual_notification_permission_ui_selector_unittest.cc",
+    "crowd_deny_preload_data_unittest.cc",
+    "crowd_deny_safe_browsing_request_unittest.cc",
+    "notifications_engagement_service_unittest.cc",
+    "permission_context_base_permissions_policy_unittest.cc",
+    "permission_revocation_request_unittests.cc",
+    "prediction_based_permission_ui_selector_unittest.cc",
+    "pref_based_quiet_permission_ui_selector_unittest.cc",
+  ]
+
+  deps = [
+    ":permissions",
+    ":permissions_proto",
+    "//chrome/test:test_support",
+    "//components/site_engagement/content",
+    "//components/ukm/content",
+    "//components/unified_consent",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    sources += [
+      "notification_blocked_message_delegate_android_unittest.cc",
+      "permission_prompt_android_unittest.cc",
+      "permission_update_message_controller_android_unittest.cc",
+    ]
+    deps += [
+      "//components/infobars/content",
+      "//components/messages/android:test_support",
+      "//components/ukm:test_support",
+    ]
+  } else {
+    sources += [ "permission_hats_trigger_unittest.cc" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash:test_support" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "permission_delegation_browsertest.cc",
+      "permission_element_browsertest.cc",
+      "permission_manager_browsertest.cc",
+      "permission_request_manager_browsertest.cc",
+      "permission_settings_page_browsertest.cc",
+    ]
+    deps = [
+      ":permissions",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/test:test_support",
+      "//components/back_forward_cache",
+      "//components/optimization_guide/core:test_support",
+    ]
+    if (build_with_tflite_lib) {
+      sources += [ "prediction_service_browsertest.cc" ]
+      deps += [ "//components/permissions/prediction_service" ]
+    }
+  }
+}
+
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "permissions_security_model_interactive_uitest.cc" ]
+
+    deps = [
+      ":permissions",
+      "//chrome/test:test_support",
+      "//components/content_settings/browser",
+      "//components/embedder_support",
+      "//content/test:browsertest_support",
+    ]
+  }
+}

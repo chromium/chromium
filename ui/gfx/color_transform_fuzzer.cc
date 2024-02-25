@@ -60,7 +60,7 @@ inline size_t Hash(const char* data, size_t size, size_t hash = ~0) {
 }
 
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_FATAL); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 };
 
 Environment* environment = new Environment();

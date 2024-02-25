@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -17,7 +18,6 @@
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
@@ -62,6 +62,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
 
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
+  bool NeedSetTransferableResource() const;
 
   // These methods notify the display compositor, through the
   // CompositorFrameSink, of the existence of a SharedBitmapId and its
@@ -76,12 +77,14 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   void RegisterSharedBitmapId(viz::SharedBitmapId id,
                               scoped_refptr<CrossThreadSharedBitmap> bitmap);
   void UnregisterSharedBitmapId(viz::SharedBitmapId id);
+  void SetInInvisibleLayerTree() override;
 
  private:
   TextureLayerImpl(LayerTreeImpl* tree_impl, int id);
 
   const char* LayerTypeAsString() const override;
   void FreeTransferableResource();
+  void OnResourceEvicted();
 
   bool premultiplied_alpha_ = true;
   bool blend_background_color_ = false;

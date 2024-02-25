@@ -38,7 +38,7 @@ class MockTouchHandleDrawable : public TouchHandleDrawable {
 
   ~MockTouchHandleDrawable() override {}
   void SetEnabled(bool enabled) override {}
-  void SetOrientation(ui::TouchHandleOrientation orientation,
+  void SetOrientation(TouchHandleOrientation orientation,
                       bool mirror_vertical,
                       bool mirror_horizontal) override {}
   void SetOrigin(const gfx::PointF& origin) override {}

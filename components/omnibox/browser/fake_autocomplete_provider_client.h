@@ -18,9 +18,10 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/query_tiles/tile_service.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
+#include "components/omnibox/browser/fake_autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/fake_on_device_tail_model_service.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -62,7 +63,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   history::HistoryService* GetHistoryService() override;
   history_clusters::HistoryClustersService* GetHistoryClustersService()
       override;
-  bookmarks::BookmarkModel* GetLocalOrSyncableBookmarkModel() override;
+  bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
@@ -72,7 +73,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
-  AutocompleteScoringModelService* GetAutocompleteScoringModelService()
+  FakeAutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -105,12 +106,9 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     shortcuts_backend_ = std::move(backend);
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  void set_scoring_model_service(
-      std::unique_ptr<AutocompleteScoringModelService> scoring_model_service) {
-    scoring_model_service_ = std::move(scoring_model_service);
+  void set_tile_service(std::unique_ptr<query_tiles::TileService> tile_svc) {
+    tile_service_ = std::move(tile_svc);
   }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
  private:
   base::ScopedTempDir history_dir_;
@@ -129,8 +127,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FakeOnDeviceTailModelService> on_device_tail_model_service_;
-  std::unique_ptr<AutocompleteScoringModelService> scoring_model_service_;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  std::unique_ptr<FakeAutocompleteScoringModelService> scoring_model_service_;
+#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_CLIENT_H_

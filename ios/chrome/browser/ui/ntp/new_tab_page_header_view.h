@@ -7,10 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+@class GradientView;
+
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
 // primary toolbar, doodle, and fake omnibox.
 @interface NewTabPageHeaderView : UIView
+
+// Initializes the view with the Lens button new badge status.
+- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;
@@ -33,7 +41,7 @@
     NSLayoutConstraint* fakeLocationBarLeadingConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* fakeLocationBarTrailingConstraint;
-@property(nonatomic, strong) UIView* fakeLocationBar;
+@property(nonatomic, strong) GradientView* fakeLocationBar;
 @property(nonatomic, strong) UILabel* searchHintLabel;
 
 // `YES` if Google is the default search engine.
@@ -68,11 +76,6 @@
 
 // Highlights the fake omnibox.
 - (void)setFakeboxHighlighted:(BOOL)highlighted;
-
-// Updates the different constraints using `topSafeAreaInset`. This is needed
-// because sometimes the safe area isn't correctly updated. See
-// crbug.com/1041831.
-- (void)updateForTopSafeAreaInset:(CGFloat)topSafeAreaInset;
 
 @end
 

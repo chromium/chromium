@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -72,10 +73,11 @@ std::unique_ptr<Layer> LayerOwner::RecreateLayer() {
 
   // Migrate all the child layers over to the new layer. Copy the list because
   // the items are removed during iteration.
-  std::vector<ui::Layer*> children_copy = old_layer->children();
-  for (std::vector<ui::Layer*>::const_iterator it = children_copy.begin();
-       it != children_copy.end();
-       ++it) {
+  std::vector<raw_ptr<ui::Layer, VectorExperimental>> children_copy =
+      old_layer->children();
+  for (std::vector<raw_ptr<ui::Layer, VectorExperimental>>::const_iterator it =
+           children_copy.begin();
+       it != children_copy.end(); ++it) {
     ui::Layer* child = *it;
     layer_->Add(child);
   }

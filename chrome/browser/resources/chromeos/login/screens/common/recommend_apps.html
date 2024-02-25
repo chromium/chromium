@@ -30,9 +30,9 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'recommendAppsScreenDescription')]]
   </div>
   <div id="app-list-view-container" slot="content">
-    <oobe-apps-list id="appsList" app-list="[[appList_]]"
-        apps-selected="{{appsSelected_}}"
-        on-apps-list-loaded="onFullyLoaded_">
+    <oobe-apps-list id="appsList" app-list="[[appList]]"
+        apps-selected="{{appsSelected}}"
+        on-apps-list-loaded="onFullyLoaded">
       <div slot="selectAllTitle">
         [[i18nDynamic(locale, 'recommendAppsSelectAll')]]
       </div>
@@ -40,11 +40,11 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="skipButton"
-        text-key="recommendAppsSkip" on-click="onSkip_" border>
+        text-key="recommendAppsSkip" on-click="onSkip" border>
     </oobe-text-button>
-    <oobe-text-button id="installButton" on-click="onInstall_" inverse
+    <oobe-text-button id="installButton" on-click="onInstall" inverse
         text-key="recommendAppsInstall"
-        disabled="[[!canProceed_(appsSelected_)]]">
+        disabled="[[!canProceed(appsSelected)]]">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

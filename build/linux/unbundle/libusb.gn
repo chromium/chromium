@@ -1,0 +1,20 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_libusb") {
+  packages = [ "libusb-1.0" ]
+}
+
+shim_headers("libusb_shim") {
+  root_path = "src/libusb"
+  headers = [
+    "libusb.h",
+  ]
+}
+
+source_set("libusb") {
+  deps = [
+    ":libusb_shim",
+  ]
+  public_configs = [ ":system_libusb" ]
+}

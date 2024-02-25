@@ -83,10 +83,9 @@ class DanglingMouseMoveHandlerOnViewDestroyingChecker
  private:
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation{
       this};
-  // Excluded from `raw_ref` rewriter which would otherwise turn this
-  // into a `raw_ref<raw_ptr<>>`. The current `raw_ptr&` setup is
-  // intentional and used to observe the pointer without counting as a
-  // live reference to the underlying memory.
+  // RAW_PTR_EXCLUSION: Avoid turning this into a `raw_ref<raw_ptr<>>`. The
+  // current `raw_ptr&` setup is intentional and used to observe the pointer
+  // without counting as a live reference to the underlying memory.
   RAW_PTR_EXCLUSION const raw_ptr<views::View, AcrossTasksDanglingUntriaged>&
       mouse_move_handler_;
 };
@@ -102,15 +101,25 @@ class DanglingMouseMoveHandlerOnViewDestroyingChecker
 // their own announcements without changing their accessible name or description
 // is the reason this system exists at all).
 class AnnounceTextView : public View {
+  METADATA_HEADER(AnnounceTextView, View)
+
  public:
-  METADATA_HEADER(AnnounceTextView);
   ~AnnounceTextView() override = default;
 
-  void Announce(const std::u16string& text) {
-    // TODO(crbug.com/1024898): Use kLiveRegionChanged when supported across
-    // screen readers and platforms. See bug for details.
+  void AnnounceTextAs(const std::u16string& text,
+                      ui::AXPlatformNode::AnnouncementType announcement_type) {
     announce_text_ = text;
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    switch (announcement_type) {
+      case ui::AXPlatformNode::AnnouncementType::kAlert:
+        announce_event_type_ = ax::mojom::Event::kAlert;
+        announce_role_ = ax::mojom::Role::kAlert;
+        break;
+      case ui::AXPlatformNode::AnnouncementType::kPolite:
+        announce_event_type_ = ax::mojom::Event::kLiveRegionChanged;
+        announce_role_ = ax::mojom::Role::kStatus;
+        break;
+    }
+    NotifyAccessibilityEvent(announce_event_type_, /*send_native_event=*/true);
   }
 
   // View:
@@ -118,20 +127,28 @@ class AnnounceTextView : public View {
 #if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS, kAlert role can invoke an unnecessary event on reparenting.
     node_data->role = ax::mojom::Role::kStaticText;
-#else
+#elif BUILDFLAG(IS_LINUX)
     // TODO(crbug.com/1024898): Use live regions (do not use alerts).
     // May require setting kLiveStatus, kContainerLiveStatus to "polite".
     node_data->role = ax::mojom::Role::kAlert;
+#else
+    node_data->role = announce_role_;
 #endif
+    node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, true);
+    node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
+                                  "polite");
+
     node_data->SetNameChecked(announce_text_);
     node_data->AddState(ax::mojom::State::kInvisible);
   }
 
  private:
   std::u16string announce_text_;
+  ax::mojom::Event announce_event_type_ = ax::mojom::Event::kNone;
+  ax::mojom::Role announce_role_ = ax::mojom::Role::kNone;
 };
 
-BEGIN_METADATA(AnnounceTextView, View)
+BEGIN_METADATA(AnnounceTextView)
 END_METADATA
 
 // This event handler receives events in the pre-target phase and takes care of
@@ -319,16 +336,21 @@ AnnounceTextView* RootView::GetOrCreateAnnounceView() {
   return announce_view_.get();
 }
 
-void RootView::AnnounceText(const std::u16string& text) {
+void RootView::AnnounceTextAs(
+    const std::u16string& text,
+    ui::AXPlatformNode::AnnouncementType announcement_type) {
+  if (text.empty()) {
+    return;
+  }
 #if BUILDFLAG(IS_MAC)
   gfx::NativeViewAccessible native = GetViewAccessibility().GetNativeObject();
-  auto* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(native);
-  if (ax_node)
-    ax_node->AnnounceText(text);
+  if (auto* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(native)) {
+    ax_node->AnnounceTextAs(text, announcement_type);
+  }
 #else
-  DCHECK(GetWidget());
-  DCHECK(GetContentsView());
-  GetOrCreateAnnounceView()->Announce(text);
+  CHECK(GetWidget());
+  CHECK(GetContentsView());
+  GetOrCreateAnnounceView()->AnnounceTextAs(text, announcement_type);
 #endif
 }
 
@@ -458,7 +480,7 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
     // Remove the double-click flag if the handler is different than the
     // one which got the first click part of the double-click.
     if (mouse_pressed_handler_ != last_click_handler_)
-      mouse_pressed_event.set_flags(event.flags() & ~ui::EF_IS_DOUBLE_CLICK);
+      mouse_pressed_event.SetFlags(event.flags() & ~ui::EF_IS_DOUBLE_CLICK);
 
     drag_info_.Reset();
     ui::EventDispatchDetails dispatch_details =
@@ -560,105 +582,11 @@ void RootView::OnMouseCaptureLost() {
 }
 
 void RootView::OnMouseMoved(const ui::MouseEvent& event) {
-  View* v = GetEventHandlerForPoint(event.location());
-  // Check for a disabled move handler. If the move handler became
-  // disabled while handling moves, it's wrong to suddenly send
-  // ET_MOUSE_EXITED and ET_MOUSE_ENTERED events, because the mouse
-  // hasn't actually exited yet.
-  if (mouse_move_handler_ && !mouse_move_handler_->GetEnabled() &&
-      v->Contains(mouse_move_handler_))
-    v = mouse_move_handler_;
+  HandleMouseEnteredOrMoved(event);
+}
 
-  if (v && v != this) {
-    if (v != mouse_move_handler_) {
-      if (mouse_move_handler_ != nullptr &&
-          (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
-           !mouse_move_handler_->Contains(v))) {
-        MouseEnterExitEvent exit(event, ui::ET_MOUSE_EXITED);
-        exit.ConvertLocationToTarget(static_cast<View*>(this),
-                                     mouse_move_handler_.get());
-        ui::EventDispatchDetails dispatch_details =
-            DispatchEvent(mouse_move_handler_, &exit);
-        if (dispatch_details.dispatcher_destroyed)
-          return;
-        // The mouse_move_handler_ could have been destroyed in the context of
-        // the mouse exit event.
-        if (!dispatch_details.target_destroyed) {
-          // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
-          // cleared, perhaps by a nested event handler, so return and wait for
-          // the next mouse move event.
-          if (!mouse_move_handler_)
-            return;
-          dispatch_details = NotifyEnterExitOfDescendant(
-              event, ui::ET_MOUSE_EXITED, mouse_move_handler_, v);
-          if (dispatch_details.dispatcher_destroyed)
-            return;
-        }
-      }
-      View* old_handler = mouse_move_handler_;
-      mouse_move_handler_ = v;
-      // TODO(crbug.com/1295290): This is for debug purpose only.
-      // Remove it after resolving the issue.
-      DanglingMouseMoveHandlerOnViewDestroyingChecker
-          mouse_move_handler_dangling_checker(mouse_move_handler_);
-      if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
-          !mouse_move_handler_->Contains(old_handler)) {
-        MouseEnterExitEvent entered(event, ui::ET_MOUSE_ENTERED);
-        entered.ConvertLocationToTarget(static_cast<View*>(this),
-                                        mouse_move_handler_.get());
-        ui::EventDispatchDetails dispatch_details =
-            DispatchEvent(mouse_move_handler_, &entered);
-        if (dispatch_details.dispatcher_destroyed ||
-            dispatch_details.target_destroyed) {
-          return;
-        }
-        // View was removed by ET_MOUSE_ENTERED, or |mouse_move_handler_| was
-        // cleared, perhaps by a nested event handler, so return and wait for
-        // the next mouse move event.
-        if (!mouse_move_handler_)
-          return;
-        dispatch_details = NotifyEnterExitOfDescendant(
-            event, ui::ET_MOUSE_ENTERED, mouse_move_handler_, old_handler);
-        if (dispatch_details.dispatcher_destroyed ||
-            dispatch_details.target_destroyed) {
-          return;
-        }
-      }
-    }
-    ui::MouseEvent moved_event(event, static_cast<View*>(this),
-                               mouse_move_handler_.get());
-    mouse_move_handler_->OnMouseMoved(moved_event);
-    // TODO(tdanderson): It may be possible to avoid setting the cursor twice
-    //                   (once here and once from CompoundEventFilter) on a
-    //                   mousemove. See crbug.com/351469.
-    if (!(moved_event.flags() & ui::EF_IS_NON_CLIENT))
-      widget_->SetCursor(mouse_move_handler_->GetCursor(moved_event));
-  } else if (mouse_move_handler_ != nullptr) {
-    MouseEnterExitEvent exited(event, ui::ET_MOUSE_EXITED);
-    ui::EventDispatchDetails dispatch_details =
-        DispatchEvent(mouse_move_handler_, &exited);
-    if (dispatch_details.dispatcher_destroyed)
-      return;
-    // The mouse_move_handler_ could have been destroyed in the context of the
-    // mouse exit event.
-    if (!dispatch_details.target_destroyed) {
-      // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
-      // cleared, perhaps by a nested event handler, so return and wait for
-      // the next mouse move event.
-      if (!mouse_move_handler_)
-        return;
-      dispatch_details = NotifyEnterExitOfDescendant(event, ui::ET_MOUSE_EXITED,
-                                                     mouse_move_handler_, v);
-      if (dispatch_details.dispatcher_destroyed)
-        return;
-    }
-    // On Aura the non-client area extends slightly outside the root view for
-    // some windows.  Let the non-client cursor handling code set the cursor
-    // as we do above.
-    if (!(event.flags() & ui::EF_IS_NON_CLIENT))
-      widget_->SetCursor(ui::Cursor());
-    mouse_move_handler_ = nullptr;
-  }
+void RootView::OnMouseEntered(const ui::MouseEvent& event) {
+  HandleMouseEnteredOrMoved(event);
 }
 
 void RootView::OnMouseExited(const ui::MouseEvent& event) {
@@ -669,9 +597,8 @@ void RootView::OnMouseExited(const ui::MouseEvent& event) {
     if (dispatch_details.dispatcher_destroyed)
       return;
     // The mouse_move_handler_ could have been destroyed in the context of the
-    // mouse exit event.
-    if (!dispatch_details.target_destroyed) {
-      CHECK(mouse_move_handler_);
+    // mouse exit event. b/312400341
+    if (!dispatch_details.target_destroyed && mouse_move_handler_) {
       dispatch_details = NotifyEnterExitOfDescendant(
           event, ui::ET_MOUSE_EXITED, mouse_move_handler_, nullptr);
       if (dispatch_details.dispatcher_destroyed)
@@ -829,6 +756,121 @@ void RootView::SetMouseLocationAndFlags(const ui::MouseEvent& event) {
   last_mouse_event_y_ = event.y();
 }
 
+void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
+  View* v = GetEventHandlerForPoint(event.location());
+  // Check for a disabled move handler. If the move handler became
+  // disabled while handling moves, it's wrong to suddenly send
+  // ET_MOUSE_EXITED and ET_MOUSE_ENTERED events, because the mouse
+  // hasn't actually exited yet.
+  if (mouse_move_handler_ && !mouse_move_handler_->GetEnabled() &&
+      v->Contains(mouse_move_handler_)) {
+    v = mouse_move_handler_;
+  }
+
+  if (v && v != this) {
+    if (v != mouse_move_handler_) {
+      if (mouse_move_handler_ != nullptr &&
+          (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
+           !mouse_move_handler_->Contains(v))) {
+        MouseEnterExitEvent exit(event, ui::ET_MOUSE_EXITED);
+        exit.ConvertLocationToTarget(static_cast<View*>(this),
+                                     mouse_move_handler_.get());
+        ui::EventDispatchDetails dispatch_details =
+            DispatchEvent(mouse_move_handler_, &exit);
+        if (dispatch_details.dispatcher_destroyed) {
+          return;
+        }
+        // The mouse_move_handler_ could have been destroyed in the context of
+        // the mouse exit event.
+        if (!dispatch_details.target_destroyed) {
+          // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
+          // cleared, perhaps by a nested event handler, so return and wait for
+          // the next mouse move event.
+          if (!mouse_move_handler_) {
+            return;
+          }
+          dispatch_details = NotifyEnterExitOfDescendant(
+              event, ui::ET_MOUSE_EXITED, mouse_move_handler_, v);
+          if (dispatch_details.dispatcher_destroyed) {
+            return;
+          }
+        }
+      }
+      View* old_handler = mouse_move_handler_;
+      mouse_move_handler_ = v;
+      // TODO(crbug.com/1295290): This is for debug purpose only.
+      // Remove it after resolving the issue.
+      DanglingMouseMoveHandlerOnViewDestroyingChecker
+          mouse_move_handler_dangling_checker(mouse_move_handler_);
+      if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
+          !mouse_move_handler_->Contains(old_handler)) {
+        MouseEnterExitEvent entered(event, ui::ET_MOUSE_ENTERED);
+        entered.ConvertLocationToTarget(static_cast<View*>(this),
+                                        mouse_move_handler_.get());
+        ui::EventDispatchDetails dispatch_details =
+            DispatchEvent(mouse_move_handler_, &entered);
+        if (dispatch_details.dispatcher_destroyed ||
+            dispatch_details.target_destroyed) {
+          return;
+        }
+        // View was removed by ET_MOUSE_ENTERED, or |mouse_move_handler_| was
+        // cleared, perhaps by a nested event handler, so return and wait for
+        // the next mouse move event.
+        if (!mouse_move_handler_) {
+          return;
+        }
+        dispatch_details = NotifyEnterExitOfDescendant(
+            event, ui::ET_MOUSE_ENTERED, mouse_move_handler_, old_handler);
+        if (dispatch_details.dispatcher_destroyed ||
+            dispatch_details.target_destroyed) {
+          return;
+        }
+      }
+    }
+
+    if (event.type() == ui::ET_MOUSE_MOVED) {
+      ui::MouseEvent moved_event(event, static_cast<View*>(this),
+                                 mouse_move_handler_.get());
+      mouse_move_handler_->OnMouseMoved(moved_event);
+      // TODO(tdanderson): It may be possible to avoid setting the cursor twice
+      //                   (once here and once from CompoundEventFilter) on a
+      //                   mousemove. See crbug.com/351469.
+      if (!(moved_event.flags() & ui::EF_IS_NON_CLIENT)) {
+        widget_->SetCursor(mouse_move_handler_->GetCursor(moved_event));
+      }
+    }
+  } else if (mouse_move_handler_ != nullptr) {
+    MouseEnterExitEvent exited(event, ui::ET_MOUSE_EXITED);
+    ui::EventDispatchDetails dispatch_details =
+        DispatchEvent(mouse_move_handler_, &exited);
+    if (dispatch_details.dispatcher_destroyed) {
+      return;
+    }
+    // The mouse_move_handler_ could have been destroyed in the context of the
+    // mouse exit event.
+    if (!dispatch_details.target_destroyed) {
+      // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
+      // cleared, perhaps by a nested event handler, so return and wait for
+      // the next mouse move event.
+      if (!mouse_move_handler_) {
+        return;
+      }
+      dispatch_details = NotifyEnterExitOfDescendant(event, ui::ET_MOUSE_EXITED,
+                                                     mouse_move_handler_, v);
+      if (dispatch_details.dispatcher_destroyed) {
+        return;
+      }
+    }
+    // On Aura the non-client area extends slightly outside the root view for
+    // some windows.  Let the non-client cursor handling code set the cursor
+    // as we do above.
+    if (!(event.flags() & ui::EF_IS_NON_CLIENT)) {
+      widget_->SetCursor(ui::Cursor());
+    }
+    mouse_move_handler_ = nullptr;
+  }
+}
+
 ui::EventDispatchDetails RootView::NotifyEnterExitOfDescendant(
     const ui::MouseEvent& event,
     ui::EventType type,
@@ -902,6 +944,6 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
   return details;
 }
 
-BEGIN_METADATA(RootView, View)
+BEGIN_METADATA(RootView)
 END_METADATA
 }  // namespace views::internal

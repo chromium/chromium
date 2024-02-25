@@ -16,4 +16,7 @@ extern const CGSize kReturnToRecentTabSize;
 // Accessibility Identifier for QuerySuggestionView.
 extern NSString* const kQuerySuggestionViewA11yIdentifierPrefix;
 
+// Image container width when kMagicStack is enabled.
+extern const CGFloat kMagicStackImageContainerWidth;
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_CELLS_CONSTANTS_H_

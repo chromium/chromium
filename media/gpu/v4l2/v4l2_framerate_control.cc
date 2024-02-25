@@ -4,6 +4,8 @@
 
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
 
+#include <linux/videodev2.h>
+
 #include "base/command_line.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,6 +14,9 @@
 #include "media/base/media_switches.h"
 
 namespace {
+// Numerical value of ioctl() OK return value;
+constexpr int kIoctlOk = 0;
+
 double GetUserFrameRate() {
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!cmd_line->HasSwitch(switches::kHardwareVideoDecodeFrameRate))
@@ -31,9 +36,8 @@ double GetUserFrameRate() {
   return 0.0;
 }
 
-bool FrameRateControlPresent(scoped_refptr<media::V4L2Device> device) {
-  DCHECK(device);
-
+bool FrameRateControlPresent(
+    const media::V4L2FrameRateControl::IoctlAsCallback& ioctl_cb) {
   struct v4l2_streamparm parms;
   memset(&parms, 0, sizeof(parms));
   parms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
@@ -52,7 +56,7 @@ bool FrameRateControlPresent(scoped_refptr<media::V4L2Device> device) {
             << " fps.";
   }
 
-  if (device->Ioctl(VIDIOC_S_PARM, &parms) != 0) {
+  if (ioctl_cb.Run(VIDIOC_S_PARM, &parms) != kIoctlOk) {
     VLOG(1) << "Failed to issue VIDIOC_S_PARM command";
     return false;
   }
@@ -64,17 +68,17 @@ bool FrameRateControlPresent(scoped_refptr<media::V4L2Device> device) {
 }  // namespace
 namespace media {
 
-static constexpr int kMovingAverageWindowSize = 32;
+static constexpr unsigned int kMovingAverageWindowSize = 32;
 static constexpr base::TimeDelta kFrameIntervalFor120fps =
     base::Milliseconds(8);
 static constexpr base::TimeDelta kFrameIntervalFor24fps =
     base::Milliseconds(41);
 
 V4L2FrameRateControl::V4L2FrameRateControl(
-    scoped_refptr<V4L2Device> device,
+    const IoctlAsCallback& ioctl_cb,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : device_(device),
-      framerate_control_present_(FrameRateControlPresent(device)),
+    : ioctl_cb_(ioctl_cb),
+      framerate_control_present_(FrameRateControlPresent(ioctl_cb_)),
       current_frame_duration_avg_ms_(0),
       last_frame_display_time_(base::TimeTicks::Now()),
       frame_duration_moving_average_(kMovingAverageWindowSize),
@@ -87,13 +91,12 @@ V4L2FrameRateControl::~V4L2FrameRateControl() = default;
 
 void V4L2FrameRateControl::UpdateFrameRate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if ((frame_duration_moving_average_.count() <
-       frame_duration_moving_average_.depth())) {
+  if (frame_duration_moving_average_.Count() < kMovingAverageWindowSize) {
     return;
   }
 
   const base::TimeDelta frame_duration_avg =
-      frame_duration_moving_average_.Average();
+      frame_duration_moving_average_.Mean();
 
   if (frame_duration_avg > kFrameIntervalFor120fps &&
       frame_duration_avg < kFrameIntervalFor24fps &&
@@ -111,7 +114,7 @@ void V4L2FrameRateControl::UpdateFrameRate() {
     TRACE_COUNTER_ID1("media,gpu", "V4L2 estimated frame rate (Hz)", this,
                       std::round(frame_duration_avg.ToHz()));
 
-    if (device_->Ioctl(VIDIOC_S_PARM, &parms) != 0) {
+    if (ioctl_cb_.Run(VIDIOC_S_PARM, &parms) != kIoctlOk) {
       LOG(ERROR) << "Failed to issue VIDIOC_S_PARM command";
       TRACE_EVENT0("media,gpu", "V4L2 VIDIOC_S_PARM call failed");
     }
@@ -165,6 +168,18 @@ void V4L2FrameRateControl::AttachToVideoFrame(
     return;
 
   video_frame->AddDestructionObserver(
+      base::BindOnce(&V4L2FrameRateControl::RecordFrameDurationThunk,
+                     weak_this_factory_.GetWeakPtr(), task_runner_));
+}
+
+void V4L2FrameRateControl::AttachToFrameResource(
+    scoped_refptr<FrameResource>& frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!framerate_control_present_) {
+    return;
+  }
+
+  frame->AddDestructionObserver(
       base::BindOnce(&V4L2FrameRateControl::RecordFrameDurationThunk,
                      weak_this_factory_.GetWeakPtr(), task_runner_));
 }

@@ -4,11 +4,11 @@
 
 #include "content/browser/interest_group/subresource_url_builder.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/strings/escape.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "url/gurl.h"
 
@@ -18,13 +18,13 @@ namespace {
 
 using BundleSubresourceInfo = SubresourceUrlBuilder::BundleSubresourceInfo;
 
-absl::optional<BundleSubresourceInfo> BuildSellerSignalsSubresourceURL(
-    const absl::optional<const blink::DirectFromSellerSignals>&
+std::optional<BundleSubresourceInfo> BuildSellerSignalsSubresourceURL(
+    const std::optional<const blink::DirectFromSellerSignals>&
         direct_from_seller_signals) {
   if (!direct_from_seller_signals)
-    return absl::nullopt;
+    return std::nullopt;
   if (!direct_from_seller_signals->seller_signals)
-    return absl::nullopt;
+    return std::nullopt;
   BundleSubresourceInfo full_info(
       /*subresource_url=*/GURL(direct_from_seller_signals->prefix.spec() +
                                "?sellerSignals"),
@@ -32,13 +32,13 @@ absl::optional<BundleSubresourceInfo> BuildSellerSignalsSubresourceURL(
   return full_info;
 }
 
-absl::optional<BundleSubresourceInfo> BuildAuctionSignalsSubresourceURL(
-    const absl::optional<const blink::DirectFromSellerSignals>&
+std::optional<BundleSubresourceInfo> BuildAuctionSignalsSubresourceURL(
+    const std::optional<const blink::DirectFromSellerSignals>&
         direct_from_seller_signals) {
   if (!direct_from_seller_signals)
-    return absl::nullopt;
+    return std::nullopt;
   if (!direct_from_seller_signals->auction_signals)
-    return absl::nullopt;
+    return std::nullopt;
   BundleSubresourceInfo full_info(
       /*subresource_url=*/GURL(direct_from_seller_signals->prefix.spec() +
                                "?auctionSignals"),
@@ -48,7 +48,7 @@ absl::optional<BundleSubresourceInfo> BuildAuctionSignalsSubresourceURL(
 
 base::flat_map<url::Origin, BundleSubresourceInfo>
 BuildPerBuyerSignalsSubresourceURLs(
-    const absl::optional<const blink::DirectFromSellerSignals>&
+    const std::optional<const blink::DirectFromSellerSignals>&
         direct_from_seller_signals) {
   if (!direct_from_seller_signals)
     return {};
@@ -90,7 +90,7 @@ BundleSubresourceInfo& BundleSubresourceInfo::operator=(
     BundleSubresourceInfo&&) = default;
 
 SubresourceUrlBuilder::SubresourceUrlBuilder(
-    const absl::optional<blink::DirectFromSellerSignals>&
+    const std::optional<blink::DirectFromSellerSignals>&
         direct_from_seller_signals)
     : seller_signals_(
           BuildSellerSignalsSubresourceURL(direct_from_seller_signals)),

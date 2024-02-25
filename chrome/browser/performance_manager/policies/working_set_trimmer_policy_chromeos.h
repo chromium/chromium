@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/memory_pressure_listener.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 class ArcProcess;
@@ -161,28 +161,19 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
 
   // Keeps track of the last time we walked the graph looking for processes
   // to trim.
-  absl::optional<base::TimeTicks> last_graph_walk_;
+  std::optional<base::TimeTicks> last_graph_walk_;
 
   // We keep track of the last time we fetched the ARC process list.
-  absl::optional<base::TimeTicks> last_arc_process_fetch_;
+  std::optional<base::TimeTicks> last_arc_process_fetch_;
 
   // We also keep track of the last time we reclaimed memory from ARCVM.
-  absl::optional<base::TimeTicks> last_arcvm_trim_;
-  absl::optional<base::TimeTicks> last_arcvm_trim_success_;
+  std::optional<base::TimeTicks> last_arcvm_trim_;
+  std::optional<base::TimeTicks> last_arcvm_trim_success_;
 
-  absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
  private:
-  static size_t GetArcVmTrimCountForFinalReport(
-      size_t current_arcvm_trim_count,
-      const base::TimeDelta& time_since_last_arcvm_trim_metric_report,
-      const base::TimeDelta& arcvm_trim_backoff_time,
-      const base::TimeDelta& arcvm_trim_metric_report_delay);
-
-  void ReportArcVmTrimMetric();
-  void ReportArcVmTrimMetricOnDestruction();
-
-  raw_ptr<Graph, ExperimentalAsh> graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 
   bool trim_on_freeze_ = false;
   bool trim_arc_on_memory_pressure_ = false;
@@ -190,13 +181,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
 
   // This map contains the last trim time of arc processes.
   std::map<base::ProcessId, base::TimeTicks> arc_processes_last_trim_;
-
-  // A timer for periodically reporting UMA stats.
-  base::RepeatingTimer arcvm_trim_metric_report_timer_;
-
-  size_t arcvm_trim_count_ = 0;
-  size_t arcvm_trim_fail_count_ = 0;
-  base::ElapsedTimer time_since_last_arcvm_trim_metric_report_;
 
   base::WeakPtrFactory<WorkingSetTrimmerPolicyChromeOS> weak_ptr_factory_{this};
 };

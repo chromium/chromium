@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace network {
@@ -21,15 +22,11 @@ class NetworkContext;
 class WEB_ENGINE_EXPORT CookieManagerImpl final
     : public fuchsia::web::CookieManager {
  public:
-  // Used to request the BrowserContext's CookieManager. Since the
+  // `get_network_context` will be called to (re)connect to CookieManager,
+  // on-demand, in response to query/observation requests.  Since the
   // NetworkContext may change, e.g. if the NetworkService crashes, the returned
   // pointer will be used immediately, and not cached by the CookieManagerImpl.
-  using GetNetworkContextCallback =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
-
-  // |get_network_context| will be called to (re)connect to CookieManager,
-  // on-demand, in response to query/observation requests.
-  explicit CookieManagerImpl(GetNetworkContextCallback get_network_context);
+  explicit CookieManagerImpl(network::NetworkContextGetter get_network_context);
 
   CookieManagerImpl(const CookieManagerImpl&) = delete;
   CookieManagerImpl& operator=(const CookieManagerImpl&) = delete;
@@ -58,7 +55,7 @@ class WEB_ENGINE_EXPORT CookieManagerImpl final
   // Handles errors on the |cookie_manager_| Mojo channel.
   void OnMojoDisconnect();
 
-  const GetNetworkContextCallback get_network_context_;
+  const network::NetworkContextGetter get_network_context_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 
   base::OnceClosure on_mojo_disconnected_for_test_;

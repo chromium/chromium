@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_manager.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -40,6 +41,7 @@ class SyncEventListener final : public NativeEventListener {
 }  // namespace
 
 TEST(WakeLockSentinelTest, SentinelType) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -55,6 +57,7 @@ TEST(WakeLockSentinelTest, SentinelType) {
 }
 
 TEST(WakeLockSentinelTest, SentinelReleased) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -72,6 +75,7 @@ TEST(WakeLockSentinelTest, SentinelReleased) {
 }
 
 TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -109,6 +113,7 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
 }
 
 TEST(WakeLockSentinelTest, ContextDestruction) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -145,6 +150,7 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
 }
 
 TEST(WakeLockSentinelTest, HasPendingActivityConditions) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 

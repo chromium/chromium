@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -50,7 +51,7 @@ class BrokerServicesBase final : public BrokerServices,
   ResultCode CreateAlternateDesktop(Desktop desktop) override;
   void DestroyDesktops() override;
   std::unique_ptr<TargetPolicy> CreatePolicy() override;
-  std::unique_ptr<TargetPolicy> CreatePolicy(base::StringPiece key) override;
+  std::unique_ptr<TargetPolicy> CreatePolicy(std::string_view key) override;
 
   ResultCode SpawnTarget(const wchar_t* exe_path,
                          const wchar_t* command_line,

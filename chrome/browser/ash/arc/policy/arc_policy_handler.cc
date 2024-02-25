@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/policy/arc_policy_handler.h"
+
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -17,9 +19,7 @@
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "third_party/re2/src/re2/stringpiece.h"
 
 namespace arc {
 
@@ -27,8 +27,7 @@ namespace {
 
 // Return the first unknown variable in |input|, or |nullopt| if no unknown
 // variables exist.
-absl::optional<base::StringPiece> FindUnknownVariable(
-    const std::string& input) {
+std::optional<std::string_view> FindUnknownVariable(const std::string& input) {
   const std::string variable_matcher = base::StringPrintf(
       "%s|%s|%s|%s|%s|%s|%s", kUserEmail, kUserEmailName, kUserEmailDomain,
       kDeviceDirectoryId, kDeviceSerialNumber, kDeviceAssetId,
@@ -39,13 +38,13 @@ absl::optional<base::StringPiece> FindUnknownVariable(
   const re2::RE2 regex(unknown_variable_capture);
   DCHECK(regex.ok()) << "Error compiling regex: " << regex.error();
 
-  re2::StringPiece capture;
+  std::string_view capture;
   const bool found_unknown_variable =
       re2::RE2::PartialMatch(input, regex, &capture) &&
       capture.data() != nullptr;
 
   if (!found_unknown_variable)
-    return absl::nullopt;
+    return std::nullopt;
 
   return capture;
 }
@@ -70,7 +69,7 @@ void WarnInvalidVariablesInManagedConfiguration(
     if (!value.is_string())
       continue;
 
-    absl::optional<base::StringPiece> unknown_variable =
+    std::optional<std::string_view> unknown_variable =
         FindUnknownVariable(value.GetString());
     if (!unknown_variable.has_value())
       continue;
@@ -97,7 +96,7 @@ void ArcPolicyHandler::PrepareForDisplaying(policy::PolicyMap* policies) const {
   if (!value)
     return;
 
-  absl::optional<base::Value> json = base::JSONReader::Read(
+  std::optional<base::Value> json = base::JSONReader::Read(
       value->GetString(), base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   if (!json.has_value())
     return;

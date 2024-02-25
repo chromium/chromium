@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_UNDERSTANDING_INTENT_GENERATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace quick_answers {
 
@@ -67,7 +67,7 @@ class IntentGenerator {
 
   void MaybeGenerateTranslationIntent(const QuickAnswersRequest& request);
   void LanguageDetectorCallback(const QuickAnswersRequest& request,
-                                absl::optional<std::string> detected_language);
+                                std::optional<std::string> detected_language);
 
   // Owned by QuickAnswersClient;
   base::WeakPtr<SpellChecker> spell_checker_;

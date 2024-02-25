@@ -13,7 +13,7 @@
 // exceeds the limit for the _CheckForTooLargeFiles presubmit check.
 std::string GetTestData(const char *path) {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path = file_path.AppendASCII("third_party/boringssl/src");
   file_path = file_path.AppendASCII(path);
 

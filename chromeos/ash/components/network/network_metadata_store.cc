@@ -21,6 +21,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -452,17 +453,16 @@ base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
 
   if (!creation_timestamp_pref) {
     SetPref(network_guid, kCreationTimestamp,
-            base::Value(current_timestamp.ToDoubleT()));
+            base::Value(current_timestamp.InSecondsFSinceUnixEpoch()));
     return current_timestamp;
   }
 
-  const base::Time creation_timestamp =
-      base::Time::FromDoubleT(creation_timestamp_pref->GetDouble());
+  const base::Time creation_timestamp = base::Time::FromSecondsSinceUnixEpoch(
+      creation_timestamp_pref->GetDouble());
   const base::TimeDelta minimum_age = ComputeMigrationMinimumAge();
 
   if (creation_timestamp + minimum_age <= current_timestamp) {
-    SetPref(network_guid, kCreationTimestamp,
-            base::Value(base::Time::UnixEpoch().ToDoubleT()));
+    SetPref(network_guid, kCreationTimestamp, base::Value(0.0));
     return base::Time::UnixEpoch();
   }
   return creation_timestamp;
@@ -565,7 +565,7 @@ void NetworkMetadataStore::SetEnableTrafficCountersAutoReset(
 
 void NetworkMetadataStore::SetDayOfTrafficCountersAutoReset(
     const std::string& network_guid,
-    const absl::optional<int>& day) {
+    const std::optional<int>& day) {
   auto value = day.has_value() ? base::Value(day.value()) : base::Value();
   SetPref(network_guid, kDayOfTrafficCountersAutoReset, std::move(value));
 }
@@ -608,6 +608,7 @@ void NetworkMetadataStore::SetUserTextMessageSuppressionState(
 
   SetPref(network_guid, kUserTextMessageSuppressionState,
           base::Value(base::to_underlying(state)));
+  CellularNetworkMetricsLogger::LogUserTextMessageSuppressionState(state);
 }
 
 UserTextMessageSuppressionState

@@ -61,4 +61,14 @@ TEST_F(HidConnectionTrackerTest,
 TEST_F(HidConnectionTrackerTest, ProfileDestroyedExtensionOrigin) {
   TestProfileDestroyedExtensionOrigin();
 }
+
+TEST_F(HidConnectionTrackerTest, WhitelistedGnubbyDev) {
+  TestSingleProfileWhitelistedExtension("gnubbyd-v3 dev",
+                                        "ckcendljdlmgnhghiaomidhiiclmapok");
+}
+
+TEST_F(HidConnectionTrackerTest, WhitelistedGnubbyProd) {
+  TestSingleProfileWhitelistedExtension("gnubbyd-v3 prod",
+                                        "lfboplenmmjcmpbkeemecobbadnmpfhi");
+}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

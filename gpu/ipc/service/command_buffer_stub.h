@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -38,7 +39,6 @@
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/swap_result.h"
@@ -209,7 +209,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
    private:
     const raw_ref<CommandBufferStub> stub_;
     bool have_context_ = false;
-    absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use_;
+    std::optional<gles2::ProgramCache::ScopedCacheUse> cache_use_;
   };
 
   mojom::CommandBufferClient& client() { return *client_.get(); }
@@ -246,6 +246,14 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   bool MakeCurrent();
 
+  bool offscreen() const {
+#if BUILDFLAG(IS_ANDROID)
+    return offscreen_;
+#else
+    return true;
+#endif
+  }
+
   // The lifetime of objects of this class is managed by a GpuChannel. The
   // GpuChannels destroy all the CommandBufferStubs that they own when
   // they are destroyed. So a raw pointer is safe.
@@ -255,7 +263,9 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   ContextUrl active_url_;
 
   bool initialized_;
-  const SurfaceHandle surface_handle_;
+#if BUILDFLAG(IS_ANDROID)
+  const bool offscreen_;
+#endif
   bool use_virtualized_gl_context_;
 
   std::unique_ptr<CommandBufferService> command_buffer_;
@@ -280,7 +290,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void Destroy();
 
   void CreateCacheUse(
-      absl::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use);
+      std::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use);
 
   // Message handlers:
   void OnAsyncFlush(int32_t put_offset,

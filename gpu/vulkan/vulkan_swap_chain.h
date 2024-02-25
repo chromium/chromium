@@ -10,17 +10,16 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/swap_result.h"
@@ -53,9 +52,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
     VkSemaphore end_semaphore() const { return end_semaphore_; }
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION VulkanSwapChain* swap_chain_ = nullptr;
+    raw_ptr<VulkanSwapChain> swap_chain_ = nullptr;
     bool success_ = false;
     VkImage image_ = VK_NULL_HANDLE;
     uint32_t image_index_ = 0;
@@ -191,7 +188,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   VkResult state_ GUARDED_BY(lock_) = VK_SUCCESS;
 
   // Acquired images queue.
-  absl::optional<uint32_t> acquired_image_ GUARDED_BY(lock_);
+  std::optional<uint32_t> acquired_image_ GUARDED_BY(lock_);
 
   bool destroy_swapchain_will_hang_ = false;
 

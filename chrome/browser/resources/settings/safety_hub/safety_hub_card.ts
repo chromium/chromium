@@ -10,11 +10,12 @@
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CardInfo, CardState} from './safety_hub_browser_proxy.js';
+import type {CardInfo} from './safety_hub_browser_proxy.js';
+import {CardState} from './safety_hub_browser_proxy.js';
 import {getTemplate} from './safety_hub_card.html.js';
 
 export interface SettingsSafetyHubCardElement {
@@ -46,8 +47,9 @@ export class SettingsSafetyHubCardElement extends PolymerElement {
     switch (state) {
       case CardState.WARNING:
       case CardState.WEAK:
-      case CardState.INFO:
         return 'cr:error';
+      case CardState.INFO:
+        return 'cr:info';
       case CardState.SAFE:
         return 'cr:check-circle';
       default:

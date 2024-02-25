@@ -41,8 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
  * TF Lite Task Vision C++ library. @c NULL in case of an error.
  */
 - (std::unique_ptr<tflite::task::vision::FrameBuffer>)
-    cppFrameBufferWithUnderlyingBuffer:(uint8_t**)buffer
-                                 error:(NSError* _Nullable*)error;
+    cppFrameBufferWithUnderlyingBuffer:(uint8_t **)buffer
+                                 error:(NSError *_Nullable *)error;
 
 @end
 

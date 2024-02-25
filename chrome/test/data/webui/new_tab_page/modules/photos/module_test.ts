@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DisableModuleEvent, DismissModuleEvent, photosDescriptor, PhotosModuleElement, PhotosProxy} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, DomIf} from 'chrome://new-tab-page/new_tab_page.js';
+import type {DisableModuleEvent, DismissModuleEvent, PhotosModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {photosDescriptor, PhotosProxy} from 'chrome://new-tab-page/lazy_load.js';
+import type {DomIf} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PhotosHandlerRemote} from 'chrome://new-tab-page/photos.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';

@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -32,19 +33,17 @@
 #include "third_party/skia/include/core/SkTypes.h"
 
 namespace content {
-
 namespace {
 
-// This enum values match ContextProviderPhase in histograms.xml
-enum ContextProviderPhase {
-  CONTEXT_PROVIDER_ACQUIRED = 0,
-  CONTEXT_PROVIDER_RELEASED = 1,
-  CONTEXT_PROVIDER_RELEASED_MAX_VALUE = CONTEXT_PROVIDER_RELEASED,
-};
+// Kill switch for using multiplanar YV12 instead of I420 with 3x single planar.
+BASE_FEATURE(kUseYV12MultiPlanar,
+             "UseYV12MultiPlanar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-void RecordContextProviderPhaseUmaEnum(const ContextProviderPhase phase) {
-  UMA_HISTOGRAM_ENUMERATION("Media.GPU.HasEverLostContext", phase,
-                            CONTEXT_PROVIDER_RELEASED_MAX_VALUE + 1);
+bool UseYV12MultiPlanar() {
+  return base::FeatureList::IsEnabled(
+             media::kUseMultiPlaneFormatForSoftwareVideo) &&
+         base::FeatureList::IsEnabled(kUseYV12MultiPlanar);
 }
 
 }  // namespace
@@ -61,8 +60,6 @@ GpuVideoAcceleratorFactoriesImpl::Create(
     bool enable_media_stream_gpu_memory_buffers,
     bool enable_video_decode_accelerator,
     bool enable_video_encode_accelerator) {
-  RecordContextProviderPhaseUmaEnum(
-      ContextProviderPhase::CONTEXT_PROVIDER_ACQUIRED);
   return base::WrapUnique(new GpuVideoAcceleratorFactoriesImpl(
       std::move(gpu_channel_host), main_thread_task_runner, task_runner,
       std::move(context_provider), std::move(codec_factory),
@@ -182,8 +179,6 @@ void GpuVideoAcceleratorFactoriesImpl::DestroyContext() {
 
   context_provider_->RemoveObserver(this);
   context_provider_ = nullptr;
-  RecordContextProviderPhaseUmaEnum(
-      ContextProviderPhase::CONTEXT_PROVIDER_RELEASED);
 }
 
 bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoDecodeAcceleratorEnabled() {
@@ -345,14 +340,19 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     // TODO(mcasas): remove the |bit_depth| check when libyuv supports more than
     // just x010ToAR30 conversions, https://crbug.com/libyuv/751.
     if (bit_depth == 10) {
-      if (capabilities.image_ar30)
+      if (capabilities.image_ar30) {
         return media::GpuVideoAcceleratorFactories::OutputFormat::XR30;
-      else if (capabilities.image_ab30)
+      } else if (capabilities.image_ab30) {
         return media::GpuVideoAcceleratorFactories::OutputFormat::XB30;
+      }
     }
 #endif
-    if (capabilities.texture_rg)
+    if (capabilities.texture_rg) {
+      if (UseYV12MultiPlanar()) {
+        return media::GpuVideoAcceleratorFactories::OutputFormat::YV12;
+      }
       return media::GpuVideoAcceleratorFactories::OutputFormat::I420;
+    }
     return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
   }
 
@@ -364,21 +364,16 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
 #endif
   }
 
-  if (capabilities.texture_rg &&
-      base::FeatureList::IsEnabled(
-          media::kUseMultiPlaneFormatForSoftwareVideo)) {
-    // Use a single GMB and single multi-planar shared image for video.
-    return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
-  }
-
   if (capabilities.image_ycbcr_420v &&
       !capabilities.image_ycbcr_420v_disabled_for_video_frames) {
     return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
   }
   if (capabilities.texture_rg) {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     // Windows supports binding single shmem GMB as separate shared images. We
     // prefer single GMB because it makes dcomp overlay code simpler.
+    // UseMultiPlaneFormatForSoftwareVideo is enabled by default on mac so we
+    // can use NV12_SINGLE_GMB.
     return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
 #else
     return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB;
@@ -410,7 +405,7 @@ GpuVideoAcceleratorFactoriesImpl::GetTaskRunner() {
   return task_runner_;
 }
 
-absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
+std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
 GpuVideoAcceleratorFactoriesImpl::GetVideoEncodeAcceleratorSupportedProfiles() {
   return codec_factory_->GetVideoEncodeAcceleratorSupportedProfiles();
 }

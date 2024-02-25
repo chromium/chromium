@@ -1,0 +1,57 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PerAppTimeLimitsAllowlist": {
+            "app_list": [
+              {
+                "app_id": "pjkljhegncpnkpknbcohdijeoejaedia",
+                "app_type": "EXTENSION"
+              },
+              {
+                "app_id": "iniodglblcgmngkgdipeiclkdjjpnlbn",
+                "app_type": "BUILT-IN"
+              }
+            ],
+            "domain_list": [
+              "support.google.com",
+              "policies.google.com"
+            ],
+            "scheme_list": [
+              "chrome",
+              "files"
+            ]
+          }
+        },
+        "prefs": {
+          "child_user.per_app_time_limits.allowlist": {
+            "value": {
+              "app_list": [
+                {
+                  "app_id": "pjkljhegncpnkpknbcohdijeoejaedia",
+                  "app_type": "EXTENSION"
+                },
+                {
+                  "app_id": "iniodglblcgmngkgdipeiclkdjjpnlbn",
+                  "app_type": "BUILT-IN"
+                }
+              ],
+              "domain_list": [
+                "support.google.com",
+                "policies.google.com"
+              ],
+              "scheme_list": [
+                "chrome",
+                "files"
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+]

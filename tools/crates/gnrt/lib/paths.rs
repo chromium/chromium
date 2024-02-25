@@ -4,6 +4,7 @@
 
 //! Paths and helpers for running within a Chromium checkout.
 
+use itertools::Itertools;
 use std::env;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -22,11 +23,17 @@ pub struct ChromiumPaths {
     /// The root of the Rust source tree that is installed in //third_party and
     /// used in the Chromium GN build.
     pub rust_src_installed: &'static Path,
+
     pub std_config_file: &'static Path,
     pub std_build: &'static Path,
     pub std_fake_root: &'static Path,
     pub std_fake_root_config_template: &'static Path,
     pub std_fake_root_cargo_template: &'static Path,
+
+    pub third_party_cargo_root: &'static Path,
+    pub third_party_config_file: &'static Path,
+
+    pub vet_config_file: &'static Path,
 }
 
 impl ChromiumPaths {
@@ -55,16 +62,19 @@ impl ChromiumPaths {
             std_fake_root: check_path(&cur_dir, STD_FAKE_ROOT)?,
             std_fake_root_config_template: check_path(&cur_dir, STD_FAKE_ROOT_CONFIG_TEMPLATE)?,
             std_fake_root_cargo_template: check_path(&cur_dir, STD_FAKE_ROOT_CARGO_TEMPLATE)?,
+
+            third_party_cargo_root: check_path(&cur_dir, THIRD_PARTY_CARGO_ROOT)?,
+            third_party_config_file: check_path(&cur_dir, THIRD_PARTY_CONFIG_FILE)?,
+
+            // The vet config file does not exist, since gnrt writes it.
+            vet_config_file: Path::new(VET_CONFIG_FILE),
         })
     }
 
     /// Given an absolute path to a file in the checkout, get an absolute GN
     /// path suitable for use in GN rules.
-    pub fn to_gn_abs_path<'a>(
-        &self,
-        path: &'a Path,
-    ) -> Result<std::borrow::Cow<'a, str>, std::path::StripPrefixError> {
-        Ok(path.strip_prefix(&self.root)?.to_string_lossy())
+    pub fn to_gn_abs_path(&self, path: &Path) -> Result<String, std::path::StripPrefixError> {
+        Ok(normalize_unix_path_separator(path.strip_prefix(&self.root)?))
     }
 
     /// Modifies the file name in a path from `foo.bar.template` to `foo.bar`.
@@ -91,12 +101,38 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
     Ok(p)
 }
 
+/// Replace all path separators with `/` and return it as a String. The
+/// resulting path is suitable for use in GN files.
+pub fn normalize_unix_path_separator(path: &Path) -> String {
+    // `Path`s on windows use `\` separators and we need to use `/` in GN strings.
+    path.iter()
+        .map(|comp| comp.to_str().unwrap_or_else(|| panic!("non-UTF-8 in path {:?}", path)))
+        .join("/")
+}
+
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
 static RUST_SRC_LIBRARY_SUBDIR: &str = "library";
 static RUST_SRC_VENDOR_SUBDIR: &str = "vendor";
 static RUST_SRC_INSTALLED_DIR: &str = "third_party/rust-toolchain/lib/rustlib/src/rust";
+
 static STD_CONFIG_FILE: &str = "build/rust/std/gnrt_config.toml";
 static STD_BUILD_DIR: &str = "build/rust/std/rules";
 static STD_FAKE_ROOT: &str = "build/rust/std/fake_root";
 static STD_FAKE_ROOT_CONFIG_TEMPLATE: &str = "build/rust/std/fake_root/.cargo/config.toml.template";
 static STD_FAKE_ROOT_CARGO_TEMPLATE: &str = "build/rust/std/fake_root/Cargo.toml.template";
+
+static THIRD_PARTY_CARGO_ROOT: &str = "third_party/rust/chromium_crates_io";
+static THIRD_PARTY_CONFIG_FILE: &str = "third_party/rust/chromium_crates_io/gnrt_config.toml";
+
+static VET_CONFIG_FILE: &str = "third_party/rust/chromium_crates_io/supply-chain/config.toml";
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_normalize() {
+        assert_eq!(normalize_unix_path_separator(Path::new("rel")), "rel");
+        assert_eq!(normalize_unix_path_separator(&Path::new("a").join("b")), "a/b");
+    }
+}

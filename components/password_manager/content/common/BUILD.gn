@@ -7,4 +7,5 @@ static_library("common") {
     "web_ui_constants.cc",
     "web_ui_constants.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

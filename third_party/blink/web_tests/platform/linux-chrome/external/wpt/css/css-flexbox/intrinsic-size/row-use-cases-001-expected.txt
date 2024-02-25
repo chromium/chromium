@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] zero width
+  assert_equals: expected 0 but got 200
+[FAIL] same heights
+  assert_equals: expected 28 but got 40
+[FAIL] no overflow 2
+  assert_less_than_equal: expected a number less than or equal to 85.65625 but got 129.3125
+Harness: the test ran to completion.

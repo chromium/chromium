@@ -1,0 +1,28 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("parcel_tracking") {
+  sources = [
+    "infobar_parcel_tracking_modal_consumer.h",
+    "infobar_parcel_tracking_modal_delegate.h",
+    "infobar_parcel_tracking_presenter.h",
+    "infobar_parcel_tracking_table_view_controller.h",
+    "infobar_parcel_tracking_table_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/parcel_tracking:infobar_delegate",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/web/public/annotations:custom_text_check_result",
+    "//ui/base",
+  ]
+}

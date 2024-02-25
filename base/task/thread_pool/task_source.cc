@@ -15,6 +15,8 @@
 namespace base {
 namespace internal {
 
+ExecutionEnvironment::~ExecutionEnvironment() = default;
+
 TaskSource::Transaction::Transaction(TaskSource* task_source)
     : task_source_(task_source) {
   task_source->lock_.Acquire();
@@ -61,16 +63,10 @@ void TaskSource::ClearDelayedHeapHandle() {
 }
 
 TaskSource::TaskSource(const TaskTraits& traits,
-                       TaskRunner* task_runner,
                        TaskSourceExecutionMode execution_mode)
     : traits_(traits),
       priority_racy_(traits.priority()),
-      task_runner_(task_runner),
-      execution_mode_(execution_mode) {
-  DCHECK(task_runner_ ||
-         execution_mode_ == TaskSourceExecutionMode::kParallel ||
-         execution_mode_ == TaskSourceExecutionMode::kJob);
-}
+      execution_mode_(execution_mode) {}
 
 TaskSource::~TaskSource() {
   // If this fails, a Transaction was likely held while releasing a reference to
@@ -86,7 +82,9 @@ TaskSource::Transaction TaskSource::BeginTransaction() {
 
 void TaskSource::ClearForTesting() {
   auto task = Clear(nullptr);
-  std::move(task.task).Run();
+  if (task) {
+    std::move(task->task).Run();
+  }
 }
 
 RegisteredTaskSource::RegisteredTaskSource() = default;
@@ -153,7 +151,8 @@ Task RegisteredTaskSource::TakeTask(TaskSource::Transaction* transaction) {
   return task_source_->TakeTask(transaction);
 }
 
-Task RegisteredTaskSource::Clear(TaskSource::Transaction* transaction) {
+std::optional<Task> RegisteredTaskSource::Clear(
+    TaskSource::Transaction* transaction) {
   DCHECK(!transaction || transaction->task_source() == get());
   return task_source_->Clear(transaction);
 }

@@ -23,6 +23,7 @@
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -52,6 +53,8 @@ class ASH_EXPORT AppsContainerView
       public AppListToastContainerView::Delegate,
       public views::FocusChangeListener,
       public AppListViewProvider {
+  METADATA_HEADER(AppsContainerView, AppListPage)
+
  public:
   explicit AppsContainerView(ContentsView* contents_view);
 
@@ -112,9 +115,8 @@ class ASH_EXPORT AppsContainerView
       const gfx::Size& search_box_size);
 
   // views::View overrides:
-  void Layout() override;
+  void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
   void AddedToWidget() override;
@@ -180,7 +182,7 @@ class ASH_EXPORT AppsContainerView
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list container.
   void UpdateForNewSortingOrder(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure,
       base::OnceClosure animation_done_closure);
@@ -300,7 +302,7 @@ class ASH_EXPORT AppsContainerView
   // Called when the animation to fade out app list items is completed.
   // `aborted` indicates whether the fade out animation is aborted.
   void OnAppsGridViewFadeOutAnimationEnded(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool aborted);
 
   // Called when the animation to fade in app list items is completed.
@@ -323,7 +325,7 @@ class ASH_EXPORT AppsContainerView
   // cardified state ends.
   bool keep_gradient_mask_for_cardified_state_ = false;
 
-  const raw_ptr<ContentsView, ExperimentalAsh> contents_view_;
+  const raw_ptr<ContentsView> contents_view_;
 
   // The app list config used to configure sizing and layout of apps grid items
   // within the apps container.
@@ -337,20 +339,16 @@ class ASH_EXPORT AppsContainerView
 
   // Contains the |continue_section_| and the |apps_grid_view_|, which are views
   // that are affected by paging. Owned by views hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> scrollable_container_ = nullptr;
+  raw_ptr<views::View> scrollable_container_ = nullptr;
 
   // The views below are owned by views hierarchy.
-  raw_ptr<ContinueContainer, ExperimentalAsh> continue_container_ = nullptr;
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<AppListToastContainerView, ExperimentalAsh> toast_container_ =
-      nullptr;
-  raw_ptr<PagedAppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
-  raw_ptr<AppListFolderView, DanglingUntriaged | ExperimentalAsh>
-      app_list_folder_view_ = nullptr;
-  raw_ptr<PageSwitcher, DanglingUntriaged | ExperimentalAsh> page_switcher_ =
-      nullptr;
-  raw_ptr<FolderBackgroundView, ExperimentalAsh> folder_background_view_ =
-      nullptr;
+  raw_ptr<ContinueContainer> continue_container_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
+  raw_ptr<AppListToastContainerView> toast_container_ = nullptr;
+  raw_ptr<PagedAppsGridView> apps_grid_view_ = nullptr;
+  raw_ptr<AppListFolderView, DanglingUntriaged> app_list_folder_view_ = nullptr;
+  raw_ptr<PageSwitcher, DanglingUntriaged> page_switcher_ = nullptr;
+  raw_ptr<FolderBackgroundView> folder_background_view_ = nullptr;
 
   ShowState show_state_ = SHOW_NONE;
 

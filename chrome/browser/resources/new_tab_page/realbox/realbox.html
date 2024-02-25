@@ -16,6 +16,14 @@
     width: var(--cr-realbox-width);
   }
 
+  :host([realbox-chrome-refresh-theming][dropdown-is-visible]) {
+    --cr-realbox-shadow: 0 0 12px 4px var(--color-realbox-shadow)
+  }
+
+  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) {
+    --cr-realbox-shadow: none;
+  }
+
   /**
    * Maintain a larger width if the secondary side can be shown and was at any
    * point available to be shown.
@@ -93,6 +101,11 @@
     width: 100%;
   }
 
+  :host([realbox-chrome-refresh-theming]) input::selection {
+    background-color: var(--color-realbox-selection-background);
+    color: var(--color-realbox-selection-foreground)
+  }
+
   input::-webkit-search-decoration,
   input::-webkit-search-results-button,
   input::-webkit-search-results-decoration {
@@ -125,6 +138,11 @@
     background-color: var(--color-realbox-results-background);
   }
 
+  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) input {
+    background-color: var(--color-realbox-background);
+  }
+
+  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) input:hover,
   input:hover {
     background-color: var(--color-realbox-background-hovered);
   }
@@ -158,27 +176,60 @@
     width: var(--ntp-realbox-icon-width);
   }
 
-  :host([single-colored-icons]) #voiceSearchButton,
-  :host([single-colored-icons]) #lensSearchButton {
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 21px 21px;
-    background-color: var(--color-new-tab-page-primary-foreground);
+  :host([realbox-chrome-refresh-theming]) .realbox-icon-button {
+    position: static;
   }
 
-  :host([single-colored-icons]) #voiceSearchButton {
-    -webkit-mask-image: url(icons/googlemic_clr_24px.svg);
+  /* When voice/lens icons are monochrome, they are webkit mask images.
+   * Webkit mask images hide borders so container rules are created to
+   * show focus borders on these icons. */
+  .realbox-icon-button-container {
+    border-radius: 2px;
+    height: 100%;
+    position: absolute;
+    right: 16px;
+    top: 0;
+    z-index: 100;
   }
 
-  :host(:not([single-colored-icons])) #voiceSearchButton {
+  .realbox-icon-button-container.voice {
+    right: var(--ntp-realbox-voice-icon-offset);
+  }
+
+  :host-context(.focus-outline-visible) .realbox-icon-button-container:focus-within {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+
+  :host(:not([realbox-chrome-refresh-theming])) #voiceSearchButton {
     background-image: url(icons/googlemic_clr_24px.svg);
   }
 
-  :host([single-colored-icons]) #lensSearchButton {
+  :host(:not([realbox-chrome-refresh-theming])) #lensSearchButton {
+    background-image: url(chrome://new-tab-page/icons/lens_icon.svg);
+  }
+
+  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton,
+  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 21px 21px;
+    background-color: var(--color-realbox-lens-voice-icon-background);
+  }
+
+  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton {
+    -webkit-mask-image: url(icons/googlemic_clr_24px.svg);
+  }
+
+  :host([realbox-chrome-refresh-theming][color-source-is-baseline]) #voiceSearchButton {
+    background-image: url(icons/googlemic_clr_24px.svg);
+  }
+
+  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
     -webkit-mask-image: url(chrome://new-tab-page/icons/lens_icon.svg);
   }
 
-  :host(:not([single-colored-icons])) #lensSearchButton {
+  :host([realbox-chrome-refresh-theming][color-source-is-baseline]) #lensSearchButton {
     background-image: url(chrome://new-tab-page/icons/lens_icon.svg);
   }
 
@@ -193,6 +244,16 @@
 
   :host-context([dir='rtl']) .realbox-icon-button {
     left: 16px;
+    right: unset;
+  }
+
+  :host-context([dir='rtl']) .realbox-icon-button-container {
+    left: 16px;
+    right: unset;
+  }
+
+  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) .realbox-icon-button-container.voice {
+    left: var(--ntp-realbox-voice-icon-offset);
     right: unset;
   }
 
@@ -211,11 +272,16 @@
     top: 0;
     z-index: 99;
   }
+
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
 <div id="inputWrapper" on-focusout=onInputWrapperFocusout_
     on-keydown="onInputWrapperKeydown_">
-  <input id="input" type="search" autocomplete="off" spellcheck="false"
-      aria-live="[[inputAriaLive_]]" role="combobox"
+  <input id="input" class="truncate" type="search" autocomplete="off" 
+      spellcheck="false" aria-live="[[inputAriaLive_]]" role="combobox"
       aria-expanded="[[dropdownIsVisible]]" aria-controls="matches"
       placeholder="$i18n{searchBoxHint}" on-copy="onInputCutCopy_"
       on-cut="onInputCutCopy_" on-focus="onInputFocus_"
@@ -225,12 +291,28 @@
   <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
   </cr-realbox-icon>
+  <div class="realbox-icon-button-container voice"
+      hidden="[[!realboxChromeRefreshTheming]]">
+    <button id="voiceSearchButton" class="realbox-icon-button"
+        on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}">
+    </button>
+  </div>
+  <div class="realbox-icon-button-container lens"
+      hidden="[[!realboxChromeRefreshTheming]]">
+    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+      <button id="lensSearchButton" class="realbox-icon-button"
+          on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}">
+      </button>
+    </template>
+  </div>
   <button id="voiceSearchButton" class="realbox-icon-button"
-      on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}">
+      on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}"
+      hidden="[[realboxChromeRefreshTheming]]">
   </button>
   <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
     <button id="lensSearchButton" class="realbox-icon-button"
-        on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}">
+        on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}"
+        hidden="[[realboxChromeRefreshTheming]]">
     </button>
   </template>
   <cr-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
@@ -238,8 +320,8 @@
       can-show-secondary-side="[[canShowSecondarySide]]"
       had-secondary-side="{{hadSecondarySide}}"
       has-secondary-side="{{hasSecondarySide}}"
-      on-match-focusin="onMatchFocusin_" on-match-click="onMatchClick_"
-      on-match-remove="onMatchRemove_" on-header-focusin="onHeaderFocusin_"
+      on-match-focusin="onMatchFocusin_"
+      on-header-focusin="onHeaderFocusin_"
       hidden$="[[!dropdownIsVisible]]">
   </cr-realbox-dropdown>
 </div>

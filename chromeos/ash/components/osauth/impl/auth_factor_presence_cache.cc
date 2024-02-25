@@ -15,12 +15,12 @@ std::string GetAuthPurposeKey(AuthPurpose purpose) {
   return base::NumberToString(static_cast<int>(purpose));
 }
 
-absl::optional<AuthFactorsSet> GetForPurpose(const base::Value::Dict& cache,
-                                             AuthPurpose purpose) {
+std::optional<AuthFactorsSet> GetForPurpose(const base::Value::Dict& cache,
+                                            AuthPurpose purpose) {
   std::string purpose_key = GetAuthPurposeKey(purpose);
   const base::Value::List* factor_list = cache.FindList(purpose_key);
   if (!factor_list) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   AuthFactorsSet result;
   for (const base::Value& element : *factor_list) {
@@ -35,7 +35,7 @@ absl::optional<AuthFactorsSet> GetForPurpose(const base::Value::Dict& cache,
 AuthFactorsSet GetWithFallback(const base::Value::Dict& cache,
                                AuthPurpose purpose) {
   {
-    absl::optional<AuthFactorsSet> result = GetForPurpose(cache, purpose);
+    std::optional<AuthFactorsSet> result = GetForPurpose(cache, purpose);
     if (result.has_value()) {
       return *result;
     }

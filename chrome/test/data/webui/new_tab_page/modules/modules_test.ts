@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Module, ModuleDescriptor, ModuleRegistry, ModulesElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {Module} from 'chrome://new-tab-page/lazy_load.js';
+import {ModuleDescriptor, ModuleRegistry, ModulesElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {assertNotStyle, assertStyle, capture, createElement, initNullModule, installMock, render} from '../test_support.js';
 
@@ -18,6 +21,12 @@ suite('NewTabPageModulesModulesTest', () => {
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
   let moduleRegistry: TestMock<ModuleRegistry>;
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      modulesRedesignedEnabled: false,
+    });
+  });
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -387,8 +396,9 @@ suite('NewTabPageModulesModulesTest', () => {
     // Act.
     await waitAfterNextRender(modulesElement);
     const undoRemoveModuleButton =
-        modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
-        HTMLElement;
+        modulesElement.shadowRoot!.querySelector<HTMLElement>(
+            '#undoRemoveModuleButton');
+    assertTrue(!!undoRemoveModuleButton);
     undoRemoveModuleButton.click();
 
     // Assert.
@@ -461,8 +471,9 @@ suite('NewTabPageModulesModulesTest', () => {
     // Act.
     await waitAfterNextRender(modulesElement);
     const undoRemoveModuleButton =
-        modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
-        HTMLElement;
+        modulesElement.shadowRoot!.querySelector<HTMLElement>(
+            '#undoRemoveModuleButton');
+    assertTrue(!!undoRemoveModuleButton);
     undoRemoveModuleButton.click();
 
     // Assert.
@@ -820,8 +831,9 @@ suite('NewTabPageModulesModulesTest', () => {
       // // Act.
       await waitAfterNextRender(modulesElement);
       const undoRemoveModuleButton =
-          modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
-          HTMLElement;
+          modulesElement.shadowRoot!.querySelector<HTMLElement>(
+              '#undoRemoveModuleButton');
+      assertTrue(!!undoRemoveModuleButton);
       undoRemoveModuleButton.click();
 
       // Assert.

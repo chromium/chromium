@@ -16,9 +16,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
@@ -36,6 +43,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
@@ -71,6 +79,8 @@ class TestContextMenuController : public ContextMenuController {
 };
 
 class TestButton : public Button {
+  METADATA_HEADER(TestButton, Button)
+
  public:
   explicit TestButton(bool has_ink_drop_action_on_click)
       : Button(base::BindRepeating([](bool* pressed) { *pressed = true; },
@@ -113,6 +123,9 @@ class TestButton : public Button {
 
   KeyClickAction custom_key_click_action_ = KeyClickAction::kNone;
 };
+
+BEGIN_METADATA(TestButton)
+END_METADATA
 
 class TestButtonObserver {
  public:
@@ -181,7 +194,7 @@ class ButtonTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    button_ = widget()->SetContentsView(std::make_unique<TestButton>(false));
+    widget()->SetContentsView(std::make_unique<TestButton>(false));
 
     event_generator_ =
         std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget()));
@@ -194,20 +207,22 @@ class ButtonTest : public ViewsTestBase {
   }
 
   TestInkDrop* CreateButtonWithInkDrop(bool has_ink_drop_action_on_click) {
-    button_ = widget()->SetContentsView(
+    widget()->SetContentsView(
         std::make_unique<TestButton>(has_ink_drop_action_on_click));
-    return AddTestInkDrop(button_);
+    return AddTestInkDrop(button());
   }
 
   void CreateButtonWithObserver() {
-    button_ = widget()->SetContentsView(std::make_unique<TestButton>(false));
-    InkDrop::Get(button_)->SetMode(views::InkDropHost::InkDropMode::ON);
-    button_observer_ = std::make_unique<TestButtonObserver>(button_);
+    widget()->SetContentsView(std::make_unique<TestButton>(false));
+    InkDrop::Get(button())->SetMode(views::InkDropHost::InkDropMode::ON);
+    button_observer_ = std::make_unique<TestButtonObserver>(button());
   }
 
  protected:
   Widget* widget() { return widget_.get(); }
-  TestButton* button() { return button_; }
+  TestButton* button() {
+    return static_cast<TestButton*>(widget()->GetContentsView());
+  }
   TestButtonObserver* button_observer() { return button_observer_.get(); }
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
   void SetDraggedView(View* dragged_view) {
@@ -216,7 +231,6 @@ class ButtonTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<TestButton, DanglingUntriaged> button_;
   std::unique_ptr<TestButtonObserver> button_observer_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
@@ -376,6 +390,12 @@ TEST_F(ButtonTest, NotifyActionNoClick) {
       ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_FALSE(button()->canceled());
+}
+
+TEST_F(ButtonTest, ButtonControllerNotifyClick) {
+  EXPECT_FALSE(button()->pressed());
+  button()->button_controller()->NotifyClick();
+  EXPECT_TRUE(button()->pressed());
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
@@ -950,7 +970,7 @@ TEST_F(ButtonTest, AnchorHighlightSetsHiglight) {
 TEST_F(ButtonTest, AnchorHighlightDestructionClearsHighlight) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 
-  absl::optional<Button::ScopedAnchorHighlight> highlight =
+  std::optional<Button::ScopedAnchorHighlight> highlight =
       button()->AddAnchorHighlight();
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
 
@@ -961,9 +981,9 @@ TEST_F(ButtonTest, AnchorHighlightDestructionClearsHighlight) {
 TEST_F(ButtonTest, NestedAnchorHighlights) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 
-  absl::optional<Button::ScopedAnchorHighlight> highlight1 =
+  std::optional<Button::ScopedAnchorHighlight> highlight1 =
       button()->AddAnchorHighlight();
-  absl::optional<Button::ScopedAnchorHighlight> highlight2 =
+  std::optional<Button::ScopedAnchorHighlight> highlight2 =
       button()->AddAnchorHighlight();
 
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
@@ -978,9 +998,9 @@ TEST_F(ButtonTest, NestedAnchorHighlights) {
 TEST_F(ButtonTest, OverlappingAnchorHighlights) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 
-  absl::optional<Button::ScopedAnchorHighlight> highlight1 =
+  std::optional<Button::ScopedAnchorHighlight> highlight1 =
       button()->AddAnchorHighlight();
-  absl::optional<Button::ScopedAnchorHighlight> highlight2 =
+  std::optional<Button::ScopedAnchorHighlight> highlight2 =
       button()->AddAnchorHighlight();
 
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
@@ -995,13 +1015,42 @@ TEST_F(ButtonTest, OverlappingAnchorHighlights) {
 TEST_F(ButtonTest, AnchorHighlightsCanOutliveButton) {
   CreateButtonWithInkDrop(false);
 
-  absl::optional<Button::ScopedAnchorHighlight> highlight =
+  std::optional<Button::ScopedAnchorHighlight> highlight =
       button()->AddAnchorHighlight();
 
   // Creating a new button will destroy the old one
   CreateButtonWithInkDrop(false);
 
   highlight.reset();
+}
+
+using ButtonActionViewInterfaceTest = ButtonTest;
+
+TEST_F(ButtonActionViewInterfaceTest, TestActionChanged) {
+  const std::u16string test_string = u"test_string";
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder()
+          .SetTooltipText(test_string)
+          .SetActionId(0)
+          .SetEnabled(false)
+          .Build();
+  button()->GetActionViewInterface()->ActionItemChangedImpl(action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_EQ(test_string, button()->GetTooltipText());
+  EXPECT_FALSE(button()->GetEnabled());
+}
+
+TEST_F(ButtonActionViewInterfaceTest, TestActionTriggered) {
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  bool called = false;
+  button()->GetActionViewInterface()->LinkActionInvocationToView(
+      base::BindRepeating([](bool* called_bool) { *called_bool = true; },
+                          &called));
+  views::test::ButtonTestApi test_api(button());
+  test_api.NotifyClick(e);
+  EXPECT_TRUE(called);
 }
 
 }  // namespace views

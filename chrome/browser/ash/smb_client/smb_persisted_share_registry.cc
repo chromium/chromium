@@ -68,7 +68,7 @@ std::vector<uint8_t> GetEncodedBinaryValue(const base::Value::Dict& dict,
   return {decoded_value.begin(), decoded_value.end()};
 }
 
-absl::optional<SmbShareInfo> DictToShare(const base::Value::Dict& dict) {
+std::optional<SmbShareInfo> DictToShare(const base::Value::Dict& dict) {
   std::string share_url = GetStringValue(dict, kShareUrlKey);
   if (share_url.empty()) {
     return {};
@@ -81,7 +81,7 @@ absl::optional<SmbShareInfo> DictToShare(const base::Value::Dict& dict) {
                     GetStringValue(dict, kWorkgroupKey),
                     dict.FindBool(kUseKerberosKey).value_or(false),
                     GetEncodedBinaryValue(dict, kPasswordSaltKey));
-  return absl::make_optional(std::move(info));
+  return std::make_optional(std::move(info));
 }
 
 }  // namespace
@@ -125,7 +125,7 @@ void SmbPersistedShareRegistry::Delete(const SmbUrl& share_url) {
   }
 }
 
-absl::optional<SmbShareInfo> SmbPersistedShareRegistry::Get(
+std::optional<SmbShareInfo> SmbPersistedShareRegistry::Get(
     const SmbUrl& share_url) const {
   const base::Value& pref =
       profile_->GetPrefs()->GetValue(prefs::kNetworkFileSharesSavedShares);
@@ -144,7 +144,7 @@ std::vector<SmbShareInfo> SmbPersistedShareRegistry::GetAll() const {
 
   std::vector<SmbShareInfo> shares;
   for (const auto& entry : pref.GetList()) {
-    absl::optional<SmbShareInfo> info = DictToShare(entry.GetDict());
+    std::optional<SmbShareInfo> info = DictToShare(entry.GetDict());
     if (info) {
       shares.push_back(std::move(*info));
     }

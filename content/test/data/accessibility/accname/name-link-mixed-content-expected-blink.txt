@@ -1,4 +1,4 @@
-# Original expectation was missing a space ("Garaventathe"), but the spec is not
+# Original expectation was missing a space ("Elithe"), but the spec is not
 # clear about this and it seems wrong, the result should match the rendered text
 # more closely. See: https://github.com/w3c/accname/issues/15
-link name='My name is Garaventa the weird. (QED)' nameFrom=contents
+link name='My name is Eli the weird. (QED)' nameFrom=contents

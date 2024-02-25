@@ -4,7 +4,9 @@
 
 #include "chrome/updater/test/request_matcher.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,10 +19,9 @@
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "third_party/re2/src/re2/stringpiece.h"
 
 namespace updater::test::request {
 
@@ -48,33 +49,36 @@ Matcher GetPathMatcher(const std::string& expected_path_regex) {
 
 Matcher GetHeaderMatcher(const std::string& header_name,
                          const std::string& expected_header_regex) {
-  return base::BindLambdaForTesting(
-      [header_name, expected_header_regex](const HttpRequest& request) {
-        re2::RE2::Options opt;
-        opt.set_case_sensitive(false);
-        HttpRequest::HeaderMap::const_iterator it =
-            request.headers.find(header_name);
-        if (it == request.headers.end()) {
-          ADD_FAILURE() << "Request header '" << header_name
-                        << "' not found, expected regex "
-                        << expected_header_regex;
-          return false;
-        } else if (!re2::RE2::FullMatch(it->second,
-                                        re2::RE2(expected_header_regex, opt))) {
-          ADD_FAILURE() << "Request header [" << it->first << " = '"
-                        << it->second << "], did not match expected regex ["
-                        << expected_header_regex << "]";
-          return false;
-        }
-        return true;
-      });
+  return base::BindLambdaForTesting([header_name, expected_header_regex](
+                                        const HttpRequest& request) {
+    re2::RE2::Options opt;
+    opt.set_case_sensitive(false);
+    HttpRequest::HeaderMap::const_iterator it =
+        request.headers.find(header_name);
+    if (it == request.headers.end()) {
+      ADD_FAILURE() << "Request header '" << header_name
+                    << "' not found, expected regex " << expected_header_regex;
+      return false;
+    } else if (!re2::RE2::FullMatch(it->second,
+                                    re2::RE2(expected_header_regex, opt))) {
+      ADD_FAILURE() << "Request header [" << it->first << " = '" << it->second
+                    << "], did not match expected regex ["
+                    << expected_header_regex << "]";
+      return false;
+    }
+    return true;
+  });
+}
+
+Matcher GetUpdaterUserAgentMatcher() {
+  return GetHeaderMatcher("User-Agent", GetUpdaterUserAgent());
 }
 
 Matcher GetContentMatcher(
     const std::vector<std::string>& expected_content_regex_sequence) {
   return base::BindLambdaForTesting(
       [expected_content_regex_sequence](const HttpRequest& request) {
-        re2::StringPiece input(request.decoded_content);
+        std::string_view input(request.decoded_content);
         for (const std::string& regex : expected_content_regex_sequence) {
           re2::RE2::Options opt;
           opt.set_case_sensitive(false);
@@ -93,8 +97,8 @@ Matcher GetContentMatcher(
 
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
-    const bool is_match = [&scope, &request]() {
-      const absl::optional<base::Value> doc =
+    const bool is_match = [&scope, &request] {
+      const std::optional<base::Value> doc =
           base::JSONReader::Read(request.decoded_content);
       if (!doc || !doc->is_dict()) {
         return false;
@@ -104,7 +108,7 @@ Matcher GetScopeMatcher(UpdaterScope scope) {
       if (!object_request) {
         return false;
       }
-      absl::optional<bool> ismachine = object_request->FindBool("ismachine");
+      std::optional<bool> ismachine = object_request->FindBool("ismachine");
       if (!ismachine.has_value()) {
         return false;
       }
@@ -125,39 +129,38 @@ Matcher GetScopeMatcher(UpdaterScope scope) {
 
 Matcher GetAppPriorityMatcher(const std::string& app_id,
                               UpdateService::Priority priority) {
-  return base::BindLambdaForTesting(
-      [app_id, priority](const HttpRequest& request) {
-        const bool is_match = [&app_id, priority, &request]() {
-          const absl::optional<base::Value> doc =
-              base::JSONReader::Read(request.decoded_content);
-          if (!doc || !doc->is_dict()) {
-            return false;
-          }
-          const base::Value::List* app_list =
-              doc->GetDict().FindListByDottedPath("request.app");
-          if (!app_list) {
-            return false;
-          }
-          for (const base::Value& app : *app_list) {
-            if (const auto* dict = app.GetIfDict()) {
-              if (const auto* appid = dict->FindString("appid");
-                  *appid == app_id) {
-                if (const auto* install_source =
-                        dict->FindString("installsource")) {
-                  return (*install_source == "ondemand") ==
-                         (priority == UpdateService::Priority::kForeground);
-                }
-              }
+  return base::BindLambdaForTesting([app_id,
+                                     priority](const HttpRequest& request) {
+    const bool is_match = [&app_id, priority, &request] {
+      const std::optional<base::Value> doc =
+          base::JSONReader::Read(request.decoded_content);
+      if (!doc || !doc->is_dict()) {
+        return false;
+      }
+      const base::Value::List* app_list =
+          doc->GetDict().FindListByDottedPath("request.app");
+      if (!app_list) {
+        return false;
+      }
+      for (const base::Value& app : *app_list) {
+        if (const auto* dict = app.GetIfDict()) {
+          if (const auto* appid = dict->FindString("appid"); *appid == app_id) {
+            if (const auto* install_source =
+                    dict->FindString("installsource")) {
+              return (*install_source == "ondemand") ==
+                     (priority == UpdateService::Priority::kForeground);
             }
           }
-          return priority != UpdateService::Priority::kForeground;
-        }();
-        if (!is_match) {
-          ADD_FAILURE() << R"(Request does not match "appid", "priority: )"
-                        << GetPrintableContent(request);
         }
-        return is_match;
-      });
+      }
+      return priority != UpdateService::Priority::kForeground;
+    }();
+    if (!is_match) {
+      ADD_FAILURE() << R"(Request does not match "appid", "priority: )"
+                    << GetPrintableContent(request);
+    }
+    return is_match;
+  });
 }
 
 Matcher GetMultipartContentMatcher(
@@ -180,11 +183,11 @@ Matcher GetMultipartContentMatcher(
     }
 
     const std::string form_data_boundary = content_type.substr(
-        base::StringPiece(kMultifpartBoundaryPrefix).length());
+        std::string_view(kMultifpartBoundaryPrefix).length());
 
     re2::RE2::Options opt;
     opt.set_case_sensitive(false);
-    re2::StringPiece input(request.decoded_content);
+    std::string_view input(request.decoded_content);
     for (std::vector<FormExpectations>::const_iterator form_expection =
              form_expections.begin();
          form_expection < form_expections.end(); ++form_expection) {

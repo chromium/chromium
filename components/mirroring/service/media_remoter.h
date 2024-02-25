@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_MEDIA_REMOTER_H_
 #define COMPONENTS_MIRRORING_SERVICE_MEDIA_REMOTER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "media/cast/cast_config.h"
@@ -13,12 +15,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
 class CastEnvironment;
-class CastTransport;
 }  // namespace media::cast
 
 namespace mirroring {
@@ -83,15 +83,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
       std::unique_ptr<openscreen::cast::Sender> audio_sender,
       std::unique_ptr<openscreen::cast::Sender> video_sender,
-      absl::optional<media::cast::FrameSenderConfig> audio_config,
-      absl::optional<media::cast::FrameSenderConfig> video_config);
-
-  // Old way using a cast transport.
-  void StartRpcMessaging(
-      scoped_refptr<media::cast::CastEnvironment> cast_environment,
-      media::cast::CastTransport* transport,
-      absl::optional<media::cast::FrameSenderConfig> audio_config,
-      absl::optional<media::cast::FrameSenderConfig> video_config);
+      std::optional<media::cast::FrameSenderConfig> audio_config,
+      std::optional<media::cast::FrameSenderConfig> video_config);
 
   // Called when a mirroring session is successfully resumed.
   void OnMirroringResumed(bool is_tab_switching = false);
@@ -120,28 +113,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   void EstimateTransmissionCapacity(
       media::mojom::Remoter::EstimateTransmissionCapacityCallback callback)
       override;
-
-  void StartOpenscreenDataStreams(
-      mojo::ScopedDataPipeConsumerHandle audio_pipe,
-      mojo::ScopedDataPipeConsumerHandle video_pipe,
-      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-          audio_sender_receiver,
-      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-          video_sender_receiver);
-
-  void StartLegacyDataStreams(
-      mojo::ScopedDataPipeConsumerHandle audio_pipe,
-      mojo::ScopedDataPipeConsumerHandle video_pipe,
-      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-          audio_sender_receiver,
-      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
-          video_sender_receiver);
-
   // Called by the public |StartRpcMessaging| methods.
   void StartRpcMessagingInternal(
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
-      absl::optional<media::cast::FrameSenderConfig> audio_config,
-      absl::optional<media::cast::FrameSenderConfig> video_config);
+      std::optional<media::cast::FrameSenderConfig> audio_config,
+      std::optional<media::cast::FrameSenderConfig> video_config);
 
   // Called by RemotingSender when error occurred. Will stop this remoting
   // session and fallback to mirroring.
@@ -156,16 +132,13 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   std::unique_ptr<RemotingSender> audio_sender_;
   std::unique_ptr<RemotingSender> video_sender_;
 
-  // Used only if StartRpcMessaging is called with a cast transport.
-  raw_ptr<media::cast::CastTransport, DanglingUntriaged> transport_ = nullptr;
-
   // Used only if StartRpcMessaging is called with openscreen::cast::Sender
   // objects.
   std::unique_ptr<openscreen::cast::Sender> openscreen_audio_sender_;
   std::unique_ptr<openscreen::cast::Sender> openscreen_video_sender_;
 
-  absl::optional<media::cast::FrameSenderConfig> audio_config_;
-  absl::optional<media::cast::FrameSenderConfig> video_config_;
+  std::optional<media::cast::FrameSenderConfig> audio_config_;
+  std::optional<media::cast::FrameSenderConfig> video_config_;
 
   // State transition diagram:
   //

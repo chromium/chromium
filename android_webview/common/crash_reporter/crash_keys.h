@@ -23,6 +23,9 @@ extern const char kAppProcessName[];
 
 extern const char kAndroidSdkInt[];
 
+// `gpu::error::ContextLostReason` for context loss on draw functor context.
+extern const char kContextLossReason[];
+
 extern const char kSupportLibraryWebkitVersion[];
 
 // Indicates whether weblayer and webview are running in the same process.

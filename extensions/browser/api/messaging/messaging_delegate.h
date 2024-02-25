@@ -6,12 +6,12 @@
 #define EXTENSIONS_BROWSER_API_MESSAGING_MESSAGING_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/messaging/message_port.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "extensions/common/extension_id.h"
 
 class GURL;
 
@@ -44,7 +44,7 @@ class MessagingDelegate {
 
   // If web_contents is a tab, returns a dictionary representing its tab.
   // Otherwise returns nullptr.
-  virtual absl::optional<base::Value::Dict> MaybeGetTabInfo(
+  virtual std::optional<base::Value::Dict> MaybeGetTabInfo(
       content::WebContents* web_contents);
 
   // Returns the WebContents for the given tab ID, if found.
@@ -57,7 +57,7 @@ class MessagingDelegate {
   // if the tab is not available.
   virtual std::unique_ptr<MessagePort> CreateReceiverForTab(
       base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const PortId& receiver_port_id,
       content::WebContents* receiver_contents,
       int receiver_frame_id,
@@ -69,7 +69,7 @@ class MessagingDelegate {
       content::BrowserContext* browser_context,
       base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
       content::RenderFrameHost* source,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const PortId& receiver_port_id,
       const std::string& native_app_name,
       bool allow_user_level,

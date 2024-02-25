@@ -90,10 +90,12 @@ enum class OffersSuggestionsEvent {
 
 void LogOfferNotificationBubbleOfferMetric(
     AutofillOfferData::OfferType offer_type,
-    bool is_reshow);
+    bool is_reshow,
+    const GURL& url);
 
 void LogOfferNotificationBubblePromoCodeButtonClicked(
-    AutofillOfferData::OfferType offer_type);
+    AutofillOfferData::OfferType offer_type,
+    const GURL& url);
 
 void LogOfferNotificationBubbleResultMetric(
     AutofillOfferData::OfferType offer_type,
@@ -103,13 +105,13 @@ void LogOfferNotificationBubbleResultMetric(
 void LogOfferNotificationBubbleSuppressed(
     AutofillOfferData::OfferType offer_type);
 
-// Log that the offers suggestions popup was shown. If |first_time_being_logged|
+// Log that the offers suggestions popup was shown. If `first_time_being_logged`
 // is true, it represents that it has not been logged yet for the promo code
 // offer field that the user is on, so additional logging is needed for the
 // histogram that denotes showing the offers suggestions popup once for a field.
 void LogOffersSuggestionsPopupShown(bool first_time_being_logged);
 
-// Log the offers suggestions popup |event| for the corresponding |offer_type|.
+// Log the offers suggestions popup `event` for the corresponding `offer_type`.
 void LogIndividualOfferSuggestionEvent(OffersSuggestionsEvent event,
                                        AutofillOfferData::OfferType offer_type);
 
@@ -126,9 +128,10 @@ void LogStoredOfferMetrics(
 // Logs whether the synced autofill offer data is valid.
 void LogSyncedOfferDataBeingValid(bool invalid);
 
-// Log the presence of the offer notification icon shows on navigation event
-// for |offer_type|.
-void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type);
+// Log the presence of the offer notification icon shows on navigation `url`
+// for `offer_type`.
+void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type,
+                                    const GURL& url);
 
 }  // namespace autofill::autofill_metrics
 

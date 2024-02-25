@@ -14,6 +14,7 @@
 namespace content {
 class BrowserContext;
 class ServiceWorkerContext;
+class StoragePartition;
 }  // namespace content
 
 namespace web_app {

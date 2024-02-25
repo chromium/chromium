@@ -5,11 +5,12 @@
 #include "components/component_updater/android/component_loader_policy.h"
 
 #include <jni.h>
+#include <stddef.h>
 #include <stdio.h>
 
-#include <stddef.h>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,31 +40,31 @@
 #include "components/component_updater/android/components_info_holder.h"
 #include "components/component_updater/android/embedded_component_loader_jni_headers/ComponentLoaderPolicyBridge_jni.h"
 #include "components/update_client/utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 namespace {
 
 constexpr char kManifestFileName[] = "manifest.json";
 
-absl::optional<base::Value::Dict> ReadManifest(
+std::optional<base::Value::Dict> ReadManifest(
     const std::string& manifest_content) {
   JSONStringValueDeserializer deserializer(manifest_content);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
-  if (root && root->is_dict())
+  if (root && root->is_dict()) {
     return std::move(*root).TakeDict();
+  }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<base::Value::Dict> ReadManifestFromFd(int fd) {
+std::optional<base::Value::Dict> ReadManifestFromFd(int fd) {
   std::string content;
   base::ScopedFILE file_stream(
       base::FileToFILE(base::File(std::move(fd)), "r"));
   return base::ReadStreamToString(file_stream.get(), &content)
              ? ReadManifest(content)
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 void RecordComponentLoadStatusHistogram(const std::string& suffix,
@@ -156,7 +157,7 @@ AndroidComponentLoaderPolicy::GetComponentId(JNIEnv* env) {
 
 void AndroidComponentLoaderPolicy::NotifyNewVersion(
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    absl::optional<base::Value::Dict> manifest) {
+    std::optional<base::Value::Dict> manifest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!manifest) {
@@ -165,8 +166,9 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
   }
   std::string version_ascii;
   if (const std::string* ptr = manifest->FindString("version")) {
-    if (base::IsStringASCII(*ptr))
+    if (base::IsStringASCII(*ptr)) {
       version_ascii = *ptr;
+    }
   }
   base::Version version(version_ascii);
   if (!version.IsValid()) {

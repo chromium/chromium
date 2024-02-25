@@ -84,7 +84,69 @@ class PatchPanelClientImpl : public PatchPanelClient {
     patchpanel::NotifyAndroidWifiMulticastLockChangeRequest request;
     request.set_held(is_held);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      LOG(ERROR) << "Failed to parse NotifyAndroidWifiMulticastLockChange "
+      LOG(ERROR) << "Failed to serialize NotifyAndroidWifiMulticastLockChange "
+                    "request proto";
+      return;
+    }
+
+    patchpanel_proxy_->CallMethod(&method_call,
+                                  dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                  base::DoNothing());
+  }
+
+  void NotifySocketConnectionEvent(
+      const patchpanel::SocketConnectionEvent& msg) override {
+    dbus::MethodCall method_call(
+        patchpanel::kPatchPanelInterface,
+        patchpanel::kNotifySocketConnectionEventMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    patchpanel::NotifySocketConnectionEventRequest request;
+    *request.mutable_msg() = msg;
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to serialize NotifySocketConnectionEvent "
+                    "request proto";
+      return;
+    }
+
+    patchpanel_proxy_->CallMethod(&method_call,
+                                  dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                  base::DoNothing());
+  }
+
+  void NotifyARCVPNSocketConnectionEvent(
+      const patchpanel::SocketConnectionEvent& msg) override {
+    dbus::MethodCall method_call(
+        patchpanel::kPatchPanelInterface,
+        patchpanel::kNotifyARCVPNSocketConnectionEventMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    patchpanel::NotifyARCVPNSocketConnectionEventRequest request;
+    *request.mutable_msg() = msg;
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to serialize NotifyARCVPNSocketConnectionEvent "
+                    "request proto";
+      return;
+    }
+
+    patchpanel_proxy_->CallMethod(&method_call,
+                                  dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                  base::DoNothing());
+  }
+
+  void SetFeatureFlag(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
+                      bool enabled) override {
+    dbus::MethodCall method_call(patchpanel::kPatchPanelInterface,
+                                 patchpanel::kSetFeatureFlagMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    patchpanel::SetFeatureFlagRequest request;
+    request.set_flag(flag);
+    request.set_enabled(enabled);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to serialize SetFeatureFlag "
                     "request proto";
       return;
     }
@@ -142,7 +204,7 @@ class PatchPanelClientImpl : public PatchPanelClient {
   }
 
   // D-Bus proxy for the PatchPanel daemon, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> patchpanel_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> patchpanel_proxy_ = nullptr;
 
   // List of observers for dbus signals.
   base::ObserverList<Observer> observer_list_;

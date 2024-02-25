@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
-import android.graphics.Rect;
-
 import org.chromium.ui.resources.ResourceManager;
 
 /**
@@ -13,19 +11,13 @@ import org.chromium.ui.resources.ResourceManager;
  * render.
  */
 public interface LayoutRenderHost {
-    /**
-     * Request layout and draw.
-     */
+    /** Request layout and draw. */
     void requestRender();
 
-    /**
-     * Indicates that we are about to draw and final layout changes should be made.
-     */
+    /** Indicates that we are about to draw and final layout changes should be made. */
     void onCompositorLayout();
 
-    /**
-     * Indicates that a previously rendered frame has been swapped to the OS.
-     */
+    /** Indicates that a previously rendered frame has been swapped to the OS. */
     void didSwapFrame(int pendingFrameCount);
 
     /**
@@ -36,31 +28,14 @@ public interface LayoutRenderHost {
      */
     default void didSwapBuffers(boolean swappedCurrentSize, int framesUntilHideBackground) {}
 
-    /**
-     * Indicates that the rendering surface has just been created.
-     */
-    void onSurfaceCreated();
-
-    /**
-     * Indicates that the rendering surface has been resized.
-     */
+    /** Indicates that the rendering surface has been resized. */
     void onSurfaceResized(int width, int height);
-
-    /**
-     * Pushes a debug rectangle that will be drawn.
-     *
-     * @param rect  The rect to be drawn.
-     * @param color The color of the rect.
-     */
-    void pushDebugRect(Rect rect, int color);
 
     /**
      * @return The {@link ResourceManager}.
      */
     ResourceManager getResourceManager();
 
-    /**
-     * Called when something has changed in the Compositor rendered view system.
-     */
+    /** Called when something has changed in the Compositor rendered view system. */
     void invalidateAccessibilityProvider();
 }

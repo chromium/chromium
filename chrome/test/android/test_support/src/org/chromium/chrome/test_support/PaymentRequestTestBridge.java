@@ -8,9 +8,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.components.autofill.EditableOption;
@@ -26,9 +27,7 @@ import org.chromium.payments.mojom.PaymentItem;
 
 import java.util.List;
 
-/**
- * Test support for injecting test behaviour from C++ tests into Java PaymentRequests.
- */
+/** Test support for injecting test behaviour from C++ tests into Java PaymentRequests. */
 @JNINamespace("payments")
 public class PaymentRequestTestBridge {
     private static PaymentUiServiceTestInterface sUiService;
@@ -38,10 +37,13 @@ public class PaymentRequestTestBridge {
      * answers about the state of the system, in order to control which paths should be tested in
      * the ChromePaymentRequestService.
      */
-    private static class ChromePaymentRequestDelegateForTest
-            extends PaymentRequestDelegateForTest implements ChromePaymentRequestService.Delegate {
-        ChromePaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
-                boolean prefsCanMakePayment, String twaPackageName) {
+    private static class ChromePaymentRequestDelegateForTest extends PaymentRequestDelegateForTest
+            implements ChromePaymentRequestService.Delegate {
+        ChromePaymentRequestDelegateForTest(
+                boolean isOffTheRecord,
+                boolean isValidSsl,
+                boolean prefsCanMakePayment,
+                String twaPackageName) {
             super(isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
         }
 
@@ -64,8 +66,11 @@ public class PaymentRequestTestBridge {
         private final boolean mPrefsCanMakePayment;
         private final String mTwaPackageName;
 
-        PaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
-                boolean prefsCanMakePayment, String twaPackageName) {
+        PaymentRequestDelegateForTest(
+                boolean isOffTheRecord,
+                boolean isValidSsl,
+                boolean prefsCanMakePayment,
+                String twaPackageName) {
             mIsOffTheRecord = isOffTheRecord;
             mIsValidSsl = isValidSsl;
             mPrefsCanMakePayment = prefsCanMakePayment;
@@ -117,13 +122,21 @@ public class PaymentRequestTestBridge {
         private final long mOnCompleteHandledPtr;
         private final long mOnUiDisplayed;
 
-        PaymentRequestNativeObserverBridgeToNativeForTest(long onCanMakePaymentCalledPtr,
-                long onCanMakePaymentReturnedPtr, long onHasEnrolledInstrumentCalledPtr,
-                long onHasEnrolledInstrumentReturnedPtr, long onAppListReadyPtr,
-                long setAppDescriptionPtr, long setShippingSectionVisiblePtr,
-                long setContactSectionVisiblePtr, long onErrorDisplayedPtr,
-                long onNotSupportedErrorPtr, long onConnectionTerminatedPtr, long onAbortCalledPtr,
-                long onCompleteHandledPtr, long onUiDisplayed) {
+        PaymentRequestNativeObserverBridgeToNativeForTest(
+                long onCanMakePaymentCalledPtr,
+                long onCanMakePaymentReturnedPtr,
+                long onHasEnrolledInstrumentCalledPtr,
+                long onHasEnrolledInstrumentReturnedPtr,
+                long onAppListReadyPtr,
+                long setAppDescriptionPtr,
+                long setShippingSectionVisiblePtr,
+                long setContactSectionVisiblePtr,
+                long onErrorDisplayedPtr,
+                long onNotSupportedErrorPtr,
+                long onConnectionTerminatedPtr,
+                long onAbortCalledPtr,
+                long onCompleteHandledPtr,
+                long onUiDisplayed) {
             mOnCanMakePaymentCalledPtr = onCanMakePaymentCalledPtr;
             mOnCanMakePaymentReturnedPtr = onCanMakePaymentReturnedPtr;
             mOnHasEnrolledInstrumentCalledPtr = onHasEnrolledInstrumentCalledPtr;
@@ -153,23 +166,26 @@ public class PaymentRequestTestBridge {
 
         @Override
         public void onCanMakePaymentCalled() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnCanMakePaymentCalledPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnCanMakePaymentCalledPtr);
         }
+
         @Override
         public void onCanMakePaymentReturned() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnCanMakePaymentReturnedPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnCanMakePaymentReturnedPtr);
         }
+
         @Override
         public void onHasEnrolledInstrumentCalled() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnHasEnrolledInstrumentCalledPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnHasEnrolledInstrumentCalledPtr);
         }
+
         @Override
         public void onHasEnrolledInstrumentReturned() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnHasEnrolledInstrumentReturnedPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnHasEnrolledInstrumentReturnedPtr);
         }
 
         @Override
@@ -189,28 +205,28 @@ public class PaymentRequestTestBridge {
                 }
             }
 
-            PaymentRequestTestBridgeJni.get().setAppDescriptions(
-                    mSetAppDescriptionsPtr, appLabels, appSublabels, appTotals);
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnAppListReadyPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .setAppDescriptions(mSetAppDescriptionsPtr, appLabels, appSublabels, appTotals);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnAppListReadyPtr);
         }
 
         @Override
         public void onShippingSectionVisibilityChange(boolean isShippingSectionVisible) {
-            PaymentRequestTestBridgeJni.get().invokeBooleanCallback(
-                    mSetShippingSectionVisiblePtr, isShippingSectionVisible);
+            PaymentRequestTestBridgeJni.get()
+                    .invokeBooleanCallback(mSetShippingSectionVisiblePtr, isShippingSectionVisible);
         }
 
         @Override
         public void onContactSectionVisibilityChange(boolean isContactSectionVisible) {
-            PaymentRequestTestBridgeJni.get().invokeBooleanCallback(
-                    mSetContactSectionVisiblePtr, isContactSectionVisible);
+            PaymentRequestTestBridgeJni.get()
+                    .invokeBooleanCallback(mSetContactSectionVisiblePtr, isContactSectionVisible);
         }
 
         @Override
         public void onErrorDisplayed() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnErrorDisplayedPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnErrorDisplayedPtr);
         }
 
         private static String ensureNotNull(@Nullable String value) {
@@ -219,24 +235,28 @@ public class PaymentRequestTestBridge {
 
         @Override
         public void onNotSupportedError() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnNotSupportedErrorPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnNotSupportedErrorPtr);
         }
+
         @Override
         public void onConnectionTerminated() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnConnectionTerminatedPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnConnectionTerminatedPtr);
         }
+
         @Override
         public void onAbortCalled() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnAbortCalledPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnAbortCalledPtr);
         }
+
         @Override
         public void onCompleteHandled() {
-            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
-                    mOnCompleteHandledPtr);
+            PaymentRequestTestBridgeJni.get()
+                    .resolvePaymentRequestObserverCallback(mOnCompleteHandledPtr);
         }
+
         @Override
         public void onUiDisplayed() {
             PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(mOnUiDisplayed);
@@ -244,27 +264,48 @@ public class PaymentRequestTestBridge {
     }
 
     @CalledByNative
-    private static void setUseDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
-            boolean prefsCanMakePayment, String twaPackageName) {
-        ChromePaymentRequestFactory.sDelegateForTest = new ChromePaymentRequestDelegateForTest(
-                isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
+    private static void setUseDelegateForTest(
+            boolean isOffTheRecord,
+            boolean isValidSsl,
+            boolean prefsCanMakePayment,
+            String twaPackageName) {
+        ChromePaymentRequestFactory.sDelegateForTest =
+                new ChromePaymentRequestDelegateForTest(
+                        isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
     }
 
     @CalledByNative
-    private static void setUseNativeObserverForTest(long onCanMakePaymentCalledPtr,
-            long onCanMakePaymentReturnedPtr, long onHasEnrolledInstrumentCalledPtr,
-            long onHasEnrolledInstrumentReturnedPtr, long onAppListReadyPtr,
-            long setAppDescriptionPtr, long setShippingSectionVisiblePtr,
-            long setContactSectionVisiblePtr, long onErrorDisplayedPtr, long onNotSupportedErrorPtr,
-            long onConnectionTerminatedPtr, long onAbortCalledPtr, long onCompleteCalledPtr,
+    private static void setUseNativeObserverForTest(
+            long onCanMakePaymentCalledPtr,
+            long onCanMakePaymentReturnedPtr,
+            long onHasEnrolledInstrumentCalledPtr,
+            long onHasEnrolledInstrumentReturnedPtr,
+            long onAppListReadyPtr,
+            long setAppDescriptionPtr,
+            long setShippingSectionVisiblePtr,
+            long setContactSectionVisiblePtr,
+            long onErrorDisplayedPtr,
+            long onNotSupportedErrorPtr,
+            long onConnectionTerminatedPtr,
+            long onAbortCalledPtr,
+            long onCompleteCalledPtr,
             long onUiDisplayedPtr) {
         PaymentRequestService.setNativeObserverForTest(
-                new PaymentRequestNativeObserverBridgeToNativeForTest(onCanMakePaymentCalledPtr,
-                        onCanMakePaymentReturnedPtr, onHasEnrolledInstrumentCalledPtr,
-                        onHasEnrolledInstrumentReturnedPtr, onAppListReadyPtr, setAppDescriptionPtr,
-                        setShippingSectionVisiblePtr, setContactSectionVisiblePtr,
-                        onErrorDisplayedPtr, onNotSupportedErrorPtr, onConnectionTerminatedPtr,
-                        onAbortCalledPtr, onCompleteCalledPtr, onUiDisplayedPtr));
+                new PaymentRequestNativeObserverBridgeToNativeForTest(
+                        onCanMakePaymentCalledPtr,
+                        onCanMakePaymentReturnedPtr,
+                        onHasEnrolledInstrumentCalledPtr,
+                        onHasEnrolledInstrumentReturnedPtr,
+                        onAppListReadyPtr,
+                        setAppDescriptionPtr,
+                        setShippingSectionVisiblePtr,
+                        setContactSectionVisiblePtr,
+                        onErrorDisplayedPtr,
+                        onNotSupportedErrorPtr,
+                        onConnectionTerminatedPtr,
+                        onAbortCalledPtr,
+                        onCompleteCalledPtr,
+                        onUiDisplayedPtr));
     }
 
     @CalledByNative
@@ -311,13 +352,12 @@ public class PaymentRequestTestBridge {
 
     @NativeMethods
     interface Natives {
-        /**
-         * The native method responsible to executing RepeatingClosure pointers.
-         */
+        /** The native method responsible to executing RepeatingClosure pointers. */
         void resolvePaymentRequestObserverCallback(long callbackPtr);
 
         void setAppDescriptions(
                 long callbackPtr, String[] appLabels, String[] appSublabels, String[] appTotals);
+
         /** The native method responsible for executing RepatingCallback<void(bool)> pointers. */
         void invokeBooleanCallback(long callbackPtr, boolean value);
     }

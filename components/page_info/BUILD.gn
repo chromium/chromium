@@ -1,6 +1,4 @@
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
+import("//build/config/features.gni")
 
 static_library("page_info") {
   sources = [
@@ -30,13 +28,14 @@ static_library("page_info") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+    "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
     "//components/security_state/core",
     "//components/signin/public/identity_manager",
     "//components/ssl_errors:ssl_errors",
-    "//components/strings:components_chromium_strings_grit",
+    "//components/strings:components_branded_strings_grit",
     "//components/strings:components_strings_grit",
     "//components/subresource_filter/core/browser",
     "//components/ukm/content",
@@ -55,11 +54,5 @@ static_library("page_info") {
     ]
   } else {
     deps += [ "//ui/native_theme" ]
-  }
-}
-
-if (is_android) {
-  java_cpp_enum("page_info_action_javagen") {
-    sources = [ "page_info.h" ]
   }
 }

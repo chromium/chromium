@@ -62,6 +62,10 @@ class FlossAdminClientTest : public testing::Test,
  public:
   FlossAdminClientTest() = default;
 
+  base::Version GetCurrVersion() {
+    return floss::version::GetMaximalSupportedVersion();
+  }
+
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
@@ -88,7 +92,7 @@ class FlossAdminClientTest : public testing::Test,
   // AdminClientObserver overrides
   void DevicePolicyEffectChanged(
       const FlossDeviceId& device_id,
-      const absl::optional<PolicyEffect>& effect) override {
+      const std::optional<PolicyEffect>& effect) override {
     fake_device_policy_effect_info_ = {device_id, effect};
   }
 
@@ -145,7 +149,7 @@ class FlossAdminClientTest : public testing::Test,
         });
     ASSERT_FALSE(IsClientRegistered());
     client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
-                  base::DoNothing());
+                  GetCurrVersion(), base::DoNothing());
 
     // Test exported callbacks are correctly parsed
     ASSERT_TRUE(!!method_handler_on_device_policy_effect_changed);
@@ -210,7 +214,7 @@ class FlossAdminClientTest : public testing::Test,
   std::unique_ptr<FlossAdminClient> client_;
 
   // For observer test inspections.
-  absl::optional<std::tuple<FlossDeviceId, absl::optional<PolicyEffect>>>
+  std::optional<std::tuple<FlossDeviceId, std::optional<PolicyEffect>>>
       fake_device_policy_effect_info_;
   std::vector<device::BluetoothUUID> fake_service_allowlist_info_;
 

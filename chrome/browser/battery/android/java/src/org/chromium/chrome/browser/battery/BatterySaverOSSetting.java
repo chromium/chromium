@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.battery;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
 
-/**
- * Wrapper for exposing OS level battery saver mode status.
- */
+/** Wrapper for exposing OS level battery saver mode status. */
 @JNINamespace("battery::android")
 public class BatterySaverOSSetting {
     @CalledByNative

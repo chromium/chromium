@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_CRASH_CAST_CRASH_STORAGE_H_
 #define CHROMECAST_CRASH_CAST_CRASH_STORAGE_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace chromecast {
 
@@ -19,16 +19,16 @@ class CastCrashStorage {
   CastCrashStorage() = default;
   virtual ~CastCrashStorage() = default;
 
-  virtual void SetLastLaunchedApp(base::StringPiece app_id) = 0;
+  virtual void SetLastLaunchedApp(std::string_view app_id) = 0;
   virtual void ClearLastLaunchedApp() = 0;
 
-  virtual void SetCurrentApp(base::StringPiece app_id) = 0;
+  virtual void SetCurrentApp(std::string_view app_id) = 0;
   virtual void ClearCurrentApp() = 0;
 
-  virtual void SetPreviousApp(base::StringPiece app_id) = 0;
+  virtual void SetPreviousApp(std::string_view app_id) = 0;
   virtual void ClearPreviousApp() = 0;
 
-  virtual void SetStadiaSessionId(base::StringPiece session_id) = 0;
+  virtual void SetStadiaSessionId(std::string_view session_id) = 0;
   virtual void ClearStadiaSessionId() = 0;
 };
 

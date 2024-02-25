@@ -30,8 +30,8 @@ class MockCrowdStrikeClient : public CrowdStrikeClient {
 
   MOCK_METHOD(void,
               GetIdentifiers,
-              (base::OnceCallback<void(absl::optional<CrowdStrikeSignals>,
-                                       absl::optional<SignalCollectionError>)>),
+              (base::OnceCallback<void(std::optional<CrowdStrikeSignals>,
+                                       std::optional<SignalCollectionError>)>),
               (override));
 };
 
@@ -52,13 +52,13 @@ class AgentSignalsCollectorTest : public testing::Test {
   }
 
   void RunTest(
-      absl::optional<CrowdStrikeSignals> returned_signals,
-      absl::optional<SignalCollectionError> returned_error = absl::nullopt) {
+      std::optional<CrowdStrikeSignals> returned_signals,
+      std::optional<SignalCollectionError> returned_error = std::nullopt) {
     EXPECT_CALL(*mocked_crowdstrike_client_, GetIdentifiers(_))
         .WillOnce(Invoke(
             [&returned_signals, &returned_error](
-                base::OnceCallback<void(absl::optional<CrowdStrikeSignals>,
-                                        absl::optional<SignalCollectionError>)>
+                base::OnceCallback<void(std::optional<CrowdStrikeSignals>,
+                                        std::optional<SignalCollectionError>)>
                     callback) {
               std::move(callback).Run(returned_signals, returned_error);
             }));
@@ -157,11 +157,11 @@ TEST_F(AgentSignalsCollectorTest, GetSignal_Success) {
 }
 
 TEST_F(AgentSignalsCollectorTest, GetSignal_NoSignalNoError) {
-  RunTest(absl::nullopt);
+  RunTest(std::nullopt);
 }
 
 TEST_F(AgentSignalsCollectorTest, GetSignal_NoSignalWithError) {
-  RunTest(absl::nullopt, SignalCollectionError::kParsingFailed);
+  RunTest(std::nullopt, SignalCollectionError::kParsingFailed);
 }
 
 }  // namespace device_signals

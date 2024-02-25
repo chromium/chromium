@@ -21,7 +21,6 @@ extern const char kChooserBluetoothOverviewURL[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kEmbeddedContentHelpCenterURL[];
 
-#if !BUILDFLAG(IS_ANDROID)
 // The key in `Product Specific String Data` under which the disposition of the
 // permission prompt is recorded in the prompt HaTS survey.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
@@ -71,15 +70,37 @@ extern const char kPermissionsPromptSurveyHadGestureKey[];
 // restriction to specific channels (typically to stable).
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPromptSurveyReleaseChannelKey[];
-#endif
 
 // TODO(crbug.com/1410489): Remove the code related to unused site permissions
 // from Android builds.
 
 // The key used for marking permissions as revoked, as per the unused site
-// permissions module of Safety Check.
+// permissions module of Safety Check, including both chooser and regular
+// permissions.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kRevokedKey[];
+
+// The key for base::Value::Dict, holding the revoked chooser permission data.
+// The Dict has StringPiece of ContentSettingsType int as key,
+// and the corresponding revoked `base::Value` data as value.
+// For example, {"3": {"foo": "bar"}, "12": "baz", "24": ["item0", "item1"]}
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kRevokedChooserPermissionsKey[];
+
+// How long an explicit Storage Access API permission grant/denial should last
+// (not taking renewals into account).
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::TimeDelta kStorageAccessAPIExplicitPermissionLifetime;
+
+// How long an implicit Storage Access API permission grant/denial should last
+// (not taking renewals into account).
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::TimeDelta kStorageAccessAPIImplicitPermissionLifetime;
+
+// How long a Related Website Sets Storage Access API permission
+// grant/denial should last (not taking renewals into account).
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::TimeDelta kStorageAccessAPIRelatedWebsiteSetsLifetime;
 
 }  // namespace permissions
 

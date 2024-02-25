@@ -25,8 +25,7 @@ constexpr char kLocalProxyUrl[] = "localhost:3128";
 
 // Encode the PAC script as a data: URL.
 std::string GetPacUrl(const char* pac_data) {
-  std::string b64_encoded;
-  base::Base64Encode(pac_data, &b64_encoded);
+  std::string b64_encoded = base::Base64Encode(pac_data);
   return "data:application/x-javascript-config;base64," + b64_encoded;
 }
 }  // namespace

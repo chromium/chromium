@@ -31,19 +31,20 @@ class InheritedFontStyleChecker
 
 InterpolationValue CSSFontStyleInterpolationType::CreateFontStyleValue(
     FontSelectionValue font_style) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(font_style));
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableNumber>(font_style));
 }
 
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
 }
 
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInitial(
     const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
-  return CreateFontStyleValue(NormalSlopeValue());
+  return CreateFontStyleValue(kNormalSlopeValue);
 }
 
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInherit(
@@ -52,7 +53,7 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInherit(
   DCHECK(state.ParentStyle());
   FontSelectionValue inherited_font_style = state.ParentStyle()->GetFontStyle();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontStyleChecker>(inherited_font_style));
+      MakeGarbageCollected<InheritedFontStyleChecker>(inherited_font_style));
   return CreateFontStyleValue(inherited_font_style);
 }
 
@@ -81,7 +82,7 @@ void CSSFontStyleInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   state.GetFontBuilder().SetStyle(FontSelectionValue(
       ClampTo(To<InterpolableNumber>(interpolable_value).Value(),
-              MinObliqueValue(), MaxObliqueValue())));
+              kMinObliqueValue, kMaxObliqueValue)));
 }
 
 }  // namespace blink

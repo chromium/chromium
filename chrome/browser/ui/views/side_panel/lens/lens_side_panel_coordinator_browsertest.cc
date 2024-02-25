@@ -54,7 +54,7 @@ namespace {
 constexpr char kCloseAction[] = "LensUnifiedSidePanel.HideSidePanel";
 constexpr char kExpectedLensSidePanelContentUrlRegex[] =
     ".*ep=ccm&re=dcsp&s=4&st=\\d+&lm=.+&p=somepayload&ep=ccmupload&"
-    "sideimagesearch=1";
+    "sideimagesearch=1&vpw=\\d+&vph=\\d+";
 constexpr char kExpected3PDseSidePanelContentUrlRegex[] =
     ".*p=somepayload&sideimagesearch=1&vpw=\\d+&vph=\\d+";
 constexpr char kExpectedNewTabContentUrlRegex[] = ".*p=somepayload";
@@ -209,19 +209,11 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
 
   std::unique_ptr<ContextMenuNotificationObserver> menu_observer_;
   base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
 };
 
-// https://crbug.com/1444953
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens \
-  DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanelForLens
-#else
-#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens \
-  ImageSearchWithValidImageOpensUnifiedSidePanelForLens
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SearchImageWithUnifiedSidePanel,
-    MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens) {
+IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
+                       ImageSearchWithValidImageOpensUnifiedSidePanelForLens) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
@@ -239,6 +231,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(side_panel_content,
               testing::MatchesRegex(kExpectedLensSidePanelContentUrlRegex));
   ExpectThatRequestContainsImageData(contents);
+
+  // Ensure SidePanel.OpenTrigger was recorded correctly.
+  histogram_tester.ExpectBucketCount("SidePanel.OpenTrigger",
+                                     SidePanelOpenTrigger::kLensContextMenu, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
@@ -463,4 +459,5 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithSidePanel3PDseDisabled,
   std::string side_panel_content = contents->GetLastCommittedURL().GetContent();
   EXPECT_NE(side_panel_content, new_tab_content);
 }
+
 }  // namespace

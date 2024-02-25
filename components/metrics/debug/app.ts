@@ -4,13 +4,18 @@
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './app.html.js';
-import {KeyValue, Log, LogData, MetricsInternalsBrowserProxy, MetricsInternalsBrowserProxyImpl} from './browser_proxy.js';
+import type {KeyValue, Log, LogData, MetricsInternalsBrowserProxy} from './browser_proxy.js';
+import {MetricsInternalsBrowserProxyImpl} from './browser_proxy.js';
 import {getEventsPeekString, logEventToString, sizeToString, timestampToString, umaLogTypeToString} from './log_utils.js';
+// <if expr="structured_metrics_enabled">
+import type {StructuredMetricEvent, StructuredMetricsSummary} from './structured/structured_utils.js';
+import {updateStructuredMetricsEvents, updateStructuredMetricsSummary} from './structured/structured_utils.js';
+// </if>
 
 /**
  * An empty log. It is appended to a logs table when there are no logs (for
@@ -69,6 +74,19 @@ export class MetricsInternalsAppElement extends CustomElement {
     // Fetch UMA summary data and set up a recurring timer.
     await this.updateUmaSummary_();
     setInterval(() => this.updateUmaSummary_(), 3000);
+
+    // Fetch Structured Metrics tab when on ChromeOS
+    // TODO: Implement a push model as new events are recorded.
+    // <if expr="structured_metrics_enabled">
+    await this.updateStructuredMetricsSummary_();
+    setInterval(() => this.updateStructuredMetricsSummary_(), 5000);
+
+    await this.updateStructuredMetricsEvents_();
+
+    const eventRefreshButton = this.$('#sm-refresh-events') as HTMLElement;
+    eventRefreshButton.addEventListener(
+        'click', () => this.updateStructuredMetricsEvents_());
+    //  </if>
 
     // Set up the UMA table caption.
     const umaTableCaption = this.$('#uma-table-caption') as HTMLElement;
@@ -249,6 +267,43 @@ export class MetricsInternalsAppElement extends CustomElement {
     a.download = `uma_logs_${new Date().getTime()}.json`;
     a.click();
   }
+
+  // <if expr="structured_metrics_enabled">
+  /**
+   * Fetches summary information of the Structured Metrics service and renders
+   * it.
+   */
+  private async updateStructuredMetricsSummary_(): Promise<void> {
+    const summary: StructuredMetricsSummary =
+        await this.browserProxy_.fetchStructuredMetricsSummary();
+    const template = this.$('#summary-row-template') as HTMLTemplateElement;
+    const smSummaryBody = this.$('#sm-summary-body') as HTMLElement;
+    updateStructuredMetricsSummary(smSummaryBody, summary, template);
+  }
+
+  /**
+   * Fetches all events currently recorded by the Structured Metrics Service and
+   * renders them. It an event has been uploaded then it will not be shown
+   * again. This only shows Events recorded in Chromium. Platform2 events are
+   * not supported yet.
+   */
+  private async updateStructuredMetricsEvents_(): Promise<void> {
+    const events: StructuredMetricEvent[] =
+        await this.browserProxy_.fetchStructuredMetricsEvents();
+    const eventTemplate =
+        this.$('#structured-metrics-event-row-template') as HTMLTemplateElement;
+
+    const eventDetailsTemplate =
+        this.$('#structured-metrics-event-details-template') as
+        HTMLTemplateElement;
+    const kvTemplate = this.$('#summary-row-template') as HTMLTemplateElement;
+    const eventTableBody = this.$('#sm-events-body') as HTMLElement;
+
+    updateStructuredMetricsEvents(
+        eventTableBody, events, eventTemplate, eventDetailsTemplate,
+        kvTemplate);
+  }
+  // </if>
 }
 
 declare global {

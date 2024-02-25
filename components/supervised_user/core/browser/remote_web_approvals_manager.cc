@@ -13,8 +13,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/supervised_user/core/browser/permission_request_creator.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "url/gurl.h"
 
 namespace {

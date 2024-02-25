@@ -63,14 +63,15 @@ WebKioskAppManager::~WebKioskAppManager() {
   g_web_kiosk_app_manager = nullptr;
 }
 
-void WebKioskAppManager::GetApps(std::vector<App>* apps) const {
-  apps->clear();
-  apps->reserve(apps_.size());
-  for (auto& web_app : apps_) {
-    App app(*web_app);
-    app.url = web_app->install_url();
-    apps->push_back(std::move(app));
+std::vector<WebKioskAppManager::App> WebKioskAppManager::GetApps() const {
+  std::vector<App> apps;
+  apps.reserve(apps_.size());
+  for (const auto& manager_app : apps_) {
+    App app(*manager_app);
+    app.url = manager_app->install_url();
+    apps.push_back(std::move(app));
   }
+  return apps;
 }
 
 void WebKioskAppManager::LoadIcons() {
@@ -105,10 +106,11 @@ void WebKioskAppManager::UpdateAppByAccountId(
   NOTREACHED();
 }
 
-void WebKioskAppManager::UpdateAppByAccountId(const AccountId& account_id,
-                                              const std::string& title,
-                                              const GURL& start_url,
-                                              const IconBitmaps& icon_bitmaps) {
+void WebKioskAppManager::UpdateAppByAccountId(
+    const AccountId& account_id,
+    const std::string& title,
+    const GURL& start_url,
+    const web_app::IconBitmaps& icon_bitmaps) {
   for (auto& web_app : apps_) {
     if (web_app->account_id() == account_id) {
       web_app->UpdateAppInfo(title, start_url, icon_bitmaps);
@@ -121,7 +123,7 @@ void WebKioskAppManager::UpdateAppByAccountId(const AccountId& account_id,
 void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
                                           const GURL& install_url) {
   const std::string app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, install_url);
+      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, install_url);
   apps_.push_back(std::make_unique<WebKioskAppData>(
       this, app_id, account_id, install_url, /*title*/ std::string(),
       /*icon_url*/ GURL()));
@@ -131,7 +133,7 @@ void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
 void WebKioskAppManager::InitKioskSystemSession(
     Profile* profile,
     const KioskAppId& kiosk_app_id,
-    const absl::optional<std::string>& app_name) {
+    const std::optional<std::string>& app_name) {
   LOG_IF(FATAL, kiosk_system_session_)
       << "Kiosk session is already initialized.";
 
@@ -177,7 +179,7 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
     GURL icon_url = GURL(account.web_kiosk_app_info.icon_url());
 
     std::string app_id =
-        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, url);
+        web_app::GenerateAppId(/*manifest_id=*/std::nullopt, url);
 
     auto old_it = old_apps.find(app_id);
     if (old_it != old_apps.end()) {

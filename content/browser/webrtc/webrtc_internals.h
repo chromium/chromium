@@ -62,8 +62,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                              int lid,
                              base::ProcessId pid,
                              const std::string& url,
-                             const std::string& rtc_configuration,
-                             const std::string& constraints) override;
+                             const std::string& rtc_configuration) override;
   void OnPeerConnectionRemoved(GlobalRenderFrameHostId frame_id,
                                int lid) override;
   void OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
@@ -173,7 +172,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                            const ChildProcessTerminationInfo& info) override;
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* unused_params) override;
   void FileSelectionCanceled(void* params) override;

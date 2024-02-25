@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/renderer.h"
@@ -55,7 +56,7 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   // commands will be received from the end-user's device over mojo.
   void SetCdm(media::CdmContext* cdm_context,
               CdmAttachedCB cdm_attached_cb) override;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
   void SetPlaybackRate(double playback_rate) override;
@@ -74,7 +75,7 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   // Calls are all forwarded to |real_renderer_|;
   void MojoRendererInitialize(
       ::mojo::PendingAssociatedRemote<media::mojom::RendererClient> client,
-      absl::optional<
+      std::optional<
           std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
           streams,
       media::mojom::MediaUrlParamsPtr media_url_params,
@@ -83,9 +84,8 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   void MojoRendererSetPlaybackRate(double playback_rate);
   void MojoRendererFlush(media::mojom::Renderer::FlushCallback callback);
   void MojoRendererSetVolume(float volume);
-  void MojoRendererSetCdm(
-      const absl::optional<::base::UnguessableToken>& cdm_id,
-      media::mojom::Renderer::SetCdmCallback callback);
+  void MojoRendererSetCdm(const std::optional<::base::UnguessableToken>& cdm_id,
+                          media::mojom::Renderer::SetCdmCallback callback);
 
   // media::RendererClient overrides.
   //
@@ -103,7 +103,7 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   void OnVideoConfigChange(const media::VideoDecoderConfig& config) override;
   void OnVideoNaturalSizeChange(const gfx::Size& size) override;
   void OnVideoOpacityChange(bool opaque) override;
-  void OnVideoFrameRateChange(absl::optional<int> fps) override;
+  void OnVideoFrameRateChange(std::optional<int> fps) override;
 
   void OnRealRendererInitializationComplete(media::PipelineStatus status);
 
@@ -136,7 +136,7 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   // MojoRendererInitialize().
   mojo::AssociatedRemote<media::mojom::RendererClient> remote_renderer_client_;
 
-  RendererClient* upstream_renderer_client_;
+  raw_ptr<RendererClient> upstream_renderer_client_;
 
   base::RepeatingTimer send_timestamp_update_caller_;
 

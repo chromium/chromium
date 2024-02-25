@@ -7,11 +7,12 @@
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_app_interface.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
@@ -143,7 +144,7 @@ void AssertTryAgainButtonOnPage() {
       LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT"));
 }
 
-// Tests that a start NTP is shown after 2 crashes.
+// Tests that an NTP is shown after 2 crashes.
 - (void)testPostCrashNTP {
   [SafeModeAppInterface setFailedStartupAttemptCount:0];
   [ChromeEarlGrey closeAllTabsInCurrentMode];
@@ -166,9 +167,8 @@ void AssertTryAgainButtonOnPage() {
       relaunchPolicy:ForceRelaunchByKilling];
   [ChromeEarlGrey waitForMainTabCount:3];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_RETURN_TO_RECENT_TAB_TITLE))]
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SafeModeAppInterface setFailedStartupAttemptCount:0];
 }

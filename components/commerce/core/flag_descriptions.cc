@@ -21,36 +21,38 @@ const char kPriceTrackingIconColorsDescription[] =
     "Tonal colors for the expanded state of the price tracking chip on "
     "desktop.";
 
-const char kShoppingCollectionName[] = "Shopping Collection";
-const char kShoppingCollectionDescription[] =
-    "Organize all products into an automatically created bookmark folder.";
+const char kProductSpecificationsName[] = "Product Specifications";
+const char kProductSpecificationsDescription[] =
+    "Enable the Product Specifications feature.";
+
+const char kShoppingIconColorVariantName[] =
+    "Enable color variant for shopping icons";
+const char kShoppingIconColorVariantDescription[] =
+    "Enables a color variant for shopping page action icons (Price Insights & "
+    "Price Tracking)";
 
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
-
-const char kShoppingListTrackByDefaultName[] = "Shopping List Track By Default";
-const char kShoppingListTrackByDefaultDescription[] =
-    "Bookmarked product pages are tracked by default if they can be.";
 
 const char kChromeCartDomBasedHeuristicsName[] =
     "ChromeCart DOM-based heuristics";
 const char kChromeCartDomBasedHeuristicsDescription[] =
     "Enable DOM-based heuristics for ChromeCart.";
 
+const char kParcelTrackingTestDataName[] = "Parcel Tracking Test Data";
+const char kParcelTrackingTestDataDescription[] =
+    "The parcel status API returns fake data for testing.";
+
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
-
-const char kShowDiscountOnNavigationName[] = "Show discount on navigation";
-const char kShowDiscountOnNavigationDescription[] =
-    "Enable discount to show on navigation";
-
-const char kPriceTrackingChipExperimentName[] =
-    "Price Tracking Chip Experiment";
-const char kPriceTrackingChipExperimentDescription[] =
-    "Enable price tracking chip experiment.";
 
 const char kShoppingPageTypesName[] = "Shopping Page Types";
 const char kShoppingPageTypesDescription[] =
     "Enable shopping page types experiment.";
+
+const char kTrackByDefaultOnMobileName[] =
+    "Product Tracking by Default on Mobile";
+const char kTrackByDefaultOnMobileDescription[] =
+    "Enable tracking a product by default when bookmarking on mobile devices.";
 
 }  // namespace commerce::flag_descriptions

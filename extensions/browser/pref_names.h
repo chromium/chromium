@@ -89,6 +89,10 @@ inline constexpr char kInstallDenyList[] = "extensions.install.denylist";
 // accessed through extensions::ExternalPolicyProvider.
 inline constexpr char kInstallForceList[] = "extensions.install.forcelist";
 
+// A dictionary containing, for each extension id, additional
+// OAuth redirect URLs that will be allowed in chrome.identity API.
+inline constexpr char kOAuthRedirectUrls[] = "extensions.oauth_redirect_urls";
+
 // String pref for what version chrome was last time the extension prefs were
 // loaded.
 inline constexpr char kLastChromeVersion[] = "extensions.last_chrome_version";
@@ -118,10 +122,9 @@ inline constexpr char kPinnedExtensions[] = "extensions.pinned_extensions";
 inline constexpr char kStorageGarbageCollect[] =
     "extensions.storage.garbagecollect";
 
-// A preference for an enterprise policy which is a temporary workaround for
-// behaviour changes to <webview>.
-inline constexpr char kChromeAppsWebViewPermissiveBehaviorAllowed[] =
-    "extensions.webview_permissive_behavior";
+// Pref for policy to enable/disable loading extension from command line
+inline constexpr char kExtensionInstallTypeBlocklist[] =
+    "extensions.extension_install_type_blocklist";
 
 // Properties in kExtensions dictionaries --------------------------------------
 

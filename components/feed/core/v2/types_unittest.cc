@@ -92,7 +92,7 @@ TEST(PersistentMetricsData, DefaultValuesForGoodVisits) {
 }
 
 TEST(PersistentMetricsData, CanHandleMissingGoodVisitsState) {
-  absl::optional<base::Value> dict = base::JSONReader::Read(R"({
+  std::optional<base::Value> dict = base::JSONReader::Read(R"({
    "day_start": "11644473600000000",
    "time_spent_in_feed": "7200000000"
 }

@@ -17,12 +17,14 @@
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
-#include "ash/system/message_center/test_notifier_settings_controller.h"
+#include "ash/system/notification_center/test_notifier_settings_controller.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
+#include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
+#include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "ui/aura/test/aura_test_helper.h"
 
 class PrefService;
@@ -57,6 +59,10 @@ class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
 class TestWallpaperControllerClient;
 
+namespace hotspot_config {
+class CrosHotspotConfigTestHelper;
+}  // namespace hotspot_config
+
 namespace input_method {
 class MockInputMethodManagerImpl;
 }  // namespace input_method
@@ -75,10 +81,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     bool start_session = true;
     // If this is not set, a TestShellDelegate will be used automatically.
     std::unique_ptr<ShellDelegate> delegate;
-    raw_ptr<PrefService, ExperimentalAsh> local_state = nullptr;
+    raw_ptr<PrefService> local_state = nullptr;
 
     // Used only when setting up a pixel diff test.
-    absl::optional<pixel_test::InitParams> pixel_test_init_params;
+    std::optional<pixel_test::InitParams> pixel_test_init_params;
 
     // True if a fake global `CrasAudioHandler` should be created.
     bool create_global_cras_audio_handler = true;
@@ -124,7 +130,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // `is_new_profile` indicates whether the logged-in account is new.
   void SimulateUserLogin(
       const AccountId& account_id,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
       bool is_new_profile = false);
 
   // Stabilizes the variable UI components (such as the battery view).
@@ -174,6 +180,11 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return input_method_manager_;
   }
 
+  hotspot_config::CrosHotspotConfigTestHelper*
+  cros_hotspot_config_test_helper() {
+    return cros_hotspot_config_test_helper_.get();
+  }
+
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
@@ -213,6 +224,8 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<quick_pair::Mediator::Factory> quick_pair_mediator_factory_;
   std::unique_ptr<quick_pair::QuickPairBrowserDelegate>
       quick_pair_browser_delegate_;
+  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
+      cros_hotspot_config_test_helper_;
 
   // Used only for pixel tests.
   std::unique_ptr<AshPixelTestHelper> pixel_test_helper_;
@@ -222,9 +235,12 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().
-  raw_ptr<input_method::MockInputMethodManagerImpl,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<input_method::MockInputMethodManagerImpl, DanglingUntriaged>
       input_method_manager_ = nullptr;
+
+  federated::FakeServiceConnectionImpl fake_federated_service_connection_;
+  federated::ScopedFakeServiceConnectionForTest
+      scoped_fake_federated_service_connection_for_test_;
 
   // True if a fake global `CrasAudioHandler` should be created.
   bool create_global_cras_audio_handler_ = true;

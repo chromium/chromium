@@ -103,8 +103,7 @@ class FileSystemContextTest : public testing::Test {
     EXPECT_EQ(expect_filesystem_id, url.filesystem_id());
   }
 
-  inline static absl::optional<FileSystemURL> last_resolved_url_ =
-      absl::nullopt;
+  inline static std::optional<FileSystemURL> last_resolved_url_ = std::nullopt;
 
  private:
   base::ScopedTempDir data_dir_;

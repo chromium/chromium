@@ -19,7 +19,7 @@ IntersectionObservation* ElementIntersectionObserverData::GetObservationFor(
   auto i = observations_.find(&observer);
   if (i == observations_.end())
     return nullptr;
-  return i->value;
+  return i->value.Get();
 }
 
 void ElementIntersectionObserverData::AddObservation(
@@ -62,10 +62,13 @@ void ElementIntersectionObserverData::StopTrackingWithController(
 bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
     unsigned flags) {
   bool needs_occlusion_tracking = false;
-  absl::optional<base::TimeTicks> monotonic_time;
+  std::optional<base::TimeTicks> monotonic_time;
+  std::optional<IntersectionGeometry::RootGeometry> root_geometry;
   for (auto& entry : observations_) {
     needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
-    entry.value->ComputeIntersection(flags, monotonic_time);
+    entry.value->ComputeIntersection(flags,
+                                     IntersectionGeometry::kInfiniteScrollDelta,
+                                     monotonic_time, root_geometry);
   }
   return needs_occlusion_tracking;
 }
@@ -79,10 +82,14 @@ bool ElementIntersectionObserverData::NeedsOcclusionTracking() const {
 }
 
 void ElementIntersectionObserverData::InvalidateCachedRects() {
-  for (auto& observer : observers_)
-    observer->InvalidateCachedRects();
-  for (auto& entry : observations_)
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    for (auto& observer : observers_) {
+      observer->InvalidateCachedRects();
+    }
+  }
+  for (auto& entry : observations_) {
     entry.value->InvalidateCachedRects();
+  }
 }
 
 void ElementIntersectionObserverData::Trace(Visitor* visitor) const {

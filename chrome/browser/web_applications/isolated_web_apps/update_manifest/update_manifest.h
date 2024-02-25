@@ -9,8 +9,10 @@
 
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -49,6 +51,10 @@ class UpdateManifest {
 
   class VersionEntry {
    public:
+    static base::expected<VersionEntry, absl::monostate> ParseFromJson(
+        const base::Value::Dict& version_entry_dict,
+        const GURL& update_manifest_url);
+
     VersionEntry(GURL src, base::Version version);
     ~VersionEntry() = default;
 
@@ -57,6 +63,14 @@ class UpdateManifest {
 
    private:
     friend bool operator==(const VersionEntry& a, const VersionEntry& b);
+
+    static base::expected<base::Version, absl::monostate>
+    ParseAndValidateVersion(
+        base::optional_ref<const base::Value> version_value);
+
+    static base::expected<GURL, absl::monostate> ParseAndValidateSrc(
+        base::optional_ref<const base::Value> src_value,
+        const GURL& update_manifest_url);
 
     GURL src_;
     base::Version version_;
@@ -77,6 +91,9 @@ UpdateManifest::VersionEntry GetLatestVersionEntry(
 
 bool operator==(const UpdateManifest::VersionEntry& lhs,
                 const UpdateManifest::VersionEntry& rhs);
+
+std::ostream& operator<<(std::ostream& os,
+                         const UpdateManifest::VersionEntry& version_entry);
 
 }  // namespace web_app
 

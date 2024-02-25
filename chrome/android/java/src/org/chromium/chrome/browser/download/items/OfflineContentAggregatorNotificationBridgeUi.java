@@ -49,9 +49,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
      */
     private final HashMap<ContentId, OfflineItemVisuals> mVisualsCache = new HashMap<>();
 
-    /**
-     * Creates a new OfflineContentAggregatorNotificationBridgeUi based on {@code provider}.
-     */
+    /** Creates a new OfflineContentAggregatorNotificationBridgeUi based on {@code provider}. */
     public OfflineContentAggregatorNotificationBridgeUi(
             OfflineContentProvider provider, DownloadNotifier notifier) {
         mProvider = provider;
@@ -60,9 +58,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
         mProvider.addObserver(this);
     }
 
-    /**
-     * Destroys this class and detaches it from associated objects.
-     */
+    /** Destroys this class and detaches it from associated objects. */
     public void destroy() {
         mProvider.removeObserver(this);
         destroyServiceDelegate();
@@ -117,8 +113,8 @@ public class OfflineContentAggregatorNotificationBridgeUi
     }
 
     @Override
-    public void resumeDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
-        mProvider.resumeDownload(id, hasUserGesture);
+    public void resumeDownload(ContentId id, DownloadItem item) {
+        mProvider.resumeDownload(id);
     }
 
     @Override
@@ -201,7 +197,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
             case OfflineItemState.FAILED:
             case OfflineItemState.PAUSED:
                 return true;
-            // OfflineItemState.CANCELLED
+                // OfflineItemState.CANCELLED
             default:
                 return false;
         }
@@ -216,8 +212,8 @@ public class OfflineContentAggregatorNotificationBridgeUi
             case OfflineItemState.PAUSED:
             case OfflineItemState.COMPLETE:
                 return true;
-            // OfflineItemState.FAILED,
-            // OfflineItemState.CANCELLED
+                // OfflineItemState.FAILED,
+                // OfflineItemState.CANCELLED
             default:
                 return false;
         }

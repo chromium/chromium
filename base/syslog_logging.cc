@@ -7,7 +7,9 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
+// clang-format off
+#include <windows.h>  // Must be in front of other Windows header files.
+// clang-format on
 
 #include <sddl.h>
 

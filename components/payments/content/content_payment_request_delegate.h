@@ -6,6 +6,7 @@
 #define COMPONENTS_PAYMENTS_CONTENT_CONTENT_PAYMENT_REQUEST_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -13,7 +14,6 @@
 #include "base/unguessable_token.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/core/payment_request_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 template <class T>
 class scoped_refptr;
@@ -101,7 +101,7 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
   // instance id is used to find the TWA window in the ash so that we can
   // attach the payment dialog to it. This interface should only be used
   // in ChromeOS.
-  virtual absl::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
+  virtual std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
       const = 0;
 
   // Returns a weak pointer to this delegate.

@@ -331,7 +331,7 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, SendXhr) {
       GURL(kTestXhrUrl), kTestXhrMethod, kTestXhrRequestBody,
       /*use_credentials=*/true,
       /*use_api_key=*/false, headers,
-      /*email=*/absl::nullopt, send_xhr_request_future.GetCallback());
+      /*email=*/std::nullopt, send_xhr_request_future.GetCallback());
   mock_app_client().WaitForAccessRequest(kTestUserEmail);
 
   const auto& response = send_xhr_request_future.Get();
@@ -440,11 +440,11 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideo) {
   expected_video->file_id = kVideoFileId;
 
   EXPECT_CALL(mock_app_client(),
-              GetVideo(kVideoFileId, absl::optional<std::string>(kResourceKey),
+              GetVideo(kVideoFileId, std::optional<std::string>(kResourceKey),
                        testing::_))
       .WillOnce([&expected_video](
                     const std::string& video_file_id,
-                    const absl::optional<std::string>& resource_key,
+                    const std::optional<std::string>& resource_key,
                     ProjectorAppClient::OnGetVideoCallback callback) {
         std::move(callback).Run(
             projector::mojom::GetVideoResult::NewVideo(expected_video.Clone()));
@@ -463,7 +463,7 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideo) {
 TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideoFail) {
   EXPECT_CALL(mock_app_client(), GetVideo(kVideoFileId, testing::_, testing::_))
       .WillOnce([](const std::string& video_file_id,
-                   const absl::optional<std::string>& resource_key,
+                   const std::optional<std::string>& resource_key,
                    ProjectorAppClient::OnGetVideoCallback callback) {
         EXPECT_FALSE(resource_key);
         std::move(callback).Run(
@@ -471,7 +471,7 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideoFail) {
       });
 
   base::test::TestFuture<projector::mojom::GetVideoResultPtr> get_video_future;
-  page().page_handler()->GetVideo(kVideoFileId, absl::nullopt,
+  page().page_handler()->GetVideo(kVideoFileId, std::nullopt,
                                   get_video_future.GetCallback());
 
   const auto& result = get_video_future.Get<0>();

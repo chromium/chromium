@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 
@@ -60,7 +61,7 @@ class JavaScriptFeatureManager : public base::SupportsUserData::Data {
  private:
   JavaScriptFeatureManager(BrowserState* browser_state);
 
-  BrowserState* browser_state_;
+  raw_ptr<BrowserState> browser_state_;
 
   // The content world shared with the page content JavaScript.
   std::unique_ptr<JavaScriptContentWorld> page_content_world_;

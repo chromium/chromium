@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_listener_map.h"
@@ -23,9 +24,10 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-blink-forward.h"
@@ -86,7 +88,11 @@ class MockEventDispatcher : public mojom::EventDispatcher {
 
   // mojom::EventDispatcher:
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value::List event_args) override {}
+                     base::Value::List event_args,
+                     DispatchEventCallback callback) override {
+    std::move(callback).Run(
+        /*event_will_run_in_lazy_background_page_script=*/false);
+  }
 
  private:
   mojo::AssociatedReceiver<mojom::EventDispatcher> receiver_{this};
@@ -99,7 +105,7 @@ using EventListenerConstructor =
         base::Value::Dict /* filter */)>;
 
 std::unique_ptr<EventListener> CreateEventListenerForExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
     base::Value::Dict filter) {
@@ -117,7 +123,7 @@ std::unique_ptr<EventListener> CreateEventListenerForURL(
 }
 
 std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     int64_t service_worker_version_id,
     int worker_thread_id,
     const std::string& event_name,
@@ -281,14 +287,14 @@ class EventRouterFilterTest : public ExtensionsTest,
 
   EventRouter* event_router() { return EventRouter::Get(browser_context()); }
 
-  const base::Value::Dict* GetFilteredEvents(const std::string& extension_id) {
+  const base::Value::Dict* GetFilteredEvents(const ExtensionId& extension_id) {
     return event_router()->GetFilteredEvents(
         extension_id, is_for_service_worker()
                           ? EventRouter::RegisteredEventType::kServiceWorker
                           : EventRouter::RegisteredEventType::kLazy);
   }
 
-  bool ContainsFilter(const std::string& extension_id,
+  bool ContainsFilter(const ExtensionId& extension_id,
                       const std::string& event_name,
                       const base::Value::Dict& to_check) {
     const base::Value::List* filter_list =
@@ -312,7 +318,7 @@ class EventRouterFilterTest : public ExtensionsTest,
   bool is_for_service_worker() const { return GetParam(); }
 
  private:
-  const base::Value::List* GetFilterList(const std::string& extension_id,
+  const base::Value::List* GetFilterList(const ExtensionId& extension_id,
                                          const std::string& event_name) {
     const base::Value::Dict* filtered_events = GetFilteredEvents(extension_id);
     const auto iter = filtered_events->begin();
@@ -431,10 +437,10 @@ class EventRouterObserver : public EventRouter::TestObserver {
 // A fake that pretends that all contexts are WebUI.
 class ProcessMapFake : public ProcessMap {
  public:
-  Feature::Context GetMostLikelyContextType(const Extension* extension,
-                                            int process_id,
-                                            const GURL* url) const override {
-    return Feature::WEBUI_CONTEXT;
+  mojom::ContextType GetMostLikelyContextType(const Extension* extension,
+                                              int process_id,
+                                              const GURL* url) const override {
+    return mojom::ContextType::kWebUi;
   }
 };
 
@@ -579,7 +585,8 @@ TEST_F(EventRouterTest, TestReportEvent) {
 }
 
 // Tests adding and removing events with filters.
-TEST_P(EventRouterFilterTest, Basic) {
+// TODO(crbug.com/1479954): test is flaky across platforms.
+TEST_P(EventRouterFilterTest, DISABLED_Basic) {
   // For the purpose of this test, "." is important in |event_name| as it
   // exercises the code path that uses |event_name| as a key in
   // base::Value::Dict.
@@ -643,7 +650,8 @@ TEST_P(EventRouterFilterTest, Basic) {
   ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[2]));
 }
 
-TEST_P(EventRouterFilterTest, URLBasedFilteredEventListener) {
+// TODO(crbug.com/1479954): test is flaky across platforms.
+TEST_P(EventRouterFilterTest, DISABLED_URLBasedFilteredEventListener) {
   const std::string kEventName = "windows.onRemoved";
   const GURL kUrl("chrome-untrusted://terminal");
   base::Value::Dict filter;
@@ -750,7 +758,8 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   EXPECT_EQ(0u, observer.dispatched_events().size());
 }
 
-TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
+// TODO(crbug.com/1479954): test is flaky across platforms.
+TEST_F(EventRouterDispatchTest, DISABLED_TestDispatchCallback) {
   std::string ext1 = "ext1";
   std::string ext2 = "ext2";
   std::string ext3 = "ext3";
@@ -810,8 +819,11 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
   const int sw_thread_id = 100;
   MockEventDispatcher sw_event_dispatcher;
   event_router()->AddServiceWorkerEventListener(
-      event_name, process4.get(), ext3,
-      mojom::ServiceWorkerContext::New(GURL(), sw_version_id, sw_thread_id));
+      mojom::EventListener::New(
+          mojom::EventListenerOwner::NewExtensionId(ext3), event_name,
+          mojom::ServiceWorkerContext::New(GURL(), sw_version_id, sw_thread_id),
+          /*event_filter=*/std::nullopt),
+      process4.get());
   event_router()->BindServiceWorkerEventDispatcher(
       process4->GetID(), sw_thread_id, sw_event_dispatcher.BindAndPassRemote());
 

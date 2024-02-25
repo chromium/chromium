@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/external_constants_override.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,13 +24,11 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/external_constants_default.h"
-#include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -56,10 +57,10 @@ std::vector<GURL> GURLVectorFromStringList(
 
 namespace updater {
 
-absl::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> base = GetInstallDirectory(scope);
+std::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope) {
+  std::optional<base::FilePath> base = GetInstallDirectory(scope);
   if (!base) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base->DirName().AppendASCII(kDevOverrideFileName);
 }
@@ -209,7 +210,7 @@ base::TimeDelta ExternalConstantsOverrider::IdleCheckPeriod() const {
   return base::Seconds(value->GetInt());
 }
 
-absl::optional<bool> ExternalConstantsOverrider::IsMachineManaged() const {
+std::optional<bool> ExternalConstantsOverrider::IsMachineManaged() const {
   if (!override_values_.contains(kDevOverrideKeyManagedDevice)) {
     return next_provider_->IsMachineManaged();
   }
@@ -219,14 +220,26 @@ absl::optional<bool> ExternalConstantsOverrider::IsMachineManaged() const {
       << "Unexpected type of override[" << kDevOverrideKeyManagedDevice
       << "]: " << base::Value::GetTypeName(is_managed->type());
 
-  return absl::make_optional(is_managed->GetBool());
+  return std::make_optional(is_managed->GetBool());
+}
+
+bool ExternalConstantsOverrider::EnableDiffUpdates() const {
+  if (!override_values_.contains(kDevOverrideKeyEnableDiffUpdates)) {
+    return next_provider_->EnableDiffUpdates();
+  }
+  const base::Value* value =
+      override_values_.Find(kDevOverrideKeyEnableDiffUpdates);
+  CHECK(value->is_bool()) << "Unexpected type of override["
+                          << kDevOverrideKeyEnableDiffUpdates
+                          << "]: " << base::Value::GetTypeName(value->type());
+  return value->GetBool();
 }
 
 // static
 scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(
     scoped_refptr<ExternalConstants> next_provider) {
-  const absl::optional<base::FilePath> override_file_path =
+  const std::optional<base::FilePath> override_file_path =
       GetOverrideFilePath(GetUpdaterScope());
   if (!override_file_path) {
     LOG(ERROR) << "Cannot find override file path.";

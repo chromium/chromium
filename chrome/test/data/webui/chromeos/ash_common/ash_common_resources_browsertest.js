@@ -5,7 +5,7 @@
 /** @fileoverview Runs the WebUI resources tests. */
 
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -20,18 +20,6 @@ var AshCommonResourcesBrowserTest = class extends PolymerTest {
     return 'dummyurl';
   }
 };
-
-var AshCommonResourcesCrDeprecatedModuleTest =
-    class extends AshCommonResourcesBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=chromeos/ash_common/cr_deprecated_test.js';
-  }
-};
-
-TEST_F('AshCommonResourcesCrDeprecatedModuleTest', 'All', function() {
-  mocha.run();
-});
 
 var AshCommonResourcesListPropertyUpdateBehaviorTest =
     class extends AshCommonResourcesBrowserTest {
@@ -104,5 +92,31 @@ var AshCommonResourcesTypescriptUtilsStrictQueryTest =
 };
 
 TEST_F('AshCommonResourcesTypescriptUtilsStrictQueryTest', 'All', function() {
+  mocha.run();
+});
+
+var AshCommonResourcesShortcutInputKeyTest =
+    class extends AshCommonResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=' +
+        'chromeos/ash_common/shortcut_input_key_test.js';
+  }
+};
+
+TEST_F('AshCommonResourcesShortcutInputKeyTest', 'All', function() {
+  mocha.run();
+});
+
+var AshCommonResourcesShortcutInputTest =
+    class extends AshCommonResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=' +
+        'chromeos/ash_common/shortcut_input_test.js';
+  }
+};
+
+TEST_F('AshCommonResourcesShortcutInputTest', 'All', function() {
   mocha.run();
 });

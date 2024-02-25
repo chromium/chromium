@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/files/file_proxy.h"
 #include "base/files/file_util.h"
@@ -22,7 +23,6 @@
 #include "remoting/host/file_transfer/ensure_user.h"
 #include "remoting/host/file_transfer/file_chooser.h"
 #include "remoting/protocol/file_transfer_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -84,8 +84,7 @@ class LocalFileReader : public FileOperations::Reader {
                        const base::File::Info& info);
   void OnReadResult(ReadCallback callback,
                     base::File::Error error,
-                    const char* data,
-                    int bytes_read);
+                    base::span<const char> data);
 
   void SetState(FileOperations::State state);
 
@@ -97,7 +96,7 @@ class LocalFileReader : public FileOperations::Reader {
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   std::unique_ptr<FileChooser> file_chooser_;
-  absl::optional<base::FileProxy> file_proxy_;
+  std::optional<base::FileProxy> file_proxy_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LocalFileReader> weak_ptr_factory_{this};
 };
@@ -148,7 +147,7 @@ class LocalFileWriter : public FileOperations::Writer {
   std::uint64_t bytes_written_ = 0;
 
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-  absl::optional<base::FileProxy> file_proxy_;
+  std::optional<base::FileProxy> file_proxy_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LocalFileWriter> weak_ptr_factory_{this};
 };
@@ -257,8 +256,7 @@ void LocalFileReader::OnGetInfoResult(OpenCallback callback,
 
 void LocalFileReader::OnReadResult(ReadCallback callback,
                                    base::File::Error error,
-                                   const char* data,
-                                   int bytes_read) {
+                                   base::span<const char> data) {
   if (error != base::File::FILE_OK) {
     SetState(FileOperations::kFailed);
     std::move(callback).Run(protocol::MakeFileTransferError(
@@ -266,12 +264,13 @@ void LocalFileReader::OnReadResult(ReadCallback callback,
     return;
   }
 
-  offset_ += bytes_read;
-  SetState(bytes_read > 0 ? FileOperations::kReady : FileOperations::kComplete);
+  offset_ += data.size();
+  SetState(data.size() > 0 ? FileOperations::kReady
+                           : FileOperations::kComplete);
 
   // The read buffer is provided and owned by FileProxy, so there's no way to
   // avoid a copy, here.
-  std::move(callback).Run(std::vector<std::uint8_t>(data, data + bytes_read));
+  std::move(callback).Run(std::vector<std::uint8_t>(data.begin(), data.end()));
 }
 
 void LocalFileReader::SetState(FileOperations::State state) {
@@ -328,12 +327,9 @@ void LocalFileWriter::WriteChunk(std::vector<std::uint8_t> data,
   //               worth checking for? If so, what should we do in that case,
   //               given that callback is moved into the task and not returned
   //               on error?
-
-  // Ensure buffer pointer is obtained before data is moved.
-  const std::uint8_t* buffer = data.data();
-  const std::size_t size = data.size();
-  file_proxy_->Write(bytes_written_, reinterpret_cast<const char*>(buffer),
-                     size,
+  // Ensure span is obtained before data is moved.
+  auto data_span = base::make_span(data);
+  file_proxy_->Write(bytes_written_, data_span,
                      base::BindOnce(&LocalFileWriter::OnWriteResult,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     std::move(data), std::move(callback)));

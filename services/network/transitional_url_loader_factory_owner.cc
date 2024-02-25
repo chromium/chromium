@@ -71,8 +71,10 @@ class TransitionalURLLoaderFactoryOwner::Core {
 };
 
 TransitionalURLLoaderFactoryOwner::TransitionalURLLoaderFactoryOwner(
-    scoped_refptr<net::URLRequestContextGetter> url_request_context_getter)
-    : core_(std::make_unique<Core>(std::move(url_request_context_getter))) {
+    scoped_refptr<net::URLRequestContextGetter> url_request_context_getter,
+    bool is_trusted)
+    : core_(std::make_unique<Core>(std::move(url_request_context_getter))),
+      is_trusted_(is_trusted) {
   DCHECK(!disallowed_in_process().IsSet());
 }
 
@@ -97,7 +99,8 @@ TransitionalURLLoaderFactoryOwner::GetURLLoaderFactory() {
     auto url_loader_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
     url_loader_factory_params->process_id = mojom::kBrowserProcessId;
-    url_loader_factory_params->is_corb_enabled = false;
+    url_loader_factory_params->is_orb_enabled = false;
+    url_loader_factory_params->is_trusted = is_trusted_;
     network_context_remote_->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(),
         std::move(url_loader_factory_params));

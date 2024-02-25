@@ -5,15 +5,17 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(
       `Verify that removal of one of the multiple projects, all of which are associated with the same frame, doesn't lead navigator to discard the frame treenode.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var rootURL = 'http://localhost:8080/LayoutTests/inspector/debugger/';
-  var sourcesNavigatorView = new Sources.NetworkNavigatorView();
-  sourcesNavigatorView.show(UI.inspectorView.element);
+  var sourcesNavigatorView = new Sources.SourcesNavigator.NetworkNavigatorView();
+  sourcesNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
 
   TestRunner.addResult('\n\n================================================');
   TestRunner.addResult('Adding urls');

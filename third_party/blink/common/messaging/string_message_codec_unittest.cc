@@ -144,7 +144,7 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
   return transferable_message;
 }
 
-void CheckStringEQ(const absl::optional<WebMessagePayload>& optional_payload,
+void CheckStringEQ(const std::optional<WebMessagePayload>& optional_payload,
                    const std::u16string& str) {
   EXPECT_TRUE(optional_payload);
   auto& payload = optional_payload.value();
@@ -152,7 +152,7 @@ void CheckStringEQ(const absl::optional<WebMessagePayload>& optional_payload,
   EXPECT_EQ(str, absl::get<std::u16string>(payload));
 }
 
-void CheckVectorEQ(const absl::optional<WebMessagePayload>& optional_payload,
+void CheckVectorEQ(const std::optional<WebMessagePayload>& optional_payload,
                    const std::vector<uint8_t>& buffer) {
   EXPECT_TRUE(optional_payload);
   auto& payload = optional_payload.value();

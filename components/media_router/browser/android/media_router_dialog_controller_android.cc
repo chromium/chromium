@@ -71,7 +71,7 @@ void MediaRouterDialogControllerAndroid::OnSinkSelected(
       presentation_request.frame_origin, initiator(),
       base::BindOnce(&StartPresentationContext::HandleRouteResponse,
                      std::move(start_presentation_context)),
-      base::TimeDelta(), browser_context->IsOffTheRecord());
+      base::TimeDelta());
   MediaRouterMetrics::RecordMediaRouterAndroidDialogAction(
       MediaRouterAndroidDialogAction::kStartRoute);
 }

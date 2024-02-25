@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,7 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -21,9 +22,9 @@
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -64,8 +65,7 @@ class FakeSignatureVerifier
     : public web_package::SignedWebBundleSignatureVerifier {
  public:
   explicit FakeSignatureVerifier(
-      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          error)
+      std::optional<web_package::SignedWebBundleSignatureVerifier::Error> error)
       : error_(error) {}
 
   void VerifySignatures(
@@ -77,7 +77,7 @@ class FakeSignatureVerifier
   }
 
  private:
-  absl::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
+  std::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
 };
 
 }  // namespace
@@ -104,8 +104,8 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
-      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          signature_verifier_error = absl::nullopt,
+      std::optional<web_package::SignedWebBundleSignatureVerifier::Error>
+          signature_verifier_error = std::nullopt,
       const std::string test_file_data = kHtmlString) {
     base::FilePath swbn_file_path =
         temp_dir_.GetPath().Append(base::FilePath::FromASCII("bundle.swbn"));
@@ -268,6 +268,25 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest, ReadIntegrityBlockAndAbort) {
           Property(&UnusableSwbnFileError::message, "test error"))));
 }
 
+TEST_F(SignedWebBundleReaderWithRealBundlesTest, Close) {
+  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
+      parse_status_future;
+
+  auto reader =
+      CreateReaderAndInitialize(TestSignedWebBundleBuilder::BuildOptions()
+                                    .SetBaseUrl(kUrl)
+                                    .SetIndexHTMLContent(kHtmlString),
+                                parse_status_future.GetCallback());
+
+  auto parse_status = parse_status_future.Take();
+  EXPECT_THAT(parse_status, HasValue());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+
+  base::test::TestFuture<void> close_future;
+  reader->Close(close_future.GetCallback());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kClosed);
+}
+
 class SignedWebBundleReaderTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -316,9 +335,9 @@ class SignedWebBundleReaderTest : public testing::Test {
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
-      absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-          signature_verifier_error = absl::nullopt,
-      const absl::optional<GURL>& base_url = absl::nullopt,
+      std::optional<web_package::SignedWebBundleSignatureVerifier::Error>
+          signature_verifier_error = std::nullopt,
+      const std::optional<GURL>& base_url = std::nullopt,
       const std::string test_file_data = kResponseBody) {
     // Provide a buffer that contains the contents of just a single
     // response. We do not need to provide an integrity block or metadata
@@ -329,8 +348,8 @@ class SignedWebBundleReaderTest : public testing::Test {
     EXPECT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
     EXPECT_TRUE(base::WriteFile(temp_file_path, test_file_data));
 
-    in_process_data_decoder_.service()
-        .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(
+    in_process_data_decoder_.SetWebBundleParserFactoryBinder(
+        base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
 
@@ -378,11 +397,10 @@ class SignedWebBundleReaderTest : public testing::Test {
     return response_result.Take();
   }
 
-  void SimulateAndWaitForParserDisconnect(SignedWebBundleReader& reader) {
+  void SimulateAndWaitForParserDisconnect() {
     base::RunLoop run_loop;
-    reader.SetParserDisconnectCallbackForTesting(run_loop.QuitClosure());
     parser_factory_->SimulateParserDisconnect();
-    run_loop.Run();
+    run_loop.RunUntilIdle();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -398,6 +416,24 @@ class SignedWebBundleReaderTest : public testing::Test {
   constexpr static char kResponseBody[] = "test";
   web_package::mojom::BundleResponsePtr response_;
 };
+
+TEST(SignedWebBundleReaderFileFalureTest, CantOpenFile) {
+  base::test::TaskEnvironment env;
+  base::FilePath file_path = base::FilePath::FromASCII("does-not-exist.swbn");
+
+  std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
+      file_path, std::nullopt,
+      std::make_unique<FakeSignatureVerifier>(std::nullopt));
+
+  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
+      error_future;
+  reader->StartReading(base::DoNothing(), error_future.GetCallback());
+
+  auto parse_status = error_future.Take();
+  EXPECT_FALSE(parse_status.has_value());
+  EXPECT_EQ(parse_status.error().value(),
+            UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError);
+}
 
 TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
@@ -713,7 +749,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
-  SimulateAndWaitForParserDisconnect(*reader.get());
+  SimulateAndWaitForParserDisconnect();
   {
     ASSERT_OK_AND_ASSIGN(auto response, ReadAndFulfillResponse(
                                             *reader.get(), resource_request,
@@ -728,7 +764,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
 
   // Simulate another disconnect to verify that the reader can recover from
   // multiple disconnects over the course of its lifetime.
-  SimulateAndWaitForParserDisconnect(*reader.get());
+  SimulateAndWaitForParserDisconnect();
   {
     ASSERT_OK_AND_ASSIGN(auto response, ReadAndFulfillResponse(
                                             *reader.get(), resource_request,
@@ -742,41 +778,6 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
   EXPECT_EQ(parser_factory_->GetParserCreationCount(), 3);
 }
 
-TEST_F(SignedWebBundleReaderTest,
-       SimulateParserDisconnectWithFileErrorWhenReconnecting) {
-  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
-      parse_status_future;
-  auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
-
-  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
-  parser_factory_->RunMetadataCallback(integrity_block_->size,
-                                       metadata_->Clone());
-
-  auto parse_status = parse_status_future.Take();
-  EXPECT_THAT(parse_status, HasValue());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
-
-  SimulateAndWaitForParserDisconnect(*reader.get());
-  reader->SetReconnectionFileErrorForTesting(
-      base::File::Error::FILE_ERROR_ACCESS_DENIED);
-
-  network::ResourceRequest resource_request;
-  resource_request.url = kUrl;
-
-  base::test::TestFuture<
-      base::expected<web_package::mojom::BundleResponsePtr,
-                     SignedWebBundleReader::ReadResponseError>>
-      response_result;
-  reader->ReadResponse(resource_request, response_result.GetCallback());
-  auto response = response_result.Take();
-  ASSERT_FALSE(response.has_value());
-  EXPECT_EQ(
-      response.error().type,
-      SignedWebBundleReader::ReadResponseError::Type::kParserInternalError);
-  EXPECT_EQ(response.error().message,
-            "Unable to open file: FILE_ERROR_ACCESS_DENIED");
-  EXPECT_EQ(parser_factory_->GetParserCreationCount(), 1);
-}
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
   parser_factory_->SimulateParseResponseCrash();
@@ -834,9 +835,84 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
   EXPECT_EQ(response_body, kResponseBody);
 }
 
+TEST_F(SignedWebBundleReaderTest, CloseWhileReadingResponseBody) {
+  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
+      parse_status_future;
+  auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
+
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
+  parser_factory_->RunMetadataCallback(integrity_block_->size,
+                                       metadata_->Clone());
+
+  auto parse_status = parse_status_future.Take();
+  EXPECT_THAT(parse_status, HasValue());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+
+  network::ResourceRequest resource_request;
+  resource_request.url = kUrl;
+
+  ASSERT_OK_AND_ASSIGN(
+      auto response, ReadAndFulfillResponse(*reader.get(), resource_request,
+                                            metadata_->requests[kUrl]->Clone(),
+                                            response_->Clone()));
+
+  const uint64_t response_body_length = response->payload_length;
+  auto read_response_body_callable =
+      base::BindOnce(&SignedWebBundleReader::ReadResponseBody,
+                     base::Unretained(reader.get()), std::move(response));
+
+  base::test::TestFuture<net::Error> on_response_read_callback;
+  mojo::ScopedDataPipeConsumerHandle response_body_consumer = ReadResponseBody(
+      response_body_length, std::move(read_response_body_callable),
+      on_response_read_callback.GetCallback());
+
+  base::test::TestFuture<void> close_future;
+  reader->Close(close_future.GetCallback());
+
+  EXPECT_EQ(net::OK, on_response_read_callback.Get());
+  std::vector<char> buffer(response_body_length);
+  uint32_t bytes_read = buffer.size();
+  MojoResult read_result = response_body_consumer->ReadData(
+      buffer.data(), &bytes_read, MOJO_READ_DATA_FLAG_NONE);
+  EXPECT_EQ(MOJO_RESULT_OK, read_result);
+  EXPECT_EQ(buffer.size(), bytes_read);
+  EXPECT_EQ(std::string(buffer.data(), bytes_read), kResponseBody);
+
+  ASSERT_TRUE(close_future.Wait());
+}
+
+TEST_F(SignedWebBundleReaderTest, ResponseBodyEndDoesntFitInUint64) {
+  base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
+      parse_status_future;
+  auto reader = CreateReaderAndInitialize(parse_status_future.GetCallback());
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
+  parser_factory_->RunMetadataCallback(integrity_block_->size,
+                                       metadata_->Clone());
+  ASSERT_TRUE(parse_status_future.Wait());
+
+  auto response = web_package::mojom::BundleResponse::New();
+  response->response_code = 200;
+  // End of the response (which is offset + length) should not fit into
+  // unit64_t.
+  response->payload_offset = std::numeric_limits<uint64_t>::max() - 10;
+  response->payload_length = 11;
+  const uint64_t response_body_length = response->payload_length;
+
+  auto read_response_body_callable =
+      base::BindOnce(&SignedWebBundleReader::ReadResponseBody,
+                     base::Unretained(reader.get()), std::move(response));
+
+  base::test::TestFuture<net::Error> on_response_read_callback;
+  mojo::ScopedDataPipeConsumerHandle response_body_consumer = ReadResponseBody(
+      response_body_length, std::move(read_response_body_callable),
+      on_response_read_callback.GetCallback());
+
+  EXPECT_NE(net::OK, on_response_read_callback.Get());
+}
+
 class SignedWebBundleReaderBaseUrlTest
     : public SignedWebBundleReaderTest,
-      public ::testing::WithParamInterface<absl::optional<std::string>> {
+      public ::testing::WithParamInterface<std::optional<std::string>> {
  public:
   SignedWebBundleReaderBaseUrlTest() {
     if (GetParam().has_value()) {
@@ -845,11 +921,11 @@ class SignedWebBundleReaderBaseUrlTest
   }
 
  protected:
-  absl::optional<GURL> base_url_;
+  std::optional<GURL> base_url_;
 };
 
 TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
-  base::test::RepeatingTestFuture<absl::optional<GURL>> on_create_parser_future;
+  base::test::RepeatingTestFuture<std::optional<GURL>> on_create_parser_future;
   parser_factory_ = std::make_unique<web_package::MockWebBundleParserFactory>(
       on_create_parser_future.GetCallback());
 
@@ -857,7 +933,7 @@ TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
       parse_status_future;
   auto reader = CreateReaderAndInitialize(
       parse_status_future.GetCallback(),
-      VerificationAction::ContinueAndVerifySignatures(), absl::nullopt,
+      VerificationAction::ContinueAndVerifySignatures(), std::nullopt,
       base_url_);
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
@@ -870,7 +946,7 @@ TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
   EXPECT_EQ(on_create_parser_future.Take(), base_url_);
   EXPECT_TRUE(on_create_parser_future.IsEmpty());
 
-  SimulateAndWaitForParserDisconnect(*reader.get());
+  SimulateAndWaitForParserDisconnect();
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
   auto response = ReadAndFulfillResponse(*reader.get(), resource_request,
@@ -883,7 +959,7 @@ TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedWebBundleReaderBaseUrlTest,
-                         ::testing::Values(absl::nullopt,
+                         ::testing::Values(std::nullopt,
                                            "https://example.com"));
 
 class UnsecureSignedWebBundleReaderTest : public testing::Test {

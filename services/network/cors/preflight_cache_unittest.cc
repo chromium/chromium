@@ -54,7 +54,7 @@ class PreflightCacheTest : public testing::Test {
 
   std::unique_ptr<PreflightResult> CreateEntry() {
     return PreflightResult::Create(mojom::CredentialsMode::kInclude,
-                                   std::string("POST"), absl::nullopt,
+                                   std::string("POST"), std::nullopt,
                                    std::string("5"), nullptr);
   }
 

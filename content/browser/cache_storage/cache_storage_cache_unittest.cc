@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -51,6 +52,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/base/url_util.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/http/http_connection_info.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/blob_test_utils.h"
@@ -351,7 +353,7 @@ std::string CopySideData(blink::mojom::Blob* actual_blob) {
   std::string output;
   base::RunLoop loop;
   actual_blob->ReadSideData(base::BindLambdaForTesting(
-      [&](const absl::optional<mojo_base::BigBuffer> data) {
+      [&](const std::optional<mojo_base::BigBuffer> data) {
         if (data)
           output.append(data->data(), data->data() + data->size());
         loop.Quit();
@@ -686,17 +688,16 @@ class CacheStorageCacheTest : public testing::Test {
         network::mojom::FetchResponseSource::kUnspecified,
         base::flat_map<std::string, std::string>(kHeaders.cbegin(),
                                                  kHeaders.cend()),
-        /*mime_type=*/absl::nullopt, net::HttpRequestHeaders::kGetMethod,
+        /*mime_type=*/std::nullopt, net::HttpRequestHeaders::kGetMethod,
         /*blob=*/nullptr, blink::mojom::ServiceWorkerResponseError::kUnknown,
         response_time_, /*cache_storage_cache_name=*/std::string(),
         /*cors_exposed_header_names=*/std::vector<std::string>(),
         /*side_data_blob=*/nullptr,
         /*side_data_blob_cache_put=*/nullptr,
-        network::mojom::ParsedHeaders::New(),
-        net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+        network::mojom::ParsedHeaders::New(), net::HttpConnectionInfo::kUNKNOWN,
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,
-        /*auth_challenge_info=*/absl::nullopt,
+        /*auth_challenge_info=*/std::nullopt,
         /*request_include_credentials=*/true);
   }
 
@@ -925,7 +926,7 @@ class CacheStorageCacheTest : public testing::Test {
   }
 
   void ErrorTypeCallback(base::RunLoop* run_loop, CacheStorageError error) {
-    callback_message_ = absl::nullopt;
+    callback_message_ = std::nullopt;
     callback_error_ = error;
     if (run_loop)
       run_loop->Quit();
@@ -1039,7 +1040,7 @@ class CacheStorageCacheTest : public testing::Test {
   std::string expected_blob_data_;
 
   CacheStorageError callback_error_ = CacheStorageError::kSuccess;
-  absl::optional<std::string> callback_message_ = absl::nullopt;
+  std::optional<std::string> callback_message_ = std::nullopt;
   blink::mojom::FetchAPIResponsePtr callback_response_;
   std::vector<std::string> callback_strings_;
   std::string bad_message_reason_;
@@ -1301,8 +1302,7 @@ TEST_P(CacheStorageCacheTestP, PutReplaceInBatchFails) {
   // A duplicate operation error should provide an informative message
   // containing the URL of the duplicate request.
   ASSERT_TRUE(callback_message_);
-  EXPECT_NE(std::string::npos,
-            callback_message_.value().find(BodyUrl().spec()));
+  EXPECT_TRUE(base::Contains(callback_message_.value(), BodyUrl().spec()));
 
   // Neither operation should have completed.
   EXPECT_FALSE(Match(body_request_));
@@ -1969,8 +1969,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaExceeded) {
   EXPECT_TRUE(Put(no_body_request_, std::move(response)));
 
   const size_t kSize = 1024 * 1024;
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buffer->data(), 0, kSize);
   EXPECT_FALSE(
       WriteSideData(no_body_request_->url, response_time, buffer, kSize));
@@ -1990,8 +1989,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaManagerModified) {
   EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_modified_count());
 
   const size_t kSize = 10;
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buffer->data(), 0, kSize);
   EXPECT_TRUE(
       WriteSideData(no_body_request_->url, response_time, buffer, kSize));
@@ -2007,8 +2005,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_DifferentTimeStamp) {
   EXPECT_TRUE(Put(no_body_request_, std::move(response)));
 
   const size_t kSize = 10;
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buffer->data(), 0, kSize);
   EXPECT_FALSE(WriteSideData(no_body_request_->url,
                              response_time + base::Seconds(1), buffer, kSize));
@@ -2018,8 +2015,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_DifferentTimeStamp) {
 
 TEST_P(CacheStorageCacheTestP, WriteSideData_NotFound) {
   const size_t kSize = 10;
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buffer->data(), 0, kSize);
   EXPECT_FALSE(WriteSideData(GURL("http://www.example.com/not_exist"),
                              base::Time::Now(), buffer, kSize));
@@ -2048,24 +2044,25 @@ TEST_P(CacheStorageCacheTestP, QuotaManagerModified) {
   // event loop.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_modified_count());
-  EXPECT_LT(0, quota_manager_proxy_->last_notified_bucket_delta());
-  int64_t sum_delta = quota_manager_proxy_->last_notified_bucket_delta();
+  int64_t sum_delta =
+      quota_manager_proxy_->last_notified_bucket_delta().value_or(0);
+  EXPECT_LT(0, sum_delta);
 
   EXPECT_TRUE(Put(body_request_, CreateBlobBodyResponse()));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, quota_manager_proxy_->notify_bucket_modified_count());
-  EXPECT_LT(sum_delta, quota_manager_proxy_->last_notified_bucket_delta());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  EXPECT_LT(sum_delta, *quota_manager_proxy_->last_notified_bucket_delta());
+  sum_delta += *quota_manager_proxy_->last_notified_bucket_delta();
 
   EXPECT_TRUE(Delete(body_request_));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, quota_manager_proxy_->notify_bucket_modified_count());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  sum_delta += *quota_manager_proxy_->last_notified_bucket_delta();
 
   EXPECT_TRUE(Delete(no_body_request_));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(4, quota_manager_proxy_->notify_bucket_modified_count());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  sum_delta += *quota_manager_proxy_->last_notified_bucket_delta();
 
   EXPECT_EQ(0, sum_delta);
 }

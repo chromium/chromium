@@ -10,24 +10,11 @@
 // Feature to enable the new overflow menu.
 BASE_DECLARE_FEATURE(kNewOverflowMenu);
 
-// Feature to add the Price Tracking destination (with Smart Sorting) to the new
-// overflow menu.
-BASE_DECLARE_FEATURE(kSmartSortingPriceTrackingDestination);
-
-// Feature to add a "Share Chrome App" action to the overflow menu
-BASE_DECLARE_FEATURE(kNewOverflowMenuShareChromeAction);
-
 // Feature to enable overflow menu customization.
 BASE_DECLARE_FEATURE(kOverflowMenuCustomization);
 
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
-
-// Whether or not the NewOverflowMenuReorderSettings feature is enabled.
-bool IsNewOverflowMenuReorderSettingsEnabled();
-
-// Whether or not the NewOverflowMenuShareChromeAction is enabled.
-bool IsNewOverflowMenuShareChromeActionEnabled();
 
 // Whether or not overflow menu customization is enabled.
 bool IsOverflowMenuCustomizationEnabled();

@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 namespace extensions {
@@ -180,7 +181,7 @@ const extensions::EventListenerMap::ListenerList& MDnsAPI::GetEventListeners() {
       .GetEventListenersByName(mdns::OnServiceList::kEventName);
 }
 
-bool MDnsAPI::IsMDnsAllowed(const std::string& extension_id) const {
+bool MDnsAPI::IsMDnsAllowed(const ExtensionId& extension_id) const {
   const extensions::Extension* extension =
       ExtensionRegistry::Get(browser_context_)
           ->enabled_extensions()
@@ -190,7 +191,7 @@ bool MDnsAPI::IsMDnsAllowed(const std::string& extension_id) const {
 
 void MDnsAPI::GetValidOnServiceListListeners(
     const std::string& service_type_filter,
-    std::set<std::string>* extension_ids,
+    std::set<ExtensionId>* extension_ids,
     ServiceTypeCounts* service_type_counts) {
   for (const auto& listener : GetEventListeners()) {
     const base::Value::Dict* filter = listener->filter();
@@ -226,7 +227,7 @@ void MDnsAPI::WriteToConsole(const std::string& service_type,
                              const std::string& message) {
   // Get all the extensions with an onServiceList listener for a particular
   // service type.
-  std::set<std::string> extension_ids;
+  std::set<ExtensionId> extension_ids;
   ServiceTypeCounts counts;
   GetValidOnServiceListListeners(service_type, &extension_ids,
                                  nullptr /* service_type_counts */);
@@ -237,7 +238,7 @@ void MDnsAPI::WriteToConsole(const std::string& service_type,
   // TODO(devlin): It's a little weird to log to the background pages,
   // especially when it might be dormant. We should probably just log to a place
   // like the ErrorConsole instead.
-  for (const std::string& extension_id : extension_ids) {
+  for (const ExtensionId& extension_id : extension_ids) {
     extensions::ExtensionHost* host =
         extensions::ProcessManager::Get(browser_context_)
             ->GetBackgroundHostForExtension(extension_id);

@@ -33,10 +33,12 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -49,7 +51,7 @@
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom-blink.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
@@ -108,7 +110,7 @@ String ConvertToBlink(const std::string& in) {
   return String::FromUTF8(in);
 }
 
-String ConvertToBlink(const absl::optional<std::string>& in) {
+String ConvertToBlink(const std::optional<std::string>& in) {
   return in ? String::FromUTF8(*in) : String();
 }
 
@@ -290,23 +292,23 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       ConvertToBlink(in->allow_csp_from), in->cross_origin_embedder_policy,
       in->cross_origin_opener_policy, in->origin_agent_cluster,
       in->accept_ch.has_value()
-          ? absl::make_optional(ConvertToBlink(in->accept_ch.value()))
-          : absl::nullopt,
+          ? std::make_optional(ConvertToBlink(in->accept_ch.value()))
+          : std::nullopt,
       in->critical_ch.has_value()
-          ? absl::make_optional(ConvertToBlink(in->critical_ch.value()))
-          : absl::nullopt,
+          ? std::make_optional(ConvertToBlink(in->critical_ch.value()))
+          : std::nullopt,
       in->client_hints_ignored_due_to_clear_site_data_header, in->xfo,
       ConvertToBlink(in->link_headers), ConvertToBlink(in->timing_allow_origin),
       ConvertToBlink(in->supports_loading_mode),
       in->reporting_endpoints.has_value()
-          ? absl::make_optional(ConvertToBlink(in->reporting_endpoints.value()))
-          : absl::nullopt,
+          ? std::make_optional(ConvertToBlink(in->reporting_endpoints.value()))
+          : std::nullopt,
       in->variants_headers.has_value()
-          ? absl::make_optional(ConvertToBlink(in->variants_headers.value()))
-          : absl::nullopt,
+          ? std::make_optional(ConvertToBlink(in->variants_headers.value()))
+          : std::nullopt,
       in->content_language.has_value()
-          ? absl::make_optional(ConvertToBlink(in->content_language.value()))
-          : absl::nullopt,
+          ? std::make_optional(ConvertToBlink(in->content_language.value()))
+          : std::nullopt,
       ConvertToBlink(in->no_vary_search_with_parse_error),
       in->observe_browsing_topics);
 }
@@ -479,7 +481,7 @@ bool ParseHTTPRefresh(const String& refresh,
   }
 }
 
-absl::optional<base::Time> ParseDate(const String& value) {
+std::optional<base::Time> ParseDate(const String& value) {
   return ParseDateFromNullTerminatedCharacters(value.Utf8().c_str());
 }
 
@@ -525,15 +527,41 @@ AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
       media_type.GetString().Substring(type_start, type_end - type_start));
 }
 
+bool IsHTTPTabOrSpace(UChar c) {
+  // https://fetch.spec.whatwg.org/#http-tab-or-space
+  return c == kSpaceCharacter || c == kTabulationCharacter;
+}
+
 ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
     const String& value) {
+  // The spec prescribes how to split the header value, and wants to include
+  // empty entries and to strip only particular type of whitespace.
+  // Spec: https://fetch.spec.whatwg.org/#x-content-type-options-header
+  // Test: external/wpt/fetch/nosniff/parsing-nosniff.window.html
+
   if (value.empty())
     return kContentTypeOptionsNone;
 
-  Vector<String> results;
-  value.Split(",", results);
-  if (results.size() && results[0].StripWhiteSpace().LowerASCII() == "nosniff")
+  String decodedAndSplitHeaderValue;
+  if (base::FeatureList::IsEnabled(
+          features::kLegacyParsingOfXContentTypeOptions)) {
+    // Header parsing, as used until M120.
+    Vector<String> results;
+    value.Split(",", results);
+    if (results.size()) {
+      decodedAndSplitHeaderValue = results[0].StripWhiteSpace();
+    }
+  } else {
+    // Header parsing, as demanded by the spec.
+    Vector<String> results;
+    value.Split(",", /* allow_empty_entries */ true, results);
+    CHECK(results.size());  // allow_empty_entries guarantees >= 1 results.
+    decodedAndSplitHeaderValue = results[0].StripWhiteSpace(IsHTTPTabOrSpace);
+  }
+
+  if (decodedAndSplitHeaderValue.LowerASCII() == "nosniff") {
     return kContentTypeOptionsNosniff;
+  }
   return kContentTypeOptionsNone;
 }
 
@@ -658,8 +686,8 @@ CacheControlHeader ParseCacheControlDirectives(
     const AtomicString& pragma_value) {
   CacheControlHeader cache_control_header;
   cache_control_header.parsed = true;
-  cache_control_header.max_age = absl::nullopt;
-  cache_control_header.stale_while_revalidate = absl::nullopt;
+  cache_control_header.max_age = std::nullopt;
+  cache_control_header.stale_while_revalidate = std::nullopt;
 
   static const char kNoCacheDirective[] = "no-cache";
   static const char kNoStoreDirective[] = "no-store";

@@ -196,3 +196,59 @@ TODO(ellyjones): How does this work?
 [SubmenuView]: submenu_view.h
 [ui::MenuModel]: ../../base/models/menu_model.h
 [Widget]: ../widget/widget.h
+
+## Ownership
+
+Unlike most other UI code, menus decouple their lifetimes from that of the
+Widgets containing them as best they can by marking the members displayed
+in Widgets by using `View::set_owned_by_client(true)`. The below diagram
+gives an overview of the ownership relationships between the key menu classes.
+
+```
+                                                                                    ┌──────────────────────────┐
+                                                                                    │ MenuHost : Widget        │
+                                                                                    │                          │
+                                                                                    │                          │
+                                                                                    │                          │
+                                                                                    └──┬───────────────────────┘
+                                                                                       │
+                                                                                       │ Owns 1
+                                                                                       │
+┌──────────────────────────┐Raw pointer   ┌──────────────────────────┐              ┌──▼───────────────────────┐
+│ ui::MenuModel            ├──────────────► MenuModelAdapter         │              │ MenuHostRootView : View  │
+│                          │              │                          │              │                          │
+│                          │Raw pointer   │ Implements MenuDelegate, │              │                          │
+│                          ◄──────────────┤ ui::MenuModelDelegate.   │              │                          │
+└──────────────────────────┘              └───▲──────────────────────┘              └──┬───────────────────────┘
+                                              │                                        │
+                                              │ Raw pointer to                         │ Contains, but does not
+                                              │ MenuDelegate.                          │ own
+┌──────────────────────────┐                  │                                     ┌──▼───────────────────────┐
+│ MenuRunner               │                  │                                     │ MenuScrollViewContainer :│
+│                          │                  │                                     │ View                     │
+│                          │                  │                                     │                          │
+│                          │                  │                                     │ Is client-owned.         │
+└──┬───────────────────────┘                  │                                     └──▲────────────┬──────────┘
+   │ Owns (de facto)                          │                                        │            │
+   │                                          │                                        │Owns 1      │ Contains
+   │                                          │                                        │            │
+┌──▼───────────────────────┐ Owns 1       ┌───┴──────────────────────┐ Owns 0 to 1  ┌──┴────────────▼──────────┐ Owns n     ┌──────────────────────────┐
+│ MenuRunnerImpl           ├──────────────► MenuItemView : View      ├──────────────► SubMenuView : View       ├────────────► View (including          ├───► Continue
+│                          │ Owns n to n  │                          │              │                          │            │ MenuItemView)            │     recursively
+│                          ├───────────┐  │ The main menu.           │              │                          │            │                          │     (tree of
+│                          │           │  │                          ├───────────┐  │ Is client-owned.         │            │                          │     submenus)
+└──┬───────────────────────┘           │  └──┬───────────────────────┘  Owns n   │  └──────────────────────────┘            └──────────────────────────┘
+   │ Creates and deletes        Weak ptr.    │                          (as views│
+   │ (de facto)                ┌───────┬─────┘                          children)│
+   │                           │       │                                         │
+┌──▼───────────────────────┐   │       │  ┌──────────────────────────┐           │  ┌──────────────────────────┐
+│ MenuController           ◄───┘       └──► MenuItemView : View      │           └──► View                     │
+│                          │              │                          │              │                          │
+│ Singleton, at most one   │              │ Sibling menus (relevant  ├───┐          │                          │
+│ instance active globally.│              │ for drag & drop).        │   │          │                          │
+└──────────────────────────┘              └──────────────────────────┘   │          └──────────────────────────┘
+                                                                         │
+                                                                       Same type of
+                                                                       children as
+                                                                       main menu
+```

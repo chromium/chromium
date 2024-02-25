@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/error_console/error_console.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/logging_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -127,7 +127,7 @@ void ErrorConsole::UseDefaultReportingForExtension(
     return;
 
   prefs_->UpdateExtensionPref(extension_id, kStoreExtensionErrorsPref,
-                              absl::nullopt);
+                              std::nullopt);
 }
 
 void ErrorConsole::ReportError(std::unique_ptr<ExtensionError> error) {
@@ -254,10 +254,10 @@ void ErrorConsole::OnExtensionUninstalled(
 void ErrorConsole::AddManifestErrorsForExtension(const Extension* extension) {
   const std::vector<InstallWarning>& warnings =
       extension->install_warnings();
-  for (auto iter = warnings.begin(); iter != warnings.end(); ++iter) {
-    ReportError(std::unique_ptr<ExtensionError>(new ManifestError(
-        extension->id(), base::UTF8ToUTF16(iter->message),
-        base::UTF8ToUTF16(iter->key), base::UTF8ToUTF16(iter->specific))));
+  for (const auto& warning : warnings) {
+    ReportError(std::make_unique<ManifestError>(
+        extension->id(), base::UTF8ToUTF16(warning.message), warning.key,
+        base::UTF8ToUTF16(warning.specific)));
   }
 }
 

@@ -6,12 +6,13 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/translate/core/browser/translate_step.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/translate/model/fake_translate_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_translate_modal_consumer.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -62,7 +63,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  FakeTranslateInfoBarDelegate* translate_delegate_;
+  raw_ptr<FakeTranslateInfoBarDelegate> translate_delegate_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
@@ -94,7 +95,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, SetUpConsumer) {
 // Tests that TranslateInfobarModalOverlayMediator calls RevertTranslation when
 // its showSourceLanguage API is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, ShowSourceLanguage) {
-  OCMExpect(translate_delegate_->RevertWithoutClosingInfobar());
+  // TODO(crbug.com/1476697): Change translate_delegate_ to a mock
+  // object, and verify that RevertWithoutClosingInfobar() is called.
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ showSourceLanguage];
 }
@@ -126,7 +128,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
 
   EXPECT_EQ(kSourceLanguage, translate_delegate_->source_language_name());
   EXPECT_EQ(kTargetLanguage, translate_delegate_->target_language_name());
-  OCMExpect(translate_delegate_->Translate());
+  // TODO(crbug.com/1476697): Change translate_delegate_ to a mock
+  // object, and verify that Translate is called.
 
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ translateWithNewLanguages];
@@ -137,8 +140,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
 // is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest,
        AlwaysTranslateSourceLanguage) {
-  OCMExpect(translate_delegate_->ToggleAlwaysTranslate());
-  OCMExpect(translate_delegate_->Translate());
+  // TODO(crbug.com/1476697): Change translate_delegate_ to a mock
+  // object, and verify that ToggleAlwaysTranslate and Translate are called.
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ alwaysTranslateSourceLanguage];
 }
@@ -147,7 +150,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest,
 // ToggleNeverTranslateSourceLanguage when its neverTranslateSourceLanguage API
 // is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSourceLanguage) {
-  OCMExpect(translate_delegate_->ToggleTranslatableLanguageByPrefs());
+  // TODO(crbug.com/1476697): Change translate_delegate_ to a mock
+  // object, and verify that ToggleTranslatableLanguageByPrefs is called.
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ neverTranslateSourceLanguage];
 }
@@ -155,7 +159,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSourceLanguage) {
 // Tests that TranslateInfobarModalOverlayMediator calls ToggleNeverPromptSite
 // when its neverTranslateSite API is called.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSite) {
-  OCMExpect(translate_delegate_->ToggleNeverPromptSite());
+  // TODO(crbug.com/1476697): Change translate_delegate_ to a mock
+  // object, and verify that ToggleNeverPromptSite is called.
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ neverTranslateSite];
 }

@@ -21,25 +21,25 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.UrlBarViewBinderUnitTest.ShadowOmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
+import org.chromium.url.GURL;
 
-/**
- * Unit tests for {@link UrlBarMediator}.
- */
+/** Unit tests for {@link UrlBarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowOmniboxResourceProvider.class})
 public class UrlBarMediatorUnitTest {
-    @Mock
-    UrlBar.UrlTextChangeListener mMockUrlTextListener;
-    @Mock
-    UrlBar.UrlTextChangeListener mAnotherUrlTextMockListener;
-    @Mock
-    Callback<Boolean> mFocusChangeCallback;
+    @Mock UrlBar.UrlTextChangeListener mMockUrlTextListener;
+    @Mock UrlBar.UrlTextChangeListener mAnotherUrlTextMockListener;
+    @Mock Callback<Boolean> mFocusChangeCallback;
 
     PropertyModel mModel;
     UrlBarMediator mMediator;
@@ -49,22 +49,39 @@ public class UrlBarMediatorUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
-        mMediator = new UrlBarMediator(mModel, mFocusChangeCallback) {
-            @Override
-            protected String sanitizeTextForPaste(String text) {
-                return text.trim();
-            }
-        };
+        mMediator =
+                new UrlBarMediator(
+                        ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback) {
+                    @Override
+                    protected String sanitizeTextForPaste(String text) {
+                        return text.trim();
+                    }
+                };
     }
 
     @Test
     public void setUrlData_SendsUpdates() {
-        UrlBarData baseData = UrlBarData.create(
-                "http://www.example.com", spannable("www.example.com"), 0, 14, "Blah");
-        UrlBarData dataWithDifferentDisplay = UrlBarData.create(
-                "http://www.example.com", spannable("www.foo.com"), 0, 11, "Blah");
-        UrlBarData dataWithDifferentEditing = UrlBarData.create(
-                "http://www.example.com", spannable("www.example.com"), 0, 14, "Bar");
+        UrlBarData baseData =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        14,
+                        "Blah");
+        UrlBarData dataWithDifferentDisplay =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.foo.com"),
+                        0,
+                        11,
+                        "Blah");
+        UrlBarData dataWithDifferentEditing =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        14,
+                        "Bar");
 
         Assert.assertTrue(mMediator.setUrlBarData(baseData, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
 
@@ -73,12 +90,15 @@ public class UrlBarMediatorUnitTest {
         mModel.addObserver(observer);
         Mockito.<PropertyObserver>reset(observer);
 
-        Assert.assertTrue(mMediator.setUrlBarData(
-                dataWithDifferentDisplay, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
-        Assert.assertTrue(mMediator.setUrlBarData(
-                dataWithDifferentEditing, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
-        Assert.assertTrue(mMediator.setUrlBarData(
-                dataWithDifferentEditing, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 4));
+        Assert.assertTrue(
+                mMediator.setUrlBarData(
+                        dataWithDifferentDisplay, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
+        Assert.assertTrue(
+                mMediator.setUrlBarData(
+                        dataWithDifferentEditing, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
+        Assert.assertTrue(
+                mMediator.setUrlBarData(
+                        dataWithDifferentEditing, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 4));
 
         Mockito.verify(observer, Mockito.times(3))
                 .onPropertyChanged(mModel, UrlBarProperties.TEXT_STATE);
@@ -86,10 +106,20 @@ public class UrlBarMediatorUnitTest {
 
     @Test
     public void setUrlData_PreventsDuplicateUpdates() {
-        UrlBarData data1 = UrlBarData.create(
-                "http://www.example.com", spannable("www.example.com"), 0, 0, "Blah");
-        UrlBarData data2 = UrlBarData.create(
-                "http://www.example.com", spannable("www.example.com"), 0, 0, "Blah");
+        UrlBarData data1 =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        0,
+                        "Blah");
+        UrlBarData data2 =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        0,
+                        "Blah");
 
         Assert.assertTrue(mMediator.setUrlBarData(data1, UrlBar.ScrollType.SCROLL_TO_TLD, 4));
 
@@ -107,26 +137,44 @@ public class UrlBarMediatorUnitTest {
     @Test
     public void setUrlData_ScrollStateForDataUrl() {
         String displayText = "data:text/html,blah";
-        UrlBarData data = UrlBarData.create(
-                "data:text/html,blah,blah", spannable(displayText), 0, displayText.length(), null);
-        Assert.assertTrue(mMediator.setUrlBarData(data, UrlBar.ScrollType.SCROLL_TO_TLD,
-                UrlBarCoordinator.SelectionState.SELECT_ALL));
+        UrlBarData data =
+                UrlBarData.create(
+                        new GURL("data:text/html,blah,blah"),
+                        spannable(displayText),
+                        0,
+                        displayText.length(),
+                        null);
+        Assert.assertTrue(
+                mMediator.setUrlBarData(
+                        data,
+                        UrlBar.ScrollType.SCROLL_TO_TLD,
+                        UrlBarCoordinator.SelectionState.SELECT_ALL));
 
         // The scroll state should be overridden to SCROLL_TO_BEGINNING for file-type schemes.
-        Assert.assertEquals(UrlBar.ScrollType.SCROLL_TO_BEGINNING,
+        Assert.assertEquals(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING,
                 mModel.get(UrlBarProperties.TEXT_STATE).scrollType);
     }
 
     @Test
     public void setUrlData_ScrollStateForAboutUrl() {
         String displayText = "about:blank#verylongurl.totallylegit.notsuspicious.url.com";
-        UrlBarData data = UrlBarData.create(
-                displayText, spannable(displayText), 0, displayText.length(), null);
-        Assert.assertTrue(mMediator.setUrlBarData(data, UrlBar.ScrollType.SCROLL_TO_TLD,
-                UrlBarCoordinator.SelectionState.SELECT_ALL));
+        UrlBarData data =
+                UrlBarData.create(
+                        new GURL(displayText),
+                        spannable(displayText),
+                        0,
+                        displayText.length(),
+                        null);
+        Assert.assertTrue(
+                mMediator.setUrlBarData(
+                        data,
+                        UrlBar.ScrollType.SCROLL_TO_TLD,
+                        UrlBarCoordinator.SelectionState.SELECT_ALL));
 
         // The scroll state should be overridden to SCROLL_TO_BEGINNING for file-type schemes.
-        Assert.assertEquals(UrlBar.ScrollType.SCROLL_TO_BEGINNING,
+        Assert.assertEquals(
+                UrlBar.ScrollType.SCROLL_TO_BEGINNING,
                 mModel.get(UrlBarProperties.TEXT_STATE).scrollType);
     }
 
@@ -135,19 +183,22 @@ public class UrlBarMediatorUnitTest {
         Assert.assertTrue(UrlBarMediator.isNewTextEquivalentToExistingText(null, null));
 
         // Empty display text, regardless of spanned state.
-        Assert.assertTrue(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, spannable(""), 0, 0, null),
-                UrlBarData.create(null, "", 0, 0, null)));
+        Assert.assertTrue(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, spannable(""), 0, 0, null),
+                        UrlBarData.create(null, "", 0, 0, null)));
 
         // No editing text, equal display text
-        Assert.assertTrue(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, spannable("Test"), 0, 0, null),
-                UrlBarData.create(null, spannable("Test"), 0, 0, null)));
+        Assert.assertTrue(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, spannable("Test"), 0, 0, null),
+                        UrlBarData.create(null, spannable("Test"), 0, 0, null)));
 
         // Equal display and editing text
-        Assert.assertTrue(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, spannable("Test"), 0, 0, "Blah"),
-                UrlBarData.create(null, spannable("Test"), 0, 0, "Blah")));
+        Assert.assertTrue(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, spannable("Test"), 0, 0, "Blah"),
+                        UrlBarData.create(null, spannable("Test"), 0, 0, "Blah")));
 
         // Equal complex display text and editing text
         SpannableStringBuilder text1 = spannable("Test");
@@ -160,16 +211,18 @@ public class UrlBarMediatorUnitTest {
         text2.setSpan(new UrlEmphasisColorSpan(4), 1, 3, 0);
         text2.setSpan(new OmniboxUrlEmphasizer.UrlEmphasisSecurityErrorSpan(), 0, 1, 0);
 
-        Assert.assertTrue(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, text1, 0, 0, "Blah"),
-                UrlBarData.create(null, text2, 0, 0, "Blah")));
+        Assert.assertTrue(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, text1, 0, 0, "Blah"),
+                        UrlBarData.create(null, text2, 0, 0, "Blah")));
 
         // Ensure adding non-emphasis spans does not mess up equality.
         text1.setSpan(new Object(), 0, 3, 0);
         Selection.setSelection(text2, 0, 1);
-        Assert.assertTrue(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, text1, 0, 0, "Blah"),
-                UrlBarData.create(null, text2, 0, 0, "Blah")));
+        Assert.assertTrue(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, text1, 0, 0, "Blah"),
+                        UrlBarData.create(null, text2, 0, 0, "Blah")));
     }
 
     @Test
@@ -180,19 +233,22 @@ public class UrlBarMediatorUnitTest {
                 UrlBarMediator.isNewTextEquivalentToExistingText(UrlBarData.EMPTY, null));
 
         // Different display texts
-        Assert.assertFalse(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, spannable("Test"), 0, 0, null),
-                UrlBarData.create(null, spannable("Test2"), 0, 0, null)));
+        Assert.assertFalse(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, spannable("Test"), 0, 0, null),
+                        UrlBarData.create(null, spannable("Test2"), 0, 0, null)));
 
         // Mismatched spannable state of display text
-        Assert.assertFalse(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, spannable("Test"), 0, 0, null),
-                UrlBarData.create(null, "Test2", 0, 0, null)));
+        Assert.assertFalse(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, spannable("Test"), 0, 0, null),
+                        UrlBarData.create(null, "Test2", 0, 0, null)));
 
         // Equal display text, different editing text
-        Assert.assertFalse(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, spannable("Test"), 0, 0, "Blah"),
-                UrlBarData.create(null, spannable("Test"), 0, 0, "Blah2")));
+        Assert.assertFalse(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, spannable("Test"), 0, 0, "Blah"),
+                        UrlBarData.create(null, spannable("Test"), 0, 0, "Blah2")));
 
         // Equal display text content, but different emphasis spans
         SpannableStringBuilder text1 = spannable("Test");
@@ -201,23 +257,25 @@ public class UrlBarMediatorUnitTest {
         text2.setSpan(new UrlEmphasisColorSpan(4), 1, 3, 0);
         text2.setSpan(new OmniboxUrlEmphasizer.UrlEmphasisSecurityErrorSpan(), 0, 1, 0);
 
-        Assert.assertFalse(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, text1, 0, 0, "Blah"),
-                UrlBarData.create(null, text2, 0, 0, "Blah")));
+        Assert.assertFalse(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, text1, 0, 0, "Blah"),
+                        UrlBarData.create(null, text2, 0, 0, "Blah")));
 
         // Add a subset of emphasis spans, but not all.
         text1.setSpan(new UrlEmphasisColorSpan(3), 0, 3, 0);
         text1.setSpan(new UrlEmphasisColorSpan(4), 1, 3, 0);
-        Assert.assertFalse(UrlBarMediator.isNewTextEquivalentToExistingText(
-                UrlBarData.create(null, text1, 0, 0, "Blah"),
-                UrlBarData.create(null, text2, 0, 0, "Blah")));
+        Assert.assertFalse(
+                UrlBarMediator.isNewTextEquivalentToExistingText(
+                        UrlBarData.create(null, text1, 0, 0, "Blah"),
+                        UrlBarData.create(null, text2, 0, 0, "Blah")));
     }
 
     @Test
     public void pasteTextValidation() {
         ClipboardManager clipboard =
-                (ClipboardManager) RuntimeEnvironment.application.getSystemService(
-                        Context.CLIPBOARD_SERVICE);
+                (ClipboardManager)
+                        RuntimeEnvironment.application.getSystemService(Context.CLIPBOARD_SERVICE);
         clipboard.setPrimaryClip(null);
         Assert.assertNull(mMediator.getTextToPaste());
 
@@ -236,8 +294,10 @@ public class UrlBarMediatorUnitTest {
         String url = "https://www.test.com/blah";
         String displayText = "test.com/blah";
         String editingText = "www.test.com/blah";
-        mMediator.setUrlBarData(UrlBarData.create(url, displayText, 0, 12, editingText),
-                UrlBar.ScrollType.NO_SCROLL, UrlBarCoordinator.SelectionState.SELECT_ALL);
+        mMediator.setUrlBarData(
+                UrlBarData.create(new GURL(url), displayText, 0, 12, editingText),
+                UrlBar.ScrollType.NO_SCROLL,
+                UrlBarCoordinator.SelectionState.SELECT_ALL);
 
         // Replacement is only valid if selecting the full text.
         Assert.assertNull(mMediator.getReplacementCutCopyText(editingText, 1, 2));
@@ -253,7 +313,8 @@ public class UrlBarMediatorUnitTest {
 
         // If the path changed in the editing text changed but the domain is untouched, it should
         // be replaced with the full domain from the unformatted URL.
-        Assert.assertEquals("https://www.test.com/foo",
+        Assert.assertEquals(
+                "https://www.test.com/foo",
                 mMediator.getReplacementCutCopyText("www.test.com/foo", 0, 16));
     }
 

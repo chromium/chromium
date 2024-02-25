@@ -1267,7 +1267,7 @@ void PopulateCompileUnitOffsets(int fd,
 
 }  // namespace
 
-bool GetDwarfSourceLineNumber(void* pc,
+bool GetDwarfSourceLineNumber(const void* pc,
                               uintptr_t cu_offset,
                               char* out,
                               size_t out_size) {
@@ -1291,7 +1291,7 @@ bool GetDwarfSourceLineNumber(void* pc,
   return true;
 }
 
-void GetDwarfCompileUnitOffsets(void* const* trace,
+void GetDwarfCompileUnitOffsets(const void* const* trace,
                                 uint64_t* cu_offsets,
                                 size_t num_frames) {
   // Ensure `cu_offsets` always has a known state.

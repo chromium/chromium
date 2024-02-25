@@ -17,8 +17,8 @@ def _JSONToCString16(json_string_literal):
       # after, otherwise the Windows compiler will sometimes try to get more
       # than 4 characters in the hex string.
       c_string_literal = (c_string_literal[0:escape_index + 1] + 'x' +
-          c_string_literal[escape_index + 2:escape_index + 6] + '" L"' +
-          c_string_literal[escape_index + 6:])
+                          c_string_literal[escape_index + 2:escape_index + 6] +
+                          '" u"' + c_string_literal[escape_index + 6:])
     escape_index = c_string_literal.find('\\', escape_index + 6)
   return c_string_literal
 
@@ -40,7 +40,7 @@ def _GenerateString16(content, lines, indent='  '):
     lines.append(indent + 'NULL,')
   else:
     # json.dumps quotes the string and escape characters as required.
-    lines.append(indent + 'L%s,' % _JSONToCString16(json.dumps(content)))
+    lines.append(indent + 'u%s,' % _JSONToCString16(json.dumps(content)))
 
 def _GenerateArrayVariableName(element_name, field_name, field_name_count):
   # Generates a unique variable name for an array variable.

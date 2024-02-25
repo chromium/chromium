@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/offline_pages/buildflags/buildflags.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -34,6 +34,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -42,6 +43,28 @@
 
 namespace content {
 namespace service_worker_controllee_request_handler_unittest {
+
+namespace {
+
+class DeleteAndStartOverWaiter : public ServiceWorkerContextCoreObserver {
+ public:
+  explicit DeleteAndStartOverWaiter(
+      ServiceWorkerContextWrapper& service_worker_context_wrapper)
+      : service_worker_context_wrapper_(service_worker_context_wrapper) {
+    service_worker_context_wrapper_->AddObserver(this);
+  }
+  void OnDeleteAndStartOver() override { run_loop_.Quit(); }
+  void Wait() {
+    run_loop_.Run();
+    service_worker_context_wrapper_->RemoveObserver(this);
+  }
+
+ private:
+  raw_ref<ServiceWorkerContextWrapper> service_worker_context_wrapper_;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
 
 class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
  public:
@@ -80,9 +103,8 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
           nullptr,
           base::BindOnce(
               [](base::OnceClosure closure,
-                 scoped_refptr<network::SharedURLLoaderFactory>) {
-                std::move(closure).Run();
-              },
+                 std::optional<NavigationLoaderInterceptor::Result>
+                     interceptor_result) { std::move(closure).Run(); },
               loader_loop_.QuitClosure()),
           base::DoNothing());
     }
@@ -221,7 +243,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override {
     return AllowServiceWorkerResult::No();
@@ -519,8 +541,10 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
           base::DoNothing()));
 
   // Destroy the context and make a new one.
+  DeleteAndStartOverWaiter delete_and_start_over_waiter(
+      *helper_->context_wrapper());
   helper_->context_wrapper()->DeleteAndStartOver();
-  base::RunLoop().RunUntilIdle();
+  delete_and_start_over_waiter.Wait();
 
   // Conduct a main resource load. The loader won't be created because the
   // interceptor's context is now null.

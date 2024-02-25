@@ -4,12 +4,12 @@
 
 #include "ui/color/color_provider_manager.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -34,10 +34,7 @@ class ColorProviderManagerTest : public testing::Test {
 
 ColorProvider* GetLightNormalColorProvider() {
   return ColorProviderManager::GetForTesting().GetColorProviderFor(
-      {ColorProviderKey::ColorMode::kLight,
-       ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
-       ColorProviderKey::FrameType::kChromium, /*user_color=*/absl::nullopt,
-       /*scheme_variant=*/absl::nullopt, /*is_grayscale=*/false, nullptr});
+      ui::ColorProviderKey());
 }
 
 class TestInitializerSupplier : public ColorProviderKey::InitializerSupplier {

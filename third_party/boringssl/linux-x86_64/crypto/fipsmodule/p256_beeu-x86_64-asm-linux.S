@@ -329,7 +329,7 @@ _CET_ENDBR
 	popq	%rbp
 .cfi_adjust_cfa_offset	-8
 .cfi_restore	rbp
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 
 .size	beeu_mod_inverse_vartime, .-beeu_mod_inverse_vartime

@@ -82,7 +82,7 @@ class CapturedAudioInputTest : public ::testing::Test {
     stream_client_.reset();
     audio_client->StreamCreated(
         std::move(pending_stream), stream_client_.BindNewPipeAndPassReceiver(),
-        {absl::in_place, base::ReadOnlySharedMemoryRegion::Create(1024).region,
+        {std::in_place, base::ReadOnlySharedMemoryRegion::Create(1024).region,
          mojo::PlatformHandle(foreign_socket.Take())});
   }
 

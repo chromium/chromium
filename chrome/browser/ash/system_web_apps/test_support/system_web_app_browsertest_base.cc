@@ -52,7 +52,7 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
 
 apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
     SystemWebAppType system_app_type) {
-  absl::optional<web_app::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       GetManager().GetAppIdForSystemApp(system_app_type);
 
   CHECK(app_id.has_value());
@@ -94,9 +94,8 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   }
 
   if (out_browser) {
-    *out_browser = web_contents
-                       ? chrome::FindBrowserWithWebContents(web_contents)
-                       : nullptr;
+    *out_browser =
+        web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
   }
 
   return web_contents;

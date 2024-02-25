@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,8 @@ class PLATFORM_EXPORT AsyncIteratorBase : public ScriptWrappable {
   v8::Local<v8::Promise> next(ScriptState* script_state,
                               ExceptionState& exception_state);
 
+  v8::Local<v8::Promise> returnForBinding(ScriptState* script_state,
+                                          ExceptionState& exception_state);
   v8::Local<v8::Promise> returnForBinding(ScriptState* script_state,
                                           v8::Local<v8::Value> value,
                                           ExceptionState& exception_state);

@@ -17,12 +17,11 @@ class GpuDriverBugWorkarounds;
 namespace gles2 {
 class ContextGroup;
 
-GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribs(
+GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     const ContextCreationAttribs& attribs_helper,
     const ContextGroup* context_group);
 
-GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribs(
-    const ContextCreationAttribs& attribs_helper,
+GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     bool use_passthrough_cmd_decoder);
 
 // Returns true if the passthrough command decoder has been requested
@@ -59,6 +58,14 @@ ParseWebGPUPowerPreference(const base::CommandLine* command_line);
 bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds);
 
 }  // namespace gles2
+
+#if BUILDFLAG(IS_MAC)
+// Set the texture target to use with MacOS native GpuMemoryBuffers based on the
+// current GL implementation.
+GPU_GLES2_EXPORT void
+SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SERVICE_UTILS_H_

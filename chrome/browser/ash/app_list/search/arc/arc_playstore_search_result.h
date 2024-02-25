@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_ARC_ARC_PLAYSTORE_SEARCH_RESULT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 
@@ -44,12 +44,12 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   void ExecuteLaunchCommand(int event_flags) override;
 
  private:
-  const absl::optional<std::string>& install_intent_uri() const {
+  const std::optional<std::string>& install_intent_uri() const {
     return data_->install_intent_uri;
   }
-  const absl::optional<std::string>& label() const { return data_->label; }
+  const std::optional<std::string>& label() const { return data_->label; }
   bool is_instant_app() const { return data_->is_instant_app; }
-  const absl::optional<std::string>& formatted_price() const {
+  const std::optional<std::string>& formatted_price() const {
     return data_->formatted_price;
   }
   float review_score() const { return data_->review_score; }
@@ -64,7 +64,7 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
 
   // |profile_| is owned by ProfileInfo.
-  const raw_ptr<AppListControllerDelegate, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<AppListControllerDelegate, DanglingUntriaged>
       list_controller_;  // Owned by AppListClient.
 
   base::WeakPtrFactory<ArcPlayStoreSearchResult> weak_ptr_factory_{this};

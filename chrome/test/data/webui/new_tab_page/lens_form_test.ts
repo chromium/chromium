@@ -1,10 +1,11 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import {LensErrorType, LensFormElement, LensSubmitType} from 'chrome://new-tab-page/lazy_load.js';
+import type {LensFormElement} from 'chrome://new-tab-page/lazy_load.js';
+import {LensErrorType, LensSubmitType} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('LensFormTest', () => {
@@ -14,6 +15,10 @@ suite('LensFormTest', () => {
   let urlFormSubmitted = false;
   let lastError: LensErrorType|null = null;
   let lastSubmit: LensSubmitType|null = null;
+  const loadingHandler = (e: Event) => {
+    const event = e as CustomEvent<LensSubmitType>;
+    lastSubmit = event.detail;
+  };
 
   setup(() => {
     lensForm = document.createElement('ntp-lens-form');
@@ -32,10 +37,7 @@ suite('LensFormTest', () => {
       lastError = event.detail;
     });
 
-    lensForm.addEventListener('loading', (e: Event) => {
-      const event = e as CustomEvent<LensSubmitType>;
-      lastSubmit = event.detail;
-    });
+    lensForm.addEventListener('loading', loadingHandler);
   });
 
   teardown(() => {
@@ -52,10 +54,17 @@ suite('LensFormTest', () => {
     // Act.
     dispatchFileInputChange(file);
 
-    // Assert.
-    assertTrue(fileFormSubmitted);
-    assertEquals(null, lastError);
-    assertEquals(LensSubmitType.FILE, lastSubmit);
+    await new Promise<void>((resolve) => {
+      lensForm.addEventListener('loading', (e: Event) => {
+        loadingHandler(e);
+        resolve();
+      });
+    }).then((_) => {
+      // Assert.
+      assertTrue(fileFormSubmitted);
+      assertEquals(null, lastError);
+      assertEquals(LensSubmitType.FILE, lastSubmit);
+    });
   });
 
   test(
@@ -112,10 +121,17 @@ suite('LensFormTest', () => {
     // Act.
     dispatchFileInputChange(file);
 
-    // Assert.
-    const action = new URL(lensForm.$.fileForm.action);
-    const ep = action.searchParams.get('ep');
-    assertEquals('cntpubb', ep);
+    await new Promise<void>((resolve) => {
+      lensForm.addEventListener('loading', (e: Event) => {
+        loadingHandler(e);
+        resolve();
+      });
+    }).then((_) => {
+      // Assert.
+      const action = new URL(lensForm.$.fileForm.action);
+      const ep = action.searchParams.get('ep');
+      assertEquals('cntpubb', ep);
+    });
   });
 
   test('submit file should set rendering environment parameter', async () => {
@@ -125,10 +141,17 @@ suite('LensFormTest', () => {
     // Act.
     dispatchFileInputChange(file);
 
-    // Assert.
-    const action = new URL(lensForm.$.fileForm.action);
-    const re = action.searchParams.get('re');
-    assertEquals('df', re);
+    await new Promise<void>((resolve) => {
+      lensForm.addEventListener('loading', (e: Event) => {
+        loadingHandler(e);
+        resolve();
+      });
+    }).then((_) => {
+      // Assert.
+      const action = new URL(lensForm.$.fileForm.action);
+      const re = action.searchParams.get('re');
+      assertEquals('df', re);
+    });
   });
 
   test('submit file should set surface parameter', async () => {
@@ -138,10 +161,17 @@ suite('LensFormTest', () => {
     // Act.
     dispatchFileInputChange(file);
 
-    // Assert.
-    const action = new URL(lensForm.$.fileForm.action);
-    const s = action.searchParams.get('s');
-    assertEquals('4', s);
+    await new Promise<void>((resolve) => {
+      lensForm.addEventListener('loading', (e: Event) => {
+        loadingHandler(e);
+        resolve();
+      });
+    }).then((_) => {
+      // Assert.
+      const action = new URL(lensForm.$.fileForm.action);
+      const s = action.searchParams.get('s');
+      assertEquals('4', s);
+    });
   });
 
   test('submit file should set language parameter', async () => {
@@ -151,10 +181,17 @@ suite('LensFormTest', () => {
     // Act.
     dispatchFileInputChange(file);
 
-    // Assert.
-    const action = new URL(lensForm.$.fileForm.action);
-    const hl = action.searchParams.get('hl');
-    assertEquals('en-US', hl);
+    await new Promise<void>((resolve) => {
+      lensForm.addEventListener('loading', (e: Event) => {
+        loadingHandler(e);
+        resolve();
+      });
+    }).then((_) => {
+      // Assert.
+      const action = new URL(lensForm.$.fileForm.action);
+      const hl = action.searchParams.get('hl');
+      assertEquals('en-US', hl);
+    });
   });
 
   test('submit file should set start time parameter', async () => {
@@ -165,10 +202,17 @@ suite('LensFormTest', () => {
     // Act.
     dispatchFileInputChange(file);
 
-    // Assert.
-    const action = new URL(lensForm.$.fileForm.action);
-    const st = action.searchParams.get('st');
-    assertEquals('1001', st);
+    await new Promise<void>((resolve) => {
+      lensForm.addEventListener('loading', (e: Event) => {
+        loadingHandler(e);
+        resolve();
+      });
+    }).then((_) => {
+      // Assert.
+      const action = new URL(lensForm.$.fileForm.action);
+      const st = action.searchParams.get('st');
+      assertEquals('1001', st);
+    });
   });
 
   test(
@@ -180,10 +224,17 @@ suite('LensFormTest', () => {
         // Act.
         dispatchFileInputChange(file);
 
-        // Assert.
-        const action = new URL(lensForm.$.fileForm.action);
-        const cd = action.searchParams.get('cd');
-        assertGT(cd?.length ?? 0, 0);
+        await new Promise<void>((resolve) => {
+          lensForm.addEventListener('loading', (e: Event) => {
+            loadingHandler(e);
+            resolve();
+          });
+        }).then((_) => {
+          // Assert.
+          const action = new URL(lensForm.$.fileForm.action);
+          const cd = action.searchParams.get('cd');
+          assertGT(cd?.length ?? 0, 0);
+        });
       });
 
 

@@ -54,7 +54,7 @@ class StubFeedApi : public FeedApi {
   void FetchResource(
       const GURL& url,
       const std::string& method,
-      const std::vector<std::string>& header_name_and_values,
+      const std::vector<std::string>& header_names_and_values,
       const std::string& post_data,
       base::OnceCallback<void(NetworkResponse)> callback) override {}
   ImageFetchId FetchImage(

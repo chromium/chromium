@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -79,7 +80,7 @@ class FileHandlingSubManagerConfigureTest
     WebAppTest::TearDown();
   }
 
-  web_app::AppId InstallWebAppWithFileHandlers(
+  webapps::AppId InstallWebAppWithFileHandlers(
       apps::FileHandlers file_handlers) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
@@ -87,7 +88,8 @@ class FileHandlingSubManagerConfigureTest
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->file_handlers = file_handlers;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
     provider().scheduler().InstallFromInfoWithParams(
@@ -97,11 +99,11 @@ class FileHandlingSubManagerConfigureTest
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
  protected:
@@ -123,7 +125,7 @@ class FileHandlingSubManagerConfigureTest
     }
   }
 
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
@@ -165,7 +167,7 @@ TEST_P(FileHandlingSubManagerConfigureTest, InstallWithFilehandlers) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -228,7 +230,7 @@ TEST_P(FileHandlingSubManagerConfigureTest, UpdateUserChoiceDisallowed) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   base::test::TestFuture<void> future;
   provider().scheduler().PersistFileHandlersUserChoice(
@@ -259,7 +261,7 @@ TEST_P(FileHandlingSubManagerConfigureTest, Uninstall) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   test::UninstallAllWebApps(profile());
   auto state =
@@ -331,7 +333,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, InstallWithFilehandlers) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -362,7 +364,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
@@ -412,7 +414,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -434,6 +436,112 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id), extension));
   }
+}
+
+TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
+       ForceUnregisterAppInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  apps::FileHandlers file_handlers;
+
+  {
+    apps::FileHandler file_handler;
+    file_handler.action = GURL("https://app.site/open-foo");
+    file_handler.display_name = u"Foo opener";
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "application/foo";
+      accept_entry.file_extensions.insert(".foo");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_TRUE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                        app_name, extension));
+  }
+
+  SynchronizeOsOptions options;
+  options.force_unregister_os_integration = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_FALSE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                         app_name, extension));
+  }
+}
+
+TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
+       ForceUnregisterAppNotInRegistry) {
+  if (!AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP()
+        << "Force unregistration is only for sub managers that are enabled";
+  }
+  apps::FileHandlers file_handlers;
+
+  {
+    apps::FileHandler file_handler;
+    file_handler.action = GURL("https://app.site/open-foo");
+    file_handler.display_name = u"Foo opener";
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "application/foo";
+      accept_entry.file_extensions.insert(".foo");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_TRUE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                        app_name, extension));
+  }
+
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
+      std::nullopt;
+  scoped_supress.emplace();
+  test::UninstallAllWebApps(profile());
+  // File extensions should still be left behind, even though the app has been
+  // uninstalled.
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_TRUE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                        app_name, extension));
+  }
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  SynchronizeOsOptions options;
+  options.force_unregister_os_integration = true;
+  test::SynchronizeOsIntegration(profile(), app_id, options);
+
+  for (const auto& extension : GetFileExtensionsFromFileHandlingProto(
+           os_integration_state.file_handling())) {
+    ASSERT_FALSE(test_override()->IsFileExtensionHandled(profile(), app_id,
+                                                         app_name, extension));
+  }
+  scoped_supress.reset();
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -38,6 +38,8 @@ UpgradeParams::UpgradeParams()
           ash::switches::kArcDisableGmsCoreCache)),
       skip_tts_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcDisableTtsCache)),
+      skip_dexopt_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kArcDisableDexOptCache)),
       enable_priority_app_lmk_delay(
           base::FeatureList::IsEnabled(kPriorityAppLmkDelay)),
       priority_app_lmk_delay_second(kPriorityAppLmkDelaySecond.Get()),

@@ -102,7 +102,7 @@ TEST(ManifestUtilTest, CaptureLinksFromString) {
 
 TEST(ManifestUtilTest, LaunchHandlerClientModeFromString) {
   using ClientMode = Manifest::LaunchHandler::ClientMode;
-  EXPECT_EQ(absl::nullopt, ClientModeFromString(""));
+  EXPECT_EQ(std::nullopt, ClientModeFromString(""));
   EXPECT_EQ(ClientMode::kAuto, ClientModeFromString("auto"));
   EXPECT_EQ(ClientMode::kNavigateNew, ClientModeFromString("navigate-new"));
   EXPECT_EQ(ClientMode::kNavigateExisting,
@@ -113,7 +113,7 @@ TEST(ManifestUtilTest, LaunchHandlerClientModeFromString) {
   EXPECT_EQ(ClientMode::kNavigateNew, ClientModeFromString("NAVIGATE-NEW"));
 
   // Unknown value.
-  EXPECT_EQ(absl::nullopt, ClientModeFromString("unknown-value"));
+  EXPECT_EQ(std::nullopt, ClientModeFromString("unknown-value"));
 }
 
 }  // namespace blink

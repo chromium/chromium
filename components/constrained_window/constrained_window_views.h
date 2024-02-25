@@ -31,6 +31,8 @@ class WebContentsModalDialogHost;
 
 namespace constrained_window {
 
+extern const void* kConstrainedWindowWidgetIdentifier;
+
 class ConstrainedWindowViewsClient;
 
 // Sets the ConstrainedWindowClient impl.
@@ -58,6 +60,11 @@ void ShowModalDialog(gfx::NativeWindow dialog,
 
 // Calls CreateWebModalDialogViews, shows the dialog, and returns its widget.
 views::Widget* ShowWebModalDialogViews(
+    views::WidgetDelegate* dialog,
+    content::WebContents* initiator_web_contents);
+
+// As above, but with an owned widget.
+std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
     views::WidgetDelegate* dialog,
     content::WebContents* initiator_web_contents);
 
@@ -96,6 +103,13 @@ views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
 // Shows a web/tab-modal dialog based on `dialog_model` and returns its widget.
 views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
                             content::WebContents* web_contents);
+
+// True if the platform supports global screen coordinates. This is typically
+// supported by most platforms except linux-wayland.
+bool SupportsGlobalScreenCoordinates();
+
+// True if the platform clips child widgets to their parent's viewport.
+bool PlatformClipsChildrenToViewport();
 
 }  // namespace constrained_window
 

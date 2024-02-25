@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/chromebox_for_meetings/browser/cfm_browser_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::cfm {
 namespace {
@@ -127,7 +127,7 @@ TEST_F(CfmBrowserServiceTest, GetBrowserRemote) {
 
 TEST_F(CfmBrowserServiceTest, GetVariationsData) {
   std::string field_trial_parameters = "Foo.Bar:Key/Value";
-  std::string field_trial_states = "*Baz/Qux/Foo/Bar/";
+  std::string field_trial_states = "*Baz/Qux/Foo/Bar";
   std::string enabled_features = "enabled<Foo";
   std::string disabled_features = "disabled<Baz";
 

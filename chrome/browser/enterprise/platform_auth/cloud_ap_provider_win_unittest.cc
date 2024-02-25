@@ -43,7 +43,7 @@ class CloudApProviderWinTest : public ::testing::Test {
  protected:
   ~CloudApProviderWinTest() override {
     // Clear an override of the join type made by any test.
-    CloudApProviderWin::SetSupportLevelForTesting(absl::nullopt);
+    CloudApProviderWin::SetSupportLevelForTesting(std::nullopt);
   }
 
   void SetUp() override {
@@ -164,51 +164,8 @@ TEST_F(CloudApProviderWinTest, Platform) {
   run_loop.Run();
 }
 
-// Tests that cookie info is correctly parsed into the cookie header.
-TEST_F(CloudApProviderWinTest, ParseCookieInfo) {
-  CloudApProviderWin provider;
-  net::HttpRequestHeaders auth_headers;
-  DWORD cookie_info_count = 2;
-
-  const wchar_t* cookie_name_1 = L"name";
-  const wchar_t* cookie_name_2 = L"x-ms-name";
-  const wchar_t* cookie_data = L"data; cookie_attributes; a; b";
-
-  ProofOfPossessionCookieInfo cookie_info_1 =
-      GetCookieInfo(cookie_name_1, cookie_data);
-  ProofOfPossessionCookieInfo cookie_info_2 =
-      GetCookieInfo(cookie_name_2, cookie_data);
-  ProofOfPossessionCookieInfo cookie_info[2] = {cookie_info_1, cookie_info_2};
-  provider.ParseCookieInfoForTesting(cookie_info, cookie_info_count,
-                                     auth_headers);
-
-  // The names and data of all cookies should appear in the cookie header.
-  std::string cookie_value;
-  ASSERT_TRUE(
-      auth_headers.GetHeader(net::HttpRequestHeaders::kCookie, &cookie_value));
-  EXPECT_EQ(
-      cookie_value,
-      base::JoinString({base::JoinString({base::WideToASCII(cookie_name_1),
-                                          base::WideToASCII(cookie_data)},
-                                         "="),
-                        base::JoinString({base::WideToASCII(cookie_name_2),
-                                          base::WideToASCII(cookie_data)},
-                                         "=")},
-                       "; "));
-
-  // None of the cookies should be set as individual headers.
-  EXPECT_FALSE(
-      auth_headers.GetHeader(base::WideToASCII(cookie_name_1), &cookie_value));
-  EXPECT_FALSE(
-      auth_headers.GetHeader(base::WideToASCII(cookie_name_2), &cookie_value));
-}
-
 // Tests that cookie info is correctly parsed into the corresponding headers.
-TEST_F(CloudApProviderWinTest, ParseCookieInfo_HeaderFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      enterprise_auth::kCloudApAuthAttachAsHeader);
-
+TEST_F(CloudApProviderWinTest, ParseCookieInfo) {
   CloudApProviderWin provider;
   net::HttpRequestHeaders auth_headers;
   DWORD cookie_info_count = 2;

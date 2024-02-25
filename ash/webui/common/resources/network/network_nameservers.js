@@ -7,11 +7,11 @@
  */
 
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/cr_elements/cr_input/cr_input.js';
-import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
-import '//resources/cr_elements/policy/cr_policy_indicator.js';
-import '//resources/cr_elements/md_select.css.js';
+import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import '//resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
+import '//resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
 import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
@@ -232,7 +232,17 @@ Polymer({
       type = NameserversType.AUTOMATIC;
       nameservers = this.clearEmptyNameServers_(nameservers);
     }
-    this.setNameservers_(type, nameservers, false /* send */);
+    // When a network is connected, we receive connection strength updates and
+    // that prevents users from making any custom updates to network
+    // nameservers. These below conditions allow connection strength updates to
+    // be applied only if network is not connected or if nameservers type is set
+    // to auto or if we are receiving the update for the first time.
+    if (type !== NameserversType.CUSTOM || !oldValue ||
+        newValue.guid !== (oldValue && oldValue.guid) ||
+        !OncMojo.connectionStateIsConnected(
+            this.managedProperties.connectionState)) {
+      this.setNameservers_(type, nameservers, false /* send */);
+    }
   },
 
   /**

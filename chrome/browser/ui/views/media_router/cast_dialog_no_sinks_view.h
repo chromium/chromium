@@ -19,9 +19,9 @@ namespace media_router {
 // discovered. For three seconds after instantiation it shows a throbber, and
 // after that it shows an icon that links to a help center article.
 class CastDialogNoSinksView : public views::View {
- public:
-  METADATA_HEADER(CastDialogNoSinksView);
+  METADATA_HEADER(CastDialogNoSinksView, views::View)
 
+ public:
   static constexpr base::TimeDelta kSearchWaitTime = base::Seconds(3);
 
   explicit CastDialogNoSinksView(Profile* profile);

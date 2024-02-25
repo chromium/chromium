@@ -21,12 +21,13 @@ struct SingleLookupResponse {
   SingleLookupResponse& operator=(SingleLookupResponse&& other);
   ~SingleLookupResponse();
 
+  friend bool operator==(const SingleLookupResponse& lhs,
+                         const SingleLookupResponse& rhs) = default;
+
   std::vector<std::string> encrypted_leak_match_prefixes;
   std::string reencrypted_lookup_hash;
 };
 
-bool operator==(const SingleLookupResponse& lhs,
-                const SingleLookupResponse& rhs);
 
 }  // namespace password_manager
 

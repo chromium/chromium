@@ -55,7 +55,7 @@ class TestFileSuggestKeyedService : public ash::FileSuggestKeyedService {
   void GetSuggestFileData(ash::FileSuggestionType type,
                           ash::GetSuggestFileDataCallback callback) override {
     if (!IsProtoInitialized()) {
-      std::move(callback).Run(/*suggestions=*/absl::nullopt);
+      std::move(callback).Run(/*suggestions=*/std::nullopt);
       return;
     }
 
@@ -69,7 +69,7 @@ class TestFileSuggestKeyedService : public ash::FileSuggestKeyedService {
 
   void SetSuggestionsForType(
       ash::FileSuggestionType type,
-      const absl::optional<std::vector<ash::FileSuggestData>>& suggestions) {
+      const std::optional<std::vector<ash::FileSuggestData>>& suggestions) {
     type_suggestion_mappings_[type] = suggestions;
     OnSuggestionProviderUpdated(type);
   }
@@ -79,7 +79,7 @@ class TestFileSuggestKeyedService : public ash::FileSuggestKeyedService {
  private:
   void RunGetSuggestFileDataCallback(ash::FileSuggestionType type,
                                      ash::GetSuggestFileDataCallback callback) {
-    absl::optional<std::vector<ash::FileSuggestData>> suggestions;
+    std::optional<std::vector<ash::FileSuggestData>> suggestions;
     auto iter = type_suggestion_mappings_.find(type);
     if (iter != type_suggestion_mappings_.end()) {
       suggestions = iter->second;
@@ -89,7 +89,7 @@ class TestFileSuggestKeyedService : public ash::FileSuggestKeyedService {
 
   // Caches file suggestions.
   std::map<ash::FileSuggestionType,
-           absl::optional<std::vector<ash::FileSuggestData>>>
+           std::optional<std::vector<ash::FileSuggestData>>>
       type_suggestion_mappings_;
 
   base::WeakPtrFactory<TestFileSuggestKeyedService> weak_factory_{this};
@@ -147,14 +147,13 @@ class ZeroStateDriveProviderTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   TestSearchController search_controller_;
-  raw_ptr<ZeroStateDriveProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<ZeroStateDriveProvider> provider_ = nullptr;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
-  raw_ptr<TestFileSuggestKeyedService, ExperimentalAsh> file_suggest_service_ =
-      nullptr;
+  raw_ptr<TestFileSuggestKeyedService> file_suggest_service_ = nullptr;
   // The mount point for drive files.
   std::unique_ptr<ScopedTestMountPoint> drive_fs_mount_point_;
 };
@@ -243,6 +242,8 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnDriveFailure) {
 TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
   // Fast forward past the construction delay.
   FastForwardByMinutes(1);
+  // Emulate that the launcher is open.
+  search_controller_.StartZeroState(base::DoNothing(), base::TimeDelta());
 
   // Creates files and suggests these files through the file suggest keyed
   // service. Returns paths to these files.
@@ -253,8 +254,10 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
         drive_fs_mount_point_.get()->CreateArbitraryFile();
     suggestions.emplace_back(ash::FileSuggestionType::kDriveFile,
                              suggested_file_path,
-                             /*new_prediction_reason=*/absl::nullopt,
-                             /*new_score=*/absl::nullopt);
+                             /*new_prediction_reason=*/std::nullopt,
+                             /*timestamp=*/std::nullopt,
+                             /*secondary_timestamp=*/std::nullopt,
+                             /*new_score=*/std::nullopt);
   }
 
   // Only test this logic if the `file_suggest_service_` is ready for test.
@@ -263,7 +266,7 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
         ash::FileSuggestionType::kDriveFile, suggestions);
     Wait();
 
-    EXPECT_EQ(search_controller_.last_results().size(), suggestion_size);
+    ASSERT_EQ(search_controller_.last_results().size(), suggestion_size);
     // Check the scores to results are assigned by using their position in the
     // results list.
     for (size_t i = 0; i < suggestion_size; ++i) {

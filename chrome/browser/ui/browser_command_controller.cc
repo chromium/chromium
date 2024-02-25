@@ -19,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -41,7 +40,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -54,7 +52,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -73,6 +71,7 @@
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/performance_manager/public/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
@@ -94,15 +93,12 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_urls.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "ui/accessibility/accessibility_features.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ui/wm/features.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -120,11 +116,13 @@
 #include "chrome/browser/ui/ash/browser_data_migration_error_dialog.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -310,7 +308,8 @@ bool BrowserCommandController::IsReservedCommandOrKey(
   // it is not reserved.
   auto* linux_ui = ui::LinuxUi::instance();
   if (linux_ui && event.os_event &&
-      linux_ui->GetTextEditCommandsForEvent(*event.os_event, nullptr)) {
+      linux_ui->GetTextEditCommandsForEvent(
+          *event.os_event, ui::TEXT_INPUT_FLAG_NONE, nullptr)) {
     return false;
   }
 #endif
@@ -366,7 +365,7 @@ void BrowserCommandController::ExtensionStateChanged() {
 }
 
 void BrowserCommandController::TabKeyboardFocusChangedTo(
-    absl::optional<int> index) {
+    std::optional<int> index) {
   UpdateCommandsForTabKeyboardFocus(index);
 }
 
@@ -579,7 +578,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
 #if BUILDFLAG(IS_MAC)
     case IDC_TOGGLE_FULLSCREEN_TOOLBAR:
-      chrome::ToggleFullscreenToolbar(browser_);
+      chrome::ToggleAlwaysShowToolbarInFullscreen(browser_);
       break;
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {
       chrome::ToggleJavaScriptFromAppleEventsAllowed(browser_);
@@ -649,6 +648,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_PASSWORD_MANAGER:
       ShowPasswordManager(browser_);
       break;
+    case IDC_SHOW_PASSWORD_CHECKUP:
+      ShowPasswordCheck(browser_);
+      break;
     case IDC_SHOW_PAYMENT_METHODS:
       ShowPaymentMethods(browser_);
       break;
@@ -660,6 +662,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_VIRTUAL_CARD_ENROLL:
       ShowVirtualCardEnrollBubble(browser_);
+      break;
+    case IDC_ORGANIZE_TABS:
+      StartTabOrganizationRequest(browser_);
       break;
     case IDC_SHOW_TRANSLATE:
       ShowTranslateBubble(browser_);
@@ -842,6 +847,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_HISTORY:
       ShowHistory(browser_->GetBrowserForOpeningWebUi());
       break;
+    case IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL:
+      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+          SidePanelEntryId::kHistoryClusters, SidePanelOpenTrigger::kAppMenu);
+      break;
     case IDC_SHOW_DOWNLOADS:
       ShowDownloads(browser_->GetBrowserForOpeningWebUi());
       break;
@@ -849,18 +858,22 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowExtensions(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
-      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
-            features::IsChromeRefresh2023());
+      CHECK(features::IsExtensionMenuInRootAppMenu());
       ShowExtensions(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
-      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
-            features::IsChromeRefresh2023());
+      CHECK(features::IsExtensionMenuInRootAppMenu());
       ShowWebStore(browser_, extension_urls::kAppMenuUtmSource);
       break;
     case IDC_PERFORMANCE:
-      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
-                          chrome::kPerformanceSubPage);
+      if (base::FeatureList::IsEnabled(
+              performance_manager::features::kPerformanceControlsSidePanel)) {
+        SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+            SidePanelEntryId::kPerformance, SidePanelOpenTrigger::kAppMenu);
+      } else {
+        ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+                            chrome::kPerformanceSubPage);
+      }
       break;
     case IDC_OPTIONS:
       ShowSettings(browser_->GetBrowserForOpeningWebUi());
@@ -894,6 +907,11 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_UPGRADE_DIALOG:
       OpenUpdateChromeDialog(browser_);
       break;
+    case IDC_OPEN_SAFETY_HUB:
+      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+                          chrome::kSafetyHubSubPage);
+      break;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_LACROS_DATA_MIGRATION: {
       auto* user_manager = user_manager::UserManager::Get();
@@ -905,12 +923,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       // run it always.
       ash::BrowserDataMigratorImpl::ClearMigrationStep(
           user_manager->GetLocalState());
-      ash::BrowserDataMigratorImpl::ClearMigrationAttemptCountForUser(
+      ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
           user_manager->GetLocalState(), user->username_hash());
       ash::BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
           user->GetAccountId(), user->username_hash(),
           base::BindOnce(
-              [](bool result, const absl::optional<uint64_t>& required_size) {
+              [](bool result, const std::optional<uint64_t>& required_size) {
                 if (!result && required_size.has_value())
                   ash::OpenBrowserDataMigrationErrorDialog(*required_size);
               }));
@@ -940,9 +958,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_SHOW_BETA_FORUM:
       ShowBetaForum(browser_);
-      break;
-    case IDC_TOGGLE_QUICK_COMMANDS:
-      ToggleCommander(browser_);
       break;
     case IDC_DISTILL_PAGE:
       ToggleDistilledView(browser_);
@@ -1027,7 +1042,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ExecLensRegionSearch(browser_);
       break;
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-
     case IDC_READING_LIST_MENU_ADD_TAB:
       chrome::MoveCurrentTabToReadLater(browser_);
       break;
@@ -1036,6 +1050,13 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
           SidePanelEntryId::kReadingList, SidePanelOpenTrigger::kAppMenu);
       break;
+
+    case IDC_SHOW_READING_MODE_SIDE_PANEL: {
+      // Yes. This is a separate feature from the reading list.
+      SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+          SidePanelEntryId::kReadAnything, SidePanelOpenTrigger::kAppMenu);
+      break;
+    }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Profile submenu commands
@@ -1188,10 +1209,9 @@ void BrowserCommandController::InitCommandState() {
   UpdateTabRestoreCommandState();
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
+  command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
 #if BUILDFLAG(IS_CHROMEOS)
-  command_updater_.UpdateCommandEnabled(
-      IDC_TOGGLE_MULTITASK_MENU,
-      chromeos::wm::features::IsWindowLayoutMenuEnabled());
+  command_updater_.UpdateCommandEnabled(IDC_TOGGLE_MULTITASK_MENU, true);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);
@@ -1249,14 +1269,20 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_PROFILE_MENU_IN_APP_MENU, true);
   command_updater_.UpdateCommandEnabled(
       IDC_SHOW_HISTORY, (!guest_session && !profile()->IsSystemProfile()));
+  command_updater_.UpdateCommandEnabled(
+      IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+      (!guest_session && !profile()->IsSystemProfile()));
   command_updater_.UpdateCommandEnabled(IDC_SHOW_DOWNLOADS, true);
   command_updater_.UpdateCommandEnabled(IDC_FIND_AND_EDIT_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SAVE_AND_SHARE_MENU, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_READING_MODE_SIDE_PANEL, true);
   command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF, false);
   command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR, false);
   command_updater_.UpdateCommandEnabled(IDC_PASSWORDS_AND_AUTOFILL_MENU,
                                         !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_PASSWORD_MANAGER,
+                                        !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_PASSWORD_CHECKUP,
                                         !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_PAYMENT_METHODS,
                                         !guest_session);
@@ -1308,8 +1334,6 @@ void BrowserCommandController::InitCommandState() {
       IDC_SHOW_SAVE_LOCAL_CARD_SIGN_IN_PROMO_IF_APPLICABLE, true);
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_SIGN_IN_PROMO, true);
   command_updater_.UpdateCommandEnabled(IDC_CARET_BROWSING_TOGGLE, true);
-  command_updater_.UpdateCommandEnabled(IDC_TOGGLE_QUICK_COMMANDS,
-                                        commander::IsEnabled());
   // Navigation commands
   command_updater_.UpdateCommandEnabled(
       IDC_HOME, normal_window || browser_->is_type_app() ||
@@ -1350,6 +1374,10 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_LACROS_DATA_MIGRATION, true);
 #endif
 
+  // Safety Hub commands.
+  command_updater_.UpdateCommandEnabled(
+      IDC_OPEN_SAFETY_HUB, base::FeatureList::IsEnabled(features::kSafetyHub));
+
   // Distill current page.
   command_updater_.UpdateCommandEnabled(IDC_DISTILL_PAGE,
                                         dom_distiller::IsDomDistillerEnabled());
@@ -1383,10 +1411,7 @@ void BrowserCommandController::InitCommandState() {
   }
 #endif
 
-  if ((browser_->is_type_normal() && features::IsChromeRefresh2023()) ||
-      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
-  }
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
 
   if (features::IsChromeRefresh2023()) {
     if (browser_->is_type_normal()) {
@@ -1476,8 +1501,7 @@ void BrowserCommandController::UpdateCommandsForExtensionsMenu() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
-      features::IsChromeRefresh2023()) {
+  if (features::IsExtensionMenuInRootAppMenu()) {
     command_updater_.UpdateCommandEnabled(
         IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
         /*state=*/true);
@@ -1797,6 +1821,11 @@ void BrowserCommandController::UpdatePrintingState() {
 
   bool print_enabled = CanPrint(browser_);
   command_updater_.UpdateCommandEnabled(IDC_PRINT, print_enabled);
+  if (features::IsToolbarPinningEnabled()) {
+    actions::ActionManager::Get()
+        .FindAction(kActionPrint)
+        ->SetEnabled(print_enabled);
+  }
 #if BUILDFLAG(ENABLE_PRINTING)
   command_updater_.UpdateCommandEnabled(IDC_BASIC_PRINT,
                                         CanBasicPrint(browser_));
@@ -1861,7 +1890,7 @@ void BrowserCommandController::UpdateCommandsForMediaRouter() {
 }
 
 void BrowserCommandController::UpdateCommandsForTabKeyboardFocus(
-    absl::optional<int> target_index) {
+    std::optional<int> target_index) {
   command_updater_.UpdateCommandEnabled(
       IDC_DUPLICATE_TARGET_TAB, !browser_->is_type_app() &&
                                     !browser_->is_type_app_popup() &&
@@ -1900,6 +1929,7 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
                                         CanCloseOtherTabs(browser_));
   command_updater_.UpdateCommandEnabled(IDC_MOVE_TAB_TO_NEW_WINDOW,
                                         CanMoveActiveTabToNewWindow(browser_));
+  UpdateCommandsForBookmarkEditing();
 }
 
 BrowserWindow* BrowserCommandController::window() {

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FeedHandler, FeedHandlerRemote} from '../../feed.mojom-webui.js';
+import type {FeedHandlerRemote} from '../../feed.mojom-webui.js';
+import {FeedHandler} from '../../feed.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler

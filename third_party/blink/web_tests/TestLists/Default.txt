@@ -77,8 +77,6 @@ dom/document_type/previous-element-sibling.html
 dom/document_type/remove.html
 dom/domparsing/domparser-assign-variable.html
 dom/domparsing/xhtml-serialize.html
-dom/legacy_dom_conformance/svg/level3/xpath/XPathResult_booleanValue_false.svg
-dom/legacy_dom_conformance/xhtml/level1/core/hc_elementgettagname.xhtml
 dom/node/normalize-with-cdata.html
 dom/parent_node/append.html
 dom/text/normalize-crash-in-spell-checker.html
@@ -265,7 +263,6 @@ external/wpt/mediasession/playbackstate.html
 external/wpt/mediasession/setactionhandler.html
 external/wpt/navigation-timing/nav2_test_instance_accessible_from_the_start.html
 external/wpt/navigation-timing/test_navigation_redirectCount_none.html
-external/wpt/orientation-event/motion/add-listener-from-callback.https.html
 external/wpt/orientation-event/orientation/create-event.https.html
 external/wpt/orientation-event/motion/optional-event-properties.https.html
 external/wpt/pointerevents/pointerevent_touch-action-illegal.html
@@ -370,7 +367,6 @@ fast/autoresize/basic.html
 fast/autoresize/turn-off-autoresize.html
 fast/backgrounds/background-clip-text.html
 fast/backgrounds/background-fill-zero-area-crash.html
-fast/backgrounds/background-shorthand-after-set-backgroundSize.html
 fast/backgrounds/size/parsing-background-size-values.html
 fast/beacon/beacon-basic.html
 fast/block/basic/018.html
@@ -829,9 +825,7 @@ paint/invalidation/svg/invalid-clip-path-crash.html
 paint/roundedrects/degenerate-radius-assert.html
 paint/selection/selection-drag-image-in-iframe.html
 payments/payment-request-in-iframe-allowed.html
-permissionclient/script-permissions.html
 permissionclient/storage-permission.html
-plugins/instance-available-before-stylesheets-loaded.html
 pointer-lock/lock-already-locked.html
 pointer-lock/mouse-event-api.html
 pointer-lock/pointerlockelement-null-when-pending.html

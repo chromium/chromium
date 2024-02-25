@@ -14,6 +14,7 @@
 namespace password_manager {
 
 using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
+using webauthn::WebAuthnCredManDelegate;
 
 CredManController::CredManController(
     base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
@@ -28,24 +29,27 @@ CredManController::~CredManController() {
 }
 
 bool CredManController::Show(
-    raw_ptr<webauthn::WebAuthnCredManDelegate> cred_man_delegate,
+    raw_ptr<WebAuthnCredManDelegate> cred_man_delegate,
     std::unique_ptr<PasswordCredentialFiller> filler,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver,
     bool is_webauthn_form) {
   // webauthn forms without passkeys should show TouchToFill bottom sheet.
   if (!cred_man_delegate || !is_webauthn_form ||
-      !webauthn::WebAuthnCredManDelegate::IsCredManEnabled() ||
-      !cred_man_delegate->HasResults()) {
+      WebAuthnCredManDelegate::CredManMode() !=
+          WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan ||
+      cred_man_delegate->HasPasskeys() !=
+          WebAuthnCredManDelegate::State::kHasPasskeys) {
     filler->Dismiss(ToShowVirtualKeyboard(false));
     return false;
   }
   visibility_controller_->SetVisible(std::move(frame_driver));
   filler_ = std::move(filler);
-  cred_man_delegate->SetRequestCompletionCallback(
-      base::BindRepeating(&CredManController::Dismiss, AsWeakPtr()));
+  cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
+      &CredManController::Dismiss, weak_ptr_factory_.GetWeakPtr()));
   cred_man_delegate->SetFillingCallback(
-      base::BindOnce(&CredManController::Fill, AsWeakPtr()));
-  cred_man_delegate->TriggerFullRequest();
+      base::BindOnce(&CredManController::Fill, weak_ptr_factory_.GetWeakPtr()));
+  cred_man_delegate->TriggerCredManUi(
+      WebAuthnCredManDelegate::RequestPasswords(true));
   return true;
 }
 

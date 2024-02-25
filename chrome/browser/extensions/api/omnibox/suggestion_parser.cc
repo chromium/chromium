@@ -70,7 +70,7 @@ void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
     std::string tag = CheckedGetElementTag(child);
     omnibox::DescriptionStyleType style_type =
         omnibox::ParseDescriptionStyleType(tag);
-    if (style_type == omnibox::DESCRIPTION_STYLE_TYPE_NONE) {
+    if (style_type == omnibox::DescriptionStyleType::kNone) {
       // Unsupported style type. Even so, we walk all children in the node for
       // forward compatibility.
       WalkNode(child, result);

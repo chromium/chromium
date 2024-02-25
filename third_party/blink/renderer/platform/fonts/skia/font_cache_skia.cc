@@ -36,6 +36,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -93,36 +94,35 @@ AtomicString FontCache::GetFamilyNameForCharacter(
 
 void FontCache::PlatformInit() {}
 
-scoped_refptr<SimpleFontData> FontCache::FallbackOnStandardFontStyle(
+const SimpleFontData* FontCache::FallbackOnStandardFontStyle(
     const FontDescription& font_description,
     UChar32 character) {
   FontDescription substitute_description(font_description);
-  substitute_description.SetStyle(NormalSlopeValue());
-  substitute_description.SetWeight(NormalWeightValue());
+  substitute_description.SetStyle(kNormalSlopeValue);
+  substitute_description.SetWeight(kNormalWeightValue);
 
   FontFaceCreationParams creation_params(
       substitute_description.Family().FamilyName());
-  FontPlatformData* substitute_platform_data =
+  const FontPlatformData* substitute_platform_data =
       GetFontPlatformData(substitute_description, creation_params);
   if (substitute_platform_data &&
       substitute_platform_data->FontContainsCharacter(character)) {
-    FontPlatformData platform_data =
-        FontPlatformData(*substitute_platform_data);
-    platform_data.SetSyntheticBold(font_description.Weight() >=
-                                       BoldThreshold() &&
-                                   font_description.SyntheticBoldAllowed());
-    platform_data.SetSyntheticItalic(font_description.Style() ==
-                                         ItalicSlopeValue() &&
-                                     font_description.SyntheticItalicAllowed());
-    return FontDataFromFontPlatformData(&platform_data, kDoNotRetain);
+    FontPlatformData* platform_data =
+        MakeGarbageCollected<FontPlatformData>(*substitute_platform_data);
+    platform_data->SetSyntheticBold(font_description.Weight() >=
+                                        kBoldThreshold &&
+                                    font_description.SyntheticBoldAllowed());
+    platform_data->SetSyntheticItalic(
+        font_description.Style() == kItalicSlopeValue &&
+        font_description.SyntheticItalicAllowed());
+    return FontDataFromFontPlatformData(platform_data);
   }
 
   return nullptr;
 }
 
-scoped_refptr<SimpleFontData> FontCache::GetLastResortFallbackFont(
-    const FontDescription& description,
-    ShouldRetain should_retain) {
+const SimpleFontData* FontCache::GetLastResortFallbackFont(
+    const FontDescription& description) {
   const FontFaceCreationParams fallback_creation_params(
       GetFallbackFontFamily(description));
   const FontPlatformData* font_platform_data = GetFontPlatformData(
@@ -195,7 +195,7 @@ scoped_refptr<SimpleFontData> FontCache::GetLastResortFallbackFont(
 #endif
 
   DCHECK(font_platform_data);
-  return FontDataFromFontPlatformData(font_platform_data, should_retain);
+  return FontDataFromFontPlatformData(font_platform_data);
 }
 
 sk_sp<SkTypeface> FontCache::CreateTypeface(
@@ -232,13 +232,13 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
 
   // TODO(https://crbug.com/1425390: Assign FontCache::font_manager_ in the
   // ctor.
-  auto font_manager = font_manager_ ? font_manager_ : SkFontMgr::RefDefault();
+  auto font_manager = font_manager_ ? font_manager_ : skia::DefaultFontMgr();
   return sk_sp<SkTypeface>(font_manager->matchFamilyStyle(
       name.empty() ? nullptr : name.c_str(), font_description.SkiaFontStyle()));
 }
 
 #if !BUILDFLAG(IS_WIN)
-std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
+const FontPlatformData* FontCache::CreateFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
     float font_size,
@@ -281,7 +281,7 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
       font_description.GetFontSynthesisWeight() ==
           FontDescription::kAutoFontSynthesisWeight;
 
-  bool synthetic_italic = (((font_description.Style() == ItalicSlopeValue()) &&
+  bool synthetic_italic = (((font_description.Style() == kItalicSlopeValue) &&
                             !typeface->isItalic()) ||
                            font_description.IsSyntheticItalic()) &&
                           font_description.GetFontSynthesisStyle() ==
@@ -293,11 +293,10 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
                 ->GetResolvedFontFeatures()
           : ResolvedFontFeatures();
 
-  std::unique_ptr<FontPlatformData> font_platform_data =
-      std::make_unique<FontPlatformData>(
-          typeface, name, font_size, synthetic_bold, synthetic_italic,
-          font_description.TextRendering(), resolved_font_features,
-          font_description.Orientation());
+  FontPlatformData* font_platform_data = MakeGarbageCollected<FontPlatformData>(
+      typeface, name, font_size, synthetic_bold, synthetic_italic,
+      font_description.TextRendering(), resolved_font_features,
+      font_description.Orientation());
 
   font_platform_data->SetAvoidEmbeddedBitmaps(
       BitmapGlyphsBlockList::ShouldAvoidEmbeddedBitmapsForTypeface(*typeface));

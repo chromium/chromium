@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
-
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 using ::testing::_;
@@ -40,6 +40,13 @@ struct TestParams {
   bool alpha;
   bool desynchronized;
 };
+
+class AcceleratedCompositingTestPlatform
+    : public blink::TestingPlatformSupport {
+ public:
+  bool IsGpuCompositingDisabled() const override { return false; }
+};
+
 }  // unnamed namespace
 
 class OffscreenCanvasTest : public ::testing::Test,
@@ -58,7 +65,7 @@ class OffscreenCanvasTest : public ::testing::Test,
   }
 
   LocalDOMWindow* GetWindow() const {
-    return web_view_helper_.GetWebView()
+    return web_view_helper_->GetWebView()
         ->MainFrameImpl()
         ->GetFrame()
         ->DomWindow();
@@ -67,25 +74,31 @@ class OffscreenCanvasTest : public ::testing::Test,
   Document& GetDocument() const { return *GetWindow()->document(); }
 
  private:
-  frame_test_helpers::WebViewHelper web_view_helper_;
+  test::TaskEnvironment task_environment_;
+  std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   Persistent<OffscreenCanvas> offscreen_canvas_;
   Persistent<OffscreenCanvasRenderingContext2D> context_;
   FakeGLES2Interface gl_;
+  std::unique_ptr<
+      ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
+      accelerated_compositing_scope_;
 };
 
 OffscreenCanvasTest::OffscreenCanvasTest() = default;
 
 void OffscreenCanvasTest::SetUp() {
-  auto factory = [](FakeGLES2Interface* gl, bool* gpu_compositing_disabled)
+  auto factory = [](FakeGLES2Interface* gl)
       -> std::unique_ptr<WebGraphicsContext3DProvider> {
-    *gpu_compositing_disabled = false;
     gl->SetIsContextLost(false);
     return std::make_unique<FakeWebGraphicsContext3DProvider>(gl);
   };
   SharedGpuContext::SetContextProviderFactoryForTesting(
       WTF::BindRepeating(factory, WTF::Unretained(&gl_)));
 
-  web_view_helper_.Initialize();
+  web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
+  web_view_helper_->Initialize();
+  accelerated_compositing_scope_ = std::make_unique<
+      ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
 
   GetDocument().documentElement()->setInnerHTML(
       String::FromUTF8("<body><canvas id='c'></canvas></body>"));
@@ -113,6 +126,9 @@ void OffscreenCanvasTest::SetUp() {
 
 void OffscreenCanvasTest::TearDown() {
   SharedGpuContext::ResetForTesting();
+  // destruction order matters due to nested TestPlatformSupport instance.
+  accelerated_compositing_scope_ = nullptr;
+  web_view_helper_ = nullptr;
 }
 
 TEST_F(OffscreenCanvasTest, AnimationNotInitiallySuspended) {

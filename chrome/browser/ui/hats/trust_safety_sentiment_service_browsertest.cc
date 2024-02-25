@@ -38,6 +38,12 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
         {{"trusted-surface-probability", "1.0"}});
   }
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
   void SetUpOnMainThread() override {
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -48,6 +54,8 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
     EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(_))
         .WillRepeatedly(testing::Return(true));
   }
+
+  void TearDownOnMainThread() override { mock_hats_service_ = nullptr; }
 
   void OpenPageInfo() {
     ShowPageInfoDialog(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -87,7 +95,7 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(TrustSafetySentimentServiceBrowserTest,

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_equals: expected Element node <input></input> but got Element node <iframe srcdoc="<input><dialog> Dialog in child </dialog>...
+Harness: the test ran to completion.
+

@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
@@ -28,8 +28,8 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
-#include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -93,8 +93,7 @@ PersonalizationAppUserProviderImpl::PersonalizationAppUserProviderImpl(
           {base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
   ash::UserImageManager* user_image_manager =
-      ash::ChromeUserManager::Get()->GetUserImageManager(
-          GetAccountId(profile_));
+      ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
   user_image_manager->DownloadProfileImage();
   user_image_file_selector_ =
       std::make_unique<ash::UserImageFileSelector>(web_ui);
@@ -138,8 +137,7 @@ void PersonalizationAppUserProviderImpl::SetUserImageObserver(
   OnUserImageChanged(*user);
 
   ash::UserImageManager* user_image_manager =
-      ash::ChromeUserManager::Get()->GetUserImageManager(
-          GetAccountId(profile_));
+      ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
   const gfx::ImageSkia& profile_image =
       user_image_manager->DownloadedProfileImage();
   OnUserProfileImageUpdated(*user, profile_image);
@@ -186,8 +184,8 @@ void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
         ash::UserImageManager::ImageIndexToHistogramIndex(index));
   }
 
-  auto* user_image_manager = ash::ChromeUserManager::Get()->GetUserImageManager(
-      GetAccountId(profile_));
+  auto* user_image_manager =
+      ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
 
   user_image_manager->SaveUserDefaultImageIndex(index);
 }
@@ -205,8 +203,7 @@ void PersonalizationAppUserProviderImpl::SelectProfileImage() {
   }
 
   ash::UserImageManager* user_image_manager =
-      ash::ChromeUserManager::Get()->GetUserImageManager(
-          GetAccountId(profile_));
+      ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
 
   user_image_manager->SaveUserImageFromProfileImage();
 }
@@ -249,8 +246,7 @@ void PersonalizationAppUserProviderImpl::SelectLastExternalUserImage() {
   }
 
   ash::UserImageManager* user_image_manager =
-      ash::ChromeUserManager::Get()->GetUserImageManager(
-          GetAccountId(profile_));
+      ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
 
   user_image_manager->SaveUserImage(std::move(last_external_user_image_));
 }
@@ -263,8 +259,7 @@ void PersonalizationAppUserProviderImpl::OnFileSelected(
       ash::default_user_image::kHistogramImageExternal);
 
   ash::UserImageManager* user_image_manager =
-      ash::ChromeUserManager::Get()->GetUserImageManager(
-          GetAccountId(profile_));
+      ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
 
   user_image_manager->SaveUserImageFromFile(path);
 }
@@ -387,8 +382,8 @@ void PersonalizationAppUserProviderImpl::OnCameraImageDecoded(
   // Image was successfully decoded so it is valid png data.
   user_image->MarkAsSafe();
 
-  auto* user_image_manager = ash::ChromeUserManager::Get()->GetUserImageManager(
-      GetAccountId(profile_));
+  auto* user_image_manager =
+      ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
 
   user_image_manager->SaveUserImage(std::move(user_image));
 }

@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_EMULATION_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_EMULATION_AGENT_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -80,7 +81,8 @@ class CORE_EXPORT InspectorEmulationAgent final
       protocol::Maybe<bool> dont_set_visible_size,
       protocol::Maybe<protocol::Emulation::ScreenOrientation>,
       protocol::Maybe<protocol::Page::Viewport>,
-      protocol::Maybe<protocol::Emulation::DisplayFeature>) override;
+      protocol::Maybe<protocol::Emulation::DisplayFeature>,
+      protocol::Maybe<protocol::Emulation::DevicePosture>) override;
   protocol::Response clearDeviceMetricsOverride() override;
   protocol::Response setHardwareConcurrencyOverride(
       int hardware_concurrency) override;
@@ -104,7 +106,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   void ApplyHardwareConcurrencyOverride(unsigned int& hardware_concurrency);
   void ApplyUserAgentOverride(String* user_agent);
   void ApplyUserAgentMetadataOverride(
-      absl::optional<blink::UserAgentMetadata>* ua_metadata);
+      std::optional<blink::UserAgentMetadata>* ua_metadata);
   void PrepareRequest(DocumentLoader*,
                       ResourceRequest&,
                       ResourceLoaderOptions&,
@@ -156,7 +158,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::Integer hardware_concurrency_override_;
   InspectorAgentState::String user_agent_override_;
   InspectorAgentState::Bytes serialized_ua_metadata_override_;
-  absl::optional<blink::UserAgentMetadata> ua_metadata_override_;
+  std::optional<blink::UserAgentMetadata> ua_metadata_override_;
   InspectorAgentState::String accept_language_override_;
   InspectorAgentState::String locale_override_;
   InspectorAgentState::Double virtual_time_budget_;

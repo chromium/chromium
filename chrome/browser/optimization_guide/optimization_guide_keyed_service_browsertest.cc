@@ -2,26 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+
 #include <memory>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/chrome_model_quality_logs_uploader_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -31,11 +46,16 @@
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -47,7 +67,28 @@
 
 namespace {
 
+using optimization_guide::OnDeviceModelComponentStateManager;
 using optimization_guide::proto::OptimizationType;
+
+class ScopedSetMetricsConsent {
+ public:
+  // Enables or disables metrics consent based off of |consent|.
+  explicit ScopedSetMetricsConsent(bool consent) : consent_(consent) {
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &consent_);
+  }
+
+  ScopedSetMetricsConsent(const ScopedSetMetricsConsent&) = delete;
+  ScopedSetMetricsConsent& operator=(const ScopedSetMetricsConsent&) = delete;
+
+  ~ScopedSetMetricsConsent() {
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        nullptr);
+  }
+
+ private:
+  const bool consent_;
+};
 
 // A WebContentsObserver that asks whether an optimization type can be applied.
 class OptimizationGuideConsumerWebContentsObserver
@@ -153,8 +194,20 @@ class OptimizationGuideKeyedServiceBrowserTest
   OptimizationGuideKeyedServiceBrowserTest()
       : network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {
-    scoped_feature_list_.InitWithFeatures(
-        {optimization_guide::features::kOptimizationHints}, {});
+    // Enable visibility of tab organization feature.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{optimization_guide::features::kOptimizationHints, {}},
+         {optimization_guide::features::kOptimizationGuideModelExecution, {}},
+         {optimization_guide::features::internal::kComposeSettingsVisibility,
+          {}},
+         {optimization_guide::features::kLogOnDeviceMetricsOnStartup,
+          {
+              {"on_device_startup_metric_delay", "0"},
+          }},
+         {optimization_guide::features::internal::
+              kTabOrganizationSettingsVisibility,
+          {{"allow_unsigned_user", "true"}}}},
+        {});
   }
 
   OptimizationGuideKeyedServiceBrowserTest(
@@ -167,6 +220,8 @@ class OptimizationGuideKeyedServiceBrowserTest
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitch(optimization_guide::switches::kPurgeHintsStore);
   }
+
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     OptimizationGuideKeyedServiceDisabledBrowserTest::SetUpOnMainThread();
@@ -186,8 +241,27 @@ class OptimizationGuideKeyedServiceBrowserTest
         https_server_->GetURL("/redirect?https://nohints.com/");
 
     SetConnectionType(network::mojom::ConnectionType::CONNECTION_2G);
+
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&OptimizationGuideKeyedServiceBrowserTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  base::CallbackListSubscription create_services_subscription_;
   void TearDownOnMainThread() override {
     EXPECT_TRUE(https_server_->ShutdownAndWaitUntilComplete());
 
@@ -265,6 +339,27 @@ class OptimizationGuideKeyedServiceBrowserTest
     return consumer_->last_can_apply_optimization_decision();
   }
 
+  OptimizationGuideKeyedService* ogks() {
+    auto* profile = browser()->profile();
+    OptimizationGuideKeyedService* ogks =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+    return ogks;
+  }
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+  GetModelQualityLogEntryForCompose() {
+    std::unique_ptr<optimization_guide::proto::LogAiDataRequest>
+        log_ai_data_request(new optimization_guide::proto::LogAiDataRequest());
+    optimization_guide::proto::ComposeLoggingData compose_logging_data;
+    *(log_ai_data_request->mutable_compose()) = compose_logging_data;
+
+    return std::make_unique<optimization_guide::ModelQualityLogEntry>(
+        std::move(log_ai_data_request),
+        ogks()
+            ->GetChromeModelQualityLogsUploaderServiceForTesting()
+            ->GetWeakPtr());
+  }
+
   GURL url_with_hints() { return url_with_hints_; }
 
   GURL url_that_redirects_to_hints() { return url_that_redirects_; }
@@ -274,6 +369,36 @@ class OptimizationGuideKeyedServiceBrowserTest
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
+  void EnableSignIn() {
+    auto account_info =
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@gmail.com",
+                                          signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
+  }
+
+  void SignOut() {
+    identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
+  }
+
+  bool IsSettingVisible(
+      optimization_guide::proto::ModelExecutionFeature feature) {
+    return OptimizationGuideKeyedServiceFactory::GetForProfile(
+               browser()->profile())
+        ->IsSettingVisible(feature);
+  }
+
+  void SetMetricsConsent(bool consent) {
+    scoped_metrics_consent_.emplace(consent);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -298,16 +423,21 @@ class OptimizationGuideKeyedServiceBrowserTest
   GURL url_that_redirects_;
   GURL url_that_redirects_to_no_hints_;
 
+  std::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
+
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   optimization_guide::testing::TestHintsComponentCreator
       test_hints_component_creator_;
   std::unique_ptr<OptimizationGuideConsumerWebContentsObserver> consumer_;
   // Histogram tester used specifically to capture metrics that are recorded
   // during browser initialization.
   base::HistogramTester histogram_tester_;
+
+  // Identity test support.
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -412,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::OptimizationGuide::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   EXPECT_TRUE(ukm_recorder.EntryHasMetric(
       entry,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
@@ -451,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::OptimizationGuide::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   EXPECT_TRUE(ukm_recorder.EntryHasMetric(
       entry,
       ukm::builders::OptimizationGuide::kRegisteredOptimizationTypesName));
@@ -614,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       {optimization_guide::proto::OptimizationType::NOSCRIPT});
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
 
-  // Beforw the hints or navigation are initiated, we should get a negative
+  // Before the hints or navigation are initiated, we should get a negative
   // response.
   ogks->CanApplyOptimization(
       url_with_hints(), optimization_guide::proto::OptimizationType::NOSCRIPT,
@@ -668,6 +798,453 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   run_loop->Run();
 }
 
+class TestSettingsEnabledObserver
+    : public optimization_guide::SettingsEnabledObserver {
+ public:
+  explicit TestSettingsEnabledObserver(
+      optimization_guide::proto::ModelExecutionFeature feature)
+      : SettingsEnabledObserver(feature) {}
+  void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override {
+    count_feature_enabled_state_changes_++;
+    is_currently_enabled_ = is_now_enabled;
+  }
+
+  int count_feature_enabled_state_changes_ = 0;
+  bool is_currently_enabled_ = false;
+};
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       SettingsVisibilitySignedOutVsSignedIn) {
+  // User is not signed-in.
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  // Visibility of tab organizer is allowed for unsigned users.
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  // Visibility of this feature is enabled via finch but the feature is still
+  // not visible.
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // MODEL_EXECUTION_FEATURE_COMPOSE should now be visible after
+  // sign-in.
+  EnableSignIn();
+
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_COMPOSE));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // SignOut not supported on ChromeOS.
+  SignOut();
+  // Tab Organizer is visible to unsigned users.
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_COMPOSE));
+#endif
+}
+
+// Verifies that Model Execution Features Controller is available for incognito
+// profiles and the visibility of settings is correct.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       SettingsVisibilityUpdatedCorrectly) {
+  EnableSignIn();
+
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  // Visibility of tab organizer is enabled via finch.
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  // Visibility of compose is enabled via finch.
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+  // Restarting the browser should cause wallpaper setting to be visible since
+  // the feature is enabled.
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(
+          optimization_guide::prefs::FeatureOptInState::kDisabled));
+
+  // Restarting the browser should cause wallpaper setting to be not visible
+  // since the feature is no-longer enabled.
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_TRUE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_COMPOSE));
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       SettingsOptInRevokedAfterSignOut) {
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  EnableSignIn();
+
+  TestSettingsEnabledObserver wallpaper_search_observer(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH);
+  TestSettingsEnabledObserver compose_observer(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE);
+
+  ogks->AddModelExecutionSettingsEnabledObserver(&wallpaper_search_observer);
+  ogks->AddModelExecutionSettingsEnabledObserver(&compose_observer);
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  EXPECT_EQ(1, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_TRUE(wallpaper_search_observer.is_currently_enabled_);
+  EXPECT_EQ(0, compose_observer.count_feature_enabled_state_changes_);
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // SignOut not supported on ChromeOS.
+  SignOut();
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  EXPECT_EQ(2, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_FALSE(wallpaper_search_observer.is_currently_enabled_);
+#endif
+}
+
+// Verifies that Model Execution Features Controller is available for incognito
+// profiles and the setting opt-in toggle and pref is updated correctly.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       SettingsOptInUpdatedCorrectly) {
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  EnableSignIn();
+
+  TestSettingsEnabledObserver wallpaper_search_observer(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH);
+  TestSettingsEnabledObserver compose_observer(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE);
+
+  ogks->AddModelExecutionSettingsEnabledObserver(&wallpaper_search_observer);
+  ogks->AddModelExecutionSettingsEnabledObserver(&compose_observer);
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  EXPECT_EQ(1, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_TRUE(wallpaper_search_observer.is_currently_enabled_);
+  EXPECT_EQ(0, compose_observer.count_feature_enabled_state_changes_);
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(
+          optimization_guide::prefs::FeatureOptInState::kDisabled));
+  EXPECT_EQ(2, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_FALSE(wallpaper_search_observer.is_currently_enabled_);
+  EXPECT_EQ(0, compose_observer.count_feature_enabled_state_changes_);
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+}
+
+// Verifies that Model Execution Features Controller updates feature prefs
+// correctly when the main toggle pref changes.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       MainToggleUpdatesSettingsCorrectly) {
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  EnableSignIn();
+
+  TestSettingsEnabledObserver wallpaper_search_observer(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH);
+  TestSettingsEnabledObserver compose_observer(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE);
+  TestSettingsEnabledObserver tab_observer(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION);
+
+  ogks->AddModelExecutionSettingsEnabledObserver(&wallpaper_search_observer);
+  ogks->AddModelExecutionSettingsEnabledObserver(&compose_observer);
+  ogks->AddModelExecutionSettingsEnabledObserver(&tab_observer);
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Enable the main feature toggle. This should enable the compose and tab
+  // organizer features on restart.
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::kModelExecutionMainToggleSettingState,
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  // Visibility of tab organizer feature is enabled via finch. Only tab
+  // organizer feature should be enabled.
+  EXPECT_EQ(0, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_EQ(1, compose_observer.count_feature_enabled_state_changes_);
+  EXPECT_TRUE(compose_observer.is_currently_enabled_);
+  EXPECT_EQ(1, tab_observer.count_feature_enabled_state_changes_);
+  EXPECT_TRUE(tab_observer.is_currently_enabled_);
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Disable main toggle. The tab organizer feature should be disabled on
+  // restart.
+  prefs->SetInteger(
+      optimization_guide::prefs::kModelExecutionMainToggleSettingState,
+      static_cast<int>(
+          optimization_guide::prefs::FeatureOptInState::kDisabled));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_EQ(2, compose_observer.count_feature_enabled_state_changes_);
+  EXPECT_FALSE(compose_observer.is_currently_enabled_);
+  EXPECT_EQ(2, tab_observer.count_feature_enabled_state_changes_);
+  EXPECT_FALSE(tab_observer.is_currently_enabled_);
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_EQ(optimization_guide::prefs::FeatureOptInState::kNotInitialized,
+            static_cast<optimization_guide::prefs::FeatureOptInState>(
+                prefs->GetInteger(
+                    optimization_guide::prefs::GetSettingEnabledPrefName(
+                        optimization_guide::proto::ModelExecutionFeature::
+                            MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH))));
+}
+
+// Verifies that Model Execution Features Controller returns null for incognito
+// profiles.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       SettingsVisibilityIncognito) {
+  EnableSignIn();
+
+  // Set up incognito browser and incognito OptimizationGuideKeyedService
+  // consumer.
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  EXPECT_TRUE(otr_browser);
+
+  // Instantiate off the record Optimization Guide Service.
+  OptimizationGuideKeyedService* otr_ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          browser()->profile()->GetPrimaryOTRProfile(
+              /*create_if_needed=*/true));
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+  EXPECT_FALSE(otr_ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       LogOnDeviceMetricsAfterStart) {
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  OnDeviceModelComponentStateManager* on_device_component_state_manager =
+      OnDeviceModelComponentStateManager::GetInstanceForTesting();
+  ASSERT_TRUE(on_device_component_state_manager);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester()
+               ->GetAllSamples(
+                   "OptimizationGuide.ModelExecution."
+                   "OnDeviceModelPerformanceClass")
+               .size() > 0;
+  }));
+
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
+}
+
+// Creating multiple profiles isn't supported easily on ash and android.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       LogOnDeviceMetricsSingleTimeForMultipleProfiles) {
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  OnDeviceModelComponentStateManager* on_device_component_state_manager =
+      OnDeviceModelComponentStateManager::GetInstanceForTesting();
+  ASSERT_TRUE(on_device_component_state_manager);
+
+  // Add a second profile which should not log performance class.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath path = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileWaiter profile_waiter;
+  profile_manager->CreateProfileAsync(path, {});
+  profile_waiter.WaitForProfileAdded();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester()
+               ->GetAllSamples(
+                   "OptimizationGuide.ModelExecution."
+                   "OnDeviceModelPerformanceClass")
+               .size() > 0;
+  }));
+
+  // Make sure all tasks have finished running.
+  content::RunAllTasksUntilIdle();
+
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
+}
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -682,8 +1259,82 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(guest_ogks);
   EXPECT_TRUE(ogks);
   EXPECT_NE(guest_ogks, ogks);
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  auto* guest_prefs = guest_browser->profile()->GetPrefs();
+
+  EnableSignIn();
+
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  guest_prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(guest_ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
 }
 #endif
+
+// Test the visibility of features with `kOptimizationGuideModelExecution`
+// enabled or disabled.
+class OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest
+    : public testing::WithParamInterface<bool>,
+      public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest()
+      : OptimizationGuideKeyedServiceBrowserTest() {
+    // Enable visibility of tab organization feature.
+    scoped_feature_list_.Reset();
+
+    if (ShouldFeatureBeEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {optimization_guide::features::kOptimizationHints,
+           // Enabled.
+           optimization_guide::features::kOptimizationGuideModelExecution,
+           optimization_guide::features::internal::
+               kTabOrganizationSettingsVisibility},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {optimization_guide::features::kOptimizationHints,
+           optimization_guide::features::internal::
+               kTabOrganizationSettingsVisibility},
+          // Disabled.
+          {optimization_guide::features::kOptimizationGuideModelExecution});
+    }
+  }
+
+  bool ShouldFeatureBeEnabled() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest,
+    SettingsNotVisible) {
+  EnableSignIn();
+
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_EQ(ShouldFeatureBeEnabled(),
+            IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+}
 
 class OptimizationGuideKeyedServicePermissionsCheckDisabledTest
     : public OptimizationGuideKeyedServiceBrowserTest {
@@ -798,3 +1449,342 @@ IN_PROC_BROWSER_TEST_F(
                            kNotAllowedByOptimizationFilter),
       1);
 }
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       CheckUploadWithMetricsConsent) {
+  // Enable metrics consent.
+  SetMetricsConsent(true);
+  ASSERT_TRUE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
+  auto* profile = browser()->profile();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_1 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entry_1));
+
+  // Upload shouldn't be blocked by metrics consent.
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 0);
+
+  // Disable metrics consent.
+  SetMetricsConsent(false);
+  ASSERT_FALSE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_2 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entry_2));
+
+  // Upload should be disabled as there is no metrics consent, so total
+  // histogram bucket count will be 1.
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       CheckUploadWithoutMetricsConsent) {
+  auto* profile = browser()->profile();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+
+  // Disable metrics consent.
+  SetMetricsConsent(false);
+  ASSERT_FALSE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
+  EXPECT_FALSE(
+      ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Upload should be disabled as there is no metrics consent, so total
+  // histogram bucket count will be 1.
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       CheckUploadOnDestructionWithoutMetricsConsent) {
+  // Disable metrics consent.
+  SetMetricsConsent(false);
+  ASSERT_FALSE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
+  // Create a new ModelQualityLogEntry for compose.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+      GetModelQualityLogEntryForCompose();
+
+  // Destruct the log entry, this should trigger uploading the logs.
+  log_entry.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Upload should be stopped on destruction as there is no metrics consent.
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", false, 1);
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+
+class OptimizationGuideKeyedServiceEnterpriseBrowserTest
+    : public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  void SetUp() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    OptimizationGuideKeyedServiceBrowserTest::SetUp();
+  }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
+                       CheckUploadWithEnterprisePolicy) {
+  // Enable metrics consent and sign in.
+  SetMetricsConsent(true);
+  EnableSignIn();
+
+  auto* profile = browser()->profile();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  auto compose_feature = optimization_guide::proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_COMPOSE;
+  auto* prefs = profile->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(compose_feature),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  base::RunLoop().RunUntilIdle();
+
+  policy::PolicyMap policies;
+
+  // Disable logging via via the enterprise policy to state
+  // kAllowWithoutLogging.
+  policies.Set(
+      policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging)),
+      nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(
+      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_1 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entry_1));
+
+  // Disable logging via via the enterprise policy to kDisable state.
+  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   optimization_guide::model_execution::prefs::
+                       ModelExecutionEnterprisePolicyValue::kDisable)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(
+      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entr_2 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entr_2));
+
+  // Enable logging via via the enterprise policy to state kAllow this shouldn't
+  // stop upload.
+  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   optimization_guide::model_execution::prefs::
+                       ModelExecutionEnterprisePolicyValue::kAllow)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(compose_feature),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  EXPECT_TRUE(
+      ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Create a new ModelQualityLogEntry and pass it to the
+  // UploadModelQualityLogs.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_3 =
+      GetModelQualityLogEntryForCompose();
+
+  ogks->UploadModelQualityLogs(std::move(log_entry_3));
+
+  // Upload should be disabled twice when logging is disabled via enterprise
+  // policy, total count should be 2.
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::
+          kDisabledDueToEnterprisePolicy,
+      2);
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
+                       CheckCanUploadLogsWithEnterprisePolicy) {
+  // Enable metrics consent and sign in.
+  SetMetricsConsent(true);
+  EnableSignIn();
+
+  auto* profile = browser()->profile();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  auto compose_feature = optimization_guide::proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_COMPOSE;
+  auto* prefs = profile->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(compose_feature),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  base::RunLoop().RunUntilIdle();
+
+  policy::PolicyMap policies;
+
+  // Disable logging via via the enterprise policy to state
+  // kAllowWithoutLogging this should return
+  // ChromeModelQualityLogsUploaderService::CanUploadLogs to false.
+  policies.Set(
+      policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging)),
+      nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(
+      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  EXPECT_FALSE(
+      ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Disable logging via via the enterprise policy to kDisable state this should
+  // return ChromeModelQualityLogsUploaderService::CanUploadLogs to false.
+  policies.Set(policy::key::kHelpMeWriteSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   optimization_guide::model_execution::prefs::
+                       ModelExecutionEnterprisePolicyValue::kDisable)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(
+      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  EXPECT_FALSE(
+      ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Enable logging via via the enterprise policy to state kAllow this shouldn't
+  // stop upload and should return
+  // ChromeModelQualityLogsUploaderService::CanUploadLogs to true.
+  policies.Set(policy::key::kHelpMeWriteSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   optimization_guide::model_execution::prefs::
+                       ModelExecutionEnterprisePolicyValue::kAllow)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(compose_feature),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  EXPECT_TRUE(
+      ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Upload should be disabled twice when logging is disabled via enterprise
+  // policy, total count should be 2.
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::
+          kDisabledDueToEnterprisePolicy,
+      2);
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
+                       CheckModelQualityLogsUploadOnDestruction) {
+  // Enable metrics consent and sign in.
+  SetMetricsConsent(true);
+  EnableSignIn();
+
+  auto* profile = browser()->profile();
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  auto compose_feature = optimization_guide::proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_COMPOSE;
+  auto* prefs = profile->GetPrefs();
+  policy::PolicyMap policies;
+
+  // Enable logging via via the enterprise policy to state kAllow this shouldn't
+  // stop upload and should return
+  // ChromeModelQualityLogsUploaderService::CanUploadLogs to true.
+  policies.Set(policy::key::kHelpMeWriteSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   optimization_guide::model_execution::prefs::
+                       ModelExecutionEnterprisePolicyValue::kAllow)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(compose_feature),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+
+  EXPECT_TRUE(
+      ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  // Create a new ModelQualityLogEntry for compose.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+      GetModelQualityLogEntryForCompose();
+
+  // Destruct the log entry, this should upload the logs.
+  log_entry.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Logs should be uploaded on destruction.
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", true, 1);
+}
+
+#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)

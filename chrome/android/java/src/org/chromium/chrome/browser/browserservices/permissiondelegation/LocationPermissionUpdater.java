@@ -26,14 +26,15 @@ import javax.inject.Singleton;
 public class LocationPermissionUpdater {
     private static final String TAG = "TWALocations";
 
-    private static final @ContentSettingsType int TYPE = ContentSettingsType.GEOLOCATION;
+    private static final @ContentSettingsType.EnumType int TYPE = ContentSettingsType.GEOLOCATION;
 
     private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;
     private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
-    public LocationPermissionUpdater(InstalledWebappPermissionManager permissionManager,
+    public LocationPermissionUpdater(
+            InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityClient trustedWebActivityClient,
             TrustedWebActivityUmaRecorder umaRecorder) {
         mPermissionManager = permissionManager;
@@ -57,8 +58,10 @@ public class LocationPermissionUpdater {
      */
     void checkPermission(Origin origin, String lastCommitedUrl, long callback) {
         mTrustedWebActivityClient.checkLocationPermission(
-                lastCommitedUrl, new TrustedWebActivityClient.PermissionCallback() {
+                lastCommitedUrl,
+                new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;
+
                     @Override
                     public void onPermission(
                             ComponentName app, @ContentSettingValues int settingValue) {
@@ -78,11 +81,13 @@ public class LocationPermissionUpdater {
                 });
     }
 
-    private void updatePermission(Origin origin, long callback, ComponentName app,
+    private void updatePermission(
+            Origin origin,
+            long callback,
+            ComponentName app,
             @ContentSettingValues int settingValue) {
         boolean enabled = settingValue == ContentSettingValues.ALLOW;
         mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, settingValue);
-        mUmaRecorder.recordLocationPermissionRequestResult(enabled);
         Log.d(TAG, "Updating origin location permissions to: %b", enabled);
 
         InstalledWebappBridge.runPermissionCallback(callback, settingValue);

@@ -135,15 +135,17 @@ void Serial::OnPortRemoved(mojom::blink::SerialPortInfoPtr port_info) {
   port->DispatchEvent(*Event::CreateBubble(event_type_names::kDisconnect));
 }
 
-ScriptPromise Serial::getPorts(ScriptState* script_state,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<SerialPort>> Serial::getPorts(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
                                    GetExecutionContext(), &exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<SerialPort>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<SerialPort>>>(
+          script_state, exception_state.GetContext());
   get_ports_promises_.insert(resolver);
 
   EnsureServiceConnection();
@@ -318,10 +320,12 @@ void Serial::OnServiceConnectionError() {
 
   // Script may execute during a call to Resolve(). Swap these sets to prevent
   // concurrent modification.
-  HeapHashSet<Member<ScriptPromiseResolver>> get_ports_promises;
+  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<SerialPort>>>>
+      get_ports_promises;
   get_ports_promises_.swap(get_ports_promises);
-  for (ScriptPromiseResolver* resolver : get_ports_promises)
+  for (auto& resolver : get_ports_promises) {
     resolver->Resolve(HeapVector<Member<SerialPort>>());
+  }
 
   HeapHashSet<Member<ScriptPromiseResolver>> request_port_promises;
   request_port_promises_.swap(request_port_promises);
@@ -340,7 +344,7 @@ void Serial::OnServiceConnectionError() {
 SerialPort* Serial::GetOrCreatePort(mojom::blink::SerialPortInfoPtr info) {
   auto it = port_cache_.find(TokenToString(info->token));
   if (it != port_cache_.end()) {
-    return it->value;
+    return it->value.Get();
   }
 
   SerialPort* port = MakeGarbageCollected<SerialPort>(this, std::move(info));
@@ -348,8 +352,9 @@ SerialPort* Serial::GetOrCreatePort(mojom::blink::SerialPortInfoPtr info) {
   return port;
 }
 
-void Serial::OnGetPorts(ScriptPromiseResolver* resolver,
-                        Vector<mojom::blink::SerialPortInfoPtr> port_infos) {
+void Serial::OnGetPorts(
+    ScriptPromiseResolverTyped<IDLSequence<SerialPort>>* resolver,
+    Vector<mojom::blink::SerialPortInfoPtr> port_infos) {
   DCHECK(get_ports_promises_.Contains(resolver));
   get_ports_promises_.erase(resolver);
 

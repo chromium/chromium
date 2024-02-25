@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_MESSAGE_TRANSFER_OPERATION_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -18,15 +19,16 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 class SecureChannelClient;
 }
 
-namespace ash::tether {
-
+namespace cross_device {
 class TimerFactory;
+}  // namespace cross_device
+
+namespace ash::tether {
 
 // Abstract base class used for operations which send and/or receive messages
 // from remote devices.
@@ -121,7 +123,7 @@ class MessageTransferOperation {
         std::unique_ptr<secure_channel::ClientChannel> channel) override;
 
    private:
-    raw_ptr<MessageTransferOperation, ExperimentalAsh> operation_;
+    raw_ptr<MessageTransferOperation> operation_;
     multidevice::RemoteDeviceRef remote_device_;
     std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
   };
@@ -141,7 +143,7 @@ class MessageTransferOperation {
     secure_channel::ClientChannel* channel() { return client_channel_.get(); }
 
    private:
-    raw_ptr<MessageTransferOperation, ExperimentalAsh> operation_;
+    raw_ptr<MessageTransferOperation> operation_;
     multidevice::RemoteDeviceRef remote_device_;
     std::unique_ptr<secure_channel::ClientChannel> client_channel_;
   };
@@ -177,19 +179,18 @@ class MessageTransferOperation {
                            uint32_t timeout_seconds);
   void StopTimerForDeviceIfRunning(multidevice::RemoteDeviceRef remote_device);
   void OnTimeout(multidevice::RemoteDeviceRef remote_device);
-  absl::optional<multidevice::RemoteDeviceRef> GetRemoteDevice(
+  std::optional<multidevice::RemoteDeviceRef> GetRemoteDevice(
       const std::string& device_id);
 
   void SetTimerFactoryForTest(
-      std::unique_ptr<TimerFactory> timer_factory_for_test);
+      std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test);
 
   multidevice::RemoteDeviceRefList remote_devices_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
   const secure_channel::ConnectionPriority connection_priority_;
 
-  std::unique_ptr<TimerFactory> timer_factory_;
+  std::unique_ptr<cross_device::TimerFactory> timer_factory_;
 
   bool initialized_ = false;
   bool shutting_down_ = false;

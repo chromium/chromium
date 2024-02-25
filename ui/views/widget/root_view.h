@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/event_processor.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view.h"
@@ -52,9 +54,9 @@ class VIEWS_EXPORT RootView : public View,
                               public ViewTargeterDelegate,
                               public FocusTraversable,
                               public ui::EventProcessor {
- public:
-  METADATA_HEADER(RootView);
+  METADATA_HEADER(RootView, View)
 
+ public:
   // Creation and lifetime -----------------------------------------------------
   explicit RootView(Widget* widget);
   RootView(const RootView&) = delete;
@@ -97,8 +99,9 @@ class VIEWS_EXPORT RootView : public View,
 
   // Accessibility -------------------------------------------------------------
 
-  // Make an announcement through the screen reader, if present.
-  void AnnounceText(const std::u16string& text);
+  // See AXPlatformNode::AnnounceTextAs for documentation of this.
+  void AnnounceTextAs(const std::u16string& text,
+                      ui::AXPlatformNode::AnnouncementType announcement_type);
   View* GetAnnounceViewForTesting();
 
   // FocusTraversable:
@@ -121,6 +124,7 @@ class VIEWS_EXPORT RootView : public View,
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void SetMouseAndGestureHandler(View* new_handler) override;
@@ -168,6 +172,10 @@ class VIEWS_EXPORT RootView : public View,
   // screen reader via an alert or live region update.
   AnnounceTextView* GetOrCreateAnnounceView();
 
+  // ET_MOUSE_ENTERED events require the same handling as ET_MOUSE_MOVED, except
+  // that for the former we don't send ET_MOUSE_MOVED to |mouse_move_handler_|.
+  void HandleMouseEnteredOrMoved(const ui::MouseEvent& event);
+
   // |view| is the view receiving |event|. This function sends the event to all
   // the Views up the hierarchy that has |notify_enter_exit_on_child_| flag
   // turned on, but does not contain |sibling|.
@@ -192,7 +200,7 @@ class VIEWS_EXPORT RootView : public View,
   // Tree operations -----------------------------------------------------------
 
   // The host Widget
-  raw_ptr<Widget, DanglingUntriaged> widget_;
+  const raw_ptr<Widget, DanglingUntriaged> widget_;
 
   // Input ---------------------------------------------------------------------
 

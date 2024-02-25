@@ -48,7 +48,7 @@ class TrackListBase : public EventTarget {
   }
 
   void Add(T* track) {
-    track->SetMediaElement(media_element_);
+    track->SetMediaElement(media_element_.Get());
     tracks_.push_back(track);
     ScheduleEvent(TrackEvent::Create(event_type_names::kAddtrack, track));
   }

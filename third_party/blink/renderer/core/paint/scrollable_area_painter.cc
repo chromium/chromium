@@ -4,13 +4,15 @@
 
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/custom_scrollbar_theme.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
+#include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -24,6 +26,18 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 
 namespace blink {
+
+namespace {
+
+bool VisibleToHitTesting(const LayoutBox& box) {
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    return ObjectPainter(box).GetHitTestOpaqueness() !=
+           cc::HitTestOpaqueness::kTransparent;
+  }
+  return box.VisibleToHitTesting();
+}
+
+}  // namespace
 
 void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
                                          const gfx::Vector2d& paint_offset,
@@ -77,7 +91,7 @@ void ScrollableAreaPainter::RecordResizerScrollHitTestData(
     GraphicsContext& context,
     const PhysicalOffset& paint_offset) {
   const auto* box = GetScrollableArea().GetLayoutBox();
-  DCHECK(box->StyleRef().VisibleToHitTesting());
+  DCHECK(VisibleToHitTesting(*box));
   if (!box->CanResize())
     return;
 
@@ -85,7 +99,9 @@ void ScrollableAreaPainter::RecordResizerScrollHitTestData(
   touch_rect.Offset(ToRoundedVector2d(paint_offset));
   context.GetPaintController().RecordScrollHitTestData(
       GetScrollableArea().GetScrollCornerDisplayItemClient(),
-      DisplayItem::kResizerScrollHitTest, nullptr, touch_rect);
+      DisplayItem::kResizerScrollHitTest, nullptr, touch_rect,
+      // Assume hit testing in some area may pass though.
+      cc::HitTestOpaqueness::kMixed);
 }
 
 void ScrollableAreaPainter::DrawPlatformResizerImage(
@@ -152,7 +168,12 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
 
 bool ScrollableAreaPainter::PaintOverflowControls(
     const PaintInfo& paint_info,
-    const gfx::Vector2d& paint_offset) {
+    const gfx::Vector2d& paint_offset,
+    const FragmentData* fragment) {
+  if (!fragment) {
+    return false;
+  }
+
   // Don't do anything if we have no overflow.
   const auto& box = *GetScrollableArea().GetLayoutBox();
   if (!box.IsScrollContainer() ||
@@ -179,9 +200,6 @@ bool ScrollableAreaPainter::PaintOverflowControls(
   }
 
   GraphicsContext& context = paint_info.context;
-  const auto* fragment = paint_info.FragmentToPaint(box);
-  if (!fragment)
-    return false;
 
   const ClipPaintPropertyNode* clip = nullptr;
   const auto* properties = fragment->PaintProperties();
@@ -203,7 +221,7 @@ bool ScrollableAreaPainter::PaintOverflowControls(
     }
   }
 
-  absl::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
+  std::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
   if (clip || transform) {
     PaintController& paint_controller = context.GetPaintController();
     PropertyTreeStateOrAlias modified_properties(
@@ -260,7 +278,7 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
   auto type = scrollbar.Orientation() == kHorizontalScrollbar
                   ? DisplayItem::kScrollbarHorizontal
                   : DisplayItem::kScrollbarVertical;
-  absl::optional<ScopedPaintChunkProperties> chunk_properties;
+  std::optional<ScopedPaintChunkProperties> chunk_properties;
   if (const auto* effect = scrollbar.Orientation() == kHorizontalScrollbar
                                ? properties->HorizontalScrollbarEffect()
                                : properties->VerticalScrollbarEffect()) {
@@ -272,9 +290,11 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
     scrollbar.Paint(context, paint_offset);
     // Custom scrollbars need main thread hit testing. The hit test rect will
     // contribute to the non-fast scrollable region of the containing layer.
-    if (GetScrollableArea().GetLayoutBox()->StyleRef().VisibleToHitTesting()) {
+    if (VisibleToHitTesting(*GetScrollableArea().GetLayoutBox())) {
       context.GetPaintController().RecordScrollHitTestData(
-          scrollbar, DisplayItem::kScrollbarHitTest, nullptr, visual_rect);
+          scrollbar, DisplayItem::kScrollbarHitTest, nullptr, visual_rect,
+          // Assume hit testing in some area may pass though.
+          cc::HitTestOpaqueness::kMixed);
     }
   } else {
     // If the scrollbar turns out to be not composited, PaintChunksToCcLayer
@@ -299,15 +319,30 @@ void ScrollableAreaPainter::PaintNativeScrollbar(GraphicsContext& context,
   CHECK(properties);
 
   const TransformPaintPropertyNode* scroll_translation = nullptr;
-  if (scrollable_area_->ShouldDirectlyCompositeScrollbar(scrollbar)) {
+  if (scrollable_area_->MayCompositeScrollbar(scrollbar)) {
     scroll_translation = properties->ScrollTranslation();
     CHECK(scroll_translation);
     CHECK(scroll_translation->ScrollNode());
   }
 
+  cc::HitTestOpaqueness hit_test_opaqueness;
+  if (scrollbar.GetTheme().AllowsHitTest()) {
+    hit_test_opaqueness =
+        ObjectPainter(*scrollable_area_->GetLayoutBox()).GetHitTestOpaqueness();
+    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
+        hit_test_opaqueness == cc::HitTestOpaqueness::kMixed) {
+      // A scrollbar is always opaque to hit test if it's visible to hit test,
+      // which is assumed in cc for non-solid-color scrollbar layers.
+      hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
+    }
+  } else {
+    hit_test_opaqueness = cc::HitTestOpaqueness::kTransparent;
+  }
+
   auto delegate = base::MakeRefCounted<ScrollbarLayerDelegate>(scrollbar);
-  ScrollbarDisplayItem::Record(context, scrollbar, type, delegate, visual_rect,
-                               scroll_translation, scrollbar.GetElementId());
+  ScrollbarDisplayItem::Record(context, scrollbar, type, std::move(delegate),
+                               visual_rect, scroll_translation,
+                               scrollbar.GetElementId(), hit_test_opaqueness);
 }
 
 void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
@@ -341,7 +376,7 @@ void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
 
   const auto& client = GetScrollableArea().GetScrollCornerDisplayItemClient();
 
-  absl::optional<ScopedPaintChunkProperties> chunk_properties;
+  std::optional<ScopedPaintChunkProperties> chunk_properties;
   const auto* properties =
       GetScrollableArea().GetLayoutBox()->FirstFragment().PaintProperties();
   if (const auto* effect = properties->ScrollCornerEffect()) {
@@ -349,9 +384,12 @@ void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
                              DisplayItem::kScrollCorner);
   }
 
+  mojom::blink::ColorScheme color_scheme =
+      GetScrollableArea().UsedColorSchemeScrollbars();
+  const ui::ColorProvider* color_provider =
+      GetScrollableArea().GetColorProvider(color_scheme);
   theme->PaintScrollCorner(context, GetScrollableArea().VerticalScrollbar(),
-                           client, visual_rect,
-                           GetScrollableArea().UsedColorSchemeScrollbars());
+                           client, visual_rect, color_scheme, color_provider);
 }
 
 PaintLayerScrollableArea& ScrollableAreaPainter::GetScrollableArea() const {

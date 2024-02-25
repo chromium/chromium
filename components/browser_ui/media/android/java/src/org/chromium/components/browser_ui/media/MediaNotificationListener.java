@@ -4,18 +4,12 @@
 
 package org.chromium.components.browser_ui.media;
 
-/**
- * Interface for classes that need to be notified about media events.
- */
+/** Interface for classes that need to be notified about media events. */
 public interface MediaNotificationListener {
-    /**
-     * The media action was caused by direct interaction with the notification.
-     */
+    /** The media action was caused by direct interaction with the notification. */
     public static final int ACTION_SOURCE_MEDIA_NOTIFICATION = 1000;
 
-    /**
-     * The media action was received via the MediaSession Android API, e.g. a headset, a watch, etc.
-     */
+    /** The media action was received via the MediaSession Android API, e.g. a headset, a watch, etc. */
     public static final int ACTION_SOURCE_MEDIA_SESSION = 1001;
 
     /**

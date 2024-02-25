@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
@@ -36,32 +37,12 @@ using EncryptionKeyAttachedCallback =
 
 using UploadProvider = ::reporting::EncryptedReportingUploadProvider;
 
+using ::base::test::EqualsProto;
 using ::testing::_;
 using ::testing::Eq;
 
 namespace ash {
 namespace {
-
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  if (!message.SerializeToString(&expected_serialized)) {
-    *result_listener << "Expected proto fails to serialize";
-    return false;
-  }
-  if (!arg.SerializeToString(&actual_serialized)) {
-    *result_listener << "Actual proto fails to serialize";
-    return false;
-  }
-  if (expected_serialized != actual_serialized) {
-    *result_listener << "Provided proto did not match the expected proto"
-                     << "\n Serialized Expected Proto: " << expected_serialized
-                     << "\n Serialized Provided Proto: " << actual_serialized;
-    return false;
-  }
-  return true;
-}
 
 // CloudPolicyClient and UploadClient are not usable outside of a managed
 // environment, to sidestep this we override the functions that normally build
@@ -158,14 +139,6 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
   // Must be initialized before any other class member.
   content::BrowserTaskEnvironment task_environment_;
 
-  ::reporting::ReportingServerConnector::TestEnvironment test_env_;
-  ::reporting::EncryptedRecord record_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<TestEncryptedReportingServiceProvider> service_provider_;
-  ServiceProviderTestHelper test_helper_;
-
   // Set up device as a managed device by default. To set the device as
   // unmanaged, create a new `policy::ScopedManagementServiceOverrideForTesting`
   // inside the test.
@@ -173,6 +146,14 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
       policy::ScopedManagementServiceOverrideForTesting(
           policy::ManagementServiceFactory::GetForPlatform(),
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  ::reporting::ReportingServerConnector::TestEnvironment test_env_;
+  ::reporting::EncryptedRecord record_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<TestEncryptedReportingServiceProvider> service_provider_;
+  ServiceProviderTestHelper test_helper_;
 };
 
 TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
@@ -197,24 +178,5 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
 
   EXPECT_THAT(response.status().code(), Eq(::reporting::error::OK));
 }
-
-TEST_F(EncryptedReportingServiceProviderTest,
-       NoRecordUploadWhenUploaderDisabled) {
-  SetupForRequestUploadEncryptedRecord();
-
-  ::reporting::UploadEncryptedRecordRequest request;
-  request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
-
-  // Disable uploader.
-  scoped_feature_list_.InitFromCommandLine("", "ProvideUploader");
-
-  ::reporting::UploadEncryptedRecordResponse response;
-  CallRequestUploadEncryptedRecord(request, &response);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(),
-              testing::IsEmpty());
-}
-
 }  // namespace
 }  // namespace ash

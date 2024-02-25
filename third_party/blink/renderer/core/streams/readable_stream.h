@@ -220,13 +220,16 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   }
 
   // https://streams.spec.whatwg.org/#is-readable-stream-locked
-  static bool IsLocked(const ReadableStream* stream) { return stream->reader_; }
+  static bool IsLocked(const ReadableStream* stream) {
+    return stream->reader_ != nullptr;
+  }
 
   // https://streams.spec.whatwg.org/#readable-stream-pipe-to
   static ScriptPromise PipeTo(ScriptState*,
                               ReadableStream*,
                               WritableStream*,
-                              PipeOptions*);
+                              PipeOptions*,
+                              ExceptionState&);
 
   // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
   static ReadableStreamDefaultReader* AcquireDefaultReader(ScriptState*,
@@ -255,7 +258,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   }
 
   ReadableStreamController* GetController() {
-    return readable_stream_controller_;
+    return readable_stream_controller_.Get();
   }
 
   v8::Local<v8::Value> GetStoredError(v8::Isolate*) const;
@@ -315,13 +318,15 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   static void FulfillReadIntoRequest(ScriptState*,
                                      ReadableStream*,
                                      DOMArrayBufferView* chunk,
-                                     bool done);
+                                     bool done,
+                                     ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
   static void FulfillReadRequest(ScriptState*,
                                  ReadableStream*,
                                  v8::Local<v8::Value> chunk,
-                                 bool done);
+                                 bool done,
+                                 ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-stream-get-num-read-into-requests
   static int GetNumReadIntoRequests(const ReadableStream*);

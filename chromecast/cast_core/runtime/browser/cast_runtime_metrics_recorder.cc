@@ -7,6 +7,7 @@
 #include <cfloat>
 #include <cmath>
 
+#include <optional>
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
@@ -18,7 +19,6 @@
 #include "base/values.h"
 #include "chromecast/base/metrics/cast_histograms.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/cast_logs.pb.h"
 
 namespace chromecast {
@@ -252,7 +252,7 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
   }
 
   // Gets event creation time. If unavailable use now.
-  absl::optional<double> maybe_event_time = value_dict.FindDouble(kEventTime);
+  std::optional<double> maybe_event_time = value_dict.FindDouble(kEventTime);
   double event_time = 0;
   if (maybe_event_time && maybe_event_time.value() > 0) {
     event_time = maybe_event_time.value();
@@ -285,7 +285,7 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
     std::unique_ptr<CastEventBuilder> event_builder(CreateEventBuilder(*name));
     PopulateEventBuilder(event_builder.get(), event_time, app_id, sdk_version,
                          session_id);
-    absl::optional<double> maybe_event_value =
+    std::optional<double> maybe_event_value =
         value_dict.FindDouble(kEventValue);
     if (maybe_event_value) {
       double event_value = maybe_event_value.value();
@@ -304,7 +304,7 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
   }
 
   for (auto kv : *multiple_events) {
-    absl::optional<double> maybe_event_value = kv.second.GetIfDouble();
+    std::optional<double> maybe_event_value = kv.second.GetIfDouble();
     if (!maybe_event_value) {
       continue;
     }

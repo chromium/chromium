@@ -28,7 +28,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -53,12 +55,45 @@
 
 namespace blink {
 
-// Function defined in third_party/blink/public/web/blink.h.
-v8::Isolate* MainThreadIsolate() {
-  return V8PerIsolateData::MainThreadIsolate();
-}
+namespace {
+void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
+  using base::debug::AllocateCrashKeyString;
+  using base::debug::CrashKeySize;
+  using base::debug::SetCrashKeyString;
 
-static V8PerIsolateData* g_main_thread_per_isolate_data = nullptr;
+  switch (id) {
+    case v8::CrashKeyId::kIsolateAddress:
+      static auto* const isolate_address =
+          AllocateCrashKeyString("v8_isolate_address", CrashKeySize::Size32);
+      SetCrashKeyString(isolate_address, value);
+      break;
+    case v8::CrashKeyId::kReadonlySpaceFirstPageAddress:
+      static auto* const ro_space_firstpage_address = AllocateCrashKeyString(
+          "v8_ro_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(ro_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kMapSpaceFirstPageAddress:
+      static auto* const map_space_firstpage_address = AllocateCrashKeyString(
+          "v8_map_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(map_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kCodeSpaceFirstPageAddress:
+      static auto* const code_space_firstpage_address = AllocateCrashKeyString(
+          "v8_code_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(code_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kDumpType:
+      static auto* const dump_type =
+          AllocateCrashKeyString("dump-type", CrashKeySize::Size32);
+      SetCrashKeyString(dump_type, value);
+      break;
+    default:
+      // Doing nothing for new keys is a valid option. Having this case allows
+      // to introduce new CrashKeyId's without triggering a build break.
+      break;
+  }
+}
+}  // namespace
 
 static void BeforeCallEnteredCallback(v8::Isolate* isolate) {
   CHECK(!ScriptForbiddenScope::IsScriptForbidden());
@@ -106,16 +141,15 @@ V8PerIsolateData::V8PerIsolateData(
     GetIsolate()->Enter();
     GetIsolate()->AddBeforeCallEnteredCallback(&BeforeCallEnteredCallback);
   }
-  if (IsMainThread())
-    g_main_thread_per_isolate_data = this;
+  if (IsMainThread()) {
+    GetIsolate()->SetAddCrashKeyCallback(AddCrashKey);
+    main_world_ =
+        DOMWrapperWorld::Create(GetIsolate(), DOMWrapperWorld::WorldType::kMain,
+                                /*is_default_world_of_isolate=*/true);
+  }
 }
 
 V8PerIsolateData::~V8PerIsolateData() = default;
-
-v8::Isolate* V8PerIsolateData::MainThreadIsolate() {
-  DCHECK(g_main_thread_per_isolate_data);
-  return g_main_thread_per_isolate_data->GetIsolate();
-}
 
 v8::Isolate* V8PerIsolateData::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -182,15 +216,14 @@ void V8PerIsolateData::Destroy(v8::Isolate* isolate) {
   V8PerIsolateData* data = From(isolate);
 
   // Clear everything before exiting the Isolate.
-  if (data->script_regexp_script_state_)
+  if (data->script_regexp_script_state_) {
     data->script_regexp_script_state_->DisposePerContextData();
+  }
   data->private_property_.reset();
   data->string_cache_->Dispose();
   data->string_cache_.reset();
   data->v8_template_map_for_main_world_.clear();
   data->v8_template_map_for_non_main_worlds_.clear();
-  if (IsMainThread())
-    g_main_thread_per_isolate_data = nullptr;
 
   // FIXME: Remove once all v8::Isolate::GetCurrent() calls are gone.
   isolate->Exit();
@@ -212,6 +245,22 @@ void V8PerIsolateData::AddV8Template(const DOMWrapperWorld& world,
                                      v8::Local<v8::Template> value) {
   auto& map = SelectV8TemplateMap(world);
   auto result = map.insert(key, v8::Eternal<v8::Template>(GetIsolate(), value));
+  DCHECK(result.is_new_entry);
+}
+
+v8::MaybeLocal<v8::DictionaryTemplate>
+V8PerIsolateData::FindV8DictionaryTemplate(const void* key) {
+  auto it = v8_dict_template_map_.find(key);
+  return it != v8_dict_template_map_.end()
+             ? it->value.Get(GetIsolate())
+             : v8::MaybeLocal<v8::DictionaryTemplate>();
+}
+
+void V8PerIsolateData::AddV8DictionaryTemplate(
+    const void* key,
+    v8::Local<v8::DictionaryTemplate> value) {
+  auto result = v8_dict_template_map_.insert(
+      key, v8::Eternal<v8::DictionaryTemplate>(GetIsolate(), value));
   DCHECK(result.is_new_entry);
 }
 
@@ -278,7 +327,7 @@ void V8PerIsolateData::ClearPersistentsForV8ContextSnapshot() {
 const base::span<const v8::Eternal<v8::Name>>
 V8PerIsolateData::FindOrCreateEternalNameCache(
     const void* lookup_key,
-    const base::span<const char* const>& names) {
+    base::span<const std::string_view> names) {
   auto it = eternal_name_cache_.find(lookup_key);
   const Vector<v8::Eternal<v8::Name>>* vector = nullptr;
   if (UNLIKELY(it == eternal_name_cache_.end())) {
@@ -286,8 +335,12 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
     Vector<v8::Eternal<v8::Name>> new_vector(
         base::checked_cast<wtf_size_t>(names.size()));
     base::ranges::transform(
-        names, new_vector.begin(), [isolate](const char* name) {
-          return v8::Eternal<v8::Name>(isolate, V8AtomicString(isolate, name));
+        names, new_vector.begin(), [isolate](std::string_view name) {
+          return v8::Eternal<v8::Name>(
+              isolate,
+              V8AtomicString(
+                  isolate,
+                  StringView(name.data(), static_cast<unsigned>(name.size()))));
         });
     vector = &eternal_name_cache_.Set(lookup_key, std::move(new_vector))
                   .stored_value->value;
@@ -343,6 +396,14 @@ void V8PerIsolateData::SetCanvasResourceTracker(
 V8PerIsolateData::GarbageCollectedData*
 V8PerIsolateData::CanvasResourceTracker() {
   return canvas_resource_tracker_;
+}
+
+void V8PerIsolateData::SetPasswordRegexp(ScriptRegexp* password_regexp) {
+  password_regexp_ = password_regexp;
+}
+
+ScriptRegexp* V8PerIsolateData::GetPasswordRegexp() {
+  return password_regexp_;
 }
 
 void* CreateHistogram(const char* name, int min, int max, size_t buckets) {

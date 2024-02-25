@@ -36,8 +36,7 @@
 #include "storage/browser/file_system/watcher_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 const char kOrigin[] =
@@ -65,7 +64,7 @@ class FakeEventRouter : public extensions::EventRouter {
   FakeEventRouter(const FakeEventRouter&) = delete;
   FakeEventRouter& operator=(const FakeEventRouter&) = delete;
 
-  ~FakeEventRouter() override {}
+  ~FakeEventRouter() override = default;
 
   // Handles an event which would normally be routed to an extension. Instead
   // replies with a hard coded response.
@@ -79,7 +78,7 @@ class FakeEventRouter : public extensions::EventRouter {
         dict->GetDict().FindString("fileSystemId");
     EXPECT_NE(file_system_id, nullptr);
     EXPECT_EQ(kFileSystemId, *file_system_id);
-    absl::optional<int> id = dict->GetDict().FindInt("requestId");
+    std::optional<int> id = dict->GetDict().FindInt("requestId");
     EXPECT_TRUE(id);
     int request_id = *id;
     EXPECT_TRUE(event->event_name == extensions::api::file_system_provider::
@@ -99,7 +98,7 @@ class FakeEventRouter : public extensions::EventRouter {
 
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;
-      absl::optional<Params> params(Params::Create(list));
+      std::optional<Params> params(Params::Create(list));
       ASSERT_TRUE(params.has_value());
       file_system_->GetRequestManager()->FulfillRequest(
           request_id,
@@ -115,7 +114,7 @@ class FakeEventRouter : public extensions::EventRouter {
 
  private:
   const raw_ptr<ProvidedFileSystemInterface,
-                DanglingUntriaged | ExperimentalAsh>
+                DanglingUntriaged>
       file_system_;  // Not owned.
   base::File::Error reply_result_;
 };
@@ -132,7 +131,7 @@ class Observer : public ProvidedFileSystemObserver {
     ChangeEvent(const ChangeEvent&) = delete;
     ChangeEvent& operator=(const ChangeEvent&) = delete;
 
-    virtual ~ChangeEvent() {}
+    virtual ~ChangeEvent() = default;
 
     storage::WatcherManager::ChangeType change_type() const {
       return change_type_;
@@ -198,12 +197,12 @@ class Observer : public ProvidedFileSystemObserver {
 // Stub notification manager, which works in unit tests.
 class StubNotificationManager : public NotificationManagerInterface {
  public:
-  StubNotificationManager() {}
+  StubNotificationManager() = default;
 
   StubNotificationManager(const StubNotificationManager&) = delete;
   StubNotificationManager& operator=(const StubNotificationManager&) = delete;
 
-  ~StubNotificationManager() override {}
+  ~StubNotificationManager() override = default;
 
   // NotificationManagerInterface overrides.
   void ShowUnresponsiveNotification(int id,
@@ -237,8 +236,8 @@ void LogOpenFile(OpenFileLog* open_file_log,
 
 class FileSystemProviderProvidedFileSystemTest : public testing::Test {
  protected:
-  FileSystemProviderProvidedFileSystemTest() {}
-  ~FileSystemProviderProvidedFileSystemTest() override {}
+  FileSystemProviderProvidedFileSystemTest() = default;
+  ~FileSystemProviderProvidedFileSystemTest() override = default;
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
@@ -958,5 +957,4 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, OpenedFile_ClosingFailure) {
   provided_file_system_->RemoveObserver(&observer);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

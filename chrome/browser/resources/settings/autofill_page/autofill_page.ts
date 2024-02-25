@@ -13,12 +13,20 @@ import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
+// <if expr="_google_chrome">
+import '../internal/icons.html.js';
+// </if>
+// <if expr="not _google_chrome">
+import '../icons.html.js';
+// </if>
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
@@ -61,6 +69,10 @@ export class SettingsAutofillPageElement extends
           return map;
         },
       },
+      isPlusAddressSettingEnabled_: {
+        type: Boolean,
+        value: () => !!loadTimeData.getString('plusAddressManagementUrl'),
+      },
     };
   }
 
@@ -88,6 +100,11 @@ export class SettingsAutofillPageElement extends
     PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.PASSWORDS);
+  }
+
+  private onPlusAddressClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('plusAddressManagementUrl'));
   }
 }
 

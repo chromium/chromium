@@ -9,15 +9,15 @@
  * destroyed when finished, and re-created when shown again.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import '//resources/cr_elements/cr_input/cr_input.js';
-import '//resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/md_select.css.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/cros_components/checkbox/checkbox.js';
 
@@ -170,9 +170,6 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = SmbBrowserProxyImpl.getInstance();
-
-    const theme = this.isJellyEnabled_() ? 'refresh23' : 'legacy';
-    document.documentElement.setAttribute('theme', theme);
   },
 
   /** @override */
@@ -278,6 +275,9 @@ Polymer({
 
     // Success case. Close dialog.
     if (result === SmbMountResult.SUCCESS) {
+      this.dispatchEvent(new CustomEvent(
+          'smb-successfully-mounted-once', {bubbles: true, composed: true}));
+
       this.$.dialog.close();
       return;
     }

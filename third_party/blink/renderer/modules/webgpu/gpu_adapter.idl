@@ -5,14 +5,14 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed=(Window, DedicatedWorker),
+    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
     SecureContext
 ] interface GPUAdapter {
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
     readonly attribute boolean isFallbackAdapter;
-    [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute boolean isCompatibilityMode;
+    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute boolean isCompatibilityMode;
 
     [CallWith=ScriptState] Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
-    [CallWith=ScriptState] Promise<GPUAdapterInfo> requestAdapterInfo(optional sequence<DOMString> unmaskHints = []);
+    [CallWith=ScriptState] Promise<GPUAdapterInfo> requestAdapterInfo();
 };

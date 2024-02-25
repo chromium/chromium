@@ -1,0 +1,8 @@
+BASE_FEATURE({{feature.name}},
+             {{feature|feature_name}},
+{%- if feature|is_feature_on_by_default %}
+             base::FEATURE_ENABLED_BY_DEFAULT
+{%- else %}
+             base::FEATURE_DISABLED_BY_DEFAULT
+{%- endif %}
+             );

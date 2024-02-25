@@ -24,6 +24,7 @@ BrowserFocusTest.*
 -BrowserFocusTest.AppLocationBar
 -BrowserFocusTest.PopupLocationBar
 -CaptionBubbleControllerViewsTest.BubblePositioning
+-LocationIconViewTest.HideOnSecondClick
 -PopupBlockerBrowserTest.WindowFeatures
 -SadTabViewInteractiveUITest.SadTabKeyboardAccessibility
 -SitePerProcessInteractiveBrowserTest.FullscreenElementInABAAndExitViaEscapeKey

@@ -9,8 +9,8 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -49,14 +49,14 @@ SensorTestContext::SensorTestContext()
   testing_scope_.GetPage().GetFocusController().SetFocused(true);
 
   testing_scope_.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
-      device::mojom::blink::SensorProvider::Name_,
+      mojom::blink::WebSensorProvider::Name_,
       WTF::BindRepeating(&SensorTestContext::BindSensorProviderRequest,
                          WTF::Unretained(this)));
 }
 
 SensorTestContext::~SensorTestContext() {
   testing_scope_.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
-      device::mojom::blink::SensorProvider::Name_, {});
+      mojom::blink::WebSensorProvider::Name_, {});
 }
 
 ExecutionContext* SensorTestContext::GetExecutionContext() const {

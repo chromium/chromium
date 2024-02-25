@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/processor_entity_tracker.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class ModelTypeState;
@@ -87,7 +87,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   std::string TrackedAccountId() const override;
   std::string TrackedCacheGuid() const override;
   void ReportError(const ModelError& error) override;
-  absl::optional<ModelError> GetError() const override;
+  std::optional<ModelError> GetError() const override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override;
@@ -103,10 +103,10 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
   void OnCommitFailed(SyncCommitError commit_error) override;
-  void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        UpdateResponseDataList updates,
-                        absl::optional<sync_pb::GarbageCollectionDirective>
-                            gc_directive) override;
+  void OnUpdateReceived(
+      const sync_pb::ModelTypeState& type_state,
+      UpdateResponseDataList updates,
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
       std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
       override;
@@ -121,7 +121,8 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
-  void ClearMetadataWhileStopped() override;
+  void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
@@ -135,7 +136,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Public for tests.
   enum class ErrorSite {
-    kBridgeInitiated = 0,
+    kReportedByBridge = 0,
     kApplyFullUpdates = 1,
     kApplyIncrementalUpdates = 2,
     kApplyUpdatesOnCommitResponse = 3,
@@ -171,19 +172,19 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   bool ValidateUpdate(
       const sync_pb::ModelTypeState& model_type_state,
       const UpdateResponseDataList& updates,
-      const absl::optional<sync_pb::GarbageCollectionDirective>& gc_directive);
+      const std::optional<sync_pb::GarbageCollectionDirective>& gc_directive);
 
   // Handle the first update received from the server after being enabled. If
   // the data type does not support incremental updates, this will be called for
   // any server update.
-  absl::optional<ModelError> OnFullUpdateReceived(
+  std::optional<ModelError> OnFullUpdateReceived(
       const sync_pb::ModelTypeState& type_state,
       UpdateResponseDataList updates,
-      absl::optional<sync_pb::GarbageCollectionDirective> gc_directive);
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
   // Handle any incremental updates received from the server after being
   // enabled.
-  absl::optional<ModelError> OnIncrementalUpdateReceived(
+  std::optional<ModelError> OnIncrementalUpdateReceived(
       const sync_pb::ModelTypeState& type_state,
       UpdateResponseDataList updates);
 
@@ -262,20 +263,24 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // Function to capture and upload a stack trace when an error occurs.
   const base::RepeatingClosure dump_stack_;
 
+  // Whether there is an ongoing processing of incoming updates, used to detect
+  // local updates based on remote changes.
+  bool processing_incremental_updates_ = false;
+
   /////////////////
   // Model state //
   /////////////////
 
   // The first model error that occurred, if any. Stored to track model state
   // and so it can be passed to sync if it happened prior to sync being ready.
-  absl::optional<ModelError> model_error_;
+  std::optional<ModelError> model_error_;
 
   // Whether the model has initialized its internal state for sync (and provided
   // metadata).
   bool model_ready_to_sync_ = false;
 
   // Marks whether metadata should be cleared upon ModelReadyToSync(). True if
-  // ClearMetadataWhileStopped() is called before ModelReadyToSync().
+  // ClearMetadataIfStopped() is called before ModelReadyToSync().
   bool pending_clear_metadata_ = false;
 
   ////////////////

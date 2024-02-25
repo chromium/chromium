@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,10 +18,11 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace {
@@ -46,24 +48,42 @@ AutofillPrivateEventRouter::AutofillPrivateEventRouter(
   if (!event_router_)
     return;
 
-  personal_data_ = autofill::PersonalDataManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(context_));
-  if (!personal_data_)
-    return;
-
-  personal_data_->AddObserver(this);
+  Profile* profile = Profile::FromBrowserContext(context_);
+  personal_data_ = autofill::PersonalDataManagerFactory::GetForProfile(profile);
+  if (personal_data_) {
+    pdm_observer_.Observe(personal_data_);
+  }
+  if (syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile)) {
+    sync_observer_.Observe(sync);
+  }
 }
 
+AutofillPrivateEventRouter::~AutofillPrivateEventRouter() = default;
+
 void AutofillPrivateEventRouter::Shutdown() {
-  if (personal_data_)
-    personal_data_->RemoveObserver(this);
+  pdm_observer_.Reset();
+  sync_observer_.Reset();
+}
+
+void AutofillPrivateEventRouter::RebindPersonalDataManagerForTesting(
+    autofill::PersonalDataManager* personal_data) {
+  pdm_observer_.Reset();
+  personal_data_ = personal_data;
+  if (personal_data_) {
+    pdm_observer_.Observe(personal_data_);
+  }
+}
+
+void AutofillPrivateEventRouter::UnbindPersonalDataManagerForTesting() {
+  pdm_observer_.Reset();
+  personal_data_ = nullptr;
 }
 
 void AutofillPrivateEventRouter::OnPersonalDataChanged() {
   BroadcastCurrentData();
 }
 
-void AutofillPrivateEventRouter::OnPersonalDataSyncStateChanged() {
+void AutofillPrivateEventRouter::OnStateChanged(syncer::SyncService*) {
   BroadcastCurrentData();
 }
 
@@ -81,7 +101,7 @@ void AutofillPrivateEventRouter::BroadcastCurrentData() {
   autofill_util::IbanEntryList ibanList =
       extensions::autofill_util::GenerateIbanList(*personal_data_);
 
-  absl::optional<api::autofill_private::AccountInfo> account_info =
+  std::optional<api::autofill_private::AccountInfo> account_info =
       extensions::autofill_util::GetAccountInfo(*personal_data_);
 
   base::Value::List args;

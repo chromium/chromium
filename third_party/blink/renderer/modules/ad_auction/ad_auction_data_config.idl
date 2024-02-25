@@ -7,6 +7,8 @@
 
 dictionary AdAuctionDataConfig {
   required USVString seller;
+  // TODO(1473331): Make `coordinator` required.
+  USVString coordinatorOrigin;
 };
 
 dictionary AdAuctionData {

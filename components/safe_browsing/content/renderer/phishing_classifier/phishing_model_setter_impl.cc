@@ -59,10 +59,8 @@ void PhishingModelSetterImpl::SetImageEmbeddingAndPhishingFlatBufferModel(
       std::move(image_embedding_model));
 
   if (!scorer) {
-    // Log here that the image embedder creation has failed.
     return;
   }
-
   ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
 
   if (observer_for_testing_.is_bound()) {
@@ -83,6 +81,21 @@ void PhishingModelSetterImpl::SetPhishingFlatBufferModel(
   if (observer_for_testing_.is_bound()) {
     observer_for_testing_->PhishingModelUpdated();
   }
+}
+
+void PhishingModelSetterImpl::AttachImageEmbeddingModel(
+    base::File image_embedding_model) {
+  Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
+
+  if (!scorer) {
+    return;
+  }
+
+  scorer->AttachImageEmbeddingModel(std::move(image_embedding_model));
+}
+
+void PhishingModelSetterImpl::ClearScorer() {
+  ScorerStorage::GetInstance()->ClearScorer();
 }
 
 void PhishingModelSetterImpl::SetTestObserver(

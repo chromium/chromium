@@ -47,6 +47,11 @@ const char kMetricsInitialLogs[] = "user_experience_metrics.initial_logs2";
 const char kMetricsInitialLogsMetadata[] =
     "user_experience_metrics.unsent_log_metadata.initial_logs";
 
+// A serialized representation of a base::UnguessableToken, used for randomizing
+// limited entropy field trials.
+const char kMetricsLimitedEntropyRandomizationSource[] =
+    "user_experience_metrics.limited_entropy_randomization_source";
+
 // A counter tracking the most recently used log record id. Increment this value
 // by one (1) for each newly created log.
 const char kMetricsLogRecordId[] = "user_experience_metrics.log_record_id";

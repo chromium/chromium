@@ -10,8 +10,11 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
-
 #include "components/prefs/pref_registry_simple.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "components/enterprise/client_certificates/core/prefs.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace enterprise_connectors {
 
@@ -66,6 +69,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
   RegisterDeviceTrustConnectorProfilePrefs(registry);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  client_certificates::RegisterProfilePrefs(registry);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

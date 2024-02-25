@@ -44,41 +44,10 @@ namespace {
 // Extra margin to be added to contents view when it's inside a scroll view.
 constexpr int kScrollViewVerticalMargin = 2;
 
-BubbleDialogModelHost::ContentsView* SetAndGetContentsView(
-    BubbleDialogModelHost* parent,
-    ui::ModalType modal_type) {
-  const bool is_modal_dialog = modal_type != ui::MODAL_TYPE_NONE;
-  auto contents_view_unique =
-      std::make_unique<BubbleDialogModelHost::ContentsView>(parent,
-                                                            is_modal_dialog);
-  BubbleDialogModelHost::ContentsView* contents_view =
-      contents_view_unique.get();
-
-  // TODO(crbug.com/1348165): Non modal dialogs size is not dependent on its
-  // content. Thus, the content has to be manually set by the view inside a
-  // scroll view. Modal dialogs handle their own size via constrained windows,
-  // so we can add a scroll view to the DialogModel directly.
-  if (is_modal_dialog) {
-    constexpr int kMaxDialogHeight = 448;
-    auto scroll_view = std::make_unique<views::ScrollView>();
-    scroll_view->ClipHeightTo(0, kMaxDialogHeight);
-    scroll_view->SetHorizontalScrollBarMode(
-        views::ScrollView::ScrollBarMode::kDisabled);
-    scroll_view->SetContents(std::move(contents_view_unique));
-    parent->SetContentsView(std::move(scroll_view));
-  } else {
-    parent->SetContentsView(std::move(contents_view_unique));
-  }
-  return contents_view;
-}
-
 BubbleDialogModelHost::FieldType GetFieldTypeForField(
-    ui::DialogModelField* field,
-    base::PassKey<ui::DialogModelHost> pass_key) {
+    ui::DialogModelField* field) {
   DCHECK(field);
-  switch (field->type(pass_key)) {
-    case ui::DialogModelField::kButton:
-      return BubbleDialogModelHost::FieldType::kControl;
+  switch (field->type()) {
     case ui::DialogModelField::kParagraph:
       return BubbleDialogModelHost::FieldType::kText;
     case ui::DialogModelField::kCheckbox:
@@ -89,11 +58,14 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kMenuItem:
       return BubbleDialogModelHost::FieldType::kMenuItem;
+    case ui::DialogModelField::kSection:
+      // TODO(pbos): Handle nested/multiple sections.
+      NOTREACHED_NORETURN();
     case ui::DialogModelField::kSeparator:
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kCustom:
       return static_cast<BubbleDialogModelHost::CustomView*>(
-                 field->AsCustomField(pass_key)->field(pass_key))
+                 field->AsCustomField()->field())
           ->field_type();
   }
 }
@@ -118,11 +90,11 @@ int GetFieldTopMargin(LayoutProvider* layout_provider,
 }
 
 int GetDialogTopMargins(LayoutProvider* layout_provider,
-                        ui::DialogModelField* first_field,
-                        base::PassKey<ui::DialogModelHost> pass_key) {
+                        ui::DialogModelField* first_field) {
+  CHECK(first_field);
+
   const BubbleDialogModelHost::FieldType field_type =
-      first_field ? GetFieldTypeForField(first_field, pass_key)
-                  : BubbleDialogModelHost::FieldType::kControl;
+      GetFieldTypeForField(first_field);
   switch (field_type) {
     case BubbleDialogModelHost::FieldType::kMenuItem:
       return 0;
@@ -137,11 +109,10 @@ int GetDialogTopMargins(LayoutProvider* layout_provider,
 
 int GetDialogBottomMargins(LayoutProvider* layout_provider,
                            ui::DialogModelField* last_field,
-                           bool has_buttons,
-                           base::PassKey<ui::DialogModelHost> pass_key) {
+                           bool has_buttons) {
+  CHECK(last_field);
   const BubbleDialogModelHost::FieldType field_type =
-      last_field ? GetFieldTypeForField(last_field, pass_key)
-                 : BubbleDialogModelHost::FieldType::kControl;
+      GetFieldTypeForField(last_field);
   switch (field_type) {
     case BubbleDialogModelHost::FieldType::kMenuItem:
       return has_buttons ? layout_provider->GetDistanceMetric(
@@ -161,8 +132,9 @@ int GetDialogBottomMargins(LayoutProvider* layout_provider,
 // Label/StyledLabel to be clickable, while supporting Links which requires a
 // StyledLabel.
 class CheckboxControl : public Checkbox {
+  METADATA_HEADER(CheckboxControl, Checkbox)
+
  public:
-  METADATA_HEADER(CheckboxControl);
   CheckboxControl(std::unique_ptr<View> label, int label_line_height)
       : label_line_height_(label_line_height) {
     auto* layout = SetLayoutManager(std::make_unique<BoxLayout>());
@@ -177,9 +149,9 @@ class CheckboxControl : public Checkbox {
     AddChildView(std::move(label));
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     // Skip LabelButton to use LayoutManager.
-    View::Layout();
+    LayoutSuperclass<View>(this);
   }
 
   gfx::Size CalculatePreferredSize() const override {
@@ -196,73 +168,85 @@ class CheckboxControl : public Checkbox {
     Checkbox::OnThemeChanged();
     // This offsets the image to align with the first line of text. See
     // LabelButton::Layout().
-    image()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
-        (label_line_height_ - image()->GetPreferredSize().height()) / 2, 0, 0,
-        0)));
+    image_container_view()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
+        (label_line_height_ -
+         image_container_view()->GetPreferredSize().height()) /
+            2,
+        0, 0, 0)));
   }
 
   const int label_line_height_;
 };
 
-BEGIN_METADATA(CheckboxControl, Checkbox)
+BEGIN_METADATA(CheckboxControl)
 END_METADATA
 
-}  // namespace
+struct DialogModelHostField {
+  raw_ptr<ui::DialogModelField> dialog_model_field = nullptr;
 
-BubbleDialogModelHost::CustomView::CustomView(std::unique_ptr<View> view,
-                                              FieldType field_type)
-    : view_(std::move(view)), field_type_(field_type) {}
+  // View representing the entire field.
+  raw_ptr<View, DanglingUntriaged> field_view = nullptr;
 
-BubbleDialogModelHost::CustomView::~CustomView() = default;
+  // Child view to |field_view|, if any, that's used for focus. For instance,
+  // a textfield row would be a container that contains both a
+  // views::Textfield and a descriptive label. In this case |focusable_view|
+  // would refer to the views::Textfield which is also what would gain focus.
+  raw_ptr<View, DanglingUntriaged> focusable_view = nullptr;
+};
 
-std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
-  DCHECK(view_);
-  return std::move(view_);
+View* GetTargetView(const DialogModelHostField& field_view_info) {
+  return field_view_info.focusable_view ? field_view_info.focusable_view.get()
+                                        : field_view_info.field_view.get();
 }
 
-// TODO(pbos): Migrate most code that calls contents_view_->(some View method)
-// into this class. This was done in steps to limit the size of the diff.
-class BubbleDialogModelHost::ContentsView : public BoxLayoutView {
+// TODO(pbos): Consider externalizing this functionality into a different
+// format that could feasibly be adopted by LayoutManagers. This is used for
+// BoxLayouts (but could be others) to agree on columns' preferred width as a
+// replacement for using GridLayout.
+class LayoutConsensusGroup {
  public:
-  ContentsView(BubbleDialogModelHost* parent, bool is_modal_dialog)
-      : parent_(parent) {
-    // Note that between-child spacing is manually handled using kMarginsKey.
-    SetOrientation(views::BoxLayout::Orientation::kVertical);
-    // Margins are added directly in the dialog. When the dialog is modal, these
-    // contents are wrapped by a scroll view and margins are added outside of it
-    // (instead of outside this contents). This causes some items (e.g
-    // emphasized buttons) to be cut by the scroll view margins (see
-    // crbug.com/1360772). Since we do want the margins outside the scroll view
-    // (so they are always present when scrolling), we add
-    // `kScrollViewVerticalMargin` inside the contents view and later remove it
-    // from the dialog margins.
-    // TODO(crbug.com/1348165): Remove this workaround when contents view
-    // directly supports a scroll view.
-    if (is_modal_dialog)
-      SetInsideBorderInsets(gfx::Insets::VH(kScrollViewVerticalMargin, 0));
+  LayoutConsensusGroup() = default;
+  ~LayoutConsensusGroup() { DCHECK(children_.empty()); }
+
+  void AddView(View* view) {
+    children_.insert(view);
+    // Because this may change the max preferred/min size, invalidate all child
+    // layouts.
+    for (auto* child : children_) {
+      child->InvalidateLayout();
+    }
   }
 
-  void OnThemeChanged() override {
-    View::OnThemeChanged();
-    if (!parent_->ShouldShowWindowIcon())
-      return;
-    const ui::ImageModel dark_mode_icon =
-        parent_->model_->dark_mode_icon(parent_->GetPassKey());
-    if (!dark_mode_icon.IsEmpty() &&
-        color_utils::IsDark(parent_->GetBackgroundColor())) {
-      parent_->SetIcon(dark_mode_icon);
-      return;
+  void RemoveView(View* view) { children_.erase(view); }
+
+  // Get the union of all preferred sizes within the group.
+  gfx::Size GetMaxPreferredSize() const {
+    gfx::Size size;
+    for (auto* child : children_) {
+      DCHECK_EQ(1u, child->children().size());
+      size.SetToMax(child->children().front()->GetPreferredSize());
     }
-    parent_->SetIcon(parent_->model_->icon(GetPassKey()));
+    return size;
+  }
+
+  // Get the union of all minimum sizes within the group.
+  gfx::Size GetMaxMinimumSize() const {
+    gfx::Size size;
+    for (auto* child : children_) {
+      DCHECK_EQ(1u, child->children().size());
+      size.SetToMax(child->children().front()->GetMinimumSize());
+    }
+    return size;
   }
 
  private:
-  const raw_ptr<BubbleDialogModelHost, DanglingUntriaged> parent_;
+  base::flat_set<View*> children_;
 };
 
-class BubbleDialogModelHost::LayoutConsensusView : public View {
+class LayoutConsensusView : public View {
+  METADATA_HEADER(LayoutConsensusView, View)
+
  public:
-  METADATA_HEADER(LayoutConsensusView);
   LayoutConsensusView(LayoutConsensusGroup* group, std::unique_ptr<View> view)
       : group_(group) {
     group->AddView(this);
@@ -295,46 +279,457 @@ class BubbleDialogModelHost::LayoutConsensusView : public View {
   const raw_ptr<LayoutConsensusGroup> group_;
 };
 
-BEGIN_METADATA(BubbleDialogModelHost, LayoutConsensusView, View)
+BEGIN_METADATA(LayoutConsensusView)
 END_METADATA
 
-BubbleDialogModelHost::LayoutConsensusGroup::LayoutConsensusGroup() = default;
-BubbleDialogModelHost::LayoutConsensusGroup::~LayoutConsensusGroup() {
-  DCHECK(children_.empty());
+}  // namespace
+
+BubbleDialogModelHost::CustomView::CustomView(std::unique_ptr<View> view,
+                                              FieldType field_type)
+    : view_(std::move(view)), field_type_(field_type) {}
+
+BubbleDialogModelHost::CustomView::~CustomView() = default;
+
+std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
+  DCHECK(view_);
+  return std::move(view_);
 }
 
-void BubbleDialogModelHost::LayoutConsensusGroup::AddView(
-    LayoutConsensusView* view) {
-  children_.insert(view);
-  // Because this may change the max preferred/min size, invalidate all child
-  // layouts.
-  for (auto* child : children_)
-    child->InvalidateLayout();
-}
+class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
+  METADATA_HEADER(BubbleDialogModelHostContentsView, DialogModelSectionHost)
 
-void BubbleDialogModelHost::LayoutConsensusGroup::RemoveView(
-    LayoutConsensusView* view) {
-  children_.erase(view);
-}
+ public:
+  // TODO(pbos): Break this dependency on BubbleDialogModelHost once most of
+  // OnFieldAdded etc. has moved into this class.
+  BubbleDialogModelHostContentsView(
+      ui::DialogModelSection* contents,
+      ui::ElementIdentifier initially_focused_field_id)
+      : contents_(contents),
+        initially_focused_field_id_(initially_focused_field_id),
+        on_field_added_subscription_(
+            contents->AddOnFieldAddedCallback(base::BindRepeating(
+                &BubbleDialogModelHostContentsView::OnFieldAdded,
+                base::Unretained(this)))),
+        on_field_changed_subscription_(
+            contents->AddOnFieldChangedCallback(base::BindRepeating(
+                &BubbleDialogModelHostContentsView::OnFieldChanged,
+                base::Unretained(this)))) {
+    // Note that between-child spacing is manually handled using kMarginsKey.
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-gfx::Size BubbleDialogModelHost::LayoutConsensusGroup::GetMaxPreferredSize()
-    const {
-  gfx::Size size;
-  for (auto* child : children_) {
-    DCHECK_EQ(1u, child->children().size());
-    size.SetToMax(child->children().front()->GetPreferredSize());
+    // Add all fields from the model.
+    for (const auto& field : contents_->fields()) {
+      OnFieldAdded(field.get());
+    }
   }
-  return size;
+
+  [[nodiscard]] base::CallbackListSubscription AddOnContentsChangedCallback(
+      base::RepeatingClosure on_contents_changed) {
+    return on_contents_changed_.Add(std::move(on_contents_changed));
+  }
+
+  // TODO(pbos): Move (most) of the host's OnFieldAdded stuff into here. If
+  // anything remains try to have BubbleDialogModelHost observe it directly.
+  void OnFieldAdded(ui::DialogModelField* field) {
+    switch (field->type()) {
+      case ui::DialogModelField::kParagraph:
+        AddOrUpdateParagraph(field->AsParagraph());
+        break;
+      case ui::DialogModelField::kCheckbox:
+        AddOrUpdateCheckbox(field->AsCheckbox());
+        break;
+      case ui::DialogModelField::kCombobox:
+        AddOrUpdateCombobox(field->AsCombobox());
+        break;
+      case ui::DialogModelField::kMenuItem:
+        AddOrUpdateMenuItem(field->AsMenuItem());
+        break;
+      case ui::DialogModelField::kSection:
+        // TODO(pbos): Handle nested/multiple sections.
+        NOTREACHED_NORETURN();
+      case ui::DialogModelField::kSeparator:
+        AddOrUpdateSeparator(field);
+        break;
+      case ui::DialogModelField::kTextfield:
+        AddOrUpdateTextfield(field->AsTextfield());
+        break;
+      case ui::DialogModelField::kCustom:
+        std::unique_ptr<View> view =
+            static_cast<BubbleDialogModelHost::CustomView*>(
+                field->AsCustomField()->field())
+                ->TransferView();
+        DCHECK(view);
+        view->SetProperty(kElementIdentifierKey, field->id());
+        DialogModelHostField info{field, view.get(), nullptr};
+        AddDialogModelHostField(std::move(view), info);
+        break;
+    }
+    OnFieldChanged(field);
+  }
+
+  void OnFieldChanged(ui::DialogModelField* field) {
+    const DialogModelHostField host_field = FindDialogModelHostField(field);
+
+    if (host_field.field_view) {
+      host_field.field_view->SetVisible(field->is_visible());
+    }
+    on_contents_changed_.Notify();
+  }
+
+  // TODO(pbos): Remove the need for this method by making sure the host always
+  // outlives us. Currently we do outlive them. Widget, WidgetDelegate and
+  // RootView lifetimes are complicated.
+  void Detach() {
+    RemoveAllChildViews();
+    contents_ = nullptr;
+    fields_.clear();
+  }
+
+  void AddOrUpdateParagraph(ui::DialogModelParagraph* model_field) {
+    // TODO(pbos): Handle updating existing field.
+
+    std::unique_ptr<View> view =
+        model_field->header().empty()
+            ? CreateViewForLabel(model_field->label())
+            : CreateViewForParagraphWithHeader(model_field->label(),
+                                               model_field->header());
+    DialogModelHostField info{model_field, view.get(), nullptr};
+    view->SetProperty(kElementIdentifierKey, model_field->id());
+    AddDialogModelHostField(std::move(view), info);
+  }
+
+  void AddOrUpdateCheckbox(ui::DialogModelCheckbox* model_field) {
+    // TODO(pbos): Handle updating existing field.
+
+    std::unique_ptr<CheckboxControl> checkbox;
+    if (DialogModelLabelRequiresStyledLabel(model_field->label())) {
+      auto label = CreateStyledLabelForDialogModelLabel(model_field->label());
+      const int line_height = label->GetLineHeight();
+      checkbox =
+          std::make_unique<CheckboxControl>(std::move(label), line_height);
+    } else {
+      auto label = CreateLabelForDialogModelLabel(model_field->label());
+      const int line_height = label->GetLineHeight();
+      checkbox =
+          std::make_unique<CheckboxControl>(std::move(label), line_height);
+    }
+    checkbox->SetChecked(model_field->is_checked());
+
+    checkbox->SetCallback(base::BindRepeating(
+        [](ui::DialogModelCheckbox* model_field,
+           base::PassKey<DialogModelFieldHost> pass_key, Checkbox* checkbox,
+           const ui::Event& event) {
+          model_field->OnChecked(pass_key, checkbox->GetChecked());
+        },
+        model_field, GetPassKey(), checkbox.get()));
+
+    DialogModelHostField info{model_field, checkbox.get(), nullptr};
+    AddDialogModelHostField(std::move(checkbox), info);
+  }
+  void AddOrUpdateCombobox(ui::DialogModelCombobox* model_field) {
+    // TODO(pbos): Handle updating existing field.
+
+    auto combobox = std::make_unique<Combobox>(model_field->combobox_model());
+    combobox->SetAccessibleName(model_field->accessible_name().empty()
+                                    ? model_field->label()
+                                    : model_field->accessible_name());
+    combobox->SetCallback(base::BindRepeating(
+        [](ui::DialogModelCombobox* model_field,
+           base::PassKey<DialogModelFieldHost> pass_key,
+           Combobox* combobox) { model_field->OnPerformAction(pass_key); },
+        model_field, GetPassKey(), combobox.get()));
+
+    combobox->SetSelectedIndex(model_field->selected_index());
+    property_changed_subscriptions_.push_back(
+        combobox->AddSelectedIndexChangedCallback(base::BindRepeating(
+            [](ui::DialogModelCombobox* model_field,
+               base::PassKey<DialogModelFieldHost> pass_key,
+               Combobox* combobox) {
+              model_field->OnSelectedIndexChanged(
+                  pass_key, combobox->GetSelectedIndex().value());
+            },
+            model_field, GetPassKey(), combobox.get())));
+    const gfx::FontList& font_list = combobox->GetFontList();
+    AddViewForLabelAndField(model_field, model_field->label(),
+                            std::move(combobox), font_list);
+  }
+
+  void AddOrUpdateMenuItem(ui::DialogModelMenuItem* model_field) {
+    // TODO(pbos): Handle updating existing field.
+
+    // TODO(crbug.com/1324298): Implement this for enabled items. Sorry!
+    DCHECK(!model_field->is_enabled());
+
+    auto item = std::make_unique<LabelButton>(
+        base::BindRepeating(
+            [](ui::DialogModelMenuItem* model_field,
+               base::PassKey<DialogModelFieldHost> pass_key,
+               const ui::Event& event) {
+              model_field->OnActivated(pass_key, event.flags());
+            },
+            model_field, GetPassKey()),
+        model_field->label());
+    item->SetImageModel(Button::STATE_NORMAL, model_field->icon());
+    // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
+    // views::LayoutProvider and replace "12" here. See below for another "12"
+    // use that also needs to be replaced.
+    item->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::VH(12 / 2, LayoutProvider::Get()->GetDistanceMetric(
+                                    DISTANCE_BUTTON_HORIZONTAL_PADDING))));
+
+    item->SetEnabled(model_field->is_enabled());
+    item->SetProperty(kElementIdentifierKey, model_field->id());
+
+    DialogModelHostField info{model_field, item.get(), nullptr};
+    AddDialogModelHostField(std::move(item), info);
+  }
+
+  void AddOrUpdateTextfield(ui::DialogModelTextfield* model_field) {
+    // TODO(pbos): Support updates to the existing model.
+
+    auto textfield = std::make_unique<Textfield>();
+    textfield->SetAccessibleName(model_field->accessible_name().empty()
+                                     ? model_field->label()
+                                     : model_field->accessible_name());
+    textfield->SetText(model_field->text());
+
+    // If this textfield is initially focused the text should be initially
+    // selected as well.
+    // TODO(pbos): Fix this for non-unique IDs. This should not select all text
+    // for all textfields with that ID.
+    if (initially_focused_field_id_ &&
+        model_field->id() == initially_focused_field_id_) {
+      textfield->SelectAll(true);
+    }
+
+    property_changed_subscriptions_.push_back(
+        textfield->AddTextChangedCallback(base::BindRepeating(
+            [](ui::DialogModelTextfield* model_field,
+               base::PassKey<DialogModelFieldHost> pass_key,
+               Textfield* textfield) {
+              model_field->OnTextChanged(pass_key, textfield->GetText());
+            },
+            model_field, GetPassKey(), textfield.get())));
+
+    const gfx::FontList& font_list = textfield->GetFontList();
+    AddViewForLabelAndField(model_field, model_field->label(),
+                            std::move(textfield), font_list);
+  }
+
+  void AddOrUpdateSeparator(ui::DialogModelField* model_field) {
+    DCHECK_EQ(ui::DialogModelField::Type::kSeparator, model_field->type());
+    // TODO(pbos): Support updates to the existing model.
+
+    auto separator = std::make_unique<Separator>();
+    DialogModelHostField info{model_field, separator.get(), nullptr};
+    AddDialogModelHostField(std::move(separator), info);
+  }
+
+  void AddViewForLabelAndField(ui::DialogModelField* model_field,
+                               const std::u16string& label_text,
+                               std::unique_ptr<View> field,
+                               const gfx::FontList& field_font) {
+    auto box_layout = std::make_unique<BoxLayoutView>();
+
+    box_layout->SetBetweenChildSpacing(LayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_RELATED_CONTROL_HORIZONTAL));
+
+    DialogModelHostField info{model_field, box_layout.get(), field.get()};
+
+    auto label = std::make_unique<Label>(label_text, style::CONTEXT_LABEL,
+                                         style::STYLE_PRIMARY);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    box_layout->AddChildView(std::make_unique<LayoutConsensusView>(
+        &textfield_first_column_group_, std::move(label)));
+    box_layout->SetFlexForView(
+        box_layout->AddChildView(std::make_unique<LayoutConsensusView>(
+            &textfield_second_column_group_, std::move(field))),
+        1);
+
+    AddDialogModelHostField(std::move(box_layout), info);
+  }
+
+  bool DialogModelLabelRequiresStyledLabel(
+      const ui::DialogModelLabel& dialog_label) {
+    return !dialog_label.replacements().empty();
+  }
+
+  std::unique_ptr<View> CreateViewForLabel(
+      const ui::DialogModelLabel& dialog_label) {
+    if (DialogModelLabelRequiresStyledLabel(dialog_label)) {
+      return CreateStyledLabelForDialogModelLabel(dialog_label);
+    }
+    return CreateLabelForDialogModelLabel(dialog_label);
+  }
+
+  std::unique_ptr<StyledLabel> CreateStyledLabelForDialogModelLabel(
+      const ui::DialogModelLabel& dialog_label) {
+    DCHECK(DialogModelLabelRequiresStyledLabel(dialog_label));
+    const std::vector<ui::DialogModelLabel::TextReplacement>& replacements =
+        dialog_label.replacements();
+
+    // Retrieve the replacements strings to create the text.
+    std::vector<std::u16string> string_replacements;
+    for (auto replacement : replacements) {
+      string_replacements.push_back(replacement.text());
+    }
+    std::vector<size_t> offsets;
+    const std::u16string text = l10n_util::GetStringFUTF16(
+        dialog_label.message_id(), string_replacements, &offsets);
+
+    auto styled_label = std::make_unique<StyledLabel>();
+    styled_label->SetText(text);
+    styled_label->SetDefaultTextStyle(dialog_label.is_secondary()
+                                          ? style::STYLE_SECONDARY
+                                          : style::STYLE_PRIMARY);
+
+    // Style the replacements as needed.
+    DCHECK_EQ(string_replacements.size(), offsets.size());
+    for (size_t i = 0; i < replacements.size(); ++i) {
+      auto replacement = replacements[i];
+      // No styling needed if replacement is neither a link nor emphasized text.
+      if (!replacement.callback().has_value() && !replacement.is_emphasized()) {
+        continue;
+      }
+
+      StyledLabel::RangeStyleInfo style_info;
+      if (replacement.callback().has_value()) {
+        style_info = StyledLabel::RangeStyleInfo::CreateForLink(
+            replacement.callback().value());
+        style_info.accessible_name = replacement.accessible_name().value();
+      } else if (replacement.is_emphasized()) {
+        style_info.text_style = views::style::STYLE_EMPHASIZED;
+      }
+
+      auto offset = offsets[i];
+      styled_label->AddStyleRange(
+          gfx::Range(offset, offset + replacement.text().length()), style_info);
+    }
+
+    return styled_label;
+  }
+
+  std::unique_ptr<Label> CreateLabelForDialogModelLabel(
+      const ui::DialogModelLabel& dialog_label) {
+    DCHECK(!DialogModelLabelRequiresStyledLabel(dialog_label));
+
+    auto text_label = std::make_unique<Label>(
+        dialog_label.GetString(), style::CONTEXT_DIALOG_BODY_TEXT,
+        dialog_label.is_secondary() ? style::STYLE_SECONDARY
+                                    : style::STYLE_PRIMARY);
+    text_label->SetMultiLine(true);
+    text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    return text_label;
+  }
+
+  std::unique_ptr<View> CreateViewForParagraphWithHeader(
+      const ui::DialogModelLabel& dialog_label,
+      const std::u16string header) {
+    auto view = std::make_unique<BoxLayoutView>();
+    view->SetOrientation(BoxLayout::Orientation::kVertical);
+
+    auto* header_label = view->AddChildView(std::make_unique<Label>(
+        header, style::CONTEXT_DIALOG_BODY_TEXT, style::STYLE_PRIMARY));
+    header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    view->AddChildView(CreateViewForLabel(dialog_label));
+    return view;
+  }
+
+  void AddDialogModelHostField(std::unique_ptr<View> view,
+                               const DialogModelHostField& field_view_info) {
+    DCHECK_EQ(view.get(), field_view_info.field_view);
+
+    AddChildView(std::move(view));
+
+    DCHECK(field_view_info.dialog_model_field);
+    DCHECK(field_view_info.field_view);
+#if DCHECK_IS_ON()
+    // Make sure none of the info is already in use.
+    for (const auto& info : fields_) {
+      DCHECK_NE(info.field_view, field_view_info.field_view);
+      DCHECK_NE(info.dialog_model_field, field_view_info.dialog_model_field);
+      if (info.focusable_view) {
+        DCHECK_NE(info.focusable_view, field_view_info.focusable_view);
+      }
+    }
+#endif  // DCHECK_IS_ON()
+    fields_.push_back(field_view_info);
+    View* const target = GetTargetView(field_view_info);
+    target->SetProperty(kElementIdentifierKey,
+                        field_view_info.dialog_model_field->id());
+    for (const auto& accelerator :
+         field_view_info.dialog_model_field->accelerators()) {
+      target->AddAccelerator(accelerator);
+    }
+  }
+
+  DialogModelHostField FindDialogModelHostField(ui::DialogModelField* field) {
+    for (const auto& info : fields_) {
+      if (info.dialog_model_field == field) {
+        return info;
+      }
+    }
+    // TODO(pbos): `field` could correspond to a button.
+    return {};
+  }
+
+  DialogModelHostField FindDialogModelHostField(View* view) {
+    for (const auto& info : fields_) {
+      if (info.field_view == view) {
+        return info;
+      }
+    }
+    NOTREACHED_NORETURN();
+  }
+
+ private:
+  // TODO(pbos): These should be const as we should never outlive our parent or
+  // DialogModelSection. Currently this isn't true because WidgetDelegate gets
+  // destroyed by Widget in OnNativeWidgetDestroyed before the content gets
+  // destroyed inside DestroyRootView in ~Widget.
+  raw_ptr<ui::DialogModelSection> contents_;
+
+  const ui::ElementIdentifier initially_focused_field_id_;
+
+  const base::CallbackListSubscription on_field_added_subscription_;
+  const base::CallbackListSubscription on_field_changed_subscription_;
+
+  std::vector<DialogModelHostField> fields_;
+  // TODO(pbos): Try to work away this list if the parent can observe enough
+  // things as a ViewObserver of us.
+  base::RepeatingClosureList on_contents_changed_;
+
+  std::vector<base::CallbackListSubscription> property_changed_subscriptions_;
+
+  LayoutConsensusGroup textfield_first_column_group_;
+  LayoutConsensusGroup textfield_second_column_group_;
+};
+
+BEGIN_METADATA(BubbleDialogModelHostContentsView)
+END_METADATA
+
+std::unique_ptr<DialogModelSectionHost> DialogModelSectionHost::Create(
+    ui::DialogModelSection* section,
+    ui::ElementIdentifier initially_focused_field_id) {
+  return std::make_unique<BubbleDialogModelHostContentsView>(
+      section, initially_focused_field_id);
 }
 
-gfx::Size BubbleDialogModelHost::LayoutConsensusGroup::GetMaxMinimumSize()
-    const {
-  gfx::Size size;
-  for (auto* child : children_) {
-    DCHECK_EQ(1u, child->children().size());
-    size.SetToMax(child->children().front()->GetMinimumSize());
-  }
-  return size;
+BEGIN_METADATA(DialogModelSectionHost)
+END_METADATA
+
+BubbleDialogModelHost::ThemeChangedObserver::ThemeChangedObserver(
+    BubbleDialogModelHost* parent,
+    BubbleDialogModelHostContentsView* contents_view)
+    : parent_(parent) {
+  observation_.Observe(contents_view);
+}
+BubbleDialogModelHost::ThemeChangedObserver::~ThemeChangedObserver() = default;
+
+void BubbleDialogModelHost::ThemeChangedObserver::OnViewThemeChanged(View*) {
+  parent_->UpdateWindowIcon();
 }
 
 BubbleDialogModelHost::BubbleDialogModelHost(
@@ -355,79 +750,81 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     ui::ModalType modal_type)
     : BubbleDialogDelegate(anchor_view, arrow),
       model_(std::move(model)),
-      contents_view_(SetAndGetContentsView(this, modal_type)) {
-  model_->set_host(GetPassKey(), this);
-
-  // Note that this needs to be called before IsModalDialog() is called later in
-  // this constructor.
-  SetModalType(modal_type);
+      // Make sure the modal type is set before calling InitContentsView which
+      // uses IsModalDialog().
+      contents_view_(
+          (SetModalType(modal_type), InitContentsView(model_->contents()))),
+      on_contents_changed_subscription_(
+          contents_view_->AddOnContentsChangedCallback(
+              base::BindRepeating(&BubbleDialogModelHost::OnContentsViewChanged,
+                                  base::Unretained(this)))),
+      theme_observer_(this, contents_view_) {
+  model_->set_host(DialogModelHost::GetPassKey(), this);
 
   // Dialog callbacks can safely refer to |model_|, they can't be called after
   // Widget::Close() calls WidgetWillClose() synchronously so there shouldn't
   // be any dangling references after model removal.
-  SetAcceptCallbackWithClose(
-      base::BindRepeating(&ui::DialogModel::OnDialogAcceptAction,
-                          base::Unretained(model_.get()), GetPassKey()));
-  SetCancelCallbackWithClose(
-      base::BindRepeating(&ui::DialogModel::OnDialogCancelAction,
-                          base::Unretained(model_.get()), GetPassKey()));
+  SetAcceptCallbackWithClose(base::BindRepeating(
+      &ui::DialogModel::OnDialogAcceptAction, base::Unretained(model_.get()),
+      DialogModelHost::GetPassKey()));
+  SetCancelCallbackWithClose(base::BindRepeating(
+      &ui::DialogModel::OnDialogCancelAction, base::Unretained(model_.get()),
+      DialogModelHost::GetPassKey()));
   SetCloseCallback(base::BindOnce(&ui::DialogModel::OnDialogCloseAction,
                                   base::Unretained(model_.get()),
-                                  GetPassKey()));
+                                  DialogModelHost::GetPassKey()));
 
   // WindowClosingCallback happens on native widget destruction which is after
-  // |model_| reset. Hence routing this callback through |this| so that we only
-  // forward the call to DialogModel::OnWindowClosing if we haven't already been
-  // closed.
+  // |model_| reset. Hence routing this callback through |this| so that we
+  // only forward the call to DialogModel::OnWindowClosing if we haven't
+  // already been closed.
   RegisterWindowClosingCallback(base::BindOnce(
       &BubbleDialogModelHost::OnWindowClosing, base::Unretained(this)));
 
   int button_mask = ui::DIALOG_BUTTON_NONE;
-  auto* ok_button = model_->ok_button(GetPassKey());
+  auto* ok_button = model_->ok_button(DialogModelHost::GetPassKey());
   if (ok_button) {
     button_mask |= ui::DIALOG_BUTTON_OK;
-    if (!ok_button->label(GetPassKey()).empty()) {
-      SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label(GetPassKey()));
+    if (!ok_button->label().empty()) {
+      SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label());
     }
-    if (ok_button->style(GetPassKey())) {
-      SetButtonStyle(ui::DIALOG_BUTTON_OK, ok_button->style(GetPassKey()));
+    if (ok_button->style()) {
+      SetButtonStyle(ui::DIALOG_BUTTON_OK, ok_button->style());
     }
-    SetButtonEnabled(ui::DIALOG_BUTTON_OK, ok_button->is_enabled(GetPassKey()));
+    SetButtonEnabled(ui::DIALOG_BUTTON_OK, ok_button->is_enabled());
   }
 
-  auto* cancel_button = model_->cancel_button(GetPassKey());
+  auto* cancel_button = model_->cancel_button(DialogModelHost::GetPassKey());
   if (cancel_button) {
     button_mask |= ui::DIALOG_BUTTON_CANCEL;
-    if (!cancel_button->label(GetPassKey()).empty()) {
-      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                     cancel_button->label(GetPassKey()));
+    if (!cancel_button->label().empty()) {
+      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button->label());
     }
-    if (cancel_button->style(GetPassKey())) {
-      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
-                     cancel_button->style(GetPassKey()));
+    if (cancel_button->style()) {
+      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, cancel_button->style());
     }
-    SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL,
-                     cancel_button->is_enabled(GetPassKey()));
+    SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, cancel_button->is_enabled());
   }
 
-  // TODO(pbos): Consider refactoring ::SetExtraView() so it can be called after
-  // the Widget is created and still be picked up. Moving this to
+  // TODO(pbos): Consider refactoring ::SetExtraView() so it can be called
+  // after the Widget is created and still be picked up. Moving this to
   // OnWidgetInitialized() will not work until then.
-  if (ui::DialogModelButton* extra_button =
-          model_->extra_button(GetPassKey())) {
-    DCHECK(!model_->extra_link(GetPassKey()));
-    auto builder = views::Builder<MdTextButton>()
-                       .SetCallback(base::BindRepeating(
-                           &ui::DialogModelButton::OnPressed,
-                           base::Unretained(extra_button), GetPassKey()))
-                       .SetText(extra_button->label(GetPassKey()));
-    if (extra_button->style(GetPassKey())) {
-      builder.SetStyle(extra_button->style(GetPassKey()).value());
+  if (ui::DialogModel::Button* extra_button =
+          model_->extra_button(DialogModelHost::GetPassKey())) {
+    DCHECK(!model_->extra_link(DialogModelHost::GetPassKey()));
+    auto builder =
+        views::Builder<MdTextButton>()
+            .SetCallback(base::BindRepeating(
+                &ui::DialogModel::Button::OnPressed,
+                base::Unretained(extra_button), DialogModelHost::GetPassKey()))
+            .SetText(extra_button->label());
+    if (extra_button->style()) {
+      builder.SetStyle(extra_button->style().value());
     }
-    builder.SetEnabled(extra_button->is_enabled(GetPassKey()));
+    builder.SetEnabled(extra_button->is_enabled());
     SetExtraView(std::move(builder).Build());
   } else if (ui::DialogModelLabel::TextReplacement* extra_link =
-                 model_->extra_link(GetPassKey())) {
+                 model_->extra_link(DialogModelHost::GetPassKey())) {
     DCHECK(extra_link->callback().has_value());
     auto link = std::make_unique<views::Link>(extra_link->text());
     link->SetCallback(extra_link->callback().value());
@@ -436,32 +833,40 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   SetButtons(button_mask);
 
-  if (model_->override_default_button(GetPassKey()))
-    SetDefaultButton(model_->override_default_button(GetPassKey()).value());
-
-  SetTitle(model_->title(GetPassKey()));
-
-  if (!model_->accessible_title(GetPassKey()).empty()) {
-    SetAccessibleTitle(model_->accessible_title(GetPassKey()));
+  if (model_->override_default_button(DialogModelHost::GetPassKey())) {
+    SetDefaultButton(
+        model_->override_default_button(DialogModelHost::GetPassKey()).value());
   }
 
-  SetSubtitle(model_->subtitle(GetPassKey()));
+  SetTitle(model_->title(DialogModelHost::GetPassKey()));
 
-  if (!model_->main_image(GetPassKey()).IsEmpty())
-    SetMainImage(model_->main_image(GetPassKey()));
+  if (!model_->accessible_title(DialogModelHost::GetPassKey()).empty()) {
+    SetAccessibleTitle(model_->accessible_title(DialogModelHost::GetPassKey()));
+  }
 
-  if (model_->override_show_close_button(GetPassKey())) {
-    SetShowCloseButton(*model_->override_show_close_button(GetPassKey()));
+  SetSubtitle(model_->subtitle(DialogModelHost::GetPassKey()));
+  // This is added due to crbug.com/1518993 which adds a subtitle that needs
+  // line wrapping. If any future dialogs need the subtitle to not line wrap,
+  // this behavior will need to be configurable via the builder.
+  SetSubtitleAllowCharacterBreak(true);
+
+  if (!model_->main_image(DialogModelHost::GetPassKey()).IsEmpty()) {
+    SetMainImage(model_->main_image(DialogModelHost::GetPassKey()));
+  }
+
+  if (model_->override_show_close_button(DialogModelHost::GetPassKey())) {
+    SetShowCloseButton(
+        *model_->override_show_close_button(DialogModelHost::GetPassKey()));
   } else {
     SetShowCloseButton(!IsModalDialog());
   }
 
-  if (!model_->icon(GetPassKey()).IsEmpty()) {
-    SetIcon(model_->icon(GetPassKey()));
+  if (!model_->icon(DialogModelHost::GetPassKey()).IsEmpty()) {
+    SetIcon(model_->icon(DialogModelHost::GetPassKey()));
     SetShowIcon(true);
   }
 
-  if (model_->is_alert_dialog(GetPassKey())) {
+  if (model_->is_alert_dialog(DialogModelHost::GetPassKey())) {
 #if BUILDFLAG(IS_WIN)
     // This is taken from LocationBarBubbleDelegateView. See
     // GetAccessibleRoleForReason(). crbug.com/1125118: Windows ATs only
@@ -476,9 +881,10 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 #endif
   }
 
-  set_internal_name(model_->internal_name(GetPassKey()));
+  set_internal_name(model_->internal_name(DialogModelHost::GetPassKey()));
 
-  set_close_on_deactivate(model_->close_on_deactivate(GetPassKey()));
+  set_close_on_deactivate(
+      model_->close_on_deactivate(DialogModelHost::GetPassKey()));
 
   // TODO(pbos): Reconsider this for dialogs which have no actions (look like
   // menus). This is probably too wide for the TabGroupEditorBubbleView which is
@@ -487,12 +893,14 @@ BubbleDialogModelHost::BubbleDialogModelHost(
       anchor_view ? DISTANCE_BUBBLE_PREFERRED_WIDTH
                   : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  AddInitialFields();
+  // Make sure we're up to date with initial contents state.
+  UpdateSpacingAndMargins();
 }
 
 BubbleDialogModelHost::~BubbleDialogModelHost() {
-  // Remove children as they may refer to the soon-to-be-destructed model.
-  contents_view_->RemoveAllChildViews();
+  // Detach ContentsView as it's referring to state that's about to be
+  // destroyed.
+  contents_view_->Detach();
 }
 
 std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
@@ -516,37 +924,42 @@ View* BubbleDialogModelHost::GetInitiallyFocusedView() {
   // TODO(pbos): Reconsider the uniqueness requirement, maybe this should select
   // the first one? If so add corresponding GetFirst query to DialogModel.
   ui::ElementIdentifier unique_id =
-      model_->initially_focused_field(GetPassKey());
+      model_->initially_focused_field(DialogModelHost::GetPassKey());
 
   if (!unique_id)
     return BubbleDialogDelegate::GetInitiallyFocusedView();
 
-  return GetTargetView(
-      FindDialogModelHostField(model_->GetFieldByUniqueId(unique_id)));
+  if (ui::DialogModel::Button* const ok_button =
+          model_->ok_button(DialogModelHost::GetPassKey());
+      ok_button && unique_id == ok_button->id()) {
+    return GetOkButton();
+  }
+
+  if (ui::DialogModel::Button* const cancel_button =
+          model_->cancel_button(DialogModelHost::GetPassKey());
+      cancel_button && unique_id == cancel_button->id()) {
+    return GetCancelButton();
+  }
+
+  if (ui::DialogModel::Button* const extra_button =
+          model_->extra_button(DialogModelHost::GetPassKey());
+      extra_button && unique_id == extra_button->id()) {
+    return GetExtraView();
+  }
+
+  return GetTargetView(contents_view_->FindDialogModelHostField(
+      model_->GetFieldByUniqueId(unique_id)));
 }
 
 void BubbleDialogModelHost::OnWidgetInitialized() {
   // Dialog buttons are added on dialog initialization.
-  if (GetOkButton()) {
-    AddDialogModelHostFieldForExistingView(
-        {model_->ok_button(GetPassKey()), GetOkButton(), nullptr});
-  }
+  UpdateDialogButtons();
 
-  if (GetCancelButton()) {
-    AddDialogModelHostFieldForExistingView(
-        {model_->cancel_button(GetPassKey()), GetCancelButton(), nullptr});
-  }
-
-  if (model_->extra_button(GetPassKey())) {
-    DCHECK(GetExtraView());
-    AddDialogModelHostFieldForExistingView(
-        {model_->extra_button(GetPassKey()), GetExtraView(), nullptr});
-  }
-
-  if (const ui::ImageModel& banner = model_->banner(GetPassKey());
+  if (const ui::ImageModel& banner =
+          model_->banner(DialogModelHost::GetPassKey());
       !banner.IsEmpty()) {
     const ui::ImageModel& dark_mode_banner =
-        model_->dark_mode_banner(GetPassKey());
+        model_->dark_mode_banner(DialogModelHost::GetPassKey());
     auto banner_view = std::make_unique<ThemeTrackingImageView>(
         banner.Rasterize(contents_view_->GetColorProvider()),
         (dark_mode_banner.IsEmpty() ? banner : dark_mode_banner)
@@ -560,10 +973,6 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
   }
 }
 
-View* BubbleDialogModelHost::GetContentsViewForTesting() {
-  return contents_view_;
-}
-
 void BubbleDialogModelHost::Close() {
   DCHECK(model_);
   DCHECK(GetWidget());
@@ -574,79 +983,82 @@ void BubbleDialogModelHost::Close() {
 
   // Notify the model of window closing before destroying it (as if
   // Widget::Close)
-  model_->OnDialogDestroying(GetPassKey());
+  model_->OnDialogDestroying(DialogModelHost::GetPassKey());
 
-  // TODO(pbos): Consider turning this into for-each-field remove field.
-  // TODO(pbos): Move this into a better-named call inside contents_view_ to
-  // make it clear that the model_ is about to be destroyed.
-  contents_view_->RemoveAllChildViews();
-  fields_.clear();
+  // Detach ContentsView as it's referring to state that's about to be
+  // destroyed.
+  contents_view_->Detach();
   model_.reset();
 }
 
-void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
-  switch (field->type(GetPassKey())) {
-    case ui::DialogModelField::kButton:
-      // TODO(pbos): Add support for buttons that are part of content area.
-      NOTREACHED_NORETURN();
-    case ui::DialogModelField::kParagraph:
-      AddOrUpdateParagraph(field->AsParagraph(GetPassKey()));
-      break;
-    case ui::DialogModelField::kCheckbox:
-      AddOrUpdateCheckbox(field->AsCheckbox(GetPassKey()));
-      break;
-    case ui::DialogModelField::kCombobox:
-      AddOrUpdateCombobox(field->AsCombobox(GetPassKey()));
-      break;
-    case ui::DialogModelField::kMenuItem:
-      AddOrUpdateMenuItem(field->AsMenuItem(GetPassKey()));
-      break;
-    case ui::DialogModelField::kSeparator:
-      AddOrUpdateSeparator(field);
-      break;
-    case ui::DialogModelField::kTextfield:
-      AddOrUpdateTextfield(field->AsTextfield(GetPassKey()));
-      break;
-    case ui::DialogModelField::kCustom:
-      std::unique_ptr<View> view =
-          static_cast<CustomView*>(
-              field->AsCustomField(GetPassKey())->field(GetPassKey()))
-              ->TransferView();
-      DCHECK(view);
-      view->SetProperty(kElementIdentifierKey, field->id(GetPassKey()));
-      DialogModelHostField info{field, view.get(), nullptr};
-      AddDialogModelHostField(std::move(view), info);
-      break;
+BubbleDialogModelHostContentsView* BubbleDialogModelHost::InitContentsView(
+    ui::DialogModelSection* contents) {
+  auto contents_view_unique =
+      std::make_unique<BubbleDialogModelHostContentsView>(
+          contents,
+          model_->initially_focused_field(DialogModelHost::GetPassKey()));
+
+  BubbleDialogModelHostContentsView* const contents_view =
+      contents_view_unique.get();
+
+  if (IsModalDialog()) {
+    // Margins are added directly in the dialog. When the dialog is modal, these
+    // contents are wrapped by a scroll view and margins are added outside of it
+    // (instead of outside this contents). This causes some items (e.g
+    // emphasized buttons) to be cut by the scroll view margins (see
+    // crbug.com/1360772). Since we do want the margins outside the scroll view
+    // (so they are always present when scrolling), we add
+    // `kScrollViewVerticalMargin` inside the contents view and later remove it
+    // from the dialog margins.
+    // TODO(crbug.com/1348165): Remove this workaround when contents view
+    // directly supports a scroll view.
+    contents_view_unique->SetInsideBorderInsets(
+        gfx::Insets::VH(kScrollViewVerticalMargin, 0));
+
+    // TODO(crbug.com/1348165): Non modal dialogs size is not dependent on its
+    // content. Thus, the content has to be manually set by the view inside a
+    // scroll view. Modal dialogs handle their own size via constrained windows,
+    // so we can add a scroll view to the DialogModel directly.
+    constexpr int kMaxDialogHeight = 448;
+    auto scroll_view = std::make_unique<views::ScrollView>();
+    scroll_view->ClipHeightTo(0, kMaxDialogHeight);
+    scroll_view->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    scroll_view->SetContents(std::move(contents_view_unique));
+    SetContentsView(std::move(scroll_view));
+  } else {
+    SetContentsView(std::move(contents_view_unique));
   }
-  UpdateSpacingAndMargins();
-
-  UpdateFieldVisibility(field);
-
-  if (GetBubbleFrameView())
-    SizeToContents();
+  return contents_view;
 }
 
-void BubbleDialogModelHost::OnFieldChanged(ui::DialogModelField* field) {
-  CHECK(field);
+void BubbleDialogModelHost::OnContentsViewChanged() {
+  UpdateSpacingAndMargins();
 
-  UpdateFieldVisibility(field);
-
-  if (field->type(GetPassKey()) == ui::DialogModelField::kButton) {
-    UpdateButton(field->AsButton(GetPassKey()));
+  if (GetBubbleFrameView()) {
+    SizeToContents();
   }
+}
+
+void BubbleDialogModelHost::OnDialogButtonChanged() {
+  UpdateDialogButtons();
 
   // If the contents of the dialog change (text, field visitiblity, etc.), the
   // dialog may need to be resized.
   SizeToContents();
 }
 
-void BubbleDialogModelHost::AddInitialFields() {
-  DCHECK(contents_view_->children().empty())
-      << "This should only be called once.";
-
-  const auto& fields = model_->fields(GetPassKey());
-  for (const auto& field : fields)
-    OnFieldAdded(field.get());
+void BubbleDialogModelHost::UpdateWindowIcon() {
+  if (!ShouldShowWindowIcon()) {
+    return;
+  }
+  const ui::ImageModel dark_mode_icon =
+      model_->dark_mode_icon(DialogModelHost::GetPassKey());
+  if (!dark_mode_icon.IsEmpty() && color_utils::IsDark(GetBackgroundColor())) {
+    SetIcon(dark_mode_icon);
+    return;
+  }
+  SetIcon(model_->icon(DialogModelHost::GetPassKey()));
 }
 
 void BubbleDialogModelHost::UpdateSpacingAndMargins() {
@@ -655,15 +1067,6 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
       layout_provider->GetInsetsMetric(InsetsMetric::INSETS_DIALOG);
   dialog_side_insets.set_top(0);
   dialog_side_insets.set_bottom(0);
-
-  // If there is a Main Image, the left dialog inset value is no longer the
-  // correct metric. Use the related control metric instead.
-  // TODO(kylixrd): Investigate whether this should be a unique distance metric
-  // or if the related control metric is valid.
-  if (!GetMainImage().IsEmpty()) {
-    dialog_side_insets.set_left(layout_provider->GetDistanceMetric(
-        DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  }
 
   ui::DialogModelField* first_field = nullptr;
   ui::DialogModelField* last_field = nullptr;
@@ -674,11 +1077,19 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
                                            ? scroll_view->contents()->children()
                                            : contents_view_->children();
 
+  if (children.empty()) {
+    // TODO(pbos): Copied from the BubbleDialogDelegate constructor. Maybe there
+    // should be a way to reset them if we become empty?
+    set_margins(layout_provider->GetDialogInsetsForContentType(
+        DialogContentType::kText, DialogContentType::kText));
+    return;
+  }
+
   for (View* const view : children) {
     ui::DialogModelField* const field =
-        FindDialogModelHostField(view).dialog_model_field;
+        contents_view_->FindDialogModelHostField(view).dialog_model_field;
 
-    FieldType field_type = GetFieldTypeForField(field, GetPassKey());
+    const FieldType field_type = GetFieldTypeForField(field);
 
     gfx::Insets side_insets =
         field_type == FieldType::kMenuItem ? gfx::Insets() : dialog_side_insets;
@@ -689,8 +1100,7 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
     } else {
       DCHECK(last_field);
 
-      FieldType last_field_type =
-          GetFieldTypeForField(last_field, GetPassKey());
+      const FieldType last_field_type = GetFieldTypeForField(last_field);
       side_insets.set_top(
           GetFieldTopMargin(layout_provider, field_type, last_field_type));
       view->SetProperty(kMarginsKey, side_insets);
@@ -705,23 +1115,13 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   // view directly supports a scroll view.
   const int extra_margin = scroll_view ? kScrollViewVerticalMargin : 0;
   const int top_margin =
-      GetDialogTopMargins(layout_provider, first_field, GetPassKey()) -
-      extra_margin;
+      GetDialogTopMargins(layout_provider, first_field) - extra_margin;
   const int bottom_margin =
       GetDialogBottomMargins(layout_provider, last_field,
-                             GetDialogButtons() != ui::DIALOG_BUTTON_NONE,
-                             GetPassKey()) -
+                             GetDialogButtons() != ui::DIALOG_BUTTON_NONE) -
       extra_margin;
   set_margins(gfx::Insets::TLBR(top_margin >= 0 ? top_margin : 0, 0,
                                 bottom_margin >= 0 ? bottom_margin : 0, 0));
-}
-
-void BubbleDialogModelHost::UpdateFieldVisibility(ui::DialogModelField* field) {
-  DialogModelHostField host_field = FindDialogModelHostField(field);
-
-  if (host_field.field_view) {
-    host_field.field_view->SetVisible(field->is_visible());
-  }
 }
 
 void BubbleDialogModelHost::OnWindowClosing() {
@@ -729,345 +1129,32 @@ void BubbleDialogModelHost::OnWindowClosing() {
   // ::Close() stack.
   if (!model_)
     return;
-  model_->OnDialogDestroying(GetPassKey());
+  model_->OnDialogDestroying(DialogModelHost::GetPassKey());
   // TODO(pbos): Do we need to reset `model_` and destroy contents? See Close().
 }
 
-void BubbleDialogModelHost::AddOrUpdateParagraph(
-    ui::DialogModelParagraph* model_field) {
-  // TODO(pbos): Handle updating existing field.
-
-  std::unique_ptr<View> view =
-      model_field->header(GetPassKey()).empty()
-          ? CreateViewForLabel(model_field->label(GetPassKey()))
-          : CreateViewForParagraphWithHeader(model_field->label(GetPassKey()),
-                                             model_field->header(GetPassKey()));
-  DialogModelHostField info{model_field, view.get(), nullptr};
-  view->SetProperty(kElementIdentifierKey, model_field->id(GetPassKey()));
-  AddDialogModelHostField(std::move(view), info);
-}
-
-void BubbleDialogModelHost::AddOrUpdateCheckbox(
-    ui::DialogModelCheckbox* model_field) {
-  // TODO(pbos): Handle updating existing field.
-
-  std::unique_ptr<CheckboxControl> checkbox;
-  if (DialogModelLabelRequiresStyledLabel(model_field->label(GetPassKey()))) {
-    auto label =
-        CreateStyledLabelForDialogModelLabel(model_field->label(GetPassKey()));
-    const int line_height = label->GetLineHeight();
-    checkbox = std::make_unique<CheckboxControl>(std::move(label), line_height);
-  } else {
-    auto label =
-        CreateLabelForDialogModelLabel(model_field->label(GetPassKey()));
-    const int line_height = label->GetLineHeight();
-    checkbox = std::make_unique<CheckboxControl>(std::move(label), line_height);
+void BubbleDialogModelHost::UpdateDialogButtons() {
+  if (ui::DialogModel::Button* const ok_button =
+          model_->ok_button(DialogModelHost::GetPassKey())) {
+    SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label());
+    MdTextButton* const ok_button_view = GetOkButton();
+    ok_button_view->SetVisible(ok_button->is_visible());
+    ok_button_view->SetProperty(kElementIdentifierKey, ok_button->id());
   }
-  checkbox->SetChecked(model_field->is_checked());
-
-  checkbox->SetCallback(base::BindRepeating(
-      [](ui::DialogModelCheckbox* model_field,
-         base::PassKey<DialogModelHost> pass_key, Checkbox* checkbox,
-         const ui::Event& event) {
-        model_field->OnChecked(pass_key, checkbox->GetChecked());
-      },
-      model_field, GetPassKey(), checkbox.get()));
-
-  DialogModelHostField info{model_field, checkbox.get(), nullptr};
-  AddDialogModelHostField(std::move(checkbox), info);
-}
-
-void BubbleDialogModelHost::AddOrUpdateCombobox(
-    ui::DialogModelCombobox* model_field) {
-  // TODO(pbos): Handle updating existing field.
-
-  auto combobox = std::make_unique<Combobox>(model_field->combobox_model());
-  combobox->SetAccessibleName(model_field->accessible_name(GetPassKey()).empty()
-                                  ? model_field->label(GetPassKey())
-                                  : model_field->accessible_name(GetPassKey()));
-  combobox->SetCallback(base::BindRepeating(
-      [](ui::DialogModelCombobox* model_field,
-         base::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
-        model_field->OnPerformAction(pass_key);
-      },
-      model_field, GetPassKey(), combobox.get()));
-
-  combobox->SetSelectedIndex(model_field->selected_index());
-  property_changed_subscriptions_.push_back(
-      combobox->AddSelectedIndexChangedCallback(base::BindRepeating(
-          [](ui::DialogModelCombobox* model_field,
-             base::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
-            model_field->OnSelectedIndexChanged(
-                pass_key, combobox->GetSelectedIndex().value());
-          },
-          model_field, GetPassKey(), combobox.get())));
-  const gfx::FontList& font_list = combobox->GetFontList();
-  AddViewForLabelAndField(model_field, model_field->label(GetPassKey()),
-                          std::move(combobox), font_list);
-}
-
-void BubbleDialogModelHost::AddOrUpdateMenuItem(
-    ui::DialogModelMenuItem* model_field) {
-  // TODO(pbos): Handle updating existing field.
-
-  // TODO(crbug.com/1324298): Implement this for enabled items. Sorry!
-  DCHECK(!model_field->is_enabled(GetPassKey()));
-
-  auto item = std::make_unique<LabelButton>(
-      base::BindRepeating(
-          [](base::PassKey<ui::DialogModelHost> pass_key,
-             ui::DialogModelMenuItem* model_field, const ui::Event& event) {
-            model_field->OnActivated(pass_key, event.flags());
-          },
-          GetPassKey(), model_field),
-      model_field->label(GetPassKey()));
-  item->SetImageModel(Button::STATE_NORMAL, model_field->icon(GetPassKey()));
-  // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
-  // views::LayoutProvider and replace "12" here. See below for another "12" use
-  // that also needs to be replaced.
-  item->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(12 / 2, LayoutProvider::Get()->GetDistanceMetric(
-                                  DISTANCE_BUTTON_HORIZONTAL_PADDING))));
-
-  item->SetEnabled(model_field->is_enabled(GetPassKey()));
-  item->SetProperty(kElementIdentifierKey, model_field->id(GetPassKey()));
-
-  DialogModelHostField info{model_field, item.get(), nullptr};
-  AddDialogModelHostField(std::move(item), info);
-}
-
-void BubbleDialogModelHost::AddOrUpdateSeparator(
-    ui::DialogModelField* model_field) {
-  DCHECK_EQ(ui::DialogModelField::Type::kSeparator,
-            model_field->type(GetPassKey()));
-  // TODO(pbos): Support updates to the existing model.
-
-  auto separator = std::make_unique<Separator>();
-  DialogModelHostField info{model_field, separator.get(), nullptr};
-  AddDialogModelHostField(std::move(separator), info);
-}
-
-void BubbleDialogModelHost::AddOrUpdateTextfield(
-    ui::DialogModelTextfield* model_field) {
-  // TODO(pbos): Support updates to the existing model.
-
-  auto textfield = std::make_unique<Textfield>();
-  textfield->SetAccessibleName(
-      model_field->accessible_name(GetPassKey()).empty()
-          ? model_field->label(GetPassKey())
-          : model_field->accessible_name(GetPassKey()));
-  textfield->SetText(model_field->text());
-
-  // If this textfield is initially focused the text should be initially
-  // selected as well.
-  // TODO(pbos): Fix this for non-unique IDs. This should not select all text
-  // for all textfields with that ID.
-  ui::ElementIdentifier initially_focused_field_id =
-      model_->initially_focused_field(GetPassKey());
-  if (initially_focused_field_id &&
-      model_field->id(GetPassKey()) == initially_focused_field_id) {
-    textfield->SelectAll(true);
+  if (ui::DialogModel::Button* const cancel_button =
+          model_->cancel_button(DialogModelHost::GetPassKey())) {
+    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button->label());
+    MdTextButton* const cancel_button_view = GetCancelButton();
+    cancel_button_view->SetVisible(cancel_button->is_visible());
+    cancel_button_view->SetProperty(kElementIdentifierKey, cancel_button->id());
   }
-
-  property_changed_subscriptions_.push_back(
-      textfield->AddTextChangedCallback(base::BindRepeating(
-          [](ui::DialogModelTextfield* model_field,
-             base::PassKey<DialogModelHost> pass_key, Textfield* textfield) {
-            model_field->OnTextChanged(pass_key, textfield->GetText());
-          },
-          model_field, GetPassKey(), textfield.get())));
-
-  const gfx::FontList& font_list = textfield->GetFontList();
-  AddViewForLabelAndField(model_field, model_field->label(GetPassKey()),
-                          std::move(textfield), font_list);
-}
-
-void BubbleDialogModelHost::UpdateButton(ui::DialogModelButton* model_field) {
-  std::u16string label = model_field->label(GetPassKey());
-  if (model_field == model_->ok_button(GetPassKey())) {
-    SetButtonLabel(ui::DIALOG_BUTTON_OK, label);
-  } else if (model_field == model_->cancel_button(GetPassKey())) {
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, label);
-  } else if (model_field == model_->extra_button(GetPassKey())) {
-    static_cast<MdTextButton*>(
-        GetTargetView(FindDialogModelHostField(model_field)))
-        ->SetText(label);
-  } else {
-    NOTIMPLEMENTED();
+  if (ui::DialogModel::Button* const extra_button =
+          model_->extra_button(DialogModelHost::GetPassKey())) {
+    auto* const extra_button_view = static_cast<MdTextButton*>(GetExtraView());
+    extra_button_view->SetText(extra_button->label());
+    extra_button_view->SetVisible(extra_button->is_visible());
+    extra_button_view->SetProperty(kElementIdentifierKey, extra_button->id());
   }
-}
-
-void BubbleDialogModelHost::AddViewForLabelAndField(
-    ui::DialogModelField* model_field,
-    const std::u16string& label_text,
-    std::unique_ptr<View> field,
-    const gfx::FontList& field_font) {
-  auto box_layout = std::make_unique<BoxLayoutView>();
-
-  box_layout->SetBetweenChildSpacing(LayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RELATED_CONTROL_HORIZONTAL));
-
-  DialogModelHostField info{model_field, box_layout.get(), field.get()};
-
-  auto label = std::make_unique<Label>(label_text, style::CONTEXT_LABEL,
-                                       style::STYLE_PRIMARY);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  box_layout->AddChildView(std::make_unique<LayoutConsensusView>(
-      &textfield_first_column_group_, std::move(label)));
-  box_layout->SetFlexForView(
-      box_layout->AddChildView(std::make_unique<LayoutConsensusView>(
-          &textfield_second_column_group_, std::move(field))),
-      1);
-
-  AddDialogModelHostField(std::move(box_layout), info);
-}
-
-void BubbleDialogModelHost::AddDialogModelHostField(
-    std::unique_ptr<View> view,
-    const DialogModelHostField& field_view_info) {
-  DCHECK_EQ(view.get(), field_view_info.field_view);
-
-  contents_view_->AddChildView(std::move(view));
-  AddDialogModelHostFieldForExistingView(field_view_info);
-}
-
-void BubbleDialogModelHost::AddDialogModelHostFieldForExistingView(
-    const DialogModelHostField& field_view_info) {
-  DCHECK(field_view_info.dialog_model_field);
-  DCHECK(field_view_info.field_view);
-  DCHECK(contents_view_->Contains(field_view_info.field_view) ||
-         field_view_info.field_view == GetOkButton() ||
-         field_view_info.field_view == GetCancelButton() ||
-         field_view_info.field_view == GetExtraView());
-#if DCHECK_IS_ON()
-  // Make sure none of the info is already in use.
-  for (const auto& info : fields_) {
-    DCHECK_NE(info.field_view, field_view_info.field_view);
-    DCHECK_NE(info.dialog_model_field, field_view_info.dialog_model_field);
-    if (info.focusable_view)
-      DCHECK_NE(info.focusable_view, field_view_info.focusable_view);
-  }
-#endif  // DCHECK_IS_ON()
-  fields_.push_back(field_view_info);
-  View* const target = GetTargetView(field_view_info);
-  target->SetProperty(kElementIdentifierKey,
-                      field_view_info.dialog_model_field->id(GetPassKey()));
-  for (const auto& accelerator :
-       field_view_info.dialog_model_field->accelerators(GetPassKey())) {
-    target->AddAccelerator(accelerator);
-  }
-}
-
-BubbleDialogModelHost::DialogModelHostField
-BubbleDialogModelHost::FindDialogModelHostField(ui::DialogModelField* field) {
-  for (const auto& info : fields_) {
-    if (info.dialog_model_field == field)
-      return info;
-  }
-  // TODO(pbos): `field` could correspond to a button.
-  return {};
-}
-
-BubbleDialogModelHost::DialogModelHostField
-BubbleDialogModelHost::FindDialogModelHostField(View* view) {
-  for (const auto& info : fields_) {
-    if (info.field_view == view)
-      return info;
-  }
-  NOTREACHED_NORETURN();
-}
-
-View* BubbleDialogModelHost::GetTargetView(
-    const DialogModelHostField& field_view_info) {
-  return field_view_info.focusable_view ? field_view_info.focusable_view.get()
-                                        : field_view_info.field_view.get();
-}
-
-bool BubbleDialogModelHost::DialogModelLabelRequiresStyledLabel(
-    const ui::DialogModelLabel& dialog_label) {
-  return !dialog_label.replacements(GetPassKey()).empty();
-}
-
-std::unique_ptr<View> BubbleDialogModelHost::CreateViewForLabel(
-    const ui::DialogModelLabel& dialog_label) {
-  if (DialogModelLabelRequiresStyledLabel(dialog_label))
-    return CreateStyledLabelForDialogModelLabel(dialog_label);
-  return CreateLabelForDialogModelLabel(dialog_label);
-}
-
-std::unique_ptr<StyledLabel>
-BubbleDialogModelHost::CreateStyledLabelForDialogModelLabel(
-    const ui::DialogModelLabel& dialog_label) {
-  DCHECK(DialogModelLabelRequiresStyledLabel(dialog_label));
-  const std::vector<ui::DialogModelLabel::TextReplacement>& replacements =
-      dialog_label.replacements(GetPassKey());
-
-  // Retrieve the replacements strings to create the text.
-  std::vector<std::u16string> string_replacements;
-  for (auto replacement : replacements) {
-    string_replacements.push_back(replacement.text());
-  }
-  std::vector<size_t> offsets;
-  const std::u16string text = l10n_util::GetStringFUTF16(
-      dialog_label.message_id(GetPassKey()), string_replacements, &offsets);
-
-  auto styled_label = std::make_unique<StyledLabel>();
-  styled_label->SetText(text);
-  styled_label->SetDefaultTextStyle(dialog_label.is_secondary(GetPassKey())
-                                        ? style::STYLE_SECONDARY
-                                        : style::STYLE_PRIMARY);
-
-  // Style the replacements as needed.
-  DCHECK_EQ(string_replacements.size(), offsets.size());
-  for (size_t i = 0; i < replacements.size(); ++i) {
-    auto replacement = replacements[i];
-    // No styling needed if replacement is neither a link nor emphasized text.
-    if (!replacement.callback().has_value() && !replacement.is_emphasized())
-      continue;
-
-    StyledLabel::RangeStyleInfo style_info;
-    if (replacement.callback().has_value()) {
-      style_info = StyledLabel::RangeStyleInfo::CreateForLink(
-          replacement.callback().value());
-      style_info.accessible_name = replacement.accessible_name().value();
-    } else if (replacement.is_emphasized()) {
-      style_info.text_style = views::style::STYLE_EMPHASIZED;
-    }
-
-    auto offset = offsets[i];
-    styled_label->AddStyleRange(
-        gfx::Range(offset, offset + replacement.text().length()), style_info);
-  }
-
-  return styled_label;
-}
-
-std::unique_ptr<Label> BubbleDialogModelHost::CreateLabelForDialogModelLabel(
-    const ui::DialogModelLabel& dialog_label) {
-  DCHECK(!DialogModelLabelRequiresStyledLabel(dialog_label));
-
-  auto text_label = std::make_unique<Label>(
-      dialog_label.GetString(GetPassKey()), style::CONTEXT_DIALOG_BODY_TEXT,
-      dialog_label.is_secondary(GetPassKey()) ? style::STYLE_SECONDARY
-                                              : style::STYLE_PRIMARY);
-  text_label->SetMultiLine(true);
-  text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  return text_label;
-}
-
-std::unique_ptr<View> BubbleDialogModelHost::CreateViewForParagraphWithHeader(
-    const ui::DialogModelLabel& dialog_label,
-    const std::u16string header) {
-  auto view = std::make_unique<BoxLayoutView>();
-  view->SetOrientation(BoxLayout::Orientation::kVertical);
-
-  auto* header_label = view->AddChildView(std::make_unique<Label>(
-      header, style::CONTEXT_DIALOG_BODY_TEXT, style::STYLE_PRIMARY));
-  header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  view->AddChildView(CreateViewForLabel(dialog_label));
-  return view;
 }
 
 bool BubbleDialogModelHost::IsModalDialog() const {

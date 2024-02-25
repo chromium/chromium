@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] e.style['transition'] = "overlay 2s" should set the property value
+  assert_equals: serialization should be canonical expected "overlay 2s" but got "overlay 2s ease 0s"
+[FAIL] Property transition value 'overlay 1s'
+  assert_equals: expected "overlay 1s" but got "overlay 1s ease 0s"
+Harness: the test ran to completion.
+

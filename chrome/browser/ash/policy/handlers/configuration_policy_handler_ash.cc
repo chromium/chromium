@@ -7,10 +7,16 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -19,7 +25,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
@@ -41,7 +46,6 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "crypto/sha2.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -56,27 +60,27 @@ constexpr char kPolicyEntryFileExtensionsKey[] = "file_extensions";
 constexpr char kSubkeyURL[] = "url";
 constexpr char kSubkeyHash[] = "hash";
 
-absl::optional<std::string> GetSubkeyString(const base::Value::Dict& dict,
-                                            PolicyErrorMap* errors,
-                                            const std::string& policy,
-                                            const std::string& subkey) {
+std::optional<std::string> GetSubkeyString(const base::Value::Dict& dict,
+                                           PolicyErrorMap* errors,
+                                           const std::string& policy,
+                                           const std::string& subkey) {
   const base::Value* policy_value = dict.Find(subkey);
 
   if (!policy_value) {
     errors->AddError(policy, IDS_POLICY_NOT_SPECIFIED_ERROR,
                      PolicyErrorPath{subkey});
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!policy_value->is_string()) {
     errors->AddError(policy, IDS_POLICY_TYPE_ERROR,
                      base::Value::GetTypeName(base::Value::Type::STRING),
                      PolicyErrorPath{subkey});
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (policy_value->GetString().empty()) {
     errors->AddError(policy, IDS_POLICY_NOT_SPECIFIED_ERROR,
                      PolicyErrorPath{subkey});
-    return absl::nullopt;
+    return std::nullopt;
   }
   return policy_value->GetString();
 }
@@ -148,6 +152,14 @@ base::Value CalculateIdleActionValue(const base::Value* idle_action_value,
   return ConvertToActionEnumValue(idle_action_value);
 }
 
+bool IsSupportedAppTypePolicyId(std::string_view policy_id) {
+  return apps_util::IsChromeAppPolicyId(policy_id) ||
+         apps_util::IsArcAppPolicyId(policy_id) ||
+         apps_util::IsSystemWebAppPolicyId(policy_id) ||
+         apps_util::IsWebAppPolicyId(policy_id) ||
+         apps_util::IsPreinstalledWebAppPolicyId(policy_id);
+}
+
 }  // namespace
 
 ExternalDataPolicyHandler::ExternalDataPolicyHandler(const char* policy_name)
@@ -177,9 +189,9 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(
   const base::Value* value = entry->value(base::Value::Type::DICT);
   DCHECK(value);
   const base::Value::Dict& dict = value->GetDict();
-  absl::optional<std::string> url_string =
+  std::optional<std::string> url_string =
       GetSubkeyString(dict, errors, policy, kSubkeyURL);
-  absl::optional<std::string> hash_string =
+  std::optional<std::string> hash_string =
       GetSubkeyString(dict, errors, policy, kSubkeyHash);
   if (!url_string || !hash_string) {
     return false;
@@ -236,7 +248,7 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
     return true;
   }
 
-  absl::optional<base::Value::Dict> root_dict =
+  std::optional<base::Value::Dict> root_dict =
       chromeos::onc::ReadDictionaryFromJson(value->GetString());
   if (!root_dict.has_value()) {
     errors->AddError(policy_name(), IDS_POLICY_NETWORK_CONFIG_PARSE_FAILED);
@@ -260,7 +272,7 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
       &validation_result);
 
   // Pass error/warning message and non-localized debug_info to PolicyErrorMap.
-  std::vector<base::StringPiece> messages;
+  std::vector<std::string_view> messages;
   for (const chromeos::onc::Validator::ValidationIssue& issue :
        validator.validation_issues()) {
     messages.push_back(issue.message);
@@ -309,7 +321,7 @@ void NetworkConfigurationPolicyHandler::PrepareForDisplaying(
   if (!entry) {
     return;
   }
-  absl::optional<base::Value> sanitized_config =
+  std::optional<base::Value> sanitized_config =
       SanitizeNetworkConfig(entry->value(base::Value::Type::STRING));
 
   if (!sanitized_config.has_value()) {
@@ -329,17 +341,17 @@ NetworkConfigurationPolicyHandler::NetworkConfigurationPolicyHandler(
       pref_path_(pref_path) {}
 
 // static
-absl::optional<base::Value>
+std::optional<base::Value>
 NetworkConfigurationPolicyHandler::SanitizeNetworkConfig(
     const base::Value* config) {
   if (!config) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Value::Dict> config_dict =
+  std::optional<base::Value::Dict> config_dict =
       chromeos::onc::ReadDictionaryFromJson(config->GetString());
   if (!config_dict.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Placeholder to insert in place of the filtered setting.
@@ -361,8 +373,8 @@ PinnedLauncherAppsPolicyHandler::PinnedLauncherAppsPolicyHandler()
 PinnedLauncherAppsPolicyHandler::~PinnedLauncherAppsPolicyHandler() = default;
 
 bool PinnedLauncherAppsPolicyHandler::CheckListEntry(const base::Value& value) {
-  const std::string policy_id = value.GetString();
-  return apps_util::IsSupportedAppTypePolicyId(policy_id);
+  const std::string& policy_id = value.GetString();
+  return IsSupportedAppTypePolicyId(policy_id);
 }
 
 void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value::List filtered_list,
@@ -405,7 +417,7 @@ bool DefaultHandlersForFileExtensionsPolicyHandler::CheckPolicySettings(
         policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
     DCHECK(policy_id);
 
-    if (!apps_util::IsSupportedAppTypePolicyId(*policy_id)) {
+    if (!IsValidPolicyId(*policy_id)) {
       errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
                        PolicyErrorPath{index, kPolicyEntryPolicyIdKey});
       continue;
@@ -450,7 +462,7 @@ void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
 
     const std::string* policy_id =
         policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
-    if (!apps_util::IsSupportedAppTypePolicyId(*policy_id)) {
+    if (!IsValidPolicyId(*policy_id)) {
       continue;
     }
 
@@ -465,6 +477,12 @@ void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
 
   prefs->SetValue(prefs::kDefaultHandlersForFileExtensions,
                   base::Value(std::move(pref_mapping)));
+}
+
+bool DefaultHandlersForFileExtensionsPolicyHandler::IsValidPolicyId(
+    std::string_view policy_id) const {
+  return IsSupportedAppTypePolicyId(policy_id) ||
+         apps_util::IsFileManagerVirtualTaskPolicyId(policy_id);
 }
 
 ScreenMagnifierPolicyHandler::ScreenMagnifierPolicyHandler()
@@ -671,6 +689,27 @@ void ArcServicePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
              static_cast<int>(ArcServicePolicyValue::kEnabled)) {
     prefs->SetBoolean(pref_, true);
   }
+}
+
+ArcLocationServicePolicyHandler::ArcLocationServicePolicyHandler(
+    const char* policy,
+    const char* pref)
+    : ArcServicePolicyHandler(policy, pref) {}
+
+void ArcLocationServicePolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
+  // After the Privacy Hub rollout, the Android location toggle will be replaced
+  // by the ChromeOS location toggle in the OOBE dialog. This new toggle will be
+  // controlled by `kGoogleLocationServicesEnabled`. This new toggle will no
+  // longer support force-setting only the initial value during the setup flow,
+  // so we can ignore this policy.
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+    return;
+  }
+
+  // Legacy handling.
+  ArcServicePolicyHandler::ApplyPolicySettings(policies, prefs);
 }
 
 }  // namespace policy

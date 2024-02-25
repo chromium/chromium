@@ -195,7 +195,7 @@ void LaunchApplication(Profile* profile,
       std::move(request),
       base::BindOnce(
           [](SuccessCallback callback,
-             absl::optional<
+             std::optional<
                  vm_tools::cicerone::LaunchContainerApplicationResponse>
                  response) {
             if (!response) {

@@ -55,7 +55,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   // RealTimeUrlLookupServiceBase:
   bool CanPerformFullURLLookup() const override;
-  bool CanCheckSubresourceURL() const override;
+  bool CanIncludeSubframeUrlInReferrerChain() const override;
   bool CanCheckSafeBrowsingDb() const override;
   bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override;
   bool CanSendRTSampleRequest() const override;
@@ -71,26 +71,21 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool CanSendPageLoadToken() const override;
   void GetAccessToken(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
 
   // Called when the access token is obtained from |token_fetcher_|.
   void OnGetAccessToken(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::TimeTicks get_token_start_time,
       const std::string& access_token);
 
-  absl::optional<std::string> GetDMTokenString() const override;
+  std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
-  double GetMinAllowedTimestampForReferrerChains() const override;
+  std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+      const override;
 
   // Unowned object used for checking profile based settings.
   raw_ptr<Profile, DanglingUntriaged> profile_;

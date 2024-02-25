@@ -25,10 +25,10 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "base/win/windows_types.h"
 
 struct IPropertyStore;
@@ -223,17 +223,10 @@ BASE_EXPORT std::wstring GetWindowObjectName(HANDLE handle);
 // Checks if the calling thread is running under a desktop with the name
 // given by |desktop_name|. |desktop_name| is ASCII case insensitive (non-ASCII
 // characters will be compared with exact matches).
-BASE_EXPORT bool IsRunningUnderDesktopName(WStringPiece desktop_name);
+BASE_EXPORT bool IsRunningUnderDesktopName(std::wstring_view desktop_name);
 
 // Returns true if current session is a remote session.
 BASE_EXPORT bool IsCurrentSessionRemote();
-
-#if !defined(OFFICIAL_BUILD)
-// IsAppVerifierEnabled() indicates whether a newly created process will get
-// Application Verifier or pageheap injected into it. Only available in
-// unofficial builds to prevent abuse.
-BASE_EXPORT bool IsAppVerifierEnabled(const std::wstring& process_name);
-#endif  // !defined(OFFICIAL_BUILD)
 
 // IsAppVerifierLoaded() indicates whether Application Verifier is *already*
 // loaded into the current process.

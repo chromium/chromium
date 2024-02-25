@@ -7,18 +7,16 @@ package org.chromium.chrome.browser.layouts;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 
 /**
- * A {@link LayoutStateObserver} that filters events based on a specified layout ID. This utility
- * is helpful if a feature wishes to exclusively listen to events on a specific layout without the
- * need for many conditionals. The only event that is not affected by the filter is
- * {@link LayoutStateObserver#onTabSelectionHinted(int)}.
+ * A {@link LayoutStateObserver} that filters events based on a specified layout ID. This utility is
+ * helpful if a feature wishes to exclusively listen to events on a specific layout without the need
+ * for many conditionals.
  */
 public final class FilterLayoutStateObserver implements LayoutStateObserver {
     /** The observer that will receive the filtered events. */
     private final LayoutStateObserver mObserver;
 
     /** The type to filter on. */
-    @LayoutType
-    private final int mType;
+    @LayoutType private final int mType;
 
     /**
      * Create a filtered observer that only filters on a single layout type.
@@ -52,10 +50,5 @@ public final class FilterLayoutStateObserver implements LayoutStateObserver {
     public void onFinishedHiding(int layoutType) {
         if (layoutType != mType) return;
         mObserver.onFinishedHiding(layoutType);
-    }
-
-    @Override
-    public void onTabSelectionHinted(int tabId) {
-        mObserver.onTabSelectionHinted(tabId);
     }
 }

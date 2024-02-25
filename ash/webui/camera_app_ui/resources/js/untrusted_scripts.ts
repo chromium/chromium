@@ -11,6 +11,7 @@ import {
   GaBaseEvent,
   GaHelper,
   GaMetricDimension,
+  MemoryUsageEventDimension,
 } from './untrusted_ga_helper.js';
 import {VideoProcessorHelper} from './untrusted_video_processor_helper.js';
 import {expandPath} from './util.js';
@@ -46,7 +47,10 @@ export function createUntrustedIframe(): UntrustedIFrame {
 // TODO(pihsun): actually get correct type from the function definition.
 interface UntrustedScriptLoader {
   loadScript(url: string): Promise<void>;
+  measureMemoryUsage(): Promise<MemoryMeasurement>;
 }
+
+let memoryMeasurementHelper: Comlink.Remote<UntrustedScriptLoader>|null = null;
 
 /**
  * Creates JS module by given |scriptUrl| under untrusted context with given
@@ -63,7 +67,15 @@ export async function injectUntrustedJSModule<T>(
   assert(iframe.contentWindow !== null);
   const untrustedRemote = Comlink.wrap<UntrustedScriptLoader>(
       Comlink.windowEndpoint(iframe.contentWindow, self));
+
+  // Memory measurement for all untrusted scripts can be done on any single
+  // untrusted frame.
+  if (memoryMeasurementHelper === null) {
+    memoryMeasurementHelper = untrustedRemote;
+  }
+
   await untrustedRemote.loadScript(scriptUrl);
+
   // loadScript adds the script exports to what's exported by the
   // untrustedRemote, so we manually cast it to the expected type.
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -73,6 +85,15 @@ export async function injectUntrustedJSModule<T>(
 let gaHelper: Promise<Comlink.Remote<GaHelper>>|null = null;
 let videoProcessorHelper: Promise<Comlink.Remote<VideoProcessorHelper>>|null =
     null;
+
+/**
+ * Measure memory used by untrusted scripts.
+ */
+export async function measureUntrustedScriptsMemory():
+    Promise<MemoryMeasurement> {
+  assert(memoryMeasurementHelper !== null);
+  return memoryMeasurementHelper.measureMemoryUsage();
+}
 
 /**
  * Gets the singleton GaHelper instance that is located in an untrusted iframe.
@@ -95,7 +116,7 @@ export function setGaHelper(newGaHelper: Promise<Comlink.Remote<GaHelper>>):
  * Types of event parameters and dimensions for GA and GA4.
  */
 export {Ga4MetricDimension, GaMetricDimension};
-export type{Ga4EventParams, GaBaseEvent};
+export type {Ga4EventParams, GaBaseEvent, MemoryUsageEventDimension};
 
 /**
  * Gets the singleton VideoProcessorHelper instance that is located in an

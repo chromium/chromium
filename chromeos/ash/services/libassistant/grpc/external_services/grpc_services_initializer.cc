@@ -17,7 +17,6 @@
 #include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/assistant/internal/libassistant_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_service.grpc.pb.h"
 #include "third_party/grpc/src/include/grpc/grpc_security_constants.h"
@@ -201,8 +200,7 @@ void GrpcServicesInitializer::StartGrpcHttpConnectionClient(
     assistant_client::HttpConnectionFactory* factory) {
   const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
   http_connection_client_ = std::make_unique<GrpcHttpConnectionClient>(
-      factory,
-      chromeos::assistant::GetHttpConnectionServiceAddress(is_chromeos_device));
+      factory, GetHttpConnectionServiceAddress(is_chromeos_device));
   http_connection_client_->Start();
 }
 

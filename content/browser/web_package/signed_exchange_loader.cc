@@ -119,10 +119,10 @@ SignedExchangeLoader::SignedExchangeLoader(
             std::move(outer_response_body)),
         base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
                        weak_factory_.GetWeakPtr()),
-        std::move(cert_fetcher_factory), network_anonymization_key,
+        std::move(cert_fetcher_factory),
         outer_request_.trusted_params
-            ? absl::make_optional(outer_request_.trusted_params->isolation_info)
-            : absl::nullopt,
+            ? std::make_optional(outer_request_.trusted_params->isolation_info)
+            : std::nullopt,
         outer_request_.load_flags, outer_response_head_->remote_endpoint,
         std::make_unique<blink::WebPackageRequestMatcher>(
             outer_request_.headers, accept_langs),
@@ -146,7 +146,7 @@ void SignedExchangeLoader::OnReceiveEarlyHints(
 void SignedExchangeLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
   NOTREACHED();
@@ -189,7 +189,7 @@ void SignedExchangeLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   NOTREACHED();
 }
 
@@ -271,7 +271,7 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
           *outer_response_head_, false /* is_fallback_redirect */));
   forwarding_client_.reset();
 
-  const absl::optional<net::SSLInfo>& ssl_info = resource_response->ssl_info;
+  const std::optional<net::SSLInfo>& ssl_info = resource_response->ssl_info;
   if (ssl_info.has_value() &&
       (url_loader_options_ &
        network::mojom::kURLLoadOptionSendSSLInfoForCertificateError) &&
@@ -284,7 +284,7 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
   if (ssl_info.has_value() &&
       !(url_loader_options_ &
         network::mojom::kURLLoadOptionSendSSLInfoWithResponse)) {
-    inner_response_head_shown_to_client->ssl_info = absl::nullopt;
+    inner_response_head_shown_to_client->ssl_info = std::nullopt;
   }
   inner_response_head_shown_to_client->was_fetched_via_cache =
       outer_response_head_->was_fetched_via_cache;
@@ -308,7 +308,7 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
   }
 
   client_->OnReceiveResponse(std::move(inner_response_head_shown_to_client),
-                             std::move(consumer_handle), absl::nullopt);
+                             std::move(consumer_handle), std::nullopt);
 
   body_data_pipe_adapter_ = std::make_unique<network::SourceStreamToDataPipe>(
       std::move(payload_stream), std::move(producer_handle));

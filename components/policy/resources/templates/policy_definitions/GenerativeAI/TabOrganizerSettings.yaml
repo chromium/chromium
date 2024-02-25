@@ -1,0 +1,46 @@
+caption: Settings for Tab Organizer
+
+desc: |-
+  Tab Organizer is an AI-based tool that automatically creates tab groups based on a user's open tabs. Suggestions are based on open tabs (but not page content).
+
+  0 = Enable the feature for users, and send relevant data to Google to help train or improve AI models. Relevant data may include prompts, inputs, outputs, and source materials, depending on the feature. It may be reviewed by humans for the sole purpose of improving AI models.
+
+  0 is the default value, except when noted below.
+
+  1 = Enable the feature for users, but do not send data to Google to train or improve AI models. 1 is the default value for Enterprise users managed by <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
+
+  2 = Disable the feature. 2 is the default value for education accounts managed by <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>.
+
+  For more information on data handling for generative AI features, please see https://support.google.com/chrome/a?p=generative_ai_settings.
+default: 0
+default_for_enterprise_users: 2
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable the feature and send data to help train AI models
+  name: Allowed
+  value: 0
+- caption: Enable the feature but don't send data to help train AI models
+  name: AllowedWithoutLogging
+  value: 1
+- caption: Disable the feature
+  name: Disabled
+  value: 2
+owners:
+- file://chrome/browser/ui/tabs/OWNERS
+- file://components/optimization_guide/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+tags:
+- google-sharing
+supported_on:
+- chrome.*:121-
+- chrome_os:121-
+tags: []
+type: int-enum

@@ -7,12 +7,15 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/process/kill.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
+#include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
@@ -98,6 +101,10 @@ class RenderViewHostDelegate {
   virtual void SetWebPreferences(const blink::web_pref::WebPreferences& prefs) {
   }
 
+  // Returns the light, dark and forced color maps for the ColorProvider
+  // associated with this RenderViewHost.
+  virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() const = 0;
+
   // Triggers a total recomputation of WebPreferences by resetting the current
   // cached WebPreferences to null and triggering the recomputation path for
   // both the "slow" attributes (hardware configurations/things that require
@@ -112,9 +119,11 @@ class RenderViewHostDelegate {
   // Called on `blink::WebView` creation to get the initial base background
   // color for this `blink::WebView`. Nullopt means a color is not set, and the
   // blink default color should be used.
-  virtual absl::optional<SkColor> GetBaseBackgroundColor();
+  virtual std::optional<SkColor> GetBaseBackgroundColor();
 
   virtual const base::Location& GetCreatorLocation() = 0;
+
+  virtual network::mojom::AttributionSupport GetAttributionSupport() = 0;
 
  protected:
   virtual ~RenderViewHostDelegate() {}

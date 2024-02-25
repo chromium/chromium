@@ -85,7 +85,7 @@ source_set("sandbox_hook") {
     ":loader",
     "//base",
     "//chromeos/ash/services/assistant/public/cpp",
-    "//chromeos/assistant/internal:internal",
+    "//chromeos/ash/services/libassistant/grpc:grpc_util",
     "//sandbox/linux:sandbox_services",
     "//sandbox/policy",
   ]
@@ -163,6 +163,7 @@ source_set("internal") {
     "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/ash/services/libassistant/grpc:assistant_client",
     "//chromeos/ash/services/libassistant/grpc:grpc_service",
+    "//chromeos/ash/services/libassistant/grpc:grpc_util",
     "//chromeos/ash/services/libassistant/grpc/external_services:grpc_services_initializer",
     "//chromeos/ash/services/libassistant/grpc/external_services:grpc_services_observer",
     "//chromeos/ash/services/libassistant/public/mojom",

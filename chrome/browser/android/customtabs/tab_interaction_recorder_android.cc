@@ -5,6 +5,7 @@
 #include "chrome/browser/android/customtabs/tab_interaction_recorder_android.h"
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
@@ -38,7 +39,7 @@ AutofillManager* GetAutofillManager(RenderFrameHost* render_frame_host) {
       autofill::ContentAutofillDriver::GetForRenderFrameHost(render_frame_host);
   if (!autofill_driver)
     return nullptr;
-  return autofill_driver->autofill_manager();
+  return &autofill_driver->GetAutofillManager();
 }
 }  // namespace
 
@@ -70,7 +71,8 @@ void AutofillObserverImpl::OnAfterSelectControlDidChange(
 
 void AutofillObserverImpl::OnAfterTextFieldDidChange(autofill::AutofillManager&,
                                                      autofill::FormGlobalId,
-                                                     autofill::FieldGlobalId) {
+                                                     autofill::FieldGlobalId,
+                                                     const std::u16string&) {
   OnFormInteraction();
 }
 

@@ -9,7 +9,7 @@ namespace certificate_provider {
 
 SignRequests::Request::Request(
     const scoped_refptr<net::X509Certificate>& certificate,
-    const absl::optional<AccountId>& authenticating_user_account_id,
+    const std::optional<AccountId>& authenticating_user_account_id,
     net::SSLPrivateKey::SignCallback callback)
     : certificate(certificate),
       authenticating_user_account_id(authenticating_user_account_id),
@@ -34,7 +34,7 @@ SignRequests::~SignRequests() {}
 int SignRequests::AddRequest(
     const std::string& extension_id,
     const scoped_refptr<net::X509Certificate>& certificate,
-    const absl::optional<AccountId>& authenticating_user_account_id,
+    const std::optional<AccountId>& authenticating_user_account_id,
     net::SSLPrivateKey::SignCallback callback) {
   RequestsState& state = extension_to_requests_[extension_id];
   const int request_id = state.next_free_id++;

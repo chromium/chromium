@@ -41,9 +41,13 @@ class GpuDiskCacheEntry {
     OPEN_ENTRY,
     WRITE_DATA,
     CREATE_ENTRY,
+    REOPEN_ENTRY,
   };
 
+  int OpenEntry();
+
   int OpenCallback(int rv);
+  int ReopenCallback(int rv);
   int WriteCallback(int rv);
   int IOComplete(int rv);
 
@@ -147,7 +151,7 @@ GpuDiskCacheEntry::~GpuDiskCacheEntry() {
     entry_->Close();
 }
 
-void GpuDiskCacheEntry::Cache() {
+int GpuDiskCacheEntry::OpenEntry() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto callback = base::BindOnce(&GpuDiskCacheEntry::OnEntryOpenComplete,
@@ -155,8 +159,15 @@ void GpuDiskCacheEntry::Cache() {
 
   disk_cache::EntryResult result =
       cache_->backend()->OpenEntry(key_, net::HIGHEST, std::move(callback));
-  if (result.net_error() != net::ERR_IO_PENDING)
+  int rv = result.net_error();
+  if (rv != net::ERR_IO_PENDING) {
     OnEntryOpenComplete(std::move(result));
+  }
+  return rv;
+}
+
+void GpuDiskCacheEntry::Cache() {
+  OpenEntry();
 }
 
 void GpuDiskCacheEntry::OnOpComplete(int rv) {
@@ -175,6 +186,9 @@ void GpuDiskCacheEntry::OnOpComplete(int rv) {
         break;
       case WRITE_DATA:
         rv = IOComplete(rv);
+        break;
+      case REOPEN_ENTRY:
+        rv = ReopenCallback(rv);
         break;
     }
   } while (rv != net::ERR_IO_PENDING && weak_ptr);
@@ -210,12 +224,30 @@ int GpuDiskCacheEntry::OpenCallback(int rv) {
   return rv;
 }
 
+int GpuDiskCacheEntry::ReopenCallback(int rv) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (rv == net::OK) {
+    cache_->backend()->OnExternalCacheHit(key_);
+  } else {
+    LOG(ERROR) << "Failed retry to open blob cache entry: " << rv;
+  }
+  cache_->EntryComplete(this);
+  return rv;
+}
+
 int GpuDiskCacheEntry::WriteCallback(int rv) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (rv != net::OK) {
-    LOG(ERROR) << "Failed to create blob cache entry: " << rv;
-    cache_->EntryComplete(this);
-    return rv;
+    // We might have failed to create the entry because another create on the
+    // same key happened before. To verify, try re-opening the entry.
+    if (rv == net::ERR_FAILED) {
+      op_type_ = REOPEN_ENTRY;
+      return OpenEntry();
+    } else {
+      LOG(ERROR) << "Failed to create blob cache entry: " << rv;
+      cache_->EntryComplete(this);
+      return rv;
+    }
   }
 
   op_type_ = WRITE_DATA;

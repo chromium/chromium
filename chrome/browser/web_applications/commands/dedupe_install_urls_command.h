@@ -15,8 +15,8 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -25,7 +25,7 @@ namespace web_app {
 class RemoveInstallUrlJob;
 
 // See WebAppCommandScheduler::ScheduleDedupeInstallUrls() for documentation.
-class DedupeInstallUrlsCommand : public WebAppCommandTemplate<AllAppsLock> {
+class DedupeInstallUrlsCommand : public WebAppCommand<AllAppsLock> {
  public:
   static base::AutoReset<bool> ScopedSuppressForTesting();
 
@@ -33,11 +33,9 @@ class DedupeInstallUrlsCommand : public WebAppCommandTemplate<AllAppsLock> {
                                     base::OnceClosure completed_callback);
   ~DedupeInstallUrlsCommand() override;
 
-  // WebAppCommandTemplate<AllAppsLock>:
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
-  void OnShutdown() override;
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
 
  private:
   void ProcessPendingJobsOrComplete();
@@ -45,14 +43,11 @@ class DedupeInstallUrlsCommand : public WebAppCommandTemplate<AllAppsLock> {
   void RecordMetrics();
 
   const raw_ref<Profile> profile_;
-  base::OnceClosure completed_callback_;
 
-  const AllAppsLockDescription lock_description_;
   std::unique_ptr<AllAppsLock> lock_;
 
-  base::flat_map<GURL, base::flat_set<AppId>> install_url_to_apps_;
-  base::flat_map<GURL, AppId> dedupe_choices_;
-  base::Value::List completed_job_debug_values_;
+  base::flat_map<GURL, base::flat_set<webapps::AppId>> install_url_to_apps_;
+  base::flat_map<GURL, webapps::AppId> dedupe_choices_;
 
   std::vector<std::unique_ptr<RemoveInstallUrlJob>> pending_jobs_;
   std::unique_ptr<RemoveInstallUrlJob> active_job_;

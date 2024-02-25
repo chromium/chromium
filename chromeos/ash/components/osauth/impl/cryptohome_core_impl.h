@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_CRYPTOHOME_CORE_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_CRYPTOHOME_CORE_IMPL_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/public/cryptohome_core.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class UserDataAuthClient;
@@ -40,12 +41,12 @@ class CryptohomeCoreImpl : public CryptohomeCore {
                        bool service_is_available);
   void OnAuthSessionStarted(bool user_exists,
                             std::unique_ptr<UserContext> context,
-                            absl::optional<AuthenticationError> error);
+                            std::optional<AuthenticationError> error);
   void OnInvalidateAuthSession(std::unique_ptr<UserContext> context,
-                               absl::optional<AuthenticationError> error);
+                               std::optional<AuthenticationError> error);
   void EndAuthSessionImpl();
 
-  absl::optional<AuthAttemptVector> current_attempt_;
+  std::optional<AuthAttemptVector> current_attempt_;
   base::flat_set<raw_ptr<Client>> clients_;
   base::flat_set<raw_ptr<Client>> clients_being_removed_;
 

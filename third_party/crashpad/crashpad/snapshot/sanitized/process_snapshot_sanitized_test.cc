@@ -79,6 +79,8 @@ class ExceptionGenerator {
 };
 
 constexpr char kAllowedAnnotationName[] = "name_of_allowed_anno";
+constexpr char kAllowedAnnotationNamePattern[] = "name_of_another_*";
+constexpr char kAllowedAnnotationNamePatternActual[] = "name_of_another_anno";
 constexpr char kAllowedAnnotationValue[] = "some_value";
 constexpr char kNonAllowedAnnotationName[] = "non_allowed_anno";
 constexpr char kNonAllowedAnnotationValue[] = "private_annotation";
@@ -98,6 +100,10 @@ void ChildTestFunction() {
 
   static StringAnnotation<32> allowed_annotation(kAllowedAnnotationName);
   allowed_annotation.Set(kAllowedAnnotationValue);
+
+  static StringAnnotation<32> allowed_matched_annotation(
+      kAllowedAnnotationNamePatternActual);
+  allowed_matched_annotation.Set(kAllowedAnnotationValue);
 
   static StringAnnotation<32> non_allowed_annotation(kNonAllowedAnnotationName);
   non_allowed_annotation.Set(kNonAllowedAnnotationValue);
@@ -129,11 +135,15 @@ CRASHPAD_CHILD_TEST_MAIN(ChildToBeSanitized) {
 
 void ExpectAnnotations(ProcessSnapshot* snapshot, bool sanitized) {
   bool found_allowed = false;
+  bool found_matched_allowed = false;
   bool found_non_allowed = false;
   for (auto module : snapshot->Modules()) {
     for (const auto& anno : module->AnnotationObjects()) {
       if (anno.name == kAllowedAnnotationName) {
         found_allowed = true;
+      }
+      if (anno.name == kAllowedAnnotationNamePatternActual) {
+        found_matched_allowed = true;
       } else if (anno.name == kNonAllowedAnnotationName) {
         found_non_allowed = true;
       }
@@ -141,6 +151,7 @@ void ExpectAnnotations(ProcessSnapshot* snapshot, bool sanitized) {
   }
 
   EXPECT_TRUE(found_allowed);
+  EXPECT_TRUE(found_matched_allowed);
   if (sanitized) {
     EXPECT_FALSE(found_non_allowed);
   } else {
@@ -279,6 +290,7 @@ class SanitizeTest : public MultiprocessExec {
 
     auto allowed_annotations = std::make_unique<std::vector<std::string>>();
     allowed_annotations->push_back(kAllowedAnnotationName);
+    allowed_annotations->push_back(kAllowedAnnotationNamePattern);
 
     auto allowed_memory_ranges =
         std::make_unique<std::vector<std::pair<VMAddress, VMAddress>>>();

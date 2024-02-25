@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests that continue to location markers are computed correctly.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
     function testFunction() {
@@ -27,11 +28,11 @@ import {SourcesTestRunner} from 'sources_test_runner';
   function step1() {
     TestRunner
         .addSnifferPromise(
-            Sources.DebuggerPlugin.prototype,
+            Sources.DebuggerPlugin.DebuggerPlugin.prototype,
             '_continueToLocationRenderedForTest')
         .then(step2);
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, '_executionLineChanged', function() {
+        Sources.DebuggerPlugin.DebuggerPlugin.prototype, '_executionLineChanged', function() {
           SourcesTestRunner.showUISourceCodePromise(this._uiSourceCode)
               .then(() => {
                 this._showContinueToLocations();
@@ -41,7 +42,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   }
 
   function step2() {
-    var currentFrame = UI.panels.sources.visibleView;
+    var currentFrame = Sources.SourcesPanel.SourcesPanel.instance().visibleView;
     var debuggerPlugin = SourcesTestRunner.debuggerPlugin(currentFrame);
     var decorations = debuggerPlugin._continueToLocationDecorations;
     var lines = [];

@@ -66,7 +66,7 @@
 namespace {
 
 // The amount of padding between the label and the sync icon.
-constexpr int kSyncIconPaddingFromLabel = 4;
+constexpr int kSyncIconPaddingFromLabel = 2;
 
 class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
@@ -122,9 +122,14 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetElideBehavior(gfx::FADE_TAIL);
-
   if (features::IsChromeRefresh2023()) {
-    title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+    title_->SetLineHeight(20);
+    if (base::FeatureList::IsEnabled(
+            features::kChromeRefresh2023TopChromeFont)) {
+      title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+    }
+  } else {
+    title_->SetTextStyle(views::style::STYLE_BODY_4);
   }
 
   // Enable keyboard focus.
@@ -207,7 +212,8 @@ bool TabGroupHeader::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 bool TabGroupHeader::OnMouseDragged(const ui::MouseEvent& event) {
-  tab_slot_controller_->ContinueDrag(this, event);
+  // TODO: ensure ignoring return value is ok.
+  std::ignore = tab_slot_controller_->ContinueDrag(this, event);
   return true;
 }
 
@@ -379,7 +385,7 @@ void TabGroupHeader::ShowContextMenuForViewImpl(
 #endif
 
   editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-      tab_slot_controller_->GetBrowser(), group().value(), this, absl::nullopt,
+      tab_slot_controller_->GetBrowser(), group().value(), this, std::nullopt,
       nullptr, kStopContextMenuPropagation));
 }
 
@@ -389,8 +395,13 @@ bool TabGroupHeader::DoesIntersectRect(const views::View* target,
   // visually the header is basically a rectangle between two tab separators.
   // The distance from the endge of the view to the tab separator is half of the
   // overlap distance. We should only accept events between the separators.
+  const views::Widget* widget = GetWidget();
+  bool extend_hittest = widget->IsMaximized() || widget->IsFullscreen();
+
   gfx::Rect contents_rect = GetLocalBounds();
-  contents_rect.Inset(gfx::Insets::VH(0, tab_style_->GetTabOverlap() / 2));
+  contents_rect.Inset(gfx::Insets::TLBR(
+      extend_hittest ? 0 : GetLayoutConstant(TAB_STRIP_PADDING),
+      tab_style_->GetTabOverlap() / 2, 0, tab_style_->GetTabOverlap() / 2));
   return contents_rect.Intersects(rect);
 }
 
@@ -499,14 +510,17 @@ void TabGroupHeader::VisualsChanged() {
 
     // horizontal and vertical insets of the title chip.
     const gfx::Insets title_chip_insets =
-        group_style_->GetInsetsForHeaderChip();
-    const int title_chip_vertical_inset = title_chip_insets.top();
-    const int title_chip_horizontal_inset = title_chip_insets.left();
+        group_style_->GetInsetsForHeaderChip(ShouldShowSyncIcon());
+    const int title_chip_vertical_inset =
+        features::IsChromeRefresh2023() ? 0 : title_chip_insets.top();
+    const int title_chip_horizontal_inset_left = title_chip_insets.left();
+    const int title_chip_horizontal_inset_right = title_chip_insets.right();
 
     // Width of title chip should atleast be the width of an empty title chip.
     const int title_chip_width =
         std::max(group_style_->GetEmptyTitleChipBounds(this).width(),
-                 content_width + 2 * title_chip_horizontal_inset);
+                 content_width + title_chip_horizontal_inset_left +
+                     title_chip_horizontal_inset_right);
 
     // The bounds and background for the `title_chip_` is set here.
     const gfx::Point title_chip_origin =
@@ -518,18 +532,22 @@ void TabGroupHeader::VisualsChanged() {
         views::CreateRoundedRectBackground(color, corner_radius));
 
     // Bounds and background of the `title_` and the `sync_icon` are set here.
-    // Cannot use `title_chip_horizontal_inset` as x coordinate in the case
-    // `title_chip_width` is the width of an empty title chip.
-    const int start_of_sync_icon = (title_chip_->width() - content_width) / 2;
-    sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
-                          sync_icon_size.width(), text_height);
-    title_->SetBounds(start_of_sync_icon + sync_icon_size.width() +
-                          padding_between_label_sync_icon,
-                      title_chip_vertical_inset, text_width, text_height);
+    const int start_of_sync_icon = title_chip_horizontal_inset_left;
+    if (!ShouldShowSyncIcon()) {
+      sync_icon_->SetBounds(0, 0, 0, 0);
+      title_->SetBounds(title_chip_horizontal_inset_left,
+                        title_chip_vertical_inset, text_width, text_height);
+    } else {
+      sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
+                            sync_icon_size.width(), text_height);
+      title_->SetBounds(start_of_sync_icon + sync_icon_size.width() +
+                            padding_between_label_sync_icon,
+                        title_chip_vertical_inset, text_width, text_height);
+    }
   }
 
   if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->Layout();
+    views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
   }
 
   const bool collapsed_state =
@@ -571,7 +589,7 @@ void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {
   widget->RemoveObserver(&editor_bubble_tracker_);
 }
 
-BEGIN_METADATA(TabGroupHeader, TabSlotView)
+BEGIN_METADATA(TabGroupHeader)
 ADD_READONLY_PROPERTY_METADATA(int, DesiredWidth)
 END_METADATA
 

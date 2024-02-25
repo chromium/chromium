@@ -4,12 +4,19 @@
 
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/screen_manager.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -19,12 +26,12 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -71,11 +78,32 @@ class PinSetupScreenTest : public OobeBaseTest {
     GetScreen()->set_exit_callback_for_testing(base::BindRepeating(
         &PinSetupScreenTest::HandleScreenExit, base::Unretained(this)));
 
+    auto* wizard_context =
+        LoginDisplayHost::default_host()->GetWizardContextForTesting();
+
     // Force the sync screen to be shown so that we don't jump to PIN setup
     // screen (consuming auth session) in unbranded build
-    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
-        true;
+    wizard_context->is_branded_build = true;
+
     login_manager_mixin_.LoginAsNewRegularUser();
+
+    // Add an authenticated session to the user context used during OOBE. In
+    // production, this is set by earlier screens which are skipped in this
+    // test.
+    std::unique_ptr<UserContext> context =
+        ash::AuthSessionStorage::Get()->BorrowForTests(
+            FROM_HERE, wizard_context->extra_factors_token.value());
+    // LoginManagerMixin uses StubAuthenticator that fills out authsession.
+    // Reset Authsession to correctly interact with FakeUserDataAuthClient.
+    context->ResetAuthSessionIds();
+    cryptohome_.MarkUserAsExisting(context->GetAccountId());
+    auto session_ids =
+        cryptohome_.AddSession(context->GetAccountId(), /*authenticated=*/true);
+    context->SetAuthSessionIds(session_ids.first, session_ids.second);
+    context->SetSessionLifetime(base::Time::Now() +
+                                cryptohome::kAuthsessionInitialLifetime);
+    ash::AuthSessionStorage::Get()->Return(
+        wizard_context->extra_factors_token.value(), std::move(context));
   }
 
   PinSetupScreen* GetScreen() {
@@ -107,39 +135,28 @@ class PinSetupScreenTest : public OobeBaseTest {
   }
 
   void ConfigureUserContextForTest() {
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      auto token = ash::AuthSessionStorage::Get()->Store(
-          std::make_unique<UserContext>());
-      ash::AuthSessionStorage::Get()->Peek(token)->SetAuthSessionId(
-          "fake-session-id");
-      LoginDisplayHost::default_host()
-          ->GetWizardContextForTesting()
-          ->extra_factors_token = token;
-    } else {
-      LoginDisplayHost::default_host()
-          ->GetWizardContextForTesting()
-          ->extra_factors_auth_session = std::make_unique<UserContext>();
-    }
+    std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
+    context->SetAuthSessionIds("fake-session-id", "broadcast");
+    context->SetSessionLifetime(base::Time::Now() +
+                                cryptohome::kAuthsessionInitialLifetime);
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
+        ->extra_factors_token =
+        ash::AuthSessionStorage::Get()->Store(std::move(context));
   }
 
   void CheckCredentialsWereCleared() {
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      EXPECT_FALSE(LoginDisplayHost::default_host()
-                       ->GetWizardContextForTesting()
-                       ->extra_factors_token.has_value());
-    } else {
-      EXPECT_EQ(LoginDisplayHost::default_host()
-                    ->GetWizardContextForTesting()
-                    ->extra_factors_auth_session,
-                nullptr);
-    }
+    EXPECT_FALSE(LoginDisplayHost::default_host()
+                     ->GetWizardContextForTesting()
+                     ->extra_factors_token.has_value());
   }
 
-  absl::optional<PinSetupScreen::Result> screen_result_;
+  std::optional<PinSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
   bool screen_exited_ = false;
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  CryptohomeMixin cryptohome_{&mixin_host_};
 
  private:
   void HandleScreenExit(PinSetupScreen::Result result) {
@@ -166,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, Skipped) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 0);
 }
 
-// If the PIN setup screen is skipped, `extra_factors_auth_session` should be
+// If the PIN setup screen is skipped, auth session should be
 // cleared.
 IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, SkippedClearsAuthSession) {
   ConfigureUserContextForTest();
@@ -188,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowInTabletMode) {
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
 }
 
-// If the PIN setup screen is shown, `extra_factors_auth_session` should be
+// If the PIN setup screen is shown, auth session should be
 // cleared.
 IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowClearsAuthSession) {
   ConfigureUserContextForTest();

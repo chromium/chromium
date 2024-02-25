@@ -115,7 +115,7 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
  private:
   void OnInstallPromptDone(bool did_accept);
 
-  bool HasUnsupportedRequirements(const std::string& extension_id) const;
+  bool HasUnsupportedRequirements(const ExtensionId& extension_id) const;
 
   bool IsExtensionApprovalFlowRequired(const Extension* target_extension) const;
 
@@ -144,7 +144,7 @@ class ManagementUninstallFunctionBase : public ExtensionFunction {
   ~ManagementUninstallFunctionBase() override;
   bool ShouldKeepWorkerAliveIndefinitely() override;
 
-  ResponseAction Uninstall(const std::string& extension_id,
+  ResponseAction Uninstall(const ExtensionId& extension_id,
                            bool show_confirm_dialog);
 
  private:

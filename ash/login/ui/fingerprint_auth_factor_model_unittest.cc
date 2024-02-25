@@ -75,7 +75,7 @@ class FingerprintAuthFactorModelTest : public AshTestBase {
       fake_fingerprint_auth_factor_model_factory_;
   std::unique_ptr<FingerprintAuthFactorModel> fingerprint_auth_factor_model_;
   AuthIconView icon_;
-  raw_ptr<AuthFactorModel, ExperimentalAsh> model_ = nullptr;
+  raw_ptr<AuthFactorModel> model_ = nullptr;
   bool on_state_changed_called_ = false;
 };
 

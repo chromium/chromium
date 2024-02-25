@@ -14,17 +14,11 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 
 import java.util.List;
 
-/**
- * Handles toolbar functionality for the Photo Picker class.
- */
+/** Handles toolbar functionality for the Photo Picker class. */
 public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
-    /**
-     * A delegate that handles dialog actions.
-     */
+    /** A delegate that handles dialog actions. */
     public interface PhotoPickerToolbarDelegate {
-        /**
-         * Called when the back arrow is clicked in the toolbar.
-         */
+        /** Called when the back arrow is clicked in the toolbar. */
         void onNavigationBackCallback();
     }
 
@@ -35,16 +29,12 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
         super(context, attrs);
     }
 
-    /**
-     * Set the {@PhotoPickerToolbarDelegate} for this toolbar.
-     */
+    /** Set the {@PhotoPickerToolbarDelegate} for this toolbar. */
     public void setDelegate(PhotoPickerToolbarDelegate delegate) {
         mDelegate = delegate;
     }
 
-    /**
-     * Shows the Back arrow navigation button in the upper left corner.
-     */
+    /** Shows the Back arrow navigation button in the upper left corner. */
     public void showBackArrow() {
         setNavigationButton(NavigationButton.BACK);
     }
@@ -62,8 +52,12 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
     }
 
     @Override
-    public void initialize(SelectionDelegate<PickerBitmap> delegate, int titleResId,
-            int normalGroupResId, int selectedGroupResId, boolean updateStatusBarColor) {
+    public void initialize(
+            SelectionDelegate<PickerBitmap> delegate,
+            int titleResId,
+            int normalGroupResId,
+            int selectedGroupResId,
+            boolean updateStatusBarColor) {
         super.initialize(
                 delegate, titleResId, normalGroupResId, selectedGroupResId, updateStatusBarColor);
 

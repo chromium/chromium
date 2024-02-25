@@ -6,7 +6,7 @@
  * Handles DumpDatabase tab for syncfs-internals.
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 import {createElementFromText} from './utils.js';

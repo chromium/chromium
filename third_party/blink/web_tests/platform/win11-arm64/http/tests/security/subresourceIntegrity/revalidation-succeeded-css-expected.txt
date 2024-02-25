@@ -1,5 +1,0 @@
-CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/cache/resources/etag.php?type=css&empty-after-revalidate-css' with computed SHA-256 integrity 'lHsrNA5vvDfa1cJ2/TxemIub4cFKxd0mj8Q9a8LpwNY='. The resource has been blocked.
-This is a testharness.js-based test.
-FAIL SRI with CSS with successful revalidation shouldn't crash assert_unreached: First request should pass Reached unreachable code
-Harness: the test ran to completion.
-

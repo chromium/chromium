@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/idle/idle_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/idle/idle_pref_names.h"
+#include "components/enterprise/idle/metrics.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_contents.h"
@@ -125,10 +126,14 @@ class CloseBrowsersAction : public Action {
 
  private:
   void OnCloseSuccess(const base::FilePath& profile_dir) {
+    metrics::RecordActionsSuccess(
+        metrics::IdleTimeoutActionType::kCloseBrowsers, true);
     std::move(continuation_).Run(/*success=*/true);
   }
 
   void OnCloseAborted(const base::FilePath& profile_dir) {
+    metrics::RecordActionsSuccess(
+        metrics::IdleTimeoutActionType::kCloseBrowsers, false);
     std::move(continuation_).Run(/*success=*/false);
   }
   Action::Continuation continuation_;
@@ -145,6 +150,8 @@ class ShowProfilePickerAction : public Action {
   void Run(Profile* profile, Continuation continuation) override {
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kProfileIdle));
+    metrics::RecordActionsSuccess(
+        metrics::IdleTimeoutActionType::kShowProfilePicker, true);
     std::move(continuation).Run(true);
   }
 
@@ -183,6 +190,7 @@ class ClearBrowsingDataAction : public Action,
     continuation_ = std::move(continuation);
     // Action object's lifetime extends until it calls `continuation_`, so
     // passing `this` as a raw pointer is safe.
+    deletion_start_time_ = base::TimeTicks::Now();
     remover->RemoveAndReply(base::Time(), base::Time::Max(), GetRemoveMask(),
                             GetOriginTypeMask(), this);
     // TODO(crbug.com/1326685): Add a pair of keepalives?
@@ -200,6 +208,11 @@ class ClearBrowsingDataAction : public Action,
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
     bool success = failed_data_types == 0;
     observation_.Reset();
+    metrics::RecordActionsSuccess(
+        metrics::IdleTimeoutActionType::kClearBrowsingData, success);
+    metrics::RecordIdleTimeoutActionTimeTaken(
+        metrics::IdleTimeoutActionType::kClearBrowsingData,
+        base::TimeTicks::Now() - deletion_start_time_);
     std::move(continuation_).Run(success);
   }
 
@@ -207,22 +220,25 @@ class ClearBrowsingDataAction : public Action,
   uint64_t GetRemoveMask() const {
     using content::BrowsingDataRemover;
     static const std::pair<ActionType, uint64_t> entries[] = {
-        {ActionType::kClearBrowsingHistory,
-         chrome_browsing_data_remover::DATA_TYPE_HISTORY},
-        {ActionType::kClearDownloadHistory,
-         BrowsingDataRemover::DATA_TYPE_DOWNLOADS},
-        {ActionType::kClearCookiesAndOtherSiteData,
-         chrome_browsing_data_remover::DATA_TYPE_SITE_DATA},
-        {ActionType::kClearCachedImagesAndFiles,
-         BrowsingDataRemover::DATA_TYPE_CACHE},
-        {ActionType::kClearPasswordSignin,
-         chrome_browsing_data_remover::DATA_TYPE_PASSWORDS},
-        {ActionType::kClearAutofill,
-         chrome_browsing_data_remover::DATA_TYPE_FORM_DATA},
-        {ActionType::kClearSiteSettings,
-         chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS},
-        {ActionType::kClearHostedAppData,
-         chrome_browsing_data_remover::DATA_TYPE_SITE_DATA}};
+#if !BUILDFLAG(IS_ANDROID)
+      {ActionType::kClearDownloadHistory,
+       BrowsingDataRemover::DATA_TYPE_DOWNLOADS},
+      {ActionType::kClearHostedAppData,
+       chrome_browsing_data_remover::DATA_TYPE_SITE_DATA},
+#endif  // !BUILDFLAG(IS_ANDROID)
+      {ActionType::kClearBrowsingHistory,
+       chrome_browsing_data_remover::DATA_TYPE_HISTORY},
+      {ActionType::kClearCookiesAndOtherSiteData,
+       chrome_browsing_data_remover::DATA_TYPE_SITE_DATA},
+      {ActionType::kClearCachedImagesAndFiles,
+       BrowsingDataRemover::DATA_TYPE_CACHE},
+      {ActionType::kClearPasswordSignin,
+       chrome_browsing_data_remover::DATA_TYPE_PASSWORDS},
+      {ActionType::kClearAutofill,
+       chrome_browsing_data_remover::DATA_TYPE_FORM_DATA},
+      {ActionType::kClearSiteSettings,
+       chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS}
+    };
     uint64_t result = 0;
     for (const auto& [action_type, mask] : entries) {
       if (base::Contains(action_types_, action_type)) {
@@ -239,12 +255,15 @@ class ClearBrowsingDataAction : public Action,
                        ActionType::kClearCookiesAndOtherSiteData)) {
       result |= BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
     }
+#if !BUILDFLAG(IS_ANDROID)
     if (base::Contains(action_types_, ActionType::kClearHostedAppData)) {
       result |= BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
     }
+#endif  // !BUILDFLAG(IS_ANDROID)
     return result;
   }
 
+  base::TimeTicks deletion_start_time_;
   base::flat_set<ActionType> action_types_;
   raw_ptr<content::BrowsingDataRemover, DanglingUntriaged>
       browsing_data_remover_for_testing_;
@@ -262,20 +281,25 @@ class ReloadPagesAction : public Action {
 #if BUILDFLAG(IS_ANDROID)
     // This covers regular tabs, PWAs, and CCTs.
     for (TabModel* model : TabModelList::models()) {
+      if (model->GetProfile() != profile) {
+        continue;  // Deliberately ignore incognito.
+      }
 #else
     // This covers regular tabs and PWAs.
     for (Browser* browser : *BrowserList::GetInstance()) {
       TabStripModel* model = browser->tab_strip_model();
-#endif  // BUILDFLAG(IS_ANDROID)
-      if (model->GetProfile() != profile) {
+      if (model->profile() != profile) {
         continue;  // Deliberately ignore incognito.
       }
+#endif  // BUILDFLAG(IS_ANDROID)
       for (int i = 0; i < model->GetTabCount(); i++) {
         model->GetWebContentsAt(i)->GetController().Reload(
             content::ReloadType::NORMAL,
             /*check_for_repost=*/true);
       }
     }
+    metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kReloadPages,
+                                  true);
     std::move(continuation).Run(/*success=*/true);
   }
 
@@ -371,14 +395,16 @@ ActionFactory::ActionQueue ActionFactory::Build(
       // "clear_*" actions are all grouped into a single Action object. Collect
       // them in a flat_set<>, and create the shared object once we have the
       // entire collection.
-      case ActionType::kClearBrowsingHistory:
+#if !BUILDFLAG(IS_ANDROID)
       case ActionType::kClearDownloadHistory:
+      case ActionType::kClearHostedAppData:
+#endif  // !BUILDFLAG(IS_ANDROID)
+      case ActionType::kClearBrowsingHistory:
       case ActionType::kClearCookiesAndOtherSiteData:
       case ActionType::kClearCachedImagesAndFiles:
       case ActionType::kClearPasswordSignin:
       case ActionType::kClearAutofill:
       case ActionType::kClearSiteSettings:
-      case ActionType::kClearHostedAppData:
         clear_actions.insert(action_type);
         break;
 

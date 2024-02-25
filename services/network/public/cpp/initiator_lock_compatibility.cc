@@ -28,8 +28,8 @@ base::debug::CrashKeyString* GetRequestInitiatorOriginLockCrashKey() {
 }  // namespace
 
 InitiatorLockCompatibility VerifyRequestInitiatorLock(
-    const absl::optional<url::Origin>& request_initiator_origin_lock,
-    const absl::optional<url::Origin>& request_initiator) {
+    const std::optional<url::Origin>& request_initiator_origin_lock,
+    const std::optional<url::Origin>& request_initiator) {
   if (!request_initiator_origin_lock.has_value())
     return InitiatorLockCompatibility::kNoLock;
   const url::Origin& lock = request_initiator_origin_lock.value();
@@ -58,7 +58,7 @@ namespace debug {
 
 ScopedRequestInitiatorOriginLockCrashKey::
     ScopedRequestInitiatorOriginLockCrashKey(
-        const absl::optional<url::Origin>& request_initiator_origin_lock)
+        const std::optional<url::Origin>& request_initiator_origin_lock)
     : ScopedOriginCrashKey(GetRequestInitiatorOriginLockCrashKey(),
                            base::OptionalToPtr(request_initiator_origin_lock)) {
 }

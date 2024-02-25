@@ -12,6 +12,7 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 === After non-affecting selector modification ===
 [expanded] 
@@ -25,6 +26,7 @@ hr, #inspected { (<style>)
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 === After affecting selector modification ===
 [expanded] 
@@ -38,5 +40,6 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 

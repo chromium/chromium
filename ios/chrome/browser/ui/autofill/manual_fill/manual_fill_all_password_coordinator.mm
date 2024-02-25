@@ -6,28 +6,35 @@
 
 #import "base/ios/block_types.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 
 @interface ManualFillAllPasswordCoordinator () <
     ManualFillPasswordMediatorDelegate,
-    PasswordViewControllerDelegate>
+    PasswordViewControllerDelegate,
+    ReauthenticationCoordinatorDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 // Fetches and filters the passwords for the view controller.
 @property(nonatomic, strong) ManualFillPasswordMediator* passwordMediator;
@@ -38,7 +45,19 @@
 
 @end
 
-@implementation ManualFillAllPasswordCoordinator
+@implementation ManualFillAllPasswordCoordinator {
+  // Used for requiring Local Authentication before revealing the password list.
+  // Authentication is also required when the app is backgrounded/foregrounded
+  // with this surface opened.
+  ReauthenticationCoordinator* _reauthCoordinator;
+
+  // Navigation controller presented by this coordinator.
+  TableViewNavigationController* _navigationController;
+
+  // Service which gives us a view on users' saved passwords.
+  std::unique_ptr<password_manager::SavedPasswordsPresenter>
+      _savedPasswordsPresenter;
+}
 
 - (void)start {
   [super start];
@@ -48,27 +67,33 @@
       initWithSearchController:searchController];
   self.passwordViewController.delegate = self;
 
-  auto profilePasswordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
-  auto accountPasswordStore =
-      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  SyncSetupService* syncService = SyncSetupServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.passwordMediator = [[ManualFillPasswordMediator alloc]
-      initWithProfilePasswordStore:profilePasswordStore
-              accountPasswordStore:accountPasswordStore
-                     faviconLoader:faviconLoader
-                          webState:webState
-                       syncService:syncService
-                               URL:GURL::EmptyGURL()
-            invokedOnPasswordField:NO];
-  [self.passwordMediator fetchPasswords];
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+  self.passwordMediator =
+      [[ManualFillPasswordMediator alloc] initWithFaviconLoader:faviconLoader
+                                                       webState:webState
+                                                    syncService:syncService
+                                                            URL:GURL()
+                                       invokedOnObfuscatedField:NO];
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  _savedPasswordsPresenter =
+      std::make_unique<password_manager::SavedPasswordsPresenter>(
+          IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
+          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+              browserState, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+              browserState, ServiceAccessType::EXPLICIT_ACCESS));
+  _savedPasswordsPresenter->Init();
+
+  [self.passwordMediator
+      setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];
+  [self.passwordMediator fetchAllPasswords];
   self.passwordMediator.actionSectionEnabled = NO;
   self.passwordMediator.consumer = self.passwordViewController;
   self.passwordMediator.contentInjector = self.injectionHandler;
@@ -78,24 +103,33 @@
 
   searchController.searchResultsUpdater = self.passwordMediator;
 
-  TableViewNavigationController* navigationController =
-      [[TableViewNavigationController alloc]
-          initWithTable:self.passwordViewController];
-  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-  navigationController.modalTransitionStyle =
+  _navigationController = [[TableViewNavigationController alloc]
+      initWithTable:self.passwordViewController];
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.modalTransitionStyle =
       UIModalTransitionStyleCoverVertical;
+  _navigationController.presentationController.delegate = self;
 
-  [self.baseViewController presentViewController:navigationController
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
+
+  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
+    [self startReauthCoordinator];
+  }
 }
 
 - (void)stop {
+  [self stopReauthCoordinator];
+
   [self.passwordViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.passwordViewController = nil;
+  [self.passwordMediator disconnect];
+  self.passwordMediator.consumer = nil;
   self.passwordMediator = nil;
+  _savedPasswordsPresenter.reset();
   [super stop];
 }
 
@@ -132,6 +166,54 @@
   [self.manualFillAllPasswordCoordinatorDelegate
       manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
   [handler openURLInNewTab:command];
+}
+
+#pragma mark - ReauthenticationCoordinatorDelegate
+
+- (void)successfulReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  // No-op.
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  [self.manualFillAllPasswordCoordinatorDelegate
+      manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
+}
+
+- (void)willPushReauthenticationViewController {
+  // No-op.
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.manualFillAllPasswordCoordinatorDelegate
+      manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
+}
+
+#pragma mark - Private
+
+// Starts reauthCoordinator and Local Authentication before revealing the
+// password list. Once started reauthCoordinator observes scene state changes
+// and requires authentication when the scene is backgrounded and then
+// foregrounded while the surface is is opened.
+- (void)startReauthCoordinator {
+  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+      initWithBaseNavigationController:_navigationController
+                               browser:self.browser
+                reauthenticationModule:nil
+                           authOnStart:YES];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+// Stops reauthCoordinator.
+- (void)stopReauthCoordinator {
+  [_reauthCoordinator stop];
+  _reauthCoordinator = nil;
 }
 
 @end

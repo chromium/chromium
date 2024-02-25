@@ -16,9 +16,7 @@
 #include "net/base/io_buffer.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 // Bridge between fileapi read file and providing extension's read fil request.
 // Created per request.
@@ -55,8 +53,6 @@ class ReadFile : public Operation {
   ProvidedFileSystemInterface::ReadChunkReceivedCallback callback_;
 };
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_READ_FILE_H_

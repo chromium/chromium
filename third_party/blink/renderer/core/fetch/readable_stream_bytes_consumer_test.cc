@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -41,6 +42,7 @@ class MockClient : public GarbageCollected<MockClient>,
 };
 
 TEST(ReadableStreamBytesConsumerTest, Create) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState& exception_state = scope.GetExceptionState();
@@ -56,6 +58,7 @@ TEST(ReadableStreamBytesConsumerTest, Create) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, EmptyStream) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -94,6 +97,7 @@ TEST(ReadableStreamBytesConsumerTest, EmptyStream) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, ErroredStream) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -132,6 +136,7 @@ TEST(ReadableStreamBytesConsumerTest, ErroredStream) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -153,16 +158,13 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
     chunk3->Data()[3] = 0x4a;
     underlying_source->Enqueue(
         ScriptValue(script_state->GetIsolate(),
-                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk1)
-                        .ToLocalChecked()));
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk1)));
     underlying_source->Enqueue(
         ScriptValue(script_state->GetIsolate(),
-                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk2)
-                        .ToLocalChecked()));
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk2)));
     underlying_source->Enqueue(
         ScriptValue(script_state->GetIsolate(),
-                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk3)
-                        .ToLocalChecked()));
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk3)));
     underlying_source->Close();
   }
 
@@ -246,6 +248,7 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -259,9 +262,9 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   chunk->Data()[1] = 0x44;
   chunk->Data()[2] = 0x45;
   chunk->Data()[3] = 0x46;
-  underlying_source->Enqueue(ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk).ToLocalChecked()));
+  underlying_source->Enqueue(
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
@@ -298,6 +301,7 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -311,9 +315,9 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   chunk->Data()[1] = 0x44;
   chunk->Data()[2] = 0x45;
   chunk->Data()[3] = 0x46;
-  underlying_source->Enqueue(ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk).ToLocalChecked()));
+  underlying_source->Enqueue(
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
@@ -351,6 +355,7 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, EnqueueUndefined) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -390,6 +395,7 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueUndefined) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, EnqueueNull) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -429,6 +435,7 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueNull) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, EnqueueString) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -469,6 +476,7 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueString) {
 }
 
 TEST(ReadableStreamBytesConsumerTest, Cancel) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 

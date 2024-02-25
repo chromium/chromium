@@ -166,6 +166,8 @@ void HTMLViewSourceDocument::AddSource(
       ProcessCommentToken(source, token);
       break;
     case HTMLToken::kCharacter:
+    case HTMLToken::kDOMPart:
+      // Process DOM Parts as character tokens.
       ProcessCharacterToken(source, token);
       break;
   }
@@ -259,7 +261,7 @@ Element* HTMLViewSourceDocument::AddSpanWithClassName(
     const AtomicString& class_name) {
   if (current_ == tbody_) {
     AddLine(class_name);
-    return current_;
+    return current_.Get();
   }
 
   auto* span = MakeGarbageCollected<HTMLSpanElement>(*this);

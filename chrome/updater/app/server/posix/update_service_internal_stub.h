@@ -5,9 +5,8 @@
 #ifndef CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_INTERNAL_STUB_H_
 #define CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_INTERNAL_STUB_H_
 
-#include "chrome/updater/app/server/posix/mojom/updater_service_internal.mojom.h"
-
 #include "base/memory/scoped_refptr.h"
+#include "chrome/updater/app/server/posix/mojom/updater_service_internal.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"

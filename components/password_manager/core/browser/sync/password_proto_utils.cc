@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 
 using autofill::FormData;
@@ -215,6 +214,7 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
   trimmed_password_data.clear_sender_name();
   trimmed_password_data.clear_date_received_windows_epoch_micros();
   trimmed_password_data.clear_sharing_notification_displayed();
+  trimmed_password_data.clear_sender_profile_image_url();
 
   TrimPasswordSpecificsDataNotesForCaching(trimmed_password_data);
 
@@ -280,16 +280,18 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
           : password_form.federation_origin.Serialize());
   *password_data.mutable_password_issues() =
       PasswordIssuesMapToProto(password_form.password_issues);
-  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    *password_data.mutable_notes() =
-        PasswordNotesToProto(password_form.notes, base_password_data.notes());
-  }
+  *password_data.mutable_notes() =
+      PasswordNotesToProto(password_form.notes, base_password_data.notes());
   password_data.set_sender_email(base::UTF16ToUTF8(password_form.sender_email));
   password_data.set_sender_name(base::UTF16ToUTF8(password_form.sender_name));
   password_data.set_date_received_windows_epoch_micros(
       password_form.date_received.ToDeltaSinceWindowsEpoch().InMicroseconds());
   password_data.set_sharing_notification_displayed(
       password_form.sharing_notification_displayed);
+  password_data.set_sender_profile_image_url(
+      password_form.sender_profile_image_url.is_valid()
+          ? password_form.sender_profile_image_url.spec()
+          : "");
   return password_data;
 }
 
@@ -305,6 +307,7 @@ sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
     *password_metadata.mutable_password_issues() =
         PasswordIssuesMapToProto(password_form.password_issues);
   }
+  password_metadata.set_type(static_cast<int>(password_form.type));
   return password_metadata;
 }
 
@@ -343,15 +346,15 @@ PasswordForm PasswordFromSpecifics(
   password.federation_origin =
       url::Origin::Create(GURL(password_data.federation_url()));
   password.password_issues = PasswordIssuesMapFromProto(password_data);
-  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    password.notes = PasswordNotesFromProto(password_data.notes());
-  }
+  password.notes = PasswordNotesFromProto(password_data.notes());
   password.sender_email = base::UTF8ToUTF16(password_data.sender_email());
   password.sender_name = base::UTF8ToUTF16(password_data.sender_name());
   password.date_received =
       ConvertToBaseTime(password_data.date_received_windows_epoch_micros());
   password.sharing_notification_displayed =
       password_data.sharing_notification_displayed();
+  password.sender_profile_image_url =
+      GURL(password_data.sender_profile_image_url());
   return password;
 }
 

@@ -8,6 +8,25 @@
 #include <stddef.h>
 #include <stdint.h>
 
+namespace base {
+
+template <typename T>
+class WeakPtr {
+ public:
+  ~WeakPtr() {}
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+};
+
+template <typename T>
+class WeakPtrFactory {
+ public:
+  explicit WeakPtrFactory(T*) {}
+  ~WeakPtrFactory() {}
+  WeakPtr<T> GetWeakPtr() { return WeakPtr<T>(); }
+};
+
+}  // namespace base
 namespace WTF {
 
 template<typename T> class RefCounted { };
@@ -21,13 +40,6 @@ template<typename T> class RawPtr {
 template<typename T> class scoped_refptr {
  public:
   ~scoped_refptr() {}
-  operator T*() const { return 0; }
-  T* operator->() const { return 0; }
-};
-
-template<typename T> class WeakPtr {
- public:
-  ~WeakPtr() {}
   operator T*() const { return 0; }
   T* operator->() const { return 0; }
 };
@@ -147,9 +159,22 @@ class unordered_map {};
 template <typename Elem>
 class vector {};
 template <typename Elem, size_t N>
-class array {};
+class array {
+ public:
+  const Elem& operator[](size_t n) const { return elems_[n]; }
+
+  const Elem* begin() const { return &elems_[0]; }
+  const Elem* end() const { return &elems_[N]; }
+
+ private:
+  Elem elems_[N];
+};
 template <typename T1, typename T2>
 class pair {};
+template <typename T>
+class optional {};
+template <class... Ts>
+class variant {};
 
 }  // namespace std
 

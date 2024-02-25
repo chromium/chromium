@@ -2,6 +2,7 @@
 <title>Support for the :user-invalid pseudo-class</title>
 <link rel="author" title="Tim Nguyen" href="https://github.com/nt1m">
 <link rel="help" href="https://drafts.csswg.org/selectors/#user-pseudos">
+<link rel="help" href="https://html.spec.whatwg.org/#selector-user-invalid">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -27,6 +28,7 @@
 <form id="form">
   <input placeholder="Required field" required id="required-input"><br>
   <textarea placeholder="Required field" required id="required-textarea"></textarea><br>
+  <input type="checkbox" required id="required-checkbox"><br>
   <input type="submit" id="submit-button">
   <input type="reset" id="reset-button">
 </form>
@@ -46,6 +48,16 @@ promise_test(async () => {
 
   assert_false(input.matches(":user-valid"), "No change happened, still does not match :user-valid");
   assert_false(input.matches(":user-invalid"), "No change happened, still does not match :user-invalid");
+
+  input.value = "not an email";
+
+  assert_false(input.matches(":user-valid"), "Programatically set value, :user-valid should not match");
+  assert_false(input.matches(":user-invalid"), "Programatically set value, :user-invalid should not match");
+
+  input.value = "";
+
+  assert_false(input.matches(":user-valid"), "Programatically cleared value, :user-valid should not match");
+  assert_false(input.matches(":user-invalid"), "Programatically cleared value, :user-invalid should not match");
 
   await test_driver.click(input);
   await test_driver.send_keys(input, "not an email");
@@ -67,11 +79,13 @@ promise_test(async () => {
   const form = document.querySelector("#form");
   const requiredInput = document.querySelector("#required-input");
   const requiredTextarea = document.querySelector("#required-textarea");
+  const requiredCheckbox = document.querySelector("#required-checkbox");
   const submitButton = document.querySelector("#submit-button");
   const resetButton = document.querySelector("#reset-button");
 
   assert_false(requiredInput.validity.valid);
   assert_false(requiredTextarea.validity.valid);
+  assert_false(requiredCheckbox.validity.valid);
   // The selector can't match because no interaction has happened.
   assert_false(requiredInput.matches(":user-valid"), "Initially does not match :user-valid");
   assert_false(requiredInput.matches(":user-invalid"), "Initially does not match :user-invalid");
@@ -79,7 +93,10 @@ promise_test(async () => {
   assert_false(requiredTextarea.matches(":user-valid"), "Initially does not match :user-valid");
   assert_false(requiredTextarea.matches(":user-invalid"), "Initially does not match :user-invalid");
 
-  await test_driver.click(submitButton);
+  assert_false(requiredCheckbox.matches(":user-valid"), "Initially does not match :user-valid");
+  assert_false(requiredCheckbox.matches(":user-invalid"), "Initially does not match :user-invalid");
+
+  submitButton.click();
 
   assert_true(requiredInput.matches(":user-invalid"), "Submitted the form, input is validated");
   assert_false(requiredInput.matches(":user-valid"), "Submitted the form, input is validated");
@@ -87,13 +104,31 @@ promise_test(async () => {
   assert_true(requiredTextarea.matches(":user-invalid"), "Submitted the form, textarea is validated");
   assert_false(requiredTextarea.matches(":user-valid"), "Submitted the form, textarea is validated");
 
-  await test_driver.click(resetButton);
+  assert_true(requiredCheckbox.matches(":user-invalid"), "Submitted the form, checkbox is validated");
+  assert_false(requiredCheckbox.matches(":user-valid"), "Submitted the form, checkbox is validated");
+
+  resetButton.click();
 
   assert_false(requiredInput.matches(":user-valid"), "Reset the form, user-interacted flag is reset");
   assert_false(requiredInput.matches(":user-invalid"), "Reset the form, user-interacted flag is reset");
 
   assert_false(requiredTextarea.matches(":user-valid"), "Reset the form, user-interacted flag is reset");
   assert_false(requiredTextarea.matches(":user-invalid"), "Reset the form, user-interacted flag is reset");
+
+  assert_false(requiredCheckbox.matches(":user-valid"), "Reset the form, user-interacted flag is reset");
+  assert_false(requiredCheckbox.matches(":user-invalid"), "Reset the form, user-interacted flag is reset");
+
+  // Test programmatic form submission with constraint validation.
+  form.requestSubmit();
+
+  assert_true(requiredInput.matches(":user-invalid"), "Called form.requestSubmit(), input is validated");
+  assert_false(requiredInput.matches(":user-valid"), "Called form.requestSubmit(), input is validated");
+
+  assert_true(requiredTextarea.matches(":user-invalid"), "Called form.requestSubmit(), textarea is validated");
+  assert_false(requiredTextarea.matches(":user-valid"), "Called form.requestSubmit(), textarea is validated");
+
+  assert_true(requiredCheckbox.matches(":user-invalid"), "Called form.requestSubmit(), checkbox is validated");
+  assert_false(requiredCheckbox.matches(":user-valid"), "Called form.requestSubmit(), checkbox is validated");
 }, ":user-invalid selector properly interacts with submit & reset buttons");
 
 // historical: https://github.com/w3c/csswg-drafts/issues/1329
@@ -102,4 +137,60 @@ test(() => {
   // matches() will throw if the selector isn't suppported
   assert_throws_dom("SyntaxError", () => input.matches(':user-error'));
 }, ':user-error selector should not be supported');
+
+['required-input', 'required-textarea'].forEach(elementId => {
+  promise_test(async () => {
+    const resetButton = document.getElementById('reset-button');
+    const element = document.getElementById(elementId);
+
+    element.value = '';
+    resetButton.click();
+    assert_false(element.matches(':user-invalid'),
+      'Element should not match :user-invalid at the start of the test.');
+    assert_false(element.matches(':user-valid'),
+      'Element should not match :user-valid at the start of the test.');
+
+    const backspace = '\uE003';
+    element.focus();
+    await test_driver.send_keys(element, 'a');
+    await test_driver.send_keys(element, backspace);
+    assert_false(element.matches(':user-invalid'),
+      'Element should not match :user-invalid before blurring.');
+    assert_false(element.matches(':user-valid'),
+      'Element should not match :user-valid before blurring.');
+
+    element.blur();
+    assert_true(element.matches(':user-invalid'),
+      'Element should match :user-invalid after typing text and deleting it.');
+    assert_false(element.matches(':user-valid'),
+      'Element should not match :user-valid after the test.');
+  }, `${elementId}: A required input or textarea should match :user-invalid if a user types into it and then clears it before blurring.`);
+});
+
+promise_test(async () => {
+  const checkbox = document.getElementById('required-checkbox');
+
+  const resetButton = document.getElementById('reset-button');
+  resetButton.click();
+  assert_false(checkbox.matches(':user-invalid'),
+    'Checkbox should not match :user-invalid at the start of the test.');
+  assert_false(checkbox.checked,
+    'Checkbox should not be checked at the start of the test.');
+
+  checkbox.checked = true;
+  assert_false(checkbox.matches(':user-invalid'),
+    'Checkbox should not match :user-invalid after programatically changing value.');
+  checkbox.checked = false;
+  assert_false(checkbox.matches(':user-invalid'),
+    'Checkbox should not match :user-invalid after programatically changing value.');
+
+  await test_driver.click(checkbox);
+  assert_true(checkbox.checked, 'Checkbox should be checked after clicking once.');
+  assert_false(checkbox.matches(':user-invalid'),
+    'Checkbox should not match :user-invalid after checking it.');
+  await test_driver.click(checkbox);
+  assert_false(checkbox.checked, 'Checkbox should not be checked after clicking twice.');
+  assert_true(checkbox.matches(':user-invalid'),
+    'Checkbox should match :user-invalid after clicking twice.');
+}, 'A required checkbox should match :user-invalid if the user unchecks it and blurs.');
 </script>

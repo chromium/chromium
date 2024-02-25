@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -26,38 +26,36 @@
 #include "url/gurl.h"
 
 class Profile;
-struct WebAppInstallInfo;
 
 namespace web_app {
 
-class LockDescription;
-class SharedWebContentsWithAppLock;
-class SharedWebContentsWithAppLockDescription;
 class WebAppDataRetriever;
 enum class WebAppUrlLoaderResult;
 
 class InstallFromSyncCommand
-    : public WebAppCommandTemplate<SharedWebContentsWithAppLock> {
+    : public WebAppCommand<SharedWebContentsWithAppLock,
+                           const webapps::AppId&,
+                           webapps::InstallResultCode> {
  public:
   struct Params {
     Params() = delete;
     ~Params();
     Params(const Params&);
-    Params(const AppId& app_id,
-           const ManifestId& manifest_id,
+    Params(const webapps::AppId& app_id,
+           const webapps::ManifestId& manifest_id,
            const GURL& start_url,
            const std::string& title,
            const GURL& scope,
-           const absl::optional<SkColor>& theme_color,
-           const absl::optional<mojom::UserDisplayMode>& user_display_mode,
+           const std::optional<SkColor>& theme_color,
+           const std::optional<mojom::UserDisplayMode>& user_display_mode,
            const std::vector<apps::IconInfo>& icons);
-    const AppId app_id;
-    const ManifestId manifest_id;
+    const webapps::AppId app_id;
+    const webapps::ManifestId manifest_id;
     const GURL start_url;
     const std::string title;
     const GURL scope;
-    const absl::optional<SkColor> theme_color;
-    const absl::optional<mojom::UserDisplayMode> user_display_mode;
+    const std::optional<SkColor> theme_color;
+    const std::optional<mojom::UserDisplayMode> user_display_mode;
     const std::vector<apps::IconInfo> icons;
   };
   using DataRetrieverFactory =
@@ -68,15 +66,13 @@ class InstallFromSyncCommand
                          OnceInstallCallback install_callback);
   ~InstallFromSyncCommand() override;
 
-  // WebAppCommandTemplate<SharedWebContentsWithAppLock>:
-  const LockDescription& lock_description() const override;
-  base::Value ToDebugValue() const override;
-  void OnShutdown() override;
-  void StartWithLock(
-      std::unique_ptr<SharedWebContentsWithAppLock> lock) override;
-
   void SetFallbackTriggeredForTesting(
       base::OnceCallback<void(webapps::InstallResultCode code)> callback);
+
+  // WebAppCommand:
+ protected:
+  void StartWithLock(
+      std::unique_ptr<SharedWebContentsWithAppLock> lock) override;
 
  private:
   void OnWebAppUrlLoadedGetWebAppInstallInfo(WebAppUrlLoaderResult result);
@@ -97,21 +93,19 @@ class InstallFromSyncCommand
       DownloadedIconsHttpResults icons_http_results);
 
   void OnInstallFinalized(FinalizeMode mode,
-                          const AppId& app_id,
+                          const webapps::AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
   void InstallFallback(webapps::InstallResultCode error_code);
 
-  void ReportResultAndDestroy(const AppId& app_id,
+  void ReportResultAndDestroy(const webapps::AppId& app_id,
                               webapps::InstallResultCode code);
 
-  std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
   const raw_ptr<Profile> profile_;
   const Params params_;
-  OnceInstallCallback install_callback_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
@@ -119,13 +113,10 @@ class InstallFromSyncCommand
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;
 
-  base::Value::List error_log_;
   InstallErrorLogEntry install_error_log_entry_;
 
   base::OnceCallback<void(webapps::InstallResultCode code)>
       fallback_triggered_for_testing_;
-
-  base::Value::Dict debug_value_;
 
   base::WeakPtrFactory<InstallFromSyncCommand> weak_ptr_factory_{this};
 };

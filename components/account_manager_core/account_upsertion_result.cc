@@ -13,7 +13,7 @@ namespace account_manager {
 AccountUpsertionResult AccountUpsertionResult::FromStatus(Status status) {
   DCHECK_NE(status, Status::kSuccess);
   DCHECK_NE(status, Status::kNetworkError);
-  return AccountUpsertionResult(status, /*account=*/absl::nullopt,
+  return AccountUpsertionResult(status, /*account=*/std::nullopt,
                                 GoogleServiceAuthError::AuthErrorNone());
 }
 
@@ -29,7 +29,7 @@ AccountUpsertionResult AccountUpsertionResult::FromError(
     const GoogleServiceAuthError& error) {
   DCHECK_NE(error.state(), GoogleServiceAuthError::NONE);
   return AccountUpsertionResult(Status::kNetworkError,
-                                /*account=*/absl::nullopt, error);
+                                /*account=*/std::nullopt, error);
 }
 
 AccountUpsertionResult::AccountUpsertionResult(const AccountUpsertionResult&) =
@@ -42,7 +42,7 @@ AccountUpsertionResult::~AccountUpsertionResult() = default;
 
 AccountUpsertionResult::AccountUpsertionResult(
     Status status,
-    const absl::optional<Account>& account,
+    const std::optional<Account>& account,
     const GoogleServiceAuthError& error)
     : status_(status), account_(account), error_(error) {
   DCHECK_EQ(account.has_value(), status == Status::kSuccess);

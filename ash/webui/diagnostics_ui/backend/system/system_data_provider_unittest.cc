@@ -139,7 +139,7 @@ healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
     double current_now,
     const std::string& technology,
     const std::string& status,
-    const absl::optional<std::string>& manufacture_date,
+    const std::optional<std::string>& manufacture_date,
     uint64_t temperature) {
   healthd_mojom::NullableUint64Ptr temp_value_ptr(
       healthd_mojom::NullableUint64::New());
@@ -169,7 +169,7 @@ healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
       /*current_now=*/0,
       /*technology=*/"",
       /*status=*/"",
-      /*manufacture_date=*/absl::nullopt,
+      /*manufacture_date=*/std::nullopt,
       /*temperature=*/0);
 }
 
@@ -189,7 +189,7 @@ healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryChargeStatusResponse(
       /*current_now=*/current_now,
       /*technology=*/"",
       /*status=*/"",
-      /*manufacture_date=*/absl::nullopt,
+      /*manufacture_date=*/std::nullopt,
       /*temperature=*/0);
 }
 
@@ -210,7 +210,7 @@ healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
       /*current_now=*/0,
       /*technology=*/"",
       /*status=*/"",
-      /*manufacture_date=*/absl::nullopt,
+      /*manufacture_date=*/std::nullopt,
       /*temperature=*/0);
 }
 
@@ -1712,7 +1712,7 @@ TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeStatusNull) {
                                      /*expected_not_a_number_error=*/0,
                                      /*expected_expectation_not_met_error=*/0);
 
-  absl::nullopt_t props = absl::nullopt;
+  std::nullopt_t props = std::nullopt;
   chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
 
   // Registering as an observer should trigger one update.

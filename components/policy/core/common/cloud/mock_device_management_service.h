@@ -15,10 +15,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace policy {
 
 class MockDeviceManagementServiceConfiguration
@@ -148,18 +144,10 @@ class FakeJobConfiguration : public DMServerJobConfiguration {
                                        const std::string& response_body)>
       RetryCallback;
 
-  explicit FakeJobConfiguration(DeviceManagementService* service);
-  FakeJobConfiguration(
-      DeviceManagementService* service,
-      JobType type,
-      const std::string& client_id,
-      bool critical,
-      DMAuth auth_data,
-      absl::optional<std::string> oauth_token,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      FakeCallback callback,
-      RetryCallback retry_callback,
-      RetryCallback should_retry_callback);
+  FakeJobConfiguration(DMServerJobConfiguration::CreateParams params,
+                       FakeCallback callback,
+                       RetryCallback retry_callback,
+                       RetryCallback should_retry_callback);
   ~FakeJobConfiguration() override;
 
   void SetRequestPayload(const std::string& request_payload);

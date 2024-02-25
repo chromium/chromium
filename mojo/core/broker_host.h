@@ -6,11 +6,12 @@
 #define MOJO_CORE_BROKER_HOST_H_
 
 #include <stdint.h>
+
+#include <string_view>
 #include <vector>
 
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "mojo/core/channel.h"
@@ -39,7 +40,7 @@ class BrokerHost : public Channel::Delegate,
 
 #if BUILDFLAG(IS_WIN)
   // Sends a named channel to the client. Like above, but for named pipes.
-  void SendNamedChannel(base::WStringPiece pipe_name);
+  void SendNamedChannel(std::wstring_view pipe_name);
 #endif
 
  private:

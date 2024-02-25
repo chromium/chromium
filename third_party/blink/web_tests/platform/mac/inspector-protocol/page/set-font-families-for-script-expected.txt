@@ -11,6 +11,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Ahem
         glyphCount : 9
         isCustomFont : true
+        postScriptName : Ahem
     }
 ]
 .inherited_font_ru
@@ -19,6 +20,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Ahem
         glyphCount : 9
         isCustomFont : true
+        postScriptName : Ahem
     }
 ]
 .standard_font
@@ -27,6 +29,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Ahem
         glyphCount : 8
         isCustomFont : false
+        postScriptName : Ahem
     }
 ]
 .sans_serif_font
@@ -35,6 +38,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Courier
         glyphCount : 9
         isCustomFont : false
+        postScriptName : Courier
     }
 ]
 .fixed_font
@@ -43,6 +47,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Courier
         glyphCount : 5
         isCustomFont : false
+        postScriptName : Courier
     }
 ]
 .standard_font_ru
@@ -51,6 +56,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Courier
         glyphCount : 8
         isCustomFont : false
+        postScriptName : Courier
     }
 ]
 .sans_serif_font_ru
@@ -59,6 +65,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Ahem
         glyphCount : 9
         isCustomFont : false
+        postScriptName : Ahem
     }
 ]
 .fixed_font_ru
@@ -67,6 +74,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Ahem
         glyphCount : 5
         isCustomFont : false
+        postScriptName : Ahem
     }
 ]
 .notgeneric_font
@@ -75,6 +83,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Ahem
         glyphCount : 10
         isCustomFont : false
+        postScriptName : Ahem
     }
 ]
 .notgeneric_font_ru
@@ -83,6 +92,7 @@ Tests Page.setFontFamilies for scripts.
         familyName : Courier
         glyphCount : 10
         isCustomFont : false
+        postScriptName : Courier
     }
 ]
 

@@ -21,6 +21,7 @@ export async function testUpdateBulkPinProgress(done: () => void) {
     pinnedBytes: 100,
     filesToPin: 100,
     remainingSeconds: 500,
+    shouldPin: true,
     emptiedQueue: false,
     listedFiles: 100,
   };
@@ -33,7 +34,7 @@ export async function testUpdateBulkPinProgress(done: () => void) {
   const firstState = store.getState().bulkPinning;
   assertDeepEquals(
       want, firstState,
-      `1. ${JSON.stringify(want)} != ${JSON.stringify(firstState)}`);
+      `1. ${JSON.stringify(want)} !== ${JSON.stringify(firstState)}`);
 
   // Dispatch another action to change the stage to `SYNCING`.
   want.stage = chrome.fileManagerPrivate.BulkPinStage.SYNCING;
@@ -43,7 +44,7 @@ export async function testUpdateBulkPinProgress(done: () => void) {
   const secondState = store.getState().bulkPinning;
   assertDeepEquals(
       want, secondState,
-      `2. ${JSON.stringify(want)} != ${JSON.stringify(secondState)}`);
+      `2. ${JSON.stringify(want)} !== ${JSON.stringify(secondState)}`);
 
   done();
 }

@@ -116,12 +116,12 @@ void UpdateManifestFetcher::InitializeJsonParser() {
       json_parser_.BindNewPipeAndPassReceiver());
   json_parser_.set_disconnect_handler(base::BindOnce(
       &UpdateManifestFetcher::OnUpdateManifestParsed, base::Unretained(this),
-      absl::nullopt, "JsonParser terminated unexpectedly"));
+      std::nullopt, "JsonParser terminated unexpectedly"));
 }
 
 void UpdateManifestFetcher::OnUpdateManifestParsed(
-    absl::optional<base::Value> result,
-    const absl::optional<std::string>& error) {
+    std::optional<base::Value> result,
+    const std::optional<std::string>& error) {
   if (!result.has_value()) {
     if (error.has_value()) {
       LOG(ERROR) << "Unable to parse IWA Update Manifest JSON for URL " << url_

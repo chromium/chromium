@@ -95,7 +95,7 @@ FrameOrWorkerScheduler::RegisterFeature(SchedulingPolicy::Feature feature,
     // Check if V8 is currently running an isolate.
     // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
     // is running.
-    if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    if (v8::Isolate::TryGetCurrent()) {
       return SchedulingAffectingFeatureHandle(
           feature, policy, CaptureSourceLocation(),
           GetFrameOrWorkerSchedulerWeakPtr());
@@ -112,11 +112,12 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
   if (IsRegisterJSSourceLocationBlockingBFCache()) {
     // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
     // is running.
-    if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    if (v8::Isolate::TryGetCurrent()) {
       OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
     }
+  } else {
+    OnStartedUsingStickyFeature(feature, policy, nullptr);
   }
-  OnStartedUsingStickyFeature(feature, policy, nullptr);
 }
 
 std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle>

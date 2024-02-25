@@ -26,7 +26,7 @@
 - (void)showPreparingPasswordsAlert;
 
 // Shows a dialog requiring the user to set a device passcode before proceeding.
-- (void)showSetPasscodeDialog;
+- (void)showSetPasscodeForPasswordExportDialog;
 
 @end
 

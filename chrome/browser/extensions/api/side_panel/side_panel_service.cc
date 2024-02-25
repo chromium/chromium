@@ -6,19 +6,20 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/extension_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -41,14 +42,6 @@ api::side_panel::PanelOptions GetPanelOptionsFromManifest(
   return options;
 }
 
-// TODO(crbug.com/1332599): Add a Clone() method for generated types.
-api::side_panel::PanelOptions CloneOptions(
-    const api::side_panel::PanelOptions& options) {
-  auto clone = api::side_panel::PanelOptions::FromValueDeprecated(
-      base::Value(options.ToValue()));
-  return clone ? std::move(*clone) : api::side_panel::PanelOptions();
-}
-
 }  // namespace
 
 SidePanelService::~SidePanelService() = default;
@@ -68,6 +61,23 @@ bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
     return false;
   }
 
+  return HasSidePanelAvailableForTab(extension, tab_id);
+}
+
+bool SidePanelService::HasSidePanelContextMenuActionForTab(
+    const Extension& extension,
+    TabId tab_id) {
+  if (!features::IsSidePanelPinningEnabled() ||
+      !base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    return false;
+  }
+
+  return HasSidePanelAvailableForTab(extension, tab_id);
+}
+
+bool SidePanelService::HasSidePanelAvailableForTab(const Extension& extension,
+                                                   TabId tab_id) {
   api::side_panel::PanelOptions options = GetOptions(extension, tab_id);
   return options.enabled.has_value() && *options.enabled &&
          options.path.has_value();
@@ -75,7 +85,7 @@ bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
 
 api::side_panel::PanelOptions SidePanelService::GetOptions(
     const Extension& extension,
-    absl::optional<TabId> id) {
+    std::optional<TabId> id) {
   auto extension_panel_options = panels_.find(extension.id());
 
   // Get default path from manifest if nothing was stored in this service for
@@ -92,15 +102,14 @@ api::side_panel::PanelOptions SidePanelService::GetOptions(
   if (tab_id != default_tab_id) {
     auto specific_tab_options = tab_panel_options.find(tab_id);
     if (specific_tab_options != tab_panel_options.end())
-      return CloneOptions(specific_tab_options->second);
+      return specific_tab_options->second.Clone();
   }
 
   // Fall back to the default tab if no tab ID was specified or entries for the
   // specific tab weren't found.
   auto default_options = tab_panel_options.find(default_tab_id);
   if (default_options != tab_panel_options.end()) {
-    auto options = CloneOptions(default_options->second);
-    return options;
+    return default_options->second.Clone();
   }
 
   // Fall back to the manifest-specified options as a last resort.
@@ -119,7 +128,7 @@ api::side_panel::PanelOptions SidePanelService::GetSpecificOptionsForTab(
   auto specific_tab_options = tab_panel_options.find(tab_id);
   return specific_tab_options == tab_panel_options.end()
              ? api::side_panel::PanelOptions()
-             : CloneOptions(specific_tab_options->second);
+             : specific_tab_options->second.Clone();
 }
 
 // Upsert to merge `panels_[extension_id][tab_id]` with `set_options`.
@@ -218,7 +227,7 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
     return base::unexpected(error);
   }
 
-  auto global_options = GetOptions(extension, absl::nullopt);
+  auto global_options = GetOptions(extension, std::nullopt);
   if (!global_options.path || !global_options.enabled.has_value() ||
       !(*global_options.enabled)) {
     return base::unexpected(
@@ -233,7 +242,7 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
 base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
     const Extension& extension,
     int tab_id,
-    absl::optional<int> window_id,
+    std::optional<int> window_id,
     bool include_incognito_information) {
   // First, find the corresponding tab.
   Browser* browser = nullptr;

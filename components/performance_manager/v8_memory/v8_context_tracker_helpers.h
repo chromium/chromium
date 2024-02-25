@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_V8_CONTEXT_TRACKER_HELPERS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_V8_CONTEXT_TRACKER_HELPERS_H_
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
@@ -76,9 +76,9 @@ enum class V8ContextDescriptionStatus {
 
 // Determines whether or not IframeAttributionData is expected to accompany the
 // provided V8ContextDescription. This is not always able to be determined, in
-// which case absl::nullopt will be returned. It is assumed that the
+// which case std::nullopt will be returned. It is assumed that the
 // |description| has previously been validated.
-[[nodiscard]] absl::optional<bool>
+[[nodiscard]] std::optional<bool>
 ExpectIframeAttributionDataForV8ContextDescription(
     const mojom::V8ContextDescription& description,
     Graph* graph);

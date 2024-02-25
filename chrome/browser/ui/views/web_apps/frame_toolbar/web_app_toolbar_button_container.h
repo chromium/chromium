@@ -29,6 +29,7 @@ class WebAppMenuButton;
 class WebAppOriginText;
 class WindowControlsOverlayToggleButton;
 class SystemAppAccessibleName;
+class ExtensionsToolbarCoordinator;
 
 class WebAppToolbarButtonContainer : public views::View,
                                      public IconLabelBubbleView::Delegate,
@@ -36,9 +37,9 @@ class WebAppToolbarButtonContainer : public views::View,
                                      public ImmersiveModeController::Observer,
                                      public PageActionIconView::Delegate,
                                      public PageActionIconContainer {
- public:
-  METADATA_HEADER(WebAppToolbarButtonContainer);
+  METADATA_HEADER(WebAppToolbarButtonContainer, views::View)
 
+ public:
   // Timing parameters for the origin fade animation.
   // These control how long it takes for the origin text and menu button
   // highlight to fade in, pause then fade out.
@@ -76,6 +77,10 @@ class WebAppToolbarButtonContainer : public views::View,
     return extensions_container_;
   }
 
+  ExtensionsToolbarCoordinator* extensions_toolbar_coordinator() {
+    return extensions_toolbar_coordinator_.get();
+  }
+
   DownloadToolbarButtonView* download_button() {
     return download_button_.get();
   }
@@ -88,7 +93,7 @@ class WebAppToolbarButtonContainer : public views::View,
 
   AvatarToolbarButton* avatar_button() { return avatar_button_; }
 
-  static void DisableAnimationForTesting();
+  static void DisableAnimationForTesting(bool disable);
 
  private:
   friend class ImmersiveModeControllerChromeosWebAppBrowserTest;
@@ -121,7 +126,7 @@ class WebAppToolbarButtonContainer : public views::View,
   SkColor GetIconLabelBubbleBackgroundColor() const override;
 
   // ContentSettingImageView::Delegate:
-  bool ShouldHideContentSettingImage(ImageType type) override;
+  bool ShouldHideContentSettingImage() override;
   content::WebContents* GetContentSettingWebContents() override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
@@ -148,6 +153,8 @@ class WebAppToolbarButtonContainer : public views::View,
 
   std::unique_ptr<PageActionIconController> page_action_icon_controller_;
   int page_action_insertion_point_ = 0;
+
+  std::unique_ptr<ExtensionsToolbarCoordinator> extensions_toolbar_coordinator_;
 
   // All remaining members are owned by the views hierarchy.
   raw_ptr<WebAppOriginText> web_app_origin_text_ = nullptr;

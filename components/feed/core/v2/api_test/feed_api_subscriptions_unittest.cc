@@ -4,6 +4,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
@@ -111,7 +112,8 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
     };
     std::sort(stored.begin(), stored.end(), sort_fn);
     std::sort(in_memory.begin(), in_memory.end(), sort_fn);
-    EXPECT_EQ(PrintToString(stored), PrintToString(in_memory));
+    EXPECT_THAT(stored,
+                ::testing::Pointwise(::base::test::EqualsProto(), in_memory));
   }
 
   std::vector<feedstore::PendingWebFeedOperation> GetAllPendingOperations() {

@@ -9,7 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/services/sharing/nearby/common/nearby_features.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -43,7 +45,7 @@ class BluetoothAdapterTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<bluetooth::FakeAdapter, ExperimentalAsh> fake_adapter_;
+  raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
   std::unique_ptr<BluetoothAdapter> bluetooth_adapter_;
 
  private:
@@ -124,8 +126,53 @@ TEST_F(BluetoothAdapterTest, TestSetName) {
   EXPECT_EQ(name, fake_adapter_->name_);
 }
 
-TEST_F(BluetoothAdapterTest, TestGetAddress) {
+TEST_F(BluetoothAdapterTest,
+       TestSetName_BluetoothClassicAdvertisingFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          ::features::kEnableNearbyBluetoothClassicAdvertising});
+
+  // When the flag is false, SetName returns vacuously true, but doesn't set the
+  // name when Bluetooth Classic Advertising flag is disabled; this is because
+  // the "name" field is a specific "advertising" format used by Nearby
+  // Connections. By not setting "name", the device remains non-discoverable
+  // over Nearby Connections.
+  std::string name = "NewName";
+  EXPECT_NE(name, fake_adapter_->name_);
+  EXPECT_TRUE(bluetooth_adapter_->SetName(name, /*persist=*/true));
+  EXPECT_NE(name, fake_adapter_->name_);
+  EXPECT_TRUE(bluetooth_adapter_->SetName(name, /*persist=*/false));
+  EXPECT_NE(name, fake_adapter_->name_);
+}
+
+TEST_F(BluetoothAdapterTest,
+       TestSetName_BluetoothClassicAdvertisingFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::
+                                kEnableNearbyBluetoothClassicAdvertising},
+      /*disabled_features=*/{});
+
+  // When flag is enabled, SetName works normally.
+  std::string name = "NewName";
+  EXPECT_NE(name, fake_adapter_->name_);
+  EXPECT_TRUE(bluetooth_adapter_->SetName(name, /*persist=*/true));
+  EXPECT_EQ(name, fake_adapter_->name_);
+
+  name = "DifferentName";
+  EXPECT_NE(name, fake_adapter_->name_);
+  EXPECT_TRUE(bluetooth_adapter_->SetName(name, /*persist=*/false));
+  EXPECT_EQ(name, fake_adapter_->name_);
+}
+
+TEST_F(BluetoothAdapterTest, TestGetMacAddress) {
   EXPECT_EQ(fake_adapter_->address_, bluetooth_adapter_->GetMacAddress());
+}
+
+TEST_F(BluetoothAdapterTest, TestGetAddress) {
+  EXPECT_EQ(fake_adapter_->address_, bluetooth_adapter_->GetAddress());
 }
 
 }  // namespace chrome

@@ -19,9 +19,9 @@ PredictionModelHandler::PredictionModelHandler(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
           std::make_unique<PredictionModelExecutor>(),
-          /*model_inference_timeout=*/absl::nullopt,
+          /*model_inference_timeout=*/std::nullopt,
           optimization_target,
-          absl::nullopt) {}
+          std::nullopt) {}
 
 void PredictionModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
@@ -34,9 +34,9 @@ void PredictionModelHandler::OnModelUpdated(
   model_load_run_loop_.Quit();
 }
 
-absl::optional<WebPermissionPredictionsModelMetadata>
+std::optional<WebPermissionPredictionsModelMetadata>
 PredictionModelHandler::GetModelMetaData() {
-  absl::optional<WebPermissionPredictionsModelMetadata> metadata =
+  std::optional<WebPermissionPredictionsModelMetadata> metadata =
       ParsedSupportedFeaturesForLoadedModel<
           WebPermissionPredictionsModelMetadata>();
   return metadata;

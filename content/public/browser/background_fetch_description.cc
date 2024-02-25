@@ -19,7 +19,7 @@ BackgroundFetchDescription::BackgroundFetchDescription(
     uint64_t upload_total_bytes,
     std::vector<std::string> outstanding_guids,
     bool start_paused,
-    absl::optional<net::IsolationInfo> isolation_info)
+    std::optional<net::IsolationInfo> isolation_info)
     : job_unique_id(job_unique_id),
       origin(origin),
       title(title),

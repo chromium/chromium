@@ -104,8 +104,6 @@ static_library("tether") {
     "tether_network_disconnection_handler.h",
     "tether_session_completion_logger.cc",
     "tether_session_completion_logger.h",
-    "timer_factory.cc",
-    "timer_factory.h",
     "top_level_host_scan_cache.cc",
     "top_level_host_scan_cache.h",
     "wifi_hotspot_connector.cc",
@@ -128,6 +126,7 @@ static_library("tether") {
     "//chromeos/ash/services/secure_channel/public/cpp/shared",
     "//chromeos/ash/services/secure_channel/public/mojom",
     "//chromeos/dbus/power",
+    "//components/cross_device/timer_factory",
     "//components/pref_registry",
     "//components/prefs",
     "//components/session_manager/core",
@@ -192,8 +191,6 @@ static_library("test_support") {
     "mock_tether_host_response_recorder.h",
     "proto_test_util.cc",
     "proto_test_util.h",
-    "test_timer_factory.cc",
-    "test_timer_factory.h",
   ]
 
   public_deps = [ ":tether" ]
@@ -208,6 +205,7 @@ static_library("test_support") {
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/ash/services/secure_channel/public/cpp/shared",
+    "//components/cross_device/timer_factory:timer_factory",
     "//device/bluetooth",
     "//testing/gmock",
     "//testing/gtest",
@@ -278,6 +276,8 @@ source_set("unit_tests") {
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/ash/services/secure_channel/public/cpp/shared",
     "//chromeos/dbus/power",
+    "//components/cross_device/timer_factory:test_support",
+    "//components/cross_device/timer_factory:timer_factory",
     "//components/prefs:test_support",
     "//components/session_manager/core",
     "//components/sync_preferences:test_support",

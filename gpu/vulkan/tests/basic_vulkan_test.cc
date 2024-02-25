@@ -5,7 +5,7 @@
 #include "gpu/vulkan/tests/basic_vulkan_test.h"
 
 #include "base/command_line.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/tests/native_window.h"

@@ -10,8 +10,10 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,6 +21,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,8 +36,10 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -124,8 +129,8 @@ constexpr char kWorkletNumPerPageHistogram[] =
     "Storage.SharedStorage.Worklet.NumPerPage";
 constexpr char kTimingRemainingBudgetHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.RemainingBudget";
-constexpr char kPrivateAggregationSendHistogramReportHistogram[] =
-    "PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult";
+constexpr char kPrivateAggregationHostPipeResultHistogram[] =
+    "PrivacySandbox.PrivateAggregation.Host.PipeResult";
 
 const double kBudgetAllowed = 5.0;
 
@@ -156,27 +161,30 @@ MakeFilter(std::vector<std::string> possible_last_messages) {
   return base::BindRepeating(
       [](std::vector<std::string> possible_last_messages,
          const content::WebContentsConsoleObserver::Message& message) {
-        return base::Contains(possible_last_messages,
-                              base::UTF16ToUTF8(message.message));
+        for (const std::string& possible_message : possible_last_messages) {
+          if (base::StartsWith(base::UTF16ToUTF8(message.message),
+                               possible_message)) {
+            return true;
+          }
+        }
+        return false;
       },
       std::move(possible_last_messages));
 }
 
 std::string GetSharedStorageDisabledErrorMessage() {
   return base::StrCat({"a JavaScript error: \"Error: ",
-                       content::GetSharedStorageDisabledMessage(), "\"\n"});
+                       content::GetSharedStorageDisabledMessage()});
 }
 
 std::string GetSharedStorageSelectURLDisabledErrorMessage() {
   return base::StrCat({"a JavaScript error: \"Error: ",
-                       content::GetSharedStorageSelectURLDisabledMessage(),
-                       "\"\n"});
+                       content::GetSharedStorageSelectURLDisabledMessage()});
 }
 
 std::string GetSharedStorageAddModuleDisabledErrorMessage() {
   return base::StrCat({"a JavaScript error: \"Error: ",
-                       content::GetSharedStorageAddModuleDisabledMessage(),
-                       "\"\n"});
+                       content::GetSharedStorageAddModuleDisabledMessage()});
 }
 
 void DelayBy(base::TimeDelta delta) {
@@ -254,6 +262,53 @@ MakeSharedStoragePrivacySandboxAttestationsMap(
   return attestations_map;
 }
 
+class MockChromeContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  bool IsSharedStorageAllowed(
+      content::BrowserContext* browser_context,
+      content::RenderFrameHost* rfh,
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr) override {
+    if (bypass_shared_storage_allowed_count_ > 0) {
+      bypass_shared_storage_allowed_count_--;
+      return true;
+    }
+
+    return ChromeContentBrowserClient::IsSharedStorageAllowed(
+        browser_context, rfh, top_frame_origin, accessing_origin,
+        out_debug_message);
+  }
+
+  bool IsSharedStorageSelectURLAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message = nullptr) override {
+    if (bypass_shared_storage_select_url_allowed_count_) {
+      bypass_shared_storage_select_url_allowed_count_--;
+      return true;
+    }
+
+    return ChromeContentBrowserClient::IsSharedStorageSelectURLAllowed(
+        browser_context, top_frame_origin, accessing_origin, out_debug_message);
+  }
+
+  void set_bypass_shared_storage_allowed_count(int count) {
+    CHECK_EQ(bypass_shared_storage_allowed_count_, 0);
+    bypass_shared_storage_allowed_count_ = count;
+  }
+
+  void set_bypass_shared_storage_select_url_allowed_count(int count) {
+    CHECK_EQ(bypass_shared_storage_select_url_allowed_count_, 0);
+    bypass_shared_storage_select_url_allowed_count_ = count;
+  }
+
+ private:
+  int bypass_shared_storage_allowed_count_ = 0;
+  int bypass_shared_storage_select_url_allowed_count_ = 0;
+};
+
 }  // namespace
 
 class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
@@ -263,13 +318,13 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kSharedStorageAPI,
-                              privacy_sandbox::kPrivacySandboxSettings4,
-                              privacy_sandbox::kPrivacySandboxSettings3,
                               features::kPrivacySandboxAdsAPIsOverride,
                               privacy_sandbox::
                                   kOverridePrivacySandboxSettingsLocalTesting},
         /*disabled_features=*/{});
   }
+
+  ~SharedStorageChromeBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     // `PrivacySandboxAttestations` has a member of type
@@ -288,9 +343,16 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
     SetPrefs(EnablePrivacySandbox(), AllowThirdPartyCookies());
     FinishSetUp();
+
+    mock_chrome_content_browser_client_ =
+        std::make_unique<MockChromeContentBrowserClient>();
+    old_chrome_content_browser_client_ = content::SetBrowserClientForTesting(
+        mock_chrome_content_browser_client_.get());
   }
 
-  ~SharedStorageChromeBrowserTestBase() override = default;
+  void TearDownOnMainThread() override {
+    content::SetBrowserClientForTesting(old_chrome_content_browser_client_);
+  }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -321,11 +383,6 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   virtual void FinishSetUp() { CHECK(https_server()->Start()); }
 
   void SetPrefs(bool enable_privacy_sandbox, bool allow_third_party_cookies) {
-    GetProfile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2,
-                                         enable_privacy_sandbox);
-    GetProfile()->GetPrefs()->SetBoolean(
-        prefs::kPrivacySandboxManuallyControlledV2, enable_privacy_sandbox);
-
     GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
@@ -333,10 +390,13 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
                 ? content_settings::CookieControlsMode::kOff
                 : content_settings::CookieControlsMode::kBlockThirdParty));
 
-    // For `privacy_sandbox::kPrivacySandboxSettings4`, we also need to ensure
-    // the `PrivacySandboxDelegate::IsPrivacySandboxRestricted()` response
-    // returns the negation of `enable_privacy_sandbox`.
+    // We need to ensure the
+    // `PrivacySandboxDelegate::IsPrivacySandboxRestricted()` response returns
+    // the negation of `enable_privacy_sandbox`.
     auto* privacy_sandbox_settings = GetPrivacySandboxSettings();
+    if (enable_privacy_sandbox) {
+      privacy_sandbox_settings->SetAllPrivacySandboxAllowedForTesting();
+    }
     auto privacy_sandbox_delegate = std::make_unique<testing::NiceMock<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
     privacy_sandbox_delegate->SetUpIsPrivacySandboxRestrictedResponse(
@@ -348,9 +408,8 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   }
 
   void SetThirdPartyCookieSetting(const GURL& main_url) {
-    // For `privacy_sandbox::kPrivacySandboxSettings4`, we also need to ensure
-    // the specific first-party URL `main_url` used by the test either has its
-    // third-party-cookie content setting set to
+    // We need to ensure the specific first-party URL `main_url` used by the
+    // test either has its third-party-cookie content setting set to
     // `ContentSetting::CONTENT_SETTING_ALLOW` or
     // `ContentSetting::CONTENT_SETTING_BLOCK`, according to
     // `AllowThirdPartyCookies()`.
@@ -516,7 +575,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
       return false;
     }
 
-    absl::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
+    std::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
     EXPECT_TRUE(observed_urn_uuid.has_value());
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
     GURL urn_uuid = observed_urn_uuid.value();
@@ -576,6 +635,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
       const {
     return EnforcementAndEnrollmentStatus::kAttestationsUnenforced;
   }
+  virtual bool EnableDebugMessages() const { return false; }
 
   bool SuccessExpected() {
     return GetEnforcementAndEnrollmentStatus() !=
@@ -590,12 +650,16 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
  protected:
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<MockChromeContentBrowserClient>
+      mock_chrome_content_browser_client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
       scoped_attestations_;
+  raw_ptr<content::ContentBrowserClient, AcrossTasksDanglingUntriaged>
+      old_chrome_content_browser_client_ = nullptr;
 };
 
 class SharedStorageChromeBrowserTest
@@ -622,16 +686,29 @@ class SharedStorageChromeBrowserTest
   base::test::ScopedFeatureList attestation_feature_;
 };
 
+// We skip testing the `enable_debug_messages` parameter on Android due to
+// hardware limitations that constrain the total number of tests that can be
+// run.
 using SharedStorageChromeBrowserParams = std::tuple<
     /*enable_privacy_sandbox=*/bool,
     /*allow_third_party_cookies=*/bool,
+#if BUILDFLAG(IS_ANDROID)
     /*enforcement_and_enrollment_status=*/EnforcementAndEnrollmentStatus>;
+#else
+    /*enforcement_and_enrollment_status=*/EnforcementAndEnrollmentStatus,
+    /*enable_debug_messages=*/bool>;
+#endif
 
 class SharedStoragePrefBrowserTest
     : public SharedStorageChromeBrowserTestBase,
       public testing::WithParamInterface<SharedStorageChromeBrowserParams> {
  public:
   SharedStoragePrefBrowserTest() {
+    base::FieldTrialParams params;
+    params["ExposeDebugMessageForSettingsStatus"] =
+        EnableDebugMessages() ? "true" : "false";
+    shared_storage_feature_.InitAndEnableFeatureWithParameters(
+        blink::features::kSharedStorageAPI, params);
     fenced_frame_api_change_feature_.InitWithFeatureState(
         blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
     fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);
@@ -651,6 +728,36 @@ class SharedStoragePrefBrowserTest
     return std::get<2>(GetParam());
   }
 
+  bool EnableDebugMessages() const override {
+#if BUILDFLAG(IS_ANDROID)
+    return false;
+#else
+    return std::get<3>(GetParam());
+#endif
+  }
+
+  void VerifyDebugErrorMessage(const std::string& error_message) {
+    ASSERT_FALSE(SuccessExpected());
+    size_t found_pos = error_message.find("Debug");
+    if (!EnableDebugMessages()) {
+      EXPECT_EQ(found_pos, std::string::npos);
+      return;
+    }
+    EXPECT_NE(found_pos, std::string::npos);
+
+    int status = (GetEnforcementAndEnrollmentStatus() ==
+                  EnforcementAndEnrollmentStatus::
+                      kAttestationsEnforcedMainHostUnenrolled)
+                     ? 6
+                     : (EnablePrivacySandbox() ? 4 : 1);
+    if (status == 4) {
+      ASSERT_FALSE(AllowThirdPartyCookies());
+    }
+
+    found_pos = error_message.find("status " + base::NumberToString(status));
+    EXPECT_NE(found_pos, std::string::npos);
+  }
+
   void AddSimpleModuleWithPermissionBypassed(
       const content::ToRenderFrameHost& execution_target) {
     content::WebContentsConsoleObserver add_module_console_observer(
@@ -658,8 +765,11 @@ class SharedStoragePrefBrowserTest
     add_module_console_observer.SetFilter(
         MakeFilter({"Finish executing simple_module.js"}));
 
-    // We allow Shared Storage for `addModule()`.
-    content::SetBypassIsSharedStorageAllowed(/*allow=*/true);
+    // Bypass the following permissions to allow one `addModule()` call.
+    mock_chrome_content_browser_client_
+        ->set_bypass_shared_storage_allowed_count(1);
+    mock_chrome_content_browser_client_
+        ->set_bypass_shared_storage_select_url_allowed_count(1);
 
     EXPECT_TRUE(content::ExecJs(execution_target, R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
@@ -672,8 +782,6 @@ class SharedStoragePrefBrowserTest
     EXPECT_EQ(
         "Finish executing simple_module.js",
         base::UTF16ToUTF8(add_module_console_observer.messages()[0].message));
-
-    content::SetBypassIsSharedStorageAllowed(/*allow=*/false);
   }
 
   bool ExecuteScriptInWorkletWithOuterPermissionsBypassed(
@@ -696,12 +804,16 @@ class SharedStoragePrefBrowserTest
                   "/shared_storage/customizable_module.js",
                   run_function_body_replacement));
 
-    // We allow Shared Storage for `addModule()` and `run()`, but any operations
-    // nested within the script run by `run()` will have preferences applied
-    // according to test parameters. When the latter disallow Shared Storage, it
-    // siumlates the situation where preferences are updated to block Shared
-    // Storage during the course of a previously allowed `run()` call.
-    content::SetBypassIsSharedStorageAllowed(/*allow=*/true);
+    // Bypass the following permissions to allow one call for `addModule()` and
+    // `run()` respectively. Any operations nested within the script run by
+    // `run()` will have preferences applied according to test parameters. When
+    // the latter disallow Shared Storage, it siumlates the situation where
+    // preferences are updated to block Shared Storage during the course of a
+    // previously allowed `run()` call.
+    mock_chrome_content_browser_client_
+        ->set_bypass_shared_storage_allowed_count(2);
+    mock_chrome_content_browser_client_
+        ->set_bypass_shared_storage_select_url_allowed_count(1);
 
     EXPECT_TRUE(content::ExecJs(
         execution_target,
@@ -741,20 +853,19 @@ class SharedStoragePrefBrowserTest
           last_script_message,
           base::UTF16ToUTF8(script_console_observer.messages()[0].message));
     } else {
-      EXPECT_EQ(
-          ExpectedSharedStorageDisabledMessage(),
-          base::UTF16ToUTF8(script_console_observer.messages()[0].message));
+      EXPECT_TRUE(base::StartsWith(
+          base::UTF16ToUTF8(script_console_observer.messages()[0].message),
+          ExpectedSharedStorageDisabledMessage()));
     }
 
     WaitForHistograms({kTimingDocumentRunHistogram});
     histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
 
-    content::SetBypassIsSharedStorageAllowed(/*allow=*/false);
-
     return result.error.empty();
   }
 
  private:
+  base::test::ScopedFeatureList shared_storage_feature_;
   base::test::ScopedFeatureList fenced_frame_api_change_feature_;
   base::test::ScopedFeatureList fenced_frame_feature_;
   base::test::ScopedFeatureList attestation_feature_;
@@ -776,7 +887,12 @@ std::string DescribePrefBrowserTestParams(
                                 kAttestationsEnforcedMainHostEnrolled)
                                ? "Enrolled"
                                : "Unenrolled"})
-           : "Unenforced"});
+           : "Unenforced"
+#if !BUILDFLAG(IS_ANDROID)
+       ,
+       "_Debug", std::get<3>(info.param) ? "Enabled" : "Disabled"
+#endif
+      });
 }
 
 }  // namespace
@@ -790,8 +906,14 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(EnforcementAndEnrollmentStatus::kAttestationsUnenforced,
                         EnforcementAndEnrollmentStatus::
                             kAttestationsEnforcedMainHostUnenrolled,
+#if BUILDFLAG(IS_ANDROID)
                         EnforcementAndEnrollmentStatus::
                             kAttestationsEnforcedMainHostEnrolled)),
+#else
+                        EnforcementAndEnrollmentStatus::
+                            kAttestationsEnforcedMainHostEnrolled),
+        testing::Bool()),
+#endif
     DescribePrefBrowserTestParams);
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
@@ -811,7 +933,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ(GetSharedStorageAddModuleDisabledErrorMessage(), result.error);
+    EXPECT_TRUE(base::StartsWith(
+        result.error, GetSharedStorageAddModuleDisabledErrorMessage()));
+    VerifyDebugErrorMessage(result.error);
     EXPECT_EQ(0u, console_observer.messages().size());
 
     WaitForHistograms({kErrorTypeHistogram});
@@ -868,7 +992,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ(GetSharedStorageDisabledErrorMessage(), run_op_result.error);
+    EXPECT_TRUE(base::StartsWith(run_op_result.error,
+                                 GetSharedStorageDisabledErrorMessage()));
+    VerifyDebugErrorMessage(run_op_result.error);
 
     // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
     EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -953,8 +1079,10 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ(GetSharedStorageSelectURLDisabledErrorMessage(),
-              run_url_op_result.error);
+    EXPECT_TRUE(
+        base::StartsWith(run_url_op_result.error,
+                         GetSharedStorageSelectURLDisabledErrorMessage()));
+    VerifyDebugErrorMessage(run_url_op_result.error);
 
     // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
     EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -972,7 +1100,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
   // Privacy Sandbox is enabled and 3P cookies are allowed, so Shared Storage
   // should be allowed.
   EXPECT_TRUE(run_url_op_result.error.empty());
-  absl::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
+  std::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
   GURL urn_uuid = observed_urn_uuid.value();
@@ -1006,7 +1134,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Set) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ(GetSharedStorageDisabledErrorMessage(), set_result.error);
+    EXPECT_TRUE(base::StartsWith(set_result.error,
+                                 GetSharedStorageDisabledErrorMessage()));
+    VerifyDebugErrorMessage(set_result.error);
     return;
   }
 
@@ -1028,7 +1158,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Append) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ(GetSharedStorageDisabledErrorMessage(), append_result.error);
+    EXPECT_TRUE(base::StartsWith(append_result.error,
+                                 GetSharedStorageDisabledErrorMessage()));
+    VerifyDebugErrorMessage(append_result.error);
     return;
   }
 
@@ -1050,7 +1182,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Delete) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ(GetSharedStorageDisabledErrorMessage(), delete_result.error);
+    EXPECT_TRUE(base::StartsWith(delete_result.error,
+                                 GetSharedStorageDisabledErrorMessage()));
+    VerifyDebugErrorMessage(delete_result.error);
     return;
   }
 
@@ -1072,7 +1206,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Clear) {
 
   if (!SuccessExpected()) {
     // Shared Storage will be disabled.
-    EXPECT_EQ(GetSharedStorageDisabledErrorMessage(), clear_result.error);
+    EXPECT_TRUE(base::StartsWith(clear_result.error,
+                                 GetSharedStorageDisabledErrorMessage()));
+    VerifyDebugErrorMessage(clear_result.error);
     return;
   }
 
@@ -1955,10 +2091,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
-  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
-                          "sharedStorage.worklet.addModule() can only ",
-                          "be invoked once per browsing context.\"\n"}),
-            result.error);
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr("addModule() can only be invoked once per worklet"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -1975,16 +2110,20 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
+  content::EvalJsResult result = content::EvalJs(GetActiveWebContents(), R"(
       sharedStorage.run(
           'test-operation', {data: {}});
-    )"));
+    )");
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "sharedStorage.worklet.addModule() has to be called before run()"));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
-      kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kRunWebVisible,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
@@ -2125,10 +2264,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         })()
       )");
 
-  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
-                          "sharedStorage.worklet.addModule() has to be ",
-                          "called before sharedStorage.selectURL().\"\n"}),
-            result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("sharedStorage.worklet.addModule() has to be "
+                                 "called before selectURL()"));
 
   WaitForHistograms({kErrorTypeHistogram});
 
@@ -2137,8 +2275,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       blink::SharedStorageWorkletErrorType::kSelectURLWebVisible, 1);
 }
 
+// TODO(https://crbug.com/1484437): Fix flakes.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       SelectUrl_NotRegisteredError) {
+                       DISABLED_SelectUrl_NotRegisteredError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2184,8 +2323,18 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
+// TODO(crbug.com/1485061): Test is flaky on ChromeOS and Windows.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_SelectUrl_FunctionError DISABLED_SelectUrl_FunctionError
+#else
+#define MAYBE_SelectUrl_FunctionError SelectUrl_FunctionError
+#endif
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       SelectUrl_FunctionError) {
+                       MAYBE_SelectUrl_FunctionError) {
+  // TODO(crbug.com/1485061): Test is flaky on linux-bfcache-rel.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2231,7 +2380,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
+// TODO(https://crbug.com/1484437): Fix flakes.
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
+                       DISABLED_SelectUrl_ScriptError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2277,8 +2428,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
+// TODO(https://crbug.com/1484437): Fix flakes.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       SelectUrl_UnexpectedCustomDataError) {
+                       DISABLED_SelectUrl_UnexpectedCustomDataError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2324,8 +2476,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
+// TODO(https://crbug.com/1484437): Fix flakes.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       SelectUrl_OutOfRangeError) {
+                       DISABLED_SelectUrl_OutOfRangeError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2371,8 +2524,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
+// TODO(https://crbug.com/1484437): Fix flakes.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-                       SelectUrl_ReturnValueToIntError) {
+                       DISABLED_SelectUrl_ReturnValueToIntError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
   GURL script_url =
@@ -2717,8 +2871,7 @@ class SharedStorageFencedFrameChromeBrowserTest
 
     EXPECT_TRUE(run_url_op_console_observer.Wait());
     EXPECT_TRUE(run_url_op_result.error.empty());
-    const absl::optional<GURL>& observed_urn_uuid =
-        config_observer.GetUrnUuid();
+    const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
     EXPECT_TRUE(observed_urn_uuid.has_value());
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -2947,13 +3100,13 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kWorkletNumPerPageHistogram,
-                     kPrivateAggregationSendHistogramReportHistogram});
+                     kPrivateAggregationHostPipeResultHistogram});
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
+      kPrivateAggregationHostPipeResultHistogram,
       SuccessExpected()
-          ? content::GetPrivateAggregationSendHistogramSuccessValue()
-          : content::GetPrivateAggregationSendHistogramApiDisabledValue(),
+          ? content::GetPrivateAggregationHostPipeReportSuccessValue()
+          : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
 }
 
@@ -2976,13 +3129,13 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kWorkletNumPerPageHistogram,
-                     kPrivateAggregationSendHistogramReportHistogram});
+                     kPrivateAggregationHostPipeResultHistogram});
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
+      kPrivateAggregationHostPipeResultHistogram,
       SuccessExpected()
-          ? content::GetPrivateAggregationSendHistogramSuccessValue()
-          : content::GetPrivateAggregationSendHistogramApiDisabledValue(),
+          ? content::GetPrivateAggregationHostPipeReportSuccessValue()
+          : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
 }
 
@@ -3005,13 +3158,13 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kWorkletNumPerPageHistogram,
-                     kPrivateAggregationSendHistogramReportHistogram});
+                     kPrivateAggregationHostPipeResultHistogram});
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
+      kPrivateAggregationHostPipeResultHistogram,
       SuccessExpected()
-          ? content::GetPrivateAggregationSendHistogramSuccessValue()
-          : content::GetPrivateAggregationSendHistogramApiDisabledValue(),
+          ? content::GetPrivateAggregationHostPipeReportSuccessValue()
+          : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
 }
 
@@ -3043,8 +3196,14 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(EnforcementAndEnrollmentStatus::kAttestationsUnenforced,
                         EnforcementAndEnrollmentStatus::
                             kAttestationsEnforcedMainHostUnenrolled,
+#if BUILDFLAG(IS_ANDROID)
                         EnforcementAndEnrollmentStatus::
                             kAttestationsEnforcedMainHostEnrolled)),
+#else
+                        EnforcementAndEnrollmentStatus::
+                            kAttestationsEnforcedMainHostEnrolled),
+        testing::Bool()),
+#endif
     DescribePrefBrowserTestParams);
 
 IN_PROC_BROWSER_TEST_P(SharedStorageHeaderPrefBrowserTest, Basic) {
@@ -3064,7 +3223,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageHeaderPrefBrowserTest, Basic) {
 
   response.WaitForRequest();
   ASSERT_TRUE(base::Contains(response.http_request()->headers,
-                             "Shared-Storage-Writable"));
+                             "Sec-Shared-Storage-Writable"));
   EXPECT_EQ(response.http_request()->content, "");
   response.Send(
       /*http_status=*/net::HTTP_OK,

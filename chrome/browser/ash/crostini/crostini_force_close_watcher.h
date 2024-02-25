@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_FORCE_CLOSE_WATCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace exo {
@@ -93,7 +93,7 @@ class ForceCloseWatcher : public views::WidgetObserver {
 
   // Implements the delay between the first and second time the user tries to
   // close the window.
-  absl::optional<base::ElapsedTimer> show_dialog_timer_;
+  std::optional<base::ElapsedTimer> show_dialog_timer_;
 };
 
 // The delegate implementation to allow exo's shell surfaces to be closed by the
@@ -128,14 +128,14 @@ class ShellSurfaceForceCloseDelegate : public ForceCloseWatcher::Delegate,
 
  private:
   // Handle to the shell surface we are trying to close.
-  raw_ptr<exo::ShellSurfaceBase, ExperimentalAsh> shell_surface_;
+  raw_ptr<exo::ShellSurfaceBase> shell_surface_;
 
   // Name of the app we are trying to close (or "" if unknown).
   std::string app_name_;
 
   // Handle to the widget representing the currently visible force-close dialog
   // (if there is one), or null.
-  raw_ptr<views::Widget, ExperimentalAsh> current_dialog_ = nullptr;
+  raw_ptr<views::Widget> current_dialog_ = nullptr;
 
   base::WeakPtrFactory<ShellSurfaceForceCloseDelegate> weak_ptr_factory_;
 };

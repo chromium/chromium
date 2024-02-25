@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Used for testting the script convert_to_ts.py
+
+group("js_modules") {
+  deps = [
+    ":other",
+  ]
+}
+
+
+
+js_library("other") {
+}

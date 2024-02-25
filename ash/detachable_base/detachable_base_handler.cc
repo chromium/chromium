@@ -149,7 +149,7 @@ void DetachableBaseHandler::BaseFirmwareUpdateFailed() {}
 
 void DetachableBaseHandler::PairChallengeSucceeded(
     const std::vector<uint8_t>& base_id) {
-  authenticated_base_id_ = base::HexEncode(base_id.data(), base_id.size());
+  authenticated_base_id_ = base::HexEncode(base_id);
   pairing_status_ = DetachableBasePairingStatus::kAuthenticated;
 
   if (GetPairingStatus() != DetachableBasePairingStatus::kNone)
@@ -179,7 +179,7 @@ void DetachableBaseHandler::TabletModeEventReceived(
 }
 
 void DetachableBaseHandler::OnGotPowerManagerSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (!switch_states.has_value() || tablet_mode_.has_value())
     return;
 

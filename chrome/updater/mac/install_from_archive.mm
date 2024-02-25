@@ -5,16 +5,16 @@
 #include "chrome/updater/mac/install_from_archive.h"
 
 #import <Cocoa/Cocoa.h>
-
-#include <map>
-#include <string>
-#include <utility>
-#include <vector>
-
 #include <poll.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
+
+#include <map>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -37,7 +37,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -56,16 +55,19 @@ bool RunHDIUtil(const std::vector<std::string>& args,
   }
 
   base::CommandLine command(hdiutil_path);
-  for (const auto& arg : args)
+  for (const auto& arg : args) {
     command.AppendArg(arg);
+  }
 
   std::string output;
   bool result = base::GetAppOutput(command, &output);
-  if (!result)
+  if (!result) {
     VLOG(1) << "hdiutil failed.";
+  }
 
-  if (command_output)
+  if (command_output) {
     *command_output = output;
+  }
 
   return result;
 }
@@ -103,8 +105,9 @@ bool MountDMG(const base::FilePath& dmg_path, std::string* mount_point) {
         break;
       }
     }
-    if (mount_point)
+    if (mount_point) {
       *mount_point = base::SysNSStringToUTF8(dmg_mount_point);
+    }
   }
   return true;
 }
@@ -126,8 +129,9 @@ bool UnmountDMG(const base::FilePath& mounted_dmg_path) {
 
 bool IsInstallScriptExecutable(const base::FilePath& script_path) {
   int permissions = 0;
-  if (!base::GetPosixFilePermissions(script_path, &permissions))
+  if (!base::GetPosixFilePermissions(script_path, &permissions)) {
     return false;
+  }
 
   constexpr int kExecutableMask = base::FILE_PERMISSION_EXECUTE_BY_USER;
   return (permissions & kExecutableMask) == kExecutableMask;
@@ -136,7 +140,7 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
 int RunExecutable(const base::FilePath& existence_checker_path,
                   const std::string& ap,
                   const std::string& arguments,
-                  const absl::optional<base::FilePath>& installer_data_file,
+                  const std::optional<base::FilePath>& installer_data_file,
                   const UpdaterScope& scope,
                   const base::Version& pv,
                   bool usage_stats_enabled,
@@ -156,8 +160,9 @@ int RunExecutable(const base::FilePath& existence_checker_path,
            ".keystone_postinstall",
        }) {
     base::FilePath executable_file_path = unpacked_path.Append(executable);
-    if (!base::PathExists(executable_file_path))
+    if (!base::PathExists(executable_file_path)) {
       continue;
+    }
 
     if (!IsInstallScriptExecutable(executable_file_path)) {
       VLOG(1) << "Executable file path (" << executable_file_path
@@ -171,7 +176,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     command.AppendArg(pv.GetString());
 
     std::string env_path = "/bin:/usr/bin";
-    absl::optional<base::FilePath> ksadmin_path =
+    std::optional<base::FilePath> ksadmin_path =
         GetKSAdminPath(GetUpdaterScope());
     if (ksadmin_path) {
       env_path = base::StrCat({env_path, ":", ksadmin_path->DirName().value()});
@@ -306,8 +311,9 @@ void CopyDMGContents(const base::FilePath& dmg_path,
 int InstallFromDMG(const base::FilePath& dmg_file_path,
                    base::OnceCallback<int(const base::FilePath&)> install) {
   std::string mount_point;
-  if (!MountDMG(dmg_file_path, &mount_point))
+  if (!MountDMG(dmg_file_path, &mount_point)) {
     return static_cast<int>(InstallErrors::kFailMountDmg);
+  }
 
   if (mount_point.empty()) {
     VLOG(1) << "No mount point.";
@@ -320,8 +326,9 @@ int InstallFromDMG(const base::FilePath& dmg_file_path,
   // into the cache folder. This will allow for differentials.
   CopyDMGContents(mounted_dmg_path, dmg_file_path.DirName());
 
-  if (!UnmountDMG(mounted_dmg_path))
+  if (!UnmountDMG(mounted_dmg_path)) {
     VLOG(1) << "Could not unmount the DMG: " << mounted_dmg_path;
+  }
 
   // Delete the DMG from the cached folder after we are done.
   if (!base::DeleteFile(dmg_file_path)) {
@@ -379,16 +386,15 @@ int InstallFromApp(const base::FilePath& app_file_path,
 }
 }  // namespace
 
-int InstallFromArchive(
-    const base::FilePath& file_path,
-    const base::FilePath& existence_checker_path,
-    const std::string& ap,
-    const UpdaterScope& scope,
-    const base::Version& pv,
-    const std::string& arguments,
-    const absl::optional<base::FilePath>& installer_data_file,
-    const bool usage_stats_enabled,
-    const base::TimeDelta& timeout) {
+int InstallFromArchive(const base::FilePath& file_path,
+                       const base::FilePath& existence_checker_path,
+                       const std::string& ap,
+                       const UpdaterScope& scope,
+                       const base::Version& pv,
+                       const std::string& arguments,
+                       const std::optional<base::FilePath>& installer_data_file,
+                       const bool usage_stats_enabled,
+                       const base::TimeDelta& timeout) {
   const std::map<std::string,
                  int (*)(const base::FilePath&,
                          base::OnceCallback<int(const base::FilePath&)>)>

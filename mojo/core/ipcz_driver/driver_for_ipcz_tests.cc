@@ -147,7 +147,7 @@ class MojoIpczChildTestNodeController
   const raw_ref<ipcz::test::TestNode> source_;
   const bool is_broker_;
   base::Process process_;
-  absl::optional<bool> result_;
+  std::optional<bool> result_;
 };
 
 // TestDriver implementation for the mojo-ipcz driver to have coverage in ipcz'

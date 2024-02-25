@@ -15,10 +15,11 @@ import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chromecast.media.AudioContentType;
 
 import java.lang.annotation.Retention;
@@ -250,8 +251,14 @@ class AudioSinkAudioTrackImpl {
     private static AudioSinkAudioTrackImpl create(long nativeAudioSinkAudioTrackImpl,
             @AudioContentType int castContentType, int channelCount, int sampleRateInHz,
             int bytesPerBuffer, int sessionId, boolean isApkAudio, boolean useHwAvSync) {
-        return new AudioSinkAudioTrackImpl(nativeAudioSinkAudioTrackImpl, castContentType,
-                channelCount, sampleRateInHz, bytesPerBuffer, sessionId, isApkAudio, useHwAvSync);
+        try {
+            return new AudioSinkAudioTrackImpl(nativeAudioSinkAudioTrackImpl, castContentType,
+                    channelCount, sampleRateInHz, bytesPerBuffer, sessionId, isApkAudio,
+                    useHwAvSync);
+        } catch (UnsupportedOperationException e) {
+            Log.e(TAG, "Failed to create audio sink track");
+            return null;
+        }
     }
 
     private AudioSinkAudioTrackImpl(long nativeAudioSinkAudioTrackImpl,

@@ -10,7 +10,6 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "ui/display/screen.h"
 
 namespace {
 
@@ -50,9 +51,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kSystemWeb:
     case apps::AppType::kRemote:
       // Chrome, Lacros, Settings, etc. are built-in.
-      return false;
-    case apps::AppType::kMacOs:
-      NOTREACHED();
       return false;
     case apps::AppType::kArc:
     case apps::AppType::kCrostini:
@@ -123,16 +121,14 @@ AppServiceAppItem::AppServiceAppItem(
     }
   }
 
-  if (!app_update.PublisherId().empty() &&
-      (app_update.AppType() == apps::AppType::kArc ||
-       app_update.AppType() == apps::AppType::kWeb)) {
-    std::string package_id =
-        apps::PackageId(app_update.AppType(), app_update.PublisherId())
-            .ToString();
-    SetPromisePackageId(package_id);
+  std::optional<apps::PackageId> package_id =
+      apps_util::GetPackageIdForApp(profile, app_update);
+  if (package_id.has_value()) {
+    SetPromisePackageId(package_id.value().ToString());
   }
 
-  const bool is_new_install = !sync_item && IsNewInstall(app_update);
+  const bool is_new_install =
+      (!sync_item || sync_item->is_new) && IsNewInstall(app_update);
   DVLOG(1) << "New AppServiceAppItem is_new_install " << is_new_install
            << " from update " << app_update;
   SetIsNewInstall(is_new_install);
@@ -149,8 +145,10 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update) {
 
 void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
                                     bool in_constructor) {
-  if (in_constructor || app_update.NameChanged()) {
-    SetName(app_update.Name());
+  if (in_constructor || app_update.ShortNameChanged()) {
+    // We display the short name rather than the full name here since
+    // each launcher item only has a limited space.
+    SetName(app_update.ShortName());
   }
 
   if (in_constructor || app_update.IconKeyChanged()) {
@@ -252,8 +250,7 @@ void AppServiceAppItem::ResetIsNewInstall() {
 
   // Record metric for approximate time from installation to launch.
   base::TimeDelta time_since_install = base::TimeTicks::Now() - creation_time_;
-  // TabletMode may be null in unit tests.
-  if (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     base::UmaHistogramCustomTimes(
         "Apps.TimeBetweenAppInstallAndLaunch.TabletMode", time_since_install,
         kTimeMetricsMin, kTimeMetricsMax, kTimeMetricsBucketCount);
@@ -275,7 +272,7 @@ void AppServiceAppItem::Launch(int event_flags,
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
-      app_type_, id(), apps::IconType::kStandard,
+      id(), apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       allow_placeholder_icon,
       base::BindOnce(&AppServiceAppItem::OnLoadIcon,

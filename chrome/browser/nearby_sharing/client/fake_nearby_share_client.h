@@ -9,44 +9,46 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
-#include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/certificate_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/contact_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
 
 // A fake implementation of the Nearby Share HTTP client that stores all request
 // data. Only use in unit tests.
 class FakeNearbyShareClient : public NearbyShareClient {
  public:
   struct UpdateDeviceRequest {
-    UpdateDeviceRequest(const nearbyshare::proto::UpdateDeviceRequest& request,
-                        UpdateDeviceCallback&& callback,
-                        ErrorCallback&& error_callback);
+    UpdateDeviceRequest(
+        const nearby::sharing::proto::UpdateDeviceRequest& request,
+        UpdateDeviceCallback&& callback,
+        ErrorCallback&& error_callback);
     UpdateDeviceRequest(UpdateDeviceRequest&& request);
     ~UpdateDeviceRequest();
-    nearbyshare::proto::UpdateDeviceRequest request;
+    nearby::sharing::proto::UpdateDeviceRequest request;
     UpdateDeviceCallback callback;
     ErrorCallback error_callback;
   };
   struct ListContactPeopleRequest {
     ListContactPeopleRequest(
-        const nearbyshare::proto::ListContactPeopleRequest& request,
+        const nearby::sharing::proto::ListContactPeopleRequest& request,
         ListContactPeopleCallback&& callback,
         ErrorCallback&& error_callback);
     ListContactPeopleRequest(ListContactPeopleRequest&& request);
     ~ListContactPeopleRequest();
-    nearbyshare::proto::ListContactPeopleRequest request;
+    nearby::sharing::proto::ListContactPeopleRequest request;
     ListContactPeopleCallback callback;
     ErrorCallback error_callback;
   };
   struct ListPublicCertificatesRequest {
     ListPublicCertificatesRequest(
-        const nearbyshare::proto::ListPublicCertificatesRequest& request,
+        const nearby::sharing::proto::ListPublicCertificatesRequest& request,
         ListPublicCertificatesCallback&& callback,
         ErrorCallback&& error_callback);
     ListPublicCertificatesRequest(ListPublicCertificatesRequest&& request);
     ~ListPublicCertificatesRequest();
-    nearbyshare::proto::ListPublicCertificatesRequest request;
+    nearby::sharing::proto::ListPublicCertificatesRequest request;
     ListPublicCertificatesCallback callback;
     ErrorCallback error_callback;
   };
@@ -69,15 +71,15 @@ class FakeNearbyShareClient : public NearbyShareClient {
 
  private:
   // NearbyShareClient:
-  void UpdateDevice(const nearbyshare::proto::UpdateDeviceRequest& request,
+  void UpdateDevice(const nearby::sharing::proto::UpdateDeviceRequest& request,
                     UpdateDeviceCallback&& callback,
                     ErrorCallback&& error_callback) override;
   void ListContactPeople(
-      const nearbyshare::proto::ListContactPeopleRequest& request,
+      const nearby::sharing::proto::ListContactPeopleRequest& request,
       ListContactPeopleCallback&& callback,
       ErrorCallback&& error_callback) override;
   void ListPublicCertificates(
-      const nearbyshare::proto::ListPublicCertificatesRequest& request,
+      const nearby::sharing::proto::ListPublicCertificatesRequest& request,
       ListPublicCertificatesCallback&& callback,
       ErrorCallback&& error_callback) override;
   std::string GetAccessTokenUsed() override;
@@ -95,13 +97,15 @@ class FakeNearbyShareClientFactory : public NearbyShareClientFactory {
 
  public:
   // Returns all FakeNearbyShareClient instances created by CreateInstance().
-  std::vector<FakeNearbyShareClient*>& instances() { return instances_; }
+  std::vector<raw_ptr<FakeNearbyShareClient, VectorExperimental>>& instances() {
+    return instances_;
+  }
 
  private:
   // NearbyShareClientFactory:
   std::unique_ptr<NearbyShareClient> CreateInstance() override;
 
-  std::vector<FakeNearbyShareClient*> instances_;
+  std::vector<raw_ptr<FakeNearbyShareClient, VectorExperimental>> instances_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CLIENT_FAKE_NEARBY_SHARE_CLIENT_H_

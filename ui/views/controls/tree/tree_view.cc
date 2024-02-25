@@ -151,12 +151,14 @@ void TreeView::SetModel(TreeModel* model) {
   selected_node_ = nullptr;
   active_node_ = nullptr;
   icons_.clear();
+  root_.Reset(nullptr);
+  root_.DeleteAll();
+  GetViewAccessibility().RemoveAllVirtualChildViews();
+
   if (model_) {
     model_->AddObserver(this);
     model_->GetIcons(&icons_);
 
-    GetViewAccessibility().RemoveAllVirtualChildViews();
-    root_.DeleteAll();
     ConfigureInternalNode(model_->GetRoot(), &root_);
     std::unique_ptr<AXVirtualView> ax_root_view =
         CreateAndSetAccessibilityView(&root_);
@@ -279,8 +281,8 @@ void TreeView::Collapse(ui::TreeModelNode* model_node) {
   // displayed.
   if (model_node == root_.model_node() && !root_shown_)
     return;
-  InternalNode* node =
-      GetInternalNodeForModelNode(model_node, DONT_CREATE_IF_NOT_LOADED);
+  InternalNode* node = GetInternalNodeForModelNode(
+      model_node, CreateType::kDontCreateIfNotLoaded);
   if (!node)
     return;
   bool was_expanded = IsExpanded(model_node);
@@ -306,7 +308,7 @@ void TreeView::Expand(TreeModelNode* node) {
   if (ExpandImpl(node)) {
     DrawnNodesChanged();
     InternalNode* internal_node =
-        GetInternalNodeForModelNode(node, DONT_CREATE_IF_NOT_LOADED);
+        GetInternalNodeForModelNode(node, CreateType::kDontCreateIfNotLoaded);
     AXVirtualView* ax_view =
         internal_node ? internal_node->accessibility_view() : nullptr;
     if (ax_view) {
@@ -331,7 +333,7 @@ void TreeView::ExpandAll(TreeModelNode* node) {
   if (expanded_at_least_one) {
     DrawnNodesChanged();
     InternalNode* internal_node =
-        GetInternalNodeForModelNode(node, DONT_CREATE_IF_NOT_LOADED);
+        GetInternalNodeForModelNode(node, CreateType::kDontCreateIfNotLoaded);
     AXVirtualView* ax_view =
         internal_node ? internal_node->accessibility_view() : nullptr;
     if (ax_view) {
@@ -348,8 +350,8 @@ bool TreeView::IsExpanded(TreeModelNode* model_node) {
     // to add NULL checks every where we look up the parent.
     return true;
   }
-  InternalNode* node =
-      GetInternalNodeForModelNode(model_node, DONT_CREATE_IF_NOT_LOADED);
+  InternalNode* node = GetInternalNodeForModelNode(
+      model_node, CreateType::kDontCreateIfNotLoaded);
   if (!node)
     return false;
 
@@ -390,7 +392,7 @@ ui::TreeModelNode* TreeView::GetNodeForRow(int row) {
 
 int TreeView::GetRowForNode(ui::TreeModelNode* node) {
   InternalNode* internal_node =
-      GetInternalNodeForModelNode(node, DONT_CREATE_IF_NOT_LOADED);
+      GetInternalNodeForModelNode(node, CreateType::kDontCreateIfNotLoaded);
   if (!internal_node)
     return -1;
   int depth = 0;
@@ -402,7 +404,7 @@ void TreeView::SetDrawingProvider(
   drawing_provider_ = std::move(provider);
 }
 
-void TreeView::Layout() {
+void TreeView::Layout(PassKey) {
   int width = preferred_size_.width();
   int height = preferred_size_.height();
   if (parent()) {
@@ -526,70 +528,65 @@ bool TreeView::HandleAccessibleAction(const ui::AXActionData& action_data) {
   return true;
 }
 
-void TreeView::TreeNodesAdded(TreeModel* model,
-                              TreeModelNode* parent,
-                              size_t start,
-                              size_t count) {
+void TreeView::TreeNodeAdded(TreeModel* model,
+                             TreeModelNode* parent,
+                             size_t index) {
   InternalNode* parent_node =
-      GetInternalNodeForModelNode(parent, DONT_CREATE_IF_NOT_LOADED);
+      GetInternalNodeForModelNode(parent, CreateType::kDontCreateIfNotLoaded);
   if (!parent_node || !parent_node->loaded_children())
     return;
+
   const auto& children = model_->GetChildren(parent);
-  for (size_t i = start; i < start + count; ++i) {
-    auto child = std::make_unique<InternalNode>();
-    ConfigureInternalNode(children[i], child.get());
-    std::unique_ptr<AXVirtualView> ax_view =
-        CreateAndSetAccessibilityView(child.get());
-    parent_node->Add(std::move(child), i);
-    DCHECK_LE(i, parent_node->accessibility_view()->GetChildCount());
-    parent_node->accessibility_view()->AddChildViewAt(std::move(ax_view), i);
-  }
+  auto child = std::make_unique<InternalNode>();
+  ConfigureInternalNode(children[index], child.get());
+  std::unique_ptr<AXVirtualView> ax_view =
+      CreateAndSetAccessibilityView(child.get());
+  parent_node->Add(std::move(child), index);
+  DCHECK_LE(index, parent_node->accessibility_view()->GetChildCount());
+  parent_node->accessibility_view()->AddChildViewAt(std::move(ax_view), index);
+
   if (IsExpanded(parent)) {
     NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
     DrawnNodesChanged();
   }
 }
 
-void TreeView::TreeNodesRemoved(TreeModel* model,
-                                TreeModelNode* parent,
-                                size_t start,
-                                size_t count) {
+void TreeView::TreeNodeRemoved(TreeModel* model,
+                               TreeModelNode* parent,
+                               size_t index) {
   InternalNode* parent_node =
-      GetInternalNodeForModelNode(parent, DONT_CREATE_IF_NOT_LOADED);
+      GetInternalNodeForModelNode(parent, CreateType::kDontCreateIfNotLoaded);
+
   if (!parent_node || !parent_node->loaded_children())
     return;
+
   bool reset_selected_node = false;
   bool reset_active_node = false;
-  for (size_t i = 0; i < count; ++i) {
-    InternalNode* child_removing = parent_node->children()[start].get();
-    if (selected_node_ && selected_node_->HasAncestor(child_removing))
-      reset_selected_node = true;
-    if (active_node_ && active_node_->HasAncestor(child_removing))
-      reset_active_node = true;
+  InternalNode* child_removing = parent_node->children()[index].get();
+  if (selected_node_ && selected_node_->HasAncestor(child_removing)) {
+    selected_node_ = nullptr;
+    reset_selected_node = true;
+  }
+  if (active_node_ && active_node_->HasAncestor(child_removing)) {
+    active_node_ = nullptr;
+    reset_active_node = true;
+  }
 
-    DCHECK(parent_node->accessibility_view()->Contains(
-        child_removing->accessibility_view()));
-    parent_node->accessibility_view()->RemoveChildView(
-        child_removing->accessibility_view());
-    child_removing->set_accessibility_view(nullptr);
-    parent_node->Remove(start);
+  DCHECK(parent_node->accessibility_view()->Contains(
+      child_removing->accessibility_view()));
+  {
+    AXVirtualView* view_to_remove = child_removing->accessibility_view();
+    child_removing = nullptr;
+    parent_node->Remove(index);
+    parent_node->accessibility_view()->RemoveChildView(view_to_remove);
   }
 
   if (reset_selected_node || reset_active_node) {
-    // selected_node_ or active_node_ or both were no longer valid (i.e. the
-    // model_node() was likely deleted by the time we entered this function).
-    // Explicitly set to nullptr before continuing; otherwise, we might try to
-    // use a deleted value.
-    if (reset_selected_node)
-      selected_node_ = nullptr;
-    if (reset_active_node)
-      active_node_ = nullptr;
-
     // Replace invalidated states with the nearest valid node.
     const auto& children = model_->GetChildren(parent);
     TreeModelNode* nearest_node = nullptr;
     if (!children.empty()) {
-      nearest_node = children[std::min(start, children.size() - 1)];
+      nearest_node = children[std::min(index, children.size() - 1)];
     } else if (parent != root_.model_node() || root_shown_) {
       nearest_node = parent;
     }
@@ -606,8 +603,8 @@ void TreeView::TreeNodesRemoved(TreeModel* model,
 }
 
 void TreeView::TreeNodeChanged(TreeModel* model, TreeModelNode* model_node) {
-  InternalNode* node =
-      GetInternalNodeForModelNode(model_node, DONT_CREATE_IF_NOT_LOADED);
+  InternalNode* node = GetInternalNodeForModelNode(
+      model_node, CreateType::kDontCreateIfNotLoaded);
   if (!node)
     return;
   int old_width = node->text_width();
@@ -657,18 +654,18 @@ size_t TreeView::GetRowCount() {
   return row_count;
 }
 
-absl::optional<size_t> TreeView::GetSelectedRow() {
+std::optional<size_t> TreeView::GetSelectedRow() {
   // Type-ahead searches should be relative to the active node, so return the
   // row of the active node for |PrefixSelector|.
   ui::TreeModelNode* model_node = GetActiveNode();
   if (!model_node)
-    return absl::nullopt;
+    return std::nullopt;
   const int row = GetRowForNode(model_node);
-  return (row == -1) ? absl::nullopt
-                     : absl::make_optional(static_cast<size_t>(row));
+  return (row == -1) ? std::nullopt
+                     : std::make_optional(static_cast<size_t>(row));
 }
 
-void TreeView::SetSelectedRow(absl::optional<size_t> row) {
+void TreeView::SetSelectedRow(std::optional<size_t> row) {
   // Type-ahead manipulates selection because active node is synced to selected
   // node, so call SetSelectedNode() instead of SetActiveNode().
   // TODO(crbug.com/1080944): Decouple active node from selected node by adding
@@ -799,9 +796,10 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
     Expand(model_->GetParent(model_node));
   if (model_node && model_node == root_.model_node() && !root_shown_)
     return;  // Ignore requests for the root when not shown.
-  InternalNode* node =
-      model_node ? GetInternalNodeForModelNode(model_node, CREATE_IF_NOT_LOADED)
-                 : nullptr;
+  InternalNode* node = model_node
+                           ? GetInternalNodeForModelNode(
+                                 model_node, CreateType::kCreateIfNotLoaded)
+                           : nullptr;
 
   // Force update if old value was nullptr to handle case of TreeNodesRemoved
   // explicitly resetting selected_node_ or active_node_ before invoking this.
@@ -930,9 +928,10 @@ void TreeView::PopulateAccessibilityData(InternalNode* node,
   DCHECK(node);
   TreeModelNode* selected_model_node = GetSelectedNode();
   InternalNode* selected_node =
-      selected_model_node ? GetInternalNodeForModelNode(
-                                selected_model_node, DONT_CREATE_IF_NOT_LOADED)
-                          : nullptr;
+      selected_model_node
+          ? GetInternalNodeForModelNode(selected_model_node,
+                                        CreateType::kDontCreateIfNotLoaded)
+          : nullptr;
   const bool selected = (node == selected_node);
   data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
   data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kSelect);
@@ -1064,7 +1063,7 @@ void TreeView::LayoutEditor() {
   // Scroll as necessary to ensure that the editor is visible.
   ScrollRectToVisible(outter_bounds);
   editor_->SetBoundsRect(row_bounds);
-  editor_->Layout();
+  editor_->DeprecatedLayoutImmediately();
 }
 
 void TreeView::SchedulePaintForNode(InternalNode* node) {
@@ -1182,7 +1181,7 @@ void TreeView::PaintExpandControl(gfx::Canvas* canvas,
 void TreeView::PaintNodeIcon(gfx::Canvas* canvas,
                              InternalNode* node,
                              const gfx::Rect& bounds) {
-  absl::optional<size_t> icon_index = model_->GetIconIndex(node->model_node());
+  std::optional<size_t> icon_index = model_->GetIconIndex(node->model_node());
   int icon_x = kArrowRegionSize + kImagePadding;
   if (!icon_index.has_value()) {
     // Flip just the |bounds| region of |canvas|.
@@ -1207,7 +1206,7 @@ void TreeView::PaintNodeIcon(gfx::Canvas* canvas,
 
 TreeView::InternalNode* TreeView::GetInternalNodeForModelNode(
     ui::TreeModelNode* model_node,
-    GetInternalNodeCreateType create_type) {
+    CreateType create_type) {
   if (model_node == root_.model_node())
     return &root_;
   InternalNode* parent_internal_node =
@@ -1215,8 +1214,9 @@ TreeView::InternalNode* TreeView::GetInternalNodeForModelNode(
   if (!parent_internal_node)
     return nullptr;
   if (!parent_internal_node->loaded_children()) {
-    if (create_type == DONT_CREATE_IF_NOT_LOADED)
+    if (create_type == CreateType::kDontCreateIfNotLoaded) {
       return nullptr;
+    }
     LoadChildren(parent_internal_node);
   }
   size_t index =
@@ -1430,7 +1430,7 @@ bool TreeView::ExpandImpl(TreeModelNode* model_node) {
   // Expand all the parents.
   bool return_value = ExpandImpl(parent);
   InternalNode* internal_node =
-      GetInternalNodeForModelNode(model_node, CREATE_IF_NOT_LOADED);
+      GetInternalNodeForModelNode(model_node, CreateType::kCreateIfNotLoaded);
   DCHECK(internal_node);
   if (!internal_node->is_expanded()) {
     if (!internal_node->loaded_children())
@@ -1508,7 +1508,7 @@ int TreeView::InternalNode::GetMaxWidth(TreeView* tree, int indent, int depth) {
   return max_width;
 }
 
-BEGIN_METADATA(TreeView, View)
+BEGIN_METADATA(TreeView)
 END_METADATA
 
 }  // namespace views

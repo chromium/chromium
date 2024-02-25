@@ -25,8 +25,9 @@ import org.chromium.chrome.R;
 public class FontPreloader {
     private static FontPreloader sInstance;
 
-    private static final Integer[] FONTS = {R.font.chrome_google_sans,
-            R.font.chrome_google_sans_medium, R.font.chrome_google_sans_bold};
+    private static final Integer[] FONTS = {
+        R.font.chrome_google_sans, R.font.chrome_google_sans_medium, R.font.chrome_google_sans_bold
+    };
 
     private static final String UMA_PREFIX = "Android.Fonts";
 
@@ -93,17 +94,13 @@ public class FontPreloader {
         }
     }
 
-    /**
-     * Should be called from FirstRunActivity to notify this class of post-inflation startup.
-     */
+    /** Should be called from FirstRunActivity to notify this class of post-inflation startup. */
     public void onPostInflationStartupFre() {
         mThreadChecker.assertOnValidThread();
         onPostInflationStartup(UMA_FRE);
     }
 
-    /**
-     * Should be called from FirstRunActivity to notify this class of the first draw.
-     */
+    /** Should be called from FirstRunActivity to notify this class of the first draw. */
     public void onFirstDrawFre() {
         mThreadChecker.assertOnValidThread();
         onFirstDraw(UMA_FRE);
@@ -127,17 +124,13 @@ public class FontPreloader {
         onFirstDraw(UMA_TABBED_ACTIVITY);
     }
 
-    /**
-     * Should be called from CustomTabActivity to notify this class of post-inflation startup.
-     */
+    /** Should be called from CustomTabActivity to notify this class of post-inflation startup. */
     public void onPostInflationStartupCustomTabActivity() {
         mThreadChecker.assertOnValidThread();
         onPostInflationStartup(UMA_CUSTOM_TAB_ACTIVITY);
     }
 
-    /**
-     * Should be called from CustomTabActivity to notify this class of the first draw.
-     */
+    /** Should be called from CustomTabActivity to notify this class of the first draw. */
     public void onFirstDrawCustomTabActivity() {
         mThreadChecker.assertOnValidThread();
         onFirstDraw(UMA_CUSTOM_TAB_ACTIVITY);
@@ -154,8 +147,9 @@ public class FontPreloader {
             mTimeOfFirstEventForPostInflation = time;
         } else {
             RecordHistogram.recordTimesHistogram(
-                    String.format("%s.%s.%s", UMA_PREFIX, UMA_FONTS_RETRIEVED_BEFORE_INFLATION,
-                            activityName),
+                    String.format(
+                            "%s.%s.%s",
+                            UMA_PREFIX, UMA_FONTS_RETRIEVED_BEFORE_INFLATION, activityName),
                     time - mTimeOfFirstEventForPostInflation);
         }
     }
@@ -171,7 +165,10 @@ public class FontPreloader {
             mTimeOfFirstEventForFirstDraw = time;
         } else {
             RecordHistogram.recordTimesHistogram(
-                    String.format("%s.%s.%s", UMA_PREFIX, UMA_FONTS_RETRIEVED_BEFORE_FIRST_DRAW,
+                    String.format(
+                            "%s.%s.%s",
+                            UMA_PREFIX,
+                            UMA_FONTS_RETRIEVED_BEFORE_FIRST_DRAW,
                             mActivityNameForFirstDraw),
                     time - mTimeOfFirstEventForFirstDraw);
             // Also record one without the activity name for aggregation across all activities.
@@ -191,7 +188,10 @@ public class FontPreloader {
             mTimeOfFirstEventForPostInflation = time;
         } else {
             RecordHistogram.recordTimesHistogram(
-                    String.format("%s.%s.%s", UMA_PREFIX, UMA_FONTS_RETRIEVED_AFTER_INFLATION,
+                    String.format(
+                            "%s.%s.%s",
+                            UMA_PREFIX,
+                            UMA_FONTS_RETRIEVED_AFTER_INFLATION,
                             mActivityNameForPostInflation),
                     time - mTimeOfFirstEventForPostInflation);
         }
@@ -200,7 +200,10 @@ public class FontPreloader {
             mTimeOfFirstEventForFirstDraw = time;
         } else {
             RecordHistogram.recordTimesHistogram(
-                    String.format("%s.%s.%s", UMA_PREFIX, UMA_FONTS_RETRIEVED_AFTER_FIRST_DRAW,
+                    String.format(
+                            "%s.%s.%s",
+                            UMA_PREFIX,
+                            UMA_FONTS_RETRIEVED_AFTER_FIRST_DRAW,
                             mActivityNameForFirstDraw),
                     time - mTimeOfFirstEventForFirstDraw);
             // Also record one without the activity name for aggregation across all activities.

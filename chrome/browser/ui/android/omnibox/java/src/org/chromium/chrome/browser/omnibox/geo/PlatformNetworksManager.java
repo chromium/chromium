@@ -48,16 +48,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Util methods for platform networking APIs.
- */
+/** Util methods for platform networking APIs. */
 class PlatformNetworksManager {
-    @VisibleForTesting
-    static TimeProvider sTimeProvider = new TimeProvider();
+    @VisibleForTesting static TimeProvider sTimeProvider = new TimeProvider();
 
     /**
-     * Equivalent to WifiSsid.NONE which is hidden for some reason. This is returned by
-     * {@link WifiManager} if it cannot get the ssid for the connected wifi access point.
+     * Equivalent to WifiSsid.NONE which is hidden for some reason. This is returned by {@link
+     * WifiManager} if it cannot get the ssid for the connected wifi access point.
      */
     static final String UNKNOWN_SSID = "<unknown ssid>";
 
@@ -81,8 +78,9 @@ class PlatformNetworksManager {
             // extracting this logic there to a method that can be called from here.
             // On Android S+, need to use NetworkCapabilities to get the WifiInfo.
             ConnectivityManager connectivityManager =
-                    (ConnectivityManager) context.getApplicationContext().getSystemService(
-                            Context.CONNECTIVITY_SERVICE);
+                    (ConnectivityManager)
+                            context.getApplicationContext()
+                                    .getSystemService(Context.CONNECTIVITY_SERVICE);
 
             Network[] allNetworks = connectivityManager.getAllNetworks();
             for (Network network : allNetworks) {
@@ -117,8 +115,10 @@ class PlatformNetworksManager {
 
     static VisibleWifi getConnectedWifiPreMarshmallow(Context context) {
         Intent intent =
-                ContextUtils.registerProtectedBroadcastReceiver(context.getApplicationContext(),
-                        null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+                ContextUtils.registerProtectedBroadcastReceiver(
+                        context.getApplicationContext(),
+                        null,
+                        new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
         if (intent != null) {
             WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
             return connectedWifiInfoToVisibleWifi(wifiInfo);
@@ -169,17 +169,22 @@ class PlatformNetworksManager {
         return visibleWifis;
     }
 
-    static void getAllVisibleCells(Context context, TelephonyManager telephonyManager,
+    static void getAllVisibleCells(
+            Context context,
+            TelephonyManager telephonyManager,
             Callback<Set<VisibleCell>> callback) {
         if (!hasLocationPermission(context) || telephonyManager == null) {
             callback.onResult(Collections.emptySet());
             return;
         }
 
-        requestCellInfoUpdate(telephonyManager, (cellInfos) -> {
-            PostTask.postTask(TaskTraits.UI_DEFAULT,
-                    () -> callback.onResult(getAllVisibleCellsFromCellInfo(cellInfos)));
-        });
+        requestCellInfoUpdate(
+                telephonyManager,
+                (cellInfos) -> {
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> callback.onResult(getAllVisibleCellsFromCellInfo(cellInfos)));
+                });
     }
 
     private static Set<VisibleCell> getAllVisibleCellsFromCellInfo(List<CellInfo> cellInfos) {
@@ -280,8 +285,8 @@ class PlatformNetworksManager {
     }
 
     /**
-     * Returns a CellInfo object representing the currently registered base stations, containing
-     * its identity fields and signal strength. Null if no base station is active.
+     * Returns a CellInfo object representing the currently registered base stations, containing its
+     * identity fields and signal strength. Null if no base station is active.
      */
     private static @Nullable CellInfo getActiveCellInfo(TelephonyManager telephonyManager) {
         int numRegisteredCellInfo = 0;
@@ -310,7 +315,7 @@ class PlatformNetworksManager {
     /**
      * Computes the connected networks.
      *
-     * Only includes network connections that are active or in the process of being set up.
+     * <p>Only includes network connections that are active or in the process of being set up.
      *
      * @param context The application context
      */
@@ -326,7 +331,7 @@ class PlatformNetworksManager {
     /**
      * Computes all visible networks.
      *
-     * Along with connected networks, also includes all networks found in the most recent {@link
+     * <p>Along with connected networks, also includes all networks found in the most recent {@link
      * WifiManager} scan, and triggers an update to get refreshed {@link TelephonyManager} {@link
      * CellInfo} data. The {@link CellInfo} includes all available cell information from all radios
      * on the device including the camped/registered, serving, and neighboring cells. This update
@@ -343,15 +348,22 @@ class PlatformNetworksManager {
 
         Set<VisibleWifi> allVisibleWifis = getAllVisibleWifis(context, getWifiManager(context));
 
-        getAllVisibleCells(context, telephonyManager, (allVisibleCells) -> {
-            callback.onResult(VisibleNetworks.create(
-                    connectedWifi, connectedCell, allVisibleWifis, allVisibleCells));
-        });
+        getAllVisibleCells(
+                context,
+                telephonyManager,
+                (allVisibleCells) -> {
+                    callback.onResult(
+                            VisibleNetworks.create(
+                                    connectedWifi,
+                                    connectedCell,
+                                    allVisibleWifis,
+                                    allVisibleCells));
+                });
     }
 
     private static TelephonyManager getTelephonyManager(Context context) {
-        return (TelephonyManager) context.getApplicationContext().getSystemService(
-                Context.TELEPHONY_SERVICE);
+        return (TelephonyManager)
+                context.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
     }
 
     private static WifiManager getWifiManager(Context context) {
@@ -361,7 +373,7 @@ class PlatformNetworksManager {
 
     private static boolean hasPermission(Context context, String permission) {
         return ApiCompatibilityUtils.checkPermission(
-                       context, permission, Process.myPid(), Process.myUid())
+                        context, permission, Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -388,21 +400,14 @@ class PlatformNetworksManager {
         callback.onResult(telephonyManager.getAllCellInfo());
     }
 
-    /**
-     * Wrapper around static time providers that allows us to mock the implementation in
-     * tests.
-     */
+    /** Wrapper around static time providers that allows us to mock the implementation in tests. */
     static class TimeProvider {
-        /**
-         * Get current time in milliseconds.
-         */
+        /** Get current time in milliseconds. */
         long getCurrentTime() {
             return System.currentTimeMillis();
         }
 
-        /**
-         * Get elapsed real time in milliseconds.
-         */
+        /** Get elapsed real time in milliseconds. */
         long getElapsedRealtime() {
             return SystemClock.elapsedRealtime();
         }

@@ -36,10 +36,9 @@ import org.chromium.url.JUnitTestGURLs;
  * not displayed on Android Go devices.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        // Remove this after updating to a version of Robolectric that supports
-        // notification channel creation. crbug.com/774315
-        sdk = Build.VERSION_CODES.N_MR1, shadows = {MediaNotificationTestShadowResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;
 
@@ -80,20 +79,11 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
                 .when(mMockForegroundServiceUtils)
                 .startForegroundService(any(Intent.class));
         mTabHolder = createMediaNotificationTestTabHolder(TAB_ID_1, "about:blank", "title1");
-        mFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        mFaviconUrl = JUnitTestGURLs.EXAMPLE_URL;
     }
 
     @Test
     public void testSetNotificationIcon() {
-        mTabHolder.simulateMediaSessionStateChanged(true, false);
-        mTabHolder.simulateFaviconUpdated(mFavicon, mFaviconUrl);
-        assertEquals(mFavicon, getDisplayedIcon());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.N_MR1)
-    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
-    public void testSetNotificationIcon_lowMem_preO() {
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         mTabHolder.simulateFaviconUpdated(mFavicon, mFaviconUrl);
         assertEquals(mFavicon, getDisplayedIcon());

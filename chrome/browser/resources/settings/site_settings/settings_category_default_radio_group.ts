@@ -8,20 +8,21 @@
  * a certain category under Site Settings.
  */
 import '../settings_shared.css.js';
-import '/shared/settings/controls/settings_radio_group.js';
+import '../controls/settings_radio_group.js';
 import '../privacy_page/collapse_radio_button.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
+import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './settings_category_default_radio_group.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {ContentSettingProvider, DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
+import type {DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
+import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
 
 /**
  * Selected content setting radio option.
@@ -124,10 +125,12 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   private getAllowOptionForCategory_(): ContentSetting {
     switch (this.category) {
       case ContentSettingsTypes.ADS:
+      case ContentSettingsTypes.AUTOMATIC_FULLSCREEN:
       case ContentSettingsTypes.BACKGROUND_SYNC:
       case ContentSettingsTypes.FEDERATED_IDENTITY_API:
       case ContentSettingsTypes.IMAGES:
       case ContentSettingsTypes.JAVASCRIPT:
+      case ContentSettingsTypes.JAVASCRIPT_JIT:
       case ContentSettingsTypes.MIXEDSCRIPT:
       case ContentSettingsTypes.PAYMENT_HANDLER:
       case ContentSettingsTypes.POPUPS:
@@ -157,6 +160,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.USB_DEVICES:
       case ContentSettingsTypes.VR:
       case ContentSettingsTypes.WINDOW_MANAGEMENT:
+      case ContentSettingsTypes.WEB_PRINTING:
         // "Ask" vs "Blocked".
         return ContentSetting.ASK;
       default:

@@ -53,7 +53,7 @@ void ClientControlledShellSurfaceDelegate::OnStateChanged(
       shell_surface_->SetMaximized();
       break;
     case chromeos::WindowStateType::kFullscreen:
-      shell_surface_->SetFullscreen(true);
+      shell_surface_->SetFullscreen(true, display::kInvalidDisplayId);
       break;
     case chromeos::WindowStateType::kPinned:
       shell_surface_->SetPinned(chromeos::WindowPinType::kPinned);
@@ -140,6 +140,13 @@ std::unique_ptr<gfx::GpuMemoryBuffer> ExoTestHelper::CreateGpuMemoryBuffer(
       ->GetGpuMemoryBufferManager()
       ->CreateGpuMemoryBuffer(size, format, gfx::BufferUsage::GPU_READ,
                               gpu::kNullSurfaceHandle, nullptr);
+}
+
+std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
+    ShellSurfaceBase* shell_surface,
+    gfx::BufferFormat format) {
+  return std::make_unique<Buffer>(CreateGpuMemoryBuffer(
+      shell_surface->GetWidget()->GetWindowBoundsInScreen().size(), format));
 }
 
 std::unique_ptr<InputMethodSurface> ExoTestHelper::CreateInputMethodSurface(

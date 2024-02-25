@@ -5,6 +5,7 @@
 #include "ash/drag_drop/drag_drop_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_image_view.h"
@@ -15,6 +16,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -27,9 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -333,7 +333,7 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
     output_drag_op = DragOperation::kMove;
   }
 
-  const raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
+  const raw_ptr<aura::Window, DanglingUntriaged> window_;
   State state_{State::kNotInvoked};
 };
 
@@ -384,7 +384,7 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
   State state() const { return state_; }
   int events_forwarded() const { return events_forwarded_; }
   ui::mojom::DragEventSource source() const { return source_; }
-  absl::optional<gfx::PointF> current_location() const {
+  std::optional<gfx::PointF> current_location() const {
     return current_location_;
   }
 
@@ -423,7 +423,7 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
  private:
   State state_ = State::kNotInvoked;
   int events_forwarded_ = 0;
-  absl::optional<gfx::PointF> current_location_;
+  std::optional<gfx::PointF> current_location_;
   ui::mojom::DragEventSource source_;
 };
 
@@ -538,13 +538,13 @@ class DragDropControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<TestDragDropController> drag_drop_controller_;
-  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged | ExperimentalAsh>
-      mock_shell_delegate_ = nullptr;
+  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged> mock_shell_delegate_ =
+      nullptr;
 
   std::unique_ptr<TestNewWindowDelegateProvider>
       test_new_window_delegate_provider_;
-  raw_ptr<NiceMock<MockNewWindowDelegate>, ExperimentalAsh>
-      mock_new_window_delegate_ptr_ = nullptr;
+  raw_ptr<NiceMock<MockNewWindowDelegate>> mock_new_window_delegate_ptr_ =
+      nullptr;
 
   bool quit_ = false;
 
@@ -1346,9 +1346,6 @@ TEST_F(DragDropControllerTest, EventTarget) {
 
 // Verifies that a tab drag changes the drag operation to a move.
 TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebUITabStripTabDragIntegration);
-
   EXPECT_CALL(*mock_shell_delegate(), IsTabDrag(_))
       .Times(1)
       .WillOnce(Return(true));
@@ -1383,9 +1380,6 @@ TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
 
 // Verifies that a tab drag does not crash (UAF) on source window destruction.
 TEST_F(DragDropControllerTest, DragTabDoesNotCrashOnSourceWindowDestruction) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebUITabStripTabDragIntegration);
-
   EXPECT_CALL(*mock_shell_delegate(), IsTabDrag(_))
       .Times(1)
       .WillOnce(Return(true));
@@ -1630,9 +1624,6 @@ TEST_F(DragDropControllerTest, ToplevelWindowDragDelegateWithTouch2) {
 }
 
 TEST_F(DragDropControllerTest, DragWithChromeTabDelegateTakesCapture) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebUITabStripTabDragIntegration);
-
   EXPECT_CALL(*mock_shell_delegate(), IsTabDrag(_))
       .Times(1)
       .WillOnce(Return(true));
@@ -1658,9 +1649,6 @@ TEST_F(DragDropControllerTest, DragWithChromeTabDelegateTakesCapture) {
 // overview (or any other window) on the other, touch and hold a desk mini view
 // (or that other window) and drag a browser tab simultaneously.
 TEST_F(DragDropControllerTest, TabletSplitViewDragTwoBrowserTabs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebUITabStripTabDragIntegration);
-
   // Enter tablet mode. Avoid TabletModeController::OnGetSwitchStates() from
   // disabling tablet mode.
   base::RunLoop().RunUntilIdle();
@@ -1672,10 +1660,9 @@ TEST_F(DragDropControllerTest, TabletSplitViewDragTwoBrowserTabs) {
   std::unique_ptr<aura::Window> tab_window2 = CreateToplevelTestWindow();
   SplitViewController* const split_view_controller =
       SplitViewController::Get(tab_window1.get());
-  split_view_controller->SnapWindow(
-      tab_window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      tab_window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(tab_window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(tab_window2.get(),
+                                    SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InTabletSplitViewMode());
 
   // Touch and hold the right tab window.
@@ -1786,7 +1773,7 @@ TEST_F(DragDropControllerDlpTest, AllowedSyncDragDrop) {
   // Configure `dlp_controller_` to allow sync drop.
   EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) { std::move(drop_cb).Run(); });
 
   PerformDlpDragAndDrop(CreateDragData(/*with_image=*/false));
@@ -1842,7 +1829,7 @@ TEST_F(DragDropControllerDlpTest, AllowedAsyncDrop) {
   base::OnceClosure drop_callback;
   EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -1870,7 +1857,7 @@ TEST_F(DragDropControllerDlpTest, InterruptedAsyncDrop) {
   base::OnceClosure drop_callback;
   EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -1907,7 +1894,7 @@ TEST_F(DragDropControllerDlpTest, DlpDisallowAsyncDrop) {
   base::OnceClosure drop_callback;
   EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -2046,7 +2033,7 @@ class DragDropControllerLongTapCancelTest : public DragDropControllerTest {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<DragTestView, ExperimentalAsh> drag_view_ = nullptr;
+  raw_ptr<DragTestView> drag_view_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   bool inside_loop_task_executed_ = false;
 };

@@ -42,11 +42,10 @@ class GURL;
 // Delegate for the TableViewTextLinkCell. Is notified when a link is
 // tapped.
 @property(nonatomic, weak) id<TableViewTextLinkCellDelegate> delegate;
-// Sets the `URL` link on the cell's label if the corresponding item's `linkURL`
-// is valid and `textLabel` contains the proper LINK delimiters.
-- (void)setLinkURL:(CrURL*)URL;
-// Sets the `URL` link on the cell's label for `range`.
-- (void)setLinkURL:(CrURL*)URL forRange:(NSRange)range;
+// Sets the cell's label with the appropriate urls and ranges.
+- (void)setText:(NSString*)text
+       linkURLs:(std::vector<GURL>)linkURLS
+     linkRanges:(NSArray*)linkRanges;
 
 @end
 

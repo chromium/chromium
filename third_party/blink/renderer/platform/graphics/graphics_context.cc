@@ -27,13 +27,13 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "cc/paint/color_filter.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/platform_canvas.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
@@ -86,14 +86,13 @@ std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(gfx::PointF pt,
   return {gfx::Point(pt.x(), y), gfx::Point(pt.x() + width, y)};
 }
 
-Color DarkModeColor(GraphicsContext& context,
-                    const Color& color,
-                    const AutoDarkMode& auto_dark_mode) {
+SkColor4f DarkModeColor(GraphicsContext& context,
+                        const SkColor4f& color,
+                        const AutoDarkMode& auto_dark_mode) {
   if (auto_dark_mode.enabled) {
-    return Color::FromSkColor4f(
-        context.GetDarkModeFilter()->InvertColorIfNeeded(
-            color.toSkColor4f(), auto_dark_mode.role,
-            SkColor4f::FromColor(auto_dark_mode.contrast_color)));
+    return context.GetDarkModeFilter()->InvertColorIfNeeded(
+        color, auto_dark_mode.role,
+        SkColor4f::FromColor(auto_dark_mode.contrast_color));
   }
   return color;
 }
@@ -129,7 +128,7 @@ class GraphicsContext::DarkModeFlags final {
 
  private:
   const cc::PaintFlags* flags_;
-  absl::optional<cc::PaintFlags> dark_mode_flags_;
+  std::optional<cc::PaintFlags> dark_mode_flags_;
 };
 
 GraphicsContext::GraphicsContext(PaintController& paint_controller)
@@ -260,9 +259,13 @@ void GraphicsContext::BeginLayer(SkBlendMode xfermode) {
   BeginLayer(flags);
 }
 
-void GraphicsContext::BeginLayer(sk_sp<cc::ColorFilter> color_filter) {
+void GraphicsContext::BeginLayer(sk_sp<cc::ColorFilter> color_filter,
+                                 const SkBlendMode* blend_mode) {
   cc::PaintFlags flags;
   flags.setColorFilter(std::move(color_filter));
+  if (blend_mode) {
+    flags.setBlendMode(*blend_mode);
+  }
   BeginLayer(flags);
 }
 
@@ -346,9 +349,9 @@ void GraphicsContext::DrawFocusRingPath(const SkPath& path,
                                         float width,
                                         float corner_radius,
                                         const AutoDarkMode& auto_dark_mode) {
-  DrawPlatformFocusRing(path, canvas_,
-                        DarkModeColor(*this, color, auto_dark_mode).Rgb(),
-                        width, corner_radius);
+  DrawPlatformFocusRing(
+      path, canvas_, DarkModeColor(*this, color.toSkColor4f(), auto_dark_mode),
+      width, corner_radius);
 }
 
 void GraphicsContext::DrawFocusRingRect(const SkRRect& rrect,
@@ -356,7 +359,8 @@ void GraphicsContext::DrawFocusRingRect(const SkRRect& rrect,
                                         float width,
                                         const AutoDarkMode& auto_dark_mode) {
   DrawPlatformFocusRing(
-      rrect, canvas_, DarkModeColor(*this, color, auto_dark_mode).Rgb(), width);
+      rrect, canvas_, DarkModeColor(*this, color.toSkColor4f(), auto_dark_mode),
+      width);
 }
 
 static void EnforceDotsAtEndpoints(GraphicsContext& context,
@@ -424,7 +428,7 @@ static void EnforceDotsAtEndpoints(GraphicsContext& context,
 
   if (use_start_dot || use_end_dot) {
     cc::PaintFlags fill_flags;
-    fill_flags.setColor(flags.getColor());
+    fill_flags.setColor(flags.getColor4f());
     if (use_start_dot) {
       SkRect start_dot;
       if (is_vertical_line) {
@@ -534,10 +538,9 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
           gfx::RectFToSkRect(GetRectForTextLine(pt, width, StrokeThickness()));
       DrawRect(r, *paint_flags, auto_dark_mode);
     } else {
-      cc::PaintFlags flags;
-      flags = ImmutableState()->FillFlags();
+      cc::PaintFlags flags = ImmutableState()->FillFlags();
       // Text lines are drawn using the stroke color.
-      flags.setColor(StrokeColor().toSkColor4f());
+      flags.setColor(ImmutableState()->StrokeFlags().getColor4f());
       SkRect r = gfx::RectFToSkRect(
           GetRectForTextLine(pt, width, RoundDownThickness(StrokeThickness())));
       DrawRect(r, flags, auto_dark_mode);
@@ -545,15 +548,14 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
   }
 }
 
-template <typename TextPaintInfo>
-void GraphicsContext::DrawTextInternal(const Font& font,
-                                       const TextPaintInfo& text_info,
-                                       const gfx::PointF& point,
-                                       const cc::PaintFlags& flags,
-                                       DOMNodeId node_id,
-                                       const AutoDarkMode& auto_dark_mode) {
+void GraphicsContext::DrawText(const Font& font,
+                               const TextFragmentPaintInfo& text_info,
+                               const gfx::PointF& point,
+                               const cc::PaintFlags& flags,
+                               DOMNodeId node_id,
+                               const AutoDarkMode& auto_dark_mode) {
   DarkModeFlags dark_mode_flags(this, auto_dark_mode, flags);
-  if (sk_sp<SkTextBlob> text_blob = paint_controller_.CachedTextBlob()) {
+  if (sk_sp<SkTextBlob> text_blob = paint_controller_->CachedTextBlob()) {
     canvas_->drawTextBlob(text_blob, point.x(), point.y(), node_id,
                           dark_mode_flags);
     return;
@@ -563,31 +565,14 @@ void GraphicsContext::DrawTextInternal(const Font& font,
                           : Font::DrawType::kGlyphsOnly);
 }
 
-void GraphicsContext::DrawText(const Font& font,
-                               const TextRunPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               const cc::PaintFlags& flags,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
-}
-
-void GraphicsContext::DrawText(const Font& font,
-                               const NGTextFragmentPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               const cc::PaintFlags& flags,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
-}
-
 template <typename DrawTextFunc>
-void GraphicsContext::DrawTextPasses(const AutoDarkMode& auto_dark_mode,
-                                     const DrawTextFunc& draw_text) {
+void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
   TextDrawingModeFlags mode_flags = TextDrawingMode();
 
-  if (mode_flags & kTextModeFill) {
-    draw_text(ImmutableState()->FillFlags());
+  if (ImmutableState()->GetTextPaintOrder() == kFillStroke) {
+    if (mode_flags & kTextModeFill) {
+      draw_text(ImmutableState()->FillFlags());
+    }
   }
 
   if ((mode_flags & kTextModeStroke) && GetStrokeStyle() != kNoStroke &&
@@ -599,25 +584,21 @@ void GraphicsContext::DrawTextPasses(const AutoDarkMode& auto_dark_mode,
     }
     draw_text(stroke_flags);
   }
+
+  if (ImmutableState()->GetTextPaintOrder() == kStrokeFill) {
+    if (mode_flags & kTextModeFill) {
+      draw_text(ImmutableState()->FillFlags());
+    }
+  }
 }
 
 void GraphicsContext::DrawText(const Font& font,
-                               const TextRunPaintInfo& text_info,
+                               const TextFragmentPaintInfo& text_info,
                                const gfx::PointF& point,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&](const cc::PaintFlags& flags) {
-    DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
-  });
-}
-
-void GraphicsContext::DrawText(const Font& font,
-                               const NGTextFragmentPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&](const cc::PaintFlags& flags) {
-    DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    DrawText(font, text_info, point, flags, node_id, auto_dark_mode);
   });
 }
 
@@ -628,9 +609,9 @@ void GraphicsContext::DrawEmphasisMarksInternal(
     const AtomicString& mark,
     const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&font, &text_info, &mark, &point,
-                                  this](const cc::PaintFlags& flags) {
-    font.DrawEmphasisMarks(canvas_, text_info, mark, point, flags);
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    font.DrawEmphasisMarks(canvas_, text_info, mark, point,
+                           DarkModeFlags(this, auto_dark_mode, flags));
   });
 }
 
@@ -642,12 +623,11 @@ void GraphicsContext::DrawEmphasisMarks(const Font& font,
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
 
-void GraphicsContext::DrawEmphasisMarks(
-    const Font& font,
-    const NGTextFragmentPaintInfo& text_info,
-    const AtomicString& mark,
-    const gfx::PointF& point,
-    const AutoDarkMode& auto_dark_mode) {
+void GraphicsContext::DrawEmphasisMarks(const Font& font,
+                                        const TextFragmentPaintInfo& text_info,
+                                        const AtomicString& mark,
+                                        const gfx::PointF& point,
+                                        const AutoDarkMode& auto_dark_mode) {
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
 
@@ -657,28 +637,15 @@ void GraphicsContext::DrawBidiText(
     const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode,
     Font::CustomFontNotReadyAction custom_font_not_ready_action) {
-  DrawTextPasses(
-      auto_dark_mode, [&font, &run_info, &point, custom_font_not_ready_action,
-                       this](const cc::PaintFlags& flags) {
-        if (font.DrawBidiText(canvas_, run_info, point,
-                              custom_font_not_ready_action, flags,
-                              printing_ ? Font::DrawType::kGlyphsAndClusters
-                                        : Font::DrawType::kGlyphsOnly)) {
-          paint_controller_.SetTextPainted();
-        }
-      });
-}
-
-void GraphicsContext::DrawHighlightForText(const Font& font,
-                                           const TextRun& run,
-                                           const gfx::PointF& point,
-                                           int h,
-                                           const Color& background_color,
-                                           const AutoDarkMode& auto_dark_mode,
-                                           int from,
-                                           int to) {
-  FillRect(font.SelectionRectForText(run, point, h, from, to), background_color,
-           auto_dark_mode);
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    if (font.DrawBidiText(canvas_, run_info, point,
+                          custom_font_not_ready_action,
+                          DarkModeFlags(this, auto_dark_mode, flags),
+                          printing_ ? Font::DrawType::kGlyphsAndClusters
+                                    : Font::DrawType::kGlyphsOnly)) {
+      paint_controller_->SetTextPainted();
+    }
+  });
 }
 
 void GraphicsContext::DrawImage(
@@ -694,7 +661,7 @@ void GraphicsContext::DrawImage(
   const gfx::RectF src = src_ptr ? *src_ptr : gfx::RectF(image.Rect());
   cc::PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
-  image_flags.setColor(SK_ColorBLACK);
+  image_flags.setColor(SkColors::kBlack);
 
   SkSamplingOptions sampling = ComputeSamplingOptions(image, dest, src);
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
@@ -732,7 +699,7 @@ void GraphicsContext::DrawImageRRect(
       ComputeSamplingOptions(image, dest.Rect(), src_rect);
   cc::PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
-  image_flags.setColor(SK_ColorBLACK);
+  image_flags.setColor(SkColors::kBlack);
 
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
   ImageDrawOptions draw_options(dark_mode_filter, sampling, respect_orientation,
@@ -773,7 +740,7 @@ void GraphicsContext::SetImagePainted(bool report_paint_timing) {
     return;
   }
 
-  paint_controller_.SetImagePainted();
+  paint_controller_->SetImagePainted();
 }
 
 cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
@@ -897,13 +864,15 @@ void GraphicsContext::FillRoundedRect(const FloatRoundedRect& rrect,
     return;
   }
 
-  if (color == FillColor()) {
-    DrawRRect(SkRRect(rrect), ImmutableState()->FillFlags(), auto_dark_mode);
+  const cc::PaintFlags& fill_flags = ImmutableState()->FillFlags();
+  const SkColor4f sk_color = color.toSkColor4f();
+  if (sk_color == fill_flags.getColor4f()) {
+    DrawRRect(SkRRect(rrect), fill_flags, auto_dark_mode);
     return;
   }
 
-  cc::PaintFlags flags = ImmutableState()->FillFlags();
-  flags.setColor(color.toSkColor4f());
+  cc::PaintFlags flags = fill_flags;
+  flags.setColor(sk_color);
 
   DrawRRect(SkRRect(rrect), flags, auto_dark_mode);
 }
@@ -957,18 +926,18 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
                                  const AutoDarkMode& auto_dark_mode) {
   DCHECK(canvas_);
 
+  const cc::PaintFlags& fill_flags = ImmutableState()->FillFlags();
+  const SkColor4f sk_color = color.toSkColor4f();
   if (!IsSimpleDRRect(outer, inner)) {
-    if (color == FillColor()) {
-      canvas_->drawDRRect(
-          SkRRect(outer), SkRRect(inner),
-          DarkModeFlags(this, auto_dark_mode, ImmutableState()->FillFlags()));
+    if (sk_color == fill_flags.getColor4f()) {
+      canvas_->drawDRRect(SkRRect(outer), SkRRect(inner),
+                          DarkModeFlags(this, auto_dark_mode, fill_flags));
     } else {
-      cc::PaintFlags flags(ImmutableState()->FillFlags());
-      flags.setColor(color.toSkColor4f());
+      cc::PaintFlags flags(fill_flags);
+      flags.setColor(sk_color);
       canvas_->drawDRRect(SkRRect(outer), SkRRect(inner),
                           DarkModeFlags(this, auto_dark_mode, flags));
     }
-
     return;
   }
 
@@ -977,8 +946,8 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
   SkRRect stroke_r_rect(outer);
   stroke_r_rect.inset(stroke_width / 2, stroke_width / 2);
 
-  cc::PaintFlags stroke_flags(ImmutableState()->FillFlags());
-  stroke_flags.setColor(color.toSkColor4f());
+  cc::PaintFlags stroke_flags(fill_flags);
+  stroke_flags.setColor(sk_color);
   stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags.setStrokeWidth(stroke_width);
 
@@ -1119,7 +1088,7 @@ void GraphicsContext::SetURLForRect(const KURL& link,
   DCHECK(canvas_);
 
   sk_sp<SkData> url(SkData::MakeWithCString(link.GetString().Utf8().c_str()));
-  canvas_->Annotate(cc::PaintCanvas::AnnotationType::URL,
+  canvas_->Annotate(cc::PaintCanvas::AnnotationType::kUrl,
                     gfx::RectToSkRect(dest_rect), std::move(url));
 }
 
@@ -1128,7 +1097,7 @@ void GraphicsContext::SetURLFragmentForRect(const String& dest_name,
   DCHECK(canvas_);
 
   sk_sp<SkData> sk_dest_name(SkData::MakeWithCString(dest_name.Utf8().c_str()));
-  canvas_->Annotate(cc::PaintCanvas::AnnotationType::LINK_TO_DESTINATION,
+  canvas_->Annotate(cc::PaintCanvas::AnnotationType::kLinkToDestination,
                     gfx::RectToSkRect(rect), std::move(sk_dest_name));
 }
 
@@ -1142,7 +1111,7 @@ void GraphicsContext::SetURLDestinationLocation(const String& name,
 
   SkRect rect = SkRect::MakeXYWH(location.x(), location.y(), 0, 0);
   sk_sp<SkData> sk_name(SkData::MakeWithCString(name.Utf8().c_str()));
-  canvas_->Annotate(cc::PaintCanvas::AnnotationType::NAMED_DESTINATION, rect,
+  canvas_->Annotate(cc::PaintCanvas::AnnotationType::kNameDestination, rect,
                     std::move(sk_name));
 }
 

@@ -36,7 +36,7 @@ void EraseStaleEntries(base::Value::Dict& engagement) {
   for (auto it = engagement.begin(); it != engagement.end();) {
     const auto& [key, value] = *it;
 
-    absl::optional<base::Time> last_time =
+    std::optional<base::Time> last_time =
         NotificationsEngagementService::ParsePeriodBeginFromBucketLabel(key);
     if (!last_time.has_value() || last_time.value() < cutoff) {
       it = engagement.erase(it);
@@ -130,7 +130,7 @@ std::string NotificationsEngagementService::GetBucketLabel(base::Time date) {
 }
 
 // static
-absl::optional<base::Time>
+std::optional<base::Time>
 NotificationsEngagementService::ParsePeriodBeginFromBucketLabel(
     const std::string& label) {
   int maybe_engagement_time;
@@ -144,7 +144,7 @@ NotificationsEngagementService::ParsePeriodBeginFromBucketLabel(
       return local_period_begin;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace permissions

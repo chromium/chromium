@@ -4,20 +4,20 @@
 
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 
+#include <optional>
+
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
 namespace {
 
-constexpr base::StringPiece kSupportsLoadingMode = "Supports-Loading-Mode";
+constexpr std::string_view kSupportsLoadingMode = "Supports-Loading-Mode";
 constexpr struct KnownLoadingMode {
-  base::StringPiece token;
+  std::string_view token;
   mojom::LoadingMode enumerator;
 } kKnownLoadingModes[] = {
     {"default", mojom::LoadingMode::kDefault},
@@ -30,7 +30,7 @@ constexpr struct KnownLoadingMode {
 }  // namespace
 
 mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
-    base::StringPiece header_value) {
+    std::string_view header_value) {
   // A parse error in the HTTP structured headers syntax is a parse error for
   // the header value as a whole.
   auto list = net::structured_headers::ParseList(header_value);

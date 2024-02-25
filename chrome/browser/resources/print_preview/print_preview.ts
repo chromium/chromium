@@ -43,7 +43,7 @@ export {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement} from './ui/copies
 export {PrintPreviewDestinationDialogElement} from './ui/destination_dialog.js';
 // </if>
 // <if expr="is_chromeos">
-export {PrintPreviewDestinationDialogCrosElement} from './ui/destination_dialog_cros.js';
+export {DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS, PrintPreviewDestinationDialogCrosElement} from './ui/destination_dialog_cros.js';
 export {PrintPreviewDestinationDropdownCrosElement} from './ui/destination_dropdown_cros.js';
 // </if>
 export {PrintPreviewDestinationListElement} from './ui/destination_list.js';
@@ -83,7 +83,7 @@ export {PluginProxy, PluginProxyImpl, ViewportChangedCallback} from './ui/plugin
 export {PreviewAreaState, PreviewTicket, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 // <if expr="is_chromeos">
-export {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource, PrintPreviewPrinterSetupInfoCrosElement} from './ui/printer_setup_info_cros.js';
+export {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from './ui/printer_setup_info_cros.js';
 // </if>
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
 export {SelectMixin, SelectMixinInterface} from './ui/select_mixin.js';

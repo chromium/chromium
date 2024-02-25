@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_system_provider/registry.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,10 +23,8 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 const char kTemporaryOrigin[] =
@@ -96,7 +95,7 @@ class FileSystemProviderRegistryTest : public testing::Test {
  protected:
   FileSystemProviderRegistryTest() : profile_(nullptr) {}
 
-  ~FileSystemProviderRegistryTest() override {}
+  ~FileSystemProviderRegistryTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -117,7 +116,7 @@ class FileSystemProviderRegistryTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<RegistryInterface> registry_;
   Watcher fake_watcher_;
 };
@@ -193,16 +192,16 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
   EXPECT_TRUE(display_name);
   EXPECT_EQ(kDisplayName, *display_name);
 
-  absl::optional<bool> writable = file_system->FindBool(kPrefKeyWritable);
+  std::optional<bool> writable = file_system->FindBool(kPrefKeyWritable);
   EXPECT_TRUE(writable.has_value());
   EXPECT_TRUE(writable.value());
 
-  absl::optional<bool> supports_notify_tag =
+  std::optional<bool> supports_notify_tag =
       file_system->FindBool(kPrefKeySupportsNotifyTag);
   EXPECT_TRUE(supports_notify_tag.has_value());
   EXPECT_TRUE(supports_notify_tag.value());
 
-  absl::optional<int> opened_files_limit =
+  std::optional<int> opened_files_limit =
       file_system->FindInt(kPrefKeyOpenedFilesLimit);
   EXPECT_TRUE(opened_files_limit.has_value());
   EXPECT_EQ(kOpenedFilesLimit, opened_files_limit.value());
@@ -219,7 +218,7 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
   EXPECT_TRUE(entry_path);
   EXPECT_EQ(fake_watcher_.entry_path.value(), *entry_path);
 
-  absl::optional<bool> recursive = watcher->FindBool(kPrefKeyWatcherRecursive);
+  std::optional<bool> recursive = watcher->FindBool(kPrefKeyWatcherRecursive);
   EXPECT_TRUE(recursive.has_value());
   EXPECT_EQ(fake_watcher_.recursive, recursive.value());
 
@@ -308,5 +307,4 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
   EXPECT_EQ(fake_watcher_.last_tag, *last_tag);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

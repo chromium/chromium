@@ -109,6 +109,8 @@ std::string AlternativeService::ToString() const {
 }
 
 std::string AlternativeServiceInfo::ToString() const {
+  // NOTE: Cannot use `base::UnlocalizedTimeFormatWithPattern()` since
+  // `net/DEPS` disallows `base/i18n`.
   base::Time::Exploded exploded;
   expiration_.LocalExplode(&exploded);
   return base::StringPrintf(

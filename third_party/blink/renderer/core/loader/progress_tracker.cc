@@ -101,9 +101,9 @@ void ProgressTracker::ProgressCompleted() {
   frame_->SetIsLoading(false);
   SendFinalProgress();
   Reset();
+  probe::FrameStoppedLoading(frame_);
   GetLocalFrameClient()->DidStopLoading();
   frame_->UpdateFaviconURL();
-  probe::FrameStoppedLoading(frame_);
 }
 
 void ProgressTracker::FinishedParsing() {
@@ -207,7 +207,7 @@ void ProgressTracker::MaybeSendProgress() {
   if (progress_value_ < last_notified_progress_value_)
     return;
 
-  double now = base::Time::Now().ToDoubleT();
+  double now = base::Time::Now().InSecondsFSinceUnixEpoch();
   double notified_progress_time_delta = now - last_notified_progress_time_;
 
   double notification_progress_delta =

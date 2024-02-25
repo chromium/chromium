@@ -193,7 +193,7 @@ BookmarkProviderTest::BookmarkProviderTest() {
 
 void BookmarkProviderTest::SetUp() {
   provider_client_ = std::make_unique<MockAutocompleteProviderClient>();
-  ON_CALL(*provider_client_, GetLocalOrSyncableBookmarkModel())
+  ON_CALL(*provider_client_, GetBookmarkModel())
       .WillByDefault(testing::Return(local_or_syncable_model_.get()));
   ON_CALL(*provider_client_, GetSchemeClassifier())
       .WillByDefault(testing::ReturnRef(classifier_));
@@ -656,31 +656,4 @@ TEST_F(BookmarkProviderTest, MaxMatches) {
   provider_->Start(input, false);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 9u);
-}
-
-TEST_F(BookmarkProviderTest, AccountBookmarkModel) {
-  const std::string kInputText = "abcd";
-  const size_t kMatchesInLocalOrSyncableModel = 2;
-
-  // With no account bookmark model, the input text hits 2 results in the
-  // local-or-syncable instance.
-  ASSERT_EQ(GetNumMatches(kInputText), kMatchesInLocalOrSyncableModel);
-
-  // Plumb an account bookmark model.
-  std::unique_ptr<BookmarkModel> account_model =
-      bookmarks::TestBookmarkClient::CreateModel();
-  ON_CALL(*provider_client_, GetAccountBookmarkModel())
-      .WillByDefault(testing::Return(account_model.get()));
-  ResetProvider();
-
-  // The account model is initially empty, so the matches remain unchanged.
-  ASSERT_EQ(GetNumMatches(kInputText), kMatchesInLocalOrSyncableModel);
-
-  // Populate the account bookmark model with some data that matches the query.
-  const BookmarkNode* other_node = account_model->other_node();
-  account_model->AddURL(other_node, other_node->children().size(),
-                        base::ASCIIToUTF16(kInputText), GURL("http://foo.com"));
-
-  // There should be one extra match now.
-  EXPECT_EQ(GetNumMatches(kInputText), kMatchesInLocalOrSyncableModel + 1);
 }

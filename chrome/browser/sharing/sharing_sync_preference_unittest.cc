@@ -75,7 +75,7 @@ class SharingSyncPreferenceTest : public testing::Test {
 };
 
 TEST_F(SharingSyncPreferenceTest, UpdateVapidKeys) {
-  EXPECT_EQ(absl::nullopt, sharing_sync_preference_.GetVapidKey());
+  EXPECT_EQ(std::nullopt, sharing_sync_preference_.GetVapidKey());
   sharing_sync_preference_.SetVapidKey(kVapidKey);
   EXPECT_EQ(kVapidKey, sharing_sync_preference_.GetVapidKey());
 }
@@ -120,7 +120,7 @@ TEST_F(SharingSyncPreferenceTest, FCMRegistrationGetSet) {
 
   // Set FCM registration without authorized entity.
   sharing_sync_preference_.SetFCMRegistration(
-      SharingSyncPreference::FCMRegistration(absl::nullopt, time_now));
+      SharingSyncPreference::FCMRegistration(std::nullopt, time_now));
 
   fcm_registration = sharing_sync_preference_.GetFCMRegistration();
   EXPECT_TRUE(fcm_registration);

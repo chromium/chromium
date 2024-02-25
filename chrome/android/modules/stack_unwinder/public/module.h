@@ -41,7 +41,8 @@ class Module {
   // Creates a new native stack unwinder.
   std::unique_ptr<base::Unwinder> CreateNativeUnwinder(
       base::NativeUnwinderAndroidMapDelegate* map_delegate,
-      uintptr_t exclude_module_with_base_address);
+      uintptr_t exclude_module_with_base_address,
+      bool is_java_name_hashing_enabled);
 
   // Creates an unwinder that will use libunwindstack::Unwinder exclusively, it
   // does not do partial unwinds instead either succeeding or failing the whole

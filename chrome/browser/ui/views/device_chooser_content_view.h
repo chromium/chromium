@@ -29,8 +29,9 @@ class Throbber;
 class DeviceChooserContentView : public views::View,
                                  public ui::TableModel,
                                  public permissions::ChooserController::View {
+  METADATA_HEADER(DeviceChooserContentView, views::View)
+
  public:
-  METADATA_HEADER(DeviceChooserContentView);
   DeviceChooserContentView(
       views::TableViewObserver* table_view_observer,
       std::unique_ptr<permissions::ChooserController> chooser_controller);

@@ -1,0 +1,26 @@
+[
+  {
+    "can_be_recommended": true,
+    "official_only": true,
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "MetricsReportingEnabled": false
+        },
+        "prefs": {
+          "user_experience_metrics.reporting_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

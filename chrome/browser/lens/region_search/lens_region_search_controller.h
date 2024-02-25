@@ -13,8 +13,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget.h"
 
-class Browser;
-
 namespace content {
 class WebContents;
 enum class Visibility;
@@ -28,7 +26,7 @@ namespace lens {
 
 class LensRegionSearchController : public content::WebContentsObserver {
  public:
-  explicit LensRegionSearchController(Browser* browser);
+  LensRegionSearchController();
   ~LensRegionSearchController() override;
 
   // Creates and runs the drag and capture flow. When run, the user enters into
@@ -67,9 +65,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
-  // Check if the image need to downscale.
-  static bool NeedsDownscale(gfx::Image image);
-
   // The function handling the metrics recording and resizing that happens when
   // the capture has been completed.
   void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
@@ -89,8 +84,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   void RecordRegionSizeRelatedMetrics(gfx::Rect screen_bounds,
                                       gfx::Size region_size);
 
-  gfx::Image ResizeImageIfNecessary(const gfx::Image& image);
-
   // Variable for tracking the default search provider as to launch the image
   // results in correct search engine. This value is set every time the capture
   // mode is started to have an accurate value for the completed capture.
@@ -103,8 +96,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   bool in_capture_mode_ = false;
 
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
-
-  raw_ptr<Browser> browser_ = nullptr;
 
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
 

@@ -32,6 +32,7 @@
 @synthesize browserProviderInterface = _browserProviderInterface;
 
 @synthesize window = _window;
+@synthesize appState = _appState;
 
 - (instancetype)initWithAppState:(AppState*)appState
                     browserState:(ChromeBrowserState*)browserState {
@@ -40,6 +41,7 @@
     DCHECK(!browserState->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;
     self.browserProviderInterface = [[StubBrowserProviderInterface alloc] init];
+    self.appState = appState;
 
     _browser = std::make_unique<TestBrowser>(browserState);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
@@ -77,9 +79,7 @@
   WebStateList* web_state_list =
       self.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
-  web_state_list->InsertWebState(
-      WebStateList::kInvalidIndex, std::move(test_web_state),
-      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  web_state_list->InsertWebState(std::move(test_web_state));
 }
 
 - (void)appendWebStatesWithURL:(const GURL)URL count:(int)count {

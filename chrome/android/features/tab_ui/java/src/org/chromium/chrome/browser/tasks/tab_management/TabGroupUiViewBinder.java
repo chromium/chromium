@@ -21,13 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * ViewBinder for TabGroupUi component.
- */
+/** ViewBinder for TabGroupUi component. */
 class TabGroupUiViewBinder {
-    /**
-     * ViewHolder class to get access to all {@link View}s inside the TabGroupUi.
-     */
+    /** ViewHolder class to get access to all {@link View}s inside the TabGroupUi. */
     public static class ViewHolder {
         public final TabGroupUiToolbarView toolbarView;
         public final RecyclerView contentView;
@@ -37,6 +33,7 @@ class TabGroupUiViewBinder {
             this.contentView = contentView;
         }
     }
+
     /**
      * Binds the given model to the given view, updating the payload in propertyKey.
      *

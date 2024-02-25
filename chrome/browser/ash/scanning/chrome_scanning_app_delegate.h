@@ -79,8 +79,7 @@ class ChromeScanningAppDelegate : public ScanningAppDelegate {
                     base::OnceCallback<void(bool)>,
                     bool file_path_exists);
 
-  raw_ptr<content::WebUI, DanglingUntriaged | ExperimentalAsh>
-      web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI, DanglingUntriaged> web_ui_;  // Owns |this|.
 
   // Helper class for for file path manipulation and verification.
   ScanningFilePathHelper file_path_helper_;

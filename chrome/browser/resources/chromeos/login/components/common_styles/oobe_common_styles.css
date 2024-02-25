@@ -22,23 +22,14 @@
       /* Classes can-scroll is-scrolled scrolled-to-bottom are set by
           OobeScrollableBehavior. */
       .scrollable.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
-        background: linear-gradient(0deg,
-                        rgba(var(--google-grey-100-rgb), 1) 0,
-                        rgba(var(--google-grey-100-rgb), 0) 8px);
-
+        border-bottom: var(--cros-sys-separator) solid 1px;
       }
       .scrollable.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
-        background: linear-gradient(0deg,
-                        rgba(var(--google-grey-100-rgb), 1) 0,
-                        rgba(var(--google-grey-100-rgb), 0) 8px),
-                    linear-gradient(180deg,
-                        rgba(var(--google-grey-100-rgb), 1) 0,
-                        rgba(var(--google-grey-100-rgb), 0) 8px);
+        border-top: var(--cros-sys-separator) solid 1px;
+        border-bottom: var(--cros-sys-separator) solid 1px;
       }
       .scrollable.is-scrolled.scrolled-to-bottom {
-        background: linear-gradient(180deg,
-                        rgba(var(--google-grey-100-rgb), 1) 0,
-                        rgba(var(--google-grey-100-rgb), 0) 8px);
+        border-top: var(--cros-sys-separator) solid 1px;
       }
 
       /* Links styles used within OOBE */
@@ -48,7 +39,6 @@
         cursor: pointer;
         text-decoration: none;
       }
-
       :host-context(.jelly-enabled) .oobe-local-link {
         color: var(--cros-sys-primary);
       }
@@ -57,7 +47,6 @@
         outline-color: var(--cros-focus-ring-color);
         transition: outline-color 200ms;
       }
-
       :host-context(.jelly-enabled) .oobe-local-link:focus {
         outline-color: var(--cros-sys-focus_ring);
       }

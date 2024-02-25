@@ -25,8 +25,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/fullscreen_util_mac.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -84,9 +83,8 @@ const int kSearchBtnMinWidth = 205;
 // Creates an NSImage from the given VectorIcon.
 NSImage* CreateNSImageFromIcon(const gfx::VectorIcon& icon,
                                SkColor color = kTouchBarDefaultIconColor) {
-  return NSImageFromImageSkiaWithColorSpace(
-      gfx::CreateVectorIcon(icon, kTouchBarIconSize, color),
-      base::mac::GetSRGBColorSpace());
+  return NSImageFromImageSkia(
+      gfx::CreateVectorIcon(icon, kTouchBarIconSize, color));
 }
 
 // Creates an NSButton for the touch bar using an existing NSImage.
@@ -298,10 +296,7 @@ class TouchBarNotificationBridge : public CommandObserver,
   // When in tab or extension fullscreen, we should show a touch bar containing
   // only items associated with that mode. Since the toolbar is hidden, only
   // the option to exit fullscreen should show up.
-  FullscreenController* controller =
-      _browser->exclusive_access_manager()->fullscreen_controller();
-  if (controller->IsWindowFullscreenForTabOrPending() ||
-      controller->IsExtensionFullscreenOrPending()) {
+  if (fullscreen_utils::IsInContentFullscreen(_browser)) {
     return [self createTabFullscreenTouchBar];
   }
 
@@ -552,10 +547,9 @@ class TouchBarNotificationBridge : public CommandObserver,
   NSImage* image = nil;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (isGoogle) {
-    image = NSImageFromImageSkiaWithColorSpace(
+    image = NSImageFromImageSkia(
         gfx::CreateVectorIcon(vector_icons::kGoogleGLogoIcon, kTouchBarIconSize,
-                              gfx::kPlaceholderColor),
-        base::mac::GetSRGBColorSpace());
+                              gfx::kPlaceholderColor));
   } else {
     image = CreateNSImageFromIcon(vector_icons::kSearchIcon);
   }

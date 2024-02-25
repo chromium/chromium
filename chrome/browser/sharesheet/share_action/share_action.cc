@@ -7,6 +7,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/drive/drive_api_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #endif
 
@@ -19,6 +20,12 @@ bool ShareAction::HasActionView() {
 bool ShareAction::ShouldShowAction(const apps::IntentPtr& intent,
                                    bool contains_hosted_document) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (const auto& file : intent->files) {
+    if (file->mime_type &&
+        drive::util::IsEncryptedMimeType(file->mime_type.value())) {
+      return false;
+    }
+  }
   return !contains_hosted_document && intent && !intent->OnlyShareToDrive() &&
          intent->IsIntentValid();
 #else

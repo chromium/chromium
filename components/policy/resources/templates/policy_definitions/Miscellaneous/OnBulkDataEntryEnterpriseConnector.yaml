@@ -8,6 +8,8 @@ desc: |-
 
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD">block_until_verdict</ph> field being set to 1 means Chrome will wait to get a response from the analysis service before giving the page access to the data. Any other integer value means Chrome gives the page access to the data immediately.
 
+        The <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD">default_action</ph> field being set to block means Chrome will not give the page access to the data if an error occurs while communicating with the analysis service. Any other value means Chrome gives the page access to the data.
+
         The <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE">minimum_data_size</ph> field indicates the minimum size (in bytes) data entered in Chrome must equal or surpass to be scanned. The default value is 100 bytes if the field is unset.
 
         The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
@@ -17,6 +19,7 @@ desc: |-
         This policy requires additional setup to take effect, please visit https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting for more information.
 example_value:
 - block_until_verdict: 0
+  default_action: allow
   custom_messages:
   - language: default
     learn_more_url: moreinfo.example.com
@@ -72,6 +75,11 @@ schema:
     properties:
       block_until_verdict:
         type: integer
+      default_action:
+        enum:
+        - allow
+        - block
+        type: string
       custom_messages:
         items:
           properties:

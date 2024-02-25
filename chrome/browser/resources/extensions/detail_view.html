@@ -54,8 +54,16 @@
     padding: 15px;
   }
 
+  .safety-check-icon {
+    align-items: center;
+    align-self: flex-start;
+    display: flex;
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+    fill: var(--google-grey-700);
+  }
+
   .safety-check-warning-container iron-icon {
-    border-radius: 50%;
     height: var(--cr-icon-size);
     padding: 6px;
     width: var(--cr-icon-size);
@@ -68,7 +76,6 @@
     }
 
     .safety-check-icon {
-      background-color: var(--google-blue-300);
       fill: var(--review-panel-icon-color);
     }
   }
@@ -195,7 +202,7 @@
     </div>
     <div class="safety-check-warning-container" id="safetyCheckWarningContainer"
         hidden$="[[!showSafetyCheck_]]">
-      <iron-icon role="img" icon="cr:extension"
+      <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
           class="safety-check-icon">
       </iron-icon>
       <div class="safety-check-wrapper">
@@ -468,6 +475,14 @@
         on-click="onSiteSettingsClick_" external></cr-link-row>
     <template is="dom-if" if="[[shouldShowOptionsSection_(data.*)]]">
       <div id="options-section">
+        <template is="dom-if" if="[[canPinToToolbar_(data.pinnedToToolbar)]]">
+          <extensions-toggle-row id="pin-to-toolbar"
+              checked="[[data.pinnedToToolbar]]"
+              class="hr"
+              on-change="onPinnedToToolbarChange_">
+            <span>$i18n{itemPinToToolbar}</span>
+          </extensions-toggle-row>
+        </template>
         <template is="dom-if"
           if="[[shouldShowIncognitoOption_(
               data.incognitoAccess.isEnabled, incognitoAvailable)]]">

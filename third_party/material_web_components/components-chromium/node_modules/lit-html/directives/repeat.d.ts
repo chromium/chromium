@@ -5,8 +5,8 @@
  */
 import { ChildPart, noChange } from '../lit-html.js';
 import { Directive, PartInfo } from '../directive.js';
-export declare type KeyFn<T> = (item: T, index: number) => unknown;
-export declare type ItemTemplate<T> = (item: T, index: number) => unknown;
+export type KeyFn<T> = (item: T, index: number) => unknown;
+export type ItemTemplate<T> = (item: T, index: number) => unknown;
 declare class RepeatDirective extends Directive {
     private _itemKeys?;
     constructor(partInfo: PartInfo);

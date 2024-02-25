@@ -53,7 +53,9 @@ class PamAuthorizer : public protocol::Authenticator {
 
 PamAuthorizer::PamAuthorizer(
     std::unique_ptr<protocol::Authenticator> underlying)
-    : underlying_(std::move(underlying)), local_login_status_(NOT_CHECKED) {}
+    : underlying_(std::move(underlying)), local_login_status_(NOT_CHECKED) {
+  ChainStateChangeAfterAcceptedWithUnderlying(*underlying_);
+}
 
 PamAuthorizer::~PamAuthorizer() {}
 
@@ -115,17 +117,27 @@ void PamAuthorizer::MaybeCheckLocalLogin() {
 }
 
 bool PamAuthorizer::IsLocalLoginAllowed() {
+  HOST_LOG << "Running local login check.";
   std::string username = GetUsername();
   if (username.empty()) {
+    LOG(ERROR) << "Failed to get username.";
     return false;
   }
   struct pam_conv conv = {PamConversation, nullptr};
   pam_handle_t* handle = nullptr;
+  HOST_LOG << "Calling pam_start() with username " << username;
   int result =
       pam_start("chrome-remote-desktop", username.c_str(), &conv, &handle);
-  if (result == PAM_SUCCESS) {
+  if (result != PAM_SUCCESS) {
+    LOG(ERROR) << "pam_start() returned error " << result;
+  } else {
+    HOST_LOG << "Calling pam_acct_mgmt()";
     result = pam_acct_mgmt(handle, 0);
+    if (result != PAM_SUCCESS) {
+      LOG(ERROR) << "pam_acct_mgmt() returned error " << result;
+    }
   }
+  HOST_LOG << "Calling pam_end()";
   pam_end(handle, result);
 
   HOST_LOG << "Local login check for " << username

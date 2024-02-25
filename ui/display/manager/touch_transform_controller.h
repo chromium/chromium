@@ -105,7 +105,7 @@ class DISPLAY_MANAGER_EXPORT TouchTransformController {
                             UpdateData* update_data) const;
 
   // |display_manager_| are not owned and must outlive TouchTransformController.
-  raw_ptr<DisplayManager, ExperimentalAsh> display_manager_;
+  raw_ptr<DisplayManager> display_manager_;
 
   bool is_calibrating_ = false;
 

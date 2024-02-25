@@ -97,7 +97,7 @@ class DeviceSettingsServiceWaiter
     : public ::ash::DeviceSettingsService::Observer {
  public:
   DeviceSettingsServiceWaiter() {
-    DCHECK(::ash::DeviceSettingsService::IsInitialized());
+    CHECK(::ash::DeviceSettingsService::IsInitialized());
     device_settings_observation_.Observe(::ash::DeviceSettingsService::Get());
   }
 
@@ -261,11 +261,17 @@ class NetworkTelemetrySamplerBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, PRE_Default) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
+// TODO(https://crbug.com/1497648): Test is flaky on multiple CrOS builders.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Default DISABLED_Default
+#else
+#define MAYBE_Default Default
+#endif
+IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, MAYBE_Default) {
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsNetworkTelemetry));
 
@@ -280,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     VerifyNetworkTelemetryData(record_data);
-    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
   }
 
   {
@@ -295,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     VerifyNetworkTelemetryData(record_data);
-    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
   }
 
   SetReportNetworkStatusPolicy(false);
@@ -306,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
         metrics::kDefaultNetworkTelemetryCollectionRate);
     base::RunLoop().RunUntilIdle();
 
-    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
   }
 
   // Set collection rate policy to double the default rate.
@@ -327,7 +333,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     VerifyNetworkTelemetryData(record_data);
-    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+    base::RunLoop().RunUntilIdle();
+    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
   }
 
   {
@@ -338,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     base::RunLoop().RunUntilIdle();
 
     // No data collected, only half of time elapsed.
-    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
 
     // Advance the remaining time.
     test::MockClock::Get().Advance(
@@ -350,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     VerifyNetworkTelemetryData(record_data);
-    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+    base::RunLoop().RunUntilIdle();
+    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
   }
 
   Deprovision();
@@ -360,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     test::MockClock::Get().Advance(collection_rate);
     base::RunLoop().RunUntilIdle();
 
-    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+    ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
   }
 }
 

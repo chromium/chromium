@@ -23,7 +23,7 @@ void RejectWithCode(ScriptPromiseResolver* resolver,
                     const String& message) {
   ScriptState::Scope scope(resolver->GetScriptState());
   ExceptionState exception_state(resolver->GetScriptState()->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "SelectorDirective",
                                  "createSelectorDirective");
   exception_state.ThrowDOMException(code, message);

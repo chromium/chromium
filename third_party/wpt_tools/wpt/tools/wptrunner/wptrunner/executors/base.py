@@ -64,6 +64,16 @@ def strip_server(url):
     return urlunsplit(url_parts)
 
 
+def server_url(server_config, protocol, subdomain=False):
+    scheme = "https" if protocol == "h2" else protocol
+    host = server_config["browser_host"]
+    if subdomain:
+        # The only supported subdomain filename flag is "www".
+        host = "{subdomain}.{host}".format(subdomain="www", host=host)
+    return "{scheme}://{host}:{port}".format(scheme=scheme, host=host,
+        port=server_config["ports"][protocol][0])
+
+
 class TestharnessResultConverter:
     harness_codes = {0: "OK",
                      1: "ERROR",
@@ -79,11 +89,10 @@ class TestharnessResultConverter:
     def __call__(self, test, result, extra=None):
         """Convert a JSON result into a (TestResult, [SubtestResult]) tuple"""
         result_url, status, message, stack, subtest_results = result
-        assert result_url == test.url, ("Got results from %s, expected %s" %
-                                        (result_url, test.url))
-        harness_result = test.result_cls(self.harness_codes[status], message, extra=extra, stack=stack)
+        assert result_url == test.url, (f"Got results from {result_url}, expected {test.url}")
+        harness_result = test.make_result(self.harness_codes[status], message, extra=extra, stack=stack)
         return (harness_result,
-                [test.subtest_result_cls(st_name, self.test_codes[st_status], st_message, st_stack)
+                [test.make_subtest_result(st_name, self.test_codes[st_status], st_message, st_stack)
                  for st_name, st_status, st_message, st_stack in subtest_results])
 
 
@@ -143,7 +152,7 @@ def get_pages(ranges_value, total_pages):
 def reftest_result_converter(self, test, result):
     extra = result.get("extra", {})
     _ensure_hash_in_reftest_screenshots(extra)
-    return (test.result_cls(
+    return (test.make_result(
         result["status"],
         result["message"],
         extra=extra,
@@ -156,14 +165,14 @@ def pytest_result_converter(self, test, data):
     if subtest_data is None:
         subtest_data = []
 
-    harness_result = test.result_cls(*harness_data)
-    subtest_results = [test.subtest_result_cls(*item) for item in subtest_data]
+    harness_result = test.make_result(*harness_data)
+    subtest_results = [test.make_subtest_result(*item) for item in subtest_data]
 
     return (harness_result, subtest_results)
 
 
 def crashtest_result_converter(self, test, result):
-    return test.result_cls(**result), []
+    return test.make_result(**result), []
 
 
 class ExecutorException(Exception):
@@ -304,7 +313,8 @@ class TestExecutor:
             result = self.do_test(test)
         except Exception as e:
             exception_string = traceback.format_exc()
-            self.logger.warning(exception_string)
+            message = f"Exception in TextExecutor.run:\n{exception_string}"
+            self.logger.warning(message)
             result = self.result_from_exception(test, e, exception_string)
 
         # log result of parent test
@@ -316,13 +326,7 @@ class TestExecutor:
         self.runner.send_message("test_ended", test, result)
 
     def server_url(self, protocol, subdomain=False):
-        scheme = "https" if protocol == "h2" else protocol
-        host = self.server_config["browser_host"]
-        if subdomain:
-            # The only supported subdomain filename flag is "www".
-            host = "{subdomain}.{host}".format(subdomain="www", host=host)
-        return "{scheme}://{host}:{port}".format(scheme=scheme, host=host,
-            port=self.server_config["ports"][protocol][0])
+        return server_url(self.server_config, protocol, subdomain)
 
     def test_url(self, test):
         return urljoin(self.server_url(test.environment["protocol"],
@@ -348,7 +352,7 @@ class TestExecutor:
         if message:
             message += "\n"
         message += exception_string
-        return test.result_cls(status, message), []
+        return test.make_result(status, message), []
 
     def wait(self):
         return self.protocol.base.wait()
@@ -644,7 +648,7 @@ class WdspecExecutor(TestExecutor):
         if success:
             return self.convert_result(test, data)
 
-        return (test.result_cls(*data), [])
+        return (test.make_result(*data), [])
 
     def do_wdspec(self, path, timeout):
         session_config = {"host": self.browser.host,
@@ -653,7 +657,8 @@ class WdspecExecutor(TestExecutor):
                           "timeout_multiplier": self.timeout_multiplier,
                           "browser": {
                               "binary": self.binary,
-                              "args": self.binary_args
+                              "args": self.binary_args,
+                              "env": self.browser.env,
                           },
                           "webdriver": {
                               "binary": self.webdriver_binary,
@@ -731,8 +736,8 @@ class CallbackHandler:
         self.logger.debug("Got async callback: %s" % result[1])
         try:
             callback = self.callbacks[command]
-        except KeyError:
-            raise ValueError("Unknown callback type %r" % result[1])
+        except KeyError as e:
+            raise ValueError("Unknown callback type %r" % result[1]) from e
         return callback(url, payload)
 
     def process_complete(self, url, payload):
@@ -745,11 +750,21 @@ class CallbackHandler:
         self.logger.debug(f"Got action: {action}")
         try:
             action_handler = self.actions[action]
-        except KeyError:
-            raise ValueError(f"Unknown action {action}")
+        except KeyError as e:
+            raise ValueError(f"Unknown action {action}") from e
         try:
             with ActionContext(self.logger, self.protocol, payload.get("context")):
-                result = action_handler(payload)
+                try:
+                    result = action_handler(payload)
+                except AttributeError as e:
+                    # If we fail to get an attribute from the protocol presumably that's a
+                    # ProtocolPart we don't implement
+                    # AttributeError got an obj property in Python 3.10, for older versions we
+                    # fall back to looking at the error message.
+                    if ((hasattr(e, "obj") and getattr(e, "obj") == self.protocol) or
+                        f"'{self.protocol.__class__.__name__}' object has no attribute" in str(e)):
+                        raise NotImplementedError from e
+                    raise
         except self.unimplemented_exc:
             self.logger.warning("Action %s not implemented" % action)
             self._send_message(cmd_id, "complete", "error", f"Action {action} not implemented")

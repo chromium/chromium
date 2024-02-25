@@ -34,23 +34,20 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/time/time.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
+class TimeDelta;
 class WaitableEvent;
 }  // namespace base
 
@@ -61,14 +58,16 @@ struct ResourceRequest;
 
 namespace blink {
 
-class ResourceLoadInfoNotifierWrapper;
 class BackForwardCacheLoaderHelper;
 class BlobDataHandle;
+class CodeCacheHost;
+class ResourceLoadInfoNotifierWrapper;
 class ResourceRequestSender;
-class WebURLRequestExtraData;
+class SecurityOrigin;
 class URLLoaderClient;
-class WebURLResponse;
+class URLLoaderThrottle;
 struct WebURLError;
+class WebURLResponse;
 
 class BLINK_PLATFORM_EXPORT URLLoader {
  public:
@@ -81,7 +80,8 @@ class BLINK_PLATFORM_EXPORT URLLoader {
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+      Vector<std::unique_ptr<URLLoaderThrottle>> throttles);
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
   URLLoader();
@@ -92,18 +92,17 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // Load the request synchronously, returning results directly to the
   // caller upon completion.  There is no mechanism to interrupt a
   // synchronous load!!
-  // If the request's PassResponsePipeToClient flag is set to true, the response
-  // will instead be redirected to a blob, which is passed out in
-  // |downloaded_blob|.
+  // If `download_to_blob` is true, the response will instead be
+  // redirected to a blob, which is passed out in `downloaded_blob`.
   virtual void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-      bool pass_response_pipe_to_client,
+      scoped_refptr<const SecurityOrigin> top_frame_origin,
+      bool download_to_blob,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
       URLLoaderClient* client,
       WebURLResponse& response,
-      absl::optional<WebURLError>& error,
+      std::optional<WebURLError>& error,
       scoped_refptr<SharedBuffer>& data,
       int64_t& encoded_data_length,
       uint64_t& encoded_body_length,
@@ -116,10 +115,11 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // loader is disposed before it completes its work.
   virtual void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      scoped_refptr<const SecurityOrigin> top_frame_origin,
       bool no_mime_sniffing,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       URLLoaderClient* client);
 
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the

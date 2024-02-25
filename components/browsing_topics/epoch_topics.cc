@@ -100,7 +100,7 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   if (top_topics_and_observing_domains.empty())
     return EpochTopics(calculation_time);
 
-  absl::optional<int> padded_top_topics_start_index_value =
+  std::optional<int> padded_top_topics_start_index_value =
       dict_value.FindInt(kPaddedTopTopicsStartIndexNameKey);
   if (!padded_top_topics_start_index_value)
     return EpochTopics(calculation_time);
@@ -108,7 +108,7 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   size_t padded_top_topics_start_index =
       static_cast<size_t>(*padded_top_topics_start_index_value);
 
-  absl::optional<int> config_version_value =
+  std::optional<int> config_version_value =
       dict_value.FindInt(kConfigVersionNameKey);
 
   // `kConfigVersionNameKey` is introduced after the initial release. Instead of
@@ -116,7 +116,7 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   // is the only valid version before this field is introduced.
   int config_version = config_version_value ? *config_version_value : 1;
 
-  absl::optional<int> taxonomy_version_value =
+  std::optional<int> taxonomy_version_value =
       dict_value.FindInt(kTaxonomyVersionNameKey);
   if (!taxonomy_version_value)
     return EpochTopics(calculation_time);
@@ -128,7 +128,7 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   if (!model_version_value)
     return EpochTopics(calculation_time);
 
-  absl::optional<int64_t> model_version_int64_value =
+  std::optional<int64_t> model_version_int64_value =
       base::ValueToInt64(model_version_value);
   if (!model_version_int64_value)
     return EpochTopics(calculation_time);

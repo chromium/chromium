@@ -3,18 +3,32 @@
         --cr-icon-button-margin-start: 20px;
       }
 
-      cr-link-row:not([hidden]) + cr-link-row {
+      cr-link-row:not([hidden]) ~ cr-link-row {
         border-top: var(--cr-separator-line);
       }
     </style>
     <settings-animated-pages id="pages" section="autofill"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-        <cr-link-row id="passwordManagerButton" start-icon="settings20:vpn-key"
+        <cr-link-row id="passwordManagerButton"
             label="$i18n{localPasswordManager}" on-click="onPasswordsClick_"
             role-description="$i18n{subpageArrowRoleDescription}"
-            external>
+            start-icon="cr20:password" external>
         </cr-link-row>
+        <template is="dom-if" if="[[isPlusAddressSettingEnabled_]]">
+          <cr-link-row id="plusAddressManagerButton"
+              label="$i18n{plusAddressSettings}"
+              on-click="onPlusAddressClick_"
+              role-description="$i18n{subpageArrowRoleDescription}"
+              <if expr="_google_chrome">
+                start-icon="settings-internal:plus-addresses-logo"
+              </if>
+              <if expr="not _google_chrome">
+                start-icon="settings:email"
+              </if>
+              external>
+          </cr-link-row>
+        </template>
         <cr-link-row id="paymentManagerButton"
             start-icon="settings20:credit-card" label="$i18n{creditCards}"
             on-click="onPaymentsClick_"

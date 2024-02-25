@@ -34,7 +34,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
                                 int toolbar_textbox_background_color,
                                 int url_bar_background_resource_id,
                                 float x_offset,
-                                float y_offset,
+                                float content_offset,
                                 bool show_debug,
                                 bool clip_shadow) {
   ToolbarResource* resource =
@@ -112,7 +112,9 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   else if (!show_debug && debug_layer_->parent())
     debug_layer_->RemoveFromParent();
 
-  layer_->SetPosition(gfx::PointF(x_offset, y_offset));
+  // Position the toolbar at the bottom of the space available for top controls.
+  layer_->SetPosition(
+      gfx::PointF(x_offset, content_offset - layer_->bounds().height()));
 }
 
 int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer) {

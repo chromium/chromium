@@ -67,15 +67,18 @@ NearbyConnection::~NearbyConnection() {
 
 void NearbyConnection::Connect() {
   SetStatus(Status::IN_PROGRESS);
-  nearby_connector_->Connect(GetRemoteDeviceBluetoothAddressAsVector(), eid_,
-                             message_receiver_.BindNewPipeAndPassRemote(),
-                             base::BindOnce(&NearbyConnection::OnConnectResult,
-                                            weak_ptr_factory_.GetWeakPtr()));
+  nearby_connector_->Connect(
+      GetRemoteDeviceBluetoothAddressAsVector(), eid_,
+      message_receiver_.BindNewPipeAndPassRemote(),
+      nearby_connection_state_listener_.BindNewPipeAndPassRemote(),
+      base::BindOnce(&NearbyConnection::OnConnectResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyConnection::Disconnect() {
   message_sender_.reset();
   message_receiver_.reset();
+  nearby_connection_state_listener_.reset();
   file_payload_handler_.reset();
   CleanUpPendingFileTransfersOnDisconnect();
   SetStatus(Status::DISCONNECTED);
@@ -112,6 +115,12 @@ void NearbyConnection::RegisterPayloadFileImpl(
 
 void NearbyConnection::OnMessageReceived(const std::string& message) {
   OnBytesReceived(message);
+}
+
+void NearbyConnection::OnNearbyConnectionStateChanged(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  SetNearbyConnectionSubStatus(step, result);
 }
 
 void NearbyConnection::OnFileTransferUpdate(

@@ -4,9 +4,14 @@
 
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
+#import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
 
 namespace autofill {
@@ -15,11 +20,17 @@ namespace autofill {
 
 CardUnmaskPromptViewBridge::CardUnmaskPromptViewBridge(
     CardUnmaskPromptController* controller,
-    UIViewController* base_view_controller)
+    UIViewController* base_view_controller,
+    PersonalDataManager* personal_data_manager)
     : controller_(controller),
       base_view_controller_(base_view_controller),
+      personal_data_manager_(personal_data_manager),
       weak_ptr_factory_(this) {
-  DCHECK(controller_);
+  CHECK(controller_);
+  CHECK(personal_data_manager_);
+  credit_card_data_ =
+      [[CreditCardData alloc] initWithCreditCard:controller_->GetCreditCard()
+                                            icon:GetCardIcon()];
 }
 
 CardUnmaskPromptViewBridge::~CardUnmaskPromptViewBridge() {
@@ -98,6 +109,23 @@ void CardUnmaskPromptViewBridge::NavigationControllerDismissed() {
 
 void CardUnmaskPromptViewBridge::DeleteSelf() {
   delete this;
+}
+
+UIImage* CardUnmaskPromptViewBridge::GetCardIcon() {
+  // Firstly check if card art image is available.
+  const CreditCard& credit_card = GetController()->GetCreditCard();
+  gfx::Image* image = personal_data_manager_->GetCreditCardArtImageForUrl(
+      credit_card.card_art_url());
+  if (image) {
+    return image->ToUIImage();
+  }
+
+  // Use card network icon.
+  Suggestion::Icon icon = credit_card.CardIconForAutofillSuggestion();
+  return icon == Suggestion::Icon::kNoIcon
+             ? nil
+             : NativeImage(CreditCard::IconResourceId(
+                   credit_card.CardIconForAutofillSuggestion()));
 }
 
 }  // namespace autofill

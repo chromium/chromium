@@ -113,7 +113,8 @@ def main():
           'deviceScaleFactor': device['screen']['device-pixel-ratio'],
           'touch': 'touch' in device['capabilities'],
           'mobile': 'mobile' in device['capabilities'],
-        }
+        },
+        'type': device['type']
       }
       if 'user-agent-metadata' in device:
         client_hints = device['user-agent-metadata']

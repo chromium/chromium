@@ -7,36 +7,19 @@
 //    ../../third_party/xcbproto/src \
 //    gen/ui/gfx/x \
 //    bigreq \
-//    composite \
-//    damage \
-//    dpms \
-//    dri2 \
 //    dri3 \
-//    ge \
 //    glx \
-//    present \
 //    randr \
-//    record \
 //    render \
-//    res \
 //    screensaver \
 //    shape \
 //    shm \
 //    sync \
-//    xc_misc \
-//    xevie \
-//    xf86dri \
-//    xf86vidmode \
 //    xfixes \
-//    xinerama \
 //    xinput \
 //    xkb \
-//    xprint \
 //    xproto \
-//    xselinux \
-//    xtest \
-//    xv \
-//    xvmc
+//    xtest
 
 #ifndef UI_GFX_X_GENERATED_PROTOS_RANDR_H_
 #define UI_GFX_X_GENERATED_PROTOS_RANDR_H_
@@ -45,6 +28,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -52,7 +36,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "render.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -247,7 +230,7 @@ class COMPONENT_EXPORT(X11) RandR {
   };
 
   struct ScreenChangeNotifyEvent {
-    static constexpr int type_id = 11;
+    static constexpr uint8_t type_id = 3;
     static constexpr uint8_t opcode = 0;
     Rotation rotation{};
     uint16_t sequence{};
@@ -261,10 +244,6 @@ class COMPONENT_EXPORT(X11) RandR {
     uint16_t height{};
     uint16_t mwidth{};
     uint16_t mheight{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&request_window);
-    }
   };
 
   struct MonitorInfo {
@@ -290,7 +269,7 @@ class COMPONENT_EXPORT(X11) RandR {
   };
 
   struct NotifyEvent {
-    static constexpr int type_id = 12;
+    static constexpr uint8_t type_id = 4;
     static constexpr uint8_t opcode = 1;
     uint16_t sequence{};
     struct Cc {
@@ -344,15 +323,13 @@ class COMPONENT_EXPORT(X11) RandR {
       Lease lease{};
       uint8_t created{};
     };
-    absl::optional<Cc> cc{};
-    absl::optional<Oc> oc{};
-    absl::optional<Op> op{};
-    absl::optional<Pc> pc{};
-    absl::optional<Pp> pp{};
-    absl::optional<Rc> rc{};
-    absl::optional<Lc> lc{};
-
-    x11::Window* GetWindow() { return nullptr; }
+    std::optional<Cc> cc{};
+    std::optional<Oc> oc{};
+    std::optional<Op> op{};
+    std::optional<Pc> pc{};
+    std::optional<Pp> pp{};
+    std::optional<Rc> rc{};
+    std::optional<Lc> lc{};
   };
 
   struct QueryVersionRequest {

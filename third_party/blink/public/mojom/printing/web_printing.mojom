@@ -1,0 +1,210 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/blob/blob.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+enum WebPrintingMultipleDocumentHandling {
+  kSeparateDocumentsCollatedCopies,
+  kSeparateDocumentsUncollatedCopies
+};
+
+enum WebPrintingSides {
+  kOneSided,
+  kTwoSidedLongEdge,
+  kTwoSidedShortEdge
+};
+
+enum WebPrintColorMode {
+  kColor,
+  kMonochrome
+};
+
+enum WebPrintingOrientationRequested {
+  kPortrait,
+  kLandscape,
+};
+
+// Corresponds to the printer-state IPP field.
+// Reports the current state of the printer.
+enum WebPrinterState {
+  kIdle,
+  kProcessing,
+  kStopped,
+};
+
+// Corresponds to the printer-state-reason IPP field.
+// Reports the reasons related to the current state of the printer.
+enum WebPrinterStateReason {
+  // All values for this enum listed below are IPP constants from RFC8011:
+  // https://www.rfc-editor.org/rfc/rfc8011.html#section-5.4.12
+  kNone,
+  kOther,
+  kConnectingToDevice,
+  kCoverOpen,
+  kDeveloperEmpty,
+  kDeveloperLow,
+  kDoorOpen,
+  kFuserOverTemp,
+  kFuserUnderTemp,
+  kInputTrayMissing,
+  kInterlockOpen,
+  kInterpreterResourceUnavailable,
+  kMarkerSupplyEmpty,
+  kMarkerSupplyLow,
+  kMarkerWasteAlmostFull,
+  kMarkerWasteFull,
+  kMediaEmpty,
+  kMediaJam,
+  kMediaLow,
+  kMediaNeeded,
+  kMovingToPaused,
+  kOpcLifeOver,
+  kOpcNearEol,
+  kOutputAreaAlmostFull,
+  kOutputAreaFull,
+  kOutputTrayMissing,
+  kPaused,
+  kShutdown,
+  kSpoolAreaFull,
+  kStoppedPartly,
+  kStopping,
+  kTimedOut,
+  kTonerEmpty,
+  kTonerLow,
+
+  // Non-standard CUPS extensions.
+  // See https://github.com/apple/cups/blob/master/backend/ipp.c for details.
+  kCupsPkiExpired,
+};
+
+// Basic description of a single printer.
+struct WebPrinterInfo {
+  string printer_name;
+  pending_remote<WebPrinter> printer_remote;
+};
+
+struct WebPrintingRange {
+  uint32 from;
+  uint32 to;
+};
+
+// Detailed description of a single printer.
+struct WebPrinterAttributes {
+  uint32 copies_default;
+  WebPrintingRange copies_supported;
+
+  WebPrintingMultipleDocumentHandling multiple_document_handling_default;
+  array<WebPrintingMultipleDocumentHandling> multiple_document_handling_supported;
+
+  WebPrintingOrientationRequested orientation_requested_default;
+  array<WebPrintingOrientationRequested> orientation_requested_supported;
+
+  gfx.mojom.Size printer_resolution_default;
+  array<gfx.mojom.Size> printer_resolution_supported;
+
+  WebPrintColorMode print_color_mode_default;
+  array<WebPrintColorMode> print_color_mode_supported;
+
+  WebPrinterState printer_state;
+  string printer_state_message;
+  array<WebPrinterStateReason> printer_state_reasons;
+
+  WebPrintingSides? sides_default;
+  array<WebPrintingSides> sides_supported;
+};
+
+struct WebPrintJobTemplateAttributes {
+  string job_name;
+
+  uint32 copies;
+  WebPrintingMultipleDocumentHandling? multiple_document_handling;
+  WebPrintingOrientationRequested? orientation_requested;
+  gfx.mojom.Size? printer_resolution;
+  WebPrintColorMode? print_color_mode;
+  WebPrintingSides? sides;
+};
+
+enum WebPrintJobState {
+  kPending,
+  kProcessing,
+  kCompleted,
+  kCanceled,
+  kAborted,
+};
+
+struct WebPrintJobUpdate {
+  WebPrintJobState state;
+  uint32 pages_printed = 0;
+};
+
+// Informs the renderer of changes to a particular print job.
+interface WebPrintJobStateObserver {
+  // Dispatches an update notification.
+  OnWebPrintJobUpdate(WebPrintJobUpdate update);
+};
+
+// Allows the renderer to control a particular job.
+interface WebPrintJobController {
+  // Requests the browser to cancel the job.
+  Cancel();
+};
+
+struct WebPrintJobInfo {
+  string job_name;
+  uint32 job_pages;
+  pending_receiver<WebPrintJobStateObserver> observer;
+  pending_remote<WebPrintJobController> controller;
+};
+
+enum GetPrintersError {
+  kUserPermissionDenied,
+};
+
+union GetPrintersResult {
+  array<WebPrinterInfo> printers;
+  GetPrintersError error;
+};
+
+enum WebPrinterFetchError {
+  kPrinterUnreachable,
+  kUserPermissionDenied,
+};
+
+union WebPrinterFetchResult {
+  WebPrinterAttributes printer_attributes;
+  WebPrinterFetchError error;
+};
+
+enum WebPrintError {
+  kPrinterUnreachable,
+  kDocumentMalformed,
+  kPrintJobTemplateAttributesMismatch,
+  kUserPermissionDenied,
+};
+
+union WebPrintResult {
+  WebPrintJobInfo print_job_info;
+  WebPrintError error;
+};
+
+// Interface for interactions with a particular printer from the render process.
+// The implementation is responsible for checking access permissions.
+interface WebPrinter {
+  // Fetches full attributes of this printer.
+  FetchAttributes() => (WebPrinterFetchResult result);
+
+  // Sends a print job to a printer.
+  Print(pending_remote<blink.mojom.Blob> document,
+        WebPrintJobTemplateAttributes attributes) => (WebPrintResult result);
+};
+
+// Interface for accessing printers from the render process.
+// The implementation is responsible for checking access permissions.
+interface WebPrintingService {
+  // Returns a list of local printers for this device.
+  GetPrinters() => (GetPrintersResult result);
+};

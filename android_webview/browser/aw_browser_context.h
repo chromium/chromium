@@ -11,13 +11,16 @@
 #include <string_view>
 #include <vector>
 
+#include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_ssl_host_state_delegate.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
+#include "base/android/jni_weak_ref.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -35,7 +38,6 @@ class AutocompleteHistoryManager;
 
 namespace content {
 class ClientHintsControllerDelegate;
-class ResourceContext;
 class SSLHostStateDelegate;
 class WebContents;
 }
@@ -50,6 +52,7 @@ class VisitedLinkWriter;
 
 namespace android_webview {
 
+class AwBrowserContextIoThreadHandle;
 class AwContentsOriginMatcher;
 class AwFormDatabaseService;
 class AwQuotaManagerBridge;
@@ -95,10 +98,8 @@ class AwBrowserContext : public content::BrowserContext,
 
   AwQuotaManagerBridge* GetQuotaManagerBridge();
   jlong GetQuotaManagerBridge(JNIEnv* env);
-  void SetWebLayerRunningInSameProcess(JNIEnv* env);
 
   AwFormDatabaseService* GetFormDatabaseService();
-  autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager();
   CookieManager* GetCookieManager();
 
   bool IsDefaultBrowserContext() const;
@@ -107,11 +108,13 @@ class AwBrowserContext : public content::BrowserContext,
   UpdateServiceWorkerXRequestedWithAllowListOriginMatcher(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& rules);
+  void SetServiceWorkerIoThreadClient(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& io_thread_client);
 
   // content::BrowserContext implementation.
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
-  content::ResourceContext* GetResourceContext() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
@@ -163,8 +166,15 @@ class AwBrowserContext : public content::BrowserContext,
   std::string GetExtraHeaders(const GURL& url);
 
  private:
+  friend class AwBrowserContextIoThreadHandle;
   void CreateUserPrefService();
   void MigrateLocalStatePrefs();
+
+  // Return the IO thread client for this browser context that should be used
+  // by service workers. This method should never be called except by
+  // AwBrowserContextIoThreadHandle#GetServiceWorkerIoThreadClient().
+  std::unique_ptr<AwContentsIoThreadClient>
+  GetServiceWorkerIoThreadClientThreadSafe();
 
   const std::string name_;
   const base::FilePath relative_path_;
@@ -180,7 +190,6 @@ class AwBrowserContext : public content::BrowserContext,
       autocomplete_history_manager_;
 
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
-  std::unique_ptr<content::ResourceContext> resource_context_;
 
   std::unique_ptr<PrefService> user_pref_service_;
   std::unique_ptr<AwSSLHostStateDelegate> ssl_host_state_delegate_;
@@ -206,6 +215,9 @@ class AwBrowserContext : public content::BrowserContext,
   //
   // In generally, use GetCookieManager() rather than using this directly.
   std::unique_ptr<CookieManager> cookie_manager_;
+
+  // The IO thread client that should be used by service workers.
+  base::android::ScopedJavaGlobalRef<jobject> sw_io_thread_client_;
 };
 
 }  // namespace android_webview

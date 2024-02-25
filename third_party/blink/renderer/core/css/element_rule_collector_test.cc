@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -23,6 +25,10 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
+
+using css_test_helpers::ParseInvisibleRule;
+using css_test_helpers::ParseRule;
+using css_test_helpers::ParseSignalingRule;
 
 static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
   auto* style_rule =
@@ -53,10 +59,10 @@ class ElementRuleCollectorTest : public PageTestBase {
   // Matches an element against a selector via ElementRuleCollector.
   //
   // Upon successful match, the combined CSSSelector::LinkMatchMask of
-  // of all matched rules is returned, or absl::nullopt if no-match.
-  absl::optional<unsigned> Match(Element* element,
-                                 const String& selector,
-                                 const ContainerNode* scope = nullptr) {
+  // of all matched rules is returned, or std::nullopt if no-match.
+  std::optional<unsigned> Match(Element* element,
+                                const String& selector,
+                                const ContainerNode* scope = nullptr) {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
@@ -66,7 +72,7 @@ class ElementRuleCollectorTest : public PageTestBase {
     String rule = selector + " { color: green }";
     RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
     if (!rule_set) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     MatchRequest request(rule_set, scope);
@@ -78,7 +84,7 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     const MatchedPropertiesVector& vector = result.GetMatchedProperties();
     if (!vector.size()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     // Either the normal rules matched, the visited dependent rules matched,
@@ -124,6 +130,22 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     return collector.MatchedCSSRuleList();
   }
+
+  void CollectIntoMatchResult(Element* element,
+                              RuleSet* rule_set,
+                              MatchResult& result) {
+    ElementResolveContext context(*element);
+    SelectorFilter filter;
+    ElementRuleCollector collector(context, StyleRecalcContext(), filter,
+                                   result, InsideLink(element));
+
+    MatchRequest request(rule_set, {});
+
+    collector.CollectMatchingRules(request);
+    collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
+                                          /*is_vtt_embedded_style=*/false,
+                                          /*tracker=*/nullptr);
+  }
 };
 
 TEST_F(ElementRuleCollectorTest, LinkMatchType) {
@@ -163,9 +185,9 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   const auto kMatchVisited = CSSSelector::kMatchVisited;
   const auto kMatchAll = CSSSelector::kMatchAll;
 
-  EXPECT_EQ(Match(foo, "#bar"), absl::nullopt);
-  EXPECT_EQ(Match(visited, "#foo"), absl::nullopt);
-  EXPECT_EQ(Match(link, "#foo"), absl::nullopt);
+  EXPECT_EQ(Match(foo, "#bar"), std::nullopt);
+  EXPECT_EQ(Match(visited, "#foo"), std::nullopt);
+  EXPECT_EQ(Match(link, "#foo"), std::nullopt);
 
   EXPECT_EQ(Match(foo, "#foo"), kMatchLink);
   EXPECT_EQ(Match(link, ":visited"), kMatchVisited);
@@ -179,8 +201,8 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
 
   EXPECT_EQ(Match(visited, ":link"), kMatchLink);
   EXPECT_EQ(Match(visited, ":visited"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":link:visited"), absl::nullopt);
-  EXPECT_EQ(Match(visited, ":visited:link"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":link:visited"), std::nullopt);
+  EXPECT_EQ(Match(visited, ":visited:link"), std::nullopt);
   EXPECT_EQ(Match(visited, "#visited:visited"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":visited#visited"), kMatchVisited);
   EXPECT_EQ(Match(visited, "body :link"), kMatchLink);
@@ -189,17 +211,17 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   EXPECT_EQ(Match(visited_span, ":visited span"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":not(:visited)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:link)"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":not(:link):not(:visited)"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":not(:link):not(:visited)"), std::nullopt);
   EXPECT_EQ(Match(visited, ":is(:not(:link))"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":is(:not(:visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:link, :not(:link))"), kMatchAll);
   EXPECT_EQ(Match(visited, ":is(:not(:visited), :not(:link))"), kMatchAll);
-  EXPECT_EQ(Match(visited, ":is(:not(:visited):not(:link))"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:not(:visited):not(:link))"), std::nullopt);
   EXPECT_EQ(Match(visited, ":is(:not(:visited):link)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:link))"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":not(:is(:visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:visited)))"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":not(:is(:link, :visited))"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":not(:is(:link, :visited))"), std::nullopt);
   EXPECT_EQ(Match(visited, ":not(:is(:link:visited))"), kMatchAll);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:link):visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:link):not(:visited)))"), kMatchAll);
@@ -213,8 +235,8 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   EXPECT_EQ(Match(visited, ":is(:link, #visited)"), kMatchAll);
   EXPECT_EQ(Match(visited, ":is(:visited)"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":is(:link)"), kMatchLink);
-  EXPECT_EQ(Match(visited, ":is(:link):is(:visited)"), absl::nullopt);
-  EXPECT_EQ(Match(visited, ":is(:link:visited)"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:link):is(:visited)"), std::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:link:visited)"), std::nullopt);
   EXPECT_EQ(Match(visited, ":is(:link, :link)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:is(:link))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:link, :visited)"), kMatchAll);
@@ -227,10 +249,10 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   // behavior for privacy reasons.
   // https://developer.mozilla.org/en-US/docs/Web/CSS/Privacy_and_the_:visited_selector
   EXPECT_EQ(Match(bar, ":link + #bar"), kMatchLink);
-  EXPECT_EQ(Match(bar, ":visited + #bar"), absl::nullopt);
+  EXPECT_EQ(Match(bar, ":visited + #bar"), std::nullopt);
   EXPECT_EQ(Match(bar, ":is(:link + #bar)"), kMatchLink);
-  EXPECT_EQ(Match(bar, ":is(:visited ~ #bar)"), absl::nullopt);
-  EXPECT_EQ(Match(bar, ":not(:is(:link + #bar))"), absl::nullopt);
+  EXPECT_EQ(Match(bar, ":is(:visited ~ #bar)"), std::nullopt);
+  EXPECT_EQ(Match(bar, ":not(:is(:link + #bar))"), std::nullopt);
   EXPECT_EQ(Match(bar, ":not(:is(:visited ~ #bar))"), kMatchLink);
 }
 
@@ -248,9 +270,9 @@ TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
   ASSERT_TRUE(unvisited_host);
 
   ShadowRoot& visited_root =
-      visited_host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      visited_host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   ShadowRoot& unvisited_root =
-      unvisited_host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      unvisited_host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   visited_root.setInnerHTML(R"HTML(
     <style id=style></style>
@@ -324,7 +346,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
   // matches rules for originating element, then returns the non-universal flag
   // for ::highlight(x) or the given PseudoId.
   auto run = [&](Element& element, String selector,
-                 absl::optional<AtomicString> defaultNamespace) {
+                 std::optional<AtomicString> defaultNamespace) {
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(parser_context);
@@ -386,7 +408,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
   EXPECT_TRUE(run(def, "*::highlight(x)", defNs));  // null|*::highlight(x)
 
   // Cases that are independent of whether there is a default @namespace.
-  for (auto& ns : Vector<absl::optional<AtomicString>>{{}, defNs}) {
+  for (auto& ns : Vector<std::optional<AtomicString>>{{}, defNs}) {
     // no default ::highlight(x), default *|*::highlight(x)
     EXPECT_FALSE(run(body, "*|*::highlight(x)", ns));
     // no default .foo::highlight(x), default *|*.foo::highlight(x)
@@ -552,6 +574,137 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
   ASSERT_EQ(1u, bar_css_rules->size());
   CSSRule* bar_css_rule_1 = bar_css_rules->at(0).first;
   EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());
+}
+
+class ElementRuleCollectorWithEmptyPage : public ElementRuleCollectorTest {
+ public:
+  void SetUp() override {
+    ElementRuleCollectorTest::SetUp();
+    UpdateAllLifecyclePhasesForTest();
+    body_ = GetDocument().body();
+    ASSERT_TRUE(body_);
+    medium_ =
+        MakeGarbageCollected<MediaQueryEvaluator>(GetDocument().GetFrame());
+  }
+
+  Persistent<Element> body_;
+  Persistent<MediaQueryEvaluator> medium_;
+};
+
+class ElementRuleCollectorSignalTest
+    : public ElementRuleCollectorWithEmptyPage {};
+
+TEST_F(ElementRuleCollectorSignalTest, NoSignal) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { color: green; }")),
+      *medium_, kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+  EXPECT_EQ(CSSSelector::Signal::kNone,
+            static_cast<CSSSelector::Signal>(
+                result.GetMatchedProperties()[0].types_.signal));
+}
+
+TEST_F(ElementRuleCollectorSignalTest, SignalAloneInMatchResult) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      ParseSignalingRule(GetDocument(), "body { color: green; }",
+                         CSSSelector::Signal::kBareDeclarationShift),
+      *medium_, kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+  EXPECT_EQ(CSSSelector::Signal::kBareDeclarationShift,
+            static_cast<CSSSelector::Signal>(
+                result.GetMatchedProperties()[0].types_.signal));
+}
+
+// Like SignalAloneInMatchResult, but there's also a non-signaling rule
+// in the MatchResult.
+TEST_F(ElementRuleCollectorSignalTest, SignalInMatchResult) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 10px; }")),
+      *medium_, kRuleHasNoSpecialState);
+  rule_set->AddStyleRule(
+      ParseSignalingRule(GetDocument(), "body { color: green; }",
+                         CSSSelector::Signal::kBareDeclarationShift),
+      *medium_, kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(2u, result.GetMatchedProperties().size());
+  EXPECT_EQ(CSSSelector::Signal::kNone,
+            static_cast<CSSSelector::Signal>(
+                result.GetMatchedProperties()[0].types_.signal));
+  EXPECT_EQ(CSSSelector::Signal::kBareDeclarationShift,
+            static_cast<CSSSelector::Signal>(
+                result.GetMatchedProperties()[1].types_.signal));
+}
+
+class ElementRuleCollectorInvisibleTest
+    : public ElementRuleCollectorWithEmptyPage {};
+
+TEST_F(ElementRuleCollectorInvisibleTest, NoInvisibleRule) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { color: green; }")),
+      *medium_, kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+  EXPECT_FALSE(result.GetMatchedProperties()[0].types_.is_invisible);
+}
+
+TEST_F(ElementRuleCollectorInvisibleTest, InvisibleRulePresent) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      ParseInvisibleRule(GetDocument(), "body { color: green; }"), *medium_,
+      kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+  EXPECT_TRUE(result.GetMatchedProperties()[0].types_.is_invisible);
+}
+
+TEST_F(ElementRuleCollectorInvisibleTest, InvisibleAndNonInvisible) {
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddStyleRule(
+      DynamicTo<StyleRule>(ParseRule(GetDocument(), "body { width: 10px; }")),
+      *medium_, kRuleHasNoSpecialState);
+  rule_set->AddStyleRule(
+      ParseInvisibleRule(GetDocument(), "body { color: green; }"), *medium_,
+      kRuleHasNoSpecialState);
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(2u, result.GetMatchedProperties().size());
+  EXPECT_FALSE(result.GetMatchedProperties()[0].types_.is_invisible);
+  EXPECT_TRUE(result.GetMatchedProperties()[1].types_.is_invisible);
+}
+
+TEST_F(ElementRuleCollectorInvisibleTest, InvisibleChildInGroupingRule) {
+  HeapVector<Member<StyleRuleBase>> child_rules;
+  child_rules.push_back(ParseRule(GetDocument(), "body { left: 10px; }"));
+  child_rules.push_back(
+      ParseInvisibleRule(GetDocument(), "body { color: green; }"));
+  auto* supports_rule = MakeGarbageCollected<StyleRuleSupports>(
+      "width:100px",
+      /* condition_is_supported */ true, std::move(child_rules));
+
+  auto* parser_context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  auto* style_sheet_contents =
+      MakeGarbageCollected<StyleSheetContents>(parser_context);
+  style_sheet_contents->ParserAppendRule(supports_rule);
+
+  RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddRulesFromSheet(style_sheet_contents, *medium_);
+
+  MatchResult result;
+  CollectIntoMatchResult(body_, rule_set, result);
+  ASSERT_EQ(2u, result.GetMatchedProperties().size());
+  EXPECT_FALSE(result.GetMatchedProperties()[0].types_.is_invisible);
+  EXPECT_TRUE(result.GetMatchedProperties()[1].types_.is_invisible);
 }
 
 }  // namespace blink

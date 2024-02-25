@@ -89,7 +89,7 @@ String V8ValueToString(v8::Local<v8::Context> current_context,
     return String("");
   }
 
-  return ToBlinkString<String>(v8_string, kDoNotExternalize);
+  return ToBlinkString<String>(isolate, v8_string, kDoNotExternalize);
 }
 
 FontLookupType ToTypeProto(Dactyloscoper::FontLookupType lookup_type) {
@@ -121,8 +121,6 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const String& str) {
   if (!context || !ShouldSample(feature))
     return;
-  if (str.empty())
-    return;
   Dactyloscoper::RecordDirectSurface(context, feature,
                                      IdentifiabilitySensitiveStringToken(str));
 }
@@ -132,8 +130,6 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         WebFeature feature,
                                         const Vector<String>& strs) {
   if (!context || !ShouldSample(feature))
-    return;
-  if (strs.empty())
     return;
   IdentifiableTokenBuilder builder;
   for (const auto& str : strs) {
@@ -148,10 +144,11 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const DOMArrayBufferView* buffer) {
   if (!context || !ShouldSample(feature))
     return;
-  if (!buffer || buffer->byteLength() == 0)
-    return;
-  IdentifiableTokenBuilder builder(base::make_span(
-      static_cast<uint8_t*>(buffer->BaseAddress()), buffer->byteLength()));
+  IdentifiableTokenBuilder builder;
+  if (buffer && buffer->byteLength() > 0) {
+    builder.AddBytes(base::make_span(
+        static_cast<uint8_t*>(buffer->BaseAddress()), buffer->byteLength()));
+  }
   Dactyloscoper::RecordDirectSurface(context, feature, builder.GetToken());
 }
 

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_view_controller.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -33,13 +34,11 @@ constexpr CGFloat customSpacingAfterImage = 24;
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_PROMO_CANCEL_BUTTON);
 
-  if (@available(iOS 15, *)) {
-    self.titleTextStyle = UIFontTextStyleTitle2;
-    self.customSpacingBeforeImageIfNoNavigationBar =
-        customSpacingBeforeImageIfNoNavigationBar;
-    self.customSpacingAfterImage = 1;
-    self.topAlignedLayout = YES;
-  }
+  self.titleTextStyle = UIFontTextStyleTitle2;
+  self.customSpacingBeforeImageIfNoNavigationBar =
+      customSpacingBeforeImageIfNoNavigationBar;
+  self.customSpacingAfterImage = 1;
+  self.topAlignedLayout = YES;
 
   [super viewDidLoad];
 }

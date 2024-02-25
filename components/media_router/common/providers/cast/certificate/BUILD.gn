@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/openscreen/src/build/config/cast.gni")
+import(
+    "//third_party/openscreen/src/cast/common/public/developer_certificate.gni")
 
 config("developer_certificate_config") {
   defines = []
@@ -20,6 +21,7 @@ source_set("certificate_reader") {
     "//base",
     "//net",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("certificate_roots") {
@@ -28,16 +30,24 @@ source_set("certificate_roots") {
     "cast_root_ca_cert_der-inc.h",
     "eureka_root_ca_der-inc.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("certificate") {
   sources = [
+    "cast_cert_printer.cc",
+    "cast_cert_printer.h",
     "cast_cert_validator.cc",
     "cast_cert_validator.h",
     "cast_crl.cc",
     "cast_crl.h",
+    "switches.cc",
+    "switches.h",
   ]
-  configs += [ ":developer_certificate_config" ]
+  configs += [
+    ":developer_certificate_config",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
   deps = [
     ":certificate_roots",
     "//base",
@@ -50,12 +60,6 @@ static_library("certificate") {
     # anyway since it doesn't check preprocesser macros.
     ":certificate_reader",
   ]
-  if (cast_allow_developer_certificate) {
-    sources += [
-      "switches.cc",
-      "switches.h",
-    ]
-  }
 }
 
 source_set("openscreen_certificate_verifier") {
@@ -71,6 +75,7 @@ source_set("openscreen_certificate_verifier") {
     "//net",
     "//third_party/openscreen/src/cast/common:public",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

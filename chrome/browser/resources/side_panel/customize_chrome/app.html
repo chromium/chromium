@@ -1,9 +1,10 @@
-<style include="sp-shared-style">
+<style include="cr-icons sp-shared-style">
   #container {
     box-sizing: border-box;
     color: var(--cr-primary-text-color);
     height: 100%;
     overflow: auto;
+    position: relative;
   }
 
   :host-context([chrome-refresh-2023]) #container {
@@ -41,7 +42,7 @@
     font-size: 12px;
     font-weight: 500;
     line-height: 16px;
-    max-width: calc(320px - 2 * var(--sp-body-padding));
+    max-width: calc(360px - 2 * var(--sp-body-padding));
   }
 
   customize-chrome-appearance {
@@ -53,14 +54,45 @@
   customize-chrome-cards,
   customize-chrome-categories,
   customize-chrome-themes,
-  customize-chrome-chrome-colors {
+  customize-chrome-chrome-colors,
+  customize-chrome-wallpaper-search {
     display: block;
-    max-width: 320px;
+    max-width: 360px;
     width: 100%;
   }
 
   :host-context([chrome-refresh-2023]) customize-chrome-appearance {
     margin-bottom: 0;
+  }
+
+  #extensions .description {
+    color: var(--cr-secondary-text-color);
+    font-weight: 400;
+    padding: 0 16px 4px;
+  }
+
+  .description a {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
+
+  #buttonContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 16px;
+  }
+
+  #couponsButton .cr-icon {
+    --cr-icon-image: url(icons/coupons.svg);
+  }
+
+  #writingButton .cr-icon {
+    --cr-icon-image: url(icons/writing.svg);
+  }
+
+  #productivityButton .cr-icon {
+    --cr-icon-image: url(icons/productivity.svg);
   }
 </style>
 <iron-pages id="container"
@@ -72,7 +104,8 @@
         <h2 slot="heading">$i18n{appearanceHeader}</h2>
       </sp-heading>
       <customize-chrome-appearance on-edit-theme-click="onEditThemeClick_"
-        id="appearanceElement">
+          on-wallpaper-search-click="onWallpaperSearchSelect_"
+          id="appearanceElement">
       </customize-chrome-appearance>
     </div>
     <hr class="sp-cards-separator">
@@ -97,13 +130,34 @@
         <sp-heading hide-back-button>
           <h2 slot="heading">Extensions</h2>
         </sp-heading>
+        <div class="description">
+          $i18nRaw{customizeWithChromeWebstoreLabel}
+        </div>
+        <div id="buttonContainer">
+          <cr-chip id="couponsButton" chip-role="link"
+            on-click="onCouponsButtonClick_">
+            <div class="cr-icon"></div>
+            $i18n{webstoreShoppingCategoryLabel}
+          </cr-chip>
+          <cr-chip id="writingButton" chip-role="link"
+            on-click="onWritingButtonClick_">
+            <div class="cr-icon"></div>
+            $i18n{webstoreWritingHelpCollectionLabel}
+          </cr-chip>
+          <cr-chip id="productivityButton" chip-role="link"
+            on-click="onProductivityButtonClick_">
+            <div class="cr-icon"></div>
+            $i18n{webstoreProductivityCategoryLabel}
+          </cr-chip>
+        </div>
       </div>
     </template>
   </div>
   <customize-chrome-categories on-back-click="onBackClick_"
       on-collection-select="onCollectionSelect_" page-name="categories"
       id="categoriesPage" on-local-image-upload="onLocalImageUpload_"
-      on-chrome-colors-select="onChromeColorsSelect_">
+      on-chrome-colors-select="onChromeColorsSelect_"
+      on-wallpaper-search-select="onWallpaperSearchSelect_">
   </customize-chrome-categories>
   <customize-chrome-themes on-back-click="onBackClick_"
       page-name="themes" id="themesPage"
@@ -112,4 +166,9 @@
   <customize-chrome-chrome-colors on-back-click="onBackClick_"
       page-name="chrome-colors" id="chromeColorsPage">
   </customize-chrome-chrome-colors>
+  <template is="dom-if" if="[[wallpaperSearchEnabled_]]">
+    <customize-chrome-wallpaper-search on-back-click="onBackClick_"
+        page-name="wallpaper-search" id="wallpaperSearchPage">
+    </customize-chrome-wallpaper-search>
+  </template>
 </iron-pages>

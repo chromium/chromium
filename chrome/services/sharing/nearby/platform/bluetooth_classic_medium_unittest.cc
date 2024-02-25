@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/services/sharing/nearby/common/nearby_features.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -113,17 +115,17 @@ class BluetoothClassicMediumTest : public testing::Test {
     run_loop.Run();
   }
 
-  raw_ptr<bluetooth::FakeAdapter, ExperimentalAsh> fake_adapter_;
+  raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
   std::unique_ptr<BluetoothClassicMedium> bluetooth_classic_medium_;
   BluetoothClassicMedium::DiscoveryCallback discovery_callback_;
 
-  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-      last_device_discovered_ = nullptr;
-  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-      last_device_name_changed_ = nullptr;
-  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-      expected_last_device_lost_ = nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged> last_device_discovered_ =
+      nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged> last_device_name_changed_ =
+      nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged> expected_last_device_lost_ =
+      nullptr;
 
   base::OnceClosure on_device_discovered_callback_;
   base::OnceClosure on_device_name_changed_callback_;
@@ -148,6 +150,43 @@ TEST_F(BluetoothClassicMediumTest, TestDiscovery_StartDiscoveryError) {
   EXPECT_FALSE(bluetooth_classic_medium_->StartDiscovery(
       std::move(discovery_callback_)));
   EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
+}
+
+TEST_F(BluetoothClassicMediumTest,
+       TestDiscovery_BluetoothClassicScanningFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          ::features::kEnableNearbyBluetoothClassicScanning});
+
+  // When classic scanning flag is disabled, Discovery will fail.
+  fake_adapter_->SetShouldDiscoverySucceed(true);
+  EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
+  EXPECT_FALSE(bluetooth_classic_medium_->StartDiscovery(
+      std::move(discovery_callback_)));
+  EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
+}
+
+TEST_F(BluetoothClassicMediumTest,
+       TestDiscovery_BluetoothClassicScanningFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyBluetoothClassicScanning},
+      /*disabled_features=*/{});
+
+  // When classic scanning flag is enabled, normal Discovery operation is not
+  // impacted.
+  fake_adapter_->SetShouldDiscoverySucceed(false);
+  EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
+  EXPECT_FALSE(bluetooth_classic_medium_->StartDiscovery(
+      std::move(discovery_callback_)));
+  EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
+
+  fake_adapter_->SetShouldDiscoverySucceed(true);
+  EXPECT_TRUE(bluetooth_classic_medium_->StartDiscovery(
+      std::move(discovery_callback_)));
+  EXPECT_TRUE(fake_adapter_->IsDiscoverySessionActive());
 }
 
 TEST_F(BluetoothClassicMediumTest,

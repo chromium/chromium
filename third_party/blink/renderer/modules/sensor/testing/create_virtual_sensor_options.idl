@@ -1,0 +1,11 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Represents the optional parameters described in
+// https://w3c.github.io/sensors/#create-virtual-sensor-command
+dictionary CreateVirtualSensorOptions {
+  boolean connected = true;
+  double? maxSamplingFrequency;
+  double? minSamplingFrequency;
+};

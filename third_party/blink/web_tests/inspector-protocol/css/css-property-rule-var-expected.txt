@@ -1,0 +1,411 @@
+Test that values of registered properties are validated correctly in the presence of var()
+Computed value:
+{
+    name : --len
+    value : 8px
+}
+{
+    name : --color
+    value : rgb(255, 0, 0)
+}
+Validated declarations:
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --in
+        range : {
+            endColumn : 14
+            endLine : 2
+            startColumn : 4
+            startLine : 2
+        }
+        text : --in: 2px;
+        value : 2px
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 31
+            endLine : 3
+            startColumn : 4
+            startLine : 3
+        }
+        text : --len: calc(var(--in) * 4);
+        value : calc(var(--in) * 4)
+    }
+    [2] : {
+        disabled : false
+        implicit : false
+        name : --color-in
+        range : {
+            endColumn : 23
+            endLine : 4
+            startColumn : 4
+            startLine : 4
+        }
+        text : --color-in: purple;
+        value : purple
+    }
+    [3] : {
+        disabled : false
+        implicit : false
+        name : --color
+        parsedOk : false
+        range : {
+            endColumn : 23
+            endLine : 5
+            startColumn : 4
+            startLine : 5
+        }
+        text : --color: var(--in);
+        value : var(--in)
+    }
+    [4] : {
+        name : --in
+        value : 2px
+    }
+    [5] : {
+        name : --len
+        value : calc(var(--in) * 4)
+    }
+    [6] : {
+        name : --color-in
+        value : purple
+    }
+    [7] : {
+        name : --color
+        value : var(--in)
+    }
+]
+Pseudo Elements:
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --m
+        range : {
+            endColumn : 11
+            endLine : 35
+            startColumn : 4
+            startLine : 35
+        }
+        text : --m: 0;
+        value : 0
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 20
+            endLine : 36
+            startColumn : 4
+            startLine : 36
+        }
+        text : --len: var(--m);
+        value : var(--m)
+    }
+    [2] : {
+        name : --m
+        value : 0
+    }
+    [3] : {
+        name : --len
+        value : var(--m)
+    }
+]
+Keyframes:
+[
+    [0] : {
+        animationName : {
+            range : {
+                endColumn : 24
+                endLine : 20
+                startColumn : 13
+                startLine : 20
+            }
+            text : --animation
+        }
+        keyframes : [
+            [0] : {
+                keyText : {
+                    range : {
+                        endColumn : 8
+                        endLine : 21
+                        startColumn : 4
+                        startLine : 21
+                    }
+                    text : 0%
+                }
+                origin : regular
+                style : {
+                    cssProperties : [
+                        [0] : {
+                            disabled : false
+                            implicit : false
+                            name : --color
+                            parsedOk : true
+                            range : {
+                                endColumn : 31
+                                endLine : 22
+                                startColumn : 6
+                                startLine : 22
+                            }
+                            text : --color: var(--color-in);
+                            value : var(--color-in)
+                        }
+                        [1] : {
+                            name : --color
+                            value : var(--color-in)
+                        }
+                    ]
+                    cssText :        --color: var(--color-in);     
+                    range : {
+                        endColumn : 4
+                        endLine : 23
+                        startColumn : 10
+                        startLine : 21
+                    }
+                    shorthandEntries : [
+                    ]
+                    styleSheetId : <string>
+                }
+                styleSheetId : <string>
+            }
+            [1] : {
+                keyText : {
+                    range : {
+                        endColumn : 6
+                        endLine : 24
+                        startColumn : 4
+                        startLine : 24
+                    }
+                    text : 100%
+                }
+                origin : regular
+                style : {
+                    cssProperties : [
+                        [0] : {
+                            disabled : false
+                            implicit : false
+                            name : --color
+                            range : {
+                                endColumn : 20
+                                endLine : 25
+                                startColumn : 6
+                                startLine : 25
+                            }
+                            text : --color: blue;
+                            value : blue
+                        }
+                        [1] : {
+                            name : --color
+                            value : blue
+                        }
+                    ]
+                    cssText :        --color: blue;     
+                    range : {
+                        endColumn : 4
+                        endLine : 26
+                        startColumn : 8
+                        startLine : 24
+                    }
+                    shorthandEntries : [
+                    ]
+                    styleSheetId : <string>
+                }
+                styleSheetId : <string>
+            }
+        ]
+    }
+]
+Editing a rule:
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --v
+        range : {
+            endColumn : 16
+            endLine : 1
+            startColumn : 7
+            startLine : 1
+        }
+        text : --v: 5px;
+        value : 5px
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 33
+            endLine : 1
+            startColumn : 17
+            startLine : 1
+        }
+        text : --len: var(--v);
+        value : var(--v)
+    }
+    [2] : {
+        name : --v
+        value : 5px
+    }
+    [3] : {
+        name : --len
+        value : var(--v)
+    }
+]
+Adding a rule:
+{
+    cssProperties : [
+        [0] : {
+            disabled : false
+            implicit : false
+            name : --v
+            range : {
+                endColumn : 17
+                endLine : 1
+                startColumn : 8
+                startLine : 1
+            }
+            text : --v: 5px;
+            value : 5px
+        }
+        [1] : {
+            disabled : false
+            implicit : false
+            name : --len
+            parsedOk : true
+            range : {
+                endColumn : 34
+                endLine : 1
+                startColumn : 18
+                startLine : 1
+            }
+            text : --len: var(--v);
+            value : var(--v)
+        }
+        [2] : {
+            name : --v
+            value : 5px
+        }
+        [3] : {
+            name : --len
+            value : var(--v)
+        }
+    ]
+    cssText :  --v: 5px; --len: var(--v); 
+    range : {
+        endColumn : 35
+        endLine : 1
+        startColumn : 7
+        startLine : 1
+    }
+    shorthandEntries : [
+    ]
+    styleSheetId : <string>
+}
+Pseudo Elements:
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --m
+        range : {
+            endColumn : 11
+            endLine : 22
+            startColumn : 4
+            startLine : 22
+        }
+        text : --m: 0;
+        value : 0
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 20
+            endLine : 23
+            startColumn : 4
+            startLine : 23
+        }
+        text : --len: var(--m);
+        value : var(--m)
+    }
+    [2] : {
+        name : --m
+        value : 0
+    }
+    [3] : {
+        name : --len
+        value : var(--m)
+    }
+]
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --m
+        range : {
+            endColumn : 11
+            endLine : 22
+            startColumn : 4
+            startLine : 22
+        }
+        text : --m: 0;
+        value : 0
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 20
+            endLine : 23
+            startColumn : 4
+            startLine : 23
+        }
+        text : --len: var(--m);
+        value : var(--m)
+    }
+    [2] : {
+        name : --m
+        value : 0
+    }
+    [3] : {
+        name : --len
+        value : var(--m)
+    }
+]
+Pseudo element registered properties:
+[
+    [0] : {
+        range : {
+            endColumn : 17
+            endLine : 3
+            startColumn : 12
+            startLine : 3
+        }
+        text : --len
+    }
+    [1] : {
+        range : {
+            endColumn : 19
+            endLine : 8
+            startColumn : 12
+            startLine : 8
+        }
+        text : --color
+    }
+]
+

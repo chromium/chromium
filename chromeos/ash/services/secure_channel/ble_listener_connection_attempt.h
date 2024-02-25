@@ -65,7 +65,7 @@ class BleListenerConnectionAttempt
   void ProcessSuccessfulConnectionDuration(
       const base::TimeDelta& duration) override;
 
-  raw_ptr<BleConnectionManager, ExperimentalAsh> ble_connection_manager_;
+  raw_ptr<BleConnectionManager> ble_connection_manager_;
 };
 
 }  // namespace ash::secure_channel

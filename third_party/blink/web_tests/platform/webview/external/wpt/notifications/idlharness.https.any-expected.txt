@@ -1,0 +1,119 @@
+This is a testharness.js-based test.
+Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] idl_test setup
+  promise_test: Unhandled rejection with value: object "ReferenceError: Notification is not defined"
+[FAIL] Notification interface: existence and properties of interface object
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface object length
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface object name
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute permission
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: operation requestPermission(optional NotificationPermissionCallback)
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute maxActions
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute onclick
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute onshow
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute onerror
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute onclose
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute title
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute dir
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute lang
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute body
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute tag
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute image
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute icon
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute badge
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute vibrate
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute timestamp
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute renotify
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute silent
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute requireInteraction
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute data
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute actions
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: operation close()
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification must be primary interface of notification
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Stringification of notification
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "permission" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "requestPermission(optional NotificationPermissionCallback)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: calling requestPermission(optional NotificationPermissionCallback) on notification with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "maxActions" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "onclick" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "onshow" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "onerror" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "onclose" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "title" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "dir" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "lang" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "body" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "tag" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "image" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "icon" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "badge" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "vibrate" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "timestamp" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "renotify" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "silent" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "requireInteraction" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "data" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "actions" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "close()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] ServiceWorkerRegistration interface: operation showNotification(DOMString, optional NotificationOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "showNotification" missing
+[FAIL] ServiceWorkerRegistration interface: operation getNotifications(optional GetNotificationOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "getNotifications" missing
+Harness: the test ran to completion.

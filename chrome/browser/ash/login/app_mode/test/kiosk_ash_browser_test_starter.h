@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_ASH_BROWSER_TEST_STARTER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_ASH_BROWSER_TEST_STARTER_H_
 
-#include "base/files/scoped_temp_dir.h"
+#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 
 namespace ash {
 
@@ -27,7 +27,7 @@ class KioskAshBrowserTestStarter {
   void SetUpBrowserManager();
 
  private:
-  base::ScopedTempDir scoped_temp_dir_xdg_;
+  ::test::AshBrowserTestStarter ash_browser_test_starter_;
 };
 
 }  // namespace ash

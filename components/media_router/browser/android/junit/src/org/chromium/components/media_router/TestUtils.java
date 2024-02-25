@@ -9,9 +9,7 @@ import androidx.mediarouter.media.MediaRouter.RouteInfo;
 
 import org.robolectric.util.ReflectionHelpers;
 
-/**
- * Utility classes and methods for MediaRouterTests.
- */
+/** Utility classes and methods for MediaRouterTests. */
 public class TestUtils {
     /**
      * Creates a mock {@link RouteInfo} to supply where needed in the tests.
@@ -23,8 +21,11 @@ public class TestUtils {
         Class<?>[] paramClasses =
                 new Class[] {MediaRouter.ProviderInfo.class, String.class, String.class};
         Object[] paramValues = new Object[] {null, "", ""};
-        RouteInfo routeInfo = ReflectionHelpers.callConstructor(RouteInfo.class,
-                ReflectionHelpers.ClassParameter.fromComponentLists(paramClasses, paramValues));
+        RouteInfo routeInfo =
+                ReflectionHelpers.callConstructor(
+                        RouteInfo.class,
+                        ReflectionHelpers.ClassParameter.fromComponentLists(
+                                paramClasses, paramValues));
         ReflectionHelpers.setField(routeInfo, "mUniqueId", id);
         ReflectionHelpers.setField(routeInfo, "mName", name);
         return routeInfo;

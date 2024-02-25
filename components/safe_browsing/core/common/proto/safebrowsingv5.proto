@@ -1,0 +1,138 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// This file includes the Safe Browsing V5 API SearchHashes request and response
+// protocol buffers, since that's the only portion of the V5 API that Chrome
+// currently uses. They should be kept in sync with the server implementation.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package safe_browsing.V5;
+
+// A request that the client issues to search for specific hash prefixes. Note
+// that currently this only searches threat lists, and does not search the
+// global cache.
+message SearchHashesRequest {
+  // The hash prefixes to be looked up.
+  repeated bytes hash_prefixes = 1;
+
+  reserved 2, 3;
+}
+
+// The response returned after searching threat hashes. Note that if nothing is
+// found, the server will return an OK status (HTTP status code 200) with
+// the `full_hashes` field empty, rather than returning a NOT_FOUND status
+// (HTTP status code 404).
+message SearchHashesResponse {
+  // The unordered list of full hashes found.
+  repeated FullHash full_hashes = 1;
+
+  // The client-side cache duration. The client shall add this duration to the
+  // current time to determine the expiration time. The expiration time then
+  // applies to every hash prefix queried by the client in the request,
+  // regardless of how many full hashes are returned in the response. Even if
+  // the server returns no full hashes for a particular hash prefix, this fact
+  // should also be cached by the client.
+  //
+  // Important: the client must not assume that the server will return the same
+  // cache duration for all responses. The server may choose different cache
+  // durations for different responses depending on the situation.
+  Duration cache_duration = 2;
+}
+
+// The full hash identified with one or more matches.
+message FullHash {
+  // The matching full hash. This is the SHA256 hash. The length will be exactly
+  // 32 bytes.
+  bytes full_hash = 1;
+
+  // Details about a matching full hash.
+  //
+  // An important note about forward compatibility: new threat types and threat
+  // attributes may be added by the server at any time; those additions are
+  // considered minor version changes. It is Google's policy not to expose minor
+  // version numbers in APIs (see
+  // https://cloud.google.com/apis/design/versioning), so clients MUST be
+  // prepared to receive FullHashDetail messages containing ThreatType enum
+  // values or ThreatAttribute enum values that are considered invalid by the
+  // client. Therefore, it is the client's responsibility to check for the
+  // validity of all ThreatType and ThreatAttribute enum values; if any value is
+  // considered invalid, the client MUST disregard the entire FullHashDetail
+  // message.
+  message FullHashDetail {
+    // The type of threat. This field will never be empty.
+    ThreatType threat_type = 1;
+
+    // Additional attributes about those full hashes. This may be empty.
+    repeated ThreatAttribute attributes = 2;
+  }
+
+  // A repeated field identifying the details relevant to this full hash.
+  repeated FullHashDetail full_hash_details = 2;
+}
+
+// Types of threats.
+enum ThreatType {
+  // Unknown.
+  THREAT_TYPE_UNSPECIFIED = 0;
+
+  // Malware threat type.
+  MALWARE = 1;
+
+  // Social engineering threat type.
+  SOCIAL_ENGINEERING = 2;
+
+  // Unwanted software threat type.
+  UNWANTED_SOFTWARE = 3;
+
+  // Potentially harmful application threat type.
+  POTENTIALLY_HARMFUL_APPLICATION = 4;
+
+  // API abuse threat type.
+  API_ABUSE = 6;
+
+  reserved 5, 7 to 13, 14, 16 to 19;
+
+  // Trick-to-bill threat list.
+  TRICK_TO_BILL = 15;
+
+  // Abusive experience violation threat type.
+  ABUSIVE_EXPERIENCE_VIOLATION = 20;
+
+  // Better advertisements threat type.
+  BETTER_ADS_VIOLATION = 21;
+}
+
+// Attributes of threats. These attributes may confer additional meaning to a
+// particular threat but will not affect the threat type. For example, an
+// attribute may specify a lower confidence while a different attribute may
+// specify higher confidence. More attributes may be added in the future.
+enum ThreatAttribute {
+  // Unknown.
+  THREAT_ATTRIBUTE_UNSPECIFIED = 0;
+
+  // Indicates that the threat_type should not be used for enforcement.
+  CANARY = 1;
+
+  // Indicates that the threat_type should only be used for enforcement on
+  // frames.
+  FRAME_ONLY = 2;
+}
+
+message Duration {
+  // Signed seconds of the span of time. Must be from -315,576,000,000
+  // to +315,576,000,000 inclusive. Note: these bounds are computed from:
+  // 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
+  int64 seconds = 1;
+
+  // Signed fractions of a second at nanosecond resolution of the span
+  // of time. Durations less than one second are represented with a 0
+  // `seconds` field and a positive or negative `nanos` field. For durations
+  // of one second or more, a non-zero value for the `nanos` field must be
+  // of the same sign as the `seconds` field. Must be from -999,999,999
+  // to +999,999,999 inclusive.
+  int32 nanos = 2;
+}

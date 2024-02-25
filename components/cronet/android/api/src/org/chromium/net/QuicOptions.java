@@ -4,56 +4,49 @@
 
 package org.chromium.net;
 
+import android.os.Build.VERSION_CODES;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresOptIn;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * Configuration options for QUIC in Cronet.
  *
- * <p>The settings in this class are only relevant if QUIC is enabled. Use
- * {@link org.chromium.net.CronetEngine.Builder#enableQuic(boolean)} to enable / disable QUIC for
- * the Cronet engine.
+ * <p>The settings in this class are only relevant if QUIC is enabled. Use {@link
+ * org.chromium.net.CronetEngine.Builder#enableQuic(boolean)} to enable / disable QUIC for the
+ * Cronet engine.
  */
-public class QuicOptions {
+public final class QuicOptions {
     private final Set<String> mQuicHostAllowlist;
     private final Set<String> mEnabledQuicVersions;
 
     private final Set<String> mConnectionOptions;
     private final Set<String> mClientConnectionOptions;
-    @Nullable
-    private final Integer mInMemoryServerConfigsCacheSize;
-    @Nullable
-    private final String mHandshakeUserAgent;
-    @Nullable
-    private final Boolean mRetryWithoutAltSvcOnQuicErrors;
-    @Nullable
-    private final Boolean mEnableTlsZeroRtt;
+    @Nullable private final Integer mInMemoryServerConfigsCacheSize;
+    @Nullable private final String mHandshakeUserAgent;
+    @Nullable private final Boolean mRetryWithoutAltSvcOnQuicErrors;
+    @Nullable private final Boolean mEnableTlsZeroRtt;
 
-    @Nullable
-    private final Long mPreCryptoHandshakeIdleTimeoutSeconds;
-    @Nullable
-    private final Long mCryptoHandshakeTimeoutSeconds;
+    @Nullable private final Long mPreCryptoHandshakeIdleTimeoutSeconds;
+    @Nullable private final Long mCryptoHandshakeTimeoutSeconds;
 
-    @Nullable
-    private final Long mIdleConnectionTimeoutSeconds;
-    @Nullable
-    private final Long mRetransmittableOnWireTimeoutMillis;
+    @Nullable private final Long mIdleConnectionTimeoutSeconds;
+    @Nullable private final Long mRetransmittableOnWireTimeoutMillis;
 
-    @Nullable
-    private final Boolean mCloseSessionsOnIpChange;
-    @Nullable
-    private final Boolean mGoawaySessionsOnIpChange;
+    @Nullable private final Boolean mCloseSessionsOnIpChange;
+    @Nullable private final Boolean mGoawaySessionsOnIpChange;
 
-    @Nullable
-    private final Long mInitialBrokenServicePeriodSeconds;
-    @Nullable
-    private final Boolean mIncreaseBrokenServicePeriodExponentially;
-    @Nullable
-    private final Boolean mDelayJobsWithAvailableSpdySession;
+    @Nullable private final Long mInitialBrokenServicePeriodSeconds;
+    @Nullable private final Boolean mIncreaseBrokenServicePeriodExponentially;
+    @Nullable private final Boolean mDelayJobsWithAvailableSpdySession;
 
     private final Set<String> mExtraQuicheFlags;
 
@@ -173,42 +166,26 @@ public class QuicOptions {
         return new Builder();
     }
 
-    /**
-     * Builder for {@link QuicOptions}.
-     */
+    /** Builder for {@link QuicOptions}. */
     public static class Builder {
         private final Set<String> mQuicHostAllowlist = new LinkedHashSet<>();
         private final Set<String> mEnabledQuicVersions = new LinkedHashSet<>();
         private final Set<String> mConnectionOptions = new LinkedHashSet<>();
         private final Set<String> mClientConnectionOptions = new LinkedHashSet<>();
-        @Nullable
-        private Integer mInMemoryServerConfigsCacheSize;
-        @Nullable
-        private String mHandshakeUserAgent;
-        @Nullable
-        private Boolean mRetryWithoutAltSvcOnQuicErrors;
-        @Nullable
-        private Boolean mEnableTlsZeroRtt;
-        @Nullable
-        private Long mPreCryptoHandshakeIdleTimeoutSeconds;
-        @Nullable
-        private Long mCryptoHandshakeTimeoutSeconds;
-        @Nullable
-        private Long mIdleConnectionTimeoutSeconds;
-        @Nullable
-        private Long mRetransmittableOnWireTimeoutMillis;
-        @Nullable
-        private Boolean mCloseSessionsOnIpChange;
-        @Nullable
-        private Boolean mGoawaySessionsOnIpChange;
-        @Nullable
-        private Long mInitialBrokenServicePeriodSeconds;
-        @Nullable
-        private Boolean mIncreaseBrokenServicePeriodExponentially;
-        @Nullable
-        private Boolean mDelayJobsWithAvailableSpdySession;
-        @Nullable
-        private final Set<String> mExtraQuicheFlags = new LinkedHashSet<>();
+        @Nullable private Integer mInMemoryServerConfigsCacheSize;
+        @Nullable private String mHandshakeUserAgent;
+        @Nullable private Boolean mRetryWithoutAltSvcOnQuicErrors;
+        @Nullable private Boolean mEnableTlsZeroRtt;
+        @Nullable private Long mPreCryptoHandshakeIdleTimeoutSeconds;
+        @Nullable private Long mCryptoHandshakeTimeoutSeconds;
+        @Nullable private Long mIdleConnectionTimeoutSeconds;
+        @Nullable private Long mRetransmittableOnWireTimeoutMillis;
+        @Nullable private Boolean mCloseSessionsOnIpChange;
+        @Nullable private Boolean mGoawaySessionsOnIpChange;
+        @Nullable private Long mInitialBrokenServicePeriodSeconds;
+        @Nullable private Boolean mIncreaseBrokenServicePeriodExponentially;
+        @Nullable private Boolean mDelayJobsWithAvailableSpdySession;
+        @Nullable private final Set<String> mExtraQuicheFlags = new LinkedHashSet<>();
 
         Builder() {}
 
@@ -358,15 +335,31 @@ public class QuicOptions {
         }
 
         /**
-         * Sets the maximum idle time for a connection.
+         * Sets the maximum idle time for a connection. The actual value for the idle timeout is the
+         * minimum of this value and the server's and is negotiated during the handshake. Thus, it
+         * only applies after the handshake has completed. If no activity is detected on the
+         * connection for the set duration, the connection is closed.
          *
-         * TODO what happens to connection that are idle for too long?
+         * <p>See <a href="https://www.rfc-editor.org/rfc/rfc9114.html#name-idle-connections">RFC
+         * 9114, section 5.1 </a> for more details.
          *
          * @return the builder for chaining
          */
         public Builder setIdleConnectionTimeoutSeconds(long idleConnectionTimeoutSeconds) {
             this.mIdleConnectionTimeoutSeconds = idleConnectionTimeoutSeconds;
             return this;
+        }
+
+        /**
+         * Same as {@link #setIdleConnectionTimeoutSeconds(long)} but using {@link
+         * java.time.Duration}.
+         *
+         * @return the builder for chaining
+         */
+        @RequiresApi(VERSION_CODES.O)
+        public Builder setIdleConnectionTimeout(@NonNull Duration idleConnectionTimeout) {
+            Objects.requireNonNull(idleConnectionTimeout);
+            return setIdleConnectionTimeoutSeconds(idleConnectionTimeout.toSeconds());
         }
 
         /**
@@ -496,17 +489,15 @@ public class QuicOptions {
     /**
      * An annotation for APIs which are not considered stable yet.
      *
-     * <p>Applications using experimental APIs must acknowledge that they're aware of using APIs
-     * that are not considered stable. The APIs might change functionality, break or cease to exist
-     * without notice.
+     * <p>Experimental APIs are subject to change, breakage, or removal at any time and may not be
+     * production ready.
      *
-     * <p>It's highly recommended to reach out to Cronet maintainers ({@code net-dev@chromium.org})
-     * before using one of the APIs annotated as experimental outside of debugging
-     * and proof-of-concept code. Be ready to help to help polishing the API, or for a "sorry,
-     * really not production ready yet".
+     * <p>It's highly recommended to reach out to Cronet maintainers
+     * (<code>net-dev@chromium.org</code>) before using one of the APIs annotated as experimental
+     * outside of debugging and proof-of-concept code.
      *
-     * <p>If you still want to use an experimental API in production, you're doing so at your
-     * own risk. You have been warned.
+     * <p>By using an Experimental API, applications acknowledge that they are doing so at their own
+     * risk.
      */
     @RequiresOptIn
     public @interface Experimental {}

@@ -81,7 +81,7 @@ void ThemeSyncableService::NotifyOnSyncStartedForTesting(
   NotifyOnSyncStarted(startup_state);
 }
 
-absl::optional<ThemeSyncableService::ThemeSyncState>
+std::optional<ThemeSyncableService::ThemeSyncState>
 ThemeSyncableService::GetThemeSyncStartState() {
   return startup_state_;
 }
@@ -91,7 +91,7 @@ void ThemeSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
                                                            std::move(done));
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 ThemeSyncableService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -114,7 +114,7 @@ ThemeSyncableService::MergeDataAndStartSyncing(
     // Current theme is unsyncable - don't overwrite from sync data, and don't
     // save the unsyncable theme to sync data.
     NotifyOnSyncStarted(ThemeSyncState::kFailed);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Find the last SyncData that has theme data and set the current theme from
@@ -127,13 +127,13 @@ ThemeSyncableService::MergeDataAndStartSyncing(
         ThemeSyncState startup_state =
             MaybeSetTheme(current_specifics, sync_data);
         NotifyOnSyncStarted(startup_state);
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
   }
 
   // No theme specifics are found. Create one according to current theme.
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       ProcessNewTheme(syncer::SyncChange::ACTION_ADD, current_specifics);
   NotifyOnSyncStarted(ThemeSyncState::kApplied);
   return error;
@@ -160,7 +160,7 @@ syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
   return list;
 }
 
-absl::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
+std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -192,7 +192,7 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
   sync_pb::ThemeSpecifics current_specifics;
   if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
     // Current theme is unsyncable, so don't overwrite it.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Set current theme from the theme specifics of the last change of type
@@ -202,31 +202,31 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
         (theme_change.change_type() == syncer::SyncChange::ACTION_ADD ||
          theme_change.change_type() == syncer::SyncChange::ACTION_UPDATE)) {
       MaybeSetTheme(current_specifics, theme_change.sync_data());
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   return syncer::ModelError(FROM_HERE, "Didn't find valid theme specifics");
 }
 
+base::WeakPtr<syncer::SyncableService> ThemeSyncableService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     const sync_pb::ThemeSpecifics& current_specs,
     const syncer::SyncData& sync_data) {
-  const sync_pb::ThemeSpecifics& sync_theme = sync_data.GetSpecifics().theme();
-  use_system_theme_by_default_ = sync_theme.use_system_theme_by_default();
+  const sync_pb::ThemeSpecifics& theme_specifics =
+      sync_data.GetSpecifics().theme();
+  use_system_theme_by_default_ = theme_specifics.use_system_theme_by_default();
   DVLOG(1) << "Set current theme from specifics: " << sync_data.ToString();
   if (AreThemeSpecificsEqual(
-          current_specs, sync_theme,
+          current_specs, theme_specifics,
           theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
     DVLOG(1) << "Skip setting theme because specs are equal";
     return ThemeSyncState::kApplied;
   }
-  return SetCurrentThemeFromThemeSpecifics(sync_theme);
-}
 
-ThemeSyncableService::ThemeSyncState
-ThemeSyncableService::SetCurrentThemeFromThemeSpecifics(
-    const sync_pb::ThemeSpecifics& theme_specifics) {
   if (theme_specifics.use_custom_theme()) {
     // TODO(akalin): Figure out what to do about third-party themes
     // (i.e., those not on either Google gallery).
@@ -247,18 +247,23 @@ ThemeSyncableService::SetCurrentThemeFromThemeSpecifics(
         DVLOG(1) << "Extension " << id << " is not a theme; aborting";
         return ThemeSyncState::kFailed;
       }
-      int disabled_reasons =
-          extensions::ExtensionPrefs::Get(profile_)->GetDisableReasons(id);
-      if (!extension_service->IsExtensionEnabled(id) &&
-          disabled_reasons != extensions::disable_reason::DISABLE_USER_ACTION) {
-        DVLOG(1) << "Theme " << id << " is disabled with reason "
-                 << disabled_reasons << "; aborting";
-        return ThemeSyncState::kFailed;
+      if (extension_service->IsExtensionEnabled(id)) {
+        // An enabled theme extension with the given id was found, so
+        // just set the current theme to it.
+        theme_service_->SetTheme(extension);
+        return ThemeSyncState::kApplied;
       }
-      // An enabled theme extension with the given id was found, so
-      // just set the current theme to it.
-      theme_service_->SetTheme(extension);
-      return ThemeSyncState::kApplied;
+      const auto disabled_reasons =
+          extensions::ExtensionPrefs::Get(profile_)->GetDisableReasons(id);
+      if (disabled_reasons == extensions::disable_reason::DISABLE_USER_ACTION) {
+        // The user had installed this theme but disabled it (by installing
+        // another atop it); re-enable.
+        theme_service_->RevertToExtensionTheme(id);
+        return ThemeSyncState::kApplied;
+      }
+      DVLOG(1) << "Theme " << id << " is disabled with reason "
+               << disabled_reasons << "; aborting";
+      return ThemeSyncState::kFailed;
     }
 
     // No extension with this id exists -- we must install it; we do
@@ -387,7 +392,7 @@ bool ThemeSyncableService::HasNonDefaultTheme(
          theme_specifics.has_autogenerated_theme();
 }
 
-absl::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
+std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
     syncer::SyncChange::SyncChangeType change_type,
     const sync_pb::ThemeSpecifics& theme_specifics) {
   syncer::SyncChangeList changes;

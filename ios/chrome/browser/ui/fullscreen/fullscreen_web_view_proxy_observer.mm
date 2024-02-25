@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_mediator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
@@ -58,6 +59,55 @@
   BOOL scrollToTop = !AreCGFloatsEqual(self.model->progress(), 0.0);
   self.mediator->ExitFullscreen();
   return scrollToTop;
+}
+
+- (void)webViewScrollViewDidScroll:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetYContentOffset(webViewScrollViewProxy.contentOffset.y);
+  }
+}
+
+- (void)webViewScrollViewWillBeginDragging:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetScrollViewIsScrolling(true);
+    self.model->SetScrollViewIsDragging(true);
+  }
+}
+
+- (void)webViewScrollViewWillEndDragging:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                            withVelocity:(CGPoint)velocity
+                     targetContentOffset:(inout CGPoint*)targetContentOffset {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetScrollViewIsScrolling(false);
+    self.model->SetScrollViewIsDragging(false);
+  }
+}
+
+- (void)webViewScrollViewDidEndDragging:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                         willDecelerate:(BOOL)decelerate {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetScrollViewIsScrolling(false);
+    self.model->SetScrollViewIsDragging(false);
+  }
+}
+
+- (void)webViewScrollViewWillBeginZooming:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetScrollViewIsZooming(true);
+  }
+}
+
+- (void)webViewScrollViewDidEndZooming:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                               atScale:(CGFloat)scale {
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetScrollViewIsZooming(false);
+  }
 }
 
 @end

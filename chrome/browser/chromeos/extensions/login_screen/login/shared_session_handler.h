@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_SHARED_SESSION_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_SHARED_SESSION_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -25,14 +25,14 @@ class SharedSessionHandler {
   SharedSessionHandler& operator=(const SharedSessionHandler&) = delete;
 
   using CallbackWithOptionalError =
-      base::OnceCallback<void(const absl::optional<std::string>&)>;
+      base::OnceCallback<void(const std::optional<std::string>&)>;
 
   // Starts a lockable Managed Guest Session with a randomly generated secret
   // as the Cryptohome key. The session secret is stored in memory to be used
   // later for unlocking the session.
   // An initial shared session is started with `password` as the password.
   // Returns the error encountered, if any.
-  absl::optional<std::string> LaunchSharedManagedGuestSession(
+  std::optional<std::string> LaunchSharedManagedGuestSession(
       const std::string& password);
 
   // Enters a new shared session. Can only be called from the lock screen. The
@@ -64,8 +64,8 @@ class SharedSessionHandler {
   SharedSessionHandler();
   ~SharedSessionHandler();
 
-  absl::optional<std::string> GetHashFromScrypt(const std::string& password,
-                                                const std::string& salt);
+  std::optional<std::string> GetHashFromScrypt(const std::string& password,
+                                               const std::string& salt);
 
   void UnlockWithSessionSecret(base::OnceCallback<void(bool)> callback);
 
@@ -75,7 +75,7 @@ class SharedSessionHandler {
                           bool auth_success);
 
   void OnCleanupDone(CallbackWithOptionalError callback,
-                     const absl::optional<std::string>& errors);
+                     const std::optional<std::string>& errors);
 
   std::string GenerateRandomString(size_t size);
 

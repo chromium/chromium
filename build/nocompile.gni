@@ -6,194 +6,185 @@
 # invokes a set of no-compile tests.  A no-compile test is a test that asserts
 # a particular construct will not compile.
 #
+# Usage:
+#
+# 1. Create a GN target:
+#
+#    import("//build/nocompile.gni")
+#
+#    nocompile_source_set("base_nocompile_tests") {
+#      sources = [
+#        "functional/one_not_equal_two_nocompile.nc",
+#      ]
+#      deps = [
+#        ":base"
+#      ]
+#    }
+#
+#    Note that by convention, nocompile tests use the `.nc` extension rather
+#    than the standard `.cc` extension: this is because the expectation lines
+#    often exceed 80 characters, which would make clang-format unhappy.
+#
+# 2. Add a dep from a related test binary to the nocompile source set:
+#
+#    test("base_unittests") {
+#      ...
+#      deps += [ ":base_nocompile_tests" ]
+#    }
+#
+# 3. Populate the .nc file with test cases. Expected compile failures should be
+#    annotated with a comment of the form:
+#
+#    // expected-error {{<expected error string here>}}
+#
+#    For example:
+#
+#    void OneDoesNotEqualTwo() {
+#      static_assert(1 == 2);  // expected-error {{static assertion failed due to requirement '1 == 2'}}
+#    }
+#
+#    The verification logic is built as part of clang; full documentation is at
+#    https://clang.llvm.org/doxygen/classclang_1_1VerifyDiagnosticConsumer.html.
+#
 # Also see:
 #   http://dev.chromium.org/developers/testing/no-compile-tests
 #
-# To use this, create a gyp target with the following form:
-#
-# import("//build/nocompile.gni")
-# nocompile_test("my_module_nc_unittests") {
-#   sources = [
-#     'nc_testset_1.nc',
-#     'nc_testset_2.nc',
-#   ]
-#
-#   # optional extra include dirs:
-#   include_dirs = [ ... ]
-# }
-#
-# The .nc files are C++ files that contain code we wish to assert will not
-# compile.  Each individual test case in the file should be put in its own
-# #ifdef section.  The expected output should be appended with a C++-style
-# comment that has a python list of regular expressions.  This will likely
-# be greater than 80-characters. Giving a solid expected output test is
-# important so that random compile failures do not cause the test to pass.
-#
-# Example .nc file:
-#
-#   #if defined(TEST_NEEDS_SEMICOLON)  // [r"expected ',' or ';' at end of input"]
-#
-#   int a = 1
-#
-#   #elif defined(TEST_NEEDS_CAST)  // [r"invalid conversion from 'void*' to 'char*'"]
-#
-#   void* a = NULL;
-#   char* b = a;
-#
-#   #endif
-#
-# If we needed disable TEST_NEEDS_SEMICOLON, then change the define to:
-#
-#   DISABLE_TEST_NEEDS_SEMICOLON
-#   TEST_NEEDS_CAST
-#
-# The lines above are parsed by a regexp so avoid getting creative with the
-# formatting or ifdef logic; it will likely just not work.
-#
-# Implementation notes:
-# The .nc files are actually processed by a python script which executes the
-# compiler and generates a .cc file that is empty on success, or will have a
-# series of #error lines on failure, and a set of trivially passing gunit
-# TEST() functions on success. This allows us to fail at the compile step when
-# something goes wrong, and know during the unittest run that the test was at
-# least processed when things go right.
-
 import("//build/config/clang/clang.gni")
-import("//build/config/python.gni")
-import("//build/toolchain/toolchain.gni")
-import("//testing/test.gni")
-
-if (is_mac) {
-  import("//build/config/mac/mac_sdk.gni")
+if (is_win) {
+  import("//build/toolchain/win/win_toolchain_data.gni")
 }
 
 declare_args() {
-  # TODO(crbug.com/1442625): Enable for Windows.
-  enable_nocompile_tests = (is_linux || is_chromeos || is_apple) && is_clang &&
-                           host_cpu == target_cpu
+  enable_nocompile_tests = is_clang && !is_nacl
 }
 
 if (enable_nocompile_tests) {
-  import("//build/config/c++/c++.gni")
-  import("//build/config/sysroot.gni")
-  template("nocompile_test") {
-    nocompile_target = target_name + "_run_nocompile"
-
-    action_foreach(nocompile_target) {
+  template("nocompile_source_set") {
+    action_foreach(target_name) {
       testonly = true
-      script = "//tools/nocompile/driver.py"
+
+      script = "//tools/nocompile/wrapper.py"
       sources = invoker.sources
-      deps = invoker.deps
-      if (defined(invoker.public_deps)) {
-        public_deps = invoker.public_deps
+      if (defined(invoker.deps)) {
+        deps = invoker.deps
       }
 
-      result_path = "$target_gen_dir/{{source_name_part}}_nc.cc"
+      # An action is not a compiler, so configs is empty until it is explicitly
+      # set.
+      configs = default_compiler_configs
+      if (defined(invoker.configs)) {
+        configs += invoker.configs
+      }
+
+      # Disable the checks that the Chrome style plugin normally enforces to
+      # reduce the amount of boilerplate needed in nocompile tests.
+      configs -= [ "//build/config/clang:find_bad_constructs" ]
+
+      if (is_win) {
+        result_path =
+            "$target_out_dir/$target_name/{{source_name_part}}_placeholder.obj"
+      } else {
+        result_path =
+            "$target_out_dir/$target_name/{{source_name_part}}_placeholder.o"
+      }
+      rebased_obj_path = rebase_path(result_path, root_build_dir)
+
+      depfile = "${result_path}.d"
+      rebased_depfile_path = rebase_path(depfile, root_build_dir)
       outputs = [ result_path ]
-      rebased_result_path = rebase_path(result_path, root_build_dir)
+
       if (is_win) {
         if (host_os == "win") {
           cxx = "clang-cl.exe"
-          nulldevice = "nul"
         } else {
           cxx = "clang-cl"
-          nulldevice = "/dev/null"
         }
       } else {
         cxx = "clang++"
       }
-      args = [
-        rebase_path("$clang_base_path/bin/$cxx", root_build_dir),
-        "4",  # number of compilers to invoke in parallel.
-        "{{source}}",
-        rebased_result_path,
-        "--",
-        "-Werror",
-        "-Wfatal-errors",
-        "-Wthread-safety",
-        "-I" + rebase_path("//", root_build_dir),
-        "-I" + rebase_path("//third_party/abseil-cpp/", root_build_dir),
-        "-I" + rebase_path("//buildtools/third_party/libc++/", root_build_dir),
-        "-I" + rebase_path(root_gen_dir, root_build_dir),
 
-        # TODO(https://crbug.com/989932): Track build/config/compiler/BUILD.gn
-        "-Wno-implicit-int-float-conversion",
-      ]
+      args = []
+
       if (is_win) {
-        args += [
-          "/W4",
-          "-Wno-unused-parameter",
-          "-I" + rebase_path("$libcxx_prefix/include", root_build_dir),
-          "/std:c++20",
+        # ninja normally parses /showIncludes output, but the depsformat
+        # variable can only be set in compiler tools, not for custom actions.
+        # Unfortunately, this means the clang wrapper needs to generate the
+        # depfile itself.
+        args += [ "--generate-depfile" ]
+      }
 
-          # TODO(crbug.com/1442625): Uncomment this, then filter and process the
-          # output appropriately to track dependencies.
-          # "/showIncludes:user"
+      args += [
+        rebase_path("$clang_base_path/bin/$cxx", root_build_dir),
+        "{{source}}",
+        rebased_obj_path,
+        rebased_depfile_path,
+        "--",
+        "{{cflags}}",
+        "{{cflags_cc}}",
+        "{{defines}}",
+        "{{include_dirs}}",
 
-          "/Fo" + nulldevice,
-          "/c",
-          "/Tp",
-        ]
-      } else {
-        depfile = "${result_path}.d"
+        # No need to generate an object file for nocompile tests.
+        "-Xclang",
+        "-fsyntax-only",
+
+        # Enable clang's VerifyDiagnosticConsumer:
+        # https://clang.llvm.org/doxygen/classclang_1_1VerifyDiagnosticConsumer.html
+        "-Xclang",
+        "-verify",
+
+        # But don't require expected-note comments since that is not the
+        # primary point of the nocompile tests.
+        "-Xclang",
+        "-verify-ignore-unexpected=note",
+
+        # Disable the error limit so that nocompile tests do not need to be
+        # arbitrarily split up when they hit the default error limit.
+        "-ferror-limit=0",
+
+        # So funny characters don't show up in error messages.
+        "-fno-color-diagnostics",
+
+        # Always treat warnings as errors.
+        "-Werror",
+      ]
+
+      if (!is_win) {
         args += [
-          "-Wall",
-          "-nostdinc++",
-          "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
-          "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
-          "-std=c++20",
+          # On non-Windows platforms, clang can generate the depfile.
           "-MMD",
           "-MF",
-          rebased_result_path + ".d",
+          rebased_depfile_path,
           "-MT",
-          rebased_result_path,
-          "-o",
-          "/dev/null",
-          "-c",
+          rebased_obj_path,
+
+          # Non-Windows clang uses file extensions to determine how to treat
+          # various inputs, so explicitly tell it to treat all inputs (even
+          # those with weird extensions like .nc) as C++ source files.
           "-x",
           "c++",
         ]
-      }
-      args += [ "{{source}}" ]
-
-      if (is_mac && host_os != "mac") {
-        args += [
-          "--target=x86_64-apple-macos",
-          "-mmacos-version-min=$mac_deployment_target",
-        ]
-      }
-
-      # Iterate over any extra include dirs and append them to the command line.
-      if (defined(invoker.include_dirs)) {
-        foreach(include_dir, invoker.include_dirs) {
-          args += [ "-I" + rebase_path(include_dir, root_build_dir) ]
-        }
-      }
-
-      if (sysroot != "") {
-        sysroot_path = rebase_path(sysroot, root_build_dir)
-        if (is_win) {
-          args += [ "/winsysroot" + sysroot_path ]
+      } else {
+        # For some reason, the Windows includes are not part of the default
+        # compiler configs. Set it explicitly here, since things like libc++
+        # depend on the VC runtime.
+        if (target_cpu == "x86") {
+          win_toolchain_data = win_toolchain_data_x86
+        } else if (target_cpu == "x64") {
+          win_toolchain_data = win_toolchain_data_x64
+        } else if (target_cpu == "arm64") {
+          win_toolchain_data = win_toolchain_data_arm64
         } else {
-          args += [
-            "--sysroot",
-            sysroot_path,
-          ]
+          error("Unsupported target_cpu, add it to win_toolchain_data.gni")
         }
+        args += win_toolchain_data.include_flags_imsvc_list
+        args += [ "/showIncludes:user" ]
       }
 
-      if (!is_nacl) {
-        args += [
-          # TODO(crbug.com/1343975) Evaluate and possibly enable.
-          "-Wno-deprecated-builtins",
-        ]
-      }
-    }
-
-    test(target_name) {
-      deps = invoker.deps + [ ":$nocompile_target" ]
-      sources = get_target_outputs(":$nocompile_target")
-      forward_variables_from(invoker, [ "bundle_deps" ])
+      # Note: for all platforms, the depfile only lists user includes, and not
+      # system includes. If system includes change, the compiler flags are
+      # expected to artificially change in some way to invalidate and force the
+      # nocompile tests to run again.
     }
   }
 }

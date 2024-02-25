@@ -28,6 +28,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/function_ref.h"
@@ -37,7 +38,6 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_unresolved_property.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -117,11 +118,16 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
@@ -131,7 +137,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
@@ -236,7 +241,7 @@ class UseCounterImplObserverImpl final : public UseCounterImpl::Observer {
   bool OnCountFeature(WebFeature feature) final {
     if (feature_ != feature)
       return false;
-    resolver_->Resolve(static_cast<int>(feature));
+    resolver_->Resolve();
     return true;
   }
 
@@ -272,9 +277,9 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
    public:
     explicit Generator(int max_count) : max_count_(max_count) {}
 
-    absl::optional<int> Generate() {
+    std::optional<int> Generate() {
       if (count_ >= max_count_) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       ++count_;
       return current_++;
@@ -313,7 +318,7 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
   TestReadableStreamSource(ScriptState* script_state, Type type)
       : UnderlyingSourceBase(script_state), type_(type) {}
 
-  ScriptPromise Start(ScriptState* script_state) override {
+  ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
     if (generator_) {
       return ScriptPromise::CastUndefined(script_state);
     }
@@ -321,7 +326,7 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
     return resolver_->Promise();
   }
 
-  ScriptPromise pull(ScriptState* script_state) override {
+  ScriptPromise Pull(ScriptState* script_state, ExceptionState&) override {
     if (!generator_) {
       return ScriptPromise::CastUndefined(script_state);
     }
@@ -331,7 +336,8 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
       Controller()->Close();
       return ScriptPromise::CastUndefined(script_state);
     }
-    Controller()->Enqueue(*result);
+    Controller()->Enqueue(
+        v8::Integer::New(script_state->GetIsolate(), *result));
     return ScriptPromise::CastUndefined(script_state);
   }
 
@@ -473,7 +479,7 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
       : type_(type),
         optimizer_flag_(
             base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
-                absl::in_place,
+                std::in_place,
                 false)) {}
 
   ScriptPromise start(ScriptState* script_state,
@@ -491,7 +497,8 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
                       ExceptionState&) override {
     DCHECK(internal_sink_);
     internal_sink_->Append(
-        ToCoreString(chunk.V8Value()
+        ToCoreString(script_state->GetIsolate(),
+                     chunk.V8Value()
                          ->ToString(script_state->GetContext())
                          .ToLocalChecked())
             .Utf8());
@@ -617,9 +624,16 @@ TestWritableStreamSink::Optimizer::PerformInProcessOptimization(
   return sink;
 }
 
+void OnLCPPredicted(ScriptPromiseResolver* resolver,
+                    const Element* lcp_element) {
+  const ElementLocator locator =
+      lcp_element ? element_locator::OfElement(*lcp_element) : ElementLocator();
+  resolver->Resolve(element_locator::ToStringForTesting(locator));
+}
+
 }  // namespace
 
-static absl::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
+static std::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
     const String& marker_type) {
   if (EqualIgnoringASCIICase(marker_type, "Spelling"))
     return DocumentMarker::kSpelling;
@@ -633,16 +647,16 @@ static absl::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
     return DocumentMarker::kActiveSuggestion;
   if (EqualIgnoringASCIICase(marker_type, "Suggestion"))
     return DocumentMarker::kSuggestion;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-static absl::optional<DocumentMarker::MarkerTypes> MarkerTypesFrom(
+static std::optional<DocumentMarker::MarkerTypes> MarkerTypesFrom(
     const String& marker_type) {
   if (marker_type.empty() || EqualIgnoringASCIICase(marker_type, "all"))
     return DocumentMarker::MarkerTypes::All();
-  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  std::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type)
-    return absl::nullopt;
+    return std::nullopt;
   return DocumentMarker::MarkerTypes(type.value());
 }
 
@@ -735,7 +749,8 @@ GCObservation* Internals::observeGC(ScriptValue script_value,
     return nullptr;
   }
 
-  return MakeGarbageCollected<GCObservation>(observed_value);
+  return MakeGarbageCollected<GCObservation>(script_value.GetIsolate(),
+                                             observed_value);
 }
 
 unsigned Internals::updateStyleAndReturnAffectedElementCount(
@@ -870,7 +885,7 @@ Element* Internals::innerEditorElement(Element* container,
 }
 
 bool Internals::isPreloaded(const String& url) {
-  return isPreloadedBy(url, document_);
+  return isPreloadedBy(url, document_.Get());
 }
 
 bool Internals::isPreloadedBy(const String& url, Document* document) {
@@ -903,13 +918,14 @@ bool Internals::isLoadingFromMemoryCache(const String& url) {
   return resource && resource->GetStatus() == ResourceStatus::kCached;
 }
 
-ScriptPromise Internals::getInitialResourcePriority(ScriptState* script_state,
-                                                    const String& url,
-                                                    Document* document,
-                                                    bool new_load_only) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLLong> Internals::getInitialResourcePriority(
+    ScriptState* script_state,
+    const String& url,
+    Document* document,
+    bool new_load_only) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLLong>>(script_state);
+  auto promise = resolver->Promise();
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
 
   auto callback = WTF::BindOnce(&Internals::ResolveResourcePriority,
@@ -920,7 +936,7 @@ ScriptPromise Internals::getInitialResourcePriority(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Internals::getInitialResourcePriorityOfNewLoad(
+ScriptPromiseTyped<IDLLong> Internals::getInitialResourcePriorityOfNewLoad(
     ScriptState* script_state,
     const String& url,
     Document* document) {
@@ -1153,7 +1169,7 @@ ShadowRoot* Internals::shadowRoot(Element* host) {
   return host->GetShadowRoot();
 }
 
-String Internals::shadowRootType(const Node* root,
+String Internals::ShadowRootMode(const Node* root,
                                  ExceptionState& exception_state) const {
   DCHECK(root);
   auto* shadow_root = DynamicTo<ShadowRoot>(root);
@@ -1164,12 +1180,12 @@ String Internals::shadowRootType(const Node* root,
     return String();
   }
 
-  switch (shadow_root->GetType()) {
-    case ShadowRootType::kUserAgent:
+  switch (shadow_root->GetMode()) {
+    case ShadowRootMode::kUserAgent:
       return String("UserAgentShadowRoot");
-    case ShadowRootType::kOpen:
+    case ShadowRootMode::kOpen:
       return String("OpenShadowRoot");
-    case ShadowRootType::kClosed:
+    case ShadowRootMode::kClosed:
       return String("ClosedShadowRoot");
     default:
       NOTREACHED();
@@ -1183,6 +1199,9 @@ const AtomicString& Internals::shadowPseudoId(Element* element) {
 }
 
 String Internals::visiblePlaceholder(Element* element) {
+  // Placeholder may be created during layout. Force layout to ensure the
+  // placeholder was created.
+  element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   if (auto* text_control_element = ToTextControlOrNull(element)) {
     if (!text_control_element->IsPlaceholderVisible())
       return String();
@@ -1314,7 +1333,7 @@ void Internals::setMarker(Document* document,
     return;
   }
 
-  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  std::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -1348,7 +1367,7 @@ void Internals::removeMarker(Document* document,
     return;
   }
 
-  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  std::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -1379,7 +1398,7 @@ unsigned Internals::markerCountForNode(Text* text,
                                        const String& marker_type,
                                        ExceptionState& exception_state) {
   DCHECK(text);
-  absl::optional<DocumentMarker::MarkerTypes> marker_types =
+  std::optional<DocumentMarker::MarkerTypes> marker_types =
       MarkerTypesFrom(marker_type);
   if (!marker_types) {
     exception_state.ThrowDOMException(
@@ -1415,7 +1434,7 @@ DocumentMarker* Internals::MarkerAt(Text* text,
                                     unsigned index,
                                     ExceptionState& exception_state) {
   DCHECK(text);
-  absl::optional<DocumentMarker::MarkerTypes> marker_types =
+  std::optional<DocumentMarker::MarkerTypes> marker_types =
       MarkerTypesFrom(marker_type);
   if (!marker_types) {
     exception_state.ThrowDOMException(
@@ -1428,7 +1447,7 @@ DocumentMarker* Internals::MarkerAt(Text* text,
       text->GetDocument().Markers().MarkersFor(*text, marker_types.value());
   if (markers.size() <= index)
     return nullptr;
-  return markers[index];
+  return markers[index].Get();
 }
 
 Range* Internals::markerRangeForNode(Text* text,
@@ -1478,13 +1497,13 @@ unsigned Internals::markerUnderlineColorForNode(
   return style_marker->UnderlineColor().Rgb();
 }
 
-static absl::optional<TextMatchMarker::MatchStatus> MatchStatusFrom(
+static std::optional<TextMatchMarker::MatchStatus> MatchStatusFrom(
     const String& match_status) {
   if (EqualIgnoringASCIICase(match_status, "kActive"))
     return TextMatchMarker::MatchStatus::kActive;
   if (EqualIgnoringASCIICase(match_status, "kInactive"))
     return TextMatchMarker::MatchStatus::kInactive;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void Internals::addTextMatchMarker(const Range* range,
@@ -1494,7 +1513,7 @@ void Internals::addTextMatchMarker(const Range* range,
   if (!range->OwnerDocument().View())
     return;
 
-  absl::optional<TextMatchMarker::MatchStatus> match_status_enum =
+  std::optional<TextMatchMarker::MatchStatus> match_status_enum =
       MatchStatusFrom(match_status);
   if (!match_status_enum) {
     exception_state.ThrowDOMException(
@@ -1524,7 +1543,7 @@ static bool ParseColor(const String& value,
   return true;
 }
 
-static absl::optional<ImeTextSpanThickness> ThicknessFrom(
+static std::optional<ImeTextSpanThickness> ThicknessFrom(
     const String& thickness) {
   if (EqualIgnoringASCIICase(thickness, "none"))
     return ImeTextSpanThickness::kNone;
@@ -1532,10 +1551,10 @@ static absl::optional<ImeTextSpanThickness> ThicknessFrom(
     return ImeTextSpanThickness::kThin;
   if (EqualIgnoringASCIICase(thickness, "thick"))
     return ImeTextSpanThickness::kThick;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-static absl::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
+static std::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
     const String& underline_style) {
   if (EqualIgnoringASCIICase(underline_style, "none"))
     return ImeTextSpanUnderlineStyle::kNone;
@@ -1547,7 +1566,7 @@ static absl::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
     return ImeTextSpanUnderlineStyle::kDash;
   if (EqualIgnoringASCIICase(underline_style, "squiggle"))
     return ImeTextSpanUnderlineStyle::kSquiggle;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 namespace {
@@ -1568,7 +1587,7 @@ void AddStyleableMarkerHelper(const Range* range,
   DCHECK(range);
   range->OwnerDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  absl::optional<ImeTextSpanThickness> thickness =
+  std::optional<ImeTextSpanThickness> thickness =
       ThicknessFrom(thickness_value);
   if (!thickness) {
     exception_state.ThrowDOMException(
@@ -1577,7 +1596,7 @@ void AddStyleableMarkerHelper(const Range* range,
     return;
   }
 
-  absl::optional<ImeTextSpanUnderlineStyle> underline_style =
+  std::optional<ImeTextSpanUnderlineStyle> underline_style =
       UnderlineStyleFrom(underline_style_value);
   if (!underline_style_value) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
@@ -2372,7 +2391,9 @@ void Internals::triggerTestInspectorIssue(Document* document) {
   auto info = mojom::blink::InspectorIssueInfo::New(
       mojom::InspectorIssueCode::kCookieIssue,
       mojom::blink::InspectorIssueDetails::New());
-  document->GetFrame()->AddInspectorIssue(std::move(info));
+  document->GetFrame()->AddInspectorIssue(
+      AuditsIssue(ConvertInspectorIssueToProtocolFormat(
+          InspectorIssue::Create(std::move(info)))));
 }
 
 AtomicString Internals::htmlNamespace() {
@@ -2543,16 +2564,6 @@ unsigned Internals::numberOfScrollableAreas(Document* document) {
   return count;
 }
 
-bool Internals::isPageBoxVisible(Document* document, int page_number) {
-  DCHECK(document);
-  // Named pages aren't supported here, because this function may be called
-  // without laying out first.
-  const ComputedStyle* style =
-      document->StyleForPage(page_number, /* page_name */ AtomicString());
-  return style->Visibility() !=
-         EVisibility::kHidden;  // display property doesn't apply to @page.
-}
-
 String Internals::layerTreeAsText(Document* document,
                                   ExceptionState& exception_state) const {
   return layerTreeAsText(document, 0, exception_state);
@@ -2714,26 +2725,6 @@ String Internals::pageProperty(String property_name,
 
   return PrintContext::PageProperty(GetFrame(), property_name.Utf8().c_str(),
                                     page_number);
-}
-
-String Internals::pageSizeAndMarginsInPixels(
-    unsigned page_number,
-    int width,
-    int height,
-    int margin_top,
-    int margin_right,
-    int margin_bottom,
-    int margin_left,
-    ExceptionState& exception_state) const {
-  if (!GetFrame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "No frame is available.");
-    return String();
-  }
-
-  return PrintContext::PageSizeAndMarginsInPixels(
-      GetFrame(), page_number, width, height, margin_top, margin_right,
-      margin_bottom, margin_left);
 }
 
 float Internals::pageScaleFactor(ExceptionState& exception_state) {
@@ -3023,6 +3014,11 @@ DOMRectList* Internals::nonDraggableRegions(Document* document,
   return AnnotatedRegions(document, false, exception_state);
 }
 
+void Internals::SetSupportsAppRegion(bool supports_app_region) {
+  document_->GetPage()->GetChromeClient().GetWebView()->SetSupportsAppRegion(
+      supports_app_region);
+}
+
 DOMRectList* Internals::AnnotatedRegions(Document* document,
                                          bool draggable,
                                          ExceptionState& exception_state) {
@@ -3271,7 +3267,7 @@ Node* Internals::visibleSelectionAnchorNode() {
   Position position = GetFrame()
                           ->Selection()
                           .ComputeVisibleSelectionInDOMTreeDeprecated()
-                          .Base();
+                          .Anchor();
   return position.IsNull() ? nullptr : position.ComputeContainerNode();
 }
 
@@ -3281,7 +3277,7 @@ unsigned Internals::visibleSelectionAnchorOffset() {
   Position position = GetFrame()
                           ->Selection()
                           .ComputeVisibleSelectionInDOMTreeDeprecated()
-                          .Base();
+                          .Anchor();
   return position.IsNull() ? 0 : position.ComputeOffsetInContainerNode();
 }
 
@@ -3291,7 +3287,7 @@ Node* Internals::visibleSelectionFocusNode() {
   Position position = GetFrame()
                           ->Selection()
                           .ComputeVisibleSelectionInDOMTreeDeprecated()
-                          .Extent();
+                          .Focus();
   return position.IsNull() ? nullptr : position.ComputeContainerNode();
 }
 
@@ -3301,7 +3297,7 @@ unsigned Internals::visibleSelectionFocusOffset() {
   Position position = GetFrame()
                           ->Selection()
                           .ComputeVisibleSelectionInDOMTreeDeprecated()
-                          .Extent();
+                          .Focus();
   return position.IsNull() ? 0 : position.ComputeOffsetInContainerNode();
 }
 
@@ -3412,13 +3408,12 @@ void Internals::forceCompositingUpdate(Document* document,
 
 void Internals::setForcedColorsAndDarkPreferredColorScheme(Document* document) {
   DCHECK(document);
-  ColorSchemeHelper color_scheme_helper(*document);
-  color_scheme_helper.SetPreferredColorScheme(
+  color_scheme_helper_.emplace(*document);
+  color_scheme_helper_->SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
-  color_scheme_helper.SetForcedColors(*document, ForcedColors::kActive);
-  color_scheme_helper.SetEmulatedForcedColors(*document,
-                                              /*is_dark_theme=*/false);
-  document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
+  color_scheme_helper_->SetForcedColors(*document, ForcedColors::kActive);
+  color_scheme_helper_->SetEmulatedForcedColors(*document,
+                                                /*is_dark_theme=*/false);
 }
 
 void Internals::setDarkPreferredColorScheme(Document* document) {
@@ -3458,10 +3453,12 @@ class AddOneFunction : public ScriptFunction::Callable {
 
 }  // namespace
 
-ScriptPromise Internals::createResolvedPromise(ScriptState* script_state,
-                                               ScriptValue value) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLAny> Internals::createResolvedPromise(
+    ScriptState* script_state,
+    ScriptValue value) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
+  auto promise = resolver->Promise();
   resolver->Resolve(value);
   return promise;
 }
@@ -3558,23 +3555,6 @@ void Internals::setInitialFocus(bool reverse) {
               : mojom::blink::FocusType::kForward);
 }
 
-Element* Internals::interestedElement() {
-  if (!GetFrame() || !GetFrame()->GetPage())
-    return nullptr;
-
-  if (!RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
-    return To<LocalFrame>(
-               GetFrame()->GetPage()->GetFocusController().FocusedOrMainFrame())
-        ->GetDocument()
-        ->ActiveElement();
-  }
-
-  return GetFrame()
-      ->GetPage()
-      ->GetSpatialNavigationController()
-      .GetInterestedElement();
-}
-
 bool Internals::isActivated() {
   if (!GetFrame())
     return false;
@@ -3611,13 +3591,8 @@ void Internals::forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
   context->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
 }
 
-void Internals::setScrollChain(ScrollState* scroll_state,
-                               const HeapVector<Member<Element>>& elements,
-                               ExceptionState&) {
-  Deque<DOMNodeId> scroll_chain;
-  for (wtf_size_t i = 0; i < elements.size(); ++i)
-    scroll_chain.push_back(DOMNodeIds::IdForNode(elements[i].Get()));
-  scroll_state->SetScrollChain(scroll_chain);
+void Internals::disableCanvasAcceleration(HTMLCanvasElement* canvas) {
+  canvas->DisableAcceleration();
 }
 
 String Internals::selectedHTMLForClipboard() {
@@ -3888,8 +3863,9 @@ void Internals::setDeviceEmulationScale(float scale,
   page->GetChromeClient().GetWebView()->EnableDeviceEmulation(params);
 }
 
-void Internals::ResolveResourcePriority(ScriptPromiseResolver* resolver,
-                                        int resource_load_priority) {
+void Internals::ResolveResourcePriority(
+    ScriptPromiseResolverTyped<IDLLong>* resolver,
+    int resource_load_priority) {
   resolver->Resolve(resource_load_priority);
 }
 
@@ -4020,14 +3996,12 @@ ScriptValue Internals::createWritableStreamAndSink(
   object
       ->Set(script_state->GetContext(),
             V8String(script_state->GetIsolate(), "stream"),
-            ToV8Traits<WritableStream>::ToV8(script_state, stream)
-                .ToLocalChecked())
+            ToV8Traits<WritableStream>::ToV8(script_state, stream))
       .Check();
   object
       ->Set(script_state->GetContext(),
             V8String(script_state->GetIsolate(), "sink"),
-            ToV8Traits<IDLPromise>::ToV8(script_state, resolver->Promise())
-                .ToLocalChecked())
+            ToV8Traits<IDLPromise>::ToV8(script_state, resolver->Promise()))
       .Check();
   return ScriptValue(script_state->GetIsolate(), object);
 }
@@ -4044,6 +4018,24 @@ void Internals::setBackForwardCacheRestorationBufferSize(unsigned int maxSize) {
   WindowPerformance& perf =
       *DOMWindowPerformance::performance(*document_->domWindow());
   perf.setBackForwardCacheRestorationBufferSizeForTest(maxSize);
+}
+
+Vector<String> Internals::getCreatorScripts(HTMLImageElement* img) {
+  DCHECK(img);
+  return Vector<String>(img->creator_scripts());
+}
+
+ScriptPromise Internals::LCPPrediction(ScriptState* script_state,
+                                       Document* document) {
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP();
+  CHECK(lcpp);
+  lcpp->AddLCPPredictedCallback(
+      WTF::BindOnce(&OnLCPPredicted, WrapPersistent(resolver)));
+  return promise;
 }
 
 }  // namespace blink

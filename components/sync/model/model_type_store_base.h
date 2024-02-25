@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BASE_H_
 #define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BASE_H_
 
+#include <compare>
 #include <memory>
 #include <string>
 #include <vector>
@@ -20,6 +21,9 @@ class ModelTypeStoreBase {
   struct Record {
     Record(const std::string& id, const std::string& value)
         : id(id), value(value) {}
+
+    friend std::strong_ordering operator<=>(const Record&,
+                                            const Record&) = default;
 
     std::string id;
     std::string value;

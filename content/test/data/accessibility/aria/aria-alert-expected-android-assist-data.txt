@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}, {id="ariaalert"}, {role="alert"}]
+++++TextView text:"This test is for aria role="alert"" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

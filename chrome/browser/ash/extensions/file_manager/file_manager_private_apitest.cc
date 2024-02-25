@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_misc.h"
+#include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -33,8 +34,13 @@
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
@@ -344,11 +350,11 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
 
   base::ScopedTempDir temp_dir_;
   base::ScopedTempDir non_watchable_dir_;
-  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged>
       disk_mount_manager_mock_ = nullptr;
   DiskMountManager::Disks volumes_;
   DiskMountManager::MountPoints mount_points_;
-  raw_ptr<file_manager::EventRouter, ExperimentalAsh> event_router_ = nullptr;
+  raw_ptr<file_manager::EventRouter> event_router_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
@@ -514,6 +520,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
     base::File video_file(downloads_dir.Append("all-justice.mp4"),
                           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(video_file.IsValid());
+    base::File text_file(downloads_dir.Append("all-justice.txt"),
+                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(text_file.IsValid());
+    ASSERT_TRUE(text_file.SetTimes(base::Time::Now(),
+                                   base::Time::Now() - base::Days(60)));
   }
 
   ASSERT_TRUE(RunExtensionTest("file_browser/recent_test", {},
@@ -526,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, MediaMetadata) {
 
   // Get source media/test/data directory path.
   base::FilePath root_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir));
   const base::FilePath media_test_data_dir =
       root_dir.AppendASCII("media").AppendASCII("test").AppendASCII("data");
 
@@ -721,17 +732,25 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, SearchFiles) {
     base::File jan_15_file(downloads_dir.Append("bar_15012020.jpg"),
                            base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(jan_15_file.IsValid());
+    static constexpr base::Time::Exploded kJan152020Noon = {.year = 2020,
+                                                            .month = 1,
+                                                            .day_of_week = 3,
+                                                            .day_of_month = 15,
+                                                            .hour = 12};
     base::Time jan_15_2020_noon;
-    ASSERT_TRUE(base::Time::FromUTCExploded(
-        base::Time::Exploded{2020, 1, 3, 15, 12, 0, 0, 0}, &jan_15_2020_noon));
+    ASSERT_TRUE(base::Time::FromUTCExploded(kJan152020Noon, &jan_15_2020_noon));
     jan_15_file.SetTimes(jan_15_2020_noon, jan_15_2020_noon);
 
     base::File jan_01_file(downloads_dir.Append("bar_01012020.jpg"),
                            base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(jan_01_file.IsValid());
+    static constexpr base::Time::Exploded kJan012020Noon = {.year = 2020,
+                                                            .month = 1,
+                                                            .day_of_week = 3,
+                                                            .day_of_month = 1,
+                                                            .hour = 12};
     base::Time jan_01_2020_noon;
-    ASSERT_TRUE(base::Time::FromUTCExploded(
-        base::Time::Exploded{2020, 1, 3, 1, 12, 0, 0, 0}, &jan_01_2020_noon));
+    ASSERT_TRUE(base::Time::FromUTCExploded(kJan012020Noon, &jan_01_2020_noon));
     jan_01_file.SetTimes(jan_01_2020_noon, jan_01_2020_noon);
   }
 
@@ -756,30 +775,64 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
     ASSERT_TRUE(drive_path_.CreateUniqueTempDir());
   }
 
+  void TearDownOnMainThread() override {
+    // The files controller must be destroyed before the profile since it's
+    // holding a pointer to it.
+    files_controller_.reset();
+    mock_rules_manager_ = nullptr;
+    fpnm_ = nullptr;
+    FileManagerPrivateApiTest::TearDownOnMainThread();
+  }
+
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
-    auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>();
+    auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>(
+        Profile::FromBrowserContext(context));
     mock_rules_manager_ = dlp_rules_manager.get();
     ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
 
-    files_controller_ =
-        std::make_unique<policy::DlpFilesControllerAsh>(*mock_rules_manager_);
+    files_controller_ = std::make_unique<policy::DlpFilesControllerAsh>(
+        *mock_rules_manager_, Profile::FromBrowserContext(context));
     ON_CALL(*mock_rules_manager_, GetDlpFilesController)
         .WillByDefault(testing::Return(files_controller_.get()));
 
     return dlp_rules_manager;
   }
 
+  std::unique_ptr<KeyedService> SetFPNM(content::BrowserContext* context) {
+    auto fpnm = std::make_unique<policy::MockFilesPolicyNotificationManager>(
+        browser()->profile());
+    fpnm_ = fpnm.get();
+    return fpnm;
+  }
+
  protected:
   base::ScopedTempDir drive_path_;
-  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      mock_rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_ =
+      nullptr;
   std::unique_ptr<policy::DlpFilesControllerAsh> files_controller_;
+  raw_ptr<policy::MockFilesPolicyNotificationManager, DanglingUntriaged> fpnm_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
+class FileManagerPrivateApiDlpOldUXTest : public FileManagerPrivateApiDlpTest {
+ protected:
+  FileManagerPrivateApiDlpOldUXTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDataLeakPreventionFilesRestriction},
+        /*disabled_features=*/{features::kNewFilesPolicyUX});
+  }
+
+  FileManagerPrivateApiDlpOldUXTest(const FileManagerPrivateApiDlpOldUXTest&) =
+      delete;
+  void operator=(const FileManagerPrivateApiDlpOldUXTest&) = delete;
+
+  ~FileManagerPrivateApiDlpOldUXTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpOldUXTest, DlpBlockCopy) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
       browser()->profile(),
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
@@ -1034,5 +1087,155 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Error) {
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
                                {.custom_arg = "error"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
+                       DlpMetadata_DismissIOTask) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(0);
+  // We should not get to the point of checking DLP.
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
+
+  policy::FilesPolicyNotificationManagerFactory::GetInstance()
+      ->SetTestingFactory(
+          browser()->profile(),
+          base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
+                              base::Unretained(this)));
+  // FPNM is created lazily so initialize it before running the test.
+  ASSERT_TRUE(
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          browser()->profile()));
+  // Expect only the valid task id.
+  EXPECT_CALL(*fpnm_, OnErrorItemDismissed(1u));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "dismissIOTask"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
+                       DlpMetadata_ProgressPausedTasks) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(0);
+  // We should not get to the point of checking DLP.
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
+
+  std::vector<storage::FileSystemURL> source_urls{
+      storage::FileSystemURL::CreateForTest(
+          GURL("filesystem:chrome-extension://abc/external/foo/src")),
+  };
+  auto dest = storage::FileSystemURL::CreateForTest(
+      GURL("filesystem:chrome-extension://abc/external/foo/dest"));
+
+  file_manager::VolumeManager* const volume_manager =
+      file_manager::VolumeManager::Get(browser()->profile());
+  ASSERT_TRUE(volume_manager);
+  file_manager::io_task::IOTaskController* io_task_controller =
+      volume_manager->io_task_controller();
+  ASSERT_TRUE(io_task_controller);
+
+  // Create and pause the task.
+  auto task_id = io_task_controller->Add(
+      std::make_unique<file_manager::io_task::DummyIOTask>(
+          source_urls, dest, file_manager::io_task::OperationType::kCopy,
+          /*show_notification=*/true, /*progress_succeeds=*/false));
+  file_manager::io_task::PauseParams pause_params;
+  pause_params.policy_params =
+      file_manager::io_task::PolicyPauseParams(policy::Policy::kDlp);
+  io_task_controller->Pause(task_id, pause_params);
+
+  // Set up FPNM, but only after creating and pausing the task so that it would
+  // only get notified by the API call.
+  policy::FilesPolicyNotificationManagerFactory::GetInstance()
+      ->SetTestingFactory(
+          browser()->profile(),
+          base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
+                              base::Unretained(this)));
+  // FPNM is created lazily so initialize it before running the test.
+  ASSERT_TRUE(
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          browser()->profile()));
+  // Expect the pause status from ProgressPausedTasks.
+  EXPECT_CALL(
+      *fpnm_,
+      OnIOTaskStatus(AllOf(
+          testing::Field(&file_manager::io_task::ProgressStatus::task_id,
+                         task_id),
+          testing::Field(&file_manager::io_task::ProgressStatus::state,
+                         file_manager::io_task::State::kPaused),
+          testing::Field(&file_manager::io_task::ProgressStatus::pause_params,
+                         pause_params))));
+  // FPNM should also get notified to show the notification by this call.
+  EXPECT_CALL(
+      *fpnm_,
+      ShowFilesPolicyNotification(
+          "swa-file-operation-1",
+          AllOf(testing::Field(&file_manager::io_task::ProgressStatus::task_id,
+                               task_id),
+                testing::Field(&file_manager::io_task::ProgressStatus::state,
+                               file_manager::io_task::State::kPaused),
+                testing::Field(
+                    &file_manager::io_task::ProgressStatus::pause_params,
+                    pause_params))));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "progressPausedTasks"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
+                       DlpMetadata_ShowPolicyDialog) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(0);
+  // We should not get to the point of checking DLP.
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
+
+  // Set up FPNM.
+  policy::FilesPolicyNotificationManagerFactory::GetInstance()
+      ->SetTestingFactory(
+          browser()->profile(),
+          base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
+                              base::Unretained(this)));
+  // FPNM is created lazily so initialize it before running the test.
+  ASSERT_TRUE(
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          browser()->profile()));
+
+  // Expect only the calls with valid parameters.
+  testing::InSequence s;
+  EXPECT_CALL(*fpnm_, ShowDialog(1u, policy::FilesDialogType::kWarning));
+  EXPECT_CALL(*fpnm_, ShowDialog(2u, policy::FilesDialogType::kError));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "showPolicyDialog"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
+                       DlpMetadata_GetDialogCaller) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+
+  policy::DlpFileDestination caller(GURL("https://example.com"));
+  SelectFileDialogExtensionUserData::SetDialogCallerForTesting(&caller);
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "getDialogCaller"},
                                {.load_as_component = true}));
 }

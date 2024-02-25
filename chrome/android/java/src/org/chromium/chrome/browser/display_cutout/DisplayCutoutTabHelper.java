@@ -14,13 +14,14 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -36,38 +37,39 @@ public class DisplayCutoutTabHelper implements UserData {
     /** The tab that this object belongs to. */
     private Tab mTab;
 
-    @VisibleForTesting
-    DisplayCutoutController mCutoutController;
+    @VisibleForTesting DisplayCutoutController mCutoutController;
 
     /** Listens to various Tab events. */
-    private final TabObserver mTabObserver = new EmptyTabObserver() {
-        @Override
-        public void onShown(Tab tab, @TabSelectionType int type) {
-            assert tab == mTab;
+    private final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onShown(Tab tab, @TabSelectionType int type) {
+                    assert tab == mTab;
 
-            // Force a layout update if we are now being shown.
-            mCutoutController.maybeUpdateLayout();
-        }
+                    // Force a layout update if we are now being shown.
+                    mCutoutController.maybeUpdateLayout();
+                }
 
-        @Override
-        public void onInteractabilityChanged(Tab tab, boolean interactable) {
-            // Force a layout update if the tab is now in the foreground.
-            mCutoutController.maybeUpdateLayout();
-        }
+                @Override
+                public void onInteractabilityChanged(Tab tab, boolean interactable) {
+                    // Force a layout update if the tab is now in the foreground.
+                    mCutoutController.maybeUpdateLayout();
+                }
 
-        @Override
-        public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-            assert tab == mTab;
+                @Override
+                public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                    assert tab == mTab;
 
-            mCutoutController.onActivityAttachmentChanged(window);
-        }
-    };
+                    mCutoutController.onActivityAttachmentChanged(window);
+                }
+            };
 
     public static DisplayCutoutTabHelper from(Tab tab) {
         UserDataHost host = tab.getUserDataHost();
         DisplayCutoutTabHelper tabHelper = host.getUserData(USER_DATA_KEY);
-        return tabHelper == null ? host.setUserData(USER_DATA_KEY, new DisplayCutoutTabHelper(tab))
-                                 : tabHelper;
+        return tabHelper == null
+                ? host.setUserData(USER_DATA_KEY, new DisplayCutoutTabHelper(tab))
+                : tabHelper;
     }
 
     @VisibleForTesting
@@ -82,19 +84,23 @@ public class DisplayCutoutTabHelper implements UserData {
         public Activity getAttachedActivity() {
             return mTab.getWindowAndroid().getActivity().get();
         }
+
         @Override
         public WebContents getWebContents() {
             return mTab.getWebContents();
         }
+
         @Override
-        public InsetObserverView getInsetObserverView() {
-            return InsetObserverViewSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
+        public InsetObserver getInsetObserverView() {
+            return InsetObserverSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
         }
+
         @Override
         public ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier() {
             WindowAndroid window = mTab.getWindowAndroid();
             return window == null ? null : ActivityDisplayCutoutModeSupplier.from(window);
         }
+
         @Override
         public boolean isInteractable() {
             return mTab.isUserInteractable();
@@ -108,7 +114,12 @@ public class DisplayCutoutTabHelper implements UserData {
             }
             BaseCustomTabActivity baseCustomTabActivity = (BaseCustomTabActivity) activity;
             return (baseCustomTabActivity.getIntentDataProvider().getTwaDisplayMode()
-                            instanceof TrustedWebActivityDisplayMode.ImmersiveMode);
+                    instanceof TrustedWebActivityDisplayMode.ImmersiveMode);
+        }
+
+        @Override
+        public boolean isDrawEdgeToEdgeEnabled() {
+            return ChromeFeatureList.sDrawEdgeToEdge.isEnabled();
         }
     }
 
@@ -120,7 +131,8 @@ public class DisplayCutoutTabHelper implements UserData {
     DisplayCutoutTabHelper(Tab tab) {
         mTab = tab;
         tab.addObserver(mTabObserver);
-        mCutoutController = new DisplayCutoutController(new ChromeDisplayCutoutDelegate(mTab));
+        mCutoutController =
+                DisplayCutoutController.createForTab(mTab, new ChromeDisplayCutoutDelegate(mTab));
     }
 
     /**
@@ -141,5 +153,10 @@ public class DisplayCutoutTabHelper implements UserData {
         DisplayCutoutTabHelper tabHelper = new DisplayCutoutTabHelper(tab);
         tabHelper.mCutoutController = controller;
         tab.getUserDataHost().setUserData(USER_DATA_KEY, tabHelper);
+    }
+
+    @VisibleForTesting
+    DisplayCutoutController getDisplayCutoutController() {
+        return mCutoutController;
     }
 }

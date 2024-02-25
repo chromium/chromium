@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,8 +22,8 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -57,7 +58,6 @@
 #include "content/public/common/url_constants.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 using content::BrowserThread;
@@ -110,20 +110,19 @@ void SetPreloadingEligibility(PreloadingAttempt* attempt,
 
 }  // namespace
 
-class NoStatePrefetchManager::OnCloseWebContentsDeleter
-    : public content::WebContentsDelegate,
-      public base::SupportsWeakPtr<
-          NoStatePrefetchManager::OnCloseWebContentsDeleter> {
+class NoStatePrefetchManager::OnCloseWebContentsDeleter final
+    : public content::WebContentsDelegate {
  public:
   OnCloseWebContentsDeleter(NoStatePrefetchManager* manager,
                             std::unique_ptr<WebContents> tab)
       : manager_(manager), tab_(std::move(tab)) {
+    tab_->SetOwnerLocationForDebug(FROM_HERE);
     tab_->SetDelegate(this);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &OnCloseWebContentsDeleter::ScheduleWebContentsForDeletion,
-            AsWeakPtr(), /*timeout=*/true),
+            weak_factory_.GetWeakPtr()),
         kDeleteWithExtremePrejudice);
   }
 
@@ -133,19 +132,20 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
 
   void CloseContents(WebContents* source) override {
     DCHECK_EQ(tab_.get(), source);
-    ScheduleWebContentsForDeletion(/*timeout=*/false);
+    ScheduleWebContentsForDeletion();
   }
 
  private:
-  void ScheduleWebContentsForDeletion(bool timeout) {
-    UMA_HISTOGRAM_BOOLEAN("Prerender.TabContentsDeleterTimeout", timeout);
+  void ScheduleWebContentsForDeletion() {
     tab_->SetDelegate(nullptr);
+    tab_->SetOwnerLocationForDebug(std::nullopt);
     manager_->ScheduleDeleteOldWebContents(std::move(tab_), this);
     // |this| is deleted at this point.
   }
 
   const raw_ptr<NoStatePrefetchManager> manager_;
   std::unique_ptr<WebContents> tab_;
+  base::WeakPtrFactory<OnCloseWebContentsDeleter> weak_factory_{this};
 };
 
 NoStatePrefetchManagerObserver::~NoStatePrefetchManagerObserver() = default;
@@ -183,7 +183,7 @@ NoStatePrefetchManager::~NoStatePrefetchManager() {
   DCHECK(active_prefetches_.empty());
   DCHECK(to_delete_prefetches_.empty());
 
-  for (auto* host : prerender_process_hosts_) {
+  for (content::RenderProcessHost* host : prerender_process_hosts_) {
     host->RemoveObserver(this);
   }
 }
@@ -250,7 +250,8 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
         content::preloading_predictor::kLinkRel, confidence, same_url_matcher);
     attempt = preloading_data->AddPreloadingAttempt(
         content::preloading_predictor::kLinkRel,
-        content::PreloadingType::kNoStatePrefetch, same_url_matcher);
+        content::PreloadingType::kNoStatePrefetch, same_url_matcher,
+        source_web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
   return StartPrefetchingWithPreconnectFallback(
       origin, url, referrer, initiator_origin, gfx::Rect(size),
@@ -264,7 +265,7 @@ NoStatePrefetchManager::StartPrefetchingFromOmnibox(
     const gfx::Size& size,
     PreloadingAttempt* attempt) {
   return StartPrefetchingWithPreconnectFallback(
-      ORIGIN_OMNIBOX, url, content::Referrer(), absl::nullopt, gfx::Rect(size),
+      ORIGIN_OMNIBOX, url, content::Referrer(), std::nullopt, gfx::Rect(size),
       session_storage_namespace, attempt ? attempt->GetWeakPtr() : nullptr);
 }
 
@@ -275,7 +276,7 @@ NoStatePrefetchManager::AddIsolatedPrerender(
     const gfx::Size& size) {
   // The preconnect fallback won't happen.
   return StartPrefetchingWithPreconnectFallback(
-      ORIGIN_ISOLATED_PRERENDER, url, content::Referrer(), absl::nullopt,
+      ORIGIN_ISOLATED_PRERENDER, url, content::Referrer(), std::nullopt,
       gfx::Rect(size), session_storage_namespace);
 }
 
@@ -298,7 +299,7 @@ NoStatePrefetchManager::StartPrefetchingFromExternalRequest(
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Rect& bounds) {
   return StartPrefetchingWithPreconnectFallback(ORIGIN_EXTERNAL_REQUEST, url,
-                                                referrer, absl::nullopt, bounds,
+                                                referrer, std::nullopt, bounds,
                                                 session_storage_namespace);
 }
 
@@ -309,7 +310,7 @@ NoStatePrefetchManager::AddForcedPrerenderFromExternalRequest(
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Rect& bounds) {
   return StartPrefetchingWithPreconnectFallback(
-      ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER, url, referrer, absl::nullopt,
+      ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER, url, referrer, std::nullopt,
       bounds, session_storage_namespace);
 }
 
@@ -546,7 +547,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     Origin origin,
     const GURL& url_arg,
     const content::Referrer& referrer,
-    const absl::optional<url::Origin>& initiator_origin,
+    const std::optional<url::Origin>& initiator_origin,
     const gfx::Rect& bounds,
     SessionStorageNamespace* session_storage_namespace,
     base::WeakPtr<content::PreloadingAttempt> attempt) {
@@ -728,7 +729,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     return nullptr;
   }
 
-  DCHECK(!no_state_prefetch_contents_ptr->prerendering_has_started());
+  DCHECK(!no_state_prefetch_contents_ptr->prefetching_has_started());
 
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle =
       base::WrapUnique(
@@ -743,7 +744,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   no_state_prefetch_contents_ptr->StartPrerendering(
       contents_bounds, session_storage_namespace, attempt);
 
-  DCHECK(no_state_prefetch_contents_ptr->prerendering_has_started());
+  DCHECK(no_state_prefetch_contents_ptr->prefetching_has_started());
 
   StartSchedulingPeriodicCleanups();
   return no_state_prefetch_handle;
@@ -856,7 +857,7 @@ std::unique_ptr<NoStatePrefetchContents>
 NoStatePrefetchManager::CreateNoStatePrefetchContents(
     const GURL& url,
     const content::Referrer& referrer,
-    const absl::optional<url::Origin>& initiator_origin,
+    const std::optional<url::Origin>& initiator_origin,
     Origin origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return base::WrapUnique(
@@ -982,6 +983,9 @@ void NoStatePrefetchManager::CleanUpOldNavigations(
 void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
     std::unique_ptr<WebContents> tab,
     OnCloseWebContentsDeleter* deleter) {
+  if (tab) {
+    tab->SetOwnerLocationForDebug(FROM_HERE);
+  }
   old_web_contents_list_.push_back(std::move(tab));
   PostCleanupTask();
 
@@ -999,7 +1003,7 @@ void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
 }
 
 void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {
-  NoStatePrefetchHistory::Entry entry(contents->prerender_url(),
+  NoStatePrefetchHistory::Entry entry(contents->prefetch_url(),
                                       contents->final_status(),
                                       contents->origin(), base::Time::Now());
   prefetch_history_->AddEntry(entry);
@@ -1008,7 +1012,7 @@ void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {
 base::Value::List NoStatePrefetchManager::GetActivePrerenders() const {
   base::Value::List list;
   for (const auto& prefetch : active_prefetches_) {
-    if (absl::optional<base::Value::Dict> prefetch_value =
+    if (std::optional<base::Value::Dict> prefetch_value =
             prefetch->contents()->GetAsDict()) {
       list.Append(std::move(*prefetch_value));
     }
@@ -1050,13 +1054,8 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
 void NoStatePrefetchManager::RecordNetworkBytesConsumed(
     Origin origin,
     int64_t prerender_bytes) {
-  int64_t recent_browser_context_bytes =
-      browser_context_network_bytes_ -
-      last_recorded_browser_context_network_bytes_;
   last_recorded_browser_context_network_bytes_ = browser_context_network_bytes_;
-  DCHECK_GE(recent_browser_context_bytes, 0);
-  histograms_->RecordNetworkBytesConsumed(origin, prerender_bytes,
-                                          recent_browser_context_bytes);
+  histograms_->RecordNetworkBytesConsumed(origin, prerender_bytes);
 }
 
 void NoStatePrefetchManager::AddPrerenderProcessHost(
@@ -1095,7 +1094,7 @@ std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::StartPrefetchingWithPreconnectFallbackForTesting(
     Origin origin,
     const GURL& url,
-    const absl::optional<url::Origin>& initiator_origin) {
+    const std::optional<url::Origin>& initiator_origin) {
   return StartPrefetchingWithPreconnectFallback(
       origin, url, content::Referrer(), initiator_origin, gfx::Rect(), nullptr);
 }

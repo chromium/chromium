@@ -6,18 +6,17 @@ package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.autofill.AutofillNameFixFlowPrompt.AutofillNameFixFlowPromptDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
-/**
- * JNI call glue for AutofillNameFixFlowPrompt C++ and Java objects.
- */
+/** JNI call glue for AutofillNameFixFlowPrompt C++ and Java objects. */
 @JNINamespace("autofill")
 final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelegate {
     private final long mNativeCardNameFixFlowViewAndroid;
@@ -28,8 +27,12 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     private final int mIconId;
     private AutofillNameFixFlowPrompt mNameFixFlowPrompt;
 
-    private AutofillNameFixFlowBridge(long nativeCardNameFixFlowViewAndroid, String title,
-            String inferredName, String confirmButtonLabel, int iconId,
+    private AutofillNameFixFlowBridge(
+            long nativeCardNameFixFlowViewAndroid,
+            String title,
+            String inferredName,
+            String confirmButtonLabel,
+            int iconId,
             WindowAndroid windowAndroid) {
         mNativeCardNameFixFlowViewAndroid = nativeCardNameFixFlowViewAndroid;
         mTitle = title;
@@ -47,17 +50,26 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     }
 
     @CalledByNative
-    private static AutofillNameFixFlowBridge create(long nativeNameFixFlowPrompt, String title,
-            String inferredName, String confirmButtonLabel, int iconId,
+    private static AutofillNameFixFlowBridge create(
+            long nativeNameFixFlowPrompt,
+            String title,
+            String inferredName,
+            String confirmButtonLabel,
+            int iconId,
             WindowAndroid windowAndroid) {
-        return new AutofillNameFixFlowBridge(nativeNameFixFlowPrompt, title, inferredName,
-                confirmButtonLabel, iconId, windowAndroid);
+        return new AutofillNameFixFlowBridge(
+                nativeNameFixFlowPrompt,
+                title,
+                inferredName,
+                confirmButtonLabel,
+                iconId,
+                windowAndroid);
     }
 
     @Override
     public void onPromptDismissed() {
-        AutofillNameFixFlowBridgeJni.get().promptDismissed(
-                mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this);
+        AutofillNameFixFlowBridgeJni.get()
+                .promptDismissed(mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this);
     }
 
     @Override
@@ -67,21 +79,21 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @Override
     public void onUserAcceptCardholderName(String name) {
-        AutofillNameFixFlowBridgeJni.get().onUserAccept(
-                mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this, name);
+        AutofillNameFixFlowBridgeJni.get()
+                .onUserAccept(
+                        mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this, name);
     }
 
     /* no-op. Legal lines aren't set. */
     @Override
     public void onLinkClicked(String url) {}
 
-    /**
-     * Shows a prompt for name fix flow.
-     */
+    /** Shows a prompt for name fix flow. */
     @CalledByNative
     private void show(WindowAndroid windowAndroid) {
-        mNameFixFlowPrompt = AutofillNameFixFlowPrompt.createAsInfobarFixFlowPrompt(
-                mActivity, this, mInferredName, mTitle, mIconId, mConfirmButtonLabel);
+        mNameFixFlowPrompt =
+                AutofillNameFixFlowPrompt.createAsInfobarFixFlowPrompt(
+                        mActivity, this, mInferredName, mTitle, mIconId, mConfirmButtonLabel);
 
         if (mNameFixFlowPrompt != null) {
             mNameFixFlowPrompt.show(
@@ -89,9 +101,7 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
         }
     }
 
-    /**
-     * Dismisses the prompt without returning any user response.
-     */
+    /** Dismisses the prompt without returning any user response. */
     @CalledByNative
     private void dismiss() {
         if (mNameFixFlowPrompt != null) {
@@ -103,8 +113,12 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     interface Natives {
         void promptDismissed(
                 long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller);
+
         void onUserDismiss(long nativeCardNameFixFlowViewAndroid);
-        void onUserAccept(long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller,
+
+        void onUserAccept(
+                long nativeCardNameFixFlowViewAndroid,
+                AutofillNameFixFlowBridge caller,
                 String name);
     }
 }

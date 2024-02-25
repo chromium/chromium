@@ -26,11 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_SPLIT_ELEMENT_COMMAND_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_SPLIT_ELEMENT_COMMAND_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/commands/edit_command.h"
 
 namespace blink {
 
-class SplitElementCommand final : public SimpleEditCommand {
+class CORE_EXPORT SplitElementCommand final : public SimpleEditCommand {
  public:
   SplitElementCommand(Element*, Node* split_point_child);
 

@@ -7,7 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -50,6 +50,31 @@ class HashRealTimeCacheTest : public PlatformTest {
                                          /*expected_count=*/num_misses);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
+  void CheckAndResetCacheDurationLogs(
+      std::optional<int> initial_cache_duration_sec,
+      std::optional<int> remaining_cache_duration_sec) {
+    if (initial_cache_duration_sec.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
+          /*sample=*/initial_cache_duration_sec.value() * 1000,  // sec to ms
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
+          /*expected_count=*/0);
+    }
+    if (remaining_cache_duration_sec.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
+          /*sample=*/remaining_cache_duration_sec.value() * 1000,  // sec to ms
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
+          /*expected_count=*/0);
+    }
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
   void CheckAndResetCacheSizeOnClear(int num_hash_prefixes,
                                      int num_full_hashes) {
     histogram_tester_->ExpectBucketCount(
@@ -83,19 +108,12 @@ class HashRealTimeCacheTest : public PlatformTest {
 
 TEST_F(HashRealTimeCacheTest, TestCacheMatching_EmptyCache) {
   auto cache = std::make_unique<HashRealTimeCache>();
-  EXPECT_TRUE(cache->SearchCache({}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/0);
-  EXPECT_TRUE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
-  EXPECT_TRUE(
-      cache->SearchCache({"aaaa", "bbbb"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"aaaa", "bbbb"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
-}
-
-TEST_F(HashRealTimeCacheTest, TestCacheMatching_SkipLogging) {
-  auto cache = std::make_unique<HashRealTimeCache>();
-  cache->SearchCache({"aaaa"}, /*skip_logging=*/true);
-  CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/0);
 }
 
 TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
@@ -120,8 +138,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
                              V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
                              V5::ThreatType::BETTER_ADS_VIOLATION,
                              V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
-                             V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION,
-                             V5::ThreatType::SOCIAL_ENGINEERING_ADS}),
+                             V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION}),
     };
     cache->CacheSearchHashesResponse(requested_hash_prefixes,
                                      response_full_hashes,
@@ -130,18 +147,16 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
 
   // Searching for no prefix or for prefixes not in the request should yield
   // empty cache results.
-  EXPECT_TRUE(cache->SearchCache({}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/0);
-  EXPECT_TRUE(cache->SearchCache({"eeee"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"eeee"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
-  EXPECT_TRUE(
-      cache->SearchCache({"eeee", "ffff"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"eeee", "ffff"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 
   std::set<std::string> hash_prefixes_to_search = {"aaaa", "bbbb", "cccc",
                                                    "dddd", "eeee", "ffff"};
-  auto cache_results =
-      cache->SearchCache(hash_prefixes_to_search, /*skip_logging=*/false);
+  auto cache_results = cache->SearchCache(hash_prefixes_to_search);
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/4, /*num_misses=*/2);
 
   // Don't expect cache results for eeee and ffff, since they are not in the
@@ -216,39 +231,35 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Expiration) {
 
   // aaaa expires at 300 seconds. cccc expires at 599 seconds.
   // Current time = 299 seconds. aaaa and cccc have not expired.
-  EXPECT_FALSE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_FALSE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
-  EXPECT_FALSE(cache->SearchCache({"cccc"}, /*skip_logging=*/false).empty());
+  EXPECT_FALSE(cache->SearchCache({"cccc"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
-  EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}, /*skip_logging=*/false).size(),
-            2u);
+  EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}).size(), 2u);
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/2, /*num_misses=*/0);
   // Current time = 300 seconds. aaaa has expired. cccc has not expired.
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
-  EXPECT_FALSE(cache->SearchCache({"cccc"}, /*skip_logging=*/false).empty());
+  EXPECT_FALSE(cache->SearchCache({"cccc"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
-  EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}, /*skip_logging=*/false).size(),
-            1u);
+  EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}).size(), 1u);
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/1);
   // Current time = 598 seconds. aaaa has expired. cccc has not expired.
   task_environment_.FastForwardBy(base::Seconds(298));
-  EXPECT_TRUE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
-  EXPECT_FALSE(cache->SearchCache({"cccc"}, /*skip_logging=*/false).empty());
+  EXPECT_FALSE(cache->SearchCache({"cccc"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
-  EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}, /*skip_logging=*/false).size(),
-            1u);
+  EXPECT_EQ(cache->SearchCache({"aaaa", "cccc"}).size(), 1u);
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/1);
   // Current time = 599 seconds. aaaa and cccc have expired.
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
-  EXPECT_TRUE(cache->SearchCache({"cccc"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"cccc"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
-  EXPECT_TRUE(
-      cache->SearchCache({"aaaa", "cccc"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"aaaa", "cccc"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/2);
 }
 
@@ -272,11 +283,11 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_ExpirationNanos) {
 
   // aaaa expires at 300.5 seconds.
   // Current time = 300.0 seconds. aaaa has not expired.
-  EXPECT_FALSE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_FALSE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   // Current time = 300.5 seconds. aaaa has expired.
   task_environment_.FastForwardBy(base::Nanoseconds(500000000));
-  EXPECT_TRUE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
 }
 
@@ -288,11 +299,10 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
     std::vector<std::string> requested_hash_prefixes = {"aaaa", "bbbb"};
     auto full_hash_1 =
         CreateBasicFullHash("aaaa1111111111111111111111111111", {});
-    AddThreatTypeAndAttributes(
-        full_hash_1, V5::ThreatType::SOCIAL_ENGINEERING,
-        {V5::ThreatAttribute::CANARY, V5::ThreatAttribute::FRAME_ONLY});
+    AddThreatTypeAndAttributes(full_hash_1, V5::ThreatType::SOCIAL_ENGINEERING,
+                               {V5::ThreatAttribute::FRAME_ONLY});
     AddThreatTypeAndAttributes(full_hash_1, V5::ThreatType::MALWARE,
-                               {V5::ThreatAttribute::CANARY});
+                               {V5::ThreatAttribute::FRAME_ONLY});
     AddThreatTypeAndAttributes(
         full_hash_1, V5::ThreatType::API_ABUSE,
         {V5::ThreatAttribute::CANARY, V5::ThreatAttribute::FRAME_ONLY});
@@ -307,8 +317,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
   }
 
   std::set<std::string> hash_prefixes_to_search = {"aaaa", "bbbb"};
-  auto cache_results =
-      cache->SearchCache(hash_prefixes_to_search, /*skip_logging=*/false);
+  auto cache_results = cache->SearchCache(hash_prefixes_to_search);
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/2, /*num_misses=*/0);
 
   // Sanity check that adding attributes for aaaa hashes does not change the
@@ -326,12 +335,11 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
   auto aaaa1_details = aaaa1_results.full_hash_details();
   EXPECT_EQ(aaaa1_details.size(), 3);
   EXPECT_EQ(aaaa1_details[0].threat_type(), V5::ThreatType::SOCIAL_ENGINEERING);
-  EXPECT_EQ(aaaa1_details[0].attributes().size(), 2);
-  EXPECT_EQ(aaaa1_details[0].attributes()[0], V5::ThreatAttribute::CANARY);
-  EXPECT_EQ(aaaa1_details[0].attributes()[1], V5::ThreatAttribute::FRAME_ONLY);
+  EXPECT_EQ(aaaa1_details[0].attributes().size(), 1);
+  EXPECT_EQ(aaaa1_details[0].attributes()[0], V5::ThreatAttribute::FRAME_ONLY);
   EXPECT_EQ(aaaa1_details[1].threat_type(), V5::ThreatType::MALWARE);
   EXPECT_EQ(aaaa1_details[1].attributes().size(), 1);
-  EXPECT_EQ(aaaa1_details[1].attributes()[0], V5::ThreatAttribute::CANARY);
+  EXPECT_EQ(aaaa1_details[1].attributes()[0], V5::ThreatAttribute::FRAME_ONLY);
   EXPECT_EQ(aaaa1_details[2].threat_type(), V5::ThreatType::UNWANTED_SOFTWARE);
   EXPECT_TRUE(aaaa1_details[2].attributes().empty());
   // Sanity check that aaaa...2 has no attributes in spite of aaaa...1 having
@@ -362,7 +370,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
                                      CreateCacheDuration(300, 0));
   }
   // Confirm the cache has the expected results.
-  auto cache_results_1 = cache->SearchCache({"aaaa"}, /*skip_logging=*/false);
+  auto cache_results_1 = cache->SearchCache({"aaaa"});
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   EXPECT_EQ(cache_results_1.size(), 1u);
   EXPECT_EQ(cache_results_1["aaaa"].size(), 1u);
@@ -386,7 +394,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
   // requests for the same prefix, the later-responding result replaces the
   // earlier-responding result. In practice, the two results are expected to be
   // the same almost always, but if they are not, this is how the cache behaves.
-  auto cache_results_2 = cache->SearchCache({"aaaa"}, /*skip_logging=*/false);
+  auto cache_results_2 = cache->SearchCache({"aaaa"});
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   EXPECT_EQ(cache_results_2.size(), 1u);
   EXPECT_EQ(cache_results_2["aaaa"].size(), 1u);
@@ -412,16 +420,44 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
   // Confirm caching Request #3 overwrote the cache duration. If it didn't, then
   // the results of Request #2 would already have expired.
   task_environment_.FastForwardBy(base::Seconds(150));
-  EXPECT_FALSE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_FALSE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
 
   // Confirm Request #3's cache duration is respected.
   task_environment_.FastForwardBy(base::Seconds(149));
-  EXPECT_FALSE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_FALSE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/1, /*num_misses=*/0);
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(cache->SearchCache({"aaaa"}, /*skip_logging=*/false).empty());
+  EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
+}
+
+TEST_F(HashRealTimeCacheTest, TestCacheMatching_CacheDurationLogging) {
+  auto cache = std::make_unique<HashRealTimeCache>();
+  std::vector<std::string> requested_hash_prefixes = {"aaaa"};
+  std::vector<V5::FullHash> response_full_hashes = {
+      CreateBasicFullHash("aaaa1111111111111111111111111111",
+                          {V5::ThreatType::SOCIAL_ENGINEERING}),
+  };
+  cache->CacheSearchHashesResponse(requested_hash_prefixes,
+                                   response_full_hashes,
+                                   CreateCacheDuration(300, 0));
+  CheckAndResetCacheDurationLogs(
+      /*initial_cache_duration_sec=*/300,
+      /*remaining_cache_duration_sec=*/std::nullopt);
+
+  cache->SearchCache({"aaaa"});
+  CheckAndResetCacheDurationLogs(/*initial_cache_duration_sec=*/std::nullopt,
+                                 /*remaining_cache_duration_sec=*/300);
+  task_environment_.FastForwardBy(base::Seconds(299));
+  cache->SearchCache({"aaaa"});
+  CheckAndResetCacheDurationLogs(/*initial_cache_duration_sec=*/std::nullopt,
+                                 /*remaining_cache_duration_sec=*/1);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  cache->SearchCache({"aaaa"});
+  CheckAndResetCacheDurationLogs(
+      /*initial_cache_duration_sec=*/std::nullopt,
+      /*remaining_cache_duration_sec=*/std::nullopt);
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_EmptyCache) {
@@ -437,16 +473,12 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_NoExpiredResults) {
   CacheEntry(cache, "cccc1111111111111111111111111111", 500);
 
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
-  EXPECT_TRUE(base::Contains(
-      cache->SearchCache({"aaaa"}, /*skip_logging=*/false), "aaaa"));
-  EXPECT_TRUE(base::Contains(
-      cache->SearchCache({"cccc"}, /*skip_logging=*/false), "cccc"));
+  EXPECT_TRUE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
+  EXPECT_TRUE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
   cache->ClearExpiredResults();
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
-  EXPECT_TRUE(base::Contains(
-      cache->SearchCache({"aaaa"}, /*skip_logging=*/false), "aaaa"));
-  EXPECT_TRUE(base::Contains(
-      cache->SearchCache({"cccc"}, /*skip_logging=*/false), "cccc"));
+  EXPECT_TRUE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
+  EXPECT_TRUE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_OneExpiredResult) {
@@ -457,16 +489,12 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_OneExpiredResult) {
   // After 400 seconds, aaaa is expired but not cccc.
   task_environment_.FastForwardBy(base::Seconds(400));
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
-  EXPECT_FALSE(base::Contains(
-      cache->SearchCache({"aaaa"}, /*skip_logging=*/false), "aaaa"));
-  EXPECT_TRUE(base::Contains(
-      cache->SearchCache({"cccc"}, /*skip_logging=*/false), "cccc"));
+  EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
+  EXPECT_TRUE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
   cache->ClearExpiredResults();
   EXPECT_EQ(GetNumCacheEntries(cache), 1);
-  EXPECT_FALSE(base::Contains(
-      cache->SearchCache({"aaaa"}, /*skip_logging=*/false), "aaaa"));
-  EXPECT_TRUE(base::Contains(
-      cache->SearchCache({"cccc"}, /*skip_logging=*/false), "cccc"));
+  EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
+  EXPECT_TRUE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_SomeExpiredResults) {
@@ -484,22 +512,14 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_SomeExpiredResults) {
 
   auto validate_cache_contents = [](std::unique_ptr<HashRealTimeCache>&
                                         cache_internal) {
-    EXPECT_FALSE(base::Contains(
-        cache_internal->SearchCache({"aaaa"}, /*skip_logging=*/false), "aaaa"));
-    EXPECT_TRUE(base::Contains(
-        cache_internal->SearchCache({"bbbb"}, /*skip_logging=*/false), "bbbb"));
-    EXPECT_FALSE(base::Contains(
-        cache_internal->SearchCache({"cccc"}, /*skip_logging=*/false), "cccc"));
-    EXPECT_FALSE(base::Contains(
-        cache_internal->SearchCache({"dddd"}, /*skip_logging=*/false), "dddd"));
-    EXPECT_FALSE(base::Contains(
-        cache_internal->SearchCache({"eeee"}, /*skip_logging=*/false), "eeee"));
-    EXPECT_TRUE(base::Contains(
-        cache_internal->SearchCache({"ffff"}, /*skip_logging=*/false), "ffff"));
-    EXPECT_TRUE(base::Contains(
-        cache_internal->SearchCache({"gggg"}, /*skip_logging=*/false), "gggg"));
-    EXPECT_FALSE(base::Contains(
-        cache_internal->SearchCache({"hhhh"}, /*skip_logging=*/false), "hhhh"));
+    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"aaaa"}), "aaaa"));
+    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"bbbb"}), "bbbb"));
+    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"cccc"}), "cccc"));
+    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"dddd"}), "dddd"));
+    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"eeee"}), "eeee"));
+    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"ffff"}), "ffff"));
+    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"gggg"}), "gggg"));
+    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"hhhh"}), "hhhh"));
   };
 
   // After 400 seconds, all of the "soon" prefixes have expired, and none of the
@@ -532,22 +552,14 @@ TEST_F(HashRealTimeCacheTest,
 
   auto validate_cache_contents = [](std::unique_ptr<HashRealTimeCache>&
                                         cache_internal) {
-    EXPECT_TRUE(base::Contains(
-        cache_internal->SearchCache({"aaaa"}, /*skip_logging=*/false), "aaaa"));
-    EXPECT_FALSE(base::Contains(
-        cache_internal->SearchCache({"bbbb"}, /*skip_logging=*/false), "bbbb"));
-    EXPECT_TRUE(base::Contains(
-        cache_internal->SearchCache({"cccc"}, /*skip_logging=*/false), "cccc"));
-    EXPECT_TRUE(base::Contains(
-        cache_internal->SearchCache({"dddd"}, /*skip_logging=*/false), "dddd"));
-    EXPECT_TRUE(base::Contains(
-        cache_internal->SearchCache({"eeee"}, /*skip_logging=*/false), "eeee"));
-    EXPECT_FALSE(base::Contains(
-        cache_internal->SearchCache({"ffff"}, /*skip_logging=*/false), "ffff"));
-    EXPECT_FALSE(base::Contains(
-        cache_internal->SearchCache({"gggg"}, /*skip_logging=*/false), "gggg"));
-    EXPECT_TRUE(base::Contains(
-        cache_internal->SearchCache({"hhhh"}, /*skip_logging=*/false), "hhhh"));
+    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"aaaa"}), "aaaa"));
+    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"bbbb"}), "bbbb"));
+    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"cccc"}), "cccc"));
+    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"dddd"}), "dddd"));
+    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"eeee"}), "eeee"));
+    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"ffff"}), "ffff"));
+    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"gggg"}), "gggg"));
+    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"hhhh"}), "hhhh"));
   };
 
   // After 400 seconds, all of the "soon" prefixes have expired, and none of the
@@ -568,16 +580,12 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_AllExpiredResults) {
   // After 500 seconds, both have expired.
   task_environment_.FastForwardBy(base::Seconds(500));
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
-  EXPECT_FALSE(base::Contains(
-      cache->SearchCache({"aaaa"}, /*skip_logging=*/false), "aaaa"));
-  EXPECT_FALSE(base::Contains(
-      cache->SearchCache({"cccc"}, /*skip_logging=*/false), "cccc"));
+  EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
+  EXPECT_FALSE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
   cache->ClearExpiredResults();
   EXPECT_EQ(GetNumCacheEntries(cache), 0);
-  EXPECT_FALSE(base::Contains(
-      cache->SearchCache({"aaaa"}, /*skip_logging=*/false), "aaaa"));
-  EXPECT_FALSE(base::Contains(
-      cache->SearchCache({"cccc"}, /*skip_logging=*/false), "cccc"));
+  EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
+  EXPECT_FALSE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_Logging) {

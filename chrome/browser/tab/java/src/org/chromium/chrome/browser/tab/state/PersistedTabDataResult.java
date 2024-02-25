@@ -4,7 +4,5 @@
 
 package org.chromium.chrome.browser.tab.state;
 
-/**
- * Holds the {@link PersistedTabDataResult} hierarchy together.
- */
+/** Holds the {@link PersistedTabDataResult} hierarchy together. */
 public interface PersistedTabDataResult {}

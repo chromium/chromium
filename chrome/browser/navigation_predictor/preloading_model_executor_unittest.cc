@@ -25,8 +25,8 @@ class PreloadingModelExecutorTest : public testing::Test {
 
   void SetUp() override {
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
-    // A model of `add` operator.
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+
     model_file_path_ = source_root_dir.AppendASCII("chrome")
                            .AppendASCII("browser")
                            .AppendASCII("navigation_predictor")
@@ -36,7 +36,7 @@ class PreloadingModelExecutorTest : public testing::Test {
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     model_executor_ = std::make_unique<PreloadingModelExecutor>();
     model_executor_->InitializeAndMoveToExecutionThread(
-        /*model_inference_timeout=*/absl::nullopt,
+        /*model_inference_timeout=*/std::nullopt,
         optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
         execution_task_runner_, base::SequencedTaskRunner::GetCurrentDefault());
   }
@@ -68,10 +68,10 @@ TEST_F(PreloadingModelExecutorTest, ExecuteModel) {
 
   // Execute model.
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  base::OnceCallback<void(const absl::optional<ModelOutput>&)>
+  base::OnceCallback<void(const std::optional<ModelOutput>&)>
       execution_callback = base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<ModelOutput>& output) {
+             const std::optional<ModelOutput>& output) {
             ASSERT_TRUE(output.has_value());
             // TODO(isaboori): After the trained model is approved, use
             // realistic inputs and check the output value.

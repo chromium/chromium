@@ -5,6 +5,7 @@
 #include "ui/color/color_provider_manager.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -13,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_metrics.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -37,10 +37,10 @@ class GlobalManager : public ColorProviderManager {
 
 static_assert(sizeof(GlobalManager) == sizeof(ColorProviderManager),
               "Global manager is intended to provide constructor visibility to "
-              "absl::optional, nothing more.");
+              "std::optional, nothing more.");
 
-absl::optional<GlobalManager>& GetGlobalManager() {
-  static base::NoDestructor<absl::optional<GlobalManager>> manager;
+std::optional<GlobalManager>& GetGlobalManager() {
+  static base::NoDestructor<std::optional<GlobalManager>> manager;
   return *manager;
 }
 
@@ -54,7 +54,7 @@ ColorProviderManager::~ColorProviderManager() = default;
 
 // static
 ColorProviderManager& ColorProviderManager::Get() {
-  absl::optional<GlobalManager>& manager = GetGlobalManager();
+  std::optional<GlobalManager>& manager = GetGlobalManager();
   if (!manager.has_value()) {
     manager.emplace();
 #if !BUILDFLAG(IS_ANDROID)
@@ -68,7 +68,7 @@ ColorProviderManager& ColorProviderManager::Get() {
 
 // static
 ColorProviderManager& ColorProviderManager::GetForTesting() {
-  absl::optional<GlobalManager>& manager = GetGlobalManager();
+  std::optional<GlobalManager>& manager = GetGlobalManager();
   if (!manager.has_value())
     manager.emplace();
   return manager.value();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 1
+// Next min version: 2
 
 module arc.mojom;
 
@@ -30,7 +30,7 @@ struct CreateTimerRequest {
   handle expiration_fd;
 };
 
-// Next method ID: 2
+// Next method ID: 3
 interface TimerHost {
   // Creates timers with the given arguments. Returns |ArcTimerResult::SUCCESS|
   // iff timers corresponding to all clocks in |timer_requests| are created.
@@ -44,6 +44,11 @@ interface TimerHost {
   // started and |ArcTimerResult::FAILURE| otherwise.
   StartTimer@1(ClockId clock_id,
                mojo_base.mojom.TimeTicks absolute_expiration_time)
+    => (ArcTimerResult result);
+
+  // Requests the host to set system clock time. The request is rejected if
+  // delta between requested time and current time is greater than 24 hours.
+  [MinVersion=1] SetTime@2(mojo_base.mojom.Time time)
     => (ArcTimerResult result);
 };
 

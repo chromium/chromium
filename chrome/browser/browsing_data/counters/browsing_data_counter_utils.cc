@@ -18,10 +18,15 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/numerics/safe_conversions.h"
@@ -90,15 +95,41 @@ std::u16string GetChromeCounterTextFromResult(
     if (cache_size_bytes >= kBytesInAMegabyte) {
       std::u16string formatted_size = FormatBytesMBOrHigher(cache_size_bytes);
       if (!is_upper_limit) {
+#if BUILDFLAG(IS_ANDROID)
+        if (base::FeatureList::IsEnabled(
+                chrome::android::kQuickDeleteForAndroid) &&
+            !is_basic_tab) {
+          return l10n_util::GetStringFUTF16(
+              IDS_ANDROID_DEL_CACHE_COUNTER_ADVANCED, formatted_size);
+        }
+#endif
         return is_basic_tab ? l10n_util::GetStringFUTF16(
                                   IDS_DEL_CACHE_COUNTER_BASIC, formatted_size)
                             : formatted_size;
       }
+
+#if BUILDFLAG(IS_ANDROID)
+      if (base::FeatureList::IsEnabled(
+              chrome::android::kQuickDeleteForAndroid) &&
+          !is_basic_tab) {
+        return l10n_util::GetStringFUTF16(
+            IDS_ANDROID_DEL_CACHE_COUNTER_ADVANCED_UPPER_ESTIMATE,
+            formatted_size);
+      }
+#endif
       return l10n_util::GetStringFUTF16(
           is_basic_tab ? IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE_BASIC
                        : IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE,
           formatted_size);
     }
+
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(chrome::android::kQuickDeleteForAndroid) &&
+        !is_basic_tab) {
+      return l10n_util::GetStringUTF16(
+          IDS_ANDROID_DEL_CACHE_COUNTER_ADVANCED_ALMOST_EMPTY);
+    }
+#endif
     return l10n_util::GetStringUTF16(
         is_basic_tab ? IDS_DEL_CACHE_COUNTER_ALMOST_EMPTY_BASIC
                      : IDS_DEL_CACHE_COUNTER_ALMOST_EMPTY);
@@ -113,10 +144,23 @@ std::u16string GetChromeCounterTextFromResult(
         static_cast<const BrowsingDataCounter::FinishedResult*>(result)
             ->Value();
 
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(chrome::android::kQuickDeleteForAndroid)) {
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_ANDROID_DEL_COOKIES_COUNTER_ADVANCED, origins);
+    }
+#endif
+
     // Determines whether or not to show the count with exception message.
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     int del_cookie_counter_msg_id =
-        ShouldShowCookieException(profile)
-            ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_EXCEPTION
+        ShouldShowCookieException(profile) ||
+                (identity_manager &&
+                 identity_manager->HasPrimaryAccount(
+                     signin::ConsentLevel::kSignin) &&
+                 switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                     switches::ExplicitBrowserSigninPhase::kExperimental))
+            ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION
             : IDS_DEL_COOKIES_COUNTER_ADVANCED;
 
     return l10n_util::GetPluralStringFUTF16(del_cookie_counter_msg_id, origins);

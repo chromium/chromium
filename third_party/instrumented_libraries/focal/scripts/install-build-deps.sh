@@ -32,12 +32,14 @@ expat \
 fontconfig \
 freetype \
 gdk-pixbuf \
+git \
 glib2.0 \
 gnome-common \
 gnome-keyring \
 gobject-introspection \
 graphite2 \
 gtk+3.0 \
+gyp \
 ido \
 jasper-initramfs \
 libappindicator3-1 \

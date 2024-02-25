@@ -38,14 +38,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   using DelayNetworkCallClosure =
       base::RepeatingCallback<void(base::OnceClosure)>;
 
-  class Delegate : public SimpleGeolocationProvider::Delegate {
+  class Delegate {
    public:
     Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    ~Delegate() override = default;
+    virtual ~Delegate() = default;
 
     // Returns true if TimeZoneResolver should include WiFi data in request.
     virtual bool ShouldSendWiFiGeolocationData() const = 0;
@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   static const char kLastTimeZoneRefreshTime[];
 
   TimeZoneResolver(Delegate* delegate,
+                   SimpleGeolocationProvider* geolocation_provider_,
                    scoped_refptr<network::SharedURLLoaderFactory> factory,
-                   const GURL& url,
                    const ApplyTimeZoneCallback& apply_timezone,
                    const DelayNetworkCallClosure& delay_network_call,
                    PrefService* local_state);
@@ -107,14 +107,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
 
  private:
   bool is_running_ = false;
-  const raw_ptr<const Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<const Delegate> delegate_;
+
+  // Points to the `SimpleGeolocationProvider::GetInstance()` throughout the
+  // object lifecycle. Overridden in unit tests.
+  raw_ptr<SimpleGeolocationProvider> geolocation_provider_ = nullptr;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  const GURL url_;
 
   const ApplyTimeZoneCallback apply_timezone_;
   const DelayNetworkCallClosure delay_network_call_;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   std::unique_ptr<TimeZoneResolverImpl> implementation_;
 

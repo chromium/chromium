@@ -34,6 +34,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/update_user_activation_state_interceptor.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
@@ -68,6 +69,11 @@ using extensions::TestMimeHandlerViewGuest;
 using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
+
+namespace {
+// The value of the data is "content to read\n".
+const char kDataUrlCsv[] = "data:text/csv;base64,Y29udGVudCB0byByZWFkCg==";
+}  // namespace
 
 class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
  public:
@@ -400,7 +406,6 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, NonAsciiHeaders) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, DataUrl) {
-  const char* kDataUrlCsv = "data:text/csv;base64,Y29udGVudCB0byByZWFkCg==";
   RunTestWithUrl(GURL(kDataUrlCsv));
 }
 
@@ -456,14 +461,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, BeforeUnload_NoDialog) {
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 }
 
-// TODO(crbug.com/1462760): Enable the test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_BeforeUnload_ShowDialog DISABLED_BeforeUnload_ShowDialog
-#else
-#define MAYBE_BeforeUnload_ShowDialog BeforeUnload_ShowDialog
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
-                       MAYBE_BeforeUnload_ShowDialog) {
+IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, BeforeUnload_ShowDialog) {
   ASSERT_NO_FATAL_FAILURE(RunTest("testBeforeUnloadShowDialog.csv"));
   auto* web_contents = GetEmbedderWebContents();
   content::PrepContentsForBeforeUnloadTest(web_contents);
@@ -497,16 +495,8 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 }
 
-// TODO(crbug.com/1462760): Enable the test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_BeforeUnloadEnabled_WithUserActivation \
-  DISABLED_BeforeUnloadEnabled_WithUserActivation
-#else
-#define MAYBE_BeforeUnloadEnabled_WithUserActivation \
-  BeforeUnloadEnabled_WithUserActivation
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
-                       MAYBE_BeforeUnloadEnabled_WithUserActivation) {
+                       BeforeUnloadEnabled_WithUserActivation) {
   ASSERT_NO_FATAL_FAILURE(RunTest("testBeforeUnloadWithUserActivation.csv"));
   auto* web_contents = GetEmbedderWebContents();
   // Prepare frames but don't trigger user activation across all frames.
@@ -654,12 +644,11 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, RejectPointLock) {
 
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
                        GuestDevToolsReloadsEmbedder) {
-  GURL data_url("data:application/pdf,foo");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), data_url));
+  GURL data_url(kDataUrlCsv);
+  RunTestWithUrl(data_url);
   auto* embedder_web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
   EXPECT_NE(embedder_web_contents->GetPrimaryMainFrame(),
             guest_view->GetGuestMainFrame());
   TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
@@ -686,10 +675,10 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
                        MimeHandlerViewInDisplayNoneFrameForGoogleApps) {
   GURL data_url(
-      "data:text/html, <iframe src='data:application/pdf,foo' "
-      "style='display:none'></iframe>,foo2");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), data_url));
-  ASSERT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
+      base::StringPrintf("data:text/html, <iframe src='%s' "
+                         "style='display:none'></iframe>,foo2",
+                         kDataUrlCsv));
+  RunTestWithUrl(data_url);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

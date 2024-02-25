@@ -116,7 +116,7 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
     int render_process_id,
-    int render_frame_id,
+    base::optional_ref<const base::UnguessableToken> render_frame_token,
     bool originated_from_service_worker) {
   return false;
 }
@@ -124,20 +124,6 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {
-  NOTREACHED();
-}
-
-void UrlCheckerDelegateImpl::CheckLookupMechanismExperimentEligibility(
-    const security_interstitials::UnsafeResource& resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  NOTREACHED();
-}
-
-void UrlCheckerDelegateImpl::CheckExperimentEligibilityAndStartBlockingPage(
-    const security_interstitials::UnsafeResource& resource,
-    base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   NOTREACHED();
 }
 

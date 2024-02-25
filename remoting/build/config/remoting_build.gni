@@ -19,3 +19,15 @@ if (is_win) {
   import("//build/config/mac/rules.gni")
   import("//third_party/icu/config.gni")
 }
+
+declare_args() {
+  # You can set the variable 'remoting_internal' to true to include Google-
+  # internal sources and implementations in a developer build. Setting this
+  # variable explicitly to true will cause your build to fail if the
+  # //remoting/internal directory is not present in your checkout.
+  remoting_internal = false
+
+  if (is_chrome_branded) {
+    remoting_internal = true
+  }
+}

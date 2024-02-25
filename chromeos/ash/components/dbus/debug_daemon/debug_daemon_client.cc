@@ -64,7 +64,7 @@ DebugDaemonClient* g_instance_for_test = nullptr;
 // terminated. Once the data has been completely read from the pipe, it invokes
 // the GetLogsCallback |callback| passing the deserialized logs data back to
 // the requester.
-class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
+class PipeReaderWrapper final {
  public:
   explicit PipeReaderWrapper(DebugDaemonClient::GetLogsCallback callback)
       : pipe_reader_(base::ThreadPool::CreateTaskRunner(
@@ -76,16 +76,16 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
   PipeReaderWrapper& operator=(const PipeReaderWrapper&) = delete;
 
   base::ScopedFD Initialize() {
-    return pipe_reader_.StartIO(
-        base::BindOnce(&PipeReaderWrapper::OnIOComplete, AsWeakPtr()));
+    return pipe_reader_.StartIO(base::BindOnce(&PipeReaderWrapper::OnIOComplete,
+                                               weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnIOComplete(absl::optional<std::string> result) {
+  void OnIOComplete(std::optional<std::string> result) {
     if (!result.has_value()) {
       VLOG(1) << "Failed to read data.";
       RecordGetFeedbackLogsV2DbusResult(
           GetFeedbackLogsV2DbusResult::kErrorReadingData);
-      RunCallbackAndDestroy(absl::nullopt);
+      RunCallbackAndDestroy(std::nullopt);
       return;
     }
 
@@ -96,7 +96,7 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
       VLOG(1) << "Failed to deserialize the JSON logs.";
       RecordGetFeedbackLogsV2DbusResult(
           GetFeedbackLogsV2DbusResult::kErrorDeserializingJSonLogs);
-      RunCallbackAndDestroy(absl::nullopt);
+      RunCallbackAndDestroy(std::nullopt);
       return;
     }
     std::map<std::string, std::string> data;
@@ -108,12 +108,16 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
 
   void TerminateStream() {
     VLOG(1) << "Terminated";
-    RunCallbackAndDestroy(absl::nullopt);
+    RunCallbackAndDestroy(std::nullopt);
+  }
+
+  base::WeakPtr<PipeReaderWrapper> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
   void RunCallbackAndDestroy(
-      absl::optional<std::map<std::string, std::string>> result) {
+      std::optional<std::map<std::string, std::string>> result) {
     if (result.has_value()) {
       std::move(callback_).Run(true, std::move(result.value()));
     } else {
@@ -124,6 +128,7 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
 
   chromeos::PipeReader pipe_reader_;
   DebugDaemonClient::GetLogsCallback callback_;
+  base::WeakPtrFactory<PipeReaderWrapper> weak_ptr_factory_{this};
 };
 
 // The DebugDaemonClient implementation used in production.
@@ -244,40 +249,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetFeedbackLogsV2(
-      const cryptohome::AccountIdentifier& id,
-      const std::vector<debugd::FeedbackLogType>& requested_logs,
-      GetLogsCallback callback) override {
-    // The PipeReaderWrapper is a self-deleting object; we don't have to worry
-    // about ownership or lifetime. We need to create a new one for each Big
-    // Logs requests in order to queue these requests. One request can take a
-    // long time to be processed and a new request should never be ignored nor
-    // cancels the on-going one.
-    PipeReaderWrapper* pipe_reader = new PipeReaderWrapper(std::move(callback));
-    base::ScopedFD pipe_write_end = pipe_reader->Initialize();
-
-    dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kGetFeedbackLogsV2);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendFileDescriptor(pipe_write_end.get());
-    writer.AppendString(id.account_id());
-    // Write |requested_logs|.
-    dbus::MessageWriter sub_writer(nullptr);
-    writer.OpenArray("i", &sub_writer);
-    for (auto log_type : requested_logs) {
-      sub_writer.AppendInt32(log_type);
-    }
-    writer.CloseContainer(&sub_writer);
-
-    DVLOG(1) << "Requesting feedback logs";
-    debugdaemon_proxy_->CallMethodWithErrorResponse(
-        &method_call, kBigLogsDBusTimeoutMS,
-        base::BindOnce(&DebugDaemonClientImpl::OnFeedbackLogsResponse,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       pipe_reader->AsWeakPtr()));
-  }
-
-  void GetFeedbackLogsV3(
+  void GetFeedbackLogs(
       const cryptohome::AccountIdentifier& id,
       const std::vector<debugd::FeedbackLogType>& requested_logs,
       GetLogsCallback callback) override {
@@ -530,16 +502,16 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void CupsAddManuallyConfiguredPrinter(
       const std::string& name,
       const std::string& uri,
+      const std::string& language,
       const std::string& ppd_contents,
       DebugDaemonClient::CupsAddPrinterCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kCupsAddManuallyConfiguredPrinter);
+                                 debugd::kCupsAddManuallyConfiguredPrinterV2);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
     writer.AppendString(uri);
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(ppd_contents.data()),
-        ppd_contents.size());
+    writer.AppendString(language);
+    writer.AppendArrayOfBytes(base::as_byte_span(ppd_contents));
 
     debugdaemon_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -550,12 +522,14 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void CupsAddAutoConfiguredPrinter(
       const std::string& name,
       const std::string& uri,
+      const std::string& language,
       DebugDaemonClient::CupsAddPrinterCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kCupsAddAutoConfiguredPrinter);
+                                 debugd::kCupsAddAutoConfiguredPrinterV2);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
     writer.AppendString(uri);
+    writer.AppendString(language);
 
     debugdaemon_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -727,7 +701,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       chromeos::DBusMethodCallback<std::vector<std::string>> callback,
       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -735,7 +709,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfStrings(&routes)) {
       LOG(ERROR) << "Got non-array response from GetRoutes";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -801,14 +775,14 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnUint64Method(chromeos::DBusMethodCallback<uint64_t> callback,
                       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
     dbus::MessageReader reader(response);
     uint64_t result;
     if (!reader.PopUint64(&result)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -820,14 +794,14 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnStringMethod(chromeos::DBusMethodCallback<std::string> callback,
                       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
     dbus::MessageReader reader(response);
     std::string result;
     if (!reader.PopString(&result)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -884,7 +858,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnTestICMP(TestICMPCallback callback, dbus::Response* response) {
     std::string status;
     if (!response || !dbus::MessageReader(response).PopString(&status)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -892,7 +866,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   // Called when pipe i/o completes; pass data on and delete the instance.
-  void OnIOComplete(absl::optional<std::string> result) {
+  void OnIOComplete(std::optional<std::string> result) {
     pipe_reader_.reset();
     std::string pipe_data =
         result.has_value() ? std::move(result).value() : std::string();
@@ -1040,7 +1014,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       chromeos::DBusMethodCallback<std::set<std::string>> callback,
       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -1048,7 +1022,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     dbus::MessageReader reader(response);
     if (!reader.PopString(&flags_string)) {
       LOG(ERROR) << "Failed to read GetU2fFlags response";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -1080,7 +1054,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       observer.OnPacketCaptureStopped();
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> debugdaemon_proxy_;
+  raw_ptr<dbus::ObjectProxy> debugdaemon_proxy_;
   std::unique_ptr<chromeos::PipeReader> pipe_reader_;
   StopAgentTracingCallback callback_;
   scoped_refptr<base::TaskRunner> stop_agent_tracing_task_runner_;

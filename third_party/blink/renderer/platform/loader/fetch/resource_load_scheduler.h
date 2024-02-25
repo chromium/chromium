@@ -8,9 +8,10 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -249,8 +250,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   // Updates the connection info of the given client. This function may initiate
   // a new resource loading.
-  void SetConnectionInfo(ClientId id,
-                         net::HttpResponseInfo::ConnectionInfo connection_info);
+  void SetConnectionInfo(ClientId id, net::HttpConnectionInfo connection_info);
 
   // Sets the HTTP RTT for testing.
   void SetHttpRttForTesting(base::TimeDelta http_rtt) {
@@ -401,14 +401,14 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   const Member<DetachableConsoleLogger> console_logger_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   ThrottleOptionOverride throttle_option_override_;
 
   Member<LoadingBehaviorObserver> loading_behavior_observer_;
 
-  absl::optional<base::TimeDelta> http_rtt_ = absl::nullopt;
-  absl::optional<base::TimeDelta> http_rtt_for_testing_ = absl::nullopt;
+  std::optional<base::TimeDelta> http_rtt_ = std::nullopt;
+  std::optional<base::TimeDelta> http_rtt_for_testing_ = std::nullopt;
 };
 
 }  // namespace blink

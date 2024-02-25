@@ -39,8 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -52,12 +51,12 @@ const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 // anything else than just an error.
 class EventLogger {
  public:
-  EventLogger() {}
+  EventLogger() = default;
 
   EventLogger(const EventLogger&) = delete;
   EventLogger& operator=(const EventLogger&) = delete;
 
-  virtual ~EventLogger() {}
+  virtual ~EventLogger() = default;
 
   void OnStatus(base::File::Error error) {
     result_ = std::make_unique<base::File::Error>(error);
@@ -157,8 +156,8 @@ class FileSystemProviderFileSystemBackend
 // is FILE_ERROR_INVALID_OPERATION.
 class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
  protected:
-  FileSystemProviderProviderAsyncFileUtilTest() {}
-  ~FileSystemProviderProviderAsyncFileUtilTest() override {}
+  FileSystemProviderProviderAsyncFileUtilTest() = default;
+  ~FileSystemProviderProviderAsyncFileUtilTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -212,8 +211,7 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh>
-      profile_;  // Owned by TestingProfileManager.
+  raw_ptr<TestingProfile> profile_;  // Owned by TestingProfileManager.
   std::unique_ptr<storage::AsyncFileUtil> async_file_util_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   std::string mount_point_name_;
@@ -328,9 +326,9 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, GetFileInfo) {
 
   async_file_util_->GetFileInfo(
       CreateOperationContext(), root_url_,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-          storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize,
+       storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(&EventLogger::OnGetFileInfo, base::Unretained(&logger)));
   base::RunLoop().RunUntilIdle();
 
@@ -552,5 +550,4 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, CreateSnapshotFile) {
   EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION, *logger.result());
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

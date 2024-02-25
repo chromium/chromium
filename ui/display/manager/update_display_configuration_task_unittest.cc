@@ -9,12 +9,14 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/types/display_constants.h"
 
 namespace display::test {
@@ -91,7 +93,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   }
 
   bool GetDisplayLayout(
-      const std::vector<DisplaySnapshot*>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       RefreshRateThrottleState new_throttle_state,
@@ -130,7 +132,8 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
 
  private:
   const DisplayMode* FindMirrorMode(
-      const std::vector<DisplaySnapshot*>& displays) const {
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays)
+      const {
     const DisplayMode* mode = displays[0]->native_mode();
     for (DisplaySnapshot* display : displays) {
       if (mode->size().GetArea() > display->native_mode()->size().GetArea())
@@ -154,8 +157,8 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
  public:
   UpdateDisplayConfigurationTaskTest()
       : delegate_(&log_),
-        small_mode_(gfx::Size(1366, 768), false, 60.0f),
-        big_mode_(gfx::Size(2560, 1600), false, 60.0f) {
+        small_mode_(CreateDisplayModeForTest({1366, 768}, false, 60.0f)),
+        big_mode_(CreateDisplayModeForTest({2560, 1600}, false, 60.0f)) {
     displays_[0] = FakeDisplaySnapshot::Builder()
                        .SetId(123)
                        .SetNativeMode(small_mode_.Clone())
@@ -185,17 +188,18 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
   ~UpdateDisplayConfigurationTaskTest() override = default;
 
   void UpdateDisplays(size_t count) {
-    std::vector<DisplaySnapshot*> displays;
+    std::vector<std::unique_ptr<DisplaySnapshot>> displays;
     for (size_t i = 0; i < count; ++i)
-      displays.push_back(displays_[i].get());
+      displays.push_back(displays_[i]->Clone());
 
-    delegate_.set_outputs(displays);
+    delegate_.SetOutputs(std::move(displays));
   }
 
   void ResponseCallback(
       bool success,
-      const std::vector<DisplaySnapshot*>& displays,
-      const std::vector<DisplaySnapshot*>& unassociated_displays,
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+          unassociated_displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       bool new_vrr_state) {
@@ -224,7 +228,7 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
 
   bool configured_ = false;
   bool configuration_status_ = false;
-  std::vector<DisplaySnapshot*> display_states_;
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> display_states_;
   MultipleDisplayState display_state_ = MULTIPLE_DISPLAY_STATE_INVALID;
   chromeos::DisplayPowerState power_state_ = chromeos::DISPLAY_POWER_ALL_ON;
   bool vrr_state_ = false;

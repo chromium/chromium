@@ -1,1 +1,7 @@
 file://components/safe_browsing/OWNERS
+
+# Interstitials and reports
+# For non-mechanical changes, send to nwokedi@ first, as pre-reviewer.
+per-file chrome_safe_browsing_blocking_page_factory.*=skrakowi@chromium.org
+per-file safe_browsing_blocking_page_test.*=skrakowi@chromium.org
+per-file threat_details_unittest.cc=skrakowi@chromium.org

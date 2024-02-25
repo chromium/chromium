@@ -12,7 +12,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** A mechanism binding EntitySuggestion properties to its view. */
 public class EntitySuggestionViewBinder {
-    /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
+    /**
+     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
+     */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         SuggestionViewViewBinder.bind(model, view, propertyKey);
     }

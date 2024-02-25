@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
+#include "chrome/browser/ui/extensions/web_file_handlers/multiclient_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -54,7 +56,6 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -99,7 +100,7 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   // ExtensionEnableFlowDelegate overrides.
   void ExtensionEnableFlowFinished() override {
     const Extension* extension =
-        registry_->GetExtensionById(extension_id_, ExtensionRegistry::ENABLED);
+        registry_->enabled_extensions().GetByID(extension_id_);
     if (!extension)
       return;
     std::move(callback_).Run();
@@ -223,7 +224,6 @@ WebContents* OpenApplicationTab(Profile* profile,
 
   extensions::LaunchType launch_type =
       extensions::GetLaunchType(ExtensionPrefs::Get(profile), extension);
-  UMA_HISTOGRAM_ENUMERATION("Extensions.AppTabLaunchType", launch_type, 100);
 
   int add_type = AddTabTypes::ADD_ACTIVE;
   if (launch_type == extensions::LAUNCH_TYPE_PINNED)
@@ -289,8 +289,7 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
   prefs->SetActiveBit(extension.id(), true);
   bool supports_web_file_handlers =
-      extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension.manifest_version());
+      extensions::WebFileHandlers::SupportsWebFileHandlers(extension);
 
   if (CanLaunchViaEvent(&extension) && !supports_web_file_handlers) {
     // When launching an app with a command line, there might be a file path to
@@ -362,72 +361,9 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
   return tab;
 }
 
-// Launch an application if `launch_type` is `multiple_clients`. First find a
-// matching handler for the intent. Return `web_contents` if a launch occurred.
-WebContents* MaybeOpenApplicationForLaunchTypeMultipleClients(
-    const extensions::api::file_handlers::FileHandler& handler,
-    const apps::AppLaunchParams& params,
-    Profile* profile,
-    const Extension& extension) {
-  // Find the matching file_handler definition based on the handler action.
-  if (handler.action != params.intent->activity_name) {
-    return nullptr;
-  }
-
-  // Determine if this is single-client (default) or multiple-clients.
-  if (handler.launch_type != "multiple-clients") {
-    return nullptr;
-  }
-
-  // Open a new window with a tab for each file being opened.
-  WebContents* web_contents = nullptr;
-  for (const auto& file : params.launch_files) {
-    std::vector<base::FilePath> files({file});
-
-    // Clone intent to clone params.
-    apps::IntentPtr intent =
-        std::make_unique<apps::Intent>(params.intent->action);
-    intent->mime_type = params.intent->mime_type;
-    intent->url = params.intent->url;
-    intent->activity_name = params.intent->activity_name;
-    apps::AppLaunchParams file_params(params.app_id, params.container,
-                                      params.disposition, params.launch_source,
-                                      params.display_id, files, intent);
-
-    // Return the last web_contents to the caller. The web_contents is
-    // only currently used for Arc and therefore WFH doesn't need any of them.
-    // This code path can only be reached by Web File Handlers, not Arc.
-    web_contents =
-        OpenEnabledApplicationHelper(profile, file_params, extension);
-  }
-  return web_contents;
-}
-
-// Launch type is defined in the manifest. It's `single-client` by default,
-// which makes all files available in the single tab. `multiple-client` opens a
-// new tab for each file.
-WebContents* CheckForMultiClientLaunchSupport(
-    const Extension* extension,
-    Profile* profile,
-    const extensions::WebFileHandlersInfo& handlers,
-    const apps::AppLaunchParams& params) {
-  // Find a matching manifest file handler action for the intent. If there's a
-  // match, return early with the last web_contents opened.
-  WebContents* web_contents = nullptr;
-  for (const auto& handler : handlers) {
-    web_contents = MaybeOpenApplicationForLaunchTypeMultipleClients(
-        handler, params, profile, *extension);
-    if (web_contents) {
-      return web_contents;
-    }
-  }
-
-  // Multi-client wasn't detected, so this is treated as single-client.
-  return nullptr;
-}
-
 WebContents* OpenEnabledApplication(Profile* profile,
                                     const apps::AppLaunchParams& params) {
+  // `extension` is required.
   const Extension* extension = GetExtension(profile, params);
   if (!extension) {
     return nullptr;
@@ -439,8 +375,7 @@ WebContents* OpenEnabledApplication(Profile* profile,
   }
 #endif
 
-  if (extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension->manifest_version())) {
+  if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     // If the extension supports Web File Handlers, File Handlers are required.
     auto* handlers = extensions::WebFileHandlers::GetFileHandlers(*extension);
     if (!handlers) {
@@ -448,11 +383,22 @@ WebContents* OpenEnabledApplication(Profile* profile,
     }
 
     // Support for multiple-clients in Web File Handlers. Launch if this is a
-    // multi-client launch. Otherwise fallthrough to
+    // for multiple-clients. Otherwise fallthrough to
     // `OpenEnabledApplicationHelper`.
-    WebContents* web_contents =
+    std::vector<apps::AppLaunchParams> app_launch_params_list =
         CheckForMultiClientLaunchSupport(extension, profile, *handlers, params);
-    if (web_contents) {
+
+    // If list isn't empty, then launch files for multiple-clients and return.
+    WebContents* web_contents = nullptr;
+    if (!app_launch_params_list.empty()) {
+      for (const auto& app_launch_params : app_launch_params_list) {
+        // Return the last web_contents to the caller. The web_contents is
+        // only currently used for Arc and therefore WFH doesn't need any of
+        // them. This code path can only be reached by Web File Handlers, not
+        // Arc.
+        web_contents = OpenEnabledApplicationHelper(profile, app_launch_params,
+                                                    *extension);
+      }
       return web_contents;
     }
   }
@@ -566,8 +512,7 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
       extensions::ExtensionSystem::Get(profile)->extension_service();
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   if (!service->IsExtensionEnabled(extension->id()) ||
-      registry->GetExtensionById(extension->id(),
-                                 ExtensionRegistry::TERMINATED)) {
+      registry->terminated_extensions().GetByID(extension->id())) {
     // Self deleting.
     auto* flow = new EnableViaDialogFlow(
         service, registry, profile, extension->id(),

@@ -10,31 +10,38 @@ import static org.hamcrest.core.IsCollectionContaining.hasItems;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for {@link Features}.
- */
+/** Tests for {@link Features}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Batch(Batch.PER_CLASS)
 public class FeaturesAnnotationsTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     /**
      * Tests that {@link EnableFeatures} and {@link DisableFeatures} can alter the flags registered
@@ -44,8 +51,7 @@ public class FeaturesAnnotationsTest {
     @SmallTest
     @EnableFeatures("One")
     @DisableFeatures("Two")
-    public void testFeaturesSetExistingFlags() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+    public void testFeaturesSetExistingFlags() {
         List<String> finalEnabledList = getFeatureList(true);
 
         assertThat(finalEnabledList, hasItems("One"));
@@ -60,15 +66,14 @@ public class FeaturesAnnotationsTest {
      * Tests the compatibility between the legacy {@link CommandLineFlags} annotation usage for
      * features and the new dedicated annotations.
      *
-     * If a feature is already present in the command line, it should not be removed nor alter
+     * <p>If a feature is already present in the command line, it should not be removed nor alter
      * the current feature list.
      */
     @Test
     @SmallTest
     @CommandLineFlags.Add("enable-features=One,Two,Three")
     @EnableFeatures("Two")
-    public void testFeaturesDoNotRemoveExistingFlags() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+    public void testFeaturesDoNotRemoveExistingFlags() {
         List<String> finalEnabledList = getFeatureList(true);
 
         assertThat(finalEnabledList, hasItems("One", "Two", "Three"));
@@ -79,14 +84,14 @@ public class FeaturesAnnotationsTest {
      * Tests the compatibility between the legacy {@link CommandLineFlags} annotation usage for
      * features and the new dedicated annotations.
      *
-     * New features should be added to the existing command line, without removing the current ones.
+     * <p>New features should be added to the existing command line, without removing the current
+     * ones.
      */
     @Test
     @SmallTest
     @CommandLineFlags.Add("enable-features=One,Two,Three")
     @EnableFeatures({"Three", "Four"})
-    public void testFeaturesAddToExistingFlags() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+    public void testFeaturesAddToExistingFlags() {
         List<String> finalEnabledList = getFeatureList(true);
 
         assertThat(finalEnabledList, hasItems("Four"));
@@ -95,8 +100,10 @@ public class FeaturesAnnotationsTest {
 
     private static List<String> getFeatureList(boolean enabled) {
         String switchName = enabled ? "enable-features" : "disable-features";
-        ArrayList<String> allFeatures = new ArrayList(
-                Arrays.asList(CommandLine.getInstance().getSwitchValue(switchName).split(",")));
+        ArrayList<String> allFeatures =
+                new ArrayList(
+                        Arrays.asList(
+                                CommandLine.getInstance().getSwitchValue(switchName).split(",")));
         // To avoid interferences with features enabled or disabled outside of
         // this test class, we only return the one we set in the tests.
         ArrayList<String> relevantFeatures =

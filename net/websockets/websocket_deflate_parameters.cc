@@ -4,6 +4,8 @@
 
 #include "net/websockets/websocket_deflate_parameters.h"
 
+#include <vector>  // for iterating over extension.parameters()
+
 #include "base/strings/string_number_conversions.h"
 
 namespace net {

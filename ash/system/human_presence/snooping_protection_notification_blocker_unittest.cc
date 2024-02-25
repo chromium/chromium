@@ -18,9 +18,9 @@
 #include "ash/shell.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/human_presence/snooping_protection_notification_blocker_internal.h"
-#include "ash/system/message_center/message_center_controller.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/network/sms_observer.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -73,7 +73,7 @@ void AddNotification(const std::string& notification_id,
                 message_center::NotifierType::SYSTEM_COMPONENT, "system",
                 NotificationCatalogName::kHPSNotify)
           : message_center::NotifierId(/*url=*/GURL(), notifier_title,
-                                       /*web_app_id=*/absl::nullopt);
+                                       /*web_app_id=*/std::nullopt);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
@@ -186,17 +186,18 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
   SnoopingProtectionNotificationBlockerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{ash::features::kSnoopingProtection,
-          {
-              {"SnoopingProtection_pos_window_ms", "4000"},
-              {"SnoopingProtection_filter_config_case", "2"},
-              {"SnoopingProtection_positive_count_threshold", "1"},
-              {"SnoopingProtection_negative_count_threshold", "1"},
-              {"SnoopingProtection_uncertain_count_threshold", "1"},
-              {"SnoopingProtection_positive_score_threshold", "0"},
-              {"SnoopingProtection_negative_score_threshold", "0"},
-          }}},
-        {ash::features::kQuickDim, ash::features::kQsRevamp});
+        {/*enabled_features=*/{
+            ash::features::kSnoopingProtection,
+            {
+                {"SnoopingProtection_pos_window_ms", "4000"},
+                {"SnoopingProtection_filter_config_case", "2"},
+                {"SnoopingProtection_positive_count_threshold", "1"},
+                {"SnoopingProtection_negative_count_threshold", "1"},
+                {"SnoopingProtection_uncertain_count_threshold", "1"},
+                {"SnoopingProtection_positive_score_threshold", "0"},
+                {"SnoopingProtection_negative_score_threshold", "0"},
+            }}},
+        /*disabled_features=*/{ash::features::kQuickDim});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kHasHps);
   }
@@ -233,10 +234,6 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
     message_center_ = message_center::MessageCenter::Get();
   }
 
-  UnifiedMessageCenterBubble* GetMessageCenterBubble() {
-    return GetPrimaryUnifiedSystemTray()->message_center_bubble();
-  }
-
   bool HasInfoNotification() {
     message_center::Notification* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(
@@ -248,7 +245,7 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
     message_center::Notification* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(
             SnoopingProtectionNotificationBlocker::kInfoNotificationId);
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 
   int GetNumOsSmartPrivacySettingsOpened() {
@@ -256,10 +253,10 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SnoopingProtectionController, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;
-  raw_ptr<message_center::MessageCenter, DanglingUntriaged | ExperimentalAsh>
-      message_center_ = nullptr;
+  raw_ptr<SnoopingProtectionController, DanglingUntriaged> controller_ =
+      nullptr;
+  raw_ptr<message_center::MessageCenter, DanglingUntriaged> message_center_ =
+      nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -490,25 +487,6 @@ TEST_F(SnoopingProtectionNotificationBlockerTest,
   }
 }
 
-// Test that message center is visible when click "Show" button.
-TEST_F(SnoopingProtectionNotificationBlockerTest, ShowButtonClicked) {
-  SetBlockerPref(true);
-
-  // Simulate snooper presence.
-  hps::HpsResultProto state;
-  state.set_value(hps::HpsResult::POSITIVE);
-  controller_->OnHpsNotifyChanged(state);
-
-  AddNotification("notification-1", u"notifier-1");
-  AddNotification("notification-2", u"notifier-2");
-
-  EXPECT_TRUE(HasInfoNotification());
-
-  // Click on show button.
-  SimulateClick(/*button_index=*/0);
-  EXPECT_TRUE(GetMessageCenterBubble()->IsMessageCenterVisible());
-}
-
 // Test that message center is visible when click Settings button.
 TEST_F(SnoopingProtectionNotificationBlockerTest, SettingsButtonClicked) {
   SetBlockerPref(true);
@@ -542,7 +520,7 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, WebsiteNotifierTitles) {
   // Website with a trusted title uses the title.
   const message_center::NotifierId trusted_notifier(
       GURL("https://trusted.com:443"), u"Trusted",
-      /*web_app_id=*/absl::nullopt);
+      /*web_app_id=*/std::nullopt);
   const std::u16string trusted_title =
       hps_internal::GetNotifierTitle<FakeAppRegistryCache>(trusted_notifier,
                                                            AccountId());
@@ -564,12 +542,12 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, AppNotifierTitles) {
   auto* app_cache =
       FakeAppRegistryCache::Get().GetAppRegistryCache(AccountId());
   apps::App crostini_app_state(apps::AppType::kCrostini, "crostini-app");
-  crostini_app_state.short_name = "Signal Messenger";
+  crostini_app_state.name = "Signal Messenger";
   auto crostini_app = std::make_unique<apps::AppUpdate>(
       &crostini_app_state, /*delta=*/nullptr, AccountId());
   app_cache->AddApp(std::move(crostini_app));
   apps::App arc_app_state(apps::AppType::kArc, "arc-app");
-  arc_app_state.short_name = "Discord";
+  arc_app_state.name = "Discord";
   auto arc_app = std::make_unique<apps::AppUpdate>(
       &arc_app_state, /*delta=*/nullptr, AccountId());
   app_cache->AddApp(std::move(arc_app));

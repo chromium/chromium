@@ -67,14 +67,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
       [[UINavigationBarAppearance alloc] init];
   [appearance configureWithDefaultBackground];
   appearance.backgroundColor = backgroundColor;
-  if (@available(iOS 15, *)) {
-    self.navigationItem.scrollEdgeAppearance = appearance;
-  } else {
-    // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
-    // titles, so it can't be used. Instead, the navigation bar will always be
-    // the same style.
-    self.navigationItem.standardAppearance = appearance;
-  }
+  self.navigationItem.scrollEdgeAppearance = appearance;
   self.navigationItem.rightBarButtonItem = [self navigationEnterButton];
   // UITableViewStyleInsetGrouped adds space to the top of the table view by
   // default. Remove that space and add in the desired amount.
@@ -102,17 +95,12 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  if (IsPasswordNotesWithBackupEnabled()) {
-    return RowIdentifier::NumRows;
-  }
-
-  return RowIdentifier::NumRows - 1;
+  return RowIdentifier::NumRows;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (indexPath.row == RowIdentifier::RowIdentifierNote &&
-      IsPasswordNotesWithBackupEnabled()) {
+  if (indexPath.row == RowIdentifier::RowIdentifierNote) {
     PasswordNoteCell* cell =
         [tableView dequeueReusableCellWithIdentifier:PasswordNoteCell.reuseID];
     if (!cell) {

@@ -47,19 +47,18 @@ namespace ash {
 namespace {
 
 constexpr char kGaiaURL[] = "chrome://oobe/gaia-signin";
-constexpr int kOobeDialogShadowElevation = 12;
-constexpr int kOobeDialogCornerRadius = 24;
 
 }  // namespace
 
 class OobeWebDialogView : public views::WebDialogView {
+  METADATA_HEADER(OobeWebDialogView, views::WebDialogView)
+
  public:
-  METADATA_HEADER(OobeWebDialogView);
   OobeWebDialogView(content::BrowserContext* context,
                     ui::WebDialogDelegate* delegate,
                     std::unique_ptr<WebContentsHandler> handler)
       : views::WebDialogView(context, delegate, std::move(handler)) {
-    if (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled()) {
+    if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       set_use_round_corners(/*round=*/true);
       set_corner_radius(kOobeDialogCornerRadius);
     }
@@ -79,7 +78,7 @@ class OobeWebDialogView : public views::WebDialogView {
   }
 
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override {
     return MediaCaptureDevicesDispatcher::GetInstance()
         ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
@@ -116,7 +115,7 @@ class OobeWebDialogView : public views::WebDialogView {
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
-BEGIN_METADATA(OobeWebDialogView, views::WebDialogView)
+BEGIN_METADATA(OobeWebDialogView)
 END_METADATA
 
 // View that controls size of OobeUIDialog.
@@ -135,15 +134,16 @@ END_METADATA
 // It is assumed that host view is always a full-screen view on a primary
 // display.
 class LayoutWidgetDelegateView : public views::WidgetDelegateView {
+  METADATA_HEADER(LayoutWidgetDelegateView, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(LayoutWidgetDelegateView);
   LayoutWidgetDelegateView(OobeUIDialogDelegate* dialog_delegate,
                            OobeWebDialogView* oobe_view)
       : dialog_delegate_(dialog_delegate), oobe_view_(oobe_view) {
     SetFocusTraversesOut(true);
     AddChildView(oobe_view_.get());
 
-    if (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled()) {
+    if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       // Create a shadow for the OOBE dialog.
       view_shadow_ = std::make_unique<ViewShadow>(oobe_view_.get(),
                                                   kOobeDialogShadowElevation);
@@ -175,7 +175,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   // views::WidgetDelegateView:
   ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_WINDOW; }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     if (fullscreen_) {
       oobe_view_->SetBoundsRect(GetContentsBounds());
       return;
@@ -194,10 +194,9 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   View* GetInitiallyFocusedView() override { return oobe_view_; }
 
  private:
-  raw_ptr<OobeUIDialogDelegate, DanglingUntriaged | ExperimentalAsh>
-      dialog_delegate_ = nullptr;  // Owned by us.
-  raw_ptr<OobeWebDialogView, ExperimentalAsh> oobe_view_ =
-      nullptr;  // Owned by views hierarchy.
+  raw_ptr<OobeUIDialogDelegate, DanglingUntriaged> dialog_delegate_ =
+      nullptr;                                      // Owned by us.
+  raw_ptr<OobeWebDialogView> oobe_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<ViewShadow> view_shadow_;
 
   // Indicates whether Oobe web view should fully occupy the hosting widget.
@@ -207,7 +206,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   bool has_shelf_ = true;
 };
 
-BEGIN_METADATA(LayoutWidgetDelegateView, views::WidgetDelegateView)
+BEGIN_METADATA(LayoutWidgetDelegateView)
 ADD_PROPERTY_METADATA(bool, Fullscreen)
 ADD_PROPERTY_METADATA(bool, HasShelf)
 END_METADATA
@@ -215,7 +214,12 @@ END_METADATA
 OobeUIDialogDelegate::OobeUIDialogDelegate(
     base::WeakPtr<LoginDisplayHostMojo> controller)
     : controller_(controller) {
+  set_allow_default_context_menu(false);
+  set_can_close(true);
   set_can_resize(false);
+  set_dialog_content_url(GURL(kGaiaURL));
+  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_show_dialog_title(false);
   keyboard_observer_.Observe(ChromeKeyboardControllerClient::Get());
 
   for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
@@ -322,6 +326,8 @@ void OobeUIDialogDelegate::Hide() {
 void OobeUIDialogDelegate::Close() {
   if (!widget_)
     return;
+  SetState(OobeDialogState::HIDDEN);
+
   // We do not call LoginScreen::NotifyOobeDialogVisibility here, because this
   // would cause the LoginShelfView to update its button visibility even though
   // the login screen is about to be destroyed. See http://crbug/836172
@@ -360,46 +366,8 @@ views::View* OobeUIDialogDelegate::GetWebDialogView() {
   return dialog_view_;
 }
 
-ui::ModalType OobeUIDialogDelegate::GetDialogModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-std::u16string OobeUIDialogDelegate::GetDialogTitle() const {
-  return std::u16string();
-}
-
-GURL OobeUIDialogDelegate::GetDialogContentURL() const {
-  return GURL(kGaiaURL);
-}
-
-void OobeUIDialogDelegate::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-void OobeUIDialogDelegate::GetDialogSize(gfx::Size* size) const {
-  // Dialog will be resized externally by LayoutWidgetDelegateView.
-}
-
-std::string OobeUIDialogDelegate::GetDialogArgs() const {
-  return std::string();
-}
-
 void OobeUIDialogDelegate::OnDialogClosed(const std::string& json_retval) {
   widget_->Close();
-}
-
-void OobeUIDialogDelegate::OnCloseContents(content::WebContents* source,
-                                           bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool OobeUIDialogDelegate::ShouldShowDialogTitle() const {
-  return false;
-}
-
-bool OobeUIDialogDelegate::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
-  return true;
 }
 
 std::vector<ui::Accelerator> OobeUIDialogDelegate::GetAccelerators() {
@@ -473,7 +441,7 @@ void OobeUIDialogDelegate::OnFocusLeavingSystemTray(bool reverse) {
 
 ui::WebDialogDelegate::FrameKind OobeUIDialogDelegate::GetWebDialogFrameKind()
     const {
-  return (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled())
+  return (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled())
              ? ui::WebDialogDelegate::FrameKind::kDialog
              : ui::WebDialogDelegate::FrameKind::kNonClient;
 }

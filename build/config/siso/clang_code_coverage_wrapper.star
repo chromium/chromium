@@ -1,5 +1,5 @@
 # -*- bazel-starlark -*-
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Siso config version of clang_code_coverage_wrapper.py"""
@@ -17,6 +17,8 @@ load("@builtin//struct.star", "module")
 _COVERAGE_FLAGS = [
     "-fprofile-instr-generate",
     "-fcoverage-mapping",
+    "-mllvm",
+    "-runtime-counter-relocation=true",
     # Following experimental flags remove unused header functions from the
     # coverage mapping data embedded in the test binaries, and the reduction
     # of binary size enables building Chrome's large unit test targets on
@@ -39,7 +41,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
     "fuchsia": [
         # TODO(crbug.com/1174725): These files caused clang to crash while
         # compiling them.
-        "../../base/allocator/partition_allocator/pcscan.cc",
+        "../../base/allocator/partition_allocator/src/partition_alloc/pcscan.cc",
         "../../third_party/skia/src/core/SkOpts.cpp",
         "../../third_party/skia/src/opts/SkOpts_hsw.cpp",
         "../../third_party/skia/third_party/skcms/skcms.cc",
@@ -202,7 +204,9 @@ def __run(ctx, args):
     files_to_instrument = []
     if instrument_file:
         files_to_instrument = str(ctx.fs.read(ctx.fs.canonpath(instrument_file))).splitlines()
-        files_to_instrument = [ctx.fs.canonpath(f) for f in files_to_instrument]
+
+        # strip() is for removing '\r' on Windows.
+        files_to_instrument = [ctx.fs.canonpath(f).strip() for f in files_to_instrument]
 
     should_remove_flags = False
     if compile_source_file not in force_list:
@@ -213,6 +217,7 @@ def __run(ctx, args):
 
     if should_remove_flags:
         return _remove_flags_from_command(compile_command)
+    print("Keeping code coverage flags for %s" % compile_source_file)
     return compile_command
 
 clang_code_coverage_wrapper = module(

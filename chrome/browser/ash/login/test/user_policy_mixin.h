@@ -70,8 +70,7 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   // Policy server that can optionally be passed into UserPolicyMixin. If set
   // user policy changes done by RequestPolicyUpdate() will also be forwarded
   // to the policy server.
-  raw_ptr<EmbeddedPolicyTestServerMixin, ExperimentalAsh>
-      embedded_policy_server_ = nullptr;
+  raw_ptr<EmbeddedPolicyTestServerMixin> embedded_policy_server_ = nullptr;
 
   policy::UserPolicyBuilder user_policy_builder_;
 

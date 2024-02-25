@@ -6,19 +6,23 @@ import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/create_unwind_table.gni")
 import("//build/config/android/extract_unwind_tables.gni")
-import("//build/config/android/jni.gni")
 import("//build/config/android/linker_version_script.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 declare_args() {
   # Compile libmonochrome.so with RELR relocations, which are smaller and more
   # efficient, but supported only on API 28+.
   # This is not permanently enabled for Trichrome because it shares its native
   # library with Monochrome.
-  use_relr_relocations = is_high_end_android
+  # Restricted to official builds to avoid turning off is_high_end_android
+  # explicitly on all relevant non-official bots. TODO(crbug.com/1515925):
+  # Always use RELR when Android O (and O_MR1) is no longer supported.
+  use_relr_relocations = is_high_end_android && is_official_build
 }
 
 # This template contains all common configuration for native shared libraries,
@@ -122,12 +126,6 @@ template("chrome_common_shared_library") {
       inputs = [ "$_linker_script" ]
       ldflags += [ "-Wl,--version-script=" +
                    rebase_path(_linker_script, root_build_dir) ]
-    }
-
-    # Handle VR JNI registration and dependencies.
-    if (!_is_webview && enable_vr) {
-      # Custom registration of a few JNI methods found in the .so file.
-      sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
     }
 
     if (_generate_partitions) {

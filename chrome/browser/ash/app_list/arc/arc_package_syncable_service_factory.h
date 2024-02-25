@@ -30,7 +30,7 @@ class ArcPackageSyncableServiceFactory : public ProfileKeyedServiceFactory {
   ArcPackageSyncableServiceFactory();
   ~ArcPackageSyncableServiceFactory() override;
 
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

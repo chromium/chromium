@@ -61,16 +61,18 @@ AnchorElementObserverForServiceWorker::AnchorElementObserverForServiceWorker(
   CHECK(document.IsInOutermostMainFrame());
   if (features::kSpeculativeServiceWorkerWarmUpIntersectionObserver.Get()) {
     intersection_observer_ = IntersectionObserver::Create(
-        {}, {std::numeric_limits<float>::min()}, &document,
+        document,
         WTF::BindRepeating(
             &AnchorElementObserverForServiceWorker::UpdateVisibleAnchors,
             WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
-        IntersectionObserver::kPostTaskToDeliver,
-        IntersectionObserver::kFractionOfTarget,
-        /*delay=*/
-        features::kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay
-            .Get());
+        IntersectionObserver::Params{
+            .thresholds = {std::numeric_limits<float>::min()},
+            .behavior = IntersectionObserver::kPostTaskToDeliver,
+            .delay = static_cast<DOMHighResTimeStamp>(
+                features::
+                    kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay
+                        .Get())});
   }
 }
 

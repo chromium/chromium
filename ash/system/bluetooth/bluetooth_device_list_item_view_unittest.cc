@@ -77,9 +77,9 @@ DeviceBatteryInfoPtr CreateDefaultBatteryInfo(uint8_t battery_percentage) {
 }
 
 DeviceBatteryInfoPtr CreateMultipleBatteryInfo(
-    absl::optional<uint8_t> left_bud_battery_percentage,
-    absl::optional<uint8_t> case_battery_percentage,
-    absl::optional<uint8_t> right_bud_battery_percentage) {
+    std::optional<uint8_t> left_bud_battery_percentage,
+    std::optional<uint8_t> case_battery_percentage,
+    std::optional<uint8_t> right_bud_battery_percentage) {
   EXPECT_TRUE(left_bud_battery_percentage || case_battery_percentage ||
               right_bud_battery_percentage);
   DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
@@ -142,7 +142,7 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
  protected:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
-  raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged>
       bluetooth_device_list_item_;
 };
 
@@ -239,24 +239,24 @@ TEST_F(BluetoothDeviceListItemViewTest, HasExpectedA11yText) {
   battery_info_permutations.push_back(DeviceBatteryInfo::New());
   battery_info_permutations.push_back(
       CreateDefaultBatteryInfo(kBatteryPercentage));
+  battery_info_permutations.push_back(
+      CreateMultipleBatteryInfo(kLeftBudBatteryPercentage,
+                                /*case_battery_percentage=*/std::nullopt,
+                                /*right_bud_battery_percentage=*/std::nullopt));
   battery_info_permutations.push_back(CreateMultipleBatteryInfo(
-      kLeftBudBatteryPercentage,
-      /*case_battery_percentage=*/absl::nullopt,
-      /*right_bud_battery_percentage=*/absl::nullopt));
+      /*left_bud_battery_percentage=*/std::nullopt, kCaseBatteryPercentage,
+      /*right_bud_battery_percentage=*/std::nullopt));
   battery_info_permutations.push_back(CreateMultipleBatteryInfo(
-      /*left_bud_battery_percentage=*/absl::nullopt, kCaseBatteryPercentage,
-      /*right_bud_battery_percentage=*/absl::nullopt));
-  battery_info_permutations.push_back(CreateMultipleBatteryInfo(
-      /*left_bud_battery_percentage=*/absl::nullopt,
-      /*case_battery_percentage=*/absl::nullopt, kRightBudBatteryPercentage));
+      /*left_bud_battery_percentage=*/std::nullopt,
+      /*case_battery_percentage=*/std::nullopt, kRightBudBatteryPercentage));
   battery_info_permutations.push_back(CreateMultipleBatteryInfo(
       kLeftBudBatteryPercentage, kCaseBatteryPercentage,
-      /*right_bud_battery_percentage=*/absl::nullopt));
+      /*right_bud_battery_percentage=*/std::nullopt));
   battery_info_permutations.push_back(CreateMultipleBatteryInfo(
-      kLeftBudBatteryPercentage, /*case_battery_percentage=*/absl::nullopt,
+      kLeftBudBatteryPercentage, /*case_battery_percentage=*/std::nullopt,
       kRightBudBatteryPercentage));
   battery_info_permutations.push_back(CreateMultipleBatteryInfo(
-      /*left_bud_battery_percentage=*/absl::nullopt, kCaseBatteryPercentage,
+      /*left_bud_battery_percentage=*/std::nullopt, kCaseBatteryPercentage,
       kRightBudBatteryPercentage));
   battery_info_permutations.push_back(CreateMultipleBatteryInfo(
       kLeftBudBatteryPercentage, kCaseBatteryPercentage,

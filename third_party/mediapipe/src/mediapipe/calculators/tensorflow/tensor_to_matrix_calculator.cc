@@ -15,6 +15,7 @@
 // Calculator converts from one-dimensional Tensor of DT_FLOAT to Matrix
 // OR from (batched) two-dimensional Tensor of DT_FLOAT to Matrix.
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/tensorflow/tensor_to_matrix_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/matrix.h"
@@ -24,7 +25,6 @@
 #include "mediapipe/framework/port/status_macros.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -67,8 +67,8 @@ absl::Status FillTimeSeriesHeaderIfValid(const Packet& header_packet,
 // -- 1-D or 2-D Tensor
 // Output:
 // -- Matrix with the same values as the Tensor
-// If input tensor is 1 dimensional, the ouput Matrix is of (1xn) shape.
-// If input tensor is 2 dimensional (batched), the ouput Matrix is (mxn) shape.
+// If input tensor is 1 dimensional, the output Matrix is of (1xn) shape.
+// If input tensor is 2 dimensional (batched), the output Matrix is (mxn) shape.
 //
 // Example Config
 // node: {

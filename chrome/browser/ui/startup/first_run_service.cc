@@ -148,17 +148,6 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
   if (chromeos::BrowserParamsProxy::Get()->IsCurrentUserEphemeral()) {
     return PolicyEffect::kSilenced;
   }
-
-  // TODO(b/273237511): Remove direct usage of DeviceEphemeralUsersEnabled
-  // policy in branch M118 in favor of newly added function
-  // `BrowserParamsProxy::Get()->IsCurrentUserEphemeral()`.
-  crosapi::mojom::DeviceSettings* device_settings =
-      g_browser_process->browser_policy_connector()->GetDeviceSettings();
-  if (device_settings->deprecated_device_ephemeral_users_enabled ==
-      crosapi::mojom::DeviceSettings::OptionalBool::kTrue) {
-    // Corresponding policy: DeviceEphemeralUsersEnabled=true
-    return PolicyEffect::kSilenced;
-  }
 #endif
 
   return PolicyEffect::kNone;
@@ -212,6 +201,23 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
     return;
   }
 
+  auto policy_effect = ComputeDevicePolicyEffect(*profile_);
+  // This check should be done prior to the profile already set up check below,
+  // to include the case where the feature `kForceSigninFlowInProfilePicker` is
+  // enabled which would cause the profile to be signed in already at this
+  // point.
+  if (policy_effect != PolicyEffect::kNone &&
+      signin_util::IsForceSigninEnabled() &&
+      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+    // When ForceSignin is enabled and the flows are going through the profile
+    // picker, the final profile setup should not yet be reached. The
+    // rest of the flow is still happening within the Profile Picker, either
+    // the management acceptance screen for Managed accounts, or the Sync
+    // Confirmation screen for Consumer accounts.
+    FinishFirstRun(FinishedReason::kForceSignin);
+    return;
+  }
+
   bool has_set_up_profile =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       // Indicates that the profile was likely migrated from pre-Lacros Ash.
@@ -227,8 +233,6 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
     FinishFirstRun(FinishedReason::kProfileAlreadySetUp);
     return;
   }
-
-  auto policy_effect = ComputeDevicePolicyEffect(*profile_);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   switch (policy_effect) {
@@ -331,7 +335,7 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
   SetFirstRunFinished(reason);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome;
+  std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome;
   switch (reason) {
     case FinishedReason::kFinishedFlow:
       // No outcome to log, the flow logs it by itself.
@@ -343,6 +347,9 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
     case FinishedReason::kSkippedByPolicies:
       outcome = ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies;
       break;
+    case FinishedReason::kForceSignin:
+      NOTREACHED() << "Force Signin policy value is not active on Lacros.";
+      break;
   }
 
   if (outcome.has_value()) {
@@ -350,13 +357,16 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
   }
 #endif
 
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  // If the reason is `FinishedReason::kForceSignin` the profile is already
+  // signed in and finalized. It should not finish the setup again.
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      reason != FinishedReason::kForceSignin) {
     // Noting that we expect that the name should already be available, as
     // after sign-in, the extended info is fetched and used for the sync
     // opt-in screen.
     profile_name_resolver_ = std::make_unique<ProfileNameResolver>(
-        &identity_manager_.get(),
-        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+        &identity_manager_.get(), identity_manager_->GetPrimaryAccountInfo(
+                                      signin::ConsentLevel::kSignin));
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &FirstRunService::FinishProfileSetUp, weak_ptr_factory_.GetWeakPtr()));
   } else if (reason == FinishedReason::kSkippedByPolicies) {

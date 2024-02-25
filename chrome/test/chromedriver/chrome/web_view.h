@@ -19,14 +19,14 @@ class TimeDelta;
 
 class FedCmTracker;
 class FrameTracker;
-struct Geoposition;
 class JavaScriptDialogManager;
-struct KeyEvent;
 class MobileEmulationOverrideManager;
-struct MouseEvent;
-struct NetworkConditions;
 class Status;
 class Timeout;
+struct Geoposition;
+struct KeyEvent;
+struct MouseEvent;
+struct NetworkConditions;
 struct TouchEvent;
 
 class WebView {
@@ -70,7 +70,8 @@ class WebView {
   // Resume the current page.
   virtual Status Resume(const Timeout* timeout) = 0;
 
-  virtual Status StartBidiServer(std::string bidi_mapper_string) = 0;
+  virtual Status StartBidiServer(std::string bidi_mapper_string,
+                                 const base::Value::Dict& mapper_options) = 0;
 
   // Send the BiDi command to the BiDiMapper
   virtual Status PostBidiCommand(base::Value::Dict command) = 0;
@@ -275,6 +276,15 @@ class WebView {
   virtual Status GetBackendNodeIdByElement(const std::string& frame,
                                            const base::Value& element,
                                            int* backend_node_id) = 0;
+
+  virtual bool IsDetached() const = 0;
+
+  virtual Status CallFunctionWithTimeout(
+      const std::string& frame,
+      const std::string& function,
+      const base::Value::List& args,
+      const base::TimeDelta& timeout,
+      std::unique_ptr<base::Value>* result) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_

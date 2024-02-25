@@ -56,7 +56,7 @@ std::string GetAndroidIntentUrlFromMediaArgs(
   return std::string();
 }
 
-absl::optional<AndroidAppInfo> GetAppInfoFromMediaArgs(
+std::optional<AndroidAppInfo> GetAppInfoFromMediaArgs(
     const std::string& play_media_args_proto) {
   PlayMediaArgs play_media_args;
   if (play_media_args.ParseFromString(play_media_args_proto)) {
@@ -73,7 +73,7 @@ absl::optional<AndroidAppInfo> GetAppInfoFromMediaArgs(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string GetWebUrlFromMediaArgs(const std::string& play_media_args_proto) {
@@ -142,7 +142,7 @@ class MediaController::GrpcEventsObserver
   }
 
   void OnPlayMedia(const std::string& play_media_args_proto) {
-    absl::optional<AndroidAppInfo> app_info =
+    std::optional<AndroidAppInfo> app_info =
         GetAppInfoFromMediaArgs(play_media_args_proto);
     if (app_info) {
       OnOpenMediaAndroidIntent(play_media_args_proto,
@@ -209,7 +209,7 @@ class MediaController::GrpcEventsObserver
 
   mojom::MediaDelegate& delegate() { return *parent_->delegate_; }
 
-  const raw_ptr<MediaController, ExperimentalAsh> parent_;
+  const raw_ptr<MediaController> parent_;
 };
 
 MediaController::MediaController()

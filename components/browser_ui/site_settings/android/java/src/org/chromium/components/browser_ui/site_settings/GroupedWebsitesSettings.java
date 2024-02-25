@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
-/**
- * Shows the permissions and other settings for a group of websites.
- */
-public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
+/** Shows the permissions and other settings for a group of websites. */
+public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         implements Preference.OnPreferenceClickListener, CustomDividerFragment {
     public static final String EXTRA_GROUP = "org.chromium.chrome.preferences.site_group";
 
@@ -66,21 +64,22 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
             return;
         }
 
-        Object extraGroup = getArguments().getSerializable(EXTRA_GROUP);
-        if (extraGroup == null) assert false : "EXTRA_GROUP must be provided.";
-        mSiteGroup = (WebsiteGroup) extraGroup;
+        WebsiteGroup extraGroup = (WebsiteGroup) getArguments().getSerializable(EXTRA_GROUP);
+        assert extraGroup != null : "EXTRA_GROUP must be provided.";
+        mSiteGroup = extraGroup;
+        var domainAndRegistry = extraGroup.getDomainAndRegistry();
 
         // Set title
-        getActivity().setTitle(String.format(getContext().getString(R.string.domain_settings_title),
-                mSiteGroup.getDomainAndRegistry()));
+        Activity activity = getActivity();
+        activity.setTitle(activity.getString(R.string.domain_settings_title, domainAndRegistry));
 
         // Preferences screen
         SettingsUtils.addPreferencesFromResource(this, R.xml.grouped_websites_preferences);
-        findPreference(PREF_SITE_TITLE).setTitle(mSiteGroup.getDomainAndRegistry());
+        findPreference(PREF_SITE_TITLE).setTitle(domainAndRegistry);
         findPreference(PREF_SITES_IN_GROUP)
-                .setTitle(String.format(
-                        getContext().getString(R.string.domain_settings_sites_in_group,
-                                mSiteGroup.getDomainAndRegistry())));
+                .setTitle(
+                        activity.getString(
+                                R.string.domain_settings_sites_in_group, domainAndRegistry));
         setUpClearDataPreference();
         setUpResetGroupPreference();
         setUpRelatedSitesPreferences();
@@ -93,7 +92,8 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
             // Handle a click on one of the sites in this group.
             // Save the current activity, so it's accessible from the SingleWebsiteSettings.
             GroupedWebsitesActivityHolder.getInstance().setActivity(getActivity());
-            ((WebsiteRowPreference) preference).handleClick(getArguments(), /*fromGrouped=*/true);
+            ((WebsiteRowPreference) preference)
+                    .handleClick(getArguments(), /* fromGrouped= */ true);
         }
         return super.onPreferenceTreeClick(preference);
     }
@@ -104,22 +104,23 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         View dialogView =
                 getActivity().getLayoutInflater().inflate(R.layout.clear_reset_dialog, null);
         TextView mainMessage = dialogView.findViewById(R.id.main_message);
-        mainMessage.setText(getString(
-                R.string.website_group_reset_confirmation, mSiteGroup.getDomainAndRegistry()));
+        mainMessage.setText(
+                getString(
+                        R.string.website_group_reset_confirmation,
+                        mSiteGroup.getDomainAndRegistry()));
         TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
         signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_group_message);
         TextView offlineText = dialogView.findViewById(R.id.offline_text);
-        offlineText.setText(R.string.webstorage_clear_data_dialog_offline_message);
-        if (getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()) {
-            TextView adPersonalizationText = dialogView.findViewById(R.id.ad_personalization_text);
-            adPersonalizationText.setVisibility(View.VISIBLE);
-        }
+        offlineText.setText(R.string.webstorage_delete_data_dialog_offline_message);
         mConfirmationDialog =
                 new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setView(dialogView)
                         .setTitle(R.string.website_reset_confirmation_title)
                         .setPositiveButton(
-                                R.string.website_reset, (dialog, which) -> { resetGroup(); })
+                                R.string.website_reset,
+                                (dialog, which) -> {
+                                    resetGroup();
+                                })
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
                         .show();
@@ -133,20 +134,23 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
             if (getFragmentManager().isStateSaved()) {
                 return;
             }
-            Callback<Boolean> onDialogClosed = (Boolean confirmed) -> {
-                if (confirmed) {
-                    RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
-                            DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
-                            DeleteBrowsingDataAction.MAX_VALUE);
+            Callback<Boolean> onDialogClosed =
+                    (Boolean confirmed) -> {
+                        if (confirmed) {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "Privacy.DeleteBrowsingData.Action",
+                                    DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
+                                    DeleteBrowsingDataAction.MAX_VALUE);
 
-                    SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(),
-                            mSiteGroup, mDataClearedCallback);
-                }
-            };
+                            SiteDataCleaner.clearData(
+                                    getSiteSettingsDelegate().getBrowserContextHandle(),
+                                    mSiteGroup,
+                                    mDataClearedCallback);
+                        }
+                    };
             ClearWebsiteStorageDialog dialogFragment =
-                    ClearWebsiteStorageDialog.newInstance(preference, onDialogClosed,
-                            getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled(),
-                            /*isGroup=*/true);
+                    ClearWebsiteStorageDialog.newInstance(
+                            preference, onDialogClosed, /* isGroup= */ true);
             dialogFragment.setTargetFragment(this, 0);
             dialogFragment.show(getFragmentManager(), ClearWebsiteStorageDialog.TAG);
         } else {
@@ -154,18 +158,20 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         }
     }
 
-    private final Runnable mDataClearedCallback = () -> {
-        Activity activity = getActivity();
-        if (activity == null || activity.isFinishing()) {
-            return;
-        }
-        // TODO(crbug.com/1342991): This always navigates the user back to the "All sites" page
-        // regardless of whether there are any non-resettable permissions left in the sites within
-        // the group. Consider calculating those and refreshing the screen in place for a slightly
-        // smoother user experience. However, due to the complexity involved in refreshing the
-        // already fetched data and a very marginal benefit, it may not be worth it.
-        getActivity().finish();
-    };
+    private final Runnable mDataClearedCallback =
+            () -> {
+                Activity activity = getActivity();
+                if (activity == null || activity.isFinishing()) {
+                    return;
+                }
+                // TODO(crbug.com/1342991): This always navigates the user back to the "All sites"
+                // page regardless of whether there are any non-resettable permissions left in the
+                // sites within the group. Consider calculating those and refreshing the screen in
+                // place for a slightly smoother user experience. However, due to the complexity
+                // involved in refreshing the already fetched data and a very marginal benefit, it
+                // may not be worth it.
+                getActivity().finish();
+            };
 
     @VisibleForTesting
     public void resetGroup() {
@@ -173,10 +179,14 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         SiteDataCleaner.resetPermissions(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup);
 
-        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
-                DeleteBrowsingDataAction.SITES_SETTINGS_PAGE, DeleteBrowsingDataAction.MAX_VALUE);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
+                DeleteBrowsingDataAction.MAX_VALUE);
 
-        SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup,
+        SiteDataCleaner.clearData(
+                getSiteSettingsDelegate().getBrowserContextHandle(),
+                mSiteGroup,
                 mDataClearedCallback);
     }
 
@@ -185,14 +195,16 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         long storage = mSiteGroup.getTotalUsage();
         int cookies = mSiteGroup.getNumberOfCookies();
         if (storage > 0 || cookies > 0) {
-            preference.setTitle(SiteSettingsUtil.generateStorageUsageText(
-                    preference.getContext(), storage, cookies));
-            preference.setDataForDisplay(mSiteGroup.getDomainAndRegistry(),
+            preference.setTitle(
+                    SiteSettingsUtil.generateStorageUsageText(
+                            preference.getContext(), storage, cookies));
+            preference.setDataForDisplay(
+                    mSiteGroup.getDomainAndRegistry(),
                     mSiteGroup.hasInstalledApp(
                             getSiteSettingsDelegate().getOriginsWithInstalledApp()),
-                    /*isGroup=*/true);
+                    /* isGroup= */ true);
             if (mSiteGroup.isCookieDeletionDisabled(
-                        getSiteSettingsDelegate().getBrowserContextHandle())) {
+                    getSiteSettingsDelegate().getBrowserContextHandle())) {
                 preference.setEnabled(false);
             }
         } else {
@@ -203,7 +215,7 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
     private void setUpResetGroupPreference() {
         Preference preference = findPreference(PREF_RESET_GROUP);
         if (mSiteGroup.isCookieDeletionDisabled(
-                    getSiteSettingsDelegate().getBrowserContextHandle())) {
+                getSiteSettingsDelegate().getBrowserContextHandle())) {
             preference.setEnabled(false);
         }
         preference.setOnPreferenceClickListener(this);
@@ -214,29 +226,36 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         TextMessagePreference relatedSitesText = findPreference(PREF_RELATED_SITES);
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                && getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled()
-                && mSiteGroup.getFPSInfo() != null;
+                        && getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled()
+                        && mSiteGroup.getFPSInfo() != null;
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
 
         if (shouldRelatedSitesPrefBeVisible) {
             var fpsInfo = mSiteGroup.getFPSInfo();
-            relatedSitesText.setTitle(getContext().getResources().getQuantityString(
-                    R.plurals.allsites_fps_summary, fpsInfo.getMembersCount(),
-                    Integer.toString(fpsInfo.getMembersCount()), fpsInfo.getOwner()));
-            relatedSitesText.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
-                    getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                @Override
-                public boolean isPreferenceControlledByPolicy(Preference preference) {
-                    for (var site : mSiteGroup.getWebsites()) {
-                        if (getSiteSettingsDelegate().isPartOfManagedFirstPartySet(
-                                    site.getAddress().getOrigin())) {
-                            return true;
+            relatedSitesText.setTitle(
+                    getContext()
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.allsites_fps_summary,
+                                    fpsInfo.getMembersCount(),
+                                    Integer.toString(fpsInfo.getMembersCount()),
+                                    fpsInfo.getOwner()));
+            relatedSitesText.setManagedPreferenceDelegate(
+                    new ForwardingManagedPreferenceDelegate(
+                            getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            for (var site : mSiteGroup.getWebsites()) {
+                                if (getSiteSettingsDelegate()
+                                        .isPartOfManagedFirstPartySet(
+                                                site.getAddress().getOrigin())) {
+                                    return true;
+                                }
+                            }
+                            return false;
                         }
-                    }
-                    return false;
-                }
-            });
+                    });
         }
     }
 
@@ -244,9 +263,16 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         PreferenceCategory category = findPreference(PREF_SITES_IN_GROUP);
         category.removeAll();
         for (Website site : mSiteGroup.getWebsites()) {
-            WebsiteRowPreference preference = new WebsiteRowPreference(category.getContext(),
-                    getSiteSettingsDelegate(), site, getActivity().getLayoutInflater());
-            preference.setOnDeleteCallback(() -> { category.removePreference(preference); });
+            WebsiteRowPreference preference =
+                    new WebsiteRowPreference(
+                            category.getContext(),
+                            getSiteSettingsDelegate(),
+                            site,
+                            getActivity().getLayoutInflater());
+            preference.setOnDeleteCallback(
+                    () -> {
+                        category.removePreference(preference);
+                    });
             category.addPreference(preference);
         }
     }

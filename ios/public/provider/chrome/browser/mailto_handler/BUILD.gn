@@ -4,5 +4,5 @@
 
 source_set("mailto_handler_api") {
   sources = [ "mailto_handler_api.h" ]
-  deps = [ "//ios/chrome/browser/mailto_handler" ]
+  deps = [ "//ios/chrome/browser/mailto_handler/model" ]
 }

@@ -111,9 +111,10 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
   // Objects used to decode the video into media::VideoFrame with
   // MojoVideoDecoder.
   media::VideoDecoderConfig config_;
+  // `gpu_factories_` must outlive `decoder_`.
+  std::unique_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   std::unique_ptr<media::VideoThumbnailDecoder> decoder_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
-  std::unique_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   bool decode_done_;
 
   base::WeakPtrFactory<ThumbnailMediaParserImpl> weak_factory_{this};

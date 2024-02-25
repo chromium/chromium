@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ScreenOffDelayBattery": 360000
+        },
+        "prefs": {
+          "power.battery_screen_off_delay_ms": {
+            "value": 360000
+          }
+        }
+      }
+    ]
+  }
+]

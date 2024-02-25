@@ -296,7 +296,7 @@ void LogForegroundDurations(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     const page_load_metrics::PageLoadMetricsObserverDelegate& delegate,
     base::TimeTicks app_background_time) {
-  absl::optional<base::TimeDelta> foreground_duration =
+  std::optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(delegate,
                                                       app_background_time);
   if (!foreground_duration)
@@ -333,7 +333,7 @@ bool WasAbortedInForeground(
       abort_info.reason == PageAbortReason::ABORT_NONE)
     return false;
 
-  absl::optional<base::TimeDelta> time_to_abort(abort_info.time_to_abort);
+  std::optional<base::TimeDelta> time_to_abort(abort_info.time_to_abort);
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           time_to_abort, delegate))
     return true;
@@ -353,7 +353,7 @@ bool WasAbortedInForeground(
 
 bool WasAbortedBeforeInteraction(
     const page_load_metrics::PageAbortInfo& abort_info,
-    const absl::optional<base::TimeDelta>& time_to_interaction) {
+    const std::optional<base::TimeDelta>& time_to_interaction) {
   // These conditions should be guaranteed by the call to
   // WasAbortedInForeground, which is called before WasAbortedBeforeInteraction
   // gets invoked.
@@ -646,7 +646,7 @@ bool FromGWSPageLoadMetricsLogger::ShouldLogPostCommitMetrics(const GURL& url) {
 }
 
 bool FromGWSPageLoadMetricsLogger::ShouldLogForegroundEventAfterCommit(
-    const absl::optional<base::TimeDelta>& event,
+    const std::optional<base::TimeDelta>& event,
     const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
   DCHECK(delegate.DidCommit())
       << "ShouldLogForegroundEventAfterCommit called without committed URL.";

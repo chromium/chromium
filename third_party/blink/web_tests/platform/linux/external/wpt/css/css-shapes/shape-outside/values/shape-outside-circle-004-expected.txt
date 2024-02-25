@@ -1,0 +1,628 @@
+This is a testharness.js-based test.
+Found 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] test unit (inline): cm - circle(at left 50% bottom 70cm)
+  assert_equals: expected "circle(at 50% calc(100% - 2645.67px))" but got "circle(at left 50% bottom 70cm)"
+[FAIL] test unit (inline): cm - circle(at left 50cm bottom 70%)
+  assert_equals: expected "circle(at 50cm calc(30%))" but got "circle(at 50cm 30%)"
+[FAIL] test unit (inline): cm - circle(at top 50% right 80cm)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) 50%)" but got "circle(at right 80cm top 50%)"
+[FAIL] test unit (inline): cm - circle(at top 50cm right 80%)
+  assert_equals: expected "circle(at calc(20%) 50cm)" but got "circle(at 20% 50cm)"
+[FAIL] test unit (inline): cm - circle(at bottom 70% left 50cm)
+  assert_equals: expected "circle(at 50cm calc(30%))" but got "circle(at 50cm 30%)"
+[FAIL] test unit (inline): cm - circle(at bottom 70% right 80cm)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) calc(30%))" but got "circle(at right 80cm top 30%)"
+[FAIL] test unit (inline): cm - circle(at bottom 70cm left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 2645.67px))" but got "circle(at left 50% bottom 70cm)"
+[FAIL] test unit (inline): cm - circle(at bottom 70cm right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 2645.67px))" but got "circle(at left 50% bottom 70cm)"
+[FAIL] test unit (inline): cm - circle(at bottom 70cm right 80cm)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) calc(100% - 2645.67px))" but got "circle(at right 80cm bottom 70cm)"
+[FAIL] test unit (inline): cm - circle(at right 80% top 50cm)
+  assert_equals: expected "circle(at calc(20%) 50cm)" but got "circle(at 20% 50cm)"
+[FAIL] test unit (inline): cm - circle(at right 80% bottom 70cm)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 2645.67px))" but got "circle(at left 20% bottom 70cm)"
+[FAIL] test unit (inline): cm - circle(at right 80cm top 50%)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) 50%)" but got "circle(at right 80cm top 50%)"
+[FAIL] test unit (inline): cm - circle(at right 80cm bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) calc(30%))" but got "circle(at right 80cm top 30%)"
+[FAIL] test unit (inline): cm - circle(at right 80cm bottom 70cm)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) calc(100% - 2645.67px))" but got "circle(at right 80cm bottom 70cm)"
+[FAIL] test unit (inline): mm - circle(at left 50% bottom 70mm)
+  assert_equals: expected "circle(at 50% calc(100% - 264.567px))" but got "circle(at left 50% bottom 70mm)"
+[FAIL] test unit (inline): mm - circle(at left 50mm bottom 70%)
+  assert_equals: expected "circle(at 50mm calc(30%))" but got "circle(at 50mm 30%)"
+[FAIL] test unit (inline): mm - circle(at top 50% right 80mm)
+  assert_equals: expected "circle(at calc(100% - 302.362px) 50%)" but got "circle(at right 80mm top 50%)"
+[FAIL] test unit (inline): mm - circle(at top 50mm right 80%)
+  assert_equals: expected "circle(at calc(20%) 50mm)" but got "circle(at 20% 50mm)"
+[FAIL] test unit (inline): mm - circle(at bottom 70% left 50mm)
+  assert_equals: expected "circle(at 50mm calc(30%))" but got "circle(at 50mm 30%)"
+[FAIL] test unit (inline): mm - circle(at bottom 70% right 80mm)
+  assert_equals: expected "circle(at calc(100% - 302.362px) calc(30%))" but got "circle(at right 80mm top 30%)"
+[FAIL] test unit (inline): mm - circle(at bottom 70mm left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 264.567px))" but got "circle(at left 50% bottom 70mm)"
+[FAIL] test unit (inline): mm - circle(at bottom 70mm right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 264.567px))" but got "circle(at left 50% bottom 70mm)"
+[FAIL] test unit (inline): mm - circle(at bottom 70mm right 80mm)
+  assert_equals: expected "circle(at calc(100% - 302.362px) calc(100% - 264.567px))" but got "circle(at right 80mm bottom 70mm)"
+[FAIL] test unit (inline): mm - circle(at right 80% top 50mm)
+  assert_equals: expected "circle(at calc(20%) 50mm)" but got "circle(at 20% 50mm)"
+[FAIL] test unit (inline): mm - circle(at right 80% bottom 70mm)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 264.567px))" but got "circle(at left 20% bottom 70mm)"
+[FAIL] test unit (inline): mm - circle(at right 80mm top 50%)
+  assert_equals: expected "circle(at calc(100% - 302.362px) 50%)" but got "circle(at right 80mm top 50%)"
+[FAIL] test unit (inline): mm - circle(at right 80mm bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 302.362px) calc(30%))" but got "circle(at right 80mm top 30%)"
+[FAIL] test unit (inline): mm - circle(at right 80mm bottom 70mm)
+  assert_equals: expected "circle(at calc(100% - 302.362px) calc(100% - 264.567px))" but got "circle(at right 80mm bottom 70mm)"
+[FAIL] test unit (inline): in - circle(at left 50% bottom 70in)
+  assert_equals: expected "circle(at 50% calc(100% - 6720px))" but got "circle(at left 50% bottom 70in)"
+[FAIL] test unit (inline): in - circle(at left 50in bottom 70%)
+  assert_equals: expected "circle(at 50in calc(30%))" but got "circle(at 50in 30%)"
+[FAIL] test unit (inline): in - circle(at top 50% right 80in)
+  assert_equals: expected "circle(at calc(100% - 7680px) 50%)" but got "circle(at right 80in top 50%)"
+[FAIL] test unit (inline): in - circle(at top 50in right 80%)
+  assert_equals: expected "circle(at calc(20%) 50in)" but got "circle(at 20% 50in)"
+[FAIL] test unit (inline): in - circle(at bottom 70% left 50in)
+  assert_equals: expected "circle(at 50in calc(30%))" but got "circle(at 50in 30%)"
+[FAIL] test unit (inline): in - circle(at bottom 70% right 80in)
+  assert_equals: expected "circle(at calc(100% - 7680px) calc(30%))" but got "circle(at right 80in top 30%)"
+[FAIL] test unit (inline): in - circle(at bottom 70in left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 6720px))" but got "circle(at left 50% bottom 70in)"
+[FAIL] test unit (inline): in - circle(at bottom 70in right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 6720px))" but got "circle(at left 50% bottom 70in)"
+[FAIL] test unit (inline): in - circle(at bottom 70in right 80in)
+  assert_equals: expected "circle(at calc(100% - 7680px) calc(100% - 6720px))" but got "circle(at right 80in bottom 70in)"
+[FAIL] test unit (inline): in - circle(at right 80% top 50in)
+  assert_equals: expected "circle(at calc(20%) 50in)" but got "circle(at 20% 50in)"
+[FAIL] test unit (inline): in - circle(at right 80% bottom 70in)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 6720px))" but got "circle(at left 20% bottom 70in)"
+[FAIL] test unit (inline): in - circle(at right 80in top 50%)
+  assert_equals: expected "circle(at calc(100% - 7680px) 50%)" but got "circle(at right 80in top 50%)"
+[FAIL] test unit (inline): in - circle(at right 80in bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 7680px) calc(30%))" but got "circle(at right 80in top 30%)"
+[FAIL] test unit (inline): in - circle(at right 80in bottom 70in)
+  assert_equals: expected "circle(at calc(100% - 7680px) calc(100% - 6720px))" but got "circle(at right 80in bottom 70in)"
+[FAIL] test unit (inline): pt - circle(at left 50% bottom 70pt)
+  assert_equals: expected "circle(at 50% calc(100% - 93.3333px))" but got "circle(at left 50% bottom 70pt)"
+[FAIL] test unit (inline): pt - circle(at left 50pt bottom 70%)
+  assert_equals: expected "circle(at 50pt calc(30%))" but got "circle(at 50pt 30%)"
+[FAIL] test unit (inline): pt - circle(at top 50% right 80pt)
+  assert_equals: expected "circle(at calc(100% - 106.667px) 50%)" but got "circle(at right 80pt top 50%)"
+[FAIL] test unit (inline): pt - circle(at top 50pt right 80%)
+  assert_equals: expected "circle(at calc(20%) 50pt)" but got "circle(at 20% 50pt)"
+[FAIL] test unit (inline): pt - circle(at bottom 70% left 50pt)
+  assert_equals: expected "circle(at 50pt calc(30%))" but got "circle(at 50pt 30%)"
+[FAIL] test unit (inline): pt - circle(at bottom 70% right 80pt)
+  assert_equals: expected "circle(at calc(100% - 106.667px) calc(30%))" but got "circle(at right 80pt top 30%)"
+[FAIL] test unit (inline): pt - circle(at bottom 70pt left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 93.3333px))" but got "circle(at left 50% bottom 70pt)"
+[FAIL] test unit (inline): pt - circle(at bottom 70pt right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 93.3333px))" but got "circle(at left 50% bottom 70pt)"
+[FAIL] test unit (inline): pt - circle(at bottom 70pt right 80pt)
+  assert_equals: expected "circle(at calc(100% - 106.667px) calc(100% - 93.3333px))" but got "circle(at right 80pt bottom 70pt)"
+[FAIL] test unit (inline): pt - circle(at right 80% top 50pt)
+  assert_equals: expected "circle(at calc(20%) 50pt)" but got "circle(at 20% 50pt)"
+[FAIL] test unit (inline): pt - circle(at right 80% bottom 70pt)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 93.3333px))" but got "circle(at left 20% bottom 70pt)"
+[FAIL] test unit (inline): pt - circle(at right 80pt top 50%)
+  assert_equals: expected "circle(at calc(100% - 106.667px) 50%)" but got "circle(at right 80pt top 50%)"
+[FAIL] test unit (inline): pt - circle(at right 80pt bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 106.667px) calc(30%))" but got "circle(at right 80pt top 30%)"
+[FAIL] test unit (inline): pt - circle(at right 80pt bottom 70pt)
+  assert_equals: expected "circle(at calc(100% - 106.667px) calc(100% - 93.3333px))" but got "circle(at right 80pt bottom 70pt)"
+[FAIL] test unit (inline): pc - circle(at left 50% bottom 70pc)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 70pc)"
+[FAIL] test unit (inline): pc - circle(at left 50pc bottom 70%)
+  assert_equals: expected "circle(at 50pc calc(30%))" but got "circle(at 50pc 30%)"
+[FAIL] test unit (inline): pc - circle(at top 50% right 80pc)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 80pc top 50%)"
+[FAIL] test unit (inline): pc - circle(at top 50pc right 80%)
+  assert_equals: expected "circle(at calc(20%) 50pc)" but got "circle(at 20% 50pc)"
+[FAIL] test unit (inline): pc - circle(at bottom 70% left 50pc)
+  assert_equals: expected "circle(at 50pc calc(30%))" but got "circle(at 50pc 30%)"
+[FAIL] test unit (inline): pc - circle(at bottom 70% right 80pc)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(30%))" but got "circle(at right 80pc top 30%)"
+[FAIL] test unit (inline): pc - circle(at bottom 70pc left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 70pc)"
+[FAIL] test unit (inline): pc - circle(at bottom 70pc right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 1120px))" but got "circle(at left 50% bottom 70pc)"
+[FAIL] test unit (inline): pc - circle(at bottom 70pc right 80pc)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 80pc bottom 70pc)"
+[FAIL] test unit (inline): pc - circle(at right 80% top 50pc)
+  assert_equals: expected "circle(at calc(20%) 50pc)" but got "circle(at 20% 50pc)"
+[FAIL] test unit (inline): pc - circle(at right 80% bottom 70pc)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 1120px))" but got "circle(at left 20% bottom 70pc)"
+[FAIL] test unit (inline): pc - circle(at right 80pc top 50%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 80pc top 50%)"
+[FAIL] test unit (inline): pc - circle(at right 80pc bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(30%))" but got "circle(at right 80pc top 30%)"
+[FAIL] test unit (inline): pc - circle(at right 80pc bottom 70pc)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 80pc bottom 70pc)"
+[FAIL] test unit (inline): em - circle(at left 50% bottom 70em)
+  assert_equals: expected "circle(at 50% calc(100% - 70em))" but got "circle(at left 50% bottom 70em)"
+[FAIL] test unit (inline): em - circle(at left 50em bottom 70%)
+  assert_equals: expected "circle(at 50em calc(30%))" but got "circle(at 50em 30%)"
+[FAIL] test unit (inline): em - circle(at top 50% right 80em)
+  assert_equals: expected "circle(at calc(100% - 80em) 50%)" but got "circle(at right 80em top 50%)"
+[FAIL] test unit (inline): em - circle(at top 50em right 80%)
+  assert_equals: expected "circle(at calc(20%) 50em)" but got "circle(at 20% 50em)"
+[FAIL] test unit (inline): em - circle(at bottom 70% left 50em)
+  assert_equals: expected "circle(at 50em calc(30%))" but got "circle(at 50em 30%)"
+[FAIL] test unit (inline): em - circle(at bottom 70% right 80em)
+  assert_equals: expected "circle(at calc(100% - 80em) calc(30%))" but got "circle(at right 80em top 30%)"
+[FAIL] test unit (inline): em - circle(at bottom 70em left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 70em))" but got "circle(at left 50% bottom 70em)"
+[FAIL] test unit (inline): em - circle(at bottom 70em right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 70em))" but got "circle(at left 50% bottom 70em)"
+[FAIL] test unit (inline): em - circle(at bottom 70em right 80em)
+  assert_equals: expected "circle(at calc(100% - 80em) calc(100% - 70em))" but got "circle(at right 80em bottom 70em)"
+[FAIL] test unit (inline): em - circle(at right 80% top 50em)
+  assert_equals: expected "circle(at calc(20%) 50em)" but got "circle(at 20% 50em)"
+[FAIL] test unit (inline): em - circle(at right 80% bottom 70em)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 70em))" but got "circle(at left 20% bottom 70em)"
+[FAIL] test unit (inline): em - circle(at right 80em top 50%)
+  assert_equals: expected "circle(at calc(100% - 80em) 50%)" but got "circle(at right 80em top 50%)"
+[FAIL] test unit (inline): em - circle(at right 80em bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 80em) calc(30%))" but got "circle(at right 80em top 30%)"
+[FAIL] test unit (inline): em - circle(at right 80em bottom 70em)
+  assert_equals: expected "circle(at calc(100% - 80em) calc(100% - 70em))" but got "circle(at right 80em bottom 70em)"
+[FAIL] test unit (inline): ex - circle(at left 50% bottom 70ex)
+  assert_equals: expected "circle(at 50% calc(100% - 70ex))" but got "circle(at left 50% bottom 70ex)"
+[FAIL] test unit (inline): ex - circle(at left 50ex bottom 70%)
+  assert_equals: expected "circle(at 50ex calc(30%))" but got "circle(at 50ex 30%)"
+[FAIL] test unit (inline): ex - circle(at top 50% right 80ex)
+  assert_equals: expected "circle(at calc(100% - 80ex) 50%)" but got "circle(at right 80ex top 50%)"
+[FAIL] test unit (inline): ex - circle(at top 50ex right 80%)
+  assert_equals: expected "circle(at calc(20%) 50ex)" but got "circle(at 20% 50ex)"
+[FAIL] test unit (inline): ex - circle(at bottom 70% left 50ex)
+  assert_equals: expected "circle(at 50ex calc(30%))" but got "circle(at 50ex 30%)"
+[FAIL] test unit (inline): ex - circle(at bottom 70% right 80ex)
+  assert_equals: expected "circle(at calc(100% - 80ex) calc(30%))" but got "circle(at right 80ex top 30%)"
+[FAIL] test unit (inline): ex - circle(at bottom 70ex left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 70ex))" but got "circle(at left 50% bottom 70ex)"
+[FAIL] test unit (inline): ex - circle(at bottom 70ex right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 70ex))" but got "circle(at left 50% bottom 70ex)"
+[FAIL] test unit (inline): ex - circle(at bottom 70ex right 80ex)
+  assert_equals: expected "circle(at calc(100% - 80ex) calc(100% - 70ex))" but got "circle(at right 80ex bottom 70ex)"
+[FAIL] test unit (inline): ex - circle(at right 80% top 50ex)
+  assert_equals: expected "circle(at calc(20%) 50ex)" but got "circle(at 20% 50ex)"
+[FAIL] test unit (inline): ex - circle(at right 80% bottom 70ex)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 70ex))" but got "circle(at left 20% bottom 70ex)"
+[FAIL] test unit (inline): ex - circle(at right 80ex top 50%)
+  assert_equals: expected "circle(at calc(100% - 80ex) 50%)" but got "circle(at right 80ex top 50%)"
+[FAIL] test unit (inline): ex - circle(at right 80ex bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 80ex) calc(30%))" but got "circle(at right 80ex top 30%)"
+[FAIL] test unit (inline): ex - circle(at right 80ex bottom 70ex)
+  assert_equals: expected "circle(at calc(100% - 80ex) calc(100% - 70ex))" but got "circle(at right 80ex bottom 70ex)"
+[FAIL] test unit (inline): ch - circle(at left 50% bottom 70ch)
+  assert_equals: expected "circle(at 50% calc(100% - 70ch))" but got "circle(at left 50% bottom 70ch)"
+[FAIL] test unit (inline): ch - circle(at left 50ch bottom 70%)
+  assert_equals: expected "circle(at 50ch calc(30%))" but got "circle(at 50ch 30%)"
+[FAIL] test unit (inline): ch - circle(at top 50% right 80ch)
+  assert_equals: expected "circle(at calc(100% - 80ch) 50%)" but got "circle(at right 80ch top 50%)"
+[FAIL] test unit (inline): ch - circle(at top 50ch right 80%)
+  assert_equals: expected "circle(at calc(20%) 50ch)" but got "circle(at 20% 50ch)"
+[FAIL] test unit (inline): ch - circle(at bottom 70% left 50ch)
+  assert_equals: expected "circle(at 50ch calc(30%))" but got "circle(at 50ch 30%)"
+[FAIL] test unit (inline): ch - circle(at bottom 70% right 80ch)
+  assert_equals: expected "circle(at calc(100% - 80ch) calc(30%))" but got "circle(at right 80ch top 30%)"
+[FAIL] test unit (inline): ch - circle(at bottom 70ch left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 70ch))" but got "circle(at left 50% bottom 70ch)"
+[FAIL] test unit (inline): ch - circle(at bottom 70ch right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 70ch))" but got "circle(at left 50% bottom 70ch)"
+[FAIL] test unit (inline): ch - circle(at bottom 70ch right 80ch)
+  assert_equals: expected "circle(at calc(100% - 80ch) calc(100% - 70ch))" but got "circle(at right 80ch bottom 70ch)"
+[FAIL] test unit (inline): ch - circle(at right 80% top 50ch)
+  assert_equals: expected "circle(at calc(20%) 50ch)" but got "circle(at 20% 50ch)"
+[FAIL] test unit (inline): ch - circle(at right 80% bottom 70ch)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 70ch))" but got "circle(at left 20% bottom 70ch)"
+[FAIL] test unit (inline): ch - circle(at right 80ch top 50%)
+  assert_equals: expected "circle(at calc(100% - 80ch) 50%)" but got "circle(at right 80ch top 50%)"
+[FAIL] test unit (inline): ch - circle(at right 80ch bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 80ch) calc(30%))" but got "circle(at right 80ch top 30%)"
+[FAIL] test unit (inline): ch - circle(at right 80ch bottom 70ch)
+  assert_equals: expected "circle(at calc(100% - 80ch) calc(100% - 70ch))" but got "circle(at right 80ch bottom 70ch)"
+[FAIL] test unit (inline): rem - circle(at left 50% bottom 70rem)
+  assert_equals: expected "circle(at 50% calc(100% - 70rem))" but got "circle(at left 50% bottom 70rem)"
+[FAIL] test unit (inline): rem - circle(at left 50rem bottom 70%)
+  assert_equals: expected "circle(at 50rem calc(30%))" but got "circle(at 50rem 30%)"
+[FAIL] test unit (inline): rem - circle(at top 50% right 80rem)
+  assert_equals: expected "circle(at calc(100% - 80rem) 50%)" but got "circle(at right 80rem top 50%)"
+[FAIL] test unit (inline): rem - circle(at top 50rem right 80%)
+  assert_equals: expected "circle(at calc(20%) 50rem)" but got "circle(at 20% 50rem)"
+[FAIL] test unit (inline): rem - circle(at bottom 70% left 50rem)
+  assert_equals: expected "circle(at 50rem calc(30%))" but got "circle(at 50rem 30%)"
+[FAIL] test unit (inline): rem - circle(at bottom 70% right 80rem)
+  assert_equals: expected "circle(at calc(100% - 80rem) calc(30%))" but got "circle(at right 80rem top 30%)"
+[FAIL] test unit (inline): rem - circle(at bottom 70rem left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 70rem))" but got "circle(at left 50% bottom 70rem)"
+[FAIL] test unit (inline): rem - circle(at bottom 70rem right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 70rem))" but got "circle(at left 50% bottom 70rem)"
+[FAIL] test unit (inline): rem - circle(at bottom 70rem right 80rem)
+  assert_equals: expected "circle(at calc(100% - 80rem) calc(100% - 70rem))" but got "circle(at right 80rem bottom 70rem)"
+[FAIL] test unit (inline): rem - circle(at right 80% top 50rem)
+  assert_equals: expected "circle(at calc(20%) 50rem)" but got "circle(at 20% 50rem)"
+[FAIL] test unit (inline): rem - circle(at right 80% bottom 70rem)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 70rem))" but got "circle(at left 20% bottom 70rem)"
+[FAIL] test unit (inline): rem - circle(at right 80rem top 50%)
+  assert_equals: expected "circle(at calc(100% - 80rem) 50%)" but got "circle(at right 80rem top 50%)"
+[FAIL] test unit (inline): rem - circle(at right 80rem bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 80rem) calc(30%))" but got "circle(at right 80rem top 30%)"
+[FAIL] test unit (inline): rem - circle(at right 80rem bottom 70rem)
+  assert_equals: expected "circle(at calc(100% - 80rem) calc(100% - 70rem))" but got "circle(at right 80rem bottom 70rem)"
+[FAIL] test unit (inline): vw - circle(at left 50% bottom 70vw)
+  assert_equals: expected "circle(at 50% calc(100% - 70vw))" but got "circle(at left 50% bottom 70vw)"
+[FAIL] test unit (inline): vw - circle(at left 50vw bottom 70%)
+  assert_equals: expected "circle(at 50vw calc(30%))" but got "circle(at 50vw 30%)"
+[FAIL] test unit (inline): vw - circle(at top 50% right 80vw)
+  assert_equals: expected "circle(at calc(100% - 80vw) 50%)" but got "circle(at right 80vw top 50%)"
+[FAIL] test unit (inline): vw - circle(at top 50vw right 80%)
+  assert_equals: expected "circle(at calc(20%) 50vw)" but got "circle(at 20% 50vw)"
+[FAIL] test unit (inline): vw - circle(at bottom 70% left 50vw)
+  assert_equals: expected "circle(at 50vw calc(30%))" but got "circle(at 50vw 30%)"
+[FAIL] test unit (inline): vw - circle(at bottom 70% right 80vw)
+  assert_equals: expected "circle(at calc(100% - 80vw) calc(30%))" but got "circle(at right 80vw top 30%)"
+[FAIL] test unit (inline): vw - circle(at bottom 70vw left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 70vw))" but got "circle(at left 50% bottom 70vw)"
+[FAIL] test unit (inline): vw - circle(at bottom 70vw right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 70vw))" but got "circle(at left 50% bottom 70vw)"
+[FAIL] test unit (inline): vw - circle(at bottom 70vw right 80vw)
+  assert_equals: expected "circle(at calc(100% - 80vw) calc(100% - 70vw))" but got "circle(at right 80vw bottom 70vw)"
+[FAIL] test unit (inline): vw - circle(at right 80% top 50vw)
+  assert_equals: expected "circle(at calc(20%) 50vw)" but got "circle(at 20% 50vw)"
+[FAIL] test unit (inline): vw - circle(at right 80% bottom 70vw)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 70vw))" but got "circle(at left 20% bottom 70vw)"
+[FAIL] test unit (inline): vw - circle(at right 80vw top 50%)
+  assert_equals: expected "circle(at calc(100% - 80vw) 50%)" but got "circle(at right 80vw top 50%)"
+[FAIL] test unit (inline): vw - circle(at right 80vw bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 80vw) calc(30%))" but got "circle(at right 80vw top 30%)"
+[FAIL] test unit (inline): vw - circle(at right 80vw bottom 70vw)
+  assert_equals: expected "circle(at calc(100% - 80vw) calc(100% - 70vw))" but got "circle(at right 80vw bottom 70vw)"
+[FAIL] test unit (inline): vh - circle(at left 50% bottom 70vh)
+  assert_equals: expected "circle(at 50% calc(100% - 70vh))" but got "circle(at left 50% bottom 70vh)"
+[FAIL] test unit (inline): vh - circle(at left 50vh bottom 70%)
+  assert_equals: expected "circle(at 50vh calc(30%))" but got "circle(at 50vh 30%)"
+[FAIL] test unit (inline): vh - circle(at top 50% right 80vh)
+  assert_equals: expected "circle(at calc(100% - 80vh) 50%)" but got "circle(at right 80vh top 50%)"
+[FAIL] test unit (inline): vh - circle(at top 50vh right 80%)
+  assert_equals: expected "circle(at calc(20%) 50vh)" but got "circle(at 20% 50vh)"
+[FAIL] test unit (inline): vh - circle(at bottom 70% left 50vh)
+  assert_equals: expected "circle(at 50vh calc(30%))" but got "circle(at 50vh 30%)"
+[FAIL] test unit (inline): vh - circle(at bottom 70% right 80vh)
+  assert_equals: expected "circle(at calc(100% - 80vh) calc(30%))" but got "circle(at right 80vh top 30%)"
+[FAIL] test unit (inline): vh - circle(at bottom 70vh left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 70vh))" but got "circle(at left 50% bottom 70vh)"
+[FAIL] test unit (inline): vh - circle(at bottom 70vh right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 70vh))" but got "circle(at left 50% bottom 70vh)"
+[FAIL] test unit (inline): vh - circle(at bottom 70vh right 80vh)
+  assert_equals: expected "circle(at calc(100% - 80vh) calc(100% - 70vh))" but got "circle(at right 80vh bottom 70vh)"
+[FAIL] test unit (inline): vh - circle(at right 80% top 50vh)
+  assert_equals: expected "circle(at calc(20%) 50vh)" but got "circle(at 20% 50vh)"
+[FAIL] test unit (inline): vh - circle(at right 80% bottom 70vh)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 70vh))" but got "circle(at left 20% bottom 70vh)"
+[FAIL] test unit (inline): vh - circle(at right 80vh top 50%)
+  assert_equals: expected "circle(at calc(100% - 80vh) 50%)" but got "circle(at right 80vh top 50%)"
+[FAIL] test unit (inline): vh - circle(at right 80vh bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 80vh) calc(30%))" but got "circle(at right 80vh top 30%)"
+[FAIL] test unit (inline): vh - circle(at right 80vh bottom 70vh)
+  assert_equals: expected "circle(at calc(100% - 80vh) calc(100% - 70vh))" but got "circle(at right 80vh bottom 70vh)"
+[FAIL] test unit (inline): vmin - circle(at left 50% bottom 70vmin)
+  assert_equals: expected "circle(at 50% calc(100% - 70vmin))" but got "circle(at left 50% bottom 70vmin)"
+[FAIL] test unit (inline): vmin - circle(at left 50vmin bottom 70%)
+  assert_equals: expected "circle(at 50vmin calc(30%))" but got "circle(at 50vmin 30%)"
+[FAIL] test unit (inline): vmin - circle(at top 50% right 80vmin)
+  assert_equals: expected "circle(at calc(100% - 80vmin) 50%)" but got "circle(at right 80vmin top 50%)"
+[FAIL] test unit (inline): vmin - circle(at top 50vmin right 80%)
+  assert_equals: expected "circle(at calc(20%) 50vmin)" but got "circle(at 20% 50vmin)"
+[FAIL] test unit (inline): vmin - circle(at bottom 70% left 50vmin)
+  assert_equals: expected "circle(at 50vmin calc(30%))" but got "circle(at 50vmin 30%)"
+[FAIL] test unit (inline): vmin - circle(at bottom 70% right 80vmin)
+  assert_equals: expected "circle(at calc(100% - 80vmin) calc(30%))" but got "circle(at right 80vmin top 30%)"
+[FAIL] test unit (inline): vmin - circle(at bottom 70vmin left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 70vmin))" but got "circle(at left 50% bottom 70vmin)"
+[FAIL] test unit (inline): vmin - circle(at bottom 70vmin right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 70vmin))" but got "circle(at left 50% bottom 70vmin)"
+[FAIL] test unit (inline): vmin - circle(at bottom 70vmin right 80vmin)
+  assert_equals: expected "circle(at calc(100% - 80vmin) calc(100% - 70vmin))" but got "circle(at right 80vmin bottom 70vmin)"
+[FAIL] test unit (inline): vmin - circle(at right 80% top 50vmin)
+  assert_equals: expected "circle(at calc(20%) 50vmin)" but got "circle(at 20% 50vmin)"
+[FAIL] test unit (inline): vmin - circle(at right 80% bottom 70vmin)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 70vmin))" but got "circle(at left 20% bottom 70vmin)"
+[FAIL] test unit (inline): vmin - circle(at right 80vmin top 50%)
+  assert_equals: expected "circle(at calc(100% - 80vmin) 50%)" but got "circle(at right 80vmin top 50%)"
+[FAIL] test unit (inline): vmin - circle(at right 80vmin bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 80vmin) calc(30%))" but got "circle(at right 80vmin top 30%)"
+[FAIL] test unit (inline): vmin - circle(at right 80vmin bottom 70vmin)
+  assert_equals: expected "circle(at calc(100% - 80vmin) calc(100% - 70vmin))" but got "circle(at right 80vmin bottom 70vmin)"
+[FAIL] test unit (inline): vmax - circle(at left 50% bottom 70vmax)
+  assert_equals: expected "circle(at 50% calc(100% - 70vmax))" but got "circle(at left 50% bottom 70vmax)"
+[FAIL] test unit (inline): vmax - circle(at left 50vmax bottom 70%)
+  assert_equals: expected "circle(at 50vmax calc(30%))" but got "circle(at 50vmax 30%)"
+[FAIL] test unit (inline): vmax - circle(at top 50% right 80vmax)
+  assert_equals: expected "circle(at calc(100% - 80vmax) 50%)" but got "circle(at right 80vmax top 50%)"
+[FAIL] test unit (inline): vmax - circle(at top 50vmax right 80%)
+  assert_equals: expected "circle(at calc(20%) 50vmax)" but got "circle(at 20% 50vmax)"
+[FAIL] test unit (inline): vmax - circle(at bottom 70% left 50vmax)
+  assert_equals: expected "circle(at 50vmax calc(30%))" but got "circle(at 50vmax 30%)"
+[FAIL] test unit (inline): vmax - circle(at bottom 70% right 80vmax)
+  assert_equals: expected "circle(at calc(100% - 80vmax) calc(30%))" but got "circle(at right 80vmax top 30%)"
+[FAIL] test unit (inline): vmax - circle(at bottom 70vmax left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 70vmax))" but got "circle(at left 50% bottom 70vmax)"
+[FAIL] test unit (inline): vmax - circle(at bottom 70vmax right 50%)
+  assert_equals: expected "circle(at calc(50%) calc(100% - 70vmax))" but got "circle(at left 50% bottom 70vmax)"
+[FAIL] test unit (inline): vmax - circle(at bottom 70vmax right 80vmax)
+  assert_equals: expected "circle(at calc(100% - 80vmax) calc(100% - 70vmax))" but got "circle(at right 80vmax bottom 70vmax)"
+[FAIL] test unit (inline): vmax - circle(at right 80% top 50vmax)
+  assert_equals: expected "circle(at calc(20%) 50vmax)" but got "circle(at 20% 50vmax)"
+[FAIL] test unit (inline): vmax - circle(at right 80% bottom 70vmax)
+  assert_equals: expected "circle(at calc(20%) calc(100% - 70vmax))" but got "circle(at left 20% bottom 70vmax)"
+[FAIL] test unit (inline): vmax - circle(at right 80vmax top 50%)
+  assert_equals: expected "circle(at calc(100% - 80vmax) 50%)" but got "circle(at right 80vmax top 50%)"
+[FAIL] test unit (inline): vmax - circle(at right 80vmax bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 80vmax) calc(30%))" but got "circle(at right 80vmax top 30%)"
+[FAIL] test unit (inline): vmax - circle(at right 80vmax bottom 70vmax)
+  assert_equals: expected "circle(at calc(100% - 80vmax) calc(100% - 70vmax))" but got "circle(at right 80vmax bottom 70vmax)"
+[FAIL] test unit (computed): cm - circle(at left 50% bottom 70cm)
+  assert_equals: expected "circle(at 50% calc(100% - 2645.67px))" but got "circle(at left 50% bottom 2645.67px)"
+[FAIL] test unit (computed): cm - circle(at top 50% right 80cm)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) 50%)" but got "circle(at right 3023.62px top 50%)"
+[FAIL] test unit (computed): cm - circle(at bottom 70% right 80cm)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) 30%)" but got "circle(at right 3023.62px top 30%)"
+[FAIL] test unit (computed): cm - circle(at bottom 70cm left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 2645.67px))" but got "circle(at left 50% bottom 2645.67px)"
+[FAIL] test unit (computed): cm - circle(at bottom 70cm right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 2645.67px))" but got "circle(at left 50% bottom 2645.67px)"
+[FAIL] test unit (computed): cm - circle(at bottom 70cm right 80cm)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) calc(100% - 2645.67px))" but got "circle(at right 3023.62px bottom 2645.67px)"
+[FAIL] test unit (computed): cm - circle(at right 80% bottom 70cm)
+  assert_equals: expected "circle(at 20% calc(100% - 2645.67px))" but got "circle(at left 20% bottom 2645.67px)"
+[FAIL] test unit (computed): cm - circle(at right 80cm top 50%)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) 50%)" but got "circle(at right 3023.62px top 50%)"
+[FAIL] test unit (computed): cm - circle(at right 80cm bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) 30%)" but got "circle(at right 3023.62px top 30%)"
+[FAIL] test unit (computed): cm - circle(at right 80cm bottom 70cm)
+  assert_equals: expected "circle(at calc(100% - 3023.62px) calc(100% - 2645.67px))" but got "circle(at right 3023.62px bottom 2645.67px)"
+[FAIL] test unit (computed): mm - circle(at left 50% bottom 70mm)
+  assert_equals: expected "circle(at 50% calc(100% - 264.567px))" but got "circle(at left 50% bottom 264.567px)"
+[FAIL] test unit (computed): mm - circle(at top 50% right 80mm)
+  assert_equals: expected "circle(at calc(100% - 302.362px) 50%)" but got "circle(at right 302.362px top 50%)"
+[FAIL] test unit (computed): mm - circle(at bottom 70% right 80mm)
+  assert_equals: expected "circle(at calc(100% - 302.362px) 30%)" but got "circle(at right 302.362px top 30%)"
+[FAIL] test unit (computed): mm - circle(at bottom 70mm left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 264.567px))" but got "circle(at left 50% bottom 264.567px)"
+[FAIL] test unit (computed): mm - circle(at bottom 70mm right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 264.567px))" but got "circle(at left 50% bottom 264.567px)"
+[FAIL] test unit (computed): mm - circle(at bottom 70mm right 80mm)
+  assert_equals: expected "circle(at calc(100% - 302.362px) calc(100% - 264.567px))" but got "circle(at right 302.362px bottom 264.567px)"
+[FAIL] test unit (computed): mm - circle(at right 80% bottom 70mm)
+  assert_equals: expected "circle(at 20% calc(100% - 264.567px))" but got "circle(at left 20% bottom 264.567px)"
+[FAIL] test unit (computed): mm - circle(at right 80mm top 50%)
+  assert_equals: expected "circle(at calc(100% - 302.362px) 50%)" but got "circle(at right 302.362px top 50%)"
+[FAIL] test unit (computed): mm - circle(at right 80mm bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 302.362px) 30%)" but got "circle(at right 302.362px top 30%)"
+[FAIL] test unit (computed): mm - circle(at right 80mm bottom 70mm)
+  assert_equals: expected "circle(at calc(100% - 302.362px) calc(100% - 264.567px))" but got "circle(at right 302.362px bottom 264.567px)"
+[FAIL] test unit (computed): in - circle(at left 50% bottom 70in)
+  assert_equals: expected "circle(at 50% calc(100% - 6720px))" but got "circle(at left 50% bottom 6720px)"
+[FAIL] test unit (computed): in - circle(at top 50% right 80in)
+  assert_equals: expected "circle(at calc(100% - 7680px) 50%)" but got "circle(at right 7680px top 50%)"
+[FAIL] test unit (computed): in - circle(at bottom 70% right 80in)
+  assert_equals: expected "circle(at calc(100% - 7680px) 30%)" but got "circle(at right 7680px top 30%)"
+[FAIL] test unit (computed): in - circle(at bottom 70in left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 6720px))" but got "circle(at left 50% bottom 6720px)"
+[FAIL] test unit (computed): in - circle(at bottom 70in right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 6720px))" but got "circle(at left 50% bottom 6720px)"
+[FAIL] test unit (computed): in - circle(at bottom 70in right 80in)
+  assert_equals: expected "circle(at calc(100% - 7680px) calc(100% - 6720px))" but got "circle(at right 7680px bottom 6720px)"
+[FAIL] test unit (computed): in - circle(at right 80% bottom 70in)
+  assert_equals: expected "circle(at 20% calc(100% - 6720px))" but got "circle(at left 20% bottom 6720px)"
+[FAIL] test unit (computed): in - circle(at right 80in top 50%)
+  assert_equals: expected "circle(at calc(100% - 7680px) 50%)" but got "circle(at right 7680px top 50%)"
+[FAIL] test unit (computed): in - circle(at right 80in bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 7680px) 30%)" but got "circle(at right 7680px top 30%)"
+[FAIL] test unit (computed): in - circle(at right 80in bottom 70in)
+  assert_equals: expected "circle(at calc(100% - 7680px) calc(100% - 6720px))" but got "circle(at right 7680px bottom 6720px)"
+[FAIL] test unit (computed): pt - circle(at left 50% bottom 70pt)
+  assert_equals: expected "circle(at 50% calc(100% - 93.3333px))" but got "circle(at left 50% bottom 93.3333px)"
+[FAIL] test unit (computed): pt - circle(at top 50% right 80pt)
+  assert_equals: expected "circle(at calc(100% - 106.667px) 50%)" but got "circle(at right 106.667px top 50%)"
+[FAIL] test unit (computed): pt - circle(at bottom 70% right 80pt)
+  assert_equals: expected "circle(at calc(100% - 106.667px) 30%)" but got "circle(at right 106.667px top 30%)"
+[FAIL] test unit (computed): pt - circle(at bottom 70pt left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 93.3333px))" but got "circle(at left 50% bottom 93.3333px)"
+[FAIL] test unit (computed): pt - circle(at bottom 70pt right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 93.3333px))" but got "circle(at left 50% bottom 93.3333px)"
+[FAIL] test unit (computed): pt - circle(at bottom 70pt right 80pt)
+  assert_equals: expected "circle(at calc(100% - 106.667px) calc(100% - 93.3333px))" but got "circle(at right 106.667px bottom 93.3333px)"
+[FAIL] test unit (computed): pt - circle(at right 80% bottom 70pt)
+  assert_equals: expected "circle(at 20% calc(100% - 93.3333px))" but got "circle(at left 20% bottom 93.3333px)"
+[FAIL] test unit (computed): pt - circle(at right 80pt top 50%)
+  assert_equals: expected "circle(at calc(100% - 106.667px) 50%)" but got "circle(at right 106.667px top 50%)"
+[FAIL] test unit (computed): pt - circle(at right 80pt bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 106.667px) 30%)" but got "circle(at right 106.667px top 30%)"
+[FAIL] test unit (computed): pt - circle(at right 80pt bottom 70pt)
+  assert_equals: expected "circle(at calc(100% - 106.667px) calc(100% - 93.3333px))" but got "circle(at right 106.667px bottom 93.3333px)"
+[FAIL] test unit (computed): pc - circle(at left 50% bottom 70pc)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): pc - circle(at top 50% right 80pc)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
+[FAIL] test unit (computed): pc - circle(at bottom 70% right 80pc)
+  assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
+[FAIL] test unit (computed): pc - circle(at bottom 70pc left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): pc - circle(at bottom 70pc right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): pc - circle(at bottom 70pc right 80pc)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
+[FAIL] test unit (computed): pc - circle(at right 80% bottom 70pc)
+  assert_equals: expected "circle(at 20% calc(100% - 1120px))" but got "circle(at left 20% bottom 1120px)"
+[FAIL] test unit (computed): pc - circle(at right 80pc top 50%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
+[FAIL] test unit (computed): pc - circle(at right 80pc bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
+[FAIL] test unit (computed): pc - circle(at right 80pc bottom 70pc)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
+[FAIL] test unit (computed): em - circle(at left 50% bottom 70em)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): em - circle(at top 50% right 80em)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
+[FAIL] test unit (computed): em - circle(at bottom 70% right 80em)
+  assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
+[FAIL] test unit (computed): em - circle(at bottom 70em left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): em - circle(at bottom 70em right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): em - circle(at bottom 70em right 80em)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
+[FAIL] test unit (computed): em - circle(at right 80% bottom 70em)
+  assert_equals: expected "circle(at 20% calc(100% - 1120px))" but got "circle(at left 20% bottom 1120px)"
+[FAIL] test unit (computed): em - circle(at right 80em top 50%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
+[FAIL] test unit (computed): em - circle(at right 80em bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
+[FAIL] test unit (computed): em - circle(at right 80em bottom 70em)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
+[FAIL] test unit (computed): ex - circle(at left 50% bottom 70ex)
+  assert_equals: expected "circle(at 50% calc(100% - 896px))" but got "circle(at left 50% bottom 896px)"
+[FAIL] test unit (computed): ex - circle(at top 50% right 80ex)
+  assert_equals: expected "circle(at calc(100% - 1024px) 50%)" but got "circle(at right 1024px top 50%)"
+[FAIL] test unit (computed): ex - circle(at bottom 70% right 80ex)
+  assert_equals: expected "circle(at calc(100% - 1024px) 30%)" but got "circle(at right 1024px top 30%)"
+[FAIL] test unit (computed): ex - circle(at bottom 70ex left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 896px))" but got "circle(at left 50% bottom 896px)"
+[FAIL] test unit (computed): ex - circle(at bottom 70ex right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 896px))" but got "circle(at left 50% bottom 896px)"
+[FAIL] test unit (computed): ex - circle(at bottom 70ex right 80ex)
+  assert_equals: expected "circle(at calc(100% - 1024px) calc(100% - 896px))" but got "circle(at right 1024px bottom 896px)"
+[FAIL] test unit (computed): ex - circle(at right 80% bottom 70ex)
+  assert_equals: expected "circle(at 20% calc(100% - 896px))" but got "circle(at left 20% bottom 896px)"
+[FAIL] test unit (computed): ex - circle(at right 80ex top 50%)
+  assert_equals: expected "circle(at calc(100% - 1024px) 50%)" but got "circle(at right 1024px top 50%)"
+[FAIL] test unit (computed): ex - circle(at right 80ex bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 1024px) 30%)" but got "circle(at right 1024px top 30%)"
+[FAIL] test unit (computed): ex - circle(at right 80ex bottom 70ex)
+  assert_equals: expected "circle(at calc(100% - 1024px) calc(100% - 896px))" but got "circle(at right 1024px bottom 896px)"
+[FAIL] test unit (computed): ch - circle(at left 50% bottom 70ch)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): ch - circle(at top 50% right 80ch)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
+[FAIL] test unit (computed): ch - circle(at bottom 70% right 80ch)
+  assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
+[FAIL] test unit (computed): ch - circle(at bottom 70ch left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): ch - circle(at bottom 70ch right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): ch - circle(at bottom 70ch right 80ch)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
+[FAIL] test unit (computed): ch - circle(at right 80% bottom 70ch)
+  assert_equals: expected "circle(at 20% calc(100% - 1120px))" but got "circle(at left 20% bottom 1120px)"
+[FAIL] test unit (computed): ch - circle(at right 80ch top 50%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
+[FAIL] test unit (computed): ch - circle(at right 80ch bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
+[FAIL] test unit (computed): ch - circle(at right 80ch bottom 70ch)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
+[FAIL] test unit (computed): rem - circle(at left 50% bottom 70rem)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): rem - circle(at top 50% right 80rem)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
+[FAIL] test unit (computed): rem - circle(at bottom 70% right 80rem)
+  assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
+[FAIL] test unit (computed): rem - circle(at bottom 70rem left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): rem - circle(at bottom 70rem right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 1120px))" but got "circle(at left 50% bottom 1120px)"
+[FAIL] test unit (computed): rem - circle(at bottom 70rem right 80rem)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
+[FAIL] test unit (computed): rem - circle(at right 80% bottom 70rem)
+  assert_equals: expected "circle(at 20% calc(100% - 1120px))" but got "circle(at left 20% bottom 1120px)"
+[FAIL] test unit (computed): rem - circle(at right 80rem top 50%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 50%)" but got "circle(at right 1280px top 50%)"
+[FAIL] test unit (computed): rem - circle(at right 80rem bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 1280px) 30%)" but got "circle(at right 1280px top 30%)"
+[FAIL] test unit (computed): rem - circle(at right 80rem bottom 70rem)
+  assert_equals: expected "circle(at calc(100% - 1280px) calc(100% - 1120px))" but got "circle(at right 1280px bottom 1120px)"
+[FAIL] test unit (computed): vw - circle(at left 50% bottom 70vw)
+  assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
+[FAIL] test unit (computed): vw - circle(at top 50% right 80vw)
+  assert_equals: expected "circle(at calc(100% - 640px) 50%)" but got "circle(at right 640px top 50%)"
+[FAIL] test unit (computed): vw - circle(at bottom 70% right 80vw)
+  assert_equals: expected "circle(at calc(100% - 640px) 30%)" but got "circle(at right 640px top 30%)"
+[FAIL] test unit (computed): vw - circle(at bottom 70vw left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
+[FAIL] test unit (computed): vw - circle(at bottom 70vw right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
+[FAIL] test unit (computed): vw - circle(at bottom 70vw right 80vw)
+  assert_equals: expected "circle(at calc(100% - 640px) calc(100% - 560px))" but got "circle(at right 640px bottom 560px)"
+[FAIL] test unit (computed): vw - circle(at right 80% bottom 70vw)
+  assert_equals: expected "circle(at 20% calc(100% - 560px))" but got "circle(at left 20% bottom 560px)"
+[FAIL] test unit (computed): vw - circle(at right 80vw top 50%)
+  assert_equals: expected "circle(at calc(100% - 640px) 50%)" but got "circle(at right 640px top 50%)"
+[FAIL] test unit (computed): vw - circle(at right 80vw bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 640px) 30%)" but got "circle(at right 640px top 30%)"
+[FAIL] test unit (computed): vw - circle(at right 80vw bottom 70vw)
+  assert_equals: expected "circle(at calc(100% - 640px) calc(100% - 560px))" but got "circle(at right 640px bottom 560px)"
+[FAIL] test unit (computed): vh - circle(at left 50% bottom 70vh)
+  assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
+[FAIL] test unit (computed): vh - circle(at top 50% right 80vh)
+  assert_equals: expected "circle(at calc(100% - 480px) 50%)" but got "circle(at right 480px top 50%)"
+[FAIL] test unit (computed): vh - circle(at bottom 70% right 80vh)
+  assert_equals: expected "circle(at calc(100% - 480px) 30%)" but got "circle(at right 480px top 30%)"
+[FAIL] test unit (computed): vh - circle(at bottom 70vh left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
+[FAIL] test unit (computed): vh - circle(at bottom 70vh right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
+[FAIL] test unit (computed): vh - circle(at bottom 70vh right 80vh)
+  assert_equals: expected "circle(at calc(100% - 480px) calc(100% - 420px))" but got "circle(at right 480px bottom 420px)"
+[FAIL] test unit (computed): vh - circle(at right 80% bottom 70vh)
+  assert_equals: expected "circle(at 20% calc(100% - 420px))" but got "circle(at left 20% bottom 420px)"
+[FAIL] test unit (computed): vh - circle(at right 80vh top 50%)
+  assert_equals: expected "circle(at calc(100% - 480px) 50%)" but got "circle(at right 480px top 50%)"
+[FAIL] test unit (computed): vh - circle(at right 80vh bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 480px) 30%)" but got "circle(at right 480px top 30%)"
+[FAIL] test unit (computed): vh - circle(at right 80vh bottom 70vh)
+  assert_equals: expected "circle(at calc(100% - 480px) calc(100% - 420px))" but got "circle(at right 480px bottom 420px)"
+[FAIL] test unit (computed): vmin - circle(at left 50% bottom 70vmin)
+  assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
+[FAIL] test unit (computed): vmin - circle(at top 50% right 80vmin)
+  assert_equals: expected "circle(at calc(100% - 480px) 50%)" but got "circle(at right 480px top 50%)"
+[FAIL] test unit (computed): vmin - circle(at bottom 70% right 80vmin)
+  assert_equals: expected "circle(at calc(100% - 480px) 30%)" but got "circle(at right 480px top 30%)"
+[FAIL] test unit (computed): vmin - circle(at bottom 70vmin left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
+[FAIL] test unit (computed): vmin - circle(at bottom 70vmin right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 420px))" but got "circle(at left 50% bottom 420px)"
+[FAIL] test unit (computed): vmin - circle(at bottom 70vmin right 80vmin)
+  assert_equals: expected "circle(at calc(100% - 480px) calc(100% - 420px))" but got "circle(at right 480px bottom 420px)"
+[FAIL] test unit (computed): vmin - circle(at right 80% bottom 70vmin)
+  assert_equals: expected "circle(at 20% calc(100% - 420px))" but got "circle(at left 20% bottom 420px)"
+[FAIL] test unit (computed): vmin - circle(at right 80vmin top 50%)
+  assert_equals: expected "circle(at calc(100% - 480px) 50%)" but got "circle(at right 480px top 50%)"
+[FAIL] test unit (computed): vmin - circle(at right 80vmin bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 480px) 30%)" but got "circle(at right 480px top 30%)"
+[FAIL] test unit (computed): vmin - circle(at right 80vmin bottom 70vmin)
+  assert_equals: expected "circle(at calc(100% - 480px) calc(100% - 420px))" but got "circle(at right 480px bottom 420px)"
+[FAIL] test unit (computed): vmax - circle(at left 50% bottom 70vmax)
+  assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
+[FAIL] test unit (computed): vmax - circle(at top 50% right 80vmax)
+  assert_equals: expected "circle(at calc(100% - 640px) 50%)" but got "circle(at right 640px top 50%)"
+[FAIL] test unit (computed): vmax - circle(at bottom 70% right 80vmax)
+  assert_equals: expected "circle(at calc(100% - 640px) 30%)" but got "circle(at right 640px top 30%)"
+[FAIL] test unit (computed): vmax - circle(at bottom 70vmax left 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
+[FAIL] test unit (computed): vmax - circle(at bottom 70vmax right 50%)
+  assert_equals: expected "circle(at 50% calc(100% - 560px))" but got "circle(at left 50% bottom 560px)"
+[FAIL] test unit (computed): vmax - circle(at bottom 70vmax right 80vmax)
+  assert_equals: expected "circle(at calc(100% - 640px) calc(100% - 560px))" but got "circle(at right 640px bottom 560px)"
+[FAIL] test unit (computed): vmax - circle(at right 80% bottom 70vmax)
+  assert_equals: expected "circle(at 20% calc(100% - 560px))" but got "circle(at left 20% bottom 560px)"
+[FAIL] test unit (computed): vmax - circle(at right 80vmax top 50%)
+  assert_equals: expected "circle(at calc(100% - 640px) 50%)" but got "circle(at right 640px top 50%)"
+[FAIL] test unit (computed): vmax - circle(at right 80vmax bottom 70%)
+  assert_equals: expected "circle(at calc(100% - 640px) 30%)" but got "circle(at right 640px top 30%)"
+[FAIL] test unit (computed): vmax - circle(at right 80vmax bottom 70vmax)
+  assert_equals: expected "circle(at calc(100% - 640px) calc(100% - 560px))" but got "circle(at right 640px bottom 560px)"
+Harness: the test ran to completion.
+

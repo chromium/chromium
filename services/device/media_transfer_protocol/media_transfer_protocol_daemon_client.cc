@@ -504,7 +504,7 @@ class MediaTransferProtocolDaemonClientImpl
         << "Connect to " << interface << " " << signal << " failed.";
   }
 
-  const raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
+  const raw_ptr<dbus::ObjectProxy> proxy_;
 
   bool listen_for_changes_called_;
 

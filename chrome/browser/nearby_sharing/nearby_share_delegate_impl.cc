@@ -9,11 +9,19 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "ui/gfx/vector_icon_types.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/nearby_sharing/internal/icons/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -26,6 +34,8 @@ std::string GetTimestampString() {
   return base::NumberToString(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
+
+const gfx::VectorIcon kEmptyIcon;
 
 }  // namespace
 
@@ -172,4 +182,22 @@ void NearbyShareDelegateImpl::SettingsOpener::ShowSettingsPage(
       ProfileManager::GetPrimaryUserProfile(),
       std::string(chromeos::settings::mojom::kNearbyShareSubpagePath) +
           query_string);
+}
+
+const gfx::VectorIcon& NearbyShareDelegateImpl::GetIcon(bool on_icon) const {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (features::IsNameEnabled()) {
+    return on_icon ? kNearbyShareInternalIcon : kNearbyShareInternalOffIcon;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return kEmptyIcon;
+}
+
+std::u16string NearbyShareDelegateImpl::GetPlaceholderFeatureName() const {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (features::IsNameEnabled()) {
+    return NearbyShareResourceGetter::GetInstance()->GetFeatureName();
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return u"";
 }

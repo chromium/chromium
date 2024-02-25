@@ -97,8 +97,8 @@ ValueStore::WriteResult TestingValueStore::Set(
     if (!old_value || *old_value != value) {
       changes.emplace_back(key,
                            old_value
-                               ? absl::optional<base::Value>(old_value->Clone())
-                               : absl::nullopt,
+                               ? std::optional<base::Value>(old_value->Clone())
+                               : std::nullopt,
                            value.Clone());
       storage_.Set(key, value.Clone());
     }
@@ -118,9 +118,9 @@ ValueStore::WriteResult TestingValueStore::Remove(
 
   ValueStoreChangeList changes;
   for (auto const& key : keys) {
-    absl::optional<base::Value> old_value = storage_.Extract(key);
+    std::optional<base::Value> old_value = storage_.Extract(key);
     if (old_value.has_value()) {
-      changes.emplace_back(key, std::move(*old_value), absl::nullopt);
+      changes.emplace_back(key, std::move(*old_value), std::nullopt);
     }
   }
   return WriteResult(std::move(changes), CreateStatusCopy(status_));

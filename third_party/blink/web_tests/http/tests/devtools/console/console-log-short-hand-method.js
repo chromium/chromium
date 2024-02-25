@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult(
       `Tests that Web Inspector won't crash if some console have been logged by the time it's opening.\n`);
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

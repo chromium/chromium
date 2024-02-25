@@ -8,6 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/user_education/user_education_types.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_prefs.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -29,7 +31,11 @@ PrefService* GetLastActiveUserPrefService() {
 void RecordInteraction(Interaction interaction) {
   CHECK(features::IsWelcomeTourEnabled());
 
+  // Some interactions, like `kQuickSettings`, can occur before user activation.
   auto* prefs = GetLastActiveUserPrefService();
+  if (!prefs) {
+    return;
+  }
 
   auto completed_time = welcome_tour_prefs::GetTimeOfFirstTourCompletion(prefs);
   auto prevented_time = welcome_tour_prefs::GetTimeOfFirstTourPrevention(prefs);
@@ -59,13 +65,20 @@ void RecordInteraction(Interaction interaction) {
     const auto relevant_time = prevented_time.has_value()
                                    ? prevented_time.value()
                                    : completed_time.value();
-    const auto delta = base::Time::Now() - relevant_time;
+    const auto time_delta = base::Time::Now() - relevant_time;
 
+    // Record high fidelity `time_delta`.
     base::UmaHistogramCustomTimes(
         base::StrCat({"Ash.WelcomeTour.", completion_string,
                       ".Interaction.FirstTime.", ToString(interaction)}),
-        delta, /*min=*/base::Seconds(1), /*max=*/base::Days(3),
+        time_delta, /*min=*/base::Seconds(1), /*max=*/base::Days(3),
         /*buckets=*/100);
+
+    // Record high readability time bucket.
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Ash.WelcomeTour.", completion_string,
+                      ".Interaction.FirstTimeBucket.", ToString(interaction)}),
+        user_education_util::GetTimeBucket(time_delta));
   }
 }
 
@@ -124,6 +137,8 @@ void RecordTourPrevented(PreventedReason reason) {
 // changed or reused. Any values added to `Interaction` must be added here.
 std::string ToString(Interaction interaction) {
   switch (interaction) {
+    case Interaction::kExploreApp:
+      return "ExploreApp";
     case Interaction::kFilesApp:
       return "FilesApp";
     case Interaction::kLauncher:

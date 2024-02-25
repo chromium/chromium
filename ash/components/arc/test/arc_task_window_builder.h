@@ -27,6 +27,10 @@ class ArcTaskWindowBuilder {
   // will be used.
   ArcTaskWindowBuilder& SetPackageName(std::string_view package_name);
 
+  // Sets the window title. If this is not supplied, a const default
+  // will be used.
+  ArcTaskWindowBuilder& SetTitle(std::string_view title);
+
   // See documentation on TestWidgetBuilder::Build{Owns,OwnedBy}NativeWidget.
   std::unique_ptr<views::Widget> BuildOwnsNativeWidget();
   views::Widget* BuildOwnedByNativeWidget();
@@ -39,6 +43,7 @@ class ArcTaskWindowBuilder {
   raw_ptr<exo::Surface> shell_root_surface_{nullptr};
   views::Widget::InitParams init_params_;
   std::string package_name_;
+  std::string title_ = "ArcTaskWindowDefaultTitle";
 };
 
 }  // namespace arc

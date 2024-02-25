@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {FocusRingManager} from './focus_ring_manager.js';
 import {MenuManager} from './menu_manager.js';
 import {SwitchAccessMetrics} from './metrics.js';
 import {Navigator} from './navigator.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
-import {ActionResponse, MenuType, Mode} from './switch_access_constants.js';
+import {ActionResponse, ErrorType, MenuType, Mode} from './switch_access_constants.js';
 
 const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
@@ -33,11 +35,13 @@ export class ActionManager {
     this.menuStack_ = [];
   }
 
-  static get instance() {
-    if (!ActionManager.instance_) {
-      ActionManager.instance_ = new ActionManager();
+  static init() {
+    if (ActionManager.instance) {
+      throw SwitchAccess.error(
+          ErrorType.DUPLICATE_INITIALIZATION,
+          'Cannot call ActionManager.init() more than once.');
     }
-    return ActionManager.instance_;
+    ActionManager.instance = new ActionManager();
   }
 
   // ================= Static Methods ==================
@@ -318,3 +322,8 @@ export class ActionManager {
     }
   }
 }
+
+/** @type {ActionManager} */
+ActionManager.instance;
+
+TestImportManager.exportForTesting(ActionManager);

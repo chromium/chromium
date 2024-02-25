@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -37,26 +42,35 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
+    private final Callback<Tab> mDelegateModelCurrentTabSupplierObserver;
+    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final Callback<Integer> mDelegateModelTabCountSupplierObserver;
+    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
+            new ObservableSupplierImpl<>();
+
     private TabModel mDelegateModel;
     private int mCountOfAddingOrClosingTabs;
     private boolean mActive;
 
-    /**
-     * Constructor for IncognitoTabModel.
-     */
+    /** Constructor for IncognitoTabModel. */
     IncognitoTabModelImpl(IncognitoTabModelDelegate tabModelCreator) {
         mDelegate = tabModelCreator;
-        mDelegateModel = EmptyTabModel.getInstance();
+        mDelegateModel = EmptyTabModel.getInstance(true);
+        mDelegateModelCurrentTabSupplierObserver = mCurrentTabSupplier::set;
+        mDelegateModelTabCountSupplierObserver = mTabCountSupplier::set;
+        mTabCountSupplier.set(0);
     }
 
-    /**
-     * Ensures that the real TabModel has been created.
-     */
+    /** Ensures that the real TabModel has been created. */
     protected void ensureTabModelImpl() {
         ThreadUtils.assertOnUiThread();
         if (!(mDelegateModel instanceof EmptyTabModel)) return;
 
         mDelegateModel = mDelegate.createTabModel();
+        mDelegateModel
+                .getCurrentTabSupplier()
+                .addObserver(mDelegateModelCurrentTabSupplierObserver);
+        mDelegateModel.getTabCountSupplier().addObserver(mDelegateModelTabCountSupplierObserver);
         for (TabModelObserver observer : mObservers) {
             mDelegateModel.addObserver(observer);
         }
@@ -68,7 +82,8 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
      */
     protected void destroyIncognitoIfNecessary() {
         ThreadUtils.assertOnUiThread();
-        if (!isEmpty() || mDelegateModel instanceof EmptyTabModel
+        if (!isEmpty()
+                || mDelegateModel instanceof EmptyTabModel
                 || mCountOfAddingOrClosingTabs != 0) {
             return;
         }
@@ -77,9 +92,15 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
             observer.didBecomeEmpty();
         }
 
+        mDelegateModel
+                .getCurrentTabSupplier()
+                .removeObserver(mDelegateModelCurrentTabSupplierObserver);
+        mDelegateModel.getTabCountSupplier().removeObserver(mDelegateModelTabCountSupplierObserver);
         mDelegateModel.destroy();
+        mCurrentTabSupplier.set(null);
+        mTabCountSupplier.set(0);
 
-        mDelegateModel = EmptyTabModel.getInstance();
+        mDelegateModel = EmptyTabModel.getInstance(true);
     }
 
     private boolean isEmpty() {
@@ -186,6 +207,11 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
+    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+        return mCurrentTabSupplier;
+    }
+
+    @Override
     public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
         mDelegateModel.setIndex(i, type, skipLoadingTab);
     }
@@ -243,6 +269,11 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public void notifyAllTabsClosureUndone() {
         mDelegateModel.notifyAllTabsClosureUndone();
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+        return mTabCountSupplier;
     }
 
     @Override

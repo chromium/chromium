@@ -70,7 +70,7 @@ class ChromeAppWindowTrackerAsh : public mojom::AppWindowTracker,
   // an existing one.
   struct WindowData {
     std::string app_id;
-    raw_ptr<aura::Window, ExperimentalAsh> window = nullptr;
+    raw_ptr<aura::Window> window = nullptr;
   };
 
   // A map from |window_id| to WindowData. Note that Lacros windows that are not

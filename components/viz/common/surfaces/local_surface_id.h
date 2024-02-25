@@ -7,15 +7,16 @@
 
 #include <inttypes.h>
 
+#include <compare>
 #include <iosfwd>
 #include <limits>
 #include <string>
-#include <tuple>
 
-#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/viz_common_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 namespace viz {
 namespace mojom {
@@ -116,15 +117,8 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
   // with submission of a CompositorFrame to a surface with this LocalSurfaceId.
   uint64_t submission_trace_id() const { return (persistent_hash() << 1) | 1; }
 
-  bool operator==(const LocalSurfaceId& other) const {
-    return parent_sequence_number_ == other.parent_sequence_number_ &&
-           child_sequence_number_ == other.child_sequence_number_ &&
-           embed_token_ == other.embed_token_;
-  }
-
-  bool operator!=(const LocalSurfaceId& other) const {
-    return !(*this == other);
-  }
+  friend std::strong_ordering operator<=>(const LocalSurfaceId&,
+                                          const LocalSurfaceId&) = default;
 
   // This implementation is fast and appropriate for a hash table lookup.
   // However the hash differs per process, and is inappropriate for tracing.
@@ -141,6 +135,12 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
   // case where both `this` and `other` have advanced separate sequences, then
   // this will return false.
   bool IsNewerThan(const LocalSurfaceId& other) const;
+
+  // Returns whether this LocalSurfaceId was generated after |other|. In the
+  // case where both `this` and `other` have advanced separate sequences, then
+  // this will return false. In the case where `embed_token_` has changed, this
+  // will return true.
+  bool IsNewerThanOrEmbeddingChanged(const LocalSurfaceId& other) const;
 
   // Returns whether this LocalSurfaceId was generated after |other| or equal to
   // it.
@@ -159,7 +159,6 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
   friend class ParentLocalSurfaceIdAllocator;
   friend class ChildLocalSurfaceIdAllocator;
 
-  friend bool operator<(const LocalSurfaceId& lhs, const LocalSurfaceId& rhs);
 
   uint32_t parent_sequence_number_;
   uint32_t child_sequence_number_;
@@ -169,25 +168,6 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
 VIZ_COMMON_EXPORT std::ostream& operator<<(
     std::ostream& out,
     const LocalSurfaceId& local_surface_id);
-
-inline bool operator<(const LocalSurfaceId& lhs, const LocalSurfaceId& rhs) {
-  return std::tie(lhs.parent_sequence_number_, lhs.child_sequence_number_,
-                  lhs.embed_token_) < std::tie(rhs.parent_sequence_number_,
-                                               rhs.child_sequence_number_,
-                                               rhs.embed_token_);
-}
-
-inline bool operator>(const LocalSurfaceId& lhs, const LocalSurfaceId& rhs) {
-  return operator<(rhs, lhs);
-}
-
-inline bool operator<=(const LocalSurfaceId& lhs, const LocalSurfaceId& rhs) {
-  return !operator>(lhs, rhs);
-}
-
-inline bool operator>=(const LocalSurfaceId& lhs, const LocalSurfaceId& rhs) {
-  return !operator<(lhs, rhs);
-}
 
 }  // namespace viz
 

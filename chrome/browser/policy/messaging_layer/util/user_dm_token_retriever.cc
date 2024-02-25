@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -50,7 +51,8 @@ void OnDMTokenRetrieved(DMTokenRetriever::CompletionCallback completion_cb,
   // Return an error if DM token is invalid
   if (!dm_token.is_valid()) {
     std::move(completion_cb)
-        .Run(Status(error::UNKNOWN, "Invalid DM token received"));
+        .Run(base::unexpected(
+            Status(error::UNKNOWN, "Invalid DM token received")));
     return;
   }
 

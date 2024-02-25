@@ -6,6 +6,8 @@ import 'chrome://password-manager/password_manager.js';
 
 import {Page, PasswordManagerImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -16,9 +18,11 @@ import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
 suite('AddPasswordDialogTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let syncProxy: TestSyncBrowserProxy;
+  let metricsTracker: MetricsTracker;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metricsTracker = fakeMetricsPrivate();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     syncProxy = new TestSyncBrowserProxy();
@@ -191,6 +195,12 @@ suite('AddPasswordDialogTest', function() {
 
     assertFalse(dialog.$.addButton.disabled);
     dialog.$.addButton.click();
+
+    assertEquals(
+        1,
+        metricsTracker.count(
+            'PasswordManager.PasswordNoteActionInSettings2',
+            /*NOTE_ADDED_IN_ADD_DIALOG*/ 0));
 
     const params = await passwordManager.whenCalled('addPassword');
 

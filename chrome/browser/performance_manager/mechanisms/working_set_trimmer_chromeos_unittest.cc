@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer_chromeos.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -27,7 +28,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 namespace mechanism {
@@ -120,7 +120,7 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
       return static_cast<arc::FakeArcSession*>(
           runner_->GetArcSessionForTesting());
     }
-    raw_ptr<arc::ArcSessionRunner, ExperimentalAsh> runner_;
+    raw_ptr<arc::ArcSessionRunner> runner_;
   };
 
   content::BrowserTaskEnvironment& task_environment() {
@@ -142,7 +142,7 @@ namespace {
 // Tests that TrimArcVmWorkingSet runs the passed callback,
 // and that the page limit is passed as requested.
 TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSet) {
-  absl::optional<bool> result;
+  std::optional<bool> result;
   std::string reason;
 
   {
@@ -170,7 +170,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoBrowserContext) {
   // Create a trimmer again with a null BrowserContext to make it unavailable.
   CreateTrimmer(nullptr);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -185,7 +185,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoArcMemoryBridge) {
   TestingProfile another_profile;
   CreateTrimmer(&another_profile);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -200,7 +200,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoArcSessionManager) {
   // Make ArcSessionManager unavailable.
   TearDownArcSessionManager();
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -221,7 +221,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   FakeArcSessionHolder session_holder(arc_session_runner());
   session_holder.session()->set_trim_result(false, "test_reason");
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -246,7 +246,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   feature_list.InitAndEnableFeatureWithParameters(arc::kGuestZram, params);
   memory_instance()->set_reclaim_all_result(0, 0);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -273,7 +273,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   memory_instance()->set_reclaim_all_result(0, 0);
   memory_instance()->set_reclaim_anon_result(2, 0);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -297,7 +297,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   // If memory_instance is used then the trim operation should fail.
   memory_instance()->set_reclaim_all_result(0, 0);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -316,7 +316,7 @@ TEST_F(
   // If memory_instance is used then the trim operation should fail.
   memory_instance()->set_reclaim_all_result(0, 0);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSet(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -327,7 +327,7 @@ TEST_F(
 
 // Tests that TrimArcVmWorkingSetDropPageCachesOnly runs the passed callback.
 TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetDropPageCachesOnly) {
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -342,7 +342,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   // Inject the failure.
   memory_instance()->set_drop_caches_result(false);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -357,7 +357,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   // Create a trimmer again with a null BrowserContext to make it unavailable.
   CreateTrimmer(nullptr);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -376,7 +376,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   TestingProfile another_profile;
   CreateTrimmer(&another_profile);
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();
@@ -395,7 +395,7 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   // Make ArcSessionManager unavailable.
   TearDownArcSessionManager();
 
-  absl::optional<bool> result;
+  std::optional<bool> result;
   TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
       [&result](bool r, const std::string&) { result = r; }));
   base::RunLoop().RunUntilIdle();

@@ -22,8 +22,9 @@ namespace media_router {
 // A button representing a sink in the Cast dialog. It is highlighted when
 // hovered.
 class CastDialogSinkButton : public HoverButton {
+  METADATA_HEADER(CastDialogSinkButton, HoverButton)
+
  public:
-  METADATA_HEADER(CastDialogSinkButton);
   CastDialogSinkButton(PressedCallback callback, const UIMediaSink& sink);
   CastDialogSinkButton(const CastDialogSinkButton&) = delete;
   CastDialogSinkButton& operator=(const CastDialogSinkButton&) = delete;
@@ -61,7 +62,7 @@ class CastDialogSinkButton : public HoverButton {
   void UpdateTitleTextStyle();
 
   const UIMediaSink sink_;
-  absl::optional<std::u16string> saved_status_text_;
+  std::optional<std::u16string> saved_status_text_;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&CastDialogSinkButton::OnEnabledChanged,

@@ -28,33 +28,25 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Tests {@link CustomTabActivity} filters touch events from overlay activity.
- */
-// clang-format off
+/** Tests {@link CustomTabActivity} filters touch events from overlay activity. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@EnableFeatures(ChromeFeatureList.CCT_PREVENT_TOUCHES)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-// clang-format on
 public class CustomTabsFilterTouchUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private MotionEvent mMotionEvent;
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Mock private MotionEvent mMotionEvent;
 
     private CustomTabActivity mActivity;
 
@@ -76,13 +68,12 @@ public class CustomTabsFilterTouchUnitTest {
     @Test
     @SmallTest
     public void testInjectMissingEventInMultiWindowMode() {
-        mActivity.initPreventTouchFeatureFlag();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
         assertTrue("Events should be consumed", mActivity.dispatchTouchEvent(mMotionEvent));
 
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
-        mActivity.onWindowFocusChanged(/*hasFocus=*/true);
+        mActivity.onWindowFocusChanged(/* hasFocus= */ true);
         verify(mMotionEvent, atLeast(1)).setAction(eq(MotionEvent.ACTION_DOWN));
     }
 }

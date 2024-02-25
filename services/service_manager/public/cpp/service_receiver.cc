@@ -103,7 +103,7 @@ void ServiceReceiver::CreatePackagedServiceInstance(
       identity.name(), std::move(receiver),
       base::BindOnce(
           [](mojo::PendingRemote<mojom::ProcessMetadata> pending_metadata,
-             absl::optional<base::ProcessId> pid) {
+             std::optional<base::ProcessId> pid) {
             if (pid) {
               mojo::Remote<mojom::ProcessMetadata> metadata(
                   std::move(pending_metadata));

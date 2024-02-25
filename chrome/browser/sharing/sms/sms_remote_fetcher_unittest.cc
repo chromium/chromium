@@ -9,15 +9,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
+#include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_metrics.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/sync_device_info/device_info.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,6 +49,16 @@ url::Origin GetOriginForURL(const std::string url) {
   return url::Origin::Create(GURL(url));
 }
 
+SharingTargetDeviceInfo CreateFakeSharingTargetDeviceInfo(
+    const std::string& guid,
+    const std::string& client_name) {
+  return SharingTargetDeviceInfo(guid, client_name,
+                                 SharingDevicePlatform::kUnknown,
+                                 /*pulse_interval=*/base::TimeDelta(),
+                                 syncer::DeviceInfo::FormFactor::kUnknown,
+                                 /*last_updated_timestamp=*/base::Time());
+}
+
 TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   content::BrowserTaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
@@ -58,7 +68,7 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
 
@@ -67,9 +77,9 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
@@ -91,16 +101,16 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid", "name"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
   base::RunLoop loop;
 
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const syncer::DeviceInfo& device_info,
+      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
                            chrome_browser_sharing::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
@@ -114,9 +124,9 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_TRUE(result);
             ASSERT_EQ("ABC", result);
             loop.Quit();
@@ -136,16 +146,16 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid", "name"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
   base::RunLoop loop;
 
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const syncer::DeviceInfo& device_info,
+      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
                            chrome_browser_sharing::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
@@ -157,9 +167,9 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             loop.Quit();
           }));
@@ -175,9 +185,9 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid-abc"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid-abc", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
@@ -185,7 +195,7 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
 
   base::MockOnceClosure mock_callback;
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const syncer::DeviceInfo& device_info,
+      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
                            chrome_browser_sharing::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
@@ -197,9 +207,9 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
   base::OnceClosure cancel_callback = FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> one_time_code,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> one_time_code,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(one_time_code);
             loop.Quit();
           }));
@@ -227,9 +237,9 @@ TEST(SmsRemoteFetcherTest, FeatureDisabled) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
             loop.Quit();
@@ -253,9 +263,9 @@ TEST(SmsRemoteFetcherTest, NoSharingService) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
             loop.Quit();
@@ -276,16 +286,16 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid", "name"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
   base::RunLoop loop;
 
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const syncer::DeviceInfo& device_info,
+      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
                            chrome_browser_sharing::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
@@ -297,9 +307,9 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
@@ -321,16 +331,16 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
 
   MockSharingService* service = CreateSharingService(&profile);
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  std::vector<SharingTargetDeviceInfo> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid", "name"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
   base::RunLoop loop;
 
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
-      .WillOnce(Invoke([&](const syncer::DeviceInfo& device_info,
+      .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
                            chrome_browser_sharing::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
@@ -347,9 +357,9 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kPromptCancelled);

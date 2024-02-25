@@ -29,7 +29,7 @@ namespace private_membership {
 //
 // This method is not threadsafe because ec_cipher is not thread-safe.
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<DoublyEncryptedId> ReEncryptId(
-    absl::string_view encrypted_id, private_join_and_compute::ECCommutativeCipher* ec_cipher);
+    absl::string_view encrypted_id, ::private_join_and_compute::ECCommutativeCipher* ec_cipher);
 
 }  // namespace private_membership
 

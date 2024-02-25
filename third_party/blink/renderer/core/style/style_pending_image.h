@@ -37,7 +37,6 @@
 
 namespace blink {
 
-class CSSValue;
 class ImageResourceObserver;
 
 // StylePendingImage is a placeholder StyleImage that is entered into the
@@ -54,12 +53,17 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
 
   WrappedImagePtr Data() const override { return value_.Get(); }
 
-  CSSValue* CssValue() const override { return value_; }
+  CSSValue* CssValue() const override { return value_.Get(); }
 
   CSSValue* ComputedCSSValue(const ComputedStyle& style,
                              bool allow_visited_style) const override;
 
   bool IsAccessAllowed(String&) const override { return true; }
+  IntrinsicSizingInfo GetNaturalSizingInfo(
+      float multiplier,
+      RespectImageOrientationEnum) const override {
+    return IntrinsicSizingInfo();
+  }
   gfx::SizeF ImageSize(float,
                        const gfx::SizeF&,
                        RespectImageOrientationEnum) const override {
@@ -104,4 +108,5 @@ inline bool StylePendingImage::IsEqual(const StyleImage& other) const {
 }
 
 }  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_PENDING_IMAGE_H_

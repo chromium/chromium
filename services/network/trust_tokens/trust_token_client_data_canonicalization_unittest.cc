@@ -5,7 +5,6 @@
 #include "services/network/trust_tokens/trust_token_client_data_canonicalization.h"
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/cbor/reader.h"
@@ -26,14 +25,14 @@ TEST(TrustTokenClientDataCanonicalization, SerializeThenDeserialize) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  absl::optional<std::vector<uint8_t>> maybe_serialization =
+  std::optional<std::vector<uint8_t>> maybe_serialization =
       CanonicalizeTrustTokenClientDataForRedemption(
           base::Time::Now(),
           url::Origin::Create(GURL("https://topframe.example")));
 
   ASSERT_TRUE(maybe_serialization);
 
-  absl::optional<cbor::Value> maybe_deserialized_cbor =
+  std::optional<cbor::Value> maybe_deserialized_cbor =
       cbor::Reader::Read(base::make_span(*maybe_serialization));
 
   ASSERT_TRUE(maybe_deserialized_cbor);

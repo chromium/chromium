@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/validation.h"
@@ -44,9 +46,13 @@ CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 void CreditCardFormEventLogger::OnDidFetchSuggestion(
     const std::vector<Suggestion>& suggestions,
     bool with_offer,
+    bool with_cvc,
+    bool is_virtual_card_standalone_cvc_field,
     const autofill_metrics::CardMetadataLoggingContext&
         metadata_logging_context) {
   has_eligible_offer_ = with_offer;
+  suggestion_contains_card_with_cvc_ = with_cvc;
+  is_virtual_card_standalone_cvc_field_ = is_virtual_card_standalone_cvc_field;
   metadata_logging_context_ = metadata_logging_context;
   suggestions_.clear();
   for (const auto& suggestion : suggestions)
@@ -67,7 +73,29 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
                                             signin_state_for_metrics,
                                             off_the_record);
 
-  suggestion_shown_timestamp_ = AutofillTickClock::NowTicks();
+  suggestion_shown_timestamp_ = base::TimeTicks::Now();
+
+  // Log if standalone CVC suggestions were shown for virtual cards.
+  if (is_virtual_card_standalone_cvc_field_) {
+    LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
+        VirtualCardStandaloneCvcSuggestionFormEvent::
+            kStandaloneCvcSuggestionShown);
+    if (!has_logged_suggestion_for_virtual_card_standalone_cvc_shown_) {
+      LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
+          VirtualCardStandaloneCvcSuggestionFormEvent::
+              kStandaloneCvcSuggestionShownOnce);
+    }
+    has_logged_suggestion_for_virtual_card_standalone_cvc_shown_ = true;
+  }
+
+  // Log if any of the card suggestions had cvc saved.
+  if (suggestion_contains_card_with_cvc_) {
+    Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN, form);
+    if (!has_logged_suggestion_for_card_with_cvc_shown_) {
+      Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN_ONCE, form);
+    }
+    has_logged_suggestion_for_card_with_cvc_shown_ = true;
+  }
 
   // Log if any of the suggestions had metadata.
   Log(metadata_logging_context_.card_metadata_available
@@ -86,6 +114,30 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
       metadata_logging_context_,
       HasBeenLogged(has_logged_suggestion_with_metadata_shown_));
   has_logged_suggestion_with_metadata_shown_ = true;
+}
+
+void CreditCardFormEventLogger::LogDeprecatedCreditCardSelectedMetric(
+    const CreditCard& credit_card,
+    const FormStructure& form,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
+  signin_state_for_metrics_ = signin_state_for_metrics;
+
+  switch (credit_card.record_type()) {
+    case CreditCard::RecordType::kLocalCard:
+    case CreditCard::RecordType::kFullServerCard:
+    case CreditCard::RecordType::kVirtualCard:
+      // No need to log selections for these types; crbug/1513307 only focused
+      // on masked server cards.
+      break;
+    case CreditCard::RecordType::kMaskedServerCard:
+      Log(DEPRECATED_FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, form);
+      if (!has_logged_legacy_masked_server_card_suggestion_selected_) {
+        has_logged_legacy_masked_server_card_suggestion_selected_ = true;
+        Log(DEPRECATED_FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE,
+            form);
+      }
+      break;
+  }
 }
 
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
@@ -131,8 +183,30 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   }
 
   autofill_metrics::LogAcceptanceLatency(
-      AutofillTickClock::NowTicks() - suggestion_shown_timestamp_,
+      base::TimeTicks::Now() - suggestion_shown_timestamp_,
       metadata_logging_context_, credit_card);
+
+  // Log if a CVC suggestion was selected for a virtual card.
+  if (is_virtual_card_standalone_cvc_field_) {
+    LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
+        VirtualCardStandaloneCvcSuggestionFormEvent::
+            kStandaloneCvcSuggestionSelected);
+    if (!has_logged_suggestion_for_virtual_card_standalone_cvc_selected_) {
+      LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
+          VirtualCardStandaloneCvcSuggestionFormEvent::
+              kStandaloneCvcSuggestionSelectedOnce);
+    }
+    has_logged_suggestion_for_virtual_card_standalone_cvc_selected_ = true;
+  }
+
+  // Log if the selected card suggestion had cvc saved.
+  if (!credit_card.cvc().empty()) {
+    Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED, form);
+    if (!has_logged_suggestion_for_card_with_cvc_selected_) {
+      Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED_ONCE, form);
+    }
+    has_logged_suggestion_for_card_with_cvc_selected_ = true;
+  }
 
   // Log if the selected suggestion had metadata.
   metadata_logging_context_ =
@@ -146,6 +220,38 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE,
         form);
+
+    if (suggestions_.size() > 1) {
+      CHECK(personal_data_manager_);
+      // Keeps track of which issuers and networks with metadata were not
+      // selected. Can be none if there was only one card suggestion displayed
+      // and that card was selected.
+      for (const Suggestion& suggestion : suggestions_) {
+        // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+        CreditCard* suggested_credit_card =
+            personal_data_manager_->GetCreditCardByGUID(
+                suggestion.GetBackendId<Suggestion::Guid>().value());
+        if (!suggested_credit_card) {
+          // Ignore non credit card suggestions in the popup like separators,
+          // manage payment methods, etc.
+          continue;
+        }
+        if (credit_card.issuer_id() != suggested_credit_card->issuer_id() &&
+            (suggested_credit_card->HasRichCardArtImageFromMetadata() ||
+             !suggested_credit_card->product_description().empty())) {
+          metadata_logging_context_.not_selected_issuer_ids_and_networks.insert(
+              suggested_credit_card->issuer_id());
+        }
+        // Skip American Express and Discover as they are an issuer and
+        // network. They are already covered in the `issuer_id` check above.
+        if (credit_card.network() != kAmericanExpressCard &&
+            credit_card.network() != kDiscoverCard &&
+            credit_card.network() != suggested_credit_card->network()) {
+          metadata_logging_context_.not_selected_issuer_ids_and_networks.insert(
+              suggested_credit_card->network());
+        }
+      }
+    }
   }
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kSelected,
@@ -154,7 +260,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   has_logged_suggestion_with_metadata_selected_ = true;
 }
 
-void CreditCardFormEventLogger::OnDidFillSuggestion(
+void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     const CreditCard& credit_card,
     const FormStructure& form,
     const AutofillField& field,
@@ -168,7 +274,7 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
       form_interactions_ukm_logger_->CreateCreditCardFillBuilder();
   builder.SetFormSignature(HashFormSignature(form.form_signature()));
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(record_type, form, field);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(form, field, record_type);
 
   AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
       {.event_logger = raw_ref(*this),
@@ -193,6 +299,29 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
       break;
   }
 
+  // Log if a standalone CVC field was filled with Autofill suggestion for a
+  // virtual card.
+  if (is_virtual_card_standalone_cvc_field_) {
+    LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
+        VirtualCardStandaloneCvcSuggestionFormEvent::
+            kStandaloneCvcSuggestionFilled);
+    if (!has_logged_suggestion_for_virtual_card_standalone_cvc_filled_) {
+      LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
+          VirtualCardStandaloneCvcSuggestionFormEvent::
+              kStandaloneCvcSuggestionFilledOnce);
+    }
+    has_logged_suggestion_for_virtual_card_standalone_cvc_filled_ = true;
+  }
+
+  // Log if the filled card suggestion had cvc saved.
+  if (!credit_card.cvc().empty()) {
+    Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED, form);
+    if (!has_logged_suggestion_for_card_with_cvc_filled_) {
+      Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED_ONCE, form);
+    }
+    has_logged_suggestion_for_card_with_cvc_filled_ = true;
+  }
+
   metadata_logging_context_ =
       autofill_metrics::GetMetadataLoggingContext({credit_card});
   // Log if the filled suggestion had metadata.
@@ -204,10 +333,11 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
   // was filled.
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kFilled,
-      metadata_logging_context_, HasBeenLogged(has_logged_suggestion_filled_));
+      metadata_logging_context_,
+      HasBeenLogged(has_logged_form_filling_suggestion_filled_));
 
-  if (!has_logged_suggestion_filled_) {
-    has_logged_suggestion_filled_ = true;
+  if (!has_logged_form_filling_suggestion_filled_) {
+    has_logged_form_filling_suggestion_filled_ = true;
     logged_suggestion_filled_was_server_data_ =
         record_type == CreditCard::RecordType::kMaskedServerCard ||
         record_type == CreditCard::RecordType::kFullServerCard ||
@@ -243,11 +373,15 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
         Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, form);
         break;
     }
-    // Log if filled suggestions had metadata, logged once per page load
+    // Log if filled suggestions had metadata. Logged once per page load.
     Log(metadata_logging_context_.card_metadata_available
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_FILLED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED_ONCE,
         form);
+  }
+
+  if (has_logged_undo_after_fill_) {
+    has_logged_fill_after_undo_ = true;
   }
 
   base::RecordAction(
@@ -259,6 +393,31 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
     ++form_interaction_counts_.autofill_fills;
   }
   UpdateFlowId();
+}
+
+void CreditCardFormEventLogger::OnDidUndoAutofill() {
+  has_logged_undo_after_fill_ = true;
+  base::RecordAction(base::UserMetricsAction("Autofill_UndoPaymentsAutofill"));
+}
+
+void CreditCardFormEventLogger::Log(FormEvent event,
+                                    const FormStructure& form) {
+  FormEventLoggerBase::Log(event, form);
+  std::string name = "Autofill.FormEvents.CreditCard";
+  if (server_record_type_count_ == 0 && local_record_type_count_ == 0) {
+    name += ".WithNoData";
+  } else if (server_record_type_count_ > 0 && local_record_type_count_ == 0) {
+    name += ".WithOnlyServerData";
+  } else if (server_record_type_count_ == 0 && local_record_type_count_ > 0) {
+    name += ".WithOnlyLocalData";
+  } else {
+    name += ".WithBothServerAndLocalData";
+  }
+  base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
+  base::UmaHistogramEnumeration(
+      name +
+          AutofillMetrics::GetMetricsSyncStateSuffix(signin_state_for_metrics_),
+      event, NUM_FORM_EVENTS);
 }
 
 void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptShown(
@@ -290,7 +449,7 @@ void CreditCardFormEventLogger::RecordShowSuggestions() {
 }
 
 void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
-  if (!has_logged_suggestion_filled_) {
+  if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, form);
   } else if (logged_suggestion_filled_was_masked_server_card_) {
     Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, form);
@@ -302,14 +461,29 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
     Log(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, form);
   }
 
-  if (has_logged_suggestion_filled_) {
+  // Log if a CVC suggestion for a virtual card was filled before form
+  // submission.
+  if (is_virtual_card_standalone_cvc_field_ &&
+      has_logged_suggestion_for_virtual_card_standalone_cvc_filled_) {
+    LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
+        VirtualCardStandaloneCvcSuggestionFormEvent::
+            kStandaloneCvcSuggestionWillSubmitOnce);
+  }
+
+  // Log if any card suggestion with cvc saved was filled before form
+  // submission.
+  if (has_logged_suggestion_for_card_with_cvc_filled_) {
+    Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_WILL_SUBMIT_ONCE, form);
+  }
+
+  if (has_logged_form_filling_suggestion_filled_) {
     // Log issuer-specific metrics on whether a card suggestion with metadata
     // was filled before submission.
     LogCardWithMetadataFormEventMetric(
         autofill_metrics::CardMetadataLoggingEvent::kWillSubmit,
         metadata_logging_context_, HasBeenLogged(false));
     // If a card suggestion was filled before submission, log it for metadata.
-    // This event can only be triggered once per page load
+    // This event can only be triggered once per page load.
     Log(metadata_logging_context_.card_metadata_available
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_WILL_SUBMIT_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_WILL_SUBMIT_ONCE,
@@ -318,7 +492,7 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
 }
 
 void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
-  if (!has_logged_suggestion_filled_) {
+  if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, form);
   } else if (logged_suggestion_filled_was_masked_server_card_) {
     Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, form);
@@ -344,19 +518,34 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     Log(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, form);
   }
 
-  if (has_logged_suggestion_filled_ && has_eligible_offer_) {
+  if (has_logged_form_filling_suggestion_filled_ && has_eligible_offer_) {
     base::UmaHistogramBoolean("Autofill.Offer.SubmittedCardHasOffer",
                               card_selected_has_offer_);
   }
 
-  if (has_logged_suggestion_filled_) {
+  // Log if a CVC suggestion for a virtual card was filled before form
+  // submission.
+  if (is_virtual_card_standalone_cvc_field_ &&
+      has_logged_suggestion_for_virtual_card_standalone_cvc_filled_) {
+    LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
+        VirtualCardStandaloneCvcSuggestionFormEvent::
+            kStandaloneCvcSuggestionSubmittedOnce);
+  }
+
+  // Log if any card suggestion with cvc saved was filled before form
+  // submission.
+  if (has_logged_suggestion_for_card_with_cvc_filled_) {
+    Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SUBMITTED_ONCE, form);
+  }
+
+  if (has_logged_form_filling_suggestion_filled_) {
     // Log issuer-specific metrics on whether a card suggestion with metadata
     // was filled before submission.
     LogCardWithMetadataFormEventMetric(
         autofill_metrics::CardMetadataLoggingEvent::kSubmitted,
         metadata_logging_context_, HasBeenLogged(false));
     // If a card suggestion was filled before submission, log it for metadata.
-    // This event can only be triggered once per page load
+    // This event can only be triggered once per page load.
     Log(metadata_logging_context_.card_metadata_available
             ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SUBMITTED_ONCE
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE,
@@ -382,7 +571,7 @@ void CreditCardFormEventLogger::OnSuggestionsShownOnce(
 
 void CreditCardFormEventLogger::OnSuggestionsShownSubmittedOnce(
     const FormStructure& form) {
-  if (!has_logged_suggestion_filled_) {
+  if (!has_logged_form_filling_suggestion_filled_) {
     const CreditCard& credit_card =
         client_->GetFormDataImporter()->ExtractCreditCardFromForm(form).card;
     Log(GetCardNumberStatusFormEvent(credit_card), form);
@@ -398,6 +587,10 @@ void CreditCardFormEventLogger::OnLog(const std::string& name,
   if (has_eligible_offer_) {
     base::UmaHistogramEnumeration(name + ".WithOffer", event, NUM_FORM_EVENTS);
   }
+}
+
+bool CreditCardFormEventLogger::HasLoggedDataToFillAvailable() const {
+  return server_record_type_count_ + local_record_type_count_ > 0;
 }
 
 FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
@@ -444,6 +637,10 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
     case UnmaskAuthFlowType::kOtpFallbackFromFido:
       flow_type_suffix = ".OtpFallbackFromFido";
       break;
+    case UnmaskAuthFlowType::kThreeDomainSecure:
+    case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
+      // TODO(crbug.com/1521960): Add logging for kThreeDomainSecure and
+      // kThreeDomainSecureConsentAlreadyGiven.
     case UnmaskAuthFlowType::kNone:
       // TODO(crbug.com/1300959): Fix Autofill.BetterAuth logging.
       return;

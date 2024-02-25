@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_data_importer_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -63,7 +64,7 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_DifferentOrigins) {
   // The TTL or 1 hour is irrelevant here.
   queue.RemoveOutdatedItems(base::Hours(1),
                             url::Origin::Create(GURL("http://bar.com")));
-  EXPECT_EQ(queue.origin(), absl::nullopt);
+  EXPECT_EQ(queue.origin(), std::nullopt);
   EXPECT_TRUE(queue.empty());
 }
 
@@ -82,22 +83,29 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_TTL) {
 }
 
 TEST(FormDataImporterUtilsTest, GetPredictedCountryCode) {
-  AutofillProfile us_profile;
-  us_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
-  AutofillProfile empty_profile;
+  AutofillProfile us_profile(AddressCountryCode("US"));
+  AutofillProfile empty_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   // Test prioritization: profile > variation service state > app locale
-  EXPECT_EQ(GetPredictedCountryCode(us_profile, "DE", "de-AT", nullptr), "US");
-  EXPECT_EQ(GetPredictedCountryCode(us_profile, "", "de-AT", nullptr), "US");
-  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "DE", "de-AT", nullptr),
+  EXPECT_EQ(GetPredictedCountryCode(us_profile, GeoIpCountryCode("DE"), "de-AT",
+                                    nullptr),
+            "US");
+  EXPECT_EQ(GetPredictedCountryCode(us_profile, GeoIpCountryCode(""), "de-AT",
+                                    nullptr),
+            "US");
+  EXPECT_EQ(GetPredictedCountryCode(empty_profile, GeoIpCountryCode("DE"),
+                                    "de-AT", nullptr),
             "DE");
-  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "", "de-AT", nullptr), "AT");
+  EXPECT_EQ(GetPredictedCountryCode(empty_profile, GeoIpCountryCode(""),
+                                    "de-AT", nullptr),
+            "AT");
 }
 
 // Each test describes a sequence of submitted forms, where 'a' and 'c' indicate
 // an address and a credit card form, respectively.
 // Using an upper case A or C, forms that are supposed to be part of the
 // association are marked.
-constexpr base::StringPiece kFormAssociatorTestCases[]{
+constexpr std::string_view kFormAssociatorTestCases[]{
     // A single address/credit card form is associated with itself.
     "A",
     "C",
@@ -112,7 +120,7 @@ constexpr base::StringPiece kFormAssociatorTestCases[]{
     "AAcC",
 };
 
-class FormAssociatorTest : public testing::TestWithParam<base::StringPiece> {};
+class FormAssociatorTest : public testing::TestWithParam<std::string_view> {};
 
 INSTANTIATE_TEST_SUITE_P(FormDataImporterUtilsTest,
                          FormAssociatorTest,
@@ -123,7 +131,7 @@ TEST_P(FormAssociatorTest, FormAssociator) {
   FormAssociator form_associator;
   url::Origin irrelevant_origin;
   FormStructure::FormAssociations expected_associations;
-  const base::StringPiece& test = GetParam();
+  const std::string_view& test = GetParam();
   // Each test verifies the association of the last form. If the last form is
   // not expected to be included, that's likely a typo.
   EXPECT_TRUE(!test.empty() && base::IsAsciiUpper(test.back()));

@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++EditText text:"Search terms" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {name="googlesearch"}, {type="search"}, {value="Search terms"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++++++++TextView text:"Search terms" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

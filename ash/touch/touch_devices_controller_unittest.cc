@@ -192,7 +192,7 @@ TEST_F(TouchDevicesControllerPrefsTest, RecordUma) {
   // Disable auto-provision of PrefService.
   constexpr bool kProvidePrefService = false;
   // Add and switch to |kUser1Email|, but user pref service is not ready.
-  session->AddUserSession(kUser1Email, user_manager::USER_TYPE_REGULAR,
+  session->AddUserSession(kUser1Email, user_manager::UserType::kRegular,
                           kProvidePrefService);
   const AccountId kUserAccount1 = AccountId::FromUserEmail(kUser1Email);
   session->SwitchActiveUser(kUserAccount1);

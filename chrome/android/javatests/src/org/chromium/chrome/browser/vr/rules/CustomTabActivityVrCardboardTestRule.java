@@ -15,25 +15,30 @@ import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActiv
 import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
 
 /**
- * Cardboard extension of CustomTabActivityTestRule. Applies CustomTabActivityTestRule.
- * then opens up a CustomTabActivity to a blank page while performing some additional setup.
+ * Cardboard extension of CustomTabActivityTestRule. Applies CustomTabActivityTestRule. then opens
+ * up a CustomTabActivity to a blank page while performing some additional setup.
  */
-public class CustomTabActivityVrCardboardTestRule
-        extends CustomTabActivityTestRule implements VrTestRule {
+public class CustomTabActivityVrCardboardTestRule extends CustomTabActivityTestRule
+        implements VrTestRule {
     @Override
     public Statement apply(final Statement base, final Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                VrCardboardTestRuleUtils.evaluateVrTestRuleImpl(
-                        base, desc, CustomTabActivityVrCardboardTestRule.this, () -> {
-                            startCustomTabActivityWithIntent(
-                                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                                            ApplicationProvider.getApplicationContext(),
-                                            "about:blank"));
-                        });
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        VrCardboardTestRuleUtils.evaluateVrTestRuleImpl(
+                                base,
+                                desc,
+                                CustomTabActivityVrCardboardTestRule.this,
+                                () -> {
+                                    startCustomTabActivityWithIntent(
+                                            CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                                                    ApplicationProvider.getApplicationContext(),
+                                                    "about:blank"));
+                                });
+                    }
+                },
+                desc);
     }
 
     @Override

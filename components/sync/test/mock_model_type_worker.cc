@@ -151,7 +151,7 @@ void MockModelTypeWorker::UpdateModelTypeState(
 
 void MockModelTypeWorker::UpdateFromServer() {
   processor_->OnUpdateReceived(model_type_state_, UpdateResponseDataList(),
-                               /*gc_directive=*/absl::nullopt);
+                               /*gc_directive=*/std::nullopt);
 }
 
 void MockModelTypeWorker::UpdateFromServer(
@@ -181,7 +181,7 @@ void MockModelTypeWorker::UpdateFromServer(
 
 void MockModelTypeWorker::UpdateFromServer(UpdateResponseDataList updates) {
   processor_->OnUpdateReceived(model_type_state_, std::move(updates),
-                               /*gc_directive=*/absl::nullopt);
+                               /*gc_directive=*/std::nullopt);
 }
 
 syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
@@ -269,7 +269,7 @@ void MockModelTypeWorker::TombstoneFromServer(const ClientTagHash& tag_hash) {
   UpdateResponseDataList list;
   list.push_back(GenerateTombstoneUpdateData(tag_hash));
   processor_->OnUpdateReceived(model_type_state_, std::move(list),
-                               /*gc_directive=*/absl::nullopt);
+                               /*gc_directive=*/std::nullopt);
 }
 
 void MockModelTypeWorker::AckOnePendingCommit() {
@@ -360,7 +360,7 @@ void MockModelTypeWorker::UpdateWithEncryptionKey(
     UpdateResponseDataList update) {
   model_type_state_.set_encryption_key_name(ekn);
   processor_->OnUpdateReceived(model_type_state_, std::move(update),
-                               /*gc_directive=*/absl::nullopt);
+                               /*gc_directive=*/std::nullopt);
 }
 
 void MockModelTypeWorker::UpdateWithGarbageCollection(

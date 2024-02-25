@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/text_elider.h"
 
@@ -21,13 +23,14 @@
 
 #include <cmath>
 
-#include "base/strings/string_piece.h"
 #include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "printing/printing_features.h"
 #endif
 
 namespace printing {
@@ -90,7 +93,7 @@ std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
 }
 
 #if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
-gfx::Size GetDefaultPaperSizeFromLocaleMicrons(base::StringPiece locale) {
+gfx::Size GetDefaultPaperSizeFromLocaleMicrons(std::string_view locale) {
   if (locale.empty())
     return kIsoA4Microns;
 
@@ -162,6 +165,16 @@ gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc) {
 bool LooksLikePdf(base::span<const char> maybe_pdf_data) {
   return maybe_pdf_data.size() >= 50u &&
          std::memcmp(maybe_pdf_data.data(), "%PDF-", 5) == 0;
+}
+
+mojom::SkiaDocumentType GetPrintDocumentType(bool source_is_pdf) {
+#if BUILDFLAG(IS_WIN)
+  return printing::features::ShouldPrintUsingXps(source_is_pdf)
+             ? mojom::SkiaDocumentType::kXPS
+             : mojom::SkiaDocumentType::kPDF;
+#else
+  return mojom::SkiaDocumentType::kPDF;
+#endif
 }
 
 }  // namespace printing

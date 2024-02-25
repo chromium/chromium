@@ -8,12 +8,15 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/views/controls/combobox/combobox.h"
 
 namespace payments {
 
 class ValidatingCombobox : public views::Combobox {
+  METADATA_HEADER(ValidatingCombobox, views::Combobox)
+
  public:
   ValidatingCombobox(std::unique_ptr<ui::ComboboxModel> model,
                      std::unique_ptr<ValidationDelegate> delegate);

@@ -6,6 +6,7 @@
 #define SERVICES_MEDIA_SESSION_MEDIA_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_session {
 
@@ -48,6 +48,7 @@ class MediaController : public mojom::MediaController,
   void PreviousTrack() override;
   void NextTrack() override;
   void Seek(base::TimeDelta seek_time) override;
+  void SkipAd() override;
   void ObserveImages(mojom::MediaSessionImageType type,
                      int minimum_size_px,
                      int desired_size_px,
@@ -57,7 +58,7 @@ class MediaController : public mojom::MediaController,
   void ScrubTo(base::TimeDelta seek_time) override;
   void EnterPictureInPicture() override;
   void ExitPictureInPicture() override;
-  void SetAudioSinkId(const absl::optional<std::string>& id) override;
+  void SetAudioSinkId(const std::optional<std::string>& id) override;
   void ToggleMicrophone() override;
   void ToggleCamera() override;
   void HangUp() override;
@@ -70,14 +71,14 @@ class MediaController : public mojom::MediaController,
   void MediaSessionInfoChanged(
       mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<MediaMetadata>&) override;
+      const std::optional<MediaMetadata>&) override;
   void MediaSessionActionsChanged(
       const std::vector<mojom::MediaSessionAction>& action) override;
   void MediaSessionImagesChanged(
       const base::flat_map<mojom::MediaSessionImageType,
                            std::vector<MediaImage>>& images) override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override;
+      const std::optional<media_session::MediaPosition>& position) override;
 
   void SetMediaSession(AudioFocusRequest* session);
   void ClearMediaSession();
@@ -102,17 +103,20 @@ class MediaController : public mojom::MediaController,
   mojom::MediaSessionInfoPtr session_info_;
 
   // The current metadata for |session_|.
-  absl::optional<MediaMetadata> session_metadata_;
+  std::optional<MediaMetadata> session_metadata_;
 
   // The current actions for |session_|.
   std::vector<mojom::MediaSessionAction> session_actions_;
 
   // The current position for |session_|.
-  absl::optional<MediaPosition> session_position_;
+  std::optional<MediaPosition> session_position_;
 
   // The current images for |session_|.
   base::flat_map<mojom::MediaSessionImageType, std::vector<MediaImage>>
       session_images_;
+
+  // The current images for the chapter at the index of the chapter list.
+  base::flat_map<int, std::vector<MediaImage>> chapter_images_;
 
   // Raw pointer to the media session we are controlling.
   raw_ptr<AudioFocusRequest> session_ = nullptr;

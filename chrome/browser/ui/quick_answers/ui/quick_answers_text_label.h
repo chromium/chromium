@@ -15,15 +15,23 @@ class Label;
 namespace quick_answers {
 
 class QuickAnswersTextLabel : public views::Label {
- public:
-  METADATA_HEADER(QuickAnswersTextLabel);
+  METADATA_HEADER(QuickAnswersTextLabel, views::Label)
 
+ public:
   explicit QuickAnswersTextLabel(const QuickAnswerText& quick_answers_text);
 
   QuickAnswersTextLabel(const QuickAnswersTextLabel&) = delete;
   QuickAnswersTextLabel& operator=(const QuickAnswersTextLabel&) = delete;
 
   ~QuickAnswersTextLabel() override = default;
+
+  // Creates a QuickAnswersTextLabel with the specified style arguments.
+  static std::unique_ptr<QuickAnswersTextLabel> CreateLabelWithStyle(
+      const std::string& text,
+      const gfx::FontList& font_list,
+      int width,
+      bool is_multi_line,
+      ui::ColorId enabled_color_id = ui::kColorLabelForeground);
 };
 
 }  // namespace quick_answers

@@ -15,7 +15,7 @@ CASE 1, original layer tree
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='box top'",
       "position": [130, 130],
       "bounds": [100, 100],
       "contentsOpaque": true,
@@ -52,7 +52,7 @@ CASE 2, change color of "inner" to red
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='box top'",
       "position": [130, 130],
       "bounds": [100, 100],
       "contentsOpaque": true,

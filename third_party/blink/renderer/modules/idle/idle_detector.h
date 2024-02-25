@@ -29,7 +29,7 @@ class ExceptionState;
 class MODULES_EXPORT IdleDetector final
     : public EventTarget,
       public ActiveScriptWrappable<IdleDetector>,
-      public ExecutionContextClient,
+      public ExecutionContextLifecycleObserver,
       public mojom::blink::IdleMonitor {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -45,6 +45,9 @@ class MODULES_EXPORT IdleDetector final
   // EventTarget implementation.
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
+
+  // ExecutionContextLifecycleObserver implementation.
+  void ContextDestroyed() override;
 
   // ActiveScriptWrappable implementation.
   bool HasPendingActivity() const final;
@@ -76,6 +79,7 @@ class MODULES_EXPORT IdleDetector final
   void OnAddMonitor(ScriptPromiseResolver*,
                     mojom::blink::IdleManagerError,
                     mojom::blink::IdleStatePtr);
+  void Clear();
 
   // State currently visible to script.
   bool has_state_ = false;

@@ -8,7 +8,6 @@ include_rules = [
   "+components/url_matcher",
   "+components/version_info",
   "-content",
-  "+content/grit/content_resources.h",
   "+content/public/common",
   "+content/public/test",
   "+crypto",

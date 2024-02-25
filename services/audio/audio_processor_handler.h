@@ -6,6 +6,7 @@
 #define SERVICES_AUDIO_AUDIO_PROCESSOR_HANDLER_H_
 
 #include <atomic>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -45,10 +46,10 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
   using DeliverProcessedAudioCallback = base::RepeatingCallback<void(
       const media::AudioBus& audio_bus,
       base::TimeTicks audio_capture_time,
-      absl::optional<double> new_volume,
+      std::optional<double> new_volume,
       const media::AudioGlitchInfo& audio_glitch_info)>;
 
-  using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
+  using LogCallback = base::RepeatingCallback<void(std::string_view)>;
 
   // |settings| specifies which audio processing effects to apply. Some effect
   // must be required, i.e. the AudioProcessorHandler may only be created if
@@ -118,7 +119,7 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
 
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,
                              base::TimeTicks audio_capture_time,
-                             absl::optional<double> new_volume);
+                             std::optional<double> new_volume);
 
   SEQUENCE_CHECKER(owning_sequence_);
 

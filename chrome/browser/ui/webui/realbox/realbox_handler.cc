@@ -8,6 +8,8 @@
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -50,6 +52,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -72,28 +75,28 @@
 
 namespace {
 
-constexpr char kAnswerCurrencyIconResourceName[] =
+// TODO(niharm): convert back to constexpr char[] once feature is cleaned up
+const char* kAnswerCurrencyIconResourceName =
     "//resources/cr_components/omnibox/icons/currency.svg";
 constexpr char kAnswerDefaultIconResourceName[] =
     "//resources/cr_components/omnibox/icons/default.svg";
-constexpr char kAnswerDictionaryIconResourceName[] =
+const char* kAnswerDictionaryIconResourceName =
     "//resources/cr_components/omnibox/icons/definition.svg";
-constexpr char kAnswerFinanceIconResourceName[] =
+const char* kAnswerFinanceIconResourceName =
     "//resources/cr_components/omnibox/icons/finance.svg";
-constexpr char kAnswerSunriseIconResourceName[] =
+const char* kAnswerSunriseIconResourceName =
     "//resources/cr_components/omnibox/icons/sunrise.svg";
-constexpr char kAnswerTranslationIconResourceName[] =
+const char* kAnswerTranslationIconResourceName =
     "//resources/cr_components/omnibox/icons/translation.svg";
-constexpr char kAnswerWhenIsIconResourceName[] =
+const char* kAnswerWhenIsIconResourceName =
     "//resources/cr_components/omnibox/icons/when_is.svg";
-constexpr char kBookmarkIconResourceName[] =
-    "//resources/images/icon_bookmark.svg";
-constexpr char kCalculatorIconResourceName[] =
+const char* kBookmarkIconResourceName = "//resources/images/icon_bookmark.svg";
+const char* kCalculatorIconResourceName =
     "//resources/cr_components/omnibox/icons/calculator.svg";
-constexpr char kChromeProductIconResourceName[] =
+const char* kChromeProductIconResourceName =
     "//resources/cr_components/omnibox/icons/chrome_product.svg";
-constexpr char kClockIconResourceName[] = "//resources/images/icon_clock.svg";
-constexpr char kDinoIconResourceName[] =
+const char* kClockIconResourceName = "//resources/images/icon_clock.svg";
+const char* kDinoIconResourceName =
     "//resources/cr_components/omnibox/icons/dino.svg";
 constexpr char kDriveDocsIconResourceName[] =
     "//resources/cr_components/omnibox/icons/drive_docs.svg";
@@ -118,41 +121,100 @@ constexpr char kExtensionAppIconResourceName[] =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kGoogleCalendarIconResourceName[] =
     "//resources/cr_components/omnibox/icons/calendar.svg";
-constexpr char kGoogleGIconResourceName[] =
+const char* kGoogleGIconResourceName =
     "//resources/cr_components/omnibox/icons/google_g.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] =
     "//resources/cr_components/omnibox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] =
     "//resources/cr_components/omnibox/icons/sites.svg";
 #endif
-constexpr char kHistoryIconResourceName[] =
-    "//resources/images/icon_history.svg";
-constexpr char kIncognitoIconResourceName[] =
+const char* kHistoryIconResourceName = "//resources/images/icon_history.svg";
+const char* kIncognitoIconResourceName =
     "//resources/cr_components/omnibox/icons/incognito.svg";
-constexpr char kJourneysIconResourceName[] =
+const char* kJourneysIconResourceName =
     "//resources/cr_components/omnibox/icons/journeys.svg";
-constexpr char kPageIconResourceName[] =
+const char* kPageIconResourceName =
     "//resources/cr_components/omnibox/icons/page.svg";
-constexpr char kPedalsIconResourceName[] = "//theme/current-channel-logo";
-constexpr char kSearchIconResourceName[] = "//resources/images/icon_search.svg";
-constexpr char kTabIconResourceName[] =
+const char* kPedalsIconResourceName = "//theme/current-channel-logo";
+const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
+const char* kTabIconResourceName =
     "//resources/cr_components/omnibox/icons/tab.svg";
-constexpr char kTrendingUpIconResourceName[] =
+const char* kTrendingUpIconResourceName =
     "//resources/cr_components/omnibox/icons/trending_up.svg";
 
 #if BUILDFLAG(IS_MAC)
-constexpr char kMacShareIconResourceName[] =
+const char* kMacShareIconResourceName =
     "//resources/cr_components/omnibox/icons/mac_share.svg";
 #elif BUILDFLAG(IS_WIN)
-constexpr char kWinShareIconResourceName[] =
+const char* kWinShareIconResourceName =
     "//resources/cr_components/omnibox/icons/win_share.svg";
 #elif BUILDFLAG(IS_LINUX)
-constexpr char kLinuxShareIconResourceName[] =
+const char* kLinuxShareIconResourceName =
     "//resources/cr_components/omnibox/icons/share.svg";
 #else
-constexpr char kShareIconResourceName[] =
+const char* kShareIconResourceName =
     "//resources/cr_components/omnibox/icons/share.svg";
 #endif
+
+static void DefineChromeRefreshRealboxIcons() {
+  kAnswerCurrencyIconResourceName =
+      "//resources/cr_components/omnibox/icons/currency_cr23.svg";
+  kAnswerDictionaryIconResourceName =
+      "//resources/cr_components/omnibox/icons/definition_cr23.svg";
+  kAnswerFinanceIconResourceName =
+      "//resources/cr_components/omnibox/icons/finance_cr23.svg";
+  kAnswerSunriseIconResourceName =
+      "//resources/cr_components/omnibox/icons/sunrise_cr23.svg";
+  kAnswerTranslationIconResourceName =
+      "//resources/cr_components/omnibox/icons/translation_cr23.svg";
+  kAnswerWhenIsIconResourceName =
+      "//resources/cr_components/omnibox/icons/when_is_cr23.svg";
+  kBookmarkIconResourceName =
+      "//resources/cr_components/omnibox/icons/bookmark_cr23.svg";
+  kCalculatorIconResourceName =
+      "//resources/cr_components/omnibox/icons/calculator_cr23.svg";
+  kChromeProductIconResourceName =
+      "//resources/cr_components/omnibox/icons/chrome_product_cr23.svg";
+  kClockIconResourceName =
+      "//resources/cr_components/omnibox/icons/clock_cr23.svg";
+  kDinoIconResourceName =
+      "//resources/cr_components/omnibox/icons/dino_cr23.svg";
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  kGoogleGIconResourceName =
+      "//resources/cr_components/omnibox/icons/google_g_cr23.svg";
+#endif
+
+  kHistoryIconResourceName =
+      "//resources/cr_components/omnibox/icons/history_cr23.svg";
+  kIncognitoIconResourceName =
+      "//resources/cr_components/omnibox/icons/incognito_cr23.svg";
+  kJourneysIconResourceName =
+      "//resources/cr_components/omnibox/icons/journeys_cr23.svg";
+  kPageIconResourceName =
+      "//resources/cr_components/omnibox/icons/page_cr23.svg";
+  kPedalsIconResourceName =
+      "//resources/cr_components/omnibox/icons/chrome_product_cr23.svg";
+  kSearchIconResourceName =
+      "//resources/cr_components/omnibox/icons/search_cr23.svg";
+  kTabIconResourceName = "//resources/cr_components/omnibox/icons/tab_cr23.svg";
+  kTrendingUpIconResourceName =
+      "//resources/cr_components/omnibox/icons/trending_up_cr23.svg";
+
+#if BUILDFLAG(IS_MAC)
+  kMacShareIconResourceName =
+      "//resources/cr_components/omnibox/icons/mac_share_cr23.svg";
+#elif BUILDFLAG(IS_WIN)
+  kWinShareIconResourceName =
+      "//resources/cr_components/omnibox/icons/win_share_cr23.svg";
+#elif BUILDFLAG(IS_LINUX)
+  kLinuxShareIconResourceName =
+      "//resources/cr_components/omnibox/icons/share_cr23.svg";
+#else
+  kShareIconResourceName =
+      "//resources/cr_components/omnibox/icons/share_cr23.svg";
+#endif
+}
 
 base::flat_map<int32_t, omnibox::mojom::SuggestionGroupPtr>
 CreateSuggestionGroupsMap(
@@ -166,6 +228,8 @@ CreateSuggestionGroupsMap(
     suggestion_group->header = base::UTF8ToUTF16(pair.second.header_text());
     suggestion_group->side_type =
         static_cast<omnibox::mojom::SideType>(pair.second.side_type());
+    suggestion_group->render_type =
+        static_cast<omnibox::mojom::RenderType>(pair.second.render_type());
     suggestion_group->hidden =
         result.IsSuggestionGroupHidden(prefs, pair.first);
     suggestion_group->show_group_a11y_label = l10n_util::GetStringFUTF16(
@@ -179,14 +243,14 @@ CreateSuggestionGroupsMap(
   return result_map;
 }
 
-absl::optional<std::u16string> GetAdditionalText(
+std::optional<std::u16string> GetAdditionalText(
     const SuggestionAnswer::ImageLine& line) {
   if (line.additional_text()) {
     const auto additional_text = line.additional_text()->text();
     if (!additional_text.empty())
       return additional_text;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
@@ -315,6 +379,12 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                           : match.contents,
           ImageLineToString16(match.answer->second_line()));
       mojom_match->image_url = match.ImageUrl().spec();
+      if (base::FeatureList::IsEnabled(
+              ntp_features::kRealboxCr23ExpandedStateIcons) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
+        mojom_match->is_weather_answer_suggestion =
+            match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER;
+      }
     }
     mojom_match->is_rich_suggestion =
         !mojom_match->image_url.empty() ||
@@ -389,7 +459,7 @@ std::string GetBase64UrlVariations(Profile* profile) {
 
 // TODO(crbug.com/1431513): Consider inheriting from `ChromeOmniboxClient`
 //  to avoid reimplementation of methods like `OnBookmarkLaunched`.
-class RealboxOmniboxClient : public OmniboxClient {
+class RealboxOmniboxClient final : public OmniboxClient {
  public:
   RealboxOmniboxClient(LocationBarModel* location_bar_model,
                        Profile* profile,
@@ -431,12 +501,14 @@ class RealboxOmniboxClient : public OmniboxClient {
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
   LocationBarModel* GetLocationBarModel() override;
+  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
  private:
   raw_ptr<LocationBarModel> location_bar_model_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
+  base::WeakPtrFactory<RealboxOmniboxClient> weak_factory_{this};
 };
 
 RealboxOmniboxClient::RealboxOmniboxClient(LocationBarModel* location_bar_model,
@@ -547,16 +619,28 @@ LocationBarModel* RealboxOmniboxClient::GetLocationBarModel() {
   return location_bar_model_;
 }
 
+base::WeakPtr<OmniboxClient> RealboxOmniboxClient::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace
 
 // static
 void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                           Profile* profile) {
-  RealboxHandler::SetupDropdownWebUIDataSource(source, profile);
-
   static constexpr webui::LocalizedString kStrings[] = {
-      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD}};
+      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
+      {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
+      {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
+      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
+      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
+
+  source->AddBoolean(
+      "realboxCr23ExpandedStateIcons",
+      base::FeatureList::IsEnabled(
+          ntp_features::kRealboxCr23ExpandedStateIcons) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 
   source->AddBoolean(
       "realboxMatchSearchboxTheme",
@@ -568,7 +652,11 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                         ntp_features::kNtpRealboxWidthBehaviorParam));
   source->AddBoolean("realboxIsTall", base::FeatureList::IsEnabled(
                                           ntp_features::kRealboxIsTall));
-
+  if ((base::FeatureList::IsEnabled(
+           ntp_features::kRealboxCr23ExpandedStateIcons) ||
+       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All))) {
+    DefineChromeRefreshRealboxIcons();
+  }
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
@@ -581,24 +669,29 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
 
   source->AddBoolean(
       "realboxLensSearch",
-      base::FeatureList::IsEnabled(ntp_features::kNtpRealboxLensSearch) &&
-          profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
+      profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
   source->AddString("realboxLensVariations", GetBase64UrlVariations(profile));
   source->AddBoolean(
       "realboxLensDirectUpload",
       base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
-}
-
-// static
-void RealboxHandler::SetupDropdownWebUIDataSource(
-    content::WebUIDataSource* source,
-    Profile* profile) {
-  static constexpr webui::LocalizedString kStrings[] = {
-      {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
-      {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
-      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
-      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
-  source->AddLocalizedStrings(kStrings);
+  source->AddBoolean(
+      "realboxCr23ExpandedStateLayout",
+      base::FeatureList::IsEnabled(
+          ntp_features::kRealboxCr23ExpandedStateLayout) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+  source->AddBoolean("realboxCr23ConsistentRowHeight",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kRealboxCr23ConsistentRowHeight));
+  source->AddBoolean(
+      "realboxCr23HoverFillShape",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23HoverFillShape) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+  source->AddBoolean(
+      "realboxCr23Theming",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+  source->AddBoolean("realboxCr23SteadyStateShadow",
+                     ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 }
 
 // static
@@ -674,13 +767,8 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
   } else if (icon.is_empty()) {
     return "";  // An empty resource name is effectively a blank icon.
   } else {
-    NOTREACHED()
-        << "Every vector icon returned by AutocompleteMatch::GetVectorIcon "
-           "must have an equivalent SVG resource for the NTP Realbox. "
-           "icon.name: '"
-        << icon.name << "'";
+    return PedalVectorIconToResourceName(icon);
   }
-  return "";
 }
 
 // static
@@ -719,7 +807,8 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
   if (icon.name == vector_icons::kGoogleSitesIcon.name) {
     return kGoogleSitesIconResourceName;
   }
-  if (icon.name == vector_icons::kGoogleSuperGIcon.name) {
+  if (icon.name == vector_icons::kGoogleSuperGIcon.name ||
+      icon.name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
     return kGoogleGIconResourceName;
   }
 #endif
@@ -800,6 +889,20 @@ bool RealboxHandler::IsRemoteBound() const {
   return page_set_;
 }
 
+void RealboxHandler::AddObserver(OmniboxWebUIPopupChangeObserver* observer) {
+  observers_.AddObserver(observer);
+  observer->OnPopupElementSizeChanged(webui_size_);
+}
+
+void RealboxHandler::RemoveObserver(OmniboxWebUIPopupChangeObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool RealboxHandler::HasObserver(
+    const OmniboxWebUIPopupChangeObserver* observer) const {
+  return observers_.HasObserver(observer);
+}
+
 void RealboxHandler::SetPage(
     mojo::PendingRemote<omnibox::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
@@ -844,11 +947,11 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   autocomplete_input.set_prefer_keyword(false);
   autocomplete_input.set_allow_exact_keyword_match(false);
 
-  autocomplete_controller()->Start(autocomplete_input);
+  controller_->StartAutocomplete(autocomplete_input);
 }
 
 void RealboxHandler::StopAutocomplete(bool clear_result) {
-  autocomplete_controller()->Stop(clear_result);
+  controller_->StopAutocomplete(clear_result);
 }
 
 void RealboxHandler::OpenAutocompleteMatch(uint8_t line,
@@ -890,6 +993,13 @@ void RealboxHandler::OnNavigationLikely(
   }
 }
 
+void RealboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
+  webui_size_ = size;
+  for (OmniboxWebUIPopupChangeObserver& observer : observers_) {
+    observer.OnPopupElementSizeChanged(size);
+  }
+}
+
 void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
   if (!match || !match->SupportsDeletion()) {
@@ -897,7 +1007,7 @@ void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
     // the web UI is referencing a stale match.
     return;
   }
-  autocomplete_controller()->Stop(false);
+  controller_->StopAutocomplete(/*clear_result=*/false);
   autocomplete_controller()->DeleteMatch(*match);
 }
 
@@ -985,10 +1095,15 @@ omnibox::mojom::SelectionLineState ConvertLineState(
   return omnibox::mojom::SelectionLineState::kNormal;
 }
 
-void RealboxHandler::UpdateSelection(OmniboxPopupSelection selection) {
-  page_->UpdateSelection(omnibox::mojom::OmniboxPopupSelection::New(
-      selection.line, ConvertLineState(selection.state),
-      selection.action_index));
+void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
+                                     OmniboxPopupSelection selection) {
+  page_->UpdateSelection(
+      omnibox::mojom::OmniboxPopupSelection::New(
+          old_selection.line, ConvertLineState(old_selection.state),
+          old_selection.action_index),
+      omnibox::mojom::OmniboxPopupSelection::New(
+          selection.line, ConvertLineState(selection.state),
+          selection.action_index));
 }
 
 // LocationBarModel:

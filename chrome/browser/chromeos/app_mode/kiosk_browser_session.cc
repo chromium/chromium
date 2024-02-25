@@ -7,6 +7,8 @@
 #include <errno.h>
 #include <signal.h>
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -35,7 +37,6 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
@@ -133,6 +134,7 @@ class KioskBrowserSession::AppWindowHandler
       return;
     }
 
+    LOG(WARNING) << "Last app window removed, ending kiosk session.";
     kiosk_browser_session_->Shutdown();
     window_registry_->RemoveObserver(this);
   }
@@ -183,7 +185,7 @@ class KioskBrowserSession::PluginHandlerDelegateImpl
   }
 
  private:
-  const raw_ptr<KioskBrowserSession, ExperimentalAsh> owner_;
+  const raw_ptr<KioskBrowserSession> owner_;
 };
 #endif
 
@@ -231,7 +233,7 @@ void KioskBrowserSession::RegisterProfilePrefs(
 void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {
   app_window_handler_ = std::make_unique<AppWindowHandler>(this);
   app_window_handler_->Init(profile(), app_id);
-  CreateBrowserWindowHandler(absl::nullopt);
+  CreateBrowserWindowHandler(std::nullopt);
 #if BUILDFLAG(ENABLE_PLUGINS)
   plugin_handler_ = std::make_unique<KioskSessionPluginHandler>(
       plugin_handler_delegate_.get());
@@ -240,14 +242,9 @@ void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {
 }
 
 void KioskBrowserSession::InitForWebKiosk(
-    const absl::optional<std::string>& web_app_name) {
+    const std::optional<std::string>& web_app_name) {
   CreateBrowserWindowHandler(web_app_name);
   metrics_service_->RecordKioskSessionWebStarted();
-}
-
-void KioskBrowserSession::SetAttemptUserExitForTesting(
-    base::OnceClosure closure) {
-  attempt_user_exit_ = std::move(closure);
 }
 
 void KioskBrowserSession::SetOnHandleBrowserCallbackForTesting(
@@ -274,7 +271,7 @@ KioskBrowserSession::KioskBrowserSession(
 }
 
 void KioskBrowserSession::CreateBrowserWindowHandler(
-    const absl::optional<std::string>& web_app_name) {
+    const std::optional<std::string>& web_app_name) {
   browser_window_handler_ = std::make_unique<KioskBrowserWindowHandler>(
       profile(), web_app_name,
       base::BindRepeating(&KioskBrowserSession::OnHandledNewBrowserWindow,

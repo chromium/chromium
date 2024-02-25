@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1012241361789814178">Trình gỡ lỗi đã bị tạm dừng ở một thẻ khác, nhấp để chuyển sang thẻ đó.</translation>
 <translation id="1088086359088493902">Giây</translation>
 <translation id="1142001580032786438">Hiển thị bộ chọn tuần</translation>
 <translation id="1171774979989969504">Vui lòng nhập địa chỉ email.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Vui lòng nhập địa chỉ email không trống.</translation>
 <translation id="1758486001363313524">Khác...</translation>
 <translation id="1787192514241997742">tổng thời gian: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Cho phép dùng camera</translation>
 <translation id="1822429046913737220">SA/CH</translation>
 <translation id="1832974991323546415">phát trên thiết bị từ xa</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Đã chuyển sang chế độ phản chiếu</translation>
 <translation id="2031987842108996681">Kênh đỏ</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' bị sử dụng sai vị trí trong '<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2068711044993563745">Giá trị tối thiểu (<ph name="MINIMUM" />) phải nhỏ hơn giá trị tối đa (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
 <translation id="2226276347425096477">Hãy cắt ngắn văn bản này thành <ph name="MAX_CHARACTERS" /> ký tự hoặc ít hơn (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
 <translation id="2247351761944213033">Tuần <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Bản nhạc <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Cho phép máy ảnh và micrô</translation>
 <translation id="2393030564806080191">Giá trị màu thập lục phân</translation>
 <translation id="2398813069815436052">đã mở hộp thoại.</translation>
 <translation id="245932805758469625">số giây còn lại của video</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Vui lòng chọn hộp kiểm này nếu bạn muốn tiếp tục.</translation>
 <translation id="2908441821576996758">Vui lòng nhập danh sách địa chỉ email được phân cách bằng dấu phẩy.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">hiển thị trình đơn mô tả bằng âm thanh</translation>
 <translation id="3075154866155599887">Vui lòng nhập một giá trị hợp lệ. Trường không hoàn chỉnh hoặc có giá trị không hợp lệ.</translation>
 <translation id="310520048233152454">Vui lòng nhập URL.</translation>
 <translation id="3220661731597678625">bước hiện tại</translation>
 <translation id="3321030238473337787">Tốc độ phát</translation>
 <translation id="3329013043687509092">Độ bão hòa</translation>
+<translation id="3377518164566272702">Cho phép dùng micrô và camera</translation>
 <translation id="3450233048674729344">Giá trị phải nhỏ hơn hoặc bằng <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Thoát chế độ hình trong hình</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Hãy kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
 <translation id="383465348367842624">Phần đứng trước '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Thoát chế độ toàn màn hình</translation>
+<translation id="4031179711345676612">Cho phép micrô</translation>
 <translation id="4103419683916926126">Mili giây</translation>
 <translation id="4201051445878709314">Hiển thị tháng trước</translation>
 <translation id="4360991593054037559">Vui lòng nhập giá trị hợp lệ. Hai giá trị hợp lệ gần nhất là <ph name="VALID_VALUE_LOW" /> và <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Chi tiết</translation>
+<translation id="4663373278480897665">Cho phép máy ảnh</translation>
 <translation id="4664250907885839816">Phần đứng sau '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Đang phát ở chế độ hình trong hình</translation>
 <translation id="4748357248530471599">bật/tắt chế độ toàn màn hình có vết cắt</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Chia sẻ vị trí</translation>
 <translation id="4812940957355064477">Vui lòng nhập một số.</translation>
 <translation id="4912200001568447310">mục hiện tại</translation>
 <translation id="4915360478455618802">Hiển thị bộ chọn giờ</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947">Đã chọn <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Bật âm thanh</translation>
 <translation id="49969490063480558">Vui lòng nhập phần đứng sau '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' không hoàn chỉnh.</translation>
+<translation id="5037575921016181960">Mật khẩu mạnh</translation>
 <translation id="5090250355906949916">thanh trượt thời gian trên video</translation>
 <translation id="509897012892853729">Kênh xanh lam</translation>
 <translation id="5117590920725113268">Hiển thị tháng tiếp theo</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">tải xuống phương tiện</translation>
 <translation id="698788488269350478">đã mở rộng.</translation>
 <translation id="6989848892321993519">Vui lòng kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng 1 ký tự).</translation>
+<translation id="7080893216867146095">Đã cho phép chia sẻ thông tin vị trí</translation>
 <translation id="709897737746224366">Vui lòng khớp với định dạng được yêu cầu.</translation>
 <translation id="7102274145889307184">vị trí hiện tại</translation>
 <translation id="7263440858009898357">Vui lòng chọn một mục trong danh sách.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Khác...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, bắt đầu vào <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>
+<translation id="918430632320614861">Cho phép dùng micrô</translation>
 <translation id="945780513535800434">Đã kiểm tra một phần</translation>
 <translation id="954003015749068518">vào chế độ hình trong hình</translation>
 </translationbundle>

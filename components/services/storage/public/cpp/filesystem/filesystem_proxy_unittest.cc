@@ -361,32 +361,17 @@ TEST_P(FilesystemProxyTest, DeleteFileFailsOnSubDirectory) {
   EXPECT_TRUE(proxy().PathExists(kDir1));
 }
 
-TEST_P(FilesystemProxyTest, DeletePathRecursively) {
-  EXPECT_TRUE(proxy().PathExists(kDir1));
-  EXPECT_TRUE(proxy().DeletePathRecursively(kDir1));
-  EXPECT_FALSE(proxy().PathExists(kDir1));
-  EXPECT_TRUE(proxy().DeletePathRecursively(kDir1));
-}
-
-TEST_P(FilesystemProxyTest, GetMaximumPathComponentLength) {
-  // This has different values on different platforms, so merely smoke test
-  // this to make sure it returns a reasonable valid value.
-  absl::optional<int> max = proxy().GetMaximumPathComponentLength(kDir1);
-  ASSERT_TRUE(max.has_value());
-  EXPECT_GT(*max, 50);
-}
-
 TEST_P(FilesystemProxyTest, GetFileInfo) {
-  absl::optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
+  std::optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
   ASSERT_TRUE(file1_info.has_value());
   EXPECT_FALSE(file1_info->is_directory);
   EXPECT_EQ(static_cast<int>(std::size(kFile1Contents) - 1), file1_info->size);
 
-  absl::optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
+  std::optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
   ASSERT_TRUE(dir1_info.has_value());
   EXPECT_TRUE(dir1_info->is_directory);
 
-  absl::optional<base::File::Info> dir1_file1_info =
+  std::optional<base::File::Info> dir1_file1_info =
       proxy().GetFileInfo(kDir1.Append(kDir1File1));
   ASSERT_TRUE(dir1_file1_info.has_value());
   EXPECT_FALSE(dir1_file1_info->is_directory);
@@ -448,13 +433,6 @@ TEST_P(FilesystemProxyTest, LockFile) {
   EXPECT_NE(nullptr, result);
 }
 
-TEST_P(FilesystemProxyTest, ComputeDirectorySize) {
-  // The file size does not include the null terminator, so subtract 1 per file.
-  int64_t expected_size =
-      std::size(kDir1File1Contents) + std::size(kDir1File2Contents) - 2;
-  EXPECT_EQ(proxy().ComputeDirectorySize(kDir1), expected_size);
-}
-
 TEST_P(FilesystemProxyTest, AbsolutePathEqualToRoot) {
   // Verifies that if a delegate is given an absolute path identical to its
   // root path, it is correctly resolved to an empty relative path and can
@@ -477,14 +455,6 @@ TEST_P(FilesystemProxyTest, AbsolutePathWithinRoot) {
                           MakeAbsolute(kDir1.Append(kDir1File1)),
                           MakeAbsolute(kDir1.Append(kDir1File2)),
                           MakeAbsolute(kDir1.Append(kDir1Dir1)))));
-}
-
-TEST_P(FilesystemProxyTest, WriteFileAtomically) {
-  const base::FilePath kFile{FILE_PATH_LITERAL("some_new_file")};
-
-  const std::string kData{"files can have a little data, as a treat"};
-  EXPECT_TRUE(proxy().WriteFileAtomically(kFile, kData));
-  EXPECT_EQ(kData, ReadFileContentsAtPath(kFile));
 }
 
 INSTANTIATE_TEST_SUITE_P(, FilesystemProxyTest, testing::Bool());

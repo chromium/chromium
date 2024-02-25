@@ -12,4 +12,7 @@
       </message>
       <message name="IDS_ANDROID_ERROR_PAGE_WEBPAGE_TEMPORARILY_DOWN_SUGGESTIONS" desc="Suggestions provided to the user when it is not possible to contact the server"><ph name="MARKUP_1">&lt;strong&gt;<ex>_</ex></ph>Suggestions:<ph name="MARKUP_2">&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;<ex>_</ex></ph>Make sure you have a data connection<ph name="MARKUP_3">&lt;/li&gt;&lt;li&gt;<ex>_</ex></ph>Reload this webpage later<ph name="MARKUP_4">&lt;/li&gt;&lt;li&gt;<ex>_</ex></ph>Check the address you entered<ph name="MARKUP_5">&lt;/li&gt;&lt;/ul&gt;<ex>_</ex></ph>
       </message>
+      <message name="IDS_ANDROID_ERROR_PAGE_SUPERVISED_USER_URL_BLOCKED_MESSAGE" desc="Message in error page to inform the supervised user that the website is blocked by their parent">
+        This website is blocked by your parent.
+      </message>
 </grit-part>

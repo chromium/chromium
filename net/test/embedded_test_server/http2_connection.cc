@@ -67,7 +67,7 @@ class Http2Connection::DataFrameSource
     return {std::min(chunks_.front().size(), max_length), finished};
   }
 
-  bool Send(absl::string_view frame_header, size_t payload_length) override {
+  bool Send(std::string_view frame_header, size_t payload_length) override {
     std::string concatenated =
         base::StrCat({frame_header, chunks_.front().substr(0, payload_length)});
     const int64_t result = connection_->OnReadyToSend(concatenated);
@@ -249,7 +249,7 @@ bool Http2Connection::HandleData(int rv) {
   if (connection_listener_)
     connection_listener_->ReadFromSocket(*socket_, rv);
 
-  absl::string_view remaining_buffer(read_buf_->data(), rv);
+  std::string_view remaining_buffer(read_buf_->data(), rv);
   while (!remaining_buffer.empty()) {
     int result = adapter_->ProcessBytes(remaining_buffer);
     if (result < 0)
@@ -287,7 +287,7 @@ base::WeakPtr<HttpConnection> Http2Connection::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-int64_t Http2Connection::OnReadyToSend(absl::string_view serialized) {
+int64_t Http2Connection::OnReadyToSend(std::string_view serialized) {
   if (write_buf_)
     return kSendBlocked;
 
@@ -360,8 +360,8 @@ void Http2Connection::SendIfNotProcessing() {
 
 http2::adapter::Http2VisitorInterface::OnHeaderResult
 Http2Connection::OnHeaderForStream(http2::adapter::Http2StreamId stream_id,
-                                   absl::string_view key,
-                                   absl::string_view value) {
+                                   std::string_view key,
+                                   std::string_view value) {
   header_map_[stream_id][std::string(key)] = std::string(value);
   return http2::adapter::Http2VisitorInterface::HEADER_OK;
 }
@@ -409,7 +409,7 @@ bool Http2Connection::OnBeginDataForStream(StreamId stream_id,
 }
 
 bool Http2Connection::OnDataForStream(StreamId stream_id,
-                                      absl::string_view data) {
+                                      std::string_view data) {
   auto request = request_map_.find(stream_id);
   if (request == request_map_.end()) {
     // We should not receive data before receiving headers.
@@ -430,7 +430,7 @@ bool Http2Connection::OnDataPaddingLength(StreamId stream_id,
 
 bool Http2Connection::OnGoAway(StreamId last_accepted_stream_id,
                                http2::adapter::Http2ErrorCode error_code,
-                               absl::string_view opaque_data) {
+                               std::string_view opaque_data) {
   return true;
 }
 
@@ -455,7 +455,7 @@ bool Http2Connection::OnInvalidFrame(StreamId stream_id,
 }
 
 bool Http2Connection::OnMetadataForStream(StreamId stream_id,
-                                          absl::string_view metadata) {
+                                          std::string_view metadata) {
   return true;
 }
 

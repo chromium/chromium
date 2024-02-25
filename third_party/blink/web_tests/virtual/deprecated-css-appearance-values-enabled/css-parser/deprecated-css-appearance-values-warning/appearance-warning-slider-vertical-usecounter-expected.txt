@@ -1,0 +1,15 @@
+CONSOLE WARNING: The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr; direction: rtl"> instead.
+CONSOLE WARNING: The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr; direction: rtl"> instead.
+CONSOLE WARNING: The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr; direction: rtl"> instead.
+CONSOLE WARNING: The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr; direction: rtl"> instead.
+This is a testharness.js-based test.
+[FAIL] Having an element with deprecated appearance value "slider-vertical" should not activate the use counter.
+  assert_false: expected false got true
+[FAIL] Having an element with deprecated -webkit-appearance value "slider-vertical" should not activate the use counter.
+  assert_false: expected false got true
+[FAIL] Having an element with deprecated appearance value "slider-vertical" should not activate the use counter (set using SetProperty).
+  assert_false: expected false got true
+[FAIL] Having an element with deprecated -webkit-appearance value "slider-vertical" should not activate the use counter (set using SetProperty).
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

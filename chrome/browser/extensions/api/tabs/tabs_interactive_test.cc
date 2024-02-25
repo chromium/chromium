@@ -30,13 +30,10 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "ui/ozone/buildflags.h"
-#endif
 
 namespace extensions {
 
@@ -212,8 +209,8 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
 
   int GetTabId(const base::Value::Dict& dict) const;
 
-  absl::optional<base::Value> RunFunction(ExtensionFunction* function,
-                                          const std::string& params);
+  std::optional<base::Value> RunFunction(ExtensionFunction* function,
+                                         const std::string& params);
 
   const Extension* extension() { return extension_.get(); }
 
@@ -295,7 +292,7 @@ int ExtensionWindowLastFocusedTest::GetTabId(
   return tab_dict->FindInt(keys::kIdKey).value_or(-2);
 }
 
-absl::optional<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
+std::optional<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
     ExtensionFunction* function,
     const std::string& params) {
   function->set_extension(extension_.get());
@@ -500,10 +497,9 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
                       ->GetLastCommittedURL());
 
   bool check_window_active_state = true;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    BUILDFLAG(IS_OZONE_WAYLAND)
   check_window_active_state = false;
-#endif
 #endif
 
   // The new browser should be inactive, since it was created with

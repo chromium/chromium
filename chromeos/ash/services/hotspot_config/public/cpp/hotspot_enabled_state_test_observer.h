@@ -27,7 +27,7 @@ class HotspotEnabledStateTestObserver
   mojo::PendingRemote<mojom::HotspotEnabledStateObserver> GenerateRemote();
 
   // mojom::HotspotEnabledStateObserver:
-  void OnHotspotTurnedOn(bool wifi_turned_off) override;
+  void OnHotspotTurnedOn() override;
 
   void OnHotspotTurnedOff(mojom::DisableReason disable_reason) override;
 

@@ -116,7 +116,7 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
     return UmaRemoteCallResult::JSON_EMPTY;
 
   // Pick out the "matches" list.
-  absl::optional<base::Value> value = base::JSONReader::Read(metadata_str);
+  std::optional<base::Value> value = base::JSONReader::Read(metadata_str);
   const base::Value::List* matches = nullptr;
   {
     if (!value.has_value())
@@ -172,6 +172,47 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
   }
 
   return UmaRemoteCallResult::MATCH;  // success
+}
+
+ThreatMetadata GetThreatMetadataFromSafeBrowsingApi(
+    SafeBrowsingJavaThreatType threat_type,
+    const std::vector<int>& threat_attributes) {
+  bool is_relevant_threat_type = false;
+  SubresourceFilterType type;
+  switch (threat_type) {
+    case SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+      is_relevant_threat_type = true;
+      type = SubresourceFilterType::ABUSIVE;
+      break;
+    case SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION:
+      is_relevant_threat_type = true;
+      type = SubresourceFilterType::BETTER_ADS;
+      break;
+    case SafeBrowsingJavaThreatType::NO_THREAT:
+    case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
+    case SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE:
+    case SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION:
+    case SafeBrowsingJavaThreatType::BILLING:
+      break;
+  }
+  if (!is_relevant_threat_type) {
+    return ThreatMetadata();
+  }
+  // Filter level is default to ENFORCE.
+  SubresourceFilterLevel level = SubresourceFilterLevel::ENFORCE;
+  for (int threat_attribute : threat_attributes) {
+    if (threat_attribute ==
+        static_cast<int>(SafeBrowsingJavaThreatAttribute::CANARY)) {
+      level = SubresourceFilterLevel::WARN;
+      break;
+    }
+  }
+
+  SubresourceFilterMatch subresource_filter_match;
+  subresource_filter_match[type] = level;
+  ThreatMetadata threat_metadata;
+  threat_metadata.subresource_filter_match = subresource_filter_match;
+  return threat_metadata;
 }
 
 }  // namespace safe_browsing

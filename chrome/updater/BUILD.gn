@@ -59,6 +59,8 @@ if (is_win || is_mac || is_linux) {
       "activity_impl.h",
       "app/app_install.cc",
       "app/app_install.h",
+      "app/app_install_progress.cc",
+      "app/app_install_progress.h",
       "app/app_recover.cc",
       "app/app_recover.h",
       "app/app_server.cc",
@@ -99,6 +101,8 @@ if (is_win || is_mac || is_linux) {
       "device_management/dm_response_validator.h",
       "device_management/dm_storage.cc",
       "device_management/dm_storage.h",
+      "find_unregistered_apps_task.cc",
+      "find_unregistered_apps_task.h",
       "installer.cc",
       "installer.h",
       "ipc/update_service_internal_proxy.cc",
@@ -193,8 +197,6 @@ if (is_win || is_mac || is_linux) {
         "lock_mac.mm",
         "mac/install_from_archive.h",
         "mac/install_from_archive.mm",
-        "mac/setup/keystone.h",
-        "mac/setup/keystone.mm",
         "mac/setup/setup.mm",
         "mac/setup/wake_task.h",
         "mac/setup/wake_task.mm",
@@ -226,7 +228,10 @@ if (is_win || is_mac || is_linux) {
     if (is_win) {
       sources += [
         "activity_impl_win.cc",
+        "app/app_install_util_win.cc",
+        "app/app_install_util_win.h",
         "app/app_install_win.cc",
+        "app/app_install_win_internal.h",
         "app/app_server_win.cc",
         "app/app_server_win.h",
         "app/server/win/com_classes.cc",
@@ -253,11 +258,11 @@ if (is_win || is_mac || is_linux) {
         "update_block_check_win.cc",
         "update_service_internal_impl_qualifying_win.cc",
         "update_usage_stats_task_win.cc",
+        "util/progress_sampler.cc",
+        "util/progress_sampler.h",
         "win/action_handler.cc",
         "win/app_command_runner.cc",
         "win/app_command_runner.h",
-        "win/install_progress_observer.cc",
-        "win/install_progress_observer.h",
         "win/installer/exit_code.h",
         "win/installer_api.cc",
         "win/installer_api.h",
@@ -292,17 +297,21 @@ if (is_win || is_mac || is_linux) {
         "win/ui/ui_ctls.h",
         "win/ui/ui_util.cc",
         "win/ui/ui_util.h",
-        "win/ui/yes_no_dialog.cc",
-        "win/ui/yes_no_dialog.h",
       ]
       deps += [
         "//build:branding_buildflags",
         "//chrome/installer/util:constants",
         "//chrome/installer/util:metainstaller_utils",
         "//chrome/installer/util:work_item",
-        "//chrome/updater/app/server/win:updater_idl_idl",
-        "//chrome/updater/app/server/win:updater_internal_idl_idl",
-        "//chrome/updater/app/server/win:updater_legacy_idl_idl",
+        "//chrome/updater/app/server/win:updater_idl",
+        "//chrome/updater/app/server/win:updater_idl_system",
+        "//chrome/updater/app/server/win:updater_idl_user",
+        "//chrome/updater/app/server/win:updater_internal_idl",
+        "//chrome/updater/app/server/win:updater_internal_idl_system",
+        "//chrome/updater/app/server/win:updater_internal_idl_user",
+        "//chrome/updater/app/server/win:updater_legacy_idl",
+        "//chrome/updater/app/server/win:updater_legacy_idl_system",
+        "//chrome/updater/app/server/win:updater_legacy_idl_user",
         "//chrome/updater/win/ui/resources",
         "//chrome/updater/win/ui/resources:strings",
         "//components/winhttp",
@@ -386,21 +395,19 @@ if (is_win || is_mac || is_linux) {
       "app/app.h",
     ]
 
-    deps = [
-      ":constants_header",
+    deps = [ ":constants_header" ]
+
+    public_deps = [
+      ":public_sources",
       "//base",
     ]
-
-    public_deps = [ ":public_sources" ]
   }
 
   source_set("constants_header") {
     sources = [ "constants.h" ]
 
-    deps = [
-      "//base",
-      "//components/update_client",
-    ]
+    public_deps = [ "//base" ]
+    deps = [ "//components/update_client" ]
   }
 
   source_set("external_constants") {
@@ -523,10 +530,11 @@ if (is_win || is_mac || is_linux) {
     ]
 
     public_deps = [ ":public_sources" ]
+    deps = [ ":constants_header" ]
 
     visibility = [
       "//chrome/browser",
-      "//chrome/browser/ui:ui",
+      "//chrome/browser/ui",
       "//chrome/browser/updater:*",
       "//chrome/test:*",
       "//chrome/test:unit_tests",
@@ -537,6 +545,7 @@ if (is_win || is_mac || is_linux) {
     sources = [
       "certificate_tag.cc",
       "certificate_tag.h",
+      "certificate_tag_internal.h",
       "tag.cc",
       "tag.h",
     ]
@@ -588,7 +597,7 @@ if (is_win || is_mac || is_linux) {
         "win/win_constants.h",
       ]
 
-      deps += [ "//chrome/updater/app/server/win:updater_idl_idl" ]
+      deps += [ "//chrome/updater/app/server/win:updater_idl" ]
 
       configs -= [ "//build/config/win:winver" ]
       configs += [
@@ -613,9 +622,13 @@ if (is_win || is_mac || is_linux) {
         "ipc/ipc_names_mac.mm",
         "ipc/update_service_dialer_mac.cc",
         "mac/privileged_helper/service_protocol.h",
+        "mac/setup/keystone.h",
+        "mac/setup/keystone.mm",
         "util/mac_util.h",
         "util/mac_util.mm",
       ]
+
+      deps += [ ":ks_ticket" ]
 
       frameworks = [ "Foundation.framework" ]
     }
@@ -707,7 +720,6 @@ if (is_win || is_mac || is_linux) {
     ]
     if (is_win) {
       sources += [
-        # TODO(crbug.com/1447274) - eliminate the dependency on //chrome/test.
         "//chrome/test/base/process_inspector_win.cc",
         "//chrome/test/base/process_inspector_win.h",
       ]
@@ -731,6 +743,7 @@ if (is_win || is_mac || is_linux) {
     sources = [
       "app/app_server_unittest.cc",
       "app/app_uninstall_unittest.cc",
+      "app/app_utils_unittest.cc",
       "certificate_tag_unittest.cc",
       "cleanup_task_unittest.cc",
       "constants_unittest.cc",
@@ -745,6 +758,7 @@ if (is_win || is_mac || is_linux) {
       "external_constants_builder.h",
       "external_constants_builder_unittest.cc",
       "external_constants_override_unittest.cc",
+      "installer_unittest.cc",
       "lock_unittest.cc",
       "net/network_unittest.cc",
       "persisted_data_unittest.cc",
@@ -821,20 +835,28 @@ if (is_win || is_mac || is_linux) {
       "test/data/tagged_msi/GUH-untagged.msi",
     ]
 
+    data_deps = [
+      ":updater_selfupdate_test_crx",
+      "//chrome/updater/test/test_installer:app_installers",
+    ]
+
     if (is_win) {
       sources += [
         "activity_impl_win_unittest.cc",
+        "app/app_install_win_unittest.cc",
         "app/server/win/com_classes_legacy_unittest.cc",
         "auto_run_on_os_upgrade_task_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
+        "test/integration_tests_win.h",
+        "util/progress_sampler_unittest.cc",
         "util/unit_test_util_win.cc",
         "util/unit_test_util_win.h",
         "util/util_win_unittest.cc",
         "util/win_util_unittest.cc",
         "win/app_command_runner_unittest.cc",
         "win/installer/configuration_unittest.cc",
-        "win/installer/installer_unittest.cc",
+        "win/installer/installer_win_unittest.cc",
         "win/installer/msi_custom_action_unittest.cc",
         "win/installer/string_unittest.cc",
         "win/installer_api_unittest.cc",
@@ -843,25 +865,23 @@ if (is_win || is_mac || is_linux) {
         "win/setup/setup_util_unittest.cc",
         "win/task_scheduler_unittest.cc",
         "win/ui/l10n_util_unittest.cc",
+        "win/ui/progress_wnd_unittest.cc",
+        "win/updater_tests.rc",
       ]
 
       deps += [
-        "app/server/win:updater_idl_idl",
-        "app/server/win:updater_internal_idl_idl",
-        "app/server/win:updater_legacy_idl_idl",
+        "app/server/win:updater_idl",
+        "app/server/win:updater_internal_idl",
+        "app/server/win:updater_legacy_idl",
         "win/installer:lib",
         "win/installer:msi_custom_action_sources",
         "win/test:test_executables",
         "win/test:test_strings",
-        "win/ui/resources:strings",
+        "win/ui/resources",
+        "//third_party/wtl",
       ]
 
-      data_deps = [
-        ":updater_selfupdate_test_crx",
-        "//chrome/updater/test/test_installer:test_app2_installer",
-        "//chrome/updater/test/test_installer:test_app2_installer_crx",
-        "//chrome/updater/test/test_installer:test_msi_installer1.0.0.0",
-        "//chrome/updater/test/test_installer:test_msi_installer_crx",
+      data_deps += [
         "//chrome/updater/win:updater",
         "//chrome/updater/win:updater_test",
         "//chrome/updater/win/installer:installer_test",
@@ -901,7 +921,7 @@ if (is_win || is_mac || is_linux) {
       sources += [
         "mac/keystone/ksadmin_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
-        "mac/setup/keystone_unittest.cc",
+        "mac/setup/keystone_unittest.mm",
         "mac/setup/ks_tickets_unittest.mm",
         "mac/setup/setup_unittest.mm",
         "mac/setup/wake_task_unittest.mm",
@@ -916,6 +936,11 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/mac:ksadmin_lib",
         "//chrome/updater/mac:privileged_helper_sources",
         "//third_party/ocmock",
+      ]
+
+      frameworks = [
+        "Foundation.framework",
+        "Security.framework",
       ]
 
       data += [
@@ -963,8 +988,7 @@ if (is_win || is_mac || is_linux) {
         "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/_CodeSignature",
       ]
 
-      data_deps = [
-        ":updater_selfupdate_test_crx",
+      data_deps += [
         "//chrome/updater/mac:ksadmin_test",
         "//chrome/updater/mac:updater_bundle_test",
       ]
@@ -1000,10 +1024,7 @@ if (is_win || is_mac || is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
       data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
-      data_deps = [
-        ":updater_selfupdate_test_crx",
-        "//chrome/updater/linux:updater_test",
-      ]
+      data_deps += [ "//chrome/updater/linux:updater_test" ]
       public_configs = [ "linux:libsystemd" ]
     }
 
@@ -1053,6 +1074,7 @@ if (is_win || is_mac || is_linux) {
       ":updater_test_sources",
       "//base/test:test_support",
       "//chrome/common:constants",
+      "//testing/buildbot/filters:updater_tests_filters",
       "//testing/gtest",
     ]
 
@@ -1066,7 +1088,6 @@ if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/installer/util:with_no_strings" ]
       data_deps = [
         ":test_service_files",
-        "//chrome/updater/test/test_installer:test_installer",
         "//chrome/updater/win:updater_test",
         "//third_party/updater:old_updater",
       ]
@@ -1106,7 +1127,6 @@ if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/installer/util:with_no_strings" ]
       data_deps += [
         ":test_service_files",
-        "//chrome/updater/test/test_installer:test_installer",
         "//chrome/updater/win:updater_test",
         "//third_party/updater:old_updater",
       ]

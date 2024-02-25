@@ -9,14 +9,16 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * This class contains the logic specific to the password accessory sheet.
- */
+/** This class contains the logic specific to the password accessory sheet. */
 class PasswordAccessorySheetMediator extends AccessorySheetTabMediator {
     private final ToggleChangeDelegate mToggleChangeDelegate;
 
-    PasswordAccessorySheetMediator(PropertyModel model, int tabType, int userInfoType,
-            int manageActionToRecord, @Nullable ToggleChangeDelegate toggleChangeDelegate) {
+    PasswordAccessorySheetMediator(
+            PropertyModel model,
+            int tabType,
+            int userInfoType,
+            int manageActionToRecord,
+            @Nullable ToggleChangeDelegate toggleChangeDelegate) {
         super(model, tabType, userInfoType, manageActionToRecord, toggleChangeDelegate);
         mToggleChangeDelegate = toggleChangeDelegate;
     }

@@ -21,6 +21,7 @@
 #include "absl/status/status.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/port/canonical_errors.h"
+#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/port/status_macros.h"
@@ -236,7 +237,7 @@ absl::Status TFLiteGPURunner::InitializeOpenCL(
 
   if (serialized_model_.empty() &&
       opencl_init_from_serialized_model_is_forced_) {
-    ASSIGN_OR_RETURN(serialized_model_, GetSerializedModel());
+    MP_ASSIGN_OR_RETURN(serialized_model_, GetSerializedModel());
   }
 
   // Try to initialize from serialized model first.

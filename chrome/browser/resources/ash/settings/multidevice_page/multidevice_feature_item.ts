@@ -11,18 +11,18 @@
  * feature's autonomous page if there is one.
  */
 
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import './multidevice_feature_toggle.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {MultiDeviceFeature} from './multidevice_constants.js';
@@ -178,7 +178,8 @@ export class SettingsMultideviceFeatureItemElement extends
    * for the purpose of logging metrics.
    */
   private onFeatureToggleClicked_(
-      event: CustomEvent<{feature: MultiDeviceFeature, enabled: boolean}>) {
+      event: CustomEvent<{feature: MultiDeviceFeature, enabled: boolean}>):
+      void {
     const feature = event.detail.feature;
     const enabled = event.detail.enabled;
 

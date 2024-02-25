@@ -5,11 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -38,6 +39,8 @@ class TetherController;
 class UserActionRecorder;
 class IconDecoder;
 class AppStreamManager;
+class PhoneHubUiReadinessRecorder;
+class PhoneHubStructuredMetricsLogger;
 
 // Responsible for the core logic of the Phone Hub feature and exposes
 // interfaces via its public API. This class is intended to be a singleton.
@@ -72,17 +75,20 @@ class PhoneHubManager {
   virtual AppStreamManager* GetAppStreamManager() = 0;
   virtual eche_app::EcheConnectionStatusHandler*
   GetEcheConnectionStatusHandler() = 0;
+  virtual PhoneHubUiReadinessRecorder* GetPhoneHubUiReadinessRecorder() = 0;
   virtual void SetEcheConnectionStatusHandler(
       eche_app::EcheConnectionStatusHandler*
           eche_connection_status_handler) = 0;
   virtual void SetSystemInfoProvider(
       eche_app::SystemInfoProvider* system_info_provider) = 0;
   virtual eche_app::SystemInfoProvider* GetSystemInfoProvider() = 0;
+  virtual PhoneHubStructuredMetricsLogger*
+  GetPhoneHubStructuredMetricsLogger() = 0;
 
   // Retrieves the timestamp of the last successful discovery for active host,
   // or nullopt if it hasn't been seen in the current Chrome session.
   virtual void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) = 0;
 
  protected:
   PhoneHubManager() = default;

@@ -12,7 +12,8 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {WhatsNewProxy, WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
+import type {WhatsNewProxy} from 'chrome://whats-new/whats_new_proxy.js';
+import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
 const whatsNewURL = 'chrome://webui-test/whats_new/test.html';
 

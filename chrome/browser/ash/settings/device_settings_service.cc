@@ -18,8 +18,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 
 #include "crypto/rsa_private_key.h"
 
@@ -159,6 +157,11 @@ void DeviceSettingsService::LoadIfNotPresent() {
 }
 
 void DeviceSettingsService::LoadImmediately() {
+  if (session_stopping_) {
+    LOG(WARNING) << "Fail the blocking request when the session is stopping";
+    // No need to HandleCompletedOperation, as there's no callback waiting.
+    return;
+  }
   std::unique_ptr<SessionManagerOperation> operation(new LoadSettingsOperation(
       /*request_key_load=*/true, /*force_immediate_load=*/true,
       base::BindOnce(&DeviceSettingsService::HandleCompletedOperation,
@@ -280,6 +283,10 @@ void DeviceSettingsService::PropertyChangeComplete(bool success) {
   }
 }
 
+void DeviceSettingsService::SessionStopping() {
+  session_stopping_ = true;
+}
+
 void DeviceSettingsService::Enqueue(
     std::unique_ptr<SessionManagerOperation> operation) {
   const bool was_empty = pending_operations_.empty();
@@ -386,6 +393,24 @@ void DeviceSettingsService::RunPendingOwnershipStatusCallbacks() {
   for (auto& callback : callbacks) {
     std::move(callback).Run(GetOwnershipStatus());
   }
+}
+
+bool DeviceSettingsService::IsDeviceManaged() const {
+  if (!policy_data_ || policy_data_->state() != em::PolicyData::ACTIVE) {
+    return false;
+  }
+  if (policy_data_->has_management_mode()) {
+    return policy_data_->management_mode() ==
+           em::PolicyData::ENTERPRISE_MANAGED;
+  } else {
+    // The old device settings didn't have a management_mode. For those we
+    // have to rely on the presence of request_token.
+    return policy_data_->has_request_token();
+  }
+}
+
+bool DeviceSettingsService::HasDmToken() const {
+  return policy_data_ && policy_data_->has_request_token();
 }
 
 std::ostream& operator<<(std::ostream& ostream,

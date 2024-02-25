@@ -4,24 +4,28 @@
 
 #include "ash/system/geolocation/geolocation_controller.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller_test_util.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/time_of_day_test_util.h"
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -36,17 +40,17 @@ constexpr char kUser2Email[] = "user2@geolocation";
 
 // Sets of test longitudes/latitude and the corresponding sunrise/sunset times
 // for testing. They all assume the clock's current time is `kTestNow`.
-constexpr base::StringPiece kTestNow = "23 Dec 2021 12:00:00";
+constexpr std::string_view kTestNow = "23 Dec 2021 12:00:00";
 
 constexpr double kTestLatitude1 = 23.5;
 constexpr double kTestLongitude1 = 35.88;
-constexpr base::StringPiece kTestSunriseTime1 = "23 Dec 2021 04:14:36.626";
-constexpr base::StringPiece kTestSunsetTime1 = "23 Dec 2021 14:59:58.459";
+constexpr std::string_view kTestSunriseTime1 = "23 Dec 2021 04:14:36.626";
+constexpr std::string_view kTestSunsetTime1 = "23 Dec 2021 14:59:58.459";
 
 constexpr double kTestLatitude2 = 37.5;
 constexpr double kTestLongitude2 = -100.5;
-constexpr base::StringPiece kTestSunriseTime2 = "23 Dec 2021 13:55:13.306";
-constexpr base::StringPiece kTestSunsetTime2 = "23 Dec 2021 23:33:46.855";
+constexpr std::string_view kTestSunriseTime2 = "23 Dec 2021 13:55:13.306";
+constexpr std::string_view kTestSunsetTime2 = "23 Dec 2021 23:33:46.855";
 
 constexpr SimpleGeoposition kSanJoseGeoposition = {37.335480, -121.893028};
 
@@ -75,7 +79,7 @@ std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
   return system::TimezoneSettings::GetTimezoneID(timezone);
 }
 
-base::Time ToUTCTime(base::StringPiece utc_time_str) {
+base::Time ToUTCTime(std::string_view utc_time_str) {
   base::Time time;
   CHECK(base::Time::FromUTCString(std::string(utc_time_str).c_str(), &time))
       << "Invalid UTC time string specified: " << utc_time_str;
@@ -85,8 +89,8 @@ base::Time ToUTCTime(base::StringPiece utc_time_str) {
 class FakeGeolocationController : public GeolocationController {
  public:
   explicit FakeGeolocationController(
-      scoped_refptr<network::SharedURLLoaderFactory> factory)
-      : GeolocationController(factory) {}
+      SimpleGeolocationProvider* geolocation_provider)
+      : GeolocationController(geolocation_provider) {}
 
   // Proxy method to call the `OnGeoposition()` callback directly, without
   // waiting for the server response. Need this to test scheduler behavior.
@@ -120,9 +124,9 @@ class GeolocationControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     CreateTestUserSessions();
+    // `SimpleGeolocationProvider` is initialized by `AshTestHelper`.
     controller_ = std::make_unique<FakeGeolocationController>(
-        static_cast<scoped_refptr<network::SharedURLLoaderFactory>>(
-            base::MakeRefCounted<TestGeolocationUrlLoaderFactory>()));
+        SimpleGeolocationProvider::GetInstance());
 
     test_clock_.SetNow(base::Time::Now());
     controller_->SetClockForTesting(&test_clock_);
@@ -188,21 +192,21 @@ class GeolocationControllerTest : public AshTestBase {
   void SetServerPosition(const Geoposition& position) {
     position_ = position;
     auto* factory = static_cast<TestGeolocationUrlLoaderFactory*>(
-        controller_->GetSharedURLLoaderFactoryForTesting());
+        SimpleGeolocationProvider::GetInstance()
+            ->GetSharedURLLoaderFactoryForTesting());
     factory->ClearResponses();
     factory->set_position(position_);
   }
 
-  void UpdateUserGeolocationPermission(bool enabled) {
-    PrefService* pref_service =
-        Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-    pref_service->SetBoolean(ash::prefs::kUserGeolocationAllowed, enabled);
+  void UpdateUserGeolocationPermission(GeolocationAccessLevel access_level) {
+    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+        access_level);
   }
 
  private:
   std::unique_ptr<FakeGeolocationController> controller_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<base::OneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_ptr_;
+  raw_ptr<base::OneShotTimer, DanglingUntriaged> timer_ptr_;
   Geoposition position_;
 };
 
@@ -329,12 +333,18 @@ TEST_F(GeolocationControllerTest, SystemGeolocationPermissionChanges) {
   EXPECT_EQ(1, observer.position_received_num());
   EXPECT_TRUE(timer_ptr()->IsRunning());
 
+  // Block geolocation usage to apps only, shouldn't affect
+  // `GeolocationController`.
+  UpdateUserGeolocationPermission(
+      GeolocationAccessLevel::kOnlyAllowedForSystem);
+  EXPECT_TRUE(timer_ptr()->IsRunning());
+
   // Disable system geo permission. Scheduling should stop.
-  controller()->OnSystemGeolocationPermissionChanged(false);
+  UpdateUserGeolocationPermission(GeolocationAccessLevel::kDisallowed);
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Re-enabling the system geo permission, should resume scheduling.
-  controller()->OnSystemGeolocationPermissionChanged(true);
+  UpdateUserGeolocationPermission(GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(timer_ptr()->IsRunning());
 }
 
@@ -344,25 +354,26 @@ TEST_F(GeolocationControllerTest, StopSchedulingWhileResponseIsComing) {
   // This will start scheduling.
   GeolocationControllerObserver observer;
   controller()->AddObserver(&observer);
+  EXPECT_TRUE(timer_ptr()->IsRunning());
 
   // Fire Geolocation request.
   timer_ptr()->FireNow();
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Disable user geolocation permission, this should stop scheduling.
-  UpdateUserGeolocationPermission(false);
-  controller()->OnSystemGeolocationPermissionChanged(false);
+  UpdateUserGeolocationPermission(GeolocationAccessLevel::kDisallowed);
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
-  // Simulate server response and check it didn't trigger scheduling to
-  // continue.
+  // Simulate server response and check it didn't resume scheduling.
   controller()->ImitateGeopositionReceived();
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Re-enable user geolocation permission, this should resume scheduling.
-  UpdateUserGeolocationPermission(true);
-  controller()->OnSystemGeolocationPermissionChanged(true);
+  UpdateUserGeolocationPermission(GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(timer_ptr()->IsRunning());
+
+  // Unsubscribe the observer before being destroyed.
+  controller()->RemoveObserver(&observer);
 }
 
 TEST_F(GeolocationControllerTest, StopSchedulingWhenObserverListIsEmpty) {
@@ -385,6 +396,9 @@ TEST_F(GeolocationControllerTest, StopSchedulingWhenObserverListIsEmpty) {
   // Add the observer back, scheduling should resume.
   controller()->AddObserver(&observer);
   EXPECT_TRUE(timer_ptr()->IsRunning());
+
+  // Unsubscribe the observer before being destroyed.
+  controller()->RemoveObserver(&observer);
 }
 
 // Tests obtaining sunset/sunrise time when there is no valid geoposition, for

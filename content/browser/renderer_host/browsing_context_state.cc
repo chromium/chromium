@@ -37,8 +37,8 @@ using perfetto::protos::pbzero::ChromeTrackEvent;
 BrowsingContextState::BrowsingContextState(
     blink::mojom::FrameReplicationStatePtr replication_state,
     RenderFrameHostImpl* parent,
-    absl::optional<BrowsingInstanceId> browsing_instance_id,
-    absl::optional<base::UnguessableToken> coop_related_group_token)
+    std::optional<BrowsingInstanceId> browsing_instance_id,
+    std::optional<base::UnguessableToken> coop_related_group_token)
     : replication_state_(std::move(replication_state)),
       parent_(parent),
       browsing_instance_id_(browsing_instance_id),

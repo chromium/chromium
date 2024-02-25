@@ -6,8 +6,10 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -63,7 +65,6 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsOk;
 
@@ -76,7 +77,7 @@ base::TimeDelta kFallbackPeriod = base::Seconds(1);
 const char kMockHostname[] = "mock.http";
 
 std::vector<uint8_t> DomainFromDot(base::StringPiece dotted_name) {
-  absl::optional<std::vector<uint8_t>> dns_name =
+  std::optional<std::vector<uint8_t>> dns_name =
       dns_names_util::DottedNameToNetwork(dotted_name);
   CHECK(dns_name.has_value());
   return dns_name.value();
@@ -314,8 +315,8 @@ class TestSocketFactory : public MockClientSocketFactory {
     explicit RemoteNameserver(DnsOverHttpsServerConfig secure_nameserver)
         : secure_nameserver(secure_nameserver) {}
 
-    absl::optional<IPEndPoint> insecure_nameserver;
-    absl::optional<DnsOverHttpsServerConfig> secure_nameserver;
+    std::optional<IPEndPoint> insecure_nameserver;
+    std::optional<DnsOverHttpsServerConfig> secure_nameserver;
   };
 
   std::vector<RemoteNameserver> remote_endpoints_;
@@ -590,12 +591,12 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
                    IOBuffer* buf,
                    int buf_size) {
     if (data_len > buf_size) {
-      memcpy(buf->data(), data, buf_size);
+      std::copy(data, data + buf_size, buf->data());
       leftover_data_ = data + buf_size;
       leftover_data_len_ = data_len - buf_size;
       return buf_size;
     }
-    memcpy(buf->data(), data, data_len);
+    std::copy(data, data + data_len, buf->data());
     return data_len;
   }
 
@@ -1026,8 +1027,8 @@ TEST_F(DnsTransactionTest, LookupWithLog) {
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
-  EXPECT_EQ(observer.count(), 6);
-  EXPECT_EQ(observer.dict_count(), 4);
+  EXPECT_EQ(observer.count(), 7);
+  EXPECT_EQ(observer.dict_count(), 5);
 }
 
 TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
@@ -2489,8 +2490,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
       config_.doh_config.servers()[0].server_template()));
   auto cookie = CanonicalCookie::Create(
       cookie_url, "test-cookie=you-still-fail", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   request_context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, CookieOptions(),
       base::BindOnce(&CookieCallback::SetCookieCallback,
@@ -2609,6 +2609,39 @@ TEST_F(DnsTransactionTest, HttpsGetRedirectToInsecureProtocol) {
   ASSERT_EQ(helper0.response(), nullptr);
 }
 
+TEST_F(DnsTransactionTest, HttpsGetContentLengthTooLarge) {
+  ConfigureDohServers(/*use_post=*/false);
+  AddQueryAndResponse(0, kT0HostName, kT0Qtype, kT0ResponseDatagram,
+                      std::size(kT0ResponseDatagram), SYNCHRONOUS,
+                      Transport::HTTPS, /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+  TransactionHelper helper0(ERR_DNS_MALFORMED_RESPONSE);
+  SetResponseModifierCallback(base::BindLambdaForTesting(
+      [](URLRequest* request, HttpResponseInfo* info) {
+        info->headers->AddHeader("Content-Length", "65536");
+      }));
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           /*secure=*/true, resolve_context_.get());
+  helper0.RunUntilComplete();
+  ASSERT_EQ(helper0.response(), nullptr);
+}
+
+TEST_F(DnsTransactionTest, HttpsGetResponseTooLargeWithoutContentLength) {
+  ConfigureDohServers(/*use_post=*/false);
+  std::vector<uint8_t> large_response(65536, 0);
+  AddQueryAndResponse(0, kT0HostName, kT0Qtype, large_response.data(),
+                      large_response.size(), SYNCHRONOUS, Transport::HTTPS,
+                      /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+  TransactionHelper helper0(ERR_DNS_MALFORMED_RESPONSE);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           /*secure=*/true, resolve_context_.get());
+  helper0.RunUntilComplete();
+  ASSERT_EQ(helper0.response(), nullptr);
+}
+
 void MakeResponseNoType(URLRequest* request, HttpResponseInfo* info) {
   info->headers->RemoveHeader("Content-Type");
 }
@@ -2656,8 +2689,8 @@ TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
                            true /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.count(), 18);
-  EXPECT_EQ(observer.dict_count(), 9);
+  EXPECT_EQ(observer.count(), 19);
+  EXPECT_EQ(observer.dict_count(), 10);
 }
 
 // Test for when a slow DoH response is delayed until after the initial fallback
@@ -3121,8 +3154,8 @@ TEST_F(DnsTransactionTest, TcpLookup_UdpRetry_WithLog) {
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
-  EXPECT_EQ(observer.count(), 8);
-  EXPECT_EQ(observer.dict_count(), 6);
+  EXPECT_EQ(observer.count(), 9);
+  EXPECT_EQ(observer.dict_count(), 7);
 }
 
 TEST_F(DnsTransactionTest, TcpLookup_LowEntropy) {
@@ -3475,6 +3508,38 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeUntilSuccess) {
   FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
   ASSERT_TRUE(doh_itr->AttemptAvailable());
   EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 0u);
+}
+
+TEST_F(DnsTransactionTestWithMockTime, ProbeCreationTriggersSuccessMetric) {
+  ConfigureDohServers(/*use_post=*/true, /*num_doh_servers=*/1,
+                      /*make_available=*/false);
+  AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
+                      std::size(kT4ResponseDatagram), ASYNC, Transport::HTTPS,
+                      /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+
+  // The metric timer should not have started yet.
+  EXPECT_FALSE(
+      resolve_context_->doh_autoupgrade_metrics_timer_is_running_for_testing());
+
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  // Ensure that calling `CreateDohProbeRunner()` causes metrics to be emitted
+  // after the timeout.
+  EXPECT_TRUE(
+      resolve_context_->doh_autoupgrade_metrics_timer_is_running_for_testing());
+
+  // Fast-forward by enough time for the timer to trigger. Add one millisecond
+  // just to make it clear that afterwards the timeout should definitely have
+  // occurred (although this may not be strictly necessary).
+  FastForwardBy(ResolveContext::kDohAutoupgradeSuccessMetricTimeout +
+                base::Milliseconds(1));
+
+  EXPECT_FALSE(
+      resolve_context_->doh_autoupgrade_metrics_timer_is_running_for_testing());
 }
 
 // Test that if a probe attempt hangs, additional probes will still run on

@@ -45,6 +45,8 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
       return "tabbed";
     case blink::mojom::DisplayMode::kBorderless:
       return "borderless";
+    case blink::mojom::DisplayMode::kPictureInPicture:
+      return "picture-in-picture";
   }
   return "";
 }
@@ -64,6 +66,9 @@ blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
     return blink::mojom::DisplayMode::kTabbed;
   if (base::EqualsCaseInsensitiveASCII(display, "borderless"))
     return blink::mojom::DisplayMode::kBorderless;
+  if (base::EqualsCaseInsensitiveASCII(display, "picture-in-picture")) {
+    return blink::mojom::DisplayMode::kPictureInPicture;
+  }
   return blink::mojom::DisplayMode::kUndefined;
 }
 
@@ -135,7 +140,7 @@ mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
   return mojom::CaptureLinks::kUndefined;
 }
 
-absl::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
+std::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
     const std::string& client_mode) {
   using ClientMode = Manifest::LaunchHandler::ClientMode;
   if (base::EqualsCaseInsensitiveASCII(client_mode, "auto"))
@@ -146,14 +151,7 @@ absl::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
     return ClientMode::kNavigateExisting;
   if (base::EqualsCaseInsensitiveASCII(client_mode, "focus-existing"))
     return ClientMode::kFocusExisting;
-  return absl::nullopt;
-}
-
-GURL GetIdFromManifest(const mojom::Manifest& manifest) {
-  if (manifest.id.is_valid()) {
-    return manifest.id;
-  }
-  return manifest.start_url;
+  return std::nullopt;
 }
 
 }  // namespace blink

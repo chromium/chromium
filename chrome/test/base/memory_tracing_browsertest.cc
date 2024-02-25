@@ -45,8 +45,8 @@ void OnStartTracingDoneCallback(
     base::OnceClosure quit_closure) {
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
-          MemoryDumpType::EXPLICITLY_TRIGGERED, explicit_dump_type,
-          MemoryDumpDeterminism::NONE,
+          MemoryDumpType::kExplicitlyTriggered, explicit_dump_type,
+          MemoryDumpDeterminism::kNone,
           BindOnce(&RequestGlobalDumpCallback, std::move(quit_closure)));
 }
 
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingBrowserTest, MAYBE_TestMemoryInfra) {
       base::trace_event::TraceConfig(
           base::trace_event::TraceConfigMemoryTestUtil::
               GetTraceConfig_EmptyTriggers()),
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED, &json_events);
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed, &json_events);
 }
 
 // crbug.com/808152: This test is flakily failing on LSAN. This test also
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingBrowserTest,
       base::trace_event::TraceConfig(
           base::trace_event::TraceConfigMemoryTestUtil::
               GetTraceConfig_BackgroundTrigger(200)),
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND, &json_events);
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground, &json_events);
 }
 
 }  // namespace

@@ -6,16 +6,14 @@
 
 namespace blink {
 
-MemoryManagedPaintCanvas::MemoryManagedPaintCanvas(const gfx::Size& size,
-                                                   Client* client)
-    : cc::InspectableRecordPaintCanvas(size), client_(client) {
-  DCHECK(client);
-}
+MemoryManagedPaintCanvas::MemoryManagedPaintCanvas(const gfx::Size& size)
+    : cc::InspectableRecordPaintCanvas(size) {}
 
 MemoryManagedPaintCanvas::~MemoryManagedPaintCanvas() = default;
 
 cc::PaintRecord MemoryManagedPaintCanvas::ReleaseAsRecord() {
   cached_image_ids_.clear();
+  image_bytes_used_ = 0;
   return cc::InspectableRecordPaintCanvas::ReleaseAsRecord();
 }
 
@@ -47,7 +45,7 @@ void MemoryManagedPaintCanvas::UpdateMemoryUsage(const cc::PaintImage& image) {
     return;
 
   cached_image_ids_.insert(image.GetContentIdForFrame(0u));
-  client_->DidPinImage(image.GetSkImageInfo().computeMinByteSize());
+  image_bytes_used_ += image.GetSkImageInfo().computeMinByteSize();
 }
 
 bool MemoryManagedPaintCanvas::IsCachingImage(

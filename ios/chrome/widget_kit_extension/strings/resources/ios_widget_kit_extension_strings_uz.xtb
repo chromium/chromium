@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1324575488877808473">Shu yerda eng koʻp kirilgan saytlarni koʻrish uchun Chrome brauzerini oching.</translation>
 <translation id="2513892053093488070">Ovozli qidiruv</translation>
 <translation id="2535710892645968259">Chrome Dino oʻyinini bosh ekrandan oching.</translation>
 <translation id="2542770169955243077">Chrome Dino oʻyini</translation>
-<translation id="2803429804752388720">Parollarni qidirish</translation>
 <translation id="2922313168575194078">Google Parollar menejerida saqlangan parollarni xavfsiz qidiring</translation>
 <translation id="302608144225178783">Chrome Dino oʻyinini bosh ekrandan ochish.</translation>
 <translation id="3296938369177810197">Ovozli qidiruv</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Yangi qidiruv yoki oxirgi ochilgan saytlarni iPad bosh sahifasidan boshlang.</translation>
 <translation id="6721566127904256183">Koʻp ochiladigan saytlar shu yerda chiqadi.</translation>
 <translation id="6855322554930231468">Qidiruv</translation>
+<translation id="6973491011026415905">Parollarni Google Parollar menejeridan qidirish</translation>
 <translation id="7010831364920321713">Inkognito qidiruv</translation>
 <translation id="7048549665319929185">Qidiring yoki
 URL manzili kiriting</translation>

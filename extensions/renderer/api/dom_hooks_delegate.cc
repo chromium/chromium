@@ -22,7 +22,7 @@ APIBindingHooks::RequestResult DOMHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   using RequestResult = APIBindingHooks::RequestResult;
 
@@ -57,12 +57,12 @@ APIBindingHooks::RequestResult DOMHooksDelegate::HandleRequest(
 
 v8::Local<v8::Value> DOMHooksDelegate::OpenOrClosedShadowRoot(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
+    const v8::LocalVector<v8::Value>& parsed_arguments) {
   DCHECK(script_context->extension());
   DCHECK(parsed_arguments[0]->IsObject());
 
-  blink::WebElement element =
-      blink::WebElement::FromV8Value(parsed_arguments[0]);
+  blink::WebElement element = blink::WebElement::FromV8Value(
+      script_context->isolate(), parsed_arguments[0]);
   if (element.IsNull())
     return v8::Null(script_context->isolate());
 
@@ -70,8 +70,7 @@ v8::Local<v8::Value> DOMHooksDelegate::OpenOrClosedShadowRoot(
   if (shadow_root.IsNull())
     return v8::Null(script_context->isolate());
 
-  return shadow_root.ToV8Value(script_context->v8_context()->Global(),
-                               script_context->isolate());
+  return shadow_root.ToV8Value(script_context->isolate());
 }
 
 }  // namespace extensions

@@ -1,0 +1,550 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanReset">
+  <int value="0" label="Not reset"/>
+  <int value="1" label="Reset"/>
+</enum>
+
+<enum name="BooleanStale">
+  <int value="0" label="Fresh"/>
+  <int value="1" label="Stale"/>
+</enum>
+
+<enum name="FirstRunCloudPolicyStoreState">
+  <int value="0" label="Loaded before initialization">
+    The cloud policy store was already loaded when the FRE intro was first
+    initialiazed.
+  </int>
+  <int value="1" label="Loaded successfully">
+    The cloud policy store has loaded within the time delay specified in the
+    observer.
+  </int>
+  <int value="2" label="Not loaded in time">
+    The cloud policy store did not load within the time delay specified in the
+    observer.
+  </int>
+  <int value="3" label="Error raised">
+    The cloud policy store raised an error while loading.
+  </int>
+  <int value="4" label="Store is null">
+    The cloud policy store was null (no CBCM).
+  </int>
+</enum>
+
+<enum name="FirstRunDefaultBrowserChoice">
+  <summary>
+    User choice on the prompt to set Chrome as their default browser.
+  </summary>
+  <int value="0" label="ClickSetAsDefaultBrowser"/>
+  <int value="1" label="SkipDefaultBrowser"/>
+  <int value="2" label="QuitOnDefaultBrowser"/>
+  <int value="3" label="NotShownOnDefaultBrowserCheckTimeout"/>
+  <int value="4" label="SuccessfullySetAsDefaultBrowser"/>
+</enum>
+
+<enum name="FirstRunEntryPoint">
+  <int value="0" label="Other"/>
+  <int value="1" label="Process startup"/>
+  <int value="2" label="Web app launch"/>
+  <int value="3" label="Web app context menu command"/>
+</enum>
+
+<enum name="FirstRunExitStatus">
+  <summary>
+    Status code indicating how the first run experience was exited.
+  </summary>
+  <int value="0"
+      label="Completed: finished through the buttons in the experience"/>
+  <int value="1"
+      label="Quit early: window closed, experience not considered 'finished'
+             (Lacros only)"/>
+  <int value="2"
+      label="Quit at end: window closed, experience considered 'finished'"/>
+  <int value="3"
+      label="Abort task: user runs experience while it's already running.
+             Experience not considered 'finished'"/>
+  <int value="4"
+      label="Abandon flow: user does something to abandon the FRE (open a new
+             window etc..), experience is considered 'finished'"/>
+</enum>
+
+<enum name="FirstRunFinishReason">
+  <int value="0" label="ExperimentCounterfactual (feature is disabled)"/>
+  <int value="1" label="FinishedFlow (happy path)"/>
+  <int value="2"
+      label="ProfileAlreadySetUp (syncing on Lacros or signed in on Dice)"/>
+  <int value="3" label="SkippedByPolicies"/>
+  <int value="4" label="ForceSignin"/>
+</enum>
+
+<enum name="GuestProfileCreatedType">
+  <int value="0" label="ParentGuest"/>
+  <int value="1" label="FirstChildGuest"/>
+</enum>
+
+<enum name="NukeProfileResult">
+  <int value="0" label="Success (1st attempt)"/>
+  <int value="1" label="Success (2nd attempt)"/>
+  <int value="2" label="Success (3rd attempt)"/>
+  <int value="10" label="Failure (1st attempt)"/>
+  <int value="11" label="Failure (2nd attempt)"/>
+  <int value="12" label="Failure (3rd attempt)"/>
+</enum>
+
+<enum name="Profile">
+  <int value="0" label="Guest Profile"/>
+  <int value="1" label="Profile 01"/>
+  <int value="2" label="Profile 02"/>
+  <int value="3" label="Profile 03"/>
+  <int value="4" label="Profile 04"/>
+  <int value="5" label="Profile 05"/>
+  <int value="6" label="Profile 06"/>
+  <int value="7" label="Profile 07"/>
+  <int value="8" label="Profile 08"/>
+  <int value="9" label="Profile 09"/>
+  <int value="10" label="Profile 10"/>
+  <int value="11" label="Profile 11"/>
+  <int value="12" label="Profile 12"/>
+  <int value="13" label="Profile 13"/>
+  <int value="14" label="Profile 14"/>
+  <int value="15" label="Profile 15"/>
+  <int value="16" label="Profile 16"/>
+  <int value="17" label="Profile 17"/>
+  <int value="18" label="Profile 18"/>
+  <int value="19" label="Profile 19"/>
+  <int value="20" label="Profile 20"/>
+  <int value="21" label="Profile 21"/>
+  <int value="22" label="Profile 22"/>
+  <int value="23" label="Profile 23"/>
+  <int value="24" label="Profile 24"/>
+  <int value="25" label="Profile 25"/>
+  <int value="26" label="Profile 26"/>
+  <int value="27" label="Profile 27"/>
+  <int value="28" label="Profile 28"/>
+  <int value="29" label="Profile 29"/>
+  <int value="30" label="Profile 30"/>
+  <int value="31" label="Profile 31"/>
+  <int value="32" label="Profile 32"/>
+  <int value="33" label="Profile 33"/>
+  <int value="34" label="Profile 34"/>
+  <int value="35" label="Profile 35"/>
+  <int value="36" label="Profile 36"/>
+  <int value="37" label="Profile 37"/>
+  <int value="38" label="Profile 38"/>
+  <int value="39" label="Profile 39"/>
+  <int value="40" label="Profile 40"/>
+  <int value="41" label="Profile 41"/>
+  <int value="42" label="Profile 42"/>
+  <int value="43" label="Profile 43"/>
+  <int value="44" label="Profile 44"/>
+  <int value="45" label="Profile 45"/>
+  <int value="46" label="Profile 46"/>
+  <int value="47" label="Profile 47"/>
+  <int value="48" label="Profile 48"/>
+  <int value="49" label="Profile 49"/>
+  <int value="50" label="Profile 50"/>
+  <int value="51" label="Profile 51"/>
+  <int value="52" label="Profile 52"/>
+  <int value="53" label="Profile 53"/>
+  <int value="54" label="Profile 54"/>
+  <int value="55" label="Profile 55"/>
+  <int value="56" label="Profile 56"/>
+  <int value="57" label="Profile 57"/>
+  <int value="58" label="Profile 58"/>
+  <int value="59" label="Profile 59"/>
+  <int value="60" label="Profile 60"/>
+  <int value="61" label="Profile 61"/>
+  <int value="62" label="Profile 62"/>
+  <int value="63" label="Profile 63"/>
+  <int value="64" label="Profile 64"/>
+  <int value="65" label="Profile 65"/>
+  <int value="66" label="Profile 66"/>
+  <int value="67" label="Profile 67"/>
+  <int value="68" label="Profile 68"/>
+  <int value="69" label="Profile 69"/>
+  <int value="70" label="Profile 70"/>
+  <int value="71" label="Profile 71"/>
+  <int value="72" label="Profile 72"/>
+  <int value="73" label="Profile 73"/>
+  <int value="74" label="Profile 74"/>
+  <int value="75" label="Profile 75"/>
+  <int value="76" label="Profile 76"/>
+  <int value="77" label="Profile 77"/>
+  <int value="78" label="Profile 78"/>
+  <int value="79" label="Profile 79"/>
+  <int value="80" label="Profile 80"/>
+  <int value="81" label="Profile 81"/>
+  <int value="82" label="Profile 82"/>
+  <int value="83" label="Profile 83"/>
+  <int value="84" label="Profile 84"/>
+  <int value="85" label="Profile 85"/>
+  <int value="86" label="Profile 86"/>
+  <int value="87" label="Profile 87"/>
+  <int value="88" label="Profile 88"/>
+  <int value="89" label="Profile 89"/>
+  <int value="90" label="Profile 90"/>
+  <int value="91" label="Profile 91"/>
+  <int value="92" label="Profile 92"/>
+  <int value="93" label="Profile 93"/>
+  <int value="94" label="Profile 94"/>
+  <int value="95" label="Profile 95"/>
+  <int value="96" label="Profile 96"/>
+  <int value="97" label="Profile 97"/>
+  <int value="98" label="Profile 98"/>
+  <int value="99" label="Profile 99"/>
+  <int value="100" label="Profile 99+"/>
+</enum>
+
+<enum name="ProfileAddNewUser">
+  <int value="0" label="(Deprecated) Add new profile from icon menu"/>
+  <int value="1" label="(Deprecated) Add new profile from title bar menu"/>
+  <int value="2" label="Add new profile from the old create profile dialog"/>
+  <int value="3" label="Add new local profile from the Profile picker"/>
+  <int value="4" label="Auto-created after deleting last user"/>
+  <int value="5" label="Add new profile from sign-in interception"/>
+  <int value="6"
+      label="Add new profile from the sync flow (to avoid data clash)"/>
+  <int value="7" label="Add new signed-in profile from the Profile picker"/>
+</enum>
+
+<enum name="ProfileAllAccountsNames">
+  <int value="0" label="At most one name (or a rare hash collision)"/>
+  <int value="1" label="Multiple names (no sync)"/>
+  <int value="2" label="Multiple names (sync enabled for one of them)"/>
+</enum>
+
+<enum name="ProfileAvatar">
+  <int value="0" label="Generic"/>
+  <int value="1" label="Generic Aqua"/>
+  <int value="2" label="Generic Blue"/>
+  <int value="3" label="Generic Green"/>
+  <int value="4" label="Generic Orange"/>
+  <int value="5" label="Generic Purple"/>
+  <int value="6" label="Generic Red"/>
+  <int value="7" label="Generic Yellow"/>
+  <int value="8" label="Secret Agent"/>
+  <int value="9" label="Superhero"/>
+  <int value="10" label="Volleyball"/>
+  <int value="11" label="Businessman"/>
+  <int value="12" label="Ninja"/>
+  <int value="13" label="Alien"/>
+  <int value="14" label="Super Awesome Cool Smiley Face"/>
+  <int value="15" label="Flower"/>
+  <int value="16" label="Pizza"/>
+  <int value="17" label="Soccer"/>
+  <int value="18" label="Burger"/>
+  <int value="19" label="Cat"/>
+  <int value="20" label="Cupcake"/>
+  <int value="21" label="Dog"/>
+  <int value="22" label="Horse"/>
+  <int value="23" label="Margarita"/>
+  <int value="24" label="Note"/>
+  <int value="25" label="Sun And Cloud"/>
+  <int value="26" label="Placeholder"/>
+  <int value="27" label="Unknown"/>
+  <int value="28" label="GAIA"/>
+  <int value="29" label="Origami Cat"/>
+  <int value="30" label="Origami Corgi"/>
+  <int value="31" label="Origami Dragon"/>
+  <int value="32" label="Origami Elephant"/>
+  <int value="33" label="Origami Fox"/>
+  <int value="34" label="Origami Monkey"/>
+  <int value="35" label="Origami Panda"/>
+  <int value="36" label="Origami Penguin"/>
+  <int value="37" label="Origami Pink Butterfly"/>
+  <int value="38" label="Origami Rabbit"/>
+  <int value="39" label="Origami Unicorn"/>
+</enum>
+
+<enum name="ProfileAvatarState">
+  <int value="0" label="Signed In: Gaia avatar"/>
+  <int value="1" label="Signed In: Modern avatar"/>
+  <int value="2" label="Signed In: Old avatar"/>
+  <int value="3" label="Signed Out: Default avatar (Grey silhouette)"/>
+  <int value="4" label="Signed Out: Modern avatar"/>
+  <int value="5" label="Signed Out: Old avatar"/>
+</enum>
+
+<enum name="ProfileDeleteAction">
+  <int value="0" label="Settings Page">
+    The user confirmed deletion of a profile from the settings page. This metric
+    is recorded even if profile deletion is cancelled after the confirmation.
+  </int>
+  <int value="1" label="User Manager">
+    The user confirmed deletion of a profile from the User Manager. This metric
+    is recorded even if profile deletion is cancelled after the confirmation.
+  </int>
+  <int value="2" label="User Manager Warning Shown">
+    The user clicked 'Remove this person' in the user manager and was shown the
+    profile deletion warning. No profile deletion action has been started yet.
+  </int>
+  <int value="3" label="Settings Page Warning Shown">
+    The user clicked 'Remove...' or the 'X' in the settings page and was shown
+    the profile deletion warning. No profile deletion action has been started
+    yet.
+  </int>
+  <int value="4" label="Aborted after confirmation">
+    The user confirmed the deletion of a profile in either the settings page or
+    the User Manager, but clicked 'Stay' in an OnBeforeUnload dialog. Since the
+    browsing window of the profile was still open, profile deletion was
+    cancelled.
+  </int>
+  <int value="5" label="Dice web signout">
+    Deprecated. The user signed out on the web, and Chrome signout was
+    prohibited.
+  </int>
+  <int value="6" label="Primary account is not allowed">
+    The primary account is a managed account and is no longer allowed by policy.
+  </int>
+  <int value="7" label="Primary account was removed (Lacros only)">
+    The primary account was removed from the device on Lacros.
+  </int>
+  <int value="8" label="Signin is required with Mirror (Lacros only)">
+    The profile is not signed in, which is unsupported on Lacros.
+  </int>
+</enum>
+
+<enum name="ProfileDeleteContext">
+  <int value="0" label="Without browser window: the last profile">
+    The deletion happened from the profile picker when no browser window is
+    shown (which is a good proxy for happening on startup). It is the last
+    remaining profile.
+  </int>
+  <int value="1" label="Without browser window: an additional profile">
+    The deletion happened from the profile picker when no browser window is
+    shown (which is a good proxy for happening on startup). It is not the last
+    remaining profile.
+  </int>
+  <int value="2" label="With a browser window: the last profile">
+    The deletion happened with at least one browser window open. It is the last
+    remaining profile.
+  </int>
+  <int value="3" label="With a browser window: an additional profile">
+    The deletion happened with at least one browser window open. It is not the
+    last remaining profile.
+  </int>
+</enum>
+
+<enum name="ProfileDestructionType">
+  <int value="0" label="Immediately"/>
+  <int value="1" label="Delayed"/>
+  <int value="2" label="Delayed and Crashed"/>
+</enum>
+
+<enum name="ProfileKeepAliveOrigin">
+  <int value="0" label="kWaitingForFirstBrowserWindow"/>
+  <int value="1" label="kBrowserWindow"/>
+  <int value="2" label="kBackgroundMode"/>
+  <int value="3" label="kOffTheRecordProfile"/>
+  <int value="4" label="kDownloadInProgress"/>
+  <int value="5" label="kAppControllerMac"/>
+  <int value="6" label="kClearingBrowsingData"/>
+  <int value="7" label="kAppWindow"/>
+  <int value="8" label="kBackgroundSync"/>
+  <int value="9" label="kNotification"/>
+  <int value="10" label="kPendingNotificationClickEvent"/>
+  <int value="11" label="kInFlightPushMessage"/>
+  <int value="12" label="kSessionRestore"/>
+  <int value="13" label="kChromeViewsDelegate"/>
+  <int value="14" label="kDevToolsWindow"/>
+  <int value="15" label="kWebAppPermissionDialogWindow"/>
+  <int value="16" label="kSessionDataDeleter"/>
+  <int value="17" label="kWebAppProtocolHandlerLaunch"/>
+  <int value="18" label="kExtensionUpdater"/>
+  <int value="19" label="kProfileCreationFlow"/>
+  <int value="20" label="kPendingNotificationCloseEvent"/>
+  <int value="21" label="kFeedbackDialog"/>
+  <int value="22" label="kWebAppUpdate"/>
+  <int value="23" label="kGettingWebAppInfo"/>
+  <int value="24" label="kCrxInstaller"/>
+  <int value="25" label="kProfilePickerView"/>
+  <int value="26" label="kCommanderFrontend"/>
+  <int value="27" label="kDiceWebSigninInterceptionBubble"/>
+  <int value="28" label="kHistoryMenuBridge"/>
+  <int value="29" label="kLacrosMainProfile"/>
+  <int value="30" label="kProfileCreationSamlFlow"/>
+  <int value="31" label="kDriveFsNativeMessageHostLacros"/>
+  <int value="32" label="kProfileDeletionProcess"/>
+  <int value="33" label="kProfileStatistics"/>
+  <int value="34" label="kIsolatedWebAppInstall"/>
+  <int value="35" label="kIsolatedWebAppUpdate"/>
+  <int value="36" label="kWebAppUninstall"/>
+  <int value="37" label="kOsIntegrationForceUnregistration"/>
+  <int value="38" label="kRemoteDebugging"/>
+  <int value="39" label="kHeadlessCommand"/>
+</enum>
+
+<enum name="ProfileMenuActionableItem">
+  <int value="0" label="Manage your Google Account button"/>
+  <int value="1" label="Passwords button"/>
+  <int value="2" label="Credit cards button"/>
+  <int value="3" label="Addresses button"/>
+  <int value="4" label="Guest profile button"/>
+  <int value="5" label="Manage profiles button"/>
+  <int value="6" label="Lock button"/>
+  <int value="7" label="Exit profile button"/>
+  <int value="8" label="Sync error button"/>
+  <int value="9" label="Current profile card"/>
+  <int value="10" label="Sign-in and turn on sync button"/>
+  <int value="11" label="Turn on sync for account button"/>
+  <int value="12" label="Sign-out button"/>
+  <int value="13" label="Switch to another profile button"/>
+  <int value="14" label="Cookies cleared on exit link"/>
+  <int value="15" label="Add new profile button"/>
+  <int value="16" label="Sync settings(sync on) button"/>
+  <int value="17" label="Edit profile button"/>
+  <int value="18" label="Create incognito shortcut button (deprecated)"/>
+  <int value="19" label="Sign-in and turn on sync button for web-only account"/>
+</enum>
+
+<enum name="ProfileNetUserCount">
+  <int value="0" label="Added new user"/>
+  <int value="1" label="Deleted a profile"/>
+</enum>
+
+<enum name="ProfilePickerAction">
+  <int value="0" label="Launch existing profile"/>
+  <int value="1" label="Launch existing profile on customize settings page"/>
+  <int value="2" label="Launch guest profile"/>
+  <int value="3" label="Launch new profile"/>
+  <int value="4" label="Delete profile"/>
+</enum>
+
+<enum name="ProfilePickerEntryPoint">
+  <int value="0" label="On startup"/>
+  <int value="1" label="Manage profile button in the profile menu"/>
+  <int value="2" label="Add new profile button in the profile menu"/>
+  <int value="3" label="Open new window after profile deletion"/>
+  <int value="4" label="New session while running (e.g. from Windows tray)"/>
+  <int value="5" label="Profile locked"/>
+  <int value="6" label="Unable to create a browser"/>
+  <int value="7" label="Background mode manager"/>
+  <int value="8" label="Adding an account from OGB (on lacros)"/>
+  <int value="9" label="First Run Experience on Lacros"/>
+  <int value="10" label="Profile idle"/>
+  <int value="11" label="First Run Experience (non-Lacros)"/>
+  <int value="12" label="No usable profile at startup"/>
+  <int value="13" label="No usable profile for existing process"/>
+  <int value="14" label="Manage profile item in the app menu"/>
+  <int value="15" label="Add new profile item in the app menu"/>
+</enum>
+
+<enum name="ProfilePickerPages">
+  <int value="0" label="mainView"/>
+  <int value="1" label="profileTypeChoice"/>
+  <int value="2" label="localProfileCustomization"/>
+  <int value="3" label="loadSignIn"/>
+  <int value="4" label="loadForceSignIn"/>
+  <int value="5" label="profileSwitch"/>
+  <int value="6" label="accountSelectionLacros"/>
+</enum>
+
+<enum name="ProfilePickerReauthResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success without reauthenticating"/>
+  <int value="2" label="Error: Reauthed with a new email"/>
+  <int value="3" label="Error: Reauthed with another signed in email"/>
+  <int value="4" label="Timeout: ForceSigninVerifier check"/>
+  <int value="5" label="Timeout: Sign in error"/>
+</enum>
+
+<enum name="ProfilePickerStartupProfileMode">
+  <int value="0" label="kBrowserWindow"/>
+  <int value="1" label="kProfilePicker"/>
+  <int value="2" label="kError"/>
+</enum>
+
+<enum name="ProfilePickerStartupProfileReason">
+  <int value="0" label="kError"/>
+  <int value="1" label="kMultipleProfiles"/>
+  <int value="2" label="kPickerForcedByPolicy"/>
+  <int value="10" label="kGuestModeRequested"/>
+  <int value="11" label="kGuestSessionLacros"/>
+  <int value="12" label="kProfileDirSwitch"/>
+  <int value="13" label="kProfileEmailSwitch"/>
+  <int value="14" label="kIgnoreProfilePicker"/>
+  <int value="15" label="kCommandLineTabs"/>
+  <int value="16" label="kPickerNotSupported"/>
+  <int value="17" label="kWasRestarted"/>
+  <int value="18" label="kIncognitoModeRequested"/>
+  <int value="19" label="kAppRequested"/>
+  <int value="20" label="kUninstallApp"/>
+  <int value="21" label="kGcpwSignin"/>
+  <int value="22" label="kLaunchWithoutWindow"/>
+  <int value="23" label="kNotificationLaunchIdWin1"/>
+  <int value="24" label="kNotificationLaunchIdWin2"/>
+  <int value="25" label="kPickerDisabledByPolicy"/>
+  <int value="26" label="kProfilesDisabledLacros"/>
+  <int value="27" label="kSingleProfile"/>
+  <int value="28" label="kInactiveProfiles"/>
+  <int value="29" label="kUserOptedOut"/>
+</enum>
+
+<enum name="ProfileSignedInFlowOutcome">
+  <int value="0" label="A consumer account is added and syncing"/>
+  <int value="1" label="A consumer account is added without sync"/>
+  <int value="2"
+      label="A consumer account is added with sync manually configured"/>
+  <int value="3" label="An enterprise account is added and syncing"/>
+  <int value="4" label="An enterprise account is added without sync"/>
+  <int value="5"
+      label="An enterprise account is added with no link data consent
+             (deprecated)"/>
+  <int value="6"
+      label="An enterprise account is added with sync manually configured"/>
+  <int value="7" label="An enterprise account is added but sync is disabled"/>
+  <int value="8" label="An account is added with some login error">
+    This includes the case that the account is already syncing in another
+    profile.
+  </int>
+  <int value="9" label="The SAML sign-in flow stated (with unclear outcome)."/>
+  <int value="10" label="The flow got aborted before successful sign-in."/>
+  <int value="11"
+      label="The flow got aborted after sign-in (not in enterprise welcome)."/>
+  <int value="12"
+      label="The flow got aborted after sign-in (in enterprise welcome)."/>
+  <int value="13"
+      label="The flow was skipped because the profile is already syncing."/>
+  <int value="14"
+      label="The flow was skipped due to the value of some policy(ies)."/>
+  <int value="15"
+      label="The flow got aborted after sync was declined while sign-in is
+             forced by policies."/>
+</enum>
+
+<enum name="ProfileUnconsentedPrimaryAccountType">
+  <int value="0" label="Consumer account"/>
+  <int value="1" label="Enterprise account"/>
+  <int value="2" label="Child account"/>
+  <int value="3" label="No account (signed-out)"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

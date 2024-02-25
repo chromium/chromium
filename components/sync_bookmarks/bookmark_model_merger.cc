@@ -17,13 +17,13 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
@@ -131,7 +131,7 @@ void LogBookmarkReuploadNeeded(bool is_reupload_needed) {
 // |server_defined_unique_tag| or null of the tag is unknown. |bookmark_model|
 // must not be null and |server_defined_unique_tag| must not be empty.
 const bookmarks::BookmarkNode* GetPermanentFolderForServerDefinedUniqueTag(
-    const bookmarks::BookmarkModel* bookmark_model,
+    const BookmarkModelView* bookmark_model,
     const std::string& server_defined_unique_tag) {
   DCHECK(bookmark_model);
   DCHECK(!server_defined_unique_tag.empty());
@@ -528,7 +528,7 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
 
 BookmarkModelMerger::BookmarkModelMerger(
     UpdateResponseDataList updates,
-    bookmarks::BookmarkModel* bookmark_model,
+    BookmarkModelView* bookmark_model,
     favicon::FaviconService* favicon_service,
     SyncedBookmarkTracker* bookmark_tracker)
     : bookmark_model_(bookmark_model),
@@ -538,8 +538,12 @@ BookmarkModelMerger::BookmarkModelMerger(
       remote_forest_(BuildRemoteForest(std::move(updates), bookmark_tracker)),
       uuid_to_match_map_(
           FindGuidMatchesOrReassignLocal(remote_forest_, bookmark_model_)) {
-  DCHECK(bookmark_tracker_->IsEmpty());
-  DCHECK(favicon_service);
+  CHECK(bookmark_tracker_->IsEmpty());
+  CHECK(favicon_service);
+  CHECK(bookmark_model);
+  CHECK(bookmark_model->bookmark_bar_node());
+  CHECK(bookmark_model->mobile_node());
+  CHECK(bookmark_model->other_node());
 
   int num_updates_in_forest = 0;
   for (const auto& [server_defined_unique_tag, root] : remote_forest_) {
@@ -593,6 +597,7 @@ void BookmarkModelMerger::Merge() {
     DCHECK_EQ(permanent_folder->uuid(),
               GetPermanentFolderUuidForServerDefinedUniqueTag(
                   server_defined_unique_tag));
+
     MergeSubtree(/*local_node=*/permanent_folder,
                  /*remote_node=*/root);
   }
@@ -672,7 +677,7 @@ int BookmarkModelMerger::CountRemoteTreeNodeDescendantsForUma(
 std::unordered_map<base::Uuid, BookmarkModelMerger::GuidMatch, base::UuidHash>
 BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
     const RemoteForest& remote_forest,
-    bookmarks::BookmarkModel* bookmark_model) {
+    BookmarkModelView* bookmark_model) {
   DCHECK(bookmark_model);
 
   TRACE_EVENT0("sync", "BookmarkModelMerger::FindGuidMatchesOrReassignLocal");

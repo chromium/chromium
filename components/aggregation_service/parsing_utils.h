@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_AGGREGATION_SERVICE_PARSING_UTILS_H_
 #define COMPONENTS_AGGREGATION_SERVICE_PARSING_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -19,7 +19,7 @@ namespace aggregation_service {
 // Parses aggregation coordinator identifier. Returns `kDefault` if `str` is
 // nullptr or is not a pre-defined value.
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
-absl::optional<url::Origin> ParseAggregationCoordinator(const std::string& str);
+std::optional<url::Origin> ParseAggregationCoordinator(const std::string& str);
 
 }  // namespace aggregation_service
 

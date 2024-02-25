@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1012241361789814178">تم مؤقتًا إيقاف برنامج تصحيح الأخطاء في علامة تبويب أخرى. انقر للتبديل إلى علامة التبويب تلك.</translation>
 <translation id="1088086359088493902">ثوانٍ‬‬</translation>
 <translation id="1142001580032786438">عرض منتقي الأسبوع</translation>
 <translation id="1171774979989969504">يُرجى إدخال عنوان البريد الإلكتروني.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">يُرجى إدخال عنوان البريد الإلكتروني وعدم ترك الحق فارغًا.</translation>
 <translation id="1758486001363313524">آخر...</translation>
 <translation id="1787192514241997742">الوقت الإجمالي: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">السماح بالوصول إلى الكاميرا</translation>
 <translation id="1822429046913737220">صباحًا/مساءً</translation>
 <translation id="1832974991323546415">تشغيل على جهاز بعيد</translation>
 <translation id="1921819250265091946">يوم</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">تم التبديل إلى النسخ المطابق.</translation>
 <translation id="2031987842108996681">درجات اللون الأحمر</translation>
 <translation id="2060505056492490888">تم استخدام "<ph name="DOT" />" في موضع خاطئ في "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">يجب أن يكون الحد الأدنى للقيمة (<ph name="MINIMUM" />) أقل من الحد الأقصى للقيمة (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2226276347425096477">يُرجى اختصار هذا النص حتى يصل إلى <ph name="MAX_CHARACTERS" /> من الحروف أو أقل (أنت الآن تستخدم <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
 <translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">المقطع الصوتي <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">تم السماح باستخدام الكاميرا والميكروفون</translation>
 <translation id="2393030564806080191">قيمة اللون السداسية العشرية</translation>
 <translation id="2398813069815436052">تم فتح مربع الحوار.</translation>
 <translation id="245932805758469625">عدد الثواني المتبقية من الفيديو</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">يُرجى وضع علامة في هذا المربع إذا أردت المتابعة.</translation>
 <translation id="2908441821576996758">يُرجى إدخال قائمة مفصولة بفواصل لعناوين البريد الإلكتروني.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ميغابايت</translation>
+<translation id="3053226512517284904">عرض قائمة أوصاف الصوت</translation>
 <translation id="3075154866155599887">يرجى إدخال قيمة صالحة. الحقل غير مكتمل أو أن التاريخ غير صالح.</translation>
 <translation id="310520048233152454">‏يُرجى إدخال عنوان URL.</translation>
 <translation id="3220661731597678625">الخطوة الحالية</translation>
 <translation id="3321030238473337787">سرعة التشغيل</translation>
 <translation id="3329013043687509092">تشبع اللون</translation>
+<translation id="3377518164566272702">السماح بالوصول إلى الميكروفون والكاميرا</translation>
 <translation id="3450233048674729344">يجب أن تكون القيمة أقل من أو تساوي <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">شهر</translation>
 <translation id="3754210790023674521">الخروج من وضع "نافذة ضمن نافذة"</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت تستخدم حاليًا <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
 <translation id="383465348367842624">الجزء المتبوع بالعلامة "<ph name="ATSIGN" />" يجب ألا يشتمل على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">خروج من عرض ملء الشاشة</translation>
+<translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
 <translation id="4103419683916926126">مللي ثانية</translation>
 <translation id="4201051445878709314">عرض الشهر السابق</translation>
 <translation id="4360991593054037559">يُرجى إدخال قيمة صالحة. علمًا بأن القيم الصالحة تتراوح بين <ph name="VALID_VALUE_LOW" /> و<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
+<translation id="4663373278480897665">تم السماح باستخدام الكاميرا</translation>
 <translation id="4664250907885839816">يجب ألا يشتمل الجزء الذي يلي العلامة "<ph name="ATSIGN" />" على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">تشغيل في وضع "نافذة ضمن النافذة"</translation>
 <translation id="4748357248530471599">تبديل صورة مقطوعة للشاشة إلى وضع ملء الشاشة</translation>
 <translation id="4763480195061959176">فيديو</translation>
+<translation id="4792862212177489858">مشاركة الموقع الجغرافي</translation>
 <translation id="4812940957355064477">يُرجى إدخال عدد.</translation>
 <translation id="4912200001568447310">العنصر الحالي</translation>
 <translation id="4915360478455618802">عرض منتقي الوقت</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> محددة</translation>
 <translation id="4992066212339426712">إعادة الصوت</translation>
 <translation id="49969490063480558">يُرجى إدخال الجزء الذي يلي العلامة "<ph name="ATSIGN" />"، حيث إن "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
+<translation id="5037575921016181960">كلمة مرور قوية</translation>
 <translation id="5090250355906949916">شريط تمرير وقت الفيديو</translation>
 <translation id="509897012892853729">درجات اللون الأزرق</translation>
 <translation id="5117590920725113268">عرض الشهر التالي</translation>
@@ -132,6 +142,7 @@
 <translation id="6941933287844615239">تنزيل وسائط</translation>
 <translation id="698788488269350478">موسّع</translation>
 <translation id="6989848892321993519">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت الآن تستخدم حرفًا واحدًا).</translation>
+<translation id="7080893216867146095">تم السماح بمشاركة الموقع الجغرافي.</translation>
 <translation id="709897737746224366">يُرجى مطابقة التنسيق المطلوب.</translation>
 <translation id="7102274145889307184">الموقع الجغرافي الحالي</translation>
 <translation id="7263440858009898357">يُرجى اختيار عنصر من القائمة.</translation>
@@ -178,6 +189,7 @@
 <translation id="9132465097189459683">آخر...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />، ابتداء من <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">نافذة ضمن النافذة</translation>
+<translation id="918430632320614861">السماح بالوصول إلى الميكروفون</translation>
 <translation id="945780513535800434">مُحدَّد جزئيًا</translation>
 <translation id="954003015749068518">الدخول في وضع "نافذة ضمن نافذة"</translation>
 </translationbundle>

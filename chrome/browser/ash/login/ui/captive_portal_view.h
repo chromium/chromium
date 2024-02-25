@@ -13,7 +13,9 @@ class CaptivePortalWindowProxy;
 
 class CaptivePortalView : public SimpleWebViewDialog {
  public:
-  CaptivePortalView(Profile* profile, CaptivePortalWindowProxy* proxy);
+  CaptivePortalView(Profile* profile,
+                    CaptivePortalWindowProxy* proxy,
+                    const std::string& network_name);
 
   CaptivePortalView(const CaptivePortalView&) = delete;
   CaptivePortalView& operator=(const CaptivePortalView&) = delete;
@@ -35,9 +37,10 @@ class CaptivePortalView : public SimpleWebViewDialog {
  private:
   // Contains CaptivePortalWindowProxy to be notified when redirection state is
   // resolved.
-  raw_ptr<CaptivePortalWindowProxy, DanglingUntriaged | ExperimentalAsh> proxy_;
+  raw_ptr<CaptivePortalWindowProxy, DanglingUntriaged> proxy_;
 
-  bool redirected_;
+  const std::string network_name_;
+  bool redirected_ = false;
 };
 
 }  // namespace ash

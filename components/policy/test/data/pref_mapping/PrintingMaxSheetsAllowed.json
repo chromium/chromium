@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingMaxSheetsAllowed": 10
+        },
+        "prefs": {
+          "printing.max_sheets_allowed": {
+            "value": 10
+          }
+        }
+      }
+    ]
+  }
+]

@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_DELAY_POLICY_H_
 #define BASE_TASK_DELAY_POLICY_H_
 
+#include "base/time/time.h"
+
 namespace base {
 namespace subtle {
 
@@ -26,7 +28,16 @@ enum class DelayPolicy {
   kPrecise,
 };
 
+inline DelayPolicy MaybeOverrideDelayPolicy(DelayPolicy delay_policy,
+                                            TimeDelta delay,
+                                            TimeDelta max_precise_delay) {
+  if (delay >= max_precise_delay && delay_policy == DelayPolicy::kPrecise) {
+    return DelayPolicy::kFlexibleNoSooner;
+  }
+  return delay_policy;
+}
+
 }  // namespace subtle
 }  // namespace base
 
-#endif  // BASE_TASK_SEQUENCED_TASK_RUNNER_H_
+#endif  // BASE_TASK_DELAY_POLICY_H_

@@ -9,8 +9,7 @@
 ] interface TaskSignal : AbortSignal {
   [
       CallWith=ScriptState,
-      NewObject,
-      RuntimeEnabled=AbortSignalAny
+      NewObject
   ] static TaskSignal _any(sequence<AbortSignal> signals, optional TaskSignalAnyInit init = {});
 
   [MeasureAs=TaskSignalPriority] readonly attribute TaskPriority priority;

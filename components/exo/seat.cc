@@ -4,7 +4,9 @@
 
 #include "components/exo/seat.h"
 
+#include <linux/input-event-codes.h>
 #include <memory>
+#include <variant>
 
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
@@ -34,11 +36,72 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/ozone/evdev/mouse_button_property.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/events/platform_event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace exo {
+
+namespace {
+
+using CustomizableButton = ash::mojom::CustomizableButton;
+
+std::optional<CustomizableButton> GetMouseButtonFromNativeEvent(
+    const ui::PlatformEvent& platform_event) {
+  auto event = ui::EventFromNative(platform_event);
+  if (!event->IsMouseEvent() || (event->type() != ui::ET_MOUSE_RELEASED &&
+                                 event->type() != ui::ET_MOUSE_PRESSED)) {
+    return std::nullopt;
+  }
+
+  auto& mouse_event = *event->AsMouseEvent();
+  switch (mouse_event.changed_button_flags()) {
+    case ui::EF_LEFT_MOUSE_BUTTON:
+      return CustomizableButton::kLeft;
+    case ui::EF_RIGHT_MOUSE_BUTTON:
+      return CustomizableButton::kRight;
+    case ui::EF_MIDDLE_MOUSE_BUTTON:
+      return CustomizableButton::kMiddle;
+    case ui::EF_FORWARD_MOUSE_BUTTON:
+    case ui::EF_BACK_MOUSE_BUTTON:
+      break;
+  }
+
+  CHECK(mouse_event.changed_button_flags() == ui::EF_FORWARD_MOUSE_BUTTON ||
+        mouse_event.changed_button_flags() == ui::EF_BACK_MOUSE_BUTTON);
+  auto key_code = ui::GetForwardBackMouseButtonProperty(mouse_event);
+  if (!key_code) {
+    return (mouse_event.changed_button_flags() == ui::EF_FORWARD_MOUSE_BUTTON)
+               ? CustomizableButton::kForward
+               : CustomizableButton::kBack;
+  }
+
+  switch (*key_code) {
+    case BTN_FORWARD:
+      return CustomizableButton::kForward;
+    case BTN_BACK:
+      return CustomizableButton::kBack;
+    case BTN_SIDE:
+      return CustomizableButton::kSide;
+    case BTN_EXTRA:
+      return CustomizableButton::kExtra;
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+bool IsPhysicalCodeEmpty(const PhysicalCode& code) {
+  const auto* keyboard_physical_code = std::get_if<ui::DomCode>(&code);
+  return keyboard_physical_code && *keyboard_physical_code == ui::DomCode::NONE;
+}
+
+}  // namespace
 
 Seat::Seat(std::unique_ptr<DataExchangeDelegate> delegate)
     : changing_clipboard_data_to_selection_source_(false),
@@ -98,6 +161,14 @@ void Seat::RemoveObserver(SeatObserver* observer) {
     observer_list.RemoveObserver(observer);
 }
 
+void Seat::NotifySurfaceCreated(Surface* surface) {
+  for (auto& observer_list : priority_observer_list_) {
+    for (auto& observer : observer_list) {
+      observer.OnSurfaceCreated(surface);
+    }
+  }
+}
+
 void Seat::NotifyPointerCaptureEnabled(Pointer* pointer,
                                        aura::Window* capture_window) {
   for (auto& observer_list : priority_observer_list_) {
@@ -124,7 +195,7 @@ void Seat::StartDrag(DataSource* source,
                      Surface* icon,
                      ui::mojom::DragEventSource event_source) {
   gfx::Point cursor_location = aura::Env::GetInstance()->GetLastPointerPoint(
-      event_source, origin->window(), /*fallback=*/absl::nullopt);
+      event_source, origin->window(), /*fallback=*/std::nullopt);
   // DragDropOperation manages its own lifetime.
   drag_drop_operation_ = DragDropOperation::Create(
       data_exchange_delegate_.get(), source, origin, icon,
@@ -134,6 +205,10 @@ void Seat::StartDrag(DataSource* source,
 void Seat::AbortPendingDragOperation() {
   if (drag_drop_operation_)
     drag_drop_operation_->AbortIfPending();
+}
+
+bool Seat::IsDragDropOperationInProgress() const {
+  return drag_drop_operation_ && drag_drop_operation_->started();
 }
 
 void Seat::SetSelection(DataSource* source) {
@@ -241,8 +316,7 @@ void Seat::OnHTMLRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,
                       const std::string& mime_type,
                       std::u16string data) {
-  writer->WriteHTML(std::move(data), std::string(),
-                    ui::ClipboardContentType::kSanitized);
+  writer->WriteHTML(std::move(data), std::string());
   std::move(callback).Run();
 }
 
@@ -331,6 +405,12 @@ void Seat::WillProcessEvent(const ui::PlatformEvent& event) {
     case ui::ET_KEY_RELEASED:
       physical_code_for_currently_processing_event_ = ui::CodeFromNative(event);
       break;
+    case ui::ET_MOUSE_PRESSED:
+    case ui::ET_MOUSE_RELEASED:
+      if (auto button = GetMouseButtonFromNativeEvent(event); button) {
+        physical_code_for_currently_processing_event_ = *button;
+      }
+      break;
     default:
       break;
   }
@@ -339,17 +419,19 @@ void Seat::WillProcessEvent(const ui::PlatformEvent& event) {
 void Seat::DidProcessEvent(const ui::PlatformEvent& event) {
   switch (ui::EventTypeFromNative(event)) {
     case ui::ET_KEY_PRESSED:
+    case ui::ET_MOUSE_PRESSED:
       physical_code_for_currently_processing_event_ = ui::DomCode::NONE;
       break;
     case ui::ET_KEY_RELEASED:
+    case ui::ET_MOUSE_RELEASED: {
       // Remove this from the pressed key map because when IME is active we can
       // end up getting the DidProcessEvent call before we get the OnKeyEvent
       // callback and then the key will end up being stuck pressed.
-      if (physical_code_for_currently_processing_event_ != ui::DomCode::NONE) {
+      if (!IsPhysicalCodeEmpty(physical_code_for_currently_processing_event_)) {
         pressed_keys_.erase(physical_code_for_currently_processing_event_);
         physical_code_for_currently_processing_event_ = ui::DomCode::NONE;
       }
-      break;
+    } break;
     default:
       break;
   }
@@ -363,13 +445,20 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
   if (event->is_repeat())
     return;
 
-  if (physical_code_for_currently_processing_event_ != ui::DomCode::NONE) {
+  if (!IsPhysicalCodeEmpty(physical_code_for_currently_processing_event_)) {
     switch (event->type()) {
-      case ui::ET_KEY_PRESSED:
-        pressed_keys_.emplace(physical_code_for_currently_processing_event_,
-                              KeyState{event->code(), /*consumed_by_ime=*/false,
-                                       event->key_code()});
-        break;
+      case ui::ET_KEY_PRESSED: {
+        auto& key_state_set =
+            pressed_keys_[physical_code_for_currently_processing_event_];
+        // Do not insert the additional events unless the event is a customized
+        // button.
+        if (!key_state_set.empty() &&
+            !(event->flags() & ui::EF_IS_CUSTOMIZED_FROM_BUTTON)) {
+          break;
+        }
+        key_state_set.emplace(event->code(), /*consumed_by_ime=*/false,
+                              event->key_code());
+      } break;
       case ui::ET_KEY_RELEASED:
         pressed_keys_.erase(physical_code_for_currently_processing_event_);
         break;

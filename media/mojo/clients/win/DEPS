@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "media_foundation_renderer_client_unittest.cc": [
+    "+content/renderer/media/win/overlay_state_service_provider.h",
+  ],
+}

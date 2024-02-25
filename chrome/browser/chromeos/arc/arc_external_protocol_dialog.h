@@ -6,26 +6,23 @@
 #define CHROME_BROWSER_CHROMEOS_ARC_ARC_EXTERNAL_PROTOCOL_DIALOG_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
 class GURL;
+class SharingTargetDeviceInfo;
 
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace syncer {
-class DeviceInfo;
-}  // namespace syncer
 
 namespace arc {
 
@@ -52,7 +49,7 @@ enum class GetActionResult {
 // true if the protocol has been handled by ARC.
 void RunArcExternalProtocolDialog(
     const GURL& url,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     base::WeakPtr<content::WebContents> web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
@@ -84,7 +81,7 @@ void OnIntentPickerClosedForTesting(
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    std::vector<SharingTargetDeviceInfo> devices,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason reason,

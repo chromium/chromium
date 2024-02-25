@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 
+#include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
@@ -109,7 +110,7 @@ sk_sp<SkTypeface> GetSkiaFallbackTypeface(const Font& template_font,
   if (text.empty())
     return nullptr;
 
-  sk_sp<SkFontMgr> font_mgr(SkFontMgr::RefDefault());
+  sk_sp<SkFontMgr> font_mgr(skia::DefaultFontMgr());
 
   const char* bcp47_locales[] = {locale.c_str()};
   int num_locales = locale.empty() ? 0 : 1;
@@ -123,7 +124,7 @@ sk_sp<SkTypeface> GetSkiaFallbackTypeface(const Font& template_font,
       font_weight, SkFontStyle::kNormal_Width,
       italic ? SkFontStyle::kItalic_Slant : SkFontStyle::kUpright_Slant);
 
-  std::set<SkFontID> tested_typeface;
+  std::set<SkTypefaceID> tested_typeface;
   sk_sp<SkTypeface> fallback_typeface;
   size_t fewest_missing_glyphs = text.length() + 1;
 

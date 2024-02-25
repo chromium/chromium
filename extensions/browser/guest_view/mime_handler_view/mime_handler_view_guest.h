@@ -32,7 +32,7 @@ class StreamContainer {
   StreamContainer(int tab_id,
                   bool embedded,
                   const GURL& handler_url,
-                  const std::string& extension_id,
+                  const ExtensionId& extension_id,
                   blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
                   const GURL& original_url);
 
@@ -169,6 +169,7 @@ class MimeHandlerViewGuest
   void ExitFullscreenModeForTab(content::WebContents*) override;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override;
+  bool ShouldResumeRequestsForCreatedWindow() override;
   bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,

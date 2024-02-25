@@ -83,8 +83,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enabled_dawn_features_list, right.enabled_dawn_features_list);
   EXPECT_EQ(left.disabled_dawn_features_list,
             right.disabled_dawn_features_list);
-  EXPECT_EQ(left.enable_gpu_blocked_time_metric,
-            right.enable_gpu_blocked_time_metric);
   EXPECT_EQ(left.enable_perf_data_collection,
             right.enable_perf_data_collection);
 #if BUILDFLAG(IS_OZONE)
@@ -177,7 +175,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD_ENUM(enable_dawn_backend_validation,
                                DawnBackendValidationLevel::kPartial,
                                mojom::DawnBackendValidationLevel::kPartial)
-    GPU_PREFERENCES_FIELD(enable_gpu_blocked_time_metric, true)
     GPU_PREFERENCES_FIELD(enable_perf_data_collection, true)
 #if BUILDFLAG(IS_OZONE)
     GPU_PREFERENCES_FIELD_ENUM(message_pump_type, base::MessagePumpType::UI,
@@ -270,7 +267,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_BOOL(enable_gpu_benchmarking_extension);
   PRINT_BOOL(enable_webgpu);
   PRINT_INT(enable_dawn_backend_validation);
-  PRINT_BOOL(enable_gpu_blocked_time_metric);
   PRINT_BOOL(enable_perf_data_collection);
 #if BUILDFLAG(IS_OZONE)
   PRINT_INT(message_pump_type);

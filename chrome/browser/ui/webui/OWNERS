@@ -3,8 +3,6 @@ file://ui/webui/PLATFORM_OWNERS
 # Maintaining ownership from this file's original Chrome OS location.
 per-file device_log_ui*=stevenjb@chromium.org
 
-per-file devtools_ui*=dgozman@chromium.org
-per-file devtools_ui*=caseq@chromium.org
 per-file inspect_ui*=dgozman@chromium.org
 per-file inspect_ui*=caseq@chromium.org
 per-file review_notification_permissions*=rainhard@chromium.org
@@ -21,7 +19,11 @@ per-file signin_internals_ui*=achuith@chromium.org
 
 per-file invalidations/invalidations_message_handler.*=file://components/invalidation/OWNERS
 
-# Review from WebUI PLATFORM_OWNERs required since this file is commonly
+# Review from WebUI PLATFORM_OWNERs required since these files are commonly
 # used to add new WebUI surfaces.
 per-file chrome_web_ui_controller_factory.cc=set noparent
 per-file chrome_web_ui_controller_factory.cc=file://ui/webui/PLATFORM_OWNERS
+per-file chrome_web_ui_configs*=set noparent
+per-file chrome_web_ui_configs*=file://ui/webui/PLATFORM_OWNERS
+per-file chrome_untrusted_web_ui_configs*=set noparent
+per-file chrome_untrusted_web_ui_configs*=file://ui/webui/PLATFORM_OWNERS

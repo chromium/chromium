@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Une version de protocole incompatible a été détectée. Veuillez vous assurer que vous utilisez la dernière version du logiciel sur les deux ordinateurs, puis réessayer.</translation>
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="1201402288615127009">Suivant</translation>
-<translation id="1296511125400541222">Copyright 2023 - Auteurs de Chromium. Tous droits réservés.</translation>
 <translation id="1297009705180977556">Erreur de connexion à <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">L'objet demandé n'existe pas.</translation>
 <translation id="1480046233931937785">Remerciements</translation>
@@ -89,7 +88,6 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="4808503597364150972">Veuillez saisir le code d'accès pour <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Hôte</translation>
 <translation id="4867841927763172006">Envoyer Imp écr</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Tous droits réservés.</translation>
 <translation id="4974476491460646149">Connexion coupée pour <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Vous devez tout d'abord configurer votre ordinateur pour l'accès à distance.</translation>
 <translation id="4987330545941822761">Le Bureau à distance Chrome ne peut pas déterminer le navigateur à utiliser pour ouvrir les URL localement. Sélectionnez une option de la liste ci-dessous.</translation>
@@ -154,6 +152,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="7693372326588366043">Actualiser la liste des hôtes</translation>
 <translation id="7714222945760997814">Signaler</translation>
 <translation id="7868137160098754906">Veuillez saisir le code d'accès de l'ordinateur distant.</translation>
+<translation id="7881455334687220899">Copyright 2024 Auteurs de Chromium. Tous droits réservés.</translation>
 <translation id="7895403300744144251">Les règles de sécurité de l'ordinateur distant n'autorisent pas les connexions à partir de votre compte.</translation>
 <translation id="7936528439960309876">Ancrer à droite</translation>
 <translation id="7970576581263377361">Échec de l'authentification. Veuillez vous connecter de nouveau à Chromium.</translation>
@@ -185,6 +184,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="8747048596626351634">La session a planté ou n'a pas réussi à démarrer. Si ~/.chrome-remote-desktop-session est présent sur l'ordinateur à distance, assurez-vous qu'il lance un processus long au premier plan, tel qu'un environnement de bureau ou un gestionnaire de fenêtres.</translation>
 <translation id="8804164990146287819">Règles de confidentialité</translation>
 <translation id="8906511416443321782">L'accès au micro est nécessaire pour capturer l'audio et le diffuser en streaming sur le client du Bureau à distance Chrome.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Tous droits réservés.</translation>
 <translation id="9111855907838866522">Vous êtes connecté à votre appareil à distance. Pour ouvrir le menu, veuillez appuyer sur l'écran avec quatre doigts.</translation>
 <translation id="9126115402994542723">Ne plus demander de code d'accès en cas de connexion à cet hôte depuis cet appareil</translation>
 <translation id="916856682307586697">Lance la session XSession par défaut</translation>

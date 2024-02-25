@@ -27,9 +27,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.test.R;
 
-/**
- * Tests for {@link BaseSuggestionView}.
- */
+/** Tests for {@link BaseSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseSuggestionViewUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -43,8 +41,9 @@ public class BaseSuggestionViewUnitTest {
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mInnerView = new View(mContext);
         mView = spy(new BaseSuggestionView<>(mInnerView));
         mView.setOnClickListener(mOnClickListener);

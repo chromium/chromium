@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <list>
 #include <string>
 #include <tuple>
 #include <utility>
 
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -30,8 +30,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -404,7 +402,7 @@ static bool ConvertEventToUpdate(int render_process_id,
       break;
     case media::MediaLogRecord::Type::kMediaEventTriggered: {
       // Delete the "event" param so that it won't spam the log.
-      absl::optional<base::Value> exists = cloned_params.Extract("event");
+      std::optional<base::Value> exists = cloned_params.Extract("event");
       DCHECK(exists.has_value());
       dict.Set("type", std::move(exists.value()));
       break;
@@ -674,7 +672,7 @@ void MediaInternals::SaveEvent(int process_id,
     // Remove all events for a given player as soon as we have to remove a
     // single event for that player to avoid showing incomplete players.
     const int id_to_remove = saved_events.front().id;
-    base::EraseIf(saved_events, [&](const media::MediaLogRecord& event) {
+    std::erase_if(saved_events, [&](const media::MediaLogRecord& event) {
       return event.id == id_to_remove;
     });
   }
@@ -699,7 +697,7 @@ void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
       DCHECK_EQ(type, CREATE);
       audio_streams_cached_data_.Set(cache_key, value.Clone());
     } else if (type == UPDATE_AND_DELETE) {
-      absl::optional<base::Value> out_value =
+      std::optional<base::Value> out_value =
           audio_streams_cached_data_.Extract(cache_key);
       CHECK(out_value.has_value());
     } else {

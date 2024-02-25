@@ -21,6 +21,7 @@ enum class KeepAliveOrigin {
   BROWSER_PROCESS_FUCHSIA,
   BROWSER_PROCESS_LACROS,
   SESSION_RESTORE,
+  HEADLESS_COMMAND,
 
   // c/b/apps
   APP_LAUNCH,
@@ -81,6 +82,9 @@ enum class KeepAliveOrigin {
 
   // c/b/sessions
   SESSION_DATA_DELETER,
+
+  // components/metrics
+  UMA_LOG,
 };
 
 // Restart: Allow Chrome to restart when all the registered KeepAlives allow

@@ -69,18 +69,29 @@ bool PdfAXActionTarget::PerformAction(
       return ShowContextMenu();
     case ax::mojom::Action::kScrollToPoint:
       return ScrollToGlobalPoint(action_data.target_point);
+    case ax::mojom::Action::kStitchChildTree: {
+      ui::AXTreeData pdf_tree_data;
+      if (!pdf_accessibility_tree_source_->GetTreeData(&pdf_tree_data)) {
+        return false;
+      }
+      CHECK_EQ(action_data.target_tree_id, pdf_tree_data.tree_id);
+      CHECK_EQ(action_data.target_node_id, target_plugin_node_->id());
+      CHECK_NE(action_data.child_tree_id, ui::AXTreeIDUnknown());
+      return StitchChildTree(action_data.child_tree_id);
+    }
     default:
       return false;
   }
 }
 
 bool PdfAXActionTarget::Click() const {
-  if (target_plugin_node_.GetRole() != ax::mojom::Role::kLink)
+  if (target_plugin_node_->GetRole() != ax::mojom::Role::kLink) {
     return false;
+  }
 
-  absl::optional<PdfAccessibilityTree::AnnotationInfo> annotation_info_result =
+  std::optional<PdfAccessibilityTree::AnnotationInfo> annotation_info_result =
       pdf_accessibility_tree_source_->GetPdfAnnotationInfoFromAXNode(
-          target_plugin_node_.data().id);
+          target_plugin_node_->data().id);
   if (!annotation_info_result.has_value())
     return false;
   const auto& annotation_info = annotation_info_result.value();
@@ -136,7 +147,7 @@ bool PdfAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
   }
   pdf_action_data.action = chrome_pdf::AccessibilityAction::kSetSelection;
   pdf_action_data.target_rect =
-      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds);
+      gfx::ToEnclosingRect(target_plugin_node_->data().relative_bounds.bounds);
 
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
@@ -163,7 +174,7 @@ bool PdfAXActionTarget::ScrollToMakeVisibleWithSubFocus(
   pdf_action_data.vertical_scroll_alignment =
       ConvertAXScrollToPdfScrollAlignment(vertical_scroll_alignment);
   pdf_action_data.target_rect =
-      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds);
+      gfx::ToEnclosingRect(target_plugin_node_->data().relative_bounds.bounds);
 
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
@@ -175,10 +186,19 @@ bool PdfAXActionTarget::ScrollToGlobalPoint(const gfx::Point& point) const {
       chrome_pdf::AccessibilityAction::kScrollToGlobalPoint;
   pdf_action_data.target_point = point;
   pdf_action_data.target_rect =
-      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds);
+      gfx::ToEnclosingRect(target_plugin_node_->data().relative_bounds.bounds);
 
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
+}
+
+bool PdfAXActionTarget::StitchChildTree(
+    const ui::AXTreeID& child_tree_id) const {
+  if (!target_plugin_node_->IsDataValid()) {
+    return false;
+  }
+  return pdf_accessibility_tree_source_->SetChildTree(target_plugin_node_->id(),
+                                                      child_tree_id);
 }
 
 }  // namespace pdf

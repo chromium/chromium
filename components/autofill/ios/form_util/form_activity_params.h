@@ -15,8 +15,10 @@ class ScriptMessage;
 
 namespace autofill {
 
-// HTML password field type.
-constexpr char kPasswordFieldType[] = "password";
+// HTML password field type. The "password" field type does not explicitly mean
+// that the field contains a password, it means that the field obfuscates its
+// information instead of showing it plainly.
+constexpr char kObfuscatedFieldType[] = "password";
 
 // Wraps information about form activity.
 struct BaseFormActivityParams {
@@ -25,7 +27,7 @@ struct BaseFormActivityParams {
   virtual ~BaseFormActivityParams();
 
   // Comparison operator for the BaseFormActivityParams structure.
-  bool operator==(const BaseFormActivityParams& params) const;
+  bool operator==(const BaseFormActivityParams&) const;
 
   // Reads data from a message into a BaseFormActivityParams object.
   // Returns whether reading the information from the message was successful.

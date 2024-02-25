@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/printing/specifics_translation.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -48,13 +48,11 @@ std::unique_ptr<EntityData> CopyToEntityData(
 // manufacturer and model strings.
 bool MigrateMakeAndModel(sync_pb::PrinterSpecifics* specifics) {
   if (specifics->has_make_and_model()) {
-    base::UmaHistogramBoolean("Printing.CUPS.MigratedMakeAndModel", false);
     return false;
   }
 
   specifics->set_make_and_model(
       MakeAndModel(specifics->manufacturer(), specifics->model()));
-  base::UmaHistogramBoolean("Printing.CUPS.MigratedMakeAndModel", true);
   return true;
 }
 
@@ -108,7 +106,7 @@ class PrintersSyncBridge::StoreProxy {
 
  private:
   // Callback for ModelTypeStore initialization.
-  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<ModelTypeStore> store) {
     if (error) {
       owner_->change_processor()->ReportError(*error);
@@ -120,7 +118,7 @@ class PrintersSyncBridge::StoreProxy {
                                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnReadAllData(const absl::optional<syncer::ModelError>& error,
+  void OnReadAllData(const std::optional<syncer::ModelError>& error,
                      std::unique_ptr<ModelTypeStore::RecordList> record_list) {
     if (error) {
       owner_->change_processor()->ReportError(*error);
@@ -154,7 +152,7 @@ class PrintersSyncBridge::StoreProxy {
   }
 
   // Callback to handle commit errors.
-  void OnCommit(const absl::optional<syncer::ModelError>& error) {
+  void OnCommit(const std::optional<syncer::ModelError>& error) {
     if (error) {
       LOG(WARNING) << "Failed to commit operation to store";
       owner_->change_processor()->ReportError(*error);
@@ -163,8 +161,11 @@ class PrintersSyncBridge::StoreProxy {
   }
 
   void OnReadAllMetadata(
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+    TRACE_EVENT0(
+        "ui",
+        "ash::{anonympus}::PrintersSyncBridge::StoreProxy::OnReadAllMetadata");
     if (error) {
       owner_->change_processor()->ReportError(*error);
       return;
@@ -173,7 +174,7 @@ class PrintersSyncBridge::StoreProxy {
     owner_->change_processor()->ModelReadyToSync(std::move(metadata_batch));
   }
 
-  raw_ptr<PrintersSyncBridge, ExperimentalAsh> owner_;
+  raw_ptr<PrintersSyncBridge> owner_;
 
   std::unique_ptr<ModelTypeStore> store_;
   base::WeakPtrFactory<StoreProxy> weak_ptr_factory_{this};
@@ -195,7 +196,7 @@ PrintersSyncBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -223,12 +224,10 @@ absl::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
     for (const auto& entry : all_data_) {
       const std::string& local_entity_id = entry.first;
 
-      // TODO(crbug.com/737809): Remove when all data is expected to have been
-      // migrated.
+      // Migrate old schema to new combined one (crbug.com/737809).
       bool migrated = MigrateMakeAndModel(entry.second.get());
 
-      // TODO(crbug.com/987869): Remove when all data is expected to have been
-      // resolved.
+      // Clean up invalid ppd references (crbug.com/987869).
       bool resolved = ResolveInvalidPpdReference(entry.second.get());
 
       if (migrated || resolved ||
@@ -248,7 +247,7 @@ absl::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
   return {};
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 PrintersSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
@@ -377,7 +376,8 @@ bool PrintersSyncBridge::UpdatePrinterLocked(
   // Modify the printer in-place then notify the change processor.
   sync_pb::PrinterSpecifics* merged = iter->second.get();
   MergePrinterToSpecifics(*SpecificsToPrinter(*printer), merged);
-  merged->set_updated_timestamp(base::Time::Now().ToJavaTime());
+  merged->set_updated_timestamp(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   CommitPrinterPut(*merged);
 
   return false;
@@ -415,7 +415,7 @@ std::vector<sync_pb::PrinterSpecifics> PrintersSyncBridge::GetAllPrinters()
   return printers;
 }
 
-absl::optional<sync_pb::PrinterSpecifics> PrintersSyncBridge::GetPrinter(
+std::optional<sync_pb::PrinterSpecifics> PrintersSyncBridge::GetPrinter(
     const std::string& id) const {
   base::AutoLock lock(data_lock_);
   auto iter = all_data_.find(id);
@@ -449,7 +449,8 @@ void PrintersSyncBridge::AddPrinterLocked(
   // TODO(skau): Benchmark this code.  Make sure it doesn't hold onto the lock
   // for too long.
   data_lock_.AssertAcquired();
-  printer->set_updated_timestamp(base::Time::Now().ToJavaTime());
+  printer->set_updated_timestamp(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
 
   CommitPrinterPut(*printer);
   auto& dest = all_data_[printer->id()];

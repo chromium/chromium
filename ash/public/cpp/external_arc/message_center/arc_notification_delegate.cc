@@ -36,8 +36,8 @@ void ArcNotificationDelegate::Close(bool by_user) {
 }
 
 void ArcNotificationDelegate::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   DCHECK(item_);
 
   if (button_index) {
@@ -56,6 +56,16 @@ void ArcNotificationDelegate::SettingsClick() {
 void ArcNotificationDelegate::ExpandStateChanged(bool expanded) {
   DCHECK(item_);
   item_->SetExpandState(expanded);
+}
+
+void ArcNotificationDelegate::SnoozeButtonClicked() {
+  DCHECK(item_);
+  item_->OpenSnooze();
+}
+
+message_center::NotificationDelegate*
+ArcNotificationDelegate::GetDelegateForParentCopy() {
+  return nullptr;
 }
 
 }  // namespace ash

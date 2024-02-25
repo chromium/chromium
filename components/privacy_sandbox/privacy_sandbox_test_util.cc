@@ -118,7 +118,8 @@ void ApplyTestState(
       user_content_setting_provider->SetWebsiteSetting(
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-          base::Value(content_setting));
+          base::Value(content_setting), /*constraints=*/{},
+          content_settings::PartitionKey::GetDefaultForTesting());
       return;
     }
     case (StateKey::kSiteDataUserExceptions): {
@@ -129,7 +130,8 @@ void ApplyTestState(
         user_content_setting_provider->SetWebsiteSetting(
             ContentSettingsPattern::FromString(primary_pattern),
             ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-            base::Value(content_setting));
+            base::Value(content_setting), /*constraints=*/{},
+            content_settings::PartitionKey::GetDefaultForTesting());
       }
       return;
     }
@@ -193,12 +195,6 @@ void ApplyTestState(
           prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "Foo Bar Baz");
       return;
     }
-    case (StateKey::kApisEnabledV2): {
-      SCOPED_TRACE("State Setup: Privacy Sandbox Apis enabled");
-      testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
-                                        base::Value(GetItemValue<bool>(value)));
-      return;
-    }
     case (StateKey::kTrialsConsentDecisionMade): {
       SCOPED_TRACE("State Setup: Trials consent decision made");
       testing_pref_service->SetUserPref(
@@ -212,35 +208,35 @@ void ApplyTestState(
                                         base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1ConsentDecisionMade): {
+    case (StateKey::kM1ConsentDecisionPreviouslyMade): {
       SCOPED_TRACE("State Setup: M1 consent decision made");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1ConsentDecisionMade,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1EEANoticeAcknowledged): {
+    case (StateKey::kM1EEANoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 eea notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1EEANoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1RowNoticeAcknowledged): {
+    case (StateKey::kM1RowNoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 row notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1RowNoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1RestrictedNoticeAcknowledged): {
+    case (StateKey::kM1RestrictedNoticePreviouslyAcknowledged): {
       SCOPED_TRACE("State Setup: M1 restricted notice acknowledged");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
           base::Value(GetItemValue<bool>(value)));
       return;
     }
-    case (StateKey::kM1PromptSuppressedReason): {
+    case (StateKey::kM1PromptPreviouslySuppressedReason): {
       SCOPED_TRACE("State Setup: M1 prompt suppressed value");
       testing_pref_service->SetUserPref(
           prefs::kPrivacySandboxM1PromptSuppressed,
@@ -290,7 +286,7 @@ void ApplyTestState(
       SCOPED_TRACE("State Setup: Attestations Map");
       privacy_sandbox::PrivacySandboxAttestations::GetInstance()
           ->SetAttestationsForTesting(
-              GetItemValue<absl::optional<
+              GetItemValue<std::optional<
                   privacy_sandbox::PrivacySandboxAttestationsMap>>(value));
       return;
     }
@@ -537,6 +533,19 @@ void CheckOutput(
       auto return_value = GetItemValue<bool>(output_value);
       ASSERT_EQ(return_value,
                 privacy_sandbox_settings->IsPrivateAggregationAllowed(
+                    top_frame_origin, reporting_origin));
+      return;
+    }
+
+    case (OutputKey::kIsPrivateAggregationDebugModeAllowed): {
+      SCOPED_TRACE("Check Output: IsPrivateAggregationDebugModeAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementReportingOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsPrivateAggregationDebugModeAllowed(
                     top_frame_origin, reporting_origin));
       return;
     }
@@ -866,80 +875,77 @@ void CheckOutput(
           1);
       return;
     }
+    case (OutputKey::kIsCookieDeprecationLabelAllowedForContext): {
+      SCOPED_TRACE("Check Output: IsCookieDeprecatioinAllowedForContext");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto context_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(
+          return_value,
+          privacy_sandbox_settings->IsCookieDeprecationLabelAllowedForContext(
+              top_frame_origin, context_origin));
+      return;
+    }
+    case (OutputKey::kIsSharedStorageAllowedDebugMessage): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_debug_message in IsSharedStorageAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      std::string* actual_out_debug_message = GetItemValueForKey<std::string*>(
+          InputKey::kOutSharedStorageDebugMessage, input);
+      privacy_sandbox_settings->IsSharedStorageAllowed(
+          top_frame_origin, accessing_origin, actual_out_debug_message);
+      std::string* expected_out_debug_message =
+          GetItemValue<std::string*>(output_value);
+      ASSERT_EQ(!!actual_out_debug_message, !!expected_out_debug_message);
+      if (expected_out_debug_message) {
+        ASSERT_EQ(*actual_out_debug_message, *expected_out_debug_message);
+      }
+      return;
+    }
+
+    case (OutputKey::kIsSharedStorageSelectURLAllowedDebugMessage): {
+      SCOPED_TRACE(
+          "Check Output: Verify out_debug_message in "
+          "IsSharedStorageSelectURLAllowed()");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      std::string* actual_out_debug_message = GetItemValueForKey<std::string*>(
+          InputKey::kOutSharedStorageSelectURLDebugMessage, input);
+      privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
+          top_frame_origin, accessing_origin, actual_out_debug_message);
+      std::string* expected_out_debug_message =
+          GetItemValue<std::string*>(output_value);
+      ASSERT_EQ(!!actual_out_debug_message, !!expected_out_debug_message);
+      if (expected_out_debug_message) {
+        ASSERT_EQ(*actual_out_debug_message, *expected_out_debug_message);
+      }
+      return;
+    }
   }
 }
 
 MockPrivacySandboxObserver::MockPrivacySandboxObserver() = default;
 MockPrivacySandboxObserver::~MockPrivacySandboxObserver() = default;
-MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() =
-    default;
+
+MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() {
+  // Setup some reasonable default responses that generally allow APIs.
+  // Tests can further override the responses as required.
+  SetUpIsPrivacySandboxRestrictedResponse(false);
+  SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(true);
+  SetUpIsIncognitoProfileResponse(false);
+  SetUpHasAppropriateTopicsConsentResponse(true);
+  SetUpIsSubjectToM1NoticeRestrictedResponse(false);
+}
+
 MockPrivacySandboxSettingsDelegate::~MockPrivacySandboxSettingsDelegate() =
     default;
-
-void SetupTestState(
-    sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
-    HostContentSettingsMap* map,
-    bool privacy_sandbox_enabled,
-    bool block_third_party_cookies,
-    ContentSetting default_cookie_setting,
-    const std::vector<CookieContentSettingException>& user_cookie_exceptions,
-    ContentSetting managed_cookie_setting,
-    const std::vector<CookieContentSettingException>&
-        managed_cookie_exceptions) {
-  // Setup block-third-party-cookies settings.
-  testing_pref_service->SetUserPref(
-      prefs::kCookieControlsMode,
-      base::Value(static_cast<int>(
-          block_third_party_cookies
-              ? content_settings::CookieControlsMode::kBlockThirdParty
-              : content_settings::CookieControlsMode::kOff)));
-
-  // Setup cookie content settings.
-  auto user_provider = std::make_unique<content_settings::MockProvider>();
-  auto managed_provider = std::make_unique<content_settings::MockProvider>();
-
-  if (default_cookie_setting != kNoSetting) {
-    user_provider->SetWebsiteSetting(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, base::Value(default_cookie_setting));
-  }
-
-  for (const auto& exception : user_cookie_exceptions) {
-    user_provider->SetWebsiteSetting(
-        ContentSettingsPattern::FromString(exception.primary_pattern),
-        ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES, base::Value(exception.content_setting));
-  }
-
-  if (managed_cookie_setting != kNoSetting) {
-    managed_provider->SetWebsiteSetting(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, base::Value(managed_cookie_setting));
-  }
-
-  for (const auto& exception : managed_cookie_exceptions) {
-    managed_provider->SetWebsiteSetting(
-        ContentSettingsPattern::FromString(exception.primary_pattern),
-        ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES, base::Value(exception.content_setting));
-  }
-
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(user_provider), HostContentSettingsMap::DEFAULT_PROVIDER);
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(managed_provider),
-      HostContentSettingsMap::POLICY_PROVIDER);
-
-  // Only adjust the Privacy Sandbox preference which should be being consulted
-  // based on feature state.
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
-    testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
-                                      base::Value(privacy_sandbox_enabled));
-  } else {
-    testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabled,
-                                      base::Value(privacy_sandbox_enabled));
-  }
-}
 
 void RunTestCase(
     content::BrowserTaskEnvironment* task_environment,

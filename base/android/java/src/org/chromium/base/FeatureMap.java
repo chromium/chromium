@@ -4,9 +4,8 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,9 +23,9 @@ import java.util.Map;
  * access to the list of base::Features passed to the base::android::FeatureMap.
  */
 @JNINamespace("base::android")
-@MainDex
 public abstract class FeatureMap {
     private long mNativeMapPtr;
+
     protected FeatureMap() {}
 
     /**
@@ -67,8 +66,8 @@ public abstract class FeatureMap {
         if (testValue != null) return testValue;
         if (FeatureList.hasTestFeatures()) return "";
         ensureNativeMapInit();
-        return FeatureMapJni.get().getFieldTrialParamByFeature(
-                mNativeMapPtr, featureName, paramName);
+        return FeatureMapJni.get()
+                .getFieldTrialParamByFeature(mNativeMapPtr, featureName, paramName);
     }
 
     /**
@@ -86,8 +85,9 @@ public abstract class FeatureMap {
         if (testValue != null) return Boolean.valueOf(testValue);
         if (FeatureList.hasTestFeatures()) return defaultValue;
         ensureNativeMapInit();
-        return FeatureMapJni.get().getFieldTrialParamByFeatureAsBoolean(
-                mNativeMapPtr, featureName, paramName, defaultValue);
+        return FeatureMapJni.get()
+                .getFieldTrialParamByFeatureAsBoolean(
+                        mNativeMapPtr, featureName, paramName, defaultValue);
     }
 
     /**
@@ -105,8 +105,9 @@ public abstract class FeatureMap {
         if (testValue != null) return Integer.valueOf(testValue);
         if (FeatureList.hasTestFeatures()) return defaultValue;
         ensureNativeMapInit();
-        return FeatureMapJni.get().getFieldTrialParamByFeatureAsInt(
-                mNativeMapPtr, featureName, paramName, defaultValue);
+        return FeatureMapJni.get()
+                .getFieldTrialParamByFeatureAsInt(
+                        mNativeMapPtr, featureName, paramName, defaultValue);
     }
 
     /**
@@ -124,13 +125,12 @@ public abstract class FeatureMap {
         if (testValue != null) return Double.valueOf(testValue);
         if (FeatureList.hasTestFeatures()) return defaultValue;
         ensureNativeMapInit();
-        return FeatureMapJni.get().getFieldTrialParamByFeatureAsDouble(
-                mNativeMapPtr, featureName, paramName, defaultValue);
+        return FeatureMapJni.get()
+                .getFieldTrialParamByFeatureAsDouble(
+                        mNativeMapPtr, featureName, paramName, defaultValue);
     }
 
-    /**
-     * Returns all the field trial parameters for the specified feature.
-     */
+    /** Returns all the field trial parameters for the specified feature. */
     public Map<String, String> getFieldTrialParamsForFeature(String featureName) {
         Map<String, String> testValues =
                 FeatureList.getTestValuesForAllFieldTrialParamsForFeature(featureName);
@@ -139,12 +139,19 @@ public abstract class FeatureMap {
 
         ensureNativeMapInit();
         Map<String, String> result = new HashMap<>();
-        String[] flattenedParams = FeatureMapJni.get().getFlattedFieldTrialParamsForFeature(
-                mNativeMapPtr, featureName);
+        String[] flattenedParams =
+                FeatureMapJni.get()
+                        .getFlattedFieldTrialParamsForFeature(mNativeMapPtr, featureName);
         for (int i = 0; i < flattenedParams.length; i += 2) {
             result.put(flattenedParams[i], flattenedParams[i + 1]);
         }
         return result;
+    }
+
+    /** Create a {@link MutableFlagWithSafeDefault} in this FeatureMap. */
+    public MutableFlagWithSafeDefault mutableFlagWithSafeDefault(
+            String featureName, boolean defaultValue) {
+        return new MutableFlagWithSafeDefault(this, featureName, defaultValue);
     }
 
     private void ensureNativeMapInit() {
@@ -159,13 +166,18 @@ public abstract class FeatureMap {
     @NativeMethods
     interface Natives {
         boolean isEnabled(long featureMap, String featureName);
+
         String getFieldTrialParamByFeature(long featureMap, String featureName, String paramName);
+
         int getFieldTrialParamByFeatureAsInt(
                 long featureMap, String featureName, String paramName, int defaultValue);
+
         double getFieldTrialParamByFeatureAsDouble(
                 long featureMap, String featureName, String paramName, double defaultValue);
+
         boolean getFieldTrialParamByFeatureAsBoolean(
                 long featureMap, String featureName, String paramName, boolean defaultValue);
+
         String[] getFlattedFieldTrialParamsForFeature(long featureMap, String featureName);
     }
 }

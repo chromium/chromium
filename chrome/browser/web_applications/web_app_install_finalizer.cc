@@ -38,12 +38,11 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -54,6 +53,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
@@ -99,6 +99,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::SUB_APP:
     case InstallSource::KIOSK:
     case InstallSource::PRELOADED_OEM:
+    case InstallSource::PRELOADED_DEFAULT:
     case InstallSource::MICROSOFT_365_SETUP:
       return false;
     case InstallSource::COUNT:
@@ -106,6 +107,96 @@ bool ShouldInstallOverwriteUserDisplayMode(
       return false;
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// When web apps are added to sync on ChromeOS the value of
+// user_display_mode_default should be set in certain cases to avoid poor sync
+// install states on devices with kSeparateUserDisplayModeForCrOS disabled
+// (including all pre-M122 devices) and non-CrOS devices with particular web
+// apps.
+// See switch for specific cases being mitigated against.
+// See go/udm-desync#bookmark=id.cg753kjyrruo for design doc.
+// TODO(b/320771282): Add automated tests.
+void ApplyUserDisplayModeSyncMitigations(
+    const WebAppInstallFinalizer::FinalizeOptions& options,
+    WebApp& web_app) {
+  if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+    return;
+  }
+
+  // Guaranteed by EnsureAppsHaveUserDisplayModeForCurrentPlatform().
+  CHECK(web_app.user_display_mode_cros().has_value(),
+        base::NotFatalUntil::M125);
+
+  // Don't mitigate installations from sync, this is only for installs that will
+  // be newly uploaded to sync.
+  if (options.install_surface == webapps::WebappInstallSource::SYNC) {
+    return;
+  }
+
+  // Only mitigate if web app is being added to sync.
+  if (options.source != WebAppManagement::Type::kSync) {
+    return;
+  }
+
+  // Don't override existing default-platform value.
+  if (web_app.user_display_mode_default().has_value()) {
+    return;
+  }
+
+  switch (web_app.user_display_mode_cros().value()) {
+    case mojom::UserDisplayMode::kBrowser:
+      if (!base::FeatureList::IsEnabled(
+              kUserDisplayModeSyncBrowserMitigation)) {
+        break;
+      }
+
+      // CrOS devices with kSeparateUserDisplayModeForCrOS disabled (including
+      // pre-M122 devices) use the user_display_mode_default sync field instead
+      // of user_display_mode_cros. If user_display_mode_default is ever unset
+      // they will fallback to using kStandalone even if user_display_mode_cros
+      // is set to kBrowser. This mitigation esures user_display_mode_default
+      // is set to kBrowser for these devices.
+      // Example user journey:
+      // - Install web app as browser shortcut on post-M122 CrOS device.
+      // - Sync installation to pre-M122 CrOS device.
+      // - Check that it is synced as a browser shortcut.
+      // TODO(b/321617981): Remove when there are sufficiently few pre-M122 CrOS
+      // devices in circulation.
+      web_app.SetUserDisplayModeDefault(mojom::UserDisplayMode::kBrowser);
+      break;
+
+    case mojom::UserDisplayMode::kStandalone: {
+      if (!base::FeatureList::IsEnabled(
+              kUserDisplayModeSyncStandaloneMitigation)) {
+        break;
+      }
+
+      // Ensure standalone averse apps don't get defaulted to kStandalone on
+      // non-CrOS devices via sync.
+      // Example user journey:
+      // - Install Google Docs as a standalone web app.
+      // - Sync installation to non-CrOS device.
+      // - Check that it is synced as a browser shortcut.
+      // TODO(b/321617972): Remove when Windows/Mac/Linux support for tabbed web
+      // apps is in sufficient circulation.
+      bool is_standalone_averse_app = web_app.app_id() == kGoogleDocsAppId ||
+                                      web_app.app_id() == kGoogleSheetsAppId ||
+                                      web_app.app_id() == kGoogleSlidesAppId;
+      if (!is_standalone_averse_app) {
+        break;
+      }
+      web_app.SetUserDisplayModeDefault(mojom::UserDisplayMode::kBrowser);
+      break;
+    }
+
+    case mojom::UserDisplayMode::kTabbed:
+      // This can only be reached when kDesktopPWAsTabStripSettings is enabled,
+      // this is only for testing and is planned to be removed.
+      break;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -133,13 +224,13 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // WebAppInstallManager and replace this runtime error in
   // WebAppInstallFinalizer with DCHECK(started_).
   if (!started_) {
-    std::move(callback).Run(AppId(),
+    std::move(callback).Run(webapps::AppId(),
                             webapps::InstallResultCode::kWebAppProviderNotReady,
                             OsHooksErrors());
     return;
   }
 
-  ManifestId manifest_id = web_app_info.manifest_id;
+  webapps::ManifestId manifest_id = web_app_info.manifest_id;
   if (manifest_id.is_valid()) {
     CHECK(url::Origin::Create(manifest_id)
               .IsSameOriginWith(url::Origin::Create(web_app_info.start_url)));
@@ -149,7 +240,14 @@ void WebAppInstallFinalizer::FinalizeInstall(
     manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url);
   }
 
-  AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+  // parent_app_manifest_id can only exist if installing as a sub-app.
+  CHECK((options.install_surface == webapps::WebappInstallSource::SUB_APP &&
+         web_app_info.parent_app_manifest_id.has_value()) ||
+        (options.install_surface != webapps::WebappInstallSource::SUB_APP &&
+         !web_app_info.parent_app_manifest_id.has_value()));
+
+  webapps::AppId app_id = GenerateAppIdFromManifestId(
+      manifest_id, web_app_info.parent_app_manifest_id);
   OnDidGetWebAppOriginAssociations origin_association_validated_callback =
       base::BindOnce(&WebAppInstallFinalizer::OnOriginAssociationValidated,
                      weak_ptr_factory_.GetWeakPtr(), web_app_info.Clone(),
@@ -171,7 +269,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     WebAppInstallInfo web_app_info,
     FinalizeOptions options,
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     ScopeExtensions validated_scope_extensions) {
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);
@@ -184,7 +282,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
 
-  if (existing_web_app) {
+  if (existing_web_app && !options.bypass_os_hooks) {
     // There is a chance that existing sources type(s) are user uninstallable
     // but the newly added source type is NOT user uninstallable. In this
     // case, the following call will unregister os uninstallation.
@@ -203,8 +301,16 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   web_app->SetIsLocallyInstalled(web_app->is_locally_installed() ||
                                  options.locally_installed);
 
-  if (options.locally_installed && web_app->install_time().is_null()) {
-    web_app->SetInstallTime(base::Time::Now());
+  // The last install time is always updated if the app has been locally
+  // installed, but the first install time is updated only once.
+  const base::Time now_time = base::Time::Now();
+  if (options.locally_installed && web_app->first_install_time().is_null()) {
+    web_app->SetFirstInstallTime(now_time);
+  }
+
+  // The last install time is updated whenever we (re)install/update.
+  if (options.locally_installed) {
+    web_app->SetLatestInstallTime(now_time);
   }
 
   if (!web_app->run_on_os_login_os_integration_state()) {
@@ -218,6 +324,9 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     DCHECK(web_app_info.user_display_mode.has_value());
     web_app->SetUserDisplayMode(*web_app_info.user_display_mode);
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  ApplyUserDisplayModeSyncMitigations(options, *web_app);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // `WebApp::chromeos_data` has a default value already. Only override if the
   // caller provided a new value.
@@ -227,7 +336,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   if (provider_->policy_manager().IsWebAppInDisabledList(app_id) &&
       web_app->chromeos_data().has_value() &&
       !web_app->chromeos_data()->is_disabled) {
-    absl::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
+    std::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
     cros_data->is_disabled = true;
     web_app->SetWebAppChromeOsData(std::move(cros_data));
   }
@@ -252,6 +361,10 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   web_app->AddSource(options.source);
   web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetLatestInstallSource(options.install_surface);
+
+  if (!web_app->generated_icon_fix().has_value()) {
+    web_app->SetGeneratedIconFix(web_app_info.generated_icon_fix);
+  }
 
   WriteExternalConfigMapInfo(
       *web_app, options.source, web_app_info.is_placeholder,
@@ -278,7 +391,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   }
 }
 
-bool WebAppInstallFinalizer::CanReparentTab(const AppId& app_id,
+bool WebAppInstallFinalizer::CanReparentTab(const webapps::AppId& app_id,
                                             bool shortcut_created) const {
   // Reparent the web contents into its own window only if that is the
   // app's launch type.
@@ -292,7 +405,7 @@ bool WebAppInstallFinalizer::CanReparentTab(const AppId& app_id,
                                                            shortcut_created);
 }
 
-void WebAppInstallFinalizer::ReparentTab(const AppId& app_id,
+void WebAppInstallFinalizer::ReparentTab(const webapps::AppId& app_id,
                                          bool shortcut_created,
                                          content::WebContents* web_contents) {
   DCHECK(web_contents);
@@ -305,7 +418,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     InstallFinalizedCallback callback) {
   CHECK(started_);
   CHECK(web_app_info.start_url.is_valid());
-  ManifestId manifest_id = web_app_info.manifest_id;
+  webapps::ManifestId manifest_id = web_app_info.manifest_id;
   if (manifest_id.is_valid()) {
     CHECK(url::Origin::Create(manifest_id)
               .IsSameOriginWith(url::Origin::Create(web_app_info.start_url)));
@@ -317,7 +430,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
   }
   CHECK(manifest_id.is_valid());
 
-  const AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);
 
@@ -325,7 +438,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
       existing_web_app->is_from_sync_and_pending_installation() ||
       app_id != existing_web_app->app_id()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), AppId(),
+        FROM_HERE, base::BindOnce(std::move(callback), webapps::AppId(),
                                   webapps::InstallResultCode::kWebAppDisabled,
                                   OsHooksErrors()));
     return;
@@ -372,6 +485,9 @@ void WebAppInstallFinalizer::Start() {
 
 void WebAppInstallFinalizer::Shutdown() {
   started_ = false;
+  // TODO(crbug/1279315): Turn WebAppInstallFinalizer into a command so it can
+  // properly call callbacks on shutdown instead of dropping them on shutdown.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
@@ -391,7 +507,7 @@ void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
       location, version, controlled_frame_partitions,
       // Always reset `pending_update_info`, because reaching this point means
       // that an install or update just succeeded.
-      /*pending_update_info=*/absl::nullopt));
+      /*pending_update_info=*/std::nullopt));
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
@@ -402,7 +518,7 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
   SetWebAppManifestFields(web_app_info, *web_app,
                           skip_icon_writes_on_download_failure);
 
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   auto write_translations_callback = base::BindOnce(
       &WebAppInstallFinalizer::WriteTranslations,
       weak_ptr_factory_.GetWeakPtr(), app_id, web_app_info.translations);
@@ -433,7 +549,7 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 }
 
 void WebAppInstallFinalizer::WriteTranslations(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::flat_map<std::string, blink::Manifest::TranslationItem>&
         translations,
     CommitCallback commit_callback,
@@ -456,27 +572,29 @@ void WebAppInstallFinalizer::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
     return;
   }
 
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
 
   ScopedRegistryUpdate update =
       provider_->sync_bridge_unsafe().BeginUpdate(std::move(commit_callback));
 
   WebApp* app_to_override = update->UpdateApp(app_id);
-  if (app_to_override)
+  if (app_to_override) {
     *app_to_override = std::move(*web_app);
-  else
+  } else {
     update->CreateApp(std::move(web_app));
+  }
 }
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     FinalizeOptions finalize_options,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
-    std::move(callback).Run(
-        AppId(), webapps::InstallResultCode::kWriteDataFailed, OsHooksErrors());
+    std::move(callback).Run(webapps::AppId(),
+                            webapps::InstallResultCode::kWriteDataFailed,
+                            OsHooksErrors());
     return;
   }
 
@@ -487,7 +605,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   // isolation work is done. https://crbug.com/1298130
   if (!web_app) {
     std::move(callback).Run(
-        AppId(), webapps::InstallResultCode::kAppNotInRegistrarAfterCommit,
+        webapps::AppId(),
+        webapps::InstallResultCode::kAppNotInRegistrarAfterCommit,
         OsHooksErrors());
     return;
   }
@@ -545,6 +664,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     case WebAppManagement::kPolicy:
     case WebAppManagement::kDefault:
     case WebAppManagement::kOem:
+    case WebAppManagement::kApsDefault:
       hooks_options.reason = SHORTCUT_CREATION_AUTOMATED;
       break;
     case WebAppManagement::kKiosk:
@@ -579,7 +699,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 
 void WebAppInstallFinalizer::OnInstallHooksFinished(
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     OsHooksErrors os_hooks_errors) {
   auto joined = std::move(callback).Then(
       base::BindOnce(&WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks,
@@ -589,11 +709,12 @@ void WebAppInstallFinalizer::OnInstallHooksFinished(
                         os_hooks_errors);
 }
 
-void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(AppId app_id) {
+void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(
+    webapps::AppId app_id) {
   provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
-bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
+bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const webapps::AppId& app_id) {
 #if BUILDFLAG(IS_CHROMEOS)
   // OS integration should always be enabled on ChromeOS.
   return true;
@@ -606,30 +727,31 @@ bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     std::string old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
-    std::move(callback).Run(
-        AppId(), webapps::InstallResultCode::kWriteDataFailed, OsHooksErrors());
+    std::move(callback).Run(webapps::AppId(),
+                            webapps::InstallResultCode::kWriteDataFailed,
+                            OsHooksErrors());
     return;
   }
 
   if (!ShouldUpdateOsHooks(app_id)) {
-    provider_->install_manager().NotifyWebAppManifestUpdated(app_id, old_name);
+    provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
     std::move(callback).Run(
         app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled,
         OsHooksErrors());
     return;
   }
 
-  auto os_hooks_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&WebAppInstallFinalizer::OnUpdateHooksFinished,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     app_id, old_name));
+  auto os_hooks_barrier =
+      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
+          &WebAppInstallFinalizer::OnUpdateHooksFinished,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id));
 
   // TODO(crbug.com/1401125): Remove UpdateOsHooks() once OS integration
   // sub managers have been implemented.
@@ -642,10 +764,9 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
 
 void WebAppInstallFinalizer::OnUpdateHooksFinished(
     InstallFinalizedCallback callback,
-    AppId app_id,
-    std::string old_name,
+    webapps::AppId app_id,
     OsHooksErrors os_hooks_errors) {
-  provider_->install_manager().NotifyWebAppManifestUpdated(app_id, old_name);
+  provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
   std::move(callback).Run(
       app_id,
       os_hooks_errors.any()
@@ -676,7 +797,7 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
 }
 
 FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const WebAppInstallInfo& new_web_app_info) {
   if (provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id) ==
       ApiApprovalState::kDisallowed) {

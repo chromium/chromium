@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/session/arc_vm_data_migration_necessity_checker.h"
 
+#include <optional>
+
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
@@ -17,7 +19,6 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -51,12 +52,12 @@ class ArcVmDataMigrationNecessityCheckerTest : public testing::Test {
 };
 
 TEST_F(ArcVmDataMigrationNecessityCheckerTest, HasDataToMigrate) {
-  absl::optional<bool> migration_needed = false;
+  std::optional<bool> migration_needed = false;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(true);
   checker_->Check(base::BindLambdaForTesting(
-      [&migration_needed](absl::optional<bool> result) {
+      [&migration_needed](std::optional<bool> result) {
         migration_needed = result;
       }));
   base::RunLoop().RunUntilIdle();
@@ -65,12 +66,12 @@ TEST_F(ArcVmDataMigrationNecessityCheckerTest, HasDataToMigrate) {
 }
 
 TEST_F(ArcVmDataMigrationNecessityCheckerTest, HasNoDataToMigrate) {
-  absl::optional<bool> migration_needed = true;
+  std::optional<bool> migration_needed = true;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(false);
   checker_->Check(base::BindLambdaForTesting(
-      [&migration_needed](absl::optional<bool> result) {
+      [&migration_needed](std::optional<bool> result) {
         migration_needed = result;
       }));
   base::RunLoop().RunUntilIdle();
@@ -79,13 +80,13 @@ TEST_F(ArcVmDataMigrationNecessityCheckerTest, HasNoDataToMigrate) {
 }
 
 TEST_F(ArcVmDataMigrationNecessityCheckerTest, ForceVirtioBlkForData) {
-  absl::optional<bool> migration_needed = true;
+  std::optional<bool> migration_needed = true;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kEnableArcVmDataMigration, kEnableVirtioBlkForData}, {});
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(true);
   checker_->Check(base::BindLambdaForTesting(
-      [&migration_needed](absl::optional<bool> result) {
+      [&migration_needed](std::optional<bool> result) {
         migration_needed = result;
       }));
   base::RunLoop().RunUntilIdle();
@@ -94,14 +95,14 @@ TEST_F(ArcVmDataMigrationNecessityCheckerTest, ForceVirtioBlkForData) {
 }
 
 TEST_F(ArcVmDataMigrationNecessityCheckerTest, MigrationFinished) {
-  absl::optional<bool> migration_needed = true;
+  std::optional<bool> migration_needed = true;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                               ArcVmDataMigrationStatus::kFinished);
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(true);
   checker_->Check(base::BindLambdaForTesting(
-      [&migration_needed](absl::optional<bool> result) {
+      [&migration_needed](std::optional<bool> result) {
         migration_needed = result;
       }));
   base::RunLoop().RunUntilIdle();
@@ -110,7 +111,7 @@ TEST_F(ArcVmDataMigrationNecessityCheckerTest, MigrationFinished) {
 }
 
 TEST_F(ArcVmDataMigrationNecessityCheckerTest, StartJobFailed) {
-  absl::optional<bool> migration_needed = true;
+  std::optional<bool> migration_needed = true;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(true);
@@ -120,7 +121,7 @@ TEST_F(ArcVmDataMigrationNecessityCheckerTest, StartJobFailed) {
             job_name != kArcVmDataMigratorJobName);
       }));
   checker_->Check(base::BindLambdaForTesting(
-      [&migration_needed](absl::optional<bool> result) {
+      [&migration_needed](std::optional<bool> result) {
         migration_needed = result;
       }));
   base::RunLoop().RunUntilIdle();
@@ -128,13 +129,13 @@ TEST_F(ArcVmDataMigrationNecessityCheckerTest, StartJobFailed) {
 }
 
 TEST_F(ArcVmDataMigrationNecessityCheckerTest, HasDataToMigrateFailed) {
-  absl::optional<bool> migration_needed = true;
+  std::optional<bool> migration_needed = true;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(
-      absl::nullopt);
+      std::nullopt);
   checker_->Check(base::BindLambdaForTesting(
-      [&migration_needed](absl::optional<bool> result) {
+      [&migration_needed](std::optional<bool> result) {
         migration_needed = result;
       }));
   base::RunLoop().RunUntilIdle();

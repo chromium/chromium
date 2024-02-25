@@ -1,0 +1,59 @@
+This is a testharness.js-based test.
+Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] <input type="date" value="2020-01-01" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="date" value="2020-01-01" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="month" value="2020-01" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="month" value="2020-01" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="week" value="2020-W01" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="week" value="2020-W01" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="time" value="00:00" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="time" value="00:00" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="datetime-local" value="2020-01-01T00:00" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="datetime-local" value="2020-01-01T00:00" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="range" style="overflow: visible; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 71 but got 61
+[FAIL] <input type="range" style="overflow: hidden; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 71 but got 61
+[FAIL] <input type="range" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 71 but got 61
+[FAIL] <input type="range" style="overflow: visible; appearance: none;">
+  assert_equals: <span>.offsetTop expected 71 but got 61
+[FAIL] <input type="range" style="overflow: hidden; appearance: none;">
+  assert_equals: <span>.offsetTop expected 71 but got 61
+[FAIL] <input type="range" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 71 but got 61
+[FAIL] <input type="color" value="#000000" style="overflow: visible; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 49 but got 46
+[FAIL] <input type="color" value="#000000" style="overflow: hidden; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 49 but got 71
+[FAIL] <input type="color" value="#000000" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 49 but got 71
+[FAIL] <input type="color" value="#000000" style="overflow: visible; appearance: none;">
+  assert_equals: <span>.offsetTop expected 49 but got 46
+[FAIL] <input type="color" value="#000000" style="overflow: hidden; appearance: none;">
+  assert_equals: <span>.offsetTop expected 49 but got 71
+[FAIL] <input type="color" value="#000000" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 49 but got 71
+[FAIL] <input type="submit" value="x" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="submit" value="x" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="reset" value="x" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="reset" value="x" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="button" value="x" style="overflow: scroll; appearance: auto;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+[FAIL] <input type="button" value="x" style="overflow: scroll; appearance: none;">
+  assert_equals: <span>.offsetTop expected 35 but got 27
+Harness: the test ran to completion.

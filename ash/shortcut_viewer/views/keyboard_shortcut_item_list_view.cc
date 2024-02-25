@@ -9,6 +9,8 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/default_style.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -25,6 +27,8 @@ constexpr SkColor kSeparatorColorLight = SkColorSetARGB(0x0F, 0x00, 0x00, 0x00);
 
 // A horizontal line to separate the KeyboardShortcutItemView.
 class HorizontalSeparator : public views::View {
+  METADATA_HEADER(HorizontalSeparator, views::View)
+
  public:
   explicit HorizontalSeparator(int preferred_width)
       : preferred_width_(preferred_width) {
@@ -35,9 +39,6 @@ class HorizontalSeparator : public views::View {
   HorizontalSeparator& operator=(const HorizontalSeparator&) = delete;
 
   ~HorizontalSeparator() override = default;
-
-  // views::View overrides:
-  const char* GetClassName() const override { return "HorizontalSeparator"; }
 
   gfx::Size CalculatePreferredSize() const override {
     constexpr int kSeparatorThickness = 1;
@@ -62,8 +63,11 @@ class HorizontalSeparator : public views::View {
 
  private:
   const int preferred_width_;
-  raw_ptr<ash::ColorProvider, ExperimentalAsh> color_provider_;
+  raw_ptr<ash::ColorProvider> color_provider_;
 };
+
+BEGIN_METADATA(HorizontalSeparator)
+END_METADATA
 
 }  // namespace
 
@@ -103,5 +107,8 @@ void KeyboardShortcutItemListView::AddCategoryLabel(
 void KeyboardShortcutItemListView::AddHorizontalSeparator() {
   AddChildView(std::make_unique<HorizontalSeparator>(bounds().width()));
 }
+
+BEGIN_METADATA(KeyboardShortcutItemListView)
+END_METADATA
 
 }  // namespace keyboard_shortcut_viewer

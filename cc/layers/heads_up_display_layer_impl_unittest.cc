@@ -56,7 +56,7 @@ class HeadsUpDisplayLayerImplTest : public LayerTreeImplTestBase,
 TEST_F(HeadsUpDisplayLayerImplTest, ResourcelessSoftwareDrawAfterResourceLoss) {
   host_impl()->CreatePendingTree();
   auto* root = EnsureRootLayerInPendingTree();
-  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>();
+  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>(std::string());
   layer->SetBounds(gfx::Size(100, 100));
   layer->set_visible_layer_rect(gfx::Rect(100, 100));
   CopyProperties(root, layer);
@@ -80,7 +80,7 @@ TEST_F(HeadsUpDisplayLayerImplTest, ResourcelessSoftwareDrawAfterResourceLoss) {
 TEST_F(HeadsUpDisplayLayerImplTest, CPUAndGPURasterCanvas) {
   host_impl()->CreatePendingTree();
   auto* root = EnsureRootLayerInPendingTree();
-  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>();
+  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>(std::string());
   layer->SetBounds(gfx::Size(100, 100));
   CopyProperties(root, layer);
 

@@ -11,9 +11,8 @@
 
 #include "android_webview/browser/lifecycle/webview_app_state_observer.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
-#include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
-#include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -56,6 +55,7 @@ class AwComponentMetricsProviderDelegateTest : public testing::Test {
   AwMetricsServiceClient* GetClient() { return client_.get(); }
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<AwMetricsServiceClient> client_;
@@ -73,52 +73,6 @@ TEST_F(AwComponentMetricsProviderDelegateTest,
   EXPECT_TRUE(system_profile.chrome_component().empty());
 }
 
-TEST_F(AwComponentMetricsProviderDelegateTest,
-       TestAppsPackageNamesComponent_Loaded) {
-  metrics::ComponentMetricsProvider provider(
-      std::make_unique<AwComponentMetricsProviderDelegate>(GetClient()));
-
-  std::string allowlist_version = "123.456.78.9";
-  GetClient()->SetAppPackageNameLoggingRule(AppPackageNameLoggingRule(
-      base::Version(allowlist_version), base::Time::Now()));
-
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideSystemProfileMetrics(&system_profile);
-  ASSERT_EQ(1, system_profile.chrome_component().size());
-  metrics::SystemProfileProto::ChromeComponent allowlist_component =
-      system_profile.chrome_component()[0];
-  EXPECT_EQ(
-      metrics::
-          SystemProfileProto_ComponentId_WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST,
-      allowlist_component.component_id());
-  EXPECT_EQ(allowlist_version, allowlist_component.version());
-}
-
-TEST_F(AwComponentMetricsProviderDelegateTest,
-       TestAppsPackageNamesComponent_CachedIsDifferentFromLoaded) {
-  metrics::ComponentMetricsProvider provider(
-      std::make_unique<AwComponentMetricsProviderDelegate>(GetClient()));
-
-  std::string allowlist_version = "123.456.78.9";
-  GetClient()->SetAppPackageNameLoggingRule(AppPackageNameLoggingRule(
-      base::Version(allowlist_version), base::Time::Now()));
-
-  component_updater::ComponentsInfoHolder::GetInstance()->AddComponent(
-      kWebViewAppsPackageNamesAllowlistComponentId,
-      base::Version("222.333.444.555"));
-
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideSystemProfileMetrics(&system_profile);
-  ASSERT_EQ(1, system_profile.chrome_component().size());
-  metrics::SystemProfileProto::ChromeComponent allowlist_component =
-      system_profile.chrome_component()[0];
-  EXPECT_EQ(
-      metrics::
-          SystemProfileProto_ComponentId_WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST,
-      allowlist_component.component_id());
-  EXPECT_EQ(allowlist_version, allowlist_component.version());
-}
-
 TEST_F(AwComponentMetricsProviderDelegateTest, TestMultipleComponents) {
   AwComponentMetricsProviderDelegate delegate(GetClient());
 
@@ -126,9 +80,6 @@ TEST_F(AwComponentMetricsProviderDelegateTest, TestMultipleComponents) {
   base::Version fake_component_version("123.456.78.9");
   component_updater::ComponentsInfoHolder::GetInstance()->AddComponent(
       fake_component_id, fake_component_version);
-  component_updater::ComponentsInfoHolder::GetInstance()->AddComponent(
-      kWebViewAppsPackageNamesAllowlistComponentId,
-      base::Version("222.333.444.555"));
 
   std::vector<ComponentInfo> components = delegate.GetComponents();
   ASSERT_EQ(1u, components.size());

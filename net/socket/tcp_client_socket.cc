@@ -288,7 +288,7 @@ int TCPClientSocket::DoConnect() {
 int TCPClientSocket::DoConnectComplete(int result) {
   if (start_connect_attempt_) {
     EmitConnectAttemptHistograms(result);
-    start_connect_attempt_ = absl::nullopt;
+    start_connect_attempt_ = std::nullopt;
     connect_attempt_timer_.Stop();
   }
 
@@ -342,12 +342,11 @@ void TCPClientSocket::Disconnect() {
 void TCPClientSocket::DoDisconnect() {
   if (start_connect_attempt_) {
     EmitConnectAttemptHistograms(ERR_ABORTED);
-    start_connect_attempt_ = absl::nullopt;
+    start_connect_attempt_ = std::nullopt;
     connect_attempt_timer_.Stop();
   }
 
   total_received_bytes_ = 0;
-  EmitTCPMetricsHistogramsOnDisconnect();
 
   // If connecting or already connected, record that the socket has been
   // disconnected.
@@ -391,10 +390,6 @@ const NetLogWithSource& TCPClientSocket::NetLog() const {
 
 bool TCPClientSocket::WasEverUsed() const {
   return was_ever_used_;
-}
-
-bool TCPClientSocket::WasAlpnNegotiated() const {
-  return false;
 }
 
 NextProto TCPClientSocket::GetNegotiatedProtocol() const {
@@ -564,14 +559,6 @@ int TCPClientSocket::OpenSocket(AddressFamily family) {
   return OK;
 }
 
-void TCPClientSocket::EmitTCPMetricsHistogramsOnDisconnect() {
-  base::TimeDelta rtt;
-  if (socket_->GetEstimatedRoundTripTime(&rtt)) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Net.TcpRtt.AtDisconnect", rtt,
-                               base::Milliseconds(1), base::Minutes(10), 100);
-  }
-}
-
 void TCPClientSocket::EmitConnectAttemptHistograms(int result) {
   // This should only be called in response to completing a connect attempt.
   DCHECK(start_connect_attempt_);
@@ -594,7 +581,7 @@ base::TimeDelta TCPClientSocket::GetConnectAttemptTimeout() {
   if (!base::FeatureList::IsEnabled(features::kTimeoutTcpConnectAttempt))
     return base::TimeDelta::Max();
 
-  absl::optional<base::TimeDelta> transport_rtt = absl::nullopt;
+  std::optional<base::TimeDelta> transport_rtt = std::nullopt;
   if (network_quality_estimator_)
     transport_rtt = network_quality_estimator_->GetTransportRTT();
 

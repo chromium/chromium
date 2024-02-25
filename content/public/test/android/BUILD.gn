@@ -1,5 +1,6 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("test_support_content_jni_headers") {
   testonly = true
@@ -10,7 +11,7 @@ android_library("android_test_message_pump_support_java") {
   testonly = true
   deps = [
     "//base:base_java_test_support",
-    "//base:jni_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   sources = [ "javatests/src/org/chromium/content_public/browser/test/NestedSystemMessageHandler.java" ]
 }
@@ -23,7 +24,6 @@ android_library("content_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
-    "//base:jni_java",
     "//base:process_launcher_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
@@ -35,12 +35,12 @@ android_library("content_java_test_support") {
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
-    "//url:origin_java",
   ]
   srcjar_deps = [ ":content_test_jni" ]
   sources = [
@@ -57,6 +57,7 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/util/ClickUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/Coordinates.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DOMUtils.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/DigitalCredentialProviderUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DomAutomationController.java",
     "javatests/src/org/chromium/content_public/browser/test/util/FencedFrameUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/HistoryUtils.java",

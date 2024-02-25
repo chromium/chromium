@@ -8,7 +8,7 @@
 <translation id="1013742170491673792">recherche</translation>
 <translation id="1014370462248694370">Balayer l'écran vers la droite avec deux doigts</translation>
 <translation id="1022586497894531524">Est-ce la première fois que vous utilisez les commentaires audio de ChromeVox ? Ce tutoriel rapide explique les bases pour commencer à utiliser ChromeVox.</translation>
-<translation id="1025074108959230262">Mode persistant désactivé</translation>
+<translation id="1025074108959230262">Mode rémanent désactivé</translation>
 <translation id="1031961866430398710">puis</translation>
 <translation id="1038643060055067718">Lignes :</translation>
 <translation id="1038795173450935438">Pour passer à l'élément suivant sur une page, appuyez sur la touche de recherche + la flèche vers la droite, et pour revenir directement à l'élément précédent, appuyez sur la touche de recherche + la flèche vers la gauche. Pour passer à la ligne suivante, appuyez sur la touche de recherche + la flèche vers le bas, et pour revenir à la ligne précédente, appuyez sur la touche de recherche + la flèche vers le haut. Si vous atteignez un élément sur lequel vous souhaitez cliquer, appuyez sur la touche de recherche + la barre d'espace.</translation>
@@ -69,7 +69,7 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Pourboire</translation>
 <translation id="1354356357730355833">copier</translation>
-<translation id="1360699455582016846">Cliquez sur l'élément sous la clé de routage <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1360699455582016846">Cliquez sur l'élément sous la touche de routage <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">passer au caractère suivant</translation>
 <translation id="1377925789329510816">Il s'agit du dernier titre. Appuyez sur la touche de recherche+H pour revenir au premier titre ou sur la touche de recherche+Maj+H pour accéder au deuxième titre de cette page.</translation>
 <translation id="138218114945450791">Bleu clair</translation>
@@ -86,10 +86,10 @@
 <translation id="1465097259579587977">Recommencer la présentation rapide</translation>
 <translation id="1480046233931937785">Remerciements</translation>
 <translation id="1487494366197411587">Sur un Chromebook, la touche de recherche se trouve juste au-dessus de la touche Maj.</translation>
-<translation id="1498498210836053409">Désactiver le mode persistant lors de la modification de texte (mode persistant intelligent)</translation>
+<translation id="1498498210836053409">Désactiver le mode rémanent lors de l'édition de texte (mode rémanent intelligent)</translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1502086903961450562">Élément graphique précédent</translation>
-<translation id="1506187449813838456">Augmenter le timbre de la voix</translation>
+<translation id="1506187449813838456">Lire un ton plus haut</translation>
 <translation id="151784044608172266">Phrase suivante</translation>
 <translation id="1524531499102321782">Ligne suivante (braille)</translation>
 <translation id="1542513807034338907">Faire défiler jusqu'à la page précédente</translation>
@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Navigation vers le haut</translation>
 <translation id="1565432156062359693">Aucune liste suivante</translation>
 <translation id="1571643229714746283">ChromeVox est prêt.</translation>
+<translation id="1588252353131492116">La désactivation ponctuelle n'est pas disponible lorsque le mode rémanent est activé</translation>
 <translation id="1594072653727561613">menu</translation>
 <translation id="1610130962244179598">Passer au braille à six points</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Principal</translation>
 <translation id="2329324941084714723">Panneau tab</translation>
 <translation id="2347456970887948350">Un lien</translation>
+<translation id="2363753371702255035">puce</translation>
 <translation id="2365384324219615024">Vous pouvez également appuyer sur Entrée pour activer des éléments. Par exemple, vous pouvez utiliser Entrée pour valider le texte saisi dans un formulaire. Pour continuer, appuyez sur Entrée.</translation>
 <translation id="2381733276052567791">Activer/Désactiver la voix</translation>
 <translation id="2390264819538553347">Pour avancer, appuyez sur Entrée. Pour revenir en arrière, appuyez sur Retour arrière.</translation>
@@ -244,7 +246,7 @@
 <translation id="267442004702508783">actualiser</translation>
 <translation id="2675533876313964202">Chartreuse</translation>
 <translation id="2684412629217766642">Fermer le tutoriel ChromeVox</translation>
-<translation id="2692503699962701720">Changer d'intonation pour les types d'éléments et le texte mis en forme</translation>
+<translation id="2692503699962701720">Changer de ton pour la lecture des types d'éléments et du texte mis en forme</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Proposition de conversion de texte</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parenthèse ouverte}one{# parenthèse ouverte}other{# parenthèses ouvertes}}</translation>
@@ -257,7 +259,7 @@
 <translation id="2737898226590637227">Aucun repère ARIA suivant</translation>
 <translation id="2749275490991666823">Cochée</translation>
 <translation id="27527859628328957">Renvoyer à l'élément suivant pouvant être agrandi</translation>
-<translation id="2756452585631602151">Saisissez un libellé personnalisé</translation>
+<translation id="2756452585631602151">Saisissez une étiquette personnalisée</translation>
 <translation id="2766299274563946262">Aucune cellule à gauche</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+ #}one{+ #}other{+ #}}</translation>
 <translation id="2792200646155001340">Essayez maintenant de passer à l'élément précédent en balayant l'écran de droite à gauche avec un doigt.</translation>
@@ -282,7 +284,7 @@
 <translation id="2909584066358367921">Aucun bouton suivant</translation>
 <translation id="2911433807131383493">Ouvrir le tutoriel ChromeVox</translation>
 <translation id="2912405967290226587">Balayer l'écran vers la droite avec trois doigts</translation>
-<translation id="2919107550468490321">Mode persistant intelligent activé</translation>
+<translation id="2919107550468490321">Mode rémanent intelligent activé</translation>
 <translation id="2937799153569150791">Aucun titre de niveau 3 suivant</translation>
 <translation id="2942710183375260152">Bleu ardoise foncé</translation>
 <translation id="2943596527105977722">Jaune paille foncé</translation>
@@ -295,7 +297,7 @@
 <translation id="2988364959384217951">Conseil : Balayez l'écran de droite à gauche avec deux doigts pour quitter ce tutoriel.</translation>
 <translation id="2998131015536248178">Caractère précédent</translation>
 <translation id="2999559350546931576">Diminuer le timbre de la voix</translation>
-<translation id="3009352964623081324">Recherche+O, puis S. Utilisez ce raccourci pour installer, gérer et personnaliser des voix.</translation>
+<translation id="3009352964623081324">Utilisez la touche Recherche+O puis S pour installer, gérer et personnaliser les voix.</translation>
 <translation id="3014130421870723208">mod@ 8pt</translation>
 <translation id="3018210433491759145">ChromeVox en cours de chargement</translation>
 <translation id="3030432017085518523">Case d'option d'élément de menu</translation>
@@ -358,7 +360,7 @@
 <translation id="3312997241656799641">Lien consulté suivant</translation>
 <translation id="3313245066383501820">Touche de modification ChromeVox</translation>
 <translation id="3317212938060708859">Un curseur</translation>
-<translation id="3321460131042519426">Enable word wrap</translation>
+<translation id="3321460131042519426">Activer le retour ligne</translation>
 <translation id="3322936298410871309">En-tête précédent de niveau 1</translation>
 <translation id="3323447499041942178">Zone de saisie</translation>
 <translation id="3324983252691184275">Pourpre</translation>
@@ -535,7 +537,7 @@
 <translation id="4597532268155981612">formulaire</translation>
 <translation id="4601367666219428522">Tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">La prochaine touche actionnée sera ignorée.</translation>
-<translation id="4617384941327705512">Mode persistant intelligent désactivé</translation>
+<translation id="4617384941327705512">Mode rémanent intelligent désactivé</translation>
 <translation id="4623097797855662355">Achevé d'imprimer</translation>
 <translation id="4624970070706497034">TalkBack n'offre plus de personnalisation pour les Chromebooks. Vous pouvez encore l'utiliser, mais avec les raccourcis clavier par défaut. Pour voir les raccourcis disponibles, appuyez sur Recherche+A, puis sur K. Si vous voulez toujours utiliser TalkBack, appuyez de nouveau sur la touche Commande.</translation>
 <translation id="4649220074413114917">Appuyez sur l'écran avec deux doigts si vous ne voulez plus que ChromeVox énonce le texte affiché. Pour continuer, appuyez sur l'écran avec deux doigts.</translation>
@@ -631,7 +633,7 @@
 <translation id="5308380583665731573">Connexion</translation>
 <translation id="5310788376443009632">Éléments supprimés :</translation>
 <translation id="5316825363044614340">passer à la ligne suivante</translation>
-<translation id="5320727453979144100">Mode persistant activé</translation>
+<translation id="5320727453979144100">Mode rémanent activé</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{virgule}one{# virgule}other{# virgules}}</translation>
 <translation id="532485153932049746">Mise en forme du texte
     <ph name="FONT_SIZE_STRING" />
@@ -668,7 +670,7 @@
 <translation id="5534303576632885660">titre</translation>
 <translation id="5539820223028224601">Gris moyen</translation>
 <translation id="554893713779400387">Activer ou désactiver la dictée</translation>
-<translation id="5549179427201066174">Activer ou désactiver les commentaires audio (icônes sonores)</translation>
+<translation id="5549179427201066174">Activer ou désactiver le retour sonore (icônes sonores)</translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5561345396546889625">Liste suivante</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
@@ -727,7 +729,7 @@
 <translation id="5878908838135392163">Bleu poudre</translation>
 <translation id="588108970619830498">Rétablissez les valeurs par défaut des paramètres de synthèse vocale</translation>
 <translation id="5891934789323004067">Tableau</translation>
-<translation id="5899860758576822363">Lire le contenu à un volume sonore moins élevé pendant la diffusion des commentaires audio ChromeVox</translation>
+<translation id="5899860758576822363">Réduire le volume lorsque ChromeVox parle</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5906974869830879618">Veuillez saisir un code</translation>
 <translation id="5921587111466148855">Chapitre</translation>
@@ -741,7 +743,7 @@
 <translation id="5968607524793740041">Afficher le menu contextuel</translation>
 <translation id="597121107011153418">{COUNT,plural, =1{avec # élément}one{avec # élément}other{avec # éléments}}</translation>
 <translation id="5981446804259161541">Cyan clair</translation>
-<translation id="5983179082906765664">Augmenter la granularité de la navigation</translation>
+<translation id="5983179082906765664">Augmenter le niveau de précision de la navigation</translation>
 <translation id="5992285135956208197">Document graphique</translation>
 <translation id="5999630716831179808">Voix</translation>
 <translation id="6006050241733874051">Formulaire</translation>
@@ -776,7 +778,7 @@
 <translation id="6280088282605782512">Appuyez deux fois</translation>
 <translation id="6282062888058716985">nav.</translation>
 <translation id="6295699829709583154">Touches essentielles : Recherche</translation>
-<translation id="6305702903308659374">Lire le contenu à un volume sonore normal, même pendant la diffusion des commentaires audio ChromeVox</translation>
+<translation id="6305702903308659374">Lire à un volume normal, même lorsque ChromeVox parle</translation>
 <translation id="6307969636681130414">Élément sur lequel vous avez appuyé</translation>
 <translation id="6315652249189065725">Ouvrir le menu des raccourcis clavier</translation>
 <translation id="6320690422100602757">Aucun élément de liste suivant</translation>
@@ -973,7 +975,7 @@
 <translation id="773906353055481349">Appuyez simultanément sur Recherche+Ctrl+Alt et sur les flèches pour parcourir le contenu par cellule</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> pour <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Le téléchargement du fichier <ph name="FILE_NAME" /> a commencé</translation>
-<translation id="7768784765476638775">Sélectionner pour prononcer</translation>
+<translation id="7768784765476638775">Sélectionner pour écouter</translation>
 <translation id="7776293189010177726">Ouvrir les menus ChromeVox</translation>
 <translation id="7799302833060027366">Appuyez sur la flèche vers le haut, vers le bas, vers la gauche ou vers la droite pour explorer le contenu mathématique</translation>
 <translation id="7800558923657349506">Épilogue</translation>
@@ -1068,11 +1070,11 @@
 <translation id="8463645336674919227">Abandon de l'erreur grammaticale</translation>
 <translation id="8465573210279050749">supprimer le mot précédent</translation>
 <translation id="847040613207937740">Aucune case à cocher suivante</translation>
-<translation id="8473540203671727883">Prononcer le texte sous la souris</translation>
-<translation id="8476408756881832830">Interrompre la lecture pendant la diffusion des commentaires audio ChromeVox</translation>
+<translation id="8473540203671727883">Lire à haute voix le texte sous la souris</translation>
+<translation id="8476408756881832830">Interrompre la lecture lorsque ChromeVox parle</translation>
 <translation id="8476508772960940536">vue d'ensemble des fenêtres</translation>
 <translation id="8480873377842220259">Vous allez maintenant découvrir des commandes pour la navigation de base. Vous pouvez maintenir la touche Recherche enfoncée et appuyer sur les touches fléchées pour naviguer au sein de l'écran. Pour continuer, appuyez sur Recherche+Flèche vers la droite.</translation>
-<translation id="8503360654911991865">Diminuer la granularité de la navigation</translation>
+<translation id="8503360654911991865">Diminuer le niveau de précision de la navigation</translation>
 <translation id="8520472399088452386">Bouton Toupie</translation>
 <translation id="8534394844575788431">Mise en forme</translation>
 <translation id="8542271685829952264">Pour découvrir l'ensemble des commandes et des raccourcis ChromeVox, appuyez sur la touche de recherche+point, puis utilisez les touches fléchées pour parcourir les menus, et la touche Entrée pour activer une commande. Pour revenir ici, appuyez sur la touche de recherche+o, puis sur t.</translation>
@@ -1171,7 +1173,7 @@
 <translation id="958854023026327378">Balayer l'écran vers le bas avec un doigt</translation>
 <translation id="962913030769097253">En-tête suivant de niveau 1</translation>
 <translation id="966588271015727539">Sélectionner une plage braille Bluetooth</translation>
-<translation id="973955474346881951">Activer/Désactiver le mode permanent</translation>
+<translation id="973955474346881951">Activer/Désactiver le mode rémanent</translation>
 <translation id="985654871861528815">Descendre d'une ligne</translation>
 <translation id="992256792861109788">Rose</translation>
 </translationbundle>

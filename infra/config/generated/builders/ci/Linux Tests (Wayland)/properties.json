@@ -19,7 +19,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -45,7 +46,8 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
@@ -72,10 +74,6 @@
       "mirroring_builder_group_and_names": [
         {
           "builder": "linux-wayland-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-wayland-siso-rel",
           "group": "tryserver.chromium.linux"
         }
       ]

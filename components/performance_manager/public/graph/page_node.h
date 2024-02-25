@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_PAGE_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_PAGE_NODE_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -14,9 +15,9 @@
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -120,6 +121,10 @@ class PageNode : public Node {
   // lifetime of this page. See "OnEmbedderFrameNodeChanged".
   virtual const FrameNode* GetEmbedderFrameNode() const = 0;
 
+  // Gets the unique token identifying this node for resource attribution. This
+  // token will not be reused after the node is destroyed.
+  virtual resource_attribution::PageContext GetResourceContext() const = 0;
+
   // Returns the type of relationship this node has with its embedder, if it has
   // an embedder.
   virtual EmbeddingType GetEmbeddingType() const = 0;
@@ -146,8 +151,12 @@ class PageNode : public Node {
   // GetTimeSinceLastVisibilityChange(), this returns nullopt for a node which
   // has never been audible. If a node is audible when created, it is considered
   // to change from inaudible to audible at that point.
-  virtual absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
+  virtual std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
       const = 0;
+
+  // Returns true if this page is displaying content in a picture-in-picture
+  // window, false otherwise.
+  virtual bool HasPictureInPicture() const = 0;
 
   // Returns the page's loading state.
   virtual LoadingState GetLoadingState() const = 0;
@@ -226,12 +235,12 @@ class PageNode : public Node {
 
   // Indicates if there's a freezing vote for this page node. This has 3
   // possible values:
-  //   - absl::nullopt: There's no active freezing vote for this page.
+  //   - std::nullopt: There's no active freezing vote for this page.
   //   - freezing::FreezingVoteValue::kCanFreeze: There's one or more positive
   //     freezing vote for this page and no negative vote.
   //   - freezing::FreezingVoteValue::kCannotFreeze: There's at least one
   //     negative freezing vote for this page.
-  virtual const absl::optional<freezing::FreezingVote>& GetFreezingVote()
+  virtual const std::optional<freezing::FreezingVote>& GetFreezingVote()
       const = 0;
 
   // Returns the current page state. See "PageNodeObserver::OnPageStateChanged".
@@ -307,6 +316,9 @@ class PageNodeObserver {
   // this property change.
   virtual void OnIsAudibleChanged(const PageNode* page_node) = 0;
 
+  // Invoked when the HasPictureInPicture property changes.
+  virtual void OnHasPictureInPictureChanged(const PageNode* page_node) = 0;
+
   // Invoked when the GetLoadingState property changes.
   virtual void OnLoadingStateChanged(const PageNode* page_node,
                                      PageNode::LoadingState previous_state) = 0;
@@ -362,7 +374,7 @@ class PageNodeObserver {
   // Called every time the aggregated freezing vote changes or gets invalidated.
   virtual void OnFreezingVoteChanged(
       const PageNode* page_node,
-      absl::optional<freezing::FreezingVote> previous_vote) = 0;
+      std::optional<freezing::FreezingVote> previous_vote) = 0;
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -393,6 +405,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnIsFocusedChanged(const PageNode* page_node) override {}
   void OnIsVisibleChanged(const PageNode* page_node) override {}
   void OnIsAudibleChanged(const PageNode* page_node) override {}
+  void OnHasPictureInPictureChanged(const PageNode* page_node) override {}
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override {}
   void OnUkmSourceIdChanged(const PageNode* page_node) override {}
@@ -410,7 +423,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
                             const PageNode* new_page_node) override {}
   void OnFreezingVoteChanged(
       const PageNode* page_node,
-      absl::optional<freezing::FreezingVote> previous_vote) override {}
+      std::optional<freezing::FreezingVote> previous_vote) override {}
 };
 
 // std::ostream support for PageNode::EmbeddingType.

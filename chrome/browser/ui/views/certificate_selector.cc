@@ -228,8 +228,9 @@ void CertificateSelector::InitWithText(
   for (auto& column : columns) {
     column.sortable = true;
   }
-  auto table = std::make_unique<views::TableView>(
-      model_.get(), columns, views::TEXT_ONLY, true /* single_selection */);
+  auto table = std::make_unique<views::TableView>(model_.get(), columns,
+                                                  views::TableType::kTextOnly,
+                                                  true /* single_selection */);
   table_ = table.get();
   table->set_observer(this);
 
@@ -242,7 +243,7 @@ ui::TableModel* CertificateSelector::table_model_for_testing() const {
 }
 
 net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
-  const absl::optional<size_t> selected = table_->GetFirstSelectedRow();
+  const std::optional<size_t> selected = table_->GetFirstSelectedRow();
   if (!selected.has_value())
     return nullptr;
   DCHECK_LT(selected.value(), identities_.size());
@@ -250,7 +251,7 @@ net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
 }
 
 bool CertificateSelector::Accept() {
-  const absl::optional<size_t> selected = table_->GetFirstSelectedRow();
+  const std::optional<size_t> selected = table_->GetFirstSelectedRow();
   if (!selected.has_value())
     return false;
 
@@ -290,7 +291,7 @@ void CertificateSelector::OnDoubleClick() {
     AcceptDialog();
 }
 
-BEGIN_METADATA(CertificateSelector, views::DialogDelegateView)
+BEGIN_METADATA(CertificateSelector)
 END_METADATA
 
 }  // namespace chrome

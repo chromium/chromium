@@ -6,12 +6,12 @@
  * @fileoverview Polymer element that displays the Google Photos zero state.
  */
 
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import '../../css/wallpaper.css.js';
-import '../../css/common.css.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosTab} from './google_photos_collection_element.js';
@@ -19,7 +19,7 @@ import {getTemplate} from './google_photos_zero_state_element.html.js';
 
 const Base = I18nMixin(PolymerElement);
 
-export class GooglePhotosZeroState extends Base {
+export class GooglePhotosZeroStateElement extends Base {
   static get is() {
     return 'google-photos-zero-state';
   }
@@ -73,4 +73,5 @@ export class GooglePhotosZeroState extends Base {
   }
 }
 
-customElements.define(GooglePhotosZeroState.is, GooglePhotosZeroState);
+customElements.define(
+    GooglePhotosZeroStateElement.is, GooglePhotosZeroStateElement);

@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
 #include "components/password_manager/ios/password_manager_tab_helper.h"
@@ -44,20 +45,18 @@ base::Value::Dict SerializeFillData(const GURL& origin,
                                     const std::u16string& password_value) {
   base::Value::Dict root_dict;
   root_dict.Set("origin", origin.spec());
-  root_dict.Set("unique_renderer_id",
-                FormRendererIdToJsParameter(form_renderer_id));
+  root_dict.Set("renderer_id", FormRendererIdToJsParameter(form_renderer_id));
 
   base::Value::List fieldList;
 
   base::Value::Dict usernameField;
-  usernameField.Set("unique_renderer_id",
+  usernameField.Set("renderer_id",
                     FieldRendererIdToJsParameter(username_element));
   usernameField.Set("value", username_value);
   fieldList.Append(std::move(usernameField));
 
   base::Value::Dict passwordField;
-  passwordField.Set("unique_renderer_id",
-                    static_cast<int>(password_element.value()));
+  passwordField.Set("renderer_id", static_cast<int>(password_element.value()));
   passwordField.Set("value", password_value);
   fieldList.Append(std::move(passwordField));
 
@@ -90,9 +89,7 @@ PasswordManagerJavaScriptFeature::GetInstance() {
 
 PasswordManagerJavaScriptFeature::PasswordManagerJavaScriptFeature()
     : web::JavaScriptFeature(
-          // TODO(crbug.com/1175793): Move autofill code to kIsolatedWorld
-          // once all scripts are converted to JavaScriptFeatures.
-          web::ContentWorld::kPageContentWorld,
+          ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
@@ -144,7 +141,7 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 PasswordManagerJavaScriptFeature::GetScriptMessageHandlerName() const {
   return FormSubmittedHandlerName;
 }

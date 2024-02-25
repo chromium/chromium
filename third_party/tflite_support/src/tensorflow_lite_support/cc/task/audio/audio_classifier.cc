@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <initializer_list>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow/lite/c/c_api_types.h"
 #include "tensorflow_lite_support/cc/common.h"
@@ -77,16 +77,16 @@ CreatePostprocessor(TfLiteEngine* engine,
 StatusOr<std::unique_ptr<AudioClassifier>> AudioClassifier::CreateFromOptions(
     const AudioClassifierOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
-  RETURN_IF_ERROR(SanityCheckOptions(options));
+  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the constructed object.
   auto options_copy = absl::make_unique<AudioClassifierOptions>(options);
 
-  ASSIGN_OR_RETURN(auto audio_classifier,
+  TFLITE_ASSIGN_OR_RETURN(auto audio_classifier,
                    TaskAPIFactory::CreateFromBaseOptions<AudioClassifier>(
                        &options_copy->base_options(), std::move(resolver)));
 
-  RETURN_IF_ERROR(audio_classifier->Init(std::move(options_copy)));
+  TFLITE_RETURN_IF_ERROR(audio_classifier->Init(std::move(options_copy)));
 
   return audio_classifier;
 }
@@ -108,7 +108,7 @@ absl::Status AudioClassifier::Init(
   options_ = std::move(options);
 
   // Create preprocessor, assuming having only 1 input tensor.
-  ASSIGN_OR_RETURN(preprocessor_, processor::AudioPreprocessor::Create(
+  TFLITE_ASSIGN_OR_RETURN(preprocessor_, processor::AudioPreprocessor::Create(
                                       GetTfLiteEngine(), {0}));
 
   // Assuming all output tensors share the same option. This is an limitation in
@@ -117,7 +117,7 @@ absl::Status AudioClassifier::Init(
       GetTfLiteEngine()->OutputCount(GetTfLiteEngine()->interpreter());
   postprocessors_.reserve(output_count);
   for (int i = 0; i < output_count; i++) {
-    ASSIGN_OR_RETURN(auto processor, CreatePostprocessor(GetTfLiteEngine(), {i},
+    TFLITE_ASSIGN_OR_RETURN(auto processor, CreatePostprocessor(GetTfLiteEngine(), {i},
                                                          options_.get()));
     postprocessors_.emplace_back(std::move(processor));
   }
@@ -140,7 +140,7 @@ AudioClassifier::Postprocess(
     // ClassificationPostprocessor doesn't set head name for backward
     // compatibility, so we set it here manually.
     classification->set_head_name(processor->GetHeadName());
-    RETURN_IF_ERROR(processor->Postprocess(classification));
+    TFLITE_RETURN_IF_ERROR(processor->Postprocess(classification));
   }
 
   return result;

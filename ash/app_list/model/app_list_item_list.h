@@ -132,7 +132,7 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   void FixItemPosition(size_t index);
 
   // Used to initiate updates on app list item positions from the ash side.
-  const raw_ptr<AppListModelDelegate, ExperimentalAsh> app_list_model_delegate_;
+  const raw_ptr<AppListModelDelegate> app_list_model_delegate_;
 
   std::vector<std::unique_ptr<AppListItem>> app_list_items_;
   base::ObserverList<AppListItemListObserver, true> observers_;

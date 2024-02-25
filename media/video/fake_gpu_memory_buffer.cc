@@ -63,7 +63,7 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format,
                                          uint64_t modifier)
     : size_(size), format_(format) {
-  absl::optional<VideoPixelFormat> video_pixel_format =
+  std::optional<VideoPixelFormat> video_pixel_format =
       GfxBufferFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
   video_pixel_format_ = *video_pixel_format;
@@ -119,8 +119,6 @@ int FakeGpuMemoryBuffer::stride(size_t plane) const {
   DCHECK_LT(plane, VideoFrame::NumPlanes(video_pixel_format_));
   return VideoFrame::PlaneSize(video_pixel_format_, plane, size_).width();
 }
-
-void FakeGpuMemoryBuffer::SetColorSpace(const gfx::ColorSpace& color_space) {}
 
 gfx::GpuMemoryBufferId FakeGpuMemoryBuffer::GetId() const {
   return handle_.id;

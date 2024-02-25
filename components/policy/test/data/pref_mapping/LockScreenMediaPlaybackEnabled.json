@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "LockScreenMediaPlaybackEnabled": true
+        },
+        "prefs": {
+          "ash.lock_screen_media_controls_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

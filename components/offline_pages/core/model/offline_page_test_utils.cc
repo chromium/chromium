@@ -94,9 +94,8 @@ std::ostream& operator<<(std::ostream& out, const OfflinePageItem& item) {
 }
 
 std::string OfflinePageVisuals::ToString() const {
-  std::string thumb_data_base64, favicon_data_base64;
-  base::Base64Encode(thumbnail, &thumb_data_base64);
-  base::Base64Encode(favicon, &favicon_data_base64);
+  std::string thumb_data_base64 = base::Base64Encode(thumbnail);
+  std::string favicon_data_base64 = base::Base64Encode(favicon);
 
   std::string s("OfflinePageVisuals(id=");
   s.append(base::NumberToString(offline_id)).append(", expiration=");

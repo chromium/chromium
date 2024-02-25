@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_U2F_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_U2F_NOTIFICATION_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -30,13 +30,13 @@ class U2FNotification {
 
  private:
   // Checks status given the current U2F flags.
-  void CheckStatus(absl::optional<std::set<std::string>> flags);
+  void CheckStatus(std::optional<std::set<std::string>> flags);
 
   // Shows the notification.
   void ShowNotification();
 
   // Handles clicks on the notification.
-  void OnNotificationClick(const absl::optional<int> button_index);
+  void OnNotificationClick(const std::optional<int> button_index);
 
   base::WeakPtrFactory<U2FNotification> weak_factory_{this};
 };

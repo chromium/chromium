@@ -32,8 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -54,7 +56,7 @@ class ScriptFunction;
 // There are cases where promises cannot work (e.g., where the thread is being
 // terminated). In such cases operations will silently fail, so you should not
 // use promises for critical use such as releasing a resource.
-class CORE_EXPORT ScriptPromise final {
+class CORE_EXPORT ScriptPromise {
   DISALLOW_NEW();
 
  public:
@@ -140,7 +142,7 @@ class CORE_EXPORT ScriptPromise final {
 
   // This is a utility class intended to be used internally.
   // ScriptPromiseResolver is for general purpose.
-  class CORE_EXPORT InternalResolver final {
+  class CORE_EXPORT InternalResolver {
     DISALLOW_NEW();
 
    public:
@@ -150,13 +152,13 @@ class CORE_EXPORT ScriptPromise final {
     void Resolve(v8::Local<v8::Value>);
     void Reject(v8::Local<v8::Value>);
     void Clear() { resolver_.Clear(); }
-    ScriptState* GetScriptState() const { return script_state_; }
+    ScriptState* GetScriptState() const { return script_state_.Get(); }
     void Trace(Visitor* visitor) const {
       visitor->Trace(script_state_);
       visitor->Trace(resolver_);
     }
 
-   private:
+   protected:
     Member<ScriptState> script_state_;
     ScriptValue resolver_;
   };
@@ -168,6 +170,75 @@ class CORE_EXPORT ScriptPromise final {
  private:
   Member<ScriptState> script_state_;
   ScriptValue promise_;
+};
+
+template <typename IDLResolvedType>
+class ScriptPromiseTyped : public ScriptPromise {
+ public:
+  ScriptPromiseTyped() = default;
+  ScriptPromiseTyped(ScriptState* script_state, v8::Local<v8::Value> promise)
+      : ScriptPromise(script_state, promise) {}
+
+  class InternalResolverTyped : public ScriptPromise::InternalResolver {
+   public:
+    explicit InternalResolverTyped(ScriptState* script_state)
+        : InternalResolver(script_state) {}
+
+    ScriptPromiseTyped<IDLResolvedType> Promise() {
+      if (resolver_.IsEmpty()) {
+        return ScriptPromiseTyped<IDLResolvedType>();
+      }
+      return ScriptPromiseTyped<IDLResolvedType>(script_state_, V8Promise());
+    }
+
+    static InternalResolverTyped GetTyped(InternalResolver& resolver) {
+      static_assert(sizeof(InternalResolverTyped) == sizeof(InternalResolver));
+      return static_cast<InternalResolverTyped&>(resolver);
+    }
+  };
+
+  static ScriptPromiseTyped<IDLResolvedType> Cast(ScriptState* script_state,
+                                                  v8::Local<v8::Value> value) {
+    if (value.IsEmpty()) {
+      return ScriptPromiseTyped<IDLResolvedType>();
+    }
+    if (value->IsPromise()) {
+      return ScriptPromiseTyped<IDLResolvedType>(script_state, value);
+    }
+    InternalResolverTyped resolver(script_state);
+    ScriptPromiseTyped<IDLResolvedType> promise = resolver.Promise();
+    resolver.Resolve(value);
+    return promise;
+  }
+
+  static ScriptPromiseTyped<IDLResolvedType> Cast(ScriptState* script_state,
+                                                  const ScriptValue& value) {
+    return ScriptPromiseTyped<IDLResolvedType>::Cast(script_state,
+                                                     value.V8Value());
+  }
+
+  static ScriptPromiseTyped<IDLResolvedType> RejectWithDOMException(
+      ScriptState* script_state,
+      DOMException* exception) {
+    return Reject(script_state, exception->ToV8(script_state));
+  }
+
+  static ScriptPromiseTyped<IDLResolvedType> Reject(ScriptState* script_state,
+                                                    const ScriptValue& value) {
+    return Reject(script_state, value.V8Value());
+  }
+
+  static ScriptPromiseTyped<IDLResolvedType> Reject(
+      ScriptState* script_state,
+      v8::Local<v8::Value> value) {
+    if (value.IsEmpty()) {
+      return ScriptPromiseTyped<IDLResolvedType>();
+    }
+    InternalResolverTyped resolver(script_state);
+    ScriptPromiseTyped<IDLResolvedType> promise = resolver.Promise();
+    resolver.Reject(value);
+    return promise;
+  }
 };
 
 }  // namespace blink

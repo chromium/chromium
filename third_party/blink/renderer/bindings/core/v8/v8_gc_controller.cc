@@ -80,14 +80,18 @@ const Node& OpaqueRootForGC(v8::Isolate*, const Node* node) {
 v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
     v8::Isolate* isolate,
     const v8::Local<v8::Value>& v8_value,
-    uint16_t class_id,
+    uint16_t,
     void*) {
-  if (class_id != WrapperTypeInfo::kNodeClassId)
+  const WrapperTypeInfo* wrapper_type_info =
+      ToWrapperTypeInfo(v8_value.As<v8::Object>());
+  if (wrapper_type_info->wrapper_class_id != WrapperTypeInfo::kNodeClassId) {
     return v8::EmbedderGraph::Node::Detachedness::kUnknown;
+  }
   const auto& root_node = OpaqueRootForGC(
       isolate, V8Node::ToWrappableUnsafe(v8_value.As<v8::Object>()));
-  if (root_node.isConnected() && root_node.GetExecutionContext())
+  if (root_node.isConnected() && root_node.GetExecutionContext()) {
     return v8::EmbedderGraph::Node::Detachedness::kAttached;
+  }
   return v8::EmbedderGraph::Node::Detachedness::kDetached;
 }
 
@@ -132,15 +136,10 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
 
   ScriptForbiddenScope::Exit();
 
-  ThreadState* current_thread_state = ThreadState::Current();
-  if (current_thread_state) {
-    current_thread_state->NotifyGarbageCollection(type, flags);
-  }
-
   TRACE_EVENT_INSTANT1(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",
       TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {
-        inspector_update_counters_event::Data(std::move(context));
+        inspector_update_counters_event::Data(std::move(context), isolate);
       });
 }
 

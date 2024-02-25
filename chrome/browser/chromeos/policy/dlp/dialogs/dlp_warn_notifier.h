@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
@@ -32,20 +33,20 @@ class DlpWarnNotifier : public views::WidgetObserver {
   // Shows a warning dialog that informs the user that printing is not
   // recommended. Calls `callback` and passes user's choice of whether to
   // proceed or not.
-  void ShowDlpPrintWarningDialog(OnDlpRestrictionCheckedCallback callback);
+  void ShowDlpPrintWarningDialog(WarningCallback callback);
 
   // Shows a warning dialog that informs the user that screen capture is not
   // recommended due to `confidential_contents` visible. Calls `callback` and
   // passes user's choice of whether to proceed or not.
   void ShowDlpScreenCaptureWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       const DlpConfidentialContents& confidential_contents);
 
   // Shows a warning dialog that informs the user that video capture is not
   // recommended due to `confidential_contents` visible. Calls `callback` and
   // passes user's choice of whether to proceed or not.
   void ShowDlpVideoCaptureWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       const DlpConfidentialContents& confidential_contents);
 
   // Shows a warning dialog that informs the user that screen sharing is not
@@ -53,7 +54,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
   // passes user's choice of whether to proceed or not.
   // Returns a pointer to the widget that owns the created dialog.
   base::WeakPtr<views::Widget> ShowDlpScreenShareWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       const DlpConfidentialContents& confidential_contents,
       const std::u16string& application_title);
 
@@ -67,7 +68,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
 
   // Helper method to create and show a DlpWarnDialog.
   virtual base::WeakPtr<views::Widget> ShowDlpWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
+      WarningCallback callback,
       DlpWarnDialog::DlpWarnDialogOptions options);
 
   // Helper method to show the `widget`.
@@ -78,7 +79,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
 
   // List of active widgets. Used in tests to verify that the dialog has or
   // hasn't been shown.
-  std::vector<views::Widget*> widgets_;
+  std::vector<raw_ptr<views::Widget, VectorExperimental>> widgets_;
 };
 
 }  // namespace policy

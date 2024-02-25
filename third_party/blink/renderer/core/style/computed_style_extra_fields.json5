@@ -50,8 +50,9 @@
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
         "layout-custom", "inline-layout-custom", "math", "block math",
-        // Available only if CSSDisplayMultipleValues is enabled:
-        "inline list-item", "flow-root list-item", "inline flow-root list-item"
+        "inline list-item", "flow-root list-item", "inline flow-root list-item",
+        // Available only if CssDisplayRuby is enabled:
+        "ruby", "block ruby", "ruby-text"
       ],
       default_value: "inline",
     },
@@ -72,20 +73,10 @@
       default_value: "g_null_atom",
     },
     {
-      name: "OriginalDisplay",
-      field_template: "keyword",
-      type_name: "EDisplay",
-      keywords: [
-        "inline", "block", "list-item", "inline-block", "table", "inline-table",
-        "table-row-group", "table-header-group", "table-footer-group",
-        "table-row", "table-column-group", "table-column", "table-cell",
-        "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
-        "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "layout-custom", "inline-layout-custom", "math", "block math",
-        // Available only if CSSDisplayMultipleValues is enabled:
-        "inline list-item", "flow-root list-item", "inline flow-root list-item"
-      ],
-      default_value: "inline",
+      name: "IsOriginalDisplayInlineType",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "true",
     },
     {
       name: "InsideLink",
@@ -218,6 +209,12 @@
       default_value: "false",
       custom_compare: true,
     },
+    {
+      name: "HasLogicalDirectionRelativeUnits",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // True if this ComputedStyle is the result of CustomStyleForLayoutObject()
     // that uses font metrics in its calculation.
     {
@@ -263,6 +260,17 @@
     // needs to be restored *non-monotonically* in ApplyMatchedCache.
     {
       name: "HasNonUaHighlightPseudoStyles",
+      field_template: "primitive",
+      field_group: "*",
+      default_value: "false",
+      type_name: "bool",
+      reset_on_new_style: true,
+      custom_compare: true,
+    },
+    // Whether any highlight pseudo selectors were found within container
+    // query blocks.
+    {
+      name: "HighlightsDependOnSizeContainerQueries",
       field_template: "primitive",
       field_group: "*",
       default_value: "false",
@@ -357,7 +365,7 @@
       field_template: "external",
       include_paths: ["third_party/blink/renderer/platform/fonts/font.h"],
       type_name: "Font",
-      field_group: "inherited->font",
+      field_group: "font",
       inherited: true,
       default_value: "Font()",
     },
@@ -587,7 +595,7 @@
       type_name: "PaintImages",
       field_group: "*",
       default_value: "nullptr",
-      wrapper_pointer_name: "std::unique_ptr",
+      wrapper_pointer_name: "Member",
       custom_compare: true,
       include_paths: ["third_party/blink/renderer/core/style/paint_images.h"],
       computed_style_custom_functions: ["getter", "setter"],
@@ -869,44 +877,6 @@
       default_value: "true",
       computed_style_custom_functions: ["setter"],
     },
-    {
-      name: "ImplicitNamedGridColumnLines",
-      field_template: "external",
-      type_name: "NamedGridLinesMap",
-      field_group: "*->grid",
-      default_value: "NamedGridLinesMap()",
-      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-    },
-    {
-      name: "ImplicitNamedGridRowLines",
-      field_template: "external",
-      type_name: "NamedGridLinesMap",
-      field_group: "*->grid",
-      default_value: "NamedGridLinesMap()",
-      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-    },
-    {
-      name: "NamedGridArea",
-      field_template: "external",
-      type_name: "NamedGridAreaMap",
-      field_group: "*->grid",
-      default_value: "NamedGridAreaMap()",
-      include_paths: ["third_party/blink/renderer/core/style/grid_area.h"],
-    },
-    {
-      name: "NamedGridAreaRowCount",
-      field_template: "primitive",
-      type_name: "wtf_size_t",
-      field_group: "*->grid",
-      default_value: "0",
-    },
-    {
-      name: "NamedGridAreaColumnCount",
-      field_template: "primitive",
-      type_name: "wtf_size_t",
-      field_group: "*->grid",
-      default_value: "0",
-    },
     // We only create and store ComputedStyle objects for elements in
     // display:none subtrees if we need it for e.g. getComputedStyle. This flag
     // is true for such ComputedStyle objects.
@@ -939,6 +909,14 @@
       inherited: true,
     },
     {
+      name: "ColorSchemeFlagsIsNormal",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      custom_compare: true,
+      inherited: true,
+    },
+    {
       name: "ColorSchemeForced",
       field_template: "primitive",
       type_name: "bool",
@@ -948,6 +926,12 @@
     },
     {
       name: "IsInBlockifyingDisplay",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
+    {
+      name: "IsInInlinifyingDisplay",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
@@ -1124,7 +1108,7 @@
     {
       name: "BaseData",
       inherited: false,
-      field_template: "external",
+      field_template: "pointer",
       type_name: "StyleBaseData",
       include_paths: ["third_party/blink/renderer/core/style/style_base_data.h"],
       default_value: "nullptr",
@@ -1135,7 +1119,8 @@
     {
       // https://drafts.csswg.org/css-contain-2/#skips-its-contents
       name: "SkipsContents",
-      field_template: "monotonic_flag",
+      field_template: "primitive",
+      type_name: "bool",
       default_value: "false",
     },
     {
@@ -1206,21 +1191,13 @@
       field_group: "*",
       default_value: "false",
     },
+    // Whether this style contains at least one reference to a (custom)
+    // CSS function.
     {
-      // https://drafts.csswg.org/css-anchor-position-1/#fallback-automatic
-      name: "HasAutoAnchorPositioningInXAxisFromTryBlock",
+      name: "AffectedByCSSFunction",
       field_template: "monotonic_flag",
       field_group: "*",
       default_value: "false",
-      custom_compare: true,
-    },
-    {
-      // https://drafts.csswg.org/css-anchor-position-1/#fallback-automatic
-      name: "HasAutoAnchorPositioningInYAxisFromTryBlock",
-      field_template: "monotonic_flag",
-      field_group: "*",
-      default_value: "false",
-      custom_compare: true,
     },
   ],
 }

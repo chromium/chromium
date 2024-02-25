@@ -7,6 +7,9 @@ package org.chromium.base.process_launcher;
 import android.content.Intent;
 
 /* package */ interface ChildServiceConnectionFactory {
-    ChildServiceConnection createConnection(Intent bindIntent, int bindFlags,
-            ChildServiceConnectionDelegate delegate, String instanceName);
+    ChildServiceConnection createConnection(
+            Intent bindIntent,
+            int bindFlags,
+            ChildServiceConnectionDelegate delegate,
+            String instanceName);
 }

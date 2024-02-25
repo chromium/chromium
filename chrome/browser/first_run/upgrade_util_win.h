@@ -20,7 +20,6 @@ namespace upgrade_util {
 // temporary folder, then new_chrome.exe is renamed to chrome.exe. The instance
 // performing the swap runs as old_chrome.exe until it exits.
 // The caller must own the browser ChromeProcessSingleton.
-// TODO: enforce via DCHECK that the caller owns the ChromeProcessSingleton.
 bool SwapNewChromeExeIfPresent();
 
 // Returns true if the currently running browser is running from old_chrome.exe.
@@ -38,7 +37,6 @@ bool IsRunningOldChrome();
 // executed, simply exit the main function. If browser is already running, you
 // will need to exit it.
 // The caller must own the browser ChromeProcessSingleton.
-// TODO: enforce via DCHECK that the caller owns the ChromeProcessSingleton.
 bool DoUpgradeTasks(const base::CommandLine& command_line);
 
 }  // namespace upgrade_util

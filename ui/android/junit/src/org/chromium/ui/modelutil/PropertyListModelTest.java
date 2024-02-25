@@ -59,7 +59,10 @@ public class PropertyListModelTest implements ListObservable.ListObserver<Proper
     }
 
     @Override
-    public void onItemRangeChanged(ListObservable<PropertyKey> source, int index, int count,
+    public void onItemRangeChanged(
+            ListObservable<PropertyKey> source,
+            int index,
+            int count,
             @Nullable PropertyKey payload) {
         mIndex = index;
         mCount = count;

@@ -22,17 +22,15 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Unit tests for {@link AuxiliarySearchBridge}
- */
+/** Unit tests for {@link AuxiliarySearchBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
@@ -43,15 +41,11 @@ public final class AuxiliarySearchBridgeTest {
     private static final String TAB_URL = "https://tab.google.com";
     private static final long FAKE_NATIVE_PROVIDER = 1;
 
-    @Mock
-    private AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
-    @Mock
-    private Profile mProfile;
+    @Mock private AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
+    @Mock private Profile mProfile;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -77,10 +71,11 @@ public final class AuxiliarySearchBridgeTest {
     public void getBookmarksSearchableData() {
         doReturn(false).when(mProfile).isOffTheRecord();
 
-        var bookmark = AuxiliarySearchEntry.newBuilder()
-                               .setTitle(BOOKMARK_TITLE)
-                               .setUrl(BOOKMARK_URL)
-                               .build();
+        var bookmark =
+                AuxiliarySearchEntry.newBuilder()
+                        .setTitle(BOOKMARK_TITLE)
+                        .setUrl(BOOKMARK_URL)
+                        .build();
         var proto = AuxiliarySearchBookmarkGroup.newBuilder().addBookmark(bookmark).build();
 
         doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);

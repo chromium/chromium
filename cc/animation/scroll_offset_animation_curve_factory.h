@@ -22,7 +22,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurveFactory {
   CreateEaseInOutAnimationForTesting(
       const gfx::PointF& target_value,
       ScrollOffsetAnimationCurve::DurationBehavior duration_behavior =
-          ScrollOffsetAnimationCurve::DurationBehavior::DELTA_BASED);
+          ScrollOffsetAnimationCurve::DurationBehavior::kDeltaBased);
 
   static std::unique_ptr<ScrollOffsetAnimationCurve>
   CreateLinearAnimationForTesting(const gfx::PointF& target_value);

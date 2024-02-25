@@ -8,18 +8,17 @@ import org.chromium.base.ThreadUtils;
 
 import java.util.concurrent.FutureTask;
 
-/**
- * A utility class useful for testing NetworkChangeNotifier.
- */
+/** A utility class useful for testing NetworkChangeNotifier. */
 public class NetworkChangeNotifierTestUtil {
-    /**
-     * Flushes UI thread task queue.
-     */
+    /** Flushes UI thread task queue. */
     public static void flushUiThreadTaskQueue() throws Exception {
-        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
-            @Override
-            public void run() {}
-        }, null);
+        FutureTask<Void> task =
+                new FutureTask<Void>(
+                        new Runnable() {
+                            @Override
+                            public void run() {}
+                        },
+                        null);
         ThreadUtils.postOnUiThread(task);
         task.get();
     }

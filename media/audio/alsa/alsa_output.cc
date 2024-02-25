@@ -613,8 +613,8 @@ snd_pcm_sframes_t AlsaPcmOutputStream::GetCurrentDelay() {
   TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("audio"),
                     "AlsaPcmOutputStream::GetCurrentDelay");
   // Intermediate values saved for tracing.
-  absl::optional<snd_pcm_sframes_t> pcm_delay;
-  absl::optional<snd_pcm_sframes_t> available_frames;
+  std::optional<snd_pcm_sframes_t> pcm_delay;
+  std::optional<snd_pcm_sframes_t> available_frames;
 
   snd_pcm_sframes_t delay = -1;
   // Don't query ALSA's delay if we have underrun since it'll be jammed at some

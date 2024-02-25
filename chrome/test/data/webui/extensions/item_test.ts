@@ -4,7 +4,8 @@
 
 /** @fileoverview Suite of tests for extension-item. */
 
-import {ExtensionsItemElement, IronIconElement, navigation, Page} from 'chrome://extensions/extensions.js';
+import type {ExtensionsItemElement, IronIconElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -129,14 +130,14 @@ suite('ExtensionItemTest', function() {
   });
 
   /** Tests that the delegate methods are correctly called. */
-  test('ClickableItems', function() {
+  test('ClickableItems', async function() {
     item.set('inDevMode', true);
 
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.$.removeButton, 'deleteItem', [item.data.id]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.$.enableToggle, 'setItemEnabled', [item.data.id, false]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector<HTMLElement>(
             '#inspect-views a[is="action-link"]')!,
         'inspectItemView', [item.data.id, item.data.views[0]]);
@@ -162,7 +163,7 @@ suite('ExtensionItemTest', function() {
 
     item.set('data.disableReasons.corruptInstall', true);
     flush();
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector<HTMLElement>('#repair-button')!,
         'repairItem', [item.data.id]);
     testVisible(item, '#enableToggle', false);
@@ -171,7 +172,7 @@ suite('ExtensionItemTest', function() {
 
     item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
     flush();
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector<HTMLElement>(
             '#terminated-reload-button')!,
         'reloadItem', [item.data.id], Promise.resolve());

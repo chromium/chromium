@@ -5,15 +5,16 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_HELP_BUBBLE_PARAMS_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_HELP_BUBBLE_PARAMS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -44,9 +45,9 @@ enum class HelpBubbleArrow {
 
 struct HelpBubbleButtonParams {
   HelpBubbleButtonParams();
-  HelpBubbleButtonParams(HelpBubbleButtonParams&&);
+  HelpBubbleButtonParams(HelpBubbleButtonParams&&) noexcept;
+  HelpBubbleButtonParams& operator=(HelpBubbleButtonParams&&) noexcept;
   ~HelpBubbleButtonParams();
-  HelpBubbleButtonParams& operator=(HelpBubbleButtonParams&&);
 
   std::u16string text;
   bool is_default = false;
@@ -61,9 +62,9 @@ struct HelpBubbleParams {
    public:
     ExtendedProperties();
     ExtendedProperties(const ExtendedProperties&);
-    ExtendedProperties(ExtendedProperties&&);
+    ExtendedProperties(ExtendedProperties&&) noexcept;
     ExtendedProperties& operator=(const ExtendedProperties&);
-    ExtendedProperties& operator=(ExtendedProperties&&);
+    ExtendedProperties& operator=(ExtendedProperties&&) noexcept;
     ~ExtendedProperties();
 
     bool operator==(const ExtendedProperties&) const;
@@ -77,9 +78,9 @@ struct HelpBubbleParams {
   };
 
   HelpBubbleParams();
-  HelpBubbleParams(HelpBubbleParams&&);
+  HelpBubbleParams(HelpBubbleParams&&) noexcept;
+  HelpBubbleParams& operator=(HelpBubbleParams&&) noexcept;
   ~HelpBubbleParams();
-  HelpBubbleParams& operator=(HelpBubbleParams&&);
 
   HelpBubbleArrow arrow = HelpBubbleArrow::kTopRight;
 
@@ -88,6 +89,12 @@ struct HelpBubbleParams {
   std::u16string body_icon_alt_text;
   std::u16string body_text;
   std::u16string screenreader_text;
+
+  // Whether the bubble should receive focus when it is shown. This is a
+  // behavioral hint; how it is actually implemented will depend on the bubble
+  // implementation (for example, bubbles attached to menu items cannot take
+  // focus for system activation reasons).
+  std::optional<bool> focus_on_show_hint;
 
   // Additional message to be read to screen reader users to aid in
   // navigation.
@@ -104,11 +111,11 @@ struct HelpBubbleParams {
 
   // Determines whether a progress indicator will be displayed; if set the
   // first value is current progress and the second is max progress.
-  absl::optional<std::pair<int, int>> progress;
+  std::optional<std::pair<int, int>> progress;
 
   // Sets the bubble timeout. If a timeout is not provided a default will
   // be used. If the timeout is 0, the bubble never times out.
-  absl::optional<base::TimeDelta> timeout;
+  std::optional<base::TimeDelta> timeout;
 
   // Called when the bubble is actively dismissed by the user, using the close
   // button or the ESC key.

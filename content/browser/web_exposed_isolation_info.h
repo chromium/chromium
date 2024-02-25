@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_WEB_EXPOSED_ISOLATION_INFO_H_
 #define CONTENT_BROWSER_WEB_EXPOSED_ISOLATION_INFO_H_
 
+#include <optional>
+
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -49,11 +50,11 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   static bool AreCompatible(const WebExposedIsolationInfo& a,
                             const WebExposedIsolationInfo& b);
   static bool AreCompatible(const WebExposedIsolationInfo& a,
-                            const absl::optional<WebExposedIsolationInfo>& b);
-  static bool AreCompatible(const absl::optional<WebExposedIsolationInfo>& a,
+                            const std::optional<WebExposedIsolationInfo>& b);
+  static bool AreCompatible(const std::optional<WebExposedIsolationInfo>& a,
                             const WebExposedIsolationInfo& b);
-  static bool AreCompatible(const absl::optional<WebExposedIsolationInfo>& a,
-                            const absl::optional<WebExposedIsolationInfo>& b);
+  static bool AreCompatible(const std::optional<WebExposedIsolationInfo>& a,
+                            const std::optional<WebExposedIsolationInfo>& b);
 
   WebExposedIsolationInfo(const WebExposedIsolationInfo& other);
   ~WebExposedIsolationInfo();
@@ -93,14 +94,14 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   bool operator<(const WebExposedIsolationInfo& b) const;
 
  private:
-  WebExposedIsolationInfo(const absl::optional<url::Origin>& origin,
+  WebExposedIsolationInfo(const std::optional<url::Origin>& origin,
                           bool isolated_application);
 
   // |origin_| serve two purposes. If null, it indicates that the page(s) it
   // refers to are not isolated, and that the crossOriginIsolated boolean is
   // false. If it has a value, all these page(s) share the same top level
   // origin. This ensure we can put them in the same process.
-  absl::optional<url::Origin> origin_;
+  std::optional<url::Origin> origin_;
 
   // Some applications may require additional isolation above and beyond what
   // COOP/COEP-based COI provides. This boolean will be `true` for applications
@@ -115,21 +116,17 @@ CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
                                         const WebExposedIsolationInfo& info);
 
 // Disable these operators, AreCompatible() functions should be used instead.
-CONTENT_EXPORT bool operator==(
-    const absl::optional<WebExposedIsolationInfo>& a,
-    const absl::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator==(
-    const WebExposedIsolationInfo& a,
-    const absl::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator==(const absl::optional<WebExposedIsolationInfo>& a,
+CONTENT_EXPORT bool operator==(const std::optional<WebExposedIsolationInfo>& a,
+                               const std::optional<WebExposedIsolationInfo>& b);
+CONTENT_EXPORT bool operator==(const WebExposedIsolationInfo& a,
+                               const std::optional<WebExposedIsolationInfo>& b);
+CONTENT_EXPORT bool operator==(const std::optional<WebExposedIsolationInfo>& a,
                                const WebExposedIsolationInfo& b);
-CONTENT_EXPORT bool operator!=(
-    const absl::optional<WebExposedIsolationInfo>& a,
-    const absl::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator!=(
-    const WebExposedIsolationInfo& a,
-    const absl::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator!=(const absl::optional<WebExposedIsolationInfo>& a,
+CONTENT_EXPORT bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
+                               const std::optional<WebExposedIsolationInfo>& b);
+CONTENT_EXPORT bool operator!=(const WebExposedIsolationInfo& a,
+                               const std::optional<WebExposedIsolationInfo>& b);
+CONTENT_EXPORT bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
                                const WebExposedIsolationInfo& b);
 
 }  // namespace content

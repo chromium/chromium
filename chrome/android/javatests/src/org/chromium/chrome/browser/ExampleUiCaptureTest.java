@@ -20,9 +20,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Simple test to demonstrate use of ScreenShooter rule.
- */
+/** Simple test to demonstrate use of ScreenShooter rule. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // Tab switcher button only exists on phones.
@@ -30,17 +28,14 @@ public class ExampleUiCaptureTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public ScreenShooter mScreenShooter = new ScreenShooter();
+    @Rule public ScreenShooter mScreenShooter = new ScreenShooter();
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityFromLauncher();
     }
 
-    /**
-     * Capture the New Tab Page and the tab switcher.
-     */
+    /** Capture the New Tab Page and the tab switcher. */
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})

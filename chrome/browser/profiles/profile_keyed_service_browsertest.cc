@@ -4,12 +4,15 @@
 
 #include <sstream>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -18,12 +21,27 @@
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/features.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/ui_base_features.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "ui/accessibility/accessibility_features.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/common/companion/visual_query/features.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -47,17 +65,13 @@ std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
       BrowserContextDependencyManager::GetInstance();
   DependencyGraph& dependency_graph =
       dependency_manager->GetDependencyGraphForTesting();
-  std::vector<DependencyNode*> nodes;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> nodes;
   bool success = dependency_graph.GetConstructionOrder(&nodes);
   DCHECK(success);
 
-  std::vector<KeyedServiceBaseFactory*> keyedServiceFactories;
-  keyedServiceFactories.reserve(nodes.size());
-  base::ranges::transform(nodes, std::back_inserter(keyedServiceFactories),
-                          [](DependencyNode* node) {
-                            return static_cast<KeyedServiceBaseFactory*>(node);
-                          });
-  return keyedServiceFactories;
+  return base::test::ToVector(nodes, [](DependencyNode* node) {
+    return static_cast<KeyedServiceBaseFactory*>(node);
+  });
 }
 
 // Returns a string representation of the elements of `set1` which are absent
@@ -154,17 +168,32 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
   ProfileKeyedServiceBrowserTest() {
     // Force features activation to make sure the test is accurate as possible.
     // Also removes differences between official and non official run of the
-    // tests. If a feature is integrated in the fieldtrial_testing_config.json,
-    // it might not be considered under an official build. Adding it under a
-    // InitWithFeatures to activate it would neglect that difference.
+    // tests.
+    //
+    // If a feature is integrated in the fieldtrial_testing_config.json,
+    // it might not be considered under an official build. Adding it under the
+    // InitWithFeatures below, to activate it, will solve that difference.
 
     // clang-format off
     feature_list_.InitWithFeatures(
         {
 #if !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
+          companion::visual_query::features::kVisualQuerySuggestions,
 #endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+          switches::kEnableBoundSessionCredentials,
+#endif  // BUILDFLAG(IS_WIN)
           blink::features::kBrowsingTopics,
+          net::features::kTpcdMetadataGrants,
+          net::features::kTpcdTrialSettings,
+          net::features::kTopLevelTpcdTrialSettings,
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+          features::kPdfOcr,
+#endif
+          features::kPersistentOriginTrials,
+          features::kSidePanelPinning,
+          features::kChromeRefresh2023,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,
@@ -208,6 +237,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "CleanupManagerLacros",
     "DownloadBubbleUpdateService",
     "DownloadCoreService",
+    "MediaNotificationService",
 #else
     "LiveCaptionController",
 #endif // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -221,10 +251,16 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "BluetoothSocketEventDispatcher",
     "BrowsingDataLifetimeManager",
     "CookieSettings",
+#if BUILDFLAG(IS_WIN)
+    "BoundSessionCookieRefreshService",
+#endif  // BUILDFLAG(IS_WIN)
     "ExtensionSystem",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "FederatedIdentityPermissionContext",
     "FeedbackPrivateAPI",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "FileChangeServiceBridge",
+#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "FileSystemAccessPermissionContext",
     "GeneratedPrefs",
     "HeavyAdService",
@@ -233,6 +269,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif
     "HidDeviceManager",
     "HostContentSettingsMap",
+    "MediaRouter",
     "MediaRouterUIService",
     "NotificationDisplayService",
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -243,6 +280,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(ENABLE_PDF)
     "PdfViewerPrivateEventRouter",
 #endif  // BUILDFLAG(ENABLE_PDF)
+    "PinnedToolbarActionsModel",
     "PlatformNotificationService",
     "PredictionModelHandlerProvider",
     "PrefWatcher",
@@ -267,17 +305,18 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "TCPSocketEventDispatcher",
     "TabGroupsEventRouter",
     "ToolbarActionsModel",
+    "TrackingProtectionSettings",
     "UDPSocketEventDispatcher",
     "UkmBackgroundRecorderService",
+#if BUILDFLAG(IS_WIN)
+    "UnexportableKeyService",
+#endif  // BUILDFLAG(IS_WIN)
+    "UpdaterService",
     "UsbDeviceManager",
     "UsbDeviceResourceManager",
     "sct_reporting::Factory"
   };
   // clang-format on
-
-  if (base::FeatureList::IsEnabled(media_router::kMediaRouterOTRInstance)) {
-    guest_otr_active_services.insert("MediaRouter");
-  }
 
   Profile* guest_profile =
       CreateProfileAndWaitForAllTasks(ProfileManager::GetGuestProfilePath());
@@ -293,19 +332,19 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   // clang-format off
   std::set<std::string> guest_active_services {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "CastNotificationControllerLacros",
     "CleanupManagerLacros",
     "ClipboardAPI",
     "ExternalLogoutRequestEventHandler",
-    "ManualTestHeartbeatEvent",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "ImageWriterControllerLacros",
+#endif
+    "MediaNotificationService",
     "SessionStateChangedEventDispatcher",
 #else // !BUILDFLAG(IS_CHROMEOS_LACROS)
     "SystemIndicatorManager",
     "WebAppProvider",
 #endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-    "SpellcheckService",
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-    "AboutSigninInternals",
     "AboutThisSiteServiceFactory",
     "AccountReconcilor",
     "ActivityLog",
@@ -322,6 +361,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     "AppShortcutManager",
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)|| BUILDFLAG(IS_WIN)
+    "ManualTestHeartbeatEvent",
+#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)|| BUILDFLAG(IS_WIN)
     "AppTerminationObserver",
     "AppWindowRegistry",
     "AudioAPI",
@@ -348,22 +390,16 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "BookmarkExpandedStateTracker",
 #endif
     "BookmarkModel",
-    "BookmarkSyncServiceFactory",
     "BookmarkUndoService",
     "BookmarksAPI",
-    "BookmarksApiWatcher",
     "BrailleDisplayPrivateAPI",
     "BrowsingTopicsService",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "CastNotificationControllerLacros",
-#endif  // BUIDLFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ChildAccountService",
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ChromeSigninClient",
     "ClosedTabCacheService",
     "CommandService",
-    "ConsentAuditor",
     "ContentIndexProvider",
     "ContentSettingsService",
     "CookieSettings",
@@ -388,9 +424,11 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ExtensionSystemShared",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "ExtensionWebUIOverrideRegistrar",
-    "FaviconService",
     "FederatedIdentityPermissionContext",
     "FeedbackPrivateAPI",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "FileChangeServiceBridge",
+#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "FileSystemAccessPermissionContext",
     "FirstPartySetsPolicyService",
     "FontPrefChangeNotifier",
@@ -415,14 +453,12 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "InstallVerifier",
     "InstanceIDProfileService",
     "InvalidationService",
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    "KidsChromeManagementClient",
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "LanguageSettingsPrivateDelegate",
     "LazyBackgroundTaskQueue",
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ListFamilyMembersService",
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    "LocalOrSyncableBookmarkSyncServiceFactory",
     "LoginUIServiceFactory",
     "MDnsAPI",
     "ManagedBookmarkService",
@@ -453,6 +489,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PersonalDataManager",
     "PinnedTabService",
+    "PinnedToolbarActionsModel",
     "PlatformNotificationService",
     "PluginManager",
     "PluginPrefs",
@@ -470,9 +507,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ProcessMap",
     "ProcessesAPI",
     "ProfileNetworkContextService",
-    "ProfileThemeUpdateServiceFactory",
     "ProtocolHandlerRegistry",
-    "ReadingListModel",
     "RealtimeReportingClient",
     "RendererStartupHelper",
     "RendererUpdater",
@@ -485,22 +520,18 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "SafeBrowsingMetricsCollector",
     "SafeBrowsingPrivateEventRouter",
     "SafeBrowsingTailoredSecurityService",
-    "SecurityEventRecorder",
+    "SearchEngineChoiceServiceFactory",
     "SendTabToSelfClientService",
     "SendTabToSelfSyncService",
     "SerialConnectionManager",
     "SerialPortManager",
     "SessionDataService",
     "SessionProtoDBFactory",
-    "SessionSyncService",
     "SessionsAPI",
     "SettingsOverridesAPI",
     "SettingsPrivateEventRouter",
-    "SharingMessageBridge",
-    "SharingService",
     "ShoppingService",
     "SidePanelService",
-    "SigninErrorController",
     "SiteDataCacheFacadeFactory",
     "SiteEngagementService",
     "SocketManager",
@@ -510,8 +541,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "SupervisedUserService",
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "SyncInvalidationsService",
-    "SyncService",
-    "SyncSessionsWebContentsRouter",
     "SystemInfoAPI",
     "TCPServerSocketEventDispatcher",
     "TCPSocketEventDispatcher",
@@ -520,23 +549,29 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "TemplateURLServiceFactory",
     "ThemeService",
     "ToolbarActionsModel",
+    "TopLevelTrialService",
+    "TpcdTrialService",
+    "TrackingProtectionSettings",
     "TranslateRanker",
     "TriggeredProfileResetter",
-    "TrustedVaultService",
     "TtsAPI",
     "UDPSocketEventDispatcher",
     "UkmBackgroundRecorderService",
+    "UpdaterService",
     "UsbDeviceManager",
     "UsbDeviceResourceManager",
     "UserCloudPolicyInvalidator",
-    "UserEventService",
     "UserPolicySigninService",
+#if !BUILDFLAG(IS_ANDROID)
+    "VisualQuerySuggestionsService",
+#endif  // !BUILDFLAG(IS_ANDROID)
     "WarningBadgeService",
     "WarningService",
     "WebAuthenticationProxyAPI",
     "WebDataService",
     "WebNavigationAPI",
     "WebRequestAPI",
+    "WebRequestEventRouter",
     "WebRtcEventLogManagerKeyedService",
     "WebrtcAudioPrivateEventService",
     "feedback::FeedbackUploaderChrome",
@@ -568,11 +603,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "AutocompleteControllerEmitter",
     "AutofillInternalsService",
     "CanMakePaymentQuery",
+    "DataControlsRulesService",
     "LocalPresentationManager",
-    "MediaRouter",
     "OmniboxInputWatcher",
     "OmniboxSuggestionsWatcher",
-    "PasswordChangeSuccessTracker",
     "PasswordManagerInternalsService",
     "PasswordRequirementsServiceFactory",
     "PolicyBlocklist",
@@ -613,10 +647,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     // default, however their creation is still possible.
     "AutocompleteControllerEmitter",
     "CanMakePaymentQuery",
-    "MediaRouter",
+    "DataControlsRulesService",
     "OmniboxInputWatcher",
     "OmniboxSuggestionsWatcher",
-    "PasswordChangeSuccessTracker",
     "PolicyBlocklist",
     "PolicyClipboardRestriction",
     "SafeSearch",

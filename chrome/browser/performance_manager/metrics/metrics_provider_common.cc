@@ -6,8 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 
 namespace performance_manager {
 
@@ -28,7 +28,7 @@ ui::AXMode::ModeFlagHistogramValue ModeFlagsToEnum(uint32_t mode_flags) {
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA;
     case ui::AXMode::kLabelImages:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES;
-    case ui::AXMode::kPDF:
+    case ui::AXMode::kPDFPrinting:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF;
     case ui::AXMode::kPDFOcr:
       return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF_OCR;
@@ -54,8 +54,9 @@ MetricsProviderCommon::MetricsProviderCommon() = default;
 MetricsProviderCommon::~MetricsProviderCommon() = default;
 
 void MetricsProviderCommon::RecordA11yFlags() {
-  ui::AXMode mode = ui::AXPlatformNode::GetAccessibilityMode();
-  bool is_mode_on = !mode.is_mode_off();
+  const ui::AXMode mode =
+      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
+  const bool is_mode_on = !mode.is_mode_off();
 
   UMA_HISTOGRAM_BOOLEAN(
       "PerformanceManager.Experimental.HasAccessibilityModeFlag", is_mode_on);
@@ -68,7 +69,7 @@ void MetricsProviderCommon::RecordA11yFlags() {
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTML);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kLabelImages);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDF);
+    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFPrinting);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFOcr);
   }
 }

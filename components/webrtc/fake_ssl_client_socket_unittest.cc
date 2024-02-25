@@ -74,7 +74,6 @@ class MockClientSocket : public net::StreamSocket {
   MOCK_CONST_METHOD0(UsingTCPFastOpen, bool());
   MOCK_CONST_METHOD0(NumBytesRead, int64_t());
   MOCK_CONST_METHOD0(GetConnectTimeMicros, base::TimeDelta());
-  MOCK_CONST_METHOD0(WasAlpnNegotiated, bool());
   MOCK_CONST_METHOD0(GetNegotiatedProtocol, net::NextProto());
   MOCK_METHOD1(GetSSLInfo, bool(net::SSLInfo*));
   MOCK_CONST_METHOD0(GetTotalReceivedBytes, int64_t());
@@ -173,7 +172,8 @@ class FakeSSLClientSocketTest : public testing::Test {
       if (fake_ssl_client_socket.IsConnected()) {
         int read_len = std::size(kReadTestData);
         int read_buf_len = 2 * read_len;
-        auto read_buf = base::MakeRefCounted<net::IOBuffer>(read_buf_len);
+        auto read_buf =
+            base::MakeRefCounted<net::IOBufferWithSize>(read_buf_len);
 
         net::TestCompletionCallback read_callback;
         int read_status = fake_ssl_client_socket.Read(

@@ -19,26 +19,6 @@
 
 LoginTabHelper::~LoginTabHelper() {}
 
-std::unique_ptr<content::LoginDelegate>
-LoginTabHelper::CreateAndStartMainFrameLoginDelegate(
-    const net::AuthChallengeInfo& auth_info,
-    content::WebContents* web_contents,
-    const content::GlobalRequestID& request_id,
-    const GURL& url,
-    scoped_refptr<net::HttpResponseHeaders> response_headers,
-    LoginAuthRequiredCallback auth_required_callback) {
-  std::unique_ptr<LoginHandler> login_handler = LoginHandler::Create(
-      auth_info, web_contents, std::move(auth_required_callback));
-  login_handler->StartMainFrame(
-      request_id, url, response_headers,
-      // The caller owns the created LoginHandler, and there's no guarantee that
-      // |this| outlives it, so use a weak pointer to receive a callback when an
-      // extension has cancelled the auth request for a navigation.
-      base::BindOnce(&LoginTabHelper::RegisterExtensionCancelledNavigation,
-                     weak_ptr_factory_.GetWeakPtr()));
-  return login_handler;
-}
-
 void LoginTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // When navigating away, the LoginHandler for the previous navigation (if any)
@@ -107,7 +87,7 @@ void LoginTabHelper::DidFinishNavigation(
   network_anonymization_key_ =
       navigation_handle->GetIsolationInfo().network_anonymization_key();
 
-  login_handler_ = LoginHandler::Create(
+  login_handler_ = CreateLoginHandler(
       navigation_handle->GetAuthChallengeInfo().value(),
       navigation_handle->GetWebContents(),
       base::BindOnce(
@@ -116,7 +96,7 @@ void LoginTabHelper::DidFinishNavigation(
           // callback, it's safe to use base::Unretained here; the
           // |login_handler_| cannot outlive its owning LoginTabHelper.
           base::Unretained(this)));
-  login_handler_->ShowLoginPromptAfterCommit(navigation_handle->GetURL());
+  login_handler_->ShowLoginPrompt(navigation_handle->GetURL());
 
   // If the challenge comes from a proxy, the URL should be hidden in the
   // omnibox to avoid origin confusion. Call DidChangeVisibleSecurityState() to
@@ -209,8 +189,16 @@ LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<LoginTabHelper>(*web_contents) {}
 
+std::unique_ptr<LoginHandler> LoginTabHelper::CreateLoginHandler(
+    const net::AuthChallengeInfo& auth_info,
+    content::WebContents* web_contents,
+    LoginAuthRequiredCallback auth_required_callback) {
+  return LoginHandler::Create(auth_info, web_contents,
+                              std::move(auth_required_callback));
+}
+
 void LoginTabHelper::HandleCredentials(
-    const absl::optional<net::AuthCredentials>& credentials) {
+    const std::optional<net::AuthCredentials>& credentials) {
   login_handler_.reset();
 
   if (credentials.has_value()) {

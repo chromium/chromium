@@ -12,30 +12,22 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
 class AutofillProvider;
-class ContentAutofillDriver;
 class FormEventLoggerWeblayerAndroid;
-
-// Creates an AndroidAutofillManager and attaches it to the `driver`.
-//
-// This hook is to be passed to CreateForWebContentsAndDelegate().
-// It is the glue between ContentAutofillDriver[Factory] and
-// AndroidAutofillManager.
-//
-// Other embedders (which don't want to use AndroidAutofillManager) shall use
-// other implementations.
-void AndroidDriverInitHook(AutofillClient* client,
-                           ContentAutofillDriver* driver);
 
 // This class forwards AutofillManager calls to AutofillProvider.
 class AndroidAutofillManager : public AutofillManager,
                                public AutofillManager::Observer {
  public:
+  AndroidAutofillManager(AutofillDriver* driver, AutofillClient* client);
+
   AndroidAutofillManager(const AndroidAutofillManager&) = delete;
   AndroidAutofillManager& operator=(const AndroidAutofillManager&) = delete;
 
@@ -46,28 +38,14 @@ class AndroidAutofillManager : public AutofillManager,
   }
 
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
-  CreditCardAccessManager* GetCreditCardAccessManager() override;
 
   bool ShouldClearPreviewedForm() override;
-
-  void FillCreditCardFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const CreditCard& credit_card,
-      const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) override;
-  void FillProfileFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const autofill::AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details) override;
 
   void OnFocusNoLongerOnFormImpl(bool had_interacted_form) override;
 
   void OnDidFillAutofillFormDataImpl(const FormData& form,
                                      const base::TimeTicks timestamp) override;
 
-  void OnDidPreviewAutofillFormDataImpl() override {}
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;
   void OnSelectOrSelectListFieldOptionsDidChangeImpl(
@@ -91,17 +69,12 @@ class AndroidAutofillManager : public AutofillManager,
   // |triggered_origin| is the origin of the field from which the autofill is
   // triggered; this affects the security policy for cross-frame fills. See
   // AutofillDriver::FillOrPreviewForm() for further details.
-  void FillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
+  void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
                          const FormData& form,
                          const FieldTypeGroup field_type_group,
                          const url::Origin& triggered_origin);
 
  protected:
-  friend void AndroidDriverInitHook(AutofillClient* client,
-                                    ContentAutofillDriver* driver);
-
-  AndroidAutofillManager(AutofillDriver* driver, AutofillClient* client);
-
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,
                            mojom::SubmissionSource source) override;
@@ -143,10 +116,6 @@ class AndroidAutofillManager : public AutofillManager,
 
   void OnAfterProcessParsedForms(
       const DenseSet<FormType>& form_types) override {}
-
-  void OnServerRequestError(FormSignature form_signature,
-                            AutofillDownloadManager::RequestType request_type,
-                            int http_error) override;
 
  private:
   // AutofillManager::Observer:

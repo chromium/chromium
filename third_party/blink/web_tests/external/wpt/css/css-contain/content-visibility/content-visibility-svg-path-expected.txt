@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] isPointInFill() should return true in a c-v:hidden subtree.
+  Failed to execute 'isPointInFill' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'.
+[FAIL] isPointInStroke() should return true in a c-v:hidden subtree.
+  Failed to execute 'isPointInStroke' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'.
+[FAIL] checkEnclosure() should return true in a c-v:hidden subtree.
+  assert_true: enclosure expected true got false
+[FAIL] getEnclosureList() should return items in a c-v:hidden subtree.
+  assert_greater_than: intersection expected a number greater than 0 but got 0
+Harness: the test ran to completion.
+

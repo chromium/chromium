@@ -1,0 +1,18 @@
+Tests that Target.closeTarget works for unresponsive renderer
+closed:
+{
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+destroyed:
+{
+    method : Target.targetDestroyed
+    params : {
+        targetId : <string>
+    }
+    sessionId : <string>
+}
+

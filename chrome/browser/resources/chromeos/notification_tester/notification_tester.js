@@ -4,10 +4,10 @@
 
 import './select_custom.js';
 import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -212,8 +212,7 @@ export class NotificationTester extends PolymerElement {
         this.notificationDelayTime = '';
         // Create a deep copy of the current state of this.notifMetadata to
         // ensure it won't be modified before chrome.send() is called.
-        const notifMetadataCopy =
-            JSON.parse(JSON.stringify(this.notifMetadata));
+        const notifMetadataCopy = structuredClone(this.notifMetadata);
         setTimeout(
             chrome.send, timedInputValueNumber * NUM_MS_IN_S,
             'generateNotificationForm', [notifMetadataCopy]);
@@ -253,9 +252,9 @@ export class NotificationTester extends PolymerElement {
   // Show / hide dom elements when this.notifMetadata.notificationType changes
   notificationTypeChanged_(notificationType) {
     this.showMultiOptions =
-        (notificationType == NotificationType.NOTIFICATION_TYPE_MULTIPLE);
+        (notificationType === NotificationType.NOTIFICATION_TYPE_MULTIPLE);
     this.showProgressOptions =
-        (notificationType == NotificationType.NOTIFICATION_TYPE_PROGRESS);
+        (notificationType === NotificationType.NOTIFICATION_TYPE_PROGRESS);
     this.showTypeSpecificDesc =
         !(this.showMultiOptions || this.showProgressOptions);
   }
@@ -264,9 +263,9 @@ export class NotificationTester extends PolymerElement {
   // notifier as a string.
   notifierTypeChanged_(notifierType) {
     // notifierType is guaranteed to be 'System' or 'Web'.
-    this.isSystemNotification = notifierType == 'System';
-    this.isWebNotification = notifierType == 'Web';
-    if (notifierType == 'System') {
+    this.isSystemNotification = notifierType === 'System';
+    this.isWebNotification = notifierType === 'Web';
+    if (notifierType === 'System') {
       this.notifMetadata.notifierType = NotifierType.SYSTEM_COMPONENT;
       return;
     }

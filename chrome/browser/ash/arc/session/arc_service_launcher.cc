@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_launch_notifier.h"
 #include "ash/components/arc/appfuse/arc_appfuse_bridge.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
@@ -19,7 +20,6 @@
 #include "ash/components/arc/disk_quota/arc_disk_quota_bridge.h"
 #include "ash/components/arc/ime/arc_ime_service.h"
 #include "ash/components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
-#include "ash/components/arc/lock_screen/arc_lock_screen_bridge.h"
 #include "ash/components/arc/media_session/arc_media_session_bridge.h"
 #include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "ash/components/arc/memory_pressure/arc_memory_pressure_bridge.h"
@@ -160,6 +160,8 @@ ArcServiceLauncher::ArcServiceLauncher(
       base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
     arc_disk_space_monitor_ = std::make_unique<ArcDiskSpaceMonitor>();
   }
+
+  session_manager_obs_.Observe(arc_session_manager_.get());
 }
 
 ArcServiceLauncher::~ArcServiceLauncher() {
@@ -215,14 +217,20 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   DCHECK(arc_service_manager_);
   DCHECK(arc_session_manager_);
 
-  // We want to configure swap exactly once for the session. We wait for after
-  // the user profile is prepared to make sure policy has been loaded. The
+  // We usually want to configure swap exactly once for the session. We wait for
+  // after the user profile is prepared to make sure policy has been loaded. The
   // function IsArcPlayStoreEnabledForProfile has many conditionals, but the
   // main one we're checking for is if ARC is disabled by policy (which is the
   // default). Note that there's a known edge case where during a session policy
   // changes from disabled to enabled. This is expected to be rare, and logging
-  // out will update the swap configuration.
+  // out will update the swap configuration. Likewise, if a user enables or
+  // disables ARC during a session, the swap configuration will also be updated.
   ash::ConfigureSwap(IsArcPlayStoreEnabledForProfile(profile));
+
+  // Record metrics for ARC status based on device affiliation
+  if (base::FeatureList::IsEnabled(kUnaffiliatedDeviceArcRestriction)) {
+    RecordArcStatusBasedOnDeviceAffiliationUMA(profile);
+  }
 
   if (arc_session_manager_->profile() != profile) {
     // Profile is not matched, so the given |profile| is not allowed to use
@@ -241,6 +249,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   // List in lexicographical order.
   ArcAccessibilityHelperBridge::GetForBrowserContext(profile);
   ArcAdbdMonitorBridge::GetForBrowserContext(profile);
+  ArcAppLaunchNotifier::GetForBrowserContext(profile);
   ArcAppPerformanceTracing::GetForBrowserContext(profile);
   ArcAudioBridge::GetForBrowserContext(profile);
   ArcAuthService::GetForBrowserContext(profile);
@@ -276,7 +285,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     ArcKeymasterBridge::GetForBrowserContext(profile);
   }
   ArcKioskBridge::GetForBrowserContext(profile);
-  ArcLockScreenBridge::GetForBrowserContext(profile);
   ArcMediaSessionBridge::GetForBrowserContext(profile);
   {
     auto* metrics_service = ArcMetricsService::GetForBrowserContext(profile);
@@ -314,7 +322,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcSharesheetBridge::GetForBrowserContext(profile);
   ArcSurveyService::GetForBrowserContext(profile);
   ArcSystemUIBridge::GetForBrowserContext(profile);
-  ArcTimerBridge::GetForBrowserContext(profile);
   ArcTracingBridge::GetForBrowserContext(profile);
   ArcTtsService::GetForBrowserContext(profile);
   ArcUsbHostBridge::GetForBrowserContext(profile);
@@ -346,6 +353,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
       ArcIdleManager::GetForBrowserContext(profile);
   } else {
     // ARC Container-only services.
+    ArcTimerBridge::GetForBrowserContext(profile);
     ArcAppfuseBridge::GetForBrowserContext(profile);
     ArcObbMounterBridge::GetForBrowserContext(profile);
   }
@@ -358,16 +366,22 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
 }
 
 void ArcServiceLauncher::Shutdown() {
+  // Reset browser context registered to ArcServiceManager before profile
+  // destruction. This is required to avoid keeping the dangling pointer after
+  // profile destruction.
+  arc_service_manager_->set_browser_context(nullptr);
+
   arc_play_store_enabled_preference_handler_.reset();
   arc_session_manager_->Shutdown();
-  arc_icon_cache_delegate_provider_.reset();
   arc_net_url_opener_.reset();
+  arc_icon_cache_delegate_provider_.reset();
 }
 
 void ArcServiceLauncher::ResetForTesting() {
   // First destroy the internal states, then re-initialize them.
   // These are for workaround of singletonness DCHECK in their ctors/dtors.
   Shutdown();
+  session_manager_obs_.Reset();
   arc_session_manager_.reset();
 
   // No recreation of arc_service_manager. Pointers to its ArcBridgeService
@@ -376,6 +390,11 @@ void ArcServiceLauncher::ResetForTesting() {
   arc_session_manager_ = CreateArcSessionManager(
       arc_service_manager_->arc_bridge_service(), chrome::GetChannel(),
       scheduler_configuration_manager_);
+  session_manager_obs_.Observe(arc_session_manager_.get());
+}
+
+void ArcServiceLauncher::OnArcPlayStoreEnabledChanged(bool enabled) {
+  ash::ConfigureSwap(/*arc_enabled=*/enabled);
 }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
@@ -432,6 +451,7 @@ void ArcServiceLauncher::OnGetTpmStatus(
 void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcAccessibilityHelperBridge::EnsureFactoryBuilt();
   ArcAdbdMonitorBridge::EnsureFactoryBuilt();
+  ArcAppLaunchNotifier::EnsureFactoryBuilt();
   ArcAppPerformanceTracing::EnsureFactoryBuilt();
   ArcAppfuseBridge::EnsureFactoryBuilt();
   ArcAudioBridge::EnsureFactoryBuilt();
@@ -461,7 +481,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
     ArcKeymasterBridge::EnsureFactoryBuilt();
   }
   ArcKioskBridge::EnsureFactoryBuilt();
-  ArcLockScreenBridge::EnsureFactoryBuilt();
   ArcMediaSessionBridge::EnsureFactoryBuilt();
   ArcMemoryBridge::EnsureFactoryBuilt();
   ArcMemoryPressureBridge::EnsureFactoryBuilt();

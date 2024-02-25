@@ -66,21 +66,36 @@ void RunRemotePlaybackTask(
   std::move(task).Run();
 }
 
-KURL GetAvailabilityUrl(const WebURL& source, bool is_source_supported) {
-  if (source.IsEmpty() || !source.IsValid() || !is_source_supported)
+KURL GetAvailabilityUrl(const WebURL& source,
+                        bool is_source_supported,
+                        std::optional<media::VideoCodec> video_codec,
+                        std::optional<media::AudioCodec> audio_codec) {
+  if (source.IsEmpty() || !source.IsValid() || !is_source_supported) {
     return KURL();
+  }
 
   // The URL for each media element's source looks like the following:
-  // remote-playback://<encoded-data> where |encoded-data| is base64 URL
-  // encoded string representation of the source URL.
+  // remote-playback:media-element?source=<encoded-data>&video_codec=<video_codec>&audio_codec=<audio_codec>
+  // where |encoded-data| is base64 URL encoded string representation of the
+  // source URL. |video_codec| and |audio_codec| are used for device capability
+  // filter for Media Remoting based Remote Playback on Desktop. The codec
+  // fields are optional.
   std::string source_string = source.GetString().Utf8();
   String encoded_source = WTF::Base64URLEncode(
       source_string.data(),
       base::checked_cast<unsigned>(source_string.length()));
 
-  return KURL(
-      base::StrCat({kRemotePlaybackPresentationUrlScheme, "://"}).c_str() +
-      encoded_source);
+  std::string video_codec_str =
+      video_codec.has_value()
+          ? ("&video_codec=" + media::GetCodecName(video_codec.value()))
+          : "";
+  std::string audio_codec_str =
+      audio_codec.has_value()
+          ? ("&audio_codec=" + media::GetCodecName(audio_codec.value()))
+          : "";
+  return KURL(StringView(kRemotePlaybackPresentationUrlPath) +
+              "?source=" + encoded_source + video_codec_str.c_str() +
+              audio_codec_str.c_str());
 }
 
 bool IsBackgroundAvailabilityMonitoringDisabled() {
@@ -127,7 +142,7 @@ ExecutionContext* RemotePlayback::GetExecutionContext() const {
   return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
-ScriptPromise RemotePlayback::watchAvailability(
+ScriptPromiseTyped<IDLLong> RemotePlayback::watchAvailability(
     ScriptState* script_state,
     V8RemotePlaybackAvailabilityCallback* callback,
     ExceptionState& exception_state) {
@@ -136,7 +151,7 @@ ScriptPromise RemotePlayback::watchAvailability(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "disableRemotePlayback attribute is present.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLLong>();
   }
 
   int id = WatchAvailabilityInternal(
@@ -145,7 +160,7 @@ ScriptPromise RemotePlayback::watchAvailability(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Availability monitoring is not supported on this device.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLLong>();
   }
 
   // TODO(avayvod): Currently the availability is tracked for each media element
@@ -154,9 +169,9 @@ ScriptPromise RemotePlayback::watchAvailability(
   // controls. If there are no default controls, we should also start tracking
   // availability on demand meaning the Promise returned by watchAvailability()
   // will be resolved asynchronously.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLLong>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   resolver->Resolve(id);
   return promise;
 }
@@ -373,7 +388,7 @@ void RemotePlayback::StateChanged(
       IsInParallelAlgorithmRunnable(
           prompt_promise_resolver_->GetExecutionContext(),
           prompt_promise_resolver_->GetScriptState())) {
-    // Changing state to "disconnected" from "disconnected" or "connecting"
+    // Changing state to "CLOSED" from "CLOSED" or "CONNECTING"
     // means that establishing connection with remote playback device failed.
     // Changing state to anything else means the state change intended by
     // prompt() succeeded.
@@ -387,10 +402,6 @@ void RemotePlayback::StateChanged(
           DOMExceptionCode::kAbortError,
           "Failed to connect to the remote device."));
     } else {
-      DCHECK((state_ == mojom::blink::PresentationConnectionState::CLOSED &&
-              state == mojom::blink::PresentationConnectionState::CONNECTING) ||
-             (state_ == mojom::blink::PresentationConnectionState::CONNECTED &&
-              state == mojom::blink::PresentationConnectionState::CLOSED));
       prompt_promise_resolver_->Resolve();
     }
   }
@@ -443,12 +454,32 @@ void RemotePlayback::PromptCancelled() {
 
 void RemotePlayback::SourceChanged(const WebURL& source,
                                    bool is_source_supported) {
-  if (IsBackgroundAvailabilityMonitoringDisabled())
+  source_ = source;
+  is_source_supported_ = is_source_supported;
+
+  UpdateAvailabilityUrlsAndStartListening();
+}
+
+void RemotePlayback::UpdateAvailabilityUrlsAndStartListening() {
+  if (is_background_availability_monitoring_disabled_for_testing_ ||
+      IsBackgroundAvailabilityMonitoringDisabled() ||
+      !RuntimeEnabledFeatures::RemotePlaybackBackendEnabled()) {
     return;
+  }
+
+  // If the video is too short, it's unlikely to be cast. Disable availability
+  // monitoring so that the cast buttons are hidden from the video player.
+  if (!media_element_ || std::isnan(media_element_->duration()) ||
+      media_element_->duration() <= kMinRemotingMediaDurationInSec) {
+    StopListeningForAvailability();
+    availability_urls_.clear();
+    return;
+  }
 
   KURL current_url =
       availability_urls_.empty() ? KURL() : availability_urls_[0];
-  KURL new_url = GetAvailabilityUrl(source, is_source_supported);
+  KURL new_url = GetAvailabilityUrl(source_, is_source_supported_, video_codec_,
+                                    audio_codec_);
 
   if (new_url == current_url)
     return;
@@ -474,6 +505,15 @@ WebString RemotePlayback::GetPresentationId() {
   return presentation_id_;
 }
 
+void RemotePlayback::MediaMetadataChanged(
+    std::optional<media::VideoCodec> video_codec,
+    std::optional<media::AudioCodec> audio_codec) {
+  video_codec_ = video_codec;
+  audio_codec_ = audio_codec;
+
+  UpdateAvailabilityUrlsAndStartListening();
+}
+
 void RemotePlayback::AddObserver(RemotePlaybackObserver* observer) {
   observers_.insert(observer);
 }
@@ -483,8 +523,11 @@ void RemotePlayback::RemoveObserver(RemotePlaybackObserver* observer) {
 }
 
 void RemotePlayback::AvailabilityChangedForTesting(bool screen_is_available) {
-  // AvailabilityChanged() is only normally called when |is_listening_| is true.
-  is_listening_ = true;
+  // Disable the background availability monitoring so that the availability
+  // won't be overridden later.
+  is_background_availability_monitoring_disabled_for_testing_ = true;
+  StopListeningForAvailability();
+
   AvailabilityChanged(screen_is_available
                           ? mojom::blink::ScreenAvailability::AVAILABLE
                           : mojom::blink::ScreenAvailability::UNAVAILABLE);
@@ -537,7 +580,8 @@ void RemotePlayback::CleanupConnections() {
 
 void RemotePlayback::AvailabilityChanged(
     mojom::blink::ScreenAvailability availability) {
-  DCHECK(is_listening_);
+  DCHECK(is_listening_ ||
+         is_background_availability_monitoring_disabled_for_testing_);
   DCHECK_NE(availability, mojom::ScreenAvailability::UNKNOWN);
   DCHECK_NE(availability, mojom::ScreenAvailability::DISABLED);
 
@@ -577,6 +621,11 @@ void RemotePlayback::OnConnectionSuccess(
       PresentationController::FromContext(GetExecutionContext());
   if (!presentation_controller)
     return;
+
+#if !BUILDFLAG(IS_ANDROID)
+  media_element_->Play();
+  media_element_->GetWebMediaPlayer()->RequestMediaRemoting();
+#endif
 
   // Note: Messages on |connection_receiver| are ignored.
   target_presentation_connection_.Bind(
@@ -650,8 +699,10 @@ void RemotePlayback::StopListeningForAvailability() {
 }
 
 void RemotePlayback::MaybeStartListeningForAvailability() {
-  if (IsBackgroundAvailabilityMonitoringDisabled())
+  if (IsBackgroundAvailabilityMonitoringDisabled() ||
+      is_background_availability_monitoring_disabled_for_testing_) {
     return;
+  }
 
   if (is_listening_)
     return;

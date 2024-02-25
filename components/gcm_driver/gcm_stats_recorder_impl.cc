@@ -13,6 +13,8 @@
 #include "base/strings/stringprintf.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
+#include "google_apis/gcm/engine/mcs_client.h"
+#include "google_apis/gcm/engine/registration_request.h"
 
 namespace gcm {
 
@@ -116,6 +118,12 @@ std::string GetRegistrationStatusString(
       return "QUOTA_EXCEEDED";
     case gcm::RegistrationRequest::TOO_MANY_REGISTRATIONS:
       return "TOO_MANY_REGISTRATIONS";
+    case gcm::RegistrationRequest::TOO_MANY_SUBSCRIBERS:
+      return "TOO_MANY_SUBSCRIBERS";
+    case gcm::RegistrationRequest::FIS_AUTH_ERROR:
+      return "FIS_AUTH_ERROR";
+    case gcm::RegistrationRequest::INVALID_TARGET_VERSION:
+      return "INVALID_TARGET_VERSION";
   }
   return "UNKNOWN_STATUS";
 }
@@ -342,9 +350,8 @@ void GCMStatsRecorderImpl::RecordRegistrationRetryDelayed(
                          retries_left));
 }
 
-void GCMStatsRecorderImpl::RecordUnregistrationSent(
-    const std::string& app_id, const std::string& source) {
-  UMA_HISTOGRAM_COUNTS_1M("GCM.UnregistrationRequest", 1);
+void GCMStatsRecorderImpl::RecordUnregistrationSent(const std::string& app_id,
+                                                    const std::string& source) {
   if (!is_recording_)
     return;
   RecordRegistration(app_id, source, "Unregistration request sent",

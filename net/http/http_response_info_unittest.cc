@@ -102,14 +102,14 @@ TEST_F(HttpResponseInfoTest, StaleRevalidationTimeoutDefault) {
 }
 
 TEST_F(HttpResponseInfoTest, StaleRevalidationTimeoutCopy) {
-  base::Time test_time = base::Time::FromDoubleT(1000);
+  base::Time test_time = base::Time::FromSecondsSinceUnixEpoch(1000);
   response_info_.stale_revalidate_timeout = test_time;
   HttpResponseInfo response_info_clone(response_info_);
   EXPECT_EQ(test_time, response_info_clone.stale_revalidate_timeout);
 }
 
 TEST_F(HttpResponseInfoTest, StaleRevalidationTimeoutRestoreValue) {
-  base::Time test_time = base::Time::FromDoubleT(1000);
+  base::Time test_time = base::Time::FromSecondsSinceUnixEpoch(1000);
   response_info_.stale_revalidate_timeout = test_time;
   HttpResponseInfo restored_response_info;
   PickleAndRestore(response_info_, &restored_response_info);
@@ -271,7 +271,7 @@ TEST_F(HttpResponseInfoTest, BrowserRunId) {
 
 // Test that an empty `browser_run_id` is preserved and doesn't throw an error.
 TEST_F(HttpResponseInfoTest, EmptyBrowserRunId) {
-  response_info_.browser_run_id = absl::nullopt;
+  response_info_.browser_run_id = std::nullopt;
   net::HttpResponseInfo restored_response_info;
   PickleAndRestore(response_info_, &restored_response_info);
   EXPECT_FALSE(restored_response_info.browser_run_id.has_value());

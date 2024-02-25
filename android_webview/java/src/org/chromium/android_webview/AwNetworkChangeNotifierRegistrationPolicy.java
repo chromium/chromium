@@ -18,12 +18,12 @@ public class AwNetworkChangeNotifierRegistrationPolicy
     @Override
     protected void init(NetworkChangeNotifierAutoDetect notifier) {
         super.init(notifier);
-        AwContentsLifecycleNotifier.addObserver(this);
+        AwContentsLifecycleNotifier.getInstance().addObserver(this);
     }
 
     @Override
     protected void destroy() {
-        AwContentsLifecycleNotifier.removeObserver(this);
+        AwContentsLifecycleNotifier.getInstance().removeObserver(this);
     }
 
     // AwContentsLifecycleNotifier.Observer

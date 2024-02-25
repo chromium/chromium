@@ -6,14 +6,23 @@
 
 #include <string>
 
-#include "ash/components/arc/metrics/arc_daily_metrics_prefs.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "components/guest_os/guest_os_prefs.h"
+#include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace arc {
 namespace prefs {
+
+namespace {
+
+void RegisterDailyMetricsPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kArcDailyMetricsKills);
+  metrics::DailyEvent::RegisterPref(registry, prefs::kArcDailyMetricsSample);
+}
+
+}  // anonymous namespace
 
 // ======== PROFILE PREFS ========
 // See below for local state prefs.
@@ -29,6 +38,9 @@ const char kAlwaysOnVpnPackage[] = "arc.vpn.always_on.vpn_package";
 // is still used.
 const char kArcActiveDirectoryPlayUserId[] =
     "arc.active_directory_play_user_id";
+// Stores whether ARC app is requested in the session. Used for UMA.
+// -1 indicates no data. 0 or greaters are the number of app launch requests.
+const char kArcAppRequestedInSession[] = "arc.app_requested_in_session";
 // A preference to keep list of Android apps and their state.
 const char kArcApps[] = "arc.apps";
 // A preference to store backup and restore state for Android apps.
@@ -180,6 +192,14 @@ const char kArcInitialLocationSettingSyncRequired[] =
 // enterprise user.
 const char kArcVmDataMigrationStrategy[] = "arc.vm_data_migration_strategy";
 
+// A preference representing if ARC is allowed on unaffiliated devices
+// of an enterprise account
+const char kUnaffiliatedDeviceArcAllowed[] = "arc.unaffiliated.device.allowed";
+
+// A preference indicating the last locale set for any apps. This will be used
+// as part of suggested locales for other apps' locale setting.
+const char kArcLastSetAppLocale[] = "arc.last_set_app_locale";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Sorted in lexicographical order.
   RegisterDailyMetricsPrefs(registry);
@@ -225,6 +245,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kArcHasAccessToRemovableMedia, false);
   registry->RegisterBooleanPref(kArcInitialSettingsPending, false);
   registry->RegisterBooleanPref(kArcInitialLocationSettingSyncRequired, true);
+  registry->RegisterStringPref(kArcLastSetAppLocale, std::string());
   registry->RegisterBooleanPref(kArcPaiStarted, false);
   registry->RegisterBooleanPref(kArcFastAppReinstallStarted, false);
   registry->RegisterListPref(kArcFastAppReinstallPackages);
@@ -243,6 +264,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kArcVmDataMigrationStrategy,
       static_cast<int>(ArcVmDataMigrationStrategy::kDoNotPrompt));
+  registry->RegisterBooleanPref(kUnaffiliatedDeviceArcAllowed, true);
 }
 
 }  // namespace prefs

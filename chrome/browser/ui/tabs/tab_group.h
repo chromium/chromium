@@ -10,13 +10,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/range/range.h"
 
 class TabGroupController;
@@ -72,12 +72,12 @@ class TabGroup {
   // Gets the model index of this group's first tab, or nullopt if it is
   // empty. Similar to ListTabs() it traverses through TabStripModel's
   // tabs. Unlike ListTabs() this is always safe to call.
-  absl::optional<int> GetFirstTab() const;
+  std::optional<int> GetFirstTab() const;
 
   // Gets the model index of this group's last tab, or nullopt if it is
   // empty. Similar to ListTabs() it traverses through TabStripModel's
   // tabs. Unlike ListTabs() this is always safe to call.
-  absl::optional<int> GetLastTab() const;
+  std::optional<int> GetLastTab() const;
 
   // Returns the range of tab model indices this group contains. Notably
   // does not rely on the TabGroup's internal metadata, but rather

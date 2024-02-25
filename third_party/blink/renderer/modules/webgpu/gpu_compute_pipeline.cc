@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_programmable_stage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_stage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 
 namespace blink {
 
@@ -38,7 +40,8 @@ WGPUComputePipelineDescriptor AsDawnType(
   dawn_desc.compute.constantCount = computeStage->constantCount;
   dawn_desc.compute.constants = computeStage->constants.get();
   dawn_desc.compute.module = programmable_stage_desc->module()->GetHandle();
-  dawn_desc.compute.entryPoint = computeStage->entry_point.c_str();
+  dawn_desc.compute.entryPoint =
+      computeStage->entry_point ? computeStage->entry_point->c_str() : nullptr;
 
   return dawn_desc;
 }
@@ -54,6 +57,18 @@ GPUComputePipeline* GPUComputePipeline::Create(
   OwnedProgrammableStage computeStage;
   WGPUComputePipelineDescriptor dawn_desc =
       AsDawnType(device, webgpu_desc, &label, &computeStage);
+
+  // If ChromiumExperimentalSubgroups feature is enabled, chain the full
+  // subgroups options after compute pipeline descriptor.
+  WGPUDawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
+  if (device->features()->has(
+          V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
+    fullSubgroupsOptions.chain.sType =
+        WGPUSType_DawnComputePipelineFullSubgroups;
+    fullSubgroupsOptions.requiresFullSubgroups =
+        webgpu_desc->getRequiresFullSubgroupsOr(false);
+    dawn_desc.nextInChain = &fullSubgroupsOptions.chain;
+  }
 
   GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
       device, device->GetProcs().deviceCreateComputePipeline(

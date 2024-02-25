@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/repeating_test_future.h"
-#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,7 +53,7 @@ class NotificationWaiter : public KioskAppManagerObserver {
   }
 
   base::test::RepeatingTestFuture<bool> notifications_received_;
-  raw_ptr<ArcKioskAppManager, ExperimentalAsh> manager_;
+  raw_ptr<ArcKioskAppManager> manager_;
 };
 
 std::string GenerateAccountId(std::string package_name) {
@@ -90,23 +88,23 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
                const std::string& auto_login_account) {
     base::Value::List device_local_accounts;
     for (const policy::ArcKioskAppBasicInfo& app : apps) {
-      base::Value::Dict entry;
-      entry.Set(kAccountsPrefDeviceLocalAccountsKeyId,
-                GenerateAccountId(app.package_name()));
-      entry.Set(kAccountsPrefDeviceLocalAccountsKeyType,
-                policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP);
-      entry.Set(
-          kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
-          static_cast<int>(policy::DeviceLocalAccount::EphemeralMode::kUnset));
-      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                app.package_name());
-      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                app.class_name());
-      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                app.action());
-      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                app.display_name());
-      device_local_accounts.Append(std::move(entry));
+      device_local_accounts.Append(
+          base::Value::Dict()
+              .Set(kAccountsPrefDeviceLocalAccountsKeyId,
+                   GenerateAccountId(app.package_name()))
+              .Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                   policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP)
+              .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+                   static_cast<int>(
+                       policy::DeviceLocalAccount::EphemeralMode::kUnset))
+              .Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+                   app.package_name())
+              .Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                   app.class_name())
+              .Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                   app.action())
+              .Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+                   app.display_name()));
     }
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,
                                  base::Value(std::move(device_local_accounts)));
@@ -121,10 +119,6 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
     base::Value device_local_accounts(base::Value::Type::LIST);
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,
                                  device_local_accounts);
-  }
-
-  void GetApps(std::vector<const ArcKioskAppData*>* apps) const {
-    manager()->GetAppsForTesting(apps);
   }
 
   ArcKioskAppManager* manager() const { return ArcKioskAppManager::Get(); }
@@ -147,8 +141,7 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     SetApps(init_apps, std::string());
     waiter.Wait(1);
 
-    std::vector<const ArcKioskAppData*> apps;
-    GetApps(&apps);
+    std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app2.package_name(), apps[1]->package_name());
@@ -169,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
 
     EXPECT_TRUE(manager()->GetAutoLaunchAccountId().is_valid());
 
-    std::vector<const ArcKioskAppData*> apps;
-    GetApps(&apps);
+    std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app2.package_name(), apps[1]->package_name());
@@ -191,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     SetApps(new_apps, std::string());
     waiter.Wait(1);
 
-    std::vector<const ArcKioskAppData*> apps;
-    GetApps(&apps);
+    std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app3.package_name(), apps[1]->package_name());
@@ -210,9 +201,7 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     CleanApps();
     waiter.Wait(1);
 
-    std::vector<const ArcKioskAppData*> apps;
-    GetApps(&apps);
-    ASSERT_EQ(0u, apps.size());
+    ASSERT_EQ(0u, manager()->GetAppsForTesting().size());
     EXPECT_FALSE(manager()->GetAutoLaunchAccountId().is_valid());
   }
 }
@@ -226,10 +215,9 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, GetAppByAccountId) {
   SetApps(init_apps, std::string());
 
   // Verify the app data searched by account id.
-  std::vector<const ArcKioskAppData*> apps;
-  GetApps(&apps);
+  std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
   ASSERT_EQ(1u, apps.size());
-  const ArcKioskAppData* app = apps.front();
+  const ArcKioskAppData* app = apps[0];
   const ArcKioskAppData* app_by_account_id =
       manager()->GetAppByAccountId(app->account_id());
   ASSERT_TRUE(app_by_account_id);
@@ -255,10 +243,9 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, UpdateNameAndIcon) {
   SetApps(init_apps, std::string());
 
   // Verify the initialized app data.
-  std::vector<const ArcKioskAppData*> apps;
-  GetApps(&apps);
+  std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
   ASSERT_EQ(1u, apps.size());
-  const ArcKioskAppData* app = apps.front();
+  const ArcKioskAppData* app = apps[0];
   ASSERT_EQ(app->name(), package_name);
   ASSERT_TRUE(app->icon().isNull());
 

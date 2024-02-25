@@ -12,10 +12,12 @@
 #include "mojo/public/cpp/base/big_string_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "net/base/proxy_chain.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/proxy_resolution/proxy_list.h"
+#include "services/network/public/cpp/network_param_mojom_traits.h"
 #include "services/network/public/mojom/proxy_config.mojom-shared.h"
 
 // This file handles the serialization of net::ProxyConfig.
@@ -36,7 +38,9 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyListDataView, net::ProxyList> {
  public:
-  static std::vector<std::string> proxies(const net::ProxyList& r);
+  static const std::vector<net::ProxyChain>& proxies(const net::ProxyList& r) {
+    return r.AllChains();
+  }
   static bool Read(network::mojom::ProxyListDataView data,
                    net::ProxyList* out_proxy_list);
 };
@@ -63,10 +67,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
   }
   static bool reverse_bypass(const net::ProxyConfig::ProxyRules& r) {
     return r.reverse_bypass;
-  }
-  static bool restrict_to_network_service_proxy_allow_list(
-      const net::ProxyConfig::ProxyRules& r) {
-    return r.restrict_to_network_service_proxy_allow_list;
   }
   static net::ProxyConfig::ProxyRules::Type type(
       const net::ProxyConfig::ProxyRules& r) {

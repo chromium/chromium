@@ -15,6 +15,7 @@ mojom("mojom") {
 
   public_deps = [
     "//components/discardable_memory/public/mojom",
+    "//components/viz/service/debugger/mojom",
     "//services/network/public/mojom",
     "//services/viz/privileged/mojom/compositing",
     "//services/viz/privileged/mojom/gl",

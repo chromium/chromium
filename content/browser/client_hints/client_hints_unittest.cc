@@ -58,7 +58,7 @@ class ClientHintsTest : public RenderViewHostImplTestHarness {
         /*document_ukm_source_id=*/ukm::kInvalidSourceId);
   }
 
-  absl::optional<ClientHintsVector> ParseAndPersist(
+  std::optional<ClientHintsVector> ParseAndPersist(
       const GURL& url,
       const net::HttpResponseHeaders* response_header,
       const std::string& accept_ch_str,
@@ -72,7 +72,7 @@ class ClientHintsTest : public RenderViewHostImplTestHarness {
         browser_context(), delegate, frame_tree_node);
   }
 
-  std::string HintsToString(absl::optional<ClientHintsVector> hints) {
+  std::string HintsToString(std::optional<ClientHintsVector> hints) {
     if (!hints)
       return "";
 
@@ -222,8 +222,7 @@ TEST_F(ClientHintsTest, DownlinkRandomized) {
 TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {blink::features::kUserAgentClientHint,
-       blink::features::kClientHintsFormFactor,
+      {blink::features::kClientHintsFormFactor,
        blink::features::kClientHintsPrefersReducedTransparency},
       {});
 
@@ -242,25 +241,25 @@ TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
     std::string description;
     std::string accept_ch_str;
     raw_ptr<FrameTreeNode> frame_tree_node;
-    absl::optional<ClientHintsVector> expect_hints;
+    std::optional<ClientHintsVector> expect_hints;
     ClientHintsVector expect_commit_hints;
   } tests[] = {
       {"Persist hints for main frame", "sec-ch-ua-platform, sec-ch-ua-bitness",
        main_frame_node,
-       absl::make_optional(ClientHintsVector{WebClientHintsType::kUAPlatform,
-                                             WebClientHintsType::kUABitness}),
+       std::make_optional(ClientHintsVector{WebClientHintsType::kUAPlatform,
+                                            WebClientHintsType::kUABitness}),
        ClientHintsVector{WebClientHintsType::kUAPlatform,
                          WebClientHintsType::kUABitness}},
       {"No persist hints for sub frame",
-       "sec-ch-ua-platform, sec-ch-ua-bitness", sub_frame_node, absl::nullopt,
+       "sec-ch-ua-platform, sec-ch-ua-bitness", sub_frame_node, std::nullopt,
        ClientHintsVector{WebClientHintsType::kUAPlatform,
                          WebClientHintsType::kUABitness}},
       {"All client hints for main frame", all_non_origin_trial_hints_pair.first,
        main_frame_node,
-       absl::make_optional(all_non_origin_trial_hints_pair.second),
+       std::make_optional(all_non_origin_trial_hints_pair.second),
        all_non_origin_trial_hints_pair.second},
       {"All client hints for sub frame", all_non_origin_trial_hints_pair.first,
-       sub_frame_node, absl::nullopt, all_non_origin_trial_hints_pair.second},
+       sub_frame_node, std::nullopt, all_non_origin_trial_hints_pair.second},
   };
 
   for (const auto& test : tests) {
@@ -286,10 +285,6 @@ TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
 }
 
 TEST_F(ClientHintsTest, SubFrame) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kUserAgentClientHint},
-                                       {});
-
   GURL url = GURL(ClientHintsTest::kOriginUrl);
   contents()->NavigateAndCommit(url);
   FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
@@ -315,7 +310,7 @@ TEST_F(ClientHintsTest, SubFrame) {
   auto actual_updated_hints = ParseAndPersist(
       url, response_headers.get(), accept_ch_str, sub_frame_node, &delegate);
 
-  EXPECT_EQ(absl::nullopt, actual_updated_hints);
+  EXPECT_EQ(std::nullopt, actual_updated_hints);
   blink::EnabledClientHints current_hints;
   delegate.GetAllowedClientHintsFromSource(url::Origin::Create(url),
                                            &current_hints);

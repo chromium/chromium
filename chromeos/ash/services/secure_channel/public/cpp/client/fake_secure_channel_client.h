@@ -128,7 +128,9 @@ class FakeSecureChannelClient : public SecureChannelClient {
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
-      ConnectionPriority connection_priority) override;
+      ConnectionPriority connection_priority,
+      SecureChannelStructuredMetricsLogger*
+          secure_channel_structured_metrics_logger) override;
   std::unique_ptr<ConnectionAttempt> ListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
@@ -138,7 +140,7 @@ class FakeSecureChannelClient : public SecureChannelClient {
   void SetNearbyConnector(NearbyConnector* nearby_connector) override {}
   void GetLastSeenTimestamp(
       const std::string& remote_device_id,
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) override;
 
  private:
   // First element of pair is remote device, second is local device.

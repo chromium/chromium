@@ -81,7 +81,9 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
 
 #if BUILDFLAG(IS_OZONE)
   // Setup global display::Screen singleton.
-  screen_ = std::make_unique<aura::ScopedScreenOzone>();
+  if (!display::Screen::HasScreen()) {
+    screen_ = std::make_unique<aura::ScreenOzone>();
+  }
 #endif  // BUILDFLAG(IS_OZONE)
 
   ui::PlatformWindowInitProperties properties;

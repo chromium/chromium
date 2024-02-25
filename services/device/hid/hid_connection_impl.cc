@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 
 namespace device {
 
@@ -74,7 +75,7 @@ void HidConnectionImpl::OnRead(ReadCallback callback,
                                scoped_refptr<base::RefCountedBytes> buffer,
                                size_t size) {
   if (!success) {
-    std::move(callback).Run(false, 0, absl::nullopt);
+    std::move(callback).Run(false, 0, std::nullopt);
     return;
   }
   DCHECK(buffer);
@@ -92,7 +93,7 @@ void HidConnectionImpl::Write(uint8_t report_id,
       base::MakeRefCounted<base::RefCountedBytes>(buffer.size() + 1);
   io_buffer->data()[0] = report_id;
 
-  memcpy(io_buffer->front() + 1, buffer.data(), buffer.size());
+  base::ranges::copy(buffer, io_buffer->front() + 1);
 
   hid_connection_->Write(io_buffer, base::BindOnce(&HidConnectionImpl::OnWrite,
                                                    weak_factory_.GetWeakPtr(),
@@ -118,7 +119,7 @@ void HidConnectionImpl::OnGetFeatureReport(
     scoped_refptr<base::RefCountedBytes> buffer,
     size_t size) {
   if (!success) {
-    std::move(callback).Run(false, absl::nullopt);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
   DCHECK(buffer);
@@ -136,7 +137,7 @@ void HidConnectionImpl::SendFeatureReport(uint8_t report_id,
       base::MakeRefCounted<base::RefCountedBytes>(buffer.size() + 1);
   io_buffer->data()[0] = report_id;
 
-  memcpy(io_buffer->front() + 1, buffer.data(), buffer.size());
+  base::ranges::copy(buffer, io_buffer->front() + 1);
 
   hid_connection_->SendFeatureReport(
       io_buffer,

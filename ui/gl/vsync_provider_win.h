@@ -29,6 +29,8 @@ class GL_EXPORT VSyncProviderWin : public gfx::VSyncProvider {
   bool SupportGetVSyncParametersIfAvailable() const override;
   bool IsHWClock() const override;
 
+  bool GetVSyncIntervalIfAvailable(base::TimeDelta* interval);
+
  private:
   gfx::AcceleratedWidget window_;
 };

@@ -5,6 +5,7 @@
 #include "net/tools/quic/synchronous_host_resolver.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -22,7 +23,6 @@
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -70,7 +70,7 @@ void ResolverThread::Run() {
   // tool not used by net/ consumers.
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(scheme_host_port_, NetworkAnonymizationKey(),
-                              NetLogWithSource(), absl::nullopt);
+                              NetLogWithSource(), std::nullopt);
 
   base::RunLoop run_loop;
   rv_ = request->Start(base::BindOnce(&ResolverThread::OnResolutionComplete,

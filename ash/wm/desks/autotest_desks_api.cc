@@ -119,7 +119,7 @@ class ChainedDeskAnimationObserver : public ui::LayerAnimationObserver,
   const bool going_left_;
   const int target_index_;
   base::OnceClosure on_desk_animation_complete_;
-  raw_ptr<ui::Layer, ExperimentalAsh> animation_layer_ = nullptr;
+  raw_ptr<ui::Layer> animation_layer_ = nullptr;
 };
 
 }  // namespace

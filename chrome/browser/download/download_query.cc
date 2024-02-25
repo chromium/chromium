@@ -18,12 +18,12 @@
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "components/download/public/common/download_item.h"
 #include "components/url_formatter/url_formatter.h"
@@ -48,7 +48,7 @@ template<> bool GetAs(const base::Value& in, bool* out) {
 template <>
 bool GetAs(const base::Value& in, double* out) {
   // `GetIfDouble()` incapsulates type verification logic.
-  const absl::optional<double> maybe_value = in.GetIfDouble();
+  const std::optional<double> maybe_value = in.GetIfDouble();
   if (maybe_value.has_value()) {
     *out = maybe_value.value();
     return true;
@@ -95,11 +95,11 @@ int64_t GetEndTimeMsEpoch(const DownloadItem& item) {
 }
 
 std::string GetStartTime(const DownloadItem& item) {
-  return base::TimeToISO8601(item.GetStartTime());
+  return base::TimeFormatAsIso8601(item.GetStartTime());
 }
 
 std::string GetEndTime(const DownloadItem& item) {
-  return base::TimeToISO8601(item.GetEndTime());
+  return base::TimeFormatAsIso8601(item.GetEndTime());
 }
 
 bool GetDangerAccepted(const DownloadItem& item) {

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -100,11 +101,17 @@ enum AppMenuAction {
   MENU_ACTION_SHOW_PAYMENT_METHODS = 78,
   MENU_ACTION_SHOW_ADDRESSES = 79,
   MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE = 80,
-
+  MENU_ACTION_SHOW_SEARCH_COMPANION = 81,
+  MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL = 82,
+  MENU_ACTION_SHOW_PERFORMANCE_SETTINGS = 83,
+  MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL = 84,
+  MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL = 85,
+  MENU_ACTION_SHOW_SAFETY_HUB = 86,
+  MENU_ACTION_SHOW_PASSWORD_CHECKUP = 87,
   LIMIT_MENU_ACTION
 };
 
-enum class AlertMenuItem { kNone, kReopenTabs, kPerformance, kPasswordManager };
+enum class AlertMenuItem { kNone, kPasswordManager };
 
 // Function to record WrenchMenu.MenuAction histogram
 void LogWrenchMenuAction(AppMenuAction action_id);
@@ -119,6 +126,7 @@ class ToolsMenuModel : public ui::SimpleMenuModel {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPerformanceMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChromeLabsMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReadingModeMenuItem);
 
   ToolsMenuModel(ui::SimpleMenuModel::Delegate* delegate, Browser* browser);
 
@@ -163,6 +171,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIncognitoMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordAndAutofillMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordManagerMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowSearchCompanion);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPerformanceMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveAndShareMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCastTitleItem);
 
   // Number of menus within the app menu with an arbitrarily high (variable)
   // number of menu items. For example, the number of bookmarks menu items
@@ -195,6 +207,9 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Runs Build() and registers observers.
   void Init();
 
+  void SetHighlightedIdentifier(
+      ui::ElementIdentifier highlighted_menu_identifier);
+
   // Overridden for ButtonMenuItemModel::Delegate:
   bool DoesCommandIdDismissMenu(int command_id) const override;
 
@@ -203,6 +218,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
   bool IsCommandIdAlerted(int command_id) const override;
+  bool IsElementIdAlerted(ui::ElementIdentifier element_id) const override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 
@@ -234,11 +250,23 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // took to select the command.
   void LogMenuMetrics(int command_id);
 
+  // Logs UMA metrics when the user interacted with a Safety Hub notification
+  // in the menu. When an expected module is provided, the metrics will only be
+  // logged when the module matches the one for which there is an active menu
+  // notification.
+  static void LogSafetyHubInteractionMetrics(
+      safety_hub::SafetyHubModuleType sh_module,
+      int event_flags);
+
  private:
   // Adds actionable global error menu items to the menu.
   // Examples: Extension permissions and sign in errors.
   // Returns a boolean indicating whether any menu items were added.
   bool AddGlobalErrorMenuItems();
+
+  // Adds the Safety Hub menu notifications to the menu. Returns a boolean
+  // indicating whether any menu items were added.
+  [[nodiscard]] bool AddSafetyHubMenuItem();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Disables/Enables the settings item based on kSystemFeaturesDisableList
@@ -273,6 +301,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
   const AlertMenuItem alert_item_;
+
+  ui::ElementIdentifier highlighted_menu_identifier_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_MODEL_H_

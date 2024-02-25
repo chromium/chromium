@@ -6,9 +6,10 @@
 
 #include <lib/zx/vmar.h>
 #include <lib/zx/vmo.h>
+
+#include <bit>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
@@ -25,7 +26,7 @@ namespace {
 
 bool AlignUpToPageSizeChecked(size_t size, size_t* aligned_size) {
   static_assert(base::IsValueInRangeForNumericType<size_t>(ZX_PAGE_SIZE) &&
-                    base::bits::IsPowerOfTwo(ZX_PAGE_SIZE),
+                    std::has_single_bit(ZX_PAGE_SIZE),
                 "The page size must fit in a size_t and be a power of 2.");
   constexpr size_t kPageSizeMinusOne = ZX_PAGE_SIZE - 1;
   base::CheckedNumeric<size_t> aligned_size_checked =
@@ -193,13 +194,13 @@ class FlatlandClientNativePixmapFactory
     }
 
     // Validate that all planes refer to a single memory object.
-    const absl::optional<zx_koid_t> first_plane_koid =
+    const std::optional<zx_koid_t> first_plane_koid =
         base::GetKoid(handle.planes[0].vmo);
     if (!first_plane_koid) {
       return nullptr;
     }
     for (const auto& plane : handle.planes) {
-      const absl::optional<zx_koid_t> plane_koid = base::GetKoid(plane.vmo);
+      const std::optional<zx_koid_t> plane_koid = base::GetKoid(plane.vmo);
       DCHECK(plane.vmo.is_valid() || !plane_koid);
       if (plane_koid != first_plane_koid) {
         return nullptr;

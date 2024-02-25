@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_session_details.h"
+#include "third_party/webrtc/modules/portal/xdg_session_details.h"
 
 namespace remoting::xdg_portal {
 
@@ -44,9 +44,8 @@ class ClipboardPortalInjector {
 
  private:
   void SelectionRead(std::string mime_type);
-  void SelectionWrite();
-  void SelectionWriteDone(
-      const std::unordered_map<int, gboolean>& request_successes);
+  void SelectionWrite(const uint serial);
+  void SelectionWriteDone(const uint serial, const gboolean success);
   void SubscribeClipboardSignals();
   void UnsubscribeSignalHandlers();
 
@@ -91,8 +90,7 @@ class ClipboardPortalInjector {
   std::unordered_set<std::string> writable_mime_type_set_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::string write_data_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unordered_set<guint> write_serials_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  guint write_serial_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   std::unordered_set<std::string> readable_mime_type_set_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

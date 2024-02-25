@@ -60,26 +60,24 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
   CachingWordShapeIterator(const CachingWordShapeIterator&) = delete;
   CachingWordShapeIterator& operator=(const CachingWordShapeIterator&) = delete;
 
-  bool Next(scoped_refptr<const ShapeResult>* word_result) {
+  bool Next(const ShapeResult** word_result) {
     if (!shape_by_word_) {
       if (start_index_)
         return false;
       *word_result = ShapeWord(text_run_, font_);
       start_index_ = 1;
-      return word_result->get();
+      return *word_result;
     }
 
     return NextWord(word_result);
   }
 
  private:
-  scoped_refptr<const ShapeResult>
-  ShapeWordWithoutSpacing(const TextRun&, const Font*);
+  const ShapeResult* ShapeWordWithoutSpacing(const TextRun&, const Font*);
 
-  scoped_refptr<const ShapeResult> ShapeWord(const TextRun&,
-                                             const Font*);
+  const ShapeResult* ShapeWord(const TextRun&, const Font*);
 
-  bool NextWord(scoped_refptr<const ShapeResult>* word_result) {
+  bool NextWord(const ShapeResult** word_result) {
     return ShapeToEndIndex(word_result, NextWordEndIndex());
   }
 
@@ -141,8 +139,7 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     return length;
   }
 
-  bool ShapeToEndIndex(scoped_refptr<const ShapeResult>* result,
-                       unsigned end_index) {
+  bool ShapeToEndIndex(const ShapeResult** result, unsigned end_index) {
     if (!end_index || end_index <= start_index_)
       return false;
 
@@ -156,7 +153,7 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
       *result = ShapeWord(sub_run, font_);
     }
     start_index_ = end_index;
-    return result->get();
+    return result;
   }
 
   unsigned EndIndexUntil(UChar ch) const {

@@ -9,6 +9,7 @@
 #include <shlobj.h>
 #include <windows.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -51,26 +52,12 @@
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
 namespace {
 
 constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
-
-// Allows access to all authenticated users on the machine.
-CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
-  CSecurityDesc sd;
-  CDacl dacl;
-  dacl.AddAllowedAce(Sids::System(), accessmask);
-  dacl.AddAllowedAce(Sids::Admins(), accessmask);
-  dacl.AddAllowedAce(Sids::Interactive(), accessmask);
-
-  sd.SetDacl(dacl);
-  sd.MakeAbsolute();
-  return sd;
-}
 
 }  // namespace
 
@@ -156,11 +143,9 @@ TEST(WinUtil, ShellExecuteAndWait) {
 }
 
 TEST(WinUtil, RunElevated) {
-  // TODO(crbug.com/1314521): Click on UAC prompts in Updater tests that require
-  // elevation
-  if (!::IsUserAnAdmin())
+  if (!::IsUserAnAdmin()) {
     return;
-
+  }
   const base::CommandLine test_process_cmd_line =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
   EXPECT_THAT(RunElevated(test_process_cmd_line.GetProgram(),
@@ -169,39 +154,57 @@ TEST(WinUtil, RunElevated) {
 }
 
 TEST(WinUtil, RunDeElevated_Exe) {
-  if (!::IsUserAnAdmin() || !IsUACOn())
+  if (!::IsUserAnAdmin() || !IsUACOn()) {
     return;
+  }
 
   // Create a shared event to be waited for in this process and signaled in the
   // test process to confirm that the test process is running at medium
   // integrity.
   // The event is created with a security descriptor that allows the medium
   // integrity process to signal it.
-  const std::wstring event_name =
-      base::StrCat({L"WinUtil.RunDeElevated-",
-                    base::NumberToWString(::GetCurrentProcessId())});
-  CSecurityAttributes sa(GetEveryoneDaclSecurityDescriptor(GENERIC_ALL));
-  base::WaitableEvent event(base::win::ScopedHandle(
-      ::CreateEvent(&sa, FALSE, FALSE, event_name.c_str())));
-  ASSERT_NE(event.handle(), nullptr);
+  test::EventHolder event_holder(CreateEveryoneWaitableEventForTest());
+  ASSERT_NE(event_holder.event.handle(), nullptr);
 
   base::CommandLine test_process_cmd_line =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
   test_process_cmd_line.AppendSwitchNative(kTestEventToSignalIfMediumIntegrity,
-                                           event_name);
+                                           event_holder.name);
   EXPECT_HRESULT_SUCCEEDED(
       RunDeElevated(test_process_cmd_line.GetProgram().value(),
                     test_process_cmd_line.GetArgumentsString()));
-  EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
+  EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
 
-  EXPECT_TRUE(test::WaitFor([&]() {
-    return test::FindProcesses(kTestProcessExecutableName).empty();
-  }));
+  EXPECT_TRUE(test::WaitFor(
+      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
+}
+
+TEST(WinUtil, RunDeElevatedCmdLine_Exe) {
+  // Create a shared event to be waited for in this process and signaled in the
+  // test process to confirm that the test process is running at medium
+  // integrity.
+  test::EventHolder event_holder(IsElevatedWithUACOn()
+                                     ? CreateEveryoneWaitableEventForTest()
+                                     : test::CreateWaitableEventForTest());
+  ASSERT_NE(event_holder.event.handle(), nullptr);
+
+  base::CommandLine test_process_cmd_line =
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  test_process_cmd_line.AppendSwitchNative(
+      IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
+                            : kTestEventToSignal,
+      event_holder.name);
+  EXPECT_HRESULT_SUCCEEDED(
+      RunDeElevatedCmdLine(test_process_cmd_line.GetCommandLineString()));
+  EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
+
+  EXPECT_TRUE(test::WaitFor(
+      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
 TEST(WinUtil, GetOSVersion) {
-  absl::optional<OSVERSIONINFOEX> rtl_os_version = GetOSVersion();
-  ASSERT_NE(rtl_os_version, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> rtl_os_version = GetOSVersion();
+  ASSERT_NE(rtl_os_version, std::nullopt);
 
   // Compare to the version from `::GetVersionEx`.
   OSVERSIONINFOEX os = {};
@@ -224,8 +227,8 @@ TEST(WinUtil, GetOSVersion) {
 }
 
 TEST(WinUtil, CompareOSVersions_SameAsCurrent) {
-  absl::optional<OSVERSIONINFOEX> this_os = GetOSVersion();
-  ASSERT_NE(this_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> this_os = GetOSVersion();
+  ASSERT_NE(this_os, std::nullopt);
 
   EXPECT_TRUE(CompareOSVersions(this_os.value(), VER_EQUAL));
   EXPECT_TRUE(CompareOSVersions(this_os.value(), VER_GREATER_EQUAL));
@@ -235,8 +238,8 @@ TEST(WinUtil, CompareOSVersions_SameAsCurrent) {
 }
 
 TEST(WinUtil, CompareOSVersions_NewBuildNumber) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
   ASSERT_GT(prior_os->dwBuildNumber, 0UL);
   --prior_os->dwBuildNumber;
 
@@ -248,8 +251,8 @@ TEST(WinUtil, CompareOSVersions_NewBuildNumber) {
 }
 
 TEST(WinUtil, CompareOSVersions_NewMajor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
   ASSERT_GT(prior_os->dwMajorVersion, 0UL);
   --prior_os->dwMajorVersion;
 
@@ -261,8 +264,8 @@ TEST(WinUtil, CompareOSVersions_NewMajor) {
 }
 
 TEST(WinUtil, CompareOSVersions_NewMinor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
 
   // This test only runs if the current OS has a minor version.
   if (prior_os->dwMinorVersion >= 1) {
@@ -277,8 +280,8 @@ TEST(WinUtil, CompareOSVersions_NewMinor) {
 }
 
 TEST(WinUtil, CompareOSVersions_NewMajorWithLowerMinor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
   ASSERT_GT(prior_os->dwMajorVersion, 0UL);
   --prior_os->dwMajorVersion;
   ++prior_os->dwMinorVersion;
@@ -291,8 +294,8 @@ TEST(WinUtil, CompareOSVersions_NewMajorWithLowerMinor) {
 }
 
 TEST(WinUtil, CompareOSVersions_OldMajor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
   ++prior_os->dwMajorVersion;
 
   EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_EQUAL));
@@ -303,8 +306,8 @@ TEST(WinUtil, CompareOSVersions_OldMajor) {
 }
 
 TEST(WinUtil, CompareOSVersions_OldMajorWithHigherMinor) {
-  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
-  ASSERT_NE(prior_os, absl::nullopt);
+  std::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, std::nullopt);
 
   // This test only runs if the current OS has a minor version.
   if (prior_os->dwMinorVersion >= 1) {
@@ -332,7 +335,7 @@ TEST(WinUtil, EnableProcessHeapMetadataProtection) {
 }
 
 TEST(WinUtil, CreateSecureTempDir) {
-  absl::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
+  std::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
   EXPECT_TRUE(temp_dir);
   EXPECT_TRUE(temp_dir->IsValid());
 }
@@ -527,24 +530,50 @@ TEST(WinUtil, GetAppAPValue) {
   DeleteAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID));
 }
 
-TEST(WinUtil, IsSTA) {
-  base::test::TaskEnvironment task_environment;
+struct WinUtilGetRegKeyContentsTestCase {
+  const std::wstring reg_key;
+  const std::wstring expected_substring;
+};
 
-  // The unit test main has initialized this thread already as an MTA.
-  EXPECT_FALSE(IsSTA());
+class WinUtilGetRegKeyContentsTest
+    : public ::testing::TestWithParam<WinUtilGetRegKeyContentsTestCase> {};
 
-  base::RunLoop run_loop;
-  base::ThreadPool::CreateCOMSTATaskRunner(
-      {base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::SingleThreadTaskRunnerThreadMode::DEDICATED)
-      ->PostTaskAndReply(
-          FROM_HERE, base::BindOnce([] {
-            base::win::ScopedCOMInitializer com_sta;
-            EXPECT_TRUE(IsSTA());
-          }),
-          base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
-  run_loop.Run();
+INSTANTIATE_TEST_SUITE_P(
+    WinUtilGetRegKeyContentsTestCases,
+    WinUtilGetRegKeyContentsTest,
+    ::testing::ValuesIn(std::vector<WinUtilGetRegKeyContentsTestCase>{
+        {L"HKLM\\SOFTWARE\\Classes\\CLSID\\{00020424-0000-0000-C000-"
+         L"000000000046}",
+         L"{00020424-0000-0000-C000-000000000046}"},
+        {L"HKLM\\SOFTWARE\\WOW6432Node\\Classes\\CLSID\\{00020424-0000-0000-"
+         L"C000-000000000046}",
+         L"{00020424-0000-0000-C000-000000000046}"},
+        {L"HKCR\\CLSID\\{00020424-0000-0000-C000-000000000046}",
+         L"{00020424-0000-0000-C000-000000000046}"},
+        {L"HKCR\\WOW6432Node\\CLSID\\{00020424-0000-0000-C000-000000000046}",
+         L"{00020424-0000-0000-C000-000000000046}"},
+    }));
+
+TEST_P(WinUtilGetRegKeyContentsTest, TestCases) {
+  std::optional<std::wstring> contents = GetRegKeyContents(GetParam().reg_key);
+  ASSERT_TRUE(contents);
+  ASSERT_NE(contents->find(GetParam().expected_substring), std::wstring::npos);
+}
+
+TEST(WinUtil, GetTextForSystemError) {
+  EXPECT_EQ(GetTextForSystemError(2),
+            L"The system cannot find the file specified. ");
+  EXPECT_EQ(GetTextForSystemError(0x80070002),
+            L"The system cannot find the file specified. ");
+  EXPECT_EQ(GetTextForSystemError(12007),
+            L"The server name or address could not be resolved ");
+  EXPECT_EQ(GetTextForSystemError(0x80072ee7),
+            L"The server name or address could not be resolved ");
+  EXPECT_EQ(GetTextForSystemError(-2147012889),
+            L"The server name or address could not be resolved ");
+  EXPECT_EQ(
+      GetTextForSystemError(MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x200)),
+      L"0x80040200");
 }
 
 }  // namespace updater

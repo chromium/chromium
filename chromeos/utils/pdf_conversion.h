@@ -5,10 +5,9 @@
 #ifndef CHROMEOS_UTILS_PDF_CONVERSION_H_
 #define CHROMEOS_UTILS_PDF_CONVERSION_H_
 
+#include <optional>
 #include <string>
 #include <vector>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -23,7 +22,7 @@ namespace chromeos {
 bool ConvertJpgImagesToPdf(const std::vector<std::string>& jpg_images,
                            const base::FilePath& file_path,
                            bool rotate_alternate_pages,
-                           absl::optional<int> dpi);
+                           std::optional<int> dpi);
 
 // Converts `jpg_images` to a single PDF, and saved the result into `output`.
 bool ConvertJpgImagesToPdf(const std::vector<std::vector<uint8_t>>& jpg_images,

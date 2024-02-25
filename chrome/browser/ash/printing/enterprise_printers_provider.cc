@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ash/printing/enterprise_printers_provider.h"
 
+#include <iterator>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/hash/md5.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/printing/calculators_policies_binder.h"
@@ -39,14 +43,6 @@ std::vector<std::string> ConvertToVector(const base::Value::List& list) {
     }
   }
   return string_list;
-}
-
-void AddPrintersFromMap(
-    const std::unordered_map<std::string, chromeos::Printer>& printer_map,
-    std::vector<chromeos::Printer>* printer_list) {
-  for (auto& printer_kv : printer_map) {
-    printer_list->push_back(printer_kv.second);
-  }
 }
 
 class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
@@ -135,7 +131,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
     recommended_printers_.clear();
     std::vector<std::string> data = FromPrefs(prefs::kRecommendedPrinters);
     for (const auto& printer_json : data) {
-      absl::optional<base::Value> printer_value = base::JSONReader::Read(
+      std::optional<base::Value> printer_value = base::JSONReader::Read(
           printer_json, base::JSON_ALLOW_TRAILING_COMMAS);
       if (!printer_value.has_value() || !printer_value.value().is_dict()) {
         LOG(WARNING) << "Ignoring invalid printer.  Invalid JSON object: "
@@ -195,30 +191,39 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
 
   void RecalculateCurrentPrintersList() {
     complete_ = true;
-    std::vector<chromeos::Printer> current_printers;
-    AddPrintersFromMap(recommended_printers_, &current_printers);
+
+    // Enterprise printers from user policy, device policy, as well as printers
+    // from the legacy `Printers` policy.
+    std::unordered_map<std::string, chromeos::Printer> all_printers =
+        recommended_printers_;
 
     if (device_printers_) {
       complete_ = complete_ && device_printers_is_complete_;
-      const auto& printers = device_printers_->GetPrinters();
+      std::unordered_map<std::string, chromeos::Printer> printers =
+          device_printers_->GetPrinters();
       PRINTER_LOG(DEBUG)
           << "EnterprisePrintersProvider::RecalculateCurrentPrintersList()"
           << "-device-printers: complete=" << device_printers_is_complete_
           << " count=" << printers.size();
-      AddPrintersFromMap(printers, &current_printers);
+
+      all_printers.merge(std::move(printers));
     }
     if (user_printers_) {
       complete_ = complete_ && user_printers_is_complete_;
-      const auto& printers = user_printers_->GetPrinters();
+      std::unordered_map<std::string, chromeos::Printer> printers =
+          user_printers_->GetPrinters();
       PRINTER_LOG(DEBUG)
           << "EnterprisePrintersProvider::RecalculateCurrentPrintersList()"
           << "-user-printers: complete=" << user_printers_is_complete_
           << " count=" << printers.size();
-      AddPrintersFromMap(printers, &current_printers);
+      all_printers.merge(std::move(printers));
     }
 
-    // Save current_printers.
-    printers_.swap(current_printers);
+    // Update `printers_` with the recalculated result.
+    printers_.clear();
+    printers_.reserve(all_printers.size());
+    base::ranges::transform(all_printers, std::back_inserter(printers_),
+                            [](const auto& p) { return p.second; });
 
     for (auto& observer : observers_) {
       observer.OnPrintersChanged(complete_, printers_);
@@ -275,7 +280,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
   std::unique_ptr<CalculatorsPoliciesBinder> profile_binder_;
 
   // Profile (user) settings.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   AccountId account_id_;
   PrefChangeRegistrar pref_change_registrar_;
 

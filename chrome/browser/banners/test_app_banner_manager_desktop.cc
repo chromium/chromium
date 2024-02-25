@@ -13,11 +13,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "chrome/browser/webapps/webapps_client_desktop.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -29,24 +31,6 @@ TestAppBannerManagerDesktop::TestAppBannerManagerDesktop(
   // Ensure no real instance exists. This must be the only instance to avoid
   // observers of AppBannerManager left observing the wrong one.
   DCHECK_EQ(AppBannerManagerDesktop::FromWebContents(web_contents), nullptr);
-
-  // Create default responses for the ML system.
-  segmentation_platform_service_ = std::make_unique<
-      segmentation_platform::MockSegmentationPlatformService>();
-  segmentation_platform::ClassificationResult result(
-      segmentation_platform::PredictionStatus::kSucceeded);
-  result.ordered_labels.push_back("DontShow");
-  ON_CALL(*segmentation_platform_service_,
-          GetClassificationResult(
-              segmentation_platform::kWebAppInstallationPromoKey, testing::_,
-              testing::_, base::test::IsNotNullCallback()))
-      .WillByDefault(base::test::RunOnceCallback<3>(result));
-  ON_CALL(*segmentation_platform_service_,
-          CollectTrainingData(
-              segmentation_platform::proto::SegmentId::
-                  OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO,
-              testing::_, testing::_, base::test::IsNotNullCallback()))
-      .WillByDefault(base::test::RunOnceCallback<3>(true));
 }
 
 TestAppBannerManagerDesktop::~TestAppBannerManagerDesktop() = default;
@@ -59,6 +43,7 @@ static std::unique_ptr<AppBannerManagerDesktop> CreateTestAppBannerManager(
 void TestAppBannerManagerDesktop::SetUp() {
   AppBannerManagerDesktop::override_app_banner_manager_desktop_for_testing_ =
       CreateTestAppBannerManager;
+  WebappsClientDesktop::CreateSingleton();
 }
 
 TestAppBannerManagerDesktop* TestAppBannerManagerDesktop::FromWebContents(
@@ -103,11 +88,6 @@ void TestAppBannerManagerDesktop::AwaitAppInstall() {
   loop.Run();
 }
 
-segmentation_platform::MockSegmentationPlatformService*
-TestAppBannerManagerDesktop::GetMockSegmentationPlatformService() {
-  return segmentation_platform_service_.get();
-}
-
 void TestAppBannerManagerDesktop::OnDidGetManifest(
     const InstallableData& result) {
   debug_log_.Append("OnDidGetManifest");
@@ -146,11 +126,6 @@ void TestAppBannerManagerDesktop::RecheckInstallabilityForLoadedPage() {
   AppBannerManagerDesktop::RecheckInstallabilityForLoadedPage();
 }
 
-segmentation_platform::SegmentationPlatformService*
-TestAppBannerManagerDesktop::GetSegmentationPlatformService() {
-  return segmentation_platform_service_.get();
-}
-
 TestAppBannerManagerDesktop*
 TestAppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
   return this;
@@ -163,7 +138,7 @@ void TestAppBannerManagerDesktop::OnInstall(blink::mojom::DisplayMode display) {
 }
 
 void TestAppBannerManagerDesktop::DidFinishCreatingWebApp(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   AppBannerManagerDesktop::DidFinishCreatingWebApp(app_id, code);
   OnFinished();

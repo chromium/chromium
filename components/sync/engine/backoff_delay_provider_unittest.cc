@@ -6,9 +6,10 @@
 
 #include <memory>
 
-#include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
 #include "components/sync/engine/polling_constants.h"
+#include "components/sync/engine/sync_protocol_error.h"
+#include "components/sync/engine/syncer_error.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,30 +43,28 @@ TEST(BackoffDelayProviderTest, GetInitialDelay) {
 
   state.last_get_key_failed = false;
   state.last_download_updates_result =
-      SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
+      SyncerError::ProtocolError(MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
-      SyncerError::NetworkConnectionUnavailable(net::ERR_FAILED);
+      SyncerError::NetworkError(net::ERR_FAILED);
   EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
-      SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR);
+      SyncerError::ProtocolError(TRANSIENT_ERROR);
   EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
-  state.last_download_updates_result =
-      SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+  state.last_download_updates_result = SyncerError::ProtocolViolationError();
   EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
-  state.last_download_updates_result = SyncerError(SyncerError::SYNCER_OK);
-  state.commit_result = SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
+  state.last_download_updates_result = SyncerError::Success();
+  state.commit_result = SyncerError::ProtocolError(MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
-  state.commit_result =
-      SyncerError::NetworkConnectionUnavailable(net::ERR_FAILED);
+  state.commit_result = SyncerError::NetworkError(net::ERR_FAILED);
   EXPECT_EQ(kInitialBackoffRetryTime, delay->GetInitialDelay(state));
 
-  state.commit_result = SyncerError(SyncerError::SERVER_RETURN_CONFLICT);
+  state.commit_result = SyncerError::ProtocolError(CONFLICT);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 }
 
@@ -78,22 +77,21 @@ TEST(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
 
   state.last_get_key_failed = false;
   state.last_download_updates_result =
-      SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
+      SyncerError::ProtocolError(MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
   state.last_download_updates_result =
-      SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR);
+      SyncerError::ProtocolError(TRANSIENT_ERROR);
   EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
 
-  state.last_download_updates_result =
-      SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+  state.last_download_updates_result = SyncerError::ProtocolViolationError();
   EXPECT_EQ(kInitialBackoffShortRetryTime, delay->GetInitialDelay(state));
 
-  state.last_download_updates_result = SyncerError(SyncerError::SYNCER_OK);
-  state.commit_result = SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
+  state.last_download_updates_result = SyncerError::Success();
+  state.commit_result = SyncerError::ProtocolError(MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 
-  state.commit_result = SyncerError(SyncerError::SERVER_RETURN_CONFLICT);
+  state.commit_result = SyncerError::ProtocolError(CONFLICT);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 }
 

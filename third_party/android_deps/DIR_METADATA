@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "Tools"
 }
-
 os: ANDROID
+buganizer_public: {
+  component_id: 1456784
+}

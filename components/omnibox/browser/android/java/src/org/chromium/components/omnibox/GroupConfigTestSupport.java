@@ -34,6 +34,13 @@ public class GroupConfigTestSupport {
                     .setRenderType(GroupConfig.RenderType.HORIZONTAL)
                     .build();
 
+    /** Query Tiles group, with no header text and horizontal layout direction. */
+    public static GroupConfig SECTION_QUERY_TILES =
+            GroupConfig.newBuilder()
+                    .setSection(GroupSection.SECTION_MOBILE_QUERY_TILES)
+                    .setRenderType(GroupConfig.RenderType.HORIZONTAL)
+                    .build();
+
     /** Suggestions with no headers, section 1. */
     public static GroupConfig SECTION_1_NO_HEADER =
             buildGroupConfig(GroupSection.SECTION_REMOTE_ZPS_1, "");

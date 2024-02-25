@@ -8,7 +8,9 @@
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
@@ -18,11 +20,10 @@ namespace {
 
 void BindMultiDeviceSetup(
     Profile* profile,
-    mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
+    mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
         receiver) {
-  ash::multidevice_setup::MultiDeviceSetupService* service =
-      ash::multidevice_setup::MultiDeviceSetupServiceFactory::GetForProfile(
-          profile);
+  multidevice_setup::MultiDeviceSetupService* service =
+      multidevice_setup::MultiDeviceSetupServiceFactory::GetForProfile(profile);
   if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
   }
@@ -31,20 +32,35 @@ void BindMultiDeviceSetup(
 }  // namespace
 
 ProximityAuthUIConfig::ProximityAuthUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  ash::multidevice::kChromeUIProximityAuthHost) {}
+    : WebUIConfig(content::kChromeUIScheme, kChromeUIProximityAuthHost) {}
 
 bool ProximityAuthUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return !Profile::FromBrowserContext(browser_context)->IsOffTheRecord();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile) {
+    return false;
+  }
+
+  // Guest/incognito/signin profiles should not access chrome://proximity-auth.
+  if (IsSigninBrowserContext(profile) || profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Likewise, kiosk users are ineligible.
+  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
+    return false;
+  }
+
+  return device_sync::DeviceSyncClientFactory::GetForProfile(profile) !=
+         nullptr;
 }
 
 std::unique_ptr<content::WebUIController>
 ProximityAuthUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                              const GURL& url) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  return std::make_unique<ash::multidevice::ProximityAuthUI>(
-      web_ui, ash::device_sync::DeviceSyncClientFactory::GetForProfile(profile),
+  return std::make_unique<ProximityAuthUI>(
+      web_ui, device_sync::DeviceSyncClientFactory::GetForProfile(profile),
       base::BindRepeating(&BindMultiDeviceSetup, profile));
 }
 

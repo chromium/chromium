@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
+#include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -36,9 +37,10 @@ class DisplayLockContext;
 class ContainerQueryData;
 class ResizeObserver;
 class ResizeObservation;
+class StyleScopeData;
 class CustomElementDefinition;
 class PopoverData;
-class CSSToggleMap;
+class OutOfFlowData;
 class HTMLElement;
 
 enum class ElementFlags;
@@ -84,18 +86,20 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kResizeObserverData = 17,
     kCustomElementDefinition = 18,
     kPopoverData = 19,
-    kToggleMap = 20,
-    kPartNamesMap = 21,
-    kNonce = 22,
-    kIsValue = 23,
-    kSavedLayerScrollOffset = 24,
-    kAnchorPositionScrollData = 25,
-    kAnchorElementObserver = 26,
-    kImplicitlyAnchoredElementCount = 27,
-    kLastRememberedBlockSize = 28,
-    kLastRememberedInlineSize = 29,
+    kPartNamesMap = 20,
+    kNonce = 21,
+    kIsValue = 22,
+    kSavedLayerScrollOffset = 23,
+    kAnchorPositionScrollData = 24,
+    kAnchorElementObserver = 25,
+    kImplicitlyAnchoredElementCount = 26,
+    kLastRememberedBlockSize = 27,
+    kLastRememberedInlineSize = 28,
+    kRestrictionTargetId = 29,
+    kStyleScopeData = 30,
+    kOutOfFlowData = 31,
 
-    kNumFields = 30,
+    kNumFields = 32,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -155,7 +159,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   }
 
   template <typename T>
-  void SetOptionalField(FieldId field_id, absl::optional<T> data) {
+  void SetOptionalField(FieldId field_id, std::optional<T> data) {
     if (data) {
       SetWrappedField<T>(field_id, *data);
     } else {
@@ -164,11 +168,11 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   }
 
   template <typename T>
-  absl::optional<T> GetOptionalField(FieldId field_id) const {
+  std::optional<T> GetOptionalField(FieldId field_id) const {
     if (auto* value = GetWrappedField<T>(field_id)) {
       return *value;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  public:
@@ -250,11 +254,26 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   ContainerQueryData* GetContainerQueryData() const;
   void ClearContainerQueryData();
 
+  StyleScopeData& EnsureStyleScopeData();
+  StyleScopeData* GetStyleScopeData() const;
+
+  OutOfFlowData& EnsureOutOfFlowData();
+  OutOfFlowData* GetOutOfFlowData() const;
+
   // Returns the crop-ID if one was set, or nullptr otherwise.
   const RegionCaptureCropId* GetRegionCaptureCropId() const;
   // Sets a crop-ID on the item. Must be called at most once. Cannot be used
   // to unset a previously set crop-ID.
   void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id);
+
+  // Returns the ID backing a RestrictionTarget if one was set on the Element,
+  // or nullptr otherwise.
+  const RestrictionTargetId* GetRestrictionTargetId() const;
+  // Returns the ID backing a RestrictionTarget if one was set on the Element,
+  // or nullptr otherwise.
+  // Sets an ID backing a RestrictionTarget associated with the Element.
+  // Must be called at most once. Cannot be used to unset a previously set IDs.
+  void SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id);
 
   using ResizeObserverDataMap =
       HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>;
@@ -264,17 +283,14 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetCustomElementDefinition(CustomElementDefinition* definition);
   CustomElementDefinition* GetCustomElementDefinition() const;
 
-  void SetLastRememberedBlockSize(absl::optional<LayoutUnit> size);
-  void SetLastRememberedInlineSize(absl::optional<LayoutUnit> size);
-  absl::optional<LayoutUnit> LastRememberedBlockSize() const;
-  absl::optional<LayoutUnit> LastRememberedInlineSize() const;
+  void SetLastRememberedBlockSize(std::optional<LayoutUnit> size);
+  void SetLastRememberedInlineSize(std::optional<LayoutUnit> size);
+  std::optional<LayoutUnit> LastRememberedBlockSize() const;
+  std::optional<LayoutUnit> LastRememberedInlineSize() const;
 
   PopoverData* GetPopoverData() const;
   PopoverData& EnsurePopoverData();
   void RemovePopoverData();
-
-  CSSToggleMap* GetToggleMap() const;
-  CSSToggleMap& EnsureToggleMap(Element* owner_element);
 
   bool HasElementFlag(ElementFlags mask) const {
     return element_flags_ & static_cast<uint16_t>(mask);
@@ -370,6 +386,14 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetAncestorsOrSiblingsAffectedByHoverInHas() {
     has_invalidation_flags_.ancestors_or_siblings_affected_by_hover_in_has =
         true;
+  }
+  bool AncestorsOrSiblingsAffectedByActiveViewTransitionInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_active_view_transition_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByActiveViewTransitionInHas() {
+    has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_active_view_transition_in_has = true;
   }
   bool AncestorsOrSiblingsAffectedByActiveInHas() const {
     return has_invalidation_flags_

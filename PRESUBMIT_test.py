@@ -1470,96 +1470,6 @@ class CheckNoDownstreamDepsTest(unittest.TestCase):
                      'Expected %d items, found %d: %s'
                      % (0, len(msgs), msgs))
 
-class AndroidDeprecatedJUnitFrameworkTest(unittest.TestCase):
-  def testCheckAndroidTestJUnitFramework(self):
-    mock_input_api = MockInputApi()
-    mock_output_api = MockOutputApi()
-
-    mock_input_api.files = [
-        MockAffectedFile('LalaLand.java', [
-          'random stuff'
-        ]),
-        MockAffectedFile('CorrectUsage.java', [
-          'import org.junit.ABC',
-          'import org.junit.XYZ;',
-        ]),
-        MockAffectedFile('UsedDeprecatedJUnit.java', [
-          'import junit.framework.*;',
-        ]),
-        MockAffectedFile('UsedDeprecatedJUnitAssert.java', [
-          'import junit.framework.Assert;',
-        ]),
-    ]
-    msgs = PRESUBMIT._CheckAndroidTestJUnitFrameworkImport(
-        mock_input_api, mock_output_api)
-    self.assertEqual(1, len(msgs),
-                     'Expected %d items, found %d: %s'
-                     % (1, len(msgs), msgs))
-    self.assertEqual(2, len(msgs[0].items),
-                     'Expected %d items, found %d: %s'
-                     % (2, len(msgs[0].items), msgs[0].items))
-    self.assertTrue('UsedDeprecatedJUnit.java:1' in msgs[0].items,
-                    'UsedDeprecatedJUnit.java not found in errors')
-    self.assertTrue('UsedDeprecatedJUnitAssert.java:1'
-                    in msgs[0].items,
-                    'UsedDeprecatedJUnitAssert not found in errors')
-
-
-class AndroidJUnitBaseClassTest(unittest.TestCase):
-  def testCheckAndroidTestJUnitBaseClass(self):
-    mock_input_api = MockInputApi()
-    mock_output_api = MockOutputApi()
-
-    mock_input_api.files = [
-        MockAffectedFile('LalaLand.java', [
-          'random stuff'
-        ]),
-        MockAffectedFile('CorrectTest.java', [
-          '@RunWith(ABC.class);'
-          'public class CorrectTest {',
-          '}',
-        ]),
-        MockAffectedFile('HistoricallyIncorrectTest.java', [
-          'public class Test extends BaseCaseA {',
-          '}',
-        ], old_contents=[
-          'public class Test extends BaseCaseB {',
-          '}',
-        ]),
-        MockAffectedFile('CorrectTestWithInterface.java', [
-          '@RunWith(ABC.class);'
-          'public class CorrectTest implement Interface {',
-          '}',
-        ]),
-        MockAffectedFile('IncorrectTest.java', [
-          'public class IncorrectTest extends TestCase {',
-          '}',
-        ]),
-        MockAffectedFile('IncorrectWithInterfaceTest.java', [
-          'public class Test implements X extends BaseClass {',
-          '}',
-        ]),
-        MockAffectedFile('IncorrectMultiLineTest.java', [
-          'public class Test implements X, Y, Z',
-          '        extends TestBase {',
-          '}',
-        ]),
-    ]
-    msgs = PRESUBMIT._CheckAndroidTestJUnitInheritance(
-        mock_input_api, mock_output_api)
-    self.assertEqual(1, len(msgs),
-                     'Expected %d items, found %d: %s'
-                     % (1, len(msgs), msgs))
-    self.assertEqual(3, len(msgs[0].items),
-                     'Expected %d items, found %d: %s'
-                     % (3, len(msgs[0].items), msgs[0].items))
-    self.assertTrue('IncorrectTest.java:1' in msgs[0].items,
-                    'IncorrectTest not found in errors')
-    self.assertTrue('IncorrectWithInterfaceTest.java:1'
-                    in msgs[0].items,
-                    'IncorrectWithInterfaceTest not found in errors')
-    self.assertTrue('IncorrectMultiLineTest.java:2' in msgs[0].items,
-                    'IncorrectMultiLineTest not found in errors')
 
 class AndroidDebuggableBuildTest(unittest.TestCase):
 
@@ -2890,7 +2800,7 @@ class BannedTypeCheckTest(unittest.TestCase):
       MockFile('some/java/problematic/requestlayout.java',
                ['requestLayout();']),
       MockFile('some/java/problematic/lastprofile.java',
-               ['Profile.getLastUsedRegularProfile();']),
+               ['ProfileManager.getLastUsedRegularProfile();']),
       MockFile('some/java/problematic/getdrawable1.java',
                ['ResourcesCompat.getDrawable();']),
       MockFile('some/java/problematic/getdrawable2.java',
@@ -3389,6 +3299,23 @@ class StringTest(unittest.TestCase):
              </release>
            </grit>
         """.splitlines()
+  # A grd file with multiple ICU syntax messages without syntax errors.
+  NEW_GRD_CONTENTS_ICU_SYNTAX_OK3 = """<?xml version="1.0" encoding="UTF-8"?>
+           <grit latest_public_release="1" current_release="1">
+             <release seq="1">
+               <messages>
+                 <message name="IDS_TEST1">
+                   {NUM, plural,
+                    =0 {New test text for numeric zero}
+                    =1 {Different test text for numeric one}
+                    =2 {New test text for numeric two}
+                    =3 {New test text for numeric three}
+                    other {Different test text for plural with {NUM} as number}}
+                 </message>
+               </messages>
+             </release>
+           </grit>
+        """.splitlines()
   # A grd file with one ICU syntax message with syntax errors (misses a comma).
   NEW_GRD_CONTENTS_ICU_SYNTAX_ERROR = """<?xml version="1.0" encoding="UTF-8"?>
            <grit latest_public_release="1" current_release="1">
@@ -3481,9 +3408,22 @@ class StringTest(unittest.TestCase):
             'other {Different test text for plural with {NUM} as number}}',
         '</message>',
     '</grit-part>')
+  # A grdp file with multiple ICU syntax messages without syntax errors.
+  NEW_GRDP_CONTENTS_ICU_SYNTAX_OK3 = (
+    '<?xml version="1.0" encoding="utf-8"?>',
+      '<grit-part>',
+        '<message name="IDS_PART_TEST1">',
+           '{NUM, plural,',
+            '=0 {New test text for numeric zero}',
+            '=1 {Different test text for numeric one}',
+            '=2 {New test text for numeric two}',
+            '=3 {New test text for numeric three}',
+            'other {Different test text for plural with {NUM} as number}}',
+        '</message>',
+    '</grit-part>')
 
-  # A grdp file with one ICU syntax message with syntax errors (superfluent
-  # whitespace).
+  # A grdp file with one ICU syntax message with syntax errors (superfluous
+  # space).
   NEW_GRDP_CONTENTS_ICU_SYNTAX_ERROR = (
     '<?xml version="1.0" encoding="utf-8"?>',
       '<grit-part>',
@@ -3882,6 +3822,18 @@ class StringTest(unittest.TestCase):
       MockAffectedFile('test.grd', self.NEW_GRD_CONTENTS_ICU_SYNTAX_OK2,
                        self.NEW_GRD_CONTENTS_ICU_SYNTAX_OK1, action='M'),
       MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS_ICU_SYNTAX_OK2,
+                       self.NEW_GRDP_CONTENTS_ICU_SYNTAX_OK1, action='M')])
+    results = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
+    # We expect no ICU syntax errors.
+    icu_errors = [e for e in results
+        if e.message == self.ICU_SYNTAX_ERROR_MESSAGE]
+    self.assertEqual(0, len(icu_errors))
+
+    # Valid changes in ICU syntax. Should not raise an error.
+    input_api = self.makeInputApi([
+      MockAffectedFile('test.grd', self.NEW_GRD_CONTENTS_ICU_SYNTAX_OK3,
+                       self.NEW_GRD_CONTENTS_ICU_SYNTAX_OK1, action='M'),
+      MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS_ICU_SYNTAX_OK3,
                        self.NEW_GRDP_CONTENTS_ICU_SYNTAX_OK1, action='M')])
     results = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     # We expect no ICU syntax errors.
@@ -4716,8 +4668,9 @@ class CheckRawPtrUsageTest(unittest.TestCase):
         # Non-C++ files are allowed.
         MockAffectedFile('test20/renderer/foo.md', ['raw_ptr<int>']),
 
-        # Mentions in a comment are allowed.
-        MockAffectedFile('test30/renderer/foo.cc', ['//raw_ptr<int>']),
+        # Renderer code is generally allowed (except specifically
+        # disallowed directories).
+        MockAffectedFile('test30/renderer/foo.cc', ['raw_ptr<int>']),
     ]
     mock_output_api = MockOutputApi()
     errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
@@ -4726,18 +4679,53 @@ class CheckRawPtrUsageTest(unittest.TestCase):
   def testDisallowedCases(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-        MockAffectedFile('test1/renderer/foo.h', ['raw_ptr<int>']),
-        MockAffectedFile('test2/renderer/foo.cc', ['raw_ptr<int>']),
-        MockAffectedFile('test3/blink/public/web/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test1/third_party/blink/renderer/core/foo.h',
+                         ['raw_ptr<int>']),
+        MockAffectedFile(
+            'test2/third_party/blink/renderer/platform/heap/foo.cc',
+            ['raw_ptr<int>']),
+        MockAffectedFile(
+            'test3/third_party/blink/renderer/platform/wtf/foo.cc',
+            ['raw_ptr<int>']),
+        MockAffectedFile('test4/blink/public/web/foo.cc', ['raw_ptr<int>']),
     ]
     mock_output_api = MockOutputApi()
     errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
     self.assertEqual(len(mock_input_api.files), len(errors))
     for error in errors:
       self.assertTrue(
-          'raw_ptr<T> should not be used in Renderer-only code' in
+          'raw_ptr<T> should not be used in this renderer code' in
           error.message)
 
+class CheckAdvancedMemorySafetyChecksUsageTest(unittest.TestCase):
+  def testAllowedCases(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        # Non-C++ files are allowed.
+        MockAffectedFile(
+          'test20/renderer/foo.md', ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+
+        # Mentions in a comment are allowed.
+        MockAffectedFile(
+          'test30/renderer/foo.cc', ['//ADVANCED_MEMORY_SAFETY_CHECKS()']),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckAdvancedMemorySafetyChecksUsage(
+      mock_input_api, mock_output_api)
+    self.assertFalse(errors)
+
+  def testDisallowedCases(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('test1/foo.h', ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+        MockAffectedFile('test2/foo.cc', ['ADVANCED_MEMORY_SAFETY_CHECKS()']),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckAdvancedMemorySafetyChecksUsage(mock_input_api, mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertTrue(
+        'ADVANCED_MEMORY_SAFETY_CHECKS() macro is managed by' in
+        errors[0].message)
 
 class AssertPythonShebangTest(unittest.TestCase):
     def testError(self):
@@ -4878,8 +4866,7 @@ class CheckMockAnnotation(unittest.TestCase):
             MockFile('path/OneTest.java', [
                 'import a.b.c.Bar;',
                 'import a.b.c.Foo;',
-                '@Mock',
-                'public static Foo f = new Foo();',
+                '@Mock public static Foo f = new Foo();',
                 'Mockito.mock(new Bar(a, b, c))'
             ]),
             MockFile('path/TwoTest.java', [
@@ -4928,7 +4915,8 @@ class CheckMockAnnotation(unittest.TestCase):
                 'package a.b.c;',
                 '@Mock',
                 'public static Baz<abc> b;',
-                'Mockito.mock(Baz.class)']),
+                'Mockito.mock(Baz.class)'
+            ]),
             MockFile('path/SixTest.java', [
                 'package a.b.c;',
                 'import android.view.View;',
@@ -4936,35 +4924,20 @@ class CheckMockAnnotation(unittest.TestCase):
                 'Mockito.spy(new View())',
                 'Mockito.mock(ArrayList.class)'
             ]),
+            MockFile('path/SevenTest.java', [
+                'package a.b.c;',
+                '@Mock private static Seven s;',
+                'Mockito.mock(Seven.class)'
+            ]),
+            MockFile('path/EightTest.java', [
+                'package a.b.c;',
+                '@Spy Eight e = new Eight2();',
+                'Mockito.py(new Eight())'
+            ]),
         ]
         errors = PRESUBMIT.CheckMockAnnotation(mock_input, MockOutputApi())
         self.assertEqual(0, len(errors))
 
-
-class LayoutInTestsTest(unittest.TestCase):
-  def testLayoutInTest(self):
-    mock_input = MockInputApi()
-    mock_input.files = [
-        MockFile('path/to/foo_unittest.cc',
-                 ['  foo->Layout();', '  bar.Layout();']),
-    ]
-    errors = PRESUBMIT.CheckNoLayoutCallsInTests(mock_input, MockOutputApi())
-    self.assertNotEqual(0, len(errors))
-
-  def testNoTriggerOnLayoutOverride(self):
-    mock_input = MockInputApi();
-    mock_input.files = [
-        MockFile('path/to/foo_unittest.cc',
-                 ['class TestView: public views::View {',
-                  ' public:',
-                  '  void Layout(); override {',
-                  '    views::View::Layout();',
-                  '    // perform bespoke layout',
-                  '  }',
-                  '};'])
-    ]
-    errors = PRESUBMIT.CheckNoLayoutCallsInTests(mock_input, MockOutputApi())
-    self.assertEqual(0, len(errors))
 
 class AssertNoJsInIosTest(unittest.TestCase):
     def testErrorJs(self):
@@ -5049,6 +5022,293 @@ class CheckNoAbbreviationInPngFileNameTest(unittest.TestCase):
     ]
     results = PRESUBMIT.CheckNoAbbreviationInPngFileName(input_api, MockOutputApi())
     self.assertEqual(0, len(results))
+
+class CheckDanglingUntriagedTest(unittest.TestCase):
+  def testError(self):
+    """Test patch adding dangling pointers are reported"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.change.DescriptionText = lambda: "description"
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents=["raw_ptr<T>"],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
+      )
+    ]
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api, mock_output_api)
+    self.assertEqual(len(msgs), 1)
+    self.assertEqual(len(msgs[0].message), 10)
+    self.assertEqual(
+      msgs[0].message[0],
+      "Unexpected new occurrences of `DanglingUntriaged` detected. Please",
+    )
+
+class CheckDanglingUntriagedTest(unittest.TestCase):
+  def testError(self):
+    """Test patch adding dangling pointers are reported"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.change.DescriptionText = lambda: "description"
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents=["raw_ptr<T>"],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
+      )
+    ]
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 1)
+    self.assertTrue(("Unexpected new occurrences of `DanglingUntriaged` detected"
+                    in msgs[0].message))
+
+  def testNonCppFile(self):
+    """Test patch adding dangling pointers are not reported in non C++ files"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.change.DescriptionText = lambda: "description"
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/README.md",
+        old_contents=[""],
+        new_contents=["The DanglingUntriaged annotation means"],
+      )
+    ]
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 0)
+
+  def testDeveloperAcknowledgeInCommitDescription(self):
+    """Test patch adding dangling pointers, but acknowledged by the developers
+    aren't reported"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents=["raw_ptr<T>"],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
+      )
+    ]
+    mock_input_api.change.DescriptionText = lambda: (
+      "DanglingUntriaged-notes: Sorry about this!")
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 0)
+
+  def testDeveloperAcknowledgeInCommitFooter(self):
+    """Test patch adding dangling pointers, but acknowledged by the developers
+    aren't reported"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents=["raw_ptr<T>"],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
+      )
+    ]
+    mock_input_api.change.DescriptionText = lambda: "description"
+    mock_input_api.change.footers["DanglingUntriaged-notes"] = ["Sorry!"]
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 0)
+
+  def testCongrats(self):
+    """Test the presubmit congrats users removing dangling pointers"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents=["raw_ptr<T, DanglingUntriaged>"],
+        new_contents=["raw_ptr<T>"],
+      )
+    ]
+    mock_input_api.change.DescriptionText = lambda: (
+      "This patch fixes some DanglingUntriaged pointers!")
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 1)
+    self.assertTrue(
+      "DanglingUntriaged pointers removed: 1" in msgs[0].message)
+    self.assertTrue("Thank you!" in msgs[0].message)
+
+  def testRenameFile(self):
+    """Patch that we do not warn about DanglingUntriaged when moving files"""
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+
+    mock_input_api.files = [
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents=["raw_ptr<T, DanglingUntriaged>"],
+        new_contents=[""],
+        action="D",
+      ),
+      MockAffectedFile(
+        local_path="foo/foo.cc",
+        old_contents=[""],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
+        action="A",
+      ),
+    ]
+    mock_input_api.change.DescriptionText = lambda: (
+      "This patch moves files")
+    msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                        mock_output_api)
+    self.assertEqual(len(msgs), 0)
+
+class CheckInlineConstexprDefinitionsInHeadersTest(unittest.TestCase):
+  def testNoInlineConstexprInHeaderFile(self):
+    """Tests that non-inlined constexpr variables in headers fail the test."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr int kVersion = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInHeaderFileInitializedFromFunction(self):
+    """Tests that non-inlined constexpr header variables that are initialized from a function fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr int kVersion = GetVersion();'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInHeaderFileInitializedWithExpression(self):
+    """Tests that non-inlined constexpr header variables initialized with an expression fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr int kVersion = (4 + 5)*3;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInHeaderFileBraceInitialized(self):
+    """Tests that non-inlined constexpr header variables that are brace-initialized fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr int kVersion{5};'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInHeaderWithAttribute(self):
+    """Tests that non-inlined constexpr header variables that have compiler attributes fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr [[maybe_unused]] int kVersion{5};'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testInlineConstexprInHeaderWithAttribute(self):
+    """Tests that inlined constexpr header variables that have compiler attributes pass."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['inline constexpr [[maybe_unused]] int kVersion{5};']),
+      MockAffectedFile('src/constants.h', ['constexpr inline [[maybe_unused]] int kVersion{5};']),
+      MockAffectedFile('src/constants.h', ['inline constexpr [[maybe_unused]] inline int kVersion{5};'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testNoInlineConstexprInHeaderFileMultipleLines(self):
+    """Tests that non-inlined constexpr header variable definitions spanning multiple lines fail."""
+    input_api = MockInputApi()
+    lines = ['constexpr char kLongName =',
+             '    "This is a very long name of something.";'
+             ]
+    input_api.files = [MockAffectedFile('src/constants.h', lines)]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testNoInlineConstexprInCCFile(self):
+    """Tests that non-inlined constexpr variables in .cc files pass the test."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/implementation.cc', ['constexpr int kVersion = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testInlineConstexprInHeaderFile(self):
+    """Tests that inlined constexpr variables in header files pass the test."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/constants.h', ['constexpr inline int kX = 5;']),
+      MockAffectedFile('src/version.h', ['inline constexpr float kY = 5.0f;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testConstexprStandaloneFunctionInHeaderFile(self):
+    """Tests that non-inlined constexpr functions in headers pass the test."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['constexpr int GetVersion();'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testConstexprWithAbseilAttributeInHeader(self):
+    """Tests that non-inlined constexpr variables with Abseil-type prefixes in headers fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['ABSL_FOOFOO constexpr int i = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testInlineConstexprWithAbseilAttributeInHeader(self):
+    """Tests that inlined constexpr variables with Abseil-type prefixes in headers pass."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['constexpr ABSL_FOO inline int i = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testConstexprWithClangAttributeInHeader(self):
+    """Tests that non-inlined constexpr variables with attributes with colons in headers fail."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['[[clang::someattribute]] constexpr int i = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testInlineConstexprWithClangAttributeInHeader(self):
+    """Tests that inlined constexpr variables with attributes with colons in headers pass."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['constexpr [[clang::someattribute]] inline int i = 5;'])
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testNoExplicitInlineConstexprInsideClassInHeaderFile(self):
+    """Tests that non-inlined constexpr class members pass the test."""
+    input_api = MockInputApi()
+    lines = ['class SomeClass {',
+             ' public:',
+             '  static constexpr kVersion = 5;',
+             '};']
+    input_api.files = [
+      MockAffectedFile('src/class.h', lines)
+    ]
+    warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
 
 if __name__ == '__main__':
   unittest.main()

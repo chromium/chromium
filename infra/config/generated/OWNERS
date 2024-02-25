@@ -20,3 +20,11 @@ per-file testing/*.pyl=*
 # json files to be modified by the appropriate owners.
 per-file builders/*/*/properties.json=*
 per-file builders/*/*/shadow-properties.json=*
+
+# Enable changes in GN args related files in the builders folder.
+# These files are generated based on GN args configuration specified in builder
+# definitions in .star files.
+per-file builders/*/*/gn-args.json=*
+per-file builders/gn_args_locations.json=*
+per-file builders-dev/*/*/gn-args.json=*
+per-file builders-dev/gn_args_locations.json=*

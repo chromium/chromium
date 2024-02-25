@@ -40,7 +40,7 @@ bool ShouldUseDenseGlyphUsage(SkTypeface* typeface) {
 
 PaintPreviewTracker::PaintPreviewTracker(
     const base::UnguessableToken& guid,
-    const absl::optional<base::UnguessableToken>& embedding_token,
+    const std::optional<base::UnguessableToken>& embedding_token,
     bool is_main_frame)
     : guid_(guid),
       embedding_token_(embedding_token),

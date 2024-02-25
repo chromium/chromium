@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -303,10 +304,9 @@ base::FilePath StoragePartitionImplMap::GetStoragePartitionPath(
   if (!partition_name.empty()) {
     // For analysis of why we can ignore collisions, see the comment above
     // kPartitionNameHashBytes.
-    char buffer[kPartitionNameHashBytes];
-    crypto::SHA256HashString(partition_name, &buffer[0],
-                             sizeof(buffer));
-    return path.AppendASCII(base::HexEncode(buffer, sizeof(buffer)));
+    uint8_t buffer[kPartitionNameHashBytes];
+    crypto::SHA256HashString(partition_name, buffer, sizeof(buffer));
+    return path.AppendASCII(base::HexEncode(buffer));
   }
 
   return path.Append(kDefaultPartitionDirname);
@@ -326,9 +326,9 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
     const StoragePartitionConfig& partition_config,
     bool can_create) {
   // Find the previously created partition if it's available.
-  PartitionMap::const_iterator it = partitions_.find(partition_config);
-  if (it != partitions_.end())
-    return it->second.get();
+  if (auto* partition = base::FindPtrOrNull(partitions_, partition_config)) {
+    return partition;
+  }
 
   if (!can_create)
     return nullptr;
@@ -336,7 +336,7 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
   base::FilePath relative_partition_path = GetStoragePartitionPath(
       partition_config.partition_domain(), partition_config.partition_name());
 
-  absl::optional<StoragePartitionConfig> fallback_config =
+  std::optional<StoragePartitionConfig> fallback_config =
       partition_config.GetFallbackForBlobUrls();
   StoragePartitionImpl* fallback_for_blob_urls =
       fallback_config.has_value() ? Get(*fallback_config, /*can_create=*/false)
@@ -436,11 +436,9 @@ void StoragePartitionImplMap::GarbageCollect(
 }
 
 void StoragePartitionImplMap::ForEach(
-    BrowserContext::StoragePartitionCallback callback) {
-  for (PartitionMap::const_iterator it = partitions_.begin();
-       it != partitions_.end();
-       ++it) {
-    callback.Run(it->second.get());
+    base::FunctionRef<void(StoragePartition*)> fn) {
+  for (const auto& [config, partition] : partitions_) {
+    fn(partition.get());
   }
 }
 

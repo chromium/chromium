@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/render_pass_internal.h"
 #include "components/viz/common/viz_common_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -59,7 +59,7 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
               const gfx::Transform& transform_to_root_target,
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
-              const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
+              const std::optional<gfx::RRectF>& backdrop_filter_bounds,
               gfx::ContentColorUsage color_usage,
               bool has_transparent_background,
               bool cache_render_pass,
@@ -92,6 +92,9 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // Indicates if any its quad needs to draw with blending.
   bool ShouldDrawWithBlending() const;
 
+  // Indicates if this pass has copy requests or video capture enabled.
+  bool HasCapture() const;
+
   // Uniquely identifies the render pass in the aggregated frame.
   AggregatedRenderPassId id;
 
@@ -107,6 +110,13 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // video holes that need to line up with other overlays or is itself presented
   // as an overlay.
   bool needs_synchronous_dcomp_commit = false;
+
+  // Indicates whether video capture has been enabled for this render pass.
+  //
+  // This is useful to avoid flipping back and forth between promoting quads to
+  // overlays since a 30fps capture on a 60fps monitor can make a copy request
+  // every other frame.
+  bool video_capture_enabled = false;
 
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 

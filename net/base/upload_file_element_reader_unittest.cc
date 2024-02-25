@@ -23,6 +23,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_nsautorelease_pool.h"
+#include "base/memory/stack_allocated.h"
 #endif
 
 using net::test::IsError;
@@ -46,7 +47,7 @@ class UploadFileElementReaderTest : public testing::TestWithParam<bool>,
     ASSERT_TRUE(
         base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path_));
     ASSERT_TRUE(base::WriteFile(
-        temp_file_path_, base::StringPiece(bytes_.data(), bytes_.size())));
+        temp_file_path_, std::string_view(bytes_.data(), bytes_.size())));
 
     reader_ =
         CreateReader(0, std::numeric_limits<uint64_t>::max(), base::Time());
@@ -95,7 +96,8 @@ class UploadFileElementReaderTest : public testing::TestWithParam<bool>,
   }
 
 #if BUILDFLAG(IS_APPLE)
-  // May be needed to avoid leaks on OSX.
+  // May be needed to avoid leaks on the Mac.
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
   base::apple::ScopedNSAutoreleasePool scoped_pool_;
 #endif
 
@@ -109,8 +111,7 @@ TEST_P(UploadFileElementReaderTest, ReadPartially) {
   const size_t kHalfSize = bytes_.size() / 2;
   ASSERT_EQ(bytes_.size(), kHalfSize * 2);
   std::vector<char> buf(kHalfSize);
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(&buf[0]);
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   TestCompletionCallback read_callback1;
   ASSERT_EQ(ERR_IO_PENDING,
             reader_->Read(
@@ -130,8 +131,7 @@ TEST_P(UploadFileElementReaderTest, ReadPartially) {
 
 TEST_P(UploadFileElementReaderTest, ReadAll) {
   std::vector<char> buf(bytes_.size());
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(&buf[0]);
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   TestCompletionCallback read_callback;
   ASSERT_EQ(ERR_IO_PENDING,
             reader_->Read(
@@ -148,8 +148,7 @@ TEST_P(UploadFileElementReaderTest, ReadAll) {
 TEST_P(UploadFileElementReaderTest, ReadTooMuch) {
   const size_t kTooLargeSize = bytes_.size() * 2;
   std::vector<char> buf(kTooLargeSize);
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(&buf[0]);
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   TestCompletionCallback read_callback;
   ASSERT_EQ(ERR_IO_PENDING,
             reader_->Read(
@@ -162,8 +161,7 @@ TEST_P(UploadFileElementReaderTest, ReadTooMuch) {
 
 TEST_P(UploadFileElementReaderTest, MultipleInit) {
   std::vector<char> buf(bytes_.size());
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(&buf[0]);
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
 
   // Read all.
   TestCompletionCallback read_callback1;
@@ -193,8 +191,7 @@ TEST_P(UploadFileElementReaderTest, MultipleInit) {
 
 TEST_P(UploadFileElementReaderTest, InitDuringAsyncOperation) {
   std::vector<char> buf(bytes_.size());
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(&buf[0]);
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
 
   // Start reading all.
   TestCompletionCallback read_callback1;
@@ -217,8 +214,7 @@ TEST_P(UploadFileElementReaderTest, InitDuringAsyncOperation) {
 
   // Read half.
   std::vector<char> buf2(bytes_.size() / 2);
-  scoped_refptr<IOBuffer> wrapped_buffer2 =
-      base::MakeRefCounted<WrappedIOBuffer>(&buf2[0]);
+  auto wrapped_buffer2 = base::MakeRefCounted<WrappedIOBuffer>(buf2);
   TestCompletionCallback read_callback2;
   EXPECT_EQ(ERR_IO_PENDING,
             reader_->Read(
@@ -235,8 +231,7 @@ TEST_P(UploadFileElementReaderTest, InitDuringAsyncOperation) {
 
 TEST_P(UploadFileElementReaderTest, RepeatedInitDuringInit) {
   std::vector<char> buf(bytes_.size());
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(&buf[0]);
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
 
   TestCompletionCallback init_callback1;
   EXPECT_THAT(reader_->Init(init_callback1.callback()),
@@ -278,8 +273,7 @@ TEST_P(UploadFileElementReaderTest, Range) {
   EXPECT_EQ(kLength, reader_->GetContentLength());
   EXPECT_EQ(kLength, reader_->BytesRemaining());
   std::vector<char> buf(kLength);
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(&buf[0]);
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   TestCompletionCallback read_callback;
   ASSERT_EQ(
       ERR_IO_PENDING,

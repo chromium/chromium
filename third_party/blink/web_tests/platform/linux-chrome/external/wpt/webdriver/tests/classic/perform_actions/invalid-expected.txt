@@ -1,0 +1,98 @@
+This is a wdspec test.
+[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[None]
+  assert 200 == 400
+[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[foo]
+  assert 200 == 400
+[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[True]
+  assert 200 == 400
+[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[42]
+  assert 200 == 400
+[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[value4]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_type[0.1-width-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_type[0.1-width-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_type[0.1-width-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_type[0.1-height-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_type[0.1-height-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_type[0.1-height-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_value[9007199254740992-width-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_value[9007199254740992-width-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_value[9007199254740992-width-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_value[9007199254740992-height-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_value[9007199254740992-height-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_dimensions_invalid_value[9007199254740992-height-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-altitudeAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-altitudeAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-altitudeAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-azimuthAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-azimuthAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-azimuthAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-altitudeAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-altitudeAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-altitudeAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-azimuthAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-azimuthAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-azimuthAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-altitudeAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-altitudeAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-altitudeAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-azimuthAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-azimuthAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-azimuthAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-altitudeAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-altitudeAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-altitudeAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-azimuthAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-azimuthAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-azimuthAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-altitudeAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-altitudeAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-altitudeAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-azimuthAngle-pointerDown]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-azimuthAngle-pointerMove]
+  assert 200 == 400
+[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-azimuthAngle-pointerUp]
+  assert 200 == 400
+[FAIL] test_wheel_action_scroll_origin_pointer_not_supported
+  assert 200 == 400
+Harness: the test ran to completion.

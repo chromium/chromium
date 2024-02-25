@@ -182,7 +182,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgListen(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PepperTCPServerSocketMessageFilter::OnListenCompleted,
                          weak_ptr_factory_.GetWeakPtr(), reply_context),
-          net::ERR_FAILED, absl::nullopt /* local_addr_out */));
+          net::ERR_FAILED, std::nullopt /* local_addr_out */));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -208,7 +208,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgAccept(
           base::BindOnce(&PepperTCPServerSocketMessageFilter::OnAcceptCompleted,
                          base::Unretained(this), reply_context,
                          std::move(socket_observer_receiver)),
-          net::ERR_FAILED, absl::nullopt /* remote_addr */, mojo::NullRemote(),
+          net::ERR_FAILED, std::nullopt /* remote_addr */, mojo::NullRemote(),
           mojo::ScopedDataPipeConsumerHandle(),
           mojo::ScopedDataPipeProducerHandle()));
   return PP_OK_COMPLETIONPENDING;
@@ -226,7 +226,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgStopListening(
 void PepperTCPServerSocketMessageFilter::OnListenCompleted(
     const ppapi::host::ReplyMessageContext& context,
     int net_result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const std::optional<net::IPEndPoint>& local_addr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Exit early if this is called during Close().
@@ -293,7 +293,7 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompleted(
     mojo::PendingReceiver<network::mojom::SocketObserver>
         socket_observer_receiver,
     int net_result,
-    const absl::optional<net::IPEndPoint>& remote_addr,
+    const std::optional<net::IPEndPoint>& remote_addr,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {

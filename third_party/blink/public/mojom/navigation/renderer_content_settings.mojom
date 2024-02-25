@@ -1,0 +1,14 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Some content settings are enforced in the renderer. These settings are scoped
+// to a single document. This mirrors the C++ type in content_settings.h.
+struct RendererContentSettings {
+  bool allow_script;
+  bool allow_image;
+  bool allow_popup;
+  bool allow_mixed_content;
+};

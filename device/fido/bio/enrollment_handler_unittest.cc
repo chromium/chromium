@@ -187,7 +187,7 @@ TEST_F(BioEnrollmentHandlerTest, EnrollMultiple) {
   // Enumerate to check enrollments.
   test::StatusAndValueCallbackReceiver<
       CtapDeviceResponseCode,
-      absl::optional<std::map<std::vector<uint8_t>, std::string>>>
+      std::optional<std::map<std::vector<uint8_t>, std::string>>>
       cb;
   handler->EnumerateTemplates(cb.callback());
   cb.WaitForCallback();
@@ -236,12 +236,12 @@ TEST_F(BioEnrollmentHandlerTest, EnumerateNone) {
 
   test::StatusAndValueCallbackReceiver<
       CtapDeviceResponseCode,
-      absl::optional<std::map<std::vector<uint8_t>, std::string>>>
+      std::optional<std::map<std::vector<uint8_t>, std::string>>>
       cb;
   handler->EnumerateTemplates(cb.callback());
   cb.WaitForCallback();
   EXPECT_EQ(cb.status(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
-  EXPECT_EQ(cb.value(), absl::nullopt);
+  EXPECT_EQ(cb.value(), std::nullopt);
 }
 
 // Tests enumerating with one enrollment.
@@ -263,7 +263,7 @@ TEST_F(BioEnrollmentHandlerTest, EnumerateOne) {
   // Enumerate
   test::StatusAndValueCallbackReceiver<
       CtapDeviceResponseCode,
-      absl::optional<std::map<std::vector<uint8_t>, std::string>>>
+      std::optional<std::map<std::vector<uint8_t>, std::string>>>
       cb1;
   handler->EnumerateTemplates(cb1.callback());
   cb1.WaitForCallback();
@@ -303,7 +303,7 @@ TEST_F(BioEnrollmentHandlerTest, Rename) {
   // Enumerate to validate renaming.
   test::StatusAndValueCallbackReceiver<
       CtapDeviceResponseCode,
-      absl::optional<std::map<std::vector<uint8_t>, std::string>>>
+      std::optional<std::map<std::vector<uint8_t>, std::string>>>
       cb3;
   handler->EnumerateTemplates(cb3.callback());
   cb3.WaitForCallback();

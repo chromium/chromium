@@ -329,8 +329,8 @@ bool FillFormSplitCache(const AutofillPageQueryRequest& query_request,
       continue;
     }
     // Chrome expects the response to be base64 encoded.
-    std::string serialized_response_base64;
-    base::Base64Encode(serialized_response, &serialized_response_base64);
+    std::string serialized_response_base64 =
+        base::Base64Encode(serialized_response);
     std::string compressed_response_body;
     if (!compression::GzipCompress(serialized_response_base64,
                                    &compressed_response_body)) {
@@ -341,7 +341,7 @@ bool FillFormSplitCache(const AutofillPageQueryRequest& query_request,
     std::string http_text =
         MakeHTTPTextFromSplit(response_header_text, compressed_response_body);
 
-    VLOG(1) << "Adding key:" << key
+    VLOG(2) << "Adding key:" << key
             << "\nAnd response:" << individual_form_response;
     (*cache_to_fill)[key] = std::move(http_text);
   }
@@ -390,7 +390,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
                                          "SerializedResponse",
                                          &compressed_response_text)) {
           (*cache_to_fill)[key] = compressed_response_text;
-          VLOG(1) << "Cached response content for key: " << key;
+          VLOG(2) << "Cached response content for key: " << key;
           continue;
         }
       } else {
@@ -517,7 +517,7 @@ ServerCacheReplayer::Status PopulateCacheFromJSONFile(
           PopulateCacheFromQueryNode(query_node, options, cache_to_fill);
       if (!status.Ok())
         return status;
-      VLOG(1) << "Filled cache with " << cache_to_fill->size()
+      VLOG(2) << "Filled cache with " << cache_to_fill->size()
               << " requests for Query node with URL: " << query_node.url;
     }
   }
@@ -611,7 +611,7 @@ std::pair<std::string, std::string> SplitHTTP(const std::string& http_text) {
 }
 
 // Streams in text format. For consistency, taken from anonymous namespace in
-// components/autofill/core/browser/autofill_download_manager.cc
+// components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc
 std::ostream& operator<<(std::ostream& out,
                          const autofill::AutofillPageQueryRequest& query) {
   for (const auto& form : query.forms()) {
@@ -775,9 +775,7 @@ bool GetResponseForQuery(const ServerCacheReplayer& cache_replayer,
     return false;
   }
   // The Api Environment expects the response body to be base64 encoded.
-  std::string tmp;
-  base::Base64Encode(serialized_response, &tmp);
-  serialized_response = tmp;
+  serialized_response = base::Base64Encode(serialized_response);
 
   VLOG(1) << "Retrieving stitched response for " << combined_key;
   *http_text = MakeHTTPTextFromSplit(response_header_text, serialized_response);
@@ -869,7 +867,7 @@ bool InterceptAutofillRequestHelper(
   auto http_pair = SplitHTTP(http_response);
   content::URLLoaderInterceptor::WriteResponse(
       http_pair.first, http_pair.second, params->client.get());
-  VLOG(1) << "Giving back response from cache";
+  VLOG(2) << "Giving back response from cache";
   return true;
 }
 

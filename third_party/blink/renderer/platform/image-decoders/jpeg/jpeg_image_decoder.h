@@ -47,7 +47,7 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   // ImageDecoder:
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
-  void OnSetData(SegmentReader* data) override;
+  void OnSetData(scoped_refptr<SegmentReader> data) override;
   gfx::Size DecodedSize() const override;
   bool SetSize(unsigned width, unsigned height) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;

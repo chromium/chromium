@@ -60,6 +60,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <sys/prctl.h>
+
 #include "base/debug/proc_maps_linux.h"
 #endif
 
@@ -161,7 +163,7 @@ class BacktraceOutputHandler {
 };
 
 #if defined(HAVE_BACKTRACE)
-void OutputPointer(void* pointer, BacktraceOutputHandler* handler) {
+void OutputPointer(const void* pointer, BacktraceOutputHandler* handler) {
   // This should be more than enough to store a 64-bit number in hex:
   // 16 hex digits + 1 for null-terminator.
   char buf[17] = { '\0' };
@@ -189,7 +191,7 @@ void OutputFrameId(size_t frame_id, BacktraceOutputHandler* handler) {
 }
 #endif  // defined(USE_SYMBOLIZE)
 
-void ProcessBacktrace(void* const* trace,
+void ProcessBacktrace(const void* const* trace,
                       size_t size,
                       const char* prefix_string,
                       BacktraceOutputHandler* handler) {
@@ -216,8 +218,8 @@ void ProcessBacktrace(void* const* trace,
 
     // Subtract by one as return address of function may be in the next
     // function when a function is annotated as noreturn.
-    void* address = static_cast<char*>(trace[i]) - 1;
-    if (google::Symbolize(address, buf, sizeof(buf))) {
+    const void* address = static_cast<const char*>(trace[i]) - 1;
+    if (google::Symbolize(const_cast<void*>(address), buf, sizeof(buf))) {
       handler->HandleOutput(buf);
 #if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
       // Only output the source line number if the offset was found. Otherwise,
@@ -266,8 +268,8 @@ void ProcessBacktrace(void* const* trace,
     }
     printed = true;
 #else   // defined(HAVE_DLADDR)
-    std::unique_ptr<char*, FreeDeleter> trace_symbols(
-        backtrace_symbols(trace, static_cast<int>(size)));
+    std::unique_ptr<char*, FreeDeleter> trace_symbols(backtrace_symbols(
+        const_cast<void* const*>(trace), static_cast<int>(size)));
     if (trace_symbols.get()) {
       for (size_t i = 0; i < size; ++i) {
         std::string trace_symbol = trace_symbols.get()[i];
@@ -762,13 +764,51 @@ class SandboxSymbolizeHelper {
     return -1;
   }
 
+  // This class is copied from
+  // third_party/crashpad/crashpad/util/linux/scoped_pr_set_dumpable.h.
+  // It aims at ensuring the process is dumpable before opening /proc/self/mem.
+  // If the process is already dumpable, this class doesn't do anything.
+  class ScopedPrSetDumpable {
+   public:
+    // Uses `PR_SET_DUMPABLE` to make the current process dumpable.
+    //
+    // Restores the dumpable flag to its original value on destruction. If the
+    // original value couldn't be determined, the destructor attempts to
+    // restore the flag to 0 (non-dumpable).
+    explicit ScopedPrSetDumpable() {
+      int result = prctl(PR_GET_DUMPABLE, 0, 0, 0, 0);
+      was_dumpable_ = result > 0;
+
+      if (!was_dumpable_) {
+        std::ignore = prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
+      }
+    }
+
+    ScopedPrSetDumpable(const ScopedPrSetDumpable&) = delete;
+    ScopedPrSetDumpable& operator=(const ScopedPrSetDumpable&) = delete;
+
+    ~ScopedPrSetDumpable() {
+      if (!was_dumpable_) {
+        std::ignore = prctl(PR_SET_DUMPABLE, 0, 0, 0, 0);
+      }
+    }
+
+   private:
+    bool was_dumpable_;
+  };
+
   // Set the base address for each memory region by reading ELF headers in
   // process memory.
   void SetBaseAddressesForMemoryRegions() {
-    base::ScopedFD mem_fd(
-        HANDLE_EINTR(open("/proc/self/mem", O_RDONLY | O_CLOEXEC)));
-    if (!mem_fd.is_valid())
-      return;
+    base::ScopedFD mem_fd;
+    {
+      ScopedPrSetDumpable s;
+      mem_fd = base::ScopedFD(
+          HANDLE_EINTR(open("/proc/self/mem", O_RDONLY | O_CLOEXEC)));
+      if (!mem_fd.is_valid()) {
+        return;
+      }
+    }
 
     auto safe_memcpy = [&mem_fd](void* dst, uintptr_t src, size_t size) {
       return HANDLE_EINTR(pread(mem_fd.get(), dst, size,
@@ -986,19 +1026,18 @@ bool SetStackDumpFirstChanceCallback(bool (*handler)(int, siginfo_t*, void*)) {
 }
 #endif
 
-size_t CollectStackTrace(void** trace, size_t count) {
+size_t CollectStackTrace(const void** trace, size_t count) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
 #if defined(NO_UNWIND_TABLES) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   // If we do not have unwind tables, then try tracing using frame pointers.
-  return base::debug::TraceStackFramePointers(const_cast<const void**>(trace),
-                                              count, 0);
+  return base::debug::TraceStackFramePointers(trace, count, 0);
 #elif defined(HAVE_BACKTRACE)
   // Though the backtrace API man page does not list any possible negative
   // return values, we take no chance.
   return base::saturated_cast<size_t>(
-      backtrace(trace, base::saturated_cast<int>(count)));
+      backtrace(const_cast<void**>(trace), base::saturated_cast<int>(count)));
 #else
   return 0;
 #endif

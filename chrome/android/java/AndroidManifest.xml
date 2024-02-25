@@ -73,6 +73,7 @@ by a child template that "extends" this file.
     <!-- TODO(https://crbug.com/1421346): Remove this tools:ignore attribute once it's no longer necessary. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" tools:ignore="SystemPermissionTypo" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:ignore="SystemPermissionTypo" />
+    <uses-permission android:name="android.permission.RUN_USER_INITIATED_JOBS" />
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -406,7 +407,7 @@ by a child template that "extends" this file.
         <!-- The singleInstancePerTask launch mode is required by Samsung OS to determine
              support for multi-instance in the drag & drop use case. See b/232168063 for
              future reference. -->
-        <activity android:name="org.chromium.chrome.browser.DragAndDropLauncherActivity"
+        <activity android:name="org.chromium.chrome.browser.dragdrop.DragAndDropLauncherActivity"
             android:theme="@style/LauncherTheme"
             android:taskAffinity=""
             android:excludeFromRecents="true"
@@ -605,6 +606,11 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
         {% endif %}
+        <activity android:name="org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity"
+            android:theme="@style/Theme.Chromium.SigninAndHistoryOptInActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+            android:exported="false">
+        </activity>
         <activity android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
@@ -803,12 +809,16 @@ by a child template that "extends" this file.
             android:process=":browser_restart_process">
         </activity>
 
-        <!-- This activity is used to show an error dialog without attempting to start up Chrome. -->
+        <!-- This activity is used to show an error dialog when Chrome fails to load the native
+             library. It must be in a separate process as when the native library fails to load an
+             exception is thrown and may crash the main process immediately. Being in a separate
+             process allows the dialog to remain visible to the user. -->
         <activity android:name="org.chromium.chrome.browser.init.LaunchFailedActivity"
             android:launchMode="singleInstance"
             android:exported="false"
             android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar"
-            android:excludeFromRecents="true">
+            android:excludeFromRecents="true"
+            android:process=":launch_failed">
         </activity>
 
         <!-- Components for Trusted Web Activities -->
@@ -1010,6 +1020,9 @@ by a child template that "extends" this file.
             <intent-filter>
                 <action android:name="org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION" />
                 <action android:name="org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION" />
+                <action android:name="org.chromium.chrome.browser.notifications.PRE_UNSUBSCRIBE" />
+                <action android:name="org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE" />
+                <action android:name="org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE" />
             </intent-filter>
         </receiver>
 
@@ -1044,9 +1057,6 @@ by a child template that "extends" this file.
             </intent-filter>
         </service>
 
-        <service android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
-            android:exported="true"
-            tools:ignore="ExportedService" />
         <service android:name="org.chromium.chrome.browser.customtabs.CustomTabsConnectionService"
             android:exported="true"
             tools:ignore="ExportedService">
@@ -1082,15 +1092,6 @@ by a child template that "extends" this file.
             tools:ignore="ExportedService">
             <intent-filter>
               <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="org.chromium.chrome.browser.webapps.WebApkInstallCoordinatorService"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-              <action android:name="org.chromium.intent.action.INSTALL_WEB_APK" />
             </intent-filter>
         </service>
 
@@ -1212,6 +1213,8 @@ by a child template that "extends" this file.
             android:label="WebXR"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             tools:ignore="NonResizeableActivity">
+            <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR"
+                android:value="true" />
             <intent-filter>
               <category android:name="android.intent.category.XR" />
             </intent-filter>
@@ -1288,6 +1291,9 @@ by a child template that "extends" this file.
       {% if enable_arcore == 'true' %}
       <!-- This tag indicates that this application optionally uses ARCore. -->
       <meta-data android:name="com.google.ar.core" android:value="optional" />
+      <meta-data
+          android:name="com.google.ar.core.load_32bit_so_from_split_module"
+          android:value="optional" />
 
       <!-- ARCore APK integration -->
       {% block base_application_extra_arcore_definitions %}

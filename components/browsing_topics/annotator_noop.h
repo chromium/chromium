@@ -22,7 +22,7 @@ class AnnotatorNoOp : public Annotator {
   void BatchAnnotate(BatchAnnotationCallback callback,
                      const std::vector<std::string>& inputs) override;
   void NotifyWhenModelAvailable(base::OnceClosure callback) override;
-  absl::optional<optimization_guide::ModelInfo> GetBrowsingTopicsModelInfo()
+  std::optional<optimization_guide::ModelInfo> GetBrowsingTopicsModelInfo()
       const override;
 };
 

@@ -19,7 +19,7 @@ struct Environment {
   Environment() {
     // Disable noisy logging as per "libFuzzer in Chrome" documentation:
     // testing/libfuzzer/getting_started.md#Disable-noisy-error-message-logging.
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 
@@ -60,7 +60,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     vp9_parser.SetStream(
         ivf_payload, ivf_frame_header.frame_size,
         media::DecryptConfig::CreateCencConfig(key_id, iv, subsamples));
-    // TODO(kcwu): further fuzzing the case of Vp9Parser::kAwaitingRefresh.
     std::unique_ptr<media::DecryptConfig> null_config;
     gfx::Size allocate_size;
     while (vp9_parser.ParseNextFrame(&vp9_frame_header, &allocate_size,

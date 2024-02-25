@@ -74,10 +74,11 @@ UserPrivateTokenKeyPermissionsManagerServiceFactory::
 UserPrivateTokenKeyPermissionsManagerServiceFactory::
     ~UserPrivateTokenKeyPermissionsManagerServiceFactory() = default;
 
-KeyedService*
-UserPrivateTokenKeyPermissionsManagerServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new UserPrivateTokenKeyPermissionsManagerService(
+std::unique_ptr<KeyedService>
+UserPrivateTokenKeyPermissionsManagerServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
+  return std::make_unique<UserPrivateTokenKeyPermissionsManagerService>(
       Profile::FromBrowserContext(context));
 }
 

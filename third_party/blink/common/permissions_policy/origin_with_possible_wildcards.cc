@@ -24,21 +24,21 @@ OriginWithPossibleWildcards& OriginWithPossibleWildcards::operator=(
 OriginWithPossibleWildcards::~OriginWithPossibleWildcards() = default;
 
 // static
-absl::optional<OriginWithPossibleWildcards>
+std::optional<OriginWithPossibleWildcards>
 OriginWithPossibleWildcards::FromOrigin(const url::Origin& origin) {
   // Origins cannot be opaque.
   if (origin.opaque()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return Parse(origin.Serialize(), NodeType::kHeader);
 }
 
 // static
-absl::optional<OriginWithPossibleWildcards>
+std::optional<OriginWithPossibleWildcards>
 OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
     const url::Origin& origin,
     bool has_subdomain_wildcard) {
-  absl::optional<OriginWithPossibleWildcards> origin_with_possible_wildcards =
+  std::optional<OriginWithPossibleWildcards> origin_with_possible_wildcards =
       FromOrigin(origin);
   if (origin_with_possible_wildcards.has_value()) {
     // Overwrite wildcard settings.
@@ -49,7 +49,7 @@ OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
 }
 
 // static
-absl::optional<OriginWithPossibleWildcards> OriginWithPossibleWildcards::Parse(
+std::optional<OriginWithPossibleWildcards> OriginWithPossibleWildcards::Parse(
     const std::string& allowlist_entry,
     const NodeType type) {
   // First we use the csp parser to extract the CSPSource struct.
@@ -59,12 +59,12 @@ absl::optional<OriginWithPossibleWildcards> OriginWithPossibleWildcards::Parse(
       network::mojom::CSPDirectiveName::Unknown, allowlist_entry,
       &origin_with_possible_wildcards.csp_source, parsing_errors);
   if (!success) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The CSPSource must have a scheme.
   if (origin_with_possible_wildcards.csp_source.scheme.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Attribute policies must not have wildcards in the port, host, or scheme.
@@ -72,7 +72,7 @@ absl::optional<OriginWithPossibleWildcards> OriginWithPossibleWildcards::Parse(
       (origin_with_possible_wildcards.csp_source.host.empty() ||
        origin_with_possible_wildcards.csp_source.is_port_wildcard ||
        origin_with_possible_wildcards.csp_source.is_host_wildcard)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The CSPSource may have parsed a path but we should ignore it as permissions

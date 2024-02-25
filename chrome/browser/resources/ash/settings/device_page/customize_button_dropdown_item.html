@@ -1,0 +1,22 @@
+<style include="md-select settings-shared input-device-settings-shared">
+  :host([selected]) #container {
+    background-color: var(--cros-highlight-color-focus);
+  }
+
+  #container {
+    align-items: center;
+    display: flex;
+    height: 36px;
+    padding: 0 16px;
+  }
+
+  #container:focus,
+  #container:hover {
+    outline: none;
+    background-color: var(--cros-highlight-color-hover);
+  }
+</style>
+<div id="container" hidden="[[option.hidden]]" tabindex="-1"
+    class="option-item" on-click="onDropdownItemSelected_">
+  [[option.name]]
+</div>

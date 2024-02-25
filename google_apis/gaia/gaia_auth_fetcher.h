@@ -19,7 +19,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
@@ -129,33 +128,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
       const std::string& device_id,
       const std::string& binding_registration_token = std::string());
 
-  // Start a MergeSession request to pre-login the user with the given
-  // credentials.
-  //
-  // Start a MergeSession request to fill the browsing cookie jar with
-  // credentials represented by the account whose uber-auth token is
-  // |uber_token|.  This method will modify the cookies of the current profile.
-  //
-  // The |external_cc_result| string can specify the result of connetion checks
-  // for various google properties, and MergeSession will set cookies on those
-  // properties too if appropriate.  See StartGetCheckConnectionInfo() for
-  // details.  The string is a comma separated list of token/result pairs, where
-  // token and result are separated by a colon.  This string may be empty, in
-  // which case no specific handling is performed.
-  //
-  // Either OnMergeSessionSuccess or OnMergeSessionFailure will be
-  // called on the consumer on the original thread.
-  void StartMergeSession(const std::string& uber_token,
-                         const std::string& external_cc_result);
-
-  // Start a request to exchange an OAuthLogin-scoped oauth2 access token for an
-  // uber-auth token.  The returned token can be used with the method
-  // StartMergeSession().
-  //
-  // Either OnUberAuthTokenSuccess or OnUberAuthTokenFailure will be
-  // called on the consumer on the original thread.
-  void StartTokenFetchForUberAuthExchange(const std::string& access_token);
-
   // Starts a request to get the cookie for list of accounts.
   void StartOAuthMultilogin(gaia::MultiloginMode mode,
                             const std::vector<MultiloginTokenIDPair>& accounts,
@@ -188,7 +160,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
 
   // Starts a request to get the list of URLs to check for connection info.
   // Returns token/URL pairs to check, and the resulting status can be given to
-  // /MergeSession requests.
+  // OAuth multilogin requests.
   void StartGetCheckConnectionInfo();
 
   // `CreateAndStartGaiaFetcher()` been called && results not back yet?
@@ -235,6 +207,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
 
   bool IsReAuthApiUrl(const GURL& url);
 
+  bool IsListAccountsUrl(const GURL& url);
+
  private:
   // The format of the POST body to get OAuth2 token pair from auth code.
   static const char kOAuth2CodeToTokenPairBodyFormat[];
@@ -244,10 +218,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   static const char kOAuth2CodeToTokenPairBindingRegistrationTokenParam[];
   // The format of the POST body to revoke an OAuth2 token.
   static const char kOAuth2RevokeTokenBodyFormat[];
-  // The format of the POST body for MergeSession.
-  static const char kMergeSessionFormat[];
-  // The format of the URL for UberAuthToken.
-  static const char kUberAuthTokenURLFormat[];
 
   // Constants for parsing error responses.
   static const char kErrorParam[];
@@ -275,14 +245,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
                        net::Error net_error,
                        int response_code);
 
-  void OnMergeSessionFetched(const std::string& data,
-                             net::Error net_error,
-                             int response_code);
-
-  void OnUberAuthTokenFetch(const std::string& data,
-                            net::Error net_error,
-                            int response_code);
-
   void OnOAuthMultiloginFetched(const std::string& data,
                                 net::Error net_error,
                                 int response_code);
@@ -308,13 +270,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   // Given an OAuth2 token, create body to revoke the token.
   std::string MakeRevokeTokenBody(const std::string& auth_token);
 
-  // Supply the authentication token returned from StartIssueAuthToken.
-  static std::string MakeMergeSessionQuery(
-      const std::string& auth_token,
-      const std::string& external_cc_result,
-      const std::string& continue_url,
-      const std::string& source);
-
   // From a SimpleURLLoader result, generates an appropriate error.
   static GoogleServiceAuthError GenerateAuthError(const std::string& data,
                                                   net::Error net_error);
@@ -325,8 +280,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   std::string source_;
   const GURL oauth2_token_gurl_;
   const GURL oauth2_revoke_gurl_;
-  const GURL merge_session_gurl_;
-  const GURL uberauth_token_gurl_;
   const GURL oauth_multilogin_gurl_;
   const GURL list_accounts_gurl_;
   const GURL logout_gurl_;

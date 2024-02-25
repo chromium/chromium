@@ -42,24 +42,67 @@
         })
     }, 'Send redemption record succeeds.');
 
-  test(function() {
-      assert_throws_js(TypeError,
-                       () => new Request('https://some-issuer.test',
-                                         {privateToken: {
-                                             version: 2,
-                                             operation: 'token-request'
-                                         }}),
-                       'Throws a TypeError due to invalid version number');
-  }, 'Creating a request with invalid token version number throws');
+    promise_test(() => {
+        const host_info = get_host_info();
+        const frame = document.createElement('iframe');
+        frame.src = '/wpt_internal/trust-tokens/resources/trust_token_send_redemption_record.py';
+        frame.privateToken = JSON.stringify({ version: 1, operation: 'send-redemption-record', issuers: [host_info.ORIGIN] });
+        document.body.appendChild(frame);
+        return new Promise(resolve => {
+            frame.addEventListener("load", resolve);
+        }).then(event => {
+            const redemptionRecord = frame.contentWindow.document.body.innerText;
+            assert_true(redemptionRecord.includes('redemption-record="dummy redemption record"'));
+        });
+    }, 'Send redemption record from an iframe succeeds.');
 
-  promise_test(function () {
-      return fetch('https://unknown-issuer.test/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
-          privateToken: { version: 1, operation: 'token-request' }
-      }).then(function (response) {
-          assert_unreached();
-      }).catch(function (error) {
-          assert_equals(error.message, 'No keys currently available for PST issuer. Issuer may need to register their key commitments.');
-      });
-  }, 'Token issuance fails with missing issuer keys.');
+    function issue_token() {
+        return fetch('/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
+            privateToken: { version: 1, operation: 'token-request' }
+        });
+    }
+
+    function redeem_token() {
+        return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
+            privateToken: { version: 1, operation: 'token-redemption', refreshPolicy: "refresh" }
+        });
+    }
+
+    promise_test(async function () {
+        // Issue a batch of tokens
+        const batch_size = 10;
+        const requests = [];
+        for (let i = 0; i < batch_size; i++) {
+            requests.push(issue_token());
+        }
+        await Promise.all(requests).then(responses =>
+            responses.forEach(response => assert_equals(response.status, 200)));
+
+        // Redeem a second token, first one is redeemed at test 'Token redemption succeeds.'
+        var response = await redeem_token();
+        assert_equals(response.status, 200);
+        // Redeeming a third token with refresh policy should fail
+        return promise_rejects_dom(this, 'OperationError', redeem_token());
+    }, 'Token redemption is rate limited.');
+
+    test(function() {
+        assert_throws_js(TypeError,
+                         () => new Request('https://some-issuer.test',
+                                           {privateToken: {
+                                               version: 2,
+                                               operation: 'token-request'
+                                           }}),
+                         'Throws a TypeError due to invalid version number');
+    }, 'Creating a request with invalid token version number throws');
+
+    promise_test(function () {
+        return fetch('https://unknown-issuer.test/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
+            privateToken: { version: 1, operation: 'token-request' }
+        }).then(function (response) {
+            assert_unreached();
+        }).catch(function (error) {
+            assert_equals(error.message, 'No keys currently available for PST issuer. Issuer may need to register their key commitments.');
+        });
+    }, 'Token issuance fails with missing issuer keys.');
 
 </script>

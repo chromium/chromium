@@ -4,6 +4,8 @@
 
 #include "components/user_education/common/tutorial.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -17,7 +19,6 @@
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -103,7 +104,7 @@ namespace internal {
 class TutorialStepBuilder {
  public:
   explicit TutorialStepBuilder(const TutorialDescription::Step& step,
-                               absl::optional<std::pair<int, int>> progress,
+                               std::optional<std::pair<int, int>> progress,
                                bool is_last_step,
                                bool can_be_restarted,
                                int complete_button_text_id)
@@ -129,7 +130,7 @@ class TutorialStepBuilder {
   ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
       TutorialService* tutorial_service);
 
-  const absl::optional<std::pair<int, int>> progress_;
+  const std::optional<std::pair<int, int>> progress_;
   const bool is_last_step_;
   const bool can_be_restarted_;
   const int complete_button_text_id_;
@@ -185,11 +186,16 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
       step_.body_text_id() ? l10n_util::GetStringUTF16(step_.body_text_id())
                            : std::u16string();
 
+  const std::u16string screenreader_text =
+      step_.screenreader_text_id()
+          ? l10n_util::GetStringUTF16(step_.screenreader_text_id())
+          : std::u16string();
+
   return base::BindOnce(
       [](TutorialService* tutorial_service, std::u16string title_text_,
-         std::u16string body_text_, HelpBubbleArrow arrow_,
-         absl::optional<std::pair<int, int>> progress, bool is_last_step,
-         bool can_be_restarted, int complete_button_text_id,
+         std::u16string body_text_, std::u16string screenreader_text_,
+         HelpBubbleArrow arrow_, std::optional<std::pair<int, int>> progress,
+         bool is_last_step, bool can_be_restarted, int complete_button_text_id,
          TutorialDescription::NextButtonCallback next_button_callback,
          HelpBubbleParams::ExtendedProperties extended_properties,
          ui::InteractionSequence* sequence, ui::TrackedElement* element) {
@@ -201,16 +207,17 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
         params.extended_properties = std::move(extended_properties);
         params.title_text = title_text_;
         params.body_text = body_text_;
+        params.screenreader_text = screenreader_text_;
         params.progress = progress;
         params.arrow = arrow_;
         params.timeout = base::TimeDelta();
         params.dismiss_callback = base::BindOnce(
-            [](absl::optional<int> step_number,
+            [](std::optional<int> step_number,
                TutorialService* tutorial_service) {
               tutorial_service->AbortTutorial(step_number);
             },
-            progress.has_value() ? absl::make_optional(progress.value().first)
-                                 : absl::nullopt,
+            progress.has_value() ? std::make_optional(progress.value().first)
+                                 : std::nullopt,
             base::Unretained(tutorial_service));
 
         if (is_last_step) {
@@ -268,9 +275,10 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
                 element, std::move(params));
         tutorial_service->SetCurrentBubble(std::move(bubble), is_last_step);
       },
-      base::Unretained(tutorial_service), title_text, body_text, step_.arrow(),
-      progress_, is_last_step_, can_be_restarted_, complete_button_text_id_,
-      step_.next_button_callback(), step_.extended_properties());
+      base::Unretained(tutorial_service), title_text, body_text,
+      screenreader_text, step_.arrow(), progress_, is_last_step_,
+      can_be_restarted_, complete_button_text_id_, step_.next_button_callback(),
+      step_.extended_properties());
 }
 
 ui::InteractionSequence::StepEndCallback
@@ -315,7 +323,7 @@ Tutorial::Builder::BuildFromDescriptionStep(
     }
     return builder.Build();
   } else {
-    absl::optional<std::pair<int, int>> progress;
+    std::optional<std::pair<int, int>> progress;
     if (step.ShouldShowBubble()) {
       ++current_progress;
       if (!is_terminal) {
@@ -418,6 +426,11 @@ void Tutorial::Start() {
 void Tutorial::Abort() {
   if (interaction_sequence_)
     interaction_sequence_.reset();
+}
+
+void Tutorial::SetState(std::unique_ptr<ScopedTutorialState> tutorial_state) {
+  CHECK(tutorial_state.get());
+  tutorial_state_ = std::move(tutorial_state);
 }
 
 }  // namespace user_education

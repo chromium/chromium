@@ -56,7 +56,7 @@ void ReportingUserTracker::OnUserAffiliationUpdated(
     return;
   }
 
-  if (user.GetType() != user_manager::USER_TYPE_REGULAR) {
+  if (user.GetType() != user_manager::UserType::kRegular) {
     return;
   }
 

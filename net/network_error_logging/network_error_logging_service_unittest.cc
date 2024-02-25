@@ -17,6 +17,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/network_error_logging/mock_persistent_nel_store.h"
 #include "net/network_error_logging/network_error_logging_service.h"
@@ -221,7 +222,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
 void ExpectDictDoubleValue(double expected_value,
                            const base::Value::Dict& value,
                            const std::string& key) {
-  absl::optional<double> double_value = value.FindDouble(key);
+  std::optional<double> double_value = value.FindDouble(key);
   ASSERT_TRUE(double_value) << key;
   EXPECT_DOUBLE_EQ(expected_value, *double_value) << key;
 }
@@ -254,7 +255,7 @@ TEST_P(NetworkErrorLoggingServiceTest, NoPolicy) {
   EXPECT_TRUE(reports().empty());
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, PolicyKeyMatchesNikAndOrigin) {
+TEST_P(NetworkErrorLoggingServiceTest, PolicyKeyMatchesNakAndOrigin) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeader_);
 
   // Make the rest of the test run synchronously.
@@ -287,7 +288,7 @@ TEST_P(NetworkErrorLoggingServiceTest, PolicyKeyMatchesNikAndOrigin) {
 }
 
 TEST_P(NetworkErrorLoggingServiceTest,
-       PolicyKeyMatchesNikAndOriginIncludeSubdomains) {
+       PolicyKeyMatchesNakAndOriginIncludeSubdomains) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeaderIncludeSubdomains_);
 
   // Make the rest of the test run synchronously.
@@ -348,7 +349,7 @@ TEST_P(NetworkErrorLoggingServiceTest,
 }
 
 TEST_P(NetworkErrorLoggingServiceTest,
-       PolicyKeyMatchesNikAndOriginIncludeSubdomainsAndSuccess) {
+       PolicyKeyMatchesNakAndOriginIncludeSubdomainsAndSuccess) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_,
                       kHeaderIncludeSubdomainsAndSuccess_);
 

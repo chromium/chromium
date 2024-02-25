@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/cross_origin_data_source.h"
@@ -64,11 +65,9 @@ class PLATFORM_EXPORT MultiBufferDataSource
     return url_data_->mime_type();
   }
 
-  // Executes |init_cb| with the result of initialization when it has completed.
-  //
   // Method called on the render thread.
   using InitializeCB = base::OnceCallback<void(bool)>;
-  void Initialize(InitializeCB init_cb);
+  void Initialize(InitializeCB init_cb) override;
 
   // Adjusts the buffering algorithm based on the given preload value.
   void SetPreload(media::DataSource::Preload preload) override;
@@ -120,9 +119,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
     is_client_audio_element_ = is_client_audio_element;
   }
 
-  const CrossOriginDataSource* GetAsCrossOriginDataSource() const override {
-    return this;
-  }
+  CrossOriginDataSource* GetAsCrossOriginDataSource() override { return this; }
 
   bool cancel_on_defer_for_testing() const { return cancel_on_defer_; }
 
@@ -258,14 +255,14 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // Current playback rate.
   double playback_rate_;
 
-  media::MediaLog* media_log_;
+  std::unique_ptr<media::MediaLog> media_log_;
 
   bool is_client_audio_element_ = false;
 
   int buffer_size_update_counter_;
 
   // Host object to report buffered byte range changes to.
-  BufferedDataSourceHost* host_;
+  raw_ptr<BufferedDataSourceHost, DanglingUntriaged> host_;
 
   DownloadingCB downloading_cb_;
 

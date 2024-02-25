@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
+#include "components/download/public/common/download_target_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,7 +63,7 @@ void DevToolsDownloadManagerDelegate::Shutdown() {
 
 bool DevToolsDownloadManagerDelegate::DetermineDownloadTarget(
     download::DownloadItem* item,
-    content::DownloadTargetCallback* callback) {
+    download::DownloadTargetCallback* callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Check if we should failback to delegate.
@@ -75,13 +76,11 @@ bool DevToolsDownloadManagerDelegate::DetermineDownloadTarget(
   // information associated to the download, we deny it by default.
   if (download_behavior_ != DownloadBehavior::ALLOW &&
       download_behavior_ != DownloadBehavior::ALLOW_AND_NAME) {
-    base::FilePath empty_path = base::FilePath();
-    std::move(*callback).Run(
-        empty_path, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
-        download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-        download::DownloadItem::InsecureDownloadStatus::UNKNOWN, empty_path,
-        empty_path, std::string() /*mime_type*/,
-        download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
+    download::DownloadTargetInfo target_info;
+    target_info.interrupt_reason =
+        download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
+
+    std::move(*callback).Run(std::move(target_info));
     return true;
   }
 
@@ -153,17 +152,18 @@ void DevToolsDownloadManagerDelegate::GenerateFilename(
 
 void DevToolsDownloadManagerDelegate::OnDownloadPathGenerated(
     uint32_t download_id,
-    content::DownloadTargetCallback callback,
+    download::DownloadTargetCallback callback,
     const base::FilePath& suggested_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  download::DownloadTargetInfo target_info;
+  target_info.target_path = suggested_path;
+  target_info.intermediate_path =
+      suggested_path.AddExtension(FILE_PATH_LITERAL(".crdownload"));
+  target_info.display_name = suggested_path.BaseName();
+  target_info.danger_type =
+      download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT;
 
-  std::move(callback).Run(
-      suggested_path, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
-      download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
-      download::DownloadItem::InsecureDownloadStatus::UNKNOWN,
-      suggested_path.AddExtension(FILE_PATH_LITERAL(".crdownload")),
-      suggested_path.BaseName(), std::string(),
-      download::DOWNLOAD_INTERRUPT_REASON_NONE);
+  std::move(callback).Run(std::move(target_info));
 }
 
 download::DownloadItem* DevToolsDownloadManagerDelegate::GetDownloadByGuid(

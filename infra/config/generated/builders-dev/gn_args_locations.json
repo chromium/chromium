@@ -1,0 +1,13 @@
+{
+  "chromium.dev": {
+    "android-pie-arm64-rel-dev": "ci/android-pie-arm64-rel-dev/gn-args.json",
+    "linux-local-ssd-rel-dev": "ci/linux-local-ssd-rel-dev/gn-args.json",
+    "linux-rel-jammy-dev": "ci/linux-rel-jammy-dev/gn-args.json",
+    "linux-remote-ssd-rel-dev": "ci/linux-remote-ssd-rel-dev/gn-args.json",
+    "mac-arm-rel-dev": "ci/mac-arm-rel-dev/gn-args.json",
+    "mac-rel-dev": "ci/mac-rel-dev/gn-args.json",
+    "win-local-ssd-rel-dev": "ci/win-local-ssd-rel-dev/gn-args.json",
+    "win-rel-dev": "ci/win-rel-dev/gn-args.json",
+    "win11-rel-dev": "ci/win11-rel-dev/gn-args.json"
+  }
+}

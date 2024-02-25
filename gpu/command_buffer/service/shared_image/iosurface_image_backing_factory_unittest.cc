@@ -10,8 +10,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/dawn_image_representation_unittest_common.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -58,6 +61,10 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
                                   gfx::BufferFormat::RGBA_8888));
 
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
+
+#if BUILDFLAG(IS_MAC)
+    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+#endif  // BUILDFLAG(IS_MAC)
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
@@ -123,7 +130,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_SCANOUT;
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
@@ -174,70 +181,95 @@ class IOSurfaceImageBackingFactoryDawnTest
     : public IOSurfaceImageBackingFactoryTest,
       public testing::WithParamInterface<wgpu::BackendType> {
  protected:
+  void SetUp() override {
+    IOSurfaceImageBackingFactoryTest::SetUp();
+
+    wgpu::RequestAdapterOptions adapter_options;
+    std::vector<const char*> adapter_enabled_toggles;
+
+    if (backend_type() == wgpu::BackendType::Vulkan) {
+      // Vulkan doesn't support IOSurface image backing, so we need
+      // MultiPlanarFormatExtendedUsages to copy to/from multiplanar texture.
+      // And this feature is currently experimental.
+      adapter_enabled_toggles.push_back("allow_unsafe_apis");
+    }
+
+    adapter_options.backendType = backend_type();
+
+    wgpu::DawnTogglesDescriptor adapter_toggles_desc;
+    adapter_toggles_desc.enabledToggles = adapter_enabled_toggles.data();
+    adapter_toggles_desc.enabledToggleCount = adapter_enabled_toggles.size();
+    adapter_options.nextInChain = &adapter_toggles_desc;
+
+    std::vector<dawn::native::Adapter> adapters =
+        instance_.EnumerateAdapters(&adapter_options);
+    EXPECT_FALSE(adapters.empty());
+    adapter_ = wgpu::Adapter(adapters[0].Get());
+  }
+
   wgpu::BackendType backend_type() { return GetParam(); }
 
   wgpu::Device CreateDevice() {
-    dawn::native::Instance instance;
-    instance.DiscoverDefaultPhysicalDevices();
+    std::vector<wgpu::FeatureName> features;
 
-    wgpu::RequestAdapterOptions adapter_options;
-    adapter_options.backendType = backend_type();
+    if (adapter_.HasFeature(wgpu::FeatureName::DawnMultiPlanarFormats)) {
+      features.push_back(wgpu::FeatureName::DawnMultiPlanarFormats);
+    }
+    if (adapter_.HasFeature(
+            wgpu::FeatureName::MultiPlanarFormatExtendedUsages)) {
+      features.push_back(wgpu::FeatureName::MultiPlanarFormatExtendedUsages);
+    }
+    if (adapter_.HasFeature(wgpu::FeatureName::MultiPlanarFormatP010)) {
+      features.push_back(wgpu::FeatureName::MultiPlanarFormatP010);
+    }
 
-    std::vector<dawn::native::Adapter> adapters =
-        instance.EnumerateAdapters(&adapter_options);
-    if (adapters.empty()) {
-      return nullptr;
+    if (adapter_.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface)) {
+      CHECK(adapter_.HasFeature(wgpu::FeatureName::SharedFenceMTLSharedEvent));
+      features.push_back(wgpu::FeatureName::SharedTextureMemoryIOSurface);
+      features.push_back(wgpu::FeatureName::SharedFenceMTLSharedEvent);
     }
 
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
-    wgpu::FeatureName dawn_internal_usage =
-        wgpu::FeatureName::DawnInternalUsages;
+    features.push_back(wgpu::FeatureName::DawnInternalUsages);
     wgpu::DeviceDescriptor device_descriptor;
-#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
-    device_descriptor.requiredFeatureCount = 1;
-#else
-    device_descriptor.requiredFeaturesCount = 1;
-#endif
-    device_descriptor.requiredFeatures = &dawn_internal_usage;
+    device_descriptor.requiredFeatureCount = features.size();
+    device_descriptor.requiredFeatures = features.data();
 
-    wgpu::Device device =
-        wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
+    wgpu::Device device = adapter_.CreateDevice(&device_descriptor);
 
     return device;
   }
-};
 
-// Test to check interaction between Dawn and skia GL representations.
-TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SkiaGL) {
-  // Create a Dawn device
-  wgpu::Device device = CreateDevice();
-  ASSERT_NE(device, nullptr);
+  std::unique_ptr<SharedImageRepresentationFactoryRef> CreateSharedImage(
+      const gfx::Size& size,
+      uint32_t usage) {
+    // Create a backing using mailbox.
+    auto mailbox = Mailbox::GenerateForSharedImage();
+    auto format = viz::SinglePlaneFormat::kRGBA_8888;
+    auto color_space = gfx::ColorSpace::CreateSRGB();
+    GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+    SkAlphaType alpha_type = kPremul_SkAlphaType;
+    gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+    auto backing = backing_factory_->CreateSharedImage(
+        mailbox, format, surface_handle, size, color_space, surface_origin,
+        alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+    EXPECT_TRUE(backing);
 
-  // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::Size size(1, 1);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_SCANOUT;
-  auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
-  EXPECT_TRUE(backing);
+    std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+        shared_image_manager_.Register(std::move(backing),
+                                       &memory_type_tracker_);
+    return factory_ref;
+  }
 
-  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  void ClearSharedImageWithDawn(wgpu::Device device,
+                                const gpu::Mailbox& mailbox,
+                                wgpu::Color color) {
+    // Create a DawnImageRepresentation.
+    auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
+        mailbox, device, backend_type(), {}, context_state_);
+    EXPECT_TRUE(dawn_representation);
 
-  // Create a DawnImageRepresentation.
-  auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-      mailbox, device, backend_type(), {});
-  EXPECT_TRUE(dawn_representation);
-
-  // Clear the shared image to green using Dawn.
-  {
     auto scoped_access = dawn_representation->BeginScopedAccess(
         wgpu::TextureUsage::RenderAttachment,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
@@ -249,7 +281,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SkiaGL) {
     color_desc.resolveTarget = nullptr;
     color_desc.loadOp = wgpu::LoadOp::Clear;
     color_desc.storeOp = wgpu::StoreOp::Store;
-    color_desc.clearValue = {0, 255, 0, 255};
+    color_desc.clearValue = color;
 
     wgpu::RenderPassDescriptor renderPassDesc = {};
     renderPassDesc.colorAttachmentCount = 1;
@@ -265,12 +297,105 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SkiaGL) {
     queue.Submit(1, &commands);
   }
 
-  CheckSkiaPixels(mailbox, size, {0, 255, 0, 255});
+  auto CopySharedImageWithDawn(wgpu::Device device,
+                               const gpu::Mailbox& src,
+                               const gpu::Mailbox& dst) {
+    auto src_rep = shared_image_representation_factory_.ProduceDawn(
+        src, device, backend_type(), {}, context_state_);
+    auto src_scoped_access = src_rep->BeginScopedAccess(
+        wgpu::TextureUsage::CopySrc,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    wgpu::Texture src_texture(src_scoped_access->texture());
+
+    auto dst_rep = shared_image_representation_factory_.ProduceDawn(
+        dst, device, backend_type(), {}, context_state_);
+
+    auto dst_scoped_access = dst_rep->BeginScopedAccess(
+        wgpu::TextureUsage::CopyDst,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    wgpu::Texture dst_texture(dst_scoped_access->texture());
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    wgpu::ImageCopyTexture copy_src;
+    copy_src.texture = src_texture;
+
+    wgpu::ImageCopyTexture copy_dst;
+    copy_dst.texture = dst_texture;
+
+    wgpu::Extent3D copy_size;
+    copy_size.width = src_rep->size().width();
+    copy_size.height = src_rep->size().height();
+
+    encoder.CopyTextureToTexture(&copy_src, &copy_dst, &copy_size);
+
+    wgpu::CommandBuffer commands = encoder.Finish();
+    wgpu::Queue queue = device.GetQueue();
+
+    queue.Submit(1, &commands);
+
+    return std::make_pair(std::move(src_rep), std::move(src_scoped_access));
+  }
+
+  dawn::native::Instance instance_;
+  wgpu::Adapter adapter_;
+};
+
+// Test to check interaction between Dawn and skia GL representations.
+TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SkiaGL) {
+  // Create a Dawn device
+  wgpu::Device device = CreateDevice();
+  ASSERT_NE(device, nullptr);
+
+  gfx::Size size(1, 1);
+  uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU_READ |
+                   SHARED_IMAGE_USAGE_WEBGPU_WRITE | SHARED_IMAGE_USAGE_SCANOUT;
+  auto factory_ref = CreateSharedImage(size, usage);
+
+  // Clear the shared image to green using Dawn.
+  ClearSharedImageWithDawn(device, factory_ref->mailbox(), {0, 255, 0, 255});
+
+  CheckSkiaPixels(factory_ref->mailbox(), size, {0, 255, 0, 255});
 
   // Shut down Dawn
-  device = wgpu::Device();
+  device = {};
 
   factory_ref.reset();
+}
+
+// Test to check interaction between Dawn devices.
+// Create 3 dawn devices, clear a shared image with devices[0], and then read it
+// from devices[1] and devices[2].
+TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_WriteReadReadOnThreeDevices) {
+  // Create three Dawn devices
+  auto device_0 = CreateDevice();
+  ASSERT_NE(device_0, nullptr);
+  auto device_1 = CreateDevice();
+  ASSERT_NE(device_1, nullptr);
+  auto device_2 = CreateDevice();
+  ASSERT_NE(device_2, nullptr);
+
+  gfx::Size size(256, 256);
+  uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU_READ |
+                   SHARED_IMAGE_USAGE_WEBGPU_WRITE | SHARED_IMAGE_USAGE_SCANOUT;
+  auto factory_ref_0 = CreateSharedImage(size, usage);
+  auto factory_ref_1 = CreateSharedImage(size, usage);
+  auto factory_ref_2 = CreateSharedImage(size, usage);
+
+  // Clear the shared image to green using Dawn.
+  ClearSharedImageWithDawn(device_0, factory_ref_0->mailbox(),
+                           {0, 255, 0, 255});
+
+  auto [rep_1, access_1] = CopySharedImageWithDawn(
+      device_1, factory_ref_0->mailbox(), factory_ref_1->mailbox());
+  auto [rep_2, access_2] = CopySharedImageWithDawn(
+      device_2, factory_ref_0->mailbox(), factory_ref_2->mailbox());
+
+  CheckSkiaPixels(factory_ref_1->mailbox(), size, {0, 255, 0, 255});
+  CheckSkiaPixels(factory_ref_2->mailbox(), size, {0, 255, 0, 255});
+
+  // Release scoped accesses.
+  access_2 = {};
+  access_1 = {};
 }
 
 // 1. Draw a color to texture through GL
@@ -278,30 +403,18 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SkiaGL) {
 // 3. Begin render pass in Dawn, but do not do anything
 // 4. Verify through CheckSkiaPixel that GL drawn color not seen
 TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
-  // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  const gfx::Size size(1, 1);
-  const auto color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_SCANOUT |
-                         SHARED_IMAGE_USAGE_WEBGPU;
-  auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
-  EXPECT_TRUE(backing);
-
-  GLenum expected_target = GL_TEXTURE_RECTANGLE;
-  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  gfx::Size size(1, 1);
+  const uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_SCANOUT |
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  auto factory_ref = CreateSharedImage(size, usage);
 
   {
     // Create a GLTextureImageRepresentation.
     auto gl_representation =
         shared_image_representation_factory_.ProduceGLTexturePassthrough(
-            mailbox);
+            factory_ref->mailbox());
+    GLenum expected_target = GetPlatformSpecificTextureTarget();
     EXPECT_TRUE(gl_representation);
     EXPECT_EQ(expected_target,
               gl_representation->GetTexturePassthrough()->target());
@@ -338,7 +451,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
 
   {
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, backend_type(), {});
+        factory_ref->mailbox(), device, backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -369,7 +482,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Check skia pixels returns black since texture was lazy cleared in Dawn
   EXPECT_TRUE(factory_ref->IsCleared());
-  CheckSkiaPixels(mailbox, size, {0, 0, 0, 0});
+  CheckSkiaPixels(factory_ref->mailbox(), size, {0, 0, 0, 0});
 
   // Shut down Dawn
   device = wgpu::Device();
@@ -383,23 +496,11 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
 // 4. Expect skia to fail to access the texture because texture is not
 // initialized
 TEST_P(IOSurfaceImageBackingFactoryDawnTest, UnclearDawn_SkiaFails) {
-  // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  const gfx::Size size(1, 1);
-  const auto color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_SCANOUT |
-                         SHARED_IMAGE_USAGE_WEBGPU;
-  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
-  ASSERT_NE(backing, nullptr);
-
-  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  gfx::Size size(1, 1);
+  const uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT |
+                         SHARED_IMAGE_USAGE_WEBGPU_READ |
+                         SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  auto factory_ref = CreateSharedImage(size, usage);
 
   // Create dawn device
   wgpu::Device device = CreateDevice();
@@ -407,7 +508,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, UnclearDawn_SkiaFails) {
 
   {
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, backend_type(), {});
+        factory_ref->mailbox(), device, backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -443,8 +544,8 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, UnclearDawn_SkiaFails) {
   EXPECT_FALSE(factory_ref->IsCleared());
 
   // Produce skia representation
-  auto skia_representation =
-      shared_image_representation_factory_.ProduceSkia(mailbox, context_state_);
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
+      factory_ref->mailbox(), context_state_);
   ASSERT_NE(skia_representation, nullptr);
 
   // Expect BeginScopedReadAccess to fail because sharedImage is uninitialized
@@ -453,6 +554,83 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, UnclearDawn_SkiaFails) {
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);
   EXPECT_EQ(scoped_read_access, nullptr);
 }
+
+TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
+  const gfx::Size size(32, 32);
+
+  const uint8_t kYFillValue = 0x12;
+  const uint8_t kUFillValue = 0x23;
+  const uint8_t kVFillValue = 0x34;
+
+  // Create a Dawn device
+  wgpu::Device device = CreateDevice();
+  ASSERT_NE(device, nullptr);
+
+  if (!device.HasFeature(wgpu::FeatureName::DawnMultiPlanarFormats)) {
+    GTEST_SKIP();
+  }
+  if (backend_type() == wgpu::BackendType::Vulkan) {
+    // Vulkan doesn't support IOSurface image backing, so we need
+    // MultiPlanarFormatExtendedUsages to copy to/from multiplanar texture.
+    ASSERT_TRUE(
+        device.HasFeature(wgpu::FeatureName::MultiPlanarFormatExtendedUsages));
+  }
+
+  // Create a backing using mailbox.
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto format = viz::MultiPlaneFormat::kNV12;
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  const uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT |
+                         SHARED_IMAGE_USAGE_WEBGPU_READ |
+                         SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, surface_handle, size, color_space, surface_origin,
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+  ASSERT_NE(backing, nullptr);
+
+  // Fill the shared image's data
+  std::array<std::vector<uint8_t>, 2> plane_datas = {
+      std::vector<uint8_t>(size.width() * size.height(), kYFillValue),
+      std::vector<uint8_t>(size.width() * size.height() / 2),
+  };
+
+  // U & V data are interleaved.
+  for (size_t i = 0; i < plane_datas[1].size(); i += 2) {
+    plane_datas[1][i] = kUFillValue;
+    plane_datas[1][i + 1] = kVFillValue;
+  }
+
+  std::vector<SkPixmap> pixmaps(2);
+
+  for (int plane_index = 0; plane_index < 2; ++plane_index) {
+    gfx::Size plane_size = format.GetPlaneSize(plane_index, size);
+    auto info =
+        SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
+                          viz::ToClosestSkColorType(
+                              /*gpu_compositing=*/true, format, plane_index),
+                          alpha_type, color_space.ToSkColorSpace());
+    pixmaps[plane_index] =
+        SkPixmap(info, plane_datas[plane_index].data(), info.minRowBytes());
+  }
+
+  ASSERT_TRUE(backing->UploadFromMemory(pixmaps));
+  backing->SetCleared();
+
+  // Sampling the shared image in Dawn
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  auto dawn_image = shared_image_representation_factory_.ProduceDawn(
+      mailbox, device, backend_type(), {}, context_state_);
+  ASSERT_NE(dawn_image, nullptr);
+
+  RunDawnVideoSamplingTest(device, dawn_image, kYFillValue, kUFillValue,
+                           kVFillValue);
+}
+
 #endif  // BUILDFLAG(USE_DAWN)
 
 // Test that Skia trying to access uninitialized SharedImage will fail
@@ -464,7 +642,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_SCANOUT;
+  const uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
@@ -495,10 +673,19 @@ class MockProgressReporter : public gl::ProgressReporter {
   MOCK_METHOD0(ReportProgress, void());
 };
 
+struct ContextTypeParams {
+  ContextTypeParams(
+      GrContextType context_type,
+      wgpu::BackendType dawn_backend_type = wgpu::BackendType::Null)
+      : context_type(context_type), dawn_backend_type(dawn_backend_type) {}
+  GrContextType context_type;
+  wgpu::BackendType dawn_backend_type;
+};
+
 class IOSurfaceImageBackingFactoryParameterizedTestBase
     : public SharedImageTestBase,
       public testing::WithParamInterface<
-          std::tuple<viz::SharedImageFormat, GrContextType>> {
+          std::tuple<viz::SharedImageFormat, ContextTypeParams>> {
  public:
   IOSurfaceImageBackingFactoryParameterizedTestBase() = default;
   ~IOSurfaceImageBackingFactoryParameterizedTestBase() override = default;
@@ -509,13 +696,14 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
     auto gr_context_type = get_gr_context_type();
     ASSERT_NO_FATAL_FAILURE(InitializeContext(gr_context_type));
 
+#if BUILDFLAG(IS_MAC)
+    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+#endif  // BUILDFLAG(IS_MAC)
+
     auto format = get_format();
     // Dawn does not support BGRA_1010102.
-    // TODO(crbug.com/1442381): Remove early return for multiplane once YUV
-    // support is added.
     if (gr_context_type == GrContextType::kGraphiteDawn &&
-        (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
-         format.is_multi_plane())) {
+        format == viz::SinglePlaneFormat::kBGRA_1010102) {
       GTEST_SKIP();
     }
 
@@ -536,7 +724,25 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
   }
 
   viz::SharedImageFormat get_format() { return std::get<0>(GetParam()); }
-  GrContextType get_gr_context_type() { return std::get<1>(GetParam()); }
+  GrContextType get_gr_context_type() {
+    return std::get<1>(GetParam()).context_type;
+  }
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+  // Override SharedImageTestBase
+  wgpu::BackendType GetDawnBackendType() const override {
+    return std::get<1>(GetParam()).dawn_backend_type;
+  }
+
+  bool DawnForceFallbackAdapter() const override {
+    return GetDawnBackendType() == wgpu::BackendType::Vulkan;
+  }
+#else
+  wgpu::BackendType GetDawnBackendType() const {
+    NOTREACHED();
+    return wgpu::BackendType::Undefined;
+  }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
  protected:
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
@@ -617,15 +823,16 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
     // First, validate a DawnImageRepresentation.
-    auto device = context_state_->dawn_context_provider()->GetDevice();
+    auto* context_provider = context_state_->dawn_context_provider();
+    auto device = context_provider->GetDevice();
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, wgpu::BackendType::Metal, {});
+        mailbox, device, context_provider->backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
     EXPECT_EQ(usage, dawn_representation->usage());
     EXPECT_EQ(color_space, dawn_representation->color_space());
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
-        wgpu::TextureUsage::RenderAttachment,
+        wgpu::TextureUsage::TextureBinding,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
@@ -642,6 +849,14 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
   if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
       format == viz::MultiPlaneFormat::kP010) {
     // Producing SkSurface for these formats fails for some reason.
+    return;
+  }
+
+  // TODO(dawn:1337): Enable once multi-planar rendering lands for Dawn
+  // Vulkan-Swiftshader.
+  if (get_gr_context_type() == GrContextType::kGraphiteDawn &&
+      GetDawnBackendType() == wgpu::BackendType::Vulkan &&
+      format.is_multi_plane()) {
     return;
   }
 
@@ -684,12 +899,15 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
     }
   } else {
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
-    auto graphite_texture = scoped_read_access->graphite_texture();
-    EXPECT_TRUE(graphite_texture.isValid());
     EXPECT_TRUE(begin_semaphores.empty());
     EXPECT_TRUE(end_semaphores.empty());
-    EXPECT_EQ(size.width(), graphite_texture.dimensions().width());
-    EXPECT_EQ(size.height(), graphite_texture.dimensions().height());
+    for (auto i = 0; i < format.NumberOfPlanes(); i++) {
+      auto graphite_texture = scoped_read_access->graphite_texture(i);
+      EXPECT_TRUE(graphite_texture.isValid());
+      auto plane_size = format.GetPlaneSize(i, size);
+      EXPECT_EQ(plane_size.width(), graphite_texture.dimensions().width());
+      EXPECT_EQ(plane_size.height(), graphite_texture.dimensions().height());
+    }
   }
   scoped_read_access.reset();
   skia_representation.reset();
@@ -757,9 +975,10 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
     // First, validate a DawnImageRepresentation.
-    auto device = context_state_->dawn_context_provider()->GetDevice();
+    auto* context_provider = context_state_->dawn_context_provider();
+    auto device = context_provider->GetDevice();
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, wgpu::BackendType::Metal, {});
+        mailbox, device, context_provider->backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
     EXPECT_EQ(usage, dawn_representation->usage());
     EXPECT_EQ(color_space, dawn_representation->color_space());
@@ -824,9 +1043,10 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
     // First, validate a DawnImageRepresentation.
-    auto device = context_state_->dawn_context_provider()->GetDevice();
+    auto* context_provider = context_state_->dawn_context_provider();
+    auto device = context_provider->GetDevice();
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, wgpu::BackendType::Metal, {});
+        mailbox, device, context_provider->backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
     EXPECT_EQ(usage, dawn_representation->usage());
     EXPECT_EQ(color_space, dawn_representation->color_space());
@@ -975,9 +1195,8 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
       continue;
     }
 
-    GLFormatDesc format_desc = ToGLFormatDesc(
-        format, /*plane_index=*/0,
-        feature_info->feature_flags().angle_rgbx_internal_format);
+    GLFormatCaps caps(feature_info.get());
+    GLFormatDesc format_desc = caps.ToGLFormatDesc(format, /*plane_index=*/0);
     int storage_format = format_desc.storage_internal_format;
     int image_gl_format = format_desc.data_format;
     int storage_gl_format =
@@ -1084,15 +1303,16 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
     // First, validate a DawnImageRepresentation.
-    auto device = context_state_->dawn_context_provider()->GetDevice();
+    auto* context_provider = context_state_->dawn_context_provider();
+    auto device = context_provider->GetDevice();
     auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
-        mailbox, device, wgpu::BackendType::Metal, {});
+        mailbox, device, context_provider->backend_type(), {}, context_state_);
     ASSERT_TRUE(dawn_representation);
     EXPECT_EQ(usage, dawn_representation->usage());
     EXPECT_EQ(color_space, dawn_representation->color_space());
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
-        wgpu::TextureUsage::RenderAttachment,
+        wgpu::TextureUsage::TextureBinding,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
@@ -1153,6 +1373,14 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
     return;
   }
 
+  // TODO(dawn:1337): Enable once multi-planar rendering lands for Dawn
+  // Vulkan-Swiftshader.
+  if (get_gr_context_type() == GrContextType::kGraphiteDawn &&
+      GetDawnBackendType() == wgpu::BackendType::Vulkan &&
+      format.is_multi_plane()) {
+    return;
+  }
+
   std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_write_access;
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
@@ -1190,18 +1418,31 @@ std::string TestBackendTypeParamToString(
     const testing::TestParamInfo<wgpu::BackendType>& param_info) {
   // We only support metal & vulkan on mac. And for vulkan, the only driver
   // supported is swiftshader.
-  std::string adapter_type =
-      (param_info.param == wgpu::BackendType::Metal) ? "Metal" : "SwiftShader";
+  std::string adapter_type = (param_info.param == wgpu::BackendType::Metal)
+                                 ? "Metal"
+                                 : "Vulkan_SwiftShader";
   return adapter_type;
 }
 
 std::string TestContextTypeFormatParamsToString(
     const testing::TestParamInfo<
-        std::tuple<viz::SharedImageFormat, GrContextType>>& param_info) {
+        std::tuple<viz::SharedImageFormat, ContextTypeParams>>& param_info) {
   std::string format = std::get<0>(param_info.param).ToTestParamString();
-  std::string context_type =
-      (std::get<1>(param_info.param) == GrContextType::kGL) ? "GL"
-                                                            : "GraphiteDawn";
+  std::string context_type;
+
+  if ((std::get<1>(param_info.param).context_type == GrContextType::kGL)) {
+    context_type = "GL";
+  } else {
+    context_type = "GraphiteDawn";
+
+    if (std::get<1>(param_info.param).dawn_backend_type ==
+        wgpu::BackendType::Metal) {
+      context_type += "_Metal";
+    } else {
+      context_type += "_Vulkan_SwiftShader";
+    }
+  }
+
   return context_type + "_" + format;
 }
 
@@ -1216,16 +1457,24 @@ INSTANTIATE_TEST_SUITE_P(,
 INSTANTIATE_TEST_SUITE_P(
     ,
     IOSurfaceImageBackingFactoryScanoutTest,
-    testing::Combine(kScanoutFormats,
-                     testing::Values(GrContextType::kGL,
-                                     GrContextType::kGraphiteDawn)),
+    testing::Combine(
+        kScanoutFormats,
+        testing::Values(ContextTypeParams(GrContextType::kGL),
+                        ContextTypeParams(GrContextType::kGraphiteDawn,
+                                          wgpu::BackendType::Metal),
+                        ContextTypeParams(GrContextType::kGraphiteDawn,
+                                          wgpu::BackendType::Vulkan))),
     TestContextTypeFormatParamsToString);
 INSTANTIATE_TEST_SUITE_P(
     ,
     IOSurfaceImageBackingFactoryGMBTest,
-    testing::Combine(kGMBFormats,
-                     testing::Values(GrContextType::kGL,
-                                     GrContextType::kGraphiteDawn)),
+    testing::Combine(
+        kGMBFormats,
+        testing::Values(ContextTypeParams(GrContextType::kGL),
+                        ContextTypeParams(GrContextType::kGraphiteDawn,
+                                          wgpu::BackendType::Metal),
+                        ContextTypeParams(GrContextType::kGraphiteDawn,
+                                          wgpu::BackendType::Vulkan))),
     TestContextTypeFormatParamsToString);
 
 }  // namespace gpu

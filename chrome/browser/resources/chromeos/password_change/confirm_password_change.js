@@ -16,10 +16,10 @@
 // fields if some of the passwords were successfully scraped.
 
 import 'chrome://confirm-password-change/strings.m.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
@@ -127,7 +127,7 @@ Polymer({
 
   /** @private */
   onErrorChanged_() {
-    if (this.currentValidationError_ != ValidationErrorType.NO_ERROR) {
+    if (this.currentValidationError_ !== ValidationErrorType.NO_ERROR) {
       this.showSpinner_ = false;
     }
   },
@@ -135,7 +135,7 @@ Polymer({
   /** @private */
   onSaveTap_() {
     this.currentValidationError_ = this.findFirstError_();
-    if (this.currentValidationError_ == ValidationErrorType.NO_ERROR) {
+    if (this.currentValidationError_ === ValidationErrorType.NO_ERROR) {
       chrome.send('changePassword', [this.oldPassword_, this.newPassword_]);
       this.showSpinner_ = true;
     }
@@ -173,7 +173,7 @@ Polymer({
       if (!this.confirmNewPassword_) {
         return ValidationErrorType.MISSING_CONFIRM_NEW_PASSWORD;
       }
-      if (this.newPassword_ != this.confirmNewPassword_) {
+      if (this.newPassword_ !== this.confirmNewPassword_) {
         return ValidationErrorType.PASSWORDS_DO_NOT_MATCH;
       }
     }
@@ -186,8 +186,8 @@ Polymer({
    */
   invalidOldPassword_() {
     const err = this.currentValidationError_;
-    return err == ValidationErrorType.MISSING_OLD_PASSWORD ||
-        err == ValidationErrorType.INCORRECT_OLD_PASSWORD;
+    return err === ValidationErrorType.MISSING_OLD_PASSWORD ||
+        err === ValidationErrorType.INCORRECT_OLD_PASSWORD;
   },
 
   /**
@@ -205,8 +205,8 @@ Polymer({
    */
   invalidConfirmNewPassword_() {
     const err = this.currentValidationError_;
-    return err == ValidationErrorType.MISSING_CONFIRM_NEW_PASSWORD ||
-        err == ValidationErrorType.PASSWORDS_DO_NOT_MATCH;
+    return err === ValidationErrorType.MISSING_CONFIRM_NEW_PASSWORD ||
+        err === ValidationErrorType.PASSWORDS_DO_NOT_MATCH;
   },
 
   /**

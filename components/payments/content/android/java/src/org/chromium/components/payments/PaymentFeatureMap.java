@@ -6,13 +6,12 @@ package org.chromium.components.payments;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.FeatureMap;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Java accessor for state of Payments feature flags.
- */
+import org.chromium.base.FeatureMap;
+
+/** Java accessor for state of Payments feature flags. */
 @JNINamespace("payments::android")
 public class PaymentFeatureMap extends FeatureMap {
     private static final PaymentFeatureMap sInstance = new PaymentFeatureMap();
@@ -22,16 +21,12 @@ public class PaymentFeatureMap extends FeatureMap {
         super();
     }
 
-    /**
-     * @return the singleton PaymentFeatureMap.
-     */
+    /** @return the singleton PaymentFeatureMap. */
     public static PaymentFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

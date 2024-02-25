@@ -87,7 +87,7 @@ class WebAppFileHandlerRegistrationWinTest : public testing::Test {
   TestingProfileManager* testing_profile_manager() {
     return testing_profile_manager_.get();
   }
-  const AppId& app_id() const { return app_id_; }
+  const webapps::AppId& app_id() const { return app_id_; }
 
   const std::wstring file_handler1_prog_id() { return file_handler1_prog_id_; }
   const std::wstring file_handler2_prog_id() { return file_handler2_prog_id_; }
@@ -160,7 +160,7 @@ class WebAppFileHandlerRegistrationWinTest : public testing::Test {
   // Returns the expected app launcher path inside the subdirectory for
   // |app_id|.
   base::FilePath GetLauncherPathForApp(Profile* profile,
-                                       const AppId app_id,
+                                       const webapps::AppId app_id,
                                        const std::string& sanitized_app_name) {
     base::FilePath web_app_dir(GetOsIntegrationResourcesDirectoryForApp(
         profile->GetPath(), app_id, GURL()));
@@ -177,7 +177,7 @@ class WebAppFileHandlerRegistrationWinTest : public testing::Test {
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  const AppId app_id_ = "app_id";
+  const webapps::AppId app_id_ = "app_id";
   // These are set in SetUp() and are the ProgIds for file handlers in the
   // default profile.
   std::wstring file_handler1_prog_id_;

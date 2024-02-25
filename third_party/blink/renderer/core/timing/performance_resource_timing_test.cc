@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -54,6 +55,7 @@ class PerformanceResourceTimingTest : public testing::Test {
         dummy_page_holder->GetDocument().GetExecutionContext());
   }
 
+  test::TaskEnvironment task_environment_;
   Persistent<ScriptState> script_state_;
 };
 

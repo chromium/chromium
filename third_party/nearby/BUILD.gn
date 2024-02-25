@@ -83,6 +83,7 @@ source_set("connections_types") {
   ]
   public_deps = [
     ":connections_enums_proto",
+    ":interop_authentication_status",
     ":platform_base",
     ":platform_public_comm",
     ":platform_public_logging",
@@ -125,6 +126,7 @@ source_set("connections_implementation") {
     "src/connections/implementation/p2p_star_pcp_handler.cc",
     "src/connections/implementation/payload_manager.cc",
     "src/connections/implementation/pcp_manager.cc",
+    "src/connections/implementation/reconnect_manager.cc",
     "src/connections/implementation/service_controller_router.cc",
     "src/connections/implementation/webrtc_bwu_handler.cc",
     "src/connections/implementation/webrtc_endpoint_channel.cc",
@@ -167,6 +169,7 @@ source_set("connections_implementation") {
     "src/connections/implementation/pcp.h",
     "src/connections/implementation/pcp_handler.h",
     "src/connections/implementation/pcp_manager.h",
+    "src/connections/implementation/reconnect_manager.h",
     "src/connections/implementation/service_controller.h",
     "src/connections/implementation/service_controller_router.h",
     "src/connections/implementation/webrtc_bwu_handler.h",
@@ -186,6 +189,8 @@ source_set("connections_implementation") {
     ":connections_implementation_mediums",
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
+    ":interop_authentication_status",
+    ":interop_authentication_transport_interface",
     ":interop_device",
     ":offline_wire_formats_proto",
     ":platform_base",
@@ -283,6 +288,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/ble_v2/ble_utils.cc",
     "src/connections/implementation/mediums/ble_v2/bloom_filter.cc",
     "src/connections/implementation/mediums/ble_v2/discovered_peripheral_tracker.cc",
+    "src/connections/implementation/mediums/ble_v2/instant_on_lost_advertisement.cc",
     "src/connections/implementation/mediums/bluetooth_classic.cc",
     "src/connections/implementation/mediums/bluetooth_radio.cc",
     "src/connections/implementation/mediums/mediums.cc",
@@ -302,6 +308,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/ble_v2/bloom_filter.h",
     "src/connections/implementation/mediums/ble_v2/discovered_peripheral_callback.h",
     "src/connections/implementation/mediums/ble_v2/discovered_peripheral_tracker.h",
+    "src/connections/implementation/mediums/ble_v2/instant_on_lost_advertisement.h",
     "src/connections/implementation/mediums/bluetooth_classic.h",
     "src/connections/implementation/mediums/bluetooth_radio.h",
     "src/connections/implementation/mediums/lost_entity_tracker.h",
@@ -489,6 +496,17 @@ source_set("flags") {
 }
 
 # src/internal/interop
+source_set("interop_authentication_transport_interface") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [ "src/internal/interop/authentication_transport.h" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 source_set("interop_device") {
   public_configs = [
     ":nearby_include_config",
@@ -499,10 +517,21 @@ source_set("interop_device") {
     "src/internal/interop/device_provider.h",
   ]
   public_deps = [
-    ":platform_api_types",
+    ":interop_authentication_status",
+    ":interop_authentication_transport_interface",
     ":platform_base_connection_info",
     "//third_party/abseil-cpp:absl",
   ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+source_set("interop_authentication_status") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [ "src/internal/interop/authentication_status.h" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -599,6 +628,10 @@ source_set("platform_base") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
+
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [ "-Wno-deprecated-declarations" ]
   sources = [
     "src/internal/platform/base64_utils.cc",
     "src/internal/platform/bluetooth_utils.cc",
@@ -872,20 +905,30 @@ source_set("presence") {
   ]
   sources = [
     "src/presence/presence_client_impl.cc",
+    "src/presence/presence_device_provider.cc",
     "src/presence/presence_service_impl.cc",
   ]
-
   public = [
     "src/presence/presence_client.h",
     "src/presence/presence_client_impl.h",
+    "src/presence/presence_device_provider.h",
     "src/presence/presence_service.h",
     "src/presence/presence_service_impl.h",
   ]
   public_deps = [
+    ":connections_local_credential_proto",
     ":connections_metadata_proto",
+    ":interop_authentication_status",
+    ":interop_authentication_transport_interface",
     ":interop_device",
+    ":platform_api_comm",
+    ":platform_api_types",
+    ":platform_base",
+    ":platform_base_logging",
     ":platform_public_types",
+    ":presence_frame_proto",
     ":presence_internal",
+    ":presence_mediums",
     ":presence_types",
     "//third_party/abseil-cpp:absl",
   ]
@@ -961,7 +1004,7 @@ source_set("presence_internal") {
     "src/presence/implementation/advertisement_factory.cc",
     "src/presence/implementation/base_broadcast_request.cc",
     "src/presence/implementation/broadcast_manager.cc",
-    "src/presence/implementation/connection_authenticator.cc",
+    "src/presence/implementation/connection_authenticator_impl.cc",
     "src/presence/implementation/credential_manager_impl.cc",
     "src/presence/implementation/ldt.cc",
     "src/presence/implementation/scan_manager.cc",
@@ -974,6 +1017,7 @@ source_set("presence_internal") {
     "src/presence/implementation/base_broadcast_request.h",
     "src/presence/implementation/broadcast_manager.h",
     "src/presence/implementation/connection_authenticator.h",
+    "src/presence/implementation/connection_authenticator_impl.h",
     "src/presence/implementation/credential_manager.h",
     "src/presence/implementation/credential_manager_impl.h",
     "src/presence/implementation/ldt.h",
@@ -998,7 +1042,7 @@ source_set("presence_internal") {
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl:boringssl",
   ]
-  if (enable_rust && enable_rust_boringssl) {
+  if (enable_rust && enable_all_rust_features && enable_rust_boringssl) {
     public_deps += [ "//third_party/beto-core:ldt_np_adv_ffi" ]
     public_configs += [ ":nearby_rust_defines" ]
   }
@@ -1059,6 +1103,12 @@ proto_library("connections_enums_proto") {
   proto_out_dir = "third_party/nearby"
 }
 
+proto_library("sharing_enums_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/proto/sharing_enums.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
 # src/internal/proto/analytics
 proto_library("connections_log_proto") {
   proto_in_dir = "src"
@@ -1100,6 +1150,83 @@ proto_library("offline_wire_formats_proto") {
   proto_in_dir = "src"
   sources = [ "${proto_in_dir}/connections/implementation/proto/offline_wire_formats.proto" ]
   proto_out_dir = "third_party/nearby"
+}
+
+# src/sharing/proto
+proto_library("encrypted_metadata_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/encrypted_metadata.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("enums_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/enums.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("field_mask_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/field_mask.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("settings_observer_data_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/settings_observer_data.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("timestamp_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/timestamp.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("rpc_resources_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/rpc_resources.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":timestamp_proto" ]
+  link_deps = [ ":timestamp_proto" ]
+}
+
+proto_library("wire_format_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/wire_format.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":sharing_enums_proto" ]
+  link_deps = [ ":sharing_enums_proto" ]
+}
+
+proto_library("device_rpc_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/device_rpc.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [
+    ":field_mask_proto",
+    ":rpc_resources_proto",
+  ]
+  link_deps = [
+    ":field_mask_proto",
+    ":rpc_resources_proto",
+  ]
+}
+
+proto_library("contact_rpc_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/contact_rpc.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":rpc_resources_proto" ]
+  link_deps = [ ":rpc_resources_proto" ]
+}
+
+proto_library("certificate_rpc_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/sharing/proto/certificate_rpc.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [ ":rpc_resources_proto" ]
+  link_deps = [ ":rpc_resources_proto" ]
 }
 
 # src/presence/proto

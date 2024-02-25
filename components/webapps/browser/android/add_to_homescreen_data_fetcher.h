@@ -12,6 +12,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
@@ -36,15 +37,17 @@ class AddToHomescreenDataFetcher {
    public:
     // Called when the homescreen icon title (and possibly information from the
     // web manifest) is available.
-    virtual void OnUserTitleAvailable(const std::u16string& title,
-                                      const GURL& url,
-                                      bool is_webapk_compatible) = 0;
+    virtual void OnUserTitleAvailable(
+        const std::u16string& title,
+        const GURL& url,
+        AddToHomescreenParams::AppType app_type) = 0;
 
     // Called when all the data needed to prompt the user to add to home screen
     // is available.
     virtual void OnDataAvailable(
         const ShortcutInfo& info,
         const SkBitmap& primary_icon,
+        AddToHomescreenParams::AppType app_type,
         const InstallableStatusCode installable_status) = 0;
 
    protected:

@@ -40,9 +40,6 @@ constexpr int kBodyFontSize = 14;
 // The line height of the text.
 constexpr int kBodyLineHeight = 20;
 
-// The line height of the confidential content title label.
-constexpr int kConfidentialContentLineHeight = 20;
-
 // The spacing between the elements in a box layout.
 constexpr int kBetweenChildSpacing = 16;
 
@@ -72,12 +69,12 @@ DlpWarnDialog::DlpWarnDialogOptions::operator=(
 
 DlpWarnDialog::DlpWarnDialogOptions::~DlpWarnDialogOptions() = default;
 
-DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
+DlpWarnDialog::DlpWarnDialog(WarningCallback callback,
                              DlpWarnDialogOptions options)
     : restriction_(options.restriction),
       application_title_(options.application_title),
       contents_(std::move(options.confidential_contents)) {
-  SetOnDlpRestrictionCheckedCallback(std::move(callback));
+  SetWarningCallback(std::move(callback));
 
   set_margins(gfx::Insets::TLBR(20, 0, 20, 0));
 
@@ -91,6 +88,12 @@ DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
 }
 
 DlpWarnDialog::~DlpWarnDialog() = default;
+
+void DlpWarnDialog::SetWarningCallback(WarningCallback callback) {
+  auto split = base::SplitOnceCallback(std::move(callback));
+  SetAcceptCallback(base::BindOnce(std::move(split.first), true));
+  SetCancelCallback(base::BindOnce(std::move(split.second), false));
+}
 
 views::Label* DlpWarnDialog::AddTitle(const std::u16string& title) {
   // Call the parent class to setup the element. Do not remove.
@@ -207,13 +210,14 @@ void DlpWarnDialog::AddConfidentialRow(const gfx::ImageSkia& icon,
   AddRowIcon(icon, row);
 
   views::Label* title_label = AddRowTitle(title, row);
+  title_label->SetMultiLine(false);
+  title_label->SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   title_label->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
                                          kBodyFontSize,
                                          gfx::Font::Weight::NORMAL));
-  title_label->SetLineHeight(kConfidentialContentLineHeight);
 }
 
-BEGIN_METADATA(DlpWarnDialog, PolicyDialogBase)
+BEGIN_METADATA(DlpWarnDialog)
 END_METADATA
 
 }  // namespace policy

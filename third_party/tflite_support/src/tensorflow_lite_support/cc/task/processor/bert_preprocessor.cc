@@ -44,11 +44,11 @@ constexpr char kSeparator[] = "[SEP]";
 StatusOr<std::unique_ptr<BertPreprocessor>> BertPreprocessor::Create(
     tflite::task::core::TfLiteEngine* engine,
     const std::initializer_list<int> input_tensor_indices) {
-  ASSIGN_OR_RETURN(auto processor, Processor::Create<BertPreprocessor>(
+  TFLITE_ASSIGN_OR_RETURN(auto processor, Processor::Create<BertPreprocessor>(
                                        /* num_expected_tensors = */ 3, engine,
                                        input_tensor_indices,
                                        /* requires_metadata = */ false));
-  RETURN_IF_ERROR(processor->Init());
+  TFLITE_RETURN_IF_ERROR(processor->Init());
   return processor;
 }
 
@@ -58,7 +58,7 @@ absl::Status BertPreprocessor::Init() {
   // BertTokenizer is packed in the processing unit SubgraphMetadata.
   const tflite::ProcessUnit* tokenizer_metadata =
       GetMetadataExtractor()->GetInputProcessUnit(kTokenizerProcessUnitIndex);
-  ASSIGN_OR_RETURN(tokenizer_, CreateTokenizerFromProcessUnit(
+  TFLITE_ASSIGN_OR_RETURN(tokenizer_, CreateTokenizerFromProcessUnit(
                                    tokenizer_metadata, GetMetadataExtractor()));
 
   const auto& ids_tensor = *GetTensor(kIdsTensorIndex);
@@ -117,8 +117,7 @@ absl::Status BertPreprocessor::Init() {
         TfLiteSupportStatus::kInvalidInputTensorSizeError);
   }
 
-  if (input_tensors_are_dynamic_)
-    return absl::OkStatus();
+  if (input_tensors_are_dynamic_) return absl::OkStatus();
 
   bert_max_seq_len_ = ids_tensor.dims->data[1];
   if (bert_max_seq_len_ < 2) {
@@ -179,9 +178,9 @@ absl::Status BertPreprocessor::Preprocess(const std::string& input_text) {
   // input_masks                 1    1   1...  1    1    0  0...  0
   // segment_ids                 0    0   0...  0    0    0  0...  0
 
-  RETURN_IF_ERROR(PopulateTensor(input_ids, ids_tensor));
-  RETURN_IF_ERROR(PopulateTensor(input_mask, mask_tensor));
-  RETURN_IF_ERROR(PopulateTensor(std::vector<int>(input_tensor_length, 0),
+  TFLITE_RETURN_IF_ERROR(PopulateTensor(input_ids, ids_tensor));
+  TFLITE_RETURN_IF_ERROR(PopulateTensor(input_mask, mask_tensor));
+  TFLITE_RETURN_IF_ERROR(PopulateTensor(std::vector<int>(input_tensor_length, 0),
                                  segment_ids_tensor));
   return absl::OkStatus();
 }

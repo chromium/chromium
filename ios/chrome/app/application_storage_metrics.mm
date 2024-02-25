@@ -17,14 +17,24 @@
 #import "base/task/thread_pool.h"
 #import "components/history/core/browser/history_constants.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 
 // Key for last stored time that size metrics of the documents directory were
 // logged.
 NSString* const kLastApplicationStorageMetricsLogTime =
     @"LastApplicationStorageMetricsLogTime";
 
+// The etension used for all snapshot images.
+constexpr std::string_view kSnapshotImageExtension = ".jpg";
+// The label appended to the snapshot filename for grey snapshot images.
+constexpr std::string_view kGreySnapshotImageIdentifier = "Grey";
+
 // The path, relative to the profile directory, where tab state is stored.
 const base::FilePath::CharType kSessionsPath[] = FILE_PATH_LITERAL("Sessions");
+
+// The path, relative to the profile directory, where snapshots are stored.
+const base::FilePath::CharType kSnapshotsPath[] =
+    FILE_PATH_LITERAL("Snapshots");
 
 // The path, relative to the application's Library directory, to WebKit's
 // storage location for website local data .
@@ -37,6 +47,55 @@ const base::FilePath::CharType kWebKitTmpPath[] = FILE_PATH_LITERAL("WebKit");
 // The path, relative to the Caches directory, used for WebKit cache.
 const base::FilePath::CharType kWebKitCachePath[] = FILE_PATH_LITERAL("WebKit");
 
+struct DirectorySnapshotDetails {
+  DirectorySnapshotDetails() : snapshot_count(0), total_size_bytes(0) {}
+
+  int snapshot_count;
+  int64_t total_size_bytes;
+};
+
+DirectorySnapshotDetails CalculateImageMetricsInRoot(bool grey_only,
+                                                     base::FilePath root) {
+  DirectorySnapshotDetails details;
+
+  if (!base::PathExists(root)) {
+    return details;
+  }
+
+  base::File file(root, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File::Info info;
+  if (!file.IsValid() || !file.GetInfo(&info)) {
+    return details;
+  }
+
+  if (!info.is_directory) {
+    if (root.MatchesExtension(kSnapshotImageExtension)) {
+      // Add this snapshot to the total if search for all snapshots or searching
+      // for grey snapshots only and the filename contains
+      // `kGreySnapshotImageIdentifier`.
+      if (!grey_only ||
+          root.BaseName().MaybeAsASCII().find(kGreySnapshotImageIdentifier) !=
+              std::string::npos) {
+        details.snapshot_count += 1;
+        details.total_size_bytes += info.size;
+      }
+    }
+    return details;
+  }
+
+  base::FileEnumerator enumerator(
+      root, /*recursive=*/false,
+      base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES);
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    DirectorySnapshotDetails child_details =
+        CalculateImageMetricsInRoot(grey_only, root.Append(path.BaseName()));
+    details.snapshot_count += child_details.snapshot_count;
+    details.total_size_bytes += child_details.total_size_bytes;
+  }
+
+  return details;
+}
 // Calculates and returns the total size used by `root`.
 int64_t CalculateTotalSize(base::FilePath root) {
   if (!base::PathExists(root)) {
@@ -130,12 +189,12 @@ void LogLibraryDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
 // Logs the optimization guide model downloads directory size. Accepts a task
 // runner as a parameter in order to keep it in scope throughout the execution.
 void LogOptimizationGuideModelDownloadsMetrics(
-    base::FilePath profile_path,
     scoped_refptr<base::SequencedTaskRunner>) {
   int items = 0;
 
-  base::FilePath models_dir = profile_path.Append(
-      optimization_guide::kOptimizationGuidePredictionModelDownloads);
+  base::FilePath models_dir =
+      base::PathService::CheckedGet(ios::DIR_USER_DATA)
+          .Append(optimization_guide::kOptimizationGuideModelStoreDirPrefix);
   if (base::PathExists(models_dir)) {
     int total_size_bytes = CalculateTotalSize(models_dir);
     UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
@@ -177,6 +236,34 @@ void LogApplicationSupportDirectorySize(
   int64_t size_without_tabs_data = application_support_size - tab_storage_size;
   UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.ApplicationSupportSize",
                                  size_without_tabs_data / 1024 / 1024);
+}
+
+void LogAverageSnapshotSizes(base::FilePath profile_path,
+                             scoped_refptr<base::SequencedTaskRunner>) {
+  base::FilePath snapshots_storage_dir = profile_path.Append(kSnapshotsPath);
+
+  DirectorySnapshotDetails grey_snapshot_details =
+      CalculateImageMetricsInRoot(/*grey_only=*/true, snapshots_storage_dir);
+  int64_t grey_average_bytes_size = 0;
+  if (grey_snapshot_details.snapshot_count > 0) {
+    grey_average_bytes_size = grey_snapshot_details.total_size_bytes /
+                              grey_snapshot_details.snapshot_count;
+  }
+  UMA_HISTOGRAM_MEMORY_KB("IOS.SandboxMetrics.AverageGreySnapshotSize",
+                          grey_average_bytes_size / 1024);
+
+  DirectorySnapshotDetails all_snapshot_details =
+      CalculateImageMetricsInRoot(/*grey_only=*/false, snapshots_storage_dir);
+  int64_t color_total_size_bytes = all_snapshot_details.total_size_bytes -
+                                   grey_snapshot_details.total_size_bytes;
+  int color_snapshot_count = all_snapshot_details.snapshot_count -
+                             grey_snapshot_details.snapshot_count;
+  int64_t color_average_bytes_size = 0;
+  if (color_snapshot_count > 0) {
+    color_average_bytes_size = color_total_size_bytes / color_snapshot_count;
+  }
+  UMA_HISTOGRAM_MEMORY_KB("IOS.SandboxMetrics.AverageColorSnapshotSize",
+                          color_average_bytes_size / 1024);
 }
 
 // Logs the WebKit tmp directory size and the size of the tmp directory
@@ -228,6 +315,8 @@ void LogApplicationStorageMetrics(base::FilePath profile_path,
       FROM_HERE,
       base::BindOnce(&LogApplicationSupportDirectorySize, profile_path,
                      off_the_record_state_path, task_runner));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&LogAverageSnapshotSizes,
+                                                  profile_path, task_runner));
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&LogCacheDirectorySizes, task_runner));
   task_runner->PostTask(
@@ -237,8 +326,8 @@ void LogApplicationStorageMetrics(base::FilePath profile_path,
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&LogLibraryDirectorySize, task_runner));
   task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&LogOptimizationGuideModelDownloadsMetrics,
-                                profile_path, task_runner));
+      FROM_HERE,
+      base::BindOnce(&LogOptimizationGuideModelDownloadsMetrics, task_runner));
   task_runner->PostTask(FROM_HERE, base::BindOnce(&LogTmpDirectorySizes,
                                                   profile_path, task_runner));
   task_runner->PostTask(FROM_HERE, base::BindOnce(&LogWebsiteLocalDataSize,

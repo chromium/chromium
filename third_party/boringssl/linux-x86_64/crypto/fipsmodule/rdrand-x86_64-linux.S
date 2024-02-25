@@ -21,7 +21,7 @@ _CET_ENDBR
 
 	adcq	%rax,%rax
 	movq	%rdx,0(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	CRYPTO_rdrand,.-CRYPTO_rdrand
 
@@ -48,10 +48,10 @@ _CET_ENDBR
 	jnz	.Lloop
 .Lout:
 	movq	$1,%rax
-	.byte	0xf3,0xc3
+	ret
 .Lerr:
 	xorq	%rax,%rax
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	CRYPTO_rdrand_multiple8_buf,.-CRYPTO_rdrand_multiple8_buf
 #endif

@@ -17,9 +17,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
  * in an internal folder. Ideally only the controller would be potentially exposed.
  */
 interface IncognitoReauthCoordinator {
-    /**
-     * A method responsible to fire the re-auth screen.
-     */
+    /** A method responsible to fire the re-auth screen. */
     void show();
 
     /**
@@ -33,8 +31,6 @@ interface IncognitoReauthCoordinator {
      */
     void hide(@DialogDismissalCause int dismissalCause);
 
-    /**
-     * A method responsible to do any clean-up when the coordinator is being destroyed.
-     */
+    /** A method responsible to do any clean-up when the coordinator is being destroyed. */
     void destroy();
 }

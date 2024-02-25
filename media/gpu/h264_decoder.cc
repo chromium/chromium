@@ -6,17 +6,16 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/media_switches.h"
 #include "media/video/h264_level_limits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace {
@@ -85,6 +84,11 @@ H264Decoder::H264Accelerator::H264Accelerator() = default;
 
 H264Decoder::H264Accelerator::~H264Accelerator() = default;
 
+scoped_refptr<H264Picture>
+H264Decoder::H264Accelerator::CreateH264PictureSecure(uint64_t secure_handle) {
+  return nullptr;
+}
+
 void H264Decoder::H264Accelerator::ProcessSPS(
     const H264SPS* sps,
     base::span<const uint8_t> sps_nalu_data) {}
@@ -97,6 +101,7 @@ H264Decoder::H264Accelerator::Status
 H264Decoder::H264Accelerator::ParseEncryptedSliceHeader(
     const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
+    uint64_t secure_handle,
     H264SliceHeader* slice_header_out) {
   return H264Decoder::H264Accelerator::Status::kNotSupported;
 }
@@ -161,6 +166,8 @@ void H264Decoder::Reset() {
 
   recovery_frame_num_.reset();
   recovery_frame_cnt_.reset();
+
+  secure_handle_ = 0;
 
   // If we are in kDecoding, we can resume without processing an SPS.
   // The state becomes kDecoding again, (1) at the first IDR slice or (2) at
@@ -1045,7 +1052,7 @@ bool H264Decoder::FinishPicture(scoped_refptr<H264Picture> pic) {
         // outputting all pictures before it, to avoid outputting corrupted
         // frames.
         (*output_candidate)->frame_num == *recovery_frame_num_) {
-      recovery_frame_num_ = absl::nullopt;
+      recovery_frame_num_ = std::nullopt;
       if (!OutputPic(*output_candidate))
         return false;
     }
@@ -1073,6 +1080,8 @@ bool H264Decoder::FinishPicture(scoped_refptr<H264Picture> pic) {
 
     dpb_.StorePic(std::move(pic));
   }
+
+  secure_handle_ = 0;
 
   return true;
 }
@@ -1114,9 +1123,7 @@ bool H264Decoder::UpdateMaxNumReorderFrames(const H264SPS* sps) {
   return true;
 }
 
-bool H264Decoder::ProcessSPS(int sps_id,
-                             bool* need_new_buffers,
-                             bool* color_space_changed) {
+bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
   DVLOG(4) << "Processing SPS id:" << sps_id;
 
   const H264SPS* sps = parser_.GetSPS(sps_id);
@@ -1183,8 +1190,6 @@ bool H264Decoder::ProcessSPS(int sps_id,
   VideoChromaSampling new_chroma_sampling = sps->GetChromaSampling();
   if (new_chroma_sampling != chroma_sampling_) {
     chroma_sampling_ = new_chroma_sampling;
-    base::UmaHistogramEnumeration("Media.PlatformVideoDecoding.ChromaSampling",
-                                  chroma_sampling_);
   }
 
   if (chroma_sampling_ != VideoChromaSampling::k420) {
@@ -1215,33 +1220,30 @@ bool H264Decoder::ProcessSPS(int sps_id,
     new_color_space = container_color_space_;
   }
 
+  bool is_color_space_change = false;
+  if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {
+    is_color_space_change = new_color_space.IsSpecified() &&
+                            new_color_space != picture_color_space_;
+  }
+
   if (pic_size_ != new_pic_size || dpb_.max_num_pics() != max_dpb_size ||
-      profile_ != new_profile || bit_depth_ != new_bit_depth) {
-    if (!Flush())
+      profile_ != new_profile || bit_depth_ != new_bit_depth ||
+      is_color_space_change) {
+    if (!Flush()) {
       return false;
+    }
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
              << ", level: " << base::strict_cast<int>(level)
              << ", DPB size: " << max_dpb_size
              << ", Picture size: " << new_pic_size.ToString()
-             << ", bit depth: " << base::strict_cast<int>(new_bit_depth);
+             << ", bit depth: " << base::strict_cast<int>(new_bit_depth)
+             << ", color_space: " << new_color_space.ToString();
     *need_new_buffers = true;
     profile_ = new_profile;
     bit_depth_ = new_bit_depth;
     pic_size_ = new_pic_size;
     picture_color_space_ = new_color_space;
     dpb_.set_max_num_pics(max_dpb_size);
-  }
-
-  // If the new color space is specified and different from picture color space
-  // then trigger color space change.
-  if (new_color_space.IsSpecified() &&
-      new_color_space != picture_color_space_) {
-    if (!Flush()) {
-      return false;
-    }
-    DVLOG(1) << "New color space: " << new_color_space.ToString();
-    picture_color_space_ = new_color_space;
-    *color_space_changed = true;
   }
 
   gfx::Rect new_visible_rect = sps->GetVisibleRect().value_or(gfx::Rect());
@@ -1285,7 +1287,7 @@ bool H264Decoder::HandleFrameNumGap(int frame_num) {
     // Seek, SPS, PPS, IDR-frame, non-IDR, ... non-IDR with invalid number.
     // The only way to work around this reliably is to ignore this error.
     // Video playback is not affected, no artefacts are visible.
-    // return false;
+    return true;
   }
 
   DVLOG(2) << "Handling frame_num gap: " << prev_ref_frame_num_ << "->"
@@ -1322,8 +1324,8 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
                                              prior_cencv1_subsamples_.end());
   all_subsamples.insert(all_subsamples.end(), subsamples.begin(),
                         subsamples.end());
-  auto rv = accelerator_->ParseEncryptedSliceHeader(spans, all_subsamples,
-                                                    curr_slice_hdr_.get());
+  auto rv = accelerator_->ParseEncryptedSliceHeader(
+      spans, all_subsamples, secure_handle_, curr_slice_hdr_.get());
   // Return now if this isn't fully processed and don't store the NALU info
   // since we will get called again in the kTryAgain case, and on an error we
   // want to exist.
@@ -1448,6 +1450,12 @@ void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     parser_.SetStream(ptr, size);
     current_decrypt_config_ = nullptr;
   }
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
+  }
 }
 
 H264Decoder::DecodeResult H264Decoder::Decode() {
@@ -1561,7 +1569,11 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           } else {
             // New picture/finished previous one, try to start a new one
             // or tell the client we need more surfaces.
-            curr_pic_ = accelerator_->CreateH264Picture();
+            if (secure_handle_) {
+              curr_pic_ = accelerator_->CreateH264PictureSecure(secure_handle_);
+            } else {
+              curr_pic_ = accelerator_->CreateH264Picture();
+            }
             if (!curr_pic_)
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)
@@ -1594,8 +1606,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           SET_ERROR_AND_RETURN();
 
         bool need_new_buffers = false;
-        bool color_space_changed = false;
-        if (!ProcessSPS(sps_id, &need_new_buffers, &color_space_changed)) {
+        if (!ProcessSPS(sps_id, &need_new_buffers)) {
           SET_ERROR_AND_RETURN();
         }
         accelerator_->ProcessSPS(
@@ -1607,7 +1618,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         if (state_ == State::kNeedStreamMetadata)
           state_ = State::kAfterReset;
 
-        if (need_new_buffers || color_space_changed) {
+        if (need_new_buffers) {
           curr_pic_ = nullptr;
           curr_nalu_ = nullptr;
           ref_pic_list_p0_.clear();
@@ -1617,9 +1628,6 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         // Perfer config changes over color space changes.
         if (need_new_buffers) {
           return kConfigChange;
-        }
-        if (color_space_changed) {
-          return kColorSpaceChange;
         }
         break;
       }
@@ -1751,7 +1759,7 @@ VideoColorSpace H264Decoder::GetVideoColorSpace() const {
   return picture_color_space_;
 }
 
-absl::optional<gfx::HDRMetadata> H264Decoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> H264Decoder::GetHDRMetadata() const {
   return hdr_metadata_;
 }
 

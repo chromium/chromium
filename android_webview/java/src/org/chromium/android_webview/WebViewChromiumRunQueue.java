@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  * Queue used for running tasks, initiated through WebView APIs, on the UI thread.
  * The queue won't start running tasks until WebView has been initialized properly.
  */
+@Lifetime.Singleton
 public class WebViewChromiumRunQueue {
     private final Queue<Runnable> mQueue;
     private final ChromiumHasStartedCallable mChromiumHasStartedCallable;
@@ -26,7 +28,9 @@ public class WebViewChromiumRunQueue {
      * Callable representing whether WebView has been initialized, and we should start running
      * tasks.
      */
-    public static interface ChromiumHasStartedCallable { public boolean hasStarted(); }
+    public static interface ChromiumHasStartedCallable {
+        public boolean hasStarted();
+    }
 
     public WebViewChromiumRunQueue(ChromiumHasStartedCallable chromiumHasStartedCallable) {
         mQueue = new ConcurrentLinkedQueue<Runnable>();
@@ -40,13 +44,15 @@ public class WebViewChromiumRunQueue {
     public void addTask(Runnable task) {
         mQueue.add(task);
         if (mChromiumHasStartedCallable.hasStarted()) {
-            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { drainQueue(); });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        drainQueue();
+                    });
         }
     }
 
-    /**
-     * Drain the queue, i.e. perform all the tasks in the queue.
-     */
+    /** Drain the queue, i.e. perform all the tasks in the queue. */
     public void drainQueue() {
         if (mQueue == null || mQueue.isEmpty()) {
             return;
@@ -72,7 +78,8 @@ public class WebViewChromiumRunQueue {
         try {
             return task.get(4, TimeUnit.SECONDS);
         } catch (java.util.concurrent.TimeoutException e) {
-            throw new RuntimeException("Probable deadlock detected due to WebView API being called "
+            throw new RuntimeException(
+                    "Probable deadlock detected due to WebView API being called "
                             + "on incorrect thread while the UI thread is blocked.",
                     e);
         } catch (Exception e) {

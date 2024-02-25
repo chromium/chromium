@@ -24,21 +24,22 @@ import './shared_vars.css.js';
 import './strings.m.js';
 import './toggle_row.js';
 
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './detail_view.html.js';
-import {ItemDelegate} from './item.js';
+import type {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
-import {ExtensionsToggleRowElement} from './toggle_row.js';
+import type {ExtensionsToggleRowElement} from './toggle_row.js';
 
 export interface ExtensionsDetailViewElement {
   $: {
@@ -243,8 +244,12 @@ export class ExtensionsDetailViewElement extends
   }
 
   private shouldShowOptionsSection_(): boolean {
-    return this.data.incognitoAccess.isEnabled ||
+    return this.canPinToToolbar_() || this.data.incognitoAccess.isEnabled ||
         this.data.fileAccess.isEnabled || this.data.errorCollection.isEnabled;
+  }
+
+  private canPinToToolbar_(): boolean {
+    return this.data.pinnedToToolbar !== undefined;
   }
 
   private shouldShowIncognitoOption_(): boolean {
@@ -292,6 +297,14 @@ export class ExtensionsDetailViewElement extends
 
   private onLoadPathClick_() {
     this.delegate.showInFolder(this.data.id);
+  }
+
+  private onPinnedToToolbarChange_() {
+    this.delegate.setItemPinnedToToolbar(
+        this.data.id,
+        this.shadowRoot!
+            .querySelector<ExtensionsToggleRowElement>(
+                '#pin-to-toolbar')!.checked);
   }
 
   private onAllowIncognitoChange_() {
@@ -403,7 +416,12 @@ export class ExtensionsDetailViewElement extends
     if (!loadTimeData.getBoolean('safetyCheckShowReviewPanel')) {
       return false;
     }
-
+    const ExtensionType = chrome.developerPrivate.ExtensionType;
+    // Check to make sure this is an extension and not a Chrome app.
+    if (!(this.data.type === ExtensionType.EXTENSION ||
+          this.data.type === ExtensionType.SHARED_MODULE)) {
+      return false;
+    }
     return !!(
         this.data.safetyCheckText && this.data.safetyCheckText.detailString &&
         this.data.acknowledgeSafetyCheckWarning !== true);

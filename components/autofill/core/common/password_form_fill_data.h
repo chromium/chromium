@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -35,6 +36,50 @@ struct PasswordAndMetadata {
   bool uses_account_store = false;
 };
 
+// Structure used to trigger password suggestion generation.
+struct PasswordSuggestionRequest {
+  PasswordSuggestionRequest(FieldRendererId element_id,
+                            const FormData& form_data,
+                            AutofillSuggestionTriggerSource trigger_source,
+                            uint64_t username_field_index,
+                            uint64_t password_field_index,
+                            base::i18n::TextDirection text_direction,
+                            const std::u16string& typed_username,
+                            bool show_webauthn_credentials,
+                            const gfx::RectF& bounds);
+
+  PasswordSuggestionRequest();
+  PasswordSuggestionRequest(const PasswordSuggestionRequest&);
+  PasswordSuggestionRequest& operator=(const PasswordSuggestionRequest&);
+  PasswordSuggestionRequest(PasswordSuggestionRequest&&);
+  PasswordSuggestionRequest& operator=(PasswordSuggestionRequest&&);
+  ~PasswordSuggestionRequest();
+
+  // The unique renderer id of the field that the user has clicked.
+  FieldRendererId element_id;
+  // A web form extracted from the DOM that contains the triggering field.
+  FormData form_data;
+  // Describes the way suggestion generation was triggered.
+  AutofillSuggestionTriggerSource trigger_source;
+  // The index of the username field in the `form_data.fields`. If the password
+  // form doesn't contain the username field, this value will be equal to
+  // `form_data.fields.size()`.
+  uint64_t username_field_index;
+  // The index of the password field in the `form_data.fields`. If the password
+  // form doesn't contain the password field, this value will be equal to
+  // `form_data.fields.size()`.
+  uint64_t password_field_index;
+  // Direction of the text for the triggering field.
+  base::i18n::TextDirection text_direction;
+  // The value of the username field. This will be empty if the suggestion
+  // generation is triggered on a password field.
+  std::u16string typed_username;
+  // Specifies whether the field is suitable to show webauthn credentials.
+  bool show_webauthn_credentials;
+  // Location at which to display the popup.
+  gfx::RectF bounds;
+};
+
 // Structure used for autofilling password forms. Note that the realms in this
 // struct are only set when the password's realm differs from the realm of the
 // form that we are filling.
@@ -51,7 +96,7 @@ struct PasswordFormFillData {
   // Contains the unique renderer form id.
   // If there is no form tag then |form_renderer_id|.is_null().
   // Username and Password elements renderer ids are in
-  // |username_field.unique_renderer_id| and |password_field.unique_renderer_id|
+  // |username_field.renderer_id| and |password_field.renderer_id|
   // correspondingly.
   FormRendererId form_renderer_id;
 

@@ -6,22 +6,26 @@
 #define UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "build/build_config.h"
-
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 
 class GURL;
 
 namespace base {
 class Pickle;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace ui {
@@ -75,11 +79,14 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   const OSExchangeDataProvider& provider() const { return *provider_; }
   OSExchangeDataProvider& provider() { return *provider_; }
 
-  // Marks drag data as tainted if it originates from the renderer. This is used
-  // to avoid granting privileges to a renderer when dragging in tainted data,
-  // since it could allow potential escalation of privileges.
-  void MarkOriginatedFromRenderer();
-  bool DidOriginateFromRenderer() const;
+  // Marks drag data as tainted by the renderer, with `origin` as the source of
+  // the data. This is used to:
+  // - avoid granting privileges to a renderer when dragging in tainted data,
+  //   since it could allow potential escalation of privileges.
+  // - track the origin where the drag data came from.
+  void MarkRendererTaintedFromOrigin(const url::Origin& origin);
+  bool IsRendererTainted() const;
+  std::optional<url::Origin> GetRendererTaintedOrigin() const;
 
   // Marks drag data as from privileged WebContents. This is used to
   // make sure non-privileged WebContents will not accept drop data from
@@ -119,8 +126,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
                       std::u16string* title) const;
-  // Return the path of a file, if available.
-  bool GetFilename(base::FilePath* path) const;
+  // Return information about the contained files, if any.
   bool GetFilenames(std::vector<FileInfo>* file_names) const;
   bool GetPickledData(const ClipboardFormatType& format,
                       base::Pickle* data) const;

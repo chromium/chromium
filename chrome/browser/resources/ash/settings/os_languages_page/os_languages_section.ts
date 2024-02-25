@@ -8,16 +8,15 @@
  * languages.
  */
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './languages.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './language_settings_card.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsState} from '../common/types.js';
@@ -51,14 +50,15 @@ export class OsSettingsLanguagesSectionElement extends
         readOnly: true,
       },
 
-      languages: {
-        type: Object,
-        notify: true,
-      },
+      /**
+       * Set of languages from <settings-languages>
+       */
+      languages: Object,
 
-      languageHelper: {
-        type: Object,
-      },
+      /**
+       * Language helper API from <settings-languages>
+       */
+      languageHelper: Object,
     };
   }
 
@@ -66,10 +66,10 @@ export class OsSettingsLanguagesSectionElement extends
   /** Passed down to children. Do not access without using PrefsMixin. */
   prefs: PrefsState;
 
+  languages: LanguagesModel|undefined;
+  languageHelper: LanguageHelper|undefined;
+
   // Internal state.
-  private languages: LanguagesModel|undefined;
-  // Only defined after a render.
-  private languageHelper: LanguageHelper;
   private section_: Section;
 }
 

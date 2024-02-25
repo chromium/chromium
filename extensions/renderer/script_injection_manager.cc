@@ -5,12 +5,13 @@
 #include "extensions/renderer/script_injection_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
-
 #include "base/auto_reset.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
@@ -19,7 +20,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/extension_frame_helper.h"
@@ -30,7 +31,6 @@
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/web_ui_injection_host.h"
 #include "ipc/ipc_message_macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -47,7 +47,7 @@ namespace {
 const int kScriptIdleTimeoutInMs = 200;
 
 // Returns the RunLocation that follows |run_location|.
-absl::optional<mojom::RunLocation> NextRunLocation(
+std::optional<mojom::RunLocation> NextRunLocation(
     mojom::RunLocation run_location) {
   switch (run_location) {
     case mojom::RunLocation::kDocumentStart:
@@ -55,11 +55,11 @@ absl::optional<mojom::RunLocation> NextRunLocation(
     case mojom::RunLocation::kDocumentEnd:
       return mojom::RunLocation::kDocumentIdle;
     case mojom::RunLocation::kDocumentIdle:
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::RunLocation::kUndefined:
     case mojom::RunLocation::kRunDeferred:
     case mojom::RunLocation::kBrowserDriven:
-      return absl::nullopt;
+      return std::nullopt;
   }
   NOTREACHED();
 }
@@ -80,7 +80,7 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void DidCreateDocumentElement() override;
   void DidFailProvisionalLoad() override;
   void DidDispatchDOMContentLoadedEvent() override;
-  void WillDetach() override;
+  void WillDetach(blink::DetachReason detach_reason) override;
   void OnDestruct() override;
   void OnStop() override;
 
@@ -95,7 +95,7 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void InvalidateAndResetFrame(bool force_reset);
 
   // The owning ScriptInjectionManager.
-  ScriptInjectionManager* manager_;
+  raw_ptr<ScriptInjectionManager> manager_;
 
   bool should_run_idle_ = true;
 
@@ -196,7 +196,8 @@ void ScriptInjectionManager::RFOHelper::DidDispatchDOMContentLoadedEvent() {
                          weak_factory_.GetWeakPtr()));
 }
 
-void ScriptInjectionManager::RFOHelper::WillDetach() {
+void ScriptInjectionManager::RFOHelper::WillDetach(
+    blink::DetachReason detach_reason) {
   // The frame is closing - invalidate.
   constexpr bool kForceReset = true;
   InvalidateAndResetFrame(kForceReset);
@@ -246,7 +247,7 @@ void ScriptInjectionManager::RFOHelper::InvalidateAndResetFrame(
 ScriptInjectionManager::ScriptInjectionManager(
     UserScriptSetManager* user_script_set_manager)
     : user_script_set_manager_(user_script_set_manager) {
-  user_script_set_manager_observation_.Observe(user_script_set_manager_);
+  user_script_set_manager_observation_.Observe(user_script_set_manager_.get());
 }
 
 ScriptInjectionManager::~ScriptInjectionManager() {
@@ -263,7 +264,7 @@ void ScriptInjectionManager::OnRenderFrameCreated(
 }
 
 void ScriptInjectionManager::OnExtensionUnloaded(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   for (auto iter = pending_injections_.begin();
       iter != pending_injections_.end();) {
     if ((*iter)->host_id().id == extension_id) {
@@ -332,7 +333,7 @@ void ScriptInjectionManager::StartInjectScripts(
   if (iter == frame_statuses_.end()) {
     invalid_run_order = (run_location != mojom::RunLocation::kDocumentStart);
   } else {
-    absl::optional<mojom::RunLocation> next = NextRunLocation(iter->second);
+    std::optional<mojom::RunLocation> next = NextRunLocation(iter->second);
     if (next)
       invalid_run_order = run_location > next.value();
   }
@@ -435,15 +436,18 @@ void ScriptInjectionManager::HandleExecuteCode(
     mojom::LocalFrame::ExecuteCodeCallback callback,
     content::RenderFrame* render_frame) {
   std::unique_ptr<const InjectionHost> injection_host;
-  if (params->host_id->type == mojom::HostID::HostType::kExtensions) {
-    injection_host = ExtensionInjectionHost::Create(params->host_id->id);
-    if (!injection_host) {
-      std::move(callback).Run(base::EmptyString(), GURL::EmptyGURL(),
-                              absl::nullopt);
-      return;
-    }
-  } else if (params->host_id->type == mojom::HostID::HostType::kWebUi) {
-    injection_host = std::make_unique<WebUIInjectionHost>(*params->host_id);
+  switch (params->host_id->type) {
+    case mojom::HostID::HostType::kExtensions:
+      injection_host = ExtensionInjectionHost::Create(params->host_id->id);
+      if (!injection_host) {
+        std::move(callback).Run(std::string(), GURL(), std::nullopt);
+        return;
+      }
+      break;
+    case mojom::HostID::HostType::kControlledFrameEmbedder:
+    case mojom::HostID::HostType::kWebUi:
+      injection_host = std::make_unique<WebUIInjectionHost>(*params->host_id);
+      break;
   }
 
   mojom::RunLocation run_at = params->run_at;

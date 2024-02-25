@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL assertSelection(inputText, tester, expectedText, options) resources/testharness.js:2095:25)
-	 expected <style>div, img { width: 200px; height: 100px; }</style><div contenteditable id="target">^<img id="image">|</div><img id="image">,
-	 but got  <style>div, img { width: 200px; height: 100px; }</style><div contenteditable id="target"></div>^<img id="image">|,
-	 sameupto <style>div, img { width: 200px; height: 100px; }</style><div contenteditable id="target">
-Harness: the test ran to completion.
-

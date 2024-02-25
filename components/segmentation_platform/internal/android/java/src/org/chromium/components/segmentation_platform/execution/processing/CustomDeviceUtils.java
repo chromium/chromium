@@ -6,13 +6,12 @@ package org.chromium.components.segmentation_platform.execution.processing;
 
 import android.util.DisplayMetrics;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
-/**
- * Implements methods to get device info.
- */
+import org.chromium.base.ContextUtils;
+
+/** Implements methods to get device info. */
 @JNINamespace("segmentation_platform")
 public class CustomDeviceUtils {
     /**

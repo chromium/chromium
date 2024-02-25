@@ -20,22 +20,20 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Properties of account picker bottom sheet.
- */
+/** Properties of account picker bottom sheet. */
 class AccountPickerBottomSheetProperties {
     /**
-     * View states of account picker.
-     * Different account picker view state correspond to different account picker bottom sheet
-     * configuration.
+     * View states of account picker. Different account picker view state correspond to different
+     * account picker bottom sheet configuration.
      */
     @IntDef({
-            ViewState.NO_ACCOUNTS,
-            ViewState.COLLAPSED_ACCOUNT_LIST,
-            ViewState.EXPANDED_ACCOUNT_LIST,
-            ViewState.SIGNIN_IN_PROGRESS,
-            ViewState.SIGNIN_GENERAL_ERROR,
-            ViewState.SIGNIN_AUTH_ERROR,
+        ViewState.NO_ACCOUNTS,
+        ViewState.COLLAPSED_ACCOUNT_LIST,
+        ViewState.EXPANDED_ACCOUNT_LIST,
+        ViewState.SIGNIN_IN_PROGRESS,
+        ViewState.SIGNIN_GENERAL_ERROR,
+        ViewState.SIGNIN_AUTH_ERROR,
+        ViewState.CONFIRM_MANAGEMENT,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ViewState {
@@ -71,8 +69,8 @@ class AccountPickerBottomSheetProperties {
          * When the user is in the sign-in process, no account or button will be visible, the user
          * sees mainly a spinner in the bottom sheet.
          *
-         * This state can only be reached from COLLAPSED_ACCOUNT_LIST, when the button
-         * |Continue as| is clicked. This state does not lead to any other state.
+         * <p>This state is initially reached from COLLAPSED_ACCOUNT_LIST, when the button |Continue
+         * as| is clicked. This state may lead to/from CONFIRM_MANAGEMENT, if required.
          */
         int SIGNIN_IN_PROGRESS = 3;
 
@@ -91,6 +89,15 @@ class AccountPickerBottomSheetProperties {
          * The state can be reached when an auth error appears during the sign-in process.
          */
         int SIGNIN_AUTH_ERROR = 5;
+
+        /**
+         * When the signin is in progress for a managed account that requires to user to confirm
+         * account management.
+         *
+         * <p>This state may be reached from SIGNIN_IN_PROGRESS, which will be returned to after the
+         * user clicks "Accept and Sign in".
+         */
+        int CONFIRM_MANAGEMENT = 6;
     }
 
     // PropertyKeys for the selected account view when the account list is collapsed.
@@ -100,6 +107,10 @@ class AccountPickerBottomSheetProperties {
             new ReadableObjectPropertyKey<>("on_selected_account_clicked");
     static final WritableObjectPropertyKey<DisplayableProfileData> SELECTED_ACCOUNT_DATA =
             new WritableObjectPropertyKey<>("selected_account_data");
+
+    // PropertyKey for the Account Management confirmation domain.
+    static final WritableObjectPropertyKey<String> SELECTED_ACCOUNT_DOMAIN =
+            new WritableObjectPropertyKey<>("selected_account_domain");
 
     // PropertyKey for the button |Continue as ...|
     static final ReadableObjectPropertyKey<OnClickListener> ON_CONTINUE_AS_CLICKED =
@@ -119,15 +130,17 @@ class AccountPickerBottomSheetProperties {
     static final ReadableObjectPropertyKey<AccountPickerBottomSheetStrings> BOTTOM_SHEET_STRINGS =
             new ReadableObjectPropertyKey("bottom_sheet_strings");
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            ON_SELECTED_ACCOUNT_CLICKED,
-            SELECTED_ACCOUNT_DATA,
-            ON_CONTINUE_AS_CLICKED,
-            ON_DISMISS_CLICKED,
-            VIEW_STATE,
-            ENTRY_POINT,
-            BOTTOM_SHEET_STRINGS,
-    };
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                ON_SELECTED_ACCOUNT_CLICKED,
+                SELECTED_ACCOUNT_DATA,
+                SELECTED_ACCOUNT_DOMAIN,
+                ON_CONTINUE_AS_CLICKED,
+                ON_DISMISS_CLICKED,
+                VIEW_STATE,
+                ENTRY_POINT,
+                BOTTOM_SHEET_STRINGS,
+            };
 
     /**
      * Creates a default model for the AccountPickerBottomSheet.
@@ -135,8 +148,10 @@ class AccountPickerBottomSheetProperties {
      * In the default model, as the selected account data is null, the bottom sheet is in the
      * state {@link ViewState#NO_ACCOUNTS}.
      */
-    static PropertyModel createModel(Runnable onSelectedAccountClicked,
-            Runnable onContinueAsClicked, OnClickListener onDismissClicked,
+    static PropertyModel createModel(
+            Runnable onSelectedAccountClicked,
+            Runnable onContinueAsClicked,
+            OnClickListener onDismissClicked,
             @EntryPoint int entryPoint,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         return new PropertyModel.Builder(ALL_KEYS)

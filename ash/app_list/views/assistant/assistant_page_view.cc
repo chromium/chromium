@@ -37,6 +37,8 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/layout/layout_manager_base.h"
 
@@ -106,7 +108,7 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
         std::max(preferred_height, host->GetMinimumSize().height());
 
     // Snap to |kMaxHeightDip| if |child| exceeds |preferred_height|.
-    for (const auto* child : host->children()) {
+    for (const views::View* child : host->children()) {
       if (child->GetHeightForWidth(width) > preferred_height)
         return kMaxHeightDip;
     }
@@ -126,7 +128,7 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
 
     views::ProposedLayout proposed_layout;
     proposed_layout.host_size = host_view()->size();
-    for (auto* child : host_view()->children()) {
+    for (views::View* child : host_view()->children()) {
       proposed_layout.child_layouts.push_back(views::ChildLayout{
           child, child->GetVisible(), bounds, views::SizeBounds()});
     }
@@ -135,7 +137,7 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
   }
 
  private:
-  const raw_ptr<AssistantPageView, ExperimentalAsh> assistant_page_view_;
+  const raw_ptr<AssistantPageView> assistant_page_view_;
 };
 
 }  // namespace
@@ -154,8 +156,7 @@ AssistantPageView::AssistantPageView(
   if (AssistantUiController::Get())  // May be |nullptr| in tests.
     AssistantUiController::Get()->GetModel()->AddObserver(this);
 
-  if (Shell::HasInstance())  // Shell might not has an instance in tests.
-    tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
+  display_observation_.Observe(display::Screen::GetScreen());
 }
 
 AssistantPageView::~AssistantPageView() {
@@ -277,7 +278,7 @@ void AssistantPageView::OnAnimationStarted(AppListState from_state,
 
     ui::AnimationThroughputReporter reporter(
         settings->GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+        metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
           base::UmaHistogramPercentage(
               "Ash.Assistant.AnimationSmoothness.ResizeAssistantPageView",
               value);
@@ -361,8 +362,8 @@ void AssistantPageView::OnAssistantControllerDestroying() {
 void AssistantPageView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   if (!assistant_view_delegate_)
     return;
 
@@ -383,12 +384,19 @@ void AssistantPageView::OnUiVisibilityChanged(
   }
 }
 
-void AssistantPageView::OnTabletModeStarted() {
-  UpdateBackground(/*in_tablet_mode=*/true);
-}
-
-void AssistantPageView::OnTabletModeEnded() {
-  UpdateBackground(/*in_tablet_mode=*/false);
+void AssistantPageView::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      // Do nothing when the tablet mode is in process of changing.
+      break;
+    case display::TabletState::kInTabletMode:
+      UpdateBackground(/*in_tablet_mode=*/true);
+      break;
+    case display::TabletState::kInClamshellMode:
+      UpdateBackground(/*in_tablet_mode=*/false);
+  }
 }
 
 void AssistantPageView::OnThemeChanged() {
@@ -433,7 +441,7 @@ void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
     layer()->SetColor(SK_ColorWHITE);
 }
 
-BEGIN_METADATA(AssistantPageView, views::View)
+BEGIN_METADATA(AssistantPageView)
 END_METADATA
 
 }  // namespace ash

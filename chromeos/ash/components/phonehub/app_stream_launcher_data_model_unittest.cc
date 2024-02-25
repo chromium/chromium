@@ -128,13 +128,13 @@ TEST_F(AppStreamLauncherDataModelTest, ResetState) {
 TEST_F(AppStreamLauncherDataModelTest, SetAppsList) {
   std::vector<Notification::AppMetadata> apps_list;
   apps_list.emplace_back(u"GPay", "com.fakeapp1", /*color_icon=*/gfx::Image(),
-                         /*monochrome_icon_mask=*/absl::nullopt,
-                         /*icon_color=*/absl::nullopt,
+                         /*monochrome_icon_mask=*/std::nullopt,
+                         /*icon_color=*/std::nullopt,
                          /*icon_is_monochrome=*/true, /*user_id=*/1,
                          proto::AppStreamabilityStatus::STREAMABLE);
   apps_list.emplace_back(u"Gboard", "com.fakeapp2", /*color_icon=*/gfx::Image(),
-                         /*monochrome_icon_mask=*/absl::nullopt,
-                         /*icon_color=*/absl::nullopt,
+                         /*monochrome_icon_mask=*/std::nullopt,
+                         /*icon_color=*/std::nullopt,
                          /*icon_is_monochrome=*/true, /*user_id=*/1,
                          proto::AppStreamabilityStatus::STREAMABLE);
   SetAppList(apps_list);
@@ -150,24 +150,24 @@ TEST_F(AppStreamLauncherDataModelTest, SetAppsList) {
 TEST_F(AppStreamLauncherDataModelTest, AddAppToList) {
   std::vector<Notification::AppMetadata> apps_list;
   apps_list.emplace_back(u"GPay", "com.fakeapp1", /*color_icon=*/gfx::Image(),
-                         /*monochrome_icon_mask=*/absl::nullopt,
-                         /*icon_color=*/absl::nullopt,
+                         /*monochrome_icon_mask=*/std::nullopt,
+                         /*icon_color=*/std::nullopt,
                          /*icon_is_monochrome=*/true, /*user_id=*/1,
                          proto::AppStreamabilityStatus::STREAMABLE);
   apps_list.emplace_back(u"Gboard", "com.fakeapp2", /*color_icon=*/gfx::Image(),
-                         /*monochrome_icon_mask=*/absl::nullopt,
-                         /*icon_color=*/absl::nullopt,
+                         /*monochrome_icon_mask=*/std::nullopt,
+                         /*icon_color=*/std::nullopt,
                          /*icon_is_monochrome=*/true, /*user_id=*/1,
                          proto::AppStreamabilityStatus::STREAMABLE);
   SetAppList(apps_list);
   AddAppToList(Notification::AppMetadata(
       u"added_app", "com.fakeapp3", /*color_icon=*/gfx::Image(),
-      /*monochrome_icon_mask=*/absl::nullopt, /*icon_color=*/absl::nullopt,
+      /*monochrome_icon_mask=*/std::nullopt, /*icon_color=*/std::nullopt,
       /*icon_is_monochrome=*/true, /*user_id=*/1,
       proto::AppStreamabilityStatus::STREAMABLE));
   AddAppToList(Notification::AppMetadata(
       u"a_added_app", "com.fakeapp3", /*color_icon=*/gfx::Image(),
-      /*monochrome_icon_mask=*/absl::nullopt, /*icon_color=*/absl::nullopt,
+      /*monochrome_icon_mask=*/std::nullopt, /*icon_color=*/std::nullopt,
       /*icon_is_monochrome=*/true, /*user_id=*/1,
       proto::AppStreamabilityStatus::STREAMABLE));
   EXPECT_TRUE(IsObserverAppListChanged());
@@ -186,13 +186,13 @@ TEST_F(AppStreamLauncherDataModelTest, AddAppToList) {
 TEST_F(AppStreamLauncherDataModelTest, RemoveAppFromList) {
   std::vector<Notification::AppMetadata> apps_list;
   apps_list.emplace_back(u"GPay", "com.fakeapp1", /*color_icon=*/gfx::Image(),
-                         /*monochrome_icon_mask=*/absl::nullopt,
-                         /*icon_color=*/absl::nullopt,
+                         /*monochrome_icon_mask=*/std::nullopt,
+                         /*icon_color=*/std::nullopt,
                          /*icon_is_monochrome=*/true, /*user_id=*/1,
                          proto::AppStreamabilityStatus::STREAMABLE);
   apps_list.emplace_back(u"Gboard", "com.fakeapp2", /*color_icon=*/gfx::Image(),
-                         /*monochrome_icon_mask=*/absl::nullopt,
-                         /*icon_color=*/absl::nullopt,
+                         /*monochrome_icon_mask=*/std::nullopt,
+                         /*icon_color=*/std::nullopt,
                          /*icon_is_monochrome=*/true, /*user_id=*/1,
                          proto::AppStreamabilityStatus::STREAMABLE);
   SetAppList(apps_list);

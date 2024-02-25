@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -15,12 +16,12 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/core/common/cloud/resource_cache.h"
@@ -31,12 +32,13 @@ namespace policy {
 CloudPolicyManager::CloudPolicyManager(
     const std::string& policy_type,
     const std::string& settings_entity_id,
-    CloudPolicyStore* cloud_policy_store,
+    std::unique_ptr<CloudPolicyStore> cloud_policy_store,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
-    : core_(policy_type,
+    : store_(std::move(cloud_policy_store)),
+      core_(policy_type,
             settings_entity_id,
-            cloud_policy_store,
+            store_.get(),
             task_runner,
             std::move(network_connection_tracker_getter)),
       waiting_for_policy_refresh_(false) {}
@@ -82,11 +84,13 @@ bool CloudPolicyManager::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
   return store()->first_policies_loaded();
 }
 
-void CloudPolicyManager::RefreshPolicies() {
+void CloudPolicyManager::RefreshPolicies(PolicyFetchReason reason) {
   if (service()) {
     waiting_for_policy_refresh_ = true;
-    service()->RefreshPolicy(base::BindOnce(
-        &CloudPolicyManager::OnRefreshComplete, base::Unretained(this)));
+    service()->RefreshPolicy(
+        base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
+                       base::Unretained(this)),
+        reason);
   } else {
     OnRefreshComplete(false);
   }
@@ -151,7 +155,7 @@ void CloudPolicyManager::CreateComponentCloudPolicyService(
   const auto task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   std::unique_ptr<ResourceCache> resource_cache(new ResourceCache(
-      policy_cache_path, task_runner, /* max_cache_size */ absl::nullopt));
+      policy_cache_path, task_runner, /* max_cache_size */ std::nullopt));
   component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
       policy_type, this, schema_registry, core(), client,
       std::move(resource_cache), task_runner);

@@ -12,8 +12,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
 
@@ -57,7 +55,6 @@ public final class DeveloperModeUtils {
         return enabledState == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private static void startDeveloperUiService(String webViewPackageName) {
         final Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent();
@@ -67,7 +64,7 @@ public final class DeveloperModeUtils {
             context.startForegroundService(intent);
         } catch (IllegalStateException e) {
             assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                : "Unable to start DeveloperUiService, this is only expected on Android S";
+                    : "Unable to start DeveloperUiService, this is only expected on Android S";
         }
     }
 
@@ -82,17 +79,23 @@ public final class DeveloperModeUtils {
     public static Map<String, Boolean> getFlagOverrides(String webViewPackageName) {
         Map<String, Boolean> flagOverrides = new HashMap<>();
 
-        Uri uri = new Uri.Builder()
-                          .scheme("content")
-                          .authority(webViewPackageName + URI_AUTHORITY_SUFFIX)
-                          .path(FLAG_OVERRIDE_URI_PATH)
-                          .build();
+        Uri uri =
+                new Uri.Builder()
+                        .scheme("content")
+                        .authority(webViewPackageName + URI_AUTHORITY_SUFFIX)
+                        .path(FLAG_OVERRIDE_URI_PATH)
+                        .build();
         final Context appContext = ContextUtils.getApplicationContext();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startDeveloperUiService(webViewPackageName);
-        }
-        try (Cursor cursor = appContext.getContentResolver().query(uri, /* projection */ null,
-                     /* selection */ null, /* selectionArgs */ null, /* sortOrder */ null)) {
+        startDeveloperUiService(webViewPackageName);
+        try (Cursor cursor =
+                appContext
+                        .getContentResolver()
+                        .query(
+                                uri,
+                                /* projection= */ null,
+                                /* selection= */ null,
+                                /* selectionArgs= */ null,
+                                /* sortOrder= */ null)) {
             assert cursor != null : "ContentProvider doesn't support querying '" + uri + "'";
             int flagNameColumnIndex = cursor.getColumnIndexOrThrow(FLAG_OVERRIDE_NAME_COLUMN);
             int flagStateColumnIndex = cursor.getColumnIndexOrThrow(FLAG_OVERRIDE_STATE_COLUMN);

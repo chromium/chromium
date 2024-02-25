@@ -15,13 +15,16 @@
 // Converts a single int or vector<int> or vector<vector<int>> to 1D (or 2D)
 // tf::Tensor.
 
+#include <cstdint>
+
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "mediapipe/calculators/tensorflow/vector_int_to_tensor_calculator_options.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -87,7 +90,7 @@ absl::Status VectorIntToTensorCalculator::GetContract(CalculatorContract* cc) {
       cc->Inputs().Tag(kVectorInt).Set<std::vector<int>>();
     }
   } else {
-    LOG(FATAL) << "input size not supported";
+    ABSL_LOG(FATAL) << "input size not supported";
   }
   RET_CHECK_EQ(cc->Outputs().NumEntries(), 1)
       << "Only one output stream is supported.";
@@ -132,7 +135,7 @@ absl::Status VectorIntToTensorCalculator::Process(CalculatorContext* cc) {
         for (int c = 0; c < cols; ++c) {
           switch (options_.tensor_data_type()) {
             case tf::DT_INT64:
-              AssignMatrixValue<tf::int64>(c, r, input[r][c], output.get());
+              AssignMatrixValue<int64_t>(c, r, input[r][c], output.get());
               break;
             case tf::DT_UINT8:
               AssignMatrixValue<uint8_t>(c, r, input[r][c], output.get());
@@ -141,7 +144,7 @@ absl::Status VectorIntToTensorCalculator::Process(CalculatorContext* cc) {
               AssignMatrixValue<int>(c, r, input[r][c], output.get());
               break;
             default:
-              LOG(FATAL) << "tensor data type is not supported.";
+              ABSL_LOG(FATAL) << "tensor data type is not supported.";
           }
         }
       }
@@ -150,7 +153,7 @@ absl::Status VectorIntToTensorCalculator::Process(CalculatorContext* cc) {
         for (int c = 0; c < cols; ++c) {
           switch (options_.tensor_data_type()) {
             case tf::DT_INT64:
-              AssignMatrixValue<tf::int64>(r, c, input[r][c], output.get());
+              AssignMatrixValue<int64_t>(r, c, input[r][c], output.get());
               break;
             case tf::DT_UINT8:
               AssignMatrixValue<uint8_t>(r, c, input[r][c], output.get());
@@ -159,7 +162,7 @@ absl::Status VectorIntToTensorCalculator::Process(CalculatorContext* cc) {
               AssignMatrixValue<int>(r, c, input[r][c], output.get());
               break;
             default:
-              LOG(FATAL) << "tensor data type is not supported.";
+              ABSL_LOG(FATAL) << "tensor data type is not supported.";
           }
         }
       }
@@ -180,7 +183,7 @@ absl::Status VectorIntToTensorCalculator::Process(CalculatorContext* cc) {
     for (int i = 0; i < length; ++i) {
       switch (options_.tensor_data_type()) {
         case tf::DT_INT64:
-          output->tensor<tf::int64, 1>()(i) = input.at(i);
+          output->tensor<int64_t, 1>()(i) = input.at(i);
           break;
         case tf::DT_UINT8:
           output->tensor<uint8_t, 1>()(i) = input.at(i);
@@ -189,12 +192,12 @@ absl::Status VectorIntToTensorCalculator::Process(CalculatorContext* cc) {
           output->tensor<int, 1>()(i) = input.at(i);
           break;
         default:
-          LOG(FATAL) << "tensor data type is not supported.";
+          ABSL_LOG(FATAL) << "tensor data type is not supported.";
       }
     }
     cc->Outputs().Tag(kTensorOut).Add(output.release(), cc->InputTimestamp());
   } else {
-    LOG(FATAL) << "input size not supported";
+    ABSL_LOG(FATAL) << "input size not supported";
   }
   return absl::OkStatus();
 }

@@ -243,12 +243,14 @@ void VideoWakeLock::StartIntersectionObserver() {
   const auto kDelayMs = 0;
 
   visibility_observer_ = IntersectionObserver::Create(
-      {}, /*thresholds=*/{visibility_threshold_}, &VideoElement().GetDocument(),
+      VideoElement().GetDocument(),
       WTF::BindRepeating(&VideoWakeLock::OnVisibilityChanged,
                          WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kMediaIntersectionObserver,
-      IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-      IntersectionObserver::kFractionOfTarget, kDelayMs);
+      IntersectionObserver::Params{
+          .thresholds = {visibility_threshold_},
+          .delay = kDelayMs,
+      });
   visibility_observer_->observe(&VideoElement());
 
   if (base::FeatureList::IsEnabled(kStrictVideoWakeLock)) {
@@ -259,13 +261,15 @@ void VideoWakeLock::StartIntersectionObserver() {
     // iframes. The observer doesn't know the outermost viewport size when
     // running from within an iframe.
     size_observer_ = IntersectionObserver::Create(
-        {}, /*thresholds=*/{kSizeThreshold},
-        &VideoElement().GetDocument().TopDocument(),
+        VideoElement().GetDocument().TopDocument(),
         WTF::BindRepeating(&VideoWakeLock::OnSizeChanged,
                            WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kMediaIntersectionObserver,
-        IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-        IntersectionObserver::kFractionOfRoot, kDelayMs);
+        IntersectionObserver::Params{
+            .thresholds = {kSizeThreshold},
+            .semantics = IntersectionObserver::kFractionOfRoot,
+            .delay = kDelayMs,
+        });
     size_observer_->observe(&VideoElement());
   }
 }

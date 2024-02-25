@@ -307,6 +307,29 @@ TEST_P(HistogramTest, FinalDeltaTest) {
   EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
 }
 
+// Check that IsDefinitelyEmpty() works with the results of SnapshotDelta().
+TEST_P(HistogramTest, IsDefinitelyEmpty_SnapshotDelta) {
+  HistogramBase* histogram = Histogram::FactoryGet("DeltaHistogram", 1, 64, 8,
+                                                   HistogramBase::kNoFlags);
+  // No samples initially.
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+
+  // Verify when |histogram| is using SingleSample.
+  histogram->Add(1);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  histogram->Add(10);
+  histogram->Add(10);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+
+  // Verify when |histogram| uses a counts array instead of SingleSample.
+  histogram->Add(1);
+  histogram->Add(50);
+  EXPECT_FALSE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+  EXPECT_TRUE(histogram->SnapshotDelta()->IsDefinitelyEmpty());
+}
+
 TEST_P(HistogramTest, ExponentialRangesTest) {
   // Check that we got a nice exponential when there was enough room.
   BucketRanges ranges(9);
@@ -627,15 +650,16 @@ TEST_P(HistogramTest, CorruptSampleCounts) {
   EXPECT_EQ(2, snapshot->redundant_count());
   EXPECT_EQ(2, snapshot->TotalCount());
 
-  snapshot->counts()[3] += 100;  // Sample count won't match redundant count.
+  // Sample count won't match redundant count.
+  snapshot->counts().value()[3u] += 100;
   EXPECT_EQ(HistogramBase::COUNT_LOW_ERROR,
             histogram->FindCorruption(*snapshot));
-  snapshot->counts()[2] -= 200;
+  snapshot->counts().value()[2u] -= 200;
   EXPECT_EQ(HistogramBase::COUNT_HIGH_ERROR,
             histogram->FindCorruption(*snapshot));
 
   // But we can't spot a corruption if it is compensated for.
-  snapshot->counts()[1] += 100;
+  snapshot->counts().value()[1u] += 100;
   EXPECT_EQ(HistogramBase::NO_INCONSISTENCIES,
             histogram->FindCorruption(*snapshot));
 }
@@ -997,16 +1021,16 @@ TEST_P(HistogramTest, CheckGetCountAndBucketData) {
   // Check the first bucket.
   const base::Value::Dict* bucket1 = buckets_list[0].GetIfDict();
   ASSERT_TRUE(bucket1 != nullptr);
-  EXPECT_EQ(bucket1->FindInt("low"), absl::optional<int>(20));
-  EXPECT_EQ(bucket1->FindInt("high"), absl::optional<int>(21));
-  EXPECT_EQ(bucket1->FindInt("count"), absl::optional<int>(30));
+  EXPECT_EQ(bucket1->FindInt("low"), std::optional<int>(20));
+  EXPECT_EQ(bucket1->FindInt("high"), std::optional<int>(21));
+  EXPECT_EQ(bucket1->FindInt("count"), std::optional<int>(30));
 
   // Check the second bucket.
   const base::Value::Dict* bucket2 = buckets_list[1].GetIfDict();
   ASSERT_TRUE(bucket2 != nullptr);
-  EXPECT_EQ(bucket2->FindInt("low"), absl::optional<int>(30));
-  EXPECT_EQ(bucket2->FindInt("high"), absl::optional<int>(31));
-  EXPECT_EQ(bucket2->FindInt("count"), absl::optional<int>(28));
+  EXPECT_EQ(bucket2->FindInt("low"), std::optional<int>(30));
+  EXPECT_EQ(bucket2->FindInt("high"), std::optional<int>(31));
+  EXPECT_EQ(bucket2->FindInt("count"), std::optional<int>(28));
 }
 
 TEST_P(HistogramTest, WriteAscii) {

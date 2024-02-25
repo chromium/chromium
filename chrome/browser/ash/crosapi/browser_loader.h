@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -17,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 class CrOSComponentManager;
@@ -71,8 +71,10 @@ class BrowserLoader {
     // lacros selection is not available.
     kCompatibilityCheck,
 
-    // Forced by the selection policy.
-    kPolicy,
+    // Forced by the selection policy or about:flags. See
+    // browser_util::DetermineLacrosSelection for the detailed condition when
+    // the lacros selection is forced.
+    kForced,
 
     // Forced by registered lacros-chrome path.
     kDeployedPath,
@@ -112,7 +114,10 @@ class BrowserLoader {
   FRIEND_TEST_ALL_PREFIXES(
       BrowserLoaderTest,
       OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsStateful);
-  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, OnLoadLacrosSpecifiedBySwitch);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadLacrosBinarySpecifiedBySwitch);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
+                           OnLoadLacrosDirectorySpecifiedBySwitch);
 
   // `source` indicates why rootfs/stateful is selected. `source` is only used
   // for logging.
@@ -143,7 +148,7 @@ class BrowserLoader {
                             const base::FilePath& path,
                             LacrosSelection selection,
                             base::Version version,
-                            bool lacros_binary_exists);
+                            const base::FilePath& lacros_binary);
 
   // Loader for rootfs lacros and stateful lacros.
   std::unique_ptr<LacrosSelectionLoader> rootfs_lacros_loader_;

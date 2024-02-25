@@ -2,6 +2,10 @@
   #pairNewDeviceBtn {
     margin-inline-end: 20px;
   }
+
+  :host-context(body.revamp-wayfinding-enabled) #statusIcon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
 </style>
 <template is="dom-if" if="[[!isSecondaryUser_]]" >
   <div id="bluetoothSummary" class="settings-box two-line first no-padding">
@@ -43,7 +47,7 @@
     </cr-toggle>
   </div>
 
-  <template is="dom-if" if="[[isBluetoothToggleOn_]]" restamp>
+  <template is="dom-if" if="[[shouldShowPairNewDevice_(systemProperties.*)]]" restamp>
     <div id="pairNewDevice" class="settings-box no-padding" actionable
         on-click="onPairNewDeviceBtnClick_">
       <div id="pairNewDeviceLabel" class="middle settings-box-text"

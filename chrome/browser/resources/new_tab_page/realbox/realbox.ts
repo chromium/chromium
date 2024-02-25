@@ -5,13 +5,14 @@
 import 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
 import 'chrome://resources/cr_components/omnibox/realbox_icon.js';
 
-import {AutocompleteMatch, AutocompleteResult, NavigationPredictor, PageCallbackRouter, PageHandlerInterface, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import {NavigationPredictor, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
-import {RealboxDropdownElement} from 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
-import {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {RealboxDropdownElement} from 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
+import type {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -70,6 +71,11 @@ export class RealboxElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      colorSourceIsBaseline: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       /** Whether the cr-realbox-dropdown should be visible. */
       dropdownIsVisible: {
         type: Boolean,
@@ -113,10 +119,15 @@ export class RealboxElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /** Whether to display single-colored icons or not. */
-      singleColoredIcons: {
+      realboxChromeRefreshTheming: {
         type: Boolean,
-        value: false,
+        value: () => loadTimeData.getBoolean('realboxCr23Theming'),
+        reflectToAttribute: true,
+      },
+
+      realboxSteadyStateShadow: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23SteadyStateShadow'),
         reflectToAttribute: true,
       },
 
@@ -221,13 +232,15 @@ export class RealboxElement extends PolymerElement {
   }
 
   canShowSecondarySide: boolean;
+  colorSourceIsBaseline: boolean;
   dropdownIsVisible: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
   isDark: boolean;
   matchSearchbox: boolean;
   realboxLensSearchEnabled: boolean;
-  singleColoredIcons: boolean;
+  realboxChromeRefreshTheming: boolean;
+  realboxSteadyStateShadow: boolean;
   private inputAriaLive_: string;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
@@ -621,13 +634,6 @@ export class RealboxElement extends PolymerElement {
   }
 
   /**
-   * @param e Event containing index of the match that was clicked.
-   */
-  private onMatchClick_(e: CustomEvent<{index: number, event: MouseEvent}>) {
-    this.navigateToMatch_(e.detail.index, e.detail.event);
-  }
-
-  /**
    * @param e Event containing index of the match that received focus.
    */
   private onMatchFocusin_(e: CustomEvent<number>) {
@@ -640,16 +646,6 @@ export class RealboxElement extends PolymerElement {
       inline: '',
       moveCursorToEnd: true,
     });
-  }
-
-  /**
-   * @param e Event containing index of the match that was removed.
-   */
-  private onMatchRemove_(e: CustomEvent<number>) {
-    const index = e.detail;
-    const match = this.result_!.matches[index];
-    assert(match);
-    this.pageHandler_.deleteAutocompleteMatch(index, match.destinationUrl);
   }
 
   private onVoiceSearchClick_() {

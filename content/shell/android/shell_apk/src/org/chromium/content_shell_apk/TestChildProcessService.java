@@ -24,9 +24,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
 
-/**
- * Child service started by ChildProcessLauncherTest.
- */
+/** Child service started by ChildProcessLauncherTest. */
 public class TestChildProcessService extends Service {
     private static final String TAG = "TestProcessService";
 
@@ -34,6 +32,7 @@ public class TestChildProcessService extends Service {
 
     private static class TestChildProcessServiceDelegate implements ChildProcessServiceDelegate {
         private final Object mConnectionSetupLock = new Object();
+
         @GuardedBy("mConnectionSetupLock")
         private boolean mConnectionSetup;
 
@@ -146,8 +145,9 @@ public class TestChildProcessService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mService = new ChildProcessService(
-                new TestChildProcessServiceDelegate(), this, getApplicationContext());
+        mService =
+                new ChildProcessService(
+                        new TestChildProcessServiceDelegate(), this, getApplicationContext());
         mService.onCreate();
     }
 

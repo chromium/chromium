@@ -11,9 +11,9 @@ mojom("mojom") {
   sources = [ "personalization_app.mojom" ]
 
   webui_module_path = "/"
-  use_typescript_sources = true
 
   public_deps = [
+    "//ash/style/mojom:color_scheme",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -62,24 +62,12 @@ mojom("mojom") {
           move_only = true
         },
         {
-          mojom = "ash.personalization_app.mojom.AnimationTheme"
-          cpp = "::ash::AmbientTheme"
-        },
-        {
-          mojom = "ash.personalization_app.mojom.TopicSource"
-          cpp = "::ash::AmbientModeTopicSource"
-        },
-        {
           mojom = "ash.personalization_app.mojom.TemperatureUnit"
           cpp = "::ash::AmbientModeTemperatureUnit"
         },
         {
           mojom = "ash.personalization_app.mojom.AmbientUiVisibility"
           cpp = "::ash::AmbientUiVisibility"
-        },
-        {
-          mojom = "ash.personalization_app.mojom.ColorScheme"
-          cpp = "::ash::ColorScheme"
         },
         {
           mojom = "ash.personalization_app.mojom.SampleColorScheme"

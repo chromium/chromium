@@ -3,13 +3,10 @@
 _For other languages, please see the [Chromium style
 guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
-As of 2021-05-12, Chromium is transitioning from Python 2 to Python 3 (follow
-[crbug.com/941669](https://crbug.com/941669) for updates). See
-[//docs/python3_migration.md](../../docs/python3_migration.md) for more on
-how to migrate code.
-
-For new (Python 3) code, you can assume Python 3.8 (and that's what the bots
-will use), but we are increasingly seeing people running 3.9 locally as well.
+We currently require Python 3.8 (as in, that's what the bots use, so don't
+assume or require anything older *or* newer), but most newer versions of
+Python3 will work fine for most things. There is an appropriate version
+of Python3 in `$depot_tools/python-bin`, if you don't have one already.
 
 We (often) use a tool called [vpython] to manage Python packages; vpython
 is a wrapper around virtualenv. However, it is not safe to use vpython
@@ -65,7 +62,7 @@ making changes to files that follow them.
 ## Making Style Guide Changes
 
 You can propose changes to this style guide by sending an email to
-`python@chromium.org`. Ideally, the list will arrive at some consensus and you
+[`python@chromium.org`]. Ideally, the list will arrive at some consensus and you
 can request review for a change to this file. If there's no consensus,
 [`//styleguide/python/OWNERS`](https://chromium.googlesource.com/chromium/src/+/main/styleguide/python/OWNERS)
 get to decide.
@@ -126,9 +123,10 @@ YAPF has gotchas. You should review its changes before submitting. Notably:
 
 #### Bugs
 * Are tracked here: https://github.com/google/yapf/issues.
-* For Chromium-specific bugs, please discuss on `python@chromium.org`.
+* For Chromium-specific bugs, please discuss on [`python@chromium.org`].
 
 #### Editor Integration
 See: https://github.com/google/yapf/tree/main/plugins
 
 [vpython]: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/doc/users/vpython.md
+[`python@chromium.org`]: https://groups.google.com/a/chromium.org/g/python

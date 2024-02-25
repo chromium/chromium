@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/296792757)
-import '../store.js';
-
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {MockFileSystem} from '../../common/js/mock_entry.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {CurrentDirectory, FileTasks, PropStatus} from '../../externs/ts/state.js';
+import {fakeMyFilesVolumeId} from '../../background/js/mock_volume_manager.js';
+import type {MockFileSystem} from '../../common/js/mock_entry.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeFileSelectionHandler} from '../../foreground/js/fake_file_selection_handler.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
-import {ActionType} from '../actions.js';
-import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
+import {type CurrentDirectory, type FileTasks, FileTaskType, PropStatus} from '../../state/state.js';
+import {clearCachedEntries} from '../ducks/all_entries.js';
 import {fetchFileTasks} from '../ducks/current_directory.js';
 import {allEntriesSize, assertAllEntriesEqual, assertStateEquals, setUpFileManagerOnWindow, setupStore, updateContent, updMetadata, waitDeepEquals} from '../for_tests.js';
-import {clearCachedEntries} from '../reducers/all_entries.js';
-import {getFilesData, Store} from '../store.js';
+import {getFilesData, type Store} from '../store.js';
 
 import {changeDirectory, updateSelection} from './current_directory.js';
 
@@ -29,10 +25,9 @@ export function setUp() {
   setUpFileManagerOnWindow();
   window.fileManager.selectionHandler = new FakeFileSelectionHandler();
 
-  fileSystem =
-      window.fileManager.volumeManager.getCurrentProfileVolumeInfo(
-                                          'downloads')!.fileSystem as
-      MockFileSystem;
+  fileSystem = window.fileManager.volumeManager
+                   .getCurrentProfileVolumeInfo(
+                       VolumeType.DOWNLOADS)!.fileSystem as MockFileSystem;
   fileSystem.populate([
     '/dir-1/',
     '/dir-2/sub-dir/',
@@ -54,7 +49,7 @@ function changeSelection(store: Store, entries: Entry[]) {
 
 export function testChangeDirectoryFromEmpty() {
   const store = setupStore();
-  const dir1 = fileSystem.entries['/dir-1'];
+  const dir1 = fileSystem.entries['/dir-1'] as DirectoryEntry;
   // The current directory starts empty.
   assertTrue(store.getState().currentDirectory?.key === undefined);
 
@@ -74,7 +69,7 @@ export function testChangeDirectoryFromEmpty() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -92,7 +87,7 @@ export function testChangeDirectoryFromEmpty() {
 
   want.status = PropStatus.SUCCESS;
   want.key = dir1.toURL();
-  want.rootType = VolumeManagerCommon.RootType.DOWNLOADS;
+  want.rootType = RootType.DOWNLOADS;
   want.pathComponents = [
     {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
     {name: dir1.name, label: dir1.name, key: dir1.toURL()},
@@ -102,9 +97,9 @@ export function testChangeDirectoryFromEmpty() {
 
 export function testChangeDirectoryTwice() {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const dir1 = fileSystem.entries['/dir-1'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const dir1 = fileSystem.entries['/dir-1'] as DirectoryEntry;
   cd(store, dir2);
   updateContent(store, [subDir]);
   changeSelection(store, [subDir]);
@@ -112,7 +107,7 @@ export function testChangeDirectoryTwice() {
   const want: CurrentDirectory = {
     key: dir1.toURL(),
     status: PropStatus.SUCCESS,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     pathComponents: [
       {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
       {name: dir1.name, label: dir1.name, key: dir1.toURL()},
@@ -125,7 +120,7 @@ export function testChangeDirectoryTwice() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -141,9 +136,9 @@ export function testChangeDirectoryTwice() {
 
 export function testChangeSelection() {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const file = fileSystem.entries['/dir-2/file.txt'] as DirectoryEntry;
   cd(store, dir2);
   updateContent(store, [subDir, file]);
   changeSelection(store, [subDir]);
@@ -151,7 +146,7 @@ export function testChangeSelection() {
   const want: CurrentDirectory = {
     key: dir2.toURL(),
     status: PropStatus.SUCCESS,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     pathComponents: [
       {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
       {name: dir2.name, label: dir2.name, key: dir2.toURL()},
@@ -164,7 +159,7 @@ export function testChangeSelection() {
       dirCount: 1,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 1,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -188,20 +183,21 @@ export function testChangeSelection() {
   want.selection.keys = [file.toURL(), subDir.toURL()];
   want.selection.dirCount = 1;
   want.selection.fileCount = 1;
+  want.selection.offlineCachedCount = 2;
   assertStateEquals(want, store.getState().currentDirectory);
 }
 
 export function testChangeDirectoryContent() {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const file = fileSystem.entries['/dir-2/file.txt']!;
   cd(store, dir2);
 
   const want: CurrentDirectory = {
     key: dir2.toURL(),
     status: PropStatus.SUCCESS,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     pathComponents: [
       {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
       {name: dir2.name, label: dir2.name, key: dir2.toURL()},
@@ -214,7 +210,7 @@ export function testChangeDirectoryContent() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -227,7 +223,7 @@ export function testChangeDirectoryContent() {
   assertStateEquals(want, store.getState().currentDirectory);
   assertEquals(
       1, allEntriesSize(store.getState()), 'only dir-2 should be cached');
-  assertAllEntriesEqual(store, ['filesystem:downloads/dir-2']);
+  assertAllEntriesEqual(store, [`filesystem:${fakeMyFilesVolumeId}/dir-2`]);
 
   // Send the content update:
   updateContent(store, [subDir]);
@@ -237,8 +233,8 @@ export function testChangeDirectoryContent() {
       2, allEntriesSize(store.getState()),
       'dir-2 and dir-2/sub-dir should be cached');
   assertAllEntriesEqual(store, [
-    'filesystem:downloads/dir-2',
-    'filesystem:downloads/dir-2/sub-dir',
+    `filesystem:${fakeMyFilesVolumeId}/dir-2`,
+    `filesystem:${fakeMyFilesVolumeId}/dir-2/sub-dir`,
   ]);
 
   // Send another content update - it should replace the original:
@@ -249,37 +245,34 @@ export function testChangeDirectoryContent() {
       3, allEntriesSize(store.getState()),
       'dir-2, dir-2/sub-dir and dir-2/file should be cached');
   assertAllEntriesEqual(store, [
-    'filesystem:downloads/dir-2',
-    'filesystem:downloads/dir-2/file.txt',
-    'filesystem:downloads/dir-2/sub-dir',
+    `filesystem:${fakeMyFilesVolumeId}/dir-2`,
+    `filesystem:${fakeMyFilesVolumeId}/dir-2/file.txt`,
+    `filesystem:${fakeMyFilesVolumeId}/dir-2/sub-dir`,
   ]);
 
   // Clear cached entries: only dir2 and file should be kept.
-  const action: ClearStaleCachedEntriesAction = {
-    type: ActionType.CLEAR_STALE_CACHED_ENTRIES,
-    payload: undefined,
-  };
-  clearCachedEntries(store.getState(), action);
+  store.dispatch(clearCachedEntries());
   assertEquals(
       2, allEntriesSize(store.getState()),
       'only dir-2 and dir-2/file should still be cached');
-  assertAllEntriesEqual(
-      store,
-      ['filesystem:downloads/dir-2', 'filesystem:downloads/dir-2/file.txt']);
+  assertAllEntriesEqual(store, [
+    `filesystem:${fakeMyFilesVolumeId}/dir-2`,
+    `filesystem:${fakeMyFilesVolumeId}/dir-2/file.txt`,
+  ]);
 }
 
 export function testComputeHasDlpDisabledFiles() {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const file = fileSystem.entries['/dir-2/file.txt']!;
   cd(store, dir2);
   updateContent(store, [subDir, file]);
 
   const want: CurrentDirectory = {
     key: dir2.toURL(),
     status: PropStatus.SUCCESS,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     pathComponents: [
       {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
       {name: dir2.name, label: dir2.name, key: dir2.toURL()},
@@ -292,7 +285,7 @@ export function testComputeHasDlpDisabledFiles() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -343,9 +336,9 @@ const fakeFileTasks: chrome.fileManagerPrivate.FileTask = {
 
 export async function testFetchTasks(done: () => void) {
   const store = setupStore();
-  const dir2 = fileSystem.entries['/dir-2'];
-  const subDir = fileSystem.entries['/dir-2/sub-dir'];
-  const file = fileSystem.entries['/dir-2/file.txt'];
+  const dir2 = fileSystem.entries['/dir-2'] as DirectoryEntry;
+  const subDir = fileSystem.entries['/dir-2/sub-dir'] as DirectoryEntry;
+  const file = fileSystem.entries['/dir-2/file.txt']!;
   cd(store, dir2);
   changeSelection(store, [subDir, file]);
 
@@ -371,7 +364,7 @@ export async function testFetchTasks(done: () => void) {
       iconType: '',
       descriptor: {
         appId: 'handler-extension-id1',
-        taskType: 'app',
+        taskType: FileTaskType.APP,
         actionId: 'any',
       },
       isDefault: false,

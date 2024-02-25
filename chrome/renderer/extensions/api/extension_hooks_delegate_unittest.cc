@@ -4,12 +4,14 @@
 
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
@@ -54,8 +56,9 @@ class ExtensionHooksDelegateTest
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
 
-    script_context_ = CreateScriptContext(context, mutable_extension.get(),
-                                          Feature::BLESSED_EXTENSION_CONTEXT);
+    script_context_ =
+        CreateScriptContext(context, mutable_extension.get(),
+                            mojom::ContextType::kPrivilegedExtension);
     script_context_->set_url(extension_->url());
     bindings_system()->UpdateBindingsForContext(script_context_);
   }
@@ -80,7 +83,7 @@ class ExtensionHooksDelegateTest
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  ScriptContext* script_context_ = nullptr;
+  raw_ptr<ScriptContext> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 
@@ -126,7 +129,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestDisabled) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = AddContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
   bindings_system()->UpdateBindingsForContext(script_context);
   ASSERT_TRUE(messaging_util::IsSendRequestDisabled(script_context));
@@ -177,12 +180,14 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
 
   const std::string kChannel = "chrome.extension.sendRequest";
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
+  const PortId port_id(other_context_id, 0, false,
+                       mojom::SerializationFormat::kJson);
 
-  ExtensionMsg_TabConnectionInfo tab_connection_info;
+  NativeRendererMessagingService::TabConnectionInfo tab_connection_info;
+  NativeRendererMessagingService::ExternalConnectionInfo
+      external_connection_info;
   tab_connection_info.frame_id = 0;
   GURL source_url("http://example.com");
-  ExtensionMsg_ExternalConnectionInfo external_connection_info;
   // We'd normally also have a tab here (stored in `tab_connection_info.tab`),
   // but then we need a very large JSON object for it to comply with our
   // schema. Just pretend it's not there.
@@ -195,12 +200,23 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
   external_connection_info.guest_render_frame_routing_id = 0;
 
   // Open a receiver for the message.
-  EXPECT_CALL(*ipc_message_sender(),
-              SendOpenMessagePort(MSG_ROUTING_NONE, port_id));
+  mojo::PendingAssociatedRemote<mojom::MessagePortHost> port_host_remote;
+  auto port_host_receiver =
+      port_host_remote.InitWithNewEndpointAndPassReceiver();
+
+  mojo::PendingAssociatedReceiver<mojom::MessagePort> port_receiver;
+  auto port_remote = port_receiver.InitWithNewEndpointAndPassRemote();
+
+  bool port_opened = false;
   messaging_service()->DispatchOnConnect(
-      script_context_set(), port_id, ChannelType::kSendRequest, kChannel,
-      tab_connection_info, external_connection_info, nullptr);
-  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+      script_context_set(), port_id, mojom::ChannelType::kSendRequest, kChannel,
+      tab_connection_info, external_connection_info, std::move(port_receiver),
+      std::move(port_host_remote), nullptr,
+      base::BindLambdaForTesting(
+          [&port_opened](bool success) { port_opened = success; }));
+  port_host_receiver.EnableUnassociatedUsage();
+  port_remote.EnableUnassociatedUsage();
+  EXPECT_TRUE(port_opened);
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
 
@@ -208,7 +224,8 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
   // channel should remain open.
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,
-      Message("\"message\"", SerializationFormat::kJson, false), nullptr);
+      Message("\"message\"", mojom::SerializationFormat::kJson, false),
+      nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));

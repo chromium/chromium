@@ -71,7 +71,7 @@ class FakeCryptAuthFeatureStatusSetter : public CryptAuthFeatureStatusSetter {
       base::OnceClosure success_callback,
       base::OnceCallback<void(NetworkRequestError)> error_callback) override;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
   std::vector<Request> requests_;
 };
 
@@ -87,7 +87,9 @@ class FakeCryptAuthFeatureStatusSetterFactory
 
   ~FakeCryptAuthFeatureStatusSetterFactory() override;
 
-  const std::vector<FakeCryptAuthFeatureStatusSetter*>& instances() const {
+  const std::vector<
+      raw_ptr<FakeCryptAuthFeatureStatusSetter, VectorExperimental>>&
+  instances() const {
     return instances_;
   }
 
@@ -109,11 +111,12 @@ class FakeCryptAuthFeatureStatusSetterFactory
       CryptAuthClientFactory* client_factory,
       std::unique_ptr<base::OneShotTimer> timer) override;
 
-  std::vector<FakeCryptAuthFeatureStatusSetter*> instances_;
+  std::vector<raw_ptr<FakeCryptAuthFeatureStatusSetter, VectorExperimental>>
+      instances_;
   std::string last_instance_id_;
   std::string last_instance_id_token_;
-  raw_ptr<CryptAuthClientFactory, DanglingUntriaged | ExperimentalAsh>
-      last_client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, DanglingUntriaged> last_client_factory_ =
+      nullptr;
 };
 
 }  // namespace device_sync

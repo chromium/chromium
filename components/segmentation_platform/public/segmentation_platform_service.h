@@ -13,6 +13,7 @@
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -42,7 +43,7 @@ struct TrainingLabels {
   ~TrainingLabels();
 
   // Name and sample of the output metric to be collected as training data.
-  absl::optional<std::pair<std::string, base::HistogramBase::Sample>>
+  std::optional<std::pair<std::string, base::HistogramBase::Sample>>
       output_metric;
 
   TrainingLabels(const TrainingLabels& other);
@@ -112,13 +113,6 @@ class SegmentationPlatformService : public KeyedService,
   virtual SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) = 0;
 
-  // Given a client and a set of inputs, runs the required models on demand and
-  // returns the result in the supplied callback.
-  virtual void GetSelectedSegmentOnDemand(
-      const std::string& segmentation_key,
-      scoped_refptr<InputContext> input_context,
-      SegmentSelectionCallback callback) = 0;
-
   // Called to trigger training data collection for a given request ID. Request
   // IDs are given when |GetClassificationResult| is called.
   virtual void CollectTrainingData(proto::SegmentId segment_id,
@@ -132,6 +126,14 @@ class SegmentationPlatformService : public KeyedService,
 
   // Called to get the proxy that is used for debugging purpose.
   virtual ServiceProxy* GetServiceProxy();
+
+  // Get access to the segmentation databases using the client.
+  // WARNING: This will return nullptr till `IsPlatformInitialized()` is false.
+  // You can observe ServiceProxy to get notified when platform is initialized.
+  // TODO(ssid): Remove the initialization requirement by handling waiting for
+  // init internally.
+  // TODO(ssid): Add a Java version of this API.
+  virtual DatabaseClient* GetDatabaseClient();
 
   // Returns true when platform finished initializing, and can execute models.
   // The `GetSelectedSegment()` calls work without full platform initialization

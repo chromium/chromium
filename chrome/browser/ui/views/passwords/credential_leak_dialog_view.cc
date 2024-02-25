@@ -147,7 +147,7 @@ void CredentialLeakDialogView::InitWindow() {
   SetExtraView(CreateInfoIcon());
 }
 
-BEGIN_METADATA(CredentialLeakDialogView, views::DialogDelegateView)
+BEGIN_METADATA(CredentialLeakDialogView)
 END_METADATA
 
 CredentialLeakPrompt* CreateCredentialLeakPromptView(

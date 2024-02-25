@@ -6,11 +6,10 @@
 #define DEVICE_VR_ANDROID_ARCORE_ADDRESS_TO_ID_MAP_H_
 
 #include <limits>
+#include <optional>
 #include <unordered_map>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase_unordered_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -54,10 +53,10 @@ class AddressToIdMap {
   }
 
   // Gets the id for the corresponding address, if it's available.
-  absl::optional<IdType> GetId(void* address) const {
+  std::optional<IdType> GetId(void* address) const {
     auto it = address_to_id_.find(address);
     if (it == address_to_id_.end()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return it->second;
@@ -68,7 +67,7 @@ class AddressToIdMap {
   // generated if the address is passed into CreateOrGetId.
   template <class Predicate>
   size_t EraseIf(Predicate pred) {
-    return base::EraseIf(address_to_id_, pred);
+    return std::erase_if(address_to_id_, pred);
   }
 
  private:

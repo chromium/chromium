@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_FORM_FIELD_DATA_PREDICTIONS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_FORM_FIELD_DATA_PREDICTIONS_H_
 
+#include <optional>
 #include <string>
 
 #include "components/autofill/core/common/form_field_data.h"
@@ -20,10 +21,15 @@ struct FormFieldDataPredictions {
   FormFieldDataPredictions& operator=(FormFieldDataPredictions&&);
   ~FormFieldDataPredictions();
 
+  friend bool operator==(const FormFieldDataPredictions&,
+                         const FormFieldDataPredictions&);
+
   std::string host_form_signature;
   std::string signature;
   std::string heuristic_type;
-  std::string server_type;
+  // std::nullopt if the server response has not arrived yet.
+  std::optional<std::string> server_type;
+  std::string html_type;
   std::string overall_type;
   std::string parseable_name;
   std::string section;

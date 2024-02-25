@@ -19,8 +19,9 @@ class Canvas;
 // set via SetIcon() will be resized and drawn inside a circle if it's too big
 // to fit in the frame.
 class ProfileIndicatorIcon : public views::View {
+  METADATA_HEADER(ProfileIndicatorIcon, views::View)
+
  public:
-  METADATA_HEADER(ProfileIndicatorIcon);
   ProfileIndicatorIcon();
   ProfileIndicatorIcon(const ProfileIndicatorIcon&) = delete;
   ProfileIndicatorIcon& operator=(const ProfileIndicatorIcon&) = delete;

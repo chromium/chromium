@@ -35,13 +35,6 @@ class FragmentainerIterator {
   // Return true if we have walked through all relevant fragmentainers.
   bool AtEnd() const { return !current_column_set_; }
 
-  // The physical translation to apply to shift the box when converting from
-  // flowthread to visual coordinates.
-  PhysicalOffset PaginationOffset() const;
-
-  // The logical top of the current fragmentainer in flowthread.
-  LayoutUnit FragmentainerLogicalTopInFlowThread() const;
-
   // Return the physical clip rectangle of the current fragmentainer, relative
   // to the flow thread.
   PhysicalRect ClipRectInFlowThread() const;

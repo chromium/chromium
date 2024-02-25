@@ -39,7 +39,10 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest {
   }
 
   TabSearchButton* tab_search_button() {
-    return browser_view()->tab_strip_region_view()->tab_search_button();
+    return browser_view()
+        ->tab_strip_region_view()
+        ->tab_search_container()
+        ->tab_search_button();
   }
 
   TabSearchBubbleHost* tab_search_bubble_host() {
@@ -80,6 +83,7 @@ class TabSearchButtonBrowserUITest : public DialogBrowserTest {
     AppendTab(chrome::kChromeUIBookmarksURL);
     auto* tab_search_button = BrowserView::GetBrowserViewForBrowser(browser())
                                   ->tab_strip_region_view()
+                                  ->tab_search_container()
                                   ->tab_search_button();
     views::test::ButtonTestApi(tab_search_button).NotifyClick(GetDummyEvent());
   }

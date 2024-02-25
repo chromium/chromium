@@ -48,7 +48,7 @@ class ASH_EXPORT CleanupAnimationObserver
  private:
   std::unique_ptr<views::Widget> widget_;
 
-  raw_ptr<OverviewDelegate, ExperimentalAsh> owner_;
+  raw_ptr<OverviewDelegate> owner_;
 
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };

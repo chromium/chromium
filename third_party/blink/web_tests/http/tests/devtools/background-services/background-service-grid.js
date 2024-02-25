@@ -4,10 +4,12 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 function dumpBackgroundServiceGrid() {
   TestRunner.addResult('Grid Entries:');
 
-  const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
+    const treeElement = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
 
   const dataGrid = treeElement.view.dataGrid;
@@ -31,7 +33,7 @@ function dumpBackgroundServiceGrid() {
 };
 
 function setOriginCheckbox(value) {
-  const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
+  const treeElement = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
   treeElement.view.originCheckbox.setChecked(value);
   // Simulate click.
@@ -40,10 +42,9 @@ function setOriginCheckbox(value) {
 
 (async function() {
   TestRunner.addResult(`Tests that the grid shows information as expected.\n`);
-  await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('resources');
 
-  const backgroundServiceModel = TestRunner.mainTarget.model(Resources.BackgroundServiceModel);
+  const backgroundServiceModel = TestRunner.mainTarget.model(Application.BackgroundServiceModel.BackgroundServiceModel);
   backgroundServiceModel.enable(Protocol.BackgroundService.ServiceName.BackgroundFetch);
   backgroundServiceModel.enable(Protocol.BackgroundService.ServiceName.BackgroundSync);
 
@@ -104,7 +105,7 @@ function setOriginCheckbox(value) {
   dumpBackgroundServiceGrid();
 
   // Simulate clicking the clear button.
-  UI.panels.resources.sidebar.backgroundFetchTreeElement.view.clearEvents();
+  Application.ResourcesPanel.ResourcesPanel.instance().sidebar.backgroundFetchTreeElement.view.clearEvents();
   dumpBackgroundServiceGrid();
 
   TestRunner.completeTest();

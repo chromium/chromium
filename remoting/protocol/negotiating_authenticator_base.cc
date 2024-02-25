@@ -13,37 +13,11 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_split.h"
 #include "remoting/base/constants.h"
-#include "remoting/base/name_value_map.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
-
-namespace {
-
-const NameMapElement<NegotiatingAuthenticatorBase::Method>
-    kAuthenticationMethodStrings[] = {
-        {NegotiatingAuthenticatorBase::Method::SHARED_SECRET_PLAIN_SPAKE2_P224,
-         "spake2_plain"},
-
-        {NegotiatingAuthenticatorBase::Method::SHARED_SECRET_SPAKE2_P224,
-         "spake2_hmac"},
-        {NegotiatingAuthenticatorBase::Method::SHARED_SECRET_SPAKE2_CURVE25519,
-         "spake2_curve25519"},
-
-        {NegotiatingAuthenticatorBase::Method::PAIRED_SPAKE2_P224,
-         "spake2_pair"},
-        {NegotiatingAuthenticatorBase::Method::PAIRED_SPAKE2_CURVE25519,
-         "pair_spake2_curve25519"},
-
-        {NegotiatingAuthenticatorBase::Method::THIRD_PARTY_SPAKE2_P224,
-         "third_party"},
-        {NegotiatingAuthenticatorBase::Method::THIRD_PARTY_SPAKE2_CURVE25519,
-         "third_party_spake2_curve25519"},
-};
-
-}  // namespace
 
 const jingle_xmpp::StaticQName
     NegotiatingAuthenticatorBase::kMethodAttributeQName = {"", "method"};
@@ -77,21 +51,6 @@ bool NegotiatingAuthenticatorBase::started() const {
 Authenticator::RejectionReason NegotiatingAuthenticatorBase::rejection_reason()
     const {
   return rejection_reason_;
-}
-
-// static
-NegotiatingAuthenticatorBase::Method
-NegotiatingAuthenticatorBase::ParseMethodString(const std::string& value) {
-  Method result;
-  if (!NameToValue(kAuthenticationMethodStrings, value, &result)) {
-    return Method::INVALID;
-  }
-  return result;
-}
-
-// static
-std::string NegotiatingAuthenticatorBase::MethodToString(Method method) {
-  return ValueToName(kAuthenticationMethodStrings, method);
 }
 
 void NegotiatingAuthenticatorBase::ProcessMessageInternal(
@@ -146,7 +105,8 @@ NegotiatingAuthenticatorBase::GetNextMessageInternal() {
   }
   state_ = current_authenticator_->state();
   DCHECK(state_ == ACCEPTED || state_ == WAITING_MESSAGE);
-  result->AddAttr(kMethodAttributeQName, MethodToString(current_method_));
+  result->AddAttr(kMethodAttributeQName,
+                  HostAuthenticationConfig::MethodToString(current_method_));
   return result;
 }
 

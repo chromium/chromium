@@ -56,6 +56,8 @@ void FrameSinkHost::InitFrameSinkHolder(
   frame_sink_holder_ = std::make_unique<FrameSinkHolder>(
       std::move(layer_tree_frame_sink),
       base::BindRepeating(&FrameSinkHost::CreateCompositorFrame,
+                          base::Unretained(this)),
+      base::BindRepeating(&FrameSinkHost::OnFirstFrameRequested,
                           base::Unretained(this)));
 }
 
@@ -118,5 +120,7 @@ void FrameSinkHost::OnWindowDestroying(aura::Window* window) {
   host_window_observation_.Reset();
   host_window_ = nullptr;
 }
+
+void FrameSinkHost::OnFirstFrameRequested() {}
 
 }  // namespace ash

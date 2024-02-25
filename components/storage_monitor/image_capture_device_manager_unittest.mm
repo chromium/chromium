@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <ImageCaptureCore/ImageCaptureCore.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -176,7 +177,11 @@ const char kTestFileContents[] = "test";
 }
 
 - (NSString*)UTI {
-  return base::apple::CFToNSPtrCast(kUTTypeImage);
+  if (@available(macOS 11, *)) {
+    return UTTypeImage.identifier;
+  } else {
+    return base::apple::CFToNSPtrCast(kUTTypeImage);
+  }
 }
 
 - (NSDate*)modificationDate {

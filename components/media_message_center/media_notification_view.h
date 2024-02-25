@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -24,6 +25,8 @@ namespace media_message_center {
 // currently playing media and provide playback controls.
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationView
     : public views::View {
+  METADATA_HEADER(MediaNotificationView, views::View)
+
  public:
   // When |forced_expanded_state| has a value, the notification will be forced
   // into that expanded state and the user won't be given a button to toggle the
@@ -48,11 +51,18 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationView
   // Sets the icon to be displayed in the notification's header section.
   // |vector_icon| must outlive the MediaNotificationView.
   virtual void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) = 0;
-  virtual void UpdateDeviceSelectorAvailability(bool availability) = 0;
   // Called by MediaNotificationItem to update mute state.
   virtual void UpdateWithMuteStatus(bool mute) = 0;
   // Called by MediaNotificationitem to update volume.
   virtual void UpdateWithVolume(float volume) = 0;
+
+  // Called to update MediaNotificationView based on whether the device selector
+  // view has been expanded and devices are visible to users.
+  virtual void UpdateDeviceSelectorVisibility(bool visible) = 0;
+
+  // Called to update MediaNotificationView based on whether the device selector
+  // view has available devices.
+  virtual void UpdateDeviceSelectorAvailability(bool has_devices) = 0;
 };
 
 }  // namespace media_message_center

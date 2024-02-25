@@ -16,6 +16,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -24,7 +26,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
@@ -49,10 +50,21 @@
 #include "net/cert/x509_util_nss.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/third_party/mozilla_security_manager/nsNSSCertificateDB.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
 namespace ash::platform_keys {
+
+void RunCallBackIfCallableElseRunCleanUp(base::OnceCallback<void()> callback,
+                                         base::OnceCallback<void()> cleanup) {
+  if (!callback.IsCancelled()) {
+    return std::move(callback).Run();
+  }
+  if (!cleanup.IsCancelled()) {
+    return std::move(cleanup).Run();
+  }
+  // else: TODO(b/280048774): Handle RemoveKey case when PlatformService
+  // is not here.
+}
 
 namespace {
 
@@ -68,6 +80,9 @@ using ::content::BrowserThread;
 // The current maximal RSA modulus length that ChromeOS's TPM supports for key
 // generation.
 const unsigned int kMaxRSAModulusLengthBits = 2048;
+
+// Default encryption constants for operations with symmetric keys.
+const unsigned long kDefaultSymKeyGenType = CKM_AES_KEY_GEN;
 
 // Returns a vector containing bytes from `value` or an empty vector if `value`
 // is nullptr.
@@ -98,7 +113,6 @@ class NSSOperationState {
       std::move(callback).Run();
     }
   }
-
   crypto::ScopedPK11Slot slot_;
 
   // Weak pointer to the PlatformKeysServiceImpl that created this state. Used
@@ -110,7 +124,7 @@ using GetCertDBCallback =
     base::OnceCallback<void(net::NSSCertDatabase* cert_db)>;
 
 // Called on the UI thread with certificate database.
-void DidGetCertDbOnUiThread(absl::optional<TokenId> token_id,
+void DidGetCertDbOnUiThread(std::optional<TokenId> token_id,
                             GetCertDBCallback callback,
                             NSSOperationState* state,
                             net::NSSCertDatabase* cert_db) {
@@ -148,7 +162,7 @@ void DidGetCertDbOnUiThread(absl::optional<TokenId> token_id,
 // Asynchronously fetches the NSSCertDatabase using |delegate| and, if
 // |token_id| is not empty, the slot for |token_id|. Stores the slot in |state|
 // and passes the database to |callback|. Will run |callback| on the IO thread.
-void GetCertDatabase(absl::optional<TokenId> token_id,
+void GetCertDatabase(std::optional<TokenId> token_id,
                      GetCertDBCallback callback,
                      PlatformKeysServiceImplDelegate* delegate,
                      NSSOperationState* state) {
@@ -158,15 +172,56 @@ void GetCertDatabase(absl::optional<TokenId> token_id,
                                               std::move(callback), state));
 }
 
+class GenerateSymKeyState : public NSSOperationState {
+ public:
+  GenerateSymKeyState(ServiceWeakPtr weak_ptr,
+                      std::vector<uint8_t> key_id,
+                      int key_size,
+                      GenerateKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        key_id_(std::move(key_id)),
+        key_size_(key_size),
+        callback_(std::move(callback)) {}
+
+  ~GenerateSymKeyState() override = default;
+
+  void OnError(const base::Location& from, Status status) override {
+    CallBack(from, key_id_, status);
+  }
+
+  void OnSuccess(const base::Location& from) {
+    CallBack(from, key_id_, Status::kSuccess);
+  }
+
+  const std::vector<uint8_t> key_id_;
+  const int key_size_;
+
+ private:
+  void CallBack(const base::Location& from,
+                std::vector<uint8_t> key_id,
+                Status status) {
+    auto bound_callback =
+        base::BindOnce(std::move(callback_), std::move(key_id), status);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        from, base::BindOnce(&NSSOperationState::RunCallback,
+                             std::move(bound_callback), service_weak_ptr_));
+  }
+
+  // Must be called on origin thread, therefore use CallBack().
+  GenerateKeyCallback callback_;
+};
+
 class GenerateRSAKeyState : public NSSOperationState {
  public:
   GenerateRSAKeyState(ServiceWeakPtr weak_ptr,
                       unsigned int modulus_length_bits,
                       bool sw_backed,
+                      TokenId token_id,
                       GenerateKeyCallback callback)
       : NSSOperationState(weak_ptr),
         modulus_length_bits_(modulus_length_bits),
         sw_backed_(sw_backed),
+        token_id_(token_id),
         callback_(std::move(callback)) {}
 
   ~GenerateRSAKeyState() override = default;
@@ -182,16 +237,23 @@ class GenerateRSAKeyState : public NSSOperationState {
 
   const unsigned int modulus_length_bits_;
   const bool sw_backed_;
+  TokenId token_id_;
 
  private:
   void CallBack(const base::Location& from,
                 std::vector<uint8_t> public_key_spki_der,
                 Status status) {
-    auto bound_callback = base::BindOnce(
-        std::move(callback_), std::move(public_key_spki_der), status);
+    auto success_callback =
+        base::BindOnce(std::move(callback_), public_key_spki_der, status);
+    // cleanup_callback will be called in case the main callback (callback_) is
+    // canceled.
+    auto cleanup_callback =
+        base::BindOnce(&PlatformKeysServiceImpl::RemoveKey, service_weak_ptr_,
+                       token_id_, public_key_spki_der, base::DoNothing());
     content::GetUIThreadTaskRunner({})->PostTask(
-        from, base::BindOnce(&NSSOperationState::RunCallback,
-                             std::move(bound_callback), service_weak_ptr_));
+        from, base::BindOnce(&RunCallBackIfCallableElseRunCleanUp,
+                             std::move(success_callback),
+                             std::move(cleanup_callback)));
   }
 
   // Must be called on origin thread, therefore use CallBack().
@@ -202,9 +264,11 @@ class GenerateECKeyState : public NSSOperationState {
  public:
   GenerateECKeyState(ServiceWeakPtr weak_ptr,
                      const std::string& named_curve,
+                     TokenId token_id,
                      GenerateKeyCallback callback)
       : NSSOperationState(weak_ptr),
         named_curve_(named_curve),
+        token_id_(token_id),
         callback_(std::move(callback)) {}
 
   ~GenerateECKeyState() override = default;
@@ -219,16 +283,23 @@ class GenerateECKeyState : public NSSOperationState {
   }
 
   const std::string named_curve_;
+  TokenId token_id_;
 
  private:
   void CallBack(const base::Location& from,
                 std::vector<uint8_t> public_key_spki_der,
                 Status status) {
-    auto bound_callback = base::BindOnce(
-        std::move(callback_), std::move(public_key_spki_der), status);
+    auto success_callback =
+        base::BindOnce(std::move(callback_), public_key_spki_der, status);
+    // cleanup_callback will be called in case the main callback (callback_) is
+    // canceled.
+    auto cleanup_callback =
+        base::BindOnce(&PlatformKeysServiceImpl::RemoveKey, service_weak_ptr_,
+                       token_id_, public_key_spki_der, base::DoNothing());
     content::GetUIThreadTaskRunner({})->PostTask(
-        from, base::BindOnce(&NSSOperationState::RunCallback,
-                             std::move(bound_callback), service_weak_ptr_));
+        from, base::BindOnce(&RunCallBackIfCallableElseRunCleanUp,
+                             std::move(success_callback),
+                             std::move(cleanup_callback)));
   }
 
   // Must be called on origin thread, therefore use CallBack().
@@ -499,6 +570,39 @@ class RemoveKeyState : public NSSOperationState {
   RemoveKeyCallback callback_;
 };
 
+class RemoveSymKeyState : public NSSOperationState {
+ public:
+  RemoveSymKeyState(ServiceWeakPtr weak_ptr,
+                    std::vector<uint8_t> key_id,
+                    RemoveKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        key_id_(std::move(key_id)),
+        callback_(std::move(callback)) {}
+
+  ~RemoveSymKeyState() override = default;
+
+  void OnError(const base::Location& from, Status status) override {
+    CallBack(from, status);
+  }
+
+  void OnSuccess(const base::Location& from) {
+    CallBack(from, Status::kSuccess);
+  }
+
+  const std::vector<uint8_t> key_id_;
+
+ private:
+  void CallBack(const base::Location& from, Status status) {
+    auto bound_callback = base::BindOnce(std::move(callback_), status);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        from, base::BindOnce(&NSSOperationState::RunCallback,
+                             std::move(bound_callback), service_weak_ptr_));
+  }
+
+  // Must be called on origin thread, therefore use CallBack().
+  RemoveKeyCallback callback_;
+};
+
 class GetTokensState : public NSSOperationState {
  public:
   GetTokensState(ServiceWeakPtr weak_ptr, GetTokensCallback callback)
@@ -507,18 +611,16 @@ class GetTokensState : public NSSOperationState {
   ~GetTokensState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, std::unique_ptr<std::vector<TokenId>>() /* no token ids */,
-             status);
+    CallBack(from, std::vector<TokenId>() /* no token ids */, status);
   }
 
-  void OnSuccess(const base::Location& from,
-                 std::unique_ptr<std::vector<TokenId>> token_ids) {
+  void OnSuccess(const base::Location& from, std::vector<TokenId> token_ids) {
     CallBack(from, std::move(token_ids), Status::kSuccess);
   }
 
  private:
   void CallBack(const base::Location& from,
-                std::unique_ptr<std::vector<TokenId>> token_ids,
+                std::vector<TokenId> token_ids,
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), std::move(token_ids), status);
@@ -623,11 +725,11 @@ class GetAttributeForKeyState : public NSSOperationState {
   ~GetAttributeForKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*attribute_value=*/absl::nullopt, status);
+    CallBack(from, /*attribute_value=*/std::nullopt, status);
   }
 
   void OnSuccess(const base::Location& from,
-                 absl::optional<std::vector<uint8_t>> attribute_value) {
+                 std::optional<std::vector<uint8_t>> attribute_value) {
     CallBack(from, std::move(attribute_value), Status::kSuccess);
   }
 
@@ -637,7 +739,7 @@ class GetAttributeForKeyState : public NSSOperationState {
 
  private:
   void CallBack(const base::Location& from,
-                absl::optional<std::vector<uint8_t>> attribute_value,
+                std::optional<std::vector<uint8_t>> attribute_value,
                 Status status) {
     auto bound_callback = base::BindOnce(std::move(callback_),
                                          std::move(attribute_value), status);
@@ -662,7 +764,7 @@ class IsKeyOnTokenState : public NSSOperationState {
   ~IsKeyOnTokenState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*on_token=*/absl::nullopt, status);
+    CallBack(from, /*on_token=*/std::nullopt, status);
   }
 
   void OnSuccess(const base::Location& from, bool on_token) {
@@ -674,7 +776,7 @@ class IsKeyOnTokenState : public NSSOperationState {
 
  private:
   void CallBack(const base::Location& from,
-                absl::optional<bool> on_token,
+                std::optional<bool> on_token,
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), on_token, status);
@@ -697,6 +799,60 @@ crypto::ScopedSECKEYPrivateKey GetPrivateKey(
     return crypto::FindNSSKeyFromPublicKeyInfoInSlot(public_key_spki_der, slot);
   }
   return crypto::FindNSSKeyFromPublicKeyInfo(public_key_spki_der);
+}
+
+// Returns the symmetric key with CKA_ID equal to |key_id|
+// found in |slot|. |type| specifies the type of the key.
+crypto::ScopedPK11SymKey GetSymKey(
+    std::vector<uint8_t> key_id,
+    PK11SlotInfo* slot,
+    CK_MECHANISM_TYPE type = kDefaultSymKeyGenType) {
+  SECItem sec_key_id{siUTF8String, key_id.data(),
+                     static_cast<unsigned int>(key_id.size())};
+  return crypto::ScopedPK11SymKey(PK11_FindFixedKey(slot, type, &sec_key_id,
+                                                    /*wincx=*/nullptr));
+}
+
+void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
+  if (!state->slot_) {
+    LOG(ERROR) << "No slot.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  if (state->key_size_ != 32) {
+    LOG(ERROR) << "Only 32-byte keys are supported.";
+    state->OnError(FROM_HERE, Status::kErrorAlgorithmNotSupported);
+    return;
+  }
+
+  std::vector<uint8_t> key_id = state->key_id_;
+  SECItem sec_key_id{siUTF8String, key_id.data(),
+                     static_cast<unsigned int>(key_id.size())};
+  CK_FLAGS op_flags = CKF_SIGN | CKF_ENCRYPT | CKF_DECRYPT;
+
+  if (!PK11_TokenKeyGenWithFlags(
+          state->slot_.get(), kDefaultSymKeyGenType, /*param=*/nullptr,
+          state->key_size_, &sec_key_id, op_flags,
+          /*attrFlags=*/PK11_ATTR_TOKEN | PK11_ATTR_PRIVATE,
+          /*wincx=*/nullptr)) {
+    LOG(ERROR) << "Couldn't generate symmetric key.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+  state->OnSuccess(FROM_HERE);
+}
+
+void GenerateSymKeyWithDB(std::unique_ptr<GenerateSymKeyState> state,
+                          net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
+  // This task interacts with the TPM, hence MayBlock().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GenerateSymKeyOnWorkerThread, std::move(state)));
 }
 
 // Does the actual RSA key generation on a worker thread. Used by
@@ -1085,8 +1241,8 @@ bool ShouldIncludePublicKey(SECKEYPublicKey* public_key) {
     return false;
   }
 
-  base::StringPiece cka_id_str(reinterpret_cast<char*>(cka_id->data),
-                               cka_id->len);
+  std::string_view cka_id_str(reinterpret_cast<char*>(cka_id->data),
+                              cka_id->len);
 
   // Only keys generated/stored by extensions/Chrome should be visible to
   // extensions. Oemcrypto stores its key in the TPM, but that should not
@@ -1107,10 +1263,9 @@ void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
 
   std::vector<std::vector<uint8_t>> public_key_spki_der_list;
 
-  // This assumes that all public keys on the slots are actually key pairs with
-  // private + public keys, so it's sufficient to get the public keys (and also
-  // not necessary to check that a private key for that public key really
-  // exists).
+  // This assumes that there might be a public key on a slot that
+  // does not have a corresponding private key. The key is then considered
+  // partially deleted and should be treated as deleted (it eventually will be).
   crypto::ScopedSECKEYPublicKeyList public_keys(
       PK11_ListPublicKeysInSlot(state->slot_.get(), /*nickname=*/nullptr));
 
@@ -1131,10 +1286,15 @@ void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
       LOG(WARNING) << "Could not encode subject public key info.";
       continue;
     }
-
-    if (subject_public_key_info->len > 0) {
-      public_key_spki_der_list.push_back(
-          ScopedSECItemToBytes(subject_public_key_info));
+    if (subject_public_key_info->len == 0) {
+      continue;
+    }
+    const std::vector<uint8_t> pubkey =
+        ScopedSECItemToBytes(subject_public_key_info);
+    crypto::ScopedSECKEYPrivateKey rsa_key =
+        crypto::FindNSSKeyFromPublicKeyInfoInSlot(pubkey, state->slot_.get());
+    if (rsa_key) {
+      public_key_spki_der_list.push_back(pubkey);
     }
   }
 
@@ -1289,23 +1449,61 @@ void RemoveKeyWithDb(std::unique_ptr<RemoveKeyState> state,
       base::BindOnce(&RemoveKeyOnWorkerThread, std::move(state)));
 }
 
+// Does the actual symmetric key removal on a worker thread. Used by
+// RemoveSymKeyWithDb().
+void RemoveSymKeyOnWorkerThread(std::unique_ptr<RemoveSymKeyState> state) {
+  if (!state->slot_) {
+    LOG(ERROR) << "No slot.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  auto key = GetSymKey(state->key_id_, state->slot_.get());
+  if (!key) {
+    LOG(ERROR) << "Couldn't find the symmetric key.";
+    state->OnError(FROM_HERE, Status::kErrorKeyNotFound);
+    return;
+  }
+
+  if (PK11_DeleteTokenSymKey(key.get()) != SECSuccess) {
+    LOG(ERROR) << "Failed to delete key.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  state->OnSuccess(FROM_HERE);
+}
+
+// Continues removing the symmetric key with the obtained |cert_db|. Called by
+// RemoveSymKey().
+void RemoveSymKeyWithDb(std::unique_ptr<RemoveSymKeyState> state,
+                        net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&RemoveSymKeyOnWorkerThread, std::move(state)));
+}
+
 // Does the actual work to determine which tokens are available.
 void GetTokensWithDB(std::unique_ptr<GetTokensState> state,
                      net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  auto token_ids = std::make_unique<std::vector<TokenId>>();
+  std::vector<TokenId> token_ids;
 
   // The user token will be unavailable in case of no logged in user in this
   // profile.
   if (cert_db->GetPrivateSlot()) {
-    token_ids->push_back(TokenId::kUser);
+    token_ids.push_back(TokenId::kUser);
   }
 
   if (cert_db->GetSystemSlot()) {
-    token_ids->push_back(TokenId::kSystem);
+    token_ids.push_back(TokenId::kSystem);
   }
 
-  DCHECK(!token_ids->empty());
+  DCHECK(!token_ids.empty());
 
   state->OnSuccess(FROM_HERE, std::move(token_ids));
 }
@@ -1455,7 +1653,7 @@ void GetAttributeForKeyWithDbOnWorkerThread(
     // to return nullopt |attribute_value| instead.
     int error = PORT_GetError();
     if (error == SEC_ERROR_BAD_DATA) {
-      state->OnSuccess(FROM_HERE, /*attribute_value=*/absl::nullopt);
+      state->OnSuccess(FROM_HERE, /*attribute_value=*/std::nullopt);
       return;
     }
 
@@ -1500,13 +1698,34 @@ void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
 
 }  // namespace
 
+void PlatformKeysServiceImpl::GenerateSymKey(TokenId token_id,
+                                             std::vector<uint8_t> key_id,
+                                             int key_size,
+                                             GenerateKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto state = std::make_unique<GenerateSymKeyState>(
+      weak_factory_.GetWeakPtr(), std::move(key_id), key_size,
+      std::move(callback));
+  if (delegate_->IsShutDown()) {
+    state->OnError(FROM_HERE, Status::kErrorShutDown);
+    return;
+  }
+
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
+  NSSOperationState* state_ptr = state.get();
+  GetCertDatabase(token_id,
+                  base::BindOnce(&GenerateSymKeyWithDB, std::move(state)),
+                  delegate_.get(), state_ptr);
+}
+
 void PlatformKeysServiceImpl::GenerateRSAKey(TokenId token_id,
                                              unsigned int modulus_length_bits,
                                              bool sw_backed,
                                              GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<GenerateRSAKeyState>(
-      weak_factory_.GetWeakPtr(), modulus_length_bits, sw_backed,
+      weak_factory_.GetWeakPtr(), modulus_length_bits, sw_backed, token_id,
       std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
@@ -1530,7 +1749,7 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
                                             GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<GenerateECKeyState>(
-      weak_factory_.GetWeakPtr(), named_curve, std::move(callback));
+      weak_factory_.GetWeakPtr(), named_curve, token_id, std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
@@ -1544,7 +1763,7 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
 }
 
 void PlatformKeysServiceImpl::SignRsaPkcs1(
-    absl::optional<TokenId> token_id,
+    std::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     HashAlgorithm hash_algorithm,
@@ -1571,7 +1790,7 @@ void PlatformKeysServiceImpl::SignRsaPkcs1(
 }
 
 void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
-    absl::optional<TokenId> token_id,
+    std::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     SignCallback callback) {
@@ -1597,7 +1816,7 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
 }
 
 void PlatformKeysServiceImpl::SignEcdsa(
-    absl::optional<TokenId> token_id,
+    std::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     HashAlgorithm hash_algorithm,
@@ -1757,6 +1976,29 @@ void PlatformKeysServiceImpl::RemoveKey(
                   delegate_.get(), state_ptr);
 }
 
+void PlatformKeysServiceImpl::RemoveSymKey(TokenId token_id,
+                                           std::vector<uint8_t> key_id,
+                                           RemoveKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  auto state = std::make_unique<RemoveSymKeyState>(
+      weak_factory_.GetWeakPtr(), std::move(key_id), std::move(callback));
+  if (delegate_->IsShutDown()) {
+    state->OnError(FROM_HERE, Status::kErrorShutDown);
+    return;
+  }
+
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
+  NSSOperationState* state_ptr = state.get();
+
+  // The NSSCertDatabase object is not required. But in case it's not available
+  // we would get more informative status codes.
+  GetCertDatabase(token_id,
+                  base::BindOnce(&RemoveSymKeyWithDb, std::move(state)),
+                  delegate_.get(), state_ptr);
+}
+
 void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<GetTokensState>(weak_factory_.GetWeakPtr(),
@@ -1768,7 +2010,7 @@ void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
   // Get the pointer to |state| before transferring ownership of |state| to the
   // callback's bound arguments.
   NSSOperationState* state_ptr = state.get();
-  GetCertDatabase(/*token_id=*/absl::nullopt /* don't get any specific slot */,
+  GetCertDatabase(/*token_id=*/std::nullopt /* don't get any specific slot */,
                   base::BindOnce(&GetTokensWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
 }
@@ -1789,7 +2031,7 @@ void PlatformKeysServiceImpl::GetKeyLocations(
   // Get the pointer to |state| before transferring ownership of |state| to the
   // callback's bound arguments.
   GetCertDatabase(
-      /*token_id=*/absl::nullopt /* don't get any specific slot */,
+      /*token_id=*/std::nullopt /* don't get any specific slot */,
       base::BindOnce(&GetKeyLocationsWithDB, std::move(state)), delegate_.get(),
       state_ptr);
 }

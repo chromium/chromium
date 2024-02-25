@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
@@ -58,17 +57,13 @@ void UserBoardViewMojo::ShowBannerMessage(const std::u16string& message,
 
 void UserBoardViewMojo::SetSmartLockState(const AccountId& account_id,
                                           SmartLockState state) {
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
-    LoginScreen::Get()->GetModel()->SetSmartLockState(account_id, state);
-  }
+  LoginScreen::Get()->GetModel()->SetSmartLockState(account_id, state);
 }
 
 void UserBoardViewMojo::NotifySmartLockAuthResult(const AccountId& account_id,
                                                   bool success) {
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
-    LoginScreen::Get()->GetModel()->NotifySmartLockAuthResult(account_id,
-                                                              success);
-  }
+  LoginScreen::Get()->GetModel()->NotifySmartLockAuthResult(account_id,
+                                                            success);
 }
 
 void UserBoardViewMojo::SetAuthType(const AccountId& account_id,

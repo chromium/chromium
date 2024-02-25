@@ -6,11 +6,13 @@ import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/customize_themes/theme_icon.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 
-import {CustomizeThemesBrowserProxy, CustomizeThemesBrowserProxyImpl} from 'chrome://resources/cr_components/customize_themes/browser_proxy.js';
-import {CustomizeThemesElement} from 'chrome://resources/cr_components/customize_themes/customize_themes.js';
-import {ChromeTheme, CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerInterface, ThemeType} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
-import {ThemeIconElement} from 'chrome://resources/cr_components/customize_themes/theme_icon.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {CustomizeThemesBrowserProxy} from 'chrome://resources/cr_components/customize_themes/browser_proxy.js';
+import {CustomizeThemesBrowserProxyImpl} from 'chrome://resources/cr_components/customize_themes/browser_proxy.js';
+import type {CustomizeThemesElement} from 'chrome://resources/cr_components/customize_themes/customize_themes.js';
+import type {ChromeTheme, CustomizeThemesHandlerInterface} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
+import {CustomizeThemesClientCallbackRouter, ThemeType} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
+import type {ThemeIconElement} from 'chrome://resources/cr_components/customize_themes/theme_icon.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

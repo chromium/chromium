@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult('Tests the signed exchange information are available when the prefetch succeeded.\n');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
   NetworkTestRunner.networkLog().reset();
 

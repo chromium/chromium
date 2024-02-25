@@ -4,6 +4,8 @@
 
 #include "content/public/browser/audio_service.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
@@ -28,7 +30,6 @@
 #include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/audio/service.h"
 #include "services/audio/service_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 #include "ui/display/util/edid_parser.h"
@@ -46,34 +47,7 @@ namespace content {
 
 namespace {
 
-absl::optional<base::TimeDelta> GetFieldTrialIdleTimeout() {
-  std::string timeout_str =
-      base::GetFieldTrialParamValue("AudioService", "teardown_timeout_s");
-  int timeout_s = 0;
-  if (!base::StringToInt(timeout_str, &timeout_s))
-    return absl::nullopt;
-  return base::Seconds(timeout_s);
-}
-
-absl::optional<base::TimeDelta> GetCommandLineIdleTimeout() {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  std::string timeout_str =
-      command_line.GetSwitchValueASCII(switches::kAudioServiceQuitTimeoutMs);
-  int timeout_ms = 0;
-  if (!base::StringToInt(timeout_str, &timeout_ms))
-    return absl::nullopt;
-  return base::Milliseconds(timeout_ms);
-}
-
-absl::optional<base::TimeDelta> GetAudioServiceProcessIdleTimeout() {
-  absl::optional<base::TimeDelta> timeout = GetCommandLineIdleTimeout();
-  if (!timeout)
-    timeout = GetFieldTrialIdleTimeout();
-  if (timeout && timeout->is_negative())
-    return absl::nullopt;
-  return timeout;
-}
+audio::mojom::AudioService* g_service_override = nullptr;
 
 bool IsAudioServiceOutOfProcess() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -205,6 +179,9 @@ uint32_t ScanEdidBitstreams() {
 
 audio::mojom::AudioService& GetAudioService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (g_service_override) {
+    return *g_service_override;
+  }
 
   // NOTE: We use sequence-local storage slot not because we support access from
   // any sequence, but to limit the lifetime of this Remote to the lifetime of
@@ -232,14 +209,16 @@ audio::mojom::AudioService& GetAudioService() {
 #else
     LaunchAudioService(std::move(receiver), 0);
 #endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) && BUILDFLAG(IS_WIN)
-    if (IsAudioServiceOutOfProcess()) {
-      auto idle_timeout = GetAudioServiceProcessIdleTimeout();
-      if (idle_timeout)
-        remote.reset_on_idle_timeout(*idle_timeout);
-    }
     remote.reset_on_disconnect();
   }
   return *remote.get();
+}
+
+base::AutoReset<audio::mojom::AudioService*>
+OverrideAudioServiceForTesting(  // IN-TEST
+    audio::mojom::AudioService* service) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return {&g_service_override, service};
 }
 
 std::unique_ptr<media::AudioSystem> CreateAudioSystemForAudioService() {

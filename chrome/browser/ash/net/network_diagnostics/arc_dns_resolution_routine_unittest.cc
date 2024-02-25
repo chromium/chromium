@@ -59,7 +59,8 @@ class ArcDnsResolutionRoutineTest : public ::testing::Test {
     fake_net_instance_->set_dns_resolution_test_result(result);
 
     // Set up routine with fake NetworkInstance service.
-    arc_dns_resolution_routine_ = std::make_unique<ArcDnsResolutionRoutine>();
+    arc_dns_resolution_routine_ = std::make_unique<ArcDnsResolutionRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     arc_dns_resolution_routine_->set_net_instance_for_testing(
         fake_net_instance_.get());
   }

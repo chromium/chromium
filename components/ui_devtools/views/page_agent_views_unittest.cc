@@ -60,7 +60,7 @@ class PageAgentViewsTest : public views::ViewsTestBase {
           return false;
       }
 
-      for (auto* child : cur_element->children()) {
+      for (ui_devtools::UIElement* child : cur_element->children()) {
         elements.emplace(child);
       }
     }

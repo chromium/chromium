@@ -76,7 +76,8 @@ class DecryptingMediaResourceTest : public testing::Test {
   }
 
   bool HasEncryptedStream() {
-    for (auto* stream : decrypting_media_resource_->GetAllStreams()) {
+    for (media::DemuxerStream* stream :
+         decrypting_media_resource_->GetAllStreams()) {
       if ((stream->type() == DemuxerStream::AUDIO &&
            stream->audio_decoder_config().is_encrypted()) ||
           (stream->type() == DemuxerStream::VIDEO &&
@@ -91,8 +92,8 @@ class DecryptingMediaResourceTest : public testing::Test {
     streams_.push_back(CreateMockDemuxerStream(type, encrypted));
   }
 
-  std::vector<DemuxerStream*> GetAllStreams() {
-    std::vector<DemuxerStream*> streams;
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams() {
+    std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams;
 
     for (auto& stream : streams_) {
       streams.push_back(stream.get());
@@ -211,8 +212,8 @@ TEST_F(DecryptingMediaResourceTest, WaitingCallback) {
   EXPECT_CALL(*streams_.front(), OnRead(_))
       .WillRepeatedly(ReturnBuffer(encrypted_buffer_));
   EXPECT_CALL(decryptor_, Decrypt(_, encrypted_buffer_, _))
-      .WillRepeatedly(RunOnceCallback<2>(Decryptor::kNoKey,
-                                         scoped_refptr<DecoderBuffer>()));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<2>(
+          Decryptor::kNoKey, scoped_refptr<DecoderBuffer>()));
   EXPECT_CALL(decrypting_media_resource_init_cb_, Run(true));
   EXPECT_CALL(waiting_cb_, Run(WaitingReason::kNoDecryptionKey));
 

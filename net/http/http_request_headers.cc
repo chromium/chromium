@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -25,7 +26,7 @@ namespace net {
 namespace {
 
 bool SupportsStreamType(
-    const absl::optional<base::flat_set<SourceStream::SourceType>>&
+    const std::optional<base::flat_set<SourceStream::SourceType>>&
         accepted_stream_types,
     SourceStream::SourceType type) {
   if (!accepted_stream_types)
@@ -63,6 +64,7 @@ const char HttpRequestHeaders::kIfRange[] = "If-Range";
 const char HttpRequestHeaders::kIfUnmodifiedSince[] = "If-Unmodified-Since";
 const char HttpRequestHeaders::kOrigin[] = "Origin";
 const char HttpRequestHeaders::kPragma[] = "Pragma";
+const char HttpRequestHeaders::kPriority[] = "Priority";
 const char HttpRequestHeaders::kProxyAuthorization[] = "Proxy-Authorization";
 const char HttpRequestHeaders::kProxyConnection[] = "Proxy-Connection";
 const char HttpRequestHeaders::kRange[] = "Range";
@@ -133,7 +135,7 @@ void HttpRequestHeaders::SetHeader(base::StringPiece key, std::string&& value) {
   // Invalid header names or values could mean clients can attach
   // browser-internal headers.
   CHECK(HttpUtil::IsValidHeaderName(key)) << key;
-  CHECK(HttpUtil::IsValidHeaderValue(value)) << key << ":" << value;
+  CHECK(HttpUtil::IsValidHeaderValue(value)) << key << " has invalid value.";
 
   SetHeaderInternal(key, std::move(value));
 }
@@ -241,7 +243,7 @@ base::Value::Dict HttpRequestHeaders::NetLogParams(
 
 void HttpRequestHeaders::SetAcceptEncodingIfMissing(
     const GURL& url,
-    const absl::optional<base::flat_set<SourceStream::SourceType>>&
+    const std::optional<base::flat_set<SourceStream::SourceType>>&
         accepted_stream_types,
     bool enable_brotli,
     bool enable_zstd) {

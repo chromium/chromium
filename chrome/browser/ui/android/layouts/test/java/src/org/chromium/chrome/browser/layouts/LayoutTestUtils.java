@@ -24,22 +24,27 @@ public class LayoutTestUtils {
     public static void waitForLayout(LayoutManager layoutManager, @LayoutType int type) {
         Assert.assertNotNull(layoutManager);
         CallbackHelper finishedShowingCallbackHelper = new CallbackHelper();
-        LayoutStateObserver observer = new LayoutStateObserver() {
-            @Override
-            public void onFinishedShowing(int layoutType) {
-                // Ensure the layout is the one we're actually looking for.
-                if (type != layoutType) return;
+        LayoutStateObserver observer =
+                new LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(int layoutType) {
+                        // Ensure the layout is the one we're actually looking for.
+                        if (type != layoutType) return;
 
-                finishedShowingCallbackHelper.notifyCalled();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (layoutManager.isLayoutVisible(type)) {
-                finishedShowingCallbackHelper.notifyCalled();
-            } else {
-                layoutManager.addObserver(observer);
-            }
-        });
+                        finishedShowingCallbackHelper.notifyCalled();
+                    }
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Only trigger immediately if the layout visible and not mid-transition.
+                    if (layoutManager.isLayoutVisible(type)
+                            && !layoutManager.isLayoutStartingToShow(type)
+                            && !layoutManager.isLayoutStartingToHide(type)) {
+                        finishedShowingCallbackHelper.notifyCalled();
+                    } else {
+                        layoutManager.addObserver(observer);
+                    }
+                });
 
         try {
             finishedShowingCallbackHelper.waitForFirst();

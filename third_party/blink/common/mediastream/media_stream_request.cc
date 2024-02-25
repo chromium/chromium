@@ -101,7 +101,7 @@ MediaStreamDevice::MediaStreamDevice(
     const std::string& name,
     const media::VideoCaptureControlSupport& control_support,
     media::VideoFacingMode facing,
-    const absl::optional<std::string>& group_id)
+    const std::optional<std::string>& group_id)
     : type(type),
       id(id),
       video_control_support(control_support),
@@ -172,6 +172,11 @@ bool MediaStreamDevice::IsSameDevice(
          input.sample_rate() == other_device.input.sample_rate() &&
          input.channel_layout() == other_device.input.channel_layout() &&
          session_id_ == other_device.session_id_;
+}
+
+bool MediaStreamDevice::operator==(
+    const MediaStreamDevice& other_device) const {
+  return IsSameDevice(other_device);
 }
 
 blink::MediaStreamDevices ToMediaStreamDevicesList(

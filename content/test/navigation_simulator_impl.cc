@@ -18,9 +18,9 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/url_utils.h"
 #include "content/test/test_navigation_url_loader.h"
 #include "content/test/test_render_frame_host.h"
@@ -353,9 +353,7 @@ NavigationSimulatorImpl::NavigationSimulatorImpl(
       transition_(browser_initiated ? ui::PAGE_TRANSITION_TYPED
                                     : ui::PAGE_TRANSITION_LINK),
       contents_mime_type_("text/html"),
-      load_url_params_(nullptr),
-      force_before_unload_for_browser_initiated_(base::FeatureList::IsEnabled(
-          features::kAvoidUnnecessaryBeforeUnloadCheckSync)) {
+      load_url_params_(nullptr) {
   net::IPAddress address;
   CHECK(address.AssignFromIPLiteral("2001:db8::1"));
   remote_endpoint_ = net::IPEndPoint(address, 80);
@@ -524,6 +522,9 @@ void NavigationSimulatorImpl::Redirect(const GURL& new_url) {
     redirect_headers_ = nullptr;
   }
 
+  if (response_postprocess_hook_) {
+    response_postprocess_hook_.Run(*response);
+  }
   url_loader->CallOnRequestRedirected(redirect_info, std::move(response));
 
   MaybeWaitForThrottleChecksComplete(base::BindOnce(
@@ -622,6 +623,9 @@ void NavigationSimulatorImpl::ReadyToCommit() {
     response->ssl_info = ssl_info_;
     response->headers = response_headers_;
     response->dns_aliases = response_dns_aliases_;
+    if (response_postprocess_hook_) {
+      response_postprocess_hook_.Run(*response);
+    }
     static_cast<TestRenderFrameHost*>(frame_tree_node_->current_frame_host())
         ->PrepareForCommitDeprecatedForNavigationSimulator(
             std::move(response), std::move(response_body_));
@@ -720,6 +724,11 @@ void NavigationSimulatorImpl::Commit() {
   // point. Overwrite it here with the desired value to correctly mock the
   // DidCommitProvisionalLoadParams.
   navigation_url_ = request_->GetURL();
+  if (navigation_url_.is_empty()) {
+    // Blink treats empty URLs as about:blank. Simulate that in the commit IPC
+    // so that the RenderFrameHost does not reject the commit.
+    navigation_url_ = GURL(url::kAboutBlankURL);
+  }
 
   auto params = BuildDidCommitProvisionalLoadParams(
       same_document_ /* same_document */, false /* failed_navigation */,
@@ -980,6 +989,11 @@ void NavigationSimulatorImpl::SetNavigationInputStart(
   navigation_input_start_ = navigation_input_start;
 }
 
+void NavigationSimulatorImpl::SetNavigationStart(
+    base::TimeTicks navigation_start) {
+  navigation_start_ = navigation_start;
+}
+
 void NavigationSimulatorImpl::SetReloadType(ReloadType reload_type) {
   CHECK_EQ(INITIALIZATION, state_) << "The reload_type parameter cannot "
                                       "be set after the navigation has started";
@@ -1119,7 +1133,6 @@ content::GlobalRequestID NavigationSimulatorImpl::GetGlobalRequestID() {
 }
 
 void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
-  AddBeforeUnloadHandlerIfNecessary();
   if (reload_type_ != ReloadType::NONE) {
     web_contents_->GetController().Reload(reload_type_,
                                           false /*check_for_repost */);
@@ -1324,7 +1337,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
     static_cast<NavigationControllerImpl&>(web_contents_->GetController())
         .GoToOffsetFromRenderer(
             session_history_offset_, render_frame_host_,
-            /*soft_navigation_heuristics_task_id=*/absl::nullopt);
+            /*soft_navigation_heuristics_task_id=*/std::nullopt);
     request_ = render_frame_host_->frame_tree_node()->navigation_request();
     return true;
   }
@@ -1332,14 +1345,14 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(
           initiator_frame_host_
-              ? absl::make_optional(initiator_frame_host_->GetFrameToken())
-              : absl::nullopt,
+              ? std::make_optional(initiator_frame_host_->GetFrameToken())
+              : std::nullopt,
           headers_, load_flags_, skip_service_worker_, request_context_type_,
           mixed_content_context_type_, is_form_submission_,
           false /* was_initiated_by_link_click */,
           blink::mojom::ForceHistoryPush::kNo, searchable_form_url_,
           searchable_form_encoding_, GURL() /* client_side_redirect_url */,
-          absl::nullopt /* detools_initiator_info */,
+          std::nullopt /* detools_initiator_info */,
           nullptr /* trust_token_params */, impression_,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
@@ -1351,7 +1364,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           false /* is_container_initiated */,
           false /* is_fullscreen_requested */, false /* has_storage_access */);
   auto common_params = blink::CreateCommonNavigationParams();
-  common_params->navigation_start = base::TimeTicks::Now();
+  common_params->navigation_start =
+      navigation_start_.is_null() ? base::TimeTicks::Now() : navigation_start_;
   common_params->input_start = navigation_input_start_;
   common_params->url = navigation_url_;
   common_params->initiator_origin = initiator_origin_.value();
@@ -1682,31 +1696,6 @@ bool NavigationSimulatorImpl::NeedsThrottleChecks() const {
 bool NavigationSimulatorImpl::NeedsPreCommitChecks() const {
   DCHECK(request_);
   return NeedsThrottleChecks() || request_->IsPageActivation();
-}
-
-void NavigationSimulatorImpl::AddBeforeUnloadHandlerIfNecessary() {
-  if (!force_before_unload_for_browser_initiated_)
-    return;
-
-  RenderFrameHostImpl* target_frame_render_frame_host_impl;
-  if (load_url_params_ && load_url_params_->frame_tree_node_id !=
-                              RenderFrameHost::kNoFrameTreeNodeId) {
-    FrameTreeNode* target_frame_tree_node =
-        FrameTreeNode::GloballyFindByID(load_url_params_->frame_tree_node_id);
-    DCHECK(target_frame_tree_node);
-    target_frame_render_frame_host_impl =
-        target_frame_tree_node->current_frame_host();
-  } else {
-    target_frame_render_frame_host_impl =
-        static_cast<RenderFrameHostImpl*>(web_contents_->GetPrimaryMainFrame());
-  }
-  if (target_frame_render_frame_host_impl &&
-      !target_frame_render_frame_host_impl->GetSuddenTerminationDisablerState(
-          blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler)) {
-    target_frame_render_frame_host_impl->SuddenTerminationDisablerChanged(
-        true,
-        blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
-  }
 }
 
 }  // namespace content

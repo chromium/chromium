@@ -80,15 +80,6 @@ export interface PrivacyPageBrowserProxy {
    *     configuration or the probe was cancelled.
    */
   probeConfig(entry: string): Promise<boolean>;
-
-
-  /**
-   * Records metrics on the user's interaction with the dropdown menu.
-   * @param oldSelection value of previously selected dropdown option
-   * @param newSelection value of newly selected dropdown option
-   */
-  recordUserDropdownInteraction(oldSelection: string, newSelection: string):
-      void;
 }
 
 export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
@@ -127,10 +118,6 @@ export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
 
   probeConfig(entry: string): Promise<boolean> {
     return sendWithPromise('probeConfig', entry);
-  }
-
-  recordUserDropdownInteraction(oldSelection: string, newSelection: string) {
-    chrome.send('recordUserDropdownInteraction', [oldSelection, newSelection]);
   }
 
   static getInstance(): PrivacyPageBrowserProxy {

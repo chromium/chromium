@@ -4,10 +4,10 @@
 
 #include "components/feature_engagement/public/configuration.h"
 
+#include <optional>
 #include <string>
 
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 namespace {

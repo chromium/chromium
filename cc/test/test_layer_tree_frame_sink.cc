@@ -23,6 +23,7 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace cc {
@@ -60,6 +61,8 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
       debug_settings_(debug_settings),
       refresh_rate_(refresh_rate),
       frame_sink_id_(kLayerTreeFrameSinkId),
+      shared_image_manager_(std::make_unique<gpu::SharedImageManager>()),
+      sync_point_manager_(std::make_unique<gpu::SyncPointManager>()),
       parent_local_surface_id_allocator_(
           new viz::ParentLocalSurfaceIdAllocator),
       client_provided_begin_frame_source_(begin_frame_source),
@@ -129,8 +132,10 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   // processor is only a stub, and viz::TestGpuServiceHolder will keep a
   // gpu::GpuTaskSchedulerHelper alive for output surface to use, so there is no
   // need to pass in an gpu::GpuTaskSchedulerHelper here.
+
   display_ = std::make_unique<viz::Display>(
-      shared_bitmap_manager_.get(), renderer_settings_, debug_settings_,
+      shared_bitmap_manager_.get(), shared_image_manager_.get(),
+      sync_point_manager_.get(), renderer_settings_, debug_settings_,
       frame_sink_id_, std::move(display_controller),
       std::move(display_output_surface), std::move(overlay_processor),
       std::move(scheduler), compositor_task_runner_);

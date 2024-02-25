@@ -84,8 +84,7 @@ class CrosBluetoothConfigTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   session_manager::SessionManager session_manager_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
@@ -113,7 +112,7 @@ TEST_F(CrosBluetoothConfigTest, CallPowerFunctions) {
   remote->SetBluetoothEnabledState(true);
   base::RunLoop().RunUntilIdle();
 
-  remote->SetBluetoothHidDetectionActive();
+  remote->SetBluetoothEnabledWithoutPersistence();
   base::RunLoop().RunUntilIdle();
 
   remote->SetBluetoothHidDetectionInactive(/*is_using_bluetooth=*/false);
@@ -130,7 +129,7 @@ TEST_F(CrosBluetoothConfigTest, CallPairingFunction) {
 TEST_F(CrosBluetoothConfigTest, CallDeviceManagementFunctions) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   const std::string device_id = "device_id";
-  absl::optional<bool> result;
+  std::optional<bool> result;
 
   remote->Connect(device_id,
                   base::BindLambdaForTesting(

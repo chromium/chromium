@@ -7,8 +7,8 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
@@ -88,7 +88,7 @@ void AppPublisher::LaunchAppWithIntent(const std::string& app_id,
                                        WindowInfoPtr window_info,
                                        LaunchCallback callback) {
   NOTIMPLEMENTED();
-  std::move(callback).Run(LaunchResult(State::FAILED));
+  std::move(callback).Run(LaunchResult(State::kFailed));
 }
 
 void AppPublisher::SetPermission(const std::string& app_id,
@@ -122,6 +122,10 @@ void AppPublisher::GetMenuModel(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
+void AppPublisher::UpdateAppSize(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
 void AppPublisher::ExecuteContextMenuCommand(const std::string& app_id,
                                              int command_id,
                                              const std::string& shortcut_id,
@@ -143,6 +147,11 @@ void AppPublisher::SetWindowMode(const std::string& app_id,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void AppPublisher::SetAppLocale(const std::string& app_id,
+                                const std::string& locale_tag) {
+  NOTIMPLEMENTED();
+}
+
 // static
 PromiseAppPtr AppPublisher::MakePromiseApp(const PackageId& package_id) {
   return std::make_unique<PromiseApp>(package_id);
@@ -182,8 +191,8 @@ void AppPublisher::Publish(std::vector<AppPtr> apps,
 
 void AppPublisher::ModifyCapabilityAccess(
     const std::string& app_id,
-    absl::optional<bool> accessing_camera,
-    absl::optional<bool> accessing_microphone) {
+    std::optional<bool> accessing_camera,
+    std::optional<bool> accessing_microphone) {
   if (!accessing_camera.has_value() && !accessing_microphone.has_value()) {
     return;
   }

@@ -107,7 +107,7 @@ class TimeZoneResolver::TimeZoneResolverImpl
 
   // Called by TZRequest.
   SimpleGeolocationProvider* geolocation_provider() {
-    return &geolocation_provider_;
+    return resolver_->geolocation_provider_;
   }
   TimeZoneProvider* timezone_provider() { return &timezone_provider_; }
 
@@ -129,7 +129,7 @@ class TimeZoneResolver::TimeZoneResolverImpl
   bool ShouldSendCellularGeolocationData();
 
  private:
-  raw_ptr<const TimeZoneResolver, ExperimentalAsh> resolver_;
+  raw_ptr<const TimeZoneResolver> resolver_;
 
   // Helper to check timezone detection policy against expected value
   bool CheckTimezoneManagementSetting(int expected_policy_value);
@@ -137,7 +137,6 @@ class TimeZoneResolver::TimeZoneResolverImpl
   // Returns delay to next timezone update request
   base::TimeDelta CalculateNextInterval();
 
-  SimpleGeolocationProvider geolocation_provider_;
   TimeZoneProvider timezone_provider_;
 
   base::OneShotTimer refresh_timer_;
@@ -183,8 +182,7 @@ class TZRequest {
   // This is called by network detector when network is available.
   void StartRequestOnNetworkAvailable();
 
-  const raw_ptr<TimeZoneResolver::TimeZoneResolverImpl, ExperimentalAsh>
-      resolver_;
+  const raw_ptr<TimeZoneResolver::TimeZoneResolverImpl> resolver_;
 
   base::WeakPtrFactory<TZRequest> weak_ptr_factory_{this};
 };
@@ -264,10 +262,7 @@ base::WeakPtr<TZRequest> TZRequest::AsWeakPtr() {
 TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
     const TimeZoneResolver* resolver)
     : resolver_(resolver),
-      geolocation_provider_(
-          resolver->delegate_,
-          resolver->shared_url_loader_factory(),
-          SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
+
       timezone_provider_(resolver->shared_url_loader_factory(),
                          DefaultTimezoneProviderURL()),
       requests_count_(0) {
@@ -394,14 +389,14 @@ TimeZoneResolver::TimeZoneResolverImpl::AsWeakPtr() {
 
 TimeZoneResolver::TimeZoneResolver(
     Delegate* delegate,
+    SimpleGeolocationProvider* geolocation_provider,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
-    const GURL& url,
     const ApplyTimeZoneCallback& apply_timezone,
     const DelayNetworkCallClosure& delay_network_call,
     PrefService* local_state)
     : delegate_(delegate),
+      geolocation_provider_(geolocation_provider),
       shared_url_loader_factory_(std::move(factory)),
-      url_(url),
       apply_timezone_(apply_timezone),
       delay_network_call_(delay_network_call),
       local_state_(local_state) {

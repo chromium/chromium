@@ -10,19 +10,25 @@
 #include <string>
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/data_controls/component.h"
-#include "chrome/browser/enterprise/data_controls/dlp_rules_manager_base.h"
+#include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
+#include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/dlp_rules_manager_base.h"
 #include "url/gurl.h"
+
+class Profile;
+
+namespace data_controls {
+class DlpReportingManager;
+}  // namespace data_controls
 
 namespace policy {
 
-class DlpReportingManager;
 class DlpFilesController;
 
 // DlpRulesManager is the CrOS-specific parser for the rules set by the
 // DataLeakPreventionRulesList policy and serves as an available service which
 // can be queried anytime about the restrictions set by the policy.
-class DlpRulesManager : public policy::DlpRulesManagerBase {
+class DlpRulesManager : public data_controls::ChromeDlpRulesManager {
  public:
   // List of all possible component values, used to simplify iterating over all
   // the options.
@@ -50,6 +56,7 @@ class DlpRulesManager : public policy::DlpRulesManagerBase {
   using AggregatedComponents =
       std::map<Level, std::set<data_controls::Component>>;
 
+  explicit DlpRulesManager(Profile* profile);
   ~DlpRulesManager() override = default;
 
   // Returns the enforcement level for `restriction` given that data comes
@@ -81,7 +88,7 @@ class DlpRulesManager : public policy::DlpRulesManagerBase {
   // Returns the reporting manager that is used to report DLPPolicyEvents to the
   // serverside. Should always return a nullptr if reporting is disabled (see
   // IsReportingEnabled).
-  virtual DlpReportingManager* GetReportingManager() const = 0;
+  virtual data_controls::DlpReportingManager* GetReportingManager() const = 0;
 
   // Returns the files controller that is used to perform DLP checks on files.
   // Should always return a nullptr if there are no file restrictions (and thus

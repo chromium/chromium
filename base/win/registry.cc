@@ -268,14 +268,6 @@ base::expected<DWORD, LONG> RegKey::GetValueCount() const {
   return base::unexpected(result);
 }
 
-FILETIME RegKey::GetLastWriteTime() const {
-  FILETIME last_write_time;
-  LONG result = RegQueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr,
-                                nullptr, nullptr, nullptr, nullptr, nullptr,
-                                nullptr, &last_write_time);
-  return (result == ERROR_SUCCESS) ? last_write_time : FILETIME{};
-}
-
 LONG RegKey::GetValueNameAt(DWORD index, std::wstring* name) const {
   wchar_t buf[256];
   DWORD bufsize = std::size(buf);
@@ -501,11 +493,11 @@ expected<bool, LONG> RegKey::IsLink() const {
   return unexpected(result);
 }
 
-absl::optional<LONG> RegKey::DeleteIfLink() {
+std::optional<LONG> RegKey::DeleteIfLink() {
   if (auto is_link = IsLink(); !is_link.has_value()) {
     return is_link.error();  // Failed to determine if a link.
   } else if (is_link.value() == false) {
-    return absl::nullopt;  // Not a link.
+    return std::nullopt;  // Not a link.
   }
 
   const NTSTATUS delete_result = ::NtDeleteKey(key_);

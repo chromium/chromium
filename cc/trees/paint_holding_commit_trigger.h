@@ -27,8 +27,11 @@ enum class PaintHoldingCommitTrigger {
   kViewTransition = 5,
   // The commit was triggered by a timeout waiting for view transition start
   kTimeoutViewTransition = 6,
+  // The commit was triggered because a new blink widget was attached to the
+  // compositor.
+  kWidgetSwapped = 7,
   // Required for UMA enum
-  kMaxValue = kTimeoutViewTransition
+  kMaxValue = kWidgetSwapped
 };
 
 PaintHoldingCommitTrigger ReasonToTimeoutTrigger(PaintHoldingReason reason);

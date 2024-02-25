@@ -113,7 +113,7 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
   void GetHostStatus(GetHostStatusCallback callback) override;
   void SetFeatureEnabledState(mojom::Feature feature,
                               bool enabled,
-                              const absl::optional<std::string>& auth_token,
+                              const std::optional<std::string>& auth_token,
                               SetFeatureEnabledStateCallback callback) override;
   void GetFeatureStates(GetFeatureStatesCallback callback) override;
   void RetrySetHostNow(RetrySetHostNowCallback callback) override;
@@ -161,7 +161,7 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
   std::unique_ptr<FeatureStateManager> feature_state_manager_;
   std::unique_ptr<AndroidSmsAppInstallingStatusObserver>
       android_sms_app_installing_host_observer_;
-  raw_ptr<AuthTokenValidator, ExperimentalAsh> auth_token_validator_;
+  raw_ptr<AuthTokenValidator> auth_token_validator_;
   std::string qs_phone_instance_id_;
 
   mojo::RemoteSet<mojom::HostStatusObserver> host_status_observers_;

@@ -5,7 +5,6 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 #import "base/check.h"
-#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -17,7 +16,8 @@
 
 namespace {
 
-const CGFloat kActionsBottomMargin = 10;
+const CGFloat kDefaultActionsBottomMargin = 10;
+const CGFloat kActionButtonImageInsets = 10;
 // Gradient height.
 const CGFloat kGradientHeight = 40.;
 const CGFloat kScrollViewBottomInsets = 20;
@@ -56,7 +56,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 // References to the UI properties that need to be updated when the trait
 // collection changes.
-@property(nonatomic, strong) UIButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 @property(nonatomic, strong) UINavigationBar* navigationBar;
@@ -85,6 +84,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
     _scrollEnabled = YES;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
+    _shouldFillInformationStack = NO;
+    _actionStackBottomMargin = kDefaultActionsBottomMargin;
   }
   return self;
 }
@@ -115,6 +116,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [stackSubviews addObject:self.imageContainerView];
   }
 
+  if (self.aboveTitleView) {
+    [stackSubviews addObject:self.aboveTitleView];
+  }
+
   if (self.titleString.length) {
     UILabel* title = [self createTitleLabel];
     [stackSubviews addObject:title];
@@ -131,6 +136,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 
   if (self.underTitleView) {
+    self.underTitleView.accessibilityIdentifier =
+        kConfirmationAlertUnderTitleViewAccessibilityIdentifier;
     [stackSubviews addObject:self.underTitleView];
   }
 
@@ -206,7 +213,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
     // Add a low priority width constraints to make sure that the buttons are
     // taking as much width as they can.
     CGFloat extraBottomMargin =
-        self.secondaryActionString ? 0 : kActionsBottomMargin;
+        self.secondaryActionString ? 0 : self.actionStackBottomMargin;
     NSLayoutConstraint* lowPriorityWidthConstraint =
         [actionStackView.widthAnchor
             constraintEqualToConstant:kContentOptimalWidth];
@@ -230,7 +237,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
           constraintEqualToAnchor:stackView.widthAnchor],
       [actionStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                   constant:-kActionsBottomMargin -
+                                   constant:-self.actionStackBottomMargin -
                                             extraBottomMargin],
       [actionStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
@@ -330,18 +337,18 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // Update fonts for specific content sizes.
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    self.primaryActionButton.titleLabel.font =
-        PreferredFontForTextStyleWithMaxCategory(
-            UIFontTextStyleHeadline,
-            self.traitCollection.preferredContentSizeCategory,
-            UIContentSizeCategoryExtraExtraExtraLarge);
+    SetConfigurationFont(self.primaryActionButton,
+                         PreferredFontForTextStyleWithMaxCategory(
+                             UIFontTextStyleHeadline,
+                             self.traitCollection.preferredContentSizeCategory,
+                             UIContentSizeCategoryExtraExtraExtraLarge));
+
+    UIFont* newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     if (self.secondaryActionString) {
-      self.secondaryActionButton.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      SetConfigurationFont(self.secondaryActionButton, newFont);
     }
     if (self.tertiaryActionString) {
-      self.tertiaryActionButton.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      SetConfigurationFont(self.tertiaryActionButton, newFont);
     }
   }
 
@@ -368,16 +375,17 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 - (void)updateViewConstraints {
-  BOOL isVerticalCompact =
-      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  BOOL showImageView =
+      self.alwaysShowImage || (self.traitCollection.verticalSizeClass !=
+                               UIUserInterfaceSizeClassCompact);
 
   // Hiding the image causes the UIStackView to change the image's height to 0.
   // Because its width and height are related, if the aspect ratio constraint
   // is active, the image's width also goes to 0, which causes the stack view
   // width to become 0 too.
-  [self.imageView setHidden:isVerticalCompact];
-  [self.imageContainerView setHidden:isVerticalCompact];
-  self.imageViewAspectRatioConstraint.active = !isVerticalCompact;
+  [self.imageView setHidden:!showImageView];
+  [self.imageContainerView setHidden:!showImageView];
+  self.imageViewAspectRatioConstraint.active = showImageView;
 
   // Allow the navigation bar to update its height based on new layout.
   [self.navigationBar invalidateIntrinsicContentSize];
@@ -433,8 +441,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // margin calculated based on the safe area of the container view it will
   // eventually live in. This is needed in case the detent value is requested
   // before the view has been added to its superview.
-  height -= MAX(kActionsBottomMargin, self.view.safeAreaInsets.bottom);
-  height += MAX(kActionsBottomMargin, containerView.safeAreaInsets.bottom);
+  height -= MAX(self.actionStackBottomMargin, self.view.safeAreaInsets.bottom);
+  height +=
+      MAX(self.actionStackBottomMargin, containerView.safeAreaInsets.bottom);
 
   return height;
 }
@@ -534,10 +543,19 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 
   if (self.showDismissBarButton) {
-    UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:self.dismissBarButtonSystemItem
-                             target:self
-                             action:@selector(didTapDismissBarButton)];
+    UIBarButtonItem* dismissButton;
+    if (self.customDismissBarButtonImage) {
+      dismissButton = [[UIBarButtonItem alloc]
+          initWithImage:self.customDismissBarButtonImage
+                  style:UIBarButtonItemStylePlain
+                 target:self
+                 action:@selector(didTapDismissBarButton)];
+    } else {
+      dismissButton = [[UIBarButtonItem alloc]
+          initWithBarButtonSystemItem:self.dismissBarButtonSystemItem
+                               target:self
+                               action:@selector(didTapDismissBarButton)];
+    }
     navigationItem.rightBarButtonItem = dismissButton;
   }
 
@@ -563,6 +581,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
 - (UIImageView*)createImageView {
   UIImageView* imageView = [[UIImageView alloc] initWithImage:self.image];
   imageView.contentMode = UIViewContentModeScaleAspectFit;
+  if (self.imageViewAccessibilityLabel) {
+    imageView.isAccessibilityElement = YES;
+    imageView.accessibilityLabel = self.imageViewAccessibilityLabel;
+  }
 
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
   return imageView;
@@ -677,6 +699,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   title.adjustsFontForContentSizeCategory = YES;
   title.accessibilityIdentifier =
       kConfirmationAlertTitleAccessibilityIdentifier;
+  title.accessibilityTraits = UIAccessibilityTraitHeader;
   return title;
 }
 
@@ -744,7 +767,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [stackView setCustomSpacing:self.customSpacingAfterImage
                     afterView:self.imageContainerView];
 
-  if (self.imageHasFixedSize) {
+  if (self.imageHasFixedSize && !self.shouldFillInformationStack) {
     stackView.alignment = UIStackViewAlignmentCenter;
   } else {
     stackView.alignment = UIStackViewAlignmentFill;
@@ -763,7 +786,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   if (self.primaryActionString) {
-    self.primaryActionButton = [self createPrimaryActionButton];
+    _primaryActionButton = [self createPrimaryActionButton];
     [actionStackView addArrangedSubview:self.primaryActionButton];
   }
 
@@ -785,11 +808,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
-  [primaryActionButton setTitle:self.primaryActionString
-                       forState:UIControlStateNormal];
+  SetConfigurationTitle(primaryActionButton, self.primaryActionString);
   primaryActionButton.accessibilityIdentifier =
       kConfirmationAlertPrimaryActionAccessibilityIdentifier;
-  primaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
   return primaryActionButton;
 }
@@ -802,29 +823,36 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [secondaryActionButton addTarget:self
                             action:@selector(didTapSecondaryActionButton)
                   forControlEvents:UIControlEventTouchUpInside];
-  [secondaryActionButton setTitle:self.secondaryActionString
-                         forState:UIControlStateNormal];
-  [secondaryActionButton setBackgroundColor:[UIColor clearColor]];
+
+  UIButtonConfiguration* buttonConfiguration =
+      secondaryActionButton.configuration
+          ? secondaryActionButton.configuration
+          : [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+
+  if (self.secondaryActionImage) {
+    buttonConfiguration.image = self.secondaryActionImage;
+    buttonConfiguration.imagePadding = kActionButtonImageInsets;
+  }
+
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+      initWithString:self.secondaryActionString];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  buttonConfiguration.attributedTitle = string;
+
   UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
                                                 ? self.secondaryActionTextColor
                                                 : kBlueColor];
-  [secondaryActionButton setTitleColor:titleColor
-                              forState:UIControlStateNormal];
+  buttonConfiguration.baseForegroundColor = titleColor;
+  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
+  secondaryActionButton.configuration = buttonConfiguration;
 
-  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
-  // deployment target is iOS 15.
-  UIEdgeInsets contentInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  SetContentEdgeInsets(secondaryActionButton, contentInsets);
-
-  secondaryActionButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  secondaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
   secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   secondaryActionButton.accessibilityIdentifier =
       kConfirmationAlertSecondaryActionAccessibilityIdentifier;
-  secondaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-
   secondaryActionButton.pointerInteractionEnabled = YES;
   secondaryActionButton.pointerStyleProvider =
       CreateOpaqueButtonPointerStyleProvider();
@@ -838,25 +866,26 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [tertiaryActionButton addTarget:self
                            action:@selector(didTapTertiaryActionButton)
                  forControlEvents:UIControlEventTouchUpInside];
-  [tertiaryActionButton setTitle:self.tertiaryActionString
-                        forState:UIControlStateNormal];
 
-  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
-  // deployment target is iOS 15.
-  UIEdgeInsets contentInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  SetContentEdgeInsets(tertiaryActionButton, contentInsets);
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
+  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
 
-  [tertiaryActionButton setBackgroundColor:[UIColor clearColor]];
-  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
-  [tertiaryActionButton setTitleColor:titleColor forState:UIControlStateNormal];
-  tertiaryActionButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  tertiaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
+  // Customize title string.
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+      initWithString:self.tertiaryActionString];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  buttonConfiguration.attributedTitle = string;
+  tertiaryActionButton.configuration = buttonConfiguration;
+
   tertiaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   tertiaryActionButton.accessibilityIdentifier =
       kConfirmationAlertTertiaryActionAccessibilityIdentifier;
-
   tertiaryActionButton.pointerInteractionEnabled = YES;
   tertiaryActionButton.pointerStyleProvider =
       CreateOpaqueButtonPointerStyleProvider();

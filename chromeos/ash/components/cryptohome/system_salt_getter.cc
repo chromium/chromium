@@ -74,7 +74,7 @@ void SystemSaltGetter::DidWaitForServiceToBeAvailable(
 
 void SystemSaltGetter::DidGetSystemSalt(
     GetSystemSaltCallback system_salt_callback,
-    absl::optional<::user_data_auth::GetSystemSaltReply> system_salt_reply) {
+    std::optional<::user_data_auth::GetSystemSaltReply> system_salt_reply) {
   if (system_salt_reply.has_value() && !system_salt_reply->salt().empty() &&
       system_salt_reply->salt().size() % 2 == 0U) {
     raw_salt_ = RawSalt(system_salt_reply->salt().begin(),
@@ -121,8 +121,7 @@ SystemSaltGetter* SystemSaltGetter::Get() {
 // static
 std::string SystemSaltGetter::ConvertRawSaltToHexString(
     const std::vector<uint8_t>& salt) {
-  return base::ToLowerASCII(
-      base::HexEncode(reinterpret_cast<const void*>(salt.data()), salt.size()));
+  return base::ToLowerASCII(base::HexEncode(salt));
 }
 
 }  // namespace ash

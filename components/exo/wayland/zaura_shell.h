@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_WAYLAND_ZAURA_SHELL_H_
 #define COMPONENTS_EXO_WAYLAND_ZAURA_SHELL_H_
 
+#include <aura-shell-server-protocol.h>
+
 #include <stdint.h>
 
 #include "ash/focus_cycler.h"
@@ -15,11 +17,9 @@
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/wm/public/activation_change_observer.h"
-
-struct wl_client;
-struct wl_resource;
 
 namespace base {
 class TimeDelta;
@@ -33,7 +33,9 @@ class ShellSurfaceBase;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kZAuraShellVersion = 58;
+// version: 65
+constexpr uint32_t kZAuraShellVersion =
+    ZAURA_TOPLEVEL_CONFIGURE_OCCLUSION_STATE_SINCE_VERSION;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -112,8 +114,8 @@ class AuraSurface : public SurfaceObserver,
       const aura::Window::OcclusionState occlusion_state);
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<Surface> surface_;
+  const raw_ptr<wl_resource> resource_;
 
   // Tooltip text sent from Lacros.
   // This is kept here since it should out-live ShowTooltip() scope.
@@ -139,15 +141,20 @@ class AuraToplevel {
   virtual ~AuraToplevel();
 
   void SetOrientationLock(uint32_t lock_type);
+  void SetWindowCornersRadii(const gfx::RoundedCornersF& radii);
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
   void SetClientUsesScreenCoordinates();
-  void SetWindowBounds(int32_t x, int32_t y, int32_t width, int32_t height);
+  void SetWindowBounds(int32_t x,
+                       int32_t y,
+                       int32_t width,
+                       int32_t height,
+                       int64_t display_id);
   void SetRestoreInfo(int32_t restore_session_id, int32_t restore_window_id);
   void SetRestoreInfoWithWindowIdSource(
       int32_t restore_session_id,
       const std::string& restore_window_id_source);
   void SetSystemModal(bool modal);
-  void SetFloat();
+  void SetFloatToLocation(uint32_t location);
   void UnsetFloat();
   void SetSnapPrimary(float snap_ratio);
   void SetSnapSecondary(float snap_ratio);
@@ -159,8 +166,11 @@ class AuraToplevel {
                    chromeos::WindowStateType state_type,
                    bool resizing,
                    bool activated,
-                   float raster_scale);
+                   float raster_scale,
+                   aura::Window::OcclusionState occlusion_state,
+                   std::optional<chromeos::WindowStateType> restore_state_type);
   virtual void OnOriginChange(const gfx::Point& origin);
+  void OnOverviewChange(bool in_overview);
   void SetDecoration(SurfaceFrameType type);
   void SetZOrder(ui::ZOrderLevel z_order);
   void Activate();
@@ -168,20 +178,20 @@ class AuraToplevel {
   void SetFullscreenMode(uint32_t mode);
   void SetScaleFactor(float scale_factor);
   void SetPersistable(bool persistable);
-  void SetShape(absl::optional<cc::Region> shape);
+  void SetShape(std::optional<cc::Region> shape);
   void AckRotateFocus(uint32_t serial, uint32_t handled);
   void OnRotatePaneFocus(uint32_t serial,
                          ash::FocusCycler::Direction direction,
                          bool restart);
   void SetCanMaximize(bool can_maximize);
   void SetCanFullscreen(bool can_fullscreen);
+  void SetShadowCornersRadii(const gfx::RoundedCornersF& radii);
 
-  raw_ptr<ShellSurface, DanglingUntriaged | ExperimentalAsh> shell_surface_;
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
-  const raw_ptr<SerialTracker, ExperimentalAsh> rotation_serial_tracker_;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      xdg_toplevel_resource_;
-  raw_ptr<wl_resource, ExperimentalAsh> aura_toplevel_resource_;
+  raw_ptr<ShellSurface, DanglingUntriaged> shell_surface_;
+  const raw_ptr<SerialTracker> serial_tracker_;
+  const raw_ptr<SerialTracker> rotation_serial_tracker_;
+  raw_ptr<wl_resource, DanglingUntriaged> xdg_toplevel_resource_;
+  raw_ptr<wl_resource> aura_toplevel_resource_;
   bool supports_window_bounds_ = false;
 
   base::WeakPtrFactory<AuraToplevel> weak_ptr_factory_{this};
@@ -189,7 +199,7 @@ class AuraToplevel {
 
 class AuraPopup {
  public:
-  AuraPopup(ShellSurfaceBase* shell_surface);
+  explicit AuraPopup(ShellSurfaceBase* shell_surface);
   AuraPopup(const AuraPopup&) = delete;
   AuraPopup& operator=(const AuraPopup&) = delete;
   ~AuraPopup();
@@ -200,7 +210,7 @@ class AuraPopup {
   void SetScaleFactor(float scale_factor);
 
  private:
-  raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
+  raw_ptr<ShellSurfaceBase, DanglingUntriaged> shell_surface_;
 };
 
 class AuraOutput : public WaylandDisplayObserver {
@@ -225,8 +235,8 @@ class AuraOutput : public WaylandDisplayObserver {
   virtual void SendLogicalTransform(int32_t transform);
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<WaylandDisplayHandler, ExperimentalAsh> display_handler_;
+  const raw_ptr<wl_resource> resource_;
+  raw_ptr<WaylandDisplayHandler> display_handler_;
 };
 
 }  // namespace wayland

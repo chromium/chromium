@@ -71,7 +71,7 @@ class FakeFolderSelectionDialogFactory : public ui::SelectFileDialogFactory {
   void OnDialogDeleted(FakeFolderSelectionDialog* dialog);
 
   // A reference to the dialog created by this factory.
-  raw_ptr<FakeFolderSelectionDialog, ExperimentalAsh> dialog_ = nullptr;
+  raw_ptr<FakeFolderSelectionDialog> dialog_ = nullptr;
 };
 
 }  // namespace ash

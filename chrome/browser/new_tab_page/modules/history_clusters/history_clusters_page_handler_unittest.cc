@@ -21,6 +21,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_test_support.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
+#include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -47,6 +48,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using ntp::MockHistoryService;
 
 class MockCartService : public CartService {
  public:
@@ -496,18 +499,22 @@ TEST_F(HistoryClustersPageHandlerTest, RecordLayoutTypeShown) {
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 0);
 }
 
+TEST_F(HistoryClustersPageHandlerTest, LoadDiscounts) {
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  EXPECT_CALL(mock_shopping_service(),
+              GetDiscountInfoForUrls(testing::_, testing::_))
+      .Times(1);
+  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
+}
+
 TEST_F(HistoryClustersPageHandlerTest, NotLoadCartWithoutFeature) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      ntp_features::kNtpChromeCartInHistoryClusterModule);
+
   history_clusters::mojom::ClusterPtr cluster_mojom;
   EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(0);
   handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
-}
-
-TEST_F(HistoryClustersPageHandlerTest, NotLoadDiscountWithoutFeature) {
-  history_clusters::mojom::ClusterPtr cluster_mojom;
-  EXPECT_CALL(mock_shopping_service(),
-              GetDiscountInfoForUrls(testing::_, testing::_))
-      .Times(0);
-  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
 }
 
 class HistoryClustersPageHandlerCartInQuestTest
@@ -528,23 +535,4 @@ TEST_F(HistoryClustersPageHandlerCartInQuestTest, LoadCartWithFeature) {
   handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
 }
 
-class HistoryClustersPageHandlerDiscountInQuestTest
-    : public HistoryClustersPageHandlerTest {
- public:
-  HistoryClustersPageHandlerDiscountInQuestTest() {
-    features_.InitAndEnableFeature(
-        ntp_features::kNtpHistoryClustersModuleDiscounts);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(HistoryClustersPageHandlerDiscountInQuestTest, LoadDiscountWithFeature) {
-  auto cluster_mojom = history_clusters::mojom::Cluster::New();
-  EXPECT_CALL(mock_shopping_service(),
-              GetDiscountInfoForUrls(testing::_, testing::_))
-      .Times(1);
-  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
-}
 }  // namespace

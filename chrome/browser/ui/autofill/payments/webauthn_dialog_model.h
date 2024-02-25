@@ -7,7 +7,6 @@
 
 #include "base/observer_list.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
-#include "ui/gfx/vector_icon_types.h"
 
 namespace autofill {
 
@@ -34,7 +33,6 @@ class WebauthnDialogModel : public AuthenticatorRequestSheetModel {
 
   // AuthenticatorRequestSheetModel:
   bool IsActivityIndicatorVisible() const override;
-  bool IsBackButtonVisible() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
   bool IsAcceptButtonVisible() const override;

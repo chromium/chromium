@@ -1,43 +1,17 @@
 This is a testharness.js-based test.
-FAIL container, item 1 assert_equals: 
-<container data-expected-margin-top="10">
-        <item data-expected-margin-top="0" class="collapsed">
-            <item data-expected-margin-top="0" class="collapsed"></item>
-        </item>
-        <item data-expected-margin-top="0" style="margin-block: 40px">
-            <item data-expected-margin-top="0" data-expected-margin-bottom="0" class="collapsed"></item>
-            <item data-expected-margin-top="0" style="margin-top: 30px;">
-                <item data-expected-margin-top="0" style="margin-block-start: 100px; height: 50px;"></item>
-            </item>
-        </item>
-    </container>
-margin-top expected "0" but got "50"
-FAIL container, item 2 assert_equals: 
-<item data-expected-margin-top="0" class="collapsed">
-            <item data-expected-margin-top="0" class="collapsed"></item>
-        </item>
-margin-top expected "0" but got "50"
-FAIL container, item 3 assert_equals: 
-<item data-expected-margin-top="0" class="collapsed"></item>
-margin-top expected "0" but got "50"
-FAIL container, item 4 assert_equals: 
-<item data-expected-margin-top="0" style="margin-block: 40px">
-            <item data-expected-margin-top="0" data-expected-margin-bottom="0" class="collapsed"></item>
-            <item data-expected-margin-top="0" style="margin-top: 30px;">
-                <item data-expected-margin-top="0" style="margin-block-start: 100px; height: 50px;"></item>
-            </item>
-        </item>
-margin-top expected "0" but got "40"
-FAIL container, item 5 assert_equals: 
-<item data-expected-margin-top="0" data-expected-margin-bottom="0" class="collapsed"></item>
-margin-top expected "0" but got "40"
-FAIL container, item 6 assert_equals: 
-<item data-expected-margin-top="0" style="margin-top: 30px;">
-                <item data-expected-margin-top="0" style="margin-block-start: 100px; height: 50px;"></item>
-            </item>
-margin-top expected "0" but got "40"
-FAIL container, item 7 assert_equals: 
-<item data-expected-margin-top="0" style="margin-block-start: 100px; height: 50px;"></item>
-margin-top expected "0" but got "30"
+[FAIL] container, item 1
+  assert_equals: \n<container data-expected-margin-top="10">\n        <item data-expected-margin-top="0" class="collapsed">\n            <item data-expected-margin-top="0" class="collapsed"></item>\n        </item>\n        <item data-expected-margin-top="0" style="margin-block: 40px">\n            <item data-expected-margin-top="0" data-expected-margin-bottom="0" class="collapsed"></item>\n            <item data-expected-margin-top="0" style="margin-top: 30px;">\n                <item data-expected-margin-top="0" style="margin-block-start: 100px; height: 50px;"></item>\n            </item>\n        </item>\n    </container>\nmargin-top expected "0" but got "50"
+[FAIL] container, item 2
+  assert_equals: \n<item data-expected-margin-top="0" class="collapsed">\n            <item data-expected-margin-top="0" class="collapsed"></item>\n        </item>\nmargin-top expected "0" but got "50"
+[FAIL] container, item 3
+  assert_equals: \n<item data-expected-margin-top="0" class="collapsed"></item>\nmargin-top expected "0" but got "50"
+[FAIL] container, item 4
+  assert_equals: \n<item data-expected-margin-top="0" style="margin-block: 40px">\n            <item data-expected-margin-top="0" data-expected-margin-bottom="0" class="collapsed"></item>\n            <item data-expected-margin-top="0" style="margin-top: 30px;">\n                <item data-expected-margin-top="0" style="margin-block-start: 100px; height: 50px;"></item>\n            </item>\n        </item>\nmargin-top expected "0" but got "40"
+[FAIL] container, item 5
+  assert_equals: \n<item data-expected-margin-top="0" data-expected-margin-bottom="0" class="collapsed"></item>\nmargin-top expected "0" but got "40"
+[FAIL] container, item 6
+  assert_equals: \n<item data-expected-margin-top="0" style="margin-top: 30px;">\n                <item data-expected-margin-top="0" style="margin-block-start: 100px; height: 50px;"></item>\n            </item>\nmargin-top expected "0" but got "40"
+[FAIL] container, item 7
+  assert_equals: \n<item data-expected-margin-top="0" style="margin-block-start: 100px; height: 50px;"></item>\nmargin-top expected "0" but got "30"
 Harness: the test ran to completion.
 

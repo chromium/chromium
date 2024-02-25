@@ -40,7 +40,7 @@ void FakeFastPairRepository::ClearFakeMetadata(
 }
 
 void FakeFastPairRepository::SetCheckAccountKeysResult(
-    absl::optional<PairingMetadata> result) {
+    std::optional<PairingMetadata> result) {
   check_account_keys_result_ = result;
 }
 
@@ -118,9 +118,7 @@ void FakeFastPairRepository::DeleteAssociatedDeviceByAccountKey(
     DeleteAssociatedDeviceByAccountKeyCallback callback) {
   for (auto it = devices_.begin(); it != devices_.end(); it++) {
     if (it->has_account_key() &&
-        base::HexEncode(std::vector<uint8_t>(it->account_key().begin(),
-                                             it->account_key().end())) ==
-            base::HexEncode(account_key)) {
+        base::HexEncode(it->account_key()) == base::HexEncode(account_key)) {
       devices_.erase(it);
       std::move(callback).Run(/*success=*/true);
       return;
@@ -149,7 +147,7 @@ void FakeFastPairRepository::FetchDeviceImages(scoped_refptr<Device> device) {
 }
 
 // Unimplemented.
-absl::optional<std::string>
+std::optional<std::string>
 FakeFastPairRepository::GetDeviceDisplayNameFromCache(
     std::vector<uint8_t> account_key) {
   return nullptr;
@@ -171,9 +169,9 @@ bool FakeFastPairRepository::EvictDeviceImages(const std::string& mac_address) {
 }
 
 // Unimplemented.
-absl::optional<bluetooth_config::DeviceImageInfo>
+std::optional<bluetooth_config::DeviceImageInfo>
 FakeFastPairRepository::GetImagesForDevice(const std::string& mac_address) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FakeFastPairRepository::SetSavedDevices(

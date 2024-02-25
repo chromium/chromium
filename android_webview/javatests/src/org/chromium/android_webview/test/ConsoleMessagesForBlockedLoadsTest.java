@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwConsoleMessage;
 import org.chromium.android_webview.AwContents;
@@ -34,19 +36,23 @@ import java.util.List;
  * Verify that content loading blocks initiated by renderer can be detected
  * by the embedder via WebChromeClient.onConsoleMessage.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
-public class ConsoleMessagesForBlockedLoadsTest {
+public class ConsoleMessagesForBlockedLoadsTest extends AwParameterizedTest {
     public static final String SERVER_HOSTNAME = "example.test";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient.AddMessageToConsoleHelper mOnConsoleMessageHelper;
     private AwContents mAwContents;
     private TestWebServer mWebServer;
+
+    public ConsoleMessagesForBlockedLoadsTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {
@@ -87,8 +93,8 @@ public class ConsoleMessagesForBlockedLoadsTest {
         List<Pair<String, String>> iframeHeaders = new ArrayList<Pair<String, String>>();
         iframeHeaders.add(Pair.create("x-frame-options", "DENY"));
         final String iframeUrl = mWebServer.setResponse("/iframe.html", iframeHtml, iframeHeaders);
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<iframe src='" + iframeUrl + "' />");
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom("", "<iframe src='" + iframeUrl + "' />");
         final String pageUrl = mWebServer.setResponse("/page.html", pageHtml, null);
         mOnConsoleMessageHelper.clearMessages();
         mActivityTestRule.loadUrlSync(
@@ -107,10 +113,11 @@ public class ConsoleMessagesForBlockedLoadsTest {
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         try {
             httpsServer = TestWebServer.startSsl();
-            final String imageUrl = mWebServer.setResponseBase64(
-                    "/insecure.png", CommonResources.FAVICON_DATA_BASE64, null);
-            final String secureHtml = CommonResources.makeHtmlPageFrom(
-                    "", "<img src='" + imageUrl + "' />");
+            final String imageUrl =
+                    mWebServer.setResponseBase64(
+                            "/insecure.png", CommonResources.FAVICON_DATA_BASE64, null);
+            final String secureHtml =
+                    CommonResources.makeHtmlPageFrom("", "<img src='" + imageUrl + "' />");
             String secureUrl = httpsServer.setResponse("/secure.html", secureHtml, null);
             mOnConsoleMessageHelper.clearMessages();
             mActivityTestRule.loadUrlSync(
@@ -131,22 +138,23 @@ public class ConsoleMessagesForBlockedLoadsTest {
     public void testCrossOriginDenial() throws Throwable {
         startWebServer();
         final String iframeXsl =
-                "<?xml version='1.0' encoding='UTF-8'?>"
-                + "<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>"
-                + "<xsl:template match='*'>"
-                + "<html><body>FAIL</body></html>"
-                + "</xsl:template>"
-                + "</xsl:stylesheet>";
-        final String iframeXslUrl = mWebServer.setResponse(
-                "/iframe.xsl", iframeXsl, null).replace(SERVER_HOSTNAME, "127.0.0.1");
+                "<?xml version='1.0' encoding='UTF-8'?><xsl:stylesheet version='1.0'"
+                        + " xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='*'>"
+                        + "<html><body>FAIL</body></html></xsl:template></xsl:stylesheet>";
+        final String iframeXslUrl =
+                mWebServer
+                        .setResponse("/iframe.xsl", iframeXsl, null)
+                        .replace(SERVER_HOSTNAME, "127.0.0.1");
         final String iframeXml =
                 "<?xml version='1.0' encoding='UTF-8'?>"
-                + "<?xml-stylesheet type='text/xsl' href='" + iframeXslUrl + "'?>"
-                + "<html xmlns='http://www.w3.org/1999/xhtml'>"
-                + "<body>PASS</body></html>";
+                        + "<?xml-stylesheet type='text/xsl' href='"
+                        + iframeXslUrl
+                        + "'?>"
+                        + "<html xmlns='http://www.w3.org/1999/xhtml'>"
+                        + "<body>PASS</body></html>";
         final String iframeXmlUrl = mWebServer.setResponse("/iframe.xml", iframeXml, null);
-        final String pageHtml = CommonResources.makeHtmlPageFrom(
-                "", "<iframe src='" + iframeXmlUrl + "' />");
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom("", "<iframe src='" + iframeXmlUrl + "' />");
         final String pageUrl = mWebServer.setResponse("/page.html", pageHtml, null);
         mOnConsoleMessageHelper.clearMessages();
         mActivityTestRule.loadUrlSync(

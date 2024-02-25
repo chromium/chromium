@@ -92,7 +92,7 @@ ArcSurveyService::~ArcSurveyService() {
 }
 
 bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
-  absl::optional<base::Value> root = base::JSONReader::Read(survey_data);
+  std::optional<base::Value> root = base::JSONReader::Read(survey_data);
   if (!root) {
     LOG(ERROR) << "Unable to find JSON root. Trying char substitutions.";
     base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{@})", ":");
@@ -107,7 +107,7 @@ bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
   }
 
   // Load trigger duration
-  absl::optional<int> elapsed_time_survey_trigger_min =
+  std::optional<int> elapsed_time_survey_trigger_min =
       root->GetDict().FindInt(kJSONKeyElapsedTimeSurveyTriggerMin);
   if (elapsed_time_survey_trigger_min) {
     elapsed_time_survey_trigger_ =

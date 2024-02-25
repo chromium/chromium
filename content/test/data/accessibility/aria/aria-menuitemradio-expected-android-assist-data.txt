@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="menu"}]
+++++MenuItem textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="menuitemradio"}]
+++++++TextView text:"Menu item 1" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++MenuItem textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-checked="true"}, {role="menuitemradio"}]
+++++++TextView text:"Menu item 2" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++MenuItem textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-checked="mixed"}, {role="menuitemradio"}]
+++++++TextView text:"Menu item 3" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

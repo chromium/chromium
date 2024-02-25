@@ -4,9 +4,10 @@
 
 #include "base/task/sequence_manager/task_queue_selector.h"
 
+#include <bit>
+#include <optional>
 #include <utility>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -14,7 +15,6 @@
 #include "base/task/task_features.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -144,9 +144,13 @@ void TaskQueueSelector::WorkQueueSetBecameNonEmpty(size_t set_index) {
   // There is now a delayed or an immediate task for |set_index|, so add to
   // |active_priority_tracker_|.
   if (non_empty_set_counts_[set_index] == 1) {
+    bool had_active_priority = active_priority_tracker_.HasActivePriority();
     TaskQueue::QueuePriority priority =
         static_cast<TaskQueue::QueuePriority>(set_index);
     active_priority_tracker_.SetActive(priority, true);
+    if (!had_active_priority && task_queue_selector_observer_) {
+      task_queue_selector_observer_->OnWorkAvailable();
+    }
   }
 }
 
@@ -233,11 +237,11 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
   task_queue_selector_observer_ = observer;
 }
 
-absl::optional<TaskQueue::QueuePriority>
+std::optional<TaskQueue::QueuePriority>
 TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!active_priority_tracker_.HasActivePriority())
-    return absl::nullopt;
+    return std::nullopt;
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();
@@ -252,7 +256,7 @@ TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TaskQueueSelector::SetImmediateStarvationCountForTest(
@@ -282,10 +286,9 @@ void TaskQueueSelector::ActivePriorityTracker::SetActive(
 
 TaskQueue::QueuePriority
 TaskQueueSelector::ActivePriorityTracker::HighestActivePriority() const {
-  DCHECK_NE(active_priorities_, 0u)
-      << "CountTrailingZeroBits(0) has undefined behavior";
+  DCHECK_NE(active_priorities_, 0u);
   return static_cast<TaskQueue::QueuePriority>(
-      bits::CountTrailingZeroBits(active_priorities_));
+      std::countr_zero(active_priorities_));
 }
 
 }  // namespace internal

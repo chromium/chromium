@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
@@ -35,10 +35,10 @@ namespace {
 const char16_t kTestSyncingEmail[] = u"test@email.com";
 
 class InfobarEditAddressProfileTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
     delegate_mock_ = OCMProtocolMock(
         @protocol(AutofillProfileEditTableViewControllerDelegate));
     delegate_modal_mock_ = OCMProtocolMock(@protocol(InfobarModalDelegate));
@@ -50,7 +50,7 @@ class InfobarEditAddressProfileTableViewControllerTest
     [controller() loadModel];
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     InfobarEditAddressProfileTableViewController* viewController =
         [[InfobarEditAddressProfileTableViewController alloc]
             initWithModalDelegate:delegate_modal_mock_];
@@ -67,9 +67,6 @@ class InfobarEditAddressProfileTableViewControllerTest
   void CreateProfileData() {
     autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
     [autofill_profile_edit_table_view_controller_
-        setHonorificPrefix:base::SysUTF16ToNSString(profile.GetRawInfo(
-                               autofill::NAME_HONORIFIC_PREFIX))];
-    [autofill_profile_edit_table_view_controller_
         setFullName:base::SysUTF16ToNSString(
                         profile.GetRawInfo(autofill::NAME_FULL))];
     [autofill_profile_edit_table_view_controller_
@@ -82,8 +79,15 @@ class InfobarEditAddressProfileTableViewControllerTest
         setHomeAddressLine2:base::SysUTF16ToNSString(profile.GetRawInfo(
                                 autofill::ADDRESS_HOME_LINE2))];
     [autofill_profile_edit_table_view_controller_
+        setHomeAddressDependentLocality:
+            base::SysUTF16ToNSString(
+                profile.GetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_LOCALITY))];
+    [autofill_profile_edit_table_view_controller_
         setHomeAddressCity:base::SysUTF16ToNSString(profile.GetRawInfo(
                                autofill::ADDRESS_HOME_CITY))];
+    [autofill_profile_edit_table_view_controller_
+        setHomeAddressAdminLevel2:base::SysUTF16ToNSString(profile.GetRawInfo(
+                                      autofill::ADDRESS_HOME_ADMIN_LEVEL2))];
     [autofill_profile_edit_table_view_controller_
         setHomeAddressState:base::SysUTF16ToNSString(profile.GetRawInfo(
                                 autofill::ADDRESS_HOME_STATE))];
@@ -171,7 +175,7 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
     return viewController;
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return CreateInfobarEditAddressProfileTableViewController();
   }
 
@@ -186,14 +190,15 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
                                NSString* expectedFooterText,
                                NSString* expectedButtonText) {
     autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
-    std::vector<std::pair<autofill::ServerFieldType, std::u16string>>
-        expected_values;
+    NSString* countryCode = base::SysUTF16ToNSString(
+        profile.GetRawInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY));
+
+    std::vector<std::pair<autofill::FieldType, std::u16string>> expected_values;
 
     for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
       const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
-      if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
-          !base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
+
+      if (!FieldIsUsedInAddress(field.autofillType, countryCode)) {
         continue;
       }
 
@@ -252,7 +257,7 @@ TEST_F(InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
 class InfobarEditAddressProfileTableViewControllerMigrationPromptTest
     : public InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled {
  protected:
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     InfobarEditAddressProfileTableViewController* viewController =
         CreateInfobarEditAddressProfileTableViewController();
     [viewController setMigrationPrompt:YES];

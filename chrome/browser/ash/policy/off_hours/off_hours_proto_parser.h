@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_OFF_HOURS_OFF_HOURS_PROTO_PARSER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -36,7 +36,7 @@ std::vector<int> ExtractIgnoredPolicyProtoTagsFromProto(
     const enterprise_management::DeviceOffHoursProto& container);
 
 // Return timezone from DeviceOffHoursProto if exists otherwise return nullptr.
-absl::optional<std::string> ExtractTimezoneFromProto(
+std::optional<std::string> ExtractTimezoneFromProto(
     const enterprise_management::DeviceOffHoursProto& container);
 
 // Return Value::Dict in format:
@@ -52,7 +52,7 @@ absl::optional<std::string> ExtractTimezoneFromProto(
 // }
 // This function is used by device_policy_decoder.cc to save "OffHours"
 // policy in PolicyMap.
-absl::optional<base::Value::Dict> ConvertOffHoursProtoToValue(
+std::optional<base::Value::Dict> ConvertOffHoursProtoToValue(
     const enterprise_management::DeviceOffHoursProto& container);
 
 }  // namespace off_hours

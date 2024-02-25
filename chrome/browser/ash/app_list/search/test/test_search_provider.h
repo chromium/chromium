@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace app_list {
@@ -21,6 +22,10 @@ class TestSearchProvider : public SearchProvider {
  public:
   TestSearchProvider(ash::AppListSearchResultType result_type,
                      base::TimeDelta delay);
+
+  TestSearchProvider(ash::AppListSearchResultType result_type,
+                     base::TimeDelta delay,
+                     SearchCategory search_category);
 
   ~TestSearchProvider() override;
 

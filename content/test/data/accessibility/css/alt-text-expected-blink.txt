@@ -58,7 +58,6 @@ rootWebArea
 ++++++++++staticText name='Some Text'
 ++++++++++++inlineTextBox name='Some Text'
 ++++++image name='alt'
-++++++++staticText ignored name='Div text content'
 ++++++genericContainer
 ++++++++staticText name='DOM Text'
 ++++++++++inlineTextBox name='DOM Text'

@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,7 +103,7 @@ TEST(ReuseCheckUtilityTest, NoReuseIfFromTheSameAffiliatedGroup) {
       {CreateCredential(u"Jan", u"password", {"https://example.com"}),
        CreateCredential(u"Mohamed", u"password",
                         {"android://certificate_hash@test.com"})},
-      FacetBrandingInfo());
+      affiliations::FacetBrandingInfo());
 
   std::vector<CredentialUIEntry> credentials;
   credentials.insert(credentials.end(),

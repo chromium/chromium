@@ -858,11 +858,6 @@ int ISOKeyboardKeyCodeMap(int nativeKeyCode) {
 }
 
 DomCode DomCodeFromNSEvent(NSEvent* event) {
-  if (KBGetLayoutType(LMGetKbdType()) == kKeyboardISO) {
-    return ui::KeycodeConverter::NativeKeycodeToDomCode(
-        ISOKeyboardKeyCodeMap(event.keyCode));
-  }
-
   return ui::KeycodeConverter::NativeKeycodeToDomCode(event.keyCode);
 }
 

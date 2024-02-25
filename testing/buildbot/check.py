@@ -118,7 +118,7 @@ def check_file(filepath, ninja_targets, ninja_targets_seen):
       seen.add(name)
 
     for d in data.get('isolated_scripts', []):
-      name = d['isolate_name']
+      name = d['test']
       if (name not in ninja_targets and
           name not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl.' %

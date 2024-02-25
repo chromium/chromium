@@ -44,8 +44,8 @@ class CrostiniUpgradeAvailableNotificationDelegate
   CrostiniUpgradeAvailableNotificationDelegate& operator=(
       const CrostiniUpgradeAvailableNotificationDelegate&) = delete;
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     disposition_ =
         CrostiniUpgradeAvailableNotificationClosed::kNotificationBody;
     if (button_index && button_index.value() == 0) {
@@ -87,7 +87,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
 
   CrostiniUpgradeAvailableNotificationClosed disposition_ =
       CrostiniUpgradeAvailableNotificationClosed::kUnknown;
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
   base::WeakPtr<CrostiniUpgradeAvailableNotification> notification_;
   base::OnceClosure closure_;
 

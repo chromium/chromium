@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Blink>WebRTC"
+}
+buganizer_public: {
+  component_id: 1456096
 }

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
@@ -17,9 +18,12 @@
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include "base/values.h"
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <map>
@@ -33,6 +37,29 @@
 
 namespace printing {
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+
+#if BUILDFLAG(IS_MAC)
+inline constexpr char kMacSystemPrintDialogDataDestinationType[] =
+    "destination_type";
+inline constexpr char kMacSystemPrintDialogDataDestinationFormat[] =
+    "destination_format";
+inline constexpr char kMacSystemPrintDialogDataDestinationLocation[] =
+    "destination_location";
+inline constexpr char kMacSystemPrintDialogDataPageFormat[] = "page_format";
+inline constexpr char kMacSystemPrintDialogDataPrintSettings[] =
+    "print_settings";
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_LINUX)
+inline constexpr char kLinuxSystemPrintDialogDataPrinter[] = "printer_name";
+inline constexpr char kLinuxSystemPrintDialogDataPrintSettings[] =
+    "print_settings";
+inline constexpr char kLinuxSystemPrintDialogDataPageSetup[] = "page_setup";
+#endif  // BUILDFLAG(IS_LINUX)
+
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+
 // Convert from `color_mode` into a `color_model`.  An invalid `color_mode`
 // will give a result of `mojom::ColorModel::kUnknownColorModel`.
 COMPONENT_EXPORT(PRINTING)
@@ -40,9 +67,9 @@ mojom::ColorModel ColorModeToColorModel(int color_mode);
 
 // Returns true if `color_model` is color and false if it is B&W.  Callers
 // are not supposed to pass in `mojom::ColorModel::kUnknownColorModel`, but
-// if they do then the result will be absl::nullopt.
+// if they do then the result will be std::nullopt.
 COMPONENT_EXPORT(PRINTING)
-absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model);
+std::optional<bool> IsColorModelSelected(mojom::ColorModel color_model);
 
 #if BUILDFLAG(USE_CUPS)
 // Get the color model setting name and value for the `color_model`.
@@ -134,6 +161,9 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
     device_name_ = device_name;
   }
   const std::u16string& device_name() const { return device_name_; }
+
+  void set_borderless(bool borderless) { borderless_ = borderless; }
+  bool borderless() const { return borderless_; }
 
   void set_media_type(const std::string& media_type) {
     media_type_ = media_type;
@@ -286,12 +316,20 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
       crosapi::mojom::StatusReason::Reason printer_status_reason) {
     printer_status_reason_ = printer_status_reason;
   }
-  absl::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason()
+  std::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason()
       const {
     return printer_status_reason_;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  void set_system_print_dialog_data(base::Value::Dict data) {
+    system_print_dialog_data_ = std::move(data);
+  }
+  const base::Value::Dict& system_print_dialog_data() const {
+    return system_print_dialog_data_;
+  }
+#endif
   // Cookie generator. It is used to initialize `PrintedDocument` with its
   // associated `PrintSettings`, to be sure that each generated `PrintedPage`
   // is correctly associated with its corresponding `PrintedDocument`.
@@ -341,11 +379,21 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   // Printer device name as opened by the OS.
   std::u16string device_name_;
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  // Platform-specific print settings captured from a system print dialog.
+  // The settings are captured in the browser process for transmission to
+  // the Print Backend service for OOP printing.
+  base::Value::Dict system_print_dialog_data_;
+#endif
+
   // Media requested by the user.
   RequestedMedia requested_media_;
 
   // Page setup in device units.
   PageSetup page_setup_device_units_;
+
+  // Whether the user has requested borderless (zero margin) printing.
+  bool borderless_;
 
   // Media type requested by the user.
   std::string media_type_;
@@ -409,7 +457,7 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // The printer status reason shown for the selected printer at the time print
   // is requested. Only local CrOS printers set printer statuses.
-  absl::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason_;
+  std::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

@@ -14,13 +14,17 @@
 
 #include <array>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <numeric>
 #include <random>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "absl/base/internal/raw_logging.h"
+#include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/raw_hash_set.h"
 #include "absl/strings/str_format.h"
@@ -55,6 +59,11 @@ struct IntPolicy {
   template <class F>
   static auto apply(F&& f, int64_t x) -> decltype(std::forward<F>(f)(x, x)) {
     return std::forward<F>(f)(x, x);
+  }
+
+  template <class Hash>
+  static constexpr HashSlotFn get_hash_slot_fn() {
+    return nullptr;
   }
 };
 
@@ -113,6 +122,11 @@ class StringPolicy {
                              PairArgs(std::forward<Args>(args)...))) {
     return apply_impl(std::forward<F>(f),
                       PairArgs(std::forward<Args>(args)...));
+  }
+
+  template <class Hash>
+  static constexpr HashSlotFn get_hash_slot_fn() {
+    return nullptr;
   }
 };
 
@@ -205,6 +219,22 @@ void CacheInSteadyStateArgs(Benchmark* bm) {
 }
 BENCHMARK(BM_CacheInSteadyState)->Apply(CacheInSteadyStateArgs);
 
+void BM_EraseEmplace(benchmark::State& state) {
+  IntTable t;
+  int64_t size = state.range(0);
+  for (int64_t i = 0; i < size; ++i) {
+    t.emplace(i);
+  }
+  while (state.KeepRunningBatch(size)) {
+    for (int64_t i = 0; i < size; ++i) {
+      benchmark::DoNotOptimize(t);
+      t.erase(i);
+      t.emplace(i);
+    }
+  }
+}
+BENCHMARK(BM_EraseEmplace)->Arg(1)->Arg(2)->Arg(4)->Arg(8)->Arg(16)->Arg(100);
+
 void BM_EndComparison(benchmark::State& state) {
   StringTable t = {{"a", "a"}, {"b", "b"}};
   auto it = t.begin();
@@ -276,7 +306,7 @@ void BM_CopyCtorSparseInt(benchmark::State& state) {
     benchmark::DoNotOptimize(t2);
   }
 }
-BENCHMARK(BM_CopyCtorSparseInt)->Range(128, 4096);
+BENCHMARK(BM_CopyCtorSparseInt)->Range(1, 4096);
 
 void BM_CopyCtorInt(benchmark::State& state) {
   std::random_device rd;
@@ -294,7 +324,7 @@ void BM_CopyCtorInt(benchmark::State& state) {
     benchmark::DoNotOptimize(t2);
   }
 }
-BENCHMARK(BM_CopyCtorInt)->Range(128, 4096);
+BENCHMARK(BM_CopyCtorInt)->Range(0, 4096);
 
 void BM_CopyCtorString(benchmark::State& state) {
   std::random_device rd;
@@ -312,7 +342,7 @@ void BM_CopyCtorString(benchmark::State& state) {
     benchmark::DoNotOptimize(t2);
   }
 }
-BENCHMARK(BM_CopyCtorString)->Range(128, 4096);
+BENCHMARK(BM_CopyCtorString)->Range(0, 4096);
 
 void BM_CopyAssign(benchmark::State& state) {
   std::random_device rd;
@@ -369,28 +399,42 @@ void BM_NoOpReserveStringTable(benchmark::State& state) {
 BENCHMARK(BM_NoOpReserveStringTable);
 
 void BM_ReserveIntTable(benchmark::State& state) {
-  int reserve_size = state.range(0);
-  for (auto _ : state) {
+  constexpr size_t kBatchSize = 1024;
+  size_t reserve_size = static_cast<size_t>(state.range(0));
+
+  std::vector<IntTable> tables;
+  while (state.KeepRunningBatch(kBatchSize)) {
     state.PauseTiming();
-    IntTable t;
+    tables.clear();
+    tables.resize(kBatchSize);
     state.ResumeTiming();
-    benchmark::DoNotOptimize(t);
-    t.reserve(reserve_size);
+    for (auto& t : tables) {
+      benchmark::DoNotOptimize(t);
+      t.reserve(reserve_size);
+      benchmark::DoNotOptimize(t);
+    }
   }
 }
-BENCHMARK(BM_ReserveIntTable)->Range(128, 4096);
+BENCHMARK(BM_ReserveIntTable)->Range(1, 64);
 
 void BM_ReserveStringTable(benchmark::State& state) {
-  int reserve_size = state.range(0);
-  for (auto _ : state) {
+  constexpr size_t kBatchSize = 1024;
+  size_t reserve_size = static_cast<size_t>(state.range(0));
+
+  std::vector<StringTable> tables;
+  while (state.KeepRunningBatch(kBatchSize)) {
     state.PauseTiming();
-    StringTable t;
+    tables.clear();
+    tables.resize(kBatchSize);
     state.ResumeTiming();
-    benchmark::DoNotOptimize(t);
-    t.reserve(reserve_size);
+    for (auto& t : tables) {
+      benchmark::DoNotOptimize(t);
+      t.reserve(reserve_size);
+      benchmark::DoNotOptimize(t);
+    }
   }
 }
-BENCHMARK(BM_ReserveStringTable)->Range(128, 4096);
+BENCHMARK(BM_ReserveStringTable)->Range(1, 64);
 
 // Like std::iota, except that ctrl_t doesn't support operator++.
 template <typename CtrlIter>
@@ -435,6 +479,17 @@ void BM_Group_MaskEmptyOrDeleted(benchmark::State& state) {
 }
 BENCHMARK(BM_Group_MaskEmptyOrDeleted);
 
+void BM_Group_MaskNonFull(benchmark::State& state) {
+  std::array<ctrl_t, Group::kWidth> group;
+  Iota(group.begin(), group.end(), -4);
+  Group g{group.data()};
+  for (auto _ : state) {
+    ::benchmark::DoNotOptimize(g);
+    ::benchmark::DoNotOptimize(g.MaskNonFull());
+  }
+}
+BENCHMARK(BM_Group_MaskNonFull);
+
 void BM_Group_CountLeadingEmptyOrDeleted(benchmark::State& state) {
   std::array<ctrl_t, Group::kWidth> group;
   Iota(group.begin(), group.end(), -2);
@@ -456,6 +511,17 @@ void BM_Group_MatchFirstEmptyOrDeleted(benchmark::State& state) {
   }
 }
 BENCHMARK(BM_Group_MatchFirstEmptyOrDeleted);
+
+void BM_Group_MatchFirstNonFull(benchmark::State& state) {
+  std::array<ctrl_t, Group::kWidth> group;
+  Iota(group.begin(), group.end(), -2);
+  Group g{group.data()};
+  for (auto _ : state) {
+    ::benchmark::DoNotOptimize(g);
+    ::benchmark::DoNotOptimize(g.MaskNonFull().LowestBitSet());
+  }
+}
+BENCHMARK(BM_Group_MatchFirstNonFull);
 
 void BM_DropDeletes(benchmark::State& state) {
   constexpr size_t capacity = (1 << 20) - 1;

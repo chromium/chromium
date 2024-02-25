@@ -8,9 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -43,6 +45,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/focus_manager_event_handler.h"
 #include "ui/views/widget/native_widget_delegate.h"
@@ -96,9 +99,10 @@ void SetIcon(aura::Window* window,
     window->SetProperty(key, value);
 }
 
-bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
-                       const ui::Layer** first,
-                       const ui::Layer** second) {
+bool FindLayersInOrder(
+    const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& children,
+    const ui::Layer** first,
+    const ui::Layer** second) {
   for (const ui::Layer* child : children) {
     if (child == *second) {
       *second = nullptr;
@@ -116,6 +120,31 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
       return false;
   }
   return false;
+}
+
+// Adds `window` as a child of `parent`. If `parent` is nullptr, find an
+// appropriate parent by consulting an implementation of WindowParentingClient
+// attached at the root Window of the tree where `window` lives.
+void ReparentAuraWindow(aura::Window* window, aura::Window* parent) {
+  if (parent) {
+    parent->AddChild(window);
+  } else {
+    // The following looks weird, but it's the equivalent of what aura has
+    // always done. (The previous behaviour of aura::Window::SetParent() used
+    // NULL as a special value that meant ask the WindowParentingClient where
+    // things should go.)
+    //
+    // This probably isn't strictly correct, but its an invariant that a Window
+    // in use will be attached to a RootWindow, so we can't just call
+    // RemoveChild here. The only possible thing that could assign a RootWindow
+    // in this case is the stacking client of the current RootWindow. This
+    // matches our previous behaviour; the global stacking client would almost
+    // always reattach the window to the same RootWindow.
+    aura::Window* root_window = window->GetRootWindow();
+    aura::client::ParentWindowWithContext(window, root_window,
+                                          root_window->GetBoundsInScreen(),
+                                          display::kInvalidDisplayId);
+  }
 }
 
 }  // namespace
@@ -280,11 +309,16 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   // the correct values.
   OnSizeConstraintsChanged();
 
+  std::optional<int64_t> target_display;
+#if BUILDFLAG(IS_CHROMEOS)
+  target_display = params.display_id;
+#endif
   if (parent) {
     parent->AddChild(window_);
   } else {
-    aura::client::ParentWindowWithContext(window_, context->GetRootWindow(),
-                                          window_bounds);
+    aura::client::ParentWindowWithContext(
+        window_, context->GetRootWindow(), window_bounds,
+        target_display.value_or(display::kInvalidDisplayId));
   }
 
   window_->AddObserver(this);
@@ -292,10 +326,11 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   // Wait to set the bounds until we have a parent. That way we can know our
   // true state/bounds (the LayoutManager may enforce a particular
   // state/bounds).
-  if (IsMaximized() || IsMinimized())
+  if (IsMaximized() || IsMinimized()) {
     SetRestoreBounds(window_, window_bounds);
-  else
-    SetBounds(window_bounds);
+  } else {
+    SetBoundsInternal(window_bounds, target_display);
+  }
   window_->SetEventTargetingPolicy(
       params.accept_events ? aura::EventTargetingPolicy::kTargetAndDescendants
                            : aura::EventTargetingPolicy::kNone);
@@ -321,6 +356,10 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
 }
 
 void NativeWidgetAura::OnWidgetInitDone() {}
+
+void NativeWidgetAura::ReparentNativeViewImpl(gfx::NativeView new_parent) {
+  ReparentAuraWindow(GetNativeView(), new_parent);
+}
 
 std::unique_ptr<NonClientFrameView>
 NativeWidgetAura::CreateNonClientFrameView() {
@@ -563,19 +602,24 @@ std::string NativeWidgetAura::GetWorkspace() const {
 void NativeWidgetAura::SetBounds(const gfx::Rect& bounds) {
   if (!window_)
     return;
+  SetBoundsInternal(bounds, std::nullopt);
+}
 
-  aura::Window* root = window_->GetRootWindow();
-  if (root) {
-    aura::client::ScreenPositionClient* screen_position_client =
-        aura::client::GetScreenPositionClient(root);
-    if (screen_position_client) {
-      display::Display dst_display =
-          display::Screen::GetScreen()->GetDisplayMatching(bounds);
-      screen_position_client->SetBounds(window_, bounds, dst_display);
-      return;
-    }
+void NativeWidgetAura::SetBoundsInternal(const gfx::Rect& bounds,
+                                         std::optional<int64_t> display_id) {
+  display::Display dst_display;
+  auto* screen = display::Screen::GetScreen();
+  // TODO(crbug.com/1480073): Call SetBoundsInScreen directly.
+  if (!display_id ||
+      !screen->GetDisplayWithDisplayId(display_id.value(), &dst_display)) {
+    dst_display = screen->GetDisplayMatching(bounds);
   }
-  window_->SetBounds(bounds);
+#if BUILDFLAG(IS_CHROMEOS)
+  // `dst_display` is not used on desktop chrome, and `GetDisplayMatching` above
+  // may return invalid display on Windows.
+  CHECK(dst_display.is_valid());
+#endif
+  window_->SetBoundsInScreen(bounds, dst_display);
 }
 
 void NativeWidgetAura::SetBoundsConstrained(const gfx::Rect& bounds) {
@@ -931,10 +975,6 @@ void NativeWidgetAura::SetVisibilityAnimationTransition(
       break;
   }
   wm::SetWindowVisibilityAnimationTransition(window_, wm_transition);
-}
-
-bool NativeWidgetAura::IsTranslucentWindowOpacitySupported() const {
-  return true;
 }
 
 ui::GestureRecognizer* NativeWidgetAura::GetGestureRecognizer() {
@@ -1335,8 +1375,9 @@ void NativeWidgetPrivate::GetAllChildWidgets(gfx::NativeView native_view,
       children->insert(native_widget->GetWidget());
   }
 
-  for (auto* child_window : native_view->children())
+  for (aura::Window* child_window : native_view->children()) {
     GetAllChildWidgets(child_window, children);
+  }
 }
 
 // static
@@ -1370,31 +1411,23 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
 
   // First notify all the widgets that they are being disassociated
   // from their previous parent.
-  for (auto* widget : widgets)
+  for (Widget* widget : widgets) {
     widget->NotifyNativeViewHierarchyWillChange();
+  }
 
-  if (new_parent) {
-    new_parent->AddChild(native_view);
+  Widget* child_widget = Widget::GetWidgetForNativeView(native_view);
+
+  if (base::FeatureList::IsEnabled(features::kDesktopWidgetReparentAura) &&
+      child_widget) {
+    child_widget->native_widget_private()->ReparentNativeViewImpl(new_parent);
   } else {
-    // The following looks weird, but it's the equivalent of what aura has
-    // always done. (The previous behaviour of aura::Window::SetParent() used
-    // NULL as a special value that meant ask the WindowParentingClient where
-    // things should go.)
-    //
-    // This probably isn't strictly correct, but its an invariant that a Window
-    // in use will be attached to a RootWindow, so we can't just call
-    // RemoveChild here. The only possible thing that could assign a RootWindow
-    // in this case is the stacking client of the current RootWindow. This
-    // matches our previous behaviour; the global stacking client would almost
-    // always reattach the window to the same RootWindow.
-    aura::Window* root_window = native_view->GetRootWindow();
-    aura::client::ParentWindowWithContext(native_view, root_window,
-                                          root_window->GetBoundsInScreen());
+    ReparentAuraWindow(native_view, new_parent);
   }
 
   // And now, notify them that they have a brand new parent.
-  for (auto* widget : widgets)
+  for (Widget* widget : widgets) {
     widget->NotifyNativeViewHierarchyChanged();
+  }
 }
 
 // static

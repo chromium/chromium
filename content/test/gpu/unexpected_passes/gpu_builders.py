@@ -22,7 +22,7 @@ class GpuBuilders(builders.Builders):
     # Builders running tests in Chrome Labs.
     tests = test_map.get('isolated_scripts', [])
     for t in tests:
-      if t.get('isolate_name') not in self.GetIsolateNames():
+      if t.get('test') not in self.GetIsolateNames():
         continue
       if self._suite in t.get('args', []):
         return True

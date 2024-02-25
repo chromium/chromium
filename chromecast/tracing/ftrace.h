@@ -6,16 +6,16 @@
 #define CHROMECAST_TRACING_FTRACE_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/strings/string_piece.h"
 
 namespace chromecast {
 namespace tracing {
 
 // Returns true if |category| is valid for system tracing.
-bool IsValidCategory(base::StringPiece category);
+bool IsValidCategory(std::string_view category);
 
 // Starts ftrace for the specified categories.
 //

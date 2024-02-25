@@ -31,10 +31,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
@@ -300,10 +298,10 @@ void ExternalCacheImpl::PutExternalExtension(
 }
 
 void ExternalCacheImpl::SetBackoffPolicy(
-    absl::optional<net::BackoffEntry::Policy> backoff_policy) {
+    std::optional<net::BackoffEntry::Policy> backoff_policy) {
   backoff_policy_ = backoff_policy;
   if (downloader_) {
-    // If `backoff_policy` is `absl::nullopt`, it will reset to default backoff
+    // If `backoff_policy` is `std::nullopt`, it will reset to default backoff
     // policy.
     downloader_->SetBackoffPolicy(backoff_policy);
   }
@@ -373,6 +371,23 @@ bool ExternalCacheImpl::GetExtensionExistingVersion(
     return false;
   *version = *val;
   return true;
+}
+
+ExternalCacheImpl::RequestRollbackResult ExternalCacheImpl::RequestRollback(
+    const extensions::ExtensionId& id) {
+  bool is_rollback_allowed = delegate_ && delegate_->IsRollbackAllowed();
+  if (!is_rollback_allowed) {
+    return RequestRollbackResult::kDisallowed;
+  }
+
+  if (delegate_->CanRollbackNow()) {
+    RemoveCachedExtension(id);
+    UpdateExtensionLoader();
+    return RequestRollbackResult::kAllowed;
+  }
+
+  local_cache_.RemoveOnNextInit(id);
+  return RequestRollbackResult::kScheduledForNextRun;
 }
 
 void ExternalCacheImpl::UpdateExtensionLoader() {

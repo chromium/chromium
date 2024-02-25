@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TenorGifResponse} from 'chrome://emoji-picker/emoji_picker.mojom-webui.js';
-import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {GifSubcategoryData, VisualContent} from 'chrome://emoji-picker/types.js';
+import {EmojiPickerApiProxy, GifSubcategoryData, TenorGifResponse, VisualContent} from 'chrome://emoji-picker/emoji_picker.js';
 
-export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
+export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
   // This variable is used to mock the status return value in the actual api
   // proxy.
   // TODO(b/268138636): Change hardcoded value to Status type once tests are
@@ -20,7 +18,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAQAAAAziH6sAAAADklEQVR42mNk+M/I8B8ABQoCAV5AcKEAAAAASUVORK5CYII=';
 
 
-  readonly initialSet = {
+  readonly initialSet: TenorGifResponse = {
     next: '1',
     results:
         [
@@ -32,6 +30,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
                 url: this.oneByTwoGif,
               },
               preview: {
+                url: this.oneByTwoGif,
+              },
+              previewImage: {
                 url: this.oneByTwoGif,
               },
             },
@@ -50,6 +51,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
               preview: {
                 url: this.oneByOneGif,
               },
+              previewImage: {
+                url: this.oneByOneGif,
+              },
             },
             previewSize: {
               width: 1,
@@ -64,6 +68,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
                 url: this.oneByTwoGif,
               },
               preview: {
+                url: this.oneByTwoGif,
+              },
+              previewImage: {
                 url: this.oneByTwoGif,
               },
             },
@@ -82,6 +89,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
               preview: {
                 url: this.oneByTwoGif,
               },
+              previewImage: {
+                url: this.oneByTwoGif,
+              },
             },
             previewSize: {
               width: 1,
@@ -96,6 +106,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
                 url: this.oneByTwoGif,
               },
               preview: {
+                url: this.oneByTwoGif,
+              },
+              previewImage: {
                 url: this.oneByTwoGif,
               },
             },
@@ -114,6 +127,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
               preview: {
                 url: this.oneByTwoGif,
               },
+              previewImage: {
+                url: this.oneByTwoGif,
+              },
             },
             previewSize: {
               width: 1,
@@ -123,7 +139,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
         ],
   };
 
-  readonly followingSet = {
+  readonly followingSet: TenorGifResponse = {
     next: '2',
     results:
         [
@@ -135,6 +151,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
                 url: this.oneByTwoGif,
               },
               preview: {
+                url: this.oneByTwoGif,
+              },
+              previewImage: {
                 url: this.oneByTwoGif,
               },
             },
@@ -153,6 +172,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
               preview: {
                 url: this.oneByTwoGif,
               },
+              previewImage: {
+                url: this.oneByTwoGif,
+              },
             },
             previewSize: {
               width: 1,
@@ -167,6 +189,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
                 url: this.oneByTwoGif,
               },
               preview: {
+                url: this.oneByTwoGif,
+              },
+              previewImage: {
                 url: this.oneByTwoGif,
               },
             },
@@ -185,6 +210,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
               preview: {
                 url: this.oneByTwoGif,
               },
+              previewImage: {
+                url: this.oneByTwoGif,
+              },
             },
             previewSize: {
               width: 1,
@@ -201,6 +229,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
               preview: {
                 url: this.oneByTwoGif,
               },
+              previewImage: {
+                url: this.oneByTwoGif,
+              },
             },
             previewSize: {
               width: 1,
@@ -215,6 +246,9 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
                 url: this.oneByTwoGif,
               },
               preview: {
+                url: this.oneByTwoGif,
+              },
+              previewImage: {
                 url: this.oneByTwoGif,
               },
             },
@@ -279,7 +313,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
     return new Promise((resolve) => {
       resolve({
         status: this.httpOk,
-        featuredGifs: this.gifs[query]!,
+        featuredGifs: this.gifs[query] ?? this.gifs['trending']!,
       });
     });
   }
@@ -289,7 +323,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
     query = (pos ? query + pos : query).replace('#', '');
     return Promise.resolve({
       status: this.httpOk,
-      searchGifs: this.searchResults[query]!,
+      searchGifs: this.searchResults[query] ?? this.searchResults['face']!,
     });
   }
 
@@ -303,6 +337,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
           url: {
             full: {url: this.oneByOneGif},
             preview: {url: this.oneByOneGif},
+            previewImage: {url: this.oneByOneGif},
           },
           previewSize: {
             width: 1,
@@ -315,6 +350,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
           url: {
             full: {url: this.oneByTwoGif},
             preview: {url: this.oneByTwoGif},
+            previewImage: {url: this.oneByTwoGif},
           },
           previewSize: {
             width: 1,
@@ -327,6 +363,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
           url: {
             full: {url: this.oneByTwoGif},
             preview: {url: this.oneByTwoGif},
+            previewImage: {url: this.oneByTwoGif},
           },
           previewSize: {
             width: 1,

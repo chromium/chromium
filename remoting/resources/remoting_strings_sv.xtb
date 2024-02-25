@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">En inkompatibel version av protokollet upptäcktes. Kontrollera att du har den senaste versionen av programvaran på båda datorerna och försök igen.</translation>
 <translation id="1008557486741366299">Inte nu</translation>
 <translation id="1201402288615127009">Nästa</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Med ensamrätt.</translation>
 <translation id="1297009705180977556">Det gick inte att ansluta till <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Det begärda objektet finns inte.</translation>
 <translation id="1480046233931937785">Medverkande</translation>
@@ -89,7 +88,6 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="4808503597364150972">Ange din pinkod för <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Värd</translation>
 <translation id="4867841927763172006">Skicka PrtScn</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Med ensamrätt.</translation>
 <translation id="4974476491460646149">Anslutningen till <ph name="HOSTNAME" /> kopplades från</translation>
 <translation id="4985296110227979402">Du måste först konfigurera datorn för fjärråtkomst</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop kan inte avgöra vilken webbläsare som ska användas för att öppna webbadresser lokalt. Välj webbläsare i listan nedan.</translation>
@@ -154,6 +152,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="7693372326588366043">Uppdatera listan med värdar</translation>
 <translation id="7714222945760997814">Rapportera detta</translation>
 <translation id="7868137160098754906">Ange din pinkod för fjärrdatorn.</translation>
+<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Med ensamrätt.</translation>
 <translation id="7895403300744144251">Fjärrdatorns säkerhetspolicy tillåter inte anslutningar från ditt konto.</translation>
 <translation id="7936528439960309876">Docka till höger</translation>
 <translation id="7970576581263377361">Autentiseringen misslyckades. Logga in i Chromium igen.</translation>
@@ -185,6 +184,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="8747048596626351634">Sessionen kraschade eller gick inte att starta. Om ~/.chrome-remote-desktop-session finns på fjärrdatorn kontrollerar du att det som startas med den filen är en process som körs under lång tid i förgrunden, som en skrivbordsmiljö eller fönsterhanterare.</translation>
 <translation id="8804164990146287819">Integritetspolicy</translation>
 <translation id="8906511416443321782">Mikrofonåtkomst behövs för att spela in ljud och streama det till Chrome Remote Desktop-klienten.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Med ensamrätt.</translation>
 <translation id="9111855907838866522">Du är ansluten till fjärrenheten. Tryck på skärmen med fyra fingrar om du vill öppna menyn.</translation>
 <translation id="9126115402994542723">Be inte om en pinkod igen när du ansluter till den här värden från den här enheten.</translation>
 <translation id="916856682307586697">Starta XSession med standardinställningar</translation>

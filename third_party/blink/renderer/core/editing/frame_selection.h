@@ -46,22 +46,22 @@ namespace blink {
 
 class EffectPaintPropertyNode;
 class Element;
-class LayoutBlock;
-class LayoutText;
-class LocalFrame;
 class FrameCaret;
 class GranularityStrategy;
 class GraphicsContext;
-class NGInlineCursor;
-class NGInlineCursorPosition;
-class NGPhysicalBoxFragment;
+class InlineCursor;
+class InlineCursorPosition;
+class LayoutBlock;
+class LayoutSelection;
+class LayoutText;
+class LocalFrame;
+class PhysicalBoxFragment;
 class Range;
 class SelectionEditor;
-class LayoutSelection;
+class TextIteratorBehavior;
 enum class SelectionModifyAlteration;
 enum class SelectionModifyDirection;
 enum class SelectionState;
-class TextIteratorBehavior;
 struct PaintInvalidatorContext;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -77,7 +77,7 @@ enum class SelectSoftLineBreak { kNotSelected, kSelected };
 // This is return type of ComputeLayoutSelectionStatus(cursor).
 // This structure represents how the fragment is selected.
 // |start|, |end| : Selection start/end offset. This offset is based on
-//   the text of NGInlineNode of a parent block thus
+//   the text of InlineNode of a parent block thus
 //   |fragemnt.StartOffset <= start <= end <= fragment.EndOffset|.
 // |start| == |end| means this fragment is not selected.
 // |line_break| : This value represents If this fragment is selected and
@@ -140,7 +140,9 @@ class CORE_EXPORT FrameSelection final
   bool IsAvailable() const;
   // You should not call |document()| when |!isAvailable()|.
   Document& GetDocument() const;
-  LocalFrame* GetFrame() const { return frame_; }
+  LocalFrame* GetFrame() const { return frame_.Get(); }
+  // Note that RootEditableElementOrDocumentElement can return null if the
+  // documentElement is null.
   Element* RootEditableElementOrDocumentElement() const;
   wtf_size_t CharacterIndexForPoint(const gfx::Point&) const;
 
@@ -201,7 +203,7 @@ class CORE_EXPORT FrameSelection final
   // Returns true if specified layout block should paint caret. This function is
   // called during painting only.
   bool ShouldPaintCaret(const LayoutBlock&) const;
-  bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
+  bool ShouldPaintCaret(const PhysicalBoxFragment&) const;
 
   // Bounds of (possibly transformed) caret in absolute coords
   gfx::Rect AbsoluteCaretBounds() const;
@@ -226,12 +228,13 @@ class CORE_EXPORT FrameSelection final
   void CommitAppearanceIfNeeded();
   void SetCaretEnabled(bool caret_is_visible);
   void ScheduleVisualUpdate() const;
-  void ScheduleVisualUpdateForPaintInvalidationIfNeeded() const;
+  void ScheduleVisualUpdateForVisualOverflowIfNeeded() const;
 
   // Paint invalidation methods delegating to FrameCaret.
   void LayoutBlockWillBeDestroyed(const LayoutBlock&);
   void UpdateStyleAndLayoutIfNeeded();
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
+  void EnsureInvalidationOfPreviousLayoutBlock();
 
   void PaintCaret(GraphicsContext&, const PhysicalOffset&);
 
@@ -312,9 +315,9 @@ class CORE_EXPORT FrameSelection final
   LayoutTextSelectionStatus ComputeLayoutSelectionStatus(
       const LayoutText& text) const;
   LayoutSelectionStatus ComputeLayoutSelectionStatus(
-      const NGInlineCursor& cursor) const;
+      const InlineCursor& cursor) const;
   SelectionState ComputePaintingSelectionStateForCursor(
-      const NGInlineCursorPosition& position) const;
+      const InlineCursorPosition& position) const;
 
   void Trace(Visitor*) const override;
 

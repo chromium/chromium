@@ -159,40 +159,32 @@ class NetworkServiceSSLConfigServiceTest : public testing::Test {
                           const net::SSLContextConfig& expected_net_config) {
     // The expected configuration must not be the default configuration, or the
     // change test won't send an event.
-    EXPECT_FALSE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        net::SSLContextConfig(), expected_net_config));
+    EXPECT_NE(net::SSLContextConfig(), expected_net_config);
 
     // Set up |mojo_config| as the initial configuration of a NetworkContext.
     mojom::NetworkContextParamsPtr network_context_params =
         mojom::NetworkContextParams::New();
     network_context_params->initial_ssl_config = mojo_config.Clone();
     SetUpNetworkContext(std::move(network_context_params));
-    EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        GetSSLContextConfig(), expected_net_config));
+    EXPECT_EQ(GetSSLContextConfig(), expected_net_config);
     // Sanity check.
-    EXPECT_FALSE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        GetSSLContextConfig(), net::SSLContextConfig()));
+    EXPECT_NE(GetSSLContextConfig(), net::SSLContextConfig());
 
     // Reset the configuration to the default ones, and check the results.
     TestSSLConfigServiceObserver observer(
         network_context_->url_request_context()->ssl_config_service());
     ssl_config_client_->OnSSLConfigUpdated(mojom::SSLConfig::New());
     net::SSLContextConfig config_during_change = observer.WaitForChange();
-    EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        GetSSLContextConfig(), net::SSLContextConfig()));
-    EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        config_during_change, net::SSLContextConfig()));
+    EXPECT_EQ(GetSSLContextConfig(), net::SSLContextConfig());
+    EXPECT_EQ(config_during_change, net::SSLContextConfig());
     // Sanity check.
-    EXPECT_FALSE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        GetSSLContextConfig(), expected_net_config));
+    EXPECT_NE(GetSSLContextConfig(), expected_net_config);
 
     // Set the configuration to |mojo_config| again, and check the results.
     ssl_config_client_->OnSSLConfigUpdated(mojo_config.Clone());
     config_during_change = observer.WaitForChange();
-    EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        GetSSLContextConfig(), expected_net_config));
-    EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        config_during_change, expected_net_config));
+    EXPECT_EQ(GetSSLContextConfig(), expected_net_config);
+    EXPECT_EQ(config_during_change, expected_net_config);
   }
 
   // Runs two conversion tests for |mojo_config|.  Uses it as an initial
@@ -248,8 +240,7 @@ class NetworkServiceSSLConfigServiceTest : public testing::Test {
 // net::SSLConfig.
 TEST_F(NetworkServiceSSLConfigServiceTest, NoSSLConfig) {
   SetUpNetworkContext(mojom::NetworkContextParams::New());
-  EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-      GetSSLContextConfig(), net::SSLContextConfig()));
+  EXPECT_EQ(GetSSLContextConfig(), net::SSLContextConfig());
 
   // Make sure the default TLS version range is as expected.
   EXPECT_EQ(net::kDefaultSSLVersionMin, GetSSLContextConfig().version_min);
@@ -263,8 +254,7 @@ TEST_F(NetworkServiceSSLConfigServiceTest, Default) {
       mojom::NetworkContextParams::New();
   network_context_params->initial_ssl_config = mojom::SSLConfig::New();
   SetUpNetworkContext(std::move(network_context_params));
-  EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-      GetSSLContextConfig(), net::SSLContextConfig()));
+  EXPECT_EQ(GetSSLContextConfig(), net::SSLContextConfig());
 
   // Make sure the default TLS version range is as expected.
   EXPECT_EQ(net::kDefaultSSLVersionMin, GetSSLContextConfig().version_min);

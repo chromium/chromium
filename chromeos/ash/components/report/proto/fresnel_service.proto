@@ -33,9 +33,13 @@ enum MarketSegment {
   // Device is enterprise enrolled but does not have enterprise market segment.
   MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN = 3;
   // Device is enterprise enrolled and has enterprise market segment.
+  // Does not count demo devices. Demo devices are only counted in
+  // MARKET_SEGMENT_ENTERPRISE_DEMO.
   MARKET_SEGMENT_ENTERPRISE = 4;
   // Device is enterprise enrolled and has education market segment.
   MARKET_SEGMENT_EDUCATION = 5;
+  // Device is enterprise enrolled as a demo device.
+  MARKET_SEGMENT_ENTERPRISE_DEMO = 6;
 };
 
 // The Chrome OS device metadata which is sent in PSM import requests.
@@ -117,6 +121,17 @@ message ChurnObservationMetadata {
   // Whether the device was `first active` during the corresponding cohort
   // period.
   optional FirstActiveDuringCohort first_active_during_cohort = 3;
+
+  // Device ActivateDate, read from VPD. In YYYY-WW ISO8601 format.
+  // Value exists after first OOBE completion and device restart.
+  // Statistics provider loads VPD file in the chrome browser preloop,
+  // before ActivateDate may be first written.
+  // Field is only set if ActivateDate is <= 4 months old.
+  optional string first_active_week = 4;
+
+  // Device last powerwash week. Formatted YYYY-WW in ISO8601 format.
+  // Field is only set if ActivateDate is <= 4 months old.
+  optional string last_powerwash_week = 5;
 }
 
 // This message is part of the import request. For some use cases, such as

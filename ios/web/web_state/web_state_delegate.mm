@@ -35,6 +35,7 @@ WebState* WebStateDelegate::OpenURLFromWebState(
 
 void WebStateDelegate::ShowRepostFormWarningDialog(
     WebState*,
+    FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(true);
 }

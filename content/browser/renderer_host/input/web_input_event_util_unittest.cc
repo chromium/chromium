@@ -4,16 +4,17 @@
 
 #include <stddef.h>
 
-#include "base/numerics/math_constants.h"
+#include <numbers>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
-#include "ui/events/gesture_detection/motion_event_generic.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/types/event_type.h"
+#include "ui/events/velocity_tracker/motion_event_generic.h"
 
 using blink::WebInputEvent;
 using blink::WebTouchEvent;
@@ -33,7 +34,7 @@ TEST(WebInputEventUtilTest, MotionEventConversion) {
   pointer.raw_y = 25;
   pointer.pressure = 30;
   pointer.touch_minor = 35;
-  pointer.orientation = -base::kPiFloat / 2;
+  pointer.orientation = -std::numbers::pi_v<float> / 2;
   pointer.tilt_x = 60;
   pointer.tilt_y = 70;
   pointer.twist = 160;

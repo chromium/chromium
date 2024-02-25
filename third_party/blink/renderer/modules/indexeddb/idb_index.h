@@ -32,8 +32,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -120,7 +118,7 @@ class IDBIndex final : public ScriptWrappable {
       mojom::IDBCursorDirection,
       IDBRequest::AsyncTraceState = IDBRequest::AsyncTraceState());
 
-  WebIDBDatabase* BackendDB() const;
+  IDBDatabase& db();
 
  private:
   const IDBIndexMetadata& Metadata() const { return *metadata_; }

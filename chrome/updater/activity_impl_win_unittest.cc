@@ -70,7 +70,7 @@ ReadActiveBitRetval ReadActiveBitAsString(base::win::RegKey& key) {
 ReadActiveBitRetval ReadActiveBitAsDword(base::win::RegKey& key) {
   DWORD did_run = 0;
   const DWORD result = key.ReadValueDW(kDidRun, &did_run);
-  return ReadActiveBitRetval(result, !!did_run);
+  return ReadActiveBitRetval(result, did_run);
 }
 
 }  // namespace

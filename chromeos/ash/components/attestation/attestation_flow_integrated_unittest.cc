@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow_integrated.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,7 +31,6 @@
 #include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -71,7 +71,7 @@ class AttestationFlowIntegratedTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -120,7 +120,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt, callback1.Get());
+      /*profile_specific_data=*/std::nullopt, callback1.Get());
   flow.GetCertificate(
       /*certificate_profile=*/static_cast<AttestationCertificateProfile>(
           request.certificate_profile()),
@@ -128,7 +128,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt, /*callback=*/callback2.Get());
+      /*profile_specific_data=*/std::nullopt, /*callback=*/callback2.Get());
   flow.GetCertificate(
       /*certificate_profile=*/static_cast<AttestationCertificateProfile>(
           request.certificate_profile()),
@@ -136,7 +136,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/false, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -183,7 +183,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateWithECC) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt, /*callback=*/callback1.Get());
+      /*profile_specific_data=*/std::nullopt, /*callback=*/callback1.Get());
   flow.GetCertificate(
       /*certificate_profile=*/static_cast<AttestationCertificateProfile>(
           request.certificate_profile()),
@@ -191,7 +191,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateWithECC) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt, /*callback=*/callback2.Get());
+      /*profile_specific_data=*/std::nullopt, /*callback=*/callback2.Get());
   flow.GetCertificate(
       /*certificate_profile=*/static_cast<AttestationCertificateProfile>(
           request.certificate_profile()),
@@ -199,7 +199,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateWithECC) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/false, /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -251,17 +251,17 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateCreatedByFactory) {
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
       /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
-      absl::nullopt, callback1.Get());
+      std::nullopt, callback1.Get());
   flow->GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
       /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
-      absl::nullopt, callback2.Get());
+      std::nullopt, callback2.Get());
   flow->GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
       /*force_new_key=*/false, ::attestation::KEY_TYPE_RSA, request.key_label(),
-      absl::nullopt,
+      std::nullopt,
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback3.Get()));
@@ -299,7 +299,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailed) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -337,7 +337,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailedInvalidProfile) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -377,7 +377,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotPrepared) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -417,7 +417,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -461,7 +461,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotAvailable) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -499,7 +499,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationTestAca) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -541,7 +541,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAcaTypeFromCommandline) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -578,7 +578,7 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificate) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/request.request_origin(), /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/request.key_label(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/request.key_label(), /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -623,7 +623,7 @@ TEST_F(AttestationFlowIntegratedTest, GetDeviceSetupCertificate) {
   ::attestation::DeviceSetupCertificateRequestMetadata profile_specific_data;
   profile_specific_data.set_id(kId);
   profile_specific_data.set_content_binding(kContentBinding);
-  auto optional_profile_specific_data = absl::make_optional(
+  auto optional_profile_specific_data = std::make_optional(
       AttestationFlow::CertProfileSpecificData(profile_specific_data));
 
   AttestationFlowIntegrated flow;
@@ -698,7 +698,7 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificateWithAccountId) {
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
@@ -726,7 +726,7 @@ TEST_F(AttestationFlowIntegratedDeathTest,
   AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
 
   AttestationFlowIntegrated flow;
-  // `profile_specific_data` is `absl::nullopt`.
+  // `profile_specific_data` is `std::nullopt`.
   flow.GetCertificate(
       /*certificate_profile=*/static_cast<AttestationCertificateProfile>(
           request.certificate_profile()),
@@ -734,7 +734,7 @@ TEST_F(AttestationFlowIntegratedDeathTest,
       /*request_origin=*/request.request_origin(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,

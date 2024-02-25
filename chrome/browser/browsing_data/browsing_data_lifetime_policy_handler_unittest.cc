@@ -20,77 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-// When the kDataRetentionPoliciesDisableSyncTypesNeeded feature is not set, the
-// data retention policies will fail if SyncDisabled is not to set, or if
-// SyncDisabled is set to false. There will be an error, but no other messages
-// in the entry.
-TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledNotSet) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      false);
-
-  policy::PolicyMap policy_map;
-  policy::PolicyErrorMap errors;
-
-  policy_map.Set(policy::key::kBrowsingDataLifetime,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_CLOUD,
-                 base::Value(base::Value::Type::LIST), nullptr);
-
-  BrowsingDataLifetimePolicyHandler handler(
-      policy::key::kBrowsingDataLifetime,
-      browsing_data::prefs::kBrowsingDataLifetime,
-      policy::Schema::Wrap(policy::GetChromeSchemaData()));
-
-  handler.CheckPolicySettings(policy_map, &errors);
-  EXPECT_EQ(errors.GetErrorMessages(policy::key::kBrowsingDataLifetime),
-            l10n_util::GetStringFUTF16(
-                IDS_POLICY_DEPENDENCY_ERROR,
-                base::UTF8ToUTF16(policy::key::kSyncDisabled), u"true"));
-  handler.PrepareForDisplaying(&policy_map);
-  EXPECT_FALSE(policy_map.Get(policy::key::kBrowsingDataLifetime)
-                   ->HasMessage(policy::PolicyMap::MessageType::kInfo));
-}
-
-TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledFalse) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      false);
-
-  policy::PolicyMap policy_map;
-  policy::PolicyErrorMap errors;
-
-  policy_map.Set(policy::key::kBrowsingDataLifetime,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_CLOUD,
-                 base::Value(base::Value::Type::LIST), nullptr);
-  policy_map.Set(policy::key::kSyncDisabled, policy::POLICY_LEVEL_MANDATORY,
-                 policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
-                 base::Value(false), nullptr);
-
-  BrowsingDataLifetimePolicyHandler handler(
-      policy::key::kBrowsingDataLifetime,
-      browsing_data::prefs::kBrowsingDataLifetime,
-      policy::Schema::Wrap(policy::GetChromeSchemaData()));
-
-  handler.CheckPolicySettings(policy_map, &errors);
-  EXPECT_EQ(errors.GetErrorMessages(policy::key::kBrowsingDataLifetime),
-            l10n_util::GetStringFUTF16(
-                IDS_POLICY_DEPENDENCY_ERROR,
-                base::UTF8ToUTF16(policy::key::kSyncDisabled), u"true"));
-  handler.PrepareForDisplaying(&policy_map);
-  EXPECT_FALSE(policy_map.Get(policy::key::kBrowsingDataLifetime)
-                   ->HasMessage(policy::PolicyMap::MessageType::kInfo));
-}
-
 TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledTrue) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      false);
-
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
 
@@ -118,10 +48,6 @@ TEST(BrowsingDataLifetimePolicyHandler, SyncDisabledTrue) {
 // be applied and the error map and messages should be empty
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST(BrowsingDataLifetimePolicyHandler, BrowserSigninDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      true);
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
 
@@ -149,16 +75,11 @@ TEST(BrowsingDataLifetimePolicyHandler, BrowserSigninDisabled) {
 // Check that the policies work correctly when set together with sync.
 TEST(BrowsingDataLifetimePolicyHandler,
      SyncTypesListDisabledWithDataRetentionPolicies) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      true);
-
   // Start with prefs enabled so we can sense that they have changed.
   PrefValueMap prefs;
   prefs.SetBoolean(syncer::prefs::internal::kSyncAutofill, true);
   prefs.SetBoolean(syncer::prefs::internal::kSyncPreferences, true);
-  prefs.SetBoolean(syncer::prefs::internal::kSyncTypedUrls, true);
+  prefs.SetBoolean(syncer::prefs::internal::kSyncHistory, true);
   prefs.SetBoolean(syncer::prefs::internal::kSyncTabs, true);
   prefs.SetBoolean(syncer::prefs::internal::kSyncSavedTabGroups, true);
   prefs.SetBoolean(syncer::prefs::internal::kSyncPasswords, true);
@@ -218,7 +139,7 @@ TEST(BrowsingDataLifetimePolicyHandler,
       prefs.GetBoolean(syncer::prefs::internal::kSyncPreferences, &enabled));
   EXPECT_FALSE(enabled);
   ASSERT_TRUE(
-      prefs.GetBoolean(syncer::prefs::internal::kSyncTypedUrls, &enabled));
+      prefs.GetBoolean(syncer::prefs::internal::kSyncHistory, &enabled));
   EXPECT_FALSE(enabled);
   ASSERT_TRUE(prefs.GetBoolean(syncer::prefs::internal::kSyncTabs, &enabled));
   EXPECT_FALSE(enabled);

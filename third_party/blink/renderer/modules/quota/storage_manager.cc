@@ -106,18 +106,19 @@ StorageManager::StorageManager(ExecutionContext* execution_context)
 
 StorageManager::~StorageManager() = default;
 
-ScriptPromise StorageManager::persist(ScriptState* script_state,
-                                      ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLBoolean> StorageManager::persist(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   DCHECK(window->IsSecureContext());  // [SecureContext] in IDL
   if (window->GetSecurityOrigin()->IsOpaque()) {
     exception_state.ThrowTypeError(kUniqueOriginErrorMessage);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   GetPermissionService(window)->RequestPermission(
       CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE),
@@ -128,20 +129,21 @@ ScriptPromise StorageManager::persist(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise StorageManager::persisted(ScriptState* script_state,
-                                        ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLBoolean> StorageManager::persisted(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   DCHECK(execution_context->IsSecureContext());  // [SecureContext] in IDL
   const SecurityOrigin* security_origin =
       execution_context->GetSecurityOrigin();
   if (security_origin->IsOpaque()) {
     exception_state.ThrowTypeError(kUniqueOriginErrorMessage);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLBoolean>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   GetPermissionService(ExecutionContext::From(script_state))
       ->HasPermission(
@@ -243,7 +245,7 @@ void StorageManager::PermissionServiceConnectionError() {
 }
 
 void StorageManager::PermissionRequestComplete(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
     mojom::blink::PermissionStatus status) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())

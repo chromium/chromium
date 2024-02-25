@@ -37,11 +37,11 @@ TEST_F(SmsInfoBarDelegateTest, InfoBarForSingleFrame) {
   std::vector<url::Origin> origin_list{origin};
   SmsInfoBar::Create(web_contents(), infobar_manager(), origin_list, "1234",
                      base::OnceClosure(), base::OnceClosure());
-  EXPECT_EQ(infobar_manager()->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager()->infobars().size(), 1u);
   std::string expected_message = "1234 is your code for example.com";
 
   EXPECT_EQ(base::UTF16ToUTF8(infobar_manager()
-                                  ->infobar_at(0)
+                                  ->infobars()[0]
                                   ->delegate()
                                   ->AsConfirmInfoBarDelegate()
                                   ->GetMessageText()),
@@ -56,11 +56,11 @@ TEST_F(SmsInfoBarDelegateTest, InfoBarForEmbeddedFrame) {
   std::vector<url::Origin> origin_list{embedded_origin, top_origin};
   SmsInfoBar::Create(web_contents(), infobar_manager(), origin_list, "1234",
                      base::OnceClosure(), base::OnceClosure());
-  EXPECT_EQ(infobar_manager()->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager()->infobars().size(), 1u);
   std::string expected_message =
       "1234 is your code for embedded.com to continue on top.com";
   EXPECT_EQ(base::UTF16ToUTF8(infobar_manager()
-                                  ->infobar_at(0)
+                                  ->infobars()[0]
                                   ->delegate()
                                   ->AsConfirmInfoBarDelegate()
                                   ->GetMessageText()),

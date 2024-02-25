@@ -234,9 +234,6 @@ CHROME_STAR_PLATFORMS = ['chrome.win', 'chrome.mac', 'chrome.linux']
 # List of supported metapolicy types.
 METAPOLICY_TYPES = ['merge', 'precedence']
 
-# List of supported chrome os management tags.
-SUPPORTED_CHROME_OS_MANAGEMENT = ['google_cloud', 'active_directory']
-
 # Helper function to determine if a given type defines a key in a dictionary
 # that is used to condition certain backwards compatibility checks.
 def IsKeyDefinedForTypeInDictionary(type, key, key_per_type_dict):
@@ -884,7 +881,6 @@ class PolicyTemplateChecker(object):
           'default_for_managed_devices_doc_only',
           'default_policy_level',
           'arc_support',
-          'supported_chrome_os_management',
       ):
         self._PolicyError(f'Unknown key: {key}', policy, key)
 
@@ -982,11 +978,11 @@ class PolicyTemplateChecker(object):
         if (not self._SupportedPolicy(policy, current_version)
             and not policy.get('deprecated', False)):
           self._PolicyError(
-              "Marked as no longer supported, but isn't marked as "
-              '"deprecated.\n'
-              '  Unsupported policies must be marked as "deprecated": True. '
-              'You may see this error after branch point. Please fix the'
-              f' issue and cc the policy owners.', policy, 'supported_on')
+              'Marked as no longer supported, but is not marked as '
+              'deprecated.\n'
+              '  Unsupported policies must be marked as `deprecated: true`. '
+              'You may see this error after branch point. Please fix the '
+              'issue and cc the policy owners.', policy, 'supported_on')
 
       supported_platforms = ExpandChromeStar(supported_platforms)
       future_on = ExpandChromeStar(
@@ -1185,31 +1181,6 @@ class PolicyTemplateChecker(object):
         self._PolicyError('"unlisted" is used by non cloud only policy.',
                           policy, 'features')
 
-
-      # Chrome OS policies may have a non-empty supported_chrome_os_management
-      # list with either 'active_directory' or 'google_cloud' or both.
-      supported_chrome_os_management = self._CheckContains(
-          policy, 'supported_chrome_os_management', list, True)
-      if supported_chrome_os_management is not None:
-        # Must be on Chrome OS.
-        if (supported_on is not None
-            and not any('chrome_os' == str
-                        for str in (supported_platforms +
-                                    (future_on if future_on else [])))):
-          self._PolicyError(
-              '"supported_chrome_os_management" is used for policy that does '
-              'not support Chrome OS.', policy, 'supported_on')
-        # Must be non-empty.
-        if len(supported_chrome_os_management) == 0:
-          self._PolicyError('"supported_chrome_os_management" is empty', policy,
-                            'supported_chrome_os_management')
-        # Must be either 'active_directory' or 'google_cloud'.
-        if (any(str not in SUPPORTED_CHROME_OS_MANAGEMENT
-                for str in supported_chrome_os_management)):
-          self._PolicyError(
-              '"supported_chrome_os_management" contains supported entry.\n'
-              f'Please use one of {SUPPORTED_CHROME_OS_MANAGEMENT}', policy,
-              'supported_chrome_os_management')
 
       # Each policy must have an 'example_value' of appropriate type.
       self._CheckContains(policy, 'example_value',

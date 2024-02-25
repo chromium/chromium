@@ -49,8 +49,8 @@ void NonPersistentNotificationHandler::OnClick(
     Profile* profile,
     const GURL& origin,
     const std::string& notification_id,
-    const absl::optional<int>& action_index,
-    const absl::optional<std::u16string>& reply,
+    const std::optional<int>& action_index,
+    const std::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   // Non persistent notifications don't allow buttons or replies.
   // https://notifications.spec.whatwg.org/#create-a-notification
@@ -65,13 +65,10 @@ void NonPersistentNotificationHandler::OnClick(
               weak_ptr_factory_.GetWeakPtr(), profile, origin, notification_id,
               std::move(completed_closure)));
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kNotificationInteractionHistory)) {
-    auto* service =
-        NotificationsEngagementServiceFactory::GetForProfile(profile);
-    // This service might be missing for incognito profiles and in tests.
-    if (service)
-      service->RecordNotificationInteraction(origin);
+  auto* service = NotificationsEngagementServiceFactory::GetForProfile(profile);
+  // This service might be missing for incognito profiles and in tests.
+  if (service) {
+    service->RecordNotificationInteraction(origin);
   }
 }
 

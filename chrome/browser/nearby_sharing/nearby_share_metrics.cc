@@ -9,6 +9,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/nearby_share_error.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
@@ -24,7 +26,7 @@ const uint64_t k5MbInBytes = 5242880;
 // numeric values should never be reused. The numbers here correspond to the
 // ordering of the flow. This enum should be kept in sync with the
 // NearbyShareBackgroundScanningSetupNotificationFlowEvent enum in
-// src/tools/metrics/histograms/enums.xml.
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class BackgroundScanningDevicesDetectedEvent {
   kNearbyDevicesDetected = 1,
   kMaxValue = kNearbyDevicesDetected
@@ -32,7 +34,9 @@ enum class BackgroundScanningDevicesDetectedEvent {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the
+// NearbyShareTransferFinalStatus enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class TransferFinalStatus {
   kComplete = 0,
   kUnknown = 1,
@@ -61,7 +65,9 @@ enum class TransferFinalStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the
+// NearbyShareStartAdvertisingFailureReason enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class StartAdvertisingFailureReason {
   kUnknown = 0,
   kError = 1,
@@ -76,7 +82,8 @@ enum class StartAdvertisingFailureReason {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the NearbyShareFinalStatus
+// enum in //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class FinalStatus {
   kSuccess = 0,
   kFailure = 1,
@@ -86,7 +93,9 @@ enum class FinalStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the
+// NearbyShareAttachmentType enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class AttachmentType {
   kUnknownFileType = 0,
   kUnknownTextType = 1,
@@ -104,7 +113,9 @@ enum class AttachmentType {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the
+// NearbyShareUpgradedMedium enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class UpgradedMedium {
   kUnknown = 0,
   kMdns = 1,
@@ -267,10 +278,6 @@ std::string GetDirectionSubcategoryName(bool is_incoming) {
   return is_incoming ? ".Receive" : ".Send";
 }
 
-std::string GetIsKnownSubcategoryName(bool is_known) {
-  return is_known ? ".Contact" : ".NonContact";
-}
-
 std::string GetShareTargetTypeSubcategoryName(
     nearby_share::mojom::ShareTargetType type) {
   switch (type) {
@@ -283,6 +290,12 @@ std::string GetShareTargetTypeSubcategoryName(
     case nearby_share::mojom::ShareTargetType::kLaptop:
       return ".Laptop";
   }
+}
+
+// Note: There are many screen states besides locked and logged in. These two
+// are the only states which Nearby Share is enabled for.
+std::string GetScreenLockedName(bool is_screen_locked) {
+  return is_screen_locked ? ".ScreenLocked" : ".LoggedIn";
 }
 
 std::string GetPayloadStatusSubcategoryName(
@@ -301,7 +314,7 @@ std::string GetPayloadStatusSubcategoryName(
 }
 
 std::string GetUpgradedMediumSubcategoryName(
-    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium) {
+    std::optional<nearby::connections::mojom::Medium> last_upgraded_medium) {
   if (!last_upgraded_medium) {
     return ".NoMediumUpgrade";
   }
@@ -325,39 +338,8 @@ std::string GetUpgradedMediumSubcategoryName(
   }
 }
 
-std::string GetMediumName(nearby::connections::mojom::Medium medium) {
-  switch (medium) {
-    case nearby::connections::mojom::Medium::kWebRtc:
-      return "WebRtc";
-    case nearby::connections::mojom::Medium::kWifiLan:
-      return "WifiLan";
-    case nearby::connections::mojom::Medium::kUnknown:
-      return "Unknown";
-    case nearby::connections::mojom::Medium::kMdns:
-      return "Mdns";
-    case nearby::connections::mojom::Medium::kBluetooth:
-      return "Bluetooth";
-    case nearby::connections::mojom::Medium::kWifiHotspot:
-      return "WifiHotspot";
-    case nearby::connections::mojom::Medium::kBle:
-      return "Ble";
-    case nearby::connections::mojom::Medium::kWifiAware:
-      return "WifiAware";
-    case nearby::connections::mojom::Medium::kNfc:
-      return "Nfc";
-    case nearby::connections::mojom::Medium::kWifiDirect:
-      return "WifiDirect";
-    case nearby::connections::mojom::Medium::kBleL2Cap:
-      return "BleL2Cap";
-    case nearby::connections::mojom::Medium::kUsb:
-      return "Usb";
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
 UpgradedMedium GetUpgradedMediumForMetrics(
-    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium) {
+    std::optional<nearby::connections::mojom::Medium> last_upgraded_medium) {
   if (!last_upgraded_medium) {
     return UpgradedMedium::kNoUpgrade;
   }
@@ -390,16 +372,38 @@ UpgradedMedium GetUpgradedMediumForMetrics(
   }
 }
 
-void RecordNearbySharePayloadAttachmentTypeMetric(
+std::string GetContactStatus(bool is_contact, bool for_self_share) {
+  if (for_self_share) {
+    return ".SelfShare";
+  }
+
+  return is_contact ? ".Contact" : ".NonContact";
+}
+
+void RecordNearbySharePayloadAttachmentTypeMetricVariants(
+    const std::string prefix,
     AttachmentType type,
     bool is_incoming,
     nearby::connections::mojom::PayloadStatus status) {
-  const std::string prefix = "Nearby.Share.Payload.AttachmentType";
   base::UmaHistogramEnumeration(prefix, type);
   base::UmaHistogramEnumeration(
       prefix + GetDirectionSubcategoryName(is_incoming), type);
   base::UmaHistogramEnumeration(
       prefix + GetPayloadStatusSubcategoryName(status), type);
+}
+
+void RecordNearbySharePayloadAttachmentTypeMetric(
+    AttachmentType type,
+    bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
+    nearby::connections::mojom::PayloadStatus status) {
+  RecordNearbySharePayloadAttachmentTypeMetricVariants(
+      "Nearby.Share.Payload.AttachmentType", type, is_incoming, status);
+  RecordNearbySharePayloadAttachmentTypeMetricVariants(
+      "Nearby.Share.Payload" + GetContactStatus(is_contact, for_self_share) +
+          ".AttachmentType",
+      type, is_incoming, status);
 }
 
 // FuseBox (go/fuse-box) makes virtual file systems (e.g. ARC ContentProvider)
@@ -425,6 +429,35 @@ bool IsShareCacheFilePath(Profile* profile, const base::FilePath& file_path) {
 }
 
 }  // namespace
+
+std::string GetMediumName(nearby::connections::mojom::Medium medium) {
+  switch (medium) {
+    case nearby::connections::mojom::Medium::kWebRtc:
+      return "WebRtc";
+    case nearby::connections::mojom::Medium::kWifiLan:
+      return "WifiLan";
+    case nearby::connections::mojom::Medium::kUnknown:
+      return "Unknown";
+    case nearby::connections::mojom::Medium::kMdns:
+      return "Mdns";
+    case nearby::connections::mojom::Medium::kBluetooth:
+      return "Bluetooth";
+    case nearby::connections::mojom::Medium::kWifiHotspot:
+      return "WifiHotspot";
+    case nearby::connections::mojom::Medium::kBle:
+      return "Ble";
+    case nearby::connections::mojom::Medium::kWifiAware:
+      return "WifiAware";
+    case nearby::connections::mojom::Medium::kNfc:
+      return "Nfc";
+    case nearby::connections::mojom::Medium::kWifiDirect:
+      return "WifiDirect";
+    case nearby::connections::mojom::Medium::kBleL2Cap:
+      return "BleL2Cap";
+    case nearby::connections::mojom::Medium::kUsb:
+      return "Usb";
+  }
+}
 
 void RecordNearbyShareEnabledMetric(NearbyShareEnabledState state) {
   base::UmaHistogramEnumeration("Nearby.Share.Enabled", state);
@@ -468,24 +501,33 @@ void RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
     sharing::mojom::FileMetadata::Type type,
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(
-      FileMetadataTypeToAttachmentType(type), is_incoming, status);
+      FileMetadataTypeToAttachmentType(type), is_incoming, is_contact,
+      for_self_share, status);
 }
 
 void RecordNearbySharePayloadTextAttachmentTypeMetric(
     sharing::mojom::TextMetadata::Type type,
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(
-      TextMetadataTypeToAttachmentType(type), is_incoming, status);
+      TextMetadataTypeToAttachmentType(type), is_incoming, is_contact,
+      for_self_share, status);
 }
 
 void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
     bool is_incoming,
+    bool is_contact,
+    bool for_self_share,
     nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(AttachmentType::kWifiCredentials,
-                                               is_incoming, status);
+                                               is_incoming, is_contact,
+                                               for_self_share, status);
 }
 
 void RecordNearbySharePayloadFileOperationMetrics(
@@ -499,7 +541,7 @@ void RecordNearbySharePayloadFileOperationMetrics(
     return;
   }
 
-  const absl::optional<base::FilePath>& path =
+  const std::optional<base::FilePath>& path =
       share_target.file_attachments[0].file_path();
   if (path) {
     // To determine the file path type, only first attachment file is checked as
@@ -524,7 +566,7 @@ void RecordNearbySharePayloadFileOperationMetrics(
 
 void RecordNearbySharePayloadFinalStatusMetric(
     nearby::connections::mojom::PayloadStatus status,
-    absl::optional<nearby::connections::mojom::Medium> medium) {
+    std::optional<nearby::connections::mojom::Medium> medium) {
   DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
   base::UmaHistogramEnumeration("Nearby.Share.Payload.FinalStatus",
                                 PayloadStatusToFinalStatus(status));
@@ -534,7 +576,7 @@ void RecordNearbySharePayloadFinalStatusMetric(
 }
 
 void RecordNearbySharePayloadMediumMetric(
-    absl::optional<nearby::connections::mojom::Medium> medium,
+    std::optional<nearby::connections::mojom::Medium> medium,
     nearby_share::mojom::ShareTargetType type,
     uint64_t num_bytes_transferred) {
   base::UmaHistogramEnumeration("Nearby.Share.Payload.Medium",
@@ -569,7 +611,7 @@ void RecordNearbySharePayloadNumAttachmentsMetric(
 void RecordNearbySharePayloadSizeMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
+    std::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
     nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes) {
   DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
@@ -593,7 +635,7 @@ void RecordNearbySharePayloadSizeMetric(
 void RecordNearbySharePayloadTransferRateMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
+    std::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
     nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,
     base::TimeDelta time_elapsed) {
@@ -642,7 +684,9 @@ void RecordNearbyShareTransferFinalStatusMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
     TransferMetadata::Status status,
-    bool is_known) {
+    bool is_known,
+    bool for_self_share,
+    bool is_screen_locked) {
   DCHECK(TransferMetadata::IsFinalStatus(status));
 
   // Emit success/failure to Standard Feature Usage Logging if there was a
@@ -660,9 +704,13 @@ void RecordNearbyShareTransferFinalStatusMetric(
 
   base::UmaHistogramBoolean("Nearby.Share.IsKnownContact", is_known);
 
+  // Log whether the transfer was a Self Share if Self Share is enabled.
+  if (features::IsSelfShareEnabled()) {
+    base::UmaHistogramBoolean("Nearby.Share.IsSelfShare", for_self_share);
+  }
+
   std::string send_or_receive = GetDirectionSubcategoryName(is_incoming);
   std::string share_target_type = GetShareTargetTypeSubcategoryName(type);
-  std::string contact_or_not = GetIsKnownSubcategoryName(is_known);
 
   base::UmaHistogramEnumeration("Nearby.Share.DeviceType", type);
   base::UmaHistogramEnumeration("Nearby.Share.DeviceType" + send_or_receive,
@@ -676,13 +724,14 @@ void RecordNearbyShareTransferFinalStatusMetric(
     base::UmaHistogramEnumeration(prefix, final_status);
     base::UmaHistogramEnumeration(prefix + send_or_receive, final_status);
     base::UmaHistogramEnumeration(prefix + share_target_type, final_status);
-    base::UmaHistogramEnumeration(prefix + contact_or_not, final_status);
+    base::UmaHistogramEnumeration(
+        prefix + GetContactStatus(is_known, for_self_share), final_status);
   }
 
   // Log the transfer success/failure for high-level success and Critical User
   // Journey (CUJ) metrics.
   {
-    absl::optional<bool> success;
+    std::optional<bool> success;
     switch (TransferMetadata::ToResult(status)) {
       case TransferMetadata::Result::kSuccess:
         success = true;
@@ -696,10 +745,18 @@ void RecordNearbyShareTransferFinalStatusMetric(
     }
     if (success.has_value()) {
       const std::string prefix = "Nearby.Share.Transfer.Success";
+      const std::string contact_status =
+          GetContactStatus(is_known, for_self_share);
       base::UmaHistogramBoolean(prefix, *success);
       base::UmaHistogramBoolean(
-          prefix + send_or_receive + share_target_type + contact_or_not,
+          prefix + send_or_receive + share_target_type + contact_status,
           *success);
+      if (for_self_share && is_incoming && features::IsSelfShareEnabled()) {
+        base::UmaHistogramBoolean(prefix + ".Receive" + share_target_type +
+                                      ".SelfShare" +
+                                      GetScreenLockedName(is_screen_locked),
+                                  success.value());
+      }
     }
   }
 }
@@ -870,4 +927,14 @@ void RecordNearbyShareStartSendFilesToAllFilesSentDuration(
 void RecordNearbyShareInitiatedToAllFilesSentDuration(base::TimeDelta delta) {
   base::UmaHistogramLongTimes(
       "Nearby.Share.TransferDuration.Sender.InitiatedToAllFilesSent", delta);
+}
+
+void RecordNearbyShareError(NearbyShareError error_code) {
+  base::UmaHistogramEnumeration("Nearby.Share.Error", error_code);
+}
+
+void RecordNearbySharePairedKeyVerificationError(
+    NearbySharePairedKeyVerificationError error) {
+  base::UmaHistogramEnumeration("Nearby.Share.PairedKeyVerificationError",
+                                error);
 }

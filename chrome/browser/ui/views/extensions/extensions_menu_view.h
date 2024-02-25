@@ -36,8 +36,9 @@ class ExtensionMenuItemView;
 class ExtensionsMenuView : public views::BubbleDialogDelegateView,
                            public TabStripModelObserver,
                            public ToolbarActionsModel::Observer {
+  METADATA_HEADER(ExtensionsMenuView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ExtensionsMenuView);
   ExtensionsMenuView(views::View* anchor_view,
                      Browser* browser,
                      ExtensionsContainer* extensions_container);

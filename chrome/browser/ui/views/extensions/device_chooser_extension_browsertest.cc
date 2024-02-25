@@ -20,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -64,6 +65,11 @@ class DeviceChooserExtensionBrowserTest
     ASSERT_EQ(url, web_contents()->GetLastCommittedURL());
   }
 
+  void TearDownOnMainThread() override {
+    extension_ = nullptr;
+    ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
   const std::string& extension_id() { return extension_->id(); }
 
   content::WebContents* web_contents() {
@@ -103,12 +109,13 @@ class DeviceChooserExtensionBrowserTest
     };
 
     std::vector<ToolbarActionView*> result;
-    for (auto* child : extensions_container()->children()) {
+    for (views::View* child : extensions_container()->children()) {
       // Ensure we don't downcast the ExtensionsToolbarButton.
       if (views::IsViewClass<ToolbarActionView>(child)) {
         auto* action = static_cast<ToolbarActionView*>(child);
-        if (is_visible(action))
+        if (is_visible(action)) {
           result.push_back(action);
+        }
       }
     }
     return result;
@@ -130,7 +137,7 @@ class DeviceChooserExtensionBrowserTest
   }
 
  private:
-  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ = nullptr;
+  raw_ptr<const extensions::Extension> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceChooserExtensionBrowserTest,

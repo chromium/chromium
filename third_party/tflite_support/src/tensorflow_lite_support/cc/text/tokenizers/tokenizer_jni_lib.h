@@ -25,8 +25,7 @@ namespace support {
 
 jobjectArray nativeTokenize(JNIEnv* env, jlong handle, jstring jtext);
 
-jintArray nativeConvertTokensToIds(JNIEnv* env,
-                                   jlong handle,
+jintArray nativeConvertTokensToIds(JNIEnv* env, jlong handle,
                                    jobjectArray jtokens);
 
 }  // namespace support

@@ -7,12 +7,30 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
 namespace {
 // The key of the one and only entry in the database.
 const char kDatabaseKey[] = "config";
 }  // namespace
+
+CleanupItem::CleanupItem() = default;
+CleanupItem::CleanupItem(uint64_t name_hash,
+                         uint64_t event_hash,
+                         proto::SignalType signal_type,
+                         base::Time timestamp)
+    : name_hash(name_hash),
+      event_hash(event_hash),
+      signal_type(signal_type),
+      timestamp(timestamp) {}
+
+CleanupItem::~CleanupItem() = default;
+
+bool CleanupItem::operator==(const CleanupItem& other) const {
+  return other.name_hash == name_hash && other.event_hash == event_hash &&
+         other.signal_type == signal_type && other.timestamp == timestamp;
+}
 
 SignalStorageConfig::SignalStorageConfig(
     std::unique_ptr<SignalStorageConfigProtoDb> database,
@@ -77,6 +95,20 @@ proto::SignalStorageConfig* SignalStorageConfig::FindSignal(
   return nullptr;
 }
 
+void SignalStorageConfig::UpdateConfigForUMASignal(
+    int signal_storage_length,
+    bool* is_dirty,
+    const proto::UMAFeature& feature) {
+  if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
+      metadata_utils::ValidationResult::kValidationSuccess) {
+    return;
+  }
+  if (UpdateConfigForSignal(signal_storage_length, feature.name_hash(),
+                            CleanupItem::kNonUkmEventHash, feature.type())) {
+    *is_dirty = true;
+  }
+}
+
 bool SignalStorageConfig::UpdateConfigForSignal(int signal_storage_length,
                                                 uint64_t signal_hash,
                                                 uint64_t event_hash,
@@ -133,24 +165,36 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
 
   // Loop through all the signals specified in the model, and check if they have
   // been collected long enough.
-  auto features =
-      metadata_utils::GetAllUmaFeatures(model_metadata, include_outputs);
-  for (auto const& feature : features) {
-    // Skip the signals that has bucket_count set to 0. These ones are only for
-    // collection purposes and hence don't get used in model evaluation.
-    if (feature.bucket_count() == 0)
-      continue;
+  bool meets_requirement = true;
+  auto feature_visit = base::BindRepeating(
+      [](SignalStorageConfig* config,
+         base::TimeDelta min_signal_collection_length, bool* meets_requirement,
+         const proto::UMAFeature& feature) {
+        // Skip the signals that has bucket_count set to 0. These ones are
+        // only for collection purposes and hence don't get used in model
+        // evaluation.
+        if (feature.bucket_count() == 0) {
+          return;
+        }
 
-    if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
-        metadata_utils::ValidationResult::kValidationSuccess) {
-      continue;
-    }
+        if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
+            metadata_utils::ValidationResult::kValidationSuccess) {
+          return;
+        }
 
-    if (!MeetsSignalCollectionRequirementForSignal(min_signal_collection_length,
-                                                   feature.name_hash(), 0,
-                                                   feature.type())) {
-      return false;
-    };
+        if (!config->MeetsSignalCollectionRequirementForSignal(
+                min_signal_collection_length, feature.name_hash(),
+                CleanupItem::kNonUkmEventHash, feature.type())) {
+          *meets_requirement = false;
+          return;
+        };
+      },
+      base::Unretained(this), min_signal_collection_length,
+      base::Unretained(&meets_requirement));
+  metadata_utils::VisitAllUmaFeatures(model_metadata, include_outputs,
+                                      std::move(feature_visit));
+  if (!meets_requirement) {
+    return false;
   }
 
   // Loop through sql features.
@@ -188,18 +232,11 @@ void SignalStorageConfig::OnSignalCollectionStarted(
 
   // Run through the model and calculate for each signal.
   bool is_dirty = false;
-  auto features = metadata_utils::GetAllUmaFeatures(model_metadata,
-                                                    /*include_outputs=*/true);
-  for (auto const& feature : features) {
-    if (metadata_utils::ValidateMetadataUmaFeature(feature) !=
-        metadata_utils::ValidationResult::kValidationSuccess) {
-      continue;
-    }
-    if (UpdateConfigForSignal(signal_storage_length, feature.name_hash(), 0,
-                              feature.type())) {
-      is_dirty = true;
-    }
-  }
+  metadata_utils::VisitAllUmaFeatures(
+      model_metadata, /*include_outputs=*/true,
+      base::BindRepeating(&SignalStorageConfig::UpdateConfigForUMASignal,
+                          base::Unretained(this), signal_storage_length,
+                          base::Unretained(&is_dirty)));
 
   // Add signals for sql features.
   for (auto const& feature : model_metadata.input_features()) {
@@ -231,10 +268,8 @@ void SignalStorageConfig::OnSignalCollectionStarted(
 
 void SignalStorageConfig::GetSignalsForCleanup(
     const std::set<std::pair<uint64_t, proto::SignalType>>& known_signals,
-    std::vector<std::tuple<uint64_t, proto::SignalType, base::Time>>& result)
-    const {
-  // Collect the signals that have longer than required data.
-  // TODO(haileywang): Handle UKM signals.
+    std::vector<CleanupItem>& result) const {
+  // Ukm signals are included only when its over required length.
   for (int i = 0; i < config_.signals_size(); ++i) {
     const auto& signal_config = config_.signals(i);
     base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -247,9 +282,8 @@ void SignalStorageConfig::GetSignalsForCleanup(
     if (earliest_needed_timestamp < collection_start_time)
       continue;
 
-    result.emplace_back(std::make_tuple(signal_config.name_hash(),
-                                        signal_config.signal_type(),
-                                        earliest_needed_timestamp));
+    result.emplace_back(signal_config.name_hash(), signal_config.event_hash(),
+                        signal_config.signal_type(), earliest_needed_timestamp);
   }
 
   // Now collect the signals that aren't used by any of the models.
@@ -258,33 +292,34 @@ void SignalStorageConfig::GetSignalsForCleanup(
 
   for (int i = 0; i < config_.signals_size(); ++i) {
     const auto& signal_config = config_.signals(i);
+    // UKM database cleans up signals after `kUkmEntriesTTL` time. Hence don't
+    // include signals when not needed. For UMA signals, skip adding signals
+    // that are used by any models.
+    // TODO(ssid) : Handle this for UKM signals.
     if (base::Contains(known_signals,
                        std::make_pair(signal_config.name_hash(),
-                                      signal_config.signal_type()))) {
+                                      signal_config.signal_type())) ||
+        signal_config.signal_type() == proto::SignalType::UKM_EVENT) {
       continue;
     }
 
-    result.emplace_back(std::make_tuple(
-        signal_config.name_hash(), signal_config.signal_type(), clock_->Now()));
+    result.emplace_back(signal_config.name_hash(), signal_config.event_hash(),
+                        signal_config.signal_type(), clock_->Now());
   }
 }
 
 void SignalStorageConfig::UpdateSignalsForCleanup(
-    const std::vector<std::tuple<uint64_t, proto::SignalType, base::Time>>&
-        signals) {
+    const std::vector<CleanupItem>& signals) {
   bool is_dirty = false;
-  for (auto& tuple : signals) {
-    uint64_t name_hash = std::get<0>(tuple);
-    proto::SignalType signal_type = std::get<1>(tuple);
-    base::Time timestamp = std::get<2>(tuple);
-
+  for (auto& signal_for_cleanup : signals) {
     proto::SignalStorageConfig* signal_config =
-        FindSignal(name_hash, 0, signal_type);
+        FindSignal(signal_for_cleanup.name_hash, signal_for_cleanup.event_hash,
+                   signal_for_cleanup.signal_type);
     if (!signal_config)
       continue;
 
     signal_config->set_collection_start_time_s(
-        timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
+        signal_for_cleanup.timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
     is_dirty = true;
   }
 

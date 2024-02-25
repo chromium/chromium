@@ -30,10 +30,11 @@ DriverMemory::DriverMemory(const IpczDriver& driver, size_t num_bytes)
     : size_(num_bytes) {
   ABSL_ASSERT(num_bytes > 0);
   IpczDriverHandle handle;
-  IpczResult result =
+  const IpczResult result =
       driver.AllocateSharedMemory(num_bytes, IPCZ_NO_FLAGS, nullptr, &handle);
-  ABSL_ASSERT(result == IPCZ_RESULT_OK);
-  memory_ = DriverObject(driver, handle);
+  if (result == IPCZ_RESULT_OK) {
+    memory_ = DriverObject(driver, handle);
+  }
 }
 
 DriverMemory::DriverMemory(DriverMemory&& other) = default;
@@ -43,12 +44,14 @@ DriverMemory& DriverMemory::operator=(DriverMemory&& other) = default;
 DriverMemory::~DriverMemory() = default;
 
 DriverMemory DriverMemory::Clone() {
-  ABSL_ASSERT(is_valid());
+  ABSL_HARDENING_ASSERT(is_valid());
 
   IpczDriverHandle handle;
-  IpczResult result = memory_.driver()->DuplicateSharedMemory(
+  const IpczResult result = memory_.driver()->DuplicateSharedMemory(
       memory_.handle(), 0, nullptr, &handle);
-  ABSL_ASSERT(result == IPCZ_RESULT_OK);
+  if (result != IPCZ_RESULT_OK) {
+    return DriverMemory();
+  }
 
   return DriverMemory(DriverObject(*memory_.driver(), handle));
 }

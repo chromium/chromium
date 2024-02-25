@@ -38,7 +38,8 @@ class ForwardingModelTypeControllerDelegate
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
-  void ClearMetadataWhileStopped() override;
+  void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
  private:
   const raw_ptr<ModelTypeControllerDelegate, AcrossTasksDanglingUntriaged>

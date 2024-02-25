@@ -32,24 +32,25 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
   icu::UnicodeString class_examples_unicode_string =
       icu::UnicodeString::fromUTF32(class_examples_codepoints,
                                     std::size(class_examples_codepoints));
-  char categories[] = {UTF16RagelIterator::COMBINING_ENCLOSING_KEYCAP,
-                       UTF16RagelIterator::COMBINING_ENCLOSING_CIRCLE_BACKSLASH,
-                       UTF16RagelIterator::ZWJ,
-                       UTF16RagelIterator::VS15,
-                       UTF16RagelIterator::VS16,
-                       UTF16RagelIterator::TAG_BASE,
-                       UTF16RagelIterator::TAG_SEQUENCE,
-                       UTF16RagelIterator::TAG_TERM,
-                       UTF16RagelIterator::EMOJI_MODIFIER_BASE,
-                       UTF16RagelIterator::EMOJI_MODIFIER,
-                       UTF16RagelIterator::REGIONAL_INDICATOR,
-                       UTF16RagelIterator::KEYCAP_BASE,
-                       UTF16RagelIterator::EMOJI_EMOJI_PRESENTATION,
-                       UTF16RagelIterator::EMOJI_TEXT_PRESENTATION};
+  const EmojiSegmentationCategory categories[] = {
+      EmojiSegmentationCategory::COMBINING_ENCLOSING_KEYCAP,
+      EmojiSegmentationCategory::COMBINING_ENCLOSING_CIRCLE_BACKSLASH,
+      EmojiSegmentationCategory::ZWJ,
+      EmojiSegmentationCategory::VS15,
+      EmojiSegmentationCategory::VS16,
+      EmojiSegmentationCategory::TAG_BASE,
+      EmojiSegmentationCategory::TAG_SEQUENCE,
+      EmojiSegmentationCategory::TAG_TERM,
+      EmojiSegmentationCategory::EMOJI_MODIFIER_BASE,
+      EmojiSegmentationCategory::EMOJI_MODIFIER,
+      EmojiSegmentationCategory::REGIONAL_INDICATOR,
+      EmojiSegmentationCategory::KEYCAP_BASE,
+      EmojiSegmentationCategory::EMOJI_EMOJI_PRESENTATION,
+      EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION};
   UTF16RagelIterator ragel_iterator(
       reinterpret_cast<const UChar*>(class_examples_unicode_string.getBuffer()),
       class_examples_unicode_string.length());
-  for (char& category : categories) {
+  for (const EmojiSegmentationCategory& category : categories) {
     CHECK_EQ(category, *ragel_iterator);
     ragel_iterator++;
   }
@@ -80,15 +81,15 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
       reinterpret_cast<const UChar*>(class_examples_unicode_string.getBuffer()),
       class_examples_unicode_string.length());
 
-  CHECK_EQ(*ragel_iterator, UTF16RagelIterator::VS15);
-  CHECK_EQ(*(ragel_iterator + 2), UTF16RagelIterator::VS15);
-  CHECK_EQ(*(ragel_iterator + 3), UTF16RagelIterator::VS16);
-  CHECK_EQ(*(ragel_iterator + 5), UTF16RagelIterator::VS16);
+  CHECK_EQ(*ragel_iterator, EmojiSegmentationCategory::VS15);
+  CHECK_EQ(*(ragel_iterator + 2), EmojiSegmentationCategory::VS15);
+  CHECK_EQ(*(ragel_iterator + 3), EmojiSegmentationCategory::VS16);
+  CHECK_EQ(*(ragel_iterator + 5), EmojiSegmentationCategory::VS16);
 
-  CHECK_EQ(*(ragel_iterator += 3), UTF16RagelIterator::VS16);
-  CHECK_EQ(*(ragel_iterator += 2), UTF16RagelIterator::VS16);
-  CHECK_EQ(*(ragel_iterator -= 4), UTF16RagelIterator::VS15);
-  CHECK_EQ(*(ragel_iterator += 1), UTF16RagelIterator::VS15);
+  CHECK_EQ(*(ragel_iterator += 3), EmojiSegmentationCategory::VS16);
+  CHECK_EQ(*(ragel_iterator += 2), EmojiSegmentationCategory::VS16);
+  CHECK_EQ(*(ragel_iterator -= 4), EmojiSegmentationCategory::VS15);
+  CHECK_EQ(*(ragel_iterator += 1), EmojiSegmentationCategory::VS15);
 
   ragel_iterator += 3;
 
@@ -96,10 +97,10 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
   CHECK(ragel_iterator != ragel_iterator_begin);
   CHECK(ragel_iterator == ragel_iterator.end() - 1);
 
-  CHECK_EQ(*ragel_iterator, UTF16RagelIterator::VS16);
-  CHECK_EQ(*(ragel_iterator - 2), UTF16RagelIterator::VS16);
-  CHECK_EQ(*(ragel_iterator - 3), UTF16RagelIterator::VS15);
-  CHECK_EQ(*(ragel_iterator - 5), UTF16RagelIterator::VS15);
+  CHECK_EQ(*ragel_iterator, EmojiSegmentationCategory::VS16);
+  CHECK_EQ(*(ragel_iterator - 2), EmojiSegmentationCategory::VS16);
+  CHECK_EQ(*(ragel_iterator - 3), EmojiSegmentationCategory::VS15);
+  CHECK_EQ(*(ragel_iterator - 5), EmojiSegmentationCategory::VS15);
 }
 
 TEST(UTF16RagelIteratorTest, InvalidOperationOnEmpty) {
@@ -122,11 +123,12 @@ TEST(UTF16RagelIteratorTest, CursorPositioning) {
 
   CHECK_EQ(ragel_iterator.end().Cursor(), 8u);
 
-  CHECK_EQ(*ragel_iterator, UTF16RagelIterator::EMOJI_EMOJI_PRESENTATION);
+  CHECK_EQ(*ragel_iterator,
+           EmojiSegmentationCategory::EMOJI_EMOJI_PRESENTATION);
   CHECK_EQ(*(ragel_iterator.SetCursor(4)),
-           UTF16RagelIterator::EMOJI_EMOJI_PRESENTATION);
+           EmojiSegmentationCategory::EMOJI_EMOJI_PRESENTATION);
   CHECK_EQ(*(ragel_iterator.SetCursor(6)),
-           UTF16RagelIterator::EMOJI_TEXT_PRESENTATION);
+           EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION);
 
   EXPECT_DCHECK_DEATH(ragel_iterator.SetCursor(-1));
   EXPECT_DCHECK_DEATH(ragel_iterator.SetCursor(ragel_iterator.end().Cursor()));

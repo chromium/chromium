@@ -43,17 +43,18 @@ GLFence::~GLFence() {
 
 bool GLFence::IsSupported() {
   DCHECK(g_current_gl_version && g_current_gl_driver);
-#if !BUILDFLAG(IS_APPLE) && defined(USE_EGL)
+#if defined(USE_EGL)
   GLDisplayEGL* display = GLDisplayEGL::GetDisplayForCurrentContext();
 #endif  // !ISAPPLE && USE_EGL
 
   return g_current_gl_driver->ext.b_GL_ARB_sync ||
          g_current_gl_version->is_es3 ||
          g_current_gl_version->is_desktop_core_profile ||
+#if defined(USE_EGL)
+         (display && display->ext->b_EGL_KHR_fence_sync) ||
+#endif
 #if BUILDFLAG(IS_APPLE)
          g_current_gl_driver->ext.b_GL_APPLE_fence ||
-#elif defined(USE_EGL)
-         (display && display->ext->b_EGL_KHR_fence_sync) ||
 #endif
          g_current_gl_driver->ext.b_GL_NV_fence;
 }
@@ -64,7 +65,7 @@ std::unique_ptr<GLFence> GLFence::Create() {
 
   std::unique_ptr<GLFence> fence;
 
-#if !BUILDFLAG(IS_APPLE) && defined(USE_EGL)
+#if defined(USE_EGL)
   GLDisplayEGL* display = GLDisplayEGL::GetDisplayForCurrentContext();
   if (display && display->ext->b_EGL_KHR_fence_sync &&
       display->ext->b_EGL_KHR_wait_sync) {

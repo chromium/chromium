@@ -27,10 +27,12 @@ WaylandDataOffer::~WaylandDataOffer() {
 }
 
 void WaylandDataOffer::Accept(uint32_t serial, const std::string& mime_type) {
+  mime_type_accepted_ = true;
   wl_data_offer_accept(data_offer_.get(), serial, mime_type.c_str());
 }
 
 void WaylandDataOffer::Reject(uint32_t serial) {
+  mime_type_accepted_ = false;
   // Passing a null MIME type means "reject."
   wl_data_offer_accept(data_offer_.get(), serial, nullptr);
 }
@@ -58,7 +60,11 @@ base::ScopedFD WaylandDataOffer::Receive(const std::string& mime_type) {
 void WaylandDataOffer::FinishOffer() {
   if (wl::get_version_of_object(data_offer_.get()) >=
       WL_DATA_OFFER_FINISH_SINCE_VERSION) {
-    wl_data_offer_finish(data_offer_.get());
+    // As per the spec it is illegal to call finish if no mimetype was accepted
+    // or no action was received.
+    if (mime_type_accepted_ && dnd_action_) {
+      wl_data_offer_finish(data_offer_.get());
+    }
   }
 }
 

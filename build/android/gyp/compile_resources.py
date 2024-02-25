@@ -126,6 +126,8 @@ def _ParseArgs(args):
       '--debuggable',
       action='store_true',
       help='Whether to add android:debuggable="true".')
+  input_opts.add_argument('--static-library-version',
+                          help='Version code for static library.')
   input_opts.add_argument('--version-code', help='Version code for apk.')
   input_opts.add_argument('--version-name', help='Version name for apk.')
   input_opts.add_argument(
@@ -196,9 +198,6 @@ def _ParseArgs(args):
   output_opts.add_argument(
       '--proguard-file', help='Path to proguard.txt generated file.')
   output_opts.add_argument(
-      '--proguard-file-main-dex',
-      help='Path to proguard.txt generated file for main dex.')
-  output_opts.add_argument(
       '--emit-ids-out', help='Path to file produced by aapt2 --emit-ids.')
 
   diff_utils.AddCommandLineFlags(parser)
@@ -226,6 +225,13 @@ def _ParseArgs(args):
 
   if options.package_id and options.shared_resources:
     parser.error('--package-id and --shared-resources are mutually exclusive')
+
+  if options.static_library_version and (options.static_library_version !=
+                                         options.version_code):
+    assert options.static_library_version == options.version_code, (
+        f'static_library_version={options.static_library_version} must equal '
+        f'version_code={options.version_code}. Please verify the version code '
+        'map for this target is defined correctly.')
 
   return options
 
@@ -753,8 +759,6 @@ def _PackageApk(options, build):
   if options.proguard_file:
     link_command += ['--proguard', build.proguard_path]
     link_command += ['--proguard-minimal-keep-rules']
-  if options.proguard_file_main_dex:
-    link_command += ['--proguard-main-dex', build.proguard_main_dex_path]
   if options.emit_ids_out:
     link_command += ['--emit-ids', build.emit_ids_path]
 
@@ -894,7 +898,6 @@ def _WriteOutputs(options, build):
       (options.arsc_path, build.arsc_path),
       (options.proto_path, build.proto_path),
       (options.proguard_file, build.proguard_path),
-      (options.proguard_file_main_dex, build.proguard_main_dex_path),
       (options.emit_ids_out, build.emit_ids_path),
       (options.info_path, build.info_path),
   ]

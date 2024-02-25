@@ -22,7 +22,6 @@
 #include "components/download/public/common/download_source.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/network_change_notifier.h"
-#include "net/http/http_response_info.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -294,8 +293,13 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadHttpResponseCode(
 COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionStrongValidators(
     DownloadInterruptReason reason);
 
+// TODO(https://crbug.com/1488120): This is only used for the purposes of tests
+// and should be refactored.
 COMPONENTS_DOWNLOAD_EXPORT void RecordParallelRequestCreationFailure(
     DownloadInterruptReason reason);
+
+COMPONENTS_DOWNLOAD_EXPORT int
+GetParallelRequestCreationFailureCountForTesting();
 
 // Records the input stream read error type.
 COMPONENTS_DOWNLOAD_EXPORT void RecordInputStreamReadError(
@@ -317,10 +321,6 @@ enum class BackgroudTargetDeterminationResultTypes {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN)
-// Records the OS error code when moving a file on Windows.
-COMPONENTS_DOWNLOAD_EXPORT void RecordWinFileMoveError(int os_error);
-#endif  // BUILDFLAG(IS_WIN)
 }  // namespace download
 
 #endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_STATS_H_

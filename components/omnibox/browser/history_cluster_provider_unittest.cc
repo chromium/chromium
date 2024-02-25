@@ -50,6 +50,9 @@ class HistoryClustersProviderTest : public testing::Test,
 
     config_.is_journeys_enabled_no_locale_check = true;
     config_.omnibox_history_cluster_provider = true;
+    // Setting this to false even though users see true behavior so that we do
+    // not need to register history clusters specific prefs in this test.
+    config_.persist_caches_to_prefs = false;
     history_clusters::SetConfigForTesting(config_);
 
     CHECK(history_dir_.CreateUniqueTempDir());
@@ -66,7 +69,6 @@ class HistoryClustersProviderTest : public testing::Test,
     history_clusters_service_ =
         std::make_unique<history_clusters::HistoryClustersService>(
             "en-US", history_service_.get(),
-            /*entity_metadata_provider=*/nullptr,
             /*url_loader_factory=*/nullptr,
             /*engagement_score_provider=*/nullptr,
             /*template_url_service=*/nullptr,
@@ -461,5 +463,5 @@ TEST_F(HistoryClustersProviderTest, Grouping_Ranking) {
 
   provider_->Start(input, false);
   ASSERT_EQ(provider_->matches().size(), 1u);
-  EXPECT_EQ(provider_->matches()[0].suggestion_group_id, absl::nullopt);
+  EXPECT_EQ(provider_->matches()[0].suggestion_group_id, std::nullopt);
 }

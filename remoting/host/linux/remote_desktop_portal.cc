@@ -16,7 +16,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/clipboard_portal.h"
 #include "remoting/host/linux/wayland_manager.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
 
 namespace remoting::xdg_portal {
 namespace {

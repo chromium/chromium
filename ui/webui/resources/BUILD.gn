@@ -14,10 +14,12 @@ generate_grd("build_grd") {
   input_files = [ "test_loader.html" ]
   input_files_base_dir = rebase_path(".", "//")
 
-  if (!is_chromeos_ash && !is_android) {
-    # Roboto Font. Roboto-Regular and Roboto-Light is already available on
-    # Android, and Roboto-Medium is not used on Android. All 6 weights of
-    # Roboto are available on Chrome OS.
+  if (is_linux) {
+    # Only need to include on Linux.
+    #  - Android: Roboto-Regular and Roboto-Light is already available on
+    #             Android, and Roboto-Medium is not used on Android.
+    #  - CrOS: All 6 weights of Roboto are available on Chrome OS.
+    #  - Win/Mac: Use system UI fonts for WebUI surfaces and don't need Roboto.
     input_files += [
       "roboto/roboto-bold.woff2",
       "roboto/roboto-medium.woff2",
@@ -26,6 +28,7 @@ generate_grd("build_grd") {
   }
 
   public_deps = [
+    "cr_components/commerce:build_grdp",
     "cr_elements:build_grdp",
     "css:build_grdp",
     "images:build_grdp",
@@ -35,6 +38,7 @@ generate_grd("build_grd") {
   ]
   grdp_files = [
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
+    "$target_gen_dir/cr_components/commerce/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
@@ -55,10 +59,12 @@ generate_grd("build_grd") {
       "cr_components/settings_prefs:build_grdp",
       "cr_components/theme_color_picker:build_grdp",
       "//third_party/d3:build_grdp",
+      "//third_party/lit/v3_0:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/third_party/d3/d3_resources.grdp",
+      "$root_gen_dir/third_party/lit/v3_0/resources.grdp",
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/theme_color_picker/resources.grdp",
@@ -81,11 +87,13 @@ generate_grd("build_grd") {
     if (!is_android) {
       public_deps += [
         "cr_components/history_clusters:build_grdp",
+        "cr_components/history_embeddings:build_grdp",
         "cr_components/omnibox:build_grdp",
         "cr_components/omnibox/icons:build_grdp",
       ]
       grdp_files += [
         "$target_gen_dir/cr_components/history_clusters/resources.grdp",
+        "$target_gen_dir/cr_components/history_embeddings/resources.grdp",
         "$target_gen_dir/cr_components/omnibox/resources.grdp",
         "$target_gen_dir/cr_components/omnibox/icons/resources.grdp",
       ]

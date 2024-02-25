@@ -20,13 +20,17 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace {
+
 const int kInvalidRadioGroupId = -1;
 const int kGroupId = 1;
 
@@ -54,6 +58,8 @@ void PopulateRadioItemFromMenuItems(
 }  // namespace
 
 namespace apps {
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kLaunchNewMenuItem);
 
 void AddCommandItem(uint32_t command_id,
                     uint32_t string_id,
@@ -95,7 +101,7 @@ void CreateOpenNewSubmenu(uint32_t string_id, MenuItems& menu_items) {
   menu_item->submenu.push_back(CreateRadioItem(
       ash::USE_LAUNCH_TYPE_WINDOW,
       StringIdForUseLaunchTypeCommand(ash::USE_LAUNCH_TYPE_WINDOW), kGroupId));
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+  if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip) &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
     menu_item->submenu.push_back(CreateRadioItem(
         ash::USE_LAUNCH_TYPE_TABBED_WINDOW,
@@ -127,9 +133,16 @@ bool ShouldAddCloseItem(const std::string& app_id,
     return false;
   }
 
-  return apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->InstanceRegistry()
-      .ContainsAppId(app_id);
+  bool can_close = true;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&can_close](const apps::AppUpdate& update) {
+        can_close = update.AllowClose().value_or(true);
+      });
+
+  return can_close && apps::AppServiceProxyFactory::GetForProfile(profile)
+                          ->InstanceRegistry()
+                          .ContainsAppId(app_id);
 }
 
 void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,
@@ -138,12 +151,16 @@ void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,
                                        int* launch_new_string_id) {
   DCHECK_EQ(menu_item->command_id, ash::LAUNCH_NEW);
 
-  if (launch_new_string_id)
+  if (launch_new_string_id) {
     *launch_new_string_id = menu_item->string_id;
+  }
 
   switch (menu_item->type) {
     case apps::MenuItemType::kCommand: {
       model->AddItemWithStringId(menu_item->command_id, menu_item->string_id);
+      model->SetElementIdentifierAt(
+          model->GetIndexOfCommandId(menu_item->command_id).value(),
+          kLaunchNewMenuItem);
       break;
     }
     case apps::MenuItemType::kSubmenu:
@@ -194,10 +211,12 @@ base::StringPiece MenuTypeToString(MenuType menu_type) {
 }
 
 MenuType MenuTypeFromString(base::StringPiece menu_type) {
-  if (base::EqualsCaseInsensitiveASCII(menu_type, "shelf"))
+  if (base::EqualsCaseInsensitiveASCII(menu_type, "shelf")) {
     return MenuType::kShelf;
-  if (base::EqualsCaseInsensitiveASCII(menu_type, "applist"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(menu_type, "applist")) {
     return MenuType::kAppList;
+  }
   return MenuType::kShelf;
 }
 

@@ -1,0 +1,9 @@
+[document web]
+++[section]
+++++[link] name='Link'
+++++++[static] name='Link'
+++++[static] name=' '
+++++[link] name='AriaLabel'
+++++++[static] name='Link'
+++++[push button] name='Button'
+++++[push button] name='AriaLabel'

@@ -74,7 +74,6 @@ void WaylandTouchDelegate::OnTouchFrame() {
 }
 void WaylandTouchDelegate::OnTouchCancel() {
   wl_touch_send_cancel(touch_resource_);
-  serial_tracker_->ResetTouchDownSerial();
 }
 
 wl_client* WaylandTouchDelegate::client() const {

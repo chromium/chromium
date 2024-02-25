@@ -137,6 +137,18 @@ const char kForceSeparateEGLDisplayForWebGLTesting[] =
 // (only allowed on non-official developer builds).
 const char kSkiaGraphiteBackend[] = "skia-graphite-backend";
 const char kSkiaGraphiteBackendDawn[] = "dawn";
+const char kSkiaGraphiteBackendDawnD3D11[] = "dawn-d3d11";
+const char kSkiaGraphiteBackendDawnD3D12[] = "dawn-d3d12";
+const char kSkiaGraphiteBackendDawnMetal[] = "dawn-metal";
+const char kSkiaGraphiteBackendDawnSwiftshader[] = "dawn-swiftshader";
+const char kSkiaGraphiteBackendDawnVulkan[] = "dawn-vulkan";
 const char kSkiaGraphiteBackendMetal[] = "metal";
+
+// Force disabling/enabling Skia Graphite. Disabling will take precedence over
+// enabling if both are specified.
+const char kDisableSkiaGraphite[] = "disable-skia-graphite";
+const char kEnableSkiaGraphite[] = "enable-skia-graphite";
+
+const char kShaderCachePath[] = "shader-cache-path";
 
 }  // namespace switches

@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_STORE_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -20,7 +21,6 @@
 #include "components/optimization_guide/core/memory_hint.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -33,17 +33,14 @@ namespace proto {
 class StoreEntry;
 }  // namespace proto
 
-// The backing store for hints and models, which is responsible for storing all
-// hints and models locally on-device. While the HintCache itself may retain
-// some hints in a memory cache, all of its hints are initially loaded
-// asynchronously by the store. All calls to this store must be made from the
-// same thread.
+// The backing store for hints, which is responsible for storing all hints
+// locally on-device. While the HintCache itself may retain some hints in a
+// memory cache, all of its hints are initially loaded asynchronously by the
+// store. All calls to this store must be made from the same thread.
 class OptimizationGuideStore {
  public:
   using HintLoadedCallback =
       base::OnceCallback<void(const std::string&, std::unique_ptr<MemoryHint>)>;
-  using PredictionModelLoadedCallback =
-      base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>)>;
   using EntryKey = std::string;
   using StoreEntryProtoDatabase =
       leveldb_proto::ProtoDatabase<proto::StoreEntry>;
@@ -97,18 +94,9 @@ class OptimizationGuideStore {
       scoped_refptr<base::SequencedTaskRunner> store_task_runner,
       PrefService* pref_service);
 
-  // Creates a model store.
-  OptimizationGuideStore(
-      leveldb_proto::ProtoDatabaseProvider* database_provider,
-      const base::FilePath& database_dir,
-      const base::FilePath& base_model_store_dir,
-      scoped_refptr<base::SequencedTaskRunner> store_task_runner,
-      PrefService* pref_service);
-
   // Creates a model store. For tests only.
   OptimizationGuideStore(
       std::unique_ptr<StoreEntryProtoDatabase> database,
-      const base::FilePath& base_model_store_dir,
       scoped_refptr<base::SequencedTaskRunner> store_task_runner,
       PrefService* pref_service);
 
@@ -182,48 +170,6 @@ class OptimizationGuideStore {
   // |entry_keys_| is updated after the expired fetched hints are
   // removed.
   void PurgeExpiredFetchedHints();
-
-  // Removes all models that have not been loaded in the max inactive duration
-  // configured. |entry_keys| is updated after the inactive models are removed.
-  // Respects models' |keep_beyond_valid_duration| setting.
-  void PurgeInactiveModels();
-
-  // Creates and returns a StoreUpdateData object for Prediction Models. This
-  // object is used to collect a batch of prediction models in a format that is
-  // usable to update the store on a background thread. This is always created
-  // when prediction models have been successfully fetched from the remote
-  // Optimization Guide Service so the store can update old prediction models.
-  std::unique_ptr<StoreUpdateData> CreateUpdateDataForPredictionModels(
-      base::Time expiry_time) const;
-
-  // Updates the prediction models contained in the store. The callback is run
-  // asynchronously after the database stores the prediction models. Virtualized
-  // for testing.
-  virtual void UpdatePredictionModels(
-      std::unique_ptr<StoreUpdateData> prediction_models_update_data,
-      base::OnceClosure callback);
-
-  // Finds the entry key for the prediction model if it is still valid in the
-  // store. Returns true if an entry key is valid and
-  // |out_prediction_model_entry_key| is populated with any matching key.
-  // Virtualized for testing.
-  virtual bool FindPredictionModelEntryKey(
-      proto::OptimizationTarget optimization_target,
-      OptimizationGuideStore::EntryKey* out_prediction_model_entry_key);
-
-  // Loads the prediction model specified by |prediction_model_entry_key|. After
-  // the load finishes, the prediction model data is passed to |callback|. In
-  // the case where the prediction model cannot be loaded, the callback is run
-  // with a nullptr. Depending on the load result, the callback may be
-  // synchronous or asynchronous.
-  // Virtualized for testing.
-  virtual void LoadPredictionModel(const EntryKey& prediction_model_entry_key,
-                                   PredictionModelLoadedCallback callback);
-
-  // Removes the prediction model specified by |entry_key| if it exists. Returns
-  // true if |entry_key| is found and the remove operation is initiated, and
-  // false otherwise.
-  bool RemovePredictionModelFromEntryKey(const EntryKey& entry_key);
 
   // Removes fetched hints whose keys are in |hint_keys| and runs |on_success|
   // if successful, otherwise the callback is not run.
@@ -391,36 +337,6 @@ class OptimizationGuideStore {
                   bool success,
                   std::unique_ptr<proto::StoreEntry> entry);
 
-  // Callback that runs after a prediction model entry is loaded from the
-  // database. If there's currently an in-flight update, then the data could be
-  // invalidated, so loaded model is discarded. Otherwise, the prediction model
-  // is released into the callback, allowing the caller to own the prediction
-  // model without copying it. Regardless of the success or failure of
-  // retrieving the key, the callback always runs (it simply runs with a nullptr
-  // on failure).
-  void OnLoadPredictionModel(PredictionModelLoadedCallback callback,
-                             bool success,
-                             std::unique_ptr<proto::StoreEntry> entry);
-
-  // Callback that runs when the prediction models that need to be updated and
-  // removed are loaded from the database. This will remove the files associated
-  // with those models and run the update routine with |update_vector| and
-  // |remove_vector| after that.
-  void OnLoadModelsToBeUpdated(
-      std::unique_ptr<EntryVector> update_vector,
-      std::unique_ptr<leveldb_proto::KeyVector> remove_vector,
-      base::OnceClosure callback,
-      bool success,
-      std::unique_ptr<EntryMap> entries);
-
-  // Callback that runs after the download URL in |loaded_model| has been
-  // verified. If |success| is false, the associated entry from |database_| will
-  // be removed and |callback| will run as if the model is not loaded.
-  void OnModelFilePathVerified(
-      std::unique_ptr<proto::PredictionModel> loaded_model,
-      PredictionModelLoadedCallback callback,
-      bool success);
-
   // Clean up file paths that were slated for deletion in previous sessions.
   void CleanUpFilePaths();
 
@@ -439,7 +355,7 @@ class OptimizationGuideStore {
   // The current component version of the store. This should only be updated
   // via SetComponentVersion(), which ensures that both |component_version_|
   // and |component_hint_key_prefix_| are updated at the same time.
-  absl::optional<base::Version> component_version_;
+  std::optional<base::Version> component_version_;
 
   // The current entry key prefix shared by all component hints containd within
   // the store. While this could be generated on the fly using
@@ -458,16 +374,11 @@ class OptimizationGuideStore {
   // The keys of the entries available within the store.
   std::unique_ptr<EntryKeySet> entry_keys_;
 
-  // The base model store dir where all the models are stored. Populated only
-  // when |this| is used as model store. Will be empty path for hint cache
-  // store.
-  const base::FilePath base_model_store_dir_;
-
   // The background task runner used to perform operations on the store.
   scoped_refptr<base::SequencedTaskRunner> store_task_runner_;
 
   // Pref service. Not owned. Guaranteed to outlive |this|.
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

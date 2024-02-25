@@ -25,6 +25,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -66,6 +67,8 @@
 #include "chrome/browser/signin/primary_account_policy_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
@@ -130,6 +133,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/live_caption/live_caption_controller.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #else
 #include "chrome/browser/profiles/profile_manager_android.h"
 #endif
@@ -164,7 +168,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
@@ -383,13 +386,13 @@ void UpdateSupervisedUserPref(Profile* profile, bool is_child) {
   }
 }
 
-absl::optional<bool> IsUserChild(Profile* profile) {
+std::optional<bool> IsUserChild(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  return user ? absl::make_optional(user->GetType() ==
-                                    user_manager::USER_TYPE_CHILD)
-              : absl::nullopt;
+  return user ? std::make_optional(user->GetType() ==
+                                   user_manager::UserType::kChild)
+              : std::nullopt;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->SessionType() ==
          crosapi::mojom::SessionType::kChildSession;
@@ -965,13 +968,6 @@ void ProfileManager::CreateMultiProfileAsync(
   init_params.is_omitted = is_hidden;
   storage.AddProfile(std::move(init_params));
 
-  if (!base::FeatureList::IsEnabled(
-          features::kNukeProfileBeforeCreateMultiAsync)) {
-    profile_manager->CreateProfileAsync(
-        new_path, std::move(initialized_callback), std::move(created_callback));
-    return;
-  }
-
   // As another check, make sure the generated path is not present in the file
   // system (there could be orphan profile dirs).
   // TODO(crbug.com/1277948): There can be a theoretical race condition with a
@@ -1116,7 +1112,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   // change to the profile in both Ash and LaCrOS and remove stored profile
   // attributes so they can be re-initialized later.
 #if BUILDFLAG(IS_CHROMEOS)
-  const absl::optional<bool> user_is_child = IsUserChild(profile);
+  const std::optional<bool> user_is_child = IsUserChild(profile);
   const bool profile_is_new = profile->IsNewProfile();
   const bool profile_is_child = profile->IsChild();
   const bool did_supervised_status_change =
@@ -1218,12 +1214,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool force_supervised_user_id =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      g_browser_process->platform_part()
-              ->profile_helper()
-              ->GetSigninProfileDir() != profile->GetPath() &&
-      g_browser_process->platform_part()
-              ->profile_helper()
-              ->GetLockScreenAppProfilePath() != profile->GetPath() &&
+      !ash::IsSigninBrowserContext(profile) &&
+      !ash::IsLockScreenAppBrowserContext(profile) &&
 #endif
       command_line->HasSwitch(switches::kSupervisedUserId);
 
@@ -1878,6 +1870,10 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
 
 void ProfileManager::OnProfileCreationStarted(Profile* profile,
                                               Profile::CreateMode create_mode) {
+  for (auto& observer : observers_) {
+    observer.OnProfileCreationStarted(profile);
+  }
+
   if (create_mode == Profile::CREATE_MODE_ASYNCHRONOUS) {
     // Profile will be registered later, in CreateProfileAsync().
     return;
@@ -1893,7 +1889,7 @@ void ProfileManager::OnProfileCreationStarted(Profile* profile,
 
 #if !BUILDFLAG(IS_ANDROID)
 
-absl::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
+std::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
     base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate) {
   bool found_entry_loaded = false;
   ProfileAttributesEntry* found_entry = nullptr;
@@ -1912,8 +1908,8 @@ absl::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
       found_entry_loaded = entry_loaded;
     }
   }
-  return found_entry ? absl::optional<base::FilePath>(found_entry->GetPath())
-                     : absl::nullopt;
+  return found_entry ? std::optional<base::FilePath>(found_entry->GetPath())
+                     : std::nullopt;
 }
 
 DeleteProfileHelper& ProfileManager::GetDeleteProfileHelper() {
@@ -2036,13 +2032,6 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   init_params.user_name = username;
   init_params.is_consented_primary_account = is_consented_primary_account;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  init_params.is_omitted =
-      base::FeatureList::IsEnabled(
-          chromeos::features::kExperimentalWebAppProfileIsolation) &&
-      Profile::IsWebAppProfilePath(profile->GetPath());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   init_params.is_ephemeral = IsForceEphemeralProfilesEnabled(profile);
   init_params.is_signed_in_with_credential_provider =
       profile->GetPrefs()->GetBoolean(prefs::kSignedInWithCredentialProvider);
@@ -2081,7 +2070,7 @@ void ProfileManager::SaveActiveProfiles() {
   // profiles. Include each base name only once in the last active profile
   // list.
   std::set<base::FilePath> profile_paths;
-  std::vector<Profile*>::const_iterator it;
+  std::vector<raw_ptr<Profile, VectorExperimental>>::const_iterator it;
   for (it = active_profiles_.begin(); it != active_profiles_.end(); ++it) {
     // crbug.com/823338 -> CHECK that the profiles aren't guest or incognito,
     // causing a crash during session restore.
@@ -2144,7 +2133,7 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
 
   Profile* original_profile = profile->GetOriginalProfile();
   // Do nothing if the closed window is not the last window of the same profile.
-  for (auto* browser_iter : *BrowserList::GetInstance()) {
+  for (Browser* browser_iter : *BrowserList::GetInstance()) {
     if (browser_iter->profile()->GetOriginalProfile() == original_profile)
       return;
   }

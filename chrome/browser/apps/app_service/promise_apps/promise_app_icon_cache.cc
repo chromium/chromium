@@ -8,9 +8,12 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/grit/app_icon_resources.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -41,23 +44,21 @@ bool PromiseAppIconCache::DoesPackageIdHaveIcons(const PackageId& package_id) {
   return icon_cache_.contains(package_id);
 }
 
-gfx::ImageSkia PromiseAppIconCache::GetIcon(const PackageId& package_id,
-                                            int32_t size_in_dip) {
+void PromiseAppIconCache::GetIconAndApplyEffects(const PackageId& package_id,
+                                                 int32_t size_in_dip,
+                                                 IconEffects icon_effects,
+                                                 LoadIconCallback callback) {
   auto iter = icon_cache_.find(package_id);
-  if (iter == icon_cache_.end()) {
-    VLOG(1) << "No icon found for promise app – Package ID not in "
-               "PromiseAppIconCache: "
+  if (iter == icon_cache_.end() || iter->second.size() == 0) {
+    VLOG(1) << "Using placeholder icon for promise app with Package Id: "
             << package_id.ToString();
-    return gfx::ImageSkia();
+    LoadIconFromResource(
+        /*profile=*/nullptr, std::nullopt, IconType::kStandard, size_in_dip,
+        IDR_APP_ICON_PLACEHOLDER_CUBE,
+        /*is_placeholder_icon=*/true, icon_effects, std::move(callback));
+    return;
   }
   std::map<int, PromiseAppIconPtr>* icons = &iter->second;
-
-  if (icons->size() == 0) {
-    VLOG(1) << "No icon found for promise app - No icons registered for "
-               "package ID: "
-            << package_id.ToString();
-    return gfx::ImageSkia();
-  }
 
   gfx::ImageSkia image_skia;
 
@@ -89,7 +90,21 @@ gfx::ImageSkia PromiseAppIconCache::GetIcon(const PackageId& package_id,
     }
     image_skia.AddRepresentation(gfx::ImageSkiaRep(icon, icon_scale));
   }
-  return image_skia;
+
+  // Construct icon value and apply effects.
+  IconValuePtr icon_value = std::make_unique<IconValue>();
+  icon_value->icon_type = IconType::kStandard;
+  icon_value->is_placeholder_icon = false;
+  icon_value->is_maskable_icon = true;
+  icon_value->uncompressed = image_skia;
+
+  if (icon_effects == apps::IconEffects::kNone) {
+    std::move(callback).Run(std::move(icon_value));
+    return;
+  }
+  apps::ApplyIconEffects(
+      /*profile=*/nullptr, /*app_id=*/std::nullopt, icon_effects, size_in_dip,
+      std::move(icon_value), std::move(callback));
 }
 
 void PromiseAppIconCache::RemoveIconsForPackageId(const PackageId& package_id) {

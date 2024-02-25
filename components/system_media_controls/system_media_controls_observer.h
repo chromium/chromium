@@ -14,6 +14,8 @@ class TimeDelta;
 
 namespace system_media_controls {
 
+class SystemMediaControls;
+
 // Interface to observe events on the SystemMediaControls.
 class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsObserver
     : public base::CheckedObserver {
@@ -23,14 +25,16 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsObserver
   virtual void OnServiceReady() {}
 
   // Called when the observer should handle the given control.
-  virtual void OnNext() {}
-  virtual void OnPrevious() {}
-  virtual void OnPlay() {}
-  virtual void OnPause() {}
-  virtual void OnPlayPause() {}
-  virtual void OnStop() {}
-  virtual void OnSeek(const base::TimeDelta& time) {}
-  virtual void OnSeekTo(const base::TimeDelta& time) {}
+  virtual void OnNext(SystemMediaControls* sender) {}
+  virtual void OnPrevious(SystemMediaControls* sender) {}
+  virtual void OnPlay(SystemMediaControls* sender) {}
+  virtual void OnPause(SystemMediaControls* sender) {}
+  virtual void OnPlayPause(SystemMediaControls* sender) {}
+  virtual void OnStop(SystemMediaControls* sender) {}
+  virtual void OnSeek(SystemMediaControls* sender,
+                      const base::TimeDelta& time) {}
+  virtual void OnSeekTo(SystemMediaControls* sender,
+                        const base::TimeDelta& time) {}
 
  protected:
   ~SystemMediaControlsObserver() override = default;

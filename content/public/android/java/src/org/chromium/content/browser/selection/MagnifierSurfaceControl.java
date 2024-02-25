@@ -13,8 +13,9 @@ import android.widget.Magnifier;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 
 /**
@@ -25,6 +26,15 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @JNINamespace("content")
 public class MagnifierSurfaceControl implements MagnifierWrapper {
+    // Shadows are implemented as linear gradients with the same rounded corner as the main
+    // content. Values are in device independent pixels, and converted to pixels at run time.
+    // Shadow height is amount that shadow extends above and below the magnifier; they increase
+    // the size of surface control.
+    private static final int TOP_SHADOW_HEIGHT_DP = 3;
+    private static final int BOTTOM_SHADOW_HEIGHT_DP = 6;
+    // The bottom shadow is shrunk horizontally by this amount each side.
+    private static final int BOTTOM_SHADOW_WIDTH_REDUCTION_DP = 3;
+
     private long mNativeMagnifierSurfaceControl;
 
     private final WebContentsImpl mWebContents;
@@ -36,7 +46,8 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
     private SurfaceControl mSurfaceControl;
     private SurfaceControl.Transaction mTransaction;
 
-    public MagnifierSurfaceControl(WebContentsImpl webContents,
+    public MagnifierSurfaceControl(
+            WebContentsImpl webContents,
             SelectionPopupControllerImpl.ReadbackViewCallback callback) {
         mWebContents = webContents;
         mViewCallback = callback;
@@ -57,6 +68,8 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
             float readback_y = y;
             y = y + mVerticalOffsetPx;
 
+            y = y - scaleByDeviceFactor(TOP_SHADOW_HEIGHT_DP);
+
             // Clamp to localVisibleRect.
             x = Math.max(x, localVisibleRect.left);
             y = Math.max(y, localVisibleRect.top);
@@ -64,8 +77,8 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
             y = Math.min(y, localVisibleRect.bottom - mHeightPx);
 
             readback_y = readback_y - mWebContents.getRenderCoordinates().getContentOffsetYPix();
-            MagnifierSurfaceControlJni.get().setReadbackOrigin(
-                    mNativeMagnifierSurfaceControl, x, readback_y);
+            MagnifierSurfaceControlJni.get()
+                    .setReadbackOrigin(mNativeMagnifierSurfaceControl, x, readback_y);
 
             int[] viewOriginInSurface = new int[2];
             getView().getLocationInSurface(viewOriginInSurface);
@@ -83,6 +96,12 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
     @Override
     public boolean isAvailable() {
         return mViewCallback.getReadbackView() != null;
+    }
+
+    @Override
+    public void childLocalSurfaceIdChanged() {
+        if (mNativeMagnifierSurfaceControl == 0) return;
+        MagnifierSurfaceControlJni.get().childLocalSurfaceIdChanged(mNativeMagnifierSurfaceControl);
     }
 
     private void createNativeIfNeeded() {
@@ -114,8 +133,19 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
         }
 
         float density = getView().getResources().getDisplayMetrics().density;
-        mNativeMagnifierSurfaceControl = MagnifierSurfaceControlJni.get().create(
-                mWebContents, surfaceControl, density, mWidthPx, mHeightPx, cornerRadius, zoom);
+        mNativeMagnifierSurfaceControl =
+                MagnifierSurfaceControlJni.get()
+                        .create(
+                                mWebContents,
+                                surfaceControl,
+                                density,
+                                mWidthPx,
+                                mHeightPx,
+                                cornerRadius,
+                                zoom,
+                                scaleByDeviceFactor(TOP_SHADOW_HEIGHT_DP),
+                                scaleByDeviceFactor(BOTTOM_SHADOW_HEIGHT_DP),
+                                scaleByDeviceFactor(BOTTOM_SHADOW_WIDTH_REDUCTION_DP));
         mSurfaceControl = surfaceControl;
         mTransaction = attachTransaction;
     }
@@ -143,11 +173,28 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
         return mView;
     }
 
+    private int scaleByDeviceFactor(int value) {
+        return (int) (value * mWebContents.getRenderCoordinates().getDeviceScaleFactor());
+    }
+
     @NativeMethods
     interface Natives {
-        long create(WebContentsImpl webContents, SurfaceControl surfaceControl, float deviceScale,
-                int width, int height, float cornerRadius, float zoom);
+        long create(
+                WebContentsImpl webContents,
+                SurfaceControl surfaceControl,
+                float deviceScale,
+                int width,
+                int height,
+                float cornerRadius,
+                float zoom,
+                int topShadowHeight,
+                int bottomShadowHeight,
+                int bottomShadowWidthReduction);
+
         void destroy(long magnifierSurfaceControl);
+
         void setReadbackOrigin(long nativeMagnifierSurfaceControl, float x, float y);
+
+        void childLocalSurfaceIdChanged(long nativeMagnifierSurfaceControl);
     }
 }

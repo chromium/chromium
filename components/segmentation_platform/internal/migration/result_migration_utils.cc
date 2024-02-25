@@ -33,16 +33,14 @@ proto::Predictor::PredictorTypeCase GetClassifierTypeForMigration(
   if (segmentation_key == kAdaptiveToolbarSegmentationKey ||
       segmentation_key == kContextualPageActionsKey) {
     return proto::Predictor::kMultiClassClassifier;
-  } else if (segmentation_key == kChromeStartAndroidSegmentationKey ||
-             segmentation_key == kChromeStartAndroidV2SegmentationKey ||
+  } else if (segmentation_key == kChromeStartAndroidV2SegmentationKey ||
              segmentation_key == kChromeLowUserEngagementSegmentationKey ||
              segmentation_key == kCrossDeviceUserKey ||
              segmentation_key == kDeviceSwitcherKey ||
              segmentation_key == kFrequentFeatureUserKey ||
              segmentation_key == kIntentionalUserKey ||
              segmentation_key == kResumeHeavyUserKey ||
-             segmentation_key == kShoppingUserSegmentationKey ||
-             segmentation_key == kQueryTilesSegmentationKey) {
+             segmentation_key == kShoppingUserSegmentationKey) {
     return proto::Predictor::kBinaryClassifier;
   } else if (segmentation_key == kFeedUserSegmentationKey ||
              segmentation_key == kPowerUserKey ||

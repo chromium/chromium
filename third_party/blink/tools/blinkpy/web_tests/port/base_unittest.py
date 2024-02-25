@@ -26,11 +26,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import mock
+import hashlib
+import json
 import operator
 import optparse
 import time
+import textwrap
 import unittest
+from unittest import mock
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.executive_mock import MockExecutive
@@ -537,6 +540,18 @@ class PortTest(LoggingTestCase):
         self.assertEqual(list(port.expectations_dict().values()),
                          ['content1\n', 'content2\n'])
 
+    def test_additional_driver_flags_for_chrome(self):
+        port = self.make_port()
+        port.set_option_default('driver_name', 'chrome')
+        flags = port.additional_driver_flags()
+        self.assertNotIn('--run-web-tests', flags)
+        self.assertIn('--enable-blink-test-features', flags)
+        ignore_certs_flags = [
+            flag for flag in flags
+            if flag.startswith('--ignore-certificate-errors-spki-list=')
+        ]
+        self.assertEqual(len(ignore_certs_flags), 1)
+
     def test_flag_specific_expectations(self):
         port = self.make_port(port_name='foo')
         port.host.filesystem.remove(MOCK_WEB_TESTS + 'TestExpectations')
@@ -752,6 +767,116 @@ class PortTest(LoggingTestCase):
         port.wpt_manifest('external/wpt')
         self.assertEqual(len(port.host.filesystem.written_files), 1)
         self.assertEqual(len(port.host.executive.calls), 1)
+
+    def test_should_update_manifest_no_cached_digest(self):
+        port = self.make_port(with_tests=True)
+        fs = port.host.filesystem
+        fs.write_text_file(f'{MOCK_WEB_TESTS}external/wpt/MANIFEST.json', '{}')
+
+        mock_git = mock.Mock()
+        mock_git.run.side_effect = lambda command: {
+            'rev-parse': '012345\n',
+            'ls-files': '',
+        }[command[0]]
+        mock_git.changed_files.return_value = [
+            'third_party/blink/web_tests/external/wpt/deleted.html'
+        ]
+
+        with mock.patch.object(port.host, 'git', return_value=mock_git):
+            self.assertTrue(port.should_update_manifest('external/wpt'))
+        digest_path = ('/mock-checkout/third_party/wpt_tools/wpt/'
+                       '.wptcache/external/wpt/digest')
+        digest = self._wpt_digest(f"""\
+            012345
+            {MOCK_WEB_TESTS}external/wpt/deleted.html:
+            """)
+        self.assertEqual(fs.read_text_file(digest_path), digest,
+                         'cached digest should be updated')
+
+    def test_should_update_manifest_cached_digest_same(self):
+        port = self.make_port(with_tests=True)
+        fs = port.host.filesystem
+        digest_path = ('/mock-checkout/third_party/wpt_tools/wpt/'
+                       '.wptcache/external/wpt/digest')
+        digest = self._wpt_digest(f"""\
+            012345
+            {MOCK_WEB_TESTS}external/wpt/uncommitted.html:3f786850e387550fdab836ed7e6dc881de23001b
+            {MOCK_WEB_TESTS}external/wpt/untracked.html:89e6c98d92887913cadf06b2adb97f26cde4849b
+            """)
+        fs.write_text_file(digest_path, digest)
+        fs.write_text_file(f'{MOCK_WEB_TESTS}external/wpt/MANIFEST.json', '{}')
+        fs.write_text_file(f'{MOCK_WEB_TESTS}external/wpt/uncommitted.html',
+                           'a\n')
+        fs.write_text_file(f'{MOCK_WEB_TESTS}external/wpt/untracked.html',
+                           'b\n')
+
+        mock_git = mock.Mock()
+        mock_git.run.side_effect = lambda command: {
+            'rev-parse':
+            '012345\n',
+            'ls-files':
+            'third_party/blink/web_tests/external/wpt/untracked.html\x00',
+        }[command[0]]
+        mock_git.changed_files.return_value = [
+            'third_party/blink/web_tests/external/wpt/uncommitted.html'
+        ]
+
+        with mock.patch.object(port.host, 'git', return_value=mock_git):
+            self.assertFalse(port.should_update_manifest('external/wpt'))
+        self.assertEqual(fs.read_text_file(digest_path), digest,
+                         'cached digest should be the same')
+        mock_git.run.assert_has_calls([
+            mock.call([
+                'rev-parse',
+                'HEAD:third_party/blink/web_tests/external/wpt',
+            ]),
+            mock.call([
+                'ls-files',
+                '--other',
+                '--exclude-standard',
+                '-z',
+                'HEAD',
+                f'{MOCK_WEB_TESTS}external/wpt',
+            ]),
+        ])
+        mock_git.changed_files.assert_called_once_with(
+            path=f'{MOCK_WEB_TESTS}external/wpt')
+
+    def test_should_update_manifest_cached_digest_different(self):
+        port = self.make_port(with_tests=True)
+        fs = port.host.filesystem
+        digest_path = ('/mock-checkout/third_party/wpt_tools/wpt/'
+                       '.wptcache/wpt_internal/digest')
+        digest = self._wpt_digest(f"""\
+            012345
+            {MOCK_WEB_TESTS}wpt_internal/changed.html:3f786850e387550fdab836ed7e6dc881de23001b
+            """)
+        fs.write_text_file(digest_path, digest)
+        fs.write_text_file(f'{MOCK_WEB_TESTS}wpt_internal/MANIFEST.json', '{}')
+        # `changed.html` had contents 'a\n'.
+        fs.write_text_file(f'{MOCK_WEB_TESTS}wpt_internal/changed.html', 'b\n')
+
+        mock_git = mock.Mock()
+        mock_git.run.side_effect = lambda command: {
+            'rev-parse': '012345\n',
+            'ls-files': '',
+        }[command[0]]
+        mock_git.changed_files.return_value = [
+            'third_party/blink/web_tests/wpt_internal/changed.html'
+        ]
+
+        with mock.patch.object(port.host, 'git', return_value=mock_git):
+            self.assertTrue(port.should_update_manifest('wpt_internal'))
+        digest = self._wpt_digest(f"""\
+            012345
+            {MOCK_WEB_TESTS}wpt_internal/changed.html:89e6c98d92887913cadf06b2adb97f26cde4849b
+            """)
+        self.assertEqual(fs.read_text_file(digest_path), digest,
+                         'cached digest should be updated')
+
+    def _wpt_digest(self, raw_preimage: str) -> str:
+        return hashlib.sha256(
+            textwrap.dedent(raw_preimage).encode()).hexdigest()
 
     def test_find_none_if_not_in_manifest(self):
         port = self.make_port(with_tests=True)
@@ -1242,6 +1367,19 @@ class PortTest(LoggingTestCase):
 
     def test_reference_files(self):
         port = self.make_port(with_tests=True)
+        port.set_option_default('manifest_update', False)
+        port.host.filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json',
+            json.dumps({
+                'items': {
+                    'reftest': {
+                        'blank.html': [
+                            'abcdef123',
+                            [None, [['about:blank', '==']], {}],
+                        ],
+                    },
+                },
+            }))
         self.assertEqual(
             port.reference_files('passes/svgreftest.svg'),
             [('==', port.web_tests_dir() + 'passes/svgreftest-expected.svg')])
@@ -1251,6 +1389,8 @@ class PortTest(LoggingTestCase):
         self.assertEqual(port.reference_files('passes/phpreftest.php'),
                          [('!=', port.web_tests_dir() +
                            'passes/phpreftest-expected-mismatch.svg')])
+        self.assertEqual(port.reference_files('external/wpt/blank.html'),
+                         [('==', 'about:blank')])
 
     def test_reference_files_from_manifest(self):
         port = self.make_port(with_tests=True)
@@ -1908,7 +2048,7 @@ class PortTest(LoggingTestCase):
                 '--disable-threaded-animation',
                 '--trace-startup=*,-blink',
                 '--trace-startup-duration=0',
-                '--trace-startup-file=trace_layout_test_non_virtual_TIME.json',
+                '--trace-startup-file=trace_layout_test_non_virtual_TIME.pftrace',
             ], port.args_for_test('non/virtual'))
 
     def test_all_systems(self):

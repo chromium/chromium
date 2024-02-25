@@ -73,7 +73,7 @@ class CollectionIndexCache {
   virtual void Trace(Visitor* visitor) const { visitor->Trace(current_node_); }
 
  protected:
-  ALWAYS_INLINE NodeType* CachedNode() const { return current_node_; }
+  ALWAYS_INLINE NodeType* CachedNode() const { return current_node_.Get(); }
   ALWAYS_INLINE unsigned CachedNodeIndex() const {
     DCHECK(CachedNode());
     return cached_node_index_;

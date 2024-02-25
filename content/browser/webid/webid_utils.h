@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
 #define CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
 
+#include <optional>
+
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
@@ -17,22 +19,31 @@ enum class IdpSigninStatus;
 
 namespace content {
 class BrowserContext;
+enum class FedCmDisconnectStatus;
 enum class FedCmIdpSigninStatusMode;
 class FedCmMetrics;
+class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
 
 namespace webid {
 
-void SetIdpSigninStatus(content::BrowserContext* context,
+// Returns true if `origin` is same site with `render_frame_host` and
+// all its ancestors. Also returns true if there are no ancestors or
+// if `render_frame_host` is null.
+bool IsSameSiteWithAncestors(const url::Origin& origin,
+                             RenderFrameHost* render_frame_host);
+
+void SetIdpSigninStatus(BrowserContext* context,
+                        int frame_tree_node_id,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status);
 
 // Computes string to display in developer tools console for a FedCM endpoint
 // request with the passed-in `endpoint_name` and which returns the passed-in
-// `http_response_code`. Returns absl::nullopt if the `http_response_code` does
+// `http_response_code`. Returns std::nullopt if the `http_response_code` does
 // not represent an error in the fetch.
-absl::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
+std::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
     const char* endpoint_name,
     int http_response_code);
 
@@ -40,6 +51,10 @@ absl::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
 // endpoint URL.
 bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
                           const GURL& endpoint_url);
+
+// Returns whether the two origins are considered same-site (same eTLD+1). Also
+// ensures that the scheme is the same.
+bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2);
 
 // Returns whether FedCM should fail/skip the accounts endpoint request because
 // the user is not signed-in to the IdP.
@@ -67,7 +82,29 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
 CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
     blink::mojom::FederatedAuthRequestResult result);
 
-FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host);
+// Returns a string to be used as the console error message for a disconnect()
+// call.
+CONTENT_EXPORT std::string GetDisconnectConsoleErrorMessage(
+    FedCmDisconnectStatus disconnect_status_for_metrics);
+
+FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
+                                                const url::Origin& idp_origin);
+
+// Returns the eTLD+1 for a given url. For localhost, returns the host.
+std::string FormatUrlWithDomain(const GURL& url, bool for_display);
+
+// Returns true if the user has used FedCM to login to the RP via the IdP
+// account or if the IdP has third party cookies access. For the former, if
+// |account| is provided, we look for the specific account. Otherwise we look
+// for *any* account.
+bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+    RenderFrameHost& host,
+    const GURL& provider_url,
+    const url::Origin& embedder_origin,
+    const url::Origin& requester_origin,
+    const std::optional<std::string>& account_id,
+    FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
 }  // namespace webid
 

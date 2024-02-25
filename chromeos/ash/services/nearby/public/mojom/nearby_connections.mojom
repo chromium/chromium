@@ -5,6 +5,7 @@
 module nearby.connections.mojom;
 
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom";
+import "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 
@@ -98,6 +99,69 @@ interface PayloadListener {
   //               the transfer.
   OnPayloadTransferUpdate(string endpoint_id, PayloadTransferUpdate update);
 };
+
+// Listener for lifecycle events associated with a connection to a remote
+// device. Methods in this interface are called from utility process, and is
+// used by the browser process to listen for connection status associated with
+// remote devices.
+//
+// This should stay aligned with v3::ConnectionListener defined at:
+// //third_party/nearby/src/connections/v3/listeners.h
+//
+// TODO(b/308178927): Introduce functions when callback implementation begins.
+interface ConnectionListenerV3 {
+  // A basic encrypted channel has been created between you and the device.
+  // Both sides are now asked if they wish to accept or reject the connection
+  // before any data can be sent over this channel.
+  //
+  // This is your chance, before you accept the connection, to confirm that you
+  // connected to the correct device. Both devices are given an identical token;
+  // it's up to you to decide how to verify it before proceeding. Typically this
+  // involves showing the token on both devices and having the users manually
+  // compare and confirm; however, this is only required if you desire a secure
+  // connection between the devices.
+  //
+  // For Presence, devices are authenticated using the devices' credentials to
+  // confirm that the remote device has the correct key pairing detected during
+  // advertising. There is no need to do an additional verification of keys
+  // during this step if this is successful. See (go/np-nc-handshake) for more
+  // details.
+  //
+  // Whichever route you decide to take (including not authenticating the other
+  // device), call Core::AcceptConnectionV3() when you're ready to talk, or
+  // Core::RejectConnectionV3() to close the connection.
+  //
+  // remote_device - The object for the remote device.
+  // info          - Other relevant information about the connection.
+  OnConnectionInitiated(ash.nearby.presence.mojom.PresenceDevice remote_device,
+                        InitialConnectionInfoV3 info);
+
+  // Called when both sides have accepted or either side has rejected the
+  // connection. If the `ConnectionResolution` status is `kSuccess`, both sides
+  // have accepted the connection and may now send `Payload` to each other.
+  // Otherwise, the connection was rejected.
+  //
+  // remote_device - The object for the remote device.
+  // resolution    - The resolution of the connection (accepted or rejected).
+  OnConnectionResult(ash.nearby.presence.mojom.PresenceDevice remote_device,
+                     Status resolution);
+
+  // Called when a remote device is disconnected or has become unreachable.
+  // At this point service (re-)discovery may start again.
+  //
+  // remote_device - The object for the remote device.
+  OnDisconnected(ash.nearby.presence.mojom.PresenceDevice remote_device);
+};
+
+// Listener for payload status, used by the V3 APIs. Methods in this interface
+// are called from utility process, and is used by the browser process to listen
+// for payload status associated with remote endpoints.
+//
+// This should stay aligned with v3::PayloadListener defined at:
+// //third_party/nearby/src/connections/v3/listeners.h
+//
+// TODO(b/308178927): Introduce functions when callback implementation begins.
+interface PayloadListenerV3 {};
 
 // Main interface to control the NearbyConnections library. Implemented in a
 // sandboxed process. This interface is used by the browser process to connect
@@ -353,5 +417,89 @@ interface NearbyConnections {
                       int64 payload_id,
                       mojo_base.mojom.ReadOnlyFile input_file,
                       mojo_base.mojom.File output_file)
+      => (Status status);
+
+  //******************************* V3 *******************************
+  // NOTE: Do NOT mix with the V1 APIs above, this might result in undefined
+  // behavior!
+
+  // Sends a request to connect to a remote device.
+  //
+  // service_id         - Service ID used to discover the device.
+  // remote_device      - The remote device to which a connection request will
+  //                      be sent.
+  // connection_options - Connection options for the new connection if both
+  //                      sides accept.
+  // listener           - An interface notified when the remote device sends
+  //                      a response to the connection request.
+  // Possible return values include:
+  // TODO(b/307319934): Clean up Status values to no longer reference endpoints
+  // when the V3 API migration occurs.
+  //   Status::kSuccess if the connection request was accepted.
+  //   Status::kAlreadyConnectedToEndpoint if the app already has a connection
+  //       to the specified device.
+  //   Status::kBluetoothError if we failed to connect because of an issue with
+  //       Bluetooth.
+  //   Status::kWifiLanError if we failed to connect because of an issue with
+  //       Wi-Fi.
+  //   Status::kError if we failed to connect for any other reason.
+  //
+  // TODO(b/306188252): This API will initially only be used by Nearby Presence
+  // client applications, and therefore uses a PresenceDevice type for its
+  // `remote_device` argument. This will eventually be replaced with the
+  // NearbyDevice type to allow use by Nearby Connections/non-Presence clients.
+  RequestConnectionV3(string service_id,
+                      ash.nearby.presence.mojom.PresenceDevice remote_device,
+                      ConnectionOptions connection_options,
+                      pending_remote<ConnectionListenerV3> listener)
+      => (Status status);
+
+  // Accepts a connection to a remote device. This method must be called
+  // before Payloads can be exchanged with the remote device.
+  //
+  // service_id    - Service ID used to discover the device.
+  // remote_device - The remote device we are accepting the connection from.
+  // listener      - An interface for payloads exchanged with the remote device.
+  // Possible status codes include:
+  // TODO(b/307319934): Clean up Status values to no longer reference endpoints
+  // when the V3 API migration occurs.
+  //   Status::kSuccess if the connection request was accepted.
+  //   Status::kAlreadyConnectedToEndpoint if the app already has a connection
+  //       to the specified device.
+  //   Status::kEndpointUnknown if the app doesn't currently have a pending
+  //       connection to the remote device.
+  AcceptConnectionV3(string service_id,
+                     ash.nearby.presence.mojom.PresenceDevice remote_device,
+                     pending_remote<PayloadListenerV3> listener)
+      => (Status status);
+
+  // Rejects a connection to a remote device.
+  //
+  // service_id    - Service ID used to discover the device.
+  // remote_device - The device for the remote device.
+  // Possible status codes include:
+  // TODO(b/307319934): Clean up Status values to no longer reference endpoints
+  // when the V3 API migration occurs.
+  //   Status::kSuccess if the connection request was rejected.
+  //   Status::kAlreadyConnectedToEndpoint if the app already has a connection
+  //       to the specified device.
+  RejectConnectionV3(string service_id,
+                     ash.nearby.presence.mojom.PresenceDevice remote_device)
+      => (Status status);
+
+  // Disconnects from a remote device. Payloads can no longer be sent to or
+  // received from the device after this function is called.
+  //
+  // service_id    - Service ID used to discover the device.
+  // remote_device - The remote device to disconnect from.
+  // Possible status codes include:
+  //   Status::kSuccess upon successful disconnection.
+  //
+  // TODO(b/306188252): This API will initially only be used by Nearby Presence
+  // client applications, and therefore uses a PresenceDevice type for its
+  // `remote_device` argument. This will eventually be replaced with the
+  // NearbyDevice type to allow use by Nearby Connections/non-Presence clients.
+  DisconnectFromDeviceV3(string service_id,
+                         ash.nearby.presence.mojom.PresenceDevice remote_device)
       => (Status status);
 };

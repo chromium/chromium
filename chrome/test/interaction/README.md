@@ -1,6 +1,6 @@
 # Interactive Testing API: "Kombucha"
 
-**[go/kombucha-api](goto.google.com/kombucha-api)**
+**[go/kombucha-api](https://goto.google.com/kombucha-api)**
 
 **Kombucha** is a group of powerful test mix-ins that let you easily and
 concisely write interactive tests.
@@ -10,7 +10,7 @@ either be backwards-compatible with existing tests, or the authors will update
 the API calls for you.
 
 This page provides technical documentation. For a cookbook/FAQ/troubleshooting
-guide, see our [Kombucha Playbook](goto.google.com/kombucha-playbook).
+guide, see our [Kombucha Playbook](https://goto.google.com/kombucha-playbook).
 
  - [Changelog](#changelog)
  - [Known Issues](#known-issues-and-incompatibilities)
@@ -88,6 +88,7 @@ Verbs fall into a number of different categories:
     - `Check()`
     - `CheckResult()`
     - `CheckElement()`
+    - `CheckVariable()`
     - `CheckView()` [Views]
     - `CheckViewProperty()` [Views]
     - `Screenshot` [Browser] - compares the target against Skia Gold in pixel
@@ -137,7 +138,7 @@ Verbs fall into a number of different categories:
       - ActivateSurface is not always reliable on Linux with the Wayland window
         manager; see [Handling Incompatibilities](#handling-incompatibilities)
         for how to correctly deal with this.
-    - `ScrollToVisible()` [Views, Browser]
+    - `ScrollIntoView()` [Views, Browser]
       - Recommended before doing anything that needs the screen coordinates of
         a UI or DOM element that is in a scrollable container.
 - **Mouse** verbs simulate mouse input to the entire application, and are
@@ -168,6 +169,7 @@ Verbs fall into a number of different categories:
     - `NavigateWebContents()` [Browser]
     - `WaitForWebContentsReady()` [Browser]
     - `WaitForWebContentsNavigation()` [Browser]
+    - `FocusWebContents()` [Browser]
     - `WaitForStateChange()` [Browser]
 - **Javascript** verbs execute javascript in an
   [instrumented WebContents](#webcontents-instrumentation), or verify a result
@@ -185,7 +187,15 @@ Verbs fall into a number of different categories:
   [Waiting for Asynchronous Events](#waiting-for-asynchronous-events) for more
   information.
    - `ObserveState()`
+   - `PollState()`
+   - `PollElement()`
+   - `PollView()` [Views]
+   - `PollViewProperty()` [Views]
    - `WaitForState()`
+   - `PollState()`
+   - `PollElement()`
+   - `PollView()` [Views]
+   - `StopObservingState()`
 - **Utility** verbs modify how the test sequence is executed.
    - `FlushEvents()` ensures that the next step happens on a fresh
      message loop rather than being able to chain successive steps.
@@ -689,6 +699,55 @@ a matcher to look for a range of values:
   WaitForState(kFooState, &GetExpectedFooValue),
   WaitForState(kFooState, testing::Ne(3)),
 ```
+
+#### Observing State Via Polling
+
+The `PollState()`, `PollElement()`, and `PollView()` verbs can be used when you
+want to observe a state but there's no established callback or observer pattern
+established for that state.
+
+For example, if a system only has a `MySystem::GetCurrentState()` property but
+has neither `MySystem::AddObserver(MySystemObserver)` or
+`MySystem::AddStateChangeCallback(MySystem::StateChangeCallback)`, you can use
+`PollState()` to monitor the state:
+
+```cpp
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+    ui::test::PollingStateObserver<MySystem::State>,
+    kMySystemState);
+
+RunTestSequence(
+  // Do setup that would cause your system to initialize.
+  PollState(kMySystemState, [](){
+    return MySystem::GetInstance()->GetCurrentState();
+  }),
+  WaitForState(kMySystemState, MySystem::State::kReady)
+  // System will be ready now, continue with your test.
+);
+```
+
+For `PollElement()` and `PollView()`, the state value is an `absl::optional` and
+if the element or view is not present in the target context the value will be
+`absl::nullopt`.
+
+Be aware that for transient or short-lived states, the correct value might be
+missed between polls, so polling should only be used for states that should
+eventually "settle" on the expected value.
+
+#### Avoiding UAF and Stopping State Observation
+
+By default, a state observer will persist until the end of the test body, and
+lasts across multiple calls to `RunTestSequence()`.
+
+You should ideally write your state observers (polling or otherwise) to handle
+freeing of resources or underlying objects, e.g. by unregistering an observer on
+destruction, or by using `base::CallbackSubscription` which is safe with respect
+to  destruction of the subscribed object. Polling an element or view is also
+safe, with the caveat that you might get a different element each time.
+
+However, in some cases it is easier to simply remove the observer than to try to
+harden it against changes in the underlying object. The `StopObservingState()`
+verb allows you to do this.
 
 ### Custom Verbs
 

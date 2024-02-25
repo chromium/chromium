@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/lock_screen_media_controls_view.h"
-#include "ash/login/ui/lock_contents_view_test_api.h"
-#include "base/memory/raw_ptr.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/fake_login_detachable_base_model.h"
 #include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/media_controls_header_view.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +23,7 @@
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_observer.h"
@@ -35,6 +36,7 @@
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -55,9 +57,9 @@ MediaSessionAction kActionButtonOrder[] = {
     MediaSessionAction::kNextTrack};
 
 // Checks if the view class name is used by a media button.
-bool IsMediaButtonType(const char* class_name) {
-  return class_name == views::ImageButton::kViewClassName ||
-         class_name == views::ToggleImageButton::kViewClassName;
+bool IsMediaButtonType(const views::View* view) {
+  return views::IsViewClass<views::ImageButton>(view) ||
+         views::IsViewClass<views::ToggleImageButton>(view);
 }
 
 class AnimationWaiter : public ui::LayerAnimationObserver,
@@ -99,7 +101,7 @@ class AnimationWaiter : public ui::LayerAnimationObserver,
   void Wait() { run_loop_.Run(); }
 
  private:
-  raw_ptr<ui::Layer, ExperimentalAsh> layer_;
+  raw_ptr<ui::Layer> layer_;
   base::RunLoop run_loop_;
 };
 
@@ -119,10 +121,10 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   void SetUp() override {
     set_start_session(true);
 
-    // Enable media controls.
-    feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
     LoginTestBase::SetUp();
+
+    feature_list_.InitAndDisableFeature(
+        media::kGlobalMediaControlsCrOSUpdatedUI);
 
     lock_contents_view_ = new LockContentsView(
         mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
@@ -259,7 +261,8 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return header_row()->close_button_for_testing();
   }
 
-  std::vector<views::Button*>& media_action_buttons() const {
+  std::vector<raw_ptr<views::Button, VectorExperimental>>&
+  media_action_buttons() const {
     return media_controls_view_->media_action_buttons_;
   }
 
@@ -281,8 +284,8 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return media_controls_view_->GetArtworkClipPath();
   }
 
-  raw_ptr<LockScreenMediaControlsView, DanglingUntriaged | ExperimentalAsh>
-      media_controls_view_ = nullptr;
+  raw_ptr<LockScreenMediaControlsView, DanglingUntriaged> media_controls_view_ =
+      nullptr;
   std::unique_ptr<AnimationWaiter> animation_waiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
@@ -292,10 +295,9 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
         std::vector<MediaSessionAction>(actions_.begin(), actions_.end()));
   }
 
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList feature_list_;
 
-  raw_ptr<LockContentsView, DanglingUntriaged | ExperimentalAsh>
-      lock_contents_view_ = nullptr;
+  raw_ptr<LockContentsView, DanglingUntriaged> lock_contents_view_ = nullptr;
   std::unique_ptr<TestMediaController> media_controller_;
   std::set<MediaSessionAction> actions_;
 };
@@ -383,9 +385,9 @@ TEST_F(LockScreenMediaControlsViewTest, ButtonsSanityCheck) {
   EXPECT_EQ(5u, media_action_buttons().size());
 
   for (int i = 0; i < 5; /* size of |button_row| */ i++) {
-    auto* child = media_action_buttons()[i];
+    auto* child = media_action_buttons()[i].get();
 
-    ASSERT_TRUE(IsMediaButtonType(child->GetClassName()));
+    ASSERT_TRUE(IsMediaButtonType(child));
 
     ASSERT_EQ(
         static_cast<MediaSessionAction>(views::Button::AsButton(child)->tag()),
@@ -480,7 +482,7 @@ TEST_F(LockScreenMediaControlsViewTest, ProgressBarVisibility) {
   EXPECT_TRUE(progress_view()->GetVisible());
 
   // Simulate position turning null.
-  media_controls_view_->MediaSessionPositionChanged(absl::nullopt);
+  media_controls_view_->MediaSessionPositionChanged(std::nullopt);
 
   // Verify that the progress is hidden again.
   EXPECT_FALSE(progress_view()->GetVisible());
@@ -528,11 +530,7 @@ TEST_F(LockScreenMediaControlsViewTest, CloseButtonVisibility) {
   EXPECT_FALSE(CloseButtonHasImage());
 }
 
-TEST_F(LockScreenMediaControlsViewTest,
-       MediaControlsNotShownIfSensitiveWithHideMetadataFeatureFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndDisableFeature(
-      media::kHideIncognitoMediaMetadata);
+TEST_F(LockScreenMediaControlsViewTest, MediaControlsNotShownIfSensitive) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying,
       /*is_sensitive=*/true);
@@ -540,13 +538,10 @@ TEST_F(LockScreenMediaControlsViewTest,
   EXPECT_FALSE(media_controls_view_->IsDrawn());
 }
 
-TEST_F(LockScreenMediaControlsViewTest,
-       MediaControlsShownIfSensitiveWithHideMetadataFeatureFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(media::kHideIncognitoMediaMetadata);
+TEST_F(LockScreenMediaControlsViewTest, MediaControlsShownIfNotSensitive) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying,
-      /*is_sensitive=*/true);
+      /*is_sensitive=*/false);
 
   EXPECT_TRUE(media_controls_view_->IsDrawn());
 }
@@ -668,6 +663,10 @@ TEST_F(LockScreenMediaControlsViewTest, SeekForwardButtonClick) {
 }
 
 TEST_F(LockScreenMediaControlsViewTest, UpdateAppIcon) {
+  // TODO (crbug/1520620): Remove the skip code once test is fixed.
+  if (::features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 

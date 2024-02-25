@@ -44,8 +44,7 @@ class PaymentDetailsValidationTest
     : public ::testing::TestWithParam<PaymentDetailsValidationTestCase> {};
 
 TEST_P(PaymentDetailsValidationTest, Test) {
-  absl::optional<base::Value> value =
-      base::JSONReader::Read(GetParam().details);
+  std::optional<base::Value> value = base::JSONReader::Read(GetParam().details);
   ASSERT_TRUE(value.has_value()) << "Should be in JSON format";
   ASSERT_TRUE(value->is_dict());
   PaymentDetails details;

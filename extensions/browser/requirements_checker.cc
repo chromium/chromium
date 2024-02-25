@@ -31,11 +31,6 @@ void RequirementsChecker::Start(ResultCallback callback) {
   const RequirementsInfo& requirements =
       RequirementsInfo::GetRequirements(extension());
 
-#if !defined(USE_AURA)
-  if (requirements.window_shape)
-    errors_.insert(Error::kWindowShapeNotSupported);
-#endif
-
   callback_ = std::move(callback);
   if (requirements.webgl) {
     scoped_refptr<content::GpuFeatureChecker> webgl_checker =
@@ -56,12 +51,6 @@ std::u16string RequirementsChecker::GetErrorMessage() const {
     messages.push_back(
         l10n_util::GetStringUTF8(IDS_EXTENSION_WEBGL_NOT_SUPPORTED));
   }
-#if !defined(USE_AURA)
-  if (errors_.count(Error::kWindowShapeNotSupported)) {
-    messages.push_back(
-        l10n_util::GetStringUTF8(IDS_EXTENSION_WINDOW_SHAPE_NOT_SUPPORTED));
-  }
-#endif
 
   return base::UTF8ToUTF16(base::JoinString(messages, " "));
 }

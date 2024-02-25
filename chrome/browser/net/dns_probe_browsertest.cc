@@ -51,6 +51,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -78,8 +79,7 @@ namespace {
 class DelayingDnsProbeService : public DnsProbeService {
  public:
   DelayingDnsProbeService(
-      const DnsProbeServiceFactory::NetworkContextGetter&
-          network_context_getter,
+      const network::NetworkContextGetter& network_context_getter,
       const DnsProbeServiceFactory::DnsConfigChangeManagerGetter&
           dns_config_change_manager_getter)
       : dns_probe_service_impl_(DnsProbeServiceFactory::CreateForTesting(
@@ -90,8 +90,7 @@ class DelayingDnsProbeService : public DnsProbeService {
   ~DelayingDnsProbeService() override { EXPECT_TRUE(delayed_probes_.empty()); }
 
   static std::unique_ptr<KeyedService> Create(
-      const DnsProbeServiceFactory::NetworkContextGetter&
-          network_context_getter,
+      const network::NetworkContextGetter& network_context_getter,
       const DnsProbeServiceFactory::DnsConfigChangeManagerGetter&
           dns_config_change_manager_getter,
       content::BrowserContext* context) {

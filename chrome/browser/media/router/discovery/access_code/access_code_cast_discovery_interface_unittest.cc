@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
@@ -54,7 +55,7 @@ namespace media_router {
 namespace {
 
 const char kMockPostData[] = "mock_post_data";
-int64_t kMockTimeoutMs = 1000000;
+constexpr base::TimeDelta kMockTimeout = base::Milliseconds(1000000);
 const char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
 const char kMockScope[] = "mock_scope";
 const char kMockEndpoint[] = "https://my-endpoint.com";
@@ -189,11 +190,11 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    // TODO(crbug.com/1466447): ConsentLevel::kSync is deprecated and should be
+    // TODO(crbug.com/40067771): ConsentLevel::kSync is deprecated and should be
     //     removed. See ConsentLevel::kSync documentation for details.
     endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
         kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod,
-        kMockContentType, std::vector<std::string>{kMockScope}, kMockTimeoutMs,
+        kMockContentType, std::vector<std::string>{kMockScope}, kMockTimeout,
         kMockPostData, TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
         identity_test_env_.identity_manager(), signin::ConsentLevel::kSync);
 
@@ -242,8 +243,9 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
 
     MockDiscoveryDeviceCallback mock_callback;
 
-    EXPECT_CALL(mock_callback, Run(Eq(absl::nullopt), expected))
-        .WillOnce([&]() { quit_closure.Run(); });
+    EXPECT_CALL(mock_callback, Run(Eq(std::nullopt), expected)).WillOnce([&]() {
+      quit_closure.Run();
+    });
 
     stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
     task_environment_.RunUntilQuit();
@@ -301,7 +303,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest,
 
   MockDiscoveryDeviceCallback mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::AUTH_ERROR));
+              Run(Eq(std::nullopt), AddSinkResultCode::AUTH_ERROR));
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -318,7 +320,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerError) {
   MockDiscoveryDeviceCallback mock_callback;
 
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::SERVER_ERROR));
+              Run(Eq(std::nullopt), AddSinkResultCode::SERVER_ERROR));
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   task_environment_.RunUntilIdle();
@@ -332,7 +334,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, SyncError) {
   MockDiscoveryDeviceCallback mock_callback;
   identity_test_env().RevokeSyncConsent();
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::PROFILE_SYNC_ERROR));
+              Run(Eq(std::nullopt), AddSinkResultCode::PROFILE_SYNC_ERROR));
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   task_environment_.RunUntilIdle();
@@ -371,7 +373,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerResponseMalformedError) {
   MockDiscoveryDeviceCallback mock_callback;
 
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
+              Run(Eq(std::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   task_environment_.RunUntilIdle();
@@ -386,7 +388,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerResponseEmptyError) {
   MockDiscoveryDeviceCallback mock_callback;
 
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
+              Run(Eq(std::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   task_environment_.RunUntilIdle();
@@ -444,7 +446,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, FieldsMissingInResponse) {
   MockDiscoveryDeviceCallback mock_callback;
 
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
+              Run(Eq(std::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   task_environment_.RunUntilIdle();
@@ -460,7 +462,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, WrongDataTypesInResponse) {
   MockDiscoveryDeviceCallback mock_callback;
 
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
+              Run(Eq(std::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
 
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   task_environment_.RunUntilIdle();
@@ -487,12 +489,12 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest,
   // error when handled.
   MockDiscoveryDeviceCallback mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::PROFILE_SYNC_ERROR));
+              Run(Eq(std::nullopt), AddSinkResultCode::PROFILE_SYNC_ERROR));
   stub_interface()->SetCallbackForTesting(mock_callback.Get());
 
   auto response = std::make_unique<EndpointResponse>();
   response->error_type =
-      absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+      std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
   response->response = "No primary accounts found";
   stub_interface()->HandleServerError(std::move(response));
   task_environment_.RunUntilIdle();
@@ -503,12 +505,12 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, HandleServerErrorAuthError) {
   // handled.
   MockDiscoveryDeviceCallback mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::AUTH_ERROR));
+              Run(Eq(std::nullopt), AddSinkResultCode::AUTH_ERROR));
   stub_interface()->SetCallbackForTesting(mock_callback.Get());
 
   auto response = std::make_unique<EndpointResponse>();
   response->error_type =
-      absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
+      std::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
   stub_interface()->HandleServerError(std::move(response));
   task_environment_.RunUntilIdle();
 }
@@ -518,12 +520,12 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, HandleServerErrorServerError) {
   // when handled.
   MockDiscoveryDeviceCallback mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::SERVER_ERROR));
+              Run(Eq(std::nullopt), AddSinkResultCode::SERVER_ERROR));
   stub_interface()->SetCallbackForTesting(mock_callback.Get());
 
   auto response = std::make_unique<EndpointResponse>();
   response->error_type =
-      absl::make_optional<FetchErrorType>(FetchErrorType::kNetError);
+      std::make_optional<FetchErrorType>(FetchErrorType::kNetError);
   stub_interface()->HandleServerError(std::move(response));
   task_environment_.RunUntilIdle();
 }
@@ -534,12 +536,12 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest,
   // malformed error when handled.
   MockDiscoveryDeviceCallback mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(Eq(absl::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
+              Run(Eq(std::nullopt), AddSinkResultCode::RESPONSE_MALFORMED));
   stub_interface()->SetCallbackForTesting(mock_callback.Get());
 
   auto response = std::make_unique<EndpointResponse>();
   response->error_type =
-      absl::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
+      std::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
   stub_interface()->HandleServerError(std::move(response));
   task_environment_.RunUntilIdle();
 }

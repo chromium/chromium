@@ -1,0 +1,21 @@
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import { __decorate } from "tslib";
+import { customElement } from 'lit/decorators.js';
+import { Card } from './internal/card.js';
+import { styles as outlinedStyles } from './internal/outlined-styles.css.js';
+import { styles as sharedStyles } from './internal/shared-styles.css.js';
+/**
+ * @final
+ * @suppress {visibility}
+ */
+export let MdOutlinedCard = class MdOutlinedCard extends Card {
+};
+MdOutlinedCard.styles = [sharedStyles, outlinedStyles];
+MdOutlinedCard = __decorate([
+    customElement('md-outlined-card')
+], MdOutlinedCard);
+//# sourceMappingURL=outlined-card.js.map

@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1324575488877808473">Abre Chrome para ver os sitios máis visitados aquí.</translation>
 <translation id="2513892053093488070">Busca por voz</translation>
 <translation id="2535710892645968259">Salta ao xogo do dinosauro de Chrome desde a pantalla de bloqueo.</translation>
 <translation id="2542770169955243077">Xogo do dinosauro de Chrome</translation>
-<translation id="2803429804752388720">Buscar os contrasinais</translation>
 <translation id="2922313168575194078">Busca de maneira segura os contrasinais gardados no xestor de contrasinais de Google</translation>
 <translation id="302608144225178783">Salta ao xogo do dinosauro de Chrome desde a pantalla de inicio.</translation>
 <translation id="3296938369177810197">Busca por voz</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Fai unha nova busca ou abre os sitios máis visitados desde a páxina de inicio do teu iPad.</translation>
 <translation id="6721566127904256183">Os sitios máis visitados móstranse aquí.</translation>
 <translation id="6855322554930231468">Busca</translation>
+<translation id="6973491011026415905">Buscar os contrasinais no xestor</translation>
 <translation id="7010831364920321713">Busca do modo de incógnito</translation>
 <translation id="7048549665319929185">Buscar contido ou escribir o URL</translation>
 <translation id="7317302007099170473">Escanear código QR</translation>

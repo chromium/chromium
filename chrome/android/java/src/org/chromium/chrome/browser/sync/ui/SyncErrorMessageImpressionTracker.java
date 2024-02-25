@@ -9,11 +9,9 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,16 +28,15 @@ public class SyncErrorMessageImpressionTracker {
     public static final long MINIMAL_DURATION_TO_PWM_ERROR_UI_MS =
             TimeUnit.MILLISECONDS.convert(30, TimeUnit.MINUTES);
 
-    public static boolean canShowNow() {
-        long lastShownTime = SharedPreferencesManager.getInstance().readLong(
-                SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, 0);
+    public static boolean canShowNow(PrefService prefService) {
+        long lastShownTime =
+                ChromeSharedPreferences.getInstance().readLong(SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, 0);
 
         // Since the password manager error and the sync error can be related,
         // the sync error should be shown only if at least MINIMAL_DURATION_TO_PWM_ERROR_UI_MS
         // have passed since the last password manager error. This condition is mirrored
         // for the password manager error.
         long currentTime = TimeUtils.currentTimeMillis();
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         long upmErrorShownTime =
                 Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));
         return currentTime - lastShownTime > MINIMAL_DURATION_BETWEEN_UI_MS
@@ -47,11 +44,11 @@ public class SyncErrorMessageImpressionTracker {
     }
 
     public static void updateLastShownTime() {
-        SharedPreferencesManager.getInstance().writeLong(
-                SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, TimeUtils.currentTimeMillis());
+        ChromeSharedPreferences.getInstance()
+                .writeLong(SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, TimeUtils.currentTimeMillis());
     }
 
     public static void resetLastShownTime() {
-        SharedPreferencesManager.getInstance().removeKey(SYNC_ERROR_MESSAGE_SHOWN_AT_TIME);
+        ChromeSharedPreferences.getInstance().removeKey(SYNC_ERROR_MESSAGE_SHOWN_AT_TIME);
     }
 }

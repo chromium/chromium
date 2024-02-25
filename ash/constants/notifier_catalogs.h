@@ -79,7 +79,7 @@ enum class NotificationCatalogName {
   kBluetoothPairingRequest = 64,
   // [Deprecated] kBluetoothPairedDevice = 65,
   kCellularSetup = 66,
-  kScreenSecurity = 67,
+  // [Deprecated] kScreenSecurity = 67,
   kWifiToggle = 68,
   kUSBPeripheralInvalidDpCable = 69,
   kUSBPeripheralInvalidUSB4ValidTBTCable = 70,
@@ -186,24 +186,28 @@ enum class NotificationCatalogName {
   kMultiCaptureOnLogin = 171,
   kFloatingWorkspace = 172,
   kScalableIphNotification = 173,
-  kUpdateNotification = 174,
+  // [Deprecated] kUpdateNotification = 174,
   kSubAppsUninstall = 175,
-  kMaxValue = kSubAppsUninstall
+  kNetworkCarrierUnlock = 176,
+  kCoralFeature = 177,
+  kInputDeviceSettings = 178,
+  kMaxValue = kInputDeviceSettings
 };
 
 // A living catalog that registers system nudges.
 // Current values should not be renumbered or removed. Please keep in sync with
-// "NudgeCatalogName" in tools/metrics/histograms/enums.xml.
+// "NudgeCatalogName" in tools/metrics/histograms/metadata/ash/enums.xml.
 // To deprecate comment out the entry.
-// Please call `SystemNudgeController::RecordNudgeAction` when the nudge's
+// Please call `SystemNudgeController::MaybeRecordNudgeAction()` (old nudges) or
+// `AnchoredNudgeManager::Get()->MaybeRecordNudgeAction()` when the nudge's
 // suggested action is performed by the user, if applicable.
 enum class NudgeCatalogName {
   kTestCatalogName = 0,
   kDictation = 1,
   // [Deprecated] kMultipaste = 2,
-  kDarkLightMode = 3,
+  // [Deprecated] kDarkLightMode = 3,
   kAutozoom = 4,
-  kAdaptiveCharging = 5,
+  // [Deprecated] kAdaptiveCharging = 5,
   kPhoneHub = 6,
   kClipboardHistoryZeroState = 7,
   kClipboardHistoryOnboarding = 8,
@@ -215,12 +219,19 @@ enum class NudgeCatalogName {
   kVideoConferenceTrayCameraUseWhileHWDisabled = 14,
   kVideoConferenceTrayCameraUseWhileSWDisabled = 15,
   kVideoConferenceTraySpeakOnMuteOptIn = 16,
-  kVideoConferenceTraySpeakOnMuteOptInConfirmation = 17,
+  // [Deprecated] kVideoConferenceTraySpeakOnMuteOptInConfirmation = 17,
   kScalableIphBubble = 18,
   kVideoConferenceTrayCameraMicrophoneUseWhileDisabled = 19,
   kMultitaskMenuClamshell = 20,
   kMultitaskMenuTablet = 21,
-  kMaxValue = kMultitaskMenuTablet
+  kCaptureModeEducationShortcutNudge = 22,
+  kCaptureModeEducationShortcutTutorial = 23,
+  kCaptureModeEducationQuickSettingsNudge = 24,
+  kGameDashboardControlsNudge = 25,
+  // [Deprecated] kWebsiteTelemetryReportingNudge = 26,
+  kStandaloneWindowMigrationUx = 27,
+  kFocusModeEndingMomentNudge = 28,
+  kMaxValue = kFocusModeEndingMomentNudge
 };
 
 // A living catalog that registers toasts.
@@ -243,12 +254,12 @@ enum class ToastCatalogName {
   kEncourageUnlock = 12,
   kNetworkAutoConnect = 13,
   kAssistantLoading = 14,
-  kToastManagerUnittest = 15,
+  kTestCatalogName = 15,
   kMaximumDeskLaunchTemplate = 16,
-  kEnterOverviewGesture = 17,
-  kExitOverviewGesture = 18,
-  kNextDeskGesture = 19,
-  kPreviousDeskGesture = 20,
+  // [Deprecated] kEnterOverviewGesture = 17,
+  // [Deprecated] kExitOverviewGesture = 18,
+  // [Deprecated] kNextDeskGesture = 19,
+  // [Deprecated] kPreviousDeskGesture = 20,
   kMoveVisibleOnAllDesksWindow = 21,
   kAppCannotSnap = 22,
   kCrostiniUnsupportedVirtualKeyboard = 23,
@@ -274,7 +285,11 @@ enum class ToastCatalogName {
   // [Deprecated] kVideoConferenceTrayUseWhileDisabled = 43,
   kBatterySaverDisabled = 44,
   kDictationNoFocusedTextField = 45,
-  kMaxValue = kDictationNoFocusedTextField
+  kBatterySaverEnabled = 46,
+  kDictationMicMuted = 47,
+  kVideoConferenceTraySpeakOnMuteOptInConfirmation = 48,
+  kAppNotClosable = 49,
+  kMaxValue = kAppNotClosable
 };
 
 }  // namespace ash

@@ -53,7 +53,7 @@ class MultiplexedChannel {
   void NotifyDisconnected();
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
   const ConnectionDetails connection_details_;
 };
 

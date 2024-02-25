@@ -28,9 +28,7 @@ public class ScopedSysTraceEvent implements AutoCloseable {
         return new ScopedSysTraceEvent(name);
     }
 
-    /**
-     * Constructor used to support the "try with resource" construct.
-     */
+    /** Constructor used to support the "try with resource" construct. */
     private ScopedSysTraceEvent(String name) {
         Trace.beginSection(name);
     }

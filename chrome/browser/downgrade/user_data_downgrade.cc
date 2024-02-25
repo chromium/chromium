@@ -56,7 +56,7 @@ base::FilePath GetLastVersionFile(const base::FilePath& user_data_dir) {
   return user_data_dir.Append(kDowngradeLastVersionFile);
 }
 
-absl::optional<base::Version> GetLastVersion(
+std::optional<base::Version> GetLastVersion(
     const base::FilePath& user_data_dir) {
   DCHECK(!user_data_dir.empty());
   std::string last_version_str;
@@ -67,7 +67,7 @@ absl::optional<base::Version> GetLastVersion(
     if (version.IsValid())
       return version;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::FilePath GetDiskCacheDir() {
@@ -108,7 +108,7 @@ std::vector<base::FilePath> GetInvalidSnapshots(
   return result;
 }
 
-absl::optional<base::Version> GetSnapshotToRestore(
+std::optional<base::Version> GetSnapshotToRestore(
     const base::Version& version,
     const base::FilePath& user_data_dir) {
   DCHECK(version.IsValid());
@@ -118,7 +118,7 @@ absl::optional<base::Version> GetSnapshotToRestore(
   auto upper_bound = available_snapshots.upper_bound(version);
   if (upper_bound != available_snapshots.begin())
     return *--upper_bound;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void RemoveDataForProfile(base::Time delete_begin,

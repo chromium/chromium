@@ -7,11 +7,20 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace attribution_reporting {
+struct OsRegistrationItem;
+}  // namespace attribution_reporting
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -21,7 +30,6 @@ class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
 
-struct OsRegistration;
 struct SendResult;
 
 // Observes events in the Attribution Reporting API. Observers are registered on
@@ -40,7 +48,7 @@ class AttributionObserver : public base::CheckedObserver {
   virtual void OnSourceHandled(
       const StorableSource& source,
       base::Time source_time,
-      absl::optional<uint64_t> cleared_debug_key,
+      std::optional<uint64_t> cleared_debug_key,
       attribution_reporting::mojom::StoreSourceResult) {}
 
   // Called when a report is sent, regardless of success, but not for attempts
@@ -58,14 +66,16 @@ class AttributionObserver : public base::CheckedObserver {
 
   // Called when a trigger is registered, regardless of success.
   virtual void OnTriggerHandled(const AttributionTrigger& trigger,
-                                absl::optional<uint64_t> cleared_debug_key,
+                                std::optional<uint64_t> cleared_debug_key,
                                 const CreateReportResult& result) {}
 
   // Called when an OS source or trigger registration is handled, regardless of
   // success.
   virtual void OnOsRegistration(
       base::Time time,
-      const OsRegistration&,
+      const attribution_reporting::OsRegistrationItem&,
+      const url::Origin& top_level_origin,
+      attribution_reporting::mojom::RegistrationType,
       bool is_debug_key_allowed,
       attribution_reporting::mojom::OsRegistrationResult) {}
 };

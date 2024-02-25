@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/system/video_conference/effects/fake_video_conference_effects.h"
+#include "ash/system/video_conference/effects/fake_video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,7 +34,7 @@ FakeVideoConferenceTrayController::FakeVideoConferenceTrayController()
       /*last_activity_time=*/base::Time::Now(),
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/absl::nullopt));
+      /*url=*/std::nullopt));
 }
 
 FakeVideoConferenceTrayController::~FakeVideoConferenceTrayController() {
@@ -66,6 +67,17 @@ void FakeVideoConferenceTrayController::StopAllScreenShare() {
     VideoConferenceTrayController::StopAllScreenShare();
   }
   stop_all_screen_share_count_++;
+}
+
+VideoConferenceTrayEffectsManager&
+FakeVideoConferenceTrayController::GetEffectsManager() {
+  return effects_manager_ ? *effects_manager_
+                          : VideoConferenceTrayController::GetEffectsManager();
+}
+
+void FakeVideoConferenceTrayController::SetEffectsManager(
+    VideoConferenceTrayEffectsManager* effects_manager) {
+  effects_manager_ = effects_manager;
 }
 
 void FakeVideoConferenceTrayController::GetMediaApps(

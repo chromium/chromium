@@ -4,12 +4,14 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
+
 (async function() {
   TestRunner.addResult(`Tests that InspectorBackendStub is catching incorrect arguments.\n`);
 
 
   console.error = function() {
-    TestRunner.addResult(String.sprintf.apply(this, arguments));
+    TestRunner.addResult(Platform.StringUtilities.sprintf.apply(this, arguments));
   };
 
   TestRunner.NetworkAgent.setUserAgentOverride(1);

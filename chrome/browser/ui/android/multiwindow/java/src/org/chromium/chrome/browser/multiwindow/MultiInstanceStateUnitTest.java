@@ -30,11 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Unit tests for MultiInstanceState.
- */
+/** Unit tests for MultiInstanceState. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {MultiInstanceStateUnitTest.ShadowAndroidTaskUtils.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {MultiInstanceStateUnitTest.ShadowAndroidTaskUtils.class})
 public class MultiInstanceStateUnitTest {
     @Implements(AndroidTaskUtils.class)
     static class ShadowAndroidTaskUtils {
@@ -125,8 +125,9 @@ public class MultiInstanceStateUnitTest {
         activity.setTaskId(taskId);
         RecentTaskInfo taskInfo = new RecentTaskInfo();
         taskInfo.id = taskId;
-        taskInfo.baseActivity = new ComponentName(
-                activity.getClass().getPackage().getName(), activity.getClass().getName());
+        taskInfo.baseActivity =
+                new ComponentName(
+                        activity.getClass().getPackage().getName(), activity.getClass().getName());
         sTasks.put(new AppTask(null), taskInfo);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
@@ -175,12 +176,14 @@ public class MultiInstanceStateUnitTest {
     }
 
     private void assertInMultiInstanceMode(String msg) {
-        Assert.assertTrue("Should be in multi-instance mode: " + msg,
+        Assert.assertTrue(
+                "Should be in multi-instance mode: " + msg,
                 mMultiInstanceState.isInMultiInstanceMode());
     }
 
     private void assertInSingleInstanceMode(String msg) {
-        Assert.assertFalse("Should be in single-instance mode: " + msg,
+        Assert.assertFalse(
+                "Should be in single-instance mode: " + msg,
                 mMultiInstanceState.isInMultiInstanceMode());
     }
 }

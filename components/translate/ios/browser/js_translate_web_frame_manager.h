@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TRANSLATE_IOS_BROWSER_JS_TRANSLATE_WEB_FRAME_MANAGER_H_
 #define COMPONENTS_TRANSLATE_IOS_BROWSER_JS_TRANSLATE_WEB_FRAME_MANAGER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/js_messaging/web_frame_user_data.h"
 
 namespace web {
@@ -30,7 +31,7 @@ class JSTranslateWebFrameManager
  protected:
   explicit JSTranslateWebFrameManager(web::WebFrame* web_frame);
 
-  web::WebFrame* web_frame_ = nullptr;
+  raw_ptr<web::WebFrame> web_frame_ = nullptr;
 
  private:
   friend class web::WebFrameUserData<JSTranslateWebFrameManager>;

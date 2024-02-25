@@ -99,7 +99,7 @@ std::u16string GetFormattedDueTime(const base::Time& due) {
     // NOTE: there is no way to differentiate missing due time vs. explicitly
     // set to 23:59 by user. Though the second case is less likely and
     // rendering it do not bring much value.
-    return u"";
+    return std::u16string();
   }
 
   const bool use_12_hour_clock =
@@ -235,15 +235,14 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
     : views::Button(std::move(pressed_callback)) {
   CHECK(assignment);
 
-  auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  layout->SetInteriorMargin(kInteriorMargin);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetInteriorMargin(kInteriorMargin);
 
   const gfx::RoundedCornersF corner_radii =
       GetRoundedCorners(item_index, last_item_index);
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, corner_radii,
-      /*for_border_thickness=*/0));
+      cros_tokens::kCrosSysSystemOnBase, corner_radii));
 
   std::vector<std::u16string> a11y_description_parts{
       base::UTF8ToUTF16(assignment->course_title)};
@@ -283,7 +282,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
 
   // Prevent the layout manager from setting the focus ring to a default hidden
   // visibility.
-  layout->SetChildViewIgnoredByLayout(focus_ring, true);
+  focus_ring->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
 GlanceablesClassroomItemView::~GlanceablesClassroomItemView() = default;
@@ -295,12 +294,12 @@ void GlanceablesClassroomItemView::GetAccessibleNodeData(
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
 }
 
-void GlanceablesClassroomItemView::Layout() {
-  views::Button::Layout();
-  views::FocusRing::Get(this)->Layout();
+void GlanceablesClassroomItemView::Layout(PassKey) {
+  LayoutSuperclass<views::Button>(this);
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }
 
-BEGIN_METADATA(GlanceablesClassroomItemView, views::View)
+BEGIN_METADATA(GlanceablesClassroomItemView)
 END_METADATA
 
 }  // namespace ash

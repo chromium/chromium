@@ -7,7 +7,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that console.memory returns fresh instance/samples.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('console.memory === console.memory', step1);

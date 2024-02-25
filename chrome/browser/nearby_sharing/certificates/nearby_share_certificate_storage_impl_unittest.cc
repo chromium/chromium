@@ -82,7 +82,7 @@ std::string EncodeString(const std::string& unencoded_string) {
   return encoded_string;
 }
 
-nearbyshare::proto::PublicCertificate CreatePublicCertificate(
+nearby::sharing::proto::PublicCertificate CreatePublicCertificate(
     const std::string& secret_id,
     const std::string& secret_key,
     const std::string& public_key,
@@ -94,7 +94,7 @@ nearbyshare::proto::PublicCertificate CreatePublicCertificate(
     const std::string& metadata_encryption_key,
     const std::string& encrypted_metadata_bytes,
     const std::string& metadata_encryption_key_tag) {
-  nearbyshare::proto::PublicCertificate cert;
+  nearby::sharing::proto::PublicCertificate cert;
   cert.set_secret_id(secret_id);
   cert.set_secret_key(secret_key);
   cert.set_public_key(public_key);
@@ -121,7 +121,7 @@ std::vector<NearbySharePrivateCertificate> CreatePrivateCertificates(
   return certs;
 }
 
-base::Time TimestampToTime(ash::nearby::proto::Timestamp timestamp) {
+base::Time TimestampToTime(nearby::sharing::proto::Timestamp timestamp) {
   return base::Time::UnixEpoch() + base::Seconds(timestamp.seconds()) +
          base::Nanoseconds(timestamp.nanos());
 }
@@ -139,7 +139,7 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
 
   void SetUp() override {
     auto db = std::make_unique<
-        leveldb_proto::test::FakeDB<nearbyshare::proto::PublicCertificate>>(
+        leveldb_proto::test::FakeDB<nearby::sharing::proto::PublicCertificate>>(
         &db_entries_);
     db_ = db.get();
 
@@ -158,7 +158,7 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
   }
 
   void PrepopulatePublicCertificates() {
-    std::vector<nearbyshare::proto::PublicCertificate> pub_certs;
+    std::vector<nearby::sharing::proto::PublicCertificate> pub_certs;
     pub_certs.emplace_back(CreatePublicCertificate(
         kSecretId1, kSecretKey1, kPublicKey1, kStartSeconds1, kStartNanos1,
         kEndSeconds1, kEndNanos1, kForSelectedContacts1,
@@ -190,10 +190,11 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
   void CaptureBoolCallback(bool* dest, bool src) { *dest = src; }
 
   void PublicCertificateCallback(
-      std::vector<nearbyshare::proto::PublicCertificate>* public_certificates,
+      std::vector<nearby::sharing::proto::PublicCertificate>*
+          public_certificates,
       base::OnceClosure complete,
       bool success,
-      std::unique_ptr<std::vector<nearbyshare::proto::PublicCertificate>>
+      std::unique_ptr<std::vector<nearby::sharing::proto::PublicCertificate>>
           result) {
     if (success && result) {
       public_certificates->swap(*result);
@@ -203,19 +204,20 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::map<std::string, nearbyshare::proto::PublicCertificate> db_entries_;
-  raw_ptr<leveldb_proto::test::FakeDB<nearbyshare::proto::PublicCertificate>,
-          DanglingUntriaged | ExperimentalAsh>
+  std::map<std::string, nearby::sharing::proto::PublicCertificate> db_entries_;
+  raw_ptr<
+      leveldb_proto::test::FakeDB<nearby::sharing::proto::PublicCertificate>,
+      DanglingUntriaged>
       db_;
   std::unique_ptr<NearbyShareCertificateStorage> cert_store_;
-  std::vector<nearbyshare::proto::PublicCertificate> public_certificates_;
+  std::vector<nearby::sharing::proto::PublicCertificate> public_certificates_;
 };
 
 TEST_F(NearbyShareCertificateStorageImplTest, DeferredCallbackQueue) {
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
 
-  std::vector<nearbyshare::proto::PublicCertificate> public_certificates;
+  std::vector<nearby::sharing::proto::PublicCertificate> public_certificates;
 
   cert_store_->GetPublicCertificates(base::BindOnce(
       &NearbyShareCertificateStorageImplTest::PublicCertificateCallback,
@@ -227,9 +229,10 @@ TEST_F(NearbyShareCertificateStorageImplTest, DeferredCallbackQueue) {
   // deferred callbacks posted during initialization.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&leveldb_proto::test::FakeDB<
-                         nearbyshare::proto::PublicCertificate>::LoadCallback,
-                     base::Unretained(db_), true));
+      base::BindOnce(
+          &leveldb_proto::test::FakeDB<
+              nearby::sharing::proto::PublicCertificate>::LoadCallback,
+          base::Unretained(db_), true));
 
   run_loop.Run();
 
@@ -239,14 +242,14 @@ TEST_F(NearbyShareCertificateStorageImplTest, DeferredCallbackQueue) {
 TEST_F(NearbyShareCertificateStorageImplTest, GetPublicCertificates) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
-  std::vector<nearbyshare::proto::PublicCertificate> public_certificates;
+  std::vector<nearby::sharing::proto::PublicCertificate> public_certificates;
   cert_store_->GetPublicCertificates(base::BindOnce(
       &NearbyShareCertificateStorageImplTest::PublicCertificateCallback,
       base::Unretained(this), &public_certificates, base::BindOnce([] {})));
   db_->LoadCallback(true);
 
   ASSERT_EQ(3u, public_certificates.size());
-  for (nearbyshare::proto::PublicCertificate& cert : public_certificates) {
+  for (nearby::sharing::proto::PublicCertificate& cert : public_certificates) {
     std::string expected_serialized, actual_serialized;
     ASSERT_TRUE(cert.SerializeToString(&expected_serialized));
     ASSERT_TRUE(db_entries_.find(cert.secret_id())
@@ -258,7 +261,7 @@ TEST_F(NearbyShareCertificateStorageImplTest, GetPublicCertificates) {
 TEST_F(NearbyShareCertificateStorageImplTest, AddPublicCertificates) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
-  std::vector<nearbyshare::proto::PublicCertificate> new_certs = {
+  std::vector<nearby::sharing::proto::PublicCertificate> new_certs = {
       CreatePublicCertificate(kSecretId3, kSecretKey2, kPublicKey2,
                               kStartSeconds2, kStartNanos2, kEndSeconds2,
                               kEndNanos2, kForSelectedContacts2,
@@ -422,7 +425,7 @@ TEST_F(NearbyShareCertificateStorageImplTest,
   auto certs = CreatePrivateCertificates(
       3, nearby_share::mojom::Visibility::kAllContacts);
   cert_store_->ReplacePrivateCertificates(certs);
-  absl::optional<base::Time> next_expiration =
+  std::optional<base::Time> next_expiration =
       cert_store_->NextPrivateCertificateExpirationTime();
 
   ASSERT_TRUE(next_expiration.has_value());
@@ -439,7 +442,7 @@ TEST_F(NearbyShareCertificateStorageImplTest,
        NextPublicCertificateExpirationTime) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
-  absl::optional<base::Time> next_expiration =
+  std::optional<base::Time> next_expiration =
       cert_store_->NextPublicCertificateExpirationTime();
 
   ASSERT_TRUE(next_expiration.has_value());

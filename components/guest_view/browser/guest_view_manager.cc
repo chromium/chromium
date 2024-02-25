@@ -144,12 +144,21 @@ void GuestViewManager::AttachGuest(int embedder_process_id,
   guest_view->SetAttachParams(attach_params);
 }
 
-bool GuestViewManager::IsOwnedByExtension(GuestViewBase* guest) {
+bool GuestViewManager::IsOwnedByExtension(const GuestViewBase* guest) {
   return delegate_->IsOwnedByExtension(guest);
+}
+
+bool GuestViewManager::IsOwnedByControlledFrameEmbedder(
+    const GuestViewBase* guest) {
+  return delegate_->IsOwnedByControlledFrameEmbedder(guest);
 }
 
 int GuestViewManager::GetNextInstanceID() {
   return ++current_instance_id_;
+}
+
+base::WeakPtr<GuestViewManager> GuestViewManager::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void GuestViewManager::CreateGuest(const std::string& view_type,
@@ -246,24 +255,25 @@ SiteInstance* GuestViewManager::GetGuestSiteInstance(
 
 void GuestViewManager::ForEachUnattachedGuest(
     content::WebContents* owner_web_contents,
-    base::RepeatingCallback<void(content::WebContents*)> callback) {
+    base::FunctionRef<void(content::WebContents*)> fn) {
   for (auto [id, guest] : guests_by_instance_id_) {
     if (guest->owner_web_contents() == owner_web_contents &&
         !guest->attached() && guest->web_contents()) {
-      callback.Run(guest->web_contents());
+      fn(guest->web_contents());
     }
   }
 }
 
-bool GuestViewManager::ForEachGuest(WebContents* owner_web_contents,
-                                    const GuestCallback& callback) {
+bool GuestViewManager::ForEachGuest(
+    WebContents* owner_web_contents,
+    base::FunctionRef<bool(content::WebContents*)> fn) {
   for (auto [id, guest] : guests_by_instance_id_) {
     if (!guest->web_contents() ||
         guest->owner_web_contents() != owner_web_contents) {
       continue;
     }
 
-    if (callback.Run(guest->web_contents())) {
+    if (fn(guest->web_contents())) {
       return true;
     }
   }
@@ -274,8 +284,15 @@ WebContents* GuestViewManager::GetFullPageGuest(
     WebContents* embedder_web_contents) {
   WebContents* result = nullptr;
   ForEachGuest(
-      embedder_web_contents,
-      base::BindRepeating(&GuestViewManager::GetFullPageGuestHelper, &result));
+      embedder_web_contents, [&](content::WebContents* guest_web_contents) {
+        auto* guest_view = GuestViewBase::FromWebContents(guest_web_contents);
+        if (guest_view && guest_view->is_full_page_plugin()) {
+          result = guest_web_contents;
+          return true;
+        }
+        return false;
+      });
+
   return result;
 }
 
@@ -525,18 +542,6 @@ bool GuestViewManager::CanUseGuestInstanceID(int guest_instance_id) {
   if (guest_instance_id <= last_instance_id_removed_)
     return false;
   return !base::Contains(removed_instance_ids_, guest_instance_id);
-}
-
-// static
-bool GuestViewManager::GetFullPageGuestHelper(
-    content::WebContents** result,
-    content::WebContents* guest_web_contents) {
-  auto* guest_view = GuestViewBase::FromWebContents(guest_web_contents);
-  if (guest_view && guest_view->is_full_page_plugin()) {
-    *result = guest_web_contents;
-    return true;
-  }
-  return false;
 }
 
 bool GuestViewManager::CanEmbedderAccessInstanceID(

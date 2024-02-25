@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++EditText text:"1" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {type="number"}, {value="1"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++++++++TextView text:"1" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++EditText text:"6" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {max="10"}, {min="5"}, {type="number"}, {value="6"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]
+++++++++TextView text:"6" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -37,7 +38,7 @@ struct WaylandFrame {
  public:
   // A frame originated from gpu process, and hence, requires acknowledgements.
   WaylandFrame(uint32_t frame_id,
-               int64_t seq,
+               const gfx::FrameData& data,
                WaylandSurface* root_surface,
                wl::WaylandOverlayConfig root_config,
                base::circular_deque<
@@ -86,13 +87,16 @@ struct WaylandFrame {
   wl::Object<struct wp_presentation_feedback> pending_feedback;
   // The actual presentation feedback. May be missing if the callback from the
   // Wayland server has not arrived yet.
-  absl::optional<gfx::PresentationFeedback> feedback = absl::nullopt;
+  std::optional<gfx::PresentationFeedback> feedback = std::nullopt;
   // Whether this frame has had OnPresentation sent for it.
   bool presentation_acked;
 
   // The sequence ID for this frame. This is used to know when the proper
   // buffers associated with a configure arrive.
   [[maybe_unused]] int64_t seq = -1;
+
+  // Trace ID for tracking submission of the current frame.
+  int64_t trace_id = -1;
 };
 
 // This is the frame update manager that configures graphical window/surface
@@ -133,7 +137,8 @@ class WaylandFrameManager {
   void DiscardFrame(std::unique_ptr<WaylandFrame> frame);
 
   // Configures |surface| but does not commit wl_surface states yet.
-  void ApplySurfaceConfigure(WaylandFrame* frame,
+  // Returns whether or not changes require a commit to the wl_surface.
+  bool ApplySurfaceConfigure(WaylandFrame* frame,
                              WaylandSurface* surface,
                              wl::WaylandOverlayConfig& config,
                              bool needs_opaque_region);
@@ -151,24 +156,23 @@ class WaylandFrameManager {
   void ClearProcessedSubmittedFrames();
 
   void OnExplicitBufferRelease(WaylandSurface* surface,
-                               struct wl_buffer* wl_buffer,
+                               wl_buffer* wl_buffer,
                                base::ScopedFD fence);
-  void OnWlBufferRelease(WaylandSurface* surface, struct wl_buffer* wl_buffer);
+  void OnWlBufferRelease(WaylandSurface* surface, wl_buffer* wl_buffer);
 
-  // wl_callback_listener
-  static void FrameCallbackDone(void* data,
-                                struct wl_callback* callback,
-                                uint32_t time);
-  void OnFrameCallback(struct wl_callback* callback);
+  // wl_callback_listener callbacks:
+  static void OnFrameDone(void* data, wl_callback* callback, uint32_t time);
 
-  // wp_presentation_feedback_listener
-  static void FeedbackSyncOutput(
+  void HandleFrameCallback(wl_callback* callback);
+
+  // wp_presentation_feedback_listener callbacks:
+  static void OnSyncOutput(
       void* data,
-      struct wp_presentation_feedback* wp_presentation_feedback,
-      struct wl_output* output);
-  static void FeedbackPresented(
+      struct wp_presentation_feedback* presentation_feedback,
+      wl_output* output);
+  static void OnPresented(
       void* data,
-      struct wp_presentation_feedback* wp_presentation_feedback,
+      struct wp_presentation_feedback* presentation_feedback,
       uint32_t tv_sec_hi,
       uint32_t tv_sec_lo,
       uint32_t tv_nsec,
@@ -176,13 +180,14 @@ class WaylandFrameManager {
       uint32_t seq_hi,
       uint32_t seq_lo,
       uint32_t flags);
-  static void FeedbackDiscarded(
+  static void OnDiscarded(
       void* data,
-      struct wp_presentation_feedback* wp_presentation_feedback);
+      struct wp_presentation_feedback* presentation_feedback);
 
-  void OnPresentation(struct wp_presentation_feedback* wp_presentation_feedback,
-                      const gfx::PresentationFeedback& feedback,
-                      bool discarded = false);
+  void HandlePresentationFeedback(
+      struct wp_presentation_feedback* presentation_feedback,
+      const gfx::PresentationFeedback& feedback,
+      bool discarded = false);
 
   // Verifies the number of submitted frames and discards pending presentation
   // feedbacks if the number is too big.

@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -35,6 +36,8 @@ class ASH_EXPORT DragHandle : public views::Button,
                               public ui::ImplicitAnimationObserver,
                               public SplitViewObserver,
                               public ShelfObserver {
+  METADATA_HEADER(DragHandle, views::Button)
+
  public:
   DragHandle(float drag_handle_corner_radius, Shelf* shelf);
   DragHandle(const DragHandle&) = delete;
@@ -153,7 +156,7 @@ class ASH_EXPORT DragHandle : public views::Button,
   void StopDragHandleNudgeShowTimer();
 
   // Pointer to the shelf that owns the drag handle.
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   // Timer to hide drag handle nudge if it has a timed life.
   base::OneShotTimer hide_drag_handle_nudge_timer_;
@@ -176,7 +179,7 @@ class ASH_EXPORT DragHandle : public views::Button,
   bool window_drag_from_shelf_in_progress_ = false;
 
   // A label used to educate users about swipe gestures on the drag handle.
-  raw_ptr<ContextualNudge, ExperimentalAsh> drag_handle_nudge_ = nullptr;
+  raw_ptr<ContextualNudge> drag_handle_nudge_ = nullptr;
 
   std::unique_ptr<Shelf::ScopedAutoHideLock> auto_hide_lock_;
 

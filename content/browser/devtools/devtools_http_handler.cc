@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/devtools/devtools_http_handler.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -31,7 +34,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "content/browser/devtools/devtools_http_handler.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -54,7 +56,6 @@
 #include "net/server/http_server_response_info.h"
 #include "net/socket/server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -579,7 +580,7 @@ void DevToolsHttpHandler::OnJsonRequest(
   std::string command;
   std::string target_id;
   if (!ParseJsonPath(path, &command, &target_id)) {
-    SendJson(connection_id, net::HTTP_NOT_FOUND, absl::nullopt,
+    SendJson(connection_id, net::HTTP_NOT_FOUND, std::nullopt,
              "Malformed query: " + info.path);
     return;
   }
@@ -629,7 +630,7 @@ void DevToolsHttpHandler::OnJsonRequest(
     if (!base::EqualsCaseInsensitiveASCII(
             info.method, net::HttpRequestHeaders::kPutMethod)) {
       SendJson(
-          connection_id, net::HTTP_METHOD_NOT_ALLOWED, absl::nullopt,
+          connection_id, net::HTTP_METHOD_NOT_ALLOWED, std::nullopt,
           base::StringPrintf("Using unsafe HTTP verb %s to invoke /json/new. "
                              "This action supports only PUT verb.",
                              info.method.c_str()));
@@ -647,7 +648,7 @@ void DevToolsHttpHandler::OnJsonRequest(
         url, for_tab ? DevToolsManagerDelegate::kTab
                      : DevToolsManagerDelegate::kFrame);
     if (!agent_host) {
-      SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, absl::nullopt,
+      SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, std::nullopt,
                "Could not create new page");
       return;
     }
@@ -661,17 +662,16 @@ void DevToolsHttpHandler::OnJsonRequest(
     scoped_refptr<DevToolsAgentHost> agent_host =
         DevToolsAgentHost::GetForId(target_id);
     if (!agent_host) {
-      SendJson(connection_id, net::HTTP_NOT_FOUND, absl::nullopt,
+      SendJson(connection_id, net::HTTP_NOT_FOUND, std::nullopt,
                "No such target id: " + target_id);
       return;
     }
 
     if (command == "activate") {
       if (agent_host->Activate()) {
-        SendJson(connection_id, net::HTTP_OK, absl::nullopt,
-                 "Target activated");
+        SendJson(connection_id, net::HTTP_OK, std::nullopt, "Target activated");
       } else {
-        SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, absl::nullopt,
+        SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, std::nullopt,
                  "Could not activate target id: " + target_id);
       }
       return;
@@ -679,16 +679,16 @@ void DevToolsHttpHandler::OnJsonRequest(
 
     if (command == "close") {
       if (agent_host->Close()) {
-        SendJson(connection_id, net::HTTP_OK, absl::nullopt,
+        SendJson(connection_id, net::HTTP_OK, std::nullopt,
                  "Target is closing");
       } else {
-        SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, absl::nullopt,
+        SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, std::nullopt,
                  "Could not close target id: " + target_id);
       }
       return;
     }
   }
-  SendJson(connection_id, net::HTTP_NOT_FOUND, absl::nullopt,
+  SendJson(connection_id, net::HTTP_NOT_FOUND, std::nullopt,
            "Unknown command: " + command);
 }
 
@@ -867,7 +867,7 @@ void DevToolsHttpHandler::ServerStarted(
 
 void DevToolsHttpHandler::SendJson(int connection_id,
                                    net::HttpStatusCode status_code,
-                                   absl::optional<base::ValueView> value,
+                                   std::optional<base::ValueView> value,
                                    const std::string& message) {
   if (!thread_)
     return;

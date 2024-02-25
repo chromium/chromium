@@ -160,15 +160,42 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
     float& prediction_reliability_score) const {
   DCHECK(IsAvailable());
 
-  if (!predicted_language || !is_prediction_reliable)
+  if (!predicted_language || !is_prediction_reliable) {
     return translate::kUnknownLanguageCode;
+  }
 
   *is_prediction_reliable = false;
   *predicted_language = translate::kUnknownLanguageCode;
   prediction_reliability_score = 0.0;
 
-  if (!lang_detection_model_)
+  if (!lang_detection_model_) {
     return translate::kUnknownLanguageCode;
+  }
+
+  const Prediction prediction = DetectLanguage(contents);
+  prediction_reliability_score = prediction.reliability;
+
+  // TODO(crbug.com/1177992): Use the model threshold provided
+  // by the model itself. Not needed until threshold is finalized.
+  bool is_reliable =
+      prediction_reliability_score > GetTFLiteLanguageDetectionThreshold();
+
+  std::string final_prediction = translate::FilterDetectedLanguage(
+      base::UTF16ToUTF8(contents), prediction.language, is_reliable);
+  *predicted_language = final_prediction;
+  *is_prediction_reliable = is_reliable;
+  language::ToTranslateLanguageSynonym(&final_prediction);
+
+  LOCAL_HISTOGRAM_BOOLEAN("LanguageDetection.TFLite.DidAttemptDetection", true);
+  return translate::DeterminePageLanguage(code, html_lang, final_prediction,
+                                          is_reliable);
+}
+
+LanguageDetectionModel::Prediction LanguageDetectionModel::DetectLanguage(
+    const std::u16string& contents) const {
+  if (!lang_detection_model_) {
+    return Prediction{translate::kUnknownLanguageCode, 0.0f};
+  }
 
   std::vector<std::pair<std::string, float>> model_predictions;
   // First evaluate the model on the entire contents based on the model's
@@ -193,23 +220,7 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
   const auto top_language_result = std::max_element(
       model_predictions.begin(), model_predictions.end(),
       [](auto& left, auto& right) { return left.second < right.second; });
-
-  prediction_reliability_score = top_language_result->second;
-
-  // TODO(crbug.com/1177992): Use the model threshold provided
-  // by the model itself. Not needed until threshold is finalized.
-  bool is_reliable =
-      prediction_reliability_score > GetTFLiteLanguageDetectionThreshold();
-
-  std::string final_prediction = translate::FilterDetectedLanguage(
-      base::UTF16ToUTF8(contents), top_language_result->first, is_reliable);
-  *predicted_language = final_prediction;
-  *is_prediction_reliable = is_reliable;
-  language::ToTranslateLanguageSynonym(&final_prediction);
-
-  LOCAL_HISTOGRAM_BOOLEAN("LanguageDetection.TFLite.DidAttemptDetection", true);
-  return translate::DeterminePageLanguage(code, html_lang, final_prediction,
-                                          is_reliable);
+  return Prediction{top_language_result->first, top_language_result->second};
 }
 
 std::string LanguageDetectionModel::GetModelVersion() const {

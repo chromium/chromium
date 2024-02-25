@@ -6,52 +6,57 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <array>
-#include <iterator>
 #include <set>
+#include <type_traits>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "crypto/random.h"
-#include "net/base/io_buffer.h"
-#include "net/base/ip_endpoint.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_stream_parser.h"
+#include "net/http/http_version.h"
+#include "net/log/net_log_event_type.h"
 #include "net/socket/client_socket_handle.h"
-#include "net/socket/ssl_client_socket.h"
-#include "net/socket/websocket_endpoint_lock_manager.h"
+#include "net/socket/stream_socket.h"
 #include "net/socket/websocket_transport_client_socket_pool.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_basic_stream.h"
 #include "net/websockets/websocket_basic_stream_adapters.h"
-#include "net/websockets/websocket_deflate_parameters.h"
-#include "net/websockets/websocket_deflate_predictor.h"
 #include "net/websockets/websocket_deflate_predictor_impl.h"
 #include "net/websockets/websocket_deflate_stream.h"
-#include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_handshake_challenge.h"
 #include "net/websockets/websocket_handshake_constants.h"
 #include "net/websockets/websocket_handshake_request_info.h"
-#include "net/websockets/websocket_handshake_response_info.h"
 #include "net/websockets/websocket_stream.h"
 
 namespace net {
+class HttpStream;
+class IOBuffer;
+class IPEndPoint;
+struct AlternativeService;
+struct LoadTimingInfo;
+struct NetErrorDetails;
 
 namespace {
 
@@ -68,7 +73,7 @@ enum GetHeaderResult {
 };
 
 std::string MissingHeaderMessage(const std::string& header_name) {
-  return std::string("'") + header_name + "' header is missing";
+  return base::StrCat({"'", header_name, "' header is missing"});
 }
 
 std::string GenerateHandshakeChallenge() {
@@ -174,12 +179,12 @@ base::Value::Dict NetLogFailureParam(int net_error,
 WebSocketBasicHandshakeStream::WebSocketBasicHandshakeStream(
     std::unique_ptr<ClientSocketHandle> connection,
     WebSocketStream::ConnectDelegate* connect_delegate,
-    bool using_proxy,
+    bool is_for_get_to_http_proxy,
     std::vector<std::string> requested_sub_protocols,
     std::vector<std::string> requested_extensions,
     WebSocketStreamRequestAPI* request,
     WebSocketEndpointLockManager* websocket_endpoint_lock_manager)
-    : state_(std::move(connection), using_proxy),
+    : state_(std::move(connection), is_for_get_to_http_proxy),
       connect_delegate_(connect_delegate),
       requested_sub_protocols_(std::move(requested_sub_protocols)),
       requested_extensions_(std::move(requested_extensions)),
@@ -245,9 +250,8 @@ int WebSocketBasicHandshakeStream::SendRequest(
   http_response_info_ = response;
 
   // Create a copy of the headers object, so that we can add the
-  // Sec-WebSockey-Key header.
-  HttpRequestHeaders enriched_headers;
-  enriched_headers.CopyFrom(headers);
+  // Sec-WebSocket-Key header.
+  HttpRequestHeaders enriched_headers = headers;
   std::string handshake_challenge;
   if (handshake_challenge_for_testing_.has_value()) {
     handshake_challenge = handshake_challenge_for_testing_.value();
@@ -270,7 +274,7 @@ int WebSocketBasicHandshakeStream::SendRequest(
   DCHECK(connect_delegate_);
   auto request =
       std::make_unique<WebSocketHandshakeRequestInfo>(url_, base::Time::Now());
-  request->headers.CopyFrom(enriched_headers);
+  request->headers = enriched_headers;
   connect_delegate_->OnStartOpeningHandshake(std::move(request));
 
   return parser()->SendRequest(
@@ -348,11 +352,10 @@ bool WebSocketBasicHandshakeStream::GetLoadTimingInfo(
 }
 
 void WebSocketBasicHandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {
-  if (!state_.connection()->socket()) {
+  if (!state_.connection()->socket() ||
+      !state_.connection()->socket()->GetSSLInfo(ssl_info)) {
     ssl_info->Reset();
-    return;
   }
-  parser()->GetSSLInfo(ssl_info);
 }
 
 void WebSocketBasicHandshakeStream::GetSSLCertRequestInfo(
@@ -397,9 +400,10 @@ WebSocketBasicHandshakeStream::RenewStreamForAuth() {
   state_.DeleteParser();
 
   auto handshake_stream = std::make_unique<WebSocketBasicHandshakeStream>(
-      state_.ReleaseConnection(), connect_delegate_, state_.using_proxy(),
-      std::move(requested_sub_protocols_), std::move(requested_extensions_),
-      stream_request_, websocket_endpoint_lock_manager_);
+      state_.ReleaseConnection(), connect_delegate_,
+      state_.is_for_get_to_http_proxy(), std::move(requested_sub_protocols_),
+      std::move(requested_extensions_), stream_request_,
+      websocket_endpoint_lock_manager_);
 
   stream_request_->OnBasicHandshakeStreamCreated(handshake_stream.get());
 
@@ -487,7 +491,7 @@ int WebSocketBasicHandshakeStream::ValidateResponse(int rv) {
         // helpful, so use a different error message.
         if (headers->GetHttpVersion() == HttpVersion(0, 9)) {
           OnFailure("Error during WebSocket handshake: Invalid status line",
-                    ERR_FAILED, absl::nullopt);
+                    ERR_FAILED, std::nullopt);
         } else {
           OnFailure(base::StringPrintf("Error during WebSocket handshake: "
                                        "Unexpected response code: %d",
@@ -500,13 +504,13 @@ int WebSocketBasicHandshakeStream::ValidateResponse(int rv) {
   } else {
     if (rv == ERR_EMPTY_RESPONSE) {
       OnFailure("Connection closed before receiving a handshake response", rv,
-                absl::nullopt);
+                std::nullopt);
       result_ = HandshakeResult::EMPTY_RESPONSE;
       return rv;
     }
     OnFailure(
-        std::string("Error during WebSocket handshake: ") + ErrorToString(rv),
-        rv, absl::nullopt);
+        base::StrCat({"Error during WebSocket handshake: ", ErrorToString(rv)}),
+        rv, std::nullopt);
     // Some error codes (for example ERR_CONNECTION_CLOSED) get changed to OK at
     // higher levels. To prevent an unvalidated connection getting erroneously
     // upgraded, don't pass through the status code unchanged if it is
@@ -546,14 +550,14 @@ int WebSocketBasicHandshakeStream::ValidateUpgradeResponse(
     return OK;
   }
   OnFailure("Error during WebSocket handshake: " + failure_message, ERR_FAILED,
-            absl::nullopt);
+            std::nullopt);
   return ERR_INVALID_RESPONSE;
 }
 
 void WebSocketBasicHandshakeStream::OnFailure(
     const std::string& message,
     int net_error,
-    absl::optional<int> response_code) {
+    std::optional<int> response_code) {
   net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_UPGRADE_FAILURE,
                     [&] { return NetLogFailureParam(net_error, message); });
   // Avoid connection reuse if auth did not happen.

@@ -15,6 +15,7 @@ source_set("metadata_headers") {
     "metadata_impl_macros.h",
     "metadata_macros_internal.h",
     "metadata_types.h",
+    "metadata_utils.h",
     "property_metadata.h",
   ]
 

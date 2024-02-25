@@ -5,13 +5,12 @@
 /**
  * @fileoverview Maintains the state of the `<xf-cloud-panel>` and ensures the
  * information is passed to it appropriately.
- * @suppress {checkTypes} TS already checks this file.
  */
 
-import {util} from '../common/js/util.js';
-import {State} from '../externs/ts/state.js';
-import {getStore, Store} from '../state/store.js';
-import {CloudPanelSettingsClickEvent, CloudPanelType, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
+import {canBulkPinningCloudPanelShow} from '../common/js/util.js';
+import type {State} from '../state/state.js';
+import {getStore, type Store} from '../state/store.js';
+import {type CloudPanelSettingsClickEvent, CloudPanelType, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
 
 export type BulkPinProgress = chrome.fileManagerPrivate.BulkPinProgress;
 export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
@@ -38,7 +37,14 @@ export class CloudPanelContainer {
    * The driveFsBulkPinningEnabled preference, used to identify if it has
    * changed or not.
    */
-  private bulkPinningPreference_: boolean|undefined = false;
+  private bulkPinningEnabled_: boolean = false;
+
+  /**
+   * If true, drive syncing is paused due to both being on a network reporting
+   * as metered and also having the preference of syncing disabled on metered
+   * networks.
+   */
+  private isOnMetered_: boolean = false;
 
   /**
    * Keeps track of the number of updates.
@@ -68,50 +74,60 @@ export class CloudPanelContainer {
   }
 
   onStateChanged(state: State) {
-    const bulkPinProgress = state.bulkPinning;
-    const bulkPinPref = state.preferences?.driveFsBulkPinningEnabled;
-    if (!bulkPinProgress) {
-      this.bulkPinningPreference_ = bulkPinPref;
+    const progress = state.bulkPinning;
+    const enabled = !!state.preferences?.driveFsBulkPinningEnabled;
+    if (!progress) {
+      this.bulkPinningEnabled_ = enabled;
       return;
     }
 
+    const isOnMetered = state.drive?.connectionType ===
+        chrome.fileManagerPrivate.DriveConnectionStateType.METERED;
+
     // Check if any of the required state has changed between store changes.
     if ((this.progress_ &&
-         (this.progress_.stage === bulkPinProgress.stage &&
-          this.progress_.filesToPin === bulkPinProgress.filesToPin &&
-          this.progress_.pinnedBytes === bulkPinProgress.pinnedBytes &&
-          this.progress_.bytesToPin === bulkPinProgress.bytesToPin &&
-          this.progress_.remainingSeconds ===
-              bulkPinProgress.remainingSeconds)) &&
-        this.bulkPinningPreference_ === bulkPinPref) {
+         (this.progress_.stage === progress.stage &&
+          this.progress_.filesToPin === progress.filesToPin &&
+          this.progress_.pinnedBytes === progress.pinnedBytes &&
+          this.progress_.bytesToPin === progress.bytesToPin &&
+          this.progress_.remainingSeconds === progress.remainingSeconds)) &&
+        this.bulkPinningEnabled_ === enabled &&
+        this.isOnMetered_ === isOnMetered) {
       return;
     }
-    this.progress_ = bulkPinProgress;
-    this.bulkPinningPreference_ = bulkPinPref;
+
+    this.progress_ = progress;
+    this.bulkPinningEnabled_ = enabled;
+    this.isOnMetered_ = isOnMetered;
 
     // If the bulk pinning cloud panel can't be shown, make sure to close any
     // open variants of it. This ensures if the panel is open when the
     // preference is disabled, it will not stay open with stale data.
-    if (!util.canBulkPinningCloudPanelShow(
-            bulkPinProgress.stage, bulkPinPref)) {
+    if (!canBulkPinningCloudPanelShow(progress.stage, enabled)) {
       this.panel_.close();
+      return;
+    }
+
+    // When on a metered network, drive syncing is paused.
+    if (this.isOnMetered_) {
+      this.updatePanelType_(CloudPanelType.METERED_NETWORK);
       return;
     }
 
     // If the bulk pinning is paused, this indicates that it is currently
     // offline or battery saver mode is active.
-    if (bulkPinProgress.stage === BulkPinStage.PAUSED_OFFLINE) {
+    if (progress.stage === BulkPinStage.PAUSED_OFFLINE) {
       this.updatePanelType_(CloudPanelType.OFFLINE);
       return;
     }
-    if (bulkPinProgress.stage === BulkPinStage.PAUSED_BATTERY_SAVER) {
+    if (progress.stage === BulkPinStage.PAUSED_BATTERY_SAVER) {
       this.updatePanelType_(CloudPanelType.BATTERY_SAVER);
       return;
     }
 
     // Not enough space indicates the available local storage is insufficient to
     // store all the files required by the users My drive.
-    if (bulkPinProgress.stage === BulkPinStage.NOT_ENOUGH_SPACE) {
+    if (progress.stage === BulkPinStage.NOT_ENOUGH_SPACE) {
       this.updatePanelType_(CloudPanelType.NOT_ENOUGH_SPACE);
       return;
     }
@@ -119,25 +135,22 @@ export class CloudPanelContainer {
 
     // Files to pin can't be negative the pinned bytes should never exceed
     // the bytes to pin (>100%).
-    if (bulkPinProgress.filesToPin < 0 ||
-        (bulkPinProgress.pinnedBytes > bulkPinProgress.bytesToPin)) {
+    if (progress.filesToPin < 0 ||
+        (progress.pinnedBytes > progress.bytesToPin)) {
       return;
     }
 
     this.clearAllAttributes_();
-    this.panel_.setAttribute('items', String(bulkPinProgress.filesToPin));
-    const percentage = (bulkPinProgress.bytesToPin === 0) ?
+    this.panel_.setAttribute('items', String(progress.filesToPin));
+    const percentage = (progress.bytesToPin === 0) ?
         '100' :
-        (bulkPinProgress.pinnedBytes / bulkPinProgress.bytesToPin * 100)
-            .toFixed(0);
-    if ((bulkPinProgress.filesToPin > 0 && bulkPinProgress.pinnedBytes > 0) ||
-        (bulkPinProgress.pinnedBytes === 0 &&
-         bulkPinProgress.bytesToPin === 0) ||
-        (bulkPinProgress.filesToPin === 0)) {
+        (progress.pinnedBytes / progress.bytesToPin * 100).toFixed(0);
+    if ((progress.filesToPin > 0 && progress.pinnedBytes > 0) ||
+        (progress.pinnedBytes === 0 && progress.bytesToPin === 0) ||
+        (progress.filesToPin === 0)) {
       this.panel_.setAttribute('percentage', String(percentage));
     }
-    this.panel_.setAttribute(
-        'seconds', String(bulkPinProgress.remainingSeconds));
+    this.panel_.setAttribute('seconds', String(progress.remainingSeconds));
     this.increaseUpdates_();
   }
 

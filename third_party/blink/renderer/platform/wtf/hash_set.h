@@ -144,9 +144,9 @@ class HashSet {
     return std::make_unique<HashSet>(*this);
   }
 
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(
-      VisitorDispatcher visitor) const {
+  void Trace(auto visitor) const
+    requires Allocator::kIsGarbageCollected
+  {
     impl_.Trace(visitor);
   }
 

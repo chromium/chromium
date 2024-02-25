@@ -66,14 +66,14 @@ DWORD Job::Init(JobLevel security_level,
     }
   }
 
-  if (!::SetInformationJobObject(job_handle_.Get(),
+  if (!::SetInformationJobObject(job_handle_.get(),
                                  JobObjectExtendedLimitInformation, &jeli,
                                  sizeof(jeli))) {
     return ::GetLastError();
   }
 
   jbur.UIRestrictionsClass = jbur.UIRestrictionsClass & (~ui_exceptions);
-  if (!::SetInformationJobObject(job_handle_.Get(),
+  if (!::SetInformationJobObject(job_handle_.get(),
                                  JobObjectBasicUIRestrictions, &jbur,
                                  sizeof(jbur))) {
     return ::GetLastError();

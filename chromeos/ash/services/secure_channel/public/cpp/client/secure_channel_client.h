@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace ash {
@@ -66,7 +67,9 @@ class SecureChannelClient {
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
-      ConnectionPriority connection_priority) = 0;
+      ConnectionPriority connection_priority,
+      SecureChannelStructuredMetricsLogger*
+          secure_channel_structure_metrics_logger) = 0;
   virtual std::unique_ptr<ConnectionAttempt> ListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
@@ -80,7 +83,7 @@ class SecureChannelClient {
   // the current Chrome session.
   virtual void GetLastSeenTimestamp(
       const std::string& remote_device_id,
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) = 0;
 
  protected:
   SecureChannelClient() = default;

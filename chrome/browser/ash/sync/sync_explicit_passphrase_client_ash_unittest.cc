@@ -136,7 +136,7 @@ class SyncExplicitPassphraseClientAshTest : public testing::Test {
 };
 
 TEST_F(SyncExplicitPassphraseClientAshTest, ShouldGetDecryptionKey) {
-  ON_CALL(*sync_user_settings(), GetDecryptionNigoriKey())
+  ON_CALL(*sync_user_settings(), GetExplicitPassphraseDecryptionNigoriKey())
       .WillByDefault(MakeTestNigoriKey);
 
   crosapi::mojom::NigoriKeyPtr nigori_key =
@@ -169,7 +169,8 @@ TEST_F(SyncExplicitPassphraseClientAshTest,
 }
 
 TEST_F(SyncExplicitPassphraseClientAshTest, ShouldSetDecryptionKey) {
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey(NotNull()));
+  EXPECT_CALL(*sync_user_settings(),
+              SetExplicitPassphraseDecryptionNigoriKey(NotNull()));
   client()->SetDecryptionNigoriKey(GetSyncingAccountKey(),
                                    MakeTestMojoNigoriKey());
 }
@@ -181,20 +182,23 @@ TEST_F(SyncExplicitPassphraseClientAshTest,
   wrong_account_key->id = "user2";
   wrong_account_key->account_type = crosapi::mojom::AccountType::kGaia;
 
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey).Times(0);
+  EXPECT_CALL(*sync_user_settings(), SetExplicitPassphraseDecryptionNigoriKey)
+      .Times(0);
   client()->SetDecryptionNigoriKey(std::move(wrong_account_key),
                                    MakeTestMojoNigoriKey());
 }
 
 TEST_F(SyncExplicitPassphraseClientAshTest,
        ShouldHandleNullKeyWhenSettingDecryptionKey) {
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey).Times(0);
+  EXPECT_CALL(*sync_user_settings(), SetExplicitPassphraseDecryptionNigoriKey)
+      .Times(0);
   client()->SetDecryptionNigoriKey(GetSyncingAccountKey(), nullptr);
 }
 
 TEST_F(SyncExplicitPassphraseClientAshTest,
        ShouldHandleInvalidKeyWhenSettingDecryptionKey) {
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey).Times(0);
+  EXPECT_CALL(*sync_user_settings(), SetExplicitPassphraseDecryptionNigoriKey)
+      .Times(0);
 
   crosapi::mojom::NigoriKeyPtr mojo_nigori_key =
       crosapi::mojom::NigoriKey::New();
@@ -202,7 +206,8 @@ TEST_F(SyncExplicitPassphraseClientAshTest,
   mojo_nigori_key->encryption_key = {1, 2, 3};
   mojo_nigori_key->mac_key = {1, 2, 3};
 
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey).Times(0);
+  EXPECT_CALL(*sync_user_settings(), SetExplicitPassphraseDecryptionNigoriKey)
+      .Times(0);
   client()->SetDecryptionNigoriKey(GetSyncingAccountKey(),
                                    std::move(mojo_nigori_key));
 }

@@ -213,7 +213,7 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
     const std::string& str,
     int* logo_num_bytes,
     int* dark_logo_num_bytes) {
-  absl::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value = base::JSONReader::Read(str);
   if (!value) {
     return nullptr;
   }
@@ -232,19 +232,19 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
     return v != nullptr;
   };
   auto get_boolean = [dict](const char* key, bool* ret) -> bool {
-    absl::optional<bool> v = dict->FindBool(key);
+    std::optional<bool> v = dict->FindBool(key);
     if (v.has_value())
       *ret = v.value();
     return v.has_value();
   };
   auto get_integer = [dict](const char* key, int* ret) -> bool {
-    absl::optional<int> v = dict->FindInt(key);
+    std::optional<int> v = dict->FindInt(key);
     if (v.has_value())
       *ret = v.value();
     return v.has_value();
   };
   auto get_double = [dict](const char* key, double* ret) -> bool {
-    absl::optional<double> v = dict->FindDouble(key);
+    std::optional<double> v = dict->FindDouble(key);
     if (v.has_value())
       *ret = v.value();
     return v.has_value();

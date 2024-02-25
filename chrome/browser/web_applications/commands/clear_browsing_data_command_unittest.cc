@@ -32,7 +32,7 @@ class ClearBrowsingDataCommandTest : public WebAppTest {
   FakeWebAppProvider* provider() { return web_app_provider_; }
 
  private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> web_app_provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> web_app_provider_ = nullptr;
 };
 
 TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
@@ -131,11 +131,7 @@ TEST_F(ClearBrowsingDataCommandTest,
   base::test::TestFuture<void> future;
   provider()->scheduler().ClearWebAppBrowsingData(
       base::Time(), base::Time::Now(), future.GetCallback());
-
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
-
   Init();
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
   EXPECT_TRUE(future.Wait());
 }
 

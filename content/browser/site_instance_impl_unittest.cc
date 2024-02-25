@@ -485,8 +485,8 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
 
   std::unique_ptr<NavigationEntryImpl> e1 =
       std::make_unique<NavigationEntryImpl>(
-          instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
-          /* initiator_base_url= */ absl::nullopt, std::u16string(),
+          instance, url, Referrer(), /* initiator_origin= */ std::nullopt,
+          /* initiator_base_url= */ std::nullopt, std::u16string(),
           ui::PAGE_TRANSITION_LINK, false,
           nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
 
@@ -496,8 +496,8 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
   // Add a second reference
   std::unique_ptr<NavigationEntryImpl> e2 =
       std::make_unique<NavigationEntryImpl>(
-          instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
-          /* initiator_base_url= */ absl::nullopt, std::u16string(),
+          instance, url, Referrer(), /* initiator_origin= */ std::nullopt,
+          /* initiator_base_url= */ std::nullopt, std::u16string(),
           ui::PAGE_TRANSITION_LINK, false,
           nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
 
@@ -703,17 +703,24 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   EXPECT_EQ("file", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
 
-  // Data URLs should include the whole URL, except for the hash.
+  // Data URLs should have the scheme and the nonce of their opaque origin.
   test_url = GURL("data:text/html,foo");
   site_url = GetSiteForURL(test_url);
-  EXPECT_EQ(test_url, site_url);
   EXPECT_EQ("data", site_url.scheme());
+  if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+    // Check that there is a serialized nonce in the site URL. The nonce is
+    // different each time, but has length 32.
+    EXPECT_EQ(32u, site_url.GetContent().length());
+    EXPECT_FALSE(site_url.EqualsIgnoringRef(test_url));
+  } else {
+    EXPECT_EQ(test_url, site_url);
+    EXPECT_TRUE(site_url.EqualsIgnoringRef(test_url));
+  }
   EXPECT_FALSE(site_url.has_host());
   test_url = GURL("data:text/html,foo#bar");
   site_url = GetSiteForURL(test_url);
   EXPECT_FALSE(site_url.has_ref());
   EXPECT_NE(test_url, site_url);
-  EXPECT_TRUE(site_url.EqualsIgnoringRef(test_url));
 
   // Javascript URLs should include the scheme.
   test_url = GURL("javascript:foo();");
@@ -919,8 +926,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   BrowsingInstance* browsing_instance = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
 
   const GURL url_a1("http://www.google.com/1.html");
   scoped_refptr<SiteInstanceImpl> site_instance_a1(
@@ -955,8 +963,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
   // Ensure the new SiteInstance is ref counted so that it gets deleted.
   scoped_refptr<SiteInstanceImpl> site_instance_a2_2(
       browsing_instance2->GetSiteInstanceForURL(
@@ -1000,8 +1009,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   scoped_refptr<BrowsingInstance> browsing_instance = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
 
   const GURL url_a1("http://www.google.com/1.html");
   scoped_refptr<SiteInstanceImpl> site_instance_a1(
@@ -1036,8 +1046,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
   scoped_refptr<SiteInstanceImpl> site_instance_a1_2(
       browsing_instance2->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a1), false));
@@ -1052,8 +1063,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   BrowsingInstance* browsing_instance3 = new BrowsingInstance(
       browser_context2.get(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
   scoped_refptr<SiteInstanceImpl> site_instance_a2_3(
       browsing_instance3->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a2), false));
@@ -1400,7 +1412,7 @@ TEST_F(SiteInstanceTest, IsolatedOriginsWithPort) {
     base::test::MockLog mock_log;
     EXPECT_CALL(
         mock_log,
-        Log(::logging::LOG_ERROR, testing::_, testing::_, testing::_,
+        Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
             ::testing::HasSubstr("Ignoring port number in isolated origin: "
                                  "http://isolated.foo.com:12345")))
         .Times(1);
@@ -2080,7 +2092,8 @@ TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
   // verify that the StoragePartition is correct.
   const auto partitioned_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), partitioned_url_info,
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
   EXPECT_EQ(non_default_partition_config,
             static_cast<SiteInstanceImpl*>(partitioned_instance.get())
                 ->GetSiteInfo()
@@ -2183,7 +2196,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdentity) {
 
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url)));
@@ -2198,7 +2211,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceCrossSite) {
 
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(GURL("https://other-example.com"))));
@@ -2222,7 +2235,8 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCoopOriginSameSite) {
       context(),
       UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
           url::Origin::Create(test_url))),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
@@ -2239,7 +2253,8 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCoopOriginCrossSite) {
       context(),
       UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
           url::Origin::Create(test_url))),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
 
   // COOP common origin might differ from the frame's actual origin (for
   // example for cross-origin subframes), so we verify that this case is handled
@@ -2266,7 +2281,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceDifferentCoopOrigin) {
   // Start without a COOP origin.
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
@@ -2284,7 +2299,8 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCrossOriginIsolation) {
       UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
           WebExposedIsolationInfo::CreateIsolated(
               url::Origin::Create(test_url)))),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
@@ -2300,7 +2316,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceDifferentCrossOriginIsolation) {
 
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
@@ -2315,7 +2331,7 @@ TEST_F(SiteInstanceTest, GroupTokensBuilding) {
   const GURL test_url("https://example.com");
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   base::UnguessableToken browsing_instance_token =
       base_instance->browsing_instance_token();
@@ -2328,7 +2344,7 @@ TEST_F(SiteInstanceTest, GroupTokensRelatedSiteInstances) {
   const GURL test_url("https://example.com");
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto derived_instance = base_instance->GetRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(GURL("https://other-example.com"))));
@@ -2352,7 +2368,7 @@ TEST_F(SiteInstanceTest, GroupTokensCoopRelatedSiteInstances) {
   const GURL test_url("https://example.com");
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   // Derive a SiteInstance that lives in the same CoopRelatedGroup but a
   // different BrowsingInstance. Provide a different WebExposedIsolationInfo to
@@ -2374,11 +2390,11 @@ TEST_F(SiteInstanceTest, GroupTokensUnrelatedSiteInstances) {
   const GURL test_url("https://example.com");
   const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   const auto other_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
-      /*is_fenced=*/false);
+      /*is_fenced=*/false, /*is_fixed_storage_partition=*/false);
 
   EXPECT_NE(other_instance.get(), base_instance.get());
   EXPECT_FALSE(other_instance->IsRelatedSiteInstance(base_instance.get()));
@@ -2387,6 +2403,129 @@ TEST_F(SiteInstanceTest, GroupTokensUnrelatedSiteInstances) {
             base_instance->browsing_instance_token());
   EXPECT_NE(other_instance->coop_related_group_token(),
             base_instance->coop_related_group_token());
+}
+
+namespace {
+
+class SiteInstanceGotProcessAndSiteBrowserClient
+    : public TestContentBrowserClient {
+ public:
+  SiteInstanceGotProcessAndSiteBrowserClient() {}
+
+  void SiteInstanceGotProcessAndSite(SiteInstance* site_instance) override {
+    call_count_++;
+  }
+
+  int call_count() { return call_count_; }
+
+ private:
+  int call_count_ = 0;
+};
+
+}  // namespace
+
+// Check that there's one call to SiteInstanceGotProcessAndSite() when a
+// SiteInstance gets a process first and a site second.
+TEST_F(SiteInstanceTest, SiteInstanceGotProcessAndSite_ProcessThenSite) {
+  SiteInstanceGotProcessAndSiteBrowserClient custom_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&custom_client);
+
+  const auto site_instance = SiteInstanceImpl::Create(context());
+  EXPECT_FALSE(site_instance->HasSite());
+  EXPECT_EQ(0, custom_client.call_count());
+
+  // Assigning a process shouldn't call SiteInstanceGotProcessAndSite(), since
+  // there's no site yet.
+  EXPECT_FALSE(site_instance->HasProcess());
+  site_instance->GetProcess();
+  EXPECT_TRUE(site_instance->HasProcess());
+  EXPECT_EQ(0, custom_client.call_count());
+
+  // Now, assign a site and expect a call to SiteInstanceGotProcessAndSite().
+  site_instance->SetSite(UrlInfo::CreateForTesting(GURL("https://foo.com")));
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Repeated calls to get a process shouldn't produce new calls.
+  site_instance->GetProcess();
+  EXPECT_EQ(1, custom_client.call_count());
+
+  SetBrowserClientForTesting(regular_client);
+}
+
+// Same as above, but now SiteInstance gets a site first and a process second.
+TEST_F(SiteInstanceTest, SiteInstanceGotProcessAndSite_SiteThenProcess) {
+  SiteInstanceGotProcessAndSiteBrowserClient custom_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&custom_client);
+
+  const auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(GURL("https://foo.com")),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
+  EXPECT_TRUE(site_instance->HasSite());
+  EXPECT_FALSE(site_instance->HasProcess());
+  EXPECT_EQ(0, custom_client.call_count());
+
+  site_instance->GetProcess();
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Repeated calls to get a process shouldn't produce new calls.
+  site_instance->GetProcess();
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Expect a new call if a SiteInstance's RenderProcessHost gets destroyed
+  // and replaced with a new one.
+  EXPECT_TRUE(site_instance->HasProcess());
+  site_instance->GetProcess()->Cleanup();
+  EXPECT_FALSE(site_instance->HasProcess());
+  site_instance->GetProcess();
+  EXPECT_TRUE(site_instance->HasProcess());
+  EXPECT_EQ(2, custom_client.call_count());
+
+  SetBrowserClientForTesting(regular_client);
+}
+
+// Check that SiteInstanceGotProcessAndSite() works properly in
+// process-per-site mode.
+TEST_F(SiteInstanceTest, SiteInstanceGotProcessAndSite_ProcessPerSite) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kProcessPerSite);
+  SiteInstanceGotProcessAndSiteBrowserClient custom_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&custom_client);
+
+  const auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(GURL("https://foo.com")),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
+  EXPECT_TRUE(site_instance->HasSite());
+  EXPECT_FALSE(site_instance->HasProcess());
+  EXPECT_EQ(0, custom_client.call_count());
+
+  site_instance->GetProcess();
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Create another SiteInstance for the same site, which should reuse the
+  // process from the first SiteInstance, since we're in process-per-site mode.
+  const auto second_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(GURL("https://foo.com")),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
+
+  // In process-per-site mode, HasProcess() returns true even if the
+  // SiteInstance hasn't gone through SetProcessInternal(). However,
+  // SiteInstanceGotProcess() shouldn't have been called on it yet.
+  EXPECT_TRUE(second_instance->HasProcess());
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Assigning a process for the second SiteInstance should trigger a call to
+  // SiteInstanceGotProcess(), even though the process is reused.
+  second_instance->GetProcess();
+  EXPECT_EQ(second_instance->GetProcess(), site_instance->GetProcess());
+  EXPECT_EQ(2, custom_client.call_count());
+
+  SetBrowserClientForTesting(regular_client);
 }
 
 }  // namespace content

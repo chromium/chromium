@@ -5,31 +5,19 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_
 
-#include <string>
-#include <vector>
+#include <optional>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/document_scan.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace crosapi::mojom {
-class DocumentScan;
-}  // namespace crosapi::mojom
+#include "extensions/browser/extension_function_histogram_value.h"
 
 namespace extensions {
 
-namespace api {
-
 class DocumentScanScanFunction : public ExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENT_SCAN_SCAN)
   DocumentScanScanFunction();
   DocumentScanScanFunction(const DocumentScanScanFunction&) = delete;
   DocumentScanScanFunction& operator=(const DocumentScanScanFunction&) = delete;
-
-  void SetMojoInterfaceForTesting(crosapi::mojom::DocumentScan* document_scan);
 
  protected:
   ~DocumentScanScanFunction() override;
@@ -38,21 +26,168 @@ class DocumentScanScanFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void MaybeInitializeMojoInterface();
-  void OnNamesReceived(const std::vector<std::string>& scanner_names);
-  void OnScanCompleted(crosapi::mojom::ScanFailureMode failure_mode,
-                       const absl::optional<std::string>& scan_data);
-
-  absl::optional<document_scan::Scan::Params> params_;
-
-  // Used to transmit mojo interface method calls to ash chrome.
-  // Null if the interface is unavailable.
-  // The pointer is constant - if Ash crashes and the mojo connection is lost,
-  // Lacros will automatically be restarted.
-  raw_ptr<crosapi::mojom::DocumentScan> document_scan_ = nullptr;
+  void OnScanCompleted(
+      std::optional<api::document_scan::ScanResults> scan_result,
+      std::optional<std::string> error);
+  DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENTSCAN_SCAN)
 };
 
-}  // namespace api
+class DocumentScanGetScannerListFunction : public ExtensionFunction {
+ public:
+  DocumentScanGetScannerListFunction();
+  DocumentScanGetScannerListFunction(
+      const DocumentScanGetScannerListFunction&) = delete;
+  DocumentScanGetScannerListFunction& operator=(
+      const DocumentScanGetScannerListFunction&) = delete;
+
+ protected:
+  ~DocumentScanGetScannerListFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnScannerListReceived(
+      api::document_scan::GetScannerListResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.getScannerList",
+                             DOCUMENTSCAN_GETSCANNERLIST)
+};
+
+class DocumentScanOpenScannerFunction : public ExtensionFunction {
+ public:
+  DocumentScanOpenScannerFunction();
+  DocumentScanOpenScannerFunction(const DocumentScanOpenScannerFunction&) =
+      delete;
+  DocumentScanOpenScannerFunction& operator=(
+      const DocumentScanOpenScannerFunction&) = delete;
+
+ protected:
+  ~DocumentScanOpenScannerFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::OpenScannerResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.openScanner",
+                             DOCUMENTSCAN_OPENSCANNER)
+};
+
+class DocumentScanGetOptionGroupsFunction : public ExtensionFunction {
+ public:
+  DocumentScanGetOptionGroupsFunction();
+  DocumentScanGetOptionGroupsFunction(
+      const DocumentScanGetOptionGroupsFunction&) = delete;
+  DocumentScanGetOptionGroupsFunction& operator=(
+      const DocumentScanGetOptionGroupsFunction&) = delete;
+
+ protected:
+  ~DocumentScanGetOptionGroupsFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::GetOptionGroupsResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.getOptionGroups",
+                             DOCUMENTSCAN_GETOPTIONGROUPS)
+};
+
+class DocumentScanCloseScannerFunction : public ExtensionFunction {
+ public:
+  DocumentScanCloseScannerFunction();
+  DocumentScanCloseScannerFunction(const DocumentScanCloseScannerFunction&) =
+      delete;
+  DocumentScanCloseScannerFunction& operator=(
+      const DocumentScanCloseScannerFunction&) = delete;
+
+ protected:
+  ~DocumentScanCloseScannerFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::CloseScannerResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.closeScanner",
+                             DOCUMENTSCAN_CLOSESCANNER)
+};
+
+class DocumentScanSetOptionsFunction : public ExtensionFunction {
+ public:
+  DocumentScanSetOptionsFunction();
+  DocumentScanSetOptionsFunction(const DocumentScanSetOptionsFunction&) =
+      delete;
+  DocumentScanSetOptionsFunction& operator=(
+      const DocumentScanSetOptionsFunction&) = delete;
+
+ protected:
+  ~DocumentScanSetOptionsFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::SetOptionsResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.setOptions", DOCUMENTSCAN_SETOPTIONS)
+};
+
+class DocumentScanStartScanFunction : public ExtensionFunction {
+ public:
+  DocumentScanStartScanFunction();
+  DocumentScanStartScanFunction(const DocumentScanStartScanFunction&) = delete;
+  DocumentScanStartScanFunction& operator=(
+      const DocumentScanStartScanFunction&) = delete;
+
+ protected:
+  ~DocumentScanStartScanFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::StartScanResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.startScan", DOCUMENTSCAN_STARTSCAN)
+};
+
+class DocumentScanCancelScanFunction : public ExtensionFunction {
+ public:
+  DocumentScanCancelScanFunction();
+  DocumentScanCancelScanFunction(const DocumentScanCancelScanFunction&) =
+      delete;
+  DocumentScanCancelScanFunction& operator=(
+      const DocumentScanCancelScanFunction&) = delete;
+
+ protected:
+  ~DocumentScanCancelScanFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::CancelScanResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.cancelScan", DOCUMENTSCAN_CANCELSCAN)
+};
+
+class DocumentScanReadScanDataFunction : public ExtensionFunction {
+ public:
+  DocumentScanReadScanDataFunction();
+  DocumentScanReadScanDataFunction(const DocumentScanReadScanDataFunction&) =
+      delete;
+  DocumentScanReadScanDataFunction& operator=(
+      const DocumentScanReadScanDataFunction&) = delete;
+
+ protected:
+  ~DocumentScanReadScanDataFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::ReadScanDataResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.readScanData",
+                             DOCUMENTSCAN_READSCANDATA)
+};
 
 }  // namespace extensions
 

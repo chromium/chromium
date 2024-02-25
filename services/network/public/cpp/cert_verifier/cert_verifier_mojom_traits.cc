@@ -32,23 +32,11 @@ bool StructTraits<cert_verifier::mojom::CertVerifierConfigDataView,
                   net::CertVerifier::Config>::
     Read(cert_verifier::mojom::CertVerifierConfigDataView data,
          net::CertVerifier::Config* config) {
-  std::vector<scoped_refptr<net::X509Certificate>> additional_trust_anchors;
-  std::vector<scoped_refptr<net::X509Certificate>>
-      additional_untrusted_authorities;
-  if (!data.ReadAdditionalTrustAnchors(&additional_trust_anchors) ||
-      !data.ReadAdditionalUntrustedAuthorities(
-          &additional_untrusted_authorities)) {
-    return false;
-  }
-
   config->enable_rev_checking = data.enable_rev_checking();
   config->require_rev_checking_local_anchors =
       data.require_rev_checking_local_anchors();
   config->enable_sha1_local_anchors = data.enable_sha1_local_anchors();
   config->disable_symantec_enforcement = data.disable_symantec_enforcement();
-  config->additional_trust_anchors = std::move(additional_trust_anchors);
-  config->additional_untrusted_authorities =
-      std::move(additional_untrusted_authorities);
   return true;
 }
 

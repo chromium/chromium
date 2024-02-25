@@ -8,16 +8,14 @@
 #include <string>
 #include <utility>
 
-#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/metrics/frame_sequence_tracker.h"
-#include "cc/metrics/jank_metrics.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace cc {
 
@@ -60,12 +58,12 @@ namespace {
 
 constexpr uint32_t kMaxNoUpdateFrameCount = 100;
 
-const char* GetJankThreadTypeName(FrameInfo::SmoothEffectDrivingThread type) {
+const char* GetThreadTypeName(SmoothEffectDrivingThread type) {
   switch (type) {
-    case FrameInfo::SmoothEffectDrivingThread::kCompositor:
-      return "Compositor";
-    case FrameInfo::SmoothEffectDrivingThread::kMain:
-      return "Main";
+    case SmoothEffectDrivingThread::kCompositor:
+      return "CompositorThread";
+    case SmoothEffectDrivingThread::kMain:
+      return "MainThread";
     default:
       NOTREACHED();
       return "";
@@ -99,15 +97,17 @@ int GetIndexForJankV3Metric(SmoothEffectDrivingThread thread_type,
   return static_cast<int>(type) + kBuiltinSequenceNum;
 }
 
-std::string GetCheckerboardingHistogramName(FrameSequenceTrackerType type) {
-  return base::StrCat(
-      {"Graphics.Smoothness.Checkerboarding.",
-       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
-}
-
 std::string GetCheckerboardingV3HistogramName(FrameSequenceTrackerType type) {
   return base::StrCat(
       {"Graphics.Smoothness.Checkerboarding3.",
+       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
+}
+
+std::string GetCheckerboardingV3ThreadedHistogramName(
+    FrameSequenceTrackerType type,
+    const char* thread_name) {
+  return base::StrCat(
+      {"Graphics.Smoothness.Checkerboarding3.", thread_name, ".",
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
@@ -131,19 +131,20 @@ FrameSequenceMetrics::V3::V3() = default;
 FrameSequenceMetrics::V3::~V3() = default;
 
 FrameSequenceMetrics::FrameSequenceMetrics(FrameSequenceTrackerType type)
-    : type_(type) {
-  SmoothEffectDrivingThread thread_type = GetEffectiveThread();
+    : type_(type) {}
 
-  // Only construct |jank_reporter_| if it has a valid tracker and thread type.
-  // For scrolling tracker types, |jank_reporter_| may be constructed later in
-  // SetScrollingThread().
-  if (thread_type == SmoothEffectDrivingThread::kCompositor ||
-      thread_type == SmoothEffectDrivingThread::kMain) {
-    jank_reporter_ = std::make_unique<JankMetrics>(type, thread_type);
+FrameSequenceMetrics::~FrameSequenceMetrics() {
+  // If we did not see sufficient frames to report we will be kept around to
+  // have the data `Merge` into the next sequence of `type_`. We do not
+  // terminate active traces immediately when we stop, as the sequence may
+  // restart, leading to `AdoptTrace`.
+  //
+  // However we may not be merged before teardown, if so terminate the trace
+  // now.
+  if (trace_data_v3_.trace_id) {
+    trace_data_v3_.TerminateV3(v3_, GetEffectiveThread());
   }
 }
-
-FrameSequenceMetrics::~FrameSequenceMetrics() = default;
 
 void FrameSequenceMetrics::ReportLeftoverData() {
   if (HasDataLeftForReporting() || type_ == FrameSequenceTrackerType::kCustom)
@@ -157,10 +158,6 @@ void FrameSequenceMetrics::SetScrollingThread(
          type_ == FrameSequenceTrackerType::kScrollbarScroll);
   DCHECK_EQ(scrolling_thread_, SmoothEffectDrivingThread::kUnknown);
   scrolling_thread_ = scrolling_thread;
-
-  DCHECK(!jank_reporter_);
-  DCHECK_NE(scrolling_thread, SmoothEffectDrivingThread::kUnknown);
-  jank_reporter_ = std::make_unique<JankMetrics>(type_, scrolling_thread);
 }
 
 void FrameSequenceMetrics::SetCustomReporter(CustomReporter custom_reporter) {
@@ -203,9 +200,6 @@ void FrameSequenceMetrics::Merge(
   DCHECK_NE(type_, FrameSequenceTrackerType::kCustom);
   DCHECK_EQ(type_, metrics->type_);
   DCHECK_EQ(GetEffectiveThread(), metrics->GetEffectiveThread());
-  impl_throughput_.Merge(metrics->impl_throughput_);
-  main_throughput_.Merge(metrics->main_throughput_);
-  frames_checkerboarded_ += metrics->frames_checkerboarded_;
 
   v3_.frames_expected += metrics->v3_.frames_expected;
   v3_.frames_dropped += metrics->v3_.frames_dropped;
@@ -220,80 +214,46 @@ void FrameSequenceMetrics::Merge(
     v3_.last_frame_delta = metrics->v3_.last_frame_delta;
     v3_.no_update_duration = metrics->v3_.no_update_duration;
   }
-
-  if (jank_reporter_)
-    jank_reporter_->Merge(std::move(metrics->jank_reporter_));
-
-  // Reset the state of |metrics| before destroying it, so that it doesn't end
-  // up reporting the metrics.
-  metrics->impl_throughput_ = {};
-  metrics->main_throughput_ = {};
-  metrics->frames_checkerboarded_ = 0;
 }
 
 bool FrameSequenceMetrics::HasEnoughDataForReporting() const {
-  return impl_throughput_.frames_expected >= kMinFramesForThroughputMetric ||
-         main_throughput_.frames_expected >= kMinFramesForThroughputMetric ||
-         v3_.frames_expected >= kMinFramesForThroughputMetric;
+  return v3_.frames_expected >= kMinFramesForThroughputMetric;
 }
 
 bool FrameSequenceMetrics::HasDataLeftForReporting() const {
-  return impl_throughput_.frames_expected > 0 ||
-         main_throughput_.frames_expected > 0 || v3_.frames_expected > 0;
+  return v3_.frames_expected > 0;
 }
 
 void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
   DCHECK(!trace_data_.trace_id);
   trace_data_.trace_id = adopt_from->trace_data_.trace_id;
   trace_data_v3_.trace_id = adopt_from->trace_data_v3_.trace_id;
-  adopt_from->trace_data_.trace_id = nullptr;
-  adopt_from->trace_data_v3_.trace_id = nullptr;
-}
-
-void FrameSequenceMetrics::AdvanceTrace(base::TimeTicks timestamp,
-                                        uint64_t sequence_number) {
-  uint32_t expected = 0, dropped = 0;
-  switch (GetEffectiveThread()) {
-    case SmoothEffectDrivingThread::kCompositor:
-      expected = impl_throughput_.frames_expected;
-      dropped =
-          impl_throughput_.frames_expected - impl_throughput_.frames_produced;
-      break;
-
-    case SmoothEffectDrivingThread::kMain:
-      expected = main_throughput_.frames_expected;
-      dropped =
-          main_throughput_.frames_expected - main_throughput_.frames_produced;
-      break;
-
-    case SmoothEffectDrivingThread::kUnknown:
-      NOTREACHED();
-  }
-  trace_data_.Advance(trace_data_.last_timestamp, timestamp, expected, dropped,
-                      sequence_number, "FrameSequenceTracker");
+  trace_data_v3_.last_presented_sequence_number =
+      adopt_from->trace_data_v3_.trace_id;
+  trace_data_v3_.last_timestamp = adopt_from->trace_data_v3_.last_timestamp;
+  trace_data_v3_.frame_count = adopt_from->trace_data_v3_.frame_count;
+  adopt_from->trace_data_.trace_id = 0u;
+  adopt_from->trace_data_v3_.trace_id = 0u;
 }
 
 void FrameSequenceMetrics::ReportMetrics() {
-  DCHECK_LE(impl_throughput_.frames_produced, impl_throughput_.frames_expected);
-  DCHECK_LE(main_throughput_.frames_produced, main_throughput_.frames_expected);
-
   // Terminates |trace_data_| for all types of FrameSequenceTracker.
-  trace_data_.Terminate();
-  trace_data_v3_.TerminateV3(v3_);
+  trace_data_v3_.TerminateV3(v3_, GetEffectiveThread());
 
   if (type_ == FrameSequenceTrackerType::kCustom) {
     DCHECK(!custom_reporter_.is_null());
     std::move(custom_reporter_)
         .Run({
-            main_throughput_.frames_expected,
-            main_throughput_.frames_produced,
-            jank_reporter_->jank_count(),
+            v3_.frames_expected,
+            v3_.frames_dropped,
+            v3_.jank_count,
         });
 
-    main_throughput_ = {};
-    impl_throughput_ = {};
-    jank_reporter_->Reset();
-    frames_checkerboarded_ = 0;
+    v3_.frames_expected = 0u;
+    v3_.frames_dropped = 0u;
+    v3_.frames_missing_content = 0u;
+    v3_.no_update_count = 0u;
+    v3_.jank_count = 0u;
     return;
   }
 
@@ -342,10 +302,7 @@ void FrameSequenceMetrics::ReportMetrics() {
           "Graphics.Smoothness.PercentDroppedFrames3.AllSequences", percent);
     }
 
-    const char* thread_name =
-        thread_type == SmoothEffectDrivingThread::kCompositor
-            ? "CompositorThread"
-            : "MainThread";
+    const char* thread_name = GetThreadTypeName(thread_type);
 
     STATIC_HISTOGRAM_POINTER_GROUP(
         GetThroughputV3HistogramName(type(), thread_name),
@@ -363,13 +320,22 @@ void FrameSequenceMetrics::ReportMetrics() {
             GetCheckerboardingV3HistogramName(type_), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
 
-    const char* jank_thread_name = GetJankThreadTypeName(GetEffectiveThread());
+    if (scrolling_thread_ != SmoothEffectDrivingThread::kUnknown) {
+      STATIC_HISTOGRAM_POINTER_GROUP(
+          GetCheckerboardingV3ThreadedHistogramName(type_, thread_name),
+          GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
+          Add(percent_missing_content),
+          base::LinearHistogram::FactoryGet(
+              GetCheckerboardingV3ThreadedHistogramName(type_, thread_name), 1,
+              100, 101, base::HistogramBase::kUmaTargetedHistogramFlag));
+    }
+
     STATIC_HISTOGRAM_POINTER_GROUP(
-        GetJankV3HistogramName(type_, jank_thread_name),
-        GetIndexForJankV3Metric(GetEffectiveThread(), type_),
+        GetJankV3HistogramName(type_, thread_name),
+        GetIndexForJankV3Metric(thread_type, type_),
         kMaximumJankV3HistogramIndex, Add(percent_jank),
         base::LinearHistogram::FactoryGet(
-            GetJankV3HistogramName(type_, jank_thread_name), 1, 100, 101,
+            GetJankV3HistogramName(type_, thread_name), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
     v3_.frames_expected = 0u;
     v3_.frames_dropped = 0u;
@@ -377,122 +343,6 @@ void FrameSequenceMetrics::ReportMetrics() {
     v3_.no_update_count = 0u;
     v3_.jank_count = 0u;
   }
-
-  // Report the checkerboarding metrics.
-  if (impl_throughput_.frames_expected >= kMinFramesForThroughputMetric) {
-    const int checkerboarding_percent = static_cast<int>(
-        100 * frames_checkerboarded_ / impl_throughput_.frames_expected);
-    STATIC_HISTOGRAM_POINTER_GROUP(
-        GetCheckerboardingHistogramName(type_), static_cast<int>(type_),
-        static_cast<int>(FrameSequenceTrackerType::kMaxType),
-        Add(checkerboarding_percent),
-        base::LinearHistogram::FactoryGet(
-            GetCheckerboardingHistogramName(type_), 1, 100, 101,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
-    ThroughputData::ReportCheckerboardingHistogram(
-        this, SmoothEffectDrivingThread::kCompositor, checkerboarding_percent);
-    frames_checkerboarded_ = 0;
-  }
-
-  // Report the jank metrics
-  if (jank_reporter_) {
-    if (jank_reporter_->thread_type() ==
-            SmoothEffectDrivingThread::kCompositor &&
-        impl_throughput_.frames_expected >= kMinFramesForThroughputMetric) {
-      DCHECK_EQ(jank_reporter_->thread_type(), this->GetEffectiveThread());
-      jank_reporter_->ReportJankMetrics(impl_throughput_.frames_expected);
-    } else if (jank_reporter_->thread_type() ==
-                   SmoothEffectDrivingThread::kMain &&
-               main_throughput_.frames_expected >=
-                   kMinFramesForThroughputMetric) {
-      DCHECK_EQ(jank_reporter_->thread_type(), this->GetEffectiveThread());
-      jank_reporter_->ReportJankMetrics(main_throughput_.frames_expected);
-    }
-  }
-
-  // Reset the metrics that reach reporting threshold.
-  if (impl_throughput_.frames_expected >= kMinFramesForThroughputMetric)
-    impl_throughput_ = {};
-  if (main_throughput_.frames_expected >= kMinFramesForThroughputMetric)
-    main_throughput_ = {};
-}
-
-void FrameSequenceMetrics::ComputeJank(SmoothEffectDrivingThread thread_type,
-                                       uint32_t frame_token,
-                                       base::TimeTicks presentation_time,
-                                       base::TimeDelta frame_interval) {
-  if (!jank_reporter_)
-    return;
-
-  if (thread_type == jank_reporter_->thread_type())
-    jank_reporter_->AddPresentedFrame(frame_token, presentation_time,
-                                      frame_interval);
-}
-
-void FrameSequenceMetrics::NotifySubmitForJankReporter(
-    SmoothEffectDrivingThread thread_type,
-    uint32_t frame_token,
-    uint32_t sequence_number) {
-  if (!jank_reporter_)
-    return;
-
-  if (thread_type == jank_reporter_->thread_type())
-    jank_reporter_->AddSubmitFrame(frame_token, sequence_number);
-}
-
-void FrameSequenceMetrics::NotifyNoUpdateForJankReporter(
-    SmoothEffectDrivingThread thread_type,
-    uint32_t sequence_number,
-    base::TimeDelta frame_interval) {
-  if (!jank_reporter_)
-    return;
-
-  if (thread_type == jank_reporter_->thread_type())
-    jank_reporter_->AddFrameWithNoUpdate(sequence_number, frame_interval);
-}
-
-void FrameSequenceMetrics::ThroughputData::ReportCheckerboardingHistogram(
-    FrameSequenceMetrics* metrics,
-    SmoothEffectDrivingThread thread_type,
-    int percent) {
-  const auto sequence_type = metrics->type();
-  DCHECK_LT(sequence_type, FrameSequenceTrackerType::kMaxType);
-
-  const bool is_animation =
-      ShouldReportForAnimation(sequence_type, thread_type);
-  const bool is_interaction = ShouldReportForInteraction(
-      metrics->type(), thread_type, metrics->GetEffectiveThread());
-
-  if (is_animation) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Graphics.Smoothness.Checkerboarding.AllAnimations", percent);
-  }
-
-  if (is_interaction) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Graphics.Smoothness.Checkerboarding.AllInteractions", percent);
-  }
-
-  if (is_animation || is_interaction) {
-    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Checkerboarding.AllSequences",
-                             percent);
-  }
-}
-
-std::unique_ptr<base::trace_event::TracedValue>
-FrameSequenceMetrics::ThroughputData::ToTracedValue(
-    const ThroughputData& impl,
-    const ThroughputData& main,
-    SmoothEffectDrivingThread effective_thread) {
-  auto dict = std::make_unique<base::trace_event::TracedValue>();
-  if (effective_thread == SmoothEffectDrivingThread::kMain) {
-    dict->SetInteger("main-frames-produced", main.frames_produced);
-    dict->SetInteger("main-frames-expected", main.frames_expected);
-  } else {
-    dict->SetInteger("impl-frames-produced", impl.frames_produced);
-    dict->SetInteger("impl-frames-expected", impl.frames_expected);
-  }
-  return dict;
 }
 
 FrameSequenceMetrics::TraceData::TraceData(FrameSequenceMetrics* m)
@@ -502,19 +352,9 @@ FrameSequenceMetrics::TraceData::TraceData(FrameSequenceMetrics* m)
 
 FrameSequenceMetrics::TraceData::~TraceData() = default;
 
-void FrameSequenceMetrics::TraceData::Terminate() {
-  if (!enabled || !trace_id)
-    return;
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "cc,benchmark", "FrameSequenceTracker", TRACE_ID_LOCAL(trace_id), "args",
-      ThroughputData::ToTracedValue(metrics->impl_throughput(),
-                                    metrics->main_throughput(),
-                                    metrics->GetEffectiveThread()),
-      "checkerboard", metrics->frames_checkerboarded());
-  trace_id = nullptr;
-}
-
-void FrameSequenceMetrics::TraceData::TerminateV3(const V3& v3) {
+void FrameSequenceMetrics::TraceData::TerminateV3(
+    const V3& v3,
+    FrameInfo::SmoothEffectDrivingThread effective_thread) {
   if (!enabled || !trace_id) {
     return;
   }
@@ -524,10 +364,33 @@ void FrameSequenceMetrics::TraceData::TerminateV3(const V3& v3) {
   dict->SetInteger("dropped", v3.frames_dropped);
   dict->SetInteger("missing_content", v3.frames_missing_content);
   dict->EndDictionary();
-  TRACE_EVENT_NESTABLE_ASYNC_END1("cc,benchmark", "FrameSequenceTrackerV3",
-                                  TRACE_ID_LOCAL(trace_id), "args",
-                                  std::move(dict));
-  trace_id = nullptr;
+  base::TimeTicks termination_time =
+      v3.last_presented_frame.GetTerminationTimeForThread(effective_thread);
+  // FrameSequenceTracker termination is based on FrameSorter. This way it can
+  // reflect delays in gfx::PresentationFeedback arriving, while also not
+  // terminating due to out-of-order dropped frames. The default termination is
+  // when the final frame produced for the sequence has been presented.
+  //
+  // Otherwise we will terminate once a frame, newer than the final one of the
+  // sequence has been produced, not dropped, and sorted. This can be a
+  // FrameInfo::FrameFinalState::NoUpdateDesired, which has no termination time,
+  // due to never being presented. When this occurs after a series of dropped
+  // frames, we can potentially have an entire sequence that was dropped.
+  // Leading to `v3.last_presented_frame` having no valid timestamp.
+  //
+  // Here we check for alternative timestamps, so as not to provide a null
+  // timestamp to the trace.
+  if (termination_time.is_null()) {
+    termination_time =
+        v3.last_frame.GetTerminationTimeForThread(effective_thread);
+    if (termination_time.is_null()) {
+      termination_time = base::TimeTicks::Now();
+    }
+  }
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
+      "cc,benchmark", "FrameSequenceTrackerV3", TRACE_ID_LOCAL(trace_id),
+      termination_time, "args", std::move(dict));
+  trace_id = 0u;
 }
 
 void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
@@ -539,7 +402,15 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
   if (!enabled)
     return;
   if (!trace_id) {
-    trace_id = this;
+    // The underlying usage of TRACE_ID_LOCAL is mapping the raw uint64_t from
+    // the point into either `trace_event_internal::TraceID::LocalId` or
+    // `perfetto::internal::LegacyTraceId`. However the trace macros don't
+    // support just providing that object directly. Here we do the cast
+    // ourselves ahead, and save the resulting value. This value will be used to
+    // nest other traces, as well as close the async trace at a later time. The
+    // value can also be merged into future sequences. This avoids holding
+    // dangling ptrs.
+    trace_id = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this));
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "cc,benchmark", histogram_name, TRACE_ID_LOCAL(trace_id),
         start_timestamp, "name",
@@ -687,7 +558,16 @@ void FrameSequenceMetrics::CalculateCheckerboardingAndJankV3(
       v3_.last_frame_delta = current_frame_delta;
       v3_.no_update_duration = base::TimeDelta();
       v3_.no_update_count = 0;
-      v3_.last_presented_frame = frame_info;
+      // It is possible for `frame_info` to have been terminated without
+      // presentation before `last_presented_frame` was presented. We do not
+      // update `last_presented_frame` in these cases so that the nested frames
+      // in the trace are all aligned on presentations.
+      if (v3_.last_presented_frame.GetTerminationTimeForThread(
+              GetEffectiveThread()) >
+          frame_info.GetTerminationTimeForThread(GetEffectiveThread())) {
+      } else {
+        v3_.last_presented_frame = frame_info;
+      }
       break;
   }
 }
@@ -720,7 +600,7 @@ void FrameSequenceMetrics::TraceJankV3(uint64_t sequence_number,
   dict->SetInteger("frame_sequence_number", sequence_number);
   dict->SetInteger("last_presented_frame_sequence_number",
                    v3_.last_presented_frame.sequence_number);
-  dict->SetString("thread-type", GetJankThreadTypeName(GetEffectiveThread()));
+  dict->SetString("thread-type", GetThreadTypeName(GetEffectiveThread()));
   dict->SetString("tracker-type",
                   FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type_));
   dict->EndDictionary();

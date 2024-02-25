@@ -463,7 +463,7 @@ TEST_P(ResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
   // Login in as kiosk app.
   UserSession session;
   session.session_id = 1u;
-  session.user_info.type = user_manager::USER_TYPE_KIOSK_APP;
+  session.user_info.type = user_manager::UserType::kKioskApp;
   session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
   session.user_info.display_name = "User 1";
   session.user_info.display_email = "user1@test.com";
@@ -483,7 +483,7 @@ TEST_P(ResolutionNotificationControllerTest, NoDialogInKioskMode) {
   // Login in as kiosk app.
   UserSession session;
   session.session_id = 1u;
-  session.user_info.type = user_manager::USER_TYPE_KIOSK_APP;
+  session.user_info.type = user_manager::UserType::kKioskApp;
   session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
   session.user_info.display_name = "User 1";
   session.user_info.display_email = "user1@test.com";

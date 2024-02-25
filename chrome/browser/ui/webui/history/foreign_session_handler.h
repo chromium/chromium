@@ -111,7 +111,7 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
 
   void HandleSetForeignSessionCollapsed(const base::Value::List& args);
 
-  absl::optional<base::Value::List> initial_session_list_;
+  std::optional<base::Value::List> initial_session_list_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 };

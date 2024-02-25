@@ -4,15 +4,15 @@
 
 #include "extensions/renderer/bindings/argument_spec_builder.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace extensions {
 
 ArgumentSpecBuilder::ArgumentSpecBuilder(ArgumentType type)
-    : ArgumentSpecBuilder(type, base::StringPiece()) {}
+    : ArgumentSpecBuilder(type, std::string_view()) {}
 
 ArgumentSpecBuilder::ArgumentSpecBuilder(ArgumentType type,
-                                         base::StringPiece name)
+                                         std::string_view name)
     : spec_(std::make_unique<ArgumentSpec>(type)) {
   if (!name.empty())
     spec_->set_name(name);
@@ -26,7 +26,7 @@ ArgumentSpecBuilder& ArgumentSpecBuilder::MakeOptional() {
 }
 
 ArgumentSpecBuilder& ArgumentSpecBuilder::AddProperty(
-    base::StringPiece property_name,
+    std::string_view property_name,
     std::unique_ptr<ArgumentSpec> property_spec) {
   properties_[std::string(property_name)] = std::move(property_spec);
   return *this;
@@ -43,7 +43,7 @@ ArgumentSpecBuilder& ArgumentSpecBuilder::SetListType(
   return *this;
 }
 
-ArgumentSpecBuilder& ArgumentSpecBuilder::SetRef(base::StringPiece ref) {
+ArgumentSpecBuilder& ArgumentSpecBuilder::SetRef(std::string_view ref) {
   spec_->set_ref(ref);
   return *this;
 }

@@ -25,9 +25,12 @@ class ASH_EXPORT SystemTrayObserver {
       TrayBubbleView* tray_bubble,
       bool visible) {}
 
-  // Called when a tray bubble changes its bounds. Note that this is also called
-  // when the bubble shows/hides.
+  // Called when a tray bubble changes its bounds. Some bubbles trigger this
+  // function when they are shown.
   virtual void OnTrayBubbleBoundsChanged(TrayBubbleView* tray_bubble) {}
+
+  // Called when the IME Menu Tray Bubble is shown.
+  virtual void OnImeMenuTrayBubbleShown() {}
 
  protected:
   virtual ~SystemTrayObserver() = default;

@@ -19,7 +19,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLAudioTensor (Utils)
-- (TfLiteAudioBuffer)cAudioBufferFromFloatBuffer:(TFLFloatBuffer*)floatBuffer;
+- (TfLiteAudioBuffer)cAudioBufferFromFloatBuffer:(TFLFloatBuffer *)floatBuffer;
 
 @end
 

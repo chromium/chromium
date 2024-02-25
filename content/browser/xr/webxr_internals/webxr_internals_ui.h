@@ -26,11 +26,10 @@ class WebXrInternalsUIConfig : public DefaultWebUIConfig<WebXrInternalsUI> {
 class WebXrInternalsUI : public WebUIController {
  public:
   explicit WebXrInternalsUI(WebUI* web_ui);
+  ~WebXrInternalsUI() override;
 
   WebXrInternalsUI(const WebXrInternalsUI&) = delete;
   WebXrInternalsUI& operator=(const WebXrInternalsUI&) = delete;
-
-  ~WebXrInternalsUI() override;
 
   void BindInterface(
       RenderFrameHost* render_frame_host,

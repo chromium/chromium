@@ -7,12 +7,17 @@
 #include <cstddef>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "compression_utils_portable.h"
 #include "gtest.h"
+
+#if !defined(CMAKE_STANDALONE_UNITTESTS)
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
+
 #include "third_party/zlib/contrib/minizip/unzip.h"
 #include "third_party/zlib/contrib/minizip/zip.h"
+#endif
+
 #include "zlib.h"
 
 void TestPayloads(size_t input_size, zlib_internal::WrapperType type) {
@@ -1020,6 +1025,89 @@ TEST(ZlibTest, DeflateZFixedCorruption) {
       0);
 }
 
+TEST(ZlibTest, DeflateCopy) {
+  // Check that deflateCopy() works.
+
+  z_stream stream1;
+  stream1.zalloc = Z_NULL;
+  stream1.zfree = Z_NULL;
+  int ret =
+      deflateInit(&stream1, Z_DEFAULT_COMPRESSION);
+  ASSERT_EQ(ret, Z_OK);
+  std::vector<uint8_t> compressed(
+      deflateBound(&stream1, strlen(zFixedCorruptionData)));
+  stream1.next_out = compressed.data();
+  stream1.avail_out = compressed.size();
+
+  // Compress the first 1000 bytes.
+  stream1.next_in = (uint8_t*)zFixedCorruptionData;
+  stream1.avail_in = 1000;
+  ret = deflate(&stream1, Z_NO_FLUSH);
+  ASSERT_EQ(ret, Z_OK);
+
+  // Copy the stream state.
+  z_stream stream2;
+  ret = deflateCopy(&stream2, &stream1);
+  ASSERT_EQ(ret, Z_OK);
+  deflateEnd(&stream1);
+
+  // Compress the remaining bytes.
+  stream2.next_in = (uint8_t*)zFixedCorruptionData + (1000 - stream2.avail_in);
+  stream2.avail_in = strlen(zFixedCorruptionData) - (1000 - stream2.avail_in);
+  ret = deflate(&stream2, Z_FINISH);
+  ASSERT_EQ(ret, Z_STREAM_END);
+  size_t compressed_sz = compressed.size() - stream2.avail_out;
+  deflateEnd(&stream2);
+
+  // Check that decompression is successful.
+  std::vector<uint8_t> decompressed(strlen(zFixedCorruptionData));
+  z_stream stream;
+  stream.zalloc = Z_NULL;
+  stream.zfree = Z_NULL;
+  ret = inflateInit(&stream);
+  ASSERT_EQ(ret, Z_OK);
+  stream.next_in = compressed.data();
+  stream.avail_in = compressed_sz;
+  stream.next_out = decompressed.data();
+  stream.avail_out = decompressed.size();
+  ret = inflate(&stream, Z_FINISH);
+  ASSERT_EQ(ret, Z_STREAM_END);
+  inflateEnd(&stream);
+
+  EXPECT_EQ(decompressed.size(), strlen(zFixedCorruptionData));
+  EXPECT_EQ(
+      memcmp(zFixedCorruptionData, decompressed.data(), decompressed.size()),
+      0);
+}
+
+TEST(ZlibTest, GzipStored) {
+  // Check that deflating uncompressed blocks with a gzip header doesn't write
+  // out of bounds (crbug.com/325990053).
+  z_stream stream;
+  stream.zalloc = Z_NULL;
+  stream.zfree = Z_NULL;
+  static const int kGzipWrapper = 16;
+  int ret = deflateInit2(&stream, Z_NO_COMPRESSION, Z_DEFLATED,
+                         9 + kGzipWrapper, 9, Z_DEFAULT_STRATEGY);
+  ASSERT_EQ(ret, Z_OK);
+
+  const std::vector<uint8_t> src(512 * 1024);
+  stream.next_in = (unsigned char*)src.data();
+  stream.avail_in = src.size();
+
+  std::vector<uint8_t> out(1000);
+  stream.next_out = (unsigned char*)out.data();
+  stream.avail_out = out.size();
+
+  ret = deflate(&stream, Z_NO_FLUSH);
+  ASSERT_EQ(ret, Z_OK);
+
+  deflateEnd(&stream);
+}
+
+// TODO(gustavoa): make these tests run standalone.
+#ifndef CMAKE_STANDALONE_UNITTESTS
+
 TEST(ZlibTest, ZipFilenameCommentSize) {
   // Check that minizip rejects zip member filenames or comments longer than
   // the zip format can represent.
@@ -1138,3 +1226,5 @@ TEST(ZlibTest, ZipExtraFieldSize) {
   EXPECT_EQ(unzGoToNextFile(uzf), UNZ_END_OF_LIST_OF_FILE);
   EXPECT_EQ(unzClose(uzf), UNZ_OK);
 }
+
+#endif

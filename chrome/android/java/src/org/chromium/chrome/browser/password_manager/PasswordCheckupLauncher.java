@@ -7,36 +7,46 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
-import org.chromium.base.annotations.CalledByNative;
+import androidx.annotation.Nullable;
+
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/**
- * A utitily class for launching the password leak check.
- */
+/** A utitily class for launching the password leak check. */
 public class PasswordCheckupLauncher {
     @CalledByNative
-    private static void launchCheckupInAccountWithWindowAndroid(
+    private static void launchCheckupOnlineWithWindowAndroid(
             String checkupUrl, WindowAndroid windowAndroid) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
-        launchCheckupInAccountWithActivity(checkupUrl, windowAndroid.getActivity().get());
+        launchCheckupOnlineWithActivity(checkupUrl, windowAndroid.getActivity().get());
     }
 
     @CalledByNative
-    private static void launchLocalCheckup(
-            WindowAndroid windowAndroid, @PasswordCheckReferrer int passwordCheckReferrer) {
+    static void launchCheckupOnDevice(
+            Profile profile,
+            WindowAndroid windowAndroid,
+            @PasswordCheckReferrer int passwordCheckReferrer,
+            @Nullable String accountEmail) {
+        assert accountEmail == null || !accountEmail.isEmpty();
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
         if (PasswordManagerHelper.canUseUpm()) {
-            PasswordManagerHelper.showPasswordCheckup(windowAndroid.getContext().get(),
-                    passwordCheckReferrer, SyncServiceFactory.get(),
-                    getModalDialogManagerSupplier(windowAndroid));
+            PasswordManagerHelper.showPasswordCheckup(
+                    windowAndroid.getContext().get(),
+                    passwordCheckReferrer,
+                    SyncServiceFactory.getForProfile(profile),
+                    getModalDialogManagerSupplier(windowAndroid),
+                    accountEmail);
             return;
         }
 
@@ -45,11 +55,19 @@ public class PasswordCheckupLauncher {
     }
 
     @CalledByNative
-    private static void launchCheckupInAccountWithActivity(String checkupUrl, Activity activity) {
+    private static void launchCheckupOnlineWithActivity(String checkupUrl, Activity activity) {
         if (tryLaunchingNativePasswordCheckup(activity)) return;
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(checkupUrl));
         intent.setPackage(activity.getPackageName());
         activity.startActivity(intent);
+    }
+
+    @CalledByNative
+    static void launchSafetyCheck(WindowAndroid windowAndroid) {
+        if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
+        (new SettingsLauncherImpl())
+                .launchSettingsActivity(
+                        windowAndroid.getContext().get(), SettingsFragment.SAFETY_CHECK);
     }
 
     private static boolean tryLaunchingNativePasswordCheckup(Activity activity) {

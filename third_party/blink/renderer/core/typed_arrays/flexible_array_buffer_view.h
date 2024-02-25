@@ -39,13 +39,6 @@ class CORE_EXPORT FlexibleArrayBufferView {
   // Returns true if this object represents IDL null.
   bool IsNull() const { return !full_ && !small_data_; }
 
-  bool IsFull() const { return full_; }
-
-  DOMArrayBufferView* Full() const {
-    DCHECK(IsFull());
-    return full_;
-  }
-
   // WARNING: The pointer returned by baseAddressMaybeOnStack() may point to
   // temporary storage that is only valid during the life-time of the
   // FlexibleArrayBufferView object.
@@ -60,6 +53,8 @@ class CORE_EXPORT FlexibleArrayBufferView {
   }
 
  private:
+  bool IsFull() const { return full_; }
+
   void SetContents(v8::Local<v8::ArrayBufferView> array_buffer_view) {
     DCHECK(IsNull());
     size_t size = array_buffer_view->ByteLength();

@@ -242,40 +242,40 @@ TEST(ExtensionProxyApiHelpers, GetBypassListFromExtensionPref) {
 TEST(ExtensionProxyApiHelpers, CreateProxyConfigDict) {
   std::string error;
   base::Value::Dict exp_direct = ProxyConfigDictionary::CreateDirect();
-  absl::optional<base::Value::Dict> out_direct(CreateProxyConfigDict(
+  std::optional<base::Value::Dict> out_direct(CreateProxyConfigDict(
       ProxyPrefs::MODE_DIRECT, false, std::string(), std::string(),
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_direct, *out_direct);
 
   base::Value::Dict exp_auto = ProxyConfigDictionary::CreateAutoDetect();
-  absl::optional<base::Value::Dict> out_auto(CreateProxyConfigDict(
+  std::optional<base::Value::Dict> out_auto(CreateProxyConfigDict(
       ProxyPrefs::MODE_AUTO_DETECT, false, std::string(), std::string(),
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_auto, *out_auto);
 
   base::Value::Dict exp_pac_url =
       ProxyConfigDictionary::CreatePacScript(kSamplePacScriptUrl, false);
-  absl::optional<base::Value::Dict> out_pac_url(CreateProxyConfigDict(
+  std::optional<base::Value::Dict> out_pac_url(CreateProxyConfigDict(
       ProxyPrefs::MODE_PAC_SCRIPT, false, kSamplePacScriptUrl, std::string(),
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_pac_url, *out_pac_url);
 
   base::Value::Dict exp_pac_data =
       ProxyConfigDictionary::CreatePacScript(kSamplePacScriptAsDataUrl, false);
-  absl::optional<base::Value::Dict> out_pac_data(CreateProxyConfigDict(
+  std::optional<base::Value::Dict> out_pac_data(CreateProxyConfigDict(
       ProxyPrefs::MODE_PAC_SCRIPT, false, std::string(), kSamplePacScript,
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_pac_data, *out_pac_data);
 
   base::Value::Dict exp_fixed =
       ProxyConfigDictionary::CreateFixedServers("foo:80", "localhost");
-  absl::optional<base::Value::Dict> out_fixed(CreateProxyConfigDict(
+  std::optional<base::Value::Dict> out_fixed(CreateProxyConfigDict(
       ProxyPrefs::MODE_FIXED_SERVERS, false, std::string(), std::string(),
       "foo:80", "localhost", &error));
   EXPECT_EQ(exp_fixed, *out_fixed);
 
   base::Value::Dict exp_system = ProxyConfigDictionary::CreateSystem();
-  absl::optional<base::Value::Dict> out_system(CreateProxyConfigDict(
+  std::optional<base::Value::Dict> out_system(CreateProxyConfigDict(
       ProxyPrefs::MODE_SYSTEM, false, std::string(), std::string(),
       std::string(), std::string(), &error));
   EXPECT_EQ(exp_system, *out_system);
@@ -327,7 +327,7 @@ TEST(ExtensionProxyApiHelpers, CreateProxyRulesDict) {
   ProxyConfigDictionary config(ProxyConfigDictionary::CreateFixedServers(
       "http=proxy1:80;https=proxy2:80;ftp=proxy3:80;socks=proxy4:80",
       "localhost"));
-  absl::optional<base::Value::Dict> extension_pref =
+  std::optional<base::Value::Dict> extension_pref =
       CreateProxyRulesDict(config);
   ASSERT_TRUE(extension_pref);
 
@@ -351,7 +351,7 @@ TEST(ExtensionProxyApiHelpers, CreateProxyRulesDictMultipleProxies) {
       "http=proxy1:80,default://;https=proxy2:80,proxy1:80;ftp=proxy3:80,"
       "https://proxy5:443;socks=proxy4:80,proxy1:80",
       "localhost"));
-  absl::optional<base::Value::Dict> extension_pref =
+  std::optional<base::Value::Dict> extension_pref =
       CreateProxyRulesDict(config);
   ASSERT_TRUE(extension_pref);
 
@@ -373,8 +373,7 @@ TEST(ExtensionProxyApiHelpers, CreateProxyRulesDictMultipleProxies) {
 TEST(ExtensionProxyApiHelpers, CreatePacScriptDictWithUrl) {
   ProxyConfigDictionary config(
       ProxyConfigDictionary::CreatePacScript(kSamplePacScriptUrl, false));
-  absl::optional<base::Value::Dict> extension_pref =
-      CreatePacScriptDict(config);
+  std::optional<base::Value::Dict> extension_pref = CreatePacScriptDict(config);
   ASSERT_TRUE(extension_pref);
 
   base::Value::Dict expected;
@@ -388,8 +387,7 @@ TEST(ExtensionProxyApiHelpers, CreatePacScriptDictWithUrl) {
 TEST(ExtensionProxyApiHelpers, CreatePacScriptDictWidthData) {
   ProxyConfigDictionary config(
       ProxyConfigDictionary::CreatePacScript(kSamplePacScriptAsDataUrl, false));
-  absl::optional<base::Value::Dict> extension_pref =
-      CreatePacScriptDict(config);
+  std::optional<base::Value::Dict> extension_pref = CreatePacScriptDict(config);
   ASSERT_TRUE(extension_pref);
 
   base::Value::Dict expected;

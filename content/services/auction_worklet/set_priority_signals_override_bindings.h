@@ -5,13 +5,14 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_SET_PRIORITY_SIGNALS_OVERRIDE_BINDINGS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_SET_PRIORITY_SIGNALS_OVERRIDE_BINDINGS_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 

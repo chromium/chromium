@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_ENCODING_INFO_HANDLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -42,9 +42,9 @@ class PLATFORM_EXPORT WebrtcEncodingInfoHandler {
   using OnMediaCapabilitiesEncodingInfoCallback =
       base::OnceCallback<void(bool, bool)>;
   void EncodingInfo(
-      const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
-      const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
-      const absl::optional<String> video_scalability_mode,
+      const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
+      const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
+      const std::optional<String> video_scalability_mode,
       OnMediaCapabilitiesEncodingInfoCallback callback) const;
 
  private:

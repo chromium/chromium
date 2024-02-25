@@ -34,6 +34,7 @@
 #include <limits>
 
 #include "base/memory/values_equivalent.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
@@ -56,17 +57,19 @@ struct FontCacheKey {
 
  public:
   FontCacheKey() = default;
-  FontCacheKey(FontFaceCreationParams creation_params,
-               float font_size,
-               unsigned options,
-               float device_scale_factor,
-               FontSizeAdjust size_adjust,
-               scoped_refptr<FontVariationSettings> variation_settings,
-               scoped_refptr<FontPalette> palette,
-               scoped_refptr<FontVariantAlternates> font_variant_alternates,
-               bool is_unique_match)
+  FontCacheKey(
+      FontFaceCreationParams creation_params,
+      float font_size,
+      unsigned options,
+      float device_scale_factor,
+      FontSizeAdjust size_adjust,
+      scoped_refptr<const FontVariationSettings> variation_settings,
+      scoped_refptr<const FontPalette> palette,
+      scoped_refptr<const FontVariantAlternates> font_variant_alternates,
+      bool is_unique_match)
       : creation_params_(creation_params),
-        font_size_(font_size * kFontSizePrecisionMultiplier),
+        font_size_(base::saturated_cast<unsigned>(
+            font_size * kFontSizePrecisionMultiplier)),
         options_(options),
         device_scale_factor_(device_scale_factor),
         size_adjust_(size_adjust),
@@ -131,8 +134,6 @@ struct FontCacheKey {
     return kFontSizePrecisionMultiplier;
   }
 
-  void ClearFontSize() { font_size_ = 0; }
-
 #if BUILDFLAG(IS_ANDROID)
   // Set the locale if the font is locale-specific. This allows different
   // |FontPlatformData| instances for each locale.
@@ -152,9 +153,9 @@ struct FontCacheKey {
   AtomicString locale_;
 #endif  // BUILDFLAG(IS_ANDROID)
   FontSizeAdjust size_adjust_;
-  scoped_refptr<FontVariationSettings> variation_settings_;
-  scoped_refptr<FontPalette> palette_;
-  scoped_refptr<FontVariantAlternates> font_variant_alternates_;
+  scoped_refptr<const FontVariationSettings> variation_settings_;
+  scoped_refptr<const FontPalette> palette_;
+  scoped_refptr<const FontVariantAlternates> font_variant_alternates_;
   bool is_unique_match_ = false;
 };
 

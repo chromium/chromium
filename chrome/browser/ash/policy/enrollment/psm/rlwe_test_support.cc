@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/request_handler_for_psm_auto_enrollment.h"
+#include "private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
@@ -22,6 +23,7 @@ namespace {
 
 std::unique_ptr<RlweClient> CreateRlweClient(
     const RlweTestCase& test_case,
+    private_membership::rlwe::RlweUseCase /* unused */,
     const private_membership::rlwe::RlwePlaintextId& /* unused*/) {
   auto status_or_client =
       private_membership::rlwe::PrivateMembershipRlweClient::CreateForTesting(

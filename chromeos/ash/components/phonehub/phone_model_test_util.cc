@@ -35,12 +35,12 @@ const PhoneStatusModel& CreateFakePhoneStatusModel() {
 const char kFakeBrowserTabUrl1[] = "https://www.example.com/tab1";
 const char16_t kFakeBrowserTabName1[] = u"Tab 1";
 const base::Time kFakeBrowserTabLastAccessedTimestamp1 =
-    base::Time::FromDoubleT(4);
+    base::Time::FromSecondsSinceUnixEpoch(4);
 
 const char kFakeBrowserTabUrl2[] = "https://www.example.com/tab2";
 const char16_t kFakeBrowserTabName2[] = u"Tab 2";
 const base::Time kFakeBrowserTabLastAccessedTimestamp2 =
-    base::Time::FromDoubleT(3);
+    base::Time::FromSecondsSinceUnixEpoch(3);
 
 const BrowserTabsModel::BrowserTabMetadata& CreateFakeBrowserTabMetadata() {
   static const base::NoDestructor<BrowserTabsModel::BrowserTabMetadata>
@@ -82,7 +82,7 @@ const Notification::AppMetadata& CreateFakeAppMetadata() {
       kFakeAppVisibleName,
       kFakeAppPackageName,
       gfx::Image(),
-      /*icon_color=*/absl::nullopt,
+      /*icon_color=*/std::nullopt,
       /*icon_is_monochrome=*/true,
       kUserId,
       phonehub::proto::AppStreamabilityStatus::STREAMABLE};

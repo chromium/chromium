@@ -4,8 +4,8 @@
 
 #import "ios/chrome/app/startup/client_registration.h"
 
-#import "ios/chrome/browser/net/chrome_cookie_store_ios_client.h"
-#import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/chrome/browser/net/model/chrome_cookie_store_ios_client.h"
+#import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/net/cookies/cookie_store_ios_client.h"
 #import "ios/web/public/web_client.h"
 

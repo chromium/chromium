@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -16,13 +18,18 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
@@ -31,7 +38,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -55,20 +61,25 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
     GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
     PreconnectSocketCallback preconnect_socket_callback,
+    GetCookieDeprecationLabelCallback get_cookie_deprecation_label,
+    GetDevtoolsAuctionIdsCallback get_devtools_auction_ids,
     bool force_reload,
     const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
-    absl::optional<int> renderer_process_id,
+    std::optional<int> renderer_process_id,
     bool is_for_seller,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& script_url,
-    const absl::optional<GURL>& wasm_url,
-    const absl::optional<GURL>& trusted_signals_base_url,
-    bool needs_cors_for_additional_bid)
+    const std::optional<GURL>& wasm_url,
+    const std::optional<GURL>& trusted_signals_base_url,
+    bool needs_cors_for_additional_bid,
+    int frame_tree_node_id)
     : receiver_(this, std::move(pending_receiver)),
       get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
       get_trusted_url_loader_factory_(
           std::move(get_trusted_url_loader_factory)),
+      get_cookie_deprecation_label_(std::move(get_cookie_deprecation_label)),
+      get_devtools_auction_ids_(std::move(get_devtools_auction_ids)),
       top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
       renderer_process_id_(renderer_process_id),
@@ -78,6 +89,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       isolation_info_(is_for_seller ? net::IsolationInfo::CreateTransient()
                                     : CreateBidderIsolationInfo(
                                           url::Origin::Create(script_url))),
+      owner_frame_tree_node_id_(frame_tree_node_id),
       script_url_(script_url),
       wasm_url_(wasm_url),
       trusted_signals_base_url_(trusted_signals_base_url),
@@ -112,19 +124,26 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
   bool is_request_allowed = false;
   bool is_trusted_bidding_signals_request = false;
+  std::optional<InterestGroupAuctionFetchType> event_type;
 
   const SubresourceUrlBuilder::BundleSubresourceInfo* maybe_subresource_info =
       nullptr;
-  absl::optional<network::ResourceRequest::WebBundleTokenParams>
+  std::optional<network::ResourceRequest::WebBundleTokenParams>
       maybe_web_bundle_token_params;
   if (url_request.url == script_url_ &&
       accept_header == "application/javascript") {
     is_request_allowed = true;
+    event_type = is_for_seller_ ? InterestGroupAuctionFetchType::kSellerJs
+                                : InterestGroupAuctionFetchType::kBidderJs;
   } else if (wasm_url_.has_value() && url_request.url == wasm_url_.value() &&
              accept_header == "application/wasm") {
+    event_type = InterestGroupAuctionFetchType::kBidderWasm;
     is_request_allowed = true;
   } else if (CouldBeTrustedSignalsUrl(url_request.url) &&
              accept_header == "application/json") {
+    event_type = is_for_seller_
+                     ? InterestGroupAuctionFetchType::kSellerTrustedSignals
+                     : InterestGroupAuctionFetchType::kBidderTrustedSignals;
     is_request_allowed = true;
     is_trusted_bidding_signals_request = true;
   } else {
@@ -170,12 +189,32 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.url = url_request.url;
   new_request.web_bundle_token_params =
       std::move(maybe_web_bundle_token_params);
+  new_request.devtools_request_id = url_request.devtools_request_id;
   new_request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                 accept_header);
   new_request.redirect_mode = network::mojom::RedirectMode::kError;
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
   new_request.enable_load_timing = url_request.enable_load_timing;
+
+  if (event_type.has_value() && new_request.devtools_request_id.has_value() &&
+      devtools_instrumentation::NeedInterestGroupAuctionEvents(
+          owner_frame_tree_node_id_)) {
+    std::vector<std::string> relevant_auction_ids =
+        get_devtools_auction_ids_.Run();
+    devtools_instrumentation::OnInterestGroupAuctionNetworkRequestCreated(
+        owner_frame_tree_node_id_, *event_type,
+        *new_request.devtools_request_id, relevant_auction_ids);
+  }
+
+  if (is_trusted_bidding_signals_request) {
+    std::optional<std::string> maybe_deprecation_label =
+        get_cookie_deprecation_label_.Run();
+    if (maybe_deprecation_label) {
+      new_request.headers.SetHeader("Sec-Cookie-Deprecation",
+                                    *maybe_deprecation_label);
+    }
+  }
 
   if (force_reload_) {
     new_request.load_flags = net::LOAD_BYPASS_CACHE;
@@ -251,8 +290,23 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
         client_security_state_.Clone();
   }
 
-  // TODO(mmenke): Investigate whether `devtools_observer` or
-  // `report_raw_headers` should be set when devtools is open.
+  bool network_instrumentation_enabled = false;
+  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    FrameTreeNode* owner_frame_tree_node =
+        FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
+    new_request.throttling_profile_id =
+        owner_frame_tree_node->current_frame_host()->devtools_frame_token();
+
+    devtools_instrumentation::ApplyAuctionNetworkRequestOverrides(
+        owner_frame_tree_node, &new_request, &network_instrumentation_enabled);
+  }
+
+  if (network_instrumentation_enabled) {
+    new_request.enable_load_timing = true;
+    if (new_request.trusted_params.has_value()) {
+      new_request.trusted_params->devtools_observer = CreateDevtoolsObserver();
+    }
+  }
 
   url_loader_factory_getter.Run()->CreateLoaderAndStart(
       std::move(receiver),
@@ -268,10 +322,46 @@ void AuctionURLLoaderFactoryProxy::Clone(
   NOTREACHED();
 }
 
+AuctionNetworkEventsProxy::AuctionNetworkEventsProxy(
+    int owner_frame_tree_node_id)
+    : owner_frame_tree_node_id_(owner_frame_tree_node_id) {}
+
+AuctionNetworkEventsProxy::~AuctionNetworkEventsProxy() = default;
+
+void AuctionNetworkEventsProxy::Clone(
+    mojo::PendingReceiver<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        receiver) {
+  if (receiver.is_valid()) {
+    auction_network_events_handlers_.Add(this, std::move(receiver));
+  }
+}
+
+void AuctionNetworkEventsProxy::OnNetworkSendRequest(
+    const ::network::ResourceRequest& request,
+    ::base::TimeTicks timestamp) {
+  devtools_instrumentation::OnAuctionWorkletNetworkRequestWillBeSent(
+      owner_frame_tree_node_id_, request, timestamp);
+}
+void AuctionNetworkEventsProxy::OnNetworkResponseReceived(
+    const std::string& request_id,
+    const std::string& loader_id,
+    const ::GURL& request_url,
+    ::network::mojom::URLResponseHeadPtr headers) {
+  devtools_instrumentation::OnAuctionWorkletNetworkResponseReceived(
+      owner_frame_tree_node_id_, request_id, loader_id, request_url, *headers);
+}
+void AuctionNetworkEventsProxy::OnNetworkRequestComplete(
+    const std::string& request_id,
+    const ::network::URLLoaderCompletionStatus& status) {
+  devtools_instrumentation::OnAuctionWorkletNetworkRequestComplete(
+      owner_frame_tree_node_id_, request_id, status);
+}
+
 bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
     const GURL& url) const {
-  if (!trusted_signals_base_url_)
+  if (!trusted_signals_base_url_) {
     return false;
+  }
 
   // Simplest way to make sure the requested URL exactly matches
   // `trusted_signals_base_url_` (which has no query or reference component),
@@ -280,13 +370,28 @@ bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
   // partial query component appended. Seems not worth fully disecting the query
   // string to make sure its only keys are hostname, keys, renderUrls, and
   // adComponentsRenderUrls.
-  if (url.has_ref())
+  if (url.has_ref()) {
     return false;
+  }
   std::string full_prefix = base::StringPrintf(
       "%s?hostname=%s&", trusted_signals_base_url_->spec().c_str(),
       top_frame_origin_.host().c_str());
   return base::StartsWith(url.spec(), full_prefix,
                           base::CompareCase::SENSITIVE);
+}
+
+mojo::PendingRemote<network::mojom::DevToolsObserver>
+AuctionURLLoaderFactoryProxy::CreateDevtoolsObserver() {
+  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    FrameTreeNode* initiator_frame_tree_node =
+        FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
+
+    if (initiator_frame_tree_node) {
+      return NetworkServiceDevToolsObserver::MakeSelfOwned(
+          initiator_frame_tree_node);
+    }
+  }
+  return mojo::PendingRemote<network::mojom::DevToolsObserver>();
 }
 
 }  // namespace content

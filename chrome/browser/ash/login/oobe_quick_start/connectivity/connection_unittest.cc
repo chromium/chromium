@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "connection.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
+
+#include <string>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -17,9 +19,10 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/handshake_helpers.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
@@ -63,6 +66,10 @@ const char kNotifySourceOfUpdateMessageKey[] = "forced_update_required";
 constexpr uint8_t kSuccess = 0x00;
 constexpr char kAuthToken[] = "auth_token";
 
+const char kBootstrapStateKey[] = "bootstrapState";
+constexpr int kBootstrapStateCancel = 1;
+constexpr int kBootstrapStateComplete = 2;
+
 // 32 random bytes to use as the shared secret.
 constexpr std::array<uint8_t, 32> kSharedSecret = {
     0x54, 0xbd, 0x40, 0xcf, 0x8a, 0x7c, 0x2f, 0x6a, 0xca, 0x15, 0x59,
@@ -75,19 +82,19 @@ constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
     0xab, 0xa0, 0xe3, 0xfc, 0xd3, 0x5a, 0x04, 0x01, 0x63, 0xf6, 0xf5,
     0xeb, 0x40, 0x7f, 0x4b, 0xac, 0xe4, 0xd1, 0xbf, 0x20, 0x19};
 
-// 6 random bytes to use as the RandomSessionId.
-constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
-                                                     0x27, 0xbb, 0x28};
+// 6 random bytes to use as the AdvertisingId.
+constexpr std::array<uint8_t, 6> kAdvertisingId = {0x6b, 0xb3, 0x85,
+                                                   0x27, 0xbb, 0x28};
+// random int with 64 bits to use as SessionId.
+constexpr uint64_t kSessionId = 184467440;
 
 // 12 random bytes to use as the nonce.
 constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
                                             0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed};
 
-constexpr base::TimeDelta kResponseTimeout = base::Seconds(3);
+constexpr base::TimeDelta kResponseTimeout = base::Seconds(60);
 
 constexpr char kGaiaTransferResultName[] = "QuickStart.GaiaTransferResult";
-constexpr char kGaiaTransferResultFailureReasonName[] =
-    "QuickStart.GaiaTransferResult.FailureReason";
 
 }  // namespace
 
@@ -106,10 +113,8 @@ class ConnectionTest : public testing::Test {
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
-    session_context_ = std::make_unique<SessionContext>(
-        session_id_, kSharedSecret, kSecondarySharedSecret);
     connection_ = std::make_unique<Connection>(
-        nearby_connection, *session_context_,
+        nearby_connection, &session_context_,
         mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
             fake_quick_start_decoder_->GetRemote()),
         /*on_connection_closed=*/base::DoNothing(),
@@ -123,14 +128,16 @@ class ConnectionTest : public testing::Test {
             }));
   }
 
-  void MarkConnectionAuthenticated() {
+  void MarkConnectionAuthenticated(
+      Connection::AuthenticationMethod auth_method =
+          Connection::AuthenticationMethod::kQR) {
     ASSERT_FALSE(ran_connection_authenticated_callback_);
-    connection_->MarkConnectionAuthenticated();
+    connection_->MarkConnectionAuthenticated(auth_method);
     ASSERT_TRUE(ran_connection_authenticated_callback_);
     ASSERT_TRUE(authenticated_connection_);
   }
 
-  void VerifyAssertionInfo(absl::optional<FidoAssertionInfo> assertion_info) {
+  void VerifyAssertionInfo(std::optional<FidoAssertionInfo> assertion_info) {
     ran_assertion_response_callback_ = true;
     assertion_info_ = assertion_info;
   }
@@ -139,12 +146,28 @@ class ConnectionTest : public testing::Test {
     return connection_->response_timeout_timer_.IsRunning();
   }
 
-  void CallParseBootstrapConfigurationsResponse(
-      base::OnceClosure callback,
-      std::string cryptauth_device_id) {
-    connection_->ParseBootstrapConfigurationsResponse(
-        *mojom::BootstrapConfigurations::New(cryptauth_device_id));
-    std::move(callback).Run();
+  AccountTransferClientData* GetClientData() {
+    return connection_->client_data_.get();
+  }
+
+  bool SimulateBootstrapConfigurationsResponse(std::string instance_id,
+                                               bool is_supervised_account) {
+    base::test::TestFuture<std::string> future;
+    connection_->OnBootstrapConfigurationsResponse(
+        future.GetCallback(),
+        mojom::QuickStartMessage::NewBootstrapConfigurations(
+            mojom::BootstrapConfigurations::New(instance_id,
+                                                is_supervised_account,
+                                                /*email=*/"")));
+
+    return future.Wait();
+  }
+
+  bool SimulateNullBootstrapConfigurationsResponse() {
+    base::test::TestFuture<std::string> future;
+    connection_->OnBootstrapConfigurationsResponse(future.GetCallback(),
+                                                   nullptr);
+    return future.Wait();
   }
 
   void SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
@@ -157,41 +180,45 @@ class ConnectionTest : public testing::Test {
   }
 
   void EmulateEmptyResponseReceived(QuickStartResponseType response_type) {
-    base::test::TestFuture<absl::optional<std::vector<uint8_t>>> future;
+    base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
     SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
                              future.GetCallback(), kResponseTimeout,
                              response_type);
     connection_->OnResponseReceived(future.GetCallback(), response_type,
-                                    absl::nullopt);
+                                    std::nullopt);
     TestMessageMetrics(
         /*succeeded=*/false, /*message_type=*/
-        quick_start_metrics::MapResponseToMessageType(response_type),
+        QuickStartMetrics::MapResponseToMessageType(response_type),
         /*error_code=*/
-        quick_start_metrics::MessageReceivedErrorCode::kDeserializationFailure);
+        QuickStartMetrics::MessageReceivedErrorCode::kDeserializationFailure);
   }
 
   void OnHandshakeResponse(base::OnceCallback<void(bool)> callback) {
     connection_->OnHandshakeResponse(kAuthToken, std::move(callback),
-                                     absl::nullopt);
+                                     std::nullopt);
   }
 
-  void OnRequestAccountTransferAssertionResponse() {
-    base::test::TestFuture<absl::optional<FidoAssertionInfo>> future;
+  bool OnRequestAccountTransferAssertionResponse() {
+    base::test::TestFuture<std::optional<FidoAssertionInfo>> future;
     connection_->OnRequestAccountTransferAssertionResponse(future.GetCallback(),
-                                                           absl::nullopt);
+                                                           nullptr);
+    return future.Get().has_value();
   }
 
   void TestMessageMetrics(
       bool should_succeed,
-      quick_start_metrics::MessageType message_type,
-      absl::optional<quick_start_metrics::MessageReceivedErrorCode>
-          error_code) {
+      QuickStartMetrics::MessageType message_type,
+      std::optional<QuickStartMetrics::MessageReceivedErrorCode> error_code,
+      bool response_expected = true) {
     histogram_tester_.ExpectBucketCount("QuickStart.MessageSent.MessageType",
                                         message_type, 1);
+    int expected_message_received_count = response_expected ? 1 : 0;
     histogram_tester_.ExpectBucketCount(
-        "QuickStart.MessageReceived.DesiredMessageType", message_type, 1);
+        "QuickStart.MessageReceived.DesiredMessageType", message_type,
+        expected_message_received_count);
+
     switch (message_type) {
-      case quick_start_metrics::MessageType::kWifiCredentials:
+      case QuickStartMetrics::MessageType::kWifiCredentials:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.WifiCredentials.Succeeded",
             should_succeed, 1);
@@ -203,7 +230,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kBootstrapConfigurations:
+      case QuickStartMetrics::MessageType::kBootstrapConfigurations:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.BootstrapConfigurations.Succeeded",
             should_succeed, 1);
@@ -216,7 +243,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kHandshake:
+      case QuickStartMetrics::MessageType::kHandshake:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.Handshake.Succeeded", should_succeed,
             1);
@@ -228,7 +255,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kNotifySourceOfUpdate:
+      case QuickStartMetrics::MessageType::kNotifySourceOfUpdate:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.NotifySourceOfUpdate.Succeeded",
             should_succeed, 1);
@@ -241,7 +268,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kGetInfo:
+      case QuickStartMetrics::MessageType::kGetInfo:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.GetInfo.Succeeded", should_succeed, 1);
         histogram_tester_.ExpectTotalCount(
@@ -252,7 +279,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kAssertion:
+      case QuickStartMetrics::MessageType::kAssertion:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.Assertion.Succeeded", should_succeed,
             1);
@@ -264,12 +291,35 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
+      case QuickStartMetrics::MessageType::kBootstrapStateCancel:
+        // We don't expect to receive any response back after sending a
+        // BootstrapStateCancel message.
+        histogram_tester_.ExpectBucketCount(
+            "QuickStart.MessageReceived.BootstrapStateCancel.Succeeded",
+            should_succeed, 0);
+        histogram_tester_.ExpectTotalCount(
+            "QuickStart.MessageReceived.BootstrapStateCancel.ListenDuration",
+            0);
+        break;
+      case QuickStartMetrics::MessageType::kBootstrapStateComplete:
+        // We don't expect to receive any response back after sending a
+        // BootstrapStateComplete message.
+        histogram_tester_.ExpectBucketCount(
+            "QuickStart.MessageReceived.BootstrapStateComplete.Succeeded",
+            should_succeed, 0);
+        histogram_tester_.ExpectTotalCount(
+            "QuickStart.MessageReceived.BootstrapStateComplete.ListenDuration",
+            0);
+        break;
     }
   }
 
   void TestHandshakeMetrics(
+      bool handshake_started,
       bool should_succeed,
-      absl::optional<quick_start_metrics::HandshakeErrorCode> error_code) {
+      std::optional<QuickStartMetrics::HandshakeErrorCode> error_code) {
+    histogram_tester_.ExpectBucketCount("QuickStart.HandshakeStarted",
+                                        handshake_started, 1);
     if (!should_succeed) {
       histogram_tester_.ExpectBucketCount(
           "QuickStart.HandshakeResult.ErrorCode", error_code.value(), 1);
@@ -284,14 +334,17 @@ class ConnectionTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<Connection> connection_;
-  std::unique_ptr<SessionContext> session_context_;
-  RandomSessionId session_id_ = RandomSessionId(kRandomSessionId);
+  AdvertisingId advertising_id_ = AdvertisingId(kAdvertisingId);
+  SessionContext session_context_ = SessionContext(kSessionId,
+                                                   advertising_id_,
+                                                   kSharedSecret,
+                                                   kSecondarySharedSecret);
   bool ran_assertion_response_callback_ = false;
   bool ran_connection_authenticated_callback_ = false;
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
       authenticated_connection_;
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_;
-  absl::optional<FidoAssertionInfo> assertion_info_;
+  std::optional<FidoAssertionInfo> assertion_info_;
   const Base64UrlString kChallenge_ =
       *Base64UrlTranscode(Base64String(kChallengeBase64));
   base::HistogramTester histogram_tester_;
@@ -299,23 +352,19 @@ class ConnectionTest : public testing::Test {
 
 TEST_F(ConnectionTest, RequestWifiCredentials) {
   MarkConnectionAuthenticated();
-  // Arbitrary Session ID for testing
-  int32_t session_id = 1;
 
   fake_quick_start_decoder_->SetWifiCredentialsResponse(
       mojom::WifiCredentials::New("ssid", mojom::WifiSecurityType::kPSK, true,
-                                  "password"),
-      absl::nullopt);
+                                  "password"));
 
-  base::test::TestFuture<absl::optional<mojom::WifiCredentials>> future;
+  base::test::TestFuture<std::optional<mojom::WifiCredentials>> future;
 
-  authenticated_connection_->RequestWifiCredentials(session_id,
-                                                    future.GetCallback());
+  authenticated_connection_->RequestWifiCredentials(future.GetCallback());
 
   fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
   std::vector<uint8_t> wifi_request = fake_nearby_connection_->GetWrittenData();
   std::string wifi_request_string(wifi_request.begin(), wifi_request.end());
-  absl::optional<base::Value> parsed_wifi_request_json =
+  std::optional<base::Value> parsed_wifi_request_json =
       base::JSONReader::Read(wifi_request_string);
   ASSERT_TRUE(parsed_wifi_request_json);
   ASSERT_TRUE(parsed_wifi_request_json->is_dict());
@@ -326,14 +375,14 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
   std::string base64_encoded_payload =
       *written_wifi_credentials_request.FindString("quickStartPayload");
 
-  absl::optional<std::vector<uint8_t>> parsed_payload =
+  std::optional<std::vector<uint8_t>> parsed_payload =
       base::Base64Decode(base64_encoded_payload);
 
   EXPECT_TRUE(parsed_payload.has_value());
   std::string parsed_payload_string(parsed_payload->begin(),
                                     parsed_payload->end());
 
-  absl::optional<base::Value> parsed_wifi_request_payload_json =
+  std::optional<base::Value> parsed_wifi_request_payload_json =
       base::JSONReader::Read(parsed_payload_string);
   ASSERT_TRUE(parsed_wifi_request_payload_json);
   ASSERT_TRUE(parsed_wifi_request_payload_json->is_dict());
@@ -341,17 +390,16 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
       parsed_wifi_request_payload_json.value().GetDict();
 
   EXPECT_TRUE(wifi_request_payload.FindBool("request_wifi"));
-  EXPECT_EQ(wifi_request_payload.FindInt("SESSION_ID"), session_id);
+  EXPECT_EQ(wifi_request_payload.FindInt("SESSION_ID"),
+            static_cast<int>(kSessionId));
 
   std::string shared_secret_str(kSecondarySharedSecret.begin(),
                                 kSecondarySharedSecret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
   EXPECT_EQ(*wifi_request_payload.FindString("shared_secret"),
-            shared_secret_base64);
+            base::Base64Encode(shared_secret_str));
 
-  const absl::optional<mojom::WifiCredentials>& credentials = future.Get();
-  EXPECT_TRUE(credentials.has_value());
+  const std::optional<mojom::WifiCredentials>& credentials = future.Get();
+  ASSERT_TRUE(credentials.has_value());
   EXPECT_EQ(credentials.value().ssid, "ssid");
   EXPECT_EQ(credentials.value().password, "password");
   EXPECT_EQ(credentials.value().security_type,
@@ -359,34 +407,29 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
   EXPECT_TRUE(credentials.value().is_hidden);
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kWifiCredentials,
-      /*error_code=*/absl::nullopt);
+      /*message_type=*/QuickStartMetrics::MessageType::kWifiCredentials,
+      /*error_code=*/std::nullopt);
 }
 
 TEST_F(ConnectionTest, RequestWifiCredentialsReturnsEmptyOnFailure) {
   MarkConnectionAuthenticated();
-  // Random Session ID for testing
-  int32_t session_id = 1;
-  fake_quick_start_decoder_->SetWifiCredentialsResponse(
-      nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+  fake_quick_start_decoder_->SetDecoderError(
+      mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 
-  base::test::TestFuture<absl::optional<mojom::WifiCredentials>> future;
+  base::test::TestFuture<std::optional<mojom::WifiCredentials>> future;
 
-  authenticated_connection_->RequestWifiCredentials(session_id,
-                                                    future.GetCallback());
+  authenticated_connection_->RequestWifiCredentials(future.GetCallback());
 
   fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
 
   EXPECT_FALSE(future.Get().has_value());
 }
 
-TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
+TEST_F(ConnectionTest, RequestAccountInfo) {
   MarkConnectionAuthenticated();
-  // Start the Quick Start account transfer flow by initially sending
-  // BootstrapOptions.
-  authenticated_connection_->RequestAccountTransferAssertion(
-      kChallenge_, base::BindOnce(&ConnectionTest::VerifyAssertionInfo,
-                                  base::Unretained(this)));
+
+  base::test::TestFuture<std::string> future;
+  authenticated_connection_->RequestAccountInfo(future.GetCallback());
 
   std::vector<uint8_t> bootstrap_options_data =
       fake_nearby_connection_->GetWrittenData();
@@ -403,19 +446,30 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   EXPECT_EQ(*bootstrap_options.FindInt(kDeviceTypeKey), kDeviceTypeChrome);
 
   // Emulate a BootstrapConfigurations response.
-  std::vector<uint8_t> cryptauth_device_id = {0x01, 0x02, 0x03};
-  std::string expected_cryptauth_device_id(cryptauth_device_id.begin(),
-                                           cryptauth_device_id.end());
+  std::vector<uint8_t> instance_id = {0x01, 0x02, 0x03};
+  std::string expected_instance_id(instance_id.begin(), instance_id.end());
+  std::string email = "fake_email_value";
   fake_quick_start_decoder_->SetBootstrapConfigurationsResponse(
-      expected_cryptauth_device_id, absl::nullopt);
+      expected_instance_id, /*is_supervised_account=*/false, email);
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
-  TestMessageMetrics(/*should_succeed=*/true, /*message_type=*/
-                     quick_start_metrics::MessageType::kBootstrapConfigurations,
-                     /*error_code=*/absl::nullopt);
+  ASSERT_EQ(future.Get(), email);
 
-  // OnBootstrapOptionsResponse should trigger a write of FIDO GetInfo
-  // request.
+  TestMessageMetrics(/*should_succeed=*/true, /*message_type=*/
+                     QuickStartMetrics::MessageType::kBootstrapConfigurations,
+                     /*error_code=*/std::nullopt);
+}
+
+TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
+  MarkConnectionAuthenticated();
+  // Start the Quick Start account transfer flow by initially sending
+  // a FIDO GetInfo request.
+  authenticated_connection_->RequestAccountTransferAssertion(
+      kChallenge_, base::BindOnce(&ConnectionTest::VerifyAssertionInfo,
+                                  base::Unretained(this)));
+
+  EXPECT_EQ(GetClientData()->GetChallengeBase64URLString(), kChallenge_);
+
   std::vector<uint8_t> fido_get_info_data =
       fake_nearby_connection_->GetWrittenData();
 
@@ -427,7 +481,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   // Verify that FIDO GetInfo request is written as expected
   base::Value::Dict* get_info_payload = get_info_request.value()->GetPayload();
   std::string get_info_message = *get_info_payload->FindString("fidoMessage");
-  absl::optional<std::vector<uint8_t>> get_info_command =
+  std::optional<std::vector<uint8_t>> get_info_command =
       base::Base64Decode(get_info_message);
   EXPECT_TRUE(get_info_command);
   EXPECT_EQ(*get_info_command, kExpectedGetInfoRequest);
@@ -436,8 +490,8 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   fake_nearby_connection_->AppendReadableData(kTestBytes);
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kGetInfo,
-      /*error_code=*/absl::nullopt);
+      /*message_type=*/QuickStartMetrics::MessageType::kGetInfo,
+      /*error_code=*/std::nullopt);
 
   // OnFidoGetInfoResponse should trigger a write of FIDO GetAssertion
   // request.
@@ -453,18 +507,21 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
 
   std::string get_assertion_message_payload =
       *assertion_read_result.value()->GetPayload()->FindString("fidoMessage");
-  absl::optional<std::vector<uint8_t>> get_assertion_command =
+  std::optional<std::vector<uint8_t>> get_assertion_command =
       base::Base64Decode(get_assertion_message_payload);
   EXPECT_TRUE(get_assertion_command);
-  cbor::Value request = requests::GenerateGetAssertionRequest(kChallenge_);
+  cbor::Value request = requests::GenerateGetAssertionRequest(
+      AccountTransferClientData(kChallenge_).CreateHash());
   std::vector<uint8_t> cbor_encoded_request =
       requests::CBOREncodeGetAssertionRequest(std::move(request));
   EXPECT_EQ(*get_assertion_command, cbor_encoded_request);
 
   // Emulate a GetAssertion response.
   std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03};
-  std::string expected_credential_id(credential_id.begin(),
-                                     credential_id.end());
+
+  // The credential ID should be Base64Url encoded.
+  Base64UrlString expected_credential_id = Base64UrlEncode(credential_id);
+
   std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
   std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
   std::string email = "testcase@google.com";
@@ -474,21 +531,22 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   std::vector<uint8_t> data = BuildEncodedResponseData(
       credential_id, auth_data, signature, user_id, status);
 
-  fake_quick_start_decoder_->SetExpectedData(data);
   fake_quick_start_decoder_->SetAssertionResponse(
       mojom::FidoAssertionResponse::New(
           /*email=*/email,
-          /*credential_id=*/expected_credential_id,
+          /*credential_id=*/
+          std::string(credential_id.begin(), credential_id.end()),
           /*auth_data=*/auth_data,
           /*signature=*/signature));
   fake_nearby_connection_->AppendReadableData(data);
   EXPECT_FALSE(fake_nearby_connection_->IsClosed());
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kAssertion,
-      /*error_code=*/absl::nullopt);
+      /*message_type=*/QuickStartMetrics::MessageType::kAssertion,
+      /*error_code=*/std::nullopt);
 
   // Wait for callback to finish and verify response
+  // TODO(b/306474980): Eliminate RunUntilIdle, simplify this test
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(assertion_info_.has_value());
   EXPECT_EQ(email, assertion_info_->email);
@@ -498,27 +556,53 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   histogram_tester_.ExpectBucketCount(kGaiaTransferResultName, true, 1);
 }
 
-TEST_F(ConnectionTest, RequestAccountTransferAssertion_EmptyResponse) {
-  OnRequestAccountTransferAssertionResponse();
-  histogram_tester_.ExpectBucketCount(kGaiaTransferResultName, false, 1);
-  histogram_tester_.ExpectBucketCount(
-      kGaiaTransferResultFailureReasonName,
-      quick_start_metrics::GaiaTransferResultFailureReason::
-          kNoAccountsReceivedFromPhone,
-      1);
+TEST_F(ConnectionTest, RequestAccountTransferAssertion_UnexpectedMessage) {
+  MarkConnectionAuthenticated();
+
+  base::test::TestFuture<std::optional<FidoAssertionInfo>> future;
+  // Start the Quick Start account transfer flow by initially sending
+  // a FIDO GetInfo request.
+  authenticated_connection_->RequestAccountTransferAssertion(
+      kChallenge_, future.GetCallback());
+
+  // Emulate a GetInfo response.
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+
+  // Set an unexpected response.
+  fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
+      mojom::NotifySourceOfUpdateResponse::New(/*ack_received=*/true));
+  fake_nearby_connection_->AppendReadableData({0x01, 0x02, 0x03});
+
+  // RequestAccountTransferAssertion() will retry after receiving an unexpected
+  // response, so set a valid response.
+  std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03};
+  std::string expected_credential_id(credential_id.begin(),
+                                     credential_id.end());
+  std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
+  std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
+  std::string email = "testcase@google.com";
+  std::vector<uint8_t> user_id(email.begin(), email.end());
+  fake_quick_start_decoder_->SetAssertionResponse(
+      mojom::FidoAssertionResponse::New(
+          /*email=*/email,
+          /*credential_id=*/expected_credential_id,
+          /*auth_data=*/auth_data,
+          /*signature=*/signature));
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+
+  std::optional<FidoAssertionInfo> response = future.Get();
+  EXPECT_TRUE(response.has_value());
 }
 
 TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
   MarkConnectionAuthenticated();
   fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
-      /*ack_received=*/true);
+      mojom::NotifySourceOfUpdateResponse::New(/*ack_received=*/true));
   base::test::TestFuture<bool> future;
-  int32_t session_id = 1;
 
-  authenticated_connection_->NotifySourceOfUpdate(session_id,
-                                                  future.GetCallback());
+  authenticated_connection_->NotifySourceOfUpdate(future.GetCallback());
 
-  fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
   std::vector<uint8_t> notify_source_data =
       fake_nearby_connection_->GetWrittenData();
 
@@ -530,59 +614,65 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
 
   EXPECT_EQ(parsed_payload.FindBool(kNotifySourceOfUpdateMessageKey), true);
 
-  EXPECT_EQ(parsed_payload.FindInt("SESSION_ID"), session_id);
+  EXPECT_EQ(parsed_payload.FindInt("SESSION_ID"), static_cast<int>(kSessionId));
 
   std::string shared_secret_str(kSecondarySharedSecret.begin(),
                                 kSecondarySharedSecret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
-  EXPECT_EQ(*parsed_payload.FindString("shared_secret"), shared_secret_base64);
+  EXPECT_EQ(*parsed_payload.FindString("shared_secret"),
+            base::Base64Encode(shared_secret_str));
 
   EXPECT_TRUE(future.Get());
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kNotifySourceOfUpdate,
-      /*error_code=*/absl::nullopt);
+      /*message_type=*/QuickStartMetrics::MessageType::kNotifySourceOfUpdate,
+      /*error_code=*/std::nullopt);
 }
 
 TEST_F(ConnectionTest, NotifySourceOfUpdate_FalseAckReceivedValue) {
   MarkConnectionAuthenticated();
   fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
-      /*ack_received=*/false);
+      mojom::NotifySourceOfUpdateResponse::New(/*ack_received=*/false));
   base::test::TestFuture<bool> future;
-  int32_t session_id = 1;
 
-  authenticated_connection_->NotifySourceOfUpdate(session_id,
-                                                  future.GetCallback());
+  authenticated_connection_->NotifySourceOfUpdate(future.GetCallback());
 
   fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
   EXPECT_FALSE(future.Get());
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kNotifySourceOfUpdate,
-      /*error_code=*/absl::nullopt);
+      /*message_type=*/QuickStartMetrics::MessageType::kNotifySourceOfUpdate,
+      /*error_code=*/std::nullopt);
 }
 
 TEST_F(ConnectionTest, NotifySourceOfUpdate_NoAckReceivedValue) {
   MarkConnectionAuthenticated();
-  fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
-      /*ack_received=*/absl::nullopt);
+  fake_quick_start_decoder_->SetDecoderError(
+      mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
   base::test::TestFuture<bool> future;
-  int32_t session_id = 1;
 
-  authenticated_connection_->NotifySourceOfUpdate(session_id,
-                                                  future.GetCallback());
+  authenticated_connection_->NotifySourceOfUpdate(future.GetCallback());
 
   fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(ConnectionTest, NotifySourceOfUpdate_UnexpectedMessage) {
+  MarkConnectionAuthenticated();
+
+  // Have the decoder provide an unexpected message.
+  fake_quick_start_decoder_->SetUserVerificationRequested(true);
+  base::test::TestFuture<bool> future;
+
+  authenticated_connection_->NotifySourceOfUpdate(future.GetCallback());
+
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  EXPECT_FALSE(future.Get());
+}
+
 TEST_F(ConnectionTest, NotifySourceOfUpdate_ResponseTimeout) {
   MarkConnectionAuthenticated();
-  int32_t session_id = 1;
   ASSERT_FALSE(IsResponseTimeoutTimerRunning());
-  authenticated_connection_->NotifySourceOfUpdate(session_id,
-                                                  base::DoNothing());
+  authenticated_connection_->NotifySourceOfUpdate(base::DoNothing());
   EXPECT_TRUE(IsResponseTimeoutTimerRunning());
   EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
 
@@ -590,14 +680,14 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_ResponseTimeout) {
   EXPECT_EQ(connection_->GetState(), Connection::State::kClosed);
   TestMessageMetrics(
       /*should_succeed=*/false,
-      /*message_type=*/quick_start_metrics::MessageType::kNotifySourceOfUpdate,
-      /*error_code=*/quick_start_metrics::MessageReceivedErrorCode::kTimeOut);
+      /*message_type=*/QuickStartMetrics::MessageType::kNotifySourceOfUpdate,
+      /*error_code=*/QuickStartMetrics::MessageReceivedErrorCode::kTimeOut);
 }
 
 TEST_F(ConnectionTest, SendBytesAndReadResponse_TimedOut) {
   ASSERT_FALSE(IsResponseTimeoutTimerRunning());
 
-  base::test::TestFuture<absl::optional<std::vector<uint8_t>>> future;
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
   SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
                            future.GetCallback(), kResponseTimeout);
 
@@ -612,7 +702,7 @@ TEST_F(ConnectionTest, SendBytesAndReadResponse_TimedOut) {
 TEST_F(ConnectionTest, SendBytesAndReadResponse_SucceedsBeforeTimeout) {
   ASSERT_FALSE(IsResponseTimeoutTimerRunning());
 
-  base::test::TestFuture<absl::optional<std::vector<uint8_t>>> future;
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
   SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
                            future.GetCallback(), kResponseTimeout);
 
@@ -633,7 +723,7 @@ TEST_F(ConnectionTest, TestClose) {
       future;
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
-          fake_nearby_connection_.get(), *session_context_,
+          fake_nearby_connection_.get(), &session_context_,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
           /*on_connection_closed=*/future.GetCallback(),
@@ -656,7 +746,7 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
       future;
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
-          fake_nearby_connection_.get(), *session_context_,
+          fake_nearby_connection_.get(), &session_context_,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
           /*on_connection_closed=*/future.GetCallback(),
@@ -688,9 +778,10 @@ TEST_F(ConnectionTest, InitiateHandshake) {
   EXPECT_TRUE(future.Get());
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kHandshake,
-      /*error_code=*/absl::nullopt);
-  TestHandshakeMetrics(/*should_succeed=*/true, /*error_code=*/absl::nullopt);
+      /*message_type=*/QuickStartMetrics::MessageType::kHandshake,
+      /*error_code=*/std::nullopt);
+  TestHandshakeMetrics(/*handshake_started=*/true, /*should_succeed=*/true,
+                       /*error_code=*/std::nullopt);
 }
 
 TEST_F(ConnectionTest, InitiateHandshake_BadResponse) {
@@ -703,36 +794,86 @@ TEST_F(ConnectionTest, InitiateHandshake_BadResponse) {
   // the target device. Should fail because it uses the wrong role.
   fake_nearby_connection_->AppendReadableData(written_payload);
   EXPECT_FALSE(future.Get());
-  TestHandshakeMetrics(/*should_succeed=*/false,
-                       /*error_code=*/quick_start_metrics::HandshakeErrorCode::
-                           kUnexpectedAuthPayloadRole);
+  TestHandshakeMetrics(
+      /*handshake_started=*/true, /*should_succeed=*/false,
+      /*error_code=*/
+      QuickStartMetrics::HandshakeErrorCode::kUnexpectedAuthPayloadRole);
 }
 
 TEST_F(ConnectionTest, EmptyHandshakeResponse) {
   base::test::TestFuture<bool> future;
   connection_->InitiateHandshake(kAuthToken, future.GetCallback());
   OnHandshakeResponse(future.GetCallback());
-  TestHandshakeMetrics(/*should_succeed=*/false,
-                       /*error_code=*/quick_start_metrics::HandshakeErrorCode::
-                           kFailedToReadResponse);
+  TestHandshakeMetrics(
+      /*handshake_started=*/true, /*should_succeed=*/false,
+      /*error_code=*/
+      QuickStartMetrics::HandshakeErrorCode::kFailedToReadResponse);
 }
 
 TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {
   fake_quick_start_decoder_->SetUserVerificationRequested(true);
+  fake_quick_start_decoder_->SetUserVerificationMethod(true);
   fake_quick_start_decoder_->SetUserVerificationResponse(
       mojom::UserVerificationResult::kUserVerified, true);
 
   MarkConnectionAuthenticated();
 
-  base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
-      future;
+  base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
   fake_nearby_connection_->AppendReadableData(kTestBytes);
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(mojom::UserVerificationResult::kUserVerified, future.Get()->result);
   EXPECT_TRUE(future.Get()->is_first_user_verification);
+}
+
+TEST_F(ConnectionTest,
+       TestUserVerificationRequested_TooManyUserVerificationPackets) {
+  fake_quick_start_decoder_->SetUserVerificationRequested(true);
+  fake_quick_start_decoder_->SetUserVerificationMethod(true);
+  fake_quick_start_decoder_->SetUserVerificationMethod(true);
+
+  MarkConnectionAuthenticated();
+
+  base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
+  authenticated_connection_->WaitForUserVerification(future.GetCallback());
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+
+  ASSERT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ConnectionTest,
+       TestUserVerificationRequested_UnsupportedVerificationMethod) {
+  fake_quick_start_decoder_->SetUserVerificationRequested(true);
+  fake_quick_start_decoder_->SetUserVerificationMethod(false);
+
+  MarkConnectionAuthenticated();
+
+  base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
+  authenticated_connection_->WaitForUserVerification(future.GetCallback());
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+
+  ASSERT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ConnectionTest, TestUserVerificationRequested_UnexpectedMessage) {
+  std::vector<uint8_t> instance_id = {0x01, 0x02, 0x03};
+  std::string expected_instance_id(instance_id.begin(), instance_id.end());
+  fake_quick_start_decoder_->SetBootstrapConfigurationsResponse(
+      expected_instance_id, /*is_supervised_account=*/false, /*email=*/"");
+
+  MarkConnectionAuthenticated();
+
+  base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
+  authenticated_connection_->WaitForUserVerification(future.GetCallback());
+  fake_nearby_connection_->AppendReadableData(kTestBytes);
+
+  ASSERT_FALSE(future.Get().has_value());
 }
 
 TEST_F(ConnectionTest,
@@ -744,8 +885,7 @@ TEST_F(ConnectionTest,
 
   MarkConnectionAuthenticated();
 
-  base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
-      future;
+  base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
@@ -761,8 +901,7 @@ TEST_F(
 
   MarkConnectionAuthenticated();
 
-  base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
-      future;
+  base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
@@ -775,8 +914,7 @@ TEST_F(ConnectionTest,
 
   MarkConnectionAuthenticated();
 
-  base::test::TestFuture<absl::optional<mojom::UserVerificationResponse>>
-      future;
+  base::test::TestFuture<std::optional<mojom::UserVerificationResponse>> future;
   authenticated_connection_->WaitForUserVerification(future.GetCallback());
   fake_nearby_connection_->AppendReadableData(kTestBytes);
   fake_quick_start_decoder_->SetDecoderError(
@@ -788,22 +926,32 @@ TEST_F(ConnectionTest,
 
 TEST_F(ConnectionTest, GetPhoneInstanceId) {
   MarkConnectionAuthenticated();
-  base::RunLoop run_loop;
 
   // Phone instance ID is initially empty.
   EXPECT_TRUE(authenticated_connection_->get_phone_instance_id().empty());
 
-  // Arbitrary CryptAuth ID.
-  std::vector<uint8_t> cryptauth_device_id = {0x01, 0x02, 0x03};
-  std::string expected_cryptauth_device_id(cryptauth_device_id.begin(),
-                                           cryptauth_device_id.end());
+  // Arbitrary instance ID.
+  std::vector<uint8_t> instance_id = {0x01, 0x02, 0x03};
+  std::string expected_instance_id(instance_id.begin(), instance_id.end());
 
-  CallParseBootstrapConfigurationsResponse(run_loop.QuitClosure(),
-                                           expected_cryptauth_device_id);
+  bool is_supervised_account = true;
 
-  run_loop.Run();
+  ASSERT_TRUE(SimulateBootstrapConfigurationsResponse(expected_instance_id,
+                                                      is_supervised_account));
+
   EXPECT_EQ(authenticated_connection_->get_phone_instance_id(),
-            expected_cryptauth_device_id);
+            expected_instance_id);
+  EXPECT_EQ(authenticated_connection_->is_supervised_account(),
+            is_supervised_account);
+}
+
+TEST_F(ConnectionTest, ParseBootstrapConfigurationsHandlesNull) {
+  MarkConnectionAuthenticated();
+  ASSERT_TRUE(authenticated_connection_->get_phone_instance_id().empty());
+
+  ASSERT_TRUE(SimulateNullBootstrapConfigurationsResponse());
+
+  EXPECT_TRUE(authenticated_connection_->get_phone_instance_id().empty());
 }
 
 TEST_F(ConnectionTest, MetricsEmittedOnEmptyResponse) {
@@ -817,6 +965,75 @@ TEST_F(ConnectionTest, MetricsEmittedOnEmptyResponse) {
   for (const auto response_type : response_types) {
     EmulateEmptyResponseReceived(response_type);
   }
+}
+
+TEST_F(ConnectionTest, CloseFromUserAbortedNotifiesPhoneWhenAuthenticated) {
+  MarkConnectionAuthenticated();
+  connection_->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
+
+  std::vector<uint8_t> notify_source_data =
+      fake_nearby_connection_->GetWrittenData();
+  QuickStartMessage::ReadResult read_result =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          notify_source_data, QuickStartMessageType::kBootstrapState);
+  ASSERT_TRUE(read_result.has_value());
+  base::Value::Dict& parsed_payload = *read_result.value()->GetPayload();
+
+  EXPECT_EQ(parsed_payload.FindInt(kBootstrapStateKey), kBootstrapStateCancel);
+  TestMessageMetrics(
+      /*should_succeed=*/true,
+      /*message_type=*/QuickStartMetrics::MessageType::kBootstrapStateCancel,
+      /*error_code=*/std::nullopt, /*response_expected=*/false);
+}
+
+TEST_F(ConnectionTest,
+       CloseFromUserAbortedDoesNotNotifyPhoneWhenUnauthenticated) {
+  connection_->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
+
+  std::vector<uint8_t> notify_source_data =
+      fake_nearby_connection_->GetWrittenData();
+  QuickStartMessage::ReadResult read_result =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          notify_source_data, QuickStartMessageType::kBootstrapState);
+  EXPECT_FALSE(read_result.has_value());
+}
+
+TEST_F(ConnectionTest, NotifyPhoneSetupComplete) {
+  MarkConnectionAuthenticated();
+  authenticated_connection_->NotifyPhoneSetupComplete();
+
+  std::vector<uint8_t> notify_source_data =
+      fake_nearby_connection_->GetWrittenData();
+  QuickStartMessage::ReadResult read_result =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          notify_source_data, QuickStartMessageType::kBootstrapState);
+  ASSERT_TRUE(read_result.has_value());
+  base::Value::Dict& parsed_payload = *read_result.value()->GetPayload();
+
+  EXPECT_EQ(parsed_payload.FindInt(kBootstrapStateKey),
+            kBootstrapStateComplete);
+  TestMessageMetrics(
+      /*should_succeed=*/true,
+      /*message_type=*/QuickStartMetrics::MessageType::kBootstrapStateComplete,
+      /*error_code=*/std::nullopt, /*response_expected=*/false);
+}
+
+TEST_F(ConnectionTest, NoResponseAfterClose) {
+  // Close the connection while waiting for a response and ensure the response
+  // callback is not invoked.
+
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
+  SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
+                           future.GetCallback(), kResponseTimeout);
+  EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
+  EXPECT_FALSE(future.IsReady());
+
+  connection_->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
+  EXPECT_EQ(connection_->GetState(), Connection::State::kClosed);
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace ash::quick_start

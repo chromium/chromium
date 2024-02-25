@@ -25,6 +25,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,14 +33,13 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -48,9 +48,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for GoogleServicesSettings.
- */
+/** Tests for GoogleServicesSettings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "A subset of tests requires adding a new account that could fail if batched.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -58,8 +56,7 @@ public class GoogleServicesSettingsTest {
     private static final String CHILD_ACCOUNT_NAME =
             AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -77,32 +74,37 @@ public class GoogleServicesSettingsTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertTrue("SIGNIN_ALLOWED pref should be set by default",
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                () ->
+                        Assert.assertTrue(
+                                "SIGNIN_ALLOWED pref should be set by default",
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            prefService.clearPref(Pref.SIGNIN_ALLOWED);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    prefService.clearPref(Pref.SIGNIN_ALLOWED);
+                });
     }
 
     @Test
     @LargeTest
     public void allowSigninOptionHiddenFromChildUser() {
         mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
-        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
-                Profile::getLastUsedRegularProfile);
+        final Profile profile =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         ChromeSwitchPreference allowChromeSignin =
-                (ChromeSwitchPreference) googleServicesSettings.findPreference(
-                        GoogleServicesSettings.PREF_ALLOW_SIGNIN);
+                (ChromeSwitchPreference)
+                        googleServicesSettings.findPreference(
+                                GoogleServicesSettings.PREF_ALLOW_SIGNIN);
         Assert.assertFalse(
                 "Chrome Signin option should not be visible", allowChromeSignin.isVisible());
     }
@@ -113,21 +115,25 @@ public class GoogleServicesSettingsTest {
         mSigninTestRule.addTestAccountThenSignin();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         ChromeSwitchPreference allowChromeSignin =
-                (ChromeSwitchPreference) googleServicesSettings.findPreference(
-                        GoogleServicesSettings.PREF_ALLOW_SIGNIN);
+                (ChromeSwitchPreference)
+                        googleServicesSettings.findPreference(
+                                GoogleServicesSettings.PREF_ALLOW_SIGNIN);
         Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
 
         onView(withText(R.string.allow_chrome_signin_title)).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertFalse("Account should be signed out!",
+                () ->
+                        Assert.assertFalse(
+                                "Account should be signed out!",
                                 IdentityServicesProvider.get()
-                                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                        .getIdentityManager(
+                                                ProfileManager.getLastUsedRegularProfile())
                                         .hasPrimaryAccount(ConsentLevel.SIGNIN)));
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertFalse("SIGNIN_ALLOWED pref should be unset",
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                () ->
+                        Assert.assertFalse(
+                                "SIGNIN_ALLOWED pref should be unset",
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
         Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
     }
@@ -138,18 +144,19 @@ public class GoogleServicesSettingsTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         ChromeSwitchPreference allowChromeSignin =
-                (ChromeSwitchPreference) googleServicesSettings.findPreference(
-                        GoogleServicesSettings.PREF_ALLOW_SIGNIN);
+                (ChromeSwitchPreference)
+                        googleServicesSettings.findPreference(
+                                GoogleServicesSettings.PREF_ALLOW_SIGNIN);
         Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
 
         onView(withText(R.string.allow_chrome_signin_title)).perform(click());
         // Accept the sign out Dialog
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertFalse(
+                () ->
+                        Assert.assertFalse(
                                 "Accepting the sign-out dialog should set SIGNIN_ALLOWED to false",
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
         Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
     }
@@ -157,163 +164,136 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @DisableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
-    public void testMetricsSettingsHiddenFlagOff() {
+    @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/true"
+    })
+    public void testPriceTrackingAnnotations() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+                    PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+                });
+
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull("Metrics settings should be null when the flag is off.",
-                    googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_METRICS_SETTINGS));
-        });
-    }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeSwitchPreference priceAnnotationsSwitch =
+                            (ChromeSwitchPreference)
+                                    googleServicesSettings.findPreference(
+                                            GoogleServicesSettings.PREF_PRICE_TRACKING_ANNOTATIONS);
+                    Assert.assertTrue(priceAnnotationsSwitch.isVisible());
+                    Assert.assertTrue(priceAnnotationsSwitch.isChecked());
 
-    @Test
-    @LargeTest
-    @Feature({"Preference"})
-    @EnableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
-    public void testMetricsSettingsShownFlagOn() {
-        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNotNull("Metrics settings should exist when the flag is on.",
-                    googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_METRICS_SETTINGS));
-        });
+                    priceAnnotationsSwitch.performClick();
+                    Assert.assertFalse(
+                            PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
+                                    ProfileManager.getLastUsedRegularProfile()));
+                    priceAnnotationsSwitch.performClick();
+                    Assert.assertTrue(
+                            PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
+                                    ProfileManager.getLastUsedRegularProfile()));
+                });
     }
 
     @Test
     @LargeTest
     @Feature({"Preference"})
     @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/true"})
-    public void
-    testPriceTrackingAnnotations() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
-            PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        });
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/false"
+    })
+    public void testPriceTrackingAnnotations_FeatureDisabled() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+                    PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+                });
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeSwitchPreference priceAnnotationsSwitch =
-                    (ChromeSwitchPreference) googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_PRICE_TRACKING_ANNOTATIONS);
-            Assert.assertTrue(priceAnnotationsSwitch.isVisible());
-            Assert.assertTrue(priceAnnotationsSwitch.isChecked());
-
-            priceAnnotationsSwitch.performClick();
-            Assert.assertFalse(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
-            priceAnnotationsSwitch.performClick();
-            Assert.assertTrue(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertNull(
+                            googleServicesSettings.findPreference(
+                                    GoogleServicesSettings.PREF_PRICE_TRACKING_ANNOTATIONS));
+                });
     }
 
     @Test
     @LargeTest
     @Feature({"Preference"})
     @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/false"})
-    public void
-    testPriceTrackingAnnotations_FeatureDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
-            PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        });
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/true"
+    })
+    public void testPriceTrackingAnnotations_NotSignedIn() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+                    PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
+                });
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull(googleServicesSettings.findPreference(
-                    GoogleServicesSettings.PREF_PRICE_TRACKING_ANNOTATIONS));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertNull(
+                            googleServicesSettings.findPreference(
+                                    GoogleServicesSettings.PREF_PRICE_TRACKING_ANNOTATIONS));
+                });
     }
 
     @Test
     @LargeTest
-    @Feature({"Preference"})
-    @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/true"})
-    public void
-    testPriceTrackingAnnotations_NotSignedIn() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
-            PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
-        });
-
-        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull(googleServicesSettings.findPreference(
-                    GoogleServicesSettings.PREF_PRICE_TRACKING_ANNOTATIONS));
-        });
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     @MinAndroidSdkLevel(
-            value = Build.VERSION_CODES.Q, reason = "Digital Wellbeing is only available from Q.")
-    public void
-    testUsageStatsReportingShown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            prefService.setBoolean(Pref.USAGE_STATS_ENABLED, true);
-        });
+            value = Build.VERSION_CODES.Q,
+            reason = "Digital Wellbeing is only available from Q.")
+    public void testUsageStatsReportingShown() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    prefService.setBoolean(Pref.USAGE_STATS_ENABLED, true);
+                });
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNotNull("Usage stats should exist when the flag and pref are set.",
-                    googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_USAGE_STATS_REPORTING));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertNotNull(
+                            "Usage stats should exist when the flag and pref are set.",
+                            googleServicesSettings.findPreference(
+                                    GoogleServicesSettings.PREF_USAGE_STATS_REPORTING));
+                });
     }
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     @MinAndroidSdkLevel(
-            value = Build.VERSION_CODES.Q, reason = "Digital Wellbeing is only available from Q.")
-    public void
-    testUsageStatsReportingNotShown_FeatureEnabledPrefDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            prefService.setBoolean(Pref.USAGE_STATS_ENABLED, false);
-        });
+            value = Build.VERSION_CODES.Q,
+            reason = "Digital Wellbeing is only available from Q.")
+    public void testUsageStatsReportingNotShown() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    prefService.setBoolean(Pref.USAGE_STATS_ENABLED, false);
+                });
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull("Usage stats should not exist when the pref is not set.",
-                    googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_USAGE_STATS_REPORTING));
-        });
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
-    @MinAndroidSdkLevel(
-            value = Build.VERSION_CODES.Q, reason = "Digital Wellbeing is only available from Q.")
-    public void
-    testUsageStatsReportingNotShown_FeatureDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            prefService.setBoolean(Pref.USAGE_STATS_ENABLED, true);
-        });
-
-        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull("Usage stats should not exist when the feature is not enabled.",
-                    googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_USAGE_STATS_REPORTING));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertNull(
+                            "Usage stats should not exist when the pref is not set.",
+                            googleServicesSettings.findPreference(
+                                    GoogleServicesSettings.PREF_USAGE_STATS_REPORTING));
+                });
     }
 
     private GoogleServicesSettings startGoogleServicesSettings() {

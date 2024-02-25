@@ -34,6 +34,13 @@ std::string HdrMetadataSmpteSt2086::ToString() const {
   return ss.str();
 }
 
+std::string HdrMetadataNdwl::ToString() const {
+  std::stringstream ss;
+  ss << std::fixed << std::setprecision(4) << "{"
+     << "nits:" << nits << "}";
+  return ss.str();
+}
+
 std::string HdrMetadataExtendedRange::ToString() const {
   std::stringstream ss;
   ss << std::fixed << std::setprecision(4) << "{"
@@ -44,7 +51,7 @@ std::string HdrMetadataExtendedRange::ToString() const {
 
 // static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
   constexpr HdrMetadataSmpteSt2086 kDefaults2086(SkNamedPrimariesExt::kRec2020,
                                                  10000.f, 0.f);
 
@@ -79,6 +86,9 @@ std::string HDRMetadata::ToString() const {
   }
   if (cta_861_3) {
     ss << "cta_861_3:" << cta_861_3->ToString() << ", ";
+  }
+  if (ndwl) {
+    ss << "ndwl:" << ndwl->ToString() << ", ";
   }
   if (extended_range) {
     ss << "extended_range:" << extended_range->ToString() << ", ";

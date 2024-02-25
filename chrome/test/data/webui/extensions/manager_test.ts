@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
-import {ExtensionsManagerElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
+import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -131,23 +132,19 @@ suite('ExtensionManagerTest', function() {
     assertViewActive('extensions-item-list');
   });
 
-  test(
-      'CloseDrawerOnNarrowModeExit', async function() {
-        manager.$.toolbar.narrow = true;
-        flush();
+  test('CloseDrawerOnNarrowModeExit', async function() {
+    manager.$.toolbar.narrow = true;
+    const toolbar = manager.$.toolbar.$.toolbar;
+    await toolbar.updateComplete;
+    toolbar.shadowRoot!.querySelector<HTMLElement>('#menuButton')!.click();
 
-        manager.shadowRoot!.querySelector('extensions-toolbar')!.shadowRoot!
-            .querySelector('cr-toolbar')!.shadowRoot!
-            .querySelector<HTMLElement>('#menuButton')!.click();
-        flush();
+    await eventToPromise('cr-drawer-opened', manager);
+    const drawer = manager.shadowRoot!.querySelector('cr-drawer');
+    assertTrue(!!drawer);
 
-        const drawer = manager.shadowRoot!.querySelector('cr-drawer')!;
-        await eventToPromise('cr-drawer-opened', drawer);
-
-        manager.$.toolbar.narrow = false;
-        flush();
-        await eventToPromise('close', drawer);
-      });
+    manager.$.toolbar.narrow = false;
+    await eventToPromise('close', drawer);
+  });
 
   test('PageTitleUpdate', function() {
     assertEquals('Extensions', document.title);

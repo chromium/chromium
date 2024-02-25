@@ -5,10 +5,6 @@
 import os
 import logging
 import posixpath
-import re
-import subprocess
-import sys
-import time
 
 from contextlib import contextmanager
 from typing import List, Optional
@@ -19,7 +15,6 @@ from chrome.test.variations.drivers import DriverFactory
 # This import also adds `devil` and `build/android` to `sys.path`.
 from chrome.test.variations.test_utils import android
 from selenium import webdriver
-from selenium.webdriver.chrome import service
 
 from devil.android import device_temp_file
 from devil.android import device_utils
@@ -31,10 +26,11 @@ class AndroidDriverFactory(DriverFactory):
   channel: str = attr.attrib()
   avd_config: Optional[str] = attr.attrib()
   enabled_emulator_window: bool = attr.attrib()
-  chromedriver_path: str = attr.attrib()
   ports: List[int] = attr.attrib()
 
+  #override
   def __attrs_post_init__(self):
+    super().__attrs_post_init__()
     self._instance = android.launch_emulator(
       avd_config=self.avd_config,
       emulator_window=self.enabled_emulator_window,
@@ -47,6 +43,12 @@ class AndroidDriverFactory(DriverFactory):
     self._package_name = android.install_chrome(self.channel, self.device)
     self.device.ClearApplicationState(self.package_name)
     logging.info('Installed Chrome (%s)', self.package_name)
+
+  #override
+  @property
+  def supports_startup_timeout(self) -> bool:
+    # Android doesn't support browser startup timeout.
+    return False
 
   @property
   def device_temp_dir(self) -> device_temp_file.NamedDeviceTemporaryDirectory:
@@ -81,7 +83,7 @@ class AndroidDriverFactory(DriverFactory):
     seed_file: Optional[str] = None,
     options: Optional[webdriver.ChromeOptions] = None
     ) -> webdriver.Remote:
-    options = options or webdriver.ChromeOptions()
+    options = options or self.default_options
     options.enable_mobile(
       android_package=self.package_name,
       android_activity=self.activity_name,
@@ -95,14 +97,12 @@ class AndroidDriverFactory(DriverFactory):
       logging.info('Installed seed at (%s)', installed_seed_path)
       options.add_argument(
         f'variations-test-seed-path={installed_seed_path}')
-      options.add_argument('--disable-field-trial-config')
       options.add_argument(f'--fake-variations-channel={self.channel}')
 
     driver = None
     try:
-      yield (driver := webdriver.Chrome(
-        service=service.Service(self.chromedriver_path),
-        options=options))
+      yield (driver := webdriver.Chrome(service=self.get_driver_service(),
+                                        options=options))
     finally:
       if driver:
         driver.quit()

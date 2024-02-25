@@ -7,15 +7,14 @@
 
 class SkBitmap;
 
-typedef unsigned int SkColor;
+using SkColor = unsigned int;
 
 namespace base {
 class FilePath;
 }
 
 // This file contains various utility functions for extension images and colors.
-namespace extensions {
-namespace image_util {
+namespace extensions::image_util {
 
 // Returns whether an icon image is considered to be visible in its display
 // context.
@@ -43,7 +42,7 @@ bool IsRenderedIconAtPathSufficientlyVisible(const base::FilePath& path,
 // Icons should be a reasonable size for analysis. There have been crash
 // reports due to memory allocation issues with calls to
 // SkBitmap::allocN32Pixels. See crbug.com/1155746.
-constexpr int kMaxAllowedPixels = 2048 * 2048;
+inline constexpr int kMaxAllowedPixels = 2048 * 2048;
 
 // Renders the icon bitmap onto another bitmap, combining it with the specified
 // background color. The output bitmap must be empty.
@@ -54,7 +53,6 @@ constexpr int kMaxAllowedPixels = 2048 * 2048;
 // Load a PNG image from a file into the destination bitmap.
 bool LoadPngFromFile(const base::FilePath& path, SkBitmap* dst);
 
-}  // namespace image_util
-}  // namespace extensions
+}  // namespace extensions::image_util
 
 #endif  // EXTENSIONS_COMMON_IMAGE_UTIL_H_

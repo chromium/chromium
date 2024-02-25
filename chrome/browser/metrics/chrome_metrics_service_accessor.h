@@ -17,9 +17,10 @@
 #include "ppapi/buildflags/buildflags.h"
 
 class BrowserProcessImpl;
+class CampaignsManagerClientImpl;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
-class ChromeProcessSingleton;
+class ChromeVariationsServiceClient;
 class HttpsFirstModeService;
 class NavigationMetricsRecorder;
 class PrefService;
@@ -55,7 +56,6 @@ class UkmConsentParamBrowserTest;
 }  // namespace metrics
 
 namespace safe_browsing {
-class ChromeCleanerControllerDelegate;
 class ChromeSafeBrowsingUIManagerDelegate;
 class DownloadUrlSBClient;
 class IncidentReportingService;
@@ -97,6 +97,18 @@ class PerSessionSettingsUserActionTracker;
 }  // namespace settings
 }  // namespace ash
 
+namespace tpcd::experiment {
+class ExperimentManagerImpl;
+}
+
+namespace SearchEngineChoiceClientSideTrial {
+void RegisterSyntheticTrials();
+}
+
+namespace readaloud {
+class SyntheticTrial;
+}
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -123,6 +135,9 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainParts;
   friend class ChromeContentBrowserClient;
   friend class ChromeMetricsServicesManagerClient;
+  // TODO(crbug.com/1508150): Remove this friend when the limited entropy
+  // synthetic trial has wrapped up.
+  friend class ChromeVariationsServiceClient;
   friend bool domain_reliability::ShouldCreateService();
   friend class extensions::ChromeGuestViewManagerDelegate;
   friend class extensions::ChromeMetricsPrivateDelegate;
@@ -134,7 +149,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ash::settings::PerSessionSettingsUserActionTracker;
   friend class settings::MetricsReportingHandler;
   friend class UmaSessionStats;
-  friend class safe_browsing::ChromeCleanerControllerDelegate;
   friend class safe_browsing::ChromeSafeBrowsingUIManagerDelegate;
   friend class safe_browsing::DownloadUrlSBClient;
   friend class safe_browsing::IncidentReportingService;
@@ -143,7 +157,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class segmentation_platform::FieldTrialRegisterImpl;
   friend class ChromeMetricsServiceClient;
   friend class ChromePasswordManagerClient;
-  friend class ChromeProcessSingleton;
   friend class NavigationMetricsRecorder;
   friend class ChromeBrowserMainExtraPartsGpu;
   friend class Browser;
@@ -152,10 +165,15 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class WebUITabStripFieldTrial;
   friend class feed::FeedServiceDelegateImpl;
   friend class FirstRunService;
+  friend void SearchEngineChoiceClientSideTrial::RegisterSyntheticTrials();
   friend class browser_sync::DeviceInfoSyncClientImpl;
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
   friend class ash::DemoSession;
+  // Used to register synthetic trials for ongoing growth experiments.
+  friend class CampaignsManagerClientImpl;
+  friend class tpcd::experiment::ExperimentManagerImpl;
+  friend class readaloud::SyntheticTrial;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;

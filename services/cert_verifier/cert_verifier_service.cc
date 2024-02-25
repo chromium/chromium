@@ -9,8 +9,10 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ip_address.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/x509_util.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -82,16 +84,20 @@ void ReconnectURLLoaderFactory(
 
 CertVerifierServiceImpl::CertVerifierServiceImpl(
     std::unique_ptr<net::CertVerifierWithUpdatableProc> verifier,
-    mojo::PendingReceiver<mojom::CertVerifierService> receiver,
+    mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
+    mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
     mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
-    scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher)
-    : verifier_(std::move(verifier)),
-      receiver_(this, std::move(receiver)),
+    scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher,
+    net::CertVerifyProc::InstanceParams instance_params)
+    : instance_params_(std::move(instance_params)),
+      verifier_(std::move(verifier)),
+      service_receiver_(this, std::move(service_receiver)),
+      updater_receiver_(this, std::move(updater_receiver)),
       client_(std::move(client)),
       cert_net_fetcher_(std::move(cert_net_fetcher)) {
   // base::Unretained is safe because |this| owns |receiver_|, so deleting
   // |this| will prevent |receiver_| from calling this callback.
-  receiver_.set_disconnect_handler(
+  service_receiver_.set_disconnect_handler(
       base::BindRepeating(&CertVerifierServiceImpl::OnDisconnectFromService,
                           base::Unretained(this)));
   verifier_->AddObserver(this);
@@ -126,6 +132,61 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
   }
 }
 
+void CertVerifierServiceImpl::UpdateAdditionalCertificates(
+    mojom::AdditionalCertificatesPtr additional_certificates) {
+  instance_params_.additional_trust_anchors =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates->trust_anchors));
+
+  instance_params_.additional_untrusted_authorities =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates->all_certificates));
+
+  instance_params_.additional_trust_anchors_with_enforced_constraints =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates
+                  ->trust_anchors_with_enforced_constraints));
+
+  instance_params_.additional_distrusted_spkis =
+      additional_certificates->distrusted_spkis;
+
+  instance_params_.include_system_trust_store =
+      additional_certificates->include_system_trust_store;
+
+  for (const auto& cert_with_constraints_mojo :
+       additional_certificates->trust_anchors_with_additional_constraints) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
+        net::x509_util::CreateCryptoBuffer(
+            base::as_byte_span(cert_with_constraints_mojo->certificate));
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        bssl::ParsedCertificate::Create(
+            std::move(cert_buffer),
+            net::x509_util::DefaultParseCertificateOptions(), nullptr);
+    if (!cert) {
+      continue;
+    }
+
+    net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+    cert_with_constraints.certificate = std::move(cert);
+    cert_with_constraints.permitted_dns_names =
+        cert_with_constraints_mojo->permitted_dns_names;
+
+    for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
+      cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
+    }
+
+    instance_params_.additional_trust_anchors_with_constraints.push_back(
+        std::move(cert_with_constraints));
+  }
+
+  verifier_->UpdateVerifyProcData(cert_net_fetcher_,
+                                  service_factory_impl_->get_impl_params(),
+                                  instance_params_);
+}
+
 void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
     base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>
         service_factory_impl) {
@@ -133,8 +194,9 @@ void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
 }
 
 void CertVerifierServiceImpl::UpdateVerifierData(
-    const net::CertVerifyProcFactory::ImplParams& impl_params) {
-  verifier_->UpdateVerifyProcData(cert_net_fetcher_, impl_params);
+    const net::CertVerifyProc::ImplParams& impl_params) {
+  verifier_->UpdateVerifyProcData(cert_net_fetcher_, impl_params,
+                                  instance_params_);
 }
 
 void CertVerifierServiceImpl::Verify(

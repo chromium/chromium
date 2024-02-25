@@ -17,6 +17,17 @@
 
 namespace gpu {
 namespace gles2 {
+namespace {
+GLenum GetErrorHelper() {
+  // Skip calling glGetError if no context is bound - this should only happen
+  // when GL is not used e.g. with Graphite.
+  if (gl::g_current_gl_driver) {
+    gl::GLApi* const api = gl::g_current_gl_context;
+    return api->glGetErrorFn();
+  }
+  return GL_NO_ERROR;
+}
+}  // namespace
 
 class ErrorStateImpl : public ErrorState {
  public:
@@ -109,7 +120,7 @@ uint32_t ErrorStateImpl::GetGLError() {
 }
 
 GLenum ErrorStateImpl::GetErrorHandleContextLoss() {
-  GLenum error = glGetError();
+  GLenum error = GetErrorHelper();
   if (error == GL_CONTEXT_LOST_KHR) {
     client_->OnContextLostError();
     // Do not expose GL_CONTEXT_LOST_KHR, as the version of the robustness
@@ -206,7 +217,7 @@ void ErrorStateImpl::ClearRealGLErrors(
     const char* filename, int line, const char* function_name) {
   // Clears and logs all current gl errors.
   GLenum error;
-  while ((error = glGetError()) != GL_NO_ERROR) {
+  while ((error = GetErrorHelper()) != GL_NO_ERROR) {
     if (error != GL_CONTEXT_LOST_KHR && error != GL_OUT_OF_MEMORY) {
       // GL_OUT_OF_MEMORY can legally happen on lost device.
       logger_->LogMessage(

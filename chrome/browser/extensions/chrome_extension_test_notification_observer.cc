@@ -12,11 +12,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -31,7 +31,6 @@ bool HasPageActionVisibilityReachedTarget(
 }
 
 bool HaveAllExtensionRenderFrameHostsFinishedLoading(ProcessManager* manager) {
-  ProcessManager::FrameSet all_views = manager->GetAllFrames();
   for (content::RenderFrameHost* host : manager->GetAllFrames()) {
     if (content::WebContents::FromRenderFrameHost(host)->IsLoading())
       return false;
@@ -94,7 +93,7 @@ bool ChromeExtensionTestNotificationObserver::WaitForExtensionViewsToLoad() {
 }
 
 bool ChromeExtensionTestNotificationObserver::WaitForExtensionIdle(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   ProcessManager* manager = ProcessManager::Get(GetBrowserContext());
   NotificationSet notification_set(manager);
   WaitForCondition(base::BindRepeating(&util::IsExtensionIdle, extension_id,
@@ -104,11 +103,11 @@ bool ChromeExtensionTestNotificationObserver::WaitForExtensionIdle(
 }
 
 bool ChromeExtensionTestNotificationObserver::WaitForExtensionNotIdle(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   ProcessManager* manager = ProcessManager::Get(GetBrowserContext());
   NotificationSet notification_set(manager);
   WaitForCondition(base::BindRepeating(
-                       [](const std::string& extension_id,
+                       [](const ExtensionId& extension_id,
                           content::BrowserContext* context) -> bool {
                          return !util::IsExtensionIdle(extension_id, context);
                        },

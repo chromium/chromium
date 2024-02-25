@@ -5,38 +5,41 @@
 #include "components/update_client/background_downloader_win.h"
 
 #include <objbase.h>
-#include <winerror.h>
-
+#include <shlobj_core.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <functional>
-#include <iomanip>
+#include <windows.h>
+#include <winerror.h>
+
 #include <limits>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "background_downloader_win.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
-#include "base/win/atl.h"
+#include "base/win/com_init_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
-
-using Microsoft::WRL::ComPtr;
-using base::win::ScopedCoMem;
 
 // The class BackgroundDownloader in this module is an adapter between
 // the CrxDownloader interface and the BITS service interfaces.
@@ -105,65 +108,44 @@ using base::win::ScopedCoMem;
 // than a week are proactively cleaned up.
 
 namespace update_client {
-
 namespace {
 
 // All jobs created by this module have a specific description so they can
 // be found at run-time or by using system administration tools.
-const wchar_t kJobName[] = L"Chrome Component Updater";
+constexpr wchar_t kJobName[] = L"Chrome Component Updater";
 
 // How often the code looks for changes in the BITS job state.
-const int kJobPollingIntervalSec = 4;
+constexpr int kJobPollingIntervalSec = 4;
 
 // How long BITS waits before retrying a job after the job encountered
 // a transient error. If this value is not set, the BITS default is 10 minutes.
-const int kMinimumRetryDelayMin = 1;
+constexpr int kMinimumRetryDelayMin = 1;
 
 // How long to wait for stuck jobs. Stuck jobs could be queued for too long,
-// have trouble connecting, could be suspended for any reason, or they have
-// encountered some transient error.
-const int kJobStuckTimeoutMin = 15;
+// have trouble connecting, or could be suspended for any reason.
+constexpr int kJobStuckTimeoutMin = 15;
 
 // How long BITS waits before giving up on a job that could not be completed
 // since the job has encountered its first transient error. If this value is
 // not set, the BITS default is 14 days.
-const int kSetNoProgressTimeoutDays = 1;
+constexpr int kSetNoProgressTimeoutDays = 1;
 
 // How often the jobs which were started but not completed for any reason
 // are cleaned up. Reasons for jobs to be left behind include browser restarts,
 // system restarts, etc. Also, the check to purge stale jobs only happens
 // at most once a day. If the job clean up code is not running, the BITS
 // default policy is to cancel jobs after 90 days of inactivity.
-const int kPurgeStaleJobsAfterDays = 3;
-const int kPurgeStaleJobsIntervalBetweenChecksDays = 1;
+constexpr int kPurgeStaleJobsAfterDays = 3;
+constexpr int kPurgeStaleJobsIntervalBetweenChecksDays = 1;
 
 // Number of maximum BITS jobs this downloader can create and queue up.
-const int kMaxQueuedJobs = 10;
+constexpr int kMaxQueuedJobs = 10;
 
-// Retrieves the singleton instance of GIT for this process.
-HRESULT GetGit(ComPtr<IGlobalInterfaceTable>* git) {
-  // Mitigate the issues caused by loading DLLs on a background thread
-  // (http://crbug/973868).
-  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-  return ::CoCreateInstance(CLSID_StdGlobalInterfaceTable, nullptr,
-                            CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&(*git)));
-}
-
-// Retrieves an interface pointer from the process GIT for a given |cookie|.
-HRESULT GetInterfaceFromGit(const ComPtr<IGlobalInterfaceTable>& git,
-                            DWORD cookie,
-                            REFIID riid,
-                            void** ppv) {
-  return git->GetInterfaceFromGlobal(cookie, riid, ppv);
-}
-
-// Registers an interface pointer in GIT and returns its corresponding |cookie|.
-template <typename T>
-HRESULT RegisterInterfaceInGit(const ComPtr<IGlobalInterfaceTable>& git,
-                               const ComPtr<T>& p,
-                               DWORD* cookie) {
-  return git->RegisterInterfaceInGlobal(p.Get(), __uuidof(T), cookie);
-}
+// Prefix used for naming the temporary directories for downloads.
+constexpr base::FilePath::CharType kDownloadDirectoryPrefix[] =
+    FILE_PATH_LITERAL("chrome_BITS_");
+constexpr base::FilePath::CharType kDownloadDirectoryPrefixMatcher[] =
+    FILE_PATH_LITERAL("chrome_BITS_*");
 
 // Returns the status code from a given BITS error.
 int GetHttpStatusFromBitsError(HRESULT error) {
@@ -179,22 +161,26 @@ int GetHttpStatusFromBitsError(HRESULT error) {
 }
 
 // Returns the files in a BITS job.
-HRESULT GetFilesInJob(const ComPtr<IBackgroundCopyJob>& job,
-                      std::vector<ComPtr<IBackgroundCopyFile>>* files) {
-  ComPtr<IEnumBackgroundCopyFiles> enum_files;
+HRESULT GetFilesInJob(
+    const Microsoft::WRL::ComPtr<IBackgroundCopyJob>& job,
+    std::vector<Microsoft::WRL::ComPtr<IBackgroundCopyFile>>* files) {
+  Microsoft::WRL::ComPtr<IEnumBackgroundCopyFiles> enum_files;
   HRESULT hr = job->EnumFiles(&enum_files);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   ULONG num_files = 0;
   hr = enum_files->GetCount(&num_files);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   for (ULONG i = 0; i != num_files; ++i) {
-    ComPtr<IBackgroundCopyFile> file;
-    if (enum_files->Next(1, &file, nullptr) == S_OK && file.Get())
+    Microsoft::WRL::ComPtr<IBackgroundCopyFile> file;
+    if (enum_files->Next(1, &file, nullptr) == S_OK && file.Get()) {
       files->push_back(file);
+    }
   }
 
   return S_OK;
@@ -202,36 +188,41 @@ HRESULT GetFilesInJob(const ComPtr<IBackgroundCopyJob>& job,
 
 // Returns the file name, the url, and some per-file progress information.
 // The function out parameters can be NULL if that data is not requested.
-HRESULT GetJobFileProperties(const ComPtr<IBackgroundCopyFile>& file,
-                             std::wstring* local_name,
-                             std::wstring* remote_name,
-                             BG_FILE_PROGRESS* progress) {
-  if (!file)
+HRESULT GetJobFileProperties(
+    const Microsoft::WRL::ComPtr<IBackgroundCopyFile>& file,
+    std::wstring* local_name,
+    std::wstring* remote_name,
+    BG_FILE_PROGRESS* progress) {
+  if (!file) {
     return E_FAIL;
+  }
 
   HRESULT hr = S_OK;
 
   if (local_name) {
-    ScopedCoMem<wchar_t> name;
+    base::win::ScopedCoMem<wchar_t> name;
     hr = file->GetLocalName(&name);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return hr;
+    }
     local_name->assign(name);
   }
 
   if (remote_name) {
-    ScopedCoMem<wchar_t> name;
+    base::win::ScopedCoMem<wchar_t> name;
     hr = file->GetRemoteName(&name);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return hr;
+    }
     remote_name->assign(name);
   }
 
   if (progress) {
     BG_FILE_PROGRESS bg_file_progress = {};
     hr = file->GetProgress(&bg_file_progress);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return hr;
+    }
     *progress = bg_file_progress;
   }
 
@@ -241,38 +232,43 @@ HRESULT GetJobFileProperties(const ComPtr<IBackgroundCopyFile>& file,
 // Returns the number of bytes downloaded and bytes to download for all files
 // in the job. If the values are not known or if an error has occurred,
 // a value of -1 is reported.
-HRESULT GetJobByteCount(const ComPtr<IBackgroundCopyJob>& job,
+HRESULT GetJobByteCount(const Microsoft::WRL::ComPtr<IBackgroundCopyJob>& job,
                         int64_t* downloaded_bytes,
                         int64_t* total_bytes) {
   *downloaded_bytes = -1;
   *total_bytes = -1;
 
-  if (!job)
+  if (!job) {
     return E_FAIL;
+  }
 
   BG_JOB_PROGRESS job_progress = {};
   HRESULT hr = job->GetProgress(&job_progress);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   const uint64_t kMaxNumBytes =
       static_cast<uint64_t>(std::numeric_limits<int64_t>::max());
-  if (job_progress.BytesTransferred <= kMaxNumBytes)
+  if (job_progress.BytesTransferred <= kMaxNumBytes) {
     *downloaded_bytes = job_progress.BytesTransferred;
+  }
 
   if (job_progress.BytesTotal <= kMaxNumBytes &&
-      job_progress.BytesTotal != BG_SIZE_UNKNOWN)
+      job_progress.BytesTotal != BG_SIZE_UNKNOWN) {
     *total_bytes = job_progress.BytesTotal;
+  }
 
   return S_OK;
 }
 
-HRESULT GetJobDisplayName(const ComPtr<IBackgroundCopyJob>& job,
+HRESULT GetJobDisplayName(const Microsoft::WRL::ComPtr<IBackgroundCopyJob>& job,
                           std::wstring* name) {
-  ScopedCoMem<wchar_t> local_name;
+  base::win::ScopedCoMem<wchar_t> local_name;
   const HRESULT hr = job->GetDisplayName(&local_name);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
   *name = local_name.get();
   return S_OK;
 }
@@ -280,19 +276,21 @@ HRESULT GetJobDisplayName(const ComPtr<IBackgroundCopyJob>& job,
 // Returns the job error code in |error_code| if the job is in the transient
 // or the final error state. Otherwise, the job error is not available and
 // the function fails.
-HRESULT GetJobError(const ComPtr<IBackgroundCopyJob>& job,
+HRESULT GetJobError(const Microsoft::WRL::ComPtr<IBackgroundCopyJob>& job,
                     HRESULT* error_code_out) {
   *error_code_out = S_OK;
-  ComPtr<IBackgroundCopyError> copy_error;
+  Microsoft::WRL::ComPtr<IBackgroundCopyError> copy_error;
   HRESULT hr = job->GetError(&copy_error);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   BG_ERROR_CONTEXT error_context = BG_ERROR_CONTEXT_NONE;
   HRESULT error_code = S_OK;
   hr = copy_error->GetError(&error_context, &error_code);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   *error_code_out = FAILED(error_code) ? error_code : E_FAIL;
   return S_OK;
@@ -302,41 +300,47 @@ HRESULT GetJobError(const ComPtr<IBackgroundCopyJob>& job,
 // Returns S_OK if the function has found at least one job, returns S_FALSE if
 // no job was found, and it returns an error otherwise.
 template <class Predicate>
-HRESULT FindBitsJobIf(Predicate pred,
-                      const ComPtr<IBackgroundCopyManager>& bits_manager,
-                      std::vector<ComPtr<IBackgroundCopyJob>>* jobs) {
-  ComPtr<IEnumBackgroundCopyJobs> enum_jobs;
+HRESULT FindBitsJobIf(
+    Predicate pred,
+    const Microsoft::WRL::ComPtr<IBackgroundCopyManager>& bits_manager,
+    std::vector<Microsoft::WRL::ComPtr<IBackgroundCopyJob>>* jobs) {
+  Microsoft::WRL::ComPtr<IEnumBackgroundCopyJobs> enum_jobs;
   HRESULT hr = bits_manager->EnumJobs(0, &enum_jobs);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   ULONG job_count = 0;
   hr = enum_jobs->GetCount(&job_count);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   // Iterate over jobs, run the predicate, and select the job only if
   // the job description matches the component updater jobs.
   for (ULONG i = 0; i != job_count; ++i) {
-    ComPtr<IBackgroundCopyJob> current_job;
+    Microsoft::WRL::ComPtr<IBackgroundCopyJob> current_job;
     if (enum_jobs->Next(1, &current_job, nullptr) == S_OK &&
         pred(current_job)) {
       std::wstring job_name;
       hr = GetJobDisplayName(current_job, &job_name);
-      if (job_name.compare(kJobName) == 0)
+      if (job_name.compare(kJobName) == 0) {
         jobs->push_back(current_job);
+      }
     }
   }
 
   return jobs->empty() ? S_FALSE : S_OK;
 }
 
-bool JobCreationOlderThanDaysPredicate(ComPtr<IBackgroundCopyJob> job,
-                                       int num_days) {
+bool JobCreationOlderThanDaysPredicate(
+    Microsoft::WRL::ComPtr<IBackgroundCopyJob> job,
+    int num_days) {
   BG_JOB_TIMES times = {};
   HRESULT hr = job->GetTimes(&times);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return false;
+  }
 
   const base::TimeDelta time_delta(base::Days(num_days));
   const base::Time creation_time(base::Time::FromFileTime(times.CreationTime));
@@ -344,25 +348,29 @@ bool JobCreationOlderThanDaysPredicate(ComPtr<IBackgroundCopyJob> job,
   return creation_time + time_delta < base::Time::Now();
 }
 
-bool JobFileUrlEqualPredicate(ComPtr<IBackgroundCopyJob> job, const GURL& url) {
-  std::vector<ComPtr<IBackgroundCopyFile>> files;
+bool JobFileUrlEqualPredicate(Microsoft::WRL::ComPtr<IBackgroundCopyJob> job,
+                              const GURL& url) {
+  std::vector<Microsoft::WRL::ComPtr<IBackgroundCopyFile>> files;
   HRESULT hr = GetFilesInJob(job, &files);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return false;
+  }
 
   for (size_t i = 0; i != files.size(); ++i) {
-    ScopedCoMem<wchar_t> remote_name;
+    base::win::ScopedCoMem<wchar_t> remote_name;
     if (SUCCEEDED(files[i]->GetRemoteName(&remote_name)) &&
-        url == GURL(base::SysWideToUTF8(remote_name.get())))
+        url == GURL(base::SysWideToUTF8(remote_name.get()))) {
       return true;
+    }
   }
 
   return false;
 }
 
 // Creates an instance of the BITS manager.
-HRESULT CreateBitsManager(ComPtr<IBackgroundCopyManager>* bits_manager) {
-  ComPtr<IBackgroundCopyManager> local_bits_manager;
+HRESULT CreateBitsManager(
+    Microsoft::WRL::ComPtr<IBackgroundCopyManager>* bits_manager) {
+  Microsoft::WRL::ComPtr<IBackgroundCopyManager> local_bits_manager;
   HRESULT hr;
   {
     // CoCreateInstance may acquire the loader lock to load a library. Doing it
@@ -382,29 +390,37 @@ HRESULT CreateBitsManager(ComPtr<IBackgroundCopyManager>* bits_manager) {
   return S_OK;
 }
 
-void CleanupJob(const ComPtr<IBackgroundCopyJob>& job) {
-  if (!job)
+void CleanupJob(const Microsoft::WRL::ComPtr<IBackgroundCopyJob>& job) {
+  if (!job) {
     return;
+  }
 
   // Get the file paths associated with this job before canceling the job.
   // Canceling the job removes it from the BITS queue right away. It appears
   // that it is still possible to query for the properties of the job after
   // the job has been canceled. It seems safer though to get the paths first.
-  std::vector<ComPtr<IBackgroundCopyFile>> files;
+  std::vector<Microsoft::WRL::ComPtr<IBackgroundCopyFile>> files;
   GetFilesInJob(job, &files);
 
   std::vector<base::FilePath> paths;
   for (const auto& file : files) {
     std::wstring local_name;
     HRESULT hr = GetJobFileProperties(file, &local_name, nullptr, nullptr);
-    if (SUCCEEDED(hr))
+    if (SUCCEEDED(hr)) {
       paths.push_back(base::FilePath(local_name));
+    }
   }
 
   job->Cancel();
 
-  for (const auto& path : paths)
+  for (const auto& path : paths) {
     DeleteFileAndEmptyParentDirectory(path);
+  }
+}
+
+void CheckIsMta() {
+  CHECK_EQ(base::win::GetComApartmentTypeForThread(),
+           base::win::ComApartmentType::MTA);
 }
 
 }  // namespace
@@ -412,12 +428,14 @@ void CleanupJob(const ComPtr<IBackgroundCopyJob>& job) {
 BackgroundDownloader::BackgroundDownloader(
     scoped_refptr<CrxDownloader> successor)
     : CrxDownloader(std::move(successor)),
-      com_task_runner_(base::ThreadPool::CreateCOMSTATaskRunner(
-          kTaskTraitsBackgroundDownloader)),
-      git_cookie_bits_manager_(0),
-      git_cookie_job_(0) {}
+      com_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          kTaskTraitsBackgroundDownloader)) {
+  DETACH_FROM_SEQUENCE(com_sequence_checker_);
+}
 
-BackgroundDownloader::~BackgroundDownloader() = default;
+BackgroundDownloader::~BackgroundDownloader() {
+  DETACH_FROM_SEQUENCE(com_sequence_checker_);
+}
 
 void BackgroundDownloader::StartTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -433,16 +451,18 @@ void BackgroundDownloader::OnTimer() {
       FROM_HERE, base::BindOnce(&BackgroundDownloader::OnDownloading, this));
 }
 
-void BackgroundDownloader::DoStartDownload(const GURL& url) {
+base::OnceClosure BackgroundDownloader::DoStartDownload(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BackgroundDownloader::BeginDownload, this, url));
+  return base::DoNothing();
 }
 
 // Called one time when this class is asked to do a download.
 void BackgroundDownloader::BeginDownload(const GURL& url) {
-  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
 
   download_start_time_ = base::TimeTicks::Now();
   job_stuck_begin_time_ = download_start_time_;
@@ -455,7 +475,6 @@ void BackgroundDownloader::BeginDownload(const GURL& url) {
 
   VLOG(1) << "Starting BITS download for: " << url.spec();
 
-  ResetInterfacePointers();
   main_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BackgroundDownloader::StartTimer, this));
 }
@@ -463,48 +482,35 @@ void BackgroundDownloader::BeginDownload(const GURL& url) {
 // Creates or opens an existing BITS job to download the |url|, and handles
 // the marshalling of the interfaces in GIT.
 HRESULT BackgroundDownloader::BeginDownloadHelper(const GURL& url) {
-  ComPtr<IGlobalInterfaceTable> git;
-  HRESULT hr = GetGit(&git);
-  if (FAILED(hr))
-    return hr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
 
-  hr = CreateBitsManager(&bits_manager_);
-  if (FAILED(hr))
+  HRESULT hr = CreateBitsManager(&bits_manager_);
+  if (FAILED(hr)) {
     return hr;
+  }
 
   hr = QueueBitsJob(url, &job_);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
-
-  hr = RegisterInterfaceInGit(git, bits_manager_, &git_cookie_bits_manager_);
-  if (FAILED(hr))
-    return hr;
-
-  hr = RegisterInterfaceInGit(git, job_, &git_cookie_job_);
-  if (FAILED(hr))
-    return hr;
+  }
 
   return S_OK;
 }
 
 // Called any time the timer fires.
 void BackgroundDownloader::OnDownloading() {
-  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
-
-  HRESULT hr = UpdateInterfacePointers();
-  if (FAILED(hr)) {
-    EndDownload(hr);
-    return;
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
 
   BG_JOB_STATE job_state = BG_JOB_STATE_ERROR;
-  hr = job_->GetState(&job_state);
+  HRESULT hr = job_->GetState(&job_state);
   if (FAILED(hr)) {
     EndDownload(hr);
     return;
   }
 
-  bool is_handled =  false;
+  bool is_handled = false;
   switch (job_state) {
     case BG_JOB_STATE_TRANSFERRED:
       is_handled = OnStateTransferred();
@@ -542,10 +548,10 @@ void BackgroundDownloader::OnDownloading() {
       break;
   }
 
-  if (is_handled)
+  if (is_handled) {
     return;
+  }
 
-  ResetInterfacePointers();
   main_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BackgroundDownloader::StartTimer, this));
 }
@@ -553,7 +559,8 @@ void BackgroundDownloader::OnDownloading() {
 // Completes the BITS download, picks up the file path of the response, and
 // notifies the CrxDownloader. The function should be called only once.
 void BackgroundDownloader::EndDownload(HRESULT error) {
-  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
 
   const base::TimeTicks download_end_time(base::TimeTicks::Now());
   const base::TimeDelta download_time =
@@ -565,10 +572,12 @@ void BackgroundDownloader::EndDownload(HRESULT error) {
   int64_t total_bytes = -1;
   GetJobByteCount(job_, &downloaded_bytes, &total_bytes);
 
-  if (FAILED(error))
+  if (FAILED(error)) {
     CleanupJob(job_);
+  }
 
-  ClearGit();
+  job_ = nullptr;
+  bits_manager_ = nullptr;
 
   // Consider the url handled if it has been successfully downloaded or a
   // 5xx has been received.
@@ -587,8 +596,9 @@ void BackgroundDownloader::EndDownload(HRESULT error) {
 
   Result result;
   result.error = error_to_report;
-  if (!result.error)
+  if (!result.error) {
     result.response = response_;
+  }
   main_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BackgroundDownloader::OnDownloadComplete, this,
                                 is_handled, result, download_metrics));
@@ -598,6 +608,8 @@ void BackgroundDownloader::EndDownload(HRESULT error) {
 // BITS job by removing it from the BITS queue and making the download
 // available to the caller.
 bool BackgroundDownloader::OnStateTransferred() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
   EndDownload(CompleteJob());
   return true;
 }
@@ -605,11 +617,13 @@ bool BackgroundDownloader::OnStateTransferred() {
 // Called when the job has encountered an error and no further progress can
 // be made. Cancels this job and removes it from the BITS queue.
 bool BackgroundDownloader::OnStateError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
   HRESULT error_code = S_OK;
   HRESULT hr = GetJobError(job_, &error_code);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     error_code = hr;
-
+  }
   CHECK(FAILED(error_code));
   EndDownload(error_code);
   return true;
@@ -619,12 +633,16 @@ bool BackgroundDownloader::OnStateError() {
 // in the current implementation but provided here as a defensive programming
 // measure.
 bool BackgroundDownloader::OnStateAcknowledged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
   EndDownload(E_UNEXPECTED);
   return true;
 }
 
 // Called when the download was cancelled. Same as above.
 bool BackgroundDownloader::OnStateCancelled() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
   EndDownload(E_UNEXPECTED);
   return true;
 }
@@ -632,12 +650,8 @@ bool BackgroundDownloader::OnStateCancelled() {
 // Called when the job has encountered a transient error, such as a
 // network disconnect, a server error, or some other recoverable error.
 bool BackgroundDownloader::OnStateTransientError() {
-  // If the job appears to be stuck, handle the transient error as if
-  // it were a final error. This causes the job to be cancelled and a specific
-  // error be returned, if the error was available.
-  if (IsStuck()) {
-    return OnStateError();
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
 
   // Don't retry at all if the transient error was a 5xx.
   HRESULT error_code = S_OK;
@@ -651,8 +665,12 @@ bool BackgroundDownloader::OnStateTransientError() {
 }
 
 bool BackgroundDownloader::OnStateQueued() {
-  if (!IsStuck())
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
+
+  if (!IsStuck()) {
     return false;
+  }
 
   // Terminate the download if the job has not made progress in a while.
   EndDownload(E_ABORT);
@@ -660,6 +678,9 @@ bool BackgroundDownloader::OnStateQueued() {
 }
 
 bool BackgroundDownloader::OnStateTransferring() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
+
   // Resets the baseline for detecting a stuck job since the job is transferring
   // data and it is making progress.
   job_stuck_begin_time_ = base::TimeTicks::Now();
@@ -674,21 +695,24 @@ bool BackgroundDownloader::OnStateTransferring() {
   return false;
 }
 
-HRESULT BackgroundDownloader::QueueBitsJob(const GURL& url,
-                                           ComPtr<IBackgroundCopyJob>* job) {
-  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
-
-  size_t num_jobs = std::numeric_limits<size_t>::max();
-  HRESULT hr = GetBackgroundDownloaderJobCount(&num_jobs);
+HRESULT BackgroundDownloader::QueueBitsJob(
+    const GURL& url,
+    Microsoft::WRL::ComPtr<IBackgroundCopyJob>* job) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
 
   // Remove some old jobs from the BITS queue before creating new jobs.
   CleanupStaleJobs();
 
-  if (FAILED(hr) || num_jobs >= kMaxQueuedJobs)
+  size_t num_jobs = std::numeric_limits<size_t>::max();
+  HRESULT hr = GetBackgroundDownloaderJobCount(&num_jobs);
+
+  if (FAILED(hr) || num_jobs >= kMaxQueuedJobs) {
     return MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF,
                         CrxDownloaderError::BITS_TOO_MANY_JOBS);
+  }
 
-  ComPtr<IBackgroundCopyJob> local_job;
+  Microsoft::WRL::ComPtr<IBackgroundCopyJob> local_job;
   hr = CreateOrOpenJob(url, &local_job);
   if (FAILED(hr)) {
     CleanupJob(local_job);
@@ -705,20 +729,25 @@ HRESULT BackgroundDownloader::QueueBitsJob(const GURL& url,
   return S_OK;
 }
 
-HRESULT BackgroundDownloader::CreateOrOpenJob(const GURL& url,
-                                              ComPtr<IBackgroundCopyJob>* job) {
-  std::vector<ComPtr<IBackgroundCopyJob>> jobs;
+HRESULT BackgroundDownloader::CreateOrOpenJob(
+    const GURL& url,
+    Microsoft::WRL::ComPtr<IBackgroundCopyJob>* job) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
+
+  std::vector<Microsoft::WRL::ComPtr<IBackgroundCopyJob>> jobs;
   HRESULT hr = FindBitsJobIf(
-      [&url](ComPtr<IBackgroundCopyJob> job) {
+      [&url](Microsoft::WRL::ComPtr<IBackgroundCopyJob> job) {
         return JobFileUrlEqualPredicate(job, url);
       },
       bits_manager_, &jobs);
   if (SUCCEEDED(hr) && !jobs.empty()) {
+    metrics::RecordBDWExistingJobUsed(true);
     *job = jobs.front();
     return S_FALSE;
   }
 
-  ComPtr<IBackgroundCopyJob> local_job;
+  Microsoft::WRL::ComPtr<IBackgroundCopyJob> local_job;
 
   GUID guid = {0};
   hr = bits_manager_->CreateJob(kJobName, BG_JOB_TYPE_DOWNLOAD, &guid,
@@ -734,67 +763,85 @@ HRESULT BackgroundDownloader::CreateOrOpenJob(const GURL& url,
     return hr;
   }
 
+  metrics::RecordBDWExistingJobUsed(false);
   *job = local_job;
   return S_OK;
 }
 
 HRESULT BackgroundDownloader::InitializeNewJob(
-    const ComPtr<IBackgroundCopyJob>& job,
+    const Microsoft::WRL::ComPtr<IBackgroundCopyJob>& job,
     const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
+
   base::FilePath tempdir;
-  if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL("chrome_BITS_"),
-                                    &tempdir))
+  if (!base::CreateNewTempDirectory(kDownloadDirectoryPrefix, &tempdir)) {
     return E_FAIL;
+  }
 
   const std::wstring filename(base::SysUTF8ToWide(url.ExtractFileName()));
   HRESULT hr = job->AddFile(base::SysUTF8ToWide(url.spec()).c_str(),
                             tempdir.Append(filename).value().c_str());
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   hr = job->SetDescription(filename.c_str());
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   hr = job->SetPriority(BG_JOB_PRIORITY_NORMAL);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   hr = job->SetMinimumRetryDelay(60 * kMinimumRetryDelayMin);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   const int kSecondsDay = 60 * 60 * 24;
   hr = job->SetNoProgressTimeout(kSecondsDay * kSetNoProgressTimeoutDays);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   return S_OK;
 }
 
 bool BackgroundDownloader::IsStuck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
   const base::TimeDelta job_stuck_timeout(base::Minutes(kJobStuckTimeoutMin));
   return job_stuck_begin_time_ + job_stuck_timeout < base::TimeTicks::Now();
 }
 
 HRESULT BackgroundDownloader::CompleteJob() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
+
   HRESULT hr = job_->Complete();
-  if (FAILED(hr) && hr != BG_S_UNABLE_TO_DELETE_FILES)
+  if (FAILED(hr) && hr != BG_S_UNABLE_TO_DELETE_FILES) {
     return hr;
+  }
 
-  std::vector<ComPtr<IBackgroundCopyFile>> files;
+  std::vector<Microsoft::WRL::ComPtr<IBackgroundCopyFile>> files;
   hr = GetFilesInJob(job_, &files);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
-  if (files.empty())
+  if (files.empty()) {
     return E_UNEXPECTED;
+  }
 
   std::wstring local_name;
   BG_FILE_PROGRESS progress = {0};
   hr = GetJobFileProperties(files.front(), &local_name, nullptr, &progress);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   // Check the post-conditions of a successful download, including the file and
   // job invariants. The byte counts for a job and its file must match as a job
@@ -807,73 +854,27 @@ HRESULT BackgroundDownloader::CompleteJob() {
   return S_OK;
 }
 
-HRESULT BackgroundDownloader::UpdateInterfacePointers() {
-  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
-
-  bits_manager_ = nullptr;
-  job_ = nullptr;
-
-  ComPtr<IGlobalInterfaceTable> git;
-  HRESULT hr = GetGit(&git);
-  if (FAILED(hr))
-    return hr;
-
-  hr = GetInterfaceFromGit(git, git_cookie_bits_manager_,
-                           IID_PPV_ARGS(&bits_manager_));
-  if (FAILED(hr))
-    return hr;
-
-  hr = GetInterfaceFromGit(git, git_cookie_job_, IID_PPV_ARGS(&job_));
-  if (FAILED(hr))
-    return hr;
-
-  return S_OK;
-}
-
-void BackgroundDownloader::ResetInterfacePointers() {
-  job_ = nullptr;
-  bits_manager_ = nullptr;
-}
-
-HRESULT BackgroundDownloader::ClearGit() {
-  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
-
-  ResetInterfacePointers();
-
-  ComPtr<IGlobalInterfaceTable> git;
-  HRESULT hr = GetGit(&git);
-  if (FAILED(hr))
-    return hr;
-
-  const DWORD cookies[] = {
-      git_cookie_job_, git_cookie_bits_manager_
-  };
-
-  for (auto cookie : cookies) {
-    git->RevokeInterfaceFromGlobal(cookie);
-  }
-
-  return S_OK;
-}
-
 HRESULT BackgroundDownloader::GetBackgroundDownloaderJobCount(
     size_t* num_jobs) {
-  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
   CHECK(bits_manager_);
 
-  std::vector<ComPtr<IBackgroundCopyJob>> jobs;
-  const HRESULT hr =
-      FindBitsJobIf([](const ComPtr<IBackgroundCopyJob>&) { return true; },
-                    bits_manager_, &jobs);
-  if (FAILED(hr))
+  std::vector<Microsoft::WRL::ComPtr<IBackgroundCopyJob>> jobs;
+  const HRESULT hr = FindBitsJobIf(
+      [](const Microsoft::WRL::ComPtr<IBackgroundCopyJob>&) { return true; },
+      bits_manager_, &jobs);
+  if (FAILED(hr)) {
     return hr;
+  }
 
   *num_jobs = jobs.size();
   return S_OK;
 }
 
 void BackgroundDownloader::CleanupStaleJobs() {
-  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  CheckIsMta();
   CHECK(bits_manager_);
 
   static base::Time last_sweep;
@@ -881,20 +882,59 @@ void BackgroundDownloader::CleanupStaleJobs() {
   const base::TimeDelta time_delta(
       base::Days(kPurgeStaleJobsIntervalBetweenChecksDays));
   const base::Time current_time(base::Time::Now());
-  if (last_sweep + time_delta > current_time)
+  if (last_sweep + time_delta > current_time) {
     return;
+  }
 
   last_sweep = current_time;
 
-  std::vector<ComPtr<IBackgroundCopyJob>> jobs;
+  std::vector<Microsoft::WRL::ComPtr<IBackgroundCopyJob>> jobs;
   FindBitsJobIf(
-      [](ComPtr<IBackgroundCopyJob> job) {
+      [](Microsoft::WRL::ComPtr<IBackgroundCopyJob> job) {
         return JobCreationOlderThanDaysPredicate(job, kPurgeStaleJobsAfterDays);
       },
       bits_manager_, &jobs);
 
-  for (const auto& job : jobs)
+  metrics::RecordBDWNumJobsCleaned(jobs.size());
+  for (const auto& job : jobs) {
     CleanupJob(job);
+  }
+
+  CleanupStaleDownloads();
+}
+
+void BackgroundDownloader::CleanupStaleDownloads() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  EnumerateDownloadDirs(
+      kDownloadDirectoryPrefixMatcher, [](const base::FilePath& dir) {
+        const base::Time now = base::Time::Now();
+        base::File::Info info;
+        if (base::GetFileInfo(dir, &info) &&
+            info.creation_time + base::Days(kPurgeStaleJobsAfterDays) < now) {
+          metrics::RecordBDWStaleDownloadAge(now - info.creation_time);
+          base::DeletePathRecursively(dir);
+        }
+      });
+}
+
+void BackgroundDownloader::EnumerateDownloadDirs(
+    const base::FilePath::StringType& matcher,
+    base::FunctionRef<void(const base::FilePath& dir)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
+  base::FilePath dir;
+  std::vector<base::FilePath> dirs;
+  if (base::GetSecureSystemTemp(&dir)) {
+    dirs.push_back(dir);
+  }
+  if (base::GetTempDir(&dir)) {
+    dirs.push_back(dir);
+  }
+  base::ranges::for_each(dirs, [&](const base::FilePath& parent_dir) {
+    base::FileEnumerator(parent_dir,
+                         /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+                         matcher)
+        .ForEach(callback);
+  });
 }
 
 }  // namespace update_client

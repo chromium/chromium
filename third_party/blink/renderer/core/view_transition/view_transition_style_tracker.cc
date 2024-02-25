@@ -21,7 +21,10 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -30,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
@@ -53,6 +57,70 @@ namespace {
 
 const char* kDuplicateTagBaseError =
     "Unexpected duplicate view-transition-name: ";
+
+CSSPropertyID kPropertiesToCapture[] = {
+    CSSPropertyID::kBackdropFilter, CSSPropertyID::kColorScheme,
+    CSSPropertyID::kMixBlendMode,   CSSPropertyID::kTextOrientation,
+    CSSPropertyID::kWritingMode,
+};
+
+CSSPropertyID kPropertiesToAnimate[] = {
+    CSSPropertyID::kBackdropFilter,
+};
+
+template <typename K, typename V>
+class FlatMapBuilder {
+ public:
+  explicit FlatMapBuilder(size_t reserve = 0) { data_.reserve(reserve); }
+
+  template <typename... Args>
+  void Insert(Args&&... args) {
+    data_.emplace_back(std::forward<Args>(args)...);
+  }
+
+  base::flat_map<K, V> Finish() && {
+    return base::flat_map<K, V>(std::move(data_));
+  }
+
+ private:
+  std::vector<std::pair<K, V>> data_
+      ALLOW_DISCOURAGED_TYPE("flat_map underlying type");
+};
+
+mojom::blink::ViewTransitionPropertyId ToTranstionPropertyId(CSSPropertyID id) {
+  switch (id) {
+    case CSSPropertyID::kBackdropFilter:
+      return mojom::blink::ViewTransitionPropertyId::kBackdropFilter;
+    case CSSPropertyID::kColorScheme:
+      return mojom::blink::ViewTransitionPropertyId::kColorScheme;
+    case CSSPropertyID::kMixBlendMode:
+      return mojom::blink::ViewTransitionPropertyId::kMixBlendMode;
+    case CSSPropertyID::kTextOrientation:
+      return mojom::blink::ViewTransitionPropertyId::kTextOrientation;
+    case CSSPropertyID::kWritingMode:
+      return mojom::blink::ViewTransitionPropertyId::kWritingMode;
+    default:
+      NOTREACHED() << "Unknown id " << static_cast<uint32_t>(id);
+  }
+  return mojom::blink::ViewTransitionPropertyId::kMinValue;
+}
+
+CSSPropertyID FromTransitionPropertyId(
+    mojom::blink::ViewTransitionPropertyId id) {
+  switch (id) {
+    case mojom::blink::ViewTransitionPropertyId::kBackdropFilter:
+      return CSSPropertyID::kBackdropFilter;
+    case mojom::blink::ViewTransitionPropertyId::kColorScheme:
+      return CSSPropertyID::kColorScheme;
+    case mojom::blink::ViewTransitionPropertyId::kMixBlendMode:
+      return CSSPropertyID::kMixBlendMode;
+    case mojom::blink::ViewTransitionPropertyId::kTextOrientation:
+      return CSSPropertyID::kTextOrientation;
+    case mojom::blink::ViewTransitionPropertyId::kWritingMode:
+      return CSSPropertyID::kWritingMode;
+  }
+  return CSSPropertyID::kInvalid;
+}
 
 const String& StaticUAStyles() {
   DEFINE_STATIC_LOCAL(
@@ -168,14 +236,14 @@ float ComputeStartForSide(float start,
 // that should be painted. The return value is relative to the element's border
 // box.
 // Returns null if the complete ink overflow rect should be painted.
-absl::optional<gfx::RectF> ComputeCaptureRect(
+std::optional<gfx::RectF> ComputeCaptureRect(
     const int max_capture_size,
     const PhysicalRect& ink_overflow_rect_in_border_box_space,
     const gfx::Transform& element_to_snapshot_root,
     const gfx::Size& snapshot_root_size) {
   if (ink_overflow_rect_in_border_box_space.Width() <= max_capture_size &&
       ink_overflow_rect_in_border_box_space.Height() <= max_capture_size) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Compute the matrix to map the element's ink overflow rectangle to snapshot
@@ -219,23 +287,41 @@ absl::optional<gfx::RectF> ComputeCaptureRect(
       captured_ink_overflow_subrect_in_snapshot_root_space);
 }
 
-int ComputeMaxCaptureSize(absl::optional<int> max_texture_size,
+int ComputeMaxCaptureSize(Document& document,
+                          std::optional<int> max_texture_size,
                           const gfx::Size& snapshot_root_size) {
+  // If the max texture size is not known yet, use the size of the snapshot
+  // root.
+  if (!max_texture_size) {
+    return std::max(snapshot_root_size.width(), snapshot_root_size.height());
+  }
+
+  // The snapshot root corresponds to the maximum screen bounds so we should be
+  // able to allocate a buffer of that size. However, Chrome Android's scaling
+  // behavior of the position-fixed viewport means the snapshot root may
+  // actually be larger than the screen bounds, though it gets scaled down by
+  // the page-scale-factor in the compositor. Since this maximum is applied to
+  // layout-generated bounds, project it into layout-space by using the minimum
+  // possible scale (which is how the position-fixed viewport size is
+  // computed).
+  const float min_page_scale_factor = document.GetPage()
+                                          ->GetPageScaleConstraintsSet()
+                                          .FinalConstraints()
+                                          .minimum_scale;
+  const int max_texture_size_in_layout =
+      static_cast<int>(std::ceil(*max_texture_size / min_page_scale_factor));
+
+  LOG_IF(WARNING, snapshot_root_size.width() > max_texture_size_in_layout ||
+                      snapshot_root_size.height() > max_texture_size_in_layout)
+      << "root snapshot does not fit within max texture size";
+
   // While we can render up to the max texture size, that would significantly
   // add to the memory overhead. So limit to up to a viewport worth of
   // additional content.
   const int max_bounds_based_on_viewport =
       2 * std::max(snapshot_root_size.width(), snapshot_root_size.height());
 
-  // If the max texture size is not known yet, clip to the size of the snapshot
-  // root. The snapshot root corresponds to the maximum screen bounds, we must
-  // be able to allocate a buffer of that size.
-  const int computed_max_texture_size = max_texture_size.value_or(
-      std::max(snapshot_root_size.width(), snapshot_root_size.height()));
-  DCHECK_LE(snapshot_root_size.width(), computed_max_texture_size);
-  DCHECK_LE(snapshot_root_size.height(), computed_max_texture_size);
-
-  return std::min(max_bounds_based_on_viewport, computed_max_texture_size);
+  return std::min(max_bounds_based_on_viewport, max_texture_size_in_layout);
 }
 
 gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
@@ -252,6 +338,16 @@ gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
 
   auto transform = GeometryMapper::SourceToDestinationProjection(
       paint_properties.Transform(), root_properties.Transform());
+  if (auto* layout_inline = DynamicTo<LayoutInline>(object)) {
+    // The paint_properties we get from
+    // `first_fragment.LocalBorderBoxProperties()` correspond to the origin of
+    // the inline's container's border-box. So the transform from GeometryMapper
+    // maps a point from the viewport to the container's border-box origin. We
+    // need the extra translation to map from container's border box origin to
+    // inline's border box origin.
+    transform.Translate(
+        gfx::Vector2dF(layout_inline->PhysicalLinesBoundingBox().offset));
+  }
 
   if (!transform.HasPerspective()) {
     transform.Round2dTranslationComponents();
@@ -341,7 +437,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     : document_(document), state_(State::kCaptured), deserialized_(true) {
   device_pixel_ratio_ = transition_state.device_pixel_ratio;
   captured_name_count_ = static_cast<int>(transition_state.elements.size());
-  snapshot_root_size_at_capture_ =
+  snapshot_root_layout_size_at_capture_ =
       transition_state.snapshot_root_size_at_capture;
 
   VectorOf<AtomicString> transition_names;
@@ -370,25 +466,25 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     element_data->captured_rect_in_layout_space =
         transition_state_element.captured_rect_in_layout_space;
 
-    CHECK_LE(transition_state_element.container_writing_mode,
-             static_cast<std::underlying_type_t<WritingMode>>(
-                 WritingMode::kMaxWritingMode));
-    element_data->container_writing_mode = static_cast<WritingMode>(
-        transition_state_element.container_writing_mode);
+    CHECK_LE(transition_state_element.captured_css_properties.size(),
+             std::size(kPropertiesToCapture));
 
-    CHECK_LE(transition_state_element.mix_blend_mode,
-             static_cast<std::underlying_type_t<BlendMode>>(
-                 BlendMode::kMaxBlendMode));
-    element_data->mix_blend_mode =
-        static_cast<BlendMode>(transition_state_element.mix_blend_mode);
+    FlatMapBuilder<CSSPropertyID, String> css_property_builder(
+        transition_state_element.captured_css_properties.size());
+    for (const auto& [id, value] :
+         transition_state_element.captured_css_properties) {
+      css_property_builder.Insert(FromTransitionPropertyId(id),
+                                  String::FromUTF8(value.c_str()));
+    }
+    element_data->captured_css_properties =
+        std::move(css_property_builder).Finish();
 
-    CHECK_LE(transition_state_element.text_orientation,
-             static_cast<std::underlying_type_t<ETextOrientation>>(
-                 ETextOrientation::kMaxEnumValue));
-    element_data->text_orientation = static_cast<ETextOrientation>(
-        transition_state_element.text_orientation);
+    for (const auto& class_name : transition_state_element.class_list) {
+      element_data->class_list.push_back(
+          AtomicString::FromUTF8(class_name.c_str()));
+    }
 
-    element_data->CacheGeometryState();
+    element_data->CacheStateForOldSnapshot();
 
     element_data_map_.insert(name, std::move(element_data));
   }
@@ -585,7 +681,16 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
       StringBuilder message;
       message.Append(kDuplicateTagBaseError);
       message.Append(name);
-      AddConsoleError(message.ReleaseString());
+
+      Vector<DOMNodeId> nodes;
+      // Find all the elements with this name.
+      for (auto& name_finder : flat_list) {
+        if (name_finder->name == name) {
+          nodes.push_back(name_finder->element->GetDomNodeId());
+        }
+      }
+
+      AddConsoleError(message.ReleaseString(), nodes);
       return false;
     }
 
@@ -636,6 +741,8 @@ bool ViewTransitionStyleTracker::Capture() {
     element_data->target_element = element;
     element_data->element_index = next_index++;
     element_data->old_snapshot_id = snapshot_id;
+    element_data->class_list =
+        element->ComputedStyleRef().ViewTransitionClass();
     element_data_map_.insert(name, std::move(element_data));
 
     if (element->IsDocumentElement()) {
@@ -660,8 +767,8 @@ bool ViewTransitionStyleTracker::Capture() {
   set_element_sequence_id_ = 0;
   pending_transition_element_names_.clear();
 
-  DCHECK(!snapshot_root_size_at_capture_.has_value());
-  snapshot_root_size_at_capture_ = GetSnapshotRootSize();
+  DCHECK(!snapshot_root_layout_size_at_capture_.has_value());
+  snapshot_root_layout_size_at_capture_ = GetSnapshotRootSize();
 
   return true;
 }
@@ -704,6 +811,13 @@ VectorOf<Element> ViewTransitionStyleTracker::GetTransitioningElements() const {
     }
   }
   return result;
+}
+
+const Vector<AtomicString>&
+ViewTransitionStyleTracker::GetViewTransitionClassList(
+    const AtomicString& name) const {
+  CHECK(element_data_map_.Contains(name));
+  return element_data_map_.at(name)->class_list;
 }
 
 bool ViewTransitionStyleTracker::Start() {
@@ -760,6 +874,9 @@ bool ViewTransitionStyleTracker::Start() {
     DCHECK(!element_data->target_element);
     element_data->target_element = element;
     element_data->new_snapshot_id = snapshot_id;
+    element_data->class_list =
+        element->ComputedStyleRef().ViewTransitionClass();
+
     // Verify that the element_index assigned in Capture is less than next_index
     // here, just as a sanity check.
     DCHECK_LT(element_data->element_index, next_index);
@@ -968,12 +1085,29 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     return false;
   }
 
-  const int max_capture_size = ComputeMaxCaptureSize(
+  const int max_capture_size_in_layout = ComputeMaxCaptureSize(
+      *document_,
       document_->GetPage()->GetChromeClient().GetMaxRenderBufferBounds(
           *document_->GetFrame()),
-      *snapshot_root_size_at_capture_);
+      *snapshot_root_layout_size_at_capture_);
+
+  if (snapshot_root_layout_size_at_capture_->width() >
+          max_capture_size_in_layout ||
+      snapshot_root_layout_size_at_capture_->height() >
+          max_capture_size_in_layout) {
+    // TODO(crbug.com/1516874): This skips the transition if the root is too
+    // large to fit into a texture but non-root elements clip in this case
+    // instead. It would be better to clip the root like we do child elements,
+    // rather than skipping (and that would comply better with the spec).
+
+    // For main frames the capture size should never be bigger than the
+    // window so we only expect to end up here due to large subframes.
+    CHECK(!document_->GetFrame()->IsOutermostMainFrame());
+    return false;
+  }
 
   bool needs_style_invalidation = false;
+
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
     if (!element_data->target_element)
@@ -992,10 +1126,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     ContainerProperties container_properties;
     PhysicalRect visual_overflow_rect_in_layout_space;
-    WritingMode writing_mode;
-    BlendMode blend_mode;
-    ETextOrientation text_orientation;
-    absl::optional<gfx::RectF> captured_rect_in_layout_space;
+    std::optional<gfx::RectF> captured_rect_in_layout_space;
 
     if (element_data->target_element->IsDocumentElement()) {
       auto layout_view_size = PhysicalSize(GetSnapshotRootSize());
@@ -1004,25 +1135,35 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       container_properties =
           ContainerProperties(layout_view_size_in_css_space, gfx::Transform());
       visual_overflow_rect_in_layout_space.size = layout_view_size;
-      writing_mode = layout_object->StyleRef().GetWritingMode();
-      blend_mode = layout_object->StyleRef().GetBlendMode();
-      text_orientation = layout_object->StyleRef().GetTextOrientation();
     } else {
       ComputeLiveElementGeometry(
-          max_capture_size, *layout_object, container_properties,
-          visual_overflow_rect_in_layout_space, writing_mode, blend_mode,
-          text_orientation, captured_rect_in_layout_space);
+          max_capture_size_in_layout, *layout_object, container_properties,
+          visual_overflow_rect_in_layout_space, captured_rect_in_layout_space);
     }
+
+    FlatMapBuilder<CSSPropertyID, String> css_property_builder(
+        std::size(kPropertiesToCapture));
+    for (CSSPropertyID id : kPropertiesToCapture) {
+      const CSSValue* css_value =
+          CSSProperty::Get(id).CSSValueFromComputedStyle(
+              layout_object->StyleRef(),
+              /*layout_object=*/nullptr,
+              /*allow_visited_style=*/false);
+
+      if (!css_value) {
+        continue;
+      }
+      css_property_builder.Insert(id, css_value->CssText());
+    }
+    auto css_properties = std::move(css_property_builder).Finish();
 
     if (!element_data->container_properties.empty() &&
         element_data->container_properties.back() == container_properties &&
         visual_overflow_rect_in_layout_space ==
             element_data->visual_overflow_rect_in_layout_space &&
-        writing_mode == element_data->container_writing_mode &&
-        blend_mode == element_data->mix_blend_mode &&
-        text_orientation == element_data->text_orientation &&
         captured_rect_in_layout_space ==
-            element_data->captured_rect_in_layout_space) {
+            element_data->captured_rect_in_layout_space &&
+        css_properties == element_data->captured_css_properties) {
       continue;
     }
 
@@ -1041,9 +1182,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     element_data->visual_overflow_rect_in_layout_space =
         visual_overflow_rect_in_layout_space;
-    element_data->container_writing_mode = writing_mode;
-    element_data->mix_blend_mode = blend_mode;
-    element_data->text_orientation = text_orientation;
+    element_data->captured_css_properties = css_properties;
     element_data->captured_rect_in_layout_space = captured_rect_in_layout_space;
 
     PseudoId live_content_element = HasLiveNewContent()
@@ -1066,7 +1205,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     // Ensure that the cached state stays in sync with the current state while
     // we're capturing.
     if (state_ == State::kCapturing) {
-      element_data->CacheGeometryState();
+      element_data->CacheStateForOldSnapshot();
     }
 
     needs_style_invalidation = true;
@@ -1089,10 +1228,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     LayoutObject& layout_object,
     ContainerProperties& container_properties,
     PhysicalRect& visual_overflow_rect_in_layout_space,
-    WritingMode& writing_mode,
-    BlendMode& blend_mode,
-    ETextOrientation& text_orientation,
-    absl::optional<gfx::RectF>& captured_rect_in_layout_space) const {
+    std::optional<gfx::RectF>& captured_rect_in_layout_space) const {
   DCHECK(!layout_object.IsLayoutView());
 
   // TODO(bokan): This doesn't account for the local offset of an inline
@@ -1105,22 +1241,18 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   auto snapshot_matrix_in_layout_space =
       ComputeViewportTransform(layout_object);
 
-  if (document_->GetLayoutView()
-          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
-    // The SnapshotViewportRect offset below takes points from the fixed
-    // viewport into the snapshot viewport. However, the transform is
-    // currently into absolute coordinates; when the scrollbar appears on the
-    // left, the fixed viewport origin is actually at (15, 0) in absolute
-    // coordinates (assuming 15px scrollbars). Therefore we must first shift
-    // by the scrollbar width so we're in fixed viewport coordinates.
-    ScrollableArea& viewport = *document_->View()->LayoutViewport();
-    snapshot_matrix_in_layout_space.PostTranslate(
-        -viewport.VerticalScrollbarWidth(), 0);
-  }
+  // The FixedToSnapshot offset below takes points from the fixed
+  // viewport into the snapshot viewport. However, the transform is
+  // currently into frame coordinates; when a scrollbar (or gutter) appears on
+  // the left, the fixed viewport origin is actually at (15, 0) in frame
+  // coordinates (assuming 15px scrollbars). Therefore we must first shift
+  // by the scrollbar width so we're in fixed viewport coordinates.
+  gfx::Vector2d fixed_to_frame =
+      -document_->GetLayoutView()->OriginAdjustmentForScrollbars();
+  snapshot_matrix_in_layout_space.PostTranslate(fixed_to_frame);
 
   gfx::Vector2d snapshot_to_fixed_offset = -GetFixedToSnapshotRootOffset();
-  snapshot_matrix_in_layout_space.PostTranslate(snapshot_to_fixed_offset.x(),
-                                                snapshot_to_fixed_offset.y());
+  snapshot_matrix_in_layout_space.PostTranslate(snapshot_to_fixed_offset);
 
   auto snapshot_matrix_in_css_space = snapshot_matrix_in_layout_space;
   snapshot_matrix_in_css_space.Zoom(1.0 / device_pixel_ratio_);
@@ -1133,15 +1265,18 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     auto* resize_observer_entry = MakeGarbageCollected<ResizeObserverEntry>(
         To<Element>(layout_object.GetNode()));
     auto entry_size = resize_observer_entry->borderBoxSize()[0];
+    // ResizeObserver gives us CSS space pixels.
     border_box_size_in_css_space =
         layout_object.IsHorizontalWritingMode()
             ? PhysicalSize(LayoutUnit(entry_size->inlineSize()),
                            LayoutUnit(entry_size->blockSize()))
             : PhysicalSize(LayoutUnit(entry_size->blockSize()),
                            LayoutUnit(entry_size->inlineSize()));
-  } else if (auto* box_model = DynamicTo<LayoutBoxModelObject>(layout_object)) {
+  } else if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
     border_box_size_in_css_space =
-        PhysicalSize(box_model->BorderBoundingBox().size());
+        layout_inline->PhysicalLinesBoundingBox().size;
+    // Convert to CSS pixels instead of layout pixels.
+    border_box_size_in_css_space.Scale(1.f / device_pixel_ratio_);
   }
 
   // If the object's effective zoom differs from device_pixel_ratio, adjust
@@ -1156,11 +1291,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       snapshot_matrix_in_css_space, border_box_size_in_css_space);
 
   if (auto* box = DynamicTo<LayoutBoxModelObject>(layout_object)) {
-    visual_overflow_rect_in_layout_space =
-        RuntimeEnabledFeatures::
-                ViewTransitionLayoutObjectVisualOverflowEnabled()
-            ? ComputeVisualOverflowRect(*box)
-            : ComputeVisualOverflowRectWithPaintLayers(*box);
+    visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(*box);
   }
 
   // This is intentionally computed in layout space to include scaling from
@@ -1168,11 +1299,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   // bounds which includes this scale.
   captured_rect_in_layout_space = ComputeCaptureRect(
       max_capture_size, visual_overflow_rect_in_layout_space,
-      snapshot_matrix_in_layout_space, *snapshot_root_size_at_capture_);
-
-  writing_mode = layout_object.StyleRef().GetWritingMode();
-  blend_mode = layout_object.StyleRef().GetBlendMode();
-  text_orientation = layout_object.StyleRef().GetTextOrientation();
+      snapshot_matrix_in_layout_space, *snapshot_root_layout_size_at_capture_);
 
   container_properties = ContainerProperties(border_box_size_in_css_space,
                                              snapshot_matrix_in_css_space);
@@ -1382,19 +1509,18 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
                   ->GetVirtualKeyboardResizeHeight();
   }
 
+  PhysicalBoxStrut scrollbar_strut =
+      document.GetLayoutView()->ComputeScrollbars();
   // A left-side scrollbar (i.e. in an RTL writing-mode) should overlay the
   // snapshot viewport as well. This cannot currently happen in Chrome but it
   // can in other browsers. Handle this case in the event
   // https://crbug.com/249860 is ever fixed.
-  LocalFrameView& view = *document.View();
-  if (document.GetLayoutView()
-          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
-    left += view.LayoutViewport()->VerticalScrollbarWidth();
-  } else {
-    right += view.LayoutViewport()->VerticalScrollbarWidth();
-  }
-
-  bottom += view.LayoutViewport()->HorizontalScrollbarHeight();
+  // This includes outsets for scrollbar-gutter; both sides could include
+  // scrollbar space simultaneously.
+  left += scrollbar_strut.left.ToInt();
+  right += scrollbar_strut.right.ToInt();
+  bottom += scrollbar_strut.bottom.ToInt();
+  top += scrollbar_strut.top.ToInt();
 
   gfx::Outsets outsets;
   outsets.set_top(top);
@@ -1406,17 +1532,28 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
 }  // namespace
 
 gfx::Rect ViewTransitionStyleTracker::GetSnapshotRootInFixedViewport() const {
-  DCHECK(document_->GetLayoutView());
   DCHECK(document_->View());
-  DCHECK(document_->GetFrame());
+  DCHECK(document_->GetLayoutView());
 
-  LocalFrameView& view = *document_->View();
+  LayoutView& layout_view = *document_->GetLayoutView();
+  LocalFrameView& frame_view = *document_->View();
 
-  // Start with the FrameView size, i.e. the position: fixed viewport, and
-  // expand the viewport by any insetting UI such as the mobile URL bar,
-  // virtual-keyboard, scrollbars, etc.
-  gfx::Rect snapshot_viewport_rect(
-      view.LayoutViewport()->ExcludeScrollbars(view.Size()));
+  // Start with the position: fixed viewport and expand it by any
+  // insetting UI such as the mobile URL bar, virtual-keyboard, scrollbars,
+  // etc.
+  // TODO(bokan): Differing behavior based on ViewportEnabled is a bit of a
+  // kludge but is required since with ViewportEnabled the frame size may
+  // actually be larger than than the LayoutView (the ICB) so we must use it.
+  // However, LayoutView::ClientWidth/Height is the only way I know to get the
+  // correct content size when the frame is inset by a scrollbar-gutter.
+  // Luckily these two cases are mutually exclusive: ViewportEnabled is only
+  // used with overlay scrollbars which have no gutter, however, it'd be better
+  // if we could query a single property directly from layout information.
+  gfx::Rect snapshot_viewport_rect =
+      document_->GetSettings()->GetViewportEnabled()
+          ? gfx::Rect(frame_view.Size().width(), frame_view.Size().height())
+          : gfx::Rect(layout_view.ClientWidth().ToInt(),
+                      layout_view.ClientHeight().ToInt());
   snapshot_viewport_rect.Outset(GetFixedToSnapshotViewportOutsets(*document_));
 
   return snapshot_viewport_rect;
@@ -1435,18 +1572,16 @@ gfx::Vector2d ViewTransitionStyleTracker::GetFrameToSnapshotRootOffset() const {
   DCHECK(document_->View());
 
   gfx::Outsets outsets = GetFixedToSnapshotViewportOutsets(*document_);
-  int left = outsets.left();
-  int top = outsets.top();
+  gfx::Vector2d fixed_to_snapshot(-outsets.left(), -outsets.top());
 
-  // Left-side vertical scrollbars are placed within the frame but offset the
-  // fixed viewport so remove its width from the fixed-to-snapshot offset to
-  // get the frame-to-snapshot offset.
-  if (document_->GetLayoutView()
-          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
-    left -= document_->View()->LayoutViewport()->VerticalScrollbarWidth();
-  }
+  // A scrollbar (or gutter) on the left or top is placed within the frame but
+  // offsets the fixed viewport so remove its size from the fixed-to-snapshot
+  // offset to get the frame-to-snapshot offset.
+  gfx::Vector2d frame_to_snapshot =
+      fixed_to_snapshot +
+      document_->GetLayoutView()->OriginAdjustmentForScrollbars();
 
-  return gfx::Vector2d(-left, -top);
+  return frame_to_snapshot;
 }
 
 ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
@@ -1455,9 +1590,9 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
   ViewTransitionState transition_state;
 
   transition_state.device_pixel_ratio = device_pixel_ratio_;
-  DCHECK(snapshot_root_size_at_capture_);
+  DCHECK(snapshot_root_layout_size_at_capture_);
   transition_state.snapshot_root_size_at_capture =
-      *snapshot_root_size_at_capture_;
+      *snapshot_root_layout_size_at_capture_;
 
   for (const auto& entry : element_data_map_) {
     const auto& element_data = entry.value;
@@ -1466,7 +1601,6 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
            "phase";
 
     auto& element = transition_state.elements.emplace_back();
-    // TODO(khushalsagar): What about non utf8 strings?
     element.tag_name = entry.key.Utf8();
     element.border_box_size_in_css_space = gfx::SizeF(
         element_data->container_properties[0].border_box_size_in_css_space);
@@ -1478,19 +1612,43 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     element.paint_order = element_data->element_index;
     element.captured_rect_in_layout_space =
         element_data->captured_rect_in_layout_space;
-    element.container_writing_mode =
-        static_cast<decltype(element.container_writing_mode)>(
-            element_data->container_writing_mode);
-    element.mix_blend_mode = static_cast<decltype(element.mix_blend_mode)>(
-        element_data->mix_blend_mode);
-    element.text_orientation = static_cast<decltype(element.text_orientation)>(
-        element_data->text_orientation);
+
+    FlatMapBuilder<mojom::blink::ViewTransitionPropertyId, std::string>
+        css_property_builder(element_data->captured_css_properties.size());
+    for (const auto& [id, value] : element_data->captured_css_properties) {
+      css_property_builder.Insert(ToTranstionPropertyId(id), value.Utf8());
+    }
+    element.captured_css_properties = std::move(css_property_builder).Finish();
+    for (const auto& class_name : element_data->class_list) {
+      element.class_list.push_back(class_name.Utf8());
+    }
   }
 
   // TODO(khushalsagar): Need to send offsets to retain positioning of
   // ::view-transition.
 
   return transition_state;
+}
+
+bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
+  if (!snapshot_root_layout_size_at_capture_.has_value()) {
+    return false;
+  }
+
+  gfx::Size current_size = GetSnapshotRootSize();
+
+  // Allow 1px of diff since the snapshot root can be adjusted by
+  // viewport-resizing UI (e.g. the virtual keyboard insets the viewport but
+  // then outsets the viewport rect to get the snapshot root). These
+  // adjustments can be off by a pixel due to different pixel snapping.
+  if (std::abs(snapshot_root_layout_size_at_capture_->width() -
+               current_size.width()) <= 1 &&
+      std::abs(snapshot_root_layout_size_at_capture_->height() -
+               current_size.height()) <= 1) {
+    return false;
+  }
+
+  return true;
 }
 
 void ViewTransitionStyleTracker::InvalidateStyle() {
@@ -1575,10 +1733,9 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
 
     // This updates the styles on the pseudo-elements as described in
     // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
-    builder.AddContainerStyles(
-        view_transition_name, element_data->container_properties.back(),
-        element_data->container_writing_mode, element_data->mix_blend_mode,
-        element_data->text_orientation);
+    builder.AddContainerStyles(view_transition_name,
+                               element_data->container_properties.back(),
+                               element_data->captured_css_properties);
 
     // This sets up the styles to animate the pseudo-elements as described in
     // https://drafts.csswg.org/css-view-transitions-1/#setup-transition-pseudo-elements-algorithm.
@@ -1594,7 +1751,8 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
       }
 
       builder.AddAnimations(type, view_transition_name,
-                            element_data->cached_container_properties);
+                            element_data->cached_container_properties,
+                            element_data->cached_animated_css_properties);
     }
   }
 
@@ -1661,7 +1819,7 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetBorderBoxRect(
   return gfx::RectF(gfx::SizeF(border_box_size_in_layout_space));
 }
 
-void ViewTransitionStyleTracker::ElementData::CacheGeometryState() {
+void ViewTransitionStyleTracker::ElementData::CacheStateForOldSnapshot() {
   // This could be empty if the element was uncontained and was ignored for a
   // transition.
   DCHECK_LT(container_properties.size(), 2u);
@@ -1672,6 +1830,16 @@ void ViewTransitionStyleTracker::ElementData::CacheGeometryState() {
   cached_visual_overflow_rect_in_layout_space =
       visual_overflow_rect_in_layout_space;
   cached_captured_rect_in_layout_space = captured_rect_in_layout_space;
+
+  FlatMapBuilder<CSSPropertyID, String> builder(
+      std::size(kPropertiesToAnimate));
+  for (auto& id : kPropertiesToAnimate) {
+    auto it = captured_css_properties.find(id);
+    if (it != captured_css_properties.end()) {
+      builder.Insert(it->first, it->second);
+    }
+  }
+  cached_animated_css_properties = std::move(builder).Finish();
 }
 
 // TODO(vmpstr): This could be optimized by caching values for individual layout
@@ -1722,6 +1890,22 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
         PhysicalRect mapped_overflow_rect =
             ComputeVisualOverflowRect(*child_box, ancestor_for_recursion);
         result.Unite(mapped_overflow_rect);
+      } else if (auto* child_text = DynamicTo<LayoutText>(child)) {
+        if (box.IsLayoutInline()) {
+          continue;
+        }
+
+        const bool child_visible =
+            child_text->StyleRef().Visibility() == EVisibility::kVisible ||
+            !child_text->VisualRectRespectsVisibility();
+        if (!child_visible) {
+          continue;
+        }
+
+        auto overflow_rect = child_text->VisualOverflowRect();
+        child_text->MapToVisualRectInAncestorSpace(
+            ancestor_for_recursion, overflow_rect, kUseGeometryMapper);
+        result.Unite(overflow_rect);
       }
     }
   }
@@ -1731,14 +1915,12 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     if (auto* layout_box = DynamicTo<LayoutBox>(box)) {
       overflow_rect = layout_box->PhysicalBorderBoxRect();
       if (layout_box->StyleRef().HasVisualOverflowingEffect()) {
-        NGPhysicalBoxStrut outsets =
+        PhysicalBoxStrut outsets =
             layout_box->ComputeVisualEffectOverflowOutsets();
         overflow_rect.Expand(outsets);
       }
-    } else if (auto* layout_inline = DynamicTo<LayoutInline>(box)) {
-      overflow_rect = layout_inline->PhysicalLinesBoundingBox();
     } else {
-      overflow_rect = PhysicalRect(box.BorderBoundingBox());
+      overflow_rect = To<LayoutInline>(box).LinesVisualOverflowBoundingBox();
     }
   }
 
@@ -1759,6 +1941,17 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     if (auto* layout_box = DynamicTo<LayoutBox>(&box);
         layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
       result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
+    } else if (auto* layout_inline = DynamicTo<LayoutInline>(box)) {
+      // We need the `overflow_rect` to be relative to the inline's
+      // border-box. However, `LayoutInline::LinesVisualOverflowBoundingBox()`
+      // is relative to the inline's container's border-box. The offset below
+      // removes the translation between the container's border-box and the
+      // inline's border-box.
+      //
+      // This mapping is done internally by
+      // `LayoutObject::MapToVisualRectInAncestorSpace` so its not necessary
+      // when computing overflow for an ancestor.
+      overflow_rect.Move(-layout_inline->PhysicalLinesBoundingBox().offset);
     }
 
     if (visible) {
@@ -1779,104 +1972,6 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     }
   }
   return result;
-}
-
-PhysicalRect
-ViewTransitionStyleTracker::ComputeVisualOverflowRectWithPaintLayers(
-    const LayoutBoxModelObject& box,
-    const LayoutBoxModelObject* ancestor) const {
-  if (ancestor) {
-    if (auto* element = DynamicTo<Element>(box.GetNode());
-        element && IsTransitionElement(*element)) {
-      return {};
-    }
-  }
-
-  if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(box)) {
-    // TODO(crbug.com/1326514): This is just the bounds of the clip-path, as
-    // opposed to the intersection between the clip-path and the border box
-    // bounds. This seems suboptimal, but that's the rect that we use further
-    // down the pipeline to generate the texture.
-    // TODO(khushalsagar): This doesn't account for CSS clip property.
-    auto bounds = PhysicalRect::EnclosingRect(*clip_path_bounds);
-    if (ancestor) {
-      box.MapToVisualRectInAncestorSpace(ancestor, bounds, kUseGeometryMapper);
-    }
-    return bounds;
-  }
-
-  PhysicalRect result;
-  auto* paint_layer = box.Layer();
-  if (!box.ChildPaintBlockedByDisplayLock() &&
-      paint_layer->HasSelfPaintingLayerDescendant() &&
-      !paint_layer->KnownToClipSubtreeToPaddingBox()) {
-    PaintLayerPaintOrderIterator iterator(paint_layer, kAllChildren);
-    while (PaintLayer* child_layer = iterator.Next()) {
-      if (!child_layer->IsSelfPaintingLayer()) {
-        continue;
-      }
-      LayoutBoxModelObject& child_box = child_layer->GetLayoutObject();
-
-      PhysicalRect mapped_overflow_rect =
-          ComputeVisualOverflowRectWithPaintLayers(child_box,
-                                                   ancestor ? ancestor : &box);
-      result.Unite(mapped_overflow_rect);
-    }
-  }
-
-  if (ancestor) {
-    // For any recursive call, we instead map our overflow rect into the
-    // ancestor space and combine that with the result. GeometryMapper should
-    // take care of any filters and clips that are necessary between this box
-    // and the ancestor.
-    auto overflow_rect = box.PhysicalVisualOverflowRect();
-    box.MapToVisualRectInAncestorSpace(ancestor, overflow_rect,
-                                       kUseGeometryMapper);
-    result.Unite(overflow_rect);
-  } else {
-    // We're at the root of the recursion, so clip self painting descendant
-    // overflow by the overflow clip rect, then add in the visual overflow (with
-    // filters) from the own painting layer.
-    if (auto* layout_box = DynamicTo<LayoutBox>(&box);
-        layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
-      result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
-    }
-    result.Unite(box.PhysicalVisualOverflowRectIncludingFilters());
-
-    // TODO(crbug.com/1432868): This captures a couple of common cases --
-    // box-shadow and no box shadow on the element. However, this isn't at all
-    // comprehensive. The paint system determines per element whether it
-    // should pixel snap or enclosing rect or something else. We need to think
-    // of a better way to fix this for all cases.
-    result.Move(box.FirstFragment().PaintOffset());
-    if (box.StyleRef().BoxShadow()) {
-      result = PhysicalRect(ToEnclosingRect(result));
-    } else {
-      result = PhysicalRect(ToPixelSnappedRect(result));
-    }
-  }
-  return result;
-}
-
-bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
-  if (!snapshot_root_size_at_capture_.has_value()) {
-    return false;
-  }
-
-  gfx::Size current_size = GetSnapshotRootSize();
-
-  // Allow 1px of diff since the snapshot root can be adjusted by
-  // viewport-resizing UI (e.g. the virtual keyboard insets the viewport but
-  // then outsets the viewport rect to get the snapshot root). These
-  // adjustments can be off by a pixel due to different pixel snapping.
-  if (std::abs(snapshot_root_size_at_capture_->width() -
-               current_size.width()) <= 1 &&
-      std::abs(snapshot_root_size_at_capture_->height() -
-               current_size.height()) <= 1) {
-    return false;
-  }
-
-  return true;
 }
 
 const char* ViewTransitionStyleTracker::StateToString(State state) {

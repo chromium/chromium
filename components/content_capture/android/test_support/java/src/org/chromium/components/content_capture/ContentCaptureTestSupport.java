@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.components.content_capture;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * This is the test support class to help setup various test conditions.
- */
+/** This is the test support class to help setup various test conditions. */
 @JNINamespace("content_capture")
 public class ContentCaptureTestSupport {
     public static void disableGetFaviconFromWebContents() {
@@ -23,6 +22,7 @@ public class ContentCaptureTestSupport {
     @NativeMethods
     interface Natives {
         void disableGetFaviconFromWebContents();
+
         void simulateDidUpdateFaviconURL(WebContents webContents, String faviconJson);
     }
 }

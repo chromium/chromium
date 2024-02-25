@@ -5,6 +5,7 @@
 /**
  * @fileoverview Definitions of all types related to output.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EarconId} from '../../common/earcon_id.js';
 import {Spannable} from '../../common/spannable.js';
@@ -201,7 +202,7 @@ export const INPUT_TYPE_MESSAGE_IDS = {
 
 /**
  * @typedef {{
- *    node: chrome.automation.AutomationNode,
+ *    node: ?chrome.automation.AutomationNode,
  *    outputFormat: (string|!OutputFormatTree),
  *    outputBuffer: !Array<Spannable>,
  *    outputFormatLogger: !OutputFormatLogger,
@@ -226,3 +227,16 @@ export const OutputFormatType = {
   BRAILLE: 'braille',
   SPEAK: 'speak',
 };
+
+/** @enum {string} */
+export const OutputNavigationType = {
+  END_OF: 'endOf',
+  ENTER: 'enter',
+  LEAVE: 'leave',
+  START_OF: 'startOf',
+};
+
+TestImportManager.exportForTesting(
+    OutputAction, OutputEarconAction, OutputNodeSpan, OutputSelectionSpan,
+    ['OutputCustomEvent', OutputCustomEvent],
+    ['OutputContextOrder', OutputContextOrder]);

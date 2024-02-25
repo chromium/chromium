@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_INTERFACE_BRIDGE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_INTERFACE_BRIDGE_BASE_H_
 
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8-forward.h"
@@ -12,7 +13,6 @@
 namespace blink {
 
 class DOMWrapperWorld;
-enum class OriginTrialFeature : int32_t;
 
 namespace bindings {
 
@@ -43,7 +43,7 @@ class PLATFORM_EXPORT V8InterfaceBridgeBase {
     FeatureSelector();
     // Selects only the properties that are associated to the given origin
     // trial feature.
-    explicit FeatureSelector(OriginTrialFeature feature);
+    explicit FeatureSelector(blink::mojom::blink::OriginTrialFeature feature);
     FeatureSelector(const FeatureSelector&) = default;
     FeatureSelector(FeatureSelector&&) = default;
     ~FeatureSelector() = default;
@@ -58,11 +58,11 @@ class PLATFORM_EXPORT V8InterfaceBridgeBase {
     // Returns true if properties should be installed.  Arguments |featureN|
     // represent the origin trial features to which the properties are
     // associated.
-    bool IsAnyOf(OriginTrialFeature feature1) const {
+    bool IsAnyOf(blink::mojom::blink::OriginTrialFeature feature1) const {
       return selector_ == feature1;
     }
-    bool IsAnyOf(OriginTrialFeature feature1,
-                 OriginTrialFeature feature2) const {
+    bool IsAnyOf(blink::mojom::blink::OriginTrialFeature feature1,
+                 blink::mojom::blink::OriginTrialFeature feature2) const {
       return selector_ == feature1 || selector_ == feature2;
     }
 
@@ -70,7 +70,7 @@ class PLATFORM_EXPORT V8InterfaceBridgeBase {
     bool does_select_all_ = false;
     // We intentionally avoid default member initializer for |selector_| in
     // order not to include runtime_enabled_features.h.
-    OriginTrialFeature selector_;
+    blink::mojom::blink::OriginTrialFeature selector_;
   };
 
   using InstallInterfaceTemplateFuncType =

@@ -16,6 +16,9 @@ class PickleIterator;
 
 class SkBitmap;
 class SkFlattenable;
+class SkColorSpace;
+struct skcms_Matrix3x3;
+struct skcms_TransferFunction;
 
 namespace skia {
 
@@ -58,6 +61,14 @@ SK_API bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out);
 
 // Returns hex string representation for the |color| in "#FFFFFF" format.
 SK_API std::string SkColorToHexString(SkColor color);
+
+// Return a string representation of an SkColorSpace. Accepts nullptr.
+SK_API std::string SkColorSpaceToString(const SkColorSpace* cs);
+
+// Return string representation of skcms matrix and transfer functions.
+SK_API std::string SkcmsMatrix3x3ToString(const skcms_Matrix3x3& m);
+SK_API std::string SkcmsTransferFunctionToString(
+    const skcms_TransferFunction& f);
 
 }  // namespace skia
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_JOB_WORKER_OOP_H_
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_WORKER_OOP_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -14,7 +15,6 @@
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)
 #error "OOP printing must be enabled"
@@ -40,8 +40,8 @@ class PrintJobWorkerOop : public PrintJobWorker {
   PrintJobWorkerOop(
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
-      absl::optional<PrintBackendServiceManager::ClientId> client_id,
-      absl::optional<PrintBackendServiceManager::ContextId> context_id,
+      std::optional<PrintBackendServiceManager::ClientId> client_id,
+      std::optional<PrintBackendServiceManager::ContextId> context_id,
       PrintJob* print_job,
       bool print_from_system_dialog);
   PrintJobWorkerOop(const PrintJobWorkerOop&) = delete;
@@ -50,6 +50,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
   // `PrintJobWorker` overrides.
   void StartPrinting(PrintedDocument* new_document) override;
+  void Cancel() override;
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   void CleanupAfterContentAnalysisDenial() override;
 #endif
@@ -59,15 +60,15 @@ class PrintJobWorkerOop : public PrintJobWorker {
   PrintJobWorkerOop(
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
-      absl::optional<PrintBackendServiceManager::ClientId> client_id,
-      absl::optional<PrintBackendServiceManager::ContextId> context_id,
+      std::optional<PrintBackendServiceManager::ClientId> client_id,
+      std::optional<PrintBackendServiceManager::ContextId> context_id,
       PrintJob* print_job,
       bool print_from_system_dialog,
       bool simulate_spooling_memory_errors);
 
   // Local callback wrappers for Print Backend Service mojom call.  Virtual to
   // support testing.
-  virtual void OnDidStartPrinting(mojom::ResultCode result);
+  virtual void OnDidStartPrinting(mojom::ResultCode result, int job_id);
 #if BUILDFLAG(IS_WIN)
   virtual void OnDidRenderPrintedPage(uint32_t page_index,
                                       mojom::ResultCode result);
@@ -83,6 +84,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
 #endif
   bool SpoolDocument() override;
   void OnDocumentDone() override;
+  void FinishDocumentDone(int job_id) override;
   void OnCancel() override;
   void OnFailure() override;
 
@@ -118,12 +120,12 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
   // Client ID with the print backend service manager for this print job.
   // Used only from UI thread.
-  absl::optional<PrintBackendServiceManager::ClientId>
+  std::optional<PrintBackendServiceManager::ClientId>
       service_manager_client_id_;
 
   // The printing context identifier related to this print job.
   // Used only from UI thread.
-  absl::optional<PrintBackendServiceManager::ContextId> printing_context_id_;
+  std::optional<PrintBackendServiceManager::ContextId> printing_context_id_;
 
   // The device name used when printing via a service.  Used only from the UI
   // thread.
@@ -139,6 +141,11 @@ class PrintJobWorkerOop : public PrintJobWorker {
   // the `PrintJob` should drop its reference as part of failure/cancel
   // processing.  Named differently than base (even though both are private)
   // to avoid any potential confusion between them.
+  // Once set at the start of printing on the worker thread, it is only
+  // referenced thereafter from the UI thread.  UI thread accesses only occur
+  // once the interactions with the Print Backend service occur as a result of
+  // starting to print the job.  Any document access from worker thread happens
+  // by methods in base class, which use the base `document_` field.
   scoped_refptr<PrintedDocument> document_oop_;
 
   // Indicates if the print job was initiated from the print system dialog.

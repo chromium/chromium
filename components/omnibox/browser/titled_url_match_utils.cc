@@ -143,13 +143,13 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     match.SetAllowedToBeDefault(input);
   }
 
-  if (provider->InKeywordMode(input)) {
+  if (input.InKeywordMode()) {
     match.from_keyword = true;
   }
 
   if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
       AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
-    match.scoring_signals = absl::make_optional<ScoringSignals>();
+    match.scoring_signals = std::make_optional<ScoringSignals>();
     // Populate ACMatches with signals for ML model scoring and training.
     if (!titled_url_match.title_match_positions.empty())
       match.scoring_signals->set_first_bookmark_title_match_position(

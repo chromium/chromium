@@ -112,10 +112,16 @@ public class AwTestContainerView extends FrameLayout {
         }
 
         public void readbackQuadrantColors(Callback<int[]> callback) {
-            sRenderThreadHandler.post(() -> {
-                callback.onResult(mContextManager.draw(
-                        mWidth, mHeight, mLastScrollX, mLastScrollY, /*readbackQuadrants=*/true));
-            });
+            sRenderThreadHandler.post(
+                    () -> {
+                        callback.onResult(
+                                mContextManager.draw(
+                                        mWidth,
+                                        mHeight,
+                                        mLastScrollX,
+                                        mLastScrollY,
+                                        /* readbackQuadrants= */ true));
+                    });
         }
 
         public boolean isReadyToRender() {
@@ -138,7 +144,10 @@ public class AwTestContainerView extends FrameLayout {
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             if (holder == mOverlaysSurfaceView.getHolder()) {
                 Surface surface = holder.getSurface();
-                sRenderThreadHandler.post(() -> { mContextManager.setOverlaysSurface(surface); });
+                sRenderThreadHandler.post(
+                        () -> {
+                            mContextManager.setOverlaysSurface(surface);
+                        });
                 return;
             }
 
@@ -148,7 +157,9 @@ public class AwTestContainerView extends FrameLayout {
 
             Surface surface = holder.getSurface();
             sRenderThreadHandler.post(
-                    () -> { mContextManager.setSurface(surface, width, height); });
+                    () -> {
+                        mContextManager.setSurface(surface, width, height);
+                    });
 
             if (mReadyToRenderCallback != null) {
                 mReadyToRenderCallback.run();
@@ -160,20 +171,22 @@ public class AwTestContainerView extends FrameLayout {
         public void surfaceDestroyed(SurfaceHolder holder) {
             if (holder == mOverlaysSurfaceView.getHolder()) {
                 WaitableEvent event = new WaitableEvent();
-                sRenderThreadHandler.post(() -> {
-                    mContextManager.setOverlaysSurface(null);
-                    event.signal();
-                });
+                sRenderThreadHandler.post(
+                        () -> {
+                            mContextManager.setOverlaysSurface(null);
+                            event.signal();
+                        });
                 event.waitForEvent();
                 return;
             }
 
             mHaveSurface = false;
             WaitableEvent event = new WaitableEvent();
-            sRenderThreadHandler.post(() -> {
-                mContextManager.setSurface(null, 0, 0);
-                event.signal();
-            });
+            sRenderThreadHandler.post(
+                    () -> {
+                        mContextManager.setSurface(null, 0, 0);
+                        event.signal();
+                    });
             event.waitForEvent();
         }
 
@@ -188,21 +201,28 @@ public class AwTestContainerView extends FrameLayout {
             }
 
             WaitableEvent syncEvent = new WaitableEvent();
-            sRenderThreadHandler.post(() -> {
-                drawOnRt(syncEvent, functor, mWidth, mHeight, mLastScrollX, mLastScrollY);
-            });
+            sRenderThreadHandler.post(
+                    () -> {
+                        drawOnRt(syncEvent, functor, mWidth, mHeight, mLastScrollX, mLastScrollY);
+                    });
             syncEvent.waitForEvent();
         }
 
-        private void drawOnRt(WaitableEvent syncEvent, int functor, int width, int height,
-                int scrollX, int scrollY) {
+        private void drawOnRt(
+                WaitableEvent syncEvent,
+                int functor,
+                int width,
+                int height,
+                int scrollX,
+                int scrollY) {
             mContextManager.sync(functor, false);
             syncEvent.signal();
-            mContextManager.draw(width, height, scrollX, scrollY, /*readbackQuadrants=*/false);
+            mContextManager.draw(width, height, scrollX, scrollY, /* readbackQuadrants= */ false);
         }
     }
 
     private static boolean sCreatedOnce;
+
     private HardwareView createHardwareViewOnlyOnce(Context context) {
         if (sCreatedOnce) return null;
         sCreatedOnce = true;
@@ -215,13 +235,16 @@ public class AwTestContainerView extends FrameLayout {
             mHardwareView = createHardwareViewOnlyOnce(context);
         }
         if (isBackedByHardwareView()) {
-            addView(mHardwareView.getOverlaysView(),
-                    new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.MATCH_PARENT));
-            addView(mHardwareView,
+            addView(
+                    mHardwareView.getOverlaysView(),
                     new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT));
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT));
+            addView(
+                    mHardwareView,
+                    new FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT));
         } else {
             setLayerType(LAYER_TYPE_SOFTWARE, null);
         }
@@ -252,9 +275,7 @@ public class AwTestContainerView extends FrameLayout {
         return mHardwareView != null;
     }
 
-    /**
-     * Use glReadPixels to get 4 pixels from center of 4 quadrants. Result is in row-major order.
-     */
+    /** Use glReadPixels to get 4 pixels from center of 4 quadrants. Result is in row-major order. */
     public void readbackQuadrantColors(Callback<int[]> callback) {
         assert isBackedByHardwareView();
         mHardwareView.readbackQuadrantColors(callback);
@@ -403,8 +424,7 @@ public class AwTestContainerView extends FrameLayout {
 
     @Override
     public AccessibilityNodeProvider getAccessibilityNodeProvider() {
-        AccessibilityNodeProvider provider =
-                mAwContents.getAccessibilityNodeProvider();
+        AccessibilityNodeProvider provider = mAwContents.getAccessibilityNodeProvider();
         return provider == null ? super.getAccessibilityNodeProvider() : provider;
     }
 
@@ -475,14 +495,27 @@ public class AwTestContainerView extends FrameLayout {
         }
 
         @Override
-        public void overScrollBy(int deltaX, int deltaY,
-                int scrollX, int scrollY,
-                int scrollRangeX, int scrollRangeY,
-                int maxOverScrollX, int maxOverScrollY,
+        public void overScrollBy(
+                int deltaX,
+                int deltaY,
+                int scrollX,
+                int scrollY,
+                int scrollRangeX,
+                int scrollRangeY,
+                int maxOverScrollX,
+                int maxOverScrollY,
                 boolean isTouchEvent) {
             // We're intentionally not calling super.scrollTo here to make testing easier.
-            AwTestContainerView.this.overScrollBy(deltaX, deltaY, scrollX, scrollY,
-                     scrollRangeX, scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent);
+            AwTestContainerView.this.overScrollBy(
+                    deltaX,
+                    deltaY,
+                    scrollX,
+                    scrollY,
+                    scrollRangeX,
+                    scrollRangeY,
+                    maxOverScrollX,
+                    maxOverScrollY,
+                    isTouchEvent);
         }
 
         @Override

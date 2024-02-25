@@ -4,22 +4,23 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/tab_pickup/tab_pickup_infobar_banner_overlay_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/sync_device_info/device_info.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/synced_sessions/distant_session.h"
-#import "ios/chrome/browser/synced_sessions/distant_tab.h"
-#import "ios/chrome/browser/tabs/tab_pickup/features.h"
-#import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/tab_pickup_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -71,7 +72,8 @@ class TabPickupBannerOverlayMediatorTest : public PlatformTest {
 
     synced_sessions::DistantSession& session = CreateDistantSession();
     std::unique_ptr<TabPickupInfobarDelegate> delegate =
-        std::make_unique<TabPickupInfobarDelegate>(browser_.get(), &session);
+        std::make_unique<TabPickupInfobarDelegate>(browser_.get(), &session,
+                                                   session.tabs.front().get());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeTailoredSecurityService, std::move(delegate));
@@ -91,7 +93,7 @@ class TabPickupBannerOverlayMediatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
-  TabPickupInfobarDelegate* delegate_ = nil;
+  raw_ptr<TabPickupInfobarDelegate> delegate_ = nil;
   FakeInfobarBannerConsumer* consumer_ = nil;
   TabPickupBannerOverlayMediator* mediator_ = nil;
 };

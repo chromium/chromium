@@ -1,0 +1,22 @@
+{
+    "name": "Sub apps test app",
+    "id": "/",
+    "version": "1.0.0",
+    "scope": "/",
+    "short_name": "Sub apps app",
+    "icons": [{
+      "src": "/subapps_icon.png",
+      "sizes": "230x230",
+      "type": "image/png",
+      "purpose": "any maskable"
+      }],
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0000FF",
+    "theme_color": "#000077",
+    "permissions_policy": {
+      "cross-origin-isolated": ["self"],
+      "sub-apps": ["self"]
+    }
+
+}

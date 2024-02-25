@@ -88,7 +88,10 @@ void SharedWorkerClientHolder::Connect(
     const KURL& url,
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     mojom::blink::WorkerOptionsPtr options,
-    ukm::SourceId client_ukm_source_id) {
+    mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
+    ukm::SourceId client_ukm_source_id,
+    const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
+        connector_override) {
   DCHECK(IsMainThread());
   DCHECK(options);
 
@@ -118,9 +121,12 @@ void SharedWorkerClientHolder::Connect(
       mojom::blink::FetchClientSettingsObject::New(
           outside_fetch_client_settings_object->GetReferrerPolicy(),
           KURL(outside_fetch_client_settings_object->GetOutgoingReferrer()),
-          insecure_requests_policy));
+          insecure_requests_policy),
+      same_site_cookies);
 
-  connector_->Connect(
+  const HeapMojoRemote<mojom::blink::SharedWorkerConnector>& connector =
+      connector_override ? *connector_override : connector_;
+  connector->Connect(
       std::move(info), std::move(client),
       worker->GetExecutionContext()->IsSecureContext()
           ? mojom::blink::SharedWorkerCreationContextType::kSecure

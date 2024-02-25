@@ -214,7 +214,7 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
     return helper;
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
+  raw_ptr<dbus::Bus> bus_;
   HelperMap helpers_;
 };
 

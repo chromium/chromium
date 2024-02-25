@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_bridge.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -25,7 +26,7 @@
 #include "chromeos/ash/components/sync_wifi/network_type_conversions.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_updater.h"
-#include "chromeos/ash/components/sync_wifi/timer_factory.h"
+#include "components/cross_device/timer_factory/timer_factory.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -36,7 +37,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash::sync_wifi {
@@ -63,7 +63,7 @@ WifiConfigurationBridge::WifiConfigurationBridge(
     LocalNetworkCollector* local_network_collector,
     NetworkConfigurationHandler* network_configuration_handler,
     SyncedNetworkMetricsLogger* metrics_recorder,
-    TimerFactory* timer_factory,
+    cross_device::TimerFactory* timer_factory,
     PrefService* pref_service,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory create_store_callback)
@@ -110,7 +110,7 @@ WifiConfigurationBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> WifiConfigurationBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> WifiConfigurationBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList change_list) {
   DCHECK(entries_.empty());
@@ -121,7 +121,7 @@ absl::optional<syncer::ModelError> WifiConfigurationBridge::MergeFullSyncData(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(metadata_change_list), std::move(change_list)));
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
@@ -211,7 +211,7 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
   }
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 WifiConfigurationBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -258,7 +258,7 @@ WifiConfigurationBridge::ApplyIncrementalSyncChanges(
     local_network_collector_->RecordZeroNetworksEligibleForSync();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WifiConfigurationBridge::GetData(StorageKeyList storage_keys,
@@ -314,7 +314,7 @@ void WifiConfigurationBridge::ApplyDisableSyncChanges(
 }
 
 void WifiConfigurationBridge::OnStoreCreated(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -327,7 +327,7 @@ void WifiConfigurationBridge::OnStoreCreated(
 }
 
 void WifiConfigurationBridge::OnReadAllData(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> records) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -391,7 +391,7 @@ void WifiConfigurationBridge::OnFixAutoconnectComplete() {
 }
 
 void WifiConfigurationBridge::OnReadAllMetadata(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("ui", "WifiConfigurationBridge::OnReadAllMetadata");
   if (error) {
@@ -403,7 +403,7 @@ void WifiConfigurationBridge::OnReadAllMetadata(
   // Make a copy in case the map is modified while iterating over the pending
   // updates.  This could happen if sync is disabled while iterating.
   base::flat_map<std::string,
-                 absl::optional<sync_pb::WifiConfigurationSpecifics>>
+                 std::optional<sync_pb::WifiConfigurationSpecifics>>
       updates = networks_to_sync_when_ready_;
   for (auto const& [storage_key, specifics] : updates) {
     if (specifics) {
@@ -416,7 +416,7 @@ void WifiConfigurationBridge::OnReadAllMetadata(
 }
 
 void WifiConfigurationBridge::OnCommit(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   if (error)
     change_processor()->ReportError(*error);
 }
@@ -490,7 +490,7 @@ void WifiConfigurationBridge::OnNetworkUpdate(
 }
 
 void WifiConfigurationBridge::SaveNetworkToSync(
-    absl::optional<sync_pb::WifiConfigurationSpecifics> proto) {
+    std::optional<sync_pb::WifiConfigurationSpecifics> proto) {
   if (!proto) {
     return;
   }
@@ -560,7 +560,7 @@ void WifiConfigurationBridge::OnBeforeConfigurationRemoved(
     return;
   }
 
-  absl::optional<NetworkIdentifier> id =
+  std::optional<NetworkIdentifier> id =
       local_network_collector_->GetNetworkIdentifierFromGuid(guid);
   if (!id) {
     return;
@@ -586,7 +586,7 @@ void WifiConfigurationBridge::OnConfigurationRemoved(
 
   const std::string& storage_key = pending_deletes_[network_guid];
   if (!store_ || !change_processor()->IsTrackingMetadata()) {
-    networks_to_sync_when_ready_.insert_or_assign(storage_key, absl::nullopt);
+    networks_to_sync_when_ready_.insert_or_assign(storage_key, std::nullopt);
     return;
   }
 

@@ -12,7 +12,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -35,18 +35,12 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
     self.title =
         l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_CREATE_PASSPHRASE);
     self.headerMessage = nil;
-    if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-      self.footerMessage =
-          base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)
-              ? l10n_util::GetNSString(
-                    IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO)
-              : l10n_util::GetNSString(
-                    IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO);
-    } else {
-      self.footerMessage =
-          l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_INFO);
-    }
+    self.footerMessage =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? l10n_util::GetNSString(
+                  IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO)
+            : l10n_util::GetNSString(
+                  IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO);
     self.processingMessage =
         l10n_util::GetNSString(IDS_IOS_SYNC_PASSPHRASE_ENCRYPTING);
 

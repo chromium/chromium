@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-FAIL The template contents owner document type is HTML document (case when document has browsing context and the template is created by HTML parser) assert_class_string: Template content owner should be a document expected "[object Document]" but got "[object HTMLDocument]"
-FAIL The template contents owner document type is HTML document (case when document has browsing context and the template is created by createElement()) assert_class_string: Template content owner should be a document expected "[object Document]" but got "[object HTMLDocument]"
-FAIL The template contents owner document type is HTML document (case when document has no browsing context and the template is created by createElement()) assert_class_string: Template content owner should be a document expected "[object Document]" but got "[object HTMLDocument]"
-FAIL The template contents owner document type is HTML document (case when document has no browsing context and the template is created via innerHTML) assert_class_string: Template content owner should be a document expected "[object Document]" but got "[object HTMLDocument]"
+[FAIL] The template contents owner document type is HTML document (case when document has browsing context and the template is created by HTML parser)
+  assert_class_string: Template content owner should be a document expected "[object Document]" but got "[object HTMLDocument]"
+[FAIL] The template contents owner document type is HTML document (case when document has browsing context and the template is created by createElement())
+  assert_class_string: Template content owner should be a document expected "[object Document]" but got "[object HTMLDocument]"
+[FAIL] The template contents owner document type is HTML document (case when document has no browsing context and the template is created by createElement())
+  assert_class_string: Template content owner should be a document expected "[object Document]" but got "[object HTMLDocument]"
+[FAIL] The template contents owner document type is HTML document (case when document has no browsing context and the template is created via innerHTML)
+  assert_class_string: Template content owner should be a document expected "[object Document]" but got "[object HTMLDocument]"
 Harness: the test ran to completion.
 

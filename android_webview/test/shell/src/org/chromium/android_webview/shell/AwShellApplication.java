@@ -13,9 +13,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.ui.base.ResourceBundle;
 
-/**
- * The android_webview shell Application subclass.
- */
+/** The android_webview shell Application subclass. */
 public class AwShellApplication extends Application {
     // Called by the framework for ALL processes. Runs before ContentProviders are created.
     // Quirk: context.getApplicationContext() returns null during this method.

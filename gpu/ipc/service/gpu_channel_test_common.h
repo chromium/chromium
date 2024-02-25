@@ -56,7 +56,8 @@ class GpuChannelTestCommon : public testing::Test {
                            int32_t routing_id,
                            base::UnsafeSharedMemoryRegion shared_state,
                            ContextResult* out_result,
-                           Capabilities* out_capabilities);
+                           Capabilities* out_capabilities,
+                           GLCapabilities* out_gl_capabilities);
 
   base::UnsafeSharedMemoryRegion GetSharedMemoryRegion();
 

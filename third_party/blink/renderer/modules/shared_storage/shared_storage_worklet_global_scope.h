@@ -94,8 +94,6 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // reset, thus we cannot rely on observer method like `Dispose()`.
   void NotifyContextDestroyed() override;
 
-  bool FeatureEnabled(OriginTrialFeature feature) const override;
-
   void Trace(Visitor*) const override;
 
   // mojom::blink::SharedStorageWorkletService implementation:

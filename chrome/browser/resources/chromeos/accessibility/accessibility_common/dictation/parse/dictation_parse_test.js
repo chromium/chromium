@@ -5,15 +5,7 @@
 GEN_INCLUDE(['../dictation_test_base.js']);
 
 /** Dictation tests for speech parsing. */
-DictationParseTest = class extends DictationE2ETestBase {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule(
-        'SpeechParser',
-        '/accessibility_common/dictation/parse/speech_parser.js');
-  }
-};
+DictationParseTest = class extends DictationE2ETestBase {};
 
 // Tests that the InputTextStrategy always returns an InputTextViewMacro,
 // regardless of the speech input.
@@ -54,7 +46,7 @@ AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
     new ParseTestCase('unselect', {name: 'UNSELECT_TEXT'}),
     new ParseTestCase('help', {name: 'LIST_COMMANDS'}),
     new ParseTestCase('new line', {name: 'NEW_LINE'}),
-    new ParseTestCase('cancel', {name: 'STOP_LISTENING'}),
+    new ParseTestCase('cancel', {name: 'TOGGLE_DICTATION'}),
     new ParseTestCase('delete the previous word', {name: 'DELETE_PREV_WORD'}),
     new ParseTestCase('move to the next word', {name: 'NAV_NEXT_WORD'}),
     new ParseTestCase('move to the previous word', {name: 'NAV_PREV_WORD'}),

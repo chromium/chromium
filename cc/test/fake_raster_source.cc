@@ -5,9 +5,11 @@
 #include "cc/test/fake_raster_source.h"
 
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/synchronization/waitable_event.h"
+#include "cc/base/features.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/skia_common.h"
@@ -26,8 +28,7 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateInfiniteFilled() {
 
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilled(
     const gfx::Size& size) {
-  auto recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(size);
+  auto recording_source = FakeRecordingSource::Create(size);
 
   PaintFlags red_flags;
   red_flags.setColor(SK_ColorRED);
@@ -54,8 +55,7 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilled(
 
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithImages(
     const gfx::Size& size) {
-  auto recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(size);
+  auto recording_source = FakeRecordingSource::Create(size);
 
   for (int y = 0; y < size.height(); y += 100) {
     for (int x = 0; x < size.width(); x += 100) {
@@ -69,8 +69,8 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithImages(
 
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithText(
     const gfx::Size& size) {
-  auto recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(size);
+  auto recording_source = FakeRecordingSource::Create(size);
+  recording_source->add_draw_rect(gfx::Rect(size));
   recording_source->set_has_draw_text_op();
   recording_source->Rerecord();
   return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
@@ -78,8 +78,7 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithText(
 
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithPaintWorklet(
     const gfx::Size& size) {
-  auto recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(size);
+  auto recording_source = FakeRecordingSource::Create(size);
 
   auto input = base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(size));
   recording_source->add_draw_image(
@@ -91,8 +90,7 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithPaintWorklet(
 
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledSolidColor(
     const gfx::Size& size) {
-  auto recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(size);
+  auto recording_source = FakeRecordingSource::Create(size);
 
   PaintFlags red_flags;
   red_flags.setColor(SK_ColorRED);
@@ -107,32 +105,30 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledSolidColor(
 
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreatePartiallyFilled(
     const gfx::Size& size,
-    const gfx::Rect& recorded_viewport) {
-  DCHECK(recorded_viewport.IsEmpty() ||
-         gfx::Rect(size).Contains(recorded_viewport));
-  auto recording_source =
-      FakeRecordingSource::CreateRecordingSource(recorded_viewport, size);
+    const gfx::Rect& recorded_bounds) {
+  // Otherwise the caller should call CreateEmpty().
+  DCHECK(!size.IsEmpty());
+  DCHECK(!recorded_bounds.IsEmpty());
+  DCHECK(gfx::Rect(size).Contains(recorded_bounds));
+  auto recording_source = FakeRecordingSource::Create(size);
 
   PaintFlags red_flags;
   red_flags.setColor(SK_ColorRED);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(size), red_flags);
+  recording_source->add_draw_rect_with_flags(recorded_bounds, red_flags);
 
-  gfx::Size smaller_size(size.width() - 10, size.height() - 10);
+  gfx::Rect smaller_rect(recorded_bounds.origin(),
+                         recorded_bounds.size() - gfx::Size(10, 10));
   PaintFlags green_flags;
   green_flags.setColor(SK_ColorGREEN);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(smaller_size),
-                                             green_flags);
+  recording_source->add_draw_rect_with_flags(smaller_rect, green_flags);
 
   recording_source->Rerecord();
-  recording_source->SetRecordedViewport(recorded_viewport);
-
   return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
 }
 
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreateEmpty(
     const gfx::Size& size) {
-  auto recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(size);
+  auto recording_source = FakeRecordingSource::Create(size);
   return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
 }
 
@@ -165,6 +161,12 @@ void FakeRasterSource::PlaybackDisplayListToCanvas(
   if (playback_allowed_event_)
     playback_allowed_event_->Wait();
   RasterSource::PlaybackDisplayListToCanvas(canvas, image_provider);
+}
+
+void FakeRasterSource::SetDirectlyCompositedImageDefaultRasterScale(
+    gfx::Vector2dF scale) {
+  directly_composited_image_info_.emplace();
+  directly_composited_image_info_->default_raster_scale = scale;
 }
 
 }  // namespace cc

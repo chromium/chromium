@@ -64,12 +64,17 @@ class BaseTestCase(unittest.TestCase):
             'MOCK Trusty': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                    'blink_wpt_tests (with patch)': {},
+                },
             },
             'MOCK Trusty Multiple Steps': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'steps': {
                     'blink_web_tests (with patch)': {},
+                    'blink_wpt_tests (with patch)': {},
                     'not_site_per_process_blink_web_tests (with patch)': {
                         'flag_specific': 'disable-site-isolation-trials',
                     },
@@ -136,6 +141,10 @@ class BaseTestCase(unittest.TestCase):
                     'args': ['--disable-site-isolation-trials'],
                 },
             ]))
+        for wpt_dir in self.mac_port.WPT_DIRS:
+            self._write(self.tool.filesystem.join(wpt_dir, 'MANIFEST.json'),
+                        json.dumps({}))
+
         # Create some dummy tests (note _setup_mock_build_data uses the same
         # test names). Also, create some dummy baselines to avoid the implicit
         # all-pass warning.
@@ -156,6 +165,7 @@ class BaseTestCase(unittest.TestCase):
         # we can make the default port also a "test" port.
         self.original_port_factory_get = self.tool.port_factory.get
         self._test_port = self.tool.port_factory.get('test')
+        self._test_port.set_option_default('manifest_update', False)
 
         def get_test_port(port_name=None, options=None, **kwargs):
             if not port_name:
@@ -319,11 +329,14 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
     def test_builders_to_fetch_from_flag_specific(self):
         build_steps_to_fetch = self.command.build_steps_to_fetch_from([
             ('MOCK Trusty', 'blink_web_tests (with patch)'),
+            ('MOCK Trusty', 'blink_wpt_tests (with patch)'),
+            ('MOCK Trusty Multiple Steps', 'blink_web_tests (with patch)'),
+            ('MOCK Trusty Multiple Steps', 'blink_wpt_tests (with patch)'),
         ])
-        # Ports are the same, but the fallback paths differ.
         self.assertEqual(
             build_steps_to_fetch, {
                 ('MOCK Trusty', 'blink_web_tests (with patch)'),
+                ('MOCK Trusty', 'blink_wpt_tests (with patch)'),
             })
 
         build_steps_to_fetch = self.command.build_steps_to_fetch_from([
@@ -512,6 +525,7 @@ class TestRebaseline(BaseTestCase):
                     },
                 },
                 step_name='blink_web_tests (with patch)'))
+        self._write('reftest.html', 'Dummy test contents')
         self._write('reftest-expected.html', 'reference page')
 
         test_baseline_set = TestBaselineSet(self.tool.builders)
@@ -519,6 +533,8 @@ class TestRebaseline(BaseTestCase):
                               'blink_web_tests (with patch)')
         self.command.rebaseline(self.options(), test_baseline_set)
 
+        self._mock_copier.find_baselines_to_copy.assert_called_once_with(
+            'reftest.html', 'txt', test_baseline_set)
         self._assert_baseline_downloaded(
             'https://results.api.cr.dev/reftest-actual.txt',
             'platform/test-win-win7/reftest-expected.txt')
@@ -996,8 +1012,8 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
     def test_rebaseline_test_passes_unexpectedly_but_on_another_port(self):
         # Similar to test_rebaseline_test_passes_unexpectedly, except that the
         # build was run on a different port than the port we are rebaselining
-        # (possible when rebaseline-cl --fill-missing), in which case we don't
-        # update the expectations.
+        # (possible when rebaseline-cl fills in missing results), in which case
+        # we don't update the expectations.
         self._write(
             self.test_expectations_path,
             '# results: [ Failure ]\nuserscripts/all-pass.html [ Failure ]\n')

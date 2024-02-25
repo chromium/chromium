@@ -37,6 +37,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_token_status.h"
@@ -294,6 +295,18 @@ class UkmBrowserTestBase : public SyncTest {
       Profile* profile) {
     std::unique_ptr<SyncServiceImplHarness> harness =
         test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings.
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      syncer::SyncUserSettings* user_settings =
+          harness->service()->GetUserSettings();
+      // Turn on App-sync in OS Sync.
+      user_settings->SetAppsSyncEnabledByOs(true);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     EXPECT_TRUE(harness->SetupSync());
 
     // If unified consent is enabled, then enable url-keyed-anonymized data
@@ -615,11 +628,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, OpenNonSyncCheck) {
   // When flag is enabled, removing MSBB consent will cause the client id to be
   // reset. In this case a new profile with sync turned off is added which also
   // removes consent.
-  if (base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync)) {
-    EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
-  } else {
-    EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
-  }
+  EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
 #endif
 
   CloseBrowserSynchronously(sync_browser);
@@ -734,17 +743,14 @@ IN_PROC_BROWSER_TEST_P(UkmBrowserTestWithDemographics,
   ukm_test_helper.BuildAndStoreLog();
   EXPECT_TRUE(ukm_test_helper.HasUnsentLogs());
 
-  // Check the log's content and the histogram.
+  // Check the log's content.
   std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
   if (param.expect_reported_demographics) {
     EXPECT_EQ(test::GetNoisedBirthYear(local_state(), test_birth_year),
               report->user_demographics().birth_year());
     EXPECT_EQ(test_gender, report->user_demographics().gender());
-    histogram.ExpectUniqueSample("UKM.UserDemographics.Status",
-                                 UserDemographicsStatus::kSuccess, 1);
   } else {
     EXPECT_FALSE(report->has_user_demographics());
-    histogram.ExpectTotalCount("UKM.UserDemographics.Status", /*count=*/0);
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -908,12 +914,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
   // client id is reset when the second profile is initially created without any
   // sync preferences enabled or MSBB. With the feature, any consent on to off
   // change for MSBB or App Sync will cause the client id to reset.
-  if (base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync)) {
-    EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
-    original_client_id = ukm_test_helper.GetClientId();
-  } else {
-    EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
-  }
+  EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
+  original_client_id = ukm_test_helper.GetClientId();
 #endif
 
   ASSERT_TRUE(
@@ -1237,7 +1239,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
 
   // History Sync is not active.
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::HISTORY));
-  ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::TYPED_URLS));
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(
       syncer::HISTORY_DELETE_DIRECTIVES));
 
@@ -1541,17 +1542,11 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, AllowedStateChanged) {
   // Expect nothing to be consented to.
   observer.ExpectAllowedStateChanged(ukm::UkmConsentState());
 #else
-  // Only on ChromeOS, theses values are dependent on whether
-  // kAppMetricsOnlyRelyOnAppSync feature is enabled.
-  EXPECT_THAT(ukm_test_helper.IsRecordingEnabled(),
-              base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync));
-  EXPECT_THAT(g_browser_process->GetMetricsServicesManager()
-                  ->IsUkmAllowedForAllProfiles(),
-              base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync));
-  observer.ExpectAllowedStateChanged(
-      base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync)
-          ? ukm::UkmConsentState({ukm::APPS})
-          : ukm::UkmConsentState());
+  // ChromeOS has a different behavior compared to other platforms.
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+  EXPECT_TRUE(g_browser_process->GetMetricsServicesManager()
+                  ->IsUkmAllowedForAllProfiles());
+  observer.ExpectAllowedStateChanged(ukm::UkmConsentState({ukm::APPS}));
 #endif
 
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
@@ -1565,13 +1560,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, AllowedStateChanged) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class UkmBrowserTestForAppConsent : public UkmBrowserTestBase {
  public:
-  UkmBrowserTestForAppConsent() {
-    scoped_feature_list_.InitWithFeatures({ukm::kAppMetricsOnlyRelyOnAppSync},
-                                          {});
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  UkmBrowserTestForAppConsent() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(UkmBrowserTestForAppConsent, MetricsClientEnablement) {

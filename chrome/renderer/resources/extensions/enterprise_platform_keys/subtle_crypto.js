@@ -7,25 +7,18 @@ var internalAPI = getInternalApi('enterprise.platformKeysInternal');
 var intersect = require('platformKeys.utils').intersect;
 var subtleCryptoModule = require('platformKeys.SubtleCrypto');
 var SubtleCryptoImpl = subtleCryptoModule.SubtleCryptoImpl;
-var KeyPair = require('enterprise.platformKeys.KeyPair').KeyPair;
+var catchInvalidTokenError = subtleCryptoModule.catchInvalidTokenError;
+var KeyPair = require('enterprise.platformKeys.CryptoKey').KeyPair;
+var SymKey = require('enterprise.platformKeys.CryptoKey').SymKey;
 var KeyUsage = require('platformKeys.Key').KeyUsage;
 
 var normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
 
-// This error is thrown by the internal and public API's token functions and
-// must be rethrown by this custom binding. Keep this in sync with the C++ part
-// of this API.
-var errorInvalidToken = 'The token is not valid.';
-
 // The following errors are specified in WebCrypto.
 // TODO(pneubeck): These should be DOMExceptions.
 function CreateNotSupportedError() {
   return new Error('The algorithm is not supported');
-}
-
-function CreateInvalidAccessError() {
-  return new Error('The requested operation is not valid for the provided key');
 }
 
 function CreateDataError() {
@@ -40,47 +33,60 @@ function CreateOperationError() {
   return new Error('The operation failed for an operation-specific reason');
 }
 
-// Catches an |internalErrorInvalidToken|. If so, forwards it to |reject| and
-// returns true.
-function catchInvalidTokenError(reject) {
-  if (chrome.runtime.lastError &&
-      chrome.runtime.lastError.message === errorInvalidToken) {
-    reject(chrome.runtime.lastError);
-    return true;
-  }
-  return false;
+// Checks if the given algorithm has the expected RSA name.
+function isSupportedRsaAlgorithmName(normalizedAlgorithmParams) {
+  return normalizedAlgorithmParams.name === 'RSASSA-PKCS1-v1_5';
 }
 
-// Returns true if the |normalizedAlgorithm| returned by normalizeAlgorithm() is
-// supported by platform keys subtle crypto internal API.
-function isSupportedGenerateKeyAlgorithm(normalizedAlgorithm) {
-  if (normalizedAlgorithm.name === 'RSASSA-PKCS1-v1_5') {
-    return equalsStandardPublicExponent(normalizedAlgorithm.publicExponent);
+// Checks if the given algorithm has the expected EC name.
+function isSupportedEcAlgorithmName(normalizedAlgorithmParams) {
+  return normalizedAlgorithmParams.name === 'ECDSA';
+}
+
+// Checks if the given algorithm has the expected AES name.
+function isSupportedAesAlgorithmName(normalizedAlgorithmParams) {
+  return normalizedAlgorithmParams.name === 'AES-CBC';
+}
+
+// Returns true if the `normalizedAlgorithmParams` returned by
+// normalizeAlgorithm() is supported by platform keys subtle crypto internal
+// API.
+function isSupportedGenerateKeyAlgorithm(normalizedAlgorithmParams) {
+  if (isSupportedRsaAlgorithmName(normalizedAlgorithmParams)) {
+    return equalsStandardPublicExponent(
+        normalizedAlgorithmParams.publicExponent);
   }
 
-  if (normalizedAlgorithm.name === 'ECDSA') {
+  if (isSupportedEcAlgorithmName(normalizedAlgorithmParams)) {
     // Only NIST P-256 curve is supported.
-    return normalizedAlgorithm.namedCurve === 'P-256';
+    return normalizedAlgorithmParams.namedCurve === 'P-256';
+  }
+
+  if (isSupportedAesAlgorithmName(normalizedAlgorithmParams)) {
+    // AES keys are only supported with 256 bits.
+    return normalizedAlgorithmParams.length === 256;
   }
 
   return false;
 }
 
-// Returns true if |array| is a BigInteger describing the standard public
+// Returns true if `array` is a BigInteger describing the standard public
 // exponent 65537. In particular, it ignores leading zeros as required by the
 // BigInteger definition in WebCrypto.
 function equalsStandardPublicExponent(array) {
   var expected = [0x01, 0x00, 0x01];
-  if (array.length < expected.length)
+  if (array.length < expected.length) {
     return false;
+  }
   for (var i = 0; i < array.length; i++) {
     var expectedDigit = 0;
     if (i < expected.length) {
-      // |expected| is symmetric, endianness doesn't matter.
+      // `expected` is symmetric, endianness doesn't matter.
       expectedDigit = expected[i];
     }
-    if (array[array.length - 1 - i] !== expectedDigit)
+    if (array[array.length - 1 - i] !== expectedDigit) {
       return false;
+    }
   }
   return true;
 }
@@ -115,36 +121,54 @@ EnterpriseSubtleCryptoImpl.prototype.generateKey =
         keyUsages.length) {
       throw CreateDataError();
     }
-    var normalizedAlgorithmParameters =
+    var normalizedAlgorithmParams =
         normalizeAlgorithm(algorithm, 'GenerateKey');
-    if (!normalizedAlgorithmParameters) {
+    if (!normalizedAlgorithmParams) {
       // TODO(pneubeck): It's not clear from the WebCrypto spec which error to
       // throw here.
       throw CreateSyntaxError();
     }
 
-    if (!isSupportedGenerateKeyAlgorithm(normalizedAlgorithmParameters)) {
+    if (!isSupportedGenerateKeyAlgorithm(normalizedAlgorithmParams)) {
       // Note: This deviates from WebCrypto.SubtleCrypto.
       throw CreateNotSupportedError();
     }
 
-    if (normalizedAlgorithmParameters.name === 'RSASSA-PKCS1-v1_5') {
-      // normalizeAlgorithm returns an array, but publicExponent should be a
-      // Uint8Array.
-      normalizedAlgorithmParameters.publicExponent =
-          new Uint8Array(normalizedAlgorithmParameters.publicExponent);
+    if (isSupportedRsaAlgorithmName(normalizedAlgorithmParams)) {
+      // `normalizeAlgorithm` returns an ArrayBuffer, but publicExponent should
+      // be a Uint8Array.
+      normalizedAlgorithmParams.publicExponent =
+          new Uint8Array(normalizedAlgorithmParams.publicExponent);
     }
 
     internalAPI.generateKey(
-        subtleCrypto.tokenId, normalizedAlgorithmParameters,
-        subtleCrypto.softwareBacked, function(spki) {
-          if (catchInvalidTokenError(reject))
+        subtleCrypto.tokenId, normalizedAlgorithmParams,
+        subtleCrypto.softwareBacked, function(identifier) {
+          if (catchInvalidTokenError(reject)) {
             return;
+          }
           if (chrome.runtime.lastError) {
             reject(CreateOperationError());
             return;
           }
-          resolve(new KeyPair(spki, normalizedAlgorithmParameters, keyUsages));
+
+          if (isSupportedAesAlgorithmName(normalizedAlgorithmParams)) {
+            resolve(
+                new SymKey(identifier, normalizedAlgorithmParams, keyUsages));
+            return;
+          }
+
+          if (isSupportedRsaAlgorithmName(normalizedAlgorithmParams) ||
+              isSupportedEcAlgorithmName(normalizedAlgorithmParams)) {
+            resolve(
+                new KeyPair(identifier, normalizedAlgorithmParams, keyUsages));
+            return;
+          }
+
+          // This code should not be reached, unless we change the list of
+          // supported algorithms in `isSupportedGenerateKeyAlgorithm()` and
+          // forget to update one of the conditions above.
+          reject(CreateNotSupportedError());
         });
   });
 };
@@ -156,7 +180,7 @@ utils.expose(SubtleCrypto, EnterpriseSubtleCryptoImpl, {
   superclass: subtleCryptoModule.SubtleCrypto,
   functions: [
     'generateKey',
-    // 'sign', 'exportKey' are exposed by the base class
+    // 'sign' and 'exportKey' are exposed by the base class.
   ],
 });
 

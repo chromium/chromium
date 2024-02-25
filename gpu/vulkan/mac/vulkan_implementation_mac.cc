@@ -81,11 +81,6 @@ std::unique_ptr<gfx::GpuFence> VulkanImplementationMac::ExportVkFenceToGpuFence(
   return nullptr;
 }
 
-VkExternalMemoryHandleTypeFlagBits
-VulkanImplementationMac::GetExternalImageHandleType() {
-  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
-}
-
 VkExternalSemaphoreHandleTypeFlagBits
 VulkanImplementationMac::GetExternalSemaphoreHandleType() {
   return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;

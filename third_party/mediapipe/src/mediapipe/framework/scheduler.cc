@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_graph.h"
@@ -30,7 +31,6 @@
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/timestamp.h"
 #include "mediapipe/framework/tool/status_util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -421,8 +421,9 @@ bool Scheduler::TryToScheduleNextSourceLayer() {
 }
 
 void Scheduler::AddUnopenedSourceNode(CalculatorNode* node) {
-  ABSL_CHECK_EQ(state_, STATE_NOT_STARTED) << "AddUnopenedSourceNode can only be "
-                                         "called before starting the scheduler";
+  ABSL_CHECK_EQ(state_, STATE_NOT_STARTED)
+      << "AddUnopenedSourceNode can only be "
+         "called before starting the scheduler";
   unopened_sources_.insert(node);
 }
 

@@ -14,13 +14,10 @@ limitations under the License.
 ==============================================================================*/
 #import "tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.h"
 
-std::string MakeString(NSString* str) {
-  return base::SysNSStringToUTF8(str);
-}
+std::string MakeString(NSString* str) { return base::SysNSStringToUTF8(str); }
 
 NSString* MakeNSString(const std::string& str) {
-  return [[NSString alloc]
-      initWithBytes:const_cast<void*>(static_cast<const void*>(str.data()))
-             length:str.length()
-           encoding:NSUTF8StringEncoding];
+  return [[NSString alloc] initWithBytes:const_cast<void*>(static_cast<const void*>(str.data()))
+                                  length:str.length()
+                                encoding:NSUTF8StringEncoding];
 }

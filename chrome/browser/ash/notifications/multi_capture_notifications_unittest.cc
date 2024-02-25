@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/notifications/multi_capture_notifications.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -26,7 +27,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
 
@@ -83,17 +83,17 @@ class MultiCaptureNotificationsTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  absl::optional<message_center::Notification> GetLoginNotification() {
+  std::optional<message_center::Notification> GetLoginNotification() {
     return tester_->GetNotification("multi_capture_on_login");
   }
 
-  absl::optional<message_center::Notification> GetCaptureNotification(
+  std::optional<message_center::Notification> GetCaptureNotification(
       const std::string& origin) {
     return tester_->GetNotification(base::StrCat({"multi_capture:", origin}));
   }
 
   void CheckCaptureNotification(const std::u16string& origin) {
-    absl::optional<message_center::Notification> notification =
+    std::optional<message_center::Notification> notification =
         GetCaptureNotification(base::UTF16ToUTF8(origin));
     ASSERT_TRUE(notification);
     EXPECT_EQ(origin + u" is recording your screen", notification->title());
@@ -127,7 +127,7 @@ TEST_F(MultiCaptureNotificationsTest, LoginNotificationTriggeredOnLogin) {
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       GetLoginNotification();
   ASSERT_TRUE(notification);
   EXPECT_EQ(u"Your screen might be recorded", notification->title());
@@ -150,7 +150,7 @@ TEST_F(MultiCaptureNotificationsTest,
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       GetLoginNotification();
   ASSERT_FALSE(notification);
   EXPECT_EQ(0u, notification_count_);
@@ -168,7 +168,7 @@ TEST_F(MultiCaptureNotificationsTest, LoginNotLoggedInNoNotification) {
       LoginState::LoggedInState::LOGGED_IN_NONE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       GetLoginNotification();
   ASSERT_FALSE(notification);
   EXPECT_EQ(0u, notification_count_);

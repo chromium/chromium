@@ -5,11 +5,11 @@
 #ifndef CONTENT_TEST_TEST_OVERSCROLL_DELEGATE_H_
 #define CONTENT_TEST_TEST_OVERSCROLL_DELEGATE_H_
 
+#include <optional>
 #include <vector>
 
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -44,11 +44,11 @@ class TestOverscrollDelegate : public OverscrollControllerDelegate {
                               OverscrollMode new_mode,
                               OverscrollSource source,
                               cc::OverscrollBehavior behavior) override;
-  absl::optional<float> GetMaxOverscrollDelta() const override;
+  std::optional<float> GetMaxOverscrollDelta() const override;
 
   gfx::Size display_size_;
 
-  absl::optional<float> delta_cap_;
+  std::optional<float> delta_cap_;
   OverscrollMode current_mode_;
   OverscrollMode completed_mode_;
   std::vector<OverscrollMode> historical_modes_;

@@ -10,13 +10,13 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/tasks/tasks_api_request_types.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
 #include "google_apis/tasks/tasks_api_url_generator_utils.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -26,7 +26,6 @@ namespace google_apis::tasks {
 namespace {
 
 constexpr char kContentTypeJson[] = "application/json; charset=utf-8";
-constexpr char kApiRequestBodyTaskStatusKey[] = "status";
 constexpr int kMaxAllowedMaxResults = 100;
 
 }
@@ -34,11 +33,11 @@ constexpr int kMaxAllowedMaxResults = 100;
 // ----- ListTaskListsRequest -----
 
 ListTaskListsRequest::ListTaskListsRequest(RequestSender* sender,
-                                           Callback callback,
-                                           const std::string& page_token)
+                                           const std::string& page_token,
+                                           Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)),
-      page_token_(page_token) {
+      page_token_(page_token),
+      callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
 }
 
@@ -99,13 +98,13 @@ void ListTaskListsRequest::OnDataParsed(std::unique_ptr<TaskLists> task_lists) {
 // ----- ListTasksRequest -----
 
 ListTasksRequest::ListTasksRequest(RequestSender* sender,
-                                   Callback callback,
                                    const std::string& task_list_id,
-                                   const std::string& page_token)
+                                   const std::string& page_token,
+                                   Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)),
       task_list_id_(task_list_id),
-      page_token_(page_token) {
+      page_token_(page_token),
+      callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
   CHECK(!task_list_id_.empty());
 }
@@ -167,15 +166,15 @@ void ListTasksRequest::OnDataParsed(std::unique_ptr<Tasks> tasks) {
 // ----- PatchTaskRequest -----
 
 PatchTaskRequest::PatchTaskRequest(RequestSender* sender,
-                                   Callback callback,
                                    const std::string& task_list_id,
                                    const std::string& task_id,
-                                   Task::Status status)
+                                   const TaskRequestPayload& payload,
+                                   Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)),
       task_list_id_(task_list_id),
       task_id_(task_id),
-      status_(status) {
+      payload_(payload),
+      callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
   CHECK(!task_list_id_.empty());
   CHECK(!task_id_.empty());
@@ -203,11 +202,7 @@ HttpRequestMethod PatchTaskRequest::GetRequestType() const {
 bool PatchTaskRequest::GetContentData(std::string* upload_content_type,
                                       std::string* upload_content) {
   *upload_content_type = kContentTypeJson;
-
-  base::Value::Dict root;
-  root.Set(kApiRequestBodyTaskStatusKey, Task::StatusToString(status_));
-
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = payload_.ToJson();
   return true;
 }
 
@@ -215,12 +210,121 @@ void PatchTaskRequest::ProcessURLFetchResults(
     const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
-  std::move(callback_).Run(GetErrorCode());
-  OnProcessURLFetchResultsComplete();
+  ApiErrorCode error = GetErrorCode();
+  switch (error) {
+    case HTTP_SUCCESS:
+      blocking_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&PatchTaskRequest::Parse, std::move(response_body)),
+          base::BindOnce(&PatchTaskRequest::OnDataParsed,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    default:
+      RunCallbackOnPrematureFailure(error);
+      OnProcessURLFetchResultsComplete();
+      break;
+  }
 }
 
 void PatchTaskRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
-  std::move(callback_).Run(error);
+  std::move(callback_).Run(base::unexpected(error));
+}
+
+// static
+std::unique_ptr<Task> PatchTaskRequest::Parse(std::string json) {
+  std::unique_ptr<base::Value> value = ParseJson(json);
+  return value ? Task::CreateFrom(*value) : nullptr;
+}
+
+void PatchTaskRequest::OnDataParsed(std::unique_ptr<Task> task) {
+  if (!task) {
+    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+  } else {
+    std::move(callback_).Run(std::move(task));
+  }
+  OnProcessURLFetchResultsComplete();
+}
+
+// ----- InsertTaskRequest -----
+
+InsertTaskRequest::InsertTaskRequest(RequestSender* sender,
+                                     const std::string& task_list_id,
+                                     const std::string& previous_task_id,
+                                     const TaskRequestPayload& payload,
+                                     Callback callback)
+    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+      task_list_id_(task_list_id),
+      previous_task_id_(previous_task_id),
+      payload_(payload),
+      callback_(std::move(callback)) {
+  CHECK(!task_list_id_.empty());
+  CHECK(callback_);
+}
+
+InsertTaskRequest::~InsertTaskRequest() = default;
+
+GURL InsertTaskRequest::GetURL() const {
+  return GetInsertTaskUrl(task_list_id_, previous_task_id_);
+}
+
+ApiErrorCode InsertTaskRequest::MapReasonToError(ApiErrorCode code,
+                                                 const std::string& reason) {
+  return code;
+}
+
+bool InsertTaskRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
+  return error == HTTP_SUCCESS || error == HTTP_CREATED;
+}
+
+HttpRequestMethod InsertTaskRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
+}
+
+bool InsertTaskRequest::GetContentData(std::string* upload_content_type,
+                                       std::string* upload_content) {
+  *upload_content_type = kContentTypeJson;
+  *upload_content = payload_.ToJson();
+  return true;
+}
+
+void InsertTaskRequest::ProcessURLFetchResults(
+    const network::mojom::URLResponseHead* response_head,
+    base::FilePath response_file,
+    std::string response_body) {
+  ApiErrorCode error = GetErrorCode();
+  switch (error) {
+    case HTTP_SUCCESS:
+    case HTTP_CREATED:
+      blocking_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&InsertTaskRequest::Parse, std::move(response_body)),
+          base::BindOnce(&InsertTaskRequest::OnDataParsed,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    default:
+      RunCallbackOnPrematureFailure(error);
+      OnProcessURLFetchResultsComplete();
+      break;
+  }
+}
+
+void InsertTaskRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
+  std::move(callback_).Run(base::unexpected(error));
+}
+
+// static
+std::unique_ptr<Task> InsertTaskRequest::Parse(std::string json) {
+  std::unique_ptr<base::Value> value = ParseJson(json);
+  return value ? Task::CreateFrom(*value) : nullptr;
+}
+
+void InsertTaskRequest::OnDataParsed(std::unique_ptr<Task> task) {
+  if (!task) {
+    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+  } else {
+    std::move(callback_).Run(std::move(task));
+  }
+  OnProcessURLFetchResultsComplete();
 }
 
 }  // namespace google_apis::tasks

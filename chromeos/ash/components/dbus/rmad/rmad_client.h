@@ -121,6 +121,22 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
       chromeos::DBusMethodCallback<rmad::RecordBrowserActionMetricReply>
           callback) = 0;
 
+  // Extracts the diagnostics app from external sources.
+  virtual void ExtractExternalDiagnosticsApp(
+      chromeos::DBusMethodCallback<rmad::ExtractExternalDiagnosticsAppReply>
+          callback) = 0;
+
+  // Installs the diagnostics app extracted by last
+  // `ExtractExternalDiagnosticsApp` call.
+  virtual void InstallExtractedDiagnosticsApp(
+      chromeos::DBusMethodCallback<rmad::InstallExtractedDiagnosticsAppReply>
+          callback) = 0;
+
+  // Gets the installed diagnostics app.
+  virtual void GetInstalledDiagnosticsApp(
+      chromeos::DBusMethodCallback<rmad::GetInstalledDiagnosticsAppReply>
+          callback) = 0;
+
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

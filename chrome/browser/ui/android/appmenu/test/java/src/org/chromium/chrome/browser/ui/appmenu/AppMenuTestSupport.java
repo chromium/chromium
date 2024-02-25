@@ -12,9 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Utility methods for performing operations on the app menu needed for testing.
- */
+/** Utility methods for performing operations on the app menu needed for testing. */
 public class AppMenuTestSupport {
     /**
      * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
@@ -27,9 +25,7 @@ public class AppMenuTestSupport {
                 .getMenuModelList();
     }
 
-    /**
-     * See {@link AppMenu#getMenuItemPropertyModel}
-     */
+    /** See {@link AppMenu#getMenuItemPropertyModel} */
     public static PropertyModel getMenuItemPropertyModel(
             AppMenuCoordinator coordinator, int itemId) {
         return ((AppMenuCoordinatorImpl) coordinator)
@@ -38,9 +34,7 @@ public class AppMenuTestSupport {
                 .getMenuItemPropertyModel(itemId);
     }
 
-    /**
-     * See {@link AppMenuHandlerImpl#onOptionsItemSelected(int)}.
-     */
+    /** See {@link AppMenuHandlerImpl#onOptionsItemSelected(int)}. */
     public static void onOptionsItemSelected(AppMenuCoordinator coordinator, int itemId) {
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
@@ -53,10 +47,11 @@ public class AppMenuTestSupport {
      * @param menuItemId The id of the menu item to click.
      */
     public static void callOnItemClick(AppMenuCoordinator coordinator, int menuItemId) {
-        PropertyModel model = ((AppMenuCoordinatorImpl) coordinator)
-                                      .getAppMenuHandlerImplForTesting()
-                                      .getAppMenu()
-                                      .getMenuItemPropertyModel(menuItemId);
+        PropertyModel model =
+                ((AppMenuCoordinatorImpl) coordinator)
+                        .getAppMenuHandlerImplForTesting()
+                        .getAppMenu()
+                        .getMenuItemPropertyModel(menuItemId);
 
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()

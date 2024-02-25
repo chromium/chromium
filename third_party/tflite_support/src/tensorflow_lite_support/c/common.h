@@ -190,10 +190,10 @@ typedef struct TfLiteSupportError {
   // Holds the error code.
   enum TfLiteSupportErrorCode code;
   // Detailed description of the error.
-  char* message;
+  char *message;
 } TfLiteSupportError;
 
-void TfLiteSupportErrorDelete(TfLiteSupportError* error);
+void TfLiteSupportErrorDelete(TfLiteSupportError *error);
 
 #ifdef __cplusplus
 }  // extern "C"

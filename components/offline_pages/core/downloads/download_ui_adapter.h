@@ -91,7 +91,7 @@ class DownloadUIAdapter : public OfflineContentProvider,
   void RemoveItem(const ContentId& id) override;
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
-  void ResumeDownload(const ContentId& id, bool has_user_gesture) override;
+  void ResumeDownload(const ContentId& id) override;
   void GetItemById(
       const ContentId& id,
       OfflineContentProvider::SingleItemCallback callback) override;

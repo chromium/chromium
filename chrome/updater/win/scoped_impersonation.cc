@@ -12,8 +12,9 @@
 namespace updater {
 
 HRESULT ScopedImpersonation::Impersonate(HANDLE token) {
-  if (!token)
+  if (!token) {
     return E_FAIL;
+  }
 
   result_ = ::ImpersonateLoggedOnUser(token) ? S_OK : HRESULTFromLastError();
   CHECK_EQ(result_, S_OK);
@@ -21,8 +22,9 @@ HRESULT ScopedImpersonation::Impersonate(HANDLE token) {
 }
 
 ScopedImpersonation::~ScopedImpersonation() {
-  if (result_ != S_OK)
+  if (result_ != S_OK) {
     return;
+  }
 
   CHECK(::RevertToSelf());
 }

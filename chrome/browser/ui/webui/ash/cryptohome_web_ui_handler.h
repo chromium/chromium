@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CRYPTOHOME_WEB_UI_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CRYPTOHOME_WEB_UI_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -12,7 +13,6 @@
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -41,9 +41,9 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
 
   void GotIsTPMTokenEnabledOnUIThread(bool is_tpm_token_enabled);
 
-  void OnIsMounted(absl::optional<user_data_auth::IsMountedReply> reply);
+  void OnIsMounted(std::optional<user_data_auth::IsMountedReply> reply);
   void OnPkcs11IsTpmTokenReady(
-      absl::optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply);
+      std::optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply);
 
   // This method is called when TpmManager D-Bus GetTpmNonsensitiveStatus call
   // completes.
@@ -53,7 +53,7 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
   // Called when Cryptohome D-Bus GetAuthFactorExtendedInfo call completes.
   // Gets requested AuthFactor with additional metadata in reply.
   void OnGetAuthFactorExtendedInfo(
-      absl::optional<user_data_auth::GetAuthFactorExtendedInfoReply> reply);
+      std::optional<user_data_auth::GetAuthFactorExtendedInfoReply> reply);
 
   // Sets textcontent of the element whose id is |destination_id| to |value|.
   void SetCryptohomeProperty(const std::string& destination_id,

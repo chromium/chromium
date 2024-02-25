@@ -5,10 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_COORDINATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_COORDINATOR_DELEGATE_H_
 
+#import "ios/chrome/browser/ui/settings/password/reauthentication/password_manager_reauthentication_delegate.h"
+
 @class PasswordSettingsCoordinator;
 
 // Delegate for PasswordSettingsCoordinator.
-@protocol PasswordSettingsCoordinatorDelegate
+@protocol PasswordSettingsCoordinatorDelegate <
+    PasswordManagerReauthenticationDelegate>
 
 // Called when the view controller was removed from navigation controller.
 - (void)passwordSettingsCoordinatorDidRemove:

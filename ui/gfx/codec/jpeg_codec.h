@@ -47,10 +47,13 @@ class CODEC_EXPORT JPEGCodec {
   // downsample: specifies how pixels will be sampled in the encoded JPEG image,
   //             can be either k420, k422 or k444.
   // quality: an integer in the range 0-100, where 100 is the highest quality.
+  // xmp_metadata: pointer to xmp metadata, or nullptr if there is no xmp
+  // metadata.
   static bool Encode(const SkPixmap& input,
                      int quality,
                      SkJpegEncoder::Downsample downsample,
-                     std::vector<unsigned char>* output);
+                     std::vector<unsigned char>* output,
+                     const SkData* xmp_metadata = nullptr);
 
   // Encodes the given raw 'input' pixmap, which includes a pointer to pixels
   // as well as information describing the pixel format. The encoded JPEG data

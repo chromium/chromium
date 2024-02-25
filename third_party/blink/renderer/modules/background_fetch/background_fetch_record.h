@@ -35,7 +35,7 @@ class MODULES_EXPORT BackgroundFetchRecord final : public ScriptWrappable {
   ~BackgroundFetchRecord() override;
 
   Request* request() const;
-  ScriptPromise responseReady(ScriptState* script_state);
+  ScriptPromiseTyped<Response> responseReady(ScriptState* script_state);
 
   // Updates |record_state_| from kPending to kAborted or kSettled. Must be
   // called when |record_state_| is kPending.
@@ -53,8 +53,7 @@ class MODULES_EXPORT BackgroundFetchRecord final : public ScriptWrappable {
   const KURL& ObservedUrl() const;
 
  private:
-  using ResponseReadyProperty =
-      ScriptPromiseProperty<Member<Response>, Member<DOMException>>;
+  using ResponseReadyProperty = ScriptPromiseProperty<Response, DOMException>;
 
   // Resolves a pending |response_ready_property_| with |response|, if it's not
   // null.

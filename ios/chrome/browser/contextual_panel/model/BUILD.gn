@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "contextual_panel_browser_agent.h",
+    "contextual_panel_browser_agent.mm",
+    "contextual_panel_model_service.h",
+    "contextual_panel_model_service.mm",
+    "contextual_panel_model_service_factory.h",
+    "contextual_panel_model_service_factory.mm",
+    "contextual_panel_tab_helper.h",
+    "contextual_panel_tab_helper.mm",
+  ]
+  deps = [
+    ":public",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+}
+
+source_set("public") {
+  sources = [
+    "contextual_panel_item_configuration.h",
+    "contextual_panel_model.h",
+  ]
+
+  deps = [ "//base" ]
+}

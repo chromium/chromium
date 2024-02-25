@@ -19,6 +19,12 @@ ui::ColorId GetThumbnailTabStripTabGroupColorId(
 ui::ColorId GetTabGroupDialogColorId(
     tab_groups::TabGroupColorId group_color_id);
 
+ui::ColorId GetSavedTabGroupForegroundColorId(
+    tab_groups::TabGroupColorId group_color_id);
+
+ui::ColorId GetSavedTabGroupOutlineColorId(
+    tab_groups::TabGroupColorId group_color_id);
+
 ui::ColorId GetTabGroupContextMenuColorId(
     tab_groups::TabGroupColorId group_color_id);
 

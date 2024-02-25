@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 #import "base/apple/foundation_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
-#import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
@@ -23,7 +23,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using password_manager::WarningType;
-using password_manager::features::IsPasswordCheckupEnabled;
 
 namespace {
 
@@ -32,7 +31,6 @@ constexpr CGFloat kVerticalSpacingBetweenItems = 8;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierHeader = kSectionIdentifierEnumZero,
-  SectionIdentifierContent,
   SectionIdentifierDismissedCredentialsButton,
   // Identifier of the section containing the first password issue when Password
   // Checkup is enabled. Subsequent password issues use incremental section
@@ -69,6 +67,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger _dismissedWarningsCount;
   // Type of insecure credentials displayed in the page.
   WarningType _warningType;
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 @end
@@ -89,7 +89,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.tableView.accessibilityIdentifier = kPasswordIssuesTableViewId;
+  self.tableView.accessibilityIdentifier = kPasswordIssuesTableViewID;
 
   [self loadModel];
 }
@@ -101,15 +101,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];
-
-  if (!IsPasswordCheckupEnabled()) {
-    [self loadModelLegacy];
-    return;
-  }
 
   TableViewModel* model = self.tableViewModel;
 
@@ -160,25 +155,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
         addSectionWithIdentifier:SectionIdentifierDismissedCredentialsButton];
     [model addItem:dismissedWarningsItem
         toSectionWithIdentifier:SectionIdentifierDismissedCredentialsButton];
-  }
-}
-
-// Legacy loadModel logic used when Password Checkup Feature is not enabled.
-- (void)loadModelLegacy {
-  CHECK(!IsPasswordCheckupEnabled());
-
-  TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierContent];
-  TableViewLinkHeaderFooterItem* headerItem = [self headerItem];
-
-  if (headerItem) {
-    [model setHeader:headerItem
-        forSectionWithIdentifier:SectionIdentifierContent];
-  }
-
-  for (PasswordIssue* password in _passwordGroups.firstObject.passwordIssues) {
-    [model addItem:[self passwordIssueItem:password]
-        toSectionWithIdentifier:SectionIdentifierContent];
   }
 }
 
@@ -250,7 +226,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   dismissedWarningsItem.accessibilityTraits = UIAccessibilityTraitButton;
   dismissedWarningsItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
-  dismissedWarningsItem.accessibilityIdentifier = kDismissedWarningsCellId;
+  dismissedWarningsItem.accessibilityIdentifier = kDismissedWarningsCellID;
   return dismissedWarningsItem;
 }
 
@@ -272,6 +248,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       PasswordIssueContentItem* passwordIssue =
           base::apple::ObjCCastStrict<PasswordIssueContentItem>(
               [model itemAtIndexPath:indexPath]);
+      base::RecordAction(
+          base::UserMetricsAction("MobilePasswordIssuesOpenPasswordDetails"));
       [self.presenter presentPasswordIssueDetails:passwordIssue.password];
       break;
     }
@@ -342,11 +320,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       // below it.
       return kVerticalSpacingBetweenItems;
 
-    case SectionIdentifierContent:
-      // Vertical spacing between the last item and its container in the legacy
-      // layout.
-      return kVerticalSpacingBetweenItems;
-
     case SectionIdentifierDismissedCredentialsButton:
       // Spacing between dismiss button and the bottom of the scrollable area.
       return kVerticalSpacingBetweenItems;
@@ -386,10 +359,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case SectionIdentifierHeader:
       // This section always has a header.
       NOTREACHED_NORETURN();
-
-    case SectionIdentifierContent:
-      // Keep legacy spacing when no header.
-      return [super tableView:tableView heightForHeaderInSection:section];
 
     case SectionIdentifierDismissedCredentialsButton:
       // Spacing to last password issue.
@@ -431,6 +400,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
              }];
 }
 
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordIssuesSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordIssuesSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  _settingsAreDismissed = YES;
+}
+
 #pragma mark - PasswordIssuesConsumer
 
 - (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordGroups
@@ -441,8 +428,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // User removed/resolved all issues, dismiss the vc and go back to the
   // previous screen.
-  if (IsPasswordCheckupEnabled() && passwordGroups.count == 0 &&
-      dismissedWarnings == 0) {
+  if (passwordGroups.count == 0 && dismissedWarnings == 0) {
     [self.presenter dismissAfterAllIssuesGone];
   }
 }

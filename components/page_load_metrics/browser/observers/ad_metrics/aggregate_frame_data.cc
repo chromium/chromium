@@ -24,6 +24,14 @@ void AggregateFrameData::UpdateCpuUsage(base::TimeTicks update_time,
     non_ad_peak_cpu_.UpdatePeakWindowedPercent(update, update_time);
 }
 
+void AggregateFrameData::UpdateFirstAdFCPSinceNavStart(
+    base::TimeDelta time_since_nav_start) {
+  if (!first_ad_fcp_after_main_nav_start_ ||
+      time_since_nav_start < first_ad_fcp_after_main_nav_start_.value()) {
+    first_ad_fcp_after_main_nav_start_ = time_since_nav_start;
+  }
+}
+
 void AggregateFrameData::ProcessResourceLoadInFrame(
     const mojom::ResourceDataUpdatePtr& resource,
     bool is_outermost_main_frame) {

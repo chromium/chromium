@@ -9,11 +9,14 @@
  */
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import type { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from './cr_policy_pref_mixin.js';
-import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
+import type { CrPolicyPrefMixinInterface} from './cr_policy_pref_mixin.js';
+import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
+import type { PrefControlMixinInterface} from './pref_control_mixin.js';
+import {PrefControlMixin} from './pref_control_mixin.js';
 
 // clang-format on
 
@@ -75,16 +78,15 @@ export const SettingsBooleanControlMixin = dedupingMixin(
             },
 
             /**
-             * For numeric prefs only, the integer value equivalent to the
-             * unchecked state. This is the value sent to prefs if the user
-             * unchecks the control. During initialization, the control is
-             * unchecked if and only if the pref value is equal to the this
-             * value. (Values 2, 3, 4, etc. all are checked.)
+             * For numeric prefs only. The integer values equivalent to the
+             * initial unchecked state. During initialization, the control is
+             * unchecked if and only if the pref value is equal to one of the
+             * values in the array. When sendPrefChange() is called the *first*
+             * value in this array will be sent to the backend.
              */
-            numericUncheckedValue: {
-              type: Number,
-              value: DEFAULT_UNCHECKED_VALUE,
-              reflectToAttribute: true,
+            numericUncheckedValues: {
+              type: Array,
+              value: () => [DEFAULT_UNCHECKED_VALUE],
             },
 
             /**
@@ -95,7 +97,6 @@ export const SettingsBooleanControlMixin = dedupingMixin(
             numericCheckedValue: {
               type: Number,
               value: DEFAULT_CHECKED_VALUE,
-              reflectToAttribute: true,
             },
           };
         }
@@ -110,7 +111,7 @@ export const SettingsBooleanControlMixin = dedupingMixin(
         noSetPref: boolean;
         label: string;
         subLabel: string;
-        numericUncheckedValue: number;
+        numericUncheckedValues: number[];
         numericCheckedValue: number;
 
         notifyChangedByUserInteraction() {
@@ -141,10 +142,11 @@ export const SettingsBooleanControlMixin = dedupingMixin(
           // a boolean or a number.
           if (this.pref!.type === chrome.settingsPrivate.PrefType.NUMBER) {
             assert(!this.inverted);
+            assert(this.numericUncheckedValues.length > 0);
             this.set(
                 'pref.value',
                 this.checked ? this.numericCheckedValue :
-                               this.numericUncheckedValue);
+                               this.numericUncheckedValues[0]);
             return;
           }
           this.set('pref.value', this.inverted ? !this.checked : this.checked);
@@ -159,10 +161,10 @@ export const SettingsBooleanControlMixin = dedupingMixin(
          */
         private getNewValue_(value: number|boolean): boolean {
           // For numeric prefs, the control is only false if the value is
-          // exactly equal to the unchecked-equivalent value.
+          // a member of `numericUncheckedValues` value.
           if (this.pref!.type === chrome.settingsPrivate.PrefType.NUMBER) {
             assert(!this.inverted);
-            return value !== this.numericUncheckedValue;
+            return !this.numericUncheckedValues.includes(value as number);
           }
           return this.inverted ? !value : !!value;
         }
@@ -184,7 +186,7 @@ export interface SettingsBooleanControlMixinInterface extends
   noSetPref: boolean;
   label: string;
   subLabel: string;
-  numericUncheckedValue: number;
+  numericUncheckedValues: number[];
   numericCheckedValue: number;
   controlDisabled(): boolean;
   notifyChangedByUserInteraction(): void;

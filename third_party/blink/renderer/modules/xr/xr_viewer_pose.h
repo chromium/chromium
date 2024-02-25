@@ -15,6 +15,9 @@ namespace blink {
 class XRFrame;
 class XRView;
 
+template <typename IDLType>
+class FrozenArray;
+
 class XRViewerPose final : public XRPose {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -25,12 +28,12 @@ class XRViewerPose final : public XRPose {
                         bool emulated_position);
   ~XRViewerPose() override = default;
 
-  const HeapVector<Member<XRView>>& views() const { return views_; }
+  const FrozenArray<XRView>& views() const { return *views_.Get(); }
 
   void Trace(Visitor*) const override;
 
  private:
-  HeapVector<Member<XRView>> views_;
+  Member<FrozenArray<XRView>> views_;
 };
 
 }  // namespace blink

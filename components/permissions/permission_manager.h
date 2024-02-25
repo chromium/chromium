@@ -34,6 +34,8 @@ class BrowserContext;
 class RenderFrameHost;
 class RenderProcessHost;
 class WebContents;
+struct PermissionRequestDescription;
+struct PermissionResult;
 }
 
 class GeolocationPermissionContextDelegateTests;
@@ -41,7 +43,6 @@ class SubscriptionInterceptingPermissionManager;
 
 namespace permissions {
 class PermissionContextBase;
-struct PermissionResult;
 class PermissionManagerTest;
 
 class PermissionManager : public KeyedService,
@@ -99,32 +100,21 @@ class PermissionManager : public KeyedService,
   PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
   // content::PermissionControllerDelegate implementation.
-  void RequestPermission(
-      blink::PermissionType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<void(PermissionStatus)> callback) override;
   void RequestPermissions(
-      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const content::PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
       override;
   void RequestPermissionsInternal(
-      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const content::PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback);
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   void RequestPermissionsFromCurrentDocument(
-      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      const content::PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
       override;
   PermissionStatus GetPermissionStatus(blink::PermissionType permission,
@@ -150,16 +140,16 @@ class PermissionManager : public KeyedService,
       const url::Origin& requesting_origin) override;
   bool IsPermissionOverridable(
       blink::PermissionType permission,
-      const absl::optional<url::Origin>& origin) override;
-  SubscriptionId SubscribePermissionStatusChange(
+      const std::optional<url::Origin>& origin) override;
+  SubscriptionId SubscribeToPermissionStatusChange(
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(PermissionStatus)> callback) override;
-  void UnsubscribePermissionStatusChange(
+  void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) override;
-  absl::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
+  std::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
       content::WebContents* web_contents) const override;
 
   // Called when a permission was decided for a given PendingRequest. The

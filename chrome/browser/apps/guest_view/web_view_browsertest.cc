@@ -20,7 +20,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -31,11 +33,12 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/extensions/identifiability_metrics_test_util.h"
+#include "chrome/browser/hid/chrome_hid_delegate.h"
+#include "chrome/browser/hid/hid_chooser_context.h"
+#include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
-#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
@@ -44,8 +47,8 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -62,7 +65,8 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
-#include "components/policy/policy_constants.h"
+#include "components/permissions/mock_chooser_controller_view.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -70,9 +74,9 @@
 #include "components/version_info/version_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/ax_event_notification_details.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/hid_chooser.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -82,13 +86,16 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
@@ -96,6 +103,7 @@
 #include "content/public/test/find_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -108,7 +116,6 @@
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
@@ -116,7 +123,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/identifiability_metrics.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -128,21 +135,29 @@
 #include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "services/device/public/mojom/hid.mojom.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/latency/latency_info.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/settings/public/constants/routes.mojom.h"  // nogncheck
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -301,7 +316,7 @@ class SelectControlWaiter : public aura::WindowObserver,
   SelectControlWaiter& operator=(const SelectControlWaiter&) = delete;
   ~SelectControlWaiter() override {
     aura::Env::GetInstance()->RemoveObserver(this);
-    for (auto* window : observed_windows_) {
+    for (aura::Window* window : observed_windows_) {
       window->RemoveObserver(this);
     }
   }
@@ -333,7 +348,7 @@ class SelectControlWaiter : public aura::WindowObserver,
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::set<aura::Window*> observed_windows_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> observed_windows_;
   bool wait_for_widget_shown_ = false;
 };
 
@@ -447,7 +462,7 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
   }
 
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override {
     checked_ = true;
     if (check_run_loop_)
@@ -572,7 +587,6 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
         std::make_unique<device::ScopedGeolocationOverrider>(10, 20);
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    identifiability_metrics_test_helper_.SetUpOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -580,6 +594,13 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
                                     "--expose-gc");
 
     extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Since LacrosAppsPublisherTest run without Ash, Lacros won't get
+    // the Ash extension keeplist data from Ash (passed via crosapi). Therefore,
+    // set empty ash keeplist for test.
+    extensions::SetEmptyAshKeeplistForTest();
+#endif
   }
 
   // Handles |request| by serving a redirect response if the |User-Agent| is
@@ -828,9 +849,6 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
 
   ~WebViewTest() override = default;
 
-  extensions::IdentifiabilityMetricsTestHelper
-      identifiability_metrics_test_helper_;
-
  private:
   bool UsesFakeSpeech() {
     const testing::TestInfo* const test_info =
@@ -859,44 +877,6 @@ using WebViewSizeTest = WebViewTest;
 using WebViewVisibilityTest = WebViewTest;
 using WebViewSpeechAPITest = WebViewTest;
 using WebViewAccessibilityTest = WebViewTest;
-
-// Used to test that enterprise policy can revert MPArch related changes. For
-// ease of testing, instead of further parameterizing the tests which actually
-// exercise the behaviour differences, we only check the method which computes
-// whether the changes take effect.
-class WebViewPolicyTest : public policy::PolicyTest {
- public:
-  WebViewPolicyTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kWebviewTagMPArchBehavior);
-  }
-
-  void SetPermissiveBehaviorPolicy(bool allowed) {
-    policy::PolicyMap policies;
-    SetPolicy(&policies,
-              policy::key::kChromeAppsWebViewPermissiveBehaviorAllowed,
-              base::Value(allowed));
-    UpdateProviderPolicy(policies);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebViewPolicyTest, MPArchBehaviorRevertedByPolicy) {
-  SetPermissiveBehaviorPolicy(true);
-
-  EXPECT_FALSE(
-      extensions::AreWebviewMPArchBehaviorsEnabled(browser()->profile()));
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewPolicyTest,
-                       ExplicitlyDisabledBehaviorPolicyHasNoEffect) {
-  SetPermissiveBehaviorPolicy(false);
-
-  EXPECT_TRUE(
-      extensions::AreWebviewMPArchBehaviorsEnabled(browser()->profile()));
-}
 
 class WebViewNewWindowTest : public WebViewTest,
                              public testing::WithParamInterface<bool> {
@@ -1027,6 +1007,61 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AudibilityStatePropagates) {
   EXPECT_FALSE(guest->IsCurrentlyAudible());
 }
 
+IN_PROC_BROWSER_TEST_F(WebViewTest, SetAudioMuted) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  LoadAppWithGuest("web_view/simple");
+
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  auto* web_view_guest = extensions::WebViewGuest::FromGuestViewBase(guest);
+  content::WebContents* owner_web_contents = GetEmbedderWebContents();
+
+  // The audio muted state for both WebContents and the WebViewGuest should be
+  // false.
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_FALSE(web_view_guest->IsAudioMuted());
+
+  // Verify that the audio muted state can change for the webview when the owner
+  // WebContents is unmuted.
+  web_view_guest->SetAudioMuted(true);
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+
+  web_view_guest->SetAudioMuted(false);
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_FALSE(web_view_guest->IsAudioMuted());
+
+  // Verify that the audio muted state changes to muted for the webview when the
+  // owner WebContents is muted, and WebViewGuest remembers the muted setting of
+  // the guest WebContents.
+  owner_web_contents->SetAudioMuted(true);
+  EXPECT_TRUE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+
+  web_view_guest->SetAudioMuted(true);
+  EXPECT_TRUE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+
+  // Verify that the audio muted state cannot change from muted for the webview
+  // when the owner WebContents is muted and the WebViewGuest remembers the set
+  // audio muted state for the guest.
+  web_view_guest->SetAudioMuted(false);
+  EXPECT_TRUE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+
+  // Verify that the audio muted state changes to the last set audio state for
+  // the webview when the owner WebContents changes to unmuted.
+  owner_web_contents->SetAudioMuted(false);
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_FALSE(web_view_guest->IsAudioMuted());
+
+  owner_web_contents->SetAudioMuted(true);
+  web_view_guest->SetAudioMuted(true);
+  owner_web_contents->SetAudioMuted(false);
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+}
+
 IN_PROC_BROWSER_TEST_F(WebViewTest, WebViewRespectsInsets) {
   LoadAppWithGuest("web_view/simple");
 
@@ -1105,7 +1140,14 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AutoplayPolicy) {
 }
 
 // This test exercises the webview spatial navigation API
-IN_PROC_BROWSER_TEST_F(WebViewTest, SpatialNavigationJavascriptAPI) {
+// TODO(https://crbug.com/1520415): Flaky timeouts on Mac and Cros.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_SpatialNavigationJavascriptAPI \
+  DISABLED_SpatialNavigationJavascriptAPI
+#else
+#define MAYBE_SpatialNavigationJavascriptAPI SpatialNavigationJavascriptAPI
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_SpatialNavigationJavascriptAPI) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSpatialNavigation);
 
@@ -1916,6 +1958,25 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
             unattached_guest_rfh->GetOutermostMainFrameOrEmbedder());
   EXPECT_EQ(embedder,
             unattached_guest->web_contents()->GetResponsibleWebContents());
+}
+
+// Creates a guest in a unattached state, then confirms that calling
+// the various view methods return null.
+IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+                       NewWindow_UnattachedVerifyViewMethods) {
+  TestHelper("testNewWindowDeferredAttachmentIndefinitely",
+             "web_view/newwindow", NEEDS_TEST_SERVER);
+  GetGuestViewManager()->WaitForNumGuestsCreated(2);
+
+  content::WebContents* embedder = GetEmbedderWebContents();
+  auto* unattached_guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  ASSERT_TRUE(unattached_guest);
+  ASSERT_EQ(embedder, unattached_guest->owner_web_contents());
+  ASSERT_FALSE(unattached_guest->attached());
+  ASSERT_FALSE(unattached_guest->embedder_web_contents());
+  ASSERT_FALSE(unattached_guest->web_contents()->GetNativeView());
+  ASSERT_FALSE(unattached_guest->web_contents()->GetContentNativeView());
+  ASSERT_FALSE(unattached_guest->web_contents()->GetTopLevelNativeWindow());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestContentLoadEvent) {
@@ -2831,8 +2892,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuLanguageSettings) {
 
   GURL page_url("http://www.google.com");
   std::unique_ptr<TestRenderViewContextMenu> menu(
-      TestRenderViewContextMenu::Create(GetGuestRenderFrameHost(), page_url,
-                                        GURL(), GURL()));
+      TestRenderViewContextMenu::Create(GetGuestRenderFrameHost(), page_url));
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS, 0);
 
   // Verify that a new WebContents has been created that is at the appropriate
@@ -2868,8 +2928,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenusAPI_Basic) {
   GURL page_url("http://www.google.com");
   // Create and build our test context menu.
   std::unique_ptr<TestRenderViewContextMenu> menu(
-      TestRenderViewContextMenu::Create(GetGuestRenderFrameHost(), page_url,
-                                        GURL(), GURL()));
+      TestRenderViewContextMenu::Create(GetGuestRenderFrameHost(), page_url));
   // Look for the extension item in the menu, and execute it.
   int command_id = ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
   ASSERT_TRUE(menu->IsCommandIdEnabled(command_id));
@@ -3125,6 +3184,152 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, PermissionsAPIEmbedderHasAccessDenyMedia) {
   TestHelper("testDenyMedia",
              "web_view/permissions_test/embedder_has_permission",
              NEEDS_TEST_SERVER);
+}
+
+class MockHidDelegate : public ChromeHidDelegate {
+ public:
+  // Simulates opening the HID device chooser dialog and selecting an item. The
+  // chooser automatically selects the device under index 0.
+  void OnWebViewHidPermissionRequestCompleted(
+      base::WeakPtr<HidChooser> chooser,
+      content::GlobalRenderFrameHostId embedder_rfh_id,
+      std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+      std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
+      content::HidChooser::Callback callback,
+      bool allow) override {
+    if (!allow) {
+      std::move(callback).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
+      return;
+    }
+
+    auto* render_frame_host = content::RenderFrameHost::FromID(embedder_rfh_id);
+    ASSERT_TRUE(render_frame_host);
+
+    chooser_controller_ = std::make_unique<HidChooserController>(
+        render_frame_host, std::move(filters), std::move(exclusion_filters),
+        std::move(callback));
+
+    mock_chooser_view_ =
+        std::make_unique<permissions::MockChooserControllerView>();
+    chooser_controller_->set_view(mock_chooser_view_.get());
+
+    EXPECT_CALL(*mock_chooser_view_.get(), OnOptionsInitialized)
+        .WillOnce(
+            testing::Invoke([this] { chooser_controller_->Select({0}); }));
+  }
+
+ private:
+  std::unique_ptr<HidChooserController> chooser_controller_;
+  std::unique_ptr<permissions::MockChooserControllerView> mock_chooser_view_;
+};
+
+class WebHidWebViewTest : public WebViewTest {
+  class TestContentBrowserClient : public ChromeContentBrowserClient {
+   public:
+    // ContentBrowserClient:
+    content::HidDelegate* GetHidDelegate() override { return &delegate_; }
+
+   private:
+    MockHidDelegate delegate_;
+  };
+
+ public:
+  WebHidWebViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kEnableWebHidInWebView);
+  }
+
+  ~WebHidWebViewTest() override {
+    content::SetBrowserClientForTesting(original_client_.get());
+  }
+
+  void SetUpOnMainThread() override {
+    WebViewTest::SetUpOnMainThread();
+    original_client_ = content::SetBrowserClientForTesting(&overriden_client_);
+    BindHidManager();
+    AddTestDevice();
+  }
+
+  void BindHidManager() {
+    mojo::PendingRemote<device::mojom::HidManager> pending_remote;
+    hid_manager_.Bind(pending_remote.InitWithNewPipeAndPassReceiver());
+    base::test::TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>>
+        devices_future;
+    auto* chooser_context =
+        HidChooserContextFactory::GetForProfile(browser()->profile());
+    chooser_context->SetHidManagerForTesting(std::move(pending_remote),
+                                             devices_future.GetCallback());
+    EXPECT_TRUE(devices_future.Wait());
+  }
+
+  void AddTestDevice() {
+    hid_manager_.CreateAndAddDevice("1", 0, 0, "Test HID Device", "",
+                                    device::mojom::HidBusType::kHIDBusTypeUSB);
+  }
+
+ private:
+  TestContentBrowserClient overriden_client_;
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
+  device::FakeHidManager hid_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebHidWebViewTest,
+                       PermissionsAPIEmbedderHasAccessAllowHid) {
+  ExtensionTestMessageListener activation_provider(
+      "performUserActivationInWebview");
+  activation_provider.SetOnSatisfied(
+      base::BindLambdaForTesting([&](const std::string&) {
+        // Activate the web view frame by executing a no-op script.
+        // This is needed because `requestDevice` method of HID API requires a
+        // window to satisfy the user activation requirement.
+        EXPECT_TRUE(content::ExecJs(
+            GetGuestViewManager()->GetLastGuestRenderFrameHostCreated(),
+            "// No-op script"));
+      }));
+  TestHelper("testAllowHid",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebHidWebViewTest,
+                       PermissionsAPIEmbedderHasAccessDenyHid) {
+  ExtensionTestMessageListener activation_provider(
+      "performUserActivationInWebview");
+  activation_provider.SetOnSatisfied(
+      base::BindLambdaForTesting([&](const std::string&) {
+        // Activate the web view frame by executing a no-op script.
+        // This is needed because `requestDevice` method of HID API requires a
+        // window to satisfy the user activation requirement.
+        EXPECT_TRUE(content::ExecJs(
+            GetGuestViewManager()->GetLastGuestRenderFrameHostCreated(),
+            "// No-op script"));
+      }));
+  TestHelper("testDenyHid", "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+}
+
+// Tests that closing the app window before the HID request is answered will
+// work correctly. This is meant to verify that no mojo callbacks will be
+// dropped in such case.
+IN_PROC_BROWSER_TEST_F(WebHidWebViewTest,
+                       PermissionsAPIEmbedderHasAccessCloseWindowHid) {
+  ExtensionTestMessageListener activation_provider(
+      "performUserActivationInWebview");
+  activation_provider.SetOnSatisfied(
+      base::BindLambdaForTesting([&](const std::string&) {
+        // Activate the web view frame by executing a no-op script.
+        // This is needed because `requestDevice` method of HID API requires a
+        // window to satisfy the user activation requirement.
+        EXPECT_TRUE(content::ExecJs(
+            GetGuestViewManager()->GetLastGuestRenderFrameHostCreated(),
+            "// No-op script"));
+      }));
+  TestHelper("testHidCloseWindow",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+  extensions::AppWindow* window = GetFirstAppWindow();
+  CloseAppWindow(window);
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest,
@@ -3523,7 +3728,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation) {
           download_manager, 2,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
 
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_TRUE(download->CanResume());
     EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
               download->GetLastReason());
@@ -3534,7 +3739,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::set<std::string> cookies;
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_EQ(download::DownloadItem::COMPLETE, download->GetState());
     ASSERT_TRUE(base::PathExists(download->GetTargetFilePath()));
     std::string content;
@@ -3631,7 +3836,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation_CrossSession) {
   // try to talk to the old EmbeddedTestServer instance. We need to update the
   // URL to point to the new instance, which should only differ by the port
   // number.
-  for (auto* download : saved_downloads) {
+  for (download::DownloadItem* download : saved_downloads) {
     const std::string port_string =
         base::NumberToString(embedded_test_server()->port());
     GURL::Replacements replacements;
@@ -3661,7 +3866,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation_CrossSession) {
       download_manager, 2,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_TRUE(download->CanResume());
     ASSERT_TRUE(download->GetFullPath().empty());
     ASSERT_TRUE(download::DOWNLOAD_INTERRUPT_REASON_CRASH ==
@@ -3874,17 +4079,7 @@ class WebViewCaptureTest : public WebViewTest {
   }
 };
 
-// TODO(crbug.com/1087381): Flaky on mac
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) ||             \
-    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-     defined(ADDRESS_SANITIZER))
-#define MAYBE_Shim_TestZoomAPI DISABLED_Shim_TestZoomAPI
-#else
-#define MAYBE_Shim_TestZoomAPI Shim_TestZoomAPI
-#endif
-IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_Shim_TestZoomAPI) {
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestZoomAPI) {
   TestHelper("testZoomAPI", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -3976,8 +4171,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestPerOriginZoomMode) {
   TestHelper("testPerOriginZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
-// TODO(crbug.com/935665): Test has flaky failures on all platforms.
-IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_Shim_TestPerViewZoomMode) {
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestPerViewZoomMode) {
   TestHelper("testPerViewZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -3994,13 +4188,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
   LoadAppWithGuest("web_view/simple");
 
   const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
-  content::NavigationController* guest_controller =
-      &GetGuestView()->GetController();
-  LoginPromptBrowserTestObserver login_observer;
-  login_observer.Register(
-      content::Source<content::NavigationController>(guest_controller));
-  WindowedAuthNeededObserver auth_needed(guest_controller);
-  WindowedAuthSuppliedObserver auth_supplied(guest_controller);
   // There are two navigations occurring here. The first fails due to the need
   // for auth. After it's supplied, a second navigation will succeed.
   content::TestNavigationObserver nav_observer(GetGuestWebContents(), 2);
@@ -4010,11 +4197,12 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
   EXPECT_TRUE(
       content::ExecJs(GetGuestRenderFrameHost(),
                       content::JsReplace("location.href = $1;", auth_url)));
-  auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
-  LoginHandler* login_handler = login_observer.handlers().front();
+  LoginHandler* login_handler =
+      LoginHandler::GetAllLoginHandlersForTest().front();
   login_handler->SetAuth(u"basicuser", u"secret");
-  auth_supplied.Wait();
   nav_observer.WaitForNavigationFinished();
 }
 
@@ -4023,18 +4211,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
   LoadAppWithGuest("web_view/simple");
 
   const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
-  content::NavigationController* guest_controller =
-      &GetGuestView()->GetController();
   content::NavigationController* tab_controller =
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  LoginPromptBrowserTestObserver login_observer;
-  login_observer.Register(
-      content::Source<content::NavigationController>(guest_controller));
-  login_observer.Register(
-      content::Source<content::NavigationController>(tab_controller));
-  WindowedAuthNeededObserver guest_auth_needed(guest_controller);
-  WindowedAuthNeededObserver tab_auth_needed(tab_controller);
-  WindowedAuthSuppliedObserver guest_auth_supplied(guest_controller);
   // There are two navigations occurring here. The first fails due to the need
   // for auth. After it's supplied, a second navigation will succeed.
   content::TestNavigationObserver guest_nav_observer(GetGuestWebContents(), 2);
@@ -4044,34 +4222,38 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
   EXPECT_TRUE(
       content::ExecJs(GetGuestRenderFrameHost(),
                       content::JsReplace("location.href = $1;", auth_url)));
-  guest_auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   // While the login UI is showing for the app, navigate a tab to the same URL
   // requiring auth.
   tab_controller->LoadURL(auth_url, content::Referrer(),
                           ui::PAGE_TRANSITION_TYPED, std::string());
-  tab_auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 2; }));
 
   // Both the guest and the tab should be prompting for credentials and the auth
   // challenge should be the same. Normally, the login code de-duplicates
   // identical challenges if multiple prompts are shown for them. However,
   // credentials can't be shared across StoragePartitions. So providing
   // credentials within the guest should not affect the tab.
-  ASSERT_EQ(2u, login_observer.handlers().size());
-  LoginHandler* guest_login_handler = login_observer.handlers().front();
-  LoginHandler* tab_login_handler = login_observer.handlers().back();
+  ASSERT_EQ(2u, LoginHandler::GetAllLoginHandlersForTest().size());
+  LoginHandler* guest_login_handler =
+      LoginHandler::GetAllLoginHandlersForTest().front();
+  LoginHandler* tab_login_handler =
+      LoginHandler::GetAllLoginHandlersForTest().back();
   EXPECT_EQ(tab_controller,
             &tab_login_handler->web_contents()->GetController());
   EXPECT_TRUE(guest_login_handler->auth_info().MatchesExceptPath(
       tab_login_handler->auth_info()));
 
   guest_login_handler->SetAuth(u"basicuser", u"secret");
-  guest_auth_supplied.Wait();
   guest_nav_observer.WaitForNavigationFinished();
 
   // The tab should still be prompting for credentials.
-  ASSERT_EQ(1u, login_observer.handlers().size());
-  EXPECT_EQ(tab_login_handler, login_observer.handlers().front());
+  ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
+  EXPECT_EQ(tab_login_handler,
+            LoginHandler::GetAllLoginHandlersForTest().front());
 }
 
 namespace {
@@ -4281,8 +4463,7 @@ IN_PROC_BROWSER_TEST_P(
   extensions::RulesRegistryService* registry_service =
       extensions::RulesRegistryService::Get(profile);
   extensions::TestRulesRegistry* rules_registry =
-      new extensions::TestRulesRegistry(content::BrowserThread::UI, "ui",
-                                        rules_registry_id);
+      new extensions::TestRulesRegistry("ui", rules_registry_id);
   registry_service->RegisterRulesRegistry(base::WrapRefCounted(rules_registry));
 
   EXPECT_TRUE(
@@ -4529,7 +4710,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
       extensions::ExtensionRegistry::Get(browser()->profile());
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(guest_url.host());
-  EXPECT_EQ(extensions::Feature::UNBLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kUnprivilegedExtension,
             process_map->GetMostLikelyContextType(
                 extension, guest_process->GetID(), &guest_url));
 }
@@ -4702,7 +4883,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
 
 // Makes sure that a webview will display correctly after reloading it after a
 // crash.
-IN_PROC_BROWSER_TEST_F(WebViewTest, ReloadAfterCrash) {
+// TODO(https://crbug.com/1494743): Flaky on Win,Mac,ChromeOS,Linux.
+IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_ReloadAfterCrash) {
   // Load guest and wait for it to appear.
   LoadAppWithGuest("web_view/simple");
 
@@ -4773,7 +4955,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTestNoDomAutomationController,
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, LoadWebViewAccessibility) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
   content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
@@ -4781,7 +4963,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, LoadWebViewAccessibility) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, FocusAccessibility) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
 
@@ -4816,7 +4998,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, FocusAccessibility) {
 // The test was disabled. See crbug.com/1141313.
 IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest,
                        DISABLED_FocusAccessibilityNestedFrame) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
 
@@ -4898,7 +5080,7 @@ class WebContentsAccessibilityEventWatcher
 };
 
 IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, DISABLED_TouchAccessibility) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/touch_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
   content::WebContents* guest_web_contents = GetGuestWebContents();
@@ -4994,14 +5176,18 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
   // Make sure wheel events don't get filtered.
   float scroll_magnitude = 15.f;
 
+  display::ScreenInfo screen_info =
+      GetGuestWebContents()->GetRenderWidgetHostView()->GetScreenInfo();
   {
     // Scroll the embedder from a position in the embedder that is not over
     // the guest.
-    gfx::Point embedder_scroll_location(
-        embedder_rect.x() + embedder_rect.width() / 2,
-        (embedder_rect.y() + guest_rect.y()) / 2);
+    gfx::Point embedder_scroll_location = gfx::ScaleToRoundedPoint(
+        gfx::Point(embedder_rect.x() + embedder_rect.width() / 2,
+                   (embedder_rect.y() + guest_rect.y()) / 2),
+        1 / screen_info.device_scale_factor);
 
-    gfx::PointF expected_offset(0.f, scroll_magnitude);
+    gfx::PointF expected_offset(
+        0.f, scroll_magnitude * screen_info.device_scale_factor);
 
     content::SimulateMouseEvent(embedder_contents,
                                 blink::WebInputEvent::Type::kMouseMove,
@@ -5024,8 +5210,9 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
   guest_rect.set_x(guest_rect.x() - embedder_rect.x());
   guest_rect.set_y(guest_rect.y() - embedder_rect.y());
   {
-    gfx::Point guest_scroll_location(guest_rect.x() + guest_rect.width() / 2,
-                                     guest_rect.y());
+    gfx::Point guest_scroll_location = gfx::ScaleToRoundedPoint(
+        gfx::Point(guest_rect.x() + guest_rect.width() / 2, guest_rect.y()),
+        1 / screen_info.device_scale_factor);
 
     content::SimulateMouseEvent(embedder_contents,
                                 blink::WebInputEvent::Type::kMouseMove,
@@ -5610,7 +5797,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebViewTest, ClassificationInGuest) {
 IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   base::RunLoop run_loop;
-  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
 
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest = GetGuestView()->GetGuestMainFrame();
@@ -5642,26 +5828,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   // The navigation should be aborted and the iframe should be left at its old
   // URL.
   EXPECT_EQ(webview_subframe->GetLastCommittedURL(), iframe_url);
-
-  // Check that a proper UKM event was logged for failed extension file access.
-  // First, find the source ID corresponding to the logged event, then make
-  // sure that the corresponding metric contains a failed
-  // ExtensionResourceAccessResult.
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
-          guest, &run_loop);
-  std::set<ukm::SourceId> source_ids = extensions::
-      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
-          merged_entries,
-          blink::IdentifiableSurface::Type::kExtensionFileAccess,
-          extension->id());
-  ASSERT_EQ(1u, source_ids.size());
-
-  const auto& entry = merged_entries[*source_ids.begin()];
-  ASSERT_EQ(1u, entry->metrics.size());
-  EXPECT_EQ(blink::IdentifiableToken(
-                extensions::ExtensionResourceAccessResult::kFailure),
-            entry->metrics.begin()->second);
 }
 
 class PopupWaiter : public content::WebContentsObserver {
@@ -6118,6 +6284,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageInSubframe) {
   // crash the browser.
   content::RenderFrameHost* guest_subframe =
       ChildFrameAt(GetGuestRenderFrameHost(), 0);
+  int initial_process_id = guest_subframe->GetProcess()->GetID();
   const GURL error_url = GURL("unknownscheme:foo");
   {
     content::TestFrameNavigationObserver load_observer(guest_subframe);
@@ -6133,6 +6300,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageInSubframe) {
     url::Origin error_origin = error_rfh->GetLastCommittedOrigin();
     EXPECT_TRUE(error_origin.opaque());
     EXPECT_FALSE(error_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid());
+
+    // The error page should not load in the initiator's process.
+    EXPECT_NE(initial_process_id, error_rfh->GetProcess()->GetID());
   }
 }
 
@@ -6785,25 +6955,6 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
   EXPECT_EQ(ff_rfh->GetProcess(), ff_rfh_2->GetProcess());
 }
 
-class WebViewPortalTest : public WebViewTest {
- public:
-  WebViewPortalTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPortals,
-                              blink::features::kPortalsCrossOrigin},
-        /*disabled_features=*/{});
-  }
-  ~WebViewPortalTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Creates and activates a <portal> element inside a <webview>.
-IN_PROC_BROWSER_TEST_F(WebViewPortalTest, PortalActivationInGuest) {
-  TestHelper("testActivatePortal", "web_view/shim", NEEDS_TEST_SERVER);
-}
-
 class WebViewUsbTest : public WebViewTest {
  public:
   WebViewUsbTest() = default;
@@ -6872,4 +7023,35 @@ IN_PROC_BROWSER_TEST_F(WebViewUsbTest, Shim_TestCannotReuseUsbPairedInTab) {
   // attempts to use the paired device. The granted permission should not be
   // available for that context.
   TestHelper("testCannotReuseUsbPairedInTab", "web_view/shim", NO_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestCannotRequestFonts) {
+  TestHelper("testCannotRequestFonts", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestCannotRequestFontsGrantedInTab) {
+  // We start the test server here, instead of in TestHelper, because we need
+  // to know the origin used in both the tab and webview before running the rest
+  // of the test.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL url = embedded_test_server()->GetURL("localhost", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Grant access to fonts from a tab.
+  permissions::MockPermissionPromptFactory tab_prompt_factory(
+      permissions::PermissionRequestManager::FromWebContents(tab_web_contents));
+  tab_prompt_factory.set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+  EXPECT_TRUE(content::ExecJs(tab_web_contents,
+                              R"((async () => {
+        await window.queryLocalFonts();
+      })())"));
+
+  // Have the embedder create a webview which navigates to the same origin and
+  // attempts to access fonts. The granted permission should not be
+  // available for that context.
+  TestHelper("testCannotRequestFonts", "web_view/shim", NO_TEST_SERVER);
 }

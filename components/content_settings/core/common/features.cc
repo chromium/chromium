@@ -9,13 +9,6 @@
 
 namespace content_settings {
 
-// Enables an improved UI for third-party cookie blocking in incognito mode.
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kImprovedCookieControls,
-             "ImprovedCookieControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
-
 // Enables auto dark feature in theme settings.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDarkenWebsitesCheckboxInThemesSetting,
@@ -31,6 +24,10 @@ namespace features {
 BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
              "SafetyCheckUnusedSitePermissions",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
+             "SafetyCheckUnusedSitePermissionsForSupportedChooserPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kActiveContentSettingExpiry,
              "ActiveContentSettingExpiry",
@@ -59,23 +56,60 @@ const base::FeatureParam<base::TimeDelta>
         &kSafetyCheckUnusedSitePermissions,
         "unused-site-permissions-revocation-cleanup-threshold", base::Days(30)};
 
-BASE_FEATURE(kUserBypassUI, "UserBypassUI", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserBypassUI, "UserBypassUI", base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kUserBypassUIExceptionExpiration{
     &kUserBypassUI, "expiration", base::Days(90)};
 
 const base::FeatureParam<int> kUserBypassUIReloadCount{&kUserBypassUI,
-                                                       "reload-count", 3};
+                                                       "reload-count", 2};
 
 const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadTime{
     &kUserBypassUI, "reload-time", base::Seconds(30)};
 
+const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadBubbleTimeout{
+    &kUserBypassUI, "reload-bubble-timeout", base::Seconds(5)};
+
+BASE_FEATURE(kUserBypassFeedback,
+             "UserBypassFeedback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kImprovedSemanticsActivityIndicators,
              "ImprovedSemanticsActivityIndicators",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLeftHandSideActivityIndicators,
+             "LeftHandSideActivityIndicators",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThirdPartyCookieDeprecationCookieSettings,
-             "ThirdPartyCookieDeprecationCookieSettings",
+BASE_FEATURE(kTrackingProtection3pcd,
+             "TrackingProtection3pcd",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
+
+BASE_FEATURE(kTpcdHeuristicsGrants,
+             "TpcdHeuristicsGrants",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
+    &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, true};
+
+BASE_FEATURE(kContentSettingsPartitioning,
+             "ContentSettingsPartitioning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kUseTestMetadataName[] = "UseTestMetadata";
+
+BASE_FEATURE(kHostIndexedMetadataGrants,
+             "HostIndexedMetadataGrants",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kUseTestMetadata{&kHostIndexedMetadataGrants,
+                                               kUseTestMetadataName, 0};
+
+BASE_FEATURE(kIndexedHostContentSettingsMap,
+             "IndexedHostContentSettingsMap",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

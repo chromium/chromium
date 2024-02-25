@@ -11,8 +11,8 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/cr.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '/shared/settings/controls/controlled_radio_button.js';
-import '/shared/settings/controls/settings_radio_group.js';
+import '../controls/controlled_radio_button.js';
+import '../controls/settings_radio_group.js';
 import '../simple_confirmation_dialog.js';
 import './search_engine_edit_dialog.js';
 import './search_engines_list.js';
@@ -20,17 +20,19 @@ import './omnibox_extension_entry.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {routes} from '../route.js';
 
-import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
+import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
+import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 import {getTemplate} from './search_engines_page.html.js';
 
 type SearchEngineEditEvent = CustomEvent<{
@@ -175,7 +177,7 @@ export class SettingsSearchEnginesPageElement extends
         'search-engines-changed', this.enginesChanged_.bind(this));
 
     this.addEventListener(
-        'edit-search-engine',
+        'view-or-edit-search-engine',
         e => this.onEditSearchEngine_(e as SearchEngineEditEvent));
 
     this.addEventListener(
@@ -236,15 +238,8 @@ export class SettingsSearchEnginesPageElement extends
 
   private enginesChanged_(searchEnginesInfo: SearchEnginesInfo) {
     this.defaultEngines = searchEnginesInfo.defaults;
-
-    // Sort |activeEngines| and |otherEngines| in alphabetical order.
-    this.activeEngines = searchEnginesInfo.actives.sort(
-        (a, b) => a.name.toLocaleLowerCase().localeCompare(
-            b.name.toLocaleLowerCase()));
-    this.otherEngines = searchEnginesInfo.others.sort(
-        (a, b) => a.name.toLocaleLowerCase().localeCompare(
-            b.name.toLocaleLowerCase()));
-
+    this.activeEngines = searchEnginesInfo.actives;
+    this.otherEngines = searchEnginesInfo.others;
     this.extensions = searchEnginesInfo.extensions;
   }
 

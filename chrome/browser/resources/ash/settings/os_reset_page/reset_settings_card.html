@@ -1,0 +1,58 @@
+<style include="settings-shared">
+  #powerwashIcon {
+    fill: var(--cros-sys-primary);
+    margin-inline-end: 16px;
+  }
+</style>
+
+<settings-card header-text="$i18n{resetPageTitle}">
+  <div class="settings-box two-line first">
+    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <iron-icon id="powerwashIcon" icon="os-settings:startup"></iron-icon>
+    </template>
+    <div class="start" id="title" aria-hidden="true">
+      $i18n{powerwashTitle}
+      <div class="secondary" id="secondaryText" aria-hidden="true">
+        $i18n{powerwashDescription}
+      </div>
+    </div>
+    <cr-button id="powerwashButton"
+        on-click="onShowPowerwashDialog_"
+        aria-labelledby="title"
+        aria-describedby="secondaryText"
+        aria-roledescription="$i18n{powerwashButtonRoleDescription}"
+        deep-link-focus-id$="[[Setting.kPowerwash]]">
+      $i18n{powerwashButton}
+    </cr-button>
+  </div>
+  <template is="dom-if" if="[[isSanitizeAllowed_]]">
+    <div class="settings-box two-line hr">
+      <div class="start" id="title" aria-hidden="true">
+        $i18n{sanitizeTitle}
+        <div class="secondary" id="secondaryText" aria-hidden="true">
+          $i18n{sanitizeShortDescription}
+        </div>
+      </div>
+      <cr-button id="sanitizeButton"
+          on-click="onShowSanitizeDialog_"
+          aria-labelledby="title"
+          aria-describedby="secondaryText"
+          deep-link-focus-id$="[[Setting.kSanitize]]">
+        $i18n{sanitizeButton}
+      </cr-button>
+    </div>
+  </template>
+</settings-card>
+<template is="dom-if" if="[[showPowerwashDialog_]]" restamp>
+  <os-settings-powerwash-dialog
+      installed-e-sim-profiles="[[installedESimProfiles_]]"
+      on-close="onPowerwashDialogClose_">
+  </os-settings-powerwash-dialog>
+</template>
+<template is="dom-if" if="[[isSanitizeAllowed_]]">
+  <template is="dom-if" if="[[showSanitizeDialog_]]" restamp>
+    <os-settings-sanitize-dialog
+        on-close="onSanitizeDialogClose_">
+    </os-settings-sanitize-dialog>
+  </template>
+</template>

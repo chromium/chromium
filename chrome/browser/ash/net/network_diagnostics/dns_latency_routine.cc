@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -85,8 +85,9 @@ double AverageLatency(const std::vector<base::TimeDelta>& latencies) {
 
 }  // namespace
 
-DnsLatencyRoutine::DnsLatencyRoutine()
-    : tick_clock_(base::DefaultTickClock::GetInstance()) {
+DnsLatencyRoutine::DnsLatencyRoutine(mojom::RoutineCallSource source)
+    : NetworkDiagnosticsRoutine(source),
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   profile_ = GetUserProfile();
   network_context_ =
       profile_->GetDefaultStoragePartition()->GetNetworkContext();
@@ -162,8 +163,8 @@ void DnsLatencyRoutine::AttemptNextResolution() {
 void DnsLatencyRoutine::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&
         endpoint_results_with_metadata) {
   resolution_complete_time_ = tick_clock_->NowTicks();
   const base::TimeDelta latency =

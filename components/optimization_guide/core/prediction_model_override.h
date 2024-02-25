@@ -17,9 +17,11 @@ namespace optimization_guide {
 // Attempts to parse the result from |GetModelOverrideForOptimizationTarget|
 // into a |proto::PredictionModel|, returning the result in the given callback
 // or nullptr if there was an error. In the event of an error, check LOG(ERROR).
+// Returns true if an override was present for the named target and false
+// otherwise.
 using OnPredictionModelBuiltCallback =
     base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>)>;
-void BuildPredictionModelFromCommandLineForOptimizationTarget(
+bool BuildPredictionModelFromCommandLineForOptimizationTarget(
     proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir,
     OnPredictionModelBuiltCallback callback);

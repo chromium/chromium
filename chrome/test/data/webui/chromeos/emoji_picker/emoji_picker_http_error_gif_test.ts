@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TRENDING_GROUP_ID} from 'chrome://emoji-picker/constants.js';
-import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {EmojiPickerApiProxy, EmojiSearch, TRENDING_GROUP_ID} from 'chrome://emoji-picker/emoji_picker.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {initialiseEmojiPickerForTest, waitForCondition} from './emoji_picker_test_util.js';
-import {TestEmojiPickerApiProxyErrorImpl} from './test_emoji_picker_offline_api_proxy.js';
+import {TestEmojiPickerApiProxyError} from './test_emoji_picker_offline_api_proxy.js';
 
 const CATEGORY_LIST = ['emoji', 'symbol', 'emoticon', 'gif'];
 function subcategoryGroupSelector(category: string, subcategory: string) {
@@ -19,8 +17,8 @@ function subcategoryGroupSelector(category: string, subcategory: string) {
 }
 
 suite('emoji-picker-offline-gif', () => {
-  const testEmojiPickerApiProxy = new TestEmojiPickerApiProxyErrorImpl();
-  EmojiPickerApiProxyImpl.setInstance(testEmojiPickerApiProxy);
+  const testEmojiPickerApiProxy = new TestEmojiPickerApiProxyError();
+  EmojiPickerApiProxy.setInstance(testEmojiPickerApiProxy);
   testEmojiPickerApiProxy.setHttpError();
   const {emojiPicker, findInEmojiPicker, readyPromise} =
       initialiseEmojiPickerForTest();
@@ -64,10 +62,9 @@ suite('emoji-picker-offline-gif', () => {
             findInEmojiPicker('#list-container', '#groups', 'emoji-error');
         assert(errorElement);
 
-        const genericErrorImage =
-            errorElement!.shadowRoot!.querySelector('.gif-error-container img');
-        assertEquals(
-            genericErrorImage!.getAttribute('src'), 'generic_error.svg');
+        const genericErrorImageNew =
+            errorElement!.shadowRoot!.querySelector('.gif-error-container svg');
+        assert(genericErrorImageNew);
 
         const errorText = errorElement!.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');
@@ -85,10 +82,9 @@ suite('emoji-picker-offline-gif', () => {
         const errorElement = results!.querySelector('.no-result > emoji-error');
         assert(errorElement);
 
-        const genericErrorImage =
-            errorElement!.shadowRoot!.querySelector('.gif-error-container img');
-        assertEquals(
-            genericErrorImage!.getAttribute('src'), 'generic_error.svg');
+        const genericErrorImageNew =
+            errorElement!.shadowRoot!.querySelector('.gif-error-container svg');
+        assert(genericErrorImageNew);
 
         const errorText = errorElement!.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');

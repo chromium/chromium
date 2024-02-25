@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_TEST_CALLBACK_RECEIVER_H_
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -15,14 +16,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 namespace internal {
 
 template <typename T>
-absl::optional<T> Nullopt() {
-  return absl::nullopt;
+std::optional<T> Nullopt() {
+  return std::nullopt;
 }
 
 class CallbackReceiverBase {
@@ -67,7 +67,7 @@ class CallbackReceiver : public internal::CallbackReceiverBase {
   // Get a result by its position in the arguments to Done().
   // Call GetResult() for the first argument or GetResult<I>().
   template <size_t I = 0>
-  typename std::tuple_element<I, std::tuple<absl::optional<T>...>>::type&
+  typename std::tuple_element<I, std::tuple<std::optional<T>...>>::type&
   GetResult() {
     return std::get<I>(results_);
   }
@@ -81,8 +81,8 @@ class CallbackReceiver : public internal::CallbackReceiverBase {
   // Get a result by its type. Won't compile if there is more than one matching
   // type.
   template <class C>
-  absl::optional<C>& GetResult() {
-    return std::get<absl::optional<C>>(results_);
+  std::optional<C>& GetResult() {
+    return std::get<std::optional<C>>(results_);
   }
 
  private:
@@ -90,7 +90,7 @@ class CallbackReceiver : public internal::CallbackReceiverBase {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  std::tuple<absl::optional<T>...> results_;
+  std::tuple<std::optional<T>...> results_;
   base::WeakPtrFactory<CallbackReceiver> weak_ptr_factory_{this};
 };
 

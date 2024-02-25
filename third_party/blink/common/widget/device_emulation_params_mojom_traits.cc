@@ -16,8 +16,10 @@ bool StructTraits<blink::mojom::DeviceEmulationParamsDataView,
       !data.ReadViewPosition(&out->view_position) ||
       !data.ReadViewSize(&out->view_size) ||
       !data.ReadViewportOffset(&out->viewport_offset) ||
-      !data.ReadWindowSegments(&out->window_segments))
+      !data.ReadWindowSegments(&out->window_segments) ||
+      !data.ReadDevicePosture(&out->device_posture)) {
     return false;
+  }
   out->screen_type = data.screen_type();
   out->device_scale_factor = data.device_scale_factor();
   out->scale = data.scale();

@@ -11,6 +11,8 @@ package org.chromium.chrome.browser;
 public class ChromeStringConstants {
     public static final String AUTOFILL_MANAGE_WALLET_CARD_URL =
             "https://payments.google.com/#paymentMethods";
+    public static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_URL_FOR_GPAY_WEB =
+            "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
     public static final String AUTOFILL_MANAGE_WALLET_ADDRESSES_URL =
             "https://payments.google.com/#paymentMethods";
     public static final String SYNC_DASHBOARD_URL = "https://www.google.com/settings/chrome/sync";

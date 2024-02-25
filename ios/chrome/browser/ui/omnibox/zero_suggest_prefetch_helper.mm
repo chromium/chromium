@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/zero_suggest_prefetch_helper.h"
 
 #import "base/feature_list.h"
-#import "components/omnibox/browser/omnibox_edit_model.h"
+#import "components/omnibox/browser/omnibox_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -39,17 +39,19 @@ using web::WebStateObserverBridge;
     _webStateListObserverBridge.reset();
     _webStateList = nullptr;
   }
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                           editModel:(OmniboxEditModel*)editModel {
+                          controller:(OmniboxController*)controller {
   self = [super init];
   if (self) {
     DCHECK(webStateList);
-    DCHECK(editModel);
+    DCHECK(controller);
 
     _webStateList = webStateList;
-    _editModel = editModel;
+    _controller = controller;
     _webStateObserverBridge = std::make_unique<WebStateObserverBridge>(self);
     _activeWebStateObservationForwarder =
         std::make_unique<ActiveWebStateObservationForwarder>(
@@ -57,6 +59,18 @@ using web::WebStateObserverBridge;
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserverBridge.get());
+
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(updateForAppWillForeground)
+               name:UIApplicationWillEnterForegroundNotification
+             object:nil];
+
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(updateForAppDidBackground)
+               name:UIApplicationDidEnterBackgroundNotification
+             object:nil];
 
     [self startPrefetchIfNecessary];
   }
@@ -90,7 +104,23 @@ using web::WebStateObserverBridge;
     return;
   }
 
-  self.editModel->StartPrefetch();
+  self.controller->StartZeroSuggestPrefetch();
+}
+
+/// Indicates to this tab helper that the app has entered a foreground state.
+- (void)updateForAppWillForeground {
+  self.controller->autocomplete_controller()
+      ->autocomplete_provider_client()
+      ->set_in_background_state(false);
+
+  [self startPrefetchIfNecessary];
+}
+
+/// Indicates to this tab helper that the app has entered a background state.
+- (void)updateForAppDidBackground {
+  self.controller->autocomplete_controller()
+      ->autocomplete_provider_client()
+      ->set_in_background_state(true);
 }
 
 @end

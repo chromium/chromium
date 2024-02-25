@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1000498691615767391">Изберете папка за отваряне</translation>
+<translation id="1014208178561091457">Файлът <ph name="FILE_NAME" /> не бе копиран, защото е шифрован.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> елемента се изтриват...</translation>
 <translation id="1049926623896334335">Документ в Word</translation>
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1060368002126861100">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги преместете в папката с файлове на Windows.</translation>
 <translation id="1062407476771304334">Замяна</translation>
+<translation id="1119383441774809183">Показване на текстовите съобщения</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
 <translation id="1120073797882051782">Хангъл, ромаджа</translation>
 <translation id="112387589102719461">Английски (САЩ) с клавиатура за програмисти (Дворак)</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Споделяне на папката с Parallels Desktop</translation>
 <translation id="1439919885608649279">Човек с цветя</translation>
 <translation id="1458457385801829801">Деактивиране на <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> файла не бяха копирани, защото са шифровани.</translation>
 <translation id="1471718551822868769">Словашки</translation>
 <translation id="1482884275703521657">Финландски</translation>
 <translation id="148466539719134488">Швейцарска клавиатура</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Португалски с американската международна клавиатура</translation>
 <translation id="1629521517399325891">Потребителският сертификат не може да се използва за удостоверяване в мрежа.</translation>
 <translation id="1641780993263690097">Китайски (пинин)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файла се правят налични офлайн</translation>
 <translation id="164969095109328410">Устройство с Chrome</translation>
 <translation id="1661207570040737402">Използвахте цялото хранилище за споделения си диск в Google Workspace.</translation>
 <translation id="1661867754829461514">Липсва PIN</translation>
@@ -275,9 +277,11 @@
 <translation id="3253225298092156258">Няма достъп</translation>
 <translation id="3254434849914415189">Избиране на приложението по подразбиране за файлове от тип <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Арабски</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> файла не бяха преместени, защото са шифровани.</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3272909651715601089">„<ph name="PATH" />“ не можа да се отвори</translation>
 <translation id="3280431534455935878">Подготвя се</translation>
+<translation id="3280719573299097127">Използвате мрежа с отчитане. Синхронизирането на файловете е поставено на пауза.</translation>
 <translation id="3280987981688031357">Грамофонна плоча</translation>
 <translation id="3290356915286466215">незащитена</translation>
 <translation id="3291218047831493686">Свържете се с тази мрежа, за да промените настройките за заключване на SIM картата</translation>
@@ -304,13 +308,13 @@
 <translation id="3475447146579922140">Електронна таблица в Google</translation>
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">Монголски</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> елемента се подготвят за синхронизиране...</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3523225005467146490">1 папка е споделена с(ъс) <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Внимание: Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3529424493985988200">За подробности се свържете с администратора си.</translation>
 <translation id="3548125359243647069">Въведохте грешен ПИН код твърде много пъти.</translation>
 <translation id="3549797760399244642">Към drive.google.com...</translation>
 <translation id="3553048479571901246">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги копирайте в папката с файлове на Windows.</translation>
@@ -327,6 +331,7 @@
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3619593063686672873">Няма скорошни видеоклипове</translation>
 <translation id="3634507049637220048">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, управлява се от администратора ви, подробности</translation>
+<translation id="36451918667380448">Мобилната мрежа е заключена от оператора. Обърнете се към него за поддръжка.</translation>
 <translation id="3645233063072417428">Преместихте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> избрани файла</translation>
 <translation id="3685122418104378273">Синхронизирането на Google Диск е деактивирано по подразбиране, когато се използват мобилни данни.</translation>
@@ -498,6 +503,7 @@
 <translation id="4935975195727477204">Газания</translation>
 <translation id="4943368462779413526">Футболна топка</translation>
 <translation id="4961158930123534723">1 папка е споделена с Parallels Desktop</translation>
+<translation id="4965874878399872778">Файловете се проверяват за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="496656650103537022">Възстановихте „<ph name="FILE_NAME" />“</translation>
 <translation id="4969785127455456148">Албум</translation>
 <translation id="4972330214479971536">Настройването на функцията за синхронизиране на файловете не завърши</translation>
@@ -553,9 +559,7 @@
 <translation id="5275973617553375938">Възстановени от Google Диск файлове</translation>
 <translation id="5278111733643988471">За да възстановите този елемент, преместете го с плъзгане в нова папка извън кошчето. Първоначалната му папка „<ph name="PARENT_FOLDER_NAME" />“ е изтрита.</translation>
 <translation id="5283101102242354279">Включване на разширение в режим „инкогнито“:</translation>
-<translation id="5286194356314741248">Сканира се</translation>
 <translation id="5288441970121584418">Хамбургер</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">Преместването на този файл е блокирано чрез администраторско правило</translation>
 <translation id="5305688511332277257">Няма инсталирани</translation>
 <translation id="5317780077021120954">Запазване</translation>
@@ -632,6 +636,7 @@
 <translation id="5838451609423551646">Премахнахте избора на всички елементи.</translation>
 <translation id="5838825566232597749">Американска (Уъркман) международна клавиатура</translation>
 <translation id="5845721951356578987">Медицинска сестра</translation>
+<translation id="5858478190805449225">Режимът за запазване на батерията е включен. Опитайте отново, когато е изключен.</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5861477046012235702">Геймър</translation>
 <translation id="5864471791310927901">Търсенето на DHCP сървър не бе успешно</translation>
@@ -698,11 +703,13 @@
 <translation id="637062427944097960">Този файл се отвори на друг работен плот. Преминете към <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), за да го прегледате.</translation>
 <translation id="6394388407447716302">Само за четене</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> елемента</translation>
+<translation id="6407769893376380348">Файлът <ph name="FILE_NAME" /> не бе преместен, защото е шифрован.</translation>
 <translation id="642282551015776456">Това име не може да се използва като име на файл или на папка</translation>
 <translation id="6423031066725912715">Виетнамски с клавиатура TCVN</translation>
 <translation id="6430271654280079150">Остава ви 1 опит.</translation>
 <translation id="643243556292470964">Изтритите файлове са преместени в кошчето</translation>
 <translation id="6438480100790416671">Мястото в хранилището се проверява…</translation>
+<translation id="6451527188465304418">Файлът се проверява за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="6485131920355264772">Извличането на информацията за мястото не бе успешно</translation>
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> се извлича в(ъв) „<ph name="FOLDER_NAME" />“</translation>
@@ -710,7 +717,6 @@
 <translation id="6503285896705205014">Копирането на <ph name="COUNT" /> файла е блокирано чрез администраторско правило</translation>
 <translation id="6509122719576673235">норвежки</translation>
 <translation id="6528513914570774834">Разрешаване на другите потребители на устройството да използват тази мрежа</translation>
-<translation id="653019979737152879">„<ph name="FILE_NAME" />“ се синхронизира...</translation>
 <translation id="6549689063733911810">Скорошни</translation>
 <translation id="6558280019477628686">Възникна грешка. Някои елементи може да не са изтрити.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />“ се изтрива...</translation>
@@ -844,7 +850,6 @@
 <translation id="7553492409867692754">Даване на приложенията за Linux на достъп до файловете в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7555339735447658365">Понастоящем сте офлайн. Синхронизирането на файловете ще се възобнови, когато имате връзка с интернет</translation>
 <translation id="7589661784326793847">Изчакайте само секунда</translation>
-<translation id="7592775719802218421">Файлът „<ph name="FILE_NAME" />“ се прави наличен офлайн</translation>
 <translation id="7600126690270271294">Сръбски</translation>
 <translation id="7603724359189955920">Решетки</translation>
 <translation id="7627790789328695202">Ами сега! Файлът „<ph name="FILE_NAME" />“ вече съществува. Преименувайте го и опитайте отново.</translation>
@@ -898,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Файловете в „Моят диск“ ще се синхронизират автоматично с вашия Chromebook, така че да можете да осъществявате достъп до тях без връзка с интернет.</translation>
 <translation id="7925247922861151263">Проверката за AAA не бе успешна</translation>
-<translation id="7925686952655276919">Без използване на мобилни данни за синхронизиране</translation>
 <translation id="7928710562641958568">Изваждане на устройството</translation>
 <translation id="7933875256234974853">Синхронизирането на файлове в Диск се подготвя...</translation>
 <translation id="7943385054491506837">Американска (Коулмак) клавиатура</translation>
@@ -921,6 +925,7 @@
 <translation id="8087576439476816834">Изтегляне на <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Споделени с мен</translation>
 <translation id="8116072619078571545">Вода с лед</translation>
+<translation id="8120392982188717723">Разрешаване на синхронизирането при мрежи с отчитане</translation>
 <translation id="8124093710070495550">Проблем при синхронизирането</translation>
 <translation id="8128733386027980860">Английски (САЩ) с клавиатура „Дворак“</translation>
 <translation id="8137331602592933310">Файлът „<ph name="FILENAME" />“ е споделен с вас. Не можете да го изтриете, защото не го притежавате.</translation>
@@ -928,6 +933,7 @@
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8147028810663464959">Ширината на знаците е пълна</translation>
 <translation id="8151638057146502721">Конфигуриране</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 грешка.}other{# грешки.}}</translation>
 <translation id="8154842056504218462">Избрахте всички елементи.</translation>
 <translation id="8157684860301034423">Извличането на информацията за приложението не бе успешно.</translation>
 <translation id="8175731104491895765">Френски (Белгия)</translation>
@@ -961,6 +967,7 @@
 <translation id="83651606385705612">Разрешете на <ph name="VM_NAME" /> да осъществява достъп до файловете в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="8372369524088641025">Ключът за WEP е неправилен</translation>
 <translation id="8372852072747894550">Гръцки</translation>
+<translation id="8377269993083688872">Оформления за имейл</translation>
 <translation id="8386903983509584791">Сканирането завърши</translation>
 <translation id="8387733224523483503">Елементът <ph name="FILE_NAME" /> е извлечен.</translation>
 <translation id="8395901698320285466">Размери</translation>
@@ -999,7 +1006,6 @@
 <translation id="8569764466147087991">Изберете файл за отваряне</translation>
 <translation id="8577897833047451336">Хърватски</translation>
 <translation id="8578308463707544055">Индонезийски</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> елемента се синхронизират...</translation>
 <translation id="8600173386174225982">Списъкът с файлове е превключен към изглед с миниизображения.</translation>
 <translation id="8601932370724196034">Файл с образ на Crostini</translation>
 <translation id="8609695766746872526">Исландски</translation>
@@ -1012,6 +1018,7 @@
 <translation id="8698877009525468705">Този файл е поверителен и е предмет на ограничения, наложени чрез администраторски правила.</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8713112442029511308">Малтийски</translation>
+<translation id="8714138378966541668">Заключено от доставчика</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Избрахте <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">хърватски</translation>
@@ -1019,6 +1026,7 @@
 <translation id="8787254343425541995">Разрешаване на прокси сървъри за споделените мрежи</translation>
 <translation id="8790981080411996443">Човек, който полива цветя</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 предупреждение.}other{# предупреждения.}}</translation>
 <translation id="8808686172382650546">Котка</translation>
 <translation id="8810671769985673465">Компресирането не бе успешно. Съществува елемент: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Испански (Испания)</translation>
@@ -1049,7 +1057,6 @@
 <translation id="9038620279323455325">Файлът „<ph name="FILE_NAME" />“ вече съществува. Моля, изберете друго име.</translation>
 <translation id="9046895021617826162">Свързването не бе успешно</translation>
 <translation id="9065512565307033593">Ако не успеете да потвърдите самоличността си, достъпът ви до мрежата ще бъде прекратен.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 предупреждение.}other{<ph name="COUNT" /> предупреждения.}}</translation>
 <translation id="908378762078012445">Руски с фонетична клавиатура AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизира се</translation>
 <translation id="9099674669267916096">Брой страници</translation>

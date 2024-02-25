@@ -6,13 +6,14 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
+#include "base/containers/map_util.h"
 #include "base/debug/alias.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -58,11 +59,12 @@ class FeatureProviderStatic {
   FeatureProviderStatic(const FeatureProviderStatic&) = delete;
   FeatureProviderStatic& operator=(const FeatureProviderStatic&) = delete;
 
-  FeatureProvider* GetFeatures(const std::string& name) const {
-    auto it = feature_providers_.find(name);
-    if (it == feature_providers_.end())
+  const FeatureProvider* GetFeatures(const std::string& name) const {
+    auto* provider = base::FindPtrOrNull(feature_providers_, name);
+    if (!provider) {
       CRASH_WITH_MINIDUMP("FeatureProvider \"" + name + "\" not found");
-    return it->second.get();
+    }
+    return provider;
   }
 
  private:
@@ -134,15 +136,14 @@ const Feature* FeatureProvider::GetBehaviorFeature(const std::string& name) {
 }
 
 const Feature* FeatureProvider::GetFeature(const std::string& name) const {
-  auto iter = features_.find(name);
-  return iter != features_.end() ? iter->second.get() : nullptr;
+  return base::FindPtrOrNull(features_, name);
 }
 
 const Feature* FeatureProvider::GetParent(const Feature& feature) const {
   if (feature.no_parent())
     return nullptr;
 
-  std::vector<base::StringPiece> split = base::SplitStringPiece(
+  std::vector<std::string_view> split = base::SplitStringPiece(
       feature.name(), ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (split.size() < 2)
     return nullptr;
@@ -176,22 +177,22 @@ const FeatureMap& FeatureProvider::GetAllFeatures() const {
   return features_;
 }
 
-void FeatureProvider::AddFeature(base::StringPiece name,
+void FeatureProvider::AddFeature(std::string_view name,
                                  std::unique_ptr<Feature> feature) {
   DCHECK(feature);
   const auto& map =
       ExtensionsClient::Get()->GetFeatureDelegatedAvailabilityCheckMap();
   if (!map.empty() && feature->RequiresDelegatedAvailabilityCheck()) {
-    auto it = map.find(feature->name());
-    if (it != map.end() && !it->second.is_null()) {
-      feature->SetDelegatedAvailabilityCheckHandler(it->second);
+    auto* handler = base::FindOrNull(map, feature->name());
+    if (handler && !handler->is_null()) {
+      feature->SetDelegatedAvailabilityCheckHandler(*handler);
     }
   }
 
   features_[std::string(name)] = std::move(feature);
 }
 
-void FeatureProvider::AddFeature(base::StringPiece name, Feature* feature) {
+void FeatureProvider::AddFeature(std::string_view name, Feature* feature) {
   AddFeature(name, base::WrapUnique(feature));
 }
 

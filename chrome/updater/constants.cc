@@ -73,6 +73,7 @@ const char kHealthCheckSwitch[] = "healthcheck";
 
 const char kEnterpriseSwitch[] = "enterprise";  // backward-compatibility.
 const char kSilentSwitch[] = "silent";          // backward-compatibility.
+const char kAlwaysLaunchCmdSwitch[] = "alwayslaunchcmd";
 const char kHandoffSwitch[] = "handoff";        // backward-compatibility.
 const char kOfflineDirSwitch[] = "offlinedir";  // backward-compatibility.
 const char kAppArgsSwitch[] = "appargs";        // backward-compatibility.
@@ -104,6 +105,7 @@ const char kDevOverrideKeyGroupPolicies[] = "group_policies";
 const char kDevOverrideKeyOverinstallTimeout[] = "overinstall_timeout";
 const char kDevOverrideKeyIdleCheckPeriodSeconds[] = "idle_check_period";
 const char kDevOverrideKeyManagedDevice[] = "managed_device";
+const char kDevOverrideKeyEnableDiffUpdates[] = "enable_diff_updates";
 
 // Policy Management constants.
 const char kProxyModeDirect[] = "direct";
@@ -117,10 +119,10 @@ const char kDownloadPreferenceCacheable[] = "cacheable";
 
 const char kUTF8BOM[] = "\xEF\xBB\xBF";
 
-const char kSourceGroupPolicyManager[] = "GroupPolicy";
-const char kSourceDMPolicyManager[] = "DeviceManagement";
-const char kSourceManagedPreferencePolicyManager[] = "ManagedPreference";
-const char kSourceDefaultValuesPolicyManager[] = "default";
+const char kSourceGroupPolicyManager[] = "Group Policy";
+const char kSourceDMPolicyManager[] = "Device Management";
+const char kSourceManagedPreferencePolicyManager[] = "Managed Preferences";
+const char kSourceDefaultValuesPolicyManager[] = "Default";
 const char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
 
 const char kSetupMutex[] = SETUP_MUTEX;

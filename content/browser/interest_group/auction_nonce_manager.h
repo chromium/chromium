@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

@@ -31,6 +31,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
+#include "net/base/features.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
@@ -43,8 +44,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <optional>
+
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -91,13 +93,13 @@ bool ShouldDisableDohForWindowsParentalControls() {
 bool ShouldEnableAsyncDns() {
   bool feature_can_be_enabled = true;
 #if BUILDFLAG(IS_ANDROID)
-  int min_sdk =
-      base::GetFieldTrialParamByFeatureAsInt(features::kAsyncDns, "min_sdk", 0);
+  int min_sdk = base::GetFieldTrialParamByFeatureAsInt(net::features::kAsyncDns,
+                                                       "min_sdk", 0);
   if (base::android::BuildInfo::GetInstance()->sdk_int() < min_sdk)
     feature_can_be_enabled = false;
 #endif
   return feature_can_be_enabled &&
-         base::FeatureList::IsEnabled(features::kAsyncDns);
+         base::FeatureList::IsEnabled(net::features::kAsyncDns);
 }
 
 }  // namespace
@@ -409,7 +411,7 @@ void StubResolverConfigReader::OnAndroidOwnedStateCheckComplete(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<std::string>
+std::optional<std::string>
 StubResolverConfigReader::GetDohWithIdentifiersDisplayServers() {
   ash::dns_over_https::TemplatesUriResolverImpl doh_template_uri_resolver;
   doh_template_uri_resolver.UpdateFromPrefs(local_state_);
@@ -417,6 +419,6 @@ StubResolverConfigReader::GetDohWithIdentifiersDisplayServers() {
   if (doh_template_uri_resolver.GetDohWithIdentifiersActive())
     return doh_template_uri_resolver.GetDisplayTemplates();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif

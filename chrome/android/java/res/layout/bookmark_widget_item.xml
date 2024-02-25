@@ -15,7 +15,16 @@ found in the LICENSE file.
     android:orientation="horizontal" >
 
     <ImageView
+        android:id="@+id/back_button"
+        android:layout_width="@dimen/bookmark_widget_min_width"
+        android:layout_height="@dimen/bookmark_widget_min_height"
+        android:scaleType="center"
+        android:contentDescription="@string/accessibility_toolbar_btn_back"
+        android:src="@drawable/ic_arrow_back_white_24dp" />
+
+    <ImageView
         android:id="@+id/favicon"
+        android:visibility="gone"
         android:layout_width="@dimen/bookmark_widget_min_width"
         android:layout_height="@dimen/bookmark_widget_min_height"
         tools:ignore="ContentDescription"

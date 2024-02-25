@@ -4,42 +4,49 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/omnibox_event_global_tracker.h"
+#import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/iph_for_new_chrome_user/utils.h"
-#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/model/utils.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -47,31 +54,37 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-const CGFloat kBubblePresentationDelay = 1;
+
+// Returns whether `view` could display and animate correctly within `guide`. If
+// NO, elements in `view` may be hidden or overlap with each other during the
+// animation.
+BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
+                                           UILayoutGuide* guide) {
+  CGSize guide_size = guide.layoutFrame.size;
+  CGSize view_fitting_size =
+      [view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+  return view_fitting_size.width <= guide_size.width &&
+         view_fitting_size.height <= guide_size.height;
+}
+
 }  // namespace
 
-@interface BubblePresenter () <SceneStateObserver, URLLoadingObserver>
+@interface BubblePresenter ()
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
 // `nil` if the tip bubble has not yet been presented. Once the bubble is
 // dismissed, it remains allocated so that `userEngaged` remains accessible.
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* bottomToolbarTipBubblePresenter;
-// Used to display the long press on toolbar buttons tip in-product help
-// promotion bubble. `nil` if the tip bubble has not yet been presented. Once
-// the bubble is dismissed, it remains allocated so that `userEngaged` remains
-// accessible.
-@property(nonatomic, strong)
-    BubbleViewControllerPresenter* longPressToolbarTipBubblePresenter;
 // Used to display the new tab tip in-product help promotion bubble. `nil` if
 // the new tab tip bubble has not yet been presented. Once the bubble is
 // dismissed, it remains allocated so that `userEngaged` remains accessible.
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* openNewTabIPHBubblePresenter;
 @property(nonatomic, strong)
+    BubbleViewControllerPresenter* sharePageIPHBubblePresenter;
+@property(nonatomic, strong)
     BubbleViewControllerPresenter* tabGridIPHBubblePresenter;
-@property(nonatomic, strong, readwrite)
-    BubbleViewControllerPresenter* incognitoTabTipBubblePresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* discoverFeedHeaderMenuTipBubblePresenter;
 @property(nonatomic, strong)
@@ -84,6 +97,13 @@ const CGFloat kBubblePresentationDelay = 1;
     BubbleViewControllerPresenter* whatsNewBubblePresenter;
 @property(nonatomic, strong) BubbleViewControllerPresenter*
     priceNotificationsWhileBrowsingBubbleTipPresenter;
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* lensKeyboardPresenter;
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* parcelTrackingTipBubblePresenter;
+@property(nonatomic, strong) GestureInProductHelpView* pullToRefreshGestureIPH;
+@property(nonatomic, strong)
+    GestureInProductHelpView* swipeBackForwardGestureIPH;
 @property(nonatomic, assign) WebStateList* webStateList;
 @property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 @property(nonatomic, assign) HostContentSettingsMap* settingsMap;
@@ -93,11 +113,10 @@ const CGFloat kBubblePresentationDelay = 1;
 @end
 
 @implementation BubblePresenter {
-  std::unique_ptr<UrlLoadingObserverBridge> _loadingObserverBridge;
-  UrlLoadingNotifierBrowserAgent* _loadingNotifier;
-
-  segmentation_platform::DeviceSwitcherResultDispatcher*
+  raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       _deviceSwitcherResultDispatcher;
+
+  raw_ptr<PrefService> _prefService;
 
   id<TabStripCommands> _tabStripCommandsHandler;
 }
@@ -109,9 +128,7 @@ const CGFloat kBubblePresentationDelay = 1;
         (segmentation_platform::DeviceSwitcherResultDispatcher*)
             deviceSwitcherResultDispatcher
                     hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                           loadingNotifier:(UrlLoadingNotifierBrowserAgent*)
-                                               urlLoadingNotifier
-                                sceneState:(SceneState*)sceneState
+                               prefService:(PrefService*)prefService
                    tabStripCommandsHandler:
                        (id<TabStripCommands>)tabStripCommandsHandler
                                    tracker:(feature_engagement::Tracker*)
@@ -119,106 +136,107 @@ const CGFloat kBubblePresentationDelay = 1;
                               webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
+    CHECK(prefService);
     DCHECK(webStateList);
-    DCHECK(urlLoadingNotifier);
 
     _webStateList = webStateList;
     _engagementTracker = engagementTracker;
     _settingsMap = settingsMap;
     _deviceSwitcherResultDispatcher = deviceSwitcherResultDispatcher;
+    _prefService = prefService;
     _tabStripCommandsHandler = tabStripCommandsHandler;
     self.started = YES;
-
-    _loadingObserverBridge = std::make_unique<UrlLoadingObserverBridge>(self);
-    _loadingNotifier = urlLoadingNotifier;
-    _loadingNotifier->AddObserver(_loadingObserverBridge.get());
-
-    [sceneState addObserver:self];
   }
   return self;
 }
 
 - (void)stop {
+  [self hideAllHelpBubbles];
   self.started = NO;
   self.webStateList = nullptr;
   self.engagementTracker = nullptr;
   self.settingsMap = nullptr;
-
-  _loadingNotifier->RemoveObserver(_loadingObserverBridge.get());
-  _loadingObserverBridge.reset();
-}
-
-- (void)showHelpBubbleIfEligible {
-  if (!self.engagementTracker) {
-    return;
-  }
-  // Waits to present the bubbles until the feature engagement tracker database
-  // is fully initialized.
-  __weak BubblePresenter* weakSelf = self;
-  void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
-    if (!successfullyLoaded)
-      return;
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW,
-                      (int64_t)(kBubblePresentationDelay * NSEC_PER_SEC)),
-        dispatch_get_main_queue(), ^{
-          [weakSelf presentBubbles];
-        });
-  };
-
-  // Because the new tab tip occurs on startup, the feature engagement
-  // tracker's database is not guaranteed to be loaded by this time. For the
-  // bubble to appear properly, a callback is used to guarantee the event data
-  // is loaded before the check to see if the promotion should be displayed.
-  self.engagementTracker->AddOnInitializedCallback(
-      base::BindRepeating(onInitializedBlock));
-}
-
-- (void)showLongPressHelpBubbleIfEligible {
-  if (!self.engagementTracker) {
-    return;
-  }
-  // Waits to present the bubble until the feature engagement tracker database
-  // is fully initialized.
-  __weak BubblePresenter* weakSelf = self;
-  void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
-    if (!successfullyLoaded)
-      return;
-    [weakSelf presentLongPressBubble];
-  };
-
-  // Because the new tab tip occurs on startup, the feature engagement
-  // tracker's database is not guaranteed to be loaded by this time. For the
-  // bubble to appear properly, a callback is used to guarantee the event data
-  // is loaded before the check to see if the promotion should be displayed.
-  self.engagementTracker->AddOnInitializedCallback(
-      base::BindRepeating(onInitializedBlock));
 }
 
 - (void)hideAllHelpBubbles {
   [self.openNewTabIPHBubblePresenter dismissAnimated:NO];
   [self.tabGridIPHBubblePresenter dismissAnimated:NO];
-  [self.incognitoTabTipBubblePresenter dismissAnimated:NO];
   [self.bottomToolbarTipBubblePresenter dismissAnimated:NO];
-  [self.longPressToolbarTipBubblePresenter dismissAnimated:NO];
   [self.discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
   [self.readingListTipBubblePresenter dismissAnimated:NO];
   [self.followWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [self.priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [self.whatsNewBubblePresenter dismissAnimated:NO];
+  [self.lensKeyboardPresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
+  [self.parcelTrackingTipBubblePresenter dismissAnimated:NO];
+  [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
+                                                      kUnknown];
 }
 
-// TODO(crbug.com/1448656): remove code.
-- (void)userEnteredTabSwitcher {
+- (void)handleTapOutsideOfVisibleGestureInProductHelp {
+  [self hideAllGestureInProductHelpViewsForReason:
+            IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
 }
 
-// TODO(crbug.com/1448656): remove code.
-- (void)toolsMenuDisplayed {
-  if (self.incognitoTabTipBubblePresenter.userEngaged) {
-    base::RecordAction(
-        base::UserMetricsAction("NewIncognitoTabTipTargetSelected"));
+- (void)presentShareButtonHelpBubbleIfEligible {
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
+          _deviceSwitcherResultDispatcher)) {
+    return;
   }
+
+  UIView* shareButtonView =
+      [_layoutGuideCenter referencedViewUnderName:kShareButtonGuide];
+  // Do not present if the share button is not visible.
+  if (!shareButtonView || shareButtonView.hidden) {
+    return;
+  }
+
+  // DCHECK if the type is not `CustomHighlightableButton`.
+  __weak CustomHighlightableButton* shareButton =
+      base::apple::ObjCCastStrict<CustomHighlightableButton>(shareButtonView);
+
+  // Do not present if button is disabled.
+  if (![shareButton isEnabled]) {
+    return;
+  }
+
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  BOOL isBottomOmnibox = IsBottomOmniboxSteadyStateEnabled() &&
+                         _prefService->GetBoolean(prefs::kBottomOmnibox);
+  BubbleArrowDirection arrowDirection =
+      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+  NSString* text =
+      l10n_util::GetNSStringWithFixup(IDS_IOS_SHARE_THIS_PAGE_IPH_TEXT);
+  NSString* announcement =
+      l10n_util::GetNSString(IDS_IOS_SHARE_THIS_PAGE_IPH_ANNOUNCEMENT);
+  CGPoint shareButtonAnchor = [self anchorPointToGuide:kShareButtonGuide
+                                             direction:arrowDirection];
+
+  auto presentAction = ^() {
+    [shareButton setCustomHighlighted:YES];
+  };
+  auto dismissAction = ^() {
+    [shareButton setCustomHighlighted:NO];
+  };
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHiOSShareToolbarItemFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentBottomOrTrailing
+                         text:text
+        voiceOverAnnouncement:announcement
+                  anchorPoint:shareButtonAnchor
+                presentAction:presentAction
+                dismissAction:dismissAction];
+  if (!presenter) {
+    return;
+  }
+
+  self.sharePageIPHBubblePresenter = presenter;
 }
 
 - (void)presentDiscoverFeedHeaderTipBubble {
@@ -370,51 +388,274 @@ const CGFloat kBubblePresentationDelay = 1;
   self.priceNotificationsWhileBrowsingBubbleTipPresenter = presenter;
 }
 
-#pragma mark - Private
+- (void)presentLensKeyboardTipBubble {
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
 
-- (void)presentBubbles {
-  // TODO(crbug.com/1448656): remove code.
-  if (!self.incognitoTabTipBubblePresenter.userEngaged)
-    [self presentNewIncognitoTabTipBubble];
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_LENS_KEYBOARD_IPH_TEXT);
+  CGPoint lensButtonAnchor = [self anchorPointToGuide:kLensKeyboardButtonGuide
+                                            direction:arrowDirection];
 
-  // TODO(crbug.com/1448656): remove code.
-  // The bottom toolbar and Discover feed header menu don't use the
-  // isUserEngaged, so don't check if the user is engaged here.
-  [self presentBottomToolbarTipBubble];
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHiOSLensKeyboardFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentTopOrLeading
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:lensButtonAnchor
+                presentAction:nil
+                dismissAction:nil];
+  if (!presenter) {
+    return;
+  }
+
+  self.lensKeyboardPresenter = presenter;
 }
 
-// TODO(crbug.com/1448656): remove code.
-- (void)presentLongPressBubble {
-  if (self.longPressToolbarTipBubblePresenter.userEngaged)
+- (void)presentParcelTrackingTipBubble {
+  if (![self canPresentBubble]) {
     return;
+  }
 
-  if (![self canPresentBubble])
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_IPH);
+
+  CGPoint magicStackAnchor = [self anchorPointToGuide:kMagicStackGuide
+                                            direction:arrowDirection];
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHiOSParcelTrackingFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentCenter
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:magicStackAnchor
+                presentAction:nil
+                dismissAction:nil];
+
+  if (!presenter) {
     return;
+  }
+
+  self.parcelTrackingTipBubblePresenter = presenter;
+}
+
+- (void)presentNewTabToolbarItemBubble {
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
+          _deviceSwitcherResultDispatcher)) {
+    return;
+  }
+
+  UIView* newTabToolbarView =
+      [_layoutGuideCenter referencedViewUnderName:kNewTabButtonGuide];
+  // Do not present if the new tab button is not visible.
+  if (!newTabToolbarView || newTabToolbarView.hidden) {
+    return;
+  }
+
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  // Do not present the new tab IPH on NTP.
+  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+  if (!currentWebState ||
+      currentWebState->GetVisibleURL() == kChromeUINewTabURL) {
+    return;
+  }
 
   BubbleArrowDirection arrowDirection =
       IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
                                                   : BubbleArrowDirectionUp;
   NSString* text =
-      l10n_util::GetNSString(IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT);
+      l10n_util::GetNSStringWithFixup(IDS_IOS_OPEN_NEW_TAB_IPH_TEXT);
+  std::u16string newTabButtonA11yLabel = base::SysNSStringToUTF16(
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB));
+  NSString* announcement = l10n_util::GetNSStringF(
+      IDS_IOS_OPEN_NEW_TAB_IPH_ANNOUNCEMENT, newTabButtonA11yLabel);
+  CGPoint newTabButtonAnchor = [self anchorPointToGuide:kNewTabButtonGuide
+                                              direction:arrowDirection];
+
+  __weak id<ToolbarCommands> weakToolbarCommandsHandler =
+      _toolbarCommandsHandler;
+  __weak id<TabStripCommands> weakTabStripCommandsHandler =
+      _tabStripCommandsHandler;
+
+  // TODO(crbug.com/1439920): refactor to use CustomHighlightableButton API.
+  ProceduralBlock presentAction = ^{
+    [weakTabStripCommandsHandler setNewTabButtonOnTabStripIPHHighlighted:YES];
+    [weakToolbarCommandsHandler setNewTabButtonIPHHighlighted:YES];
+  };
+  ProceduralBlock dismissAction = ^{
+    [weakTabStripCommandsHandler setNewTabButtonOnTabStripIPHHighlighted:NO];
+    [weakToolbarCommandsHandler setNewTabButtonIPHHighlighted:NO];
+  };
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the new tab tip, then end early to prevent the potential reassignment
+  // of the existing `openNewTabIPHBubblePresenter` to nil.
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::
+                                        kIPHiOSNewTabToolbarItemFeature
+                          direction:arrowDirection
+                          alignment:BubbleAlignmentBottomOrTrailing
+                               text:text
+              voiceOverAnnouncement:announcement
+                        anchorPoint:newTabButtonAnchor
+                      presentAction:presentAction
+                      dismissAction:dismissAction];
+  if (!presenter) {
+    return;
+  }
+
+  self.openNewTabIPHBubblePresenter = presenter;
+}
+
+// Optionally presents a bubble associated with the tab grid iph. If the feature
+// engagement tracker determines it is valid to show the new tab tip, then it
+// initializes `tabGridIPHBubblePresenter` and presents the bubble. If it is
+// not valid to show the new tab tip, `tabGridIPHBubblePresenter` is set to
+// `nil` and no bubble is shown. This method requires that `self.browserState`
+// is not NULL.
+- (void)presentTabGridToolbarItemBubble {
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
+          _deviceSwitcherResultDispatcher)) {
+    return;
+  }
+
+  UIView* tabGridToolbarView =
+      [_layoutGuideCenter referencedViewUnderName:kNewTabButtonGuide];
+  // Do not present if the tab grid button is not visible.
+  if (!tabGridToolbarView || tabGridToolbarView.hidden) {
+    return;
+  }
+
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  // only present the IPH when tab count > 1.
+  if (self.webStateList->count() <= 1) {
+    return;
+  }
+
+  BubbleArrowDirection arrowDirection =
+      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
+                                                  : BubbleArrowDirectionUp;
+  NSString* text =
+      l10n_util::GetNSStringWithFixup(IDS_IOS_SEE_ALL_OPEN_TABS_IPH_TEXT);
+  NSString* announcement =
+      l10n_util::GetNSString(IDS_IOS_SEE_ALL_OPEN_TABS_IPH_ANNOUNCEMENT);
   CGPoint tabGridButtonAnchor = [self anchorPointToGuide:kTabSwitcherGuide
                                                direction:arrowDirection];
 
-  // If the feature engagement tracker does not consider it valid to display
-  // the tip, then end early to prevent the potential reassignment of the
-  // existing `longPressToolbarTipBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHLongPressToolbarTipFeature
-                    direction:arrowDirection
-                         text:text
-        voiceOverAnnouncement:
-            l10n_util::GetNSString(
-                IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_VOICE_OVER)
-                  anchorPoint:tabGridButtonAnchor];
-  if (!presenter)
-    return;
+  __weak id<ToolbarCommands> weakToolbarCommandsHandler =
+      _toolbarCommandsHandler;
+  // TODO(crbug.com/1439920): refactor to use CustomHighlightableButton API.
+  auto presentAction = ^() {
+    [weakToolbarCommandsHandler setTabGridButtonIPHHighlighted:YES];
+  };
+  auto dismissAction = ^() {
+    [weakToolbarCommandsHandler setTabGridButtonIPHHighlighted:NO];
+  };
 
-  self.longPressToolbarTipBubblePresenter = presenter;
+  // If the feature engagement tracker does not consider it valid to display
+  // the new tab tip, then end early to prevent the potential reassignment
+  // of the existing `tabGridIPHBubblePresenter` to nil.
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::
+                                        kIPHiOSTabGridToolbarItemFeature
+                          direction:arrowDirection
+                          alignment:BubbleAlignmentBottomOrTrailing
+                               text:text
+              voiceOverAnnouncement:announcement
+                        anchorPoint:tabGridButtonAnchor
+                      presentAction:presentAction
+                      dismissAction:dismissAction];
+  if (!presenter) {
+    return;
+  }
+
+  self.tabGridIPHBubblePresenter = presenter;
 }
+
+- (void)presentPullToRefreshGestureInProductHelp {
+  if (UIAccessibilityIsVoiceOverRunning() || (![self canPresentBubble])) {
+    // TODO(crbug.com/1521489): Add voice over announcement once fixed.
+    return;
+  }
+  const base::Feature& pullToRefreshFeature =
+      feature_engagement::kIPHiOSPullToRefreshFeature;
+  BOOL userEligibleForPullToRefreshIPH =
+      iph_for_new_chrome_user::IsUserNewSafariSwitcher(
+          _deviceSwitcherResultDispatcher) &&
+      self.engagementTracker->WouldTriggerHelpUI(pullToRefreshFeature);
+  if (!userEligibleForPullToRefreshIPH) {
+    return;
+  }
+  __weak BubblePresenter* weakSelf = self;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_PULL_TO_REFRESH_IPH);
+  ProceduralBlock resetPullToRefreshGestureIPH = ^{
+    weakSelf.pullToRefreshGestureIPH = nil;
+  };
+  self.pullToRefreshGestureIPH =
+      [self presentGestureInProductHelpForFeature:pullToRefreshFeature
+                                        direction:BubbleArrowDirectionUp
+                                             text:text
+                                    dismissAction:resetPullToRefreshGestureIPH];
+  [self.pullToRefreshGestureIPH startAnimation];
+}
+
+- (void)presentBackForwardSwipeGestureInProductHelp {
+  if (UIAccessibilityIsVoiceOverRunning() ||
+      (![self canPresentBubbleWithCheckTabScrolledToTop:NO])) {
+    return;
+  }
+  const base::Feature& backForwardSwipeFeature =
+      feature_engagement::kIPHiOSSwipeBackForwardFeature;
+  BOOL userEligible =
+      IsFirstRunRecent(base::Days(60)) &&
+      self.engagementTracker->WouldTriggerHelpUI(backForwardSwipeFeature);
+  if (!userEligible) {
+    return;
+  }
+
+  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+  if (currentWebState->GetVisibleURL() == kChromeUINewTabURL) {
+    return;
+  }
+
+  // Retrieve swipe-able directions.
+  const web::NavigationManager* navigationManager =
+      currentWebState->GetNavigationManager();
+  BOOL back = navigationManager->CanGoBack();
+  BOOL forward = navigationManager->CanGoForward();
+  int textId = IDS_IOS_BACK_FORWARD_SWIPE_IPH_BACK_ONLY;
+  if (forward) {
+    textId = back ? IDS_IOS_BACK_FORWARD_SWIPE_IPH
+                  : IDS_IOS_BACK_FORWARD_SWIPE_IPH_FORWARD_ONLY;
+  }
+
+  __weak BubblePresenter* weakSelf = self;
+  ProceduralBlock resetSwipeBackForwardGestureIPH = ^{
+    weakSelf.swipeBackForwardGestureIPH = nil;
+  };
+  self.swipeBackForwardGestureIPH = [self
+      presentGestureInProductHelpForFeature:backForwardSwipeFeature
+                                  direction:back ? BubbleArrowDirectionLeading
+                                                 : BubbleArrowDirectionTrailing
+                                       text:l10n_util::GetNSString(textId)
+                              dismissAction:resetSwipeBackForwardGestureIPH];
+  if (back && forward) {
+    self.swipeBackForwardGestureIPH.animationRepeatCount = 4;
+    self.swipeBackForwardGestureIPH.bidirectional = YES;
+  }
+  [self.swipeBackForwardGestureIPH startAnimation];
+}
+
+#pragma mark - Private
 
 // Convenience method that calls -presentBubbleForFeature with default param
 // values for `alignment`, `presentAction`, and `dismissAction`.
@@ -452,8 +693,9 @@ const CGFloat kBubblePresentationDelay = 1;
                             alignment:alignment
                                  text:text
                         dismissAction:dismissAction];
-  if (!presenter)
+  if (!presenter) {
     return nil;
+  }
   presenter.voiceOverAnnouncement = voiceOverAnnouncement;
   if ([presenter canPresentInView:self.rootViewController.view
                       anchorPoint:anchorPoint] &&
@@ -469,194 +711,14 @@ const CGFloat kBubblePresentationDelay = 1;
   return presenter;
 }
 
-// TODO(crbug.com/1448656): remove code.
-// Presents a bubble associated with the bottom toolbar tip in-product help
-// promotion.
-- (void)presentBottomToolbarTipBubble {
-  if (!IsSplitToolbarMode(self.rootViewController))
-    return;
-
-  if (![self canPresentBubble])
-    return;
-
-  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
-  NSString* text = l10n_util::GetNSStringWithFixup(
-      IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_TEXT);
-  CGPoint newTabButtonAnchor = [self anchorPointToGuide:kNewTabButtonGuide
-                                              direction:arrowDirection];
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the tip, then end early to prevent the potential reassignment of the
-  // existing `bottomToolbarTipBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHBottomToolbarTipFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentCenter
-                         text:text
-        voiceOverAnnouncement:
-            l10n_util::GetNSString(
-                IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_VOICE_OVER)
-                  anchorPoint:newTabButtonAnchor
-                presentAction:nil
-                dismissAction:nil];
-  if (!presenter)
-    return;
-
-  self.bottomToolbarTipBubblePresenter = presenter;
-  self.engagementTracker->NotifyEvent(
-      feature_engagement::events::kBottomToolbarOpened);
-}
-
-// Optionally presents a bubble associated with the new tab iph. If the feature
-// engagement tracker determines it is valid to show the new tab tip, then it
-// initializes `openNewTabIPHBubblePresenter` and presents the bubble. If it is
-// not valid to show the new tab tip, `openNewTabIPHBubblePresenter` is set to
-// `nil` and no bubble is shown. This method requires that `self.browserState`
-// is not NULL.
-- (void)presentNewTabToolbarItemBubble {
-  if (!iph_for_new_chrome_user::IsUserEligible(
-          _deviceSwitcherResultDispatcher)) {
-    return;
-  }
-
-  if (![self canPresentBubble])
-    return;
-
-  // Do not present the new tab IPH on NTP.
-  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
-  if (!currentWebState ||
-      currentWebState->GetVisibleURL() == kChromeUINewTabURL) {
-    return;
-  }
-
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
-  NSString* text =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_OPEN_NEW_TAB_IPH_TEXT);
-  CGPoint newTabButtonAnchor = [self anchorPointToGuide:kNewTabButtonGuide
-                                              direction:arrowDirection];
-
-  __weak id<ToolbarCommands> weakToolbarCommandsHandler =
-      _toolbarCommandsHandler;
-  __weak id<TabStripCommands> weakTabStripCommandsHandler =
-      _tabStripCommandsHandler;
-
-  ProceduralBlock presentAction = ^{
-    [weakTabStripCommandsHandler setNewTabButtonOnTabStripIPHHighlighted:YES];
-    [weakToolbarCommandsHandler setNewTabButtonIPHHighlighted:YES];
-  };
-  ProceduralBlock dismissAction = ^{
-    [weakTabStripCommandsHandler setNewTabButtonOnTabStripIPHHighlighted:NO];
-    [weakToolbarCommandsHandler setNewTabButtonIPHHighlighted:NO];
-  };
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the new tab tip, then end early to prevent the potential reassignment
-  // of the existing `openNewTabIPHBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter =
-      [self presentBubbleForFeature:feature_engagement::
-                                        kIPHiOSNewTabToolbarItemFeature
-                          direction:arrowDirection
-                          alignment:BubbleAlignmentBottomOrTrailing
-                               text:text
-              voiceOverAnnouncement:text
-                        anchorPoint:newTabButtonAnchor
-                      presentAction:presentAction
-                      dismissAction:dismissAction];
-  if (!presenter)
-    return;
-
-  self.openNewTabIPHBubblePresenter = presenter;
-}
-
-// Optionally presents a bubble associated with the tab grid iph. If the feature
-// engagement tracker determines it is valid to show the new tab tip, then it
-// initializes `tabGridIPHBubblePresenter` and presents the bubble. If it is
-// not valid to show the new tab tip, `tabGridIPHBubblePresenter` is set to
-// `nil` and no bubble is shown. This method requires that `self.browserState`
-// is not NULL.
-- (void)presentTabGridToolbarItemBubble {
-  if (!iph_for_new_chrome_user::IsUserEligible(
-          _deviceSwitcherResultDispatcher)) {
-    return;
-  }
-
-  if (![self canPresentBubble]) {
-    return;
-  }
-
-  // only present the IPH when tab count > 1.
-  if (self.webStateList->count() <= 1) {
-    return;
-  }
-
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
-  NSString* text =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_SEE_ALL_OPEN_TABS_IPH_TEXT);
-  CGPoint tabGridButtonAnchor = [self anchorPointToGuide:kTabSwitcherGuide
-                                               direction:arrowDirection];
-
-  __weak id<ToolbarCommands> weakToolbarCommandsHandler =
-      _toolbarCommandsHandler;
-  auto presentAction = ^() {
-    [weakToolbarCommandsHandler setTabGridButtonIPHHighlighted:YES];
-  };
-  auto dismissAction = ^() {
-    [weakToolbarCommandsHandler setTabGridButtonIPHHighlighted:NO];
-  };
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the new tab tip, then end early to prevent the potential reassignment
-  // of the existing `tabGridIPHBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter =
-      [self presentBubbleForFeature:feature_engagement::
-                                        kIPHiOSTabGridToolbarItemFeature
-                          direction:arrowDirection
-                          alignment:BubbleAlignmentBottomOrTrailing
-                               text:text
-              voiceOverAnnouncement:text
-                        anchorPoint:tabGridButtonAnchor
-                      presentAction:presentAction
-                      dismissAction:dismissAction];
-  if (!presenter) {
-    return;
-  }
-
-  self.tabGridIPHBubblePresenter = presenter;
-}
-
-// TODO(crbug.com/1448656): remove code.
-// Presents a bubble associated with the new incognito tab tip in-product help
-// promotion.
-- (void)presentNewIncognitoTabTipBubble {
-  if (![self canPresentBubble])
-    return;
-
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
-  NSString* text = l10n_util::GetNSStringWithFixup(
-      IDS_IOS_NEW_INCOGNITO_TAB_IPH_PROMOTION_TEXT);
-
-  CGPoint toolsButtonAnchor = [self anchorPointToGuide:kToolsMenuGuide
-                                             direction:arrowDirection];
-
-  // If the feature engagement tracker does not consider it valid to display
-  // the incognito tab tip, then end early to prevent the potential reassignment
-  // of the existing `incognitoTabTipBubblePresenter` to nil.
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHNewIncognitoTabTipFeature
-                    direction:arrowDirection
-                         text:text
-        voiceOverAnnouncement:nil
-                  anchorPoint:toolsButtonAnchor];
-  if (!presenter)
-    return;
-
-  self.incognitoTabTipBubblePresenter = presenter;
+// If any gesture IPH visible, remove it and log the `reason` why it should be
+// removed on UMA. Otherwise, do nothing. The presenter of any gesture IPH
+// should make sure it's called when the user leaves the refreshed website,
+// especially while the IPH is still visible.
+- (void)hideAllGestureInProductHelpViewsForReason:
+    (IPHDismissalReasonType)reason {
+  [self.pullToRefreshGestureIPH dismissWithReason:reason];
+  [self.swipeBackForwardGestureIPH dismissWithReason:reason];
 }
 
 #pragma mark - Private Utils
@@ -679,7 +741,16 @@ const CGFloat kBubblePresentationDelay = 1;
 }
 
 // Returns whether the tab can present a bubble tip.
+// TODO(crbug.com/1448656): make most callsites pass NO for
+// `CheckTabScrolledToTop` as it's error-prone.
 - (BOOL)canPresentBubble {
+  return [self canPresentBubbleWithCheckTabScrolledToTop:YES];
+}
+
+// Returns whether the tab can present a bubble tip. Whether tab being scrolled
+// to top is required for presenting the bubble tip is determined by
+// `checkTabScrolledToTop`.
+- (BOOL)canPresentBubbleWithCheckTabScrolledToTop:(BOOL)checkTabScrolledToTop {
   // If BubblePresenter has been stopped, do not present the bubble.
   if (!self.started) {
     return NO;
@@ -693,7 +764,7 @@ const CGFloat kBubblePresentationDelay = 1;
     return NO;
   }
   // Do not present the bubble if the tab is not scrolled to the top.
-  if (![self isTabScrolledToTop]) {
+  if (checkTabScrolledToTop && ![self isTabScrolledToTop]) {
     return NO;
   }
   return YES;
@@ -724,30 +795,71 @@ const CGFloat kBubblePresentationDelay = 1;
                          text:(NSString*)text
                 dismissAction:(ProceduralBlock)dismissAction {
   DCHECK(self.engagementTracker);
-  if ([self shouldForcePresentBubbleForFeature:feature] ||
-      self.engagementTracker->WouldTriggerHelpUI(feature)) {
-    // Capture `weakSelf` instead of the feature engagement tracker object
-    // because `weakSelf` will safely become `nil` if it is deallocated, whereas
-    // the feature engagement tracker will remain pointing to invalid memory if
-    // its owner (the ChromeBrowserState) is deallocated.
+  // Capture `weakSelf` instead of the feature engagement tracker object
+  // because `weakSelf` will safely become `nil` if it is deallocated, whereas
+  // the feature engagement tracker will remain pointing to invalid memory if
+  // its owner (the ChromeBrowserState) is deallocated.
+  __weak BubblePresenter* weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
+      ^(IPHDismissalReasonType IPHDismissalReasonType,
+        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        if (dismissAction) {
+          dismissAction();
+        }
+        [weakSelf featureDismissed:feature withSnooze:snoozeAction];
+      };
+
+  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+      [[BubbleViewControllerPresenter alloc]
+          initDefaultBubbleWithText:text
+                     arrowDirection:direction
+                          alignment:alignment
+               isLongDurationBubble:[self isLongDurationBubble:feature]
+                  dismissalCallback:dismissalCallbackWithSnoozeAction];
+
+  return bubbleViewControllerPresenter;
+}
+
+// If an in-product help message should be shown for `feature`, presents an IPH
+// view covering the content area and return the view, otherwise return `nil`
+// and do nothing. `direction` is the direction the bubble's arrow is pointing.
+// `text` is the text displayed by the bubble. `dismissAction` is the callback
+// function invoked when the IPH is dismissed.
+//
+// Note that this method does NOT start the animation. The caller should start
+// the animation of the returned `GestureInProductHelpView` accordingly. This
+// allows the caller to make modifications to the view before animating.
+- (GestureInProductHelpView*)
+    presentGestureInProductHelpForFeature:(const base::Feature&)feature
+                                direction:(BubbleArrowDirection)direction
+                                     text:(NSString*)text
+                            dismissAction:(ProceduralBlock)dismissAction {
+  DCHECK(self.engagementTracker);
+  NamedGuide* guide = [NamedGuide guideWithName:kContentAreaGuide
+                                           view:self.rootViewController.view];
+  if (!guide) {
+    return nil;
+  }
+  GestureInProductHelpView* gestureIPHView =
+      [[GestureInProductHelpView alloc] initWithText:text
+                                  bubbleBoundingSize:guide.layoutFrame.size
+                                      arrowDirection:direction];
+  [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
+  if (CanGestureInProductHelpViewFitInGuide(gestureIPHView, guide) &&
+      self.engagementTracker->ShouldTriggerHelpUI(feature)) {
     __weak BubblePresenter* weakSelf = self;
-    ProceduralBlockWithSnoozeAction dismissalCallbackWithSnoozeAction =
-        ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
+    CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
+        ^(IPHDismissalReasonType IPHDismissalReasonType,
+          feature_engagement::Tracker::SnoozeAction snoozeAction) {
           if (dismissAction) {
             dismissAction();
           }
           [weakSelf featureDismissed:feature withSnooze:snoozeAction];
         };
-
-    BubbleViewControllerPresenter* bubbleViewControllerPresenter =
-        [[BubbleViewControllerPresenter alloc]
-            initDefaultBubbleWithText:text
-                       arrowDirection:direction
-                            alignment:alignment
-                 isLongDurationBubble:[self isLongDurationBubble:feature]
-                    dismissalCallback:dismissalCallbackWithSnoozeAction];
-
-    return bubbleViewControllerPresenter;
+    gestureIPHView.dismissCallback = dismissalCallbackWithSnoozeAction;
+    [self.rootViewController.view addSubview:gestureIPHView];
+    AddSameConstraints(gestureIPHView, guide);
+    return gestureIPHView;
   }
   return nil;
 }
@@ -781,30 +893,4 @@ const CGFloat kBubblePresentationDelay = 1;
   return NO;
 }
 
-#pragma mark - SceneStateObserver
-
-- (void)sceneState:(SceneState*)sceneState
-    transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (level >= SceneActivationLevelForegroundActive) {
-    [self presentTabGridToolbarItemBubble];
-  }
-}
-
-#pragma mark - URLLoadingObserver
-
-- (void)tabDidLoadURL:(GURL)URL
-       transitionType:(ui::PageTransition)transitionType {
-  web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  if (currentWebState &&
-      ((transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
-       (transitionType & ui::PAGE_TRANSITION_FORWARD_BACK))) {
-    [self presentNewTabToolbarItemBubble];
-  }
-}
-
-- (void)newTabDidLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
-  if (isUserInitiated) {
-    [self presentTabGridToolbarItemBubble];
-  }
-}
 @end

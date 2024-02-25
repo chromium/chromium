@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AutoOpenFileTypes": [
+            "exe",
+            ".txt",
+            "pdf"
+          ]
+        },
+        "prefs": {
+          "download.extensions_to_open_by_policy": {
+            "value": [
+              "exe",
+              "pdf"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

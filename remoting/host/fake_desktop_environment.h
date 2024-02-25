@@ -76,7 +76,7 @@ class FakeScreenControls : public ScreenControls {
 
   // ScreenControls implementation.
   void SetScreenResolution(const ScreenResolution& resolution,
-                           absl::optional<webrtc::ScreenId> screen_id) override;
+                           std::optional<webrtc::ScreenId> screen_id) override;
   void SetVideoLayout(const protocol::VideoLayout& video_layout) override;
 };
 

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_ARC_VM_DATA_MIGRATION_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_ARC_VM_DATA_MIGRATION_SCREEN_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -18,7 +20,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -67,11 +68,12 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   void SetUpInitialView();
 
-  void OnGetFreeDiskSpace(absl::optional<int64_t> reply);
+  void OnGetFreeDiskSpace(std::optional<int64_t> reply);
 
   void OnGetAndroidDataInfoResponse(
       uint64_t free_disk_space,
-      absl::optional<arc::data_migrator::GetAndroidDataInfoResponse> response);
+      const base::TimeTicks& time_before_get_android_data_info,
+      std::optional<arc::data_migrator::GetAndroidDataInfoResponse> response);
 
   void CheckBatteryState();
 
@@ -81,7 +83,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   // Sets up the destination of the migration, and then triggers the migration.
   void SetUpDestinationAndTriggerMigration();
   void OnCreateDiskImageResponse(
-      absl::optional<vm_tools::concierge::CreateDiskImageResponse> res);
+      std::optional<vm_tools::concierge::CreateDiskImageResponse> res);
 
   // Triggers the migration by calling ArcVmDataMigrator's StartMigration().
   void TriggerMigration();
@@ -115,7 +117,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   virtual device::mojom::WakeLock* GetWakeLock();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::string user_id_hash_;
 
   ArcVmDataMigrationScreenView::UIState current_ui_state_ =
@@ -133,7 +135,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   // |update_button_pressed_| is flipped to true.
   double lowest_battery_percent_during_migration_;
 
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
   base::TimeTicks previous_ticks_ = {};
   uint64_t previous_bytes_ = 0;
 

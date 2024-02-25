@@ -35,7 +35,7 @@ For Android:
     # Build with: is_official_build=true is_chrome_branded=true
     # This will dump the list of SI's only when they don't match the expected
     # number in static_initializers.gni (this is what the bots use).
-    ninja chrome/android:monochrome_static_initializers
+    ninja chrome/android:check_chrome_static_initializers
     # or, to dump directly:
     tools/linux/dump-static-initializers.py out/Release/lib.unstripped/libmonochrome.so
 

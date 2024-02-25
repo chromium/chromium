@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Error in remote: Uncaught Error: assert_array_equals: Execution order expected property 0 to be "Inline1" but got "EndOfBody" (expected array ["Inline1", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1"] got ["EndOfBody", "Inline1", "Sync1", "DOMContentLoaded", "Async1"])
-FAIL Child Async Script Execution Order Uncaught Error: assert_array_equals: Execution order expected property 0 to be "Inline1" but got "EndOfBody" (expected array ["Inline1", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1"] got ["EndOfBody", "Inline1", "Sync1", "DOMContentLoaded", "Async1"])
+[FAIL] Child Async Script Execution Order
+  Uncaught Error: assert_array_equals: Execution order expected property 0 to be "Inline1" but got "EndOfBody" (expected array ["Inline1", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1"] got ["EndOfBody", "Inline1", "Sync1", "DOMContentLoaded", "Async1"])
 Harness: the test ran to completion.
 

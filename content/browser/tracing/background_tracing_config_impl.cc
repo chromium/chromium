@@ -91,7 +91,7 @@ base::Value::Dict BackgroundTracingConfigImpl::ToDict() {
   if (category_preset_ == CUSTOM_CATEGORY_PRESET) {
     dict.Set(kConfigCustomCategoriesKey, custom_categories_);
   } else if (category_preset_ == CUSTOM_TRACE_CONFIG) {
-    absl::optional<base::Value> trace_config =
+    std::optional<base::Value> trace_config =
         base::JSONReader::Read(trace_config_.ToString());
     if (trace_config) {
       dict.Set(kConfigTraceConfigKey, std::move(*trace_config));
@@ -346,8 +346,12 @@ TraceConfig BackgroundTracingConfigImpl::GetConfigForCategoryPreset(
     base::trace_event::TraceRecordMode record_mode) {
   switch (preset) {
     case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP: {
+      // This config should match exactly the one set in
+      // TraceStartupConfig::EnableFromBackgroundTracing, otherwise the
+      // startup session will not be adopted.
       auto config =
           tracing::TraceStartupConfig::GetDefaultBrowserStartupConfig();
+      config.EnableArgumentFilter();
       config.SetTraceRecordMode(record_mode);
       return config;
     }

@@ -6,6 +6,7 @@
 #define MEDIA_REMOTING_COURIER_RENDERER_H_
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "media/remoting/metrics.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 #include "third_party/openscreen/src/util/weak_ptr.h"
@@ -83,7 +83,7 @@ class CourierRenderer final : public Renderer {
   void Initialize(MediaResource* media_resource,
                   RendererClient* client,
                   PipelineStatusCallback init_cb) final;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) final;
   void Flush(base::OnceClosure flush_cb) final;
   void StartPlayingFrom(base::TimeDelta time) final;
   void SetPlaybackRate(double playback_rate) final;

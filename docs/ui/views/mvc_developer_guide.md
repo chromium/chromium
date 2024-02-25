@@ -5,7 +5,7 @@
 ### Model:
 * Contains data related to the display of the view
 * Treat backend service as separate models
-* Notifies view controller updates and gets updated by the view controller
+* Gets updated by the view controller
 
 ### View:
 * Presentation of UI
@@ -20,8 +20,7 @@ We break up the traditional Controller into the Coordinator and View Controller.
 * Public API of the component
 * In charge of when features become active or inactive
 * Owned by the coordinator of it’s parent component
-* Creates and owns the view controller
-* Creates or manages the models of it’s child coordinators
+* May create and own UI models or manage the models of it’s child coordinators
 
 #### View Controller:
 * Sets up views based on model data
@@ -32,6 +31,8 @@ We break up the traditional Controller into the Coordinator and View Controller.
 
 # Visual of Components
 ![visual of components](images/mvc_visual_of_components.png)
+
+Note: In this diagram the coordinator is owning the model, but the model can also be owned by the parent coordinator or outside components if it’s a backend model.
 
 #### Concrete Examples
 Simple example from the Chrome Labs feature.

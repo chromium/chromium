@@ -43,8 +43,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/command_line.h"
+#include "chrome/common/chrome_switches.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/lacros/lacros_paths.h"
+#include "chromeos/startup/startup.h"  // nogncheck
 #endif
 
 namespace {
@@ -105,6 +108,11 @@ bool GetChromeOsCrdDataDirInternal(base::FilePath* result,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const base::FilePath::CharType kLacrosLogDirectory[] =
+    FILE_PATH_LITERAL("/var/log/lacros");
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 base::FilePath& GetInvalidSpecifiedUserDataDirInternal() {
   static base::NoDestructor<base::FilePath> s;
@@ -184,6 +192,12 @@ bool PathProvider(int key, base::FilePath* result) {
   base::FilePath cur;
   switch (key) {
     case chrome::DIR_USER_DATA:
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && DCHECK_IS_ON()
+      // Check that the user data directory is not accessed before
+      // initialization when prelaunching at login screen.
+      DCHECK(chromeos::lacros_paths::IsInitializedUserDataDir() ||
+             !chromeos::IsLaunchedWithPostLoginParams());
+#endif
       if (!GetDefaultUserDataDirectory(&cur)) {
         return false;
       }
@@ -232,10 +246,26 @@ bool PathProvider(int key, base::FilePath* result) {
       // and annoyed a lot of users.
 #endif
       break;
+    case chrome::DIR_CRASH_METRICS:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      cur = base::FilePath(kLacrosLogDirectory);
+#else
+      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
+        return false;
+      }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      break;
     case chrome::DIR_CRASH_DUMPS:
+// Only use /var/log/{chrome,lacros} on IS_CHROMEOS_DEVICE builds. For
+// non-device builds we fall back to the #else below and store relative to the
+// default user-data directory.
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // ChromeOS uses a separate directory. See http://crosbug.com/25089
       cur = base::FilePath("/var/log/chrome");
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      cur = base::FilePath(kLacrosLogDirectory);
+#endif  // BUILDFlAG(IS_CHROMEOS_ASH)
 #elif BUILDFLAG(IS_ANDROID)
       if (!base::android::GetCacheDirectory(&cur)) {
         return false;
@@ -386,12 +416,22 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
       break;
 
-    case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM:
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
+    case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM: {
+      int components_dir =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kEnableLacrosSharedComponentsDir)
+              ? static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR)
+              : static_cast<int>(chrome::DIR_USER_DATA);
+#else
+          chrome::DIR_USER_DATA;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (!base::PathService::Get(components_dir, &cur)) {
         return false;
       }
       cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
       break;
+    }
     case chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT:
       if (!base::PathService::Get(chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM,
                                   &cur)) {
@@ -483,7 +523,7 @@ bool PathProvider(int key, base::FilePath* result) {
       }
       break;
     case chrome::DIR_TEST_DATA:
-      if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &cur)) {
+      if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &cur)) {
         return false;
       }
       cur = cur.Append(FILE_PATH_LITERAL("chrome"));
@@ -494,7 +534,7 @@ bool PathProvider(int key, base::FilePath* result) {
       }
       break;
     case chrome::DIR_TEST_TOOLS:
-      if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &cur)) {
+      if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &cur)) {
         return false;
       }
       cur = cur.Append(FILE_PATH_LITERAL("chrome"));
@@ -571,7 +611,8 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC))
     case chrome::DIR_NATIVE_MESSAGING:
 #if BUILDFLAG(IS_MAC)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

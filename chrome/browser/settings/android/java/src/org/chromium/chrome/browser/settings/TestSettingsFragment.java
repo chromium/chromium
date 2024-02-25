@@ -13,9 +13,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
-/**
- * A TestSettingsFragment that has several preference inside.
- */
+/** A TestSettingsFragment that has several preference inside. */
 public class TestSettingsFragment extends PreferenceFragmentCompat implements BackPressHandler {
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();

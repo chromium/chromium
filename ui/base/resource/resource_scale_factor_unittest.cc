@@ -15,11 +15,8 @@ TEST(ResourceScaleFactorTest, GetResourceScaleFactorScale) {
 }
 
 TEST(ResourceScaleFactorTest, GetScaleFactorFromScalePartlySupported) {
-  std::vector<ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(k100Percent);
-  supported_factors.push_back(k200Percent);
   test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {k100Percent, k200Percent});
   EXPECT_EQ(k100Percent, GetSupportedResourceScaleFactor(0.1f));
   EXPECT_EQ(k100Percent, GetSupportedResourceScaleFactor(0.9f));
   EXPECT_EQ(k100Percent, GetSupportedResourceScaleFactor(1.0f));

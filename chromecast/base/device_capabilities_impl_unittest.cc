@@ -582,7 +582,7 @@ TEST_F(DeviceCapabilitiesImplTest, SetCapabilityDictionaryInvalid) {
 
 // Test MergeDictionary.
 TEST_F(DeviceCapabilitiesImplTest, MergeDictionary) {
-  absl::optional<base::Value::Dict> deserialized_value =
+  std::optional<base::Value::Dict> deserialized_value =
       base::JSONReader::ReadDict(kSampleDictionaryCapability);
   ASSERT_TRUE(deserialized_value);
 

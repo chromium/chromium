@@ -6,8 +6,10 @@
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -17,8 +19,8 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
-#import "components/password_manager/core/browser/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -38,17 +40,18 @@
 #import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
-#import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
-#import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
-#import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
+#import "ios/chrome/browser/policy/model/enterprise_policy_test_helper.h"
+#import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -59,24 +62,25 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/signin/system_identity_manager.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
+#import "ios/chrome/browser/ui/whats_new/constants.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
-#import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
-#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
@@ -171,10 +175,13 @@ class OverflowMenuMediatorTest : public PlatformTest {
     // testing the mediator are usually hosted in `browserStatePrefs_`.
     builder.SetPrefService(CreatePrefServiceForBrowserState());
     builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
         ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
         ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             web::BrowserState,
                             password_manager::MockPasswordStoreInterface>));
@@ -225,8 +232,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     web_state_->SetWebFramesManager(content_world, std::move(frames_manager));
 
     browser_->GetWebStateList()->InsertWebState(
-        0, std::move(test_web_state), WebStateList::INSERT_FORCE_INDEX,
-        WebStateOpener());
+        std::move(test_web_state), WebStateList::InsertionParams::AtIndex(0));
     for (int i = 1; i < kNumberOfWebStates; i++) {
       InsertNewWebState(i);
     }
@@ -262,8 +268,6 @@ class OverflowMenuMediatorTest : public PlatformTest {
     mediator_.isIncognito = is_incognito;
     mediator_.menuOrderer = orderer_;
     mediator_.baseViewController = baseViewController_;
-    mediator_.supervisedUserService =
-        SupervisedUserServiceFactory::GetForBrowserState(browser_state_.get());
     SetUpReadingList();
     return mediator_;
   }
@@ -341,8 +345,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     web_state->SetWebFramesManager(content_world, std::move(frames_manager));
 
     browser_->GetWebStateList()->InsertWebState(
-        index, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,
-        WebStateOpener());
+        std::move(web_state), WebStateList::InsertionParams::AtIndex(index));
   }
 
   void SetUpActiveWebState() {
@@ -434,33 +437,32 @@ class OverflowMenuMediatorTest : public PlatformTest {
   OverflowMenuModel* model_;
   OverflowMenuMediator* mediator_;
   OverflowMenuOrderer* orderer_;
-  BookmarkModel* local_or_syncable_bookmark_model_;
-  BookmarkModel* account_bookmark_model_;
-  ReadingListModel* reading_list_model_;
+  raw_ptr<BookmarkModel> local_or_syncable_bookmark_model_;
+  raw_ptr<BookmarkModel> account_bookmark_model_;
+  raw_ptr<ReadingListModel> reading_list_model_;
   std::unique_ptr<TestingPrefServiceSimple> browserStatePrefs_;
   std::unique_ptr<TestingPrefServiceSimple> localStatePrefs_;
-  web::FakeWebState* web_state_;
+  raw_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   UIViewController* baseViewController_;
   translate::LanguageDetectionModel language_detection_model_;
   TestingPrefServiceSimple pref_service_;
+  feature_engagement::test::MockTracker tracker_;
 };
 
 // Tests that the feature engagement tracker get notified when the mediator is
 // disconnected and the tracker wants the notification badge displayed.
 TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
   CreateMediator(/*is_incognito=*/NO);
-  feature_engagement::test::MockTracker tracker;
-  EXPECT_CALL(tracker, ShouldTriggerHelpUI(testing::_))
+  EXPECT_CALL(tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(Return(true));
-  mediator_.engagementTracker = &tracker;
+  mediator_.engagementTracker = &tracker_;
 
   // Force model update.
   mediator_.model = model_;
 
   // There may be one or more Tools Menu items that use engagement trackers.
-  EXPECT_CALL(tracker, Dismissed(testing::_)).Times(testing::AtLeast(1));
-  [mediator_ disconnect];
+  EXPECT_CALL(tracker_, Dismissed(testing::_)).Times(testing::AtLeast(1));
 }
 
 // Tests that the mediator is returning the right number of items and sections
@@ -805,11 +807,6 @@ TEST_F(OverflowMenuMediatorTest, TestOpenWhatsNewDoesntCrashWithNoTracker) {
   // Create Mediator and DO NOT set the Tracker on it.
   CreateMediator(/*is_incognito=*/NO);
 
-  std::unique_ptr<MockPromosManager> promos_manager =
-      std::make_unique<MockPromosManager>();
-  EXPECT_CALL(*promos_manager, DeregisterPromo(testing::_));
-  mediator_.promosManager = promos_manager.get();
-
   // Force model update.
   mediator_.model = model_;
 
@@ -928,6 +925,11 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   web_state_->SetCurrentURL(kUrl);
   CreateBrowserStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
+  // Show the new label badge for What's New.
+  ON_CALL(tracker_, ShouldTriggerHelpUI(testing::Ref(
+                        feature_engagement::kIPHWhatsNewUpdatedFeature)))
+      .WillByDefault(testing::Return(true));
+  mediator_.engagementTracker = &tracker_;
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
@@ -959,6 +961,11 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
 TEST_F(OverflowMenuMediatorTest,
        TestPromotedDestinationsWhenNoHistoryUsageRanking) {
   CreateMediator(/*is_incognito=*/NO);
+  // Show the new label badge for What's New.
+  ON_CALL(tracker_, ShouldTriggerHelpUI(testing::Ref(
+                        feature_engagement::kIPHWhatsNewUpdatedFeature)))
+      .WillByDefault(testing::Return(true));
+  mediator_.engagementTracker = &tracker_;
   syncer::MockSyncService syncService;
   ON_CALL(syncService, GetUserActionableError())
       .WillByDefault(
@@ -980,4 +987,121 @@ TEST_F(OverflowMenuMediatorTest,
       BadgeTypeNew,
       mediator_.model.destinations[kNewDestinationsInsertionIndex + 1].badge);
   EXPECT_EQ(8U, [mediator_.model.destinations count]);
+}
+
+// Tests that the actions have the correct longpress items set.
+TEST_F(OverflowMenuMediatorTest, ActionLongpressItems) {
+  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
+  CreateMediator(/*is_incognito=*/NO);
+
+  mediator_.model = model_;
+
+  // The 1st action group should contain modifiable actions with 2 longpress
+  // items. All other action groups should contain un-modifiable actions with no
+  // longpress items.
+  for (NSUInteger index = 0; index < mediator_.model.actionGroups.count;
+       index++) {
+    OverflowMenuActionGroup* actionGroup = mediator_.model.actionGroups[index];
+    for (OverflowMenuAction* action in actionGroup.actions) {
+      if (index == 1) {
+        EXPECT_EQ(action.longPressItems.count, 2ul);
+      } else {
+        EXPECT_EQ(action.longPressItems.count, 0ul);
+      }
+    }
+  }
+}
+
+// Tests that the destinations have the correct longpress items set.
+TEST_F(OverflowMenuMediatorTest, DestinationLongpressItems) {
+  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
+  CreateMediator(/*is_incognito=*/NO);
+
+  mediator_.model = model_;
+
+  // The 1st action group should contain modifiable actions with 2 longpress
+  // items. Settings and Site Info are exceptions, as they are not hideable, so
+  // they shold only have one longpress item
+  for (OverflowMenuDestination* destination in mediator_.model.destinations) {
+    overflow_menu::Destination destinationType =
+        static_cast<overflow_menu::Destination>(destination.destination);
+    if (destinationType == overflow_menu::Destination::Settings ||
+        destinationType == overflow_menu::Destination::SiteInfo) {
+      EXPECT_EQ(destination.longPressItems.count, 1ul);
+      continue;
+    }
+    EXPECT_EQ(destination.longPressItems.count, 2ul);
+  }
+}
+
+// Tests that when a destination becomes hidden during customization, the
+// corresponding action gains a subtitle and a highlight.
+TEST_F(OverflowMenuMediatorTest, DestinationHideShowsActionSubtitle) {
+  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
+  CreateMediator(/*is_incognito=*/NO);
+
+  mediator_.model = model_;
+
+  // Start customization sessions.
+  DestinationCustomizationModel* destinationModel =
+      orderer_.destinationCustomizationModel;
+  ActionCustomizationModel* actionModel = orderer_.actionCustomizationModel;
+
+  // Find destination in customization model.
+  OverflowMenuDestination* bookmarksDestination;
+  for (OverflowMenuDestination* destination in destinationModel
+           .shownDestinations) {
+    if (destination.accessibilityIdentifier == kToolsMenuBookmarksId) {
+      bookmarksDestination = destination;
+      break;
+    }
+  }
+  bookmarksDestination.shown = NO;
+
+  // Find corresponding action.
+  OverflowMenuAction* addToBookmarksAction;
+  for (OverflowMenuAction* action in actionModel.shownActions) {
+    if (action.accessibilityIdentifier == kToolsMenuAddToBookmarks) {
+      addToBookmarksAction = action;
+      break;
+    }
+  }
+
+  // Make sure that the corresponding action has a subtitle.
+  EXPECT_NE(addToBookmarksAction, nil);
+  EXPECT_TRUE(addToBookmarksAction.highlighted);
+  EXPECT_NE(addToBookmarksAction.subtitle, nil);
+}
+
+// Tests that when the the right metric is recorder when the Password Manager
+// item is tapped.
+TEST_F(OverflowMenuMediatorTest, OpenPasswordsMetricLogged) {
+  CreateMediator(/*is_incognito=*/NO);
+
+  mediator_.model = model_;
+
+  // Find the Password Manager destination.
+  OverflowMenuDestination* passwordsDestination;
+  for (OverflowMenuDestination* destination in mediator_.model.destinations) {
+    if (destination.accessibilityIdentifier == kToolsMenuPasswordsId) {
+      passwordsDestination = destination;
+      break;
+    }
+  }
+  EXPECT_NSNE(nil, passwordsDestination);
+
+  base::HistogramTester histogram_tester;
+
+  // Verify that bucker count is zero.
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kChromeMenuItem, 0);
+
+  // Call Password Manager destination's handler.
+  passwordsDestination.handler();
+
+  // Bucket count should now be one.
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kChromeMenuItem, 1);
 }

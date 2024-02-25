@@ -30,15 +30,15 @@ export class GoogleAssistantBrowserProxyImpl implements
     instance = obj;
   }
 
-  showGoogleAssistantSettings() {
+  showGoogleAssistantSettings(): void {
     chrome.send('showGoogleAssistantSettings');
   }
 
-  retrainAssistantVoiceModel() {
+  retrainAssistantVoiceModel(): void {
     chrome.send('retrainAssistantVoiceModel');
   }
 
-  syncVoiceModelStatus() {
+  syncVoiceModelStatus(): void {
     chrome.send('syncVoiceModelStatus');
   }
 }

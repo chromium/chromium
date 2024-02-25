@@ -82,27 +82,21 @@ SK_API SkBitmap CGImageToSkBitmap(CGImageRef image);
 #ifdef __OBJC__
 
 // Draws an NSImage with a given size into a SkBitmap.
-SK_API SkBitmap NSImageToSkBitmapWithColorSpace(NSImage* image,
-                                                bool is_opaque,
-                                                CGColorSpaceRef color_space);
+SK_API SkBitmap NSImageToSkBitmap(NSImage* image, bool is_opaque);
 
 // Draws an NSImageRep with a given size into a SkBitmap.
-SK_API SkBitmap NSImageRepToSkBitmapWithColorSpace(NSImageRep* image,
-                                                   NSSize size,
-                                                   bool is_opaque,
-                                                   CGColorSpaceRef colorspace);
+SK_API SkBitmap NSImageRepToSkBitmap(NSImageRep* image,
+                                     NSSize size,
+                                     bool is_opaque);
 
 // Given an SkBitmap, return an autoreleased NSBitmapImageRep.
-SK_API NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
-    const SkBitmap& skiaBitmap,
-    CGColorSpaceRef colorSpace);
+SK_API NSBitmapImageRep* SkBitmapToNSBitmapImageRep(const SkBitmap& skiaBitmap);
 
 #endif  // __OBJC__
 
 // Given an SkBitmap and a color space, return an autoreleased NSImage.
 // TODO(https://crbug.com/1433041): Restrict this to Objective-C callers.
-SK_API NSImage* SkBitmapToNSImageWithColorSpace(const SkBitmap& icon,
-                                                CGColorSpaceRef colorSpace);
+SK_API NSImage* SkBitmapToNSImage(const SkBitmap& icon);
 
 }  // namespace skia
 

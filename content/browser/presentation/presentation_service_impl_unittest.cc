@@ -9,6 +9,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -30,7 +31,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using blink::mojom::PresentationConnectionResult;
 using blink::mojom::PresentationInfo;
@@ -158,7 +158,7 @@ class PresentationServiceImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<PresentationServiceImpl> service_impl_;
 
   MockPresentationController mock_controller_;
-  absl::optional<mojo::Receiver<PresentationController>> controller_receiver_;
+  std::optional<mojo::Receiver<PresentationController>> controller_receiver_;
 
   GURL presentation_url1_;
   GURL presentation_url2_;
@@ -410,24 +410,27 @@ TEST_F(PresentationServiceImplTest, ReconnectPresentationError) {
 }
 
 TEST_F(PresentationServiceImplTest, MaxPendingReconnectPresentationRequests) {
-  const char* presentation_url = "http://fooUrl%d";
-  const char* presentation_id = "presentationId%d";
+  static constexpr char kPresentationUrlTemplate[] = "http://fooUrl%d";
+  static constexpr char kPresentationIdTemplate[] = "presentationId%d";
   int num_requests = PresentationServiceImpl::kMaxQueuedRequests;
   int i = 0;
   EXPECT_CALL(mock_delegate_, ReconnectPresentation(_, _, _, _))
       .Times(num_requests);
   for (; i < num_requests; ++i) {
-    std::vector<GURL> urls = {GURL(base::StringPrintf(presentation_url, i))};
+    std::vector<GURL> urls = {
+        GURL(base::StringPrintf(kPresentationUrlTemplate, i))};
     // Uninvoked callbacks must outlive |service_impl_| since they get invoked
     // at |service_impl_|'s destruction.
     service_impl_->ReconnectPresentation(
-        urls, base::StringPrintf(presentation_id, i), base::DoNothing());
+        urls, base::StringPrintf(kPresentationIdTemplate, i),
+        base::DoNothing());
   }
 
-  std::vector<GURL> urls = {GURL(base::StringPrintf(presentation_url, i))};
+  std::vector<GURL> urls = {
+      GURL(base::StringPrintf(kPresentationUrlTemplate, i))};
   // Exceeded maximum queue size, should invoke mojo callback with error.
   service_impl_->ReconnectPresentation(
-      urls, base::StringPrintf(presentation_id, i),
+      urls, base::StringPrintf(kPresentationIdTemplate, i),
       std::move(expect_presentation_error_cb_));
   ExpectPresentationCallbackWasRun();
 }

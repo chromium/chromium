@@ -49,7 +49,7 @@ void WebViewContentScriptManager::AddContentScripts(
     content::RenderFrameHost* render_frame_host,
     int view_instance_id,
     const mojom::HostID& host_id,
-    std::unique_ptr<UserScriptList> scripts) {
+    UserScriptList scripts) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   UserScriptLoader* loader = ExtensionSystem::Get(browser_context_)
@@ -75,7 +75,7 @@ void WebViewContentScriptManager::AddContentScripts(
   // Step 2: Updates the guest_content_script_map_.
   ContentScriptMap& map = iter->second;
   std::set<std::string> ids_to_delete;
-  for (const std::unique_ptr<UserScript>& script : *scripts) {
+  for (const std::unique_ptr<UserScript>& script : scripts) {
     auto map_iter = map.find(script->name());
     // If a content script has the same name as the new one, remove the old
     // script first, and insert the new one.
@@ -218,7 +218,7 @@ void WebViewContentScriptManager::SignalOnScriptsUpdated(
 
 void WebViewContentScriptManager::OnScriptsUpdated(
     UserScriptLoader* loader,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   --pending_operation_count_;
   DCHECK_GE(pending_operation_count_, 0);
   RunCallbacksIfReady();

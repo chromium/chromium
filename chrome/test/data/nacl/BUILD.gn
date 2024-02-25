@@ -63,11 +63,8 @@ group("nacl") {
   if (nacl_target_cpu != "arm") {
     data_deps += [ ":partly_invalid($newlib)" ]
   }
-  if (target_cpu != "mipsel" && !is_mac && !is_win) {
+  if (target_cpu != "mipsel") {
     # GlibC tools are not available for MIPS
-    # The GlibC toolchain is based on gcc, which no longer runs on mac;
-    # it still runs on Windows but is flaky due to its use of cygwin, so also
-    # disable it there.
     glibc = "//build/toolchain/nacl:glibc_${nacl_target_cpu}"
     data_deps += [
       ":exit_status_test($glibc)",

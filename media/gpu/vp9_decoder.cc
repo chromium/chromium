@@ -9,11 +9,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/gpu/vp9_decoder.h"
 
 namespace media {
@@ -29,20 +29,16 @@ bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
   }
 
   bool enable_vp9_ksvc =
-// On windows, currently only d3d11 supports decoding VP9 kSVC stream, we
-// shouldn't combine the switch kD3D11Vp9kSVCHWDecoding to kVp9kSVCHWDecoding
-// due to we want keep returning false to MediaCapability.
-#if BUILDFLAG(IS_WIN)
-      base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding);
-#elif BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
-      // V4L2 stateless API decoder is not capable of decoding VP9 k-SVC stream.
+  // V4L2 stateless decoder does not support VP9 kSVC streams.
+  // See comments in media::IsVp9kSVCHWDecodingEnabled().
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
       false;
 #else
-      base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding);
-#endif
+      media::IsVp9kSVCHWDecodingEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
 
   if (!enable_vp9_ksvc) {
-    DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
+    DLOG(ERROR) << "VP9 k-SVC hardware decoding is disabled";
     return false;
   }
 
@@ -106,8 +102,9 @@ VP9Decoder::VP9Accelerator::VP9Accelerator() {}
 
 VP9Decoder::VP9Accelerator::~VP9Accelerator() {}
 
-bool VP9Decoder::VP9Accelerator::SupportsContextProbabilityReadback() const {
-  return false;
+scoped_refptr<VP9Picture> VP9Decoder::VP9Accelerator::CreateVP9PictureSecure(
+    uint64_t secure_handle) {
+  return nullptr;
 }
 
 VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
@@ -118,8 +115,7 @@ VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
       // TODO(hiroh): Set profile to UNKNOWN.
       profile_(profile),
       accelerator_(std::move(accelerator)),
-      parser_(accelerator_->NeedsCompressedHeaderParsed(),
-              accelerator_->SupportsContextProbabilityReadback()) {}
+      parser_(accelerator_->NeedsCompressedHeaderParsed()) {}
 
 VP9Decoder::~VP9Decoder() = default;
 
@@ -137,6 +133,12 @@ void VP9Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   if (!GetSpatialLayerFrameSize(decoder_buffer, frame_sizes)) {
     SetError();
     return;
+  }
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
   }
 
   parser_.SetStream(ptr, size, frame_sizes,
@@ -157,6 +159,8 @@ void VP9Decoder::Reset() {
   ref_frames_.Clear();
 
   parser_.Reset();
+
+  secure_handle_ = 0;
 
   if (state_ == kDecoding) {
     state_ = kAfterReset;
@@ -199,10 +203,6 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
           DVLOG(1) << "Error parsing stream";
           SetError();
           return kDecodeError;
-
-        case Vp9Parser::kAwaitingRefresh:
-          DVLOG(4) << "Awaiting context update";
-          return kNeedContextUpdate;
       }
     }
 
@@ -275,8 +275,6 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
         GetVP9ChromaSampling(*curr_frame_hdr_);
     if (new_chroma_sampling != chroma_sampling_) {
       chroma_sampling_ = new_chroma_sampling;
-      base::UmaHistogramEnumeration(
-          "Media.PlatformVideoDecoding.ChromaSampling", chroma_sampling_);
     }
 
     if (chroma_sampling_ != VideoChromaSampling::k420) {
@@ -294,6 +292,12 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
 
     DCHECK(!new_pic_size.IsEmpty());
 
+    bool is_color_space_change = false;
+    if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {
+      is_color_space_change = new_color_space.IsSpecified() &&
+                              new_color_space != picture_color_space_;
+    }
+
     const bool is_pic_size_different = new_pic_size != pic_size_;
     const bool is_pic_size_larger = new_pic_size.width() > pic_size_.width() ||
                                     new_pic_size.height() > pic_size_.height();
@@ -301,13 +305,15 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
         (ignore_resolution_changes_to_smaller_for_testing_
              ? is_pic_size_larger
              : is_pic_size_different) ||
-        new_profile != profile_ || curr_frame_hdr_->bit_depth != bit_depth_;
+        new_profile != profile_ || curr_frame_hdr_->bit_depth != bit_depth_ ||
+        is_color_space_change;
 
     if (is_new_configuration_different_enough) {
       DVLOG(1) << "New profile: " << GetProfileName(new_profile)
                << ", new resolution: " << new_pic_size.ToString()
                << ", new bit depth: "
-               << base::strict_cast<int>(curr_frame_hdr_->bit_depth);
+               << base::strict_cast<int>(curr_frame_hdr_->bit_depth)
+               << ", new color space: " << new_color_space.ToString();
 
       if (!curr_frame_hdr_->IsKeyframe() &&
           !(curr_frame_hdr_->IsIntra() && pic_size_.IsEmpty())) {
@@ -342,20 +348,12 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       return kConfigChange;
     }
 
-    if (new_color_space.IsSpecified() &&
-        new_color_space != picture_color_space_ &&
-        curr_frame_hdr_->IsKeyframe()) {
-      // TODO(posciak): This requires us to be on a keyframe (see above) and is
-      // required, because VDA clients expect all surfaces to be returned before
-      // they can cycle surface sets after receiving kConfigChange.
-      // This is only an implementation detail of VDAs and can be improved.
-      ref_frames_.Clear();
-
-      picture_color_space_ = new_color_space;
-      return kColorSpaceChange;
+    scoped_refptr<VP9Picture> pic;
+    if (secure_handle_) {
+      pic = accelerator_->CreateVP9PictureSecure(secure_handle_);
+    } else {
+      pic = accelerator_->CreateVP9Picture();
     }
-
-    scoped_refptr<VP9Picture> pic = accelerator_->CreateVP9Picture();
     if (!pic) {
       return kRanOutOfSurfaces;
     }
@@ -381,39 +379,14 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
   }
 }
 
-void VP9Decoder::UpdateFrameContext(
-    scoped_refptr<VP9Picture> pic,
-    Vp9Parser::ContextRefreshCallback context_refresh_cb) {
-  DCHECK(context_refresh_cb);
-  Vp9FrameContext frame_ctx;
-  memset(&frame_ctx, 0, sizeof(frame_ctx));
-
-  if (!accelerator_->GetFrameContext(std::move(pic), &frame_ctx)) {
-    SetError();
-    return;
-  }
-
-  std::move(context_refresh_cb).Run(frame_ctx);
-}
-
 VP9Decoder::VP9Accelerator::Status VP9Decoder::DecodeAndOutputPicture(
     scoped_refptr<VP9Picture> pic) {
   DCHECK(!pic_size_.IsEmpty());
   DCHECK(pic->frame_hdr);
 
-  base::OnceClosure done_cb;
-  Vp9Parser::ContextRefreshCallback context_refresh_cb =
-      parser_.GetContextRefreshCb(pic->frame_hdr->frame_context_idx);
-  if (context_refresh_cb) {
-    done_cb =
-        base::BindOnce(&VP9Decoder::UpdateFrameContext, base::Unretained(this),
-                       pic, std::move(context_refresh_cb));
-  }
-
   const Vp9Parser::Context& context = parser_.context();
   VP9Accelerator::Status status = accelerator_->SubmitDecode(
-      pic, context.segmentation(), context.loop_filter(), ref_frames_,
-      std::move(done_cb));
+      pic, context.segmentation(), context.loop_filter(), ref_frames_);
   if (status != VP9Accelerator::Status::kOk) {
     if (status == VP9Accelerator::Status::kTryAgain)
       pending_pic_ = std::move(pic);
@@ -458,9 +431,9 @@ VideoColorSpace VP9Decoder::GetVideoColorSpace() const {
   return picture_color_space_;
 }
 
-absl::optional<gfx::HDRMetadata> VP9Decoder::GetHDRMetadata() const {
+std::optional<gfx::HDRMetadata> VP9Decoder::GetHDRMetadata() const {
   // VP9 only allow HDR metadata exists in the container.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 size_t VP9Decoder::GetRequiredNumOfPictures() const {

@@ -1,0 +1,115 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [ "java/src/org/chromium/chrome/browser/translate/AutoTranslateSnackbarController.java" ]
+  resources_package = "org.chromium.chrome.browser.translate"
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/translate/content/android:java_resources",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+static_library("android") {
+  sources = [
+    "auto_translate_snackbar_controller.cc",
+    "auto_translate_snackbar_controller.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//content/public/browser",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/translate/AutoTranslateSnackbarController.java" ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.translate"
+  sources = [ "java/src/org/chromium/chrome/browser/translate/AutoTranslateSnackbarControllerTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.translate"
+  sources = [ "java/src/org/chromium/chrome/browser/translate/AutoTranslateSnackbarControllerJavaTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/ui/messages/android:java_resources",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/test/android:test_support_java",
+    "//components/browser_ui/widget/android:java",
+    "//components/messages/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "auto_translate_snackbar_controller_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base",
+    "//base/test:test_support",
+    "//components/language/core/browser",
+    "//components/language/core/browser:test_support",
+    "//components/language/core/common",
+    "//components/metrics",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser",
+    "//components/translate/core/browser:test_support",
+    "//components/translate/core/common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

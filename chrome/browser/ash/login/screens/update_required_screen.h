@@ -110,7 +110,7 @@ class UpdateRequiredScreen : public BaseScreen,
   bool is_first_portal_notification_ = true;
 
   base::WeakPtr<UpdateRequiredView> view_;
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_;
+  raw_ptr<ErrorScreen> error_screen_;
   base::RepeatingClosure exit_callback_;
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
@@ -138,7 +138,7 @@ class UpdateRequiredScreen : public BaseScreen,
   base::OneShotTimer error_message_timer_;
 
   // Overridden for testing EOL by setting the current time.
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 
   base::TimeDelta error_message_delay_;
 

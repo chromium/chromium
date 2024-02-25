@@ -22,7 +22,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_REPLACED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_REPLACED_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -74,6 +75,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // or underflow the final content box by 1px.
   static PhysicalRect PreSnappedRectForPersistentSizing(const PhysicalRect&);
 
+  void AddVisualEffectOverflow();
   void RecalcVisualOverflow() override;
 
   // These values are specified to be 300 and 150 pixels in the CSS 2.1 spec.
@@ -121,13 +123,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // content box.
   bool ClipsToContentBox() const;
 
-  void SetBoxLayoutExtraInput(const BoxLayoutExtraInput* input) {
+  void SetNewContentRect(const PhysicalRect* new_content_rect) {
     NOT_DESTROYED();
-    extra_input_ = input;
-  }
-  const BoxLayoutExtraInput* GetBoxLayoutExtraInput() const {
-    NOT_DESTROYED();
-    return extra_input_;
+    new_content_rect_ = new_content_rect;
   }
 
   // This returns a local rectangle excluding borders and padding from
@@ -144,7 +142,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return true;
   }
 
-  bool IsInSelfHitTestingPhase(HitTestPhase phase) const final {
+  bool IsInSelfHitTestingPhase(HitTestPhase phase) const override {
     NOT_DESTROYED();
     if (LayoutBox::IsInSelfHitTestingPhase(phase))
       return true;
@@ -182,9 +180,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutReplaced() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectReplaced || LayoutBox::IsOfType(type);
+    return true;
   }
 
   // The intrinsic size for a replaced element is based on its content's natural
@@ -193,15 +191,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // Note that the intrinsic size for the element can be independent of its
   // content's natural size. For example, if contain-intrinsic-size is
   // specified. Returns null for these cases.
-  absl::optional<gfx::SizeF> ComputeObjectViewBoxSizeForIntrinsicSizing() const;
-
-  // This returns border-box size computed in NG if a
-  // BoxLayoutExtraInput is associated to this box.
-  PhysicalSize SizeFromNG() const;
-
-  // This returns border and padding values computed in NG if a
-  // BoxLayoutExtraInput is associated to this box.
-  NGPhysicalBoxStrut BorderPaddingFromNG() const;
+  std::optional<gfx::SizeF> ComputeObjectViewBoxSizeForIntrinsicSizing() const;
 
   // ReplacedPainter doesn't support CompositeBackgroundAttachmentFixed yet.
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
@@ -213,38 +203,38 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.
-  absl::optional<PhysicalRect> ComputeObjectViewBoxRect(
+  std::optional<PhysicalRect> ComputeObjectViewBoxRect(
       const PhysicalSize* overridden_intrinsic_size = nullptr) const;
 
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalRect& base_content_rect,
       const PhysicalSize* overridden_intrinsic_size) const;
 
-  absl::optional<LayoutUnit> IntrinsicWidthOverride() const {
+  std::optional<LayoutUnit> IntrinsicWidthOverride() const {
     NOT_DESTROYED();
     if (HasOverrideIntrinsicContentWidth())
       return OverrideIntrinsicContentWidth();
     else if (ShouldApplySizeContainment())
       return LayoutUnit();
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<LayoutUnit> IntrinsicHeightOverride() const {
+  std::optional<LayoutUnit> IntrinsicHeightOverride() const {
     NOT_DESTROYED();
     if (HasOverrideIntrinsicContentHeight())
       return OverrideIntrinsicContentHeight();
     else if (ShouldApplySizeContainment())
       return LayoutUnit();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The natural/intrinsic size for this replaced element based on the natural
   // size for the element's contents.
   mutable PhysicalSize intrinsic_size_;
 
-  // Extra layout input data. This one may be set during layout, and cleared
+  // The new content rect for SVG roots. This is set during layout, and cleared
   // afterwards. Always nullptr when this object isn't in the process of being
   // laid out.
-  const BoxLayoutExtraInput* extra_input_ = nullptr;
+  const PhysicalRect* new_content_rect_ = nullptr;
 };
 
 template <>

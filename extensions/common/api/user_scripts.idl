@@ -1,10 +1,20 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Use the <code>userScripts</code> API to execute user scripts in the User
 // Scripts context.
 namespace userScripts {
+  // The JavaScript world for a user script to execute within.
+  enum ExecutionWorld {
+    // Specifies the execution environment of the DOM, which is the execution
+    // environment shared with the host page's JavaScript.
+    MAIN,
+    // Specifies the execution environment that is specific to user scripts and
+    // is exempt from the page's CSP.
+    USER_SCRIPT
+  };
+
   // The source of the script to inject.
   dictionary ScriptSource {
     // A string containing the JavaScript code to inject. Exactly one of
@@ -17,7 +27,9 @@ namespace userScripts {
   };
 
   // Describes a user script to be injected into a web page registered through
-  // this API.
+  // this API. The script is injected into a page if its URL matches any of
+  // "matches" or "include_globs" patterns, and the URL doesn't match
+  // "exclude_matches" and "exclude_globs" patterns.
   dictionary RegisteredUserScript {
     // If true, it will inject into all frames, even if the frame is not the
     // top-most frame in the tab. Each frame is checked independently for URL
@@ -25,24 +37,34 @@ namespace userScripts {
     // requirements are not met. Defaults to false, meaning that only the top
     // frame is matched.
     boolean? allFrames;
-    // Excludes pages that this content script would otherwise be injected into.
-    // See <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
+    // Excludes pages that this user script would otherwise be injected into.
+    // See <a href="develop/concepts/match-patterns">Match Patterns</a> for more details on
+    // the syntax of these strings.
     DOMString[]? excludeMatches;
     // The ID of the user script specified in the API call. This property must
     // not start with a '_' as it's reserved as a prefix for generated script
     // IDs.
     DOMString id;
+    // Specifies wildcard patterns for pages this user script will be injected
+    // into.
+    DOMString[]? includeGlobs;
+    // Specifies wildcard patterns for pages this user script will NOT be
+    // injected into.
+    DOMString[]? excludeGlobs;
     // The list of ScriptSource objects defining sources of scripts to be
     // injected into matching pages.
     ScriptSource[] js;
-    // Specifies which pages this content script will be injected into. See
-    // <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
+    // Specifies which pages this user script will be injected into. See
+    // <a href="develop/concepts/match-patterns">Match Patterns</a> for more details on the
+    // syntax of these strings. This property must be specified for
+    // ${ref:register}.
     DOMString[]? matches;
     // Specifies when JavaScript files are injected into the web page. The
     // preferred and default value is <code>document_idle</code>.
     extensionTypes.RunAt? runAt;
+    // The JavaScript execution environment to run the script in. The default is
+    // <code>`USER_SCRIPT`</code>.
+    ExecutionWorld? world;
   };
 
   // An object used to filter user scripts for ${ref:getScripts}.
@@ -52,25 +74,72 @@ namespace userScripts {
     DOMString[]? ids;
   };
 
+  // An object used to update the <code>`USER_SCRIPT`</code> world
+  // configuration. If a propertie is not specified, it will reset it to its
+  // default value.
+  dictionary WorldProperties{
+    // Specifies the world csp. The default is the <code>`ISOLATED`</code>
+    // world csp.
+    DOMString? csp;
+    // Specifies whether messaging APIs are exposed. The default is
+    // <code>false</code>.
+    boolean? messaging;
+  };
+
   callback RegisterCallback = void();
 
   callback GetScriptsCallback = void(RegisteredUserScript[] scripts);
+
+  callback UnregisterCallback = void();
+
+  callback UpdateCallback = void();
+
+  callback ConfigureWorldCallback = void();
 
   interface Functions {
     // Registers one or more user scripts for this extension.
     // |scripts|: Contains a list of user scripts to be registered.
     // |callback|: Called once scripts have been fully registered or if an error
     // has ocurred.
-    [supportsPromises] static void register(RegisteredUserScript[] scripts,
-                                            optional RegisterCallback callback);
+    static void register(
+        RegisteredUserScript[] scripts,
+        optional RegisterCallback callback);
 
     // Returns all dynamically-registered user scripts for this extension.
-    // |filter|: If filter is specified, this method returns only the scripts
-    // that match it.
+    // |filter|: If specified, this method returns only the user scripts that
+    // match it.
     // |callback|: Called once scripts have been fully registered or if an error
     // occurs.
-    [supportsPromises] static void getScripts(
+    static void getScripts(
         optional UserScriptFilter filter,
         GetScriptsCallback callback);
+
+    // Unregisters all dynamically-registered user scripts for this extension.
+    // |filter|: If specified, this method unregisters only the user scripts
+    // that match it.
+    // |callback|: Called once scripts have been fully unregistered or if an
+    // error ocurs
+    static void unregister(
+        optional UserScriptFilter filter,
+        UnregisterCallback callback);
+
+    // Updates one or more user scripts for this extension.
+    // |scripts|: Contains a list of user scripts to be updated. A property is
+    // only updated for the existing script if it is specified in this object.
+    // If there are errors during script parsing/file validation, or if the IDs
+    // specified do not correspond to a fully registered script, then no scripts
+    // are updated.
+    // |callback|: Called once scripts have been fully updated or if an error
+    // occurs.
+    static void update(
+        RegisteredUserScript[] scripts,
+        optional UpdateCallback callback);
+
+    // Configures the <code>`USER_SCRIPT`</code> execution environment.
+    // |properties|: Contains the user script world configuration.
+    // |callback|: Called once world hase been configured.
+    static void configureWorld(
+        WorldProperties properties,
+        optional ConfigureWorldCallback callback);
   };
 };

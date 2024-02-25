@@ -14,8 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // Removes .local from |raw_hostname| if located at the end of the string and
 // returns the new hostname.
@@ -60,7 +59,6 @@ class MDnsHostLocator : public HostLocator {
   base::WeakPtrFactory<MDnsHostLocator> weak_factory_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_DISCOVERY_MDNS_HOST_LOCATOR_H_

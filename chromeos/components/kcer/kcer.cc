@@ -86,19 +86,4 @@ PrivateKeyHandle& PrivateKeyHandle::operator=(const PrivateKeyHandle&) =
 PrivateKeyHandle::PrivateKeyHandle(PrivateKeyHandle&&) = default;
 PrivateKeyHandle& PrivateKeyHandle::operator=(PrivateKeyHandle&&) = default;
 
-//==============================================================================
-
-namespace internal {
-
-std::unique_ptr<kcer::Kcer> CreateKcer(
-    scoped_refptr<base::TaskRunner> token_task_runner,
-    base::WeakPtr<kcer::internal::KcerToken> user_token,
-    base::WeakPtr<kcer::internal::KcerToken> device_token) {
-  return std::make_unique<kcer::internal::KcerImpl>(
-      std::move(token_task_runner), std::move(user_token),
-      std::move(device_token));
-}
-
-}  // namespace internal
-
 }  // namespace kcer

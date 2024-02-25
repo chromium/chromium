@@ -1,5 +1,7 @@
 jimmyxgong@chromium.org
+longbowei@google.com
 zentaro@chromium.org
+cambickel@google.com
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace blink {
 
@@ -746,8 +748,8 @@ TEST_F(FrameSelectionTest, SelectInvalidPositionInFlatTreeDoesntCrash) {
       Selection().ComputeVisibleSelectionInFlatTree();
 
   // This only records the current behavior. It might be changed in the future.
-  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Base());
-  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Extent());
+  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Anchor());
+  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Focus());
 }
 
 TEST_F(FrameSelectionTest, CaretInShadowTree) {
@@ -1396,6 +1398,33 @@ TEST_F(FrameSelectionTest, SelectionBounds) {
             frame_view->FrameToDocument(Selection().AbsoluteUnclippedBounds()));
 }
 
+TEST_F(FrameSelectionTest, AbosluteSelectionBoundsAfterScroll) {
+  SetBodyContent(
+      "<style>"
+      "  html, body { height: 2000px; }"
+      "</style>"
+      "<div style='height:1000px;'>"
+      "  <p style='margin-top:100px; font-size:30px'>text</p>"
+      "</div>");
+  Selection().SelectAll();
+
+  gfx::Rect initial_anchor, initial_focus;
+  Selection().ComputeAbsoluteBounds(initial_anchor, initial_focus);
+
+  // Scroll 50px down.
+  const int scroll_offset = 50;
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
+
+  // Check absolute selection bounds are updated.
+  gfx::Rect anchor_after_scroll, focus_after_scroll;
+  Selection().ComputeAbsoluteBounds(anchor_after_scroll, focus_after_scroll);
+  EXPECT_EQ(anchor_after_scroll,
+            initial_anchor - gfx::Vector2d(0, scroll_offset));
+  EXPECT_EQ(focus_after_scroll,
+            initial_focus - gfx::Vector2d(0, scroll_offset));
+}
+
 TEST_F(FrameSelectionTest, SelectionContainsBidiBoundary) {
   InsertStyleElement("div{font:10px/10px Ahem}");
   // Rendered as abcFED
@@ -1443,7 +1472,7 @@ TEST_F(FrameSelectionTest, PositionDisconnectedInFlatTree) {
       Selection().SetSelection(selection, SetSelectionOptions());
       EXPECT_TRUE(extent.IsConnected());
       bool flat_extent_is_connected =
-          ToPositionInFlatTree(selection.Extent()).IsConnected();
+          ToPositionInFlatTree(selection.Focus()).IsConnected();
       EXPECT_EQ(flat_base_is_connected || flat_extent_is_connected
                     ? "<div id=\"host\"></div>|y"
                     : "<div id=\"host\"></div>y",

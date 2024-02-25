@@ -1,0 +1,45 @@
+<style include="settings-shared">
+  #container {
+    height: calc(5 * var(--cr-section-min-height));
+  }
+
+  /*
+   * adds horizontal padding to account for the removed padding from the dialog
+   * body
+   */
+   #emptyText {
+    padding-inline-end: 20px;
+    padding-inline-start: 20px;
+    padding-top: 20px;
+  }
+
+  .label-slot {
+    align-items: center;
+    display: flex;
+  }
+
+  .checkbox-label {
+    margin-inline-start: 10px;
+  }
+</style>
+<div id="container" scrollable>
+  <iron-list id="list" scroll-target="container" role="listbox"
+      items="[[currentSites_]]" hidden$="[[!currentSites_.length]]">
+    <template>
+      <settings-checkbox-list-entry role="option"
+          checked="[[isSelectedSite_(item)]]" tabindex="[[tabIndex]]"
+          aria-posinset$="[[getAriaPosinset_(index)]]"
+          aria-setsize$="[[currentSites_.length]]"
+          aria-description="$i18n{tabDiscardingExceptionsActiveSiteAriaDescription}"
+          on-change="onToggleSelection_">
+        <div class="label-slot">
+          <site-favicon url="[[item]]"></site-favicon>
+          <div class="checkbox-label text-elide">[[item]]</div>
+        </div>
+      </settings-checkbox-list-entry>
+    </template>
+  </iron-list>
+  <div id="emptyText" hidden="[[currentSites_.length]]">
+    $i18n{tabDiscardingExceptionsAddDialogCurrentTabsEmpty}
+  </div>
+</div>

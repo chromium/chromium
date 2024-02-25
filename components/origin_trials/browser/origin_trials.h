@@ -5,20 +5,20 @@
 #ifndef COMPONENTS_ORIGIN_TRIALS_BROWSER_ORIGIN_TRIALS_H_
 #define COMPONENTS_ORIGIN_TRIALS_BROWSER_ORIGIN_TRIALS_H_
 
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/origin_trials/common/origin_trials_persistence_provider.h"
-#include "components/origin_trials/common/persisted_trial_token.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 
 namespace url {
 class Origin;
@@ -36,6 +36,10 @@ namespace origin_trials {
 class OriginTrials : public KeyedService,
                      public content::OriginTrialsControllerDelegate {
  public:
+  using ObserverMap = std::map<
+      std::string,
+      base::ObserverList<content::OriginTrialsControllerDelegate::Observer>>;
+
   OriginTrials(
       std::unique_ptr<OriginTrialsPersistenceProvider> persistence_provider,
       std::unique_ptr<blink::TrialTokenValidator> token_validator);
@@ -48,6 +52,8 @@ class OriginTrials : public KeyedService,
   ~OriginTrials() override;
 
   // content::OriginTrialsControllerDelegate
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void PersistTrialsFromTokens(
       const url::Origin& origin,
       const url::Origin& partition_origin,
@@ -61,7 +67,7 @@ class OriginTrials : public KeyedService,
       const base::Time current_time) override;
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
                                    const url::Origin& partition_origin,
-                                   blink::OriginTrialFeature feature,
+                                   blink::mojom::OriginTrialFeature feature,
                                    const base::Time current_time) override;
   base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
@@ -73,6 +79,28 @@ class OriginTrials : public KeyedService,
   friend class OriginTrialsTest;
   std::unique_ptr<OriginTrialsPersistenceProvider> persistence_provider_;
   std::unique_ptr<blink::TrialTokenValidator> trial_token_validator_;
+  ObserverMap observer_map_;
+
+  void NotifyStatusChange(const url::Origin& origin,
+                          const std::string& partition_site,
+                          bool match_subdomains,
+                          const std::string& trial,
+                          bool enabled);
+  void NotifyPersistedTokensCleared();
+
+  // Returns true if `origin` can use a token made for `token_origin`. For
+  // `origin` to use `token_origin`'s token, at least one of the following must
+  // be true:
+  //  - `origin` equals `token_origin`
+  //  - `match_subdomains` is true and `origin` is a subdomain of `token_origin`
+  // NOTE: This is meant to mirror the logic used in
+  // `blink::TrialToken::ValidateOrigin()`.
+  // TODO(crbug.com/1227440): Find a way to share/reuse the logic in
+  // `blink::TrialToken`. Otherwise, the logic could change in one place and not
+  // the other.
+  bool MatchesTokenOrigin(const url::Origin& token_origin,
+                          bool match_subdomains,
+                          const url::Origin& origin) const;
 
   void PersistTokensInternal(const url::Origin& origin,
                              const url::Origin& partition_origin,
@@ -90,7 +118,7 @@ class OriginTrials : public KeyedService,
       const url::Origin& origin,
       const url::Origin& partition_origin,
       const base::Time current_time,
-      const absl::optional<blink::OriginTrialFeature> trial_feature_match)
+      const std::optional<blink::mojom::OriginTrialFeature> trial_feature_match)
       const;
 
   // Update the stored tokens for `origin` with the `new_tokens`, partitioned by

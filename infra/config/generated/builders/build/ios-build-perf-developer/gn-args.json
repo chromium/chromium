@@ -1,0 +1,30 @@
+{
+  "phases": {
+    "ninja": {
+      "gn_args": {
+        "is_debug": true,
+        "target_environment": "simulator",
+        "target_os": "ios",
+        "use_remoteexec": true,
+        "use_siso": false
+      }
+    },
+    "siso_native": {
+      "gn_args": {
+        "is_debug": true,
+        "target_environment": "simulator",
+        "target_os": "ios",
+        "use_siso": true
+      }
+    },
+    "siso_reproxy": {
+      "gn_args": {
+        "is_debug": true,
+        "target_environment": "simulator",
+        "target_os": "ios",
+        "use_remoteexec": true,
+        "use_siso": true
+      }
+    }
+  }
+}

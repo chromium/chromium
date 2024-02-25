@@ -387,7 +387,8 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuGroupedByDesks) {
       browser_7.get(), browser_5.get(), browser_4.get(),
       browser_2.get(), browser_3.get(), browser_6.get()};
   const auto& mru_ordered_windows =
-      browser()->tab_menu_model_delegate()->GetOtherTabbedBrowserWindows();
+      browser()->tab_menu_model_delegate()->GetOtherBrowserWindows(
+          /*is_app=*/false);
   ASSERT_EQ(6u, mru_ordered_windows.size());
   ASSERT_EQ(mru_ordered_windows, kExpectedMRUOrder);
 
@@ -444,7 +445,8 @@ TEST_F(ExistingWindowSubMenuModelTest, EnsureGroupedByDesksCommands) {
   const std::vector<Browser*> kExpectedMRUOrder{
       browser_4.get(), browser_2.get(), browser_3.get(), browser_5.get()};
   const auto& mru_ordered_windows =
-      browser()->tab_menu_model_delegate()->GetOtherTabbedBrowserWindows();
+      browser()->tab_menu_model_delegate()->GetOtherBrowserWindows(
+          /*is_app=*/false);
   ASSERT_EQ(4u, mru_ordered_windows.size());
   ASSERT_EQ(mru_ordered_windows, kExpectedMRUOrder);
 

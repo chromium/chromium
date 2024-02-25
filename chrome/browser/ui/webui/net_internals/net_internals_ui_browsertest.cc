@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/net_internals/net_internals_ui_browsertest.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
@@ -48,8 +49,7 @@
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/transport_security_state.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -62,6 +62,25 @@ base::Time ToTime(const char* time_string) {
   base::Time time;
   CHECK(base::Time::FromString(time_string, &time));
   return time;
+}
+
+std::vector<network::mojom::RequestDestination> ToRequestDestinationList(
+    const base::Value::List* list) {
+  std::vector<network::mojom::RequestDestination> result;
+  if (!list) {
+    return result;
+  }
+  for (const auto& value : *list) {
+    CHECK(value.is_string());
+    std::optional<network::mojom::RequestDestination> dest =
+        network::RequestDestinationFromString(
+            value.GetString(),
+            network::EmptyRequestDestinationOption::kUseTheEmptyString);
+    CHECK(dest);
+    result.push_back(*dest);
+  }
+  std::sort(result.begin(), result.end());
+  return result;
 }
 
 // Notifies the NetInternalsTest.Task JS object of the DNS lookup result once
@@ -77,16 +96,16 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
     receiver_.set_disconnect_handler(base::BindOnce(
         &DnsLookupClient::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/absl::nullopt,
-        /*endpoint_results_with_metadata=*/absl::nullopt));
+        /*resolved_addresses=*/std::nullopt,
+        /*endpoint_results_with_metadata=*/std::nullopt));
   }
   ~DnsLookupClient() override {}
 
   // network::mojom::ResolveHostClient:
   void OnComplete(int32_t error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override {
     std::string result;
     if (error == net::OK) {
@@ -132,8 +151,8 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       response_client->OnComplete(
           net::ERR_NAME_NOT_RESOLVED,
           net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-          /*resolved_addresses=*/absl::nullopt,
-          /*endpoint_results_with_metadata=*/absl::nullopt);
+          /*resolved_addresses=*/std::nullopt,
+          /*endpoint_results_with_metadata=*/std::nullopt);
     }
 
     const net::IPAddress first_localhost{127, 0, 0, 1};
@@ -161,7 +180,7 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       response_client->OnComplete(
           0, net::ResolveErrorInfo(net::OK),
           net::AddressList(first_ip_endpoint),
-          /*endpoint_results_with_metadata=*/absl::nullopt);
+          /*endpoint_results_with_metadata=*/std::nullopt);
     }
 
     if (hostname == "multihost.com") {
@@ -272,16 +291,10 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
   void HandleMessage(const content::WebUI::MessageCallback& handler,
                      const base::Value::List& data);
 
-  // Runs NetInternalsTest.callback with the given value.
-  void RunJavascriptCallback(base::Value* value);
-
-  // Takes a string and provides the corresponding URL from the test server,
-  // which must already have been started.
-  void GetTestServerURL(const base::Value::List& list);
-
-  // Performs a DNS lookup. Calls the Javascript callback with the host's IP
+  // Performs a DNS lookup. Resolves a Javascript Promise with the host's IP
   // address or an error string.
   void DnsLookup(const base::Value::List& list);
+  void DnsLookupFinished(std::string callback_id, base::Value* result);
 
   // Sets/resets a mock network context for testing.
   void SetNetworkContextForTesting(const base::Value::List& list);
@@ -309,10 +322,6 @@ NetInternalsTest::MessageHandler::MessageHandler(
     : net_internals_test_(net_internals_test) {}
 
 void NetInternalsTest::MessageHandler::RegisterMessages() {
-  RegisterMessage(
-      "getTestServerURL",
-      base::BindRepeating(&NetInternalsTest::MessageHandler::GetTestServerURL,
-                          weak_factory_.GetWeakPtr()));
   RegisterMessage("dnsLookup", base::BindRepeating(
                                    &NetInternalsTest::MessageHandler::DnsLookup,
                                    weak_factory_.GetWeakPtr()));
@@ -348,27 +357,22 @@ void NetInternalsTest::MessageHandler::HandleMessage(
   handler.Run(data);
 }
 
-void NetInternalsTest::MessageHandler::RunJavascriptCallback(
-    base::Value* value) {
-  web_ui()->CallJavascriptFunctionUnsafe("NetInternalsTest.callback", *value);
-}
-
-void NetInternalsTest::MessageHandler::GetTestServerURL(
-    const base::Value::List& list) {
-  ASSERT_TRUE(net_internals_test_->StartTestServer());
-  const std::string& path = list[0].GetString();
-  GURL url = net_internals_test_->embedded_test_server()->GetURL(path);
-  base::Value url_value(url.spec());
-  RunJavascriptCallback(&url_value);
+void NetInternalsTest::MessageHandler::DnsLookupFinished(
+    std::string callback_id,
+    base::Value* result) {
+  ResolveJavascriptCallback(callback_id, *result);
 }
 
 void NetInternalsTest::MessageHandler::DnsLookup(
     const base::Value::List& list) {
-  ASSERT_GE(2u, list.size());
+  AllowJavascript();
+  ASSERT_GE(3u, list.size());
   ASSERT_TRUE(list[0].is_string());
-  ASSERT_TRUE(list[1].is_bool());
-  const std::string hostname = list[0].GetString();
-  const bool local = list[1].GetBool();
+  ASSERT_TRUE(list[1].is_string());
+  ASSERT_TRUE(list[2].is_bool());
+  const std::string& callback_id = list[0].GetString();
+  const std::string hostname = list[1].GetString();
+  const bool local = list[2].GetBool();
   ASSERT_TRUE(browser());
 
   auto resolve_host_parameters = network::mojom::ResolveHostParameters::New();
@@ -376,9 +380,10 @@ void NetInternalsTest::MessageHandler::DnsLookup(
     resolve_host_parameters->source = net::HostResolverSource::LOCAL_ONLY;
   mojo::PendingRemote<network::mojom::ResolveHostClient> client;
   // DnsLookupClient owns itself.
-  new DnsLookupClient(client.InitWithNewPipeAndPassReceiver(),
-                      base::BindOnce(&MessageHandler::RunJavascriptCallback,
-                                     weak_factory_.GetWeakPtr()));
+  new DnsLookupClient(
+      client.InitWithNewPipeAndPassReceiver(),
+      base::BindOnce(&NetInternalsTest::MessageHandler::DnsLookupFinished,
+                     weak_factory_.GetWeakPtr(), callback_id));
   browser()
       ->profile()
       ->GetDefaultStoragePartition()
@@ -406,12 +411,15 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
   base::Value::Dict dict = base::test::ParseJsonDict(*dictionary_json_string);
   net::SHA256HashValue hash_value;
   base::HexStringToSpan(*dict.FindString("hash"), hash_value.data);
+  const std::string* id_string = dict.FindString("id");
   network_context_for_testing_.RegisterTestSharedDictionary(
       net::SharedDictionaryIsolationKey(
           url::Origin::Create(GURL(*dict.FindString("frame_origin"))),
           net::SchemefulSite(GURL(*dict.FindString("top_frame_site")))),
       network::mojom::SharedDictionaryInfo::New(
-          *dict.FindString("match"), GURL(*dict.FindString("dictionary_url")),
+          *dict.FindString("match"),
+          ToRequestDestinationList(dict.FindList("match_dest")),
+          id_string ? *id_string : "", GURL(*dict.FindString("dictionary_url")),
           ToTime(dict.FindString("response_time")->c_str()),
           base::Seconds(*dict.FindInt("expiration")),
           ToTime(dict.FindString("last_used_time")->c_str()),
@@ -422,27 +430,18 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
 // NetInternalsTest
 ////////////////////////////////////////////////////////////////////////////////
 
-NetInternalsTest::NetInternalsTest()
-    : test_server_started_(false) {
-  message_handler_ = std::make_unique<MessageHandler>(this);
-}
+NetInternalsTest::NetInternalsTest() = default;
 
-NetInternalsTest::~NetInternalsTest() {
-}
+NetInternalsTest::~NetInternalsTest() = default;
 
 void NetInternalsTest::SetUpOnMainThread() {
-  WebUIBrowserTest::SetUpOnMainThread();
+  WebUIMochaBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*.com", "127.0.0.1");
 }
 
-content::WebUIMessageHandler* NetInternalsTest::GetMockMessageHandler() {
-  return message_handler_.get();
-}
-
-bool NetInternalsTest::StartTestServer() {
-  if (test_server_started_)
-    return true;
-  test_server_started_ = embedded_test_server()->Start();
-
-  return test_server_started_;
+void NetInternalsTest::OnWebContentsAvailable(
+    content::WebContents* web_contents) {
+  content::WebUI* web_ui_instance = web_contents->GetWebUI();
+  ASSERT_TRUE(web_ui_instance != nullptr);
+  web_ui_instance->AddMessageHandler(std::make_unique<MessageHandler>(this));
 }

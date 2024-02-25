@@ -4,7 +4,6 @@
 
 #include "ash/system/brightness/unified_brightness_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -14,7 +13,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
@@ -38,7 +36,6 @@ class UnifiedBrightnessViewTest : public AshTestBase {
   ~UnifiedBrightnessViewTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
     AshTestBase::SetUp();
     GetPrimaryUnifiedSystemTray()->ShowBubble();
     brightness_slider_controller_ =
@@ -102,16 +99,14 @@ class UnifiedBrightnessViewTest : public AshTestBase {
  private:
   // The `UnifiedBrightnessView` containing a `QuickSettingsSlider`, a
   // `NightLight` button, and a drill-in button.
-  raw_ptr<UnifiedBrightnessView, DanglingUntriaged | ExperimentalAsh>
-      unified_brightness_view_ = nullptr;
+  raw_ptr<UnifiedBrightnessView, DanglingUntriaged> unified_brightness_view_ =
+      nullptr;
 
   // The `UnifiedBrightnessView` containing only a `QuickSettingsSlider`.
   std::unique_ptr<UnifiedBrightnessView> brightness_slider_ = nullptr;
 
-  raw_ptr<UnifiedBrightnessSliderController,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<UnifiedBrightnessSliderController, DanglingUntriaged>
       brightness_slider_controller_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests to ensure that the `slider_button` does not handle any events,
@@ -234,8 +229,8 @@ TEST_F(UnifiedBrightnessViewTest, MoreButton) {
   EXPECT_TRUE(more_button()->GetEnabled());
 }
 
-// Tests that the night light button is disabled in the sign-in and lock screen.
-// TODO(b/294868714): remove the test for the lock screen.
+// Tests that the night light button is disabled in the sign-in screen, and is
+// enabled in the locked screen.
 TEST_F(UnifiedBrightnessViewTest, NightLightButtonState) {
   // Close the bubble so the brightness view can be recreated.
   GetPrimaryUnifiedSystemTray()->CloseBubble();
@@ -247,11 +242,11 @@ TEST_F(UnifiedBrightnessViewTest, NightLightButtonState) {
   EXPECT_FALSE(night_light_button()->GetEnabled());
 
   GetPrimaryUnifiedSystemTray()->CloseBubble();
-  // In the lock screen, the `night_light_button_` is disabled.
+  // In the locked screen, the `night_light_button_` is enabled.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   GetPrimaryUnifiedSystemTray()->ShowBubble();
-  EXPECT_FALSE(night_light_button()->GetEnabled());
+  EXPECT_TRUE(night_light_button()->GetEnabled());
 
   GetPrimaryUnifiedSystemTray()->CloseBubble();
   // In the active user session, the `night_light_button_` is enabled.

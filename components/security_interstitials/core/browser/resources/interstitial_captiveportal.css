@@ -3,7 +3,7 @@
  * found in the LICENSE file. */
 
 .captive-portal .icon {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(images/1x/captive_portal_page_icon.png) 1x,
       url(images/2x/captive_portal_page_icon.png) 2x);
 }

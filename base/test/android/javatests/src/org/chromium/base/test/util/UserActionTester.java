@@ -13,30 +13,32 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A util class that records UserActions.
- */
+/** A util class that records UserActions. */
 public class UserActionTester implements Callback<String> {
     @GuardedBy("mActions")
     private List<String> mActions;
 
     public UserActionTester() {
         mActions = new ArrayList<>();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                UmaRecorderHolder.get().addUserActionCallbackForTesting(UserActionTester.this);
-            }
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        UmaRecorderHolder.get()
+                                .addUserActionCallbackForTesting(UserActionTester.this);
+                    }
+                });
     }
 
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                UmaRecorderHolder.get().removeUserActionCallbackForTesting(UserActionTester.this);
-            }
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        UmaRecorderHolder.get()
+                                .removeUserActionCallbackForTesting(UserActionTester.this);
+                    }
+                });
     }
 
     @Override

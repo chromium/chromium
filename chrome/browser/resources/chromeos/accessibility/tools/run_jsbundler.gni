@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
-
 closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
 
@@ -28,9 +26,20 @@ template("run_jsbundler") {
   } else {
     rewrite_rules = []
   }
+  if (defined(invoker.clear_dest_dirs)) {
+    assert(defined(invoker.dest_dir))
+    clear_dest_dirs = []
+    foreach(clear_dest_dir, invoker.clear_dest_dirs) {
+      clear_dest_dirs += [ rebase_path(invoker.dest_dir + "/" + clear_dest_dir,
+                                       root_build_dir) ]
+    }
+  } else {
+    clear_dest_dirs = []
+  }
 
   action(target_name) {
-    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/jsbundler.py"
+    script =
+        "//chrome/browser/resources/chromeos/accessibility/tools/jsbundler.py"
     inputs = jsbundler_modules
     sources = invoker.sources
     forward_variables_from(invoker, [ "deps" ])
@@ -67,6 +76,13 @@ template("run_jsbundler") {
         rebase_path(invoker.output_file, root_build_dir),
       ]
     }
+    foreach(clear_dest_dir, clear_dest_dirs) {
+      args += [
+        "--clear_dest_dir",
+        clear_dest_dir,
+      ]
+    }
+
     if (defined(invoker.dest_dir)) {
       args += [
         "-d",

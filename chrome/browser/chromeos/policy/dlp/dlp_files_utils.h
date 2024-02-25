@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_FILES_UTILS_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_FILES_UTILS_H_
 
-#include "chrome/browser/enterprise/data_controls/component.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/enterprise/data_controls/component.h"
+#include "url/gurl.h"
 
 namespace policy {
 namespace dlp {
@@ -37,7 +39,7 @@ bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
                             data_controls::Component component);
 
 // Opens the policy Learn more page.
-void OpenLearnMore();
+void OpenLearnMore(const GURL& url = GURL(dlp::kDlpLearnMoreUrl));
 
 }  // namespace dlp
 }  // namespace policy

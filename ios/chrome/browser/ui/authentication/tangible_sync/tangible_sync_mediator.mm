@@ -1,19 +1,23 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator.h"
 
 #import "base/check_op.h"
+#import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/unified_consent_service.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service.h"
+#import "ios/chrome/browser/ui/authentication/account_capabilities_latency_tracker.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_consumer.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator_delegate.h"
@@ -24,27 +28,30 @@
 @end
 
 @implementation TangibleSyncMediator {
-  AuthenticationService* _authenticationService;
-  ChromeAccountManagerService* _accountManagerService;
+  raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   // Auditor for user consent.
-  consent_auditor::ConsentAuditor* _consentAuditor;
+  raw_ptr<consent_auditor::ConsentAuditor> _consentAuditor;
   // Manager for user's Google identities.
-  signin::IdentityManager* _identityManager;
+  raw_ptr<signin::IdentityManager> _identityManager;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // Manager for the authentication flow.
   AuthenticationFlow* _authenticationFlow;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Service that allows for configuring sync.
-  SyncSetupService* _syncSetupService;
+  raw_ptr<SyncSetupService> _syncSetupService;
   // Manager for user consent.
-  unified_consent::UnifiedConsentService* _unifiedConsentService;
+  raw_ptr<unified_consent::UnifiedConsentService> _unifiedConsentService;
   // Sync opt-in access point.
   signin_metrics::AccessPoint _accessPoint;
+  // Records the latency of capabilities fetch for this view.
+  std::unique_ptr<signin::AccountCapabilitiesLatencyTracker>
+      _accountCapabilitiesLatencyTracker;
 }
 
 - (instancetype)
@@ -82,11 +89,15 @@
     _syncSetupService = syncSetupService;
     _unifiedConsentService = unifiedConsentService;
     _accessPoint = accessPoint;
+    _accountCapabilitiesLatencyTracker =
+        std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
+            identityManager);
   }
   return self;
 }
 
 - (void)disconnect {
+  _accountCapabilitiesLatencyTracker.reset();
   _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   self.consumer = nil;
@@ -149,6 +160,12 @@
   }
 }
 
+- (void)onChromeAccountManagerServiceShutdown:
+    (ChromeAccountManagerService*)accountManagerService {
+  // TODO(crbug.com/1489595): Remove `[self disconnect]`.
+  [self disconnect];
+}
+
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onPrimaryAccountChanged:
@@ -162,6 +179,13 @@
       return;
     }
     [self.delegate tangibleSyncMediatorUserRemoved:self];
+  }
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
   }
 }
 

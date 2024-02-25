@@ -7,9 +7,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
@@ -17,7 +17,6 @@
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace base {
@@ -114,8 +113,23 @@ int GetGlobalStaticRuleLimit();
 // also the maximum number of static rules an extension can enable at any point.
 int GetMaximumRulesPerRuleset();
 
-// Returns the shared rule limit for dynamic and session-scoped rules.
-int GetDynamicAndSessionRuleLimit();
+// Returns the rule limit for dynamic rules. If the
+// `kDeclarativeNetRequestSafeRuleLimits` is disabled, the dynamic rule limit
+// will be the "unsafe" dynamic rule limit which is lower in value.
+int GetDynamicRuleLimit();
+
+// Returns the rule limit for "unsafe" dynamic rules. See the implementation for
+// `IsRuleSafe` for how a rule's safety is determined.
+int GetUnsafeDynamicRuleLimit();
+
+// Returns the rule limit for session-scoped rules. If the
+// `kDeclarativeNetRequestSafeRuleLimits` is disabled, the session-scoped rule
+// limit will be the "unsafe" session-scoped rule limit which is lower in value.
+int GetSessionRuleLimit();
+
+// Returns the rule limit for "unsafe" session-scoped rules. See the
+// implementation for `IsRuleSafe` for how a rule's safety is determined.
+int GetUnsafeSessionRuleLimit();
 
 // Returns the per-extension regex rules limit. This is enforced separately for
 // static and dynamic rulesets.
@@ -132,8 +146,14 @@ ScopedRuleLimitOverride CreateScopedStaticGuaranteedMinimumOverrideForTesting(
 ScopedRuleLimitOverride CreateScopedGlobalStaticRuleLimitOverrideForTesting(
     int limit);
 ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(int limit);
-ScopedRuleLimitOverride
-CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(int limit);
+ScopedRuleLimitOverride CreateScopedDynamicRuleLimitOverrideForTesting(
+    int limit);
+ScopedRuleLimitOverride CreateScopedUnsafeDynamicRuleLimitOverrideForTesting(
+    int limit);
+ScopedRuleLimitOverride CreateScopedSessionRuleLimitOverrideForTesting(
+    int limit);
+ScopedRuleLimitOverride CreateScopedUnsafeSessionRuleLimitOverrideForTesting(
+    int limit);
 ScopedRuleLimitOverride CreateScopedDisabledStaticRuleLimitOverrideForTesting(
     int limit);
 
@@ -151,7 +171,7 @@ size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher);
 // for the specified |tab_id|. If |tab_is| is omitted, then non-tab specific
 // permissions are checked.
 bool HasDNRFeedbackPermission(const Extension* extension,
-                              const absl::optional<int>& tab_id);
+                              const std::optional<int>& tab_id);
 
 // Returns the appropriate error string for an unsuccessful rule parsing result.
 std::string GetParseError(ParseResult error_reason, int rule_id);
@@ -172,6 +192,9 @@ url_pattern_index::flat::RequestMethod GetRequestMethod(
 url_pattern_index::flat::RequestMethod GetRequestMethod(
     bool http_or_https,
     api::declarative_net_request::RequestMethod request_method);
+
+bool IsRuleSafe(const api::declarative_net_request::Rule& rule);
+bool IsRuleSafe(const flat::UrlRuleMetadata& rule);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

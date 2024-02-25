@@ -1,0 +1,568 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="CrOSActionRecorderEvent">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="RecordAction"/>
+  <int value="2" label="FlushToDisk"/>
+  <int value="3" label="ReadFromFileFail"/>
+  <int value="4" label="ParseFromStringFail"/>
+  <int value="5" label="CreateDirectoryFail"/>
+  <int value="6" label="WriteFileAtomicallyFail"/>
+  <int value="7" label="StructuredMetricsLogged"/>
+</enum>
+
+<enum name="CrosDisksArchiveType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ZIP"/>
+  <int value="2" label="RAR"/>
+  <int value="3" label="TAR">Uncompressed TAR</int>
+  <int value="4" label="TAR.BZ2">Bzip2-compressed TAR</int>
+  <int value="5" label="TAR.GZ">Gzip-compressed TAR</int>
+  <int value="6" label="BZ2">Bzip2-compressed File</int>
+  <int value="7" label="GZ">Gzip-compressed File</int>
+  <int value="8" label="7Z">7-Zip</int>
+  <int value="9" label="CRX">Chrome Extension</int>
+  <int value="10" label="ISO">ISO image</int>
+  <int value="11" label="TAR.XZ">XZ-compressed TAR</int>
+  <int value="12" label="XZ">XZ-compressed File</int>
+  <int value="13" label="TAR.LZMA">LZMA-compressed TAR</int>
+  <int value="14" label="LZMA">LZMA-compressed File</int>
+  <int value="15" label="TAR.Z">Z-compressed TAR</int>
+  <int value="16" label="Z">Z-compressed File</int>
+  <int value="17" label="TAR.ZST">Zstandard-compressed TAR</int>
+  <int value="18" label="ZST">Zstandard-compressed File</int>
+  <int value="19" label="TAR.LZ">LZIP-compressed TAR</int>
+  <int value="20" label="LZ">LZIP-compressed File</int>
+</enum>
+
+<enum name="CrosDisksClientFormatError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Internal"/>
+  <int value="3" label="Invalid device path"/>
+  <int value="4" label="Device being formatted"/>
+  <int value="5" label="Unsupported filesystem"/>
+  <int value="6" label="Format program not found"/>
+  <int value="7" label="Format program failed"/>
+  <int value="8" label="Device not allowed for formatting"/>
+  <int value="9" label="Invalid format options"/>
+  <int value="10" label="Label too long"/>
+  <int value="11" label="Label has invalid character"/>
+</enum>
+
+<enum name="CrosDisksClientMountError">
+  <int value="0" label="Success">MountError::kNone</int>
+  <int value="1" label="Unknown">MountError::kUnknown</int>
+  <int value="2" label="Internal">MountError::kInternal</int>
+  <int value="3" label="Invalid argument">MountError::kInvalidArgument</int>
+  <int value="4" label="Invalid path">MountError::kInvalidPath</int>
+  <int value="5" label="Path already mounted">
+    MountError::kPathAlreadyMounted
+  </int>
+  <int value="6" label="Path not mounted">MountError::kPathNotMounted</int>
+  <int value="7" label="Directory creation failed">
+    MountError::kDirectoryCreationFailed
+  </int>
+  <int value="8" label="Invalid mount options">
+    MountError::kInvalidMountOptions
+  </int>
+  <int value="9" label="Invalid unmount options">
+    MountError::kInvalidUnmountOptions
+  </int>
+  <int value="10" label="Insufficient permissions">
+    MountError::kInsufficientPermissions
+  </int>
+  <int value="11" label="Mount program not found">
+    MountError::kMountProgramNotFound
+  </int>
+  <int value="12" label="Mount program failed">
+    MountError::kMountProgramFailed
+  </int>
+  <int value="13" label="Invalid device path">
+    MountError::kInvalidDevicePath
+  </int>
+  <int value="14" label="Unknown filesystem">
+    MountError::kUnknownFilesystem
+  </int>
+  <int value="15" label="Unsupported filesystem">
+    MountError::kUnsupportedFilesystem
+  </int>
+  <int value="16" label="Invalid archive">MountError::kInvalidArchive</int>
+  <int value="17" label="Need password">MountError::kNeedPassword</int>
+  <int value="18" label="In progress">MountError::kInProgress</int>
+  <int value="19" label="Cancelled">MountError::kCancelled</int>
+  <int value="20" label="Busy">MountError::kBusy</int>
+</enum>
+
+<enum name="CrosDisksDeviceMediaType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="USB Drive"/>
+  <int value="2" label="SD Card"/>
+  <int value="3" label="Optical Disc"/>
+  <int value="4" label="Mobile Device"/>
+  <int value="5" label="DVD"/>
+</enum>
+
+<enum name="CrosDisksFilesystemType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Others"/>
+  <int value="2" label="FAT"/>
+  <int value="3" label="exFAT"/>
+  <int value="4" label="NTFS"/>
+  <int value="5" label="HFS+"/>
+  <int value="6" label="Ext2"/>
+  <int value="7" label="Ext3"/>
+  <int value="8" label="Ext4"/>
+  <int value="9" label="ISO9660"/>
+  <int value="10" label="UDF"/>
+</enum>
+
+<enum name="CrosDisksMountTypeError">
+  <int value="0" label="Invalid - Success">
+    100 * MountType::kInvalid + MountError::kNone
+  </int>
+  <int value="1" label="Invalid - Unknown">
+    100 * MountType::kInvalid + MountError::kUnknown
+  </int>
+  <int value="2" label="Invalid - Internal">
+    100 * MountType::kInvalid + MountError::kInternal
+  </int>
+  <int value="3" label="Invalid - Invalid argument">
+    100 * MountType::kInvalid + MountError::kInvalidArgument
+  </int>
+  <int value="4" label="Invalid - Invalid path">
+    100 * MountType::kInvalid + MountError::kInvalidPath
+  </int>
+  <int value="5" label="Invalid - Path already mounted">
+    100 * MountType::kInvalid + MountError::kPathAlreadyMounted
+  </int>
+  <int value="6" label="Invalid - Path not mounted">
+    100 * MountType::kInvalid + MountError::kPathNotMounted
+  </int>
+  <int value="7" label="Invalid - Directory creation failed">
+    100 * MountType::kInvalid + MountError::kDirectoryCreationFailed
+  </int>
+  <int value="8" label="Invalid - Invalid mount options">
+    100 * MountType::kInvalid + MountError::kInvalidMountOptions
+  </int>
+  <int value="9" label="Invalid - Invalid unmount options">
+    100 * MountType::kInvalid + MountError::kInvalidUnmountOptions
+  </int>
+  <int value="10" label="Invalid - Insufficient permissions">
+    100 * MountType::kInvalid + MountError::kInsufficientPermissions
+  </int>
+  <int value="11" label="Invalid - Mount program not found">
+    100 * MountType::kInvalid + MountError::kMountProgramNotFound
+  </int>
+  <int value="12" label="Invalid - Mount program failed">
+    100 * MountType::kInvalid + MountError::kMountProgramFailed
+  </int>
+  <int value="13" label="Invalid - Invalid device path">
+    100 * MountType::kInvalid + MountError::kInvalidDevicePath
+  </int>
+  <int value="14" label="Invalid - Unknown filesystem">
+    100 * MountType::kInvalid + MountError::kUnknownFilesystem
+  </int>
+  <int value="15" label="Invalid - Unsupported filesystem">
+    100 * MountType::kInvalid + MountError::kUnsupportedFilesystem
+  </int>
+  <int value="16" label="Invalid - Invalid archive">
+    100 * MountType::kInvalid + MountError::kInvalidArchive
+  </int>
+  <int value="17" label="Invalid - Need password">
+    100 * MountType::kInvalid + MountError::kNeedPassword
+  </int>
+  <int value="18" label="Invalid - In progress">
+    100 * MountType::kInvalid + MountError::kInProgress
+  </int>
+  <int value="19" label="Invalid - Cancelled">
+    100 * MountType::kInvalid + MountError::kCancelled
+  </int>
+  <int value="20" label="Invalid - Busy">
+    100 * MountType::kInvalid + MountError::kBusy
+  </int>
+  <int value="100" label="Device - Success">
+    100 * MountType::kDevice + MountError::kNone
+  </int>
+  <int value="101" label="Device - Unknown">
+    100 * MountType::kDevice + MountError::kUnknown
+  </int>
+  <int value="102" label="Device - Internal">
+    100 * MountType::kDevice + MountError::kInternal
+  </int>
+  <int value="103" label="Device - Invalid argument">
+    100 * MountType::kDevice + MountError::kInvalidArgument
+  </int>
+  <int value="104" label="Device - Invalid path">
+    100 * MountType::kDevice + MountError::kInvalidPath
+  </int>
+  <int value="105" label="Device - Path already mounted">
+    100 * MountType::kDevice + MountError::kPathAlreadyMounted
+  </int>
+  <int value="106" label="Device - Path not mounted">
+    100 * MountType::kDevice + MountError::kPathNotMounted
+  </int>
+  <int value="107" label="Device - Directory creation failed">
+    100 * MountType::kDevice + MountError::kDirectoryCreationFailed
+  </int>
+  <int value="108" label="Device - Invalid mount options">
+    100 * MountType::kDevice + MountError::kInvalidMountOptions
+  </int>
+  <int value="109" label="Device - Invalid unmount options">
+    100 * MountType::kDevice + MountError::kInvalidUnmountOptions
+  </int>
+  <int value="110" label="Device - Insufficient permissions">
+    100 * MountType::kDevice + MountError::kInsufficientPermissions
+  </int>
+  <int value="111" label="Device - Mount program not found">
+    100 * MountType::kDevice + MountError::kMountProgramNotFound
+  </int>
+  <int value="112" label="Device - Mount program failed">
+    100 * MountType::kDevice + MountError::kMountProgramFailed
+  </int>
+  <int value="113" label="Device - Invalid device path">
+    100 * MountType::kDevice + MountError::kInvalidDevicePath
+  </int>
+  <int value="114" label="Device - Unknown filesystem">
+    100 * MountType::kDevice + MountError::kUnknownFilesystem
+  </int>
+  <int value="115" label="Device - Unsupported filesystem">
+    100 * MountType::kDevice + MountError::kUnsupportedFilesystem
+  </int>
+  <int value="116" label="Device - Invalid archive">
+    100 * MountType::kDevice + MountError::kInvalidArchive
+  </int>
+  <int value="117" label="Device - Needs password">
+    100 * MountType::kDevice + MountError::kNeedPassword
+  </int>
+  <int value="118" label="Device - In progress">
+    100 * MountType::kDevice + MountError::kInProgress
+  </int>
+  <int value="119" label="Device - Cancelled">
+    100 * MountType::kDevice + MountError::kCancelled
+  </int>
+  <int value="120" label="Device - Busy">
+    100 * MountType::kDevice + MountError::kBusy
+  </int>
+  <int value="200" label="Archive - Success">
+    100 * MountType::kArchive + MountError::kNone
+  </int>
+  <int value="201" label="Archive - Unknown">
+    100 * MountType::kArchive + MountError::kUnknown
+  </int>
+  <int value="202" label="Archive - Internal">
+    100 * MountType::kArchive + MountError::kInternal
+  </int>
+  <int value="203" label="Archive - Invalid argument">
+    100 * MountType::kArchive + MountError::kInvalidArgument
+  </int>
+  <int value="204" label="Archive - Invalid path">
+    100 * MountType::kArchive + MountError::kInvalidPath
+  </int>
+  <int value="205" label="Archive - Path already mounted">
+    100 * MountType::kArchive + MountError::kPathAlreadyMounted
+  </int>
+  <int value="206" label="Archive - Path not mounted">
+    100 * MountType::kArchive + MountError::kPathNotMounted
+  </int>
+  <int value="207" label="Archive - Directory creation failed">
+    100 * MountType::kArchive + MountError::kDirectoryCreationFailed
+  </int>
+  <int value="208" label="Archive - Invalid mount options">
+    100 * MountType::kArchive + MountError::kInvalidMountOptions
+  </int>
+  <int value="209" label="Archive - Invalid unmount options">
+    100 * MountType::kArchive + MountError::kInvalidUnmountOptions
+  </int>
+  <int value="210" label="Archive - Insufficient permissions">
+    100 * MountType::kArchive + MountError::kInsufficientPermissions
+  </int>
+  <int value="211" label="Archive - Mount program not found">
+    100 * MountType::kArchive + MountError::kMountProgramNotFound
+  </int>
+  <int value="212" label="Archive - Mount program failed">
+    100 * MountType::kArchive + MountError::kMountProgramFailed
+  </int>
+  <int value="213" label="Archive - Invalid device path">
+    100 * MountType::kArchive + MountError::kInvalidDevicePath
+  </int>
+  <int value="214" label="Archive - Unknown filesystem">
+    100 * MountType::kArchive + MountError::kUnknownFilesystem
+  </int>
+  <int value="215" label="Archive - Unsupported filesystem">
+    100 * MountType::kArchive + MountError::kUnsupportedFilesystem
+  </int>
+  <int value="216" label="Archive - Invalid archive">
+    100 * MountType::kArchive + MountError::kInvalidArchive
+  </int>
+  <int value="217" label="Archive - Need password">
+    100 * MountType::kArchive + MountError::kNeedPassword
+  </int>
+  <int value="218" label="Archive - In progress">
+    100 * MountType::kArchive + MountError::kInProgress
+  </int>
+  <int value="219" label="Archive - Cancelled">
+    100 * MountType::kArchive + MountError::kCancelled
+  </int>
+  <int value="220" label="Archive - Busy">
+    100 * MountType::kArchive + MountError::kBusy
+  </int>
+  <int value="300" label="Network - Success">
+    100 * MountType::kNetworkStorage + MountError::kNone
+  </int>
+  <int value="301" label="Network - Unknown">
+    100 * MountType::kNetworkStorage + MountError::kUnknown
+  </int>
+  <int value="302" label="Network - Internal">
+    100 * MountType::kNetworkStorage + MountError::kInternal
+  </int>
+  <int value="303" label="Network - Invalid argument">
+    100 * MountType::kNetworkStorage + MountError::kInvalidArgument
+  </int>
+  <int value="304" label="Network - Invalid path">
+    100 * MountType::kNetworkStorage + MountError::kInvalidPath
+  </int>
+  <int value="305" label="Network - Path already mounted">
+    100 * MountType::kNetworkStorage + MountError::kPathAlreadyMounted
+  </int>
+  <int value="306" label="Network - Path not mounted">
+    100 * MountType::kNetworkStorage + MountError::kPathNotMounted
+  </int>
+  <int value="307" label="Network - Directory creation failed">
+    100 * MountType::kNetworkStorage + MountError::kDirectoryCreationFailed
+  </int>
+  <int value="308" label="Network - Invalid mount options">
+    100 * MountType::kNetworkStorage + MountError::kInvalidMountOptions
+  </int>
+  <int value="309" label="Network - Invalid unmount options">
+    100 * MountType::kNetworkStorage + MountError::kInvalidUnmountOptions
+  </int>
+  <int value="310" label="Network - Insufficient permissions">
+    100 * MountType::kNetworkStorage + MountError::kInsufficientPermissions
+  </int>
+  <int value="311" label="Network - Mount program not found">
+    100 * MountType::kNetworkStorage + MountError::kMountProgramNotFound
+  </int>
+  <int value="312" label="Network - Mount program failed">
+    100 * MountType::kNetworkStorage + MountError::kMountProgramFailed
+  </int>
+  <int value="313" label="Network - Invalid device path">
+    100 * MountType::kNetworkStorage + MountError::kInvalidDevicePath
+  </int>
+  <int value="314" label="Network - Unknown filesystem">
+    100 * MountType::kNetworkStorage + MountError::kUnknownFilesystem
+  </int>
+  <int value="315" label="Network - Unsupported filesystem">
+    100 * MountType::kNetworkStorage + MountError::kUnsupportedFilesystem
+  </int>
+  <int value="316" label="Network - Invalid archive">
+    100 * MountType::kNetworkStorage + MountError::kInvalidArchive
+  </int>
+  <int value="317" label="Network - Needs password">
+    100 * MountType::kNetworkStorage + MountError::kNeedPassword
+  </int>
+  <int value="318" label="Network - In progress">
+    100 * MountType::kNetworkStorage + MountError::kInProgress
+  </int>
+  <int value="319" label="Network - Cancelled">
+    100 * MountType::kNetworkStorage + MountError::kCancelled
+  </int>
+  <int value="320" label="Network - Busy">
+    100 * MountType::kNetworkStorage + MountError::kBusy
+  </int>
+</enum>
+
+<enum name="DaemonError">
+  <int value="132" label="SIGILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
+  </int>
+  <int value="134" label="SIGABRT">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
+  </int>
+  <int value="137" label="SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
+  </int>
+  <int value="139" label="SIGSEGV">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
+  </int>
+  <int value="143" label="SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
+  </int>
+  <int value="253" label="Seccomp violation">
+    MINIJAIL_ERR_JAIL from libminijail
+  </int>
+</enum>
+
+<enum name="FuseArchiveError">
+  <int value="0" label="Success">EXIT_SUCCESS</int>
+  <int value="1" label="Generic error">EXIT_CODE_GENERIC_FAILURE</int>
+  <int value="11" label="Cannot open">EXIT_CODE_CANNOT_OPEN_ARCHIVE</int>
+  <int value="20" label="Missing password">EXIT_CODE_PASSPHRASE_REQUIRED</int>
+  <int value="21" label="Bad password">EXIT_CODE_PASSPHRASE_INCORRECT</int>
+  <int value="22" label="Encryption method not supported">
+    EXIT_CODE_PASSPHRASE_NOT_SUPPORTED
+  </int>
+  <int value="30" label="Invalid archive">EXIT_CODE_INVALID_RAW_ARCHIVE</int>
+  <int value="31" label="Invalid archive header">
+    EXIT_CODE_INVALID_ARCHIVE_HEADER
+  </int>
+  <int value="32" label="Invalid archive contents">
+    EXIT_CODE_INVALID_ARCHIVE_CONTENTS
+  </int>
+  <int value="33" label="Duplicate entry (explicit)">
+    EXIT_CODE_INVALID_EXPLICIT_DUPLICATE_ENTRY
+  </int>
+  <int value="34" label="Duplicate entry (implicit)">
+    EXIT_CODE_INVALID_IMPLICIT_DUPLICATE_ENTRY
+  </int>
+  <int value="132" label="Terminated by SIGILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
+  </int>
+  <int value="134" label="Terminated by SIGABRT">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
+  </int>
+  <int value="137" label="Terminated by SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
+  </int>
+  <int value="139" label="Terminated by SIGSEGV">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
+  </int>
+  <int value="143" label="Terminated by SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
+  </int>
+  <int value="251" label="Cannot bind-mount file">
+    MINIJAIL_ERR_MOUNT from libminijail
+  </int>
+  <int value="253" label="Seccomp violation">
+    MINIJAIL_ERR_JAIL from libminijail
+  </int>
+</enum>
+
+<enum name="FuseZipError">
+  <int value="0" label="Success">EXIT_SUCCESS</int>
+  <int value="11" label="Multipart ZIP">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_MULTIDISK (1) from libzip
+  </int>
+  <int value="15" label="Cannot read">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_READ (5) from libzip
+  </int>
+  <int value="19" label="No such file">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_NOENT (9) from libzip
+  </int>
+  <int value="21" label="Cannot open">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_OPEN (11) from libzip
+  </int>
+  <int value="23" label="Malloc failure">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_MEMORY (13) from libzip
+  </int>
+  <int value="26" label="Compression method not supported">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_COMPNOTSUPP (16) from libzip
+  </int>
+  <int value="27" label="Premature end of file">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_EOF (17) from libzip
+  </int>
+  <int value="29" label="Not a ZIP">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_NOZIP (19) from libzip
+  </int>
+  <int value="31" label="Inconsistent ZIP">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_INCONS (21) from libzip
+  </int>
+  <int value="34" label="Encryption method not supported">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_ENCRNOTSUPP (24) from libzip
+  </int>
+  <int value="36" label="Missing password">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_NOPASSWD (26) from libzip
+  </int>
+  <int value="37" label="Bad password">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_WRONGPASSWD (27) from libzip
+  </int>
+  <int value="38" label="Operation not supported">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_OPNOTSUPP (28) from libzip
+  </int>
+  <int value="132" label="Terminated by SIGILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
+  </int>
+  <int value="134" label="Terminated by SIGABRT">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
+  </int>
+  <int value="137" label="Terminated by SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
+  </int>
+  <int value="139" label="Terminated by SIGSEGV">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
+  </int>
+  <int value="143" label="Terminated by SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
+  </int>
+  <int value="251" label="Cannot bind-mount file">
+    MINIJAIL_ERR_MOUNT from libminijail
+  </int>
+  <int value="253" label="Seccomp violation">
+    MINIJAIL_ERR_JAIL from libminijail
+  </int>
+</enum>
+
+<enum name="Rar2fsError">
+  <int value="0" label="Success">Hardcoded in rar2fs</int>
+  <int value="1" label="Missing primary volume">Hardcoded in rar2fs</int>
+  <int value="12" label="Bad data">ERAR_BAD_DATA from libunrar</int>
+  <int value="13" label="Bad archive">ERAR_BAD_ARCHIVE from libunrar</int>
+  <int value="14" label="Unknown format">ERAR_UNKNOWN_FORMAT from libunrar</int>
+  <int value="15" label="Cannot open">ERAR_EOPEN from libunrar</int>
+  <int value="18" label="Cannot read">ERAR_EREAD from libunrar</int>
+  <int value="22" label="Missing password">
+    ERAR_MISSING_PASSWORD from libunrar
+  </int>
+  <int value="24" label="Bad password">ERAR_BAD_PASSWORD from libunrar</int>
+  <int value="132" label="Terminated by SIGILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
+  </int>
+  <int value="134" label="Terminated by SIGABRT">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
+  </int>
+  <int value="137" label="Terminated by SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
+  </int>
+  <int value="139" label="Terminated by SIGSEGV">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
+  </int>
+  <int value="143" label="Terminated by SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
+  </int>
+  <int value="251" label="Cannot bind-mount file">
+    MINIJAIL_ERR_MOUNT from libminijail
+  </int>
+  <int value="253" label="Seccomp violation">
+    MINIJAIL_ERR_JAIL from libminijail
+  </int>
+</enum>
+
+</enums>
+
+</histogram-configuration>

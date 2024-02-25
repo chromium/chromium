@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -26,7 +26,6 @@
 #include "components/download/public/common/download_item.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -97,7 +96,7 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   views::ViewAccessibility& accessibility = GetViewAccessibility();
   accessibility.OverrideName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_DOWNLOADS_BAR));
-  accessibility.OverrideRole(ax::mojom::Role::kGroup);
+  accessibility.SetRole(ax::mojom::Role::kGroup);
 
   // Delay 5 seconds if the mouse leaves the shelf by way of entering another
   // window. This is much larger than the normal delay as opening a download is
@@ -144,7 +143,7 @@ gfx::Size DownloadShelfView::CalculatePreferredSize() const {
                                       gfx::Size(prefsize.width(), 0), prefsize);
 }
 
-void DownloadShelfView::Layout() {
+void DownloadShelfView::Layout(PassKey) {
   int x = kStartPadding;
   const int download_items_end =
       std::max(0, width() - kEndPadding - close_button_->width() -
@@ -168,12 +167,13 @@ void DownloadShelfView::Layout() {
        center_y(close_button_->height())});
 
   if (all_downloads_hidden) {
-    for (auto* view : download_views_)
+    for (DownloadItemView* view : download_views_) {
       view->SetVisible(false);
+    }
     return;
   }
 
-  for (auto* view : base::Reversed(download_views_)) {
+  for (DownloadItemView* view : base::Reversed(download_views_)) {
     gfx::Size view_size = view->GetPreferredSize();
     if (view == download_views_.back()) {
       view_size = gfx::Tween::SizeValueBetween(
@@ -248,10 +248,11 @@ void DownloadShelfView::MouseMovedOutOfHost() {
 }
 
 void DownloadShelfView::AutoClose() {
-  if (base::ranges::all_of(download_views_, [](const auto* view) {
+  if (base::ranges::all_of(download_views_, [](const DownloadItemView* view) {
         return view->model()->GetOpened();
-      }))
+      })) {
     mouse_watcher_.Start(GetWidget()->GetNativeWindow());
+  }
 }
 
 void DownloadShelfView::RemoveDownloadView(View* view) {
@@ -307,13 +308,11 @@ void DownloadShelfView::DoShowDownload(
 void DownloadShelfView::DoOpen() {
   SetVisible(true);
   shelf_animation_.Show();
-  SetLastOpened();
 }
 
 void DownloadShelfView::DoClose() {
   parent_->SetDownloadShelfVisible(false);
   shelf_animation_.Hide();
-  RecordShelfVisibleTime();
 }
 
 void DownloadShelfView::DoHide() {
@@ -358,18 +357,5 @@ DownloadItemView* DownloadShelfView::GetViewOfLastDownloadItemForTesting() {
   return download_views_.empty() ? nullptr : download_views_.back();
 }
 
-void DownloadShelfView::SetLastOpened() {
-  last_opened_ = base::Time::Now();
-}
-
-void DownloadShelfView::RecordShelfVisibleTime() {
-  if (!last_opened_.is_null()) {
-    base::UmaHistogramCustomTimes("Download.Shelf.VisibleTime",
-                                  base::Time::Now() - last_opened_,
-                                  base::Seconds(1), base::Days(1), 100);
-    last_opened_ = base::Time();
-  }
-}
-
-BEGIN_METADATA(DownloadShelfView, views::AccessiblePaneView)
+BEGIN_METADATA(DownloadShelfView)
 END_METADATA

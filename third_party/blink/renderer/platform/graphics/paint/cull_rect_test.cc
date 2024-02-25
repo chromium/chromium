@@ -15,35 +15,38 @@ namespace blink {
 
 class CullRectTest : public testing::Test,
                      public testing::WithParamInterface<bool>,
-                     private ScopedCompositeScrollAfterPaintForTest {
+                     private ScopedDynamicScrollCullRectExpansionForTest {
  protected:
-  CullRectTest() : ScopedCompositeScrollAfterPaintForTest(GetParam()) {}
+  CullRectTest() : ScopedDynamicScrollCullRectExpansionForTest(GetParam()) {}
 
   bool ApplyPaintProperties(
       CullRect& cull_rect,
       const PropertyTreeState& root,
       const PropertyTreeState& source,
       const PropertyTreeState& destination,
-      const absl::optional<CullRect>& old_cull_rect = absl::nullopt) {
+      const std::optional<CullRect>& old_cull_rect = std::nullopt) {
     return cull_rect.ApplyPaintProperties(root, source, destination,
                                           old_cull_rect, disable_expansion_);
   }
 
-  bool ApplyScrollTranslation(CullRect& cull_rect,
-                              const TransformPaintPropertyNode& t) {
+  std::pair<bool, bool> ApplyScrollTranslation(
+      CullRect& cull_rect,
+      const TransformPaintPropertyNode& t) {
     return cull_rect.ApplyScrollTranslation(t, t, disable_expansion_);
   }
 
   bool ChangedEnough(const gfx::Rect& old_rect,
                      const gfx::Rect& new_rect,
-                     const absl::optional<gfx::Rect>& bounds = absl::nullopt) {
-    return CullRect(new_rect).ChangedEnough(CullRect(old_rect), bounds);
+                     const std::optional<gfx::Rect>& bounds = std::nullopt,
+                     const std::pair<bool, bool>& expanded = {true, true}) {
+    return CullRect(new_rect).ChangedEnough(expanded, CullRect(old_rect),
+                                            bounds);
   }
 
   bool disable_expansion_ = false;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, CullRectTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, CullRectTest, testing::Bool());
 
 TEST_P(CullRectTest, IntersectsRect) {
   CullRect cull_rect(gfx::Rect(0, 0, 50, 50));
@@ -109,56 +112,130 @@ TEST_P(CullRectTest, ApplyTransformInfinite) {
   EXPECT_TRUE(cull_rect.IsInfinite());
 }
 
-TEST_P(CullRectTest, ApplyScrollTranslationPartialScrollingContents) {
+TEST_P(CullRectTest, ApplyScrollTranslationPartialScrollingContents1) {
+  auto state = CreateCompositedScrollTranslationState(
+      PropertyTreeState::Root(), 0, -5000, gfx::Rect(20, 10, 40, 50),
+      gfx::Size(40, 8000));
+  auto& scroll_translation = state.Transform();
+
+  CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
+
+  // Clipped: (20, 10, 30, 50)
+  // Inverse transformed: (20, 5010, 30, 50)
+  // Expanded: (0, 1010, 30/40, 8050)
+  // Then clipped by the contents rect.
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(std::make_pair(false, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+    EXPECT_EQ(gfx::Rect(20, 1010, 30, 7000), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(std::make_pair(true, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+    EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
+  }
+
+  cull_rect = CullRect::Infinite();
+  // This result differs from the above result in width (30 vs 40)
+  // because it's not clipped by the infinite input cull rect.
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(std::make_pair(false, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+    EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(std::make_pair(true, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+    EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
+  }
+
+  // This cull rect is fully contained by the container rect.
+  cull_rect = CullRect(gfx::Rect(30, 10, 20, 30));
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(std::make_pair(false, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+    // No expansion in the non-scrollable direction.
+    EXPECT_EQ(gfx::Rect(30, 1010, 20, 7000), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(std::make_pair(true, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+    EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
+  }
+}
+
+TEST_P(CullRectTest, ApplyScrollTranslationPartialScrollingContents2) {
   auto state = CreateCompositedScrollTranslationState(
       PropertyTreeState::Root(), -3000, -5000, gfx::Rect(20, 10, 40, 50),
       gfx::Size(8000, 8000));
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
-
-  // Clipped: (20, 10, 30, 50)
-  // Inverse transformed: (3020, 5010, 30, 50)
-  // Expanded: (-980, 1010, 8030, 8050)
-  // Then clipped by the contents rect.
-  EXPECT_EQ(gfx::Rect(20, 1010, 7030, 7000), cull_rect.Rect());
-
+  // Similar to ApplyScrollTranslationPartialScrollingContents1, but expands
+  // cull rect along both axes.
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(1020, 3010, 4030, 4050)
+                : gfx::Rect(20, 1010, 7030, 7000),
+            cull_rect.Rect());
   cull_rect = CullRect::Infinite();
-  EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
-  // This result differs from the above result in width (7030 vs 7040)
-  // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(gfx::Rect(20, 1010, 7040, 7000), cull_rect.Rect());
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(1020, 3010, 4040, 4050)
+                : gfx::Rect(20, 1010, 7040, 7000),
+            cull_rect.Rect());
 }
 
 TEST_P(CullRectTest,
-       ApplyNonCompositedScrollTranslationPartialScrollingContents) {
+       ApplyNonCompositedScrollTranslationPartialScrollingContents1) {
+  auto state = CreateScrollTranslationState(PropertyTreeState::Root(), 0, -5000,
+                                            gfx::Rect(20, 10, 40, 50),
+                                            gfx::Size(40, 8000));
+  auto& scroll_translation = state.Transform();
+
+  CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
+  // Same as ApplyScrollTranslationPartialScrollingContents1.
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(std::make_pair(false, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+    EXPECT_EQ(gfx::Rect(20, 1010, 30, 7000), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(std::make_pair(true, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+    EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
+  }
+  cull_rect = CullRect::Infinite();
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(std::make_pair(false, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+  } else {
+    EXPECT_EQ(std::make_pair(true, true),
+              ApplyScrollTranslation(cull_rect, scroll_translation));
+  }
+  EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
+}
+
+TEST_P(CullRectTest,
+       ApplyNonCompositedScrollTranslationPartialScrollingContents2) {
   auto state = CreateScrollTranslationState(PropertyTreeState::Root(), -3000,
                                             -5000, gfx::Rect(20, 10, 40, 50),
                                             gfx::Size(8000, 8000));
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // Same as ApplyScrollTranslationPartialScrollingContents.
-    EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
-    EXPECT_EQ(gfx::Rect(20, 1010, 7030, 7000), cull_rect.Rect());
-    cull_rect = CullRect::Infinite();
-    EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
-    EXPECT_EQ(gfx::Rect(20, 1010, 7040, 7000), cull_rect.Rect());
-  } else {
-    EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
-
-    // Clipped: (20, 10, 30, 50)
-    // Inverse transformed: (3020, 5010, 30, 50)
-    EXPECT_EQ(gfx::Rect(3020, 5010, 30, 50), cull_rect.Rect());
-
-    cull_rect = CullRect::Infinite();
-    EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
-    // This result differs from the above result in width (40 vs 30)
-    // because it's not clipped by the infinite input cull rect.
-    EXPECT_EQ(gfx::Rect(3020, 5010, 40, 50), cull_rect.Rect());
-  }
+  // Same as ApplyScrollTranslationPartialScrollingContents2.
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(1020, 3010, 4030, 4050)
+                : gfx::Rect(20, 1010, 7030, 7000),
+            cull_rect.Rect());
+  cull_rect = CullRect::Infinite();
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(1020, 3010, 4040, 4050)
+                : gfx::Rect(20, 1010, 7040, 7000),
+            cull_rect.Rect());
 }
 
 TEST_P(CullRectTest,
@@ -170,14 +247,16 @@ TEST_P(CullRectTest,
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
 
   // Clipped: (20, 10, 30, 50)
   // Inverse transformed: (3020, 5010, 30, 50)
   EXPECT_EQ(gfx::Rect(3020, 5010, 30, 50), cull_rect.Rect());
 
   cull_rect = CullRect::Infinite();
-  EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
   // This result differs from the above result in width (40 vs 30)
   // because it's not clipped by the infinite input cull rect.
   EXPECT_EQ(gfx::Rect(3020, 5010, 40, 50), cull_rect.Rect());
@@ -190,7 +269,8 @@ TEST_P(CullRectTest, ApplyScrollTranslationNoIntersectionWithContainerRect) {
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
   EXPECT_TRUE(cull_rect.Rect().IsEmpty());
 }
 
@@ -202,7 +282,8 @@ TEST_P(CullRectTest,
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
   EXPECT_TRUE(cull_rect.Rect().IsEmpty());
 }
 
@@ -213,7 +294,8 @@ TEST_P(CullRectTest, ApplyScrollTranslationWholeScrollingContents) {
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
 
   // Clipped: (20, 10, 30, 50)
   // Inverse transformed: (30, 25, 30, 50)
@@ -222,7 +304,8 @@ TEST_P(CullRectTest, ApplyScrollTranslationWholeScrollingContents) {
   EXPECT_EQ(gfx::Rect(20, 10, 2000, 2000), cull_rect.Rect());
 
   cull_rect = CullRect::Infinite();
-  EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
   EXPECT_EQ(gfx::Rect(20, 10, 2000, 2000), cull_rect.Rect());
 }
 
@@ -234,26 +317,14 @@ TEST_P(CullRectTest,
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // Same as ApplyScrollTranslationWholeScrollingContents.
-    EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
-    EXPECT_EQ(gfx::Rect(20, 10, 2000, 2000), cull_rect.Rect());
-    cull_rect = CullRect::Infinite();
-    EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
-    EXPECT_EQ(gfx::Rect(20, 10, 2000, 2000), cull_rect.Rect());
-  } else {
-    EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
-
-    // Clipped: (20, 10, 30, 50)
-    // Inverse transformed: (30, 25, 30, 50)
-    EXPECT_EQ(gfx::Rect(30, 25, 30, 50), cull_rect.Rect());
-
-    cull_rect = CullRect::Infinite();
-    EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
-    // This result differs from the above result in height (40 vs 30)
-    // because it's not clipped by the infinite input cull rect.
-    EXPECT_EQ(gfx::Rect(30, 25, 40, 50), cull_rect.Rect());
-  }
+  // Same as ApplyScrollTranslationWholeScrollingContents.
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(gfx::Rect(20, 10, 2000, 2000), cull_rect.Rect());
+  cull_rect = CullRect::Infinite();
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(gfx::Rect(20, 10, 2000, 2000), cull_rect.Rect());
 }
 
 TEST_P(CullRectTest,
@@ -265,14 +336,16 @@ TEST_P(CullRectTest,
   auto& scroll_translation = state.Transform();
 
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
-  EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
 
   // Clipped: (20, 10, 30, 50)
   // Inverse transformed: (30, 25, 30, 50)
   EXPECT_EQ(gfx::Rect(30, 25, 30, 50), cull_rect.Rect());
 
   cull_rect = CullRect::Infinite();
-  EXPECT_FALSE(ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
   // This result differs from the above result in height (40 vs 30)
   // because it's not clipped by the infinite input cull rect.
   EXPECT_EQ(gfx::Rect(30, 25, 40, 50), cull_rect.Rect());
@@ -364,6 +437,27 @@ TEST_P(CullRectTest, ChangedEnoughOldRectTouchingEdge) {
   EXPECT_FALSE(ChangedEnough(gfx::Rect(300, 400, 100, 100), new_rect, bounds));
 }
 
+TEST_P(CullRectTest, ChangedEnoughNotExpanded) {
+  gfx::Rect old_rect(100, 100, 300, 300);
+  // X is not expanded and unchanged, y isn't changed enough.
+  EXPECT_FALSE(ChangedEnough(old_rect, gfx::Rect(100, 0, 300, 300),
+                             std::nullopt, {false, true}));
+  // X is not expanded and changed, y unchanged.
+  EXPECT_TRUE(ChangedEnough(old_rect, gfx::Rect(0, 100, 300, 300), std::nullopt,
+                            {false, true}));
+  EXPECT_TRUE(ChangedEnough(old_rect, gfx::Rect(100, 100, 200, 300),
+                            std::nullopt, {false, true}));
+
+  // X isn't changed enough, y is not expanded and unchanged.
+  EXPECT_FALSE(ChangedEnough(old_rect, gfx::Rect(0, 100, 300, 300),
+                             std::nullopt, {true, false}));
+  // X unchanged, Y is not expanded and changed.
+  EXPECT_TRUE(ChangedEnough(old_rect, gfx::Rect(100, 0, 300, 300), std::nullopt,
+                            {true, false}));
+  EXPECT_TRUE(ChangedEnough(old_rect, gfx::Rect(100, 100, 300, 200),
+                            std::nullopt, {true, false}));
+}
+
 TEST_P(CullRectTest, ApplyPaintPropertiesWithoutClipScroll) {
   auto t1 = CreateTransform(t0(), MakeTranslationMatrix(1, 2));
   auto t2 = CreateTransform(*t1, MakeTranslationMatrix(10, 20));
@@ -444,9 +538,15 @@ TEST_P(CullRectTest, SingleScrollPartialScrollingContents) {
   CullRect cull_rect1(gfx::Rect(0, 0, 50, 100));
   EXPECT_TRUE(ApplyPaintProperties(cull_rect1, state1, state1,
                                    scroll_translation_state));
-  EXPECT_EQ(gfx::Rect(20, 1010, 7030, 7000), cull_rect1.Rect());
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(1020, 3010, 4030, 4050)
+                : gfx::Rect(20, 1010, 7030, 7000),
+            cull_rect1.Rect());
 
-  CullRect old_cull_rect(gfx::Rect(20, 1100, 7050, 6910));
+  CullRect old_cull_rect(
+      RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+          ? gfx::Rect(1000, 3100, 4000, 4000)
+          : gfx::Rect(20, 1100, 7050, 6910));
   CullRect cull_rect2(gfx::Rect(0, 0, 50, 100));
   // Use old_cull_rect if the new cull rect didn't change enough.
   EXPECT_TRUE(ApplyPaintProperties(cull_rect2, state1, state1,
@@ -463,9 +563,12 @@ TEST_P(CullRectTest, SingleScrollPartialScrollingContents) {
   CullRect cull_rect4 = CullRect::Infinite();
   EXPECT_TRUE(ApplyPaintProperties(cull_rect4, state1, state1,
                                    scroll_translation_state));
-  // This result differs from the first result in width (7030 vs 7040)
+  // This result differs from the first result in width (4030 vs 4040)
   // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(gfx::Rect(20, 1010, 7040, 7000), cull_rect4.Rect());
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(1020, 3010, 4040, 4050)
+                : gfx::Rect(20, 1010, 7040, 7000),
+            cull_rect4.Rect());
 }
 
 TEST_P(CullRectTest, TransformUnderScrollTranslation) {
@@ -482,9 +585,15 @@ TEST_P(CullRectTest, TransformUnderScrollTranslation) {
   // except that the offset is adjusted with |t2|.
   CullRect cull_rect1(gfx::Rect(0, 0, 50, 100));
   EXPECT_TRUE(ApplyPaintProperties(cull_rect1, state1, state1, state2));
-  EXPECT_EQ(gfx::Rect(-1980, -1990, 7030, 7000), cull_rect1.Rect());
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(-980, 10, 4030, 4050)
+                : gfx::Rect(-1980, -1990, 7030, 7000),
+            cull_rect1.Rect());
 
-  CullRect old_cull_rect(gfx::Rect(-1980, -1990, 7030, 7000));
+  CullRect old_cull_rect(
+      RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+          ? gfx::Rect(-980, 10, 4000, 4000)
+          : gfx::Rect(-1980, -1990, 7030, 7000));
   CullRect cull_rect2(gfx::Rect(0, 0, 50, 100));
   // Use old_cull_rect if the new cull rect didn't change enough.
   EXPECT_TRUE(
@@ -502,7 +611,10 @@ TEST_P(CullRectTest, TransformUnderScrollTranslation) {
   EXPECT_TRUE(ApplyPaintProperties(cull_rect4, state1, state1, state2));
   // This result differs from the first result in height (7050 vs 7060)
   // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(gfx::Rect(-1980, -1990, 7040, 7000), cull_rect4.Rect());
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(-980, 10, 4040, 4050)
+                : gfx::Rect(-1980, -1990, 7040, 7000),
+            cull_rect4.Rect());
 }
 
 TEST_P(CullRectTest, TransformEscapingScroll) {
@@ -549,7 +661,7 @@ TEST_P(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
       ref_scroll_translation_state1.GetPropertyTreeState();
 
   auto t2 = CreateTransform(scroll_translation_state1.Transform(),
-                            MakeTranslationMatrix(2000, 3000));
+                            MakeTranslationMatrix(1000, 1500));
   PropertyTreeState state2(*t2, scroll_translation_state1.Clip(), e0());
 
   auto ref_scroll_translation_state2 = CreateCompositedScrollTranslationState(
@@ -597,11 +709,18 @@ TEST_P(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
   // After t2: (-3980, -3975, 8070, 8180)
   // Clipped by the container rect of the second scroll: (20, 10, 50, 100)
   // After the second scroll offset: (3020, 5010, 50, 100)
-  // Expanded: (-980, 1010, 8050, 8100)
-  // Then clipped by the contents rect.
-  EXPECT_EQ(gfx::Rect(20, 1010, 7050, 8100), cull_rect1.Rect());
+  // DynamicScrollCullRectExpansion:
+  //   Expanded: (1020, 3010, 4050, 4100)
+  // Otherwise:
+  //   Expanded: (-980, 1010, 8050, 8100)
+  //   Then clipped by the contents rect.
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(1020, 3010, 4050, 4100)
+                : gfx::Rect(20, 1010, 7050, 8100),
+            cull_rect1.Rect());
 
-  CullRect old_cull_rect(gfx::Rect(20, 1100, 7050, 8100));
+  CullRect old_cull_rect = cull_rect1;
+  old_cull_rect.Move(gfx::Vector2d(0, 100));
   CullRect cull_rect2(gfx::Rect(0, 0, 100, 200));
   // Use old_cull_rect if the new cull rect didn't change enough.
   EXPECT_TRUE(ApplyPaintProperties(cull_rect2, state1, state1,
@@ -797,6 +916,37 @@ TEST_P(CullRectTest, ClipWithNonIntegralOffsetAndZeroSize) {
   CullRect cull_rect(gfx::Rect(0, 0, 800, 600));
   EXPECT_FALSE(ApplyPaintProperties(cull_rect, source, source, destination));
   EXPECT_TRUE(cull_rect.Rect().IsEmpty());
+}
+
+TEST_P(CullRectTest, ScrollableAlongOneAxisWithClippedInput) {
+  auto root = PropertyTreeState::Root();
+  // Scrollable along y only.
+  auto scroll_state = CreateCompositedScrollTranslationState(
+      root, 0, 0, gfx::Rect(0, 0, 300, 300), gfx::Size(300, 5000));
+
+  // The input rect is smaller than the container rect.
+  CullRect cull_rect(gfx::Rect(10, 10, 150, 250));
+  // Apply scroll translation. Should expand in the scrollable direction.
+  EXPECT_TRUE(ApplyPaintProperties(cull_rect, root, root,
+                                   scroll_state.GetPropertyTreeState()));
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(gfx::Rect(10, 0, 150, 4260), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 300, 4260), cull_rect.Rect());
+  }
+
+  CullRect old_cull_rect = cull_rect;
+  // The input rect becomes wider but still smaller than the container rect.
+  // ChangedEnough should return true as the changed direction is not expanded.
+  cull_rect = CullRect(gfx::Rect(10, 10, 200, 250));
+  EXPECT_TRUE(ApplyPaintProperties(cull_rect, root, root,
+                                   scroll_state.GetPropertyTreeState(),
+                                   old_cull_rect));
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(gfx::Rect(10, 0, 200, 4260), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 300, 4260), cull_rect.Rect());
+  }
 }
 
 TEST_P(CullRectTest, IntersectsVerticalRange) {

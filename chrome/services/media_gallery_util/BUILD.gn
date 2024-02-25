@@ -17,6 +17,8 @@ source_set("lib") {
     "media_parser_factory.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/common",
@@ -24,6 +26,8 @@ source_set("lib") {
     "//mojo/public/cpp/bindings",
     "//third_party/libyuv",
   ]
+
+  public_deps = [ "//chrome/services/media_gallery_util/public/mojom" ]
 
   if (is_android) {
     sources += [
@@ -33,8 +37,6 @@ source_set("lib") {
       "video_thumbnail_parser.h",
     ]
   }
-
-  public_deps = [ "//chrome/services/media_gallery_util/public/mojom" ]
 
   if (media_use_ffmpeg) {
     deps += [

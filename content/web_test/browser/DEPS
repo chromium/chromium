@@ -1,5 +1,6 @@
 include_rules = [
   "+components/content_settings/core/common",
+  "+components/custom_handlers",
   "+components/download",
   "+components/keyed_service/core",
   "+components/network_session_configurator/common",
@@ -12,6 +13,7 @@ include_rules = [
   "+content/web_test/common",
   "+device/bluetooth",
   "+services/device/public/cpp/test",
+  "+services/device/public/mojom",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/proxy_resolver",
@@ -28,5 +30,7 @@ specific_include_rules = {
   # //content/browser.
   ".*\.(cc|mm)": [
     "+content/browser",
+    "+services/tracing/public/cpp",
+    "+third_party/perfetto/include",
   ],
 }

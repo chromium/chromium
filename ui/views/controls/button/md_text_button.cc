@@ -12,6 +12,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "ui/actions/actions.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -34,13 +35,22 @@
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
-MdTextButton::MdTextButton(PressedCallback callback,
-                           const std::u16string& text,
-                           int button_context)
-    : LabelButton(std::move(callback), text, button_context) {
+MdTextButton::MdTextButton(
+    PressedCallback callback,
+    const std::u16string& text,
+    int button_context,
+    bool use_text_color_for_icon,
+    std::unique_ptr<LabelButtonImageContainer> image_container)
+    : LabelButton(std::move(callback),
+                  text,
+                  button_context,
+                  std::move(image_container)),
+      use_text_color_for_icon_(use_text_color_for_icon) {
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetShowInkDropWhenHotTracked(true);
@@ -80,19 +90,6 @@ MdTextButton::MdTextButton(PressedCallback callback,
 
 MdTextButton::~MdTextButton() = default;
 
-void MdTextButton::SetProminent(bool is_prominent) {
-  if (is_prominent == (style_ == ui::ButtonStyle::kProminent)) {
-    return;
-  }
-  SetStyle(is_prominent ? ui::ButtonStyle::kProminent
-                        : ui::ButtonStyle::kDefault);
-  UpdateColors();
-}
-
-bool MdTextButton::GetProminent() const {
-  return style_ == ui::ButtonStyle::kProminent;
-}
-
 void MdTextButton::SetStyle(ui::ButtonStyle button_style) {
   if (style_ == button_style) {
     return;
@@ -108,23 +105,7 @@ ui::ButtonStyle MdTextButton::GetStyle() const {
   return style_;
 }
 
-SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
-  if (!features::IsChromeRefresh2023()) {
-    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
-  }
-
-  switch (button_style) {
-    case ui::ButtonStyle::kProminent:
-      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);
-    case ui::ButtonStyle::kDefault:
-    case ui::ButtonStyle::kText:
-    case ui::ButtonStyle::kTonal:
-    default:
-      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
-  }
-}
-
-void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
+void MdTextButton::SetBgColorOverride(const std::optional<SkColor>& color) {
   if (color == bg_color_override_)
     return;
   bg_color_override_ = color;
@@ -132,11 +113,11 @@ void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
   OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
 }
 
-absl::optional<SkColor> MdTextButton::GetBgColorOverride() const {
+std::optional<SkColor> MdTextButton::GetBgColorOverride() const {
   return bg_color_override_;
 }
 
-void MdTextButton::SetCornerRadius(absl::optional<float> radius) {
+void MdTextButton::SetCornerRadius(std::optional<float> radius) {
   if (corner_radius_ == radius)
     return;
   corner_radius_ = radius;
@@ -146,7 +127,7 @@ void MdTextButton::SetCornerRadius(absl::optional<float> radius) {
   OnPropertyChanged(&corner_radius_, kPropertyEffectsNone);
 }
 
-absl::optional<float> MdTextButton::GetCornerRadius() const {
+std::optional<float> MdTextButton::GetCornerRadius() const {
   return corner_radius_;
 }
 
@@ -192,18 +173,17 @@ void MdTextButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
-void MdTextButton::SetEnabledTextColors(absl::optional<SkColor> color) {
+void MdTextButton::SetEnabledTextColors(std::optional<SkColor> color) {
   LabelButton::SetEnabledTextColors(std::move(color));
   UpdateColors();
 }
 
-void MdTextButton::SetCustomPadding(
-    const absl::optional<gfx::Insets>& padding) {
+void MdTextButton::SetCustomPadding(const std::optional<gfx::Insets>& padding) {
   custom_padding_ = padding;
   UpdatePadding();
 }
 
-absl::optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
+std::optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
   return custom_padding_.value_or(CalculateDefaultPadding());
 }
 
@@ -213,7 +193,10 @@ void MdTextButton::SetText(const std::u16string& text) {
 }
 
 PropertyEffects MdTextButton::UpdateStyleToIndicateDefaultStatus() {
-  SetProminent(style_ == ui::ButtonStyle::kProminent || GetIsDefault());
+  SetStyle(style_ == ui::ButtonStyle::kProminent || GetIsDefault()
+               ? ui::ButtonStyle::kProminent
+               : ui::ButtonStyle::kDefault);
+  UpdateColors();
   return kPropertyEffectsNone;
 }
 
@@ -263,8 +246,9 @@ void MdTextButton::UpdateTextColor() {
   }
 
   const ui::ColorProvider* color_provider = GetColorProvider();
+  const auto& typography_provider = TypographyProvider::Get();
   SkColor enabled_text_color = color_provider->GetColor(
-      style::GetColorId(label()->GetTextContext(), text_style));
+      typography_provider.GetColorId(label()->GetTextContext(), text_style));
   const auto colors = explicitly_set_colors();
   LabelButton::SetEnabledTextColors(enabled_text_color);
   // Disabled buttons need the disabled color explicitly set.
@@ -273,7 +257,7 @@ void MdTextButton::UpdateTextColor() {
   // since a descendant could have overridden the label enabled color.
   if (GetState() == STATE_DISABLED) {
     LabelButton::SetTextColor(
-        STATE_DISABLED, color_provider->GetColor(style::GetColorId(
+        STATE_DISABLED, color_provider->GetColor(typography_provider.GetColorId(
                             label()->GetTextContext(), style::STYLE_DISABLED)));
   }
   set_explicitly_set_colors(colors);
@@ -322,19 +306,65 @@ void MdTextButton::UpdateBackgroundColor() {
           features::IsChromeRefresh2023() /* should_border_scale */)));
 }
 
+void MdTextButton::UpdateIconColor() {
+  if (features::IsChromeRefresh2023() && use_text_color_for_icon_ &&
+      HasImage(ButtonState::STATE_NORMAL)) {
+    auto image_model = GetImageModel(ButtonState::STATE_NORMAL);
+    if (image_model.IsVectorIcon()) {
+      LabelButton::SetImageModel(ButtonState::STATE_NORMAL,
+                                 ui::ImageModel::FromVectorIcon(
+                                     *image_model.GetVectorIcon().vector_icon(),
+                                     LabelButton::GetCurrentTextColor(),
+                                     image_model.GetVectorIcon().icon_size()));
+    }
+  }
+}
+
 void MdTextButton::UpdateColors() {
   if (GetWidget()) {
     UpdateTextColor();
     UpdateBackgroundColor();
+    UpdateIconColor();
     SchedulePaint();
   }
 }
 
-BEGIN_METADATA(MdTextButton, LabelButton)
-ADD_PROPERTY_METADATA(bool, Prominent)
-ADD_PROPERTY_METADATA(absl::optional<float>, CornerRadius)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, BgColorOverride)
-ADD_PROPERTY_METADATA(absl::optional<gfx::Insets>, CustomPadding)
+SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
+  if (!features::IsChromeRefresh2023()) {
+    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
+  }
+
+  switch (button_style) {
+    case ui::ButtonStyle::kProminent:
+      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);
+    case ui::ButtonStyle::kDefault:
+    case ui::ButtonStyle::kText:
+    case ui::ButtonStyle::kTonal:
+    default:
+      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
+  }
+}
+
+std::unique_ptr<ActionViewInterface> MdTextButton::GetActionViewInterface() {
+  return std::make_unique<MdTextButtonActionViewInterface>(this);
+}
+
+MdTextButtonActionViewInterface::MdTextButtonActionViewInterface(
+    MdTextButton* action_view)
+    : LabelButtonActionViewInterface(action_view), action_view_(action_view) {}
+
+void MdTextButtonActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  LabelButtonActionViewInterface::ActionItemChangedImpl(action_item);
+  action_view_->SetText(action_item->GetText());
+  action_view_->SetImageModel(action_view_->GetState(),
+                              action_item->GetImage());
+}
+
+BEGIN_METADATA(MdTextButton)
+ADD_PROPERTY_METADATA(std::optional<float>, CornerRadius)
+ADD_PROPERTY_METADATA(std::optional<SkColor>, BgColorOverride)
+ADD_PROPERTY_METADATA(std::optional<gfx::Insets>, CustomPadding)
 ADD_PROPERTY_METADATA(ui::ButtonStyle, Style)
 END_METADATA
 

@@ -20,6 +20,7 @@ package sync_pb;
 // list entry. It must be kept synced with the reading_list.ReadingListLocal
 // protobuf.
 message ReadingListSpecifics {
+  // entry_id and url must be equal.
   optional string entry_id = 1;
   optional string title = 2;
   optional string url = 3;

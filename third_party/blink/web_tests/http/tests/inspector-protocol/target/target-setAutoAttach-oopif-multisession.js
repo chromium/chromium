@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL(
       'https://devtools.oopif-a.test:8443/inspector-protocol/resources/coi-with-iframe.php',
       `Tests that the attachedToTarget message is dispatched to all attached sessions`);

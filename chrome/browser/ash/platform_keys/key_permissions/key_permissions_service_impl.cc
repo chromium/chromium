@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -28,7 +29,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::platform_keys {
 
@@ -95,7 +95,7 @@ void KeyPermissionsServiceImpl::
         std::vector<uint8_t> public_key_spki_der,
         CanUserGrantPermissionForKeyCallback callback,
         const std::vector<TokenId>& key_locations,
-        absl::optional<bool> corporate_key,
+        std::optional<bool> corporate_key,
         Status status) {
   if (status != Status::kSuccess) {
     std::move(callback).Run(/*allowed=*/false);
@@ -131,7 +131,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     Status status) {
   if (status != Status::kSuccess) {
     LOG(ERROR) << "Key locations retrieval failed: " << StatusToString(status);
-    std::move(callback).Run(/*corporate=*/absl::nullopt, status);
+    std::move(callback).Run(/*corporate=*/std::nullopt, status);
     return;
   }
 
@@ -167,7 +167,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
 
 void KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse(
     IsCorporateKeyCallback callback,
-    absl::optional<bool> allowed,
+    std::optional<bool> allowed,
     Status status) {
   if (allowed.has_value()) {
     std::move(callback).Run(allowed.value(), Status::kSuccess);
@@ -176,7 +176,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse(
 
   LOG(ERROR) << "Checking corporate flag via KeyPermissionsManager failed: "
              << StatusToString(status);
-  std::move(callback).Run(/*corporate=*/absl::nullopt, status);
+  std::move(callback).Run(/*corporate=*/std::nullopt, status);
 }
 
 void KeyPermissionsServiceImpl::SetCorporateKey(

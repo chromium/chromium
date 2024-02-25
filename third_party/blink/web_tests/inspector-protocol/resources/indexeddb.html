@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+window.dbPromise = new Promise(resolve => {
+    var dbRequest = indexedDB.open('testDatabase1', 2147483649);
+    dbRequest.onsuccess = () => resolve(dbRequest.result);
+});
+    </script>
+  </head>
+</html>

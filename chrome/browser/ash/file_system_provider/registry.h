@@ -18,8 +18,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Key names for preferences.
 extern const char kPrefKeyFileSystemId[];
@@ -59,10 +58,9 @@ class Registry : public RegistryInterface {
                         const Watcher& watcher) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REGISTRY_H_

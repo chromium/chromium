@@ -1,7 +1,7 @@
 Name: Bouncy Castle Provider
 Short Name: bcprov-jdk18on
 URL: https://github.com/bcgit/bc-java
-Version: 1.72
+Version: 1.76
 License: MIT
 License File: LICENSE
 CPEPrefix: cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.72

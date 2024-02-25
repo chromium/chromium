@@ -24,7 +24,7 @@ MockBluetoothDevice::MockBluetoothDevice(MockBluetoothAdapter* adapter,
                                          bool connected)
     : BluetoothDevice(adapter),
       bluetooth_class_(bluetooth_class),
-      name_(name ? absl::optional<std::string>(name) : absl::nullopt),
+      name_(name ? std::optional<std::string>(name) : std::nullopt),
       address_(address),
       connected_(connected),
       paired_(initially_paired) {
@@ -40,6 +40,7 @@ MockBluetoothDevice::MockBluetoothDevice(MockBluetoothAdapter* adapter,
   ON_CALL(*this, GetNameForDisplay())
       .WillByDefault(
           Return(base::UTF8ToUTF16(name_ ? name_.value() : "Unnamed Device")));
+  ON_CALL(*this, GetType()).WillByDefault(ReturnPointee(&transport_));
   ON_CALL(*this, GetDeviceType())
       .WillByDefault(Return(BluetoothDeviceType::UNKNOWN));
   ON_CALL(*this, IsPaired()).WillByDefault(ReturnPointee(&paired_));

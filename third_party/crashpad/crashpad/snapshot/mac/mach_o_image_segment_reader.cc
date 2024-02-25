@@ -20,6 +20,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -39,38 +40,26 @@ std::string SizeLimitedCString(const char* c_string, size_t max_length) {
 }  // namespace
 
 bool IsMalformedCLKernelsModule(uint32_t mach_o_file_type,
-                                const std::string& module_name,
-                                bool* has_timestamp) {
+                                const std::string& module_name) {
 #if defined(ARCH_CPU_X86_FAMILY)
   if (mach_o_file_type != MH_BUNDLE) {
     return false;
   }
 
   if (module_name == "cl_kernels") {
-    if (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_10 ||
-        MacOSVersionNumber() >= 10'10'00) {
-      if (has_timestamp) {
-        *has_timestamp = false;
-      }
-      return true;
-    }
-    return false;
+    return __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_10 ||
+        MacOSVersionNumber() >= 10'10'00;
   }
 
   static const char kCvmsObjectPathPrefix[] =
       "/private/var/db/CVMS/cvmsCodeSignObj";
-  if (module_name.compare(
-          0, strlen(kCvmsObjectPathPrefix), kCvmsObjectPathPrefix) == 0 &&
-      (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_14 ||
-       MacOSVersionNumber() >= 10'14'00)) {
-    if (has_timestamp) {
-      *has_timestamp = true;
-    }
-    return true;
-  }
-#endif  // ARCH_CPU_X86_FAMILY
-
+  return module_name.compare(
+             0, strlen(kCvmsObjectPathPrefix), kCvmsObjectPathPrefix) == 0 &&
+         (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_14 ||
+          MacOSVersionNumber() >= 10'14'00);
+#else
   return false;
+#endif  // ARCH_CPU_X86_FAMILY
 }
 
 MachOImageSegmentReader::MachOImageSegmentReader()
@@ -165,9 +154,8 @@ bool MachOImageSegmentReader::Initialize(ProcessReaderMac* process_reader,
     //
     // https://openradar.appspot.com/20239912
     if (section_segment_name != segment_name &&
-        !(IsMalformedCLKernelsModule(file_type, module_name, nullptr) &&
-          segment_name == SEG_TEXT &&
-          section_segment_name == "__LD" &&
+        !(IsMalformedCLKernelsModule(file_type, module_name) &&
+          segment_name == SEG_TEXT && section_segment_name == "__LD" &&
           section_name == "__compact_unwind" &&
           (section.flags & S_ATTR_DEBUG))) {
       LOG(WARNING) << "section.segname incorrect in segment " << segment_name

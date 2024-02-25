@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_REQUIREMENT_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_REQUIREMENT_UTILS_H_
 
+#include <vector>
+
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -12,42 +14,30 @@
 
 namespace autofill {
 
-// Stores the collection of AddressProfileImportRequirementMetric that are
-// violated. These violation prevents the import of a profile.
-constexpr autofill_metrics::AddressProfileImportRequirementMetric
-    kMinimumAddressRequirementViolations[] = {
-        autofill_metrics::AddressProfileImportRequirementMetric::
-            kLine1RequirementViolated,
-        autofill_metrics::AddressProfileImportRequirementMetric::
-            kCityRequirementViolated,
-        autofill_metrics::AddressProfileImportRequirementMetric::
-            kStateRequirementViolated,
-        autofill_metrics::AddressProfileImportRequirementMetric::
-            kZipRequirementViolated,
-        autofill_metrics::AddressProfileImportRequirementMetric::
-            kZipOrStateRequirementViolated,
-        autofill_metrics::AddressProfileImportRequirementMetric::
-            kLine1OrHouseNumberRequirementViolated,
-        autofill_metrics::AddressProfileImportRequirementMetric::
-            kNameRequirementViolated};
+// Checks the country-specific import requirements of the `profile` by ensuring
+// that certain types have a non-empty value. For each requirement the function
+// returns either the fulfilled or violated enum entry. An address submitted via
+// a form must have at least the fields required as determined by its country
+// code. No verification of validity of the contents is performed. This is an
+// existence check only. Assumes `profile` has been finalized. Introducing
+// additional profile import checks should be complemented with adding to the
+// violations list in `kMinimumAddressRequirementViolations`. If `log_buffer` is
+// present, validation results are logged there.
+std::vector<autofill_metrics::AddressProfileImportRequirementMetric>
+ValidateProfileImportRequirements(const AutofillProfile& profile,
+                                  LogBuffer* log_buffer = nullptr);
 
-// Does requirement checks on the `profile`. Either the requirements are
-// fulfilled or they are violated. An address submitted via a form must have at
-// least the fields required as determined by its country code. No verification
-// of validity of the contents is performed. This is an existence check only.
-// Assumes `profile` has been finalized.
-// Introducing additional profile import checks should be complemented with
-// adding to the violations list in
-// `autofill_metrics::kMinimumAddressRequirementViolations`.
-base::flat_set<autofill_metrics::AddressProfileImportRequirementMetric>
-GetAutofillProfileRequirementResult(const AutofillProfile& profile,
-                                    LogBuffer* import_log_buffer);
+// Validates non-empty values for certain types (e.g. is the email address
+// an actual email address). Emits metrics for all violate (= non-empty and
+// invalid) types.
+// Returns true if all non-empty values are valid.
+bool ValidateNonEmptyValues(const AutofillProfile& profile,
+                            LogBuffer* log_buffer);
 
-// Returns true if minimum requirements for import of a given `profile` have
-// been met.
-// Uses the country_code from `profile` to fetch the requirements and the run
-// the validations.
-bool IsMinimumAddress(const AutofillProfile& profile);
+// Returns true if the minimum requirements to import the `profile` are met.
+// If `log_buffer` is present, validation results are logged there.
+bool IsMinimumAddress(const AutofillProfile& profile,
+                      LogBuffer* log_buffer = nullptr);
 
 // Returns true if the profile can be migrated to the Account. Only sufficiently
 // complete profiles are migrated and this method does not check for the

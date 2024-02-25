@@ -26,9 +26,9 @@ limitations under the License.
 
 #include <iostream>
 
-#include "absl/flags/flag.h"          // from @com_google_absl
-#include "absl/flags/parse.h"         // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/flags/parse.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
@@ -39,40 +39,28 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' image embedder model.");
-ABSL_FLAG(std::string,
-          first_image_path,
-          "",
+ABSL_FLAG(std::string, first_image_path, "",
           "Absolute path to the first image, whose feature vector will be "
           "extracted and compared to the second image using cosine similarity. "
           "The image must be RGB or RGBA (grayscale is not supported). The "
           "image EXIF orientation flag, if any, is NOT taken into account.");
-ABSL_FLAG(std::string,
-          second_image_path,
-          "",
+ABSL_FLAG(std::string, second_image_path, "",
           "Absolute path to the second image, whose feature vector will be "
           "extracted and compared to the first image using cosine similarity. "
           "The image must be RGB or RGBA (grayscale is not supported). The "
           "image EXIF orientation flag, if any, is NOT taken into account.");
-ABSL_FLAG(bool,
-          l2_normalize,
-          false,
+ABSL_FLAG(bool, l2_normalize, false,
           "If true, the raw feature vectors returned by the image embedder "
           "will be normalized with L2-norm. Generally only needed if the model "
           "doesn't already contain a L2_NORMALIZATION TFLite Op.");
 ABSL_FLAG(
-    bool,
-    quantize,
-    false,
+    bool, quantize, false,
     "If true, the raw feature vectors returned by the image embedder will "
     "be quantized to 8 bit integers (uniform quantization) via post-processing "
     "before cosine similarity is computed.");
-ABSL_FLAG(bool,
-          use_coral,
-          false,
+ABSL_FLAG(bool, use_coral, false,
           "If true, inference will be delegated to a connected Coral Edge TPU "
           "device.");
 
@@ -118,22 +106,22 @@ StatusOr<std::unique_ptr<FrameBuffer>> BuildFrameBufferFromImageData(
 absl::Status ComputeCosineSimilarity() {
   // Build ImageEmbedder.
   const ImageEmbedderOptions& options = BuildOptions();
-  ASSIGN_OR_RETURN(std::unique_ptr<ImageEmbedder> image_embedder,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<ImageEmbedder> image_embedder,
                    ImageEmbedder::CreateFromOptions(options));
 
   // Load images into FrameBuffer objects.
-  ASSIGN_OR_RETURN(ImageData first_image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData first_image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_first_image_path)));
-  ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> first_frame_buffer,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> first_frame_buffer,
                    BuildFrameBufferFromImageData(first_image));
-  ASSIGN_OR_RETURN(ImageData second_image,
+  TFLITE_ASSIGN_OR_RETURN(ImageData second_image,
                    DecodeImageFromFile(absl::GetFlag(FLAGS_second_image_path)));
-  ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> second_frame_buffer,
+  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> second_frame_buffer,
                    BuildFrameBufferFromImageData(second_image));
 
   // Extract feature vectors.
   auto start_embed = steady_clock::now();
-  ASSIGN_OR_RETURN(const EmbeddingResult& first_embedding_result,
+  TFLITE_ASSIGN_OR_RETURN(const EmbeddingResult& first_embedding_result,
                    image_embedder->Embed(*first_frame_buffer));
   auto end_embed = steady_clock::now();
   std::string delegate =
@@ -143,10 +131,10 @@ absl::Status ComputeCosineSimilarity() {
                    .count()
             << " ms" << std::endl;
 
-  ASSIGN_OR_RETURN(const EmbeddingResult& second_embedding_result,
+  TFLITE_ASSIGN_OR_RETURN(const EmbeddingResult& second_embedding_result,
                    image_embedder->Embed(*second_frame_buffer));
   // Compute cosine similarity.
-  ASSIGN_OR_RETURN(
+  TFLITE_ASSIGN_OR_RETURN(
       double cosine_similarity,
       ImageEmbedder::CosineSimilarity(
           image_embedder->GetEmbeddingByIndex(first_embedding_result, 0)

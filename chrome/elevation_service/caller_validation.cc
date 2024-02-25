@@ -13,8 +13,11 @@
 
 #include "base/logging.h"
 #include "base/process/process.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
+#include "chrome/elevation_service/elevator.h"
 
 namespace elevation_service {
 
@@ -22,6 +25,44 @@ namespace {
 
 constexpr char kPathValidationPrefix[] = "PATH";
 constexpr char kNoneValidationPrefix[] = "NONE";
+
+// Paths look like this: "\Device\HarddiskVolume6\Program Files\Blah\app.exe".
+// This function will remove the final EXE, then it will remove paths that match
+// 'Temp' or 'Application' if they are the final directory.
+//
+// Examples:
+// "\Device\HarddiskVolume6\Program Files\Blah\app.exe" ->
+// "\Device\HarddiskVolume6\Program Files\Blah\"
+//
+// "\Device\HarddiskVolume6\Program Files\Blah\app2.exe" ->
+// "\Device\HarddiskVolume6\Program Files\Blah\"
+//
+// "\Device\HarddiskVolume6\Program Files\Blah\Temp\app.exe" ->
+// "\Device\HarddiskVolume6\Program Files\Blah\"
+//
+// "\Device\HarddiskVolume6\Program Files\Blah\Application\app.exe" ->
+// "\Device\HarddiskVolume6\Program Files\Blah\"
+//
+// Note: base::FilePath is not used here because NT paths are not real paths.
+std::string MaybeTrimProcessPath(const std::string& full_path) {
+  auto tokens = base::SplitString(full_path, "\\", base::KEEP_WHITESPACE,
+                                  base::SPLIT_WANT_ALL);
+  std::string output;
+  size_t token = 0;
+  for (auto it = tokens.rbegin(); it != tokens.rend(); ++it) {
+    token++;
+    if (token == 1 &&
+        base::EndsWith(*it, ".exe", base::CompareCase::INSENSITIVE_ASCII)) {
+      continue;
+    }
+    if (token == 2 && (base::EqualsCaseInsensitiveASCII(*it, "Temp") ||
+                       base::EqualsCaseInsensitiveASCII(*it, "Application"))) {
+      continue;
+    }
+    output = *it + "\\" + output;
+  }
+  return output;
+}
 
 std::string GetProcessExecutablePath(const base::Process& process) {
   std::string image_path(MAX_PATH, L'\0');
@@ -47,31 +88,42 @@ std::string GetProcessExecutablePath(const base::Process& process) {
 
 // Generate path based validation data, or return empty string if this was not
 // possible.
-std::string GeneratePathValidationData(const base::Process& process) {
-  return GetProcessExecutablePath(process);
+base::expected<std::string, HRESULT> GeneratePathValidationData(
+    const base::Process& process) {
+  auto path = GetProcessExecutablePath(process);
+  if (path.empty()) {
+    return base::unexpected(
+        elevation_service::Elevator::kErrorCouldNotObtainPath);
+  }
+  // Application identity capture for encrypt is only supported on local paths.
+  if (!base::StartsWith(path, "\\Device\\HarddiskVolume",
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+    return base::unexpected(
+        elevation_service::Elevator::kErrorUnsupportedFilePath);
+  }
+  return path;
 }
 
 bool ValidatePath(const base::Process& process, const std::string& data) {
-  return data == GetProcessExecutablePath(process);
+  return MaybeTrimProcessPath(data) ==
+         MaybeTrimProcessPath(GetProcessExecutablePath(process));
 }
 
 }  // namespace
 
-std::string GenerateValidationData(ProtectionLevel level,
-                                   const base::Process& process) {
-  std::string validation_data;
+base::expected<std::string, HRESULT> GenerateValidationData(
+    ProtectionLevel level,
+    const base::Process& process) {
   switch (level) {
     case ProtectionLevel::NONE:
-      validation_data.insert(0, kNoneValidationPrefix);
-      break;
+      return kNoneValidationPrefix;
     case ProtectionLevel::PATH_VALIDATION:
-      validation_data = GeneratePathValidationData(process);
-      if (validation_data.empty())
-        return std::string();
-      validation_data.insert(0, kPathValidationPrefix);
-      break;
+      auto path_validation_data = GeneratePathValidationData(process);
+      if (path_validation_data.has_value()) {
+        path_validation_data->insert(0, kPathValidationPrefix);
+      }
+      return path_validation_data;
   }
-  return validation_data;
 }
 
 bool ValidateData(const base::Process& process,

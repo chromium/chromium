@@ -11,12 +11,14 @@
 
 #import <iomanip>
 #import <numeric>
+#include <string_view>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/check.h"
-#include "base/strings/string_piece.h"
+#include "base/apple/scoped_typeref.h"
+#include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -29,9 +31,27 @@
 #include "printing/printing_features.h"
 #include "printing/units.h"
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include "base/numerics/safe_conversions.h"
+#include "base/types/expected.h"
+#endif
+
 namespace printing {
 
 namespace {
+
+template <typename T>
+struct ScopedPMTypeTraits {
+  static T InvalidValue() { return nullptr; }
+  static T Retain(T object) {
+    PMRetain(object);
+    return object;
+  }
+  static void Release(T object) { PMRelease(object); }
+};
+
+template <typename T>
+using ScopedPMType = base::apple::ScopedTypeRef<T, ScopedPMTypeTraits<T>>;
 
 const int kMaxPaperSizeDifferenceInPoints = 2;
 
@@ -85,22 +105,269 @@ bool IsIppColorModelColorful(mojom::ColorModel color_model) {
   return IsColorModelSelected(color_model).value();
 }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+
+// The set of "capture" routines run in the browser process.
+// The set of "apply" routines run in the Print Backend service.
+
+base::expected<std::vector<uint8_t>, mojom::ResultCode>
+CaptureSystemPrintSettings(PMPrintSettings& print_settings) {
+  CFDataRef data_ref = nullptr;
+  OSStatus status = PMPrintSettingsCreateDataRepresentation(
+      print_settings, &data_ref, kPMDataFormatXMLDefault);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status)
+        << "Failed to create data representation of print settings";
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
+
+  base::apple::ScopedCFTypeRef<CFDataRef> scoped_data_ref(data_ref);
+  uint32_t data_size = CFDataGetLength(data_ref);
+  std::vector<uint8_t> capture_data(data_size);
+  CFDataGetBytes(data_ref, CFRangeMake(0, data_size),
+                 static_cast<UInt8*>(&capture_data.front()));
+  return capture_data;
+}
+
+base::expected<std::vector<uint8_t>, mojom::ResultCode> CaptureSystemPageFormat(
+    PMPageFormat& page_format) {
+  CFDataRef data_ref = nullptr;
+  OSStatus status = PMPageFormatCreateDataRepresentation(
+      page_format, &data_ref, kPMDataFormatXMLDefault);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status)
+        << "Failed to create data representation of page format";
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
+
+  uint32_t data_size = CFDataGetLength(data_ref);
+  std::vector<uint8_t> capture_data(data_size);
+  CFDataGetBytes(data_ref, CFRangeMake(0, data_size),
+                 static_cast<UInt8*>(&capture_data.front()));
+  return capture_data;
+}
+
+base::expected<base::apple::ScopedCFTypeRef<CFStringRef>, mojom::ResultCode>
+CaptureSystemDestinationFormat(PMPrintSession& print_session,
+                               PMPrintSettings& print_settings) {
+  CFStringRef destination_format_ref = nullptr;
+  OSStatus status = PMSessionCopyDestinationFormat(
+      print_session, print_settings, &destination_format_ref);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to get printing destination format";
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
+  return base::apple::ScopedCFTypeRef<CFStringRef>(destination_format_ref);
+}
+
+base::expected<base::apple::ScopedCFTypeRef<CFURLRef>, mojom::ResultCode>
+CaptureSystemDestinationLocation(PMPrintSession& print_session,
+                                 PMPrintSettings& print_settings) {
+  CFURLRef destination_location_ref = nullptr;
+  OSStatus status = PMSessionCopyDestinationLocation(
+      print_session, print_settings, &destination_location_ref);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status)
+        << "Failed to get printing destination location";
+    return base::unexpected(mojom::ResultCode::kFailed);
+  }
+  return base::apple::ScopedCFTypeRef<CFURLRef>(destination_location_ref);
+}
+
+mojom::ResultCode CaptureSystemPrintDialogData(NSPrintInfo* print_info,
+                                               PrintSettings* settings) {
+  PMPrintSettings print_settings =
+      (PMPrintSettings)[print_info PMPrintSettings];
+
+  base::expected<std::vector<uint8_t>, mojom::ResultCode> print_settings_data =
+      CaptureSystemPrintSettings(print_settings);
+  if (!print_settings_data.has_value()) {
+    return print_settings_data.error();
+  }
+
+  PMPageFormat page_format =
+      static_cast<PMPageFormat>([print_info PMPageFormat]);
+
+  base::expected<std::vector<uint8_t>, mojom::ResultCode> page_format_data =
+      CaptureSystemPageFormat(page_format);
+  if (!page_format_data.has_value()) {
+    return page_format_data.error();
+  }
+
+  PMPrintSession print_session =
+      static_cast<PMPrintSession>([print_info PMPrintSession]);
+
+  PMDestinationType destination_type = kPMDestinationInvalid;
+  PMSessionGetDestinationType(print_session, print_settings, &destination_type);
+
+  base::expected<base::apple::ScopedCFTypeRef<CFStringRef>, mojom::ResultCode>
+      destination_format =
+          CaptureSystemDestinationFormat(print_session, print_settings);
+  if (!destination_format.has_value()) {
+    return destination_format.error();
+  }
+
+  base::expected<base::apple::ScopedCFTypeRef<CFURLRef>, mojom::ResultCode>
+      destination_location =
+          CaptureSystemDestinationLocation(print_session, print_settings);
+  if (!destination_location.has_value()) {
+    return destination_location.error();
+  }
+
+  base::Value::Dict dialog_data;
+  dialog_data.Set(kMacSystemPrintDialogDataPrintSettings,
+                  std::move(print_settings_data.value()));
+  dialog_data.Set(kMacSystemPrintDialogDataPageFormat,
+                  std::move(page_format_data.value()));
+  dialog_data.Set(kMacSystemPrintDialogDataDestinationType, destination_type);
+  if (destination_format.value()) {
+    dialog_data.Set(
+        kMacSystemPrintDialogDataDestinationFormat,
+        base::SysCFStringRefToUTF8(destination_format.value().get()));
+  }
+  if (destination_location.value()) {
+    dialog_data.Set(kMacSystemPrintDialogDataDestinationLocation,
+                    base::SysCFStringRefToUTF8(
+                        CFURLGetString(destination_location.value().get())));
+  }
+  settings->set_system_print_dialog_data(std::move(dialog_data));
+  return mojom::ResultCode::kSuccess;
+}
+
+void ApplySystemPrintSettings(const base::Value::Dict& system_print_dialog_data,
+                              NSPrintInfo* print_info,
+                              PMPrintSession& print_session,
+                              PMPrintSettings& print_settings) {
+  const base::Value::BlobStorage* data =
+      system_print_dialog_data.FindBlob(kMacSystemPrintDialogDataPrintSettings);
+  CHECK(data);
+  uint32_t data_size = data->size();
+  CHECK_GT(data_size, 0u);
+  CFDataRef data_ref =
+      CFDataCreate(kCFAllocatorDefault,
+                   static_cast<const UInt8*>(&data->front()), data_size);
+  CHECK(data_ref);
+  base::apple::ScopedCFTypeRef<CFDataRef> scoped_data_ref(data_ref);
+
+  ScopedPMType<PMPrintSettings> new_print_settings;
+  OSStatus status = PMPrintSettingsCreateWithDataRepresentation(
+      data_ref, new_print_settings.InitializeInto());
+  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+
+  status = PMSessionValidatePrintSettings(
+      print_session, new_print_settings.get(), kPMDontWantBoolean);
+  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  status = PMCopyPrintSettings(new_print_settings.get(), print_settings);
+  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+
+  [print_info updateFromPMPrintSettings];
+}
+
+void ApplySystemPageFormat(const base::Value::Dict& system_print_dialog_data,
+                           NSPrintInfo* print_info,
+                           PMPrintSession& print_session,
+                           PMPageFormat& page_format) {
+  const base::Value::BlobStorage* data =
+      system_print_dialog_data.FindBlob(kMacSystemPrintDialogDataPageFormat);
+  CHECK(data);
+  uint32_t data_size = data->size();
+  CHECK_GT(data_size, 0u);
+  CFDataRef data_ref =
+      CFDataCreate(kCFAllocatorDefault,
+                   static_cast<const UInt8*>(&data->front()), data_size);
+  CHECK(data_ref);
+
+  ScopedPMType<PMPageFormat> new_page_format;
+  OSStatus status = PMPageFormatCreateWithDataRepresentation(
+      data_ref, new_page_format.InitializeInto());
+  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  status = PMSessionValidatePageFormat(print_session, page_format,
+                                       kPMDontWantBoolean);
+  status = PMCopyPageFormat(new_page_format.get(), page_format);
+  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+
+  [print_info updateFromPMPageFormat];
+}
+
+void ApplySystemDestination(const std::u16string& device_name,
+                            const base::Value::Dict& system_print_dialog_data,
+                            PMPrintSession& print_session,
+                            PMPrintSettings& print_settings) {
+  std::optional<int> destination_type = system_print_dialog_data.FindInt(
+      kMacSystemPrintDialogDataDestinationType);
+
+  CHECK(destination_type.has_value());
+  CHECK(base::IsValueInRangeForNumericType<uint16_t>(*destination_type));
+
+  const std::string* destination_format_str =
+      system_print_dialog_data.FindString(
+          kMacSystemPrintDialogDataDestinationFormat);
+  const std::string* destination_location_str =
+      system_print_dialog_data.FindString(
+          kMacSystemPrintDialogDataDestinationLocation);
+
+  base::apple::ScopedCFTypeRef<CFStringRef> destination_format;
+  if (destination_format_str) {
+    destination_format.reset(
+        base::SysUTF8ToCFStringRef(*destination_format_str));
+  }
+
+  base::apple::ScopedCFTypeRef<CFURLRef> destination_location;
+  if (destination_location_str) {
+    destination_location.reset(CFURLCreateWithFileSystemPath(
+        kCFAllocatorDefault,
+        base::SysUTF8ToCFStringRef(*destination_location_str).get(),
+        kCFURLPOSIXPathStyle,
+        /*isDirectory=*/FALSE));
+  }
+
+  base::apple::ScopedCFTypeRef<CFStringRef> destination_name(
+      base::SysUTF16ToCFStringRef(device_name));
+  ScopedPMType<PMPrinter> printer(
+      PMPrinterCreateFromPrinterID(destination_name.get()));
+  CHECK(printer);
+  OSStatus status = PMSessionSetCurrentPMPrinter(print_session, printer.get());
+  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+
+  status = PMSessionSetDestination(
+      print_session, print_settings,
+      static_cast<PMDestinationType>(*destination_type),
+      destination_format.get(), destination_location.get());
+  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+}
+
+void ApplySystemPrintDialogData(
+    const std::u16string& device_name,
+    const base::Value::Dict& system_print_dialog_data,
+    NSPrintInfo* print_info) {
+  PMPrintSession print_session =
+      static_cast<PMPrintSession>([print_info PMPrintSession]);
+  PMPrintSettings print_settings =
+      static_cast<PMPrintSettings>([print_info PMPrintSettings]);
+  PMPageFormat page_format =
+      static_cast<PMPageFormat>([print_info PMPageFormat]);
+
+  ApplySystemDestination(device_name, system_print_dialog_data, print_session,
+                         print_settings);
+  ApplySystemPrintSettings(system_print_dialog_data, print_info, print_session,
+                           print_settings);
+  ApplySystemPageFormat(system_print_dialog_data, print_info, print_session,
+                        page_format);
+}
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+
 }  // namespace
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    bool skip_system_calls) {
-  auto context = std::make_unique<PrintingContextMac>(delegate);
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (skip_system_calls)
-    context->set_skip_system_calls();
-#endif
-  return context;
+    ProcessBehavior process_behavior) {
+  return std::make_unique<PrintingContextMac>(delegate, process_behavior);
 }
 
-PrintingContextMac::PrintingContextMac(Delegate* delegate)
-    : PrintingContext(delegate),
+PrintingContextMac::PrintingContextMac(Delegate* delegate,
+                                       ProcessBehavior process_behavior)
+    : PrintingContext(delegate, process_behavior),
       print_info_([NSPrintInfo.sharedPrintInfo copy]) {}
 
 PrintingContextMac::~PrintingContextMac() {
@@ -154,7 +421,17 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
         print_info_ = [panel printInfo];
         settings_->set_ranges(GetPageRangesFromPrintInfo());
         InitPrintSettingsFromPrintInfo();
-        std::move(block_callback).Run(mojom::ResultCode::kSuccess);
+        mojom::ResultCode result = mojom::ResultCode::kSuccess;
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+        if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
+          // This is running in the browser process, where system calls are
+          // normally not allowed except for this system dialog exception.
+          // Capture the setting here to be transmitted to a PrintBackend
+          // service when the document is printed.
+          result = CaptureSystemPrintDialogData(print_info_, settings_.get());
+        }
+#endif
+        std::move(block_callback).Run(result);
       } else {
         std::move(block_callback).Run(mojom::ResultCode::kCanceled);
       }
@@ -269,13 +546,14 @@ bool PrintingContextMac::SetPrinter(const std::string& device_name) {
     return true;
   }
 
-  PMPrinter new_printer = PMPrinterCreateFromPrinterID(new_printer_id.get());
-  if (!new_printer)
+  ScopedPMType<PMPrinter> new_printer(
+      PMPrinterCreateFromPrinterID(new_printer_id.get()));
+  if (!new_printer) {
     return false;
+  }
 
-  OSStatus status = PMSessionSetCurrentPMPrinter(print_session, new_printer);
-  PMRelease(new_printer);
-  return status == noErr;
+  return PMSessionSetCurrentPMPrinter(print_session, new_printer.get()) ==
+         noErr;
 }
 
 bool PrintingContextMac::UpdatePageFormatWithPaperInfo() {
@@ -321,7 +599,7 @@ bool PrintingContextMac::UpdatePageFormatWithPaperInfo() {
     return false;
 
   PMPaper best_matching_paper =
-      MatchPaper(paper_list, paper_name, page_width, page_height);
+      MatchPaper(paper_list, paper_name.get(), page_width, page_height);
 
   if (best_matching_paper)
     return UpdatePageFormatWithPaper(best_matching_paper, default_page_format);
@@ -330,26 +608,25 @@ bool PrintingContextMac::UpdatePageFormatWithPaperInfo() {
   if (media.IsDefault())
     return true;
 
-  PMPaper paper = nullptr;
+  ScopedPMType<PMPaper> paper;
   if (PMPaperCreateCustom(current_printer, CFSTR("Custom paper ID"),
                           CFSTR("Custom paper"), page_width, page_height,
-                          &margins, &paper) != noErr) {
+                          &margins, paper.InitializeInto()) != noErr) {
     return false;
   }
-  bool result = UpdatePageFormatWithPaper(paper, default_page_format);
-  PMRelease(paper);
-  return result;
+  return UpdatePageFormatWithPaper(paper.get(), default_page_format);
 }
 
 bool PrintingContextMac::UpdatePageFormatWithPaper(PMPaper paper,
                                                    PMPageFormat page_format) {
-  PMPageFormat new_format = nullptr;
-  if (PMCreatePageFormatWithPMPaper(&new_format, paper) != noErr)
+  ScopedPMType<PMPageFormat> new_format;
+  if (PMCreatePageFormatWithPMPaper(new_format.InitializeInto(), paper) !=
+      noErr) {
     return false;
+  }
   // Copy over the original format with the new page format.
-  bool result = (PMCopyPageFormat(new_format, page_format) == noErr);
+  bool result = (PMCopyPageFormat(new_format.get(), page_format) == noErr);
   [print_info_ updateFromPMPageFormat];
-  PMRelease(new_format);
   return result;
 }
 
@@ -429,9 +706,8 @@ bool PrintingContextMac::SetOutputColor(int color_mode) {
   // set every single known PPD color setting and hope that one of them sticks.
   const bool is_color = IsIppColorModelColorful(color_model);
   for (const auto& setting : GetKnownPpdColorSettings()) {
-    const base::StringPiece& color_setting_name = setting.name;
-    const base::StringPiece& color_value =
-        is_color ? setting.color : setting.bw;
+    std::string_view color_setting_name = setting.name;
+    std::string_view color_value = is_color ? setting.color : setting.bw;
     if (!SetKeyValue(color_setting_name, color_value))
       return false;
   }
@@ -459,8 +735,8 @@ bool PrintingContextMac::SetResolution(const gfx::Size& dpi_size) {
                                       &resolution) == noErr;
 }
 
-bool PrintingContextMac::SetKeyValue(base::StringPiece key,
-                                     base::StringPiece value) {
+bool PrintingContextMac::SetKeyValue(std::string_view key,
+                                     std::string_view value) {
   PMPrintSettings print_settings =
       static_cast<PMPrintSettings>([print_info_ PMPrintSettings]);
   base::apple::ScopedCFTypeRef<CFStringRef> cf_key =
@@ -490,8 +766,28 @@ mojom::ResultCode PrintingContextMac::NewDocument(
 
   in_print_job_ = true;
 
-  if (skip_system_calls())
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls &&
+      !settings_->system_print_dialog_data().empty()) {
+    // Settings which the browser process captured from the system dialog now
+    // need to be applied to the printing context here which is running in a
+    // PrintBackend service.
+
+    // NOTE: Reset `print_info_` with a copy of `sharedPrintInfo` so as to
+    // start with a clean slate.
+    print_info_ = [[NSPrintInfo sharedPrintInfo] copy];
+
+    ApplySystemPrintDialogData(settings_->device_name(),
+                               settings_->system_print_dialog_data(),
+                               print_info_);
+  }
+#endif
 
   PMPrintSession print_session =
       static_cast<PMPrintSession>([print_info_ PMPrintSession]);

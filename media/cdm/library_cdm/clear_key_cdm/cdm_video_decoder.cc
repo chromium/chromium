@@ -5,6 +5,7 @@
 #include "media/cdm/library_cdm/clear_key_cdm/cdm_video_decoder.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -17,7 +18,6 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 // Necessary to convert async media::VideoDecoder to sync CdmVideoDecoder.
 // Typically not recommended for production code, but is ok here since
 // ClearKeyCdm is only for testing.
@@ -290,8 +290,8 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
 
   // Results of |video_decoder_| operations. Set iff the callback of the
   // operation has been called.
-  absl::optional<DecoderStatus> last_init_result_;
-  absl::optional<DecoderStatus> last_decode_status_;
+  std::optional<DecoderStatus> last_init_result_;
+  std::optional<DecoderStatus> last_decode_status_;
 
   // Queue of decoded video frames.
   using VideoFrameQueue = base::queue<scoped_refptr<VideoFrame>>;
@@ -307,7 +307,6 @@ std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
     const cdm::VideoDecoderConfig_3& config) {
   SetupGlobalEnvironmentIfNeeded();
 
-  static base::NoDestructor<media::NullMediaLog> null_media_log;
   std::unique_ptr<VideoDecoder> video_decoder;
 
 #if BUILDFLAG(ENABLE_LIBVPX)
@@ -316,11 +315,15 @@ std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
 #endif
 
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
-  if (config.codec == cdm::kCodecAv1)
-    video_decoder = std::make_unique<Dav1dVideoDecoder>(null_media_log.get());
+  if (config.codec == cdm::kCodecAv1) {
+    video_decoder =
+        std::make_unique<Dav1dVideoDecoder>(std::make_unique<NullMediaLog>());
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  static base::NoDestructor<media::NullMediaLog> null_media_log;
+
   if (!video_decoder)
     video_decoder = std::make_unique<FFmpegVideoDecoder>(null_media_log.get());
 #endif

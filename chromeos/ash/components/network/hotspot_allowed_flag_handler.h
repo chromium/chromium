@@ -8,35 +8,36 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 
 namespace ash {
 
-// Handles setting correct value for shill::kTetheringAllowedProperty property
-// depending on ash::features::kHotspot flag. This Shill property value is
-// updated when the handler initializes or Shill signals a
-// shill::kTetheringAllowedProperty changed. Note, setting this value to true
-// is a pre-requisite of successfully enable/disable hotspot and check
+// Handles setting value for both shill::kTetheringAllowedProperty and
+// shill::kExperimentalTetheringFunctionality property depending on kHotspot
+// and kTetheringExperimentalCarriers flag. This Shill property value is
+// updated when the handler initializes or Shill signals a corresponding
+// property changed. Note, setting shill::kTetheringAllowedProperty value to
+// true is a pre-requisite of successfully enable/disable hotspot and check
 // tethering readiness in Shill.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotAllowedFlagHandler
-    : public ShillPropertyChangedObserver {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotAllowedFlagHandler {
  public:
   HotspotAllowedFlagHandler();
   HotspotAllowedFlagHandler(const HotspotAllowedFlagHandler&) = delete;
   HotspotAllowedFlagHandler& operator=(const HotspotAllowedFlagHandler&) =
       delete;
-  ~HotspotAllowedFlagHandler() override;
+  ~HotspotAllowedFlagHandler();
 
   void Init();
 
- private:
-  // ShillPropertyChangedObserver overrides
-  void OnPropertyChanged(const std::string& key,
-                         const base::Value& value) override;
+  // Refreshes kTetheringAllowedProperty and kExperimentalTetheringFunctionality
+  // flags in shill based on user preferences
+  void UpdateFlags();
 
-  // Callback when the SetHotspotAllowed flag operation failed.
-  void OnSetHotspotAllowedFlagFailure(const std::string& error_name,
-                                      const std::string& error_message);
+ private:
+
+  // Callback when set shill manager property operation failed.
+  void OnSetManagerPropertyFailure(const std::string& property_name,
+                                   const std::string& error_name,
+                                   const std::string& error_message);
 
   base::WeakPtrFactory<HotspotAllowedFlagHandler> weak_ptr_factory_{this};
 };

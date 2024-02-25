@@ -19,6 +19,8 @@
 namespace chromeos {
 
 class NonClientFrameViewBase : public views::NonClientFrameView {
+  METADATA_HEADER(NonClientFrameViewBase, views::NonClientFrameView)
+
  public:
   explicit NonClientFrameViewBase(views::Widget* frame);
   NonClientFrameViewBase(const NonClientFrameViewBase&) = delete;
@@ -37,7 +39,7 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
   void SizeConstraintsChanged() override;
   views::View::Views GetChildrenInZOrder() override;
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
@@ -56,12 +58,12 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
   // views::NonClientFrameView:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
-  const raw_ptr<views::Widget, ExperimentalAsh> frame_;
+  const raw_ptr<views::Widget> frame_;
 
   // View which contains the title and window controls.
-  raw_ptr<HeaderView, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<HeaderView> header_view_ = nullptr;
 
-  raw_ptr<OverlayView, ExperimentalAsh> overlay_view_ = nullptr;
+  raw_ptr<OverlayView> overlay_view_ = nullptr;
 
   bool frame_enabled_ = true;
 
@@ -80,22 +82,23 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
 // when painting the HeaderView to its own layer.
 class NonClientFrameViewBase::OverlayView : public views::View,
                                             public views::ViewTargeterDelegate {
+  METADATA_HEADER(OverlayView, views::View)
+
  public:
-  METADATA_HEADER(OverlayView);
   explicit OverlayView(HeaderView* header_view);
   OverlayView(const OverlayView&) = delete;
   OverlayView& operator=(const OverlayView&) = delete;
   ~OverlayView() override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
  private:
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  raw_ptr<HeaderView, ExperimentalAsh> header_view_;
+  raw_ptr<HeaderView> header_view_;
 };
 
 }  // namespace chromeos

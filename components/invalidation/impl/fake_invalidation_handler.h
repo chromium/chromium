@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FAKE_INVALIDATION_HANDLER_H_
 #define COMPONENTS_INVALIDATION_IMPL_FAKE_INVALIDATION_HANDLER_H_
 
+#include <map>
+#include <set>
 #include <string>
 
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_handler.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 
 namespace invalidation {
 
@@ -21,24 +23,24 @@ class FakeInvalidationHandler : public InvalidationHandler {
   ~FakeInvalidationHandler() override;
 
   InvalidatorState GetInvalidatorState() const;
-  const TopicInvalidationMap& GetLastInvalidationMap() const;
+  const std::map<Topic, Invalidation>& GetReceivedInvalidations() const;
+  const std::multiset<Topic>& GetSuccessfullySubscribed() const;
+  void Clear();
   int GetInvalidationCount() const;
-  const std::string& GetInvalidatorClientId() const;
 
   // InvalidationHandler implementation.
   void OnInvalidatorStateChange(InvalidatorState state) override;
-  void OnIncomingInvalidation(
-      const TopicInvalidationMap& invalidation_map) override;
+  void OnIncomingInvalidation(const Invalidation& invalidation) override;
+  void OnSuccessfullySubscribed(const Topic& topic) override;
   std::string GetOwnerName() const override;
   bool IsPublicTopic(const Topic& topic) const override;
-  void OnInvalidatorClientIdChange(const std::string& client_id) override;
 
  private:
   InvalidatorState state_ = DEFAULT_INVALIDATION_ERROR;
-  TopicInvalidationMap last_invalidation_map_;
+  std::map<Topic, Invalidation> received_invalidations_;
   int invalidation_count_ = 0;
+  std::multiset<Topic> successfully_subscribed_;
   std::string owner_name_;
-  std::string client_id_;
 };
 
 }  // namespace invalidation

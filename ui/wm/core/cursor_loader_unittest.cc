@@ -4,9 +4,10 @@
 
 #include "ui/wm/core/cursor_loader.h"
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/base/cursor/cursor.h"
@@ -53,7 +54,7 @@ TEST(CursorLoaderTest, GetCursorData) {
       cursor_loader.SetSize(cursor_size);
 
       const ui::Cursor invisible_cursor = CursorType::kNone;
-      absl::optional<ui::CursorData> cursor_loader_data =
+      std::optional<ui::CursorData> cursor_loader_data =
           cursor_loader.GetCursorData(invisible_cursor);
       ASSERT_TRUE(cursor_loader_data);
       EXPECT_TRUE(cursor_loader_data->bitmaps[0].isNull());
@@ -66,7 +67,7 @@ TEST(CursorLoaderTest, GetCursorData) {
         ASSERT_TRUE(cursor_loader_data);
         const auto cursor_data =
             GetCursorData(cursor.type(), cursor_size, resource_scale,
-                          display.panel_rotation());
+                          std::nullopt, display.panel_rotation());
         ASSERT_TRUE(cursor_data);
         ASSERT_EQ(cursor_loader_data->bitmaps.size(),
                   cursor_data->bitmaps.size());
@@ -82,7 +83,7 @@ TEST(CursorLoaderTest, GetCursorData) {
   const SkBitmap kBitmap = gfx::test::CreateBitmap(20, 20);
   constexpr gfx::Point kHotspot = gfx::Point(10, 10);
   const ui::Cursor custom_cursor = ui::Cursor::NewCustom(kBitmap, kHotspot);
-  absl::optional<ui::CursorData> cursor_data =
+  std::optional<ui::CursorData> cursor_data =
       cursor_loader.GetCursorData(custom_cursor);
   ASSERT_TRUE(cursor_data);
   EXPECT_EQ(cursor_data->bitmaps[0].getGenerationID(),

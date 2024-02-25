@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.browser_controls;
 
 import org.chromium.ui.util.TokenHolder;
 
-/**
- * Allows for manipulating visibility of the browser controls, as well as retrieving state.
- */
+/** Allows for manipulating visibility of the browser controls, as well as retrieving state. */
 public interface BrowserControlsVisibilityManager extends BrowserControlsStateProvider {
     /**
      * @return The visibility delegate that allows browser UI to control the browser control
@@ -48,8 +46,6 @@ public interface BrowserControlsVisibilityManager extends BrowserControlsStatePr
      */
     int hideAndroidControlsAndClearOldToken(int oldToken);
 
-    /**
-     * Release a hiding token returned from {@link #hideAndroidControlsAndClearOldToken(int)}.
-     */
+    /** Release a hiding token returned from {@link #hideAndroidControlsAndClearOldToken(int)}. */
     void releaseAndroidControlsHidingToken(int token);
 }

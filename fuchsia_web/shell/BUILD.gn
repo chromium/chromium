@@ -5,8 +5,8 @@
 assert(is_fuchsia)
 
 import("//build/config/fuchsia/generate_runner_scripts.gni")
-import("//third_party/fuchsia-sdk/sdk/build/component.gni")
-import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+import("//third_party/fuchsia-gn-sdk/src/component.gni")
+import("//third_party/fuchsia-gn-sdk/src/package.gni")
 
 # Nothing else should depend on these targets except the final component.
 visibility = [ ":*" ]
@@ -39,10 +39,7 @@ source_set("present_frame") {
     "present_frame.cc",
     "present_frame.h",
   ]
-  deps = [
-    "//base",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
-  ]
+  deps = [ "//base" ]
   public_deps = [
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",

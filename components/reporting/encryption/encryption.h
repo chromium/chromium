@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_REPORTING_ENCRYPTION_ENCRYPTION_H_
 #define COMPONENTS_REPORTING_ENCRYPTION_ENCRYPTION_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -104,7 +104,7 @@ class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
   ~Encryptor();
 
   // Public key used for asymmetric encryption of symmetric key and its id.
-  absl::optional<std::pair<std::string, PublicKeyId>> asymmetric_key_;
+  std::optional<std::pair<std::string, PublicKeyId>> asymmetric_key_;
 
   // Sequential task runner for all asymmetric_key_ activities: update, read.
   scoped_refptr<base::SequencedTaskRunner>

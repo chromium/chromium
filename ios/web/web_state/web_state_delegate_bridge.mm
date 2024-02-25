@@ -44,6 +44,7 @@ WebState* WebStateDelegateBridge::OpenURLFromWebState(
 
 void WebStateDelegateBridge::ShowRepostFormWarningDialog(
     WebState* source,
+    FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
   SEL selector = @selector(webState:runRepostFormDialogWithCompletionHandler:);
   if ([delegate_ respondsToSelector:selector]) {
@@ -51,7 +52,9 @@ void WebStateDelegateBridge::ShowRepostFormWarningDialog(
         runRepostFormDialogWithCompletionHandler:base::CallbackToBlock(
                                                      std::move(callback))];
   } else {
-    std::move(callback).Run(true);
+    bool default_response =
+        warning_type == FormWarningType::kRepost ? true : false;
+    std::move(callback).Run(default_response);
   }
 }
 
@@ -67,7 +70,7 @@ JavaScriptDialogPresenter* WebStateDelegateBridge::GetJavaScriptDialogPresenter(
 void WebStateDelegateBridge::HandlePermissionsDecisionRequest(
     WebState* source,
     NSArray<NSNumber*>* permissions,
-    WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
+    WebStatePermissionDecisionHandler handler) {
   if ([delegate_ respondsToSelector:@selector(webState:
                                         handlePermissions:decisionHandler:)]) {
     [delegate_ webState:source

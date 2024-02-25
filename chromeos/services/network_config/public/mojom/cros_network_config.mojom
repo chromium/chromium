@@ -219,6 +219,10 @@ struct CellularStateProperties {
   // String representing the SIM lock type. This will be empty when the SIM
   // is unlocked.
   string sim_lock_type;
+  // True when a SIM has a custom name.
+  bool has_nick_name = false;
+  // String representing the network operator.
+  string network_operator;
 };
 
 struct EthernetStateProperties {
@@ -332,6 +336,14 @@ struct DeviceStateProperties {
   NetworkType type;
   // Whether or not any managed networks are available.
   bool managed_network_available = false;
+  // Serial number of the device, reported for cellular devices
+  // to start with. Displayed along with IMEI/EID to help user
+  // unlock carrier locked device.
+  string? serial;
+  // Indicates if the device is carrier locked.
+  // Reported only for cellular devices. Defaults to false
+  // for other device types.
+  bool is_carrier_locked = false;
 };
 
 const int32 kNoLimit = 0;
@@ -381,6 +393,7 @@ enum ApnIpType {
 enum ApnType {
   kDefault,
   kAttach,
+  kTether,
 };
 
 struct ApnProperties {
@@ -397,7 +410,8 @@ struct ApnProperties {
   // free-form entry in the future.
   // TODO(b/249550650) Remove attach after APN Revamp feature
   // has been completely transitioned.
-  // TODO(b/249550650) Add all new properties to the onc_spec.md documentation.
+  // TODO(b/249550650) Add all new properties to the
+  // //components/onc/docs/onc_spec.md documentation.
   string? attach;
   // The state property will be used by Chrome to determine whether a custom APN
   // is disabled by the user or not. Chrome will filter out disabled APNs before
@@ -716,6 +730,7 @@ struct ManagedCellularProperties {
   string? min;
   string? model_id;
   string? network_technology;
+  string sim_lock_type;
   PaymentPortalProperties? payment_portal;
   string? roaming_state;
   // The current user selected APN. This corresponds to APN field in ONC.
@@ -803,8 +818,8 @@ struct TrafficCounterProperties {
   uint32 user_specified_reset_day;
 };
 
-// Managed properties provided by getManagedProperties. See onc_spec.md for
-// details about each property.
+// Managed properties provided by getManagedProperties. See
+// //components/onc/docs/onc_spec.md for details about each property.
 struct ManagedProperties {
   // Typed properties for compatibility with NetworkStateProperties.
   ConnectionStateType connection_state = kNotConnected;
@@ -906,7 +921,8 @@ struct SubjectAltName {
 };
 
 // Subset of currently implemented config properties in the UI. Additional
-// optional propreties from onc_spec.md may be added as needed.
+// optional properties from //components/onc/docs/onc_spec.md may be added as
+// needed.
 struct IPSecConfigProperties {
   string authentication_type;
   string? client_cert_pkcs11_id;
@@ -923,7 +939,8 @@ struct IPSecConfigProperties {
 };
 
 // Subset of currently implemented config properties in the UI. Additional
-// optional propreties from onc_spec.md may be added as needed.
+// optional properties from //components/onc/docs/onc_spec.md may be added as
+// needed.
 struct L2TPConfigProperties {
   bool lcp_echo_disabled = false;
   string? password;
@@ -932,7 +949,8 @@ struct L2TPConfigProperties {
 };
 
 // Subset of currently implemented config properties in the UI. Additional
-// optional propreties from onc_spec.md may be added as needed.
+// optional properties from //components/onc/docs/onc_spec.md may be added as
+// needed.
 struct OpenVPNConfigProperties {
   string? client_cert_pkcs11_id;
   string? client_cert_type;
@@ -1077,6 +1095,27 @@ struct GlobalPolicy {
 
   // List of blocked networks which can not be connected to.
   array<string> blocked_hex_ssids;
+
+  // If true, ChromeOS wipes "Recommended" values in shared managed networks on
+  // some occasions (see //components/onc/docs/onc_spec.md).
+  bool recommended_values_are_ephemeral = false;
+
+  // If true, ChromeOS deletes shared non-managed on some occasions (see
+  // //components/onc/docs/onc_spec.md).
+  bool user_created_network_configurations_are_ephemeral = false;
+
+  // If set to kAllow, ChromeOS will allow showing text message notifications,
+  // when set to kSuppress, notifications will not be shown, when kUnset
+  // allows configuration by the user. (see //components/onc/docs/onc_spec.md).
+  SuppressionType allow_text_messages = kUnset;
+};
+
+// Type of the allow text messages property, mapped from onc strings. (see
+// components/onc/docs/onc_spec.md)
+enum SuppressionType {
+kUnset,
+kAllow,
+kSuppress,
 };
 
 // VPN providers for type kExtension and kArc are set via SetVpnProviders and
@@ -1300,7 +1339,15 @@ interface CrosNetworkConfig {
   // Creates a new APN for the cellular network with ID |network_guid|, and
   // appends it to |custom_apn_list|. Should only be called when the APN
   // Revamp feature flag is enabled.
-  CreateCustomApn(string network_guid, ApnProperties apn);
+  CreateCustomApn(string network_guid, ApnProperties apn) =>
+    (bool success);
+
+  // Creates a new APN for the cellular network with ID |network_guid|,
+  // appends it to |custom_apn_list| in the enabled state, and disables
+  // all other existing custom APNs. Should only be called when the APN
+  // Revamp feature flag is enabled.
+  CreateExclusivelyEnabledCustomApn(string network_guid, ApnProperties apn) =>
+    (bool success);
 
   // Removes the APN with ID |apn_id| from |custom_apn_list| for the cellular
   // network with ID |network_guid|. Should only be called when the APN

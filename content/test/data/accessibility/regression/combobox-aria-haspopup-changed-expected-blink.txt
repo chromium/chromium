@@ -1,0 +1,19 @@
+rootWebArea name='Done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++textFieldWithComboBox name='combobox unaltered' haspopup=listbox
+++++++++genericContainer
+++++++textFieldWithComboBox name='combobox menu' haspopup=menu
+++++++++genericContainer
+++++++textFieldWithComboBox name='combobox grid' haspopup=grid
+++++++++genericContainer
+++++++textFieldWithComboBox name='combobox dialog' haspopup=dialog
+++++++++genericContainer
+++++++textFieldWithComboBox name='combobox changed to menu' haspopup=menu
+++++++++genericContainer
+++++++textFieldWithComboBox name='combobox changed to grid' haspopup=grid
+++++++++genericContainer
+++++++textFieldWithComboBox name='combobox changed to dialog' haspopup=dialog
+++++++++genericContainer
+++++++popUpButton name='changed to grid' haspopup=grid
+++++++comboBoxMenuButton name='changed to grid' haspopup=grid

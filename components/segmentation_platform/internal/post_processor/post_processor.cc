@@ -4,9 +4,11 @@
 
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "components/segmentation_platform/public/result.h"
 
@@ -19,9 +21,26 @@ constexpr int kInvalidResult = -2;
 constexpr int kNoWinningLabel = -1;
 constexpr int kUnderflowBinIndex = -1;
 
-bool IsValidResult(proto::PredictionResult prediction_result) {
-  return (prediction_result.result_size() > 0 &&
-          prediction_result.has_output_config());
+bool IsValidResult(const proto::PredictionResult& prediction_result) {
+  if (metadata_utils::ValidateOutputConfig(prediction_result.output_config()) !=
+      metadata_utils::ValidationResult::kValidationSuccess) {
+    return false;
+  }
+  int output_length = 1;
+  const auto& predictor = prediction_result.output_config().predictor();
+  if (predictor.has_multi_class_classifier()) {
+    output_length = predictor.multi_class_classifier().class_labels_size();
+    int threshold_count = predictor.multi_class_classifier().class_thresholds_size();
+    if (threshold_count > 0 && output_length != threshold_count) {
+      return false;
+    }
+  }
+  if (predictor.has_generic_predictor()) {
+    output_length = predictor.generic_predictor().output_labels_size();
+  }
+  return prediction_result.result_size() > 0 &&
+         prediction_result.has_output_config() &&
+         prediction_result.result_size() == output_length;
 }
 
 bool IsScoreBelowMultiClassThreshold(
@@ -37,8 +56,26 @@ bool IsScoreBelowMultiClassThreshold(
 
 }  // namespace
 
+// static
+bool PostProcessor::IsClassificationResult(
+    const proto::PredictionResult& prediction_result) {
+  const proto::Predictor& predictor =
+      prediction_result.output_config().predictor();
+  switch (predictor.PredictorType_case()) {
+    case proto::Predictor::kBinaryClassifier:
+    case proto::Predictor::kMultiClassClassifier:
+    case proto::Predictor::kBinnedClassifier:
+      return true;
+    default:
+      return false;
+  }
+}
+
 std::vector<std::string> PostProcessor::GetClassifierResults(
     const proto::PredictionResult& prediction_result) {
+  if (!IsValidResult(prediction_result)) {
+    return {};
+  }
   const std::vector<float> model_scores(prediction_result.result().begin(),
                                         prediction_result.result().end());
   const proto::Predictor& predictor =
@@ -131,12 +168,15 @@ ClassificationResult PostProcessor::GetPostProcessedClassificationResult(
     const proto::PredictionResult& prediction_result,
     PredictionStatus status) {
   if (!IsValidResult(prediction_result)) {
+    // The post processing failed, mark the result as failure for the clients.
+    if (status == PredictionStatus::kSucceeded) {
+      status = PredictionStatus::kFailed;
+    }
     return ClassificationResult(status);
   }
-  std::vector<std::string> ordered_labels =
-      GetClassifierResults(prediction_result);
   ClassificationResult classification_result = ClassificationResult(status);
-  classification_result.ordered_labels = ordered_labels;
+  classification_result.ordered_labels =
+      GetClassifierResults(prediction_result);
   return classification_result;
 }
 
@@ -146,14 +186,14 @@ int PostProcessor::GetIndexOfTopLabel(
     return kInvalidResult;
   }
 
-  std::vector<std::string> result_labels =
+  const std::vector<std::string>& result_labels =
       GetClassifierResults(prediction_result);
   if (result_labels.empty()) {
     return kNoWinningLabel;
   }
 
-  std::string top_label = result_labels[0];
-  auto predictor = prediction_result.output_config().predictor();
+  const std::string& top_label = result_labels[0];
+  const auto& predictor = prediction_result.output_config().predictor();
 
   switch (predictor.PredictorType_case()) {
     case proto::Predictor::kBinaryClassifier: {
@@ -162,7 +202,7 @@ int PostProcessor::GetIndexOfTopLabel(
       return static_cast<int>(bool_result);
     }
     case proto::Predictor::kMultiClassClassifier: {
-      auto multi_class_classifier = predictor.multi_class_classifier();
+      const auto& multi_class_classifier = predictor.multi_class_classifier();
       for (int i = 0; i < multi_class_classifier.class_labels_size(); i++) {
         if (top_label == multi_class_classifier.class_labels(i)) {
           return i;
@@ -172,7 +212,7 @@ int PostProcessor::GetIndexOfTopLabel(
       return kInvalidResult;
     }
     case proto::Predictor::kBinnedClassifier: {
-      auto binned_classifier = predictor.binned_classifier();
+      const auto& binned_classifier = predictor.binned_classifier();
       if (top_label == binned_classifier.underflow_label()) {
         return kUnderflowBinIndex;
       }
@@ -197,11 +237,18 @@ base::TimeDelta PostProcessor::GetTTLForPredictedResult(
   if (prediction_result.result_size() > 0 &&
       prediction_result.has_output_config()) {
     ordered_labels = GetClassifierResults(prediction_result);
-    auto predicted_result_ttl =
+    if (!prediction_result.output_config().has_predicted_result_ttl()) {
+      LOG(ERROR) << "Prediction result has no `predicted_result_ttl` on its "
+                    "`output_config`, returning empty TTL.";
+      return base::TimeDelta();
+    }
+
+    const auto& predicted_result_ttl =
         prediction_result.output_config().predicted_result_ttl();
-    auto top_label_to_ttl_map = predicted_result_ttl.top_label_to_ttl_map();
+    const auto& top_label_to_ttl_map =
+        predicted_result_ttl.top_label_to_ttl_map();
     auto default_ttl = predicted_result_ttl.default_ttl();
-    auto time_unit = predicted_result_ttl.time_unit();
+    const auto time_unit = predicted_result_ttl.time_unit();
 
     if (ordered_labels.empty()) {
       return default_ttl * metadata_utils::ConvertToTimeDelta(time_unit);
@@ -224,7 +271,7 @@ RawResult PostProcessor::GetRawResult(
     return RawResult(PredictionStatus::kFailed);
   }
   RawResult result(status);
-  result.result = prediction_result;
+  result.result = std::move(prediction_result);
   return result;
 }
 

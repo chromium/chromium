@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++View text:"selection_list" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="select"}, {display="inline-block"}, {aria-label="selection_list"}, {id="listbox"}, {size="10"}]
+++++++View textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++++++View text:"One" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="option"}, {display="block"}, {id="listbox_option_enabled_one"}, {value="listbox_e1"}]
+++++++++View text:"Two" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="option"}, {display="block"}, {value="listbox_e2"}]
+++++++++View text:"Three" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="option"}, {display="block"}, {value="listbox_e3"}]
+++++++++View text:"Four" textSize:0.0 style:0 fgColor:0 htmlInfo:[{htmlTag="option"}, {display="block"}, {value="listbox_e4"}]

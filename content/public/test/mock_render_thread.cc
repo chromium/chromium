@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/render_message_filter.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/test/test_render_frame.h"
@@ -21,7 +20,6 @@
 #include "ipc/ipc_sync_message.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -38,55 +36,22 @@ constexpr int32_t kFirstGeneratedRoutingId = 313337000;
 
 static const blink::UserAgentMetadata kUserAgentMetadata;
 
-class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
- public:
-  MockRenderMessageFilterImpl() = default;
-  ~MockRenderMessageFilterImpl() override = default;
-
-  // mojom::RenderMessageFilter:
-  void GenerateRoutingID(GenerateRoutingIDCallback callback) override {
-    std::move(callback).Run(RenderThread::Get()->GenerateRoutingID());
-  }
-
-  void GenerateFrameRoutingID(
-      GenerateFrameRoutingIDCallback callback) override {
-    int routing_id;
-    blink::LocalFrameToken frame_token;
-    base::UnguessableToken devtools_frame_token;
-    blink::DocumentToken document_token;
-    RenderThread::Get()->GenerateFrameRoutingID(
-        routing_id, frame_token, devtools_frame_token, document_token);
-    std::move(callback).Run(routing_id, frame_token, devtools_frame_token,
-                            document_token);
-  }
-
-  void HasGpuProcess(HasGpuProcessCallback callback) override {
-    std::move(callback).Run(false);
-  }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void SetThreadType(int32_t platform_thread_id,
-                     base::ThreadType thread_type) override {}
-#endif
-};
-
 }  // namespace
 
 MockRenderThread::MockRenderThread()
-    : next_routing_id_(kFirstGeneratedRoutingId),
-      mock_render_message_filter_(new MockRenderMessageFilterImpl()) {
-  RenderThreadImpl::SetRenderMessageFilterForTesting(
-      mock_render_message_filter_.get());
-}
+    : next_routing_id_(kFirstGeneratedRoutingId) {}
 
 MockRenderThread::~MockRenderThread() {
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   while (!filters_.empty()) {
     scoped_refptr<IPC::MessageFilter> filter = filters_.back();
     filters_.pop_back();
     filter->OnFilterRemoved();
   }
+#endif
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // Called by the Widget. Used to send messages to the browser.
 // We short-circuit the mechanism and handle the messages right here on this
 // class.
@@ -115,24 +80,8 @@ bool MockRenderThread::Send(IPC::Message* msg) {
   return true;
 }
 
-IPC::SyncChannel* MockRenderThread::GetChannel() {
-  return nullptr;
-}
-
-std::string MockRenderThread::GetLocale() {
-  return "en-US";
-}
-
 IPC::SyncMessageFilter* MockRenderThread::GetSyncMessageFilter() {
   return nullptr;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-MockRenderThread::GetIOTaskRunner() {
-  return io_task_runner_;
-}
-
-void MockRenderThread::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
 }
 
 void MockRenderThread::AddRoute(int32_t routing_id, IPC::Listener* listener) {}
@@ -142,22 +91,6 @@ void MockRenderThread::AttachTaskRunnerToRoute(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {}
 
 void MockRenderThread::RemoveRoute(int32_t routing_id) {}
-
-int MockRenderThread::GenerateRoutingID() {
-  return GetNextRoutingID();
-}
-
-bool MockRenderThread::GenerateFrameRoutingID(
-    int32_t& routing_id,
-    blink::LocalFrameToken& frame_token,
-    base::UnguessableToken& devtools_frame_token,
-    blink::DocumentToken& document_token) {
-  routing_id = GetNextRoutingID();
-  frame_token = blink::LocalFrameToken();
-  devtools_frame_token = base::UnguessableToken::Create();
-  document_token = blink::DocumentToken();
-  return true;
-}
 
 void MockRenderThread::AddFilter(IPC::MessageFilter* filter) {
   filter->OnFilterAdded(&sink());
@@ -176,6 +109,36 @@ void MockRenderThread::RemoveFilter(IPC::MessageFilter* filter) {
     }
   }
   NOTREACHED() << "filter to be removed not found";
+}
+
+#endif
+
+IPC::SyncChannel* MockRenderThread::GetChannel() {
+  return nullptr;
+}
+
+std::string MockRenderThread::GetLocale() {
+  return "en-US";
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+MockRenderThread::GetIOTaskRunner() {
+  return io_task_runner_;
+}
+
+void MockRenderThread::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
+}
+
+bool MockRenderThread::GenerateFrameRoutingID(
+    int32_t& routing_id,
+    blink::LocalFrameToken& frame_token,
+    base::UnguessableToken& devtools_frame_token,
+    blink::DocumentToken& document_token) {
+  routing_id = GetNextRoutingID();
+  frame_token = blink::LocalFrameToken();
+  devtools_frame_token = base::UnguessableToken::Create();
+  document_token = blink::DocumentToken();
+  return true;
 }
 
 void MockRenderThread::AddObserver(RenderThreadObserver* observer) {
@@ -238,26 +201,27 @@ int32_t MockRenderThread::GetNextRoutingID() {
 
 mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
 MockRenderThread::TakeInitialBrowserInterfaceBrokerReceiverForFrame(
-    int32_t routing_id) {
+    const blink::LocalFrameToken& frame_token) {
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       broker_from_create_child_frame_request;
-  auto it = frame_routing_id_to_initial_browser_brokers_.find(routing_id);
-  if (it != frame_routing_id_to_initial_browser_brokers_.end()) {
+  auto it = frame_token_to_initial_browser_brokers_.find(frame_token);
+  if (it != frame_token_to_initial_browser_brokers_.end()) {
     broker_from_create_child_frame_request = std::move(it->second);
-    frame_routing_id_to_initial_browser_brokers_.erase(it);
+    frame_token_to_initial_browser_brokers_.erase(it);
   }
   return broker_from_create_child_frame_request;
 }
 
 void MockRenderThread::OnCreateChildFrame(
-    int32_t child_routing_id,
+    const blink::LocalFrameToken& child_frame_token,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker) {
-  frame_routing_id_to_initial_browser_brokers_.emplace(
-      child_routing_id, std::move(browser_interface_broker));
+  frame_token_to_initial_browser_brokers_.emplace(
+      child_frame_token, std::move(browser_interface_broker));
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool MockRenderThread::OnControlMessageReceived(const IPC::Message& msg) {
   for (auto& observer : observers_) {
     if (observer.OnControlMessageReceived(msg))
@@ -271,6 +235,7 @@ bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   sink_.OnMessageReceived(msg);
   return false;
 }
+#endif
 
 // The View expects to be returned a valid route_id different from its own.
 void MockRenderThread::OnCreateWindow(
@@ -278,8 +243,8 @@ void MockRenderThread::OnCreateWindow(
     mojom::CreateNewWindowReply* reply) {
   reply->frame = TestRenderFrame::CreateStubFrameReceiver();
   reply->main_frame_route_id = GetNextRoutingID();
-  frame_routing_id_to_initial_browser_brokers_.emplace(
-      reply->main_frame_route_id,
+  frame_token_to_initial_browser_brokers_.emplace(
+      reply->main_frame_token,
       reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
   reply->associated_interface_provider =
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote();
@@ -317,11 +282,6 @@ void MockRenderThread::OnCreateWindow(
 
 void MockRenderThread::ReleaseAllWebViews() {
   page_broadcasts_.clear();
-}
-
-network::mojom::AttributionSupport
-MockRenderThread::GetAttributionReportingSupport() {
-  return network::mojom::AttributionSupport::kWeb;
 }
 
 }  // namespace content

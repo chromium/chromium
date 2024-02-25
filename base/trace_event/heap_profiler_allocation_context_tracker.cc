@@ -17,7 +17,7 @@ namespace trace_event {
 
 std::atomic<AllocationContextTracker::CaptureMode>
     AllocationContextTracker::capture_mode_{
-        AllocationContextTracker::CaptureMode::DISABLED};
+        AllocationContextTracker::CaptureMode::kDisabled};
 
 namespace {
 
@@ -64,7 +64,7 @@ AllocationContextTracker::~AllocationContextTracker() = default;
 
 // static
 void AllocationContextTracker::SetCurrentThreadName(const char* name) {
-  if (name && capture_mode() != CaptureMode::DISABLED) {
+  if (name && capture_mode() != CaptureMode::kDisabled) {
     GetInstanceForCurrentThread()->thread_name_ = name;
   }
 }

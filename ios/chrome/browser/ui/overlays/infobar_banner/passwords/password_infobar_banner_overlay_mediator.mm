@@ -7,10 +7,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "build/build_config.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
-#import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
+#import "ios/chrome/browser/credential_provider_promo/model/features.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -39,8 +39,13 @@
              : nullptr;
 }
 
-// Returns the delegate attached to the config.
+// Returns the delegate attached to the config or `nullptr` if there is no
+// config.
 - (IOSChromeSavePasswordInfoBarDelegate*)passwordDelegate {
+  if (!self.config) {
+    return nullptr;
+  }
+
   return static_cast<IOSChromeSavePasswordInfoBarDelegate*>(
       self.config->delegate());
 }
@@ -51,12 +56,12 @@
   return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
-#pragma mark - InfobarOverlayRequestMediator
+#pragma mark - InfobarBannerDelegate
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
   // This can happen if the user quickly navigates to another website while the
-  // banner is still appearing, causing the banner to be triggered before being
-  // removed.
+  // banner is still appearing, where the infobar owning the delegate is deleted
+  // before handling the button action.
   if (!self.passwordDelegate) {
     return;
   }
@@ -78,14 +83,18 @@
 #pragma mark - InfobarBannerOverlayMediator
 
 - (void)finishDismissal {
-  if (!self.request) {
-    return;
-  }
-  if (!self.passwordDelegate) {
-    return;
+  if (self.passwordDelegate) {
+    // If the infobar owning the delegate isn't yet deleted, report the infobar
+    // as gone right now. The infobar outlives the banner UI when the state of
+    // the page hasn't changed after dimissing the banner.
+    //
+    // Not having a delegate at this moment happens when navigating away from
+    // the page on which the banner is displayed, where the infobar delegate is
+    // deleted before the dismiss callback is called.
+    self.passwordDelegate->InfobarGone();
   }
 
-  self.passwordDelegate->InfoBarDismissed();
+  [super finishDismissal];
 }
 
 #pragma mark - Private
@@ -117,7 +126,7 @@
 
   NSString* title = base::SysUTF16ToNSString(delegate->GetMessageText());
 
-  absl::optional<std::string> account_string =
+  std::optional<std::string> account_string =
       delegate->GetAccountToStorePassword();
   NSString* subtitle =
       account_string ? l10n_util::GetNSStringF(

@@ -44,44 +44,6 @@ bool ExtractBaseAddressAndLength(char** base_address,
   return status == noErr && length_at_offset == *length;
 }
 
-NSDictionary<NSString*, DeviceNameAndTransportType*>*
-GetVideoCaptureDeviceNames() {
-  // At this stage we already know that AVFoundation is supported and the whole
-  // library is loaded and initialised, by the device monitoring.
-  NSMutableDictionary<NSString*, DeviceNameAndTransportType*>* device_names =
-      [[NSMutableDictionary alloc] init];
-
-  NSArray<AVCaptureDevice*>* devices = GetVideoCaptureDevices();
-
-  for (AVCaptureDevice* device in devices) {
-    if ([device hasMediaType:AVMediaTypeVideo] ||
-        [device hasMediaType:AVMediaTypeMuxed]) {
-      if (device.suspended) {
-        continue;
-      }
-
-#if BUILDFLAG(IS_MAC)
-      // Transport types are defined for Audio devices and reused for video.
-      int transport_type = device.transportType;
-      VideoCaptureTransportType device_transport_type =
-          (transport_type == kIOAudioDeviceTransportTypeBuiltIn ||
-           transport_type == kIOAudioDeviceTransportTypeUSB)
-              ? VideoCaptureTransportType::APPLE_USB_OR_BUILT_IN
-              : VideoCaptureTransportType::OTHER_TRANSPORT;
-#else
-      VideoCaptureTransportType device_transport_type =
-          VideoCaptureTransportType::APPLE_USB_OR_BUILT_IN;
-#endif
-      DeviceNameAndTransportType* name_and_transport_type =
-          [[DeviceNameAndTransportType alloc]
-               initWithName:device.localizedName
-              transportType:device_transport_type];
-      device_names[device.uniqueID] = name_and_transport_type;
-    }
-  }
-  return device_names;
-}
-
 gfx::Size GetPixelBufferSize(CVPixelBufferRef pixel_buffer) {
   return gfx::Size(CVPixelBufferGetWidth(pixel_buffer),
                    CVPixelBufferGetHeight(pixel_buffer));
@@ -100,7 +62,7 @@ gfx::Size GetSampleBufferSize(CMSampleBufferRef sample_buffer) {
 }
 
 #if BUILDFLAG(IS_IOS)
-absl::optional<int> MaybeGetVideoRotation(
+std::optional<int> MaybeGetVideoRotation(
     UIDeviceOrientation orientation,
     AVCaptureDevicePosition camera_position) {
   bool is_front_camera = NO;
@@ -110,7 +72,7 @@ absl::optional<int> MaybeGetVideoRotation(
     is_front_camera = NO;
   }
 
-  absl::optional<int> rotation;
+  std::optional<int> rotation;
   switch (orientation) {
     case UIDeviceOrientationPortrait:
       rotation = 90;

@@ -52,7 +52,7 @@ class ArcPipBridge : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   std::unique_ptr<ArcPictureInPictureWindowControllerImpl>
       pip_window_controller_;

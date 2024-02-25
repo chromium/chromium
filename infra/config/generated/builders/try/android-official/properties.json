@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/android-official/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -39,7 +42,8 @@
           "builder": "android-official",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-official/targets"
     }
   },
   "$build/reclient": {

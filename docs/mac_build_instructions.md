@@ -154,6 +154,17 @@ in your args.gn to disable debug symbols altogether.  This makes both full
 rebuilds and linking faster (at the cost of not getting symbolized backtraces
 in gdb).
 
+#### Use Reclient
+
+In addition, Google employees should use Reclient, a distributed compilation system.
+Detailed information is available internally but the relevant gn arg is:
+* `use_remoteexec = true`
+
+Google employees can visit
+[go/building-chrome-mac#using-remote-execution](https://goto.google.com/building-chrome-mac#using-remote-execution)
+for more information. For external contributors, Reclient does not support Mac
+builds.
+
 #### CCache
 
 You might also want to [install ccache](ccache_mac.md) to speed up the build.
@@ -346,7 +357,8 @@ $ git config core.untrackedCache true
 
 You can significantly speed up git by using [fsmonitor.](https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/)
 You should enable fsmonitor in large repos, such as Chromium and v8. Enabling
-it globally will launch many processes and probably isn't worthwhile. The
+it globally will launch many processes and probably isn't worthwhile. Be sure
+you have at least version 2.43 (fsmonitor on the Mac is broken before then). The
 command to enable fsmonitor in the current repo is:
 
 ```shell

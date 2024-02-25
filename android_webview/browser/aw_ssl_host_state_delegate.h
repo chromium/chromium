@@ -86,8 +86,8 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
       const std::string& host,
       bool enforce,
       content::StoragePartition* storage_partition) override;
-  bool IsHttpsEnforcedForHost(
-      const std::string& host,
+  bool IsHttpsEnforcedForUrl(
+      const GURL& url,
       content::StoragePartition* storage_partition) override;
 
   // Revokes all SSL certificate error allow exceptions made by the user for

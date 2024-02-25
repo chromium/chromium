@@ -53,16 +53,20 @@ bool AreCollapsible(const AskForValuesToFillFieldLogEvent& event1,
 
 bool AreCollapsible(const TriggerFillFieldLogEvent& event1,
                     const TriggerFillFieldLogEvent& event2) {
-  return event1.fill_event_id != event2.fill_event_id;
+  return event1.fill_event_id == event2.fill_event_id;
 }
 
 bool AreCollapsible(const FillFieldLogEvent& event1,
                     const FillFieldLogEvent& event2) {
-  return event1.fill_event_id != event2.fill_event_id &&
+  return event1.fill_event_id == event2.fill_event_id &&
          event1.had_value_before_filling == event2.had_value_before_filling &&
          event1.autofill_skipped_status == event2.autofill_skipped_status &&
-         event1.was_autofilled == event2.was_autofilled &&
-         event1.had_value_after_filling == event2.had_value_after_filling;
+         event1.was_autofilled_before_security_policy ==
+             event2.was_autofilled_before_security_policy &&
+         event1.had_value_after_filling == event2.had_value_after_filling &&
+         event1.filling_method == event2.filling_method &&
+         event1.filling_prevented_by_iframe_security_policy ==
+             event2.filling_prevented_by_iframe_security_policy;
 }
 
 bool AreCollapsible(const TypingFieldLogEvent& event1,

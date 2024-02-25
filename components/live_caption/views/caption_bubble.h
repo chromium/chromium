@@ -21,6 +21,7 @@
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -49,6 +50,7 @@ class CaptionBubbleEventObserver;
 namespace captions {
 class CaptionBubbleFrameView;
 class CaptionBubbleLabel;
+class LanguageLabelButton;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. These should be the same as
@@ -63,6 +65,12 @@ enum class SessionEvent {
   kMaxValue = kCloseButtonClicked,
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Used by ash window manager to place the caption bubble in the correct
+// container.
+extern const ui::ClassProperty<bool>* const kIsCaptionBubbleKey;
+#endif
+
 using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,8 +83,9 @@ using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 //
 class CaptionBubble : public views::BubbleDialogDelegateView,
                       public gfx::AnimationDelegate {
+  METADATA_HEADER(CaptionBubble, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(CaptionBubble);
   CaptionBubble(PrefService* profile_prefs,
                 const std::string& application_locale,
                 base::OnceClosure destroyed_callback);
@@ -97,7 +106,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void SetModel(CaptionBubbleModel* model);
 
   // Changes the caption style of the caption bubble.
-  void UpdateCaptionStyle(absl::optional<ui::CaptionStyle> caption_style);
+  void UpdateCaptionStyle(std::optional<ui::CaptionStyle> caption_style);
 
   // Returns whether the bubble has activity. Activity is defined as
   // transcription received from the speech service or user interacting with the
@@ -105,7 +114,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   bool HasActivity();
 
   views::Label* GetLabelForTesting();
-  views::StyledLabel* GetLanguageLabelForTesting();
+  views::Label* GetDownloadProgressLabelForTesting();
+  views::Label* GetLanguageLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
@@ -161,6 +171,13 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void OnTextChanged();
 
   // Called by CaptionBubbleModel to notify this object that the model's
+  // download progress text has changed. Sets the text of the caption bubble to
+  // the model's download progress text.
+  void OnDownloadProgressTextChanged();
+
+  void OnLanguagePackInstalled();
+
+  // Called by CaptionBubbleModel to notify this object that the model's
   // auto-detected language has changed.
   void OnAutoDetectedLanguageChanged();
 
@@ -203,9 +220,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void SetTextSizeAndFontFamily();
   void SetTextColor();
   void SetBackgroundColor();
-  void UpdateLiveTranslateLabelStyle(
-      views::StyledLabel::RangeStyleInfo label_style,
-      views::StyledLabel::RangeStyleInfo languages_style);
   void OnLanguageChanged();
   void UpdateLanguageLabelText();
 
@@ -233,7 +247,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   void LogSessionEvent(SessionEvent event);
 
-  std::vector<views::View*> GetButtons();
+  std::vector<raw_ptr<views::View, VectorExperimental>> GetButtons();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
@@ -241,14 +255,14 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<CaptionBubbleLabel> label_;
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
-  raw_ptr<views::StyledLabel> language_label_;
+  raw_ptr<views::Label> download_progress_label_;
+  raw_ptr<LanguageLabelButton> language_label_;
   raw_ptr<views::View> header_container_;
   raw_ptr<views::View> left_header_container_;
   std::string source_language_code_;
   std::string target_language_code_;
   std::u16string source_language_text_;
   std::u16string target_language_text_;
-  std::vector<size_t> language_label_offsets_;
   raw_ptr<views::ImageView> generic_error_icon_;
   raw_ptr<views::View> generic_error_message_;
   raw_ptr<views::ImageButton> back_to_tab_button_;
@@ -257,7 +271,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::ImageButton> collapse_button_;
   raw_ptr<views::ImageButton> pin_button_;
   raw_ptr<views::ImageButton> unpin_button_;
-  raw_ptr<views::ImageButton> caption_settings_button_;
   raw_ptr<CaptionBubbleFrameView> frame_;
 
   // Flag indicating whether the current source language does not match the user
@@ -274,7 +287,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::Checkbox> media_foundation_renderer_error_checkbox_ = nullptr;
 #endif
 
-  absl::optional<ui::CaptionStyle> caption_style_;
+  std::optional<ui::CaptionStyle> caption_style_;
   raw_ptr<CaptionBubbleModel> model_ = nullptr;
   raw_ptr<PrefService> profile_prefs_;
 
@@ -303,7 +316,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // A timer which causes the bubble to hide if there is no activity after a
   // specified interval.
   std::unique_ptr<base::RetainingOneShotTimer> inactivity_timer_;
-  raw_ptr<const base::TickClock, AcrossTasksDanglingUntriaged> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   gfx::SlideAnimation controls_animation_;
 

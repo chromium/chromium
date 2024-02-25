@@ -8,7 +8,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='absolute'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='absolute'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",

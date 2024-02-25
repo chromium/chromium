@@ -24,18 +24,31 @@ import java.util.Map;
 public class MockNotificationManagerProxy implements NotificationManagerProxy {
     private static final String KEY_SEPARATOR = ":";
 
-    /**
-     * Holds a notification and the arguments passed to #notify and #cancel.
-     */
-    public static class NotificationEntry {
+    /** Holds a notification and the arguments passed to #notify and #cancel. */
+    public static class NotificationEntry implements StatusBarNotificationProxy {
         public final Notification notification;
         public final String tag;
         public final int id;
 
-        NotificationEntry(Notification notification, String tag, int id) {
+        public NotificationEntry(Notification notification, String tag, int id) {
             this.notification = notification;
             this.tag = tag;
             this.id = id;
+        }
+
+        @Override
+        public int getId() {
+            return id;
+        }
+
+        @Override
+        public String getTag() {
+            return tag;
+        }
+
+        @Override
+        public Notification getNotification() {
+            return notification;
         }
     }
 
@@ -87,7 +100,7 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     public void cancel(int id) {
-        cancel(null /* tag */, id);
+        cancel(/* tag= */ null, id);
     }
 
     @Override
@@ -105,7 +118,7 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     public void notify(int id, Notification notification) {
-        notify(null /* tag */, id, notification);
+        notify(/* tag= */ null, id, notification);
     }
 
     @Override
@@ -116,7 +129,9 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     public void notify(NotificationWrapper notification) {
-        notify(notification.getMetadata().tag, notification.getMetadata().id,
+        notify(
+                notification.getMetadata().tag,
+                notification.getMetadata().id,
                 notification.getNotification());
     }
 
@@ -162,4 +177,9 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     public void deleteNotificationChannelGroup(String groupId) {}
+
+    @Override
+    public List<? extends StatusBarNotificationProxy> getActiveNotifications() {
+        return getNotifications();
+    }
 }

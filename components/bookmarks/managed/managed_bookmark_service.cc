@@ -121,12 +121,8 @@ bool ManagedBookmarkService::CanSetPermanentNodeTitle(
   return !IsDescendantOf(node, managed_node_);
 }
 
-bool ManagedBookmarkService::CanSyncNode(const BookmarkNode* node) {
-  return !IsDescendantOf(node, managed_node_);
-}
-
-bool ManagedBookmarkService::CanBeEditedByUser(const BookmarkNode* node) {
-  return !IsDescendantOf(node, managed_node_);
+bool ManagedBookmarkService::IsNodeManaged(const BookmarkNode* node) {
+  return IsDescendantOf(node, managed_node_);
 }
 
 void ManagedBookmarkService::Shutdown() {

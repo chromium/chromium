@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Upgrade in tree order in the same tree scope
+  Illegal constructor
+[FAIL] Upgrade in shadow-including tree order across tree scopes
+  Illegal constructor
+[FAIL] Upgrade order does not depend on shadow root attach order
+  Illegal constructor
+[FAIL] Upgrade in association order across documents, then tree order in each document
+  Illegal constructor
+[FAIL] Upgrade order is not affected by DOM order between child frames
+  Illegal constructor
+[FAIL] Upgrade order is affected by shadow tree adoption across documents
+  Illegal constructor
+[FAIL] Elements in the "owner" window of a scoped registry are not always upgraded first
+  Illegal constructor
+Harness: the test ran to completion.
+

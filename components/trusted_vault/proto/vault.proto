@@ -56,6 +56,11 @@ message SecurityDomainMember {
   }
 
   MemberType member_type = 4;
+
+  message MemberMetadata {
+    bool usable_for_retrieval = 1;
+  }
+  MemberMetadata member_metadata = 6;
 }
 
 message JoinSecurityDomainsRequest {
@@ -73,8 +78,13 @@ message JoinSecurityDomainsErrorDetail {
   JoinSecurityDomainsResponse already_exists_response = 1;
 }
 
-// TODO(crbug.com/1234719): figure out how to link google.protobuf.Any and use
-// it instead.
+message ListSecurityDomainMembersResponse {
+  repeated SecurityDomainMember security_domain_members = 1;
+  string next_page_token = 2;
+}
+
+// There is no way to google.protobuf.Any directly in this codebase, so this
+// proto just replicates it.
 message Proto3Any {
   string type_url = 1;
   bytes value = 2;

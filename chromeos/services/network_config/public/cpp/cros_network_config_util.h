@@ -9,6 +9,21 @@
 
 namespace chromeos::network_config {
 
+// Key names aligned with the field names defined in
+// `cros_network_config.mojom.WiFiConfigProperties` mojo interface but with JS
+// naming style (e.g. type_config => typeConfig).
+extern const char kMojoKeySecurity[];
+extern const char kMojoKeySsid[];
+extern const char kMojoKeyPassphrase[];
+extern const char kMojoKeyEapInner[];
+extern const char kMojoKeyEapOuter[];
+extern const char kMojoKeyEapIdentity[];
+extern const char kMojoKeyEapAnonymousIdentity[];
+extern const char kMojoKeyEapPassword[];
+extern const char kMojoKeyEap[];
+extern const char kMojoKeyWifi[];
+extern const char kMojoKeyTypeConfig[];
+
 struct ManagedDictionary {
   base::Value active_value;
   mojom::PolicySource policy_source = mojom::PolicySource::kNone;
@@ -19,8 +34,8 @@ bool GetBoolean(const base::Value::Dict* dict,
                 const char* key,
                 bool value_if_key_missing_from_dict = false);
 
-absl::optional<std::string> GetString(const base::Value::Dict* dict,
-                                      const char* key);
+std::optional<std::string> GetString(const base::Value::Dict* dict,
+                                     const char* key);
 
 const base::Value::Dict* GetDictionary(const base::Value::Dict* dict,
                                        const char* key);
@@ -77,6 +92,14 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
 // Creates a Mojo APN list from a ONC dictionary.
 mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value,
                                            bool is_apn_revamp_enabled);
+
+// Converts the `cros_network_config.mojom.WiFiConfigProperties` into
+// `base::Value::Dict` format which can be recognized in MojoJS. All the field
+// names in the mojo interface will be transformed to JS naming style and used
+// as key names.
+base::Value::Dict WiFiConfigPropertiesToMojoJsValue(
+    const mojo::StructPtr<
+        chromeos::network_config::mojom::WiFiConfigProperties>& wifi_config);
 
 }  // namespace chromeos::network_config
 

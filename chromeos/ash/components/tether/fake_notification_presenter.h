@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_NOTIFICATION_PRESENTER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/components/tether/notification_presenter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -27,8 +27,7 @@ class FakeNotificationPresenter : public NotificationPresenter {
 
   // Note: This function fails a test if potential_hotspot_state() is not
   // SINGLE_HOTSPOT_NEARBY_SHOWN when called.
-  absl::optional<multidevice::RemoteDeviceRef>
-  GetPotentialHotspotRemoteDevice();
+  std::optional<multidevice::RemoteDeviceRef> GetPotentialHotspotRemoteDevice();
 
   bool is_setup_required_notification_shown() {
     return is_setup_required_notification_shown_;
@@ -53,7 +52,7 @@ class FakeNotificationPresenter : public NotificationPresenter {
 
  private:
   PotentialHotspotNotificationState potential_hotspot_state_;
-  absl::optional<multidevice::RemoteDeviceRef> potential_hotspot_remote_device_;
+  std::optional<multidevice::RemoteDeviceRef> potential_hotspot_remote_device_;
   bool is_setup_required_notification_shown_;
   bool is_connection_failed_notification_shown_;
 };

@@ -77,7 +77,7 @@ BluetoothDevice* BluetoothTestCast::SimulateLowEnergyDevice(
   if (device_ordinal > 7 || device_ordinal < 1)
     return nullptr;
 
-  absl::optional<std::string> device_name = std::string(kTestDeviceName);
+  std::optional<std::string> device_name = std::string(kTestDeviceName);
   std::string device_address = kTestDeviceAddress1;
   std::vector<std::string> service_uuids;
   std::map<std::string, std::vector<uint8_t>> service_data;
@@ -105,7 +105,7 @@ BluetoothDevice* BluetoothTestCast::SimulateLowEnergyDevice(
       device_address = kTestDeviceAddress2;
       break;
     case 5:
-      device_name = absl::nullopt;
+      device_name = std::nullopt;
       break;
     default:
       NOTREACHED();
@@ -117,7 +117,7 @@ BluetoothDevice* BluetoothTestCast::SimulateLowEnergyDevice(
 
 void BluetoothTestCast::UpdateAdapter(
     const std::string& address,
-    const absl::optional<std::string>& name,
+    const std::optional<std::string>& name,
     const std::vector<std::string>& service_uuids,
     const std::map<std::string, std::vector<uint8_t>>& service_data,
     const std::map<uint16_t, std::vector<uint8_t>>& manufacturer_data) {

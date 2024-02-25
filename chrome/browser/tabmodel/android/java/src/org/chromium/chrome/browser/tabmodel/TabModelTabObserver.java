@@ -8,9 +8,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
-/**
- * Observer of tab changes for all tabs owned by a {@link TabModel}.
- */
+/** Observer of tab changes for all tabs owned by a {@link TabModel}. */
 public class TabModelTabObserver extends EmptyTabObserver {
     private final TabModel mTabModel;
     private final TabModelObserver mTabModelObserver;
@@ -28,30 +26,34 @@ public class TabModelTabObserver extends EmptyTabObserver {
      */
     public TabModelTabObserver(TabModel model) {
         mTabModel = model;
-        mTabModelObserver = new TabModelObserver() {
-            @Override
-            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                onTabSelected(tab);
-            }
+        mTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        onTabSelected(tab);
+                    }
 
-            @Override
-            public void tabClosureCommitted(Tab tab) {
-                tab.removeObserver(TabModelTabObserver.this);
-            }
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        tab.removeObserver(TabModelTabObserver.this);
+                    }
 
-            @Override
-            public void restoreCompleted() {
-                maybeCallOnTabSelected();
-            }
-        };
+                    @Override
+                    public void restoreCompleted() {
+                        maybeCallOnTabSelected();
+                    }
+
+                    @Override
+                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        TabModelTabObserver.this.willCloseTab(tab);
+                    }
+                };
 
         mTabModel.addObserver(mTabModelObserver);
         maybeCallOnTabSelected();
     }
 
-    /**
-     * Destroys the observer and removes itself as a listener for Tab updates.
-     */
+    /** Destroys the observer and removes itself as a listener for Tab updates. */
     public void destroy() {
         mTabModel.removeObserver(mTabModelObserver);
         int tabCount = mTabModel.getCount();
@@ -60,14 +62,18 @@ public class TabModelTabObserver extends EmptyTabObserver {
         }
     }
 
+    /* Called when a tab starts closing. */
+    public void willCloseTab(Tab tab) {}
+
     /* Called when a tab in a model is selected or restored. */
     protected void onTabSelected(Tab tab) {
         tab.addObserver(TabModelTabObserver.this);
-    };
+    }
 
     private void maybeCallOnTabSelected() {
-        if (mTabModel.index() != TabList.INVALID_TAB_INDEX) {
-            onTabSelected(mTabModel.getTabAt(mTabModel.index()));
+        Tab tab = mTabModel.getTabAt(mTabModel.index());
+        if (tab != null) {
+            onTabSelected(tab);
         }
     }
 }

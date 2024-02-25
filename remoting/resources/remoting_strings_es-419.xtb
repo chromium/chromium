@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">Se detectó una versión de protocolo incompatible. Asegúrate de que tienes instalada la última versión del software en ambas computadoras y vuelve a intentarlo.</translation>
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="1201402288615127009">Siguiente</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="1297009705180977556">Se produjo un error al conectarse a <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">El objeto solicitado no existe.</translation>
 <translation id="1480046233931937785">Créditos</translation>
@@ -89,7 +88,6 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="4808503597364150972">Ingresa tu PIN de <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Enviar Impr Pant</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. Todos los derechos reservados.</translation>
 <translation id="4974476491460646149">Conexión cerrada para <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Para obtener acceso remoto, primero debes configurar la computadora</translation>
 <translation id="4987330545941822761">El Escritorio remoto de Chrome no puede determinar el navegador para abrir las URL de forma local. Elígelo de la siguiente lista.</translation>
@@ -154,6 +152,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="7693372326588366043">Actualiza la lista de hosts.</translation>
 <translation id="7714222945760997814">Denunciar este problema</translation>
 <translation id="7868137160098754906">Ingresa tu PIN para la computadora remota.</translation>
+<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="7895403300744144251">Las políticas de seguridad en la computadora remota no admiten conexiones de tu cuenta.</translation>
 <translation id="7936528439960309876">Acoplar a la derecha</translation>
 <translation id="7970576581263377361">Se produjo un error de autenticación. Vuelve a acceder a Chromium.</translation>
@@ -185,6 +184,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="8747048596626351634">La sesión se bloqueó o no pudo iniciarse. Si la computadora remota cuenta con el script ~/.chrome-remote-desktop-session, asegúrate de que este inicia un proceso de ejecución prolongada en primer plano, como un entorno de escritorio o un administrador de ventanas.</translation>
 <translation id="8804164990146287819">Política de Privacidad</translation>
 <translation id="8906511416443321782">Debes permitir el acceso al micrófono para capturar audio y transmitirlo al cliente del Escritorio remoto de Chrome.</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. Todos los derechos reservados.</translation>
 <translation id="9111855907838866522">Te conectaste a tu dispositivo remoto. Para abrir el menú, presiona la pantalla con cuatro dedos.</translation>
 <translation id="9126115402994542723">No volver a pedir un PIN al conectarse a este host desde este dispositivo</translation>
 <translation id="916856682307586697">Iniciar la sesión predeterminada de Xsession</translation>

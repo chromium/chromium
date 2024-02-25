@@ -17,8 +17,8 @@ limitations under the License.
 #define TENSORFLOW_LITE_SUPPORT_METADATA_CC_METADATA_POPULATOR_H_
 
 #include "absl/container/flat_hash_map.h"  // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
-#include "flatbuffers/flatbuffers.h"       // from @flatbuffers
+#include "absl/status/status.h"  // from @com_google_absl
+#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
@@ -79,8 +79,7 @@ class ModelMetadataPopulator {
   // Zips and appends associated files to the provided model buffer. Called
   // internally by `Populate()`.
   tflite::support::StatusOr<std::string> AppendAssociatedFiles(
-      const char* model_buffer_data,
-      size_t model_buffer_size);
+      const char* model_buffer_data, size_t model_buffer_size);
 
   // The unpacked model FlatBuffer.
   tflite::ModelT model_t_;

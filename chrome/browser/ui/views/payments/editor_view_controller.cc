@@ -40,29 +40,21 @@
 namespace payments {
 namespace {
 
-class ErrorLabelView : public views::Label {
- public:
-  METADATA_HEADER(ErrorLabelView);
+constexpr int kErrorLabelTopPadding = 6;
 
-  ErrorLabelView(const std::u16string& error, autofill::ServerFieldType type)
-      : views::Label(error, CONTEXT_DIALOG_BODY_TEXT_SMALL) {
-    SetID(static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) + type);
-    SetMultiLine(true);
-    SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    constexpr int kErrorLabelTopPadding = 6;
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kErrorLabelTopPadding, 0, 0, 0)));
-  }
-
-  // views::Label:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    SetEnabledColor(GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
-  }
-};
-
-BEGIN_METADATA(ErrorLabelView, views::Label)
-END_METADATA
+std::unique_ptr<views::Label> CreateErrorLabel(const std::u16string& error,
+                                               autofill::FieldType type) {
+  return views::Builder<views::Label>()
+      .SetText(error)
+      .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+      .SetID(static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) + type)
+      .SetMultiLine(true)
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(kErrorLabelTopPadding, 0, 0, 0)))
+      .SetEnabledColorId(ui::kColorAlertHighSeverity)
+      .Build();
+}
 
 }  // namespace
 
@@ -80,14 +72,14 @@ EditorViewController::EditorViewController(
 EditorViewController::~EditorViewController() {}
 
 void EditorViewController::DisplayErrorMessageForField(
-    autofill::ServerFieldType type,
+    autofill::FieldType type,
     const std::u16string& error_message) {
   AddOrUpdateErrorMessageForField(type, error_message);
   RelayoutPane();
 }
 
 // static
-int EditorViewController::GetInputFieldViewId(autofill::ServerFieldType type) {
+int EditorViewController::GetInputFieldViewId(autofill::FieldType type) {
   return static_cast<int>(DialogViewID::INPUT_FIELD_TYPE_OFFSET) +
          static_cast<int>(type);
 }
@@ -97,7 +89,7 @@ std::unique_ptr<views::View> EditorViewController::CreateHeaderView() {
 }
 
 std::unique_ptr<views::View> EditorViewController::CreateCustomFieldView(
-    autofill::ServerFieldType type,
+    autofill::FieldType type,
     views::View** focusable_field,
     bool* valid,
     std::u16string* error_message) {
@@ -105,7 +97,7 @@ std::unique_ptr<views::View> EditorViewController::CreateCustomFieldView(
 }
 
 std::unique_ptr<views::View> EditorViewController::CreateExtraViewForField(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   return nullptr;
 }
 
@@ -445,7 +437,7 @@ int EditorViewController::ComputeWidestExtraViewWidth(
 }
 
 void EditorViewController::AddOrUpdateErrorMessageForField(
-    autofill::ServerFieldType type,
+    autofill::FieldType type,
     const std::u16string& error_message) {
   const auto& label_view_it = error_labels_.find(type);
   DCHECK(label_view_it != error_labels_.end());
@@ -456,7 +448,7 @@ void EditorViewController::AddOrUpdateErrorMessageForField(
     if (label_view_it->second->children().empty()) {
       // If there was no error label view, add it.
       label_view_it->second->AddChildView(
-          std::make_unique<ErrorLabelView>(error_message, type));
+          CreateErrorLabel(error_message, type));
     } else {
       // The error view is the only child, and has a Label as only child itself.
       static_cast<views::Label*>(label_view_it->second->children().front())
@@ -465,7 +457,7 @@ void EditorViewController::AddOrUpdateErrorMessageForField(
   }
 }
 
-void EditorViewController::SaveButtonPressed() {
+void EditorViewController::SaveButtonPressed(const ui::Event& event) {
   if (!ValidateModelAndSave())
     return;
   if (back_navigation_type_ == BackNavigationType::kOneStep) {

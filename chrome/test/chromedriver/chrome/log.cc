@@ -98,7 +98,7 @@ std::string FormatValueForDisplay(const base::Value& value) {
 }
 
 std::string FormatJsonForDisplay(const std::string& json) {
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value)
     value.emplace(json);
   return FormatValueForDisplay(*value);

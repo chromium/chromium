@@ -46,7 +46,7 @@ message HashedHostInfos {
 // Request to return a set of hints that guide what optimizations to perform
 // on those hosts.
 message GetHintsRequest {
-  reserved 6;
+  reserved 6, 10;
 
   // Information about the set of hosts to retrieve hints for.
   repeated HostInfo hosts = 1;
@@ -74,6 +74,9 @@ message GetHintsRequest {
   // Context in which this request is made.
   optional RequestContext context = 3;
 
+  // Metadata related to how the request with this context was made.
+  optional RequestContextMetadata context_metadata = 11;
+
   // The locale to associate with this request.
   //
   // It is the IETF language tag, defined in BCP 47. The region subtag is not
@@ -83,9 +86,30 @@ message GetHintsRequest {
 
   // Information about the request origin.
   optional OriginInfo origin_info = 9;
+}
 
-  // The theme associated with this request.
-  optional ThemeKey theme_key = 10;
+message RequestContextMetadata {
+  // update logic at {@link HintsManager::CanApplyOptimizationOnDemand} for
+  // getting the context metadata sent and setting the metadata w.r.t the
+  // context.
+  oneof metadata {
+    // Only filled in when RequestContext is CONTEXT_PAGE_INSIGHTS_HUB.
+    PageInsightsHubRequestContextMetadata page_insights_hub_metadata = 1;
+  }
+}
+
+message PageInsightsHubRequestContextMetadata {
+  // True if the Page Insights feature was triggered by the user (as opposed to
+  // auto-peeking).
+  optional bool is_user_initiated = 1;
+  // True if the Page Insights feature is showing on top of an initial page. See
+  // go/pih-cct-conditions.
+  optional bool is_initial_page = 2;
+  // True if logging of URL by server, and personalisation of response, is
+  // forbidden.
+  optional bool should_not_log_or_personalize = 3;
+  // Timestamp for the navigation that reached the URL, in milliseconds.
+  optional int64 navigation_timestamp_ms = 4;
 }
 
 // Response to the GetHints request.
@@ -113,10 +137,11 @@ message GetHintsResponse {
   repeated MatchedHintInfo hints_to_remove = 3;
 }
 
-// Must sync with enum OptimizationType in enums.xml for metric recording.
+// Must sync with enum OptimizationType in enums.xml and
+// optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32;
+  reserved 11, 12, 16, 29;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -191,11 +216,38 @@ enum OptimizationType {
   PRICE_INSIGHTS = 30;
   // Information about which JavaScript functions should be eager compiled.
   V8_COMPILE_HINTS = 31;
+  // Provides Page Insights features for a URL.
+  PAGE_INSIGHTS = 32;
   // This optimization provides information about shoppinge page types of this
   // page.
   SHOPPING_PAGE_TYPES = 33;
   // This optimization provides information about shopping discounts for a URL.
   SHOPPING_DISCOUNTS = 34;
+  // This optimization helps determine if this page is a good candidate for
+  // compose.
+  COMPOSE = 35;
+  // This optimization provides information about whether a merchant can be
+  // triggered with PIX bottom sheet.
+  PIX_PAYMENT_MERCHANT_ALLOWLIST = 36;
+  // The below optimizations provide information for merchant URLs that are
+  // eligible for credit card category benefits. These URLs are shared and apply
+  // to all card issuers that support showing benefits on Chrome.
+  SHARED_CREDIT_CARD_FLIGHT_BENEFITS = 37;
+  SHARED_CREDIT_CARD_DINING_BENEFITS = 38;
+  SHARED_CREDIT_CARD_GROCERY_BENEFITS = 39;
+  SHARED_CREDIT_CARD_ENTERTAINMENT_BENEFITS = 40;
+  SHARED_CREDIT_CARD_STREAMING_BENEFITS = 41;
+  SHARED_CREDIT_CARD_SUBSCRIPTION_BENEFITS = 42;
+  // The below optimizations provide information about merchant URLs that only
+  // Capital One supports for credit card category benefits.
+  CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS = 43;
+  CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS = 44;
+  CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS = 45;
+  CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS = 46;
+  // The below optimizations provide information about merchant URLs that only
+  // American Express supports for credit card category benefits.
+  AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS = 47;
+  AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS = 48;
 }
 
 // Presents semantics for how page load URLs should be matched.

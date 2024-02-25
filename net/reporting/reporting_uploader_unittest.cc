@@ -532,8 +532,8 @@ TEST_F(ReportingUploaderTest, DontSendCookies) {
   ResultSavingCookieCallback<CookieAccessResult> cookie_callback;
   GURL url = server_.GetURL("/");
   auto cookie = CanonicalCookie::Create(
-      url, "foo=bar", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      url, "foo=bar", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */);
   context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), url, CookieOptions::MakeAllInclusive(),
       cookie_callback.MakeCallback());
@@ -637,8 +637,6 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
   const SchemefulSite kSite1 = SchemefulSite(kOrigin);
   const SchemefulSite kSite2(GURL("https://origin2/"));
   ASSERT_NE(kSite1, kSite2);
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const url::Origin kSiteOrigin1 = url::Origin::Create(kSite1.GetURL());
   const url::Origin kSiteOrigin2 = url::Origin::Create(kSite2.GetURL());
   const IsolationInfo kIsolationInfo1 =

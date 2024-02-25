@@ -36,8 +36,7 @@ VAProfile GetProfile(Vp9FrameHeader frame_hdr) {
       break;
   }
 
-  LOG_ASSERT(false) << "Unsupported VP9 profile " << frame_hdr.profile;
-  return VAProfileNone;
+  LOG(FATAL) << "Unsupported VP9 profile " << frame_hdr.profile;
 }
 
 // Returns the preferred VA_RT_FORMAT for the given |profile|.

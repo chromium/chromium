@@ -114,7 +114,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
 
     // If set, we didn't issue OnTracingEnabled() on the session yet. If set and
     // empty, no more pids are pending and we should issue OnTracingEnabled().
-    absl::optional<std::set<base::ProcessId>> pending_enable_tracing_ack_pids_;
+    std::optional<std::set<base::ProcessId>> pending_enable_tracing_ack_pids_;
     base::OneShotTimer enable_tracing_ack_timer_;
 
     struct DataSourceHandle : public std::pair<std::string, std::string> {

@@ -31,6 +31,8 @@ namespace variations {
 class SyntheticTrialRegistry;
 }
 
+class IdentifiabilityStudyState;
+
 namespace metrics {
 
 class MetricsLogUploader;
@@ -39,32 +41,6 @@ class MetricsService;
 namespace structured {
 class StructuredMetricsService;
 }
-
-// The minimum number bytes of the queue to be persisted before logs are
-// dropped. This will be applied to both log queues (initial/ongoing). This
-// ensures that a reasonable amount of history will be stored even if there is a
-// long series of very small logs.
-//
-// Refer to //components/metrics/unsent_log_store.h for more details on when
-// logs are dropped.
-extern const base::FeatureParam<int> kMinLogQueueBytes;
-
-// The minimum number of ongoing logs to persist in the queue before logs are
-// dropped.
-//
-// Note that each ongoing log may be pretty large, since "initial" logs must
-// first be sent before any ongoing logs are transmitted. "Initial" logs will
-// not be sent if a user is offline. As a result, the current ongoing log will
-// accumulate until the "initial" log can be transmitted. We don't want to save
-// too many of these mega-logs (this should be capped by kMaxLogQueueBytes).
-//
-// A "standard shutdown" will create a small log, including just the data that
-// was not yet been transmitted, and that is normal (to have exactly one
-// ongoing_log_ at startup).
-//
-// Refer to //components/metrics/unsent_log_store.h for more details on when
-// logs are dropped.
-extern const base::FeatureParam<int> kMinOngoingLogQueueCount;
 
 // An abstraction of operations that depend on the embedder's (e.g. Chrome)
 // environment.
@@ -89,6 +65,10 @@ class MetricsServiceClient {
 
   // Returns the UkmService instance that this client is associated with.
   virtual ukm::UkmService* GetUkmService();
+
+  // Returns the IdentifiabilityStudyState instance that this client is
+  // associated with. Might be nullptr.
+  virtual IdentifiabilityStudyState* GetIdentifiabilityStudyState();
 
   // Returns the StructuredMetricsService instance that this client is
   // associated with.
@@ -184,10 +164,6 @@ class MetricsServiceClient {
   // Return true iff the system is currently on a cellular connection.
   virtual bool IsOnCellularConnection();
 
-  // Returns whether the allowlist for external experiment ids is enabled. Some
-  // embedders like WebLayer disable it. For Chrome, it should be enabled.
-  virtual bool IsExternalExperimentAllowlistEnabled();
-
   // Returns true iff UKM is allowed for all profiles.
   // See //components/ukm/observers/ukm_consent_state_observer.h for details.
   virtual bool IsUkmAllowedForAllProfiles();
@@ -244,21 +220,21 @@ class MetricsServiceClient {
   // when a user metric consent state should not be applied (ie no logged in
   // user or managed policy).
   //
-  // Will return absl::nullopt if there is no current user or current user
+  // Will return std::nullopt if there is no current user or current user
   // metrics consent should not be applied to determine metrics reporting state.
   //
   // Not all platforms support per-user consent. If per-user consent is not
-  // supported, this function should return absl::nullopt.
-  virtual absl::optional<bool> GetCurrentUserMetricsConsent() const;
+  // supported, this function should return std::nullopt.
+  virtual std::optional<bool> GetCurrentUserMetricsConsent() const;
 
   // Returns the current user id.
   //
-  // Will return absl::nullopt if there is no current user, metrics reporting is
+  // Will return std::nullopt if there is no current user, metrics reporting is
   // disabled, or current user should not have a user id.
   //
   // Not all platforms support per-user consent. If per-user consent is not
-  // supported, this function should return absl::nullopt.
-  virtual absl::optional<std::string> GetCurrentUserId() const;
+  // supported, this function should return std::nullopt.
+  virtual std::optional<std::string> GetCurrentUserId() const;
 
  private:
   base::RepeatingClosure update_running_services_;

@@ -4,13 +4,14 @@
 
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace {
 
-std::string NormalizeHost(base::StringPiece host) {
+std::string NormalizeHost(std::string_view host) {
   return GURL(base::StrCat({url::kHttpScheme, "://", host})).host();
 }
 
@@ -42,7 +43,7 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr,
     url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr remove_header =
         url_rewrite::mojom::UrlRequestRewriteRemoveHeader::New();
     if (!input.query_pattern().empty())
-      remove_header->query_pattern = absl::make_optional(input.query_pattern());
+      remove_header->query_pattern = std::make_optional(input.query_pattern());
     if (!input.header_name().empty())
       remove_header->header_name = input.header_name();
     return remove_header;
@@ -166,10 +167,10 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRulePtr,
 
     if (!input.host_filters().empty()) {
       // Convert host names in case they contain non-ASCII characters.
-      const base::StringPiece kWildcard("*.");
+      const std::string_view kWildcard("*.");
 
       std::vector<std::string> hosts;
-      for (base::StringPiece host : input.host_filters()) {
+      for (std::string_view host : input.host_filters()) {
         if (base::StartsWith(host, kWildcard, base::CompareCase::SENSITIVE)) {
           hosts.push_back(
               base::StrCat({kWildcard, NormalizeHost(host.substr(2))}));

@@ -5,6 +5,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -125,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
     auto ukm_entries = test_ukm_recorder.GetEntriesByName(Entry::kEntryName);
 
     ASSERT_EQ(1u, ukm_entries.size());
-    auto* entry = ukm_entries[0];
+    auto* entry = ukm_entries[0].get();
 
     // The test doesn't check the URL because not the full Ukm stack is
     // running in //content.

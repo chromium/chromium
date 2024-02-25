@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -33,7 +34,7 @@ class COMPONENT_EXPORT(EVDEV) MouseButtonMapEvdev {
 
   // Swaps left & right mouse buttons. If `device_id` has no value, settings are
   // configured as though per device settings are disabled.
-  void SetPrimaryButtonRight(absl::optional<int> device_id,
+  void SetPrimaryButtonRight(std::optional<int> device_id,
                              bool primary_button_right);
 
   // Return the mapped button.

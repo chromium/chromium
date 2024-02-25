@@ -93,6 +93,7 @@ class ColdModeSpellCheckRequester
   struct FullyCheckedEditableEntry {
     int previous_checked_length = 0;
     int accumulated_delta = 0;
+    uint64_t previous_checked_dom_tree_version = 0u;
   };
   HeapHashMap<WeakMember<const Element>, FullyCheckedEditableEntry>
       fully_checked_root_editables_;

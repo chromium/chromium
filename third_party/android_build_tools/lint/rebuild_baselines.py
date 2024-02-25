@@ -66,7 +66,12 @@ def build_all_lint_targets(
         logging.info(f'Re-building lint targets: {target_names}')
         cmd = gn_helpers.CreateBuildCommand(str(out_dir)) + target_names
         # Do not show output by default since all lint warnings are printed.
-        subprocess.run(cmd, check=True, capture_output=not verbose)
+        result = subprocess.run(cmd, check=False, capture_output=not verbose)
+        if result.returncode:
+            print('Build failed.')
+            print(result.stdout)
+            print(result.stderr)
+            sys.exit(1)
 
     return built_targets + target_names
 
@@ -151,7 +156,7 @@ def main():
 
     out_dir = _OUTPUT_DIR_ROOT / 'Lint-Default'
     gn_args = [
-        'use_goma=true',
+        'use_remoteexec=true',
         'target_os="android"',
         'treat_warnings_as_errors=false',
         'is_component_build=false',
@@ -164,7 +169,7 @@ def main():
     if include_clank:
         out_dir = _OUTPUT_DIR_ROOT / 'Lint-Clank'
         gn_args = [
-            'use_goma=true',
+            'use_remoteexec=true',
             'target_os="android"',
             'treat_warnings_as_errors=false',
             'is_component_build=false',
@@ -176,7 +181,7 @@ def main():
 
     out_dir = _OUTPUT_DIR_ROOT / 'Lint-Cast'
     gn_args = [
-        'use_goma=true',
+        'use_remoteexec=true',
         'target_os="android"',
         'treat_warnings_as_errors=false',
         'is_component_build=false',
@@ -191,7 +196,7 @@ def main():
 
     out_dir = _OUTPUT_DIR_ROOT / 'Lint-Cronet'
     gn_args = [
-        'use_goma=true',
+        'use_remoteexec=true',
         'target_os="android"',
         'treat_warnings_as_errors=false',
         'is_component_build=false',

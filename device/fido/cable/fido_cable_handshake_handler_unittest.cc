@@ -7,7 +7,9 @@
 #include <array>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -29,7 +31,6 @@
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -39,7 +40,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Test;
 using TestDeviceCallbackReceiver =
-    test::ValueCallbackReceiver<absl::optional<std::vector<uint8_t>>>;
+    test::ValueCallbackReceiver<std::optional<std::vector<uint8_t>>>;
 using NiceMockBluetoothAdapter = ::testing::NiceMock<MockBluetoothAdapter>;
 
 // Sufficiently large test control point length as we are not interested
@@ -134,21 +135,21 @@ std::vector<uint8_t> GetExpectedEncryptionKey(
 // derived from |handshake_key|.
 std::vector<uint8_t> ConstructAuthenticatorHelloReply(
     base::span<const uint8_t> hello_msg,
-    base::StringPiece handshake_key) {
+    std::string_view handshake_key) {
   auto reply = fido_parsing_utils::Materialize(hello_msg);
   crypto::HMAC hmac(crypto::HMAC::SHA256);
   if (!hmac.Init(handshake_key))
     return std::vector<uint8_t>();
 
   std::array<uint8_t, 32> authenticator_hello_mac;
-  if (!hmac.Sign(fido_parsing_utils::ConvertToStringPiece(hello_msg),
+  if (!hmac.Sign(fido_parsing_utils::ConvertToStringView(hello_msg),
                  authenticator_hello_mac.data(),
                  authenticator_hello_mac.size())) {
     return std::vector<uint8_t>();
   }
 
   fido_parsing_utils::Append(
-      &reply, base::make_span(authenticator_hello_mac).first(16));
+      &reply, base::make_span(authenticator_hello_mac).first(16u));
   return reply;
 }
 
@@ -177,8 +178,8 @@ class FakeCableAuthenticator {
  public:
   FakeCableAuthenticator() {
     handshake_key_ = crypto::HkdfSha256(
-        fido_parsing_utils::ConvertToStringPiece(kTestSessionPreKey),
-        fido_parsing_utils::ConvertToStringPiece(kTestNonce),
+        fido_parsing_utils::ConvertToStringView(kTestSessionPreKey),
+        fido_parsing_utils::ConvertToStringView(kTestNonce),
         kCableHandshakeKeyInfo, 32);
   }
 
@@ -199,10 +200,10 @@ class FakeCableAuthenticator {
     if (handshake_message.size() != 58)
       return false;
 
-    const auto client_hello = handshake_message.first(42);
+    const auto client_hello = handshake_message.first(42u);
     if (!hmac.VerifyTruncated(
-            fido_parsing_utils::ConvertToStringPiece(client_hello),
-            fido_parsing_utils::ConvertToStringPiece(
+            fido_parsing_utils::ConvertToStringView(client_hello),
+            fido_parsing_utils::ConvertToStringView(
                 handshake_message.subspan(42)))) {
       return false;
     }

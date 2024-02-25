@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_IMPL_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_IMPL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "components/media_message_center/media_notification_background.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -49,7 +50,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundImpl
   bool UpdateCornerRadius(int top_radius, int bottom_radius) override;
   bool UpdateArtworkMaxWidthPct(double max_width_pct) override;
   void UpdateFavicon(const gfx::ImageSkia& icon) override;
-  void UpdateDeviceSelectorAvailability(bool availability) override;
+  void UpdateDeviceSelectorVisibility(bool visible) override;
 
   SkColor GetBackgroundColor(const views::View& owner) const override;
   SkColor GetForegroundColor(const views::View& owner) const override;
@@ -57,7 +58,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundImpl
  private:
   friend class MediaNotificationBackgroundImplTest;
   friend class MediaNotificationViewImplTest;
-  friend class MediaNotificationViewModernImplTest;
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationBackgroundImplRTLTest,
                            BoundsSanityCheck);
 
@@ -81,10 +81,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundImpl
   gfx::ImageSkia favicon_;
   gfx::ImageSkia artwork_;
   double artwork_max_width_pct_;
-  bool audio_device_selector_availability_ = false;
+  bool audio_device_selector_visible_ = false;
 
-  absl::optional<SkColor> background_color_;
-  absl::optional<SkColor> foreground_color_;
+  std::optional<SkColor> background_color_;
+  std::optional<SkColor> foreground_color_;
 };
 
 }  // namespace media_message_center

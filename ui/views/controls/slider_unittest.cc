@@ -36,12 +36,12 @@ namespace {
 // A views::SliderListener that tracks simple event call history.
 class TestSliderListener : public views::SliderListener {
  public:
-  TestSliderListener();
+  TestSliderListener() = default;
 
   TestSliderListener(const TestSliderListener&) = delete;
   TestSliderListener& operator=(const TestSliderListener&) = delete;
 
-  ~TestSliderListener() override;
+  ~TestSliderListener() override = default;
 
   int last_event_epoch() { return last_event_epoch_; }
 
@@ -54,9 +54,6 @@ class TestSliderListener : public views::SliderListener {
   }
 
   views::Slider* last_drag_ended_sender() { return last_drag_ended_sender_; }
-
-  // Resets the state of this as if it were newly created.
-  virtual void ResetCallHistory();
 
   // views::SliderListener:
   void SliderValueChanged(views::Slider* sender,
@@ -74,27 +71,10 @@ class TestSliderListener : public views::SliderListener {
   // The epoch of the last time SliderDragEnded was called.
   int last_drag_ended_epoch_ = -1;
   // The sender from the last SliderDragStarted call.
-  raw_ptr<views::Slider, AcrossTasksDanglingUntriaged>
-      last_drag_started_sender_ = nullptr;
+  raw_ptr<views::Slider> last_drag_started_sender_ = nullptr;
   // The sender from the last SliderDragEnded call.
-  raw_ptr<views::Slider, AcrossTasksDanglingUntriaged> last_drag_ended_sender_ =
-      nullptr;
+  raw_ptr<views::Slider> last_drag_ended_sender_ = nullptr;
 };
-
-TestSliderListener::TestSliderListener() = default;
-
-TestSliderListener::~TestSliderListener() {
-  last_drag_started_sender_ = nullptr;
-  last_drag_ended_sender_ = nullptr;
-}
-
-void TestSliderListener::ResetCallHistory() {
-  last_event_epoch_ = 0;
-  last_drag_started_epoch_ = -1;
-  last_drag_ended_epoch_ = -1;
-  last_drag_started_sender_ = nullptr;
-  last_drag_ended_sender_ = nullptr;
-}
 
 void TestSliderListener::SliderValueChanged(views::Slider* sender,
                                             float value,
@@ -137,9 +117,7 @@ class SliderTest : public views::ViewsTestBase,
   ~SliderTest() override = default;
 
  protected:
-  Slider* slider() { return slider_; }
-
-  TestSliderListener& slider_listener() { return slider_listener_; }
+  Slider* slider() { return static_cast<Slider*>(widget_->GetContentsView()); }
 
   int max_x() { return max_x_; }
 
@@ -161,14 +139,8 @@ class SliderTest : public views::ViewsTestBase,
   float GetMaxValue() const;
 
  private:
-  // The Slider to be tested.
-  raw_ptr<Slider, AcrossTasksDanglingUntriaged> slider_ = nullptr;
-
   // Populated values for discrete slider.
   base::flat_set<float> values_;
-
-  // A simple SliderListener test double.
-  TestSliderListener slider_listener_;
   // Stores the default locale at test setup so it can be restored
   // during test teardown.
   std::string default_locale_;
@@ -184,7 +156,7 @@ class SliderTest : public views::ViewsTestBase,
 
 void SliderTest::ClickAt(int x, int y) {
   gfx::Point point =
-      slider_->GetBoundsInScreen().origin() + gfx::Vector2d(x, y);
+      slider()->GetBoundsInScreen().origin() + gfx::Vector2d(x, y);
   event_generator_->MoveMouseTo(point);
   event_generator_->ClickLeftButton();
 }
@@ -219,7 +191,7 @@ void SliderTest::SetUp() {
 
   widget_ = std::make_unique<Widget>();
   widget_->Init(std::move(init_params));
-  slider_ = widget_->SetContentsView(std::move(slider));
+  widget_->SetContentsView(std::move(slider));
   widget_->Show();
 
   event_generator_ =
@@ -407,38 +379,40 @@ TEST_P(SliderTest, SliderValueForKeyboard) {
 
 // Verifies the correct SliderListener events are raised for a tap gesture.
 TEST_P(SliderTest, SliderListenerEventsForTapGesture) {
-  test::SliderTestApi slider_test_api(slider());
-  slider_test_api.SetListener(&slider_listener());
+  TestSliderListener slider_listener;
+  test::SliderTestApi(slider()).SetListener(&slider_listener);
 
   event_generator()->GestureTapAt(gfx::Point(0, 0));
-  EXPECT_EQ(1, slider_listener().last_drag_started_epoch());
-  EXPECT_EQ(2, slider_listener().last_drag_ended_epoch());
-  EXPECT_EQ(slider(), slider_listener().last_drag_started_sender());
-  EXPECT_EQ(slider(), slider_listener().last_drag_ended_sender());
+  EXPECT_EQ(1, slider_listener.last_drag_started_epoch());
+  EXPECT_EQ(2, slider_listener.last_drag_ended_epoch());
+  EXPECT_EQ(slider(), slider_listener.last_drag_started_sender());
+  EXPECT_EQ(slider(), slider_listener.last_drag_ended_sender());
+  test::SliderTestApi(slider()).SetListener(nullptr);
 }
 
 // Verifies the correct SliderListener events are raised for a scroll gesture.
 TEST_P(SliderTest, SliderListenerEventsForScrollGesture) {
-  test::SliderTestApi slider_test_api(slider());
-  slider_test_api.SetListener(&slider_listener());
+  TestSliderListener slider_listener;
+  test::SliderTestApi(slider()).SetListener(&slider_listener);
 
   event_generator()->GestureScrollSequence(
       gfx::Point(0.25 * max_x(), 0.25 * max_y()),
       gfx::Point(0.75 * max_x(), 0.75 * max_y()), base::Milliseconds(0),
       5 /* steps */);
 
-  EXPECT_EQ(1, slider_listener().last_drag_started_epoch());
-  EXPECT_GT(slider_listener().last_drag_ended_epoch(),
-            slider_listener().last_drag_started_epoch());
-  EXPECT_EQ(slider(), slider_listener().last_drag_started_sender());
-  EXPECT_EQ(slider(), slider_listener().last_drag_ended_sender());
+  EXPECT_EQ(1, slider_listener.last_drag_started_epoch());
+  EXPECT_GT(slider_listener.last_drag_ended_epoch(),
+            slider_listener.last_drag_started_epoch());
+  EXPECT_EQ(slider(), slider_listener.last_drag_started_sender());
+  EXPECT_EQ(slider(), slider_listener.last_drag_ended_sender());
+  test::SliderTestApi(slider()).SetListener(nullptr);
 }
 
 // Verifies the correct SliderListener events are raised for a multi
 // finger scroll gesture.
 TEST_P(SliderTest, SliderListenerEventsForMultiFingerScrollGesture) {
-  test::SliderTestApi slider_test_api(slider());
-  slider_test_api.SetListener(&slider_listener());
+  TestSliderListener slider_listener;
+  test::SliderTestApi(slider()).SetListener(&slider_listener);
 
   gfx::Point points[] = {gfx::Point(0, 0.1 * max_y()),
                          gfx::Point(0, 0.2 * max_y())};
@@ -446,11 +420,12 @@ TEST_P(SliderTest, SliderListenerEventsForMultiFingerScrollGesture) {
       2 /* count */, points, 0 /* event_separation_time_ms */, 5 /* steps */,
       2 /* move_x */, 0 /* move_y */);
 
-  EXPECT_EQ(1, slider_listener().last_drag_started_epoch());
-  EXPECT_GT(slider_listener().last_drag_ended_epoch(),
-            slider_listener().last_drag_started_epoch());
-  EXPECT_EQ(slider(), slider_listener().last_drag_started_sender());
-  EXPECT_EQ(slider(), slider_listener().last_drag_ended_sender());
+  EXPECT_EQ(1, slider_listener.last_drag_started_epoch());
+  EXPECT_GT(slider_listener.last_drag_ended_epoch(),
+            slider_listener.last_drag_started_epoch());
+  EXPECT_EQ(slider(), slider_listener.last_drag_started_sender());
+  EXPECT_EQ(slider(), slider_listener.last_drag_ended_sender());
+  test::SliderTestApi(slider()).SetListener(nullptr);
 }
 
 // Verifies the correct SliderListener events are raised for an accessible
@@ -462,21 +437,21 @@ TEST_P(SliderTest, SliderRaisesA11yEvents) {
   // First, detach/reattach the slider without setting value.
   // Temporarily detach the slider.
   View* root_view = slider()->parent();
-  root_view->RemoveChildView(slider());
+  auto owning_slider = root_view->RemoveChildViewT(slider());
 
   // Re-attachment should cause nothing to get fired.
-  root_view->AddChildView(slider());
+  root_view->AddChildView(std::move(owning_slider));
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   // Now, set value before reattaching.
-  root_view->RemoveChildView(slider());
+  owning_slider = root_view->RemoveChildViewT(slider());
 
   // Value changes won't trigger accessibility events before re-attachment.
-  slider()->SetValue(22);
+  owning_slider->SetValue(22);
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   // Re-attachment should trigger the value change.
-  root_view->AddChildView(slider());
+  root_view->AddChildView(std::move(owning_slider));
   EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 }
 

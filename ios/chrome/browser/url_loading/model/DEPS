@@ -1,0 +1,20 @@
+include_rules = [
+  "+ios/chrome/browser/web/model",
+  "+ios/chrome/browser/policy/model",
+  "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/crash_report/model",
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/prerender/model",
+  "+ios/chrome/browser/tab_insertion/model",
+  "+ios/chrome/browser/sessions",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^url_loading_browser_agent.mm": [
+    "+ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h",
+    "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+}
+

@@ -19,25 +19,9 @@
 <body>
 <script src="resources/interpolation-test.js"></script>
 <script>
-function assertCrossfadeInterpolation(options) {
-  var fromComputed = options.fromComputed || options.from;
-  assertInterpolation({
-    property: '-webkit-mask-image',
-    from: options.from,
-    to: options.to,
-  }, [
-    {at: -0.3, is: fromComputed},
-    {at: 0, is: fromComputed},
-    {at: 0.3, is: '-webkit-cross-fade(' + fromComputed + ', ' + options.to + ', 0.3)'},
-    {at: 0.5, is: '-webkit-cross-fade(' + fromComputed + ', ' + options.to + ', 0.5)'},
-    {at: 0.6, is: '-webkit-cross-fade(' + fromComputed + ', ' + options.to + ', 0.6)'},
-    {at: 1, is: options.to},
-    {at: 1.5, is: options.to},
-  ]);
-}
-
 // neutral
-assertCrossfadeInterpolation({
+assertNoInterpolation({
+  property: '-webkit-mask-image',
   from: neutralKeyframe,
   fromComputed: 'url(../resources/stripes-20.png)',
   to: 'url(../resources/green-20.png)',
@@ -51,7 +35,8 @@ assertNoInterpolation({
 });
 
 // inherit
-assertCrossfadeInterpolation({
+assertNoInterpolation({
+  property: '-webkit-mask-image',
   from: 'inherit',
   fromComputed: 'url(../resources/blue-20.png)',
   to: 'url(../resources/green-20.png)',
@@ -65,19 +50,22 @@ assertNoInterpolation({
 });
 
 // Image to image
-assertCrossfadeInterpolation({
+assertNoInterpolation({
+  property: '-webkit-mask-image',
   from: 'url(../resources/stripes-20.png)',
   to: 'url(../resources/blue-20.png)',
 });
 
 // Image to gradient
-assertCrossfadeInterpolation({
+assertNoInterpolation({
+  property: '-webkit-mask-image',
   from: 'url(../resources/stripes-20.png)',
   to: 'linear-gradient(45deg, blue, transparent)',
 });
 
 // Gradient to gradient
-assertCrossfadeInterpolation({
+assertNoInterpolation({
+  property: '-webkit-mask-image',
   from: 'linear-gradient(-45deg, blue, transparent)',
   to: 'linear-gradient(45deg, blue, transparent)',
 });
@@ -96,40 +84,22 @@ var toA = 'url(../resources/blue-20.png)';
 var toB = 'url(../resources/stripes-20.png)';
 var from = fromA + ', ' + fromB;
 var to = toA + ', ' + toB;
-assertInterpolation({
+assertNoInterpolation({
   property: '-webkit-mask-image',
   from: from,
   to: to,
-}, [
-  // The interpolation of different numbers of -webkit-mask-images looks a bit strange here.
-  // Animating -webkit-mask-image is not specified to be possible however we do it for backwards compatibility.
-  // With this in mind we kept the implementation simple at the expense of this corner case because there is
-  // no official specification to support.
-  {at: -0.3, is: from},
-  {at: 0, is: from},
-  {at: 0.3, is: '-webkit-cross-fade(' + fromA + ', ' + toA + ', 0.3), -webkit-cross-fade(' + fromB + ', ' + toB + ', 0.3)'},
-  {at: 0.6, is: '-webkit-cross-fade(' + fromA + ', ' + toA + ', 0.6), -webkit-cross-fade(' + fromB + ', ' + toB + ', 0.6)'},
-  {at: 1, is: to},
-  {at: 1.5, is: to},
-]);
+});
 
 // Single to multiple
 from = 'url(../resources/blue-20.png)';
 toA = 'url(../resources/stripes-20.png)';
 toB = 'url(../resources/blue-20.png)';
 to = toA + ', ' + toB;
-assertInterpolation({
+assertNoInterpolation({
   property: '-webkit-mask-image',
   from: from,
   to: to,
-}, [
-  {at: -0.3, is: from + ', ' + from},
-  {at: 0, is: from + ', ' + from},
-  {at: 0.3, is: '-webkit-cross-fade(' + from + ', ' + toA + ', 0.3), -webkit-cross-fade(' + from + ', ' + toB + ', 0.3)'},
-  {at: 0.6, is: '-webkit-cross-fade(' + from + ', ' + toA + ', 0.6), -webkit-cross-fade(' + from + ', ' + toB + ', 0.6)'},
-  {at: 1, is: to},
-  {at: 1.5, is: to},
-]);
+});
 
 // Multiple mismatched types
 assertNoInterpolation({

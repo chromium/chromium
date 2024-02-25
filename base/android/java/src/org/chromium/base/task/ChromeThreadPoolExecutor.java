@@ -8,9 +8,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.BuildConfig;
-
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -31,13 +28,15 @@ class ChromeThreadPoolExecutor extends ThreadPoolExecutor {
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE_SECONDS = 30;
 
-    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
-        private final AtomicInteger mCount = new AtomicInteger(1);
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "CrAsyncTask #" + mCount.getAndIncrement());
-        }
-    };
+    private static final ThreadFactory sThreadFactory =
+            new ThreadFactory() {
+                private final AtomicInteger mCount = new AtomicInteger(1);
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "CrAsyncTask #" + mCount.getAndIncrement());
+                }
+            };
 
     private static final BlockingQueue<Runnable> sPoolWorkQueue =
             new ArrayBlockingQueue<Runnable>(128);
@@ -46,13 +45,23 @@ class ChromeThreadPoolExecutor extends ThreadPoolExecutor {
     private static final int RUNNABLE_WARNING_COUNT = 32;
 
     ChromeThreadPoolExecutor() {
-        this(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, SECONDS, sPoolWorkQueue,
+        this(
+                CORE_POOL_SIZE,
+                MAXIMUM_POOL_SIZE,
+                KEEP_ALIVE_SECONDS,
+                SECONDS,
+                sPoolWorkQueue,
                 sThreadFactory);
     }
 
     @VisibleForTesting
-    ChromeThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-            TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
+    ChromeThreadPoolExecutor(
+            int corePoolSize,
+            int maximumPoolSize,
+            long keepAliveTime,
+            TimeUnit unit,
+            BlockingQueue<Runnable> workQueue,
+            ThreadFactory threadFactory) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
         allowCoreThreadTimeOut(true);
     }
@@ -60,23 +69,10 @@ class ChromeThreadPoolExecutor extends ThreadPoolExecutor {
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
     private static String getClassName(Runnable runnable) {
         Class blamedClass = runnable.getClass();
-        try {
-            if (blamedClass == AsyncTask.NamedFutureTask.class) {
+        if (blamedClass == AsyncTask.NamedFutureTask.class) {
                 blamedClass = ((AsyncTask.NamedFutureTask) runnable).getBlamedClass();
             } else if (blamedClass.getEnclosingClass() == android.os.AsyncTask.class) {
-                // This gets the AsyncTask that produced the runnable.
-                Field field = blamedClass.getDeclaredField("this$0");
-                field.setAccessible(true);
-                blamedClass = field.get(runnable).getClass();
-            }
-        } catch (NoSuchFieldException e) {
-            if (BuildConfig.ENABLE_ASSERTS) {
-                throw new RuntimeException(e);
-            }
-        } catch (IllegalAccessException e) {
-            if (BuildConfig.ENABLE_ASSERTS) {
-                throw new RuntimeException(e);
-            }
+            blamedClass = android.os.AsyncTask.class;
         }
         return blamedClass.getName();
     }

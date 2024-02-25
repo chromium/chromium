@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -51,7 +52,7 @@ base::Value ConvertVpnValueToString(const base::Value& value) {
 // Returns the string value of |key| from |dict| if found, or the empty string
 // otherwise.
 std::string FindStringKeyOrEmpty(const base::Value::Dict& dict,
-                                 base::StringPiece key) {
+                                 std::string_view key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
@@ -138,12 +139,10 @@ class LocalTranslator {
                                 const StringTranslationEntry table[],
                                 const std::string& shill_property_name);
 
-  raw_ptr<const chromeos::onc::OncValueSignature, ExperimentalAsh>
-      onc_signature_;
-  raw_ptr<const FieldTranslationEntry, ExperimentalAsh>
-      field_translation_table_;
-  raw_ptr<const base::Value::Dict, ExperimentalAsh> onc_object_;
-  raw_ptr<base::Value::Dict, ExperimentalAsh> shill_dictionary_;
+  raw_ptr<const chromeos::onc::OncValueSignature> onc_signature_;
+  raw_ptr<const FieldTranslationEntry> field_translation_table_;
+  raw_ptr<const base::Value::Dict> onc_object_;
+  raw_ptr<base::Value::Dict> shill_dictionary_;
 };
 
 void LocalTranslator::TranslateFields() {
@@ -351,7 +350,7 @@ void LocalTranslator::TranslateWiFi() {
   // We currently only support managed and no adhoc networks.
   shill_dictionary_->Set(shill::kModeProperty, shill::kModeManaged);
 
-  absl::optional<bool> allow_gateway_arp_polling =
+  std::optional<bool> allow_gateway_arp_polling =
       onc_object_->FindBool(::onc::wifi::kAllowGatewayARPPolling);
   if (allow_gateway_arp_polling) {
     shill_dictionary_->Set(shill::kLinkMonitorDisableProperty,
@@ -552,29 +551,34 @@ void LocalTranslator::TranslateApn() {
   // ["Default", "Attach", "Default"] -> "DEFAULT,IA".
   bool contains_default = false;
   bool contains_attach = false;
+  bool contains_tether = false;
   for (const auto& apn_type : *apn_types) {
     std::string apn_type_string = apn_type.GetString();
     if (apn_type_string == ::onc::cellular_apn::kApnTypeDefault) {
       contains_default = true;
     } else if (apn_type_string == ::onc::cellular_apn::kApnTypeAttach) {
       contains_attach = true;
+    } else if (apn_type_string == ::onc::cellular_apn::kApnTypeTether) {
+      contains_tether = true;
     } else {
       NOTREACHED() << "Invalid APN type: " << apn_type;
     }
   }
-  std::stringstream apn_types_stream;
+  std::vector<std::string> apn_type_strings;
   if (contains_default) {
-    apn_types_stream << shill::kApnTypeDefault;
+    apn_type_strings.push_back(shill::kApnTypeDefault);
   }
   if (contains_attach) {
-    if (contains_default) {
-      apn_types_stream << ",";
-    }
-    apn_types_stream << shill::kApnTypeIA;
+    apn_type_strings.push_back(shill::kApnTypeIA);
+  }
+  if (contains_tether) {
+    apn_type_strings.push_back(shill::kApnTypeDun);
   }
 
-  std::string apn_types_string = apn_types_stream.str();
-  DCHECK(!apn_types_string.empty()) << "APN must have at least one APN type";
+  const std::string apn_types_string = base::JoinString(apn_type_strings, ",");
+  if (apn_types_string.empty()) {
+    NET_LOG(ERROR) << "APN must have at least one APN type";
+  }
   shill_dictionary_->Set(shill::kApnTypesProperty, apn_types_string);
 
   CopyFieldsAccordingToSignature();

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_DISK_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
@@ -66,7 +66,7 @@ void GetDiskInfo(OnceDiskInfoCallback callback,
 void OnAmountOfFreeDiskSpace(OnceDiskInfoCallback callback,
                              Profile* profile,
                              std::string vm_name,
-                             absl::optional<int64_t> free_space);
+                             std::optional<int64_t> free_space);
 
 // Combined callback for EnsureConciergeRunning or EnsureVmRunning which passes
 // off to the next step in the chain. For getting full disk info, the VM must be
@@ -93,7 +93,7 @@ void OnListVmDisks(
     OnceDiskInfoCallback callback,
     std::string vm_name,
     int64_t free_space,
-    absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
+    std::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
 // Given a minimum, currently selected and maximum value, constructs a range of
 // DiskSliderTicks spanning from min to max. Ensures that one of the ticks
@@ -114,7 +114,7 @@ void ResizeCrostiniDisk(Profile* profile,
 // crostini_disk or tests.
 void OnResize(
     base::OnceCallback<void(bool)> callback,
-    absl::optional<vm_tools::concierge::ResizeDiskImageResponse> response);
+    std::optional<vm_tools::concierge::ResizeDiskImageResponse> response);
 
 // Splits the range between |min_size| and |available_space| into enough
 // evenly-spaced intervals you can use them as ticks on a slider. Will return an

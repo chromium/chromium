@@ -54,13 +54,14 @@ void MenuConfig::InitCR2023() {
     return;
   }
 
-  font_list = LayoutProvider::Get()->GetTypographyProvider().GetFont(
-      style::CONTEXT_MENU, style::STYLE_BODY_3_EMPHASIS);
+  font_list = TypographyProvider::Get().GetFont(style::CONTEXT_MENU,
+                                                style::STYLE_BODY_3_EMPHASIS);
   reserve_dedicated_arrow_column = false;
   menu_horizontal_border_size = 0;
   submenu_horizontal_overlap = 0;
   item_vertical_margin = 6;
   item_horizontal_border_padding = 12;
+  arrow_size = 16;
   separator_height = 17;
   separator_spacing_height = 4;
   use_outer_border = false;

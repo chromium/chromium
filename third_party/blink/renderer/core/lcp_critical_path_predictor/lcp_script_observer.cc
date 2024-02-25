@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_script_observer.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
 namespace blink {
@@ -15,26 +16,36 @@ HashSet<String> LCPScriptObserver::GetExecutingScriptUrls() {
 
   // Gather sync and async scripts in execution
   for (const probe::ExecuteScript* probe : stack_script_probes_) {
+    if (probe->script_url.empty()) {
+      continue;
+    }
     script_urls.insert(probe->script_url);
   }
 
   // Gather async functions in execution
   for (const probe::CallFunction* probe : stack_function_probes_) {
     String url = GetScriptUrlFromCallFunctionProbe(probe);
+    if (url.empty()) {
+      continue;
+    }
     script_urls.insert(url);
   }
 
   // Gather (promise) microtasks in execution. This is required as Probes
   // do not yet have an implementation that covers microtasks.
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  DCHECK(isolate);
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
   auto v8_stack_urls = GetScriptUrlsFromCurrentStack(isolate, 0);
   for (auto& url : v8_stack_urls) {
+    if (url.empty()) {
+      continue;
+    }
     script_urls.insert(url);
   }
 
   const String document_url = local_root_->GetDocument()->Url();
-  script_urls.erase(document_url);
+  if (!document_url.empty()) {
+    script_urls.erase(document_url);
+  }
 
   return script_urls;
 }
@@ -45,10 +56,11 @@ String LCPScriptObserver::GetScriptUrlFromCallFunctionProbe(
       probe->function->GetScriptOrigin().ResourceName();
   String script_url;
   if (!resource_name.IsEmpty()) {
+    v8::Isolate* isolate = ToIsolate(local_root_);
     v8::MaybeLocal<v8::String> resource_name_string =
-        resource_name->ToString(ToIsolate(local_root_)->GetCurrentContext());
+        resource_name->ToString(isolate->GetCurrentContext());
     if (!resource_name_string.IsEmpty()) {
-      script_url = ToCoreString(resource_name_string.ToLocalChecked());
+      script_url = ToCoreString(isolate, resource_name_string.ToLocalChecked());
     }
   }
   return script_url;
@@ -56,7 +68,7 @@ String LCPScriptObserver::GetScriptUrlFromCallFunctionProbe(
 
 LCPScriptObserver::LCPScriptObserver(LocalFrame* local_root)
     : local_root_(local_root) {
-  CHECK(base::FeatureList::IsEnabled(features::kLCPScriptObserver));
+  CHECK(blink::LcppScriptObserverEnabled());
   local_root_->GetProbeSink()->AddLCPScriptObserver(this);
 }
 

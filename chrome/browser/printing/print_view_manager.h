@@ -88,16 +88,6 @@ class PrintViewManager : public PrintViewManagerBase,
  protected:
   explicit PrintViewManager(content::WebContents* web_contents);
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS) && BUILDFLAG(IS_CHROMEOS)
-  // Helper to run scanning for print after the Chrome OS DLP checks. Runs
-  // `callback` with false if `should_proceed` is false, or calls
-  // `RejectPrintPreviewRequestIfRestrictedByContentAnalysis` otherwise.
-  virtual void OnDlpPrintingRestrictionsChecked(
-      content::GlobalRenderFrameHostId rfh_id,
-      base::OnceCallback<void(bool should_proceed)> callback,
-      bool should_proceed);
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS) && BUILDFLAG(IS_CHROMEOS)
-
  private:
   friend class content::WebContentsUserData<PrintViewManager>;
 
@@ -155,17 +145,6 @@ class PrintViewManager : public PrintViewManagerBase,
   // tasks that need to be done when the request is rejected due to
   // restrictions.
   void OnPrintPreviewRequestRejected(content::GlobalRenderFrameHostId rfh_id);
-
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Checks whether printing is currently restricted by scanning the
-  // page/document content for sensitive data and aborts print preview if
-  // needed. Since this check is performed asynchronously, invokes `callback`
-  // with an indicator whether to proceed or not.
-  // Virtual to allow tests to override.
-  void RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
-      content::GlobalRenderFrameHostId rfh_id,
-      base::OnceCallback<void(bool should_proceed)> callback);
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   // Virtual method that tests can override, in order to avoid actually
   // displaying a system print dialog.

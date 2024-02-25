@@ -27,9 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FILTER_EFFECT_BUILDER_H_
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkTileMode.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -47,9 +48,10 @@ class CORE_EXPORT FilterEffectBuilder final {
  public:
   FilterEffectBuilder(const gfx::RectF& reference_box,
                       float zoom,
+                      Color current_color,
+                      mojom::blink::ColorScheme color_scheme,
                       const cc::PaintFlags* fill_flags = nullptr,
-                      const cc::PaintFlags* stroke_flags = nullptr,
-                      SkTileMode blur_tile_mode = SkTileMode::kDecal);
+                      const cc::PaintFlags* stroke_flags = nullptr);
 
   Filter* BuildReferenceFilter(const ReferenceFilterOperation&,
                                FilterEffect* previous_effect,
@@ -68,9 +70,10 @@ class CORE_EXPORT FilterEffectBuilder final {
   const gfx::RectF reference_box_;
   const float zoom_;
   float shorthand_scale_;  // Scale factor for shorthand filter functions.
+  const Color current_color_;
+  const mojom::blink::ColorScheme color_scheme_;
   const cc::PaintFlags* fill_flags_;
   const cc::PaintFlags* stroke_flags_;
-  const SkTileMode blur_tile_mode_;
 };
 
 }  // namespace blink

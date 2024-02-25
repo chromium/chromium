@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
@@ -12,7 +14,6 @@
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"

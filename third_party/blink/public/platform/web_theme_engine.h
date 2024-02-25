@@ -32,9 +32,10 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 
 #include <map>
+#include <optional>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
@@ -114,7 +115,7 @@ class WebThemeEngine {
     int track_y = 0;
     int track_width = 0;
     int track_height = 0;
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> track_color;
   };
 
   // Extra parameters for PartCheckbox, PartPushButton and PartRadio.
@@ -166,10 +167,16 @@ class WebThemeEngine {
     bool right_to_left = false;
   };
 
+  enum class SpinArrowsDirection : int {
+    kLeftRight,
+    kUpDown,
+  };
+
   // Extra parameters for PartInnerSpinButton
   struct InnerSpinButtonExtraParams {
     bool spin_up = false;
     bool read_only = false;
+    SpinArrowsDirection spin_arrows_direction = SpinArrowsDirection::kUpDown;
   };
 
   // Extra parameters for PartProgressBar
@@ -187,14 +194,18 @@ class WebThemeEngine {
   struct ScrollbarThumbExtraParams {
     WebScrollbarOverlayColorTheme scrollbar_theme =
         WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark;
-    absl::optional<SkColor> thumb_color;
+    std::optional<SkColor> thumb_color;
+    bool is_thumb_minimal_mode = false;
   };
 
   struct ScrollbarButtonExtraParams {
+    // TODO(crbug.com/1493088): We should probably pass the border-radius
+    // instead.
     float zoom = 0;
+    bool needs_rounded_corner = false;
     bool right_to_left = false;
-    absl::optional<SkColor> thumb_color;
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
   };
 
   // Represents ui::NativeTheme System Info
@@ -220,8 +231,8 @@ class WebThemeEngine {
     mojom::ColorScheme scrollbar_theme = mojom::ColorScheme::kLight;
     ScrollbarOrientation orientation = ScrollbarOrientation::kVerticalOnRight;
     float scale_from_dip = 0;
-    absl::optional<SkColor> thumb_color;
-    absl::optional<SkColor> track_color;
+    std::optional<SkColor> thumb_color;
+    std::optional<SkColor> track_color;
   };
 #endif
 
@@ -252,11 +263,10 @@ class WebThemeEngine {
   struct ScrollbarStyle {
     int thumb_thickness;
     int scrollbar_margin;
-    int thumb_thickness_thin;
-    int scrollbar_margin_thin;
-    SkColor color;
+    SkColor4f color;
     base::TimeDelta fade_out_delay;
     base::TimeDelta fade_out_duration;
+    float idle_thickness_scale;
   };
 
   // Gets the overlay scrollbar style. Not used on Mac.
@@ -271,6 +281,9 @@ class WebThemeEngine {
     // NativeTheme so these fields are unused in non-Android WebThemeEngines.
   }
 
+  virtual bool IsFluentOverlayScrollbarEnabled() const { return false; }
+  virtual int GetPaintedScrollbarTrackInset() const { return 0; }
+
   // Paint the given the given theme part.
   virtual void Paint(
       cc::PaintCanvas*,
@@ -279,12 +292,15 @@ class WebThemeEngine {
       const gfx::Rect&,
       const ExtraParams*,
       blink::mojom::ColorScheme,
-      const absl::optional<SkColor>& accent_color = absl::nullopt) {}
+      const ui::ColorProvider*,
+      const std::optional<SkColor>& accent_color = std::nullopt) {}
 
-  virtual absl::optional<SkColor> GetSystemColor(
+  virtual std::optional<SkColor> GetSystemColor(
       SystemThemeColor system_theme) const {
-    return absl::nullopt;
+    return std::nullopt;
   }
+
+  virtual std::optional<SkColor> GetAccentColor() const { return std::nullopt; }
 
   virtual ForcedColors GetForcedColors() const { return ForcedColors::kNone; }
   virtual void OverrideForcedColorsTheme(bool is_dark_theme) {}
@@ -294,15 +310,6 @@ class WebThemeEngine {
   virtual SystemColorInfoState GetSystemColorInfo() {
     SystemColorInfoState state;
     return state;
-  }
-  virtual void EmulateForcedColors(bool is_dark_theme) {}
-
-  // Updates the WebThemeEngine's global light and dark ColorProvider instances
-  // using the RendererColorMaps provided. Returns true if new ColorProviders
-  // were created, returns false otherwise.
-  virtual bool UpdateColorProviders(const ui::RendererColorMap& light_colors,
-                                    const ui::RendererColorMap& dark_colors) {
-    return false;
   }
 };
 

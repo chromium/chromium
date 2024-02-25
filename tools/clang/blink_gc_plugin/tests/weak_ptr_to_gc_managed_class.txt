@@ -1,0 +1,26 @@
+In file included from weak_ptr_to_gc_managed_class.cpp:5:
+./weak_ptr_to_gc_managed_class.h:19:3: warning: [blink-gc] WeakPtr or WeakPtrFactory field 'WeakPtrFactory<blink::Mixin>' to a GC managed class 'Mixin' declared here (use WeakCell or WeakCellFactory instead):
+  base::WeakPtrFactory<Mixin> m_factory{this};
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./weak_ptr_to_gc_managed_class.h:27:3: warning: [blink-gc] WeakPtr or WeakPtrFactory field 'WeakPtr<blink::GCed>' to a GC managed class 'GCed' declared here (use WeakCell or WeakCellFactory instead):
+  base::WeakPtr<GCed> m_gced;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+./weak_ptr_to_gc_managed_class.h:28:3: warning: [blink-gc] WeakPtr or WeakPtrFactory field 'WeakPtr<blink::Mixin>' to a GC managed class 'Mixin' declared here (use WeakCell or WeakCellFactory instead):
+  base::WeakPtr<Mixin> m_mixin;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./weak_ptr_to_gc_managed_class.h:31:3: warning: [blink-gc] WeakPtr or WeakPtrFactory field 'WeakPtrFactory<blink::GCed>' to a GC managed class 'GCed' declared here (use WeakCell or WeakCellFactory instead):
+  base::WeakPtrFactory<GCed> m_factory{this};
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./weak_ptr_to_gc_managed_class.h:36:3: warning: [blink-gc] WeakPtr or WeakPtrFactory field 'WeakPtr<blink::GCed>' to a GC managed class 'GCed' declared here (use WeakCell or WeakCellFactory instead):
+  base::WeakPtr<GCed> m_gced;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+./weak_ptr_to_gc_managed_class.h:37:3: warning: [blink-gc] WeakPtr or WeakPtrFactory field 'WeakPtr<blink::Mixin>' to a GC managed class 'Mixin' declared here (use WeakCell or WeakCellFactory instead):
+  base::WeakPtr<Mixin> m_mixin;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+weak_ptr_to_gc_managed_class.cpp:10:3: warning: [blink-gc] WeakPtr or WeakPtrFactory field 'WeakPtr<blink::GCed>' to a GC managed class 'GCed' declared here (use WeakCell or WeakCellFactory instead):
+  base::WeakPtr<GCed> gced;
+  ^~~~~~~~~~~~~~~~~~~~~~~~
+weak_ptr_to_gc_managed_class.cpp:11:3: warning: [blink-gc] WeakPtr or WeakPtrFactory field 'WeakPtr<blink::Mixin>' to a GC managed class 'Mixin' declared here (use WeakCell or WeakCellFactory instead):
+  base::WeakPtr<Mixin> mixin;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+8 warnings generated.

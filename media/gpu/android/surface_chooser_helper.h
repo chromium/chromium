@@ -6,6 +6,7 @@
 #define MEDIA_GPU_ANDROID_SURFACE_CHOOSER_HELPER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -13,7 +14,6 @@
 #include "media/gpu/android/android_video_surface_chooser.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -90,7 +90,7 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   void SetIsPersistentVideo(bool is_persistent_video);
 
   // Update the chooser state using the given factory.
-  void UpdateChooserState(absl::optional<AndroidOverlayFactoryCB> new_factory);
+  void UpdateChooserState(std::optional<AndroidOverlayFactoryCB> new_factory);
 
   // Notify us about a promotion hint.  This will update the chooser state
   // if needed.

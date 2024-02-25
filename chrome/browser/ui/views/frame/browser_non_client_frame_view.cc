@@ -104,7 +104,7 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
   TabStrip* const tab_strip = browser_view_->tabstrip();
 
   const bool active = ShouldPaintAsActive(active_state);
-  const absl::optional<int> bg_id =
+  const std::optional<int> bg_id =
       tab_strip->GetCustomBackgroundId(active_state);
   if (bg_id.has_value()) {
     // If the theme has a custom tab background image, assume tab shapes are
@@ -165,7 +165,7 @@ SkColor BrowserNonClientFrameView::GetFrameColor(
                                           : ui::kColorFrameInactive);
 }
 
-absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
+std::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();
   const bool incognito = browser_view_->GetIncognito();
@@ -187,7 +187,7 @@ absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
       tp->HasCustomImage(id) || (!active && tp->HasCustomImage(active_id)) ||
       tp->HasCustomImage(IDR_THEME_FRAME) ||
       (incognito && tp->HasCustomImage(IDR_THEME_FRAME_INCOGNITO));
-  return has_custom_image ? absl::make_optional(id) : absl::nullopt;
+  return has_custom_image ? std::make_optional(id) : std::nullopt;
 }
 
 void BrowserNonClientFrameView::UpdateMinimumSize() {}
@@ -317,5 +317,5 @@ int BrowserNonClientFrameView::GetSystemMenuY() const {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-BEGIN_METADATA(BrowserNonClientFrameView, views::NonClientFrameView)
+BEGIN_METADATA(BrowserNonClientFrameView)
 END_METADATA

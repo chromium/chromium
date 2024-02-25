@@ -9,9 +9,11 @@
 #include <type_traits>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/base_tracing.h"
@@ -50,7 +52,7 @@ DWORD GetSleepTimeoutMs(TimeTicks next_task_time,
 
   // A saturated_cast with an unsigned destination automatically clamps negative
   // values at zero.
-  static_assert(!std::is_signed<DWORD>::value, "DWORD is unexpectedly signed");
+  static_assert(!std::is_signed_v<DWORD>, "DWORD is unexpectedly signed");
   return saturated_cast<DWORD>(timeout_ms);
 }
 
@@ -73,7 +75,7 @@ void MessagePumpWin::Run(Delegate* delegate) {
   if (run_state_)
     run_state.is_nested = true;
 
-  AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
+  AutoReset<raw_ptr<RunState>> auto_reset_run_state(&run_state_, &run_state);
   DoRunLoop();
 }
 
@@ -90,7 +92,7 @@ void MessagePumpWin::Quit() {
 MessagePumpForUI::MessagePumpForUI() {
   bool succeeded = message_window_.Create(
       BindRepeating(&MessagePumpForUI::MessageCallback, Unretained(this)));
-  DCHECK(succeeded);
+  CHECK(succeeded);
 }
 
 MessagePumpForUI::~MessagePumpForUI() = default;
@@ -298,9 +300,13 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
       wait_flags = 0;
     } else {
       last_wakeup_was_spurious = true;
-      TRACE_EVENT_INSTANT("base",
-                          "MessagePumpForUI::WaitForWork Spurious Wakeup",
-                          "reason: ", result);
+      TRACE_EVENT_INSTANT(
+          "base", "MessagePumpForUI::WaitForWork Spurious Wakeup",
+          [&](perfetto::EventContext ctx) {
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_chrome_message_pump_for_ui()
+                ->set_wait_for_object_result(result);
+          });
     }
 
     DCHECK_NE(WAIT_FAILED, result) << GetLastError();
@@ -521,6 +527,7 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
   if (msg.message == kMsgHaveWork && msg.hwnd == message_window_.hwnd())
     return ProcessPumpReplacementMessage();
 
+  run_state_->delegate->BeginNativeWorkBeforeDoWork();
   auto scoped_do_work_item = run_state_->delegate->BeginWorkItem();
 
   TRACE_EVENT("base,toplevel", "MessagePumpForUI DispatchMessage",
@@ -761,6 +768,7 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
   if (ProcessInternalIOItem(item))
     return true;
 
+  run_state_->delegate->BeginNativeWorkBeforeDoWork();
   auto scoped_do_work_item = run_state_->delegate->BeginWorkItem();
 
   TRACE_EVENT(

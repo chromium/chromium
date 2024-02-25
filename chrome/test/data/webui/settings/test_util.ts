@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {StorageAccessEmbeddingException, StorageAccessSiteException, ChooserException, ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, DefaultContentSetting, OriginInfo, PaperTooltipElement, RawChooserException, RawSiteException, SiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
-import {Route, Router} from 'chrome://settings/settings.js';
+import type {StorageAccessEmbeddingException, StorageAccessSiteException, ChooserException, DefaultContentSetting, OriginInfo, PaperTooltipElement, RawChooserException, RawSiteException, SiteException, SiteGroup} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
+import type {Route} from 'chrome://settings/settings.js';
+import {Router} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
@@ -123,6 +125,7 @@ export function createSiteSettingsPrefs(
   defaults[ContentSettingsTypes.COOKIES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.IMAGES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.JAVASCRIPT].setting = ContentSetting.ALLOW;
+  defaults[ContentSettingsTypes.JAVASCRIPT_JIT].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.SOUND].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.POPUPS].setting = ContentSetting.BLOCK;
   defaults[ContentSettingsTypes.PROTOCOL_HANDLERS].setting =

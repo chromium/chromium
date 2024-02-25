@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -36,7 +38,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 
 namespace content {
@@ -94,7 +95,7 @@ class CastWebContentsImpl : public CastWebContents,
   void BlockMediaLoading(bool blocked) override;
   void BlockMediaStarting(bool blocked) override;
   void EnableBackgroundVideoPlayback(bool enabled) override;
-  void AddBeforeLoadJavaScript(uint64_t id, base::StringPiece script) override;
+  void AddBeforeLoadJavaScript(uint64_t id, std::string_view script) override;
   void PostMessageToMainFrame(
       const std::string& target_origin,
       const std::string& data,
@@ -170,18 +171,18 @@ class CastWebContentsImpl : public CastWebContents,
   std::vector<chromecast::shell::mojom::FeaturePtr> GetRendererFeatures();
   void OnBindingsReceived(
       std::vector<chromecast::mojom::ApiBindingPtr> bindings);
-  bool OnPortConnected(base::StringPiece port_name,
+  bool OnPortConnected(std::string_view port_name,
                        std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   content::WebContents* web_contents_;
   mojom::CastWebViewParamsPtr params_;
-  absl::optional<url_rewrite::UrlRequestRewriteRulesManager>
+  std::optional<url_rewrite::UrlRequestRewriteRulesManager>
       url_rewrite_rules_manager_;
   PageState page_state_;
   PageState last_state_;
   shell::RemoteDebuggingServer* const remote_debugging_server_;
   std::unique_ptr<CastMediaBlocker> media_blocker_;
-  absl::optional<std::vector<std::string>> activity_url_filter_;
+  std::optional<std::vector<std::string>> activity_url_filter_;
 
   // Retained so that this observer can be removed before being destroyed:
   content::RenderProcessHost* main_process_host_;

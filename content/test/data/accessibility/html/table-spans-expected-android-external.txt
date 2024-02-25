@@ -1,4 +1,4 @@
-WebView text:"Table example with rowspan and colspan" focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
+WebView text:"Table example with rowspan and colspan" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
 ++GridView CollectionInfo:[rows=2, cols=2] actions:[AX_FOCUS] bundle:[chromeRole="table", roleDescription="table"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
 ++++++View text:"AD" CollectionItemInfo:[rowSpan=2, rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]

@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service_lacros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
@@ -28,9 +29,11 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/web_applications/app_service/lacros_browser_shortcuts_controller.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -47,10 +50,10 @@
 namespace apps {
 
 AppServiceProxyLacros::AppServiceProxyLacros(Profile* profile)
-    : inner_icon_loader_(this),
-      icon_coalescer_(&inner_icon_loader_),
-      outer_icon_loader_(&icon_coalescer_,
-                         apps::IconCache::GarbageCollectionPolicy::kEager),
+    : app_inner_icon_loader_(this),
+      app_icon_coalescer_(&app_inner_icon_loader_),
+      app_outer_icon_loader_(&app_icon_coalescer_,
+                             apps::IconCache::GarbageCollectionPolicy::kEager),
       profile_(profile) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
     auto* service = chromeos::LacrosService::Get();
@@ -107,22 +110,31 @@ AppServiceProxyLacros::BrowserAppInstanceTracker() {
   return browser_app_instance_tracker_.get();
 }
 
-absl::optional<IconKey> AppServiceProxyLacros::GetIconKey(
-    const std::string& app_id) {
-  return outer_icon_loader_.GetIconKey(app_id);
+apps::WebsiteMetricsServiceLacros*
+AppServiceProxyLacros::WebsiteMetricsService() {
+  return metrics_service_.get();
 }
 
-std::unique_ptr<apps::IconLoader::Releaser>
-AppServiceProxyLacros::LoadIconFromIconKey(AppType app_type,
-                                           const std::string& app_id,
-                                           const IconKey& icon_key,
-                                           IconType icon_type,
-                                           int32_t size_hint_in_dip,
-                                           bool allow_placeholder_icon,
-                                           apps::LoadIconCallback callback) {
-  return outer_icon_loader_.LoadIconFromIconKey(
-      app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-      allow_placeholder_icon, std::move(callback));
+AppInstallService& AppServiceProxyLacros::AppInstallService() {
+  return *app_install_service_;
+}
+
+void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
+                                   AppType app_type,
+                                   bool should_notify_initialized) {
+  app_registry_cache_.OnApps(std::move(deltas), app_type,
+                             should_notify_initialized);
+}
+
+std::unique_ptr<IconLoader::Releaser> AppServiceProxyLacros::LoadIcon(
+    const std::string& app_id,
+    const IconType& icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  return app_icon_loader()->LoadIcon(app_id, icon_type, size_hint_in_dip,
+                                     allow_placeholder_icon,
+                                     std::move(callback));
 }
 
 void AppServiceProxyLacros::Launch(const std::string& app_id,
@@ -170,17 +182,16 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
   ProxyLaunch(std::move(params));
 }
 
-void AppServiceProxyLacros::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+void AppServiceProxyLacros::LaunchAppWithIntent(const std::string& app_id,
+                                                int32_t event_flags,
+                                                IntentPtr intent,
+                                                LaunchSource launch_source,
+                                                WindowInfoPtr window_info,
+                                                LaunchCallback callback) {
   CHECK(intent);
 
   if (!remote_crosapi_app_service_proxy_) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -190,7 +201,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
     LOG(WARNING) << "Ash AppServiceProxy version "
                  << crosapi_app_service_proxy_version_
                  << " does not support Launch().";
-    std::move(callback).Run(false);
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -199,13 +210,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
       window_info ? window_info->display_id : display::kInvalidDisplayId);
   params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
-  ProxyLaunch(
-      std::move(params),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool)> callback, LaunchResult&& result) {
-            std::move(callback).Run(ConvertLaunchResultToBool(result));
-          },
-          std::move(callback)));
+  ProxyLaunch(std::move(params), base::BindOnce(std::move(callback)));
 }
 
 void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
@@ -217,14 +222,13 @@ void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
   LaunchAppWithIntent(
       app_id, event_flags,
       std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
-      launch_source, std::move(window_info),
-      base::BindOnce(ConvertBoolToLaunchResult).Then(std::move(callback)));
+      launch_source, std::move(window_info), std::move(callback));
 }
 
 void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   if (!remote_crosapi_app_service_proxy_) {
-    std::move(callback).Run(LaunchResult());
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -234,7 +238,7 @@ void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
     LOG(WARNING) << "Ash AppServiceProxy version "
                  << crosapi_app_service_proxy_version_
                  << " does not support Launch().";
-    std::move(callback).Run(LaunchResult());
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
 
@@ -284,6 +288,10 @@ void AppServiceProxyLacros::StopApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
+void AppServiceProxyLacros::UpdateAppSize(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
 void AppServiceProxyLacros::ExecuteContextMenuCommand(
     const std::string& app_id,
     int command_id,
@@ -299,8 +307,8 @@ void AppServiceProxyLacros::OpenNativeSettings(const std::string& app_id) {
 apps::IconLoader* AppServiceProxyLacros::OverrideInnerIconLoaderForTesting(
     apps::IconLoader* icon_loader) {
   apps::IconLoader* old =
-      inner_icon_loader_.overriding_icon_loader_for_testing_;
-  inner_icon_loader_.overriding_icon_loader_for_testing_ = icon_loader;
+      app_inner_icon_loader_.overriding_icon_loader_for_testing_;
+  app_inner_icon_loader_.overriding_icon_loader_for_testing_ = icon_loader;
   return old;
 }
 
@@ -334,9 +342,11 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
         !update.ShowInLauncher().value_or(false)) {
       return;
     }
-    if (exclude_browser_tab_apps &&
-        update.WindowMode() == WindowMode::kBrowser) {
-      return;
+    if (!chromeos::features::IsCrosShortstandEnabled()) {
+      if (exclude_browser_tab_apps &&
+          update.WindowMode() == WindowMode::kBrowser) {
+        return;
+      }
     }
     std::set<std::string> existing_activities;
     for (const auto& filter : update.IntentFilters()) {
@@ -439,31 +449,30 @@ base::WeakPtr<AppServiceProxyLacros> AppServiceProxyLacros::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-AppServiceProxyLacros::InnerIconLoader::InnerIconLoader(
+AppServiceProxyLacros::AppInnerIconLoader::AppInnerIconLoader(
     AppServiceProxyLacros* host)
     : host_(host) {}
 
-absl::optional<IconKey> AppServiceProxyLacros::InnerIconLoader::GetIconKey(
-    const std::string& app_id) {
+std::optional<IconKey> AppServiceProxyLacros::AppInnerIconLoader::GetIconKey(
+    const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
-    return overriding_icon_loader_for_testing_->GetIconKey(app_id);
+    return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
 
   if (!host_->crosapi_receiver_.is_bound()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<IconKey> icon_key;
+  std::optional<IconKey> icon_key;
   host_->app_registry_cache_.ForOneApp(
-      app_id,
+      id,
       [&icon_key](const AppUpdate& update) { icon_key = update.IconKey(); });
   return icon_key;
 }
 
 std::unique_ptr<IconLoader::Releaser>
-AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
-    AppType app_type,
-    const std::string& app_id,
+AppServiceProxyLacros::AppInnerIconLoader::LoadIconFromIconKey(
+    const std::string& id,
     const IconKey& icon_key,
     IconType icon_type,
     int32_t size_hint_in_dip,
@@ -471,8 +480,8 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
     apps::LoadIconCallback callback) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->LoadIconFromIconKey(
-        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-        allow_placeholder_icon, std::move(callback));
+        id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+        std::move(callback));
   }
 
   if (!host_->remote_crosapi_app_service_proxy_) {
@@ -486,8 +495,7 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
     std::move(callback).Run(std::make_unique<IconValue>());
   } else {
     host_->remote_crosapi_app_service_proxy_->LoadIcon(
-        app_id, icon_key.Clone(), icon_type, size_hint_in_dip,
-        std::move(callback));
+        id, icon_key.Clone(), icon_type, size_hint_in_dip, std::move(callback));
   }
   return nullptr;
 }
@@ -521,6 +529,11 @@ void AppServiceProxyLacros::Initialize() {
     lacros_web_apps_controller_ =
         std::make_unique<web_app::LacrosWebAppsController>(profile_);
     lacros_web_apps_controller_->Init();
+    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
+      lacros_browser_shortcuts_controller_ =
+          std::make_unique<web_app::LacrosBrowserShortcutsController>(profile_);
+      lacros_browser_shortcuts_controller_->Initialize();
+    }
   }
 
   // Make the chrome://app-icon/ resource available.
@@ -557,6 +570,9 @@ void AppServiceProxyLacros::Initialize() {
           crosapi_receiver_.BindNewPipeAndPassRemote());
   remote_crosapi_app_service_proxy_ =
       service->GetRemote<crosapi::mojom::AppServiceProxy>().get();
+
+  app_install_service_ = std::make_unique<AppInstallServiceLacros>(
+      *remote_crosapi_app_service_proxy_);
 }
 
 void AppServiceProxyLacros::Shutdown() {
@@ -565,13 +581,6 @@ void AppServiceProxyLacros::Shutdown() {
   if (lacros_web_apps_controller_) {
     lacros_web_apps_controller_->Shutdown();
   }
-}
-
-void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
-                                   AppType app_type,
-                                   bool should_notify_initialized) {
-  app_registry_cache_.OnApps(std::move(deltas), app_type,
-                             should_notify_initialized);
 }
 
 void AppServiceProxyLacros::OnPreferredAppsChanged(

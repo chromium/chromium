@@ -19,10 +19,12 @@ class AppServicePromiseAppItem : public ChromeAppListItem,
  public:
   static const char kItemType[];
 
-  AppServicePromiseAppItem(Profile* profile,
-                           AppListModelUpdater* model_updater,
-                           const apps::PromiseAppUpdate& app_update,
-                           const syncer::StringOrdinal position);
+  AppServicePromiseAppItem(
+      Profile* profile,
+      AppListModelUpdater* model_updater,
+      const apps::PromiseAppUpdate& app_update,
+      const std::string& promised_app_id,
+      const app_list::AppListSyncableService::SyncItem* sync_item);
   AppServicePromiseAppItem(const AppServicePromiseAppItem&) = delete;
   AppServicePromiseAppItem& operator=(const AppServicePromiseAppItem&) = delete;
   ~AppServicePromiseAppItem() override;
@@ -44,6 +46,7 @@ class AppServicePromiseAppItem : public ChromeAppListItem,
   void GetContextMenuModel(ash::AppListItemContext item_context,
                            GetMenuModelCallback callback) override;
   app_list::AppContextMenu* GetAppContextMenu() override;
+  std::string GetPromisedItemId() const override;
 
   void OnLoadIcon(apps::IconValuePtr icon_value);
 
@@ -52,6 +55,11 @@ class AppServicePromiseAppItem : public ChromeAppListItem,
   // TODO(261907495): Remove this field and replace it with one in the
   // ChromeAppListItem metadata.
   const apps::PackageId package_id_;
+
+  // If non-empty, the app ID of the item that will be installed in place of the
+  // promise item. This may be non-empty if the promise item is added for an app
+  // previously installed by the user (and present in the app list sync data).
+  const std::string promised_app_id_;
 
   base::WeakPtrFactory<AppServicePromiseAppItem> weak_ptr_factory_{this};
 };

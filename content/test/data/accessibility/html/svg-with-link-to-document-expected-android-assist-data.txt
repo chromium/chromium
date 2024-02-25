@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Image text:"svg" textSize:16.0 style:0 htmlInfo:[{htmlTag="svg"}, {display="inline"}, {aria-label="svg"}, {height="10"}, {viewbox="0 0 10 10"}, {width="10"}]
+++++++View text:"svg-with-link-to-document" textSize:16.0 style:0 htmlInfo:[{htmlTag="a"}, {display="inline"}, {href="#"}]

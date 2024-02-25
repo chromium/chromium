@@ -4,6 +4,9 @@
 
 #include "components/exo/seat.h"
 
+#include <optional>
+
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -12,26 +15,32 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "components/exo/data_device.h"
+#include "components/exo/data_device_delegate.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
 #include "components/exo/seat_observer.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
+#include "components/exo/test/test_data_device_delegate.h"
+#include "components/exo/test/test_data_source_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/types/event_type.h"
 
 namespace exo {
 namespace {
 
 using SeatTest = test::ExoTestBase;
+using test::TestDataSourceDelegate;
 
 class TestSeatObserver : public SeatObserver {
  public:
@@ -47,45 +56,6 @@ class TestSeatObserver : public SeatObserver {
 
  private:
   base::RepeatingClosure callback_;
-};
-
-class TestDataSourceDelegate : public DataSourceDelegate {
- public:
-  TestDataSourceDelegate() {}
-
-  TestDataSourceDelegate(const TestDataSourceDelegate&) = delete;
-  TestDataSourceDelegate& operator=(const TestDataSourceDelegate&) = delete;
-
-  bool cancelled() const { return cancelled_; }
-
-  // Overridden from DataSourceDelegate:
-  void OnDataSourceDestroying(DataSource* device) override {}
-  void OnTarget(const absl::optional<std::string>& mime_type) override {}
-  void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
-    if (data_map_.empty()) {
-      const char kTestData[] = "TestData";
-      ASSERT_TRUE(base::WriteFileDescriptor(fd.get(), kTestData));
-    } else {
-      ASSERT_TRUE(base::WriteFileDescriptor(fd.get(), data_map_[mime_type]));
-    }
-  }
-  void OnCancelled() override { cancelled_ = true; }
-  void OnDndDropPerformed() override {}
-  void OnDndFinished() override {}
-  void OnAction(DndAction dnd_action) override {}
-  bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return can_accept_;
-  }
-
-  void SetData(const std::string& mime_type, std::vector<uint8_t> data) {
-    data_map_[mime_type] = std::move(data);
-  }
-
-  bool can_accept_ = true;
-
- private:
-  bool cancelled_ = false;
-  base::flat_map<std::string, std::vector<uint8_t>> data_map_;
 };
 
 void RunReadingTask() {
@@ -109,16 +79,16 @@ class TestSeat : public Seat {
   Surface* GetFocusedSurface() override { return surface_; }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_ = nullptr;
+  raw_ptr<Surface> surface_ = nullptr;
 };
 
 TEST_F(SeatTest, OnSurfaceFocused) {
   TestSeat seat;
   int callback_counter = 0;
-  absl::optional<int> observer1_counter;
+  std::optional<int> observer1_counter;
   TestSeatObserver observer1(base::BindLambdaForTesting(
       [&]() { observer1_counter = callback_counter++; }));
-  absl::optional<int> observer2_counter;
+  std::optional<int> observer2_counter;
   TestSeatObserver observer2(base::BindLambdaForTesting(
       [&]() { observer2_counter = callback_counter++; }));
 
@@ -177,11 +147,9 @@ TEST_F(SeatTest, SetSelectionReadDteFromLacros) {
   DataSource source(&delegate);
 
   source.Offer(kTextMimeType);
-  delegate.SetData(kTextMimeType,
-                   std::vector<uint8_t>(kTestText.begin(), kTestText.end()));
+  delegate.SetData(kTextMimeType, kTestText);
   source.Offer(kDteMimeType);
-  delegate.SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
-                                                      kEncodedTestDte.end()));
+  delegate.SetData(kDteMimeType, kEncodedTestDte);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -192,7 +160,7 @@ TEST_F(SeatTest, SetSelectionReadDteFromLacros) {
 
   EXPECT_EQ(clipboard, kTestText);
 
-  const ui::DataTransferEndpoint* source_dte =
+  std::optional<ui::DataTransferEndpoint> source_dte =
       ui::Clipboard::GetForCurrentThread()->GetSource(
           ui::ClipboardBuffer::kCopyPaste);
 
@@ -223,11 +191,9 @@ TEST_F(SeatTest, SetSelectionIgnoreDteFromNonLacros) {
   DataSource source(&delegate);
 
   source.Offer(kTextMimeType);
-  delegate.SetData(kTextMimeType,
-                   std::vector<uint8_t>(kTestText.begin(), kTestText.end()));
+  delegate.SetData(kTextMimeType, kTestText);
   source.Offer(kDteMimeType);
-  delegate.SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
-                                                      kEncodedTestDte.end()));
+  delegate.SetData(kDteMimeType, kEncodedTestDte);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -238,7 +204,7 @@ TEST_F(SeatTest, SetSelectionIgnoreDteFromNonLacros) {
 
   EXPECT_EQ(clipboard, kTestText);
 
-  const ui::DataTransferEndpoint* source_dte =
+  std::optional<ui::DataTransferEndpoint> source_dte =
       ui::Clipboard::GetForCurrentThread()->GetSource(
           ui::ClipboardBuffer::kCopyPaste);
 
@@ -252,13 +218,10 @@ TEST_F(SeatTest, SetSelectionTextUTF8) {
   seat.set_focused_surface(&focused_surface);
 
   // UTF8 encoded data
-  const uint8_t data[] = {
-      0xe2, 0x9d, 0x84,       // SNOWFLAKE
-      0xf0, 0x9f, 0x94, 0xa5  // FIRE
-  };
-  std::u16string converted_data;
-  EXPECT_TRUE(base::UTF8ToUTF16(reinterpret_cast<const char*>(data),
-                                sizeof(data), &converted_data));
+  std::string data(
+      "\xe2\x9d\x84"        // SNOWFLAKE
+      "\xf0\x9f\x94\xa5");  // FIRE
+  std::u16string converted_data = base::UTF8ToUTF16(data);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
@@ -267,10 +230,8 @@ TEST_F(SeatTest, SetSelectionTextUTF8) {
   const std::string kTextHtmlType = "text/html;charset=utf-8";
   source.Offer(kTextPlainType);
   source.Offer(kTextHtmlType);
-  delegate.SetData(kTextPlainType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
-  delegate.SetData(kTextHtmlType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextPlainType, data);
+  delegate.SetData(kTextHtmlType, data);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -294,19 +255,16 @@ TEST_F(SeatTest, SetSelectionTextUTF8Legacy) {
   seat.set_focused_surface(&focused_surface);
 
   // UTF8 encoded data
-  const uint8_t data[] = {
-      0xe2, 0x9d, 0x84,       // SNOWFLAKE
-      0xf0, 0x9f, 0x94, 0xa5  // FIRE
-  };
-  std::u16string converted_data;
-  EXPECT_TRUE(base::UTF8ToUTF16(reinterpret_cast<const char*>(data),
-                                sizeof(data), &converted_data));
+  std::string data(
+      "\xe2\x9d\x84"        // SNOWFLAKE
+      "\xf0\x9f\x94\xa5");  // FIRE
+  std::u16string converted_data = base::UTF8ToUTF16(data);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   const std::string kMimeType = "UTF8_STRING";
   source.Offer(kMimeType);
-  delegate.SetData(kMimeType, std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kMimeType, data);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -323,11 +281,10 @@ TEST_F(SeatTest, SetSelectionTextUTF16LE) {
   seat.set_focused_surface(&focused_surface);
 
   // UTF16 little endian encoded data
-  const uint8_t data[] = {
-      0xff, 0xfe,              // Byte order mark
-      0x44, 0x27,              // SNOWFLAKE
-      0x3d, 0xd8, 0x25, 0xdd,  // FIRE
-  };
+  std::string data(
+      "\xff\xfe"            // Byte order mark
+      "\x44\x27"            // SNOWFLAKE
+      "\x3d\xd8\x25\xdd");  // FIRE
   std::u16string converted_data;
   converted_data.push_back(0x2744);
   converted_data.push_back(0xd83d);
@@ -339,10 +296,8 @@ TEST_F(SeatTest, SetSelectionTextUTF16LE) {
   const std::string kTextHtmlType = "text/html;charset=utf-16";
   source.Offer(kTextPlainType);
   source.Offer(kTextHtmlType);
-  delegate.SetData(kTextPlainType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
-  delegate.SetData(kTextHtmlType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextPlainType, data);
+  delegate.SetData(kTextHtmlType, data);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -366,11 +321,10 @@ TEST_F(SeatTest, SetSelectionTextUTF16BE) {
   seat.set_focused_surface(&focused_surface);
 
   // UTF16 big endian encoded data
-  const uint8_t data[] = {
-      0xfe, 0xff,              // Byte order mark
-      0x27, 0x44,              // SNOWFLAKE
-      0xd8, 0x3d, 0xdd, 0x25,  // FIRE
-  };
+  std::string data(
+      "\xfe\xff"            // Byte order mark
+      "\x27\x44"            // SNOWFLAKE
+      "\xd8\x3d\xdd\x25");  // FIRE
   std::u16string converted_data;
   converted_data.push_back(0x2744);
   converted_data.push_back(0xd83d);
@@ -382,10 +336,8 @@ TEST_F(SeatTest, SetSelectionTextUTF16BE) {
   const std::string kTextHtmlType = "text/html;charset=utf-16";
   source.Offer(kTextPlainType);
   source.Offer(kTextHtmlType);
-  delegate.SetData(kTextPlainType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
-  delegate.SetData(kTextHtmlType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextPlainType, data);
+  delegate.SetData(kTextHtmlType, data);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -408,18 +360,14 @@ TEST_F(SeatTest, SetSelectionTextEmptyString) {
   Surface focused_surface;
   seat.set_focused_surface(&focused_surface);
 
-  const uint8_t data[] = {};
-
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   const std::string kTextPlainType = "text/plain;charset=utf-8";
   const std::string kTextHtmlType = "text/html;charset=utf-16";
   source.Offer(kTextPlainType);
   source.Offer(kTextHtmlType);
-  delegate.SetData(kTextPlainType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
-  delegate.SetData(kTextHtmlType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextPlainType, std::string());
+  delegate.SetData(kTextHtmlType, std::string());
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -465,7 +413,7 @@ TEST_F(SeatTest, SetSelectionFilenames) {
 
   TestDataSourceDelegate delegate;
   const std::string kMimeType = "text/uri-list";
-  delegate.SetData(kMimeType, std::vector<uint8_t>(data.begin(), data.end()));
+  delegate.SetData(kMimeType, data);
   DataSource source(&delegate);
   source.Offer(kMimeType);
   seat.SetSelection(&source);
@@ -494,8 +442,7 @@ TEST_F(SeatTest, SetSelectionWebCustomData) {
 
   TestDataSourceDelegate delegate;
   const std::string kMimeType = "chromium/x-web-custom-data";
-  delegate.SetData(kMimeType, std::vector<uint8_t>(custom_data_str.begin(),
-                                                   custom_data_str.end()));
+  delegate.SetData(kMimeType, std::move(custom_data_str));
   DataSource source(&delegate);
   source.Offer(kMimeType);
   seat.SetSelection(&source);
@@ -694,7 +641,7 @@ TEST_F(SeatTest, SetSelection_ClientOutOfFocus) {
   seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate;
-  delegate.can_accept_ = false;
+  delegate.set_can_accept(false);
   DataSource source(&delegate);
   source.Offer("text/plain;charset=utf-8");
   seat.SetSelection(&source);
@@ -713,15 +660,15 @@ TEST_F(SeatTest, PressedKeys) {
   seat.WillProcessEvent(&press_a);
   seat.OnKeyEvent(press_a.AsKeyEvent());
   seat.DidProcessEvent(&press_a);
-  base::flat_map<ui::DomCode, KeyState> pressed_keys;
-  pressed_keys[ui::CodeFromNative(&press_a)] = KeyState{press_a.code(), false};
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
+  pressed_keys[ui::CodeFromNative(&press_a)].emplace(press_a.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Press B, then A & B should be in the map.
   seat.WillProcessEvent(&press_b);
   seat.OnKeyEvent(press_b.AsKeyEvent());
   seat.DidProcessEvent(&press_b);
-  pressed_keys[ui::CodeFromNative(&press_b)] = KeyState{press_b.code(), false};
+  pressed_keys[ui::CodeFromNative(&press_b)].emplace(press_b.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Release A, with the normal order where DidProcessEvent is after OnKeyEvent,
@@ -729,7 +676,7 @@ TEST_F(SeatTest, PressedKeys) {
   seat.WillProcessEvent(&release_a);
   seat.OnKeyEvent(release_a.AsKeyEvent());
   seat.DidProcessEvent(&release_a);
-  pressed_keys.erase(ui::CodeFromNative(&press_a));
+  pressed_keys.erase(PhysicalCode(ui::CodeFromNative(&press_a)));
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Release B, do it out of order so DidProcessEvent is before OnKeyEvent, the
@@ -742,6 +689,9 @@ TEST_F(SeatTest, PressedKeys) {
 
 TEST_F(SeatTest, DragDropAbort) {
   TestSeat seat;
+  test::TestDataDeviceDelegate data_device_delegate;
+
+  DataDevice data_device(&data_device_delegate, &seat);
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   Surface origin, icon;
@@ -749,10 +699,128 @@ TEST_F(SeatTest, DragDropAbort) {
   // Give origin a root window for DragDropOperation.
   GetContext()->AddChild(origin.window());
 
-  seat.StartDrag(&source, &origin, &icon, ui::mojom::DragEventSource::kMouse);
+  data_device.StartDrag(&source, &origin, &icon,
+                        ui::mojom::DragEventSource::kMouse);
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
   seat.AbortPendingDragOperation();
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
+}
+
+TEST_F(SeatTest, MultiRewriteEventsFromInvalidSource) {
+  TestSeat seat;
+
+  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0);
+  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, 0);
+  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, 0);
+  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B, 0);
+
+  // Press A, it should be in the map.
+  seat.WillProcessEvent(&press_a);
+  seat.OnKeyEvent(press_a.AsKeyEvent());
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
+  pressed_keys[ui::CodeFromNative(&press_a)].emplace(press_a.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Press A, but it was remapped to B. Should not be added to pressed_keys map.
+  seat.OnKeyEvent(press_b.AsKeyEvent());
+  seat.DidProcessEvent(&press_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Release B -> A from the same physical "A" event. Entry should be removed
+  // after first event.
+  seat.WillProcessEvent(&release_a);
+  seat.OnKeyEvent(release_b.AsKeyEvent());
+  pressed_keys.erase(PhysicalCode(ui::CodeFromNative(&press_a)));
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  seat.OnKeyEvent(release_a.AsKeyEvent());
+  seat.DidProcessEvent(&release_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+}
+
+TEST_F(SeatTest, MultiRewriteEventsFromValidSource) {
+  TestSeat seat;
+
+  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
+                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A,
+                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B,
+                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B,
+                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+
+  // Press A, it should be in the map.
+  seat.WillProcessEvent(&press_a);
+  seat.OnKeyEvent(press_a.AsKeyEvent());
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
+  auto& key_state_set = pressed_keys[ui::CodeFromNative(&press_a)];
+  key_state_set.emplace(press_a.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Press A, but it was remapped to B. Should be added to pressed_keys map
+  // since it is explicitly allowlisted.
+  seat.OnKeyEvent(press_b.AsKeyEvent());
+  seat.DidProcessEvent(&press_a);
+  key_state_set.emplace(press_b.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Release B -> A from the same physical "A" event. Entry should be removed
+  // after first event.
+  seat.WillProcessEvent(&release_a);
+  seat.OnKeyEvent(release_b.AsKeyEvent());
+  pressed_keys.erase(PhysicalCode(ui::CodeFromNative(&press_a)));
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  seat.OnKeyEvent(release_a.AsKeyEvent());
+  seat.DidProcessEvent(&release_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+}
+
+TEST_F(SeatTest, MouseMultiRewriteEventsFromValidSource) {
+  TestSeat seat;
+
+  ui::MouseEvent press_back(ui::ET_MOUSE_PRESSED, gfx::PointF{}, gfx::PointF{},
+                            base::TimeTicks(), ui::EF_BACK_MOUSE_BUTTON,
+                            ui::EF_BACK_MOUSE_BUTTON);
+  ui::MouseEvent release_back(
+      ui::ET_MOUSE_RELEASED, gfx::PointF{}, gfx::PointF{}, base::TimeTicks(),
+      ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
+
+  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
+                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A,
+                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B,
+                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B,
+                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+
+  // Press Back remapped to "A", it should be in the map.
+  seat.WillProcessEvent(&press_back);
+  seat.OnKeyEvent(press_a.AsKeyEvent());
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
+  auto& key_state_set = pressed_keys[ash::mojom::CustomizableButton::kBack];
+  key_state_set.emplace(press_a.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Press B remapped within the same Back mouse button. Should also be added to
+  // the map.
+  seat.OnKeyEvent(press_b.AsKeyEvent());
+  seat.DidProcessEvent(&press_back);
+  key_state_set.emplace(press_b.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Release B then A from the same physical mouse button release. Both should
+  // be instantly removed from the map.
+  seat.WillProcessEvent(&press_back);
+  seat.OnKeyEvent(release_b.AsKeyEvent());
+  pressed_keys.erase(PhysicalCode(ash::mojom::CustomizableButton::kBack));
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  seat.OnKeyEvent(release_a.AsKeyEvent());
+  seat.DidProcessEvent(&press_back);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
 }
 
 }  // namespace

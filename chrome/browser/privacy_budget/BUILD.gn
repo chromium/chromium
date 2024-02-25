@@ -4,14 +4,12 @@
 
 source_set("headers") {
   sources = [
-    "active_sampling.h",
     "encountered_surface_tracker.h",
     "identifiability_study_group_settings.h",
     "identifiability_study_state.h",
     "mesa_distribution.h",
     "privacy_budget_metrics_provider.h",
     "privacy_budget_prefs.h",
-    "privacy_budget_reid_score_estimator.h",
     "privacy_budget_ukm_entry_filter.h",
     "representative_surface_set.h",
     "surface_set_equivalence.h",
@@ -31,13 +29,11 @@ source_set("headers") {
 
 source_set("privacy_budget") {
   sources = [
-    "active_sampling.cc",
     "encountered_surface_tracker.cc",
     "identifiability_study_group_settings.cc",
     "identifiability_study_state.cc",
     "privacy_budget_metrics_provider.cc",
     "privacy_budget_prefs.cc",
-    "privacy_budget_reid_score_estimator.cc",
     "privacy_budget_ukm_entry_filter.cc",
     "representative_surface_set.cc",
     "surface_set_equivalence.cc",
@@ -51,9 +47,14 @@ source_set("privacy_budget") {
 
   deps = [
     "//base",
+    "//base/version_info:channel",
+    "//chrome/common:channel_info",
+    "//chrome/common:mojo_bindings",
     "//chrome/common/privacy_budget",
     "//components/prefs",
     "//components/ukm",
+    "//components/variations",
+    "//content/public/browser",
     "//content/public/common",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -66,7 +67,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "active_sampling_unittest.cc",
     "encountered_surface_tracker_unittest.cc",
     "identifiability_study_group_settings_unittest.cc",
     "identifiability_study_state_unittest.cc",
@@ -74,7 +74,6 @@ source_set("unit_tests") {
     "inspectable_identifiability_study_state.h",
     "mesa_distribution_unittest.cc",
     "privacy_budget_metrics_provider_unittest.cc",
-    "privacy_budget_reid_score_estimator_unittest.cc",
     "privacy_budget_ukm_entry_filter_unittest.cc",
     "representative_surface_set_unittest.cc",
     "surface_set_equivalence_unittest.cc",
@@ -102,7 +101,6 @@ source_set("browser_tests") {
     "privacy_budget_browsertest.cc",
     "privacy_budget_browsertest_util.cc",
     "privacy_budget_browsertest_util.h",
-    "privacy_budget_reid_score_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

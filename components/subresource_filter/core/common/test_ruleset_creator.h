@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 
 namespace subresource_filter {
@@ -72,12 +72,12 @@ class TestRulesetCreator {
   // paths having the given |suffix|.
   // Enclose call in ASSERT_NO_FATAL_FAILURE to detect errors.
   void CreateRulesetToDisallowURLsWithPathSuffix(
-      base::StringPiece suffix,
+      std::string_view suffix,
       TestRulesetPair* test_ruleset_pair);
 
   // Same as above, but only creates an unindexed ruleset.
   void CreateUnindexedRulesetToDisallowURLsWithPathSuffix(
-      base::StringPiece suffix,
+      std::string_view suffix,
       TestRuleset* test_unindexed_ruleset);
 
   // Creates both the indexed and unindexed versions of a testing ruleset that
@@ -85,14 +85,14 @@ class TestRulesetCreator {
   // containing any of the given `substrings`. Enclose call in
   // ASSERT_NO_FATAL_FAILURE to detect errors.
   void CreateRulesetToDisallowURLWithSubstrings(
-      std::vector<base::StringPiece> substrings,
+      std::vector<std::string_view> substrings,
       TestRulesetPair* test_ruleset_pair);
 
   // Similar to CreateRulesetToDisallowURLsWithPathSuffix, but the resulting
   // ruleset consists of |num_of_suffixes| rules, each of them disallowing URLs
   // with suffixes of the form |suffix|_k, 0 <= k < |num_of_suffixes|.
   void CreateRulesetToDisallowURLsWithManySuffixes(
-      base::StringPiece suffix,
+      std::string_view suffix,
       int num_of_suffixes,
       TestRulesetPair* test_ruleset_pair);
 

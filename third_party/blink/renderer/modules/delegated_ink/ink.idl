@@ -5,7 +5,6 @@
 // https://github.com/WICG/ink-enhancement
 
 [
-    RuntimeEnabled=DelegatedInkTrails,
     Exposed=Window
 ] interface Ink {
     [CallWith=ScriptState, RaisesException] Promise<DelegatedInkTrailPresenter> requestPresenter(optional InkPresenterParam param = {});

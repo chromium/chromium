@@ -701,7 +701,7 @@ $L$sqr_1024_in_tail:
 $L$sqr_1024_epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_rsaz_1024_sqr_avx2:
 global	rsaz_1024_mul_avx2
@@ -1294,7 +1294,7 @@ $L$mul_1024_in_tail:
 $L$mul_1024_epilogue:
 	mov	rdi,QWORD[8+rsp]	;WIN64 epilogue
 	mov	rsi,QWORD[16+rsp]
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_rsaz_1024_mul_avx2:
 global	rsaz_1024_red2norm_avx2
@@ -1493,7 +1493,7 @@ _CET_ENDBR
 	adc	r11,0
 	mov	QWORD[120+rcx],rax
 	mov	rax,r11
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -1654,7 +1654,7 @@ _CET_ENDBR
 	mov	QWORD[168+rcx],r8
 	mov	QWORD[176+rcx],r8
 	mov	QWORD[184+rcx],r8
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 global	rsaz_1024_scatter5_avx2
@@ -1681,7 +1681,7 @@ $L$oop_scatter_1024:
 	jnz	NEAR $L$oop_scatter_1024
 
 	vzeroupper
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 
@@ -1827,7 +1827,7 @@ $L$oop_gather_1024:
 	movaps	xmm15,XMMWORD[((-24))+r11]
 	lea	rsp,[r11]
 
-	DB	0F3h,0C3h		;repret
+	ret
 
 $L$SEH_end_rsaz_1024_gather5:
 
@@ -1939,7 +1939,7 @@ $L$common_seh_tail:
 	pop	rbx
 	pop	rdi
 	pop	rsi
-	DB	0F3h,0C3h		;repret
+	ret
 
 
 section	.pdata rdata align=4

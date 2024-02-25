@@ -22,6 +22,13 @@ enum DisplaySource {
   DISPLAY_SOURCE_POPUP,
 };
 
+// Enumeration of quiet mode set by user or focus mode.
+enum class QuietModeSourceType {
+  kUserAction,
+  kFocusMode,
+  kMaxValue = kFocusMode,
+};
+
 }  // namespace message_center
 
 #endif  // UI_MESSAGE_CENTER_MESSAGE_CENTER_TYPES_H_

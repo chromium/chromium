@@ -32,14 +32,15 @@ class SignalStorageConfig;
 
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  public:
-  ModelExecutionSchedulerImpl(std::vector<Observer*>&& observers,
-                              SegmentInfoDatabase* segment_database,
-                              SignalStorageConfig* signal_storage_config,
-                              ModelManager* model_manager,
-                              ModelExecutor* model_executor,
-                              base::flat_set<proto::SegmentId> segment_ids,
-                              base::Clock* clock,
-                              const PlatformOptions& platform_options);
+  ModelExecutionSchedulerImpl(
+      std::vector<raw_ptr<Observer, VectorExperimental>>&& observers,
+      SegmentInfoDatabase* segment_database,
+      SignalStorageConfig* signal_storage_config,
+      ModelManager* model_manager,
+      ModelExecutor* model_executor,
+      base::flat_set<proto::SegmentId> segment_ids,
+      base::Clock* clock,
+      const PlatformOptions& platform_options);
   ~ModelExecutionSchedulerImpl() override;
 
   // Disallow copy/assign.
@@ -67,7 +68,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // Observers listening to model exeuction events. Required by the segment
   // selection pipeline.
-  std::vector<Observer*> observers_;
+  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
 
   // The database storing metadata and results.
   const raw_ptr<SegmentInfoDatabase> segment_database_;
@@ -80,7 +81,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   const raw_ptr<ModelExecutor> model_executor_;
 
   // The set of all known segments.
-  base::flat_set<proto::SegmentId> all_segment_ids_;
+  base::flat_set<proto::SegmentId> legacy_output_segment_ids_;
 
   // The time provider.
   raw_ptr<base::Clock> clock_;

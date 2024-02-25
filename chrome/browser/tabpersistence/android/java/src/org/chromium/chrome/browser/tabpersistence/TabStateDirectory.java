@@ -27,8 +27,7 @@ public class TabStateDirectory {
     private static final String BASE_STATE_FOLDER = "tabs";
 
     /** The name of the directory where the state for tabbed mode is saved. */
-    @VisibleForTesting
-    public static final String TABBED_MODE_DIRECTORY = "0";
+    @VisibleForTesting public static final String TABBED_MODE_DIRECTORY = "0";
 
     /** The name of the directory where the state for custom tabs is saved. */
     public static final String CUSTOM_TABS_DIRECTORY = "custom_tabs";
@@ -87,8 +86,9 @@ public class TabStateDirectory {
         private static File sDirectory;
 
         static {
-            sDirectory = ContextUtils.getApplicationContext().getDir(
-                    BASE_STATE_FOLDER, Context.MODE_PRIVATE);
+            sDirectory =
+                    ContextUtils.getApplicationContext()
+                            .getDir(BASE_STATE_FOLDER, Context.MODE_PRIVATE);
         }
     }
 
@@ -103,9 +103,7 @@ public class TabStateDirectory {
         return BaseStateDirectoryHolder.sDirectory;
     }
 
-    /**
-     * Sets where the base state directory is in tests.
-     */
+    /** Sets where the base state directory is in tests. */
     public static void setBaseStateDirectoryForTests(File directory) {
         var oldValue = BaseStateDirectoryHolder.sDirectory;
         BaseStateDirectoryHolder.sDirectory = directory;

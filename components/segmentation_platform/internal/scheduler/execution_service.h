@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
@@ -27,7 +28,6 @@ class FeatureListQueryProcessor;
 class InputDelegateHolder;
 }
 
-struct Config;
 struct PlatformOptions;
 class ModelExecutor;
 class ModelProviderFactory;
@@ -54,12 +54,12 @@ class ExecutionService {
       SignalHandler* signal_handler,
       base::Clock* clock,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const base::flat_set<SegmentId>& all_segment_ids,
+      const base::flat_set<SegmentId>& legacy_output_segment_ids,
       ModelProviderFactory* model_provider_factory,
-      std::vector<ModelExecutionScheduler::Observer*>&& observers,
+      std::vector<raw_ptr<ModelExecutionScheduler::Observer,
+                          VectorExperimental>>&& observers,
       const PlatformOptions& platform_options,
       std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
-      const std::vector<std::unique_ptr<Config>>* configs,
       PrefService* profile_prefs,
       CachedResultProvider* cached_result_provider);
 
@@ -88,6 +88,10 @@ class ExecutionService {
 
   // Executes daily maintenance and collection tasks.
   void RunDailyTasks(bool is_startup);
+
+  processing::FeatureListQueryProcessor* feature_processor() {
+    return feature_list_query_processor_.get();
+  }
 
   void set_training_data_collector_for_testing(
       std::unique_ptr<TrainingDataCollector> collector) {

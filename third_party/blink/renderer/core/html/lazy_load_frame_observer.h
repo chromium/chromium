@@ -38,7 +38,9 @@ class LazyLoadFrameObserver final
   ~LazyLoadFrameObserver();
 
   void DeferLoadUntilNearViewport(const ResourceRequestHead&, WebFrameLoadType);
-  bool IsLazyLoadPending() const { return lazy_load_intersection_observer_; }
+  bool IsLazyLoadPending() const {
+    return lazy_load_intersection_observer_ != nullptr;
+  }
   void CancelPendingLazyLoad();
 
   void LoadImmediately();

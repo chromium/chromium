@@ -1,0 +1,22 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// gpu/command_buffer/common/shared_image_capabilities.h
+module gpu.mojom;
+
+import "ui/gfx/mojom/buffer_types.mojom";
+
+struct SharedImageCapabilities {
+  bool supports_scanout_shared_images;
+  bool supports_luminance_shared_images;
+  bool supports_r16_shared_images;
+  bool is_r16f_supported;
+  bool disable_r8_shared_images;
+  bool disable_webgpu_shared_images;
+
+  bool shared_image_d3d;
+  bool shared_image_swap_chain;
+
+  array<gfx.mojom.BufferUsageAndFormat> texture_target_exception_list;
+};

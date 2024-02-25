@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/border.h"
@@ -34,6 +35,8 @@ constexpr int kLayoutExampleLeftPadding = 8;
 constexpr gfx::Size kLayoutExampleDefaultChildSize(180, 90);
 
 class LayoutPanel : public View {
+  METADATA_HEADER(LayoutPanel, View)
+
  protected:
   void OnThemeChanged() override {
     View::OnThemeChanged();
@@ -42,19 +45,27 @@ class LayoutPanel : public View {
   }
 };
 
+BEGIN_METADATA(LayoutPanel)
+END_METADATA
+
 // This View holds two other views which consists of a view on the left onto
 // which the BoxLayout is attached for demonstrating its features. The view
 // on the right contains all the various controls which allow the user to
-// interactively control the various features/properties of BoxLayout. Layout()
-// will ensure the left view takes 75% and the right view fills the remaining
-// 25%.
+// interactively control the various features/properties of BoxLayout.
+// Layout will ensure the left view takes 75% and the right view fills the
+// remaining 25%.
 class FullPanel : public View {
+  METADATA_HEADER(FullPanel, View)
+
  public:
   FullPanel() = default;
   FullPanel(const FullPanel&) = delete;
   FullPanel& operator=(const FullPanel&) = delete;
   ~FullPanel() override = default;
 };
+
+BEGIN_METADATA(FullPanel)
+END_METADATA
 
 std::unique_ptr<Textfield> CreateCommonTextfield(
     TextfieldController* container) {
@@ -88,20 +99,25 @@ LayoutExampleBase::ChildPanel::ChildPanel(LayoutExampleBase* example)
 
 LayoutExampleBase::ChildPanel::~ChildPanel() = default;
 
-void LayoutExampleBase::ChildPanel::Layout() {
+void LayoutExampleBase::ChildPanel::Layout(PassKey) {
   constexpr int kSpacing = 2;
   if (selected_) {
     const gfx::Rect client = GetContentsBounds();
+    margin_.top->SizeToPreferredSize();
     margin_.top->SetPosition(
         gfx::Point((client.width() - margin_.top->width()) / 2, kSpacing));
+    margin_.left->SizeToPreferredSize();
     margin_.left->SetPosition(
         gfx::Point(kSpacing, (client.height() - margin_.left->height()) / 2));
+    margin_.bottom->SizeToPreferredSize();
     margin_.bottom->SetPosition(
         gfx::Point((client.width() - margin_.bottom->width()) / 2,
                    client.height() - margin_.bottom->height() - kSpacing));
+    margin_.right->SizeToPreferredSize();
     margin_.right->SetPosition(
         gfx::Point(client.width() - margin_.right->width() - kSpacing,
                    (client.height() - margin_.right->height()) / 2));
+    flex_->SizeToPreferredSize();
     flex_->SetPosition(gfx::Point((client.width() - flex_->width()) / 2,
                                   (client.height() - flex_->height()) / 2));
   }
@@ -162,6 +178,9 @@ Textfield* LayoutExampleBase::ChildPanel::CreateTextfield(
     const std::u16string& name) {
   return AddChildView(CreateCommonTextfieldWithAXName(this, name));
 }
+
+BEGIN_METADATA(LayoutExampleBase, ChildPanel)
+END_METADATA
 
 LayoutExampleBase::LayoutExampleBase(const char* title) : ExampleBase(title) {}
 

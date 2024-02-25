@@ -56,9 +56,8 @@ void ThrottledOfflineContentProvider::PauseDownload(const ContentId& id) {
   FlushUpdates();
 }
 
-void ThrottledOfflineContentProvider::ResumeDownload(const ContentId& id,
-                                                     bool has_user_gesture) {
-  wrapped_provider_->ResumeDownload(id, has_user_gesture);
+void ThrottledOfflineContentProvider::ResumeDownload(const ContentId& id) {
+  wrapped_provider_->ResumeDownload(id);
   FlushUpdates();
 }
 
@@ -86,7 +85,7 @@ void ThrottledOfflineContentProvider::OnGetAllItemsDone(
 
 void ThrottledOfflineContentProvider::OnGetItemByIdDone(
     SingleItemCallback callback,
-    const absl::optional<OfflineItem>& item) {
+    const std::optional<OfflineItem>& item) {
   if (item.has_value())
     UpdateItemIfPresent(item.value());
   std::move(callback).Run(item);
@@ -123,8 +122,8 @@ void ThrottledOfflineContentProvider::OnItemRemoved(const ContentId& id) {
 
 void ThrottledOfflineContentProvider::OnItemUpdated(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
-  absl::optional<UpdateDelta> merged = update_delta;
+    const std::optional<UpdateDelta>& update_delta) {
+  std::optional<UpdateDelta> merged = update_delta;
   if (updates_.find(item.id) != updates_.end()) {
     merged = UpdateDelta::MergeUpdates(updates_[item.id].second, update_delta);
   }

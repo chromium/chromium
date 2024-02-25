@@ -24,6 +24,13 @@ namespace {
 constexpr std::size_t kNumOfZoomFactors = 9;
 using ZoomListBucket = std::pair<int, std::array<float, kNumOfZoomFactors>>;
 
+constexpr std::array<ZoomListBucket, 4> kTestData{{
+    {240, {0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f}},
+    {720, {0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f, 1.05f, 1.10f}},
+    {1024, {0.90f, 0.95f, 1.f, 1.05f, 1.10f, 1.15f, 1.20f, 1.25f, 1.30f}},
+    {2400, {1.f, 1.10f, 1.15f, 1.20f, 1.30f, 1.40f, 1.50f, 1.75f, 2.00f}},
+}};
+
 bool WithinEpsilon(float a, float b) {
   return std::abs(a - b) < std::numeric_limits<float>::epsilon();
 }
@@ -34,13 +41,7 @@ using DisplayManagerUtilTest = testing::Test;
 
 TEST_F(DisplayManagerUtilTest, DisplayZooms) {
   // The expected zoom list for the width given by |first| of the pair should be
-  //  equal to the |second| of the pair.
-  constexpr std::array<ZoomListBucket, 4> kTestData{{
-      {240, {0.60f, 0.65f, 0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f}},
-      {720, {0.70f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.f, 1.05f, 1.10f}},
-      {1024, {0.90f, 0.95f, 1.f, 1.05f, 1.10f, 1.15f, 1.20f, 1.25f, 1.30f}},
-      {2400, {1.f, 1.10f, 1.15f, 1.20f, 1.30f, 1.40f, 1.50f, 1.75f, 2.00f}},
-  }};
+  // equal to the |second| of the pair.
   for (const auto& data : kTestData) {
     {
       SCOPED_TRACE("Landscape");
@@ -59,6 +60,18 @@ TEST_F(DisplayManagerUtilTest, DisplayZooms) {
       for (std::size_t j = 0; j < kNumOfZoomFactors; j++) {
         EXPECT_FLOAT_EQ(zoom_values[j], data.second[j]);
       }
+    }
+  }
+}
+
+TEST_F(DisplayManagerUtilTest, DisplayZoomsByDisplayWidth) {
+  // The expected zoom list for the width given by |first| of the pair should be
+  // equal to the |second| of the pair.
+  for (const auto& data : kTestData) {
+    const std::vector<float> zoom_values =
+        GetDisplayZoomFactorsByDsiplayWidth(data.first);
+    for (std::size_t j = 0; j < kNumOfZoomFactors; j++) {
+      EXPECT_FLOAT_EQ(zoom_values[j], data.second[j]);
     }
   }
 }

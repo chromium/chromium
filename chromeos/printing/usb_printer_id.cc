@@ -19,10 +19,16 @@ const char kModel[] = "MODEL";
 const char kModelAbbr[] = "MDL";
 const char kCommandSet[] = "COMMAND SET";
 const char kCommandSetAbbr[] = "CMD";
+const char kChromeOsRawId[] = "CHROMEOS_RAW_ID";
 
 UsbPrinterId::UsbPrinterId(base::span<const uint8_t> device_id_data) {
   // Build mapping.
   id_mappings_ = BuildDeviceIdMapping(device_id_data);
+
+  // Save original ID.
+  if (base::Contains(id_mappings_, kChromeOsRawId)) {
+    raw_id_ = id_mappings_[kChromeOsRawId].front();
+  }
 
   // Save required mappings.
   // Save make_.
@@ -81,6 +87,7 @@ std::map<std::string, std::vector<std::string>> BuildDeviceIdMapping(
 
     ret[term.first] = values;
   }
+  ret[kChromeOsRawId].emplace_back(std::move(printer_id));
 
   return ret;
 }

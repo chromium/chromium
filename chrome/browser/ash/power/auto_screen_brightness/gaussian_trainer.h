@@ -15,13 +15,13 @@ namespace auto_screen_brightness {
 
 struct TrainingResult {
   TrainingResult();
-  TrainingResult(const absl::optional<MonotoneCubicSpline>& new_curve,
+  TrainingResult(const std::optional<MonotoneCubicSpline>& new_curve,
                  double error);
   TrainingResult(const TrainingResult& result);
   ~TrainingResult();
   // |new_curve| will be nullopt if trainer's curve stays unchanged after
   // training.
-  absl::optional<MonotoneCubicSpline> new_curve;
+  std::optional<MonotoneCubicSpline> new_curve;
   // Evaluation error of the latest curve (possibly updated) using the training
   // data points.
   double error;
@@ -115,10 +115,10 @@ class GaussianTrainer : public Trainer {
 
   Params params_;
   // |global_curve| does not change after |SetInitialCurves| is called.
-  absl::optional<MonotoneCubicSpline> global_curve_;
+  std::optional<MonotoneCubicSpline> global_curve_;
   // |current_curve_| initially is set by |SetInitialCurves| and then gets
   // updated during training.
-  absl::optional<MonotoneCubicSpline> current_curve_;
+  std::optional<MonotoneCubicSpline> current_curve_;
 
   // Whether the |brightness_| has been updated since last time |Train| updated
   // the curve.

@@ -364,6 +364,53 @@ def _RunGdb(device, package_name, debug_process_name, pid, output_directory,
   os.execv(gdb_script_path, cmd)
 
 
+def _RunLldb(device,
+             package_name,
+             debug_process_name,
+             pid,
+             output_directory,
+             port,
+             target_cpu=None,
+             ndk_dir=None,
+             lldb_server=None,
+             lldb=None,
+             verbose=None):
+  if not pid:
+    debug_process_name = _NormalizeProcessName(debug_process_name, package_name)
+    pid = device.GetApplicationPids(debug_process_name, at_most_one=True)
+  if not pid:
+    # Attaching lldb makes the app run so slow that it takes *minutes* to start
+    # up (as of 2018). Better to just fail than to start & attach.
+    raise Exception('App not running.')
+
+  lldb_script_path = os.path.dirname(__file__) + '/connect_lldb.sh'
+  cmd = [
+      lldb_script_path,
+      '--package-name=%s' % package_name,
+      '--output-directory=%s' % output_directory,
+      '--adb=%s' % adb_wrapper.AdbWrapper.GetAdbPath(),
+      '--device=%s' % device.serial,
+      '--pid=%s' % pid,
+      '--port=%d' % port,
+  ]
+  # Enable verbose output of connect_lldb.sh if it's set for this script.
+  if verbose:
+    cmd.append('--verbose')
+  if target_cpu:
+    cmd.append('--target-arch=%s' % _TargetCpuToTargetArch(target_cpu))
+  if ndk_dir:
+    cmd.append('--ndk-dir=%s' % ndk_dir)
+  if lldb_server:
+    cmd.append('--lldb-server=%s' % lldb_server)
+  if lldb:
+    cmd.append('--lldb=%s' % lldb)
+  logging.warning('Running: %s', ' '.join(shlex.quote(x) for x in cmd))
+  print(
+      _Colorize('All subsequent output is from connect_lldb.sh script.',
+                colorama.Fore.YELLOW))
+  os.execv(lldb_script_path, cmd)
+
+
 def _PrintPerDeviceOutput(devices, results, single_line=False):
   for d, result in zip(devices, results):
     if not single_line and d is not devices[0]:
@@ -1067,7 +1114,7 @@ class _StackScriptContext:
       cmd.append('--quiet')
     if input_file:
       cmd.append(input_file)
-    logging.info('Running stack.py')
+    logging.info('Running: %s', shlex.join(cmd))
     return subprocess.Popen(cmd, universal_newlines=True, **kwargs)
 
 
@@ -1268,6 +1315,60 @@ class _Command:
       ]
     return self.apk_helper is not None
 
+  def _FindSupportedDevices(self, devices):
+    """Returns supported devices and reasons for each not supported one."""
+    app_abis = self.apk_helper.GetAbis()
+    calling_script_name = os.path.basename(sys.argv[0])
+    is_webview = 'webview' in calling_script_name
+    requires_32_bit = self.apk_helper.Get32BitAbiOverride() == '0xffffffff'
+    logging.debug('App supports (requires 32bit: %r, is webview: %r): %r',
+                  requires_32_bit, is_webview, app_abis)
+    # Webview 32_64 targets can work even on 64-bit only devices since only the
+    # webview library in the target needs the correct bitness.
+    if requires_32_bit and not is_webview:
+      app_abis = [abi for abi in app_abis if '64' not in abi]
+      logging.debug('App supports (filtered): %r', app_abis)
+    if not app_abis:
+      # The app does not have any native libs, so all devices can support it.
+      return devices, None
+    fully_supported = []
+    not_supported_reasons = {}
+    for device in devices:
+      device_abis = device.GetSupportedABIs()
+      device_primary_abi = device_abis[0]
+      logging.debug('Device primary: %s', device_primary_abi)
+      logging.debug('Device supports: %r', device_abis)
+
+      # x86/x86_64 emulators sometimes advertises arm support but arm builds do
+      # not work on them. Thus these non-functional ABIs need to be filtered out
+      # here to avoid resulting in hard to understand runtime failures.
+      if device_primary_abi in ('x86', 'x86_64'):
+        device_abis = [abi for abi in device_abis if not abi.startswith('arm')]
+        logging.debug('Device supports (filtered): %r', device_abis)
+
+      if any(abi in app_abis for abi in device_abis):
+        fully_supported.append(device)
+      else:  # No common supported ABIs between the device and app.
+        if device_primary_abi == 'x86':
+          target_cpu = 'x86'
+        elif device_primary_abi == 'x86_64':
+          target_cpu = 'x64'
+        elif device_primary_abi.startswith('arm64'):
+          target_cpu = 'arm64'
+        elif device_primary_abi.startswith('armeabi'):
+          target_cpu = 'arm'
+        else:
+          target_cpu = '<something else>'
+        # pylint: disable=line-too-long
+        native_lib_link = 'https://chromium.googlesource.com/chromium/src/+/main/docs/android_native_libraries.md'
+        not_supported_reasons[device.serial] = (
+            f"none of the app's ABIs ({','.join(app_abis)}) match this "
+            f"device's ABIs ({','.join(device_abis)}), you may need to set "
+            f'target_cpu="{target_cpu}" in your args.gn. If you already set '
+            'the target_cpu arg, you may need to use one of the _64 or _64_32 '
+            f'targets, see {native_lib_link} for more details.')
+    return fully_supported, not_supported_reasons
+
   def ProcessArgs(self, args):
     self.args = args
     # Ensure these keys always exist. They are set by wrapper scripts, but not
@@ -1320,14 +1421,32 @@ class _Command:
 
     self.devices = []
     if self.need_device_args:
-      abis = None
-      if self._CreateApkHelpers(args, incremental_apk_path, install_dict):
-        abis = self.apk_helper.GetAbis()
-      self.devices = device_utils.DeviceUtils.HealthyDevices(
+      # Avoid filtering by ABIs with catapult since some x86 or x86_64 emulators
+      # can still work with the right target_cpu GN arg and the right targets.
+      # Doing this manually allows us to output more informative warnings to
+      # help devs towards the right course, see: https://crbug.com/1335139
+      available_devices = device_utils.DeviceUtils.HealthyDevices(
           device_arg=args.devices,
           enable_device_files_cache=bool(args.output_directory),
-          default_retries=0,
-          abis=abis)
+          default_retries=0)
+      if not available_devices:
+        raise Exception('Cannot find any available devices.')
+
+      if not self._CreateApkHelpers(args, incremental_apk_path, install_dict):
+        self.devices = available_devices
+      else:
+        fully_supported, not_supported_reasons = self._FindSupportedDevices(
+            available_devices)
+        if fully_supported:
+          self.devices = fully_supported
+        else:
+          reason_string = '\n'.join(
+              'The device (serial={}) is not supported because {}'.format(
+                  serial, reason)
+              for serial, reason in not_supported_reasons.items())
+          raise Exception('Cannot find any supported devices for this app.\n\n'
+                          f'{reason_string}')
+
       # TODO(agrieve): Device cache should not depend on output directory.
       #     Maybe put into /tmp?
       _LoadDeviceCaches(self.devices, args.output_directory)
@@ -1545,6 +1664,54 @@ If no apk process is currently running, sends a launch intent.
                        help='Use the given port for the GDB connection')
 
 
+class _LldbCommand(_Command):
+  name = 'lldb'
+  description = 'Runs //build/android/connect_lldb.sh with apk-specific args.'
+  long_description = description + """
+
+To attach to a process other than the APK's main process, use --pid=1234.
+To list all PIDs, use the "ps" command.
+
+If no apk process is currently running, sends a launch intent.
+"""
+  needs_package_name = True
+  needs_output_directory = True
+  calls_exec = True
+  supports_multiple_devices = False
+
+  def Run(self):
+    _RunLldb(device=self.devices[0],
+             package_name=self.args.package_name,
+             debug_process_name=self.args.debug_process_name,
+             pid=self.args.pid,
+             output_directory=self.args.output_directory,
+             port=self.args.port,
+             target_cpu=self.args.target_cpu,
+             ndk_dir=self.args.ndk_dir,
+             lldb_server=self.args.lldb_server,
+             lldb=self.args.lldb,
+             verbose=bool(self.args.verbose_count))
+
+  def _RegisterExtraArgs(self, group):
+    pid_group = group.add_mutually_exclusive_group()
+    pid_group.add_argument('--debug-process-name',
+                           help='Name of the process to attach to. '
+                           'E.g. "privileged_process0", or "foo.bar:baz"')
+    pid_group.add_argument('--pid',
+                           help='The process ID to attach to. Defaults to '
+                           'the main process for the package.')
+    group.add_argument('--ndk-dir',
+                       help='Select alternative NDK root directory.')
+    group.add_argument('--lldb-server',
+                       help='Select alternative on-device lldb-server.')
+    group.add_argument('--lldb', help='Select alternative client lldb.sh.')
+    # Same default port that ndk-gdb.py uses.
+    group.add_argument('--port',
+                       type=int,
+                       default=5039,
+                       help='Use the given port for the LLDB connection')
+
+
 class _LogcatCommand(_Command):
   name = 'logcat'
   description = 'Runs "adb logcat" with filters relevant the current APK.'
@@ -1723,15 +1890,18 @@ class _PrintCertsCommand(_Command):
             self.bundle_generation_info.keystore_password, '-alias',
             self.bundle_generation_info.keystore_alias, '-file', f.name
         ]
+        logging.warning('Running: %s', shlex.join(cmd))
         subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         cmd = [keytool, '-printcert', '-file', f.name]
-        logging.warning('Running: %s', ' '.join(cmd))
+        logging.warning('Running: %s', shlex.join(cmd))
         subprocess.check_call(cmd)
         if self.args.full_cert:
           # Redirect stderr to hide a keytool warning about using non-standard
           # keystore format.
+          cmd += ['-rfc']
+          logging.warning('Running: %s', shlex.join(cmd))
           pem_encoded_certificate = subprocess.check_output(
-              cmd + ['-rfc'], stderr=subprocess.STDOUT).decode()
+              cmd, stderr=subprocess.STDOUT).decode()
     else:
 
       def run_apksigner(min_sdk_version):
@@ -1740,7 +1910,7 @@ class _PrintCertsCommand(_Command):
             str(min_sdk_version), '--print-certs-pem', '--verbose',
             self.apk_helper.path
         ]
-        logging.warning('Running: %s', ' '.join(cmd))
+        logging.warning('Running: %s', shlex.join(cmd))
         env = os.environ.copy()
         env['PATH'] = os.path.pathsep.join(
             [os.path.join(_JAVA_HOME, 'bin'),
@@ -1926,8 +2096,9 @@ class _ManifestCommand(_Command):
       apkanalyzer = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'android_sdk',
                                  'public', 'cmdline-tools', 'latest', 'bin',
                                  'apkanalyzer')
-      subprocess.check_call(
-          [apkanalyzer, 'manifest', 'print', self.apk_helper.path])
+      cmd = [apkanalyzer, 'manifest', 'print', self.apk_helper.path]
+      logging.info('Running: %s', shlex.join(cmd))
+      subprocess.check_call(cmd)
 
 
 class _StackCommand(_Command):
@@ -1965,6 +2136,7 @@ _COMMANDS = [
     _ClearDataCommand,
     _ArgvCommand,
     _GdbCommand,
+    _LldbCommand,
     _LogcatCommand,
     _PsCommand,
     _DiskUsageCommand,

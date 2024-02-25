@@ -182,12 +182,12 @@ ProjectorXhrSender::~ProjectorXhrSender() = default;
 void ProjectorXhrSender::Send(
     const GURL& url,
     projector::mojom::RequestType method,
-    const absl::optional<std::string>& request_body,
+    const std::optional<std::string>& request_body,
     bool use_credentials,
     bool use_api_key,
     SendRequestCallback callback,
-    const absl::optional<base::flat_map<std::string, std::string>>& headers,
-    const absl::optional<std::string>& account_email) {
+    const std::optional<base::flat_map<std::string, std::string>>& headers,
+    const std::optional<std::string>& account_email) {
   if (!IsUrlAllowlisted(url.spec())) {
     std::move(callback).Run(CreateXhrResposne(
         std::string(), projector::mojom::XhrResponseCode::kUnsupportedURL));
@@ -238,8 +238,8 @@ void ProjectorXhrSender::Send(
 void ProjectorXhrSender::OnAccessTokenRequestCompleted(
     const GURL& url,
     projector::mojom::RequestType method,
-    const absl::optional<std::string>& request_body,
-    const absl::optional<base::flat_map<std::string, std::string>>& headers,
+    const std::optional<std::string>& request_body,
+    const std::optional<base::flat_map<std::string, std::string>>& headers,
     bool use_credentials,
     SendRequestCallback callback,
     const std::string& email,
@@ -259,9 +259,9 @@ void ProjectorXhrSender::OnAccessTokenRequestCompleted(
 void ProjectorXhrSender::SendRequest(
     const GURL& url,
     projector::mojom::RequestType method,
-    const absl::optional<std::string>& request_body,
+    const std::optional<std::string>& request_body,
     const std::string& token,
-    const absl::optional<base::flat_map<std::string, std::string>>& headers,
+    const std::optional<base::flat_map<std::string, std::string>>& headers,
     bool allow_cookie,
     SendRequestCallback callback) {
   // Build resource request.
@@ -351,7 +351,7 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
 }
 
 bool ProjectorXhrSender::IsValidEmail(
-    const absl::optional<std::string>& email_check) {
+    const std::optional<std::string>& email_check) {
   const auto email = email_check.value_or(std::string());
   if (email.empty()) {
     // TODO(b/288457397): Return false here and clean up to require account

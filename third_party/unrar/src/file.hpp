@@ -14,8 +14,6 @@
   #define FILE_BAD_HANDLE NULL
 #endif
 
-class RAROptions;
-
 enum FILE_HANDLETYPE {FILE_HANDLENORMAL,FILE_HANDLESTD};
 
 enum FILE_ERRORTYPE {FILE_SUCCESS,FILE_NOTFOUND,FILE_READERROR};
@@ -59,6 +57,16 @@ class File
     FileHandle hFile;
     bool LastWrite;
     FILE_HANDLETYPE HandleType;
+    
+    // If we read the user input in console prompts from stdin, we shall
+    // process the available line immediately, not waiting for rest of data.
+    // Otherwise apps piping user responses to multiple Ask() prompts can
+    // hang if no more data is available yet and pipe isn't closed.
+    // If we read RAR archive or other file data from stdin, we shall collect
+    // the entire requested block as long as pipe isn't closed, so we get
+    // complete archive headers, not split between different reads.
+    bool LineInput;
+
     bool SkipClose;
     FILE_READ_ERROR_MODE ReadErrorMode;
     bool NewFile;
@@ -70,6 +78,8 @@ class File
 #endif
     bool PreserveAtime;
     bool TruncatedAfterReadError;
+
+    int64 CurFilePos; // Used for forward seeks in stdin files.
   protected:
     bool OpenShared; // Set by 'Archive' class.
   public:
@@ -80,6 +90,10 @@ class File
 #if defined(CHROMIUM_UNRAR)
     FileHandle hOpenFile;
 #endif  // defined(CHROMIUM_UNRAR)
+
+
+    byte *SeekBuf; // To read instead of seek for stdin files.
+    static const size_t SeekBufSize=0x10000;
   public:
     File();
     virtual ~File();
@@ -110,11 +124,16 @@ class File
     void SetOpenFileTime(RarTime *ftm,RarTime *ftc=NULL,RarTime *fta=NULL);
     void SetCloseFileTime(RarTime *ftm,RarTime *fta=NULL);
     static void SetCloseFileTimeByName(const wchar *Name,RarTime *ftm,RarTime *fta);
-    void GetOpenFileTime(RarTime *ft);
+#ifdef _UNIX
+    static void StatToRarTime(struct stat &st,RarTime *ftm,RarTime *ftc,RarTime *fta);
+#endif
+    void GetOpenFileTime(RarTime *ftm,RarTime *ftc=NULL,RarTime *fta=NULL);
     virtual bool IsOpened() {return hFile!=FILE_BAD_HANDLE;} // 'virtual' for MultiFile class.
     int64 FileLength();
     void SetHandleType(FILE_HANDLETYPE Type) {HandleType=Type;}
+    void SetLineInputMode(bool Mode) {LineInput=Mode;}
     FILE_HANDLETYPE GetHandleType() {return HandleType;}
+    bool IsSeekable() {return HandleType!=FILE_HANDLESTD;}
     bool IsDevice();
     static bool RemoveCreated();
     FileHandle GetHandle() {return hFile;}
@@ -123,9 +142,6 @@ class File
     int64 Copy(File &Dest,int64 Length=INT64NDF);
     void SetAllowDelete(bool Allow) {AllowDelete=Allow;}
     void SetExceptions(bool Allow) {AllowExceptions=Allow;}
-#ifdef _WIN_ALL
-    void RemoveSequentialFlag() {NoSequentialRead=true;}
-#endif
     void SetPreserveAtime(bool Preserve) {PreserveAtime=Preserve;}
     bool IsTruncatedAfterReadError() {return TruncatedAfterReadError;}
 
@@ -135,7 +151,7 @@ class File
     // the file handle to unrar. This handle is then used to read the file.
     void SetFileHandle(FileHandle file);
 #endif  // defined(CHROMIUM_UNRAR)
-
+  
 #ifdef _UNIX
     int GetFD()
     {

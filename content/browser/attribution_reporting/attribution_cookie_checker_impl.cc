@@ -30,7 +30,7 @@ void ProcessCookies(base::OnceCallback<void(bool)> callback,
       base::ranges::any_of(cookies, [](const net::CookieWithAccessResult& c) {
         // It is not possible to create a `SameSite: None` cookie insecurely, so
         // we only DCHECK this for now.
-        DCHECK(c.cookie.IsSecure());
+        DCHECK(c.cookie.SecureAttribute());
         return c.cookie.IsHttpOnly() && !c.cookie.IsPartitioned() &&
                c.cookie.Name() == "ar_debug";
       });

@@ -24,7 +24,7 @@ std::unique_ptr<PrefetchCookieListener> PrefetchCookieListener::MakeAndRegister(
   // |cookie_listener| will get updates whenever host cookies for |url| or
   // domain cookies that match |url| are changed.
   cookie_manager->AddCookieChangeListener(
-      url, absl::nullopt,
+      url, std::nullopt,
       cookie_listener->cookie_listener_receiver_.BindNewPipeAndPassRemote());
 
   return cookie_listener;

@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
  * Fake default browser provider implementation to inject into
  * CustomTabActivityNavigationController.
  *
- * Required for all tests which call {@link
+ * <p>Required for all tests which call {@link
  * CustomTabActivityNavigationController#openCurrentUrlInBrowser}.
  */
 public class FakeDefaultBrowserProviderImpl

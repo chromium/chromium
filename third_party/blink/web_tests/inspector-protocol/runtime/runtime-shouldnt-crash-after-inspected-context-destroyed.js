@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`Tests that call to console after inspected context was destroyed shouldn't produce crash.`);
   await session.evaluate(`
     var iframe = document.createElement('iframe');

@@ -4,9 +4,10 @@
 
 #include "components/performance_manager/power/battery_level_provider_chromeos.h"
 
+#include <optional>
+
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager::power {
 
@@ -30,14 +31,14 @@ BatteryLevelProviderChromeOS::Create() {
 
 void BatteryLevelProviderChromeOS::GetBatteryState(
     base::OnceCallback<
-        void(const absl::optional<base::BatteryLevelProvider::BatteryState>&)>
+        void(const std::optional<base::BatteryLevelProvider::BatteryState>&)>
         callback) {
   DCHECK(power_manager_client_);
 
-  const absl::optional<power_manager::PowerSupplyProperties>& power_status =
+  const std::optional<power_manager::PowerSupplyProperties>& power_status =
       power_manager_client_->GetLastStatus();
   if (!power_status) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -48,9 +49,9 @@ void BatteryLevelProviderChromeOS::GetBatteryState(
     state = {
         .battery_count = 0,
         .is_external_power_connected = true,
-        .current_capacity = absl::nullopt,
-        .full_charged_capacity = absl::nullopt,
-        .charge_unit = absl::nullopt,
+        .current_capacity = std::nullopt,
+        .full_charged_capacity = std::nullopt,
+        .charge_unit = std::nullopt,
         // TODO(anthonyvd): This should be the time that the state was last
         // sampled from the system, but PowerManagerClient doesn't yet provide
         // this information.
@@ -61,10 +62,10 @@ void BatteryLevelProviderChromeOS::GetBatteryState(
                             power_status->has_battery_charge_full();
     bool has_charge_in_percent = power_status->has_battery_percent();
 
-    absl::optional<uint64_t> charge;
-    absl::optional<uint64_t> charge_full;
-    absl::optional<base::BatteryLevelProvider::BatteryLevelUnit> charge_unit =
-        absl::nullopt;
+    std::optional<uint64_t> charge;
+    std::optional<uint64_t> charge_full;
+    std::optional<base::BatteryLevelProvider::BatteryLevelUnit> charge_unit =
+        std::nullopt;
 
     // There are 3 ways the power manager could report the battery capacity,
     // affecting how the battery state will be constructed. In order of

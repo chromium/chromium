@@ -133,7 +133,7 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
         << "Connect to " << interface << " " << signal << " failed.";
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
+  raw_ptr<dbus::ObjectProxy> proxy_;
   BurnFinishedHandler burn_finished_handler_;
   BurnProgressUpdateHandler burn_progress_update_handler_;
 

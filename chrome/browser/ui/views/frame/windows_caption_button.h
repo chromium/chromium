@@ -17,8 +17,9 @@
 class BrowserFrameViewWin;
 
 class WindowsCaptionButton : public views::Button {
+  METADATA_HEADER(WindowsCaptionButton, views::Button)
+
  public:
-  METADATA_HEADER(WindowsCaptionButton);
   WindowsCaptionButton(PressedCallback callback,
                        BrowserFrameViewWin* frame_view,
                        ViewID button_type,

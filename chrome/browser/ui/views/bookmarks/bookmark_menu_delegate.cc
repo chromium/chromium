@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -40,6 +41,8 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
@@ -244,7 +247,8 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 
   DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
 
-  std::vector<const BookmarkNode*> selection = {menu_id_to_node_map_[id]};
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selection = {
+      menu_id_to_node_map_[id]};
 
   RecordBookmarkLaunch(location_,
                        profile_metrics::GetBrowserProfileType(profile_));
@@ -423,7 +427,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
     return false;
   }
   const BookmarkNode* node = menu_id_to_node_map_[id];
-  std::vector<const BookmarkNode*> nodes(1, node);
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes(1, node);
   context_menu_ = std::make_unique<BookmarkContextMenu>(
       parent_, browser_, profile_, location_, node->parent(), nodes,
       ShouldCloseOnRemove(node));
@@ -481,7 +485,8 @@ void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
 }
 
 void BookmarkMenuDelegate::WillRemoveBookmarks(
-    const std::vector<const BookmarkNode*>& bookmarks) {
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        bookmarks) {
   DCHECK(!is_mutating_model_);
   is_mutating_model_ = true;  // Set to false in DidRemoveBookmarks().
 
@@ -627,11 +632,17 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
                                      size_t start_child_index,
                                      MenuItemView* menu) {
   DCHECK_LE(start_child_index, parent->children().size());
-  if (parent == GetBookmarkModel()->other_node() &&
-      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+  if (parent == GetBookmarkModel()->other_node()) {
+    ui::ImageModel bookmarks_side_panel_icon =
+        features::IsSidePanelPinningEnabled()
+            ? ui::ImageModel::FromVectorIcon(
+                  kBookmarksSidePanelIcon, ui::kColorMenuIcon,
+                  ui::SimpleMenuModel::kDefaultIconSize)
+            : ui::ImageModel();
     menu->AppendMenuItem(
         IDC_SHOW_BOOKMARK_SIDE_PANEL,
-        l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL));
+        l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL),
+        bookmarks_side_panel_icon);
     if (!parent->children().empty()) {
       menu->AppendSeparator();
     }
@@ -647,7 +658,7 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
       child_menu_item =
           menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()),
                                GetFaviconForNode(GetBookmarkModel(), node));
-      child_menu_item->GetViewAccessibility().OverrideDescription(
+      child_menu_item->GetViewAccessibility().SetDescription(
           url_formatter::FormatUrl(
               node->url(), url_formatter::kFormatUrlOmitDefaults,
               base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));

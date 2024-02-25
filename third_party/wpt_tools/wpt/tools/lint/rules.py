@@ -156,8 +156,10 @@ class MultipleTestharness(Rule):
     name = "MULTIPLE-TESTHARNESS"
     description = "More than one `<script src='/resources/testharness.js'>`"
     to_fix = """
-        ensure each test has only one `<script
-        src='/resources/testharnessreport.js'>` instance
+        Ensure each test has only one `<script
+        src='/resources/testharness.js'>` instance.
+        For `.js` tests, remove `// META: script=/resources/testharness.js`,
+        which wptserve already adds to the boilerplate markup.
     """
 
 
@@ -181,6 +183,12 @@ class MissingTestharnessReport(Rule):
 class MultipleTestharnessReport(Rule):
     name = "MULTIPLE-TESTHARNESSREPORT"
     description = "More than one `<script src='/resources/testharnessreport.js'>`"
+    to_fix = """
+        Ensure each test has only one `<script
+        src='/resources/testharnessreport.js'>` instance.
+        For `.js` tests, remove `// META: script=/resources/testharnessreport.js`,
+        which wptserve already adds to the boilerplate markup.
+    """
 
 
 class VariantMissing(Rule):
@@ -198,7 +206,7 @@ class VariantMissing(Rule):
 class MalformedVariant(Rule):
     name = "MALFORMED-VARIANT"
     description = collapse("""
-        %s `<meta name=variant>` 'content' attribute must be a non empty string
+        %s must be a non empty string
         and start with '?' or '#'
     """)
 
@@ -337,6 +345,23 @@ class TentativeDirectoryName(Rule):
     name = "TENTATIVE-DIRECTORY-NAME"
     description = "Directories for tentative tests must be named exactly 'tentative'"
     to_fix = "rename directory to be called 'tentative'"
+
+
+class InvalidMetaFile(Rule):
+    name = "INVALID-META-FILE"
+    description = "The META.yml is not a YAML file with the expected structure"
+
+
+class InvalidWebFeaturesFile(Rule):
+    name = "INVALID-WEB-FEATURES-FILE"
+    description = "The WEB_FEATURES.yml file contains an invalid structure"
+
+
+class MissingTestInWebFeaturesFile(Rule):
+    name = "MISSING-WEB-FEATURES-FILE"
+    description = collapse("""
+        The WEB_FEATURES.yml file references a test that does not exist: '%s'
+    """)
 
 
 class Regexp(metaclass=abc.ABCMeta):
@@ -502,3 +527,15 @@ class AssertPreconditionRegexp(Regexp):
     file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
     description = "Test-file line has an `assert_precondition(...)` call"
     to_fix = """Replace with `assert_implements` or `assert_implements_optional`"""
+
+
+class HTMLInvalidSyntaxRegexp(Regexp):
+    pattern = (br"<(a|abbr|article|audio|b|bdi|bdo|blockquote|body|button|canvas|caption|cite|code|colgroup|data|datalist|dd|del|details|"
+               br"dfn|dialog|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h[1-6]|head|header|html|i|iframe|ins|kbd|label|legend|li|"
+               br"main|map|mark|menu|meter|nav|noscript|object|ol|optgroup|option|output|p|picture|pre|progress|q|rp|rt|ruby|s|samp|script|"
+               br"search|section|select|slot|small|span|strong|style|sub|summary|sup|table|tbody|td|template|textarea|tfoot|th|thead|time|"
+               br"title|tr|u|ul|var|video)(\s+[^>]+)?\s*/>")
+    name = "HTML INVALID SYNTAX"
+    file_extensions = [".html", ".htm"]
+    description = "Test-file line has a non-void HTML tag with /> syntax"
+    to_fix = """Replace with start tag and end tag"""

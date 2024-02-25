@@ -6,7 +6,6 @@
 
 #include <ostream>
 
-#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 
 namespace network {
@@ -15,7 +14,7 @@ using mojom::CorsError;
 
 using Result = PrivateNetworkAccessCheckResult;
 
-base::StringPiece PrivateNetworkAccessCheckResultToStringPiece(Result result) {
+std::string_view PrivateNetworkAccessCheckResultToStringPiece(Result result) {
   switch (result) {
     case Result::kAllowedMissingClientSecurityState:
       return "allowed-missing-client-security-state";
@@ -51,7 +50,7 @@ std::ostream& operator<<(std::ostream& out,
   return out << PrivateNetworkAccessCheckResultToStringPiece(result);
 }
 
-absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
+std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     Result result) {
   switch (result) {
     case Result::kAllowedMissingClientSecurityState:
@@ -61,7 +60,7 @@ absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kAllowedByTargetIpAddressSpace:
     case Result::kAllowedByPolicyPreflightWarn:
     case Result::kAllowedPotentiallyTrustworthySameOrigin:
-      return absl::nullopt;
+      return std::nullopt;
     case Result::kBlockedByLoadOption:
       // TODO(https:/crbug.com/1254689): Return better error than this, which
       // does not fit.

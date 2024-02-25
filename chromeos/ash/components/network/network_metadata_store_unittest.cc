@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/network/network_metadata_store.h"
+
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -16,12 +19,12 @@
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler_impl.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_metadata_observer.h"
-#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -33,7 +36,6 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -116,6 +118,7 @@ class TestNetworkMetadataObserver : public NetworkMetadataObserver {
 class NetworkMetadataStoreTest : public ::testing::Test {
  public:
   NetworkMetadataStoreTest() {
+    LoginState::Initialize();
     network_configuration_handler_ =
         NetworkConfigurationHandler::InitializeForTest(
             helper_.network_state_handler(),
@@ -179,6 +182,7 @@ class NetworkMetadataStoreTest : public ::testing::Test {
     scoped_user_manager_.reset();
     network_configuration_handler_.reset();
     NetworkHandler::Shutdown();
+    LoginState::Shutdown();
   }
 
   void SetUp() override {
@@ -267,10 +271,8 @@ class NetworkMetadataStoreTest : public ::testing::Test {
     AssertCustomApnListFirstValue();
   }
 
-  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
-      primary_user_;
-  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
-      secondary_user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged> secondary_user_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -307,7 +309,7 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandler>
@@ -492,7 +494,7 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationRemoved) {
   ASSERT_TRUE(metadata_store()->GetIsConfiguredBySync(kGuid));
 
   network_configuration_handler()->RemoveConfiguration(
-      service_path, /*remove_confirmer=*/absl::nullopt, base::DoNothing(),
+      service_path, /*remove_confirmer=*/std::nullopt, base::DoNothing(),
       base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
@@ -509,7 +511,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks) {
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
   UserManager()->SetIsCurrentUserNew(true);
-  UserManager()->set_is_current_user_owner(true);
+  UserManager()->SetOwnerId(primary_user_->GetAccountId());
   metadata_store()->LoggedInStateChanged();
   ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
@@ -524,7 +526,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_EnterpriseEnrolled) {
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
   UserManager()->SetIsCurrentUserNew(true);
-  UserManager()->set_is_current_user_owner(true);
+  UserManager()->SetOwnerId(primary_user_->GetAccountId());
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
@@ -538,7 +540,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotOwner) {
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
   UserManager()->SetIsCurrentUserNew(true);
-  UserManager()->set_is_current_user_owner(false);
+  UserManager()->ResetOwnerId();
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
@@ -552,7 +554,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotFirstLogin) {
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
   UserManager()->SetIsCurrentUserNew(false);
-  UserManager()->set_is_current_user_owner(true);
+  UserManager()->SetOwnerId(primary_user_->GetAccountId());
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
@@ -707,7 +709,7 @@ TEST_F(NetworkMetadataStoreTest, SetTrafficCountersAutoResetDay) {
   EXPECT_EQ(nullptr, value);
 
   metadata_store()->SetDayOfTrafficCountersAutoReset(
-      kGuid, /*day=*/absl::optional<int>(5));
+      kGuid, /*day=*/std::optional<int>(5));
   base::RunLoop().RunUntilIdle();
 
   value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
@@ -715,7 +717,7 @@ TEST_F(NetworkMetadataStoreTest, SetTrafficCountersAutoResetDay) {
   EXPECT_EQ(5, value->GetInt());
 
   metadata_store()->SetDayOfTrafficCountersAutoReset(
-      kGuid, /*day=*/absl::optional<int>(31));
+      kGuid, /*day=*/std::optional<int>(31));
   base::RunLoop().RunUntilIdle();
 
   value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
@@ -723,7 +725,7 @@ TEST_F(NetworkMetadataStoreTest, SetTrafficCountersAutoResetDay) {
   EXPECT_EQ(31, value->GetInt());
 
   metadata_store()->SetDayOfTrafficCountersAutoReset(kGuid,
-                                                     /*day=*/absl::nullopt);
+                                                     /*day=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
@@ -892,7 +894,7 @@ TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
   base::test::ScopedFeatureList enabled_feature_list;
   enabled_feature_list.InitAndEnableFeature(
       ash::features::kSuppressTextMessages);
-
+  base::HistogramTester histogram_tester;
   // Case: Suppression state should be Allow when user text message
   // suppression state has never been set.
   EXPECT_EQ(
@@ -906,6 +908,16 @@ TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
   EXPECT_EQ(
       UserTextMessageSuppressionState::kSuppress,
       metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
+  histogram_tester.ExpectBucketCount(
+      CellularNetworkMetricsLogger::
+          kUserAllowTextMessagesSuppressionStateHistogram,
+      CellularNetworkMetricsLogger::UserTextMessageSuppressionState::
+          kTextMessagesSuppress,
+      1u);
+  histogram_tester.ExpectTotalCount(
+      CellularNetworkMetricsLogger::
+          kUserAllowTextMessagesSuppressionStateHistogram,
+      1u);
 
   // Case: Suppression state should be Allow when the user text message
   // suppression state was set to Allow.
@@ -914,6 +926,16 @@ TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
   EXPECT_EQ(
       UserTextMessageSuppressionState::kAllow,
       metadata_store()->GetUserTextMessageSuppressionState(kCellularkGuid));
+  histogram_tester.ExpectBucketCount(
+      CellularNetworkMetricsLogger::
+          kUserAllowTextMessagesSuppressionStateHistogram,
+      CellularNetworkMetricsLogger::UserTextMessageSuppressionState::
+          kTextMessagesAllow,
+      1u);
+  histogram_tester.ExpectTotalCount(
+      CellularNetworkMetricsLogger::
+          kUserAllowTextMessagesSuppressionStateHistogram,
+      2u);
 }
 
 }  // namespace ash

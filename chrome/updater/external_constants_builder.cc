@@ -5,6 +5,7 @@
 #include "chrome/updater/external_constants_builder.h"
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -43,9 +43,9 @@ std::vector<std::string> StringVectorFromGURLVector(
 }  // namespace
 
 ExternalConstantsBuilder::~ExternalConstantsBuilder() {
-  LOG_IF(WARNING, !written_) << "An ExternalConstantsBuilder with "
-                             << overrides_.size() << " entries is being "
-                             << "discarded without being written to a file.";
+  LOG_IF(WARNING, !written_)
+      << "An ExternalConstantsBuilder with " << overrides_.size()
+      << " entries is being " << "discarded without being written to a file.";
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetUpdateURL(
@@ -168,7 +168,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearIdleCheckPeriod() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetMachineManaged(
-    const absl::optional<bool>& is_managed_device) {
+    const std::optional<bool>& is_managed_device) {
   if (is_managed_device.has_value()) {
     overrides_.Set(kDevOverrideKeyManagedDevice, is_managed_device.value());
   }
@@ -181,8 +181,19 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearMachineManaged() {
   return *this;
 }
 
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetEnableDiffUpdates(
+    bool enable_diffs) {
+  overrides_.Set(kDevOverrideKeyEnableDiffUpdates, enable_diffs);
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearEnableDiffUpdates() {
+  overrides_.Remove(kDevOverrideKeyEnableDiffUpdates);
+  return *this;
+}
+
 bool ExternalConstantsBuilder::Overwrite() {
-  const absl::optional<base::FilePath> override_path =
+  const std::optional<base::FilePath> override_path =
       GetOverrideFilePath(GetUpdaterScope());
   if (!override_path) {
     LOG(ERROR) << "Can't find base directory; can't save constant overrides.";
@@ -202,11 +213,13 @@ bool ExternalConstantsBuilder::Modify() {
   scoped_refptr<ExternalConstantsOverrider> verifier =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
-  if (!verifier)
+  if (!verifier) {
     return Overwrite();
+  }
 
-  if (!overrides_.contains(kDevOverrideKeyUrl))
+  if (!overrides_.contains(kDevOverrideKeyUrl)) {
     SetUpdateURL(StringVectorFromGURLVector(verifier->UpdateURL()));
+  }
   if (!overrides_.contains(kDevOverrideKeyCrashUploadUrl)) {
     SetCrashUploadURL(verifier->CrashUploadURL().possibly_invalid_spec());
   }
@@ -214,23 +227,32 @@ bool ExternalConstantsBuilder::Modify() {
     SetDeviceManagementURL(
         verifier->DeviceManagementURL().possibly_invalid_spec());
   }
-  if (!overrides_.contains(kDevOverrideKeyUseCUP))
+  if (!overrides_.contains(kDevOverrideKeyUseCUP)) {
     SetUseCUP(verifier->UseCUP());
-  if (!overrides_.contains(kDevOverrideKeyInitialDelay))
+  }
+  if (!overrides_.contains(kDevOverrideKeyInitialDelay)) {
     SetInitialDelay(verifier->InitialDelay());
-  if (!overrides_.contains(kDevOverrideKeyServerKeepAliveSeconds))
+  }
+  if (!overrides_.contains(kDevOverrideKeyServerKeepAliveSeconds)) {
     SetServerKeepAliveTime(verifier->ServerKeepAliveTime());
-  if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat))
+  }
+  if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat)) {
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
-  if (!overrides_.contains(kDevOverrideKeyGroupPolicies))
+  }
+  if (!overrides_.contains(kDevOverrideKeyGroupPolicies)) {
     SetGroupPolicies(verifier->GroupPolicies());
-  if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout))
+  }
+  if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout)) {
     SetOverinstallTimeout(verifier->OverinstallTimeout());
+  }
   if (!overrides_.contains(kDevOverrideKeyIdleCheckPeriodSeconds)) {
     SetIdleCheckPeriod(verifier->IdleCheckPeriod());
   }
   if (!overrides_.contains(kDevOverrideKeyManagedDevice)) {
     SetMachineManaged(verifier->IsMachineManaged());
+  }
+  if (!overrides_.contains(kDevOverrideKeyEnableDiffUpdates)) {
+    SetEnableDiffUpdates(verifier->EnableDiffUpdates());
   }
 
   return Overwrite();

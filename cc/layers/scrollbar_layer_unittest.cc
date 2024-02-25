@@ -12,7 +12,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/append_quads_data.h"
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/scrollbar_layer_base.h"
@@ -42,6 +42,8 @@
 #include "components/viz/test/test_raster_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::Bool;
 
 namespace cc {
 
@@ -102,14 +104,17 @@ class FakeResourceTrackingUIResourceManager : public UIResourceManager {
 class BaseScrollbarLayerTest : public testing::Test {
  public:
   explicit BaseScrollbarLayerTest(
-      LayerTreeSettings::ScrollbarAnimator animator) {
+      LayerTreeSettings::ScrollbarAnimator animator,
+      bool enable_fluent_overlay_scrollbar = false) {
     layer_tree_settings_.single_thread_proxy_scheduler = false;
     layer_tree_settings_.use_zero_copy = true;
     layer_tree_settings_.scrollbar_animator = animator;
     layer_tree_settings_.scrollbar_fade_delay = base::Milliseconds(20);
     layer_tree_settings_.scrollbar_fade_duration = base::Milliseconds(20);
+    layer_tree_settings_.enable_fluent_overlay_scrollbar =
+        enable_fluent_overlay_scrollbar;
 
-    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
+    animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
     LayerTreeHost::InitParams params;
     params.client = &fake_client_;
@@ -150,15 +155,18 @@ class ScrollbarLayerTest : public BaseScrollbarLayerTest {
       : BaseScrollbarLayerTest(LayerTreeSettings::ANDROID_OVERLAY) {}
 };
 
-class AuraScrollbarLayerTest : public BaseScrollbarLayerTest {
+class AuraScrollbarLayerTest : public BaseScrollbarLayerTest,
+                               public testing::WithParamInterface<bool> {
  public:
-  AuraScrollbarLayerTest()
-      : BaseScrollbarLayerTest(LayerTreeSettings::AURA_OVERLAY) {}
+  explicit AuraScrollbarLayerTest(
+      bool enable_fluent_overlay_scrollbar = GetParam())
+      : BaseScrollbarLayerTest(LayerTreeSettings::AURA_OVERLAY,
+                               enable_fluent_overlay_scrollbar) {}
 };
 
-class FakePaintedOverlayScrollbar : public FakeScrollbar {
+class FakeNinePatchThumbScrollbar : public FakeScrollbar {
  public:
-  FakePaintedOverlayScrollbar() {
+  FakeNinePatchThumbScrollbar() {
     set_should_paint(true);
     set_has_thumb(true);
     set_is_overlay(true);
@@ -172,18 +180,18 @@ class FakePaintedOverlayScrollbar : public FakeScrollbar {
   }
 
  private:
-  ~FakePaintedOverlayScrollbar() override = default;
+  ~FakeNinePatchThumbScrollbar() override = default;
 };
 
-// Test that a painted overlay scrollbar will repaint and recrate its resource
+// Test that a nine-patch-thumb scrollbar will repaint and recrate its resource
 // after its been disposed, even if Blink doesn't think it requires a repaint.
 // crbug.com/704656.
-TEST_F(ScrollbarLayerTest, RepaintOverlayWhenResourceDisposed) {
+TEST_F(ScrollbarLayerTest, RepaintNinePatchWhenResourceDisposed) {
   scoped_refptr<Layer> layer_tree_root = Layer::Create();
   scoped_refptr<Layer> content_layer = Layer::Create();
-  auto fake_scrollbar = base::MakeRefCounted<FakePaintedOverlayScrollbar>();
-  scoped_refptr<PaintedOverlayScrollbarLayer> scrollbar_layer =
-      PaintedOverlayScrollbarLayer::Create(fake_scrollbar);
+  auto fake_scrollbar = base::MakeRefCounted<FakeNinePatchThumbScrollbar>();
+  scoped_refptr<NinePatchThumbScrollbarLayer> scrollbar_layer =
+      NinePatchThumbScrollbarLayer::Create(fake_scrollbar);
   scrollbar_layer->SetScrollElementId(layer_tree_root->element_id());
 
   // Setup.
@@ -313,12 +321,12 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   scoped_refptr<PaintedScrollbarLayer> painted_scrollbar_layer =
       PaintedScrollbarLayer::Create(base::MakeRefCounted<FakeScrollbar>());
   painted_scrollbar_layer->SetScrollElementId(layer_a->element_id());
-  scoped_refptr<PaintedOverlayScrollbarLayer> painted_overlay_scrollbar_layer =
-      PaintedOverlayScrollbarLayer::Create(
+  scoped_refptr<NinePatchThumbScrollbarLayer> nine_patch_thumb_scrollbar_layer =
+      NinePatchThumbScrollbarLayer::Create(
           base::MakeRefCounted<FakeNinePatchScrollbar>());
-  painted_overlay_scrollbar_layer->SetScrollElementId(layer_a->element_id());
+  nine_patch_thumb_scrollbar_layer->SetScrollElementId(layer_a->element_id());
   scoped_refptr<SolidColorScrollbarLayer> solid_color_scrollbar_layer =
-      SolidColorScrollbarLayer::Create(ScrollbarOrientation::VERTICAL, 1, 1,
+      SolidColorScrollbarLayer::Create(ScrollbarOrientation::kVertical, 1, 1,
                                        false);
   solid_color_scrollbar_layer->SetScrollElementId(layer_a->element_id());
 
@@ -326,7 +334,7 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   layer_tree_root->AddChild(layer_a);
   layer_tree_root->AddChild(layer_b);
   layer_tree_root->AddChild(painted_scrollbar_layer);
-  layer_tree_root->AddChild(painted_overlay_scrollbar_layer);
+  layer_tree_root->AddChild(nine_patch_thumb_scrollbar_layer);
   layer_tree_root->AddChild(solid_color_scrollbar_layer);
 
   layer_tree_host_->UpdateLayers();
@@ -337,10 +345,10 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
       static_cast<ScrollbarLayerImplBase*>(
           layer_impl_tree_root->layer_tree_impl()->LayerById(
               painted_scrollbar_layer->id()));
-  ScrollbarLayerImplBase* painted_overlay_scrollbar_layer_impl =
+  ScrollbarLayerImplBase* nine_patch_thumb_scrollbar_layer_impl =
       static_cast<ScrollbarLayerImplBase*>(
           layer_impl_tree_root->layer_tree_impl()->LayerById(
-              painted_overlay_scrollbar_layer->id()));
+              nine_patch_thumb_scrollbar_layer->id()));
   ScrollbarLayerImplBase* solid_color_scrollbar_layer_impl =
       static_cast<ScrollbarLayerImplBase*>(
           layer_impl_tree_root->layer_tree_impl()->LayerById(
@@ -348,13 +356,13 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
 
   ASSERT_EQ(painted_scrollbar_layer_impl->scroll_element_id_,
             layer_a->element_id());
-  ASSERT_EQ(painted_overlay_scrollbar_layer_impl->scroll_element_id_,
+  ASSERT_EQ(nine_patch_thumb_scrollbar_layer_impl->scroll_element_id_,
             layer_a->element_id());
   ASSERT_EQ(solid_color_scrollbar_layer_impl->scroll_element_id_,
             layer_a->element_id());
 
   painted_scrollbar_layer->SetScrollElementId(layer_b->element_id());
-  painted_overlay_scrollbar_layer->SetScrollElementId(layer_b->element_id());
+  nine_patch_thumb_scrollbar_layer->SetScrollElementId(layer_b->element_id());
   solid_color_scrollbar_layer->SetScrollElementId(layer_b->element_id());
 
   ASSERT_TRUE(layer_tree_host_->needs_commit());
@@ -375,11 +383,12 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
     layer_tree_host_->host_impl()->FinishCommit(*commit_state, unsafe_state);
     completion_event->Signal();
   }
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_EQ(painted_scrollbar_layer_impl->scroll_element_id_,
             layer_b->element_id());
-  EXPECT_EQ(painted_overlay_scrollbar_layer_impl->scroll_element_id_,
+  EXPECT_EQ(nine_patch_thumb_scrollbar_layer_impl->scroll_element_id_,
             layer_b->element_id());
   EXPECT_EQ(solid_color_scrollbar_layer_impl->scroll_element_id_,
             layer_b->element_id());
@@ -570,7 +579,7 @@ TEST_F(ScrollbarLayerTest, ThumbRectForOverlayLeftSideVerticalScrollbar) {
   // Create an overlay left side vertical scrollbar.
   scoped_refptr<FakePaintedScrollbarLayer> scrollbar_layer =
       FakePaintedScrollbarLayer::Create(false, true,
-                                        ScrollbarOrientation::VERTICAL, true,
+                                        ScrollbarOrientation::kVertical, true,
                                         true, root_layer->element_id());
   root_layer->SetScrollable(gfx::Size(20, 50));
   root_layer->SetBounds(gfx::Size(50, 100));
@@ -620,7 +629,7 @@ TEST_F(ScrollbarLayerTest, SolidColorDrawQuads) {
     scoped_refptr<Layer> root = Layer::Create();
     scoped_refptr<Layer> child = Layer::Create();
     scoped_refptr<ScrollbarLayerBase> scrollbar_layer =
-        SolidColorScrollbarLayer::Create(ScrollbarOrientation::HORIZONTAL,
+        SolidColorScrollbarLayer::Create(ScrollbarOrientation::kHorizontal,
                                          kThumbThickness, kTrackStart, false);
     root->AddChild(child);
     root->AddChild(scrollbar_layer);
@@ -690,7 +699,7 @@ TEST_F(ScrollbarLayerTest, LayerDrivenSolidColorDrawQuads) {
   scoped_refptr<Layer> child1 = Layer::Create();
   const bool kIsLeftSideVerticalScrollbar = false;
   scoped_refptr<SolidColorScrollbarLayer> child2 =
-      SolidColorScrollbarLayer::Create(ScrollbarOrientation::HORIZONTAL,
+      SolidColorScrollbarLayer::Create(ScrollbarOrientation::kHorizontal,
                                        kThumbThickness, kTrackStart,
                                        kIsLeftSideVerticalScrollbar);
   child2->SetScrollElementId(scroll_layer->element_id());
@@ -746,7 +755,7 @@ TEST_F(ScrollbarLayerTest, ScrollbarLayerOpacity) {
   scoped_refptr<SolidColorScrollbarLayer> scrollbar_layer;
   const bool kIsLeftSideVerticalScrollbar = false;
   scrollbar_layer = SolidColorScrollbarLayer::Create(
-      ScrollbarOrientation::HORIZONTAL, kThumbThickness, kTrackStart,
+      ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
       kIsLeftSideVerticalScrollbar);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
   scrollbar_layer->SetElementId(ElementId(300));
@@ -808,7 +817,7 @@ TEST_F(ScrollbarLayerTest, ScrollbarLayerOpacity) {
   EXPECT_EQ(node->opacity, 0.25f);
 }
 
-TEST_F(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
+TEST_P(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   // Pushing changed bounds of scroll layer can lead to calling
   // OnOpacityAnimated on scrollbar layer which means OnOpacityAnimated should
   // be independent of scrollbar layer's properties as scrollbar layer can push
@@ -822,7 +831,7 @@ TEST_F(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   scoped_refptr<Layer> child1 = Layer::Create();
   const bool kIsLeftSideVerticalScrollbar = false;
   scoped_refptr<SolidColorScrollbarLayer> scrollbar_layer =
-      SolidColorScrollbarLayer::Create(ScrollbarOrientation::HORIZONTAL,
+      SolidColorScrollbarLayer::Create(ScrollbarOrientation::kHorizontal,
                                        kThumbThickness, kTrackStart,
                                        kIsLeftSideVerticalScrollbar);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
@@ -851,7 +860,10 @@ TEST_F(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   const EffectNode* node =
       host_impl->active_tree()->property_trees()->effect_tree().Node(
           scrollbar_layer->effect_tree_index());
-  EXPECT_EQ(node->opacity, 1.f);
+  // If Fluent overlay scrollbars are active, changing the bounds scrollable
+  // content shouldn't make the scrollbars appear.
+  EXPECT_EQ(node->opacity,
+            layer_tree_settings_.enable_fluent_overlay_scrollbar ? 0.f : 1.f);
 }
 
 TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
@@ -868,7 +880,7 @@ TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
 
   SolidColorScrollbarLayerImpl* scrollbar_layer =
       impl.AddLayer<SolidColorScrollbarLayerImpl>(
-          ScrollbarOrientation::HORIZONTAL, kThumbThickness, kTrackStart,
+          ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
           kIsLeftSideVerticalScrollbar);
 
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
@@ -908,7 +920,7 @@ TEST_F(ScrollbarLayerTest, LayerChangesAffectingScrollbarGeometries) {
   const bool kIsLeftSideVerticalScrollbar = false;
   SolidColorScrollbarLayerImpl* scrollbar_layer =
       impl.AddLayer<SolidColorScrollbarLayerImpl>(
-          ScrollbarOrientation::HORIZONTAL, kThumbThickness, kTrackStart,
+          ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
           kIsLeftSideVerticalScrollbar);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
   EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
@@ -984,7 +996,7 @@ TEST_F(ScrollbarLayerTest, UpdateScrollbarGeometriesScrollNodeOnContainer) {
   impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
 }
 
-TEST_F(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
+TEST_P(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
   // Scrollbar Layer can be created after SetScrollable is called and in a
   // separate commit. Ensure we do not missing the DidRequestShowFromMainThread
   // call.
@@ -1011,7 +1023,7 @@ TEST_F(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
   host_impl->ActivateSyncTree();
 
   scoped_refptr<SolidColorScrollbarLayer> scrollbar_layer =
-      SolidColorScrollbarLayer::Create(ScrollbarOrientation::HORIZONTAL,
+      SolidColorScrollbarLayer::Create(ScrollbarOrientation::kHorizontal,
                                        kThumbThickness, kTrackStart,
                                        kIsLeftSideVerticalScrollbar);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
@@ -1042,10 +1054,10 @@ class ScrollbarLayerSolidColorThumbTest : public testing::Test {
     const bool kIsLeftSideVerticalScrollbar = false;
 
     horizontal_scrollbar_layer_ = SolidColorScrollbarLayerImpl::Create(
-        host_impl_->active_tree(), 1, ScrollbarOrientation::HORIZONTAL,
+        host_impl_->active_tree(), 1, ScrollbarOrientation::kHorizontal,
         kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar);
     vertical_scrollbar_layer_ = SolidColorScrollbarLayerImpl::Create(
-        host_impl_->active_tree(), 2, ScrollbarOrientation::VERTICAL,
+        host_impl_->active_tree(), 2, ScrollbarOrientation::kVertical,
         kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar);
   }
 
@@ -1137,7 +1149,7 @@ class ScrollbarLayerTestResourceCreationAndRelease : public ScrollbarLayerTest {
       const int kTrackStart = 0;
       const bool kIsLeftSideVerticalScrollbar = false;
       scrollbar_layer = SolidColorScrollbarLayer::Create(
-          ScrollbarOrientation::HORIZONTAL, kThumbThickness, kTrackStart,
+          ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
           kIsLeftSideVerticalScrollbar);
     } else {
       auto scrollbar = base::MakeRefCounted<FakeScrollbar>();
@@ -1504,5 +1516,7 @@ TEST_F(ScaledScrollbarLayerTestScaledRasterization, TestLostPrecisionInClip) {
   TestScale(gfx::Rect(0, 1240, 1333, 15), 2.7754839f);
   TestScale(gfx::Rect(0, 1240, 677, 15), 2.46677136f);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AuraScrollbarLayerTest, Bool());
 
 }  // namespace cc

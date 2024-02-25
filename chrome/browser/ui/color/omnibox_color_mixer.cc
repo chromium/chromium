@@ -35,6 +35,8 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
 
   mixer[kColorOmniboxText] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxTextDimmed] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorOmniboxSelectionBackground] = {ui::kColorSysStateTextHighlight};
+  mixer[kColorOmniboxSelectionForeground] = {ui::kColorSysStateOnTextHighlight};
 
   // In high-contrast mode, text colors have selected variants. This is because
   // the selected suggestion has a high-contrast background, so when the
@@ -68,8 +70,6 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
   }
 
   mixer[kColorPageActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
-  mixer[kColorPageActionIconPressed] = {
-      ui::kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorPageInfoBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorPageInfoIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
@@ -127,21 +127,58 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxResultsButtonIcon] = {kColorOmniboxResultsUrl};
   mixer[kColorOmniboxResultsButtonIconSelected] = {
       kColorOmniboxResultsButtonIcon};
-  mixer[kColorOmniboxResultsButtonInkDrop] = {ui::kColorSysStateHoverOnSubtle};
-  mixer[kColorOmniboxResultsButtonInkDropSelected] = {
+  // Action chip hover & select colors for hovered suggestion rows (e.g. via
+  // mouse cursor).
+  mixer[kColorOmniboxResultsButtonInkDropRowHovered] = {
+      ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorOmniboxResultsButtonInkDropSelectedRowHovered] = {
+      ui::kColorSysStateRippleNeutralOnSubtle};
+  // Action chip hover & select colors for selected suggestion rows (e.g. via
+  // arrow keys).
+  mixer[kColorOmniboxResultsButtonInkDropRowSelected] = {
+      ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorOmniboxResultsButtonInkDropSelectedRowSelected] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
 
   // Update starter pack icon color.
   mixer[kColorOmniboxResultsStarterPackIcon] = {ui::kColorSysPrimary};
 }
 
+// Apply fallback Omnibox color mappings for CR2023 clients who are not eligible
+// for the usual color treatment (due to using high-contrast mode and/or a
+// custom theme).
+void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
+                                      const ui::ColorProviderKey& key) {
+  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kExpandedStateColors)) {
+    return;
+  }
+
+  // Action chip hover & select colors for hovered suggestion rows (e.g. via
+  // mouse cursor).
+  mixer[kColorOmniboxResultsButtonInkDropRowHovered] = {ui::SetAlpha(
+      kColorOmniboxResultsButtonInkDrop, std::ceil(0.10f * 255.0f))};
+  mixer[kColorOmniboxResultsButtonInkDropSelectedRowHovered] = {ui::SetAlpha(
+      kColorOmniboxResultsButtonInkDrop, std::ceil(0.16f * 255.0f))};
+  // Action chip hover & select colors for selected suggestion rows (e.g. via
+  // arrow keys).
+  mixer[kColorOmniboxResultsButtonInkDropRowSelected] = {ui::SetAlpha(
+      kColorOmniboxResultsButtonInkDropSelected, std::ceil(0.10f * 255.0f))};
+  mixer[kColorOmniboxResultsButtonInkDropSelectedRowSelected] = {ui::SetAlpha(
+      kColorOmniboxResultsButtonInkDropSelected, std::ceil(0.16f * 255.0f))};
+}
+
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.
 void ApplyOmniboxCR2023Colors(ui::ColorMixer& mixer,
                               const ui::ColorProviderKey& key) {
-  // Do not apply CR2023 Omnibox colors to clients using high-contrast
-  // mode or a custom theme.
-  // TODO(khalidpeer): Roll out CR2023 color updates for high-contrast clients.
-  // TODO(khalidpeer): Roll out CR2023 color updates for themed clients.
+  ApplyOmniboxCR2023FallbackColors(mixer, key);
+
+  // Do not apply the full set of CR2023 Omnibox colors to clients using
+  // high-contrast mode or a custom theme.
+  // TODO(khalidpeer): Roll out full set of CR2023 color updates for
+  //   high-contrast clients.
+  // TODO(khalidpeer): Roll out full set of CR2023 color updates for themed
+  //   clients.
   if (ShouldApplyHighContrastColors(key) || key.custom_theme) {
     return;
   }
@@ -190,6 +227,12 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
                                  gfx::kGoogleGrey100, kColorOmniboxResultsUrl);
   mixer[kColorOmniboxKeywordSeparator] = {kColorOmniboxText};
 
+  // Omnibox highlight colors.
+  mixer[kColorOmniboxSelectionBackground] = {
+      ui::kColorTextfieldSelectionBackground};
+  mixer[kColorOmniboxSelectionForeground] = {
+      ui::kColorTextfieldSelectionForeground};
+
   // Bubble outline colors.
   mixer[kColorOmniboxBubbleOutline] = ui::SelectBasedOnDarkInput(
       kColorToolbarBackgroundSubtleEmphasis, gfx::kGoogleGrey100,
@@ -223,7 +266,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
     const auto results_icon = [contrast_ratio](ui::ColorId text_id,
                                                ui::ColorId background_id) {
       return ui::BlendForMinContrast(ui::DeriveDefaultIconColor(text_id),
-                                     background_id, absl::nullopt,
+                                     background_id, std::nullopt,
                                      contrast_ratio);
     };
     mixer[kColorOmniboxResultsIcon] =
@@ -232,7 +275,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
         results_icon(kColorOmniboxResultsTextSelected,
                      kColorOmniboxResultsBackgroundSelected);
     mixer[kColorOmniboxResultsStarterPackIcon] = ui::BlendForMinContrast(
-        gfx::kGoogleBlue600, kColorOmniboxResultsBackground, absl::nullopt,
+        gfx::kGoogleBlue600, kColorOmniboxResultsBackground, std::nullopt,
         color_utils::kMinimumVisibleContrastRatio);
   }
 
@@ -243,7 +286,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
           return ui::BlendForMinContrast(
               foreground_id, foreground_id,
               ui::BlendForMinContrast(background_id, background_id,
-                                      absl::nullopt, contrast_ratio),
+                                      std::nullopt, contrast_ratio),
               contrast_ratio);
         };
     mixer[kColorOmniboxResultsTextDimmed] = blend_with_clamped_contrast(
@@ -264,7 +307,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
           // Like kColorAlertHighSeverity, but toggled on `dark_selector`.
           ui::SelectBasedOnDarkInput(dark_selector, gfx::kGoogleRed300,
                                      gfx::kGoogleRed600),
-          background, absl::nullopt, contrast_ratio);
+          background, std::nullopt, contrast_ratio);
     };
     const auto positive_color = [contrast_ratio](
                                     ui::ColorId background,
@@ -273,7 +316,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
           // Like kColorAlertLowSeverity, but toggled on `dark_selector`.
           ui::SelectBasedOnDarkInput(dark_selector, gfx::kGoogleGreen300,
                                      gfx::kGoogleGreen700),
-          background, absl::nullopt, contrast_ratio);
+          background, std::nullopt, contrast_ratio);
     };
     const auto secondary_color = [contrast_ratio](
                                      ui::ColorId background,
@@ -287,7 +330,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
                                          SK_ColorWHITE),
               ui::SelectBasedOnDarkInput(dark_selector, gfx::kGoogleGrey200,
                                          gfx::kGoogleGrey900)),
-          background, absl::nullopt, contrast_ratio);
+          background, std::nullopt, contrast_ratio);
     };
     const auto url_color = [contrast_ratio](ui::ColorId background,
                                             ui::ColorTransform dark_selector) {
@@ -327,7 +370,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       return ui::BlendForMinContrast(
           ui::SelectBasedOnDarkInput(kColorToolbarBackgroundSubtleEmphasis,
                                      dark_input, light_input),
-          kColorToolbarBackgroundSubtleEmphasisHovered, absl::nullopt,
+          kColorToolbarBackgroundSubtleEmphasisHovered, std::nullopt,
           contrast_ratio);
     };
 
@@ -372,7 +415,6 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorPageInfoIconPressed] = {
       ui::SetAlpha(kColorOmniboxText, std::ceil(0.16f * 255.0f))};
   mixer[kColorPageActionIconHover] = {kColorPageInfoIconHover};
-  mixer[kColorPageActionIconPressed] = {kColorPageInfoIconPressed};
   mixer[kColorPageActionIcon] = {kColorOmniboxResultsIcon};
 
   // Override omnibox colors per CR2023 spec.

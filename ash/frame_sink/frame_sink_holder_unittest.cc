@@ -68,6 +68,8 @@ class TestFrameFactory {
     return frame;
   }
 
+  void OnFirstFrameRequested() {}
+
   void SetFrameResources(std::vector<viz::ResourceId> frame_resource) {
     latest_frame_resources_ = std::move(frame_resource);
   }
@@ -112,6 +114,8 @@ class FrameSinkHolderTest : public AshTestBase {
     frame_sink_holder_ = std::make_unique<FrameSinkHolder>(
         std::move(layer_tree_frame_sink),
         base::BindRepeating(&TestFrameFactory::CreateCompositorFrame,
+                            base::Unretained(frame_factory_.get())),
+        base::BindRepeating(&TestFrameFactory::OnFirstFrameRequested,
                             base::Unretained(frame_factory_.get())));
 
     holder_weak_ptr_ = frame_sink_holder_->GetWeakPtr();
@@ -125,7 +129,7 @@ class FrameSinkHolderTest : public AshTestBase {
   // holder did not schedule a delete task, it will get destroyed once we
   // delete the root_window of `host_window_`.
   std::unique_ptr<FrameSinkHolder> frame_sink_holder_;
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> host_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
 
   // Will be used to access the frame_sink_holder once we pass the
   // ownership of `frame_sink_holder_` to
@@ -136,7 +140,7 @@ class FrameSinkHolderTest : public AshTestBase {
   std::unique_ptr<TestFrameFactory> frame_factory_;
 
   // Keeping a reference to be used in tests.
-  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged>
       layer_tree_frame_sink_;  // no owned
 };
 

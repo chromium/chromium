@@ -42,7 +42,9 @@
       initWithStyle:ChromeTableViewStyle()];
 
   self.mediator = [[AddressBarPreferenceMediator alloc]
-      initWithPrefService:self.browser->GetBrowserState()->GetPrefs()];
+      initWithOriginalPrefService:self.browser->GetBrowserState()
+                                      ->GetOriginalChromeBrowserState()
+                                      ->GetPrefs()];
 
   self.mediator.consumer = self.viewController;
 

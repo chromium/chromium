@@ -27,9 +27,7 @@ import java.util.Set;
  * Thread safety: This object should only be accessed on a single thread at any time.
  */
 public class InstalledWebappDataRegister {
-    /**
-     * The shared preferences file name. If you modify this you'll have to migrate old data.
-     */
+    /** The shared preferences file name. If you modify this you'll have to migrate old data. */
     private static final String PREFS_FILE = "trusted_web_activity_client_apps";
 
     /**
@@ -44,8 +42,9 @@ public class InstalledWebappDataRegister {
     /** Creates a InstalledWebappDataRegister. */
     public InstalledWebappDataRegister() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
-                    PREFS_FILE, Context.MODE_PRIVATE);
+            mPreferences =
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         }
 
         // Trigger a Preferences read in a background thread to try to load the Preferences file
@@ -109,17 +108,15 @@ public class InstalledWebappDataRegister {
         return getUids().contains(String.valueOf(uid));
     }
 
-    /**
-     * Gets the application name that was previously registered for the uid.
-     */
-    /* package */ @Nullable String getAppNameForRegisteredUid(int uid) {
+    /** Gets the application name that was previously registered for the uid. */
+    /* package */ @Nullable
+    String getAppNameForRegisteredUid(int uid) {
         return mPreferences.getString(createAppNameKey(uid), null);
     }
 
-    /**
-     * Gets the package name that was previously registered for the uid.
-     */
-    /* package */ @Nullable String getPackageNameForRegisteredUid(int uid) {
+    /** Gets the package name that was previously registered for the uid. */
+    /* package */ @Nullable
+    String getPackageNameForRegisteredUid(int uid) {
         return mPreferences.getString(createPackageNameKey(uid), null);
     }
 

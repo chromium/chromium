@@ -78,8 +78,7 @@ class AffiliatedInvalidationServiceProviderImpl
   // Destroy the device-global invalidation service, if any.
   void DestroyDeviceInvalidationService();
 
-  // Initializes and returns either TiclInvalidationService or
-  // FCMInvalidationService depending on the feature kPolicyFcmInvalidations.
+  // Initializes and returns an `InvalidationService`.
   std::unique_ptr<invalidation::InvalidationService>
   InitializeDeviceInvalidationService();
 
@@ -111,8 +110,7 @@ class AffiliatedInvalidationServiceProviderImpl
   // The invalidation service currently used by consumers. nullptr if there are
   // no registered consumers or no connected invalidation service is available
   // for use.
-  raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
-      current_invalidation_service_;
+  raw_ptr<invalidation::InvalidationService> current_invalidation_service_;
 
   base::ObserverList<Consumer, true>::Unchecked consumers_;
   int consumer_count_;

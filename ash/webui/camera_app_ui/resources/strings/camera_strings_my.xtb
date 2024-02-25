@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို ဖျက်ရန်</translation>
 <translation id="1113173431709655881">ကင်မရာမုဒ်</translation>
 <translation id="1153190633558910465">အကွက်ပိတ်ရန်</translation>
-<translation id="1175958423215084756">လင့်ခ်တွေ့ရှိသည်။ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို ဖျက်ပြီးပြီ</translation>
 <translation id="1258009455399840361">၉၀ ဒီဂရီ နာရီလက်တံအတိုင်း လှည့်ရန်</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> စာမျက်နှာကို တည်းဖြတ်ရန်</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">ညာဘက် ရွှေ့ကြည့်ရန်</translation>
 <translation id="3081586908890909590">ဗီဒီယိုရိုက်ခြင်းမုဒ်သို့ ပြောင်းရန်</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">“<ph name="WIFINAME" />” နှင့် ချိတ်ဆက်ရန်</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
 <translation id="3240426699337459095">လင့်ခ်ကူးယူပြီးပါပြီ</translation>
 <translation id="3354465018370944241">ဓာတ်ပုံဆက်တင်များ</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">ဗီဒီယိုကို စီမံဆောင်ရွက်နေ...</translation>
 <translation id="3789724198583203151">၉၀ ဒီဂရီ နာရီလက်တံပြောင်းပြန် လှည့်ရန်</translation>
 <translation id="3810838688059735925">ဗီဒီယို</translation>
-<translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
 <translation id="4060608699153044055">စက်သိုလှောင်ခန်းနေရာ နည်းနေသဖြင့် မှတ်တမ်းတင်၍မရပါ။ စတင်မှတ်တမ်းတင်ရန် သင့်စက်တွင် နေရာလွတ် ပြုလုပ်ရမည်။</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ရိုက်ကူးမှု ခဏရပ်ရန်</translation>
 <translation id="4121305183798804752">စာရွက်စာတမ်းကို တွေ့ထားသည်</translation>
 <translation id="414641094616694804">ဤကင်မရာတွင် ပုံရိပ်ပြတ်သားကိန်းကို မပြောင်းနိုင်ပါ</translation>
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
-<translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
 <translation id="428234092390943511">စာမျက်နှာ ပုံသေး</translation>
 <translation id="4349714250734879769">Chrome ၏ စကေး ဖရိမ်များ</translation>
 <translation id="4383571725254449280">စွမ်းဆောင်ရည် မှတ်တမ်းများကို ပုံနှိပ်ရန်</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">ပုံရိပ်ပြတ်သားကိန်း အပြည့်</translation>
 <translation id="4864143361253542638">စကင်လုပ်ထားသည့် စာမျက်နှာစာရင်း</translation>
 <translation id="4890010094662541459">၃ x ၃</translation>
+<translation id="4892746741161549733"><ph name="URL" /> လင့်ခ်လိပ်စာကို မိတ္တူကူးရန်</translation>
 <translation id="491895758387112773">ဗီဒီယိုရိုက်ကူးမှုကို စနစ်အမျိုးမျိုးတွင် ထုတ်လွှင့်ခြင်း</translation>
 <translation id="495170559598752135">လုပ်ဆောင်ချက်များ</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">ဓာတ်ပုံ အချိုးအစား</translation>
 <translation id="5057360777601936059">သင့်ကင်မရာကို လောလောဆယ်မရနိုင်ပါ။ 
         ကင်မရာကို စနစ်တကျ ချိတ်ဆက်ထားခြင်းရှိမရှိ စစ်ပါ။</translation>
+<translation id="5157591164390831335">URL တွေ့ရှိသည်။</translation>
 <translation id="5163387177077603948">ဦးတည်ချက်အမှန်အတိုင်း ရွေ့နေသည်</translation>
-<translation id="5219374179772385066">‘အမြန်ပြကွက်မုဒ်’ ယခု ရနိုင်ပါပြီ။</translation>
 <translation id="5235304959032763950">၁၆x၉</translation>
 <translation id="5266635337630551423">မှတ်တမ်း၏ ဘယ်ဘက်ထောင့်ထိပ်</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">'ကင်မရာ' အက်ပ်ကို အကြံပြုချက်ပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။
 
 သင့်အကြံပြုချက်သည် ရုပ်ပုံ (သို့) ဗီဒီယိုအရည်အသွေးနှင့် ပတ်သက်ပါက နမူနာဓာတ်ပုံ (သို့) ဗီဒီယိုကို ပူးတွဲပေးပြီး ဘာမှားနေသည်ကို ဖော်ပြပါ။ (ဥပမာ ဓာတ်ပုံ အလွန်မှောင်နေသည် (သို့) အရာဝတ္ထု ဆုံချက်မပြတ်ပါ။)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> နှင့် ချိတ်ဆက်ရန်</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="6617916774429601017">ပုံရိပ်ပြတ်သားကိန်းအားလုံး ပြပါ</translation>
 <translation id="6631515515009660915">မှန်ပိတ်ရန်</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">စာသားကူးယူပြီးပါပြီ</translation>
 <translation id="7488619942230388918">GIF ဗီဒီယို ရိုက်ကူးရန်</translation>
 <translation id="7557677699350329807">ကင်မရာနောက်တစ်ခုသို့ ပြောင်းရန်</translation>
+<translation id="7562584071994185503"><ph name="TEXT" /> စာသားကို မိတ္တူကူးရန်</translation>
 <translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>
 <translation id="7608223098072244877">အလျား ၄၊​ အနံ ၄</translation>
 <translation id="761421184377987513">ဘယ်ဘက် အောက်ခြေ ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">Camera HAL ၏ စကေး ဖရိမ်များ</translation>
 <translation id="8425673304802773841">အောက်သို့ စောင်းရန်</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
+<translation id="8609951387004618906"><ph name="URL" /> ဖွင့်ရန်</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">မိုက်ခရိုဖုန်း အသံပိတ် ခလုတ်။ အသံတိတ်ခြင်း ဖွင့်</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8732462232047530626">မက်တာဒေတာကို အစမ်းကြည့်ရှုရန်</translation>
+<translation id="874854738381978209">Wi-Fi ကွန်ရက် တွေ့သည်။</translation>
 <translation id="8815966864175525708">ဒေါင်လိုက် ဓာတ်ပုံရိုက်ရန်အတွက် ပြောင်းရန်</translation>
 <translation id="8828441885228359828">ဆက်လက်ရိုက်ကူးရန်</translation>
 <translation id="8870695351537079478">စတင်ရိုက်ကူး၍ မရပါ</translation>

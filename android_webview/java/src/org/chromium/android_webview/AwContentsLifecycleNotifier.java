@@ -4,11 +4,16 @@
 
 package org.chromium.android_webview;
 
+import android.os.Build;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 /**
  * This class is intended to notify observers of the existence native instances of
@@ -19,63 +24,92 @@ import org.chromium.base.annotations.JNINamespace;
 @JNINamespace("android_webview")
 @Lifetime.Singleton
 public class AwContentsLifecycleNotifier {
-    /**
-     * Observer interface to be implemented by deriving webview lifecycle observers.
-     */
+    // Initializing here means that the class will not initialize the LazyHolder members
+    // until #getInstance is called since LazyHolder is a separate class.
+    // This should prevent the members from being initialized anywhere, but the UIThread since
+    // all calls to addObserver and removeObserver depend on getInstance and are called from
+    // the UIThread.
+    private static class LazyHolder {
+        static final AwContentsLifecycleNotifier sInstance = new AwContentsLifecycleNotifier();
+    }
+
+    /** @return the singleton AwContentsLifecycleNotifier. */
+    @CalledByNative
+    public static AwContentsLifecycleNotifier getInstance() {
+        ThreadUtils.assertOnUiThread();
+        return LazyHolder.sInstance;
+    }
+
+    /** Observer interface to be implemented by deriving webview lifecycle observers. */
     public static interface Observer {
         public void onFirstWebViewCreated();
+
         public void onLastWebViewDestroyed();
     }
 
-    private static final ObserverList<Observer> sLifecycleObservers =
-            new ObserverList<Observer>();
-    private static boolean sHasWebViewInstances;
-    private static @AppState int sAppState = AppState.DESTROYED;
+    private boolean mHasWebViewInstances;
+    private volatile @AppState int mAppState = AppState.DESTROYED;
+
+    private final ObserverList<Observer> mLifecycleObservers = new ObserverList<Observer>();
 
     private AwContentsLifecycleNotifier() {}
 
-    public static void addObserver(Observer observer) {
-        sLifecycleObservers.addObserver(observer);
+    public void addObserver(Observer observer) {
+        mLifecycleObservers.addObserver(observer);
     }
 
-    public static void removeObserver(Observer observer) {
-        sLifecycleObservers.removeObserver(observer);
+    public void removeObserver(Observer observer) {
+        mLifecycleObservers.removeObserver(observer);
     }
 
-    public static boolean hasWebViewInstances() {
-        return sHasWebViewInstances;
+    public boolean hasWebViewInstances() {
+        return mHasWebViewInstances;
     }
 
-    public static @AppState int getAppState() {
-        return sAppState;
+    // Calls to this are thread safe
+    public @AppState int getAppState() {
+        return mAppState;
     }
 
     // Called on UI thread.
     @CalledByNative
-    private static void onFirstWebViewCreated() {
+    private void onFirstWebViewCreated() {
         ThreadUtils.assertOnUiThread();
-        sHasWebViewInstances = true;
+        mHasWebViewInstances = true;
         // first webview created, notify observers.
-        for (Observer observer : sLifecycleObservers) {
+        for (Observer observer : mLifecycleObservers) {
             observer.onFirstWebViewCreated();
         }
     }
 
     // Called on UI thread.
     @CalledByNative
-    private static void onLastWebViewDestroyed() {
+    private void onLastWebViewDestroyed() {
         ThreadUtils.assertOnUiThread();
-        sHasWebViewInstances = false;
+        mHasWebViewInstances = false;
         // last webview destroyed, notify observers.
-        for (Observer observer : sLifecycleObservers) {
+        for (Observer observer : mLifecycleObservers) {
             observer.onLastWebViewDestroyed();
         }
     }
 
     // Called on UI thread.
     @CalledByNative
-    private static void onAppStateChanged(@AppState int appState) {
+    private void onAppStateChanged(@AppState int appState) {
         ThreadUtils.assertOnUiThread();
-        sAppState = appState;
+        mAppState = appState;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_EXIT_REASON_METRIC)) {
+            TrackExitReasonsOfInterest.writeLastWebViewState();
+        }
+    }
+
+    @CalledByNative
+    public static void initialize() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_EXIT_REASON_METRIC)) {
+            TrackExitReasonsOfInterest.init(AwContentsLifecycleNotifier.getInstance()::getAppState);
+        }
     }
 }

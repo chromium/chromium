@@ -1,10 +1,5 @@
 This is a testharness.js-based test.
-PASS font-variant: normal serialization
-FAIL font-variant: none serialization assert_equals: font-variant was set expected "none" but got "no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual"
-FAIL font-variant-ligatures: none serialization with non-default value for another longhand assert_equals: font-variant was set expected "" but got "no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual small-caps"
-PASS font-variant: normal with non-default longhands
-PASS CSS-wide keyword in one longhand
-PASS CSS-wide keyword in shorthand
-FAIL font: menu serialization assert_equals: font-variant was set expected "" but got "normal"
+[FAIL] font: menu serialization
+  assert_equals: font-variant was set expected "" but got "normal"
 Harness: the test ran to completion.
 

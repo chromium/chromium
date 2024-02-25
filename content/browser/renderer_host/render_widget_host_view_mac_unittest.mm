@@ -16,6 +16,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
@@ -32,15 +33,15 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/site_instance_group.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_widget_host_view_mac_delegate.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "content/test/mock_render_input_router.h"
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/mock_widget_input_handler.h"
 #include "content/test/stub_render_widget_host_owner_delegate.h"
@@ -242,12 +243,13 @@ NSEvent* MockTabletEventWithParams(CGEventType type,
                                    NSPointingDeviceType device_type) {
   base::apple::ScopedCFTypeRef<CGEventRef> cg_event(
       CGEventCreate(/*source=*/nullptr));
-  CGEventSetType(cg_event, type);
-  CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventEnterProximity,
+  CGEventSetType(cg_event.get(), type);
+  CGEventSetIntegerValueField(cg_event.get(),
+                              kCGTabletProximityEventEnterProximity,
                               is_entering_proximity);
-  CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventPointerType,
-                              device_type);
-  NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+  CGEventSetIntegerValueField(cg_event.get(),
+                              kCGTabletProximityEventPointerType, device_type);
+  NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
   return event;
 }
 
@@ -263,17 +265,18 @@ NSEvent* MockMouseEventWithParams(CGEventType mouse_type,
       CGPointMake(location.x, NSHeight(NSScreen.screens[0].frame) - location.y);
   base::apple::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
       /*source=*/nullptr, mouse_type, cg_location, button));
-  CGEventSetIntegerValueField(cg_event, kCGMouseEventSubtype, subtype);
-  CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventEnterProximity,
+  CGEventSetIntegerValueField(cg_event.get(), kCGMouseEventSubtype, subtype);
+  CGEventSetIntegerValueField(cg_event.get(),
+                              kCGTabletProximityEventEnterProximity,
                               is_entering_proximity);
-  CGEventSetIntegerValueField(cg_event, kCGTabletEventRotation, 300);
+  CGEventSetIntegerValueField(cg_event.get(), kCGTabletEventRotation, 300);
   if (is_pen_tip)
-    CGEventSetIntegerValueField(cg_event, kCGTabletEventPointButtons, 1);
+    CGEventSetIntegerValueField(cg_event.get(), kCGTabletEventPointButtons, 1);
   CGEventTimestamp timestamp =
       (ui::EventTimeForNow() - base::TimeTicks()).InMicroseconds() *
       base::Time::kNanosecondsPerMicrosecond;
-  CGEventSetTimestamp(cg_event, timestamp);
-  NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+  CGEventSetTimestamp(cg_event.get(), timestamp);
+  NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
   return event;
 }
 
@@ -319,77 +322,6 @@ id MockSmartMagnifyEvent() {
       modifierFlags];
   return event;
 }
-
-class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
- public:
-  MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
-                           base::SafeRef<SiteInstanceGroup> site_instance_group,
-                           int32_t routing_id,
-                           bool for_frame_widget)
-      : RenderWidgetHostImpl(/*frame_tree=*/nullptr,
-                             /*self_owned=*/false,
-                             delegate,
-                             std::move(site_instance_group),
-                             routing_id,
-                             /*hidden=*/false,
-                             /*renderer_initiated_creation=*/false,
-                             std::make_unique<FrameTokenMessageQueue>()) {
-    mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
-    BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-                         TestRenderWidgetHost::CreateStubWidgetRemote());
-    if (for_frame_widget) {
-      mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-      BindFrameWidgetInterfaces(
-          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-          TestRenderWidgetHost::CreateStubFrameWidgetRemote());
-    }
-    RendererWidgetCreated(for_frame_widget);
-
-    ON_CALL(*this, Focus())
-        .WillByDefault(
-            testing::Invoke(this, &MockRenderWidgetHostImpl::FocusImpl));
-    ON_CALL(*this, Blur())
-        .WillByDefault(
-            testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
-  }
-
-  MockRenderWidgetHostImpl(const MockRenderWidgetHostImpl&) = delete;
-  MockRenderWidgetHostImpl& operator=(const MockRenderWidgetHostImpl&) = delete;
-
-  ~MockRenderWidgetHostImpl() override = default;
-
-  // Extracts |latency_info| and stores it in |last_wheel_event_latency_info_|.
-  void ForwardWheelEventWithLatencyInfo(
-      const blink::WebMouseWheelEvent& wheel_event,
-      const ui::LatencyInfo& ui_latency) override {
-    RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(wheel_event,
-                                                           ui_latency);
-    last_wheel_event_latency_info_ = ui::LatencyInfo(ui_latency);
-  }
-
-  MOCK_METHOD0(Focus, void());
-  MOCK_METHOD0(Blur, void());
-
-  MockWidgetInputHandler* input_handler() { return &input_handler_; }
-  MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
-    return input_handler_.GetAndResetDispatchedMessages();
-  }
-
-  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override {
-    return &input_handler_;
-  }
-
-  const ui::LatencyInfo& LastWheelEventLatencyInfo() const {
-    return last_wheel_event_latency_info_;
-  }
-
- private:
-  void FocusImpl() { RenderWidgetHostImpl::Focus(); }
-  void BlurImpl() { RenderWidgetHostImpl::Blur(); }
-
-  ui::LatencyInfo last_wheel_event_latency_info_;
-  MockWidgetInputHandler input_handler_;
-};
 
 // Generates the |length| of composition rectangle vector and save them to
 // |output|. It starts from |origin| and each rectangle contains |unit_size|.
@@ -441,8 +373,8 @@ NSEvent* MockScrollWheelEventWithPhase(SEL mockPhaseSelector, int32_t delta) {
       CGEventCreateScrollWheelEvent(
           /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
   CGEventTimestamp timestamp = 0;
-  CGEventSetTimestamp(cg_event, timestamp);
-  NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+  CGEventSetTimestamp(cg_event.get(), timestamp);
+  NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
   method_setImplementation(
       class_getInstanceMethod([NSEvent class], @selector(phase)),
       [MockPhaseMethods instanceMethodForSelector:mockPhaseSelector]);
@@ -458,8 +390,8 @@ NSEvent* MockScrollWheelEventWithMomentumPhase(SEL mockPhaseSelector,
       CGEventCreateScrollWheelEvent(
           /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
   CGEventTimestamp timestamp = 0;
-  CGEventSetTimestamp(cg_event, timestamp);
-  NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+  CGEventSetTimestamp(cg_event.get(), timestamp);
+  NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
   method_setImplementation(
       class_getInstanceMethod([NSEvent class], @selector(momentumPhase)),
       [MockPhaseMethods instanceMethodForSelector:mockPhaseSelector]);
@@ -474,9 +406,96 @@ class MockRenderWidgetHostOwnerDelegate
     : public StubRenderWidgetHostOwnerDelegate {
  public:
   MOCK_METHOD1(SetBackgroundOpaque, void(bool opaque));
+  MOCK_METHOD(void, RenderWidgetGotFocus, (), (override));
+  MOCK_METHOD(void, RenderWidgetLostFocus, (), (override));
 };
 
 }  // namespace
+
+class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
+ public:
+  MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
+                           base::SafeRef<SiteInstanceGroup> site_instance_group,
+                           int32_t routing_id,
+                           bool for_frame_widget)
+      : RenderWidgetHostImpl(
+            /*frame_tree=*/nullptr,
+            /*self_owned=*/false,
+            DefaultFrameSinkId(*site_instance_group, routing_id),
+            delegate,
+            std::move(site_instance_group),
+            routing_id,
+            /*hidden=*/false,
+            /*renderer_initiated_creation=*/false,
+            std::make_unique<FrameTokenMessageQueue>()) {
+    SetupMockRenderInputRouter();
+
+    mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
+    BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+                         TestRenderWidgetHost::CreateStubWidgetRemote());
+    if (for_frame_widget) {
+      mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+      BindFrameWidgetInterfaces(
+          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+          TestRenderWidgetHost::CreateStubFrameWidgetRemote());
+    }
+    RendererWidgetCreated(for_frame_widget);
+
+    ON_CALL(*this, Focus())
+        .WillByDefault(
+            testing::Invoke(this, &MockRenderWidgetHostImpl::FocusImpl));
+    ON_CALL(*this, Blur())
+        .WillByDefault(
+            testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
+  }
+
+  MockRenderWidgetHostImpl(const MockRenderWidgetHostImpl&) = delete;
+  MockRenderWidgetHostImpl& operator=(const MockRenderWidgetHostImpl&) = delete;
+
+  ~MockRenderWidgetHostImpl() override = default;
+
+  // Extracts |latency_info| and stores it in |last_wheel_event_latency_info_|.
+  void ForwardWheelEventWithLatencyInfo(
+      const blink::WebMouseWheelEvent& wheel_event,
+      const ui::LatencyInfo& ui_latency) override {
+    RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(wheel_event,
+                                                           ui_latency);
+    last_wheel_event_latency_info_ = ui::LatencyInfo(ui_latency);
+  }
+
+  MOCK_METHOD0(Focus, void());
+  MOCK_METHOD0(Blur, void());
+
+  MockWidgetInputHandler* input_handler() {
+    return mock_render_input_router_->mock_widget_input_handler_.get();
+  }
+
+  MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
+    return input_handler()->GetAndResetDispatchedMessages();
+  }
+
+  RenderInputRouter* GetRenderInputRouter() override {
+    return mock_render_input_router_.get();
+  }
+
+  const ui::LatencyInfo& LastWheelEventLatencyInfo() const {
+    return last_wheel_event_latency_info_;
+  }
+
+ private:
+  void FocusImpl() { RenderWidgetHostImpl::Focus(); }
+  void BlurImpl() { RenderWidgetHostImpl::Blur(); }
+
+  void SetupMockRenderInputRouter() {
+    mock_render_input_router_ = std::make_unique<MockRenderInputRouter>(
+        this, this, MakeFlingScheduler(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    SetupInputRouter();
+  }
+
+  std::unique_ptr<MockRenderInputRouter> mock_render_input_router_;
+  ui::LatencyInfo last_wheel_event_latency_info_;
+};
 
 class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
  public:
@@ -563,6 +582,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
 
  private:
   // This class isn't derived from PlatformTest.
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
   base::apple::ScopedNSAutoreleasePool pool_;
 
   base::SimpleTestTickClock mock_clock_;
@@ -739,8 +759,8 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
 
   // If the firstRectForCharacterRange is failed in renderer, empty rect vector
   // is sent. Make sure this does not crash.
-  rwhv_mac_->ImeCompositionRangeChanged(
-      gfx::Range(10, 12), std::vector<gfx::Rect>(), absl::nullopt);
+  rwhv_mac_->ImeCompositionRangeChanged(gfx::Range(10, 12),
+                                        std::vector<gfx::Rect>(), std::nullopt);
   EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
       gfx::Range(10, 11), &rect, nullptr));
 
@@ -755,7 +775,7 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
                                std::vector<size_t>(),
                                &composition_bounds);
   rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds,
-                                        absl::nullopt);
+                                        std::nullopt);
 
   // Out of range requests will return caret position.
   EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
@@ -814,7 +834,7 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionMultilineCase) {
                                break_points,
                                &composition_bounds);
   rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds,
-                                        absl::nullopt);
+                                        std::nullopt);
 
   // Range doesn't contain line breaking point.
   gfx::Range range;
@@ -899,7 +919,7 @@ TEST_F(RenderWidgetHostViewMacTest, CompositionEventAfterDestroy) {
   const gfx::Rect composition_bounds(0, 0, 30, 40);
   const gfx::Range range(0, 1);
   rwhv_mac_->ImeCompositionRangeChanged(
-      range, std::vector<gfx::Rect>(1, composition_bounds), absl::nullopt);
+      range, std::vector<gfx::Rect>(1, composition_bounds), std::nullopt);
 
   NSRange actual_range = NSMakeRange(0, 0);
 
@@ -917,28 +937,33 @@ TEST_F(RenderWidgetHostViewMacTest, CompositionEventAfterDestroy) {
   EXPECT_EQ(gfx::Range(), gfx::Range(actual_range));
 }
 
-// Verify that |SetActive()| calls |RenderWidgetHostImpl::Blur()| and
-// |RenderWidgetHostImp::Focus()|.
-TEST_F(RenderWidgetHostViewMacTest, BlurAndFocusOnSetActive) {
+// Verify that |SetActive()| calls |RenderWidgetHostImpl::LostFocus()| and
+// |RenderWidgetHostImp::GotFocus()|.
+TEST_F(RenderWidgetHostViewMacTest, LostFocusAndGotFocusOnSetActive) {
   EXPECT_CALL(*host_, Focus());
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetGotFocus());
   [window_ makeFirstResponder:rwhv_mac_->GetInProcessNSView()];
   testing::Mock::VerifyAndClearExpectations(host_.get());
 
   EXPECT_CALL(*host_, Blur());
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetLostFocus());
   rwhv_mac_->SetActive(false);
   testing::Mock::VerifyAndClearExpectations(host_.get());
 
   EXPECT_CALL(*host_, Focus());
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetGotFocus());
   rwhv_mac_->SetActive(true);
   testing::Mock::VerifyAndClearExpectations(host_.get());
 
   // Unsetting first responder should blur.
   EXPECT_CALL(*host_, Blur());
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetLostFocus());
   [window_ makeFirstResponder:nil];
   testing::Mock::VerifyAndClearExpectations(host_.get());
 
   // |SetActive()| should not focus if view is not first responder.
   EXPECT_CALL(*host_, Focus()).Times(0);
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetGotFocus()).Times(0);
   rwhv_mac_->SetActive(true);
   testing::Mock::VerifyAndClearExpectations(host_.get());
 }
@@ -1802,6 +1827,9 @@ TEST_F(InputMethodMacTest, SetMarkedText) {
 // This test makes sure that selectedRange and markedRange are updated correctly
 // in various scenarios.
 TEST_F(InputMethodMacTest, MarkedRangeSelectedRange) {
+  if (!base::FeatureList::IsEnabled(features::kMacImeLiveConversionFix)) {
+    return;
+  }
   // If the replacement range is valid, the range should be replaced with the
   // new text.
   {
@@ -1957,8 +1985,8 @@ TEST_F(InputMethodMacTest, SecurePasswordInput) {
   ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
   ASSERT_EQ(text_input_manager(), tab_view()->GetTextInputManager());
 
-  // RenderWidgetHostViewMacTest.BlurAndFocusOnSetActive checks the
-  // Focus()/Blur() rules, just silence the warnings here.
+  // RenderWidgetHostViewMacTest.LostFocusAndGotFocusOnSetActive checks the
+  // GotFocus()/LostFocus() rules, just silence the warnings here.
   EXPECT_CALL(*host_, Focus()).Times(::testing::AnyNumber());
   EXPECT_CALL(*host_, Blur()).Times(::testing::AnyNumber());
 

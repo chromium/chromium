@@ -410,6 +410,20 @@ void RequestManager::PrepareCaptureRequest() {
     return;
   }
 
+  // Sets crop region if there is a value set from Camera app.
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_id_);
+  if (camera_app_device) {
+    auto crop_region = camera_app_device->GetCropRegion();
+    if (crop_region.has_value()) {
+      SetCaptureMetadata(
+          cros::mojom::CameraMetadataTag::ANDROID_SCALER_CROP_REGION,
+          cros::mojom::EntryType::TYPE_INT32, crop_region->size(),
+          SerializeMetadataValueFromSpan<int32_t>(*crop_region));
+    }
+  }
+
   auto capture_request = request_builder_->BuildRequest(std::move(stream_types),
                                                         std::move(settings));
   CHECK_GT(capture_request->output_buffers.size(), 0u);
@@ -711,9 +725,20 @@ void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
   if (!capturing_) {
     return;
   }
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_id_);
   if (message->type == cros::mojom::Camera3MsgType::CAMERA3_MSG_ERROR) {
     auto error = std::move(message->message->get_error());
     uint32_t frame_number = error->frame_number;
+    if (pending_results_.count(frame_number)) {
+      CaptureResult& pending_result = pending_results_[frame_number];
+      if (camera_app_device &&
+          (pending_result.still_capture_callback ||
+           pending_result.portrait_callbacks_map[StreamType::kJpegOutput])) {
+        camera_app_device->OnShutterDone();
+      }
+    }
     uint64_t error_stream_id = error->error_stream_id;
     StreamType stream_type = StreamIdToStreamType(error_stream_id);
     if (stream_type == StreamType::kUnknown) {
@@ -755,9 +780,6 @@ void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
     }
     pending_result.timestamp = reference_time - first_frame_shutter_time_;
 
-    auto camera_app_device =
-        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
-            device_id_);
     if (camera_app_device &&
         (pending_result.still_capture_callback ||
          pending_result.portrait_callbacks_map[StreamType::kJpegOutput])) {
@@ -893,7 +915,7 @@ void RequestManager::RequestStreamBuffers(
         cros::mojom::Camera3StreamBufferReqStatus::CAMERA3_PS_BUF_REQ_OK;
     ret->output_buffers = std::vector<cros::mojom::Camera3StreamBufferPtr>();
     for (size_t i = 0; i < req->num_buffers_requested; ++i) {
-      absl::optional<BufferInfo> buffer_info =
+      std::optional<BufferInfo> buffer_info =
           stream_buffer_manager_->RequestBufferForCaptureRequest(stream_type);
       if (!buffer_info.has_value()) {
         // Return buffers to |stream_buffer_manager_|.
@@ -1024,7 +1046,7 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
 
   if (video_capture_use_gmb_) {
     VideoCaptureFormat format;
-    absl::optional<VideoCaptureDevice::Client::Buffer> buffer =
+    std::optional<VideoCaptureDevice::Client::Buffer> buffer =
         stream_buffer_manager_->AcquireBufferForClientById(
             stream_type, buffer_ipc_id, &format);
     CHECK(buffer);

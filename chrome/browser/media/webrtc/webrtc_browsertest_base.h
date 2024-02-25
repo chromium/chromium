@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_BROWSERTEST_BASE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/media/webrtc/test_stats_dictionary.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace infobars {
 class InfoBar;
@@ -120,10 +120,6 @@ class WebRtcTestBase : public InProcessBrowserTest {
 
   std::string ExecuteJavascript(const std::string& javascript,
                                 content::WebContents* tab_contents) const;
-
-  // TODO(https://crbug.com/1004239): Remove this function as soon as browser
-  // tests stop relying on the legacy getStats() API.
-  void ChangeToLegacyGetStats(content::WebContents* tab) const;
 
   // Sets up a peer connection in the tab and adds the current local stream
   // (which you can prepare by calling one of the GetUserMedia* methods above).
@@ -238,7 +234,7 @@ class WebRtcTestBase : public InProcessBrowserTest {
   // Try to open a dekstop media stream, and return the stream id.
   // On failure, will return empty string.
   std::string GetDesktopMediaStream(content::WebContents* tab);
-  absl::optional<std::string> LoadDesktopCaptureExtension();
+  std::optional<std::string> LoadDesktopCaptureExtension();
 
  private:
   void CloseInfoBarInTab(content::WebContents* tab_contents,

@@ -58,6 +58,9 @@ class VideoConferenceManagerBase {
   // Stops all screen sharing.
   virtual void StopAllScreenShare() = 0;
 
+  // Called when CreateBackgroundImage button is clicked on.
+  virtual void CreateBackgroundImage() = 0;
+
   virtual ~VideoConferenceManagerBase() = default;
 };
 

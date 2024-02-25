@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -16,12 +17,33 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/user_agent.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
-#include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/command_line.h"
+#include "headless/public/switches.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#endif
+
+#if defined(HEADLESS_USE_PREFS)
+#include "components/os_crypt/sync/os_crypt.h"  // nogncheck
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/in_memory_pref_store.h"
+#include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_service_factory.h"
+#endif
+
+#if defined(HEADLESS_USE_POLICY)
+#include "components/headless/policy/headless_mode_policy.h"  // nogncheck
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "headless/lib/browser/policy/headless_policies.h"
+#endif
 
 namespace headless {
 
@@ -32,6 +54,11 @@ constexpr gfx::Size kDefaultWindowSize(800, 600);
 
 constexpr gfx::FontRenderParams::Hinting kDefaultFontRenderHinting =
     gfx::FontRenderParams::Hinting::HINTING_FULL;
+
+#if defined(HEADLESS_USE_PREFS)
+const base::FilePath::CharType kLocalStateFilename[] =
+    FILE_PATH_LITERAL("Local State");
+#endif
 
 }  // namespace
 
@@ -98,6 +125,11 @@ Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
   return *this;
 }
 
+Builder& Builder::SetDiskCacheDir(const base::FilePath& dir) {
+  options_.disk_cache_dir = dir;
+  return *this;
+}
+
 Builder& Builder::SetWindowSize(const gfx::Size& size) {
   options_.window_size = size;
   return *this;
@@ -145,12 +177,12 @@ blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
 
   // Rengenerate the brand version lists with kHeadlessProductName.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, significant_version, absl::nullopt,
-      absl::nullopt, kEnableUpdatedGreaseByPolicy,
+      seed, kHeadlessProductName, significant_version, std::nullopt,
+      std::nullopt, kEnableUpdatedGreaseByPolicy,
       blink::UserAgentBrandVersionType::kMajorVersion);
   metadata.brand_full_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, metadata.full_version, absl::nullopt,
-      absl::nullopt, kEnableUpdatedGreaseByPolicy,
+      seed, kHeadlessProductName, metadata.full_version, std::nullopt,
+      std::nullopt, kEnableUpdatedGreaseByPolicy,
       blink::UserAgentBrandVersionType::kFullVersion);
   return metadata;
 }
@@ -187,7 +219,13 @@ void HeadlessBrowserImpl::Shutdown() {
     content::GetIOThreadTaskRunner({})->DeleteSoon(
         FROM_HERE, system_request_context_manager_.release());
   }
-  browser_main_parts_->QuitMainMessageLoop();
+  // We might have posted task during shutdown, let these run
+  // before quitting the message loop. See ~HeadlessWebContentsImpl
+  // for additional context.
+  if (quit_main_message_loop_) {
+    BrowserMainThread()->PostTask(FROM_HERE,
+                                  std::move(quit_main_message_loop_));
+  }
 }
 
 void HeadlessBrowserImpl::ShutdownWithExitCode(int exit_code) {
@@ -207,26 +245,6 @@ HeadlessBrowserImpl::GetAllBrowserContexts() {
   }
 
   return result;
-}
-
-HeadlessBrowserMainParts* HeadlessBrowserImpl::browser_main_parts() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return browser_main_parts_;
-}
-
-void HeadlessBrowserImpl::set_browser_main_parts(
-    HeadlessBrowserMainParts* browser_main_parts) {
-  DCHECK(!browser_main_parts_);
-  browser_main_parts_ = browser_main_parts;
-}
-
-void HeadlessBrowserImpl::RunOnStartCallback() {
-  // We don't support the tethering domain on this agent host.
-  agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
-      nullptr, content::DevToolsAgentHost::CreateServerSocketCallback());
-
-  PlatformStart();
-  std::move(on_start_callback_).Run(this);
 }
 
 HeadlessBrowserContext* HeadlessBrowserImpl::CreateBrowserContext(
@@ -305,17 +323,130 @@ HeadlessBrowserContext* HeadlessBrowserImpl::GetBrowserContextForId(
   return find_it->second.get();
 }
 
+bool HeadlessBrowserImpl::ShouldStartDevToolsServer() {
+  if (!options()->DevtoolsServerEnabled()) {
+    return false;
+  }
+
+#if defined(HEADLESS_USE_POLICY)
+  CHECK(local_state_);
+  if (!IsRemoteDebuggingAllowed(local_state_.get())) {
+    // Follow content/browser/devtools/devtools_http_handler.cc that reports its
+    // remote debugging port on stderr for symmetry.
+    fputs("\nDevTools remote debugging is disallowed by the system admin.\n",
+          stderr);
+    fflush(stderr);
+    return false;
+  }
+#endif
+  return true;
+}
+
+void HeadlessBrowserImpl::PreMainMessageLoopRun() {
+  PlatformInitialize();
+#if defined(HEADLESS_USE_PREFS)
+  CreatePrefService();
+#endif
+
+  // We don't support the tethering domain on this agent host.
+  agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
+      nullptr, content::DevToolsAgentHost::CreateServerSocketCallback());
+
+  PlatformStart();
+  std::move(on_start_callback_).Run(this);
+}
+
+void HeadlessBrowserImpl::WillRunMainMessageLoop(base::RunLoop& run_loop) {
+  quit_main_message_loop_ = run_loop.QuitClosure();
+}
+
+void HeadlessBrowserImpl::PostMainMessageLoopRun() {
+#if defined(HEADLESS_USE_PREFS)
+  if (local_state_) {
+    local_state_->CommitPendingWrite();
+    local_state_.reset(nullptr);
+  }
+#endif
+#if defined(HEADLESS_USE_POLICY)
+  if (policy_connector_) {
+    policy_connector_->Shutdown();
+    policy_connector_.reset(nullptr);
+  }
+#endif
+}
+
 #if defined(HEADLESS_USE_PREFS)
 PrefService* HeadlessBrowserImpl::GetPrefs() {
-  return browser_main_parts_ ? browser_main_parts_->GetPrefs() : nullptr;
+  return local_state_.get();
 }
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
 policy::PolicyService* HeadlessBrowserImpl::GetPolicyService() {
-  return browser_main_parts_ ? browser_main_parts_->GetPolicyService()
-                             : nullptr;
+  return policy_connector_ ? policy_connector_->GetPolicyService() : nullptr;
 }
 #endif
+
+#if defined(HEADLESS_USE_PREFS)
+void HeadlessBrowserImpl::CreatePrefService() {
+  scoped_refptr<PersistentPrefStore> pref_store;
+  if (options()->user_data_dir.empty()) {
+    pref_store = base::MakeRefCounted<InMemoryPrefStore>();
+  } else {
+    base::FilePath local_state_file =
+        options()->user_data_dir.Append(kLocalStateFilename);
+    pref_store = base::MakeRefCounted<JsonPrefStore>(
+        local_state_file,
+        /*pref_filter=*/nullptr,
+        /*file_task_runner=*/
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+        /*read_only=*/true);
+    auto result = pref_store->ReadPrefs();
+    if (result != JsonPrefStore::PREF_READ_ERROR_NONE &&
+        result != JsonPrefStore::PREF_READ_ERROR_NO_FILE) {
+      LOG(ERROR) << "Failed to read prefs in '" << local_state_file
+                 << "', error: " << result;
+      BrowserMainThread()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&HeadlessBrowserImpl::ShutdownWithExitCode,
+                         weak_ptr_factory_.GetWeakPtr(), EXIT_FAILURE));
+      return;
+    }
+  }
+
+  auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
+#if BUILDFLAG(IS_WIN)
+  OSCrypt::RegisterLocalPrefs(pref_registry.get());
+#endif
+
+  PrefServiceFactory factory;
+
+#if defined(HEADLESS_USE_POLICY)
+  RegisterHeadlessPrefs(pref_registry.get());
+
+  policy_connector_ =
+      std::make_unique<policy::HeadlessBrowserPolicyConnector>();
+
+  factory.set_managed_prefs(
+      policy_connector_->CreatePrefStore(policy::POLICY_LEVEL_MANDATORY));
+
+  BrowserContextDependencyManager::GetInstance()
+      ->RegisterProfilePrefsForServices(pref_registry.get());
+#endif  // defined(HEADLESS_USE_POLICY)
+
+  factory.set_user_prefs(pref_store);
+  local_state_ = factory.Create(std::move(pref_registry));
+
+#if BUILDFLAG(IS_WIN)
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kDisableCookieEncryption) &&
+      OSCrypt::InitWithExistingKey(local_state_.get()) != OSCrypt::kSuccess) {
+    command_line->AppendSwitch(switches::kDisableCookieEncryption);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+}
+#endif  // defined(HEADLESS_USE_PREFS)
 
 }  // namespace headless

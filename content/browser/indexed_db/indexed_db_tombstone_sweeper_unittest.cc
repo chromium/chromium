@@ -13,14 +13,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
-#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/leveldb/mock_level_db.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +25,7 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
@@ -71,6 +69,19 @@ MATCHER_P(SliceEq,
               base::HexEncode(str.data(), str.size())) {
   *result_listener << "which is " << base::HexEncode(arg.data(), arg.size());
   return std::string(arg.data(), arg.size()) == str;
+}
+
+leveldb_env::Options GetLevelDBOptions() {
+  leveldb_env::Options options;
+  options.comparator = indexed_db::GetDefaultLevelDBComparator();
+  options.create_if_missing = true;
+  options.write_buffer_size = 4 * 1024 * 1024;
+  options.paranoid_checks = true;
+
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env;
+  options.env = g_leveldb_env.get();
+
+  return options;
 }
 
 class MockTickClock : public base::TickClock {
@@ -138,19 +149,21 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
   }
 
   void SetupRealDB() {
-    scoped_refptr<LevelDBState> level_db_state;
-    leveldb::Status s;
-    std::tie(level_db_state, s, std::ignore) =
-        IndexedDBClassFactory::Get()->leveldb_factory().OpenLevelDBState(
-            base::FilePath(), indexed_db::GetDefaultLevelDBComparator(),
-            /* create_if_missing=*/true);
+    leveldb_env::Options options = GetLevelDBOptions();
+    std::unique_ptr<leveldb::Env> in_memory_env =
+        leveldb_chrome::NewMemEnv("in-memory-testing-db", options.env);
+    options.env = in_memory_env.get();
+
+    std::unique_ptr<leveldb::DB> db;
+    leveldb::Status s = leveldb_env::OpenDB(options, std::string(), &db);
     ASSERT_TRUE(s.ok());
-    in_memory_db_ =
-        IndexedDBClassFactory::Get()
-            ->transactional_leveldb_factory()
-            .CreateLevelDBDatabase(std::move(level_db_state), nullptr, nullptr,
-                                   TransactionalLevelDBDatabase::
-                                       kDefaultMaxOpenIteratorsPerDatabase);
+    scoped_refptr<LevelDBState> level_db_state =
+        LevelDBState::CreateForInMemoryDB(std::move(in_memory_env),
+                                          options.comparator, std::move(db),
+                                          "in-memory-testing-db");
+    in_memory_db_ = DefaultTransactionalLevelDBFactory().CreateLevelDBDatabase(
+        std::move(level_db_state), nullptr, nullptr,
+        TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
     sweeper_ = std::make_unique<IndexedDBTombstoneSweeper>(
         kRoundIterations, kMaxIterations, in_memory_db_->db());
     sweeper_->SetStartSeedsForTesting(0, 0, 0);

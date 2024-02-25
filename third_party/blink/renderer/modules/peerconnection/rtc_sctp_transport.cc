@@ -103,14 +103,14 @@ double RTCSctpTransport::maxMessageSize() const {
   return std::numeric_limits<double>::infinity();
 }
 
-absl::optional<int16_t> RTCSctpTransport::maxChannels() const {
+std::optional<int16_t> RTCSctpTransport::maxChannels() const {
   if (!current_state_.MaxChannels())
-    return absl::nullopt;
+    return std::nullopt;
   return current_state_.MaxChannels().value();
 }
 
 RTCDtlsTransport* RTCSctpTransport::transport() const {
-  return dtls_transport_;
+  return dtls_transport_.Get();
 }
 
 rtc::scoped_refptr<webrtc::SctpTransportInterface>

@@ -1,0 +1,956 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AdbSideloadingPromptEvent">
+  <int value="0" label="Prompt shown"/>
+  <int value="1" label="Prompt skipped"/>
+  <int value="2" label="Canceled by user"/>
+  <int value="3" label="Enabled by user"/>
+  <int value="4" label="Failed to display the prompt"/>
+  <int value="5" label="Failed to enable"/>
+  <int value="6" label="Failed to display the prompt (need powerwash)"/>
+  <int value="7" label="Failed to enable (need powerwash)"/>
+</enum>
+
+<enum name="AppInstallType">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="OPTIONAL"/>
+  <int value="2" label="REQUIRED"/>
+  <int value="3" label="PRELOAD"/>
+  <int value="4" label="FORCE_INSTALLED"/>
+  <int value="5" label="BLOCKED"/>
+  <int value="6" label="AVAILABLE"/>
+  <int value="7" label="REQUIRED_FOR_SETUP"/>
+  <int value="8" label="KIOSK"/>
+</enum>
+
+<enum name="AppPrimaryAbi">
+  <int value="0" label="None"/>
+  <int value="1" label="arm"/>
+  <int value="2" label="arm64"/>
+  <int value="3" label="x86"/>
+  <int value="4" label="x86_64"/>
+</enum>
+
+<enum name="ArcAccessibilityFeature">
+  <summary>Accessibility features supported by ARC and counted in UMA</summary>
+  <int value="0" label="DockedMagnifier">Docked Magnifier</int>
+  <int value="1" label="FullscreenMagnifier">Fullscreen Manigifier</int>
+  <int value="2" label="SelectToSpeak">Select To Speak</int>
+  <int value="3" label="SpokenFeedback">Spoken Feedback</int>
+  <int value="4" label="SwitchAccess">Switch Access</int>
+  <int value="5" label="TalkBack">TalkBack</int>
+</enum>
+
+<enum name="ArcAnr">
+  <summary>Defines ARC ANR types.</summary>
+  <int value="0" label="Unknown">ANR type cannot be determined.</int>
+  <int value="1" label="Input">ANR while handling input event dispatching.</int>
+  <int value="2" label="ForegroundService">ANR in foreground service.</int>
+  <int value="3" label="Broadcast">ANR handling broadcast.</int>
+  <int value="4" label="ContentProvider">ANR from ContentProvider.</int>
+  <int value="5" label="AppRequested">ANR requested explicitly by app.</int>
+  <int value="6" label="Process">ANR in process.</int>
+  <int value="7" label="BackgroundService">ANR in background service.</int>
+</enum>
+
+<enum name="ArcAppGmsKillType">
+  <summary>Defines ARC app kill types by GMS Core.</summary>
+  <int value="2" label="GMS Core update"/>
+  <int value="3" label="GMS Core start failure"/>
+</enum>
+
+<enum name="ArcAppShortcutStatus">
+  <summary>Defines ARC app shortcut result</summary>
+  <int value="0" label="Empty Icon"/>
+  <int value="1" label="Non-empty icon"/>
+</enum>
+
+<enum name="ArcAuthAccountCheckStatus">
+  <int value="0" label="Account is up to date"/>
+  <int value="1" label="New account"/>
+  <int value="2" label="Account needs reauth"/>
+  <int value="3" label="Account has unknown state"/>
+  <int value="4" label="Account check failed"/>
+</enum>
+
+<enum name="ArcAuthCodeStatus">
+  <summary>Defines the status of auth code retrieval.</summary>
+  <int value="16" label="Server does not return authorization"/>
+  <int value="17" label="ARC was disabled for Active Directory user"/>
+  <int value="18" label="Success"/>
+  <int value="21" label="Account is not present in Chrome OS Account Manager"/>
+</enum>
+
+<enum name="ArcAuthMainAccountResolutionStatus">
+  <int value="0" label="No hash code no account"/>
+  <int value="1" label="No hash code for single account"/>
+  <int value="2" label="No hash code for multiple accounts"/>
+  <int value="3" label="Hash code set but no account"/>
+  <int value="4" label="Hash code set but does not match single account"/>
+  <int value="5" label="Hash code set but does not match any account"/>
+  <int value="6" label="Hash code set and matches single account"/>
+  <int value="7" label="Hash code set and matches one of multiple accounts"/>
+  <int value="8" label="Hash code collides with multiple accounts"/>
+</enum>
+
+<enum name="ArcAuthReauthReason">
+  <int value="0" label="AndroidID is missing"/>
+  <int value="1" label="Main account is missing"/>
+  <int value="2" label="ARC DPC is out of sync"/>
+  <int value="3" label="Reauth not needed"/>
+</enum>
+
+<enum name="ArcBootContinueCodeInstallationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Host side code is not ready"/>
+  <int value="2" label="Can not install host code"/>
+</enum>
+
+<enum name="ArcClipboardDragDropEvent">
+  <int value="0" label="Text clipboard set from Chrome"/>
+  <int value="1" label="Image clipboard set from Chrome"/>
+  <int value="2" label="Text clipboard set from ARC"/>
+  <int value="3" label="Image clipboard set from ARC"/>
+  <int value="4" label="Text dropped from Chrome"/>
+  <int value="5" label="Image dropped from Chrome"/>
+  <int value="6" label="Text dropped from ARC"/>
+  <int value="7" label="Image dropped from ARC"/>
+</enum>
+
+<enum name="ArcCodeRelocationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error bootlockboxd not ready"/>
+  <int value="2" label="Error unable to relocate"/>
+  <int value="3" label="Error unable to sign"/>
+  <int value="4" label="Salt empty"/>
+</enum>
+
+<enum name="ArcCodeVerificationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error bootlockboxd not ready"/>
+  <int value="2" label="The first boot after OTA or OOBE boot"/>
+  <int value="3" label="Invalid code"/>
+</enum>
+
+<enum name="ArcContainerLifetimeEvent">
+  <int value="0" label="Starting"/>
+  <int value="1" label="Failed to start"/>
+  <int value="2" label="Crashed early"/>
+  <int value="3" label="Crashed"/>
+</enum>
+
+<enum name="ArcCorePriAbiMigEvent">
+<!-- Value from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="Migration Completed"/>
+  <int value="2" label="GMS No Downgrade"/>
+  <int value="3" label="GMS Downgrade Success"/>
+  <int value="4" label="GMS Downgrade Failure"/>
+  <int value="5" label="Webview No Downgrade"/>
+  <int value="6" label="Webview Downgrade Success"/>
+  <int value="7" label="Webview Downgrade Failure"/>
+</enum>
+
+<enum name="ArcCpuRestrictionVmResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Other failure reason"/>
+  <int value="2" label="VM concierge service is not available"/>
+  <int value="3" label="VM concierge client is not available"/>
+  <int value="4" label="VM Concierge did not respond"/>
+</enum>
+
+<enum name="ArcCustomTabsSessionEndReason">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
+  <int value="0" label="Closed"/>
+  <int value="1" label="Forwarded to a normal tab"/>
+</enum>
+
+<enum name="ArcDataRestoreStatus">
+  <summary>
+    Tracks status of SELinux contexts restore flows of Android /data for ARC++ P
+    container. This also means ARC++ container boot delay.
+  </summary>
+  <int value="0" label="NotNeeded">
+    SELinux data restoration was not needed.
+  </int>
+  <int value="1" label="Success">SELinux data restoration succeeded.</int>
+  <int value="2" label="Failed">SELinux data restoration failed.</int>
+</enum>
+
+<enum name="ArcEnableState">
+  <int value="0" label="Enabled not managed"/>
+  <int value="1" label="Disabled not managed"/>
+  <int value="2" label="Managed on"/>
+  <int value="3" label="Managed on but disabled"/>
+  <int value="4" label="Managed off"/>
+  <int value="5" label="Not allowed but enabled"/>
+  <int value="6" label="Not allowed"/>
+</enum>
+
+<enum name="ArcFeaturesParseResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kErrorParsingJson"/>
+  <int value="2" label="kInvalidFeatureList"/>
+  <int value="3" label="kInvalidUnavailableFeatureList"/>
+  <int value="4" label="kInvalidPropertiesList"/>
+  <int value="5" label="kMissingFingerprintProperty"/>
+  <int value="6" label="kMissingSdkProperty"/>
+  <int value="7" label="kMissingReleaseProperty"/>
+  <int value="8" label="kMissingAbiListProperty"/>
+  <int value="9" label="kMissingPlayStoreVersion"/>
+</enum>
+
+<enum name="ArcFileSystemWatcherExceedLimitState">
+  <int value="0"
+      label="inotify exceeds its limit when ArcFileSystemWatcher is started"/>
+  <int value="1"
+      label="inotify exceeds its limit while processing a filesystem change"/>
+</enum>
+
+<enum name="ArcKeyMintError">
+  <int value="0" label="Other unspecified error code"/>
+  <int value="1" label="OK"/>
+  <int value="2" label="Unknown error"/>
+  <int value="3" label="Invalid Key Blob"/>
+  <int value="4" label="Invalid Arguement"/>
+  <int value="5" label="Unsupported Algorithm"/>
+  <int value="6" label="Unimplemented"/>
+</enum>
+
+<enum name="ArcMainAccountHashMigrationStatus">
+  <int value="0" label="Hash code migration not required as v2 is not set."/>
+  <int value="1" label="Hash code migration from v2 to v3 successful"/>
+  <int value="2" label="Hash code migration from v2 to v3 failed"/>
+  <int value="3"
+      label="Hash code migration failed as there are multiple account with
+             the same hash."/>
+  <int value="4"
+      label="Hash code migration failed as there are no account matching the
+             existing valid hash"/>
+</enum>
+
+<enum name="ArcMojoConnectionType">
+  <summary>Types of mojo connections to the ARC container.</summary>
+  <int value="0" label="AppLauncher"/>
+  <int value="1" label="IntentHelper"/>
+</enum>
+
+<enum name="ArcNativeBridgeType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
+  <int value="2" label="Houdini"/>
+  <int value="3" label="Ndk-translation"/>
+</enum>
+
+<enum name="ArcNearbyShareDataHandlingResult">
+  <int value="0" label="Directory does not exists."/>
+  <int value="1" label="Unexpected null g_browser_process."/>
+  <int value="2" label="Invalid profile."/>
+  <int value="3" label="Base directory is empty."/>
+  <int value="4" label="Failed to create unique temp directory."/>
+  <int value="5" label="External urls are empty."/>
+  <int value="6" label="Invalid size provided for file name."/>
+  <int value="7" label="Invalid FileSystemURL from handle."/>
+  <int value="8" label="FileSystemURL is not of external file type."/>
+  <int value="9" label="Invalid destination file descriptor."/>
+  <int value="10" label="Invalid destination file at path."/>
+  <int value="11" label="Failed to prepare temp directory and stream files."/>
+  <int value="12" label="Failed to stream file IO data."/>
+  <int value="13" label="Invalid number of bytes read."/>
+  <int value="14" label="Timeout."/>
+</enum>
+
+<enum name="ArcNearbyShareIOErrorResult">
+  <int value="0" label="Failed to create FileStreamReader."/>
+  <int value="1" label="Failed to wait for data pipe."/>
+  <int value="2" label="Unexpected close of data pipe."/>
+  <int value="3" label="Failed to write to data pipe."/>
+  <int value="4" label="Reached EOF even though there are remaining bytes."/>
+  <int value="5" label="Read failed."/>
+  <int value="6" label="Could not find valid endpoint for streamed data."/>
+</enum>
+
+<enum name="ArcNetworkError">
+<!-- ArcNetworkError values from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Get host networks error (mojo)"/>
+  <int value="2" label="Add host WiFi network error (mojo)"/>
+  <int value="3" label="Forget host WiFi network error (mojo)"/>
+  <int value="4" label="Connect host WiFi network error (mojo)"/>
+  <int value="5" label="Disconnect host WiFi network error (mojo)"/>
+  <int value="6" label="Host WiFi scan timeout (mojo)"/>
+  <int value="7" label="Get host WiFi scan results error (mojo)"/>
+  <int value="8" label="Get interface IPv4 address error (netd)"/>
+  <int value="9" label="Set interface IPv4 address error (netd)"/>
+  <int value="10" label="List interfaces error (netd)"/>
+  <int value="11" label="Set interface up error (netd)"/>
+  <int value="12" label="Set interface mtu error (netd)"/>
+  <int value="13" label="Clear interface configuration error (netd)"/>
+  <int value="14" label="Get interface configuration error (netd)"/>
+  <int value="15" label="Restart IPv6 error (netd)"/>
+  <int value="16" label="Start IP forwarding error (netd)"/>
+  <int value="17" label="Stop IP forwarding error (netd)"/>
+  <int value="18" label="Start interface forwarding error (netd)"/>
+  <int value="19" label="Stop interface forwarding error (netd)"/>
+  <int value="20" label="Start tethering error (netd)"/>
+  <int value="21" label="Stop tethering error (netd)"/>
+  <int value="22" label="SNAT start error (netd)"/>
+  <int value="23" label="SNAT stop error (netd)"/>
+  <int value="24" label="Invalid PasspointConfiguration (wifi)"/>
+  <int value="25" label="Service connection error (ArcHostVpnService)"/>
+  <int value="26" label="Service crashed error (ArcHostVpnService)"/>
+  <int value="27" label="Service internal error (ArcHostVpnService)"/>
+  <int value="28" label="Update host WiFi network error (mojo)"/>
+</enum>
+
+<enum name="ArcNetworkEvent">
+<!-- ArcNetworkEvent values from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Legacy Android VPN connection"/>
+  <int value="2" label="3p Android VPN connection (VpnService)"/>
+  <int value="3" label="Configure Android VPN (mojo)"/>
+  <int value="4" label="Disconnect Android VPN (mojo)"/>
+  <int value="5" label="DNS test (mojo)"/>
+  <int value="6" label="HTTP test (mojo)"/>
+  <int value="7" label="Ping test (mojo)"/>
+  <int value="8" label="New client (WifiScanner)"/>
+  <int value="9" label="Get scan results (WifiScanner)"/>
+  <int value="10" label="Get single scan results (WifiScanner)"/>
+  <int value="11" label="Enable WifiScanner (WifiScanner)"/>
+  <int value="12" label="Disable WifiScanner (WifiScanner)"/>
+  <int value="13" label="Start single scan (WifiScanner)"/>
+  <int value="14" label="Start background scan (WifiScanner)"/>
+  <int value="15" label="Start PNO scan (WifiScanner)"/>
+  <int value="16" label="Register scan result listener (WifiScanner)"/>
+  <int value="17" label="Start scan (WifiManager)"/>
+  <int value="18" label="Enable WiFi (WifiManager)"/>
+  <int value="19" label="Disable WiFi (WifiManager)"/>
+  <int value="20" label="Disconnect WiFi network (WifiManager)"/>
+  <int value="21" label="Reconnect WiFi network (WifiManager)"/>
+  <int value="22" label="Get WiFi networks (WifiManager)"/>
+  <int value="23" label="Get WiFi networks with PIIs (WifiManager)"/>
+  <int value="24" label="Add WiFi network (WifiManager)"/>
+  <int value="25" label="Remove WiFi network (WifiManager)"/>
+  <int value="26" label="Enable WiFi network (WifiManager)"/>
+  <int value="27" label="Disable WiFi network (WifiManager)"/>
+  <int value="28" label="Connect WiFi network (WifiManager)"/>
+  <int value="29" label="Save WiFi network (WifiManager)"/>
+  <int value="30" label="Forget WiFi network (WifiManager)"/>
+  <int value="31" label="Register scan result listener (WifiManager)"/>
+  <int value="32" label="Add WiFi network suggestion (WifiManager)"/>
+  <int value="33" label="Enable TDLS offload to local peer (WifiManager)"/>
+  <int value="34" label="Start local hotspot (WifiManager)"/>
+  <int value="35" label="Add Passpoint configuration (WifiManager)"/>
+  <int value="36" label="IPsec IKE2 Android VPN connection (VpnManager)"/>
+  <int value="37" label="Android VPN IPv6 provisioning"/>
+  <int value="38" label="Android VPN IPv4 provisioning"/>
+  <int value="39" label="Disconnect host VPN"/>
+  <int value="40" label="Start service connection (ArcHostVpnService)"/>
+  <int value="41" label="Replace VPN routing interface (ArcHostVpnService)"/>
+  <int value="42" label="Disconnect service (ArcHostVpnService)"/>
+</enum>
+
+<enum name="ArcNotificationExpandState">
+  <int value="0" label="Fixed size"/>
+  <int value="1" label="Expandable"/>
+  <int value="2" label="Expanded"/>
+  <int value="3" label="Collapsed"/>
+</enum>
+
+<enum name="ArcNotificationStyle">
+  <int value="0" label="No Style"/>
+  <int value="1" label="Big Picture Style"/>
+  <int value="2" label="Big Text Style"/>
+  <int value="3" label="Messaging Style"/>
+  <int value="4" label="Inbox Style"/>
+  <int value="5" label="Media Style"/>
+  <int value="6" label="Decorated Custom View Style"/>
+  <int value="7" label="Decorated Media Custom View Style"/>
+  <int value="8" label="Call Style"/>
+</enum>
+
+<enum name="ArcOptInAction">
+  <summary>Defines Arc OptIn actions</summary>
+  <int value="0" label="DEPRECATED: Opted Out"/>
+  <int value="1" label="DEPRECATED: Opted In"/>
+  <int value="2" label="DEPRECATED: Notification accepted"/>
+  <int value="3" label="DEPRECATED: Notification declined"/>
+  <int value="4" label="DEPRECATED: Notification timed out"/>
+  <int value="5" label="Retry after OptIn failure"/>
+  <int value="6" label="Opted In from OOBE"/>
+  <int value="7" label="Opted Out from OOBE"/>
+  <int value="8" label="Opted In from session"/>
+  <int value="9" label="Opted Out from session"/>
+  <int value="10" label="Opted In from OOBE (Configuration)"/>
+</enum>
+
+<enum name="ArcOptInCancel">
+  <summary>Defines Arc OptIn cancel reason</summary>
+  <int value="0" label="Canceled by user"/>
+  <int value="1" label="Unclassified failure"/>
+  <int value="2" label="Network failure"/>
+  <int value="3" label="DEPRECATED: GMS Services are not available"/>
+  <int value="4" label="DEPRECATED: Bad authentication returned by server"/>
+  <int value="5" label="DEPRECATED: GMS Core is not available"/>
+  <int value="6" label="Provisioning failed"/>
+  <int value="7" label="Android Management required"/>
+  <int value="8" label="Busy"/>
+</enum>
+
+<enum name="ArcOptInNetworkErrorAction">
+  <summary>
+    Defines Arc optin dialog actions when a network-related provisioning error
+    occurs.
+  </summary>
+  <int value="0" label="Window closed"/>
+  <int value="1" label="Retry clicked"/>
+  <int value="2" label="SendFeedback clicked"/>
+  <int value="3" label="CheckNetwork clicked"/>
+  <int value="4" label="Network error shown">
+    This bucket encompasses all others and works as a total count for
+    network-related errors (instead of the histogram's total sample count which
+    doesn't reflect that information). This enum value was added on 2023 Dec 21
+    The data before this date is missing.
+  </int>
+</enum>
+
+<enum name="ArcOptInResult">
+  <summary>
+    Defines Arc OptIn flow states. Normally each OptIn flow reports 2-3 states;
+    Started should be accompined with Succeeded or Canceled. Optionally
+    Succeeded after retry or Canceled after error may be provided.
+  </summary>
+  <int value="0" label="Started"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Succeeded after retry"/>
+  <int value="3" label="Canceled"/>
+  <int value="4" label="Canceled after error"/>
+</enum>
+
+<enum name="ArcOptInSilentAuthCode">
+  <summary>Defines Arc OptIn Silent Auth code state</summary>
+  <int value="0" label="Disabled (deprecated)"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="HTTP Context cannot be prepared"/>
+  <int value="3" label="No LST token is available"/>
+  <int value="4" label="Failed due sever HTTP error"/>
+  <int value="5" label="Failed due client HTTP error"/>
+  <int value="6" label="Failed due unknown HTTP error"/>
+  <int value="7" label="Cannot parse HTTP response"/>
+  <int value="8" label="No Auth code in response"/>
+  <int value="9"
+      label="The network was configured with a mandatory PAC script that
+             could not be fetched, parsed or executed."/>
+</enum>
+
+<enum name="ArcPlayAutoInstallRequestState">
+  <summary>Defines PlayAutoInstal flow state aftert the request.</summary>
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="No account provided"/>
+  <int value="3" label="No apps returned"/>
+  <int value="4" label="Interrupted"/>
+  <int value="5" label="No response from Play Store"/>
+  <int value="6" label="No access to Play Store"/>
+  <int value="7" label="No Gms Proxy"/>
+  <int value="8" label="No access to Gms Proxy"/>
+  <int value="9" label="Timeout"/>
+</enum>
+
+<enum name="ArcPolicyKey">
+  <summary>Defines the keys ArcPolicy object can contain.</summary>
+  <int value="0" label="unknown"/>
+  <int value="1" label="accountTypesWithManagementDisabled"/>
+  <int value="2" label="alwaysOnVpnPackage"/>
+  <int value="3" label="applications"/>
+  <int value="4" label="availableAppSetPolicy"/>
+  <int value="5" label="complianceRules"/>
+  <int value="6" label="installUnknownSourcesDisabled"/>
+  <int value="7" label="maintenanceWindow"/>
+  <int value="8" label="modifyAccountsDisabled"/>
+  <int value="9" label="permissionGrants"/>
+  <int value="10" label="permittedAccessibilityServices"/>
+  <int value="11" label="playStoreMode"/>
+  <int value="12" label="shortSupportMessage"/>
+  <int value="13" label="statusReportingSettings"/>
+  <int value="14" label="workAccountAppWhitelist"/>
+  <int value="15" label="apkCacheEnabled"/>
+  <int value="16" label="debuggingFeaturesDisabled"/>
+  <int value="17" label="cameraDisabled"/>
+  <int value="18" label="printingDisabled"/>
+  <int value="19" label="screenCaptureDisabled"/>
+  <int value="20" label="shareLocationDisabled"/>
+  <int value="21" label="unmuteMicrophoneDisabled"/>
+  <int value="22" label="setWallpaperDisabled"/>
+  <int value="23" label="vpnConfigDisabled"/>
+  <int value="24" label="privateKeySelectionEnabled"/>
+  <int value="25" label="choosePrivateKeyRules"/>
+  <int value="26" label="credentialsConfigDisabled"/>
+  <int value="27" label="caCerts"/>
+  <int value="28" label="requiredKeyPairs"/>
+  <int value="29" label="enabledSystemAppPackageNames"/>
+</enum>
+
+<enum name="ArcProvisioningCheckInError">
+  <summary>Defines ARC GMS check-in failure reasons</summary>
+  <int value="1" label="Check-in failed"/>
+  <int value="2" label="Timeout"/>
+  <int value="3" label="Internal error"/>
+</enum>
+
+<enum name="ArcProvisioningCloudFlowError">
+  <summary>Defines Arc Cloud DPC Provisioning failure reasons</summary>
+  <int value="0" label="Unknown or uncommon error"/>
+  <int value="1" label="Enrollment token provided was invalid"/>
+  <int value="2" label="Enterprise hit device quota"/>
+  <int value="3"
+      label="CloudDPS could not fulfill request because of a transient error"/>
+  <int value="4" label="Account could not be added"/>
+  <int value="5" label="Could not get Android ID"/>
+  <int value="6" label="Device got stuck in quarantine mode"/>
+  <int value="7" label="Setup step timed out"/>
+  <int value="8"
+      label="There was no network, so device couldn't fulfill a request"/>
+  <int value="9" label="Enterprise is not registered with CloudDPx"/>
+  <int value="10" label="User cancelled the step"/>
+  <int value="11"
+      label="Either account migration failed or account was deleted by user
+             during provisioning"/>
+  <int value="12" label="Policy got stuck in invalid state"/>
+  <int value="13" label="Issues with DpcSupport"/>
+  <int value="14" label="Account wad not ready"/>
+  <int value="15" label="Checkin failed"/>
+  <int value="16" label="Issues with whitelisting work account"/>
+  <int value="17" label="Error parsing JSON, most likely policy JSON"/>
+  <int value="18" label="ManagedProvisioning failed"/>
+  <int value="19" label="Setup intent could not be parsed"/>
+  <int value="20" label="CloudDPS exception with an uncommon server code"/>
+  <int value="21"
+      label="Removing a previously existing unmanaged account failed"/>
+  <int value="22" label="Error with getting OAuth token"/>
+  <int value="23" label="AccountException with no exception details"/>
+  <int value="24"
+      label="Error with getting OAuth token due to AuthenticatorException"/>
+  <int value="25" label="Error with getting OAuth token due to IOException"/>
+  <int value="26"
+      label="Error with getting OAuth token due to OperationCanceledException"/>
+</enum>
+
+<enum name="ArcProvisioningSignInError">
+  <summary>Defines ARC GMS sign-in failure reasons</summary>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Sign-in service unavailble"/>
+  <int value="3" label="Bad authentication"/>
+  <int value="4" label="Unknown error"/>
+  <int value="5" label="Timeout"/>
+  <int value="6" label="Internal error"/>
+</enum>
+
+<enum name="ArcProvisioningStatus">
+  <summary>Defines ARC GMS check-in failure reasons</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Unclassified failure"/>
+  <int value="2" label="GMS sign-in failed"/>
+  <int value="3" label="GMS check-in failed"/>
+  <int value="4" label="Cloud provision flow failed"/>
+  <int value="5" label="Mojo version mistmached"/>
+  <int value="6" label="ARC provisioning timeout"/>
+  <int value="7" label="Chrome provisioning timeout"/>
+  <int value="8" label="ARC instance is stopped before complete provisioning"/>
+  <int value="9" label="Disabled"/>
+  <int value="10" label="Chrome server communication error"/>
+  <int value="11" label="Network is unavailable"/>
+  <int value="12" label="Unsupported account type"/>
+  <int value="13" label="Account is not present in Chrome"/>
+</enum>
+
+<enum name="ArcResizeLockState">
+<!-- Value from components/arc/mojom/compatibility_mode.mojom -->
+
+  <summary>
+    Defines the types of resize lock setting status that overrides the state
+    Android calculates
+  </summary>
+  <int value="0" label="UNDEFINED"/>
+  <int value="1" label="READY"/>
+  <int value="2" label="ON"/>
+  <int value="3" label="OFF"/>
+  <int value="4" label="FULLY_LOCKED"/>
+</enum>
+
+<enum name="ArcSdkVersionUpgradeType">
+  <summary>Defines the types of ARC SDK version upgrade</summary>
+  <int value="0" label="NO_UPGRADE"/>
+  <int value="1" label="UNKNOWN_UPGRADE"/>
+  <int value="2" label="UNKNOWN_DOWNGRADE"/>
+  <int value="3" label="M_TO_N"/>
+  <int value="4" label="M_TO_P"/>
+  <int value="5" label="N_TO_P"/>
+  <int value="6" label="P_TO_Q"/>
+  <int value="7" label="N_TO_R"/>
+  <int value="8" label="P_TO_R"/>
+  <int value="9" label="R_TO_T"/>
+  <int value="10" label="P_TO_T"/>
+</enum>
+
+<enum name="ArcStopReason">
+  <summary>Describes the reason the ARC instance is stopped</summary>
+  <int value="0" label="SHUTDOWN"/>
+  <int value="1" label="GENERIC_BOOT_FAILURE"/>
+  <int value="2" label="LOW_DISK_SPACE"/>
+  <int value="3" label="CRASH"/>
+</enum>
+
+<enum name="ArcSupervisionTransitionResult">
+  <summary>
+    Defines Arc supervision transition success and failure reasons
+  </summary>
+  <int value="0" label="CloudDPC supervision was disabled successfully."/>
+  <int value="1" label="CloudDPC supervision was already disabled."/>
+  <int value="2" label="CloudDPC supervision was enabled successfully."/>
+  <int value="3" label="CloudDPC supervision was already enabled."/>
+  <int value="4" label="Invalid state returned from Chrome."/>
+  <int value="5"
+      label="Failed to disable CloudDPC due to an unspecified error."/>
+  <int value="6"
+      label="Failed to enable CloudDPC due to an unspecified error."/>
+</enum>
+
+<enum name="ArcUserInteraction">
+  <summary>Defines Arc User Interactions</summary>
+  <int value="0" label="Action not user initiated"/>
+  <int value="1" label="App started from launcher"/>
+  <int value="2" label="App started from launcher context menu"/>
+  <int value="3" label="App started from launcher search"/>
+  <int value="4" label="App started from launcher search context menu"/>
+  <int value="5" label="App started from launcher suggested apps"/>
+  <int value="6" label="App started from launcher suggested apps context menu"/>
+  <int value="7" label="App started from shelf"/>
+  <int value="8" label="App started from shelf context menu"/>
+  <int value="9" label="App started from settings"/>
+  <int value="10" label="Interaction with notification"/>
+  <int value="11" label="Interaction with app window"/>
+  <int value="12" label="App started from extension API"/>
+  <int value="13" label="App started from stylus tools"/>
+  <int value="14" label="App started from file manager"/>
+  <int value="15" label="App started by left-clicking on link"/>
+  <int value="16" label="App started from link context menu"/>
+  <int value="17" label="App started from Smart Text Selection context menu"/>
+  <int value="18" label="App started from Kiosk Next Home"/>
+  <int value="19" label="Interaction with gamepad"/>
+  <int value="20" label="App started from URL in the Omnibox"/>
+  <int value="21" label="App started from sharesheet"/>
+  <int value="22" label="App started from full restore"/>
+  <int value="23" label="App started from other app"/>
+</enum>
+
+<enum name="ArcVmDataMigrationAccessDeniedAtOpenFileFailureType">
+  <int value="0" label="Other"/>
+  <int value="1" label="References parent"/>
+  <int value="2" label="False positive case of references parent"/>
+  <int value="3" label="Permission denied"/>
+  <int value="4" label="Is a directory"/>
+  <int value="5" label="Read-only file system"/>
+  <int value="6" label="Operation not permitted"/>
+</enum>
+
+<enum name="ArcVmDataMigrationFailedPathType">
+  <int value="0" label="Unknown absolute path"/>
+  <int value="1" label="Other (src)"/>
+  <int value="2" label="Other (dest)"/>
+  <int value="3" label="Other (src or dest)"/>
+  <int value="4" label="Under /data/media/0/Android/data (src)"/>
+  <int value="5" label="Under /data/media/0/Android/data (dest)"/>
+  <int value="6" label="Under /data/media/0/Android/data (src or dest)"/>
+  <int value="7" label="Under /data/media/0/Android/obb (src)"/>
+  <int value="8" label="Under /data/media/0/Android/obb (dest)"/>
+  <int value="9" label="Under /data/media/0/Android/obb (src or dest)"/>
+  <int value="10"
+      label="Under /data/media/0 except for Android/{data,obb} (src)"/>
+  <int value="11"
+      label="Under /data/media/0 except for Android/{data,obb} (dest)"/>
+  <int value="12"
+      label="Under /data/media/0 except for Android/{data,obb} (src or dest)"/>
+  <int value="13" label="Under /data/app (src)"/>
+  <int value="14" label="Under /data/app (dest)"/>
+  <int value="15" label="Under /data/app (src or dest)"/>
+  <int value="16" label="Under /data/data (src)"/>
+  <int value="17" label="Under /data/data (dest)"/>
+  <int value="18" label="Under /data/data (src or dest)"/>
+  <int value="19" label="Under /data/user/0 (src)"/>
+  <int value="20" label="Under /data/user/0 (dest)"/>
+  <int value="21" label="Under /data/user/0 (src or dest)"/>
+  <int value="22" label="Under /data/user_de/0 (src)"/>
+  <int value="23" label="Under /data/user_de/0 (dest)"/>
+  <int value="24" label="Under /data/user_de/0 (src or dest)"/>
+</enum>
+
+<enum name="ArcVmDataMigrationFinishReason">
+  <summary>
+    Defines the reason why ARCVM /data migration is marked as finished.
+  </summary>
+  <int value="0" label="No Android /data to migrate"/>
+  <int value="1" label="Migration finished successfully"/>
+  <int value="2" label="Migration failed"/>
+</enum>
+
+<enum name="ArcVmDataMigrationScreenEvent">
+  <summary>
+    The types of events that can happen during the screen flow of ARCVM /data
+    migration.
+  </summary>
+  <int value="0" label="Welcome screen is shown"/>
+  <int value="1" label="Skip button is clicked"/>
+  <int value="2" label="Update button is clicked"/>
+  <int value="3" label="Progress screen is shown"/>
+  <int value="4" label="Resume screen is shown"/>
+  <int value="5" label="Success screen is shown"/>
+  <int value="6" label="Failure screen is shown"/>
+  <int value="7" label="Finish button is clicked"/>
+  <int value="8" label="Report button is clicked"/>
+</enum>
+
+<enum name="ArcVmDataMigrationScreenInitialState">
+  <summary>
+    The types of initial states of the screen flow of ARCVM /data migration.
+  </summary>
+  <int value="0" label="Ready to start migration"/>
+  <int value="1" label="Free disk space is too small"/>
+  <int value="2" label="Battery is not charged enough"/>
+</enum>
+
+<enum name="ArcVmDataMigrationScreenSetupFailure">
+  <summary>
+    The types of failures that can happen during the setup phase of the screen
+    flow of ARCVM /data migration.
+  </summary>
+  <int value="0" label="DEPRECATED: GetVmInfo request failed"/>
+  <int value="1" label="DEPRECATED: StopVm request failed"/>
+  <int value="2" label="DEPRECATED: Upstart jobs could not be stopped"/>
+  <int value="3" label="GetFreeDiskSpace request failed"/>
+  <int value="4" label="GetAndroidDataInfo request failed"/>
+  <int value="5" label="CreateDiskImage request failed due to D-Bus error"/>
+  <int value="6" label="CreateDiskImage request failed due to general error"/>
+  <int value="7" label="ArcVmDataMigrator could not be started"/>
+  <int value="8" label="StartMigration request failed"/>
+  <int value="9" label="ARCVM or ARCVM Upstart jobs could not be stopped"/>
+</enum>
+
+<enum name="ArcVmDataMigrationSetupResult">
+  <summary>
+    The types of the result of the setup of ARCVM /data migration.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to create mount point"/>
+  <int value="2" label="Failed to attach loop device"/>
+  <int value="3" label="Failed to mount migration destination"/>
+  <int value="4" label="Failed to create thread for migration"/>
+  <int value="5" label="Failed to create /data/media with casefold flag"/>
+</enum>
+
+<enum name="ArcVmDataMigrationStatus">
+  <summary>Defines the status of ARCVM /data migration.</summary>
+  <int value="0" label="The user has not been notified"/>
+  <int value="1" label="The user has been notified"/>
+  <int value="2" label="The user has confirmed the migration"/>
+  <int value="3" label="The migration has started"/>
+  <int value="4" label="The migration has finished"/>
+</enum>
+
+<enum name="BooleanIsCustomNotification">
+  <int value="0" label="Not Custom Notification"/>
+  <int value="1" label="Is Custom Notification"/>
+</enum>
+
+<enum name="CompanionLibraryApisList">
+<!-- Value from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="GetDeviceMode"/>
+  <int value="2" label="GetDisplayTopology"/>
+  <int value="3" label="GetPrimaryDisplayId"/>
+  <int value="4" label="GetWorkspaceInsets"/>
+  <int value="5" label="RegisterArcDeviceInformationCallback"/>
+  <int value="6" label="UnregisterArcDeviceInformationCallback"/>
+  <int value="7" label="ActivateTask"/>
+  <int value="8" label="GetCaptionHeight"/>
+  <int value="9" label="GetHiddenCaptionButton"/>
+  <int value="10" label="HideCaptionButton"/>
+  <int value="11" label="GetTaskWindowBounds"/>
+  <int value="12" label="GetTaskWindowState"/>
+  <int value="13" label="IsShadowHidden"/>
+  <int value="14" label="HideShadow"/>
+  <int value="15" label="OnCloseRequestResponse"/>
+  <int value="16" label="SetOnCloseRequestHandler"/>
+  <int value="17" label="RemoveOnCloseRequestHandler"/>
+  <int value="18" label="SetTaskWindowBounds"/>
+  <int value="19" label="SetTaskWindowState"/>
+  <int value="20" label="GetWindowState"/>
+  <int value="21" label="WindowInteractionController"/>
+  <int value="22" label="SetClippingToTaskDisable"/>
+  <int value="23" label="IsClippingToTaskDisable"/>
+</enum>
+
+<enum name="CrOSFileSystemMigrationEndStatus">
+  <int value="1" label="New migration failed (generic failure)"/>
+  <int value="2" label="New migration succeeded"/>
+  <int value="3" label="Resumed migration failed (generic failure)"/>
+  <int value="4" label="Resumed migration succeeded"/>
+  <int value="5" label="New migration failed (low initial disk space)"/>
+  <int value="6" label="Resumed migration failed (low initial disk space)"/>
+  <int value="7" label="New migration failed (file error)"/>
+  <int value="8" label="Resumed migration failed (file error)"/>
+  <int value="9" label="New migration failed (file error EIO on open)"/>
+  <int value="10" label="Resumed migration failed (file error EIO on open)"/>
+  <int value="11" label="New migration cancelled"/>
+  <int value="12" label="Resumed migration cancelled"/>
+  <int value="13"
+      label="New migration failed (low disk space during migration)"/>
+  <int value="14"
+      label="Resumed migration failed (low disk space during migration)"/>
+</enum>
+
+<enum name="CrOSFileSystemMigrationFailedOperationType">
+  <int value="1" label="Other"/>
+  <int value="2" label="open(src_file)"/>
+  <int value="3" label="open(dest_file)"/>
+  <int value="4" label="symlink"/>
+  <int value="5" label="delete"/>
+  <int value="6" label="get-attribute"/>
+  <int value="7" label="mkdir"/>
+  <int value="8" label="readlink"/>
+  <int value="9" label="seek"/>
+  <int value="10" label="sendfile"/>
+  <int value="11" label="set-attribute"/>
+  <int value="12" label="stat"/>
+  <int value="13" label="sync"/>
+  <int value="14" label="truncate"/>
+  <int value="15" label="non fatal open(src_file)"/>
+  <int value="16" label="failed at remove-attribute"/>
+</enum>
+
+<enum name="CrOSFileSystemMigrationStartStatus">
+  <int value="1" label="Migration started"/>
+  <int value="2" label="Migration resumed"/>
+</enum>
+
+<enum name="InstallationCounterReasonEnum">
+  <int value="0" label="User"/>
+  <int value="1" label="Default App"/>
+  <int value="2" label="OEM"/>
+  <int value="3" label="Policy based App"/>
+  <int value="4" label="Unknown Reason"/>
+</enum>
+
+<enum name="LowLatencyStylusLibraryApisList">
+<!-- Value from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="InkOverlay::LowLatencyStylusLibInActiveUse"/>
+  <int value="2" label="GLInkOverlay::LowLatencyStylusLibInActiveUse"/>
+  <int value="3" label="GLInkRenderer::SetProjectionMatrix"/>
+  <int value="4" label="GLInkRenderer::SetViewMatrix"/>
+</enum>
+
+<enum name="NearbyShareArcBridgeFailResult">
+  <int value="0" label="Instance is null."/>
+  <int value="1" label="Instance already exists."/>
+</enum>
+
+<enum name="PrintPreviewHelperEvents">
+  <int value="0" label="PREVIEW_EVENT_REQUESTED"/>
+  <int value="1" label="PREVIEW_EVENT_CACHE_HIT"/>
+  <int value="2" label="PREVIEW_EVENT_CREATE_DOCUMENT"/>
+  <int value="3" label="PREVIEW_EVENT_NEW_SETTINGS"/>
+  <int value="4" label="PREVIEW_EVENT_INITIATED"/>
+</enum>
+
+<enum name="UnaffiliatedDeviceArcAllowedStatus">
+  <int value="0" label="Enabled on affiliated device"/>
+  <int value="1" label="Enabled on unaffiliated device"/>
+  <int value="2" label="Disabled on unaffiliated device"/>
+</enum>
+
+<enum name="UninstallCounterReasonEnum">
+  <int value="0" label="User"/>
+</enum>
+
+<enum name="VpnServiceBuilderCompatApisList">
+<!-- Value from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="VPN Exclude Route"/>
+  <int value="2" label="VPN Add Route"/>
+</enum>
+
+<enum name="WaylandTimingEvent">
+<!--
+  WaylandTimingEvent values from components/arc/mojom/metrics.mojom
+
+  Terminology:
+  binder = Android binder events handled by wayland-service.
+  wl = Public wayland interfaces.
+  zaura = Aura shell interface to a wayland surface.
+  zcr = Chrome protocol extension (not part of public wayland).
+  -->
+
+  <int value="0" label="Other unspecified event"/>
+  <int value="1" label="Released clipboard data (binder)"/>
+  <int value="2" label="Fenced buffer released (wl)"/>
+  <int value="3" label="Input keyboard leave (wl)"/>
+  <int value="4" label="Input pointer motion (wl)"/>
+  <int value="5" label="Input pointer leave (wl)"/>
+  <int value="6" label="Aura shell window activated from focus switch (zaura)"/>
+  <int value="7" label="Aura surface occlusion changed (zaura)"/>
+  <int value="8" label="Remote surface window geometry changed (zcr)"/>
+  <int value="9" label="Remote surface window bounds changed in output (zcr)"/>
+  <int value="10" label="Vsync timing update (zcr)"/>
+</enum>
+
+<enum name="WindowPredictorLaunchType">
+  <int value="0" label="Success"/>
+  <int value="1" label="FailedNoArcTaskHandler"/>
+  <int value="2" label="FailedAppPendingRestore"/>
+  <int value="3" label="FailedNoArcAppLaunchHandler"/>
+</enum>
+
+<enum name="WindowPredictorUseCase">
+  <int value="0" label="ArcNotReady"/>
+  <int value="1" label="InstanceResponse"/>
+  <int value="2" label="ArcVmmSwapped"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

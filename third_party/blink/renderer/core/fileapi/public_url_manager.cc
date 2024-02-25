@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
@@ -144,6 +145,22 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
   }
 }
 
+PublicURLManager::PublicURLManager(
+    base::PassKey<StorageAccessHandle>,
+    ExecutionContext* execution_context,
+    mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore>
+        frame_url_store_remote)
+    : ExecutionContextLifecycleObserver(execution_context),
+      frame_url_store_(execution_context),
+      worker_url_store_(execution_context) {
+  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
+    execution_context_type_ = ExecutionContextIdForHistogram::kFrame;
+  }
+  frame_url_store_.Bind(
+      std::move(frame_url_store_remote),
+      execution_context->GetTaskRunner(TaskType::kFileReading));
+}
+
 mojom::blink::BlobURLStore& PublicURLManager::GetBlobURLStore() {
   DCHECK_NE(frame_url_store_.is_bound(), worker_url_store_.is_bound());
   if (frame_url_store_.is_bound()) {
@@ -172,7 +189,7 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
     // Determining the top-level site for workers is non-trivial. We assume
     // usage of blob URLs in workers is much lower than in windows, so we
     // should still get useful metrics even while ignoring workers.
-    absl::optional<BlinkSchemefulSite> top_level_site;
+    std::optional<BlinkSchemefulSite> top_level_site;
     if (GetExecutionContext()->IsWindow()) {
       auto* window = To<LocalDOMWindow>(GetExecutionContext());
       if (window->top() && window->top()->GetFrame()) {
@@ -258,9 +275,9 @@ void PublicURLManager::Resolve(
   DCHECK(url.ProtocolIs("blob"));
 
   auto metrics_callback = [](ExecutionContext* execution_context,
-                             const absl::optional<base::UnguessableToken>&
+                             const std::optional<base::UnguessableToken>&
                                  unsafe_agent_cluster_id,
-                             const absl::optional<BlinkSchemefulSite>&
+                             const std::optional<BlinkSchemefulSite>&
                                  unsafe_top_level_site) {
     if (execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
       execution_context->CountUse(
@@ -271,7 +288,7 @@ void PublicURLManager::Resolve(
     // used to calculate metrics it should be okay to not track top-level site
     // in that case, as long as the count for unknown top-level sites ends up
     // low enough compared to overall usage.
-    absl::optional<BlinkSchemefulSite> top_level_site;
+    std::optional<BlinkSchemefulSite> top_level_site;
     if (execution_context->IsWindow()) {
       auto* window = To<LocalDOMWindow>(execution_context);
       if (window->top() && window->top()->GetFrame()) {
@@ -312,7 +329,7 @@ void PublicURLManager::Resolve(
   DCHECK(url.ProtocolIs("blob"));
 
   auto metrics_callback = [](ExecutionContext* execution_context,
-                             const absl::optional<base::UnguessableToken>&
+                             const std::optional<base::UnguessableToken>&
                                  unsafe_agent_cluster_id) {
     if (execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
       execution_context->CountUse(

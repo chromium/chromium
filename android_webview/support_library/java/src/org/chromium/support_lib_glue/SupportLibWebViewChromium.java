@@ -44,15 +44,16 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
 
     @Override
     public void insertVisualStateCallback(long requestId, InvocationHandler callbackInvoHandler) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.INSERT_VISUAL_STATE_CALLBACK")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.INSERT_VISUAL_STATE_CALLBACK")) {
             recordApiCall(ApiCall.INSERT_VISUAL_STATE_CALLBACK);
             final VisualStateCallbackBoundaryInterface visualStateCallback =
                     BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                             VisualStateCallbackBoundaryInterface.class, callbackInvoHandler);
 
             mSharedWebViewChromium.insertVisualStateCallback(
-                    requestId, new AwContents.VisualStateCallback() {
+                    requestId,
+                    new AwContents.VisualStateCallback() {
                         @Override
                         public void onComplete(long requestId) {
                             visualStateCallback.onComplete(requestId);
@@ -63,15 +64,19 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
 
     @Override
     public /* WebMessagePort */ InvocationHandler[] createWebMessageChannel() {
-        return SupportLibWebMessagePortAdapter.fromMessagePorts(
-                mSharedWebViewChromium.createWebMessageChannel());
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.CREATE_WEB_MESSAGE_CHANNEL")) {
+            recordApiCall(ApiCall.CREATE_WEB_MESSAGE_CHANNEL);
+            return SupportLibWebMessagePortAdapter.fromMessagePorts(
+                    mSharedWebViewChromium.createWebMessageChannel());
+        }
     }
 
     @Override
     public void postMessageToMainFrame(
             /* WebMessage */ InvocationHandler message, Uri targetOrigin) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.POST_MESSAGE_TO_MAIN_FRAME")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.POST_MESSAGE_TO_MAIN_FRAME")) {
             recordApiCall(ApiCall.POST_MESSAGE_TO_MAIN_FRAME);
             WebMessageBoundaryInterface messageBoundaryInterface =
                     BoundaryInterfaceReflectionUtil.castToSuppLibClass(
@@ -86,12 +91,16 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     }
 
     @Override
-    public void addWebMessageListener(String jsObjectName, String[] allowedOriginRules,
+    public void addWebMessageListener(
+            String jsObjectName,
+            String[] allowedOriginRules,
             /* WebMessageListener */ InvocationHandler listener) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.ADD_WEB_MESSAGE_LISTENER")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.ADD_WEB_MESSAGE_LISTENER")) {
             recordApiCall(ApiCall.ADD_WEB_MESSAGE_LISTENER);
-            mSharedWebViewChromium.addWebMessageListener(jsObjectName, allowedOriginRules,
+            mSharedWebViewChromium.addWebMessageListener(
+                    jsObjectName,
+                    allowedOriginRules,
                     new SupportLibWebMessageListenerAdapter(mWebView, listener));
         }
     }
@@ -99,7 +108,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     @Override
     public void removeWebMessageListener(final String jsObjectName) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.REMOVE_WEB_MESSAGE_LISTENER")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.REMOVE_WEB_MESSAGE_LISTENER")) {
             recordApiCall(ApiCall.REMOVE_WEB_MESSAGE_LISTENER);
             mSharedWebViewChromium.removeWebMessageListener(jsObjectName);
         }
@@ -109,7 +118,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     public /* ScriptHandler */ InvocationHandler addDocumentStartJavaScript(
             final String script, final String[] allowedOriginRules) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.ADD_DOCUMENT_START_SCRIPT")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.ADD_DOCUMENT_START_SCRIPT")) {
             recordApiCall(ApiCall.ADD_DOCUMENT_START_SCRIPT);
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                     new SupportLibScriptHandlerAdapter(
@@ -129,7 +138,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     @Override
     public WebChromeClient getWebChromeClient() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBCHROME_CLIENT")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBCHROME_CLIENT")) {
             recordApiCall(ApiCall.GET_WEBCHROME_CLIENT);
             return mSharedWebViewChromium.getWebChromeClient();
         }
@@ -138,7 +147,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     @Override
     public /* WebViewRenderer */ InvocationHandler getWebViewRenderer() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_RENDERER")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_RENDERER")) {
             recordApiCall(ApiCall.GET_WEBVIEW_RENDERER);
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                     new SupportLibWebViewRendererAdapter(
@@ -149,7 +158,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     @Override
     public /* WebViewRendererClient */ InvocationHandler getWebViewRendererClient() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_RENDERER_CLIENT")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_RENDERER_CLIENT")) {
             recordApiCall(ApiCall.GET_WEBVIEW_RENDERER_CLIENT);
             SharedWebViewRendererClientAdapter webViewRendererClientAdapter =
                     mSharedWebViewChromium.getWebViewRendererClientAdapter();
@@ -163,11 +172,45 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     public void setWebViewRendererClient(
             /* WebViewRendererClient */ InvocationHandler webViewRendererClient) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.SET_WEBVIEW_RENDERER_CLIENT")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_WEBVIEW_RENDERER_CLIENT")) {
             recordApiCall(ApiCall.SET_WEBVIEW_RENDERER_CLIENT);
-            mSharedWebViewChromium.setWebViewRendererClientAdapter(webViewRendererClient != null
+            mSharedWebViewChromium.setWebViewRendererClientAdapter(
+                    webViewRendererClient != null
                             ? new SupportLibWebViewRendererClientAdapter(webViewRendererClient)
                             : null);
+        }
+    }
+
+    @Override
+    public void setProfile(String profileName) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.SET_WEBVIEW_PROFILE")) {
+            recordApiCall(ApiCall.SET_WEBVIEW_PROFILE);
+            mSharedWebViewChromium.setProfile(profileName);
+        }
+    }
+
+    @Override
+    public /* Profile */ InvocationHandler getProfile() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_PROFILE")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_PROFILE);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibProfile(mSharedWebViewChromium.getProfile()));
+        }
+    }
+
+    @Override
+    public void setAudioMuted(boolean muted) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.SET_AUDIO_MUTED")) {
+            recordApiCall(ApiCall.SET_AUDIO_MUTED);
+            mSharedWebViewChromium.getAwContents().setAudioMuted(muted);
+        }
+    }
+
+    @Override
+    public boolean isAudioMuted() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.IS_AUDIO_MUTED")) {
+            recordApiCall(ApiCall.IS_AUDIO_MUTED);
+            return mSharedWebViewChromium.getAwContents().isAudioMuted();
         }
     }
 }

@@ -42,7 +42,6 @@ apps::AppTypeName GetHistogrameAppType(apps::AppType app_type) {
       return apps::AppTypeName::kChromeApp;
     case apps::AppType::kWeb:
       return apps::AppTypeName::kWeb;
-    case apps::AppType::kMacOs:
     case apps::AppType::kPluginVm:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kStandaloneBrowserChromeApp:
@@ -63,7 +62,7 @@ AppLaunchHandler::AppLaunchHandler(Profile* profile) : profile_(profile) {}
 
 AppLaunchHandler::~AppLaunchHandler() = default;
 
-bool AppLaunchHandler::HasRestoreData() {
+bool AppLaunchHandler::HasRestoreData() const {
   return restore_data_ && !restore_data_->app_id_to_launch_list().empty();
 }
 
@@ -181,7 +180,6 @@ void AppLaunchHandler::LaunchApp(apps::AppType app_type,
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
     case apps::AppType::kUnknown:
-    case apps::AppType::kMacOs:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:

@@ -38,17 +38,18 @@ const int kScrollAreaHeight = 192;
 
 // This container has the right Layout() impl to use within a ScrollView.
 class ScrollableView : public views::View {
+  METADATA_HEADER(ScrollableView, views::View)
+
  public:
-  METADATA_HEADER(ScrollableView);
   ScrollableView() = default;
   ScrollableView(const ScrollableView&) = delete;
   ScrollableView& operator=(const ScrollableView&) = delete;
   ~ScrollableView() override = default;
 
-  void Layout() override;
+  void Layout(PassKey) override;
 };
 
-void ScrollableView::Layout() {
+void ScrollableView::Layout(PassKey) {
   gfx::Size pref = GetPreferredSize();
   int width = pref.width();
   int height = pref.height();
@@ -58,10 +59,10 @@ void ScrollableView::Layout() {
   }
   SetBounds(x(), y(), width, height);
 
-  views::View::Layout();
+  LayoutSuperclass<views::View>(this);
 }
 
-BEGIN_METADATA(ScrollableView, views::View)
+BEGIN_METADATA(ScrollableView)
 END_METADATA
 
 }  // namespace
@@ -192,7 +193,7 @@ void MediaGalleriesDialogViews::InitChildViews() {
 
 void MediaGalleriesDialogViews::UpdateGalleries() {
   InitChildViews();
-  contents_->Layout();
+  contents_->DeprecatedLayoutImmediately();
 
   if (ControllerHasWebContents())
     DialogModelChanged();

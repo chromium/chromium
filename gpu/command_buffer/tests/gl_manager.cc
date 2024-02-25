@@ -138,7 +138,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   void* memory(size_t plane) override {
     DCHECK(mapped_);
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return IOSurfaceGetBaseAddressOfPlane(iosurface_, plane);
+    return IOSurfaceGetBaseAddressOfPlane(iosurface_.get(), plane);
   }
   void Unmap() override {
     DCHECK(mapped_);
@@ -148,7 +148,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   gfx::BufferFormat GetFormat() const override { return format_; }
   int stride(size_t plane) const override {
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return IOSurfaceGetWidthOfPlane(iosurface_, plane);
+    return IOSurfaceGetWidthOfPlane(iosurface_.get(), plane);
   }
   gfx::GpuMemoryBufferId GetId() const override {
     NOTREACHED();
@@ -167,7 +167,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
       uint64_t tracing_process_id,
       int importance) const override {}
 
-  IOSurfaceRef iosurface() { return iosurface_; }
+  IOSurfaceRef iosurface() { return iosurface_.get(); }
 
  private:
   bool mapped_;
@@ -343,32 +343,33 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   command_buffer_->set_handler(decoder_.get());
 
-  surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
-                                                gfx::Size());
-  ASSERT_TRUE(surface_.get() != nullptr)
-      << "could not create offscreen surface";
+  auto surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                    gfx::Size());
+  ASSERT_TRUE(surface.get() != nullptr) << "could not create offscreen surface";
 
   if (base_context_) {
     context_ = scoped_refptr<gl::GLContext>(new gpu::GLContextVirtual(
         share_group_.get(), base_context_->get(), decoder_->AsWeakPtr()));
     ASSERT_TRUE(context_->Initialize(
-        surface_.get(), GenerateGLContextAttribs(attribs, context_group)));
+        surface.get(),
+        GenerateGLContextAttribsForDecoder(attribs, context_group)));
   } else {
     if (real_gl_context) {
       context_ = scoped_refptr<gl::GLContext>(new gpu::GLContextVirtual(
           share_group_.get(), real_gl_context, decoder_->AsWeakPtr()));
       ASSERT_TRUE(context_->Initialize(
-          surface_.get(), GenerateGLContextAttribs(attribs, context_group)));
+          surface.get(),
+          GenerateGLContextAttribsForDecoder(attribs, context_group)));
     } else {
       context_ = gl::init::CreateGLContext(
-          share_group_.get(), surface_.get(),
-          GenerateGLContextAttribs(attribs, context_group));
+          share_group_.get(), surface.get(),
+          GenerateGLContextAttribsForDecoder(attribs, context_group));
       g_gpu_feature_info.ApplyToGLContext(context_.get());
     }
   }
   ASSERT_TRUE(context_.get() != nullptr) << "could not create GL context";
-
-  ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
+  ASSERT_TRUE(context_->default_surface() == surface.get());
+  ASSERT_TRUE(context_->MakeCurrentDefault());
 
   // if (gpu_preferences_.use_passthrough_cmd_decoder) {
   //   auto* apit = g_current_gl_context;
@@ -377,13 +378,14 @@ void GLManager::InitializeWithWorkaroundsImpl(
   // }
 
   auto result =
-      decoder_->Initialize(surface_.get(), context_.get(), true,
+      decoder_->Initialize(context_->default_surface(), context_.get(), true,
                            ::gpu::gles2::DisallowedFeatures(), attribs);
   if (result != gpu::ContextResult::kSuccess)
     return;
   // Client side Capabilities queries return reference, service side return
   // value. Here two sides are joined together.
   capabilities_ = decoder_->GetCapabilities();
+  gl_capabilities_ = decoder_->GetGLCapabilities();
 
   // Create the GLES2 helper, which writes the command buffer protocol.
   gles2_helper_.reset(new gles2::GLES2CmdHelper(command_buffer_.get()));
@@ -508,8 +510,9 @@ void GLManager::Destroy() {
   transfer_buffer_.reset();
   gles2_helper_.reset();
   if (decoder_.get()) {
-    bool have_context = decoder_->GetGLContext() &&
-                        decoder_->GetGLContext()->MakeCurrent(surface_.get());
+    bool have_context =
+        decoder_->GetGLContext() &&
+        decoder_->GetGLContext()->MakeCurrent(context_->default_surface());
     decoder_->Destroy(have_context);
     decoder_.reset();
   }
@@ -527,6 +530,10 @@ void GLManager::SetGpuControlClient(GpuControlClient*) {
 
 const Capabilities& GLManager::GetCapabilities() const {
   return capabilities_;
+}
+
+const GLCapabilities& GLManager::GetGLCapabilities() const {
+  return gl_capabilities_;
 }
 
 void GLManager::SignalQuery(uint32_t query, base::OnceClosure callback) {

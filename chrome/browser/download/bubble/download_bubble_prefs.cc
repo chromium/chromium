@@ -15,32 +15,14 @@
 
 namespace download {
 
-bool IsDownloadBubbleEnabled(Profile* profile) {
+bool IsDownloadBubbleEnabled() {
 // Download bubble won't replace the old download notification in
 // Ash. See https://crbug.com/1323505.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 #else
-  if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)) {
-    return false;
-  }
-
-  PrefService* prefs = profile->GetPrefs();
-
-  // If the download bubble policy is managed by enterprise admins and it is
-  // set to false, disable download bubble.
-  if (prefs->IsManagedPreference(prefs::kDownloadBubbleEnabled) &&
-      !prefs->GetBoolean(prefs::kDownloadBubbleEnabled)) {
-    return false;
-  }
-
   return true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-bool IsDownloadBubbleV2Enabled(Profile* profile) {
-  return IsDownloadBubbleEnabled(profile) &&
-         base::FeatureList::IsEnabled(safe_browsing::kDownloadBubbleV2);
 }
 
 bool ShouldShowDownloadBubble(Profile* profile) {
@@ -59,7 +41,7 @@ bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url) {
     return false;
   }
 
-  absl::optional<enterprise_connectors::AnalysisSettings> settings =
+  std::optional<enterprise_connectors::AnalysisSettings> settings =
       connector_service->GetAnalysisSettings(
           url, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
   if (!settings) {
@@ -68,10 +50,6 @@ bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url) {
 
   return settings->block_until_verdict ==
          enterprise_connectors::BlockUntilVerdict::kBlock;
-}
-
-bool ShouldSuppressDownloadBubbleIph(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kDownloadBubbleIphSuppression);
 }
 
 bool IsDownloadBubblePartialViewControlledByPref() {

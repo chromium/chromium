@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
                        StatusCallback callback) override;
   void FileExists(const FileSystemURL& url, StatusCallback callback) override;
   void GetMetadata(const FileSystemURL& url,
-                   int fields,
+                   GetMetadataFieldSet fields,
                    GetMetadataCallback callback) override;
   void ReadDirectory(const FileSystemURL& url,
                      const ReadDirectoryCallback& callback) override;

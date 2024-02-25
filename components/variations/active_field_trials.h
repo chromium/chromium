@@ -9,11 +9,24 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
+#include "base/process/launch.h"
 #include "base/strings/string_piece.h"
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#include "base/files/platform_file.h"
+#include "base/posix/global_descriptors.h"
+#endif
+
 namespace variations {
+
+// Suffix added to field trial group names when they are manually forced with
+// command line flags or internals page. Using a suffix ensures that consumers
+// of these names (or hashes of the names) treat manually forced groups distinct
+// from non-forced groups.
+inline constexpr base::StringPiece kOverrideSuffix = "_MANUALLY_FORCED";
 
 // The Unique ID of a trial and its active group, where the name and group
 // identifiers are hashes of the trial and group name strings.
@@ -26,6 +39,10 @@ struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupId {
 COMPONENT_EXPORT(VARIATIONS)
 ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
                                 base::StringPiece group_name);
+COMPONENT_EXPORT(VARIATIONS)
+ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
+                                base::StringPiece group_name,
+                                bool is_overridden);
 
 // We need to supply a Compare class for templates since ActiveGroupId is a
 // user-defined type.
@@ -118,7 +135,7 @@ bool IsInSyntheticTrialGroup(const std::string& trial_name,
 
 // Sets the version of the seed that the current set of FieldTrials was
 // generated from.
-// TODO(crbug/507665): Move this to field_trials_provider once it moves
+// TODO(crbug.com/507665): Move this to field_trials_provider once it moves
 // into components/variations
 COMPONENT_EXPORT(VARIATIONS)
 void SetSeedVersion(const std::string& seed_version);
@@ -127,10 +144,24 @@ void SetSeedVersion(const std::string& seed_version);
 // generated from.
 // Only works on the browser process; returns the empty string from other
 // processes.
-// TODO(crbug/507665): Move this to field_trials_provider once it moves
+// TODO(crbug.com/507665): Move this to field_trials_provider once it moves
 // into components/variations
 COMPONENT_EXPORT(VARIATIONS)
 const std::string& GetSeedVersion();
+
+#if BUILDFLAG(USE_BLINK)
+// Populates |command_line| and |launch_options| with the handles and command
+// line arguments necessary for a child process to get the needed variations
+// info.
+COMPONENT_EXPORT(VARIATIONS)
+void PopulateLaunchOptionsWithVariationsInfo(
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+    base::GlobalDescriptors::Key descriptor_key,
+    base::ScopedFD& descriptor_to_share,
+#endif
+    base::CommandLine* command_line,
+    base::LaunchOptions* launch_options);
+#endif  // !BUILDFLAG(USE_BLINK)
 
 // Expose some functions for testing. These functions just wrap functionality
 // that is implemented above.

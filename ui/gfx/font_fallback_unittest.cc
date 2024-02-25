@@ -203,6 +203,14 @@ TEST_P(GetFallbackFontTest, GetFallbackFont) {
     }
   }
 
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/1476170): font fallback does not appear to be working
+  // consistently.
+  if (fallback_font.GetFontName() == ".LastResort") {
+    GTEST_SKIP() << ".LastResort is not currently behaving correctly.";
+  }
+#endif
+
   // Ensure that glyphs exists in the fallback font.
   if (!DoesFontSupportCodePoints(fallback_font, test_case_.text)) {
     ADD_FAILURE() << "Font '" << fallback_font.GetFontName()

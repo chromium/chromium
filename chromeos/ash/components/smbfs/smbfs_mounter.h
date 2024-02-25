@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "net/base/ip_address.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace smbfs {
 
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsMounter {
     std::string username;
     std::string workgroup;
     std::string password;
-    absl::optional<KerberosOptions> kerberos_options;
+    std::optional<KerberosOptions> kerberos_options;
 
     // Allow NTLM authentication to be used.
     bool allow_ntlm = false;
@@ -128,9 +128,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsMounter {
   const std::string share_path_;
   const std::string mount_dir_name_;
   const MountOptions options_;
-  const raw_ptr<SmbFsHost::Delegate, ExperimentalAsh> delegate_;
-  const raw_ptr<ash::disks::DiskMountManager, ExperimentalAsh>
-      disk_mount_manager_;
+  const raw_ptr<SmbFsHost::Delegate> delegate_;
+  const raw_ptr<ash::disks::DiskMountManager> disk_mount_manager_;
   const base::UnguessableToken token_;
   const std::string mount_url_;
   bool mojo_fd_pending_ = false;

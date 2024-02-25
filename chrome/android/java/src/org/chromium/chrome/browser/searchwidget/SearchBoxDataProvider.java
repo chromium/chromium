@@ -37,6 +37,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
 
     /**
      * Called when native library is loaded and a tab has been initialized.
+     *
      * @param tab The tab to use.
      */
     public void onNativeLibraryReady(Tab tab) {

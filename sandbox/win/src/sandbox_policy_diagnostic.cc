@@ -47,6 +47,13 @@ const char kPlatformMitigations[] = "platformMitigations";
 const char kPolicyRules[] = "policyRules";
 const char kProcessId[] = "processId";
 const char kTag[] = "tag";
+const char kZeroAppShim[] = "zeroAppShim";
+
+// Closable handles.
+const char kALPCPort[] = "ALPC Port";
+const char kFileDeviceApi[] = "\\Device\\DeviceApi";
+const char kFileKsecDD[] = "\\Device\\KsecDD";
+const char kWindowsShellGlobalCounters[] = "*\\windows_shell_global_counters";
 
 // Values in snapshots of Policies.
 const char kDisabled[] = "disabled";
@@ -107,7 +114,7 @@ std::string GetIntegrityLevelInEnglish(IntegrityLevel integrity) {
 }
 
 std::wstring GetSidAsString(const base::win::Sid& sid) {
-  absl::optional<std::wstring> result = sid.ToSddlString();
+  std::optional<std::wstring> result = sid.ToSddlString();
   if (!result) {
     DCHECK(false) << "Failed to make sddl string";
     return L"";
@@ -158,8 +165,6 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "NtQueryFullAttributesFile";
     case IpcTag::NTSETINFO_RENAME:
       return "NtSetInfoRename";
-    case IpcTag::CREATENAMEDPIPEW:
-      return "CreateNamedPipeW";
     case IpcTag::NTOPENTHREAD:
       return "NtOpenThread";
     case IpcTag::NTOPENPROCESSTOKENEX:
@@ -192,31 +197,22 @@ std::string GetOpcodeAction(EvalResult action) {
       return "askBroker";
     case DENY_ACCESS:
       return "deny";
-    case GIVE_READONLY:
-      return "readonly";
-    case GIVE_ALLACCESS:
-      return "allaccess";
-    case GIVE_CACHED:
-      return "cached";
-    case GIVE_FIRST:
-      return "first";
     case SIGNAL_ALARM:
       return "alarm";
     case FAKE_SUCCESS:
       return "fakeSuccess";
     case FAKE_ACCESS_DENIED:
       return "fakeDenied";
-    case TERMINATE_PROCESS:
-      return "terminate";
   }
 }
 
 std::string GetStringMatchOperation(int pos, uint32_t options) {
   if (pos == 0) {
-    if (options & EXACT_LENGTH)
+    if (options) {
       return "exact";
-    else
+    } else {
       return "prefix";
+    }
   } else if (pos < 0) {
     return "scan";
   } else if (pos == kSeekToEnd) {
@@ -255,12 +251,6 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
         condition += base::StringPrintf("p[%d] == %p", param, match_ptr);
       }
       break;
-    case OP_NUMBER_MATCH_RANGE:
-      opcode->GetArgument(0, &args[0]);
-      opcode->GetArgument(1, &args[1]);
-      condition +=
-          base::StringPrintf("%x <= p[%d] <= %x", args[0], param, args[1]);
-      break;
     case OP_NUMBER_AND_MATCH:
       opcode->GetArgument(0, &args[0]);
       condition += base::StringPrintf("p[%d] & %x", param, args[0]);
@@ -274,10 +264,8 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
       auto match_string = std::wstring(opcode->GetRelativeString(0), 0,
                                        static_cast<size_t>(args[1]));
       condition += GetStringMatchOperation(pos, args[3]);
-      if (args[3] & CASE_INSENSITIVE)
-        condition += "_i";
       condition +=
-          base::StringPrintf("(p[%d], '%S')", param, match_string.c_str());
+          base::StringPrintf("(p[%d], '%ls')", param, match_string.c_str());
     } break;
     case OP_ACTION:
       opcode->GetArgument(0, &args[0]);
@@ -340,16 +328,24 @@ base::Value::Dict GetPolicyRules(const PolicyGlobal* policy_rules) {
   return results;
 }
 
-// HandleMap is just wstrings, nested sets could be empty.
-base::Value::Dict GetHandlesToClose(const HandleMap& handle_map) {
-  base::Value::Dict results;
-  for (const auto& kv : handle_map) {
-    base::Value::List entries;
-    // kv.second may be an empty map.
-    for (const auto& entry : kv.second) {
-      entries.Append(base::AsStringPiece16(entry));
-    }
-    results.Set(base::WideToUTF8(kv.first), std::move(entries));
+// `handle_config` is a set of configuration bools - only output things
+// if they are enabled.
+base::Value::List GetHandlesToClose(HandleCloserConfig& handle_config) {
+  base::Value::List results;
+  if (!handle_config.handle_closer_enabled) {
+    return results;
+  }
+  if (handle_config.section_windows_global_shell_counters) {
+    results.Append(kWindowsShellGlobalCounters);
+  }
+  if (handle_config.file_device_api) {
+    results.Append(kFileDeviceApi);
+  }
+  if (handle_config.file_ksecdd) {
+    results.Append(kFileKsecDD);
+  }
+  if (handle_config.disconnect_csrss) {
+    results.Append(kALPCPort);
   }
   return results;
 }
@@ -407,11 +403,8 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
     }
   }
   is_csrss_connected_ = config->is_csrss_connected();
-  auto* handle_closer = config->handle_closer();
-  if (handle_closer) {
-    handles_to_close_.insert(handle_closer->handles_to_close_.begin(),
-                             handle_closer->handles_to_close_.end());
-  }
+  zero_appshim_ = config->zero_appshim();
+  handles_to_close_ = config->handle_closer();
 }
 
 PolicyDiagnostic::~PolicyDiagnostic() = default;
@@ -462,8 +455,8 @@ const char* PolicyDiagnostic::JsonString() {
     dict.Set(kPolicyRules, GetPolicyRules(policy_rules_.get()));
 
   dict.Set(kDisconnectCsrss, is_csrss_connected_ ? kDisabled : kEnabled);
-  if (!handles_to_close_.empty())
-    dict.Set(kHandlesToClose, GetHandlesToClose(handles_to_close_));
+  dict.Set(kZeroAppShim, zero_appshim_);
+  dict.Set(kHandlesToClose, GetHandlesToClose(handles_to_close_));
 
   auto json_string = std::make_unique<std::string>();
   JSONStringValueSerializer to_json(json_string.get());

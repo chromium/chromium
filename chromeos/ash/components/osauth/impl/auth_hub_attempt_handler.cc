@@ -4,11 +4,12 @@
 
 #include "chromeos/ash/components/osauth/impl/auth_hub_attempt_handler.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

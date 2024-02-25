@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
@@ -19,10 +20,8 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
-#include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -83,12 +82,6 @@ class InSessionAuthDialogClient
                         bool is_complete,
                         int percent_complete) override {}
 
-  // For testing:
-  void SetExtendedAuthenticator(
-      scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator) {
-    extended_authenticator_ = std::move(extended_authenticator);
-  }
-
  private:
   // State associated with a pending authentication attempt. Only for Password
   // and PIN, not for fingerprint, since the fingerprint path needs to surface
@@ -101,10 +94,6 @@ class InSessionAuthDialogClient
     base::OnceCallback<void(bool)> callback;
   };
 
-  // Returns a pointer to the ExtendedAuthenticator instance if there is one.
-  // Otherwise creates one.
-  ash::ExtendedAuthenticator* GetExtendedAuthenticator();
-
   // Attempts to authenticate user in `user_context` with the given `password`.
   void AuthenticateWithPassword(std::unique_ptr<ash::UserContext> user_context,
                                 const std::string& password);
@@ -114,30 +103,30 @@ class InSessionAuthDialogClient
   void OnAuthSessionStarted(base::OnceCallback<void(bool)> callback,
                             bool user_exists,
                             std::unique_ptr<ash::UserContext> user_context,
-                            absl::optional<ash::AuthenticationError> error);
+                            std::optional<ash::AuthenticationError> error);
 
   // Passed as a callback to
   // `LegacyFingerprintEngine::PrepareLegacyFingerprintFactor`.
   void OnPrepareLegacyFingerprintFactor(
       base::OnceCallback<void(bool)> callback,
       std::unique_ptr<ash::UserContext> user_context,
-      absl::optional<ash::AuthenticationError> error);
+      std::optional<ash::AuthenticationError> error);
 
   // Passed as a callback to
   // `LegacyFingerprintEngine::TerminateLegacyFingerprintFactor`.
   void OnTerminateLegacyFingerprintFactor(
       base::OnceClosure callback,
       std::unique_ptr<ash::UserContext> user_context,
-      absl::optional<ash::AuthenticationError> error);
+      std::optional<ash::AuthenticationError> error);
 
   // Passed as a callback to `AuthPerformer::AuthenticateWith*`. Checks
   // the result of the authentication operation.
   void OnAuthVerified(bool authenticated_by_password,
                       std::unique_ptr<ash::UserContext> user_context,
-                      absl::optional<ash::AuthenticationError> error);
+                      std::optional<ash::AuthenticationError> error);
 
   void OnPinAttemptDone(std::unique_ptr<ash::UserContext> user_context,
-                        absl::optional<ash::AuthenticationError> error);
+                        std::optional<ash::AuthenticationError> error);
 
   void OnPasswordAuthSuccess(const ash::UserContext& user_context);
 
@@ -150,18 +139,15 @@ class InSessionAuthDialogClient
       bool is_pin_auth_available,
       std::unique_ptr<ash::UserContext> user_context);
 
-  // Used to authenticate the user to unlock supervised users.
-  scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator_;
-
   // State associated with a pending authentication attempt.
-  absl::optional<AuthState> pending_auth_state_;
+  std::optional<AuthState> pending_auth_state_;
 
   // Used to start and authenticate auth sessions.
   ash::AuthPerformer auth_performer_;
 
-  absl::optional<ash::legacy::CryptohomePinEngine> pin_engine_;
+  std::optional<ash::legacy::CryptohomePinEngine> pin_engine_;
 
-  absl::optional<ash::LegacyFingerprintEngine> legacy_fingerprint_engine_;
+  std::optional<ash::LegacyFingerprintEngine> legacy_fingerprint_engine_;
 
   std::unique_ptr<ash::UserContext> user_context_;
 

@@ -7,9 +7,10 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -40,8 +41,8 @@ bool MEDIA_EXPORT CheckH264LevelLimits(VideoCodecProfile profile,
 
 // Return a minimum level that comforts Table A-1 in spec with |profile|,
 // |bitrate|, |framerate| and |framesize_in_mbs|. If there is no proper level,
-// returns absl::nullopt.
-absl::optional<uint8_t> MEDIA_EXPORT
+// returns std::nullopt.
+std::optional<uint8_t> MEDIA_EXPORT
 FindValidH264Level(VideoCodecProfile profile,
                    uint32_t bitrate,
                    uint32_t framerate,

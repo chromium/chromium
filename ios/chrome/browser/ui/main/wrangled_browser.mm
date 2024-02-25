@@ -48,14 +48,6 @@
   return self.browser->GetBrowserState();
 }
 
-- (BOOL)userInteractionEnabled {
-  return self.coordinator.active;
-}
-
-- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled {
-  self.coordinator.active = userInteractionEnabled;
-}
-
 - (BOOL)incognito {
   return self.browserState->IsOffTheRecord();
 }

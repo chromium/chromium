@@ -10,15 +10,16 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './site_favicon.js';
 import './dialogs/password_preview_item.js';
 
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import type {PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_importer.html.js';
 import {Page, Router} from './router.js';
 
@@ -79,13 +80,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   static get properties() {
     return {
-      enablePasswordsImportM2_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enablePasswordsImportM2');
-        },
-      },
-
       dialogState_: Number,
 
       dialogStateEnum_: {
@@ -143,7 +137,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   isAccountStoreUser: boolean;
   accountEmail: string;
 
-  private enablePasswordsImportM2_: boolean;
   private dialogState_: DialogState = DialogState.NO_DIALOG;
   // Refers both to syncing users with sync enabled for passwords and account
   // store users who choose to import passwords to their account.
@@ -468,22 +461,9 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     return !this.isAccountStoreUser && !this.isState_(DialogState.IN_PROGRESS);
   }
 
-  private shouldHideTipBox_(): boolean {
-    // Tip box is only shown in "success" state if all passwords were imported.
-    // Only shown in Passwords Import M1.
-    if (this.enablePasswordsImportM2_) {
-      return true;
-    }
-    assert(this.results_);
-    return !!this.results_.displayedEntries.length;
-  }
-
   private shouldHideDeleteFileOption_(): boolean {
     // "Delete file" checkbox is only shown in "success" state if all passwords
     // were imported.
-    if (!this.enablePasswordsImportM2_) {
-      return true;
-    }
     assert(this.results_);
     return !!this.results_.displayedEntries.length;
   }

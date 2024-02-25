@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_PERMISSIONS_TEST_OBJECT_PERMISSION_CONTEXT_BASE_MOCK_PERMISSION_OBSERVER_H_
 #define COMPONENTS_PERMISSIONS_TEST_OBJECT_PERMISSION_CONTEXT_BASE_MOCK_PERMISSION_OBSERVER_H_
 
+#include <optional>
+
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace permissions {
@@ -21,7 +22,7 @@ class MockPermissionObserver
 
   MOCK_METHOD2(
       OnObjectPermissionChanged,
-      void(absl::optional<ContentSettingsType> guard_content_settings_type,
+      void(std::optional<ContentSettingsType> guard_content_settings_type,
            ContentSettingsType data_content_settings_type));
   MOCK_METHOD1(OnPermissionRevoked, void(const url::Origin& origin));
 };

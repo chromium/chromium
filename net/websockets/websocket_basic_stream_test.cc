@@ -12,25 +12,31 @@
 #include <stdint.h>
 #include <string.h>  // for memcpy() and memset().
 
+#include <iterator>
+#include <optional>
 #include <utility>
 
 #include "base/big_endian.h"
 #include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/log/test_net_log.h"
+#include "net/socket/client_socket_handle.h"
+#include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
-#include "net/socket/ssl_client_socket.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -82,11 +88,15 @@ const WebSocketMaskingKey kNonNulMaskingKey = {
 
 // A masking key generator function which generates the identity mask,
 // ie. "\0\0\0\0".
-WebSocketMaskingKey GenerateNulMaskingKey() { return kNulMaskingKey; }
+WebSocketMaskingKey GenerateNulMaskingKey() {
+  return kNulMaskingKey;
+}
 
 // A masking key generation function which generates a fixed masking key with no
 // nul characters.
-WebSocketMaskingKey GenerateNonNulMaskingKey() { return kNonNulMaskingKey; }
+WebSocketMaskingKey GenerateNonNulMaskingKey() {
+  return kNonNulMaskingKey;
+}
 
 // A subclass of StaticSocketDataProvider modified to require that all data
 // expected to be read or written actually is.
@@ -114,19 +124,24 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
   WebSocketBasicStreamSocketTest()
       : common_connect_job_params_(
             &factory_,
-            nullptr /* host_resolver */,
-            nullptr /* http_auth_cache */,
-            nullptr /* http_auth_handler_factory */,
-            nullptr /* spdy_session_pool */,
-            nullptr /* quic_supported_versions */,
-            nullptr /* quic_stream_factory */,
-            nullptr /* proxy_delegate */,
-            nullptr /* http_user_agent_settings */,
-            nullptr /* ssl_client_context */,
-            nullptr /* socket_performance_watcher_factory */,
-            nullptr /* network_quality_estimator */,
-            nullptr /* net_log */,
-            nullptr /* websocket_endpoint_lock_manager */),
+            /*host_resolver=*/nullptr,
+            /*http_auth_cache=*/nullptr,
+            /*http_auth_handler_factory=*/nullptr,
+            /*spdy_session_pool=*/nullptr,
+            /*quic_supported_versions=*/nullptr,
+            /*quic_session_pool=*/nullptr,
+            /*proxy_delegate=*/nullptr,
+            /*http_user_agent_settings=*/nullptr,
+            /*ssl_client_context=*/nullptr,
+            /*socket_performance_watcher_factory=*/nullptr,
+            /*network_quality_estimator=*/nullptr,
+            /*net_log=*/nullptr,
+            /*websocket_endpoint_lock_manager=*/nullptr,
+            /*http_server_properties*/ nullptr,
+            /*alpn_protos=*/nullptr,
+            /*application_settings=*/nullptr,
+            /*ignore_certificate_errors=*/nullptr,
+            /*early_data_enabled=*/nullptr),
         pool_(1, 1, &common_connect_job_params_),
         generator_(&GenerateNulMaskingKey) {}
 
@@ -149,9 +164,9 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
     ClientSocketPool::GroupId group_id(
         url::SchemeHostPort(url::kHttpScheme, "a", 80),
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-        SecureDnsPolicy::kAllow);
+        SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
     transport_socket->Init(
-        group_id, null_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
+        group_id, null_params, std::nullopt /* proxy_annotation_tag */, MEDIUM,
         SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
         NetLogWithSource());
@@ -208,10 +223,7 @@ class WebSocketBasicStreamSocketChunkedReadTest
   // put in the last chunk. If LAST_FRAME_NOT_BIG is specified, then the last
   // frame will be no bigger than the rest of the frames (but it can be smaller,
   // if not enough data remains).
-  enum LastFrameBehaviour {
-    LAST_FRAME_BIG,
-    LAST_FRAME_NOT_BIG
-  };
+  enum LastFrameBehaviour { LAST_FRAME_BIG, LAST_FRAME_NOT_BIG };
 
   // Prepares a read from |data| of |data_size|, split into |number_of_chunks|,
   // each of |chunk_size| (except that the last chunk may be larger or
@@ -258,7 +270,7 @@ class WebSocketBasicStreamSocketWriteTest
     const size_t payload_size =
         kWriteFrameSize - (WebSocketFrameHeader::kBaseHeaderSize +
                            WebSocketFrameHeader::kMaskingKeyLength);
-    auto buffer = base::MakeRefCounted<IOBuffer>(payload_size);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload_size);
     frame_buffers_.push_back(buffer);
     memcpy(buffer->data(), kWriteFrame + kWriteFrameSize - payload_size,
            payload_size);
@@ -313,8 +325,8 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest, AsyncReadWorks) {
 
 // ReadFrames will not return a frame whose header has not been wholly received.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, HeaderFragmentedSync) {
-  CreateChunkedRead(
-      SYNCHRONOUS, kSampleFrame, kSampleFrameSize, 1, 2, LAST_FRAME_BIG);
+  CreateChunkedRead(SYNCHRONOUS, kSampleFrame, kSampleFrameSize, 1, 2,
+                    LAST_FRAME_BIG);
   int result = stream_->ReadFrames(&frames_, cb_.callback());
   EXPECT_THAT(result, IsOk());
   ASSERT_EQ(1U, frames_.size());
@@ -323,8 +335,8 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, HeaderFragmentedSync) {
 
 // The same behaviour applies to asynchronous reads.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, HeaderFragmentedAsync) {
-  CreateChunkedRead(
-      ASYNC, kSampleFrame, kSampleFrameSize, 1, 2, LAST_FRAME_BIG);
+  CreateChunkedRead(ASYNC, kSampleFrame, kSampleFrameSize, 1, 2,
+                    LAST_FRAME_BIG);
   int result = stream_->ReadFrames(&frames_, cb_.callback());
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   EXPECT_THAT(cb_.WaitForResult(), IsOk());
@@ -384,8 +396,7 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest, HeaderOnlyChunk) {
 TEST_F(WebSocketBasicStreamSocketTest, HeaderBodySeparated) {
   MockRead reads[] = {
       MockRead(SYNCHRONOUS, kPartialLargeFrame, kLargeFrameHeaderSize),
-      MockRead(ASYNC,
-               kPartialLargeFrame + kLargeFrameHeaderSize,
+      MockRead(ASYNC, kPartialLargeFrame + kLargeFrameHeaderSize,
                kPartialLargeFrameSize - kLargeFrameHeaderSize)};
   CreateStream(reads, base::span<MockWrite>());
   EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
@@ -406,12 +417,8 @@ TEST_F(WebSocketBasicStreamSocketTest, HeaderBodySeparated) {
 // Every frame has a header with a correct payload_length field.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, LargeFrameTwoChunks) {
   const size_t kChunkSize = 16;
-  CreateChunkedRead(ASYNC,
-                    kPartialLargeFrame,
-                    kPartialLargeFrameSize,
-                    kChunkSize,
-                    2,
-                    LAST_FRAME_NOT_BIG);
+  CreateChunkedRead(ASYNC, kPartialLargeFrame, kPartialLargeFrameSize,
+                    kChunkSize, 2, LAST_FRAME_NOT_BIG);
   TestCompletionCallback cb[2];
 
   ASSERT_THAT(stream_->ReadFrames(&frames_, cb[0].callback()),
@@ -432,11 +439,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, LargeFrameTwoChunks) {
 // Only the final frame of a fragmented message has |final| bit set.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, OnlyFinalChunkIsFinal) {
   static const size_t kFirstChunkSize = 4;
-  CreateChunkedRead(ASYNC,
-                    kSampleFrame,
-                    kSampleFrameSize,
-                    kFirstChunkSize,
-                    2,
+  CreateChunkedRead(ASYNC, kSampleFrame, kSampleFrameSize, kFirstChunkSize, 2,
                     LAST_FRAME_BIG);
   TestCompletionCallback cb[2];
 
@@ -460,12 +463,8 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, ContinuationOpCodeUsed) {
   const int kChunkCount = 3;
   // The input data is one frame with opcode Text, which arrives in three
   // separate chunks.
-  CreateChunkedRead(ASYNC,
-                    kSampleFrame,
-                    kSampleFrameSize,
-                    kFirstChunkSize,
-                    kChunkCount,
-                    LAST_FRAME_BIG);
+  CreateChunkedRead(ASYNC, kSampleFrame, kSampleFrameSize, kFirstChunkSize,
+                    kChunkCount, LAST_FRAME_BIG);
   TestCompletionCallback cb[kChunkCount];
 
   ASSERT_THAT(stream_->ReadFrames(&frames_, cb[0].callback()),
@@ -554,12 +553,8 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest, AsyncErrorsPassedThrough) {
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, CloseAfterFrame) {
   // The chunk size equals the data size, so the second chunk is 0 size, closing
   // the connection.
-  CreateChunkedRead(SYNCHRONOUS,
-                    kSampleFrame,
-                    kSampleFrameSize,
-                    kSampleFrameSize,
-                    2,
-                    LAST_FRAME_NOT_BIG);
+  CreateChunkedRead(SYNCHRONOUS, kSampleFrame, kSampleFrameSize,
+                    kSampleFrameSize, 2, LAST_FRAME_NOT_BIG);
 
   EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
   EXPECT_EQ(1U, frames_.size());
@@ -654,8 +649,7 @@ TEST_F(WebSocketBasicStreamSocketTest, ThreeFrameEmptyMessage) {
   MockRead reads[] = {
       MockRead(SYNCHRONOUS, kEmptyFirstFrame, kEmptyFirstFrameSize),
       MockRead(SYNCHRONOUS, kEmptyMiddleFrame, kEmptyMiddleFrameSize),
-      MockRead(SYNCHRONOUS,
-               kEmptyFinalContinuationFrame,
+      MockRead(SYNCHRONOUS, kEmptyFinalContinuationFrame,
                kEmptyFinalContinuationFrameSize)};
   CreateStream(reads, base::span<MockWrite>());
 
@@ -702,8 +696,7 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest,
        PartialControlFrameInHttpResponse) {
   const size_t kPartialFrameBytes = 3;
   SetHttpReadBuffer(kCloseFrame, kPartialFrameBytes);
-  CreateRead(MockRead(ASYNC,
-                      kCloseFrame + kPartialFrameBytes,
+  CreateRead(MockRead(ASYNC, kCloseFrame + kPartialFrameBytes,
                       kCloseFrameSize - kPartialFrameBytes));
 
   ASSERT_THAT(stream_->ReadFrames(&frames_, cb_.callback()),
@@ -722,8 +715,7 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest,
        PartialControlFrameInHttpResponseSync) {
   const size_t kPartialFrameBytes = 3;
   SetHttpReadBuffer(kCloseFrame, kPartialFrameBytes);
-  CreateRead(MockRead(SYNCHRONOUS,
-                      kCloseFrame + kPartialFrameBytes,
+  CreateRead(MockRead(SYNCHRONOUS, kCloseFrame + kPartialFrameBytes,
                       kCloseFrameSize - kPartialFrameBytes));
 
   EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
@@ -776,12 +768,8 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest, OverlongControlFrame) {
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, SplitOverlongControlFrame) {
   const size_t kFirstChunkSize = 16;
   expect_all_io_to_complete_ = false;
-  CreateChunkedRead(SYNCHRONOUS,
-                    k126BytePong,
-                    k126BytePongSize,
-                    kFirstChunkSize,
-                    2,
-                    LAST_FRAME_BIG);
+  CreateChunkedRead(SYNCHRONOUS, k126BytePong, k126BytePongSize,
+                    kFirstChunkSize, 2, LAST_FRAME_BIG);
 
   EXPECT_EQ(ERR_WS_PROTOCOL_ERROR,
             stream_->ReadFrames(&frames_, cb_.callback()));
@@ -792,11 +780,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest,
        AsyncSplitOverlongControlFrame) {
   const size_t kFirstChunkSize = 16;
   expect_all_io_to_complete_ = false;
-  CreateChunkedRead(ASYNC,
-                    k126BytePong,
-                    k126BytePongSize,
-                    kFirstChunkSize,
-                    2,
+  CreateChunkedRead(ASYNC, k126BytePong, k126BytePongSize, kFirstChunkSize, 2,
                     LAST_FRAME_BIG);
 
   ASSERT_THAT(stream_->ReadFrames(&frames_, cb_.callback()),
@@ -811,8 +795,8 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest,
 // returning.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, SyncControlFrameAssembly) {
   const size_t kChunkSize = 3;
-  CreateChunkedRead(
-      SYNCHRONOUS, kCloseFrame, kCloseFrameSize, kChunkSize, 3, LAST_FRAME_BIG);
+  CreateChunkedRead(SYNCHRONOUS, kCloseFrame, kCloseFrameSize, kChunkSize, 3,
+                    LAST_FRAME_BIG);
 
   EXPECT_THAT(stream_->ReadFrames(&frames_, cb_.callback()), IsOk());
   ASSERT_EQ(1U, frames_.size());
@@ -823,8 +807,8 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, SyncControlFrameAssembly) {
 // has been completely assembled.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, AsyncControlFrameAssembly) {
   const size_t kChunkSize = 3;
-  CreateChunkedRead(
-      ASYNC, kCloseFrame, kCloseFrameSize, kChunkSize, 3, LAST_FRAME_BIG);
+  CreateChunkedRead(ASYNC, kCloseFrame, kCloseFrameSize, kChunkSize, 3,
+                    LAST_FRAME_BIG);
 
   ASSERT_THAT(stream_->ReadFrames(&frames_, cb_.callback()),
               IsError(ERR_IO_PENDING));
@@ -847,12 +831,8 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, OneMegFrame) {
   base::WriteBigEndian(big_frame.get() + 2, kPayloadSize);
   memset(big_frame.get() + kLargeFrameHeaderSize, 'A', kPayloadSize);
 
-  CreateChunkedRead(ASYNC,
-                    big_frame.get(),
-                    kWireSize,
-                    kReadBufferSize,
-                    kExpectedFrameCount,
-                    LAST_FRAME_BIG);
+  CreateChunkedRead(ASYNC, big_frame.get(), kWireSize, kReadBufferSize,
+                    kExpectedFrameCount, LAST_FRAME_BIG);
 
   for (size_t frame = 0; frame < kExpectedFrameCount; ++frame) {
     frames_.clear();
@@ -878,12 +858,8 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, ReservedFlagCleared) {
   const size_t kReservedFlagFrameSize = std::size(kReservedFlagFrame) - 1;
   const size_t kChunkSize = 5;
 
-  CreateChunkedRead(ASYNC,
-                    kReservedFlagFrame,
-                    kReservedFlagFrameSize,
-                    kChunkSize,
-                    2,
-                    LAST_FRAME_BIG);
+  CreateChunkedRead(ASYNC, kReservedFlagFrame, kReservedFlagFrameSize,
+                    kChunkSize, 2, LAST_FRAME_BIG);
 
   TestCompletionCallback cb[2];
   ASSERT_THAT(stream_->ReadFrames(&frames_, cb[0].callback()),
@@ -963,7 +939,7 @@ TEST_F(WebSocketBasicStreamSocketTest, WriteNonNulMask) {
       std::make_unique<WebSocketFrame>(WebSocketFrameHeader::kOpCodeText);
   const std::string unmasked_payload = "graphics";
   const size_t payload_size = unmasked_payload.size();
-  auto buffer = base::MakeRefCounted<IOBuffer>(payload_size);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload_size);
   memcpy(buffer->data(), unmasked_payload.data(), payload_size);
   frame->payload = buffer->data();
   WebSocketFrameHeader& header = frame->header;

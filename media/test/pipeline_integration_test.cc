@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -20,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/cdm_callback_promise.h"
@@ -115,17 +115,16 @@ static base::Time kLiveTimelineOffset() {
   // 2012-11-10 12:34:56.789123456
   // Since base::Time only has a resolution of microseconds,
   // construct a base::Time for 2012-11-10 12:34:56.789123.
-  base::Time::Exploded exploded_time;
-  exploded_time.year = 2012;
-  exploded_time.month = 11;
-  exploded_time.day_of_month = 10;
-  exploded_time.day_of_week = 6;
-  exploded_time.hour = 12;
-  exploded_time.minute = 34;
-  exploded_time.second = 56;
-  exploded_time.millisecond = 789;
+  static constexpr base::Time::Exploded kExplodedTime = {.year = 2012,
+                                                         .month = 11,
+                                                         .day_of_week = 6,
+                                                         .day_of_month = 10,
+                                                         .hour = 12,
+                                                         .minute = 34,
+                                                         .second = 56,
+                                                         .millisecond = 789};
   base::Time timeline_offset;
-  EXPECT_TRUE(base::Time::FromUTCExploded(exploded_time, &timeline_offset));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kExplodedTime, &timeline_offset));
 
   timeline_offset += base::Microseconds(123);
 
@@ -399,7 +398,7 @@ class PipelineIntegrationTest : public testing::Test,
   }
 
   void OnSelectedVideoTrackChanged(
-      absl::optional<MediaTrack::Id> selected_track_id) {
+      std::optional<MediaTrack::Id> selected_track_id) {
     base::RunLoop run_loop;
     pipeline_->OnSelectedVideoTrackChanged(selected_track_id,
                                            run_loop.QuitClosure());
@@ -526,7 +525,7 @@ class MSEChangeTypeTest
       std::string s = base::StrCat({std::get<0>(info.param).filename, "_AND_",
                                     std::get<1>(info.param).filename});
       // Strip out invalid param name characters.
-      base::EraseIf(s, [](char c) {
+      std::erase_if(s, [](char c) {
         return !absl::ascii_isalnum(static_cast<unsigned char>(c)) && c != '_';
       });
       return s;
@@ -781,7 +780,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240.webm", kHashed | kNoClockless));
 
   // Disable video.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
 
   // Seek to flush the pipeline and ensure there's no prerolled video data.
   ASSERT_TRUE(Seek(base::TimeDelta()));
@@ -818,7 +817,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
 TEST_F(PipelineIntegrationTest, TrackStatusChangesBeforePipelineStarted) {
   std::vector<MediaTrack::Id> empty_track_ids;
   OnEnabledAudioTracksChanged(empty_track_ids);
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
 }
 
 TEST_F(PipelineIntegrationTest, TrackStatusChangesAfterPipelineEnded) {
@@ -832,7 +831,7 @@ TEST_F(PipelineIntegrationTest, TrackStatusChangesAfterPipelineEnded) {
   track_ids.push_back(MediaTrack::Id("2"));
   OnEnabledAudioTracksChanged(track_ids);
   // Disable video track.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   // Re-enable video track.
   OnSelectedVideoTrackChanged(MediaTrack::Id("1"));
 }
@@ -872,7 +871,7 @@ TEST_F(PipelineIntegrationTest, MAYBE_TrackStatusChangesWhileSuspended) {
   ASSERT_TRUE(Suspend());
 
   // Disable video track.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   ASSERT_TRUE(Resume(TimestampMs(300)));
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(TimestampMs(400)));
   ASSERT_TRUE(Suspend());
@@ -919,7 +918,7 @@ TEST_F(PipelineIntegrationTest, ReinitRenderersWhileVideoTrackIsDisabled) {
   EXPECT_CALL(*this, OnVideoOpacityChange(true)).Times(AnyNumber());
 
   // Disable the video track.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   // pipeline.Suspend() releases renderers and pipeline.Resume() recreates and
   // reinitializes renderers while the video track is disabled.
   ASSERT_TRUE(Suspend());
@@ -953,7 +952,7 @@ TEST_F(PipelineIntegrationTest, PipelineStoppedWhileVideoRestartPending) {
 
   // Disable video track first, to re-enable it later and stop the pipeline
   // (which destroys the media renderer) while video restart is pending.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   ASSERT_TRUE(WaitUntilCurrentTimeIsAfter(TimestampMs(200)));
 
   OnSelectedVideoTrackChanged(MediaTrack::Id("1"));
@@ -1632,7 +1631,7 @@ TEST_F(PipelineIntegrationTest, MSE_GCWithDisabledVideoStream) {
 
   // Disable the video track and start playback. Renderer won't read from the
   // disabled video stream, so the video stream read position should be 0.
-  OnSelectedVideoTrackChanged(absl::nullopt);
+  OnSelectedVideoTrackChanged(std::nullopt);
   Play();
 
   // Wait until audio playback advances past 2 seconds and call MSE GC algorithm
@@ -2952,16 +2951,9 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
-// Ensures audio-video playback with missing or negative timestamps fails
-// instead of crashing.  See http://crbug.com/396864.
-TEST_F(PipelineIntegrationTest, BasicPlaybackChainedOggVideo) {
-  ASSERT_EQ(DEMUXER_ERROR_COULD_NOT_PARSE,
-            Start("double-bear.ogv", kUnreliableDuration));
-}
-
 // Tests that we signal ended even when audio runs longer than video track.
 TEST_F(PipelineIntegrationTest, BasicPlaybackAudioLongerThanVideo) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear_audio_longer_than_video.ogv"));
+  ASSERT_EQ(PIPELINE_OK, Start("bear_audio_longer_than_video_vp8.ogv"));
   // Audio track is 2000ms. Video track is 1001ms. Duration should be higher
   // of the two.
   EXPECT_EQ(2000, pipeline_->GetMediaDuration().InMilliseconds());
@@ -2971,7 +2963,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackAudioLongerThanVideo) {
 
 // Tests that we signal ended even when audio runs shorter than video track.
 TEST_F(PipelineIntegrationTest, BasicPlaybackAudioShorterThanVideo) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear_audio_shorter_than_video.ogv"));
+  ASSERT_EQ(PIPELINE_OK, Start("bear_audio_shorter_than_video_vp8.ogv"));
   // Audio track is 500ms. Video track is 1001ms. Duration should be higher of
   // the two.
   EXPECT_EQ(1001, pipeline_->GetMediaDuration().InMilliseconds());
@@ -2980,6 +2972,15 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackAudioShorterThanVideo) {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_F(PipelineIntegrationTest, NegativeVideoTimestamps) {
+  ASSERT_EQ(PIPELINE_OK,
+            Start("sync2-trimmed.mp4", kHashed | kUnreliableDuration));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_EQ("aa56bcbc674d2e7a60bbecb77c55bb1e", GetVideoHash());
+  EXPECT_AUDIO_HASH("89.10,30.04,90.81,29.89,89.55,29.20,");
+}
+
 TEST_F(PipelineIntegrationTest, Rotated_Metadata_0) {
   ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_0.mp4"));
   ASSERT_EQ(VIDEO_ROTATION_0,
@@ -3018,6 +3019,16 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHi10P) {
 
   ASSERT_TRUE(WaitUntilOnEnded());
 }
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+TEST_F(PipelineIntegrationTest, HLSMediaPlaylistTSavc1) {
+  base::test::ScopedFeatureList enable_hls{kBuiltInHlsPlayer};
+  ASSERT_EQ(PIPELINE_OK, StartPipelineWithHlsManifest("hls/mp_ts_avc1.m3u8"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_EQ("6bc0ecac3fea91d9591cb3197d28b196", GetVideoHash());
+}
+#endif
 
 // Verify that full-range H264 video has the right color space.
 TEST_F(PipelineIntegrationTest, Fullrange_H264) {

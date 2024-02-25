@@ -5,12 +5,12 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {isFakeEntry} from '../../../common/js/entry_utils.js';
+import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../../common/js/mock_entry.js';
-import {util} from '../../../common/js/util.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {RootType} from '../../../common/js/volume_manager_types.js';
 
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
 import {MetadataRequest} from './metadata_request.js';
@@ -48,13 +48,12 @@ export function setUp() {
 
   installMockChrome(mockChrome);
 
-  fakeEntry = new FakeEntryImpl(
-      'fakeEntry', VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
-  assertTrue(util.isFakeEntry(fakeEntry as unknown as FilesAppEntry));
+  fakeEntry = new FakeEntryImpl('fakeEntry', RootType.DRIVE_FAKE_ROOT);
+  assertTrue(isFakeEntry(fakeEntry as unknown as FilesAppEntry));
 
   const mockFileSystem = new MockFileSystem('volumeId');
   realEntry = MockFileEntry.create(mockFileSystem, '/test.tiff');
-  assertFalse(util.isFakeEntry(realEntry as unknown as FilesAppEntry));
+  assertFalse(isFakeEntry(realEntry as unknown as FilesAppEntry));
 }
 
 /**
@@ -76,12 +75,12 @@ export async function testDlpMetadataProviderIgnoresFakeEntries(
   ]);
 
   assertEquals(2, results.length);
-  assertEquals(results[0].isDlpRestricted, undefined);
-  assertEquals(results[0].sourceUrl, undefined);
-  assertEquals(results[0].isRestrictedForDestination, undefined);
-  assertEquals(results[1].isDlpRestricted, true);
-  assertEquals(results[1].sourceUrl, 'https://example.com');
-  assertEquals(results[1].isRestrictedForDestination, false);
+  assertEquals(results[0]!.isDlpRestricted, undefined);
+  assertEquals(results[0]!.sourceUrl, undefined);
+  assertEquals(results[0]!.isRestrictedForDestination, undefined);
+  assertEquals(results[1]!.isDlpRestricted, true);
+  assertEquals(results[1]!.sourceUrl, 'https://example.com');
+  assertEquals(results[1]!.isRestrictedForDestination, false);
 
   done();
 }

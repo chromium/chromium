@@ -15,8 +15,8 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.process_launcher.ChildProcessService;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
-import org.chromium.components.version_info.VersionConstants;
 
 /**
  * Class used in android:zygotePreloadName attribute of manifest.
@@ -41,10 +41,14 @@ public class ZygotePreload implements android.app.ZygotePreload {
 
     protected final void doPreloadCommon(ApplicationInfo appInfo) {
         // Using concatenation rather than %s to allow values to be inlined by R8.
-        Log.i(TAG,
-                "Loaded Zygote. version=" + VersionConstants.PRODUCT_VERSION
-                        + " minSdkVersion=" + BuildConfig.MIN_SDK_VERSION
-                        + " isBundle=" + BuildConfig.BUNDLES_SUPPORTED);
+        Log.i(
+                TAG,
+                "Loaded Zygote. version="
+                        + VersionConstants.PRODUCT_VERSION
+                        + " minSdkVersion="
+                        + BuildConfig.MIN_SDK_VERSION
+                        + " isBundle="
+                        + BuildConfig.BUNDLES_SUPPORTED);
         try {
             // The current thread time is the best approximation we have of the zygote start time
             // since Process.getStartUptimeMillis() is not reliable in the zygote process. This will

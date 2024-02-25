@@ -28,16 +28,7 @@ struct IconFramePreferenceKey: PreferenceKey {
   }
 }
 
-/// `PreferenceKey` holding the frame of the text in the destination view.
-struct TextFramePreferenceKey: PreferenceKey {
-  static var defaultValue: CGRect = .null
-  static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
-    value = CGRectUnion(value, nextValue())
-  }
-}
-
 /// A view displaying a single destination.
-@available(iOS 15, *)
 struct OverflowMenuDestinationView: View {
   /// Parameters providing any necessary data to layout the view.
   enum LayoutParameters {
@@ -45,20 +36,15 @@ struct OverflowMenuDestinationView: View {
     /// There is `iconSpacing` to either side of the icon, and `iconPadding`
     /// around the icon and inside the background.
     case vertical(iconSpacing: CGFloat, iconPadding: CGFloat)
-    /// The destination has an icon on the left and text on the right. Here
-    /// the view will have a fixed overall `itemWidth`.
-    case horizontal(itemWidth: CGFloat)
+    case horizontal
   }
 
   /// Shape consisting of a path around the icon and text.
   struct IconShape: Shape {
     let iconFrame: CGRect
-    let textFrame: CGRect
 
     func path(in rect: CGRect) -> Path {
-      var path = Path(roundedRect: iconFrame, cornerRadius: Dimensions.cornerRadius)
-      path.addRect(textFrame)
-      return path
+      return Path(roundedRect: iconFrame, cornerRadius: Dimensions.cornerRadius)
     }
   }
 
@@ -85,7 +71,7 @@ struct OverflowMenuDestinationView: View {
 
     /// The padding on either side of the view in the horizontal layout,
     /// separating it from the next view.
-    static let horizontalLayoutViewPadding: CGFloat = 16
+    static let horizontalLayoutViewPadding: CGFloat = 13
 
     /// The padding around the icon and inside the background in horizontal
     /// layout.
@@ -109,6 +95,12 @@ struct OverflowMenuDestinationView: View {
 
     /// The width of the new label badge.
     static let newLabelBadgeWidth: CGFloat = 20
+
+    /// The top padding of the hover effect on destination items.
+    static let hoverEffectTopPadding: CGFloat = 10
+
+    /// The bottom padding of the hover effect on destination items.
+    static let hoverEffectBottomPadding: CGFloat = 3
   }
 
   static let viewNamespace = "destinationView"
@@ -126,7 +118,6 @@ struct OverflowMenuDestinationView: View {
   @State private var isPressed = false
 
   @State private var iconFrame: CGRect = .zero
-  @State private var textFrame: CGRect = .zero
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
@@ -135,7 +126,7 @@ struct OverflowMenuDestinationView: View {
       .coordinateSpace(name: Self.viewNamespace)
       .contentShape(
         [.contextMenuPreview, .dragPreview],
-        IconShape(iconFrame: iconFrame, textFrame: textFrame)
+        IconShape(iconFrame: iconFrame)
       )
       .if(editMode?.wrappedValue.isEditing != true) { view in
         view.contextMenu {
@@ -160,9 +151,6 @@ struct OverflowMenuDestinationView: View {
       .onPreferenceChange(IconFramePreferenceKey.self) { newFrame in
         iconFrame = newFrame
       }
-      .onPreferenceChange(TextFramePreferenceKey.self) { newFrame in
-        textFrame = newFrame
-      }
   }
 
   // The button view, which is replaced by just a plain view when this is in
@@ -172,38 +160,50 @@ struct OverflowMenuDestinationView: View {
     if editMode?.wrappedValue.isEditing == true {
       buttonContent
     } else {
-      Button(
-        action: {
-          metricsHandler?.popupMenuTookAction()
-          destination.handler()
-        },
-        label: {
-          buttonContent
-        }
+      ZStack(alignment: .top) {
+        RoundedRectangle(cornerRadius: Dimensions.cornerRadius)
+          .opacity(0)
+        Button(
+          action: {
+            metricsHandler?.popupMenuTookAction()
+            metricsHandler?.popupMenuUserSelectedDestination()
+            destination.handler()
+          },
+          label: {
+            buttonContent
+          }
+        )
+        .buttonStyle(IsPressedStyle(isPressed: $isPressed))
+      }
+      .padding(.top, Dimensions.hoverEffectTopPadding)
+      .padding(.bottom, Dimensions.hoverEffectBottomPadding)
+      .contentShape(
+        .hoverEffect,
+        RoundedRectangle(cornerRadius: Dimensions.cornerRadius)
       )
-      .buttonStyle(IsPressedStyle(isPressed: $isPressed))
+      .hoverEffect(.automatic)
     }
   }
 
   /// The content of the button view.
   @ViewBuilder
   var buttonContent: some View {
-    let destinationWidth = Self.destinationWidth(layoutParameters)
     Group {
       switch layoutParameters {
-      case .vertical:
+      case .vertical(let iconSpacing, let iconPadding):
         VStack {
           icon
           text
         }
-        .frame(width: destinationWidth)
+        .frame(
+          width: Self.verticalLayoutDestinationWidth(
+            iconSpacing: iconSpacing, iconPadding: iconPadding))
       case .horizontal:
         HStack {
           icon
           Spacer().frame(width: Dimensions.horizontalLayoutIconSpacing)
           text
         }
-        .frame(width: destinationWidth, alignment: .leading)
         // In horizontal layout, the item itself has leading and trailing
         // padding.
         .padding([.leading, .trailing], Dimensions.horizontalLayoutViewPadding)
@@ -316,7 +316,7 @@ struct OverflowMenuDestinationView: View {
     switch layoutParameters {
     case .vertical:
       textSpacing = Dimensions.verticalLayoutTextPadding
-      maximumLines = nil
+      maximumLines = 2
     case .horizontal:
       textSpacing = 0
       maximumLines = 1
@@ -326,12 +326,6 @@ struct OverflowMenuDestinationView: View {
       .padding([.leading, .trailing], textSpacing)
       .multilineTextAlignment(.center)
       .lineLimit(maximumLines)
-      .overlay {
-        GeometryReader { geometry in
-          Color.clear.preference(
-            key: TextFramePreferenceKey.self, value: geometry.frame(in: .named(Self.viewNamespace)))
-        }
-      }
   }
 
   var accessibilityLabel: String {
@@ -356,12 +350,9 @@ struct OverflowMenuDestinationView: View {
     ].compactMap { $0 }.joined(separator: "-")
   }
 
-  static public func destinationWidth(_ layoutParameters: LayoutParameters) -> CGFloat {
-    switch layoutParameters {
-    case .vertical(let iconSpacing, let iconPadding):
-      return Dimensions.imageWidth + 2 * iconSpacing + 2 * iconPadding
-    case .horizontal(let itemWidth):
-      return itemWidth
-    }
+  static public func verticalLayoutDestinationWidth(iconSpacing: CGFloat, iconPadding: CGFloat)
+    -> CGFloat
+  {
+    return Dimensions.imageWidth + 2 * iconSpacing + 2 * iconPadding
   }
 }

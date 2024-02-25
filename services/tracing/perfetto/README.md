@@ -19,7 +19,7 @@ and is rolled in [/third_party/chrome/](https://cs.chromium.org/chromium/src/thi
 
 [Project page](https://android.googlesource.com/platform/external/perfetto/+/master/README.md)
 
-[Life of a Perfetto tracing Session](https://android.googlesource.com/platform/external/perfetto/+/master/docs/life-of-a-tracing-session.md)
+[Life of a Perfetto tracing Session](https://perfetto.dev/docs/design-docs/life-of-a-tracing-session)
 
 [Internal documentation](http://go/perfetto-project)
 

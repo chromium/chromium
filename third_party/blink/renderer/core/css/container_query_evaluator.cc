@@ -70,6 +70,9 @@ bool NameMatches(const ComputedStyle& style,
 
 bool TypeMatches(const ComputedStyle& style,
                  const ContainerSelector& container_selector) {
+  DCHECK(
+      !container_selector.HasUnknownFeature() ||
+      !RuntimeEnabledFeatures::CSSUnknownContainerQueriesNoSelectionEnabled());
   unsigned type = container_selector.Type(style.GetWritingMode());
   return !type || ((style.ContainerType() & type) == type);
 }
@@ -89,7 +92,7 @@ Element* CachedContainer(Element* starting_element,
       container_selector_cache.Find<ScopedContainerSelectorHashTranslator>(
           ScopedContainerSelector(container_selector, selector_tree_scope));
   if (it != container_selector_cache.end()) {
-    return it->value;
+    return it->value.Get();
   }
   Element* container = ContainerQueryEvaluator::FindContainer(
       starting_element, container_selector, selector_tree_scope);
@@ -103,7 +106,7 @@ Element* CachedContainer(Element* starting_element,
 
 ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
-      container.GetDocument(), container, absl::nullopt, absl::nullopt,
+      container.GetDocument(), container, std::nullopt, std::nullopt,
       ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
@@ -136,6 +139,10 @@ bool ContainerQueryEvaluator::EvalAndAdd(
     ContainerSelectorCache& container_selector_cache,
     MatchResult& match_result) {
   const ContainerSelector& selector = query.Selector();
+  if (selector.HasUnknownFeature() &&
+      RuntimeEnabledFeatures::CSSUnknownContainerQueriesNoSelectionEnabled()) {
+    return false;
+  }
   bool selects_size = selector.SelectsSizeContainers();
   bool selects_style = selector.SelectsStyleContainers();
   bool selects_state = selector.SelectsStateContainers();
@@ -167,12 +174,12 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   return false;
 }
 
-absl::optional<double> ContainerQueryEvaluator::Width() const {
+std::optional<double> ContainerQueryEvaluator::Width() const {
   CHECK(media_query_evaluator_);
   return media_query_evaluator_->GetMediaValues().Width();
 }
 
-absl::optional<double> ContainerQueryEvaluator::Height() const {
+std::optional<double> ContainerQueryEvaluator::Height() const {
   CHECK(media_query_evaluator_);
   return media_query_evaluator_->GetMediaValues().Height();
 }
@@ -336,8 +343,8 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
   size_ = size;
   contained_axes_ = contained_axes;
 
-  absl::optional<double> width;
-  absl::optional<double> height;
+  std::optional<double> width;
+  std::optional<double> height;
 
   const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
   Element* container = existing_values.ContainerElement();

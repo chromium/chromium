@@ -9,10 +9,11 @@ import '../../history_clusters/page_favicon.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {ClientId as PageImageServiceClientId} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Annotation, URLVisit} from '../../../history_cluster_types.mojom-webui.js';
+import type {URLVisit} from '../../../history_cluster_types.mojom-webui.js';
+import {Annotation} from '../../../history_cluster_types.mojom-webui.js';
 import {I18nMixin} from '../../../i18n_setup.js';
 
 import {getTemplate} from './visit_tile.html.js';
@@ -65,10 +66,21 @@ export class VisitTileModuleElement extends I18nMixin
         reflectToAttribute: true,
       },
 
+      // The texts for the discount chip.
+      discount: {
+        type: String,
+      },
+
       hasDiscount: {
         type: Boolean,
-        value: false,
+        computed: `computeHasDiscount_(discount)`,
         reflectToAttribute: true,
+      },
+
+      /* The label of the tile in a11y mode. */
+      tileLabel_: {
+        type: String,
+        computed: `computeTileLabel_(discount, label_)`,
       },
     };
   }
@@ -76,8 +88,10 @@ export class VisitTileModuleElement extends I18nMixin
   format: string;
   imagesEnabled: boolean;
   visit: URLVisit;
+  discount: string;
   hasDiscount: boolean;
   private imageUrl_: Url|null;
+  private label_: string;
 
   hasImageUrl(): boolean {
     return !!this.imageUrl_;
@@ -94,6 +108,10 @@ export class VisitTileModuleElement extends I18nMixin
     let domain = (new URL(this.visit.normalizedUrl.url)).hostname;
     domain = domain.replace('www.', '');
     return domain;
+  }
+
+  private computeHasDiscount_(): boolean {
+    return !!this.discount && this.discount.length !== 0;
   }
 
   // Set imageUrl when visit is set/updated.
@@ -114,6 +132,15 @@ export class VisitTileModuleElement extends I18nMixin
       }
     }
     this.imageUrl_ = null;
+  }
+
+  private computeTileLabel_(): string {
+    const labelTexts =
+        [this.visit.pageTitle, this.label_, this.visit.relativeDate];
+    if (!!this.discount && this.discount.length !== 0) {
+      labelTexts.push(this.discount);
+    }
+    return labelTexts.join(', ');
   }
 }
 

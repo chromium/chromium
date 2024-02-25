@@ -35,7 +35,7 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
 
   auto on_terminate_gpu_cb =
       base::BindOnce(&WaylandBufferManagerConnector::OnTerminateGpuProcess,
-                     base::Unretained(this));
+                     weak_factory_.GetWeakPtr());
   buffer_manager_host_->SetTerminateGpuCallback(std::move(on_terminate_gpu_cb));
   terminate_callback_ = std::move(terminate_callback);
 
@@ -59,7 +59,8 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
       buffer_manager_host_->SupportsAcquireFence(),
       buffer_manager_host_->SupportsOverlays(),
       buffer_manager_host_->GetSurfaceAugmentorVersion(),
-      buffer_manager_host_->SupportsSinglePixelBuffer());
+      buffer_manager_host_->SupportsSinglePixelBuffer(),
+      buffer_manager_host_->GetServerVersion());
 }
 
 void WaylandBufferManagerConnector::OnTerminateGpuProcess(std::string message) {

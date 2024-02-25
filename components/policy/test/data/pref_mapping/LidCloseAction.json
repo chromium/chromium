@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "LidCloseAction": 0
+        },
+        "prefs": {
+          "power.lid_closed_action": {
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]

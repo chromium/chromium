@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
@@ -10,7 +11,7 @@
 #include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -52,7 +53,7 @@
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "ash/wm/test_session_state_animator.h"
+#include "ash/wm/test/test_session_state_animator.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -78,7 +79,6 @@
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
@@ -192,7 +192,7 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
   }
   void SetBrightnessPercent(double percent, bool gradual) override {}
   void GetBrightnessPercent(
-      base::OnceCallback<void(absl::optional<double>)> callback) override {
+      base::OnceCallback<void(std::optional<double>)> callback) override {
     std::move(callback).Run(100.0);
   }
 
@@ -436,11 +436,10 @@ class AcceleratorControllerTest : public AshTestBase {
     return true;
   }
 
-  raw_ptr<AcceleratorControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;  // Not owned.
+  raw_ptr<AcceleratorControllerImpl, DanglingUntriaged> controller_ =
+      nullptr;  // Not owned.
   std::unique_ptr<AcceleratorControllerImpl::TestApi> test_api_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
-      new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
@@ -705,7 +704,7 @@ TEST_F(AcceleratorControllerTest, WindowSnapUpsideDown) {
       DisplayConfigurationController::ANIMATION_SYNC);
   display::Display current_display =
       display_manager()->GetDisplayForId(primary_display_id);
-  ASSERT_TRUE(chromeos::IsDisplayLayoutHorizontal(current_display));
+  ASSERT_TRUE(current_display.is_landscape());
   ASSERT_FALSE(chromeos::IsDisplayLayoutPrimary(current_display));
 
   // Snap the window. Test that it goes to the physical left/right as expected.
@@ -726,7 +725,7 @@ TEST_F(AcceleratorControllerTest, WindowSnapUpsideDown) {
       display::Display::RotationSource::USER,
       DisplayConfigurationController::ANIMATION_SYNC);
   current_display = display_manager()->GetDisplayForId(primary_display_id);
-  ASSERT_FALSE(chromeos::IsDisplayLayoutHorizontal(current_display));
+  ASSERT_FALSE(current_display.is_landscape());
   ASSERT_FALSE(chromeos::IsDisplayLayoutPrimary(current_display));
 
   window = CreateAppWindow(gfx::Rect(300, 300));
@@ -781,38 +780,6 @@ TEST_F(AcceleratorControllerTest, TestRepeatedSnap) {
   EXPECT_EQ(normal_bounds.ToString(), window->bounds().ToString());
 }
 
-// Test that GetEncodedShortcut encodes a shortcut correctly.
-// - The low 16 bits represent the key code.
-// - The high 16 bits represent the modififers.
-//   - The 31 bit: Command key
-//   - The 30 bit: Alt key
-//   - The 29 bit: Control key
-//   - The 28 bit: Shift key
-//   - All other bits are 0
-TEST_F(AcceleratorControllerTest, GetEncodedShortcut) {
-  // Test will verify that ui::EF_FUNCTION_DOWN and ui::EF_ALTGR_DOWN will be
-  // ignored.
-  const int all_modifiers = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
-                            ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
-                            ui::EF_FUNCTION_DOWN | ui::EF_ALTGR_DOWN;
-  struct {
-    ui::KeyboardCode code;
-    int modifiers;
-    const int expected_int;
-  } keys[] = {
-      {ui::VKEY_A, ui::EF_SHIFT_DOWN, 0x0800'0041},  // A: 0x41
-      {ui::VKEY_A, ui::EF_CONTROL_DOWN, 0x1000'0041},
-      {ui::VKEY_A, ui::EF_ALT_DOWN, 0x2000'0041},
-      {ui::VKEY_A, ui::EF_COMMAND_DOWN, 0x4000'0041},
-      {ui::VKEY_Z, all_modifiers, 0x7800'005A},  // Z: 0x5A
-  };
-
-  for (const auto& key : keys) {
-    EXPECT_EQ(GetEncodedShortcut(ui::Accelerator(key.code, key.modifiers)),
-              key.expected_int);
-  }
-}
-
 class AcceleratorControllerTestWithClamshellSplitView
     : public AcceleratorControllerTest {
  public:
@@ -835,7 +802,7 @@ class AcceleratorControllerTestWithClamshellSplitView
  private:
   void EnterOverviewAndDragTo(aura::Window* window,
                               const gfx::Point& destination) {
-    DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
+    CHECK(!OverviewController::Get()->InOverviewSession());
     ToggleOverview();
 
     ui::test::EventGenerator* generator = GetEventGenerator();
@@ -1025,7 +992,7 @@ TEST_F(AcceleratorControllerTest, RotateScreen) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   display::Display::Rotation initial_rotation =
       GetActiveDisplayRotation(display.id());
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
 
   EXPECT_FALSE(accessibility_controller
@@ -1186,7 +1153,7 @@ TEST_F(AcceleratorControllerTest, RotateScreenWithWindowLockingOrientation) {
   // those that requested window rotation locks.
   TabletModeControllerTestApi().AttachExternalMouse();
   EXPECT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
-  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
 
   wm::ActivateWindow(win0.get());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
@@ -1308,11 +1275,9 @@ TEST_F(AcceleratorControllerTest, DontToggleFullscreenWhenOverviewStarts) {
   generator->PressKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
   generator->PressKey(ui::VKEY_ZOOM, ui::EF_NONE);
   EXPECT_FALSE(WindowState::Get(widget->GetNativeWindow())->IsFullscreen());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-  EXPECT_TRUE(Shell::Get()
-                  ->overview_controller()
-                  ->overview_session()
-                  ->IsWindowInOverview(widget->GetNativeWindow()));
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->overview_session()->IsWindowInOverview(
+      widget->GetNativeWindow()));
 }
 
 // Tests that window shortcuts don't work on a minimized, i.e. not visible,
@@ -1325,7 +1290,7 @@ TEST_F(AcceleratorControllerTest, MinimizedWindowInOverview) {
   EXPECT_TRUE(window_state->IsMinimized());
   ToggleOverview();
   GetEventGenerator()->PressKey(ui::VKEY_OEM_4, ui::EF_ALT_DOWN);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_TRUE(window_state->IsMinimized());
 }
 
@@ -1493,8 +1458,7 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
 }
 
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
-  AccessibilityControllerImpl* accessibility_controller =
-      Shell::Get()->accessibility_controller();
+  test_api_->SetCanHandleLauncher(true);
 
   // The press event should not toggle the AppList, the release should instead.
   EXPECT_FALSE(
@@ -1507,25 +1471,7 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
-  EXPECT_EQ(ui::VKEY_LWIN, GetPreviousAccelerator().key_code());
 
-  // When spoken feedback is on, the AppList should not toggle.
-  accessibility_controller->SetSpokenFeedbackEnabled(true,
-                                                     A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
-  EXPECT_FALSE(
-      ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  EXPECT_FALSE(ProcessInController(
-      CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  accessibility_controller->SetSpokenFeedbackEnabled(false,
-                                                     A11Y_NOTIFICATION_NONE);
-  EXPECT_FALSE(accessibility_controller->spoken_feedback().enabled());
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  // Turning off spoken feedback should allow the AppList to toggle again.
-  EXPECT_FALSE(
-      ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   EXPECT_TRUE(ProcessInController(
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
@@ -1541,14 +1487,20 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
 
-  // When pressed key is interrupted by mouse, the AppList should not toggle.
+  // Verifies VKEY_RWIN triggers AppList, too. This happens if modifier
+  // keys are swapped.
+  GetAppListTestHelper()->DismissAndRunLoop();
   EXPECT_FALSE(
-      ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  controller_->GetAcceleratorHistory()->InterruptCurrentAccelerator();
-  EXPECT_FALSE(ProcessInController(
-      CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
+      ProcessInController(ui::Accelerator(ui::VKEY_RWIN, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(ui::VKEY_RWIN, GetCurrentAccelerator().key_code());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  EXPECT_TRUE(ProcessInController(
+      CreateReleaseAccelerator(ui::VKEY_RWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_EQ(ui::VKEY_RWIN, GetPreviousAccelerator().key_code());
 }
 
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
@@ -1569,13 +1521,11 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
 }
 
 TEST_F(AcceleratorControllerTest, ToggleMultitaskMenu) {
-  base::test::ScopedFeatureList scoped_feature_list;
   // Accelerators behind a flag should also be accompanied by the
   // `kShortcutCustomization` to support dynamic accelerator registration.
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::wm::features::kWindowLayoutMenu,
-       ::features::kShortcutCustomization},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::features::kShortcutCustomization);
+
   // Simulate fake user login to ensure pref registration is done correctly.
   SimulateUserLogin("fakeuser");
   // Enabling `kShortcutCustomization` will start letting
@@ -1626,6 +1576,8 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::Accelerator::KeyState::PRESSED)));
 
 TEST_P(GlobalAcceleratorsToggleLauncher, ToggleLauncher) {
+  test_api_->SetCanHandleLauncher(true);
+
   EXPECT_TRUE(
       ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
   base::RunLoop().RunUntilIdle();
@@ -1638,6 +1590,8 @@ TEST_P(GlobalAcceleratorsToggleLauncher, ToggleLauncher) {
 }
 
 TEST_P(GlobalAcceleratorsToggleLauncher, PreventProcessingShortcuts) {
+  test_api_->SetCanHandleLauncher(true);
+
   // Set Controller to block all shortcuts and try to toggle the productivity
   // launcher
   controller_->SetPreventProcessingAccelerators(true);
@@ -1776,7 +1730,7 @@ TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
 
 // Tests the histogram of volume adjustment in tablet mode.
 TEST_F(AcceleratorControllerTest, TabletModeVolumeAdjustHistogram) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   base::HistogramTester histogram_tester;
   const ui::Accelerator kVolumeDown(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
   const ui::Accelerator kVolumeUp(ui::VKEY_VOLUME_UP, ui::EF_NONE);
@@ -1819,7 +1773,7 @@ class SideVolumeButtonAcceleratorTest
 
   void SetUp() override {
     AcceleratorControllerTest::SetUp();
-    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    ash::TabletModeControllerTestApi().EnterTabletMode();
     test_api_->SetSideVolumeButtonLocation(region_, side_);
     ui::DeviceDataManagerTestApi().SetUncategorizedDevices({ui::InputDevice(
         kSideVolumeButtonId, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
@@ -1938,8 +1892,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests the AcceleratorAction::kToggleCapsLock accelerator.
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
-  ImeControllerImpl* controller = Shell::Get()->ime_controller();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kShortcutStateMachines);
 
+  ImeControllerImpl* controller = Shell::Get()->ime_controller();
   TestImeControllerClient client;
   controller->SetClient(&client);
   EXPECT_EQ(0, client.set_caps_lock_count_);
@@ -2040,6 +1996,76 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
   controller->UpdateCapsLockState(false);
 }
 
+// Tests the AcceleratorAction::kToggleCapsLock accelerator.
+TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsStateMachines) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kShortcutStateMachines);
+
+  ImeControllerImpl* controller = Shell::Get()->ime_controller();
+  TestImeControllerClient client;
+  controller->SetClient(&client);
+  EXPECT_EQ(0, client.set_caps_lock_count_);
+
+  // Following tests are testing valid uses of the capslock accelerator.
+  test_api_->SetCanHandleCapsLock(true);
+
+  // 1. Press Alt, Press Search, Release Search, Release Alt.
+  // Note when you press Alt then press search, the key_code at this point is
+  // VKEY_LWIN (for search) and Alt is the modifier.
+  const ui::Accelerator press_alt_then_search(ui::VKEY_LWIN, ui::EF_ALT_DOWN);
+  EXPECT_FALSE(ProcessInController(press_alt_then_search));
+  // When you release Search before Alt, the key_code is still VKEY_LWIN and
+  // Alt is still the modifier.
+  const ui::Accelerator release_search_before_alt(
+      CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_ALT_DOWN));
+  EXPECT_TRUE(ProcessInController(release_search_before_alt));
+  EXPECT_EQ(1, client.set_caps_lock_count_);
+  EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // 2. Press Search, Press Alt, Release Search, Release Alt.
+  const ui::Accelerator press_search_then_alt(ui::VKEY_MENU,
+                                              ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(ProcessInController(press_search_then_alt));
+  EXPECT_TRUE(ProcessInController(release_search_before_alt));
+  EXPECT_EQ(2, client.set_caps_lock_count_);
+  EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // 3. Press Alt, Press Search, Release Alt, Release Search.
+  EXPECT_FALSE(ProcessInController(press_alt_then_search));
+  const ui::Accelerator release_alt_before_search(
+      CreateReleaseAccelerator(ui::VKEY_MENU, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(ProcessInController(release_alt_before_search));
+  EXPECT_EQ(3, client.set_caps_lock_count_);
+  EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // 4. Press Search, Press Alt, Release Alt, Release Search.
+  EXPECT_FALSE(ProcessInController(press_search_then_alt));
+  EXPECT_TRUE(ProcessInController(release_alt_before_search));
+  EXPECT_EQ(4, client.set_caps_lock_count_);
+  EXPECT_TRUE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // Following tests are testing invalid uses of the capslock accelerator.
+  test_api_->SetCanHandleCapsLock(false);
+
+  // 5. Press Search, Press Alt, Release Alt, Release search
+  EXPECT_FALSE(ProcessInController(press_search_then_alt));
+  EXPECT_FALSE(ProcessInController(release_alt_before_search));
+  EXPECT_EQ(4, client.set_caps_lock_count_);
+  EXPECT_FALSE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+
+  // 6. Press Alt, Press Search, Release Search, Release Alt
+  EXPECT_FALSE(ProcessInController(press_alt_then_search));
+  EXPECT_FALSE(ProcessInController(release_search_before_alt));
+  EXPECT_EQ(4, client.set_caps_lock_count_);
+  EXPECT_FALSE(controller->IsCapsLockEnabled());
+  controller->UpdateCapsLockState(false);
+}
+
 class PreferredReservedAcceleratorsTest : public AshTestBase {
  public:
   PreferredReservedAcceleratorsTest() = default;
@@ -2076,7 +2102,7 @@ TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithFullscreen) {
   ui::test::EventGenerator* generator = GetEventGenerator();
 
   // Power key (reserved) should always be handled.
-  Shell::Get()->power_button_controller()->OnTabletModeStarted();
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   PowerButtonControllerTestApi test_api(
       Shell::Get()->power_button_controller());
   EXPECT_FALSE(test_api.PowerButtonMenuTimerIsRunning());
@@ -2126,7 +2152,7 @@ TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithPinned) {
   ui::test::EventGenerator* generator = GetEventGenerator();
 
   // Power key (reserved) should always be handled.
-  Shell::Get()->power_button_controller()->OnTabletModeStarted();
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   PowerButtonControllerTestApi test_api(
       Shell::Get()->power_button_controller());
   EXPECT_FALSE(test_api.PowerButtonMenuTimerIsRunning());
@@ -2256,7 +2282,7 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
 }
 
 TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
 
@@ -2315,7 +2341,7 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
 TEST_F(AcceleratorControllerTest, TestDialogCancel) {
   ui::Accelerator accelerator(ui::VKEY_H,
                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Pressing cancel on the dialog should have no effect.
   EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
@@ -2337,7 +2363,7 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
   // High Contrast Mode Enabled dialog and notification should be shown.
   EXPECT_FALSE(IsConfirmationDialogOpen());
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
   EXPECT_TRUE(ProcessInController(accelerator));
@@ -2473,8 +2499,8 @@ class AcceleratorControllerImprovedKeyboardShortcutsTest
   }
 
  protected:
-  raw_ptr<TestInputMethodManager, DanglingUntriaged | ExperimentalAsh>
-      input_method_manager_ = nullptr;  // Not owned.
+  raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_ =
+      nullptr;  // Not owned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2528,8 +2554,8 @@ class AcceleratorControllerInputMethodTest : public AcceleratorControllerTest {
   }
 
  protected:
-  raw_ptr<AcceleratorMockInputMethod, DanglingUntriaged | ExperimentalAsh>
-      mock_input_ = nullptr;  // Not owned.
+  raw_ptr<AcceleratorMockInputMethod, DanglingUntriaged> mock_input_ =
+      nullptr;  // Not owned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2650,6 +2676,42 @@ TEST_F(DeprecatedAcceleratorTester, TestDeprecatedAcceleratorsBehavior) {
   }
 }
 
+TEST_F(DeprecatedAcceleratorTester, NoNotificationIfReplacementMissing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kShortcutCustomization);
+
+  // Remove the replacements for all deprecated accelerators.
+  Shell::Get()->ash_accelerator_configuration()->RemoveAccelerator(
+      AcceleratorAction::kShowShortcutViewer,
+      ui::Accelerator{ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN});
+
+  Shell::Get()->ash_accelerator_configuration()->RemoveAccelerator(
+      AcceleratorAction::kOpenGetHelp,
+      ui::Accelerator{ui::VKEY_H, ui::EF_COMMAND_DOWN});
+
+  for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
+    const AcceleratorData& entry = kDeprecatedAccelerators[i];
+
+    const DeprecatedAcceleratorData* data =
+        test_api_->GetDeprecatedAcceleratorData(entry.action);
+    DCHECK(data);
+
+    EXPECT_TRUE(IsMessageCenterEmpty());
+    ui::Accelerator deprecated_accelerator = CreateAccelerator(entry);
+    if (data->deprecated_enabled) {
+      EXPECT_TRUE(ProcessInController(deprecated_accelerator));
+    } else {
+      EXPECT_FALSE(ProcessInController(deprecated_accelerator));
+    }
+
+    // We do not expect to see a notification in the message center.
+    EXPECT_FALSE(
+        ContainsDeprecatedAcceleratorNotification(data->uma_histogram_name));
+
+    ResetStateIfNeeded();
+  }
+}
+
 TEST_F(DeprecatedAcceleratorTester, TestNewAccelerators) {
   // Add below the new accelerators that replaced the deprecated ones (if any).
   const AcceleratorData kNewAccelerators[] = {
@@ -2758,7 +2820,7 @@ class FakeMagnificationManager {
 
  private:
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
@@ -2772,7 +2834,7 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Toggle the fullscreen magnifier on/off, dialog should be shown on first use
   // of accelerator.
@@ -2820,7 +2882,7 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Toggle the docked magnifier on/off, dialog should be shown on first use of
   // accelerator.
@@ -3009,7 +3071,7 @@ struct MediaSessionAcceleratorTestConfig {
 
   // Runs the test with the supplied action enabled and will also send the media
   // session info to the controller.
-  absl::optional<MediaSessionAction> with_action_enabled;
+  std::optional<MediaSessionAction> with_action_enabled;
 
   // If true then we should expect the action will handle the media keys.
   bool eligible_action = false;
@@ -3070,7 +3132,7 @@ class MediaSessionAcceleratorTest
     SimulatePlaybackState(playback_state);
   }
 
-  void SimulateActionsChanged(absl::optional<MediaSessionAction> action) {
+  void SimulateActionsChanged(std::optional<MediaSessionAction> action) {
     std::vector<MediaSessionAction> actions;
 
     if (action)
@@ -3298,7 +3360,7 @@ TEST_P(MediaSessionAcceleratorTest,
     EXPECT_EQ(0, controller()->next_track_count());
   }
 
-  SimulateActionsChanged(absl::nullopt);
+  SimulateActionsChanged(std::nullopt);
 
   ProcessInController(ui::Accelerator(ui::VKEY_MEDIA_NEXT_TRACK, ui::EF_NONE));
   Shell::Get()->media_controller()->FlushForTesting();
@@ -3429,6 +3491,11 @@ TEST_F(AcceleratorControllerGameDashboardTests,
   EXPECT_FALSE(ProcessInController(accelerator));
   window->SetProperty(kArcGameControlsFlagsKey, ArcGameControlsFlag::kKnown);
   EXPECT_TRUE(ProcessInController(accelerator));
+  window->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ash::ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
+                                            ArcGameControlsFlag::kEdit));
+  EXPECT_FALSE(ProcessInController(accelerator));
 }
 
 }  // namespace ash

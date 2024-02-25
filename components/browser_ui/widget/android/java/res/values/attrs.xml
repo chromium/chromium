@@ -25,16 +25,6 @@ found in the LICENSE file.
         <attr name="dualControlLayoutHorizontalPadding" format="dimension"/>
     </declare-styleable>
 
-    <declare-styleable name="ListMenuButton">
-        <attr name="menuMaxWidth" format="reference|dimension" />
-        <attr name="menuVerticalOverlapAnchor" format="boolean" />
-        <attr name="menuHorizontalOverlapAnchor" format="boolean" />
-        <!-- Used to specify if a menu button is positioned at the start or at
-        the end of a layout so the correct menu popup anim file can be applied.
-        The default is set to true -->
-        <attr name="menuPositionedAtEnd" format="boolean" />
-    </declare-styleable>
-
     <declare-styleable name="AsyncImageView">
         <attr name="unavailableSrc" format="reference" />
         <attr name="waitingSrc" format="reference" />
@@ -135,15 +125,4 @@ found in the LICENSE file.
             <enum name="hard" value="2" />
         </attr>
     </declare-styleable>
-
-    <!-- Surface color resources. See https://crbug.com/1410537. -->
-    <attr name="tileViewIconBackgroundModern" format="reference"/>
-    <attr name="cardElevation" format="reference|dimension"/>
-    <attr name="defaultBgColorDarkElev1Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev1Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev2Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev3Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev4Baseline" format="reference|color"/>
-    <attr name="defaultBgColorElev5Baseline" format="reference|color"/>
-    <attr name="defaultChipRippleColor" format="reference|color"/>
 </resources>

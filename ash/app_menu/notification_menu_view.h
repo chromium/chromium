@@ -10,6 +10,7 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace message_center {
@@ -30,6 +31,8 @@ class NotificationItemView;
 // A view inserted into a container MenuItemView which shows a
 // NotificationItemView and a NotificationMenuHeaderView.
 class APP_MENU_EXPORT NotificationMenuView : public views::View {
+  METADATA_HEADER(NotificationMenuView, views::View)
+
  public:
   // API for child views to interact with the NotificationMenuController.
   class Delegate {
@@ -56,7 +59,7 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Whether |notifications_for_this_app_| is empty.
   bool IsEmpty() const;
@@ -104,13 +107,11 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
   const std::string app_id_;
 
   // Owned by AppMenuModelAdapter.
-  const raw_ptr<NotificationMenuView::Delegate,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<NotificationMenuView::Delegate, DanglingUntriaged>
       notification_item_view_delegate_;
 
   // Owned by AppMenuModelAdapter.
-  const raw_ptr<views::SlideOutControllerDelegate,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<views::SlideOutControllerDelegate, DanglingUntriaged>
       slide_out_controller_delegate_;
 
   // The deque of NotificationItemViews. The front item in the deque is the view
@@ -119,15 +120,14 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
 
   // A double separator used to distinguish notifications from context menu
   // options. Owned by views hierarchy.
-  raw_ptr<views::MenuSeparator, ExperimentalAsh> double_separator_;
+  raw_ptr<views::MenuSeparator, DanglingUntriaged> double_separator_;
 
   // Holds the header and counter texts. Owned by views hierarchy.
-  raw_ptr<NotificationMenuHeaderView, ExperimentalAsh> header_view_;
+  raw_ptr<NotificationMenuHeaderView, DanglingUntriaged> header_view_;
 
   // A view that shows icons of notifications for this app that are not being
   // shown.
-  raw_ptr<NotificationOverflowView, DanglingUntriaged | ExperimentalAsh>
-      overflow_view_ = nullptr;
+  raw_ptr<NotificationOverflowView, DanglingUntriaged> overflow_view_ = nullptr;
 };
 
 }  // namespace ash

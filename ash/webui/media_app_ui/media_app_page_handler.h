@@ -46,7 +46,7 @@ class MediaAppPageHandler : public media_app_ui::mojom::PageHandler {
 
  private:
   mojo::Receiver<media_app_ui::mojom::PageHandler> receiver_;
-  raw_ptr<MediaAppUI, ExperimentalAsh> media_app_ui_;  // Owns |this|.
+  raw_ptr<MediaAppUI> media_app_ui_;  // Owns |this|.
 };
 
 }  // namespace ash

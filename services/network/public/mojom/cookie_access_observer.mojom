@@ -4,9 +4,11 @@
 
 module network.mojom;
 
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/cookie_setting_overrides.mojom";
 
 struct CookieAccessDetails {
   enum Type {
@@ -22,6 +24,10 @@ struct CookieAccessDetails {
   // worker script looking them up.
   url.mojom.Url url;
 
+  // The top frame origin for the given request, we use top_frame_origin from
+  // net::IsolationInfo.
+  url.mojom.Origin top_frame_origin;
+
   SiteForCookies site_for_cookies;
   // Each element of the `cookie_list` array includes a CookieInclusionStatus
   // and a CanonicalCookie if one was successfully constructed; if we were
@@ -33,6 +39,18 @@ struct CookieAccessDetails {
   // |devtools_request_id| contains the DevTools request id of the request
   // that triggered the cookie change, if the read was triggered by a request.
   string? devtools_request_id;
+
+  // CookieAccessDetails may be deduplicated to reduce IPC costs. In this case,
+  // |count| refers to the number of instances that are duplicates of |this|
+  // that would have been sent (including |this|).
+  uint32 count = 1;
+
+  // If the cookies are accessed by a network transfer, `is_ad_tagged` records
+  // whether the request was determined to be for advertising purposes.
+  bool is_ad_tagged;
+
+  // A set of enum values as a bitmask.
+  CookieSettingOverrides cookie_setting_overrides;
 };
 
 // Cloneable interface to observe the cookie reads or writes.

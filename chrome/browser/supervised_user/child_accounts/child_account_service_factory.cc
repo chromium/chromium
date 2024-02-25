@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -26,17 +25,11 @@ namespace {
 // is used to allow remote approvals through ChildAccountService.
 std::unique_ptr<supervised_user::PermissionRequestCreator>
 CreatePermissionCreator(Profile* profile) {
-  std::unique_ptr<supervised_user::PermissionRequestCreator> permission_creator;
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kEnableCreatePermissionRequestFetcher)) {
-    permission_creator =
-        std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
-            IdentityManagerFactory::GetForProfile(profile),
-            profile->GetURLLoaderFactory());
-  } else {
-    permission_creator =
-        PermissionRequestCreatorApiary::CreateWithProfile(profile);
-  }
+  std::unique_ptr<supervised_user::PermissionRequestCreator>
+      permission_creator =
+          std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
+              IdentityManagerFactory::GetForProfile(profile),
+              profile->GetURLLoaderFactory());
   return permission_creator;
 }
 

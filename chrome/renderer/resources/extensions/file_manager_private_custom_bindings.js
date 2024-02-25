@@ -64,8 +64,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setCustomCallback('searchDrive',
-      function(callback, response) {
+  apiFunctions.setCustomCallback('searchDrive', function(callback, response) {
     if (response && !response.error && response.entries) {
       response.entries = response.entries.map(getExternalFileEntry);
     }
@@ -76,7 +75,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     }
 
     if (callback) {
-      callback(response.entries, response.nextFeed);
+      callback({entries: response.entries, nextFeed: response.nextFeed});
     }
   });
 
@@ -162,13 +161,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'computeChecksum', function(entry, successCallback, failureCallback) {
         var url = getEntryURL(entry);
         fileManagerPrivateInternal.computeChecksum(
-            url, callbackAdaptor(successCallback, failureCallback));
-      });
-
-  apiFunctions.setHandleRequest(
-      'getMimeType', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
-        fileManagerPrivateInternal.getMimeType(
             url, callbackAdaptor(successCallback, failureCallback));
       });
 
@@ -332,13 +324,18 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getRecentFiles',
       function(
-          restriction, file_type, invalidate_cache, successCallback,
-          failureCallback) {
+          restriction, query, cutoffDays, file_type, invalidate_cache,
+          successCallback, failureCallback) {
         let resultHandler = function(entryDescriptions) {
           return entryDescriptions.map(getExternalFileEntry);
         };
+        // Due to C++integer limits we bind the JavaScript value to 0 .. 65535.
+        // Negative values are not accepted as this means files modified in the
+        // future. This limit means that x days after June 6, 2149 users will
+        // not be able to ask for files modified before Jan 01 + x, 1970.
+        const clampedCutoffDays = Math.min(Math.max(0, cutoffDays), 65535);
         fileManagerPrivateInternal.getRecentFiles(
-            restriction, file_type, invalidate_cache,
+            restriction, query, clampedCutoffDays, file_type, invalidate_cache,
             callbackAdaptor(successCallback, failureCallback, resultHandler));
       });
 
@@ -363,13 +360,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'getCrostiniSharedPaths',
       function(
           observeFirstForSession, vmName, successCallback, failureCallback) {
-        // TODO(tjudkins): This call can't use the callbackAdaptor due to it
-        // having a multiparameter callback.
         fileManagerPrivateInternal.getCrostiniSharedPaths(
-            observeFirstForSession, vmName,
-            function(entryDescriptions, firstForSession) {
-              successCallback(
-                  entryDescriptions.map(getExternalFileEntry), firstForSession);
+            observeFirstForSession, vmName, function(response) {
+              const {entries, firstForSession} = response;
+              successCallback({
+                entries: entries.map(getExternalFileEntry),
+                firstForSession,
+              });
             });
       });
 
@@ -382,10 +379,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'installLinuxPackage', function(entry, successCallback, failureCallback) {
-        // TODO(tjudkins): This call can't use the callbackAdaptor due to it
-        // having a multiparameter callback.
         var url = getEntryURL(entry);
-        fileManagerPrivateInternal.installLinuxPackage(url, successCallback);
+        fileManagerPrivateInternal.installLinuxPackage(
+            url, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setCustomCallback('searchFiles',

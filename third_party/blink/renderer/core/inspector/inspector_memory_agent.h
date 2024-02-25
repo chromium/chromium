@@ -68,13 +68,13 @@ class CORE_EXPORT InspectorMemoryAgent final
       std::unique_ptr<protocol::Memory::SamplingProfile>*) override;
 
  private:
-  Vector<String> Symbolize(const WebVector<void*>& addresses);
+  Vector<String> Symbolize(const WebVector<const void*>& addresses);
   std::unique_ptr<protocol::Memory::SamplingProfile> GetSamplingProfileById(
       uint32_t id);
 
   Member<InspectedFrames> frames_;
   uint32_t profile_id_ = 0;
-  HashMap<void*, String> symbols_cache_;
+  HashMap<const void*, String> symbols_cache_;
 
   InspectorAgentState::Integer sampling_profile_interval_;
 

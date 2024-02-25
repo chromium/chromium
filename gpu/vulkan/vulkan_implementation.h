@@ -90,10 +90,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
   virtual SemaphoreHandle GetSemaphoreHandle(VkDevice vk_device,
                                              VkSemaphore vk_semaphore);
 
-  // Returns VkExternalMemoryHandleTypeFlagBits that should be set when creating
-  // external images and memory.
-  virtual VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() = 0;
-
   // Returns VkExternalSemaphoreHandleTypeFlagBits that should be used when
   // creating and exporting external semaphores.
   virtual VkExternalSemaphoreHandleTypeFlagBits

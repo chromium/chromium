@@ -57,7 +57,7 @@ class SystemUIComponentsGridView : public views::View {
   void AddInstanceImpl(const std::u16string& name, views::View* instance_view);
 
   // The grid layout holding the labels and instances.
-  raw_ptr<GridLayout, ExperimentalAsh> grid_layout_;
+  raw_ptr<GridLayout> grid_layout_;
 };
 
 }  // namespace ash

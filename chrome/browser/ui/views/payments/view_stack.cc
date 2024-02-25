@@ -42,7 +42,7 @@ void ViewStack::Push(std::unique_ptr<views::View> view, bool animate) {
   } else {
     view->SetBoundsRect(destination);
   }
-  view->Layout();
+  view->DeprecatedLayoutImmediately();
 
   // Add the new view to the stack so it can be popped later when navigating
   // back to the previous screen.
@@ -133,7 +133,7 @@ void ViewStack::UpdateAnimatorBounds(
   // If an animator is currently animating, figure out which views and update
   // their target bounds.
   if (animator->IsAnimating()) {
-    for (auto* view : stack_) {
+    for (views::View* view : stack_) {
       if (animator->IsAnimating(view)) {
         animator->SetTargetBounds(view, target);
       }
@@ -153,6 +153,6 @@ void ViewStack::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   RequestFocus();
 }
 
-BEGIN_METADATA(ViewStack, views::View)
+BEGIN_METADATA(ViewStack)
 ADD_READONLY_PROPERTY_METADATA(size_t, Size)
 END_METADATA

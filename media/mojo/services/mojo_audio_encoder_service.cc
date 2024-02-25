@@ -74,7 +74,7 @@ void MojoAudioEncoderService::OnDone(MojoDoneCallback callback,
 
 void MojoAudioEncoderService::OnOutput(
     EncodedAudioBuffer output,
-    absl::optional<media::AudioEncoder::CodecDescription> desc) {
+    std::optional<media::AudioEncoder::CodecDescription> desc) {
   client_->OnEncodedBufferReady(
       std::move(output),
       desc.value_or(media::AudioEncoder::CodecDescription()));

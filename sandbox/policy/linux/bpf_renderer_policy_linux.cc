@@ -36,6 +36,7 @@ namespace policy {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 ResultExpr RestrictIoctl() {
   const Arg<unsigned long> request(1);
   return Switch(request)
@@ -44,10 +45,16 @@ ResultExpr RestrictIoctl() {
              Allow())
       .Default(CrashSIGSYSIoctl());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
-
+#if !BUILDFLAG(IS_ANDROID)
 RendererProcessPolicy::RendererProcessPolicy() = default;
+#else
+RendererProcessPolicy::RendererProcessPolicy(
+    const BaselinePolicyAndroid::RuntimeOptions& options)
+    : BPFBasePolicy(options) {}
+#endif  // !BUILDFLAG(IS_ANDROID)
 RendererProcessPolicy::~RendererProcessPolicy() = default;
 
 ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
@@ -60,8 +67,12 @@ ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_clock_getres_time64:
 #endif
       return RestrictClockID();
+// Android requires a larger set of allowed ioctls, so this case is handled
+// through BPFBasePolicy calling through to BaselinePolicyAndroid on Android.
+#if !BUILDFLAG(IS_ANDROID)
     case __NR_ioctl:
       return RestrictIoctl();
+#endif  // !BUILDFLAG(IS_ANDROID)
     // Allow the system calls below.
     case __NR_fdatasync:
     case __NR_fsync:

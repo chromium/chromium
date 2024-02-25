@@ -1,0 +1,107 @@
+This is a testharness.js-based test.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] idl_test setup
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'requestSession')"
+[FAIL] XRHitTestSource interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRHitTestSource" expected property "XRHitTestSource" missing
+[FAIL] XRHitTestSource interface object length
+  assert_own_property: self does not have own property "XRHitTestSource" expected property "XRHitTestSource" missing
+[FAIL] XRHitTestSource interface object name
+  assert_own_property: self does not have own property "XRHitTestSource" expected property "XRHitTestSource" missing
+[FAIL] XRHitTestSource interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRHitTestSource" expected property "XRHitTestSource" missing
+[FAIL] XRHitTestSource interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRHitTestSource" expected property "XRHitTestSource" missing
+[FAIL] XRHitTestSource interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRHitTestSource" expected property "XRHitTestSource" missing
+[FAIL] XRHitTestSource interface: operation cancel()
+  assert_own_property: self does not have own property "XRHitTestSource" expected property "XRHitTestSource" missing
+[FAIL] XRTransientInputHitTestSource interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRTransientInputHitTestSource" expected property "XRTransientInputHitTestSource" missing
+[FAIL] XRTransientInputHitTestSource interface object length
+  assert_own_property: self does not have own property "XRTransientInputHitTestSource" expected property "XRTransientInputHitTestSource" missing
+[FAIL] XRTransientInputHitTestSource interface object name
+  assert_own_property: self does not have own property "XRTransientInputHitTestSource" expected property "XRTransientInputHitTestSource" missing
+[FAIL] XRTransientInputHitTestSource interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRTransientInputHitTestSource" expected property "XRTransientInputHitTestSource" missing
+[FAIL] XRTransientInputHitTestSource interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRTransientInputHitTestSource" expected property "XRTransientInputHitTestSource" missing
+[FAIL] XRTransientInputHitTestSource interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRTransientInputHitTestSource" expected property "XRTransientInputHitTestSource" missing
+[FAIL] XRTransientInputHitTestSource interface: operation cancel()
+  assert_own_property: self does not have own property "XRTransientInputHitTestSource" expected property "XRTransientInputHitTestSource" missing
+[FAIL] XRHitTestResult interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRHitTestResult" expected property "XRHitTestResult" missing
+[FAIL] XRHitTestResult interface object length
+  assert_own_property: self does not have own property "XRHitTestResult" expected property "XRHitTestResult" missing
+[FAIL] XRHitTestResult interface object name
+  assert_own_property: self does not have own property "XRHitTestResult" expected property "XRHitTestResult" missing
+[FAIL] XRHitTestResult interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRHitTestResult" expected property "XRHitTestResult" missing
+[FAIL] XRHitTestResult interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRHitTestResult" expected property "XRHitTestResult" missing
+[FAIL] XRHitTestResult interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRHitTestResult" expected property "XRHitTestResult" missing
+[FAIL] XRHitTestResult interface: operation getPose(XRSpace)
+  assert_own_property: self does not have own property "XRHitTestResult" expected property "XRHitTestResult" missing
+[FAIL] XRTransientInputHitTestResult interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRTransientInputHitTestResult" expected property "XRTransientInputHitTestResult" missing
+[FAIL] XRTransientInputHitTestResult interface object length
+  assert_own_property: self does not have own property "XRTransientInputHitTestResult" expected property "XRTransientInputHitTestResult" missing
+[FAIL] XRTransientInputHitTestResult interface object name
+  assert_own_property: self does not have own property "XRTransientInputHitTestResult" expected property "XRTransientInputHitTestResult" missing
+[FAIL] XRTransientInputHitTestResult interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRTransientInputHitTestResult" expected property "XRTransientInputHitTestResult" missing
+[FAIL] XRTransientInputHitTestResult interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRTransientInputHitTestResult" expected property "XRTransientInputHitTestResult" missing
+[FAIL] XRTransientInputHitTestResult interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRTransientInputHitTestResult" expected property "XRTransientInputHitTestResult" missing
+[FAIL] XRTransientInputHitTestResult interface: attribute inputSource
+  assert_own_property: self does not have own property "XRTransientInputHitTestResult" expected property "XRTransientInputHitTestResult" missing
+[FAIL] XRTransientInputHitTestResult interface: attribute results
+  assert_own_property: self does not have own property "XRTransientInputHitTestResult" expected property "XRTransientInputHitTestResult" missing
+[FAIL] XRRay interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay interface object length
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay interface object name
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay interface: attribute origin
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay interface: attribute direction
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay interface: attribute matrix
+  assert_own_property: self does not have own property "XRRay" expected property "XRRay" missing
+[FAIL] XRRay must be primary interface of new XRRay()
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRay is not defined"
+[FAIL] Stringification of new XRRay()
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRay is not defined"
+[FAIL] XRRay interface: new XRRay() must inherit property "origin" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRay is not defined"
+[FAIL] XRRay interface: new XRRay() must inherit property "direction" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRay is not defined"
+[FAIL] XRRay interface: new XRRay() must inherit property "matrix" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRay is not defined"
+[FAIL] XRSession interface: operation requestHitTestSource(XRHitTestOptionsInit)
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: operation requestHitTestSourceForTransientInput(XRTransientInputHitTestOptionsInit)
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: xrSession must inherit property "requestHitTestSource(XRHitTestOptionsInit)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: calling requestHitTestSource(XRHitTestOptionsInit) on xrSession with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "requestHitTestSourceForTransientInput(XRTransientInputHitTestOptionsInit)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: calling requestHitTestSourceForTransientInput(XRTransientInputHitTestOptionsInit) on xrSession with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRFrame interface: operation getHitTestResults(XRHitTestSource)
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: operation getHitTestResultsForTransientInput(XRTransientInputHitTestSource)
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+Harness: the test ran to completion.

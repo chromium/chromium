@@ -3,10 +3,5 @@ rootWebArea name='done'
 ++++genericContainer ignored
 ++++++genericContainer
 ++++++++group className='hidden' name='Label'
-++++++++++staticText ignored invisible name='<newline>    target<newline>    '
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='<newline>      child<newline>    '
-++++++++++staticText ignored invisible name='<newline>    '
 ++++++++++genericContainer ignored invisible
 ++++++++++++staticText ignored invisible name='Label'
-++++++++++staticText ignored invisible name='<newline>  '

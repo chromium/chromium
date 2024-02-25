@@ -33,11 +33,12 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const UnsafeResource& unsafe_resource,
-      std::unique_ptr<AwWebResourceRequest> resource_request);
+      std::unique_ptr<AwWebResourceRequest> resource_request,
+      std::optional<base::TimeTicks> blocked_page_shown_timestamp);
 
   ~AwSafeBrowsingBlockingPage() override;
 
-  // safe_browsing::BaseBlockingPage:
+  // security_interstitials::SecurityInterstitialPage:
   void CreatedPostCommitErrorPageNavigation(
       content::NavigationHandle* error_page_navigation_handle) override;
 
@@ -79,6 +80,9 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
   // Holds a copy of the resource request that triggered this blocking page,
   // only used with committed interstitials.
   std::unique_ptr<AwWebResourceRequest> resource_request_;
+
+  // Timestamp of when the safe browsing blocking page was shown to the user.
+  int64_t warning_shown_ts_;
 };
 
 }  // namespace android_webview

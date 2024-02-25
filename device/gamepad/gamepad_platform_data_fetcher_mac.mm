@@ -9,6 +9,7 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -50,7 +51,7 @@ GamepadSource GamepadPlatformDataFetcherMac::source() {
 void GamepadPlatformDataFetcherMac::OnAddedToProvider() {
   hid_manager_ref_.reset(
       IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone));
-  if (CFGetTypeID(hid_manager_ref_) != IOHIDManagerGetTypeID()) {
+  if (CFGetTypeID(hid_manager_ref_.get()) != IOHIDManagerGetTypeID()) {
     enabled_ = false;
     return;
   }
@@ -60,7 +61,7 @@ void GamepadPlatformDataFetcherMac::OnAddedToProvider() {
     DeviceMatching(kGenericDesktopUsagePage, kGameUsageNumber),
     DeviceMatching(kGenericDesktopUsagePage, kMultiAxisUsageNumber),
   ];
-  IOHIDManagerSetDeviceMatchingMultiple(hid_manager_ref_,
+  IOHIDManagerSetDeviceMatchingMultiple(hid_manager_ref_.get(),
                                         base::apple::NSToCFPtrCast(criteria));
 
   RegisterForNotifications();
@@ -68,26 +69,27 @@ void GamepadPlatformDataFetcherMac::OnAddedToProvider() {
 
 void GamepadPlatformDataFetcherMac::RegisterForNotifications() {
   // Register for plug/unplug notifications.
-  IOHIDManagerRegisterDeviceMatchingCallback(hid_manager_ref_,
+  IOHIDManagerRegisterDeviceMatchingCallback(hid_manager_ref_.get(),
                                              DeviceAddCallback, this);
-  IOHIDManagerRegisterDeviceRemovalCallback(hid_manager_ref_,
+  IOHIDManagerRegisterDeviceRemovalCallback(hid_manager_ref_.get(),
                                             DeviceRemoveCallback, this);
 
   // Register for value change notifications.
-  IOHIDManagerRegisterInputValueCallback(hid_manager_ref_, ValueChangedCallback,
-                                         this);
+  IOHIDManagerRegisterInputValueCallback(hid_manager_ref_.get(),
+                                         ValueChangedCallback, this);
 
-  IOHIDManagerScheduleWithRunLoop(hid_manager_ref_, CFRunLoopGetCurrent(),
+  IOHIDManagerScheduleWithRunLoop(hid_manager_ref_.get(), CFRunLoopGetCurrent(),
                                   kCFRunLoopDefaultMode);
 
-  const auto result = IOHIDManagerOpen(hid_manager_ref_, kIOHIDOptionsTypeNone);
+  const auto result =
+      IOHIDManagerOpen(hid_manager_ref_.get(), kIOHIDOptionsTypeNone);
   enabled_ = (result == kIOReturnSuccess || result == kIOReturnExclusiveAccess);
 }
 
 void GamepadPlatformDataFetcherMac::UnregisterFromNotifications() {
-  IOHIDManagerUnscheduleFromRunLoop(hid_manager_ref_, CFRunLoopGetCurrent(),
-                                    kCFRunLoopDefaultMode);
-  IOHIDManagerClose(hid_manager_ref_, kIOHIDOptionsTypeNone);
+  IOHIDManagerUnscheduleFromRunLoop(
+      hid_manager_ref_.get(), CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+  IOHIDManagerClose(hid_manager_ref_.get(), kIOHIDOptionsTypeNone);
 }
 
 void GamepadPlatformDataFetcherMac::PauseHint(bool pause) {
@@ -171,8 +173,9 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
   DCHECK_EQ(kXInputTypeNone,
             gamepad_id_list.GetXInputType(vendor_int, product_int));
 
-  if (devices_.find(location_int) != devices_.end())
+  if (base::Contains(devices_, location_int)) {
     return;
+  }
 
   const GamepadId gamepad_id =
       gamepad_id_list.GetGamepadId(product_name, vendor_int, product_int);
@@ -212,7 +215,13 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
     return;
   }
 
-  state->data.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
+  if (GamepadIdList::Get().HasTriggerRumbleSupport(gamepad_id)) {
+    state->data.vibration_actuator.type =
+        GamepadHapticActuatorType::kTriggerRumble;
+  } else {
+    state->data.vibration_actuator.type =
+        GamepadHapticActuatorType::kDualRumble;
+  }
   state->data.vibration_actuator.not_null = new_device->SupportsVibration();
 
   state->data.connected = true;

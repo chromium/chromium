@@ -44,7 +44,7 @@ constexpr int kSpaceBetweenIconAndTextDip = 4;
 constexpr int kMaxNumHints = 5;
 
 std::unique_ptr<views::ImageView> CreateImageView(
-    raw_ptr<views::ImageView, ExperimentalAsh>* destination_view,
+    raw_ptr<views::ImageView>* destination_view,
     const gfx::VectorIcon& icon) {
   return views::Builder<views::ImageView>()
       .CopyAddressTo(destination_view)
@@ -54,7 +54,7 @@ std::unique_ptr<views::ImageView> CreateImageView(
 }
 
 std::unique_ptr<views::Label> CreateLabelView(
-    raw_ptr<views::Label, ExperimentalAsh>* destination_view,
+    raw_ptr<views::Label>* destination_view,
     const std::u16string& text,
     ui::ColorId enabled_color_id) {
   return views::Builder<views::Label>()
@@ -90,8 +90,9 @@ int ToMessageId(DictationBubbleHintType hint_type) {
 // View for the Dictation bubble top row. Responsible for displaying icons,
 // animations, and non-finalized speech results.
 class ASH_EXPORT TopRowView : public views::View {
+  METADATA_HEADER(TopRowView, views::View)
+
  public:
-  METADATA_HEADER(TopRowView);
   TopRowView() {
     std::unique_ptr<views::BoxLayout> layout =
         std::make_unique<views::BoxLayout>(
@@ -115,7 +116,7 @@ class ASH_EXPORT TopRowView : public views::View {
   // Updates the visibility of all child views. Also updates the text content
   // of `label_` and updates the size of this view.
   void Update(DictationBubbleIconType icon,
-              const absl::optional<std::u16string>& text) {
+              const std::optional<std::u16string>& text) {
     // Update visibility.
     bool is_standby = icon == DictationBubbleIconType::kStandby;
     if (use_standby_animation_) {
@@ -153,7 +154,7 @@ class ASH_EXPORT TopRowView : public views::View {
   // can successfully be loaded. Otherwise, returns a std::unique_ptr<ImageView>
   // as a fallback.
   std::unique_ptr<views::View> CreateStandbyView() {
-    absl::optional<std::string> json =
+    std::optional<std::string> json =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_DICTATION_BUBBLE_ANIMATION);
     if (json.has_value()) {
@@ -173,23 +174,22 @@ class ASH_EXPORT TopRowView : public views::View {
 
   // Owned by the views hierarchy.
   // An animation that is shown when Dictation is standing by.
-  raw_ptr<views::AnimatedImageView, ExperimentalAsh> standby_animation_ =
-      nullptr;
+  raw_ptr<views::AnimatedImageView> standby_animation_ = nullptr;
   // An image that is shown when Dictation is standing by. Only used if the
   // above AnimatedImageView fails to initialize.
-  raw_ptr<views::ImageView, ExperimentalAsh> standby_image_ = nullptr;
+  raw_ptr<views::ImageView> standby_image_ = nullptr;
   // If true, this view will use `standby_animation_`. Otherwise, will use
   // `standby_image_`.
   bool use_standby_animation_ = false;
   // An image that is shown when a macro is successfully run.
-  raw_ptr<views::ImageView, ExperimentalAsh> macro_succeeded_image_ = nullptr;
+  raw_ptr<views::ImageView> macro_succeeded_image_ = nullptr;
   // An image that is shown when a macro fails to run.
-  raw_ptr<views::ImageView, ExperimentalAsh> macro_failed_image_ = nullptr;
+  raw_ptr<views::ImageView> macro_failed_image_ = nullptr;
   // A label that displays non-final speech results.
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
-BEGIN_METADATA(TopRowView, views::View)
+BEGIN_METADATA(TopRowView)
 END_METADATA
 
 }  // namespace
@@ -205,8 +205,8 @@ DictationBubbleView::~DictationBubbleView() = default;
 
 void DictationBubbleView::Update(
     DictationBubbleIconType icon,
-    const absl::optional<std::u16string>& text,
-    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
+    const std::optional<std::u16string>& text,
+    const std::optional<std::vector<DictationBubbleHintType>>& hints) {
   top_row_view_->Update(icon, text);
   hint_view_->Update(hints);
   SizeToContents();
@@ -275,7 +275,7 @@ std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
   return hints;
 }
 
-BEGIN_METADATA(DictationBubbleView, views::View)
+BEGIN_METADATA(DictationBubbleView)
 END_METADATA
 
 DictationHintView::DictationHintView() {
@@ -296,7 +296,7 @@ DictationHintView::DictationHintView() {
 DictationHintView::~DictationHintView() = default;
 
 void DictationHintView::Update(
-    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
+    const std::optional<std::vector<DictationBubbleHintType>>& hints) {
   int num_visible_hints = 0;
   if (hints.has_value()) {
     DCHECK(hints.value().size() <= kMaxNumHints);
@@ -331,7 +331,7 @@ void DictationHintView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
-BEGIN_METADATA(DictationHintView, views::View)
+BEGIN_METADATA(DictationHintView)
 END_METADATA
 
 }  // namespace ash

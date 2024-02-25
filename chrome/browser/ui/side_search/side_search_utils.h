@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_UTILS_H_
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -22,7 +22,7 @@ class WebContents;
 namespace side_search {
 
 // Returns side search tab restore state data if applicable or empty.
-absl::optional<std::pair<std::string, std::string>>
+std::optional<std::pair<std::string, std::string>>
 MaybeGetSideSearchTabRestoreData(content::WebContents* web_contents);
 
 // If applicable, persists the required tab data to be able to successfully

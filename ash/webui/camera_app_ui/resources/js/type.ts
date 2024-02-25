@@ -340,11 +340,13 @@ export enum ErrorType {
   NO_AVAILABLE_LEVEL = 'no-available-level',
   PERF_METRICS_FAILURE = 'perf-metrics-failure',
   PRELOAD_IMAGE_FAILURE = 'preload-image-failure',
+  RESUME_CAMERA_FAILURE = 'resume-camera-failure',
   RESUME_PAUSE_FAILURE = 'resume-pause-failure',
   SET_FPS_RANGE_FAILURE = 'set-fps-range-failure',
   START_CAMERA_FAILURE = 'start-camera-failure',
   START_CAPTURE_FAILURE = 'start-capture-failure',
   STOP_CAPTURE_FAILURE = 'stop-capture-failure',
+  SUSPEND_CAMERA_FAILURE = 'suspend-camera-failure',
   UNCAUGHT_ERROR = 'uncaught-error',
   UNCAUGHT_PROMISE = 'uncaught-promise',
   UNSAFE_INTEGER = 'unsafe-integer',
@@ -478,6 +480,7 @@ export enum LocalStorageKey {
   ENABLE_MULTISTREAM_RECORDING_CHROME = 'enableMultistreamRecordingChrome',
   ENABLE_PTZ_FOR_BUILTIN = 'enablePTZForBuiltin',
   EXPERT_MODE = 'expert',
+  GA_ID_REFRESH_TIME = 'gaIdRefreshTime',
   GA_USER_ID = 'google-analytics.analytics.user-id',
   GA4_CLIENT_ID = 'ga4ClientId',
   MIRRORING_TOGGLES = 'mirroringToggles',
@@ -491,7 +494,6 @@ export enum LocalStorageKey {
   SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
   SHOW_METADATA = 'showMetadata',
-  TIME_LAPSE_DIALOG_SHOWN = 'timeLapseDialogShown',
   TOGGLE_MIC = 'toggleMic',
 }
 
@@ -501,6 +503,17 @@ export enum LocalStorageKey {
 export enum LowStorageDialogType {
   AUTO_STOP = 'auto-stop',
   CANNOT_START = 'cannot-start',
+}
+
+/**
+ * A rectangle representing a crop region with size (width, height) and having
+ * the top-left coordinate at (x, y).
+ */
+export interface CropRegionRect {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
 }
 
 export type Awaitable<T> = PromiseLike<T>|T;

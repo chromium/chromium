@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include <optional>
 
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/origin.h"
 
 namespace ui {
@@ -19,7 +19,7 @@ DataTransferEndpoint::DataTransferEndpoint(const url::Origin& origin,
 DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
                                            bool notify_if_restricted)
     : type_(type),
-      origin_(absl::nullopt),
+      origin_(std::nullopt),
       notify_if_restricted_(notify_if_restricted) {
   DCHECK_NE(type, EndpointType::kUrl);
 }

@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:4 htmlInfo:[{htmlTag="a"}, {display="block"}, {name="named_anchor_1"}]
+++++TextView text:"named anchor" textSize:16.0 style:4 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:4 fgColor:-16776978 htmlInfo:[{htmlTag="a"}, {display="block"}, {href="#foo"}, {name="named_anchor_2"}]
+++++TextView text:"both a named anchor and a link" textSize:16.0 style:4 fgColor:-16776978 htmlInfo:[{htmlTag=""}, {display=""}]

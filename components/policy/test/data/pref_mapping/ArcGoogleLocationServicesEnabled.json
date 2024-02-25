@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set). PH is enabled by field trial, so the underlying pref will be unaffected.",
+        "prefs": {
+          "arc.location_service.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Default value, user decides. PH is enabled by field trial.",
+        "policies": {
+          "ArcGoogleLocationServicesEnabled": 1
+        },
+        "prefs": {
+          "arc.location_service.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value, disabled. PH is enabled by field trial.",
+        "policies": {
+          "ArcGoogleLocationServicesEnabled": 2
+        },
+        "prefs": {
+          "arc.location_service.enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

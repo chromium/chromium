@@ -8,17 +8,18 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sender.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
@@ -277,13 +278,13 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual float GetDeviceScaleFactor() = 0;
 
   // Get the allowed touch action corresponding to this RenderWidgetHost.
-  virtual absl::optional<cc::TouchAction> GetAllowedTouchAction() = 0;
+  virtual std::optional<cc::TouchAction> GetAllowedTouchAction() = 0;
 
   // Write a representation of this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
   using DragOperationCallback =
-      base::OnceCallback<void(::ui::mojom::DragOperation)>;
+      base::OnceCallback<void(::ui::mojom::DragOperation, bool)>;
   // Drag-and-drop drop target messages that get sent to Blink.
   virtual void DragTargetDragEnter(const DropData& drop_data,
                                    const gfx::PointF& client_pt,
@@ -343,5 +344,22 @@ class CONTENT_EXPORT RenderWidgetHost {
 };
 
 }  // namespace content
+
+namespace base {
+template <>
+struct ScopedObservationTraits<content::RenderWidgetHost,
+                               content::RenderWidgetHost::InputEventObserver> {
+  static void AddObserver(
+      content::RenderWidgetHost* rwh,
+      content::RenderWidgetHost::InputEventObserver* observer) {
+    rwh->AddInputEventObserver(observer);
+  }
+  static void RemoveObserver(
+      content::RenderWidgetHost* rwh,
+      content::RenderWidgetHost::InputEventObserver* observer) {
+    rwh->RemoveInputEventObserver(observer);
+  }
+};
+}  // namespace base
 
 #endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_H_

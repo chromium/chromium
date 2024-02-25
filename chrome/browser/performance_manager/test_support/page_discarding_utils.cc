@@ -26,13 +26,14 @@ LenientMockPageDiscarder::~LenientMockPageDiscarder() = default;
 void LenientMockPageDiscarder::DiscardPageNodes(
     const std::vector<const PageNode*>& page_nodes,
     ::mojom::LifecycleUnitDiscardReason discard_reason,
-    base::OnceCallback<void(bool)> post_discard_cb) {
-  bool result = false;
+    base::OnceCallback<void(const std::vector<DiscardEvent>&)>
+        post_discard_cb) {
+  std::vector<DiscardEvent> discard_events;
   for (auto* node : page_nodes) {
     if (DiscardPageNodeImpl(node))
-      result = true;
+      discard_events.emplace_back(base::TimeTicks::Now(), 0);
   }
-  std::move(post_discard_cb).Run(result);
+  std::move(post_discard_cb).Run(std::move(discard_events));
 }
 
 GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder()
@@ -77,7 +78,6 @@ void GraphTestHarnessWithMockDiscarder::SetUp() {
   page_node_ = CreateNode<performance_manager::PageNodeImpl>();
   main_frame_node_ =
       CreateFrameNodeAutoId(process_node_.get(), page_node_.get());
-  main_frame_node_->SetIsCurrent(true);
   MakePageNodeDiscardable(page_node(), task_env());
 }
 

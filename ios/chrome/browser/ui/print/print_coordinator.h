@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/web/print/web_state_printer.h"
+#import "ios/chrome/browser/web/model/print/web_state_printer.h"
 
 class Browser;
 

@@ -1,0 +1,73 @@
+<style include="cr-actionable-row-style cr-shared-style cr-hidden-style">
+  :host {
+    box-sizing: border-box;
+    flex: 1;
+    font-family: inherit;
+    font-size: 100%;  /* Specifically for Mac OSX, harmless elsewhere. */
+    line-height: 154%;  /* 20px. */
+    min-height: var(--cr-section-min-height);
+    padding: 0;
+  }
+
+  :host(:not([embedded])) {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #startIcon {
+    --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+        var(--google-grey-700));
+    display: flex;
+    flex-shrink: 0;
+    padding-inline-end: var(--cr-icon-button-margin-start);
+    width: var(--cr-link-row-icon-width, var(--cr-icon-size));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #startIcon {
+      --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+          var(--google-grey-500));
+    }
+  }
+
+  #labelWrapper {
+    flex: 1;
+    flex-basis: 0.000000001px;
+    padding-bottom: var(--cr-section-vertical-padding);
+    padding-top: var(--cr-section-vertical-padding);
+    text-align: start;
+  }
+
+  #label,
+  #subLabel {
+    display: flex;
+  }
+
+  #buttonAriaDescription {
+    clip: rect(0,0,0,0);
+    display: block;
+    position: fixed;
+  }
+</style>
+<iron-icon id="startIcon" icon="[[startIcon]]" hidden="[[!startIcon]]"
+    aria-hidden="true">
+</iron-icon>
+<div id="labelWrapper" hidden="[[hideLabelWrapper_]]">
+  <div id="label" aria-hidden="[[!ariaShowLabel]]">
+    [[label]]
+    <slot name="label"></slot>
+  </div>
+  <div id="subLabel" class="cr-secondary-text"
+      aria-hidden="[[!ariaShowSublabel]]">
+    [[subLabel]]
+    <slot name="sub-label"></slot>
+  </div>
+</div>
+<slot></slot>
+<div id="buttonAriaDescription" aria-hidden="true">
+  [[computeButtonAriaDescription_(external, buttonAriaDescription)]]
+</div>
+<cr-icon-button id="icon" iron-icon="[[getIcon_(external)]]" role="link"
+    part="icon" aria-roledescription$="[[roleDescription]]"
+    aria-describedby="buttonAriaDescription"
+    aria-labelledby="label subLabel" disabled="[[disabled]]">
+</cr-icon-button>

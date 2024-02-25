@@ -9,29 +9,26 @@ const int kGoodVisitTimeInFeedSeconds = 60;
 const int kNonShortClickSeconds = 10;
 const int kMinutesBetweenSessions = 5;
 const int kMaxCardsInFeed = 50;
-const int kRangeForActivityBucketsInDays = 28;
 
-NSString* const kArticleVisitTimestampKey = @"ShortClickInteractionTimestamp";
-NSString* const kLongFeedVisitTimeAggregateKey =
-    @"LongFeedInteractionTimeDelta";
-NSString* const kLongDiscoverFeedVisitTimeAggregateKey =
-    @"LongDiscoverFeedInteractionTimeDelta";
-NSString* const kLongFollowingFeedVisitTimeAggregateKey =
-    @"LongFollowingFeedInteractionTimeDelta";
-NSString* const kLastUsedFeedForGoodVisitsKey = @"LastUsedFeedForGoodVisits";
-NSString* const kLastInteractionTimeForGoodVisits =
-    @"LastInteractionTimeForGoodVisits";
-NSString* const kLastInteractionTimeForDiscoverGoodVisits =
-    @"LastInteractionTimeForGoodVisitsDiscover";
-NSString* const kLastInteractionTimeForFollowingGoodVisits =
-    @"LastInteractionTimeForGoodVisitsFollowing";
-NSString* const kLastDayTimeInFeedReportedKey = @"LastDayTimeInFeedReported";
-NSString* const kTimeSpentInFeedAggregateKey = @"TimeSpentInFeedAggregate";
-NSString* const kActivityBucketLastReportedDateKey =
-    @"ActivityBucketLastReportedDate";
-NSString* const kActivityBucketLastReportedDateArrayKey =
-    @"ActivityBucketLastReportedDateArray";
-NSString* const kActivityBucketKey = @"FeedActivityBucket";
+const char kArticleVisitTimestampKey[] = "ShortClickInteractionTimestamp";
+const char kLongFeedVisitTimeAggregateKey[] = "LongFeedInteractionTimeDelta";
+const char kLongDiscoverFeedVisitTimeAggregateKey[] =
+    "LongDiscoverFeedInteractionTimeDelta";
+const char kLongFollowingFeedVisitTimeAggregateKey[] =
+    "LongFollowingFeedInteractionTimeDelta";
+const char kLastUsedFeedForGoodVisitsKey[] = "LastUsedFeedForGoodVisits";
+const char kLastInteractionTimeForGoodVisits[] =
+    "LastInteractionTimeForGoodVisits";
+const char kLastInteractionTimeForDiscoverGoodVisits[] =
+    "LastInteractionTimeForGoodVisitsDiscover";
+const char kLastInteractionTimeForFollowingGoodVisits[] =
+    "LastInteractionTimeForGoodVisitsFollowing";
+const char kLastDayTimeInFeedReportedKey[] = "LastDayTimeInFeedReported";
+const char kTimeSpentInFeedAggregateKey[] = "TimeSpentInFeedAggregate";
+const char kActivityBucketLastReportedDateKey[] =
+    "ActivityBucketLastReportedDate";
+const char kActivityBucketLastReportedDateArrayKey[] =
+    "ActivityBucketLastReportedDateArray";
 
 #pragma mark - Histograms
 
@@ -91,8 +88,6 @@ const char kFollowCountAfterFollow[] =
     "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow";
 const char kFollowCountAfterUnfollow[] =
     "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow";
-const char kFollowCountWhenEngaged[] =
-    "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged";
 const char kDiscoverIndexWhenSwitchingFeed[] =
     "ContentSuggestions.Feed.CardIndexOnSwitch";
 const char kFollowingIndexWhenSwitchingFeed[] =

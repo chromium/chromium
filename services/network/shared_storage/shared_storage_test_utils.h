@@ -5,12 +5,12 @@
 #ifndef SERVICES_NETWORK_SHARED_STORAGE_SHARED_STORAGE_TEST_UTILS_H_
 #define SERVICES_NETWORK_SHARED_STORAGE_SHARED_STORAGE_TEST_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -53,15 +53,16 @@ class SharedStorageResponse : public net::test_server::BasicHttpResponse {
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override;
 
  private:
-  absl::optional<std::string> shared_storage_write_;
+  std::optional<std::string> shared_storage_write_;
   net::HttpStatusCode code_ = net::HTTP_OK;
-  absl::optional<std::string> new_location_;
+  std::optional<std::string> new_location_;
 };
 
 // Sends a response with the "Shared-Storage-Write" header, with value
 // `shared_storage_write`, to any request whose path starts with the
-// `kSharedStoragePathPrefix` prefix and which has the "Shared-Storage-Writable:
-// ?1" request header or whose full path is `MakeSharedStorageBypassPath()`.
+// `kSharedStoragePathPrefix` prefix and which has the
+// "Sec-Shared-Storage-Writable: ?1" request header or whose full path is
+// `MakeSharedStorageBypassPath()`.
 std::unique_ptr<net::test_server::HttpResponse>
 HandleSharedStorageRequestSimple(std::string shared_storage_write,
                                  const net::test_server::HttpRequest& request);
@@ -70,9 +71,9 @@ HandleSharedStorageRequestSimple(std::string shared_storage_write,
 // available value in `shared_storage_write_headers` as tracked by
 // `SharedStorageRequestCount`, to any request whose path starts with the
 // `kSharedStoragePathPrefix` prefix and ends with the
-// `kSharedStorageWritePathSuffix` and which has the "Shared-Storage-Writable:
-// ?1" request header, as long as `shared_storage_write_headers` has not yet
-// been fully iterated through..
+// `kSharedStorageWritePathSuffix` and which has the
+// "Sec-Shared-Storage-Writable: ?1" request header, as long as
+// `shared_storage_write_headers` has not yet been fully iterated through..
 std::unique_ptr<net::test_server::HttpResponse>
 HandleSharedStorageRequestMultiple(
     std::vector<std::string> shared_storage_write_headers,

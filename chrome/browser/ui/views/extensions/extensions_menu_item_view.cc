@@ -47,6 +47,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -153,9 +154,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   CHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
-  views::FlexSpecification stretch_specification =
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded);
   auto builder =
       views::Builder<ExtensionMenuItemView>(this)
           // Set so the extension button receives enter/exit on children to
@@ -168,7 +166,10 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                   std::make_unique<ExtensionsMenuButton>(browser_,
                                                          controller_.get()))
                   .CopyAddressTo(&primary_action_button_)
-                  .SetProperty(views::kFlexBehaviorKey, stretch_specification),
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kUnbounded)),
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
                       views::Button::PressedCallback(), std::u16string()))
@@ -202,8 +203,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
     // By default, the button's accessible description is set to the button's
     // tooltip text. For the pin button, we only want the accessible name to be
     // read on accessibility mode since it includes the tooltip text. Thus we
-    // override the accessible description.
-    pin_button_->GetViewAccessibility().OverrideDescription(
+    // set the accessible description.
+    pin_button_->GetViewAccessibility().SetDescription(
         std::u16string(),
         ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   }
@@ -225,9 +226,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
-  views::FlexSpecification stretch_specification =
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded);
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const int icon_size =
       provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
@@ -258,7 +256,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       .SetNotifyEnterExitOnChild(true)
       .SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+      .SetProperty(views::kBoxLayoutFlexKey,
+                   views::BoxLayoutFlexSpecification())
       .AddChildren(
           // Main row.
           views::Builder<views::FlexLayoutView>()
@@ -275,7 +274,9 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                                                              controller_.get()))
                       .CopyAddressTo(&primary_action_button_)
                       .SetProperty(views::kFlexBehaviorKey,
-                                   stretch_specification),
+                                   views::FlexSpecification(
+                                       views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kUnbounded)),
                   // Site access toggle.
                   views::Builder<views::ToggleButton>()
                       .CopyAddressTo(&site_access_toggle_)
@@ -302,20 +303,17 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       .SetProperty(
                           views::kMarginsKey,
                           gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
-                      .SetBorder(views::CreateEmptyBorder(
-                          ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
+                      // Override the hover button border since we are adding
+                      // vertical spacing in between menu items.
+                      .SetBorder(views::CreateEmptyBorder(gfx::Insets(0)))
                       .SetTooltipText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_TOOLTIP))),
           // Secondary row.
           views::Builder<views::FlexLayoutView>().AddChildren(
               // Site permissions button.
-              // TODO(crbug.com/1390952): Enterprise icon should appear to the
-              // left of the label, instead of the right. HoverButton should
-              // take care of this, but for some reason it doesn't.
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
-                      site_permissions_button_callback,
+                      std::move(site_permissions_button_callback),
                       is_enterprise
                           ? std::make_unique<views::ImageView>(
                                 ui::ImageModel::FromVectorIcon(
@@ -326,7 +324,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                                     ui::kColorIcon, small_icon_size))
                           : nullptr,
                       std::u16string(), std::u16string(),
-                      std::move(site_permissions_button_icon)))
+                      std::move(site_permissions_button_icon),
+                      /*add_vertical_label_spacing=*/false))
                   .CopyAddressTo(&site_permissions_button_)
                   // Align the main and secondary row text by adding the primary
                   // action button's icon size as margin.
@@ -340,7 +339,23 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP))))
       .BuildChildren();
 
+  if (features::IsChromeRefresh2023()) {
+    primary_action_button_->SetTitleTextStyle(
+        views::style::STYLE_BODY_3_EMPHASIS, ui::kColorDialogBackground,
+        kColorExtensionsMenuText);
+    site_permissions_button_->SetTitleTextStyle(
+        views::style::STYLE_BODY_5, ui::kColorDialogBackground,
+        kColorExtensionsMenuSecondaryText);
+  }
+
   SetupContextMenuButton();
+
+  // By default, the button's accessible description is set to the button's
+  // tooltip text. This is the accepted workaround to ensure only accessible
+  // name is announced by a screenreader rather than tooltip text and
+  // accessible name.
+  site_access_toggle_->GetViewAccessibility().OverrideDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 
 ExtensionMenuItemView::~ExtensionMenuItemView() = default;
@@ -395,6 +410,10 @@ void ExtensionMenuItemView::Update(
         site_permissions_text));
     site_permissions_button_icon_->SetVisible(
         site_permissions_button_state == SitePermissionsButtonState::kEnabled);
+
+    // Update button size after changing its contents so it fits in the menu
+    // item row.
+    site_permissions_button_->PreferredSizeChanged();
   }
 
   view_controller()->UpdateState();
@@ -468,6 +487,13 @@ void ExtensionMenuItemView::SetupContextMenuButton() {
                               base::Unretained(this)),
           std::make_unique<views::Button::DefaultButtonControllerDelegate>(
               context_menu_button_.get())));
+
+  // By default, the button's accessible description is set to the button's
+  // tooltip text. This is the accepted workaround to ensure only accessible
+  // name is announced by a screenreader rather than tooltip text and
+  // accessible name.
+  context_menu_button_->GetViewAccessibility().SetDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 
 void ExtensionMenuItemView::OnContextMenuPressed() {
@@ -483,16 +509,16 @@ void ExtensionMenuItemView::OnPinButtonPressed() {
   CHECK(model_);
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.PinButtonPressed"));
-  // Toggle pin visibility.
-  bool is_action_pinned = model_->IsActionPinned(controller_->GetId());
-  model_->SetActionVisibility(controller_->GetId(), !is_action_pinned);
+  // Toggle action visibility.
+  bool new_action_visibility = !model_->IsActionPinned(controller_->GetId());
+  model_->SetActionVisibility(controller_->GetId(), new_action_visibility);
   GetViewAccessibility().AnnounceText(
-      GetPinButtonPressedAccText(is_action_pinned));
+      GetPinButtonPressedAccText(new_action_visibility));
 }
 
 bool ExtensionMenuItemView::IsContextMenuRunningForTesting() const {
   return context_menu_controller_->IsMenuRunning();
 }
 
-BEGIN_METADATA(ExtensionMenuItemView, views::View)
+BEGIN_METADATA(ExtensionMenuItemView)
 END_METADATA

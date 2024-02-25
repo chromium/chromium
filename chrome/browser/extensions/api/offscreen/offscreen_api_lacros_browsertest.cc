@@ -119,6 +119,8 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
   // An offscreen document that knows how to capture all screens.
   static constexpr char kOffscreenJs[] =
       R"(
+        'use strict';
+
         let streams;
 
         async function captureAllScreens() {
@@ -165,12 +167,22 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
           } else {
             console.error('Unexpected message: ' + msg);
           }
-        }))";
+        })
+        R)";
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Blank.");
   test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
-                     R"(<html><script src="offscreen.js"></script></html>)");
+                     R"(
+    <html>
+      <script src="offscreen.js"></script>
+      <meta http-equiv="Content-Security-Policy"
+        content="object-src 'none'; base-uri 'none';
+        script-src 'strict-dynamic'
+        'sha256-Y55VppSZfjQ4A035BPDo9OMXignyoxRXv+KKCZpnWiM=';
+        require-trusted-types-for 'script';trusted-types a;">
+    </html>
+    )");
   test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenJs);
 
   scoped_refptr<const Extension> extension =

@@ -121,7 +121,7 @@ class HoldingSpaceTrayIcon::ResizeAnimation
 
   void Start() {
     animation_throughput_tracker_.Start(
-        metrics_util::ForSmoothness(base::BindRepeating(
+        metrics_util::ForSmoothnessV3(base::BindRepeating(
             holding_space_metrics::RecordPodResizeAnimationSmoothness)));
 
     animation_.Show();
@@ -131,8 +131,8 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   void AdvanceToEnd() { animation_.End(); }
 
  private:
-  const raw_ptr<HoldingSpaceTrayIcon, ExperimentalAsh> icon_;
-  const raw_ptr<views::View, ExperimentalAsh> previews_container_;
+  const raw_ptr<HoldingSpaceTrayIcon> icon_;
+  const raw_ptr<views::View> previews_container_;
   const gfx::Size initial_size_;
   const gfx::Size target_size_;
 
@@ -523,7 +523,7 @@ void HoldingSpaceTrayIcon::EnsurePreviewLayerStackingOrder() {
   }
 }
 
-BEGIN_METADATA(HoldingSpaceTrayIcon, views::View)
+BEGIN_METADATA(HoldingSpaceTrayIcon)
 END_METADATA
 
 }  // namespace ash

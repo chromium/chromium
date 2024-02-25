@@ -32,6 +32,7 @@
 namespace blink {
 
 class ComputedStyle;
+class Element;
 
 enum RuleMatchingBehavior { kMatchAllRules, kMatchAllRulesExcludingSMIL };
 
@@ -61,6 +62,7 @@ class StyleRequest {
   ScrollbarPart scrollbar_part{kNoPart};
   CustomScrollbar* scrollbar{nullptr};
   AtomicString pseudo_argument{g_null_atom};
+  Vector<AtomicString> pseudo_ident_list;
   RulesToInclude rules_to_include{kAll};
   bool can_trigger_animations{true};
 
@@ -70,9 +72,11 @@ class StyleRequest {
 
   StyleRequest(PseudoId pseudo_id,
                const ComputedStyle* parent_override,
+               const ComputedStyle* originating_element_style = nullptr,
                const AtomicString& pseudo_argument = g_null_atom)
       : parent_override(parent_override),
         layout_parent_override(parent_override),
+        originating_element_style(originating_element_style),
         pseudo_id(pseudo_id),
         pseudo_argument(pseudo_argument) {
     DCHECK(!IsTransitionPseudoElement(pseudo_id) ||

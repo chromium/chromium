@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -14,9 +15,11 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "ui/views/interaction/polling_view_observer.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/widget_test.h"
@@ -56,7 +59,6 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
     // Set up the Views hierarchy to use for the tests.
     auto contents =
         Builder<FlexLayoutView>()
-            .CopyAddressTo(&contents_)
             .SetProperty(kElementIdentifierKey, kContentsId)
             .SetOrientation(LayoutOrientation::kVertical)
             .AddChildren(
@@ -67,7 +69,6 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
                     .AddTab(kTab2Title, std::make_unique<Label>(kTab2Contents))
                     .AddTab(kTab3Title, std::make_unique<Label>(kTab3Contents)),
                 Builder<FlexLayoutView>()
-                    .CopyAddressTo(&buttons_)
                     .SetProperty(kElementIdentifierKey, kButtonsId)
                     .SetOrientation(LayoutOrientation::kHorizontal)
                     .AddChildren(
@@ -113,13 +114,11 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
 
   void TearDown() override {
     SetContextWidget(nullptr);
-    widget_.reset();
-    contents_ = nullptr;
     tabs_ = nullptr;
-    buttons_ = nullptr;
     button1_ = nullptr;
     button2_ = nullptr;
     scroll_ = nullptr;
+    widget_.reset();
     InteractiveViewsTest::TearDown();
   }
 
@@ -139,12 +138,10 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
       base::MockCallback<Button::PressedCallback::Callback>>;
 
   std::unique_ptr<Widget> widget_;
-  raw_ptr<FlexLayoutView, DanglingUntriaged> contents_;
-  raw_ptr<TabbedPane, DanglingUntriaged> tabs_;
-  raw_ptr<FlexLayoutView, DanglingUntriaged> buttons_;
-  raw_ptr<LabelButton, DanglingUntriaged> button1_;
-  raw_ptr<LabelButton, DanglingUntriaged> button2_;
-  raw_ptr<ScrollView, DanglingUntriaged> scroll_;
+  raw_ptr<TabbedPane> tabs_;
+  raw_ptr<LabelButton> button1_;
+  raw_ptr<LabelButton> button2_;
+  raw_ptr<ScrollView> scroll_;
   ButtonCallbackMock button1_callback_;
   ButtonCallbackMock button2_callback_;
 };
@@ -211,6 +208,28 @@ TEST_F(InteractiveViewsTestTest, WaitForViewProperty_BecomesTrue) {
   button1_->SetEnabled(false);
   DoPost(base::BindLambdaForTesting([this]() { button1_->SetEnabled(true); }));
   RunTestSequence(WaitForViewProperty(kButton1Id, View, Enabled, true));
+}
+
+TEST_F(InteractiveViewsTestTest, PollView) {
+  using Observer = PollingViewObserver<std::u16string, LabelButton>;
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(Observer, kButtonTextState);
+  DoPost(base::BindLambdaForTesting(
+      [this]() { button1_->SetText(kButton2Caption); }));
+  RunTestSequence(PollView(kButtonTextState, kButton1Id,
+                           [](const LabelButton* b) -> std::u16string {
+                             return b->GetText();
+                           }),
+                  WaitForState(kButtonTextState, kButton2Caption));
+}
+
+TEST_F(InteractiveViewsTestTest, PollViewProperty) {
+  using Observer = PollingViewPropertyObserver<std::u16string, LabelButton>;
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(Observer, kButtonTextState);
+  DoPost(base::BindLambdaForTesting(
+      [this]() { button1_->SetText(kButton2Caption); }));
+  RunTestSequence(
+      PollViewProperty(kButtonTextState, kButton1Id, &LabelButton::GetText),
+      WaitForState(kButtonTextState, kButton2Caption));
 }
 
 TEST_F(InteractiveViewsTestTest, WaitForViewPropertyFails) {

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstring>
 #include <set>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -170,6 +171,15 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
         return DispatchKeyEventPostIME(event);
       }
     }
+  }
+
+  // Simply forward the key event if there's no focused TextInputClient.
+  // Dead keys cannot be supported in this case because composition and commit
+  // are not supported.
+  if (base::FeatureList::IsEnabled(
+          features::kInputMethodDeadKeyFixForNoInputField) &&
+      GetTextInputClient() == nullptr) {
+    return DispatchKeyEventPostIME(event);
   }
 
   // If |context_| is not usable, then we can only dispatch the key event as is.
@@ -380,17 +390,6 @@ void InputMethodAsh::OnFocus() {
   }
 }
 
-void InputMethodAsh::OnTouch(ui::EventPointerType pointerType) {
-  TextInputClient* client = GetTextInputClient();
-  if (!client || !IsTextInputClientFocused(client)) {
-    return;
-  }
-  TextInputMethod* engine = GetEngine();
-  if (engine) {
-    engine->OnTouch(pointerType);
-  }
-}
-
 void InputMethodAsh::OnBlur() {
   if (IMEBridge::Get() && IMEBridge::Get()->GetInputContextHandler() == this) {
     IMEBridge::Get()->SetInputContextHandler(nullptr);
@@ -492,22 +491,6 @@ gfx::Range InputMethodAsh::GetAutocorrectRange() {
   return GetTextInputClient()->GetAutocorrectRange();
 }
 
-gfx::Rect InputMethodAsh::GetAutocorrectCharacterBounds() {
-  if (IsTextInputTypeNone())
-    return gfx::Rect();
-  return GetTextInputClient()->GetAutocorrectCharacterBounds();
-}
-
-gfx::Rect InputMethodAsh::GetTextFieldBounds() {
-  if (IsTextInputTypeNone())
-    return gfx::Rect();
-  absl::optional<gfx::Rect> control_bounds;
-  absl::optional<gfx::Rect> selection_bounds;
-  GetTextInputClient()->GetActiveTextInputControlLayoutBounds(
-      &control_bounds, &selection_bounds);
-  return control_bounds ? *control_bounds : gfx::Rect();
-}
-
 void InputMethodAsh::SetAutocorrectRange(
     const gfx::Range& range,
     SetAutocorrectRangeDoneCallback callback) {
@@ -531,10 +514,10 @@ void InputMethodAsh::SetAutocorrectRange(
   }
 }
 
-absl::optional<ui::GrammarFragment>
+std::optional<ui::GrammarFragment>
 InputMethodAsh::GetGrammarFragmentAtCursor() {
   if (IsTextInputTypeNone())
-    return absl::nullopt;
+    return std::nullopt;
   return GetTextInputClient()->GetGrammarFragmentAtCursor();
 }
 
@@ -567,13 +550,11 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
   // text. Again we need to fix this properly by removing the pending mechanism.
   if (pending_composition_ && !pending_commit_ && !pending_composition_range_) {
     GetTextInputClient()->SetCompositionText(*pending_composition_);
-    pending_composition_ = absl::nullopt;
+    pending_composition_ = std::nullopt;
     composition_changed_ = false;
   }
-  if (client &&
-      (client->HasCompositionText() ||
-       (base::FeatureList::IsEnabled(::features::kAlwaysConfirmComposition) &&
-        client->SupportsAlwaysConfirmComposition()))) {
+  if (client && (client->HasCompositionText() ||
+                 client->SupportsAlwaysConfirmComposition())) {
     const size_t characters_committed =
         client->ConfirmCompositionText(/*keep_selection*/ true);
     typing_session_manager_.CommitCharacters(characters_committed);
@@ -588,8 +569,8 @@ void InputMethodAsh::ResetContext(bool reset_engine) {
 
   const bool was_composing = composing_text_;
 
-  pending_composition_ = absl::nullopt;
-  pending_commit_ = absl::nullopt;
+  pending_composition_ = std::nullopt;
+  pending_commit_ = std::nullopt;
   composing_text_ = false;
   composition_changed_ = false;
 
@@ -618,13 +599,10 @@ void InputMethodAsh::UpdateContextFocusState() {
 
   IMEBridge::Get()->SetCurrentInputContext(GetInputContext());
 
-  if (base::FeatureList::IsEnabled(
-          features::kInputMethodDeadKeyFixForTerminal)) {
-    TextInputClient* client = GetTextInputClient();
-    focused_url_ = client && !IsPasswordOrNoneInputFieldFocused()
-                       ? client->GetTextEditingContext().page_url
-                       : GURL();
-  }
+  TextInputClient* client = GetTextInputClient();
+  focused_url_ = client && !IsPasswordOrNoneInputFieldFocused()
+                     ? client->GetTextEditingContext().page_url
+                     : GURL();
 }
 
 ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
@@ -708,10 +686,8 @@ ui::EventDispatchDetails InputMethodAsh::ProcessFilteredKeyPressEvent(
     // TODO(b/289319217): Investigate if we need to distinguish between a dead
     // key that is handled by the character composer or is handled by the input
     // method.
-    // TODO(b/289319217): Expand fix to all URLs once the fix looks stable.
-    if (base::FeatureList::IsEnabled(
-            features::kInputMethodDeadKeyFixForTerminal) &&
-        focused_url_.is_valid() && IsTerminalOrCrosh(focused_url_) &&
+    if ((base::FeatureList::IsEnabled(features::kInputMethodDeadKeyFix) ||
+         (focused_url_.is_valid() && IsTerminalOrCrosh(focused_url_))) &&
         event->GetDomKey().IsDeadKey()) {
       return DispatchKeyEventPostIME(event);
     }
@@ -815,7 +791,7 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
       client->ClearCompositionText();
     }
 
-    pending_composition_ = absl::nullopt;
+    pending_composition_ = std::nullopt;
     pending_composition_range_.reset();
   }
 
@@ -827,7 +803,7 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
 
   // We should not clear composition text here, as it may belong to the next
   // composition session.
-  pending_commit_ = absl::nullopt;
+  pending_commit_ = std::nullopt;
   composition_changed_ = false;
 }
 
@@ -875,7 +851,7 @@ void InputMethodAsh::CommitText(
       typing_session_manager_.CommitCharacters(text.length());
     }
     SendFakeProcessKeyEvent(false);
-    pending_commit_ = absl::nullopt;
+    pending_commit_ = std::nullopt;
   }
 }
 
@@ -919,7 +895,7 @@ void InputMethodAsh::UpdateCompositionText(const CompositionText& text,
     }
     SendFakeProcessKeyEvent(false);
     composition_changed_ = false;
-    pending_composition_ = absl::nullopt;
+    pending_composition_ = std::nullopt;
   }
 }
 
@@ -929,7 +905,7 @@ void InputMethodAsh::HidePreeditText() {
 
   // Intentionally leaves |composing_text_| unchanged.
   composition_changed_ = true;
-  pending_composition_ = absl::nullopt;
+  pending_composition_ = std::nullopt;
 
   if (!handling_key_event_) {
     TextInputClient* client = GetTextInputClient();
@@ -1010,7 +986,7 @@ void InputMethodAsh::DeleteSurroundingText(uint32_t num_char16s_before_cursor,
 void InputMethodAsh::ReplaceSurroundingText(
     uint32_t length_before_selection,
     uint32_t length_after_selection,
-    base::StringPiece16 replacement_text) {
+    std::u16string_view replacement_text) {
   if (!GetTextInputClient()) {
     return;
   }
@@ -1127,20 +1103,6 @@ bool InputMethodAsh::IsPasswordOrNoneInputFieldFocused() {
 bool InputMethodAsh::HasCompositionText() {
   TextInputClient* client = GetTextInputClient();
   return client && client->HasCompositionText();
-}
-
-std::u16string InputMethodAsh::GetCompositionText() {
-  TextInputClient* client = GetTextInputClient();
-  if (!client) {
-    return u"";
-  }
-
-  gfx::Range composition_range;
-  client->GetCompositionTextRange(&composition_range);
-  std::u16string composition_text;
-  client->GetTextFromRange(composition_range, &composition_text);
-
-  return composition_text;
 }
 
 ukm::SourceId InputMethodAsh::GetClientSourceForMetrics() {

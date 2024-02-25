@@ -57,7 +57,7 @@ ImageDataFetcher::~ImageDataFetcher() {
 }
 
 void ImageDataFetcher::SetImageDownloadLimit(
-    absl::optional<int64_t> max_download_bytes) {
+    std::optional<int64_t> max_download_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   max_download_bytes_ = max_download_bytes;
 }

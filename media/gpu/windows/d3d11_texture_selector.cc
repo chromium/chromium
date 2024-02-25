@@ -79,7 +79,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     bool shared_image_use_shared_handle) {
   VideoPixelFormat output_pixel_format;
   DXGI_FORMAT output_dxgi_format;
-  absl::optional<gfx::ColorSpace> output_color_space;
+  std::optional<gfx::ColorSpace> output_color_space;
 
   bool needs_texture_copy = !SupportsZeroCopy(gpu_preferences, workarounds);
 
@@ -121,8 +121,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
       // If device support P010 zero copy, then try P010 firstly.
-      if (hdr_output_mode == HDRMode::kSDROnly &&
-          supports_fmt(DXGI_FORMAT_P010)) {
+      if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
         output_dxgi_format = DXGI_FORMAT_P010;
         output_pixel_format = PIXEL_FORMAT_P016LE;
         // Gfx::ColorTransform now can handle both PQ/HLG content well for
@@ -139,11 +138,6 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
         // video processor, reset colorspace to use gfx do tone mapping.
         output_color_space.reset();
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
-      } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
-        output_dxgi_format = DXGI_FORMAT_P010;
-        output_pixel_format = PIXEL_FORMAT_P016LE;
-        output_color_space.reset();
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P016LE";
       } else if (supports_fmt(DXGI_FORMAT_R16G16B16A16_FLOAT)) {
         output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         output_pixel_format = PIXEL_FORMAT_RGBAF16;
@@ -216,7 +210,7 @@ CopyTextureSelector::CopyTextureSelector(
     VideoPixelFormat pixfmt,
     DXGI_FORMAT input_dxgifmt,
     DXGI_FORMAT output_dxgifmt,
-    absl::optional<gfx::ColorSpace> output_color_space,
+    std::optional<gfx::ColorSpace> output_color_space,
     ComD3D11VideoDevice video_device,
     ComD3D11DeviceContext device_context,
     bool shared_image_use_shared_handle)

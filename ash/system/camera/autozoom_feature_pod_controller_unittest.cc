@@ -6,68 +6,41 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
-// Tests are parameterized by feature QsRevamp.
-class AutozoomFeaturePodControllerTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class AutozoomFeaturePodControllerTest : public AshTestBase {
  public:
-  AutozoomFeaturePodControllerTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-  }
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  AutozoomFeaturePodControllerTest() = default;
 
   // AshTestBase:
   void TearDown() override {
     tile_.reset();
-    button_.reset();
     controller_.reset();
     AshTestBase::TearDown();
   }
 
   void CreateButton() {
     controller_ = std::make_unique<AutozoomFeaturePodController>();
-    if (IsQsRevampEnabled()) {
-      tile_ = controller_->CreateTile();
-    } else {
-      button_ = base::WrapUnique(controller_->CreateButton());
-    }
+    tile_ = controller_->CreateTile();
   }
 
-  bool IsButtonVisible() {
-    return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
-  }
+  bool IsButtonVisible() { return tile_->GetVisible(); }
 
   void PressIcon() { controller_->OnIconPressed(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AutozoomFeaturePodController> controller_;
-  std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         AutozoomFeaturePodControllerTest,
-                         testing::Bool());
-
-TEST_P(AutozoomFeaturePodControllerTest, ButtonVisibility) {
+TEST_F(AutozoomFeaturePodControllerTest, ButtonVisibility) {
   // By default autozoom is not supported, so the button is not visible.
   CreateButton();
   EXPECT_FALSE(IsButtonVisible());
@@ -78,7 +51,7 @@ TEST_P(AutozoomFeaturePodControllerTest, ButtonVisibility) {
   EXPECT_TRUE(IsButtonVisible());
 }
 
-TEST_P(AutozoomFeaturePodControllerTest, PressIconTogglesFeature) {
+TEST_F(AutozoomFeaturePodControllerTest, PressIconTogglesFeature) {
   CreateButton();
   ASSERT_EQ(Shell::Get()->autozoom_controller()->GetState(),
             cros::mojom::CameraAutoFramingState::OFF);

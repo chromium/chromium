@@ -32,9 +32,6 @@ class KeepAliveURLLoadersTestObserverImpl;
 // KeepAliveURLLoader has entered certain state, e.g.
 // `WaitForTotalOnReceiveRedirectProcessed()` indicates the loader handles the
 // redirect itself rather than handing over to renderer as renderer is gone.
-//
-// Must also call `base::test::AllowCheckIsTestForTesting()` once to enable this
-// observer.
 class KeepAliveURLLoadersTestObserver {
  public:
   // Begins observing the internal states of all instances of KeepAliveURLLoader

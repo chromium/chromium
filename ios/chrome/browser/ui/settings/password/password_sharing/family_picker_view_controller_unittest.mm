@@ -8,7 +8,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_consumer.h"
@@ -30,11 +30,12 @@ const CGFloat kAccessorySymbolSize = 22;
 
 }  // namespace
 
-class FamilyPickerViewControllerTest : public ChromeTableViewControllerTest {
+class FamilyPickerViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  protected:
   FamilyPickerViewControllerTest() = default;
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[FamilyPickerViewController alloc]
         initWithStyle:ChromeTableViewStyle()];
   }
@@ -151,77 +152,65 @@ TEST_F(FamilyPickerViewControllerTest, TestAccessoryViewOfIneligibleRecipient) {
 // Tests accessory views on selecting and deselecting eligible password sharing
 // recipient (with a public key).
 TEST_F(FamilyPickerViewControllerTest, TestAccessoryViewOfEligibleRecipient) {
-  RecipientInfo recipient;
-  recipient.email = kEmail;
-  recipient.user_name = kName;
-  recipient.public_key.key = kPublicKey;
-  recipient.public_key.key_version = kPublicKeyVersion;
-  SetFamilyWithRecipients({recipient});
-
+  SetFamilyWithSize(3);
   EXPECT_EQ(NumberOfSections(), 1);
-  EXPECT_EQ(NumberOfItemsInSection(0), 1);
-  CheckCellText(@"user", 0, 0);
-  CheckCellDetailText(@"test@gmail.com", 0, 0);
-  CheckCellAccessoryViewImage(
-      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 0);
+  EXPECT_EQ(NumberOfItemsInSection(0), 3);
 
   FamilyPickerViewController* family_controller =
       base::apple::ObjCCastStrict<FamilyPickerViewController>(controller());
-  [family_controller tableView:family_controller.tableView
-       didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-  CheckCellAccessoryViewImage(
-      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 0);
+  UITableView* tableView = family_controller.tableView;
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
 
-  [family_controller tableView:family_controller.tableView
-      didDeselectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
   CheckCellAccessoryViewImage(
-      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 0);
+      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 1);
+
+  [tableView selectRowAtIndexPath:indexPath
+                         animated:NO
+                   scrollPosition:UITableViewScrollPositionNone];
+  CheckCellAccessoryViewImage(
+      DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                 kAccessorySymbolSize),
+      0, 1);
+
+  [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  CheckCellAccessoryViewImage(
+      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 1);
 }
 
 TEST_F(FamilyPickerViewControllerTest, TestShareButtonEnabledWithSelectedRows) {
-  RecipientInfo recipient1;
-  recipient1.public_key.key = kPublicKey;
-  recipient1.public_key.key_version = kPublicKeyVersion;
-  RecipientInfo recipient2;
-  recipient2.public_key.key = kPublicKey;
-  recipient2.public_key.key_version = kPublicKeyVersion;
-  SetFamilyWithRecipients({recipient1, recipient2});
-
+  SetFamilyWithSize(2);
   EXPECT_EQ(NumberOfSections(), 1);
   EXPECT_EQ(NumberOfItemsInSection(0), 2);
 
   FamilyPickerViewController* family_controller =
       base::apple::ObjCCastStrict<FamilyPickerViewController>(controller());
-  EXPECT_FALSE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
-
+  UITableView* tableView = family_controller.tableView;
+  UIBarButtonItem* shareButton =
+      family_controller.navigationItem.rightBarButtonItem;
   NSIndexPath* indexPath1 = [NSIndexPath indexPathForRow:0 inSection:0];
   NSIndexPath* indexPath2 = [NSIndexPath indexPathForRow:1 inSection:0];
 
-  [family_controller.tableView
-      selectRowAtIndexPath:indexPath1
-                  animated:NO
-            scrollPosition:UITableViewScrollPositionNone];
-  [family_controller tableView:family_controller.tableView
-       didSelectRowAtIndexPath:indexPath1];
-  EXPECT_TRUE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
+  EXPECT_FALSE(shareButton.isEnabled);
 
-  [family_controller.tableView
-      selectRowAtIndexPath:indexPath2
-                  animated:NO
-            scrollPosition:UITableViewScrollPositionNone];
-  [family_controller tableView:family_controller.tableView
-       didSelectRowAtIndexPath:indexPath2];
-  EXPECT_TRUE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
+  [tableView selectRowAtIndexPath:indexPath1
+                         animated:NO
+                   scrollPosition:UITableViewScrollPositionNone];
+  [family_controller tableView:tableView didSelectRowAtIndexPath:indexPath1];
+  EXPECT_TRUE(shareButton.isEnabled);
 
-  [family_controller.tableView deselectRowAtIndexPath:indexPath1 animated:NO];
-  [family_controller tableView:family_controller.tableView
-      didDeselectRowAtIndexPath:indexPath1];
-  EXPECT_TRUE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
+  [tableView selectRowAtIndexPath:indexPath2
+                         animated:NO
+                   scrollPosition:UITableViewScrollPositionNone];
+  [family_controller tableView:tableView didSelectRowAtIndexPath:indexPath2];
+  EXPECT_TRUE(shareButton.isEnabled);
 
-  [family_controller.tableView deselectRowAtIndexPath:indexPath2 animated:NO];
-  [family_controller tableView:family_controller.tableView
-      didDeselectRowAtIndexPath:indexPath2];
-  EXPECT_FALSE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
+  [tableView deselectRowAtIndexPath:indexPath1 animated:NO];
+  [family_controller tableView:tableView didDeselectRowAtIndexPath:indexPath1];
+  EXPECT_TRUE(shareButton.isEnabled);
+
+  [tableView deselectRowAtIndexPath:indexPath2 animated:NO];
+  [family_controller tableView:tableView didDeselectRowAtIndexPath:indexPath2];
+  EXPECT_FALSE(shareButton.isEnabled);
 }
 
 // Tests that recipients are sorted in the table by eligibility for sharing
@@ -248,4 +237,30 @@ TEST_F(FamilyPickerViewControllerTest,
   CheckCellText(@"test4", 0, 1);
   CheckCellText(@"test1", 0, 2);
   CheckCellText(@"test2", 0, 3);
+}
+
+// Tests that with one eligible recipient the cell should be preselected.
+TEST_F(FamilyPickerViewControllerTest,
+       TestAccessoryViewWithOneEligibleRecipient) {
+  SetFamilyWithSize(1);
+  EXPECT_EQ(NumberOfSections(), 1);
+  EXPECT_EQ(NumberOfItemsInSection(0), 1);
+
+  FamilyPickerViewController* family_controller =
+      base::apple::ObjCCastStrict<FamilyPickerViewController>(controller());
+
+  // Simulate the view appearing.
+  [family_controller viewWillAppear:YES];
+  [family_controller viewDidAppear:YES];
+  CheckCellAccessoryViewImage(
+      DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                 kAccessorySymbolSize),
+      0, 0);
+
+  // Check that the cell still can be deselected.
+  [family_controller.tableView
+      deselectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                    animated:NO];
+  CheckCellAccessoryViewImage(
+      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 0);
 }

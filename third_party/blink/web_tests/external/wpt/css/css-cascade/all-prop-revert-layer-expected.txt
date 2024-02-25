@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] baseline-source
+  assert_equals: Layer 3 should rollback to layer 2. expected "first" but got "auto"
+Harness: the test ran to completion.
+

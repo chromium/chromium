@@ -24,7 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/crash/core/browser/crashes_ui_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/grit/dev_ui_components_resources.h"

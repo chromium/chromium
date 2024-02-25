@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/event.h"
@@ -27,7 +29,7 @@
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
  protected:
   void ShowUi(const std::string& name) override {
-    absl::optional<tab_groups::TabGroupId> group =
+    std::optional<tab_groups::TabGroupId> group =
         browser()->tab_strip_model()->AddToNewGroup({0});
     browser()->tab_strip_model()->OpenTabGroupEditor(group.value());
 
@@ -45,13 +47,8 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       MAYBE_InvokeUi_default) {
+                       InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
@@ -122,8 +119,10 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   histogram_tester.ExpectTotalCount("TabGroups.TabGroupBubble.TabCount", 0);
 }
 
+// Verify that when a group that holds all of the tabs in a window is closing
+// does not close the browser. Instead it should create a new tab.
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       CloseGroupClosesBrowser) {
+                       ClosingLastGroupInBrowserSpawnsNewTab) {
   ShowUi("SetUp");
 
   TabGroupModel* group_model = browser()->tab_strip_model()->group_model();
@@ -148,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   EXPECT_EQ(0u, group_model->ListTabGroups().size());
   EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
-  EXPECT_EQ(0, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(browser()->IsAttemptingToCloseBrowser());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(browser()->IsAttemptingToCloseBrowser());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
@@ -175,14 +174,16 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
                                 gfx::PointF(), base::TimeTicks(), 0, 0);
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   views::test::ButtonTestApi(move_group_button).NotifyClick(released_event);
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
 
   EXPECT_EQ(0u, group_model->ListTabGroups().size());
   EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* active_browser = browser_list->GetLastActive();
+  Browser* active_browser = chrome::FindLastActive();
   ASSERT_NE(active_browser, browser());
   EXPECT_EQ(1, active_browser->tab_strip_model()->count());
   EXPECT_EQ(
@@ -211,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(
 
   TabStripModel* tsm = browser()->tab_strip_model();
   ASSERT_EQ(3, tsm->count());
-  absl::optional<tab_groups::TabGroupId> group = tsm->AddToNewGroup({0, 1});
+  std::optional<tab_groups::TabGroupId> group = tsm->AddToNewGroup({0, 1});
 
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());

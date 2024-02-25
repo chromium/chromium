@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/curtain/security_curtain_controller.h"
-
 #include "ash/curtain/security_curtain_widget_controller.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -13,13 +14,16 @@
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/system/power/power_button_menu_view.h"
 #include "ash/system/power/power_button_test_base.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check_deref.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/events/test/event_generator.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/native_widget.h"
@@ -41,74 +45,19 @@ using ::testing::Ne;
 
 using DisplayId = uint64_t;
 
-// Simple event handler that can track any events.
-class TestEventHandler : public ui::EventHandler {
- public:
-  TestEventHandler() = default;
-  ~TestEventHandler() override = default;
-
-  // ui::EventHandler:
-  void OnEvent(ui::Event* event) override {
-    has_seen_event_ = true;
-
-    event->SetHandled();
-    event->StopPropagation();
-  }
-
-  bool HasSeenAnyEvent() { return has_seen_event_; }
-
- private:
-  bool has_seen_event_ = false;
-};
-
-// Helper class that allows observing of all `ui::Event`'s on a given target
-// window, and which allows easy generation of input events.
-class EventTester {
- public:
-  EventTester(std::unique_ptr<aura::Window> window,
-              ui::test::EventGenerator& event_generator)
-      : window_(std::move(window)), event_generator_(event_generator) {
-    window_->SetTargetHandler(&event_handler_);
-    event_generator_->SetTargetWindow(window_.get());
-  }
-
-  EventTester(const EventTester&) = delete;
-  EventTester& operator=(const EventTester&) = delete;
-  ~EventTester() = default;
-
-  ui::test::EventGenerator& event_generator() { return *event_generator_; }
-  TestEventHandler& event_handler() { return event_handler_; }
-
-  gfx::Point location() const { return window_->bounds().CenterPoint(); }
-
- private:
-  std::unique_ptr<aura::Window> window_;
-  TestEventHandler event_handler_;
-  raw_ref<ui::test::EventGenerator> event_generator_;
-};
-
-EventFilter only_mouse_events_filter() {
-  return base::BindRepeating([](const ui::Event& event) {
-    return event.IsMouseEvent() ? FilterResult::kKeepEvent
-                                : FilterResult::kSuppressEvent;
-  });
-}
-
 ViewFactory FakeViewFactory() {
   return base::BindRepeating(
       []() { return views::Builder<views::View>().Build(); });
-}
-
-EventFilter FakeEventFilter() {
-  return base::BindRepeating(
-      [](const ui::Event&) { return FilterResult::kSuppressEvent; });
 }
 
 }  // namespace
 
 class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
  public:
-  SecurityCurtainControllerImplTest() = default;
+  SecurityCurtainControllerImplTest()
+      : PowerButtonTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   SecurityCurtainControllerImplTest(const SecurityCurtainControllerImplTest&) =
       delete;
   SecurityCurtainControllerImplTest& operator=(
@@ -123,19 +72,30 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
         Shell::Get()->power_button_controller());
   }
 
-  void TearDown() override { PowerButtonTestBase::TearDown(); }
+  void TearDown() override {
+    power_button_test_api_.reset();
+    ResetPowerButtonController();
+    PowerButtonTestBase::TearDown();
+  }
 
   SecurityCurtainController& security_curtain_controller() {
     return ash::Shell::Get()->security_curtain_controller();
+  }
+
+  CameraPrivacySwitchController& camera_controller() {
+    return CHECK_DEREF(CameraPrivacySwitchController::Get());
   }
 
   PowerButtonControllerTestApi& power_button_test_api() {
     return *power_button_test_api_;
   }
 
+  const ui::InputController& input_controller() {
+    return CHECK_DEREF(ui::OzonePlatform::GetInstance()->GetInputController());
+  }
+
   SecurityCurtainController::InitParams init_params() {
-    return SecurityCurtainController::InitParams{FakeEventFilter(),
-                                                 FakeViewFactory()};
+    return SecurityCurtainController::InitParams{FakeViewFactory()};
   }
 
   bool IsNativeCursorEnabled() {
@@ -145,12 +105,8 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
                 ->is_cursor_compositing_enabled();
   }
 
-  SecurityCurtainController::InitParams WithEventFilter(EventFilter filter) {
-    return SecurityCurtainController::InitParams{filter, FakeViewFactory()};
-  }
-
   SecurityCurtainController::InitParams WithViewFactory(ViewFactory factory) {
-    return SecurityCurtainController::InitParams{FakeEventFilter(), factory};
+    return SecurityCurtainController::InitParams{factory};
   }
 
   bool IsCurtainShownOnDisplay(const display::Display& display) {
@@ -222,11 +178,6 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
     return last_display_id;
   }
 
-  EventTester CreateEventTester() {
-    return EventTester(CreateTestWindow({0, 0, 1000, 5000}),
-                       *GetEventGenerator());
-  }
-
   bool IsAudioOutputMuted() {
     return CrasAudioHandler::Get()->IsOutputMutedBySecurityCurtain() &&
            CrasAudioHandler::Get()->IsOutputMuted();
@@ -235,11 +186,6 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
   bool IsAudioInputMuted() {
     return CrasAudioHandler::Get()->IsInputMutedBySecurityCurtain() &&
            CrasAudioHandler::Get()->IsInputMuted();
-  }
-
-  EventTester CreateEventTesterOnDisplay(const display::Display& display) {
-    return EventTester(CreateTestWindow(display.bounds()),
-                       *GetEventGenerator());
   }
 
   views::Widget& GetCurtainWidget() {
@@ -263,6 +209,9 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
 
  private:
   std::unique_ptr<PowerButtonControllerTestApi> power_button_test_api_;
+
+  // Security curtain requires privacy hub to force disable the camera access.
+  base::test::ScopedFeatureList features_{features::kCrosPrivacyHubV0};
 };
 
 TEST_F(SecurityCurtainControllerImplTest,
@@ -389,97 +338,32 @@ TEST_F(SecurityCurtainControllerImplTest,
   }
 }
 
-TEST_F(SecurityCurtainControllerImplTest, CurtainShouldBlockMouseEvents) {
-  security_curtain_controller().Enable(init_params());
-  EventTester tester = CreateEventTester();
+TEST_F(SecurityCurtainControllerImplTest, CurtainShouldDisableInputDevices) {
+  ASSERT_TRUE(input_controller().AreInputDevicesEnabled());
 
-  tester.event_generator().ClickLeftButton();
+  auto params = init_params();
+  params.disable_input_devices = true;
+  security_curtain_controller().Enable(params);
 
-  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
+  EXPECT_FALSE(input_controller().AreInputDevicesEnabled());
 }
 
-TEST_F(SecurityCurtainControllerImplTest, CurtainShouldBlockTouchEvents) {
-  security_curtain_controller().Enable(init_params());
-  EventTester tester = CreateEventTester();
+TEST_F(SecurityCurtainControllerImplTest, UncurtainShouldReenableInputDevices) {
+  auto params = init_params();
+  params.disable_input_devices = true;
+  security_curtain_controller().Enable(params);
+  security_curtain_controller().Disable();
 
-  tester.event_generator().PressTouch();
-
-  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
-}
-
-TEST_F(SecurityCurtainControllerImplTest, CurtainShouldBlockGestureEvents) {
-  security_curtain_controller().Enable(init_params());
-  EventTester tester = CreateEventTester();
-
-  tester.event_generator().GestureTapAt(tester.location());
-
-  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
-}
-
-TEST_F(SecurityCurtainControllerImplTest, CurtainShouldBlockKeyboardEvents) {
-  security_curtain_controller().Enable(init_params());
-  EventTester tester = CreateEventTester();
-
-  tester.event_generator().PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
-
-  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
-}
-
-TEST_F(SecurityCurtainControllerImplTest, CurtainShouldRespectEventFilter) {
-  security_curtain_controller().Enable(
-      WithEventFilter(only_mouse_events_filter()));
-  EventTester tester = CreateEventTester();
-
-  // With our 'only mouse' filter touch events should be suppressed.
-  tester.event_generator().PressTouch();
-  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
-
-  // ... and mouse events should go through
-  tester.event_generator().ClickLeftButton();
-  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(true));
+  EXPECT_TRUE(input_controller().AreInputDevicesEnabled());
 }
 
 TEST_F(SecurityCurtainControllerImplTest,
-       CurtainShouldRespectEventFilterOnAllDisplays) {
-  CreateMultipleDisplays();
-  security_curtain_controller().Enable(
-      WithEventFilter(only_mouse_events_filter()));
+       CurtainShouldNotDisableInputDevicesWhenRequested) {
+  auto params = init_params();
+  params.disable_input_devices = false;
+  security_curtain_controller().Enable(params);
 
-  for (auto display : GetDisplays()) {
-    SCOPED_TRACE("Failure on display " + display.ToString());
-
-    EventTester tester = CreateEventTesterOnDisplay(display);
-
-    // With our 'only mouse' filter touch events should be suppressed.
-    tester.event_generator().PressTouch();
-    EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
-
-    // ... and mouse events should go through
-    tester.event_generator().ClickLeftButton();
-    EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(true));
-  }
-}
-
-TEST_F(SecurityCurtainControllerImplTest,
-       CurtainShouldRespectEventFilterOnNewlyAddedDisplays) {
-  CreateSingleDisplay();
-  security_curtain_controller().Enable(
-      WithEventFilter(only_mouse_events_filter()));
-
-  CreateMultipleDisplays();
-  for (auto display : GetDisplays()) {
-    SCOPED_TRACE("Failure on display " + display.ToString());
-
-    EventTester tester = CreateEventTesterOnDisplay(display);
-
-    // With our 'only mouse' filter touch events should be suppressed.
-    tester.event_generator().PressTouch();
-    EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
-
-    // ... and mouse events should go through
-    tester.event_generator().ClickLeftButton();
-    EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(true));
-  }
+  EXPECT_TRUE(input_controller().AreInputDevicesEnabled());
 }
 
 TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotOccludeOtherWindows) {
@@ -543,12 +427,19 @@ TEST_F(SecurityCurtainControllerImplTest,
 }
 
 TEST_F(SecurityCurtainControllerImplTest,
-       ShouldMuteAudioOutputMuteWhileCurtainIsEnabled) {
+       ShouldMuteAudioOutputAfterRequestedDelayWhileCurtainIsEnabled) {
   CreateSingleDisplay();
 
+  auto delay = base::Minutes(5);
   auto params = init_params();
-  params.mute_audio_output = true;
+  params.mute_audio_output_after = delay;
   security_curtain_controller().Enable(params);
+  EXPECT_FALSE(IsAudioOutputMuted());
+
+  task_environment()->FastForwardBy(delay - base::Seconds(10));
+  EXPECT_FALSE(IsAudioOutputMuted());
+
+  task_environment()->FastForwardBy(base::Seconds(10));
   EXPECT_TRUE(IsAudioOutputMuted());
 
   security_curtain_controller().Disable();
@@ -556,11 +447,25 @@ TEST_F(SecurityCurtainControllerImplTest,
 }
 
 TEST_F(SecurityCurtainControllerImplTest,
-       ShouldNotMuteAudioOutputMuteWhenItsNotRequested) {
+       ShouldMuteAudioOutputWhileCurtainIsEnabled) {
   CreateSingleDisplay();
 
   auto params = init_params();
-  params.mute_audio_output = false;
+  params.mute_audio_output_after = base::TimeDelta();
+  security_curtain_controller().Enable(params);
+  task_environment()->RunUntilIdle();  // Audio is muted asynchronously.
+  EXPECT_TRUE(IsAudioOutputMuted());
+
+  security_curtain_controller().Disable();
+  EXPECT_FALSE(IsAudioOutputMuted());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldNotMuteAudioOutputWhenItsNotRequested) {
+  CreateSingleDisplay();
+
+  auto params = init_params();
+  params.mute_audio_output_after = base::TimeDelta::Max();
   security_curtain_controller().Enable(params);
   EXPECT_FALSE(IsAudioOutputMuted());
 }
@@ -650,6 +555,32 @@ TEST_F(SecurityCurtainControllerImplTest,
   security_curtain_controller().Disable();
 
   EXPECT_FALSE(power_button_test_api().IsMenuOpened());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldForceDisableCameraAccessWhenCurtainModeIsEnabled) {
+  auto params = init_params();
+  params.disable_camera_access = true;
+  security_curtain_controller().Enable(params);
+  EXPECT_TRUE(camera_controller().IsCameraAccessForceDisabled());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldStopForceDisablingCameraAccessWhenCurtainModeIsDisabled) {
+  auto params = init_params();
+  params.disable_camera_access = true;
+  security_curtain_controller().Enable(params);
+  security_curtain_controller().Disable();
+
+  EXPECT_FALSE(camera_controller().IsCameraAccessForceDisabled());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldNotForceDisableCameraAccessWhenNotRequested) {
+  auto params = init_params();
+  params.disable_camera_access = false;
+  security_curtain_controller().Enable(params);
+  EXPECT_FALSE(camera_controller().IsCameraAccessForceDisabled());
 }
 
 }  // namespace ash::curtain

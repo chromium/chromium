@@ -113,11 +113,11 @@ TagKind GetTagKind(TagName name) {
   NOTREACHED_NORETURN();
 }
 
-absl::optional<TagName> ParseTagName(base::StringPiece name) {
+std::optional<TagName> ParseTagName(base::StringPiece name) {
   // Search for the tag name
   const auto* match = kTagNames.find(name);
   if (match == kTagNames.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return match->second;

@@ -11,14 +11,19 @@
   }
 
   #managedEolTooltipIcon {
-    margin-inline-end: 54px;
+    margin-inline-end: 48px;
   }
 
-  #changeChannelCrButton {
+  #changeChannelButton {
     margin-inline-start: 16px;
   }
+
+  :host-context(body:not(.revamp-wayfinding-enabled))
+      #buildDetailsLinkContainer {
+    border-bottom: var(--cr-separator-line);
+  }
 </style>
-<div class="settings-box two-line">
+<div class="settings-box two-line first">
   <div class="start">
     <div role="heading" aria-level="2">$i18n{aboutChannelLabel}</div>
     <div id="currentlyOnChannelText" aria-hidden="true" class="secondary">
@@ -34,7 +39,7 @@
             canChangeChannel_)]]">
     </cr-policy-indicator>
   </template>
-  <cr-button id="changeChannelCrButton"
+  <cr-button id="changeChannelButton"
       on-click="onChangeChannelClick_"
       aria-describedby="currentlyOnChannelText"
       disabled="[[!canChangeChannel_]]"
@@ -154,4 +159,3 @@
       class="icon-external">
   </cr-icon-button>
 </div>
-<div class="hr"></div>

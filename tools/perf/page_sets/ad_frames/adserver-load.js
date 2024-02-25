@@ -8,7 +8,11 @@
 
 function LoadFrame(type, url) {
   const frame = document.createElement(type);
-  frame.src = url;
+  if (type == "fencedframe") {
+    frame.config = new FencedFrameConfig(url);
+  } else {
+    frame.src = url;
+  }
   const dimensions = url.split(";sz=")[1].split("x");
   frame.width = dimensions[0];
   frame.height = dimensions[1];

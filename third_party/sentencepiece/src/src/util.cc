@@ -32,11 +32,15 @@ void SetRandomGeneratorSeed(unsigned int seed) {
 }
 
 uint32 GetRandomGeneratorSeed() {
+#if !SENTENCEPIECE_DISABLE_EXCEPTIONS
   try {
+#endif
     return g_seed == kDefaultSeed ? std::random_device{}() : g_seed.load();
+#if !SENTENCEPIECE_DISABLE_EXCEPTIONS
   } catch (...) {
     return g_seed.load();
   }
+#endif
 }
 
 namespace logging {

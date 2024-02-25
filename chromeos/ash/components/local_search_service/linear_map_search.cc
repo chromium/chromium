@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/local_search_service/linear_map_search.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/local_search_service/search_utils.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::local_search_service {
 
@@ -134,14 +134,14 @@ void LinearMapSearch::Find(const std::u16string& query,
   if (query.empty()) {
     const ResponseStatus status = ResponseStatus::kEmptyQuery;
     MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
-    std::move(callback).Run(status, absl::nullopt);
+    std::move(callback).Run(status, std::nullopt);
     return;
   }
 
   if (data_.empty()) {
     const ResponseStatus status = ResponseStatus::kEmptyIndex;
     MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
-    std::move(callback).Run(status, absl::nullopt);
+    std::move(callback).Run(status, std::nullopt);
     return;
   }
 

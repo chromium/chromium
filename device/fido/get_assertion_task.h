@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -19,7 +20,6 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_task.h"
 #include "device/fido/pin.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cbor {
 class Value;
@@ -34,9 +34,12 @@ class AuthenticatorMakeCredentialResponse;
 // https://fidoalliance.org/specs/fido-v2.0-rd-20161004/fido-client-to-authenticator-protocol-v2.0-rd-20161004.html#authenticatorgetassertion
 class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
  public:
-  using GetAssertionTaskCallback = base::OnceCallback<void(
-      CtapDeviceResponseCode,
-      absl::optional<AuthenticatorGetAssertionResponse>)>;
+  using GetAssertionTaskCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              std::vector<AuthenticatorGetAssertionResponse>)>;
+  using GetNextAssertionOperation =
+      DeviceOperation<CtapGetNextAssertionRequest,
+                      AuthenticatorGetAssertionResponse>;
   using SignOperation = DeviceOperation<CtapGetAssertionRequest,
                                         AuthenticatorGetAssertionResponse>;
   using RegisterOperation =
@@ -75,26 +78,33 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
   void HandleResponse(
       std::vector<PublicKeyCredentialDescriptor> allow_list,
       CtapDeviceResponseCode response_code,
-      absl::optional<AuthenticatorGetAssertionResponse> response_data);
+      std::optional<AuthenticatorGetAssertionResponse> response_data);
+
+  // HandleNextResponse processes an assertion and requests the next one if
+  // necessary.
+  void HandleNextResponse(
+      uint8_t num_responses,
+      CtapDeviceResponseCode response_code,
+      std::optional<AuthenticatorGetAssertionResponse> response_data);
 
   // HandleResponseToSilentRequest is a callback to a request without user-
   // presence requested used to silently probe credentials from the allow list.
   void HandleResponseToSilentRequest(
       CtapDeviceResponseCode response_code,
-      absl::optional<AuthenticatorGetAssertionResponse> response_data);
+      std::optional<AuthenticatorGetAssertionResponse> response_data);
 
   // HandleDummyMakeCredentialComplete is the callback for the dummy credential
   // creation request that will be triggered, if needed, to get a touch.
   void HandleDummyMakeCredentialComplete(
       CtapDeviceResponseCode response_code,
-      absl::optional<AuthenticatorMakeCredentialResponse> response_data);
+      std::optional<AuthenticatorMakeCredentialResponse> response_data);
 
   void MaybeSetPRFParameters(CtapGetAssertionRequest* request,
                              const PRFInput* maybe_inputs);
 
   void MaybeRevertU2fFallbackAndInvokeCallback(
       CtapDeviceResponseCode status,
-      absl::optional<AuthenticatorGetAssertionResponse> response);
+      std::optional<AuthenticatorGetAssertionResponse> response);
 
   void LogAndFail(const char* error);
 
@@ -103,10 +113,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
   std::vector<std::vector<PublicKeyCredentialDescriptor>> allow_list_batches_;
   size_t current_allow_list_batch_ = 0;
 
+  std::unique_ptr<GetNextAssertionOperation> next_assertion_operation_;
   std::unique_ptr<SignOperation> sign_operation_;
   std::unique_ptr<RegisterOperation> dummy_register_operation_;
   GetAssertionTaskCallback callback_;
   std::unique_ptr<pin::HMACSecretRequest> hmac_secret_request_;
+  std::vector<AuthenticatorGetAssertionResponse> responses_;
 
   bool canceled_ = false;
 

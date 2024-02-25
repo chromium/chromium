@@ -31,7 +31,7 @@ base::OnceCallback<void(bool)> MakeSuccessCallback(base::OnceClosure callback,
 bool PutSync(blink::mojom::StorageArea* area,
              const std::vector<uint8_t>& key,
              const std::vector<uint8_t>& value,
-             const absl::optional<std::vector<uint8_t>>& old_value,
+             const std::optional<std::vector<uint8_t>>& old_value,
              const std::string& source) {
   bool success = false;
   base::RunLoop loop;
@@ -76,7 +76,7 @@ bool GetAllSync(blink::mojom::StorageArea* area,
 
 bool DeleteSync(blink::mojom::StorageArea* area,
                 const std::vector<uint8_t>& key,
-                const absl::optional<std::vector<uint8_t>>& client_old_value,
+                const std::optional<std::vector<uint8_t>>& client_old_value,
                 const std::string& source) {
   bool success = false;
   base::RunLoop loop;

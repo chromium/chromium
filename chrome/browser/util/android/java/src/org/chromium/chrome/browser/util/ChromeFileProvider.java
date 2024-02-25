@@ -49,11 +49,12 @@ public class ChromeFileProvider extends FileProvider {
     public static Uri generateUriAndBlockAccess() {
         String authority = getAuthority();
         String fileName = BLOCKED_FILE_PREFIX + String.valueOf(System.nanoTime());
-        Uri blockingUri = new Uri.Builder()
-                                  .scheme(UrlConstants.CONTENT_SCHEME)
-                                  .authority(authority)
-                                  .path(fileName)
-                                  .build();
+        Uri blockingUri =
+                new Uri.Builder()
+                        .scheme(UrlConstants.CONTENT_SCHEME)
+                        .authority(authority)
+                        .path(fileName)
+                        .build();
         synchronized (sLock) {
             sCurrentBlockingUri = blockingUri;
             sFileUri = null;
@@ -94,7 +95,11 @@ public class ChromeFileProvider extends FileProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         Uri fileUri = getFileUriWhenReady(uri);
         if (fileUri == null) return null;
@@ -181,9 +186,7 @@ public class ChromeFileProvider extends FileProvider {
         return null;
     }
 
-    /**
-     * Gets the authority string for content URI generation.
-     */
+    /** Gets the authority string for content URI generation. */
     private static String getAuthority() {
         return ContextUtils.getApplicationContext().getPackageName() + AUTHORITY_SUFFIX;
     }

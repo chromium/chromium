@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_CONTROLLER_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/observer_list_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class ChromeKeyboardWebContents;
@@ -181,14 +181,17 @@ class ChromeKeyboardControllerClient
   void OnSessionStateChanged() override;
 
   // Sets whether the virtual keyboard is enabled from prefs.
-  void SetVirtualKeyboardBehaviorFromPrefs();
+  void SetTouchKeyboardEnabledFromPrefs();
+
+  // Sets whether smart visibility is enabled from prefs.
+  void SetSmartVisibilityFromPrefs();
 
   // Returns either the test profile or the active user profile.
   Profile* GetProfile();
 
   gfx::Rect BoundsFromScreen(const gfx::Rect& screen_bounds);
 
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   raw_ptr<ash::KeyboardController> keyboard_controller_ = nullptr;
 
@@ -196,7 +199,7 @@ class ChromeKeyboardControllerClient
   std::unique_ptr<ChromeKeyboardWebContents> keyboard_contents_;
 
   // Cached copy of the latest config provided by KeyboardController.
-  absl::optional<keyboard::KeyboardConfig> cached_keyboard_config_;
+  std::optional<keyboard::KeyboardConfig> cached_keyboard_config_;
 
   // Cached copy of the active enabled flags provided by KeyboardController.
   std::set<keyboard::KeyboardEnableFlag> keyboard_enable_flags_;

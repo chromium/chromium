@@ -40,8 +40,6 @@ namespace media {
 
 namespace {
 
-constexpr size_t kDefaultFrameRateNumerator = 30;
-constexpr size_t kDefaultFrameRateDenominator = 1;
 constexpr size_t kMaxFrameRateNumerator = 120;
 constexpr size_t kMaxFrameRateDenominator = 1;
 constexpr size_t kNumInputBuffers = 3;
@@ -126,20 +124,20 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
           compression_session,
           kVTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder,
           kCFAllocatorDefault, cf_using_hardware.InitializeInto()) == 0) {
-    info.is_hardware_accelerated = CFBooleanGetValue(cf_using_hardware);
+    info.is_hardware_accelerated = CFBooleanGetValue(cf_using_hardware.get());
   }
 #else
   // iOS is always hardware-accelerated.
   info.is_hardware_accelerated = true;
 #endif
 
-  absl::optional<int> max_frame_delay_property;
+  std::optional<int> max_frame_delay_property;
   base::apple::ScopedCFTypeRef<CFNumberRef> max_frame_delay_count;
   if (VTSessionCopyProperty(
           compression_session, kVTCompressionPropertyKey_MaxFrameDelayCount,
           kCFAllocatorDefault, max_frame_delay_count.InitializeInto()) == 0) {
     int32_t frame_delay;
-    if (CFNumberGetValue(max_frame_delay_count, kCFNumberSInt32Type,
+    if (CFNumberGetValue(max_frame_delay_count.get(), kCFNumberSInt32Type,
                          &frame_delay) &&
         frame_delay != kVTUnlimitedFrameDelayCount) {
       max_frame_delay_property = frame_delay;
@@ -360,10 +358,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
   client_ = client;
   input_visible_size_ = config.input_visible_size;
-  if (config.initial_framerate.has_value())
-    frame_rate_ = config.initial_framerate.value();
-  else
-    frame_rate_ = kDefaultFrameRateNumerator / kDefaultFrameRateDenominator;
+  frame_rate_ = config.framerate;
   bitrate_ = config.bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
@@ -387,7 +382,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  auto encoder_info = GetVideoEncoderInfo(compression_session_, profile_);
+  auto encoder_info = GetVideoEncoderInfo(compression_session_.get(), profile_);
 
   // Report whether hardware encode is being used.
   if (!encoder_info.is_hardware_accelerated) {
@@ -423,11 +418,11 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     //   * If we're uploading to a new pixel buffer and the provided frame color
     //     space is valid that'll be set on the pixel buffer.
     //   * If the frame color space is not valid, BT709 will be assumed.
-    auto frame_cs = GetImageBufferColorSpace(pixel_buffer);
+    auto frame_cs = GetImageBufferColorSpace(pixel_buffer.get());
     if (encoder_color_space_ && frame_cs != encoder_color_space_) {
       if (pending_encodes_) {
-        auto status = VTCompressionSessionCompleteFrames(compression_session_,
-                                                         kCMTimeInvalid);
+        auto status = VTCompressionSessionCompleteFrames(
+            compression_session_.get(), kCMTimeInvalid);
         if (status != noErr) {
           NotifyErrorStatus(
               {EncoderStatus::Codes::kEncoderFailedFlush,
@@ -472,8 +467,8 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   // We can pass the ownership of |request| to the encode callback if
   // successful. Otherwise let it fall out of scope.
   OSStatus status = VTCompressionSessionEncodeFrame(
-      compression_session_, pixel_buffer, timestamp_cm, duration_cm,
-      frame_props, reinterpret_cast<void*>(request.get()), nullptr);
+      compression_session_.get(), pixel_buffer.get(), timestamp_cm, duration_cm,
+      frame_props.get(), reinterpret_cast<void*>(request.get()), nullptr);
   if (status != noErr) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "VTCompressionSessionEncodeFrame failed: " +
@@ -520,10 +515,22 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
-  DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
-           << ": framerate=" << framerate;
+    uint32_t framerate,
+    const std::optional<gfx::Size>& size) {
+  std::ostringstream parameters_description;
+  parameters_description << ": bitrate=" << bitrate.ToString()
+                         << ": framerate=" << framerate;
+  if (size.has_value()) {
+    parameters_description << ": frame size=" << size->width() << "x"
+                           << size->height();
+  }
+  DVLOG(3) << __func__ << parameters_description.str();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (size.has_value()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Update output frame size is not supported"});
+    return;
+  }
 
   if (!compression_session_) {
     NotifyErrorStatus(
@@ -576,8 +583,8 @@ void VTVideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
   // Even though this will block until all frames are returned, the frames will
   // be posted to the current task runner, so we can't run the flush callback
   // at this time.
-  OSStatus status =
-      VTCompressionSessionCompleteFrames(compression_session_, kCMTimeInvalid);
+  OSStatus status = VTCompressionSessionCompleteFrames(
+      compression_session_.get(), kCMTimeInvalid);
 
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status)
@@ -723,7 +730,7 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession(VideoCodec codec) {
     return false;
   }
 
-  RequestEncodingParametersChange(bitrate_, frame_rate_);
+  RequestEncodingParametersChange(bitrate_, frame_rate_, std::nullopt);
   return true;
 }
 
@@ -773,7 +780,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
   // are guaranteed that the output callback will not execute again.
   OSStatus status = VTCompressionSessionCreate(
       kCFAllocatorDefault, input_size.width(), input_size.height(),
-      VideoCodecToCMVideoCodec(codec), encoder_spec,
+      VideoCodecToCMVideoCodec(codec), encoder_spec.get(),
       nullptr /* sourceImageBufferAttributes */,
       nullptr /* compressedDataAllocator */,
       &VTVideoEncodeAccelerator::CompressionCallback,
@@ -890,7 +897,7 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
 
 void VTVideoEncodeAccelerator::DestroyCompressionSession() {
   if (compression_session_) {
-    VTCompressionSessionInvalidate(compression_session_);
+    VTCompressionSessionInvalidate(compression_session_.get());
     compression_session_.reset();
   }
 }

@@ -14,13 +14,13 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/icu_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -129,7 +129,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/files/scoped_file.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
-#include "chromeos/lacros/lacros_test_helper.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "chromeos/startup/startup_switches.h"  // nogncheck
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 #endif
@@ -139,7 +139,13 @@
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/files/file_util.h"
+#include "base/test/test_reg_util_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace content {
+
 namespace {
 
 // Whether an instance of BrowserTestBase has already been created in this
@@ -167,7 +173,7 @@ void SignalHandler(int signal) {
     std::string message("BrowserTestBase received signal: ");
     message += strsignal(signal);
     message += ". Backtrace:\n";
-    logging::RawLog(logging::LOG_ERROR, message.c_str());
+    logging::RawLog(logging::LOGGING_ERROR, message.c_str());
     auto stack_trace = base::debug::StackTrace();
     stack_trace.OutputToStream(&std::cerr);
 #if BUILDFLAG(IS_ANDROID)
@@ -270,12 +276,24 @@ BrowserTestBase::BrowserTestBase() {
   handle_sigterm_ = true;
 #endif
 
-  // This is called through base::TestSuite initially. It'll also be called
-  // inside BrowserMain, so tell the code to ignore the check that it's being
-  // called more than once
-  base::i18n::AllowMultipleInitializeCallsForTesting();
+#if BUILDFLAG(IS_WIN)
+  // Disallow overriding HKLM during browser test startup. This is because it
+  // will interfere with process launches, which rely on there being a valid
+  // HKLM. This functionality is restored just before the test fixture itself
+  // starts in ProxyRunTestOnMainThreadLoop, after browser startup has been
+  // completed.
+  registry_util::RegistryOverrideManager::
+      SetAllowHKLMRegistryOverrideForIntegrationTests(/*allow=*/false);
+#endif
 
   embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>();
+
+#if BUILDFLAG(IS_WIN)
+  // Even if running as admin, browser tests should not write temp files to
+  // secure temp, otherwise any left-over files cannot be cleaned up by the test
+  // runner.
+  base::SetDisableSecureSystemTempForTesting(/*disabled=*/true);
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(USE_AURA)
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
@@ -324,6 +342,9 @@ void BrowserTestBase::SetUp() {
   command_line->AppendSwitchASCII(
       switches::kIPCConnectionTimeout,
       base::NumberToString(TestTimeouts::action_max_timeout().InSeconds()));
+
+  // Useful when debugging test failures.
+  command_line->AppendSwitch(switches::kLogMissingUnloadACK);
 
   command_line->AppendSwitch(switches::kDomAutomationController);
 
@@ -396,10 +417,12 @@ void BrowserTestBase::SetUp() {
   if (command_line->HasSwitch("enable-gpu"))
     use_software_gl = false;
 
-#if BUILDFLAG(IS_MAC)
-  // On Mac we always use hardware GL.
+#if BUILDFLAG(IS_APPLE)
+  // On Apple we always use hardware GL.
   use_software_gl = false;
+#endif
 
+#if BUILDFLAG(IS_MAC)
   // Expand the network service sandbox to allow reading the test TLS
   // certificates.
   SetNetworkTestCertsDirectoryForTesting(net::GetTestCertsDirectory());
@@ -432,16 +455,14 @@ void BrowserTestBase::SetUp() {
   // For more details, please see:
   // //chrome/browser/ash/crosapi/test_mojo_connection_manager.h.
   {
-    // TODO(crbug.com/1127581): Switch to use |kLacrosMojoSocketForTesting| in
-    // //ash/constants/ash_switches.h.
-    // Please refer to the CL comments for why it can't be done now:
-    // http://crrev.com/c/2402580/2/content/public/test/browser_test_base.cc
-    std::string socket_path =
-        command_line->GetSwitchValueASCII("lacros-mojo-socket-for-testing");
-    if (socket_path.empty()) {
-      disable_crosapi_ =
-          std::make_unique<chromeos::ScopedDisableCrosapiForTesting>();
-    } else {
+    if (!chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
+      // TODO(crbug.com/1127581): Switch to use |kLacrosMojoSocketForTesting| in
+      // //ash/constants/ash_switches.h.
+      // Please refer to the CL comments for why it can't be done now:
+      // http://crrev.com/c/2402580/2/content/public/test/browser_test_base.cc
+      CHECK(command_line->HasSwitch("lacros-mojo-socket-for-testing"));
+      std::string socket_path =
+          command_line->GetSwitchValueASCII("lacros-mojo-socket-for-testing");
       auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
       base::ScopedFD socket_fd = channel.TakePlatformHandle().TakeFD();
 
@@ -595,16 +616,13 @@ void BrowserTestBase::SetUp() {
   // again.
   startup_metric_utils::GetBrowser().ResetSessionForTesting();
 
-  base::i18n::AllowMultipleInitializeCallsForTesting();
-  base::i18n::InitializeICU();
-
   // The ContentMainDelegate and ContentClient should have been set by
   // JNI_OnLoad for the test target.
   ContentMainDelegate* delegate = content_main_params.delegate;
   ASSERT_TRUE(delegate);
   ASSERT_TRUE(GetContentClientForTesting());
 
-  absl::optional<int> startup_error = delegate->BasicStartupComplete();
+  std::optional<int> startup_error = delegate->BasicStartupComplete();
   ASSERT_FALSE(startup_error.has_value());
 
   // We can only setup startup tracing after mojo is initialized above.
@@ -633,7 +651,7 @@ void BrowserTestBase::SetUp() {
     const bool has_thread_pool =
         GetContentClientForTesting()->browser()->CreateThreadPool("Browser");
 
-    absl::optional<int> pre_browser_main_exit_code = delegate->PreBrowserMain();
+    std::optional<int> pre_browser_main_exit_code = delegate->PreBrowserMain();
     ASSERT_FALSE(pre_browser_main_exit_code.has_value());
 
     BrowserTaskExecutor::Create();
@@ -644,7 +662,7 @@ void BrowserTestBase::SetUp() {
           variations::VariationsIdsProvider::Mode::kUseSignedInState);
     }
 
-    absl::optional<int> post_early_initialization_exit_code =
+    std::optional<int> post_early_initialization_exit_code =
         delegate->PostEarlyInitialization(invoked_in_browser);
     ASSERT_FALSE(post_early_initialization_exit_code.has_value());
 
@@ -826,7 +844,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   // set a ScopedRunLoopTimeout from their fixture's constructor (which
   // happens as part of setting up the test factory in gtest while
   // ProxyRunTestOnMainThreadLoop() happens later as part of SetUp()).
-  absl::optional<base::test::ScopedRunLoopTimeout> scoped_run_timeout;
+  std::optional<base::test::ScopedRunLoopTimeout> scoped_run_timeout;
   if (!base::test::ScopedRunLoopTimeout::ExistsForCurrentThread()) {
     // TODO(https://crbug.com/918724): determine whether the timeout can be
     // reduced from action_max_timeout() to action_timeout().
@@ -872,7 +890,6 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
       base::RunLoop flush_startup_tasks;
       flush_startup_tasks.RunUntilIdle();
       // Make sure there isn't an odd caller which reached |flush_startup_tasks|
-      // statically via base::RunLoop::QuitCurrent*Deprecated().
       DCHECK(!flush_startup_tasks.AnyQuitCalled());
     }
 
@@ -890,11 +907,23 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     }
     initial_web_contents_.reset();
 
-    OnRestartNetworkServiceForTesting(
-        base::BindRepeating(&BrowserTestBase::ForceInitializeNetworkProcess,
-                            base::Unretained(this)));
+    base::CallbackListSubscription on_network_service_restarted_subscription =
+        RegisterNetworkServiceProcessGoneHandler(base::BindRepeating(
+            [](BrowserTestBase* browser_test_base, bool crashed) {
+              if (!crashed) {
+                browser_test_base->ForceInitializeNetworkProcess();
+              }
+            },
+            base::Unretained(this)));
 
     SetUpOnMainThread();
+
+#if BUILDFLAG(IS_WIN)
+    // Now that most of process startup is complete, including launching the
+    // network service process, HKLM override can be safely permitted again.
+    registry_util::RegistryOverrideManager::
+        SetAllowHKLMRegistryOverrideForIntegrationTests(/*allow=*/true);
+#endif  // BUILDFLAG(IS_WIN)
 
     if (!IsSkipped()) {
       initial_navigation_observer.reset();
@@ -916,7 +945,12 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     TearDownOnMainThread();
     AssertThatNetworkServiceDidNotCrash();
 
-    OnRestartNetworkServiceForTesting(base::NullCallback());
+    // The subscription should be reset after asserting that the network service
+    // did not crash, otherwise a network service restart task might be
+    // processed in AssertThatNetworkServiceDidNotCrash() and the network
+    // service will not be correctly initialized, which causes
+    // AssertThatNetworkServiceDidNotCrash() to incorrectly report crashes.
+    on_network_service_restarted_subscription = {};
   }
 
   PostRunTestOnMainThread();
@@ -939,14 +973,28 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 }
 
 void BrowserTestBase::SetAllowNetworkAccessToHostResolutions() {
-  const char kManualTestPrefix[] = "MANUAL_";
   // Must be called before Setup() to take effect. This mode can only be
   // used in manual tests to prevent flakiness in tryjobs due to the
   // dependency on network access.
   CHECK(!set_up_called_);
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // External network access is only allowed for ChromeOS integration tests
+  // running on real devices or VMs.
+  CHECK(base::SysInfo::IsRunningOnChromeOS())
+      << "External network access is only allowed for on device ChromeOS "
+         "integration tests";
+#else
+  const char kManualTestPrefix[] = "MANUAL_";
   CHECK(base::StartsWith(
       testing::UnitTest::GetInstance()->current_test_info()->name(),
       kManualTestPrefix, base::CompareCase::SENSITIVE));
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
+
+  LOG(WARNING) << "External network access is allowed. "
+               << "This could lead to DoS on web sites and is normally only "
+               << "allowed for manual tests and ChromeOS integration tests on "
+               << "devices.";
   allow_network_access_to_host_resolutions_ = true;
 }
 
@@ -1160,6 +1208,7 @@ void BrowserTestBase::InitializeNetworkProcess() {
 void BrowserTestBase::CreatedBrowserMainPartsImpl(
     BrowserMainParts* browser_main_parts) {
   browser_main_parts_ = browser_main_parts;
+  GetCurrentTestLauncherDelegate()->CreatedBrowserMainParts(browser_main_parts);
   CreatedBrowserMainParts(browser_main_parts);
 }
 

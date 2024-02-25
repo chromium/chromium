@@ -56,6 +56,9 @@ constexpr bool kIsRoot = false;
 constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 constexpr FrameSinkId kAnotherArbitraryFrameSinkId(2, 2);
 
+constexpr gfx::Size kDefaultSize(20, 20);
+constexpr gfx::Rect kDefaultOutputRect(kDefaultSize);
+
 const base::UnguessableToken kArbitraryToken =
     base::UnguessableToken::CreateForTesting(1, 2);
 const base::UnguessableToken kAnotherArbitraryToken =
@@ -83,7 +86,7 @@ bool BeginFrameArgsAreEquivalent(const BeginFrameArgs& first,
 }
 
 std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
-  return info.param ? "BeginFrameAcks" : "CompositoFrameAcks";
+  return info.param ? "BeginFrameAcks" : "CompositorFrameAcks";
 }
 
 }  // namespace
@@ -105,6 +108,11 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override {}
+#if BUILDFLAG(IS_ANDROID)
+  void VerifyThreadIdsDoNotBelongToHost(
+      const std::vector<int32_t>& thread_ids,
+      VerifyThreadIdsDoNotBelongToHostCallback callback) override {}
+#endif
 };
 
 class CompositorFrameSinkSupportTest : public testing::Test {
@@ -161,7 +169,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
       std::unique_ptr<CopyOutputRequest> request) {
     frame.render_pass_list.back()->copy_requests.push_back(std::move(request));
     const auto result = support_->MaybeSubmitCompositorFrame(
-        local_surface_id_, std::move(frame), absl::nullopt, 0,
+        local_surface_id_, std::move(frame), std::nullopt, 0,
         mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
     switch (result) {
       case SubmitResult::ACCEPTED:
@@ -319,9 +327,13 @@ class OnBeginFrameAcksCompositorFrameSinkSupportTest
 
   bool BeginFrameAcksEnabled() const { return GetParam(); }
 
-  int ack_pending_from_surface_count(
+  int num_pending_frames(const CompositorFrameSinkSupport* support) const {
+    return support->pending_frames_.size();
+  }
+
+  bool client_needs_begin_frame(
       const CompositorFrameSinkSupport* support) const {
-    return support->ack_pending_from_surface_count_;
+    return support->client_needs_begin_frame_;
   }
 
  private:
@@ -593,7 +605,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, ResourceLifetime) {
 
   // This test relied on CompositorFrameSinkSupport::ReturnResources to not send
   // as long as there has been no DidReceiveCompositorFrameAck. Such that
-  // `ack_pending_from_surface_count_` is always greater than 1.
+  // the number of pending frames is always greater than 1.
   //
   // With features::kOnBeginFrameAcks we now return the resources during
   // OnBeginFrame, however that is throttled while we await any ack.
@@ -740,7 +752,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, AddDuringEviction) {
     testing::Mock::VerifyAndClearExpectations(&mock_client);
   }
 
-  EXPECT_EQ(1, ack_pending_from_surface_count(support.get()));
+  EXPECT_EQ(1, num_pending_frames(support.get()));
 }
 
 // Verifies that only monotonically increasing LocalSurfaceIds are accepted.
@@ -760,37 +772,37 @@ TEST_F(CompositorFrameSinkSupportTest, MonotonicallyIncreasingLocalSurfaceIds) {
 
   // LocalSurfaceId1(6, 1)
   auto result = support->MaybeSubmitCompositorFrame(
-      local_surface_id1, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id1, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(6, 2): Child-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id2, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id2, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(7, 2): Parent-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id3, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id3, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   // LocalSurfaceId(5, 3): Submit rejected because not monotonically increasing.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id4, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id4, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::SURFACE_ID_DECREASED, result);
 
   // LocalSurfaceId(8, 1): Submit rejected because not monotonically increasing.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id5, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id5, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::SURFACE_ID_DECREASED, result);
 
   // LocalSurfaceId(9, 3): Parent AND child-initiated synchronization.
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id6, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id6, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
@@ -1129,7 +1141,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, FrameSizeMismatch) {
                    .AddRenderPass(gfx::Rect(5, 5), gfx::Rect())
                    .Build();
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), absl::nullopt, 0,
+      local_surface_id_, std::move(frame), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
   EXPECT_TRUE(GetSurfaceForId(id));
@@ -1145,7 +1157,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, FrameSizeMismatch) {
                       std::size(frame_resource_ids));
 
   result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), absl::nullopt, 0,
+      local_surface_id_, std::move(frame), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
 
   EXPECT_EQ(SubmitResult::SIZE_MISMATCH, result);
@@ -1170,7 +1182,7 @@ TEST_F(CompositorFrameSinkSupportTest, DeviceScaleFactorMismatch) {
                    .SetDeviceScaleFactor(0.5f)
                    .Build();
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), absl::nullopt, 0,
+      local_surface_id_, std::move(frame), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
   EXPECT_TRUE(GetSurfaceForId(id));
@@ -1182,7 +1194,7 @@ TEST_F(CompositorFrameSinkSupportTest, DeviceScaleFactorMismatch) {
               .SetDeviceScaleFactor(0.4f)
               .Build();
   result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, std::move(frame), absl::nullopt, 0,
+      local_surface_id_, std::move(frame), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::SIZE_MISMATCH, result);
 }
@@ -1254,9 +1266,24 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   received_args = GetLastUsedBeginFrameArgs(support_.get());
   EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
 
+  // The ACK from the last submitted frame arrives. If BeginFrameAcks is enabled
+  // this results in the client immediately receiving a MISSED begin-frame.
+  support_->SendCompositorFrameAck();
+  if (BeginFrameAcksEnabled()) {
+    received_args = GetLastUsedBeginFrameArgs(support_.get());
+    EXPECT_TRUE(BeginFrameArgsAreEquivalent(args, received_args));
+    EXPECT_EQ(received_args.type, BeginFrameArgs::MISSED);
+
+    // Issue a new BeginFrame. This time, the client should not receive it since
+    // it has stopped asking for begin-frames.
+    args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 3);
+    begin_frame_source_.TestOnBeginFrame(args);
+    received_args = GetLastUsedBeginFrameArgs(support_.get());
+    EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
+  }
+
   // The presentation-feedback from the last submitted frame arrives. This
   // results in the client immediately receiving a MISSED begin-frame.
-  support_->SendCompositorFrameAck();
   SendPresentationFeedback(support_.get(), token);
   received_args = GetLastUsedBeginFrameArgs(support_.get());
   EXPECT_TRUE(BeginFrameArgsAreEquivalent(args, received_args));
@@ -1265,10 +1292,40 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   // Issue another begin-frame. This time, the client should not receive it
   // anymore since it has stopped asking for begin-frames, and it has already
   // received the last presentation-feedback.
-  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 3);
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 3, 4);
   begin_frame_source_.TestOnBeginFrame(args);
   received_args = GetLastUsedBeginFrameArgs(support_.get());
   EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
+}
+
+// Validates that if the client wants AutoNeedsBeginFrame, an unsolicited frame
+// starts subsequent BeginFrames, as if SetNeedsBeginFrame(true) is called.
+TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
+       AutoNeedsBeginFrameOnUnsolicitedFrame) {
+  support_->SetAutoNeedsBeginFrame();
+
+  EXPECT_FALSE(client_needs_begin_frame(support_.get()));
+
+  BeginFrameArgs args =
+      CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 1);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  EXPECT_EQ(fake_support_client_.begin_frame_count(), 0);
+
+  CompositorFrame unsolicited_frame =
+      MakeDefaultCompositorFrame(BeginFrameArgs::kManualSourceId);
+  support_->SubmitCompositorFrame(local_surface_id_,
+                                  std::move(unsolicited_frame));
+
+  EXPECT_TRUE(client_needs_begin_frame(support_.get()));
+
+  // BeginFrame is not sent synchronously while processing unsolicited frame.
+  EXPECT_EQ(fake_support_client_.begin_frame_count(), 0);
+
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 2);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  EXPECT_EQ(fake_support_client_.begin_frame_count(), 1);
 }
 
 TEST_F(CompositorFrameSinkSupportTest, FrameIndexCarriedOverToNewSurface) {
@@ -1473,6 +1530,7 @@ TEST_F(CompositorFrameSinkSupportTest,
            CopyOutputRequest::ResultFormat::RGBA,
            CopyOutputRequest::ResultDestination::kSystemMemory,
            base::BindOnce(StubResultCallback))});
+  EXPECT_TRUE(surface_observer_.IsSurfaceDamaged(id1));
 
   // Send an exact CopyOutputRequest for Surface1. It can only be picked up by
   // Surface1.
@@ -1483,6 +1541,7 @@ TEST_F(CompositorFrameSinkSupportTest,
            CopyOutputRequest::ResultDestination::kSystemMemory,
            base::BindOnce(StubResultCallback)),
        /*capture_exact_id=*/true});
+  EXPECT_TRUE(surface_observer_.IsSurfaceDamaged(id2));
 
   // Surface2 picks up the non-exact CopyOutputRequest.
   GetSurfaceForId(id2)->TakeCopyOutputRequestsFromClient();
@@ -1533,7 +1592,7 @@ TEST_F(CompositorFrameSinkSupportTest, OnFrameTokenUpdate) {
 TEST_F(CompositorFrameSinkSupportTest,
        DisallowEmbedTokenReuseAcrossFrameSinks) {
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id_, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
@@ -1545,7 +1604,7 @@ TEST_F(CompositorFrameSinkSupportTest,
       false /* not root frame sink */);
   LocalSurfaceId local_surface_id(31232, local_surface_id_.embed_token());
   result = support->MaybeSubmitCompositorFrame(
-      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT, result);
 }
@@ -1561,13 +1620,13 @@ TEST_F(CompositorFrameSinkSupportTest, SubmitAfterReparenting) {
   CompositorFrame frame =
       CompositorFrameBuilder().AddDefaultRenderPass().Build();
   SubmitResult result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id1, std::move(frame), absl::nullopt, 0,
+      local_surface_id1, std::move(frame), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
   frame = CompositorFrameBuilder().AddDefaultRenderPass().Build();
   result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id2, std::move(frame), absl::nullopt, 0,
+      local_surface_id2, std::move(frame), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
 
   // Even though |local_surface_id2| has a smaller parent sequence number than
@@ -1774,12 +1833,31 @@ TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   SurfaceId id(kAnotherArbitraryFrameSinkId, local_surface_id_);
   support->SetBeginFrameSource(&begin_frame_source);
   support->SetNeedsBeginFrame(true);
+  support->SetLastKnownVsync(BeginFrameArgs::DefaultInterval());
+
+  // Check that non perfect cadence throttle does not apply
+  int non_perfect_cadence_fps = BeginFrameArgs::DefaultInterval().ToHz() / 2.5;
+  base::TimeDelta non_perfect_throttled_interval =
+      base::Seconds(1) / non_perfect_cadence_fps;
+  bool did_throttle = support->ThrottleBeginFrame(
+      non_perfect_throttled_interval, /*perfect_cadence*/ true);
+  EXPECT_FALSE(did_throttle);
 
   // We only throttle multiples of the refresh rate.
   constexpr int fps = BeginFrameArgs::DefaultInterval().ToHz() / 2;
-
   constexpr base::TimeDelta throttled_interval = base::Seconds(1) / fps;
-  support->ThrottleBeginFrame(throttled_interval);
+
+  // When no last known vsync exists, perfect cadence cannot be computed, just
+  // apply the throttle.
+  support->SetLastKnownVsync(base::TimeDelta());
+  did_throttle =
+      support->ThrottleBeginFrame(throttled_interval, /*perfect_cadence*/ true);
+  EXPECT_TRUE(did_throttle);
+
+  support->SetLastKnownVsync(BeginFrameArgs::DefaultInterval());
+  did_throttle =
+      support->ThrottleBeginFrame(throttled_interval, /*perfect_cadence*/ true);
+  EXPECT_TRUE(did_throttle);
 
   constexpr base::TimeDelta interval = BeginFrameArgs::DefaultInterval();
   const int num_expected_skipped_frames =
@@ -1979,7 +2057,7 @@ TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
 TEST_F(CompositorFrameSinkSupportTest,
        ReleaseTransitionDirectiveClearsFrameSinkManagerEntry) {
   auto result = support_->MaybeSubmitCompositorFrame(
-      local_surface_id_, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      local_surface_id_, MakeDefaultCompositorFrame(), std::nullopt, 0,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
@@ -2007,67 +2085,134 @@ TEST_F(CompositorFrameSinkSupportTest,
   EXPECT_FALSE(SupportHasSurfaceAnimationManager(support_.get()));
 }
 
-TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
-  // No surface with active frame.
-  EXPECT_EQ((gfx::Rect{}),
-            support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget()));
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_NoSurfaceWithActiveFrame) {
+  const auto props =
+      support_->GetRequestRegionProperties(VideoCaptureSubTarget());
+  EXPECT_EQ(std::nullopt, props);
+}
 
-  // Surface with active frame but no capture identifier.
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_SurfaceWithNoCaptureIdentifier) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3),
                                   ResourceId(4), ResourceId(5)};
   SubmitCompositorFrameWithResources(first_frame_ids,
                                      std::size(first_frame_ids));
-  EXPECT_EQ((gfx::Rect{0, 0, 20, 20}),
-            (support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget())));
+  const auto props_with_frame =
+      support_->GetRequestRegionProperties(VideoCaptureSubTarget());
+  EXPECT_EQ((kDefaultOutputRect), props_with_frame->render_pass_subrect);
+  EXPECT_EQ(kDefaultSize, props_with_frame->root_render_pass_size);
+  EXPECT_TRUE(props_with_frame->transform_to_root.IsIdentity());
+}
 
-  // Render pass with subtree size.
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_RenderPassWithSubtreeSize) {
+  constexpr SubtreeCaptureId kSubtreeId(base::Token(0, 22u));
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
-  constexpr SubtreeCaptureId kSubtreeId1(base::Token(0, 22u));
 
   auto frame = CompositorFrameBuilder()
                    .AddDefaultRenderPass()
                    .AddDefaultRenderPass()
                    .SetReferencedSurfaces({SurfaceRange(surface_id)})
                    .Build();
-  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId1;
-  frame.render_pass_list.front()->subtree_size = gfx::Size{13, 37};
+  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId;
+  frame.render_pass_list.front()->subtree_size = gfx::Size{13, 17};
   support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
   // The subtree size should be cropped by the size of the surface (20x20).
-  EXPECT_EQ((gfx::Rect{0, 0, 13, 37}),
-            support_->GetCopyOutputRequestRegion(kSubtreeId1));
+  const auto props_with_subtree =
+      support_->GetRequestRegionProperties(kSubtreeId);
+  EXPECT_EQ((gfx::Rect{0, 0, 13, 17}), props_with_subtree->render_pass_subrect);
+  EXPECT_EQ(kDefaultSize, props_with_subtree->root_render_pass_size);
+  EXPECT_TRUE(props_with_subtree->transform_to_root.IsIdentity());
+}
 
-  // Render pass but no subtree size, just a frame size in pixels.
-  constexpr SubtreeCaptureId kSubtreeId2(base::Token(0, 7u));
-  auto frame_with_output_size =
-      CompositorFrameBuilder()
-          .AddDefaultRenderPass()
-          .AddDefaultRenderPass()
-          .SetReferencedSurfaces({SurfaceRange(surface_id)})
-          .Build();
-  frame_with_output_size.render_pass_list.front()->subtree_capture_id =
-      kSubtreeId2;
-  frame_with_output_size.render_pass_list.front()->output_rect =
-      gfx::Rect{0, 0, 15, 15};
-  support_->SubmitCompositorFrame(local_surface_id_,
-                                  std::move(frame_with_output_size));
-  EXPECT_EQ((gfx::Rect{0, 0, 15, 15}),
-            support_->GetCopyOutputRequestRegion(kSubtreeId2));
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_RenderPassWithNoSubtreeSize) {
+  constexpr SubtreeCaptureId kSubtreeId(base::Token(0, 7u));
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
 
-  // Render pass with capture bounds.
+  auto frame = CompositorFrameBuilder()
+                   .AddDefaultRenderPass()
+                   .AddDefaultRenderPass()
+                   .SetReferencedSurfaces({SurfaceRange(surface_id)})
+                   .Build();
+  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId;
+  frame.render_pass_list.front()->output_rect = gfx::Rect{0, 0, 15, 14};
+  frame.metadata.capture_bounds =
+      RegionCaptureBounds{{{kSubtreeId.subtree_id(), gfx::Rect{5, 6, 15, 14}}}};
+  const auto transform = gfx::Transform::MakeTranslation(5.0f, 6.0f);
+  frame.render_pass_list.front()->transform_to_root_target = transform;
+
+  // Mark the surface as damaged to update the capture bounds.
+  support_->OnSurfaceAggregatedDamage(
+      /*surface*/ nullptr, local_surface_id_, frame, kDefaultOutputRect,
+      base::TimeTicks::Now());
+
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+  const auto region_properties =
+      support_->GetRequestRegionProperties(kSubtreeId);
+
+  ASSERT_TRUE(region_properties);
+  EXPECT_EQ((gfx::Rect{0, 0, 15, 14}), region_properties->render_pass_subrect);
+  EXPECT_EQ(kDefaultSize, region_properties->root_render_pass_size);
+  EXPECT_EQ(transform, region_properties->transform_to_root);
+}
+
+TEST_F(
+    CompositorFrameSinkSupportTest,
+    GetRequestRegionProperties_RenderPassWithNoSubtreeSizeShouldClipToViewport) {
+  constexpr SubtreeCaptureId kSubtreeId(base::Token(0, 7u));
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
+
+  auto frame = CompositorFrameBuilder()
+                   .AddDefaultRenderPass()
+                   .AddDefaultRenderPass()
+                   .SetReferencedSurfaces({SurfaceRange(surface_id)})
+                   .Build();
+  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId;
+  frame.render_pass_list.front()->output_rect = gfx::Rect{0, 0, 15, 14};
+  // Same as the output rect to avoid cropping.
+  frame.metadata.capture_bounds = RegionCaptureBounds{
+      {{kSubtreeId.subtree_id(), gfx::Rect{12, 10, 15, 14}}}};
+  const auto transform = gfx::Transform::MakeTranslation(12.0f, 10.0f);
+  frame.render_pass_list.front()->transform_to_root_target = transform;
+
+  // Mark the surface as damaged to update the capture bounds.
+  support_->OnSurfaceAggregatedDamage(
+      /*surface*/ nullptr, local_surface_id_, frame, kDefaultOutputRect,
+      base::TimeTicks::Now());
+
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+  const auto region_properties =
+      support_->GetRequestRegionProperties(kSubtreeId);
+  ASSERT_TRUE(region_properties);
+
+  // The render pass is partially offscreen and needs to be intersected with
+  // the viewport.
+  EXPECT_EQ((gfx::Rect{0, 0, 8, 10}), region_properties->render_pass_subrect);
+  EXPECT_EQ(kDefaultSize, region_properties->root_render_pass_size);
+  EXPECT_EQ(transform, region_properties->transform_to_root);
+}
+
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_RenderPassWithCaptureBounds) {
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
   const auto crop_id = RegionCaptureCropId::CreateRandom();
+
   auto frame_with_crop_id =
       CompositorFrameBuilder()
           .AddDefaultRenderPass()
           .AddDefaultRenderPass()
           .SetReferencedSurfaces({SurfaceRange(surface_id)})
           .Build();
-  frame_with_crop_id.render_pass_list.front()->output_rect =
-      gfx::Rect{0, 0, 20, 20};
+  frame_with_crop_id.render_pass_list.front()->output_rect = kDefaultOutputRect;
   support_->SubmitCompositorFrame(local_surface_id_,
                                   std::move(frame_with_crop_id));
 
   // No capture bounds are set, so we shouldn't capture anything.
-  EXPECT_EQ((gfx::Rect{}), support_->GetCopyOutputRequestRegion(crop_id));
+  const auto props_without_capture_bounds =
+      support_->GetRequestRegionProperties(crop_id);
+  EXPECT_FALSE(props_without_capture_bounds);
 
   // After setting capture bounds, we should be able to crop to it.
   auto frame_with_crop_id_and_bounds =
@@ -2076,18 +2221,21 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
           .AddDefaultRenderPass()
           .SetReferencedSurfaces({SurfaceRange(surface_id)})
           .Build();
-  frame_with_crop_id_and_bounds.render_pass_list.front()->output_rect =
-      gfx::Rect{0, 0, 20, 20};
+  frame_with_crop_id_and_bounds.render_pass_list.back()->output_rect =
+      kDefaultOutputRect;
   frame_with_crop_id_and_bounds.metadata.capture_bounds =
       RegionCaptureBounds{{{crop_id, gfx::Rect{0, 0, 13, 13}}}};
 
-  // mark the surface as damaged to update the capture bounds.
+  // Mark the surface as damaged to update the capture bounds.
   support_->OnSurfaceAggregatedDamage(
       /*surface*/ nullptr, local_surface_id_, frame_with_crop_id_and_bounds,
-      gfx::Rect{0, 0, 20, 20}, base::TimeTicks::Now());
+      kDefaultOutputRect, base::TimeTicks::Now());
 
-  EXPECT_EQ((gfx::Rect{0, 0, 13, 13}),
-            support_->GetCopyOutputRequestRegion(crop_id));
+  const auto region_properties = support_->GetRequestRegionProperties(crop_id);
+  ASSERT_TRUE(region_properties);
+  EXPECT_EQ((gfx::Rect{0, 0, 13, 13}), region_properties->render_pass_subrect);
+  EXPECT_EQ(kDefaultSize, region_properties->root_render_pass_size);
+  EXPECT_TRUE(region_properties->transform_to_root.IsIdentity());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

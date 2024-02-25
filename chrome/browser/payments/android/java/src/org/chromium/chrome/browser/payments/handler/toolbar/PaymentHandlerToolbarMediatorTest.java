@@ -23,18 +23,13 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A test for PaymentHandlerToolbarMediator.
- */
+/** A test for PaymentHandlerToolbarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaymentHandlerToolbarMediatorTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    private WebContents mMockWebContents;
-    @Mock
-    private PaymentHandlerToolbarMediatorDelegate mMockDelegate;
+    @Mock private WebContents mMockWebContents;
+    @Mock private PaymentHandlerToolbarMediatorDelegate mMockDelegate;
 
     private PropertyModel mModel;
     private PaymentHandlerToolbarMediator mMediator;
@@ -59,7 +54,8 @@ public class PaymentHandlerToolbarMediatorTest {
         mMediator.didChangeVisibleSecurityState();
 
         Assert.assertEquals(123, mModel.get(PaymentHandlerToolbarProperties.SECURITY_ICON));
-        Assert.assertEquals("this is content description.",
+        Assert.assertEquals(
+                "this is content description.",
                 mModel.get(PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION));
     }
 
@@ -77,7 +73,8 @@ public class PaymentHandlerToolbarMediatorTest {
         mMediator.didStartNavigationInPrimaryMainFrame(navigation);
 
         Assert.assertEquals(123, mModel.get(PaymentHandlerToolbarProperties.SECURITY_ICON));
-        Assert.assertEquals("this is content description.",
+        Assert.assertEquals(
+                "this is content description.",
                 mModel.get(PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION));
     }
 }

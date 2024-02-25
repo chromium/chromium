@@ -8,8 +8,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 }  // namespace
@@ -121,9 +120,8 @@ void RequestManager::SetTimeoutForTesting(const base::TimeDelta& timeout) {
 std::vector<int> RequestManager::GetActiveRequestIds() const {
   std::vector<int> result;
 
-  for (auto request_it = requests_.begin(); request_it != requests_.end();
-       ++request_it) {
-    result.push_back(request_it->first);
+  for (const auto& request : requests_) {
+    result.push_back(request.first);
   }
 
   return result;
@@ -139,9 +137,9 @@ void RequestManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-RequestManager::Request::Request() {}
+RequestManager::Request::Request() = default;
 
-RequestManager::Request::~Request() {}
+RequestManager::Request::~Request() = default;
 
 void RequestManager::OnRequestTimeout(int request_id) {
   for (auto& observer : observers_)
@@ -236,5 +234,4 @@ void RequestManager::DestroyRequest(int request_id,
                                   TRACE_ID_LOCAL(request_id));
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

@@ -144,7 +144,7 @@ ScriptPromise Permissions::revoke(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Permissions::requestAll(
+ScriptPromiseTyped<IDLSequence<PermissionStatus>> Permissions::requestAll(
     ScriptState* script_state,
     const HeapVector<ScriptValue>& raw_permissions,
     ExceptionState& exception_state) {
@@ -160,7 +160,7 @@ ScriptPromise Permissions::requestAll(
     auto descriptor = ParsePermissionDescriptor(script_state, raw_permission,
                                                 exception_state);
     if (exception_state.HadException())
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLSequence<PermissionStatus>>();
 
     // Only append permissions types that are not already present in the vector.
     wtf_size_t internal_index = kNotFound;
@@ -177,9 +177,10 @@ ScriptPromise Permissions::requestAll(
     caller_index_to_internal_index[i] = internal_index;
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<PermissionStatus>>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   Vector<PermissionDescriptorPtr> internal_permissions_copy;
   internal_permissions_copy.reserve(internal_permissions.size());
@@ -316,7 +317,7 @@ void Permissions::VerifyPermissionsAndReturnStatus(
       result.push_back(PermissionStatus::Take(listener, resolver));
     }
   }
-  resolver->Resolve(result);
+  resolver->DowncastTo<IDLSequence<PermissionStatus>>()->Resolve(result);
 }
 
 void Permissions::PermissionVerificationComplete(
@@ -358,7 +359,7 @@ PermissionStatusListener* Permissions::GetOrCreatePermissionStatusListener(
   return listeners_.at(*type);
 }
 
-absl::optional<PermissionType> Permissions::GetPermissionType(
+std::optional<PermissionType> Permissions::GetPermissionType(
     const mojom::blink::PermissionDescriptor& descriptor) {
   return PermissionDescriptorInfoToPermissionType(
       descriptor.name,

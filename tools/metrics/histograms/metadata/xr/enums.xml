@@ -1,0 +1,58 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="VRViewerType">
+  <int value="0" label="GVR_UNKNOWN"/>
+  <int value="1" label="GVR_CARDBOARD"/>
+  <int value="2" label="GVR_DAYDREAM"/>
+  <int value="10" label="ORIENTATION_SENSOR_DEVICE"/>
+  <int value="11" label="FAKE_DEVICE"/>
+  <int value="20" label="OPENVR_UNKNOWN"/>
+  <int value="21" label="OPENVR_VIVE"/>
+  <int value="22" label="OPENVR_RIFT_CV1"/>
+  <int value="40" label="OCULUS_UNKNOWN"/>
+  <int value="60" label="WINDOWS_MIXED_REALITY_UNKNOWN"/>
+  <int value="70" label="OPENXR_UNKNOWN"/>
+</enum>
+
+<enum name="XRDeviceId">
+  <int value="0" label="WEB_TEST_DEVICE_ID"/>
+  <int value="1" label="FAKE_DEVICE_ID"/>
+  <int value="2" label="ORIENTATION_DEVICE_ID"/>
+  <int value="3" label="GVR_DEVICE_ID"/>
+  <int value="4" label="OPENVR_DEVICE_ID"/>
+  <int value="5" label="OCULUS_DEVICE_ID"/>
+  <int value="6" label="WINDOWS_MIXED_REALITY_ID"/>
+  <int value="7" label="ARCORE_DEVICE_ID"/>
+  <int value="8" label="OPENXR_DEVICE_ID"/>
+  <int value="9" label="CARDBOARD_DEVICE_ID"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

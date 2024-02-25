@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1324575488877808473">Ouvrez Chrome pour voir vos sites les plus visités ici.</translation>
 <translation id="2513892053093488070">Recherche vocale</translation>
 <translation id="2535710892645968259">Commencez à jouer au jeu du dinosaure de Chrome à partir de votre écran de verrouillage.</translation>
 <translation id="2542770169955243077">Jeu de dinosaures de Chrome</translation>
-<translation id="2803429804752388720">Rechercher des mots de passe</translation>
 <translation id="2922313168575194078">Recherchez en toute sécurité vos mots de passe enregistrés sur le gestionnaire de mots de passe Google</translation>
 <translation id="302608144225178783">Commencez à jouer au jeu de dinosaures de Chrome directement à l'écran d'accueil.</translation>
 <translation id="3296938369177810197">Recherche vocale</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Lancez une nouvelle recherche ou ouvrez vos sites les plus visités depuis la page d'accueil de votre iPad.</translation>
 <translation id="6721566127904256183">Vos sites les plus visités seront affichés ici.</translation>
 <translation id="6855322554930231468">Recherche</translation>
+<translation id="6973491011026415905">Recherche sur le gest. de mots de passe</translation>
 <translation id="7010831364920321713">Rechercher en mode de navigation privée</translation>
 <translation id="7048549665319929185">Faites une recherche ou entrez une URL</translation>
 <translation id="7317302007099170473">Numériser le code QR</translation>

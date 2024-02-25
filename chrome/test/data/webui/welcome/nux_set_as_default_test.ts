@@ -4,10 +4,10 @@
 
 import 'chrome://welcome/set_as_default/nux_set_as_default.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {NuxSetAsDefaultElement} from 'chrome://welcome/set_as_default/nux_set_as_default.js';
+import type {NuxSetAsDefaultElement} from 'chrome://welcome/set_as_default/nux_set_as_default.js';
 import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
 
 import {TestNuxSetAsDefaultProxy} from './test_nux_set_as_default_proxy.js';

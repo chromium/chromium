@@ -134,7 +134,8 @@ std::map<OsType, int> SyncDeviceInfoObserver::CountActiveDevicesByOsType(
   TRACE_EVENT0("ui", "SyncDeviceInfoObserver::CountActiveDevicesByOsType");
   std::map<OsType, int> count_by_os_type;
   const base::Time now = base::Time::Now();
-  for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+  for (const syncer::DeviceInfo* device_info :
+       device_info_tracker_->GetAllDeviceInfo()) {
     if (!IsDeviceActive(device_info->last_updated_timestamp(), now,
                         active_threshold)) {
       continue;
@@ -148,13 +149,13 @@ std::map<OsType, int> SyncDeviceInfoObserver::CountActiveDevicesByOsType(
 
 void SyncDeviceInfoObserver::Process(
     const proto::CustomInput& input,
-    const FeatureProcessorState& feature_processor_state,
+    FeatureProcessorState& feature_processor_state,
     ProcessedCallback callback) {
   int wait_for_device_info_in_seconds = 0;
 
   auto model_input_it =
       input.additional_args().find("wait_for_device_info_in_seconds");
-  absl::optional<int> wait_from_input;
+  std::optional<int> wait_from_input;
   if (feature_processor_state.input_context()) {
     auto api_input_it =
         feature_processor_state.input_context()->metadata_args.find(
@@ -226,7 +227,8 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
       device_count_by_type;
   int total_count = 0;
   const base::Time now = base::Time::Now();
-  for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+  for (const syncer::DeviceInfo* device_info :
+       device_info_tracker_->GetAllDeviceInfo()) {
     if (device_info_tracker_->IsRecentLocalCacheGuid(device_info->guid())) {
       continue;
     }

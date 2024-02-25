@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.password_manager;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ObserverList;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.url.GURL;
 
 /**
@@ -26,9 +27,7 @@ public class PasswordStoreBridge {
     private final ObserverList<PasswordStoreObserver> mObserverList;
     private int mPasswordsCount = -1;
 
-    /**
-     * Observer listening to messages relevant to password store changes.
-     */
+    /** Observer listening to messages relevant to password store changes. */
     public interface PasswordStoreObserver {
         /**
          * Called when the set of password credentials is changed.
@@ -45,9 +44,7 @@ public class PasswordStoreBridge {
         void onEdit(PasswordStoreCredential credential);
     }
 
-    /**
-     * Initializes its native counterpart.
-     */
+    /** Initializes its native counterpart. */
     public PasswordStoreBridge() {
         mNativePasswordStoreBridge = PasswordStoreBridgeJni.get().init(this);
         mObserverList = new ObserverList<>();
@@ -69,18 +66,41 @@ public class PasswordStoreBridge {
     }
 
     @CalledByNative
-    private static void insertCredential(PasswordStoreCredential[] credentials, int index, GURL url,
-            String username, String password) {
+    private static void insertCredential(
+            PasswordStoreCredential[] credentials,
+            int index,
+            GURL url,
+            String username,
+            String password) {
         credentials[index] = new PasswordStoreCredential(url, username, password);
     }
 
-    /**
-     * Inserts new credential into the password store.
-     */
+    /** Inserts new credential into the password store. */
     @VisibleForTesting
     public void insertPasswordCredential(PasswordStoreCredential credential) {
-        PasswordStoreBridgeJni.get().insertPasswordCredentialForTesting(
-                mNativePasswordStoreBridge, credential);
+        PasswordStoreBridgeJni.get()
+                .insertPasswordCredentialInProfileStoreForTesting(
+                        mNativePasswordStoreBridge, credential);
+    }
+
+    /** Inserts new credential into the profile password store. */
+    @VisibleForTesting
+    public void insertPasswordCredentialInProfileStore(PasswordStoreCredential credential) {
+        PasswordStoreBridgeJni.get()
+                .insertPasswordCredentialInProfileStoreForTesting(
+                        mNativePasswordStoreBridge, credential);
+    }
+
+    /** Inserts new credential into the account password store. */
+    @VisibleForTesting
+    public void insertPasswordCredentialInAccountStore(PasswordStoreCredential credential) {
+        PasswordStoreBridgeJni.get()
+                .insertPasswordCredentialInAccountStoreForTesting(
+                        mNativePasswordStoreBridge, credential);
+    }
+
+    public void blocklistForTesting(String url) {
+        PasswordStoreBridgeJni.get().blocklistForTesting(mNativePasswordStoreBridge, url);
     }
 
     /**
@@ -89,38 +109,48 @@ public class PasswordStoreBridge {
      * @return True if credential was successfully updated, false otherwise.
      */
     public boolean editPassword(PasswordStoreCredential credential, String newPassword) {
-        return PasswordStoreBridgeJni.get().editPassword(
-                mNativePasswordStoreBridge, credential, newPassword);
+        return PasswordStoreBridgeJni.get()
+                .editPassword(mNativePasswordStoreBridge, credential, newPassword);
     }
 
     /**
-     * Returns the count of stored credentials.
+     * @return Returns the count of stored credentials for both account and local stores combined.
      */
-    public int getPasswordStoreCredentialsCount() {
-        return PasswordStoreBridgeJni.get().getPasswordStoreCredentialsCount(
-                mNativePasswordStoreBridge);
+    public int getPasswordStoreCredentialsCountForAllStores() {
+        return PasswordStoreBridgeJni.get()
+                .getPasswordStoreCredentialsCountForAllStores(mNativePasswordStoreBridge);
     }
 
     /**
-     * Returns the list of credentials stored in the database.
+     * @return Returns the count of stored credentials in the account storage.
      */
+    public int getPasswordStoreCredentialsCountForAccountStore() {
+        return PasswordStoreBridgeJni.get()
+                .getPasswordStoreCredentialsCountForAccountStore(mNativePasswordStoreBridge);
+    }
+
+    /**
+     * @return Returns the count of stored credentials in the local storage.
+     */
+    public int getPasswordStoreCredentialsCountForProfileStore() {
+        return PasswordStoreBridgeJni.get()
+                .getPasswordStoreCredentialsCountForProfileStore(mNativePasswordStoreBridge);
+    }
+
+    /** Returns the list of credentials stored in the database. */
     public PasswordStoreCredential[] getAllCredentials() {
         PasswordStoreCredential[] credentials =
-                new PasswordStoreCredential[getPasswordStoreCredentialsCount()];
+                new PasswordStoreCredential[getPasswordStoreCredentialsCountForAllStores()];
         PasswordStoreBridgeJni.get().getAllCredentials(mNativePasswordStoreBridge, credentials);
         return credentials;
     }
 
-    /**
-     * Empties the password store.
-     */
+    /** Empties the password store. */
     public void clearAllPasswords() {
         PasswordStoreBridgeJni.get().clearAllPasswords(mNativePasswordStoreBridge);
     }
 
-    /**
-     * Destroys its C++ counterpart.
-     */
+    /** Destroys its C++ counterpart. */
     public void destroy() {
         if (mNativePasswordStoreBridge != 0) {
             PasswordStoreBridgeJni.get().destroy(mNativePasswordStoreBridge);
@@ -149,20 +179,35 @@ public class PasswordStoreBridge {
         mObserverList.removeObserver(obs);
     }
 
-    /**
-     * C++ method signatures.
-     */
+    /** C++ method signatures. */
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(PasswordStoreBridge passwordStoreBridge);
-        void insertPasswordCredentialForTesting(
+
+        void insertPasswordCredentialInProfileStoreForTesting(
                 long nativePasswordStoreBridge, PasswordStoreCredential credential);
-        boolean editPassword(long nativePasswordStoreBridge, PasswordStoreCredential credential,
+
+        void insertPasswordCredentialInAccountStoreForTesting(
+                long nativePasswordStoreBridge, PasswordStoreCredential credential);
+
+        void blocklistForTesting(long nativePasswordStoreBridge, String url);
+
+        boolean editPassword(
+                long nativePasswordStoreBridge,
+                PasswordStoreCredential credential,
                 String newPassword);
-        int getPasswordStoreCredentialsCount(long nativePasswordStoreBridge);
+
+        int getPasswordStoreCredentialsCountForAllStores(long nativePasswordStoreBridge);
+
+        int getPasswordStoreCredentialsCountForAccountStore(long nativePasswordStoreBridge);
+
+        int getPasswordStoreCredentialsCountForProfileStore(long nativePasswordStoreBridge);
+
         void getAllCredentials(
                 long nativePasswordStoreBridge, PasswordStoreCredential[] credentials);
+
         void clearAllPasswords(long nativePasswordStoreBridge);
+
         void destroy(long nativePasswordStoreBridge);
     }
 }

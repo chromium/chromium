@@ -59,10 +59,12 @@ bool RtcpParser::Parse(base::BigEndianReader* reader) {
     if (!ParseCommonHeader(reader, &header))
       return false;
 
-    base::span<const uint8_t> tmp;
-    if (!reader->ReadSpan(&tmp, header.length_in_octets - 4))
+    std::optional<base::span<const uint8_t>> tmp =
+        reader->ReadSpan(header.length_in_octets - 4);
+    if (!tmp.has_value()) {
       return false;
-    base::BigEndianReader chunk(tmp);
+    }
+    base::BigEndianReader chunk(*tmp);
 
     switch (header.PT) {
       case kPacketTypeSenderReport:
@@ -538,8 +540,8 @@ enum {
 };
 }  // namespace
 
-bool IsRtcpPacket(const uint8_t* packet, size_t length) {
-  if (length < kMinLengthOfRtcp) {
+bool IsRtcpPacket(base::span<const uint8_t> packet) {
+  if (packet.size() < kMinLengthOfRtcp) {
     LOG(ERROR) << "Invalid RTCP packet received.";
     return false;
   }
@@ -548,11 +550,12 @@ bool IsRtcpPacket(const uint8_t* packet, size_t length) {
   return packet_type >= kPacketTypeLow && packet_type <= kPacketTypeHigh;
 }
 
-uint32_t GetSsrcOfSender(const uint8_t* rtcp_buffer, size_t length) {
-  if (length < kMinLengthOfRtcp)
+uint32_t GetSsrcOfSender(base::span<const uint8_t> rtcp_buffer) {
+  if (rtcp_buffer.size() < kMinLengthOfRtcp) {
     return 0;
+  }
   uint32_t ssrc_of_sender;
-  base::BigEndianReader big_endian_reader(rtcp_buffer, length);
+  base::BigEndianReader big_endian_reader(rtcp_buffer);
   big_endian_reader.Skip(4);  // Skip header.
   big_endian_reader.ReadU32(&ssrc_of_sender);
   return ssrc_of_sender;

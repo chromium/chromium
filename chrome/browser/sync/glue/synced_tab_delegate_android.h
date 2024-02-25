@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
+#include "components/sync_sessions/synced_tab_delegate.h"
 
 namespace content {
 class WebContents;
@@ -33,12 +34,16 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
   bool IsPlaceholderTab() const override;
+  std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
+      override;
 
   // Set the web contents for this tab.
   void SetWebContents(content::WebContents* web_contents);
 
   // Set web contents to null.
   void ResetWebContents();
+
+  static SessionID SessionIdFromAndroidId(int android_tab_id);
 
  private:
   const raw_ptr<TabAndroid> tab_android_;

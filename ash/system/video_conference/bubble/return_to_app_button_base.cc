@@ -20,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
@@ -147,5 +148,8 @@ std::u16string ReturnToAppButtonBase::GetPeripheralsAccessibleName() const {
 std::u16string ReturnToAppButtonBase::GetLabelText() const {
   return label_->GetText();
 }
+
+BEGIN_METADATA(ReturnToAppButtonBase)
+END_METADATA
 
 }  // namespace ash::video_conference

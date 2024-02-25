@@ -44,8 +44,6 @@ source_set("identity_manager") {
     "profile_oauth2_token_service_delegate.cc",
     "profile_oauth2_token_service_delegate.h",
     "profile_oauth2_token_service_observer.h",
-    "ubertoken_fetcher_impl.cc",
-    "ubertoken_fetcher_impl.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -112,6 +110,8 @@ source_set("identity_manager") {
     sources += [
       "token_binding_helper.cc",
       "token_binding_helper.h",
+      "token_binding_oauth2_access_token_fetcher.cc",
+      "token_binding_oauth2_access_token_fetcher.h",
     ]
     deps += [ "//components/unexportable_keys" ]
   }
@@ -157,7 +157,6 @@ source_set("unit_tests") {
     "primary_account_manager_unittest.cc",
     "profile_oauth2_token_service_delegate_unittest.cc",
     "profile_oauth2_token_service_unittest.cc",
-    "ubertoken_fetcher_impl_unittest.cc",
   ]
 
   deps = [
@@ -219,7 +218,10 @@ source_set("unit_tests") {
   }
 
   if (enable_bound_session_credentials) {
-    sources += [ "token_binding_helper_unittest.cc" ]
+    sources += [
+      "token_binding_helper_unittest.cc",
+      "token_binding_oauth2_access_token_fetcher_unittest.cc",
+    ]
 
     deps += [
       "//components/unexportable_keys",

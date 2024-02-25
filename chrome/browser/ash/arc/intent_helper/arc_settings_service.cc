@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_settings_service.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
@@ -16,6 +17,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
@@ -24,7 +26,6 @@
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,7 +112,7 @@ arc::mojom::CaptionColorPtr GetCaptionColorFromPrefs(
   // generic, it does some redundant stuffs (like utf16 conversion, removing rgb
   // prefix). But since this path is frequently used, the benefit of reusing
   // method outweighs the cons.
-  absl::optional<SkColor> sk_color =
+  std::optional<SkColor> sk_color =
       ui::metadata::SkColorConverter::FromString(base::UTF8ToUTF16(color_str));
   if (!sk_color) {
     return nullptr;
@@ -185,7 +186,9 @@ bool GetHttpProxyServer(const ProxyConfigDictionary* proxy_config_dict,
   if (!proxy_list || proxy_list->IsEmpty())
     return false;
 
-  const net::ProxyServer& server = proxy_list->Get();
+  const net::ProxyChain& chain = proxy_list->First();
+  CHECK(chain.is_single_proxy());
+  const net::ProxyServer& server = chain.First();
   *host = server.host_port_pair().host();
   *port = server.host_port_pair().port();
   return !host->empty() && *port;
@@ -277,9 +280,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncBackupEnabled() const;
   void SyncCaptionStyle() const;
   void SyncConsumerAutoUpdateToggle() const;
-  void SyncDockedMagnifierEnabled() const;
-  void SyncFocusHighlightEnabled() const;
-  void SyncGIOBetaEnabled() const;
   void SyncLocale() const;
   void SyncLocationServiceEnabled() const;
   void SyncProxySettings() const;
@@ -287,10 +287,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncProxySettingsForSystemProxy() const;
   void SyncReportingConsent(bool initial_sync) const;
   void SyncPictureInPictureEnabled() const;
-  void SyncScreenMagnifierEnabled() const;
-  void SyncSelectToSpeakEnabled() const;
-  void SyncSpokenFeedbackEnabled() const;
-  void SyncSwitchAccessEnabled() const;
   void SyncTimeZone() const;
   void SyncTimeZoneByGeolocation() const;
   void SyncUse24HourClock() const;
@@ -309,10 +305,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // Registers to listen to a particular perf in local state.
   // This should be used when dealing with pref per device.
   void AddLocalStatePrefToObserve(const std::string& pref_name);
-
-  // Returns whether client supports `EnableAccessibilityFeatures` method or
-  // not.
-  bool IsEnableAccessibilityFeaturesMethodAvailable() const;
 
   // Returns the integer value of the pref.  pref_name must exist.
   int GetIntegerPref(const std::string& pref_name) const;
@@ -343,8 +335,8 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // ConnectionObserver<mojom::AppInstance>:
   void OnConnectionReady() override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // Manages pref observation registration.
@@ -366,7 +358,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   std::string default_network_name_;
 
   // Proxy configuration of the default network.
-  absl::optional<base::Value::Dict> default_proxy_config_;
+  std::optional<base::Value::Dict> default_proxy_config_;
 
   // The PAC URL associated with `default_network_name_`, received via the DHCP
   // discovery method.
@@ -418,31 +410,11 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
              pref_name == ash::prefs::kAccessibilitySwitchAccessEnabled ||
              pref_name == ash::prefs::kDockedMagnifierEnabled) {
     SyncAccessibilityFeatures();
-    if (IsEnableAccessibilityFeaturesMethodAvailable()) {
-      return;
-    }
-
-    // TODO(b/296330419): Keeping these for backward compatibility until all
-    // client has supported the new way to update enable accessibility features.
-    // Clean up afterwards.
-    if (pref_name == ash::prefs::kAccessibilityFocusHighlightEnabled) {
-      SyncFocusHighlightEnabled();
-    } else if (pref_name == ash::prefs::kAccessibilityScreenMagnifierEnabled) {
-      SyncScreenMagnifierEnabled();
-    } else if (pref_name == ash::prefs::kAccessibilitySelectToSpeakEnabled) {
-      SyncSelectToSpeakEnabled();
-    } else if (pref_name == ash::prefs::kAccessibilitySpokenFeedbackEnabled) {
-      SyncSpokenFeedbackEnabled();
-    } else if (pref_name == ash::prefs::kAccessibilitySwitchAccessEnabled) {
-      SyncSwitchAccessEnabled();
-    } else if (pref_name == ash::prefs::kDockedMagnifierEnabled) {
-      SyncDockedMagnifierEnabled();
-    }
   } else if (pref_name == ash::prefs::kAccessibilityLargeCursorEnabled) {
     SyncAccessibilityLargeMouseCursorEnabled();
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
     SyncAccessibilityVirtualKeyboardEnabled();
-  } else if (pref_name == ash::prefs::kUserGeolocationAllowed) {
+  } else if (pref_name == ash::prefs::kUserGeolocationAccessLevel) {
     SyncUserGeolocation();
   } else if (pref_name == ::language::prefs::kApplicationLocale ||
              pref_name == ::language::prefs::kPreferredLanguages) {
@@ -564,7 +536,7 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   AddPrefToObserve(ash::prefs::kAccessibilitySwitchAccessEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityVirtualKeyboardEnabled);
   AddPrefToObserve(ash::prefs::kDockedMagnifierEnabled);
-  AddPrefToObserve(ash::prefs::kUserGeolocationAllowed);
+  AddPrefToObserve(ash::prefs::kUserGeolocationAccessLevel);
   AddPrefToObserve(onc::prefs::kDeviceOpenNetworkConfiguration);
   AddPrefToObserve(onc::prefs::kOpenNetworkConfiguration);
   AddPrefToObserve(proxy_config::prefs::kProxy);
@@ -610,7 +582,6 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   SyncAccessibilityVirtualKeyboardEnabled();
   SyncCaptionStyle();
   SyncConsumerAutoUpdateToggle();
-  SyncGIOBetaEnabled();
   SyncProxySettings();
   SyncReportingConsent(/*initial_sync=*/false);
   SyncPictureInPictureEnabled();
@@ -622,15 +593,6 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   // https://crbug.com/955071
   ResetFontScaleToDefault();
   ResetPageZoomToDefault();
-
-  if (!IsEnableAccessibilityFeaturesMethodAvailable()) {
-    SyncDockedMagnifierEnabled();
-    SyncFocusHighlightEnabled();
-    SyncScreenMagnifierEnabled();
-    SyncSelectToSpeakEnabled();
-    SyncSpokenFeedbackEnabled();
-    SyncSwitchAccessEnabled();
-  }
 }
 
 void ArcSettingsServiceImpl::SyncAppTimeSettings() {
@@ -716,24 +678,6 @@ void ArcSettingsServiceImpl::SyncAccessibilityFeatures() const {
       GetBooleanPref(ash::prefs::kAccessibilitySwitchAccessEnabled);
 
   instance->EnableAccessibilityFeatures(std::move(features));
-}
-
-void ArcSettingsServiceImpl::SyncFocusHighlightEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilityFocusHighlightEnabled,
-      "org.chromium.arc.intent_helper.SET_FOCUS_HIGHLIGHT_ENABLED");
-}
-
-void ArcSettingsServiceImpl::SyncScreenMagnifierEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilityScreenMagnifierEnabled,
-      "org.chromium.arc.intent_helper.SET_SCREEN_MAGNIFIER_ENABLED");
-}
-
-void ArcSettingsServiceImpl::SyncDockedMagnifierEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kDockedMagnifierEnabled,
-      "org.chromium.arc.intent_helper.SET_DOCKED_MAGNIFIER_ENABLED");
 }
 
 void ArcSettingsServiceImpl::SyncLocale() const {
@@ -901,24 +845,6 @@ void ArcSettingsServiceImpl::SyncPictureInPictureEnabled() const {
   instance->SetPipSuppressionStatus(!isPipEnabled);
 }
 
-void ArcSettingsServiceImpl::SyncSelectToSpeakEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilitySelectToSpeakEnabled,
-      "org.chromium.arc.intent_helper.SET_SELECT_TO_SPEAK_ENABLED");
-}
-
-void ArcSettingsServiceImpl::SyncSpokenFeedbackEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-      "org.chromium.arc.intent_helper.SET_SPOKEN_FEEDBACK_ENABLED");
-}
-
-void ArcSettingsServiceImpl::SyncSwitchAccessEnabled() const {
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kAccessibilitySwitchAccessEnabled,
-      "org.chromium.arc.intent_helper.SET_SWITCH_ACCESS_ENABLED");
-}
-
 void ArcSettingsServiceImpl::SyncTimeZone() const {
   TimezoneSettings* timezone_settings = TimezoneSettings::GetInstance();
   std::u16string timezoneID = timezone_settings->GetCurrentTimezoneID();
@@ -950,19 +876,23 @@ void ArcSettingsServiceImpl::SyncUse24HourClock() const {
                         extras);
 }
 
-void ArcSettingsServiceImpl::SyncGIOBetaEnabled() const {
-  SendBoolValueSettingsBroadcast(
-      ash::features::IsArcInputOverlayBetaEnabled(), /*managed=*/false,
-      "org.chromium.arc.intent_helper.ACTION_SET_GIO_BETA_ENABLED");
-}
-
 void ArcSettingsServiceImpl::SyncUserGeolocation() const {
   // We are purposefully not calling SyncUserGeolocation() at boot,
   // as we sync this property from Android. We might need to sync
   // in case of disable but not in case of enable (default).
 
-  SendBoolPrefSettingsBroadcast(
-      ash::prefs::kUserGeolocationAllowed,
+  // We need to map tri-state of ChromeOS toggle to boolean ARC++ toggle.
+  const PrefService::Preference* pref = registrar_.prefs()->FindPreference(
+      ash::prefs::kUserGeolocationAccessLevel);
+  DCHECK(pref);
+  DCHECK(pref->GetValue()->is_int());
+
+  bool enabled_for_arc =
+      ash::PrivacyHubController::CrosToArcGeolocationPermissionMapping(
+          static_cast<ash::GeolocationAccessLevel>(pref->GetValue()->GetInt()));
+
+  SendBoolValueSettingsBroadcast(
+      enabled_for_arc, !pref->IsUserModifiable(),
       "org.chromium.arc.intent_helper.SET_USER_GEOLOCATION");
 }
 
@@ -995,13 +925,6 @@ void ArcSettingsServiceImpl::AddLocalStatePrefToObserve(
   local_state_registrar_.Add(
       pref_name, base::BindRepeating(&ArcSettingsServiceImpl::OnPrefChanged,
                                      base::Unretained(this)));
-}
-
-bool ArcSettingsServiceImpl::IsEnableAccessibilityFeaturesMethodAvailable()
-    const {
-  auto* const instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->intent_helper(), EnableAccessibilityFeatures);
-  return instance;
 }
 
 int ArcSettingsServiceImpl::GetIntegerPref(const std::string& pref_name) const {

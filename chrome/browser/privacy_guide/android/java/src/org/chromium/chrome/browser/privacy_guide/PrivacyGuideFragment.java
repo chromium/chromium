@@ -26,10 +26,12 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.widget.ButtonCompat;
@@ -43,15 +45,24 @@ import java.util.List;
 /**
  * Fragment containing the Privacy Guide (a walk-through of the most important privacy settings).
  */
-public class PrivacyGuideFragment
-        extends Fragment implements BackPressHandler, BackPressHelper.ObsoleteBackPressedHandler {
+public class PrivacyGuideFragment extends Fragment
+        implements BackPressHandler,
+                ProfileDependentSetting,
+                FragmentSettingsLauncher {
     /**
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FragmentType.WELCOME, FragmentType.MSBB, FragmentType.HISTORY_SYNC,
-            FragmentType.SAFE_BROWSING, FragmentType.COOKIES, FragmentType.SEARCH_SUGGESTIONS,
-            FragmentType.DONE})
+    @IntDef({
+        FragmentType.WELCOME,
+        FragmentType.MSBB,
+        FragmentType.HISTORY_SYNC,
+        FragmentType.SAFE_BROWSING,
+        FragmentType.COOKIES,
+        FragmentType.SEARCH_SUGGESTIONS,
+        FragmentType.PRELOAD,
+        FragmentType.DONE
+    })
     @interface FragmentType {
         int WELCOME = 0;
         int MSBB = 1;
@@ -59,16 +70,31 @@ public class PrivacyGuideFragment
         int SAFE_BROWSING = 3;
         int COOKIES = 4;
         int SEARCH_SUGGESTIONS = 5;
-        int DONE = 6;
+        int PRELOAD = 6;
+        int DONE = 7;
         int MAX_VALUE = DONE;
     }
-    public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER = Collections.unmodifiableList(
-            Arrays.asList(FragmentType.WELCOME, FragmentType.MSBB, FragmentType.HISTORY_SYNC,
-                    FragmentType.SAFE_BROWSING, FragmentType.COOKIES, FragmentType.DONE));
+
+    public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER =
+            Collections.unmodifiableList(
+                    Arrays.asList(
+                            FragmentType.WELCOME,
+                            FragmentType.MSBB,
+                            FragmentType.HISTORY_SYNC,
+                            FragmentType.SAFE_BROWSING,
+                            FragmentType.COOKIES,
+                            FragmentType.DONE));
     public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER_PG3 =
-            Collections.unmodifiableList(Arrays.asList(FragmentType.WELCOME, FragmentType.MSBB,
-                    FragmentType.HISTORY_SYNC, FragmentType.COOKIES, FragmentType.SAFE_BROWSING,
-                    FragmentType.SEARCH_SUGGESTIONS, FragmentType.DONE));
+            Collections.unmodifiableList(
+                    Arrays.asList(
+                            FragmentType.WELCOME,
+                            FragmentType.MSBB,
+                            FragmentType.HISTORY_SYNC,
+                            FragmentType.COOKIES,
+                            FragmentType.SAFE_BROWSING,
+                            FragmentType.SEARCH_SUGGESTIONS,
+                            FragmentType.PRELOAD,
+                            FragmentType.DONE));
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
     private CustomTabIntentHelper mCustomTabHelper;
@@ -84,46 +110,54 @@ public class PrivacyGuideFragment
     private ButtonCompat mDoneButton;
     private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate;
     private NavbarVisibilityDelegate mNavbarVisibilityDelegate;
-    private boolean mEnablePostMVPFixes;
+    private Profile mProfile;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate();
+        mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate(mProfile);
         if (savedInstanceState != null) {
             mPrivacyGuideMetricsDelegate.restoreState(savedInstanceState);
         }
         mHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
-        mEnablePostMVPFixes = ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled();
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         modifyAppBar();
         mView = inflater.inflate(R.layout.privacy_guide_steps, container, false);
 
         mViewPager = (ViewPager2) mView.findViewById(R.id.review_viewpager);
-        mPagerAdapter = new PrivacyGuidePagerAdapter(this, new StepDisplayHandlerImpl(),
-                ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled() ? ALL_FRAGMENT_TYPE_ORDER_PG3
-                                                                    : ALL_FRAGMENT_TYPE_ORDER);
+        mPagerAdapter =
+                new PrivacyGuidePagerAdapter(
+                        this,
+                        new StepDisplayHandlerImpl(mProfile),
+                        ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
+                                ? ALL_FRAGMENT_TYPE_ORDER_PG3
+                                : ALL_FRAGMENT_TYPE_ORDER);
         mNavbarVisibilityDelegate = new NavbarVisibilityDelegate(mPagerAdapter.getItemCount());
         mViewPager.setAdapter(mPagerAdapter);
-        if (ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled()) {
-            mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
-        }
+        mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
         mViewPager.setUserInputEnabled(false);
 
         mTabLayout = mView.findViewById(R.id.tab_layout);
-        new TabLayoutMediator(mTabLayout, mViewPager, (tab, position) -> {
-            tab.view.setClickable(false);
-            tab.view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            if (position == 0 || position == mPagerAdapter.getItemCount() - 1) {
-                tab.view.setVisibility(View.GONE);
-            }
-        }).attach();
+        new TabLayoutMediator(
+                        mTabLayout,
+                        mViewPager,
+                        (tab, position) -> {
+                            tab.view.setClickable(false);
+                            tab.view.setImportantForAccessibility(
+                                    View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+                            if (position == 0 || position == mPagerAdapter.getItemCount() - 1) {
+                                tab.view.setVisibility(View.GONE);
+                            }
+                        })
+                .attach();
 
         mStartButton = (ButtonCompat) mView.findViewById(R.id.start_button);
         mStartButton.setOnClickListener((View v) -> nextStep());
@@ -138,10 +172,11 @@ public class PrivacyGuideFragment
         mFinishButton.setOnClickListener((View v) -> nextStep());
 
         mDoneButton = (ButtonCompat) mView.findViewById(R.id.done_button);
-        mDoneButton.setOnClickListener((View v) -> {
-            PrivacyGuideMetricsDelegate.recordMetricsForDoneButton();
-            getActivity().finish();
-        });
+        mDoneButton.setOnClickListener(
+                (View v) -> {
+                    PrivacyGuideMetricsDelegate.recordMetricsForDoneButton();
+                    getActivity().finish();
+                });
 
         return mView;
     }
@@ -220,10 +255,27 @@ public class PrivacyGuideFragment
                 mPagerAdapter.getFragmentType(followingStepIdx));
     }
 
+    private boolean onBackPressed() {
+        if (shouldHandleBackPress()) {
+            previousStep();
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public void onAttachFragment(@NonNull Fragment childFragment) {
+        if (childFragment instanceof ProfileDependentSetting) {
+            ((ProfileDependentSetting) childFragment).setProfile(mProfile);
+        }
+
         if (childFragment instanceof SafeBrowsingFragment) {
             ((SafeBrowsingFragment) childFragment)
+                    .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
+        }
+        if (childFragment instanceof PreloadFragment) {
+            ((PreloadFragment) childFragment)
                     .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
         }
         if (childFragment instanceof DoneFragment) {
@@ -257,16 +309,6 @@ public class PrivacyGuideFragment
     }
 
     @Override
-    public boolean onBackPressed() {
-        if (shouldHandleBackPress()) {
-            previousStep();
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
     public int handleBackPress() {
         return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
@@ -277,7 +319,7 @@ public class PrivacyGuideFragment
     }
 
     private boolean shouldHandleBackPress() {
-        return mEnablePostMVPFixes && mViewPager.getCurrentItem() > 0;
+        return mViewPager.getCurrentItem() > 0;
     }
 
     public void setBottomSheetControllerSupplier(
@@ -289,6 +331,7 @@ public class PrivacyGuideFragment
         mCustomTabHelper = tabHelper;
     }
 
+    @Override
     public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
         mSettingsLauncher = settingsLauncher;
     }
@@ -298,5 +341,10 @@ public class PrivacyGuideFragment
         var oldValue = mPrivacyGuideMetricsDelegate;
         mPrivacyGuideMetricsDelegate = privacyGuideMetricsDelegate;
         ResettersForTesting.register(() -> mPrivacyGuideMetricsDelegate = oldValue);
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 }

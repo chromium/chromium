@@ -26,10 +26,9 @@ namespace safe_browsing {
 
 namespace {
 
-absl::optional<ChromeUserPopulation>& GetCachedUserPopulation(
-    Profile* profile) {
+std::optional<ChromeUserPopulation>& GetCachedUserPopulation(Profile* profile) {
   static base::NoDestructor<
-      std::map<Profile*, absl::optional<ChromeUserPopulation>>>
+      std::map<Profile*, std::optional<ChromeUserPopulation>>>
       instance;
   return (*instance)[profile];
 }
@@ -47,7 +46,7 @@ NoCachedPopulationReason& GetNoCachedPopulationReason(Profile* profile) {
 
 void ComparePopulationWithCache(Profile* profile,
                                 const ChromeUserPopulation& population) {
-  const absl::optional<ChromeUserPopulation>& cached_population =
+  const std::optional<ChromeUserPopulation>& cached_population =
       GetCachedUserPopulation(profile);
   if (!cached_population) {
     return;
@@ -58,7 +57,7 @@ void ComparePopulationWithCache(Profile* profile,
 
 void ClearCachedUserPopulation(Profile* profile,
                                NoCachedPopulationReason reason) {
-  GetCachedUserPopulation(profile) = absl::nullopt;
+  GetCachedUserPopulation(profile) = std::nullopt;
   GetNoCachedPopulationReason(profile) = reason;
 }
 
@@ -86,9 +85,9 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
       advanced_protection_manager->IsUnderAdvancedProtection();
 #endif
 
-  absl::optional<size_t> num_profiles;
-  absl::optional<size_t> num_loaded_profiles;
-  absl::optional<size_t> num_open_profiles;
+  std::optional<size_t> num_profiles;
+  std::optional<size_t> num_loaded_profiles;
+  std::optional<size_t> num_open_profiles;
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // |profile_manager| may be null in tests.

@@ -63,16 +63,16 @@ class ASH_EXPORT PhoneStatusView : public TriView,
 
   void ConfigureTriViewContainer(TriView::Container container);
 
-  raw_ptr<phonehub::PhoneModel, ExperimentalAsh> phone_model_ = nullptr;
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<phonehub::PhoneModel> phone_model_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // Owned by views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> phone_name_label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> signal_icon_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> battery_icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> battery_label_ = nullptr;
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<views::Label> phone_name_label_ = nullptr;
+  raw_ptr<views::ImageView> signal_icon_ = nullptr;
+  raw_ptr<views::ImageView> battery_icon_ = nullptr;
+  raw_ptr<views::Label> battery_label_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
+  raw_ptr<IconButton> settings_button_ = nullptr;
 };
 
 }  // namespace ash

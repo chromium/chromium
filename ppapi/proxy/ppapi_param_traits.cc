@@ -319,7 +319,7 @@ void ParamTraits<ppapi::proxy::PPBURLLoader_UpdateProgress_Params>::Log(
     std::string* l) {
 }
 
-#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL)
 // SerializedDirEntry ----------------------------------------------------------
 
 // static
@@ -375,9 +375,9 @@ void ParamTraits<ppapi::proxy::SerializedFontDescription>::Log(
     const param_type& p,
     std::string* l) {
 }
-#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL)
 
-#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL)
 // ppapi::PepperFilePath -------------------------------------------------------
 
 // static
@@ -413,7 +413,7 @@ void ParamTraits<ppapi::PepperFilePath>::Log(const param_type& p,
   l->append(")");
 }
 
-#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // PPB_X509Certificate_Fields --------------------------------------------------
 

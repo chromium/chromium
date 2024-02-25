@@ -5,9 +5,11 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(
-      'Verifies that Network.*ExtraInfo events get assigned to the correct SDK.NetworkRequest instance in the case of cross origin redirects.');
+      'Verifies that Network.*ExtraInfo events get assigned to the correct SDK.NetworkRequest.NetworkRequest instance in the case of cross origin redirects.');
 
   await TestRunner.evaluateInPageAsync(`
 new Promise(resolve => {

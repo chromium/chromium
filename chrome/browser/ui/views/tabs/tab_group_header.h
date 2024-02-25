@@ -26,7 +26,7 @@ namespace views {
 class ImageView;
 class Label;
 class View;
-}
+}  // namespace views
 
 // View for tab group headers in the tab strip, which are markers of group
 // boundaries. There is one header for each group, which is included in the tab
@@ -34,9 +34,9 @@ class View;
 class TabGroupHeader : public TabSlotView,
                        public views::ContextMenuController,
                        public views::ViewTargeterDelegate {
- public:
-  METADATA_HEADER(TabGroupHeader);
+  METADATA_HEADER(TabGroupHeader, TabSlotView)
 
+ public:
   TabGroupHeader(TabSlotController& tab_slot_controller,
                  const tab_groups::TabGroupId& group,
                  const TabGroupStyle& style);

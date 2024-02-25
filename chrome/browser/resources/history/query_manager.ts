@@ -6,9 +6,8 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {HistoryEntry, HistoryQuery, QueryResult} from './externs.js';
-import {QueryState} from './externs.js';
-import {HistoryRouterElement} from './router.js';
+import type {HistoryEntry, HistoryQuery, QueryResult, QueryState} from './externs.js';
+import type {HistoryRouterElement} from './router.js';
 
 declare global {
   interface HTMLElementTagNameMap {

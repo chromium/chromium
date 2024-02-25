@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import './metrics_utils.js';
 import './share_password_dialog_header.js';
 import './share_password_recipient.js';
 import '../shared_style.css.js';
@@ -13,6 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
+import {PasswordSharingActions, recordPasswordSharingInteraction} from './metrics_utils.js';
 import {getTemplate} from './share_password_family_picker_dialog.html.js';
 
 export interface SharePasswordFamilyPickerDialogElement {
@@ -22,7 +24,7 @@ export interface SharePasswordFamilyPickerDialogElement {
     action: HTMLButtonElement,
     cancel: HTMLElement,
     avatar: HTMLImageElement,
-    manageLink: HTMLAnchorElement,
+    viewFamily: HTMLAnchorElement,
     footerDescription: HTMLElement,
   };
 }
@@ -40,7 +42,11 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
   static get properties() {
     return {
       dialogTitle: String,
-      members: Array,
+
+      members: {
+        type: Array,
+        value: [],
+      },
 
       selectedRecipients: {
         type: Array,
@@ -67,10 +73,15 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
   private eligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
   private ineligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
 
-  private onClickCancel_() {
-    this.dispatchEvent(
-        new CustomEvent('close', {bubbles: true, composed: true}));
-  }
+    override ready() {
+      super.ready();
+
+      // Pre-select the member if they are eligible for sharing and there are no
+      // other members in the group.
+      if (this.members.length === 1 && this.computeEligible_().length === 1) {
+        this.selectedRecipients = this.members;
+      }
+    }
 
   private computeEligible_(): chrome.passwordsPrivate.RecipientInfo[] {
     const eligibleMembers = this.members.filter(member => member.isEligible);
@@ -92,7 +103,32 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
             .map(item => item.recipient);
   }
 
+  // Should only be called for eligible recipients.
+  private shouldPreselectFirstEntry_(index: number): boolean {
+    // Only pre-select the first entry when there is only single group member.
+    return index === 0 && this.members.length === 1;
+  }
+
+  private onViewFamilyClick_() {
+    recordPasswordSharingInteraction(
+        PasswordSharingActions.FAMILY_PICKER_VIEW_FAMILY_CLICKED);
+  }
+
+  private onClickCancel_() {
+    recordPasswordSharingInteraction(
+        PasswordSharingActions.FAMILY_PICKER_CANCELED);
+    this.dispatchEvent(
+        new CustomEvent('close', {bubbles: true, composed: true}));
+  }
+
   private onClickShare_() {
+    if (this.selectedRecipients.length === 1) {
+      recordPasswordSharingInteraction(
+          PasswordSharingActions.FAMILY_PICKER_SHARE_WITH_ONE_MEMBER);
+    } else {
+      recordPasswordSharingInteraction(
+          PasswordSharingActions.FAMILY_PICKER_SHARE_WITH_MULTIPLE_MEMBERS);
+    }
     this.dispatchEvent(
         new CustomEvent('start-share', {bubbles: true, composed: true}));
   }

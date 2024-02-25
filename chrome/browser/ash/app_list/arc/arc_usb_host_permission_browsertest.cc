@@ -165,12 +165,11 @@ class ArcUsbHostPermissionTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<ArcAppListPrefs, DanglingUntriaged | ExperimentalAsh>
-      arc_app_list_pref_;
-  raw_ptr<ArcUsbHostPermissionManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged> arc_app_list_pref_;
+  raw_ptr<ArcUsbHostPermissionManager, DanglingUntriaged>
       arc_usb_permission_manager_;
   std::unique_ptr<FakeAppInstance> app_instance_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {
@@ -184,19 +183,18 @@ class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {
   ~ArcUsbHostKioskPermissionTest() override = default;
 
   void SetUpOnMainThread() override {
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(AccountId::FromUserEmail(kTestProfileName));
-    GetFakeUserManager()->AddArcKioskAppUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
+    fake_user_manager_->AddArcKioskAppUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     ArcUsbHostPermissionTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     ArcUsbHostPermissionTest::TearDownOnMainThread();
     const AccountId account_id(AccountId::FromUserEmail(kTestProfileName));
-    GetFakeUserManager()->RemoveUserFromList(account_id);
-    user_manager_enabler_.reset();
+    fake_user_manager_->RemoveUserFromList(account_id);
+    fake_user_manager_.Reset();
   }
 
   void set_response(bool accepted) {
@@ -207,14 +205,10 @@ class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {
   int accepted_response_count() const { return accepted_response_count_; }
 
  private:
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   int accepted_response_count_ = 0;
 
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(ArcUsbHostPermissionTest, UsbTemporayPermissionTest) {

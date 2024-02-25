@@ -419,7 +419,7 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
   }
 
   int tiles_count = 0;
-  for (const absl::optional<ntp_tiles::NTPTileImpression>& impression :
+  for (const std::optional<ntp_tiles::NTPTileImpression>& impression :
        logged_impressions_) {
     if (!impression.has_value()) {
       break;

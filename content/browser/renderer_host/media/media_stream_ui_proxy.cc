@@ -63,7 +63,7 @@ class MediaStreamUIProxy::Core {
                                       const DesktopMediaID& new_media_id);
 
   void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect);
+      const std::optional<gfx::Rect>& region_capture_rect);
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetFocus(const DesktopMediaID& media_id,
@@ -203,7 +203,7 @@ void MediaStreamUIProxy::Core::OnDeviceStoppedForSourceChange(
 }
 
 void MediaStreamUIProxy::Core::OnRegionCaptureRectChanged(
-    const absl::optional<gfx::Rect>& region_capture_rec) {
+    const std::optional<gfx::Rect>& region_capture_rec) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (ui_) {
     ui_->OnRegionCaptureRectChanged(region_capture_rec);
@@ -422,7 +422,7 @@ void MediaStreamUIProxy::OnDeviceStoppedForSourceChange(
 }
 
 void MediaStreamUIProxy::OnRegionCaptureRectChanged(
-    const absl::optional<gfx::Rect>& region_capture_rec) {
+    const std::optional<gfx::Rect>& region_capture_rec) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   GetUIThreadTaskRunner({})->PostTask(
@@ -543,14 +543,16 @@ void FakeMediaStreamUIProxy::RequestAccess(
     if (!devices_to_use.audio_device.has_value() &&
         blink::IsAudioInputMediaType(request->audio_type) &&
         blink::IsAudioInputMediaType(device.type) &&
-        (request->requested_audio_device_id.empty() ||
-         request->requested_audio_device_id == device.id)) {
+        (request->requested_audio_device_ids.empty() ||
+         request->requested_audio_device_ids.front().empty() ||
+         request->requested_audio_device_ids.front() == device.id)) {
       devices_to_use.audio_device = device;
     } else if (!devices_to_use.video_device.has_value() &&
                blink::IsVideoInputMediaType(request->video_type) &&
                blink::IsVideoInputMediaType(device.type) &&
-               (request->requested_video_device_id.empty() ||
-                request->requested_video_device_id == device.id)) {
+               (request->requested_video_device_ids.empty() ||
+                request->requested_video_device_ids.front().empty() ||
+                request->requested_video_device_ids.front() == device.id)) {
       devices_to_use.video_device = device;
     }
   }
@@ -564,7 +566,7 @@ void FakeMediaStreamUIProxy::RequestAccess(
   }
 
   if (!audio_share_) {
-    devices_to_use.audio_device = absl::nullopt;
+    devices_to_use.audio_device = std::nullopt;
   }
   const bool is_devices_empty = !devices_to_use.audio_device.has_value() &&
                                 !devices_to_use.video_device.has_value();

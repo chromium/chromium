@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_MESSAGE_VIEW_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
@@ -21,15 +23,17 @@ class DisplayOverlayController;
 
 // MessageView shows info or error message on the top center of the window.
 class MessageView : public views::LabelButton {
+  METADATA_HEADER(MessageView, views::LabelButton)
+
  public:
   static MessageView* Show(DisplayOverlayController* controller,
                            views::View* parent,
-                           const base::StringPiece& message,
+                           std::string_view message,
                            MessageType message_type);
 
   MessageView(DisplayOverlayController* controller,
               const gfx::Size& parent_size,
-              const base::StringPiece& message,
+              std::string_view message,
               MessageType message_type);
   MessageView(const MessageView&) = delete;
   MessageView& operator=(const MessageView&) = delete;

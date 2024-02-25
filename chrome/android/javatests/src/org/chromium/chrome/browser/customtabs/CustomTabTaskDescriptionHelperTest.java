@@ -36,14 +36,11 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Tests for {@link CustomTabTaskDescriptionHelper}.
- */
+/** Tests for {@link CustomTabTaskDescriptionHelper}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabTaskDescriptionHelperTest {
-    @Rule
-    public WebappActivityTestRule mWebappActivityTestRule = new WebappActivityTestRule();
+    @Rule public WebappActivityTestRule mWebappActivityTestRule = new WebappActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
 
@@ -67,8 +64,8 @@ public class CustomTabTaskDescriptionHelperTest {
     }
 
     /**
-     * Tests that the task description gives preference to the theme color value provided by the
-     * web page when both the web page and the launch intent provide a custom theme color.
+     * Tests that the task description gives preference to the theme color value provided by the web
+     * page when both the web page and the launch intent provide a custom theme color.
      */
     @Test
     @MediumTest
@@ -151,8 +148,8 @@ public class CustomTabTaskDescriptionHelperTest {
     }
 
     /**
-     * Tests that the short_name is used in the task description when it is provided by the
-     * the launch intent.
+     * Tests that the short_name is used in the task description when it is provided by the the
+     * launch intent.
      */
     @Test
     @MediumTest
@@ -172,7 +169,7 @@ public class CustomTabTaskDescriptionHelperTest {
 
     /**
      * Tests that the page title is used in the task description if the launch intent provides
-    neither a name nor a short_name.
+     * neither a name nor a short_name.
      */
     @Test
     @MediumTest
@@ -206,18 +203,14 @@ public class CustomTabTaskDescriptionHelperTest {
                 () -> ThemeTestUtils.getDefaultThemeColor(activity.getActivityTab()));
     }
 
-    /**
-     * Fetches the task description color from the ActivityManager.
-     */
+    /** Fetches the task description color from the ActivityManager. */
     private static int fetchTaskDescriptionColor(Activity activity) throws Exception {
         ActivityManager.TaskDescription taskDescription =
                 (ActivityManager.TaskDescription) fetchTaskDescription(activity);
         return (taskDescription == null) ? Color.TRANSPARENT : taskDescription.getPrimaryColor();
     }
 
-    /**
-     * Fetches the task description label from the ActivityManager.
-     */
+    /** Fetches the task description label from the ActivityManager. */
     private static String fetchTaskDescriptionLabel(Activity activity) throws Exception {
         ActivityManager.TaskDescription taskDescription =
                 (ActivityManager.TaskDescription) fetchTaskDescription(activity);
@@ -225,19 +218,23 @@ public class CustomTabTaskDescriptionHelperTest {
     }
 
     private static Object fetchTaskDescription(Activity activity) throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            try {
-                ActivityManager activityManager =
-                        (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-                for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
-                    if (activity.getTaskId() == task.getTaskInfo().id) {
-                        ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
-                        return (taskInfo == null) ? null : (Object) taskInfo.taskDescription;
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        ActivityManager activityManager =
+                                (ActivityManager)
+                                        activity.getSystemService(Context.ACTIVITY_SERVICE);
+                        for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
+                            if (activity.getTaskId() == task.getTaskInfo().id) {
+                                ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
+                                return (taskInfo == null)
+                                        ? null
+                                        : (Object) taskInfo.taskDescription;
+                            }
+                        }
+                    } catch (Exception e) {
                     }
-                }
-            } catch (Exception e) {
-            }
-            return null;
-        });
+                    return null;
+                });
     }
 }

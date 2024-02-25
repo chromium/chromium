@@ -126,7 +126,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
 
   SetContents(std::make_unique<views::View>());
 
-  if (!controller->is_recording_in_progress()) {
+  if (controller->can_start_new_recording()) {
     const bool audio_capture_managed_by_policy =
         controller->IsAudioCaptureDisabledByPolicy();
 
@@ -200,8 +200,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
                      camera_managed_by_policy);
   }
 
-  if (features::AreCaptureModeDemoToolsEnabled() &&
-      !controller->is_recording_in_progress()) {
+  if (controller->can_start_new_recording()) {
     separator_2_ =
         contents()->AddChildView(std::make_unique<views::Separator>());
     separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
@@ -249,9 +248,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
 
   capture_mode_util::SetHighlightBorder(
       this, kCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1);
+      views::HighlightBorder::Type::kHighlightBorderOnShadow);
 
   shadow_->SetRoundedCornerRadius(kCornerRadius);
 }
@@ -513,7 +510,7 @@ void CaptureModeSettingsView::OnDemoToolsButtonToggled() {
   CaptureModeController::Get()->EnableDemoTools(/*enable=*/!was_on);
 }
 
-BEGIN_METADATA(CaptureModeSettingsView, views::ScrollView)
+BEGIN_METADATA(CaptureModeSettingsView)
 END_METADATA
 
 }  // namespace ash

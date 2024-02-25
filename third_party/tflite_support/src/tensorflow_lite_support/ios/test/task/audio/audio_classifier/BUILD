@@ -4,7 +4,6 @@ load("@org_tensorflow//tensorflow/lite:special_rules.bzl", "tflite_ios_lab_runne
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = ["//visibility:private"],
     licenses = ["notice"],  # Apache 2.0
 )

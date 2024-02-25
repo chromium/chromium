@@ -203,7 +203,7 @@ AXInspectScenario AXInspectTestHelper::ParseScenario(
                                  default_filters);
 }
 
-absl::optional<AXInspectScenario> AXInspectTestHelper::ParseScenario(
+std::optional<AXInspectScenario> AXInspectTestHelper::ParseScenario(
     const base::FilePath& scenario_path,
     const std::vector<AXPropertyFilter>& default_filters) {
   const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
@@ -250,7 +250,7 @@ std::vector<AXApiType::Type> AXInspectTestHelper::EventTestPasses() {
 }
 
 // static
-absl::optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 AXInspectTestHelper::LoadExpectationFile(const base::FilePath& expected_file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -263,7 +263,7 @@ AXInspectTestHelper::LoadExpectationFile(const base::FilePath& expected_file) {
   base::RemoveChars(expected_contents_raw, "\r", &expected_contents);
 
   if (!expected_contents.compare(0, strlen(kMarkSkipFile), kMarkSkipFile)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> expected_lines =
@@ -381,7 +381,7 @@ FilePath::StringType AXInspectTestHelper::GetVersionSpecificExpectedFileSuffix(
   // When running tests in a platform specific test directory (such as
   // content/test/data/accessibility/mac/) the expectation_type_ == content.
   if ((expectation_type_ == "mac" || expectation_type_ == "content") &&
-      !base::mac::IsAtLeastOS11()) {
+      base::mac::MacOSMajorVersion() < 11) {
     FilePath::StringType suffix;
     if (!expectations_qualifier.empty()) {
       suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;

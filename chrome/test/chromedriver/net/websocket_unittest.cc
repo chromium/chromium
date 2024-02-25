@@ -242,8 +242,7 @@ TEST_F(WebSocketTest, VerifyTextFramelsProcessed) {
       static_cast<char>(net::WebSocketFrameHeader::kOpCodeText | kFinalBit),
       static_cast<char>(kOriginalMessage.length())};
   frame += kOriginalMessage;
-  std::string encoded_frame;
-  base::Base64Encode(frame, &encoded_frame);
+  std::string encoded_frame = base::Base64Encode(frame);
 
   server_.SetMessageAction(TestHttpServer::kEchoRawMessage);
   base::RunLoop run_loop;
@@ -267,8 +266,7 @@ TEST_F(WebSocketTest, VerifyBinaryFramelsNotProcessed) {
       static_cast<char>(net::WebSocketFrameHeader::kOpCodeBinary | kFinalBit),
       static_cast<char>(kOriginalMessage.length())};
   frame += kOriginalMessage;
-  std::string encoded_frame;
-  base::Base64Encode(frame, &encoded_frame);
+  std::string encoded_frame = base::Base64Encode(frame);
 
   server_.SetMessageAction(TestHttpServer::kEchoRawMessage);
   base::RunLoop run_loop;
@@ -290,8 +288,7 @@ TEST_F(WebSocketTest, VerifyCloseFramelsNotProcessed) {
   std::string frame = {
       static_cast<char>(net::WebSocketFrameHeader::kOpCodeClose | kFinalBit),
       0};
-  std::string encoded_frame;
-  base::Base64Encode(frame, &encoded_frame);
+  std::string encoded_frame = base::Base64Encode(frame);
 
   server_.SetMessageAction(TestHttpServer::kEchoRawMessage);
   base::RunLoop run_loop;

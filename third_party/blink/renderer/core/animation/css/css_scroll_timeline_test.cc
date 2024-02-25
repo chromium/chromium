@@ -232,22 +232,20 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
 
 namespace {
 
-absl::optional<ScrollTimeline::ScrollAxis> GetTimelineAxis(
+std::optional<ScrollTimeline::ScrollAxis> GetTimelineAxis(
     const Animation& animation) {
   if (auto* scroll_timeline =
           DynamicTo<ScrollTimeline>(animation.TimelineInternal())) {
     return scroll_timeline->GetAxis();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
 
 TEST_F(CSSScrollTimelineTest, ViewTimelineHost) {
   ScopedCSSTreeScopedTimelinesForTest scoped_feature(true);
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       @keyframes anim {
         from { z-index: 100; }
@@ -286,9 +284,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineHost) {
 
 TEST_F(CSSScrollTimelineTest, ViewTimelineSlotted) {
   ScopedCSSTreeScopedTimelinesForTest scoped_feature(true);
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       @keyframes anim {
         from { z-index: 100; }
@@ -327,9 +323,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineSlotted) {
 
 TEST_F(CSSScrollTimelineTest, ViewTimelinePart) {
   ScopedCSSTreeScopedTimelinesForTest scoped_feature(true);
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       .host {
         view-timeline: --timeline y;
@@ -373,9 +367,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelinePart) {
 
 TEST_F(CSSScrollTimelineTest, ScrollTimelineHost) {
   ScopedCSSTreeScopedTimelinesForTest scoped_feature(true);
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       @keyframes anim {
         from { z-index: 100; }
@@ -416,9 +408,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineHost) {
 
 TEST_F(CSSScrollTimelineTest, ScrollTimelineSlotted) {
   ScopedCSSTreeScopedTimelinesForTest scoped_feature(true);
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       @keyframes anim {
         from { z-index: 100; }
@@ -457,9 +447,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineSlotted) {
 
 TEST_F(CSSScrollTimelineTest, ScrollTimelinePart) {
   ScopedCSSTreeScopedTimelinesForTest scoped_feature(true);
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       .host {
         scroll-timeline: --timeline y;

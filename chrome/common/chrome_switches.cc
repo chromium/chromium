@@ -108,6 +108,13 @@ const char kAutoSelectDesktopCaptureSource[] =
 const char kAutoSelectTabCaptureSourceByTitle[] =
     "auto-select-tab-capture-source-by-title";
 
+// This flag makes Chrome auto-select a window with the provided title when
+// the media-picker should otherwise be displayed to the user. This switch
+// is very similar to kAutoSelectDesktopCaptureSource, but limits selection
+// to the window.
+const char kAutoSelectWindowCaptureSourceByTitle[] =
+    "auto-select-window-capture-source-by-title";
+
 // How often (in seconds) to check for updates. Should only be used for testing
 // purposes.
 const char kCheckForUpdateIntervalSec[] = "check-for-update-interval";
@@ -242,10 +249,6 @@ const char kEnableBookmarkUndo[] = "enable-bookmark-undo";
 // Proxy component within the service process.
 const char kEnableCloudPrintProxy[] = "enable-cloud-print-proxy";
 
-// Enables CriticalPersistedTabData - redesign/replacement for TabState
-const char kEnableCriticalPersistedTabData[] =
-    "enable-critical-persisted-tab-data";
-
 // Enables Domain Reliability Monitoring.
 const char kEnableDomainReliability[] = "enable-domain-reliability";
 
@@ -253,10 +256,6 @@ const char kEnableDomainReliability[] = "enable-domain-reliability";
 // download warnings.
 const char kEnableDownloadWarningImprovements[] =
     "enable-download-warning-improvements";
-
-// Enables the early process singleton feature. The process singleton will be
-// held for the whole lifetime of BrowserImpl (see https://crbug.com/1340599).
-const char kEnableEarlyProcessSingleton[] = "enable-early-process-singleton";
 
 // Enables logging for extension activity.
 const char kEnableExtensionActivityLogging[] =
@@ -268,6 +267,17 @@ const char kEnableExtensionActivityLogTesting[] =
 // Force enabling HangoutServicesExtension.
 const char kEnableHangoutServicesExtensionForTesting[] =
     "enable-hangout-services-extension-for-testing";
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Makes Lacros fork the zygotes before blocking when prelaunched at login
+// screen.
+const char kEnableLacrosForkZygotesAtLoginScreen[] =
+    "enable-lacros-fork-zygotes-at-login-screen";
+
+// Makes Lacros use a location shared across users for browser components.
+const char kEnableLacrosSharedComponentsDir[] =
+    "enable-lacros-shared-components-dir";
+#endif
 
 // Allows NaCl to run in all contexts (such as open web). Note that
 // kDisableNaCl disables NaCl in all contexts and takes precedence.
@@ -546,6 +556,13 @@ const char kSimulateUpgrade[] = "simulate-upgrade";
 // possible) for testing purposes.
 const char kSimulateIdleTimeout[] = "simulate-idle-timeout";
 
+// Causes password_manager_android_util::SetUsesSplitStoresAndUPMForLocal() to
+// ignore the min GmsCore version requirement.
+// TODO(crbug.com/324370397): Remove once min GmsCore version running on the
+// bots is above the checked value.
+const char kSkipLocalUpmGmsCoreVersionCheckForTesting[] =
+    "skip-local-upm-gms-core-version-check-for-testing";
+
 // Specifies the maximum SSL/TLS version ("tls1.2" or "tls1.3").
 const char kSSLVersionMax[] = "ssl-version-max";
 
@@ -598,10 +615,6 @@ const char kTestName[] = "test-name";
 // Identifies a list of download sources as trusted, but only if proper group
 // policy is set.
 const char kTrustedDownloadSources[] = "trusted-download-sources";
-
-// Experimental. Shows a dialog asking the user to try chrome. This flag is to
-// be used only by the upgrade process.
-const char kTryChromeAgain[] = "try-chrome-again";
 
 // Overrides per-origin quota settings to unlimited storage for any
 // apps/origins.  This should be used only for testing purpose.
@@ -670,10 +683,6 @@ const char kWinJumplistAction[] = "win-jumplist-action";
 // Android authentication account type for SPNEGO authentication
 const char kAuthAndroidNegotiateAccountType[] = "auth-spnego-account-type";
 
-// Enable the accessibility tab switcher.
-const char kEnableAccessibilityTabSwitcher[] =
-    "enable-accessibility-tab-switcher";
-
 // Forces the device to report being owned by an enterprise. This mimics the
 // presence of an app signaling device ownership.
 const char kForceDeviceOwnership[] = "force-device-ownership";
@@ -695,6 +704,10 @@ const char kMarketUrlForTesting[] = "market-url-for-testing";
 
 // Force enable user agent overrides to request desktop sites in Clank.
 const char kRequestDesktopSites[] = "request-desktop-sites";
+
+// Hash names of Java functions in SSM. Only has an effect if SSM is enabled.
+const char kStartStackProfilerWithJavaNameHashing[] =
+    "start-stack-profiler-with-java-name-hashing";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -729,13 +742,12 @@ const char kHelp[] = "help";
 const char kHelpShort[] = "h";
 
 // Specifies which encryption storage backend to use. Possible values are
-// kwallet, kwallet5, kwallet6, gnome, gnome-keyring, gnome-libsecret, basic.
+// kwallet, kwallet5, kwallet6, gnome-libsecret, basic.
 // Any other value will lead to Chrome detecting the best backend automatically.
-// TODO(crbug.com/571003): Once PasswordStore no longer uses the Keyring or
-// KWallet for storing passwords, rename this flag to stop referencing
-// passwords. Do not rename it sooner, though; developers and testers might
-// rely on it keeping large amounts of testing passwords out of their Keyrings
-// or KWallets.
+// TODO(crbug.com/571003): Once PasswordStore no longer uses KWallet for storing
+// passwords, rename this flag to stop referencing passwords. Do not rename it
+// sooner, though; developers and testers might rely on it keeping large amounts
+// of testing passwords out of their KWallets.
 const char kPasswordStore[] = "password-store";
 
 // Enables the feature of allowing the user to disable the backend via a
@@ -785,15 +797,30 @@ const char kEnableProfileShortcutManager[] = "enable-profile-shortcut-manager";
 // for accessibility software (see https://crbug.com/1072735).
 extern const char kFromInstaller[] = "from-installer";
 
+// Indicates that this launch of the browser originated from the Legacy Browser
+// Support for Edge extension's native host. This is recorded in UMA.
+extern const char kFromBrowserSwitcher[] = "from-browser-switcher";
+
 // Makes Windows happy by allowing it to show "Enable access to this program"
 // checkbox in Add/Remove Programs->Set Program Access and Defaults. This only
 // shows an error box because the only way to hide Chrome is by uninstalling
 // it.
 const char kHideIcons[] = "hide-icons";
 
+// Don't try to clear downlevel OS appcompat layers out of Chrome's
+// AppCompatFlags\Layers value in the Windows registry on process startup; see
+// https://crbug.com/1482568.
+const char kNoAppCompatClear[] = "no-appcompat-clear";
+
 // Whether or not the browser should warn if the profile is on a network share.
 // This flag is only relevant for Windows currently.
 const char kNoNetworkProfileWarning[] = "no-network-profile-warning";
+
+// Whether this process should PrefetchVirtualMemory on the contents of
+// Chrome.dll. This warms up the pages in memory to speed up startup but might
+// not be required in later renderers and/or GPU. For experiment info see
+// crbug.com/1350257.
+const char kNoPreReadMainDll[] = "no-pre-read-main-dll";
 
 // Used in combination with kNotificationLaunchId to specify the inline reply
 // entered in the toast in the Windows Action Center.
@@ -804,12 +831,8 @@ const char kNotificationInlineReply[] = "notification-inline-reply";
 const char kNotificationLaunchId[] = "notification-launch-id";
 
 // /prefetch:# arguments for the browser process launched in background mode and
-// for the watcher process. Use profiles 5, 6 and 7 as documented on
-// kPrefetchArgument* in content_switches.cc.
+// as documented in prefetch_type_win.h.
 const char kPrefetchArgumentBrowserBackground[] = "/prefetch:5";
-// /prefetch:6 was formerly used by the watcher but is no longer used.
-// /prefetch:7 is used by crashpad, which can't depend on constants defined
-// here. See crashpad_win.cc for more details.
 
 // See kHideIcons.
 const char kShowIcons[] = "show-icons";

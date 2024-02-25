@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/version_info/channel.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -16,8 +17,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "components/account_manager_core/account.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 TestWaitForNetworkCallbackHelper::TestWaitForNetworkCallbackHelper() = default;
@@ -76,6 +78,13 @@ network::mojom::CookieManager* TestSigninClient::GetCookieManager() {
   return cookie_manager_.get();
 }
 
+network::mojom::NetworkContext* TestSigninClient::GetNetworkContext() {
+  if (!network_context_) {
+    network_context_ = std::make_unique<network::TestNetworkContext>();
+  }
+  return network_context_.get();
+}
+
 network::TestURLLoaderFactory* TestSigninClient::GetTestURLLoaderFactory() {
   if (test_url_loader_factory_)
     return test_url_loader_factory_;
@@ -132,20 +141,38 @@ version_info::Channel TestSigninClient::GetClientChannel() {
   return version_info::Channel::UNKNOWN;
 }
 
+void TestSigninClient::OnPrimaryAccountChangedWithEventSource(
+    signin::PrimaryAccountChangeEvent event_details,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source) {}
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+TestSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
+  return bound_session_delegate_factory_ ? bound_session_delegate_factory_.Run()
+                                         : nullptr;
+}
+
+void TestSigninClient::SetBoundSessionOauthMultiloginDelegateFactory(
+    BoundSessionOauthMultiloginDelegateFactory factory) {
+  bound_session_delegate_factory_ = std::move(factory);
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-absl::optional<account_manager::Account>
+std::optional<account_manager::Account>
 TestSigninClient::GetInitialPrimaryAccount() {
   return initial_primary_account_;
 }
 
-absl::optional<bool> TestSigninClient::IsInitialPrimaryAccountChild() const {
+std::optional<bool> TestSigninClient::IsInitialPrimaryAccountChild() const {
   return is_initial_primary_account_child_;
 }
 
 void TestSigninClient::SetInitialPrimaryAccountForTests(
     const account_manager::Account& account,
-    const absl::optional<bool>& is_child) {
-  initial_primary_account_ = absl::make_optional(account);
+    const std::optional<bool>& is_child) {
+  initial_primary_account_ = std::make_optional(account);
   is_initial_primary_account_child_ = is_child;
 }
 

@@ -70,7 +70,7 @@ class TestDelegate : public HttpFirewallRoutine::Delegate {
 
   // Delegate:
   std::unique_ptr<TlsProber> CreateAndExecuteTlsProber(
-      TlsProber::NetworkContextGetter network_context_getter,
+      network::NetworkContextGetter network_context_getter,
       net::HostPortPair host_port_pair,
       bool negotiate_tls,
       TlsProber::TlsProbeCompleteCallback callback) override {
@@ -117,7 +117,8 @@ class HttpFirewallRoutineTest : public ::testing::Test {
 
   void SetUpRoutine(
       base::circular_deque<TlsProberReturnValue> fake_probe_results) {
-    http_firewall_routine_ = std::make_unique<HttpFirewallRoutine>();
+    http_firewall_routine_ = std::make_unique<HttpFirewallRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     http_firewall_routine_->SetDelegateForTesting(
         std::make_unique<TestDelegate>(std::move(fake_probe_results)));
   }

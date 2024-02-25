@@ -22,14 +22,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -39,10 +37,11 @@ import org.chromium.ui.test.util.ViewUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR + "<Study",
-        "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:mode/always-new-tab"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group",
+    "force-fieldtrial-params=Study.Group:mode/always-new-tab"
+})
 @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
 public class OptionalNewTabButtonControllerTabletTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
@@ -53,7 +52,7 @@ public class OptionalNewTabButtonControllerTabletTest {
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, /*clearAllTabState=*/false);
+            new BlankCTATabInitialStateRule(sActivityTestRule, /* clearAllTabState= */ false);
 
     private String mTestPageUrl;
 
@@ -83,7 +82,7 @@ public class OptionalNewTabButtonControllerTabletTest {
     public void testButton_hiddenOnTablet_landscape() {
         ActivityTestUtils.rotateActivityToOrientation(
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
-        sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
+        sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
 
         ViewUtils.waitForViewCheckingState(
                 withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
@@ -94,7 +93,7 @@ public class OptionalNewTabButtonControllerTabletTest {
     public void testButton_hiddenOnTablet_portrait() {
         ActivityTestUtils.rotateActivityToOrientation(
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
-        sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
+        sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
 
         ViewUtils.waitForViewCheckingState(
                 withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);

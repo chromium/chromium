@@ -22,16 +22,11 @@ class ConvertableToTraceFormat;
 }
 }
 
-namespace gpu {
-class GpuMemoryBufferManager;
-}
-
 namespace cc {
 
 class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
  public:
   ZeroCopyRasterBufferProvider(
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       viz::RasterContextProvider* compositor_context_provider,
       const RasterCapabilities& raster_caps);
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;
@@ -67,7 +62,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
 
-  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
   raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const viz::SharedImageFormat tile_format_;

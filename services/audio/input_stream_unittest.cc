@@ -196,7 +196,7 @@ class AudioServiceInputStreamTest : public testing::Test {
 
   void OnCreated(media::mojom::ReadOnlyAudioDataPipePtr ptr,
                  bool initially_muted,
-                 const absl::optional<base::UnguessableToken>& stream_id) {
+                 const std::optional<base::UnguessableToken>& stream_id) {
     EXPECT_EQ(stream_id.has_value(), !!ptr);
     CreatedCallback(!!ptr, initially_muted);
   }

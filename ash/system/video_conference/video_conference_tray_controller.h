@@ -101,8 +101,7 @@ class ASH_EXPORT VideoConferenceTrayController
   void MaybeRunNudgeRequest();
 
   // Attempts showing the speak-on-mute opt-in nudge.
-  void MaybeShowSpeakOnMuteOptInNudge(
-      VideoConferenceTray* video_conference_tray);
+  void MaybeShowSpeakOnMuteOptInNudge();
 
   // Callback used to update prefs whenever a user opts in or out of the
   // speak-on-mute feature. An `opt_in` value of false means the user opted out.
@@ -190,9 +189,10 @@ class ASH_EXPORT VideoConferenceTrayController
   // Gets `disable_shelf_autohide_timer_`, used for testing.
   base::OneShotTimer& GetShelfAutoHideTimerForTest();
 
-  VideoConferenceTrayEffectsManager& effects_manager() {
-    return effects_manager_;
-  }
+  virtual VideoConferenceTrayEffectsManager& GetEffectsManager();
+
+  // Passes create background image action to `video_conference_manager_`.
+  void CreateBackgroundImage();
 
   bool camera_muted_by_hardware_switch() const {
     return camera_muted_by_hardware_switch_;

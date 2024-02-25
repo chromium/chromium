@@ -23,8 +23,6 @@ owners:
 - lbaraz@chromium.org
 schema:
   type: boolean
-supported_chrome_os_management:
-- google_cloud
 tags:
 - admin-sharing
 type: main

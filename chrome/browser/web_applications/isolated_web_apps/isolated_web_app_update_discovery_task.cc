@@ -4,6 +4,9 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 
+#include <optional>
+#include <ostream>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,12 +25,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -114,19 +116,6 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
       trigger:
         "The browser automatically checks for updates of all policy-installed "
         "Isolated Web Apps after startup and in regular time intervals."
-      internal {
-        contacts {
-          email: "cmfcmf@google.com"
-        }
-      }
-      # TODO(crbug.com/1444692): `user_data` is duplicated in
-      # `UpdateManifestFetcher::DownloadUpdateManifest`, but the traffic
-      # annotator script complains that it is missing if it is not also
-      # present here.
-      user_data {
-        type: NONE
-      }
-      last_reviewed: "2023-07-04"
     }
     policy {
       setting: "This feature cannot be disabled in settings."
@@ -184,7 +173,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
     FailWith(Error::kIwaNotInstalled);
     return;
   }
-  absl::optional<WebApp::IsolationData> isolation_data =
+  std::optional<WebApp::IsolationData> isolation_data =
       web_app->isolation_data();
   if (!isolation_data) {
     FailWith(Error::kIwaNotInstalled);
@@ -224,10 +213,10 @@ void IsolatedWebAppUpdateDiscoveryTask::GetDownloadPath(
     UpdateManifest::VersionEntry version_entry) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce([]() -> absl::optional<base::FilePath> {
+      base::BindOnce([]() -> std::optional<base::FilePath> {
         base::FilePath download_path;
         bool success = base::CreateTemporaryFile(&download_path);
-        return success ? absl::make_optional(download_path) : absl::nullopt;
+        return success ? std::make_optional(download_path) : std::nullopt;
       }),
       base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnGetDownloadPath,
                      weak_factory_.GetWeakPtr(), std::move(version_entry)));
@@ -235,7 +224,7 @@ void IsolatedWebAppUpdateDiscoveryTask::GetDownloadPath(
 
 void IsolatedWebAppUpdateDiscoveryTask::OnGetDownloadPath(
     UpdateManifest::VersionEntry version_entry,
-    absl::optional<base::FilePath> download_path) {
+    std::optional<base::FilePath> download_path) {
   if (!download_path.has_value()) {
     FailWith(Error::kDownloadPathCreationFailed);
     return;
@@ -258,19 +247,6 @@ void IsolatedWebAppUpdateDiscoveryTask::OnGetDownloadPath(
         "Isolated Web Apps after startup and in regular time intervals. If an "
         "update is found, then the corresponding Signed Web Bundle is "
         "downloaded."
-      internal {
-        contacts {
-          email: "cmfcmf@google.com"
-        }
-      }
-      # TODO(crbug.com/1444692): `user_data` is duplicated in
-      # `IsolatedWebAppDownloader::DownloadSignedWebBundle`, but the traffic
-      # annotator script complains that it is missing if it is not also
-      # present here.
-      user_data {
-        type: NONE
-      }
-      last_reviewed: "2023-07-04"
     }
     policy {
       setting: "This feature cannot be disabled in settings."
@@ -301,7 +277,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
   }
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
-      WebApp::IsolationData::PendingUpdateInfo(
+      IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
           InstalledBundle({.path = download_path}), expected_version),
       url_info_,
       /*optional_keep_alive=*/nullptr,
@@ -311,9 +287,10 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone(
-    base::expected<void, IsolatedWebAppUpdatePrepareAndStoreCommandError>
-        result) {
+    IsolatedWebAppUpdatePrepareAndStoreCommandResult result) {
   if (result.has_value()) {
+    debug_log_.Set("prepare_and_store_command_update_version",
+                   result->update_version.GetString());
     SucceedWith(Success::kUpdateFoundAndSavedInDatabase);
   } else {
     debug_log_.Set("prepare_and_store_command_error", result.error().message);

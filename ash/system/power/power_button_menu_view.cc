@@ -21,16 +21,17 @@
 #include "ash/system/power/power_button_menu_view_util.h"
 #include "ash/system/user/login_status.h"
 #include "ash/wm/lock_state_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -70,10 +71,10 @@ PowerButtonMenuView::PowerButtonMenuView(
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
   if (features::IsBackgroundBlurEnabled()) {
-    layer()->SetBackgroundBlur(kPowerButtonMenuBlurType);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_ACCESSIBLE));
   RecreateItems();
@@ -113,7 +114,7 @@ PowerButtonMenuView::TransformDisplacement
 PowerButtonMenuView::GetTransformDisplacement() const {
   TransformDisplacement transform_displacement;
   if (power_button_position_ == PowerButtonPosition::NONE ||
-      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     transform_displacement.direction = TransformDirection::Y;
     transform_displacement.distance = kPowerButtonMenuTransformDistanceDp;
     return transform_displacement;
@@ -190,7 +191,7 @@ void PowerButtonMenuView::RecreateItems() {
   const bool create_lock_screen = login_status != LoginStatus::LOCKED &&
                                   session_controller->CanLockScreen();
   const bool create_capture_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      display::Screen::GetScreen()->InTabletMode() &&
       !session_controller->IsUserSessionBlocked() &&
       login_status != LoginStatus::KIOSK_APP;
   const bool create_feedback = login_status != LoginStatus::LOCKED &&
@@ -249,11 +250,7 @@ void PowerButtonMenuView::RecreateItems() {
       &feedback_item_);
 }
 
-const char* PowerButtonMenuView::GetClassName() const {
-  return "PowerButtonMenuView";
-}
-
-void PowerButtonMenuView::Layout() {
+void PowerButtonMenuView::Layout(PassKey) {
   gfx::Rect rect(GetContentsBounds().origin(),
                  power_off_item_->GetPreferredSize());
   const int y_offset =
@@ -329,5 +326,8 @@ void PowerButtonMenuView::ButtonPressed(PowerButtonMenuActionType action,
   std::move(callback).Run();
   Shell::Get()->power_button_controller()->DismissMenu();
 }
+
+BEGIN_METADATA(PowerButtonMenuView)
+END_METADATA
 
 }  // namespace ash

@@ -1,18 +1,46 @@
+<!DOCTYPE html>
 <html>
+<style>
+  #draggableDiv {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: teal;
+  }
+  #draggableText {
+    position: absolute;
+    /* Leave sufficient gap between the draggable div and the text to avoid
+       ambiguity due to touch fuzzing. */
+    top: 120px;
+    left: 0px;
+    background-color: aqua;
+  }
+</style>
 <body onload="top.runTest()">
-<div id='mydiv' draggable='true' ondragstart='drag(event)' onmousedown='mousedown(event)' style='width:100px;height:100px;position:absolute;top:0px; left:0px; background-color:blue;'>
+<div id='draggableDiv' draggable='true'>
 Drag me</div>
-<div id='textdiv' ondragstart='textDivDrag(event)' style='position:absolute;top:100px; left:0px; background-color:blue;'>Some text</div>
+<div><span id='draggableText'>Some text</span></div>
 <script type='text/javascript'>
-    function drag(event) {
-        top.onDragStart();
-    }
-    function mousedown(event) {
-        top.onMouseDown();
-    }
-    function textDivDrag(event) {
-        top.onTextDivDrag();
-    }
+  const block = document.getElementById('draggableDiv');
+  block.addEventListener('dragstart', (event) => {
+    event.preventDefault();
+    top.dragStarted(block);
+  });
+  block.addEventListener('mousedown', (event) => {
+    top.mousedownTriggered();
+  });
+
+  const text = document.getElementById('draggableText');
+  text.addEventListener('dragstart', (event) => {
+    event.preventDefault();
+    top.dragStarted(text);
+  });
+
+  document.addEventListener('contextmenu', event => {
+    event.preventDefault();
+  });
 </script>
 </body>
 </html>

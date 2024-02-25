@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_WEBIDL_COMPAT_H_
 
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-value.h"
@@ -47,6 +47,11 @@ struct CONTENT_EXPORT UnrestrictedDouble {
 //  argument bar, etc.)
 class CONTENT_EXPORT IdlConvert {
  public:
+  // This should be bigger than the biggest Sequence<> the users of this need to
+  // handle, which is currently up to
+  // blink::kMaxAdAuctionAdComponentsConfigLimit.
+  static const size_t kSequenceLengthLimit = 101;
+
   // Outcome of the conversion, either success or some kind of error.
   class CONTENT_EXPORT Status {
    public:
@@ -186,6 +191,38 @@ class CONTENT_EXPORT IdlConvert {
                         v8::Local<v8::Value> value,
                         v8::Local<v8::Value>& out);
 
+  // Tries to use `iterator_factory` returned by CheckForSequence to iterate
+  // over `iterable`. Entries will be provided one-by-one to `item_callback`
+  // (0 to kSequenceLengthLimit times).
+  //
+  // `item_callback` is expected to typecheck its input and return the status,
+  // with failures interrupting the conversion and propagated up.
+  static Status ConvertSequence(
+      AuctionV8Helper* v8_helper,
+      std::string_view error_prefix,
+      std::initializer_list<std::string_view> error_subject,
+      v8::Local<v8::Object> iterable,
+      v8::Local<v8::Object> iterator_factory,
+      base::RepeatingCallback<Status(v8::Local<v8::Value>)> item_callback);
+
+  // Check if given `maybe_iterable` can be treated as a sequence.
+  // If it can be, sets `result` to the value of the @@iterator property and
+  // returns success.
+  //
+  // If trying to look up the @@iterator property throws an exception or times
+  // out, or returns in a non-null-or-undefined value that's not a callable
+  // object, returns a failure.
+  //
+  // Otherwise, returns success and keeps `result` unchanged. This denotes
+  // `maybe_iterable` not being a sequence, and that it can be used as some
+  // other type in a union containing a sequence.
+  static Status CheckForSequence(
+      v8::Isolate* isolate,
+      std::string_view error_prefix,
+      std::initializer_list<std::string_view> error_subject,
+      v8::Local<v8::Object> maybe_iterable,
+      v8::Local<v8::Object>& result);
+
   // Makes a failure result based on state of `catcher`. If nothing is set on
   // `catcher`, will report a conversion failure.
   static Status MakeConversionFailure(
@@ -226,10 +263,6 @@ CONTENT_EXPORT IdlConvert::Status ConvertRecord(
 //  GetOptionalSequence.
 class CONTENT_EXPORT DictConverter {
  public:
-  // This should be bigger than the biggest Sequence<> the users of this need to
-  // handle, which is currently blink::kMaxAdAuctionAdComponents.
-  static const size_t kSequenceLengthLimit = 21;
-
   // Prepares to convert `value` to a WebIDL dictionary.
   //
   // Since fields conversions may loop infinitely, a `time_limit_scope` must
@@ -267,7 +300,7 @@ class CONTENT_EXPORT DictConverter {
   }
 
   template <typename T>
-  bool GetOptional(std::string_view field, absl::optional<T>& out) {
+  bool GetOptional(std::string_view field, std::optional<T>& out) {
     if (is_failed()) {
       return false;
     }
@@ -278,7 +311,7 @@ class CONTENT_EXPORT DictConverter {
     }
 
     if (val->IsUndefined()) {
-      out = absl::nullopt;
+      out = std::nullopt;
       return true;
     }
 
@@ -291,15 +324,13 @@ class CONTENT_EXPORT DictConverter {
   // Gets an optional sequence field `field`. If the field exists,
   // `exists_callback` will be called, and then entries will be provided
   // one-by-one to `item_callback` (0 to kSequenceLengthLimit times).
-  // `item_callback` is expected to typecheck its input and return true/false as
-  // appropriate.
-  //
-  // The conversion routine can use SetStatus() to forward errors to `this` from
-  // a different converter.
+  // `item_callback` is expected to typecheck its input and return status as
+  // appropriate; with failures forwarded to `this`.
   bool GetOptionalSequence(
       std::string_view field,
       base::OnceClosure exists_callback,
-      base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback);
+      base::RepeatingCallback<IdlConvert::Status(v8::Local<v8::Value>)>
+          item_callback);
 
   std::string ErrorMessage() const;
 
@@ -327,15 +358,9 @@ class CONTENT_EXPORT DictConverter {
   // This can mark failure.
   v8::Local<v8::Value> GetMember(std::string_view field);
 
-  bool ConvertSequence(
-      std::string_view field,
-      v8::Local<v8::Value> value,
-      base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback);
-
   void MarkFailed(std::string_view fail_message);
   void MarkFailedWithTimeout(std::string_view fail_message);
   void MarkFailedWithException(const v8::TryCatch& catcher);
-  void MarkFailedIter(std::string_view field, const v8::TryCatch& catcher);
 
   raw_ptr<AuctionV8Helper> v8_helper_;
   std::string error_prefix_;

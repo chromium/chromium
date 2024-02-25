@@ -11,6 +11,8 @@ component("views_examples_lib") {
   testonly = true
 
   sources = [
+    "actions_example.cc",
+    "actions_example.h",
     "animated_image_view_example.cc",
     "animated_image_view_example.h",
     "animation_example.cc",
@@ -45,6 +47,7 @@ component("views_examples_lib") {
     "example_base.h",
     "example_combobox_model.cc",
     "example_combobox_model.h",
+    "examples_action_id.h",
     "examples_color_id.h",
     "examples_color_mixer.cc",
     "examples_color_mixer.h",
@@ -128,10 +131,12 @@ component("views_examples_lib") {
     "//cc/paint",
     "//skia",
     "//third_party/icu",
+    "//ui/actions",
     "//ui/base",
     "//ui/color",
     "//ui/events",
     "//ui/gfx",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/lottie",
     "//ui/message_center",
@@ -170,6 +175,7 @@ source_set("views_examples_proc") {
     "//components/viz/service",
     "//mojo/core/embedder",
     "//skia",
+    "//ui/accessibility:test_support",
     "//ui/base",
     "//ui/color:mixers",
     "//ui/compositor",
@@ -186,6 +192,7 @@ source_set("views_examples_proc") {
     ]
     deps += [
       "//ui/base:pixel_diff_test_support",
+      "//ui/native_theme:native_theme",
       "//ui/snapshot",
     ]
   }
@@ -223,6 +230,10 @@ executable("views_examples") {
     "//ui/color:mixers",
     "//ui/resources:ui_test_pak",
   ]
+
+  if (is_win) {
+    deps += [ "//ui/native_theme:native_theme_browser" ]
+  }
 }
 
 component("views_examples_with_content_lib") {

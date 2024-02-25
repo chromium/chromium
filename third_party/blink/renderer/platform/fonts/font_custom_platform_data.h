@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
 #include "third_party/blink/renderer/platform/fonts/resolved_font_features.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -54,21 +55,22 @@ class FontPlatformData;
 class FontVariationSettings;
 
 class PLATFORM_EXPORT FontCustomPlatformData
-    : public RefCounted<FontCustomPlatformData> {
-  USING_FAST_MALLOC(FontCustomPlatformData);
-
+    : public GarbageCollected<FontCustomPlatformData> {
  public:
-  static scoped_refptr<FontCustomPlatformData> Create(SharedBuffer*,
-                                               String& ots_parse_message);
+  static FontCustomPlatformData* Create(SharedBuffer*,
+                                        String& ots_parse_message);
+  FontCustomPlatformData(sk_sp<SkTypeface>, size_t data_size);
   FontCustomPlatformData(const FontCustomPlatformData&) = delete;
   FontCustomPlatformData& operator=(const FontCustomPlatformData&) = delete;
   ~FontCustomPlatformData();
+
+  void Trace(Visitor*) const {}
 
   // The size argument should come from EffectiveFontSize() and
   // adjusted_specified_size should come from AdjustedSpecifiedSize() of
   // FontDescription. The latter is needed for correctly applying
   // font-optical-sizing: auto; independent of zoom level.
-  FontPlatformData GetFontPlatformData(
+  const FontPlatformData* GetFontPlatformData(
       float size,
       float adjusted_specified_size,
       bool bold,
@@ -80,7 +82,7 @@ class PLATFORM_EXPORT FontCustomPlatformData
       const ResolvedFontFeatures& resolved_font_features,
       FontOrientation = FontOrientation::kHorizontal,
       const FontVariationSettings* = nullptr,
-      const FontPalette* = nullptr);
+      const FontPalette* = nullptr) const;
 
   String FamilyNameForInspector() const;
 
@@ -91,7 +93,6 @@ class PLATFORM_EXPORT FontCustomPlatformData
   bool MayBeIconFont() const;
 
  private:
-  FontCustomPlatformData(sk_sp<SkTypeface>, size_t data_size);
   sk_sp<SkTypeface> base_typeface_;
   size_t data_size_;
 

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +20,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace viz {
@@ -46,7 +46,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
     // The cached resource for each shared element. The entries here are
     // optional since copy request for an element may fail or a
     // [src_element, dst_element] has a null src_element.
-    std::vector<absl::optional<PositionedResource>> shared;
+    std::vector<std::optional<PositionedResource>> shared;
 
     // A map from renderer generated ViewTransitionElementResourceId to the
     // corresponding cached resource. The resources are the same as |shared|

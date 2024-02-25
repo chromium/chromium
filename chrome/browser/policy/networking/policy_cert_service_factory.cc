@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "services/network/cert_verifier_with_trust_anchors.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -25,6 +24,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/incognito_helpers.h"
+#endif
 
 namespace policy {
 namespace {
@@ -50,7 +53,8 @@ ash::PolicyCertificateProvider* GetPolicyCertificateProvider(Profile* profile) {
   return UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
 }
 
-KeyedService* BuildServiceInstanceAsh(content::BrowserContext* context) {
+std::unique_ptr<KeyedService> BuildServiceInstanceAsh(
+    content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
   ash::PolicyCertificateProvider* policy_certificate_provider =
@@ -59,14 +63,16 @@ KeyedService* BuildServiceInstanceAsh(content::BrowserContext* context) {
     return nullptr;
 
   if (ash::ProfileHelper::Get()->IsSigninProfile(profile)) {
-    return new PolicyCertService(profile, policy_certificate_provider,
-                                 /*may_use_profile_wide_trust_anchors=*/false);
+    return std::make_unique<PolicyCertService>(
+        profile, policy_certificate_provider,
+        /*may_use_profile_wide_trust_anchors=*/false);
   }
 
   if (ash::ProfileHelper::Get()->IsLockScreenProfile(profile) &&
       ash::features::ArePolicyProvidedTrustAnchorsAllowedAtLockScreen()) {
-    return new PolicyCertService(profile, policy_certificate_provider,
-                                 /*may_use_profile_wide_trust_anchors=*/true);
+    return std::make_unique<PolicyCertService>(
+        profile, policy_certificate_provider,
+        /*may_use_profile_wide_trust_anchors=*/true);
   }
 
   // Don't allow policy-provided certificates for "special" Profiles except the
@@ -83,16 +89,17 @@ KeyedService* BuildServiceInstanceAsh(content::BrowserContext* context) {
   // future changes.
   bool may_use_profile_wide_trust_anchors =
       user == user_manager->GetPrimaryUser() &&
-      user->GetType() != user_manager::USER_TYPE_GUEST;
+      user->GetType() != user_manager::UserType::kGuest;
 
-  return new PolicyCertService(profile, policy_certificate_provider,
-                               may_use_profile_wide_trust_anchors);
+  return std::make_unique<PolicyCertService>(
+      profile, policy_certificate_provider, may_use_profile_wide_trust_anchors);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-KeyedService* BuildServiceInstanceLacros(content::BrowserContext* context) {
+std::unique_ptr<KeyedService> BuildServiceInstanceLacros(
+    content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
   ash::PolicyCertificateProvider* policy_certificate_provider =
@@ -100,9 +107,17 @@ KeyedService* BuildServiceInstanceLacros(content::BrowserContext* context) {
   if (!policy_certificate_provider)
     return nullptr;
 
-  return new PolicyCertService(
-      profile, policy_certificate_provider,
-      /*may_use_profile_wide_trust_anchors=*/profile->IsMainProfile());
+  Profile* original_profile = Profile::FromBrowserContext(
+      chrome::GetBrowserContextRedirectedInIncognito(profile));
+  // Only allow trusted policy-provided certificates for non-guest primary
+  // users. Guest users don't have user policy, but set
+  // `may_use_profile_wide_trust_anchors`=false for them out of caution against
+  // future changes.
+  bool may_use_profile_wide_trust_anchors =
+      original_profile->IsMainProfile() && !original_profile->IsGuestSession();
+
+  return std::make_unique<PolicyCertService>(
+      profile, policy_certificate_provider, may_use_profile_wide_trust_anchors);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -141,7 +156,8 @@ PolicyCertServiceFactory::PolicyCertServiceFactory()
 
 PolicyCertServiceFactory::~PolicyCertServiceFactory() = default;
 
-KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PolicyCertServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return BuildServiceInstanceAsh(context);

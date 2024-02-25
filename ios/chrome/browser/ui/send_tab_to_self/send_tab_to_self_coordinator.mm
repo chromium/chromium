@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
+
 #import <memory>
+#import <optional>
 #import <utility>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -21,7 +24,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_observer.h"
-#import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -33,13 +36,13 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
@@ -47,7 +50,6 @@
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_presentation_controller.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -59,7 +61,7 @@ NSString* const kActivityServicesSnackbarCategory =
 class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
  public:
   using GetDisplayReasonCallback = base::RepeatingCallback<
-      absl::optional<send_tab_to_self::EntryPointDisplayReason>()>;
+      std::optional<send_tab_to_self::EntryPointDisplayReason>()>;
 
   // Queries `get_display_reason_callback` until it indicates the device list is
   // known (i.e. until it returns kOfferFeature or kInformNoTargetDevice), then
@@ -81,7 +83,7 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
   ~TargetDeviceListWaiter() override { sync_service_->RemoveObserver(this); }
 
   void OnStateChanged(syncer::SyncService*) override {
-    absl::optional<send_tab_to_self::EntryPointDisplayReason> display_reason =
+    std::optional<send_tab_to_self::EntryPointDisplayReason> display_reason =
         get_display_reason_callback_.Run();
     if (!display_reason) {
       // Model starting up, keep waiting.
@@ -99,7 +101,7 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
   }
 
  private:
-  syncer::SyncService* const sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
   const GetDisplayReasonCallback get_display_reason_callback_;
   base::OnceClosure on_list_known_callback_;
 };
@@ -282,7 +284,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 #pragma mark - Private
 
 - (void)show {
-  absl::optional<send_tab_to_self::EntryPointDisplayReason> displayReason =
+  std::optional<send_tab_to_self::EntryPointDisplayReason> displayReason =
       [self displayReason];
   DCHECK(displayReason);
 
@@ -359,6 +361,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (void)onSigninComplete:(BOOL)succeeded {
   if (!succeeded) {
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        BrowserCoordinatorCommands) hideSendTabToSelfUI];
     return;
   }
   __weak __typeof(self) weakSelf = self;
@@ -379,11 +383,11 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   [self show];
 }
 
-- (absl::optional<send_tab_to_self::EntryPointDisplayReason>)displayReason {
+- (std::optional<send_tab_to_self::EntryPointDisplayReason>)displayReason {
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  return service ? service->GetEntryPointDisplayReason(_url) : absl::nullopt;
+  return service ? service->GetEntryPointDisplayReason(_url) : std::nullopt;
 }
 
 @end

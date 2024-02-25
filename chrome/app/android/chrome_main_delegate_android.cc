@@ -35,7 +35,7 @@ BASE_FEATURE(kUseProcessStartTimeForMetrics,
 ChromeMainDelegateAndroid::ChromeMainDelegateAndroid() = default;
 ChromeMainDelegateAndroid::~ChromeMainDelegateAndroid() = default;
 
-absl::optional<int> ChromeMainDelegateAndroid::BasicStartupComplete() {
+std::optional<int> ChromeMainDelegateAndroid::BasicStartupComplete() {
   TRACE_EVENT0("startup", "ChromeMainDelegateAndroid::BasicStartupComplete");
   policy::android::AndroidCombinedPolicyProvider::SetShouldWaitForPolicy(true);
   SetChromeSpecificCommandLineFlags();

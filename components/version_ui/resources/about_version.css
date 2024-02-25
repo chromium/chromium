@@ -127,3 +127,11 @@ body {
 #copy-os-content-to-clipboard:active {
   background-color: var(--active-background-color);
 }
+
+#messages {
+  clip: rect(0 0 0 0);
+  height: 1px;
+  overflow: hidden;
+  position: fixed;
+  width: 1px;
+}

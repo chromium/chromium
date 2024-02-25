@@ -16,6 +16,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -33,12 +34,7 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(USE_VAAPI_X11)
-#include "ui/gfx/x/xproto.h"  // nogncheck
-#endif                        // BUILDFLAG(USE_VAAPI_X11)
 
 namespace gfx {
 enum class BufferFormat : uint8_t;
@@ -93,6 +89,7 @@ enum class VAImplementation {
   kMesaGallium,
   kIntelI965,
   kIntelIHD,
+  kChromiumFakeDriver,
   kOther,
   kInvalid,
 };
@@ -333,7 +330,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const gfx::Size& size,
       const std::vector<SurfaceUsageHint>& usage_hints,
       size_t num_surfaces,
-      const absl::optional<gfx::Size>& visible_size);
+      const std::optional<gfx::Size>& visible_size);
 
   // Attempts to create a protected session that will be attached to the
   // decoding context to enable encrypted video decoding. If it cannot be
@@ -379,6 +376,9 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // exists, it will be attached to the newly created |va_context_id_| as well.
   [[nodiscard]] virtual bool CreateContext(const gfx::Size& size);
 
+  // Returns true iff a VAContextID has been created and hasn't been destroyed.
+  bool HasContext() const;
+
   // Destroys the context identified by |va_context_id_|.
   virtual void DestroyContext();
 
@@ -395,8 +395,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const gfx::Size& size,
       const std::vector<SurfaceUsageHint>& usage_hints,
       size_t num_surfaces,
-      const absl::optional<gfx::Size>& visible_size,
-      const absl::optional<uint32_t>& va_fourcc);
+      const std::optional<gfx::Size>& visible_size,
+      const std::optional<uint32_t>& va_fourcc);
 
   // Creates a self-releasing VASurface from |pixmap|. The created VASurface
   // shares the ownership of the underlying buffer represented by |pixmap|. The
@@ -481,14 +481,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       VASurfaceID va_surface_id,
       const std::vector<std::pair<VABufferID, VABufferDescriptor>>& va_buffers);
 
-#if BUILDFLAG(USE_VAAPI_X11)
-  // Put data from |va_surface_id| into |x_pixmap| of size
-  // |dest_size|, converting/scaling to it.
-  [[nodiscard]] bool PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
-                                          x11::Pixmap x_pixmap,
-                                          gfx::Size dest_size);
-#endif  // BUILDFLAG(USE_VAAPI_X11)
-
   // Creates a ScopedVAImage from a VASurface |va_surface_id| and map it into
   // memory with the given |format| and |size|. If |format| is not equal to the
   // internal format, the underlying implementation will do format conversion if
@@ -528,7 +520,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // linear size of the resulted encoded frame is larger than |target_size|.
   [[nodiscard]] virtual bool DownloadFromVABuffer(
       VABufferID buffer_id,
-      absl::optional<VASurfaceID> sync_surface_id,
+      std::optional<VASurfaceID> sync_surface_id,
       uint8_t* target_ptr,
       size_t target_size,
       size_t* coded_data_size);
@@ -552,6 +544,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       bool& packed_pps,
       bool& packed_slice);
 
+  // Gets the minimum segment block size supported for AV1 encoding.
+  [[nodiscard]] bool GetMinAV1SegmentSize(VideoCodecProfile profile,
+                                          uint32_t& min_seg_size);
+
   // Blits a VASurface |va_surface_src| into another VASurface
   // |va_surface_dest| applying pixel format conversion, cropping
   // and scaling if needed. |src_rect| and |dest_rect| are optional. They can
@@ -562,8 +558,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   [[nodiscard]] virtual bool BlitSurface(
       const VASurface& va_surface_src,
       const VASurface& va_surface_dest,
-      absl::optional<gfx::Rect> src_rect = absl::nullopt,
-      absl::optional<gfx::Rect> dest_rect = absl::nullopt
+      std::optional<gfx::Rect> src_rect = std::nullopt,
+      std::optional<gfx::Rect> dest_rect = std::nullopt
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       ,
       VAProtectedSessionID va_protected_session_id = VA_INVALID_ID

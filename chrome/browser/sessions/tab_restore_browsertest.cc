@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -47,7 +48,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_view_host.h"
@@ -58,6 +58,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -140,9 +141,6 @@ class TabRestoreTest : public InProcessBrowserTest {
   // operation.
   content::WebContents* RestoreMostRecentlyClosed(Browser* browser) {
     ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
-    content::WindowedNotificationObserver tab_loaded_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
     {
       TabRestoreServiceLoadWaiter waiter(
           TabRestoreServiceFactory::GetForProfile(browser->profile()));
@@ -150,7 +148,7 @@ class TabRestoreTest : public InProcessBrowserTest {
       waiter.Wait();
     }
     content::WebContents* new_tab = tab_added_waiter.Wait();
-    tab_loaded_observer.Wait();
+    content::WaitForLoadStop(new_tab);
     return new_tab;
   }
 
@@ -186,7 +184,7 @@ class TabRestoreTest : public InProcessBrowserTest {
       EXPECT_EQ(++tab_count, browser->tab_strip_model()->count());
     }
 
-    EXPECT_EQ(chrome::FindBrowserWithWebContents(new_tab), browser);
+    EXPECT_EQ(chrome::FindBrowserWithTab(new_tab), browser);
 
     // Get a handle to the restored tab.
     ASSERT_GT(browser->tab_strip_model()->count(), expected_tabstrip_index);
@@ -291,8 +289,7 @@ class TabRestoreTest : public InProcessBrowserTest {
   raw_ptr<const BrowserList> active_browser_list_;
 
  private:
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
 // Close the end tab in the current window, then restore it. The tab should be
@@ -312,6 +309,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, Basic) {
   EXPECT_EQ(closed_tab_index, browser()->tab_strip_model()->active_index());
   EXPECT_EQ(url1_,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  // Make sure that the navigation type reported is "back_forward" on the
+  // duplicated tab.
+  EXPECT_EQ(
+      "back_forward",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "performance.getEntriesByType('navigation')[0].type"));
 }
 
 // Close a tab not at the end of the current window, then restore it. The tab
@@ -816,13 +819,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabFromClosedWindowByID) {
   // Restore the tab into the current window.
   EXPECT_EQ(1, browser->tab_strip_model()->count());
   ui_test_utils::TabAddedWaiter tab_added_waiter(browser);
-  content::WindowedNotificationObserver tab_loaded_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
   service->RestoreEntryById(browser->live_tab_context(), tab_id_to_restore,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  tab_added_waiter.Wait();
-  tab_loaded_observer.Wait();
+  auto* new_tab = tab_added_waiter.Wait();
+  content::WaitForLoadStop(new_tab);
 
   // Check that the tab was correctly restored.
   EXPECT_EQ(2, browser->tab_strip_model()->count());
@@ -965,15 +965,13 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow) {
   EXPECT_EQ(window_count - 1, active_browser_list_->size());
 
   // Restore the window.
-  content::WindowedNotificationObserver load_stop_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
   chrome::RestoreTab(active_browser_list_->get(0));
   EXPECT_EQ(window_count, active_browser_list_->size());
 
   Browser* browser = GetBrowser(1);
   EXPECT_EQ(initial_tab_count + 2, browser->tab_strip_model()->count());
-  load_stop_observer.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab_added_waiter.Wait()));
 
   EXPECT_EQ(initial_tab_count + 1, browser->tab_strip_model()->active_index());
   content::WebContents* restored_tab =
@@ -1665,10 +1663,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 
   // Restore the window. This should record kTimeBetweenWindowClosedAndRestored
   // histogram.
-  content::WindowedNotificationObserver load_stop_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
   chrome::RestoreTab(active_browser_list_->get(0));
+  EXPECT_TRUE(content::WaitForLoadStop(tab_added_waiter.Wait()));
 
   EXPECT_EQ(histogram_tester.GetAllSamples(kTimeBetweenWindowClosedAndRestored)
                 .size(),
@@ -1923,4 +1920,81 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowTabGroupsMatchesWindowTabs) {
   // The window should no longer track the double entry group.
   ASSERT_EQ(window_entry->tab_groups.find(double_entry_group),
             window_entry->tab_groups.end());
+}
+
+class SoftNavigationTabRestoreTest : public TabRestoreTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TabRestoreTest::SetUpCommandLine(command_line);
+    features_list_.InitWithFeatures({blink::features::kSoftNavigationHeuristics,
+                                     blink::features::kNavigationId},
+                                    {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_list_;
+};
+
+// TODO(crbug.com/1492469): Test is found flaky on linux, win and mac,most
+// probably due to mouseclicks not working consistently.
+IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
+                       DISABLED_SoftNavigationToRestoredTab) {
+  // Set up a test web server.
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to the first page.
+  int starting_tab_count = browser()->tab_strip_model()->count();
+  GURL soft_nav_url = embedded_test_server()->GetURL(
+      "/session_history/soft-navigation-and-back.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), soft_nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  int tab_count = browser()->tab_strip_model()->count();
+
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Observe soft navigations.
+  ASSERT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+    window.soft_nav_promise = new Promise(r => {
+      new PerformanceObserver(r).observe({
+        type: 'soft-navigation',
+      })
+    });
+  )",
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Perform a soft navigation and wait until it's reported.
+  content::SimulateMouseClickAt(
+      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
+  ASSERT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+    window.soft_nav_promise;
+  )"));
+
+  // Close the tab.
+  int closed_tab_index = tab_count - 1;
+  CloseTab(closed_tab_index);
+  EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
+
+  // Restore the tab.
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
+
+  // Soft-navigate back.
+  content::SimulateMouseClickAt(
+      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
+
+  // TODO(https://crbug.com/1487628) - We're not actually getting a report on
+  // the second navigation, as they are not committed. We need to actually wait
+  // for the second soft navigation and see that it fires, once the bug is
+  // fixed.
+
+  // And make sure everything looks right.
+  EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(closed_tab_index, browser()->tab_strip_model()->active_index());
+  // TODO(https://crbug.com/1487628) - validate the the URL is back to the
+  // original one, once the bug is fixed.
 }

@@ -6,24 +6,36 @@
 
 #include <errno.h>
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator_metrics.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -44,6 +56,9 @@ constexpr size_t kLacrosDataSize = sizeof(kLacrosDataContent);
 // NOTE: we use a sequence of characters that can't be an actual AppId here,
 // so we can be sure that it won't be included in `kExtensionsAshOnly`.
 constexpr char kLacrosOnlyExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+constexpr char kPrimaryUser[] = "primary-user@gmail.com";
+constexpr char kSecondaryUser[] = "secondary-user@gmail.com";
 
 // ID of an extension that runs in both Lacros and Ash chrome.
 std::string_view GetBothChromesExtensionId() {
@@ -93,7 +108,7 @@ void CreateDirectoryAndFile(const base::FilePath& directory_path,
                             int file_size) {
   CreateDirectoryForTesting(directory_path);
   ASSERT_TRUE(base::WriteFile(directory_path.Append(file_path),
-                              base::StringPiece(file_content, file_size)));
+                              std::string_view(file_content, file_size)));
 }
 
 void SetUpExtensions(const base::FilePath& ash_profile_dir,
@@ -277,7 +292,7 @@ bool ReadJSON(const base::FilePath& path, base::Value* json_out) {
     return false;
   }
 
-  absl::optional<base::Value> deserialized_json =
+  std::optional<base::Value> deserialized_json =
       base::JSONReader::Read(file_contents);
   if (!deserialized_json.has_value()) {
     return false;
@@ -716,8 +731,7 @@ TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeStateStoreLevelDB) {
   }
 }
 
-TEST_F(BrowserDataBackMigratorTest,
-       MergesAshOnlyPreferencesCorrectly) {
+TEST_F(BrowserDataBackMigratorTest, MergesAshOnlyPreferencesCorrectly) {
   // AshPrefs
   // {
   //   kOtherAshPreference: kAshPrefValue,
@@ -762,8 +776,7 @@ TEST_F(BrowserDataBackMigratorTest,
   ASSERT_EQ(merged_other_ash_pref->GetInt(), kAshPrefValue);
 }
 
-TEST_F(BrowserDataBackMigratorTest,
-       MergesDictSplitPreferencesCorrectly) {
+TEST_F(BrowserDataBackMigratorTest, MergesDictSplitPreferencesCorrectly) {
   // AshPrefs
   // {
   //   browser_data_migrator_util::kSplitPreferencesKeys[0]: {
@@ -840,8 +853,7 @@ TEST_F(BrowserDataBackMigratorTest,
   ASSERT_EQ(lacros_extension_value->GetInt(), kLacrosPrefValue);
 }
 
-TEST_F(BrowserDataBackMigratorTest,
-       MergesListSplitPreferencesCorrectly) {
+TEST_F(BrowserDataBackMigratorTest, MergesListSplitPreferencesCorrectly) {
   // AshPrefs
   // {
   //   browser_data_migrator_util::kSplitPreferencesKeys[0]: [
@@ -907,8 +919,7 @@ TEST_F(BrowserDataBackMigratorTest,
   ASSERT_EQ(CountStringInList(*split_pref_list, kLacrosOnlyExtensionId), 1u);
 }
 
-TEST_F(BrowserDataBackMigratorTest,
-       MergesLacrosPreferencesCorrectly) {
+TEST_F(BrowserDataBackMigratorTest, MergesLacrosPreferencesCorrectly) {
   // AshPrefs
   // {
   //   kOtherAshPreference: kAshPrefValue,
@@ -1072,6 +1083,42 @@ TEST_F(BrowserDataBackMigratorFilesSetupTest,
       browser_data_migrator_util::kExtensionsFilePath)));
 }
 
+TEST_F(BrowserDataBackMigratorTest, MovesMergedItemsBackToAshCorrectly) {
+  CreateTemporaryDirectory();
+  // Generate merged Local Storage leveldb.
+  const base::FilePath tmp_local_storage_leveldb_path =
+      tmp_profile_dir_.Append(browser_data_migrator_util::kLocalStorageFilePath)
+          .Append(browser_data_migrator_util::kLocalStorageLeveldbName);
+  std::map<std::string, std::string> merged_level_db_contents;
+  merged_level_db_contents["VERSION"] = "1";
+  GenerateLevelDB(tmp_local_storage_leveldb_path, merged_level_db_contents);
+  // Generate merged preferences.
+  base::Value::Dict merged_prefs;
+  merged_prefs.SetByDottedPath(
+      browser_data_migrator_util::kAshOnlyPreferencesKeys[0], kAshPrefValue);
+  ASSERT_TRUE(WriteJSONDict(merged_prefs, tmp_prefs_path_));
+
+  const auto result =
+      BrowserDataBackMigrator::MoveMergedItemsBackToAsh(ash_profile_dir_);
+
+  ASSERT_EQ(result.status, BrowserDataBackMigrator::TaskStatus::kSucceeded);
+  // Verify that there is a level db in the ash dir with the right contents.
+  const base::FilePath ash_local_storage_leveldb_path =
+      ash_profile_dir_.Append(browser_data_migrator_util::kLocalStorageFilePath)
+          .Append(browser_data_migrator_util::kLocalStorageLeveldbName);
+  auto ash_level_db = ReadLevelDB(ash_local_storage_leveldb_path);
+  EXPECT_EQ(ash_level_db["VERSION"], "1");
+  EXPECT_EQ(ash_level_db.size(), 1u);
+  // Verify that there is a pref file in the ash dir with the right contents.
+  base::Value ash_prefs;
+  EXPECT_TRUE(ReadJSON(ash_prefs_path_, &ash_prefs));
+  const base::Value::Dict& ash_prefs_dict = ash_prefs.GetDict();
+  EXPECT_EQ(ash_prefs_dict.size(), 1u);
+  const base::Value* ash_pref = ash_prefs_dict.FindByDottedPath(
+      browser_data_migrator_util::kAshOnlyPreferencesKeys[0]);
+  EXPECT_EQ(ash_pref->GetInt(), kAshPrefValue);
+}
+
 namespace {
 
 // This implementation of RAII for LacrosDataBackwardMigrationMode is intended
@@ -1181,6 +1228,106 @@ TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledAfterInit) {
 
   EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
       crosapi::browser_util::PolicyInitState::kAfterInit));
+}
+
+class BrowserDataBackMigratorShouldMigrateBackTest : public testing::Test {
+ public:
+  BrowserDataBackMigratorShouldMigrateBackTest() = default;
+  ~BrowserDataBackMigratorShouldMigrateBackTest() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(base::PathService::Override(chrome::DIR_USER_DATA,
+                                            user_data_dir_.GetPath()));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+  }
+
+  void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }
+
+  void AddRegularUser(const std::string& email) {
+    AccountId account_id = AccountId::FromUserEmail(email);
+    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
+
+    // Create the Lacros directory when a user is added. All checks rely on this
+    // directory being present, so creating it puts focus on other conditions.
+    ash_profile_dir_ = user_data_dir_.GetPath().Append(
+        ProfileHelper::GetUserProfileDir(user->username_hash()));
+    ASSERT_TRUE(base::CreateDirectory(ash_profile_dir_));
+    lacros_dir_ =
+        ash_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
+    ASSERT_TRUE(base::CreateDirectory(lacros_dir_));
+  }
+
+ protected:
+  ash::FakeChromeUserManager* user_manager() {
+    return fake_user_manager_.Get();
+  }
+
+ private:
+  base::ScopedTempDir user_data_dir_;
+  base::FilePath ash_profile_dir_;
+  base::FilePath lacros_dir_;
+
+  ScopedTestingLocalState scoped_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+  content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
+};
+
+TEST_F(BrowserDataBackMigratorShouldMigrateBackTest,
+       CommandLineForceMigration) {
+  AddRegularUser(kPrimaryUser);
+  const user_manager::User* const user = user_manager()->GetPrimaryUser();
+
+  {
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kForceBrowserDataBackwardMigration, "force-migration");
+    EXPECT_TRUE(BrowserDataBackMigrator::ShouldMigrateBack(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+}
+
+TEST_F(BrowserDataBackMigratorShouldMigrateBackTest, CommandLineForceSkip) {
+  AddRegularUser(kPrimaryUser);
+  const user_manager::User* const user = user_manager()->GetPrimaryUser();
+
+  {
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kForceBrowserDataBackwardMigration, "force-skip");
+    EXPECT_FALSE(BrowserDataBackMigrator::ShouldMigrateBack(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+}
+
+TEST_F(BrowserDataBackMigratorShouldMigrateBackTest,
+       MaybeRestartToMigrateSecondaryUser) {
+  // Add two users to simulate multi user session.
+  AddRegularUser(kPrimaryUser);
+  AddRegularUser(kSecondaryUser);
+  const auto* const primary_user = user_manager()->GetPrimaryUser();
+  const auto* const secondary_user =
+      user_manager()->FindUser(AccountId::FromUserEmail(kSecondaryUser));
+  EXPECT_NE(primary_user, secondary_user);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosProfileBackwardMigration}, {});
+    // Migration should be triggered for the primary user.
+    EXPECT_TRUE(BrowserDataBackMigrator::ShouldMigrateBack(
+        primary_user->GetAccountId(), primary_user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+    // But not for secondary users.
+    EXPECT_FALSE(BrowserDataBackMigrator::ShouldMigrateBack(
+        secondary_user->GetAccountId(), secondary_user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
 }
 
 }  // namespace ash

@@ -267,7 +267,7 @@ const char* CryptAuthFeatureTypeToString(CryptAuthFeatureType feature_type) {
   }
 }
 
-absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
+std::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
     const std::string& feature_type_string) {
   if (feature_type_string == kBetterTogetherHostSupportedString)
     return CryptAuthFeatureType::kBetterTogetherHostSupported;
@@ -334,7 +334,7 @@ absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
   if (feature_type_string == kPhoneHubCameraRollClientEnabledString)
     return CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Computes the base64url-encoded, SHA-256 8-byte hash of the
@@ -351,7 +351,7 @@ std::string CryptAuthFeatureTypeToGcmHash(CryptAuthFeatureType feature_type) {
   return hash_base64url;
 }
 
-absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromGcmHash(
+std::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromGcmHash(
     const std::string& feature_type_hash) {
   // The map from the feature type hash value that CryptAuth sends in GCM
   // messages to the CryptAuthFeatureType enum.
@@ -371,7 +371,7 @@ absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromGcmHash(
   auto it = hash_to_feature_map->find(feature_type_hash);
 
   if (it == hash_to_feature_map->end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return it->second;
 }

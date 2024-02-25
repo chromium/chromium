@@ -8,7 +8,6 @@
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "url/gurl.h"

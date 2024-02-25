@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/buildflag.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,9 +14,11 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -144,8 +147,17 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
       blink::mojom::WebFeature::kUserDataFieldFilledPreviously, 2);
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClearBrowsingData DISABLED_ClearBrowsingData
+#else
+#define MAYBE_ClearBrowsingData ClearBrowsingData
+#endif
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
-                       ClearBrowsingData) {
+                       MAYBE_ClearBrowsingData) {
+  // TODO(https://crbug.com/1487593): Re-enable this test on bfcache bot.
+  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

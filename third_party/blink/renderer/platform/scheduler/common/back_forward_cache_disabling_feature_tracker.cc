@@ -107,8 +107,9 @@ WTF::HashSet<SchedulingPolicy::Feature>
 BackForwardCacheDisablingFeatureTracker::
     GetActiveFeaturesTrackedForBackForwardCacheMetrics() {
   WTF::HashSet<SchedulingPolicy::Feature> result;
-  for (const auto& it : back_forward_cache_disabling_feature_counts_)
+  for (const auto& it : back_forward_cache_disabling_feature_counts_) {
     result.insert(it.first);
+  }
   return result;
 }
 

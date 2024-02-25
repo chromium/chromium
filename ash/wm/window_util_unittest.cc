@@ -13,6 +13,7 @@
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -34,25 +35,6 @@ std::string GetAdjustedBounds(const gfx::Rect& visible,
 }  // namespace
 
 using WindowUtilTest = AshTestBase;
-
-TEST_F(WindowUtilTest, CenterWindow) {
-  UpdateDisplay("500x400, 600x400");
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(12, 20, 100, 100)));
-
-  WindowState* window_state = WindowState::Get(window.get());
-  EXPECT_FALSE(window_state->bounds_changed_by_user());
-
-  CenterWindow(window.get());
-  // Centring window is considered as a user's action.
-  EXPECT_TRUE(window_state->bounds_changed_by_user());
-  EXPECT_EQ("200,126 100x100", window->bounds().ToString());
-  EXPECT_EQ("200,126 100x100", window->GetBoundsInScreen().ToString());
-  window->SetBoundsInScreen(gfx::Rect(600, 0, 100, 100), GetSecondaryDisplay());
-  CenterWindow(window.get());
-  EXPECT_EQ("250,126 100x100", window->bounds().ToString());
-  EXPECT_EQ("750,126 100x100", window->GetBoundsInScreen().ToString());
-}
 
 TEST_F(WindowUtilTest, AdjustBoundsToEnsureMinimumVisibility) {
   const gfx::Rect visible_bounds(0, 0, 100, 100);
@@ -181,7 +163,8 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   // neither of them get removed when running EnsureTransientRoots.
   auto window1 = CreateTestWindow();
   auto window2 = CreateTestWindow();
-  std::vector<aura::Window*> window_list = {window1.get(), window2.get()};
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> window_list = {
+      window1.get(), window2.get()};
   EnsureTransientRoots(&window_list);
   ASSERT_EQ(2u, window_list.size());
 
@@ -236,11 +219,48 @@ TEST_F(WindowUtilTest,
   WindowState::Get(window.get())
       ->SetStateObject(std::unique_ptr<WindowState::State>(state));
 
-  std::vector<aura::Window*> windows = {window.get()};
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows = {
+      window.get()};
   MinimizeAndHideWithoutAnimation(windows);
 
   EXPECT_FALSE(window->IsVisible());
   EXPECT_TRUE(state->was_visible_on_minimize());
+}
+
+TEST_F(WindowUtilTest, SortWindowsBottomToTop) {
+  auto window1 = CreateTestWindow();
+  auto window2 = CreateTestWindow();
+  auto window3 = CreateTestWindow();
+
+  EXPECT_EQ(
+      (std::vector<aura::Window*>{window1.get(), window2.get(), window3.get()}),
+      SortWindowsBottomToTop({window3.get(), window1.get(), window2.get()}));
+
+  EXPECT_EQ((std::vector<aura::Window*>{window2.get(), window3.get()}),
+            SortWindowsBottomToTop({window3.get(), window2.get()}));
+
+  EXPECT_EQ((std::vector<aura::Window*>{window1.get(), window2.get()}),
+            SortWindowsBottomToTop({window2.get(), window1.get()}));
+
+  EXPECT_EQ((std::vector<aura::Window*>{window2.get()}),
+            SortWindowsBottomToTop({window2.get()}));
+
+  // Add some children to window2:
+  std::unique_ptr<aura::Window> window21 =
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+  window21->Init(ui::LAYER_NOT_DRAWN);
+  std::unique_ptr<aura::Window> window22 =
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+  window22->Init(ui::LAYER_NOT_DRAWN);
+
+  window2->AddChild(window21.get());
+  window2->AddChild(window22.get());
+
+  EXPECT_EQ(
+      (std::vector<aura::Window*>{window1.get(), window2.get(), window21.get(),
+                                  window22.get(), window3.get()}),
+      SortWindowsBottomToTop({window21.get(), window22.get(), window3.get(),
+                              window1.get(), window2.get()}));
 }
 
 TEST_F(WindowUtilTest, InteriorTargeter) {

@@ -8,11 +8,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
@@ -27,6 +30,8 @@ namespace ash::shimless_rma {
 namespace {
 
 ExternalAppDialog* g_instance = nullptr;
+base::RepeatingCallback<void(const ExternalAppDialog::InitParams&)>
+    g_mock_show_function;
 
 constexpr double kRelativeScreenWidth = 0.9;
 constexpr double kRelativeScreenHeight = 0.8;
@@ -83,7 +88,25 @@ void WebContentsHandler::RunFileChooser(
   listener->FileSelectionCanceled();
 }
 
+std::string_view ConsoleMessageLevelToString(
+    blink::mojom::ConsoleMessageLevel level) {
+  switch (level) {
+    case blink::mojom::ConsoleMessageLevel::kVerbose:
+      return "VERBOSE";
+    case blink::mojom::ConsoleMessageLevel::kInfo:
+      return "INFO";
+    case blink::mojom::ConsoleMessageLevel::kWarning:
+      return "WARNING";
+    case blink::mojom::ConsoleMessageLevel::kError:
+      return "ERROR";
+  }
+}
+
 }  // namespace
+
+ExternalAppDialog::InitParams::InitParams() = default;
+
+ExternalAppDialog::InitParams::~InitParams() = default;
 
 // static
 void ExternalAppDialog::Show(const InitParams& params) {
@@ -91,44 +114,62 @@ void ExternalAppDialog::Show(const InitParams& params) {
     LOG(ERROR) << "Can only show one ExternalAppDialog";
     return;
   }
+  if (g_mock_show_function) {
+    g_mock_show_function.Run(params);
+    return;
+  }
   new ExternalAppDialog(params);
 }
 
+// static
+content::WebContents* ExternalAppDialog::GetWebContents() {
+  return g_instance ? g_instance->web_dialog_view_->web_contents() : nullptr;
+}
+
+// static
+void ExternalAppDialog::SetMockShowForTesting(
+    base::RepeatingCallback<void(const InitParams& params)> callback) {
+  g_mock_show_function = callback;
+}
+
+// static
+void ExternalAppDialog::CloseForTesting() {
+  if (g_instance) {
+    g_instance->widget_->Close();
+  }
+}
+
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)
-    : content_url_(params.content_url) {
+    : content::WebContentsObserver(nullptr),
+      on_console_log_(params.on_console_log) {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
+  set_can_close(true);
   set_can_resize(false);
+  set_center_dialog_title_text(true);
+  set_close_dialog_on_escape(false);
+  set_dialog_content_url(params.content_url);
+  set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
+  set_dialog_title(base::UTF8ToUTF16(params.app_name));
 
   views::Widget::InitParams widget_params{};
   widget_params.z_order = ui::ZOrderLevel::kFloatingWindow;
-  widget_params.delegate = new views::WebDialogView(
+  web_dialog_view_ = new views::WebDialogView(
       params.context, this, std::make_unique<WebContentsHandler>());
+  widget_params.delegate = web_dialog_view_;
   widget_params.parent =
       ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
                                ash::kShellWindowId_LockSystemModalContainer);
 
-  views::Widget* widget = new views::Widget;
-  widget->Init(std::move(widget_params));
-  widget->Show();
+  widget_ = new views::Widget;
+  widget_->Init(std::move(widget_params));
+  widget_->Show();
 }
 
 ExternalAppDialog::~ExternalAppDialog() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
-}
-
-ui::ModalType ExternalAppDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
-}
-
-std::u16string ExternalAppDialog::GetDialogTitle() const {
-  return base::ASCIIToUTF16(base::StringPiece{"Tmp Dialog Title"});
-}
-
-GURL ExternalAppDialog::GetDialogContentURL() const {
-  return content_url_;
 }
 
 void ExternalAppDialog::GetDialogSize(gfx::Size* size) const {
@@ -138,37 +179,26 @@ void ExternalAppDialog::GetDialogSize(gfx::Size* size) const {
                     kRelativeScreenHeight * screen_size.height());
 }
 
-void ExternalAppDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-std::string ExternalAppDialog::GetDialogArgs() const {
-  return {};
+void ExternalAppDialog::OnLoadingStateChanged(content::WebContents* source) {
+  content::WebContentsObserver::Observe(source);
 }
 
-// NOTE: This function deletes this object at the end.
-void ExternalAppDialog::OnDialogClosed(const std::string& json_retval) {
-  delete this;
-}
-
-void ExternalAppDialog::OnCloseContents(content::WebContents* source,
-                                        bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool ExternalAppDialog::ShouldCloseDialogOnEscape() const {
-  return false;
-}
-
-bool ExternalAppDialog::ShouldShowDialogTitle() const {
-  return true;
-}
-
-bool ExternalAppDialog::ShouldCenterDialogTitleText() const {
-  return true;
-}
-
-bool ExternalAppDialog::ShouldShowCloseButton() const {
-  return true;
+void ExternalAppDialog::OnDidAddMessageToConsole(
+    content::RenderFrameHost* source_frame,
+    blink::mojom::ConsoleMessageLevel log_level,
+    const std::u16string& message,
+    int32_t line_no,
+    const std::u16string& source_id,
+    const std::optional<std::u16string>& untrusted_stack_trace) {
+  if (ash::features::IsShimlessRMA3pDiagnosticsDevModeEnabled()) {
+    LOG(WARNING) << "[CONSOLE " << ConsoleMessageLevelToString(log_level)
+                 << "] \"" << message << "\", source: " << source_id << " ("
+                 << line_no << ")";
+  }
+  if (on_console_log_) {
+    on_console_log_.Run(content::ConsoleMessageLevelToLogSeverity(log_level),
+                        message, line_no, source_id);
+  }
 }
 
 }  // namespace ash::shimless_rma

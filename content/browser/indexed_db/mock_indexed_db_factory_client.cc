@@ -17,15 +17,9 @@ using blink::IndexedDBKey;
 namespace content {
 
 MockIndexedDBFactoryClient::MockIndexedDBFactoryClient()
-    : IndexedDBFactoryClient(nullptr,
-                             absl::nullopt,
-                             mojo::NullAssociatedRemote(),
-                             base::SequencedTaskRunner::GetCurrentDefault()) {}
+    : IndexedDBFactoryClient(mojo::NullAssociatedRemote()) {}
 MockIndexedDBFactoryClient::MockIndexedDBFactoryClient(bool expect_connection)
-    : IndexedDBFactoryClient(nullptr,
-                             absl::nullopt,
-                             mojo::NullAssociatedRemote(),
-                             base::SequencedTaskRunner::GetCurrentDefault()),
+    : IndexedDBFactoryClient(mojo::NullAssociatedRemote()),
       expect_connection_(expect_connection) {}
 
 MockIndexedDBFactoryClient::~MockIndexedDBFactoryClient() {

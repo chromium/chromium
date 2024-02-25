@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.share.link_to_text;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-/**
- * A Java API for connecting to shared_highlighting component.
- */
+/** A Java API for connecting to shared_highlighting component. */
 public class LinkToTextBridge {
     // TODO(gayane): Update the name whenever |shared_highlighting::ShouldOfferLinkToText| updated
     // to more descriptive name.
@@ -42,11 +41,16 @@ public class LinkToTextBridge {
     @NativeMethods
     interface Natives {
         boolean shouldOfferLinkToText(GURL url);
+
         boolean supportsLinkGenerationInIframe(GURL url);
+
         void logFailureMetrics(WebContents webContents, @LinkGenerationError int error);
+
         void logSuccessMetrics(WebContents webContents);
+
         void logLinkRequestedBeforeStatus(
                 @LinkGenerationStatus int status, @LinkGenerationReadyStatus int readyStatus);
+
         void logLinkToTextReshareStatus(@LinkToTextReshareStatus int status);
     }
 }

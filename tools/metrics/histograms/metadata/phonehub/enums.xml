@@ -1,0 +1,263 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="MoreAppsButtonLoadingState">
+  <summary>
+    When the Phone Hub bubble is opened, this enum denotes when either the
+    glimmer animation is shown on the More Apps button or if the apps are loaded
+    immediately and no animation is shown.
+  </summary>
+  <int value="0" label="Glimmer animation was shown."/>
+  <int value="1" label="More apps button was loaded immediately."/>
+</enum>
+
+<enum name="PhoneHubCameraRollBooleanStorageAccessPermission">
+  <int value="0" label="No storage access permission on Android device"/>
+  <int value="1" label="Android device has storage access permission"/>
+</enum>
+
+<enum name="PhoneHubCameraRollContentClicked">
+  <int value="11" label="Single Click to context menu media 1"/>
+  <int value="21" label="Single Click to context menu media 2"/>
+  <int value="31" label="Single Click to context menu media 3"/>
+  <int value="41" label="Single Click to context menu media 4"/>
+  <int value="51" label="Single Click to context menu media &gt;=5"/>
+</enum>
+
+<enum name="PhoneHubCameraRollContentShown">
+  <int value="1" label="Content Shown : media 1"/>
+  <int value="2" label="Content Shown : media 2"/>
+  <int value="3" label="Content Shown : media 3"/>
+  <int value="4" label="Content Shown : media 4"/>
+  <int value="5" label="Content Shown : media &gt;=5"/>
+</enum>
+
+<enum name="PhoneHubCameraRollContextMenuDownload">
+  <int value="111" label="Click on download in context menu media 1"/>
+  <int value="211" label="Click on download in context menu media 2"/>
+  <int value="311" label="Click on download in context menu media 3"/>
+  <int value="411" label="Click on download in context menu media 4"/>
+  <int value="511" label="Click on download in context menu media &gt;=5"/>
+</enum>
+
+<enum name="PhoneHubCameraRollDownloadResult">
+  <int value="0" label="The download was successful"/>
+  <int value="1"
+      label="The download was canceled likely due to connection loss"/>
+  <int value="2" label="Failed to transfer the file from the phone"/>
+  <int value="3" label="The file was no longer available on the phone"/>
+  <int value="4"
+      label="The file could not be downloaded because the file name provided
+             was invalid"/>
+  <int value="5"
+      label="The file could not be downloaded because it was already being
+             downloaded in a previous attempt"/>
+  <int value="6"
+      label="The file could not be downloaded because there was not enough
+             free disk space for the item requested"/>
+  <int value="7"
+      label="The file could not be downloaded because a file already exists
+             at the target path, likely a result of some race conditions"/>
+  <int value="8"
+      label="The file could not be downloaded because the destination path
+             could not be opened for I/O"/>
+</enum>
+
+<enum name="PhoneHubCameraRollOptInEntryPoint">
+  <int value="0" label="New user opted in via multidevice setup flow"/>
+  <int value="1" label="User opted in via onboarding dialog in phonehub view"/>
+  <int value="2" label="User opted in via Settings page"/>
+</enum>
+
+<enum name="PhoneHubFeatureStatus">
+  <int value="0" label="Not eligible for feature"/>
+  <int value="1" label="Eligible phone but not set up"/>
+  <int value="2" label="Phone selected and pending setup"/>
+  <int value="3" label="Disabled"/>
+  <int value="4" label="Unavalable Bluetooth off"/>
+  <int value="5" label="Unavalable Bluetooth disconnected"/>
+  <int value="6" label="Enabled and connecting"/>
+  <int value="7" label="Enabled and connected"/>
+  <int value="8" label="Unavailable screen locked or suspended"/>
+</enum>
+
+<enum name="PhoneHubInterstitialScreenEvent">
+  <int value="0" label="Screen Shown"/>
+  <int value="1" label="Learn More Clicked"/>
+  <int value="2" label="Dismiss Clicked"/>
+  <int value="3" label="Confirm Clicked"/>
+</enum>
+
+<enum name="PhoneHubMessageResult">
+  <int value="0" label="Request message was sent"/>
+  <int value="1" label="Response was sent back"/>
+</enum>
+
+<enum name="PhoneHubMessageType">
+  <int value="0" label="Provide CrOS State"/>
+  <int value="1" label="Phone status snapshot"/>
+  <int value="2" label="Phone status update"/>
+  <int value="3" label="Update notification mode request"/>
+  <int value="4" label="Update notification mode response"/>
+  <int value="5" label="Ring device request"/>
+  <int value="6" label="Ring device response"/>
+  <int value="7" label="Update battery mode request"/>
+  <int value="8" label="Update battery mode response"/>
+  <int value="9" label="Dismiss notification request"/>
+  <int value="10" label="Dismiss notification response"/>
+  <int value="11" label="Notification inline reply request"/>
+  <int value="12" label="Notification inline reply response"/>
+  <int value="13" label="Show notification access setup request"/>
+  <int value="14" label="Show notification access setup response"/>
+  <int value="15" label="Fetch camera roll items request"/>
+  <int value="16" label="Fetch camera roll items response"/>
+  <int value="17" label="Fetch camera roll item data request"/>
+  <int value="18" label="Fetch camera roll item data response"/>
+  <int value="19" label="Initiate camera roll item transfer request"/>
+  <int value="20" label="Decline incoming call request"/>
+  <int value="21" label="Decline incoming call response"/>
+  <int value="22" label="Hangup ongoing call request"/>
+  <int value="23" label="Hangup ongoing call response"/>
+  <int value="24" label="Feature setup request"/>
+  <int value="25" label="Feature setup response"/>
+  <int value="26" label="Ping request"/>
+  <int value="27" label="Ping response"/>
+  <int value="28" label="App stream update"/>
+  <int value="29" label="App list update"/>
+  <int value="30" label="App list incremental update"/>
+</enum>
+
+<enum name="PhoneHubNotificationAccessSetupStatus">
+  <int value="1" label="Connecting to phone"/>
+  <int value="2" label="Timed out connecting to phone"/>
+  <int value="3" label="Disconnected from phone before setup complete"/>
+  <int value="4" label="Sent message to phone; awaiting response"/>
+  <int value="5" label="Completed successfully"/>
+  <int value="6" label="Phone is prohibited from granting access"/>
+</enum>
+
+<enum name="PhoneHubNotificationInteraction">
+  <int value="0" label="User sent an inline reply from notification"/>
+  <int value="1" label="User dismissed notification"/>
+</enum>
+
+<enum name="PhoneHubOptInEntryPoint">
+  <int value="0" label="New user opted in via multidevice setup flow"/>
+  <int value="1" label="User opted in via onboarding promotion"/>
+  <int value="2" label="User opted in via Settings page"/>
+</enum>
+
+<enum name="PhoneHubPermissionsOnboardingScreenEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Screen Shown"/>
+  <int value="2" label="Learn More Clicked"/>
+  <int value="3" label="Dismiss Or Cancel Clicked"/>
+  <int value="4" label="Set Up Or Done Clicked"/>
+  <int value="5" label="Next Or Try Again Clicked"/>
+</enum>
+
+<enum name="PhoneHubPermissionsOnboardingSetUpMode">
+  <int value="0" label="Set Up mode is irrelivant"/>
+  <int value="1" label="Notification"/>
+  <int value="2" label="Messaging Apps"/>
+  <int value="3" label="Recent Photos"/>
+  <int value="4" label="Notification and messaging apps"/>
+  <int value="5" label="Notification and recent photos"/>
+  <int value="6" label="Messaging apps and recent photos"/>
+  <int value="7" label="All permissions"/>
+</enum>
+
+<enum name="PhoneHubPermissionsOnboardingSetUpResult">
+  <int value="0" label="None"/>
+  <int value="1" label="Notification"/>
+  <int value="2" label="Messaging Apps"/>
+  <int value="3" label="Recent Photos"/>
+  <int value="4" label="Notification and messaging apps"/>
+  <int value="5" label="Notification and recent photos"/>
+  <int value="6" label="Messaging apps and recent photos"/>
+  <int value="7" label="All permissions"/>
+</enum>
+
+<enum name="PhoneHubQuickAction">
+  <int value="0" label="Toggle Hotspot On"/>
+  <int value="1" label="Toggle Hotspot Off"/>
+  <int value="2" label="Toggle Quiet Mode On"/>
+  <int value="3" label="Toggle Quiet Mode Off"/>
+  <int value="4" label="Toggle Locate Phone On"/>
+  <int value="5" label="Toggle Locate Phone Off"/>
+</enum>
+
+<enum name="PhoneHubScreen">
+  <int value="0" label="BluetoothOrWifiDisabled"/>
+  <int value="1" label="PhoneDisconnected"/>
+  <int value="2" label="InitialConnecting (Deprecated)"/>
+  <int value="3" label="Reconnecting (Deprecated)"/>
+  <int value="4" label="Onboarding.ExistingMultideviceUser"/>
+  <int value="5" label="Onboarding.NewMultideviceUser"/>
+  <int value="6" label="PhoneConnected"/>
+  <int value="7" label="OnboardingDismissPrompt"/>
+  <int value="8" label="Invalid"/>
+  <int value="9" label="PhoneConnecting"/>
+  <int value="10" label="PhoneTetherConnectionPending"/>
+</enum>
+
+<enum name="PhoneHubTetherConnectionResult">
+  <int value="0" label="Started a tether connection attempt"/>
+  <int value="1" label="Attempt was successful"/>
+</enum>
+
+<enum name="PhoneHubUiResult">
+  <int value="0" label="Secure Channel is not connected"/>
+  <int value="1" label="Secure channel connected"/>
+  <int value="2"
+      label="Secure channel connected and CrosState message is sent"/>
+  <int value="3"
+      label="PhoneStatusSnapshot is received but Phone Hub UI is not ready"/>
+  <int value="4" label="Connected Phone Hub UI is ready"/>
+</enum>
+
+<enum name="PhoneHubUserAction">
+  <int value="0" label="UI opened while connected"/>
+  <int value="1" label="Tether connection attempted"/>
+  <int value="2" label="Do Not Disturb toggled"/>
+  <int value="3" label="Find My Device toggled"/>
+  <int value="4" label="Synced browser tab opened"/>
+  <int value="5" label="Notification dismissed"/>
+  <int value="6" label="Notification inline reply attempted"/>
+  <int value="7" label="Camera Roll download attempted"/>
+</enum>
+
+<enum name="RecentAppsViewUiState">
+  <int value="0" label="Loading"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Apps"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

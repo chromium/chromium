@@ -17,7 +17,7 @@
 //   headers and bodies.
 //
 // If you want to change this protocol definition or you have questions
-// regarding its format please contact chrome-anti-phishing@googlegroups.com.
+// regarding its format please contact safebrowsing@chromium.org.
 
 syntax = "proto2";
 
@@ -129,6 +129,9 @@ message ChromeUserPopulation {
   // If user has signed in. The user may or may not have sync enabled. For sync
   // status, check is_history_sync_enabled instead.
   optional bool is_signed_in = 18;
+
+  // Server-side only field.
+  reserved 19;
 }
 
 message ImageFeatureEmbedding {
@@ -246,8 +249,7 @@ message ClientPhishingRequest {
   // users.
   optional VisualFeatures visual_features = 26;
 
-  // Carried over from realtime API response, this is used to identify cases
-  // where the scoring from protego requested this request.
+  // This is used to identify what process sent the ping.
   optional ClientSideDetectionType client_side_detection_type = 28;
 
   // Image embedding from model output tensor
@@ -260,17 +262,17 @@ message ClientPhishingResponse {
   required bool phishy = 1;
 
   // A list of SafeBrowsing host-suffix / path-prefix expressions that
-  // are whitelisted.  The client must match the current top-level URL
-  // against these whitelisted expressions and only apply a positive
+  // are allowlisted.  The client must match the current top-level URL
+  // against these alllowlisted expressions and only apply a positive
   // phishing verdict above if the URL does not match any expression
-  // on this whitelist.  The client must not cache these whitelisted
-  // expressions.  This whitelist will be empty for the vast majority
+  // on this allowlist.  The client must not cache these allowlisted
+  // expressions.  This allowlist will be empty for the vast majority
   // of the responses but might contain up to 100 entries in emergency
   // situations.
   //
   // Marked OBSOLETE because the URL is sent for all users, so the server
-  // can do whitelist matching.
-  repeated string OBSOLETE_whitelist_expression = 2;
+  // can do allowlist matching.
+  repeated string OBSOLETE_allowlist_expression = 2;
 }
 
 // The message is used for client request to determine whether the provided URL
@@ -970,12 +972,17 @@ message ClientDownloadRequest {
       PARSER_TIMED_OUT = 2;
       // The archive was too large to parse.
       TOO_LARGE = 3;
+      // Error writing to disk (e.g. disk full).
+      DISK_ERROR = 4;
     }
     optional Status parser_status = 1;
 
     // The number of files and directories contained within.
     optional int32 file_count = 2;
     optional int32 directory_count = 3;
+
+    // True if at least one entry is encrypted or headers are encrypted.
+    optional bool is_encrypted = 4;
   }
   optional ArchiveSummary archive_summary = 85;
 
@@ -993,13 +1000,18 @@ message ClientDownloadRequest {
     // Note: Version 1 can have inconsistent behavior because it uses
     // indeterminate UI strings (can be changed by a client-side feature flag).
     // Version 2: Client-side UI string/icon updates. Supported in M117.
+    // Version 3: Client-side UI string update for suspicious archive warnings.
+    // Supported in M120.
     optional int32 version = 1;
   }
   optional TailoredInfo tailored_info = 86;
 
-  // Fields 87-89 are reserved for server-side use and are never sent by the
+  // Fields 87-90 are reserved for server-side use and are never sent by the
   // client.
-  reserved 87 to 89;
+  reserved 87 to 90;
+
+  // The token from previous requests related to this download, if any exists.
+  optional bytes previous_token = 91;
 }
 
 message ReferrerChainOptions {
@@ -1068,6 +1080,9 @@ message ReferrerChainEntry {
     // navigation is the result of the user copy and paste the address from the
     // browser into the address bar.
     COPY_PASTE_USER_INITIATED = 4;
+
+    // Navigation is initiated by a click on a Push Notification.
+    NOTIFICATION_INITIATED = 5;
   }
 
   message ServerRedirect {
@@ -1137,6 +1152,10 @@ enum ClientSideDetectionType {
   CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED = 0;
   // Send a CSD request regardless of the client side model's score values.
   FORCE_REQUEST = 1;
+  // Either the local DOM or visual model triggered.
+  TRIGGER_MODELS = 2;
+  // A Notification prompt triggered.
+  NOTIFICATION_PERMISSION_PROMPT = 3;
 }
 
 message ClientDownloadResponse {
@@ -1210,6 +1229,10 @@ message ClientDownloadResponse {
     repeated ExperimentalWarningAdjustment adjustments = 2 [packed = true];
   }
   optional TailoredVerdict tailored_verdict = 20;
+
+  // Whether this archive is suspicious and we should prompt the user for a
+  // password for use in local decryption.
+  optional bool is_suspicious_encrypted_archive = 21;
 }
 
 // The following protocol buffer holds the feedback report gathered
@@ -1485,7 +1508,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 32
+// Next tag: 35
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1498,7 +1521,7 @@ message ClientSafeBrowsingReportRequest {
     URL_MALWARE = 2;
     URL_UNWANTED = 3;
     URL_CLIENT_SIDE_PHISHING = 4;
-    URL_CLIENT_SIDE_MALWARE = 5;
+    URL_CLIENT_SIDE_MALWARE = 5 [deprecated = true];
     DANGEROUS_DOWNLOAD_RECOVERY = 6;
     DANGEROUS_DOWNLOAD_WARNING = 7;
     DANGEROUS_DOWNLOAD_BY_API = 10;
@@ -1510,9 +1533,10 @@ message ClientSafeBrowsingReportRequest {
     APK_DOWNLOAD = 17;
     BLOCKED_AD_REDIRECT = 19;
     BLOCKED_AD_POPUP = 20;
-    // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
-    HASH_PREFIX_REAL_TIME_EXPERIMENT = 21;
+    HASH_PREFIX_REAL_TIME_EXPERIMENT = 21 [deprecated = true];
     PHISHY_SITE_INTERACTIONS = 22;
+    WARNING_SHOWN = 23;
+    NOTIFICATION_PERMISSION_ACCEPTED = 24;
   }
 
   message HTTPHeader {
@@ -1623,6 +1647,8 @@ message ClientSafeBrowsingReportRequest {
     PVER5_NATIVE_REAL_TIME = 6;
     // The Android Safe Browsing API hit in real time.
     ANDROID_SAFEBROWSING_REAL_TIME = 7;
+    // The Android Safe Browsing API hit in local blocklist.
+    ANDROID_SAFEBROWSING = 8;
   }
 
   // The information propagated from the client about various environment
@@ -1632,6 +1658,13 @@ message ClientSafeBrowsingReportRequest {
     optional int64 google_play_services_version = 2;
     optional bool is_instant_apps = 3;
     optional SafeBrowsingUrlApiType url_api_type = 4;
+    // Server-side only fields.
+    reserved 5;
+    reserved 6;
+    // Whether this is an asynchronous check. If true,
+    // the user may see the page before they see a warning. See
+    // go/async-sb-check-telemetry for details.
+    optional bool is_async_check = 7;
   }
   optional SafeBrowsingClientProperties client_properties = 17;
 
@@ -1683,24 +1716,33 @@ message ClientSafeBrowsingReportRequest {
       SURFACE_UNSPECIFIED = 0;
       // Applicable actions: DISCARD, OPEN_SUBPAGE
       BUBBLE_MAINPAGE = 1;
-      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
+      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
+      // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
       BUBBLE_SUBPAGE = 2;
-      // Applicable actions: DISCARD, KEEP
+      // Applicable actions: DISCARD, KEEP, PROCEED
       DOWNLOADS_PAGE = 3;
       // Applicable actions: PROCEED, CANCEL, CLOSE
+      // TODO(chlily): Remove CLOSE option once ImprovedDownloadPageWarnings
+      // launches.
       DOWNLOAD_PROMPT = 4;
+      // Applicable actions: OPEN_SUBPAGE
+      // Note: This only covers ChromeOS Lacros v2 notifications. CLOSE should
+      // also be logged, but is currently not.
+      DOWNLOAD_NOTIFICATION = 5;
     }
     optional Surface surface = 1;
 
     enum Action {
       ACTION_UNSPECIFIED = 0;
       // The user clicks proceed, which means the user decides to bypass the
-      // warning.
+      // warning. This is a terminal action.
       PROCEED = 1;
       // The user clicks discard, which means the user decides to obey the
       // warning and the dangerous download is deleted from disk.
       DISCARD = 2;
-      // The user has clicked the keep button on the surface.
+      // The user has clicked the keep button on the surface, which causes
+      // another surface (e.g. download prompt) to be displayed. This is not a
+      // terminal action.
       KEEP = 3;
       // The user has clicked the close button on the surface.
       CLOSE = 4;
@@ -1712,8 +1754,12 @@ message ClientSafeBrowsingReportRequest {
       // The user has clicked the back button on the bubble subpage to go back
       // to the bubble main page.
       BACK = 7;
-      // The user has opened the subpage from the main page.
+      // The user has opened the download bubble subpage.
       OPEN_SUBPAGE = 8;
+      // The user bypassed a deep scanning prompt
+      PROCEED_DEEP_SCAN = 9;
+      // The user clicks the learn more link on the bubble subpage.
+      OPEN_LEARN_MORE_LINK = 10;
     }
     optional Action action = 2;
 
@@ -1731,6 +1777,8 @@ message ClientSafeBrowsingReportRequest {
   repeated DownloadWarningAction download_warning_actions = 27;
 
   message HashRealTimeExperimentDetails {
+    option deprecated = true;
+
     enum ExperimentThreatType {
       SAFE_OR_OTHER = 0;  // This differs from the SafeBrowsing ThreatType.
       MALWARE = 1;
@@ -1760,8 +1808,8 @@ message ClientSafeBrowsingReportRequest {
   }
 
   // Only populated for type = HASH_PREFIX_REAL_TIME_EXPERIMENT.
-  // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
-  optional HashRealTimeExperimentDetails hash_real_time_experiment_details = 28;
+  optional HashRealTimeExperimentDetails hash_real_time_experiment_details = 28
+      [deprecated = true];
 
   // The request destination of the |url| fetched. Added to better understand
   // the protection of cross-site warnings (i.e. warnings triggered when url and
@@ -1821,6 +1869,10 @@ message ClientSafeBrowsingReportRequest {
     WEB_IDENTITY = 24;
     // <link rel=dictionary>
     DICTIONARY = 25;
+    // Speculation rules (Speculation-Rules: "..." header).
+    SPECULATION_RULES = 26;
+    // import "..." with { type: "json" }
+    JSON = 27;
   }
 
   // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,
@@ -1899,6 +1951,42 @@ message ClientSafeBrowsingReportRequest {
 
   // List of user interactions that the user performs with a phishy site.
   repeated PhishySiteInteraction phishy_site_interactions = 31;
+
+  // Timestamp of when the warning was first shown to the user.
+  optional int64 warning_shown_timestamp_msec = 32;
+
+  // Information included in WARNING_SHOWN reports.
+  message WarningShownInfo {
+    // Type of warning UX shown to the user.
+    enum WarningUXType {
+      UNKNOWN = 0;
+      PHISHING_INTERSTITIAL = 1;
+      CLIENT_SIDE_PHISHING_INTERSTITIAL = 2;
+      MALWARE_INTERSTITIAL = 3;
+      UWS_INTERSTITIAL = 4;
+      BILLING_INTERSTITIAL = 5;
+      BINARY_MALWARE_DOWNLOAD_WARNING = 6;
+    }
+    optional WarningUXType warning_type = 1;
+
+    // Data contains the hash value of the download and referrer URLs. Only set
+    // in BINARY_MALWARE_DOWNLOAD_WARNING report.
+    optional string post_data = 2;
+  }
+
+  optional WarningShownInfo warning_shown_info = 33;
+
+  // Information included in NOTIFICATION_PERMISSION_ACCEPTED reports.
+  message PermissionPromptInfo {
+    // The request origin of the permission prompt.
+    optional string origin = 1;
+
+    // The amount of time the user spent on the permission prompt before
+    // accepting the permission.
+    optional int64 display_duration_sec = 2;
+  }
+
+  optional PermissionPromptInfo permission_prompt_info = 34;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
@@ -2080,6 +2168,13 @@ message ExtensionTelemetryReportRequest {
         optional uint32 contact_count = 2;
         // Protocol used to make the connection.
         optional ProtocolType connection_protocol = 3;
+
+        enum ContactInitiator {
+          CONTACT_INITIATOR_UNSPECIFIED = 0;
+          EXTENSION = 1;
+          CONTENT_SCRIPT = 2;
+        }
+        optional ContactInitiator contacted_by = 4;
       }
       repeated RemoteHostInfo remote_host = 1;
 
@@ -2248,14 +2343,16 @@ message ExtensionTelemetryReportRequest {
         CREATE = 1;
         UPDATE = 2;
         REMOVE = 3;
+        CAPTURE_VISIBLE_TAB = 4;
       }
       message CallDetails {
         // The API method invoked.
         optional ApiMethod method = 1;
-        // The URL to navigate the tab to.
+        // The URL to navigate the tab to. This field is only valid when
+        // method is one of CREATE or UPDATE.
         optional string new_url = 2;
-        // The currently committed URL for the tab. This field is not applicable
-        // when method = CREATE.
+        // The currently committed URL for the tab. This field is only
+        // valid when method is one of UPDATE, REMOVE, or CAPTURE_VISIBLE_TAB.
         optional string current_url = 3;
         // Number of times this call was made.
         optional uint32 count = 4;
@@ -2279,6 +2376,8 @@ message ExtensionTelemetryReportRequest {
   // The telemetry configuration version used to generate this report.
   // This field is not present if the default configuration is used.
   optional uint32 configuration_version = 3;
+  // Tracks the current setting of developer mode in chrome://extensions page.
+  optional bool developer_mode_enabled = 4;
 }
 
 message ExtensionTelemetryReportResponse {

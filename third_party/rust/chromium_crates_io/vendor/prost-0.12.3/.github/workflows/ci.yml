@@ -1,0 +1,108 @@
+name: CI
+on: pull_request
+
+env:
+  PROTOC_VERSION: 3.20.3
+
+jobs:
+
+  rustfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: cargo fmt --all --check
+
+  machete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: install cargo-machete
+        uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-machete
+      - name: Check unused dependencies
+        run: cargo machete
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        toolchain:
+          - stable
+          - "1.65"
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: install toolchain (${{ matrix.toolchain }})
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - name: install protoc
+        uses: taiki-e/install-action@v2
+        with:
+          tool: protoc@${{ env.PROTOC_VERSION }}
+      - name: install ninja
+        uses: ./.github/actions/setup-ninja
+      - uses: Swatinem/rust-cache@v2
+      - name: test
+        run: cargo test --workspace --all-targets
+      - name: test no-default-features
+        run: cargo test -p prost-build -p prost-derive -p prost-types --all-targets --no-default-features
+      # Run doc tests separately: https://github.com/rust-lang/cargo/issues/6669
+      - name: test doc
+        run: cargo test --workspace --doc
+      - name: test doc no-default-features
+        run: cargo test -p prost-build -p prost-derive -p prost-types --doc --no-default-features
+
+  kani:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Verify with Kani
+        uses: model-checking/kani-github-action@v0.32
+        with:
+          enable-propproof: true
+          args: |
+            --tests -p prost-types --default-unwind 3 \
+            --harness "tests::check_timestamp_roundtrip_via_system_time" \
+            --harness "tests::check_duration_roundtrip" \
+            --harness "tests::check_duration_roundtrip_nanos"
+        # --default-unwind N roughly corresponds to how much effort
+        # Kani will spend trying to prove correctness of the
+        # program. Higher the number, more programs can be proven
+        # correct. However, Kani will require more time and memory. If
+        # Kani fails with "Failed Checks: unwinding assertion," this
+        # number may need to be raised for Kani to succeed.
+
+  no-std:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+      - name: install protoc
+        uses: taiki-e/install-action@v2
+        with:
+          tool: protoc@${{ env.PROTOC_VERSION }}
+      - uses: Swatinem/rust-cache@v2
+      - name: install cargo-no-std-check
+        uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-no-std-check
+      - name: prost cargo-no-std-check
+        run: cargo no-std-check --manifest-path Cargo.toml --no-default-features
+      - name: prost-types cargo-no-std-check
+        run: cargo no-std-check --manifest-path prost-types/Cargo.toml --no-default-features
+      # prost-build depends on prost with --no-default-features, but when
+      # prost-build is built through the workspace, prost typically has default
+      # features enabled due to vagaries in Cargo workspace feature resolution.
+      # This additional check ensures that prost-build does not rely on any of
+      # prost's default features to compile.
+      - name: prost-build check
+        run: cargo check --manifest-path prost-build/Cargo.toml

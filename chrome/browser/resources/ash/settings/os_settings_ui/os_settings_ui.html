@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    --settings-menu-width: 250px;
+
     /* Centered cards has a max-width of var(--cr-centered-card-max-width)
       * and a width of a certain percentage. Therefore, to make room for the
       * cards to be at their max width, the flex-basis of #main needs to be
@@ -15,7 +15,7 @@
     --cr-toolbar-padding-top: 8px;
   }
 
-  os-toolbar {
+  settings-toolbar {
     /* TODO(hsuregan): update for dark mode when needed. */
     min-height: 56px;
     /* Needs to be higher than #cr-container-show-top's z-index so that the
@@ -45,7 +45,7 @@
   }
 
   #left,
-  #main,
+  #center,
   #right {
     flex: 1 1 0;
   }
@@ -54,17 +54,39 @@
     height: 100%;
     position: sticky;
     top: 0;
+    /* Specify z-index so menu item tooltips overlay #center content. */
+    z-index: 100;
   }
 
   #left os-settings-menu {
-    max-height: 100%;
+    height: 100%;
     overflow: auto;
     overscroll-behavior: contain;
-    width: var(--settings-menu-width);
   }
 
-  #main {
+  :host-context(body.revamp-wayfinding-enabled) #drawer {
+    /* TODO(b/316088424) Use window border radius token if available */
+    --cr-drawer-border-start-end-radius: 12px;
+    --cr-drawer-border-end-end-radius: 12px;
+    --cr-drawer-header-color: var(--cros-sys-primary);
+    --cr-drawer-header-font: var(--cros-title-1-font);
+    --cr-drawer-header-padding: 22px;
+    --cr-drawer-width: var(--settings-menu-width);
+  }
+
+  #center {
     flex-basis: var(--settings-main-basis);
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #center  {
+    box-sizing: border-box;
+    height: 100%;
+    padding-top: 8px;
+  }
+
+  /* Take up all remaining vertical space. */
+  :host-context(body.revamp-wayfinding-enabled) #center > os-settings-main {
+    min-height: 100%;
   }
 
   /* The breakpoint of 980px was decided on by the rounded sum of
@@ -76,7 +98,7 @@
       display: none;
     }
 
-    #main {
+    #center {
       min-width: auto;
       /* Add some padding to make room for borders and to prevent focus
         * indicators from being cropped. */
@@ -84,11 +106,16 @@
     }
   }
 
-  #iconButton {
+  #drawerIcon {
     cursor: pointer;
     margin-inline-end: 14px;
     margin-inline-start: 0;
     outline: none;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #drawerIcon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+    margin-inline-end: 6px;
   }
 </style>
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
@@ -96,13 +123,13 @@
     query-matches="{{isNarrow}}">
 </iron-media-query>
 <template is="dom-if" if="[[showToolbar_]]">
-  <os-toolbar on-os-toolbar-menu-tap="onMenuButtonClick_"
+  <settings-toolbar on-settings-toolbar-menu-tap="onMenuButtonClick_"
       spinner-active="[[toolbarSpinnerActive_]]"
       role="banner"
       narrow="[[isNarrow]]"
       narrow-threshold="980"
       show-menu="[[isNarrow]]">
-  </os-toolbar>
+  </settings-toolbar>
 </template>
 <template is="dom-if" if="[[showNavMenu_]]">
   <cr-drawer id="drawer" on-close="onMenuClose_" heading="$i18n{settings}"
@@ -111,38 +138,44 @@
       <!-- Hidden from a11y because this icon is decorative. Clicking closes
           the dialog, but screen reader users can do this by pressing ESC,
           so aria-hidden is OK here. -->
-      <iron-icon id="iconButton" icon="cr20:menu"
-          on-click="onDrawerIconClick_" title="$i18n{close}"
+      <cr-icon-button id="drawerIcon"
+          iron-icon="cr20:menu"
+          on-click="onDrawerIconClick_"
+          title="$i18n{close}"
           aria-hidden="true">
-      </iron-icon>
+      </cr-icon-button>
     </div>
     <div slot="body">
       <template is="dom-if" id="drawerTemplate">
         <os-settings-menu
+            is-drawer-menu
             page-availability="[[pageAvailability_]]"
-            on-iron-activate="onSectionSelect_"
+            on-iron-activate="onMenuItemSelected_"
             advanced-opened="{{advancedOpenedInMenu_}}">
         </os-settings-menu>
       </template>
     </div>
   </cr-drawer>
 </template>
+<!-- #container is the shadow container for CrContainerShadowMixin. -->
 <div id="container" class="no-outline">
   <div id="left">
     <template is="dom-if" if="[[showNavMenu_]]">
       <os-settings-menu
           page-availability="[[pageAvailability_]]"
-          on-iron-activate="onSectionSelect_"
+          on-iron-activate="onMenuItemSelected_"
           advanced-opened="{{advancedOpenedInMenu_}}">
       </os-settings-menu>
     </template>
   </div>
-  <os-settings-main id="main"
-      prefs="{{prefs}}"
-      toolbar-spinner-active="{{toolbarSpinnerActive_}}"
-      page-availability="[[pageAvailability_]]"
-      advanced-toggle-expanded="{{advancedOpenedInMain_}}">
-  </os-settings-main>
+  <div id="center">
+    <os-settings-main
+        prefs="{{prefs}}"
+        toolbar-spinner-active="{{toolbarSpinnerActive_}}"
+        page-availability="[[pageAvailability_]]"
+        advanced-toggle-expanded="{{advancedOpenedInMain_}}">
+    </os-settings-main>
+  </div>
   <!-- An additional child of the flex #container to take up space,
         aligned with the right-hand child of the flex toolbar. -->
   <div id="right"></div>

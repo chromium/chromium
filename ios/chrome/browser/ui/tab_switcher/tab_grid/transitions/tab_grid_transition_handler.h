@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_direction.h"
 
+@protocol TabGridTransitionLayoutProviding;
+
 namespace {
 
 // Transition types available.
@@ -31,7 +33,9 @@ enum class TabGridTransitionType {
 // `direction`, `tabGridViewController` and `bvcContainerViewController`.
 - (instancetype)initWithTransitionType:(TabGridTransitionType)transitionType
                              direction:(TabGridTransitionDirection)direction
-                 tabGridViewController:(UIViewController*)tabGridViewController
+                 tabGridViewController:
+                     (UIViewController<TabGridTransitionLayoutProviding>*)
+                         tabGridViewController
             bvcContainerViewController:
                 (BVCContainerViewController*)bvcContainerViewController
     NS_DESIGNATED_INITIALIZER;

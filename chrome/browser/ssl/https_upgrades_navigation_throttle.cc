@@ -34,26 +34,6 @@ namespace {
 // showing the HTTPS-First Mode interstitial.
 base::TimeDelta g_fallback_delay = base::Seconds(3);
 
-// Returns true if HTTPS-First Mode interstitial should be enabled by the
-// Typically Secure User heuristic. The heuristic can set the HFM pref to true,
-// but it shouldn't override user preference. If the user ever modified
-// the HFM pref by enabling or disabling it before, this will return false.
-bool IsInterstitialEnabledByTypicallySecureUserHeuristic(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
-    return false;
-  }
-  HttpsFirstModeService* hfm_service =
-      HttpsFirstModeServiceFactory::GetForProfile(profile);
-  // HttpsFirstModeService can be null in tests.
-  if (hfm_service) {
-    hfm_service->MaybeEnableHttpsFirstModeForUser(
-        /*add_fallback_entry=*/false);
-  }
-  return profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled) &&
-         profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-}
-
 }  // namespace
 
 // static
@@ -71,11 +51,25 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
+  // Repair prefs if the user was previously affected by crbug.com/1475747. This
+  // will reset the affected prefs, before setting up the state for the Throttle
+  // for this navigation.
+  // TODO(crbug.com/1475747): Remove this after M120 (or after
+  // kHttpsFirstModeV2ForTypicallySecureUsers is enabled by default).
+  HttpsFirstModeService::FixTypicallySecureUserPrefs(profile);
+
   PrefService* prefs = profile->GetPrefs();
   security_interstitials::https_only_mode::HttpInterstitialState
       interstitial_state;
   interstitial_state.enabled_by_pref =
       prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    if (profile->IsIncognitoProfile() && prefs &&
+        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
+      interstitial_state.enabled_by_pref = true;
+    }
+  }
 
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
@@ -87,16 +81,16 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   if (hfm_service) {
     // Can be null in some cases, e.g. when using Ash sign-in profile.
-    hfm_service->MaybeEnableHttpsFirstModeForUrl(handle->GetURL());
-  }
-  // StatefulSSLHostStateDelegate can be null during tests.
-  if (state && state->IsHttpsEnforcedForHost(handle->GetURL().host(),
-                                             storage_partition)) {
-    interstitial_state.enabled_by_engagement_heuristic = true;
+    hfm_service->IncrementRecentNavigationCount();
+    interstitial_state.enabled_by_typically_secure_browsing =
+        hfm_service->IsInterstitialEnabledByTypicallySecureUserHeuristic();
   }
 
-  interstitial_state.enabled_by_typically_secure_browsing =
-      IsInterstitialEnabledByTypicallySecureUserHeuristic(profile);
+  // StatefulSSLHostStateDelegate can be null during tests.
+  if (state &&
+      state->IsHttpsEnforcedForUrl(handle->GetURL(), storage_partition)) {
+    interstitial_state.enabled_by_engagement_heuristic = true;
+  }
 
   bool https_upgrades_enabled =
       interstitial_state.enabled_by_pref ||

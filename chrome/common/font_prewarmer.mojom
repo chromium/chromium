@@ -8,14 +8,12 @@ module chrome.mojom;
 // that prewarming actually happens in a background thread.
 interface FontPrewarmer {
   // Prewarms fonts previously returned via RenderFrameFontFamilyAccessor.
-  PrewarmFonts(array<string> primary_font_names,
-               array<string> fallback_font_names);
+  PrewarmFonts(array<string> font_names);
 };
 
 // Used to request the fonts used to generate first contenful paint. This is
 // exposed per RenderFrame and is an associated interface.
 interface RenderFrameFontFamilyAccessor {
   // Requests the set of fonts used to generate first contentful paint.
-  GetFontFamilyNames() => (array<string> primary_font_names,
-                           array<string> fallback_font_names);
+  GetFontFamilyNames() => (array<string> font_names);
 };

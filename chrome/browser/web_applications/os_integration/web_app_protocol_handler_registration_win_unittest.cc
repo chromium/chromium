@@ -49,6 +49,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   WebAppProtocolHandlerRegistrationWinTest() {}
 
   void SetUp() override {
+    registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
@@ -72,7 +73,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   // Ensures that URLAssociations entries are created for a given protocol.
   // "HKEY_CURRENT_USER\Software\<prog_id>\Capabilities\URLAssociations\<protocol>".
   bool ProgIdRegisteredForProtocol(const std::string& protocol,
-                                   const AppId& app_id,
+                                   const webapps::AppId& app_id,
                                    Profile* profile) {
     std::wstring prog_id = GetProgIdForApp(profile->GetPath(), app_id);
 
@@ -96,7 +97,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
     return association_exists && entry_matches;
   }
 
-  void AddAndVerifyProtocolAssociations(const AppId& app_id,
+  void AddAndVerifyProtocolAssociations(const webapps::AppId& app_id,
                                         const std::string& app_name,
                                         const std::string& app_url,
                                         Profile* profile,
@@ -149,7 +150,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   // Returns the expected app launcher path inside the subdirectory for
   // |app_id|.
   base::FilePath GetLauncherPathForApp(Profile* profile,
-                                       const AppId app_id,
+                                       const webapps::AppId app_id,
                                        const std::string& sanitized_app_name) {
     base::FilePath web_app_dir(GetOsIntegrationResourcesDirectoryForApp(
         profile->GetPath(), app_id, GURL()));
@@ -163,7 +164,8 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,

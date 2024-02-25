@@ -23,7 +23,7 @@ const char kSmartLockFeatureName[] = "easy_unlock";
 
 RemoteDeviceLifeCycleImpl::RemoteDeviceLifeCycleImpl(
     ash::multidevice::RemoteDeviceRef remote_device,
-    absl::optional<ash::multidevice::RemoteDeviceRef> local_device,
+    std::optional<ash::multidevice::RemoteDeviceRef> local_device,
     ash::secure_channel::SecureChannelClient* secure_channel_client)
     : remote_device_(remote_device),
       local_device_(local_device),

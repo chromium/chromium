@@ -50,6 +50,10 @@ public class AppMenuItemProperties {
     /** The menu item icon's color resource value. */
     public static final WritableIntPropertyKey ICON_COLOR_RES = new WritableIntPropertyKey();
 
+    /** Whether to show a badge on the menu item icon. */
+    public static final WritableBooleanPropertyKey ICON_SHOW_BADGE =
+            new WritableBooleanPropertyKey();
+
     /** The the menu item's position in the menu. */
     static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey();
 
@@ -59,7 +63,7 @@ public class AppMenuItemProperties {
 
     /** The click handler for the menu item. */
     public static final WritableObjectPropertyKey<AppMenuClickHandler> CLICK_HANDLER =
-            new WritableObjectPropertyKey<>(true /* skipEquality */, "CLICK_HANDLER");
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true, "CLICK_HANDLER");
 
     /**
      * Whether the menu is shown from a menu icon positioned at start. This is used to determine the
@@ -79,7 +83,22 @@ public class AppMenuItemProperties {
     public static final WritableObjectPropertyKey<ModelList> SUBMENU =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {MENU_ITEM_ID, TITLE,
-            TITLE_CONDENSED, ENABLED, HIGHLIGHTED, CHECKABLE, CHECKED, ICON, ICON_COLOR_RES,
-            POSITION, SUPPORT_ENTER_ANIMATION, CLICK_HANDLER, MENU_ICON_AT_START, SUBMENU};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                MENU_ITEM_ID,
+                TITLE,
+                TITLE_CONDENSED,
+                ENABLED,
+                HIGHLIGHTED,
+                CHECKABLE,
+                CHECKED,
+                ICON,
+                ICON_COLOR_RES,
+                ICON_SHOW_BADGE,
+                POSITION,
+                SUPPORT_ENTER_ANIMATION,
+                CLICK_HANDLER,
+                MENU_ICON_AT_START,
+                SUBMENU
+            };
 }

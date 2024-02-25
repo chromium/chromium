@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.suggestions;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 
-/**
- * Interface between the suggestion surface and the rest of the browser.
- */
+/** Interface between the suggestion surface and the rest of the browser. */
 public interface SuggestionsUiDelegate {
     // Dependency injection
     // TODO(dgn): remove these methods once the users have a different way to get a reference
@@ -29,9 +27,7 @@ public interface SuggestionsUiDelegate {
 
     // Feature/State checks
 
-    /**
-     * Registers a {@link DestructionObserver}, notified when the delegate's host goes away.
-     */
+    /** Registers a {@link DestructionObserver}, notified when the delegate's host goes away. */
     void addDestructionObserver(DestructionObserver destructionObserver);
 
     /** @return Whether the suggestions UI is currently visible. */

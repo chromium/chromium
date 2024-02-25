@@ -26,7 +26,7 @@ const char kRedeemingOriginKey[] = "redeeming-origin";
 //    // “redeeming-origin”’s value is of CBOR type “text string.”
 //    “redeeming-origin”: <Top-level origin at the time of redemption>,
 // },
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 CanonicalizeTrustTokenClientDataForRedemption(
     base::Time redemption_timestamp,
     const url::Origin& top_frame_origin) {
@@ -38,7 +38,7 @@ CanonicalizeTrustTokenClientDataForRedemption(
       redemption_timestamp - base::Time::UnixEpoch();
 
   if (redemption_timestamp_minus_unix_epoch.is_negative())
-    return absl::nullopt;
+    return std::nullopt;
 
   map[cbor::Value(kRedemptionTimestampKey, cbor::Value::Type::STRING)] =
       cbor::Value(redemption_timestamp_minus_unix_epoch.InSeconds());

@@ -49,8 +49,7 @@ class ASH_EXPORT UnifiedAudioDetailedViewController
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  raw_ptr<AudioDetailedView, DanglingUntriaged | ExperimentalAsh> view_ =
-      nullptr;
+  raw_ptr<AudioDetailedView, DanglingUntriaged> view_ = nullptr;
 };
 
 }  // namespace ash

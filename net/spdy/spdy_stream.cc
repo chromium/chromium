@@ -37,32 +37,29 @@ namespace {
 base::Value::Dict NetLogSpdyStreamErrorParams(spdy::SpdyStreamId stream_id,
                                               int net_error,
                                               base::StringPiece description) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("net_error", ErrorToShortString(net_error));
-  dict.Set("description", description);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("net_error", ErrorToShortString(net_error))
+      .Set("description", description);
 }
 
 base::Value::Dict NetLogSpdyStreamWindowUpdateParams(
     spdy::SpdyStreamId stream_id,
     int32_t delta,
     int32_t window_size) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("delta", delta);
-  dict.Set("window_size", window_size);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("delta", delta)
+      .Set("window_size", window_size);
 }
 
 base::Value::Dict NetLogSpdyDataParams(spdy::SpdyStreamId stream_id,
                                        int size,
                                        bool fin) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("size", size);
-  dict.Set("fin", fin);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("size", size)
+      .Set("fin", fin);
 }
 
 }  // namespace
@@ -655,10 +652,6 @@ bool SpdyStream::GetSSLInfo(SSLInfo* ssl_info) const {
   return session_->GetSSLInfo(ssl_info);
 }
 
-bool SpdyStream::WasAlpnNegotiated() const {
-  return session_->WasAlpnNegotiated();
-}
-
 NextProto SpdyStream::GetNegotiatedProtocol() const {
   return session_->GetNegotiatedProtocol();
 }
@@ -809,17 +802,14 @@ void SpdyStream::OnEarlyHintsReceived(
 void SpdyStream::SaveResponseHeaders(
     const spdy::Http2HeaderBlock& response_headers,
     int status) {
-  DCHECK(response_headers_.empty());
-  if (response_headers.find("transfer-encoding") != response_headers.end()) {
+  if (response_headers.contains("transfer-encoding")) {
     session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR,
                           "Received transfer-encoding header");
     return;
   }
 
-  for (spdy::Http2HeaderBlock::const_iterator it = response_headers.begin();
-       it != response_headers.end(); ++it) {
-    response_headers_.insert(*it);
-  }
+  DCHECK(response_headers_.empty());
+  response_headers_ = response_headers.Clone();
 
   // If delegate is not yet attached, OnHeadersReceived() will be called after
   // the delegate gets attached to the stream.

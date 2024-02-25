@@ -5,6 +5,7 @@
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,11 +18,11 @@
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/pref_service.h"
-#include "components/update_client/activity_data_service.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patch/in_process_patcher.h"
 #include "components/update_client/patcher.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
@@ -29,7 +30,6 @@
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -39,7 +39,9 @@ AwComponentUpdaterConfigurator::AwComponentUpdaterConfigurator(
     : configurator_impl_(
           component_updater::ComponentUpdaterCommandLineConfigPolicy(cmdline),
           false),
-      pref_service_(pref_service) {}
+      pref_service_(pref_service),
+      persisted_data_(
+          update_client::CreatePersistedData(pref_service, nullptr)) {}
 
 AwComponentUpdaterConfigurator::~AwComponentUpdaterConfigurator() = default;
 
@@ -168,11 +170,9 @@ PrefService* AwComponentUpdaterConfigurator::GetPrefService() const {
   return pref_service_;
 }
 
-update_client::ActivityDataService*
-AwComponentUpdaterConfigurator::GetActivityDataService() const {
-  // This tracks user's activity using the component, doesn't apply to
-  // components and safe to be null.
-  return nullptr;
+update_client::PersistedData* AwComponentUpdaterConfigurator::GetPersistedData()
+    const {
+  return persisted_data_.get();
 }
 
 bool AwComponentUpdaterConfigurator::IsPerUserInstall() const {
@@ -184,9 +184,9 @@ AwComponentUpdaterConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
 }
 
-absl::optional<bool>
-AwComponentUpdaterConfigurator::IsMachineExternallyManaged() const {
-  return absl::nullopt;
+std::optional<bool> AwComponentUpdaterConfigurator::IsMachineExternallyManaged()
+    const {
+  return std::nullopt;
 }
 
 update_client::UpdaterStateProvider
@@ -201,13 +201,17 @@ scoped_refptr<update_client::Configurator> MakeAwComponentUpdaterConfigurator(
                                                               pref_service);
 }
 
-absl::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
+std::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
     const {
   base::FilePath path;
   return base::android::GetCacheDirectory(&path)
-             ? absl::optional<base::FilePath>(
+             ? std::optional<base::FilePath>(
                    path.AppendASCII(("webview_crx_cache")))
-             : absl::nullopt;
+             : std::nullopt;
+}
+
+bool AwComponentUpdaterConfigurator::IsConnectionMetered() const {
+  return configurator_impl_.IsConnectionMetered();
 }
 
 }  // namespace android_webview

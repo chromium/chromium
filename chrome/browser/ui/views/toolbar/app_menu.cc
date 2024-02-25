@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <set>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -17,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -42,7 +44,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -51,14 +52,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/feature_engagement/public/feature_constants.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/feature_switch.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -97,6 +98,8 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -131,11 +134,10 @@ const int kZoomLabelHorizontalPadding = 2;
 
 // Returns true if |command_id| identifies a bookmark menu item.
 bool IsBookmarkCommand(int command_id) {
-  return command_id == IDC_SHOW_BOOKMARK_SIDE_PANEL ||
-         (command_id >= IDC_FIRST_UNBOUNDED_MENU &&
-          ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
-               AppMenuModel::kNumUnboundedMenuTypes ==
-           0));
+  return command_id >= IDC_FIRST_UNBOUNDED_MENU &&
+         ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
+              AppMenuModel::kNumUnboundedMenuTypes ==
+          0);
 }
 
 // Returns true if |command_id| identifies a recent tabs menu item.
@@ -270,8 +272,9 @@ std::u16string GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
 
 // A button that lives inside a menu item.
 class InMenuButton : public LabelButton {
+  METADATA_HEADER(InMenuButton, LabelButton)
+
  public:
-  METADATA_HEADER(InMenuButton);
   using LabelButton::LabelButton;
   InMenuButton(const InMenuButton&) = delete;
   InMenuButton& operator=(const InMenuButton&) = delete;
@@ -311,13 +314,14 @@ class InMenuButton : public LabelButton {
   }
 };
 
-BEGIN_METADATA(InMenuButton, LabelButton)
+BEGIN_METADATA(InMenuButton)
 END_METADATA
 
 // A button with an image inside a menu item.
 class InMenuImageButton : public ImageButton {
+  METADATA_HEADER(InMenuImageButton, ImageButton)
+
  public:
-  METADATA_HEADER(InMenuImageButton);
   using ImageButton::ImageButton;
 
   void Init(InMenuButtonBackground::ButtonType type,
@@ -338,82 +342,84 @@ class InMenuImageButton : public ImageButton {
   }
 };
 
-BEGIN_METADATA(InMenuImageButton, ImageButton)
+BEGIN_METADATA(InMenuImageButton)
 END_METADATA
 
 // Helper method that adds a bespoke chip to the profile related menu items.
-void AddChipToProfileMenuItem(Browser* browser,
-                              views::MenuItemView* item,
-                              const std::u16string& chip_label,
-                              const int horizontal_padding,
-                              std::vector<base::CallbackListSubscription>&
-                                  profile_menu_subscription_list) {
+void AddSignedInChipToProfileMenuItem(
+    Profile* profile,
+    views::MenuItemView* item,
+    const int horizontal_padding,
+    std::vector<base::CallbackListSubscription>&
+        profile_menu_subscription_list) {
+  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) ||
+      profile->IsIncognitoProfile()) {
+    return;
+  }
   constexpr int profile_chip_corner_radii = 100;
   raw_ptr<views::Label> profile_chip_label;
   const MenuConfig& config = MenuConfig::instance();
-  // Truncate in the same way that app_menu_model does for the menu
-  // title.
-  if (!chip_label.empty() && !browser->profile()->IsIncognitoProfile()) {
-    std::u16string local_name =
-        ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-            chip_label, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
-            gfx::CHARACTER_BREAK));
-    // We need to have the label of the profile chip within a
-    // BoxLayoutView and inside border insets because MenuItemView will
-    // layout the child items to the full height of the menu item in
-    // MenuItemView::Layout().
-    auto profile_chip =
-        views::Builder<views::BoxLayoutView>()
-            .SetInsideBorderInsets(
-                gfx::Insets::VH(config.item_vertical_margin, 0))
-            .AddChildren(
-                views::Builder<views::Label>()
-                    .SetText(local_name)
-                    .CopyAddressTo(&profile_chip_label)
-                    .SetBackground(views::CreateThemedRoundedRectBackground(
-                        item->IsSelected()
-                            ? ui::kColorAppMenuProfileRowChipHovered
-                            : ui::kColorAppMenuProfileRowChipBackground,
-                        profile_chip_corner_radii))
-                    // Add additional horizontal padding. Vertical
-                    // padding depends on menu margins to get alignment
-                    // with other items in the menu.
-                    .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-                        0, views::LayoutProvider::Get()
-                               ->GetInsetsMetric(views::INSETS_LABEL_BUTTON)
-                               .left()))))
-            .Build();
 
-    // MenuItemView has specific layout logic for child views in
-    // MenuItemView::Layout() which does not work very well with more
-    // custom menu items. We use this view to add the correct spacing
-    // between the profile chip and the edge of the menu.
-    auto profile_chip_edge_spacing_view =
-        views::Builder<views::View>()
-            .SetPreferredSize(gfx::Size(horizontal_padding, 0))
-            .Build();
-    profile_menu_subscription_list.push_back(
-        item->AddSelectedChangedCallback(base::BindRepeating(
-            [](MenuItemView* menu_item_view, View* child_view,
-               int corner_radius) {
-              child_view->SetBackground(
-                  views::CreateThemedRoundedRectBackground(
-                      menu_item_view->IsSelected()
+  const AccountInfo account_info = GetAccountInfoFromProfile(profile);
+
+  const std::u16string signed_in_status =
+      (IsSyncPaused(profile) || account_info.IsEmpty())
+          ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
+          : l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE);
+  // We need to have the label of the profile chip within a
+  // BoxLayoutView and inside border insets because MenuItemView will
+  // layout the child items to the full height of the menu item in
+  // MenuItemView::Layout().
+  auto profile_chip =
+      views::Builder<views::BoxLayoutView>()
+          .SetInsideBorderInsets(
+              gfx::Insets::VH(config.item_vertical_margin, 0))
+          .AddChildren(
+              views::Builder<views::Label>()
+                  .SetText(signed_in_status)
+                  .CopyAddressTo(&profile_chip_label)
+                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                      item->IsSelected()
                           ? ui::kColorAppMenuProfileRowChipHovered
                           : ui::kColorAppMenuProfileRowChipBackground,
-                      corner_radius));
-            },
-            item, profile_chip_label, profile_chip_corner_radii)));
-    item->AddChildView(std::move(profile_chip));
-    item->AddChildView(std::move(profile_chip_edge_spacing_view));
-    item->SetHighlightWhenSelectedWithChildViews(true);
-  }
+                      profile_chip_corner_radii))
+                  // Add additional horizontal padding. Vertical
+                  // padding depends on menu margins to get alignment
+                  // with other items in the menu.
+                  .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+                      0, views::LayoutProvider::Get()
+                             ->GetInsetsMetric(views::INSETS_LABEL_BUTTON)
+                             .left()))))
+          .Build();
+
+  // MenuItemView has specific layout logic for child views which does not work
+  // very well with more custom menu items. We use this view to add the correct
+  // spacing between the profile chip and the edge of the menu.
+  auto profile_chip_edge_spacing_view =
+      views::Builder<views::View>()
+          .SetPreferredSize(gfx::Size(horizontal_padding, 0))
+          .Build();
+  profile_menu_subscription_list.push_back(
+      item->AddSelectedChangedCallback(base::BindRepeating(
+          [](MenuItemView* menu_item_view, View* child_view,
+             int corner_radius) {
+            child_view->SetBackground(views::CreateThemedRoundedRectBackground(
+                menu_item_view->IsSelected()
+                    ? ui::kColorAppMenuProfileRowChipHovered
+                    : ui::kColorAppMenuProfileRowChipBackground,
+                corner_radius));
+          },
+          item, profile_chip_label, profile_chip_corner_radii)));
+  item->AddChildView(std::move(profile_chip));
+  item->AddChildView(std::move(profile_chip_edge_spacing_view));
+  item->SetHighlightWhenSelectedWithChildViews(true);
 }
 
 // AppMenuView is a view that can contain label buttons.
 class AppMenuView : public views::View {
+  METADATA_HEADER(AppMenuView, views::View)
+
  public:
-  METADATA_HEADER(AppMenuView);
   AppMenuView(AppMenu* menu, ButtonMenuItemModel* menu_model)
       : menu_(menu->AsWeakPtr()), menu_model_(menu_model) {}
   AppMenuView(const AppMenuView&) = delete;
@@ -490,13 +496,14 @@ class AppMenuView : public views::View {
   raw_ptr<ButtonMenuItemModel> menu_model_;
 };
 
-BEGIN_METADATA(AppMenuView, views::View)
+BEGIN_METADATA(AppMenuView)
 END_METADATA
 
 // Subclass of ImageButton whose preferred size includes the size of the border.
 class FullscreenButton : public ImageButton {
+  METADATA_HEADER(FullscreenButton, ImageButton)
+
  public:
-  METADATA_HEADER(FullscreenButton);
   explicit FullscreenButton(PressedCallback callback,
                             ButtonMenuItemModel* menu_model,
                             size_t fullscreen_index,
@@ -547,7 +554,7 @@ class FullscreenButton : public ImageButton {
   }
 };
 
-BEGIN_METADATA(FullscreenButton, ImageButton)
+BEGIN_METADATA(FullscreenButton)
 END_METADATA
 
 }  // namespace
@@ -556,8 +563,9 @@ END_METADATA
 
 // CutCopyPasteView is the view containing the cut/copy/paste buttons.
 class AppMenu::CutCopyPasteView : public AppMenuView {
+  METADATA_HEADER(CutCopyPasteView, AppMenuView)
+
  public:
-  METADATA_HEADER(CutCopyPasteView);
   CutCopyPasteView(AppMenu* menu,
                    ButtonMenuItemModel* menu_model,
                    size_t cut_index,
@@ -595,11 +603,11 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
         0};
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     // All buttons are given the same width.
     int width = GetMaxChildViewPreferredWidth();
     int x = 0;
-    for (auto* child : children()) {
+    for (views::View* child : children()) {
       child->SetBounds(x, 0, width, height());
       x += width;
     }
@@ -609,13 +617,14 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
   // Returns the max preferred width of all the children.
   int GetMaxChildViewPreferredWidth() const {
     int width = 0;
-    for (const auto* child : children())
+    for (const views::View* child : children()) {
       width = std::max(width, child->GetPreferredSize().width());
+    }
     return width;
   }
 };
 
-BEGIN_METADATA(AppMenu, CutCopyPasteView, AppMenuView)
+BEGIN_METADATA(AppMenu, CutCopyPasteView)
 ADD_READONLY_PROPERTY_METADATA(int, MaxChildViewPreferredWidth)
 END_METADATA
 
@@ -625,8 +634,9 @@ END_METADATA
 // the zoom, a label showing the current zoom percent, and a button to go
 // full-screen.
 class AppMenu::ZoomView : public AppMenuView {
+  METADATA_HEADER(ZoomView, AppMenuView)
+
  public:
-  METADATA_HEADER(ZoomView);
   ZoomView(AppMenu* menu,
            ButtonMenuItemModel* menu_model,
            size_t decrement_index,
@@ -668,7 +678,7 @@ class AppMenu::ZoomView : public AppMenuView {
 
     // An accessibility role of kAlert will ensure that any updates to the zoom
     // level can be picked up by screen readers.
-    zoom_label->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
+    zoom_label->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 
     zoom_label_ = AddChildView(std::move(zoom_label));
 
@@ -733,7 +743,7 @@ class AppMenu::ZoomView : public AppMenuView {
         0);
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     int x = 0;
     int button_width = std::max(increment_button_->GetPreferredSize().width(),
                                 decrement_button_->GetPreferredSize().width());
@@ -845,10 +855,10 @@ class AppMenu::ZoomView : public AppMenuView {
   // 100%. This should not be accessed directly, use GetZoomLabelMaxWidth()
   // instead. This value is cached because is depends on multiple calls to
   // gfx::GetStringWidth(...) which are expensive.
-  mutable absl::optional<int> zoom_label_max_width_;
+  mutable std::optional<int> zoom_label_max_width_;
 };
 
-BEGIN_METADATA(AppMenu, ZoomView, AppMenuView)
+BEGIN_METADATA(AppMenu, ZoomView)
 ADD_READONLY_PROPERTY_METADATA(int, ZoomLabelMaxWidth)
 END_METADATA
 
@@ -954,11 +964,10 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
     : browser_(browser), model_(model), run_types_(run_types) {
   global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(browser->profile()));
-  new_badge_tracker_ =
-      std::make_unique<ScopedNewBadgeTracker>(browser_->profile());
 
   DCHECK(!root_);
-  root_ = new MenuItemView(this);
+  auto root = std::make_unique<MenuItemView>(/*delegate=*/this);
+  root_ = root.get();
   PopulateMenu(root_, model);
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
@@ -972,7 +981,7 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
     types |= views::MenuRunner::SHOULD_SHOW_MNEMONICS;
   }
 
-  menu_runner_ = std::make_unique<views::MenuRunner>(root_, types);
+  menu_runner_ = std::make_unique<views::MenuRunner>(std::move(root), types);
 }
 
 AppMenu::~AppMenu() {
@@ -990,10 +999,12 @@ void AppMenu::RunMenu(views::MenuButtonController* host) {
   UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_MENU_OPENED,
                             LIMIT_MENU_ACTION);
 
-  menu_runner_->RunMenuAt(host->button()->GetWidget(), host,
-                          host->button()->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
-                          ui::MENU_SOURCE_NONE);
+  menu_runner_->RunMenuAt(
+      host->button()->GetWidget(), host,
+      host->button()->GetAnchorBoundsInScreen(),
+      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE,
+      /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/std::nullopt,
+      "Chrome.AppMenu.MenuHostInitToNextFramePresented");
 }
 
 void AppMenu::CloseMenu() {
@@ -1012,7 +1023,7 @@ const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
   return model->GetLabelFontListAt(index);
 }
 
-absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
+std::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
   // Only return a color if there's a font list - otherwise this method will
   // return a color for every recent tab item, not just the header.
   // Ensure that we call GetColor() using the `root_`'s SubmenuView as this is
@@ -1021,11 +1032,12 @@ absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
   // to correctly determine the label color as this requires querying the View's
   // hosting widget (crbug.com/1233392).
   return GetLabelFontList(command_id)
-             ? absl::make_optional(
+             ? std::make_optional(
                    root_->GetSubmenu()->GetColorProvider()->GetColor(
-                       views::style::GetColorId(views::style::CONTEXT_MENU,
-                                                views::style::STYLE_PRIMARY)))
-             : absl::nullopt;
+                       views::TypographyProvider::Get().GetColorId(
+                           views::style::CONTEXT_MENU,
+                           views::style::STYLE_PRIMARY)))
+             : std::nullopt;
 }
 
 std::u16string AppMenu::GetTooltipText(int command_id,
@@ -1129,7 +1141,8 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return false;  // The root item, a separator, or a title.
   }
 
-  if (IsBookmarkCommand(command_id)) {
+  if (IsBookmarkCommand(command_id) ||
+      command_id == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
     return true;
   }
 
@@ -1137,8 +1150,7 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
-  if ((base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
-       features::IsChromeRefresh2023()) &&
+  if (features::IsExtensionMenuInRootAppMenu() &&
       command_id == IDC_EXTENSIONS_SUBMENU) {
     return true;
   }
@@ -1214,25 +1226,6 @@ void AppMenu::WillShowMenu(MenuItemView* menu) {
     CreateBookmarkMenu();
   else if (bookmark_menu_delegate_)
     bookmark_menu_delegate_->WillShowMenu(menu);
-
-  if (menu->GetCommand() == IDC_MORE_TOOLS_MENU) {
-    std::vector<MenuItemView*> more_tools_items =
-        menu->GetSubmenu()->GetMenuItems();
-
-    auto performanceItem =
-        base::ranges::find_if(more_tools_items, [](MenuItemView* item) -> bool {
-          return item->GetCommand() == IDC_PERFORMANCE;
-        });
-
-    if (performanceItem != more_tools_items.end()) {
-      bool show_new_badge =
-          browser_->window()->IsFeaturePromoActive(
-              feature_engagement::kIPHHighEfficiencyModeFeature) ||
-          new_badge_tracker_->TryShowNewBadge(
-              feature_engagement::kIPHPerformanceNewBadgeFeature);
-      (*performanceItem)->set_is_new(show_new_badge);
-    }
-  }
 }
 
 void AppMenu::WillHideMenu(MenuItemView* menu) {
@@ -1339,9 +1332,9 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
           if (profile_attributes &&
               !profile_attributes->GetLocalProfileName().empty()) {
             const MenuConfig& config = MenuConfig::instance();
-            AddChipToProfileMenuItem(
-                browser_, item, profile_attributes->GetLocalProfileName(),
-                config.arrow_to_edge_padding + views::kSubmenuArrowSize,
+            AddSignedInChipToProfileMenuItem(
+                browser_->profile(), item,
+                config.arrow_to_edge_padding + config.arrow_size,
                 profile_menu_item_selected_subscription_list_);
           }
         }
@@ -1395,37 +1388,12 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
             std::make_unique<RecentTabsMenuModelDelegate>(
                 this, model->GetSubmenuModelAt(i), item);
         break;
-
-      default: {
-        if (features::IsChromeRefresh2023() &&
-            IsOtherProfileCommand(model->GetCommandIdAt(i))) {
-          // Other profile command ids are dynamic and can change depending on
-          // the number of profiles in the browser. Because it's dynamic, check
-          // in the default section by verifying if the command matches what was
-          // assigned during initialization and whether the profile entry has
-          // a matching name.
-          std::u16string chip_label;
-          std::u16string gaia_name = model->GetLabelAt(i);
-          auto all_profile_entries =
-              GetAllOtherProfileEntriesForProfileSubMenu(browser_->profile());
-          size_t profile_index = (model->GetCommandIdAt(i) -
-                                  AppMenuModel::kMinOtherProfileCommandId) /
-                                 AppMenuModel::kNumUnboundedMenuTypes;
-          if (profile_index < all_profile_entries.size() &&
-              GetProfileMenuDisplayName(all_profile_entries[profile_index]) ==
-                  gaia_name) {
-            chip_label =
-                all_profile_entries[profile_index]->GetLocalProfileName();
-          }
-
-          if (!chip_label.empty()) {
-            AddChipToProfileMenuItem(
-                browser_, item, chip_label, 0 /*horizontal_padding*/,
-                profile_menu_item_selected_subscription_list_);
-          }
-        }
+      case IDC_SHOW_MANAGEMENT_PAGE:
+        parent->SetTooltip(model->GetAccessibleNameAt(i),
+                           IDC_SHOW_MANAGEMENT_PAGE);
         break;
-      }
+      default:
+        break;
     }
   }
 }

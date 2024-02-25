@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/color/color_id.h",
+  "+content/public/browser",
+  "+third_party/skia",
+  "+third_party/webrtc",
+  "+ui",
+]

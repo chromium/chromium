@@ -158,11 +158,11 @@ InlineLoginDialog::InlineLoginDialog()
     : InlineLoginDialog(GetInlineLoginUrl(std::string())) {}
 
 InlineLoginDialog::InlineLoginDialog(const GURL& url)
-    : InlineLoginDialog(url, absl::nullopt, base::DoNothing()) {}
+    : InlineLoginDialog(url, std::nullopt, base::DoNothing()) {}
 
 InlineLoginDialog::InlineLoginDialog(
     const GURL& url,
-    absl::optional<account_manager::AccountAdditionOptions> options,
+    std::optional<account_manager::AccountAdditionOptions> options,
     base::OnceClosure close_dialog_closure)
     : SystemWebDialogDelegate(url, std::u16string() /* title */),
       delegate_(this),
@@ -247,14 +247,14 @@ void InlineLoginDialog::Show(
 // static
 void InlineLoginDialog::Show(const std::string& email,
                              base::OnceClosure close_dialog_closure) {
-  ShowInternal(email, /*options=*/absl::nullopt,
+  ShowInternal(email, /*options=*/std::nullopt,
                std::move(close_dialog_closure));
 }
 
 // static
 void InlineLoginDialog::ShowInternal(
     const std::string& email,
-    absl::optional<account_manager::AccountAdditionOptions> options,
+    std::optional<account_manager::AccountAdditionOptions> options,
     base::OnceClosure close_dialog_closure) {
   // If the dialog was triggered as a response to background request, it could
   // get displayed on the lock screen. In this case it is safe to ignore it,

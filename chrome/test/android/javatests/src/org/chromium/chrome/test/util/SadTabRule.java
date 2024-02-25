@@ -12,9 +12,7 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Initialize a SadTab instance stubbed for facilitating tests.
- */
+/** Initialize a SadTab instance stubbed for facilitating tests. */
 public class SadTabRule extends ExternalResource {
     private Tab mTab;
     private SadTab mSadTab;
@@ -36,35 +34,40 @@ public class SadTabRule extends ExternalResource {
         assert mTab != null;
 
         if (mSadTab == null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                mSadTab = new SadTab(mTab) {
-                    private boolean mShowing;
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mSadTab =
+                                new SadTab(mTab) {
+                                    private boolean mShowing;
 
-                    @Override
-                    public void show(
-                            Context context, Runnable suggestionAction, Runnable buttonAction) {
-                        mShowing = true;
-                    }
+                                    @Override
+                                    public void show(
+                                            Context context,
+                                            Runnable suggestionAction,
+                                            Runnable buttonAction) {
+                                        mShowing = true;
+                                    }
 
-                    @Override
-                    public void removeIfPresent() {
-                        mShowing = false;
-                    }
+                                    @Override
+                                    public void removeIfPresent() {
+                                        mShowing = false;
+                                    }
 
-                    @Override
-                    public boolean isShowing() {
-                        return mShowing;
-                    }
-                };
-                SadTab.initForTesting(mTab, mSadTab);
-            });
+                                    @Override
+                                    public boolean isShowing() {
+                                        return mShowing;
+                                    }
+                                };
+                        SadTab.initForTesting(mTab, mSadTab);
+                    });
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (show) {
-                mSadTab.show(mTab.getContext(), () -> {}, () -> {});
-            } else {
-                mSadTab.removeIfPresent();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (show) {
+                        mSadTab.show(mTab.getContext(), () -> {}, () -> {});
+                    } else {
+                        mSadTab.removeIfPresent();
+                    }
+                });
     }
 }

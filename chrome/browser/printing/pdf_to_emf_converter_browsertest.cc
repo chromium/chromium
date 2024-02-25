@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <limits>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -26,7 +27,6 @@
 #include "printing/metafile.h"
 #include "printing/pdf_render_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #ifndef NTDDI_WIN10_VB  // Windows 10.0.19041
 #error "Older Windows SDK unsupported"
@@ -43,7 +43,7 @@ constexpr size_t kHeaderSize = sizeof(ENHMETAHEADER);
 
 constexpr uint32_t kInvalidPageCount = std::numeric_limits<uint32_t>::max();
 
-const absl::optional<bool> kUseSkiaOptions[]{absl::nullopt, true, false};
+const std::optional<bool> kUseSkiaOptions[]{std::nullopt, true, false};
 
 void StartCallbackImpl(base::OnceClosure quit_closure,
                        uint32_t* page_count_out,
@@ -111,7 +111,7 @@ std::string HashData(const char* data, size_t len) {
 
 class PdfToEmfConverterBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<absl::optional<bool>> {
+      public ::testing::WithParamInterface<std::optional<bool>> {
  public:
   PdfToEmfConverterBrowserTest(const PdfToEmfConverterBrowserTest&) = delete;
   PdfToEmfConverterBrowserTest& operator=(const PdfToEmfConverterBrowserTest&) =

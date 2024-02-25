@@ -56,7 +56,6 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
     bool skip_for_now = false;
     bool trusted_value = false;
     bool trusted_found = false;
-    bool choose_what_to_sync = false;
     // Whether the account should be available in ARC after addition. Used only
     // on Chrome OS.
     bool is_available_in_arc = false;
@@ -71,12 +70,12 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
   // JS callback to prepare for starting auth.
   void HandleInitializeMessage(const base::Value::List& args);
 
-  // Continue to initialize the gaia auth extension. It calls
+  // Continue to initialize the authenticator component. It calls
   // |SetExtraInitParams| to set extra init params.
   void ContinueHandleInitializeMessage();
 
-  // JS callback to handle tasks after auth extension loads.
-  virtual void HandleAuthExtensionReadyMessage(const base::Value::List& args) {}
+  // JS callback to handle tasks after authenticator component loads.
+  virtual void HandleAuthenticatorReadyMessage(const base::Value::List& args) {}
 
   // JS callback to complete login. It calls |CompleteLogin| to do the real
   // work.

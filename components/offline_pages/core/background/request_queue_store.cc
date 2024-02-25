@@ -382,8 +382,8 @@ bool InitDatabaseSync(sql::Database* db, const base::FilePath& path) {
   return CreateSchemaSync(db);
 }
 
-absl::optional<std::vector<std::unique_ptr<SavePageRequest>>>
-GetAllRequestsSync(sql::Database* db) {
+std::optional<std::vector<std::unique_ptr<SavePageRequest>>> GetAllRequestsSync(
+    sql::Database* db) {
   static const char kSql[] =
       "SELECT " REQUEST_QUEUE_FIELDS " FROM " REQUEST_QUEUE_TABLE_NAME;
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
@@ -391,14 +391,14 @@ GetAllRequestsSync(sql::Database* db) {
   while (statement.Step())
     requests.push_back(MakeSavePageRequest(statement));
   if (!statement.Succeeded())
-    return absl::nullopt;
+    return std::nullopt;
   return requests;
 }
 
 // Calls |callback| with the result of |requests|.
 void InvokeGetRequestsCallback(
     RequestQueueStore::GetRequestsCallback callback,
-    absl::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests) {
+    std::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests) {
   if (requests) {
     std::move(callback).Run(true, std::move(requests).value());
   } else {
@@ -445,7 +445,7 @@ AddRequestResult AddRequestSync(sql::Database* db,
   // check preconditions.
   if (options.maximum_in_flight_requests_for_namespace > 0 ||
       options.disallow_duplicate_requests) {
-    absl::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests =
+    std::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests =
         GetAllRequestsSync(db);
     if (!requests)
       return AddRequestResult::STORE_FAILURE;
@@ -552,7 +552,7 @@ UpdateRequestsResult RemoveRequestsIfSync(
     sql::Database* db,
     const base::RepeatingCallback<bool(const SavePageRequest&)>&
         remove_predicate) {
-  absl::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests =
+  std::optional<std::vector<std::unique_ptr<SavePageRequest>>> requests =
       GetAllRequestsSync(db);
   if (!requests)
     return UpdateRequestsResult(StoreState::LOADED);
@@ -587,8 +587,8 @@ RequestQueueStore::~RequestQueueStore() {
 
 void RequestQueueStore::Initialize(InitializeCallback callback) {
   DCHECK(!db_);
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 500});
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{.page_size = 4096, .cache_size = 500});
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&InitDatabaseSync, db_.get(), db_file_path_),

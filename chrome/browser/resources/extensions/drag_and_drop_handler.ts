@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
+import type {DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
 
 import {Service} from './service.js';
 

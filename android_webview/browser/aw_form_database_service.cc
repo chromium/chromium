@@ -12,7 +12,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/webdata/common/webdata_constants.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -42,7 +44,13 @@ AwFormDatabaseService::AwFormDatabaseService(const base::FilePath path)
   web_database_ = new WebDatabaseService(path.Append(kWebDataFilename),
                                          content::GetUIThreadTaskRunner({}),
                                          db_task_runner);
-  web_database_->AddTable(base::WrapUnique(new autofill::AutofillTable));
+  web_database_->AddTable(std::make_unique<autofill::AutocompleteTable>());
+  // WebView shouldn't depend on non-Autocomplete tables. However,
+  // `AwFormDatabaseService::ClearFormData()` also clear Autofill-related data.
+  // This is likely a bug.
+  // Once crbug.com/1501199 is resolved, all tables can be removed.
+  web_database_->AddTable(std::make_unique<autofill::AddressAutofillTable>());
+  web_database_->AddTable(std::make_unique<autofill::PaymentsAutofillTable>());
   web_database_->LoadDatabase();
 
   autofill_data_ = new autofill::AutofillWebDataService(

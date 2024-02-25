@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_TEST_PASSWORDS_PRIVATE_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_TEST_PASSWORDS_PRIVATE_DELEGATE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 // A test PasswordsPrivateDelegate implementation which uses mock data.
@@ -27,7 +29,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
   // Fake implementation of `GetUrlCollection`. This returns a value if `url` is
   // not empty.
-  absl::optional<api::passwords_private::UrlCollection> GetUrlCollection(
+  std::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) override;
   // Fake implementation. This returns the value set by
   // `SetIsAccountStoreDefault`.
@@ -89,12 +91,13 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
-  void ExtendAuthValidity() override;
+  void RestartAuthTimer() override;
   void SwitchBiometricAuthBeforeFillingState(
       content::WebContents* web_contents) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
   void ShowExportedFileInShell(content::WebContents* web_contents,
                                std::string file_path) override;
+  base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 
   void SetProfile(Profile* profile);
   void SetOptedInForAccountStorage(bool opted_in);
@@ -152,11 +155,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // Simplified version of an undo manager that only allows undoing and redoing
   // the very last deletion. When the entries are nullopt, this means there is
   // no previous deletion to undo.
-  absl::optional<api::passwords_private::PasswordUiEntry> last_deleted_entry_;
-  absl::optional<api::passwords_private::ExceptionEntry>
-      last_deleted_exception_;
+  std::optional<api::passwords_private::PasswordUiEntry> last_deleted_entry_;
+  std::optional<api::passwords_private::ExceptionEntry> last_deleted_exception_;
 
-  absl::optional<std::u16string> plaintext_password_ = u"plaintext";
+  std::optional<std::u16string> plaintext_password_ = u"plaintext";
 
   api::passwords_private::ImportResults import_results_;
 
@@ -195,6 +197,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // used to track whether the exported file was shown in shell.
   bool exported_file_shown_in_shell_ = false;
+
+  base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };
 }  // namespace extensions
 

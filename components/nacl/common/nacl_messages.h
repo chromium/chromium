@@ -58,47 +58,6 @@ IPC_MESSAGE_CONTROL1(NaClProcessMsg_AddPrefetchedResource,
 IPC_MESSAGE_CONTROL1(NaClProcessMsg_Start,
                      nacl::NaClStartParams /* params */)
 
-#if BUILDFLAG(IS_WIN)
-// Tells the NaCl broker to launch a NaCl loader process.
-IPC_MESSAGE_CONTROL2(NaClProcessMsg_LaunchLoaderThroughBroker,
-                     int, /* launch_id */
-                     mojo::MessagePipeHandle /* service_request_pipe */)
-
-// Notify the browser process that the loader was launched successfully.
-IPC_MESSAGE_CONTROL2(NaClProcessMsg_LoaderLaunched,
-                     int, /* launch_id */
-                     base::ProcessHandle /* loader process handle */)
-
-// Tells the NaCl broker to attach a debug exception handler to the
-// given NaCl loader process.
-IPC_MESSAGE_CONTROL3(NaClProcessMsg_LaunchDebugExceptionHandler,
-                     int32_t /* pid of the NaCl process */,
-                     base::ProcessHandle /* handle of the NaCl process */,
-                     std::string /* NaCl internal process layout info */)
-
-// Notify the browser process that the broker process finished
-// attaching a debug exception handler to the given NaCl loader
-// process.
-IPC_MESSAGE_CONTROL2(NaClProcessMsg_DebugExceptionHandlerLaunched,
-                     int32_t /* pid */,
-                     bool /* success */)
-
-// Notify the broker that all loader processes have been terminated and it
-// should shutdown.
-IPC_MESSAGE_CONTROL0(NaClProcessMsg_StopBroker)
-
-// Used by the NaCl process to request that a Windows debug exception
-// handler be attached to it.
-IPC_SYNC_MESSAGE_CONTROL1_1(NaClProcessMsg_AttachDebugExceptionHandler,
-                            std::string, /* Internal process info */
-                            bool /* Result */)
-
-// Notify the browser process that the NaCl process has bound the given
-// TCP port number to use for the GDB debug stub.
-IPC_MESSAGE_CONTROL1(NaClProcessHostMsg_DebugStubPortSelected,
-                     uint16_t /* debug_stub_port */)
-#endif
-
 // Used by the NaCl process to query a database in the browser.  The database
 // contains the signatures of previously validated code chunks.
 IPC_SYNC_MESSAGE_CONTROL1_1(NaClProcessMsg_QueryKnownToValidate,

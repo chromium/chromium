@@ -62,7 +62,7 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
       mojo::PendingRemote<mojom::DiscoverySessionStatusObserver> observer)
       override;
   void SetBluetoothEnabledState(bool enabled) override;
-  void SetBluetoothHidDetectionActive() override;
+  void SetBluetoothEnabledWithoutPersistence() override;
   void SetBluetoothHidDetectionInactive(bool is_using_bluetooth) override;
   void StartDiscovery(
       mojo::PendingRemote<mojom::BluetoothDiscoveryDelegate> delegate) override;
@@ -85,7 +85,7 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   std::unique_ptr<DiscoveredDevicesProvider> discovered_devices_provider_;
   std::unique_ptr<DiscoverySessionManager> discovery_session_manager_;
   std::unique_ptr<DeviceOperationHandler> device_operation_handler_;
-  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_ = nullptr;
+  raw_ptr<FastPairDelegate> fast_pair_delegate_ = nullptr;
 };
 
 }  // namespace ash::bluetooth_config

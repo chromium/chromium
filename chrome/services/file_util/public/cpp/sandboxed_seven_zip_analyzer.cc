@@ -21,13 +21,17 @@ namespace {
 // thread with either `success_callback` or `failure_callback`.
 void PrepareFileToAnalyze(
     base::FilePath file_path,
-    base::OnceCallback<void(base::File file)> success_callback,
+    base::OnceCallback<void(SandboxedSevenZipAnalyzer::WrappedFilePtr)>
+        success_callback,
     base::OnceCallback<void(safe_browsing::ArchiveAnalysisResult reason)>
         failure_callback) {
-  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_WIN_SHARE_DELETE);
+  SandboxedSevenZipAnalyzer::WrappedFilePtr file(
+      new base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_WIN_SHARE_DELETE),
+      base::OnTaskRunnerDeleter(
+          base::SequencedTaskRunner::GetCurrentDefault()));
 
-  if (!file.IsValid()) {
+  if (!file->IsValid()) {
     DLOG(ERROR) << "Could not open file: " << file_path.value();
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -60,7 +64,10 @@ SandboxedSevenZipAnalyzer::SandboxedSevenZipAnalyzer(
     mojo::PendingRemote<chrome::mojom::FileUtilService> service)
     : file_path_(zip_file),
       callback_(std::move(callback)),
-      service_(std::move(service)) {
+      service_(std::move(service)),
+      file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK(callback_);
   service_->BindSafeArchiveAnalyzer(
       remote_analyzer_.BindNewPipeAndPassReceiver());
@@ -72,10 +79,8 @@ SandboxedSevenZipAnalyzer::SandboxedSevenZipAnalyzer(
 void SandboxedSevenZipAnalyzer::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::ThreadPool::PostTask(
+  file_task_runner_->PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
           &PrepareFileToAnalyze, file_path_,
           base::BindOnce(&SandboxedSevenZipAnalyzer::AnalyzeFile, GetWeakPtr()),
@@ -96,14 +101,15 @@ void SandboxedSevenZipAnalyzer::ReportFileFailure(
   }
 }
 
-void SandboxedSevenZipAnalyzer::AnalyzeFile(base::File file) {
+void SandboxedSevenZipAnalyzer::AnalyzeFile(
+    SandboxedSevenZipAnalyzer::WrappedFilePtr file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (remote_analyzer_) {
     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
         temp_file_getter_remote =
             temp_file_getter_.GetRemoteTemporaryFileGetter();
     remote_analyzer_->AnalyzeSevenZipFile(
-        std::move(file), std::move(temp_file_getter_remote),
+        std::move(*file), std::move(temp_file_getter_remote),
         base::BindOnce(&SandboxedSevenZipAnalyzer::AnalyzeFileDone,
                        GetWeakPtr()));
   } else {

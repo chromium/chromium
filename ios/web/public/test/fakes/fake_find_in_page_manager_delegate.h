@@ -5,10 +5,12 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_FIND_IN_PAGE_MANAGER_DELEGATE_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_FIND_IN_PAGE_MANAGER_DELEGATE_H_
 
+#import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
+
 #include <memory>
 #include <string>
 
-#import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
+#import "base/memory/raw_ptr.h"
 
 namespace web {
 
@@ -40,7 +42,7 @@ class FakeFindInPageManagerDelegate : public FindInPageManagerDelegate {
   struct State {
     State();
     ~State();
-    WebState* web_state = nullptr;
+    raw_ptr<WebState> web_state = nullptr;
     int match_count = -1;
     NSString* query;
     int index = -1;

@@ -1,0 +1,831 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AndroidProcessedCrashCounts">
+  <int value="0" label="Gpu foreground OOM">
+    GPU is killed by Android due to OOM while app is foreground.
+  </int>
+  <int value="1" label="Visible renderer foreground oom">
+    Renderer is killed by Android due to OOM while app is foreground and
+    renderer is hosting visible clients (generally tabs).
+  </int>
+  <int value="2" label="Renderer intentional kill">
+    Renderer is killed to free renderer slot while and app is foreground.
+  </int>
+  <int value="3" label="Visible subframe renderer foreground oom">
+    Renderer hosting visible subframe is killed by Android due to OOM while app
+    is foreground.
+  </int>
+  <int value="4" label="Visible subframe renderer foreground intentional kill">
+    Renderer hosting visible subframe is killed to free renderer slot while app
+    is foreground.
+  </int>
+  <int value="5" label="Visible main frame renderer foreground crash">
+    Renderer is crashed (with crash report) while app is foreground and renderer
+    is hosting visible clients (generally tabs).
+  </int>
+  <int value="6" label="Visible subframe renderer foreground crash">
+    Renderer hosting visible subframe is crashed (with crash report) while app
+    is foreground.
+  </int>
+  <int value="7" label="All GPU process crashes"/>
+  <int value="8" label="All renderer process crashes"/>
+  <int value="9"
+      label="Visible main frame renderer foreground intentional kill"/>
+  <int value="10"
+      label="Visible renderer foreground normal termination without minidump"/>
+  <int value="11"
+      label="Invisible renderer in foreground app with strong binding killed"/>
+  <int value="12"
+      label="Invisible renderer in foreground app with strong binding oom"/>
+  <int value="13"
+      label="Invisible renderer in foreground app with moderate binding
+             killed"/>
+  <int value="14"
+      label="Invisible renderer in foreground app with moderate binding oom"/>
+  <int value="15"
+      label="Visible renderer in foreground app allocation failure"/>
+  <int value="16" label="All renderer allocation failure"/>
+  <int value="17" label="Utility process foreground OOM"/>
+  <int value="18" label="All utility process crashes"/>
+  <int value="19" label="Renderer shutdown from RenderProcessHost::Shutdown"/>
+  <int value="20"
+      label="Invisible renderer in foreground app with visible binding killed"/>
+  <int value="21"
+      label="Invisible renderer in foreground app with visible binding oom"/>
+  <int value="22"
+      label="Invisible renderer in foreground app with not perceptible
+             binding killed"/>
+  <int value="23"
+      label="Invisible renderer in foreground app with not perceptible
+             binding oom"/>
+  <int value="24"
+      label="Invisible renderer in foreground app with waived binding oom"/>
+</enum>
+
+<enum name="AndroidProcessedMinidumps">
+  <int value="0" label="Other"/>
+  <int value="1" label="Browser"/>
+  <int value="2" label="Renderer"/>
+  <int value="3" label="Gpu"/>
+  <int value="4" label="Utility"/>
+</enum>
+
+<enum name="AppWillTerminateReceived">
+  <int value="0" label="WasNotReceivedForXte">
+    ApplicationWillTerminate notification was not received for this XTE.
+  </int>
+  <int value="1" label="WasNotReceivedForUte">
+    ApplicationWillTerminate notification was not received for this UTE.
+  </int>
+  <int value="2" label="WasReceivedForXte">
+    ApplicationWillTerminate notification was received for this XTE.
+  </int>
+  <int value="3" label="WasReceivedForUte">
+    ApplicationWillTerminate notification was received for this UTE.
+  </int>
+</enum>
+
+<enum name="BadMessageReasonAutofill">
+<!-- Generated from components/autofill/content/browser/bad_message.h.
+Called by update_bad_message_reasons.py.-->
+
+  <int value="1" label="Prerendering"/>
+</enum>
+
+<enum name="BadMessageReasonChrome">
+<!-- Generated from chrome/browser/bad_message.h.
+Called by update_bad_message_reasons.py.-->
+
+  <int value="0" label="WRLHH_LOGGING_STOPPED_BAD_STATE"/>
+  <int value="1" label="PPH_EXTRA_PREVIEW_MESSAGE"/>
+  <int value="2" label="PMF_INVALID_INITIATOR_ORIGIN"/>
+  <int value="3" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
+  <int value="4" label="RFH_DISPLAY_CAPTURE_PERMISSION_MISSING"/>
+  <int value="5" label="MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW"/>
+  <int value="6" label="MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS"/>
+  <int value="7" label="PVM_SCRIPTED_PRINT_FENCED_FRAME"/>
+  <int value="8" label="PVMB_SCRIPTED_PRINT_FENCED_FRAME"/>
+  <int value="9" label="SSI_CREATE_FENCED_FRAME"/>
+  <int value="10" label="CCU_SUPERFLUOUS_BIND"/>
+</enum>
+
+<enum name="BadMessageReasonContent">
+<!-- Generated from content/browser/bad_message.h.
+Called by update_bad_message_reasons.py.-->
+
+  <int value="0" label="OBSOLETE_NC_IN_PAGE_NAVIGATION"/>
+  <int value="1" label="RFH_CAN_COMMIT_URL_BLOCKED"/>
+  <int value="2" label="RFH_CAN_ACCESS_FILES_OF_PAGE_STATE"/>
+  <int value="3" label="RFH_SANDBOX_FLAGS"/>
+  <int value="4" label="RFH_NO_PROXY_TO_PARENT"/>
+  <int value="5" label="RPH_DESERIALIZATION_FAILED"/>
+  <int value="6" label="OBSOLETE_RVH_CAN_ACCESS_FILES_OF_PAGE_STATE"/>
+  <int value="7" label="OBSOLETE_RFH_FILE_CHOOSER_PATH"/>
+  <int value="8" label="OBSOLETE_RWH_SYNTHETIC_GESTURE"/>
+  <int value="9" label="OBSOLETE_RWH_FOCUS"/>
+  <int value="10" label="OBSOLETE_RWH_BLUR"/>
+  <int value="11" label="RWH_SHARED_BITMAP"/>
+  <int value="12" label="OBSOLETE_RWH_BAD_ACK_MESSAGE"/>
+  <int value="13" label="OBSOLETE_RWHVA_SHARED_MEMORY"/>
+  <int value="14" label="SERVICE_WORKER_BAD_URL"/>
+  <int value="15" label="OBSOLETE_WC_INVALID_FRAME_SOURCE"/>
+  <int value="16" label="OBSOLETE_RWHVM_UNEXPECTED_FRAME_TYPE"/>
+  <int value="17" label="RFPH_DETACH"/>
+  <int value="18" label="DFH_BAD_EMBEDDER_MESSAGE"/>
+  <int value="19" label="NC_AUTO_SUBFRAME"/>
+  <int value="20" label="CSDH_NOT_RECOGNIZED"/>
+  <int value="21" label="OBSOLETE_DSMF_OPEN_STORAGE"/>
+  <int value="22" label="DSMF_LOAD_STORAGE"/>
+  <int value="23" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_OPEN"/>
+  <int value="24" label="OBSOLETE_DBMF_DB_NOT_OPEN_ON_MODIFY"/>
+  <int value="25" label="OBSOLETE_DBMF_DB_NOT_OPEN_ON_CLOSE"/>
+  <int value="26" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_SQLITE_ERROR"/>
+  <int value="27" label="RDH_INVALID_PRIORITY"/>
+  <int value="28" label="OBSOLETE_RDH_REQUEST_NOT_TRANSFERRING"/>
+  <int value="29" label="RDH_BAD_DOWNLOAD"/>
+  <int value="30" label="OBSOLETE_NMF_NO_PERMISSION_SHOW"/>
+  <int value="31" label="OBSOLETE_NMF_NO_PERMISSION_CLOSE"/>
+  <int value="32" label="OBSOLETE_NMF_NO_PERMISSION_VERIFY"/>
+  <int value="33" label="MH_INVALID_MIDI_PORT"/>
+  <int value="34" label="MH_MIDI_SYSEX_PERMISSION"/>
+  <int value="35" label="ACDH_REGISTER"/>
+  <int value="36" label="ACDH_UNREGISTER"/>
+  <int value="37" label="ACDH_SET_SPAWNING"/>
+  <int value="38" label="ACDH_SELECT_CACHE"/>
+  <int value="39" label="OBSOLETE_ACDH_SELECT_CACHE_FOR_WORKER"/>
+  <int value="40" label="ACDH_SELECT_CACHE_FOR_SHARED_WORKER"/>
+  <int value="41" label="ACDH_MARK_AS_FOREIGN_ENTRY"/>
+  <int value="42" label="ACDH_PENDING_REPLY_IN_GET_STATUS"/>
+  <int value="43" label="ACDH_GET_STATUS"/>
+  <int value="44" label="ACDH_PENDING_REPLY_IN_START_UPDATE"/>
+  <int value="45" label="ACDH_START_UPDATE"/>
+  <int value="46" label="ACDH_PENDING_REPLY_IN_SWAP_CACHE"/>
+  <int value="47" label="ACDH_SWAP_CACHE"/>
+  <int value="48" label="SWDH_NOT_HANDLED"/>
+  <int value="49" label="OBSOLETE_SWDH_REGISTER_BAD_URL"/>
+  <int value="50" label="OBSOLETE_SWDH_REGISTER_NO_HOST"/>
+  <int value="51" label="OBSOLETE_SWDH_REGISTER_CANNOT"/>
+  <int value="52" label="OBSOLETE_SWDH_UNREGISTER_BAD_URL"/>
+  <int value="53" label="OBSOLETE_SWDH_UNREGISTER_NO_HOST"/>
+  <int value="54" label="OBSOLETE_SWDH_UNREGISTER_CANNOT"/>
+  <int value="55" label="OBSOLETE_SWDH_GET_REGISTRATION_BAD_URL"/>
+  <int value="56" label="OBSOLETE_SWDH_GET_REGISTRATION_NO_HOST"/>
+  <int value="57" label="OBSOLETE_SWDH_GET_REGISTRATION_CANNOT"/>
+  <int value="58" label="OBSOLETE_SWDH_GET_REGISTRATION_FOR_READY_NO_HOST"/>
+  <int value="59"
+      label="OBSOLETE_SWDH_GET_REGISTRATION_FOR_READY_ALREADY_IN_PROGRESS"/>
+  <int value="60" label="SWDH_POST_MESSAGE"/>
+  <int value="61" label="OBSOLETE_SWDH_PROVIDER_CREATED_NO_HOST"/>
+  <int value="62" label="OBSOLETE_SWDH_PROVIDER_DESTROYED_NO_HOST"/>
+  <int value="63" label="OBSOLETE_SWDH_SET_HOSTED_VERSION_NO_HOST"/>
+  <int value="64" label="OBSOLETE_SWDH_SET_HOSTED_VERSION"/>
+  <int value="65" label="OBSOLETE_SWDH_WORKER_SCRIPT_LOAD_NO_HOST"/>
+  <int value="66" label="SWDH_INCREMENT_WORKER_BAD_HANDLE"/>
+  <int value="67" label="SWDH_DECREMENT_WORKER_BAD_HANDLE"/>
+  <int value="68" label="OBSOLETE_SWDH_INCREMENT_REGISTRATION_BAD_HANDLE"/>
+  <int value="69" label="OBSOLETE_SWDH_DECREMENT_REGISTRATION_BAD_HANDLE"/>
+  <int value="70" label="SWDH_TERMINATE_BAD_HANDLE"/>
+  <int value="71" label="OBSOLETE_FAMF_APPEND_ITEM_TO_BLOB"/>
+  <int value="72" label="OBSOLETE_FAMF_APPEND_SHARED_MEMORY_TO_BLOB"/>
+  <int value="73" label="OBSOLETE_FAMF_MALFORMED_STREAM_URL"/>
+  <int value="74" label="OBSOLETE_FAMF_APPEND_ITEM_TO_STREAM"/>
+  <int value="75" label="OBSOLETE_FAMF_APPEND_SHARED_MEMORY_TO_STREAM"/>
+  <int value="76" label="OBSOLETE_IDBDH_CAN_READ_FILE"/>
+  <int value="77" label="OBSOLETE_IDBDH_GET_OR_TERMINATE"/>
+  <int value="78" label="RFMF_SET_COOKIE_BAD_ORIGIN"/>
+  <int value="79" label="RFMF_GET_COOKIES_BAD_ORIGIN"/>
+  <int value="80" label="OBSOLETE_SWDH_GET_REGISTRATIONS_NO_HOST"/>
+  <int value="81" label="OBSOLETE_SWDH_GET_REGISTRATIONS_INVALID_ORIGIN"/>
+  <int value="82" label="OBSOLETE_AOAH_UNAUTHORIZED_URL"/>
+  <int value="83" label="BDH_INVALID_SERVICE_ID"/>
+  <int value="84" label="OBSOLETE_RFH_COMMIT_DESERIALIZATION_FAILED"/>
+  <int value="85" label="BDH_INVALID_CHARACTERISTIC_ID"/>
+  <int value="86" label="OBSOLETE_SWDH_UPDATE_NO_HOST"/>
+  <int value="87" label="OBSOLETE_SWDH_UPDATE_BAD_REGISTRATION_ID"/>
+  <int value="88" label="OBSOLETE_SWDH_UPDATE_CANNOT"/>
+  <int value="89" label="OBSOLETE_SWDH_UNREGISTER_BAD_REGISTRATION_ID"/>
+  <int value="90" label="BDH_INVALID_WRITE_VALUE_LENGTH"/>
+  <int value="91" label="OBSOLETE_WC_MEMORY_CACHE_RESOURCE_BAD_SECURITY_INFO"/>
+  <int value="92" label="OBSOLETE_WC_RENDERER_DID_NAVIGATE_BAD_SECURITY_INFO"/>
+  <int value="93" label="OBSOLETE_BDH_DUPLICATE_REQUEST_DEVICE_ID"/>
+  <int value="94" label="CSDH_INVALID_ORIGIN"/>
+  <int value="95" label="OBSOLETE_RDH_ILLEGAL_ORIGIN"/>
+  <int value="96" label="OBSOLETE_RDH_UNAUTHORIZED_HEADER_REQUEST"/>
+  <int value="97" label="RDH_INVALID_URL"/>
+  <int value="98" label="OBSOLETE_BDH_CHARACTERISTIC_ALREADY_SUBSCRIBED"/>
+  <int value="99" label="RFH_OWNER_PROPERTY"/>
+  <int value="100" label="OBSOLETE_BDH_EMPTY_OR_INVALID_FILTERS"/>
+  <int value="101"
+      label="OBSOLETE_WC_CONTENT_WITH_CERT_ERRORS_BAD_SECURITY_INFO"/>
+  <int value="102" label="OBSOLETE_RFMF_RENDERER_FAKED_ITS_OWN_DEATH"/>
+  <int value="103" label="DWNLD_INVALID_SAVABLE_RESOURCE_LINKS_RESPONSE"/>
+  <int value="104" label="OBSOLETE_DWNLD_INVALID_SERIALIZE_AS_MHTML_RESPONSE"/>
+  <int value="105" label="BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN"/>
+  <int value="106" label="OBSOLETE_ACI_WRONG_STORAGE_PARTITION"/>
+  <int value="107" label="OBSOLETE_RDHI_WRONG_STORAGE_PARTITION"/>
+  <int value="108" label="RDH_INVALID_REQUEST_ID"/>
+  <int value="109" label="BDH_SERVICE_NOT_ALLOWED_FOR_ORIGIN"/>
+  <int value="110" label="WSI_UNEXPECTED_ADD_CHANNEL_REQUEST"/>
+  <int value="111" label="WSI_UNEXPECTED_SEND_FRAME"/>
+  <int value="112" label="RFH_UNEXPECTED_LOAD_START"/>
+  <int value="113" label="NMF_INVALID_ARGUMENT"/>
+  <int value="114" label="RFH_INVALID_ORIGIN_ON_COMMIT"/>
+  <int value="115" label="BDH_UUID_REGISTERED"/>
+  <int value="116" label="BDH_CONSTRUCTION_FAILED"/>
+  <int value="117" label="BDH_INVALID_REFCOUNT_OPERATION"/>
+  <int value="118" label="BDH_INVALID_URL_OPERATION"/>
+  <int value="119" label="OBSOLETE_IDBDH_INVALID_ORIGIN"/>
+  <int value="120" label="OBSOLETE_RFH_FAIL_PROVISIONAL_LOAD_NO_HANDLE"/>
+  <int value="121" label="OBSOLETE_RFH_FAIL_PROVISIONAL_LOAD_NO_ERROR"/>
+  <int value="122" label="NI_IN_PAGE_NAVIGATION"/>
+  <int value="123" label="RPH_MOJO_PROCESS_ERROR"/>
+  <int value="124" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_GET_SPACE"/>
+  <int value="125" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_MODIFIED"/>
+  <int value="126" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_CLOSED"/>
+  <int value="127" label="OBSOLETE_WSI_INVALID_HEADER_VALUE"/>
+  <int value="128" label="OBSOLETE_SWDH_SET_HOSTED_VERSION_INVALID_HOST"/>
+  <int value="129" label="OBSOLETE_SWDH_SET_HOSTED_VERSION_PROCESS_MISMATCH"/>
+  <int value="130" label="OBSOLETE_MSDH_INVALID_FRAME_ID"/>
+  <int value="131" label="SDH_INVALID_PORT_RANGE"/>
+  <int value="132" label="SCO_INVALID_ARGUMENT"/>
+  <int value="133" label="RFH_INCONSISTENT_DEVTOOLS_MESSAGE"/>
+  <int value="134" label="DSH_DUPLICATE_CONNECTION_ID"/>
+  <int value="135" label="DSH_NOT_CREATED_SESSION_ID"/>
+  <int value="136" label="DSH_NOT_ALLOCATED_SESSION_ID"/>
+  <int value="137" label="DSH_DELETED_SESSION_ID"/>
+  <int value="138" label="OBSOLETE_DSH_WRONG_STORAGE_PARTITION"/>
+  <int value="139" label="BDH_DISALLOWED_ORIGIN"/>
+  <int value="140" label="ARH_CREATED_STREAM_WITHOUT_AUTHORIZATION"/>
+  <int value="141" label="MDDH_INVALID_DEVICE_TYPE_REQUEST"/>
+  <int value="142" label="OBSOLETE_MDDH_UNAUTHORIZED_ORIGIN"/>
+  <int value="143" label="OBSOLETE_SWDH_ENABLE_NAVIGATION_PRELOAD_NO_HOST"/>
+  <int value="144"
+      label="OBSOLETE_SWDH_ENABLE_NAVIGATION_PRELOAD_INVALID_ORIGIN"/>
+  <int value="145"
+      label="OBSOLETE_SWDH_ENABLE_NAVIGATION_PRELOAD_BAD_REGISTRATION_ID"/>
+  <int value="146" label="OBSOLETE_RDH_TRANSFERRING_REQUEST_NOT_FOUND"/>
+  <int value="147" label="OBSOLETE_RDH_TRANSFERRING_NONNAVIGATIONAL_REQUEST"/>
+  <int value="148" label="OBSOLETE_SWDH_GET_NAVIGATION_PRELOAD_STATE_NO_HOST"/>
+  <int value="149"
+      label="OBSOLETE_SWDH_GET_NAVIGATION_PRELOAD_STATE_INVALID_ORIGIN"/>
+  <int value="150"
+      label="OBSOLETE_SWDH_GET_NAVIGATION_PRELOAD_STATE_BAD_REGISTRATION_ID"/>
+  <int value="151" label="OBSOLETE_SWDH_SET_NAVIGATION_PRELOAD_HEADER_NO_HOST"/>
+  <int value="152"
+      label="OBSOLETE_SWDH_SET_NAVIGATION_PRELOAD_HEADER_INVALID_ORIGIN"/>
+  <int value="153"
+      label="OBSOLETE_SWDH_SET_NAVIGATION_PRELOAD_HEADER_BAD_REGISTRATION_ID"/>
+  <int value="154"
+      label="OBSOLETE_SWDH_SET_NAVIGATION_PRELOAD_HEADER_BAD_VALUE"/>
+  <int value="155" label="MDDH_INVALID_SUBSCRIPTION_REQUEST"/>
+  <int value="156" label="OBSOLETE_MDDH_INVALID_UNSUBSCRIPTION_REQUEST"/>
+  <int value="157" label="OBSOLETE_AOAH_NONSENSE_DEVICE_ID"/>
+  <int value="158" label="BDH_INVALID_OPTIONS"/>
+  <int value="159" label="RFH_DID_ADD_CONSOLE_MESSAGE_BAD_SEVERITY"/>
+  <int value="160" label="AIRH_VOLUME_OUT_OF_RANGE"/>
+  <int value="161" label="BDH_INVALID_DESCRIPTOR_ID"/>
+  <int value="162" label="OBSOLETE_RWH_INVALID_BEGIN_FRAME_ACK_DID_NOT_SWAP"/>
+  <int value="163"
+      label="OBSOLETE_RWH_INVALID_BEGIN_FRAME_ACK_COMPOSITOR_FRAME"/>
+  <int value="164" label="BFSI_INVALID_DEVELOPER_ID"/>
+  <int value="165" label="BFSI_INVALID_REQUESTS"/>
+  <int value="166" label="BFSI_INVALID_TITLE"/>
+  <int value="167" label="RWH_INVALID_FRAME_TOKEN"/>
+  <int value="168" label="RWH_BAD_FRAME_SINK_REQUEST"/>
+  <int value="169" label="RWH_SURFACE_INVARIANTS_VIOLATION"/>
+  <int value="170" label="ILLEGAL_UPLOAD_PARAMS"/>
+  <int value="171" label="RFH_BASE_URL_FOR_DATA_URL_SPECIFIED"/>
+  <int value="172" label="OBSOLETE_RFPH_ILLEGAL_UPLOAD_PARAMS"/>
+  <int value="173" label="OBSOLETE_SWDH_PROVIDER_CREATED_ILLEGAL_TYPE"/>
+  <int value="174"
+      label="OBSOLETE_SWDH_PROVIDER_CREATED_ILLEGAL_TYPE_NOT_WINDOW"/>
+  <int value="175"
+      label="OBSOLETE_SWDH_PROVIDER_CREATED_ILLEGAL_TYPE_SERVICE_WORKER"/>
+  <int value="176" label="OBSOLETE_SWDH_PROVIDER_CREATED_DUPLICATE_ID"/>
+  <int value="177" label="OBSOLETE_SWDH_PROVIDER_CREATED_BAD_ID"/>
+  <int value="178" label="RFH_KEEP_ALIVE_HANDLE_REQUESTED_INCORRECTLY"/>
+  <int value="179" label="BFSI_INVALID_UNIQUE_ID"/>
+  <int value="180" label="BPE_UNEXPECTED_MESSAGE_BEFORE_BPGM_CREATION"/>
+  <int value="181" label="WEBUI_SEND_FROM_UNAUTHORIZED_PROCESS"/>
+  <int value="182"
+      label="CPFC_RESIZE_PARAMS_CHANGED_LOCAL_SURFACE_ID_UNCHANGED"/>
+  <int value="183"
+      label="BPG_RESIZE_PARAMS_CHANGED_LOCAL_SURFACE_ID_UNCHANGED"/>
+  <int value="184" label="RFH_NEGATIVE_SELECTION_START_OFFSET"/>
+  <int value="185" label="WEBUI_BAD_SCHEME_ACCESS"/>
+  <int value="186" label="CSDH_UNEXPECTED_OPERATION"/>
+  <int value="187" label="RMF_BAD_URL_CACHEABLE_METADATA"/>
+  <int value="188" label="RFH_INTERFACE_PROVIDER_MISSING"/>
+  <int value="189" label="OBSOLETE_RFH_INTERFACE_PROVIDER_SUPERFLUOUS"/>
+  <int value="190" label="AIRH_UNEXPECTED_BITSTREAM"/>
+  <int value="191" label="ARH_UNEXPECTED_BITSTREAM"/>
+  <int value="192" label="RDH_NULL_CLIENT"/>
+  <int value="193" label="RVH_WEB_UI_BINDINGS_MISMATCH"/>
+  <int value="194" label="OBSOLETE_WCI_NEW_WIDGET_PROCESS_MISMATCH"/>
+  <int value="195" label="AUTH_INVALID_EFFECTIVE_DOMAIN"/>
+  <int value="196" label="AUTH_INVALID_RELYING_PARTY"/>
+  <int value="197" label="RWH_COPY_REQUEST_ATTEMPT"/>
+  <int value="198" label="SYNC_COMPOSITOR_NO_FUTURE_FRAME"/>
+  <int value="199" label="SYNC_COMPOSITOR_NO_BEGIN_FRAME"/>
+  <int value="200" label="WEBUI_BAD_HOST_ACCESS"/>
+  <int value="201" label="OBSOLETE_RFMF_BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
+  <int value="202" label="PSI_BAD_PERMISSION_DESCRIPTOR"/>
+  <int value="203" label="BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
+  <int value="204" label="OBSOLETE_RFPH_BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
+  <int value="205" label="RFH_ERROR_PROCESS_NON_ERROR_COMMIT"/>
+  <int value="206" label="RFH_ERROR_PROCESS_NON_UNIQUE_ORIGIN_COMMIT"/>
+  <int value="207" label="OBSOLETE_RFH_CANNOT_RENDER_FALLBACK_CONTENT"/>
+  <int value="208" label="OBSOLETE_RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE"/>
+  <int value="209" label="OBSOLETE_RFH_INVALID_WEB_REPORTING_CRASH_ID"/>
+  <int value="210" label="RFH_DETACH_MAIN_FRAME"/>
+  <int value="211" label="RFH_BROWSER_INTERFACE_BROKER_MISSING"/>
+  <int value="212" label="RFPH_POST_MESSAGE_INVALID_SOURCE_ORIGIN"/>
+  <int value="213" label="INVALID_INITIATOR_ORIGIN"/>
+  <int value="214" label="RFHI_BEGIN_NAVIGATION_MISSING_INITIATOR_ORIGIN"/>
+  <int value="215" label="RFHI_BEGIN_NAVIGATION_NON_WEBBY_TRANSITION"/>
+  <int value="216" label="RFH_NO_MATCHING_NAVIGATION_REQUEST_ON_COMMIT"/>
+  <int value="217" label="OBSOLETE_AUTH_INVALID_ICON_URL"/>
+  <int value="218" label="MDDH_INVALID_STREAM_SELECTION_INFO"/>
+  <int value="219" label="REGISTER_PROTOCOL_HANDLER_INVALID_URL"/>
+  <int value="220" label="NC_SAME_DOCUMENT_POST_COMMIT_ERROR"/>
+  <int value="221" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
+  <int value="222" label="RFPH_ADVANCE_FOCUS_INTO_PORTAL"/>
+  <int value="223" label="RFH_UNEXPECTED_EMBEDDING_TOKEN"/>
+  <int value="224" label="RFH_MISSING_EMBEDDING_TOKEN"/>
+  <int value="225" label="RFH_BAD_DOCUMENT_POLICY_HEADER"/>
+  <int value="226" label="RFMF_INVALID_PLUGIN_EMBEDDER_ORIGIN"/>
+  <int value="227" label="RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME"/>
+  <int value="228" label="INPUT_ROUTER_INVALID_EVENT_SOURCE"/>
+  <int value="229" label="RFH_INACTIVE_CHECK_FROM_SPECULATIVE_RFH"/>
+  <int value="230" label="RFH_SUBFRAME_CAPTURE_ON_MAIN_FRAME"/>
+  <int value="231" label="RFH_CSP_ATTRIBUTE"/>
+  <int value="232" label="RFH_RECEIVED_ASSOCIATED_MESSAGE_WHILE_BFCACHED"/>
+  <int value="233" label="RWH_CLOSE_PORTAL"/>
+  <int value="234" label="MSDH_INVALID_STREAM_TYPE"/>
+  <int value="235" label="RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND"/>
+  <int value="236" label="ASGH_ASSOCIATED_INTERFACE_REQUEST"/>
+  <int value="237" label="ASGH_RECEIVED_CONTROL_MESSAGE"/>
+  <int value="238" label="CSDH_BAD_OWNER"/>
+  <int value="239" label="SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID"/>
+  <int value="240" label="WCI_INVALID_FULLSCREEN_OPTIONS"/>
+  <int value="241" label="PAYMENTS_WITHOUT_PERMISSION"/>
+  <int value="242" label="WEB_BUNDLE_INVALID_NAVIGATION_URL"/>
+  <int value="243" label="WCI_INVALID_DOWNLOAD_IMAGE_RESULT"/>
+  <int value="244" label="MDDH_NULL_CAPTURE_HANDLE_CONFIG"/>
+  <int value="245" label="MDDH_INVALID_CAPTURE_HANDLE"/>
+  <int value="246" label="MDDH_INVALID_ALL_ORIGINS_PERMITTED"/>
+  <int value="247" label="MDDH_INVALID_PERMITTED_ORIGIN"/>
+  <int value="248" label="MDDH_NOT_TOP_LEVEL"/>
+  <int value="249" label="RFH_DID_CHANGE_IFRAME_ATTRIBUTE"/>
+  <int value="250" label="FARI_LOGOUT_BAD_ENDPOINT"/>
+  <int value="251"
+      label="OBSOLETE_RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE"/>
+  <int value="252" label="RFH_POPUP_REQUEST_WHILE_PRERENDERING"/>
+  <int value="253" label="RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE"/>
+  <int value="254" label="RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS"/>
+  <int value="255" label="RFPH_FOCUSED_FENCED_FRAME"/>
+  <int value="256" label="WCI_REQUEST_LOCK_MOUSE_FENCED_FRAME"/>
+  <int value="257" label="BFSI_CREATE_FOR_FRAME_FENCED_FRAME"/>
+  <int value="258" label="RFH_FENCED_FRAME_MOJO_WHEN_DISABLED"/>
+  <int value="259" label="PMM_SUBSCRIBE_INVALID_ORIGIN"/>
+  <int value="260" label="PMM_UNSUBSCRIBE_INVALID_ORIGIN"/>
+  <int value="261" label="PMM_GET_SUBSCRIPTION_INVALID_ORIGIN"/>
+  <int value="262" label="RFH_INACTIVE_CHECK_FROM_PENDING_COMMIT_RFH"/>
+  <int value="263" label="MSDH_INVALID_STREAM_TYPE_COMBINATION"/>
+  <int value="264" label="AUTH_INVALID_FENCED_FRAME"/>
+  <int value="265" label="BIBI_BIND_GAMEPAD_MONITOR_FOR_FENCED_FRAME"/>
+  <int value="266" label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_FOR_FENCED_FRAME"/>
+  <int value="267" label="BIBI_BIND_BATTERY_MONITOR_FOR_FENCED_FRAME"/>
+  <int value="268" label="RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME"/>
+  <int value="269" label="RFH_UNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME"/>
+  <int value="270"
+      label="RFH_BEFOREUNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME"/>
+  <int value="271" label="MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE"/>
+  <int value="272" label="RFHI_SUBFRAME_NAV_WOULD_CHANGE_MAINFRAME_ORIGIN"/>
+  <int value="273" label="FF_CREATE_WHILE_PRERENDERING"/>
+  <int value="274" label="RFHI_SET_OVERLAYS_CONTENT_NOT_OUTERMOST_FRAME"/>
+  <int value="275" label="FF_DIFFERENT_MODE_THAN_EMBEDDER"/>
+  <int value="276" label="RFHI_UNFENCED_TOP_IPC_OUTSIDE_FENCED_FRAME"/>
+  <int value="277" label="FF_NAVIGATION_INVALID_URL"/>
+  <int value="278" label="FTN_ANONYMOUS"/>
+  <int value="279" label="BFSI_CREATE_FOR_WORKER_FENCED_FRAME"/>
+  <int value="280" label="PMM_SUBSCRIBE_IN_FENCED_FRAME"/>
+  <int value="281" label="MSDH_REQUEST_ALL_SCREENS_NOT_ALLOWED_FOR_ORIGIN"/>
+  <int value="282" label="RFHI_CREATE_FENCED_FRAME_BAD_FRAME_TOKEN"/>
+  <int value="283" label="RFHI_CREATE_FENCED_FRAME_BAD_DEVTOOLS_FRAME_TOKEN"/>
+  <int value="284" label="FF_FROZEN_SANDBOX_FLAGS_CHANGED"/>
+  <int value="285" label="MSM_GET_OPEN_DEVICE_FOR_UNSUPPORTED_STREAM_TYPE"/>
+  <int value="286" label="MSDH_KEEP_DEVICE_ALIVE_USE_WITHOUT_FEATURE"/>
+  <int value="287"
+      label="OBSOLETE_MSDH_INCONSISTENT_AUDIO_TYPE_AND_REQUESTED_FIELDS"/>
+  <int value="288"
+      label="OBSOLETE_MSDH_INCONSISTENT_VIDEO_TYPE_AND_REQUESTED_FIELDS"/>
+  <int value="289"
+      label="MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED"/>
+  <int value="290" label="MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED"/>
+  <int value="291" label="MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED"/>
+  <int value="292" label="MSDH_ON_STREAM_STARTED_DISALLOWED"/>
+  <int value="293" label="RFH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME"/>
+  <int value="294" label="RFPH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME"/>
+  <int value="295" label="BIBI_BIND_PRESSURE_MANAGER_FOR_INSECURE_ORIGIN"/>
+  <int value="296" label="BIBI_BIND_PRESSURE_MANAGER_FOR_FENCED_FRAME"/>
+  <int value="297"
+      label="BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="298" label="RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN"/>
+  <int value="299" label="RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE"/>
+  <int value="300" label="RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT"/>
+  <int value="301" label="RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME"/>
+  <int value="302" label="MH_MIDI_PERMISSION"/>
+  <int value="303" label="RFH_CAN_ACCESS_FILES_OF_PAGE_STATE_AT_COMMIT"/>
+  <int value="304" label="PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE"/>
+  <int value="305" label="RFH_FOCUS_ACROSS_FENCED_BOUNDARY"/>
+  <int value="306"
+      label="RFH_RECEIVED_INVALID_SHARED_STORAGE_WRITABLE_ATTRIBUTE"/>
+  <int value="307"
+      label="MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED"/>
+  <int value="308" label="PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE"/>
+  <int value="309"
+      label="OBSOLETE_RFH_RECEIVED_INVALID_AD_AUCTION_HEADERS_ATTRIBUTE"/>
+  <int value="310" label="OBSOLETE_MSDH_SEND_WHEEL_BUT_CSC_FEATURE_DISABLED"/>
+  <int value="311" label="MSDH_SEND_WHEEL_INVALID_ACTION"/>
+  <int value="312"
+      label="OBSOLETE_MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED"/>
+  <int value="313" label="RFH_FENCED_DOCUMENT_DATA_NOT_FOUND"/>
+  <int value="314"
+      label="OBSOLETE_MSDH_SET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED"/>
+  <int value="315" label="MSDH_SET_ZOOM_LEVEL_INVALID_LEVEL"/>
+  <int value="316"
+      label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_FROM_UNTRUSTWORTHY_ORIGIN"/>
+  <int value="317"
+      label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_FROM_OPAQUE_ORIGIN"/>
+  <int value="318"
+      label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_WITH_PERMISSION_DISABLED"/>
+</enum>
+
+<enum name="BadMessageReasonExtensions">
+<!-- Generated from extensions/browser/bad_message.h.
+Called by update_bad_message_reasons.py.-->
+
+  <int value="0" label="EOG_BAD_ORIGIN"/>
+  <int value="1" label="EVG_BAD_ORIGIN"/>
+  <int value="2" label="BH_BLOB_NOT_OWNED"/>
+  <int value="3" label="EH_BAD_EVENT_ID"/>
+  <int value="4" label="AVG_BAD_INST_ID"/>
+  <int value="5" label="AVG_BAD_EXT_ID"/>
+  <int value="6" label="OBSOLETE_AVG_NULL_AVG"/>
+  <int value="7" label="DEPRECATED_ESWMF_INVALID_DECREMENT_ACTIVITY"/>
+  <int value="8" label="EFD_BAD_MESSAGE"/>
+  <int value="9" label="EFD_BAD_MESSAGE_WORKER"/>
+  <int value="10" label="WVG_PARTITION_ID_NOT_UTF8"/>
+  <int value="11" label="ESWMF_BAD_EVENT_ACK"/>
+  <int value="12" label="MHVG_INVALID_PLUGIN_FRAME_ID"/>
+  <int value="13" label="EMF_INVALID_CHANNEL_SOURCE_TYPE"/>
+  <int value="14" label="EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE"/>
+  <int value="15" label="EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE"/>
+  <int value="16" label="EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT"/>
+  <int value="17" label="EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT"/>
+  <int value="18" label="EMF_INVALID_PORT_CONTEXT"/>
+  <int value="19" label="AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME"/>
+  <int value="20" label="EFD_INVALID_EXTENSION_ID_FOR_PROCESS"/>
+  <int value="21" label="DEPRECATED_EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG"/>
+  <int value="22" label="EMF_NON_EXTENSION_SENDER_FRAME"/>
+  <int value="23" label="EMF_NON_EXTENSION_SENDER_NATIVE_HOST"/>
+  <int value="24" label="EMF_INVALID_SOURCE_URL"/>
+  <int value="25" label="DEPRECATED_EMF_INVALID_SOURCE_URL_FROM_WORKER"/>
+  <int value="26"
+      label="EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST"/>
+  <int value="27" label="EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE"/>
+  <int value="28" label="EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT"/>
+  <int value="29" label="EMF_INVALID_EXTERNAL_EXTENSION_ID_FOR_USER_SCRIPT"/>
+  <int value="30"
+      label="EMF_INVALID_OPEN_CHANNEL_TO_NATIVE_APP_FROM_NATIVE_HOST"/>
+  <int value="31" label="EFH_NO_BACKGROUND_HOST_FOR_FRAME"/>
+  <int value="32" label="LEGACY_IPC_MISMATCH"/>
+  <int value="33" label="ER_SW_INVALID_LAZY_BACKGROUND_PARAM"/>
+</enum>
+
+<enum name="BadMessageReasonGuestView">
+<!-- Generated from components/guest_view/browser/bad_message.h.
+Called by update_bad_message_reasons.py.-->
+
+  <int value="0" label="GVM_EMBEDDER_FORBIDDEN_ACCESS_TO_GUEST"/>
+  <int value="1" label="GVM_INVALID_GUESTVIEW_TYPE"/>
+  <int value="2" label="GVMF_UNEXPECTED_MESSAGE_BEFORE_GVM_CREATION"/>
+  <int value="3" label="GVM_INVALID_ATTACH"/>
+</enum>
+
+<enum name="BadMessageReasonNaCl">
+<!-- Generated from components/nacl/browser/bad_message.h.
+Called by update_bad_message_reasons.py.-->
+
+  <int value="0" label="NFH_OPEN_EXECUTABLE_BAD_ROUTING_ID"/>
+  <int value="1" label="NHMF_LAUNCH_CONTINUATION_BAD_ROUTING_ID"/>
+  <int value="2" label="NHMF_GET_NEXE_FD_BAD_URL"/>
+</enum>
+
+<enum name="BadMessageReasonPasswordManager">
+<!-- Generated from components/password_manager/content/browser/bad_message.h.
+Called by update_bad_message_reasons.py.-->
+
+  <int value="1" label="CPMD_BAD_ORIGIN_FORMS_PARSED_OBSOLETE"/>
+  <int value="2" label="CPMD_BAD_ORIGIN_FORMS_RENDERED_OBSOLETE"/>
+  <int value="3" label="CPMD_BAD_ORIGIN_FORM_SUBMITTED"/>
+  <int value="4" label="CPMD_BAD_ORIGIN_FOCUSED_PASSWORD_FORM_FOUND_OBSOLETE"/>
+  <int value="5" label="CPMD_BAD_ORIGIN_IN_PAGE_NAVIGATION_OBSOLETE"/>
+  <int value="6" label="CPMD_BAD_ORIGIN_PASSWORD_NO_LONGER_GENERATED"/>
+  <int value="7" label="CPMD_BAD_ORIGIN_PRESAVE_GENERATED_PASSWORD"/>
+  <int value="8"
+      label="CPMD_BAD_ORIGIN_SAVE_GENERATION_FIELD_DETECTED_BY_CLASSIFIER_OBSOLETE"/>
+  <int value="9" label="CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE_OBSOLETE"/>
+  <int value="10" label="CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED"/>
+  <int value="11"
+      label="CPMD_BAD_ORIGIN_SHOW_MANUAL_PASSWORD_GENERATION_POPUP"/>
+  <int value="12" label="CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP_OBSOLETE"/>
+  <int value="13"
+      label="CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM_OBSOLETE"/>
+  <int value="14" label="CPMD_BAD_ORIGIN_PRERENDERING"/>
+</enum>
+
+<enum name="BooleanHasPossibleExplanation">
+  <int value="0" label="Unknown explanation"/>
+  <int value="1" label="Has possible explanation"/>
+</enum>
+
+<enum name="BooleanMarkedForReload">
+  <int value="0" label="Not marked for reload"/>
+  <int value="1" label="Marked for reload"/>
+</enum>
+
+<enum name="BooleanRebooted">
+  <int value="0" label="Has not rebooted"/>
+  <int value="1" label="Rebooted"/>
+</enum>
+
+<enum name="CrashVisibility">
+  <summary>
+    This enum describes the timing of a renderer crash in relation to whether a
+    sad frame was visible. Whether a subframe is &quot;visible&quot; is
+    currently defined as 1) in visible, non-occluded WebContents and 2) with a
+    non-empty viewport intersection rect.
+  </summary>
+  <int value="0" label="CrashedWhileVisible">
+    The renderer crashed while the subframe was visible.
+  </int>
+  <int value="1" label="ShownAfterCrashing">
+    The renderer crashed while the subframe was hidden, but later the frame
+    became visible (the tab was foregrounded, the frame was scrolled into view,
+    the frame was resized, etc.).
+  </int>
+  <int value="2" label="NeverVisibleAfterCrash">
+    The renderer crashed while the subframe was hidden, and the frame was never
+    shown afterwards (e.g. until eventually being discarded when the whole tab
+    is navigated away).
+  </int>
+  <int value="3" label="ShownWhileAncestorIsLoading">
+    The renderer crashed while the subframe was hidden, and the frame became
+    visible while an ancestor frame had a pending load. This form of sad frame
+    is not as bad for user experience as ShownAfterCrashing, since the sad frame
+    is expected to disappear shortly when the ancestor frame finishes
+    navigation.
+
+    One common case where this is expected to happen is when a crashed subframe
+    appears on a hidden tab, which will mark the tab for reload, and then the
+    user switches to this tab. The tab will start reloading, but the crashed
+    subframe may become visible momentarily before the reload completes.
+  </int>
+</enum>
+
+<enum name="DebugScenario">
+<!-- Generated from content/common/debug_utils.h.
+Called by update_debug_scenarios.py.-->
+
+<!-- For more details about the meaning of each value in this enum,
+     please refer to content/common/debug_utils.h. -->
+
+  <int value="1" label="kDebugSameDocNavigationDocIdMismatch"/>
+  <int value="2" label="kDebugNonMainFrameWithOldPageInfo"/>
+  <int value="3" label="kDebugBackForwardCacheMetricsMismatch"/>
+  <int value="4" label="kDebugBrowserVsRendererOriginToCommit"/>
+  <int value="5" label="kDebugBackForwardCacheEvictRestoreRace"/>
+  <int value="6" label="kDebugNoResponseHeadForHttpOrHttps"/>
+  <int value="7" label="kDebugSubframeProxyCreationWithNoRVH"/>
+  <int value="8" label="kDebugBackForwardCacheEntryExistsOnSubframeHistoryNav"/>
+  <int value="9" label="kDebugNoRenderFrameProxyHostOnSetFocusedFrame"/>
+  <int value="10" label="kDebugNoRestoredRFHOnNonRestartedNavigation"/>
+</enum>
+
+<enum name="DumpWithoutCrashingStatus">
+  <int value="0" label="Dump throttled"/>
+  <int value="1" label="Dump uploaded"/>
+</enum>
+
+<enum name="FrameVisibility">
+  <int value="0" label="Rendered but not in the current viewport"/>
+  <int value="1" label="Rendered in current viewport"/>
+  <int value="2"
+      label="Not visible, no layout object created (e.g., display: none)"/>
+</enum>
+
+<enum name="IOSAppState">
+  <int value="0"
+      label="Unknown UTE. This should not happen and presence of this value
+             likely indicates a bug in Chrome or UIKit code."/>
+  <int value="1"
+      label="Unknown XTE. This should not happen and presence of this value
+             likely indicates a bug in Chrome or UIKit code."/>
+  <int value="2" label="App state was UIApplicationStateActive during UTE."/>
+  <int value="3" label="App state was UIApplicationStateActive during XTE."/>
+  <int value="4" label="App state was UIApplicationStateInactive during UTE."/>
+  <int value="5" label="App state was UIApplicationStateInactive during XTE."/>
+  <int value="6"
+      label="App state was UIApplicationStateBackground during UTE."/>
+  <int value="7"
+      label="App state was UIApplicationStateBackground during XTE."/>
+</enum>
+
+<enum name="IOSDeviceThermalState">
+  <int value="0" label="0-Unknown"/>
+  <int value="1" label="1-Nominal"/>
+  <int value="2" label="2-Fair"/>
+  <int value="3" label="3-Serious"/>
+  <int value="4" label="4-Critical"/>
+</enum>
+
+<enum name="IOSPostCrashAction">
+  <int value="0" label="Restore tabs normally after a clean shutdown"/>
+  <int value="1" label="Restore tabs normally after an unclean shutdown"/>
+  <int value="2" label="Don't restore tabs, show crash infobar and NTP"/>
+  <int value="3" label="Restore tabs with return to previous tab NTP"/>
+  <int value="4" label="Show safe mode"/>
+</enum>
+
+<enum name="IOSStabilityUserVisibleTerminationType">
+  <summary>
+    One of several separate stability metrics. The values are non-contiguous as
+    they are a subset of values matching fields of the Stability proto (from the
+    SystemProfile).
+  </summary>
+  <int value="0"
+      label="Termination caused by system signal (f.e. EXC_BAD_ACCESS)"/>
+  <int value="1"
+      label="Termination caused by Hang / UI Thread freeze (ui thread was
+             locked for 9+ seconds and the app was quit by OS or the user)."/>
+</enum>
+
+<enum name="MobileSessionShutdownType">
+  <int value="0" label="Shutdown in background"/>
+  <int value="1" label="Shutdown in foreground; no log; no memory warning"/>
+  <int value="2" label="Shutdown in foreground; with log; no memory warning"/>
+  <int value="3" label="Shutdown in foreground; no log; with memory warning"/>
+  <int value="4" label="Shutdown in foreground; with log; with memory warning"/>
+  <int value="5" label="First launch after upgrade"/>
+  <int value="6" label="Shutdown in foreground, main thread not responding"/>
+</enum>
+
+<enum name="OOMShutdownHint">
+  <int value="0" label="There is no additional information for this UTE/XTE"/>
+  <int value="1" label="Session restoration was in progress before this UTE"/>
+  <int value="2" label="Session restoration was in progress before this XTE"/>
+</enum>
+
+<enum name="RendererHostedContentType">
+  <int value="0" label="Hosting an extension"/>
+  <int value="1" label="Hosting an active foreground main frame"/>
+  <int value="2"
+      label="Hosting an active foreground subframe (but no active foreground
+             main frame)"/>
+  <int value="3"
+      label="Hosting an active background frame (but no active foreground
+             frame)"/>
+  <int value="4" label="Hosting an inactive frame (but no active frame)"/>
+  <int value="5" label="Not hosting any frame or extension"/>
+</enum>
+
+<enum name="ShownAfterCrashingReason">
+  <summary>
+    This enum describes the reason that a crashed subframe became visible.
+  </summary>
+  <int value="0" label="TabWasShown">
+    The crashed subframe became visible because the user switched to a tab that
+    contains it.
+  </int>
+  <int value="1" label="ViewportIntersection">
+    The crashed subframe became visible because its viewport intersection became
+    non-empty. For example, this can happens when the subframe was scrolled into
+    view.
+  </int>
+  <int value="2" label="Visibility">
+    The crashed subframe became visible because its visibility was updated, for
+    example if the parent frame changed the iframe element's visibility through
+    CSS.
+  </int>
+  <int value="3" label="ViewportIntersectionAfterTabWasShown">
+    The crashed subframe became visible after (1) a tab that contains it became
+    visible, and then (2) its viewport intersection became non-empty, for
+    example if the subframe was scrolled into view.
+  </int>
+  <int value="4" label="VisibilityAfterTabWasShown">
+    The crashed subframe became visible after (1) a tab that contains it became
+    visible, and then (2) its visibility was updated, for example if the parent
+    frame changed the iframe element's visibility through CSS.
+  </int>
+</enum>
+
+<enum name="StabilityEventType">
+  <summary>
+    One of several separate stability metrics. The values are non-contiguous as
+    they are a subset of values matching fields of the Stability proto (from the
+    SystemProfile).
+  </summary>
+  <int value="2" label="Pageload count"/>
+  <int value="3" label="Renderer crash count"/>
+  <int value="4" label="(Obsolete Dec 2021) Renderer hang count"/>
+  <int value="5" label="Extension renderer crash count"/>
+  <int value="6" label="(Obsolete Feb 2022) Child process crash count"/>
+  <int value="15" label="Browser launch count"/>
+  <int value="16" label="Browser crash count"/>
+  <int value="17" label="(Obsolete Dec 2021) Incomplete shutdown count"/>
+  <int value="22" label="(Obsolete Mar 2022) Plugin crash count"/>
+  <int value="24" label="Renderer failed launch count"/>
+  <int value="25" label="Extension renderer failed launch count"/>
+  <int value="26" label="Renderer launch count"/>
+  <int value="27" label="Extension renderer launch count"/>
+  <int value="31" label="GPU process crash count"/>
+  <int value="32" label="Utility process crash count"/>
+  <int value="33" label="Utility process launch count"/>
+</enum>
+
+<enum name="StabilityPageLoadType">
+  <summary>
+    Load types included in the &quot;Total pageloads&quot; shown on the
+    stability dashboard.
+  </summary>
+  <int value="0" label="Visible tab - Main frame different document"/>
+  <int value="1" label="Visible tab - Sub frame different document"/>
+  <int value="2" label="Visible tab - Main frame same document"/>
+  <int value="3" label="Visible tab - Sub frame same document"/>
+  <int value="4" label="Visible tab - No commit"/>
+  <int value="5" label="Hidden tab - Main frame different document"/>
+  <int value="6" label="Hidden tab - Sub frame different document"/>
+  <int value="7" label="Hidden tab - Main frame same document"/>
+  <int value="8" label="Hidden tab - Sub frame same document"/>
+  <int value="9" label="Hidden tab - No commit"/>
+  <int value="10" label="Prerender - Main frame different document"/>
+  <int value="11" label="Prerender - Sub frame different document"/>
+  <int value="12" label="Prerender - Main frame same document"/>
+  <int value="13" label="Prerender - Sub frame same document"/>
+  <int value="14" label="Prerender - No commit"/>
+  <int value="15" label="Extension background page"/>
+  <int value="16" label="DevTools"/>
+  <int value="17" label="Unknown"/>
+</enum>
+
+<enum name="TerminationStatus">
+  <int value="0" label="Normal termination"/>
+  <int value="1" label="Abnormal termination"/>
+  <int value="2" label="Killed"/>
+  <int value="3" label="Crashed"/>
+  <int value="4" label="Still running"/>
+  <int value="5" label="Killed by OOM (ChromeOS)"/>
+  <int value="6" label="OOM protected (Android)"/>
+  <int value="7" label="Launch failed"/>
+  <int value="8" label="OOM"/>
+  <int value="9" label="Integrity failure (Win)"/>
+</enum>
+
+<enum name="VersionComparison">
+  <summary>The difference between two compared versions.</summary>
+  <int value="0" label="Same">No version between versions.</int>
+  <int value="1" label="Minor">A difference in minor versions.</int>
+  <int value="2" label="Major">A difference in major versions.</int>
+</enum>
+
+</enums>
+
+</histogram-configuration>

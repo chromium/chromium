@@ -53,8 +53,8 @@ class ArcApplicationNotifierController
       apps::AppRegistryCache* cache) override;
 
   // Needed to load icons for ARC apps.
-  raw_ptr<Profile, ExperimentalAsh> last_used_profile_ = nullptr;
-  raw_ptr<NotifierController::Observer, ExperimentalAsh> observer_;
+  raw_ptr<Profile, DanglingUntriaged> last_used_profile_ = nullptr;
+  raw_ptr<NotifierController::Observer> observer_;
 
   // Used to keep track of all PWA start URLs to prevent creation of duplicate
   // notifier metadata.

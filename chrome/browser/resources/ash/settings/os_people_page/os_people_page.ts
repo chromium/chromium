@@ -6,33 +6,37 @@
  * @fileoverview
  * 'settings-people-page' is the settings page containing sign-in settings.
  */
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../parental_controls_page/parental_controls_page.js';
+import '../parental_controls_page/parental_controls_settings_card.js';
+import './account_manager_settings_card.js';
+import './additional_accounts_settings_card.js';
 
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAccountManagerEnabled} from '../common/load_time_booleans.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {isAccountManagerEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
@@ -69,6 +73,20 @@ export class OsSettingsPeoplePageElement extends
        */
       syncStatus: Object,
 
+      accounts_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      deviceAccount_: {
+        type: Object,
+        value() {
+          return null;
+        },
+      },
+
       authTokenInfo_: {
         type: Object,
         observer: 'onAuthTokenChanged_',
@@ -78,6 +96,7 @@ export class OsSettingsPeoplePageElement extends
        * The current profile icon URL. Usually a data:image/png URL.
        */
       profileIconUrl_: String,
+
       profileName_: String,
 
       profileEmail_: String,
@@ -96,6 +115,14 @@ export class OsSettingsPeoplePageElement extends
         type: Boolean,
         value() {
           return isAccountManagerEnabled();
+        },
+        readOnly: true,
+      },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
         },
         readOnly: true,
       },
@@ -144,6 +171,8 @@ export class OsSettingsPeoplePageElement extends
   }
 
   syncStatus: SyncStatus;
+  private accounts_: Account[];
+  private deviceAccount_: Account|null;
   private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private profileIconUrl_: string;
   private profileName_: string;
@@ -151,6 +180,7 @@ export class OsSettingsPeoplePageElement extends
   private profileLabel_: string;
   private fingerprintUnlockEnabled_: boolean;
   private isAccountManagerEnabled_: boolean;
+  private readonly isRevampWayfindingEnabled_: boolean;
   private showParentalControls_: boolean;
   private section_: Section;
   private showPasswordPromptDialog_: boolean;
@@ -242,6 +272,8 @@ export class OsSettingsPeoplePageElement extends
     });
   }
 
+  // TODO(b/302374851) The manual deep linking below can be removed once the
+  // Revamp feature is fully launched.
   override beforeDeepLinkAttempt(settingId: Setting): boolean {
     switch (settingId) {
       // Manually show the deep links for settings nested within elements.
@@ -341,27 +373,30 @@ export class OsSettingsPeoplePageElement extends
   private async updateAccounts_(): Promise<void> {
     const accounts =
         await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
+    this.accounts_ = accounts;
+
     // The user might not have any GAIA accounts (e.g. guest mode or Active
     // Directory). In these cases the profile row is hidden, so there's nothing
     // to do.
     if (accounts.length === 0) {
       return;
     }
-    this.profileName_ = accounts[0].fullName;
-    this.profileEmail_ = accounts[0].email;
-    this.profileIconUrl_ = accounts[0].pic;
 
-    await this.setProfileLabel(accounts);
-  }
+    // First account is always the device account.
+    assert(
+        accounts[0].isDeviceAccount,
+        'The device account should always be first.');
+    this.deviceAccount_ = accounts[0];
+    this.profileName_ = this.deviceAccount_.fullName;
+    this.profileEmail_ = this.deviceAccount_.email;
+    this.profileIconUrl_ = this.deviceAccount_.pic;
 
-  private async setProfileLabel(accounts: Account[]): Promise<void> {
     // Template: "$1 Google accounts" with correct plural of "account".
     const labelTemplate = await sendWithPromise(
-        'getPluralString', 'profileLabel', accounts.length);
-
+        'getPluralString', 'profileLabel', this.accounts_.length);
     // Final output: "X Google accounts"
     this.profileLabel_ = loadTimeData.substituteString(
-        labelTemplate, accounts[0].email, accounts.length);
+        labelTemplate, this.profileEmail_, this.accounts_.length);
   }
 
   /**

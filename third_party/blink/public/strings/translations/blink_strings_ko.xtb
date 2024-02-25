@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1012241361789814178">디버거가 다른 탭에서 일시중지되었습니다. 해당 탭으로 전환하려면 클릭하세요.</translation>
 <translation id="1088086359088493902">초</translation>
 <translation id="1142001580032786438">주 선택도구 표시</translation>
 <translation id="1171774979989969504">이메일 주소를 입력하세요.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">비어 있지 않은 이메일 주소를 입력해 주세요.</translation>
 <translation id="1758486001363313524">다른 일자...</translation>
 <translation id="1787192514241997742">총 시간: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">카메라 허용</translation>
 <translation id="1822429046913737220">오전/오후</translation>
 <translation id="1832974991323546415">원격 기기에서 재생</translation>
 <translation id="1921819250265091946">일</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">미러링으로 전환됨</translation>
 <translation id="2031987842108996681">빨간색 채널</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'에서 '<ph name="DOT" />'의 위치가 잘못되었습니다.</translation>
+<translation id="2068711044993563745">최솟값(<ph name="MINIMUM" />)은 최댓값(<ph name="MAXIMUM" />)보다 작아야 합니다.</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2226276347425096477">이 텍스트를 <ph name="MAX_CHARACTERS" />자 이하로 줄이세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />, <ph name="WEEKNUMBER" />번째 주</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />번 트랙</translation>
+<translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
 <translation id="2393030564806080191">16진수 색상 값</translation>
 <translation id="2398813069815436052">대화상자가 열렸습니다.</translation>
 <translation id="245932805758469625">동영상 남은 시간</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">계속하려면 이 확인란을 선택하세요.</translation>
 <translation id="2908441821576996758">이메일 주소를 쉼표로 구분하여 입력하세요.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" />MB</translation>
+<translation id="3053226512517284904">오디오 설명 표시 메뉴</translation>
 <translation id="3075154866155599887">유효한 값을 입력하세요. 입력을 완료하지 않았거나 날짜가 잘못되었습니다.</translation>
 <translation id="310520048233152454">URL을 입력하세요.</translation>
 <translation id="3220661731597678625">현재 단계</translation>
 <translation id="3321030238473337787">재생 속도</translation>
 <translation id="3329013043687509092">채도</translation>
+<translation id="3377518164566272702">마이크 및 카메라 허용</translation>
 <translation id="3450233048674729344">값은 <ph name="MAXIMUM" /> 이하여야 합니다.</translation>
 <translation id="3732799496749320381">월</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">이 텍스트를 <ph name="MIN_CHARACTERS" />자 이상으로 늘리세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' 앞 부분에 '<ph name="INVALIDCHARACTER" />' 기호가 포함되면 안됩니다.</translation>
 <translation id="3846214748874656680">전체화면 종료</translation>
+<translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4103419683916926126">밀리초</translation>
 <translation id="4201051445878709314">이전 달 표시</translation>
 <translation id="4360991593054037559">유효한 값을 입력해 주세요. 가장 근접한 유효 값 2개는 <ph name="VALID_VALUE_LOW" /> 및 <ph name="VALID_VALUE_HIGHER" />입니다.</translation>
 <translation id="4522570452068850558">세부정보</translation>
+<translation id="4663373278480897665">카메라 허용됨</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' 다음 부분에 '<ph name="INVALIDCHARACTER" />' 기호가 포함되면 안됩니다.</translation>
 <translation id="4718048029184481307">PIP 모드에서 재생</translation>
 <translation id="4748357248530471599">디스플레이 컷아웃을 전체화면으로 전환</translation>
 <translation id="4763480195061959176">동영상</translation>
+<translation id="4792862212177489858">위치 공유</translation>
 <translation id="4812940957355064477">숫자를 입력하세요.</translation>
 <translation id="4912200001568447310">현재 항목</translation>
 <translation id="4915360478455618802">시간 선택도구 표시</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />개 선택됨</translation>
 <translation id="4992066212339426712">음소거 해제</translation>
 <translation id="49969490063480558">'<ph name="ATSIGN" />' 뒷 부분을 입력해 주세요. '<ph name="INVALIDADDRESS" />'(이)가 완전하지 않습니다.</translation>
+<translation id="5037575921016181960">안전한 비밀번호</translation>
 <translation id="5090250355906949916">동영상 시간 스크러버</translation>
 <translation id="509897012892853729">파란색 채널</translation>
 <translation id="5117590920725113268">다음 달 표시</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">미디어 다운로드</translation>
 <translation id="698788488269350478">펼쳐졌습니다.</translation>
 <translation id="6989848892321993519">이 텍스트를 <ph name="MIN_CHARACTERS" />자 이상으로 늘리세요(현재 1자 사용 중).</translation>
+<translation id="7080893216867146095">위치 공유 허용됨</translation>
 <translation id="709897737746224366">요청한 형식과 일치시키세요.</translation>
 <translation id="7102274145889307184">현재 위치</translation>
 <translation id="7263440858009898357">목록에서 항목을 선택하세요.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">다른 달...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />(<ph name="WEEK_START_DATE" />에 시작)</translation>
 <translation id="916607977885256133">PIP 모드</translation>
+<translation id="918430632320614861">마이크 허용</translation>
 <translation id="945780513535800434">일부만 선택됨</translation>
 <translation id="954003015749068518">PIP 모드 시작</translation>
 </translationbundle>

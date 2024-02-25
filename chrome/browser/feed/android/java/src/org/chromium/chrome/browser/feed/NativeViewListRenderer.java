@@ -21,14 +21,10 @@ import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.ui.base.ViewUtils;
 
-/**
- * Implementation of {@link HybridListRenderer} for list consisting all native views.
- */
+/** Implementation of {@link HybridListRenderer} for list consisting all native views. */
 public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListRenderer.ViewHolder>
         implements HybridListRenderer, ListContentManagerObserver {
-    /**
-     * A ViewHolder for the underlying RecyclerView.
-     */
+    /** A ViewHolder for the underlying RecyclerView. */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ViewHolder(View v) {
             super(v);
@@ -110,7 +106,6 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     @Override
     public void onItemRangeRemoved(int startIndex, int count) {
         notifyItemRangeRemoved(startIndex, count);
-        ;
     }
 
     @Override

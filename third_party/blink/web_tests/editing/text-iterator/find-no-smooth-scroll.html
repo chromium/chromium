@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html style="scroll-behavior:smooth">
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=866694">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="height:2000px"></div>
+<div>hello world</div>
+
+<script>
+promise_test(async () => {
+  assert_equals(window.pageYOffset, 0,
+    'The page should initially be scrolled to the top at the start of the test.');
+
+  testRunner.findString('hello world', ['Async']);
+  await new Promise(requestAnimationFrame);
+
+  const finalScrollOffset = window.pageYOffset;
+  assert_not_equals(finalScrollOffset, 0,
+    'The page should start scrolling after one rAF.');
+  await new Promise(requestAnimationFrame);
+
+  assert_equals(window.pageYOffset, finalScrollOffset,
+    'The scrolling should be done after one rAF.');
+}, 'find-in-page should not do smooth scrolling even if the page has the property set.');
+</script>

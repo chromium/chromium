@@ -65,14 +65,14 @@ component("vr_ui") {
     "renderers/base_quad_renderer.h",
     "renderers/base_renderer.cc",
     "renderers/base_renderer.h",
+    "renderers/grid_renderer.cc",
+    "renderers/grid_renderer.h",
     "renderers/radial_gradient_quad_renderer.cc",
     "renderers/radial_gradient_quad_renderer.h",
     "renderers/texture_copy_renderer.cc",
     "renderers/texture_copy_renderer.h",
     "renderers/textured_quad_renderer.cc",
     "renderers/textured_quad_renderer.h",
-    "renderers/transparent_quad_renderer.cc",
-    "renderers/transparent_quad_renderer.h",
     "skia_surface_provider.cc",
     "skia_surface_provider.h",
     "skia_surface_provider_factory.h",
@@ -96,7 +96,6 @@ component("vr_ui") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
-    "//chrome/browser/vr/vector_icons",
     "//chrome/common:constants",
     "//components/vector_icons",
     "//device/base",
@@ -108,6 +107,10 @@ component("vr_ui") {
     "//ui/gfx/animation/keyframe",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "VR_UI_IMPLEMENTATION" ]
+
   if (use_native_partitions) {
     # Mark symbols in this library as belonging to the VR partition. Only
     # exported symbols (module entrypoints) are affected.
@@ -116,9 +119,8 @@ component("vr_ui") {
 
   if (is_android) {
     sources += [ "jni_onload.cc" ]
+    deps += [ "//third_party/jni_zero" ]
   }
-
-  defines = [ "VR_UI_IMPLEMENTATION" ]
 
   if (use_command_buffer) {
     sources += [
@@ -142,29 +144,14 @@ component("vr_ui") {
 
 component("vr_common") {
   sources = [
-    "base_scheduler_delegate.cc",
-    "base_scheduler_delegate.h",
     "browser_renderer.cc",
     "browser_renderer.h",
-    "browser_renderer_browser_interface.h",
     "frame_type.h",
-    "gesture_detector.cc",
-    "gesture_detector.h",
+    "graphics_delegate.cc",
     "graphics_delegate.h",
-    "input_delegate.h",
-    "platform_controller.h",
-    "scheduler_browser_renderer_interface.h",
-    "scheduler_delegate.h",
     "vr_export.h",
     "vr_web_contents_observer.cc",
     "vr_web_contents_observer.h",
-  ]
-
-  sources += [
-    "input_delegate_for_testing.cc",
-    "input_delegate_for_testing.h",
-    "platform_controller_for_testing.cc",
-    "platform_controller_for_testing.h",
   ]
 
   public_deps = [
@@ -193,32 +180,28 @@ component("vr_common") {
     "//ui/display",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "VR_IMPLEMENTATION" ]
+
   if (is_win) {
     sources += [
       "win/graphics_delegate_win.cc",
       "win/graphics_delegate_win.h",
-      "win/input_delegate_win.cc",
-      "win/input_delegate_win.h",
-      "win/scheduler_delegate_win.cc",
-      "win/scheduler_delegate_win.h",
       "win/vr_browser_renderer_thread_win.cc",
       "win/vr_browser_renderer_thread_win.h",
     ]
 
-    deps += [ "//services/viz/public/cpp/gpu" ]
+    deps += [
+      "//gpu/command_buffer/client:gles2_c_lib",
+      "//services/viz/public/cpp/gpu",
+    ]
 
     # Windows doesn't have app bundles, so include the UI directly.
     deps += [ ":vr_ui" ]
   }
 
-  defines = [ "VR_IMPLEMENTATION" ]
-
   if (!use_command_buffer) {
-    sources += [
-      "base_graphics_delegate.cc",
-      "base_graphics_delegate.h",
-    ]
-    deps += [ "//ui/gl/init" ]
   }
 }
 
@@ -228,8 +211,6 @@ component("vr_base") {
   sources = [
     "browser_ui_interface.h",
     "fov_rectangle.h",
-    "input_event.cc",
-    "input_event.h",
     "macros.h",
     "model/camera_model.h",
     "model/capturing_state_model.h",
@@ -240,10 +221,8 @@ component("vr_base") {
     "pose_util.h",
     "render_info.h",
     "scheduler_ui_interface.h",
-    "ui_browser_interface.h",
-    "ui_initial_state.cc",
-    "ui_initial_state.h",
     "ui_interface.h",
+    "ui_test_input.cc",
     "ui_test_input.h",
     "vr_base_export.h",
     "vr_geometry_util.cc",
@@ -275,14 +254,11 @@ component("vr_base") {
     "//skia",
   ]
 
-  if (is_android) {
-    deps += [ "//chrome/android/features/vr:split_jni_headers" ]
-  }
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 test("vr_common_unittests") {
   sources = [
-    "base_scheduler_delegate_unittest.cc",
     "browser_renderer_unittest.cc",
     "databinding/binding_unittest.cc",
     "elements/linear_layout_unittest.cc",
@@ -294,7 +270,6 @@ test("vr_common_unittests") {
     "elements/ui_element_unittest.cc",
     "elements/vector_icon_unittest.cc",
     "elements/viewport_aware_root_unittest.cc",
-    "gesture_detector_unittest.cc",
     "test/paths.cc",
     "test/paths.h",
     "test/run_all_unittests.cc",
@@ -358,8 +333,6 @@ source_set("vr_test_support") {
     "test/constants.h",
     "test/mock_browser_ui_interface.cc",
     "test/mock_browser_ui_interface.h",
-    "test/mock_ui_browser_interface.cc",
-    "test/mock_ui_browser_interface.h",
     "test/vr_test_suite.cc",
     "test/vr_test_suite.h",
   ]
@@ -468,8 +441,6 @@ if (!is_android) {
     if (is_win) {
       # Infrastructure.
       sources += [
-        "test/browser_test_browser_renderer_browser_interface.cc",
-        "test/browser_test_browser_renderer_browser_interface.h",
         "test/ui_utils.cc",
         "test/ui_utils.h",
       ]

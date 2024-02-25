@@ -41,6 +41,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -64,11 +65,14 @@ void SetCommonButtonAttributes(views::ImageButton* button) {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kTextField);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kPreviousButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kNextButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kCloseButtonElementId);
 
 class FindBarMatchCountLabel : public views::Label {
- public:
-  METADATA_HEADER(FindBarMatchCountLabel);
+  METADATA_HEADER(FindBarMatchCountLabel, views::Label)
 
+ public:
   FindBarMatchCountLabel() = default;
 
   FindBarMatchCountLabel(const FindBarMatchCountLabel&) = delete;
@@ -76,11 +80,12 @@ class FindBarMatchCountLabel : public views::Label {
 
   ~FindBarMatchCountLabel() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // We need to return at least 1dip so that box layout adds padding on either
     // side (otherwise there will be a jump when our size changes between empty
     // and non-empty).
-    gfx::Size size = views::Label::CalculatePreferredSize();
+    gfx::Size size = views::Label::CalculatePreferredSize(available_size);
     size.set_width(std::max(1, size.width()));
     return size;
   }
@@ -105,14 +110,17 @@ class FindBarMatchCountLabel : public views::Label {
       return;
 
     last_result_ = result;
+    // TODO(1499078): Get NO_RESULTS to be announced under Orca and ChromeVox.
     SetText(l10n_util::GetStringFUTF16(
         IDS_FIND_IN_PAGE_COUNT,
         base::FormatNumber(last_result_->active_match_ordinal()),
         base::FormatNumber(last_result_->number_of_matches())));
 
     if (last_result_->final_update()) {
-      NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged,
-                               /* send_native_event = */ true);
+      ui::AXNodeData node_data;
+      GetAccessibleNodeData(&node_data);
+      GetViewAccessibility().AnnouncePolitely(
+          node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
     }
   }
 
@@ -122,7 +130,7 @@ class FindBarMatchCountLabel : public views::Label {
   }
 
  private:
-  absl::optional<find_in_page::FindNotificationDetails> last_result_;
+  std::optional<find_in_page::FindNotificationDetails> last_result_;
 };
 
 BEGIN_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel, views::Label)
@@ -130,7 +138,7 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel)
 
-BEGIN_METADATA(FindBarMatchCountLabel, views::Label)
+BEGIN_METADATA(FindBarMatchCountLabel)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -219,6 +227,8 @@ FindBarView::FindBarView(FindBarHost* host) {
               .SetAccessibleName(
                   l10n_util::GetStringUTF16(IDS_ACCNAME_PREVIOUS))
               .SetID(VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON)
+              .SetProperty(views::kElementIdentifierKey,
+                           kPreviousButtonElementId)
               .SetTooltipText(
                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP))
               .SetCallback(base::BindRepeating(&FindBarView::FindNext,
@@ -228,6 +238,7 @@ FindBarView::FindBarView(FindBarHost* host) {
               .CopyAddressTo(&find_next_button_)
               .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT))
               .SetID(VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON)
+              .SetProperty(views::kElementIdentifierKey, kNextButtonElementId)
               .SetTooltipText(
                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP))
               .SetCallback(base::BindRepeating(&FindBarView::FindNext,
@@ -236,6 +247,7 @@ FindBarView::FindBarView(FindBarHost* host) {
           views::Builder<views::ImageButton>()
               .CopyAddressTo(&close_button_)
               .SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON)
+              .SetProperty(views::kElementIdentifierKey, kCloseButtonElementId)
               .SetTooltipText(
                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_CLOSE_TOOLTIP))
               .SetAnimationDuration(base::TimeDelta())
@@ -243,7 +255,11 @@ FindBarView::FindBarView(FindBarHost* host) {
                                                base::Unretained(this)))
               .SetProperty(views::kMarginsKey, image_button_margins))
       .BuildChildren();
-
+  if (features::IsChromeRefresh2023()) {
+    find_text_->SetFontList(
+        views::Textfield::GetDefaultFontList().DeriveWithWeight(
+            gfx::Font::Weight::MEDIUM));
+  }
   SetFlexForView(find_text_, 1, true);
   SetCommonButtonAttributes(find_previous_button_);
   SetCommonButtonAttributes(find_next_button_);
@@ -318,14 +334,14 @@ void FindBarView::UpdateForResult(
   // The match_count label may have increased/decreased in size so we need to
   // do a layout and repaint the dialog so that the find text field doesn't
   // partially overlap the match-count label when it increases on no matches.
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
 void FindBarView::ClearMatchCount() {
   match_count_text_->ClearResult();
   UpdateMatchCountAppearance(false);
-  Layout();
+  DeprecatedLayoutImmediately();
   SchedulePaint();
 }
 
@@ -506,5 +522,5 @@ void FindBarView::OnThemeChanged() {
                                          fg_color, fg_disabled_color);
 }
 
-BEGIN_METADATA(FindBarView, views::View)
+BEGIN_METADATA(FindBarView)
 END_METADATA

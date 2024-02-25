@@ -12,12 +12,12 @@ CastDialogModel::CastDialogModel(const CastDialogModel& other) = default;
 
 CastDialogModel::~CastDialogModel() = default;
 
-absl::optional<size_t> CastDialogModel::GetFirstActiveSinkIndex() const {
+std::optional<size_t> CastDialogModel::GetFirstActiveSinkIndex() const {
   for (size_t i = 0; i < media_sinks_.size(); i++) {
     if (!media_sinks_.at(i).route)
       return i;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace media_router

@@ -12,13 +12,11 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
 #include "base/sys_byteorder.h"
 #include "base/task/sequenced_task_runner.h"
-#include "media/audio/audio_bus_pool.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_bus_pool.h"
 #include "media/base/audio_sample_types.h"
 
 namespace media {
@@ -88,7 +86,7 @@ class CharBufferWriter {
   }
 
  private:
-  raw_ptr<char> buf_;
+  raw_ptr<char, AllowPtrArithmetic> buf_;
   const int max_size_;
   int size_;
 };

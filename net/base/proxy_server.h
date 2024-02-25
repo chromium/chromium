@@ -7,14 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <tuple>
 
-#include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -27,14 +27,14 @@ class NET_EXPORT ProxyServer {
   // ProxyList::RemoveProxiesWithoutScheme().
   enum Scheme {
     SCHEME_INVALID = 1 << 0,
-    SCHEME_DIRECT  = 1 << 1,
-    SCHEME_HTTP    = 1 << 2,
-    SCHEME_SOCKS4  = 1 << 3,
-    SCHEME_SOCKS5  = 1 << 4,
-    SCHEME_HTTPS   = 1 << 5,
+    // SCHEME_DIRECT (value = 1 << 1) is no longer used or supported.
+    SCHEME_HTTP = 1 << 2,
+    SCHEME_SOCKS4 = 1 << 3,
+    SCHEME_SOCKS5 = 1 << 4,
+    SCHEME_HTTPS = 1 << 5,
     // A QUIC proxy is an HTTP proxy in which QUIC is used as the transport,
     // instead of TCP.
-    SCHEME_QUIC    = 1 << 6,
+    SCHEME_QUIC = 1 << 6,
   };
 
   // Default copy-constructor and assignment operator are OK!
@@ -50,30 +50,26 @@ class NET_EXPORT ProxyServer {
   // (URL format) or without (HostPortPair format). On invalid input, result
   // will be a `SCHEME_INVALID` ProxyServer.
   //
-  // Must not be called with `SCHEME_INVALID` or `SCHEME_DIRECT`. Use
-  // `ProxyServer()` or `Direct()` respectively to create an invalid or direct
-  // ProxyServer.
+  // Must not be called with `SCHEME_INVALID`. Use `ProxyServer()` to create an
+  // invalid ProxyServer.
   static ProxyServer FromSchemeHostAndPort(Scheme scheme,
-                                           base::StringPiece host,
-                                           base::StringPiece port_str);
+                                           std::string_view host,
+                                           std::string_view port_str);
   static ProxyServer FromSchemeHostAndPort(Scheme scheme,
-                                           base::StringPiece host,
-                                           absl::optional<uint16_t> port);
+                                           std::string_view host,
+                                           std::optional<uint16_t> port);
 
   // In URL format (with brackets around IPv6 literals). Must not call for
-  // ProxyServers without a host (invalid or direct).
+  // invalid ProxyServers.
   std::string GetHost() const;
 
-  // Must not call for ProxyServers without a host (invalid or direct).
+  // Must not call for invalid ProxyServers.
   uint16_t GetPort() const;
 
   bool is_valid() const { return scheme_ != SCHEME_INVALID; }
 
   // Gets the proxy's scheme (i.e. SOCKS4, SOCKS5, HTTP)
   Scheme scheme() const { return scheme_; }
-
-  // Returns true if this ProxyServer is actually just a DIRECT connection.
-  bool is_direct() const { return scheme_ == SCHEME_DIRECT; }
 
   // Returns true if this ProxyServer is an HTTP proxy.
   bool is_http() const { return scheme_ == SCHEME_HTTP; }
@@ -103,11 +99,6 @@ class NET_EXPORT ProxyServer {
 
   const HostPortPair& host_port_pair() const;
 
-  // Returns a ProxyServer representing DIRECT connections.
-  static ProxyServer Direct() {
-    return ProxyServer(SCHEME_DIRECT, HostPortPair());
-  }
-
   // Returns the default port number for a proxy server with the specified
   // scheme. Returns -1 if unknown.
   static int GetDefaultPortForScheme(Scheme scheme);
@@ -132,8 +123,6 @@ class NET_EXPORT ProxyServer {
 
 NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
                                             const ProxyServer& proxy_server);
-
-typedef std::pair<HostPortPair, ProxyServer> HostPortProxyPair;
 
 }  // namespace net
 

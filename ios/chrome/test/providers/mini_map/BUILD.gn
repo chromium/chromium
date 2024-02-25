@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("mini_map") {
-  sources = [ "test_mini_map.mm" ]
+  sources = [
+    "test_mini_map.h",
+    "test_mini_map.mm",
+  ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/mini_map:mini_map_api",

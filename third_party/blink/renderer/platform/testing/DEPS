@@ -6,22 +6,16 @@ include_rules = [
     "+third_party/blink/renderer/platform/testing",
 
     # Dependencies.
-    "+base/at_exit.h",
-    "+base/command_line.h",
-    "+base/i18n/icu_util.h",
     "+base/path_service.h",
     "+base/process",
-    "+base/run_loop.h",
-    "+base/metrics/statistics_recorder.h",
-    "+base/strings/string_number_conversions.h",
     "+base/task/single_thread_task_executor.h",
     "+base/task/thread_pool/thread_pool_instance.h",
-    "+base/test/test_io_thread.h",
     "+cc",
     "+mojo/core/embedder",
     "+services/network/public",
     "+testing",
 
+    "+third_party/blink/renderer/platform/bindings",
     "+third_party/blink/renderer/platform/context_lifecycle_notifier.h",
     "+third_party/blink/renderer/platform/context_lifecycle_observer.h",
     "+third_party/blink/renderer/platform/exported",
@@ -56,6 +50,9 @@ include_rules = [
 specific_include_rules = {
     "blink_fuzzer_test_support\.cc": [
         "+content/public/test/blink_test_environment.h",
+    ],
+    "task_environment\.cc": [
+        "+third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h",
     ],
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",

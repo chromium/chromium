@@ -65,8 +65,7 @@ class PluginVmManagerImplTest : public testing::Test {
         testing_profile_.get());
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
-        testing_profile_.get(), shelf_model_.get(),
-        /*shelf_item_factory=*/nullptr);
+        testing_profile_.get(), shelf_model_.get());
     chrome_shelf_controller_->SetProfileForTest(testing_profile_.get());
     chrome_shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(testing_profile_.get()));
@@ -155,8 +154,7 @@ class PluginVmManagerImplTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<PluginVmTestHelper> test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<PluginVmManagerImpl, DanglingUntriaged | ExperimentalAsh>
-      plugin_vm_manager_;
+  raw_ptr<PluginVmManagerImpl, DanglingUntriaged> plugin_vm_manager_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;

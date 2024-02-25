@@ -52,6 +52,7 @@ const char kExampleHost[] = "example.com";
 
 const uint64_t kDeltaOneDayInSeconds = UINT64_C(86400);
 const uint64_t kDeltaOneWeekInSeconds = UINT64_C(604800);
+const uint64_t kDeltaFifteenDaysInSeconds = UINT64_C(1296000);
 
 scoped_refptr<net::X509Certificate> GetOkCert() {
   return net::ImportCertFromFile(net::GetTestCertsDirectory(), kOkCertFile);
@@ -786,10 +787,10 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
   // has not passed yet.
   EXPECT_TRUE(state->IsHttpAllowedForHost(kWWWGoogleHost, storage_partition));
 
-  // Now simulate the clock advancing by one week, which is past the expiration
-  // point.
+  // Now simulate the clock advancing by fifteen days, which is past the
+  // expiration point.
   clock_ptr->Advance(
-      base::Seconds(kDeltaOneWeekInSeconds - kDeltaOneDayInSeconds + 1));
+      base::Seconds(kDeltaFifteenDaysInSeconds - kDeltaOneDayInSeconds + 1));
 
   // HTTP should no longer be allowed because the specified delta has passed.
   EXPECT_FALSE(state->IsHttpAllowedForHost(kWWWGoogleHost, storage_partition));
@@ -867,8 +868,8 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
   state->AllowHttpForHost(kWWWGoogleHost, storage_partition);
   EXPECT_TRUE(state->IsHttpAllowedForHost(kWWWGoogleHost, storage_partition));
 
-  // Simulate the clock advancing by one week, the default expiration time.
-  clock_ptr->Advance(base::Seconds(kDeltaOneWeekInSeconds + 1));
+  // Simulate the clock advancing by fifteen days, the default expiration time.
+  clock_ptr->Advance(base::Seconds(kDeltaFifteenDaysInSeconds + 1));
 
   // The decision expiration time has come, so this should now return false.
   EXPECT_FALSE(state->IsHttpAllowedForHost(kWWWGoogleHost, storage_partition));

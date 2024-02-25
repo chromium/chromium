@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1012241361789814178">Program za otklanjanje grešaka je pauziran na drugoj kartici. Kliknite da biste prešli na tu karticu.</translation>
 <translation id="1088086359088493902">Sekunde</translation>
 <translation id="1142001580032786438">Prikazuj birač nedelje</translation>
 <translation id="1171774979989969504">Unesite imejl adresu.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Unesite imejl adresu koja nije prazna.</translation>
 <translation id="1758486001363313524">Drugo...</translation>
 <translation id="1787192514241997742">ukupno vreme: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Dozvoli kameru</translation>
 <translation id="1822429046913737220">pre podne/po podne</translation>
 <translation id="1832974991323546415">puštajte na udaljenom uređaju</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Prebačeno je na preslikavanje</translation>
 <translation id="2031987842108996681">Crveni kanal</translation>
 <translation id="2060505056492490888">„<ph name="DOT" />“ je stavljeno na pogrešno mesto u „<ph name="INVALIDDOMAIN" />“.</translation>
+<translation id="2068711044993563745">Minimalna vrednost (<ph name="MINIMUM" />) mora da bude manja od maksimalne vrednosti (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2226276347425096477">Skratite ovaj tekst na <ph name="MAX_CHARACTERS" /> znak(ov)a ili manje (trenutno koristite <ph name="CURRENT_LENGTH" /> znak(ov)a).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedelja, <ph name="YEAR" />.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. pesma</translation>
+<translation id="2353297238722298836">Kamera i mikrofon su dozvoljeni</translation>
 <translation id="2393030564806080191">Heksadecimalna vrednost boje</translation>
 <translation id="2398813069815436052">otvoren je dijalog.</translation>
 <translation id="245932805758469625">broj preostalih sekundi video snimka</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Potvrdite izbor u ovom polju za potvrdu ukoliko želite da nastavite.</translation>
 <translation id="2908441821576996758">Unesite listu imejl adresa razdvojenih zarezima.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3053226512517284904">omogućite prikaz menija sa zvučnim opisima</translation>
 <translation id="3075154866155599887">Unesite važeću vrednost. Polje nije popunjeno ili sadrži nevažeći datum.</translation>
 <translation id="310520048233152454">Unesite URL adresu.</translation>
 <translation id="3220661731597678625">aktuelni korak</translation>
 <translation id="3321030238473337787">Brzina reprodukcije</translation>
 <translation id="3329013043687509092">Zasićenost boja</translation>
+<translation id="3377518164566272702">Dozvoli mikrofon i kameru</translation>
 <translation id="3450233048674729344">Vrednost sme da bude najviše <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Izađi iz režima slike u slici</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Produžite ovaj tekst na <ph name="MIN_CHARACTERS" /> znak(ov)a ili više (trenutno koristite <ph name="CURRENT_LENGTH" /> znak(ov)a).</translation>
 <translation id="383465348367842624">Deo pre „<ph name="ATSIGN" />“ ne treba da sadrži simbol „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="3846214748874656680">Izađi iz celog ekrana</translation>
+<translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
 <translation id="4103419683916926126">Milisekunde</translation>
 <translation id="4201051445878709314">Prikaži prethodni mesec</translation>
 <translation id="4360991593054037559">Unesite važeću vrednost. Dve najbliže važeće vrednosti su <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalji</translation>
+<translation id="4663373278480897665">Kamera je dozvoljena</translation>
 <translation id="4664250907885839816">Deo posle „<ph name="ATSIGN" />“ ne treba da sadrži simbol „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Reprodukuje se u režimu slike u slici</translation>
 <translation id="4748357248530471599">uključi/isključi ceo ekran bez oblasti izrezanog prikaza</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Deli lokaciju</translation>
 <translation id="4812940957355064477">Unesite broj.</translation>
 <translation id="4912200001568447310">aktuelna stavka</translation>
 <translation id="4915360478455618802">Prikazuj birač vremena</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947">Izabrano: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Uključi zvuk</translation>
 <translation id="49969490063480558">Unesite neki deo posle „<ph name="ATSIGN" />“. Adresa „<ph name="INVALIDADDRESS" />“ je nepotpuna.</translation>
+<translation id="5037575921016181960">Jaka lozinka</translation>
 <translation id="5090250355906949916">klizač za trajanje video snimka</translation>
 <translation id="509897012892853729">Plavi kanal</translation>
 <translation id="5117590920725113268">Prikaži sledeći mesec</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">preuzmi medije</translation>
 <translation id="698788488269350478">prošireno.</translation>
 <translation id="6989848892321993519">Produžite ovaj tekst na bar <ph name="MIN_CHARACTERS" /> znak(ov)a (trenutno koristite 1 znak).</translation>
+<translation id="7080893216867146095">Deljenje lokacije je dozvoljeno</translation>
 <translation id="709897737746224366">Izaberite zahtevani format.</translation>
 <translation id="7102274145889307184">trenutna lokacija</translation>
 <translation id="7263440858009898357">Izaberite stavku sa liste.</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Drugo...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, od <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Slika u slici</translation>
+<translation id="918430632320614861">Dozvoli mikrofon</translation>
 <translation id="945780513535800434">Delimično označeno</translation>
 <translation id="954003015749068518">uđi u režim slike u slici</translation>
 </translationbundle>

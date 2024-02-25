@@ -10,6 +10,7 @@ include_rules = [
   "+android_webview/browser_jni_headers",
   "+components/about_ui",
   "+components/content_capture",
+  "+components/crash/android/java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java",
   "+components/embedder_support/android/java",
   "+components/feature_engagement",
   "+components/heap_profiling",
@@ -43,7 +44,4 @@ include_rules = [
   "+ui/android",
   "+ui/base",
   "+ui/gfx",
-
-  # Used for Vulkan interop path.
-  "+third_party/vulkan/include",
 ]

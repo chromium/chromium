@@ -119,8 +119,6 @@ void FakeSyncEngine::ConnectDataType(
 
 void FakeSyncEngine::DisconnectDataType(ModelType type) {}
 
-void FakeSyncEngine::SetProxyTabsDatatypeEnabled(bool enabled) {}
-
 const SyncStatus& FakeSyncEngine::GetDetailedStatus() const {
   return sync_status_;
 }
@@ -147,6 +145,8 @@ bool FakeSyncEngine::IsNextPollTimeInThePast() const {
 }
 
 void FakeSyncEngine::GetNigoriNodeForDebugging(AllNodesCallback callback) {}
+
+void FakeSyncEngine::RecordNigoriMemoryUsageAndCountsHistograms() {}
 
 void FakeSyncEngine::GetTypesWithUnsyncedData(
     base::OnceCallback<void(ModelTypeSet)> cb) const {

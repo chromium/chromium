@@ -14,9 +14,7 @@ namespace content {
 class MessageLoopRunner;
 }
 
-// This class waits on the SessionRestore notification. It is a replacement for
-// content::WindowedNotificationObserver, which uses notification service. This
-// class uses the callback-based notification instead.
+// This class waits on the SessionRestore callback.
 class SessionRestoreTestHelper {
  public:
   SessionRestoreTestHelper();

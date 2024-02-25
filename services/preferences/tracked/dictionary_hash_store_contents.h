@@ -5,6 +5,8 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_
 #define SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "services/preferences/tracked/hash_store_contents.h"
@@ -33,7 +35,7 @@ class DictionaryHashStoreContents : public HashStoreContents {
   // HashStoreContents implementation
   bool IsCopyable() const override;
   std::unique_ptr<HashStoreContents> MakeCopy() const override;
-  base::StringPiece GetUMASuffix() const override;
+  std::string_view GetUMASuffix() const override;
   void Reset() override;
   bool GetMac(const std::string& path, std::string* out_value) override;
   bool GetSplitMacs(const std::string& path,

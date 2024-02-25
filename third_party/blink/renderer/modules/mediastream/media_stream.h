@@ -47,9 +47,13 @@ class MODULES_EXPORT MediaStreamObserver : public GarbageCollectedMixin {
   virtual ~MediaStreamObserver() = default;
 
   // Invoked when |MediaStream::addTrack| is called.
-  virtual void OnStreamAddTrack(MediaStream*, MediaStreamTrack*) = 0;
+  virtual void OnStreamAddTrack(MediaStream*,
+                                MediaStreamTrack*,
+                                ExceptionState& exception_state) = 0;
   // Invoked when |MediaStream::removeTrack| is called.
-  virtual void OnStreamRemoveTrack(MediaStream*, MediaStreamTrack*) = 0;
+  virtual void OnStreamRemoveTrack(MediaStream*,
+                                   MediaStreamTrack*,
+                                   ExceptionState& exception_state) = 0;
 
   void Trace(Visitor* visitor) const override {}
 };
@@ -147,7 +151,7 @@ class MODULES_EXPORT MediaStream final
   void AddRemoteTrack(MediaStreamTrack*);
   void RemoveRemoteTrack(MediaStreamTrack*);
 
-  MediaStreamDescriptor* Descriptor() const { return descriptor_; }
+  MediaStreamDescriptor* Descriptor() const { return descriptor_.Get(); }
 
   // EventTarget
   const AtomicString& InterfaceName() const override;

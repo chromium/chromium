@@ -49,7 +49,7 @@ class InstanceUpdateTest : public testing::Test {
     aura::Window test_window(nullptr);
     test_window.Init(ui::LAYER_NOT_DRAWN);
 
-    expect_launch_id_ = base::EmptyString();
+    expect_launch_id_.clear();
     expect_state_ = apps::InstanceState::kUnknown;
     expect_last_updated_time_ = base::Time();
 
@@ -101,18 +101,18 @@ class InstanceUpdateTest : public testing::Test {
     // State and StateTime tests.
     if (state) {
       state->UpdateState(apps::InstanceState::kRunning,
-                         base::Time::FromDoubleT(1000.0));
+                         base::Time::FromSecondsSinceUnixEpoch(1000));
       expect_state_ = apps::InstanceState::kRunning;
-      expect_last_updated_time_ = base::Time::FromDoubleT(1000.0);
+      expect_last_updated_time_ = base::Time::FromSecondsSinceUnixEpoch(1000);
       expect_state_changed_ = false;
       expect_last_updated_time_changed_ = false;
       CheckExpects(u);
     }
     if (delta) {
       delta->UpdateState(apps::InstanceState::kActive,
-                         base::Time::FromDoubleT(2000.0));
+                         base::Time::FromSecondsSinceUnixEpoch(2000));
       expect_state_ = apps::InstanceState::kActive;
-      expect_last_updated_time_ = base::Time::FromDoubleT(2000.0);
+      expect_last_updated_time_ = base::Time::FromSecondsSinceUnixEpoch(2000);
       expect_state_changed_ = true;
       expect_last_updated_time_changed_ = true;
       CheckExpects(u);
@@ -124,7 +124,7 @@ class InstanceUpdateTest : public testing::Test {
     }
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> expect_window_;
+  raw_ptr<aura::Window> expect_window_;
   bool expect_window_changed_;
   std::string expect_launch_id_;
   bool expect_launch_id_changed_;

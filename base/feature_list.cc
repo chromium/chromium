@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include "base/base_switches.h"
+#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -28,6 +29,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/feature_visitor.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 
@@ -47,26 +53,31 @@ class EarlyFeatureAccessTracker {
   }
 
   // Invoked when `feature` is accessed before FeatureList registration.
-  void AccessedFeature(const Feature& feature) {
+  void AccessedFeature(const Feature& feature,
+                       bool with_feature_allow_list = false) {
     AutoLock lock(lock_);
-    if (fail_instantly_)
-      Fail(&feature);
-    else if (!feature_)
+    if (fail_instantly_) {
+      Fail(&feature, with_feature_allow_list);
+    } else if (!feature_) {
       feature_ = &feature;
+      feature_had_feature_allow_list_ = with_feature_allow_list;
+    }
   }
 
   // Asserts that no feature was accessed before FeatureList registration.
   void AssertNoAccess() {
     AutoLock lock(lock_);
-    if (feature_)
-      Fail(feature_);
+    if (feature_) {
+      Fail(feature_, feature_had_feature_allow_list_);
+    }
   }
 
   // Makes calls to AccessedFeature() fail instantly.
   void FailOnFeatureAccessWithoutFeatureList() {
     AutoLock lock(lock_);
-    if (feature_)
-      Fail(feature_);
+    if (feature_) {
+      Fail(feature_, feature_had_feature_allow_list_);
+    }
     fail_instantly_ = true;
   }
 
@@ -77,8 +88,13 @@ class EarlyFeatureAccessTracker {
     fail_instantly_ = false;
   }
 
+  const Feature* GetFeature() {
+    AutoLock lock(lock_);
+    return feature_.get();
+  }
+
  private:
-  void Fail(const Feature* feature) {
+  void Fail(const Feature* feature, bool with_feature_allow_list) {
     // TODO(crbug.com/1358639): Enable this check on all platforms.
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_NACL)
@@ -86,14 +102,14 @@ class EarlyFeatureAccessTracker {
     // facilitate crash triage.
     SCOPED_CRASH_KEY_STRING256("FeatureList", "feature-accessed-too-early",
                                feature->name);
+    SCOPED_CRASH_KEY_BOOL("FeatureList", "early-access-allow-list",
+                          with_feature_allow_list);
 #endif  // !BUILDFLAG(IS_NACL)
-    // Fail if DCHECKs are enabled.
-    DCHECK(!feature) << "Accessed feature " << feature->name
-                     << " before FeatureList registration.";
-    // TODO(crbug.com/1383852): When we believe that all early accesses have
-    // been fixed, remove this base::debug::DumpWithoutCrashing() and change the
-    // above DCHECK to a CHECK.
-    base::debug::DumpWithoutCrashing();
+    CHECK(!feature) << "Accessed feature " << feature->name
+                    << (with_feature_allow_list
+                            ? " which is not on the allow list passed to "
+                              "SetEarlyAccessInstance()."
+                            : " before FeatureList registration.");
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_CHROMEOS)
   }
@@ -107,6 +123,7 @@ class EarlyFeatureAccessTracker {
 
   // First feature to be accessed before FeatureList registration.
   raw_ptr<const Feature> feature_ GUARDED_BY(lock_) = nullptr;
+  bool feature_had_feature_allow_list_ GUARDED_BY(lock_) = false;
 
   // Whether AccessedFeature() should fail instantly.
   bool fail_instantly_ GUARDED_BY(lock_) = false;
@@ -143,19 +160,21 @@ struct FeatureEntry {
   // Size of the pickled structure, NOT the total size of this entry.
   uint64_t pickle_size;
 
+  // Return a pointer to the pickled data area immediately following the entry.
+  char* GetPickledDataPtr() { return reinterpret_cast<char*>(this + 1); }
+  const char* GetPickledDataPtr() const {
+    return reinterpret_cast<const char*>(this + 1);
+  }
+
   // Reads the feature and trial name from the pickle. Calling this is only
   // valid on an initialized entry that's in shared memory.
   bool GetFeatureAndTrialName(StringPiece* feature_name,
                               StringPiece* trial_name) const {
-    const char* src =
-        reinterpret_cast<const char*>(this) + sizeof(FeatureEntry);
-
-    Pickle pickle(src, checked_cast<size_t>(pickle_size));
+    Pickle pickle(GetPickledDataPtr(), checked_cast<size_t>(pickle_size));
     PickleIterator pickle_iter(pickle);
-
-    if (!pickle_iter.ReadStringPiece(feature_name))
+    if (!pickle_iter.ReadStringPiece(feature_name)) {
       return false;
-
+    }
     // Return true because we are not guaranteed to have a trial name anyways.
     std::ignore = pickle_iter.ReadStringPiece(trial_name);
     return true;
@@ -242,6 +261,11 @@ uint32_t PackFeatureCache(FeatureList::OverrideState override_state,
          (caching_context & 0xFFFF);
 }
 
+// A monotonically increasing id, passed to `FeatureList`s as they are created
+// to invalidate the cache member of `base::Feature` objects that were queried
+// with a different `FeatureList` installed.
+uint16_t g_current_caching_context = 1;
+
 }  // namespace
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -250,7 +274,7 @@ BASE_FEATURE(kDCheckIsFatalFeature,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-FeatureList::FeatureList() = default;
+FeatureList::FeatureList() : caching_context_(g_current_caching_context++) {}
 
 FeatureList::~FeatureList() = default;
 
@@ -271,9 +295,8 @@ FeatureList::ScopedDisallowOverrides::~ScopedDisallowOverrides() {
 #endif
 }
 
-void FeatureList::InitializeFromCommandLine(
-    const std::string& enable_features,
-    const std::string& disable_features) {
+void FeatureList::InitFromCommandLine(const std::string& enable_features,
+                                      const std::string& disable_features) {
   DCHECK(!initialized_);
 
   std::string parsed_enable_features;
@@ -313,8 +336,7 @@ void FeatureList::InitializeFromCommandLine(
   initialized_from_command_line_ = true;
 }
 
-void FeatureList::InitializeFromSharedMemory(
-    PersistentMemoryAllocator* allocator) {
+void FeatureList::InitFromSharedMemory(PersistentMemoryAllocator* allocator) {
   DCHECK(!initialized_);
 
   PersistentMemoryAllocator::Iterator iter(allocator);
@@ -411,9 +433,7 @@ void FeatureList::AddFeaturesToAllocator(PersistentMemoryAllocator* allocator) {
 
     entry->override_state = override.second.overridden_state;
     entry->pickle_size = pickle.size();
-
-    char* dst = reinterpret_cast<char*>(entry) + sizeof(FeatureEntry);
-    memcpy(dst, pickle.data(), pickle.size());
+    memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size());
 
     allocator->MakeIterable(entry);
   }
@@ -434,8 +454,11 @@ void FeatureList::GetCommandLineFeatureOverrides(
 
 // static
 bool FeatureList::IsEnabled(const Feature& feature) {
-  if (!g_feature_list_instance) {
-    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
+  if (!g_feature_list_instance ||
+      !g_feature_list_instance->AllowFeatureAccess(feature)) {
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
+        feature, g_feature_list_instance &&
+                     g_feature_list_instance->IsEarlyAccessInstance());
     return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
   }
   return g_feature_list_instance->IsFeatureEnabled(feature);
@@ -447,19 +470,25 @@ bool FeatureList::IsValidFeatureOrFieldTrialName(StringPiece name) {
 }
 
 // static
-absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
-  if (!g_feature_list_instance) {
-    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
+std::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
+  if (!g_feature_list_instance ||
+      !g_feature_list_instance->AllowFeatureAccess(feature)) {
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
+        feature, g_feature_list_instance &&
+                     g_feature_list_instance->IsEarlyAccessInstance());
     // If there is no feature list, there can be no overrides.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return g_feature_list_instance->IsFeatureEnabledIfOverridden(feature);
 }
 
 // static
 FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
-  if (!g_feature_list_instance) {
-    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
+  if (!g_feature_list_instance ||
+      !g_feature_list_instance->AllowFeatureAccess(feature)) {
+    EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
+        feature, g_feature_list_instance &&
+                     g_feature_list_instance->IsEarlyAccessInstance());
     return nullptr;
   }
   return g_feature_list_instance->GetAssociatedFieldTrial(feature);
@@ -511,14 +540,14 @@ bool FeatureList::ParseEnableFeatureString(StringPiece enable_feature,
 }
 
 // static
-bool FeatureList::InitializeInstance(const std::string& enable_features,
-                                     const std::string& disable_features) {
-  return InitializeInstance(enable_features, disable_features,
-                            std::vector<FeatureOverrideInfo>());
+bool FeatureList::InitInstance(const std::string& enable_features,
+                               const std::string& disable_features) {
+  return InitInstance(enable_features, disable_features,
+                      std::vector<FeatureOverrideInfo>());
 }
 
 // static
-bool FeatureList::InitializeInstance(
+bool FeatureList::InitInstance(
     const std::string& enable_features,
     const std::string& disable_features,
     const std::vector<FeatureOverrideInfo>& extra_overrides) {
@@ -545,7 +574,7 @@ bool FeatureList::InitializeInstance(
   }
 
   std::unique_ptr<FeatureList> feature_list(new FeatureList);
-  feature_list->InitializeFromCommandLine(enable_features, disable_features);
+  feature_list->InitFromCommandLine(enable_features, disable_features);
   feature_list->RegisterExtraFeatureOverrides(extra_overrides);
   FeatureList::SetInstance(std::move(feature_list));
   return !instance_existed_before;
@@ -558,7 +587,14 @@ FeatureList* FeatureList::GetInstance() {
 
 // static
 void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
-  DCHECK(!g_feature_list_instance);
+  DCHECK(!g_feature_list_instance ||
+         g_feature_list_instance->IsEarlyAccessInstance());
+  // If there is an existing early-access instance, release it.
+  if (g_feature_list_instance) {
+    std::unique_ptr<FeatureList> old_instance =
+        WrapUnique(g_feature_list_instance);
+    g_feature_list_instance = nullptr;
+  }
   instance->FinalizeInitialization();
 
   // Note: Intentional leak of global singleton.
@@ -566,14 +602,19 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
 
   EarlyFeatureAccessTracker::GetInstance()->AssertNoAccess();
 
+  // Don't configure random bytes field trials for a possibly early access
+  // FeatureList instance, as the state of the involved Features might change
+  // with the final FeatureList for this process.
+  if (!g_feature_list_instance->IsEarlyAccessInstance()) {
 #if !BUILDFLAG(IS_NACL)
-  // Configured first because it takes precedence over the getrandom() trial.
-  internal::ConfigureBoringSSLBackedRandBytesFieldTrial();
+    // Configured first because it takes precedence over the getrandom() trial.
+    internal::ConfigureBoringSSLBackedRandBytesFieldTrial();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  internal::ConfigureRandBytesFieldTrial();
+    internal::ConfigureRandBytesFieldTrial();
 #endif
+  }
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Update the behaviour of LOGGING_DCHECK to match the Feature configuration.
@@ -586,11 +627,21 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   if (FeatureList::IsEnabled(kDCheckIsFatalFeature) ||
       CommandLine::ForCurrentProcess()->HasSwitch(
           "gtest_internal_run_death_test")) {
-    logging::LOGGING_DCHECK = logging::LOG_FATAL;
+    logging::LOGGING_DCHECK = logging::LOGGING_FATAL;
   } else {
-    logging::LOGGING_DCHECK = logging::LOG_INFO;
+    logging::LOGGING_DCHECK = logging::LOGGING_ERROR;
   }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+}
+
+// static
+void FeatureList::SetEarlyAccessInstance(
+    std::unique_ptr<FeatureList> instance,
+    base::flat_set<std::string> allowed_feature_names) {
+  CHECK(!g_feature_list_instance);
+  CHECK(!allowed_feature_names.empty());
+  instance->allowed_feature_names_ = std::move(allowed_feature_names);
+  SetInstance(std::move(instance));
 }
 
 // static
@@ -615,9 +666,47 @@ void FeatureList::FailOnFeatureAccessWithoutFeatureList() {
       ->FailOnFeatureAccessWithoutFeatureList();
 }
 
-void FeatureList::SetCachingContextForTesting(uint16_t caching_context) {
-  caching_context_ = caching_context;
+// static
+const Feature* FeatureList::GetEarlyAccessedFeatureForTesting() {
+  return EarlyFeatureAccessTracker::GetInstance()->GetFeature();
 }
+
+// static
+void FeatureList::ResetEarlyFeatureAccessTrackerForTesting() {
+  EarlyFeatureAccessTracker::GetInstance()->Reset();
+}
+
+void FeatureList::AddEarlyAllowedFeatureForTesting(std::string feature_name) {
+  CHECK(IsEarlyAccessInstance());
+  allowed_feature_names_.insert(std::move(feature_name));
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor) {
+  CHECK(g_feature_list_instance);
+  FieldTrialParamAssociator* params_associator =
+      FieldTrialParamAssociator::GetInstance();
+
+  for (auto& feature_override : g_feature_list_instance->overrides_) {
+    FieldTrial* field_trial = feature_override.second.field_trial;
+
+    std::string trial_name;
+    std::string group_name;
+    FieldTrialParams params;
+    if (field_trial) {
+      trial_name = field_trial->trial_name();
+      group_name = field_trial->group_name();
+      params_associator->GetFieldTrialParamsWithoutFallback(
+          trial_name, group_name, &params);
+    }
+
+    visitor.Visit(feature_override.first,
+                  feature_override.second.overridden_state, params, trial_name,
+                  group_name);
+  }
+}
+#endif  // BULDFLAG(IS_CHROMEOS_ASH)
 
 void FeatureList::FinalizeInitialization() {
   DCHECK(!initialized_);
@@ -636,7 +725,7 @@ bool FeatureList::IsFeatureEnabled(const Feature& feature) const {
   return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
 }
 
-absl::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
+std::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
     const Feature& feature) const {
   OverrideState overridden_state = GetOverrideState(feature);
 
@@ -644,7 +733,7 @@ absl::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
   if (overridden_state != OVERRIDE_USE_DEFAULT)
     return overridden_state == OVERRIDE_ENABLE_FEATURE;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 FeatureList::OverrideState FeatureList::GetOverrideState(
@@ -875,6 +964,20 @@ bool FeatureList::CheckFeatureIdentity(const Feature& feature) const {
   }
   // Compare address of |feature| to the existing tracked entry.
   return it->second == &feature;
+}
+
+bool FeatureList::IsEarlyAccessInstance() const {
+  return !allowed_feature_names_.empty();
+}
+
+bool FeatureList::AllowFeatureAccess(const Feature& feature) const {
+  DCHECK(initialized_);
+  // If this isn't an instance set with SetEarlyAccessInstance all features are
+  // allowed to be checked.
+  if (!IsEarlyAccessInstance()) {
+    return true;
+  }
+  return base::Contains(allowed_feature_names_, feature.name);
 }
 
 FeatureList::OverrideEntry::OverrideEntry(OverrideState overridden_state,

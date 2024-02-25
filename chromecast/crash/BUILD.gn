@@ -88,6 +88,8 @@ cast_source_set("crash") {
         "linux/synchronized_minidump_manager.cc",
         "linux/synchronized_minidump_manager.h",
       ]
+
+      deps += [ "//base:i18n" ]
     }
 
     deps += [

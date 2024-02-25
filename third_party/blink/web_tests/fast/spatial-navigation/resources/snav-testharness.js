@@ -77,7 +77,7 @@
     let receivingDoc = wanted.ownerDocument;
     let verifyAndAdvance = gAsyncTest.step_func(function() {
       clearTimeout(failureTimer);
-      let focused = window.internals.interestedElement;
+      let focused = focusedDocument().activeElement;
       assert_equals(focused, wanted,
                     'step ' + step + ': expected focus ' + expectedId + ', actual focus ' + focused.id);
       // Kick off another async test step.
@@ -93,7 +93,7 @@
     // Start a timer to catch the failure of missing keyup event.
     failureTimer = setTimeout(gAsyncTest.step_func(function() {
       assert_unreached('step ' + step + ': timeout when waiting for focus on ' + expectedId +
-                       ', actual focus on ' + window.internals.interestedElement.id);
+                       ', actual focus on ' + focusedDocument().activeElement.id);
       gAsyncTest.done();
     }), 1000);
     triggerMove(direction);
@@ -101,26 +101,23 @@
 
   // TODO: Port all old spatial navigation layout tests to this method.
   window.snav = {
-    assertSnavEnabledAndTestable: function(focuslessSpatNav) {
+    assertSnavEnabledAndTestable: function() {
       test(() => {
         assert_true(!!window.testRunner);
-        window.snav.enableSnav(focuslessSpatNav);
+        window.snav.enableSnav();
       }, 'window.testRunner is present.');
     },
 
-    enableSnav: function(focuslessSpatNav) {
-      if (focuslessSpatNav)
-        internals.runtimeFlags.focuslessSpatialNavigationEnabled = true;
-
+    enableSnav: function() {
       testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
       testRunner.overridePreference('WebKitSpatialNavigationEnabled', 1);
     },
 
     triggerMove: triggerMove,
 
-    assertFocusMoves: function(expectedMoves, enableSpatnav=true, postAssertsFunc=null, focuslessSpatNav=false) {
+    assertFocusMoves: function(expectedMoves, enableSpatnav=true, postAssertsFunc=null) {
       if (enableSpatnav)
-        snav.assertSnavEnabledAndTestable(focuslessSpatNav);
+        snav.assertSnavEnabledAndTestable();
       if (postAssertsFunc)
         gPostAssertsFunc = postAssertsFunc;
       gAsyncTest = async_test("Focus movements:\n" +

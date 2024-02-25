@@ -113,7 +113,7 @@ scoped_refptr<media::VideoFrame> ConstructVideoFrame(
         base::strict_cast<size_t>(dma_buf_planes[i]->offset),
         base::strict_cast<size_t>(dma_buf_planes[i]->size));
   }
-  const absl::optional<media::VideoFrameLayout> layout =
+  const std::optional<media::VideoFrameLayout> layout =
       media::VideoFrameLayout::CreateWithPlanes(
           pixel_format, coded_size, std::move(planes),
           media::VideoFrameLayout::kBufferAddressAlignment, modifier);

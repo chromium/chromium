@@ -17,7 +17,9 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/emoji/emoji_search.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -34,7 +36,9 @@ enum class EmojiVariantType {
   // smaller entries only used by Chrome OS VK
   kEmojiPickerBase = 4,
   kEmojiPickerVariant = 5,
-  kMaxValue = kEmojiPickerVariant,
+  kEmojiPickerGifInserted = 6,
+  kEmojiPickerGifCopied = 7,
+  kMaxValue = kEmojiPickerGifCopied,
 };
 
 void LogInsertEmoji(bool is_variant, int16_t search_length) {
@@ -47,6 +51,14 @@ void LogInsertEmoji(bool is_variant, int16_t search_length) {
                               search_length);
 }
 
+void LogInsertGif(bool is_inserted) {
+  EmojiVariantType insert_value = is_inserted
+                                      ? EmojiVariantType::kEmojiPickerGifInserted
+                                      : EmojiVariantType::kEmojiPickerGifCopied;
+  base::UmaHistogramEnumeration("InputMethod.SystemEmojiPicker.TriggerType",
+                                insert_value);
+}
+
 void LogInsertEmojiDelay(base::TimeDelta delay) {
   base::UmaHistogramMediumTimes("InputMethod.SystemEmojiPicker.Delay", delay);
 }
@@ -54,6 +66,11 @@ void LogInsertEmojiDelay(base::TimeDelta delay) {
 void LogLoadTime(base::TimeDelta delay) {
   base::UmaHistogramMediumTimes("InputMethod.SystemEmojiPicker.LoadTime",
                                 delay);
+}
+
+void LogInsertionLatency(base::TimeDelta delay) {
+  base::UmaHistogramTimes("InputMethod.SystemEmojiPicker.InsertionLatency",
+                          delay);
 }
 
 void CopyEmojiToClipboard(const std::string& emoji_to_copy) {
@@ -80,8 +97,7 @@ void CopyGifToClipboard(const GURL& gif_to_copy) {
   auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste);
 
-  clipboard->WriteHTML(base::UTF8ToUTF16(BuildGifHTML(gif_to_copy)), "",
-                       ui::ClipboardContentType::kSanitized);
+  clipboard->WriteHTML(base::UTF8ToUTF16(BuildGifHTML(gif_to_copy)), "");
 
   // Show a toast that says "GIF not supported. Copied to clipboard.".
   ToastManager::Get()->Show(ToastData(
@@ -94,6 +110,7 @@ void CopyGifToClipboard(const GURL& gif_to_copy) {
 class InsertObserver : public ui::InputMethodObserver {
  public:
   explicit InsertObserver(ui::InputMethod* ime) : ime_(ime) {
+    start_time_ = base::TimeTicks::Now();
     delete_timer_.Start(
         FROM_HERE, base::Seconds(1),
         base::BindOnce(&InsertObserver::DestroySelf, base::Unretained(this)));
@@ -151,7 +168,10 @@ class InsertObserver : public ui::InputMethodObserver {
   void OnInputMethodDestroyed(const ui::InputMethod* client) override {}
 
  protected:
-  void MarkInserted() { this->inserted_ = true; }
+  void MarkInserted() {
+    this->inserted_ = true;
+    LogInsertionLatency(base::TimeTicks::Now() - start_time_);
+  }
 
  private:
   void DestroySelf() {
@@ -162,8 +182,9 @@ class InsertObserver : public ui::InputMethodObserver {
   }
   int focus_change_count_ = 0;
   base::OneShotTimer delete_timer_;
-  raw_ptr<ui::InputMethod, ExperimentalAsh> ime_;
+  raw_ptr<ui::InputMethod, LeakedDanglingUntriaged> ime_;
   bool inserted_ = false;
+  base::TimeTicks start_time_;
 };
 
 // Used to insert an emoji after WebUI handler is destroyed, before
@@ -204,10 +225,14 @@ class GifObserver : public InsertObserver {
     if (input_client->CanInsertImage()) {
       input_client->InsertImage(gif_to_insert_);
       MarkInserted();
+      LogInsertGif(/*is_inserted=*/true);
     }
   }
 
-  void PerformCopy() override { CopyGifToClipboard(gif_to_insert_); }
+  void PerformCopy() override {
+    CopyGifToClipboard(gif_to_insert_);
+    LogInsertGif(/*is_inserted=*/false);
+  }
 
  private:
   GURL gif_to_insert_;
@@ -218,11 +243,13 @@ EmojiPageHandler::EmojiPageHandler(
     content::WebUI* web_ui,
     EmojiUI* webui_controller,
     bool incognito_mode,
-    bool no_text_field)
+    bool no_text_field,
+    emoji_picker::mojom::Category initial_category)
     : receiver_(this, std::move(receiver)),
       webui_controller_(webui_controller),
       incognito_mode_(incognito_mode),
-      no_text_field_(no_text_field) {
+      no_text_field_(no_text_field),
+      initial_category_(initial_category) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
   // There are two conditions to control the GIF support:
@@ -269,10 +296,20 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_GIF_SUPPORT);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kImeSystemEmojiPickerJellySupport)) {
+
+  if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerMojoSearch)) {
     enabled_features.push_back(
-        emoji_picker::mojom::Feature::EMOJI_PICKER_JELLY_SUPPORT);
+        emoji_picker::mojom::Feature::EMOJI_PICKER_MOJO_SEARCH);
+  }
+  if (SealUtils::ShouldEnable()) {
+    enabled_features.push_back(
+        emoji_picker::mojom::Feature::EMOJI_PICKER_SEAL_SUPPORT);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kImeSystemEmojiPickerVariantGrouping)) {
+    enabled_features.push_back(
+        emoji_picker::mojom::Feature::EMOJI_PICKER_VARIANT_GROUPING_SUPPORT);
   }
 
   std::move(callback).Run(enabled_features);
@@ -283,14 +320,14 @@ void EmojiPageHandler::GetCategories(GetCategoriesCallback callback) {
                                          url_loader_factory_);
 }
 
-void EmojiPageHandler::GetFeaturedGifs(const absl::optional<std::string>& pos,
+void EmojiPageHandler::GetFeaturedGifs(const std::optional<std::string>& pos,
                                        GetFeaturedGifsCallback callback) {
   gif_tenor_api_fetcher_.FetchFeaturedGifs(std::move(callback),
                                            url_loader_factory_, pos);
 }
 
 void EmojiPageHandler::SearchGifs(const std::string& query,
-                                  const absl::optional<std::string>& pos,
+                                  const std::optional<std::string>& pos,
                                   SearchGifsCallback callback) {
   gif_tenor_api_fetcher_.FetchGifSearch(std::move(callback),
                                         url_loader_factory_, query, pos);
@@ -347,11 +384,13 @@ void EmojiPageHandler::InsertGif(const GURL& gif) {
   if (!input_method) {
     DLOG(WARNING) << "no input_method found";
     CopyGifToClipboard(gif);
+    LogInsertGif(/*is_inserted=*/false);
     return;
   }
 
   if (no_text_field_) {
     CopyGifToClipboard(gif);
+    LogInsertGif(/*is_inserted=*/false);
     return;
   }
 
@@ -367,6 +406,10 @@ void EmojiPageHandler::InsertGif(const GURL& gif) {
 
 void EmojiPageHandler::OnUiFullyLoaded() {
   LogLoadTime(base::TimeTicks::Now() - shown_time_);
+}
+
+void EmojiPageHandler::GetInitialCategory(GetInitialCategoryCallback callback) {
+  std::move(callback).Run(initial_category_);
 }
 
 }  // namespace ash

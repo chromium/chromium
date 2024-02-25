@@ -88,9 +88,8 @@ class RenderWidgetHostDelegateEditCommandCounter
   unsigned int edit_command_message_count_ = 0;
 
  private:
-  void ExecuteEditCommand(
-      const std::string& command,
-      const absl::optional<std::u16string>& value) override {
+  void ExecuteEditCommand(const std::string& command,
+                          const std::optional<std::u16string>& value) override {
     edit_command_message_count_++;
   }
   void Undo() override {}
@@ -149,17 +148,16 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
       process_host_factory.CreateRenderProcessHost(&browser_context, nullptr);
   scoped_refptr<SiteInstanceGroup> site_instance_group = base::WrapRefCounted(
       SiteInstanceGroup::CreateForTesting(&browser_context, process_host));
-  // Populates |g_supported_scale_factors|.
-  std::vector<ui::ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(ui::k100Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
-      supported_factors);
+      {ui::k100Percent});
 
   @autoreleasepool {
     int32_t routing_id = process_host->GetNextRoutingID();
     std::unique_ptr<RenderWidgetHostImpl> render_widget =
         RenderWidgetHostImpl::Create(
             /*frame_tree=*/nullptr, &delegate,
+            RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group,
+                                                     routing_id),
             site_instance_group->GetSafeRef(), routing_id,
             /*hidden=*/false, /*renderer_initiated_creation=*/false,
             std::make_unique<FrameTokenMessageQueue>());

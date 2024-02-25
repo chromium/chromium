@@ -1,0 +1,62 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDataMigrationSettings": 1
+        },
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDataMigrationSettings": 1,
+          "ProfileSeparationSettings": 1
+        },
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDataMigrationSettings": 2,
+          "ProfileSeparationSettings": 1
+        },
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDataMigrationSettings": 3,
+          "ProfileSeparationSettings": 1
+        },
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  }
+]

@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 
 #include <iterator>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -30,7 +32,6 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 
@@ -44,7 +45,7 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
   // TODO(csharrison, linnan): Validate that `time` is valid (e.g. not null /
   // inf).
   base::Time rounded = RoundDownToWholeDaySinceUnixEpoch(time);
-  return base::NumberToString(rounded.ToJavaTime() /
+  return base::NumberToString(rounded.InMillisecondsSinceUnixEpoch() /
                               base::Time::kMillisecondsPerSecond);
 }
 
@@ -58,7 +59,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<attribution_reporting::AggregatableTriggerData>&
         aggregatable_trigger_data,
-    const attribution_reporting::AggregatableValues& aggregatable_values) {
+    const std::vector<attribution_reporting::AggregatableValues>&
+        aggregatable_values) {
   int num_trigger_data_filtered = 0;
 
   attribution_reporting::AggregationKeys::Keys buckets = keys.keys();
@@ -83,17 +85,22 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     }
   }
 
-  const attribution_reporting::AggregatableValues::Values& values =
-      aggregatable_values.values();
-
   std::vector<AggregatableHistogramContribution> contributions;
-  for (const auto& [key_id, key] : buckets) {
-    auto value = values.find(key_id);
-    if (value == values.end()) {
-      continue;
-    }
+  for (const auto& aggregatable_value : aggregatable_values) {
+    if (source_filter_data.Matches(source_type, source_time, trigger_time,
+                                   aggregatable_value.filters())) {
+      const attribution_reporting::AggregatableValues::Values& values =
+          aggregatable_value.values();
+      for (const auto& [key_id, key] : buckets) {
+        auto value = values.find(key_id);
+        if (value == values.end()) {
+          continue;
+        }
 
-    contributions.emplace_back(key, value->second);
+        contributions.emplace_back(key, value->second);
+      }
+      break;
+    }
   }
 
   if (!aggregatable_trigger_data.empty()) {
@@ -108,23 +115,22 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
         100 * (buckets.size() - contributions.size()) / buckets.size());
   }
 
-  static_assert(
-      attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger == 20,
-      "Bump the version for histogram "
-      "Conversions.AggregatableReport.NumContributionsPerReport2");
+  static_assert(attribution_reporting::kMaxAggregationKeysPerSource == 20,
+                "Bump the version for histogram "
+                "Conversions.AggregatableReport.NumContributionsPerReport2");
 
   base::UmaHistogramExactLinear(
       "Conversions.AggregatableReport.NumContributionsPerReport2",
       contributions.size(),
-      attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1);
+      attribution_reporting::kMaxAggregationKeysPerSource + 1);
 
   return contributions;
 }
 
-absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
+std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
     const AttributionReport& report) {
   base::Time source_time;
-  absl::optional<uint64_t> source_debug_key;
+  std::optional<uint64_t> source_debug_key;
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions;
   const AttributionReport::CommonAggregatableData* common_aggregatable_data =
@@ -149,7 +155,6 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           [&](const AttributionReport::NullAggregatableData& data) {
             source_time = data.fake_source_time;
             common_aggregatable_data = &data.common_data;
-            contributions.emplace_back(/*bucket=*/0, /*value=*/0);
           },
       },
       report.data());
@@ -164,7 +169,8 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
 
   base::Value::Dict additional_fields;
   std::string serialized_source_time;
-  switch (common_aggregatable_data->source_registration_time_config) {
+  switch (common_aggregatable_data->aggregatable_trigger_config
+              .source_registration_time_config()) {
     case attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude:
       serialized_source_time =
           SerializeTimeRoundedDownToWholeDayInSeconds(source_time);
@@ -186,9 +192,11 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           std::move(contributions),
           blink::mojom::AggregationServiceMode::kDefault,
           common_aggregatable_data->aggregation_coordinator_origin
-              ? absl::make_optional(
+              ? std::make_optional(
                     **common_aggregatable_data->aggregation_coordinator_origin)
-              : absl::nullopt),
+              : std::nullopt,
+          /*max_contributions_allowed=*/
+          attribution_reporting::kMaxAggregationKeysPerSource),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),

@@ -30,26 +30,33 @@ public class EventTracker {
         // exception handler on the returned promise, so they expect there to be one on the root
         // promise.
         mRootPromise.except((e) -> {});
-        mBridge.getAllEvents((result) -> {
-            List<WebsiteEvent> events = new ArrayList<>(result.size());
-            for (WebsiteEventProtos.WebsiteEvent protoEvent : result) {
-                events.add(new WebsiteEvent(getJavaTimestamp(protoEvent.getTimestamp()),
-                        protoEvent.getFqdn(), protoEvent.getType().getNumber()));
-            }
-            mRootPromise.fulfill(events);
-        });
+        mBridge.getAllEvents(
+                (result) -> {
+                    List<WebsiteEvent> events = new ArrayList<>(result.size());
+                    for (WebsiteEventProtos.WebsiteEvent protoEvent : result) {
+                        events.add(
+                                new WebsiteEvent(
+                                        getJavaTimestamp(protoEvent.getTimestamp()),
+                                        protoEvent.getFqdn(),
+                                        protoEvent.getType().getNumber()));
+                    }
+                    mRootPromise.fulfill(events);
+                });
     }
 
     /** Query all events in the half-open range [start, end) */
     public Promise<List<WebsiteEvent>> queryWebsiteEvents(long start, long end) {
         assert start < end;
-        return mRootPromise.then((Function<List<WebsiteEvent>, List<WebsiteEvent>>) (result) -> {
-            UsageStatsMetricsReporter.reportMetricsEvent(UsageStatsMetricsEvent.QUERY_EVENTS);
-            List<WebsiteEvent> sublist = sublistFromTimeRange(start, end, result);
-            List<WebsiteEvent> sublistCopy = new ArrayList<>(sublist.size());
-            sublistCopy.addAll(sublist);
-            return sublistCopy;
-        });
+        return mRootPromise.then(
+                (Function<List<WebsiteEvent>, List<WebsiteEvent>>)
+                        (result) -> {
+                            UsageStatsMetricsReporter.reportMetricsEvent(
+                                    UsageStatsMetricsEvent.QUERY_EVENTS);
+                            List<WebsiteEvent> sublist = sublistFromTimeRange(start, end, result);
+                            List<WebsiteEvent> sublistCopy = new ArrayList<>(sublist.size());
+                            sublistCopy.addAll(sublist);
+                            return sublistCopy;
+                        });
     }
 
     /**
@@ -59,17 +66,22 @@ public class EventTracker {
      */
     public Promise<Void> addWebsiteEvent(WebsiteEvent event) {
         final Promise<Void> writePromise = new Promise<>();
-        mRootPromise.then((result) -> {
-            List<WebsiteEventProtos.WebsiteEvent> eventsList = Arrays.asList(getProtoEvent(event));
-            mBridge.addEvents(eventsList, (didSucceed) -> {
-                if (didSucceed) {
-                    result.add(event);
-                    writePromise.fulfill(null);
-                } else {
-                    writePromise.reject();
-                }
-            });
-        }, (e) -> {});
+        mRootPromise.then(
+                (result) -> {
+                    List<WebsiteEventProtos.WebsiteEvent> eventsList =
+                            Arrays.asList(getProtoEvent(event));
+                    mBridge.addEvents(
+                            eventsList,
+                            (didSucceed) -> {
+                                if (didSucceed) {
+                                    result.add(event);
+                                    writePromise.fulfill(null);
+                                } else {
+                                    writePromise.reject();
+                                }
+                            });
+                },
+                (e) -> {});
 
         return writePromise;
     }
@@ -77,49 +89,60 @@ public class EventTracker {
     /** Remove every item in the list of events. */
     public Promise<Void> clearAll() {
         final Promise<Void> writePromise = new Promise<>();
-        mRootPromise.then((result) -> {
-            mBridge.deleteAllEvents((didSucceed) -> {
-                if (didSucceed) {
-                    result.clear();
-                    writePromise.fulfill(null);
-                } else {
-                    writePromise.reject();
-                }
-            });
-        }, (e) -> {});
+        mRootPromise.then(
+                (result) -> {
+                    mBridge.deleteAllEvents(
+                            (didSucceed) -> {
+                                if (didSucceed) {
+                                    result.clear();
+                                    writePromise.fulfill(null);
+                                } else {
+                                    writePromise.reject();
+                                }
+                            });
+                },
+                (e) -> {});
         return writePromise;
     }
 
     /** Removes items in the list in the half-open range [startTimeMs, endTimeMs). */
     public Promise<Void> clearRange(long startTimeMs, long endTimeMs) {
         final Promise<Void> writePromise = new Promise<>();
-        mRootPromise.then((result) -> {
-            mBridge.deleteEventsInRange(startTimeMs, endTimeMs, (didSucceed) -> {
-                if (didSucceed) {
-                    sublistFromTimeRange(startTimeMs, endTimeMs, result).clear();
-                    writePromise.fulfill(null);
-                } else {
-                    writePromise.reject();
-                }
-            });
-        }, (e) -> {});
+        mRootPromise.then(
+                (result) -> {
+                    mBridge.deleteEventsInRange(
+                            startTimeMs,
+                            endTimeMs,
+                            (didSucceed) -> {
+                                if (didSucceed) {
+                                    sublistFromTimeRange(startTimeMs, endTimeMs, result).clear();
+                                    writePromise.fulfill(null);
+                                } else {
+                                    writePromise.reject();
+                                }
+                            });
+                },
+                (e) -> {});
         return writePromise;
     }
 
     /** Clear any events that have a domain in fqdns. */
     public Promise<Void> clearDomains(List<String> fqdns) {
         final Promise<Void> writePromise = new Promise<>();
-        mRootPromise.then((result) -> {
-            mBridge.deleteEventsWithMatchingDomains(
-                    fqdns.toArray(new String[fqdns.size()]), (didSucceed) -> {
-                        if (didSucceed) {
-                            filterMatchingDomains(fqdns, result);
-                            writePromise.fulfill(null);
-                        } else {
-                            writePromise.reject();
-                        }
-                    });
-        }, (e) -> {});
+        mRootPromise.then(
+                (result) -> {
+                    mBridge.deleteEventsWithMatchingDomains(
+                            fqdns.toArray(new String[fqdns.size()]),
+                            (didSucceed) -> {
+                                if (didSucceed) {
+                                    filterMatchingDomains(fqdns, result);
+                                    writePromise.fulfill(null);
+                                } else {
+                                    writePromise.reject();
+                                }
+                            });
+                },
+                (e) -> {});
         return writePromise;
     }
 

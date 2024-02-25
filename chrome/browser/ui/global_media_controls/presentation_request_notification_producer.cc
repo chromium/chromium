@@ -165,7 +165,9 @@ void PresentationRequestNotificationProducer::OnPresentationsChanged(
   // If there is a presentation, there would already be an item associated with
   // that, so `this` doesn't have to provide another item.
   if (has_presentation && provider_.is_bound()) {
+#if !BUILDFLAG(IS_CHROMEOS)
     provider_->HideMediaUI();
+#endif
     provider_->HideItem();
   }
 }

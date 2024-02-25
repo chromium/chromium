@@ -25,11 +25,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/app_icon_resources.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -320,8 +320,9 @@ gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size) {
 
 gfx::ImageSkia ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui", "apps::ApplyBackgroundAndMask");
-  if (image.isNull())
+  if (image.isNull()) {
     return gfx::ImageSkia();
+  }
   return gfx::ImageSkiaOperations::CreateButtonBackground(
       SK_ColorWHITE, image, LoadMaskImage(GetScaleToSize(image)));
 }
@@ -413,7 +414,7 @@ void ArcActivityIconsToImageSkias(
 }
 
 gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
-    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
+    const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,
     IconEffects icon_effects,
     int size_hint_in_dip) {
   TRACE_EVENT0("ui", "apps::ConvertSquareBitmapsToImageSkia");
@@ -434,7 +435,7 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 gfx::ImageSkia ConvertIconBitmapsToImageSkia(
-    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
+    const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,
     int size_hint_in_dip) {
   TRACE_EVENT0("ui", "apps::ConvertIconBitmapsToImageSkia");
   if (icon_bitmaps.empty()) {
@@ -444,11 +445,10 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
   gfx::ImageSkia image_skia;
   auto it = icon_bitmaps.begin();
 
-  for (ui::ResourceScaleFactor scale_factor :
-       ui::GetSupportedResourceScaleFactors()) {
+  for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     float icon_scale = ui::GetScaleForResourceScaleFactor(scale_factor);
 
-    SquareSizePx icon_size_in_px =
+    web_app::SquareSizePx icon_size_in_px =
         gfx::ScaleToFlooredSize(gfx::Size(size_hint_in_dip, size_hint_in_dip),
                                 icon_scale)
             .width();
@@ -485,7 +485,7 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
 }
 
 void ApplyIconEffects(Profile* profile,
-                      const absl::optional<std::string>& app_id,
+                      const std::optional<std::string>& app_id,
                       IconEffects icon_effects,
                       int size_hint_in_dip,
                       IconValuePtr iv,
@@ -532,7 +532,7 @@ void LoadIconFromExtension(IconType icon_type,
   constexpr bool is_placeholder_icon = false;
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          profile, /*app_id=*/absl::nullopt, icon_type, size_hint_in_dip,
+          profile, /*app_id=*/std::nullopt, icon_type, size_hint_in_dip,
           is_placeholder_icon, icon_effects, IDR_APP_DEFAULT_ICON,
           std::move(callback));
   icon_loader->LoadExtensionIcon(
@@ -556,7 +556,7 @@ void LoadIconFromWebApp(Profile* profile,
   constexpr bool is_placeholder_icon = false;
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          profile, /*app_id=*/absl::nullopt, icon_type, size_hint_in_dip,
+          profile, /*app_id=*/std::nullopt, icon_type, size_hint_in_dip,
           is_placeholder_icon, icon_effects, IDR_APP_DEFAULT_ICON,
           std::move(callback));
   icon_loader->LoadWebAppIcon(
@@ -580,7 +580,7 @@ void GetWebAppCompressedIconData(Profile* profile,
   DCHECK(web_app_provider);
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          profile, /*app_id=*/absl::nullopt, IconType::kCompressed, size_in_dip,
+          profile, /*app_id=*/std::nullopt, IconType::kCompressed, size_in_dip,
           /*is_placeholder_icon=*/false, IconEffects::kNone,
           kInvalidIconResource, std::move(callback));
   icon_loader->GetWebAppCompressedIconData(web_app_id, scale_factor,
@@ -597,7 +597,7 @@ void GetChromeAppCompressedIconData(Profile* profile,
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          profile, /*app_id=*/absl::nullopt, IconType::kCompressed, size_in_dip,
+          profile, /*app_id=*/std::nullopt, IconType::kCompressed, size_in_dip,
           /*is_placeholder_icon=*/false, IconEffects::kNone,
           IDR_APP_DEFAULT_ICON, std::move(callback));
   icon_loader->GetChromeAppCompressedIconData(
@@ -663,7 +663,7 @@ void LoadIconFromFileWithFallback(
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_type,
+          /*profile=*/nullptr, /*app_id=*/std::nullopt, icon_type,
           size_hint_in_dip, is_placeholder_icon, icon_effects,
           kInvalidIconResource, std::move(fallback), std::move(callback));
   icon_loader->LoadCompressedIconFromFile(path);
@@ -680,14 +680,14 @@ void LoadIconFromCompressedData(IconType icon_type,
 
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(
-          /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_type,
+          /*profile=*/nullptr, /*app_id=*/std::nullopt, icon_type,
           size_hint_in_dip, is_placeholder_icon, icon_effects,
           kInvalidIconResource, std::move(callback));
   icon_loader->LoadIconFromCompressedData(compressed_icon_data);
 }
 
 void LoadIconFromResource(Profile* profile,
-                          absl::optional<std::string> app_id,
+                          std::optional<std::string> app_id,
                           IconType icon_type,
                           int size_hint_in_dip,
                           int resource_id,

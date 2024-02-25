@@ -6,6 +6,7 @@
 #
 # ::
 #
+#   LIBXML2_FOUND              - True if libxml2 headers and libraries were found
 #   LIBXML2_INCLUDE_DIR        - Directory where LibXml2 headers are located.
 #   LIBXML2_INCLUDE_DIRS       - list of the include directories needed to use LibXml2.
 #   LIBXML2_LIBRARY            - path to the LibXml2 library.
@@ -55,30 +56,55 @@ if(LIBXML2_WITH_ICONV)
   list(APPEND LIBXML2_LIBRARIES    ${Iconv_LIBRARIES})
   list(APPEND LIBXML2_INCLUDE_DIRS ${Iconv_INCLUDE_DIRS})
   list(APPEND LIBXML2_INTERFACE_LINK_LIBRARIES "Iconv::Iconv")
+  if(NOT Iconv_FOUND)
+    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "Iconv dependency was not found")
+    return()
+  endif()
 endif()
 
 if(LIBXML2_WITH_THREADS)
   find_dependency(Threads)
   list(APPEND LIBXML2_LIBRARIES    ${CMAKE_THREAD_LIBS_INIT})
   list(APPEND LIBXML2_INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Threads::Threads>")
+  if(NOT Threads_FOUND)
+    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "Threads dependency was not found")
+    return()
+  endif()
 endif()
 
 if(LIBXML2_WITH_ICU)
   find_dependency(ICU COMPONENTS data i18n uc)
   list(APPEND LIBXML2_LIBRARIES    ${ICU_LIBRARIES})
   list(APPEND LIBXML2_INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:ICU::data>;\$<LINK_ONLY:ICU::i18n>;\$<LINK_ONLY:ICU::uc>")
+  if(NOT ICU_FOUND)
+    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "ICU dependency was not found")
+    return()
+  endif()
 endif()
 
 if(LIBXML2_WITH_LZMA)
   find_dependency(LibLZMA)
   list(APPEND LIBXML2_LIBRARIES    ${LIBLZMA_LIBRARIES})
   list(APPEND LIBXML2_INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:LibLZMA::LibLZMA>")
+  if(NOT LibLZMA_FOUND)
+    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "LibLZMA dependency was not found")
+    return()
+  endif()
 endif()
 
 if(LIBXML2_WITH_ZLIB)
   find_dependency(ZLIB)
   list(APPEND LIBXML2_LIBRARIES    ${ZLIB_LIBRARIES})
   list(APPEND LIBXML2_INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:ZLIB::ZLIB>")
+  if(NOT ZLIB_FOUND)
+    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "ZLIB dependency was not found")
+    return()
+  endif()
 endif()
 
 if(UNIX)
@@ -95,6 +121,10 @@ endif()
 set(LIBXML2_MODULES @WITH_MODULES@)
 
 mark_as_advanced(LIBXML2_LIBRARY LIBXML2_XMLCATALOG_EXECUTABLE LIBXML2_XMLLINT_EXECUTABLE)
+
+if(DEFINED LIBXML2_LIBRARY AND DEFINED LIBXML2_INCLUDE_DIRS)
+  set(LIBXML2_FOUND TRUE)
+endif()
 
 if(NOT TARGET LibXml2::LibXml2 AND DEFINED LIBXML2_LIBRARY AND DEFINED LIBXML2_INCLUDE_DIRS)
   add_library(LibXml2::LibXml2 UNKNOWN IMPORTED)

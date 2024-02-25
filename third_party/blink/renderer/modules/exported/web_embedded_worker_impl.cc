@@ -215,10 +215,9 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       mojo::NullRemote() /* blob_url_store */, BeginFrameProviderParams(),
       nullptr /* parent_permissions_policy */,
       base::UnguessableToken() /* agent_cluster_id */,
-      worker_start_data->ukm_source_id,
-      absl::nullopt, /* parent_context_token */
-      false,         /* parent_cross_origin_isolated_capability */
-      false,         /* parent_is_isolated_context */
+      worker_start_data->ukm_source_id, std::nullopt, /* parent_context_token */
+      false, /* parent_cross_origin_isolated_capability */
+      false, /* parent_is_isolated_context */
       interface_registry);
 
   worker_thread_ = std::make_unique<ServiceWorkerThread>(

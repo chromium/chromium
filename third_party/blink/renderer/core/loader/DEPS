@@ -1,7 +1,8 @@
 specific_include_rules = {
     "alternate_signed_exchange_resource_info.cc" : [
         "+media/media_buildflags.h",
-        "+net/http/http_request_headers.h"
+        "+net/http/http_request_headers.h",
+        "+services/network/public/cpp/constants.h"
     ],
     "empty_clients.cc" : [
         "+components/viz/common/surfaces/local_surface_id.h"
@@ -33,6 +34,7 @@ include_rules = [
   "+base/no_destructor.h",
   "+base/strings/utf_string_conversions.h",
   "+services/network/public/cpp/client_hints.h",
+  "+services/network/public/cpp/shared_dictionary_encoding_names.h",
   "+services/network/public/cpp/shared_url_loader_factory.h",
   "+services/network/public/cpp/wrapper_shared_url_loader_factory.h",
   "+url/url_features.h",

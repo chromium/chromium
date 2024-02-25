@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/audio/audio_manager_base.h"
@@ -70,11 +71,6 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const std::string& device_id,
       const LogCallback& log_callback) override;
 
-  // Indicates if there's support for the OpenSLES performance mode keys. See
-  // OpenSLESOutputStream for specific details. Essentially this allows for low
-  // power audio when large buffer sizes can be used.
-  static bool SupportsPerformanceModeForOutput();
-
   void SetMute(JNIEnv* env,
                const base::android::JavaParamRef<jobject>& obj,
                jboolean muted);
@@ -90,8 +86,6 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // b/80326798 to adjust (hackily) for hardware latency that OpenSLES isn't
   // otherwise accounting for.
   base::TimeDelta GetOutputLatency();
-
-  bool IsUsingAAudioForTesting() { return UseAAudio(); }
 
   static int GetSinkAudioEncodingFormats();
 
@@ -119,22 +113,16 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   void DoSetMuteOnAudioThread(bool muted);
   void DoSetVolumeOnAudioThread(double volume);
 
-  // Returns whether or not we can and should use AAudio.
-  bool UseAAudio();
-  bool UseAAudioOutput();
-  bool UseAAudioInput();
-
   // Java AudioManager instance.
   base::android::ScopedJavaGlobalRef<jobject> j_audio_manager_;
 
-  typedef std::set<MuteableAudioOutputStream*> OutputStreams;
+  typedef std::set<raw_ptr<MuteableAudioOutputStream, SetExperimental>>
+      OutputStreams;
   OutputStreams streams_;
 
   // Enabled when first input stream is created and set to false when last
   // input stream is destroyed. Also affects the stream type of output streams.
   bool communication_mode_is_on_;
-
-  absl::optional<bool> is_aaudio_available_;
 
   // If set, overrides volume level on output streams
   bool output_volume_override_set_;

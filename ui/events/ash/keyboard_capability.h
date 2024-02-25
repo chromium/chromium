@@ -6,13 +6,13 @@
 #define UI_EVENTS_ASH_KEYBOARD_CAPABILITY_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -24,6 +24,8 @@
 namespace ui {
 
 // TODO(dpad): Handle display mirror top row keys.
+// This enum should mirror the enum `KeyboardTopRowLayout` in
+// tools/metrics/histograms/enums.xml and values should not be changed.
 enum class TopRowActionKey {
   kNone = 0,
   kMinValue = kNone,
@@ -53,46 +55,43 @@ enum class TopRowActionKey {
   kMaxValue = kPrivacyScreenToggle,
 };
 
-inline constexpr auto kLayout1TopRowActionKeys =
-    base::MakeFixedFlatSet<TopRowActionKey>({
-        TopRowActionKey::kBack,
-        TopRowActionKey::kForward,
-        TopRowActionKey::kRefresh,
-        TopRowActionKey::kFullscreen,
-        TopRowActionKey::kOverview,
-        TopRowActionKey::kScreenBrightnessDown,
-        TopRowActionKey::kScreenBrightnessUp,
-        TopRowActionKey::kVolumeMute,
-        TopRowActionKey::kVolumeDown,
-        TopRowActionKey::kVolumeUp,
-    });
+static const TopRowActionKey kLayout1TopRowActionKeys[] = {
+    TopRowActionKey::kBack,
+    TopRowActionKey::kForward,
+    TopRowActionKey::kRefresh,
+    TopRowActionKey::kFullscreen,
+    TopRowActionKey::kOverview,
+    TopRowActionKey::kScreenBrightnessDown,
+    TopRowActionKey::kScreenBrightnessUp,
+    TopRowActionKey::kVolumeMute,
+    TopRowActionKey::kVolumeDown,
+    TopRowActionKey::kVolumeUp,
+};
 
-inline constexpr auto kLayout2TopRowActionKeys =
-    base::MakeFixedFlatSet<TopRowActionKey>({
-        TopRowActionKey::kBack,
-        TopRowActionKey::kRefresh,
-        TopRowActionKey::kFullscreen,
-        TopRowActionKey::kOverview,
-        TopRowActionKey::kScreenBrightnessDown,
-        TopRowActionKey::kScreenBrightnessUp,
-        TopRowActionKey::kPlayPause,
-        TopRowActionKey::kVolumeMute,
-        TopRowActionKey::kVolumeDown,
-        TopRowActionKey::kVolumeUp,
-    });
+static const TopRowActionKey kLayout2TopRowActionKeys[] = {
+    TopRowActionKey::kBack,
+    TopRowActionKey::kRefresh,
+    TopRowActionKey::kFullscreen,
+    TopRowActionKey::kOverview,
+    TopRowActionKey::kScreenBrightnessDown,
+    TopRowActionKey::kScreenBrightnessUp,
+    TopRowActionKey::kPlayPause,
+    TopRowActionKey::kVolumeMute,
+    TopRowActionKey::kVolumeDown,
+    TopRowActionKey::kVolumeUp,
+};
 
-inline constexpr auto kLayoutWilcoDrallionTopRowActionKeys =
-    base::MakeFixedFlatSet<TopRowActionKey>({
-        TopRowActionKey::kBack,
-        TopRowActionKey::kRefresh,
-        TopRowActionKey::kFullscreen,
-        TopRowActionKey::kOverview,
-        TopRowActionKey::kScreenBrightnessDown,
-        TopRowActionKey::kScreenBrightnessUp,
-        TopRowActionKey::kVolumeMute,
-        TopRowActionKey::kVolumeDown,
-        TopRowActionKey::kVolumeUp,
-    });
+static const TopRowActionKey kLayoutWilcoDrallionTopRowActionKeys[] = {
+    TopRowActionKey::kBack,
+    TopRowActionKey::kRefresh,
+    TopRowActionKey::kFullscreen,
+    TopRowActionKey::kOverview,
+    TopRowActionKey::kScreenBrightnessDown,
+    TopRowActionKey::kScreenBrightnessUp,
+    TopRowActionKey::kVolumeMute,
+    TopRowActionKey::kVolumeDown,
+    TopRowActionKey::kVolumeUp,
+};
 
 // Keyboard layout1 map between top row keys to function keys.
 inline constexpr auto kLayout1TopRowKeyToFKeyMap =
@@ -167,14 +166,15 @@ inline constexpr auto kSixPackKeyToAltSystemKeyMap =
 class KeyboardCapability : public InputDeviceEventObserver {
  public:
   using ScanCodeToEvdevKeyConverter =
-      base::RepeatingCallback<absl::optional<uint32_t>(const base::ScopedFD& fd,
-                                                       uint32_t scancode)>;
+      base::RepeatingCallback<std::optional<uint32_t>(const base::ScopedFD& fd,
+                                                      uint32_t scancode)>;
   enum class DeviceType {
     kDeviceUnknown = 0,
     kDeviceInternalKeyboard,
     kDeviceInternalRevenKeyboard,
     kDeviceExternalAppleKeyboard,
     kDeviceExternalChromeOsKeyboard,
+    kDeviceExternalNullTopRowChromeOsKeyboard,
     kDeviceExternalGenericKeyboard,
     kDeviceExternalUnknown,
     kDeviceHotrodRemote,
@@ -231,11 +231,11 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Converts from the given `key_code` to the corresponding meaning in
   // `TopRowActionKey` enum.
-  static absl::optional<TopRowActionKey> ConvertToTopRowActionKey(
+  static std::optional<TopRowActionKey> ConvertToTopRowActionKey(
       ui::KeyboardCode key_code);
 
   // Converts the given `action_key` to the corresponding `KeyboardCode` VKEY.
-  static absl::optional<KeyboardCode> ConvertToKeyboardCode(
+  static std::optional<KeyboardCode> ConvertToKeyboardCode(
       TopRowActionKey action_key);
 
   // Check if a key code is one of the top row keys.
@@ -247,7 +247,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Find the mapped function key if the given key code is a top row key for
   // the given keyboard.
   // TODO(zhangwenyu): Support custom vivaldi layouts.
-  absl::optional<KeyboardCode> GetMappedFKeyIfExists(
+  std::optional<KeyboardCode> GetMappedFKeyIfExists(
       const KeyboardCode& key_code,
       const KeyboardDevice& keyboard) const;
 
@@ -263,6 +263,9 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Check if the keycode is a function key.
   static bool IsFunctionKey(ui::KeyboardCode code);
+
+  // Check if the keycode is either the F11 or F12 function key.
+  static bool IsF11OrF12(ui::KeyboardCode code);
 
   // Returns the set of modifier keys present on the given keyboard.
   std::vector<mojom::ModifierKey> GetModifierKeys(
@@ -342,15 +345,19 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if the CapsLock key exists on the given keyboard.
   bool HasCapsLockKey(const KeyboardDevice& keyboard) const;
 
+  // Finds the keyboard with the corresponding  `device_id` and checks its
+  // `DeviceType` to determine if it's a ChromeOS keyboard.
+  bool IsChromeOSKeyboard(int device_id) const;
+
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.
-  absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
+  std::optional<KeyboardCode> GetCorrespondingFunctionKey(
       const KeyboardDevice& keyboard,
       TopRowActionKey action_key) const;
 
   // Gets the corresponding action key for the given `key_code` which must be an
   // F-Key in the range of F1 to F24 for the given `keyboard`
-  absl::optional<TopRowActionKey> GetCorrespondingActionKeyForFKey(
+  std::optional<TopRowActionKey> GetCorrespondingActionKeyForFKey(
       const KeyboardDevice& keyboard,
       KeyboardCode key_code) const;
 
@@ -364,8 +371,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
  private:
   const KeyboardInfo* GetKeyboardInfo(const KeyboardDevice& keyboard) const;
   void TrimKeyboardInfoMap();
-
-  bool IsChromeOSKeyboard(const ui::KeyboardDevice& keyboard) const;
 
   ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter_;
 

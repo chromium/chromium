@@ -4,8 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
 
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_client.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_client.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

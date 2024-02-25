@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout.data;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
-/**
- * A profile, similar to the one used by the PersonalDataManager.
- */
+/** A profile, similar to the one used by the PersonalDataManager. */
 public class FastCheckoutAutofillProfile {
     private final String mGUID;
     private final boolean mIsLocal;
-    private final String mHonorificPrefix;
     private final String mFullName;
     private final String mCompanyName;
     private final String mStreetAddress;
@@ -28,14 +25,24 @@ public class FastCheckoutAutofillProfile {
     private final String mLanguageCode;
 
     @CalledByNative
-    public FastCheckoutAutofillProfile(String guid, boolean isLocal, String honorificPrefix,
-            String fullName, String companyName, String streetAddress, String region,
-            String locality, String dependentLocality, String postalCode, String sortingCode,
-            String countryCode, String countryName, String phoneNumber, String emailAddress,
+    public FastCheckoutAutofillProfile(
+            String guid,
+            boolean isLocal,
+            String fullName,
+            String companyName,
+            String streetAddress,
+            String region,
+            String locality,
+            String dependentLocality,
+            String postalCode,
+            String sortingCode,
+            String countryCode,
+            String countryName,
+            String phoneNumber,
+            String emailAddress,
             String languageCode) {
         mGUID = guid;
         mIsLocal = isLocal;
-        mHonorificPrefix = honorificPrefix;
         mFullName = fullName;
         mCompanyName = companyName;
         mStreetAddress = streetAddress;
@@ -58,11 +65,6 @@ public class FastCheckoutAutofillProfile {
 
     public boolean getIsLocal() {
         return mIsLocal;
-    }
-
-    @CalledByNative
-    public String getHonorificPrefix() {
-        return mHonorificPrefix;
     }
 
     @CalledByNative

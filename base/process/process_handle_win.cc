@@ -5,13 +5,10 @@
 #include "base/process/process_handle.h"
 
 #include <windows.h>
-
-#include <tlhelp32.h>
-
+#include <winternl.h>
 #include <ostream>
 
-#include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
+#include "base/check.h"
 
 namespace base {
 
@@ -34,22 +31,36 @@ ProcessId GetProcId(ProcessHandle process) {
   return result;
 }
 
-ProcessId GetParentProcessId(ProcessHandle process) {
-  ProcessId child_pid = GetProcId(process);
-  PROCESSENTRY32 process_entry;
-      process_entry.dwSize = sizeof(PROCESSENTRY32);
+// Local definition to include InheritedFromUniqueProcessId which contains a
+// unique identifier for the parent process. See documentation at:
+// https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntqueryinformationprocess
+typedef struct _PROCESS_BASIC_INFORMATION {
+  PVOID Reserved1;
+  PPEB PebBaseAddress;
+  PVOID Reserved2[2];
+  ULONG_PTR UniqueProcessId;
+  ULONG_PTR InheritedFromUniqueProcessId;
+} PROCESS_BASIC_INFORMATION;
 
-  win::ScopedHandle snapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
-  if (snapshot.is_valid() && Process32First(snapshot.get(), &process_entry)) {
-    do {
-      if (process_entry.th32ProcessID == child_pid)
-        return process_entry.th32ParentProcessID;
-    } while (Process32Next(snapshot.get(), &process_entry));
+ProcessId GetParentProcessId(ProcessHandle process) {
+  HINSTANCE ntdll = GetModuleHandle(L"ntdll.dll");
+  decltype(NtQueryInformationProcess)* nt_query_information_process =
+      reinterpret_cast<decltype(NtQueryInformationProcess)*>(
+          GetProcAddress(ntdll, "NtQueryInformationProcess"));
+  if (!nt_query_information_process) {
+    return 0u;
   }
 
+  PROCESS_BASIC_INFORMATION pbi = {};
   // TODO(zijiehe): To match other platforms, -1 (UINT32_MAX) should be returned
-  // if |child_id| cannot be found in the |snapshot|.
-  return 0u;
+  // if the parent process id cannot be found.
+  ProcessId pid = 0u;
+  if (NT_SUCCESS(nt_query_information_process(process, ProcessBasicInformation,
+                                              &pbi, sizeof(pbi), nullptr))) {
+    pid = static_cast<ProcessId>(pbi.InheritedFromUniqueProcessId);
+  }
+
+  return pid;
 }
 
 }  // namespace base

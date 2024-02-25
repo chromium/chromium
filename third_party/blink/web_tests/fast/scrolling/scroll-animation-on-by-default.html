@@ -4,7 +4,9 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/gesture-util.js"></script>
 <script src="../../resources/scrollbar-util.js"></script>
-<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 <body style="height: 1000px; width: 1000px">
 <script>
 window.onload = () => {
@@ -16,63 +18,40 @@ window.onload = () => {
   var end_offset = 0;
   var animated_scroll = false;
 
-  // Watches for scroll offset values between the bounds (start_offset, end_offset).
-  window.onscroll = function() {
-    if(!animated_scroll)
-      animated_scroll = window.scrollY > start_offset && window.scrollY < end_offset;
-  }
-
-  function initBounds(start, end) {
-    start_offset = start;
-    end_offset = end;
-    animated_scroll = false;
+  async function resetTest() {
+    await waitForCompositorCommit();
+    await waitForScrollReset(document.scrollingElement);
+    assert_equals(window.scrollY, 0, "Scroller is expected to be at 0 offset.");
   }
 
   promise_test (async () => {
-    resetScrollOffset(document.scrollingElement);
-    await waitForCompositorCommit();
+    await resetTest();
+
+    if (!TRACK_WIDTH) {
+      // Can't click on a track that is not visible.
+      return;
+    }
 
     // Click on the track part just above the down arrow.
     const x = window.innerWidth - BUTTON_WIDTH / 2;
     const y = window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH - 2;
 
-    // Start at 0, perform a click and check that scrollY animates at least once.
-    // Also, note that this test is relevant only when running in threaded mode
-    // (--enable-threaded-compositing).
-    assert_equals(window.scrollY, 0, "Scroller is expected to be at 0 offset.");
-    initBounds(0, 431);
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
-    assert_equals(window.scrollY, 431, "Unexpected scroll offset for scrollbar track.");
-    assert_true(animated_scroll, "Scrollbar scroll did not animate.");
+    return Promise.all([
+      animatedScrollPromise(document),
+      clickAndWaitForScroll(x, y)
+    ]);
   }, "Test mouse click on scrollbar is animated.");
 
   promise_test (async () => {
-    // Mac doesn't support mousewheel animations yet crbug.com/574283.
-    if(navigator.userAgent.includes("Mac OS X"))
-      return;
-
-    resetScrollOffset(document.scrollingElement);
-    await waitForCompositorCommit();
-
-    const scrollAmountY = 72;
-    const expectedScrollY = isPercentBasedScrollingEnabled() ?
-          calculateExpectedScroll(document.scrollingElement, 0, scrollAmountY).y
-        : scrollAmountY;
-
-    // Start at 0, perform a mousewheel tick and check that scrollY animates at
-    // least once. This test is relevant only when running in threaded mode
-    // (--enable-threaded-compositing).
-    assert_equals(window.scrollY, 0, "Scroller is expected to be at 0 offset.");
-    initBounds(0, expectedScrollY);
-    await smoothScrollWithXY(0, scrollAmountY, window.innerWidth / 2, window.innerHeight / 2,
-                             GestureSourceType.MOUSE_INPUT,
-                             SPEED_INSTANT, false /* precise_scrolling_deltas */,
-                             false /* scroll_by_page */, true /* cursor_visible */,
-                             false /* scroll_by_percentage */);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
-    assert_approx_equals(window.scrollY, expectedScrollY, 0.0001, "Unexpected scroll offset for mousewheel tick.");
-    assert_true(animated_scroll, "Mousewheel tick did not animate.");
+    await resetTest();
+    const x = window.innerWidth / 2;
+    const y = window.innerHeight / 2;
+    const deltaX = 0;
+    const deltaY = 1000;
+    return Promise.all([
+      animatedScrollPromise(document),
+      wheelScroll(x, y, deltaX, deltaY)
+    ]);
   }, "Test mouse wheel tick is animated.");
 }
 </script>

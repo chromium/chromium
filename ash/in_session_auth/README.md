@@ -13,4 +13,4 @@ apps.
 
 This dialog is controlled by ash::AuthDialogController. When the user provides
 a credential, the controller talks to cryptohome via
-chromeos::ExtendedAuthenticator for authentication.
+ash::AuthPerformer for authentication.

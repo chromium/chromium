@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -35,6 +35,12 @@ id<GREYMatcher> VisibleReadingListItem(NSString* entryTitle) {
                     grey_sufficientlyVisible(), nil);
 }
 
+id<GREYMatcher> VisibleLocalItemIcon(NSString* title) {
+  return grey_allOf(grey_ancestor(ReadingListItem(title)),
+                    grey_accessibilityID(kTableViewURLCellMetadataImageID),
+                    grey_sufficientlyVisible(), nil);
+}
+
 // Opens the reading list menu.
 void OpenReadingList() {
   [ChromeEarlGreyUI openToolsMenu];
@@ -52,20 +58,6 @@ void AddURLToReadingList(const GURL& URL) {
   [ChromeEarlGrey waitForPageToFinishLoading];
   // Add the page to the Reading List.
   [ChromeEarlGreyUI openToolsMenu];
-
-  // TODO(crbug.com/1473383): Remove workaround when tapping works properly.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    if (@available(iOS 17.0, *)) {
-      // The button is manually tappable which is why tests that use this method
-      // are not disabled. Instead, we implement this workaround for the tools
-      // menu action item not being tappable on iPhone after being tapped in a
-      // separate instance during EG tests.
-      [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                              kPopupMenuToolsMenuActionListId)]
-          performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-    }
-  }
-
   [ChromeEarlGreyUI
       tapToolsMenuAction:chrome_test_util::ButtonWithAccessibilityLabelId(
                              IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];

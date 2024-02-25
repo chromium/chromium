@@ -1022,11 +1022,6 @@ void ExpectHistogramsAreRecordedForTestFrameSet(
                           time_recorded ? num_subresource_checks : 0);
   tester.ExpectTotalCount(SubresourceFilterBrowserTest::kEvaluationCPUDuration,
                           time_recorded ? num_subresource_checks : 0);
-
-  tester.ExpectUniqueSample(
-      SubresourceFilterBrowserTest::kDocumentLoadActivationLevel,
-      static_cast<base::Histogram::Sample>(mojom::ActivationLevel::kEnabled),
-      6);
 }
 
 }  // namespace
@@ -1095,10 +1090,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTestWithoutAdTagging,
   tester.ExpectTotalCount(kEvaluationCPUDuration, 0);
 
   // Although SubresourceFilterAgents still record the activation decision.
-  tester.ExpectUniqueSample(
-      kDocumentLoadActivationLevel,
-      static_cast<base::Histogram::Sample>(mojom::ActivationLevel::kDisabled),
-      6);
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,

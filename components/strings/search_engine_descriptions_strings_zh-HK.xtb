@@ -1,0 +1,10 @@
+
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
+<translationbundle lang="zh-HK">
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">透過全球最使用率最高的搜尋引擎尋找所需資料。</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">快速简便的搜索引擎</translation>
+</translationbundle>

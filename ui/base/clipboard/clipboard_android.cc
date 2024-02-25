@@ -52,13 +52,14 @@
 // These "other formats" only work within the same process, and can't be copied
 // between Android applications.
 
-using base::android::AttachCurrentThread;
-using base::android::ClearException;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaByteArrayToByteVector;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
+using jni_zero::AttachCurrentThread;
+using jni_zero::ClearException;
 
 namespace ui {
 
@@ -303,7 +304,8 @@ void ClipboardMap::OnPrimaryClipboardChanged() {
 }
 
 void ClipboardMap::OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms) {
-  base::Time timestamp = base::Time::FromJavaTime(timestamp_ms);
+  base::Time timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(timestamp_ms);
   if (GetLastModifiedTime() < timestamp) {
     sequence_number_ = ClipboardSequenceNumberToken();
     UpdateLastModifiedTime(timestamp);
@@ -442,7 +444,7 @@ void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
 }
 
 int64_t ClipboardAndroid::GetLastModifiedTimeToJavaTime(JNIEnv* env) {
-  return GetLastModifiedTime().ToJavaTime();
+  return GetLastModifiedTime().InMillisecondsSinceUnixEpoch();
 }
 
 void ClipboardAndroid::SetModifiedCallback(ModifiedCallback cb) {
@@ -466,11 +468,11 @@ ClipboardAndroid::~ClipboardAndroid() {
 void ClipboardAndroid::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-DataTransferEndpoint* ClipboardAndroid::GetSource(
+std::optional<DataTransferEndpoint> ClipboardAndroid::GetSource(
     ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return nullptr;
+  return std::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardAndroid::GetSequenceNumber(
@@ -684,15 +686,10 @@ void ClipboardAndroid::WriteText(base::StringPiece text) {
   g_map.Get().Set(ClipboardFormatType::PlainTextType(), text);
 }
 
-void ClipboardAndroid::WriteHTML(base::StringPiece markup,
-                                 absl::optional<base::StringPiece> source_url) {
-  g_map.Get().Set(ClipboardFormatType::HtmlType(), markup);
-}
-
-void ClipboardAndroid::WriteUnsanitizedHTML(
+void ClipboardAndroid::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> source_url) {
-  WriteHTML(markup, source_url);
+    std::optional<base::StringPiece> /* source_url */) {
+  g_map.Get().Set(ClipboardFormatType::HtmlType(), markup);
 }
 
 void ClipboardAndroid::WriteSvg(base::StringPiece markup) {

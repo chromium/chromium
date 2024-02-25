@@ -9,9 +9,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
-#include "base/strings/string_piece.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 
 U_NAMESPACE_BEGIN
@@ -31,7 +31,7 @@ namespace internal {
 class BASE_I18N_EXPORT MessageArg {
  public:
   MessageArg(const char* s);
-  MessageArg(StringPiece s);
+  MessageArg(std::string_view s);
   MessageArg(const std::string& s);
   MessageArg(const std::u16string& s);
   MessageArg(int i);
@@ -96,24 +96,24 @@ class BASE_I18N_EXPORT MessageFormatter {
   MessageFormatter& operator=(const MessageFormatter&) = delete;
 
   static std::u16string FormatWithNamedArgs(
-      StringPiece16 msg,
-      StringPiece name0 = StringPiece(),
+      std::u16string_view msg,
+      std::string_view name0 = std::string_view(),
       const internal::MessageArg& arg0 = internal::MessageArg(),
-      StringPiece name1 = StringPiece(),
+      std::string_view name1 = std::string_view(),
       const internal::MessageArg& arg1 = internal::MessageArg(),
-      StringPiece name2 = StringPiece(),
+      std::string_view name2 = std::string_view(),
       const internal::MessageArg& arg2 = internal::MessageArg(),
-      StringPiece name3 = StringPiece(),
+      std::string_view name3 = std::string_view(),
       const internal::MessageArg& arg3 = internal::MessageArg(),
-      StringPiece name4 = StringPiece(),
+      std::string_view name4 = std::string_view(),
       const internal::MessageArg& arg4 = internal::MessageArg(),
-      StringPiece name5 = StringPiece(),
+      std::string_view name5 = std::string_view(),
       const internal::MessageArg& arg5 = internal::MessageArg(),
-      StringPiece name6 = StringPiece(),
+      std::string_view name6 = std::string_view(),
       const internal::MessageArg& arg6 = internal::MessageArg());
 
   static std::u16string FormatWithNumberedArgs(
-      StringPiece16 msg,
+      std::u16string_view msg,
       const internal::MessageArg& arg0 = internal::MessageArg(),
       const internal::MessageArg& arg1 = internal::MessageArg(),
       const internal::MessageArg& arg2 = internal::MessageArg(),

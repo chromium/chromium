@@ -99,6 +99,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="1559739829547075274">Navigo mbrapsht</translation>
 <translation id="1565432156062359693">Nuk ka asnjë listë tjetër</translation>
 <translation id="1571643229714746283">ChromeVox është gati</translation>
+<translation id="1588252353131492116">Kalimi nuk ofrohet kur modaliteti "i ngjitur" është aktiv</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">Kalo në Braille me 6 pika</translation>
 <translation id="161042844686301425">E bruztë</translation>
@@ -194,6 +195,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2318372665160196757">Kryesor</translation>
 <translation id="2329324941084714723">Paneli i skedave</translation>
 <translation id="2347456970887948350">Një lidhje</translation>
+<translation id="2363753371702255035">pikë liste</translation>
 <translation id="2365384324219615024">Mund të shtypësh gjithashtu Enter për të aktivizuar artikujt. Për shembull, Enter mund të përdoret për të dërguar tekstin në një formular. Për të vazhduar, shtyp Enter.</translation>
 <translation id="2381733276052567791">Aktivizo/çaktivizo të folurën</translation>
 <translation id="2390264819538553347">Për të shkuar përpara, shtyp tastin "Enter", për t'u kthyer pas shtyp tastin "Backspace"</translation>
@@ -460,7 +462,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4035381225449278841">Pranverë</translation>
 <translation id="4038098586530338813">ribëj</translation>
 <translation id="4047216625641135770">Shenjë</translation>
-<translation id="4047910800766704982">Mund të përdorësh një zë natyral, të ngjashëm me të njeriut, kur pajisja jote është në linjë. Teksti do të dërgohet te Google për përpunim. Këtë mund ta çaktivizosh në çdo kohë te "Cilësimet".</translation>
+<translation id="4047910800766704982">Mund të përdorësh një zë natyral, të ngjashëm me të njeriut, kur pajisja jote është online. Teksti do të dërgohet te Google për përpunim. Këtë mund ta çaktivizosh në çdo kohë te "Cilësimet".</translation>
 <translation id="4053520724192563562">E gjelbër limoni</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Një ngarkim faqeje në vazhdim</translation>

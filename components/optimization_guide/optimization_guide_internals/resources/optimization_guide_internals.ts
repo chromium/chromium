@@ -4,11 +4,12 @@
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util.js';
+import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {DownloadedModelInfo, PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
+import type {DownloadedModelInfo, LoggedClientIds} from './optimization_guide_internals.mojom-webui.js';
+import {PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
 import {OptimizationGuideInternalsBrowserProxy} from './optimization_guide_internals_browser_proxy.js';
 
 // Contains all the log events received when the internals page is open.
@@ -91,6 +92,9 @@ function getLogSource(logSource: number) {
   if (logSource == 5) {
     return 'TEXT_CLASSIFIER';
   }
+  if (logSource == 6) {
+    return 'MODEL_EXECUTION';
+  }
   return logSource.toString();
 }
 
@@ -126,9 +130,10 @@ async function onModelsPageOpen() {
       const versionStr = version.toString();
       const existingModel = $<HTMLTableRowElement>(optimizationTarget);
       if (existingModel) {
-        existingModel.querySelector('.downloaded-models-version')!.innerHTML =
+        existingModel.querySelector('.downloaded-models-version')!.textContent =
             versionStr;
-        existingModel.querySelector('.downloaded-models-file-path')!.innerHTML =
+        existingModel.querySelector(
+                         '.downloaded-models-file-path')!.textContent =
             filePath;
       } else {
         const downloadedModel = downloadedModelsContainer.insertRow();
@@ -143,6 +148,25 @@ async function onModelsPageOpen() {
   } catch (err) {
     throw new Error(
         `Error resolving promise from requestDownloadedModelsInfo, ${err}`);
+  }
+}
+
+async function onClientIDsPageOpen() {
+  const loggedClientIdsContainer =
+      getRequiredElement<HTMLTableElement>('logged-client-ids-container');
+  try {
+    const response: {loggedClientIds: LoggedClientIds[]} =
+        await PageHandlerFactory.getRemote()
+            .requestLoggedModelQualityClientIds();
+    const loggedClientIds = response.loggedClientIds;
+    for (const {clientId} of loggedClientIds) {
+      const clientIdStr = clientId.toString();
+      const loggedClients = loggedClientIdsContainer.insertRow();
+      appendTD(loggedClients, clientIdStr, 'logged-client-ids');
+    }
+  } catch (err) {
+    throw new Error(
+        `Error resolving promise from requestLoggedClientIds, ${err}`);
   }
 }
 
@@ -229,6 +253,8 @@ function initialize() {
 
     if (hash === 'models') {
       onModelsPageOpen();
+    } else if (hash === 'client-ids') {
+      onClientIDsPageOpen();
     }
   };
 

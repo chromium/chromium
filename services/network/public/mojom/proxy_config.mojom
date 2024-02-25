@@ -5,15 +5,16 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/big_string.mojom";
+import "services/network/public/mojom/network_param.mojom";
+
 // This corresponds to the string representation of net::ProxyConfigBypassRules.
 struct ProxyBypassRules {
   array<string> rules;
 };
 
-// A list of proxies, each in the format of a single semi-colon delimited entry
-// in the output of a PAC script (e.g., "PROXY foo.com", "DIRECT").
+// A list of proxy chains.
 struct ProxyList {
-  array<string> proxies;
+  array<network.mojom.ProxyChain> proxies;
 };
 
 // This corresponds to net::ProxyConfig::ProxyRules::Type.
@@ -27,7 +28,6 @@ enum ProxyRulesType {
 struct ProxyRules {
   ProxyBypassRules bypass_rules;
   bool reverse_bypass;
-  bool restrict_to_network_service_proxy_allow_list;
   ProxyRulesType type;
   ProxyList single_proxies;
   ProxyList proxies_for_http;
@@ -48,4 +48,18 @@ struct ProxyConfig {
   mojo_base.mojom.BigString pac_url;
   bool pac_mandatory;
   ProxyRules proxy_rules;
+};
+
+// The policy used for bypassing requests that are eligible for IP Protection.
+// Even if a domain is part of the masked domain list, the bypass policy can
+// be used to bypass certain network requests from IP Protection.
+enum IpProtectionProxyBypassPolicy {
+  // No bypass policy.
+  kNone = 0,
+  // Request to domains that are first party to the top level frame are
+  // bypassed.
+  kFirstPartyToTopLevelFrame = 1,
+  // Request to domains that are on a given exclusion list are bypassed. This
+  // exclusion list is set through NetworkService::UpdateMaskedDomainList.
+  kExclusionList = 2,
 };

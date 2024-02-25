@@ -5,10 +5,10 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_handler.h"
 
 #include <set>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
@@ -65,7 +65,7 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  std::set<base::StringPiece> ruleset_ids;
+  std::set<std::string_view> ruleset_ids;
 
   // Validates the ruleset at the given |index|. On success, returns true and
   // populates |info|. On failure, returns false and populates |error|.
@@ -111,6 +111,9 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
 
   int enabled_ruleset_count = 0;
 
+  std::set<base::FilePath> unique_paths;
+  bool unique_paths_warning = false;
+
   // Note: the static_cast<int> below is safe because we did already verify that
   // |rulesets.size()| <= dnr_api::MAX_NUMBER_OF_STATIC_RULESETS, which is an
   // integer.
@@ -121,6 +124,20 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
 
     if (info.enabled)
       enabled_ruleset_count++;
+
+    // The DNR system can support assigning different IDs to a ruleset, but this
+    // is likely a developers' mistake since two declarations of the same rule
+    // consume twice the amount of resources.
+    if (!unique_paths_warning) {
+      if (unique_paths.contains(info.relative_path)) {
+        unique_paths_warning = true;
+        extension->AddInstallWarning(
+            InstallWarning(errors::kDeclarativeNetRequestPathDuplicates,
+                           dnr_api::ManifestKeys::kDeclarativeNetRequest));
+      } else {
+        unique_paths.insert(info.relative_path);
+      }
+    }
 
     rulesets_info.push_back(std::move(info));
   }

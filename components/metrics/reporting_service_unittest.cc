@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/metrics/log_store.h"
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,14 +28,17 @@ namespace {
 
 // Represent a flushed log and its metadata to be used for testing.
 struct TestLog {
-  explicit TestLog(const std::string& log) : log(log), user_id(absl::nullopt) {}
+  explicit TestLog(const std::string& log) : log(log), user_id(std::nullopt) {}
   TestLog(const std::string& log, uint64_t user_id)
       : log(log), user_id(user_id) {}
+  TestLog(const std::string& log, uint64_t user_id, LogMetadata log_metadata)
+      : log(log), user_id(user_id), log_metadata(log_metadata) {}
   TestLog(const TestLog& other) = default;
   ~TestLog() = default;
 
   const std::string log;
-  const absl::optional<uint64_t> user_id;
+  const std::optional<uint64_t> user_id;
+  const LogMetadata log_metadata;
 };
 
 const char kTestUploadUrl[] = "test_url";
@@ -54,8 +58,11 @@ class TestLogStore : public LogStore {
   const std::string& staged_log_hash() const override {
     return staged_log_hash_;
   }
-  absl::optional<uint64_t> staged_log_user_id() const override {
+  std::optional<uint64_t> staged_log_user_id() const override {
     return logs_.front().user_id;
+  }
+  const LogMetadata staged_log_metadata() const override {
+    return logs_.front().log_metadata;
   }
   const std::string& staged_log_signature() const override {
     return base::EmptyString();

@@ -1,8 +1,9 @@
-var globalVar = 0;
-
 class EmptyOperation {
   async run(data) {}
 }
+
+/* dummy text */console.log(`loaded module, test token: ${typeof(testToken) === 'undefined' ? '<undefined>' : testToken}`);
+var globalVar = 0;
 
 class SetGlobalVarAndPauseOnDebuggerOperation {
   async run(data) {

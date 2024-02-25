@@ -4,6 +4,7 @@
 
 #include "ash/webui/file_manager/file_manager_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/file_manager/file_manager_page_handler.h"
@@ -12,6 +13,7 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -22,8 +24,8 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/file_manager/grit/file_manager_gen_resources.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
-#include "ui/file_manager/grit/file_manager_resources.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
@@ -37,17 +39,15 @@ bool IsKioskSession() {
       session_controller->GetUserSessionByAccountId(account_id)->user_info.type;
 
   switch (user_type) {
-    case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_GUEST:
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
       return false;
-    case user_manager::USER_TYPE_KIOSK_APP:
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
       return true;
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -61,8 +61,12 @@ FileManagerUIConfig::FileManagerUIConfig(
 
 bool FileManagerUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
+  // Enable file manager WebUI if enable for SWA config or
+  // for the Kiosk session if SWAs are disabled there.
   return SystemWebAppUIConfig::IsWebUIEnabled(browser_context) ||
-         IsKioskSession();
+         (!base::FeatureList::IsEnabled(
+              ash::features::kKioskEnableSystemWebApps) &&
+          IsKioskSession());
 }
 
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
@@ -85,6 +89,8 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
   CreateAndAddTrustedAppDataSource(web_ui, window_counter_);
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+  // Add a handler to provide pluralized strings.
+  web_ui->AddMessageHandler(delegate_->GetPluralStringHandler());
 }
 
 void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
@@ -93,8 +99,7 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIFileManagerHost);
 
   // Setup chrome://file-manager main and default page.
-  source->AddResourcePath("", IDR_FILE_MANAGER_SWA_MAIN_HTML);
-
+  source->AddResourcePath("", IDR_FILE_MANAGER_MAIN_HTML);
   // Add chrome://file-manager content.
   source->AddResourcePaths(
       base::make_span(kFileManagerSwaResources, kFileManagerSwaResourcesSize));

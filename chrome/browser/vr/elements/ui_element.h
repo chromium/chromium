@@ -35,9 +35,12 @@ namespace base {
 class TimeTicks;
 }
 
+namespace gfx {
+class KeyframeModel;
+}  // namespace gfx
+
 namespace vr {
 
-class KeyframeModel;
 class SkiaSurfaceProvider;
 class UiElementRenderer;
 struct CameraModel;

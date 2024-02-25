@@ -23,7 +23,6 @@ template("bundle_js") {
       out_folder = invoker.out_folder
     }
 
-    inputs = [ "//ui/webui/resources/tools/rollup_plugin.mjs" ]
     outputs = []
     input_count = 0
     foreach(f, invoker.js_module_in_files) {
@@ -43,10 +42,7 @@ template("bundle_js") {
       }
     }
 
-    outputs += [
-      "$out_folder/rollup.config.mjs",
-      "$out_folder/${target_name}_requestlist.txt",
-    ]
+    outputs += [ "$out_folder/${target_name}_requestlist.txt" ]
 
     # Note that we have to manually pass the sources to our script if the
     # script needs them as inputs.
@@ -63,8 +59,28 @@ template("bundle_js") {
       target_name,
     ]
 
+    inputs = []
+    if (defined(invoker.rollup_config)) {
+      inputs += [ invoker.rollup_config ]
+      args += [
+        "--rollup_config",
+        rebase_path(invoker.rollup_config, root_build_dir),
+      ]
+    } else {
+      inputs += [ "//ui/webui/resources/tools/rollup_plugin.mjs" ]
+      outputs += [ "$out_folder/rollup.config.mjs" ]
+    }
+
     if (defined(invoker.excludes)) {
       args += [ "--exclude" ] + invoker.excludes
+    }
+
+    external_paths = []
+
+    # Add invoker.external_paths before the default external_paths so that they
+    # are considered first.
+    if (defined(invoker.external_paths)) {
+      external_paths += invoker.external_paths
     }
 
     # Specify default external_paths. The order here matters in multiple ways.
@@ -84,7 +100,6 @@ template("bundle_js") {
     is_chrome_untrusted =
         string_replace(invoker.host, "chrome-untrusted://", "") != invoker.host
 
-    external_paths = []
     if (is_chromeos_ash) {
       ash_resources_path =
           rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/",
@@ -101,14 +116,18 @@ template("bundle_js") {
     }
     external_paths += [ "//resources/polymer/v3_0/|$polymer_path" ]
 
+    lit_path = rebase_path("${root_gen_dir}/third_party/lit/v3_0/minified/",
+                           root_build_dir)
+    if (!is_chrome_untrusted) {
+      external_paths += [ "chrome://resources/lit/v3_0/|$lit_path" ]
+    }
+    external_paths += [ "//resources/lit/v3_0/|$lit_path" ]
+
     if (!is_chrome_untrusted) {
       external_paths += [ "chrome://resources/|$resources_path" ]
     }
     external_paths += [ "//resources/|$resources_path" ]
 
-    if (defined(invoker.external_paths)) {
-      external_paths += invoker.external_paths
-    }
     args += [ "--external_paths" ] + external_paths
 
     args += [ "--js_module_in_files" ] + invoker.js_module_in_files

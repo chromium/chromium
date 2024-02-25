@@ -13,7 +13,7 @@ include_rules = [
   "+content/browser/download/drag_download_file.h",
   "+content/browser/download/drag_download_util.h",
   "+content/browser/renderer_host/input/mouse_wheel_rails_filter_mac.h",
-  "+content/browser/renderer_host/input/web_input_event_builders_mac.h",
+  "+content/common/input/web_input_event_builders_mac.h",
   "+content/browser/renderer_host/render_widget_host_view_mac.h",
   "+content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h",
   "+content/browser/web_contents/web_contents_impl.h",

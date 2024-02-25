@@ -1,1 +1,0 @@
-XPathResult_iterateNext_INVALID_STATE_ERR: Success

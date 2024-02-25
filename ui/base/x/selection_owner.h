@@ -15,10 +15,11 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/x/selection_utils.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
 namespace x11 {
-class XScopedEventSelector;
+class ScopedEventSelector;
 }
 
 namespace ui {
@@ -34,7 +35,7 @@ COMPONENT_EXPORT(UI_BASE_X) extern const char kTargets[];
 // processes.
 class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
  public:
-  SelectionOwner(x11::Connection* connection,
+  SelectionOwner(x11::Connection& connection,
                  x11::Window xwindow,
                  x11::Atom selection_name);
 
@@ -70,14 +71,13 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
  private:
   // Holds state related to an incremental data transfer.
   struct IncrementalTransfer {
-    IncrementalTransfer(
-        x11::Window window,
-        x11::Atom target,
-        x11::Atom property,
-        std::unique_ptr<x11::XScopedEventSelector> event_selector,
-        const scoped_refptr<base::RefCountedMemory>& data,
-        int offset,
-        base::TimeTicks timeout);
+    IncrementalTransfer(x11::Window window,
+                        x11::Atom target,
+                        x11::Atom property,
+                        x11::ScopedEventSelector event_selector,
+                        const scoped_refptr<base::RefCountedMemory>& data,
+                        int offset,
+                        base::TimeTicks timeout);
 
     IncrementalTransfer(const IncrementalTransfer&) = delete;
     IncrementalTransfer& operator=(const IncrementalTransfer&) = delete;
@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
     x11::Atom property;
 
     // Selects events on |window|.
-    std::unique_ptr<x11::XScopedEventSelector> event_selector;
+    x11::ScopedEventSelector event_selector;
 
     // The data to be transferred.
     scoped_refptr<base::RefCountedMemory> data;
@@ -130,6 +130,8 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
   // |event|.
   std::vector<IncrementalTransfer>::iterator FindIncrementalTransferForEvent(
       const x11::PropertyNotifyEvent& event);
+
+  raw_ref<x11::Connection> connection_;
 
   // Our X11 state.
   x11::Window x_window_;

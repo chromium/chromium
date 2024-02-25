@@ -13,20 +13,12 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/secure_payment_confirmation_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace payments {
-
-// static
-bool PaymentCredential::IsFrameAllowedToUseSecurePaymentConfirmation(
-    content::RenderFrameHost* rfh) {
-  return rfh && rfh->IsActive() &&
-         rfh->IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kPayment) &&
-         base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation);
-}
 
 PaymentCredential::PaymentCredential(
     content::RenderFrameHost& render_frame_host,
@@ -92,7 +84,8 @@ void PaymentCredential::OnWebDataServiceRequestDone(
 }
 
 bool PaymentCredential::IsCurrentStateValid() const {
-  if (!IsFrameAllowedToUseSecurePaymentConfirmation(&render_frame_host()) ||
+  if (!content::IsFrameAllowedToUseSecurePaymentConfirmation(
+          &render_frame_host()) ||
       !web_data_service_) {
     return false;
   }

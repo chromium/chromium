@@ -88,8 +88,8 @@ class CONTENT_EXPORT BrowsingContextState
   BrowsingContextState(
       blink::mojom::FrameReplicationStatePtr replication_state,
       RenderFrameHostImpl* parent,
-      absl::optional<BrowsingInstanceId> browsing_instance_id,
-      absl::optional<base::UnguessableToken> coop_related_group_token);
+      std::optional<BrowsingInstanceId> browsing_instance_id,
+      std::optional<base::UnguessableToken> coop_related_group_token);
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
@@ -307,8 +307,8 @@ class CONTENT_EXPORT BrowsingContextState
   // therefore doesn't have a dedicated associated BrowsingInstance or
   // CoopRelatedGroup. TODO(crbug.com/1270671): Make `browsing_instance_id` and
   // `coop_related_group_token` non-optional when the legacy path is removed.
-  const absl::optional<BrowsingInstanceId> browsing_instance_id_;
-  const absl::optional<base::UnguessableToken> coop_related_group_token_;
+  const std::optional<BrowsingInstanceId> browsing_instance_id_;
+  const std::optional<base::UnguessableToken> coop_related_group_token_;
 
   base::WeakPtrFactory<BrowsingContextState> weak_factory_{this};
 };

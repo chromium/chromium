@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service.h"
 
+#include <inttypes.h>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/browser/media/router/test/mock_dns_sd_registry.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
@@ -28,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using cast_channel::CastDeviceCapability;
+using cast_channel::CastDeviceCapabilitySet;
 using ::testing::_;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
@@ -43,7 +46,9 @@ net::IPEndPoint CreateIPEndPoint(int num) {
   return net::IPEndPoint(ip_address, 8009 + num);
 }
 
-media_router::DnsSdService CreateDnsService(int num, int capabilities) {
+media_router::DnsSdService CreateDnsService(
+    int num,
+    CastDeviceCapabilitySet capabilities) {
   net::IPEndPoint ip_endpoint = CreateIPEndPoint(num);
   media_router::DnsSdService service;
   service.service_name =
@@ -54,7 +59,8 @@ media_router::DnsSdService CreateDnsService(int num, int capabilities) {
   service.service_data.push_back(
       base::StringPrintf("fn=friendly name %d", num));
   service.service_data.push_back(base::StringPrintf("md=model name %d", num));
-  service.service_data.push_back(base::StringPrintf("ca=%d", capabilities));
+  service.service_data.push_back(
+      base::StringPrintf("ca=%" PRIu64, capabilities.ToEnumBitmask()));
 
   return service;
 }
@@ -120,10 +126,10 @@ TEST_F(CastMediaSinkServiceTest, DiscoverSinksNow) {
 
 TEST_F(CastMediaSinkServiceTest, TestOnDnsSdEvent) {
   DnsSdService service1 = CreateDnsService(
-      1, CastDeviceCapability::VIDEO_OUT | CastDeviceCapability::AUDIO_OUT);
+      1, {CastDeviceCapability::kVideoOut, CastDeviceCapability::kAudioOut});
   DnsSdService service2 =
-      CreateDnsService(2, CastDeviceCapability::MULTIZONE_GROUP);
-  DnsSdService service3 = CreateDnsService(3, CastDeviceCapability::NONE);
+      CreateDnsService(2, {CastDeviceCapability::kMultizoneGroup});
+  DnsSdService service3 = CreateDnsService(3, {});
 
   // Add dns services.
   DnsSdRegistry::DnsSdServiceList service_list{service1, service2, service3};

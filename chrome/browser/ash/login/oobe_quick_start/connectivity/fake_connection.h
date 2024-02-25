@@ -24,7 +24,7 @@ class FakeConnection : public Connection {
     // Connection::Factory:
     std::unique_ptr<Connection> Create(
         NearbyConnection* nearby_connection,
-        SessionContext session_context,
+        SessionContext* session_context,
         mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
         ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated) override;
@@ -34,7 +34,7 @@ class FakeConnection : public Connection {
 
   FakeConnection(
       NearbyConnection* nearby_connection,
-      SessionContext session_context,
+      SessionContext* session_context,
       mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
       ConnectionClosedCallback on_connection_closed,
       ConnectionAuthenticatedCallback on_connection_authenticated);
@@ -44,18 +44,19 @@ class FakeConnection : public Connection {
   // Connection:
   void InitiateHandshake(const std::string& authentication_token,
                          HandshakeSuccessCallback callback) override;
-  void RequestWifiCredentials(int32_t session_id,
-                              RequestWifiCredentialsCallback callback) override;
+  void RequestWifiCredentials(RequestWifiCredentialsCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
+  void RequestAccountInfo(RequestAccountInfoCallback callback) override;
   void RequestAccountTransferAssertion(
       const Base64UrlString& challenge,
       RequestAccountTransferAssertionCallback callback) override;
 
   bool WasHandshakeInitiated();
-  void SendWifiCredentials(absl::optional<mojom::WifiCredentials> credentials);
-  void VerifyUser(absl::optional<mojom::UserVerificationResponse> response);
+  void SendWifiCredentials(std::optional<mojom::WifiCredentials> credentials);
+  void VerifyUser(std::optional<mojom::UserVerificationResponse> response);
+  void SendAccountInfo(std::string email);
   void SendAccountTransferAssertionInfo(
-      absl::optional<FidoAssertionInfo> assertion_info);
+      std::optional<FidoAssertionInfo> assertion_info);
   void HandleHandshakeResult(bool success);
 
   void set_phone_instance_id(std::string phone_instance_id) {
@@ -70,6 +71,7 @@ class FakeConnection : public Connection {
   HandshakeSuccessCallback handshake_success_callback_;
   RequestWifiCredentialsCallback wifi_credentials_callback_;
   AwaitUserVerificationCallback await_user_verification_callback_;
+  RequestAccountInfoCallback request_account_info_callback_;
   RequestAccountTransferAssertionCallback
       request_account_transfer_assertion_callback_;
 

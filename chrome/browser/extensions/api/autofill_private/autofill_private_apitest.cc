@@ -8,11 +8,14 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -45,8 +48,22 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     content::RunAllPendingInMessageLoop();
+    // Rebinding the `autofill_client()` test PDM on the
+    // `AutofillPrivateEventRouter`. This sets the correct test PDM instance on
+    // the observers under the `AutofillPrivateEventRouter`.
+    AutofillPrivateEventRouterFactory::GetForProfile(browser_context())
+        ->RebindPersonalDataManagerForTesting(
+            autofill_client()->GetPersonalDataManager());
     autofill_client()->GetPersonalDataManager()->SetPrefService(
         autofill_client()->GetPrefs());
+  }
+
+  void TearDownOnMainThread() override {
+    // Unbinding the `autofill_client()` test PDM on the
+    // `AutofillPrivateEventRouter`. This removes the test PDM instance added to
+    // the observers in `SetUpOnMainThread()` for `AutofillPrivateEventRouter`.
+    AutofillPrivateEventRouterFactory::GetForProfile(browser_context())
+        ->UnbindPersonalDataManagerForTesting();
   }
 
  protected:
@@ -65,6 +82,13 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
+  content::BrowserContext* browser_context() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetBrowserContext();
+  }
+
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;
 };
@@ -91,6 +115,92 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddress) {
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddCreditCard_Cvc) {
+  base::UserActionTester user_action_tester;
+
+  EXPECT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillCreditCardsAdded"));
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("AutofillCreditCardsAddedWithCvc"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiTest,
+    AddCreditCard_Metrics_StoredCreditCardCountBeforeCardAdded) {
+  base::HistogramTester histogram_tester;
+
+  autofill::TestPersonalDataManager* personal_data_manager =
+      autofill_client()->GetPersonalDataManager();
+  // Required for adding the server card.
+  personal_data_manager->SetSyncingForTest(/*is_syncing_for_test=*/true);
+
+  // Set up the personal data manager with 2 existing cards.
+  personal_data_manager->AddCreditCard(autofill::test::GetCreditCard2());
+  personal_data_manager->AddServerCreditCard(
+      autofill::test::GetMaskedServerCard());
+  EXPECT_EQ(personal_data_manager->GetCreditCards().size(), 2u);
+
+  EXPECT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
+
+  // Expect the metric to add a record for the 2 existing cards.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethods.SettingsPage."
+      "StoredCreditCardCountBeforeCardAdded",
+      2, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddCreditCard_NoCvc) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addNewCreditCardWithoutCvc")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillCreditCardsAdded"));
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("AutofillCreditCardsAddedWithCvc"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_NoExistingCvc_NoNewCvcAdded) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_NoExistingCvc_NewCvcAdded) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard_AddCvc")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasAdded"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_ExistingCvc_Removed) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard_RemoveCvc"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasRemoved"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_ExistingCvc_Updated) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard_UpdateCvc"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUpdated"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_ExistingCvc_Unchanged) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard_UnchangedCvc"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUnchanged"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddNewIban_NoNickname) {
@@ -139,6 +249,23 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, removeExistingIban) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillIbanDeleted"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, removeExistingCard) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("removeExistingCard")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillCreditCardDeleted"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       removeExistingCard_WithCvcAndNickname) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("removeExistingCard_WithCvcAndNickname"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardDeletedAndHadCvc"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardDeletedAndHadNickname"));
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, isValidIban) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("isValidIban")) << message_;
@@ -172,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
-                       authenticateUserToEditLocalCard) {
+                       showEditCardDialogForLocalCard_ReauthOn) {
   base::UserActionTester user_action_tester;
 
   autofill_client()
@@ -193,13 +320,37 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                   mock_mandatory_reauth_manager),
               AuthenticateWithMessage)
       .Times(1);
-  EXPECT_TRUE(RunAutofillSubtest("authenticateUserToEditLocalCard"))
-      << message_;
+  EXPECT_TRUE(RunAutofillSubtest("getLocalCard")) << message_;
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       showEditCardDialogForLocalCard_ReauthOff) {
+  base::UserActionTester user_action_tester;
+
+  autofill_client()
+      ->GetPersonalDataManager()
+      ->SetPaymentMethodsMandatoryReauthEnabled(false);
+  auto* mock_mandatory_reauth_manager =
+      autofill_client()->GetOrCreatePaymentsMandatoryReauthManager();
+
+  EXPECT_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
+                  mock_mandatory_reauth_manager),
+              AuthenticateWithMessage)
+      .Times(0);
+  EXPECT_TRUE(RunAutofillSubtest("getLocalCard")) << message_;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, bulkDeleteAllCvcs) {
+  EXPECT_TRUE(RunAutofillSubtest("bulkDeleteAllCvcs")) << message_;
+}
 
 }  // namespace extensions

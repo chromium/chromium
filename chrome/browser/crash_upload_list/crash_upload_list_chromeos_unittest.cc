@@ -4,6 +4,7 @@
 
 #include "chrome/browser/crash_upload_list/crash_upload_list_chromeos.h"
 
+#include <optional>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 using FatalCrashType = CrashUploadListChromeOS::CrashUploadInfo::FatalCrashType;
@@ -24,7 +24,7 @@ using FatalCrashType = CrashUploadListChromeOS::CrashUploadInfo::FatalCrashType;
 // Input to the fatal_crash_type field and the expected parsed FatalCrashType. A
 // missing input implies that the fatal_crash_type field is missing.
 struct InputExpectedPair {
-  absl::optional<std::string> input;
+  std::optional<std::string> input;
   FatalCrashType expected;
 };
 
@@ -37,7 +37,7 @@ static const InputExpectedPair kEcPair = {
     .expected = FatalCrashType::EmbeddedController};
 
 static const InputExpectedPair kMissingPair = {
-    .input = absl::nullopt,
+    .input = std::nullopt,
     .expected = FatalCrashType::Unknown};
 
 // Unknown pair with a specified input.

@@ -13,18 +13,18 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/nearby/sharing/proto/certificate_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/contact_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace {
 
@@ -58,7 +58,7 @@ GURL CreateV1RequestUrl(const std::string& request_path) {
 
 ash::nearby::NearbyApiCallFlow::QueryParameters
 ListContactPeopleRequestToQueryParameters(
-    const nearbyshare::proto::ListContactPeopleRequest& request) {
+    const nearby::sharing::proto::ListContactPeopleRequest& request) {
   ash::nearby::NearbyApiCallFlow::QueryParameters query_parameters;
   if (request.page_size() > 0) {
     query_parameters.emplace_back(kPageSize,
@@ -72,7 +72,7 @@ ListContactPeopleRequestToQueryParameters(
 
 ash::nearby::NearbyApiCallFlow::QueryParameters
 ListPublicCertificatesRequestToQueryParameters(
-    const nearbyshare::proto::ListPublicCertificatesRequest& request) {
+    const nearby::sharing::proto::ListPublicCertificatesRequest& request) {
   ash::nearby::NearbyApiCallFlow::QueryParameters query_parameters;
   if (request.page_size() > 0) {
     query_parameters.emplace_back(kPageSize,
@@ -232,37 +232,36 @@ NearbyShareClientImpl::NearbyShareClientImpl(
 NearbyShareClientImpl::~NearbyShareClientImpl() = default;
 
 void NearbyShareClientImpl::UpdateDevice(
-    const nearbyshare::proto::UpdateDeviceRequest& request,
+    const nearby::sharing::proto::UpdateDeviceRequest& request,
     UpdateDeviceCallback&& callback,
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);
   MakeApiCall(CreateV1RequestUrl(request.device().name()), RequestType::kPatch,
               request.SerializeAsString(),
-              /*request_as_query_parameters=*/absl::nullopt,
-              std::move(callback), std::move(error_callback),
-              GetUpdateDeviceAnnotation());
+              /*request_as_query_parameters=*/std::nullopt, std::move(callback),
+              std::move(error_callback), GetUpdateDeviceAnnotation());
 }
 
 void NearbyShareClientImpl::ListContactPeople(
-    const nearbyshare::proto::ListContactPeopleRequest& request,
+    const nearby::sharing::proto::ListContactPeopleRequest& request,
     ListContactPeopleCallback&& callback,
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);
   MakeApiCall(CreateV1RequestUrl(kListContactPeoplePath), RequestType::kGet,
-              /*serialized_request=*/absl::nullopt,
+              /*serialized_request=*/std::nullopt,
               ListContactPeopleRequestToQueryParameters(request),
               std::move(callback), std::move(error_callback),
               GetContactsAnnotation());
 }
 
 void NearbyShareClientImpl::ListPublicCertificates(
-    const nearbyshare::proto::ListPublicCertificatesRequest& request,
+    const nearby::sharing::proto::ListPublicCertificatesRequest& request,
     ListPublicCertificatesCallback&& callback,
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);
   MakeApiCall(
       CreateV1RequestUrl(request.parent() + "/" + kListPublicCertificatesPath),
-      RequestType::kGet, /*serialized_request=*/absl::nullopt,
+      RequestType::kGet, /*serialized_request=*/std::nullopt,
       ListPublicCertificatesRequestToQueryParameters(request),
       std::move(callback), std::move(error_callback),
       GetListPublicCertificatesAnnotation());
@@ -276,8 +275,8 @@ template <class ResponseProto>
 void NearbyShareClientImpl::MakeApiCall(
     const GURL& request_url,
     RequestType request_type,
-    const absl::optional<std::string>& serialized_request,
-    const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
+    const std::optional<std::string>& serialized_request,
+    const std::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
         request_as_query_parameters,
     base::OnceCallback<void(const ResponseProto&)>&& response_callback,
     ErrorCallback&& error_callback,
@@ -310,8 +309,8 @@ void NearbyShareClientImpl::MakeApiCall(
 template <class ResponseProto>
 void NearbyShareClientImpl::OnAccessTokenFetched(
     RequestType request_type,
-    const absl::optional<std::string>& serialized_request,
-    const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
+    const std::optional<std::string>& serialized_request,
+    const std::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
         request_as_query_parameters,
     base::OnceCallback<void(const ResponseProto&)>&& response_callback,
     GoogleServiceAuthError error,
@@ -376,7 +375,8 @@ void NearbyShareClientImpl::OnFlowSuccess(
 
 void NearbyShareClientImpl::OnApiCallFailed(
     ash::nearby::NearbyHttpError error) {
-  NS_LOG(ERROR) << "Nearby Share RPC call failed with error " << error;
+  CD_LOG(ERROR, Feature::NS)
+      << "Nearby Share RPC call failed with error " << error;
   std::move(error_callback_).Run(error);
 }
 

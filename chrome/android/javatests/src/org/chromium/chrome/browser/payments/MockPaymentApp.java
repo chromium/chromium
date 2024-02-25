@@ -34,15 +34,18 @@ import java.util.Set;
     /**
      * Constructs a mock payment app for tests.
      *
-     * @param identifier           The identifier of the payment app. Must be unique.
-     * @param name                 The name of the mocked payment app.
-     * @param icon                 The icon that should be used for this mock payment app. Can be
-     *                             null.
+     * @param identifier The identifier of the payment app. Must be unique.
+     * @param name The name of the mocked payment app.
+     * @param icon The icon that should be used for this mock payment app. Can be null.
      * @param supportedMethodNames The supported payment methods of the mock payment app.
      * @param supportedDelegations The supported delegations of the mock payment app.
      */
-    /* package */ MockPaymentApp(String identifier, @Nullable String name, Drawable icon,
-            String[] supportedMethodNames, @Nullable SupportedDelegations supportedDelegations) {
+    /* package */ MockPaymentApp(
+            String identifier,
+            @Nullable String name,
+            Drawable icon,
+            String[] supportedMethodNames,
+            @Nullable SupportedDelegations supportedDelegations) {
         super(identifier, name == null ? "" : name, "test@bobpay.test", icon);
         mSupportedMethodNames = new HashSet<>(Arrays.asList(supportedMethodNames));
         mSupportedDelegations = supportedDelegations;
@@ -74,10 +77,17 @@ import java.util.Set;
     }
 
     @Override
-    public void invokePaymentApp(String id, String merchantName, String origin, String iframeOrigin,
-            @Nullable byte[][] certificateChain, Map<String, PaymentMethodData> methodDataMap,
-            PaymentItem total, List<PaymentItem> displayItems,
-            Map<String, PaymentDetailsModifier> modifiers, PaymentOptions paymentOptions,
+    public void invokePaymentApp(
+            String id,
+            String merchantName,
+            String origin,
+            String iframeOrigin,
+            @Nullable byte[][] certificateChain,
+            Map<String, PaymentMethodData> methodDataMap,
+            PaymentItem total,
+            List<PaymentItem> displayItems,
+            Map<String, PaymentDetailsModifier> modifiers,
+            PaymentOptions paymentOptions,
             List<PaymentShippingOption> shippingOptions,
             PaymentApp.InstrumentDetailsCallback callback) {
         PostTask.postTask(

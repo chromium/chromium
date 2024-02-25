@@ -63,7 +63,7 @@ class CopyOrMoveIOTask : public IOTask {
   void CompleteWithError(PolicyError policy_error) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   std::vector<storage::FileSystemURL> source_urls_;

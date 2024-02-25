@@ -27,14 +27,19 @@
     <div id="target"></div>
 </div>
 
+<script src="/web-animations/testcommon.js"></script>
 <script>
-    addEventListener("load", () => {
-        setTimeout(() => {
-            requestAnimationFrame(() => {
-                container.classList.add("green");
-                document.documentElement.classList.remove("reftest-wait");
-            });
-        }, 0);
+  addEventListener("load", async () => {
+    // crbug.com/1378671: Screenshot can be taken while compositor commits are
+    // still being deferred for first contentful paint (FCP). Wait for FCP
+    // before starting the test.
+    await waitForCompositorReady();
+    requestAnimationFrame(() => {
+      container.classList.add("green");
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove("reftest-wait");
+      });
     });
+  });
 </script>
 </html>

@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 
 #include <cmath>
+#include <memory>
 #include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -30,7 +32,6 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -134,8 +135,9 @@ bool EnsureCanUpdate(bool interactive,
 
 }  // namespace
 
-VersionUpdater* VersionUpdater::Create(content::WebContents* web_contents) {
-  return new VersionUpdaterCros(web_contents);
+std::unique_ptr<VersionUpdater> VersionUpdater::Create(
+    content::WebContents* web_contents) {
+  return base::WrapUnique(new VersionUpdaterCros(web_contents));
 }
 
 void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
@@ -270,7 +272,7 @@ void VersionUpdaterCros::IsFeatureEnabled(const std::string& feature,
 }
 
 void VersionUpdaterCros::OnIsFeatureEnabled(IsFeatureEnabledCallback callback,
-                                            absl::optional<bool> enabled) {
+                                            std::optional<bool> enabled) {
   std::move(callback).Run(std::move(enabled));
 }
 

@@ -126,7 +126,7 @@ class BrowsingTopicsBrowserTest : public ContentBrowserTest {
     return last_request_is_topics_request_;
   }
 
-  const absl::optional<std::string>& last_topics_header() const {
+  const std::optional<std::string>& last_topics_header() const {
     return last_topics_header_;
   }
 
@@ -162,7 +162,7 @@ class BrowsingTopicsBrowserTest : public ContentBrowserTest {
   bool last_request_is_topics_request_ = false;
 
   std::unique_ptr<base::RunLoop> resource_request_url_waiter_;
-  absl::optional<std::string> last_topics_header_;
+  std::optional<std::string> last_topics_header_;
 
   std::unique_ptr<URLLoaderInterceptor> url_loader_monitor_;
 };

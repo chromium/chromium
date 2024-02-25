@@ -17,8 +17,8 @@ const composeCustomResponse = () => {
 };
 
 self.addEventListener('install', e => {
-  if (e.registerRouter) {
-    e.registerRouter([
+  if (e.addRoutes) {
+    e.addRoutes([
       {
         condition: {
           urlPattern: {pathname: "/service_worker/race_network_and_fetch"}

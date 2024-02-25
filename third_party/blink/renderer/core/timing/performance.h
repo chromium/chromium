@@ -320,13 +320,13 @@ class CORE_EXPORT Performance : public EventTarget {
       ScriptState* script_state,
       const AtomicString& measure_name,
       const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
-      absl::optional<String> end_mark,
+      std::optional<String> end_mark,
       ExceptionState& exception_state);
 
   PerformanceMeasure* MeasureWithDetail(ScriptState* script_state,
                                         const AtomicString& measure_name,
                                         const V8UnionDoubleOrString* start,
-                                        const absl::optional<double>& duration,
+                                        const std::optional<double>& duration,
                                         const V8UnionDoubleOrString* end,
                                         const ScriptValue& detail,
                                         ExceptionState& exception_state);
@@ -354,6 +354,8 @@ class CORE_EXPORT Performance : public EventTarget {
       ScriptState* script_state,
       const AtomicString& maybe_type = g_null_atom,
       const AtomicString& maybe_name = g_null_atom);
+
+  void ProcessUserFeatureMark(const PerformanceMarkOptions* mark_options);
 
  protected:
   Performance(base::TimeTicks time_origin,

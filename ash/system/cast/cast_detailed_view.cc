@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -19,8 +18,10 @@
 #include "ash/system/cast/cast_zero_state_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -79,8 +80,9 @@ std::unique_ptr<views::View> MakeButtonContainer() {
   manager->set_between_child_spacing(kTrayPopupLabelRightPadding);
   button_container->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0,
-                        kStopButtonExtraMargin + kQsExtraMarginsFromRightEdge));
+      gfx::Insets::TLBR(
+          0, 0, 0,
+          kStopButtonExtraMargin + kWideMenuExtraMarginsFromRightEdge));
   return button_container;
 }
 
@@ -105,35 +107,32 @@ void CastDetailedView::CreateItems() {
 void CastDetailedView::OnDevicesUpdated(
     const std::vector<SinkAndRoute>& sinks_routes) {
   sinks_and_routes_.clear();
-  // Add/update existing.
-  for (const auto& device : sinks_routes)
-    sinks_and_routes_.insert(std::make_pair(device.sink.id, device));
-
+  for (const auto& sink_and_route : sinks_routes) {
+    sinks_and_routes_.push_back(sink_and_route);
+  }
   // Update UI.
   UpdateReceiverListFromCachedData();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void CastDetailedView::UpdateReceiverListFromCachedData() {
   RemoveAllViews();
 
-  // QsRevamp places items in a rounded container.
-  const bool is_qs_revamp_enabled = features::IsQsRevampEnabled();
   views::View* item_container =
-      is_qs_revamp_enabled
-          ? scroll_content()->AddChildView(std::make_unique<RoundedContainer>())
-          : scroll_content();
+      scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
 
   // Per product requirement, access code receiver should be shown before other
   // receivers.
-  if (CastConfigController::Get()->AccessCodeCastingEnabled()) {
+  if (CastConfigController::Get()->AccessCodeCastingEnabled() &&
+      (Shell::Get()->session_controller()->GetSessionState() !=
+       session_manager::SessionState::LOCKED)) {
     AddAccessCodeCastButton(item_container);
   }
 
   // Add a view for each receiver.
   for (auto& it : sinks_and_routes_) {
-    const CastSink& sink = it.second.sink;
-    const CastRoute& route = it.second.route;
+    const CastSink& sink = it.sink;
+    const CastRoute& route = it.route;
     HoverHighlightView* container = AddScrollListItem(
         item_container, SinkIconTypeToIcon(sink.sink_icon_type),
         base::UTF8ToUTF16(sink.name));
@@ -141,14 +140,13 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
 
     // Add receiver action buttons if this machine ("local source") is casting
     // to the device. See also CastNotificationController::OnDevicesUpdated().
-    if (is_qs_revamp_enabled && !route.id.empty() && route.is_local_source) {
+    if (!route.id.empty() && route.is_local_source) {
       AddReceiverActionButtons(sink, route, container, item_container);
     }
   }
 
   // If there are no receiver views, show the zero state view.
-  if (features::IsQsRevampEnabled() && !add_access_code_device_ &&
-      view_to_sink_map_.empty()) {
+  if (!add_access_code_device_ && view_to_sink_map_.empty()) {
     AddZeroStateView();
     scroller()->SetVisible(false);
   } else {
@@ -156,7 +154,7 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
   }
 
   scroll_content()->SizeToPreferredSize();
-  scroller()->Layout();
+  scroller()->DeprecatedLayoutImmediately();
 }
 
 void CastDetailedView::AddZeroStateView() {
@@ -179,7 +177,7 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Cast_Detailed_Launch_Cast"));
     // Close the system tray to emphasize the pinned Cast notification.
-    if (weak_this && features::IsQsRevampEnabled()) {
+    if (weak_this) {
       weak_this->CloseBubble();  // Deletes `this`.
     }
   } else if (view == add_access_code_device_) {
@@ -192,14 +190,12 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
 }
 
 void CastDetailedView::StopCasting(const std::string& route_id) {
-  DCHECK(features::IsQsRevampEnabled());
   CastConfigController::Get()->StopCasting(route_id);
   CloseBubble();  // Deletes `this`.
 }
 
 void CastDetailedView::FreezePressed(const std::string& route_id,
                                      bool is_frozen) {
-  DCHECK(features::IsQsRevampEnabled());
   if (is_frozen) {
     CastConfigController::Get()->UnfreezeRoute(route_id);
   } else {
@@ -247,7 +243,7 @@ void CastDetailedView::AddReceiverActionButtons(
   if (route.freeze_info.can_freeze) {
     std::unique_ptr<PillButton> freeze_button = CreateFreezeButton(route);
     std::unique_ptr<views::View> button_container = MakeButtonContainer();
-    std::vector<views::View*> extra_views;
+    std::vector<raw_ptr<views::View, VectorExperimental>> extra_views;
     extra_views.emplace_back(
         button_container->AddChildView(std::move(freeze_button)));
     extra_views.emplace_back(
@@ -293,7 +289,7 @@ std::unique_ptr<PillButton> CastDetailedView::CreateFreezeButton(
   return freeze_button;
 }
 
-BEGIN_METADATA(CastDetailedView, TrayDetailedView)
+BEGIN_METADATA(CastDetailedView)
 END_METADATA
 
 }  // namespace ash

@@ -49,7 +49,7 @@ void GetHexModelIdFromServiceData(
 
   if (!process_reference) {
     QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -60,7 +60,7 @@ void GetHexModelIdFromServiceData(
       base::BindOnce(
           [](std::unique_ptr<QuickPairProcessManager::ProcessReference>,
              GetHexModelIdFromServiceDataCallback callback,
-             const absl::optional<std::string>& result) {
+             const std::optional<std::string>& result) {
             std::move(callback).Run(result);
           },
           std::move(process_reference), std::move(callback)));
@@ -76,7 +76,7 @@ void ParseDecryptedResponse(
 
   if (!process_reference) {
     QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -87,7 +87,7 @@ void ParseDecryptedResponse(
       base::BindOnce(
           [](std::unique_ptr<QuickPairProcessManager::ProcessReference>,
              ParseDecryptedResponseCallback callback,
-             const absl::optional<DecryptedResponse>& result) {
+             const std::optional<DecryptedResponse>& result) {
             std::move(callback).Run(result);
           },
           std::move(process_reference), std::move(callback)));
@@ -102,7 +102,7 @@ void ParseDecryptedPasskey(const std::vector<uint8_t>& aes_key,
 
   if (!process_reference) {
     QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -113,7 +113,7 @@ void ParseDecryptedPasskey(const std::vector<uint8_t>& aes_key,
       base::BindOnce(
           [](std::unique_ptr<QuickPairProcessManager::ProcessReference>,
              ParseDecryptedPasskeyCallback callback,
-             const absl::optional<DecryptedPasskey>& result) {
+             const std::optional<DecryptedPasskey>& result) {
             std::move(callback).Run(result);
           },
           std::move(process_reference), std::move(callback)));
@@ -129,7 +129,7 @@ void ParseNotDiscoverableAdvertisement(
 
   if (!process_reference) {
     QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -141,7 +141,7 @@ void ParseNotDiscoverableAdvertisement(
           base::BindOnce(
               [](std::unique_ptr<QuickPairProcessManager::ProcessReference>,
                  ParseNotDiscoverableAdvertisementCallback callback,
-                 const absl::optional<NotDiscoverableAdvertisement>& result) {
+                 const std::optional<NotDiscoverableAdvertisement>& result) {
                 std::move(callback).Run(result);
               },
               std::move(process_reference), std::move(callback)));

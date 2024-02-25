@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_IMPL_H_
 #define IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_IMPL_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/timer/timer.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/web_state_observer.h"
@@ -87,8 +88,8 @@ class FindInPageManagerImpl : public FindInPageManager,
   // in `StartSearch` and set back to `nil` in `StopSearch`.
   id<CRWFindSession> find_session_ API_AVAILABLE(ios(16)) = nil;
 
-  FindInPageManagerDelegate* delegate_ = nullptr;
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<FindInPageManagerDelegate> delegate_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   base::WeakPtrFactory<FindInPageManagerImpl> weak_factory_;
 };
 

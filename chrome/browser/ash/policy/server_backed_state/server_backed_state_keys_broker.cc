@@ -72,21 +72,20 @@ void ServerBackedStateKeysBroker::FetchStateKeys() {
 }
 
 void ServerBackedStateKeysBroker::StoreStateKeys(
-    const std::vector<std::string>& state_keys) {
+    const base::expected<std::vector<std::string>, ErrorType>& state_keys) {
   bool send_notification = !available();
 
   requested_ = false;
   auto wait_interval = kPollInterval;
-  if (state_keys.empty()) {
-    LOG(WARNING) << "Failed to obtain server-backed state keys.";
-    wait_interval = kRetryInterval;
-  } else if (base::Contains(state_keys, std::string())) {
-    LOG(WARNING) << "Bad state keys.";
+  if (!state_keys.has_value()) {
+    LOG(WARNING) << "Failed to obtain server-backed state keys. Error: "
+                 << static_cast<int>(state_keys.error());
     wait_interval = kRetryInterval;
   } else {
-    send_notification |= state_keys_ != state_keys;
-    state_keys_ = state_keys;
+    send_notification |= state_keys_ != state_keys.value();
   }
+  state_keys_ = state_keys.value_or(std::vector<std::string>());
+  error_type_ = state_keys.error_or(ErrorType::kNoError);
 
   if (send_notification)
     update_callbacks_.Notify();
@@ -98,6 +97,11 @@ void ServerBackedStateKeysBroker::StoreStateKeys(
       base::BindOnce(&ServerBackedStateKeysBroker::FetchStateKeys,
                      weak_factory_.GetWeakPtr()),
       wait_interval);
+}
+
+ServerBackedStateKeysBroker::ErrorType ServerBackedStateKeysBroker::error_type()
+    const {
+  return error_type_;
 }
 
 }  // namespace policy

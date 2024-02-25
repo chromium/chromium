@@ -25,7 +25,8 @@ UNKNOWN focusable has_input_focus
 ++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
 ++++++++++STATIC_TEXT label='Some '
 ++++++++++++UNKNOWN label='Some '
-++++++++++STATIC_TEXT label='more'
-++++++++++++UNKNOWN label='more'
+++++++++++UNKNOWN
+++++++++++++STATIC_TEXT label='more'
+++++++++++++++UNKNOWN label='more'
 ++++++++++STATIC_TEXT label=' text.'
 ++++++++++++UNKNOWN label=' text.'

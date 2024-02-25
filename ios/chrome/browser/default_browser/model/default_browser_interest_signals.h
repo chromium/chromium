@@ -1,0 +1,48 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_INTEREST_SIGNALS_H_
+#define IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_INTEREST_SIGNALS_H_
+
+namespace default_browser {
+
+// Records all necessary information for Chrome start with widget.
+void NotifyStartWithWidget();
+
+// Records all necessary information for Chrome start with URL event.
+void NotifyStartWithURL();
+
+// Records all necessary information for Credential Extension use.
+void NotifyCredentialExtensionUsed();
+
+// Records all necessary information when autofill suggestions were shown to the
+// user. Except passwords.
+void NotifyAutofillSuggestionsShown();
+
+// Records all necessary information when password suggestion is used.
+void NotifyPasswordAutofillSuggestionUsed();
+
+// Records all necessary information when password is saved or updated through
+// infobar.
+void NotifyPasswordSavedOrUpdated();
+
+// Records all necessary information when remote tabs grid is selected.
+void NotifyRemoteTabsGridViewed();
+
+// Records all necessary information when user added or edited a bookmark.
+void NotifyBookmarkAddOrEdit();
+
+// Records all necessary information when user opens bookmark manager.
+void NotifyBookmarkManagerOpened();
+
+// Records all necessary information when user closes bookmark manager.
+// TODO(b/315330160): Consider not tracking Bookmark manager close events.
+void NotifyBookmarkManagerClosed();
+
+// Records all necessary information when user opens a URL from bookmarks.
+void NotifyURLFromBookmarkOpened();
+
+}  // namespace default_browser
+
+#endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_INTEREST_SIGNALS_H_

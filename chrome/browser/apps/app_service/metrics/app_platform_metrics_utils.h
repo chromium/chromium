@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 class Profile;
@@ -27,7 +28,7 @@ enum class AppTypeName {
   kCrostini = 3,
   kChromeApp = 4,
   kWeb = 5,
-  kMacOs = 6,
+  // kMacOs = 6,  // Removed.
   kPluginVm = 7,
   kStandaloneBrowser = 8,
   kRemote = 9,
@@ -60,7 +61,7 @@ enum class AppTypeNameV2 {
   kChromeAppTab = 5,
   kWebWindow = 6,
   kWebTab = 7,
-  kMacOs = 8,
+  // kMacOs = 8, // Removed.
   kPluginVm = 9,
   kStandaloneBrowser = 10,
   kRemote = 11,
@@ -93,7 +94,6 @@ constexpr char kBuiltInHistogramName[] = "BuiltIn";
 constexpr char kCrostiniHistogramName[] = "Crostini";
 constexpr char kChromeAppHistogramName[] = "ChromeApp";
 constexpr char kWebAppHistogramName[] = "WebApp";
-constexpr char kMacOsHistogramName[] = "MacOs";
 constexpr char kPluginVmHistogramName[] = "PluginVm";
 constexpr char kStandaloneBrowserHistogramName[] = "StandaloneBrowser";
 constexpr char kRemoteHistogramName[] = "RemoteApp";
@@ -176,6 +176,10 @@ AppTypeName GetAppTypeNameFromString(const std::string& app_type_name);
 // returns false.
 bool ShouldRecordUkm(Profile* profile);
 
+// Returns true if it's allowed to record UKM for `app_id`.
+bool ShouldRecordUkmForAppId(const std::string& app_id,
+                             const apps::AppRegistryCache& cache);
+
 // Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
 // system web apps, builtin apps, Borealis apps, and Crostini apps are recorded
 // because they are synced to server/cloud, or part of OS. Other app types,
@@ -197,6 +201,9 @@ AppTypeName GetAppTypeName(Profile* profile,
 // app registry cache, so can identify apps which aren't registered with app
 // service.
 AppType GetAppType(Profile* profile, const std::string& app_id);
+
+// Returns true if |app_id| is a system web app for a given |profile|.
+bool IsSystemWebApp(Profile* profile, const std::string& app_id);
 
 }  // namespace apps
 

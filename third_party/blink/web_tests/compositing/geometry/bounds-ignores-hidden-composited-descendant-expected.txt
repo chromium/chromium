@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutImage (positioned) IMG",
+      "name": "LayoutImage (positioned, block) IMG",
       "position": [10, 10],
       "bounds": [50, 50],
       "contentsOpaque": true,
@@ -21,7 +21,7 @@
       "backgroundColor": "#0000FF"
     },
     {
-      "name": "LayoutImage (positioned) IMG",
+      "name": "LayoutImage (positioned, block) IMG",
       "position": [10, 10],
       "bounds": [50, 50],
       "contentsOpaque": true,

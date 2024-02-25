@@ -1,0 +1,168 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<enums>
+
+<enum name="MachineLearningServiceCreateGraphExecutorResultEvent">
+  <int value="0" label="OK"/>
+  <int value="1" label="MODEL_INTERPRETATION_ERROR"/>
+  <int value="2" label="MEMORY_ALLOCATION_ERROR"/>
+  <int value="3" label="NNAPI_UNAVAILABLE"/>
+  <int value="4" label="NNAPI_USE_ERROR"/>
+  <int value="5" label="GPU_UNAVAILABLE"/>
+  <int value="6" label="GPU_USE_ERROR"/>
+  <int value="7" label="DELEGATE_CONFIG_ERROR"/>
+  <int value="8" label="NOT_FULLY_DELEGABLE"/>
+</enum>
+
+<enum name="MachineLearningServiceDlcBeginInstallResult">
+  <int value="0" label="Install successfully initiated"/>
+  <int value="1" label="Failed because D-Bus not connected"/>
+  <int value="2" label="Failed because DLC Service was busy too many times"/>
+  <int value="3" label="Will retry because DLC Service was busy"/>
+  <int value="4"
+      label="Failed because DLC Service returned an error code (see separate
+             DLC error code histogram)"/>
+  <int value="5" label="Failed because of an unknown DLC Service failure"/>
+</enum>
+
+<enum name="MachineLearningServiceDlcErrorCode">
+<!-- One entry for each kError{...} error code in
+  third_party/cros_system_api/dbus/dlcservice/dbus-constants.h -->
+
+  <int value="0" label="Unrecognized DLC error code"/>
+  <int value="1" label="NONE (No error)"/>
+  <int value="2" label="INTERNAL"/>
+  <int value="3" label="BUSY (Not terminal: retry is possible)"/>
+  <int value="4" label="NEED_REBOOT"/>
+  <int value="5" label="INVALID_DLC"/>
+  <int value="6" label="ALLOCATION"/>
+  <int value="7" label="NO_IMAGE_FOUND"/>
+</enum>
+
+<enum name="MachineLearningServiceDlcFinalInstallResult">
+  <int value="0" label="Successful install"/>
+  <int value="1"
+      label="Failed because DLC Service returned an error code (see separate
+             DLC error code histogram)"/>
+</enum>
+
+<enum name="MachineLearningServiceDocumentScannerResultEvent">
+  <int value="0" label="OK"/>
+  <int value="1" label="ERROR"/>
+</enum>
+
+<enum name="MachineLearningServiceExecuteResultEvent">
+  <int value="0" label="OK"/>
+  <int value="1" label="MEMORY_ALLOCATION_ERROR"/>
+  <int value="2" label="UNKNOWN_INPUT_ERROR"/>
+  <int value="3" label="INPUT_TYPE_ERROR"/>
+  <int value="4" label="INPUT_SHAPE_ERROR"/>
+  <int value="5" label="INPUT_FORMAT_ERROR"/>
+  <int value="6" label="OUTPUT_MISSING_ERROR"/>
+  <int value="7" label="UNKNOWN_OUTPUT_ERROR"/>
+  <int value="8" label="DUPLICATE_OUTPUT_ERROR"/>
+  <int value="9" label="EXECUTION_ERROR"/>
+</enum>
+
+<enum name="MachineLearningServiceLoadHandwritingModelResultEvent">
+  <int value="0" label="OK"/>
+  <int value="1" label="DEPRECATED_MODEL_SPEC_ERROR"/>
+  <int value="2" label="LOAD_MODEL_ERROR"/>
+  <int value="3" label="FEATURE_NOT_SUPPORTED_ERROR"/>
+  <int value="4" label="LANGUAGE_NOT_SUPPORTED_ERROR"/>
+  <int value="5" label="FEATURE_DISABLED_BY_USER"/>
+  <int value="6" label="DLC_DOES_NOT_EXIST"/>
+  <int value="7" label="DLC_INSTALL_ERROR"/>
+  <int value="8" label="DLC_GET_PATH_ERROR"/>
+  <int value="9" label="LOAD_NATIVE_LIB_ERROR"/>
+  <int value="10" label="LOAD_FUNC_PTR_ERROR"/>
+  <int value="11" label="LOAD_MODEL_FILES_ERROR"/>
+</enum>
+
+<enum name="MachineLearningServiceLoadHeatmapPalmRejectionResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="UNKNOWN_ERROR"/>
+  <int value="2" label="LOAD_MODEL_ERROR"/>
+  <int value="3" label="CREATE_GRAPH_EXECUTOR_ERROR"/>
+  <int value="4" label="OPEN_DEVICE_ERROR"/>
+</enum>
+
+<enum name="MachineLearningServiceLoadModelResultEvent">
+  <int value="0" label="OK"/>
+  <int value="1" label="MODEL_SPEC_ERROR"/>
+  <int value="2" label="LOAD_MODEL_ERROR"/>
+  <int value="3" label="FEATURE_NOT_SUPPORTED_ERROR"/>
+  <int value="4" label="LANGUAGE_NOT_SUPPORTED_ERROR"/>
+</enum>
+
+<enum name="MachineLearningServiceMojoConnectionEvent">
+  <int value="0" label="Mojo bootstrap requested over D-Bus"/>
+  <int value="1" label="Mojo bootstrap succeeded"/>
+  <int value="2" label="Connection closed"/>
+</enum>
+
+<enum name="MachineLearningServiceProcessError">
+  <int value="0" label="kSpawnWorkerProcessFailed"/>
+  <int value="1" label="kChangeEuidToMlServiceDBusFailed"/>
+  <int value="2" label="kChangeEuidBackToRootFailed"/>
+  <int value="3" label="kGetWorkerProcessMemoryUsageFailed"/>
+  <int value="4" label="kReapWorkerProcessMaxNumOfRetrialsExceeded"/>
+</enum>
+
+<enum name="MachineLearningServiceReapWorkerProcessErrno">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kECHILD"/>
+  <int value="2" label="kEINTR"/>
+  <int value="3" label="kEINVAL"/>
+</enum>
+
+<enum name="MachineLearningServiceWebPlatformTfLiteFlatBufferModelComputeEvent">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kIncorrectNumberOfInputs"/>
+  <int value="2" label="kMissingInput"/>
+  <int value="3" label="kInvalidInputBufferSize"/>
+  <int value="4" label="kFailToCompute"/>
+</enum>
+
+<enum
+    name="MachineLearningServiceWebPlatformTfLiteFlatBufferModelCreateModelLoaderResultEvent">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kUnknownError"/>
+  <int value="2" label="kNotSupported"/>
+</enum>
+
+<enum name="MachineLearningServiceWebPlatformTfLiteFlatBufferModelLoadEvent">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kInvalidInputBigBuffer"/>
+  <int value="2" label="kInvalidSharedBuffer"/>
+  <int value="3" label="kUnknownTypeOfInputBigBuffer"/>
+  <int value="4" label="kBuildModelFailed"/>
+  <int value="5" label="kInterpretModelFailed"/>
+  <int value="6" label="kAllocateTensorFailed"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

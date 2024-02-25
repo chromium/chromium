@@ -70,6 +70,8 @@ if (!is_android) {
 
   static_library("live_translate") {
     sources = [
+      "greedy_text_stabilizer.cc",
+      "greedy_text_stabilizer.h",
       "live_translate_controller.cc",
       "live_translate_controller.h",
     ]
@@ -99,10 +101,15 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "caption_bubble_context_remote_unittest.cc" ]
+    sources = [ "greedy_text_stabilizer_unittest.cc" ]
+
+    if (is_chromeos_ash) {
+      sources += [ "caption_bubble_context_remote_unittest.cc" ]
+    }
 
     deps = [
       ":live_caption",
+      ":live_translate",
       "//base",
       "//base/test:test_support",
       "//media/mojo/mojom:speech_recognition",

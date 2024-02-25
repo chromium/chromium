@@ -30,8 +30,7 @@ public class Promise<T> {
         int REJECTED = 2;
     }
 
-    @PromiseState
-    private int mState = PromiseState.UNFULFILLED;
+    @PromiseState private int mState = PromiseState.UNFULFILLED;
 
     private T mResult;
     private final List<Callback<T>> mFulfillCallbacks = new LinkedList<>();
@@ -76,13 +75,15 @@ public class Promise<T> {
             return;
         }
 
-        assert mRejectCallbacks.size() == 0 : "Do not call the single argument "
-            + "Promise.then(Callback) on a Promise that already has a rejection handler.";
+        assert mRejectCallbacks.size() == 0
+                : "Do not call the single argument Promise.then(Callback) on a Promise that already"
+                        + " has a rejection handler.";
 
-        Callback<Exception> onReject = reason -> {
-            throw new UnhandledRejectionException(
-                    "Promise was rejected without a rejection handler.", reason);
-        };
+        Callback<Exception> onReject =
+                reason -> {
+                    throw new UnhandledRejectionException(
+                            "Promise was rejected without a rejection handler.", reason);
+                };
 
         then(onFulfill, onReject);
         mThrowingRejectionHandler = true;
@@ -123,8 +124,9 @@ public class Promise<T> {
     }
 
     private void exceptInner(Callback<Exception> onReject) {
-        assert !mThrowingRejectionHandler : "Do not add an exception handler to a Promise you have "
-            + "called the single argument Promise.then(Callback) on.";
+        assert !mThrowingRejectionHandler
+                : "Do not add an exception handler to a Promise you have "
+                        + "called the single argument Promise.then(Callback) on.";
 
         if (mState == PromiseState.REJECTED) {
             postCallbackToLooper(onReject, mRejectReason);
@@ -146,14 +148,15 @@ public class Promise<T> {
         // Once this Promise is fulfilled:
         // - Apply the given function to the result.
         // - Fulfill the new Promise.
-        thenInner(result -> {
-            try {
-                promise.fulfill(function.apply(result));
-            } catch (Exception e) {
-                // If function application fails, reject the next Promise.
-                promise.reject(e);
-            }
-        });
+        thenInner(
+                result -> {
+                    try {
+                        promise.fulfill(function.apply(result));
+                    } catch (Exception e) {
+                        // If function application fails, reject the next Promise.
+                        promise.reject(e);
+                    }
+                });
 
         // If this Promise is rejected, reject the next Promise.
         exceptInner(promise::reject);
@@ -175,16 +178,18 @@ public class Promise<T> {
         // Once this Promise is fulfilled:
         // - Apply the given function to the result (giving us an inner Promise).
         // - On fulfillment of this inner Promise, fulfill our return Promise.
-        thenInner(result -> {
-            try {
-                // When the inner Promise is fulfilled, fulfill the return Promise.
-                // Alternatively, if the inner Promise is rejected, reject the return Promise.
-                function.apply(result).then(promise::fulfill, promise::reject);
-            } catch (Exception e) {
-                // If creating the inner Promise failed, reject the next Promise.
-                promise.reject(e);
-            }
-        });
+        thenInner(
+                result -> {
+                    try {
+                        // When the inner Promise is fulfilled, fulfill the return Promise.
+                        // Alternatively, if the inner Promise is rejected, reject the return
+                        // Promise.
+                        function.apply(result).then(promise::fulfill, promise::reject);
+                    } catch (Exception e) {
+                        // If creating the inner Promise failed, reject the next Promise.
+                        promise.reject(e);
+                    }
+                });
 
         // If this Promise is rejected, reject the next Promise.
         exceptInner(promise::reject);
@@ -230,24 +235,18 @@ public class Promise<T> {
         mRejectCallbacks.clear();
     }
 
-    /**
-     * Rejects a Promise, see {@link #reject(Exception)}.
-     */
+    /** Rejects a Promise, see {@link #reject(Exception)}. */
     public void reject() {
         reject(null);
     }
 
-    /**
-     * Returns whether the promise is fulfilled.
-     */
+    /** Returns whether the promise is fulfilled. */
     public boolean isFulfilled() {
         checkThread();
         return mState == PromiseState.FULFILLED;
     }
 
-    /**
-     * Returns whether the promise is rejected.
-     */
+    /** Returns whether the promise is rejected. */
     public boolean isRejected() {
         checkThread();
         return mState == PromiseState.REJECTED;
@@ -263,18 +262,14 @@ public class Promise<T> {
         return mResult;
     }
 
-    /**
-     * Convenience method to return a Promise fulfilled with the given result.
-     */
+    /** Convenience method to return a Promise fulfilled with the given result. */
     public static <T> Promise<T> fulfilled(T result) {
         Promise<T> promise = new Promise<>();
         promise.fulfill(result);
         return promise;
     }
 
-    /**
-     * Convenience method to return a rejected Promise.
-     */
+    /** Convenience method to return a rejected Promise. */
     public static <T> Promise<T> rejected() {
         Promise<T> promise = new Promise<>();
         promise.reject();

@@ -22,7 +22,6 @@ namespace {
 
 const char kFakePhoneKey[] = "fake-phone-key";
 const char kFakePhoneName[] = "Phony Phone";
-const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
 
 }  // namespace
 
@@ -49,8 +48,6 @@ class MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest
     fake_feature_state_manager_ = std::make_unique<FakeFeatureStateManager>();
     test_pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    AndroidSmsAppInstallingStatusObserver::RegisterPrefs(
-        test_pref_service_->registry());
     android_sms_app_installing_status_observer_ =
         AndroidSmsAppInstallingStatusObserver::Factory::Create(
             fake_host_status_provider_.get(), fake_feature_state_manager_.get(),
@@ -67,7 +64,7 @@ class MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest
 
   void SetHostWithStatus(
       mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
+      const std::optional<multidevice::RemoteDeviceRef>& host_device) {
     fake_host_status_provider_->SetHostWithStatus(host_status, host_device);
   }
 
@@ -118,7 +115,7 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                    absl::nullopt /* host_device */);
+                    std::nullopt /* host_device */);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(
@@ -131,7 +128,7 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
        InstallsAfterHostVerified) {
   Initialize();
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
-                    absl::nullopt /* host_device */);
+                    std::nullopt /* host_device */);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
@@ -146,21 +143,7 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
-                    absl::nullopt /* host_device */);
-  EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
-
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
-  EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
-}
-
-TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
-       DoesNotInstallAfterHostVerifiedIfUninstalledByUser) {
-  Initialize();
-  fake_app_helper_delegate()->Reset();
-  fake_app_helper_delegate()->set_has_app_been_manually_uninstalled(true);
-
-  SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
-                    absl::nullopt /* host_device */);
+                    std::nullopt /* host_device */);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
@@ -171,9 +154,8 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
        DoesNotDisableFeatureIfAppRegistryNotReady) {
   Initialize();
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
-                    absl::nullopt /* host_device */);
+                    std::nullopt /* host_device */);
   fake_app_helper_delegate()->Reset();
-  fake_app_helper_delegate()->set_has_app_been_manually_uninstalled(true);
   fake_app_helper_delegate()->set_is_app_registry_ready(false);
   SetMessagesFeatureState(mojom::FeatureState::kEnabledByUser);
 
@@ -189,7 +171,7 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
-                    absl::nullopt /* host_device */);
+                    std::nullopt /* host_device */);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
@@ -203,7 +185,7 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
-                    absl::nullopt /* host_device */);
+                    std::nullopt /* host_device */);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
 
   SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
@@ -253,62 +235,11 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
        DoesNotInstallIfNotVerified) {
   Initialize();
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
-                    absl::nullopt /* host_device */);
+                    std::nullopt /* host_device */);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
   SetMessagesFeatureState(
       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts);
   EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
-}
-
-// This test covers the temporary fix to re-enable users who were affected by
-// crbug.com/1131140 which caused Messages to become disabled during login due
-// to the app being incorrectly considered uninstalled.
-TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
-       ReenablesMessages_WhenDisabledByBug) {
-  // Don't call Initialize(), instead simulate the class starting disabled.
-  SetMessagesFeatureState(mojom::FeatureState::kDisabledByUser);
-  fake_app_helper_delegate()->set_has_installed_app(true);
-  fake_android_sms_app_helper_delegate()->set_is_app_registry_ready(true);
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
-
-  EXPECT_EQ(mojom::FeatureState::kEnabledByUser, GetMessagesFeatureState());
-  EXPECT_FALSE(test_pref_service()->GetBoolean(kShouldAttemptReenable));
-}
-
-TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
-       DoesntReenableMessages_WhenNoHostSet) {
-  // Don't call Initialize(), instead simulate the class starting disabled.
-  SetMessagesFeatureState(mojom::FeatureState::kDisabledByUser);
-  fake_app_helper_delegate()->set_has_installed_app(true);
-  fake_android_sms_app_helper_delegate()->set_is_app_registry_ready(true);
-  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                    absl::nullopt /* host_device */);
-
-  EXPECT_EQ(mojom::FeatureState::kDisabledByUser, GetMessagesFeatureState());
-  EXPECT_FALSE(test_pref_service()->GetBoolean(kShouldAttemptReenable));
-}
-
-TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
-       DoesntReenableMessages_WhenAppNotInstalled) {
-  // Don't call Initialize(), instead simulate the class starting disabled.
-  SetMessagesFeatureState(mojom::FeatureState::kDisabledByUser);
-  fake_app_helper_delegate()->set_has_installed_app(false);
-  fake_android_sms_app_helper_delegate()->set_is_app_registry_ready(true);
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
-
-  EXPECT_EQ(mojom::FeatureState::kDisabledByUser, GetMessagesFeatureState());
-  EXPECT_FALSE(test_pref_service()->GetBoolean(kShouldAttemptReenable));
-}
-
-TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
-       DoesntTryReenableMessages_WhenRegistryNotReady) {
-  // Don't call Initialize(), instead simulate the class starting disabled.
-  SetMessagesFeatureState(mojom::FeatureState::kDisabledByUser);
-  fake_app_helper_delegate()->set_has_installed_app(true);
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
-
-  EXPECT_EQ(mojom::FeatureState::kDisabledByUser, GetMessagesFeatureState());
-  EXPECT_TRUE(test_pref_service()->GetBoolean(kShouldAttemptReenable));
 }
 
 }  // namespace multidevice_setup

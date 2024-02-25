@@ -79,45 +79,39 @@ class CORE_EXPORT SelectorFilter {
   DISALLOW_NEW();
 
  public:
-  class ParentStackFrame {
-    DISALLOW_NEW();
-
-   public:
-    ParentStackFrame() : element(nullptr) {}
-    explicit ParentStackFrame(Element& element) : element(&element) {}
-
-    void Trace(Visitor*) const;
-
-    Member<Element> element;
-    Vector<unsigned, 4> identifier_hashes;
-  };
-
   SelectorFilter() = default;
   SelectorFilter(const SelectorFilter&) = delete;
   SelectorFilter& operator=(const SelectorFilter&) = delete;
 
+  // Call before the first PushParent(), if you are starting traversal at
+  // some tree scope that is not at the root of the document.
+  void PushAllParentsOf(TreeScope& tree_scope);
+
   void PushParent(Element& parent);
   void PopParent(Element& parent);
 
-  bool ParentStackIsConsistent(const ContainerNode* parent_node) const {
-    return !parent_stack_.empty() &&
-           parent_stack_.back().element == parent_node;
+  bool ParentStackIsConsistent(const Element* parent) const {
+    if (parent == nullptr) {
+      return parent_stack_.empty();
+    } else {
+      return !parent_stack_.empty() && parent_stack_.back() == parent;
+    }
   }
 
-  template <unsigned maximumIdentifierCount>
-  inline bool FastRejectSelector(const unsigned* identifier_hashes) const;
+  inline bool FastRejectSelector(
+      const base::span<const unsigned> identifier_hashes) const;
   static void CollectIdentifierHashes(const CSSSelector&,
                                       const StyleScope*,
-                                      unsigned* identifier_hashes,
-                                      unsigned maximum_identifier_count);
+                                      Vector<unsigned>& bloom_hash_backing);
 
   void Trace(Visitor*) const;
 
  private:
+  void PushAncestors(const Node& node);
   void PushParentStackFrame(Element& parent);
   void PopParentStackFrame();
 
-  HeapVector<ParentStackFrame> parent_stack_;
+  HeapVector<Member<Element>> parent_stack_;
 
   // With 100 unique strings in the filter, 2^12 slot table has false positive
   // rate of ~0.2%.
@@ -125,13 +119,14 @@ class CORE_EXPORT SelectorFilter {
   std::unique_ptr<IdentifierFilter> ancestor_identifier_filter_;
 };
 
-template <unsigned maximumIdentifierCount>
 inline bool SelectorFilter::FastRejectSelector(
-    const unsigned* identifier_hashes) const {
-  DCHECK(ancestor_identifier_filter_);
-  for (unsigned n = 0; n < maximumIdentifierCount && identifier_hashes[n];
-       ++n) {
-    if (!ancestor_identifier_filter_->MayContain(identifier_hashes[n])) {
+    const base::span<const unsigned> identifier_hashes) const {
+  if (!ancestor_identifier_filter_) {
+    DCHECK(parent_stack_.empty());
+    return false;
+  }
+  for (unsigned hash : identifier_hashes) {
+    if (!ancestor_identifier_filter_->MayContain(hash)) {
       return true;
     }
   }
@@ -139,7 +134,5 @@ inline bool SelectorFilter::FastRejectSelector(
 }
 
 }  // namespace blink
-
-WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(blink::SelectorFilter::ParentStackFrame)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_FILTER_H_

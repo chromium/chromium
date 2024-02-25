@@ -14,12 +14,13 @@ import 'chrome://resources/js/ios/web_ui.js';
 import './strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
-// <if expr="chromeos_ash or is_win or is_chromeos">
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+// <if expr="is_chromeos or is_win">
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 // </if>
-// <if expr="is_chromeos">
-import {$} from 'chrome://resources/js/util_ts.js';
+// <if expr="chromeos_ash">
+import {$} from 'chrome://resources/js/util.js';
 // </if>
 // clang-format on
 
@@ -103,6 +104,9 @@ function returnCustomizationId(response: {[customizationId: string]: any}) {
       response['customizationId'];
 }
 
+// </if>
+
+// <if expr="chromeos_ash">
 /**
  * Callback from the backend to inform if Lacros is enabled or not.
  * @param enabled True if it is enabled.
@@ -122,11 +126,28 @@ function returnLacrosEnabled(enabled: string) {
 function crosUrlVersionRedirect() {
   chrome.send('crosUrlVersionRedirect');
 }
-
 // </if>
 
 function copyToClipboard() {
-  navigator.clipboard.writeText(getRequiredElement('copy-content').innerText);
+  navigator.clipboard.writeText(getRequiredElement('copy-content').innerText)
+      .then(announceCopy);
+}
+
+function announceCopy() {
+  const messagesDiv = getRequiredElement('messages');
+  messagesDiv.innerHTML = window.trustedTypes!.emptyHTML;
+
+  // <if expr="is_macosx">
+  // VoiceOver on Mac does not seem to consistently read out the contents of
+  // a static alert element. Toggling the role of alert seems to force VO
+  // to consistently read out the messages.
+  messagesDiv.removeAttribute('role');
+  messagesDiv.setAttribute('role', 'alert');
+  // </if>
+
+  const div = document.createElement('div');
+  div.innerText = loadTimeData.getString('copy_notice');
+  messagesDiv.append(div);
 }
 
 // <if expr="chromeos_lacros">
@@ -141,16 +162,24 @@ function initialize() {
   // <if expr="chromeos_lacros or is_win">
   addWebUiListener('return-os-version', returnOsVersion);
   // </if>
+
   // <if expr="is_chromeos">
   addWebUiListener('return-platform-version', returnPlatformVersion);
   addWebUiListener('return-firmware-version', returnFirmwareVersion);
   addWebUiListener(
       'return-arc-and-arc-android-sdk-versions',
       returnArcAndArcAndroidSdkVersions);
-  addWebUiListener('return-lacros-enabled', returnLacrosEnabled);
   getRequiredElement('arc_holder').hidden = true;
   chrome.chromeosInfoPrivate.get(['customizationId'])
       .then(returnCustomizationId);
+  // </if>
+
+  // <if expr="chromeos_ash">
+  addWebUiListener('return-lacros-enabled', returnLacrosEnabled);
+  // </if>
+  // <if expr="chromeos_lacros">
+  // We always display the container in Lacros
+  getRequiredElement('os-link-container').hidden = false;
   // </if>
 
   chrome.send('requestVersionInfo');

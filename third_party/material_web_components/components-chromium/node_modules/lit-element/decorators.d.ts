@@ -3,7 +3,6 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-export * from '@lit/reactive-element/decorators/base.js';
 export * from '@lit/reactive-element/decorators/custom-element.js';
 export * from '@lit/reactive-element/decorators/property.js';
 export * from '@lit/reactive-element/decorators/state.js';

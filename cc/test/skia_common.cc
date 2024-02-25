@@ -161,7 +161,7 @@ PaintImage CreateDiscardablePaintImage(
     bool allocate_encoded_data,
     PaintImage::Id id,
     SkColorType color_type,
-    absl::optional<YUVSubsampling> yuv_format,
+    std::optional<YUVSubsampling> yuv_format,
     SkYUVAPixmapInfo::DataType yuv_data_type) {
   if (!color_space)
     color_space = SkColorSpace::MakeSRGB();
@@ -215,7 +215,7 @@ PaintImage CreateAnimatedImage(const gfx::Size& size,
       .set_paint_image_generator(sk_make_sp<FakePaintImageGenerator>(
           SkImageInfo::MakeN32Premul(size.width(), size.height()),
           std::move(frames)))
-      .set_animation_type(PaintImage::AnimationType::ANIMATED)
+      .set_animation_type(PaintImage::AnimationType::kAnimated)
       .set_repetition_count(repetition_count)
       .TakePaintImage();
 }
@@ -258,7 +258,7 @@ scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
   return CreateSkottieFromString(json);
 }
 
-scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json) {
+scoped_refptr<SkottieWrapper> CreateSkottieFromString(std::string_view json) {
   base::span<const uint8_t> json_span = base::as_bytes(base::make_span(json));
   return SkottieWrapper::CreateSerializable(
       std::vector<uint8_t>(json_span.begin(), json_span.end()));

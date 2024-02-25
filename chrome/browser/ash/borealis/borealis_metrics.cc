@@ -6,8 +6,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 
 namespace borealis {
+
+using borealis::mojom::InstallResult;
 
 const char kBorealisInstallNumAttemptsHistogram[] =
     "Borealis.Install.NumAttempts";
@@ -37,8 +40,7 @@ void RecordBorealisInstallNumAttemptsHistogram() {
   base::UmaHistogramBoolean(kBorealisInstallNumAttemptsHistogram, true);
 }
 
-void RecordBorealisInstallResultHistogram(
-    BorealisInstallResult install_result) {
+void RecordBorealisInstallResultHistogram(InstallResult install_result) {
   base::UmaHistogramEnumeration(kBorealisInstallResultHistogram,
                                 install_result);
 }
@@ -94,8 +96,6 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "Success";
     case borealis::BorealisStartupResult::kCancelled:
       return stream << "Cancelled";
-    case borealis::BorealisStartupResult::kMountFailed:
-      return stream << "Mount failed";
     case borealis::BorealisStartupResult::kDiskImageFailed:
       return stream << "Disk Image failed";
     case borealis::BorealisStartupResult::kStartVmFailed:
@@ -108,5 +108,30 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "Request Wayland failed";
     case borealis::BorealisStartupResult::kDisallowed:
       return stream << "Borealis is not allowed";
+    case borealis::BorealisStartupResult::kDlcCancelled:
+      return stream << "DLC install was cancelled";
+    case borealis::BorealisStartupResult::kDlcOffline:
+      return stream << "Device is offline";
+    case borealis::BorealisStartupResult::kDlcNeedUpdateError:
+      return stream
+             << "DLC service couldn't find an image at the correct version";
+    case borealis::BorealisStartupResult::kDlcNeedRebootError:
+      return stream << "Device needs to be rebooted";
+    case borealis::BorealisStartupResult::kDlcNeedSpaceError:
+      return stream << "Device needs more space to install DLC";
+    case borealis::BorealisStartupResult::kDlcBusyError:
+      return stream << "DLC service is busy";
+    case borealis::BorealisStartupResult::kDlcInternalError:
+      return stream << "DLC reported an internal error";
+    case borealis::BorealisStartupResult::kDlcUnsupportedError:
+      return stream << "Borealis DLC is not supported";
+    case borealis::BorealisStartupResult::kDlcUnknownError:
+      return stream << "DLC service ran into an unknown error";
+    case borealis::BorealisStartupResult::kConciergeUnavailable:
+      return stream << "Concierge is unavailable";
+    case borealis::BorealisStartupResult::kEmptyDiskResponse:
+      return stream << "Concierge returned an empty disk response";
+    case borealis::BorealisStartupResult::kStartVmEmptyResponse:
+      return stream << "Concierge returned an empty startup request";
   }
 }

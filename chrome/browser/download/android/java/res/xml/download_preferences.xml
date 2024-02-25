@@ -17,4 +17,9 @@ found in the LICENSE file.
         android:title="@string/download_location_prompt_enabled_title"
         android:summaryOn="@string/text_on"
         android:summaryOff="@string/text_off" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="auto_open_pdf_enabled"
+        android:title="@string/auto_open_pdf_enabled_title"
+        android:summaryOff="@string/text_off"/>
 </PreferenceScreen>

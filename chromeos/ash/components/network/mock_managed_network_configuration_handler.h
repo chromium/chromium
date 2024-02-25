@@ -101,6 +101,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                           const std::string& profile_path));
   MOCK_CONST_METHOD1(NotifyPolicyAppliedToNetwork,
                      void(const std::string& service_path));
+  MOCK_METHOD0(TriggerEphemeralNetworkConfigActions, void());
   MOCK_METHOD1(OnCellularPoliciesApplied, void(const NetworkProfile& profile));
   MOCK_CONST_METHOD0(OnEnterpriseMonitoredWebPoliciesApplied, void());
   MOCK_CONST_METHOD0(AllowCellularSimLock, bool());
@@ -109,6 +110,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnect, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnectIfAvailable, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToAutoconnect, bool());
+  MOCK_CONST_METHOD0(IsProhibitedFromConfiguringVpn, bool());
+  MOCK_CONST_METHOD0(RecommendedValuesAreEphemeral, bool());
+  MOCK_CONST_METHOD0(UserCreatedNetworkConfigurationsAreEphemeral, bool());
   MOCK_CONST_METHOD0(GetAllowTextMessages, PolicyTextMessageSuppressionState());
   MOCK_CONST_METHOD0(GetBlockedHexSSIDs, std::vector<std::string>());
 };

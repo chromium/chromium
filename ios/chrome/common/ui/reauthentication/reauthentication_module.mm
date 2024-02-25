@@ -46,6 +46,14 @@ constexpr char kPasscodeArticleURL[] = "https://support.apple.com/HT204060";
   return self;
 }
 
+- (BOOL)canAttemptReauthWithBiometrics {
+  LAContext* context = _createLAContext();
+  // The authentication method is Touch ID or Face ID.
+  return
+      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                           error:nil];
+}
+
 - (BOOL)canAttemptReauth {
   LAContext* context = _createLAContext();
   // The authentication method is Touch ID, Face ID or passcode.

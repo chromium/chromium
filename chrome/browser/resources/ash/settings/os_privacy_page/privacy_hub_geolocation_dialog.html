@@ -1,0 +1,32 @@
+<style include="settings-shared">
+  #dialogBody {
+    padding-top: 10px;
+  }
+
+  cr-dialog::part(dialog) {
+    width: 370px;
+  }
+</style>
+
+<cr-dialog id="systemGeolocationDialog" show-on-attach>
+  <div slot="title">
+    $i18n{systemGeolocationDialogTitle}
+  </div>
+  <div slot="body" id="dialogBody">
+    <localized-link localized-string="$i18n{systemGeolocationDialogBody}"
+        link-url="$i18n{systemGeolocationDialogLearnMoreUrl}">
+    </localized-link>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton"
+        class="cancel-button"
+        on-click="onCancelClicked_">
+      $i18n{systemGeolocationDialogCancelButton}
+    </cr-button>
+    <cr-button id="confirmButton"
+        class="action-button"
+        on-click="onEnableClicked_">
+      $i18n{systemGeolocationDialogConfirmButton}
+    </cr-button>
+  </div>
+</cr-dialog>

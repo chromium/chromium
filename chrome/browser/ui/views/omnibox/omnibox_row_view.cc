@@ -33,7 +33,7 @@ struct ui::metadata::TypeConverter<OmniboxPopupSelection>
     : public ui::metadata::BaseTypeConverter<true> {
   static std::u16string ToString(
       ui::metadata::ArgType<OmniboxPopupSelection> source_value);
-  static absl::optional<OmniboxPopupSelection> FromString(
+  static std::optional<OmniboxPopupSelection> FromString(
       const std::u16string& source_value);
   static ui::metadata::ValidStrings GetValidStrings() { return {}; }
 };
@@ -48,22 +48,22 @@ std::u16string ui::metadata::TypeConverter<OmniboxPopupSelection>::ToString(
 }
 
 // static
-absl::optional<OmniboxPopupSelection> ui::metadata::TypeConverter<
+std::optional<OmniboxPopupSelection> ui::metadata::TypeConverter<
     OmniboxPopupSelection>::FromString(const std::u16string& source_value) {
   const auto values = base::SplitString(
       source_value, u"{,}", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (values.size() != 2)
-    return absl::nullopt;
+    return std::nullopt;
   // TODO(pkasting): This should be size_t, but for some reason that won't link
   // on Mac.
-  const absl::optional<uint32_t> line =
+  const std::optional<uint32_t> line =
       TypeConverter<uint32_t>::FromString(values[0]);
-  const absl::optional<OmniboxPopupSelection::LineState> state =
+  const std::optional<OmniboxPopupSelection::LineState> state =
       TypeConverter<OmniboxPopupSelection::LineState>::FromString(values[1]);
   return (line.has_value() && state.has_value())
-             ? absl::make_optional<OmniboxPopupSelection>(line.value(),
-                                                          state.value())
-             : absl::nullopt;
+             ? std::make_optional<OmniboxPopupSelection>(line.value(),
+                                                         state.value())
+             : std::nullopt;
 }
 
 OmniboxRowView::OmniboxRowView(size_t line, OmniboxPopupViewViews* popup_view)
@@ -120,5 +120,5 @@ gfx::Insets OmniboxRowView::GetInsets() const {
   return gfx::Insets::TLBR(0, 0, 0, right_inset);
 }
 
-BEGIN_METADATA(OmniboxRowView, views::View)
+BEGIN_METADATA(OmniboxRowView)
 END_METADATA

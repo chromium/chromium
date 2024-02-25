@@ -25,7 +25,8 @@ TEST(PlatformNotificationDataTest, AssignmentOperator) {
   notification_data.vibration_pattern.assign(std::begin(vibration_pattern),
                                              std::end(vibration_pattern));
 
-  notification_data.timestamp = base::Time::FromJsTime(1513966159000.);
+  notification_data.timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(1513966159000.);
   notification_data.renotify = true;
   notification_data.silent = true;
   notification_data.require_interaction = true;
@@ -42,7 +43,7 @@ TEST(PlatformNotificationDataTest, AssignmentOperator) {
   notification_data.actions[0]->action = "buttonAction";
   notification_data.actions[0]->title = u"Button Title!";
   notification_data.actions[0]->icon = GURL("https://example.com/aButton.png");
-  notification_data.actions[0]->placeholder = absl::nullopt;
+  notification_data.actions[0]->placeholder = std::nullopt;
 
   notification_data.actions[1] = blink::mojom::NotificationAction::New();
   notification_data.actions[1]->type =

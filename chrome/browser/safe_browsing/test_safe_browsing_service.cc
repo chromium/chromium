@@ -27,8 +27,7 @@ namespace safe_browsing {
 // TestSafeBrowsingService functions:
 TestSafeBrowsingService::TestSafeBrowsingService()
     : test_shared_loader_factory_(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)) {
+          test_url_loader_factory_.GetSafeWeakWrapper()) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   services_delegate_ = ServicesDelegate::CreateForTest(this, this);
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
@@ -65,7 +64,7 @@ base::CallbackListSubscription TestSafeBrowsingService::RegisterStateCallback(
   return {};
 }
 
-std::string TestSafeBrowsingService::serilized_download_report() {
+std::string TestSafeBrowsingService::serialized_download_report() {
   return serialized_download_report_;
 }
 
@@ -94,7 +93,7 @@ bool TestSafeBrowsingService::SendDownloadReport(
     download::DownloadItem* download,
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
-    absl::optional<bool> show_download_in_folder) {
+    std::optional<bool> show_download_in_folder) {
   auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
   report->set_type(report_type);
   report->set_download_verdict(

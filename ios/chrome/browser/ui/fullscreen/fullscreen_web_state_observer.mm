@@ -80,10 +80,13 @@ void FullscreenWebStateObserver::DidFinishNavigation(
   model_->SetResizesScrollView(
       !is_pdf && !ios::provider::IsFullscreenSmoothScrollingSupported());
 
+  model_->SetScrollViewHeight(web_state->GetView().bounds.size.height);
+
   // Only reset the model for document-changing navigations or same-document
   // navigations that update the visible URL.
-  if (!navigation_context->IsSameDocument() || url_changed)
+  if (!navigation_context->IsSameDocument() || url_changed) {
     model_->ResetForNavigation();
+  }
 }
 
 void FullscreenWebStateObserver::DidStartLoading(web::WebState* web_state) {

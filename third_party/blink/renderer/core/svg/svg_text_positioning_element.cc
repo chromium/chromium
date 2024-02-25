@@ -20,7 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_text_positioning_element.h"
 
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length_list.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
@@ -81,7 +81,7 @@ void SVGTextPositioningElement::SvgAttributeChanged(
       return;
 
     if (auto* ng_text =
-            LayoutNGSVGText::LocateLayoutSVGTextAncestor(layout_object)) {
+            LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)) {
       ng_text->SetNeedsPositioningValuesUpdate();
     }
     MarkForLayoutAndParentResourceInvalidation(*layout_object);

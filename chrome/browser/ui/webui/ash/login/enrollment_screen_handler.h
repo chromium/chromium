@@ -72,6 +72,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void ShowEnrollmentStatus(policy::EnrollmentStatus status) override;
   void ShowOtherError(EnrollmentLauncher::OtherError error_code) override;
   void Shutdown() override;
+  base::WeakPtr<EnrollmentScreenView> AsWeakPtr() override;
 
   // Implements BaseScreenHandler:
   void InitAfterJavascriptAllowed() override;
@@ -86,7 +87,8 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
 
  private:
   // Handlers for WebUI messages.
-  void HandleToggleFakeEnrollment();
+  void HandleToggleFakeEnrollmentAndCompleteLogin(const std::string& user,
+                                                  int license_type);
   void HandleClose(const std::string& reason);
   void HandleCompleteLogin(const std::string& user, int license_type);
   void OnGetCookiesForCompleteLogin(
@@ -100,6 +102,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void HandleDeviceAttributesProvided(const std::string& asset_id,
                                       const std::string& location);
   void HandleOnLearnMore();
+  void HandleGetDeviceId(const std::string& callback_id);
 
   // Shows a given enrollment step.
   void ShowStep(const std::string& step);
@@ -139,8 +142,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   bool IsOnEnrollmentScreen();
 
   // Keeps the controller for this view.
-  raw_ptr<Controller, DanglingUntriaged | ExperimentalAsh> controller_ =
-      nullptr;
+  raw_ptr<Controller, DanglingUntriaged> controller_ = nullptr;
 
   bool show_on_init_ = false;
 

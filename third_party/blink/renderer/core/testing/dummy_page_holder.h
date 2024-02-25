@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -69,6 +70,15 @@ class DummyPageHolder {
   USING_FAST_MALLOC(DummyPageHolder);
 
  public:
+  static std::unique_ptr<DummyPageHolder> CreateAndCommitNavigation(
+      const KURL& url,
+      const gfx::Size& initial_view_size = gfx::Size(),
+      ChromeClient* = nullptr,
+      LocalFrameClient* = nullptr,
+      base::OnceCallback<void(Settings&)> setting_overrider =
+          base::NullCallback(),
+      const base::TickClock* clock = base::DefaultTickClock::GetInstance());
+
   DummyPageHolder(
       const gfx::Size& initial_view_size = gfx::Size(),
       ChromeClient* = nullptr,
@@ -93,13 +103,7 @@ class DummyPageHolder {
   // engine.
   ScopedMockOverlayScrollbars enable_mock_scrollbars_;
 
-  // The LocalFrame is accessed from worker threads by unit tests
-  // (ThreadableLoaderTest), hence we need to allow cross-thread
-  // usage of |m_frame|.
-  //
-  // TODO: rework the tests to not require cross-thread access.
-  CrossThreadPersistent<LocalFrame> frame_;
-
+  Persistent<LocalFrame> frame_;
   Persistent<LocalFrameClient> local_frame_client_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };

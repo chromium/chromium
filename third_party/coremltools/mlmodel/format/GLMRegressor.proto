@@ -1,0 +1,28 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification;
+
+/*
+ * A generalized linear model regressor.
+ */
+message GLMRegressor {
+  message DoubleArray {
+    repeated double value = 1;
+  }
+
+  enum PostEvaluationTransform {
+    NoTransform = 0;
+    Logit = 1;
+    Probit = 2;
+  }
+
+  repeated DoubleArray weights = 1;
+  repeated double offset = 2;
+  PostEvaluationTransform postEvaluationTransform = 3;
+}

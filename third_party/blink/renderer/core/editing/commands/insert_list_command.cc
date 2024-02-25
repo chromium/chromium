@@ -153,8 +153,9 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
       visible_selection.End().IsOrphan())
     return;
 
-  if (!RootEditableElementOf(EndingSelection().Base()))
+  if (!RootEditableElementOf(EndingSelection().Anchor())) {
     return;
+  }
 
   VisiblePosition visible_end = visible_selection.VisibleEnd();
   VisiblePosition visible_start = visible_selection.VisibleStart();
@@ -175,8 +176,9 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
     if (new_end.IsNotNull())
       builder.Extend(new_end.DeepEquivalent());
     SetEndingSelection(SelectionForUndoStep::From(builder.Build()));
-    if (!RootEditableElementOf(EndingSelection().Base()))
+    if (!RootEditableElementOf(EndingSelection().Anchor())) {
       return;
+    }
   }
 
   const HTMLQualifiedName& list_tag =
@@ -596,11 +598,11 @@ void InsertListCommand::ListifyParagraph(const VisiblePosition& original_start,
 
   // If original_start is of type kOffsetInAnchor, then the offset can become
   // invalid when inserting the <li>. So use a RelocatablePosition.
-  absl::optional<RelocatablePosition> relocatable_original_start(
+  std::optional<RelocatablePosition> relocatable_original_start(
       original_start.DeepEquivalent().IsOffsetInAnchor()
-          ? absl::optional<RelocatablePosition>(
+          ? std::optional<RelocatablePosition>(
                 RelocatablePosition(original_start.DeepEquivalent()))
-          : absl::nullopt);
+          : std::nullopt);
 
   // Check for adjoining lists.
   HTMLElement* const previous_list = AdjacentEnclosingList(
@@ -732,11 +734,11 @@ void InsertListCommand::MoveParagraphOverPositionIntoEmptyListItem(
   // enclosing block node so we can get the "outer" block node without crossing
   // block boundaries as that function only breaks when the loop hits the
   // editable boundary or the parent element has an inline style(as we pass
-  // |IsInline| to it).
+  // |IsInlineElement| to it).
   Node* const constraining_ancestor =
       EnclosingBlock(start.DeepEquivalent().AnchorNode());
   Node* const outer_block = HighestEnclosingNodeOfType(
-      start.DeepEquivalent(), &IsInline, kCannotCrossEditingBoundary,
+      start.DeepEquivalent(), &IsInlineElement, kCannotCrossEditingBoundary,
       constraining_ancestor);
   MoveParagraphWithClones(
       start, end, list_item_element,

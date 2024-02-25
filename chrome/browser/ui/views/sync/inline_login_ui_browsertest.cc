@@ -34,7 +34,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -138,12 +138,6 @@ class FooWebUIProvider
               (content::WebUI * web_ui, const GURL& url),
               (override));
 };
-
-bool AddToSet(std::set<content::WebContents*>* set,
-              content::WebContents* web_contents) {
-  set->insert(web_contents);
-  return false;
-}
 
 std::unique_ptr<net::test_server::HttpResponse> EmptyHtmlResponseHandler(
     const net::test_server::HttpRequest& request) {
@@ -317,7 +311,11 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
   std::set<content::WebContents*> set;
   GuestViewManager* manager =
       GuestViewManager::FromBrowserContext(info.contents->GetBrowserContext());
-  manager->ForEachGuest(info.contents, base::BindRepeating(&AddToSet, &set));
+  manager->ForEachGuest(info.contents, [&](content::WebContents* web_contents) {
+    set.insert(web_contents);
+    return false;
+  });
+
   ASSERT_EQ(1u, set.size());
   content::WebContents* webview_contents = *set.begin();
   content::RenderProcessHost* process =

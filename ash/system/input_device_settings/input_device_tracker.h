@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_TRACKER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
@@ -51,12 +52,12 @@ class ASH_EXPORT InputDeviceTracker
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   bool WasDevicePreviouslyConnected(InputDeviceCategory category,
-                                    const base::StringPiece& device_key) const;
+                                    std::string_view device_key) const;
 
  private:
   void Init(PrefService* pref_service);
   void RecordDeviceConnected(InputDeviceCategory category,
-                             const base::StringPiece& device_key);
+                             std::string_view device_key);
 
   void ResetPrefMembers();
   void RecordConnectedDevices();
@@ -66,7 +67,7 @@ class ASH_EXPORT InputDeviceTracker
 
   bool HasSeenPrimaryDeviceKeyAlias(
       const std::vector<std::string>& previously_observed_devices,
-      base::StringPiece device_key);
+      std::string_view device_key);
 
   std::unique_ptr<StringListPrefMember> keyboard_observed_devices_;
   std::unique_ptr<StringListPrefMember> mouse_observed_devices_;

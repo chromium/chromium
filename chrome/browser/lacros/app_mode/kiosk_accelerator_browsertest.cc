@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/app_mode/test/accelerator_helpers.h"
-#include "chrome/browser/lacros/browser_service_lacros.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -26,60 +29,32 @@ using crosapi::mojom::SessionType;
 
 namespace {
 
-const char kNavigationUrl[] = "https://www.example.com/";
-
-// Observes BrowserList and blocks until a given browser is removed.
-class BrowserClosedWaiter : public BrowserListObserver {
- public:
-  explicit BrowserClosedWaiter(Browser* browser) : browser_{browser} {
-    BrowserList::AddObserver(this);
-  }
-
-  ~BrowserClosedWaiter() override { BrowserList::RemoveObserver(this); }
-
-  [[nodiscard]] bool Wait() { return future_.Wait(); }
-
- private:
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser_ == browser) {
-      future_.SetValue();
-    }
-  }
-
-  raw_ptr<Browser> browser_ = nullptr;
-  base::test::TestFuture<void> future_;
-};
+const char kWebAppUrl[] = "https://www.example.com/";
 
 [[nodiscard]] bool WaitUntilBrowserClosed(Browser* browser) {
-  auto waiter = BrowserClosedWaiter(browser);
-  return waiter.Wait();
+  TestBrowserClosedWaiter waiter(browser);
+  return waiter.WaitUntilClosed();
+}
+
+void CreateKioskWindow() {
+  web_app::CreateWebApplicationWindow(ProfileManager::GetPrimaryUserProfile(),
+                                      kWebAppUrl,
+                                      WindowOpenDisposition::NEW_POPUP,
+                                      /*restore_id=*/0);
+}
+
+void SetBrowserInitParamsForWebKiosk() {
+  BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->session_type = SessionType::kWebKioskSession;
+  init_params->device_settings = crosapi::mojom::DeviceSettings::New();
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 }
 
 }  // namespace
 
 // Tests browser view accelerators work normally in non kiosk session.
-class NonKioskAcceleratorTest : public InProcessBrowserTest {
- protected:
-  NonKioskAcceleratorTest() = default;
-  ~NonKioskAcceleratorTest() override = default;
-
-  void SetUpOnMainThread() override {
-    browser_service_ = std::make_unique<BrowserServiceLacros>();
-    InProcessBrowserTest::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    InProcessBrowserTest::TearDownOnMainThread();
-    browser_service_.reset();
-  }
-
-  BrowserServiceLacros* browser_service() const {
-    return browser_service_.get();
-  }
-
- private:
-  std::unique_ptr<BrowserServiceLacros> browser_service_;
-};
+using NonKioskAcceleratorTest = InProcessBrowserTest;
 
 // Tests browser view accelerators do not work in kiosk session.
 class WebKioskAcceleratorTest : public InProcessBrowserTest {
@@ -87,14 +62,16 @@ class WebKioskAcceleratorTest : public InProcessBrowserTest {
   WebKioskAcceleratorTest() = default;
   ~WebKioskAcceleratorTest() override = default;
 
-  void SetUp() override { InProcessBrowserTest::SetUp(); }
+  void SetUp() override {
+    SetBrowserInitParamsForWebKiosk();
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpOnMainThread() override {
-    browser_service_ = std::make_unique<BrowserServiceLacros>();
     InProcessBrowserTest::SetUpOnMainThread();
     SetKioskSessionType();
     CreateKioskWindow();
-    CloseNonKioskWindow();
+    WaitForNonKioskWindowToClose();
     SelectFirstBrowser();
   }
 
@@ -105,7 +82,6 @@ class WebKioskAcceleratorTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
-    browser_service_.reset();
   }
 
  private:
@@ -116,34 +92,26 @@ class WebKioskAcceleratorTest : public InProcessBrowserTest {
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
   }
 
-  void CreateKioskWindow() {
-    base::test::TestFuture<CreationResult> future;
-    browser_service()->NewFullscreenWindow(
-        GURL(kNavigationUrl),
-        display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
-        future.GetCallback());
-    ASSERT_EQ(future.Take(), CreationResult::kSuccess);
-  }
-
-  BrowserServiceLacros* browser_service() const {
-    return browser_service_.get();
-  }
-
-  void CloseNonKioskWindow() {
+  void WaitForNonKioskWindowToClose() {
+    // The test framework automatically spawns a separate, non-kiosk browser
+    // window.
+    // This browser will automatically be closed by the code, but that happens
+    // asynchronous so wait here until that's done.
     ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+
     for (Browser* browser : *BrowserList::GetInstance()) {
-      const GURL& url =
-          browser->tab_strip_model()->GetActiveWebContents()->GetURL();
-      if (url != kNavigationUrl) {
-        browser->window()->Close();
+      // The non kiosk window will be automatically closed, but we have to wait
+      // for the closing to finish.
+      if (browser->IsAttemptingToCloseBrowser() ||
+          browser->IsBrowserClosing()) {
         ASSERT_TRUE(WaitUntilBrowserClosed(browser));
+        // do not continue looping since the browser list is now invalidated.
         break;
       }
     }
+
     ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   }
-
-  std::unique_ptr<BrowserServiceLacros> browser_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseTabWorks) {

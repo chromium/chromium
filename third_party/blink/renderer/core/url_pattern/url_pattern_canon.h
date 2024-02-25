@@ -22,26 +22,6 @@ enum class ValueType {
   kURL,
 };
 
-// The following functions are callbacks that may be passed to the
-// liburlpattern::Parse() method.  Each performs validation and encoding for
-// a different URL component.
-//
-// Note that there are two different pathname callbacks for "standard" URLs
-// like `https://foo` // vs "path" URLs like `data:foo`.  Select the correct
-// callback by calling `ShouldTreatAsStandardURL()`.
-absl::StatusOr<std::string> ProtocolEncodeCallback(absl::string_view input);
-absl::StatusOr<std::string> UsernameEncodeCallback(absl::string_view input);
-absl::StatusOr<std::string> PasswordEncodeCallback(absl::string_view input);
-absl::StatusOr<std::string> HostnameEncodeCallback(absl::string_view input);
-absl::StatusOr<std::string> IPv6HostnameEncodeCallback(absl::string_view input);
-absl::StatusOr<std::string> PortEncodeCallback(absl::string_view input);
-absl::StatusOr<std::string> StandardURLPathnameEncodeCallback(
-    absl::string_view input);
-absl::StatusOr<std::string> PathURLPathnameEncodeCallback(
-    absl::string_view input);
-absl::StatusOr<std::string> SearchEncodeCallback(absl::string_view input);
-absl::StatusOr<std::string> HashEncodeCallback(absl::string_view input);
-
 // Utility functions to canonicalize different component strings.  They will
 // throw an exception if the input is invalid.  The canonicalization and/or
 // validation will only be applied if the `type` is kURL.  These functions

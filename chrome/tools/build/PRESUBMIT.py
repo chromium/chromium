@@ -8,7 +8,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-_PLATFORMS = ['chromeos', 'win']
+_PLATFORMS = ['win']
 
 def _CheckChange(input_api, output_api):
   results = []

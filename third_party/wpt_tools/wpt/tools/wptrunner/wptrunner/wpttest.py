@@ -4,7 +4,7 @@ import subprocess
 import sys
 from abc import ABC
 from collections import defaultdict
-from typing import Any, ClassVar, Dict, Optional, Type
+from typing import Any, ClassVar, Dict, Optional, Set, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
@@ -14,6 +14,9 @@ enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest
 
 
 class Result(ABC):
+    default_expected: ClassVar[str]
+    statuses: Set[str]
+
     def __init__(self,
                  status,
                  message,
@@ -25,7 +28,7 @@ class Result(ABC):
             raise ValueError("Unrecognised status %s" % status)
         self.status = status
         self.message = message
-        self.expected = expected
+        self.expected = expected if expected is not None else self.default_expected
         self.known_intermittent = known_intermittent if known_intermittent is not None else []
         self.extra = extra if extra is not None else {}
         self.stack = stack
@@ -238,6 +241,25 @@ class Test(ABC):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def make_result(self,
+                    status,
+                    message,
+                    expected=None,
+                    extra=None,
+                    stack=None,
+                    known_intermittent=None):
+        if expected is None:
+            expected = self.expected()
+            known_intermittent = self.known_intermittent()
+        return self.result_cls(status, message, expected, extra, stack, known_intermittent)
+
+    def make_subtest_result(self, name, status, message, stack=None, expected=None,
+                            known_intermittent=None):
+        if expected is None:
+            expected = self.expected(name)
+            known_intermittent = self.known_intermittent(name)
+        return self.subtest_result_cls(name, status, message, stack, expected, known_intermittent)
+
     def update_metadata(self, metadata=None):
         if metadata is None:
             metadata = {}
@@ -391,6 +413,19 @@ class Test(ABC):
                 prefs = {}
             prefs.update(meta_prefs)
         return prefs
+
+    def expected_fail_message(self, subtest):
+        if subtest is None:
+            return None
+
+        metadata = self._get_metadata(subtest)
+        if metadata is None:
+            return None
+
+        try:
+            return metadata.get("expected-fail-message")
+        except KeyError:
+            return None
 
     def expected(self, subtest=None):
         if subtest is None:

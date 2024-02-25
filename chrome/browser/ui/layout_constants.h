@@ -53,6 +53,13 @@ enum LayoutConstant {
   // The corner radius to use for children of the location bar.
   LOCATION_BAR_CHILD_CORNER_RADIUS,
 
+  // The size of icons within chips inside the location bar.
+  LOCATION_BAR_CHIP_ICON_SIZE,
+
+  // The internal padding to use inside an indicator chip, permission request
+  // chip and between chips in the location bar.
+  LOCATION_BAR_CHIP_PADDING,
+
   // The vertical and horizontal padding inside the border.
   LOCATION_BAR_ELEMENT_PADDING,
 
@@ -76,9 +83,6 @@ enum LayoutConstant {
   // either `LOCATION_BAR_LEADING_ICON_SIZE` or
   // `LOCATION_BAR_TRAILING_ICON_SIZE`
   LOCATION_BAR_ICON_SIZE,
-
-  // The size of icons within chips inside the LocationBar.
-  LOCATION_BAR_CHIP_ICON_SIZE,
 
   // The size of the leading icons used inside the LocationBar.
   LOCATION_BAR_LEADING_ICON_SIZE,
@@ -137,6 +141,18 @@ enum LayoutConstant {
 
   // The total height, including icons and insets, of buttons in the toolbar.
   TOOLBAR_BUTTON_HEIGHT,
+
+  // The corner radius for a divider in the toolbar.
+  TOOLBAR_DIVIDER_CORNER_RADIUS,
+
+  // The height for a divider in the toolbar.
+  TOOLBAR_DIVIDER_HEIGHT,
+
+  // The horizontal space on either side of a divider in the toolbar.
+  TOOLBAR_DIVIDER_SPACING,
+
+  // The width for a divider in the toolbar.
+  TOOLBAR_DIVIDER_WIDTH,
 
   // Additional horizontal padding between the elements in the toolbar.
   TOOLBAR_ELEMENT_PADDING,

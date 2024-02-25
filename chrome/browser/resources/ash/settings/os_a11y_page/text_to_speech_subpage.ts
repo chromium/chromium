@@ -8,22 +8,22 @@
  * for text-to-speech accessibility settings.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '/shared/settings/controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './text_to_speech_subpage.html.js';
@@ -36,7 +36,7 @@ import {TextToSpeechSubpageBrowserProxy, TextToSpeechSubpageBrowserProxyImpl} fr
  * and should always reflect it (do not change one without changing the other).
  */
 export enum PdfOcrUserSelection {
-  TURN_ON_ONCE_FROM_CONTEXT_MENU = 0,
+  DEPRECATED_TURN_ON_ONCE_FROM_CONTEXT_MENU = 0,
   TURN_ON_ALWAYS_FROM_CONTEXT_MENU = 1,
   TURN_OFF_FROM_CONTEXT_MENU = 2,
   TURN_ON_ALWAYS_FROM_MORE_ACTIONS = 3,
@@ -52,9 +52,8 @@ export enum PdfOcrUserSelection {
 export enum ScreenAiInstallStatus {
   NOT_DOWNLOADED = 0,
   DOWNLOADING = 1,
-  FAILED = 2,
+  DOWNLOAD_FAILED = 2,
   DOWNLOADED = 3,
-  READY = 4,
 }
 
 const SettingsTextToSpeechSubpageElementBase =
@@ -84,14 +83,6 @@ export class SettingsTextToSpeechSubpageElement extends
        * Indicate whether a screen reader is enabled.
        */
       hasScreenReader: Boolean,
-
-      isAccessibilityChromeVoxPageMigrationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilityChromeVoxPageMigrationEnabled');
-        },
-      },
 
       /**
        * |pdfOcrProgress_| stores the downloading progress in percentage of
@@ -128,7 +119,6 @@ export class SettingsTextToSpeechSubpageElement extends
   hasScreenReader: boolean;
   private deviceBrowserProxy_: DevicePageBrowserProxy;
   private hasKeyboard_: boolean;
-  private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
   private pdfOcrProgress_: number;
   private pdfOcrStatus_: ScreenAiInstallStatus;
   private showPdfOcrToggle_: boolean;
@@ -146,7 +136,7 @@ export class SettingsTextToSpeechSubpageElement extends
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -167,7 +157,7 @@ export class SettingsTextToSpeechSubpageElement extends
     }
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(
@@ -181,12 +171,10 @@ export class SettingsTextToSpeechSubpageElement extends
         return this.pdfOcrProgress_ > 0 && this.pdfOcrProgress_ < 100 ?
             this.i18n('pdfOcrDownloadProgressLabel', this.pdfOcrProgress_) :
             this.i18n('pdfOcrDownloadingLabel');
-      case ScreenAiInstallStatus.FAILED:
+      case ScreenAiInstallStatus.DOWNLOAD_FAILED:
         return this.i18n('pdfOcrDownloadErrorLabel');
       case ScreenAiInstallStatus.DOWNLOADED:
         return this.i18n('pdfOcrDownloadCompleteLabel');
-      case ScreenAiInstallStatus.READY:
-        // No subtitle update in this case
       case ScreenAiInstallStatus.NOT_DOWNLOADED:
         // No subtitle update in this case
       default:
@@ -195,18 +183,18 @@ export class SettingsTextToSpeechSubpageElement extends
     }
   }
 
-  private onPdfOcrStateChanged_(pdfOcrState: ScreenAiInstallStatus) {
+  private onPdfOcrStateChanged_(pdfOcrState: ScreenAiInstallStatus): void {
     this.pdfOcrStatus_ = pdfOcrState;
   }
 
-  private onPdfOcrDownloadingProgressChanged_(progress: number) {
+  private onPdfOcrDownloadingProgressChanged_(progress: number): void {
     this.pdfOcrProgress_ = progress;
   }
 
   /**
    * Note: Overrides RouteOriginMixin implementation
    */
-  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
@@ -255,10 +243,6 @@ export class SettingsTextToSpeechSubpageElement extends
   }
 
   private onChromeVoxSettingsClick_(): void {
-    this.textToSpeechBrowserProxy_.showChromeVoxSettings();
-  }
-
-  private onChromeVoxNewSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_CHROMEVOX);
   }
 
@@ -267,10 +251,6 @@ export class SettingsTextToSpeechSubpageElement extends
   }
 
   private onSelectToSpeakSettingsClick_(): void {
-    this.textToSpeechBrowserProxy_.showSelectToSpeakSettings();
-  }
-
-  private onSelectToSpeakClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_SELECT_TO_SPEAK);
   }
 

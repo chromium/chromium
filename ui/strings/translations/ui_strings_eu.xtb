@@ -174,7 +174,7 @@
 <translation id="7052633198403197513">F1</translation>
 <translation id="7170202025028120564">Aplikazioaren bistaratze-ezarpenek aplikazioa berrabiarazten denean izango dute eragina.</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238427729722629793">{MINUTES,plural, =1{1 min gelditzen da}other{# min gelditzen dira}}</translation>
+<translation id="7238427729722629793">{MINUTES,plural, =1{1 minutu gelditzen da}other{# minutu gelditzen dira}}</translation>
 <translation id="7363164521834647158">Bidali erantzuna</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Duela 1 min}other{Duela # min}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -194,7 +194,7 @@
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Zenbakiaren jatorria: <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Duela 1 ordu}other{Duela # ordu}}</translation>
-<translation id="8131263257437993507">{SECONDS,plural, =1{1 s gelditzen da}other{# s gelditzen dira}}</translation>
+<translation id="8131263257437993507">{SECONDS,plural, =1{1 segundo gelditzen da}other{# segundo gelditzen dira}}</translation>
 <translation id="8134065097954893699">Orri hau berriro kargatzea</translation>
 <translation id="815598010540052116">Egin behera</translation>
 <translation id="8179976553408161302">Sartu</translation>

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ import {SecurityTestRunner} from 'security_test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Security from 'devtools/panels/security/security.js';
 
 (async function() {
   await TestRunner.showPanel('security');
@@ -31,7 +32,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   request1.setSecurityDetails(securityDetails);
   SecurityTestRunner.dispatchRequestFinished(request1);
-  const securityPanel = Security.SecurityPanel.instance();
+  const securityPanel = Security.SecurityPanel.SecurityPanel.instance();
 
   securityPanel.showOrigin('https://foo.test');
   await AxeCoreTestRunner.runValidation(securityPanel.contentElement);

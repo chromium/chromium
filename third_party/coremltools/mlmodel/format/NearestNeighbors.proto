@@ -1,0 +1,120 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification;
+
+import public "DataStructures.proto";
+import public "Parameters.proto";
+
+/*
+ * A k-Nearest-Neighbor classifier
+ */
+message KNearestNeighborsClassifier {
+  /*
+   * The "core" nearest neighbor model attributes.
+   */
+  NearestNeighborsIndex nearestNeighborsIndex = 1;
+
+  /*
+   * Number of neighbors to use for classification.
+   */
+  Int64Parameter numberOfNeighbors = 3;
+
+  /*
+   * Type of labels supported by the model. Currently supports String or Int64
+   * labels.
+   */
+  oneof ClassLabels {
+    StringVector stringClassLabels = 100;
+    Int64Vector int64ClassLabels = 101;
+  }
+
+  /*
+   * Default value of class label (useful when prediction is called on an empty
+   * kNN classifier)
+   */
+  oneof DefaultClassLabel {
+    string defaultStringLabel = 110;
+    int64 defaultInt64Label = 111;
+  }
+
+  /*
+   * Weighting scheme to be used when computing the majority label of a
+   * new data point.
+   */
+  oneof WeightingScheme {
+    UniformWeighting uniformWeighting = 200;
+    InverseDistanceWeighting inverseDistanceWeighting = 210;
+  }
+}
+
+/*
+ * The "core" attributes of a Nearest Neighbors model.
+ */
+message NearestNeighborsIndex {
+  /*
+   * Number of dimensions of the input data.
+   */
+  int32 numberOfDimensions = 1;
+
+  /*
+   * Vector of floating point data that makes up the model. Each data point must
+   * have 'numberOfDimensions' dimensions.
+   */
+  repeated FloatVector floatSamples = 2;
+
+  /*
+   * Backing data structure for the Nearest Neighbors Index. Currently supports
+   * a linear index or a kd-tree index.
+   */
+  oneof IndexType {
+    LinearIndex linearIndex = 100;
+    SingleKdTreeIndex singleKdTreeIndex = 110;
+  }
+
+  /*
+   * Distance function to be used to find neighbors. Currently only Squared
+   * Euclidean Distance is supported.
+   */
+  oneof DistanceFunction {
+    SquaredEuclideanDistance squaredEuclideanDistance = 200;
+  }
+}
+
+/*
+ * Specifies a uniform weighting scheme (i.e. each neighbor receives equal
+ * voting power).
+ */
+message UniformWeighting {}
+
+/*
+ * Specifies a inverse-distance weighting scheme (i.e. closest neighbors
+ * receives higher voting power). A nearest neighbor with highest sum of (1 /
+ * distance) is picked.
+ */
+message InverseDistanceWeighting {}
+
+/*
+ * Specifies a flat index of data points to be searched by brute force.
+ */
+message LinearIndex {}
+
+/*
+ * Specifies a kd-tree backend for the nearest neighbors model.
+ */
+message SingleKdTreeIndex {
+  /*
+   * Number of data points contained within a leaf node of the kd-tree.
+   */
+  int32 leafSize = 1;
+}
+
+/*
+ * Specifies the Squared Euclidean Distance function.
+ */
+message SquaredEuclideanDistance {}

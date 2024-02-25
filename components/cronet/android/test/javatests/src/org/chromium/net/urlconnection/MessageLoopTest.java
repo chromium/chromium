@@ -23,15 +23,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-/**
- * Tests the MessageLoop implementation.
- */
+/** Tests the MessageLoop implementation. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public class MessageLoopTest {
     private Thread mTestThread;
     private final ExecutorService mExecutorService =
             Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
+
     private class ExecutorThreadFactory implements ThreadFactory {
         @Override
         public Thread newThread(Runnable r) {
@@ -39,6 +38,7 @@ public class MessageLoopTest {
             return mTestThread;
         }
     }
+
     private boolean mFailed;
 
     @Test
@@ -46,12 +46,14 @@ public class MessageLoopTest {
     public void testInterrupt() throws Exception {
         final MessageLoop loop = new MessageLoop();
         assertThat(loop.isRunning()).isFalse();
-        Future future = mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                assertThrows(InterruptedIOException.class, loop::loop);
-            }
-        });
+        Future future =
+                mExecutorService.submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                assertThrows(InterruptedIOException.class, loop::loop);
+                            }
+                        });
         Thread.sleep(1000);
         assertThat(loop.isRunning()).isTrue();
         assertThat(loop.hasLoopFailed()).isFalse();
@@ -60,12 +62,15 @@ public class MessageLoopTest {
         assertThat(loop.isRunning()).isFalse();
         assertThat(loop.hasLoopFailed()).isTrue();
         // Re-spinning the message loop is not allowed after interrupt.
-        mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                assertThrows(InterruptedIOException.class, loop::loop);
-            }
-        }).get();
+        mExecutorService
+                .submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                assertThrows(InterruptedIOException.class, loop::loop);
+                            }
+                        })
+                .get();
     }
 
     @Test
@@ -73,18 +78,21 @@ public class MessageLoopTest {
     public void testTaskFailed() throws Exception {
         final MessageLoop loop = new MessageLoop();
         assertThat(loop.isRunning()).isFalse();
-        Future future = mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                assertThrows(NullPointerException.class, loop::loop);
-            }
-        });
-        Runnable failedTask = new Runnable() {
-            @Override
-            public void run() {
-                throw new NullPointerException();
-            }
-        };
+        Future future =
+                mExecutorService.submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                assertThrows(NullPointerException.class, loop::loop);
+                            }
+                        });
+        Runnable failedTask =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        throw new NullPointerException();
+                    }
+                };
         Thread.sleep(1000);
         assertThat(loop.isRunning()).isTrue();
         assertThat(loop.hasLoopFailed()).isFalse();
@@ -93,12 +101,15 @@ public class MessageLoopTest {
         assertThat(loop.isRunning()).isFalse();
         assertThat(loop.hasLoopFailed()).isTrue();
         // Re-spinning the message loop is not allowed after exception.
-        mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                assertThrows(NullPointerException.class, loop::loop);
-            }
-        }).get();
+        mExecutorService
+                .submit(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                assertThrows(NullPointerException.class, loop::loop);
+                            }
+                        })
+                .get();
     }
 
     @Test

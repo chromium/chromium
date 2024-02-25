@@ -41,7 +41,7 @@ class TestBackgroundSyncManager : public BackgroundSyncManager {
 
   TestBackgroundSyncManager(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-      scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
+      DevToolsBackgroundServicesContextImpl& devtools_context);
 
   TestBackgroundSyncManager(const TestBackgroundSyncManager&) = delete;
   TestBackgroundSyncManager& operator=(const TestBackgroundSyncManager&) =

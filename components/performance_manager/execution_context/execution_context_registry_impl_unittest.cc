@@ -99,16 +99,16 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
 
   // Expect the FrameExecutionContext implementation to work.
   EXPECT_EQ(ExecutionContextType::kFrameNode, frame1_ec->GetType());
-  EXPECT_EQ(frame1->frame_token().value(), frame1_ec->GetToken().value());
-  EXPECT_EQ(frame1->url(), frame1_ec->GetUrl());
+  EXPECT_EQ(frame1->GetFrameToken().value(), frame1_ec->GetToken().value());
+  EXPECT_EQ(frame1->GetURL(), frame1_ec->GetUrl());
   EXPECT_EQ(frame1->process_node(), frame1_ec->GetProcessNode());
   EXPECT_EQ(frame1, frame1_ec->GetFrameNode());
   EXPECT_FALSE(frame1_ec->GetWorkerNode());
 
   // Expect the WorkerExecutionContext implementation to work.
   EXPECT_EQ(ExecutionContextType::kWorkerNode, worker_ec->GetType());
-  EXPECT_EQ(worker->worker_token().value(), worker_ec->GetToken().value());
-  EXPECT_EQ(worker->url(), worker_ec->GetUrl());
+  EXPECT_EQ(worker->GetWorkerToken().value(), worker_ec->GetToken().value());
+  EXPECT_EQ(worker->GetURL(), worker_ec->GetUrl());
   EXPECT_EQ(worker->process_node(), worker_ec->GetProcessNode());
   EXPECT_FALSE(worker_ec->GetFrameNode());
   EXPECT_EQ(worker, worker_ec->GetWorkerNode());
@@ -127,10 +127,12 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
             registry_->GetExecutionContextByToken(worker_ec->GetToken()));
 
   // Lookup by typed tokens should work.
-  EXPECT_EQ(frame1, registry_->GetFrameNodeByFrameToken(frame1->frame_token()));
-  EXPECT_EQ(frame2, registry_->GetFrameNodeByFrameToken(frame2->frame_token()));
+  EXPECT_EQ(frame1,
+            registry_->GetFrameNodeByFrameToken(frame1->GetFrameToken()));
+  EXPECT_EQ(frame2,
+            registry_->GetFrameNodeByFrameToken(frame2->GetFrameToken()));
   EXPECT_EQ(worker,
-            registry_->GetWorkerNodeByWorkerToken(worker->worker_token()));
+            registry_->GetWorkerNodeByWorkerToken(worker->GetWorkerToken()));
 
   // Querying a random token should fail.
   EXPECT_FALSE(

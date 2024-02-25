@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Cross-origin element ready check with no allowfullscreen or allow attribute
+  promise_test: Unhandled rejection with value: object "Error: Timed out waiting for message"
+Harness: the test ran to completion.

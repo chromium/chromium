@@ -26,16 +26,15 @@ class PhoneNumber : public FormGroup {
 
   PhoneNumber& operator=(const PhoneNumber& number);
   bool operator==(const PhoneNumber& other) const;
-  bool operator!=(const PhoneNumber& other) const { return !operator==(other); }
 
   void set_profile(const AutofillProfile* profile) { profile_ = profile; }
 
   // FormGroup implementation:
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
-                        ServerFieldTypeSet* matching_types) const override;
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                        FieldTypeSet* matching_types) const override;
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
@@ -45,8 +44,9 @@ class PhoneNumber : public FormGroup {
     PhoneCombineHelper();
     ~PhoneCombineHelper();
 
-    // If |type| is a phone field type, saves the |value| accordingly and
-    // returns true.  For all other field types returns false.
+    // If |type| is a phone field type, processes the |value| accordingly and
+    // returns true. This function always returns true for all phone number
+    // field types. For all other field types false is returned.
     bool SetInfo(const AutofillType& type, const std::u16string& value);
 
     // Parses the number built up from pieces stored via SetInfo() according to
@@ -69,7 +69,7 @@ class PhoneNumber : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
   bool SetInfoWithVerificationStatusImpl(const AutofillType& type,

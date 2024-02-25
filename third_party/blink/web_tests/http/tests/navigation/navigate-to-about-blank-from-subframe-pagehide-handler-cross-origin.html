@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<iframe></iframe>
+<a href='about:blank'></a>
+<script>
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+  }
+  let iframe = document.querySelector('iframe');
+  let link = document.querySelector('a');
+  iframe.contentWindow.addEventListener('pagehide', function() {
+    link.click();
+  });
+  location.href = 'http://localhost:8000/navigation/resources/pass-and-notify-done.html'
+</script>

@@ -102,7 +102,7 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Create Decoder.
   VideoDecodeAccelerator::Config vda_config(config.profile());
-  vda_config.output_mode = VideoDecodeAccelerator::Config::OutputMode::IMPORT;
+  vda_config.output_mode = VideoDecodeAccelerator::Config::OutputMode::kImport;
   vda_config.encryption_scheme = config.encryption_scheme();
   vda_config.is_deferred_initialization_allowed = false;
   vda_config.initial_expected_coded_size = config.coded_size();
@@ -191,7 +191,6 @@ int TestVDAVideoDecoder::GetMaxDecodeRequests() const {
 void TestVDAVideoDecoder::ProvidePictureBuffers(
     uint32_t requested_num_of_buffers,
     VideoPixelFormat format,
-    uint32_t textures_per_buffer,
     const gfx::Size& dimensions,
     uint32_t texture_target) {
   NOTIMPLEMENTED() << "VDA must call ProvidePictureBuffersWithVisibleRect()";
@@ -200,12 +199,10 @@ void TestVDAVideoDecoder::ProvidePictureBuffers(
 void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     VideoPixelFormat format,
-    uint32_t textures_per_buffer,
     const gfx::Size& dimensions,
     const gfx::Rect& visible_rect,
     uint32_t texture_target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
-  ASSERT_EQ(textures_per_buffer, 1u);
   DVLOGF(4) << "Requested " << requested_num_of_buffers
             << " picture buffers with size " << dimensions.width() << "x"
             << dimensions.height();
@@ -329,7 +326,7 @@ void TestVDAVideoDecoder::PictureReady(const Picture& picture) {
 
 // static
 void TestVDAVideoDecoder::ReusePictureBufferThunk(
-    absl::optional<base::WeakPtr<TestVDAVideoDecoder>> vda_video_decoder,
+    std::optional<base::WeakPtr<TestVDAVideoDecoder>> vda_video_decoder,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     int32_t picture_buffer_id) {
   DCHECK(vda_video_decoder);

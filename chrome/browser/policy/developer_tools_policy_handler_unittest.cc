@@ -210,7 +210,7 @@ class DeveloperToolsPolicyHandlerWithProfileTest
 
       user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id, /* is_affiliated= */ true,
-          user_manager::UserType::USER_TYPE_REGULAR, primary_profile_);
+          user_manager::UserType::kRegular, primary_profile_);
       user_manager->LoginUser(account_id);
     }
     {
@@ -222,7 +222,7 @@ class DeveloperToolsPolicyHandlerWithProfileTest
 
       user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id, /* is_affiliated= */ true,
-          user_manager::UserType::USER_TYPE_REGULAR, secondary_profile_);
+          user_manager::UserType::kRegular, secondary_profile_);
     }
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
@@ -250,8 +250,8 @@ class DeveloperToolsPolicyHandlerWithProfileTest
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_;
-  raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_;
+  raw_ptr<TestingProfile> primary_profile_;
+  raw_ptr<TestingProfile> secondary_profile_;
 };
 
 TEST_F(DeveloperToolsPolicyHandlerWithProfileTest,

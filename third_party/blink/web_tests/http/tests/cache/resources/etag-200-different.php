@@ -4,11 +4,12 @@
 header('ETag: foo');
 header('Cache-control: max-age=0');
 
-if ($_GET['type'] == 'css') {
+$type = $_GET['type'] ?? null;
+if ($type == 'css') {
     header('Content-Type: text/css');
 }
-
-if ($_SERVER['HTTP_IF_NONE_MATCH'] == 'foo') {
+$http_if_none_match = $_SERVER['HTTP_IF_NONE_MATCH'] ?? null;
+if ($http_if_none_match == 'foo') {
     // The body after revalidation.
     echo "/* after revalidation */";
     exit;

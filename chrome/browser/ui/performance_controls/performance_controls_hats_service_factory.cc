@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -48,7 +49,7 @@ PerformanceControlsHatsServiceFactory::BuildServiceInstanceForBrowserContext(
                kPerformanceControlsBatteryPerformanceSurvey) &&
        !base::FeatureList::IsEnabled(
            performance_manager::features::
-               kPerformanceControlsHighEfficiencyOptOutSurvey) &&
+               kPerformanceControlsMemorySaverOptOutSurvey) &&
        !base::FeatureList::IsEnabled(
            performance_manager::features::
                kPerformanceControlsBatterySaverOptOutSurvey))) {
@@ -63,7 +64,8 @@ PerformanceControlsHatsServiceFactory::BuildServiceInstanceForBrowserContext(
   // Chrome) and simply not creating the service avoids unnecessary work
   // tracking user interactions.
   auto* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+      HatsServiceFactory::GetForProfile(profile,
+                                        /*create_if_necessary=*/true);
   if (!hats_service ||
       !hats_service->CanShowAnySurvey(/*user_prompted=*/false)) {
     return nullptr;

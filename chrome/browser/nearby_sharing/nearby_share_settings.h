@@ -132,9 +132,9 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
   mojo::RemoteSet<nearby_share::mojom::NearbyShareSettingsObserver>
       observers_set_;
   mojo::ReceiverSet<nearby_share::mojom::NearbyShareSettings> receiver_set_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
-  raw_ptr<NearbyShareLocalDeviceDataManager, ExperimentalAsh>
-      local_device_data_manager_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_ =
+      nullptr;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

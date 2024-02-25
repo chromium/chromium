@@ -63,6 +63,8 @@ import sys
 _COVERAGE_FLAGS = [
     '-fprofile-instr-generate',
     '-fcoverage-mapping',
+    '-mllvm',
+    '-runtime-counter-relocation=true',
     # Following experimental flags remove unused header functions from the
     # coverage mapping data embedded in the test binaries, and the reduction
     # of binary size enables building Chrome's large unit test targets on
@@ -85,7 +87,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
     'fuchsia': [
         # TODO(crbug.com/1174725): These files caused clang to crash while
         # compiling them.
-        '../../base/allocator/partition_allocator/pcscan.cc',
+        '../../base/allocator/partition_allocator/src/partition_alloc/pcscan.cc',
         '../../third_party/skia/src/core/SkOpts.cpp',
         '../../third_party/skia/src/opts/SkOpts_hsw.cpp',
         '../../third_party/skia/third_party/skcms/skcms.cc',

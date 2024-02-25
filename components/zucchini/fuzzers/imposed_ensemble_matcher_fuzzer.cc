@@ -25,7 +25,8 @@ constexpr size_t kMaxImageSize = 1024;
 
 struct Environment {
   Environment() {
-    logging::SetMinLogLevel(logging::LOG_FATAL);  // Disable console spamming.
+    // Disable console spamming.
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 

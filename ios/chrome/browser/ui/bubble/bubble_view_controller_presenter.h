@@ -8,13 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#include "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view.h"
+#import "ios/chrome/browser/ui/bubble/bubble_dismissal_reason_type.h"
 
-// Procedural block with a snoozeAction argument, used for the bubble's
-// dismissal callback.
-typedef void (^ProceduralBlockWithSnoozeAction)(
-    feature_engagement::Tracker::SnoozeAction);
+typedef NS_ENUM(NSInteger, BubbleAlignment);
+typedef NS_ENUM(NSInteger, BubbleArrowDirection);
+typedef NS_ENUM(NSInteger, BubbleViewType);
 
 @class BubbleViewController;
 
@@ -59,7 +57,8 @@ typedef void (^ProceduralBlockWithSnoozeAction)(
               arrowDirection:(BubbleArrowDirection)arrowDirection
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
-           dismissalCallback:(ProceduralBlockWithSnoozeAction)dismissalCallback
+           dismissalCallback:
+               (CallbackWithIPHDismissalReasonType)dismissalCallback
     NS_DESIGNATED_INITIALIZER;
 
 // Initializes the presenter with a Default BubbleViewType. `text` is the text
@@ -72,8 +71,8 @@ typedef void (^ProceduralBlockWithSnoozeAction)(
                            arrowDirection:(BubbleArrowDirection)arrowDirection
                                 alignment:(BubbleAlignment)alignment
                      isLongDurationBubble:(BOOL)isLongDurationBubble
-                        dismissalCallback:
-                            (ProceduralBlockWithSnoozeAction)dismissalCallback;
+                        dismissalCallback:(CallbackWithIPHDismissalReasonType)
+                                              dismissalCallback;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -84,9 +83,28 @@ typedef void (^ProceduralBlockWithSnoozeAction)(
 // Presents the bubble in `parentView`. The underlying BubbleViewController is
 // added as a child view controller of `parentViewController`. `anchorPoint`
 // determines where the bubble is anchored in window coordinates.
+// Has the same effect as
+// -presentInViewController:view:anchorPoint:anchorViewFrame: with
+// `anchorViewFrame` == CGRectZero.
 - (void)presentInViewController:(UIViewController*)parentViewController
                            view:(UIView*)parentView
                     anchorPoint:(CGPoint)anchorPoint;
+
+// Presents the bubble in `parentView`. The underlying BubbleViewController is
+// added as a child view controller of `parentViewController`. `anchorPoint`
+// determines where the bubble is anchored in window coordinates.
+// `anchorViewFrame` is the frame of the anchored view, in the coordinate system
+// of the `parentView`, used for determining whether the user acts on the IPH by
+// touching inside the frame.
+- (void)presentInViewController:(UIViewController*)parentViewController
+                           view:(UIView*)parentView
+                    anchorPoint:(CGPoint)anchorPoint
+                anchorViewFrame:(CGRect)anchorViewFrame;
+
+// If `hidden`, the arrow hides behind the bubble; otherwise, it is visible and
+// pointing to the anchor point. If `animated`, the arrow will be slid out of /
+// back in the bubble. If the bubble is not visible, this will have no effect.
+- (void)setArrowHidden:(BOOL)hidden animated:(BOOL)animated;
 
 // Removes the bubble from the screen and removes the BubbleViewController from
 // its parent. If the bubble is not visible, has no effect. Can be animated or

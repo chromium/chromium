@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/window/frame_background.h"
@@ -41,31 +42,21 @@ bool BrowserFrameViewLinuxNative::DrawFrameButtonParams::operator==(
 BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
     BrowserFrame* frame,
     BrowserView* browser_view,
-    BrowserFrameViewLayoutLinux* layout,
-    std::unique_ptr<ui::NavButtonProvider> nav_button_provider,
-    ui::WindowFrameProvider* window_frame_provider)
+    BrowserFrameViewLayoutLinuxNative* layout,
+    std::unique_ptr<ui::NavButtonProvider> nav_button_provider)
     : BrowserFrameViewLinux(frame, browser_view, layout),
       nav_button_provider_(std::move(nav_button_provider)),
-      window_frame_provider_(window_frame_provider) {}
+      layout_(layout) {}
 
 BrowserFrameViewLinuxNative::~BrowserFrameViewLinuxNative() = default;
 
-float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
-  return window_frame_provider_->GetTopCornerRadiusDip();
-}
-
-int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
-  return window_frame_provider_->IsTopFrameTranslucent() ? GetTopAreaHeight()
-                                                         : 0;
-}
-
-void BrowserFrameViewLinuxNative::Layout() {
-  // Calling MaybeUpdateCachedFrameButtonImages() from Layout() is sufficient to
-  // catch all cases that could update the appearance, since
+void BrowserFrameViewLinuxNative::Layout(PassKey) {
+  // Calling MaybeUpdateCachedFrameButtonImages() here is sufficient to catch
+  // all cases that could update the appearance, since
   // DesktopWindowTreeHostPlatform::On{Window,Activation}StateChanged() does a
   // layout any time the maximized and activation state changes, respectively.
   MaybeUpdateCachedFrameButtonImages();
-  OpaqueBrowserFrameView::Layout();
+  LayoutSuperclass<OpaqueBrowserFrameView>(this);
 }
 
 BrowserFrameViewLinuxNative::FrameButtonStyle
@@ -73,19 +64,30 @@ BrowserFrameViewLinuxNative::GetFrameButtonStyle() const {
   return FrameButtonStyle::kImageButton;
 }
 
+int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
+  return layout_->GetFrameProvider()->IsTopFrameTranslucent()
+             ? GetTopAreaHeight()
+             : 0;
+}
+
+float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
+  return layout_->GetFrameProvider()->GetTopCornerRadiusDip();
+}
+
 void BrowserFrameViewLinuxNative::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
-  window_frame_provider_->PaintWindowFrame(
+  layout_->GetFrameProvider()->PaintWindowFrame(
       canvas, GetLocalBounds(), GetTopAreaHeight(), ShouldPaintAsActive(),
-      GetTiledEdges());
+      GetInputInsets());
 }
 
 void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
   DrawFrameButtonParams params{
       GetTopAreaHeight() - layout()->FrameEdgeInsets(!IsMaximized()).top(),
       IsMaximized(), ShouldPaintAsActive()};
-  if (cache_ == params)
+  if (cache_ == params) {
     return;
+  }
   cache_ = params;
   nav_button_provider_->RedrawImages(params.top_area_height, params.maximized,
                                      params.active);
@@ -102,10 +104,10 @@ void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
       views::Button* button = GetButtonFromDisplayType(type);
       DCHECK_EQ(std::string(views::ImageButton::kViewClassName),
                 button->GetClassName());
-      static_cast<views::ImageButton*>(button)->SetImage(
+      static_cast<views::ImageButton*>(button)->SetImageModel(
           button_state,
-          nav_button_provider_->GetImage(
-              type, ButtonStateToNavButtonProviderState(button_state)));
+          ui::ImageModel::FromImageSkia(nav_button_provider_->GetImage(
+              type, ButtonStateToNavButtonProviderState(button_state))));
     }
   }
 }
@@ -125,3 +127,6 @@ views::Button* BrowserFrameViewLinuxNative::GetButtonFromDisplayType(
       NOTREACHED_NORETURN();
   }
 }
+
+BEGIN_METADATA(BrowserFrameViewLinuxNative)
+END_METADATA

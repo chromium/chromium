@@ -1,0 +1,43 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("mgs") {
+  sources = [
+    "managed_guest_session_utils.cc",
+    "managed_guest_session_utils.h",
+  ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chromeos/crosapi/mojom",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "managed_guest_session_test_utils.cc",
+    "managed_guest_session_test_utils.h",
+  ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chromeos/crosapi/mojom",
+  ]
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
+}

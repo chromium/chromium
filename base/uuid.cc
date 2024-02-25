@@ -9,6 +9,8 @@
 
 #include <ostream>
 
+#include "base/containers/span.h"
+#include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -66,7 +68,7 @@ Uuid Uuid::GenerateRandomV4() {
   uint8_t sixteen_bytes[kGuidV4InputLength];
   // Use base::RandBytes instead of crypto::RandBytes, because crypto calls the
   // base version directly, and to prevent the dependency from base/ to crypto/.
-  RandBytes(&sixteen_bytes, sizeof(sixteen_bytes));
+  RandBytes(sixteen_bytes);
   return FormatRandomDataAsV4Impl(sixteen_bytes);
 }
 
@@ -155,32 +157,14 @@ const std::string& Uuid::AsLowercaseString() const {
   return lowercase_;
 }
 
-bool Uuid::operator==(const Uuid& other) const {
-  return AsLowercaseString() == other.AsLowercaseString();
-}
-
-bool Uuid::operator!=(const Uuid& other) const {
-  return !(*this == other);
-}
-
-bool Uuid::operator<(const Uuid& other) const {
-  return AsLowercaseString() < other.AsLowercaseString();
-}
-
-bool Uuid::operator<=(const Uuid& other) const {
-  return *this < other || *this == other;
-}
-
-bool Uuid::operator>(const Uuid& other) const {
-  return !(*this <= other);
-}
-
-bool Uuid::operator>=(const Uuid& other) const {
-  return !(*this < other);
-}
-
 std::ostream& operator<<(std::ostream& out, const Uuid& uuid) {
   return out << uuid.AsLowercaseString();
+}
+
+size_t UuidHash::operator()(const Uuid& uuid) const {
+  // TODO(crbug.com/1026195): Avoid converting to string to take the hash when
+  // the internal type is migrated to a non-string type.
+  return FastHash(uuid.AsLowercaseString());
 }
 
 }  // namespace base

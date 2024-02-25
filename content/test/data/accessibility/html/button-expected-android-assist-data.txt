@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Button textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="button"}, {display="inline-block"}, {onclick="alert('Hello user!')"}, {type="button"}]
+++++++TextView text:"Click me!" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag=""}, {display=""}]

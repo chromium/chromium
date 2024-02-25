@@ -22,4 +22,9 @@ message LogUploadEvent {
   // Additional fields provided by the caller can be added here.
   // The ID of the remote device command that triggered the log upload.
   optional int64 command_id = 3;
+  // The optional result payload (as a JSON string) for the command that has
+  // triggered the log upload. For more details please see comments for
+  // `FetchSupportPacketResultCode` in
+  // components/policy/proto/device_management_backend.proto file.
+  optional string command_result_payload = 4;
 }

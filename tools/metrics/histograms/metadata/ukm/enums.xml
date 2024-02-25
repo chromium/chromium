@@ -1,0 +1,79 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="PersistedLogsLogReadStatus">
+  <int value="0" label="RECALL_SUCCESS"/>
+  <int value="1" label="LIST_EMPTY"/>
+  <int value="2" label="LIST_SIZE_MISSING"/>
+  <int value="3" label="LIST_SIZE_TOO_SMALL"/>
+  <int value="4" label="LIST_SIZE_CORRUPTION"/>
+  <int value="5" label="LOG_STRING_CORRUPTION"/>
+  <int value="6" label="CHECKSUM_CORRUPTION"/>
+  <int value="7" label="CHECKSUM_STRING_CORRUPTION"/>
+  <int value="8" label="DECODE_FAIL"/>
+  <int value="9" label="DEPRECATED_XML_PROTO_MISMATCH"/>
+</enum>
+
+<enum name="UkmDataDroppedReason">
+  <int value="0" label="Not dropped"/>
+  <int value="1" label="Recording disabled"/>
+  <int value="2" label="Max hit"/>
+  <int value="3" label="Not whitelisted (Deprecated)"/>
+  <int value="4" label="Unsupported URL scheme"/>
+  <int value="5" label="Sampled out"/>
+  <int value="6" label="Extension URLs disabled"/>
+  <int value="7" label="Extension not synced"/>
+  <int value="8" label="Not matched"/>
+  <int value="9" label="Empty URL"/>
+  <int value="10" label="Rejected by filter"/>
+  <int value="11" label="No UKM sampling configuration received"/>
+  <int value="12" label="MSBB consent is disabled"/>
+  <int value="13" label="Apps consent is disabled"/>
+  <int value="14" label="Extension URL has an unexpected scheme"/>
+  <int value="15"
+      label="Recording Disabled with UkmReduceAddEntryIPC experiment"/>
+</enum>
+
+<enum name="UkmEventNameHash">
+  <summary>
+    Placeholder enum. The values are UKM event name hashes truncated to 31 bits.
+    This gets populated by the GetEnumsNodes function in merge_xml.py when
+    producing the merged XML file.
+  </summary>
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
+</enum>
+
+<enum name="UkmResetReason">
+  <int value="0" label="OnUkmAllowedStateChanged"/>
+  <int value="1" label="UpdatePermissions"/>
+  <int value="2" label="ClonedInstall"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

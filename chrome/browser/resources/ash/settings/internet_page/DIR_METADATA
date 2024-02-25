@@ -1,4 +1,1 @@
-buganizer {
-  component_id: 1131775
-}
-team_email: "cros-connectivity@google.com"
+mixins: "//ash/webui/common/resources/network/COMMON_METADATA"

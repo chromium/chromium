@@ -282,7 +282,7 @@ class RequestQueueStoreTestBase : public testing::Test {
   const std::vector<std::unique_ptr<SavePageRequest>>& last_requests() const {
     return last_requests_;
   }
-  absl::optional<AddRequestResult> last_add_result() const {
+  std::optional<AddRequestResult> last_add_result() const {
     return last_add_result_;
   }
 
@@ -296,7 +296,7 @@ class RequestQueueStoreTestBase : public testing::Test {
  private:
   LastResult last_result_;
   UpdateStatus last_update_status_;
-  absl::optional<AddRequestResult> last_add_result_;
+  std::optional<AddRequestResult> last_add_result_;
   std::unique_ptr<UpdateRequestsResult> last_update_result_;
   std::vector<std::unique_ptr<SavePageRequest>> last_requests_;
 
@@ -325,7 +325,7 @@ void RequestQueueStoreTestBase::PumpLoop() {
 void RequestQueueStoreTestBase::ClearResults() {
   last_result_ = LastResult::RESULT_NONE;
   last_update_status_ = UpdateStatus::FAILED;
-  last_add_result_ = absl::nullopt;
+  last_add_result_ = std::nullopt;
   last_requests_.clear();
   last_update_result_.reset(nullptr);
 }
@@ -610,7 +610,7 @@ TEST_F(RequestQueueStoreTest, AddRequest) {
   store->AddRequest(request, RequestQueue::AddOptions(),
                     base::BindOnce(&RequestQueueStoreTestBase::AddRequestDone,
                                    base::Unretained(this)));
-  ASSERT_EQ(absl::nullopt, this->last_add_result());
+  ASSERT_EQ(std::nullopt, this->last_add_result());
   this->PumpLoop();
   ASSERT_EQ(AddRequestResult::SUCCESS, this->last_add_result());
 
@@ -629,7 +629,7 @@ TEST_F(RequestQueueStoreTest, AddRequest) {
   store->AddRequest(request, RequestQueue::AddOptions(),
                     base::BindOnce(&RequestQueueStoreTestBase::AddRequestDone,
                                    base::Unretained(this)));
-  ASSERT_EQ(absl::nullopt, this->last_add_result());
+  ASSERT_EQ(std::nullopt, this->last_add_result());
   this->PumpLoop();
   ASSERT_EQ(AddRequestResult::ALREADY_EXISTS, this->last_add_result());
 

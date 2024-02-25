@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  sources = [
+    "content_facilitated_payments_driver.cc",
+    "content_facilitated_payments_driver.h",
+    "content_facilitated_payments_driver_factory.cc",
+    "content_facilitated_payments_driver_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/facilitated_payments/core/browser",
+    "//components/facilitated_payments/core/mojom",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_facilitated_payments_driver_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//components/optimization_guide/core:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

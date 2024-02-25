@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
@@ -85,21 +86,22 @@ void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
     DCHECK(descriptor.has_writable());
     info.GetReturnValue().Set(
         V8ObjectBuilder(ScriptState::ForCurrentRealm(info))
-            .Add("configurable", descriptor.configurable())
-            .Add("enumerable", descriptor.enumerable())
-            .Add("value", descriptor.value())
-            .Add("writable", descriptor.writable())
+            .AddBoolean("configurable", descriptor.configurable())
+            .AddBoolean("enumerable", descriptor.enumerable())
+            .AddV8Value("value", descriptor.value())
+            .AddBoolean("writable", descriptor.writable())
             .V8Value());
     return;
   }
   // Accessor property
   DCHECK(descriptor.has_get() || descriptor.has_set());
-  info.GetReturnValue().Set(V8ObjectBuilder(ScriptState::ForCurrentRealm(info))
-                                .Add("configurable", descriptor.configurable())
-                                .Add("enumerable", descriptor.enumerable())
-                                .Add("get", descriptor.get())
-                                .Add("set", descriptor.set())
-                                .V8Value());
+  info.GetReturnValue().Set(
+      V8ObjectBuilder(ScriptState::ForCurrentRealm(info))
+          .AddBoolean("configurable", descriptor.configurable())
+          .AddBoolean("enumerable", descriptor.enumerable())
+          .AddV8Value("get", descriptor.get())
+          .AddV8Value("set", descriptor.set())
+          .V8Value());
 }
 
 const int32_t kMaxInt32 = 0x7fffffff;
@@ -782,7 +784,18 @@ ScriptState* ToScriptState(LocalFrame* frame, DOMWrapperWorld& world) {
 }
 
 ScriptState* ToScriptStateForMainWorld(LocalFrame* frame) {
-  return ToScriptState(frame, DOMWrapperWorld::MainWorld());
+  if (!frame) {
+    return nullptr;
+  }
+  auto* isolate = ToIsolate(frame);
+  v8::HandleScope handle_scope(isolate);
+  return ToScriptStateImpl(frame, DOMWrapperWorld::MainWorld(isolate));
+}
+
+ScriptState* ToScriptStateForMainWorld(ExecutionContext* context) {
+  DCHECK(context);
+  return ToScriptState(context,
+                       DOMWrapperWorld::MainWorld(context->GetIsolate()));
 }
 
 bool IsValidEnum(const String& value,

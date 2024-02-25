@@ -60,7 +60,7 @@ class ScopedMockTimezone {
   static constexpr char kTZ[] = "TZ";
 
   base::test::ScopedRestoreDefaultTimezone icu_timezone_;
-  absl::optional<std::string> old_timezone_;
+  std::optional<std::string> old_timezone_;
 };
 }  // namespace
 

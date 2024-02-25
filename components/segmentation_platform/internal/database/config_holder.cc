@@ -16,6 +16,9 @@ ConfigHolder::ConfigHolder(std::vector<std::unique_ptr<Config>> configs)
   for (const auto& config : configs_) {
     if (metadata_utils::ConfigUsesLegacyOutput(config.get())) {
       legacy_output_segmentation_keys_.insert(config->segmentation_key);
+      for (const auto& segment_id : config->segments) {
+        legacy_output_segment_ids_.insert(segment_id.first);
+      }
     } else {
       // Non legacy segment IDs must have a 1:1 relationship with segmentation
       // keys. These checks ensure that.
@@ -41,12 +44,12 @@ ConfigHolder::ConfigHolder(std::vector<std::unique_ptr<Config>> configs)
 
 ConfigHolder::~ConfigHolder() = default;
 
-absl::optional<std::string> ConfigHolder::GetKeyForSegmentId(
+std::optional<std::string> ConfigHolder::GetKeyForSegmentId(
     proto::SegmentId segment_id) const {
   auto key_for_updated_segment =
       segmentation_key_by_segment_id_.find(segment_id);
   if (key_for_updated_segment == segmentation_key_by_segment_id_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return key_for_updated_segment->second;
 }

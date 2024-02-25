@@ -53,10 +53,9 @@ class PasswordSyncTokenVerifierTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<TestingProfile> primary_profile_ = nullptr;
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<PasswordSyncTokenVerifier> verifier_;
   std::unique_ptr<user_manager::KnownUser> known_user_;
@@ -84,7 +83,7 @@ void PasswordSyncTokenVerifierTest::SetUp() {
 
   user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       saml_login_account_id_, /* is_affiliated = */ false,
-      user_manager::UserType::USER_TYPE_REGULAR, primary_profile_);
+      user_manager::UserType::kRegular, primary_profile_);
   user_manager_->LoginUser(saml_login_account_id_);
   // ActiveUser in FakeChromeUserManager needs to be set explicitly.
   user_manager_->SwitchActiveUser(saml_login_account_id_);

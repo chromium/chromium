@@ -11,6 +11,8 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/policy_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace policy {
@@ -18,26 +20,11 @@ namespace policy {
 // static
 std::unique_ptr<LocalTestPolicyProvider>
 LocalTestPolicyProvider::CreateIfAllowed(version_info::Channel channel) {
-  if (IsAllowed(channel)) {
+  if (utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr, channel)) {
     return base::WrapUnique(new LocalTestPolicyProvider());
   }
 
   return nullptr;
-}
-
-bool LocalTestPolicyProvider::IsAllowed(version_info::Channel channel) {
-  if (channel == version_info::Channel::CANARY ||
-      channel == version_info::Channel::DEFAULT) {
-    return true;
-  }
-
-#if BUILDFLAG(IS_IOS)
-  if (channel == version_info::Channel::BETA) {
-    return true;
-  }
-#endif
-
-  return false;
 }
 
 LocalTestPolicyProvider::~LocalTestPolicyProvider() = default;
@@ -45,19 +32,23 @@ LocalTestPolicyProvider::~LocalTestPolicyProvider() = default;
 void LocalTestPolicyProvider::LoadJsonPolicies(
     const std::string& json_policies_string) {
   loader_.SetPolicyListJson(json_policies_string);
-  RefreshPolicies();
+  RefreshPolicies(PolicyFetchReason::kUnspecified);
 }
 
 void LocalTestPolicyProvider::SetUserAffiliated(bool affiliated) {
   loader_.SetUserAffiliated(affiliated);
 }
 
-void LocalTestPolicyProvider::ClearPolicies() {
-  loader_.ClearPolicies();
-  RefreshPolicies();
+const std::string& LocalTestPolicyProvider::GetPolicies() const {
+  return loader_.policies();
 }
 
-void LocalTestPolicyProvider::RefreshPolicies() {
+void LocalTestPolicyProvider::ClearPolicies() {
+  loader_.ClearPolicies();
+  RefreshPolicies(PolicyFetchReason::kUnspecified);
+}
+
+void LocalTestPolicyProvider::RefreshPolicies(PolicyFetchReason reason) {
   PolicyBundle bundle = loader_.Load();
   first_policies_loaded_ = true;
   UpdatePolicy(std::move(bundle));
@@ -77,7 +68,7 @@ void LocalTestPolicyProvider::RegisterLocalStatePrefs(
 
 LocalTestPolicyProvider::LocalTestPolicyProvider() {
   set_active(false);
-  RefreshPolicies();
+  RefreshPolicies(PolicyFetchReason::kUnspecified);
 }
 
 }  // namespace policy

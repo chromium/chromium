@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <optional>
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
@@ -31,7 +32,6 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/types/display_constants.h"
@@ -55,7 +55,7 @@ constexpr char kManualStart[] = "manual";
 
 constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 
-// ArcVmUreadaheadMode param value strings.
+// ArcUreadaheadMode param value strings.
 constexpr char kReadahead[] = "readahead";
 constexpr char kGenerate[] = "generate";
 constexpr char kDisabled[] = "disabled";
@@ -100,7 +100,7 @@ int64_t GetRequiredDiskImageSizeForArcVmDataMigrationInBytes(
 
 void OnStaleArcVmStopped(
     EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
-    absl::optional<vm_tools::concierge::StopVmResponse> response) {
+    std::optional<vm_tools::concierge::StopVmResponse> response) {
   // Successful response is returned even when the VM is not running. See
   // Service::StopVm() in platform2/vm_tools/concierge/service.cc.
   if (!response.has_value() || !response->success()) {
@@ -218,11 +218,13 @@ bool IsArcVmDevConfIgnored() {
       ash::switches::kIgnoreArcVmDevConf);
 }
 
+// TODO(b/315507371): Remove after deprecated switches are not in use
 bool IsUreadaheadDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kArcDisableUreadahead);
 }
 
+// TODO(b/315507371): Remove after deprecated switches are not in use
 bool IsHostUreadaheadGeneration() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kArcHostUreadaheadGeneration);
@@ -233,25 +235,25 @@ bool IsArcUseDevCaches() {
       ash::switches::kArcUseDevCaches);
 }
 
-ArcVmUreadaheadMode GetArcVmUreadaheadMode() {
-  ArcVmUreadaheadMode mode = IsUreadaheadDisabled()
-                                 ? ArcVmUreadaheadMode::DISABLED
-                                 : ArcVmUreadaheadMode::READAHEAD;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kArcVmUreadaheadMode)) {
-    const std::string value =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            ash::switches::kArcVmUreadaheadMode);
-    if (value == kReadahead) {
-      mode = ArcVmUreadaheadMode::READAHEAD;
-    } else if (value == kGenerate) {
-      mode = ArcVmUreadaheadMode::GENERATE;
-    } else if (value == kDisabled) {
-      mode = ArcVmUreadaheadMode::DISABLED;
-    } else {
-      LOG(ERROR) << "Invalid parameter " << value << " for "
-                 << ash::switches::kArcVmUreadaheadMode;
-    }
+ArcUreadaheadMode GetArcUreadaheadMode(
+    std::string_view ureadahead_mode_switch) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ureadahead_mode_switch)) {
+    return ArcUreadaheadMode::READAHEAD;
+  }
+  ArcUreadaheadMode mode = ArcUreadaheadMode::READAHEAD;
+  const std::string value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          ureadahead_mode_switch);
+  if (value == kReadahead) {
+    mode = ArcUreadaheadMode::READAHEAD;
+  } else if (value == kGenerate) {
+    mode = ArcUreadaheadMode::GENERATE;
+  } else if (value == kDisabled) {
+    mode = ArcUreadaheadMode::DISABLED;
+  } else {
+    LOG(FATAL) << "Invalid parameter " << value << " for "
+               << ureadahead_mode_switch;
   }
   return mode;
 }
@@ -319,12 +321,12 @@ bool IsArcAllowedForUser(const user_manager::User* user) {
   // - Active directory users;
   // - ARC kiosk session;
   // - Public Session users;
-  //   USER_TYPE_ARC_KIOSK_APP check is compatible with IsArcKioskMode()
+  //   kUserTypeArcKioskApp check is compatible with IsArcKioskMode()
   //   above because ARC kiosk user is always the primary/active user of a
-  //   user session. The same for USER_TYPE_PUBLIC_ACCOUNT.
+  //   user session. The same for kPublicAccount.
   if (!user->HasGaiaAccount() && !user->IsActiveDirectoryUser() &&
-      user->GetType() != user_manager::USER_TYPE_ARC_KIOSK_APP &&
-      user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+      user->GetType() != user_manager::UserType::kArcKioskApp &&
+      user->GetType() != user_manager::UserType::kPublicAccount) {
     VLOG(1) << "Users without GAIA or AD accounts, or not ARC kiosk apps are "
                "not supported in ARC.";
     return false;
@@ -338,48 +340,48 @@ bool IsArcOptInVerificationDisabled() {
       ash::switches::kDisableArcOptInVerification);
 }
 
-absl::optional<int> GetWindowTaskId(const aura::Window* window) {
+std::optional<int> GetWindowTaskId(const aura::Window* window) {
   if (!window) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string* window_app_id = exo::GetShellApplicationId(window);
   if (!window_app_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetTaskIdFromWindowAppId(*window_app_id);
 }
 
-absl::optional<int> GetTaskIdFromWindowAppId(const std::string& window_app_id) {
+std::optional<int> GetTaskIdFromWindowAppId(const std::string& window_app_id) {
   int task_id;
   if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d", &task_id) !=
       1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return task_id;
 }
 
-absl::optional<int> GetWindowSessionId(const aura::Window* window) {
+std::optional<int> GetWindowSessionId(const aura::Window* window) {
   if (!window) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const std::string* window_app_id = exo::GetShellApplicationId(window);
   if (!window_app_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetSessionIdFromWindowAppId(*window_app_id);
 }
 
-absl::optional<int> GetSessionIdFromWindowAppId(
+std::optional<int> GetSessionIdFromWindowAppId(
     const std::string& window_app_id) {
   int session_id;
   if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.session.%d",
                   &session_id) != 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return session_id;
 }
 
-absl::optional<int> GetWindowTaskOrSessionId(const aura::Window* window) {
+std::optional<int> GetWindowTaskOrSessionId(const aura::Window* window) {
   auto result = GetWindowTaskId(window);
   if (result) {
     return result;
@@ -553,8 +555,13 @@ bool ShouldUseVirtioBlkData(PrefService* prefs) {
 
 bool ShouldUseArcKeyMint() {
   auto version = GetArcAndroidSdkVersionAsInt();
-  return version >= kArcVersionT && version < kMaxArcVersion &&
-         base::FeatureList::IsEnabled(kSwitchToKeyMintOnT);
+  // TODO(b/308630124): Change to ">= kArcVersionT", when ready to enable
+  // KeyMint on ARC V+.
+  return version == kArcVersionT && version < kMaxArcVersion &&
+         base::FeatureList::IsEnabled(kSwitchToKeyMintOnT) &&
+         (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+              ash::switches::kArcBlockKeyMint) ||
+          base::FeatureList::IsEnabled(kSwitchToKeyMintOnTOverride));
 }
 
 int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {

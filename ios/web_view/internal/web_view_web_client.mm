@@ -37,14 +37,14 @@
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_ssl_util.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
+#import "ios/web_view/internal/js_messaging/web_view_scripts_java_script_feature.h"
 #import "ios/web_view/internal/safe_browsing/cwv_unsafe_url_handler_internal.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
-#import "ios/web_view/internal/web_view_early_page_script_provider.h"
 #import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/internal/web_view_web_main_parts.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/public/cwv_web_view.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/cert/cert_status_flags.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -101,21 +101,8 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
       security_interstitials::IOSSecurityInterstitialJavaScriptFeature::
           GetInstance(),
       translate::TranslateJavaScriptFeature::GetInstance(),
-      WebViewMessageHandlerJavaScriptFeature::FromBrowserState(browser_state)};
-}
-
-NSString* WebViewWebClient::GetDocumentStartScriptForAllFrames(
-    web::BrowserState* browser_state) const {
-  WebViewEarlyPageScriptProvider& provider =
-      WebViewEarlyPageScriptProvider::FromBrowserState(browser_state);
-  return provider.GetAllFramesScript();
-}
-
-NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(
-    web::BrowserState* browser_state) const {
-  WebViewEarlyPageScriptProvider& provider =
-      WebViewEarlyPageScriptProvider::FromBrowserState(browser_state);
-  return provider.GetMainFrameScript();
+      WebViewMessageHandlerJavaScriptFeature::FromBrowserState(browser_state),
+      WebViewScriptsJavaScriptFeature::FromBrowserState(browser_state)};
 }
 
 void WebViewWebClient::PrepareErrorPage(
@@ -124,7 +111,7 @@ void WebViewWebClient::PrepareErrorPage(
     NSError* error,
     bool is_post,
     bool is_off_the_record,
-    const absl::optional<net::SSLInfo>& info,
+    const std::optional<net::SSLInfo>& info,
     int64_t navigation_id,
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(error);
@@ -144,9 +131,7 @@ void WebViewWebClient::PrepareErrorPage(
     SafeBrowsingUnsafeResourceContainer* container =
         SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
     const security_interstitials::UnsafeResource* resource =
-        container->GetMainFrameUnsafeResource()
-            ?: container->GetSubFrameUnsafeResource(
-                   web_state->GetNavigationManager()->GetLastCommittedItem());
+        container->GetMainFrameUnsafeResource();
     CWVUnsafeURLHandler* handler =
         [[CWVUnsafeURLHandler alloc] initWithWebState:web_state
                                        unsafeResource:*resource
@@ -185,10 +170,23 @@ bool WebViewWebClient::EnableLongPressUIContextMenu() const {
   return CWVWebView.chromeContextMenuEnabled;
 }
 
+bool WebViewWebClient::EnableWebInspector(
+    web::BrowserState* browser_state) const {
+  return CWVWebView.webInspectorEnabled;
+}
+
 bool WebViewWebClient::IsMixedContentAutoupgradeEnabled(
     web::BrowserState* browser_state) const {
   return base::FeatureList::IsEnabled(
       security_interstitials::features::kMixedContentAutoupgrade);
+}
+
+bool WebViewWebClient::IsInsecureFormWarningEnabled(
+    web::BrowserState* browser_state) const {
+  // ios/web_view doesn't receive variations seeds at runtime, so this will
+  // only ever use the default value of the feature.
+  return base::FeatureList::IsEnabled(
+      security_interstitials::features::kInsecureFormSubmissionInterstitial);
 }
 
 }  // namespace ios_web_view

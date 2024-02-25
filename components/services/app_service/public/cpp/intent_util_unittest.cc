@@ -36,8 +36,8 @@ class IntentUtilTest : public testing::Test {
 
   std::vector<apps::IntentFilePtr> CreateIntentFiles(
       const GURL& url,
-      absl::optional<std::string> mime_type,
-      absl::optional<bool> is_directory) {
+      std::optional<std::string> mime_type,
+      std::optional<bool> is_directory) {
     auto file = std::make_unique<apps::IntentFile>(url);
     file->mime_type = mime_type;
     file->is_directory = is_directory;
@@ -657,19 +657,19 @@ TEST_F(IntentUtilTest, FileExtensionMatchCaseInsensitive) {
 
   auto lowercase_intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView,
-      CreateIntentFiles(test_url("abc.csv"), absl::nullopt, false));
+      CreateIntentFiles(test_url("abc.csv"), std::nullopt, false));
   EXPECT_TRUE(lowercase_intent->MatchFilter(lowercase_filter));
   EXPECT_TRUE(lowercase_intent->MatchFilter(uppercase_filter));
 
   auto uppercase_intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView,
-      CreateIntentFiles(test_url("abc.CSV"), absl::nullopt, false));
+      CreateIntentFiles(test_url("abc.CSV"), std::nullopt, false));
   EXPECT_TRUE(uppercase_intent->MatchFilter(lowercase_filter));
   EXPECT_TRUE(uppercase_intent->MatchFilter(uppercase_filter));
 
   auto mixcase_intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView,
-      CreateIntentFiles(test_url("abc.CsV"), absl::nullopt, false));
+      CreateIntentFiles(test_url("abc.CsV"), std::nullopt, false));
   EXPECT_TRUE(mixcase_intent->MatchFilter(lowercase_filter));
   EXPECT_TRUE(mixcase_intent->MatchFilter(uppercase_filter));
 }

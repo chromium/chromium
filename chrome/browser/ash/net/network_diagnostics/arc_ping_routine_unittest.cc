@@ -56,7 +56,8 @@ class ArcPingRoutineTest : public NetworkDiagnosticsTestHelper {
     fake_net_instance_->set_ping_test_result(result);
 
     // Set up routine with fake NetworkInstance service.
-    arc_ping_routine_ = std::make_unique<ArcPingRoutine>();
+    arc_ping_routine_ = std::make_unique<ArcPingRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     arc_ping_routine_->set_net_instance_for_testing(fake_net_instance_.get());
   }
 

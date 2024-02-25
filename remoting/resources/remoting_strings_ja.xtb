@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">互換性のないプロトコル バージョンが検出されました。両方のパソコンにインストールしているソフトウェアのバージョンが最新であることを確認し、もう一度お試しください。</translation>
 <translation id="1008557486741366299">後で</translation>
 <translation id="1201402288615127009">次へ</translation>
-<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> への接続中にエラーが発生しました</translation>
 <translation id="1450760146488584666">リクエストしたオブジェクトは存在しません。</translation>
 <translation id="1480046233931937785">クレジット</translation>
@@ -89,7 +88,6 @@
 <translation id="4808503597364150972"><ph name="HOSTNAME" /> の PIN を入力してください。</translation>
 <translation id="4812684235631257312">ホスト</translation>
 <translation id="4867841927763172006">PrtScn を送信</translation>
-<translation id="4960795469833295568">Copyright 2023 Google LLC. All Rights Reserved.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> との接続が切断されました</translation>
 <translation id="4985296110227979402">リモート接続に使用するパソコンを最初に設定しておく必要があります</translation>
 <translation id="4987330545941822761">Chrome リモート デスクトップでは、URL をローカルで開くブラウザを決定できません。下のリストから選択してください。</translation>
@@ -154,6 +152,7 @@
 <translation id="7693372326588366043">ホストのリストを更新します</translation>
 <translation id="7714222945760997814">この問題を報告</translation>
 <translation id="7868137160098754906">リモート パソコンの PIN を入力してください。</translation>
+<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="7895403300744144251">リモート パソコンのセキュリティ ポリシーで、ご使用のアカウントからの接続が許可されていません。</translation>
 <translation id="7936528439960309876">右に固定</translation>
 <translation id="7970576581263377361">認証できませんでした。Chromium にもう一度ログインしてください。</translation>
@@ -185,6 +184,7 @@
 <translation id="8747048596626351634">セッションがクラッシュしたか、セッションを開始できませんでした。~/.chrome-remote-desktop-session がリモートのパソコンにある場合は、このスクリプトによって、デスクトップ環境やウィンドウ マネージャのような長時間実行のフォアグラウンド プロセスが開始されることを確認してください。</translation>
 <translation id="8804164990146287819">プライバシー ポリシー</translation>
 <translation id="8906511416443321782">音声をキャプチャして Chrome リモート デスクトップ クライアントにストリーミングするには、マイクへのアクセスが必要です。</translation>
+<translation id="9042277333359847053">Copyright 2024 Google LLC. All Rights Reserved.</translation>
 <translation id="9111855907838866522">リモートデバイスに接続されています。メニューを開くには、4 本の指で画面をタップしてください。</translation>
 <translation id="9126115402994542723">このデバイスからこのホストに接続するときに PIN の再入力を要求しない。</translation>
 <translation id="916856682307586697">デフォルトの XSession を起動</translation>

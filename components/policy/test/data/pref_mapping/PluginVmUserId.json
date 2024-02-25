@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PluginVmUserId": "USER_ID"
+        },
+        "prefs": {
+          "plugin_vm.user_id": {
+            "value": "USER_ID"
+          }
+        }
+      }
+    ]
+  }
+]

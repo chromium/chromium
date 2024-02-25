@@ -27,9 +27,9 @@ namespace ash {
 // to show auth factors (e.g. Fingerprint, Smart Lock) in the
 // LoginAuthFactorsView.
 class ASH_EXPORT AuthIconView : public views::View {
- public:
-  METADATA_HEADER(AuthIconView);
+  METADATA_HEADER(AuthIconView, views::View)
 
+ public:
   enum class Status {
     kPrimary,
     kDisabled,
@@ -110,8 +110,8 @@ class ASH_EXPORT AuthIconView : public views::View {
 
   base::RepeatingClosure on_tap_or_click_callback_;
 
-  raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> icon_;
-  raw_ptr<views::AnimatedImageView, ExperimentalAsh> lottie_animation_view_;
+  raw_ptr<AnimatedRoundedImageView> icon_;
+  raw_ptr<views::AnimatedImageView> lottie_animation_view_;
   ui::ImageModel icon_image_model_;
 
   // Time when the progress animation was enabled.

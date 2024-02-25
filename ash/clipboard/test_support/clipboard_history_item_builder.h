@@ -5,11 +5,12 @@
 #ifndef ASH_CLIPBOARD_TEST_SUPPORT_CLIPBOARD_HISTORY_ITEM_BUILDER_H_
 #define ASH_CLIPBOARD_TEST_SUPPORT_CLIPBOARD_HISTORY_ITEM_BUILDER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "base/memory/ref_counted_memory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
 
 namespace ui {
@@ -78,8 +79,9 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
   ClipboardHistoryItemBuilder& ClearPng();
 
   // Sets/clears `custom_format_` and `custom_data_` data.
-  ClipboardHistoryItemBuilder& SetCustomData(const std::string& custom_format,
-                                             const std::string& custom_data);
+  ClipboardHistoryItemBuilder& SetCustomData(
+      const ui::ClipboardFormatType& custom_format,
+      const std::string& custom_data);
   ClipboardHistoryItemBuilder& ClearCustomData();
 
   // Sets/clears file system data.
@@ -93,16 +95,16 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
 
  private:
   // `ui::ClipboardData` formats.
-  absl::optional<std::string> text_;
-  absl::optional<std::string> markup_;
-  absl::optional<std::string> svg_;
-  absl::optional<std::string> rtf_;
+  std::optional<std::string> text_;
+  std::optional<std::string> markup_;
+  std::optional<std::string> svg_;
+  std::optional<std::string> rtf_;
   std::vector<ui::FileInfo> filenames_;
-  absl::optional<std::string> bookmark_title_;
-  absl::optional<std::vector<uint8_t>> png_;
-  absl::optional<std::string> custom_format_;
-  absl::optional<std::string> custom_data_;
-  absl::optional<bool> web_smart_paste_;
+  std::optional<std::string> bookmark_title_;
+  std::optional<std::vector<uint8_t>> png_;
+  std::optional<ui::ClipboardFormatType> custom_format_;
+  std::optional<std::string> custom_data_;
+  std::optional<bool> web_smart_paste_;
 };
 
 }  // namespace ash

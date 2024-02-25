@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_SETTINGS_STUB_CROS_SETTINGS_PROVIDER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/prefs/pref_value_map.h"
 
@@ -27,9 +27,9 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
   ~StubCrosSettingsProvider() override;
 
   // CrosSettingsProvider implementation.
-  const base::Value* Get(base::StringPiece path) const override;
+  const base::Value* Get(std::string_view path) const override;
   TrustedStatus PrepareTrustedValues(base::OnceClosure* callback) override;
-  bool HandlesSetting(base::StringPiece path) const override;
+  bool HandlesSetting(std::string_view path) const override;
 
   void SetTrustedStatus(TrustedStatus status);
   void SetCurrentUserIsOwner(bool owner);

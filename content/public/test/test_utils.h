@@ -17,10 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -218,102 +214,7 @@ class MessageLoopRunner : public base::RefCountedThreadSafe<MessageLoopRunner> {
   base::ThreadChecker thread_checker_;
 };
 
-// A WindowedNotificationObserver allows code to wait until a condition is met.
-// Simple conditions are specified by providing a |notification_type| and a
-// |source|. When a notification of the expected type from the expected source
-// is received, the condition is met.
-// More complex conditions can be specified by providing a |notification_type|
-// and a |callback|. The callback is called whenever the notification is fired.
-// If the callback returns |true|, the condition is met. Otherwise, the
-// condition is not yet met and the callback will be invoked again every time a
-// notification of the expected type is received until the callback returns
-// |true|. For convenience, two callback types are defined, one that is provided
-// with the notification source and details, and one that is not.
-//
-// This helper class exists to avoid the following common pattern in tests:
-//   PerformAction()
-//   WaitForCompletionNotification()
-// The pattern leads to flakiness as there is a window between PerformAction
-// returning and the observers getting registered, where a notification will be
-// missed.
-//
-// Rather, one can do this:
-//   WindowedNotificationObserver signal(...)
-//   PerformAction()
-//   signal.Wait()
-class WindowedNotificationObserver : public NotificationObserver {
- public:
-  // Callback invoked on notifications. Should return |true| when the condition
-  // being waited for is met. For convenience, there is a choice between two
-  // callback types, one that is provided with the notification source and
-  // details, and one that is not.
-  using ConditionTestCallback =
-      base::RepeatingCallback<bool(const NotificationSource&,
-                                   const NotificationDetails&)>;
-  using ConditionTestCallbackWithoutSourceAndDetails =
-      base::RepeatingCallback<bool(void)>;
-
-  // Set up to wait for a simple condition. The condition is met when a
-  // notification of the given |notification_type| from the given |source| is
-  // received. To accept notifications from all sources, specify
-  // NotificationService::AllSources() as |source|.
-  WindowedNotificationObserver(int notification_type,
-                               const NotificationSource& source);
-
-  // Set up to wait for a complex condition. The condition is met when
-  // |callback| returns |true|. The callback is invoked whenever a notification
-  // of |notification_type| from any source is received.
-  WindowedNotificationObserver(int notification_type,
-                               ConditionTestCallback callback);
-  WindowedNotificationObserver(
-      int notification_type,
-      ConditionTestCallbackWithoutSourceAndDetails callback);
-
-  WindowedNotificationObserver(const WindowedNotificationObserver&) = delete;
-  WindowedNotificationObserver& operator=(const WindowedNotificationObserver&) =
-      delete;
-
-  ~WindowedNotificationObserver() override;
-
-  // Adds an additional notification type to wait for. The condition will be met
-  // if any of the registered notification types from their respective sources
-  // is received.
-  void AddNotificationType(int notification_type,
-                           const NotificationSource& source);
-
-  // Wait until the specified condition is met. If the condition is already met
-  // (that is, the expected notification has already been received or the
-  // given callback returns |true| already), Wait() returns immediately.
-  void Wait();
-
-  // Returns NotificationService::AllSources() if we haven't observed a
-  // notification yet.
-  const NotificationSource& source() const {
-    return source_;
-  }
-
-  const NotificationDetails& details() const {
-    return details_;
-  }
-
-  // NotificationObserver:
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
-
- private:
-  bool seen_ = false;
-  NotificationRegistrar registrar_;
-
-  ConditionTestCallback callback_;
-
-  NotificationSource source_;
-  NotificationDetails details_;
-  base::RunLoop run_loop_;
-};
-
-// Helper to wait for loading to stop on a WebContents.  It should be preferred
-// to uses of WindowedNotificationObserver for NOTIFICATION_LOAD_STOP.
+// Helper to wait for loading to stop on a WebContents.
 //
 // This helper class exists to avoid the following common pattern in tests:
 //   PerformAction()
@@ -369,7 +270,7 @@ class InProcessUtilityThreadHelper : public BrowserChildProcessObserver {
   void BrowserChildProcessHostDisconnected(
       const ChildProcessData& data) override;
 
-  absl::optional<base::RunLoop> run_loop_;
+  std::optional<base::RunLoop> run_loop_;
 };
 
 // This observer keeps tracks of whether a given RenderFrameHost has received

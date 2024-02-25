@@ -8,6 +8,7 @@
 
 #include <limits>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 
 namespace remoting {
@@ -29,8 +30,8 @@ VersionRange::VersionRange(const std::string& range_spec) {
   size_t dash_pos = range_spec.find('-');
   if (dash_pos == std::string::npos) {
     // May be a single version string.
-    min_version_ = absl::make_optional<base::Version>(range_spec);
-    max_version_ = absl::make_optional<base::Version>(*min_version_);
+    min_version_ = std::make_optional<base::Version>(range_spec);
+    max_version_ = std::make_optional<base::Version>(*min_version_);
     is_min_version_inclusive_ = true;
     is_max_version_inclusive_ = true;
     return;
@@ -59,9 +60,9 @@ VersionRange::VersionRange(const std::string& range_spec) {
     // Unbound min version.
     std::vector<uint32_t> version_components{kUnboundMinVersionNumber};
     min_version_ =
-        absl::make_optional<base::Version>(std::move(version_components));
+        std::make_optional<base::Version>(std::move(version_components));
   } else {
-    min_version_ = absl::make_optional<base::Version>(min_version_string);
+    min_version_ = std::make_optional<base::Version>(min_version_string);
   }
 
   std::string max_version_string = range_spec.substr(dash_pos + 1);
@@ -70,9 +71,9 @@ VersionRange::VersionRange(const std::string& range_spec) {
     // Unbound max version.
     std::vector<uint32_t> version_components{kUnboundMaxVersionNumber};
     max_version_ =
-        absl::make_optional<base::Version>(std::move(version_components));
+        std::make_optional<base::Version>(std::move(version_components));
   } else {
-    max_version_ = absl::make_optional<base::Version>(max_version_string);
+    max_version_ = std::make_optional<base::Version>(max_version_string);
   }
 }
 

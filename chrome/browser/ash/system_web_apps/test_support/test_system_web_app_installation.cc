@@ -140,7 +140,7 @@ std::vector<int> UnittestingSystemAppDelegate::GetAdditionalSearchTerms()
 bool UnittestingSystemAppDelegate::ShouldShowInLauncher() const {
   return show_in_launcher_;
 }
-bool UnittestingSystemAppDelegate::ShouldShowInSearch() const {
+bool UnittestingSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return show_in_search_;
 }
 bool UnittestingSystemAppDelegate::ShouldHandleFileOpenIntents() const {
@@ -155,6 +155,9 @@ bool UnittestingSystemAppDelegate::ShouldAllowResize() const {
 bool UnittestingSystemAppDelegate::ShouldAllowMaximize() const {
   return is_maximizable_;
 }
+bool UnittestingSystemAppDelegate::ShouldAllowFullscreen() const {
+  return is_fullscreenable_;
+}
 bool UnittestingSystemAppDelegate::ShouldHaveTabStrip() const {
   return has_tab_strip_;
 }
@@ -164,7 +167,7 @@ bool UnittestingSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
 bool UnittestingSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return allow_scripts_to_close_windows_;
 }
-absl::optional<SystemWebAppBackgroundTaskInfo>
+std::optional<SystemWebAppBackgroundTaskInfo>
 UnittestingSystemAppDelegate::GetTimerInfo() const {
   return timer_info_;
 }
@@ -209,7 +212,7 @@ bool UnittestingSystemAppDelegate::ShouldAnimateThemeChanges() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
-    const std::vector<web_app::AppId>& ids) {
+    const std::vector<webapps::AppId>& ids) {
   uninstall_and_replace_ = ids;
 }
 void UnittestingSystemAppDelegate::SetMinimumWindowSize(const gfx::Size& size) {
@@ -236,7 +239,7 @@ void UnittestingSystemAppDelegate::SetAdditionalSearchTerms(
 void UnittestingSystemAppDelegate::SetShouldShowInLauncher(bool value) {
   show_in_launcher_ = value;
 }
-void UnittestingSystemAppDelegate::SetShouldShowInSearch(bool value) {
+void UnittestingSystemAppDelegate::SetShouldShowInSearchAndShelf(bool value) {
   show_in_search_ = value;
 }
 void UnittestingSystemAppDelegate::SetShouldHandleFileOpenIntents(bool value) {
@@ -461,6 +464,21 @@ TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppLaunchWithUrl() {
+  std::unique_ptr<UnittestingSystemAppDelegate> delegate =
+      std::make_unique<UnittestingSystemAppDelegate>(
+          SystemWebAppType::MEDIA, "Test",
+          GURL("chrome://test-system-app/pwa.html"),
+          base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
+
+  delegate->SetShouldShowInLauncher(false);
+
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
+}
+
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppNotShownInLauncher() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -482,7 +500,7 @@ TestSystemWebAppInstallation::SetUpAppNotShownInSearch() {
           SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
-  delegate->SetShouldShowInSearch(false);
+  delegate->SetShouldShowInSearchAndShelf(false);
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
@@ -674,23 +692,23 @@ TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
                 GenerateWebAppInstallInfoForTestApp();
             info->title = u"Shortcuts";
             {
-              WebAppShortcutsMenuItemInfo menu_item;
+              web_app::WebAppShortcutsMenuItemInfo menu_item;
               menu_item.name = u"One";
               menu_item.url = GURL("chrome://test-system-app/pwa.html#one");
               info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
 
-              IconBitmaps bitmaps;
+              web_app::IconBitmaps bitmaps;
               bitmaps.any[web_app::icon_size::k256] =
                   CreateIcon(web_app::icon_size::k256);
               info->shortcuts_menu_icon_bitmaps.push_back(bitmaps);
             }
             {
-              WebAppShortcutsMenuItemInfo menu_item;
+              web_app::WebAppShortcutsMenuItemInfo menu_item;
               menu_item.name = u"Two";
               menu_item.url = GURL("chrome://test-system-app/pwa.html#two");
               info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
 
-              IconBitmaps bitmaps;
+              web_app::IconBitmaps bitmaps;
               bitmaps.any[web_app::icon_size::k256] =
                   CreateIcon(web_app::icon_size::k256);
               info->shortcuts_menu_icon_bitmaps.push_back(bitmaps);
@@ -807,10 +825,10 @@ TestSystemWebAppInstallation::SetUpAppsForContestMenuTest() {
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithColors(
-    absl::optional<SkColor> theme_color,
-    absl::optional<SkColor> dark_mode_theme_color,
-    absl::optional<SkColor> background_color,
-    absl::optional<SkColor> dark_mode_background_color) {
+    std::optional<SkColor> theme_color,
+    std::optional<SkColor> dark_mode_theme_color,
+    std::optional<SkColor> background_color,
+    std::optional<SkColor> dark_mode_background_color) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemWebAppType::MEDIA, "Test",
@@ -847,7 +865,7 @@ TestSystemWebAppInstallation::CreateWebAppProvider(Profile* profile) {
   auto provider = std::make_unique<web_app::FakeWebAppProvider>(profile);
   provider->SetWebAppUiManager(
       std::make_unique<web_app::WebAppUiManagerImpl>(profile));
-  provider->Start();
+  provider->StartWithSubsystems();
 
   return provider;
 }
@@ -909,7 +927,7 @@ void TestSystemWebAppInstallation::WaitForAppInstall() {
   run_loop.Run();
 }
 
-web_app::AppId TestSystemWebAppInstallation::GetAppId() {
+webapps::AppId TestSystemWebAppInstallation::GetAppId() {
   return SystemWebAppManager::GetForTest(profile_)
       ->GetAppIdForSystemApp(type_.value())
       .value();

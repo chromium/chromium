@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -37,21 +37,21 @@ URLLoaderMonitor::~URLLoaderMonitor() {
   interceptor_.reset();
 }
 
-absl::optional<network::ResourceRequest> URLLoaderMonitor::GetRequestInfo(
+std::optional<network::ResourceRequest> URLLoaderMonitor::GetRequestInfo(
     const GURL& url) {
   base::AutoLock autolock(lock_);
   const auto resource_request = resource_request_map_.find(url);
   if (resource_request == resource_request_map_.end())
-    return absl::nullopt;
+    return std::nullopt;
   return resource_request->second;
 }
 
-absl::optional<network::URLLoaderCompletionStatus>
+std::optional<network::URLLoaderCompletionStatus>
 URLLoaderMonitor::GetCompletionStatus(const GURL& url) {
   base::AutoLock autolock(lock_);
   const auto completion_status = resource_completion_status_map_.find(url);
   if (completion_status == resource_completion_status_map_.end())
-    return absl::nullopt;
+    return std::nullopt;
   return completion_status->second;
 }
 

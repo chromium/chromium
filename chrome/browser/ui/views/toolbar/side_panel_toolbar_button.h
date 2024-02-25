@@ -7,13 +7,16 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
 
 class SidePanelToolbarButton : public ToolbarButton {
+  METADATA_HEADER(SidePanelToolbarButton, ToolbarButton)
+
  public:
   explicit SidePanelToolbarButton(Browser* browser);
   SidePanelToolbarButton(const SidePanelToolbarButton&) = delete;

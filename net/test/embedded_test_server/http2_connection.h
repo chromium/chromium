@@ -50,10 +50,10 @@ class Http2Connection : public HttpConnection,
   base::WeakPtr<HttpConnection> GetWeakPtr() override;
 
   // http2::adapter::Http2VisitorInterface
-  int64_t OnReadyToSend(absl::string_view serialized) override;
+  int64_t OnReadyToSend(std::string_view serialized) override;
   OnHeaderResult OnHeaderForStream(StreamId stream_id,
-                                   absl::string_view key,
-                                   absl::string_view value) override;
+                                   std::string_view key,
+                                   std::string_view value) override;
   bool OnEndHeadersForStream(StreamId stream_id) override;
   bool OnEndStream(StreamId stream_id) override;
   bool OnCloseStream(StreamId stream_id,
@@ -70,7 +70,7 @@ class Http2Connection : public HttpConnection,
   void OnSettingsAck() override {}
   bool OnBeginHeadersForStream(StreamId stream_id) override;
   bool OnBeginDataForStream(StreamId stream_id, size_t payload_length) override;
-  bool OnDataForStream(StreamId stream_id, absl::string_view data) override;
+  bool OnDataForStream(StreamId stream_id, std::string_view data) override;
   bool OnDataPaddingLength(StreamId stream_id, size_t padding_length) override;
   void OnRstStream(StreamId stream_id,
                    http2::adapter::Http2ErrorCode error_code) override {}
@@ -83,7 +83,7 @@ class Http2Connection : public HttpConnection,
                               StreamId promised_stream_id) override {}
   bool OnGoAway(StreamId last_accepted_stream_id,
                 http2::adapter::Http2ErrorCode error_code,
-                absl::string_view opaque_data) override;
+                std::string_view opaque_data) override;
   void OnWindowUpdate(StreamId stream_id, int window_increment) override {}
   int OnBeforeFrameSent(uint8_t frame_type,
                         StreamId stream_id,
@@ -98,9 +98,9 @@ class Http2Connection : public HttpConnection,
   void OnBeginMetadataForStream(StreamId stream_id,
                                 size_t payload_length) override {}
   bool OnMetadataForStream(StreamId stream_id,
-                           absl::string_view metadata) override;
+                           std::string_view metadata) override;
   bool OnMetadataEndForStream(StreamId stream_id) override;
-  void OnErrorDebug(absl::string_view message) override {}
+  void OnErrorDebug(std::string_view message) override {}
 
   http2::adapter::OgHttp2Adapter* adapter() { return adapter_.get(); }
 

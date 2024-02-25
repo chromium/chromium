@@ -82,7 +82,7 @@ class MODULES_EXPORT AudioEncoder final
 
   ParsedConfig* ParseConfig(const AudioEncoderConfig* opts,
                             ExceptionState&) override;
-  bool VerifyCodecSupport(ParsedConfig*, ExceptionState&) override;
+  bool VerifyCodecSupport(ParsedConfig*, String* js_error_message) override;
 
   bool CanReconfigure(ParsedConfig& original_config,
                       ParsedConfig& new_config) override;
@@ -93,7 +93,14 @@ class MODULES_EXPORT AudioEncoder final
       ParsedConfig* active_config,
       uint32_t reset_count,
       media::EncodedAudioBuffer encoded_buffer,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_desc);
+      std::optional<media::AudioEncoder::CodecDescription> codec_desc);
+  DOMException* MakeOperationError(std::string error_msg,
+                                   media::EncoderStatus status);
+  DOMException* MakeEncodingError(std::string error_msg,
+                                  media::EncoderStatus status);
+
+  // True if MojoAudioEncoder is being used.
+  bool is_platform_encoder_ = false;
 };
 
 }  // namespace blink

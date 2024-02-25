@@ -16,8 +16,9 @@
 class Browser;
 
 class LoadingBarView : public views::View, public gfx::AnimationDelegate {
+  METADATA_HEADER(LoadingBarView, views::View)
+
  public:
-  METADATA_HEADER(LoadingBarView);
   LoadingBarView();
   LoadingBarView(const LoadingBarView&) = delete;
   LoadingBarView& operator=(const LoadingBarView&) = delete;
@@ -48,8 +49,9 @@ class LoadingBarView : public views::View, public gfx::AnimationDelegate {
 
 class TopContainerLoadingBar : public LoadingBarView,
                                public content::WebContentsObserver {
+  METADATA_HEADER(TopContainerLoadingBar, LoadingBarView)
+
  public:
-  METADATA_HEADER(TopContainerLoadingBar);
   explicit TopContainerLoadingBar(Browser*);
   TopContainerLoadingBar(const TopContainerLoadingBar&) = delete;
   TopContainerLoadingBar& operator=(const TopContainerLoadingBar&) = delete;

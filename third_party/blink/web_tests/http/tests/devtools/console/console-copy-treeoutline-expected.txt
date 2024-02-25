@@ -2,5 +2,5 @@ Tests that console copies tree outline messages properly.
 
 
 Running: testSelectAll
-Selected text: console-copy-treeoutline.js:19 {foo: 1, bar: 'string'}
+Selected text: console-copy-treeoutline.js:20 {foo: 1, bar: 'string'}
 

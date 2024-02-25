@@ -65,10 +65,10 @@ class ASH_EXPORT FullscreenNotificationBubble : public aura::WindowObserver,
   gfx::Rect GetBubbleBounds();
 
   // The contents of the widget.
-  raw_ptr<SubtleNotificationView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<SubtleNotificationView> view_ = nullptr;
 
   // The widget containing the bubble.
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   // A timer to auto-dismiss the bubble after a short period of time.
   std::unique_ptr<base::OneShotTimer> timer_;

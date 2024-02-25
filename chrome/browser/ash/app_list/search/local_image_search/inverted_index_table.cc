@@ -98,14 +98,14 @@ bool InvertedIndexTable::Insert(SqlDatabase* db,
 
 // static
 bool InvertedIndexTable::Remove(SqlDatabase* db,
-                                const base::FilePath& image_path) {
+                                const base::FilePath& file_path) {
   static constexpr char kQuery[] =
       // clang-format off
       "DELETE FROM inverted_index "
       "WHERE document_id IN ("
           "SELECT d.document_id "
           "FROM documents AS d "
-          "WHERE d.file_path=? )";
+          "WHERE directory_path=? AND file_name=? )";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -115,7 +115,8 @@ bool InvertedIndexTable::Remove(SqlDatabase* db,
     return false;
   }
 
-  statement->BindString(0, image_path.value());
+  statement->BindString(0, file_path.DirName().AsUTF8Unsafe());
+  statement->BindString(1, file_path.BaseName().AsUTF8Unsafe());
   if (!statement->Run()) {
     LOG(ERROR) << "Failed to remove annotations.";
     return false;

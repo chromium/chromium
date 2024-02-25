@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "media/gpu/chromeos/fourcc.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include <optional>
 
 #include "media/gpu/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,8 +21,8 @@ namespace media {
 // Checks that converting a V4L2 pixel format to Fourcc and back to V4L2
 // yields the same format as the original one.
 static void CheckFromV4L2PixFmtAndBack(uint32_t fmt) {
-  absl::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(fmt);
-  EXPECT_NE(fourcc, absl::nullopt);
+  std::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(fmt);
+  EXPECT_NE(fourcc, std::nullopt);
   EXPECT_EQ(fourcc->ToV4L2PixFmt(), fmt);
 }
 
@@ -91,7 +92,7 @@ TEST(FourccTest, V4L2PixFmtToVideoPixelFormat) {
                 ->ToVideoPixelFormat());
 
   // Randomly pick an unmapped v4l2 fourcc.
-  EXPECT_EQ(absl::nullopt, Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_Z16));
+  EXPECT_EQ(std::nullopt, Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_Z16));
 }
 
 TEST(FourccTest, VideoPixelFormatToV4L2PixFmt) {
@@ -133,10 +134,10 @@ TEST(FourccTest, VideoPixelFormatToV4L2PixFmt) {
 // Checks that converting a VaFourCC to Fourcc and back to VaFourCC
 // yields the same format as the original one.
 static void CheckFromVAFourCCAndBack(uint32_t va_fourcc) {
-  absl::optional<Fourcc> fourcc = Fourcc::FromVAFourCC(va_fourcc);
-  EXPECT_NE(fourcc, absl::nullopt);
-  absl::optional<uint32_t> to_va_fourcc = fourcc->ToVAFourCC();
-  EXPECT_NE(to_va_fourcc, absl::nullopt);
+  std::optional<Fourcc> fourcc = Fourcc::FromVAFourCC(va_fourcc);
+  EXPECT_NE(fourcc, std::nullopt);
+  std::optional<uint32_t> to_va_fourcc = fourcc->ToVAFourCC();
+  EXPECT_NE(to_va_fourcc, std::nullopt);
   EXPECT_EQ(*to_va_fourcc, va_fourcc);
 }
 
@@ -203,8 +204,8 @@ TEST(FourccTest, FourccToSinglePlanar) {
             Fourcc(Fourcc::NV12).ToSinglePlanar());
   EXPECT_EQ(Fourcc(Fourcc::NM21).ToSinglePlanar(),
             Fourcc(Fourcc::NV21).ToSinglePlanar());
-  EXPECT_EQ(Fourcc(Fourcc::MT21).ToSinglePlanar(), absl::nullopt);
-  EXPECT_EQ(Fourcc(Fourcc::Q08C).ToSinglePlanar(), absl::nullopt);
-  EXPECT_EQ(Fourcc(Fourcc::Q10C).ToSinglePlanar(), absl::nullopt);
+  EXPECT_EQ(Fourcc(Fourcc::MT21).ToSinglePlanar(), std::nullopt);
+  EXPECT_EQ(Fourcc(Fourcc::Q08C).ToSinglePlanar(), std::nullopt);
+  EXPECT_EQ(Fourcc(Fourcc::Q10C).ToSinglePlanar(), std::nullopt);
 }
 }  // namespace media

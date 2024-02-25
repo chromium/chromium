@@ -58,7 +58,7 @@ void TestRecordBooleanMetric(base::RepeatingCallback<void(bool)> recording_cb,
 // histogram specific to the provider.
 void TestRouteResultCodeHistogramsWithProviders(
     base::RepeatingCallback<void(mojom::RouteRequestResultCode,
-                                 absl::optional<mojom::MediaRouteProviderId>)>
+                                 std::optional<mojom::MediaRouteProviderId>)>
         record_cb,
     mojom::MediaRouteProviderId provider1,
     const std::string& histogram_provider1,
@@ -95,7 +95,7 @@ void TestRouteResultCodeHistogramsWithProviders(
 
 void TestRouteResultCodeHistograms(
     base::RepeatingCallback<void(mojom::RouteRequestResultCode,
-                                 absl::optional<mojom::MediaRouteProviderId>)>
+                                 std::optional<mojom::MediaRouteProviderId>)>
         record_cb,
     const std::string& base_histogram_name) {
   TestRouteResultCodeHistogramsWithProviders(
@@ -132,22 +132,10 @@ TEST(MediaRouterMetricsTest, RecordMediaRouterDialogActivationLocation) {
                   Bucket(static_cast<int>(activation_location2), 1)));
 }
 
-TEST(MediaRouterMetricsTest, RecordMediaRouterDialogPaint) {
-  TestRecordTimeDeltaMetric(
-      base::BindRepeating(&MediaRouterMetrics::RecordMediaRouterDialogPaint),
-      MediaRouterMetrics::kHistogramUiDialogPaint);
-}
-
 TEST(MediaRouterMetricsTest, RecordMediaRouterDialogLoaded) {
   TestRecordTimeDeltaMetric(
       base::BindRepeating(&MediaRouterMetrics::RecordMediaRouterDialogLoaded),
       MediaRouterMetrics::kHistogramUiDialogLoadedWithData);
-}
-
-TEST(MediaRouterMetricsTest, RecordCloseDialogLatency) {
-  TestRecordTimeDeltaMetric(
-      base::BindRepeating(&MediaRouterMetrics::RecordCloseDialogLatency),
-      MediaRouterMetrics::kHistogramCloseLatency);
 }
 
 TEST(MediaRouterMetricsTest, RecordPresentationUrlType) {
@@ -207,46 +195,6 @@ TEST(MediaRouterMetricsTest, RecordDeviceCount) {
   tester.ExpectTotalCount(MediaRouterMetrics::kHistogramUiDeviceCount, 2);
   EXPECT_THAT(tester.GetAllSamples(MediaRouterMetrics::kHistogramUiDeviceCount),
               ElementsAre(Bucket(0, 1), Bucket(30, 1)));
-}
-
-TEST(MediaRouterMetricsTest, RecordStartRouteDeviceIndex) {
-  base::HistogramTester tester;
-  tester.ExpectTotalCount(MediaRouterMetrics::kHistogramStartLocalPosition, 0);
-
-  MediaRouterMetrics::RecordStartRouteDeviceIndex(30);
-  MediaRouterMetrics::RecordStartRouteDeviceIndex(0);
-
-  tester.ExpectTotalCount(MediaRouterMetrics::kHistogramStartLocalPosition, 2);
-  EXPECT_THAT(
-      tester.GetAllSamples(MediaRouterMetrics::kHistogramStartLocalPosition),
-      ElementsAre(Bucket(0, 1), Bucket(30, 1)));
-}
-
-TEST(MediaRouterMetricsTest, RecordStartLocalSessionLatency) {
-  TestRecordTimeDeltaMetric(
-      base::BindRepeating(&MediaRouterMetrics::RecordStartLocalSessionLatency),
-      MediaRouterMetrics::kHistogramStartLocalLatency);
-}
-
-TEST(MediaRouterMetricsTest, RecordStartLocalSessionSuccessful) {
-  TestRecordBooleanMetric(
-      base::BindRepeating(
-          &MediaRouterMetrics::RecordStartLocalSessionSuccessful),
-      MediaRouterMetrics::kHistogramStartLocalSessionSuccessful);
-}
-
-TEST(MediaRouterMetricsTest, RecordStopRoute) {
-  base::HistogramTester tester;
-  tester.ExpectTotalCount(MediaRouterMetrics::kHistogramStopRoute, 0);
-
-  MediaRouterMetrics::RecordStopLocalRoute();
-  MediaRouterMetrics::RecordStopRemoteRoute();
-  MediaRouterMetrics::RecordStopLocalRoute();
-
-  tester.ExpectTotalCount(MediaRouterMetrics::kHistogramStopRoute, 3);
-  EXPECT_THAT(tester.GetAllSamples(MediaRouterMetrics::kHistogramStopRoute),
-              ElementsAre(Bucket(/* Local route */ 0, 2),
-                          Bucket(/* Remote route */ 1, 1)));
 }
 
 TEST(MediaRouterMetricsTest, RecordIconStateAtDialogOpen) {

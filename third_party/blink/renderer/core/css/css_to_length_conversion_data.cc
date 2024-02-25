@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -45,8 +46,8 @@ namespace blink {
 
 namespace {
 
-absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
-                                                Element* context_element) {
+std::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
+                                               Element* context_element) {
   DCHECK(requested_axis == kPhysicalAxisHorizontal ||
          requested_axis == kPhysicalAxisVertical);
 
@@ -62,16 +63,16 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
     ContainerQueryEvaluator& evaluator =
         container->EnsureContainerQueryEvaluator();
     evaluator.SetReferencedByUnit();
-    absl::optional<double> size = requested_axis == kPhysicalAxisHorizontal
-                                      ? evaluator.Width()
-                                      : evaluator.Height();
+    std::optional<double> size = requested_axis == kPhysicalAxisHorizontal
+                                     ? evaluator.Width()
+                                     : evaluator.Height();
     if (!size.has_value()) {
       continue;
     }
     return size;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -123,9 +124,9 @@ float CSSToLengthConversionData::FontSizes::Rch(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
-  absl::optional<float> full_width;
+  std::optional<float> full_width;
   if (font_data) {
-    full_width = font_data->GetFontMetrics().IdeographicFullWidth();
+    full_width = font_data->IdeographicInlineSize();
   }
   if (!full_width.has_value()) {
     return Em(zoom);
@@ -138,9 +139,9 @@ float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
   DCHECK(root_font_);
   const SimpleFontData* font_data = root_font_->PrimaryFont();
-  absl::optional<float> full_width;
+  std::optional<float> full_width;
   if (font_data) {
-    full_width = font_data->GetFontMetrics().IdeographicFullWidth();
+    full_width = font_data->IdeographicInlineSize();
   }
   if (!full_width.has_value()) {
     return Rem(zoom);
@@ -245,13 +246,12 @@ bool CSSToLengthConversionData::ContainerSizes::SizesEqual(
   return (Width() == other.Width()) && (Height() == other.Height());
 }
 
-absl::optional<double> CSSToLengthConversionData::ContainerSizes::Width()
-    const {
+std::optional<double> CSSToLengthConversionData::ContainerSizes::Width() const {
   CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxisHorizontal), cached_width_);
   return cached_width_;
 }
 
-absl::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
+std::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
     const {
   CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxisVertical), cached_height_);
   return cached_height_;
@@ -259,12 +259,19 @@ absl::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
 
 void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
     PhysicalAxes requested_axis,
-    absl::optional<double>& cache) const {
+    std::optional<double>& cache) const {
   if ((cached_physical_axes_ & requested_axis) == requested_axis) {
     return;
   }
   cached_physical_axes_ |= requested_axis;
   cache = FindSizeForContainerAxis(requested_axis, context_element_);
+}
+
+CSSToLengthConversionData::AnchorData::AnchorData(
+    Length::AnchorEvaluator* evaluator)
+    : evaluator_(evaluator) {
+  // TODO(crbug.com/41483417): Note that this will become something more
+  // than a simple wrapper over Length::AnchorEvaluator* in the future.
 }
 
 CSSToLengthConversionData::CSSToLengthConversionData(
@@ -273,6 +280,7 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     const LineHeightSize& line_height_size,
     const ViewportSize& viewport_size,
     const ContainerSizes& container_sizes,
+    const AnchorData& anchor_data,
     float zoom,
     Flags& flags)
     : CSSLengthResolver(
@@ -282,6 +290,7 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       line_height_size_(line_height_size),
       viewport_size_(viewport_size),
       container_sizes_(container_sizes),
+      anchor_data_(anchor_data),
       flags_(&flags) {}
 
 float CSSToLengthConversionData::EmFontSize(float zoom) const {
@@ -438,6 +447,10 @@ double CSSToLengthConversionData::ContainerHeight() const {
 }
 
 WritingMode CSSToLengthConversionData::GetWritingMode() const {
+  // This method is called by CSSLengthResolver only when resolving
+  // logical direction relative units, so we can set the flag
+  // indicating the presence of such units.
+  SetFlag(Flag::kLogicalDirectionRelative);
   return writing_mode_;
 }
 
@@ -445,6 +458,10 @@ CSSToLengthConversionData::ContainerSizes
 CSSToLengthConversionData::PreCachedContainerSizesCopy() const {
   SetFlag(Flag::kContainerRelative);
   return container_sizes_.PreCachedCopy();
+}
+
+void CSSToLengthConversionData::ReferenceAnchor() const {
+  SetFlag(Flag::kAnchorRelative);
 }
 
 }  // namespace blink

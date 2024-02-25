@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Ensure that XRWebGLLayer's constructor throws appropriate errors using webgl assert_unreached: Inline XRWebGLLayers should not fail when created with a context that is not XRCompatible Reached unreachable code
-FAIL Ensure that XRWebGLLayer's constructor throws appropriate errors using webgl2 assert_unreached: Inline XRWebGLLayers should not fail when created with a context that is not XRCompatible Reached unreachable code
-Harness: the test ran to completion.
-

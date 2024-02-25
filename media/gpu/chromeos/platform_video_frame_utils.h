@@ -5,10 +5,11 @@
 #ifndef MEDIA_GPU_CHROMEOS_PLATFORM_VIDEO_FRAME_UTILS_H_
 #define MEDIA_GPU_CHROMEOS_PLATFORM_VIDEO_FRAME_UTILS_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
@@ -45,9 +46,9 @@ MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
 // CreatePlatformVideoFrame(), i.e., all parameters are forwarded to that
 // function (|visible_rect| is set to gfx::Rect(|coded_size|), |natural_size| is
 // set to |coded_size|, and |timestamp| is set to base::TimeDelta()). This
-// function is not cheap as it allocates a buffer. Returns absl::nullopt if the
+// function is not cheap as it allocates a buffer. Returns std::nullopt if the
 // buffer allocation fails. This function is thread-safe.
-MEDIA_GPU_EXPORT absl::optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
+MEDIA_GPU_EXPORT std::optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     gfx::BufferUsage buffer_usage);
@@ -61,6 +62,11 @@ MEDIA_GPU_EXPORT gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
 // compositing/scanout.
 MEDIA_GPU_EXPORT scoped_refptr<gfx::NativePixmapDmaBuf>
 CreateNativePixmapDmaBuf(const VideoFrame* video_frame);
+
+// Returns either the GPU MemoryBuffer ID or the FD of the first file
+// descriptor depending on the storage type.
+MEDIA_GPU_EXPORT gfx::GenericSharedMemoryId GetSharedMemoryId(
+    const VideoFrame& frame);
 
 // Returns true if |gmb_handle| can be imported into minigbm and false
 // otherwise.

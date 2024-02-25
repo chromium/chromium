@@ -36,15 +36,17 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
             // creation.
             return true;
         }
-        try (TraceEvent te = TraceEvent.scoped(
-                     "BackgroundTaskScheduler.schedule", Integer.toString(taskInfo.getTaskId()))) {
+        try (TraceEvent te =
+                TraceEvent.scoped(
+                        "BackgroundTaskScheduler.schedule",
+                        Integer.toString(taskInfo.getTaskId()))) {
             ThreadUtils.assertOnUiThread();
 
             SchedulingVisitor schedulingVisitor = new SchedulingVisitor(context, taskInfo);
             taskInfo.getTimingInfo().accept(schedulingVisitor);
             boolean success = schedulingVisitor.getSuccess();
-            BackgroundTaskSchedulerUma.getInstance().reportTaskScheduled(
-                    taskInfo.getTaskId(), success);
+            BackgroundTaskSchedulerUma.getInstance()
+                    .reportTaskScheduled(taskInfo.getTaskId(), success);
 
             // Retain expiration metrics
             MetricsVisitor metricsVisitor = new MetricsVisitor(taskInfo.getTaskId());
@@ -90,21 +92,23 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
 
         @Override
         public void visit(TaskInfo.OneOffInfo oneOffInfo) {
-            BackgroundTaskSchedulerUma.getInstance().reportTaskCreatedAndExpirationState(
-                    mTaskId, oneOffInfo.expiresAfterWindowEndTime());
+            BackgroundTaskSchedulerUma.getInstance()
+                    .reportTaskCreatedAndExpirationState(
+                            mTaskId, oneOffInfo.expiresAfterWindowEndTime());
         }
 
         @Override
         public void visit(TaskInfo.PeriodicInfo periodicInfo) {
-            BackgroundTaskSchedulerUma.getInstance().reportTaskCreatedAndExpirationState(
-                    mTaskId, periodicInfo.expiresAfterWindowEndTime());
+            BackgroundTaskSchedulerUma.getInstance()
+                    .reportTaskCreatedAndExpirationState(
+                            mTaskId, periodicInfo.expiresAfterWindowEndTime());
         }
     }
 
     @Override
     public void cancel(Context context, int taskId) {
-        try (TraceEvent te = TraceEvent.scoped(
-                     "BackgroundTaskScheduler.cancel", Integer.toString(taskId))) {
+        try (TraceEvent te =
+                TraceEvent.scoped("BackgroundTaskScheduler.cancel", Integer.toString(taskId))) {
             ThreadUtils.assertOnUiThread();
             BackgroundTaskSchedulerUma.getInstance().reportTaskCanceled(taskId);
 

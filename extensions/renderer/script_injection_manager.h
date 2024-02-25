@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -45,7 +47,7 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   void OnRenderFrameCreated(content::RenderFrame* render_frame);
 
   // Removes pending injections of the unloaded extension.
-  void OnExtensionUnloaded(const std::string& extension_id);
+  void OnExtensionUnloaded(const ExtensionId& extension_id);
 
   // Handle the ExecuteCode extension message.
   void HandleExecuteCode(mojom::ExecuteCodeParamsPtr params,
@@ -110,13 +112,14 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   FrameStatusMap frame_statuses_;
 
   // The frames currently being injected into, so long as that frame is valid.
-  std::set<content::RenderFrame*> active_injection_frames_;
+  std::set<raw_ptr<content::RenderFrame, SetExperimental>>
+      active_injection_frames_;
 
   // The collection of RFOHelpers.
   std::vector<std::unique_ptr<RFOHelper>> rfo_helpers_;
 
   // The set of UserScripts associated with extensions. Owned by the Dispatcher.
-  UserScriptSetManager* user_script_set_manager_;
+  raw_ptr<UserScriptSetManager> user_script_set_manager_;
 
   // Pending injections which are waiting for either the proper run location or
   // user consent.

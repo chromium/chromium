@@ -29,9 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * A DisplayAndroid implementation tied to a physical Display.
- */
+/** A DisplayAndroid implementation tied to a physical Display. */
 /* package */ class PhysicalDisplayAndroid extends DisplayAndroid {
     private static final String TAG = "DisplayAndroid";
 
@@ -48,10 +46,16 @@ import java.util.function.Consumer;
         return display.getHdrSdrRatio();
     }
 
+    private static boolean isHdr(Display display) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return false;
+        return display.isHdr() && display.isHdrSdrRatioAvailable();
+    }
+
     private static boolean hasForcedDIPScale() {
         if (sForcedDIPScale == null) {
-            String forcedScaleAsString = CommandLine.getInstance().getSwitchValue(
-                    DisplaySwitches.FORCE_DEVICE_SCALE_FACTOR);
+            String forcedScaleAsString =
+                    CommandLine.getInstance()
+                            .getSwitchValue(DisplaySwitches.FORCE_DEVICE_SCALE_FACTOR);
             if (forcedScaleAsString == null) {
                 sForcedDIPScale = Float.valueOf(0.0f);
             } else {
@@ -99,8 +103,8 @@ import java.util.function.Consumer;
 
             case PixelFormat.RGBA_8888:
                 assert false;
-            // fall through
-            // RGBX_8888 does not have an alpha channel even if it has 8 reserved bits at the end.
+                // fall through RGBX_8888 does not have an alpha channel even if it has 8 reserved
+                // bits at the end.
             case PixelFormat.RGBX_8888:
             case PixelFormat.RGB_888:
             default:
@@ -128,13 +132,13 @@ import java.util.function.Consumer;
             case PixelFormat.RGB_565:
                 return 5;
 
-            // Non-RGB formats.
+                // Non-RGB formats.
             case PixelFormat.A_8:
             case PixelFormat.LA_88:
             case PixelFormat.L_8:
                 return 0;
 
-            // Unknown format. Use 8 as a sensible default.
+                // Unknown format. Use 8 as a sensible default.
             default:
                 return 8;
         }
@@ -151,20 +155,25 @@ import java.util.function.Consumer;
             Context appContext = ContextUtils.getApplicationContext();
             // `createWindowContext` on some devices writes to disk. See crbug.com/1408587.
             try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-                mWindowContext = ApiHelperForS.createWindowContext(
-                        appContext, display, WindowManager.LayoutParams.TYPE_APPLICATION, null);
+                mWindowContext =
+                        ApiHelperForS.createWindowContext(
+                                appContext,
+                                display,
+                                WindowManager.LayoutParams.TYPE_APPLICATION,
+                                null);
             }
             assert display.getDisplayId()
                     == ApiHelperForR.getDisplay(mWindowContext).getDisplayId();
-            mComponentCallbacks = new ComponentCallbacks() {
-                @Override
-                public void onLowMemory() {}
+            mComponentCallbacks =
+                    new ComponentCallbacks() {
+                        @Override
+                        public void onLowMemory() {}
 
-                @Override
-                public void onConfigurationChanged(Configuration newConfig) {
-                    updateFromConfiguration();
-                }
-            };
+                        @Override
+                        public void onConfigurationChanged(Configuration newConfig) {
+                            updateFromConfiguration();
+                        }
+                    };
             mWindowContext.registerComponentCallbacks(mComponentCallbacks);
             mDisplay = ApiHelperForR.getDisplay(mWindowContext);
             updateFromConfiguration();
@@ -177,9 +186,11 @@ import java.util.function.Consumer;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
                 && mDisplay.isHdrSdrRatioAvailable()) {
             mHdrSdrRatioCallback = this::hdrSdrRatioChanged;
-            mDisplay.registerHdrSdrRatioChangedListener((Runnable runnable) -> {
-                ThreadUtils.getUiThreadHandler().post(runnable);
-            }, mHdrSdrRatioCallback);
+            mDisplay.registerHdrSdrRatioChangedListener(
+                    (Runnable runnable) -> {
+                        ThreadUtils.getUiThreadHandler().post(runnable);
+                    },
+                    mHdrSdrRatioCallback);
         } else {
             mHdrSdrRatioCallback = null;
         }
@@ -198,12 +209,16 @@ import java.util.function.Consumer;
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
 
         if (BuildInfo.getInstance().isAutomotive
-                && CommandLine.getInstance().hasSwitch(
-                        DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
+                && CommandLine.getInstance()
+                        .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             mDisplay.getRealMetrics(displayMetrics);
-            DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(mWindowContext, displayMetrics);
         }
-        updateCommon(size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi,
+        updateCommon(
+                size,
+                displayMetrics.density,
+                displayMetrics.xdpi,
+                displayMetrics.ydpi,
                 ApiHelperForR.getDisplay(mWindowContext));
     }
 
@@ -237,9 +252,10 @@ import java.util.function.Consumer;
         }
 
         if (BuildInfo.getInstance().isAutomotive
-                && CommandLine.getInstance().hasSwitch(
-                        DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
-            DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
+                && CommandLine.getInstance()
+                        .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(
+                    ContextUtils.getApplicationContext(), displayMetrics);
         }
         updateCommon(
                 size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi, display);
@@ -247,7 +263,20 @@ import java.util.function.Consumer;
 
     private void hdrSdrRatioChanged(Display display) {
         assert display.getDisplayId() == mDisplay.getDisplayId();
-        super.update(null, null, null, null, null, null, null, null, null, null, null, null,
+        super.update(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                isHdr(mDisplay),
                 getHdrSdrRatio(mDisplay));
     }
 
@@ -271,8 +300,20 @@ import java.util.function.Consumer;
             supportedModes = Arrays.asList(modes);
         }
 
-        super.update(size, density, xdpi, ydpi, bitsPerPixel(pixelFormatId),
-                bitsPerComponent(pixelFormatId), display.getRotation(), isWideColorGamut, null,
-                display.getRefreshRate(), currentMode, supportedModes, getHdrSdrRatio(display));
+        super.update(
+                size,
+                density,
+                xdpi,
+                ydpi,
+                bitsPerPixel(pixelFormatId),
+                bitsPerComponent(pixelFormatId),
+                display.getRotation(),
+                isWideColorGamut,
+                null,
+                display.getRefreshRate(),
+                currentMode,
+                supportedModes,
+                isHdr(display),
+                getHdrSdrRatio(display));
     }
 }

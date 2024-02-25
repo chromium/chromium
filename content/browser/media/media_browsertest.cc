@@ -53,6 +53,14 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 #if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+    media::kCrOSLegacyMediaFormats,
+#endif
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+    media::kBuiltInHlsPlayer,
+#endif
   };
 
   std::vector<base::test::FeatureRef> disabled_features = {
@@ -120,9 +128,8 @@ void MediaBrowserTest::CleanupTest() {
 std::string MediaBrowserTest::EncodeErrorMessage(
     const std::string& original_message) {
   url::RawCanonOutputT<char> buffer;
-  url::EncodeURIComponent(original_message.data(), original_message.size(),
-                          &buffer);
-  return std::string(buffer.data(), buffer.length());
+  url::EncodeURIComponent(original_message, &buffer);
+  return std::string(buffer.view());
 }
 
 void MediaBrowserTest::AddTitlesToAwait(content::TitleWatcher* title_watcher) {
@@ -205,17 +212,6 @@ class MediaTest : public testing::WithParamInterface<bool>,
   }
 };
 
-// Android doesn't support Theora.
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearTheora) {
-  PlayVideo("bear.ogv");
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentTheora) {
-  PlayVideo("bear_silent.ogv");
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWebm) {
   PlayVideo("bear.webm");
 }
@@ -294,6 +290,20 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMovPcmS24be) {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+
+IN_PROC_BROWSER_TEST_P(MediaTest, HLSSingleFileBear) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("bear-1280x720-hls-clear-mpl.m3u8");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaTest, HLSMultivariantBitrateBear) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("hls/multi-bitrate-multivariant-bear/playlist.m3u8");
+}
+
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   PlayVideo("bear.mp4");
@@ -322,6 +332,11 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated180) {
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated270) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_270.mp4", 720, 1280);
+}
+
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAacH264) {
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  PlayVideo("bear_h264_aac.3gp");
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -380,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_LoadManyVideos) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4) {
   PlayVideo("bear_mpeg4_mp3.avi");
 }
@@ -392,11 +407,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4Asp) {
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Divx) {
   PlayVideo("bear_divx_mp3.avi");
 }
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAacH264) {
-  PlayVideo("bear_h264_aac.3gp");
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac) {

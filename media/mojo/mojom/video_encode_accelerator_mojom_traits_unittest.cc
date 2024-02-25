@@ -14,6 +14,17 @@
 
 namespace media {
 
+TEST(SVCScalabilityModeTest, RoundTrip) {
+  auto hw_supported_svc_modes =
+      ::media::GetSupportedScalabilityModesByHWEncoderForTesting();
+  for (::media::SVCScalabilityMode input_svc_mode : hw_supported_svc_modes) {
+    SVCScalabilityMode output_svc_mode;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SVCScalabilityMode>(
+        input_svc_mode, output_svc_mode));
+    EXPECT_EQ(input_svc_mode, output_svc_mode);
+  }
+}
+
 TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
   ::media::VideoEncodeAccelerator::SupportedProfile input;
   input.profile = VP9PROFILE_PROFILE0;
@@ -25,6 +36,8 @@ TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
                              VideoEncodeAccelerator::kVariableMode;
   input.scalability_modes.push_back(::media::SVCScalabilityMode::kL1T3);
   input.scalability_modes.push_back(::media::SVCScalabilityMode::kL3T3Key);
+  input.scalability_modes.push_back(::media::SVCScalabilityMode::kS2T3);
+  input.scalability_modes.push_back(::media::SVCScalabilityMode::kS3T1);
 
   ::media::VideoEncodeAccelerator::SupportedProfile output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
@@ -167,10 +180,12 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
 
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
-      kBitrate, kBaseFramerate, absl::nullopt, absl::nullopt, false,
+      kBitrate, kBaseFramerate,
       ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
-      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera,
-      input_spatial_layers, ::media::SVCInterLayerPredMode::kOnKeyPic);
+      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera);
+  input_config.drop_frame_thresh_percentage = 30;
+  input_config.spatial_layers = input_spatial_layers;
+  input_config.inter_layer_pred = ::media::SVCInterLayerPredMode::kOnKeyPic;
 
   ::media::VideoEncodeAccelerator::Config output_config{};
   ASSERT_TRUE(
@@ -187,7 +202,9 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
       ::media::Bitrate::VariableBitrate(kBaseBitrateBps, kMaximumBitrate);
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
-      kBitrate);
+      kBitrate, 30,
+      ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
+      ::media::VideoEncodeAccelerator::Config::ContentType::kCamera);
 
   ::media::VideoEncodeAccelerator::Config output_config{};
   ASSERT_TRUE(
@@ -225,6 +242,7 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
   input_metadata.payload_size_bytes = 1234;
   input_metadata.key_frame = true;
   input_metadata.timestamp = base::Milliseconds(123456);
+  input_metadata.end_of_picture = true;
   ::media::BitstreamBufferMetadata output_metadata;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(
@@ -259,12 +277,12 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
   vp9.temporal_up_switch = true;
   vp9.referenced_by_upper_spatial_layers = true;
   vp9.reference_lower_spatial_layers = true;
-  vp9.end_of_picture = true;
   vp9.temporal_idx = 2;
   vp9.spatial_idx = 0;
   vp9.spatial_layer_resolutions = {gfx::Size(320, 180), gfx::Size(640, 360)};
   vp9.p_diffs = {0, 1};
   input_metadata.vp9 = vp9;
+  input_metadata.end_of_picture = false;
   output_metadata = ::media::BitstreamBufferMetadata();
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(

@@ -89,7 +89,7 @@ class GFX_EXPORT ImageSkiaRep {
 
   // TODO(malaykeshav): Remove when migration is complete and it is safe.
   cc::PaintImage paint_image_;
-  mutable absl::optional<cc::PaintRecord> paint_record_;
+  mutable std::optional<cc::PaintRecord> paint_record_;
   ImageRepType type_;
 
   Size pixel_size_;

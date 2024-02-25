@@ -102,9 +102,7 @@ CaptureModeBarView::CaptureModeBarView()
 
   capture_mode_util::SetHighlightBorder(
       this, border_radius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder2);
+      views::HighlightBorder::Type::kHighlightBorderOnShadow);
 
   shadow_->SetRoundedCornerRadius(border_radius);
 }
@@ -126,8 +124,8 @@ void CaptureModeBarView::AppendCommonElements() {
       /*has_border=*/true));
 
   // Customize the settings button toggled color.
-  settings_button_->SetIconToggledColorId(kColorAshButtonIconColor);
-  settings_button_->SetBackgroundToggledColorId(
+  settings_button_->SetIconToggledColor(kColorAshButtonIconColor);
+  settings_button_->SetBackgroundToggledColor(
       kColorAshControlBackgroundColorInactive);
 
   // Add highlight helper to settings button and close button.
@@ -148,7 +146,7 @@ void CaptureModeBarView::OnCloseButtonPressed() {
   CaptureModeController::Get()->Stop();
 }
 
-BEGIN_METADATA(CaptureModeBarView, views::View)
+BEGIN_METADATA(CaptureModeBarView)
 END_METADATA
 
 }  // namespace ash

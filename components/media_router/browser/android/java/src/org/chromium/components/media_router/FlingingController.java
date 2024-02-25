@@ -10,15 +10,12 @@ package org.chromium.components.media_router;
  * This interface should be the same as media/base/flinging_controller.h.
  */
 public interface FlingingController {
-    /**
-     * Gets the media controller through which we can send commands to the Cast device.
-     */
+    /** Gets the media controller through which we can send commands to the Cast device. */
     public MediaController getMediaController();
 
-    /**
-     * Subscribe or unsubscribe to changes in the MediaStatus.
-     */
+    /** Subscribe or unsubscribe to changes in the MediaStatus. */
     public void setMediaStatusObserver(MediaStatusObserver observer);
+
     public void clearMediaStatusObserver();
 
     /**

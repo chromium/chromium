@@ -215,7 +215,7 @@ void IOSTranslateDriver::RevertTranslation(int page_seq_no) {
   TranslateController::FromWebState(web_state_)->RevertTranslation();
 }
 
-bool IOSTranslateDriver::IsIncognito() {
+bool IOSTranslateDriver::IsIncognito() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }
 
@@ -223,7 +223,7 @@ const std::string& IOSTranslateDriver::GetContentsMimeType() {
   return web_state_->GetContentsMimeType();
 }
 
-const GURL& IOSTranslateDriver::GetLastCommittedURL() {
+const GURL& IOSTranslateDriver::GetLastCommittedURL() const {
   return web_state_->GetLastCommittedURL();
 }
 
@@ -235,7 +235,7 @@ ukm::SourceId IOSTranslateDriver::GetUkmSourceId() {
   return ukm::GetSourceIdForWebStateDocument(web_state_);
 }
 
-bool IOSTranslateDriver::HasCurrentPage() {
+bool IOSTranslateDriver::HasCurrentPage() const {
   DCHECK(web_state_->IsRealized());
   return (web_state_->GetNavigationManager()->GetVisibleItem() != nullptr);
 }

@@ -6,7 +6,7 @@
 #define COMPONENTS_SYNC_ENGINE_CYCLE_MODEL_NEUTRAL_STATE_H_
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/syncer_error.h"
+#include "components/sync/engine/syncer_error.h"
 
 namespace syncer {
 
@@ -38,8 +38,8 @@ struct ModelNeutralState {
   // Records the most recent results of GetKey, PostCommit and GetUpdates
   // commands.
   bool last_get_key_failed = false;
-  SyncerError last_download_updates_result;
-  SyncerError commit_result;
+  SyncerError last_download_updates_result = SyncerError::Success();
+  SyncerError commit_result = SyncerError::Success();
 
   // Set to true by PostCommitMessageCommand if any commits were successful.
   bool items_committed = false;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_INSTALL_TRACKER_H_
 
 #include <map>
+#include <optional>
 
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -17,7 +18,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -78,7 +78,7 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
 
   // Called directly by AppSorting logic when apps are re-ordered on the new tab
   // page.
-  void OnAppsReordered(const absl::optional<ExtensionId>& extension_id);
+  void OnAppsReordered(const std::optional<ExtensionId>& extension_id);
 
  private:
   void OnExtensionPrefChanged();
@@ -97,7 +97,7 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   raw_ptr<content::BrowserContext> browser_context_;
 
   base::ObserverList<InstallObserver>::Unchecked observers_;
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 };

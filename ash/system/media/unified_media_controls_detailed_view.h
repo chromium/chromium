@@ -12,9 +12,9 @@ namespace ash {
 
 // Detailed view displaying all active media sessions
 class UnifiedMediaControlsDetailedView : public TrayDetailedView {
- public:
-  METADATA_HEADER(UnifiedMediaControlsDetailedView);
+  METADATA_HEADER(UnifiedMediaControlsDetailedView, TrayDetailedView)
 
+ public:
   UnifiedMediaControlsDetailedView(
       DetailedViewDelegate* delegate,
       std::unique_ptr<views::View> notification_list_view);

@@ -23,10 +23,11 @@ class FirmwareUpdateSystemAppDelegate : public ash::SystemWebAppDelegate {
 
   // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
+  bool ShouldAllowFullscreen() const override;
   bool ShouldAllowMaximize() const override;
   bool ShouldAllowResize() const override;
   bool ShouldShowInLauncher() const override;
-  bool ShouldShowInSearch() const override;
+  bool ShouldShowInSearchAndShelf() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
 };
 

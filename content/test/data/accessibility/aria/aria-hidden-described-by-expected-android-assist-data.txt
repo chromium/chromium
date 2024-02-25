@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}]
+++++View text:"span-A span-1" textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {aria-describedby="s1"}, {aria-label="span-A"}]
+++++View text:"span-B span-2" textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {aria-describedby="s2"}, {aria-label="span-B"}]
+++++View text:"span-C span-3" textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {aria-describedby="s3"}, {aria-label="span-C"}]
+++++View text:"span-D span-4" textSize:16.0 style:0 htmlInfo:[{htmlTag="span"}, {display="inline"}, {aria-describedby="s4"}, {aria-label="span-D"}]

@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "components/gcm_driver/gcm_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
@@ -38,6 +38,7 @@ class SharedURLLoaderFactory;
 
 namespace gcm {
 
+class GCMAccountTracker;
 class GCMClientFactory;
 class GCMDriver;
 
@@ -92,9 +93,7 @@ class GCMProfileService : public KeyedService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Used for both account tracker and GCM.UserSignedIn UMA.
-  class IdentityObserver;
-  std::unique_ptr<IdentityObserver> identity_observer_;
+  std::unique_ptr<GCMAccountTracker> gcm_account_tracker_;
 #endif
 
   GetProxyResolvingFactoryCallback get_socket_factory_callback_;

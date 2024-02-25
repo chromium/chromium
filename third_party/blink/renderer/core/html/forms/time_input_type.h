@@ -41,7 +41,6 @@ class TimeInputType final : public BaseTemporalInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   Decimal DefaultValueForStepUp() const override;
   StepRange CreateStepRange(AnyStepHandling) const override;
   bool ParseToDateComponentsInternal(const String&,

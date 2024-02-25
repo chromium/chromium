@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_WORK_QUEUE_H_
 #define BASE_TASK_SEQUENCE_MANAGER_WORK_QUEUE_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -55,7 +56,7 @@ class BASE_EXPORT WorkQueue {
 
   // Returns the front task's TaskOrder if `tasks_` is non-empty and a fence
   // hasn't been reached, otherwise returns nullopt.
-  absl::optional<TaskOrder> GetFrontTaskOrder() const;
+  std::optional<TaskOrder> GetFrontTaskOrder() const;
 
   // Returns the first task in this queue or null if the queue is empty. This
   // method ignores any fences.
@@ -175,7 +176,7 @@ class BASE_EXPORT WorkQueue {
   // an IntrusiveHeap inside the WorkQueueSet.
   HeapHandle heap_handle_;
   const char* const name_;
-  absl::optional<Fence> fence_;
+  std::optional<Fence> fence_;
   const QueueType queue_type_;
 };
 

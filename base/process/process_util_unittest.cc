@@ -1295,6 +1295,17 @@ TEST_F(ProcessUtilTest, PreExecHook) {
 
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
+// There's no such thing as a parent process id on Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
+TEST_F(ProcessUtilTest, GetParentProcessId2) {
+  ProcessId id1 = GetCurrentProcId();
+  Process process = SpawnChild("SimpleChildProcess");
+  ASSERT_TRUE(process.IsValid());
+  ProcessId ppid = GetParentProcessId(process.Handle());
+  EXPECT_EQ(ppid, id1);
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 namespace {
 
 std::string TestLaunchProcess(const CommandLine& cmdline,

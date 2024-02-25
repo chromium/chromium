@@ -11,18 +11,15 @@
 #import "components/metrics/metrics_service.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/template_url_service.h"
-#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -112,24 +109,6 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   service->SetUserSelectedDefaultSearchProvider(templateURL);
 }
 
-+ (void)setSupervisedUserURLFilterBehavior:
-    (supervised_user::SupervisedUserURLFilter::FilteringBehavior)behavior {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
-  settings_service->SetLocalSetting(
-      supervised_user::kContentPackDefaultFilteringBehavior,
-      base::Value(behavior));
-}
-
-+ (void)resetSupervisedUserURLFilterBehavior {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
-  settings_service->RemoveLocalSetting(
-      supervised_user::kContentPackDefaultFilteringBehavior);
-}
-
 + (void)addURLRewriterForHosts:(NSArray<NSString*>*)hosts
                         onPort:(NSString*)port {
   listHosts.clear();
@@ -143,11 +122,16 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
       ->AddTransientURLRewriter(&HostToLocalHostRewrite);
 }
 
-+ (void)resetAddressBarPreference {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  PrefService* preferences = browserState->GetPrefs();
-  preferences->SetBoolean(prefs::kBottomOmnibox, false);
++ (NSString*)frYahooSearchEngineName {
+  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::yahoo_fr.name);
+}
+
++ (NSString*)usYahooSearchEngineName {
+  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::yahoo.name);
+}
+
++ (NSString*)googleSearchEngineName {
+  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::google.name);
 }
 
 @end

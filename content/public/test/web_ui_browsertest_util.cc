@@ -60,8 +60,8 @@ struct WebUIControllerConfig {
   bool disable_xfo = false;
   bool disable_trusted_types = false;
   std::vector<std::string> requestable_schemes;
-  absl::optional<std::vector<std::string>> frame_ancestors;
-  absl::optional<std::string> supported_scheme;
+  std::optional<std::vector<std::string>> frame_ancestors;
+  std::optional<std::string> supported_scheme;
 };
 
 class TestWebUIController : public WebUIController {
@@ -172,7 +172,7 @@ TestUntrustedDataSourceHeaders::~TestUntrustedDataSourceHeaders() = default;
 void AddUntrustedDataSource(
     BrowserContext* browser_context,
     const std::string& host,
-    absl::optional<TestUntrustedDataSourceHeaders> headers) {
+    std::optional<TestUntrustedDataSourceHeaders> headers) {
   auto* untrusted_data_source = WebUIDataSource::CreateAndAdd(
       browser_context, GetChromeUntrustedUIURL(host).spec());
   untrusted_data_source->SetRequestFilter(

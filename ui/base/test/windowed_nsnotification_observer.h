@@ -11,10 +11,9 @@ namespace base {
 class RunLoop;
 }
 
-// Like WindowedNotificationObserver in content/public/test/test_utils.h, this
-// starts watching for a notification upon construction and can wait until the
-// notification is observed. This guarantees that notifications fired between
-// calls to init and wait will be caught.
+// This class starts watching for an NSNotification upon construction and can
+// wait until the notification is observed. This guarantees that notifications
+// fired between calls to -init and -wait will be caught.
 @interface WindowedNSNotificationObserver : NSObject
 
 @property(readonly, nonatomic) int notificationCount;

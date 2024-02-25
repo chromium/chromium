@@ -142,39 +142,10 @@ void CastDialogMetrics::OnSinksLoaded(const base::Time& sinks_load_time) {
   sinks_load_time_ = sinks_load_time;
 }
 
-void CastDialogMetrics::OnPaint(const base::Time& paint_time) {
-  if (!paint_time_.is_null())
-    return;
-  MediaRouterMetrics::RecordMediaRouterDialogPaint(paint_time -
-                                                   initialization_time_);
-  paint_time_ = paint_time;
-}
-
-void CastDialogMetrics::OnStartCasting(const base::Time& start_time,
-                                       int selected_sink_index,
-                                       MediaCastMode cast_mode,
+void CastDialogMetrics::OnStartCasting(MediaCastMode cast_mode,
                                        SinkIconType icon_type) {
-  DCHECK(!sinks_load_time_.is_null());
-  MediaRouterMetrics::RecordStartRouteDeviceIndex(selected_sink_index);
-  if (!first_action_recorded_) {
-    MediaRouterMetrics::RecordStartLocalSessionLatency(start_time -
-                                                       sinks_load_time_);
-  }
   MaybeRecordActivationLocationAndCastMode(cast_mode);
   MediaRouterMetrics::RecordMediaSinkTypeForCastDialog(icon_type);
-}
-
-void CastDialogMetrics::OnStopCasting(bool is_local_route) {
-  if (is_local_route) {
-    MediaRouterMetrics::RecordStopLocalRoute();
-  } else {
-    MediaRouterMetrics::RecordStopRemoteRoute();
-  }
-}
-
-void CastDialogMetrics::OnCloseDialog(const base::Time& close_time) {
-  if (!first_action_recorded_ && !paint_time_.is_null())
-    MediaRouterMetrics::RecordCloseDialogLatency(close_time - paint_time_);
 }
 
 void CastDialogMetrics::OnRecordSinkCount(

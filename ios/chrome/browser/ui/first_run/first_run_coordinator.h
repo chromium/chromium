@@ -12,11 +12,8 @@
 // The delegate for the FirstRunCoordinator.
 @protocol FirstRunCoordinatorDelegate <NSObject>
 
-// Called when first run screens should finish presenting.
-- (void)willFinishPresentingScreens;
-
-// Called when first run UI has been dismissed.
-- (void)didFinishPresentingScreens;
+// Called when first run is done and the coordinator can be stopped.
+- (void)didFinishFirstRun;
 
 @end
 

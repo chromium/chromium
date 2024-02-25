@@ -6,10 +6,11 @@
 
 #include <linux/input-event-codes.h>
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 namespace {
@@ -26,11 +27,11 @@ TEST(MouseButtonMapTest, SharedDeviceSettingsMapping) {
   EXPECT_EQ(BTN_LEFT, mouse_button_map.GetMappedButton(kDeviceId1, BTN_LEFT));
   EXPECT_EQ(BTN_LEFT, mouse_button_map.GetMappedButton(kDeviceId2, BTN_LEFT));
 
-  mouse_button_map.SetPrimaryButtonRight(absl::nullopt, true);
+  mouse_button_map.SetPrimaryButtonRight(std::nullopt, true);
   EXPECT_EQ(BTN_RIGHT, mouse_button_map.GetMappedButton(kDeviceId1, BTN_LEFT));
   EXPECT_EQ(BTN_RIGHT, mouse_button_map.GetMappedButton(kDeviceId2, BTN_LEFT));
 
-  mouse_button_map.SetPrimaryButtonRight(absl::nullopt, false);
+  mouse_button_map.SetPrimaryButtonRight(std::nullopt, false);
   EXPECT_EQ(BTN_LEFT, mouse_button_map.GetMappedButton(kDeviceId1, BTN_LEFT));
   EXPECT_EQ(BTN_LEFT, mouse_button_map.GetMappedButton(kDeviceId2, BTN_LEFT));
 }

@@ -26,11 +26,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COUNTER_DIRECTIVES_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -93,9 +93,9 @@ class CounterDirectives {
   friend bool operator==(const CounterDirectives&, const CounterDirectives&);
 
  private:
-  absl::optional<int> reset_value_;
-  absl::optional<int> increment_value_;
-  absl::optional<int> set_value_;
+  std::optional<int> reset_value_;
+  std::optional<int> increment_value_;
+  std::optional<int> set_value_;
 };
 
 inline bool operator!=(const CounterDirectives& a, const CounterDirectives& b) {

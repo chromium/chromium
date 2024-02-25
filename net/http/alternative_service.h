@@ -28,7 +28,7 @@ NET_EXPORT void HistogramAlternateProtocolUsage(AlternateProtocolUsage usage,
 
 enum BrokenAlternateProtocolLocation {
   BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB = 0,
-  BROKEN_ALTERNATE_PROTOCOL_LOCATION_QUIC_STREAM_FACTORY = 1,
+  BROKEN_ALTERNATE_PROTOCOL_LOCATION_QUIC_SESSION_POOL = 1,
   BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_ALT = 2,
   BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_MAIN = 3,
   BROKEN_ALTERNATE_PROTOCOL_LOCATION_QUIC_HTTP_STREAM = 4,
@@ -146,8 +146,9 @@ class NET_EXPORT_PRIVATE AlternativeServiceInfo {
 
   void set_advertised_versions(
       const quic::ParsedQuicVersionVector& advertised_versions) {
-    if (alternative_service_.protocol != kProtoQUIC)
+    if (alternative_service_.protocol != kProtoQUIC) {
       return;
+    }
 
     advertised_versions_ = advertised_versions;
     std::sort(advertised_versions_.begin(), advertised_versions_.end(),

@@ -161,7 +161,7 @@ class UnlockManagerImpl : public UnlockManager,
   // if and only if |error| is empty. If the auth attempt is accepted, unlocks
   // the screen.
   void FinalizeAuthAttempt(
-      const absl::optional<
+      const std::optional<
           SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>& error);
 
   // Failed to create a connection to the host during the "initial scan". See
@@ -201,7 +201,7 @@ class UnlockManagerImpl : public UnlockManager,
       GetRemoteStatusResultFailureReason reason);
 
   // Used to call into the embedder. Expected to outlive |this| instance.
-  raw_ptr<ProximityAuthClient, ExperimentalAsh> proximity_auth_client_;
+  raw_ptr<ProximityAuthClient> proximity_auth_client_;
 
   // Starts running after resuming from suspension, and fires once enough time
   // has elapsed such that the BluetoothAdapter's presence and power values can
@@ -222,7 +222,7 @@ class UnlockManagerImpl : public UnlockManager,
 
   // Controls the proximity auth flow logic for a remote device. Not owned, and
   // expcted to outlive |this| instance.
-  raw_ptr<RemoteDeviceLifeCycle, ExperimentalAsh> life_cycle_ = nullptr;
+  raw_ptr<RemoteDeviceLifeCycle> life_cycle_ = nullptr;
 
   // True if the manager is currently processing a user-initiated authentication
   // attempt, which is initiated when the user pod is clicked.
@@ -277,8 +277,8 @@ class UnlockManagerImpl : public UnlockManager,
   // Stores the last value emitted to the
   // SmartLock.GetRemoteStatus.Unlock(.Failure) metrics. Should be |nullopt|
   // until the first time GetRemoteStatus succeeds or fails.
-  absl::optional<bool> get_remote_status_unlock_success_;
-  absl::optional<GetRemoteStatusResultFailureReason>
+  std::optional<bool> get_remote_status_unlock_success_;
+  std::optional<GetRemoteStatusResultFailureReason>
       get_remote_status_unlock_failure_reason_;
 
   // Used to track if the "initial scan" has timed out. See

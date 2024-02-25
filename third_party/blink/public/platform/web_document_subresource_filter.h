@@ -36,10 +36,6 @@ class WebDocumentSubresourceFilter {
   // Returns true if disallowed resource loads should be logged to the devtools
   // console.
   virtual bool ShouldLogToConsole() = 0;
-
-  // Report that the resource request corresponding to |request_id|  was tagged
-  // as an ad.
-  virtual void ReportAdRequestId(int request_id) {}
 };
 
 }  // namespace blink

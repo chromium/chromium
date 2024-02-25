@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_PROVIDER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/browser/content_index_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -61,8 +61,7 @@ class ContentIndexProviderImpl
   void RemoveItem(const offline_items_collection::ContentId& id) override;
   void CancelDownload(const offline_items_collection::ContentId& id) override;
   void PauseDownload(const offline_items_collection::ContentId& id) override;
-  void ResumeDownload(const offline_items_collection::ContentId& id,
-                      bool has_user_gesture) override;
+  void ResumeDownload(const offline_items_collection::ContentId& id) override;
   void GetItemById(const offline_items_collection::ContentId& id,
                    SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;
@@ -81,7 +80,7 @@ class ContentIndexProviderImpl
 
  private:
   void DidGetItem(SingleItemCallback callback,
-                  absl::optional<content::ContentIndexEntry> entry);
+                  std::optional<content::ContentIndexEntry> entry);
   void DidGetAllEntriesAcrossStorageParitions(
       std::unique_ptr<OfflineItemList> item_list,
       MultipleItemCallback callback);
@@ -92,7 +91,7 @@ class ContentIndexProviderImpl
   void DidGetIcons(const offline_items_collection::ContentId& id,
                    VisualsCallback callback,
                    std::vector<SkBitmap> icons);
-  void DidGetEntryToOpen(absl::optional<content::ContentIndexEntry> entry);
+  void DidGetEntryToOpen(std::optional<content::ContentIndexEntry> entry);
   void DidOpenTab(content::ContentIndexEntry entry,
                   content::WebContents* web_contents);
   offline_items_collection::OfflineItem EntryToOfflineItem(
@@ -102,7 +101,7 @@ class ContentIndexProviderImpl
   ContentIndexMetrics metrics_;
   raw_ptr<offline_items_collection::OfflineContentAggregator> aggregator_;
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
-  absl::optional<std::vector<gfx::Size>> icon_sizes_for_testing_;
+  std::optional<std::vector<gfx::Size>> icon_sizes_for_testing_;
   base::WeakPtrFactory<ContentIndexProviderImpl> weak_ptr_factory_{this};
 };
 

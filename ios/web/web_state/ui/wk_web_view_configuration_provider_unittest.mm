@@ -7,7 +7,6 @@
 #import <WebKit/WebKit.h>
 
 #import "base/memory/ptr_util.h"
-#import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -18,22 +17,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-namespace {
-
-// Returns the WKUserScript from `user_scripts` which contains `script_string`
-// or null if no such script is found.
-WKUserScript* FindWKUserScriptContaining(NSArray<WKUserScript*>* user_scripts,
-                                         NSString* script_string) {
-  for (WKUserScript* user_script in user_scripts) {
-    if ([user_script.source containsString:script_string]) {
-      return user_script;
-    }
-  }
-  return nil;
-}
-
-}  // namespace
 
 namespace web {
 namespace {
@@ -141,135 +124,6 @@ TEST_F(WKWebViewConfigurationProviderTest, Purge) {
   // No configuration after `Purge` call.
   GetProvider().Purge();
   EXPECT_FALSE(config);
-}
-
-// Tests that configuration's userContentController has both all_frames script
-// and a main_frame script with the same content as
-// web::GetDocumentStartScriptForAllFrames() and
-// web::GetDocumentStartScriptForMainFrame() returns respectively.
-TEST_F(WKWebViewConfigurationProviderTest, UserScript) {
-  WKUserContentController* user_content_controller =
-      GetProvider().GetWebViewConfiguration().userContentController;
-
-  WKUserScript* early_all_user_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts,
-      GetDocumentStartScriptForAllFrames(&browser_state_));
-  ASSERT_TRUE(early_all_user_script);
-  EXPECT_FALSE(early_all_user_script.isForMainFrameOnly);
-
-  WKUserScript* main_frame_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts,
-      GetDocumentStartScriptForMainFrame(&browser_state_));
-  ASSERT_TRUE(main_frame_script);
-  EXPECT_TRUE(main_frame_script.isForMainFrameOnly);
-
-  EXPECT_NE(early_all_user_script.source, main_frame_script.source);
-  EXPECT_TRUE([early_all_user_script.source containsString:@"all_frames"]);
-  EXPECT_TRUE([main_frame_script.source containsString:@"main_frame"]);
-}
-
-// Tests that configuration's userContentController has different main frame
-// scripts after the main frame scripts are updated. Verifies that all frame
-// scripts were no altered while updating the main frame scripts.
-TEST_F(WKWebViewConfigurationProviderTest, UpdateMainFrameScripts) {
-  FakeWebClient* client = GetWebClient();
-  client->SetEarlyPageScriptForMainFrame(@"var test = 4;");
-
-  WKUserContentController* user_content_controller =
-      GetProvider().GetWebViewConfiguration().userContentController;
-
-  NSString* initial_all_frames_script_source =
-      GetDocumentStartScriptForAllFrames(&browser_state_);
-  WKUserScript* initial_all_frames_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts, initial_all_frames_script_source);
-  EXPECT_TRUE(initial_all_frames_script);
-
-  NSString* initial_main_frame_script_source =
-      GetDocumentStartScriptForMainFrame(&browser_state_);
-  WKUserScript* initial_main_frame_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts, initial_main_frame_script_source);
-  EXPECT_TRUE(initial_main_frame_script);
-
-  client->SetEarlyPageScriptForMainFrame(@"var test = 3;");
-  GetProvider().UpdateScripts();
-
-  NSString* updated_main_frame_script_source =
-      GetDocumentStartScriptForMainFrame(&browser_state_);
-  WKUserScript* updated_main_frame_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts, updated_main_frame_script_source);
-  EXPECT_TRUE(updated_main_frame_script);
-
-  EXPECT_NE(updated_main_frame_script_source, initial_main_frame_script_source);
-  EXPECT_NE(initial_main_frame_script.source, updated_main_frame_script.source);
-  EXPECT_LT(0U, [updated_main_frame_script.source
-                    rangeOfString:updated_main_frame_script_source]
-                    .length);
-  EXPECT_EQ(0U, [initial_main_frame_script.source
-                    rangeOfString:updated_main_frame_script_source]
-                    .length);
-
-  NSString* updated_all_frames_script_source =
-      GetDocumentStartScriptForAllFrames(&browser_state_);
-  WKUserScript* updated_all_frames_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts, updated_all_frames_script_source);
-  EXPECT_TRUE(updated_all_frames_script);
-
-  EXPECT_TRUE([updated_all_frames_script_source
-      isEqualToString:initial_all_frames_script_source]);
-  EXPECT_TRUE([initial_all_frames_script.source
-      isEqualToString:updated_all_frames_script.source]);
-}
-
-// Tests that configuration's userContentController has different all frames
-// scripts after the all frames scripts are updated. Verifies that main frame
-// scripts were no altered while updating the all frames scripts.
-TEST_F(WKWebViewConfigurationProviderTest, UpdateAllFramesScripts) {
-  FakeWebClient* client = GetWebClient();
-  client->SetEarlyPageScriptForAllFrames(@"var test = 4;");
-
-  WKUserContentController* user_content_controller =
-      GetProvider().GetWebViewConfiguration().userContentController;
-
-  NSString* initial_main_frame_script_source =
-      GetDocumentStartScriptForMainFrame(&browser_state_);
-  WKUserScript* initial_main_frame_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts, initial_main_frame_script_source);
-  EXPECT_TRUE(initial_main_frame_script);
-
-  NSString* initial_all_frames_script_source =
-      GetDocumentStartScriptForAllFrames(&browser_state_);
-  WKUserScript* initial_all_frames_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts, initial_all_frames_script_source);
-  EXPECT_TRUE(initial_all_frames_script);
-
-  client->SetEarlyPageScriptForAllFrames(@"var test = 3;");
-  GetProvider().UpdateScripts();
-
-  NSString* updated_all_frames_script_source =
-      GetDocumentStartScriptForAllFrames(&browser_state_);
-  WKUserScript* updated_all_frames_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts, updated_all_frames_script_source);
-  EXPECT_TRUE(updated_all_frames_script);
-
-  EXPECT_NE(updated_all_frames_script_source, initial_all_frames_script_source);
-  EXPECT_NE(initial_all_frames_script.source, updated_all_frames_script.source);
-  EXPECT_LT(0U, [updated_all_frames_script.source
-                    rangeOfString:updated_all_frames_script_source]
-                    .length);
-  EXPECT_EQ(0U, [initial_all_frames_script.source
-                    rangeOfString:updated_all_frames_script_source]
-                    .length);
-
-  NSString* updated_main_frame_script_source =
-      GetDocumentStartScriptForMainFrame(&browser_state_);
-  WKUserScript* updated_main_frame_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts, updated_main_frame_script_source);
-  EXPECT_TRUE(updated_main_frame_script);
-
-  EXPECT_TRUE([updated_main_frame_script_source
-      isEqualToString:initial_main_frame_script_source]);
-  EXPECT_TRUE([initial_main_frame_script.source
-      isEqualToString:updated_main_frame_script.source]);
 }
 
 // Tests that configuration's userContentController has additional scripts

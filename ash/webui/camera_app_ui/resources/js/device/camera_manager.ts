@@ -13,7 +13,7 @@ import {Point} from '../geometry.js';
 import * as metrics from '../metrics.js';
 import {isLocalDev} from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
-import {ScreenState} from '../mojo/type.js';
+import {LidState, ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
 import * as state from '../state.js';
@@ -38,6 +38,7 @@ import {windowController} from '../window_controller.js';
 import {EventListener, OperationScheduler} from './camera_operation.js';
 import {VideoCaptureCandidate} from './capture_candidate.js';
 import {Preview} from './preview.js';
+import {PTZController} from './ptz_controller.js';
 import {
   CameraConfig,
   CameraInfo,
@@ -57,7 +58,9 @@ class ResumeStateWatchdog {
   private succeed = false;
 
   constructor(private readonly doReconfigure: () => Promise<boolean>) {
-    this.start();
+    // This is for watchdog running in the background.
+    // TODO(pihsun): Move this out of constructor.
+    void this.start();
   }
 
   private async start() {
@@ -127,10 +130,10 @@ export class CameraManager implements EventListener {
     // that needs to be done in a user gesture and can't be done here.
     if (!isLocalDev()) {
       const idleDetector = new IdleDetector();
-      idleDetector.addEventListener('change', () => {
+      idleDetector.addEventListener('change', async () => {
         this.locked = idleDetector.screenState === 'locked';
         if (this.locked) {
-          this.reconfigure();
+          await this.reconfigure();
         }
       });
       idleDetector.start().catch((e) => {
@@ -140,10 +143,10 @@ export class CameraManager implements EventListener {
       });
     }
 
-    document.addEventListener('visibilitychange', () => {
+    document.addEventListener('visibilitychange', async () => {
       const recording = state.get(state.State.TAKING) && state.get(Mode.VIDEO);
       if (this.isTabletBackground() && !recording) {
-        this.reconfigure();
+        await this.reconfigure();
       }
     });
 
@@ -265,32 +268,39 @@ export class CameraManager implements EventListener {
     const isTablet = await helper.initTabletModeMonitor(setTablet);
     setTablet(isTablet);
 
-    const handleScreenStateChange = () => {
+    function setLidClosed(lidState: LidState) {
+      state.set(state.State.LID_CLOSED, lidState === LidState.kClosed);
+    }
+
+    const lidState = await helper.initLidStateMonitor(setLidClosed);
+    setLidClosed(lidState);
+
+    const handleScreenStateChange = async () => {
       if (this.screenOff) {
-        this.reconfigure();
+        await this.reconfigure();
       }
     };
 
-    const updateScreenOffAuto = (screenState: ScreenState) => {
-      const isOffAuto = screenState === ScreenState.OFF_AUTO;
+    const updateScreenOffAuto = async (screenState: ScreenState) => {
+      const isOffAuto = screenState === ScreenState.kOffAuto;
       if (this.screenOffAuto !== isOffAuto) {
         this.screenOffAuto = isOffAuto;
-        handleScreenStateChange();
+        await handleScreenStateChange();
       }
     };
     const screenState =
         await helper.initScreenStateMonitor(updateScreenOffAuto);
 
-    const updateExternalScreen = (hasExternalScreen: boolean) => {
+    const updateExternalScreen = async (hasExternalScreen: boolean) => {
       if (this.hasExternalScreen !== hasExternalScreen) {
         this.hasExternalScreen = hasExternalScreen;
-        handleScreenStateChange();
+        await handleScreenStateChange();
       }
     };
     const hasExternalScreen =
         await helper.initExternalScreenMonitor(updateExternalScreen);
 
-    this.screenOffAuto = screenState === ScreenState.OFF_AUTO;
+    this.screenOffAuto = screenState === ScreenState.kOffAuto;
     this.hasExternalScreen = hasExternalScreen;
 
     await this.scheduler.initialize(cameraViewUI);
@@ -379,25 +389,25 @@ export class CameraManager implements EventListener {
         .addVideoResolutionOptionListener(listener);
   }
 
-  setPrefPhotoResolutionLevel(deviceId: string, level: PhotoResolutionLevel):
-      void {
-    this.setCapturePref(deviceId, () => {
+  async setPrefPhotoResolutionLevel(
+      deviceId: string, level: PhotoResolutionLevel): Promise<void> {
+    await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoResolutionLevel(
           deviceId, level);
     });
   }
 
-  setPrefPhotoAspectRatioSet(deviceId: string, aspectRatioSet: AspectRatioSet):
-      void {
-    this.setCapturePref(deviceId, () => {
+  async setPrefPhotoAspectRatioSet(
+      deviceId: string, aspectRatioSet: AspectRatioSet): Promise<void> {
+    await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoAspectRatioSet(
           deviceId, aspectRatioSet);
     });
   }
 
-  setPrefVideoResolutionLevel(deviceId: string, level: VideoResolutionLevel):
-      void {
-    this.setCapturePref(deviceId, () => {
+  async setPrefVideoResolutionLevel(
+      deviceId: string, level: VideoResolutionLevel): Promise<void> {
+    await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolutionLevel(
           deviceId, level);
     });
@@ -406,8 +416,9 @@ export class CameraManager implements EventListener {
   /**
    * Used when showing all resolutions.
    */
-  setPrefPhotoResolution(deviceId: string, resolution: Resolution): void {
-    this.setCapturePref(deviceId, () => {
+  async setPrefPhotoResolution(deviceId: string, resolution: Resolution):
+      Promise<void> {
+    await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoResolution(
           deviceId, resolution);
     });
@@ -416,8 +427,9 @@ export class CameraManager implements EventListener {
   /**
    * Used when showing all resolutions.
    */
-  setPrefVideoResolution(deviceId: string, resolution: Resolution): void {
-    this.setCapturePref(deviceId, () => {
+  async setPrefVideoResolution(deviceId: string, resolution: Resolution):
+      Promise<void> {
+    await this.setCapturePref(deviceId, () => {
       this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolution(
           deviceId, resolution);
     });
@@ -471,6 +483,10 @@ export class CameraManager implements EventListener {
     return this.preview.setPointOfInterest(point);
   }
 
+  getPTZController(): PTZController {
+    return this.preview.getPTZController();
+  }
+
   resetPTZ(): Promise<void> {
     return this.preview.resetPTZ();
   }
@@ -493,8 +509,8 @@ export class CameraManager implements EventListener {
     }
   }
 
-  stopCapture(): void {
-    this.scheduler.stopCapture();
+  async stopCapture(): Promise<void> {
+    await this.scheduler.stopCapture();
   }
 
   takeVideoSnapshot(): void {
@@ -540,6 +556,9 @@ export class CameraManager implements EventListener {
   }
 
   async reconfigure(): Promise<boolean> {
+    // TODO(pihsun): This (and tryReconfigure) is being called by many sync
+    // callback. Revisit this to push reconfigure jobs on an AsyncJobQueue and
+    // returns result in a AsyncJob instead of directly returning a Promise?
     if (this.watchdog !== null) {
       if (!await this.watchdog.waitNextReconfigure()) {
         return false;

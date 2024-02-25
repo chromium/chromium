@@ -30,31 +30,10 @@ namespace blink {
 
 namespace {
 
-// Accumulated scroll offset of all frames up to the local root frame.
-int AccumulatedScrollOffset(const HTMLAnchorElement& anchor_element) {
-  int offset = 0;
-  Frame* frame = anchor_element.GetDocument().GetFrame();
-  while (frame && frame->View()) {
-    auto* local_frame = DynamicTo<LocalFrame>(frame);
-    if (!local_frame)
-      break;
-
-    offset += local_frame->View()->LayoutViewport()->ScrollOffsetInt().y();
-    frame = frame->Tree().Parent();
-  }
-  return offset;
-}
-
 // Whether the element is inside an iframe.
 bool IsInIFrame(const HTMLAnchorElement& anchor_element) {
   Frame* frame = anchor_element.GetDocument().GetFrame();
-  while (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-    HTMLFrameOwnerElement* owner = local_frame->GetDocument()->LocalOwner();
-    if (owner && IsA<HTMLIFrameElement>(owner))
-      return true;
-    frame = frame->Tree().Parent();
-  }
-  return false;
+  return frame && !frame->IsMainFrame();
 }
 
 // Whether the anchor element contains an image element.
@@ -68,9 +47,14 @@ bool ContainsImage(const HTMLAnchorElement& anchor_element) {
 }
 
 // Whether the link target has the same host as the root document.
-bool IsSameHost(const HTMLAnchorElement& anchor_element) {
-  String source_host = GetRootDocument(anchor_element)->Url().Host();
-  String target_host = anchor_element.Href().Host();
+bool IsSameHost(const HTMLAnchorElement& anchor_element,
+                const KURL& anchor_href) {
+  Document* top_document = GetTopDocument(anchor_element);
+  if (!top_document) {
+    return false;
+  }
+  StringView source_host = top_document->Url().HostView();
+  StringView target_host = anchor_href.HostView();
   return source_host == target_host;
 }
 
@@ -78,11 +62,18 @@ bool IsSameHost(const HTMLAnchorElement& anchor_element) {
 // the second number equals the first number plus one. Examples:
 // example.com/page9/cat5, example.com/page10/cat5 => true
 // example.com/page9/cat5, example.com/page10/cat10 => false
+// Note that this may give an incorrect result if the strings differ at
+// percent-encoded characters. For example:
+//   "example.com/%20page", "example.com/%21page"
+//       (false positive -- these are " " and "!")
+//   "example.com/%39page", "example.com/%31%30page"
+//       (false negative -- these are "9" and "10")
 bool IsStringIncrementedByOne(const String& source, const String& target) {
   // Consecutive numbers should differ in length by at most 1.
   int length_diff = target.length() - source.length();
-  if (length_diff < 0 || length_diff > 1)
+  if (length_diff < 0 || length_diff > 1) {
     return false;
+  }
 
   // The starting position of difference.
   unsigned int left = 0;
@@ -93,18 +84,20 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
 
   // There is no difference, or the difference is not a digit.
   if (left == source.length() || left == target.length() ||
-      !u_isdigit(source[left]) || !u_isdigit(target[left])) {
+      !IsASCIIDigit(source[left]) || !IsASCIIDigit(target[left])) {
     return false;
   }
 
   // Expand towards right to extract the numbers.
   unsigned int source_right = left + 1;
-  while (source_right < source.length() && u_isdigit(source[source_right]))
+  while (source_right < source.length() && IsASCIIDigit(source[source_right])) {
     source_right++;
+  }
 
   unsigned int target_right = left + 1;
-  while (target_right < target.length() && u_isdigit(target[target_right]))
+  while (target_right < target.length() && IsASCIIDigit(target[target_right])) {
     target_right++;
+  }
 
   int source_number = source.Substring(left, source_right - left).ToInt();
   int target_number = target.Substring(left, target_right - left).ToInt();
@@ -112,42 +105,67 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
   // The second number should increment by one and the rest of the strings
   // should be the same.
   return source_number + 1 == target_number &&
-         source.Substring(source_right) == target.Substring(target_right);
+         StringView(source, source_right) == StringView(target, target_right);
 }
 
 // Extract source and target link url, and return IsStringIncrementedByOne().
-bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element) {
-  if (!IsSameHost(anchor_element))
+bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element,
+                           const KURL& anchor_href) {
+  if (!IsSameHost(anchor_element, anchor_href)) {
     return false;
+  }
 
-  String source_url = GetRootDocument(anchor_element)->Url().GetString();
-  String target_url = anchor_element.Href().GetString();
+  Document* top_document = GetTopDocument(anchor_element);
+  if (!top_document) {
+    return false;
+  }
+
+  String source_url = top_document->Url().GetString();
+  String target_url = anchor_href.GetString();
   return IsStringIncrementedByOne(source_url, target_url);
 }
 
 // Returns the bounding box rect of a layout object, including visual
-// overflows.
+// overflows. Overflow is included as part of the clickable area of an anchor,
+// so we account for it as well.
 gfx::Rect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
   Vector<PhysicalRect> rects = layout_object.OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
   return ToEnclosingRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
 }
 
-bool IsNonEmptyTextNode(Node* node) {
-  if (!node) {
-    return false;
+bool HasTextSibling(const HTMLAnchorElement& anchor_element) {
+  for (auto* text = DynamicTo<Text>(anchor_element.previousSibling()); text;
+       text = DynamicTo<Text>(text->previousSibling())) {
+    if (!text->ContainsOnlyWhitespaceOrEmpty()) {
+      return true;
+    }
   }
-  if (!node->IsTextNode()) {
-    return false;
+
+  for (auto* text = DynamicTo<Text>(anchor_element.nextSibling()); text;
+       text = DynamicTo<Text>(text->nextSibling())) {
+    if (!text->ContainsOnlyWhitespaceOrEmpty()) {
+      return true;
+    }
   }
-  return !To<Text>(node)->wholeText().ContainsOnlyWhitespaceOrEmpty();
+
+  return false;
 }
 
 }  // anonymous namespace
 
-// Helper function that returns the root document the anchor element is in.
-Document* GetRootDocument(const HTMLAnchorElement& anchor) {
-  return anchor.GetDocument().GetFrame()->LocalFrameRoot().GetDocument();
+Document* GetTopDocument(const HTMLAnchorElement& anchor) {
+  LocalFrame* frame = anchor.GetDocument().GetFrame();
+  if (!frame) {
+    return nullptr;
+  }
+
+  LocalFrame* local_main_frame = DynamicTo<LocalFrame>(frame->Tree().Top());
+  if (!local_main_frame) {
+    return nullptr;
+  }
+
+  return local_main_frame->GetDocument();
 }
 
 // Computes a unique ID for the anchor. We hash the pointer address of the
@@ -160,46 +178,76 @@ uint32_t AnchorElementId(const HTMLAnchorElement& element) {
 
 mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
     const HTMLAnchorElement& anchor_element) {
+  const KURL anchor_href = anchor_element.Href();
+  if (!anchor_href.ProtocolIsInHTTPFamily()) {
+    return nullptr;
+  }
+
+  // If the anchor doesn't have a valid frame/root document, skip it.
   LocalFrame* local_frame = anchor_element.GetDocument().GetFrame();
-  if (!local_frame) {
+  if (!local_frame || !GetTopDocument(anchor_element)) {
+    return nullptr;
+  }
+
+  const bool is_in_iframe = IsInIFrame(anchor_element);
+
+  // Only anchors with width/height should be evaluated.
+  LayoutObject* layout_object = anchor_element.GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+  // For the main frame case, we need the bounding box including overflow for
+  // calculations later in this function. These bounding box calculations are
+  // expensive, so we don't want to calculate both. We'll use the overflow
+  // version for this empty check as well.
+  // For the subframe case, we don't need the overflow for subsequent
+  // calculations, so we exclude it from this check, as it's faster to do so.
+  gfx::Rect bounding_box = is_in_iframe
+                               ? layout_object->AbsoluteBoundingBoxRect()
+                               : AbsoluteElementBoundingBoxRect(*layout_object);
+  if (bounding_box.IsEmpty()) {
     return nullptr;
   }
 
   mojom::blink::AnchorElementMetricsPtr metrics =
       mojom::blink::AnchorElementMetrics::New();
   metrics->anchor_id = AnchorElementId(anchor_element);
-  metrics->is_in_iframe = IsInIFrame(anchor_element);
+  metrics->is_in_iframe = is_in_iframe;
   metrics->contains_image = ContainsImage(anchor_element);
-  metrics->is_same_host = IsSameHost(anchor_element);
-  metrics->is_url_incremented_by_one = IsUrlIncrementedByOne(anchor_element);
-  metrics->source_url = GetRootDocument(anchor_element)->Url();
-  metrics->target_url = anchor_element.Href();
+  metrics->is_same_host = IsSameHost(anchor_element, anchor_href);
+  metrics->is_url_incremented_by_one =
+      IsUrlIncrementedByOne(anchor_element, anchor_href);
+  metrics->target_url = anchor_href;
+  metrics->has_text_sibling = HasTextSibling(anchor_element);
+
+  const ComputedStyle& computed_style = anchor_element.ComputedStyleRef();
+  metrics->font_weight =
+      static_cast<uint32_t>(computed_style.GetFontWeight() + 0.5f);
+  metrics->font_size_px = computed_style.FontSize();
 
   // Don't record size metrics for subframe document Anchors.
-  if (anchor_element.GetDocument().ParentDocument())
+  if (is_in_iframe) {
     return metrics;
+  }
 
-  LayoutObject* layout_object = anchor_element.GetLayoutObject();
-  if (!layout_object)
+  DCHECK(local_frame->IsLocalRoot());
+  LocalFrameView* root_frame_view = local_frame->View();
+  if (!root_frame_view) {
     return metrics;
-
-  LocalFrameView* local_frame_view = local_frame->View();
-  LocalFrameView* root_frame_view = local_frame->LocalFrameRoot().View();
-  if (!local_frame_view || !root_frame_view)
-    return metrics;
+  }
+  DCHECK(!root_frame_view->ParentFrameView());
 
   gfx::Rect viewport = root_frame_view->LayoutViewport()->VisibleContentRect();
-  if (viewport.IsEmpty())
+  if (viewport.IsEmpty()) {
     return metrics;
+  }
   metrics->viewport_size = viewport.size();
 
   // Use the viewport size to normalize anchor element metrics.
   float base_height = static_cast<float>(viewport.height());
   float base_width = static_cast<float>(viewport.width());
 
-  // The anchor element rect in the root frame.
-  gfx::Rect target = local_frame_view->ConvertToRootFrame(
-      AbsoluteElementBoundingBoxRect(*layout_object));
+  gfx::Rect target = bounding_box;
 
   // Limit the element size to the viewport size.
   float ratio_area = std::min(1.0f, target.height() / base_height) *
@@ -211,48 +259,10 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   metrics->ratio_distance_top_to_visible_top =
       ratio_distance_top_to_visible_top;
 
-  float ratio_distance_center_to_visible_top =
-      (target.y() + target.height() / 2.0) / base_height;
-  metrics->ratio_distance_center_to_visible_top =
-      ratio_distance_center_to_visible_top;
-
   float ratio_distance_root_top =
-      (target.y() + AccumulatedScrollOffset(anchor_element)) / base_height;
-  metrics->ratio_distance_root_top = ratio_distance_root_top;
-
-  // Distance to the bottom is tricky if the element is inside sub/iframes.
-  // Here we use the target location in the root viewport, and calculate
-  // the distance from the bottom of the anchor element to the root bottom.
-  int root_height = GetRootDocument(anchor_element)
-                        ->GetLayoutView()
-                        ->GetScrollableArea()
-                        ->ContentsSize()
-                        .height();
-
-  int root_scrolled = root_frame_view->LayoutViewport()->ScrollOffsetInt().y();
-  float ratio_distance_root_bottom =
-      (root_height - root_scrolled - target.y() - target.height()) /
+      (target.y() + root_frame_view->LayoutViewport()->ScrollOffsetInt().y()) /
       base_height;
-  metrics->ratio_distance_root_bottom = ratio_distance_root_bottom;
-
-  // Get the anchor element rect that intersects with the viewport.
-  gfx::Rect target_visible = target;
-  target_visible.Intersect(gfx::Rect(viewport.size()));
-
-  // It guarantees to be less or equal to 1.
-  float ratio_visible_area = (target_visible.height() / base_height) *
-                             (target_visible.width() / base_width);
-  DCHECK_GE(1.0, ratio_visible_area);
-  metrics->ratio_visible_area = ratio_visible_area;
-
-  metrics->has_text_sibling =
-      IsNonEmptyTextNode(anchor_element.nextSibling()) ||
-      IsNonEmptyTextNode(anchor_element.previousSibling());
-
-  const ComputedStyle& computed_style = anchor_element.ComputedStyleRef();
-  metrics->font_weight =
-      static_cast<uint32_t>(computed_style.GetFontWeight() + 0.5f);
-  metrics->font_size_px = computed_style.FontSize();
+  metrics->ratio_distance_root_top = ratio_distance_root_top;
 
   return metrics;
 }

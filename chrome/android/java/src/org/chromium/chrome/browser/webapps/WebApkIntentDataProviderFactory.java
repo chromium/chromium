@@ -11,6 +11,7 @@ import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_WEBAPK_SELECT
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
@@ -60,9 +61,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Factory for building {@link BrowserServicesIntentDataProvider} for WebAPKs.
- */
+/** Factory for building {@link BrowserServicesIntentDataProvider} for WebAPKs. */
 public class WebApkIntentDataProviderFactory {
     public static final String RESOURCE_NAME = "name";
     public static final String RESOURCE_SHORT_NAME = "short_name";
@@ -98,13 +97,15 @@ public class WebApkIntentDataProviderFactory {
         // Force navigation if the extra is not specified to avoid breaking deep linking for old
         // WebAPKs which don't specify the {@link WebappConstants#EXTRA_FORCE_NAVIGATION} intent
         // extra.
-        boolean forceNavigation = IntentUtils.safeGetBooleanExtra(
-                intent, WebappConstants.EXTRA_FORCE_NAVIGATION, true);
+        boolean forceNavigation =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, WebappConstants.EXTRA_FORCE_NAVIGATION, true);
 
         ShareData shareData = null;
 
-        String shareDataActivityClassName = IntentUtils.safeGetStringExtra(
-                intent, EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME);
+        String shareDataActivityClassName =
+                IntentUtils.safeGetStringExtra(
+                        intent, EXTRA_WEBAPK_SELECTED_SHARE_TARGET_ACTIVITY_CLASS_NAME);
 
         // Presence of {@link shareDataActivityClassName} indicates that this is a share.
         if (!TextUtils.isEmpty(shareDataActivityClassName)) {
@@ -127,8 +128,15 @@ public class WebApkIntentDataProviderFactory {
         boolean canUseSplashFromContentProvider =
                 IntentUtils.safeGetBooleanExtra(intent, EXTRA_SPLASH_PROVIDED_BY_WEBAPK, false);
 
-        return create(intent, webApkPackageName, url, source, forceNavigation,
-                canUseSplashFromContentProvider, shareData, shareDataActivityClassName);
+        return create(
+                intent,
+                webApkPackageName,
+                url,
+                source,
+                forceNavigation,
+                canUseSplashFromContentProvider,
+                shareData,
+                shareDataActivityClassName);
     }
 
     /**
@@ -137,8 +145,10 @@ public class WebApkIntentDataProviderFactory {
      */
     private static boolean hasContentProviderForSplash(String webApkPackageName) {
         PackageManager packageManager = ContextUtils.getApplicationContext().getPackageManager();
-        ProviderInfo providerInfo = packageManager.resolveContentProvider(
-                WebApkCommonUtils.generateSplashContentProviderAuthority(webApkPackageName), 0);
+        ProviderInfo providerInfo =
+                packageManager.resolveContentProvider(
+                        WebApkCommonUtils.generateSplashContentProviderAuthority(webApkPackageName),
+                        0);
         return (providerInfo != null
                 && TextUtils.equals(providerInfo.packageName, webApkPackageName));
     }
@@ -154,8 +164,9 @@ public class WebApkIntentDataProviderFactory {
             }
             return WebApkDistributor.OTHER;
         }
-        return packageName.startsWith(WEBAPK_PACKAGE_PREFIX) ? WebApkDistributor.BROWSER
-                                                             : WebApkDistributor.OTHER;
+        return packageName.startsWith(WEBAPK_PACKAGE_PREFIX)
+                ? WebApkDistributor.BROWSER
+                : WebApkDistributor.OTHER;
     }
 
     /**
@@ -179,14 +190,17 @@ public class WebApkIntentDataProviderFactory {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG
                         && TextUtils.equals(parser.getName(), SHORTCUT_TAG_NAME)) {
-                    int nameResId = parser.getAttributeResourceValue(
-                            SHORTCUT_ATTRIBUTE_NAMESPACE, SHORTCUT_NAME_ATTRIBUTE, 0);
-                    int shortNameResId = parser.getAttributeResourceValue(
-                            SHORTCUT_ATTRIBUTE_NAMESPACE, SHORTCUT_SHORT_NAME_ATTRIBUTE, 0);
+                    int nameResId =
+                            parser.getAttributeResourceValue(
+                                    SHORTCUT_ATTRIBUTE_NAMESPACE, SHORTCUT_NAME_ATTRIBUTE, 0);
+                    int shortNameResId =
+                            parser.getAttributeResourceValue(
+                                    SHORTCUT_ATTRIBUTE_NAMESPACE, SHORTCUT_SHORT_NAME_ATTRIBUTE, 0);
                     String iconUrl = parser.getAttributeValue(null, SHORTCUT_ICON_URL_ATTRIBUTE);
                     String iconHash = parser.getAttributeValue(null, SHORTCUT_ICON_HASH_ATTRIBUTE);
-                    int iconId = parser.getAttributeResourceValue(
-                            SHORTCUT_ATTRIBUTE_NAMESPACE, SHORTCUT_ICON_ATTRIBUTE, 0);
+                    int iconId =
+                            parser.getAttributeResourceValue(
+                                    SHORTCUT_ATTRIBUTE_NAMESPACE, SHORTCUT_ICON_ATTRIBUTE, 0);
 
                     eventType = parser.next();
                     if (eventType != XmlPullParser.START_TAG
@@ -195,12 +209,19 @@ public class WebApkIntentDataProviderFactory {
                         return new ArrayList<>();
                     }
 
-                    String launchUrl = parser.getAttributeValue(
-                            SHORTCUT_ATTRIBUTE_NAMESPACE, SHORTCUT_INTENT_LAUNCH_URL_ATTRIBUTE);
+                    String launchUrl =
+                            parser.getAttributeValue(
+                                    SHORTCUT_ATTRIBUTE_NAMESPACE,
+                                    SHORTCUT_INTENT_LAUNCH_URL_ATTRIBUTE);
 
-                    shortcuts.add(new ShortcutItem(nameResId != 0 ? res.getString(nameResId) : "",
-                            shortNameResId != 0 ? res.getString(shortNameResId) : "", launchUrl,
-                            iconUrl, iconHash, new WebappIcon(webApkPackageName, iconId)));
+                    shortcuts.add(
+                            new ShortcutItem(
+                                    nameResId != 0 ? res.getString(nameResId) : "",
+                                    shortNameResId != 0 ? res.getString(shortNameResId) : "",
+                                    launchUrl,
+                                    iconUrl,
+                                    iconHash,
+                                    new WebappIcon(webApkPackageName, iconId)));
                 }
                 eventType = parser.next();
             }
@@ -228,9 +249,14 @@ public class WebApkIntentDataProviderFactory {
      */
     // looking up resources from other apps requires the use of getIdentifier()
     @SuppressWarnings("DiscouragedApi")
-    public static BrowserServicesIntentDataProvider create(Intent intent, String webApkPackageName,
-            String url, int source, boolean forceNavigation,
-            boolean canUseSplashFromContentProvider, ShareData shareData,
+    public static BrowserServicesIntentDataProvider create(
+            Intent intent,
+            String webApkPackageName,
+            String url,
+            int source,
+            boolean forceNavigation,
+            boolean canUseSplashFromContentProvider,
+            ShareData shareData,
             String shareDataActivityClassName) {
         // Unlike non-WebAPK web apps, WebAPK ids are predictable. A malicious actor may send an
         // intent with a valid start URL and arbitrary other data. Only use the start URL, the
@@ -246,9 +272,12 @@ public class WebApkIntentDataProviderFactory {
         PackageManager pm = appContext.getPackageManager();
         Resources res = null;
         int apkVersion = 0;
+        long lastUpdateTime = 0;
         try {
             res = pm.getResourcesForApplication(webApkPackageName);
-            apkVersion = pm.getPackageInfo(webApkPackageName, 0).versionCode;
+            PackageInfo packageInfo = pm.getPackageInfo(webApkPackageName, 0);
+            apkVersion = packageInfo.versionCode;
+            lastUpdateTime = packageInfo.lastUpdateTime;
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
@@ -259,27 +288,37 @@ public class WebApkIntentDataProviderFactory {
         int nameId = res.getIdentifier(RESOURCE_NAME, RESOURCE_STRING_TYPE, webApkPackageName);
         int shortNameId =
                 res.getIdentifier(RESOURCE_SHORT_NAME, RESOURCE_STRING_TYPE, webApkPackageName);
-        String name = nameId != 0 ? res.getString(nameId)
-                                  : IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.NAME);
-        String shortName = shortNameId != 0
-                ? res.getString(shortNameId)
-                : IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.SHORT_NAME);
+        String name =
+                nameId != 0
+                        ? res.getString(nameId)
+                        : IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.NAME);
+        String shortName =
+                shortNameId != 0
+                        ? res.getString(shortNameId)
+                        : IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.SHORT_NAME);
+        boolean hasCustomName = bundle.getBoolean(WebApkMetaDataKeys.HAS_CUSTOM_NAME, false);
 
         String scope = IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.SCOPE);
 
         @DisplayMode.EnumType
-        int displayMode = displayModeFromString(
-                IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.DISPLAY_MODE));
-        int orientation = orientationFromString(
-                IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.ORIENTATION));
-        long themeColor = WebApkMetaDataUtils.getLongFromMetaData(
-                bundle, WebApkMetaDataKeys.THEME_COLOR, ColorUtils.INVALID_COLOR);
-        long backgroundColor = WebApkMetaDataUtils.getLongFromMetaData(
-                bundle, WebApkMetaDataKeys.BACKGROUND_COLOR, ColorUtils.INVALID_COLOR);
-        long darkThemeColor = WebApkMetaDataUtils.getLongFromMetaData(
-                bundle, WebApkMetaDataKeys.DARK_THEME_COLOR, ColorUtils.INVALID_COLOR);
-        long darkBackgroundColor = WebApkMetaDataUtils.getLongFromMetaData(
-                bundle, WebApkMetaDataKeys.DARK_BACKGROUND_COLOR, ColorUtils.INVALID_COLOR);
+        int displayMode =
+                displayModeFromString(
+                        IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.DISPLAY_MODE));
+        int orientation =
+                orientationFromString(
+                        IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.ORIENTATION));
+        long themeColor =
+                WebApkMetaDataUtils.getLongFromMetaData(
+                        bundle, WebApkMetaDataKeys.THEME_COLOR, ColorUtils.INVALID_COLOR);
+        long backgroundColor =
+                WebApkMetaDataUtils.getLongFromMetaData(
+                        bundle, WebApkMetaDataKeys.BACKGROUND_COLOR, ColorUtils.INVALID_COLOR);
+        long darkThemeColor =
+                WebApkMetaDataUtils.getLongFromMetaData(
+                        bundle, WebApkMetaDataKeys.DARK_THEME_COLOR, ColorUtils.INVALID_COLOR);
+        long darkBackgroundColor =
+                WebApkMetaDataUtils.getLongFromMetaData(
+                        bundle, WebApkMetaDataKeys.DARK_BACKGROUND_COLOR, ColorUtils.INVALID_COLOR);
 
         // Fetch the default background color from the WebAPK's resources. Fetching the default
         // background color from the WebAPK is important for consistency when:
@@ -290,9 +329,10 @@ public class WebApkIntentDataProviderFactory {
         // WebAPK and Chrome processes.
         int defaultBackgroundColorId =
                 IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.DEFAULT_BACKGROUND_COLOR_ID, 0);
-        int defaultBackgroundColor = (defaultBackgroundColorId == 0)
-                ? SplashLayout.getDefaultBackgroundColor(appContext)
-                : res.getColor(defaultBackgroundColorId, theme);
+        int defaultBackgroundColor =
+                (defaultBackgroundColorId == 0)
+                        ? SplashLayout.getDefaultBackgroundColor(appContext)
+                        : res.getColor(defaultBackgroundColorId, theme);
 
         int shellApkVersion =
                 IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.SHELL_APK_VERSION, 0);
@@ -303,8 +343,7 @@ public class WebApkIntentDataProviderFactory {
         String appKey = IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.APP_KEY);
         Map<String, String> iconUrlToMurmur2HashMap = getIconUrlAndIconMurmur2HashMap(bundle);
 
-        @WebApkDistributor
-        int distributor = getDistributor(bundle, webApkPackageName);
+        @WebApkDistributor int distributor = getDistributor(bundle, webApkPackageName);
 
         int primaryIconId = IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.ICON_ID, 0);
         int primaryMaskableIconId =
@@ -327,8 +366,9 @@ public class WebApkIntentDataProviderFactory {
 
         int splashIconId = IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.SPLASH_ID, 0);
 
-        int isSplashIconMaskableBooleanId = IntentUtils.safeGetInt(
-                bundle, WebApkMetaDataKeys.IS_SPLASH_ICON_MASKABLE_BOOLEAN_ID, 0);
+        int isSplashIconMaskableBooleanId =
+                IntentUtils.safeGetInt(
+                        bundle, WebApkMetaDataKeys.IS_SPLASH_ICON_MASKABLE_BOOLEAN_ID, 0);
         boolean isSplashIconMaskable = false;
         if (isSplashIconMaskableBooleanId != 0) {
             try {
@@ -348,72 +388,124 @@ public class WebApkIntentDataProviderFactory {
         boolean isSplashProvidedByWebApk =
                 (canUseSplashFromContentProvider && hasContentProviderForSplash(webApkPackageName));
 
-        return create(intent, url, scope,
-                new WebappIcon(webApkPackageName,
-                        isPrimaryIconMaskable ? primaryMaskableIconId : primaryIconId),
-                new WebappIcon(webApkPackageName, splashIconId), name, shortName, displayMode,
-                orientation, source, themeColor, backgroundColor, darkThemeColor,
-                darkBackgroundColor, defaultBackgroundColor, isPrimaryIconMaskable,
-                isSplashIconMaskable, webApkPackageName, shellApkVersion, manifestUrl,
-                manifestStartUrl, manifestId, appKey, distributor, iconUrlToMurmur2HashMap,
-                shareTarget, forceNavigation, isSplashProvidedByWebApk, shareData,
-                parseShortcutItems(webApkPackageName, res), apkVersion);
+        return create(
+                intent,
+                url,
+                scope,
+                new WebappIcon(
+                        webApkPackageName,
+                        isPrimaryIconMaskable ? primaryMaskableIconId : primaryIconId,
+                        res,
+                        shellApkVersion),
+                new WebappIcon(webApkPackageName, splashIconId),
+                name,
+                shortName,
+                hasCustomName,
+                displayMode,
+                orientation,
+                source,
+                themeColor,
+                backgroundColor,
+                darkThemeColor,
+                darkBackgroundColor,
+                defaultBackgroundColor,
+                isPrimaryIconMaskable,
+                isSplashIconMaskable,
+                webApkPackageName,
+                shellApkVersion,
+                manifestUrl,
+                manifestStartUrl,
+                manifestId,
+                appKey,
+                distributor,
+                iconUrlToMurmur2HashMap,
+                shareTarget,
+                forceNavigation,
+                isSplashProvidedByWebApk,
+                shareData,
+                parseShortcutItems(webApkPackageName, res),
+                apkVersion,
+                lastUpdateTime);
     }
 
     /**
      * Construct a {@link BrowserServicesIntentDataProvider} instance.
-     * @param intent                   Intent used to launch activity.
-     * @param url                      URL that the WebAPK should navigate to when launched.
-     * @param scope                    Scope for the WebAPK.
-     * @param primaryIcon              Primary icon to show for the WebAPK.
-     * @param splashIcon               Splash icon to use for the splash screen.
-     * @param name                     Name of the WebAPK.
-     * @param shortName                The short name of the WebAPK.
-     * @param displayMode              Display mode of the WebAPK.
-     * @param orientation              Orientation of the WebAPK.
-     * @param source                   Source that the WebAPK was launched from.
-     * @param themeColor               The theme color of the WebAPK.
-     * @param backgroundColor          The background color of the WebAPK.
-     * @param darkThemeColor           The theme color of the WebAPK's dark mode.
-     * @param darkBackgroundColor      The background color of the WebAPK's dark mode.
-     * @param defaultBackgroundColor   The background color to use if the Web Manifest does not
-     *                                 provide a background color.
-     * @param isPrimaryIconMaskable    Is the primary icon maskable.
-     * @param isSplashIconMaskable     Is the splash icon maskable.
-     * @param webApkPackageName        The package of the WebAPK.
-     * @param shellApkVersion          Version of the code in //chrome/android/webapk/shell_apk.
-     * @param manifestUrl              URL of the Web Manifest.
-     * @param manifestStartUrl         URL that the WebAPK should navigate to when launched from
-     *                                 the homescreen. Different from the {@link url} parameter if
-     *                                 the WebAPK is launched from a deep link.
-     * @param manifestId               Id of the WebAPK.
-     * @param appKey                   Key used to identified the WebAPK. This is either the
-     *                                 Manifest URL or the Manifest Unique ID depending on the
-     *                                 situation.
-     * @param distributor              The source from where the WebAPK is installed.
-     * @param iconUrlToMurmur2HashMap  Map of the WebAPK's icon URLs to Murmur2 hashes of the
-     *                                 icon untransformed bytes.
-     * @param shareTarget              Specifies what share data is supported by WebAPK.
-     * @param forceNavigation          Whether the WebAPK should navigate to {@link url} if the
-     *                                 WebAPK is already open.
+     *
+     * @param intent Intent used to launch activity.
+     * @param url URL that the WebAPK should navigate to when launched.
+     * @param scope Scope for the WebAPK.
+     * @param primaryIcon Primary icon to show for the WebAPK.
+     * @param splashIcon Splash icon to use for the splash screen.
+     * @param name Name of the WebAPK.
+     * @param shortName The short name of the WebAPK.
+     * @param displayMode Display mode of the WebAPK.
+     * @param orientation Orientation of the WebAPK.
+     * @param source Source that the WebAPK was launched from.
+     * @param themeColor The theme color of the WebAPK.
+     * @param backgroundColor The background color of the WebAPK.
+     * @param darkThemeColor The theme color of the WebAPK's dark mode.
+     * @param darkBackgroundColor The background color of the WebAPK's dark mode.
+     * @param defaultBackgroundColor The background color to use if the Web Manifest does not
+     *     provide a background color.
+     * @param isPrimaryIconMaskable Is the primary icon maskable.
+     * @param isSplashIconMaskable Is the splash icon maskable.
+     * @param webApkPackageName The package of the WebAPK.
+     * @param shellApkVersion Version of the code in //chrome/android/webapk/shell_apk.
+     * @param manifestUrl URL of the Web Manifest.
+     * @param manifestStartUrl URL that the WebAPK should navigate to when launched from the
+     *     homescreen. Different from the {@link url} parameter if the WebAPK is launched from a
+     *     deep link.
+     * @param manifestId Id of the WebAPK.
+     * @param appKey Key used to identified the WebAPK. This is either the Manifest URL or the
+     *     Manifest Unique ID depending on the situation.
+     * @param distributor The source from where the WebAPK is installed.
+     * @param iconUrlToMurmur2HashMap Map of the WebAPK's icon URLs to Murmur2 hashes of the icon
+     *     untransformed bytes.
+     * @param shareTarget Specifies what share data is supported by WebAPK.
+     * @param forceNavigation Whether the WebAPK should navigate to {@link url} if the WebAPK is
+     *     already open.
      * @param isSplashProvidedByWebApk Whether the WebAPK (1) launches an internal activity to
-     *                                 display the splash screen and (2) has a content provider
-     *                                 which provides a screenshot of the splash screen.
-     * @param shareData                Shared information from the share intent.
-     * @param shortcutItems            A list of shortcut items.
-     * @param webApkVersionCode        WebAPK's version code.
+     *     display the splash screen and (2) has a content provider which provides a screenshot of
+     *     the splash screen.
+     * @param shareData Shared information from the share intent.
+     * @param shortcutItems A list of shortcut items.
+     * @param webApkVersionCode WebAPK's version code.
+     * @param lastUpdateTime WebAPK's last update timestamp.
      */
-    public static BrowserServicesIntentDataProvider create(Intent intent, String url, String scope,
-            WebappIcon primaryIcon, WebappIcon splashIcon, String name, String shortName,
-            @DisplayMode.EnumType int displayMode, int orientation, int source, long themeColor,
-            long backgroundColor, long darkThemeColor, long darkBackgroundColor,
-            int defaultBackgroundColor, boolean isPrimaryIconMaskable, boolean isSplashIconMaskable,
-            String webApkPackageName, int shellApkVersion, String manifestUrl,
-            String manifestStartUrl, String manifestId, String appKey,
-            @WebApkDistributor int distributor, Map<String, String> iconUrlToMurmur2HashMap,
-            WebApkShareTarget shareTarget, boolean forceNavigation,
-            boolean isSplashProvidedByWebApk, ShareData shareData, List<ShortcutItem> shortcutItems,
-            int webApkVersionCode) {
+    public static BrowserServicesIntentDataProvider create(
+            Intent intent,
+            String url,
+            String scope,
+            WebappIcon primaryIcon,
+            WebappIcon splashIcon,
+            String name,
+            String shortName,
+            boolean hasCustomName,
+            @DisplayMode.EnumType int displayMode,
+            int orientation,
+            int source,
+            long themeColor,
+            long backgroundColor,
+            long darkThemeColor,
+            long darkBackgroundColor,
+            int defaultBackgroundColor,
+            boolean isPrimaryIconMaskable,
+            boolean isSplashIconMaskable,
+            String webApkPackageName,
+            int shellApkVersion,
+            String manifestUrl,
+            String manifestStartUrl,
+            String manifestId,
+            String appKey,
+            @WebApkDistributor int distributor,
+            Map<String, String> iconUrlToMurmur2HashMap,
+            WebApkShareTarget shareTarget,
+            boolean forceNavigation,
+            boolean isSplashProvidedByWebApk,
+            ShareData shareData,
+            List<ShortcutItem> shortcutItems,
+            int webApkVersionCode,
+            long lastUpdateTime) {
         if (manifestStartUrl == null || webApkPackageName == null) {
             Log.e(TAG, "Incomplete data provided: " + manifestStartUrl + ", " + webApkPackageName);
             return null;
@@ -442,31 +534,66 @@ public class WebApkIntentDataProviderFactory {
             splashIcon = new WebappIcon();
         }
 
-        WebappExtras webappExtras = new WebappExtras(
-                WebappIntentUtils.getIdForWebApkPackage(webApkPackageName), url, scope, primaryIcon,
-                name, shortName, displayMode, orientation, source,
-                WebappIntentUtils.colorFromLongColor(backgroundColor),
-                WebappIntentUtils.colorFromLongColor(darkBackgroundColor), defaultBackgroundColor,
-                false /* isIconGenerated */, isPrimaryIconMaskable, forceNavigation);
-        WebApkExtras webApkExtras = new WebApkExtras(webApkPackageName, splashIcon,
-                isSplashIconMaskable, shellApkVersion, manifestUrl, manifestStartUrl, manifestId,
-                appKey, distributor, iconUrlToMurmur2HashMap, shareTarget, isSplashProvidedByWebApk,
-                shortcutItems, webApkVersionCode);
+        WebappExtras webappExtras =
+                new WebappExtras(
+                        WebappIntentUtils.getIdForWebApkPackage(webApkPackageName),
+                        url,
+                        scope,
+                        primaryIcon,
+                        name,
+                        shortName,
+                        displayMode,
+                        orientation,
+                        source,
+                        WebappIntentUtils.colorFromLongColor(backgroundColor),
+                        WebappIntentUtils.colorFromLongColor(darkBackgroundColor),
+                        defaultBackgroundColor,
+                        /* isIconGenerated= */ false,
+                        isPrimaryIconMaskable,
+                        forceNavigation);
+        WebApkExtras webApkExtras =
+                new WebApkExtras(
+                        webApkPackageName,
+                        splashIcon,
+                        isSplashIconMaskable,
+                        shellApkVersion,
+                        manifestUrl,
+                        manifestStartUrl,
+                        manifestId,
+                        appKey,
+                        distributor,
+                        iconUrlToMurmur2HashMap,
+                        shareTarget,
+                        isSplashProvidedByWebApk,
+                        shortcutItems,
+                        webApkVersionCode,
+                        lastUpdateTime,
+                        hasCustomName);
         boolean hasCustomToolbarColor = WebappIntentUtils.isLongColorValid(themeColor);
-        int toolbarColor = hasCustomToolbarColor
-                ? (int) themeColor
-                : WebappIntentDataProvider.getDefaultToolbarColor();
+        int toolbarColor =
+                hasCustomToolbarColor
+                        ? (int) themeColor
+                        : WebappIntentDataProvider.getDefaultToolbarColor();
         boolean hasCustomDarkToolbarColor = WebappIntentUtils.isLongColorValid(darkThemeColor);
-        int darkToolbarColor = hasCustomDarkToolbarColor
-                ? (int) darkThemeColor
-                : WebappIntentDataProvider.getDefaultDarkToolbarColor();
-        return new WebappIntentDataProvider(intent, toolbarColor, hasCustomToolbarColor,
-                darkToolbarColor, hasCustomDarkToolbarColor, shareData, webappExtras, webApkExtras);
+        int darkToolbarColor =
+                hasCustomDarkToolbarColor
+                        ? (int) darkThemeColor
+                        : WebappIntentDataProvider.getDefaultDarkToolbarColor();
+        return new WebappIntentDataProvider(
+                intent,
+                toolbarColor,
+                hasCustomToolbarColor,
+                darkToolbarColor,
+                hasCustomDarkToolbarColor,
+                shareData,
+                webappExtras,
+                webApkExtras);
     }
 
     private static int computeSource(Intent intent, ShareData shareData) {
-        int source = IntentUtils.safeGetIntExtra(
-                intent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
+        int source =
+                IntentUtils.safeGetIntExtra(
+                        intent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
         if (source >= ShortcutSource.COUNT) {
             return ShortcutSource.UNKNOWN;
         }
@@ -476,8 +603,10 @@ public class WebApkIntentDataProviderFactory {
             return ShortcutSource.EXTERNAL_INTENT_FROM_CHROME;
         }
 
-        if (source == ShortcutSource.WEBAPK_SHARE_TARGET && shareData != null
-                && shareData.uris != null && shareData.uris.size() > 0) {
+        if (source == ShortcutSource.WEBAPK_SHARE_TARGET
+                && shareData != null
+                && shareData.uris != null
+                && shareData.uris.size() > 0) {
             return ShortcutSource.WEBAPK_SHARE_TARGET_FILE;
         }
         return source;
@@ -491,8 +620,9 @@ public class WebApkIntentDataProviderFactory {
     private static Bundle extractWebApkMetaData(String webApkPackageName) {
         PackageManager packageManager = ContextUtils.getApplicationContext().getPackageManager();
         try {
-            ApplicationInfo appInfo = packageManager.getApplicationInfo(
-                    webApkPackageName, PackageManager.GET_META_DATA);
+            ApplicationInfo appInfo =
+                    packageManager.getApplicationInfo(
+                            webApkPackageName, PackageManager.GET_META_DATA);
             return appInfo.metaData;
         } catch (PackageManager.NameNotFoundException e) {
             return null;
@@ -594,8 +724,9 @@ public class WebApkIntentDataProviderFactory {
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.setPackage(webApkPackageName);
         shareIntent.setType("*/*");
-        List<ResolveInfo> resolveInfos = PackageManagerUtils.queryIntentActivities(
-                shareIntent, PackageManager.GET_META_DATA);
+        List<ResolveInfo> resolveInfos =
+                PackageManagerUtils.queryIntentActivities(
+                        shareIntent, PackageManager.GET_META_DATA);
 
         for (ResolveInfo resolveInfo : resolveInfos) {
             Bundle shareTargetMetaData = resolveInfo.activityInfo.metaData;
@@ -611,12 +742,14 @@ public class WebApkIntentDataProviderFactory {
                 return new Pair<>(null, null);
             }
 
-            String encodedFileNames = IntentUtils.safeGetString(
-                    shareTargetMetaData, WebApkMetaDataKeys.SHARE_PARAM_NAMES);
+            String encodedFileNames =
+                    IntentUtils.safeGetString(
+                            shareTargetMetaData, WebApkMetaDataKeys.SHARE_PARAM_NAMES);
             String[] fileNames = WebApkShareTargetUtil.decodeJsonStringArray(encodedFileNames);
 
-            String encodedFileAccepts = IntentUtils.safeGetString(
-                    shareTargetMetaData, WebApkMetaDataKeys.SHARE_PARAM_ACCEPTS);
+            String encodedFileAccepts =
+                    IntentUtils.safeGetString(
+                            shareTargetMetaData, WebApkMetaDataKeys.SHARE_PARAM_ACCEPTS);
             String[][] fileAccepts = WebApkShareTargetUtil.decodeJsonAccepts(encodedFileAccepts);
 
             String shareMethod =
@@ -624,17 +757,26 @@ public class WebApkIntentDataProviderFactory {
             boolean isShareMethodPost =
                     shareMethod != null && shareMethod.toUpperCase(Locale.ENGLISH).equals("POST");
 
-            String shareEncType = IntentUtils.safeGetString(
-                    shareTargetMetaData, WebApkMetaDataKeys.SHARE_ENCTYPE);
-            boolean isShareEncTypeMultipart = shareEncType != null
-                    && shareEncType.toLowerCase(Locale.ENGLISH).equals("multipart/form-data");
+            String shareEncType =
+                    IntentUtils.safeGetString(
+                            shareTargetMetaData, WebApkMetaDataKeys.SHARE_ENCTYPE);
+            boolean isShareEncTypeMultipart =
+                    shareEncType != null
+                            && shareEncType
+                                    .toLowerCase(Locale.ENGLISH)
+                                    .equals("multipart/form-data");
 
-            WebApkShareTarget target = new WebApkShareTarget(shareAction,
-                    IntentUtils.safeGetString(
-                            shareTargetMetaData, WebApkMetaDataKeys.SHARE_PARAM_TITLE),
-                    IntentUtils.safeGetString(
-                            shareTargetMetaData, WebApkMetaDataKeys.SHARE_PARAM_TEXT),
-                    isShareMethodPost, isShareEncTypeMultipart, fileNames, fileAccepts);
+            WebApkShareTarget target =
+                    new WebApkShareTarget(
+                            shareAction,
+                            IntentUtils.safeGetString(
+                                    shareTargetMetaData, WebApkMetaDataKeys.SHARE_PARAM_TITLE),
+                            IntentUtils.safeGetString(
+                                    shareTargetMetaData, WebApkMetaDataKeys.SHARE_PARAM_TEXT),
+                            isShareMethodPost,
+                            isShareEncTypeMultipart,
+                            fileNames,
+                            fileAccepts);
 
             return new Pair<>(shareTargetActivityName, target);
         }

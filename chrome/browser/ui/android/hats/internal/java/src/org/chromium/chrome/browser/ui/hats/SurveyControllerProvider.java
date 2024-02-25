@@ -4,17 +4,15 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
-/**
- * Util class that creates a new SurveyController.
- */
+import org.chromium.chrome.browser.profiles.Profile;
+
+/** Util class that creates a new SurveyController. */
 // TODO(crbug/1400731): Change to package private once public references are removed.
 public class SurveyControllerProvider {
     private SurveyControllerProvider() {}
 
-    /**
-     * @return A new instance of survey controller.
-     */
-    public static SurveyController create() {
+    /** Return a SurveyController associated with the given profile. */
+    public static SurveyController create(Profile profile) {
         return new SurveyController() {};
     }
 }

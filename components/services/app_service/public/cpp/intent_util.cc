@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/intent_util.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
 namespace {
@@ -443,34 +443,33 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
   return base::Value(std::move(intent_value));
 }
 
-absl::optional<std::string> GetStringValueFromDict(
-    const base::Value::Dict& dict,
-    const std::string& key_name) {
+std::optional<std::string> GetStringValueFromDict(const base::Value::Dict& dict,
+                                                  const std::string& key_name) {
   const base::Value* value = dict.Find(key_name);
   if (!value)
-    return absl::nullopt;
+    return std::nullopt;
 
   const std::string* string_value = value->GetIfString();
   if (!string_value || string_value->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return *string_value;
 }
 
-absl::optional<bool> GetBoolValueFromDict(const base::Value::Dict& dict,
-                                          const std::string& key_name) {
+std::optional<bool> GetBoolValueFromDict(const base::Value::Dict& dict,
+                                         const std::string& key_name) {
   return dict.FindBool(key_name);
 }
 
-absl::optional<GURL> GetGurlValueFromDict(const base::Value::Dict& dict,
-                                          const std::string& key_name) {
+std::optional<GURL> GetGurlValueFromDict(const base::Value::Dict& dict,
+                                         const std::string& key_name) {
   const std::string* url_spec = dict.FindString(key_name);
   if (!url_spec)
-    return absl::nullopt;
+    return std::nullopt;
 
   GURL url(*url_spec);
   if (!url.is_valid())
-    return absl::nullopt;
+    return std::nullopt;
 
   return url;
 }
@@ -613,19 +612,19 @@ SharedText ExtractSharedText(const std::string& share_text) {
 }
 
 // static
-absl::optional<std::string> AuthorityView::PortToString(const GURL& url) {
+std::optional<std::string> AuthorityView::PortToString(const GURL& url) {
   int port_number = url.EffectiveIntPort();
   if (port_number == url::PORT_UNSPECIFIED) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::ToString(port_number);
 }
 
 // static
-absl::optional<std::string> AuthorityView::PortToString(
+std::optional<std::string> AuthorityView::PortToString(
     const url::Origin& origin) {
   if (origin.port() == 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::ToString(origin.port());
 }

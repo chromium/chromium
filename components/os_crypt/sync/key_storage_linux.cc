@@ -217,7 +217,7 @@ bool KeyStorageLinux::WaitForInitOnTaskRunner() {
   return success;
 }
 
-absl::optional<std::string> KeyStorageLinux::GetKey() {
+std::optional<std::string> KeyStorageLinux::GetKey() {
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_sync_primitives;
   base::SequencedTaskRunner* task_runner = GetTaskRunner();
 
@@ -229,7 +229,7 @@ absl::optional<std::string> KeyStorageLinux::GetKey() {
   base::WaitableEvent password_loaded(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  absl::optional<std::string> password;
+  std::optional<std::string> password;
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&KeyStorageLinux::BlockOnGetKeyImplThenSignal,
@@ -244,7 +244,7 @@ base::SequencedTaskRunner* KeyStorageLinux::GetTaskRunner() {
 
 void KeyStorageLinux::BlockOnGetKeyImplThenSignal(
     base::WaitableEvent* on_password_received,
-    absl::optional<std::string>* password) {
+    std::optional<std::string>* password) {
   *password = GetKeyImpl();
   on_password_received->Signal();
 }

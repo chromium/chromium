@@ -13,10 +13,10 @@
 @class CommandDispatcher;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
+class PrefService;
 @class SceneState;
 @protocol TabStripCommands;
 @protocol ToolbarCommands;
-class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
 
 namespace feature_engagement {
@@ -39,9 +39,7 @@ class DeviceSwitcherResultDispatcher;
         (segmentation_platform::DeviceSwitcherResultDispatcher*)
             deviceSwitcherResultDispatcher
                     hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                           loadingNotifier:(UrlLoadingNotifierBrowserAgent*)
-                                               urlLoadingNotifier
-                                sceneState:(SceneState*)sceneState
+                               prefService:(PrefService*)prefService
                    tabStripCommandsHandler:
                        (id<TabStripCommands>)tabStripCommandsHandler
                                    tracker:(feature_engagement::Tracker*)
@@ -63,12 +61,6 @@ class DeviceSwitcherResultDispatcher;
 // Stops this presenter.
 - (void)stop;
 
-// Notifies the presenter that the user entered the tab switcher.
-- (void)userEnteredTabSwitcher;
-
-// Notifies the presenter that the tools menu has been displayed.
-- (void)toolsMenuDisplayed;
-
 // Presents a bubble associated with the Discover feed header's menu button.
 - (void)presentDiscoverFeedHeaderTipBubble;
 
@@ -85,6 +77,14 @@ class DeviceSwitcherResultDispatcher;
 // Presents a help bubble to inform the user that they can track the price of
 // the item on the current website.
 - (void)presentPriceNotificationsWhileBrowsingTipBubble;
+
+// Presents a help bubble to inform the user that they can tap the Lens
+// button in the omnibox keyboard to search with their camera.
+- (void)presentLensKeyboardTipBubble;
+
+// Presents a help bubble to inform the user that their tracked packages will
+// appear in the Magic Stack.
+- (void)presentParcelTrackingTipBubble;
 
 @end
 

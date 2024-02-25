@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/logging.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -13,8 +14,8 @@
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/content_settings/core/common/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -28,7 +29,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -52,7 +53,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface BlockPopupsTableViewController () <
     BooleanObserver,
     PopoverLabelViewControllerDelegate> {
-  ChromeBrowserState* _browserState;  // weak
+  raw_ptr<ChromeBrowserState> _browserState;  // weak
 
   // List of url patterns that are allowed to display popups.
   base::Value::List _exceptions;

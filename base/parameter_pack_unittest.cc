@@ -57,14 +57,11 @@ TEST(ParameterPack, IndexInPack) {
 
 TEST(ParameterPack, NthType) {
   static_assert(
-      std::is_same<int, ParameterPack<int, float, bool>::NthType<0>>::value,
-      "");
+      std::is_same_v<int, ParameterPack<int, float, bool>::NthType<0>>, "");
   static_assert(
-      std::is_same<float, ParameterPack<int, float, bool>::NthType<1>>::value,
-      "");
+      std::is_same_v<float, ParameterPack<int, float, bool>::NthType<1>>, "");
   static_assert(
-      std::is_same<bool, ParameterPack<int, float, bool>::NthType<2>>::value,
-      "");
+      std::is_same_v<bool, ParameterPack<int, float, bool>::NthType<2>>, "");
 }
 
 TEST(ParameterPack, IsAllSameType) {

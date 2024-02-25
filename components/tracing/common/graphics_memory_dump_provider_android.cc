@@ -41,8 +41,9 @@ bool GraphicsMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   if (args.level_of_detail !=
-      base::trace_event::MemoryDumpLevelOfDetail::DETAILED)
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
     return true;  // Dump on detailed memory dumps only.
+  }
 
   const char kAbstractSocketName[] = "chrome_tracing_memtrack_helper";
   struct sockaddr_un addr;

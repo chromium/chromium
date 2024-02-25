@@ -41,17 +41,15 @@ class MessageBoxViewTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
     message_box_ = std::make_unique<MessageBoxView>(kDefaultMessage);
-    provider_ = LayoutProvider::Get();
   }
 
   std::unique_ptr<MessageBoxView> message_box_;
-  raw_ptr<const LayoutProvider, DanglingUntriaged> provider_;
 };
 
 TEST_F(MessageBoxViewTest, CheckMessageOnlySize) {
   message_box_->SizeToPreferredSize();
 
-  gfx::Insets box_border = provider_->GetDialogInsetsForContentType(
+  gfx::Insets box_border = LayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText);
   gfx::Size scroll_size = message_box_->scroll_view_->size();
   scroll_size.Enlarge(0, box_border.top() + box_border.bottom());
@@ -62,7 +60,7 @@ TEST_F(MessageBoxViewTest, CheckWithOptionalViewsSize) {
   message_box_->SetPromptField(std::u16string());
   message_box_->SizeToPreferredSize();
 
-  gfx::Insets box_border = provider_->GetDialogInsetsForContentType(
+  gfx::Insets box_border = LayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl);
   gfx::Size scroll_size = message_box_->scroll_view_->size();
   gfx::Size prompt_size = message_box_->prompt_field_->size();
@@ -77,7 +75,7 @@ TEST_F(MessageBoxViewTest, CheckWithOptionalViewsSize) {
   message_box_->SetLink(u"Link to display", base::DoNothing());
   message_box_->SizeToPreferredSize();
 
-  box_border = provider_->GetDialogInsetsForContentType(
+  box_border = LayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText);
   gfx::Size checkbox_size = message_box_->checkbox_->size();
   gfx::Size link_size = message_box_->link_->size();
@@ -107,7 +105,7 @@ TEST_F(MessageBoxViewTest, CheckInterRowHeightChange) {
 
   int scroll_height = message_box_->scroll_view_->height();
   int prompt_height = message_box_->prompt_field_->height();
-  gfx::Insets box_border = provider_->GetDialogInsetsForContentType(
+  gfx::Insets box_border = LayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl);
   int inter_row_spacing = message_box_->inter_row_vertical_spacing_;
   EXPECT_EQ(

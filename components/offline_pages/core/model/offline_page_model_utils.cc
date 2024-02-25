@@ -71,13 +71,10 @@ base::FilePath GenerateUniqueFilenameForOfflinePage(
 
   // Find a unique name based on |suggested_path|.
   int uniquifier = base::GetUniquePathNumber(suggested_path);
-  base::FilePath::StringType suffix;
-  if (uniquifier > 0)
-#if BUILDFLAG(IS_WIN)
-    suffix = base::StringPrintf(L" (%d)", uniquifier);
-#else   // BUILDFLAG(IS_WIN)
+  std::string suffix;
+  if (uniquifier > 0) {
     suffix = base::StringPrintf(" (%d)", uniquifier);
-#endif  // BUILDFLAG(IS_WIN)
+  }
 
   // Truncation.
   int max_path_component_length =
@@ -86,13 +83,15 @@ base::FilePath GenerateUniqueFilenameForOfflinePage(
     int limit = max_path_component_length -
                 suggested_path.Extension().length() - suffix.length();
     if (limit <= 0 ||
-        !filename_generation::TruncateFilename(&suggested_path, limit))
+        !filename_generation::TruncateFilename(&suggested_path, limit)) {
       return base::FilePath();
+    }
   }
 
   // Adding uniquifier suffix if needed.
-  if (uniquifier > 0)
-    suggested_path = suggested_path.InsertBeforeExtension(suffix);
+  if (!suffix.empty()) {
+    suggested_path = suggested_path.InsertBeforeExtensionASCII(suffix);
+  }
 
   return suggested_path;
 }

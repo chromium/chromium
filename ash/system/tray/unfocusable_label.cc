@@ -17,7 +17,7 @@ void UnfocusableLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->RemoveState(ax::mojom::State::kFocusable);
 }
 
-BEGIN_METADATA(UnfocusableLabel, views::Label)
+BEGIN_METADATA(UnfocusableLabel)
 END_METADATA
 
 }  // namespace ash

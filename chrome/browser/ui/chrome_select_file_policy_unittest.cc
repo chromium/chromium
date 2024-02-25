@@ -54,12 +54,12 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
   }
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override {
     ASSERT_FALSE(file_selection_initialisation_in_progress);
   }
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
                           void* params) override {
     ASSERT_FALSE(file_selection_initialisation_in_progress);
   }

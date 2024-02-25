@@ -34,7 +34,7 @@ bool MountRequestHandler::Execute(int request_id) {
       extensions::api::file_system_provider::OnMountRequested::kEventName,
       std::move(event_args));
 
-  return request_dispatcher_->DispatchRequest(request_id, absl::nullopt,
+  return request_dispatcher_->DispatchRequest(request_id, std::nullopt,
                                               std::move(event));
 }
 
@@ -54,7 +54,7 @@ void MountRequestHandler::OnError(int /* request_id */,
 }
 
 void MountRequestHandler::OnAbort(int request_id) {
-  request_dispatcher_->CancelRequest(request_id, absl::nullopt);
+  request_dispatcher_->CancelRequest(request_id, std::nullopt);
 }
 
 }  // namespace ash::file_system_provider

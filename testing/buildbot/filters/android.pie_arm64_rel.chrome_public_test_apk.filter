@@ -69,6 +69,8 @@
 
 # crbug.com/1128488
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogInitialShowFromStrip
+# crbug.com/1473281
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testRenderDialog_3Tabs_Landscape_NewAspectRatio
 
 # crbug.com/1128570
 -org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testManualInitiationWithBarOpen

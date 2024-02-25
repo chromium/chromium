@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_features.h"
@@ -41,7 +42,7 @@ AutofillOfferData CreateTestFreeListingCouponOffer(
 
 struct OfferNotificationBubbleViewPixelTestConfig {
   std::string name;
-  absl::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
+  std::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
 };
 
 std::string GetTestName(
@@ -79,9 +80,7 @@ class OfferNotificationBubbleViewPixelBrowserTest
         views::test::AnyWidgetTestPasskey{},
         OfferNotificationBubbleViews::kViewClassName);
 
-    autofill_client->UpdateOfferNotification(
-        &offer, /*notification_has_been_shown=*/true,
-        /*expand_notification_icon=*/false);
+    autofill_client->UpdateOfferNotification(&offer, {});
     OfferNotificationBubbleControllerImpl* controller = GetController();
     EXPECT_TRUE(controller);
     // Ensure the window is active before reshowing the bubble.
@@ -118,14 +117,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         OfferNotificationBubbleViewPixelTestConfig{"FreeListingOffer_default"},
         OfferNotificationBubbleViewPixelTestConfig{
-            "FreeListingOffer_on_navigation",
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{commerce::kShowDiscountOnNavigation, {}}})},
-        OfferNotificationBubbleViewPixelTestConfig{
-            "FreeListingOffer_on_navigation_chrome_refresh_style",
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{commerce::kShowDiscountOnNavigation, {}},
-                 {::features::kChromeRefresh2023, {}}})}),
+            "FreeListingOffer_chrome_refresh_style",
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+                {{::features::kChromeRefresh2023, {}}})}),
     GetTestName);
 
 // TODO(crbug.com/1473417): Disabled because this is flaky on the bots, but not

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from 'chrome://settings/settings.js';
+import type {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 

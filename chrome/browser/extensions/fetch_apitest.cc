@@ -47,7 +47,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleEchoOrigin(
 // JavaScript snippet which performs a fetch given a URL expression to be
 // substituted as %s, then sends back the fetched content using
 // chrome.test.sendScriptResult.
-const char* kFetchScript = R"(
+constexpr char kFetchScript[] = R"(
   fetch(%s).then(function(result) {
     return result.text();
   }).then(function(text) {
@@ -59,7 +59,7 @@ const char* kFetchScript = R"(
 
 // JavaScript snippet which performs a fetch given a URL expression to be
 // substituted as %s.
-const char* kDOMFetchScript = R"(
+constexpr char kDOMFetchScript[] = R"(
   fetch(%s).then(function(result) {
     return result.text();
   }).catch(function(err) {
@@ -133,7 +133,7 @@ class ExtensionFetchTest : public ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(ExtensionFetchTest, ExtensionCanFetchExtensionResource) {
   TestExtensionDir dir;
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
            "background": {"scripts": ["bg.js"]},
            "manifest_version": 2,
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest, ExtensionCanFetchExtensionResource) {
 IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
                        ExtensionCanFetchHostedResourceWithHostPermissions) {
   TestExtensionDir dir;
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
            "background": {"scripts": ["bg.js"]},
            "manifest_version": 2,
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(
     ExtensionFetchTest,
     ExtensionCannotFetchHostedResourceWithoutHostPermissions) {
   TestExtensionDir dir;
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
            "background": {"scripts": ["bg.js"]},
            "manifest_version": 2,
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
                        HostCanFetchWebAccessibleExtensionResource) {
   TestExtensionDir dir;
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
            "background": {"scripts": ["bg.js"]},
            "manifest_version": 2,
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(
     ExtensionFetchTest,
     HostCanFetchWebAccessibleExtensionResource_FetchFromServiceWorker) {
   TestExtensionDir dir;
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
            "background": {"scripts": ["bg.js"]},
            "manifest_version": 2,
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
                        HostCannotFetchNonWebAccessibleExtensionResource) {
   TestExtensionDir dir;
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
            "background": {"scripts": ["bg.js"]},
            "manifest_version": 2,
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest, FetchResponseType) {
       GetQuotedTestServerURL("example.com", "/extensions/test_file.txt")
           .data());
   TestExtensionDir dir;
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
            "background": {"scripts": ["bg.js"]},
            "manifest_version": 2,

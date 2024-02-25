@@ -17,7 +17,7 @@ select,
 input[type='checkbox'],
 input[type='radio'] {
   -webkit-appearance: none;
-  background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  background-image: linear-gradient(#ededed, #ededed 38%, #dedede);
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 2px;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08),
@@ -57,10 +57,10 @@ select {
   -webkit-appearance: none;
   /* OVERRIDE */
   background-image:
-      -webkit-image-set(
+      image-set(
           url(../images/select.png) 1x,
           url(../images/2x/select.png) 2x),
-      -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+      linear-gradient(#ededed, #ededed 38%, #dedede);
   background-position: right center;
   background-repeat: no-repeat;
   padding-inline-end: 24px;
@@ -121,7 +121,7 @@ input[type='search'] {
 /* Checked ********************************************************************/
 
 input[type='checkbox']:checked::before {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(../images/check.png) 1x,
       url(../images/2x/check.png) 2x);
   background-size: 100% 100%;
@@ -165,7 +165,7 @@ input[type='radio']:checked::before {
         button,
         input[type='button'],
         input[type='submit']):not(.custom-appearance)) {
-  background-image: -webkit-linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
+  background-image: linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
   border-color: rgba(0, 0, 0, 0.3);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12),
       inset 0 1px 2px rgba(255, 255, 255, 0.95);
@@ -175,10 +175,10 @@ input[type='radio']:checked::before {
 :enabled:hover:-webkit-any(select) {
   /* OVERRIDE */
   background-image:
-      -webkit-image-set(
+      image-set(
           url(../images/select.png) 1x,
           url(../images/2x/select.png) 2x),
-      -webkit-linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
+      linear-gradient(#f0f0f0, #f0f0f0 38%, #e0e0e0);
 }
 </if>
 
@@ -192,7 +192,7 @@ input[type='radio']:checked::before {
         button,
         input[type='button'],
         input[type='submit']):not(.custom-appearance)) {
-  background-image: -webkit-linear-gradient(#e7e7e7, #e7e7e7 38%, #d7d7d7);
+  background-image: linear-gradient(#e7e7e7, #e7e7e7 38%, #d7d7d7);
   box-shadow: none;
   text-shadow: none;
 }
@@ -200,7 +200,7 @@ input[type='radio']:checked::before {
 :enabled:active:-webkit-any(select) {
   /* OVERRIDE */
   background-image: url(../images/select.png),
-      -webkit-linear-gradient(#e7e7e7, #e7e7e7 38%, #d7d7d7);
+      linear-gradient(#e7e7e7, #e7e7e7 38%, #d7d7d7);
 }
 
 /* Disabled *******************************************************************/
@@ -210,7 +210,7 @@ input[type='radio']:checked::before {
     input[type='button'],
     input[type='submit']):not(.custom-appearance),
 select:disabled {
-  background-image: -webkit-linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
+  background-image: linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
   border-color: rgba(80, 80, 80, 0.2);
   box-shadow: 0 1px 0 rgba(80, 80, 80, 0.08),
       inset 0 1px 2px rgba(255, 255, 255, 0.75);
@@ -220,10 +220,10 @@ select:disabled {
 select:disabled {
   /* OVERRIDE */
   background-image:
-      -webkit-image-set(
+      image-set(
           url(../images/disabled_select.png) 1x,
           url(../images/2x/disabled_select.png) 2x),
-      -webkit-linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
+      linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
 }
 
 input:disabled:-webkit-any([type='checkbox'],

@@ -1,0 +1,15 @@
+static_library("debug") {
+  sources = [
+    "structured_metrics_debug_provider.cc",
+    "structured_metrics_debug_provider.h",
+    "structured_metrics_utils.cc",
+    "structured_metrics_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/metrics/structured",
+    "//components/metrics/structured:structured_metrics_validator",
+    "//third_party/metrics_proto",
+  ]
+}

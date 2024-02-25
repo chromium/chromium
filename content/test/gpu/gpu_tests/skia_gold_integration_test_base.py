@@ -49,20 +49,31 @@ class _ImageParameters():
     self.driver_version: Optional[str] = None
     self.driver_vendor: Optional[str] = None
     self.display_server: Optional[str] = None
+    self.skia_graphite_status: Optional[str] = None
 
 
+# This and its subclasses could potentially be switched to using dataclasses,
+# but due to Python's method resolution order, inheritance breaks if a parent
+# class has fields with defaults and a child class has fields without defaults.
+# This might be possible to resolve with kw_only, but that requires at least
+# Python 3.10.
+# The third party attrs module supposedly handles this situation
+# (https://stackoverflow.com/a/53085935), but attempting to do so on version
+# 21.4.0 fails.
 class SkiaGoldTestCase():
   """Base class for any Gold-enabled test case definition.
 
   Only information used within SkiaGoldIntegrationTestBase should be stored
   here. Additional information should be stored in the appropriate subclass.
   """
+  # pylint: disable=too-many-arguments
   def __init__(
       self,
       name: str,
       gpu_process_disabled: bool = False,
       grace_period_end: Optional[date] = None,
-      matching_algorithm: Optional[algo.SkiaGoldMatchingAlgorithm] = None):
+      matching_algorithm: Optional[algo.SkiaGoldMatchingAlgorithm] = None,
+      refresh_after_finish: bool = False):
     """
     Args:
       name: A string containing the name of the test.
@@ -77,12 +88,17 @@ class SkiaGoldTestCase():
           skia_gold_matching_algoriths.SkiaGoldMatchingAlgorithm that specifies
           which matching algorithm Skia Gold should use for the test. Defaults
           to exact matching.
+      refresh_after_finish: Whether to refresh the entire page after the test
+          finishes.
     """
     self.name = name
     self.gpu_process_disabled = gpu_process_disabled
     self.grace_period_end = grace_period_end
     self.matching_algorithm = (matching_algorithm
                                or algo.ExactMatchingAlgorithm())
+    self.refresh_after_finish = refresh_after_finish
+
+  #pylint: enable=too-many-arguments
 
 
 class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
@@ -122,8 +138,13 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     if not cls._dom_automation_controller_script:
       with open(
           os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                       'dom_automation_controller.js')) as f:
+                       'websocket_heartbeat.js')) as f:
         cls._dom_automation_controller_script = f.read()
+      cls._dom_automation_controller_script += '\n'
+      with open(
+          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+                       'dom_automation_controller.js')) as f:
+        cls._dom_automation_controller_script += f.read()
 
   @classmethod
   def GetSkiaGoldProperties(cls) -> sgp.SkiaGoldProperties:
@@ -301,6 +322,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     params.driver_version = device.driver_version
     params.driver_vendor = device.driver_vendor
     params.display_server = gpu_helper.GetDisplayServer(browser.browser_type)
+    params.skia_graphite_status = gpu_helper.GetSkiaGraphiteStatus(
+        system_info.gpu)
 
   @classmethod
   def _UploadBitmapToCloudStorage(cls,
@@ -383,6 +406,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         _GetCombinedHardwareIdentifier(img_params),
         'browser_type':
         _ToNonEmptyStrOrNone(self.browser.browser_type),
+        'skia_graphite_status':
+        _ToNonEmptyStrOrNone(img_params.skia_graphite_status),
     }
     # If we have a grace period active, then the test is potentially flaky.
     # Include a pair that will cause Gold to ignore any untriaged images, which

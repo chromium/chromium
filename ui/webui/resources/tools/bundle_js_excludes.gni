@@ -1,0 +1,23 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# URLs to be passed as `excludes` to most (but not all) bundle_js() invocations.
+BUNDLE_JS_EXCLUDES = []
+foreach(excluded_file,
+        [
+          "resources/mojo/mojo/public/js/bindings.js",
+          "resources/mojo/mojo/public/mojom/base/time.mojom-lite.js",
+          "resources/lit/v3_0/lit.rollup.js",
+          "resources/polymer/v3_0/polymer/polymer_bundled.min.js",
+          "resources/js/cr.js",  # This file relies on globals.
+          "resources/js/load_time_data.js",
+          "resources/ash/common/load_time_data.m.js",
+          "resources/mwc/lit/index.js",
+        ]) {
+  # Exclude both the chrome://resources form and the scheme-relative form.
+  BUNDLE_JS_EXCLUDES += [
+    "chrome://${excluded_file}",
+    "//${excluded_file}",
+  ]
+}

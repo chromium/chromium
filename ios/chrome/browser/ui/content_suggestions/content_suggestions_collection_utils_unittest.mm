@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/platform_test.h"
@@ -83,7 +84,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhoneLandscape) {
   // Test.
   EXPECT_EQ(68, heightLogo);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogo);
-  EXPECT_EQ(78, topMargin);
+  EXPECT_EQ(95, topMargin);
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPad) {
@@ -159,11 +160,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NearestAncestor) {
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
-  base::test::ScopedFeatureList feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kStartSurfaceShrinkLogoParam] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(kStartSurface, parameters);
-
   // Landscape.
   CGFloat heightLogoLandscape =
       DoodleHeight(YES, YES, IPhoneLandscapeTraitCollection());
@@ -173,7 +169,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
       DoodleTopMargin(kTopInset, IPhoneLandscapeTraitCollection());
   EXPECT_EQ(68, heightLogoLandscape);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogoLandscape);
-  EXPECT_EQ(78, topMarginLandscape);
+  EXPECT_EQ(95, topMarginLandscape);
 
   // Portrait
   CGFloat heightLogoPortrait =
@@ -185,6 +181,24 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
   EXPECT_EQ(68, heightLogoPortrait);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogoPortrait);
   EXPECT_EQ(95, topMarginPortrait);
+}
+
+TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
+  EXPECT_EQ(50, FakeOmniboxHeight());
+  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
+  EXPECT_EQ(65, FakeOmniboxHeight());
+}
+
+TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
+  EXPECT_EQ(36, PinnedFakeOmniboxHeight());
+  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
+  EXPECT_EQ(48, PinnedFakeOmniboxHeight());
+}
+
+TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeight) {
+  EXPECT_EQ(50, FakeToolbarHeight());
+  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
+  EXPECT_EQ(62, FakeToolbarHeight());
 }
 
 }  // namespace content_suggestions

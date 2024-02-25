@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/file_access/scoped_file_access.h"
@@ -30,10 +29,14 @@ namespace policy {
 class DlpScopedFileAccessDelegate
     : public file_access::ScopedFileAccessDelegate {
  public:
+  using DefaultAccess = file_access::ScopedFileAccessDelegate::DefaultAccess;
+
   ~DlpScopedFileAccessDelegate() override;
 
+  using DlpClientProvider = base::RepeatingCallback<chromeos::DlpClient*()>;
+
   // Initializes the singleton instance.
-  static void Initialize(chromeos::DlpClient* client);
+  static void Initialize(DlpClientProvider client_provider);
 
   // file_access::ScopedFileAccessDelegate:
   void RequestFilesAccess(
@@ -45,20 +48,25 @@ class DlpScopedFileAccessDelegate
       const std::vector<base::FilePath>& files,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
       override;
+  void RequestDefaultFilesAccess(
+      const std::vector<base::FilePath>& files,
+      base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
+      override;
   RequestFilesAccessIOCallback CreateFileAccessCallback(
       const GURL& destination) const override;
 
  protected:
-  explicit DlpScopedFileAccessDelegate(chromeos::DlpClient* client);
+  explicit DlpScopedFileAccessDelegate(DlpClientProvider client_provider);
 
  private:
   friend class DlpScopedFileAccessDelegateTest;
   friend class DlpScopedFileAccessDelegateInteractiveUITest;
-  friend std::unique_ptr<DlpScopedFileAccessDelegate>
-  std::make_unique<DlpScopedFileAccessDelegate>(chromeos::DlpClient*&& client);
+  friend std::unique_ptr<DlpScopedFileAccessDelegate> std::make_unique<
+      DlpScopedFileAccessDelegate>(DlpClientProvider&& client_provider);
 
   // Starts a RequestFileAccess request to the daemon.
   void PostRequestFileAccessToDaemon(
+      chromeos::DlpClient* client,
       const ::dlp::RequestFileAccessRequest request,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback);
 
@@ -68,10 +76,7 @@ class DlpScopedFileAccessDelegate
       const ::dlp::RequestFileAccessResponse response,
       base::ScopedFD fd);
 
-  // This is a pointer to a global dbus client singleton that is owned by the
-  // browser instance. It is initialized and destructed at the same time as
-  // dbus.
-  raw_ptr<chromeos::DlpClient, LeakedDanglingUntriaged> client_;
+  const DlpClientProvider client_provider_;
 
   base::WeakPtrFactory<DlpScopedFileAccessDelegate> weak_ptr_factory_;
 };

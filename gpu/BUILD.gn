@@ -427,6 +427,7 @@ test("gl_tests") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+    sources += [ "command_buffer/service/shared_image/ozone_image_backing_factory_unittest.cc" ]
   }
 
   if (enable_vulkan) {
@@ -471,12 +472,21 @@ test("gl_tests") {
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
     ]
+
+    sources += [
+      "command_buffer/service/shared_image/dawn_image_representation_unittest_common.cc",
+      "command_buffer/service/shared_image/dawn_image_representation_unittest_common.h",
+    ]
   }
 
   data_deps = [ "//testing/buildbot/filters:gl_tests_filters" ]
 
   if (is_android && enable_chrome_android_internal) {
     data_deps += [ "//clank/build/bot/filters:gl_tests_filters" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
   }
 }
 
@@ -592,7 +602,6 @@ test("gpu_unittests") {
     "config/gpu_test_config_unittest.cc",
     "config/gpu_test_expectations_parser_unittest.cc",
     "config/gpu_util_unittest.cc",
-    "config/webgpu_blocklist_unittest.cc",
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
     "ipc/client/image_decode_accelerator_proxy_unittest.cc",
     "ipc/common/gpu_memory_buffer_impl_shared_memory_unittest.cc",
@@ -693,7 +702,10 @@ test("gpu_unittests") {
   }
 
   if (use_dawn) {
-    sources += [ "command_buffer/service/dawn_caching_interface_unittest.cc" ]
+    sources += [
+      "command_buffer/service/dawn_caching_interface_unittest.cc",
+      "config/webgpu_blocklist_unittest.cc",
+    ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -757,6 +769,7 @@ test("gpu_unittests") {
 
   if (use_dawn) {
     deps += [
+      "//gpu/config:webgpu_blocklist_impl",
       "//net:test_support",
       "//third_party/dawn/src/dawn:cpp",
       "//third_party/dawn/src/dawn:proc",
@@ -766,6 +779,11 @@ test("gpu_unittests") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+  }
+
+  if (is_ios) {
+    bundle_deps =
+        [ "//testing/buildbot/filters:gpu_unittests_filters_bundle_data" ]
   }
 }
 

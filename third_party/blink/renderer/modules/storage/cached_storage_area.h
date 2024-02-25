@@ -143,12 +143,12 @@ class MODULES_EXPORT CachedStorageArea
   // mojom::blink::StorageAreaObserver:
   void KeyChanged(const Vector<uint8_t>& key,
                   const Vector<uint8_t>& new_value,
-                  const absl::optional<Vector<uint8_t>>& old_value,
+                  const std::optional<Vector<uint8_t>>& old_value,
                   const String& source) override;
   void KeyChangeFailed(const Vector<uint8_t>& key,
                        const String& source) override;
   void KeyDeleted(const Vector<uint8_t>& key,
-                  const absl::optional<Vector<uint8_t>>& old_value,
+                  const std::optional<Vector<uint8_t>>& old_value,
                   const String& source) override;
   void AllDeleted(bool was_nonempty, const String& source) override;
   void ShouldSendOldValueOnMutations(bool value) override;

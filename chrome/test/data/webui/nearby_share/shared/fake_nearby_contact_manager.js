@@ -6,22 +6,26 @@
  * @fileoverview Fake implementation of ContactManagerInterface for testing.
  */
 
-import {ContactManagerInterface, ContactRecord, DownloadContactsObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
 /**
  * Fake implementation of ContactManagerInterface
- *
- * @implements {ContactManagerInterface}
  */
 export class FakeContactManager {
   constructor() {
-    /** @type {?Array<!ContactRecord>} */
+    /**
+     * Restore ContactRecord type when migrated to TS.
+     * @type {?Array<!Object>}
+     */
     this.contactRecords = null;
     /** @type {!Array<!string>} */
     this.allowedContacts = [];
     /** @private {number} */
     this.numUnreachable_ = 3;
-    /** @private {?DownloadContactsObserverInterface} */
+    /**
+     * Restore DownloadContactsObserverInterface type when migrated to TS.
+     * @private {?Object}
+     */
     this.observer_;
     /** @private {Object} */
     this.$ = {
@@ -32,7 +36,8 @@ export class FakeContactManager {
   }
 
   /**
-   * @param {!DownloadContactsObserverInterface} observer
+   * Restore DownloadContactsObserverInterface type when migrated to TS.
+   * @param {!Object} observer
    */
   addDownloadContactsObserver(observer) {
     // Just support a single observer for testing.

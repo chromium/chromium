@@ -15,6 +15,10 @@
     padding-top: var(--cr-realbox-height);
   }
 
+  :host([expanded-state-layout-chrome-refresh]) #content {
+    padding-bottom: 8px;
+  }
+
   @media (forced-colors: active) {
     #content {
       border: 1px solid ActiveBorder;
@@ -52,10 +56,13 @@
     font-size: .875em;
     font-weight: 500;
     overflow: hidden;
-    padding-inline-end: 6px;
-    padding-inline-start: 6px;
+    padding-inline-end: 1px;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .header cr-icon-button {
+    top: 1px;
   }
 
   .header:focus-within:not(:focus) cr-icon-button {
@@ -63,7 +70,7 @@
           var(--color-realbox-results-icon-selected);
   }
 
-  cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
+  :host(:not([chrome-refresh-hover-shape])) cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
     background-color:
         var(--color-realbox-results-background-hovered);
   }
@@ -93,6 +100,10 @@
   }
 
   .secondary-side .matches {
+    display: block;
+  }
+
+  .secondary-side .matches.horizontal {
     display: flex;
     gap: 4px;
   }
@@ -100,9 +111,9 @@
 <div id="content">
   <template is="dom-repeat"
       items="[[sideTypes_(showSecondarySide_)]]"
-      as="side">
-    <div class$="[[classForSide_(side)]]">
-      <template is="dom-repeat" items="[[groupIdsForSide_(side, result.matches.*)]]"
+      as="sideType">
+    <div class$="[[sideTypeClass_(sideType)]]">
+      <template is="dom-repeat" items="[[groupIdsForSideType_(sideType, result.matches.*)]]"
           as="groupId">
         <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
           <!-- Header cannot be tabbed into but gets focus when clicked. This stops
@@ -117,12 +128,12 @@
             </cr-icon-button>
           </h3>
         </template>
-        <div class="matches">
+        <div class$="matches [[renderTypeClassForGroup_(groupId)]]">
           <template is="dom-repeat"
               items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
               as="match" on-dom-change="onResultRepaint_">
             <cr-realbox-match tabindex="0" role="option" match="[[match]]"
-                match-index="[[matchIndex_(match)]]" side-type="[[side]]"
+                match-index="[[matchIndex_(match)]]" side-type="[[sideType]]"
                 selected$="[[isSelected_(match, selectedMatchIndex)]]">
             </cr-realbox-match>
           </template>

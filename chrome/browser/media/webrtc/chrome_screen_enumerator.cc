@@ -28,8 +28,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
-base::LazyInstance<std::vector<aura::Window*>>::DestructorAtExit
-    root_windows_for_testing_ = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<std::vector<raw_ptr<aura::Window, VectorExperimental>>>::
+    DestructorAtExit root_windows_for_testing_ = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
@@ -70,9 +70,10 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
         /*display_surface=*/media::mojom::DisplayCaptureSurfaceType::MONITOR,
         /*logical_surface=*/true,
         /*cursor=*/media::mojom::CursorCaptureType::NEVER,
-        /*capture_handle=*/nullptr);
+        /*capture_handle=*/nullptr,
+        /*initial_zoom_level=*/100);
     stream_devices_set->stream_devices.push_back(
-        blink::mojom::StreamDevices::New(/*audio_device=*/absl::nullopt,
+        blink::mojom::StreamDevices::New(/*audio_device=*/std::nullopt,
                                          /*video_device=*/device));
   }
   return stream_devices_set;
@@ -109,7 +110,7 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
                                     /*name=*/"Screen",
                                     /*display_id=*/source.display_id);
     stream_devices_set->stream_devices.push_back(
-        blink::mojom::StreamDevices::New(/*audio_device=*/absl::nullopt,
+        blink::mojom::StreamDevices::New(/*audio_device=*/std::nullopt,
                                          /*video_device=*/device));
   }
 
@@ -125,7 +126,7 @@ ChromeScreenEnumerator::~ChromeScreenEnumerator() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeScreenEnumerator::SetRootWindowsForTesting(
-    std::vector<aura::Window*> root_windows) {
+    std::vector<raw_ptr<aura::Window, VectorExperimental>> root_windows) {
   root_windows_for_testing_.Get() = std::move(root_windows);
 }
 
@@ -141,7 +142,6 @@ void ChromeScreenEnumerator::EnumerateScreens(
     blink::mojom::MediaStreamType stream_type,
     ScreensCallback screens_callback) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kGetAllScreensMedia));
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(

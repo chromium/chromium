@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {NtpBackgroundData, NtpBackgroundProxy} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';
+import type {NtpBackgroundData, NtpBackgroundProxy} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';
 
 export class TestNtpBackgroundProxy extends TestBrowserProxy implements
     NtpBackgroundProxy {
@@ -16,7 +16,6 @@ export class TestNtpBackgroundProxy extends TestBrowserProxy implements
       'getBackgrounds',
       'preloadImage',
       'recordBackgroundImageFailedToLoad',
-      'recordBackgroundImageLoadTime',
       'setBackground',
     ]);
   }
@@ -37,10 +36,6 @@ export class TestNtpBackgroundProxy extends TestBrowserProxy implements
 
   recordBackgroundImageFailedToLoad() {
     this.methodCalled('recordBackgroundImageFailedToLoad');
-  }
-
-  recordBackgroundImageLoadTime(loadTime: number) {
-    this.methodCalled('recordBackgroundImageLoadTime', loadTime);
   }
 
   recordBackgroundImageNeverLoaded() {}

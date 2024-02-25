@@ -15,6 +15,7 @@
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace views {
@@ -32,7 +33,8 @@ class CaptionBubbleSessionObserver;
 //
 //  The implementation of the caption bubble controller for Views.
 //
-class CaptionBubbleControllerViews : public CaptionBubbleController {
+class CaptionBubbleControllerViews : public CaptionBubbleController,
+                                     public speech::SodaInstaller::Observer {
  public:
   CaptionBubbleControllerViews(PrefService* profile_prefs,
                                const std::string& application_locale);
@@ -59,7 +61,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
 
   // Called when the caption style changes.
   void UpdateCaptionStyle(
-      absl::optional<ui::CaptionStyle> caption_style) override;
+      std::optional<ui::CaptionStyle> caption_style) override;
 
   bool IsWidgetVisibleForTesting() override;
   bool IsGenericErrorMessageVisibleForTesting() override;
@@ -74,6 +76,13 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
  private:
   friend class CaptionBubbleControllerViewsTest;
   friend class LiveCaptionUnavailabilityNotifierTest;
+
+  // SodaInstaller::Observer overrides:
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
+  void OnSodaInstallError(speech::LanguageCode language_code,
+                          speech::SodaInstaller::ErrorCode error_code) override;
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int progress) override;
 
   // A callback passed to the CaptionBubble which is called when the
   // CaptionBubble is destroyed.
@@ -111,6 +120,8 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // sessions.
   std::unordered_map<std::string, std::unique_ptr<CaptionBubbleSessionObserver>>
       caption_bubble_session_observers_;
+
+  std::string application_locale_;
 
   base::WeakPtrFactory<CaptionBubbleControllerViews> weak_factory_{this};
 };

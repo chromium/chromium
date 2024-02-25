@@ -1,0 +1,59 @@
+digraph {
+  node[shape=plaintext]
+  edge[style=dashed, color=crimson]
+
+  page1[label=<
+    <table border="0" cellborder="1" cellspacing="0"><tr>
+      <!-- head partition page -->
+      <td port="head" bgcolor="darkgrey" width="40" height="52"></td>
+      <!-- bucket-external memory - not depicted -->
+      <td width="160"></td>
+      <!-- a slot span in this bucket -->
+   <td port="slotspan" bgcolor="crimson" width="80"></td>
+      <!-- bucket-external memory - not depicted -->
+      <td width="320"></td>
+      <!-- tail partition page -->
+      <td bgcolor="darkgrey" width="40"></td>
+    </tr></table>
+  >]
+  page2[label=<
+    <table border="0" cellborder="1" cellspacing="0"><tr>
+      <!-- head partition page -->
+      <td port="head" bgcolor="darkgrey" width="40" height="52"></td>
+      <!-- bucket-external memory - not depicted -->
+      <td width="280"></td>
+      <!-- a slot span in this bucket -->
+      <td port="slotspan" bgcolor="crimson" width="80"></td>
+      <!-- bucket-external memory - not depicted -->
+      <td width="200"></td>
+      <!-- tail partition page -->
+      <td bgcolor="darkgrey" width="40"></td>
+    </tr></table>
+  >]
+  page3[label=<
+    <table border="0" cellborder="1" cellspacing="0"><tr>
+      <!-- head partition page -->
+      <td port="head" bgcolor="darkgrey" width="40" height="52"></td>
+      <!-- bucket-external memory - not depicted -->
+      <td width="40"></td>
+      <!-- a slot span in this bucket -->
+      <td port="slotspan1" bgcolor="crimson" width="80"></td>
+      <!-- bucket-external memory - not depicted -->
+      <td width="120"></td>
+      <!-- a slot span in this bucket -->
+      <td port="slotspan2" bgcolor="crimson" width="80"></td>
+      <!-- bucket-external memory - not depicted -->
+      <td width="240"></td>
+      <!-- tail partition page -->
+      <td bgcolor="darkgrey" width="40"></td>
+    </tr></table>
+  >]
+
+  // Invisibly link the head partition pages to force alignment.
+  page1:head->page2:head->page3:head[style=invis]
+
+  // Inter-super-page links disable constraints so to let the above
+  // fully control alignment.
+  page1:slotspan->page2:slotspan->page3:slotspan1[constraint=false]
+  page3:slotspan1:s->page3:slotspan2:sw
+}

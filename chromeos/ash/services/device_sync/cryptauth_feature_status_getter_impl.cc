@@ -87,7 +87,7 @@ ConvertFeatureStatusesToSoftwareFeatureMap(
   base::flat_set<multidevice::SoftwareFeature> marked_enabled;
   for (const cryptauthv2::DeviceFeatureStatus::FeatureStatus& status :
        feature_statuses) {
-    absl::optional<CryptAuthFeatureType> feature_type =
+    std::optional<CryptAuthFeatureType> feature_type =
         CryptAuthFeatureTypeFromString(status.feature_type());
 
     bool is_known_feature_type = feature_type.has_value();
@@ -153,7 +153,8 @@ base::Time GetMaxLastModifiedTimeFromFeatureStatuses(
                                              max_last_modified_time_millis);
   }
 
-  return base::Time::FromJavaTime(max_last_modified_time_millis);
+  return base::Time::FromMillisecondsSinceUnixEpoch(
+      max_last_modified_time_millis);
 }
 
 void RecordGetFeatureStatusesMetrics(base::TimeDelta execution_time,

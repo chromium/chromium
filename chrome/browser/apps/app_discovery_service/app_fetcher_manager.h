@@ -23,7 +23,7 @@ class AppFetcher {
   virtual void GetApps(ResultCallback callback) = 0;
   virtual base::CallbackListSubscription RegisterForAppUpdates(
       RepeatingResultCallback callback);
-  virtual void GetIcon(const std::string& app_id,
+  virtual void GetIcon(const std::string& icon_id,
                        int32_t size_hint_in_dip,
                        GetIconCallback callback);
 };
@@ -40,7 +40,7 @@ class AppFetcherManager {
   base::CallbackListSubscription RegisterForAppUpdates(
       ResultType result_type,
       RepeatingResultCallback callback);
-  void GetIcon(const std::string& app_id,
+  void GetIcon(const std::string& icon_id,
                int32_t size_hint_in_dip,
                ResultType result_type,
                GetIconCallback callback);
@@ -52,6 +52,7 @@ class AppFetcherManager {
 
   std::unique_ptr<AppFetcher> recommended_arc_app_fetcher_;
   std::unique_ptr<AppFetcher> game_fetcher_;
+  std::unique_ptr<AppFetcher> almanac_fetcher_;
 
   static AppFetcher* g_test_fetcher_;
 };

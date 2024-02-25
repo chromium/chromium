@@ -23,6 +23,7 @@ class CONTENT_EXPORT FileSystemAccessWatchScope {
   static FileSystemAccessWatchScope GetScopeForDirectoryWatch(
       const storage::FileSystemURL& directory_url,
       bool is_recursive);
+  static FileSystemAccessWatchScope GetScopeForAllBucketFileSystems();
 
   ~FileSystemAccessWatchScope();
 
@@ -37,11 +38,28 @@ class CONTENT_EXPORT FileSystemAccessWatchScope {
   // Returns true if `scope` is contained within this `Scope`.
   bool Contains(const FileSystemAccessWatchScope& scope) const;
 
-  const storage::FileSystemURL& root_url() const { return root_url_; }
+  bool IsRecursive() const {
+    switch (watch_type_) {
+      case WatchType::kFile:
+      case WatchType::kDirectoryNonRecursive:
+        return false;
+      case WatchType::kAllBucketFileSystems:
+      case WatchType::kDirectoryRecursive:
+        return true;
+    }
+  }
+
+  // This method may only be called when `watch_type_` is not
+  // `WatchType::kAllBucketFileSystems`.
+  const storage::FileSystemURL& root_url() const {
+    CHECK(root_url_.is_valid());
+    return root_url_;
+  }
   FileSystemAccessPermissionContext::HandleType handle_type() const {
     switch (watch_type_) {
       case WatchType::kFile:
         return FileSystemAccessPermissionContext::HandleType::kFile;
+      case WatchType::kAllBucketFileSystems:
       case WatchType::kDirectoryNonRecursive:
       case WatchType::kDirectoryRecursive:
         return FileSystemAccessPermissionContext::HandleType::kDirectory;
@@ -54,6 +72,7 @@ class CONTENT_EXPORT FileSystemAccessWatchScope {
 
  private:
   enum class WatchType {
+    kAllBucketFileSystems,
     kFile,
     kDirectoryNonRecursive,
     kDirectoryRecursive,
@@ -62,6 +81,7 @@ class CONTENT_EXPORT FileSystemAccessWatchScope {
   FileSystemAccessWatchScope(storage::FileSystemURL root_url,
                              WatchType watch_type);
 
+  // Invalid iff `watch_type_` is `WatchType::kAllBucketFileSystems`.
   storage::FileSystemURL root_url_;
   WatchType watch_type_;
 };

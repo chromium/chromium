@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assert, assertInstanceof} from './assert_ts.js';
+import {assert, assertInstanceof} from './assert.js';
 import {EventTracker} from './event_tracker.js';
-import {hasKeyModifiers, isRTL} from './util_ts.js';
+import {hasKeyModifiers, isRTL} from './util.js';
 // clang-format on
 
 const ACTIVE_CLASS: string = 'focus-row-active';

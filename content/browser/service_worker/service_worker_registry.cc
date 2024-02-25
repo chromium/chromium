@@ -98,12 +98,6 @@ void CompleteFindSoon(
 void RecordRetryCount(size_t retries, size_t queue_size) {
   base::UmaHistogramCounts100("ServiceWorker.Storage.RetryCountForRecovery",
                               retries);
-
-  // We've seen traces with 14,000 ServiceWorkerStorageControl tasks
-  // (https://crbug.com/1302111), so ensure more than that can fit in the
-  // histogram buckets in case those were queued retries.
-  base::UmaHistogramCounts100000(
-      "ServiceWorker.Storage.RetryQueueSizeForRecovery", queue_size);
 }
 
 // Notifies quota manager that a disk write operation failed so that it can
@@ -149,7 +143,7 @@ void FindRegistrationForClientUrlTraceEventBegin(int64_t trace_event_id,
 void FindRegistrationForClientUrlTraceEventEnd(
     int64_t trace_event_id,
     blink::ServiceWorkerStatusCode status,
-    absl::optional<std::string> info) {
+    std::optional<std::string> info) {
   if (info) {
     TRACE_EVENT_NESTABLE_ASYNC_END2(
         "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
@@ -180,13 +174,13 @@ std::string RouterRulesToString(blink::ServiceWorkerRouterRules rules) {
 // Enables merging duplicate calls of FindRegistrationForClientUrl.
 BASE_FEATURE(kServiceWorkerMergeFindRegistrationForClientUrl,
              "ServiceWorkerMergeFindRegistrationForClientUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable registration cache to skip calling FindRegistrationForClientUrl while
 // there is a live registration. (https://crbug.com/1446216)
 BASE_FEATURE(kServiceWorkerRegistrationCache,
              "ServiceWorkerRegistrationCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kServiceWorkerRegistrationCacheSize{
     &kServiceWorkerRegistrationCache, "service_worker_registration_cache_size",
@@ -194,7 +188,7 @@ const base::FeatureParam<int> kServiceWorkerRegistrationCacheSize{
 
 BASE_FEATURE(kServiceWorkerScopeCacheLimit,
              "ServiceWorkerScopeCacheLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The cache size for kServiceWorkerScopeCache.
 // (https://crbug.com/1411197)
@@ -347,8 +341,8 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   // calling FindRegistrationForClientUrl() mojo API.
   // (https://crbug.com/1446216)
   bool no_registration = false;
-  absl::optional<GURL> matched_scope;
-  absl::optional<std::set<GURL>> scopes;
+  std::optional<GURL> matched_scope;
+  std::optional<std::set<GURL>> scopes;
   auto iter = registration_scope_cache_.Get(key);
   if (iter != registration_scope_cache_.end()) {
     scopes = iter->second;
@@ -382,12 +376,12 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     auto it = registration_id_cache_.Get(std::make_pair(*matched_scope, key));
     if (it != registration_id_cache_.end()) {
       int64_t registration_id = it->second;
-      absl::optional<scoped_refptr<ServiceWorkerRegistration>> registration =
+      std::optional<scoped_refptr<ServiceWorkerRegistration>> registration =
           FindFromLiveRegistrationsForId(registration_id);
       if (registration) {
         FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
         FindRegistrationForClientUrlTraceEventEnd(
-            trace_event_id, blink::ServiceWorkerStatusCode::kOk, absl::nullopt);
+            trace_event_id, blink::ServiceWorkerStatusCode::kOk, std::nullopt);
         CompleteFindNow(std::move(*registration),
                         blink::ServiceWorkerStatusCode::kOk,
                         std::move(callback));
@@ -483,7 +477,7 @@ void ServiceWorkerRegistry::FindRegistrationForId(
 void ServiceWorkerRegistry::FindRegistrationForIdOnly(
     int64_t registration_id,
     FindRegistrationCallback callback) {
-  FindRegistrationForIdInternal(registration_id, /*key=*/absl::nullopt,
+  FindRegistrationForIdInternal(registration_id, /*key=*/std::nullopt,
                                 std::move(callback));
 }
 
@@ -994,7 +988,7 @@ void ServiceWorkerRegistry::Start() {
 
 void ServiceWorkerRegistry::FindRegistrationForIdInternal(
     int64_t registration_id,
-    const absl::optional<blink::StorageKey>& key,
+    const std::optional<blink::StorageKey>& key,
     FindRegistrationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Registration lookup is expected to abort when storage is disabled.
@@ -1005,7 +999,7 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
   }
 
   // Lookup live registration first.
-  absl::optional<scoped_refptr<ServiceWorkerRegistration>> registration =
+  std::optional<scoped_refptr<ServiceWorkerRegistration>> registration =
       FindFromLiveRegistrationsForId(registration_id);
   if (registration) {
     blink::ServiceWorkerStatusCode status =
@@ -1153,7 +1147,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   return registration;
 }
 
-absl::optional<scoped_refptr<ServiceWorkerRegistration>>
+std::optional<scoped_refptr<ServiceWorkerRegistration>>
 ServiceWorkerRegistry::FindFromLiveRegistrationsForId(int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -1171,7 +1165,7 @@ ServiceWorkerRegistry::FindFromLiveRegistrationsForId(int64_t registration_id) {
   }
   // There is no live registration. Storage lookup is required. Returning
   // nullopt results in storage lookup.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ServiceWorkerRegistry::DoomUncommittedResources(
@@ -1191,7 +1185,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     FindRegistrationCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     storage::mojom::ServiceWorkerFindRegistrationResultPtr result,
-    const absl::optional<std::vector<GURL>>& scopes) {
+    const std::optional<std::vector<GURL>>& scopes) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerRegistry::DidFindRegistrationForClientUrl",
       TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
@@ -1269,7 +1263,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
   }
 
   FindRegistrationForClientUrlTraceEventEnd(trace_event_id, status,
-                                            absl::nullopt);
+                                            std::nullopt);
   if (base::FeatureList::IsEnabled(
           kServiceWorkerMergeFindRegistrationForClientUrl)) {
     RunFindRegistrationCallbacks(client_url, key, std::move(registration),

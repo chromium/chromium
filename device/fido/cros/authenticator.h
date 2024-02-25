@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_CROS_AUTHENTICATOR_H_
 #define DEVICE_FIDO_CROS_AUTHENTICATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -19,7 +20,6 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
 
   // Since this method is synchronous, it will simply return the GetAlgorithms
   // result obtained during `InitializeAuthenticator`.
-  absl::optional<base::span<const int32_t>> GetAlgorithms() override;
+  std::optional<base::span<const int32_t>> GetAlgorithms() override;
 
   void MakeCredential(CtapMakeCredentialRequest request,
                       MakeCredentialOptions request_options,
@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   std::string GetId() const override;
   const AuthenticatorSupportedOptions& Options() const override;
 
-  absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
+  std::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
 
   void GetTouch(base::OnceClosure callback) override {}
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
@@ -95,23 +95,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   // of `InitializeAuthenticator`.
   void OnGetAlgorithmsResponse(
       base::OnceClosure callback,
-      absl::optional<u2f::GetAlgorithmsResponse> response);
+      std::optional<u2f::GetAlgorithmsResponse> response);
   // Cache whether power button is enabled, and run the barrier callback
   // of `InitializeAuthenticator`.
   void OnIsPowerButtonModeEnabled(base::OnceClosure callback, bool enabled);
   void OnHasCredentialInformationForRequest(
       GetPlatformCredentialInfoForRequestCallback callback,
-      absl::optional<u2f::HasCredentialsResponse> response);
+      std::optional<u2f::HasCredentialsResponse> response);
   void OnMakeCredentialResponse(
       CtapMakeCredentialRequest request,
       MakeCredentialCallback callback,
-      absl::optional<u2f::MakeCredentialResponse> response);
+      std::optional<u2f::MakeCredentialResponse> response);
   void OnGetAssertionResponse(
       CtapGetAssertionRequest request,
       GetAssertionCallback callback,
-      absl::optional<u2f::GetAssertionResponse> response);
+      std::optional<u2f::GetAssertionResponse> response);
   void OnCancelResponse(
-      absl::optional<u2f::CancelWebAuthnFlowResponse> response);
+      std::optional<u2f::CancelWebAuthnFlowResponse> response);
 
   // Current request_id, used for cancelling the request.
   std::string current_request_id_;
@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   // Callback to set request_id in the window property.
   base::RepeatingCallback<std::string()> generate_request_id_callback_;
   const Config config_;
-  absl::optional<std::vector<int32_t>> supported_algorithms_;
+  std::optional<std::vector<int32_t>> supported_algorithms_;
   bool u2f_enabled_ = false;
   base::WeakPtrFactory<ChromeOSAuthenticator> weak_factory_;
 };

@@ -68,8 +68,7 @@ enum Permission : NSUInteger;
 
 // Invoked by WebStateObserverBridge::PermissionStateChanged.
 - (void)webState:(web::WebState*)webState
-    didChangeStateForPermission:(web::Permission)permission
-    API_AVAILABLE(ios(15.0));
+    didChangeStateForPermission:(web::Permission)permission;
 
 // Invoked by WebStateObserverBridge::RenderProcessGone.
 - (void)renderProcessGoneForWebState:(web::WebState*)webState;
@@ -119,8 +118,7 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void FaviconUrlUpdated(web::WebState* web_state,
                          const std::vector<FaviconURL>& candidates) override;
   void PermissionStateChanged(web::WebState* web_state,
-                              web::Permission permission) override
-      API_AVAILABLE(ios(15.0));
+                              web::Permission permission) override;
   void RenderProcessGone(web::WebState* web_state) override;
   void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;

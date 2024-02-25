@@ -14,15 +14,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
-/**
- * Test for {@link PriceUtils}.
- */
+/** Test for {@link PriceUtils}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PriceUtilsTest {
     private static final int MICROS_TO_UNITS = 1000000;
 
-    @Rule
-    public ChromeBrowserTestRule mActivityTestRule = new ChromeBrowserTestRule();
+    @Rule public ChromeBrowserTestRule mActivityTestRule = new ChromeBrowserTestRule();
 
     @Test
     @SmallTest
@@ -42,7 +39,9 @@ public class PriceUtilsTest {
     public void testPriceFormatting_GreaterOrEqualThanTenUnit() {
         Assert.assertEquals("$10", PriceUtils.formatPrice("USD", 10 * MICROS_TO_UNITS));
         Assert.assertEquals("$10", PriceUtils.formatPrice("USD", (long) (10.4 * MICROS_TO_UNITS)));
-        Assert.assertEquals("Should round up.", "$11",
+        Assert.assertEquals(
+                "Should round up.",
+                "$11",
                 PriceUtils.formatPrice("USD", (long) (10.5 * MICROS_TO_UNITS)));
     }
 }

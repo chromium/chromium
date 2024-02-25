@@ -337,16 +337,15 @@ KWalletDBus::Error KWalletDBus::WriteEntry(const int wallet_handle,
                                            const std::string& folder_name,
                                            const std::string& key,
                                            const std::string& app_name,
-                                           const uint8_t* data,
-                                           const size_t length,
+                                           base::span<const uint8_t> data,
                                            int* return_code_ptr) {
   dbus::MethodCall method_call(kKWalletInterface, "writeEntry");
   dbus::MessageWriter builder(&method_call);
-  builder.AppendInt32(wallet_handle);        // handle
-  builder.AppendString(folder_name);         // folder
-  builder.AppendString(key);                 // key
-  builder.AppendArrayOfBytes(data, length);  // value
-  builder.AppendString(app_name);            // appid
+  builder.AppendInt32(wallet_handle);                         // handle
+  builder.AppendString(folder_name);                          // folder
+  builder.AppendString(key);                                  // key
+  builder.AppendArrayOfBytes(data);                           // value
+  builder.AppendString(app_name);                             // appid
   std::unique_ptr<dbus::Response> response(
       kwallet_proxy_
           ->CallMethodAndBlock(&method_call,
@@ -457,7 +456,7 @@ KWalletDBus::Error KWalletDBus::ReadPassword(
     const std::string& folder_name,
     const std::string& key,
     const std::string& app_name,
-    absl::optional<std::string>* const password_ptr) {
+    std::optional<std::string>* const password_ptr) {
   dbus::MethodCall method_call(kKWalletInterface, "readPassword");
   dbus::MessageWriter builder(&method_call);
   builder.AppendInt32(handle);
@@ -478,7 +477,7 @@ KWalletDBus::Error KWalletDBus::ReadPassword(
   if (!reader.PopString(&password)) {
     LOG(ERROR) << "Error reading response from " << kwalletd_name_
                << " (readPassword): " << response->ToString();
-    *password_ptr = absl::nullopt;
+    *password_ptr = std::nullopt;
     return CANNOT_READ;
   }
   *password_ptr = std::move(password);

@@ -55,7 +55,7 @@ class ObservableArrayExoticObjectHandler {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     ExceptionState exception_state(
-        isolate, ExceptionContext::Context::kOperationInvoke,
+        isolate, ExceptionContextType::kOperationInvoke,
         BackingListWrappable::ObservableArrayNameInIDL(), "defineProperty");
     if (!(info[0]->IsArray() && info[1]->IsName() && info[2]->IsObject())) {
       exception_state.ThrowTypeError("Invalid argument.");
@@ -141,7 +141,7 @@ class ObservableArrayExoticObjectHandler {
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     if (!(info[0]->IsArray() && info[1]->IsName())) {
       ExceptionState exception_state(
-          isolate, ExceptionContext::Context::kOperationInvoke,
+          isolate, ExceptionContextType::kOperationInvoke,
           BackingListWrappable::ObservableArrayNameInIDL(), "deleteProperty");
       exception_state.ThrowTypeError("Invalid argument.");
       return;
@@ -160,8 +160,8 @@ class ObservableArrayExoticObjectHandler {
         }
         ScriptState* script_state = ScriptState::From(current_context);
         ExceptionState exception_state(
-            isolate, ExceptionContext::Context::kIndexedPropertyDelete,
-            BackingListWrappable::ObservableArrayNameInIDL());
+            isolate, ExceptionContextType::kOperationInvoke,
+            BackingListWrappable::ObservableArrayNameInIDL(), "deleteProperty");
         if (!RunDeleteAlgorithm(script_state, backing_list, index,
                                 exception_state)) {
           return;
@@ -190,7 +190,7 @@ class ObservableArrayExoticObjectHandler {
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     if (!(info[0]->IsArray() && info[1]->IsName())) {
       ExceptionState exception_state(
-          isolate, ExceptionContext::Context::kOperationInvoke,
+          isolate, ExceptionContextType::kOperationInvoke,
           BackingListWrappable::ObservableArrayNameInIDL(), "get");
       exception_state.ThrowTypeError("Invalid argument.");
       return;
@@ -207,12 +207,9 @@ class ObservableArrayExoticObjectHandler {
           V8SetReturnValue(info, v8::Undefined(isolate));
           return;
         }
-        v8::Local<v8::Value> v8_element;
         ScriptState* script_state = ScriptState::From(current_context);
-        if (!ToV8Traits<ElementIdlType>::ToV8(script_state, backing_list[index])
-                 .ToLocal(&v8_element)) {
-          return;
-        }
+        v8::Local<v8::Value> v8_element =
+            ToV8Traits<ElementIdlType>::ToV8(script_state, backing_list[index]);
         V8SetReturnValue(info, v8_element);
         return;
       }
@@ -237,7 +234,7 @@ class ObservableArrayExoticObjectHandler {
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     if (!(info[0]->IsArray() && info[1]->IsName())) {
       ExceptionState exception_state(
-          isolate, ExceptionContext::Context::kOperationInvoke,
+          isolate, ExceptionContextType::kOperationInvoke,
           BackingListWrappable::ObservableArrayNameInIDL(),
           "getOwnPropertyDescriptor");
       exception_state.ThrowTypeError("Invalid argument.");
@@ -255,12 +252,9 @@ class ObservableArrayExoticObjectHandler {
           V8SetReturnValue(info, v8::Undefined(isolate));
           return;
         }
-        v8::Local<v8::Value> v8_element;
         ScriptState* script_state = ScriptState::From(current_context);
-        if (!ToV8Traits<ElementIdlType>::ToV8(script_state, backing_list[index])
-                 .ToLocal(&v8_element)) {
-          return;
-        }
+        v8::Local<v8::Value> v8_element =
+            ToV8Traits<ElementIdlType>::ToV8(script_state, backing_list[index]);
         v8::PropertyDescriptor prop_desc(v8_element, true);
         prop_desc.set_configurable(true);
         prop_desc.set_enumerable(true);
@@ -293,7 +287,7 @@ class ObservableArrayExoticObjectHandler {
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     if (!(info[0]->IsArray() && info[1]->IsName())) {
       ExceptionState exception_state(
-          isolate, ExceptionContext::Context::kOperationInvoke,
+          isolate, ExceptionContextType::kOperationInvoke,
           BackingListWrappable::ObservableArrayNameInIDL(), "has");
       exception_state.ThrowTypeError("Invalid argument.");
       return;
@@ -329,7 +323,7 @@ class ObservableArrayExoticObjectHandler {
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     if (!info[0]->IsArray()) {
       ExceptionState exception_state(
-          isolate, ExceptionContext::Context::kOperationInvoke,
+          isolate, ExceptionContextType::kOperationInvoke,
           BackingListWrappable::ObservableArrayNameInIDL(), "ownKeys");
       exception_state.ThrowTypeError("Invalid argument.");
       return;
@@ -347,12 +341,9 @@ class ObservableArrayExoticObjectHandler {
     keys_vector.ReserveInitialCapacity(backing_list.size());
     for (uint32_t index = 0; index < backing_list.size(); ++index)
       keys_vector.push_back(String::Number(index));
-    v8::Local<v8::Value> own_keys_as_value;
-    if (!ToV8Traits<IDLSequence<IDLString>>::ToV8(
-             ScriptState::From(current_context), keys_vector)
-             .ToLocal(&own_keys_as_value)) {
-      return;
-    }
+    v8::Local<v8::Value> own_keys_as_value =
+        ToV8Traits<IDLSequence<IDLString>>::ToV8(
+            ScriptState::From(current_context), keys_vector);
     v8::Local<v8::Array> own_keys = own_keys_as_value.As<v8::Array>();
 
     // 6. Extend keys with ! O.[[OwnPropertyKeys]]().
@@ -393,7 +384,7 @@ class ObservableArrayExoticObjectHandler {
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     if (!(info[0]->IsArray() && info[1]->IsName())) {
       ExceptionState exception_state(
-          isolate, ExceptionContext::Context::kOperationInvoke,
+          isolate, ExceptionContextType::kOperationInvoke,
           BackingListWrappable::ObservableArrayNameInIDL(), "set");
       exception_state.ThrowTypeError("Invalid argument.");
       return;
@@ -407,8 +398,8 @@ class ObservableArrayExoticObjectHandler {
       v8::Local<v8::Uint32> v8_index;
       if (v8_property->ToArrayIndex(current_context).ToLocal(&v8_index)) {
         ExceptionState exception_state(
-            isolate, ExceptionContext::Context::kIndexedPropertySet,
-            BackingListWrappable::ObservableArrayNameInIDL());
+            isolate, ExceptionContextType::kOperationInvoke,
+            BackingListWrappable::ObservableArrayNameInIDL(), "indexed value");
         uint32_t index = v8_index->Value();
         bool result =
             DoSetTheIndexedValue(isolate, current_context, backing_list, index,
@@ -420,7 +411,7 @@ class ObservableArrayExoticObjectHandler {
       if (v8_property.As<v8::String>()->StringEquals(
               V8AtomicString(isolate, "length"))) {
         ExceptionState exception_state(
-            isolate, ExceptionContext::Context::kAttributeSet,
+            isolate, ExceptionContextType::kAttributeSet,
             BackingListWrappable::ObservableArrayNameInIDL(), "length");
         bool result = DoSetTheLength(isolate, current_context, backing_list,
                                      v8_value, exception_state);

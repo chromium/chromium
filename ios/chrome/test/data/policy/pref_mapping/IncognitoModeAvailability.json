@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IncognitoModeAvailability": 1
+        },
+        "prefs": {
+          "incognito.mode_availability": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "IncognitoModeAvailability": 2
+        },
+        "prefs": {
+          "incognito.mode_availability": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

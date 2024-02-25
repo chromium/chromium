@@ -289,9 +289,9 @@
       <part file="blocked_content_strings.grdp" />
       <part file="browsing_data_strings.grdp" />
       <part file="commerce_strings.grdp" />
+      <part file="compose_strings.grdp" />
       <part file="live_caption_strings.grdp" />
       <part file="components_settings_strings.grdp" />
-      <part file="content_creation_strings.grdp" />
       <part file="crash_strings.grdp" />
       <part file="dialog_strings.grdp" />
       <part file="dom_distiller_strings.grdp" />
@@ -315,12 +315,14 @@
       <part file="payments_strings.grdp" />
       <part file="pdf_strings.grdp" />
       <part file="permissions_strings.grdp" />
+      <part file="plus_addresses_strings.grdp" />
       <part file="policy_strings.grdp" />
       <part file="print_media_strings.grdp" />
       <part file="printing_component_strings.grdp" />
       <part file="privacy_sandbox_strings.grdp" />
       <part file="protocol_handler_strings.grdp" />
       <part file="reset_password_strings.grdp" />
+      <part file="search_engine_choice_strings.grdp" />
       <part file="security_interstitials_strings.grdp" />
       <part file="send_tab_to_self_strings.grdp" />
       <part file="site_settings_strings.grdp" />

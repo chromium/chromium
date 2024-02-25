@@ -33,8 +33,7 @@ class SourceUrlRecorderWebContentsObserverBrowserTest
 
  protected:
   SourceUrlRecorderWebContentsObserverBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ukm::kUkmFeature, blink::features::kPortals}, {});
+    scoped_feature_list_.InitWithFeatures({ukm::kUkmFeature}, {});
   }
 
   ~SourceUrlRecorderWebContentsObserverBrowserTest() override {}
@@ -208,98 +207,6 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverDownloadBrowserTest,
   EXPECT_TRUE(observer.is_download());
   EXPECT_EQ(nullptr, GetSourceForNavigationId(observer.navigation_id()));
   EXPECT_EQ(GURL(), GetAssociatedURLForWebContentsDocument());
-}
-
-IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
-                       Portal) {
-  GURL url = embedded_test_server()->GetURL("/title1.html");
-  {
-    content::NavigationHandleObserver observer(shell()->web_contents(), url);
-    EXPECT_TRUE(content::NavigateToURL(shell(), url));
-    const ukm::UkmSource* source =
-        GetSourceForNavigationId(observer.navigation_id());
-    EXPECT_NE(nullptr, source);
-    EXPECT_EQ(url, source->url());
-  }
-
-  // Create the portal and get its associated WebContents.
-  content::WebContentsAddedObserver contents_observer;
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(),
-             "document.body.appendChild(document.createElement('portal'));"));
-  content::WebContents* portal_contents = contents_observer.GetWebContents();
-  EXPECT_TRUE(portal_contents->IsPortal());
-  EXPECT_NE(portal_contents, shell()->web_contents());
-
-  // Register the UKM SourceUrlRecorder for the portal WebContents. Normally
-  // this would be done automatically via TabHelper registration, but TabHelper
-  // registration doesn't run in //content.
-  ukm::InitializeSourceUrlRecorderForWebContents(portal_contents);
-
-  // Navigate the portal and wait for the navigation to finish.
-  GURL portal_url = embedded_test_server()->GetURL("/title2.html");
-  content::TestNavigationManager portal_nav_manager(portal_contents,
-                                                    portal_url);
-  content::NavigationHandleObserver portal_nav_observer(portal_contents,
-                                                        portal_url);
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(),
-             base::StringPrintf("document.querySelector('portal').src = '%s';",
-                                portal_url.spec().c_str())));
-  ASSERT_TRUE(portal_nav_manager.WaitForNavigationFinished());
-  EXPECT_TRUE(portal_nav_observer.has_committed());
-  EXPECT_FALSE(portal_nav_observer.is_error());
-
-  // Ensure no UKM source was created for the portal navigation.
-  // TODO(crbug/1078355): Ensure the source was created but no URL was recorded.
-  EXPECT_EQ(nullptr,
-            GetSourceForNavigationId(portal_nav_observer.navigation_id()));
-
-  // Activate the portal, which should cause a URL to be recorded for the
-  // associated UKM source. Activation is similar to a main frame navigation
-  // from the user standpoint, as it causes the portal to shift from being in a
-  // more iframe-like state to becoming the main frame in the associated browser
-  // tab.
-  std::string activated_listener = R"(
-    activated = false;
-    window.addEventListener('portalactivate', e => {
-      activated = true;
-    });
-  )";
-  EXPECT_TRUE(ExecJs(portal_contents, activated_listener));
-  EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                     "document.querySelector('portal').activate()"));
-
-  std::string activated_poll = R"(
-    new Promise(resolve => {
-      setInterval(() => {
-        if (activated)
-          resolve(true);
-      }, 10);
-    });
-  )";
-  EXPECT_EQ(true, EvalJs(portal_contents, activated_poll));
-
-  // The activated portal contents should be the currently active contents.
-  EXPECT_EQ(portal_contents, shell()->web_contents());
-
-  // TODO(crbug/1078143): enable when UKM sources are created for activated
-  // portals.
-#if 0
-  // Ensure a UKM source was created for the activated portal, and a URL was
-  // recorded.
-  const ukm::UkmSource* portal_source =
-      GetSourceForNavigationId(portal_nav_observer.navigation_id());
-  EXPECT_NE(nullptr, portal_source);
-  EXPECT_EQ(portal_url, portal_source->url());
-#endif
-
-  {
-    // Ensure a UKM source is recorded for navigations in an activated portal.
-    content::NavigationHandleObserver observer(portal_contents, url);
-    EXPECT_TRUE(content::NavigateToURL(shell(), url));
-    EXPECT_NE(nullptr, GetSourceForNavigationId(observer.navigation_id()));
-  }
 }
 
 class SourceUrlRecorderWebContentsObserverPrerenderBrowserTest

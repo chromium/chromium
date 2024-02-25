@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
 
@@ -63,6 +64,15 @@ EligibleHostDevicesProviderImpl::GetEligibleHostDevices() const {
           features::kCryptAuthV2AlwaysUseActiveEligibleHosts)) {
     multidevice::RemoteDeviceRefList eligible_active_devices;
     for (const auto& device : eligible_active_devices_from_last_sync_) {
+      if (device.remote_device.instance_id().empty() &&
+          device.remote_device.GetDeviceId().empty()) {
+        // TODO(b/207089877): Add a metric to capture the frequency of missing
+        // device id.
+        PA_LOG(WARNING) << __func__
+                        << ": encountered device with missing Instance ID and "
+                           "legacy device ID";
+        continue;
+      }
       eligible_active_devices.push_back(device.remote_device);
     }
 
@@ -84,6 +94,16 @@ void EligibleHostDevicesProviderImpl::OnNewDevicesSynced() {
 void EligibleHostDevicesProviderImpl::UpdateEligibleDevicesSet() {
   eligible_devices_from_last_sync_.clear();
   for (const auto& remote_device : device_sync_client_->GetSyncedDevices()) {
+    if (remote_device.instance_id().empty() &&
+        remote_device.GetDeviceId().empty()) {
+      // TODO(b/207089877): Add a metric to capture the frequency of missing
+      // device id.
+      PA_LOG(WARNING) << __func__
+                      << ": encountered device with missing Instance ID and "
+                         "legacy device ID";
+      continue;
+    }
+
     multidevice::SoftwareFeatureState host_state =
         remote_device.GetSoftwareFeatureState(
             multidevice::SoftwareFeature::kBetterTogetherHost);
@@ -123,7 +143,7 @@ void EligibleHostDevicesProviderImpl::UpdateEligibleDevicesSet() {
 
 void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
     device_sync::mojom::NetworkRequestResult network_result,
-    absl::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>
+    std::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>
         devices_activity_status_optional) {
   if (network_result != device_sync::mojom::NetworkRequestResult::kSuccess ||
       !devices_activity_status_optional) {

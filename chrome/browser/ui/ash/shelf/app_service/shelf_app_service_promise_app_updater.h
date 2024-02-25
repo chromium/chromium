@@ -7,9 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 class Profile;
 
@@ -27,6 +27,7 @@ class ShelfPromiseAppUpdater : public ShelfAppUpdater,
 
   // PromiseAppRegistryCache::Observer overrides:
   void OnPromiseAppUpdate(const apps::PromiseAppUpdate& promise_app) override;
+  void OnPromiseAppRemoved(const apps::PackageId& package_id) override;
   void OnPromiseAppRegistryCacheWillBeDestroyed(
       apps::PromiseAppRegistryCache* cache) override;
 

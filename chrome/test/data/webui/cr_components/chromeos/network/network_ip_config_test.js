@@ -64,6 +64,25 @@ suite('NetworkIpConfigTest', function() {
     assertTrue(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
+  test(
+      'Show ip config textbox when automatic config is toggled off',
+      function() {
+        ipConfig.managedProperties = {
+          type: NetworkType.kEthernet,
+        };
+        flush();
+
+        const autoConfigIpToggle = ipConfig.$$('#autoConfigIpToggle');
+        assertFalse(autoConfigIpToggle.disabled);
+
+        autoConfigIpToggle.click();
+        flush();
+
+        const propertyList = ipConfig.$$('network-property-list-mojo');
+        assertTrue(!!propertyList);
+        assertFalse(propertyList.disabled);
+      });
+
   test('Disabled UI state', function() {
     // WiFi non-policy networks should enable autoConfigIpToggle.
     ipConfig.managedProperties = {
@@ -111,45 +130,47 @@ suite('NetworkIpConfigTest', function() {
     assertTrue(!!getAutoConfig());
   });
 
-  test('Do not apply observed changes for static config type', function() {
-    const ipAddress = '127.0.0.1';
-    ipConfig.managedProperties = {
-      ipAddressConfigType: {
-        activeValue: 'Static',
-        policySource: PolicySource.kNone,
-      },
-      staticIpConfig: {
-        ipAddress: {
-          activeValue: ipAddress,
-        },
-      },
-      connectionState: ConnectionStateType.kNotConnected,
-      type: NetworkType.kWiFi,
-    };
-    flush();
+  test(
+      'Do not apply observed changes for static config type when connected',
+      function() {
+        const ipAddress = '127.0.0.1';
+        ipConfig.managedProperties = {
+          ipAddressConfigType: {
+            activeValue: 'Static',
+            policySource: PolicySource.kNone,
+          },
+          staticIpConfig: {
+            ipAddress: {
+              activeValue: ipAddress,
+            },
+          },
+          connectionState: ConnectionStateType.kConnected,
+          type: NetworkType.kWiFi,
+        };
+        flush();
 
-    const getIpAddress = () =>
-        ipConfig.shadowRoot.querySelector('network-property-list-mojo')
-            .shadowRoot.querySelector('cr-input')
-            .value;
-    assertEquals(ipAddress, getIpAddress());
+        const getIpAddress = () =>
+            ipConfig.shadowRoot.querySelector('network-property-list-mojo')
+                .shadowRoot.querySelector('cr-input')
+                .value;
+        assertEquals(ipAddress, getIpAddress());
 
-    ipConfig.managedProperties = {
-      ipAddressConfigType: {
-        activeValue: 'Static',
-        policySource: PolicySource.kNone,
-      },
-      staticIpConfig: {
-        ipAddress: {
-          activeValue: '127.0.0.2',
-        },
-      },
-      connectionState: ConnectionStateType.kNotConnected,
-      type: NetworkType.kWiFi,
-    };
-    flush();
+        ipConfig.managedProperties = {
+          ipAddressConfigType: {
+            activeValue: 'Static',
+            policySource: PolicySource.kNone,
+          },
+          staticIpConfig: {
+            ipAddress: {
+              activeValue: '127.0.0.2',
+            },
+          },
+          connectionState: ConnectionStateType.kConnected,
+          type: NetworkType.kWiFi,
+        };
+        flush();
 
-    // Observed changes should not be applied if the config type is static.
-    assertEquals(ipAddress, getIpAddress());
-  });
+        // Observed changes should not be applied if the config type is static.
+        assertEquals(ipAddress, getIpAddress());
+      });
 });

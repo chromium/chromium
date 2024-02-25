@@ -43,6 +43,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/mojom/renderer.mojom.h"
@@ -533,6 +534,10 @@ void ExtensionFunction::SetBadMessage() {
 
 bool ExtensionFunction::user_gesture() const {
   return user_gesture_ || UserGestureForTests::GetInstance()->HaveGesture();
+}
+
+void ExtensionFunction::ResetServiceWorkerKeepalive() {
+  service_worker_keepalive_.reset();
 }
 
 void ExtensionFunction::SetBrowserContextForTesting(

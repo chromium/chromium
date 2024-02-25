@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CONTENT_RENDERER_TRANSLATE_AGENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -17,7 +18,6 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -48,11 +48,6 @@ class TranslateAgent : public content::RenderFrameObserver,
   // the specified URL. If there is anything that can or should be done before
   // this URL loads, this is the time to prepare for it.
   void PrepareForUrl(const GURL& url);
-
-  // Under kRetryLanguageDetection, this is true if a previous call to
-  // PageCaptured has been made with captured page content and language
-  // detection was run.
-  bool WasPageContentCapturedForUrl() { return page_contents_length_; }
 
   // mojom::TranslateAgent implementation.
   void TranslateFrame(const std::string& translate_script,

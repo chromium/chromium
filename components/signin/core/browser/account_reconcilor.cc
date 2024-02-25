@@ -596,7 +596,15 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
   // completely remove them from Chrome.
   // Revoking the token for the primary account is not supported (it should be
   // signed out or put to auth error state instead).
-  delegate_->RevokeSecondaryTokensBeforeReconcileIfNeeded();
+  delegate_->RevokeSecondaryTokensForReconcileIfNeeded(verified_gaia_accounts);
+  if (!delegate_->IsUpdateCookieAllowed()) {
+    // TODO(b/320279580): Record reconcilor operation if tokens were revoked to
+    // match cookies.
+    error_during_last_reconcile_ = GoogleServiceAuthError::AuthErrorNone();
+    CalculateIfMultiloginReconcileIsDone();
+    ScheduleStartReconcileIfChromeAccountsChanged();
+    return;
+  }
 
   std::vector<CoreAccountId> chrome_accounts =
       LoadValidAccountsFromTokenService();

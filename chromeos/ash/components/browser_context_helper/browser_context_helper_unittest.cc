@@ -84,6 +84,7 @@ TEST_F(BrowserContextHelperTest, GetBrowserContextByAccountId) {
   content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);
+  fake_user_manager->OnUserProfileCreated(account_id, /*prefs=*/nullptr);
 
   // BrowserContext instance corresponding to the account_id should be returned.
   EXPECT_EQ(browser_context, helper.GetBrowserContextByAccountId(account_id));
@@ -92,6 +93,8 @@ TEST_F(BrowserContextHelperTest, GetBrowserContextByAccountId) {
   // found.
   EXPECT_FALSE(helper.GetBrowserContextByAccountId(
       AccountId::FromUserEmail("notfound@test")));
+
+  fake_user_manager->OnUserProfileWillBeDestroyed(account_id);
 }
 
 TEST_F(BrowserContextHelperTest, GetBrowserContextByUser) {
@@ -111,6 +114,9 @@ TEST_F(BrowserContextHelperTest, GetBrowserContextByUser) {
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
   const user_manager::User* user = fake_user_manager->AddUser(account_id);
+  fake_user_manager->UserLoggedIn(account_id, username_hash,
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
   content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);
@@ -120,11 +126,12 @@ TEST_F(BrowserContextHelperTest, GetBrowserContextByUser) {
   EXPECT_FALSE(helper.GetBrowserContextByUser(user));
 
   // Mark User as if Profile is created.
-  fake_user_manager->UserLoggedIn(account_id, username_hash,
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
+  fake_user_manager->OnUserProfileCreated(account_id, /*prefs=*/nullptr);
+
   // Then the appropriate BrowserContext instance should be returned.
   EXPECT_EQ(browser_context, helper.GetBrowserContextByUser(user));
+
+  fake_user_manager->OnUserProfileWillBeDestroyed(account_id);
 }
 
 TEST_F(BrowserContextHelperTest, GetBrowserContextByUser_Guest) {
@@ -144,6 +151,10 @@ TEST_F(BrowserContextHelperTest, GetBrowserContextByUser_Guest) {
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
   const user_manager::User* user = fake_user_manager->AddGuestUser(account_id);
+  fake_user_manager->UserLoggedIn(account_id, username_hash,
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+
   delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);
@@ -151,12 +162,12 @@ TEST_F(BrowserContextHelperTest, GetBrowserContextByUser_Guest) {
       delegate_ptr->CreateBrowserContext(
           delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
           /*is_off_the_record=*/true);
-  fake_user_manager->UserLoggedIn(account_id, username_hash,
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
+  fake_user_manager->OnUserProfileCreated(account_id, /*prefs=*/nullptr);
 
   // Off the record instance should be returned.
   EXPECT_EQ(otr_browser_context, helper.GetBrowserContextByUser(user));
+
+  fake_user_manager->OnUserProfileWillBeDestroyed(account_id);
 }
 
 TEST_F(BrowserContextHelperTest, GetUserByBrowserContext) {
@@ -175,12 +186,13 @@ TEST_F(BrowserContextHelperTest, GetUserByBrowserContext) {
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
   const user_manager::User* user = fake_user_manager->AddUser(account_id);
-  content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
-      delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
-      /*is_off_the_record=*/false);
   fake_user_manager->UserLoggedIn(account_id, username_hash,
                                   /*browser_restart=*/false,
                                   /*is_child=*/false);
+  content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
+      delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
+      /*is_off_the_record=*/false);
+  fake_user_manager->OnUserProfileCreated(account_id, /*prefs=*/nullptr);
 
   EXPECT_EQ(user, helper.GetUserByBrowserContext(browser_context));
 
@@ -197,6 +209,8 @@ TEST_F(BrowserContextHelperTest, GetUserByBrowserContext) {
           delegate_ptr->GetUserDataDir()->Append("unknown@user"),
           /*is_off_the_record=*/false);
   EXPECT_FALSE(helper.GetUserByBrowserContext(unknown_browser_context));
+
+  fake_user_manager->OnUserProfileWillBeDestroyed(account_id);
 }
 
 TEST_F(BrowserContextHelperTest, GetUserBrowserContextDirName) {

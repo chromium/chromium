@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -74,13 +75,6 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
-// Currently, loopback audio capture is only supported on Windows and ChromeOS.
-#if defined(USE_CRAS) || BUILDFLAG(IS_WIN)
-constexpr bool kIsLoopbackAudioSupported = true;
-#else
-constexpr bool kIsLoopbackAudioSupported = false;
-#endif
-
 // Helper to get title of the calling application shown in the screen capture
 // notification.
 std::u16string GetApplicationTitle(content::WebContents* web_contents,
@@ -114,7 +108,7 @@ bool HasNotificationExemption(const GURL& url) {
 // Find browser or app window from a given |web_contents|.
 gfx::NativeWindow FindParentWindowForWebContents(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser && browser->window())
     return browser->window()->GetNativeWindow();
 
@@ -165,7 +159,8 @@ bool ShouldCaptureAudio(const content::DesktopMediaID& media_id,
   // tab/webcontents capture streams.
   const bool audio_supported =
       (media_id.type == content::DesktopMediaID::TYPE_SCREEN &&
-       kIsLoopbackAudioSupported) ||
+       DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+           DesktopMediaPicker::Params::RequestSource::kExtension)) ||
       media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS;
 
   return audio_permitted && audio_requested && audio_supported;
@@ -281,7 +276,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
   const bool capture_audio =
       pending_request->request.audio_type ==
           blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE &&
-      kIsLoopbackAudioSupported;
+      DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+          DesktopMediaPicker::Params::RequestSource::kExtension);
 
 #if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -323,7 +319,7 @@ bool DesktopCaptureAccessHandler::SupportsStreamType(
 
 bool DesktopCaptureAccessHandler::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return false;
@@ -375,7 +371,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
 
   // If the device id wasn't specified then this is a screen capture request
   // (i.e. chooseDesktopMedia() API wasn't used to generate device id).
-  if (request.requested_video_device_id.empty()) {
+  if (request.requested_video_device_ids.empty() ||
+      request.requested_video_device_ids.front().empty()) {
     if (allowed_capture_level < AllowedScreenCaptureLevel::kDesktop) {
       std::move(pending_request->callback)
           .Run(blink::mojom::StreamDevicesSet(),
@@ -411,9 +408,11 @@ void DesktopCaptureAccessHandler::HandleRequest(
       web_contents_for_stream ? web_contents_for_stream->GetPrimaryMainFrame()
                               : nullptr;
   if (main_frame) {
+    // This function would have already returned if this vector was empty.
+    CHECK(!request.requested_video_device_ids.empty());
     media_id =
         content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-            request.requested_video_device_id,
+            request.requested_video_device_ids.front(),
             main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
             url::Origin::Create(request.security_origin),
             content::kRegistryStreamTypeDesktop);
@@ -484,7 +483,8 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
   DCHECK_EQ(pending_request->request.video_type,
             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
 
-  if (pending_request->request.requested_video_device_id.empty()) {
+  if (pending_request->request.requested_video_device_ids.empty() ||
+      pending_request->request.requested_video_device_ids.front().empty()) {
     // Passing nullptr selects the default picker (DesktopMediaPickerViews).
     pending_request->picker = picker_factory_->CreatePicker(nullptr);
     if (!pending_request->picker) {
@@ -539,10 +539,10 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
   const PendingAccessRequest& pending_request = *queue.front();
 
   if (!pending_request.picker) {
-    DCHECK(!pending_request.request.requested_video_device_id.empty());
+    DCHECK(!pending_request.request.requested_video_device_ids.empty());
     content::WebContentsMediaCaptureId web_contents_id;
     if (content::WebContentsMediaCaptureId::Parse(
-            pending_request.request.requested_video_device_id,
+            pending_request.request.requested_video_device_ids.front(),
             &web_contents_id)) {
       content::DesktopMediaID media_id(
           content::DesktopMediaID::TYPE_WEB_CONTENTS,
@@ -573,7 +573,8 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
       base::BindOnce(&DesktopCaptureAccessHandler::OnPickerDialogResults,
                      base::Unretained(this), web_contents->GetWeakPtr(),
                      pending_request.application_title);
-  DesktopMediaPicker::Params picker_params;
+  DesktopMediaPicker::Params picker_params(
+      DesktopMediaPicker::Params::RequestSource::kExtension);
   picker_params.web_contents = web_contents;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;

@@ -7,15 +7,17 @@
 #include <string.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/url_util.h"
 #include "net/dns/dns_names_util.h"
@@ -37,7 +39,7 @@ const char kPath[] = "/dns-query";
 
 std::unique_ptr<test_server::HttpResponse> MakeHttpErrorResponse(
     HttpStatusCode status,
-    base::StringPiece error) {
+    std::string_view error) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(status);
   response->set_content(std::string(error));
@@ -69,7 +71,7 @@ TestDohServer::TestDohServer() {
 
 TestDohServer::~TestDohServer() = default;
 
-void TestDohServer::SetHostname(base::StringPiece name) {
+void TestDohServer::SetHostname(std::string_view name) {
   DCHECK(!server_.Started());
   hostname_ = std::string(name);
 }
@@ -79,7 +81,7 @@ void TestDohServer::SetFailRequests(bool fail_requests) {
   fail_requests_ = fail_requests;
 }
 
-void TestDohServer::AddAddressRecord(base::StringPiece name,
+void TestDohServer::AddAddressRecord(std::string_view name,
                                      const IPAddress& address,
                                      base::TimeDelta ttl) {
   AddRecord(BuildTestAddressRecord(std::string(name), address, ttl));
@@ -87,8 +89,7 @@ void TestDohServer::AddAddressRecord(base::StringPiece name,
 
 void TestDohServer::AddRecord(const DnsResourceRecord& record) {
   base::AutoLock lock(lock_);
-  records_.insert(
-      std::make_pair(std::make_pair(record.name, record.type), record));
+  records_.emplace(std::pair(record.name, record.type), record);
 }
 
 bool TestDohServer::Start() {
@@ -136,6 +137,15 @@ int TestDohServer::QueriesServed() {
   return queries_served_;
 }
 
+int TestDohServer::QueriesServedForSubdomains(std::string_view domain) {
+  CHECK(net::dns_names_util::IsValidDnsName(domain));
+  auto is_subdomain = [&domain](std::string_view candidate) {
+    return net::IsSubdomainOf(candidate, domain);
+  };
+  base::AutoLock lock(lock_);
+  return base::ranges::count_if(query_qnames_, is_subdomain);
+}
+
 std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
     const test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
@@ -180,7 +190,7 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
     return MakeHttpErrorResponse(HTTP_BAD_REQUEST, "invalid DNS query");
   }
 
-  absl::optional<std::string> name = dns_names_util::NetworkToDottedName(
+  std::optional<std::string> name = dns_names_util::NetworkToDottedName(
       dns_query.qname(), /*require_complete=*/true);
   if (!name) {
     DnsResponse response(dns_query.id(), /*is_authoritative=*/false,
@@ -189,15 +199,16 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
                          dns_protocol::kRcodeFORMERR);
     return MakeHttpResponseFromDns(response);
   }
+  query_qnames_.push_back(*name);
 
-  auto range = records_.equal_range(std::make_pair(*name, dns_query.qtype()));
+  auto range = records_.equal_range(std::pair(*name, dns_query.qtype()));
   std::vector<DnsResourceRecord> answers;
   for (auto i = range.first; i != range.second; ++i) {
     answers.push_back(i->second);
   }
 
-  VLOG(1) << "Serving " << answers.size() << " records for " << *name
-          << ", qtype " << dns_query.qtype();
+  LOG(INFO) << "Serving " << answers.size() << " records for " << *name
+            << ", qtype " << dns_query.qtype();
 
   // Note `answers` may be empty. NOERROR with no answers is how to express
   // NODATA, so there is no need handle it specially.

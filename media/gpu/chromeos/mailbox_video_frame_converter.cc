@@ -4,6 +4,8 @@
 
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -15,11 +17,13 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
@@ -59,11 +63,9 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
                     << static_cast<int>(buffer_format);
       NOTREACHED_NORETURN();
   }
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // If format is true multiplanar format, we prefer external sampler on
-  // ChromeOS.
-  // TODO(crbug.com/1471111): Add external sampler support for Linux with
-  // Vulkan.
+  // ChromeOS and Linux.
   if (format.is_multi_plane()) {
     format.SetPrefersExternalSampler();
   }
@@ -97,6 +99,19 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
 
     gpu_channel_ = get_gpu_channel_cb_.Run();
     return !!gpu_channel_;
+  }
+
+  std::optional<gpu::SharedImageCapabilities> GetCapabilities() override {
+    DCHECK(gpu_task_runner_->BelongsToCurrentThread());
+    if (!gpu_channel_) {
+      return std::nullopt;
+    }
+
+    gpu::SharedImageStub* shared_image_stub = gpu_channel_->shared_image_stub();
+    DCHECK(shared_image_stub);
+    gpu::SharedImageFactory* factory = shared_image_stub->factory();
+    CHECK(factory);
+    return factory->MakeCapabilities();
   }
 
   gpu::SharedImageStub::SharedImageDestructionCallback CreateSharedImage(
@@ -168,7 +183,7 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
   }
 
   bool WaitOnSyncTokenAndReleaseFrame(
-      scoped_refptr<VideoFrame> frame,
+      scoped_refptr<FrameResource> frame,
       const gpu::SyncToken& sync_token) override {
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
@@ -320,15 +335,24 @@ bool MailboxVideoFrameConverter::InitializeOnGPUThread() {
   return gpu_delegate_->Initialize();
 }
 
-void MailboxVideoFrameConverter::ConvertFrame(scoped_refptr<VideoFrame> frame) {
+void MailboxVideoFrameConverter::ConvertFrame(
+    scoped_refptr<FrameResource> frame) {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(4);
 
-  if (!frame || frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
+  if (!frame ||
+      frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     return OnError(FROM_HERE, "Invalid frame.");
+  }
 
-  VideoFrame* origin_frame =
-      !unwrap_frame_cb_.is_null() ? unwrap_frame_cb_.Run(*frame) : frame.get();
+  VideoFrame* origin_frame = nullptr;
+  if (!get_original_frame_cb_.is_null()) {
+    origin_frame = get_original_frame_cb_.Run(frame->GetSharedMemoryId());
+  } else {
+    // This is true because the frame pools are all still video frame based.
+    CHECK(frame->AsVideoFrameResource());
+    origin_frame = frame->AsVideoFrameResource()->GetMutableVideoFrame().get();
+  }
   if (!origin_frame)
     return OnError(FROM_HERE, "Failed to get origin frame.");
 
@@ -340,11 +364,11 @@ void MailboxVideoFrameConverter::ConvertFrame(scoped_refptr<VideoFrame> frame) {
 
   input_frame_queue_.emplace(frame, origin_frame_id);
 
-  // Either |frame| keeps a refptr of |origin_frame| or |origin_frame| points to
-  // the same thing as |frame|. Therefore, |origin_frame| is guaranteed to be
-  // valid by carrying |frame|. Additionally, |origin_frame| owns the
-  // SharedImage, so as long as |frame| lives, |shared_image| is valid. Hence,
-  // it's safe to use base::Unretained here.
+  // |frame| always carries a reference to |origin_frame|, directly or
+  // indirectly. Therefore, |origin_frame| is guaranteed to be valid by carrying
+  // |frame|. Additionally, |origin_frame| owns the SharedImage, so as long as
+  // |frame| lives, |shared_image| is valid. Hence, it's safe to use
+  // base::Unretained here.
   gpu_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MailboxVideoFrameConverter::ConvertFrameOnGPUThread,
@@ -354,7 +378,7 @@ void MailboxVideoFrameConverter::ConvertFrame(scoped_refptr<VideoFrame> frame) {
 
 void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
     VideoFrame* origin_frame,
-    scoped_refptr<VideoFrame> frame,
+    scoped_refptr<FrameResource> frame,
     const gpu::Mailbox& mailbox) {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!mailbox.IsZero());
@@ -388,7 +412,7 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   VideoFrame::ReleaseMailboxCB release_mailbox_cb = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
          base::WeakPtr<MailboxVideoFrameConverter> gpu_weak_ptr,
-         scoped_refptr<VideoFrame> frame, const gpu::SyncToken& sync_token) {
+         scoped_refptr<FrameResource> frame, const gpu::SyncToken& sync_token) {
         if (!sync_token.HasData()) {
           return;
         }
@@ -409,9 +433,9 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
       gpu_task_runner_, gpu_weak_this_, frame);
 
   // Note the use of GetRectSizeFromOrigin() as the coded size. The reason is
-  // that the coded_size() of the outgoing VideoFrame tells the client what the
-  // "usable area" of the frame's buffer is so that it issues rendering commands
-  // correctly. For most videos, this usable area is simply
+  // that the coded_size() of the outgoing FrameResource tells the client what
+  // the "usable area" of the frame's buffer is so that it issues rendering
+  // commands correctly. For most videos, this usable area is simply
   // frame->visible_rect().size(). However, some H.264 videos define a visible
   // rectangle that doesn't start at (0, 0). For these frames, the usable area
   // includes the non-visible area on the left and on top of the visible area
@@ -438,12 +462,12 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   mailbox_frame->metadata().is_webgpu_compatible =
       frame->metadata().is_webgpu_compatible;
 
-  output_cb_.Run(mailbox_frame);
+  output_cb_.Run(VideoFrameResource::Create(std::move(mailbox_frame)));
 }
 
 void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
     VideoFrame* origin_frame,
-    scoped_refptr<VideoFrame> frame,
+    scoped_refptr<FrameResource> frame,
     ScopedSharedImage* stored_shared_image) {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media,gpu", "ConvertFrameOnGPUThread", "VideoFrame id",
@@ -504,13 +528,13 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
 }
 
 bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
-    VideoFrame* video_frame,
+    VideoFrame* origin_frame,
     const gfx::ColorSpace& src_color_space,
     const gfx::Rect& destination_visible_rect,
     ScopedSharedImage* shared_image) {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   DCHECK(shared_image);
-  DVLOGF(4) << "frame: " << video_frame->unique_id();
+  DVLOGF(4) << "frame: " << origin_frame->unique_id();
 
   // TODO(crbug.com/998279): consider eager initialization.
   if (!InitializeOnGPUThread()) {
@@ -519,14 +543,14 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   }
 
   const auto buffer_format =
-      VideoPixelFormatToGfxBufferFormat(video_frame->format());
+      VideoPixelFormatToGfxBufferFormat(origin_frame->format());
   if (!buffer_format) {
     OnError(FROM_HERE, "Unsupported format: " +
-                           VideoPixelFormatToString(video_frame->format()));
+                           VideoPixelFormatToString(origin_frame->format()));
     return false;
   }
 
-  auto gpu_memory_buffer_handle = CreateGpuMemoryBufferHandle(video_frame);
+  auto gpu_memory_buffer_handle = CreateGpuMemoryBufferHandle(origin_frame);
   DCHECK(!gpu_memory_buffer_handle.is_null());
   DCHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
 
@@ -542,12 +566,24 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   const gfx::Size shared_image_size =
       GetRectSizeFromOrigin(destination_visible_rect);
 
+  const std::optional<gpu::SharedImageCapabilities> shared_image_caps =
+      gpu_delegate_->GetCapabilities();
+
+  if (!shared_image_caps.has_value()) {
+    OnError(FROM_HERE, "Can't get the SharedImageCapabilities");
+    return false;
+  }
+
   // The allocated SharedImages should be usable for the (Display) compositor
   // and, potentially, for overlays (Scanout).
   uint32_t shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  if (video_frame->metadata().is_webgpu_compatible) {
-    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+
+  // These SharedImages might also be used for zero-copy import into WebGPU to
+  // serve as the sources of WebGPU reads (e.g., for video effects processing).
+  if (origin_frame->metadata().is_webgpu_compatible &&
+      !shared_image_caps->disable_webgpu_shared_images) {
+    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
   gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb;
@@ -616,7 +652,7 @@ bool MailboxVideoFrameConverter::UpdateSharedImageOnGPUThread(
 }
 
 void MailboxVideoFrameConverter::WaitOnSyncTokenAndReleaseFrameOnGPUThread(
-    scoped_refptr<VideoFrame> frame,
+    scoped_refptr<FrameResource> frame,
     const gpu::SyncToken& sync_token) {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   if (!gpu_delegate_->WaitOnSyncTokenAndReleaseFrame(std::move(frame),
@@ -652,10 +688,10 @@ bool MailboxVideoFrameConverter::HasPendingFrames() const {
   return !input_frame_queue_.empty();
 }
 
-void MailboxVideoFrameConverter::set_unwrap_frame_cb(
-    UnwrapFrameCB unwrap_frame_cb) {
+void MailboxVideoFrameConverter::set_get_original_frame_cb(
+    GetOriginalFrameCB get_original_frame_cb) {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
-  unwrap_frame_cb_ = std::move(unwrap_frame_cb);
+  get_original_frame_cb_ = std::move(get_original_frame_cb);
 }
 
 void MailboxVideoFrameConverter::OnError(const base::Location& location,

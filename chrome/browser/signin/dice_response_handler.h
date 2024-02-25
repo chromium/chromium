@@ -21,13 +21,15 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include <optional>
+
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"  // nogncheck
 #include "components/unexportable_keys/unexportable_key_id.h"       // nogncheck
 #include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class AboutSigninInternals;
@@ -58,10 +60,15 @@ class ProcessDiceHeaderDelegate {
   virtual void HandleTokenExchangeSuccess(CoreAccountId account_id,
                                           bool is_new_account) = 0;
 
-  // Asks the delegate to enable sync for the |account_id|.
+  // Asks the delegate to enable sync for the |account_info|.
   // Called after the account was seeded in the account tracker service and
   // after the refresh token was fetched and updated in the token service.
-  virtual void EnableSync(const CoreAccountId& account_id) = 0;
+  virtual void EnableSync(const CoreAccountInfo& account_info) = 0;
+
+  // Called when a Dice signin header is received. This is received before
+  // navigating to the `continue_url`. Chrome has received the authorization
+  // code, but has not exchanged it for a token yet.
+  virtual void OnDiceSigninHeaderReceived() = 0;
 
   // Handles a failure in the token exchange (i.e. shows the error to the user).
   virtual void HandleTokenExchangeFailure(
@@ -81,7 +88,7 @@ class DiceResponseHandler : public KeyedService {
           base::StringPiece auth_code,
           const GURL& registration_url,
           base::OnceCallback<void(
-              absl::optional<RegistrationTokenHelper::Result>)> callback)>;
+              std::optional<RegistrationTokenHelper::Result>)> callback)>;
 #else
   // A fake factory type that is always used to pass a null callback.
   using RegistrationTokenHelperFactory = base::RepeatingClosure;
@@ -168,7 +175,7 @@ class DiceResponseHandler : public KeyedService {
     void StartBindingKeyGeneration(const RegistrationTokenHelperFactory&
                                        registration_token_helper_factory);
     void OnRegistrationTokenGenerated(
-        absl::optional<RegistrationTokenHelper::Result> result);
+        std::optional<RegistrationTokenHelper::Result> result);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
     // Lock the account reconcilor while tokens are being fetched.

@@ -14,24 +14,22 @@
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -69,7 +67,9 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 namespace ash {
 
 FakeChromeUserManager::FakeChromeUserManager()
-    : ChromeUserManager(new FakeTaskRunner()) {
+    : UserManagerBase(
+          new FakeTaskRunner(),
+          g_browser_process ? g_browser_process->local_state() : nullptr) {
   ProfileHelper::SetProfileToUserForTestingEnabled(true);
 }
 
@@ -85,14 +85,14 @@ user_manager::User* FakeChromeUserManager::AddUser(
 user_manager::User* FakeChromeUserManager::AddChildUser(
     const AccountId& account_id) {
   return AddUserWithAffiliationAndTypeAndProfile(
-      account_id, false, user_manager::USER_TYPE_CHILD, nullptr);
+      account_id, false, user_manager::UserType::kChild, nullptr);
 }
 
 user_manager::User* FakeChromeUserManager::AddUserWithAffiliation(
     const AccountId& account_id,
     bool is_affiliated) {
   return AddUserWithAffiliationAndTypeAndProfile(
-      account_id, is_affiliated, user_manager::USER_TYPE_REGULAR, nullptr);
+      account_id, is_affiliated, user_manager::UserType::kRegular, nullptr);
 }
 
 user_manager::User* FakeChromeUserManager::AddSamlUser(
@@ -118,6 +118,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
 
   if (profile) {
@@ -134,6 +135,7 @@ user_manager::User* FakeChromeUserManager::AddKioskAppUser(
   user_manager::User* user = user_manager::User::CreateKioskAppUser(account_id);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -144,6 +146,7 @@ user_manager::User* FakeChromeUserManager::AddArcKioskAppUser(
       user_manager::User::CreateArcKioskAppUser(account_id);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -154,6 +157,7 @@ user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
       user_manager::User::CreateWebKioskAppUser(account_id);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -163,6 +167,7 @@ user_manager::User* FakeChromeUserManager::AddGuestUser() {
       user_manager::User::CreateGuestUser(user_manager::GuestAccountId());
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(user->GetAccountId()));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -178,6 +183,7 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -196,29 +202,9 @@ void FakeChromeUserManager::LoginUser(const AccountId& account_id,
   SimulateUserProfileLoad(account_id);
 }
 
-MultiProfileUserController*
-FakeChromeUserManager::GetMultiProfileUserController() {
-  return multi_profile_user_controller_;
-}
-
-UserImageManager* FakeChromeUserManager::GetUserImageManager(
-    const AccountId& account_id) {
-  UserImageManagerMap::iterator user_image_manager_it =
-      user_image_managers_.find(account_id);
-  if (user_image_manager_it != user_image_managers_.end()) {
-    return user_image_manager_it->second.get();
-  }
-  if (mock_user_image_manager_enabled_) {
-    auto mgr =
-        std::make_unique<::testing::NiceMock<MockUserImageManager>>(account_id);
-    MockUserImageManager* mgr_raw = mgr.get();
-    user_image_managers_[account_id] = std::move(mgr);
-    return mgr_raw;
-  }
-  auto mgr = std::make_unique<UserImageManagerImpl>(account_id, this);
-  UserImageManagerImpl* mgr_raw = mgr.get();
-  user_image_managers_[account_id] = std::move(mgr);
-  return mgr_raw;
+user_manager::MultiUserSignInPolicyController*
+FakeChromeUserManager::GetMultiUserSignInPolicyController() {
+  return multi_user_sign_in_policy_controller_;
 }
 
 void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {
@@ -258,13 +244,7 @@ void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
   const user_manager::UserList::iterator it =
       base::ranges::find(users_, account_id, &user_manager::User::GetAccountId);
   if (it != users_.end()) {
-    if (primary_user_ == *it) {
-      primary_user_ = nullptr;
-    }
-    if (active_user_ != *it) {
-      delete *it;
-    }
-    users_.erase(it);
+    DeleteUser(*it);
   }
 }
 
@@ -272,14 +252,14 @@ user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
     const {
   // Supervised users are not allowed to use multi-profiles.
   if (GetLoggedInUsers().size() == 1 &&
-      GetPrimaryUser()->GetType() != user_manager::USER_TYPE_REGULAR) {
+      GetPrimaryUser()->GetType() != user_manager::UserType::kRegular) {
     return user_manager::UserList();
   }
 
   user_manager::UserList result;
   const user_manager::UserList& users = GetUsers();
   for (user_manager::User* user : users) {
-    if (user->GetType() == user_manager::USER_TYPE_REGULAR &&
+    if (user->GetType() == user_manager::UserType::kRegular &&
         !user->is_logged_in()) {
       result.push_back(user);
     }
@@ -288,33 +268,15 @@ user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
   return result;
 }
 
-void FakeChromeUserManager::SetOwnerId(const AccountId& account_id) {
-  UserManagerBase::SetOwnerId(account_id);
-}
-
 void FakeChromeUserManager::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   NOTIMPLEMENTED();
-}
-
-bool FakeChromeUserManager::IsStubAccountId(const AccountId& account_id) const {
-  return account_id == user_manager::StubAccountId();
 }
 
 bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
          user_manager::kSupervisedUserDomain;
-}
-
-const gfx::ImageSkia& FakeChromeUserManager::GetResourceImagekiaNamed(
-    int id) const {
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
-}
-
-std::u16string FakeChromeUserManager::GetResourceStringUTF16(
-    int string_id) const {
-  return std::u16string();
 }
 
 void FakeChromeUserManager::ScheduleResolveLocale(
@@ -327,19 +289,6 @@ void FakeChromeUserManager::ScheduleResolveLocale(
 
 bool FakeChromeUserManager::IsValidDefaultUserImageId(int image_index) const {
   return default_user_image::IsValidIndex(image_index);
-}
-
-// UserManager implementation:
-void FakeChromeUserManager::Initialize() {
-  return ChromeUserManager::Initialize();
-}
-
-void FakeChromeUserManager::Shutdown() {
-  ChromeUserManager::Shutdown();
-
-  for (auto& user_image_manager : user_image_managers_) {
-    user_image_manager.second->Shutdown();
-  }
 }
 
 const user_manager::UserList& FakeChromeUserManager::GetUsers() const {
@@ -367,7 +316,7 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
                                          const std::string& username_hash,
                                          bool browser_restart,
                                          bool is_child) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->username_hash() == username_hash) {
       user->set_is_logged_in(true);
       logged_in_users_.push_back(user);
@@ -396,7 +345,7 @@ const user_manager::User* FakeChromeUserManager::FindUser(
   }
 
   const user_manager::UserList& users = GetUsers();
-  for (const auto* user : users) {
+  for (const user_manager::User* user : users) {
     if (user->GetAccountId() == account_id) {
       return user;
     }
@@ -412,7 +361,7 @@ user_manager::User* FakeChromeUserManager::FindUserAndModify(
   }
 
   const user_manager::UserList& users = GetUsers();
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     if (user->GetAccountId() == account_id) {
       return user;
     }
@@ -456,17 +405,12 @@ void FakeChromeUserManager::SaveForceOnlineSignin(const AccountId& account_id,
 void FakeChromeUserManager::SaveUserDisplayName(
     const AccountId& account_id,
     const std::u16string& display_name) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->set_display_name(display_name);
       return;
     }
   }
-}
-
-std::u16string FakeChromeUserManager::GetUserDisplayName(
-    const AccountId& account_id) const {
-  return std::u16string();
 }
 
 void FakeChromeUserManager::SaveUserDisplayEmail(
@@ -484,12 +428,8 @@ void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
   NOTREACHED();
 }
 
-absl::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : absl::nullopt;
-}
-
-bool FakeChromeUserManager::IsCurrentUserOwner() const {
-  return active_user_ && GetOwnerAccountId() == active_user_->GetAccountId();
+std::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {
+  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeChromeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
@@ -519,34 +459,34 @@ bool FakeChromeUserManager::IsLoggedInAsChildUser() const {
 bool FakeChromeUserManager::IsLoggedInAsManagedGuestSession() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user
-             ? active_user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT
+             ? active_user->GetType() == user_manager::UserType::kPublicAccount
              : false;
 }
 
 bool FakeChromeUserManager::IsLoggedInAsGuest() const {
   const user_manager::User* active_user = GetActiveUser();
-  return active_user ? active_user->GetType() == user_manager::USER_TYPE_GUEST
+  return active_user ? active_user->GetType() == user_manager::UserType::kGuest
                      : false;
 }
 
 bool FakeChromeUserManager::IsLoggedInAsKioskApp() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user
-             ? active_user->GetType() == user_manager::USER_TYPE_KIOSK_APP
+             ? active_user->GetType() == user_manager::UserType::kKioskApp
              : false;
 }
 
 bool FakeChromeUserManager::IsLoggedInAsArcKioskApp() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user
-             ? active_user->GetType() == user_manager::USER_TYPE_ARC_KIOSK_APP
+             ? active_user->GetType() == user_manager::UserType::kArcKioskApp
              : false;
 }
 
 bool FakeChromeUserManager::IsLoggedInAsWebKioskApp() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user
-             ? active_user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP
+             ? active_user->GetType() == user_manager::UserType::kWebKioskApp
              : false;
 }
 
@@ -579,11 +519,11 @@ bool FakeChromeUserManager::IsGaiaUserAllowed(
 
 bool FakeChromeUserManager::IsUserAllowed(
     const user_manager::User& user) const {
-  DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
-         user.GetType() == user_manager::USER_TYPE_GUEST ||
-         user.GetType() == user_manager::USER_TYPE_CHILD);
+  DCHECK(user.GetType() == user_manager::UserType::kRegular ||
+         user.GetType() == user_manager::UserType::kGuest ||
+         user.GetType() == user_manager::UserType::kChild);
 
-  if (user.GetType() == user_manager::USER_TYPE_GUEST &&
+  if (user.GetType() == user_manager::UserType::kGuest &&
       !IsGuestSessionAllowed()) {
     return false;
   }
@@ -595,7 +535,7 @@ bool FakeChromeUserManager::IsUserAllowed(
 
 void FakeChromeUserManager::SimulateUserProfileLoad(
     const AccountId& account_id) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->SetProfileIsCreated();
       break;
@@ -663,7 +603,7 @@ user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
     return nullptr;
   }
   if (active_account_id_.is_valid()) {
-    for (auto* user : users_) {
+    for (user_manager::User* user : users_) {
       if (user->GetAccountId() == active_account_id_) {
         return user;
       }

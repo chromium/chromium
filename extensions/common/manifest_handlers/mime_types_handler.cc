@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -76,17 +77,6 @@ const std::vector<std::string>& MimeTypesHandler::GetMIMETypeAllowlist() {
   return *allowlist_vector;
 }
 
-// static
-void MimeTypesHandler::ReportUsedHandler(const std::string& extension_id) {
-  auto* const* it =
-      base::ranges::find(kMIMETypeHandlersAllowlist, extension_id);
-  if (it != std::end(kMIMETypeHandlersAllowlist)) {
-    MimeHandlerType type = static_cast<MimeHandlerType>(
-        it - std::begin(kMIMETypeHandlersAllowlist));
-    base::UmaHistogramEnumeration("Extensions.UsedMimeTypeHandler", type);
-  }
-}
-
 MimeTypesHandler::MimeTypesHandler() = default;
 MimeTypesHandler::~MimeTypesHandler() = default;
 
@@ -95,7 +85,7 @@ void MimeTypesHandler::AddMIMEType(const std::string& mime_type) {
 }
 
 bool MimeTypesHandler::CanHandleMIMEType(const std::string& mime_type) const {
-  return mime_type_set_.find(mime_type) != mime_type_set_.end();
+  return base::Contains(mime_type_set_, mime_type);
 }
 
 bool MimeTypesHandler::HasPlugin() const {

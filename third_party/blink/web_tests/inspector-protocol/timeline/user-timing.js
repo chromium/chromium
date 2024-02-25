@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
 
   // Test traces
   var {page, session, dp} = await testRunner.startHTML(
@@ -20,6 +20,7 @@
     const zeroMark = performance.mark('~zero');
     const zero = zeroMark.startTime;
 
+    performance.mark('@1500', {startTime: zero + 1500});
     performance.mark('@1200', {startTime: zero + 1200});
     performance.mark('@1000', {startTime: zero + 1000});
     performance.mark('@500', {startTime: zero + 500});

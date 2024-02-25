@@ -31,7 +31,7 @@ class QuickPairLogBufferTest : public testing::Test,
 
  protected:
   std::vector<LogBuffer::LogMessage> log_messages_;
-  raw_ptr<LogBuffer, ExperimentalAsh> log_buffer_ = nullptr;
+  raw_ptr<LogBuffer> log_buffer_ = nullptr;
 };
 
 TEST_F(QuickPairLogBufferTest, ObserversNotifiedWhenLogsAdded) {

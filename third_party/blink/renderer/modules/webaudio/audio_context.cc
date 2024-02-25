@@ -101,7 +101,7 @@ const char* LatencyCategoryToString(
 }
 
 String GetAudioContextLogString(const WebAudioLatencyHint& latency_hint,
-                                absl::optional<float> sample_rate) {
+                                std::optional<float> sample_rate) {
   StringBuilder builder;
   builder.AppendFormat("AudioContext({latency_hint=%s}",
                        LatencyCategoryToString(latency_hint.Category()));
@@ -175,7 +175,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
       WebAudioLatencyHint::AudioContextLatencyCategory::kLastValue);
 
   // This value can be `nullopt` when there's no user-provided options.
-  absl::optional<float> sample_rate;
+  std::optional<float> sample_rate;
   if (context_options->hasSampleRate()) {
     sample_rate = context_options->sampleRate();
   }
@@ -242,7 +242,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
 
 AudioContext::AudioContext(LocalDOMWindow& window,
                            const WebAudioLatencyHint& latency_hint,
-                           absl::optional<float> sample_rate,
+                           std::optional<float> sample_rate,
                            WebAudioSinkDescriptor sink_descriptor)
     : BaseAudioContext(&window, kRealtimeContext),
       context_id_(context_id++),
@@ -851,8 +851,8 @@ bool AudioContext::HandlePreRenderTasks(const AudioIOPosition* output_position,
     // passed.
     HandleStoppableSourceNodes();
 
-    // Update the dirty state of the listener.
-    listener()->UpdateState();
+    // Update the dirty state of the AudioListenerHandler.
+    listener()->Handler().UpdateState();
 
     // Update output timestamp and metric.
     output_position_ = *output_position;
@@ -985,6 +985,12 @@ AudioCallbackMetric AudioContext::GetCallbackMetric() const {
   return callback_metric_;
 }
 
+uint32_t AudioContext::PlatformBufferSize() const {
+  return (static_cast<RealtimeAudioDestinationHandler&>(
+              destination()->GetAudioDestinationHandler()))
+      .GetCallbackBufferSize();
+}
+
 void AudioContext::OnPermissionStatusChange(
     mojom::blink::PermissionStatus status) {
   microphone_permission_status_ = status;
@@ -1101,13 +1107,13 @@ void AudioContext::DevicesEnumerated(
         audio_input_capabilities) {
   Vector<WebMediaDeviceInfo> output_devices =
       enumeration[static_cast<wtf_size_t>(
-          mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT)];
+          mojom::blink::MediaDeviceType::kMediaAudioOuput)];
 
   TRACE_EVENT1(
       "webaudio", "AudioContext::DevicesEnumerated", "DeviceEnumeration",
       audio_utilities::GetDeviceEnumerationForTracing(output_devices));
 
-  OnDevicesChanged(mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT,
+  OnDevicesChanged(mojom::blink::MediaDeviceType::kMediaAudioOuput,
                    output_devices);
 
   // Start the first resolver in the queue once `output_device_ids_` is
@@ -1119,7 +1125,7 @@ void AudioContext::DevicesEnumerated(
 
 void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                                     const Vector<WebMediaDeviceInfo>& devices) {
-  if (device_type == mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT) {
+  if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOuput) {
     output_device_ids_.clear();
     for (auto device : devices) {
       if (device.device_id == "default") {

@@ -124,6 +124,7 @@ MOCK_METHOD3(ClientWaitSync,
              GLenum(GLsync sync, GLbitfield flags, GLuint64 timeout));
 MOCK_METHOD3(ClientWaitSyncAPPLE,
              GLenum(GLsync sync, GLbitfield flags, GLuint64 timeout));
+MOCK_METHOD2(ClipControlEXT, void(GLenum origin, GLenum depth));
 MOCK_METHOD4(
     ColorMask,
     void(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha));
@@ -1047,7 +1048,10 @@ MOCK_METHOD0(PixelLocalStorageBarrierANGLE, void());
 MOCK_METHOD2(PixelStorei, void(GLenum pname, GLint param));
 MOCK_METHOD2(PointParameteri, void(GLenum pname, GLint param));
 MOCK_METHOD2(PolygonMode, void(GLenum face, GLenum mode));
+MOCK_METHOD2(PolygonModeANGLE, void(GLenum face, GLenum mode));
 MOCK_METHOD2(PolygonOffset, void(GLfloat factor, GLfloat units));
+MOCK_METHOD3(PolygonOffsetClampEXT,
+             void(GLfloat factor, GLfloat units, GLfloat clamp));
 MOCK_METHOD0(PopDebugGroup, void());
 MOCK_METHOD0(PopGroupMarkerEXT, void());
 MOCK_METHOD1(PrimitiveRestartIndex, void(GLuint index));

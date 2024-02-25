@@ -28,10 +28,4 @@ base::RefCountedMemory* GetFaviconResourceBytes(
       IDR_SETTINGS_FAVICON, scale_factor);
 }
 
-base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
-    ui::ResourceScaleFactor scale_factor) {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-      IDR_FLAGS_FAVICON, scale_factor);
-}
-
 }  // namespace settings_utils

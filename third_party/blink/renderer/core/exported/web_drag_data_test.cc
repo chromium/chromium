@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/platform/web_drag_data.h"
-
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -12,10 +11,12 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(WebDragDataTest, items) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   DataObject* data_object = DataObject::Create();
 
@@ -31,15 +32,17 @@ TEST(WebDragDataTest, items) {
     FileMetadata metadata;
     metadata.platform_path = "/native/visible/snapshot";
     data_object->Add(
-        File::CreateForFileSystemFile("name", metadata, File::kIsUserVisible));
+        File::CreateForFileSystemFile(&context.GetExecutionContext(), "name",
+                                      metadata, File::kIsUserVisible));
   }
 
   // Not user visible snapshot file.
   {
     FileMetadata metadata;
     metadata.platform_path = "/native/not-visible/snapshot";
-    data_object->Add(File::CreateForFileSystemFile("name", metadata,
-                                                   File::kIsNotUserVisible));
+    data_object->Add(
+        File::CreateForFileSystemFile(&context.GetExecutionContext(), "name",
+                                      metadata, File::kIsNotUserVisible));
   }
 
   // User visible file system URL file.

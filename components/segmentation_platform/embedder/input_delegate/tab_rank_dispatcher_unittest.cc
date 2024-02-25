@@ -76,9 +76,6 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
               GetControllerDelegate,
               ());
-  MOCK_METHOD(void,
-              ProxyTabsStateChanged,
-              (syncer::DataTypeController::State state));
 };
 
 class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
@@ -100,7 +97,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   }
 
   bool GetAllForeignSessions(
-      std::vector<const sync_sessions::SyncedSession*>* sessions) override {
+      std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                          VectorExperimental>>* sessions) override {
     *sessions = foreign_sessions_;
     base::ranges::sort(*sessions, std::greater(),
                        [](const sync_sessions::SyncedSession* session) {
@@ -127,9 +125,9 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
 
   MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
 
-  MOCK_METHOD2(GetForeignSession,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionWindow*>* windows));
+  MOCK_METHOD1(
+      GetForeignSession,
+      std::vector<const sessions::SessionWindow*>(const std::string& tag));
 
   MOCK_METHOD2(GetForeignSessionTabs,
                bool(const std::string& tag,
@@ -138,7 +136,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
  private:
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>>
       foreign_sessions_owned_;
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      foreign_sessions_;
   std::unique_ptr<sync_sessions::SyncedSession> local_session_;
   std::map<std::string, const sessions::SessionTab*> session_to_tab_;
 };

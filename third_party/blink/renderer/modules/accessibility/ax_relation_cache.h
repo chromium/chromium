@@ -50,12 +50,22 @@ class AXRelationCache {
   // Return true if any label ever pointed to the element via the for attribute.
   bool MayHaveHTMLLabelViaForAttribute(const HTMLElement&);
 
-  // Given an element in the DOM tree that was either just added or whose id
-  // just changed, check to see if another object wants to be its parent due to
-  // aria-owns. If so, add it to a queue of ids to process later during
-  // ProcessUpdatesWithCleanLayout.
+  // True if any aria-describedy or aria-labelledby ever pointed to the element.
+  bool IsARIALabelOrDescription(Element&);
+
+  // Process an element in the DOM tree that was either just added or whose id
+  // just changed:
+  // * Check to see if another object wants to be its parent due to
+  //   aria-owns. If so, add it to a queue of ids to process later during
+  //   ProcessUpdatesWithCleanLayout.
+  // * Update accessible objects for nodes that are related via
+  //   label or description attributes.
   // |node| is not optional.
   // |obj| is optional. If provided, it must match the AXObject for |node|.
+  // Returns AXObject* of owner if an aria-owns relation to |obj| exists.
+  AXObject* GetOrCreateAriaOwnerFor(Node* node, AXObject* obj);
+  // Update aria-owns as well as any name/description related to the node
+  // and any aria-activedescendant relations.
   void UpdateRelatedTree(Node* node, AXObject* obj);
 
   void UpdateRelatedActiveDescendant(Node* node);
@@ -84,8 +94,12 @@ class AXRelationCache {
   void UpdateReverseTextRelations(Element& relation_source,
                                   const Vector<String>& target_ids);
 
-  void UpdateReverseActiveDescendantRelations(Node* relation_source,
-                                              const String& id);
+  void UpdateReverseActiveDescendantRelations(Element& relation_source);
+  void UpdateReverseOwnsRelations(Element& relation_source);
+
+  // Update a subtree used for a label so that it will be included in the tree,
+  // even if hidden.
+  void NotifySubtreeIsUsedForLabel(Element& labelling_subtree_root);
 
   // Process a new element and cache relations from its relevant attributes
   // using values of type IDREF/IDREFS.
@@ -142,7 +156,7 @@ class AXRelationCache {
   bool IsDirty() const;
 
   static bool IsValidOwner(AXObject* owner);
-  static bool IsValidOwnedChild(AXObject* child);
+  static bool IsValidOwnedChild(Node& child);
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
   void ElementHasBeenProcessed(Element&);
@@ -173,7 +187,7 @@ class AXRelationCache {
   // Get ids that the element points to via aria-labelledby/describedby.
   Vector<String> GetTextRelationIds(Element& relation_source);
 
-  bool IsValidOwnsRelation(AXObject* owner, AXObject* child) const;
+  bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
   void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,
                                          const Vector<AXID>& removed_child_ids,
                                          const Vector<AXID>& newly_owned_ids);
@@ -223,8 +237,12 @@ class AXRelationCache {
   // name calculation to be optimized.
   HashSet<AtomicString> all_previously_seen_label_target_ids_;
 
-  // A set of IDs that need to be updated during the kInAccessibility
-  // lifecycle phase. For each of these, the new set of owned children
+  // Labels and descriptions set by ariaLabelledByElements,
+  // ariaDescribedByElements as opposed to aria-labelledby.describedy="[id]".
+  HashSet<DOMNodeId> explicitly_set_text_relations_from_element_attributes_;
+
+  // A set of IDs that need to be update when layout is clean.
+  // For each of these, the new set of owned children
   // will be computed, and if it's different than before, ChildrenChanged
   // will be fired on all affected nodes.
   HashSet<AXID> owner_ids_to_update_;
@@ -237,7 +255,7 @@ class AXRelationCache {
   AXObject* ObjectFromAXID(AXID) const;
   AXObject* GetOrCreate(Node*, const AXObject* owner);
   AXObject* Get(Node*);
-  void ChildrenChanged(AXObject*);
+  void ChildrenChangedWithCleanLayout(AXObject*);
 
   // Do an initial scan of document to find any relations. We'll catch any
   // subsequent relations when nodes fare attached or attributes change.
@@ -249,6 +267,9 @@ class AXRelationCache {
   // to process relations first). An error here indicates that
   // UpdateCacheAfterNodeIsAttached() was never called for the element.
   HashSet<DOMNodeId> processed_elements_;
+
+  // Avoid running relation checks until cache is initialized().
+  bool is_initialized_ = false;
 #endif
 };
 

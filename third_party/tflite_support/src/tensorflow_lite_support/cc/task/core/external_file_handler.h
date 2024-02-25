@@ -18,7 +18,7 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -92,4 +92,5 @@ class ExternalFileHandler {
 }  // namespace core
 }  // namespace task
 }  // namespace tflite
+
 #endif  // TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_EXTERNAL_FILE_HANDLER_H_

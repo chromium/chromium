@@ -77,7 +77,7 @@ void FontMetadata::BlobImpl(ScriptPromiseResolver* resolver,
   SetUpFontUniqueLookupIfNecessary();
 
   FontDescription description;
-  scoped_refptr<SimpleFontData> font_data =
+  const SimpleFontData* font_data =
       FontCache::Get().GetFontData(description, AtomicString(postscriptName),
                                    AlternateFontName::kLocalUniqueFace);
   if (!font_data) {

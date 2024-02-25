@@ -37,7 +37,6 @@ AX_TEST_F(
       assertEquals(locale.value, this.getSpeechRecognitionLocale());
       // Change the locale.
       await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'es-ES');
-      // Wait for the callbacks to Dictation.
       locale = await this.getPref(Dictation.DICTATION_LOCALE_PREF);
       this.updateSpeechRecognitionProperties({locale: locale.value});
       assertEquals('es-ES', this.getSpeechRecognitionLocale());
@@ -251,8 +250,6 @@ AX_TEST_F('DictationE2ETest', 'NoCommandsWhenNotSupported', async function() {
   // System language is en-US. If the Dictation locale doesn't match,
   // commands should not work.
   await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'es-ES');
-  // Wait for the callbacks to Dictation.
-  await this.getPref(Dictation.DICTATION_LOCALE_PREF);
 
   // Now this text should just get typed in instead of reinterpreted.
   this.sendFinalSpeechResult('New line');
@@ -269,8 +266,6 @@ AX_TEST_F(
 
       // Turn on ChromeVox
       await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, true);
-      // Wait for the callbacks to Dictation.
-      await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
 
       // Now silenceSpokenFeedback should get called when toggling Dictation on.
       this.toggleDictationOn();
@@ -318,3 +313,32 @@ AX_TEST_F(
       this.toggleDictationOff();
       assertEquals(null, this.getInputController().surroundingInfo_);
     });
+
+AX_TEST_F('DictationE2ETest', 'ShowsToastWhenMicMuted', async function() {
+  const StreamType = chrome.audio.StreamType;
+  const ToastType = chrome.accessibilityPrivate.ToastType;
+
+  assertEquals(
+      0,
+      this.mockAccessibilityPrivate.getShowToastCount(
+          ToastType.DICTATION_MIC_MUTED));
+  await new Promise(
+      resolve =>
+          chrome.audio.setMute(StreamType.INPUT, /*isMuted=*/ true, resolve));
+
+  // Use callOnToggleDictation instead of toggleDictation because the latter
+  // asserts that speech recognition successfully starts, which won't be the
+  // case here.
+  this.mockAccessibilityPrivate.callOnToggleDictation(true);
+  assertTrue(this.getDictationActive());
+  this.checkDictationImeActive();
+  // Focus the input context so that we try to start speech recognition. We'll
+  // fail to start since the device is muted.
+  this.focusInputContext();
+  // Confirm that a toast was shown and that Dictation is inactive.
+  assertEquals(
+      1,
+      this.mockAccessibilityPrivate.getShowToastCount(
+          ToastType.DICTATION_MIC_MUTED));
+  assertFalse(this.getDictationActive());
+});

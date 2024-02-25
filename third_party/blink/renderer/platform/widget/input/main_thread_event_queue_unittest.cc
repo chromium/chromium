@@ -156,7 +156,7 @@ class HandledEventCallbackTracker {
                       blink::mojom::InputEventResultState ack_result,
                       const ui::LatencyInfo& latency,
                       mojom::blink::DidOverscrollParamsPtr params,
-                      absl::optional<cc::TouchAction> touch_action) {
+                      std::optional<cc::TouchAction> touch_action) {
     callbacks_received_[index] = ReceivedCallback(
         handling_event_ ? CallbackReceivedState::kCalledWhileHandlingEvent
                         : CallbackReceivedState::kCalledAfterHandleEvent,
@@ -260,7 +260,7 @@ class MainThreadEventQueueTest : public testing::Test,
     auto handled_event = std::make_unique<HandledEvent>(event);
     handled_tasks_.push_back(std::move(handled_event));
     std::move(callback).Run(blink::mojom::InputEventResultState::kNotConsumed,
-                            event.latency_info(), nullptr, absl::nullopt);
+                            event.latency_info(), nullptr, std::nullopt);
     return true;
   }
   void InputEventsDispatched(bool raf_aligned) override {
@@ -1156,6 +1156,29 @@ TEST_F(MainThreadEventQueueTest, BlockingTouchesOutsideFling) {
   EXPECT_TRUE(Equal(kEvents, *last_touch_event));
 }
 
+TEST_F(MainThreadEventQueueTest, QueueingEventTimestampRecorded) {
+  WebMouseEvent kEvent = SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseDown);
+  // Set event timestamp to be in the past to simulate actual event
+  // so that creation of event and queueing does not happen in the same tick.
+  kEvent.SetTimeStamp(base::TimeTicks::Now() - base::Microseconds(10));
+
+  HandleEvent(kEvent, blink::mojom::InputEventResultState::kSetNonBlocking);
+
+  EXPECT_EQ(1u, event_queue().size());
+  EXPECT_TRUE(main_task_runner_->HasPendingTask());
+  RunPendingTasksWithoutRaf();
+  EXPECT_FALSE(main_task_runner_->HasPendingTask());
+  EXPECT_EQ(0u, event_queue().size());
+  EXPECT_EQ(1u, handled_tasks_.size());
+
+  EXPECT_EQ(kEvent.GetType(),
+            handled_tasks_.at(0)->taskAsEvent()->Event().GetType());
+  const WebMouseEvent* kHandledEvent = static_cast<const WebMouseEvent*>(
+      handled_tasks_.at(0)->taskAsEvent()->EventPointer());
+  EXPECT_LT(kHandledEvent->TimeStamp(), kHandledEvent->QueuedTimeStamp());
+}
+
 class MainThreadEventQueueInitializationTest
     : public testing::Test,
       public MainThreadEventQueueClient {
@@ -1166,7 +1189,7 @@ class MainThreadEventQueueInitializationTest
                         std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback callback) override {
     std::move(callback).Run(blink::mojom::InputEventResultState::kNotConsumed,
-                            event.latency_info(), nullptr, absl::nullopt);
+                            event.latency_info(), nullptr, std::nullopt);
     return true;
   }
 

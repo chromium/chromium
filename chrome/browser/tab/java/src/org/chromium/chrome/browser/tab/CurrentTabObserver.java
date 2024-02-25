@@ -35,18 +35,22 @@ public class CurrentTabObserver {
      *        Owned by this class.
      * @param swapCallback Callback to invoke when the current tab is swapped.
      */
-    public CurrentTabObserver(@NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull TabObserver tabObserver, @Nullable Callback<Tab> swapCallback) {
+    public CurrentTabObserver(
+            @NonNull ObservableSupplier<Tab> tabSupplier,
+            @NonNull TabObserver tabObserver,
+            @Nullable Callback<Tab> swapCallback) {
         mTabSupplier = tabSupplier;
         mTabObserver = tabObserver;
         mCallbackController = new CallbackController();
-        mTabSupplierCallback = mCallbackController.makeCancelable((tab) -> {
-            if (mTab == tab) return;
-            if (mTab != null) mTab.removeObserver(mTabObserver);
-            mTab = tab;
-            if (mTab != null) mTab.addObserver(mTabObserver);
-            if (swapCallback != null) swapCallback.onResult(tab);
-        });
+        mTabSupplierCallback =
+                mCallbackController.makeCancelable(
+                        (tab) -> {
+                            if (mTab == tab) return;
+                            if (mTab != null) mTab.removeObserver(mTabObserver);
+                            mTab = tab;
+                            if (mTab != null) mTab.addObserver(mTabObserver);
+                            if (swapCallback != null) swapCallback.onResult(tab);
+                        });
         mTabSupplier.addObserver(mTabSupplierCallback);
     }
 

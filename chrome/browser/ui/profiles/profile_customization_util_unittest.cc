@@ -40,6 +40,7 @@ class ProfileNameResolverTest : public testing::Test {
  protected:
   const std::string kTestGivenName = "Jane";
   const std::string kTestEmail = "jane@bar.baz";
+  const std::string kTestGaiaId = "123456";
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
@@ -57,7 +58,7 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName) {
   base::test::TestFuture<std::u16string> profile_name_future_2;
 
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
-                               core_account_info.account_id};
+                               core_account_info};
 
   // `RunWithProfileName` should not run the callback as no profile name is
   // available.
@@ -86,7 +87,7 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoAvailable) {
   base::test::TestFuture<std::u16string> profile_name_future;
 
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
-                               core_account_info.account_id};
+                               core_account_info};
 
   // The information is available, the callback should run right away.
   resolver.RunWithProfileName(profile_name_future.GetCallback());
@@ -94,22 +95,50 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoAvailable) {
   EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), profile_name_future.Get());
 }
 
-TEST_F(ProfileNameResolverTest, RunWithProfileName_InvalidInfo) {
-  CoreAccountInfo core_account_info =
-      identity_test_env()->MakeAccountAvailable(kTestEmail);
+TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoUnvailable) {
   auto scoped_timeout_override =
       ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(
           base::TimeDelta());
 
   base::test::TestFuture<std::u16string> profile_name_future;
 
+  // The account is not known from the identity manager.
+  CoreAccountInfo core_account_info;
+  core_account_info.account_id = CoreAccountId::FromGaiaId(kTestGaiaId);
+  core_account_info.gaia = kTestGaiaId;
+  core_account_info.email = kTestEmail;
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
-                               core_account_info.account_id};
+                               core_account_info};
   resolver.RunWithProfileName(profile_name_future.GetCallback());
 
-  // Simulate the account info being updated with invalid info. Should result in
-  // the callback not getting called, and waiting until the timeout to get a
-  // fallback value as name.
+  // Simulate the account info being updated.
+  resolver.OnExtendedAccountInfoUpdated(
+      FillAccountInfo(core_account_info, kTestGivenName));
+  EXPECT_TRUE(profile_name_future.IsReady());
+
+  EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), profile_name_future.Get());
+}
+
+// Regression test for https://crbug.com/1481902
+TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoMissing) {
+  auto scoped_timeout_override =
+      ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(
+          base::TimeDelta());
+
+  base::test::TestFuture<std::u16string> profile_name_future;
+
+  // The account is not known from the identity manager.
+  CoreAccountInfo core_account_info;
+  core_account_info.account_id = CoreAccountId::FromGaiaId(kTestGaiaId);
+  core_account_info.gaia = kTestGaiaId;
+  core_account_info.email = kTestEmail;
+  ProfileNameResolver resolver{identity_test_env()->identity_manager(),
+                               core_account_info};
+  resolver.RunWithProfileName(profile_name_future.GetCallback());
+
+  // Simulate the account info being updated with invalid info. Should
+  // result in the callback not getting called, and waiting until the
+  // timeout to get a fallback value as name.
   resolver.OnExtendedAccountInfoUpdated(AccountInfo());
   EXPECT_FALSE(profile_name_future.IsReady());
 

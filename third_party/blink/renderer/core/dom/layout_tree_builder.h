@@ -87,8 +87,9 @@ class LayoutTreeBuilder {
     auto* const parent = next->Parent();
     if (!IsAnonymousInline(parent))
       return next;
-    if (!LIKELY(parent->IsLayoutNGTextCombine()))
+    if (!LIKELY(parent->IsLayoutTextCombine())) {
       return parent;
+    }
     auto* const text_combine_parent = parent->Parent();
     if (IsAnonymousInline(text_combine_parent))
       return text_combine_parent;

@@ -172,7 +172,7 @@ class FakeSchedulerClient : public SchedulerClient,
     PushAction("ScheduledActionDrawIfPossible");
     num_draws_++;
     if (!draw_will_happen_)
-      return DRAW_ABORTED_CHECKERBOARD_ANIMATIONS;
+      return DrawResult::kAbortedCheckerboardAnimations;
 
     if (swap_will_happen_if_draw_happens_) {
       last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
@@ -183,14 +183,14 @@ class FakeSchedulerClient : public SchedulerClient,
       if (automatic_ack_)
         scheduler_->DidReceiveCompositorFrameAck();
     }
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
   DrawResult ScheduledActionDrawForced() override {
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
     PushAction("ScheduledActionDrawForced");
     last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
   void ScheduledActionCommit() override {
     EXPECT_FALSE(inside_action_);
@@ -293,9 +293,9 @@ class FakeSchedulerClient : public SchedulerClient,
   viz::BeginFrameAck last_begin_frame_ack_;
   base::TimeTicks posted_begin_impl_frame_deadline_;
   std::vector<const char*> actions_;
-  raw_ptr<TestScheduler, DanglingUntriaged> scheduler_ = nullptr;
+  raw_ptr<TestScheduler> scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
-  absl::optional<FrameSkippedReason> last_frame_skipped_reason_;
+  std::optional<FrameSkippedReason> last_frame_skipped_reason_;
 };
 
 enum BeginFrameSourceType {
@@ -333,7 +333,7 @@ class SchedulerTestTaskRunner : public base::TestMockTimeTaskRunner {
   void RunTasksWhile(base::RepeatingCallback<bool()> condition) {
     run_condition_ = condition;
     FastForwardUntilNoTasksRemain();
-    run_condition_ = absl::nullopt;
+    run_condition_ = std::nullopt;
     // We've moved all the pending tasks away to break the execution loop,
     // now we should restore them.
     while (!tasks_to_requeue_.empty()) {
@@ -359,7 +359,7 @@ class SchedulerTestTaskRunner : public base::TestMockTimeTaskRunner {
   ~SchedulerTestTaskRunner() override = default;  // Ref-counted.
 
   size_t task_count_ = 0u;
-  absl::optional<base::RepeatingCallback<bool()>> run_condition_;
+  std::optional<base::RepeatingCallback<bool()>> run_condition_;
   base::circular_deque<base::TestPendingTask> tasks_to_requeue_;
 };
 
@@ -369,7 +369,7 @@ class SchedulerTest : public testing::Test {
       : task_runner_(base::MakeRefCounted<SchedulerTestTaskRunner>()),
         fake_external_begin_frame_source_(nullptr) {}
 
-  ~SchedulerTest() override = default;
+  ~SchedulerTest() override { client_->set_scheduler(nullptr); }
 
  protected:
   TestScheduler* CreateScheduler(BeginFrameSourceType bfs_type) {
@@ -858,7 +858,7 @@ class SchedulerClientThatsetNeedsDrawInsideDraw : public FakeSchedulerClient {
 
   DrawResult ScheduledActionDrawForced() override {
     NOTREACHED();
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
 
  private:
@@ -965,7 +965,7 @@ class SchedulerClientThatSetNeedsBeginMainFrameInsideDraw
 
   DrawResult ScheduledActionDrawForced() override {
     NOTREACHED();
-    return DRAW_SUCCESS;
+    return DrawResult::kSuccess;
   }
 
   void SetNeedsBeginMainFrameOnNextDraw() {
@@ -1674,7 +1674,7 @@ TEST_F(SchedulerTest, MainFrameNotSkippedAfterLateBeginMainFrameAbort) {
   // After aborting the frame, make sure we don't skip the
   // next BeginMainFrame.
   client_->Reset();
-  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
   EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
   scheduler_->SetNeedsBeginMainFrame();
   EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
@@ -3348,7 +3348,7 @@ TEST_F(SchedulerTest, NoLayerTreeFrameSinkCreationWhileCommitPending) {
   client_->Reset();
   scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
   scheduler_->BeginMainFrameAborted(
-      CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
+      CommitEarlyOutReason::kAbortedDeferredCommit);
   EXPECT_ACTIONS("ScheduledActionBeginLayerTreeFrameSinkCreation");
 }
 
@@ -3405,7 +3405,7 @@ TEST_F(SchedulerTest, AbortedCommitsTriggerImplSideInvalidations) {
   client_->Reset();
   scheduler_->SetNeedsBeginMainFrame();
   scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
-  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
   EXPECT_ACTIONS("ScheduledActionPerformImplSideInvalidation");
 }
 
@@ -3995,7 +3995,7 @@ TEST_F(SchedulerTest, SendEarlyDidNotProduceFrameIfIdle) {
   // Request a new commit before finishing the current one to simulate behavior
   // seen in certain OOPIF renderers.
   scheduler_->SetNeedsBeginMainFrame();
-  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
   EXPECT_EQ(client_->last_begin_frame_ack().frame_id.sequence_number,
             begin_main_frame_args.frame_id.sequence_number);
 }

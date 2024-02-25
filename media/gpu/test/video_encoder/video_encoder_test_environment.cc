@@ -53,6 +53,12 @@ struct SVCConfig {
     {"L3T1_KEY", 3, 1, SVCInterLayerPredMode::kOnKeyPic},
     {"L3T2_KEY", 3, 2, SVCInterLayerPredMode::kOnKeyPic},
     {"L3T3_KEY", 3, 3, SVCInterLayerPredMode::kOnKeyPic},
+    {"S2T1", 2, 1, SVCInterLayerPredMode::kOff},
+    {"S2T2", 2, 2, SVCInterLayerPredMode::kOff},
+    {"S2T3", 2, 3, SVCInterLayerPredMode::kOff},
+    {"S3T1", 3, 1, SVCInterLayerPredMode::kOff},
+    {"S3T2", 3, 2, SVCInterLayerPredMode::kOff},
+    {"S3T3", 3, 3, SVCInterLayerPredMode::kOff},
 };
 
 uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
@@ -126,7 +132,7 @@ VideoBitrateAllocation CreateBitrateAllocation(
     const VideoCodec codec,
     const gfx::Size& resolution,
     uint32_t frame_rate,
-    absl::optional<uint32_t> encode_bitrate,
+    std::optional<uint32_t> encode_bitrate,
     size_t num_spatial_layers,
     size_t num_temporal_layers,
     bool is_vbr,
@@ -210,8 +216,9 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     const base::FilePath& output_folder,
     const std::string& codec,
     const std::string& svc_mode,
+    VideoEncodeAccelerator::Config::ContentType content_type,
     bool save_output_bitstream,
-    absl::optional<uint32_t> encode_bitrate,
+    std::optional<uint32_t> encode_bitrate,
     Bitrate::Mode bitrate_mode,
     bool reverse,
     const FrameOutputConfig& frame_output_config,
@@ -273,7 +280,6 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
       enabled_features);
   std::vector<base::test::FeatureRef> combined_disabled_features(
       disabled_features);
-  combined_disabled_features.push_back(media::kFFmpegDecodeOpaqueVP8);
 #if BUILDFLAG(USE_VAAPI)
   // TODO(crbug.com/828482): remove once enabled by default.
   combined_enabled_features.push_back(media::kVaapiLowPowerEncoderGen9x);
@@ -287,8 +293,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
-  // TODO(crbug.com/1186051): remove once enabled by default.
-  combined_enabled_features.push_back(media::kVaapiVp9kSVCHWEncoding);
+  // TODO(b/292462186): remove once enabled by default.
+  combined_enabled_features.push_back(media::kVaapiVp9SModeHWEncoding);
   // TODO(b/202926617): remove once enabled by default.
   combined_enabled_features.push_back(media::kVaapiVp8TemporalLayerHWEncoding);
 #endif
@@ -304,8 +310,9 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   return new VideoEncoderTestEnvironment(
       test_type, std::move(video), output_folder, video_path.BaseName(),
       profile, inter_layer_pred_mode, num_spatial_layers, num_temporal_layers,
-      bitrate_allocation, save_output_bitstream, reverse, frame_output_config,
-      combined_enabled_features, combined_disabled_features);
+      content_type, bitrate_allocation, save_output_bitstream, reverse,
+      frame_output_config, combined_enabled_features,
+      combined_disabled_features);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
@@ -317,6 +324,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     SVCInterLayerPredMode inter_layer_pred_mode,
     size_t num_spatial_layers,
     size_t num_temporal_layers,
+    VideoEncodeAccelerator::Config::ContentType content_type,
     const VideoBitrateAllocation& bitrate,
     bool save_output_bitstream,
     bool reverse,
@@ -336,6 +344,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
                                               video_->FrameRate(),
                                               num_spatial_layers,
                                               num_temporal_layers)),
+      content_type_(content_type),
       save_output_bitstream_(save_output_bitstream),
       reverse_(reverse),
       frame_output_config_(frame_output_config),
@@ -376,6 +385,11 @@ VideoEncoderTestEnvironment::SpatialLayers() const {
 
 SVCInterLayerPredMode VideoEncoderTestEnvironment::InterLayerPredMode() const {
   return inter_layer_pred_mode_;
+}
+
+VideoEncodeAccelerator::Config::ContentType
+VideoEncoderTestEnvironment::ContentType() const {
+  return content_type_;
 }
 
 const VideoBitrateAllocation& VideoEncoderTestEnvironment::BitrateAllocation()

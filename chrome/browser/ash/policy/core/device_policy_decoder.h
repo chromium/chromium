@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_POLICY_DECODER_H_
 #define CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_POLICY_DECODER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/values.h"
 
 namespace enterprise_management {
 class ChromeDeviceSettingsProto;
@@ -33,7 +34,7 @@ extern const char hostNameRegex[];
 // valid JSON string or doesn't comply with the declared schema (e.g. mismatched
 // type, missing required field, etc.). Any warning or error messages from the
 // decoding and schema validation process are stored in |error|.
-absl::optional<base::Value> DecodeJsonStringAndNormalize(
+std::optional<base::Value> DecodeJsonStringAndNormalize(
     const std::string& json_string,
     const std::string& policy_name,
     std::string* error);

@@ -7,20 +7,18 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/system_textfield.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
+#include "ash/wm/overview/overview_focusable_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Defines a textfield styled so when it's not focused, it looks like a normal
-// label. It can be highlighted and activated by the
-// `OverviewHighlightController`.
-
+// label. It can be focused and activated by the `OverviewFocusCycler`.
 class ASH_EXPORT DeskTextfield : public SystemTextfield,
-                                 public OverviewHighlightableView {
- public:
-  METADATA_HEADER(DeskTextfield);
+                                 public OverviewFocusableView {
+  METADATA_HEADER(DeskTextfield, SystemTextfield)
 
+ public:
   DeskTextfield();
   explicit DeskTextfield(Type type);
   DeskTextfield(const DeskTextfield&) = delete;
@@ -50,13 +48,13 @@ class ASH_EXPORT DeskTextfield : public SystemTextfield,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
 
-  // OverviewHighlightableView:
+  // OverviewFocusableView:
   views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView(bool primary_action) override;
-  void MaybeSwapHighlightedView(bool right) override;
-  void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
+  void MaybeActivateFocusedView() override;
+  void MaybeCloseFocusedView(bool primary_action) override;
+  void MaybeSwapFocusedView(bool right) override;
+  void OnFocusableViewFocused() override;
+  void OnFocusableViewBlurred() override;
 
  private:
   bool use_default_focus_manager_ = false;

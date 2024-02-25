@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAttestationStatement
   bool IsNoneAttestation() const override;
   bool IsSelfAttestation() const override;
   bool IsAttestationCertificateInappropriatelyIdentifying() const override;
-  absl::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
+  std::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
 
  private:
   const std::vector<uint8_t> signature_;
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PackedAttestationStatement
   bool IsNoneAttestation() const override;
   bool IsSelfAttestation() const override;
   bool IsAttestationCertificateInappropriatelyIdentifying() const override;
-  absl::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
+  std::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
 
  private:
   const CoseAlgorithmIdentifier algorithm_;

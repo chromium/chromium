@@ -5,6 +5,7 @@
 #include "net/reporting/reporting_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -29,7 +30,6 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -53,7 +53,7 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   const std::string kGroup_ = "group";
   const std::string kGroup2_ = "group2";
   const std::string kType_ = "type";
-  const absl::optional<base::UnguessableToken> kReportingSource_ =
+  const std::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
   const NetworkAnonymizationKey kNak_ =
       NetworkAnonymizationKey::CreateSameSite(SchemefulSite(kOrigin_));
@@ -77,10 +77,11 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
 
   // Initializes, or re-initializes, |service_| and its dependencies.
   void Init() {
-    if (GetParam())
+    if (GetParam()) {
       store_ = std::make_unique<MockPersistentReportingStore>();
-    else
+    } else {
       store_ = nullptr;
+    }
 
     auto test_context = std::make_unique<TestReportingContext>(
         &clock_, &tick_clock_, ReportingPolicy(), store_.get());
@@ -92,8 +93,9 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   // If the store exists, simulate finishing loading the store, which should
   // make the rest of the test run synchronously.
   void FinishLoading(bool load_success) {
-    if (store_)
+    if (store_) {
       store_->FinishLoading(load_success);
+    }
   }
 
   MockPersistentReportingStore* store() { return store_.get(); }
@@ -107,8 +109,8 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   base::SimpleTestTickClock tick_clock_;
 
   std::unique_ptr<MockPersistentReportingStore> store_;
-  raw_ptr<TestReportingContext, DanglingUntriaged> context_;
   std::unique_ptr<ReportingService> service_;
+  raw_ptr<TestReportingContext> context_ = nullptr;
 };
 
 TEST_P(ReportingServiceTest, QueueReport) {
@@ -116,7 +118,7 @@ TEST_P(ReportingServiceTest, QueueReport) {
                          kType_, base::Value::Dict(), 0);
   FinishLoading(true /* load_success */);
 
-  std::vector<const ReportingReport*> reports;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
@@ -133,7 +135,7 @@ TEST_P(ReportingServiceTest, QueueReportSanitizeUrl) {
                          kType_, base::Value::Dict(), 0);
   FinishLoading(true /* load_success */);
 
-  std::vector<const ReportingReport*> reports;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
@@ -150,7 +152,7 @@ TEST_P(ReportingServiceTest, DontQueueReportInvalidUrl) {
   service()->QueueReport(url, kReportingSource_, kNak_, kUserAgent_, kGroup_,
                          kType_, base::Value::Dict(), 0);
 
-  std::vector<const ReportingReport*> reports;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(0u, reports.size());
 }
@@ -167,7 +169,7 @@ TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
                          kType_, base::Value::Dict(), 0);
   FinishLoading(true /* load_success */);
 
-  std::vector<const ReportingReport*> reports;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
 
@@ -214,7 +216,7 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
       context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_);
   EXPECT_TRUE(cached_endpoint);
 
-  // Ensure that the NIK is stored properly with the endpoint group.
+  // Ensure that the NAK is stored properly with the endpoint group.
   EXPECT_FALSE(cached_endpoint.group_key.network_anonymization_key.IsEmpty());
 }
 
@@ -242,7 +244,7 @@ TEST_P(ReportingServiceTest,
       context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_);
   EXPECT_TRUE(cached_endpoint);
 
-  // When isolation is disabled, cached endpoints should have a null NIK.
+  // When isolation is disabled, cached endpoints should have a null NAK.
   EXPECT_TRUE(cached_endpoint.group_key.network_anonymization_key.IsEmpty());
 }
 
@@ -261,7 +263,7 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
 
   FinishLoading(true /* load_success */);
 
-  std::vector<const ReportingReport*> reports;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(0u, context()->cache()->GetReportCountWithStatusForTesting(
@@ -305,7 +307,7 @@ TEST_P(ReportingServiceTest,
 
   FinishLoading(true /* load_success */);
 
-  std::vector<const ReportingReport*> reports;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(0u, context()->cache()->GetReportCountWithStatusForTesting(
@@ -425,8 +427,9 @@ TEST_P(ReportingServiceTest, ProcessReportToHeaderNetworkIsolationKeyDisabled) {
 }
 
 TEST_P(ReportingServiceTest, WriteToStore) {
-  if (!store())
+  if (!store()) {
     return;
+  }
 
   MockPersistentReportingStore::CommandList expected_commands;
 
@@ -500,8 +503,9 @@ TEST_P(ReportingServiceTest, WriteToStore) {
 }
 
 TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
-  if (!store())
+  if (!store()) {
     return;
+  }
 
   MockPersistentReportingStore::CommandList expected_commands;
 

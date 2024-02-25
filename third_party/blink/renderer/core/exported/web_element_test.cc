@@ -15,7 +15,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -24,11 +26,20 @@ namespace blink {
 class WebElementTest : public PageTestBase {
  protected:
   void InsertHTML(String html);
+  void AddScript(String script);
   WebElement TestElement();
 };
 
 void WebElementTest::InsertHTML(String html) {
   GetDocument().documentElement()->setInnerHTML(html);
+}
+
+void WebElementTest::AddScript(String js) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(js);
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 }
 
 WebElement WebElementTest::TestElement() {
@@ -96,6 +107,164 @@ TEST_F(WebElementTest, IsAutonomousCustomElement) {
       WebElement(To<Element>(v1autonomous)).IsAutonomousCustomElement());
 }
 
+// Tests SelectedText() and ContainsFrameSelection() with divs, including a
+// contenteditable.
+TEST_F(WebElementTest, SelectedTextOfContentEditable) {
+  InsertHTML(
+      R"(<div>Foo</div>
+         <div id=testElement contenteditable>Some <b>rich text</b> here.</div>
+         <div>Bar</div>)");
+  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Selection().SelectSubString(*element, 2, 15);
+  ASSERT_EQ(Selection().SelectedText(), String("me rich text he"));
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "me rich text he");
+
+  Selection().SelectSubString(*element, 10, 7);
+  ASSERT_EQ(Selection().SelectedText(), String("text he"));
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "text he");
+
+  Selection().SelectSubString(*element->firstElementChild(), 0, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("rich text"));
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "rich text");
+
+  Selection().SelectSubString(*element->parentElement(), 0, 8);
+  ASSERT_EQ(Selection().SelectedText(), String("Foo\nSome"));
+  EXPECT_FALSE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "");
+
+  Selection().SelectSubString(*element->parentElement(), 19, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("here.\nBar"));
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  // This is not ideal behavior: it'd be preferable if SelectedText() truncated
+  // the selection at the end of `TestElement()`.
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "here.\nBar");
+}
+
+// Tests SelectedText() and ContainsFrameSelection() with a textarea.
+TEST_F(WebElementTest, SelectedTextOfTextArea) {
+  InsertHTML(
+      R"(<div>Foo</div>
+         <textarea id=testElement>Some plain text here.</textarea>
+         <div>Bar</div>)");
+  auto* element = blink::To<HTMLTextAreaElement>(
+      GetDocument().getElementById(AtomicString("testElement")));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  element->Focus();
+
+  element->SetSelectionRange(2, 18);
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "me plain text he");
+
+  element->SetSelectionRange(11, 18);
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "text he");
+
+  element->SetSelectionRange(5, 15);
+  EXPECT_TRUE(TestElement().ContainsFrameSelection());
+  EXPECT_EQ(TestElement().SelectedText().Utf8(), "plain text");
+}
+
+// Tests SelectedText() and ContainsFrameSelection() with a document
+// with no root, on a form control element.
+TEST_F(WebElementTest, SelectedTextEmptyDocument) {
+  InsertHTML(R"(<input type=text id=testElement></div>)");
+  WebElement test_element = TestElement();
+  GetDocument().documentElement()->remove();
+
+  EXPECT_FALSE(test_element.ContainsFrameSelection());
+  EXPECT_EQ(test_element.SelectedText().Utf8(), "");
+}
+
+TEST_F(WebElementTest, PasteTextIntoContentEditable) {
+  InsertHTML(
+      "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>"
+      "<textarea>Some plain text here.</textarea>");
+  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Selection().SelectSubString(*element->firstElementChild(), 0, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("rich text"));
+  // Paste and replace selection.
+  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  EXPECT_EQ(element->innerHTML(), "Some <b>fancy text</b>&nbsp;here.");
+  // Paste and replace all.
+  TestElement().PasteText("Hello", /*replace_all=*/true);
+  EXPECT_EQ(element->innerHTML(), "Hello");
+  // Paste into an unfocused element.
+  element->nextElementSibling()->Focus();
+  TestElement().PasteText("world", /*replace_all=*/false);
+  EXPECT_EQ(element->innerHTML(), "Hello&nbsp;world");
+}
+
+TEST_F(WebElementTest, PasteTextIntoTextArea) {
+  InsertHTML(
+      "<div contenteditable>Some <b>rich text</b> here.</div>"
+      "<textarea id=testElement>Some plain text here.</textarea>");
+  auto* element = blink::To<HTMLTextAreaElement>(
+      GetDocument().getElementById(AtomicString("testElement")));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  element->Focus();
+  element->setSelectionStart(5);
+  element->setSelectionEnd(15);
+  ASSERT_EQ(element->Value().Substring(
+                element->selectionStart(),
+                element->selectionEnd() - element->selectionStart()),
+            String("plain text"));
+  // Paste and replace selection.
+  TestElement().PasteText("boring text", /*replace_all=*/false);
+  EXPECT_EQ(element->Value(), "Some boring text here.");
+  // Paste and replace all.
+  TestElement().PasteText("Hello", /*replace_all=*/true);
+  EXPECT_EQ(element->Value(), "Hello");
+  // Paste into an unfocused element.
+  element->previousElementSibling()->Focus();
+  TestElement().PasteText("world", /*replace_all=*/false);
+  EXPECT_EQ(element->Value(), "Hello world");
+}
+
+// Tests that PasteText() aborts when the JavaScript handler of the 'paste'
+// event prevents the default handling.
+TEST_F(WebElementTest, PasteTextIsNoOpWhenPasteIsCancelled) {
+  InsertHTML(
+      "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>");
+  AddScript(R"(
+      document.getElementById('testElement').addEventListener('paste', e => {
+        e.target.textContent = 'UPPERCASE TEXT';
+        e.preventDefault();
+      }))");
+  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Selection().SelectSubString(*element->firstElementChild(), 0, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("rich text"));
+  // Paste and replace selection.
+  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  EXPECT_EQ(element->innerHTML(), "Some <b>UPPERCASE TEXT</b> here.");
+}
+
+// Tests that PasteText() aborts when the JavaScript handler of the
+// 'beforeinput' event prevents the default handling.
+TEST_F(WebElementTest, PasteTextIsNoOpWhenBeforeInputIsCancelled) {
+  InsertHTML(
+      "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>");
+  AddScript(R"(
+      document.getElementById('testElement').addEventListener('beforeinput',
+                                                              e => {
+        e.target.textContent = 'UPPERCASE TEXT';
+        e.preventDefault();
+      }))");
+  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Selection().SelectSubString(*element->firstElementChild(), 0, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("rich text"));
+  // Paste and replace selection.
+  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  EXPECT_EQ(element->innerHTML(), "Some <b>UPPERCASE TEXT</b> here.");
+}
+
 TEST_F(WebElementTest, ShadowRoot) {
   InsertHTML("<input id=testElement>");
   EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
@@ -106,7 +275,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
     auto* element = GetDocument().getElementById(AtomicString("testElement"));
-    element->AttachShadowRootInternal(ShadowRootType::kOpen);
+    element->AttachShadowRootForTesting(ShadowRootMode::kOpen);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 open ShadowRoot.";
   }
@@ -116,7 +285,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
     auto* element = GetDocument().getElementById(AtomicString("testElement"));
-    element->AttachShadowRootInternal(ShadowRootType::kClosed);
+    element->AttachShadowRootForTesting(ShadowRootMode::kClosed);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 closed ShadowRoot.";
   }

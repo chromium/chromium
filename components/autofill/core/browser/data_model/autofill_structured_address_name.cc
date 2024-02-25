@@ -12,11 +12,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -38,29 +40,23 @@ std::u16string ReduceToInitials(const std::u16string& value) {
   return base::i18n::ToUpper(result);
 }
 
-NameHonorific::NameHonorific(AddressComponent* parent)
-    : AddressComponent(NAME_HONORIFIC_PREFIX, parent, MergeMode::kDefault) {}
-
-NameHonorific::~NameHonorific() = default;
-
-NameFirst::NameFirst(AddressComponent* parent)
-    : AddressComponent(NAME_FIRST, parent, MergeMode::kDefault) {}
+NameFirst::NameFirst()
+    : AddressComponent(NAME_FIRST, {}, MergeMode::kDefault) {}
 
 NameFirst::~NameFirst() = default;
 
-NameMiddle::NameMiddle(AddressComponent* parent)
-    : AddressComponent(NAME_MIDDLE, parent, MergeMode::kDefault) {}
+NameMiddle::NameMiddle()
+    : AddressComponent(NAME_MIDDLE, {}, MergeMode::kDefault) {}
 
 NameMiddle::~NameMiddle() = default;
 
-const ServerFieldTypeSet NameMiddle::GetAdditionalSupportedFieldTypes() const {
-  constexpr ServerFieldTypeSet additional_supported_field_types{
-      NAME_MIDDLE_INITIAL};
+const FieldTypeSet NameMiddle::GetAdditionalSupportedFieldTypes() const {
+  constexpr FieldTypeSet additional_supported_field_types{NAME_MIDDLE_INITIAL};
   return additional_supported_field_types;
 }
 
 std::u16string NameMiddle::GetValueForOtherSupportedType(
-    ServerFieldType field_type) const {
+    FieldType field_type) const {
   CHECK(IsSupportedType(field_type));
   return HasMiddleNameInitialsCharacteristics(base::UTF16ToUTF8(GetValue()))
              ? GetValue()
@@ -68,20 +64,20 @@ std::u16string NameMiddle::GetValueForOtherSupportedType(
 }
 
 void NameMiddle::SetValueForOtherSupportedType(
-    ServerFieldType field_type,
+    FieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
   CHECK(IsSupportedType(field_type));
   SetValue(value, status);
 }
 
-NameLastFirst::NameLastFirst(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_FIRST, parent, MergeMode::kDefault) {}
+NameLastFirst::NameLastFirst()
+    : AddressComponent(NAME_LAST_FIRST, {}, MergeMode::kDefault) {}
 
 NameLastFirst::~NameLastFirst() = default;
 
-NameLastConjunction::NameLastConjunction(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_CONJUNCTION, parent, MergeMode::kDefault) {}
+NameLastConjunction::NameLastConjunction()
+    : AddressComponent(NAME_LAST_CONJUNCTION, {}, MergeMode::kDefault) {}
 
 NameLastConjunction::~NameLastConjunction() = default;
 
@@ -96,15 +92,16 @@ std::vector<const re2::RE2*> NameLast::GetParseRegularExpressionsByRelevance()
   return {pattern_provider->GetRegEx(RegEx::kParseLastNameIntoSecondLastName)};
 }
 
-NameLastSecond::NameLastSecond(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_SECOND, parent, MergeMode::kDefault) {}
+NameLastSecond::NameLastSecond()
+    : AddressComponent(NAME_LAST_SECOND, {}, MergeMode::kDefault) {}
 
 NameLastSecond::~NameLastSecond() = default;
 
-NameLast::NameLast(AddressComponent* parent)
-    : AddressComponent(NAME_LAST,
-                       parent,
-                       MergeMode::kDefault) {}
+NameLast::NameLast() : AddressComponent(NAME_LAST, {}, MergeMode::kDefault) {
+  RegisterChildNode(&last_first_);
+  RegisterChildNode(&last_conjuntion_);
+  RegisterChildNode(&last_second_);
+}
 
 NameLast::~NameLast() = default;
 
@@ -112,14 +109,12 @@ void NameLast::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   SetValueForType(NAME_LAST_SECOND, GetValue(), VerificationStatus::kParsed);
 }
 
-NameFull::NameFull() : NameFull(nullptr) {}
-
 // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-NameFull::NameFull(AddressComponent* parent)
-    : AddressComponent(
-          NAME_FULL,
-          parent,
-          MergeMode::kDefault) {}
+NameFull::NameFull() : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
+  RegisterChildNode(&first_);
+  RegisterChildNode(&middle_);
+  RegisterChildNode(&last_);
+}
 
 NameFull::NameFull(const NameFull& other) : NameFull() {
   // The purpose of the copy operator is to copy the values and verification
@@ -127,15 +122,6 @@ NameFull::NameFull(const NameFull& other) : NameFull() {
   // already implemented as a recursive operation in the base class.
   this->CopyFrom(other);
 }
-
-NameHonorificPrefix::NameHonorificPrefix(AddressComponent* parent)
-    : AddressComponent(NAME_HONORIFIC_PREFIX,
-                       parent,
-                       MergeMode::kUseBetterOrNewerForSameValue |
-                           MergeMode::kReplaceEmpty |
-                           MergeMode::kUseBetterOrMostRecentIfDifferent) {}
-
-NameHonorificPrefix::~NameHonorificPrefix() = default;
 
 void NameFull::MigrateLegacyStructure() {
   // Only if the name was imported from a legacy structure, the component has no
@@ -148,26 +134,26 @@ void NameFull::MigrateLegacyStructure() {
     SetValue(GetValue(), VerificationStatus::kObserved);
 
     // Set the verification status of all subcomponents to |kParsed|.
-    for (auto* subcomponent : Subcomponents()) {
+    for (AddressComponent* subcomponent : Subcomponents()) {
       subcomponent->SetValue(subcomponent->GetValue(),
                              subcomponent->GetValue().empty()
                                  ? VerificationStatus::kNoStatus
                                  : VerificationStatus::kParsed);
     }
-
+    AddressComponent* name_last = GetNodeForType(NAME_LAST);
     // Finally, unset the substructure of the last name and complete it;
-    name_last_.RecursivelyUnsetSubcomponents();
-    // This tree is not trivially completable, because it has values both at the
-    // root node and in the first layer. Make a manual completion call for the
-    // structure of the last name.
-    name_last_.RecursivelyCompleteTree();
+    name_last->RecursivelyUnsetSubcomponents();
+    // This tree is not trivially completable, because it has values both at
+    // the root node and in the first layer. Make a manual completion call for
+    // the structure of the last name.
+    name_last->RecursivelyCompleteTree();
 
     return;
   }
 
   // Otherwise, at least one of the subcomponents should be set.
   // Set its verification status to observed.
-  for (auto* subcomponent : Subcomponents()) {
+  for (AddressComponent* subcomponent : Subcomponents()) {
     if (!subcomponent->GetValue().empty())
       subcomponent->SetValue(subcomponent->GetValue(),
                              VerificationStatus::kObserved);
@@ -220,8 +206,10 @@ std::vector<const re2::RE2*> NameFull::GetParseRegularExpressionsByRelevance()
 std::u16string NameFull::GetFormatString() const {
   StructuredAddressesFormatProvider::ContextInfo info;
   info.name_has_cjk_characteristics =
-      HasCjkNameCharacteristics(base::UTF16ToUTF8(name_first_.GetValue())) &&
-      HasCjkNameCharacteristics(base::UTF16ToUTF8(name_last_.GetValue()));
+      HasCjkNameCharacteristics(
+          base::UTF16ToUTF8(GetNodeForType(NAME_FIRST)->GetValue())) &&
+      HasCjkNameCharacteristics(
+          base::UTF16ToUTF8(GetNodeForType(NAME_LAST)->GetValue()));
 
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
   CHECK(pattern_provider);
@@ -231,46 +219,5 @@ std::u16string NameFull::GetFormatString() const {
 }
 
 NameFull::~NameFull() = default;
-
-NameFullWithPrefix::NameFullWithPrefix() : NameFullWithPrefix(nullptr) {}
-
-NameFullWithPrefix::NameFullWithPrefix(AddressComponent* parent)
-    : AddressComponent(NAME_FULL_WITH_HONORIFIC_PREFIX,
-                       parent,
-                       MergeMode::kMergeChildrenAndReformatIfNeeded) {}
-
-NameFullWithPrefix::NameFullWithPrefix(const NameFullWithPrefix& other)
-    : NameFullWithPrefix() {
-  // The purpose of the copy operator is to copy the values and verification
-  // statuses of all nodes in |other| to |this|. This exact functionality is
-  // already implemented as a recursive operation in the base class.
-  this->CopyFrom(other);
-}
-
-NameFullWithPrefix::~NameFullWithPrefix() = default;
-
-std::vector<const re2::RE2*>
-NameFullWithPrefix::GetParseRegularExpressionsByRelevance() const {
-  auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
-  return {pattern_provider->GetRegEx(RegEx::kParsePrefixedName)};
-}
-
-void NameFullWithPrefix::MigrateLegacyStructure() {
-  // If a verification status is set, the structure is already migrated.
-  if (GetVerificationStatus() != VerificationStatus::kNoStatus) {
-    return;
-  }
-
-  // If it is not migrated, continue with migrating the full name.
-  name_full_.MigrateLegacyStructure();
-
-  // Check if the tree is already in a completed state.
-  // If yes, build the root node from the subcomponents.
-  // Otherwise, this step is not necessary and will be taken care of in a later
-  // stage of the import process.
-  if (MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() > 1) {
-    FormatValueFromSubcomponents();
-  }
-}
 
 }  // namespace autofill

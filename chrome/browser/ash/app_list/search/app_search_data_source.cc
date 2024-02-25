@@ -251,7 +251,8 @@ AppSearchDataSource::AppSearchDataSource(
     : profile_(profile),
       list_controller_(list_controller),
       clock_(clock),
-      icon_cache_(apps::AppServiceProxyFactory::GetForProfile(profile),
+      icon_cache_(apps::AppServiceProxyFactory::GetForProfile(profile)
+                      ->app_icon_loader(),
                   apps::IconCache::GarbageCollectionPolicy::kExplicit) {
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -414,12 +415,6 @@ void AppSearchDataSource::Refresh() {
           return;
         }
 
-        if (!std::strcmp(update.AppId().c_str(),
-                         ash::kInternalAppIdContinueReading)) {
-          // Don't show continue reading results in the recommended apps.
-          return;
-        }
-
         // TODO(crbug.com/826982): add the "can load in incognito" concept to
         // the App Service and use it here, similar to ExtensionDataSource.
         const std::string name = update.Name();
@@ -451,7 +446,7 @@ void AppSearchDataSource::Refresh() {
 
 void AppSearchDataSource::OnAppUpdate(const apps::AppUpdate& update) {
   if (!apps_util::IsInstalled(update.Readiness()) || update.IconKeyChanged()) {
-    icon_cache_.RemoveIcon(update.AppType(), update.AppId());
+    icon_cache_.RemoveIcon(update.AppId());
   }
 
   if (update.Readiness() == apps::Readiness::kReady) {

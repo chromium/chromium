@@ -116,7 +116,7 @@ bool LocalFileSuggestionProvider::IsInitialized() const {
 void LocalFileSuggestionProvider::GetSuggestFileData(
     GetSuggestFileDataCallback callback) {
   if (!files_ranker_ || !files_ranker_->initialized()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -148,6 +148,11 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
                           : std::vector<base::FilePath>())),
       base::BindOnce(&LocalFileSuggestionProvider::OnValidationComplete,
                      weak_factory_.GetWeakPtr()));
+}
+
+void LocalFileSuggestionProvider::MaybeUpdateItemSuggestCache(
+    base::PassKey<FileSuggestKeyedService>) {
+  NOTREACHED();
 }
 
 void LocalFileSuggestionProvider::OnFilesOpened(
@@ -184,11 +189,6 @@ void LocalFileSuggestionProvider::OnFilesOpened(
   }
 }
 
-bool LocalFileSuggestionProvider::HasPendingLocalSuggestionFetchForTest()
-    const {
-  return !on_validation_complete_callback_list_.empty();
-}
-
 void LocalFileSuggestionProvider::OnProtoInitialized(
     app_list::ReadStatus status) {
   NotifySuggestionUpdate(FileSuggestionType::kLocalFile);
@@ -204,11 +204,26 @@ void LocalFileSuggestionProvider::OnValidationComplete(
 
   std::vector<FileSuggestData> final_results;
   for (auto& result : results.first) {
-    final_results.emplace_back(
-        FileSuggestionType::kLocalFile, result.path,
-        app_list::GetJustificationString(result.info.last_accessed,
-                                         result.info.last_modified),
-        result.score);
+    if (result.info.last_accessed > result.info.last_modified) {
+      std::optional<std::u16string> justification_string =
+          app_list::GetJustificationString(app_list::JustificationType::kViewed,
+                                           result.info.last_accessed,
+                                           /*user_name=*/"");
+      final_results.emplace_back(
+          FileSuggestionType::kLocalFile, result.path, justification_string,
+          /*timestamp=*/result.info.last_accessed,
+          /*secondary_timestamp=*/std::nullopt, result.score);
+    } else {
+      std::optional<std::u16string> justification_string =
+          app_list::GetJustificationString(
+              app_list::JustificationType::kModifiedByCurrentUser,
+              result.info.last_modified,
+              /*user_name=*/"");
+      final_results.emplace_back(
+          FileSuggestionType::kLocalFile, result.path, justification_string,
+          /*timestamp=*/result.info.last_modified,
+          /*secondary_timestamp=*/std::nullopt, result.score);
+    }
   }
 
   // Sort valid results high-to-low by score.

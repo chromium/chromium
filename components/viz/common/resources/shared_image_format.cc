@@ -4,13 +4,14 @@
 
 #include "components/viz/common/resources/shared_image_format.h"
 
+#include <compare>
+#include <optional>
 #include <type_traits>
 
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 namespace {
@@ -70,6 +71,8 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
     return "NV12A_LEGACY";
   } else if (format == LegacyMultiPlaneFormat::kP010) {
     return "P010_LEGACY";
+  } else if (format == SinglePlaneFormat::kR_F16) {
+    return "R_F16";
   }
   NOTREACHED_NORETURN();
 }
@@ -89,6 +92,7 @@ int BitsPerPixelForTrueSinglePlaneFormat(SharedImageFormat format) {
   } else if (format == SinglePlaneFormat::kRGBA_4444 ||
              format == SinglePlaneFormat::kRGB_565 ||
              format == SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == SinglePlaneFormat::kR_F16 ||
              format == SinglePlaneFormat::kR_16 ||
              format == SinglePlaneFormat::kBGR_565 ||
              format == SinglePlaneFormat::kRG_88) {
@@ -125,6 +129,8 @@ const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
       return "Y_UV";
     case SharedImageFormat::PlaneConfig::kY_UV_A:
       return "Y_UV_A";
+    case SharedImageFormat::PlaneConfig::kY_U_V_A:
+      return "Y_U_V_A";
   }
 }
 
@@ -132,6 +138,10 @@ const char* SubsamplingToString(SharedImageFormat::Subsampling subsampling) {
   switch (subsampling) {
     case SharedImageFormat::Subsampling::k420:
       return "420";
+    case SharedImageFormat::Subsampling::k422:
+      return "422";
+    case SharedImageFormat::Subsampling::k444:
+      return "444";
   }
 }
 
@@ -195,6 +205,8 @@ int SharedImageFormat::NumberOfPlanes() const {
       return 2;
     case PlaneConfig::kY_UV_A:
       return 3;
+    case PlaneConfig::kY_U_V_A:
+      return 4;
   }
 }
 
@@ -202,7 +214,7 @@ bool SharedImageFormat::IsValidPlaneIndex(int plane_index) const {
   return plane_index >= 0 && plane_index < NumberOfPlanes();
 }
 
-absl::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
+std::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
     int plane_index,
     const gfx::Size& size) const {
   DCHECK(!size.IsEmpty());
@@ -219,14 +231,14 @@ absl::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
         BitsPerPixelForTrueSinglePlaneFormat(*this);
     bits_per_row *= size.width();
     if (!bits_per_row.IsValid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     base::CheckedNumeric<size_t> estimated_bytes =
         ConvertBitsToBytes(bits_per_row.ValueOrDie());
     estimated_bytes *= size.height();
     if (!estimated_bytes.IsValid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return estimated_bytes.ValueOrDie();
@@ -242,13 +254,13 @@ absl::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
   plane_estimated_bytes *= plane_size.width();
   plane_estimated_bytes *= plane_size.height();
   if (!plane_estimated_bytes.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return plane_estimated_bytes.ValueOrDie();
 }
 
-absl::optional<size_t> SharedImageFormat::MaybeEstimatedSizeInBytes(
+std::optional<size_t> SharedImageFormat::MaybeEstimatedSizeInBytes(
     const gfx::Size& size) const {
   DCHECK(!size.IsEmpty());
 
@@ -262,15 +274,15 @@ absl::optional<size_t> SharedImageFormat::MaybeEstimatedSizeInBytes(
 
   base::CheckedNumeric<size_t> total_estimated_bytes = 0;
   for (int plane_index = 0; plane_index < NumberOfPlanes(); ++plane_index) {
-    absl::optional<size_t> plane_estimated_bytes =
+    std::optional<size_t> plane_estimated_bytes =
         MaybeEstimatedPlaneSizeInBytes(plane_index, size);
     if (!plane_estimated_bytes.has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     total_estimated_bytes += plane_estimated_bytes.value();
     if (!total_estimated_bytes.IsValid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -292,30 +304,33 @@ gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
     return size;
   }
 
-  switch (plane_config()) {
-    case PlaneConfig::kY_U_V:
-    case PlaneConfig::kY_V_U:
-      if (plane_index == 0) {
-        return size;
-      } else {
-        DCHECK_EQ(subsampling(), Subsampling::k420);
-        return gfx::ScaleToCeiledSize(size, 0.5);
-      }
-    case PlaneConfig::kY_UV:
-      if (plane_index == 1) {
-        DCHECK_EQ(subsampling(), Subsampling::k420);
-        return gfx::ScaleToCeiledSize(size, 0.5);
-      } else {
-        return size;
-      }
-    case PlaneConfig::kY_UV_A:
-      if (plane_index == 1) {
-        DCHECK_EQ(subsampling(), Subsampling::k420);
-        return gfx::ScaleToCeiledSize(size, 0.5);
-      } else {
-        return size;
-      }
+  // First plane is always Y plane and it is always size (not subsampled).
+  if (plane_index == 0) {
+    return size;
   }
+  // A plane is always size
+  if (plane_config() == PlaneConfig::kY_UV_A && plane_index == 2) {
+    return size;
+  }
+  if (plane_config() == PlaneConfig::kY_U_V_A && plane_index == 3) {
+    return size;
+  }
+
+  // UV scales
+  float width_scale = 1.0;
+  float height_scale = 1.0;
+  switch (subsampling()) {
+    case Subsampling::k420:
+      width_scale = 0.5;
+      height_scale = 0.5;
+      break;
+    case Subsampling::k422:
+      width_scale = 0.5;
+      break;
+    case Subsampling::k444:
+      break;
+  }
+  return gfx::ScaleToCeiledSize(size, width_scale, height_scale);
 }
 
 // For multiplanar formats.
@@ -324,6 +339,7 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
   switch (plane_config()) {
     case PlaneConfig::kY_U_V:
     case PlaneConfig::kY_V_U:
+    case PlaneConfig::kY_U_V_A:
       return 1;
     case PlaneConfig::kY_UV:
       return plane_index == 1 ? 2 : 1;
@@ -401,6 +417,7 @@ bool SharedImageFormat::HasAlpha() const {
     case PlaneConfig::kY_UV:
       return false;
     case PlaneConfig::kY_UV_A:
+    case PlaneConfig::kY_U_V_A:
       return true;
   }
 }
@@ -442,6 +459,7 @@ int SharedImageFormat::BitsPerPixel() const {
     case mojom::SingleplanarFormat::RGBA_4444:
     case mojom::SingleplanarFormat::RGB_565:
     case mojom::SingleplanarFormat::LUMINANCE_F16:
+    case mojom::SingleplanarFormat::R_F16:
     case mojom::SingleplanarFormat::R16_EXT:
     case mojom::SingleplanarFormat::BGR_565:
     case mojom::SingleplanarFormat::RG_88:
@@ -477,22 +495,19 @@ bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
   }
 }
 
-bool SharedImageFormat::operator!=(const SharedImageFormat& o) const {
-  return !operator==(o);
-}
-
-bool SharedImageFormat::operator<(const SharedImageFormat& o) const {
+std::weak_ordering SharedImageFormat::operator<=>(
+    const SharedImageFormat& o) const {
   if (plane_type_ != o.plane_type()) {
-    return plane_type_ < o.plane_type();
+    return plane_type_ <=> o.plane_type();
   }
 
   switch (plane_type_) {
     case PlaneType::kUnknown:
-      return false;
+      return std::weak_ordering::equivalent;
     case PlaneType::kSinglePlane:
-      return singleplanar_format() < o.singleplanar_format();
+      return singleplanar_format() <=> o.singleplanar_format();
     case PlaneType::kMultiPlane:
-      return multiplanar_format() < o.multiplanar_format();
+      return multiplanar_format() <=> o.multiplanar_format();
   }
 }
 
@@ -501,13 +516,11 @@ bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator==(
   return plane_config == o.plane_config && subsampling == o.subsampling &&
          channel_format == o.channel_format;
 }
-bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator!=(
+
+std::weak_ordering
+SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator<=>(
     const MultiplanarFormat& o) const {
-  return !operator==(o);
-}
-bool SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator<(
-    const MultiplanarFormat& o) const {
-  return std::tie(plane_config, subsampling, channel_format) <
+  return std::tie(plane_config, subsampling, channel_format) <=>
          std::tie(o.plane_config, o.subsampling, o.channel_format);
 }
 

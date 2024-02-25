@@ -6,14 +6,13 @@
 #define EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/mojom/host_id.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -61,7 +60,7 @@ class ExecuteCodeFunction : public ExtensionFunction {
   // Called when contents from the loaded file have been localized.
   void DidLoadAndLocalizeFile(const std::string& file,
                               std::vector<std::unique_ptr<std::string>> data,
-                              absl::optional<std::string> load_error);
+                              std::optional<std::string> load_error);
 
   const mojom::HostID& host_id() const { return host_id_; }
   void set_host_id(const mojom::HostID& host_id) { host_id_ = host_id; }
@@ -79,10 +78,10 @@ class ExecuteCodeFunction : public ExtensionFunction {
   // Note that for tabs.removeCSS we still use |InjectDetails| rather than
   // |DeleteInjectionDetails|, since the two types are compatible; the value
   // of |run_at| defaults to |RUN_AT_NONE|.
-  std::unique_ptr<api::extension_types::InjectDetails> details_;
-  absl::optional<InitResult> init_result_;
+  std::optional<api::extension_types::InjectDetails> details_;
+  std::optional<InitResult> init_result_;
   // Set iff |init_result_| == FAILURE, holds the error string.
-  absl::optional<std::string> init_error_;
+  std::optional<std::string> init_error_;
 
  private:
   void OnExecuteCodeFinished(std::vector<ScriptExecutor::FrameResult> results);

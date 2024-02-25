@@ -52,7 +52,7 @@ class NavigationEntryTest : public testing::Test {
     entry2_ = std::make_unique<NavigationEntryImpl>(
         instance_, GURL("test:url"),
         Referrer(GURL("from"), network::mojom::ReferrerPolicy::kDefault),
-        kInitiatorOrigin, /* initiator_base_url= */ absl::nullopt, u"title",
+        kInitiatorOrigin, /* initiator_base_url= */ std::nullopt, u"title",
         ui::PAGE_TRANSITION_TYPED, false, nullptr /* blob_url_loader_factory */,
         false /* is_initial_entry */);
   }
@@ -274,9 +274,8 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   // (referrer, initiator, etc.).  This is why it is important to test
   // SetPageState/GetPageState last.
   blink::PageState test_page_state = CreateTestPageState();
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  entry2_->SetPageState(test_page_state, context.get());
+  NavigationEntryRestoreContextImpl context;
+  entry2_->SetPageState(test_page_state, &context);
   EXPECT_EQ(test_page_state.ToEncodedData(),
             entry2_->GetPageState().ToEncodedData());
 }
@@ -326,9 +325,8 @@ TEST_F(NavigationEntryTest, SetPageStateWithCorruptedSequenceNumbers) {
   blink::PageState page_state =
       blink::PageState::CreateFromEncodedData(encoded_data);
 
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  entry1_->SetPageState(page_state, context.get());
+  NavigationEntryRestoreContextImpl context;
+  entry1_->SetPageState(page_state, &context);
 
   ASSERT_EQ(1u, entry1_->root_node()->children.size());
   EXPECT_NE(entry1_->root_node()->frame_entry.get(),
@@ -341,10 +339,9 @@ TEST_F(NavigationEntryTest, SetPageStateWithDefaultSequenceNumbers) {
   blink::PageState page_state2 =
       blink::PageState::CreateFromURL(GURL("http://bar.com"));
 
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  entry1_->SetPageState(page_state1, context.get());
-  entry2_->SetPageState(page_state2, context.get());
+  NavigationEntryRestoreContextImpl context;
+  entry1_->SetPageState(page_state1, &context);
+  entry2_->SetPageState(page_state2, &context);
 
   // Because no sequence numbers were set on the PageState objects, they will
   // default to 0.
@@ -365,7 +362,8 @@ TEST_F(NavigationEntryTest, SetPageStateWithDefaultSequenceNumbers) {
 // Test that content URIs correctly show the file display name as the title.
 TEST_F(NavigationEntryTest, DISABLED_NavigationEntryContentUri) {
   base::FilePath image_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &image_path));
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &image_path));
   image_path = image_path.Append(FILE_PATH_LITERAL("content"));
   image_path = image_path.Append(FILE_PATH_LITERAL("test"));
   image_path = image_path.Append(FILE_PATH_LITERAL("data"));

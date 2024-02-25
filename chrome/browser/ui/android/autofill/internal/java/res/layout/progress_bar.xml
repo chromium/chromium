@@ -16,15 +16,15 @@ found in the LICENSE file.
 
     <ProgressBar
         android:id="@+id/progress_bar"
-        android:layout_height="@dimen/progress_bar_size"
+        android:layout_height="@dimen/autofill_dialog_progress_bar_size"
+        android:layout_width="@dimen/autofill_dialog_progress_bar_size"
         android:layout_marginBottom="@dimen/progress_bar_margin_bottom"
-        android:layout_marginTop="@dimen/progress_bar_margin_top"
-        android:layout_width="@dimen/progress_bar_size"/>
+        android:layout_marginTop="@dimen/progress_bar_margin_top"/>
 
     <ImageView
         android:id="@+id/confirmation_icon"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/progress_bar_size"
+        android:layout_height="@dimen/autofill_dialog_progress_bar_size"
         android:src="@drawable/checkmark_blue"
         android:visibility="gone"
         tools:ignore="ContentDescription" />

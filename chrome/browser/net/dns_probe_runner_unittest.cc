@@ -50,7 +50,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
       : result_list_(std::move(result_list)) {}
 
   void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
+      const std::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
     ASSERT_FALSE(resolver_);
     resolver_ = std::make_unique<FakeHostResolver>(std::move(receiver),
@@ -70,7 +70,7 @@ class FirstHangingThenFakeResolverNetworkContext
       : result_list_(std::move(result_list)) {}
 
   void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
+      const std::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
     if (call_num == 0) {
       resolver_ = std::make_unique<HangingHostResolver>(std::move(receiver));

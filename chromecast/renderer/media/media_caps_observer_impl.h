@@ -9,7 +9,6 @@
 #include "chromecast/media/base/supported_codec_profile_levels_memo.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace chromecast {
 namespace media {
@@ -25,14 +24,6 @@ class MediaCapsObserverImpl : public mojom::MediaCapsObserver {
   ~MediaCapsObserverImpl() override;
 
  private:
-  void ScreenResolutionChanged(uint32_t width, uint32_t height) override;
-  void ScreenInfoChanged(int32_t hdcp_version,
-                         int32_t supported_eotfs,
-                         int32_t dolby_vision_flags,
-                         int32_t screen_width_mm,
-                         int32_t screen_height_mm,
-                         bool current_mode_supports_hdr,
-                         bool current_mode_supports_dolby_vision) override;
   void AddSupportedCodecProfileLevel(
       mojom::CodecProfileLevelPtr codec_profile_level) override;
 

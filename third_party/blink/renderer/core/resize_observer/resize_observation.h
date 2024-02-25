@@ -24,7 +24,7 @@ class CORE_EXPORT ResizeObservation final
                     ResizeObserver*,
                     ResizeObserverBoxOptions observed_box);
 
-  Element* Target() const { return target_; }
+  Element* Target() const { return target_.Get(); }
   size_t TargetDepth();
   // True if observation_size_ differs from target's current size.
   bool ObservationSizeOutOfSync();

@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKWallet : public KeyStorageLinux {
  protected:
   // KeyStorageLinux
   bool Init() override;
-  absl::optional<std::string> GetKeyImpl() override;
+  std::optional<std::string> GetKeyImpl() override;
 
  private:
   enum class InitResult {
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKWallet : public KeyStorageLinux {
 
   // Generates a new 16-byte key, stores it in KWallet and returns the key
   // value.
-  absl::optional<std::string> GenerateAndStorePassword();
+  std::optional<std::string> GenerateAndStorePassword();
 
   const base::nix::DesktopEnvironment desktop_env_;
   int32_t handle_ = kInvalidHandle;

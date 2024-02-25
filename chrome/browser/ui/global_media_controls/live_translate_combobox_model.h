@@ -28,7 +28,7 @@ class LiveTranslateComboboxModel : public ui::ComboboxModel {
   // Overridden from ui::ComboboxModel:
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 
   void UpdateTargetLanguageIndex(int index);
 

@@ -71,9 +71,13 @@ public final class LGEmailActionModeWorkaroundImpl {
         if (!lgeMailPackageId.equals(appName)) return false;
         if (versionCode > LGEmailWorkaroundMaxVersion) return false;
 
-        Log.w(TAG, "Working around action mode LG Email bug in WebView (http://crbug.com/651706). "
-                + "APK name: " + lgeMailPackageId + ", versionCode: "
-                + versionCode);
+        Log.w(
+                TAG,
+                "Working around action mode LG Email bug in WebView (http://crbug.com/651706). "
+                        + "APK name: "
+                        + lgeMailPackageId
+                        + ", versionCode: "
+                        + versionCode);
         return true;
     }
 
@@ -84,57 +88,77 @@ public final class LGEmailActionModeWorkaroundImpl {
         try {
             // Part I: post ActionMode.Callback2#onDestroyActionMode() on UI thread.
             final ActionMode.Callback2 c = (Callback2) getField(actionMode, "mCallback");
-            setField(actionMode, "mCallback", new ActionMode.Callback2() {
-                @Override
-                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                    return c.onCreateActionMode(mode, menu);
-                }
-
-                @Override
-                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                    return c.onPrepareActionMode(mode, menu);
-                }
-
-                @Override
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    return c.onActionItemClicked(mode, item);
-                }
-
-                @Override
-                public void onDestroyActionMode(final ActionMode mode) {
-                    PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
+            setField(
+                    actionMode,
+                    "mCallback",
+                    new ActionMode.Callback2() {
                         @Override
-                        public void run() {
-                            c.onDestroyActionMode(mode);
+                        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                            return c.onCreateActionMode(mode, menu);
+                        }
+
+                        @Override
+                        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                            return c.onPrepareActionMode(mode, menu);
+                        }
+
+                        @Override
+                        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                            return c.onActionItemClicked(mode, item);
+                        }
+
+                        @Override
+                        public void onDestroyActionMode(final ActionMode mode) {
+                            PostTask.postTask(
+                                    TaskTraits.UI_DEFAULT,
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            c.onDestroyActionMode(mode);
+                                        }
+                                    });
                         }
                     });
-                }
-            });
 
             // Part II: post PopupWindow#dismiss() on UI thread.
             final Object floatingToolbar = getField(actionMode, "mFloatingToolbar");
             final Object popup = getField(floatingToolbar, "mPopup");
             final ViewGroup contentContainer = (ViewGroup) getField(popup, "mContentContainer");
             final PopupWindow popupWindow = (PopupWindow) getField(popup, "mPopupWindow");
-            Method createExitAnimation = floatingToolbar.getClass().getDeclaredMethod(
-                    "createExitAnimation", View.class, int.class, AnimatorListener.class);
+            Method createExitAnimation =
+                    floatingToolbar
+                            .getClass()
+                            .getDeclaredMethod(
+                                    "createExitAnimation",
+                                    View.class,
+                                    int.class,
+                                    AnimatorListener.class);
             createExitAnimation.setAccessible(true);
-            Object newDismissAnimation = createExitAnimation.invoke(
-                    null, contentContainer, 150, new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
+            Object newDismissAnimation =
+                    createExitAnimation.invoke(
+                            null,
+                            contentContainer,
+                            150,
+                            new AnimatorListenerAdapter() {
                                 @Override
-                                public void run() {
-                                    popupWindow.dismiss();
-                                    contentContainer.removeAllViews();
+                                public void onAnimationEnd(Animator animation) {
+                                    PostTask.postTask(
+                                            TaskTraits.UI_DEFAULT,
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    popupWindow.dismiss();
+                                                    contentContainer.removeAllViews();
+                                                }
+                                            });
                                 }
                             });
-                        }
-                    });
             setField(popup, "mDismissAnimation", newDismissAnimation);
-        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException
-                | NoSuchMethodException | InvocationTargetException e) {
+        } catch (NoSuchFieldException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | NoSuchMethodException
+                | InvocationTargetException e) {
             // Ignore exception and just return.
         } catch (Exception e) {
             Log.w(TAG, "Error occurred during LGEmailActionModeWorkaround: ", e);

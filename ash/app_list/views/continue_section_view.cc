@@ -350,6 +350,10 @@ void ContinueSectionView::MaybeCreatePrivacyNotice() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kScaleToMaximum));
+  if (available_width_) {
+    privacy_toast_->SetAvailableWidth(*available_width_);
+  }
+
   if (!tablet_mode_)
     privacy_toast_->UpdateInteriorMargins(kPrivacyToastInteriorMarginClamshell);
 }
@@ -478,7 +482,16 @@ void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
     PreferredSizeChanged();
 }
 
-BEGIN_METADATA(ContinueSectionView, views::View)
+void ContinueSectionView::ConfigureLayoutForAvailableWidth(
+    int available_width) {
+  available_width_ = available_width;
+
+  if (privacy_toast_) {
+    privacy_toast_->SetAvailableWidth(available_width);
+  }
+}
+
+BEGIN_METADATA(ContinueSectionView)
 END_METADATA
 
 }  // namespace ash

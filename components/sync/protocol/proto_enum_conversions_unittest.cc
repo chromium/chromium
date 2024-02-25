@@ -105,6 +105,10 @@ TEST(ProtoEnumConversionsTest, GetSavedTabGroupColorString) {
   TestEnumStringsNonEmpty(sync_pb::SavedTabGroup::SavedTabGroupColor);
 }
 
+TEST(ProtoEnumConversionsTest, GetSharedTabGroupColorString) {
+  TestEnumStringsNonEmpty(sync_pb::SharedTabGroup::Color);
+}
+
 TEST(ProtoEnumConversionsTest, GetIssuerString) {
   TestEnumStringsNonEmpty(sync_pb::CardIssuer::Issuer);
 }
@@ -119,6 +123,10 @@ TEST(ProtoEnumConversionsTest, GetNoteTargetTypeString) {
 
 TEST(ProtoEnumConversionsTest, GetInitialSyncStateString) {
   TestEnumStringsNonEmpty(sync_pb::ModelTypeState::InitialSyncState);
+}
+
+TEST(ProtoEnumConversionsTest, GetCategoryBenefitTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::CardBenefit::CategoryBenefitType);
 }
 
 }  // namespace

@@ -6,15 +6,16 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
+#include "ash/glanceables/common/glanceables_error_message_view.h"
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/style/ash_color_id.h"
+#include "base/functional/bind.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view_class_properties.h"
 
@@ -26,9 +27,7 @@ constexpr int kBubbleCornerRadius = 24;
 }  // namespace
 
 GlanceableTrayChildBubble::GlanceableTrayChildBubble(
-    DetailedViewDelegate* delegate,
-    bool for_glanceables_container)
-    : TrayDetailedView(delegate) {
+    bool for_glanceables_container) {
   if (for_glanceables_container) {
     SetAccessibleRole(ax::mojom::Role::kGroup);
 
@@ -52,7 +51,33 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
   }
 }
 
-BEGIN_METADATA(GlanceableTrayChildBubble, views::View)
+void GlanceableTrayChildBubble::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
+  if (error_message_) {
+    error_message_->UpdateBoundsToContainer(GetLocalBounds());
+  }
+}
+
+void GlanceableTrayChildBubble::ShowErrorMessage(
+    const std::u16string& error_message) {
+  MaybeDismissErrorMessage();
+
+  error_message_ = AddChildView(std::make_unique<GlanceablesErrorMessageView>(
+      base::BindRepeating(&GlanceableTrayChildBubble::MaybeDismissErrorMessage,
+                          base::Unretained(this)),
+      error_message));
+  error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+}
+
+void GlanceableTrayChildBubble::MaybeDismissErrorMessage() {
+  if (!error_message_.get()) {
+    return;
+  }
+
+  RemoveChildViewT(std::exchange(error_message_, nullptr));
+}
+
+BEGIN_METADATA(GlanceableTrayChildBubble)
 END_METADATA
 
 }  // namespace ash

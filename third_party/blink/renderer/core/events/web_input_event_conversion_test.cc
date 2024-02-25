@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/input/touch.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -80,9 +81,12 @@ void RegisterMockedURL(const std::string& base_url,
       WebString::FromUTF8(file_name));
 }
 
-}  // namespace
+class WebInputEventConversionTest : public testing::Test {
+ private:
+  test::TaskEnvironment task_environment;
+};
 
-TEST(WebInputEventConversionTest, WebKeyboardEventBuilder) {
+TEST_F(WebInputEventConversionTest, WebKeyboardEventBuilder) {
   // Test key location conversion.
   int modifiers =
       GetModifiersForKeyLocationCode(KeyboardEvent::kDomKeyLocationStandard);
@@ -109,13 +113,13 @@ TEST(WebInputEventConversionTest, WebKeyboardEventBuilder) {
                modifiers & WebInputEvent::kIsRight);
 }
 
-TEST(WebInputEventConversionTest, WebMouseEventBuilder) {
+TEST_F(WebInputEventConversionTest, WebMouseEventBuilder) {
   TouchEvent* event = TouchEvent::Create();
   WebMouseEventBuilder mouse(nullptr, *event);
   EXPECT_EQ(WebInputEvent::Type::kUndefined, mouse.GetType());
 }
 
-TEST(WebInputEventConversionTest, InputEventsScaling) {
+TEST_F(WebInputEventConversionTest, InputEventsScaling) {
   const std::string base_url("http://www.test1.com/");
   const std::string file_name("fixed_layout.html");
 
@@ -337,7 +341,7 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
   }
 }
 
-TEST(WebInputEventConversionTest, InputEventsTransform) {
+TEST_F(WebInputEventConversionTest, InputEventsTransform) {
   const std::string base_url("http://www.test2.com/");
   const std::string file_name("fixed_layout.html");
 
@@ -602,7 +606,7 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
   }
 }
 
-TEST(WebInputEventConversionTest, InputEventsConversions) {
+TEST_F(WebInputEventConversionTest, InputEventsConversions) {
   const std::string base_url("http://www.test3.com/");
   const std::string file_name("fixed_layout.html");
 
@@ -641,7 +645,7 @@ TEST(WebInputEventConversionTest, InputEventsConversions) {
   }
 }
 
-TEST(WebInputEventConversionTest, VisualViewportOffset) {
+TEST_F(WebInputEventConversionTest, VisualViewportOffset) {
   const std::string base_url("http://www.test4.com/");
   const std::string file_name("fixed_layout.html");
 
@@ -741,7 +745,7 @@ TEST(WebInputEventConversionTest, VisualViewportOffset) {
   }
 }
 
-TEST(WebInputEventConversionTest, ElasticOverscroll) {
+TEST_F(WebInputEventConversionTest, ElasticOverscroll) {
   const std::string base_url("http://www.test5.com/");
   const std::string file_name("fixed_layout.html");
 
@@ -818,7 +822,7 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
 }
 
 // Page reload/navigation should not reset elastic overscroll.
-TEST(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
+TEST_F(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
   const std::string base_url("http://www.test6.com/");
   const std::string file_name("fixed_layout.html");
 
@@ -864,4 +868,5 @@ TEST(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
   }
 }
 
+}  // namespace
 }  // namespace blink

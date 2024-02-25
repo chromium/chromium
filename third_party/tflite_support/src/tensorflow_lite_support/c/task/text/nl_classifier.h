@@ -48,8 +48,7 @@ typedef struct TfLiteNLClassifierOptions {
 // Creates TfLiteNLClassifier from model path and options, returns nullptr if
 // the file doesn't exist or is not a well formatted TFLite model path.
 TfLiteNLClassifier* TfLiteNLClassifierCreateFromOptions(
-    const char* model_path,
-    const TfLiteNLClassifierOptions* options);
+    const char* model_path, const TfLiteNLClassifierOptions* options);
 
 // Invokes the encapsulated TFLite model and classifies the input text.
 Categories* TfLiteNLClassifierClassify(const TfLiteNLClassifier* classifier,

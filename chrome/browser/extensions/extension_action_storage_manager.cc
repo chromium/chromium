@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -81,14 +82,7 @@ bool StringToSkBitmap(const std::string& str, SkBitmap* bitmap) {
 std::string BitmapToString(const SkBitmap& bitmap) {
   std::vector<unsigned char> data;
   bool success = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data);
-  if (!success)
-    return std::string();
-
-  base::StringPiece raw_str(
-      reinterpret_cast<const char*>(&data[0]), data.size());
-  std::string base64_str;
-  base::Base64Encode(raw_str, &base64_str);
-  return base64_str;
+  return success ? base::Base64Encode(data) : "";
 }
 
 // Set |action|'s default values to those specified in |dict|.
@@ -123,7 +117,7 @@ void SetDefaultsFromValue(const base::Value::Dict& dict,
                               RawStringToSkColor(*badge_text_color));
   }
 
-  absl::optional<int> appearance_storage = dict.FindInt(kAppearanceStorageKey);
+  std::optional<int> appearance_storage = dict.FindInt(kAppearanceStorageKey);
   if (appearance_storage && !action->HasIsVisible(kDefaultTabId)) {
     switch (*appearance_storage) {
       case INVISIBLE:
@@ -253,8 +247,8 @@ void ExtensionActionStorageManager::WriteToStorage(
 }
 
 void ExtensionActionStorageManager::ReadFromStorage(
-    const std::string& extension_id,
-    absl::optional<base::Value> value) {
+    const ExtensionId& extension_id,
+    std::optional<base::Value> value) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)->
       enabled_extensions().GetByID(extension_id);
   if (!extension)

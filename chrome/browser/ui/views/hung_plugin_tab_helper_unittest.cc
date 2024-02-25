@@ -73,11 +73,11 @@ TEST_F(HungPluginTabHelperTest, DontRemoveTwice) {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents());
   ASSERT_TRUE(infobar_manager);
-  ASSERT_EQ(1u, infobar_manager->infobar_count());
-  auto* infobar = static_cast<ConfirmInfoBar*>(infobar_manager->infobar_at(0));
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  auto* infobar = static_cast<ConfirmInfoBar*>(infobar_manager->infobars()[0]);
   views::MdTextButton* ok_button = infobar->ok_button_for_testing();
   ok_button->SetCallback(
       base::BindRepeating(&RemoveOnlyOnce, base::Unretained(infobar)));
   views::test::ButtonTestApi(ok_button).NotifyClick(ui::test::TestEvent());
-  EXPECT_EQ(0u, infobar_manager->infobar_count());
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
 }

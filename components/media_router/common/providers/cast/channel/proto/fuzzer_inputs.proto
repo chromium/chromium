@@ -69,14 +69,6 @@ message CastAuthUtilInputs {
 
 // Inputs for functions in cast_message_utils.cc
 message CastMessageUtilInputs {
-  message CreateBroadcastRequestInput {
-    required string source_id = 1;
-    required int32 request_id = 2;
-    repeated string app_id = 3;
-    required string broadcast_namespace = 4;
-    required string broadcast_message = 5;
-  }
-
   message CreateLaunchRequestInput {
     required string source_id = 1;
     required int32 request_id = 2;
@@ -156,7 +148,6 @@ message CastMessageUtilInputs {
   }
 
   oneof input {
-    CreateBroadcastRequestInput create_broadcast_request_input = 1;
     CreateLaunchRequestInput create_launch_request_input = 2;
     CreateStopRequestInput create_stop_request_input = 3;
     CreateCastMessageInput create_cast_message_input = 4;

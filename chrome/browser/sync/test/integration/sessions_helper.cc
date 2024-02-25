@@ -159,17 +159,16 @@ void CloseTab(int browser_index, int tab_index) {
 }
 
 void MoveTab(int from_browser_index, int to_browser_index, int tab_index) {
-  std::unique_ptr<content::WebContents> detached_contents =
+  std::unique_ptr<tabs::TabModel> detached_tab =
       test()
           ->GetBrowser(from_browser_index)
           ->tab_strip_model()
-          ->DetachWebContentsAtForInsertion(tab_index);
+          ->DetachTabAtForInsertion(tab_index);
 
   TabStripModel* target_strip =
       test()->GetBrowser(to_browser_index)->tab_strip_model();
-  target_strip->InsertWebContentsAt(target_strip->count(),
-                                    std::move(detached_contents),
-                                    AddTabTypes::ADD_ACTIVE);
+  target_strip->InsertDetachedTabAt(
+      target_strip->count(), std::move(detached_tab), AddTabTypes::ADD_ACTIVE);
 }
 
 void NavigateTab(int browser_index, const GURL& url) {

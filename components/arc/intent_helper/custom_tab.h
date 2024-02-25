@@ -52,7 +52,7 @@ class ARC_EXPORT CustomTab : public aura::WindowObserver {
 
   std::unique_ptr<views::NativeViewHost> host_ =
       std::make_unique<views::NativeViewHost>();
-  const raw_ptr<aura::Window, ExperimentalAsh> arc_app_window_;
+  const raw_ptr<aura::Window> arc_app_window_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       arc_app_window_observation_{this};
   base::ScopedObservation<aura::Window, aura::WindowObserver>

@@ -11,11 +11,9 @@ namespace signed_exchange_utils {
 
 std::string CreateHeaderIntegrityHashString(
     const net::SHA256HashValue& header_integrity) {
-  std::string header_integrity_base64;
-  base::Base64Encode(
+  std::string header_integrity_base64 = base::Base64Encode(
       base::StringPiece(reinterpret_cast<const char*>(header_integrity.data),
-                        sizeof(header_integrity.data)),
-      &header_integrity_base64);
+                        sizeof(header_integrity.data)));
   return std::string("sha256-") + header_integrity_base64;
 }
 

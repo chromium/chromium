@@ -43,7 +43,7 @@ Browser* ExtensionSidePanelViewHost::GetBrowser() {
   }
 
   DCHECK(web_contents_);
-  return chrome::FindBrowserWithWebContents(web_contents_);
+  return chrome::FindBrowserWithTab(web_contents_);
 }
 
 WindowController* ExtensionSidePanelViewHost::GetExtensionWindowController()
@@ -54,7 +54,7 @@ WindowController* ExtensionSidePanelViewHost::GetExtensionWindowController()
   }
 
   DCHECK(web_contents_);
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   return browser ? browser->extension_window_controller() : nullptr;
 }
 

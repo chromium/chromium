@@ -23,4 +23,4 @@ class SystemSignalsServiceHost : public KeyedService {
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SYSTEM_SIGNALS_SERVICE_HOST_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SYSTEM_SIGNALS_SERVICE_HOST_H_

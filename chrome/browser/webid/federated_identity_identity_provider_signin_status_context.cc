@@ -25,13 +25,13 @@ FederatedIdentityIdentityProviderSigninStatusContext::
           HostContentSettingsMapFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context))) {}
 
-absl::optional<bool>
+std::optional<bool>
 FederatedIdentityIdentityProviderSigninStatusContext::GetSigninStatus(
     const url::Origin& identity_provider) {
   auto granted_object =
       GetGrantedObject(identity_provider, identity_provider.Serialize());
   if (!granted_object)
-    return absl::nullopt;
+    return std::nullopt;
 
   return granted_object->value.FindBool(kIdpSigninStatusKey);
 }

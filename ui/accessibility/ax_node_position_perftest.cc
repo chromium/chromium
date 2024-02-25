@@ -9,7 +9,7 @@
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/single_ax_tree_manager.h"
+#include "ui/accessibility/test_single_ax_tree_manager.h"
 
 namespace ui {
 
@@ -21,7 +21,8 @@ constexpr int kLaps = 5000;
 constexpr int kWarmupLaps = 5;
 constexpr char kMetricCallsPerSecondRunsPerS[] = "calls_per_second";
 
-class AXPositionPerfTest : public ::testing::Test, public SingleAXTreeManager {
+class AXPositionPerfTest : public ::testing::Test,
+                           public TestSingleAXTreeManager {
  public:
   AXPositionPerfTest() = default;
 

@@ -427,10 +427,8 @@ bool FrameProcessor::ProcessFrames(
   // 1. For each coded frame in the media segment run the following steps:
   for (const auto& frame : frames) {
     // Skip any 0-byte audio or video buffers, since they cannot produce any
-    // valid decode output (and are rejected by FFmpeg A/V decode.) Retain
-    // 0-byte text buffers because their |side_data| just might be useful, and
-    // we don't feed them to FFmpeg later.
-    if (!frame->data_size() && frame->type() != DemuxerStream::TEXT) {
+    // valid decode output (and are rejected by FFmpeg A/V decode.)
+    if (!frame->data_size()) {
       LIMITED_MEDIA_LOG(DEBUG, media_log_, num_skipped_empty_frame_warnings_,
                         kMaxSkippedEmptyFrameWarnings)
           << "Discarding empty audio or video coded frame, PTS="
@@ -643,6 +641,10 @@ bool FrameProcessor::HandlePartialAppendWindowTrimming(
         (audio_preroll_buffer_->timestamp() +
          audio_preroll_buffer_->duration() - buffer->timestamp())
             .InMicroseconds();
+    // The only value that can't be converted with std::abs.
+    if (delta == std::numeric_limits<int64_t>::min()) {
+      return false;
+    }
     if (std::abs(delta) < sample_duration_.InMicroseconds() &&
         audio_preroll_buffer_->timestamp() <= buffer->timestamp()) {
       DVLOG(1) << "Attaching audio preroll buffer ["

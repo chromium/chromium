@@ -4,9 +4,10 @@
 
 #include "ui/gl/gl_display_egl_util.h"
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "base/scoped_environment_variable_override.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gl {
 
@@ -26,9 +27,9 @@ class GLDisplayEglUtilStub : public GLDisplayEglUtil {
 
   void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
                                               EGLint* buffer_size) override {}
-  absl::optional<base::ScopedEnvironmentVariableOverride>
+  std::optional<base::ScopedEnvironmentVariableOverride>
   MaybeGetScopedDisplayUnsetForVulkan() override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  private:

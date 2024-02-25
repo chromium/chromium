@@ -64,14 +64,14 @@ bool LocalWebMemoryMeasurer::ShouldMeasure(v8::Local<v8::Context> context) {
 }
 
 void LocalWebMemoryMeasurer::MeasurementComplete(
-    const std::vector<std::pair<v8::Local<v8::Context>, size_t>>& context_sizes,
-    size_t unattributed_size) {
-  DCHECK_LE(context_sizes.size(), 1u);
+    v8::MeasureMemoryDelegate::Result result) {
+  DCHECK_LE(result.contexts.size(), 1u);
+  DCHECK_LE(result.sizes_in_bytes.size(), 1u);
   // The isolate has only one context, so all memory of the isolate can be
   // attributed to that context.
-  size_t bytes = unattributed_size;
-  for (const auto& context_size : context_sizes) {
-    bytes += context_size.second;
+  size_t bytes = result.unattributed_size_in_bytes;
+  for (size_t size : result.sizes_in_bytes) {
+    bytes += size;
   }
   WebMemoryAttributionPtr attribution = WebMemoryAttribution::New();
   attribution->scope = attribution_scope_;

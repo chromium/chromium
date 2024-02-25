@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_manager.h"
@@ -133,10 +135,10 @@ class SystemUIComponentsGridView::GridLayout : public views::LayoutManager {
       return gfx::Size();
 
     // Preferred Size = Grid Size + Total Spacing + Border Size.
-    int width = std::accumulate(col_width_.begin(), col_width_.end(), 0) +
+    int width = std::reduce(col_width_.begin(), col_width_.end(), 0) +
                 (col_num_ - 1) / col_group_size_ * col_group_spacing_ +
                 border_insets_.width();
-    int height = std::accumulate(row_height_.begin(), row_height_.end(), 0) +
+    int height = std::reduce(row_height_.begin(), row_height_.end(), 0) +
                  (row_num_ - 1) / row_group_size_ * row_group_spacing_ +
                  border_insets_.height();
     return gfx::Size(width, height);
@@ -161,7 +163,7 @@ class SystemUIComponentsGridView::GridLayout : public views::LayoutManager {
     DCHECK(view);
 
     // Get the index of `view` in `children_`.
-    auto iter = std::find(children_.begin(), children_.end(), view);
+    auto iter = base::ranges::find(children_, view);
     DCHECK(iter != children_.end());
     const int view_index = std::distance(children_.begin(), iter);
 
@@ -176,7 +178,7 @@ class SystemUIComponentsGridView::GridLayout : public views::LayoutManager {
         break;
       }
 
-      const auto* child = children_[index];
+      const auto* child = children_[index].get();
       if (child) {
         row_height_[row_index] =
             std::max(row_height_[row_index],
@@ -190,7 +192,7 @@ class SystemUIComponentsGridView::GridLayout : public views::LayoutManager {
         break;
       }
 
-      const auto* child = children_[index];
+      const auto* child = children_[index].get();
       if (child) {
         col_width_[col_index] =
             std::max(col_width_[col_index],
@@ -220,7 +222,7 @@ class SystemUIComponentsGridView::GridLayout : public views::LayoutManager {
   int col_group_spacing_;
   gfx::Insets border_insets_;
 
-  std::vector<views::View*> children_;
+  std::vector<raw_ptr<views::View, VectorExperimental>> children_;
 };
 
 // -----------------------------------------------------------------------------

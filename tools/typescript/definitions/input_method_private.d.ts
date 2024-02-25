@@ -10,13 +10,32 @@ import {ChromeEvent} from './chrome_event.js';
 declare global {
   export namespace chrome {
     export namespace inputMethodPrivate {
+      export enum LanguagePackStatus {
+        UNKNOWN = 'unknown',
+        NOT_INSTALLED = 'notInstalled',
+        IN_PROGRESS = 'inProgress',
+        INSTALLED = 'installed',
+        ERROR_OTHER = 'errorOther',
+        ERROR_NEEDS_REBOOT = 'errorNeedsReboot',
+      }
+
+      export interface LanguagePackStatusChange {
+        engineIds: string[];
+        status: LanguagePackStatus;
+      }
+
       export function getCurrentInputMethod(): Promise<string>;
       export function setCurrentInputMethod(inputMethodId: string):
           Promise<void>;
 
       export function openOptionsPage(id: string): void;
 
+      export function getLanguagePackStatus(inputMethodId: string):
+          Promise<LanguagePackStatus>;
+
       export const onChanged: ChromeEvent<(newInputMethodId: string) => void>;
+      export const onLanguagePackStatusChanged:
+          ChromeEvent<(change: LanguagePackStatusChange) => void>;
     }
   }
 }

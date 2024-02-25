@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace input_method {
@@ -32,7 +33,7 @@ class MultiWordSuggester : public Suggester {
   void OnBlur() override;
   void OnExternalSuggestionsUpdated(
       const std::vector<ime::AssistiveSuggestion>& suggestions,
-      const absl::optional<ime::SuggestionsTextContext>& context) override;
+      const std::optional<ime::SuggestionsTextContext>& context) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool TrySuggestWithSurroundingText(const std::u16string& text,
                                      gfx::Range selection_range) override;
@@ -115,7 +116,7 @@ class MultiWordSuggester : public Suggester {
     bool IsSuggestionHighlighted();
 
     // Returns the current suggestion state if there is any available.
-    absl::optional<Suggestion> GetSuggestion();
+    std::optional<Suggestion> GetSuggestion();
 
     // Returns the last suggestion type shown to the user. This suggestion may,
     // or may not, be currently showing to the user.
@@ -126,16 +127,16 @@ class MultiWordSuggester : public Suggester {
 
    private:
     // Not owned by this class
-    raw_ptr<MultiWordSuggester, ExperimentalAsh> suggester_;
+    raw_ptr<MultiWordSuggester> suggester_;
 
     // The current state of the suggester (eg is a suggestion shown or not).
     State state_ = State::kNoSuggestionShown;
 
     // Last known surrounding text context captured by the suggester.
-    absl::optional<SurroundingText> surrounding_text_;
+    std::optional<SurroundingText> surrounding_text_;
 
     // The current suggestion shown to the user by the suggester.
-    absl::optional<Suggestion> suggestion_;
+    std::optional<Suggestion> suggestion_;
 
     // The last suggestion type shown to the user.
     AssistiveType last_suggestion_type_ = AssistiveType::kGenericAction;
@@ -153,11 +154,10 @@ class MultiWordSuggester : public Suggester {
   void Announce(const std::u16string& message);
 
   // The currently focused input (nullopt if none are focused)
-  absl::optional<int> focused_context_id_;
+  std::optional<int> focused_context_id_;
 
   // Not owned by this class
-  raw_ptr<SuggestionHandlerInterface, DanglingUntriaged | ExperimentalAsh>
-      suggestion_handler_;
+  raw_ptr<SuggestionHandlerInterface, DanglingUntriaged> suggestion_handler_;
 
   // Current suggestion state
   SuggestionState state_;
@@ -165,7 +165,7 @@ class MultiWordSuggester : public Suggester {
   ui::ime::AssistiveWindowButton suggestion_button_;
 
   // The current user's Chrome user profile.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace input_method

@@ -2,19 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserApi, ZoomBehavior} from './browser_api.js';
-import {FittingType, Point} from './constants.js';
-import {ContentController, MessageData, PluginController, PluginControllerEventType} from './controller.js';
+import type {BrowserApi} from './browser_api.js';
+import {ZoomBehavior} from './browser_api.js';
+import type {Point} from './constants.js';
+import {FittingType} from './constants.js';
+import type {ContentController, MessageData} from './controller.js';
+import {PluginController, PluginControllerEventType} from './controller.js';
 import {record, recordFitTo, UserAction} from './metrics.js';
-import {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
-import {LoadState, SerializedKeyEvent} from './pdf_scripting_api.js';
-import {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
+import type {OpenPdfParams} from './open_pdf_params_parser.js';
+import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
+import type {SerializedKeyEvent} from './pdf_scripting_api.js';
+import {LoadState} from './pdf_scripting_api.js';
+import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {Viewport} from './viewport.js';
 import {ViewportScroller} from './viewport_scroller.js';
 import {ZoomManager} from './zoom_manager.js';
@@ -54,6 +59,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
   protected lastViewportPosition: Point|null = null;
   protected originalUrl: string = '';
   protected paramsParser: OpenPdfParamsParser|null = null;
+  protected pdfOopifEnabled: boolean = false;
   showErrorDialog: boolean;
   protected strings?: {[key: string]: string};
   protected tracker: EventTracker = new EventTracker();
@@ -117,15 +123,20 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
       plugin.toggleAttribute('pdf-viewer-update-enabled', true);
     }
 
-    // Pass the attributes for loading PDF plugin through the
-    // `mimeHandlerPrivate` API.
+    // Pass the attributes for loading PDF plugin through the `pdfViewerPrivate`
+    // API if OOPIF PDF is enabled, or the `mimeHandlerPrivate` API.
     const attributesForLoading:
         chrome.mimeHandlerPrivate.PdfPluginAttributes = {
       backgroundColor: this.getBackgroundColor(),
       allowJavascript: javascript === 'allow',
     };
-    if (chrome.mimeHandlerPrivate &&
-        chrome.mimeHandlerPrivate.setPdfPluginAttributes) {
+
+    // PDF viewer only, as Print Preview doesn't set PDF plugin attributes.
+    if (this.pdfOopifEnabled) {
+      if (chrome.pdfViewerPrivate) {
+        chrome.pdfViewerPrivate.setPdfPluginAttributes(attributesForLoading);
+      }
+    } else if (chrome.mimeHandlerPrivate) {
       chrome.mimeHandlerPrivate.setPdfPluginAttributes(attributesForLoading);
     }
 
@@ -146,6 +157,8 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
       content: HTMLElement) {
     this.browserApi = browserApi;
     this.originalUrl = this.browserApi!.getStreamInfo().originalUrl;
+    this.pdfOopifEnabled =
+        document.documentElement.hasAttribute('pdfOopifEnabled');
 
     record(UserAction.DOCUMENT_OPENED);
 

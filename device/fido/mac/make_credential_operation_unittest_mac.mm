@@ -43,7 +43,7 @@ CtapMakeCredentialRequest MakeTestRequest() {
 TEST(MakeCredentialOperationTest, DISABLED_TestRun) {
   base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<CtapDeviceResponseCode,
-                       absl::optional<AuthenticatorMakeCredentialResponse>>
+                       std::optional<AuthenticatorMakeCredentialResponse>>
       callback_receiver;
   auto request = MakeTestRequest();
   TouchIdCredentialStore credential_store(

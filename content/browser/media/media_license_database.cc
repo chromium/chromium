@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
 
 namespace content {
@@ -20,6 +21,10 @@ namespace {
 
 static const int kVersionNumber = 1;
 
+const char kUmaPrefix[] = "Media.EME.MediaLicenseDatabaseSQLiteError";
+const char kUmaPrefixWithPeriod[] =
+    "Media.EME.MediaLicenseDatabaseSQLiteError.";
+
 }  // namespace
 
 MediaLicenseDatabase::MediaLicenseDatabase(const base::FilePath& path)
@@ -29,9 +34,9 @@ MediaLicenseDatabase::MediaLicenseDatabase(const base::FilePath& path)
       // bytes) and that we'll typically only be pulling one file at a time
       // (playback), specify a large page size to allow inner nodes can pack
       // many keys, to keep the index B-tree flat.
-      db_(sql::DatabaseOptions{.exclusive_locking = true,
-                               .page_size = 32768,
-                               .cache_size = 8}) {}
+      db_(sql::DatabaseOptions{.page_size = 32768, .cache_size = 8}) {}
+
+MediaLicenseDatabase::~MediaLicenseDatabase() = default;
 
 MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenFile(
     const media::CdmType& cdm_type,
@@ -44,18 +49,20 @@ MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenFile(
   return OpenDatabase();
 }
 
-absl::optional<std::vector<uint8_t>> MediaLicenseDatabase::ReadFile(
+std::optional<std::vector<uint8_t>> MediaLicenseDatabase::ReadFile(
     const media::CdmType& cdm_type,
     const std::string& file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (OpenDatabase() != MediaLicenseStorageHostOpenError::kOk) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static constexpr char kSelectSql[] =
       "SELECT data FROM licenses WHERE cdm_type=? AND file_name=?";
   DCHECK(db_.IsSQLValid(kSelectSql));
+
+  last_operation_ = "ReadFile";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindString(0, cdm_type.ToString());
@@ -72,9 +79,10 @@ absl::optional<std::vector<uint8_t>> MediaLicenseDatabase::ReadFile(
   std::vector<uint8_t> data;
   if (!statement.ColumnBlobAsVector(0, &data)) {
     DVLOG(1) << "Error reading media license data.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
+  last_operation_.reset();
   return data;
 }
 
@@ -94,6 +102,9 @@ bool MediaLicenseDatabase::WriteFile(const media::CdmType& cdm_type,
   // clang-format on
   DCHECK(db_.IsSQLValid(kInsertSql));
 
+  last_operation_ = "WriteFile";
+  last_write_file_size_ = data.size();
+
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
   statement.BindString(0, cdm_type.ToString());
   statement.BindString(1, file_name);
@@ -103,6 +114,7 @@ bool MediaLicenseDatabase::WriteFile(const media::CdmType& cdm_type,
   if (!success)
     DVLOG(1) << "Error writing media license data.";
 
+  last_operation_.reset();
   return success;
 }
 
@@ -118,6 +130,8 @@ bool MediaLicenseDatabase::DeleteFile(const media::CdmType& cdm_type,
       "DELETE FROM licenses WHERE cdm_type=? AND file_name=?";
   DCHECK(db_.IsSQLValid(kDeleteSql));
 
+  last_operation_ = "DeleteFile";
+
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
   statement.BindString(0, cdm_type.ToString());
   statement.BindString(1, file_name);
@@ -126,6 +140,7 @@ bool MediaLicenseDatabase::DeleteFile(const media::CdmType& cdm_type,
   if (!success)
     DVLOG(1) << "Error writing media license data.";
 
+  last_operation_.reset();
   return success;
 }
 
@@ -141,6 +156,36 @@ bool MediaLicenseDatabase::ClearDatabase() {
   }
 
   return sql::Database::Delete(path_);
+}
+
+uint64_t MediaLicenseDatabase::GetDatabaseSize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static constexpr char kPageCountSql[] = "PRAGMA page_count";
+  DCHECK(db_.IsSQLValid(kPageCountSql));
+
+  last_operation_ = "QueryPageCount";
+
+  sql::Statement statement_count(
+      db_.GetCachedStatement(SQL_FROM_HERE, kPageCountSql));
+  statement_count.Step();
+
+  uint64_t page_count = statement_count.ColumnInt(0);
+
+  static constexpr char kPageSizeSql[] = "PRAGMA page_size";
+  DCHECK(db_.IsSQLValid(kPageSizeSql));
+
+  last_operation_ = "QueryPageSize";
+
+  sql::Statement statement_size(
+      db_.GetCachedStatement(SQL_FROM_HERE, kPageSizeSql));
+  statement_size.Step();
+
+  uint64_t page_size = statement_size.ColumnInt(0);
+
+  last_operation_.reset();
+
+  return page_count * page_size;
 }
 
 // Opens and sets up a database if one is not already set up.
@@ -228,8 +273,25 @@ MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenDatabase(
 void MediaLicenseDatabase::OnDatabaseError(int error, sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sql::UmaHistogramSqliteResult("Media.EME.MediaLicenseDatabaseSQLiteError",
-                                error);
+  sql::UmaHistogramSqliteResult(kUmaPrefix, error);
+
+  if (last_operation_) {
+    sql::UmaHistogramSqliteResult(kUmaPrefixWithPeriod + *last_operation_,
+                                  error);
+
+    // Log the size of the data in bytes if the error was a full disk error to
+    // track size of data being rejected by the MediaLicenseDatabase.
+    if (last_operation_ == "WriteFile" &&
+        sql::ToSqliteResultCode(error) == sql::SqliteResultCode::kFullDisk &&
+        last_write_file_size_) {
+      base::UmaHistogramCustomCounts(
+          "Media.EME.MediaLicenseDatabase.WriteFile.FullDiskDataSizeBytes",
+          last_write_file_size_.value(), /*min=*/1,
+          /*exclusive_max=*/60 * 1024, /*buckets=*/100);
+    }
+
+    last_operation_.reset();
+  }
 }
 
 }  // namespace content

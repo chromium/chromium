@@ -27,6 +27,8 @@
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
+#include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 
 namespace ash {
 namespace phonehub {
@@ -102,7 +104,9 @@ class FakePhoneHubManager : public PhoneHubManager {
 
   FakePingManager* fake_ping_manager() { return &fake_ping_manager_; }
 
-  void set_host_last_seen_timestamp(absl::optional<base::Time> timestamp) {
+  FakeIconDecoder* fake_icon_decoder() { return &fake_icon_decoder_; }
+
+  void set_host_last_seen_timestamp(std::optional<base::Time> timestamp) {
     host_last_seen_timestamp_ = timestamp;
   }
 
@@ -132,9 +136,10 @@ class FakePhoneHubManager : public PhoneHubManager {
   ConnectionScheduler* GetConnectionScheduler() override;
   UserActionRecorder* GetUserActionRecorder() override;
   void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) override;
   IconDecoder* GetIconDecoder() override;
   AppStreamManager* GetAppStreamManager() override;
+  PhoneHubUiReadinessRecorder* GetPhoneHubUiReadinessRecorder() override;
   eche_app::EcheConnectionStatusHandler* GetEcheConnectionStatusHandler()
       override;
   void SetEcheConnectionStatusHandler(
@@ -143,6 +148,8 @@ class FakePhoneHubManager : public PhoneHubManager {
   void SetSystemInfoProvider(
       eche_app::SystemInfoProvider* system_info_provider) override;
   eche_app::SystemInfoProvider* GetSystemInfoProvider() override;
+  PhoneHubStructuredMetricsLogger* GetPhoneHubStructuredMetricsLogger()
+      override;
 
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
@@ -163,12 +170,15 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakePingManager fake_ping_manager_;
   FakeIconDecoder fake_icon_decoder_;
   AppStreamManager app_stream_manager_;
-  raw_ptr<eche_app::EcheConnectionStatusHandler,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_ =
+      nullptr;
+  raw_ptr<PhoneHubStructuredMetricsLogger>
+      phone_hub_structured_metrics_logger_ = nullptr;
+  raw_ptr<eche_app::EcheConnectionStatusHandler, DanglingUntriaged>
       eche_connection_status_handler_ = nullptr;
-  raw_ptr<eche_app::SystemInfoProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<eche_app::SystemInfoProvider, DanglingUntriaged>
       system_info_provider_ = nullptr;
-  absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;
+  std::optional<base::Time> host_last_seen_timestamp_ = std::nullopt;
 };
 
 }  // namespace phonehub

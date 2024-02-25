@@ -32,6 +32,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.R;
 import org.chromium.chrome.browser.recent_tabs.ui.TabItemViewBinder.BindContext;
@@ -47,13 +48,10 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabItemViewBinderUnitTest {
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    FaviconHelper.Natives mFaviconHelperJniMock;
-    @Mock
-    Profile mProfile;
+    @Mock FaviconHelper.Natives mFaviconHelperJniMock;
+    @Mock Profile mProfile;
 
     private Activity mActivity;
     private View mTabItemView;
@@ -65,30 +63,42 @@ public class TabItemViewBinderUnitTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         jniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mFaviconHelper = new FaviconHelper();
-        mBindContext = new BindContext(new DefaultFaviconHelper(),
-                FaviconUtils.createCircularIconGenerator(mActivity), mFaviconHelper, mProfile);
+        mBindContext =
+                new BindContext(
+                        new DefaultFaviconHelper(),
+                        FaviconUtils.createCircularIconGenerator(mActivity),
+                        mFaviconHelper,
+                        mProfile);
 
-        mTabItemView = LayoutInflater.from(mActivity).inflate(
-                R.layout.restore_tabs_tab_item, /*root=*/null);
+        mTabItemView =
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.restore_tabs_tab_item, /* root= */ null);
 
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(FOREIGN_SESSION_TAB,
-                                 new ForeignSessionTab(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1),
-                                         "title", 32L, 0))
-                         .with(IS_SELECTED, true)
-                         .with(ON_CLICK_LISTENER,
-                                 () -> { mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED)); })
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(
+                                FOREIGN_SESSION_TAB,
+                                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0))
+                        .with(IS_SELECTED, true)
+                        .with(
+                                ON_CLICK_LISTENER,
+                                () -> {
+                                    mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED));
+                                })
+                        .build();
 
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mModel, mTabItemView, (tabModel, tabView, tabPropertyKey) -> {
-                    TabItemViewBinder.bind(tabModel, tabView, tabPropertyKey, mBindContext);
-                });
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel,
+                        mTabItemView,
+                        (tabModel, tabView, tabPropertyKey) -> {
+                            TabItemViewBinder.bind(tabModel, tabView, tabPropertyKey, mBindContext);
+                        });
     }
 
     @After

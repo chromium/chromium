@@ -5,11 +5,16 @@
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 
 #include "ash/shell.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
+#include "components/app_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
+#include "content/public/test/test_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget.h"
 
@@ -90,6 +95,26 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList(
   }
 
   return apps;
+}
+
+// static
+void AppLaunchInfoSaveWaiter::Wait(bool allow_save) {
+  ::full_restore::FullRestoreSaveHandler* save_handler =
+      ::full_restore::FullRestoreSaveHandler::GetInstance();
+
+  if (allow_save) {
+    save_handler->AllowSave();
+  }
+
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+  if (timer->IsRunning()) {
+    // Simulate timeout, and the launch info is saved.
+    timer->FireNow();
+  }
+  content::RunAllTasksUntilIdle();
+
+  ::full_restore::FullRestoreReadHandler::GetInstance()
+      ->profile_path_to_restore_data_.clear();
 }
 
 }  // namespace ash

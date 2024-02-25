@@ -62,7 +62,7 @@ class TpmChallengeKeyTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  raw_ptr<MockTpmChallengeKeySubtle, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockTpmChallengeKeySubtle, DanglingUntriaged>
       mock_tpm_challenge_key_subtle_ = nullptr;
   std::unique_ptr<TpmChallengeKey> challenge_key_;
   // In the current implementation of TpmChallengeKey the profile is just
@@ -91,7 +91,7 @@ class CallbackObserver {
   }
 
   base::RunLoop loop_;
-  absl::optional<TpmChallengeKeyResult> result_;
+  std::optional<TpmChallengeKeyResult> result_;
 };
 
 TEST_F(TpmChallengeKeyTest, PrepareKeyFailed) {
@@ -112,7 +112,7 @@ TEST_F(TpmChallengeKeyTest, PrepareKeyFailed) {
   challenge_key_->BuildResponse(kFlowType, &profile_,
                                 callback_observer.GetCallback(), GetChallenge(),
                                 kRegisterKey, ::attestation::KEY_TYPE_RSA,
-                                kKeyName, /*signals=*/absl::nullopt);
+                                kKeyName, /*signals=*/std::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(callback_observer.GetResult(),
@@ -143,7 +143,7 @@ TEST_F(TpmChallengeKeyTest, SignChallengeFailed) {
   challenge_key_->BuildResponse(kFlowType, &profile_,
                                 callback_observer.GetCallback(), GetChallenge(),
                                 kRegisterKey, ::attestation::KEY_TYPE_RSA,
-                                kKeyName, /*signals=*/absl::nullopt);
+                                kKeyName, /*signals=*/std::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(callback_observer.GetResult(),
@@ -179,7 +179,7 @@ TEST_F(TpmChallengeKeyTest, RegisterKeyFailed) {
   challenge_key_->BuildResponse(kFlowType, &profile_,
                                 callback_observer.GetCallback(), GetChallenge(),
                                 kRegisterKey, ::attestation::KEY_TYPE_RSA,
-                                kKeyName, /*signals=*/absl::nullopt);
+                                kKeyName, /*signals=*/std::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(callback_observer.GetResult(),
@@ -214,7 +214,7 @@ TEST_F(TpmChallengeKeyTest, DontRegisterSuccess) {
   challenge_key_->BuildResponse(kFlowType, &profile_,
                                 callback_observer.GetCallback(), GetChallenge(),
                                 kRegisterKey, ::attestation::KEY_TYPE_RSA,
-                                kKeyName, /*signals=*/absl::nullopt);
+                                kKeyName, /*signals=*/std::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(
@@ -249,7 +249,7 @@ TEST_F(TpmChallengeKeyTest, RegisterSuccess) {
   challenge_key_->BuildResponse(kFlowType, &profile_,
                                 callback_observer.GetCallback(), GetChallenge(),
                                 kRegisterKey, ::attestation::KEY_TYPE_RSA,
-                                kKeyName, /*signals=*/absl::nullopt);
+                                kKeyName, /*signals=*/std::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(

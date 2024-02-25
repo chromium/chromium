@@ -120,8 +120,8 @@ std::unique_ptr<VideoDecoder> VdaVideoDecoder::Create(
       std::move(media_log), target_color_space,
       base::BindOnce(&PictureBufferManager::Create,
                      /*allocate_gpu_memory_buffers=*/output_mode ==
-                         VideoDecodeAccelerator::Config::OutputMode::IMPORT),
-      output_mode == VideoDecodeAccelerator::Config::OutputMode::ALLOCATE
+                         VideoDecodeAccelerator::Config::OutputMode::kImport),
+      output_mode == VideoDecodeAccelerator::Config::OutputMode::kAllocate
           ? base::BindOnce(&CreateCommandBufferHelper, std::move(get_stub_cb))
           : base::NullCallback(),
       base::BindRepeating(&CreateAndInitializeVda, gpu_preferences,
@@ -344,7 +344,7 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
 
   // Set up |command_buffer_helper_|.
   if (!reinitializing_) {
-    if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::ALLOCATE) {
+    if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kAllocate) {
       command_buffer_helper_ =
           std::move(create_command_buffer_helper_cb_).Run();
       if (!command_buffer_helper_) {
@@ -517,7 +517,7 @@ bool VdaVideoDecoder::FramesHoldExternalResources() const {
   DVLOG(3) << __func__;
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
 
-  return output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT;
+  return output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kImport;
 }
 
 void VdaVideoDecoder::NotifyInitializationComplete(DecoderStatus status) {
@@ -530,46 +530,41 @@ void VdaVideoDecoder::NotifyInitializationComplete(DecoderStatus status) {
 
 void VdaVideoDecoder::ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                                             VideoPixelFormat format,
-                                            uint32_t textures_per_buffer,
                                             const gfx::Size& dimensions,
                                             uint32_t texture_target) {
   DVLOG(2) << __func__ << "(" << requested_num_of_buffers << ", " << format
-           << ", " << textures_per_buffer << ", " << dimensions.ToString()
-           << ", " << texture_target << ")";
+           << ", " << dimensions.ToString() << ", " << texture_target << ")";
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   DCHECK(vda_initialized_);
 
   gpu_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VdaVideoDecoder::ProvidePictureBuffersAsync,
-                     gpu_weak_this_, requested_num_of_buffers, format,
-                     textures_per_buffer, dimensions, texture_target));
+      FROM_HERE, base::BindOnce(&VdaVideoDecoder::ProvidePictureBuffersAsync,
+                                gpu_weak_this_, requested_num_of_buffers,
+                                format, dimensions, texture_target));
 }
 
 void VdaVideoDecoder::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     VideoPixelFormat format,
-    uint32_t textures_per_buffer,
     const gfx::Size& dimensions,
     const gfx::Rect& visible_rect,
     uint32_t texture_target) {
-  if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT) {
+  if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kImport) {
     // In IMPORT mode, we (as the client of the underlying VDA) are responsible
     // for buffer allocation with no textures (i.e., |texture_target| is
     // irrelevant). Therefore, the logic in the base version of
     // ProvidePictureBuffersWithVisibleRect() is not applicable.
-    ProvidePictureBuffers(requested_num_of_buffers, format, textures_per_buffer,
-                          dimensions, texture_target);
+    ProvidePictureBuffers(requested_num_of_buffers, format, dimensions,
+                          texture_target);
     return;
   }
   VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
-      requested_num_of_buffers, format, textures_per_buffer, dimensions,
-      visible_rect, texture_target);
+      requested_num_of_buffers, format, dimensions, visible_rect,
+      texture_target);
 }
 
 void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
                                                  VideoPixelFormat pixel_format,
-                                                 uint32_t planes,
                                                  gfx::Size texture_size,
                                                  GLenum texture_target) {
   DVLOG(2) << __func__;
@@ -585,8 +580,8 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
 
   std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
       picture_buffers_and_gmbs = picture_buffer_manager_->CreatePictureBuffers(
-          count, pixel_format, planes, texture_size, texture_target,
-          output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT
+          count, pixel_format, texture_size, texture_target,
+          output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kImport
               ? VideoDecodeAccelerator::TextureAllocationMode::
                     kDoNotAllocateGLTextures
               : vda_->GetSharedImageTextureAllocationMode());
@@ -604,7 +599,7 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
   }
   vda_->AssignPictureBuffers(std::move(picture_buffers));
 
-  if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT) {
+  if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kImport) {
     for (auto& picture_buffer_and_gmb : picture_buffers_and_gmbs) {
       vda_->ImportBufferForPicture(picture_buffer_and_gmb.first.id(),
                                    pixel_format,
@@ -825,12 +820,12 @@ void VdaVideoDecoder::NotifyError(VideoDecodeAccelerator::Error error) {
 }
 
 gpu::SharedImageStub* VdaVideoDecoder::GetSharedImageStub() const {
-  DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
+  DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::kAllocate);
   return command_buffer_helper_->GetSharedImageStub();
 }
 
 CommandBufferHelper* VdaVideoDecoder::GetCommandBufferHelper() const {
-  DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
+  DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::kAllocate);
   return command_buffer_helper_.get();
 }
 

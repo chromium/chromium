@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_utils.h"
 
 namespace ui {
 
@@ -41,6 +42,12 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   // Gets the ColorMode currently associated with this source.
   ColorProviderKey::ColorMode GetColorMode() const;
 
+  // Gets the RendererColorMap corresponding to the ColorProvider for the
+  // `color_mode` and `forced_colors`.
+  virtual const RendererColorMap GetRendererColorMap(
+      ColorProviderKey::ColorMode color_mode,
+      ColorProviderKey::ForcedColors forced_colors) const = 0;
+
   base::ObserverList<ColorProviderSourceObserver>& observers_for_testing() {
     return observers_;
   }
@@ -56,4 +63,4 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
 
 }  // namespace ui
 
-#endif  // UI_COLOR_COLOR_PROVIDER_H_
+#endif  // UI_COLOR_COLOR_PROVIDER_SOURCE_H_

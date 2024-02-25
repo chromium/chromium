@@ -41,19 +41,21 @@ class ASH_EXPORT UnifiedMediaControlsController
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override;
+      const std::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const absl::optional<base::UnguessableToken>& request_id) override;
+      const std::optional<base::UnguessableToken>& request_id) override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override {}
+      const std::optional<media_session::MediaPosition>& position) override {}
 
   // media_session::mojom::MediaControllerImageObserver implementations.
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override {}
 
   views::View* CreateView();
 
@@ -85,12 +87,11 @@ class ASH_EXPORT UnifiedMediaControlsController
   void MaybeShowMediaControlsOrEmptyState();
 
   // Weak ptr, owned by view hierarchy.
-  raw_ptr<UnifiedMediaControlsView, DanglingUntriaged | ExperimentalAsh>
-      media_controls_ = nullptr;
+  raw_ptr<UnifiedMediaControlsView, DanglingUntriaged> media_controls_ =
+      nullptr;
 
   // Delegate for show/hide media controls.
-  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ =
-      nullptr;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
 
@@ -106,7 +107,7 @@ class ASH_EXPORT UnifiedMediaControlsController
   std::unique_ptr<base::OneShotTimer> hide_artwork_timer_ =
       std::make_unique<base::OneShotTimer>();
 
-  absl::optional<base::UnguessableToken> media_session_id_;
+  std::optional<base::UnguessableToken> media_session_id_;
 
   media_session::mojom::MediaSessionInfoPtr session_info_;
 
@@ -115,13 +116,13 @@ class ASH_EXPORT UnifiedMediaControlsController
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
 
   // Pending data to update when |freeze_session_tmier_| fired.
-  absl::optional<base::UnguessableToken> pending_session_id_;
-  absl::optional<media_session::mojom::MediaSessionInfoPtr>
+  std::optional<base::UnguessableToken> pending_session_id_;
+  std::optional<media_session::mojom::MediaSessionInfoPtr>
       pending_session_info_;
-  absl::optional<media_session::MediaMetadata> pending_metadata_;
-  absl::optional<base::flat_set<media_session::mojom::MediaSessionAction>>
+  std::optional<media_session::MediaMetadata> pending_metadata_;
+  std::optional<base::flat_set<media_session::mojom::MediaSessionAction>>
       pending_enabled_actions_;
-  absl::optional<SkBitmap> pending_artwork_;
+  std::optional<SkBitmap> pending_artwork_;
 };
 
 }  // namespace ash

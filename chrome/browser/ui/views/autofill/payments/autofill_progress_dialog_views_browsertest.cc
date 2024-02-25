@@ -7,14 +7,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/autofill_progress_dialog_views.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/widget_test.h"
 
@@ -46,24 +48,32 @@ class AutofillProgressDialogViewsBrowserTest
   }
 
   void ShowUi(const std::string& name) override {
-    controller()->ShowDialog(GetDialogType(), base::DoNothing());
+    controller()->ShowDialog(
+        GetDialogType(),
+        base::BindOnce(&CreateAndShowProgressDialog, controller()->GetWeakPtr(),
+                       base::Unretained(web_contents())),
+        base::DoNothing());
   }
 
   AutofillProgressDialogViews* GetDialogViews() {
     DCHECK(controller());
 
-    AutofillProgressDialogView* dialog_view =
+    base::WeakPtr<AutofillProgressDialogView> dialog_view =
         controller()->autofill_progress_dialog_view();
     if (!dialog_view)
       return nullptr;
 
-    return static_cast<AutofillProgressDialogViews*>(dialog_view);
+    return static_cast<AutofillProgressDialogViews*>(dialog_view.get());
   }
 
-  AutofillProgressDialogControllerImpl* controller() {
-    auto* client = ChromeAutofillClient::FromWebContentsForTesting(
-        browser()->tab_strip_model()->GetActiveWebContents());
+  AutofillProgressDialogControllerImpl* controller() const {
+    auto* client =
+        ChromeAutofillClient::FromWebContentsForTesting(web_contents());
     return client->AutofillProgressDialogControllerForTesting();
+  }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 };
 
@@ -84,7 +94,7 @@ IN_PROC_BROWSER_TEST_P(AutofillProgressDialogViewsBrowserTest,
   base::HistogramTester histogram_tester;
   ShowUi(GetDialogTypeStringForLogging());
   VerifyUi();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  web_contents()->Close();
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Autofill.ProgressDialog.", GetDialogTypeStringForLogging(),

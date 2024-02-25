@@ -22,7 +22,8 @@ import androidx.annotation.RequiresApi;
 import dalvik.system.BaseDexClassLoader;
 import dalvik.system.PathClassLoader;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
@@ -129,9 +130,7 @@ public class BundleUtils {
         return getSplitApkPath(splitName) != null;
     }
 
-    /**
-     * The lock to hold when calling {@link Context#createContextForSplit(String)}.
-     */
+    /** The lock to hold when calling {@link Context#createContextForSplit(String)}. */
     public static Object getSplitContextLock() {
         return sSplitLock;
     }
@@ -172,9 +171,11 @@ public class BundleUtils {
             // cache, see b/172602571. This should be solved for the chrome ClassLoader by
             // SplitCompatAppComponentFactory, but modules which depend on the chrome module need
             // special handling here to make sure they have the correct parent.
-            boolean shouldReplaceClassLoader = isolatedSplitsEnabled()
-                    && !parent.equals(BundleUtils.class.getClassLoader()) && appContext != null
-                    && !parent.equals(appContext.getClassLoader());
+            boolean shouldReplaceClassLoader =
+                    isolatedSplitsEnabled()
+                            && !parent.equals(BundleUtils.class.getClassLoader())
+                            && appContext != null
+                            && !parent.equals(appContext.getClassLoader());
             synchronized (sCachedClassLoaders) {
                 if (shouldReplaceClassLoader && !sCachedClassLoaders.containsKey(splitName)) {
                     String apkPath = getSplitApkPath(splitName);
@@ -229,8 +230,9 @@ public class BundleUtils {
             // Due to b/171269960 isolated split class loaders have an empty library path, so check
             // the base module class loader first which loaded BundleUtils. If the library is not
             // found there, attempt to construct the correct library path from the split.
-            String path = ((BaseDexClassLoader) BundleUtils.class.getClassLoader())
-                                  .findLibrary(libraryName);
+            String path =
+                    ((BaseDexClassLoader) BundleUtils.class.getClassLoader())
+                            .findLibrary(libraryName);
             if (path != null) {
                 return path;
             }
@@ -256,7 +258,9 @@ public class BundleUtils {
         ClassLoader activityClassLoader = activity.getClass().getClassLoader();
         ClassLoader contextClassLoader = baseContext.getClassLoader();
         if (activityClassLoader != contextClassLoader) {
-            Log.w(TAG, "Mismatched ClassLoaders between Activity and context (fixing): %s",
+            Log.w(
+                    TAG,
+                    "Mismatched ClassLoaders between Activity and context (fixing): %s",
                     activity.getClass());
             replaceClassLoader(baseContext, activityClassLoader);
         }
@@ -385,9 +389,7 @@ public class BundleUtils {
             return null;
         }
 
-        /**
-         * Loads the class with the specified binary name.
-         */
+        /** Loads the class with the specified binary name. */
         @Override
         public Class<?> findClass(String cn) throws ClassNotFoundException {
             Class<?> foundClass = checkSplitsClassLoaders(cn);
@@ -408,7 +410,10 @@ public class BundleUtils {
                         return foundClass;
                     }
                 }
-                Log.w(TAG, "No class %s amongst %s", cn,
+                Log.w(
+                        TAG,
+                        "No class %s amongst %s",
+                        cn,
                         TextUtils.join("\n", sInflationClassLoaders.keySet()));
             }
             throw new ClassNotFoundException(cn);

@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -178,7 +178,7 @@ struct EncodedLogo {
 };
 using EncodedLogoCallback =
     base::OnceCallback<void(LogoCallbackReason type,
-                            const absl::optional<EncodedLogo>& logo)>;
+                            const std::optional<EncodedLogo>& logo)>;
 
 struct Logo {
   Logo();
@@ -192,7 +192,7 @@ struct Logo {
   LogoMetadata metadata;
 };
 using LogoCallback = base::OnceCallback<void(LogoCallbackReason type,
-                                             const absl::optional<Logo>& logo)>;
+                                             const std::optional<Logo>& logo)>;
 
 struct LogoCallbacks {
   EncodedLogoCallback on_cached_encoded_logo_available;

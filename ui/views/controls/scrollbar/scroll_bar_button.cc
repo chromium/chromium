@@ -113,7 +113,7 @@ void ScrollBarButton::RepeaterNotifyClick() {
   Button::NotifyClick(event);
 }
 
-BEGIN_METADATA(ScrollBarButton, Button)
+BEGIN_METADATA(ScrollBarButton)
 END_METADATA
 
 }  // namespace views

@@ -32,13 +32,12 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for the DecoderServiceHost.
- */
+/** Tests for the DecoderServiceHost. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusCallback,
-                                               DecoderServiceHost.ImagesDecodedCallback {
+public class DecoderServiceHostTest
+        implements DecoderServiceHost.DecoderStatusCallback,
+                DecoderServiceHost.ImagesDecodedCallback {
     // The timeout (in milliseconds) to wait for the decoding.
     private static final int WAIT_TIMEOUT_MS = 7500;
 
@@ -68,10 +67,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         mContext = InstrumentationRegistry.getTargetContext();
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DecoderServiceHost.setIntentSupplier(
-                    () -> { return new Intent(mContext, TestImageDecoderService.class); });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DecoderServiceHost.setIntentSupplier(
+                            () -> {
+                                return new Intent(mContext, TestImageDecoderService.class);
+                            });
+                });
 
         DecoderServiceHost.setStatusCallback(this);
     }
@@ -91,8 +93,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     // DecoderServiceHost.ImagesDecodedCallback:
 
     @Override
-    public void imagesDecodedCallback(String filePath, boolean isVideo, boolean isZoomedIn,
-            List<Bitmap> bitmaps, String videoDuration, float ratio) {
+    public void imagesDecodedCallback(
+            String filePath,
+            boolean isVideo,
+            boolean isZoomedIn,
+            List<Bitmap> bitmaps,
+            String videoDuration,
+            float ratio) {
         mLastDecodedPath = filePath;
         mLastIsVideo = isVideo;
         mLastFrameCount = bitmaps != null ? bitmaps.size() : -1;
@@ -119,8 +126,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         mOnDecodedCallback.waitForCallback(callCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
-    private void decodeImage(DecoderServiceHost host, Uri uri, @PickerBitmap.TileTypes int fileType,
-            int width, boolean fullWidth, DecoderServiceHost.ImagesDecodedCallback callback) {
+    private void decodeImage(
+            DecoderServiceHost host,
+            Uri uri,
+            @PickerBitmap.TileTypes int fileType,
+            int width,
+            boolean fullWidth,
+            DecoderServiceHost.ImagesDecodedCallback callback) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> host.decodeImage(uri, fileType, width, fullWidth, callback));
     }
@@ -141,64 +153,130 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         DecoderServiceHost.DecoderServiceParams lowerPri;
 
         // Still image decoding has higher priority than first frame video decoding.
-        higherPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.PICTURE,
-                /* firstFrame= */ true, callback);
-        lowerPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.VIDEO,
-                /* firstFrame= */ true, callback);
+        higherPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.PICTURE,
+                        /* firstFrame= */ true,
+                        callback);
+        lowerPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.VIDEO,
+                        /* firstFrame= */ true,
+                        callback);
         DecoderServiceHost host = new DecoderServiceHost(this, mContext);
-        Assert.assertTrue("Still images have priority over requests for initial video frame",
+        Assert.assertTrue(
+                "Still images have priority over requests for initial video frame",
                 host.mRequestComparator.compare(higherPri, lowerPri) < 0);
 
         // Still image decoding has higher priority than decoding remaining video frames.
-        higherPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.PICTURE,
-                /* firstFrame= */ true, callback);
-        lowerPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.VIDEO,
-                /* firstFrame= */ false, callback);
-        Assert.assertTrue("Still images have priority over requests for remaining video frames",
+        higherPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.PICTURE,
+                        /* firstFrame= */ true,
+                        callback);
+        lowerPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.VIDEO,
+                        /* firstFrame= */ false,
+                        callback);
+        Assert.assertTrue(
+                "Still images have priority over requests for remaining video frames",
                 host.mRequestComparator.compare(higherPri, lowerPri) < 0);
 
         // First frame video request have priority over remaining video frames.
-        higherPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.VIDEO,
-                /* firstFrame= */ true, callback);
-        lowerPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.VIDEO,
-                /* firstFrame= */ false, callback);
-        Assert.assertTrue("Initial video frames have priority over remaining video frames",
+        higherPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.VIDEO,
+                        /* firstFrame= */ true,
+                        callback);
+        lowerPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.VIDEO,
+                        /* firstFrame= */ false,
+                        callback);
+        Assert.assertTrue(
+                "Initial video frames have priority over remaining video frames",
                 host.mRequestComparator.compare(higherPri, lowerPri) < 0);
 
         // Enforce FIFO principle for two identical still image requests.
-        higherPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.PICTURE,
-                /* firstFrame= */ true, callback);
-        lowerPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.PICTURE,
-                /* firstFrame= */ true, callback);
-        Assert.assertTrue("Identical still image requests should be processed FIFO",
+        higherPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.PICTURE,
+                        /* firstFrame= */ true,
+                        callback);
+        lowerPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.PICTURE,
+                        /* firstFrame= */ true,
+                        callback);
+        Assert.assertTrue(
+                "Identical still image requests should be processed FIFO",
                 host.mRequestComparator.compare(higherPri, lowerPri) < 0);
 
         // Enforce FIFO principle for two identical video requests (initial frames).
-        higherPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.VIDEO,
-                /* firstFrame= */ true, callback);
-        lowerPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.VIDEO,
-                /* firstFrame= */ true, callback);
-        Assert.assertTrue("Identical video requests (initial frames) should be processed FIFO",
+        higherPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.VIDEO,
+                        /* firstFrame= */ true,
+                        callback);
+        lowerPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.VIDEO,
+                        /* firstFrame= */ true,
+                        callback);
+        Assert.assertTrue(
+                "Identical video requests (initial frames) should be processed FIFO",
                 host.mRequestComparator.compare(higherPri, lowerPri) < 0);
 
         // Enforce FIFO principle for two identical video requests (remaining frames).
-        higherPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.VIDEO,
-                /* firstFrame= */ false, callback);
-        lowerPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
-                PickerBitmap.TileTypes.VIDEO,
-                /* firstFrame= */ false, callback);
-        Assert.assertTrue("Identical video requests (remanining frames) should be processed FIFO",
+        higherPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.VIDEO,
+                        /* firstFrame= */ false,
+                        callback);
+        lowerPri =
+                new DecoderServiceHost.DecoderServiceParams(
+                        uri,
+                        width,
+                        fullWidth,
+                        PickerBitmap.TileTypes.VIDEO,
+                        /* firstFrame= */ false,
+                        callback);
+        Assert.assertTrue(
+                "Identical video requests (remanining frames) should be processed FIFO",
                 host.mRequestComparator.compare(higherPri, lowerPri) < 0);
     }
 
@@ -217,12 +295,27 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         File file2 = new File(UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + video2));
         File file3 = new File(UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + jpg1));
 
-        decodeImage(host, Uri.fromFile(file1), PickerBitmap.TileTypes.VIDEO, 10,
-                /*fullWidth=*/false, this);
-        decodeImage(host, Uri.fromFile(file2), PickerBitmap.TileTypes.VIDEO, 10,
-                /*fullWidth=*/false, this);
-        decodeImage(host, Uri.fromFile(file3), PickerBitmap.TileTypes.PICTURE, 10,
-                /*fullWidth=*/false, this);
+        decodeImage(
+                host,
+                Uri.fromFile(file1),
+                PickerBitmap.TileTypes.VIDEO,
+                10,
+                /* fullWidth= */ false,
+                this);
+        decodeImage(
+                host,
+                Uri.fromFile(file2),
+                PickerBitmap.TileTypes.VIDEO,
+                10,
+                /* fullWidth= */ false,
+                this);
+        decodeImage(
+                host,
+                Uri.fromFile(file3),
+                PickerBitmap.TileTypes.PICTURE,
+                10,
+                /* fullWidth= */ false,
+                this);
 
         int idleCallCount = mOnDecoderIdleCallback.getCallCount();
 
@@ -277,8 +370,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         File file2 = new File(UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + jpg1));
 
         // Thumbnail photo. 100 x 100 -> 10 x 10.
-        decodeImage(host, Uri.fromFile(file2), PickerBitmap.TileTypes.PICTURE, 10,
-                /*fullWidth=*/false, this);
+        decodeImage(
+                host,
+                Uri.fromFile(file2),
+                PickerBitmap.TileTypes.PICTURE,
+                10,
+                /* fullWidth= */ false,
+                this);
         waitForThumbnailDecode();
         Assert.assertTrue(mLastDecodedPath.contains(jpg1));
         Assert.assertEquals(false, mLastIsVideo);
@@ -289,8 +387,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         Assert.assertEquals(10, mLastInitialFrame.getHeight());
 
         // Full-width photo. 100 x 100 -> 200 x 200.
-        decodeImage(host, Uri.fromFile(file2), PickerBitmap.TileTypes.PICTURE, 200,
-                /*fullWidth=*/true, this);
+        decodeImage(
+                host,
+                Uri.fromFile(file2),
+                PickerBitmap.TileTypes.PICTURE,
+                200,
+                /* fullWidth= */ true,
+                this);
         waitForThumbnailDecode();
         Assert.assertTrue(mLastDecodedPath.contains(jpg1));
         Assert.assertEquals(false, mLastIsVideo);
@@ -301,8 +404,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         Assert.assertEquals(200, mLastInitialFrame.getHeight());
 
         // Thumbnail video. 1920 x 1080 -> 10 x 10.
-        decodeImage(host, Uri.fromFile(file1), PickerBitmap.TileTypes.VIDEO, 10,
-                /*fullWidth=*/false, this);
+        decodeImage(
+                host,
+                Uri.fromFile(file1),
+                PickerBitmap.TileTypes.VIDEO,
+                10,
+                /* fullWidth= */ false,
+                this);
         waitForThumbnailDecode(); // Initial frame.
         Assert.assertTrue(mLastDecodedPath.contains(video1));
         Assert.assertEquals(true, mLastIsVideo);
@@ -313,8 +421,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         Assert.assertEquals(10, mLastInitialFrame.getHeight());
 
         // Full-width video. 1920 x 1080 -> 2000 x 1125.
-        decodeImage(host, Uri.fromFile(file1), PickerBitmap.TileTypes.VIDEO, 2000,
-                /*fullWidth=*/true, this);
+        decodeImage(
+                host,
+                Uri.fromFile(file1),
+                PickerBitmap.TileTypes.VIDEO,
+                2000,
+                /* fullWidth= */ true,
+                this);
         waitForThumbnailDecode(); // Initial frame.
         Assert.assertTrue(mLastDecodedPath.contains(video1));
         Assert.assertEquals(true, mLastIsVideo);
@@ -342,14 +455,29 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         String yellowPath = UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + yellow);
         String redPath = UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + red);
 
-        decodeImage(host, Uri.fromFile(new File(greenPath)), PickerBitmap.TileTypes.PICTURE, 10,
-                /*fullWidth=*/false, this);
-        decodeImage(host, Uri.fromFile(new File(yellowPath)), PickerBitmap.TileTypes.PICTURE, 10,
-                /*fullWidth=*/false, this);
+        decodeImage(
+                host,
+                Uri.fromFile(new File(greenPath)),
+                PickerBitmap.TileTypes.PICTURE,
+                10,
+                /* fullWidth= */ false,
+                this);
+        decodeImage(
+                host,
+                Uri.fromFile(new File(yellowPath)),
+                PickerBitmap.TileTypes.PICTURE,
+                10,
+                /* fullWidth= */ false,
+                this);
 
         // Now add and subsequently remove the request.
-        decodeImage(host, Uri.fromFile(new File(redPath)), PickerBitmap.TileTypes.PICTURE, 10,
-                /*fullWidth=*/false, this);
+        decodeImage(
+                host,
+                Uri.fromFile(new File(redPath)),
+                PickerBitmap.TileTypes.PICTURE,
+                10,
+                /* fullWidth= */ false,
+                this);
         cancelDecodeImage(host, redPath);
 
         // First decoding result should be the green image.
@@ -372,8 +500,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         // Try decoding without a connection to the decoder.
         String green = "green100x100.jpg";
         String greenPath = UrlUtils.getIsolatedTestFilePath(TEST_FILE_PATH + green);
-        decodeImage(host, Uri.fromFile(new File(greenPath)), PickerBitmap.TileTypes.PICTURE, 10,
-                /*fullWidth=*/false, this);
+        decodeImage(
+                host,
+                Uri.fromFile(new File(greenPath)),
+                PickerBitmap.TileTypes.PICTURE,
+                10,
+                /* fullWidth= */ false,
+                this);
         Assert.assertEquals(greenPath, mLastDecodedPath);
         Assert.assertEquals(null, mLastInitialFrame);
     }
@@ -387,8 +520,13 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
 
         // Try decoding a file that doesn't exist.
         String noPath = "/nonexistentpath/nonexistentfile";
-        decodeImage(host, Uri.fromFile(new File(noPath)), PickerBitmap.TileTypes.PICTURE, 10,
-                /*fullWidth=*/false, this);
+        decodeImage(
+                host,
+                Uri.fromFile(new File(noPath)),
+                PickerBitmap.TileTypes.PICTURE,
+                10,
+                /* fullWidth= */ false,
+                this);
         Assert.assertEquals(noPath, mLastDecodedPath);
         Assert.assertEquals(null, mLastInitialFrame);
 

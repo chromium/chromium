@@ -51,7 +51,8 @@ subdirectories:
       content shown on the log page.
 
     - `chromevox/background/output/`, which contains the logic to generate the
-      text that is spoken or sent to the braille display.
+      text that is spoken or sent to the braille display. More details are in
+      [the README.md file within that directory](/chrome/browser/resources/chromeos/accessibility/chromevox/background/output/).
 
     - `chromevox/background/panel/`, which contains the logic to support the
       ChromeVox panel.

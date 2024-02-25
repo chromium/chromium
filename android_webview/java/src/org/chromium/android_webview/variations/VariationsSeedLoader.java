@@ -16,6 +16,10 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.services.IVariationsSeedServer;
@@ -26,8 +30,6 @@ import org.chromium.android_webview.common.variations.VariationsServiceMetricsHe
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.variations.LoadSeedResult;
 
@@ -87,16 +89,26 @@ public class VariationsSeedLoader {
 
     @VisibleForTesting
     public static final String APP_SEED_FRESHNESS_HISTOGRAM_NAME = "Variations.AppSeedFreshness";
+
+    @VisibleForTesting
+    public static final String SEED_FRESHNESS_DIFF_HISTOGRAM_NAME = "Variations.SeedFreshnessDiff";
+
     @VisibleForTesting
     public static final String DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME =
             "Variations.WebViewDownloadJobInterval";
+
     @VisibleForTesting
     public static final String DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME =
             "Variations.WebViewDownloadJobQueueTime";
+
     private static final String SEED_LOAD_BLOCKING_TIME_HISTOGRAM_NAME =
             "Variations.SeedLoadBlockingTime";
     // This metric is also written by VariationsSeedStore::LoadSeed and is used by other platforms.
     private static final String SEED_LOAD_RESULT_HISTOGRAM_NAME = "Variations.SeedLoadResult";
+    // These two variables below are used for caching the difference between Seed and
+    // AppSeed Freshness.
+    private static long sCachedSeedFreshness;
+    private static long sCachedAppSeedFreshness;
 
     private SeedLoadAndUpdateRunnable mRunnable;
     private SeedServerCallback mSeedServerCallback = new SeedServerCallback();
@@ -110,12 +122,60 @@ public class VariationsSeedLoader {
         RecordHistogram.recordTimesHistogram(SEED_LOAD_BLOCKING_TIME_HISTOGRAM_NAME, timeMs);
     }
 
-    private static void recordAppSeedFreshness(long freshnessMinutes) {
+    private static void recordAppSeedFreshness(long appSeedFreshnessMinutes) {
         // Bucket parameters should match Variations.SeedFreshness.
         // See variations::RecordSeedFreshness.
-        RecordHistogram.recordCustomCountHistogram(APP_SEED_FRESHNESS_HISTOGRAM_NAME,
-                (int) freshnessMinutes, /*min=*/1, /*max=*/(int) TimeUnit.DAYS.toMinutes(30),
-                /*numBuckets=*/50);
+        RecordHistogram.recordCustomCountHistogram(
+                APP_SEED_FRESHNESS_HISTOGRAM_NAME,
+                (int) appSeedFreshnessMinutes,
+                /* min= */ 1,
+                /* max= */ (int) TimeUnit.DAYS.toMinutes(30),
+                /* numBuckets= */ 50);
+        cacheAppSeedFreshness(appSeedFreshnessMinutes);
+    }
+
+    // This method is to cache the AppSeedFreshness value
+    @VisibleForTesting
+    public static void cacheAppSeedFreshness(long appSeedFreshnessMinutes) {
+        if (appSeedFreshnessMinutes < 0) {
+            return;
+        }
+        sCachedAppSeedFreshness = appSeedFreshnessMinutes;
+        calculateSeedFreshnessDiff();
+    }
+
+    // This method is to cache the SeedFreshness value
+    @CalledByNative
+    @VisibleForTesting
+    public static void cacheSeedFreshness(long seedFreshness) {
+        if (seedFreshness < 0) {
+            return;
+        }
+        sCachedSeedFreshness = seedFreshness;
+        calculateSeedFreshnessDiff();
+    }
+
+    // This method is to calculate the difference between SeedFreshness
+    // and AppSeedFreshness
+    private static void calculateSeedFreshnessDiff() {
+        if (sCachedSeedFreshness == 0 || sCachedAppSeedFreshness == 0) {
+            return;
+        }
+        long diff = sCachedSeedFreshness - sCachedAppSeedFreshness;
+        recordAppSeedFreshnessDiff(diff);
+    }
+
+    // This method is to record the difference between SeedFreshness
+    // and AppSeedFreshness
+    private static void recordAppSeedFreshnessDiff(long diff) {
+        RecordHistogram.recordCustomCountHistogram(
+                SEED_FRESHNESS_DIFF_HISTOGRAM_NAME,
+                (int) diff,
+                /* min= */ 1,
+                /* max= */ (int) TimeUnit.DAYS.toMinutes(30),
+                /* numBuckets= */ 50);
+        sCachedSeedFreshness = 0;
+        sCachedAppSeedFreshness = 0;
     }
 
     private static void recordMinuteHistogram(String name, long value, long maxValue) {
@@ -128,14 +188,16 @@ public class VariationsSeedLoader {
         if (lastRequestTime == 0) {
             return false;
         }
-        long maxRequestPeriodMillis = VariationsUtils.getDurationSwitchValueInMillis(
-                AwSwitches.FINCH_SEED_MIN_UPDATE_PERIOD, MAX_REQUEST_PERIOD_MILLIS);
+        long maxRequestPeriodMillis =
+                VariationsUtils.getDurationSwitchValueInMillis(
+                        AwSwitches.FINCH_SEED_MIN_UPDATE_PERIOD, MAX_REQUEST_PERIOD_MILLIS);
         return now < lastRequestTime + maxRequestPeriodMillis;
     }
 
     private boolean isSeedExpired(long seedFileTime) {
-        long expirationDuration = VariationsUtils.getDurationSwitchValueInMillis(
-                AwSwitches.FINCH_SEED_EXPIRATION_AGE, SEED_EXPIRATION_MILLIS);
+        long expirationDuration =
+                VariationsUtils.getDurationSwitchValueInMillis(
+                        AwSwitches.FINCH_SEED_EXPIRATION_AGE, SEED_EXPIRATION_MILLIS);
         return getCurrentTimeMillis() > seedFileTime + expirationDuration;
     }
 
@@ -155,6 +217,14 @@ public class VariationsSeedLoader {
         return true;
     }
 
+    public static void maybeRecordSeedFileTime(long seedFileTime) {
+        if (seedFileTime != 0) {
+            long freshnessMinutes =
+                    TimeUnit.MILLISECONDS.toMinutes(new Date().getTime() - seedFileTime);
+            recordAppSeedFreshness(freshnessMinutes);
+        }
+    }
+
     // Loads our local copy of the seed, if any, and then renames our local copy and/or requests a
     // new seed, if necessary.
     private class SeedLoadAndUpdateRunnable implements Runnable {
@@ -171,41 +241,45 @@ public class VariationsSeedLoader {
         private long mCurrentSeedDate = Long.MIN_VALUE;
         private long mSeedFileTime;
 
-        private FutureTask<Boolean> mLoadTask = new FutureTask<>(() -> {
-            File newSeedFile = VariationsUtils.getNewSeedFile();
-            File oldSeedFile = VariationsUtils.getSeedFile();
+        private FutureTask<Boolean> mLoadTask =
+                new FutureTask<>(
+                        () -> {
+                            File newSeedFile = VariationsUtils.getNewSeedFile();
+                            File oldSeedFile = VariationsUtils.getSeedFile();
 
-            // First check for a new seed.
-            boolean loadedSeed = false;
-            if (parseAndSaveSeedFile(newSeedFile)) {
-                loadedSeed = true;
-                mSeedFileTime = newSeedFile.lastModified();
+                            // First check for a new seed.
+                            boolean loadedSeed = false;
+                            if (parseAndSaveSeedFile(newSeedFile)) {
+                                loadedSeed = true;
+                                mSeedFileTime = newSeedFile.lastModified();
 
-                // If a valid new seed was found, make a note to replace the old seed with
-                // the new seed. (Don't do it now, to avoid delaying FutureTask.get().)
-                mFoundNewSeed = true;
-            } else if (parseAndSaveSeedFile(oldSeedFile)) { // If no new seed, check for an old one.
-                loadedSeed = true;
-                mSeedFileTime = oldSeedFile.lastModified();
-            }
+                                // If a valid new seed was found, make a note to replace the old
+                                // seed with the new seed. (Don't do it now, to avoid delaying
+                                // FutureTask.get().)
+                                mFoundNewSeed = true;
+                            } else if (parseAndSaveSeedFile(
+                                    oldSeedFile)) { // If no new seed, check for an old one.
+                                loadedSeed = true;
+                                mSeedFileTime = oldSeedFile.lastModified();
+                            }
 
-            // Make a note to request a new seed if necessary. (Don't request it now, to
-            // avoid delaying FutureTask.get().)
-            if (!loadedSeed || isSeedExpired(mSeedFileTime)) {
-                mNeedNewSeed = true;
+                            // Make a note to request a new seed if necessary. (Don't request it
+                            // now, to avoid delaying FutureTask.get().)
+                            if (!loadedSeed || isSeedExpired(mSeedFileTime)) {
+                                mNeedNewSeed = true;
 
-                // Rate-limit the requests.
-                if (shouldThrottleRequests(getCurrentTimeMillis())) {
-                    mNeedNewSeed = false;
-                }
-            }
+                                // Rate-limit the requests.
+                                if (shouldThrottleRequests(getCurrentTimeMillis())) {
+                                    mNeedNewSeed = false;
+                                }
+                            }
 
-            // Save the date field of whatever seed was loaded, if any.
-            if (loadedSeed) {
-                mCurrentSeedDate = VariationsSeedLoaderJni.get().getSavedSeedDate();
-            }
-            return loadedSeed;
-        });
+                            // Save the date field of whatever seed was loaded, if any.
+                            if (loadedSeed) {
+                                mCurrentSeedDate = VariationsSeedLoaderJni.get().getSavedSeedDate();
+                            }
+                            return loadedSeed;
+                        });
 
         @Override
         public void run() {
@@ -233,11 +307,7 @@ public class VariationsSeedLoader {
         public boolean get(long timeout, TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
             boolean success = mLoadTask.get(timeout, unit);
-            if (mSeedFileTime != 0) {
-                long freshnessMinutes =
-                        TimeUnit.MILLISECONDS.toMinutes(getCurrentTimeMillis() - mSeedFileTime);
-                recordAppSeedFreshness(freshnessMinutes);
-            }
+            maybeRecordSeedFileTime(mSeedFileTime);
             return success;
         }
 
@@ -259,16 +329,24 @@ public class VariationsSeedLoader {
 
         public void start() {
             try {
-                if (!bind(ContextUtils.getApplicationContext(), getServerIntent(),
-                            Context.BIND_AUTO_CREATE)) {
+                if (!bind(
+                        ContextUtils.getApplicationContext(),
+                        getServerIntent(),
+                        Context.BIND_AUTO_CREATE)) {
                     Log.e(TAG, "Failed to bind to WebView service");
+                    // If we don't close the file descriptor here, it will be leaked since this
+                    // service only wants to close it once the service has been connected.
+                    // Problematic if we can't connect to the service in the first place.
+                    VariationsUtils.closeSafely(mNewSeedFd);
                 }
                 // Connect to nonembedded metrics Service at the same time we connect to variation
                 // service.
                 AwBrowserProcess.collectNonembeddedMetrics();
             } catch (NameNotFoundException e) {
-                Log.e(TAG,
-                        "WebView provider \"" + AwBrowserProcess.getWebViewPackageName()
+                Log.e(
+                        TAG,
+                        "WebView provider \""
+                                + AwBrowserProcess.getWebViewPackageName()
                                 + "\" not found!");
             }
         }
@@ -277,8 +355,8 @@ public class VariationsSeedLoader {
         public void onServiceConnectedImpl(ComponentName name, IBinder service) {
             try {
                 if (mNewSeedFd.getFd() >= 0) {
-                    IVariationsSeedServer.Stub.asInterface(service).getSeed(
-                            mNewSeedFd, mOldSeedDate, mSeedServerCallback);
+                    IVariationsSeedServer.Stub.asInterface(service)
+                            .getSeed(mNewSeedFd, mOldSeedDate, mSeedServerCallback);
                 }
             } catch (RemoteException e) {
                 Log.e(TAG, "Faild requesting seed", e);
@@ -299,13 +377,15 @@ public class VariationsSeedLoader {
                     VariationsServiceMetricsHelper.fromBundle(metricsBundle);
             if (metrics.hasJobInterval()) {
                 // Variations.DownloadJobInterval records time in minutes.
-                recordMinuteHistogram(DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME,
+                recordMinuteHistogram(
+                        DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME,
                         TimeUnit.MILLISECONDS.toMinutes(metrics.getJobInterval()),
                         TimeUnit.DAYS.toMinutes(30));
             }
             if (metrics.hasJobQueueTime()) {
                 // Variations.DownloadJobQueueTime records time in minutes.
-                recordMinuteHistogram(DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME,
+                recordMinuteHistogram(
+                        DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME,
                         TimeUnit.MILLISECONDS.toMinutes(metrics.getJobQueueTime()),
                         TimeUnit.DAYS.toMinutes(30));
             }
@@ -339,9 +419,12 @@ public class VariationsSeedLoader {
         File newSeedFile = VariationsUtils.getNewSeedFile();
         ParcelFileDescriptor newSeedFd = null;
         try {
-            newSeedFd = ParcelFileDescriptor.open(newSeedFile,
-                    ParcelFileDescriptor.MODE_WRITE_ONLY | ParcelFileDescriptor.MODE_TRUNCATE
-                            | ParcelFileDescriptor.MODE_CREATE);
+            newSeedFd =
+                    ParcelFileDescriptor.open(
+                            newSeedFile,
+                            ParcelFileDescriptor.MODE_WRITE_ONLY
+                                    | ParcelFileDescriptor.MODE_TRUNCATE
+                                    | ParcelFileDescriptor.MODE_CREATE);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Failed to open seed file " + newSeedFile);
             return false;

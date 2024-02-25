@@ -1,4 +1,5 @@
 Document
 ++Group IsControlElement=false
-++++Text Name='Web Browser'
+++++ListItem IsControlElement=false
+++++++Text Name='Web Browser'
 ++++Text Name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

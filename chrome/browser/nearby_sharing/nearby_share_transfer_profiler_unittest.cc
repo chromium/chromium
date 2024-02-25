@@ -9,7 +9,8 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-const char endpoint_id[] = "ABCD";
+constexpr char kEndpointId[] = "ABCD";
+constexpr char kHistogramPrefix[] = "Nearby.Share.TransferDuration.";
 
 class NearbyShareTransferProfilerTest : public ::testing::Test {
  protected:
@@ -26,10 +27,14 @@ class NearbyShareTransferProfilerTest : public ::testing::Test {
   void ExpectTimeMetric(std::string histogram_suffix,
                         uint expected_millis,
                         uint expected_count = 1) {
-    const std::string histogram_prefix = "Nearby.Share.TransferDuration.";
     histogram_tester_.ExpectUniqueTimeSample(
-        histogram_prefix + histogram_suffix,
+        kHistogramPrefix + histogram_suffix,
         base::Milliseconds(expected_millis), expected_count);
+  }
+
+  void ExpectTotalCount(std::string histogram_suffix, uint expected_count) {
+    histogram_tester_.ExpectTotalCount(kHistogramPrefix + histogram_suffix,
+                                       expected_count);
   }
 };
 
@@ -39,19 +44,19 @@ class NearbyShareTransferProfilerTest : public ::testing::Test {
 TEST_F(NearbyShareTransferProfilerTest, Sender_FlowCompleteWithoutUpgrade) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnEndpointDiscovered(endpoint_id);
+  subject.OnEndpointDiscovered(kEndpointId);
   AdvanceClock(100);
-  subject.OnOutgoingEndpointDecoded(endpoint_id);
+  subject.OnOutgoingEndpointDecoded(kEndpointId);
   AdvanceClock(100);
-  subject.OnShareTargetSelected(endpoint_id);
+  subject.OnShareTargetSelected(kEndpointId);
   AdvanceClock(100);
-  subject.OnConnectionEstablished(endpoint_id);
+  subject.OnConnectionEstablished(kEndpointId);
   AdvanceClock(100);
-  subject.OnIntroductionFrameSent(endpoint_id);
+  subject.OnIntroductionFrameSent(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendStart(endpoint_id);
+  subject.OnSendStart(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnSendComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Sender.DiscoveredToConnectionEstablished", 300);
   ExpectTimeMetric("Sender.InitiatedToSentIntroductionFrame", 200);
@@ -62,24 +67,24 @@ TEST_F(NearbyShareTransferProfilerTest, Sender_FlowCompleteWithoutUpgrade) {
 TEST_F(NearbyShareTransferProfilerTest, Sender_FlowCompleteManyRecievers) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnEndpointDiscovered(endpoint_id);
+  subject.OnEndpointDiscovered(kEndpointId);
   subject.OnEndpointDiscovered("EFGH");
   subject.OnEndpointDiscovered("IJKL");
   subject.OnEndpointDiscovered("MNOP");
   AdvanceClock(100);
-  subject.OnOutgoingEndpointDecoded(endpoint_id);
+  subject.OnOutgoingEndpointDecoded(kEndpointId);
   subject.OnOutgoingEndpointDecoded("IJKL");
   subject.OnOutgoingEndpointDecoded("MNOP");
   AdvanceClock(100);
-  subject.OnShareTargetSelected(endpoint_id);
+  subject.OnShareTargetSelected(kEndpointId);
   AdvanceClock(100);
-  subject.OnConnectionEstablished(endpoint_id);
+  subject.OnConnectionEstablished(kEndpointId);
   AdvanceClock(100);
-  subject.OnIntroductionFrameSent(endpoint_id);
+  subject.OnIntroductionFrameSent(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendStart(endpoint_id);
+  subject.OnSendStart(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnSendComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Sender.DiscoveredToConnectionEstablished", 300);
   ExpectTimeMetric("Sender.InitiatedToSentIntroductionFrame", 200);
@@ -90,22 +95,22 @@ TEST_F(NearbyShareTransferProfilerTest, Sender_FlowCompleteManyRecievers) {
 TEST_F(NearbyShareTransferProfilerTest, Sender_FlowCompleteWithUpgrade) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnEndpointDiscovered(endpoint_id);
+  subject.OnEndpointDiscovered(kEndpointId);
   AdvanceClock(100);
-  subject.OnOutgoingEndpointDecoded(endpoint_id);
+  subject.OnOutgoingEndpointDecoded(kEndpointId);
   AdvanceClock(100);
-  subject.OnShareTargetSelected(endpoint_id);
+  subject.OnShareTargetSelected(kEndpointId);
   AdvanceClock(100);
-  subject.OnConnectionEstablished(endpoint_id);
+  subject.OnConnectionEstablished(kEndpointId);
   AdvanceClock(100);
-  subject.OnBandwidthUpgrade(endpoint_id,
+  subject.OnBandwidthUpgrade(kEndpointId,
                              nearby::connections::mojom::Medium::kWifiLan);
   AdvanceClock(100);
-  subject.OnIntroductionFrameSent(endpoint_id);
+  subject.OnIntroductionFrameSent(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendStart(endpoint_id);
+  subject.OnSendStart(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnSendComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Sender.DiscoveredToConnectionEstablished", 300);
   ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade", 100);
@@ -123,30 +128,30 @@ TEST_F(NearbyShareTransferProfilerTest,
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
   // First successful transfer.
-  subject.OnEndpointDiscovered(endpoint_id);
+  subject.OnEndpointDiscovered(kEndpointId);
   AdvanceClock(100);
-  subject.OnOutgoingEndpointDecoded(endpoint_id);
+  subject.OnOutgoingEndpointDecoded(kEndpointId);
   AdvanceClock(100);
-  subject.OnShareTargetSelected(endpoint_id);
+  subject.OnShareTargetSelected(kEndpointId);
   AdvanceClock(100);
-  subject.OnConnectionEstablished(endpoint_id);
+  subject.OnConnectionEstablished(kEndpointId);
   AdvanceClock(100);
-  subject.OnIntroductionFrameSent(endpoint_id);
+  subject.OnIntroductionFrameSent(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendStart(endpoint_id);
+  subject.OnSendStart(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnSendComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   // Second successful transfer without rediscovering endpoint.
-  subject.OnShareTargetSelected(endpoint_id);
+  subject.OnShareTargetSelected(kEndpointId);
   AdvanceClock(100);
-  subject.OnConnectionEstablished(endpoint_id);
+  subject.OnConnectionEstablished(kEndpointId);
   AdvanceClock(100);
-  subject.OnIntroductionFrameSent(endpoint_id);
+  subject.OnIntroductionFrameSent(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendStart(endpoint_id);
+  subject.OnSendStart(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnSendComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Sender.DiscoveredToConnectionEstablished", 300, 1);
   ExpectTimeMetric("Sender.InitiatedToSentIntroductionFrame", 200, 2);
@@ -157,25 +162,25 @@ TEST_F(NearbyShareTransferProfilerTest,
 TEST_F(NearbyShareTransferProfilerTest, Sender_MultipleBandwidthUpgrades) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnEndpointDiscovered(endpoint_id);
+  subject.OnEndpointDiscovered(kEndpointId);
   AdvanceClock(100);
-  subject.OnOutgoingEndpointDecoded(endpoint_id);
+  subject.OnOutgoingEndpointDecoded(kEndpointId);
   AdvanceClock(100);
-  subject.OnShareTargetSelected(endpoint_id);
+  subject.OnShareTargetSelected(kEndpointId);
   AdvanceClock(100);
-  subject.OnConnectionEstablished(endpoint_id);
+  subject.OnConnectionEstablished(kEndpointId);
   AdvanceClock(100);
-  subject.OnBandwidthUpgrade(endpoint_id,
+  subject.OnBandwidthUpgrade(kEndpointId,
                              nearby::connections::mojom::Medium::kWifiLan);
   AdvanceClock(100);
-  subject.OnIntroductionFrameSent(endpoint_id);
+  subject.OnIntroductionFrameSent(kEndpointId);
   AdvanceClock(100);
-  subject.OnSendStart(endpoint_id);
+  subject.OnSendStart(kEndpointId);
   AdvanceClock(100);
-  subject.OnBandwidthUpgrade(endpoint_id,
+  subject.OnBandwidthUpgrade(kEndpointId,
                              nearby::connections::mojom::Medium::kWifiLan);
   AdvanceClock(100);
-  subject.OnSendComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnSendComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Sender.DiscoveredToConnectionEstablished", 300);
   ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade", 100);
@@ -191,15 +196,15 @@ TEST_F(NearbyShareTransferProfilerTest, Sender_MultipleBandwidthUpgrades) {
 TEST_F(NearbyShareTransferProfilerTest, Receiver_FlowCompleteWithoutUpgrade) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnIncomingEndpointDecoded(endpoint_id, false);
+  subject.OnIncomingEndpointDecoded(kEndpointId, false);
   AdvanceClock(100);
-  subject.OnPairedKeyHandshakeComplete(endpoint_id);
+  subject.OnPairedKeyHandshakeComplete(kEndpointId);
   AdvanceClock(100);
-  subject.OnIntroductionFrameReceived(endpoint_id);
+  subject.OnIntroductionFrameReceived(kEndpointId);
   AdvanceClock(100);
-  subject.OnTransferAccepted(endpoint_id);
+  subject.OnTransferAccepted(kEndpointId);
   AdvanceClock(100);
-  subject.OnReceiveComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 200);
   ExpectTimeMetric("Receiver.AcceptedTransferToAllFilesReceived", 100);
@@ -210,18 +215,18 @@ TEST_F(NearbyShareTransferProfilerTest,
        Receiver_HighVisFlowCompleteWithUpgrade) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnIncomingEndpointDecoded(endpoint_id, true);
+  subject.OnIncomingEndpointDecoded(kEndpointId, true);
   AdvanceClock(100);
-  subject.OnBandwidthUpgrade(endpoint_id,
+  subject.OnBandwidthUpgrade(kEndpointId,
                              nearby::connections::mojom::Medium::kWifiLan);
   AdvanceClock(100);
-  subject.OnPairedKeyHandshakeComplete(endpoint_id);
+  subject.OnPairedKeyHandshakeComplete(kEndpointId);
   AdvanceClock(100);
-  subject.OnIntroductionFrameReceived(endpoint_id);
+  subject.OnIntroductionFrameReceived(kEndpointId);
   AdvanceClock(100);
-  subject.OnTransferAccepted(endpoint_id);
+  subject.OnTransferAccepted(kEndpointId);
   AdvanceClock(100);
-  subject.OnReceiveComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 300);
   ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade",
@@ -237,18 +242,18 @@ TEST_F(NearbyShareTransferProfilerTest,
 TEST_F(NearbyShareTransferProfilerTest, Receiver_MultipleBandwidthUpgrades) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnIncomingEndpointDecoded(endpoint_id, true);
+  subject.OnIncomingEndpointDecoded(kEndpointId, true);
   AdvanceClock(100);
-  subject.OnPairedKeyHandshakeComplete(endpoint_id);
+  subject.OnPairedKeyHandshakeComplete(kEndpointId);
   AdvanceClock(100);
-  subject.OnBandwidthUpgrade(endpoint_id,
+  subject.OnBandwidthUpgrade(kEndpointId,
                              nearby::connections::mojom::Medium::kWifiLan);
   AdvanceClock(100);
-  subject.OnIntroductionFrameReceived(endpoint_id);
+  subject.OnIntroductionFrameReceived(kEndpointId);
   AdvanceClock(100);
-  subject.OnTransferAccepted(endpoint_id);
+  subject.OnTransferAccepted(kEndpointId);
   AdvanceClock(100);
-  subject.OnReceiveComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 300);
   ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade",
@@ -265,18 +270,18 @@ TEST_F(NearbyShareTransferProfilerTest,
        Receiver_FlowCompleteWithNonHighVisUpgrade) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnIncomingEndpointDecoded(endpoint_id, false);
+  subject.OnIncomingEndpointDecoded(kEndpointId, false);
   AdvanceClock(100);
-  subject.OnPairedKeyHandshakeComplete(endpoint_id);
+  subject.OnPairedKeyHandshakeComplete(kEndpointId);
   AdvanceClock(100);
-  subject.OnIntroductionFrameReceived(endpoint_id);
+  subject.OnIntroductionFrameReceived(kEndpointId);
   AdvanceClock(100);
-  subject.OnTransferAccepted(endpoint_id);
+  subject.OnTransferAccepted(kEndpointId);
   AdvanceClock(100);
-  subject.OnBandwidthUpgrade(endpoint_id,
+  subject.OnBandwidthUpgrade(kEndpointId,
                              nearby::connections::mojom::Medium::kWifiLan);
   AdvanceClock(100);
-  subject.OnReceiveComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 200);
   ExpectTimeMetric(
@@ -290,25 +295,58 @@ TEST_F(NearbyShareTransferProfilerTest,
   ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived.WifiLan", 100);
 }
 
+// Regression test for b/301132314
+TEST_F(NearbyShareTransferProfilerTest,
+       Receiver_FlowBandwidthUpgradeAfterComplete) {
+  NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
+
+  subject.OnIncomingEndpointDecoded(kEndpointId, false);
+  AdvanceClock(100);
+  subject.OnPairedKeyHandshakeComplete(kEndpointId);
+  AdvanceClock(100);
+  subject.OnIntroductionFrameReceived(kEndpointId);
+  AdvanceClock(100);
+  subject.OnTransferAccepted(kEndpointId);
+  AdvanceClock(100);
+  subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
+  AdvanceClock(100);
+  subject.OnBandwidthUpgrade(kEndpointId,
+                             nearby::connections::mojom::Medium::kWifiLan);
+
+  ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 200);
+  ExpectTimeMetric("Receiver.AcceptedTransferToAllFilesReceived", 100);
+  ExpectTimeMetric("Receiver.ReceivedIntroductionFrameToAllFilesReceived", 200);
+
+  // Bandwidth upgrade metrics should not be emitted if the bandwidth upgrade
+  // completes after the transfer has ended.
+  ExpectTotalCount(
+      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade", 0);
+  ExpectTotalCount(
+      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade.WifiLan",
+      0);
+  ExpectTotalCount("Receiver.BandwidthUpgradeToAllFilesReceived", 0);
+  ExpectTotalCount("Receiver.BandwidthUpgradeToAllFilesReceived.WifiLan", 0);
+}
+
 TEST_F(NearbyShareTransferProfilerTest,
        Receiver_FlowCompleteWithMutlipleUpgrades) {
   NearbyShareTransferProfiler subject = NearbyShareTransferProfiler();
 
-  subject.OnIncomingEndpointDecoded(endpoint_id, true);
+  subject.OnIncomingEndpointDecoded(kEndpointId, true);
   AdvanceClock(100);
-  subject.OnPairedKeyHandshakeComplete(endpoint_id);
+  subject.OnPairedKeyHandshakeComplete(kEndpointId);
   AdvanceClock(100);
-  subject.OnBandwidthUpgrade(endpoint_id,
+  subject.OnBandwidthUpgrade(kEndpointId,
                              nearby::connections::mojom::Medium::kWifiLan);
   AdvanceClock(100);
-  subject.OnIntroductionFrameReceived(endpoint_id);
+  subject.OnIntroductionFrameReceived(kEndpointId);
   AdvanceClock(100);
-  subject.OnTransferAccepted(endpoint_id);
+  subject.OnTransferAccepted(kEndpointId);
   AdvanceClock(100);
-  subject.OnBandwidthUpgrade(endpoint_id,
+  subject.OnBandwidthUpgrade(kEndpointId,
                              nearby::connections::mojom::Medium::kWifiLan);
   AdvanceClock(100);
-  subject.OnReceiveComplete(endpoint_id, TransferMetadata::Status::kComplete);
+  subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 300);
   ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade",

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -178,8 +179,6 @@ void PopulatePrefRegistrationFromApp(base::Value::Dict& pref_registration,
   pref_registration.Set(guest_os::prefs::kContainerNameKey,
                         base::Value(container_name));
   pref_registration.Set(guest_os::prefs::kAppNameKey, std::move(name));
-  pref_registration.Set(guest_os::prefs::kAppCommentKey,
-                        ProtoToDictionary(app.comment()));
   pref_registration.Set(guest_os::prefs::kAppExecKey, base::Value(app.exec()));
   pref_registration.Set(guest_os::prefs::kAppExecutableFileNameKey,
                         base::Value(app.executable_file_name()));
@@ -323,8 +322,7 @@ static std::string Join(const List& list) {
   return joined;
 }
 
-std::string GetStringKey(const base::Value& dict,
-                         const base::StringPiece& key) {
+std::string GetStringKey(const base::Value& dict, std::string_view key) {
   if (!dict.is_dict()) {
     return std::string();
   }
@@ -366,10 +364,6 @@ std::string GuestOsRegistryService::Registration::Name() const {
         base::UTF8ToUTF16(GetLocalizedString(guest_os::prefs::kAppNameKey)));
   }
   return GetLocalizedString(guest_os::prefs::kAppNameKey);
-}
-
-std::string GuestOsRegistryService::Registration::Comment() const {
-  return GetLocalizedString(guest_os::prefs::kAppCommentKey);
 }
 
 std::string GuestOsRegistryService::Registration::Exec() const {
@@ -453,23 +447,30 @@ bool GuestOsRegistryService::Registration::IsScaled() const {
   return GetBool(guest_os::prefs::kAppScaledKey);
 }
 
+std::string GuestOsRegistryService::Registration::StartupWmClass() const {
+  return GetString(guest_os::prefs::kAppStartupWMClassKey);
+}
+
+bool GuestOsRegistryService::Registration::StartupNotify() const {
+  return GetBool(guest_os::prefs::kAppStartupNotifyKey);
+}
+
 std::string GuestOsRegistryService::Registration::GetString(
-    base::StringPiece key) const {
+    std::string_view key) const {
   return GetStringKey(pref_, key);
 }
 
-bool GuestOsRegistryService::Registration::GetBool(
-    base::StringPiece key) const {
+bool GuestOsRegistryService::Registration::GetBool(std::string_view key) const {
   if (!pref_.is_dict()) {
     return false;
   }
-  const absl::optional<bool> value = pref_.GetDict().FindBool(key);
+  const std::optional<bool> value = pref_.GetDict().FindBool(key);
   return value.value_or(false);
 }
 
 // This is the companion to GuestOsRegistryService::SetCurrentTime().
 base::Time GuestOsRegistryService::Registration::GetTime(
-    base::StringPiece key) const {
+    std::string_view key) const {
   if (!pref_.is_dict()) {
     return base::Time();
   }
@@ -485,7 +486,7 @@ base::Time GuestOsRegistryService::Registration::GetTime(
 // undescores, e.g. 'fr' or 'en_US'), but users of the registry don't need to
 // deal with this.
 std::string GuestOsRegistryService::Registration::GetLocalizedString(
-    base::StringPiece key) const {
+    std::string_view key) const {
   if (!pref_.is_dict()) {
     return std::string();
   }
@@ -511,7 +512,7 @@ std::string GuestOsRegistryService::Registration::GetLocalizedString(
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::GetLocalizedList(
-    base::StringPiece key) const {
+    std::string_view key) const {
   if (!pref_.is_dict()) {
     return {};
   }
@@ -613,16 +614,16 @@ GuestOsRegistryService::GetRegisteredApps(VmType vm_type) const {
   return apps;
 }
 
-absl::optional<GuestOsRegistryService::Registration>
+std::optional<GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
   const base::Value::Dict& apps =
       prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
 
   const base::Value::Dict* pref_registration = apps.FindDict(app_id);
   if (!pref_registration) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::make_optional<Registration>(
+  return std::make_optional<Registration>(
       app_id, base::Value(pref_registration->Clone()));
 }
 
@@ -632,7 +633,7 @@ void GuestOsRegistryService::RegisterTransientUrlHandler(
   url_handlers_.emplace_back(handler, canHandleCallback);
 }
 
-absl::optional<GuestOsUrlHandler> GuestOsRegistryService::GetHandler(
+std::optional<GuestOsUrlHandler> GuestOsRegistryService::GetHandler(
     const GURL& url) const {
   // Transient URL handlers are system-installed, so always take priority.
   for (const auto& handler : url_handlers_) {
@@ -650,9 +651,9 @@ absl::optional<GuestOsUrlHandler> GuestOsRegistryService::GetHandler(
     }
   }
   if (!result) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::make_optional<GuestOsUrlHandler>(
+  return std::make_optional<GuestOsUrlHandler>(
       result->Name(),
       base::BindRepeating(Launch, result->VmType(), result->app_id()));
 }
@@ -742,7 +743,7 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
 }
 
 void GuestOsRegistryService::ApplyContainerBadge(
-    const absl::optional<std::string>& app_id,
+    const std::optional<std::string>& app_id,
     gfx::ImageSkia* image_skia) {
   if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
     auto reg = GetRegistration(*app_id);
@@ -965,7 +966,7 @@ void GuestOsRegistryService::UpdateApplicationList(
       }
 
       base::Value::Dict name = ProtoToDictionary(app.name());
-      if (name.Find(base::StringPiece()) == nullptr) {
+      if (name.Find(std::string_view()) == nullptr) {
         LOG(WARNING) << "Received app '" << app.desktop_file_id()
                      << "' with missing unlocalized name";
         continue;
@@ -1037,8 +1038,7 @@ void GuestOsRegistryService::UpdateApplicationList(
   // due to the container being offline.
   for (auto retry_iter = retry_icon_requests_.begin();
        retry_iter != retry_icon_requests_.end(); ++retry_iter) {
-    for (ui::ResourceScaleFactor scale_factor :
-         ui::GetSupportedResourceScaleFactors()) {
+    for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       if (retry_iter->second & (1 << scale_factor)) {
         RequestContainerAppIcon(retry_iter->first, scale_factor);
       }
@@ -1097,6 +1097,18 @@ void GuestOsRegistryService::AppLaunched(const std::string& app_id) {
   ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
   base::Value::Dict& app = update->Find(app_id)->GetDict();
   SetCurrentTime(app, guest_os::prefs::kAppLastLaunchTimeKey);
+
+  auto vm_type = app.FindInt(guest_os::prefs::kVmTypeKey);
+  if (!vm_type.has_value()) {
+    LOG(ERROR) << "Failed to find " << guest_os::prefs::kVmTypeKey
+               << " for app " << app_id;
+    return;
+  }
+
+  for (Observer& obs : observers_) {
+    obs.OnAppLastLaunchTimeUpdated(static_cast<VmType>(vm_type.value()), app_id,
+                                   clock_->Now());
+  }
 }
 
 void GuestOsRegistryService::SetCurrentTime(base::Value::Dict& dictionary,
@@ -1136,7 +1148,7 @@ void GuestOsRegistryService::RequestContainerAppIcon(
     const std::string& app_id,
     ui::ResourceScaleFactor scale_factor) {
   // Ignore requests for app_id that isn't registered.
-  absl::optional<GuestOsRegistryService::Registration> registration =
+  std::optional<GuestOsRegistryService::Registration> registration =
       GetRegistration(app_id);
   DCHECK(registration);
   if (!registration) {

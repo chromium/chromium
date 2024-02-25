@@ -7,6 +7,9 @@
 #include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using JavaScriptResultCallback =
     content::RenderFrameHost::JavaScriptResultCallback;
@@ -169,8 +173,7 @@ class ArcSelectFilesHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ArcSelectFilesHandler> arc_select_files_handler_;
-  raw_ptr<MockSelectFileDialogHolder, DanglingUntriaged | ExperimentalAsh>
-      mock_dialog_holder_;
+  raw_ptr<MockSelectFileDialogHolder, DanglingUntriaged> mock_dialog_holder_;
 };
 
 TEST_F(ArcSelectFilesHandlerTest, SelectFiles_DialogType) {
@@ -286,10 +289,11 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_InitialDocumentPath) {
   request->initial_document_path = arc::mojom::DocumentPath::New();
   request->initial_document_path->authority = "testing.provider";
   request->initial_document_path->path = {"doc:root", "doc:file1"};
+  request->initial_document_path->root_id = "root";
 
-  // "doc:file1" is expected to be ignored.
-  base::FilePath expected_file_path = base::FilePath(
-      "/special/arc-documents-provider/testing.provider/doc:root");
+  // |initial_document_path->path| is expected to be ignored.
+  base::FilePath expected_file_path =
+      base::FilePath("/special/arc-documents-provider/testing.provider/root");
 
   EXPECT_CALL(*mock_dialog_holder_,
               SelectFile(_, FilePathMatcher(expected_file_path), _, _, _, _, _))
@@ -307,7 +311,7 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelected_CallbackCalled) {
   arc_select_files_handler_->SelectFiles(request, callback.Get());
 
   EXPECT_CALL(std::move(callback), Run(_)).Times(1);
-  arc_select_files_handler_->FileSelected(base::FilePath(), 0, nullptr);
+  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(), 0, nullptr);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, FileSelected_PickerActivitySelected) {
@@ -328,9 +332,10 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelected_PickerActivitySelected) {
               Run(SelectFilesResultMatcher(expected_result.get())))
       .Times(1);
 
-  arc_select_files_handler_->FileSelected(
-      ConvertAndroidActivityToFilePath(package_name, activity_name), 0,
-      nullptr);
+  base::FilePath path =
+      ConvertAndroidActivityToFilePath(package_name, activity_name);
+  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(path), 0,
+                                          nullptr);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, FileSelectionCanceled_CallbackCalled) {
@@ -349,13 +354,18 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelectionCanceled_CallbackCalled) {
 }
 
 TEST_F(ArcSelectFilesHandlerTest, OnFileSelectorEvent) {
+  bool isFilesNewDirectoryTreeOn =
+      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   CallOnFileSelectorEventAndCheckScript(mojom::FileSelectorEventType::CLICK_OK,
                                         "", kScriptClickOk);
   CallOnFileSelectorEventAndCheckScript(
       mojom::FileSelectorEventType::CLICK_CANCEL, "", kScriptClickCancel);
   CallOnFileSelectorEventAndCheckScript(
       mojom::FileSelectorEventType::CLICK_DIRECTORY, "Click Target",
-      base::StringPrintf(kScriptClickDirectory, "\"Click Target\""));
+      base::StringPrintf(isFilesNewDirectoryTreeOn
+                             ? kScriptClickDirectoryForNewTree
+                             : kScriptClickDirectory,
+                         "\"Click Target\""));
   CallOnFileSelectorEventAndCheckScript(
       mojom::FileSelectorEventType::CLICK_FILE, "Click\tTarget",
       base::StringPrintf(kScriptClickFile, "\"Click\\tTarget\""));
@@ -366,7 +376,13 @@ TEST_F(ArcSelectFilesHandlerTest, OnFileSelectorEvent) {
 }
 
 TEST_F(ArcSelectFilesHandlerTest, GetFileSelectorElements) {
-  EXPECT_CALL(*mock_dialog_holder_, ExecuteJavaScript(kScriptGetElements, _))
+  bool isFilesNewDirectoryTreeOn =
+      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
+  EXPECT_CALL(
+      *mock_dialog_holder_,
+      ExecuteJavaScript(isFilesNewDirectoryTreeOn ? kScriptGetElementsForNewTree
+                                                  : kScriptGetElements,
+                        _))
       .WillOnce(testing::Invoke(
           [](const std::string&, JavaScriptResultCallback callback) {
             std::move(callback).Run(

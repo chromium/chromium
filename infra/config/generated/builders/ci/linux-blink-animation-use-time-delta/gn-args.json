@@ -1,0 +1,9 @@
+{
+  "gn_args": {
+    "blink_animation_use_time_delta": true,
+    "is_component_build": true,
+    "is_debug": true,
+    "symbol_level": 1,
+    "use_remoteexec": true
+  }
+}

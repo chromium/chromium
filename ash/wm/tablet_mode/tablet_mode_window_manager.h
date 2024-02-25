@@ -44,6 +44,12 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
                                            public SplitViewObserver,
                                            public SessionObserver {
  public:
+  // There are two reasons that we would destroy `this`.
+  enum class ShutdownReason {
+    kSystemShutdown,
+    kExitTabletUIMode,
+  };
+
   // This should only be created or deleted by the creator
   // (TabletModeController).
   TabletModeWindowManager();
@@ -62,7 +68,7 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   // Stops tracking windows and returns them to their clamshell mode state. Work
   // is done here instead of the destructor because TabletModeController may
   // still need this object alive during shutdown.
-  void Shutdown();
+  void Shutdown(ShutdownReason shutdown_reason);
 
   // True if |window| is in |window_state_map_|.
   bool IsTrackingWindow(aura::Window* window);
@@ -200,7 +206,7 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   std::unique_ptr<TabletModeMultitaskMenuController>
       tablet_mode_multitask_menu_controller_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // True when tablet mode is about to end.
   bool is_exiting_ = false;

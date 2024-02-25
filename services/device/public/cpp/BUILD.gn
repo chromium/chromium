@@ -19,6 +19,7 @@ component("device_features") {
 if (is_android) {
   source_set("device_feature_list") {
     sources = [ "device_feature_map.cc" ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     deps = [
       ":device_features",
       "//base",
@@ -32,8 +33,6 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test/fake_device_posture_provider.cc",
-    "test/fake_device_posture_provider.h",
     "test/fake_sensor_and_provider.cc",
     "test/fake_sensor_and_provider.h",
     "test/fake_serial_port_client.cc",

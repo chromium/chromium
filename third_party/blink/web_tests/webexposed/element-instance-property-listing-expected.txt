@@ -133,6 +133,7 @@ namespace http://www.w3.org/1999/xhtml
     property getElementsByClassName
     property getElementsByTagName
     property getElementsByTagNameNS
+    property getHTML
     property getInnerHTML
     property getRootNode
     property hasAttribute
@@ -176,6 +177,7 @@ namespace http://www.w3.org/1999/xhtml
     property offsetParent
     property offsetTop
     property offsetWidth
+    property on
     property onabort
     property onanimationend
     property onanimationiteration
@@ -265,6 +267,8 @@ namespace http://www.w3.org/1999/xhtml
     property onselectionchange
     property onselectstart
     property onslotchange
+    property onsnapchanged
+    property onsnapchanging
     property onstalled
     property onsubmit
     property onsuspend
@@ -327,6 +331,7 @@ namespace http://www.w3.org/1999/xhtml
     property setAttributeNode
     property setAttributeNodeNS
     property setHTML
+    property setHTMLUnsafe
     property setPointerCapture
     property shadowRoot
     property showPopover
@@ -340,12 +345,12 @@ namespace http://www.w3.org/1999/xhtml
     property toString
     property toggleAttribute
     property togglePopover
-    property toggles
     property translate
     property virtualKeyboardPolicy
     property webkitMatchesSelector
     property webkitRequestFullScreen
     property webkitRequestFullscreen
+    property writingSuggestions
 html element a
     property attributionSrc
     property charset
@@ -479,6 +484,7 @@ html element body
     property onlanguagechange
     property onmessage
     property onmessageerror
+    property onmove
     property onoffline
     property ononline
     property onpagehide
@@ -502,6 +508,8 @@ html element button
     property formMethod
     property formNoValidate
     property formTarget
+    property invokeAction
+    property invokeTargetElement
     property labels
     property name
     property popoverTargetAction
@@ -579,6 +587,7 @@ html element fencedframe
     property allow
     property config
     property height
+    property onfencedtreeclick
     property sandbox
     property width
 html element fieldset
@@ -639,6 +648,7 @@ html element frameset
     property onlanguagechange
     property onmessage
     property onmessageerror
+    property onmove
     property onoffline
     property ononline
     property onpagehide
@@ -672,10 +682,10 @@ html element hr
     property size
     property width
 html element html
-    property blocking
     property version
 html element i
 html element iframe
+    property adAuctionHeaders
     property align
     property allow
     property allowFullscreen
@@ -752,6 +762,8 @@ html element input
     property height
     property incremental
     property indeterminate
+    property invokeAction
+    property invokeTargetElement
     property labels
     property list
     property max
@@ -827,6 +839,7 @@ html element link
     property sizes
     property target
     property type
+html element listbox
 html element listing
     property width
 html element main
@@ -935,6 +948,10 @@ html element param
     property type
     property value
     property valueType
+html element permission
+    property ondismiss
+    property onresolve
+    property type
 html element picture
 html element plaintext
 html element pre
@@ -989,12 +1006,14 @@ html element select
     property selectedIndex
     property selectedOptions
     property setCustomValidity
+    property showPicker
     property size
     property type
     property validationMessage
     property validity
     property value
     property willValidate
+html element selectedoption
 html element selectlist
     property checkValidity
     property disabled
@@ -1087,6 +1106,10 @@ html element td
     property width
 html element template
     property content
+    property parseparts
+    property serializable
+    property shadowRootClonable
+    property shadowRootDelegatesFocus
     property shadowRootMode
 html element textarea
     property autocomplete
@@ -1288,6 +1311,7 @@ namespace http://www.w3.org/2000/svg
     property accessibleNode
     property addEventListener
     property after
+    property anchorElement
     property animate
     property append
     property appendChild
@@ -1385,6 +1409,7 @@ namespace http://www.w3.org/2000/svg
     property getElementsByClassName
     property getElementsByTagName
     property getElementsByTagNameNS
+    property getHTML
     property getInnerHTML
     property getRootNode
     property hasAttribute
@@ -1416,6 +1441,7 @@ namespace http://www.w3.org/2000/svg
     property nodeValue
     property nonce
     property normalize
+    property on
     property onabort
     property onanimationend
     property onanimationiteration
@@ -1505,6 +1531,8 @@ namespace http://www.w3.org/2000/svg
     property onselectionchange
     property onselectstart
     property onslotchange
+    property onsnapchanged
+    property onsnapchanging
     property onstalled
     property onsubmit
     property onsuspend
@@ -1566,6 +1594,7 @@ namespace http://www.w3.org/2000/svg
     property setAttributeNode
     property setAttributeNodeNS
     property setHTML
+    property setHTMLUnsafe
     property setPointerCapture
     property shadowRoot
     property slot
@@ -1574,7 +1603,6 @@ namespace http://www.w3.org/2000/svg
     property tagName
     property textContent
     property toggleAttribute
-    property toggles
     property viewportElement
     property webkitMatchesSelector
     property webkitRequestFullScreen
@@ -1652,13 +1680,6 @@ svg element circle
     property transform
 svg element clipPath
     property clipPathUnits
-    property farthestViewportElement
-    property getBBox
-    property getCTM
-    property getScreenCTM
-    property nearestViewportElement
-    property requiredExtensions
-    property systemLanguage
     property transform
 svg element defs
     property farthestViewportElement

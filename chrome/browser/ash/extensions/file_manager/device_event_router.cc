@@ -53,7 +53,7 @@ void DeviceEventRouter::OnDeviceAdded(const std::string& device_path) {
 
   SetDeviceState(device_path, DEVICE_STATE_USUAL);
   if (IsExternalStorageDisabled()) {
-    OnDeviceEvent(file_manager_private::DEVICE_EVENT_TYPE_DISABLED, device_path,
+    OnDeviceEvent(file_manager_private::DeviceEventType::kDisabled, device_path,
                   "");
     return;
   }
@@ -62,7 +62,7 @@ void DeviceEventRouter::OnDeviceAdded(const std::string& device_path) {
 void DeviceEventRouter::OnDeviceRemoved(const std::string& device_path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SetDeviceState(device_path, DEVICE_STATE_USUAL);
-  OnDeviceEvent(file_manager_private::DEVICE_EVENT_TYPE_REMOVED, device_path,
+  OnDeviceEvent(file_manager_private::DeviceEventType::kRemoved, device_path,
                 "");
 }
 
@@ -81,7 +81,7 @@ void DeviceEventRouter::OnDiskRemoved(const ash::disks::Disk& disk) {
   const std::string& device_path = disk.storage_device_path();
   if (!disk.is_read_only() && disk.is_mounted() &&
       GetDeviceState(device_path) != DEVICE_HARD_UNPLUGGED_AND_REPORTED) {
-    OnDeviceEvent(file_manager_private::DEVICE_EVENT_TYPE_HARD_UNPLUGGED,
+    OnDeviceEvent(file_manager_private::DeviceEventType::kHardUnplugged,
                   device_path, disk.device_label());
     SetDeviceState(device_path, DEVICE_HARD_UNPLUGGED_AND_REPORTED);
   }
@@ -106,10 +106,10 @@ void DeviceEventRouter::OnFormatStarted(const std::string& device_path,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (success) {
-    OnDeviceEvent(file_manager_private::DEVICE_EVENT_TYPE_FORMAT_START,
+    OnDeviceEvent(file_manager_private::DeviceEventType::kFormatStart,
                   device_path, device_label);
   } else {
-    OnDeviceEvent(file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL,
+    OnDeviceEvent(file_manager_private::DeviceEventType::kFormatFail,
                   device_path, device_label);
   }
 }
@@ -119,8 +119,8 @@ void DeviceEventRouter::OnFormatCompleted(const std::string& device_path,
                                           bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  OnDeviceEvent(success ? file_manager_private::DEVICE_EVENT_TYPE_FORMAT_SUCCESS
-                        : file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL,
+  OnDeviceEvent(success ? file_manager_private::DeviceEventType::kFormatSuccess
+                        : file_manager_private::DeviceEventType::kFormatFail,
                 device_path, device_label);
 }
 
@@ -130,10 +130,10 @@ void DeviceEventRouter::OnPartitionStarted(const std::string& device_path,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (success) {
-    OnDeviceEvent(file_manager_private::DEVICE_EVENT_TYPE_PARTITION_START,
+    OnDeviceEvent(file_manager_private::DeviceEventType::kPartitionStart,
                   device_path, device_label);
   } else {
-    OnDeviceEvent(file_manager_private::DEVICE_EVENT_TYPE_PARTITION_FAIL,
+    OnDeviceEvent(file_manager_private::DeviceEventType::kPartitionFail,
                   device_path, device_label);
   }
 }
@@ -144,8 +144,8 @@ void DeviceEventRouter::OnPartitionCompleted(const std::string& device_path,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   OnDeviceEvent(success
-                    ? file_manager_private::DEVICE_EVENT_TYPE_PARTITION_SUCCESS
-                    : file_manager_private::DEVICE_EVENT_TYPE_PARTITION_FAIL,
+                    ? file_manager_private::DeviceEventType::kPartitionSuccess
+                    : file_manager_private::DeviceEventType::kPartitionFail,
                 device_path, device_label);
 }
 
@@ -154,8 +154,8 @@ void DeviceEventRouter::OnRenameStarted(const std::string& device_path,
                                         bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  OnDeviceEvent(success ? file_manager_private::DEVICE_EVENT_TYPE_RENAME_START
-                        : file_manager_private::DEVICE_EVENT_TYPE_RENAME_FAIL,
+  OnDeviceEvent(success ? file_manager_private::DeviceEventType::kRenameStart
+                        : file_manager_private::DeviceEventType::kRenameFail,
                 device_path, device_label);
 }
 
@@ -164,8 +164,8 @@ void DeviceEventRouter::OnRenameCompleted(const std::string& device_path,
                                           bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  OnDeviceEvent(success ? file_manager_private::DEVICE_EVENT_TYPE_RENAME_SUCCESS
-                        : file_manager_private::DEVICE_EVENT_TYPE_RENAME_FAIL,
+  OnDeviceEvent(success ? file_manager_private::DeviceEventType::kRenameSuccess
+                        : file_manager_private::DeviceEventType::kRenameFail,
                 device_path, device_label);
 }
 

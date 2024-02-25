@@ -93,6 +93,8 @@ TEST_F(DiscountProcessorTest, TestGetDiscountsForCluster) {
   ASSERT_EQ(map[url_foo].size(), 1u);
   ASSERT_EQ(map[url_foo][0]->value_in_text, "15% off");
   const GURL annotated_url = GURL(
-      "https://www.foo.com/?utm_source=chrome-history-cluster-with-discount");
+      "https://www.foo.com/"
+      "?utm_source=chrome&utm_medium=app&utm_campaign=chrome-history-cluster-"
+      "with-discount");
   ASSERT_EQ(map[url_foo][0]->annotated_visit_url, annotated_url);
 }

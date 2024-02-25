@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ServiceInterface} from 'chrome://extensions/extensions.js';
+import type {ServiceInterface} from 'chrome://extensions/extensions.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -33,6 +33,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'deleteErrors',
       'deleteItem',
       'deleteItems',
+      'dismissSafetyHubExtensionsMenuNotification',
       'uninstallItem',
       'downloadActivities',
       'getExtensionActivityLog',
@@ -63,6 +64,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'setItemCollectsErrors',
       'setItemEnabled',
       'setItemHostAccess',
+      'setItemPinnedToToolbar',
       'setItemSafetyCheckWarningAcknowledged',
       'setProfileInDevMode',
       'setShortcutHandlingSuspended',
@@ -170,6 +172,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   setItemHostAccess(id: string, access: chrome.developerPrivate.HostAccess) {
     this.methodCalled('setItemHostAccess', [id, access]);
+  }
+
+  setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean) {
+    this.methodCalled('setItemPinnedToToolbar', [id, pinnedToToolbar]);
   }
 
   setShortcutHandlingSuspended(enable: boolean) {
@@ -384,5 +390,9 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       updates: chrome.developerPrivate.ExtensionSiteAccessUpdate[]) {
     this.methodCalled('updateSiteAccess', site, updates);
     return Promise.resolve();
+  }
+
+  dismissSafetyHubExtensionsMenuNotification() {
+    this.methodCalled('dismissSafetyHubExtensionsMenuNotification');
   }
 }

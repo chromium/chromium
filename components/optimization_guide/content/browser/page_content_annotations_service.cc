@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -22,7 +23,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
-#include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -102,7 +102,7 @@ void LogRelatedSearchesCacheHit(bool cache_hit) {
 // UKM.
 void MaybeRecordVisibilityUKM(
     const HistoryVisit& visit,
-    const absl::optional<history::VisitContentModelAnnotations>&
+    const std::optional<history::VisitContentModelAnnotations>&
         content_annotations) {
   if (!visit.navigation_id) {
     return;
@@ -172,6 +172,7 @@ std::string GetCanonicalSearchURL(const GURL& url,
 PageContentAnnotationsService::PageContentAnnotationsService(
     std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
     const std::string& application_locale,
+    const std::string& country_code,
     OptimizationGuideModelProvider* optimization_guide_model_provider,
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
@@ -202,10 +203,6 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     zero_suggest_cache_service_observation_.Observe(
         zero_suggest_cache_service_);
   }
-  if (features::ShouldQueryEmbeddings()) {
-    text_embeddings_for_visits_ =
-        std::make_unique<InMemoryTextEmbeddingManager>();
-  }
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
       optimization_guide_model_provider);
@@ -217,25 +214,18 @@ PageContentAnnotationsService::PageContentAnnotationsService(
         AnnotationType::kContentVisibility, base::DoNothing());
     annotation_types_to_execute_.push_back(AnnotationType::kContentVisibility);
   }
-  if (features::ShouldExecutePageEntitiesModelOnPageContent(
-          application_locale)) {
-    model_manager_->RequestAndNotifyWhenModelAvailable(
-        AnnotationType::kPageEntities, base::DoNothing());
-    annotation_types_to_execute_.push_back(AnnotationType::kPageEntities);
-  }
-  if (features::ShouldExecuteTextEmbeddingModelOnPageContent(
-          application_locale)) {
-    model_manager_->RequestAndNotifyWhenModelAvailable(
-        AnnotationType::kTextEmbedding, base::DoNothing());
-    annotation_types_to_execute_.push_back(AnnotationType::kTextEmbedding);
-  }
 #endif
 
+  is_remote_page_metadata_fetching_enabled_ =
+      features::RemotePageMetadataEnabled(application_locale, country_code);
+  is_salient_image_metadata_fetching_enabled_ =
+      features::ShouldPersistSalientImageMetadata(application_locale,
+                                                  country_code);
   std::vector<proto::OptimizationType> optimization_types;
-  if (features::RemotePageMetadataEnabled()) {
+  if (is_remote_page_metadata_fetching_enabled_) {
     optimization_types.emplace_back(proto::PAGE_ENTITIES);
   }
-  if (features::ShouldPersistSalientImageMetadata()) {
+  if (is_salient_image_metadata_fetching_enabled_) {
     optimization_types.emplace_back(proto::SALIENT_IMAGE);
   }
   if (optimization_guide_decider_ && !optimization_types.empty()) {
@@ -334,49 +324,38 @@ void PageContentAnnotationsService::AnnotateVisitBatch() {
   }
 
   std::unique_ptr<
-      std::vector<absl::optional<history::VisitContentModelAnnotations>>>
+      std::vector<std::optional<history::VisitContentModelAnnotations>>>
       merged_annotation_outputs = std::make_unique<
-          std::vector<absl::optional<history::VisitContentModelAnnotations>>>();
+          std::vector<std::optional<history::VisitContentModelAnnotations>>>();
   merged_annotation_outputs->reserve(inputs.size());
 
-  std::unique_ptr<std::vector<absl::optional<std::vector<float>>>>
-      merged_embedding_outputs =
-          std::make_unique<std::vector<absl::optional<std::vector<float>>>>();
-  merged_embedding_outputs->reserve(inputs.size());
-
   for (size_t i = 0; i < inputs.size(); i++) {
-    merged_annotation_outputs->push_back(absl::nullopt);
-    merged_embedding_outputs->push_back(absl::nullopt);
+    merged_annotation_outputs->push_back(std::nullopt);
   }
 
-  std::vector<absl::optional<history::VisitContentModelAnnotations>>*
+  std::vector<std::optional<history::VisitContentModelAnnotations>>*
       merged_annotation_outputs_ptr = merged_annotation_outputs.get();
-
-  std::vector<absl::optional<std::vector<float>>>*
-      merged_embedding_outputs_ptr = merged_embedding_outputs.get();
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       annotation_types_to_execute_.size(),
       base::BindOnce(&PageContentAnnotationsService::OnBatchVisitsAnnotated,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(merged_annotation_outputs),
-                     std::move(merged_embedding_outputs)));
+                     std::move(merged_annotation_outputs)));
 
   for (AnnotationType type : annotation_types_to_execute_) {
     annotator_->Annotate(
         base::BindOnce(
             &PageContentAnnotationsService::OnAnnotationBatchComplete,
             weak_ptr_factory_.GetWeakPtr(), type, merged_annotation_outputs_ptr,
-            merged_embedding_outputs_ptr, barrier_closure),
+            barrier_closure),
         inputs, type);
   }
 }
 
 void PageContentAnnotationsService::OnAnnotationBatchComplete(
     AnnotationType type,
-    std::vector<absl::optional<history::VisitContentModelAnnotations>>*
+    std::vector<std::optional<history::VisitContentModelAnnotations>>*
         merge_to_output,
-    std::vector<absl::optional<std::vector<float>>>* merge_embeddings_to_output,
     base::OnceClosure signal_merge_complete_callback,
     const std::vector<BatchAnnotationResult>& batch_result) {
   DCHECK_EQ(merge_to_output->size(), batch_result.size());
@@ -384,7 +363,8 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
     const BatchAnnotationResult result = batch_result[i];
     DCHECK_EQ(type, result.type());
 
-    if (optimization_guide_logger_) {
+    if (optimization_guide_logger_ &&
+        optimization_guide_logger_->ShouldEnableDebugLogs()) {
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
           optimization_guide_logger_)
@@ -399,19 +379,6 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
     if (type == AnnotationType::kContentVisibility) {
       DCHECK(result.visibility_score());
       current_annotations.visibility_score = *result.visibility_score();
-    } else if (type == AnnotationType::kPageEntities) {
-      DCHECK(result.entities());
-      for (const ScoredEntityMetadata& scored_md : *result.entities()) {
-        DCHECK(scored_md.score >= 0.0 && scored_md.score <= 1.0);
-        history::VisitContentModelAnnotations::Category category(
-            scored_md.metadata.entity_id,
-            static_cast<int>(100 * scored_md.score));
-        history::VisitContentModelAnnotations::MergeCategoryIntoVector(
-            category, &current_annotations.entities);
-      }
-    } else if (type == AnnotationType::kTextEmbedding) {
-      DCHECK(result.embeddings());
-      merge_embeddings_to_output->at(i) = *result.embeddings();
     }
 
     history::VisitContentModelAnnotations previous_annotations =
@@ -429,22 +396,11 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
 
 void PageContentAnnotationsService::OnBatchVisitsAnnotated(
     std::unique_ptr<
-        std::vector<absl::optional<history::VisitContentModelAnnotations>>>
-        merged_annotation_outputs,
-    std::unique_ptr<std::vector<absl::optional<std::vector<float>>>>
-        merged_embedding_outputs) {
+        std::vector<std::optional<history::VisitContentModelAnnotations>>>
+        merged_annotation_outputs) {
   DCHECK_EQ(merged_annotation_outputs->size(),
             current_visit_annotation_batch_.size());
-  DCHECK_EQ(merged_embedding_outputs->size(),
-            current_visit_annotation_batch_.size());
   for (size_t i = 0; i < merged_annotation_outputs->size(); i++) {
-    if (features::ShouldQueryEmbeddings()) {
-      text_embeddings_for_visits_->AddEmbeddingForVisit(
-          current_visit_annotation_batch_[i].url,
-          current_visit_annotation_batch_[i].text_to_annotate.value(),
-          current_visit_annotation_batch_[i].nav_entry_timestamp,
-          merged_embedding_outputs->at(i));
-    }
     OnPageContentAnnotated(current_visit_annotation_batch_[i],
                            merged_annotation_outputs->at(i));
   }
@@ -473,7 +429,8 @@ void PageContentAnnotationsService::BatchAnnotate(
           [](BatchAnnotationCallback original_callback,
              OptimizationGuideLogger* optimization_guide_logger,
              const std::vector<BatchAnnotationResult>& batch_result) {
-            if (optimization_guide_logger) {
+            if (optimization_guide_logger &&
+                optimization_guide_logger->ShouldEnableDebugLogs()) {
               for (const BatchAnnotationResult& result : batch_result) {
                 OPTIMIZATION_GUIDE_LOGGER(
                     optimization_guide_common::mojom::LogSource::
@@ -488,13 +445,13 @@ void PageContentAnnotationsService::BatchAnnotate(
       inputs, annotation_type);
 }
 
-absl::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
+std::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
     AnnotationType type) const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   DCHECK(annotator_);
   return annotator_->GetModelInfoForType(type);
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 
@@ -521,7 +478,7 @@ void PageContentAnnotationsService::ExtractRelatedSearches(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
-    const absl::optional<history::VisitContentModelAnnotations>&
+    const std::optional<history::VisitContentModelAnnotations>&
         content_annotations) {
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
@@ -529,26 +486,9 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   if (!content_annotations)
     return;
 
-  bool is_new_entry = false;
   if (annotated_text_cache_.Peek(*visit.text_to_annotate) ==
       annotated_text_cache_.end()) {
-    is_new_entry = true;
     annotated_text_cache_.Put(*visit.text_to_annotate, *content_annotations);
-  }
-
-  // Only log entities for new entries for local visits.
-  if (is_new_entry && !visit.visit_id) {
-    for (const auto& entity : content_annotations->entities) {
-      // Skip low weight entities.
-      if (entity.weight < 50)
-        continue;
-      GetMetadataForEntityId(
-          entity.id,
-          base::BindOnce(
-              &PageContentAnnotationsService::OnEntityMetadataRetrieved,
-              weak_ptr_factory_.GetWeakPtr(), visit.url, entity.id,
-              entity.weight));
-    }
   }
 
   MaybeRecordVisibilityUKM(visit, content_annotations);
@@ -603,9 +543,7 @@ void PageContentAnnotationsService::OnZeroSuggestResponseUpdated(
   for (const auto& result : suggest_results) {
     const auto subtypes = result.subtypes();
     // Suggestions with HIVEMIND subtype are considered "related searches".
-    auto it = std::find(subtypes.begin(), subtypes.end(),
-                        omnibox::SuggestSubtype::SUBTYPE_HIVEMIND);
-    if (it != subtypes.end()) {
+    if (base::Contains(subtypes, omnibox::SuggestSubtype::SUBTYPE_HIVEMIND)) {
       related_searches.push_back(base::UTF16ToUTF8(
           base::CollapseWhitespace(result.suggestion(), true)));
     }
@@ -727,44 +665,6 @@ void PageContentAnnotationsService::OnURLQueried(
       annotation_type);
 }
 
-void PageContentAnnotationsService::QueryEmbeddings(
-    base::OnceCallback<void(history::QueryResults&)> callback_to_history_page,
-    const std::string& query) {
-  std::vector<std::string> query_input = {query};
-  // Generate an embedding for the query using the same BatchAnnotate API
-  // used to generate embeddings for page visits.
-  BatchAnnotate(base::BindOnce(&PageContentAnnotationsService::OnQueryEmbedded,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback_to_history_page)),
-                query_input, AnnotationType::kTextEmbedding);
-}
-
-void PageContentAnnotationsService::OnQueryEmbedded(
-    base::OnceCallback<void(history::QueryResults&)> callback_to_history_page,
-    const std::vector<BatchAnnotationResult>& result) {
-  DCHECK_EQ(result.size(), 1U);
-  // Find closest embeddings with result.embeddings()
-  history::QueryResults results;
-  if (result[0].embeddings().has_value()) {
-    results = text_embeddings_for_visits_
-                  ->InMemoryTextEmbeddingManager::QueryEmbeddings(
-                      result[0].embeddings().value());
-  } else {
-    LOG(ERROR) << "Invalid embedding, cannot execute QueryEmbeddings";
-  }
-  std::move(callback_to_history_page).Run(results);
-}
-
-void PageContentAnnotationsService::GetMetadataForEntityId(
-    const std::string& entity_id,
-    EntityMetadataRetrievedCallback callback) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
-#else
-  std::move(callback).Run(absl::nullopt);
-#endif
-}
-
 void PageContentAnnotationsService::OnURLsModified(
     history::HistoryService* history_service,
     const history::URLRows& changed_urls) {
@@ -790,8 +690,12 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
     const history::VisitRow& visit_row,
-    absl::optional<int64_t> local_navigation_id) {
+    std::optional<int64_t> local_navigation_id) {
   DCHECK_EQ(history_service, history_service_);
+
+  if (!url_row.url().SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
 
   // By default, annotate the title.
   HistoryVisit history_visit(visit_row.visit_id);
@@ -854,7 +758,8 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     return;
   }
 
-  if (features::RemotePageMetadataEnabled() && optimization_guide_decider_) {
+  if (is_remote_page_metadata_fetching_enabled_ &&
+      optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimization(
         url_row.url(), proto::PAGE_ENTITIES,
         base::BindOnce(
@@ -862,7 +767,7 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
             weak_ptr_factory_.GetWeakPtr(), history_visit,
             proto::PAGE_ENTITIES));
   }
-  if (features::ShouldPersistSalientImageMetadata() &&
+  if (is_salient_image_metadata_fetching_enabled_ &&
       optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimization(
         url_row.url(), proto::SALIENT_IMAGE,
@@ -957,36 +862,6 @@ void PageContentAnnotationsService::PersistSalientImageMetadata(
   }
 }
 
-void PageContentAnnotationsService::OnEntityMetadataRetrieved(
-    const GURL& url,
-    const std::string& entity_id,
-    int weight,
-    const absl::optional<EntityMetadata>& entity_metadata) {
-  if (!entity_metadata.has_value())
-    return;
-
-  GURL::Replacements replacements;
-  replacements.ClearQuery();
-  replacements.ClearRef();
-
-  for (const auto& collection : entity_metadata->collections) {
-    PageEntityCollection page_entity_collection =
-        GetPageEntityCollectionForString(collection);
-    base::UmaHistogramEnumeration(
-        "OptimizationGuide.PageContentAnnotations.EntityCollection_50",
-        page_entity_collection);
-  }
-
-  if (optimization_guide_logger_) {
-    OPTIMIZATION_GUIDE_LOGGER(
-        optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
-        optimization_guide_logger_)
-        << "Entities: Url=" << url.ReplaceComponents(replacements)
-        << " Weight=" << base::NumberToString(weight) << ". "
-        << entity_metadata->ToHumanReadableString();
-  }
-}
-
 void PageContentAnnotationsService::NotifyPageContentAnnotatedObservers(
     AnnotationType annotation_type,
     const GURL& url,
@@ -1011,7 +886,7 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
 
   switch (optimization_type) {
     case proto::OptimizationType::PAGE_ENTITIES: {
-      absl::optional<proto::PageEntitiesMetadata> page_entities_metadata =
+      std::optional<proto::PageEntitiesMetadata> page_entities_metadata =
           metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
       if (page_entities_metadata) {
         PersistRemotePageMetadata(history_visit, *page_entities_metadata);
@@ -1019,7 +894,7 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
       break;
     }
     case proto::OptimizationType::SALIENT_IMAGE: {
-      absl::optional<proto::SalientImageMetadata> salient_image_metadata =
+      std::optional<proto::SalientImageMetadata> salient_image_metadata =
           metadata.ParsedMetadata<proto::SalientImageMetadata>();
       if (salient_image_metadata) {
         PersistSalientImageMetadata(history_visit, *salient_image_metadata);

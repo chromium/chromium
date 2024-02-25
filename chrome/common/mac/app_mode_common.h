@@ -22,7 +22,8 @@
 
 // The version of the ChromeAppModeInfo struct below. If the format of the
 // struct ever changes, be sure to update the APP_SHIM_VERSION_NUMBER here and
-// the corresponding line in //chrome/app/framework.order .
+// the corresponding lines in //chrome/app/framework.order and
+// //chrome/app/framework.exports .
 #define APP_SHIM_VERSION_NUMBER 7
 
 // All the other macro magic to make APP_SHIM_VERSION_NUMBER usable.
@@ -45,6 +46,12 @@ extern const char kAppShimBootstrapNameFragment[];
 // along with any other necessary configuration. The shim will read this to
 // determine which version of the framework to load.
 extern const char kRunningChromeVersionSymlinkName[];
+
+// A file used to store feature and field trial state of the currently or most
+// recently running Chrome. The shim will read this to determine what features
+// to enable if it wasn't launched by Chrome, until it can get the current state
+// from Chrome.
+extern const char kFeatureStateFileName[];
 
 // The process ID of the Chrome process that launched the app shim.
 // The presence of this switch instructs the app shim to send LaunchApp with
@@ -242,6 +249,10 @@ struct ChromeConnectionConfig {
   // Parses a path value into a configuration.
   static ChromeConnectionConfig DecodeFromPath(const base::FilePath& path);
 };
+
+// Returns true when running on version of macOS that can perform code signing
+// at runtime and the UseAdHocSigningForWebAppShims feature is enabled.
+bool UseAdHocSigningForWebAppShims();
 
 }  // namespace app_mode
 

@@ -42,7 +42,7 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
   // Returns after InitializeGlobalScope() is called.
   void RunUntilInitializeGlobalScope();
 
-  const absl::optional<base::TimeDelta>& idle_delay() const {
+  const std::optional<base::TimeDelta>& idle_delay() const {
     return idle_delay_;
   }
 
@@ -53,11 +53,17 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
   // Flush messages in the message pipe.
   void FlushForTesting();
 
+  base::WeakPtr<FakeServiceWorker> AsWeakPtr();
+
  protected:
   // blink::mojom::ServiceWorker overrides:
   void InitializeGlobalScope(
       mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerHost>
           service_worker_host,
+      mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+          associated_interfaces_from_browser,
+      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+          associated_interfaces_to_browser,
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
       blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
       FetchHandlerExistence fetch_handler_existence,
@@ -91,13 +97,13 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
       int action_index,
-      const absl::optional<std::u16string>& reply,
+      const std::optional<std::u16string>& reply,
       DispatchNotificationClickEventCallback callback) override;
   void DispatchNotificationCloseEvent(
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
       DispatchNotificationCloseEventCallback callback) override;
-  void DispatchPushEvent(const absl::optional<std::string>& payload,
+  void DispatchPushEvent(const std::optional<std::string>& payload,
                          DispatchPushEventCallback callback) override;
   void DispatchPushSubscriptionChangeEvent(
       blink::mojom::PushSubscriptionPtr old_subscription,
@@ -158,8 +164,10 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
 
   mojo::Receiver<blink::mojom::ServiceWorker> receiver_{this};
 
-  // absl::nullopt means SetIdleDelay() is not called.
-  absl::optional<base::TimeDelta> idle_delay_;
+  // std::nullopt means SetIdleDelay() is not called.
+  std::optional<base::TimeDelta> idle_delay_;
+
+  base::WeakPtrFactory<FakeServiceWorker> weak_ptr_factory_{this};
 };
 
 }  // namespace content

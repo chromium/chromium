@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-100">
 <meta charset="utf-8">
 <style>
 .bidi1 {
-    direction: rtl; 
+    direction: rtl;
     -webkit-rtl-ordering: logical;
     width: 100px;
 }
@@ -94,9 +95,9 @@ for (var i = 1; i < 4; ++i) {
 var leftAligned = document.getElementById("left-aligned");
 var cloned = leftAligned.cloneNode(true);
 for (var child = cloned.firstChild; child; child = child.nextSibling) {
-    if (child.tagName == "SELECT") 
+    if (child.tagName == "SELECT")
         child.style.direction = "rtl";
-    if (child.tagName == "DIV") 
+    if (child.tagName == "DIV")
         child.style.textAlign = "right";
 }
 cloned.setAttribute("id", "right-aligned");

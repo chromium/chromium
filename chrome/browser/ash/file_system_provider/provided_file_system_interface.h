@@ -31,8 +31,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInfo;
 class OperationRequestManager;
@@ -142,7 +141,7 @@ class ProvidedFileSystemInterface {
   // Mask of fields requested from the GetMetadata() call.
   typedef int MetadataFieldMask;
 
-  virtual ~ProvidedFileSystemInterface() {}
+  virtual ~ProvidedFileSystemInterface() = default;
 
   // Requests unmounting of the file system. The callback is called when the
   // request is accepted or rejected, with an error code.
@@ -315,7 +314,6 @@ class ProvidedFileSystemInterface {
   virtual std::unique_ptr<ScopedUserInteraction> StartUserInteraction() = 0;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDED_FILE_SYSTEM_INTERFACE_H_

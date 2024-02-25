@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "chromeos/ash/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::device_sync {
 
@@ -52,8 +52,8 @@ CryptAuthDeviceRegistryImpl::CryptAuthDeviceRegistryImpl(
 
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap instance_id_to_device_map;
   for (const auto [key, value] : dict) {
-    absl::optional<std::string> instance_id = util::DecodeFromString(key);
-    absl::optional<CryptAuthDevice> device =
+    std::optional<std::string> instance_id = util::DecodeFromString(key);
+    std::optional<CryptAuthDevice> device =
         CryptAuthDevice::FromDictionary(value.GetDict());
     if (!instance_id || !device || *instance_id != device->instance_id()) {
       PA_LOG(ERROR) << "Error retrieving device with Instance ID " << key

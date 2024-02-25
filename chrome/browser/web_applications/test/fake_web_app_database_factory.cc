@@ -38,7 +38,7 @@ Registry FakeWebAppDatabaseFactory::ReadRegistry() {
   base::RunLoop run_loop;
 
   GetStore()->ReadAllData(base::BindLambdaForTesting(
-      [&](const absl::optional<syncer::ModelError>& error,
+      [&](const std::optional<syncer::ModelError>& error,
           std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
         DCHECK(!error);
 
@@ -46,7 +46,7 @@ Registry FakeWebAppDatabaseFactory::ReadRegistry() {
           auto app = WebAppDatabase::ParseWebApp(record.id, record.value);
           DCHECK(app);
 
-          AppId app_id = app->app_id();
+          webapps::AppId app_id = app->app_id();
           registry.emplace(std::move(app_id), std::move(app));
         }
         run_loop.Quit();
@@ -56,8 +56,8 @@ Registry FakeWebAppDatabaseFactory::ReadRegistry() {
   return registry;
 }
 
-std::set<AppId> FakeWebAppDatabaseFactory::ReadAllAppIds() {
-  std::set<AppId> app_ids;
+std::set<webapps::AppId> FakeWebAppDatabaseFactory::ReadAllAppIds() {
+  std::set<webapps::AppId> app_ids;
 
   Registry registry = ReadRegistry();
   for (Registry::value_type& kv : registry)
@@ -77,14 +77,15 @@ void FakeWebAppDatabaseFactory::WriteProtos(
     GURL start_url(proto->sync_data().start_url());
     DCHECK(!start_url.is_empty());
     DCHECK(start_url.is_valid());
-    AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+    webapps::AppId app_id =
+        GenerateAppId(proto->sync_data().relative_manifest_id(), start_url);
     write_batch->WriteData(app_id, proto->SerializeAsString());
   }
 
   GetStore()->CommitWriteBatch(
       std::move(write_batch),
       base::BindLambdaForTesting(
-          [&](const absl::optional<syncer::ModelError>& error) {
+          [&](const std::optional<syncer::ModelError>& error) {
             DCHECK(!error);
             run_loop.Quit();
           }));

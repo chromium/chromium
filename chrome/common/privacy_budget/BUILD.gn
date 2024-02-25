@@ -14,6 +14,8 @@ source_set("privacy_budget") {
     "types.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//third_party/blink/public/common",

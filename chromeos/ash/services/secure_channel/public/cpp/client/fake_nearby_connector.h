@@ -116,11 +116,15 @@ class FakeNearbyConnector : public NearbyConnector {
     ConnectArgs(
         const std::vector<uint8_t>& bluetooth_public_address,
         mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+        mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+            nearby_connection_state_listener,
         ConnectCallback callback);
     ~ConnectArgs();
 
     std::vector<uint8_t> bluetooth_public_address;
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver;
+    mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener;
     ConnectCallback callback;
   };
 
@@ -129,6 +133,8 @@ class FakeNearbyConnector : public NearbyConnector {
       const std::vector<uint8_t>& bluetooth_public_address,
       const std::vector<uint8_t>& service_data,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
+      mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener,
       ConnectCallback callback) override;
 
   base::queue<std::unique_ptr<ConnectArgs>> queued_connect_args_;

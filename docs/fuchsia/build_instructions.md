@@ -15,8 +15,8 @@ There are instructions for other platforms linked from the
 *   At least 100GB of free disk space.
 *   You must have Git and Python installed already.
 
-Most development is done on Ubuntu. Mac build is supported on a best-effort
-basis. If you already have a Chromium checkout, continue to the
+Most development is done on Ubuntu. Mac build is not supported.
+If you already have a Chromium checkout, continue to the
 [next section](#instructions-for-current-chromium-developers). Otherwise, skip
 to the [following section](#instructions-for-new-chromium-developers). If you
 are a Fuchsia developer, see also
@@ -148,7 +148,7 @@ both images. The set of available images is listed in the
 [DEPS file](https://source.chromium.org/chromium/chromium/src/+/main:DEPS).
 
 Note: fxbug.dev/85552 tracks migration away from the legacy image names, like
-`qemu.x64`, which is mapped to `terminal.qemu-x64-release` by the
+`qemu.x64`, which is mapped to `terminal.x64-release` by the
 [`update_images.py`](https://source.chromium.org/chromium/chromium/src/+/main:build/fuchsia/update_images.py)
 helper script.
 

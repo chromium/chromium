@@ -52,7 +52,7 @@ hps::FeatureConfig ParseFeatureConfigFromList(const base::Value::List& args) {
   }
 
   // Check that there is a valid filter_config_case in the map.
-  absl::optional<int> filter_config_case = arg0->FindInt("filter_config_case");
+  std::optional<int> filter_config_case = arg0->FindInt("filter_config_case");
   if (!filter_config_case.has_value() ||
       (filter_config_case.value() != kConsecutiveResultsFilterConfig &&
        filter_config_case.value() != kAverageFilterConfig)) {
@@ -131,10 +131,10 @@ class HumanPresenceInternalsUIMessageHandler
   void QuerySnoopingProtection(const base::Value::List& args);
 
   void OnConnected(bool connected);
-  void OnLockOnLeaveResult(absl::optional<hps::HpsResultProto>);
-  void OnSnoopingProtectionResult(absl::optional<hps::HpsResultProto>);
-  static absl::optional<std::string> ReadManifest();
-  void UpdateManifest(absl::optional<std::string> manifest);
+  void OnLockOnLeaveResult(std::optional<hps::HpsResultProto>);
+  void OnSnoopingProtectionResult(std::optional<hps::HpsResultProto>);
+  static std::optional<std::string> ReadManifest();
+  void UpdateManifest(std::optional<std::string> manifest);
 
   base::ScopedObservation<ash::HumanPresenceDBusClient,
                           ash::HumanPresenceDBusClient::Observer>
@@ -162,7 +162,7 @@ void HumanPresenceInternalsUIMessageHandler::OnHpsNotifyChanged(
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnLockOnLeaveResult(
-    absl::optional<hps::HpsResultProto> state) {
+    std::optional<hps::HpsResultProto> state) {
   base::Value::Dict value;
   if (state.has_value()) {
     value.Set("state", state->value());
@@ -175,7 +175,7 @@ void HumanPresenceInternalsUIMessageHandler::OnLockOnLeaveResult(
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnSnoopingProtectionResult(
-    absl::optional<hps::HpsResultProto> state) {
+    std::optional<hps::HpsResultProto> state) {
   base::Value::Dict value;
   if (state.has_value()) {
     value.Set("state", state->value());
@@ -224,18 +224,18 @@ void HumanPresenceInternalsUIMessageHandler::OnConnected(bool connected) {
 }
 
 // static
-absl::optional<std::string>
+std::optional<std::string>
 HumanPresenceInternalsUIMessageHandler::ReadManifest() {
   std::string manifest;
   const base::FilePath::CharType kManifestPath[] =
       FILE_PATH_LITERAL("/usr/lib/firmware/hps/manifest.txt");
   if (!base::ReadFileToString(base::FilePath(kManifestPath), &manifest))
-    return absl::nullopt;
+    return std::nullopt;
   return manifest;
 }
 
 void HumanPresenceInternalsUIMessageHandler::UpdateManifest(
-    absl::optional<std::string> manifest) {
+    std::optional<std::string> manifest) {
   if (!manifest.has_value()) {
     FireWebUIListener(hps::kHumanPresenceInternalsManifestEvent,
                       base::Value("(Failed to read manifest)"));

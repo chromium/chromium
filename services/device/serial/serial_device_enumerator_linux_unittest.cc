@@ -53,8 +53,8 @@ TEST_F(SerialDeviceEnumeratorLinuxTest, EnumerateUsb) {
   testing::FakeUdevLoader fake_udev;
   fake_udev.AddFakeDevice(/*name=*/"ttyACM0",
                           /*syspath=*/"/sys/class/tty/ttyACM0",
-                          /*subsystem=*/"tty", /*devnode=*/absl::nullopt,
-                          /*devtype=*/absl::nullopt, /*sysattrs=*/{},
+                          /*subsystem=*/"tty", /*devnode=*/std::nullopt,
+                          /*devtype=*/std::nullopt, /*sysattrs=*/{},
                           /*properties=*/
                           {
                               {"DEVNAME", "/dev/ttyACM0"},
@@ -82,8 +82,8 @@ TEST_F(SerialDeviceEnumeratorLinuxTest, EnumerateRfcomm) {
   testing::FakeUdevLoader fake_udev;
   fake_udev.AddFakeDevice(/*name=*/"rfcomm0",
                           /*syspath=*/"/sys/class/tty/rfcomm0",
-                          /*subsystem=*/"tty", /*devnode=*/absl::nullopt,
-                          /*devtype=*/absl::nullopt, /*sysattrs=*/{},
+                          /*subsystem=*/"tty", /*devnode=*/std::nullopt,
+                          /*devtype=*/std::nullopt, /*sysattrs=*/{},
                           /*properties=*/
                           {
                               {"DEVNAME", "/dev/rfcomm0"},

@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] Mixed auto/hint light dismiss behavior, click on auto1
+  assert_equals: Error, index 2 (innerhint1) expected false but got true
+[FAIL] Mixed auto/hint light dismiss behavior, click on auto2
+  assert_equals: Error, index 2 (innerhint1) expected false but got true
+[FAIL] Mixed auto/hint light dismiss behavior, click on innerhint1
+  assert_equals: Error, index 3 (innerhint2) expected false but got true
+[FAIL] Mixed auto/hint light dismiss behavior, click on innerhint2
+  assert_equals: Error, index 4 (hint1) expected false but got true
+[FAIL] Mixed auto/hint light dismiss behavior, click on hint1
+  assert_equals: Error, index 0 (auto1) expected true but got false
+[FAIL] Mixed auto/hint light dismiss behavior, click on hint2
+  assert_equals: Error, index 0 (auto1) expected true but got false
+[FAIL] Clicking outside closes all
+  assert_equals: Error, index 2 (innerhint1) expected false but got true
+[FAIL] Auto cannot be nested inside hint (invalidauto1)
+  assert_equals: auto inside hint ignores the hints and gets nested within auto2, index 2 (innerhint1) expected false but got true
+[FAIL] Auto cannot be nested inside hint (invalidauto2)
+  assert_equals: auto inside hint works as an independent (non-nested) auto, index 2 (innerhint1) expected false but got true
+Harness: the test ran to completion.
+

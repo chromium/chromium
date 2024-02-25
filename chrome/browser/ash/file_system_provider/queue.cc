@@ -10,8 +10,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 Queue::Task::Task() : token(0) {
 }
@@ -22,16 +21,14 @@ Queue::Task::Task(size_t token, AbortableCallback callback)
 Queue::Task::Task(Task&& other) = default;
 Queue::Task& Queue::Task::operator=(Task&& other) = default;
 
-Queue::Task::~Task() {
-}
+Queue::Task::~Task() = default;
 
 Queue::Queue(size_t max_in_parallel)
     : max_in_parallel_(max_in_parallel), next_token_(1) {
   CHECK_LT(0u, max_in_parallel);
 }
 
-Queue::~Queue() {
-}
+Queue::~Queue() = default;
 
 size_t Queue::NewToken() {
   return next_token_++;
@@ -104,5 +101,4 @@ void Queue::Abort(size_t token) {
   NOTREACHED();
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

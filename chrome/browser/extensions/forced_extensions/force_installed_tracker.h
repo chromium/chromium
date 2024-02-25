@@ -146,7 +146,7 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
       const ExtensionId& id) const;
 
   static bool IsExtensionFetchedFromCache(
-      const absl::optional<ExtensionDownloaderDelegate::CacheStatus>& status);
+      const std::optional<ExtensionDownloaderDelegate::CacheStatus>& status);
 
  private:
   policy::PolicyService* policy_service();

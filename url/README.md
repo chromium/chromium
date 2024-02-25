@@ -73,3 +73,19 @@ restriction has been relaxed somewhat. Blink still provides its own URL object
 using its own string type, so the insulation that the Utility layer provides is
 still useful. But some STL strings and calls to base functions have gradually
 been added in places where doing so is possible.
+
+## Caution for terminologies
+
+Due to historical usage, the term "Standard URL" is currently used within the
+code to represent "[Special URLs][1]", except for "file:" scheme URL, as defined
+in the URL Standard. However, this terminology is outdated and can lead to
+confusion, particularly now that we are supporting [non-special URLs][2] as well
+([crbug/1416006][3]). For the sake of consistency and clarity, it is recommended
+to switch to the more accurate term "Special URL" throughout the codebase.
+However, this change should be carefully planned and executed due to the
+widespread use of the current terminology in both internal and third-party code.
+For a while, "Standard URL" and "Special URL" are used interchangeably.
+
+[1]: https://url.spec.whatwg.org/#is-special
+[2]: https://url.spec.whatwg.org/#is-not-special
+[3]: https://crbug.com/1416006

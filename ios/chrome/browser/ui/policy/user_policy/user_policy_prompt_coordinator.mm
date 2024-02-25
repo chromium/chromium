@@ -7,8 +7,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_mediator.h"
@@ -69,21 +69,16 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   self.presentedViewController.actionHandler = self.mediator;
   self.presentedViewController.presentationController.delegate = self.mediator;
 
-  if (@available(iOS 15, *)) {
-    self.presentedViewController.modalPresentationStyle =
-        UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        self.presentedViewController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-  } else {
-    self.presentedViewController.modalPresentationStyle =
-        UIModalPresentationFormSheet;
-  }
+  self.presentedViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      self.presentedViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
   self.presentedViewController.modalInPresentation = YES;
 

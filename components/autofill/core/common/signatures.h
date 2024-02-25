@@ -8,8 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/strings/string_piece.h"
 #include "base/types/id_type.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
 
@@ -44,17 +47,17 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data);
 // Calculates field signature based on |field_name| and |field_type|.
 FieldSignature CalculateFieldSignatureByNameAndType(
     base::StringPiece16 field_name,
-    base::StringPiece field_type);
+    mojom::FormControlType field_type);
 
 // Calculates field signature based on |field_data|. This function is a proxy to
 // |CalculateFieldSignatureByNameAndType|.
 FieldSignature CalculateFieldSignatureForField(const FormFieldData& field_data);
 
 // Returns 64-bit hash of the string.
-uint64_t StrToHash64Bit(base::StringPiece str);
+uint64_t StrToHash64Bit(std::string_view str);
 
 // Returns 32-bit hash of the string.
-uint32_t StrToHash32Bit(base::StringPiece str);
+uint32_t StrToHash32Bit(std::string_view str);
 
 // Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
 int64_t HashFormSignature(FormSignature form_signature);

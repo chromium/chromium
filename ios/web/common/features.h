@@ -29,11 +29,6 @@ BASE_DECLARE_FEATURE(kClearOldNavigationRecordsWorkaround);
 // Feature flag enabling persistent downloads.
 BASE_DECLARE_FEATURE(kEnablePersistentDownloads);
 
-// Records snapshot size of image (IOS.Snapshots.ImageSize histogram) and PDF
-// (IOS.Snapshots.PDFSize histogram) if enabled. Enabling this flag will
-// generate PDF when Page Snapshot is taken just to record PDF size.
-BASE_DECLARE_FEATURE(kRecordSnapshotSize);
-
 // When enabled, the `attribution` property of NSMutableURLRequests passed to
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
 BASE_DECLARE_FEATURE(kSetRequestAttribution);
@@ -41,25 +36,11 @@ BASE_DECLARE_FEATURE(kSetRequestAttribution);
 // Feature flag that enable Shared Highlighting color change in iOS.
 BASE_DECLARE_FEATURE(kIOSSharedHighlightingColorChange);
 
-// Feature flag that enables native session restoration with a synthesized
-// interaction state.
-BASE_DECLARE_FEATURE(kSynthesizedRestoreSession);
-
-// Enables the Fullscreen API in WebKit (supported on iOS 16.0+). This API
-// allows web sites to enter fullscreen mode, with all browser UI hidden.
-BASE_DECLARE_FEATURE(kEnableFullscreenAPI);
-
 // Feature flag enabling use of new iOS 15
 // loadSimulatedRequest:responseHTMLString: API to display error pages in
 // CRWWKNavigationHandler. The helper method IsLoadSimulatedRequestAPIEnabled()
 // should be used instead of directly checking this feature.
 BASE_DECLARE_FEATURE(kUseLoadSimulatedRequestForOfflinePage);
-
-// Feature flag to enable Emails detection.
-BASE_DECLARE_FEATURE(kEnableEmails);
-
-// Feature flag to enable Phone Numbers detection.
-BASE_DECLARE_FEATURE(kEnablePhoneNumbers);
 
 // Feature flag to enable Measurements detection.
 BASE_DECLARE_FEATURE(kEnableMeasurements);
@@ -69,6 +50,8 @@ extern const char kOneTapForMapsConsentModeParamTitle[];
 extern const char kOneTapForMapsConsentModeDefaultParam[];
 extern const char kOneTapForMapsConsentModeForcedParam[];
 extern const char kOneTapForMapsConsentModeDisabledParam[];
+extern const char kOneTapForMapsConsentModeIPHParam[];
+extern const char kOneTapForMapsConsentModeIPHForcedParam[];
 // Feature flag to enable One tap experience for Maps.
 BASE_DECLARE_FEATURE(kOneTapForMaps);
 
@@ -80,6 +63,11 @@ BASE_DECLARE_FEATURE(kScrollViewProxyScrollEnabledWorkaround);
 // Feature flag to prevent navigation without user interaction.
 BASE_DECLARE_FEATURE(kPreventNavigationWithoutUserInteraction);
 
+// Feature flag to allow a window to open an external app from another window.
+// This flag can be used to kill the cross window limitation in case it breaks a
+// legitimate use case.
+BASE_DECLARE_FEATURE(kAllowCrossWindowExternalAppNavigation);
+
 // Feature flag to enable Web Inspector support.
 BASE_DECLARE_FEATURE(kEnableWebInspector);
 
@@ -87,8 +75,16 @@ BASE_DECLARE_FEATURE(kEnableWebInspector);
 // viewport adjustment experiment is selected via command line switches.
 BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 
-// Feature flag to enable the session serialization optimizations.
-BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
+// Feature flag that force the use of the synthesized native WKWebView
+// session instead of the (maybe inexistent) saved native session. The
+// purpose of this flag it to allow to testing this code path.
+BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
+
+// Feature flag to remove the UnsafeRestore code path.
+BASE_DECLARE_FEATURE(kRemoveOldWebStateRestoration);
+
+// Feature flag to enable intent detection in viewport only.
+BASE_DECLARE_FEATURE(kEnableViewportIntents);
 
 // When true, the new loadSimulatedRequest API should be used when displaying
 // error pages.
@@ -97,8 +93,8 @@ bool IsLoadSimulatedRequestAPIEnabled();
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();
 
-// When true, session serialization optimizations should be enabled.
-bool UseSessionSerializationOptimizations();
+// Feature flag to disable the raccoon.
+BASE_DECLARE_FEATURE(kDisableRaccoon);
 
 }  // namespace features
 }  // namespace web

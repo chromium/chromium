@@ -224,7 +224,7 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
     base::apple::ScopedCFTypeRef<CFTypeRef> value_ref;
     AXError result = AXUIElementCopyParameterizedAttributeValue(
         (__bridge AXUIElementRef)node_, (__bridge CFStringRef)attribute,
-        parameter_ref, value_ref.InitializeInto());
+        parameter_ref.get(), value_ref.InitializeInto());
 
     return ToOptional((__bridge id)value_ref.get(), result,
                       "GetParameterizedAttributeValue(" +
@@ -234,24 +234,24 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
   return AXOptionalNSObject::Error(kUnsupportedObject);
 }
 
-absl::optional<id> AXElementWrapper::PerformSelector(
+std::optional<id> AXElementWrapper::PerformSelector(
     const std::string& selector_string) const {
   if (![node_ conformsToProtocol:@protocol(NSAccessibility)])
-    return absl::nullopt;
+    return std::nullopt;
 
   NSString* selector_nsstring = base::SysUTF8ToNSString(selector_string);
   SEL selector = NSSelectorFromString(selector_nsstring);
 
   if ([node_ respondsToSelector:selector])
     return [node_ valueForKey:selector_nsstring];
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<id> AXElementWrapper::PerformSelector(
+std::optional<id> AXElementWrapper::PerformSelector(
     const std::string& selector_string,
     const std::string& argument_string) const {
   if (![node_ conformsToProtocol:@protocol(NSAccessibility)])
-    return absl::nullopt;
+    return std::nullopt;
 
   SEL selector =
       NSSelectorFromString(base::SysUTF8ToNSString(selector_string + ":"));
@@ -262,7 +262,7 @@ absl::optional<id> AXElementWrapper::PerformSelector(
   if ([node_ respondsToSelector:selector])
     return [node_ performSelector:selector withObject:argument];
 #pragma clang diagnostic pop
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AXElementWrapper::SetAttributeValue(NSString* attribute, id value) const {
@@ -325,26 +325,51 @@ std::string AXElementWrapper::AXErrorMessage(AXError result,
 
   std::string error;
   switch (result) {
+    case kAXErrorAPIDisabled:
+      error = "API disabled; you may need to add terminal and/or this binary "
+              "to System Settings -> Privacy & Security -> Accessibility";
+      break;
+    case kAXErrorActionUnsupported:
+      error = "action unsupported";
+      break;
     case kAXErrorAttributeUnsupported:
       error = "attribute unsupported";
       break;
-    case kAXErrorParameterizedAttributeUnsupported:
-      error = "parameterized attribute unsupported";
+    case kAXErrorCannotComplete:
+      error = "cannot complete";
       break;
-    case kAXErrorNoValue:
-      error = "no value";
+    case kAXErrorFailure:
+      error = "failure";
       break;
     case kAXErrorIllegalArgument:
       error = "illegal argument";
       break;
     case kAXErrorInvalidUIElement:
-      error = "invalid UIElement";
+      error = "invalid UI element";
       break;
-    case kAXErrorCannotComplete:
-      error = "cannot complete";
+    case kAXErrorInvalidUIElementObserver:
+      error = "illegal UI element observer";
+      break;
+    case kAXErrorNoValue:
+      error = "no value";
+      break;
+    case kAXErrorNotEnoughPrecision:
+      error = "not enough precision";
       break;
     case kAXErrorNotImplemented:
       error = "not implemented";
+      break;
+    case kAXErrorNotificationAlreadyRegistered:
+      error = "notification already registered";
+      break;
+    case kAXErrorNotificationNotRegistered:
+      error = "notification not registered";
+      break;
+    case kAXErrorNotificationUnsupported:
+      error = "notification unsupported";
+      break;
+    case kAXErrorParameterizedAttributeUnsupported:
+      error = "parameterized attribute unsupported";
       break;
     default:
       error = "unknown error";

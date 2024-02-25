@@ -57,7 +57,7 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
                         GetRoutineUpdateCallback callback) override;
   void RunAcPowerRoutine(
       crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
-      const absl::optional<std::string>& expected_power_type,
+      const std::optional<std::string>& expected_power_type,
       RunAcPowerRoutineCallback callback) override;
   void RunAudioDriverRoutine(RunAudioDriverRoutineCallback callback) override;
   void RunBatteryCapacityRoutine(
@@ -95,6 +95,7 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
   void RunDnsResolverPresentRoutine(
       RunDnsResolverPresentRoutineCallback callback) override;
   void RunEmmcLifetimeRoutine(RunEmmcLifetimeRoutineCallback callback) override;
+  void RunFanRoutine(RunFanRoutineCallback callback) override;
   void RunFingerprintAliveRoutine(
       RunFingerprintAliveRoutineCallback callback) override;
   void RunFloatingPointAccuracyRoutine(

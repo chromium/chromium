@@ -130,11 +130,7 @@ class TemplateWriter(object):
     '''Checks if the given policy is internal only'''
     return self.GetPolicyFeature(policy, 'internal_only', False)
 
-  def IsPolicyOrItemSupportedOnPlatform(self,
-                                        item,
-                                        platform,
-                                        product=None,
-                                        management=None):
+  def IsPolicyOrItemSupportedOnPlatform(self, item, platform, product=None):
     '''Checks if |item| is supported on |product| for |platform|. If
     |product| is not specified, only the platform support is checked.
     If |management| is specified, also checks for support for Chrome OS
@@ -146,12 +142,7 @@ class TemplateWriter(object):
         'win', 'mac', 'linux', 'chrome_os', 'android'.
       product: Optional product to check; one of
         'chrome', 'chrome_frame', 'chrome_os', 'webview'.
-      management: Optional Chrome OS management type to check; one of
-        'active_directory', 'google_cloud'.
     '''
-    if management and not self.IsCrOSManagementSupported(item, management):
-      return False
-
     for supported_on in item['supported_on']:
       if (platform == supported_on['platform']
           and (not product or product in supported_on['product'])
@@ -178,19 +169,6 @@ class TemplateWriter(object):
     '''
     return (self.IsPolicyOrItemSupportedOnPlatform(policy, 'win', product)
             or self.IsPolicyOrItemSupportedOnPlatform(policy, 'win7', product))
-
-  def IsCrOSManagementSupported(self, policy, management):
-    '''Checks whether |policy| supports the Chrome OS |management| type.
-
-    Args:
-      policy: The dictionary of the policy.
-      management: Chrome OS management type to check; one of
-        'active_directory', 'google_cloud'.
-    '''
-    # By default, i.e. if supported_chrome_os_management is not set, all
-    # management types are supported.
-    return management in policy.get('supported_chrome_os_management',
-                                    ['active_directory', 'google_cloud'])
 
   def IsVersionSupported(self, policy, supported_on):
     '''Checks whether the policy is supported on current version'''

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -23,7 +25,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -85,7 +86,7 @@ TEST_F(AppDeduplicationServerConnectorTest,
       AppDeduplicationServerConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<absl::optional<proto::DeduplicateData>> test_callback;
+  base::test::TestFuture<std::optional<proto::DeduplicateData>> test_callback;
   server_connector_.GetDeduplicateAppsFromServer(
       device_info_, test_shared_loader_factory_, test_callback.GetCallback());
   auto observed_response = test_callback.Get();
@@ -98,7 +99,7 @@ TEST_F(AppDeduplicationServerConnectorTest,
   url_loader_factory_.AddResponse(
       AppDeduplicationServerConnector::GetServerUrl().spec(), "");
 
-  base::test::TestFuture<absl::optional<proto::DeduplicateData>> response;
+  base::test::TestFuture<std::optional<proto::DeduplicateData>> response;
   server_connector_.GetDeduplicateAppsFromServer(
       device_info_, test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
@@ -109,7 +110,7 @@ TEST_F(AppDeduplicationServerConnectorTest, GetDeduplicateAppsFromServerError) {
       AppDeduplicationServerConnector::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
-  base::test::TestFuture<absl::optional<proto::DeduplicateData>> response;
+  base::test::TestFuture<std::optional<proto::DeduplicateData>> response;
   server_connector_.GetDeduplicateAppsFromServer(
       device_info_, test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());
@@ -122,7 +123,7 @@ TEST_F(AppDeduplicationServerConnectorTest,
       network::mojom::URLResponseHead::New(), /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
 
-  base::test::TestFuture<absl::optional<proto::DeduplicateData>> response;
+  base::test::TestFuture<std::optional<proto::DeduplicateData>> response;
   server_connector_.GetDeduplicateAppsFromServer(
       device_info_, test_shared_loader_factory_, response.GetCallback());
   EXPECT_FALSE(response.Get().has_value());

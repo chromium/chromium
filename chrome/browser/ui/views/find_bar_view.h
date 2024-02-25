@@ -45,12 +45,15 @@ class Textfield;
 class FindBarView : public views::BoxLayoutView,
                     public DropdownBarHostDelegate,
                     public views::TextfieldController {
- public:
-  METADATA_HEADER(FindBarView);
+  METADATA_HEADER(FindBarView, views::BoxLayoutView)
 
+ public:
   // Element IDs for ui::ElementTracker
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTextField);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPreviousButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNextButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
 
   explicit FindBarView(FindBarHost* host = nullptr);
 

@@ -4,6 +4,8 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // Memory pressure level corresponding to MemoryPressureLevel in
 // base/memory/memory_pressure_listener.h
 [Stable, Extensible]
@@ -14,12 +16,39 @@ enum MemoryPressureLevel {
 };
 
 // Memory pressure status.
+// Next MinVersion: 2
 [Stable]
 struct MemoryPressure {
   MemoryPressureLevel level@0;
 
   // The amount of memory to reclaim to reduce the memory pressure level.
   uint64 reclaim_target_kb@1;
+
+  // The origin time of the memory pressure signal.
+  [MinVersion=1] mojo_base.mojom.TimeTicks? signal_origin@2;
+};
+
+// A renderer process hosting a frame of a page for browser memory usage
+// estimation.
+// Next MinVersion: 2
+[Stable]
+struct PageProcess {
+  int32 pid@0;
+
+  // Indicates if this renderer process is hosting a frame of a protected page.
+  // Discarding a protected page will more negatively impact the user.
+  bool host_protected_page@1;
+
+  // Indicates if this renderer process is hosting a frame of a visible page. A
+  // visible page is always protected, but discarding a visible page will more
+  // negatively impact the user than discarding a non-visible protected page.
+  bool host_visible_page@2;
+
+  // Indicates if this renderer process is hosting a frame of a focused page. A
+  // focused page is always protected and visible, but discarding a focused
+  // page will more negatively impact the user than discarding a visible but
+  // not focused page.
+  [MinVersion=1] bool host_focused_page@3;
 };
 
 // Interface for memory pressure observers. Implemented by lacros-chrome. Used
@@ -35,4 +64,11 @@ interface MemoryPressureObserver {
 interface ResourceManager {
   // Adds an observer for memory pressure status.
   AddMemoryPressureObserver@0(pending_remote<MemoryPressureObserver> observer);
+
+  // Reports Lacros process list corresponding to background web pages.
+  // DEPRECATED. Use ReportPageProcesses instead.
+  [MinVersion=1] DEPRECATED_ReportBackgroundProcesses@1(array<int32> pids);
+
+  // Reports Lacros process list corresponding to web pages.
+  [MinVersion=2] ReportPageProcesses@2(array<PageProcess> processes);
 };

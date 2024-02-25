@@ -6,19 +6,21 @@
 #define NET_TEST_CERT_BUILDER_H_
 
 #include <map>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
-#include "net/cert/pki/parse_certificate.h"
-#include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
 
 class GURL;
 
@@ -26,11 +28,13 @@ namespace base {
 class FilePath;
 }
 
-namespace net {
-
+namespace bssl {
 namespace der {
 class Input;
-}
+}  // namespace der
+}  // namespace bssl
+
+namespace net {
 
 // CertBuilder is a helper class to dynamically create a test certificate.
 //
@@ -43,6 +47,24 @@ class Input;
 // dependent on ordering.
 class CertBuilder {
  public:
+  // Parameters for creating an embedded SignedCertificateTimestamp.
+  struct SctConfig {
+    SctConfig();
+    SctConfig(std::string log_id,
+              bssl::UniquePtr<EVP_PKEY> log_key,
+              base::Time timestamp);
+    SctConfig(const SctConfig&);
+    SctConfig(SctConfig&&);
+    ~SctConfig();
+    SctConfig& operator=(const SctConfig&);
+    SctConfig& operator=(SctConfig&&);
+
+    std::string log_id;
+    // Only EC keys are supported currently.
+    bssl::UniquePtr<EVP_PKEY> log_key;
+    base::Time timestamp;
+  };
+
   // Initializes the CertBuilder, if |orig_cert| is non-null it will be used as
   // a template. If |issuer| is null then the generated certificate will be
   // self-signed. Otherwise, it will be signed using |issuer|.
@@ -92,12 +114,12 @@ class CertBuilder {
   static std::array<std::unique_ptr<CertBuilder>, 2> CreateSimpleChain2();
 
   // Returns a compatible signature algorithm for |key|.
-  static absl::optional<SignatureAlgorithm> DefaultSignatureAlgorithmForKey(
-      EVP_PKEY* key);
+  static std::optional<bssl::SignatureAlgorithm>
+  DefaultSignatureAlgorithmForKey(EVP_PKEY* key);
 
   // Signs |tbs_data| with |key| using |signature_algorithm| appending the
   // signature onto |out_signature| and returns true if successful.
-  static bool SignData(SignatureAlgorithm signature_algorithm,
+  static bool SignData(bssl::SignatureAlgorithm signature_algorithm,
                        base::StringPiece tbs_data,
                        EVP_PKEY* key,
                        CBB* out_signature);
@@ -110,7 +132,7 @@ class CertBuilder {
   // Returns a DER encoded AlgorithmIdentifier TLV for |signature_algorithm|
   // empty string on error.
   static std::string SignatureAlgorithmToDer(
-      SignatureAlgorithm signature_algorithm);
+      bssl::SignatureAlgorithm signature_algorithm);
 
   // Generates |num_bytes| random bytes, and then returns the hex encoding of
   // those bytes.
@@ -126,15 +148,15 @@ class CertBuilder {
   // contain extensions, so if |version| is |V1| or |V2| you may want to also
   // call |ClearExtensions()| unless you intentionally want to generate an
   // invalid certificate.
-  void SetCertificateVersion(CertificateVersion version);
+  void SetCertificateVersion(bssl::CertificateVersion version);
 
   // Sets a value for the indicated X.509 (v3) extension.
-  void SetExtension(const der::Input& oid,
+  void SetExtension(const bssl::der::Input& oid,
                     std::string value,
                     bool critical = false);
 
   // Removes an extension (if present).
-  void EraseExtension(const der::Input& oid);
+  void EraseExtension(const bssl::der::Input& oid);
 
   // Removes all extensions.
   void ClearExtensions();
@@ -186,13 +208,13 @@ class CertBuilder {
   void SetSubjectAltNames(const std::vector<std::string>& dns_names,
                           const std::vector<IPAddress>& ip_addresses);
 
-  // Sets the keyUsage extension. |usages| should contain the KeyUsageBit
+  // Sets the keyUsage extension. |usages| should contain the bssl::KeyUsageBit
   // values of the usages to set, and must not be empty.
-  void SetKeyUsages(const std::vector<KeyUsageBit>& usages);
+  void SetKeyUsages(const std::vector<bssl::KeyUsageBit>& usages);
 
   // Sets the extendedKeyUsage extension. |usages| should contain the DER OIDs
   // of the usage purposes to set, and must not be empty.
-  void SetExtendedKeyUsages(const std::vector<der::Input>& purpose_oids);
+  void SetExtendedKeyUsages(const std::vector<bssl::der::Input>& purpose_oids);
 
   // Sets the certificatePolicies extension with the specified policyIdentifier
   // OIDs, which must be specified in dotted string notation (e.g. "1.2.3.4").
@@ -209,8 +231,8 @@ class CertBuilder {
   // Sets the PolicyConstraints extension. If both |require_explicit_policy|
   // and |inhibit_policy_mapping| are nullopt, the PolicyConstraints extension
   // will removed.
-  void SetPolicyConstraints(absl::optional<uint64_t> require_explicit_policy,
-                            absl::optional<uint64_t> inhibit_policy_mapping);
+  void SetPolicyConstraints(std::optional<uint64_t> require_explicit_policy,
+                            std::optional<uint64_t> inhibit_policy_mapping);
 
   // Sets the inhibitAnyPolicy extension.
   void SetInhibitAnyPolicy(uint64_t skip_certs);
@@ -242,7 +264,7 @@ class CertBuilder {
   // CertBuilder was initialized from a template cert, the signature algorithm
   // of that cert will be used, or if there was no template cert, a default
   // algorithm will be used base on the signing key type.
-  void SetSignatureAlgorithm(SignatureAlgorithm signature_algorithm);
+  void SetSignatureAlgorithm(bssl::SignatureAlgorithm signature_algorithm);
 
   // Sets both signature AlgorithmIdentifier TLVs to encode in the generated
   // certificate.
@@ -265,6 +287,10 @@ class CertBuilder {
   void SetSerialNumber(uint64_t serial_number);
   void SetRandomSerialNumber();
 
+  // Sets the configuration that will be used to generate a
+  // SignedCertificateTimestampList extension in the certificate.
+  void SetSctConfig(std::vector<CertBuilder::SctConfig> sct_configs);
+
   // Sets the private key for the generated certificate to an EC key. If a key
   // was already set, it will be replaced.
   void GenerateECKey();
@@ -276,6 +302,9 @@ class CertBuilder {
 
   // Loads the private key for the generated certificate from |key_file|.
   bool UseKeyFromFile(const base::FilePath& key_file);
+
+  // Sets the private key to be |key|.
+  void SetKey(bssl::UniquePtr<EVP_PKEY> key);
 
   // Returns the CertBuilder that issues this certificate. (Will be |this| if
   // certificate is self-signed.)
@@ -371,11 +400,14 @@ class CertBuilder {
   //   * All extensions (dropping any duplicates)
   //   * Signature algorithm (from Certificate)
   //   * Validity (expiration)
-  void InitFromCert(const der::Input& cert);
+  void InitFromCert(const bssl::der::Input& cert);
 
   // Assembles the CertBuilder into a TBSCertificate.
   void BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
                            std::string* out);
+
+  void BuildSctListExtension(const std::string& pre_tbs_certificate,
+                             std::string* out);
 
   void GenerateCertificate();
 
@@ -384,15 +416,17 @@ class CertBuilder {
     std::string value;
   };
 
-  CertificateVersion version_ = CertificateVersion::V3;
+  bssl::CertificateVersion version_ = bssl::CertificateVersion::V3;
   std::string validity_tlv_;
-  absl::optional<std::string> issuer_tlv_;
+  std::optional<std::string> issuer_tlv_;
   std::string subject_tlv_;
-  absl::optional<SignatureAlgorithm> signature_algorithm_;
+  std::optional<bssl::SignatureAlgorithm> signature_algorithm_;
   std::string outer_signature_algorithm_tlv_;
   std::string tbs_signature_algorithm_tlv_;
   uint64_t serial_number_ = 0;
   int default_pkey_id_ = EVP_PKEY_EC;
+
+  std::vector<SctConfig> sct_configs_;
 
   std::map<std::string, ExtensionValue> extensions_;
 

@@ -5,10 +5,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -40,11 +40,11 @@
 #include "extensions/browser/updater/update_service.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -59,7 +59,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
 
   // Returns the data we've gotten from the CrxDataCallback for ids passed to
   // the Update function.
-  std::vector<absl::optional<update_client::CrxComponent>>* data() {
+  std::vector<std::optional<update_client::CrxComponent>>* data() {
     return &data_;
   }
 
@@ -132,11 +132,11 @@ class FakeUpdateClient : public update_client::UpdateClient {
 
   void Stop() override {}
 
-  void SendUninstallPing(const update_client::CrxComponent& crx_component,
-                         int reason,
-                         update_client::Callback callback) override {
+  void SendPing(const update_client::CrxComponent& crx_component,
+                PingParams ping_params,
+                update_client::Callback callback) override {
     uninstall_pings_.emplace_back(crx_component.app_id, crx_component.version,
-                                  reason);
+                                  ping_params.extra_code1);
   }
 
   void set_delay_update() { delay_update_ = true; }
@@ -214,9 +214,9 @@ class FakeUpdateClient : public update_client::UpdateClient {
     Finish(request);
   }
 
-  std::vector<absl::optional<update_client::CrxComponent>> data_;
+  std::vector<std::optional<update_client::CrxComponent>> data_;
   std::vector<UninstallPing> uninstall_pings_;
-  std::vector<Observer*> observers_;
+  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
 
   bool delay_update_ = false;
   bool is_malware_update_item_ = false;
@@ -231,7 +231,12 @@ void FakeUpdateClient::Update(const std::vector<std::string>& ids,
                               CrxStateChangeCallback crx_state_change_callback,
                               bool is_foreground,
                               update_client::Callback callback) {
-  data_ = std::move(crx_data_callback).Run(ids);
+  std::move(crx_data_callback)
+      .Run(
+          ids,
+          base::BindLambdaForTesting(
+              [&](const std::vector<std::optional<update_client::CrxComponent>>&
+                      output) { data_ = output; }));
 
   UpdateRequest request{ids, crx_state_change_callback, std::move(callback)};
 
@@ -269,13 +274,13 @@ class FakeExtensionSystem : public MockExtensionSystem {
   ~FakeExtensionSystem() override = default;
 
   struct InstallUpdateRequest {
-    InstallUpdateRequest(const std::string& extension_id,
+    InstallUpdateRequest(const ExtensionId& extension_id,
                          const base::FilePath& temp_dir,
                          bool install_immediately)
         : extension_id(extension_id),
           temp_dir(temp_dir),
           install_immediately(install_immediately) {}
-    std::string extension_id;
+    ExtensionId extension_id;
     base::FilePath temp_dir;
     bool install_immediately;
   };
@@ -289,7 +294,7 @@ class FakeExtensionSystem : public MockExtensionSystem {
   }
 
   // ExtensionSystem override
-  void InstallUpdate(const std::string& extension_id,
+  void InstallUpdate(const ExtensionId& extension_id,
                      const std::string& public_key,
                      const base::FilePath& temp_dir,
                      bool install_immediately,
@@ -299,11 +304,11 @@ class FakeExtensionSystem : public MockExtensionSystem {
     if (!next_install_callback_.is_null()) {
       std::move(next_install_callback_).Run();
     }
-    std::move(install_update_callback).Run(absl::nullopt);
+    std::move(install_update_callback).Run(std::nullopt);
   }
 
   void PerformActionBasedOnOmahaAttributes(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const base::Value::Dict& attributes) override {
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
     scoped_refptr<const Extension> extension =
@@ -315,7 +320,7 @@ class FakeExtensionSystem : public MockExtensionSystem {
       registry->AddEnabled(extension);
     }
 
-    const absl::optional<bool> maybe_allowlisted =
+    const std::optional<bool> maybe_allowlisted =
         attributes.FindBool("_esbAllowlist");
     if (maybe_allowlisted) {
       extension_allowlist_states_[extension_id] =
@@ -324,12 +329,12 @@ class FakeExtensionSystem : public MockExtensionSystem {
     }
   }
 
-  bool FinishDelayedInstallationIfReady(const std::string& extension_id,
+  bool FinishDelayedInstallationIfReady(const ExtensionId& extension_id,
                                         bool install_immediately) override {
     return false;
   }
 
-  AllowlistState GetExtensionAllowlistState(const std::string& extension_id) {
+  AllowlistState GetExtensionAllowlistState(const ExtensionId& extension_id) {
     if (!base::Contains(extension_allowlist_states_, extension_id))
       return ALLOWLIST_UNDEFINED;
 
@@ -573,7 +578,7 @@ TEST_F(UpdateServiceTest, UninstallPings) {
 }
 
 TEST_F(UpdateServiceTest, CheckOmahaMalwareAttributes) {
-  std::string extension_id = crx_file::id_util::GenerateId("id");
+  ExtensionId extension_id = crx_file::id_util::GenerateId("id");
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
   scoped_refptr<const Extension> extension1 =
       ExtensionBuilder("1").SetVersion("1.2").SetID(extension_id).Build();
@@ -615,7 +620,7 @@ TEST_F(UpdateServiceTest, CheckOmahaMalwareAttributes) {
 }
 
 TEST_F(UpdateServiceTest, CheckOmahaAllowlistAttributes) {
-  std::string extension_id = crx_file::id_util::GenerateId("id");
+  ExtensionId extension_id = crx_file::id_util::GenerateId("id");
   scoped_refptr<const Extension> extension1 =
       ExtensionBuilder("1").SetVersion("1.2").SetID(extension_id).Build();
 
@@ -647,7 +652,7 @@ TEST_F(UpdateServiceTest, CheckOmahaAllowlistAttributes) {
 }
 
 TEST_F(UpdateServiceTest, CheckNoOmahaAttributes) {
-  std::string extension_id = crx_file::id_util::GenerateId("id");
+  ExtensionId extension_id = crx_file::id_util::GenerateId("id");
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
   scoped_refptr<const Extension> extension1 =
       ExtensionBuilder("1").SetVersion("1.2").SetID(extension_id).Build();

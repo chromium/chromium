@@ -12,6 +12,7 @@
 #include "ash/wm/window_util.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -44,9 +45,9 @@ StandaloneBrowserExtensionAppShelfItemController::
   apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
       ProfileManager::GetPrimaryUserProfile());
 
-  icon_loader_releaser_ = proxy->LoadIconFromIconKey(
-      apps::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id,
-      apps::IconKey(), apps::IconType::kStandard, /*size_hint_in_dip=*/48,
+  icon_loader_releaser_ = proxy->LoadIconWithIconEffects(
+      shelf_id.app_id, apps::IconEffects::kNone, apps::IconType::kStandard,
+      /*size_hint_in_dip=*/48,
       /*allow_placeholder_icon=*/false,
       base::BindOnce(
           &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,
@@ -94,7 +95,7 @@ void StandaloneBrowserExtensionAppShelfItemController::ItemSelected(
   // ash::LAUNCH_FROM_SHELF since that path is never triggered.
   DCHECK_EQ(source, ash::LAUNCH_FROM_SHELF);
 
-  std::vector<aura::Window*> filtered_windows;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> filtered_windows;
   for (aura::Window* window : windows_) {
     if (filter_predicate.is_null() || filter_predicate.Run(window)) {
       filtered_windows.push_back(window);

@@ -4,7 +4,12 @@
 
 #include "chrome/browser/device_api/managed_configuration_store.h"
 
+#include <utility>
+
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "components/value_store/leveldb_value_store.h"
+#include "components/value_store/value_store_change.h"
 
 ManagedConfigurationStore::ManagedConfigurationStore(const url::Origin& origin,
                                                      const base::FilePath& path)
@@ -20,8 +25,9 @@ void ManagedConfigurationStore::Initialize() {
 
 bool ManagedConfigurationStore::SetCurrentPolicy(
     const base::Value::Dict& current_configuration) {
-  if (!store_)
+  if (!store_) {
     Initialize();
+  }
   // Get the previous policies stored in the database.
   base::Value::Dict previous_policy;
   value_store::ValueStore::ReadResult read_result = store_->Get();
@@ -37,9 +43,10 @@ bool ManagedConfigurationStore::SetCurrentPolicy(
   std::vector<std::string> removed_keys;
 
   bool store_updated = false;
-  for (auto kv : previous_policy) {
-    if (!current_configuration.Find(kv.first))
-      removed_keys.push_back(kv.first);
+  for (auto item : previous_policy) {
+    if (!current_configuration.Find(item.first)) {
+      removed_keys.push_back(item.first);
+    }
   }
   value_store::ValueStoreChangeList changes;
   value_store::LeveldbValueStore::WriteResult result =
@@ -61,15 +68,17 @@ bool ManagedConfigurationStore::SetCurrentPolicy(
   return store_updated;
 }
 
-absl::optional<base::Value::Dict> ManagedConfigurationStore::Get(
+std::optional<base::Value::Dict> ManagedConfigurationStore::Get(
     const std::vector<std::string>& keys) {
-  if (!store_)
+  if (!store_) {
     Initialize();
+  }
 
   auto result = store_->Get(keys);
 
-  if (!result.status().ok())
-    return absl::nullopt;
+  if (!result.status().ok()) {
+    return std::nullopt;
+  }
 
   return result.PassSettings();
 }

@@ -1,0 +1,128 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_mediator.h"
+
+#import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_consumer.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_item_identifier.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+
+// Tests the PushNotificationsOptInMediator functionality.
+class NotificationsOptInMediatorTest : public PlatformTest {
+ protected:
+  void SetUp() override {
+    browser_state_ = BuildChromeBrowserState();
+    test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        std::move(browser_state_));
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        test_manager_.get());
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        test_manager_->GetLastUsedBrowserState(),
+        std::make_unique<FakeAuthenticationServiceDelegate>());
+    auth_service_ = AuthenticationServiceFactory::GetForBrowserState(
+        test_manager_->GetLastUsedBrowserState());
+    prefs_ = test_manager_->GetLastUsedBrowserState()->GetPrefs();
+    local_state_ = TestingApplicationContext::GetGlobal()->GetLocalState();
+    scoped_feature_list_.InitWithFeatures(
+        {kIOSTipsNotifications, kContentPushNotifications}, {});
+    consumer_ = OCMStrictProtocolMock(@protocol(NotificationsOptInConsumer));
+  }
+
+  void TearDown() override {
+    prefs_->ClearPref(prefs::kFeaturePushNotificationPermissions);
+    local_state_.get()->ClearPref(prefs::kAppLevelPushNotificationPermissions);
+  }
+
+ protected:
+  // Enables/disables notifications with `key`.
+  void TurnNotificationForKey(BOOL on, const std::string key) {
+    ScopedDictPrefUpdate update(prefs_.get(),
+                                prefs::kFeaturePushNotificationPermissions);
+    update->Set(key, on);
+  }
+
+  // Enables/disables app level notifications with `key`.
+  void TurnAppLevelNotificationForKey(BOOL on, const std::string key) {
+    ScopedDictPrefUpdate update(local_state_.get(),
+                                prefs::kAppLevelPushNotificationPermissions);
+    update->Set(key, on);
+  }
+
+  // Builds a browser state.
+  std::unique_ptr<ChromeBrowserState> BuildChromeBrowserState() {
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetDefaultFactory());
+    return builder.Build();
+  }
+
+  web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<PrefService> prefs_;
+  raw_ptr<PrefService> local_state_;
+  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
+  NotificationsOptInMediator* mediator_;
+  id consumer_;
+};
+
+// Tests that the mediator makes the proper consumer calls when all the
+// notifications are initially disabled.
+TEST_F(NotificationsOptInMediatorTest,
+       TestConsumer_NotificationsInitiallyDisabled) {
+  mediator_ = [[NotificationsOptInMediator alloc]
+      initWithAuthenticationService:auth_service_];
+  OCMExpect([consumer_ setOptInItem:kTips enabled:NO]);
+  OCMExpect([consumer_ setOptInItem:kContent enabled:NO]);
+  OCMExpect([consumer_ setOptInItem:kPriceTracking enabled:NO]);
+
+  mediator_.consumer = consumer_;
+  [mediator_ configureConsumer];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the mediator makes the proper consumer calls when all the
+// notifications are intially enabled and then one switch is disabled.
+TEST_F(NotificationsOptInMediatorTest,
+       TestConsumer_NotificationsInitiallyEnabled) {
+  TurnNotificationForKey(YES, kCommerceNotificationKey);
+  TurnNotificationForKey(YES, kContentNotificationKey);
+  TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
+
+  mediator_ = [[NotificationsOptInMediator alloc]
+      initWithAuthenticationService:auth_service_];
+  OCMExpect([consumer_ setOptInItem:kTips enabled:YES]);
+  OCMExpect([consumer_ setOptInItem:kContent enabled:YES]);
+  OCMExpect([consumer_ setOptInItem:kPriceTracking enabled:YES]);
+
+  mediator_.consumer = consumer_;
+  [mediator_ configureConsumer];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setOptInItem:kTips enabled:NO]);
+  [mediator_ disableUserSelectionForItem:kTips];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}

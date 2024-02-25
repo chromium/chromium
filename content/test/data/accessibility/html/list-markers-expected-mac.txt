@@ -13,5 +13,6 @@ AXWebArea
 ++++AXGroup
 ++++++AXListMarker AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Some '
-++++++AXStaticText AXValue='more'
+++++++AXGroup AXSubrole=AXStrongStyleGroup
+++++++++AXStaticText AXValue='more'
 ++++++AXStaticText AXValue=' text.'

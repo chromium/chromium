@@ -15,9 +15,10 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
@@ -27,8 +28,13 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
+#include "components/memory_pressure/reclaim_target.h"
+#include "components/memory_pressure/unnecessary_discard_monitor.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace resource_coordinator {
@@ -58,6 +64,8 @@ enum class ProcessType {
 // renderers' scores up to date in /proc/<pid>/oom_score_adj.
 class TabManagerDelegate : public wm::ActivationChangeObserver,
                            public content::NotificationObserver,
+                           public content::RenderProcessHostCreationObserver,
+                           public content::RenderProcessHostObserver,
                            public BrowserListObserver {
  public:
   class MemoryStat;
@@ -110,6 +118,10 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   // Get debugd client instance. Virtual for unit testing.
   virtual ash::DebugDaemonClient* GetDebugDaemonClient();
 
+  // Report process list of tab mainframes. Virtual for unit testing.
+  virtual void ReportProcesses(
+      const std::vector<ash::ResourcedClient::Process>& processes);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, CandidatesSorted);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
@@ -121,6 +133,10 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, IsRecentlyKilledArcProcess);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, KillMultipleProcesses);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, SetOomScoreAdj);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, TestDiscardedTabsAreSkipped);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, ReportProcesses);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
+                           TestTargetMemoryToFreeIsRespected);
 
   using OptionalArcProcessList = arc::ArcProcessService::OptionalArcProcessList;
 
@@ -129,6 +145,15 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   friend std::ostream& operator<<(std::ostream& out,
                                   const Candidate& candidate);
+
+  // content::RenderProcessHostCreationObserver implementation.
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+
+  // RenderProcessHostObserver implementation.
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -163,6 +188,21 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
                          TabManager::TabDiscardDoneCB tab_discard_done,
                          OptionalArcProcessList arc_processes);
 
+  // Processes a specific candidate for a low memory kill.
+  int ProcessCandidate(::mojom::LifecycleUnitDiscardReason reason,
+                       base::TimeTicks kill_start_time,
+                       Candidate& candidate,
+                       int target_memory_to_free_kb);
+
+  // Processes an app candidate for a low memory kill.
+  int ProcessAppCandidate(base::TimeTicks kill_start_time,
+                          Candidate& candidate);
+
+  // Processes a lifecycle unit candidate for a low memory kill.
+  int ProcessLifecycleUnitCandidate(Candidate& candidate,
+                                    int target_memory_to_free_kb,
+                                    ::mojom::LifecycleUnitDiscardReason reason);
+
   // Sets a newly focused tab the highest priority process if it wasn't.
   void AdjustFocusedTabScore(base::ProcessHandle pid);
 
@@ -193,6 +233,15 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
     return base::Seconds(60);
   }
 
+  // The listing is throttled to avoid too frequent reporting.
+  void ListProcessesThrottled();
+
+  // Called by |delayed_report_timer_|.
+  void ListProcessesDelayed();
+
+  // List the tab processes for reporting.
+  void ListProcesses();
+
   // The OOM adjustment score for persistent ARC processes.
   static const int kPersistentArcAppOomScore;
 
@@ -201,6 +250,10 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   // Registrar to receive renderer notifications.
   content::NotificationRegistrar registrar_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
 
   // Timer to periodically make OOM score adjustments.
   base::RepeatingTimer adjust_oom_priorities_timer_;
@@ -220,6 +273,19 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   // Util for getting system memory status.
   std::unique_ptr<TabManagerDelegate::MemoryStat> mem_stat_;
+
+  // For throttling the renderer process list reporting.
+  base::TimeTicks last_pids_report_ = base::TimeTicks::Now();
+
+  // Delay the reporting if it's less than the minimum interval since last
+  // reporting.
+  base::OneShotTimer delayed_report_timer_;
+
+  // Sequences to check if the last tab event is handled.
+  uint64_t tab_event_sequence_ = 0;
+  uint64_t tab_report_sequence_ = 0;
+
+  memory_pressure::UnnecessaryDiscardMonitor unnecessary_discard_monitor_;
 
   // Weak pointer factory used for posting tasks to other threads.
   base::WeakPtrFactory<TabManagerDelegate> weak_ptr_factory_{this};
@@ -267,12 +333,8 @@ class TabManagerDelegate::Candidate {
   // Derive process type for this candidate. Used to initialize |process_type_|.
   ProcessType GetProcessTypeInternal() const;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION LifecycleUnit* lifecycle_unit_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION const arc::ArcProcess* app_ = nullptr;
+  raw_ptr<LifecycleUnit, DanglingUntriaged> lifecycle_unit_ = nullptr;
+  raw_ptr<const arc::ArcProcess, DanglingUntriaged> app_ = nullptr;
   ProcessType process_type_ = GetProcessTypeInternal();
 };
 
@@ -285,7 +347,7 @@ class TabManagerDelegate::MemoryStat {
 
   // Returns target size of memory to free given current memory pressure and
   // pre-configured low memory margin.
-  virtual int TargetMemoryToFreeKB();
+  virtual memory_pressure::ReclaimTarget TargetMemoryToFree();
 
   // Returns estimated memory to be freed if the process |handle| is killed.
   virtual int EstimatedMemoryFreedKB(base::ProcessHandle handle);

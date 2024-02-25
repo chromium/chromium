@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -15,10 +16,6 @@
 
 namespace ash {
 namespace {
-
-// Image search privacy notice dictionary pref keys.
-constexpr char kPrivacyNoticeShownCount[] = "shown_count";
-constexpr char kPrivacyNoticeAccepted[] = "accepted";
 
 // Maximum number of times that the notifier can be shown to users.
 constexpr int kMaxShowCount = 3;
@@ -39,23 +36,22 @@ SearchNotifierController::SearchNotifierController() = default;
 // static
 void SearchNotifierController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kImageSearchPrivacyNotice);
+  // TODO(b/311785210): Maybe implement category nudge.
 }
 
 // static
 void SearchNotifierController::ResetPrefsForNewUserSession(PrefService* prefs) {
-  prefs->ClearPref(prefs::kImageSearchPrivacyNotice);
+  // TODO(b/311785210): Maybe implement category nudge.
 }
 
 // static
 int SearchNotifierController::GetPrivacyNoticeShownCount(PrefService* prefs) {
-  const base::Value::Dict& dictionary =
-      prefs->GetDict(prefs::kImageSearchPrivacyNotice);
-
-  return dictionary.FindInt(kPrivacyNoticeShownCount).value_or(0);
+  // TODO(b/311785210): Maybe implement category nudge.
+  return 0;
 }
 
-bool SearchNotifierController::ShouldShowPrivacyNotice() const {
+// static
+bool SearchNotifierController::ShouldShowPrivacyNotice() {
   PrefService* prefs = GetPrefs();
   if (!prefs) {
     return false;
@@ -65,47 +61,21 @@ bool SearchNotifierController::ShouldShowPrivacyNotice() const {
     return false;
   }
 
-  return GetPrivacyNoticeShownCount(prefs) < kMaxShowCount;
+  return GetPrivacyNoticeShownCount(prefs) <= kMaxShowCount;
+}
+
+// static
+bool SearchNotifierController::IsPrivacyNoticeAccepted() {
+  // TODO(b/311785210): Maybe implement category nudge.
+  return false;
 }
 
 void SearchNotifierController::SetPrivacyNoticeAcceptedPref() {
-  PrefService* prefs = GetPrefs();
-  if (!prefs) {
-    return;
-  }
-
-  ScopedDictPrefUpdate privacy_pref_update(prefs,
-                                           prefs::kImageSearchPrivacyNotice);
-  privacy_pref_update->Set(kPrivacyNoticeAccepted, true);
-}
-
-bool SearchNotifierController::IsPrivacyNoticeAccepted() const {
-  const PrefService* prefs = GetPrefs();
-  if (!prefs) {
-    return false;
-  }
-
-  return prefs->GetDict(prefs::kImageSearchPrivacyNotice)
-      .FindBool(kPrivacyNoticeAccepted)
-      .value_or(false);
+  // TODO(b/311785210): Maybe implement category nudge.
 }
 
 void SearchNotifierController::UpdateNotifierVisibility(bool visible) {
-  PrefService* prefs = GetPrefs();
-  if (!prefs) {
-    return;
-  }
-
-  bool is_visible_updated = visible != is_visible_;
-  is_visible_ = visible;
-  ScopedDictPrefUpdate update(prefs, prefs::kImageSearchPrivacyNotice);
-
-  // Update the number of times that the notifier was shown to users if the
-  // visibility updates.
-  if (visible && is_visible_updated) {
-    update->Set(kPrivacyNoticeShownCount,
-                GetPrivacyNoticeShownCount(prefs) + 1);
-  }
+  // TODO(b/311785210): Maybe implement category nudge.
 }
 
 }  // namespace ash

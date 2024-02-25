@@ -8,6 +8,7 @@
 
 #include <tuple>
 
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 
@@ -27,6 +28,10 @@ void RuleMetaData::SetExpirationAndLifetime(base::Time expiration,
   CHECK_GE(lifetime, base::TimeDelta());
   expiration_ = expiration;
   lifetime_ = lifetime;
+}
+
+bool RuleMetaData::IsExpired(base::Clock* clock) const {
+  return !expiration().is_null() && expiration() < clock->Now();
 }
 
 bool RuleMetaData::operator==(const RuleMetaData& other) const {

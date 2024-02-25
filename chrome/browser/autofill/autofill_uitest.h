@@ -46,7 +46,7 @@ std::ostream& operator<<(std::ostream& os, ObservedUiEvents event);
 void TryToCloseAllPrompts(content::WebContents* web_contents);
 
 class BrowserAutofillManagerTestDelegateImpl
-    : public autofill::BrowserAutofillManagerTestDelegate {
+    : public BrowserAutofillManagerTestDelegate {
  public:
   BrowserAutofillManagerTestDelegateImpl();
 
@@ -68,7 +68,6 @@ class BrowserAutofillManagerTestDelegateImpl
   void DidFillFormData() override;
   void DidShowSuggestions() override;
   void DidHideSuggestions() override;
-  void OnTextFieldChanged() override;
 
   void SetExpectations(std::list<ObservedUiEvents> expected_events,
                        base::TimeDelta timeout = base::Seconds(0),

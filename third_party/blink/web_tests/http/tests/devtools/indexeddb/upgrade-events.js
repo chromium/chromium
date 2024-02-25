@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`Tests that deleted databases do not get recreated.\n`);
-  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -16,7 +17,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   var storageKey = 'http://127.0.0.1:8000/';
   var databaseName = 'testDatabase - ' + self.location;
   var objectStoreName = 'testObjectStore';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId({storageKey}, databaseName);
+  var databaseId = new Application.IndexedDBModel.DatabaseId({storageKey}, databaseName);
 
   function onConsoleError(callback) {
     var old = console.error;
@@ -107,7 +108,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   }
 
   function checkDatabaseDoesExist(callback) {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
+    TestRunner.addSniffer(Application.IndexedDBModel.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
@@ -118,7 +119,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   }
 
   function checkDatabaseDoesNotExist(callback) {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
+    TestRunner.addSniffer(Application.IndexedDBModel.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {

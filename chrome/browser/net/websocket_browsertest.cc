@@ -18,19 +18,22 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_source.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -60,6 +63,12 @@
 namespace {
 
 using SSLOptions = net::SpawnedTestServer::SSLOptions;
+
+using testing::HasSubstr;
+using testing::Not;
+
+constexpr char kHostA[] = "a.test";
+constexpr char kHostB[] = "b.test";
 
 class WebSocketBrowserTest : public InProcessBrowserTest {
  public:
@@ -93,7 +102,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
 
   void NavigateToPath(const std::string& relative) {
     base::FilePath path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+    EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
     path =
         path.Append(net::GetWebSocketTestDataDirectory()).AppendASCII(relative);
     GURL url(std::string("file://") + path.MaybeAsASCII());
@@ -139,7 +148,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     const url::Origin origin;
 
     process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
-        url, requested_protocols, site_for_cookies, isolation_info,
+        url, requested_protocols, site_for_cookies,
+        /*has_storage_access=*/false, isolation_info,
         std::move(additional_headers), process->GetID(), origin,
         network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
@@ -148,7 +158,15 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
             process->GetID(), frame->GetRoutingID()),
         /*auth_handler=*/mojo::NullRemote(),
         /*header_client=*/mojo::NullRemote(),
-        /*throttling_profile_id=*/absl::nullopt);
+        /*throttling_profile_id=*/std::nullopt);
+  }
+
+  void SetBlockThirdPartyCookies(bool blocked) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            blocked ? content_settings::CookieControlsMode::kBlockThirdParty
+                    : content_settings::CookieControlsMode::kOff));
   }
 
   net::SpawnedTestServer ws_server_;
@@ -220,7 +238,7 @@ class WebSocketBrowserHTTPSConnectToTest
     : public WebSocketBrowserConnectToTest {
  protected:
   explicit WebSocketBrowserHTTPSConnectToTest(
-      SSLOptions::ServerCertificate cert = SSLOptions::CERT_OK)
+      SSLOptions::ServerCertificate cert = SSLOptions::CERT_TEST_NAMES)
       : WebSocketBrowserConnectToTest(cert),
         https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
 
@@ -235,44 +253,14 @@ class WebSocketBrowserHTTPSConnectToTest
   net::EmbeddedTestServer https_server_;
 };
 
-// Automatically fill in any login prompts that appear with the supplied
-// credentials.
-class AutoLogin : public content::NotificationObserver {
- public:
-  AutoLogin(const std::string& username,
-            const std::string& password,
-            content::NavigationController* navigation_controller)
-      : username_(base::UTF8ToUTF16(username)),
-        password_(base::UTF8ToUTF16(password)),
-        logged_in_(false) {
-    registrar_.Add(
-        this,
-        chrome::NOTIFICATION_AUTH_NEEDED,
-        content::Source<content::NavigationController>(navigation_controller));
+class WebSocketBrowserHTTPSConnectToTestPre3pcd
+    : public WebSocketBrowserHTTPSConnectToTest {
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+    WebSocketBrowserHTTPSConnectToTest::SetUp();
   }
-
-  AutoLogin(const AutoLogin&) = delete;
-  AutoLogin& operator=(const AutoLogin&) = delete;
-
-  // NotificationObserver implementation
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(chrome::NOTIFICATION_AUTH_NEEDED, type);
-    LoginHandler* login_handler =
-        content::Details<LoginNotificationDetails>(details)->handler();
-    login_handler->SetAuth(username_, password_);
-    logged_in_ = true;
-  }
-
-  bool logged_in() const { return logged_in_; }
-
- private:
-  const std::u16string username_;
-  const std::u16string password_;
-  bool logged_in_;
-
-  content::NotificationRegistrar registrar_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that the browser can handle a WebSocket frame split into multiple TCP
@@ -382,16 +370,12 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
   // Launch a basic-auth-protected WebSocket server.
   ws_server_.set_websocket_basic_auth(true);
   ASSERT_TRUE(ws_server_.Start());
-
-  content::NavigationController* navigation_controller =
-      &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  AutoLogin auto_login("test", "test", navigation_controller);
-
-  WindowedAuthNeededObserver auth_needed_waiter(navigation_controller);
   NavigateToHTTP("connect_check.html");
-  auth_needed_waiter.Wait();
 
-  EXPECT_TRUE(auto_login.logged_in());
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
+  LoginHandler::GetAllLoginHandlersForTest().front()->SetAuth(u"test", u"test");
+
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
@@ -751,6 +735,98 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWithAllowFileAccessFromFiles,
   base::RunLoop run_loop;
   NavigateToPath(base::StringPrintf("check-origin.html?port=%d", port));
   EXPECT_EQ("FILE", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTestPre3pcd,
+                       CookieAccess_ThirdPartyAllowed) {
+  ASSERT_TRUE(wss_server_.Start());
+
+  SetBlockThirdPartyCookies(false);
+
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 server().GetURL(kHostA, "/"),
+                                 "cookie=1; SameSite=None; Secure"));
+
+  content::DOMMessageQueue message_queue(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ConnectTo(kHostB, wss_server_.GetURL(kHostA, "echo-request-headers"));
+
+  std::string message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_THAT(message, HasSubstr("cookie=1"));
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
+                       CookieAccess_ThirdPartyBlocked) {
+  ASSERT_TRUE(wss_server_.Start());
+
+  SetBlockThirdPartyCookies(true);
+
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 server().GetURL(kHostA, "/"),
+                                 "cookie=1; SameSite=None; Secure"));
+
+  content::DOMMessageQueue message_queue(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ConnectTo(kHostB, wss_server_.GetURL(kHostA, "echo-request-headers"));
+
+  std::string message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_THAT(message, Not(HasSubstr("cookie=1")));
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
+                       CookieAccess_ThirdPartyAllowedBySetting) {
+  ASSERT_TRUE(wss_server_.Start());
+
+  SetBlockThirdPartyCookies(true);
+
+  GURL::Replacements port_replacement;
+  std::string port_str =
+      base::NumberToString(wss_server_.host_port_pair().port());
+  port_replacement.SetPortStr(port_str);
+
+  {
+    base::test::TestFuture<void> future;
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->SetContentSettings(
+            ContentSettingsType::COOKIES,
+            {
+                ContentSettingPatternSource(
+                    /*primary_pattern=*/ContentSettingsPattern::
+                        FromURLNoWildcard(
+                            server()
+                                .GetURL(kHostA, "/")
+                                .ReplaceComponents(port_replacement)),
+                    /*secondary_patttern=*/
+                    ContentSettingsPattern::FromURLNoWildcard(
+                        server().GetURL(kHostB, "/")),
+                    /*setting_value=*/base::Value(CONTENT_SETTING_ALLOW),
+                    /*source=*/"preference",
+                    /*incognito=*/false,
+                    /*metadata=*/content_settings::RuleMetaData()),
+            },
+            future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 server().GetURL(kHostA, "/"),
+                                 "cookie=1; SameSite=None; Secure"));
+
+  content::DOMMessageQueue message_queue(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ConnectTo(kHostB, wss_server_.GetURL(kHostA, "echo-request-headers"));
+
+  std::string message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_THAT(message, HasSubstr("cookie=1"));
+  EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
 }  // namespace

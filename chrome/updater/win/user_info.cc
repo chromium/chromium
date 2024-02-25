@@ -24,15 +24,19 @@ HRESULT GetProcessUser(std::wstring* name,
   CSid current_sid;
 
   HRESULT hr = GetProcessUserSid(&current_sid);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
-  if (sid)
+  if (sid) {
     *sid = current_sid.Sid();
-  if (name)
+  }
+  if (name) {
     *name = current_sid.AccountName();
-  if (domain)
+  }
+  if (domain) {
     *domain = current_sid.Domain();
+  }
 
   return S_OK;
 }

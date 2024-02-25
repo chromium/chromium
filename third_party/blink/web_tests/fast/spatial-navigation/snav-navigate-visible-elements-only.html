@@ -27,8 +27,8 @@
 <div id="A" tabindex="0"></div>
 
 <script>
-  // This test checks that focusless mode allows entering focus into an element
-  // with the enter key and exiting it with the escape key.
+  // This test checks that spatial navigation allows entering focus into an
+  // element with the enter key and exiting it with the escape key.
   const A = document.getElementById("A");
   const start = document.getElementById("start");
 
@@ -37,14 +37,14 @@
 
   test(() => {
     assert_equals(window.scrollY, 0, "Start at 0 scroll offset.")
-    assert_equals(window.internals.interestedElement,
+    assert_equals(document.activeElement,
                   start, "Top DIV starts off focused");
 
     // Down should scroll the visual viewport, since there's no targets
     // availabe on screen.
     snav.triggerMove('Down');
 
-    assert_equals(window.internals.interestedElement,
+    assert_equals(document.activeElement,
                   start,
                   "First navigation should't move interest");
     assert_greater_than(window.scrollY, 0,
@@ -54,17 +54,17 @@
                         "A element should now be at least partially visible");
 
     snav.triggerMove('Down');
-    assert_equals(window.internals.interestedElement,
+    assert_equals(document.activeElement,
                   A,
                   "Navigate to onscreen element.");
 
     snav.triggerMove('Up');
-    assert_equals(window.internals.interestedElement,
+    assert_equals(document.activeElement,
                   A,
                   "Don't navigate to obscured(in viewport) element even if it has visible part outside of viewport.");
 
     snav.triggerMove('Up');
-    assert_equals(window.internals.interestedElement,
+    assert_equals(document.activeElement,
                   start,
                   "Navigate to onscreen element.");
   }, "Don't navigate to elements that are off screen.");

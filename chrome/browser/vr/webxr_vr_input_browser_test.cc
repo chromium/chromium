@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -9,8 +10,8 @@
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
-#include "device/vr/openxr/openxr_interaction_profile_type.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
 
 // Browser test equivalent of
 // chrome/android/javatests/src/.../browser/vr/WebXrVrInputTest.java.
@@ -220,7 +221,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   }
 
   void UpdateInteractionProfile(
-      device_test::mojom::InteractionProfileType new_profile) {
+      device::mojom::OpenXrInteractionProfileType new_profile) {
     device_test::mojom::EventData data = {};
     data.type = device_test::mojom::EventType::kInteractionProfileChanged;
     data.interaction_profile = new_profile;
@@ -606,7 +607,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInteractionProfileChanged) {
   // Simulate the runtime sending an interaction profile change event to change
   // from Windows motion controller to Khronos simple Controller.
   my_mock.UpdateInteractionProfile(
-      device_test::mojom::InteractionProfileType::kKHRSimple);
+      device::mojom::OpenXrInteractionProfileType::kKHRSimple);
   // Make sure change events happens again since interaction profile changed
   t->PollJavaScriptBooleanOrFail("inputChangeEvents === 2",
                                  WebXrVrBrowserTestBase::kPollTimeoutShort);
@@ -617,36 +618,32 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInteractionProfileChanged) {
   t->EndTest();
 }
 
-// We explicitly translate between the two types because this ensures that we
-// add a corresponding mojom InteractionProfileType whenever we add a new OpenXr
-// Interaction Profile. Since the mojom type is only needed for tests, we can't
-// just use only the mojom type, and because the mojom type may be used for
-// other runtimes, we can't just typemap it.
-device_test::mojom::InteractionProfileType GetMojomInteractionProfile(
-    device::OpenXrInteractionProfileType profile) {
-  switch (profile) {
-    case device::OpenXrInteractionProfileType::kMicrosoftMotion:
-      return device_test::mojom::InteractionProfileType::kWMRMotion;
-    case device::OpenXrInteractionProfileType::kKHRSimple:
-      return device_test::mojom::InteractionProfileType::kKHRSimple;
-    case device::OpenXrInteractionProfileType::kOculusTouch:
-      return device_test::mojom::InteractionProfileType::kOculusTouch;
-    case device::OpenXrInteractionProfileType::kValveIndex:
-      return device_test::mojom::InteractionProfileType::kValveIndex;
-    case device::OpenXrInteractionProfileType::kHTCVive:
-      return device_test::mojom::InteractionProfileType::kHTCVive;
-    case device::OpenXrInteractionProfileType::kSamsungOdyssey:
-      return device_test::mojom::InteractionProfileType::kSamsungOdyssey;
-    case device::OpenXrInteractionProfileType::kHPReverbG2:
-      return device_test::mojom::InteractionProfileType::kHPReverbG2;
-    case device::OpenXrInteractionProfileType::kHandSelectGrasp:
-      return device_test::mojom::InteractionProfileType::kHandSelectGrasp;
-    case device::OpenXrInteractionProfileType::kViveCosmos:
-      return device_test::mojom::InteractionProfileType::kViveCosmos;
-    case device::OpenXrInteractionProfileType::kCount:
-      return device_test::mojom::InteractionProfileType::kInvalid;
-  }
-}
+// Set up an initial constant and some compile time validations for it.
+constexpr device::mojom::OpenXrInteractionProfileType
+    kInitialInteractionProfile =
+        device::mojom::OpenXrInteractionProfileType::kMinValue;
+
+// If intentionally changing `Invalid` to be the 0th profile, please update the
+// assignment above.
+static_assert(kInitialInteractionProfile !=
+                  device::mojom::OpenXrInteractionProfileType::kInvalid,
+              "TestAllKnownInteractionProfileTypes expects the 0th profile in "
+              "OpenXrInteractionProfileType to be valid.");
+
+// A list of interaction profiles that should be skipped by the below test. Each
+// profile must have a comment indicating why it is skipped.
+constexpr device::mojom::OpenXrInteractionProfileType
+    kSkippedInteractionProfiles[] = {
+        // The "Invalid" entry is not a real profile.
+        device::mojom::OpenXrInteractionProfileType::kInvalid,
+        // kAndroidHandGestures is a "synthetic" interaction profile type which
+        // is synthesized via it's own set of extension methods and needs to
+        // use a different mechanism to send button clicks rather than the rest
+        // of the methods.
+        device::mojom::OpenXrInteractionProfileType::kAndroidHandGestures,
+        // kMetaHandAim is also a "synthetic" interaction profile type
+        device::mojom::OpenXrInteractionProfileType::kMetaHandAim,
+};
 
 // Ensure that OpenXR can change between all known Interaction Profile types.
 // If you're adding a new interaction profile, you may need to validate that
@@ -655,11 +652,7 @@ device_test::mojom::InteractionProfileType GetMojomInteractionProfile(
 // adding with the new interaction profile.
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestAllKnownInteractionProfileTypes) {
   WebXrControllerInputMock my_mock;
-
-  // Explicitly set us to the first interaction profile before we start the
-  // session.
-  my_mock.UpdateInteractionProfile(GetMojomInteractionProfile(
-      static_cast<device::OpenXrInteractionProfileType>(0)));
+  my_mock.UpdateInteractionProfile(kInitialInteractionProfile);
   auto controller_data = my_mock.CreateValidController(
       device::ControllerRole::kControllerRoleRight);
   my_mock.ConnectController(controller_data);
@@ -675,11 +668,16 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestAllKnownInteractionProfileTypes) {
 
   // Note that since we explicitly set ourselves to the 0th value above, we want
   // to start changing to the first item in the enum.
-  static uint32_t kFinalValue =
-      static_cast<uint32_t>(device::OpenXrInteractionProfileType::kCount);
-  for (uint32_t i = 1; i < kFinalValue; i++) {
-    my_mock.UpdateInteractionProfile(GetMojomInteractionProfile(
-        static_cast<device::OpenXrInteractionProfileType>(i)));
+  static uint32_t kFinalValue = static_cast<uint32_t>(
+      device::mojom::OpenXrInteractionProfileType::kMaxValue);
+  static uint32_t kFirstChangedProfileIndex =
+      static_cast<uint32_t>(kInitialInteractionProfile) + 1;
+  for (uint32_t i = kFirstChangedProfileIndex; i <= kFinalValue; i++) {
+    auto profile = static_cast<device::mojom::OpenXrInteractionProfileType>(i);
+    if (base::Contains(kSkippedInteractionProfiles, profile)) {
+      continue;
+    }
+    my_mock.UpdateInteractionProfile(profile);
     expected_change_events++;
     // Make sure change events happens again since interaction profile changed
     t->PollJavaScriptBooleanOrFail(

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MediaDevices interface: attribute ondevicechange
+  assert_true: The prototype object must have a property "ondevicechange" expected true got false
+[FAIL] MediaDevices interface: navigator.mediaDevices must inherit property "ondevicechange" with the proper type
+  assert_inherits: property "ondevicechange" not found in prototype chain
+Harness: the test ran to completion.

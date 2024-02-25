@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 
 #import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/web/public/web_state.h"
 

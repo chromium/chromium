@@ -87,11 +87,6 @@ class MockWebContentsObserver : public WebContentsObserver {
               DidFinishNavigation,
               (NavigationHandle* navigation_handle),
               (override));
-  MOCK_METHOD(void,
-              DidActivatePortal,
-              (WebContents* predecessor_web_contents,
-               base::TimeTicks activation_time),
-              (override));
   MOCK_METHOD(void, DidStartLoading, (), (override));
   MOCK_METHOD(void, DidStopLoading, (), (override));
   MOCK_METHOD(void, LoadProgressChanged, (double progress), (override));
@@ -277,7 +272,7 @@ class MockWebContentsObserver : public WebContentsObserver {
                const std::u16string& message,
                int32_t line_no,
                const std::u16string& source_id,
-               const absl::optional<std::u16string>& untrusted_stack_trace),
+               const std::optional<std::u16string>& untrusted_stack_trace),
               (override));
   MOCK_METHOD(void,
               MediaStartedPlaying,

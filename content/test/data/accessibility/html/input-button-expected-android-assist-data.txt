@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Button text:"Button" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {type="button"}, {value="Button"}]
+++++++TextView text:"Button" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag=""}, {display=""}]
+++++Button text:"Name Description" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {aria-label="Name"}, {type="button"}, {value="Description"}]
+++++++TextView text:"Description" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag=""}, {display=""}]

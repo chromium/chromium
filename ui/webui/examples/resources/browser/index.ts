@@ -3,10 +3,20 @@
 // found in the LICENSE file.
 
 import {PageHandlerFactory, PageHandlerRemote} from './browser.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {Url as MojoUrl} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+
+import {
+  DictionaryValue as mojoBase_mojom_DictionaryValue
+} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
 interface WebshellServices {
   allowWebviewElementRegistration(callback: ()=>void): void;
+  getNextId(): number;
+  registerWebView(viewInstanceId: number): void;
+  attachIframeGuest(containerId: number,
+                    guestInstanceId: number,
+                    attachParams: object,
+                    contentWindow: Window | null): void
 }
 
 declare var webshell: WebshellServices;
@@ -36,29 +46,53 @@ class BrowserProxy {
 class WebviewElement extends HTMLElement {
   public iframeElement: HTMLIFrameElement;
   private viewInstanceId: number;
+  private containerId: number;
+  private guestInstanceId: number;
 
   constructor() {
     super();
     this.iframeElement = document.createElement('iframe');
-    this.iframeElement.style.width = '100%';
-    this.iframeElement.style.height = '100%';
     this.iframeElement.style.border = '0px';
     this.iframeElement.style.margin = "0";
     this.iframeElement.style.padding = "0";
+    this.iframeElement.style.flex = '1';
     this.appendChild(this.iframeElement);
-    this.viewInstanceId = -1;
+    this.viewInstanceId = webshell.getNextId();
+    this.containerId = webshell.getNextId();
+    this.guestInstanceId = -1;
+    const instance = this;
+    webshell.registerWebView(this.viewInstanceId);
+    const createParams: mojoBase_mojom_DictionaryValue = {
+      storage: {"instanceId": {"intValue": this.viewInstanceId}}
+    };
+    BrowserProxy.getInstance().createGuestView(
+        createParams).then((result) => {
+          instance.onGuestViewCreated(result.guestInstanceId);
+        });
   }
 
-  navigate(src: Url) {
-    BrowserProxy.getInstance().navigate(this.viewInstanceId, src);
+  onGuestViewCreated(guestInstanceId: number) {
+    this.guestInstanceId = guestInstanceId;
+    const createParams: mojoBase_mojom_DictionaryValue = {
+      storage: {"instanceId": {"intValue": this.viewInstanceId}}
+    };
+    const iframeContentWindow = this.iframeElement.contentWindow;
+    webshell.attachIframeGuest(this.containerId,
+                               this.guestInstanceId,
+                               createParams,
+                               iframeContentWindow);
+  }
+
+  navigate(src: MojoUrl) {
+    BrowserProxy.getInstance().navigate(this.guestInstanceId, src);
   }
 
   goBack() {
-    BrowserProxy.getInstance().goBack(this.viewInstanceId);
+    BrowserProxy.getInstance().goBack(this.guestInstanceId);
   }
 
   goForward() {
-    BrowserProxy.getInstance().goForward(this.viewInstanceId);
+    BrowserProxy.getInstance().goForward(this.guestInstanceId);
   }
 }
 
@@ -70,9 +104,16 @@ function navigateToAddressBarUrl() {
   const webview = document.getElementById("webview") as WebviewElement;
   const addressBar = document.getElementById("address") as HTMLInputElement;
   if (webview && addressBar) {
-    const src = new Url();
-    src.url = addressBar.value;
-    webview.navigate(src);
+    try {
+      // Validate the URL before converting it to a Mojo URL to avoid a Mojo
+      // validation error when sending this call to the browser. Successful
+      // construction indicates a valid URL.
+      const src = new URL(addressBar.value);
+      const mojoSrc: MojoUrl = {url: src.toString()};
+      webview.navigate(mojoSrc);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 

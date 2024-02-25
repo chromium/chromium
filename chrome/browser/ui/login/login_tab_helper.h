@@ -15,7 +15,6 @@
 #include "url/gurl.h"
 
 namespace content {
-class LoginDelegate;
 class NavigationHandle;
 class WebContents;
 }  // namespace content
@@ -32,14 +31,6 @@ class LoginTabHelper : public content::WebContentsObserver,
   LoginTabHelper& operator=(const LoginTabHelper&) = delete;
 
   ~LoginTabHelper() override;
-
-  std::unique_ptr<content::LoginDelegate> CreateAndStartMainFrameLoginDelegate(
-      const net::AuthChallengeInfo& auth_info,
-      content::WebContents* web_contents,
-      const content::GlobalRequestID& request_id,
-      const GURL& url,
-      scoped_refptr<net::HttpResponseHeaders> response_headers,
-      LoginAuthRequiredCallback auth_required_callback);
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -70,16 +61,21 @@ class LoginTabHelper : public content::WebContentsObserver,
   WillProcessMainFrameUnauthorizedResponse(
       content::NavigationHandle* navigation_handle);
 
+  void RegisterExtensionCancelledNavigation(
+      const content::GlobalRequestID& request_id);
+
+ protected:
+  explicit LoginTabHelper(content::WebContents* web_contents);
+  virtual std::unique_ptr<LoginHandler> CreateLoginHandler(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      LoginAuthRequiredCallback auth_required_callback);
+
  private:
   friend class content::WebContentsUserData<LoginTabHelper>;
 
-  explicit LoginTabHelper(content::WebContents* web_contents);
-
   void HandleCredentials(
-      const absl::optional<net::AuthCredentials>& credentials);
-
-  void RegisterExtensionCancelledNavigation(
-      const content::GlobalRequestID& request_id);
+      const std::optional<net::AuthCredentials>& credentials);
 
   // When the user enters credentials into the login prompt, they are populated
   // in the auth cache and then page is reloaded to re-send the request with the

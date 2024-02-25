@@ -19,22 +19,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A worker task to retrieve images for contacts.
- */
+/** A worker task to retrieve images for contacts. */
 class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
     private static final String[] PROJECTION = {
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.LOOKUP_KEY,
-            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
+        ContactsContract.Contacts._ID,
+        ContactsContract.Contacts.LOOKUP_KEY,
+        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 
-    /**
-     * An interface to use to communicate back the results to the client.
-     */
+    /** An interface to use to communicate back the results to the client. */
     public interface ContactsRetrievedCallback {
         /**
          * A callback to define to receive the contact details.
+         *
          * @param contacts The contacts retrieved.
          */
         void contactsRetrieved(ArrayList<ContactDetails> contacts);
@@ -63,6 +60,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
 
     /**
      * A ContactsFetcherWorkerTask constructor.
+     *
      * @param context The Context to use.
      * @param callback The callback to use to communicate back the results.
      * @param includeNames Whether names were requested by the website.
@@ -70,8 +68,12 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
      * @param includeTel Whether to include telephones in the data fetched.
      * @param includeAddresses Whether to include telephones in the data fetched.
      */
-    public ContactsFetcherWorkerTask(Context context, ContactsRetrievedCallback callback,
-            boolean includeNames, boolean includeEmails, boolean includeTel,
+    public ContactsFetcherWorkerTask(
+            Context context,
+            ContactsRetrievedCallback callback,
+            boolean includeNames,
+            boolean includeEmails,
+            boolean includeTel,
             boolean includeAddresses) {
         mContext = context;
         mContentResolver = context.getContentResolver();
@@ -84,6 +86,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
 
     /**
      * Fetches the details for all contacts (in a background thread).
+     *
      * @return The icon representing a contact.
      */
     @Override
@@ -97,11 +100,12 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
 
     /**
      * Fetches specific details for contacts.
+     *
      * @param source The source URI to use for the lookup.
      * @param idColumn The name of the id column.
      * @param idColumn The name of the data column.
      * @param sortOrder The sort order. Data must be sorted by CONTACT_ID but can be additionally
-     *                  sorted also.
+     *     sorted also.
      * @return A map of ids to contact details (as ArrayList).
      */
     private Map<String, ArrayList<String>> getDetails(
@@ -162,28 +166,48 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
     private Map<String, ArrayList<PaymentAddress>> getAddressDetails() {
         Map<String, ArrayList<PaymentAddress>> map = new HashMap<>();
 
-        String addressSortOrder = ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID
-                + " ASC, " + ContactsContract.CommonDataKinds.StructuredPostal.DATA + " ASC";
-        Cursor cursor = mContentResolver.query(
-                ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI, null, null, null,
-                addressSortOrder);
+        String addressSortOrder =
+                ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID
+                        + " ASC, "
+                        + ContactsContract.CommonDataKinds.StructuredPostal.DATA
+                        + " ASC";
+        Cursor cursor =
+                mContentResolver.query(
+                        ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        addressSortOrder);
 
         ArrayList<PaymentAddress> list = new ArrayList<>();
         String key = "";
 
         while (cursor.moveToNext()) {
-            String id = cursor.getString(cursor.getColumnIndexOrThrow(
-                    ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID));
-            String city = cursor.getString(cursor.getColumnIndexOrThrow(
-                    ContactsContract.CommonDataKinds.StructuredPostal.CITY));
-            String country = cursor.getString(cursor.getColumnIndexOrThrow(
-                    ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY));
-            String formattedAddress = cursor.getString(cursor.getColumnIndexOrThrow(
-                    ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
-            String postcode = cursor.getString(cursor.getColumnIndexOrThrow(
-                    ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE));
-            String region = cursor.getString(cursor.getColumnIndexOrThrow(
-                    ContactsContract.CommonDataKinds.StructuredPostal.REGION));
+            String id =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID));
+            String city =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    ContactsContract.CommonDataKinds.StructuredPostal.CITY));
+            String country =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY));
+            String formattedAddress =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    ContactsContract.CommonDataKinds.StructuredPostal
+                                            .FORMATTED_ADDRESS));
+            String postcode =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE));
+            String region =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    ContactsContract.CommonDataKinds.StructuredPostal.REGION));
             PaymentAddress address =
                     createAddress(city, country, formattedAddress, postcode, region);
             if (key.isEmpty()) {
@@ -208,31 +232,45 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
 
     /**
      * Fetches all known contacts.
+     *
      * @return The contact list as an array.
      */
     public ArrayList<ContactDetails> getAllContacts() {
-        Map<String, ArrayList<String>> emailMap = mIncludeEmails
-                ? getDetails(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
-                        ContactsContract.CommonDataKinds.Email.CONTACT_ID,
-                        ContactsContract.CommonDataKinds.Email.DATA,
-                        ContactsContract.CommonDataKinds.Email.CONTACT_ID + " ASC, "
-                                + ContactsContract.CommonDataKinds.Email.DATA + " ASC")
-                : null;
+        Map<String, ArrayList<String>> emailMap =
+                mIncludeEmails
+                        ? getDetails(
+                                ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                                ContactsContract.CommonDataKinds.Email.CONTACT_ID,
+                                ContactsContract.CommonDataKinds.Email.DATA,
+                                ContactsContract.CommonDataKinds.Email.CONTACT_ID
+                                        + " ASC, "
+                                        + ContactsContract.CommonDataKinds.Email.DATA
+                                        + " ASC")
+                        : null;
 
-        Map<String, ArrayList<String>> phoneMap = mIncludeTel
-                ? getDetails(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
-                        ContactsContract.CommonDataKinds.Phone.DATA,
-                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " ASC, "
-                                + ContactsContract.CommonDataKinds.Phone.NUMBER + " ASC")
-                : null;
+        Map<String, ArrayList<String>> phoneMap =
+                mIncludeTel
+                        ? getDetails(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                                ContactsContract.CommonDataKinds.Phone.DATA,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+                                        + " ASC, "
+                                        + ContactsContract.CommonDataKinds.Phone.NUMBER
+                                        + " ASC")
+                        : null;
 
         Map<String, ArrayList<PaymentAddress>> addressMap =
                 mIncludeAddresses ? getAddressDetails() : null;
 
         // A cursor containing the raw contacts data.
-        Cursor cursor = mContentResolver.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
-                null, null, ContactsContract.Contacts.SORT_KEY_PRIMARY + " ASC");
+        Cursor cursor =
+                mContentResolver.query(
+                        ContactsContract.Contacts.CONTENT_URI,
+                        PROJECTION,
+                        null,
+                        null,
+                        ContactsContract.Contacts.SORT_KEY_PRIMARY + " ASC");
         if (!cursor.moveToFirst()) {
             cursor.close();
             return new ArrayList<ContactDetails>();
@@ -242,8 +280,10 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
         do {
             String id =
                     cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-            String name = cursor.getString(
-                    cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+            String name =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
             List<String> email = mIncludeEmails ? emailMap.get(id) : null;
             List<String> tel = mIncludeTel ? phoneMap.get(id) : null;
             List<PaymentAddress> address = mIncludeAddresses ? addressMap.get(id) : null;
@@ -259,6 +299,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
 
     /**
      * Communicates the results back to the client. Called on the UI thread.
+     *
      * @param contacts The contacts retrieved.
      */
     @Override

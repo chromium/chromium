@@ -61,9 +61,12 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
   }
 
   void AddBrowser(Browser* browser, const std::vector<GURL>& urls) {
+    ui_test_utils::BrowserChangeObserver new_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     ui_test_utils::NavigateToURLWithDisposition(
         browser, urls[0], WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+    ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
     AddNavigations(BrowserList::GetInstance()->GetLastActive(),
                    {urls.begin() + 1, urls.end()});
   }
@@ -91,7 +94,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
                                   base::Time to,
                                   std::set<GURL> restrict_urls = {}) {
     return DeletionInfo(history::DeletionTimeRange(from, to), false, {}, {},
-                        restrict_urls.empty() ? absl::optional<std::set<GURL>>()
+                        restrict_urls.empty() ? std::optional<std::set<GURL>>()
                                               : restrict_urls);
   }
 
@@ -315,7 +318,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabDeletion) {
   ExpectDeleteLastSessionCalled(2);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabWindowDeletion) {
+// TODO(crbug.com/1487680): flaky.
+IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
+                       DISABLED_RecentTabWindowDeletion) {
   // Create a new browser with three tabs and close it.
   AddBrowser(browser(), {url_a_});
   Browser* new_browser = BrowserList::GetInstance()->GetLastActive();

@@ -8,8 +8,8 @@ ADDRESS_HOME_CITY | city | Zip and City |  | salutation_1
 ADDRESS_HOME_COUNTRY | country | Country | US | salutation_1
 ADDRESS_HOME_STATE | state | State | CA | salutation_1
 EMAIL_ADDRESS | email | Email |  | salutation_1
-PHONE_HOME_WHOLE_NUMBER | phone | Phone * |  | salutation_1
-PHONE_HOME_WHOLE_NUMBER | mobile | Mobile * |  | salutation_1
+PHONE_HOME_CITY_AND_NUMBER | phone | Phone * |  | salutation_1
+PHONE_HOME_CITY_AND_NUMBER | mobile | Mobile * |  | salutation_1
 UNKNOWN_TYPE | paymentMethod | 31.89 USD by | CC | salutation_1
 CREDIT_CARD_TYPE | accountBrandDropDown | Card Brand | VISA | accountBrandDropDown_2
 CREDIT_CARD_NUMBER | cardNumber | Card Number |  | accountBrandDropDown_2

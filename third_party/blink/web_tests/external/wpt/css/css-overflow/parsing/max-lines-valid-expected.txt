@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL e.style['max-lines'] = "none" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['max-lines'] = "1" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['max-lines'] = "6" should set the property value assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-lines'] = "none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-lines'] = "1" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['max-lines'] = "6" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

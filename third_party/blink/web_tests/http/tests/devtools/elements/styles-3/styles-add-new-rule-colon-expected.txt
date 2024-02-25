@@ -12,6 +12,7 @@ foo, [$div#inspected$], bar { (inspector-stylesheet:1 -> inspector-stylesheet:1:
 [expanded] 
 [$div$] { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 After adding new rule (other):
 [expanded] 
@@ -24,6 +25,7 @@ div#other { (inspector-stylesheet:5 -> inspector-stylesheet:5:12)
 [expanded] 
 div { (user agent stylesheet)
     display: block;
+    unicode-bidi: isolate;
 
 Revision added: inspector-stylesheet
 

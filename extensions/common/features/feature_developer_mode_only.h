@@ -10,7 +10,11 @@ namespace extensions {
 // Gets the developer mode as seen by the Feature system.
 bool GetCurrentDeveloperMode(int context_id);
 
-// Sets the current developer mode as seen by the Feature system.
+// Sets the current developer mode as seen by the Feature system for the
+// current process.
+// Note: If you want to change this value, you may be looking for
+// util::SetDeveloperModeForProfile() (which updates all associated
+// processes).
 void SetCurrentDeveloperMode(int context_id, bool current_developer_mode);
 
 }  // namespace extensions

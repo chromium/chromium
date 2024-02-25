@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_REQUEST_H_
 
+#include <optional>
+
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -62,13 +63,13 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
 
-  static absl::optional<network::mojom::CredentialsMode> ParseCredentialsMode(
+  static std::optional<network::mojom::CredentialsMode> ParseCredentialsMode(
       const String& credentials_mode);
 
   // From Request.idl:
   String method() const;
   const KURL& url() const;
-  Headers* getHeaders() const { return headers_; }
+  Headers* getHeaders() const { return headers_.Get(); }
   String destination() const;
   String referrer() const;
   String getReferrerPolicy() const;
@@ -79,20 +80,21 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   String integrity() const;
   bool keepalive() const;
   bool isHistoryNavigation() const;
-  AbortSignal* signal() const { return signal_; }
+  AbortSignal* signal() const { return signal_.Get(); }
   String targetAddressSpace() const;
 
   // From Request.idl:
   // This function must be called with entering an appropriate V8 context.
   Request* clone(ScriptState*, ExceptionState&);
 
-  FetchRequestData* PassRequestData(ScriptState*);
+  FetchRequestData* PassRequestData(ScriptState*, ExceptionState&);
   mojom::blink::FetchAPIRequestPtr CreateFetchAPIRequest() const;
   bool HasBody() const;
   BodyStreamBuffer* BodyBuffer() override { return request_->Buffer(); }
   const BodyStreamBuffer* BodyBuffer() const override {
     return request_->Buffer();
   }
+  uint64_t BodyBufferByteLength() const { return request_->BufferByteLength(); }
   mojom::blink::RequestContextType GetRequestContextType() const;
   network::mojom::RequestDestination GetRequestDestination() const;
   network::mojom::RequestMode GetRequestMode() const;
@@ -100,7 +102,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   void Trace(Visitor*) const override;
 
  private:
-  const FetchRequestData* GetRequest() const { return request_; }
+  const FetchRequestData* GetRequest() const { return request_.Get(); }
   static Request* CreateRequestWithRequestOrString(ScriptState*,
                                                    Request*,
                                                    const String&,

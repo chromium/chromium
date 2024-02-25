@@ -35,7 +35,7 @@
   return self;
 }
 
-- (instancetype)initWithModelPath:(NSString*)modelPath {
+- (instancetype)initWithModelPath:(NSString *)modelPath {
   self = [self init];
   if (self) {
     self.baseOptions.modelFile.filePath = modelPath;
@@ -47,14 +47,14 @@
 
 @implementation TFLImageSegmenter {
   /** ImageSegmenter backed by C API */
-  TfLiteImageSegmenter* _imageSegmenter;
+  TfLiteImageSegmenter *_imageSegmenter;
 }
 
 - (void)dealloc {
   TfLiteImageSegmenterDelete(_imageSegmenter);
 }
 
-- (instancetype)initWithImageSegmenter:(TfLiteImageSegmenter*)imageSegmenter {
+- (instancetype)initWithImageSegmenter:(TfLiteImageSegmenter *)imageSegmenter {
   self = [super init];
   if (self) {
     _imageSegmenter = imageSegmenter;
@@ -62,9 +62,8 @@
   return self;
 }
 
-+ (nullable instancetype)imageSegmenterWithOptions:
-                             (nonnull TFLImageSegmenterOptions*)options
-                                             error:(NSError**)error {
++ (nullable instancetype)imageSegmenterWithOptions:(nonnull TFLImageSegmenterOptions *)options
+                                             error:(NSError **)error {
   TfLiteImageSegmenterOptions cOptions = TfLiteImageSegmenterOptionsCreate();
 
   [options.baseOptions copyToCOptions:&(cOptions.base_options)];
@@ -72,22 +71,20 @@
 
   if (options.displayNamesLocale) {
     if (options.displayNamesLocale.UTF8String) {
-      cOptions.display_names_locale =
-          strdup(options.displayNamesLocale.UTF8String);
+      cOptions.display_names_locale = strdup(options.displayNamesLocale.UTF8String);
       if (!cOptions.display_names_locale) {
         exit(-1);  // Memory Allocation Failed.
       }
     } else {
-      [TFLCommonUtils
-          createCustomError:error
-                   withCode:TFLSupportErrorCodeInvalidArgumentError
-                description:@"Could not convert (NSString *) to (char *)."];
+      [TFLCommonUtils createCustomError:error
+                               withCode:TFLSupportErrorCodeInvalidArgumentError
+                            description:@"Could not convert (NSString *) to (char *)."];
       return nil;
     }
   }
 
-  TfLiteSupportError* cCreateImageSegmenterError = nil;
-  TfLiteImageSegmenter* cImageSegmenter =
+  TfLiteSupportError *cCreateImageSegmenterError = nil;
+  TfLiteImageSegmenter *cImageSegmenter =
       TfLiteImageSegmenterFromOptions(&cOptions, &cCreateImageSegmenterError);
 
   // Freeing memory of allocated string.
@@ -97,17 +94,16 @@
     TfLiteSupportErrorDelete(cCreateImageSegmenterError);
   }
 
-  // Return nil if C object detector evaluates to nil. If an error was generted
-  // by the C layer, it has already been populated to an NSError and deleted
-  // before returning from the method.
+  // Return nil if C object detector evaluates to nil. If an error was generted by the C layer, it
+  // has already been populated to an NSError and deleted before returning from the method.
   if (!cImageSegmenter) {
     return nil;
   }
   return [[TFLImageSegmenter alloc] initWithImageSegmenter:cImageSegmenter];
 }
 
-- (nullable TFLSegmentationResult*)segmentWithGMLImage:(GMLImage*)image
-                                                 error:(NSError**)error {
+- (nullable TFLSegmentationResult *)segmentWithGMLImage:(GMLImage *)image
+                                                  error:(NSError **)error {
   if (!image) {
     [TFLCommonUtils createCustomError:error
                              withCode:TFLSupportErrorCodeInvalidArgumentError
@@ -115,15 +111,15 @@
     return nil;
   }
 
-  TfLiteFrameBuffer* cFrameBuffer = [image cFrameBufferWithError:error];
+  TfLiteFrameBuffer *cFrameBuffer = [image cFrameBufferWithError:error];
 
   if (!cFrameBuffer) {
     return nil;
   }
 
-  TfLiteSupportError* cSegmentError = nil;
-  TfLiteSegmentationResult* cSegmentationResult = TfLiteImageSegmenterSegment(
-      _imageSegmenter, cFrameBuffer, &cSegmentError);
+  TfLiteSupportError *cSegmentError = nil;
+  TfLiteSegmentationResult *cSegmentationResult =
+      TfLiteImageSegmenterSegment(_imageSegmenter, cFrameBuffer, &cSegmentError);
 
   free(cFrameBuffer->buffer);
   cFrameBuffer->buffer = nil;
@@ -136,14 +132,13 @@
     TfLiteSupportErrorDelete(cSegmentError);
   }
 
-  // Return nil if C result evaluates to nil. If an error was generted by the C
-  // layer, it has already been populated to an NSError and deleted before
-  // returning from the method.
+  // Return nil if C result evaluates to nil. If an error was generted by the C layer, it has
+  // already been populated to an NSError and deleted before returning from the method.
   if (!cSegmentationResult) {
     return nil;
   }
 
-  TFLSegmentationResult* segmentationResult =
+  TFLSegmentationResult *segmentationResult =
       [TFLSegmentationResult segmentationResultWithCResult:cSegmentationResult];
   TfLiteSegmentationResultDelete(cSegmentationResult);
 

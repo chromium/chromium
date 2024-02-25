@@ -102,9 +102,8 @@ void ConvertDecoderBufferToProto(
 }  // namespace
 
 scoped_refptr<media::DecoderBuffer> ByteArrayToDecoderBuffer(
-    const uint8_t* data,
-    uint32_t size) {
-  base::BigEndianReader reader(data, size);
+    base::span<const uint8_t> data) {
+  base::BigEndianReader reader(data);
   uint8_t payload_version = 0;
   uint16_t proto_size = 0;
   openscreen::cast::DecoderBuffer segment;

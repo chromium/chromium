@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -15,6 +16,7 @@
 #include "components/variations/hashing.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
+#include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -57,8 +59,7 @@ class VariationsCrashKeysTest : public ::testing::Test {
 
 TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
   SyntheticTrialRegistry registry;
-  registry.AddSyntheticTrialObserver(
-      SyntheticTrialsActiveGroupIdProvider::GetInstance());
+  registry.AddObserver(SyntheticTrialsActiveGroupIdProvider::GetInstance());
 
   // Start with 2 trials, one active and one not
   base::FieldTrialList::CreateFieldTrial("Trial1", "Group1")->Activate();
@@ -132,10 +133,31 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
       info.experiment_list);
 }
 
-TEST_F(VariationsCrashKeysTest, SeedVersionKey) {
+TEST_F(VariationsCrashKeysTest, SeedVersionFromParsedSeed) {
   SetSeedVersion("version-123");
   InitCrashKeys();
   EXPECT_EQ("version-123", GetVariationsSeedVersionCrashKey());
+}
+
+TEST_F(VariationsCrashKeysTest, SeedVersionFromCommandLineSwitch) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsSeedVersion, "version-456");
+  InitCrashKeys();
+  EXPECT_EQ("version-456", GetVariationsSeedVersionCrashKey());
+}
+
+TEST_F(VariationsCrashKeysTest, OverriddenFieldTrial) {
+  base::FieldTrialList::CreateFieldTrial("Trial1", "Group1",
+                                         /*is_low_anonymity=*/false,
+                                         /*is_overridden=*/true)
+      ->Activate();
+
+  InitCrashKeys();
+
+  // Because the trial is overridden, it has a different group variation ID.
+  EXPECT_EQ("1", GetNumExperimentsCrashKey());
+  EXPECT_EQ("2a140065", HashNameAsHexString("Group1_MANUALLY_FORCED"));
+  EXPECT_EQ("8e7abfb0-2a140065,", GetVariationsCrashKey());
 }
 
 }  // namespace variations

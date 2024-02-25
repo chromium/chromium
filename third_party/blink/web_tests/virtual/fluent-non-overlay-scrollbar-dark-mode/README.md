@@ -1,4 +1,3 @@
-The suit contains web tests for Fluent non-overlay scrollbar that can be
-enabled via the following feature flag: `--enable-features=FluentScrollbar`.
-Please see more details here: https://crbug.com/1351598.
-preferredColorScheme is set to dark to force dark mode scrollbars.
+Please see
+`third_party/blink/web_tests/virtual/fluent-non-overlay-scrollbar/README.md`.
+This suite runs Fluent Overlay tests with dark mode enabled.

@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/win/async_operation.h"
@@ -33,7 +32,7 @@ using Microsoft::WRL::Make;
 }  // namespace
 
 FakeBluetoothAdapterWinrt::FakeBluetoothAdapterWinrt(
-    base::StringPiece address,
+    std::string_view address,
     Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadio> radio)
     : raw_address_(ToRawBluetoothAddress(address)), radio_(std::move(radio)) {}
 
@@ -41,7 +40,7 @@ FakeBluetoothAdapterWinrt::~FakeBluetoothAdapterWinrt() = default;
 
 // static
 uint64_t FakeBluetoothAdapterWinrt::ToRawBluetoothAddress(
-    base::StringPiece address) {
+    std::string_view address) {
   uint64_t raw_address;
   const bool result = base::HexStringToUInt64(
       base::StrCat(base::SplitStringPiece(address, ":", base::TRIM_WHITESPACE,

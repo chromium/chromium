@@ -50,12 +50,26 @@ class AppInfoDialogBrowserTest : public DialogBrowserTest {
 };
 
 // Invokes a dialog that shows details of an installed extension.
-IN_PROC_BROWSER_TEST_F(AppInfoDialogBrowserTest, InvokeUi_default) {
+// Flaky on ChromeOS. See https://crbug.com/1485666
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_F(AppInfoDialogBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
+// Flaky on ChromeOS. See https://crbug.com/1484928
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CreateShortcutsAfterExtensionUnloaded \
+  DISABLED_CreateShortcutsAfterExtensionUnloaded
+#else
+#define MAYBE_CreateShortcutsAfterExtensionUnloaded \
+  CreateShortcutsAfterExtensionUnloaded
+#endif
 IN_PROC_BROWSER_TEST_F(AppInfoDialogBrowserTest,
-                       CreateShortcutsAfterExtensionUnloaded) {
+                       MAYBE_CreateShortcutsAfterExtensionUnloaded) {
   ShowUi("");
   ASSERT_TRUE(AppInfoDialog::GetLastDialogForTesting());
 

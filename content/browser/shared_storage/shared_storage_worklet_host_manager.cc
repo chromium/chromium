@@ -6,7 +6,6 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
-#include "content/browser/shared_storage/shared_storage_render_thread_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 
 namespace content {
@@ -20,51 +19,80 @@ void SharedStorageWorkletHostManager::OnDocumentServiceDestroyed(
   // there's an actual worklet operation request, but the
   // `SharedStorageDocumentServiceImpl` will call this method on destruction
   // irrespectively, so it may not exist in map.
-  auto it = attached_shared_storage_worklet_hosts_.find(document_service);
-  if (it == attached_shared_storage_worklet_hosts_.end())
-    return;
-
-  SharedStorageWorkletHost* worklet_host = it->second.get();
-  if (!worklet_host->HasPendingOperations()) {
-    attached_shared_storage_worklet_hosts_.erase(it);
+  auto worklet_hosts_it =
+      attached_shared_storage_worklet_hosts_.find(document_service);
+  if (worklet_hosts_it == attached_shared_storage_worklet_hosts_.end()) {
     return;
   }
 
-  DCHECK(!keep_alive_shared_storage_worklet_hosts_.count(worklet_host));
-  keep_alive_shared_storage_worklet_hosts_.insert(
-      {worklet_host, std::move(it->second)});
+  WorkletHosts& worklet_hosts = worklet_hosts_it->second;
+  for (auto& [raw_worklet_host, worklet_host] : worklet_hosts) {
+    if (raw_worklet_host->HasPendingOperations()) {
+      auto [it, inserted] = keep_alive_shared_storage_worklet_hosts_.emplace(
+          raw_worklet_host, std::move(worklet_host));
+      CHECK(inserted);
 
-  attached_shared_storage_worklet_hosts_.erase(it);
+      raw_worklet_host->EnterKeepAliveOnDocumentDestroyed(base::BindOnce(
+          &SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished,
+          base::Unretained(this)));
+    }
+  }
 
-  worklet_host->EnterKeepAliveOnDocumentDestroyed(base::BindOnce(
-      &SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished,
-      base::Unretained(this)));
+  attached_shared_storage_worklet_hosts_.erase(worklet_hosts_it);
 }
 
 void SharedStorageWorkletHostManager::ExpireWorkletHostForDocumentService(
-    SharedStorageDocumentServiceImpl* document_service) {
-  attached_shared_storage_worklet_hosts_.erase(document_service);
+    SharedStorageDocumentServiceImpl* document_service,
+    SharedStorageWorkletHost* worklet_host) {
+  auto worklet_hosts_it =
+      attached_shared_storage_worklet_hosts_.find(document_service);
+  CHECK(worklet_hosts_it != attached_shared_storage_worklet_hosts_.end());
+
+  WorkletHosts& worklet_hosts = worklet_hosts_it->second;
+
+  auto worklet_host_it = worklet_hosts.find(worklet_host);
+  CHECK(worklet_host_it != worklet_hosts.end());
+
+  worklet_hosts.erase(worklet_host);
+
+  if (worklet_hosts.empty()) {
+    attached_shared_storage_worklet_hosts_.erase(worklet_hosts_it);
+  }
 }
 
-SharedStorageWorkletHost*
-SharedStorageWorkletHostManager::GetOrCreateSharedStorageWorkletHost(
-    SharedStorageDocumentServiceImpl* document_service) {
-  auto it = attached_shared_storage_worklet_hosts_.find(document_service);
-  if (it != attached_shared_storage_worklet_hosts_.end())
-    return it->second.get();
+void SharedStorageWorkletHostManager::CreateWorkletHost(
+    SharedStorageDocumentServiceImpl* document_service,
+    const url::Origin& frame_origin,
+    const GURL& script_source_url,
+    network::mojom::CredentialsMode credentials_mode,
+    const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
+    mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
+        worklet_host_receiver,
+    blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
+        callback) {
+  auto worklet_hosts_it =
+      attached_shared_storage_worklet_hosts_.find(document_service);
 
-  auto driver = std::make_unique<SharedStorageRenderThreadWorkletDriver>(
-      &(static_cast<RenderFrameHostImpl&>(document_service->render_frame_host())
-            .GetAgentSchedulingGroup()));
+  // A document can only create multiple worklets with `kSharedStorageAPIM123`
+  // enabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123)) {
+    CHECK(worklet_hosts_it == attached_shared_storage_worklet_hosts_.end());
+  }
+
+  WorkletHosts& worklet_hosts =
+      (worklet_hosts_it != attached_shared_storage_worklet_hosts_.end())
+          ? worklet_hosts_it->second
+          : attached_shared_storage_worklet_hosts_[document_service];
 
   std::unique_ptr<SharedStorageWorkletHost> worklet_host =
-      CreateSharedStorageWorkletHost(std::move(driver), *document_service);
+      CreateWorkletHostHelper(
+          *document_service, frame_origin, script_source_url, credentials_mode,
+          origin_trial_features, std::move(worklet_host_receiver),
+          std::move(callback));
 
-  SharedStorageWorkletHost* worklet_host_ptr = worklet_host.get();
+  SharedStorageWorkletHost* raw_worklet_host = worklet_host.get();
 
-  attached_shared_storage_worklet_hosts_.insert(
-      {document_service, std::move(worklet_host)});
-  return worklet_host_ptr;
+  worklet_hosts.emplace(raw_worklet_host, std::move(worklet_host));
 }
 
 void SharedStorageWorkletHostManager::AddSharedStorageObserver(
@@ -93,11 +121,19 @@ void SharedStorageWorkletHostManager::NotifySharedStorageAccessed(
 }
 
 std::unique_ptr<SharedStorageWorkletHost>
-SharedStorageWorkletHostManager::CreateSharedStorageWorkletHost(
-    std::unique_ptr<SharedStorageWorkletDriver> driver,
-    SharedStorageDocumentServiceImpl& document_service) {
-  return std::make_unique<SharedStorageWorkletHost>(std::move(driver),
-                                                    document_service);
+SharedStorageWorkletHostManager::CreateWorkletHostHelper(
+    SharedStorageDocumentServiceImpl& document_service,
+    const url::Origin& frame_origin,
+    const GURL& script_source_url,
+    network::mojom::CredentialsMode credentials_mode,
+    const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
+    mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
+        worklet_host,
+    blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
+        callback) {
+  return std::make_unique<SharedStorageWorkletHost>(
+      document_service, frame_origin, script_source_url, credentials_mode,
+      origin_trial_features, std::move(worklet_host), std::move(callback));
 }
 
 void SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished(
@@ -114,7 +150,7 @@ void SharedStorageWorkletHostManager::NotifyUrnUuidGenerated(
 }
 
 void SharedStorageWorkletHostManager::NotifyConfigPopulated(
-    const absl::optional<FencedFrameConfig>& config) {
+    const std::optional<FencedFrameConfig>& config) {
   for (SharedStorageObserverInterface& observer : observers_) {
     observer.OnConfigPopulated(config);
   }

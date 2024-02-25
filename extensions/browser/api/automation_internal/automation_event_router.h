@@ -20,7 +20,6 @@
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -108,7 +107,7 @@ class AutomationEventRouter
       content::BrowserContext* browser_context = nullptr) override;
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override;
+      const std::optional<gfx::Rect>& rect) override;
 
   // If a remote router is registered, then all events are directly forwarded to
   // it. The caller of this method is responsible for calling it again with
@@ -136,7 +135,6 @@ class AutomationEventRouter
     RenderProcessHostId render_process_host_id;
     bool desktop;
     std::set<ui::AXTreeID> tree_ids;
-    bool is_active_context;
   };
 
   AutomationEventRouter();
@@ -163,18 +161,6 @@ class AutomationEventRouter
 
   void RemoveAutomationListener(content::RenderProcessHost* host);
 
-  // Called when the user switches profiles or when a listener is added
-  // or removed. The purpose is to ensure that multiple instances of the
-  // same extension running in different profiles don't interfere with one
-  // another, so in that case only the one associated with the active profile
-  // is marked as active.
-  //
-  // This is needed on Chrome OS because ChromeVox loads into the login profile
-  // in addition to the active profile.  If a similar fix is needed on other
-  // platforms, we'd need an equivalent of SessionStateObserver that works
-  // everywhere.
-  void UpdateActiveProfile();
-
   // Returns the listener for the provided ID, or `nullptr` if none is found.
   AutomationListener* GetListenerByRenderProcessID(
       const RenderProcessHostId& listener_rph_id) const;
@@ -183,12 +169,9 @@ class AutomationEventRouter
   void BindAutomation(
       mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) override;
 
-  content::NotificationRegistrar registrar_;
   std::vector<std::unique_ptr<AutomationListener>> listeners_;
 
   std::map<WorkerId, base::Uuid> keepalive_request_uuid_for_worker_;
-
-  raw_ptr<content::BrowserContext, LeakedDanglingUntriaged> active_context_;
 
   // The caller of RegisterRemoteRouter is responsible for ensuring that this
   // pointer is valid. The remote router must be unregistered with

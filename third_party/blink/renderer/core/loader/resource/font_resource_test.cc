@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
+#include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/resource/mock_font_resource_client.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -24,8 +26,8 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -38,6 +40,9 @@ class FontResourceTest : public testing::Test {
   void TearDown() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 class CacheAwareFontResourceTest : public FontResourceTest {
@@ -55,8 +60,10 @@ class CacheAwareFontResourceTest : public FontResourceTest {
 class FontResourceStrongReferenceTest : public FontResourceTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMemoryCacheStrongReference);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kMemoryCacheStrongReference,
+         features::kResourceFetcherStoresStrongReferences},
+        {});
     FontResourceTest::SetUp();
   }
 
@@ -137,7 +144,7 @@ TEST_F(FontResourceTest,
 
 // Tests if the RevalidationPolicy UMA works properly for fonts.
 TEST_F(FontResourceTest, RevalidationPolicyMetrics) {
-  blink::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
   auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
@@ -234,10 +241,12 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   ResourceFetcher* fetcher = document.Fetcher();
-  CSSFontFaceSrcValue* src_value = CSSFontFaceSrcValue::Create(
-      url.GetString(), url.GetString(),
-      Referrer(document.Url(), document.GetReferrerPolicy()),
-      nullptr /* world */, OriginClean::kTrue, false /* is_ad_related */);
+  auto* src_uri_value = MakeGarbageCollected<cssvalue::CSSURIValue>(
+      CSSUrlData(AtomicString(url.GetString()), url,
+                 Referrer(document.Url(), document.GetReferrerPolicy()),
+                 OriginClean::kTrue, false /* is_ad_related */));
+  auto* src_value =
+      CSSFontFaceSrcValue::Create(src_uri_value, nullptr /* world */);
 
   // Route font requests in this test through CSSFontFaceSrcValue::Fetch
   // instead of calling FontResource::Fetch directly. CSSFontFaceSrcValue

@@ -8,7 +8,7 @@
 
 namespace cast_streaming {
 
-void SetNetworkContextGetter(NetworkContextGetter getter) {
+void SetNetworkContextGetter(network::NetworkContextGetter getter) {
   openscreen_platform::SetNetworkContextGetter(std::move(getter));
 }
 

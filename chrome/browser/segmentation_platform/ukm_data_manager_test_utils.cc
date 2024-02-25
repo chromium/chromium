@@ -5,13 +5,14 @@
 #include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
-#include "components/segmentation_platform/internal/execution/model_manager_impl.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
@@ -41,19 +42,17 @@ ukm::mojom::UkmEntryPtr GetSamplePageLoadEntry(ukm::SourceId source_id) {
 
 // Runs the given query and returns the result as float value. See
 // RunReadonlyQueries() for more info.
-absl::optional<float> RunQueryAndGetResult(
-    UkmDatabase::CustomSqlQuery&& query) {
-  absl::optional<float> output;
+std::optional<float> RunQueryAndGetResult(UkmDatabase* database,
+                                          UkmDatabase::CustomSqlQuery&& query) {
+  std::optional<float> output;
   UkmDatabase::QueryList queries;
   queries.emplace(0, std::move(query));
   base::RunLoop wait_for_query;
-  UkmDatabase* database =
-      UkmDatabaseClient::GetInstance().GetUkmDataManager()->GetUkmDatabase();
   database->RunReadonlyQueries(
       std::move(queries),
       base::BindOnce(
-          [](base::OnceClosure quit, absl::optional<float>* output,
-             bool success, processing::IndexedTensors tensor) {
+          [](base::OnceClosure quit, std::optional<float>* output, bool success,
+             processing::IndexedTensors tensor) {
             if (success) {
               EXPECT_EQ(1u, tensor.size());
               EXPECT_EQ(1u, tensor.at(0).size());
@@ -69,17 +68,31 @@ absl::optional<float> RunQueryAndGetResult(
 }  // namespace
 
 UkmDataManagerTestUtils::UkmDataManagerTestUtils(
-    ukm::TestUkmRecorder* ukm_recorder)
-    : ukm_recorder_(ukm_recorder) {}
+    ukm::TestUkmRecorder* ukm_recorder,
+    bool owned_db_client)
+    : ukm_recorder_(ukm_recorder) {
+  if (owned_db_client) {
+    owned_db_client_ = std::make_unique<UkmDatabaseClient>();
+    ukm_database_client_ = owned_db_client_.get();
+  } else {
+    ukm_database_client_ = &UkmDatabaseClientHolder::GetClientInstance(nullptr);
+  }
+}
 UkmDataManagerTestUtils::~UkmDataManagerTestUtils() {
-  UkmDatabaseClient::GetInstance().clear_ukm_recorder_for_testing();
+#if !BUILDFLAG(IS_ANDROID)
+  // The client should be torn down after profile is destroyed. On Android
+  // browser tests the profile is never destroyed, so do not tear down the
+  // client.
+  ukm_database_client_->TearDownForTesting();
+#endif
+  ukm_database_client_ = nullptr;
 }
 
 void UkmDataManagerTestUtils::PreProfileInit(
     const std::map<SegmentId, proto::SegmentationModelMetadata>&
         default_overrides) {
   // Set test recorder before UkmObserver is created.
-  UkmDatabaseClient::GetInstance().set_ukm_recorder_for_testing(ukm_recorder_);
+  ukm_database_client_->set_ukm_recorder_for_testing(ukm_recorder_);
 
   for (const auto& segment : default_overrides) {
     auto provider = std::make_unique<MockDefaultModelProvider>(segment.first,
@@ -90,11 +103,30 @@ void UkmDataManagerTestUtils::PreProfileInit(
     TestDefaultModelOverride::GetInstance().SetModelForTesting(
         segment.first, std::move(provider));
   }
+
+  if (owned_db_client_) {
+    owned_db_client_->PreProfileInit(/*in_memory_database=*/true);
+  }
+}
+
+void UkmDataManagerTestUtils::SetupForProfile(Profile* profile) {
+  UkmDatabaseClientHolder::SetUkmClientForTesting(profile,
+                                                  ukm_database_client_.get());
+  CHECK_EQ(ukm_database_client_.get(),
+           &UkmDatabaseClientHolder::GetClientInstance(profile));
+  history_service_ = HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  // Create the platform to kick off initialization.
+  segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+      profile);
+}
+
+void UkmDataManagerTestUtils::WillDestroyProfile(Profile* profile) {
+  UkmDatabaseClientHolder::SetUkmClientForTesting(profile, nullptr);
 }
 
 void UkmDataManagerTestUtils::WaitForUkmObserverRegistration() {
-  UkmObserver* observer =
-      UkmDatabaseClient::GetInstance().ukm_observer_for_testing();
+  UkmObserver* observer = ukm_database_client_->ukm_observer_for_testing();
   while (!observer->is_started_for_testing()) {
     base::RunLoop().RunUntilIdle();
   }
@@ -103,8 +135,14 @@ void UkmDataManagerTestUtils::WaitForUkmObserverRegistration() {
 proto::SegmentationModelMetadata
 UkmDataManagerTestUtils::GetSamplePageLoadMetadata(const std::string& query) {
   proto::SegmentationModelMetadata metadata;
+  MetadataWriter writer(&metadata);
+  writer.AddOutputConfigForBinaryClassifier(
+      /*threshold=*/0.5f,
+      /*positive_label=*/"Show",
+      /*negative_label=*/"NotShow");
   metadata.set_time_unit(proto::TimeUnit::DAY);
   metadata.set_bucket_duration(42u);
+
   auto* feature = metadata.add_input_features();
   auto* sql_feature = feature->mutable_sql_feature();
   sql_feature->set_sql(query);
@@ -118,8 +156,7 @@ UkmDataManagerTestUtils::GetSamplePageLoadMetadata(const std::string& query) {
 
 void UkmDataManagerTestUtils::RecordPageLoadUkm(const GURL& url,
                                                 base::Time history_timestamp) {
-  UkmObserver* observer =
-      UkmDatabaseClient::GetInstance().ukm_observer_for_testing();
+  UkmObserver* observer = ukm_database_client_->ukm_observer_for_testing();
   // Ensure that the observer is started before recording metrics.
   ASSERT_TRUE(observer->is_started_for_testing());
   // Ensure that OTR profiles are not started in the test.
@@ -139,7 +176,9 @@ void UkmDataManagerTestUtils::RecordPageLoadUkm(const GURL& url,
 bool UkmDataManagerTestUtils::IsUrlInDatabase(const GURL& url) {
   UkmDatabase::CustomSqlQuery query("SELECT 1 FROM urls WHERE url=?",
                                     {processing::ProcessedValue(url.spec())});
-  absl::optional<float> result = RunQueryAndGetResult(std::move(query));
+  std::optional<float> result = RunQueryAndGetResult(
+      ukm_database_client_->GetUkmDataManager()->GetUkmDatabase(),
+      std::move(query));
   return !!result;
 }
 

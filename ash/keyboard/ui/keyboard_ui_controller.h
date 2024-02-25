@@ -170,6 +170,10 @@ class KEYBOARD_EXPORT KeyboardUIController
   // lock the keyboard
   void ShowKeyboardInDisplay(const display::Display& display);
 
+  // Controls whether `ShowKeyboardIfWithinTransientBlurThreshold` should show
+  // the keyboard.
+  void SetShouldShowOnTransientBlur(bool should_show);
+
   // Returns the bounds in root window for the visible portion of the keyboard.
   // An empty rectangle will get returned when the keyboard is hidden.
   const gfx::Rect& visual_bounds_in_root() const {
@@ -412,13 +416,12 @@ class KEYBOARD_EXPORT KeyboardUIController
   std::unique_ptr<KeyboardUIFactory> ui_factory_;
   std::unique_ptr<KeyboardUI> ui_;
   std::unique_ptr<ui::VirtualKeyboardController> virtual_keyboard_controller_;
-  raw_ptr<KeyboardLayoutDelegate, DanglingUntriaged | ExperimentalAsh>
-      layout_delegate_ = nullptr;
+  raw_ptr<KeyboardLayoutDelegate, DanglingUntriaged> layout_delegate_ = nullptr;
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       ime_observation_{this};
 
   // Container window that the keyboard window is a child of.
-  raw_ptr<aura::Window, ExperimentalAsh> parent_container_ = nullptr;
+  raw_ptr<aura::Window> parent_container_ = nullptr;
 
   // CallbackAnimationObserver should be destroyed before |ui_| because it uses
   // |ui_|'s animator.
@@ -457,6 +460,7 @@ class KEYBOARD_EXPORT KeyboardUIController
   NotificationManager notification_manager_;
 
   base::Time time_of_last_blur_ = base::Time::UnixEpoch();
+  bool should_show_on_transient_blur_ = true;
 
   DisplayUtil display_util_;
 

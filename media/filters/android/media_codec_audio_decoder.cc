@@ -18,6 +18,7 @@
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/media_serializers.h"
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/ac3/ac3_util.h"
@@ -103,6 +104,8 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
     case AudioCodec::kPCM_S24BE:
     case AudioCodec::kPCM_ALAW:
     case AudioCodec::kALAC:
+    case AudioCodec::kAC4:
+    case AudioCodec::kIAMF:
       platform_codec_supported = false;
       break;
     case AudioCodec::kAC3:
@@ -442,10 +445,10 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
         sample_format_, channel_layout_, channel_count_, sample_rate_,
         frame_count, out.size, pool_);
 
-    MediaCodecStatus status = media_codec->CopyFromOutputBuffer(
+    MediaCodecResult result = media_codec->CopyFromOutputBuffer(
         out.index, out.offset, audio_buffer->channel_data()[0], out.size);
 
-    if (status != MEDIA_CODEC_OK) {
+    if (!result.is_ok()) {
       media_codec->ReleaseOutputBuffer(out.index, false);
       return false;
     }
@@ -484,14 +487,15 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
   // Copy data into AudioBuffer.
   CHECK_LE(out.size, audio_buffer->data_size());
 
-  MediaCodecStatus status = media_codec->CopyFromOutputBuffer(
+  MediaCodecResult result = media_codec->CopyFromOutputBuffer(
       out.index, out.offset, audio_buffer->channel_data()[0], out.size);
 
   // Release MediaCodec output buffer.
   media_codec->ReleaseOutputBuffer(out.index, false);
 
-  if (status != MEDIA_CODEC_OK)
+  if (!result.is_ok()) {
     return false;
+  }
 
   // Calculate and set buffer timestamp.
 
@@ -523,10 +527,11 @@ bool MediaCodecAudioDecoder::OnOutputFormatChanged() {
   // state, then we'll also transition to the error state when it notifies us.
 
   int new_sampling_rate = 0;
-  MediaCodecStatus status =
+  MediaCodecResult result =
       media_codec->GetOutputSamplingRate(&new_sampling_rate);
-  if (status != MEDIA_CODEC_OK) {
-    DLOG(ERROR) << "GetOutputSamplingRate failed.";
+  if (!result.is_ok()) {
+    DLOG(ERROR) << "GetOutputSamplingRate failed, result: "
+                << MediaSerialize(result);
     return false;
   }
   if (new_sampling_rate != sample_rate_) {
@@ -544,9 +549,10 @@ bool MediaCodecAudioDecoder::OnOutputFormatChanged() {
   }
 
   int new_channel_count = 0;
-  status = media_codec->GetOutputChannelCount(&new_channel_count);
-  if (status != MEDIA_CODEC_OK || !new_channel_count) {
-    DLOG(ERROR) << "GetOutputChannelCount failed.";
+  result = media_codec->GetOutputChannelCount(&new_channel_count);
+  if (!result.is_ok() || !new_channel_count) {
+    DLOG(ERROR) << "GetOutputChannelCount failed, result: "
+                << MediaSerialize(result);
     return false;
   }
 

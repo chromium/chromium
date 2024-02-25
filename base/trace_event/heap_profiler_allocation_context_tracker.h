@@ -23,12 +23,12 @@ namespace trace_event {
 class BASE_EXPORT AllocationContextTracker {
  public:
   enum class CaptureMode : int32_t {
-    DISABLED,      // Don't capture anything
-    NATIVE_STACK,  // Backtrace has full native backtraces from stack unwinding
+    kDisabled,     // Don't capture anything
+    kNativeStack,  // Backtrace has full native backtraces from stack unwinding
   };
 
   // Globally sets capturing mode.
-  // TODO(primiano): How to guard against *_STACK -> DISABLED -> *_STACK?
+  // TODO(primiano): How to guard against *Stack -> kDisabled -> *Stack?
   static void SetCaptureMode(CaptureMode mode);
 
   // Returns global capturing mode.
@@ -36,13 +36,15 @@ class BASE_EXPORT AllocationContextTracker {
     // A little lag after heap profiling is enabled or disabled is fine, it is
     // more important that the check is as cheap as possible when capturing is
     // not enabled, so do not issue a memory barrier in the fast path.
-    if (capture_mode_.load(std::memory_order_relaxed) == CaptureMode::DISABLED)
-      return CaptureMode::DISABLED;
+    if (capture_mode_.load(std::memory_order_relaxed) ==
+        CaptureMode::kDisabled) {
+      return CaptureMode::kDisabled;
+    }
 
     // In the slow path, an acquire load is required to pair with the release
     // store in |SetCaptureMode|. This is to ensure that the TLS slot for
     // the thread-local allocation context tracker has been initialized if
-    // |capture_mode| returns something other than DISABLED.
+    // |capture_mode| returns something other than kDisabled.
     return capture_mode_.load(std::memory_order_acquire);
   }
 

@@ -201,6 +201,8 @@ blink::mojom::ResourceType GetResourceType(
       return blink::mojom::ResourceType::kScript;
     case network::mojom::RequestDestination::kStyle:
       return blink::mojom::ResourceType::kStylesheet;
+    case network::mojom::RequestDestination::kFont:
+      return blink::mojom::ResourceType::kFontResource;
     default:
       NOTREACHED() << destination;
   }
@@ -258,7 +260,8 @@ void PrefetchManager::PrefetchUrl(
       content::CreateContentBrowserURLLoaderThrottles(
           request, profile_, std::move(wc_getter),
           /*navigation_ui_data=*/nullptr,
-          content::RenderFrameHost::kNoFrameTreeNodeId);
+          content::RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_id=*/std::nullopt);
 
   auto client = std::make_unique<network::EmptyURLLoaderClient>();
 
@@ -277,7 +280,7 @@ void PrefetchManager::PrefetchUrl(
           content::GlobalRequestID::MakeBrowserInitiated().request_id, options,
           &request, client.get(), kPrefetchTrafficAnnotation,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          /*cors_exempt_header_list=*/absl::nullopt);
+          /*cors_exempt_header_list=*/std::nullopt);
 
   delegate_->PrefetchInitiated(info.url, job->url);
 

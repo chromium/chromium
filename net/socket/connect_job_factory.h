@@ -6,6 +6,8 @@
 #define NET_SOCKET_CONNECT_JOB_FACTORY_H_
 
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
@@ -18,7 +20,7 @@
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "net/ssl/ssl_config.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -26,13 +28,32 @@ namespace net {
 
 class NetworkAnonymizationKey;
 struct NetworkTrafficAnnotationTag;
-class ProxyServer;
+class ProxyChain;
 struct SSLConfig;
 
 // Common factory for all ConnectJob types. Determines and creates the correct
 // ConnectJob depending on the passed in parameters.
 class NET_EXPORT_PRIVATE ConnectJobFactory {
  public:
+  // What protocols may be negotiated with the destination SSL server via ALPN.
+  // These do not apply to the proxy server, for which all protocols listed in
+  // CommonConnectJobParams are always allowed to be negotiated, unless
+  // HttpServerProperties forces H1.
+  //
+  // AlpnMode has no impact when not talking to an HTTPS destination server.
+  enum class AlpnMode {
+    // Don't use ALPN mode at all when negotiating a connection. This is used by
+    // non-HTTP consumers.
+    kDisabled,
+    // Only try to negotiate H1. This is only used by WebSockets.
+    kHttp11Only,
+    // Allow negotiating H2 or H1 via ALPN. H2 may only be negotiated if
+    // CommonConnectJobParams allows it. Also, if HttpServerProperties only
+    // allows H1 for the destination server, only H1 will be negotiated, even
+    // if `kHttpAll` is specified.
+    kHttpAll,
+  };
+
   // The endpoint of a connection when the endpoint does not have a known
   // standard scheme.
   struct SchemelessEndpoint {
@@ -64,10 +85,10 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   // ConnectJob.
   std::unique_ptr<ConnectJob> CreateConnectJob(
       url::SchemeHostPort endpoint,
-      const ProxyServer& proxy_server,
-      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
+      const ProxyChain& proxy_chain,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+      ConnectJobFactory::AlpnMode alpn_mode,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,
@@ -75,6 +96,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       SocketTag socket_tag,
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
+      bool disable_cert_network_fetches,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const;
 
@@ -83,10 +105,8 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   std::unique_ptr<ConnectJob> CreateConnectJob(
       bool using_ssl,
       HostPortPair endpoint,
-      const ProxyServer& proxy_server,
-      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
+      const ProxyChain& proxy_chain,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,
@@ -100,10 +120,10 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
  private:
   virtual std::unique_ptr<ConnectJob> CreateConnectJob(
       Endpoint endpoint,
-      const ProxyServer& proxy_server,
-      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-      const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
+      const ProxyChain& proxy_chain,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+      ConnectJobFactory::AlpnMode alpn_mode,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,
@@ -111,6 +131,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       SocketTag socket_tag,
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
+      bool disable_cert_network_fetches,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const;
 

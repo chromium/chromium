@@ -7,7 +7,6 @@
 
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "components/password_manager/core/browser/reauth_purpose.h"
 
 class Profile;
 

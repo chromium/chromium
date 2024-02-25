@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "data_sharing_service_factory.h",
+    "data_sharing_service_factory.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/ios",
+  ]
+  deps = [
+    "//components/data_sharing/internal",
+    "//components/data_sharing/public",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public",
+    "//services/network/public/cpp",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "data_sharing_service_factory_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/data_sharing/public",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

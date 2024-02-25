@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {Note, NoteOverview, UserNotesPageCallbackRouter} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
-import {UserNotesApiProxy} from 'chrome://user-notes-side-panel.top-chrome/user_notes_api_proxy.js';
+import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Note, NoteOverview} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
+import {UserNotesPageCallbackRouter} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
+import type {UserNotesApiProxy} from 'chrome://user-notes-side-panel.top-chrome/user_notes_api_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestUserNotesApiProxy extends TestBrowserProxy implements

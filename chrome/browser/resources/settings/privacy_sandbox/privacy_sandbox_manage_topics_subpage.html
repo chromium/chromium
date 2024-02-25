@@ -1,0 +1,70 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  #explanationText {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .outer-row {
+    align-items: center;
+    display: flex;
+    min-height: var(--cr-section-two-line-min-height);
+    --cr-icon-button-margin-end: 20px;
+    padding: 0 var(--cr-section-padding);
+    width: 100%;
+  }
+
+  .topic-toggle-row:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  .topic-toggle-row {
+    align-items: center;
+    display: flex;
+    width: 100%
+  }
+
+  .icon {
+    margin-inline-end: var(--cr-icon-button-margin-end);
+  }
+
+  .label-wrapper {
+    padding: var(--cr-section-vertical-padding) 0;
+    margin-inline-end: 20px;
+  }
+
+</style>
+<div id="explanationText">
+  $i18n{manageTopicsPageDescription}
+  <span id="learnMoreLink" on-click="onLearnMoreClick_">
+    $i18nRaw{manageTopicsPageLearnMoreLink}
+  </span>
+</div>
+<template is="dom-repeat" items="[[firstLevelTopicsList_]]">
+  <div class="topic-toggle-row" on-click="onToggleRowClick_" actionable>
+    <div class="outer-row">
+      <span class="icon">
+        <iron-icon slot="icon"
+            icon="[[computeTopicIcon_(item.topic.topicId)]]">
+        </iron-icon>
+      </span>
+      <div class="flex label-wrapper">
+        <div class="label">[[item.topic.displayString]]</div>
+        <div class="cr-secondary-text sub-label">
+          <span class="sub-label-text">[[item.topic.description]]</span>
+        </div>
+      </div>
+      <cr-toggle id="toggle-[[item.topic.topicId]]"
+          on-change="onToggleChange_"
+          checked="[[!item.removed]]"
+          aria-label="[[item.topic.displayString]]"
+          aria-description="[[item.topic.description]]"></cr-toggle>
+    </div>
+  </div>
+</template>
+<template is="dom-if" if="[[shouldShowBlockTopicDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="blockTopicDialog"
+      title-text="[[blockTopicDialogTitle_]]"
+      body-text="[[blockTopicDialogBody_]]"
+      confirm-text="$i18n{topicsPageBlockTopic}"
+      on-close="onBlockTopicDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>

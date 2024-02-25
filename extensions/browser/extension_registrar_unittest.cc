@@ -5,7 +5,7 @@
 #include "extensions/browser/extension_registrar.h"
 
 #include <memory>
-
+#include <optional>
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
@@ -20,7 +20,6 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -369,7 +368,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
   scoped_refptr<const Extension> extension_;
 
   // Initialized in SetUp().
-  absl::optional<ExtensionRegistrar> registrar_;
+  std::optional<ExtensionRegistrar> registrar_;
 };
 
 TEST_F(ExtensionRegistrarTest, Basic) {

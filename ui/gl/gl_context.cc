@@ -73,13 +73,15 @@ GLContext::GLContext(GLShareGroup* share_group) : share_group_(share_group) {
 }
 
 GLContext::~GLContext() {
+  DCHECK(has_called_on_destory_);
+
 #if BUILDFLAG(IS_APPLE)
   DCHECK(!HasBackpressureFences());
 #endif
   share_group_->RemoveContext(this);
   if (GetCurrent() == this) {
     SetCurrent(nullptr);
-    SetCurrentGL(nullptr);
+    SetThreadLocalCurrentGL(nullptr);
   }
   base::subtle::Atomic32 after_value =
       base::subtle::NoBarrier_AtomicIncrement(&total_gl_contexts_, -1);
@@ -103,6 +105,15 @@ void GLContext::SetSwitchableGPUsSupported() {
   switchable_gpus_supported_ = true;
 }
 
+bool GLContext::Initialize(GLSurface* compatible_surface,
+                           const GLContextAttribs& attribs) {
+  DCHECK(compatible_surface && !default_surface_);
+  if (compatible_surface->IsOffscreen()) {
+    default_surface_ = compatible_surface;
+  }
+  return InitializeImpl(compatible_surface, attribs);
+}
+
 bool GLContext::MakeCurrent(GLSurface* surface) {
   if (context_lost_) {
     LOG(ERROR) << "Failed to make current since context is marked as lost";
@@ -111,9 +122,30 @@ bool GLContext::MakeCurrent(GLSurface* surface) {
   return MakeCurrentImpl(surface);
 }
 
+bool GLContext::MakeCurrentDefault() {
+  if (!default_surface()) {
+    LOG(ERROR) << "Failed to make current offscreen since the context was not "
+                  "initialized with an offscreen surface.";
+    return false;
+  }
+  return MakeCurrent(default_surface());
+}
+
+void GLContext::AddObserver(GLContextObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void GLContext::RemoveObserver(GLContextObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+bool GLContext::CanShareTexturesWithContext(GLContext* other_context) {
+  return other_context && (this == other_context ||
+                           share_group_ == other_context->share_group());
+}
+
 GLApi* GLContext::CreateGLApi(DriverGL* driver) {
   real_gl_api_ = new RealGLApi;
-  real_gl_api_->set_gl_workarounds(gl_workarounds_);
   real_gl_api_->SetDisabledExtensions(disabled_gl_extensions_);
   real_gl_api_->Initialize(driver);
   return real_gl_api_;
@@ -185,6 +217,10 @@ void GLContext::DirtyVirtualContextState() {
 GLDisplayEGL* GLContext::GetGLDisplayEGL() {
   return nullptr;
 }
+
+GLContextEGL* GLContext::AsGLContextEGL() {
+  return nullptr;
+}
 #endif  // USE_EGL
 
 #if BUILDFLAG(IS_APPLE)
@@ -249,36 +285,15 @@ void GLContext::BackpressureFenceWait(uint64_t fence_id) {
     }
   }
 
-  // While we could call GLFence::ClientWait, this performs a busy wait on
-  // Mac, leading to high CPU usage. Instead we poll with a 1ms delay. This
-  // should have minimal impact, as we will only hit this path when we are
-  // more than one frame (16ms) behind.
-  //
-  // Note that on some platforms (10.9), fences appear to sometimes get
-  // lost and will never pass. Add a 32ms timeout to prevent these
-  // situations from causing a GPU process hang.
-  // https://crbug.com/618075
-  bool fence_completed = false;
-  for (int poll_iter = 0; !fence_completed && poll_iter < 32; ++poll_iter) {
-    if (poll_iter > 0) {
-      base::PlatformThread::Sleep(base::Milliseconds(1));
-    }
-    {
-      TRACE_EVENT0("gpu", "GLFence::HasCompleted");
-      fence_completed = fence->HasCompleted();
-    }
-  }
-  if (!fence_completed) {
-    TRACE_EVENT0("gpu", "Finish");
-    // We timed out waiting for the above fence, just issue a glFinish.
-    glFinish();
-  }
+  fence->ClientWait();
   fence.reset();
 
   // Waiting on |fence_id| has implicitly waited on all previous fences, so
   // remove them.
-  while (backpressure_fences_.begin()->first < fence_id)
+  while (!backpressure_fences_.empty() &&
+         backpressure_fences_.begin()->first < fence_id) {
     backpressure_fences_.erase(backpressure_fences_.begin());
+  }
 }
 
 bool GLContext::HasBackpressureFences() const {
@@ -345,9 +360,26 @@ GLContext* GLContext::GetRealCurrent() {
   return current_real_context;
 }
 
+void GLContext::OnContextWillDestroy() {
+  DCHECK(!has_called_on_destory_);
+  has_called_on_destory_ = true;
+
+  for (auto& obs : observer_list_) {
+    obs.OnGLContextWillDestroy(this);
+  }
+}
+
 std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
   return std::make_unique<GLVersionInfo>(
       GetGLVersion().c_str(), GetGLRenderer().c_str(), GetExtensions());
+}
+
+void GLContext::MarkContextLost() {
+  context_lost_ = true;
+
+  for (auto& obs : observer_list_) {
+    obs.OnGLContextLost(this);
+  }
 }
 
 void GLContext::SetCurrent(GLSurface* surface) {
@@ -362,13 +394,9 @@ void GLContext::SetCurrent(GLSurface* surface) {
   // TODO(sievers): Remove this, but needs all gpu_unittest classes
   // to create and make current a context.
   if (!surface && GetGLImplementation() != kGLImplementationMockGL &&
-      GetGLImplementation() != kGLImplementationStubGL)
-    SetCurrentGL(nullptr);
-}
-
-void GLContext::SetGLWorkarounds(const GLWorkarounds& workarounds) {
-  DCHECK(!real_gl_api_);
-  gl_workarounds_ = workarounds;
+      GetGLImplementation() != kGLImplementationStubGL) {
+    SetThreadLocalCurrentGL(nullptr);
+  }
 }
 
 void GLContext::SetDisabledGLExtensions(
@@ -387,8 +415,9 @@ void GLContext::SetGLStateRestorer(GLStateRestorer* state_restorer) {
 
 GLenum GLContext::CheckStickyGraphicsResetStatus() {
   GLenum status = CheckStickyGraphicsResetStatusImpl();
-  if (status != GL_NO_ERROR)
-    context_lost_ = true;
+  if (status != GL_NO_ERROR) {
+    MarkContextLost();
+  }
   return status;
 }
 
@@ -432,7 +461,7 @@ bool GLContext::MakeVirtuallyCurrent(
     if (switched_real_contexts || !current_surface ||
         !virtual_context->IsCurrent(surface)) {
       if (!MakeCurrent(surface)) {
-        context_lost_ = true;
+        MarkContextLost();
         return false;
       }
     }
@@ -473,7 +502,7 @@ bool GLContext::MakeVirtuallyCurrent(
   virtual_context->SetCurrent(surface);
   if (!surface->OnMakeCurrent(virtual_context)) {
     LOG(ERROR) << "Could not make GLSurface current.";
-    context_lost_ = true;
+    MarkContextLost();
     return false;
   }
   return true;
@@ -485,7 +514,7 @@ void GLContext::OnReleaseVirtuallyCurrent(GLContext* virtual_context) {
 }
 
 void GLContext::BindGLApi() {
-  SetCurrentGL(GetCurrentGL());
+  SetThreadLocalCurrentGL(GetCurrentGL());
 }
 
 GLContextReal::GLContextReal(GLShareGroup* share_group)

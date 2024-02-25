@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 #import "base/time/time.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -15,13 +16,13 @@
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
-#import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
+#import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_constants.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_payload.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
@@ -58,10 +59,6 @@ const TextFragment kTestTextFragment = TextFragment("selected text");
 const char kSuccessUkmMetric[] = "Success";
 const char kErrorUkmMetric[] = "Error";
 
-class FakeWebStateListDelegate : public WebStateListDelegate {
-  void WillAddWebState(web::WebState* web_state) override {}
-};
-
 // Fake version of JS Feature which directly invokes the passed callback using
 // the provided latency and response values, without actually invoking JS (or
 // a mocked replacement).
@@ -81,15 +78,14 @@ class FakeJSFeature : public LinkToTextJavaScriptFeature {
 
  private:
   base::TimeDelta latency_;
-  base::Value* response_;
+  raw_ptr<base::Value> response_;
 };
 
 }  // namespace
 
 class LinkToTextMediatorTest : public PlatformTest {
  protected:
-  LinkToTextMediatorTest()
-      : web_state_list_delegate_(), web_state_list_(&web_state_list_delegate_) {
+  LinkToTextMediatorTest() : web_state_list_(&web_state_list_delegate_) {
     feature_list_.InitAndEnableFeature(kSharedHighlightingIOS);
 
     mocked_activity_service_commands_ =
@@ -99,9 +95,9 @@ class LinkToTextMediatorTest : public PlatformTest {
 
     auto web_state = std::make_unique<FakeWebState>();
     web_state_ = web_state.get();
-    web_state_list_.InsertWebState(0, std::move(web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list_.InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = web_frames_manager.get();
@@ -210,10 +206,10 @@ class LinkToTextMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
-  FakeWebState* web_state_;
+  raw_ptr<FakeWebState> web_state_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
-  web::FakeWebFramesManager* web_frames_manager_;
-  web::FakeWebFrame* main_frame_;
+  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
+  raw_ptr<web::FakeWebFrame> main_frame_;
   UIView* fake_view_;
   LinkToTextMediator* mediator_;
   UIScrollView* fake_scroll_view_;

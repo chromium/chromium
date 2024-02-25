@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/events/gesture_detection/bitset_32.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/types/event_type.h"
+#include "ui/events/velocity_tracker/bitset_32.h"
 #include "ui/latency/latency_info.h"
 
 namespace ui {
@@ -65,8 +66,8 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   void OnTouchEventAck(uint32_t unique_touch_event_id,
                        bool event_consumed,
                        bool is_source_touch_event_set_blocking,
-                       const absl::optional<EventLatencyMetadata>&
-                           event_latency_metadata = absl::nullopt);
+                       const std::optional<EventLatencyMetadata>&
+                           event_latency_metadata = std::nullopt);
 
   // Whether there are any active gesture sequences still queued in the filter.
   bool IsEmpty() const;
@@ -113,7 +114,7 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   void EndScrollIfNecessary(const GestureEventDataPacket& packet);
   void PopGestureSequence();
   void SendAckedEvents(
-      const absl::optional<EventLatencyMetadata>& event_latency_metadata);
+      const std::optional<EventLatencyMetadata>& event_latency_metadata);
   GestureSequence& Head();
   GestureSequence& Tail();
 

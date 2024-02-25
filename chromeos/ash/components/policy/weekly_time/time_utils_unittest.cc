@@ -34,13 +34,14 @@ enum {
   kSunday = 7,
 };
 
-constexpr int kMinutesInHour = 60;
-constexpr int kMillisecondsInHour = 3600000;
-constexpr base::TimeDelta kMinute = base::Minutes(1);
-constexpr base::TimeDelta kHour = base::Hours(1);
-constexpr base::Time::Exploded kDaylightSavingsTime{2018, 8, 3, 8, 15, 0, 0, 0};
-constexpr base::Time::Exploded kNonDaylightSavingsTime{2018, 1, 0, 28,
-                                                       0,    0, 0, 0};
+constexpr base::Time::Exploded kDaylightSavingsTime = {.year = 2018,
+                                                       .month = 8,
+                                                       .day_of_week = 3,
+                                                       .day_of_month = 8,
+                                                       .hour = 15};
+constexpr base::Time::Exploded kNonDaylightSavingsTime{.year = 2018,
+                                                       .month = 1,
+                                                       .day_of_month = 28};
 
 base::Time TimeFromString(const char* text) {
   base::Time time;
@@ -91,7 +92,7 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, ToLocalizedStringDaylightSavings) {
 
   // 15:50 UTC, 8:50 PT, 11:50 PT
   WeeklyTime test_weekly_time =
-      WeeklyTime(5, (15 * kMinutesInHour + 50) * kMinute.InMilliseconds(), 0);
+      WeeklyTime(5, (base::Hours(15) + base::Minutes(50)).InMilliseconds(), 0);
 
   base::i18n::SetICUDefaultLocale("en_US");
   icu::TimeZone::adoptDefault(
@@ -116,7 +117,7 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, ToLocalizedStringNoDaylightSavings) {
 
   // 15:50 UTC, 7:50 PST
   WeeklyTime test_weekly_time =
-      WeeklyTime(5, (15 * kMinutesInHour + 50) * kMinute.InMilliseconds(), 0);
+      WeeklyTime(5, (base::Hours(15) + base::Minutes(50)).InMilliseconds(), 0);
 
   base::i18n::SetICUDefaultLocale("en_US");
   icu::TimeZone::adoptDefault(
@@ -132,7 +133,7 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, GetOffsetFromTimezoneToGmt) {
   int result;
   GetOffsetFromTimezoneToGmt(*zone, &test_clock_, &result);
   // Negative since it's a conversion from |timezone| to GMT.
-  EXPECT_EQ(result, -7 * kHour.InMilliseconds());
+  EXPECT_EQ(result, base::Hours(-7).InMilliseconds());
   // Passing in the string should also work and yield the same result.
   int result2;
   GetOffsetFromTimezoneToGmt("Asia/Jakarta", &test_clock_, &result2);
@@ -146,7 +147,7 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, GetOffsetFromTimezoneToGmtDaylight) {
       icu::UnicodeString::fromUTF8("America/Los_Angeles")));
   int result;
   GetOffsetFromTimezoneToGmt(*zone, &test_clock_, &result);
-  EXPECT_EQ(result, 7 * kHour.InMilliseconds());
+  EXPECT_EQ(result, base::Hours(7).InMilliseconds());
   // Passing in the string should also work and yield the same result.
   int result2;
   GetOffsetFromTimezoneToGmt("America/Los_Angeles", &test_clock_, &result2);
@@ -160,7 +161,7 @@ TEST_F(TimeUtilsTimezoneFunctionsTest, GetOffsetFromTimezoneToGmtNoDaylight) {
       icu::UnicodeString::fromUTF8("America/Los_Angeles")));
   int result;
   GetOffsetFromTimezoneToGmt(*zone, &test_clock_, &result);
-  EXPECT_EQ(result, 8 * kHour.InMilliseconds());
+  EXPECT_EQ(result, base::Hours(8).InMilliseconds());
   // Passing in the string should also work and yield the same result.
   int result2;
   GetOffsetFromTimezoneToGmt("America/Los_Angeles", &test_clock_, &result2);
@@ -173,21 +174,21 @@ TEST(TimeUtilsEmptyIntervalVector, NeverContainsTime) {
 }
 
 TEST(TimeUtilsEmptyIntervalVector, HasNoNextEvent) {
-  EXPECT_EQ(GetNextEventTime(base::Time{}, {}), absl::nullopt);
-  EXPECT_EQ(GetNextEventTime(base::Time::Now(), {}), absl::nullopt);
+  EXPECT_EQ(GetNextEventTime(base::Time{}, {}), std::nullopt);
+  EXPECT_EQ(GetNextEventTime(base::Time::Now(), {}), std::nullopt);
 }
 
 TEST(TimeUtilsNonEmptyIntervalVector, SometimesContainsTime) {
   const std::vector<WeeklyTimeInterval> intervals = {
       // First
       {WeeklyTime{kSunday, 0, 0},
-       WeeklyTime{kSunday, 2 * kMillisecondsInHour, 0}},
+       WeeklyTime{kSunday, base::Hours(2).InMilliseconds(), 0}},
       // Second (overlaps with first)
-      {WeeklyTime{kSunday, kMillisecondsInHour, 0},
-       WeeklyTime{kSunday, 3 * kMillisecondsInHour, 0}},
+      {WeeklyTime{kSunday, base::Hours(1).InMilliseconds(), 0},
+       WeeklyTime{kSunday, base::Hours(3).InMilliseconds(), 0}},
       // Third, no overlap
       {WeeklyTime{kMonday, 0, 0},
-       WeeklyTime{kMonday, 2 * kMillisecondsInHour + 17, 0}},
+       WeeklyTime{kMonday, base::Hours(2).InMilliseconds() + 17, 0}},
   };
 
   // First interval, before begin.
@@ -238,13 +239,13 @@ TEST(TimeUtilsNonEmptyIntervalVector, AlwaysHasNextEvent) {
   const std::vector<WeeklyTimeInterval> intervals = {
       // First
       {WeeklyTime{kSunday, 0, 0},
-       WeeklyTime{kSunday, 2 * kMillisecondsInHour, 0}},
+       WeeklyTime{kSunday, base::Hours(2).InMilliseconds(), 0}},
       // Second (overlaps with first)
-      {WeeklyTime{kSunday, kMillisecondsInHour, 0},
-       WeeklyTime{kSunday, 3 * kMillisecondsInHour, 0}},
+      {WeeklyTime{kSunday, base::Hours(1).InMilliseconds(), 0},
+       WeeklyTime{kSunday, base::Hours(3).InMilliseconds(), 0}},
       // Third, no overlap
       {WeeklyTime{kMonday, 0, 0},
-       WeeklyTime{kMonday, 2 * kMillisecondsInHour + 17, 0}},
+       WeeklyTime{kMonday, base::Hours(2).InMilliseconds() + 17, 0}},
   };
 
   // Just to make sure: Time::FromString actually parses microseconds

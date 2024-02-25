@@ -14,6 +14,8 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.content_public.browser.WebContents;
 
+import java.lang.ref.WeakReference;
+
 /**
  * This class receive captured content and send it to framework in non-UI
  * thread.
@@ -21,13 +23,16 @@ import org.chromium.content_public.browser.WebContents;
 @RequiresApi(Build.VERSION_CODES.Q)
 public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     private PlatformSession mPlatformSession;
-    private final View mView;
+    // This is the WebView itself when used in WebView; it must not be strongly referenced as this
+    // object is ultimately owned by the native OnscreenContentProvider and will make the WebView
+    // uncollectable.
+    private final WeakReference<View> mView;
 
     /**
      * This method is used when ViewStructure is available.
      *
-     * @Return ContentCaptureConsumer or null if ContentCapture service isn't
-     *         available, disabled or isn't AiAi service.
+     * @return ContentCaptureConsumer or null if ContentCapture service isn't available, disabled or
+     *     isn't AiAi service.
      */
     public static ContentCaptureConsumer create(
             Context context, View view, ViewStructure structure, WebContents webContents) {
@@ -41,10 +46,11 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
 
     private PlatformContentCaptureConsumer(
             View view, ViewStructure viewStructure, WebContents webContents) {
-        mView = view;
+        mView = new WeakReference(view);
         if (viewStructure != null) {
-            mPlatformSession = new PlatformSession(
-                    view.getContentCaptureSession(), viewStructure.getAutofillId());
+            mPlatformSession =
+                    new PlatformSession(
+                            view.getContentCaptureSession(), viewStructure.getAutofillId());
         }
     }
 
@@ -52,7 +58,9 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     public void onContentCaptured(
             FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
         if (mPlatformSession == null) {
-            mPlatformSession = PlatformSession.fromView(mView);
+            View view = mView.get();
+            if (view == null) return;
+            mPlatformSession = PlatformSession.fromView(view);
             if (mPlatformSession == null) return;
         }
         new ContentCapturedTask(parentFrame, contentCaptureFrame, mPlatformSession)

@@ -83,11 +83,19 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_5_OR_MORE_APPS},
       {"appManagementIntentSharingTabExplanation",
        IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION},
+      {"appManagementAppContentLabel", IDS_APP_MANAGEMENT_APP_CONTENT_TITLE},
+      {"appManagementAppContentSublabel",
+       IDS_APP_MANAGEMENT_APP_CONTENT_SUBTITLE},
+      {"appManagementAppContentDialogSublabel",
+       IDS_APP_MANAGEMENT_APP_CONTENT_DIALOG_SUBTITLE},
+      {"appManagementPermissionsWithOriginLabel",
+       IDS_APP_MANAGEMENT_PERMISSIONS_WITH_ORIGIN},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-class WebAppSettingsWindowDelegate : public AppManagementPageHandler::Delegate {
+class WebAppSettingsWindowDelegate
+    : public AppManagementPageHandlerBase::Delegate {
  public:
   explicit WebAppSettingsWindowDelegate(Profile* profile) : profile_(profile) {}
 
@@ -106,7 +114,7 @@ class WebAppSettingsWindowDelegate : public AppManagementPageHandler::Delegate {
 }  // namespace
 
 // static
-std::unique_ptr<AppManagementPageHandler::Delegate>
+std::unique_ptr<AppManagementPageHandlerBase::Delegate>
 WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(Profile* profile) {
   return std::make_unique<WebAppSettingsWindowDelegate>(profile);
 }
@@ -145,10 +153,10 @@ void WebAppSettingsUI::BindInterface(
 }
 
 void WebAppSettingsUI::OnWebAppUninstalled(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   auto* web_contents = web_ui()->GetWebContents();
-  const web_app::AppId current_app_id =
+  const webapps::AppId current_app_id =
       web_app::GetAppIdFromAppSettingsUrl(web_contents->GetURL());
 
   if (app_id == current_app_id)

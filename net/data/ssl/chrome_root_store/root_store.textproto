@@ -8,13 +8,13 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 11
+version_major: 14
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
 trust_anchors {
   sha256_hex: "55926084ec963a64b96e2abe01ce0ba86a64fbfebcc7aab5afc155b37fd76066"
-  ev_policy_oids: "1.3.159.1.17.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Amazon Root CA 3, O=Amazon, C=US
@@ -28,14 +28,6 @@ trust_anchors {
 # https://good.sca2a.amazontrust.com/
 trust_anchors {
   sha256_hex: "1ba5b2aa8c65401a82960118f80bec4f62304d83cec4713a19c39c011ea46db4"
-  ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=Starfield Services Root Certificate Authority - G2, O=Starfield Technologies, Inc., L=Scottsdale, ST=Arizona, C=US
-# https://valid.sfsg2.catest.starfieldtech.com/
-trust_anchors {
-  sha256_hex: "568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5"
-  ev_policy_oids: "2.16.840.1.114414.1.7.24.3"
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -57,7 +49,7 @@ trust_anchors {
 # https://juice.certum.pl/
 trust_anchors {
   sha256_hex: "5c58468d55f58e497e743982d2b50010b6d165374acf83a7d4a32db768c4408e"
-  ev_policy_oids: "1.2.616.1.113527.2.5.1.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Certum Trusted Network CA 2, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL
@@ -74,7 +66,7 @@ trust_anchors {
 # https://publifirma.firmaprofesional.com/
 trust_anchors {
   sha256_hex: "57de0583efd2b26e0361da99da9df4648def7ee8441c3b728afa9bcde0f9b26a"
-  ev_policy_oids: "1.3.6.1.4.1.13177.10.1.3.10"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Buypass Class 2 Root CA, O=Buypass AS-983163327, C=NO
@@ -86,7 +78,7 @@ trust_anchors {
 # https://valid.evident.ca23.ssl.buypass.no/
 trust_anchors {
   sha256_hex: "edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d"
-  ev_policy_oids: "2.16.578.1.26.1.3.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # OU=certSIGN ROOT CA G2, O=CERTSIGN SA, C=RO
@@ -105,7 +97,7 @@ trust_anchors {
 # https://www.erenepu.com/
 trust_anchors {
   sha256_hex: "5cc3d78e4e1d5e45547a04e6873e64f90cf9536d1ccc2ef800f355c4c5fd70fd"
-  ev_policy_oids: "2.16.156.112554.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # OU=ePKI Root Certification Authority, O=Chunghwa Telecom Co., Ltd., C=TW
@@ -127,7 +119,9 @@ trust_anchors {
 # https://certdemo-ev-valid.ssl.d-trust.net/
 trust_anchors {
   sha256_hex: "eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881"
+  # TODO(cclements,hchao): remove non-CABF OID once it is not used anymore.
   ev_policy_oids: "1.3.6.1.4.1.4788.2.202.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=T-TeleSec GlobalRoot Class 2, OU=T-Systems Trust Center, O=T-Systems Enterprise Services GmbH, C=DE
@@ -139,7 +133,7 @@ trust_anchors {
 # http://www.telesec.de/ / https://root-class3.test.telesec.de/
 trust_anchors {
   sha256_hex: "fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd"
-  ev_policy_oids: "1.3.6.1.4.1.7879.13.24.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Certigna Root CA, OU=0002 48146308100036, O=Dhimyotis, C=FR
@@ -161,7 +155,7 @@ trust_anchors {
 # https://global-root-g3.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "31ad6648f8104138c738f39ea4320133393e3a18cc02296ef97c2ac9ef6731d0"
-  ev_policy_oids: "2.16.840.1.114412.2.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=DigiCert Assured ID Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
@@ -178,35 +172,35 @@ trust_anchors {
 # https://trusted-root-g4.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "552f7bdcf1a7af9e6ce672017f4f12abf77240c78e761ac203d1d9d20ac89988"
-  ev_policy_oids: "2.16.840.1.114412.2.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
 # https://www.digicert.com
 trust_anchors {
   sha256_hex: "7431e5f4c3c1ce4690774f0b61e05440883ba9a01ed00ba6abd7806ed3b118cf"
-  ev_policy_oids: "2.16.840.1.114412.2.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=DigiCert Assured ID Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US
 # https://assured-id-root-g2.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "7d05ebb682339f8c9451ee094eebfefa7953a114edb2f44949452fab7d2fc185"
-  ev_policy_oids: "2.16.840.1.114412.2.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=DigiCert Assured ID Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US
 # https://assured-id-root-g3.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2"
-  ev_policy_oids: "2.16.840.1.114412.2.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=DigiCert Global Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US
 # https://global-root-g2.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f"
-  ev_policy_oids: "2.16.840.1.114412.2.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=CA Disig Root R2, O=Disig a.s., L=Bratislava, C=SK
@@ -240,28 +234,28 @@ trust_anchors {
 # https://validec.entrust.net
 trust_anchors {
   sha256_hex: "02ed0eb28c14da45165c566791700d6451d7fb56f0b2ab1d3b8eb070e56edff5"
-  ev_policy_oids: "2.16.840.1.114028.10.1.2"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=AffirmTrust Commercial, O=AffirmTrust, C=US
 # https://commercial.affirmtrust.com/
 trust_anchors {
   sha256_hex: "0376ab1d54c5f9803ce4b2e201a0ee7eef7b57b636e8a93c9b8d4860c96f5fa7"
-  ev_policy_oids: "1.3.6.1.4.1.34697.2.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=AffirmTrust Networking, O=AffirmTrust, C=US
 # https://networking.affirmtrust.com:4431
 trust_anchors {
   sha256_hex: "0a81ec5a929777f145904af38d5d509f66b5e2c58fcdb531058b0e17f3f0b41b"
-  ev_policy_oids: "1.3.6.1.4.1.34697.2.2"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Entrust Root Certification Authority - G2, OU=(c) 2009 Entrust, Inc. - for authorized use only, OU=See www.entrust.net/legal-terms, O=Entrust, Inc., C=US
 # https://validg2.entrust.net
 trust_anchors {
   sha256_hex: "43df5774b03e7fef5fe40d931a7bedf1bb2e6b42738c4e6d3841103d3aa7f339"
-  ev_policy_oids: "2.16.840.1.114028.10.1.2"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Entrust.net Certification Authority (2048), OU=(c) 1999 Entrust.net Limited, OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.), O=Entrust.net
@@ -273,28 +267,28 @@ trust_anchors {
 # https://premium.affirmtrust.com:4432/
 trust_anchors {
   sha256_hex: "70a73f7f376b60074248904534b11482d5bf0e698ecc498df52577ebf2e93b9a"
-  ev_policy_oids: "1.3.6.1.4.1.34697.2.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Entrust Root Certification Authority, OU=(c) 2006 Entrust, Inc., OU=www.entrust.net/CPS is incorporated by reference, O=Entrust, Inc., C=US
 # https://www.entrust.net/
 trust_anchors {
   sha256_hex: "73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c"
-  ev_policy_oids: "2.16.840.1.114028.10.1.2"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=AffirmTrust Premium ECC, O=AffirmTrust, C=US
 # https://premiumecc.affirmtrust.com:4433/
 trust_anchors {
   sha256_hex: "bd71fdf6da97e4cf62d1647add2581b07d79adf8397eb4ecba9c5e8488821423"
-  ev_policy_oids: "1.3.6.1.4.1.34697.2.4"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Entrust Root Certification Authority - G4, OU=(c) 2015 Entrust, Inc. - for authorized use only, OU=See www.entrust.net/legal-terms, O=Entrust, Inc., C=US
 # https://validg4.entrust.net
 trust_anchors {
   sha256_hex: "db3517d1f6732a2d5ab97c533ec70779ee3270a62fb4ac4238372460e6f01e88"
-  ev_policy_oids: "2.16.840.1.114028.10.1.2"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=GDCA TrustAUTH R5 ROOT, O=GUANG DONG CERTIFICATE AUTHORITY CO.,LTD., C=CN
@@ -306,54 +300,55 @@ trust_anchors {
 # https://2038r5.globalsign.com/
 trust_anchors {
   sha256_hex: "179fbc148a3dd00fd24ea13458cc43bfa7f59c8182d783a513f6ebec100c8924"
-  ev_policy_oids: "1.3.6.1.4.1.4146.1.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R6
 trust_anchors {
   sha256_hex: "2cabeafe37d06ca22aba7391c0033d25982952c453647349763a3ab5ad6ccf69"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=GlobalSign, O=GlobalSign, OU=GlobalSign Root CA - R3
 # https://2029.globalsign.com/
 trust_anchors {
   sha256_hex: "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b"
-  ev_policy_oids: "1.3.6.1.4.1.4146.1.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=GlobalSign Root CA, OU=Root CA, O=GlobalSign nv-sa, C=BE
 # GlobalSign Root CA
 trust_anchors {
   sha256_hex: "ebd41040e4bb3ec742c9e381d31ef2a41a48b6685c96e7cef3c1df6cd4331c99"
-  ev_policy_oids: "1.3.6.1.4.1.4146.1.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # OU=Starfield Class 2 Certification Authority, O=Starfield Technologies, Inc., C=US
 # https://www.starfieldtech.com/
 trust_anchors {
   sha256_hex: "1465fa205397b876faa6f0a9958e5590e40fcc7faa4fb7c2c8677521fb5fb658"
-  ev_policy_oids: "2.16.840.1.114414.1.7.23.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Starfield Root Certificate Authority - G2, O=Starfield Technologies, Inc., L=Scottsdale, ST=Arizona, C=US
 # https://valid.sfig2.catest.starfieldtech.com/
 trust_anchors {
   sha256_hex: "2ce1cb0bf9d2f9e102993fbe215152c3b2dd0cabde1c68e5319b839154dbb7f5"
-  ev_policy_oids: "2.16.840.1.114414.1.7.23.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Go Daddy Root Certificate Authority - G2, O=GoDaddy.com, Inc., L=Scottsdale, ST=Arizona, C=US
 # https://valid.gdig2.catest.godaddy.com/
 trust_anchors {
   sha256_hex: "45140b3247eb9cc8c5b4f0d7b53091f73292089e6e5a63e2749dd3aca9198eda"
-  ev_policy_oids: "2.16.840.1.114413.1.7.23.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # OU=Go Daddy Class 2 Certification Authority, O=The Go Daddy Group, Inc., C=US
 # https://www.godaddy.com/
 trust_anchors {
   sha256_hex: "c3846bf24b9e93ca64274c0ec67c1ecc5e024ffcacd2d74019350e81fe546ae4"
-  ev_policy_oids: "2.16.840.1.114413.1.7.23.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=GTS Root R3, O=Google Trust Services LLC, C=US
@@ -427,7 +422,6 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "5d56499be4d2e08bcfcad08a3e38723d50503bde706948e42f55603019e528ae"
   ev_policy_oids: "2.23.140.1.1"
-  ev_policy_oids: "2.16.840.1.113839.0.6.9"
 }
 
 # CN=ISRG Root X1, O=Internet Security Research Group, C=US
@@ -442,8 +436,7 @@ trust_anchors {
 # https://servicios1.izenpe.com
 trust_anchors {
   sha256_hex: "2530cc8e98321502bad96f9b1fba1b099e2d299e0f4548bb914f363bc0d4531f"
-  ev_policy_oids: "1.3.6.1.4.1.14777.6.1.1",
-  ev_policy_oids: "1.3.6.1.4.1.14777.6.1.2"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=SZAFIR ROOT CA2, O=Krajowa Izba Rozliczeniowa S.A., C=PL
@@ -499,7 +492,7 @@ trust_anchors {
 # https://www.quovadis.bm/
 trust_anchors {
   sha256_hex: "85a0dd7dd720adb7ff05f83d542b209dc7ff4528f7d677b18389fea5e5c49e86"
-  ev_policy_oids: "1.3.6.1.4.1.8024.0.2.100.1.2"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=QuoVadis Root CA 3 G3, O=QuoVadis Limited, C=BM
@@ -516,14 +509,16 @@ trust_anchors {
 # https://evsslicag3-v.quovadisglobal.com/
 trust_anchors {
   sha256_hex: "8fe4fb0af93a4d0d67db0bebb23e37c71bf325dcbcdd240ea04daf58b47e1840"
-  ev_policy_oids: "1.3.6.1.4.1.8024.0.2.100.1.2"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # OU=Security Communication RootCA2, O=SECOM Trust Systems CO.,LTD., C=JP
 # https://www.secomtrust.net/contact/form.html
 trust_anchors {
   sha256_hex: "513b2cecb810d4cde5dd85391adfc6c2dd60d87bb736d2b521484aa47a0ebef6"
+  # TODO(cclements,hchao): remove non-CABF OID once it is not used anymore.
   ev_policy_oids: "1.2.392.200091.100.721.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # OU=Security Communication RootCA1, O=SECOM Trust.net, C=JP
@@ -535,28 +530,28 @@ trust_anchors {
 # https://secure.comodo.com/
 trust_anchors {
   sha256_hex: "1a0d20445de5ba1862d19ef880858cbce50102b36e8f0a040c3c69e74522fe6e"
-  ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=COMODO ECC Certification Authority, O=COMODO CA Limited, L=Salford, ST=Greater Manchester, C=GB
 # https://comodoecccertificationauthority-ev.comodoca.com/
 trust_anchors {
   sha256_hex: "1793927a0614549789adce2f8f34f7f0b66d0f3ae3a3b84d21ec15dbba4fadc7"
-  ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=USERTrust ECC Certification Authority, O=The USERTRUST Network, L=Jersey City, ST=New Jersey, C=US
 # https://usertrustecccertificationauthority-ev.comodoca.com/
 trust_anchors {
   sha256_hex: "4ff460d54b9c86dabfbcfc5712e0400d2bed3fbc4d4fbdaa86e06adcd2a9ad7a"
-  ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=COMODO RSA Certification Authority, O=COMODO CA Limited, L=Salford, ST=Greater Manchester, C=GB
 # https://comodorsacertificationauthority-ev.comodoca.com/
 trust_anchors {
   sha256_hex: "52f0e1c4e58ec629291b60317f074671b85d7ea80d5b07273463534b32b40234"
-  ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=AAA Certificate Services, O=Comodo CA Limited, L=Salford, ST=Greater Manchester, C=GB
@@ -568,13 +563,13 @@ trust_anchors {
 # https://usertrustrsacertificationauthority-ev.comodoca.com/
 trust_anchors {
   sha256_hex: "e793c9b02fd8aa13e21c31228accb08119643b749c898964b1746d46c3d4cbd2"
-  ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Secure Global CA, O=SecureTrust Corporation, C=US
 trust_anchors {
   sha256_hex: "4200f5043ac8590ebb527d209ed1503029fbcbd41ca1b506ec27f15ade7dac69"
-  ev_policy_oids: "2.16.840.1.114404.1.1.2.4.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Trustwave Global ECC P384 Certification Authority, O=Trustwave Holdings, Inc., L=Chicago, ST=Illinois, C=US
@@ -598,7 +593,7 @@ trust_anchors {
 # CN=XRamp Global Certification Authority, O=XRamp Security Services Inc, OU=www.xrampsecurity.com, C=US
 trust_anchors {
   sha256_hex: "cecddc905099d8dadfc5b1d209b737cbe2c18cfb2c10c0ff0bcf0d3286fc1aa2"
-  ev_policy_oids: "2.16.840.1.114404.1.1.2.4.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=SecureTrust CA, O=SecureTrust Corporation, C=US
@@ -606,7 +601,7 @@ trust_anchors {
 # https://www.trustwave.com/
 trust_anchors {
   sha256_hex: "f1c1b50ae5a20dd8030ec9f6bc24823dd367b5255759b4e71b61fce9f7375d73"
-  ev_policy_oids: "2.16.840.1.114404.1.1.2.4.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=UCA Global G2 Root, O=UniTrust, C=CN
@@ -649,7 +644,7 @@ trust_anchors {
 # https://testevg2.swisssign.net/
 trust_anchors {
   sha256_hex: "62dd0be9b9f50a163ea0f8e75c053b1eca57ea55c8688f647c6881f2c8357b95"
-  ev_policy_oids: "2.16.756.1.89.1.2.1.1"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=SwissSign Silver CA - G2, O=SwissSign AG, C=CH
@@ -661,14 +656,14 @@ trust_anchors {
 # https://evssldemo3.twca.com.tw/index.html
 trust_anchors {
   sha256_hex: "59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b"
-  ev_policy_oids: "1.3.6.1.4.1.40869.1.1.22.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=TWCA Root Certification Authority, OU=Root CA, O=TAIWAN-CA, C=TW
 # https://evssldemo.twca.com.tw/index.html
 trust_anchors {
   sha256_hex: "bfd88fe1101c41ae3e801bf8be56350ee9bad1a6b9bd515edc5c6d5b8711ac44"
-  ev_policy_oids: "1.3.6.1.4.1.40869.1.1.22.3"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=TeliaSonera Root CA v1, O=TeliaSonera
@@ -699,11 +694,13 @@ trust_anchors {
 # CN=GlobalSign Root E46, O=GlobalSign nv-sa, C=BE
 trust_anchors {
   sha256_hex: "cbb9c44d84b8043e1050ea31a69f514955d7bfd2e2c6b49301019ad61d9f5058"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=GlobalSign Root R46, O=GlobalSign nv-sa, C=BE
 trust_anchors {
   sha256_hex: "4fa3126d8d3a11d1c4855a4f807cbad6cf919d3a5a88b03bea2c6372d93c40c9"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=GLOBALTRUST 2020, O=e-commerce monitoring GmbH, C=AT
@@ -795,4 +792,28 @@ trust_anchors {
 # CN=vTrus Root CA, O=iTrusChina Co.,Ltd., C=CN
 trust_anchors {
   sha256_hex: "8a71de6559336f426c26e53880d00d88a18da4c6a91f0dcb6194e206c5c96387"
+}
+
+# C=DE, O=Atos, CN=Atos TrustedRoot Root CA ECC TLS 2021
+trust_anchors {
+  sha256_hex: "b2fae53e14ccd7ab9212064701ae279c1d8988facb775fa8a008914e663988a8"
+}
+
+# C=DE, O=Atos, CN=Atos TrustedRoot Root CA RSA TLS 2021
+trust_anchors {
+  sha256_hex: "81a9088ea59fb364c548a6f85559099b6f0405efbf18e5324ec9f457ba00112f"
+}
+
+# CN=Sectigo Public Server Authentication Root E46, O=Sectigo Limited, C=GB
+# https://sectigopublicserverauthenticationroote46-ev.sectigo.com/
+trust_anchors {
+  sha256_hex: "c90f26f0fb1b4018b22227519b5ca2b53e2ca5b3be5cf18efe1bef47380c5383"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# CN=Sectigo Public Server Authentication Root R46, O=Sectigo Limited, C=GB
+# https://sectigopublicserverauthenticationrootr46-ev.sectigo.com/
+trust_anchors {
+  sha256_hex: "7bb647a62aeeac88bf257aa522d01ffea395e0ab45c73f93f65654ec38f25a06"
+  ev_policy_oids: "2.23.140.1.1"
 }

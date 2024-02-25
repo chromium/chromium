@@ -29,7 +29,7 @@ class ChromeDesktopImpl : public ChromeImpl {
                     std::unique_ptr<DevToolsClient> websocket_client,
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,
-                    absl::optional<MobileDevice> mobile_device,
+                    std::optional<MobileDevice> mobile_device,
                     std::string page_load_strategy,
                     base::Process process,
                     const base::CommandLine& command,

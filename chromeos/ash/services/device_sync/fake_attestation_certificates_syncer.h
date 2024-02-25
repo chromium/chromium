@@ -54,8 +54,7 @@ class FakeAttestationCertificatesSyncerFactory
       AttestationCertificatesSyncer::GetAttestationCertificatesFunction
           get_attestation_certificates_function) override;
 
-  raw_ptr<AttestationCertificatesSyncer, ExperimentalAsh> last_created_ =
-      nullptr;
+  raw_ptr<AttestationCertificatesSyncer> last_created_ = nullptr;
 };
 
 }  // namespace device_sync

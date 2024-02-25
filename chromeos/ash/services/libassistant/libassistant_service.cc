@@ -37,16 +37,8 @@ class LibassistantFactoryImpl : public LibassistantFactory {
     return base::WrapUnique(assistant_manager);
   }
 
-  assistant_client::AssistantManagerInternal* UnwrapAssistantManagerInternal(
-      assistant_client::AssistantManager* assistant_manager) override {
-    auto* entrypoint = LibassistantLoaderImpl::GetInstance()->GetEntryPoint();
-    auto* assistant_manager_internal =
-        entrypoint->GetAssistantManagerInternal(assistant_manager);
-    return assistant_manager_internal;
-  }
-
  private:
-  const raw_ptr<assistant_client::PlatformApi, ExperimentalAsh> platform_api_;
+  const raw_ptr<assistant_client::PlatformApi> platform_api_;
 };
 
 std::unique_ptr<LibassistantFactory> FactoryOrDefault(

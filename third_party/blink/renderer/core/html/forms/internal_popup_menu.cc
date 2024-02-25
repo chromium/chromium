@@ -51,8 +51,9 @@ namespace {
 // TODO crbug.com/516675 Add stretch to serialization
 
 const char* FontStyleToString(FontSelectionValue slope) {
-  if (slope == ItalicSlopeValue())
+  if (slope == kItalicSlopeValue) {
     return "italic";
+  }
   return "normal";
 }
 
@@ -131,8 +132,8 @@ class PopupMenuCSSFontSelector : public CSSFontSelector,
 
   // We don't override willUseFontData() for now because the old PopupListBox
   // only worked with fonts loaded when opening the popup.
-  scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                      const FontFamily&) override;
+  const FontData* GetFontData(const FontDescription&,
+                              const FontFamily&) override;
 
   void Trace(Visitor*) const override;
 
@@ -151,7 +152,7 @@ PopupMenuCSSFontSelector::PopupMenuCSSFontSelector(
 
 PopupMenuCSSFontSelector::~PopupMenuCSSFontSelector() = default;
 
-scoped_refptr<FontData> PopupMenuCSSFontSelector::GetFontData(
+const FontData* PopupMenuCSSFontSelector::GetFontData(
     const FontDescription& description,
     const FontFamily& font_family) {
   return owner_font_selector_->GetFontData(description, font_family);
@@ -313,7 +314,7 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   if (box && box->GetScrollableArea()) {
     if (ScrollableArea* scrollable = box->GetScrollableArea()) {
       temp_scrollbar = MakeGarbageCollected<CustomScrollbar>(
-          scrollable, kVerticalScrollbar, &owner_element.InnerElement());
+          scrollable, kVerticalScrollbar, box);
     }
   }
   for (auto target : targets) {
@@ -444,7 +445,7 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
     AddProperty("fontSize", font_description.ComputedPixelSize(), data);
   }
   // Our UA stylesheet has font-weight:normal for OPTION.
-  if (NormalWeightValue() != font_description.Weight()) {
+  if (kNormalWeightValue != font_description.Weight()) {
     AddProperty("fontWeight", font_description.Weight().ToString(), data);
   }
   if (base_font.Family() != font_description.Family()) {
@@ -644,7 +645,7 @@ void InternalPopupMenu::UpdateFromElement(UpdateReason) {
 }
 
 AXObject* InternalPopupMenu::PopupRootAXObject() const {
-  return popup_ ? popup_->RootAXObject() : nullptr;
+  return popup_ ? popup_->RootAXObject(owner_element_) : nullptr;
 }
 
 void InternalPopupMenu::Update(bool force_update) {

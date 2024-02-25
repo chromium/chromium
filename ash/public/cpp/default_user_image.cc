@@ -29,7 +29,7 @@ DefaultUserImage::DefaultUserImage(
     int index,
     std::u16string title,
     GURL url,
-    absl::optional<DeprecatedSourceInfo> source_info)
+    std::optional<DeprecatedSourceInfo> source_info)
     : index(index),
       title(std::move(title)),
       url(std::move(url)),

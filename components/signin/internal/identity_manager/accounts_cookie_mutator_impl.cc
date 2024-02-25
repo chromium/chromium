@@ -13,7 +13,6 @@
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin {
 
@@ -33,23 +32,6 @@ AccountsCookieMutatorImpl::AccountsCookieMutatorImpl(
 }
 
 AccountsCookieMutatorImpl::~AccountsCookieMutatorImpl() = default;
-
-void AccountsCookieMutatorImpl::AddAccountToCookie(
-    const CoreAccountId& account_id,
-    gaia::GaiaSource source,
-    AddAccountToCookieCompletedCallback completion_callback) {
-  gaia_cookie_manager_service_->AddAccountToCookie(
-      account_id, source, std::move(completion_callback));
-}
-
-void AccountsCookieMutatorImpl::AddAccountToCookieWithToken(
-    const CoreAccountId& account_id,
-    const std::string& access_token,
-    gaia::GaiaSource source,
-    AddAccountToCookieCompletedCallback completion_callback) {
-  gaia_cookie_manager_service_->AddAccountToCookieWithToken(
-      account_id, access_token, source, std::move(completion_callback));
-}
 
 void AccountsCookieMutatorImpl::SetAccountsInCookie(
     const MultiloginParameters& parameters,

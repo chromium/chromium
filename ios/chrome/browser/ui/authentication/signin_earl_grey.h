@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
 @protocol GREYMatcher;
@@ -16,6 +17,8 @@ namespace signin {
 enum class ConsentLevel;
 }
 
+class GURL;
+
 #define SigninEarlGrey \
   [SigninEarlGreyImpl invokedFromFile:@"" __FILE__ lineNumber:__LINE__]
 
@@ -24,6 +27,7 @@ enum class ConsentLevel;
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
 
 // Adds `fakeIdentity` to the fake identity service.
+// Does nothing if the identity is already added.
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Adds `fakeIdentity` to the fake system identity interaction manager. This
@@ -39,16 +43,50 @@ enum class ConsentLevel;
                            forIdentity:(FakeSystemIdentity*)fakeIdentity;
 - (void)setCanHaveEmailAddressDisplayed:(BOOL)value
                             forIdentity:(FakeSystemIdentity*)fakeIdentity;
-- (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
-                                forIdentity:(FakeSystemIdentity*)fakeIdentity;
+- (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
+                                                    forIdentity:
+                                                        (FakeSystemIdentity*)
+                                                            fakeIdentity;
 
 // Removes `fakeIdentity` from the fake identity service asynchronously to
 // simulate identity removal from the device.
 - (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
+// Returns the gaia ID of the signed-in account.
+// If there is no signed-in account returns an empty string.
+- (NSString*)primaryAccountGaiaID;
+
+// Checks that no identity is signed in.
+- (BOOL)isSignedOut;
+
 // Signs the user out of the primary account. Induces a GREYAssert if the
 // app fails to sign out.
 - (void)signOut;
+
+// Signs in with the fake identity and access point Settings.
+// Adds the fake-identity to the identity manager if necessary.
+// Only intended for tests requiring sign-in but not covering the sign-in UI
+// behavior to speed up and simplify those tests.
+// Will bypass the usual verifications before signin and other
+// entry-point-implemented behavior (e.g. history & tabs sync will be disabled,
+// no check for management status, sign-in related
+// metrics will not be sent)
+// Note that, when sync-the-feature is enabled, this function differs from
+// `[SigninEarlGreyUI signinWithFakeIdentity:identity]`. The
+// UI function enable sync too.
+// TODO(crbug.com/40067025): Remove this last remark when sync is disabled.
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
+
+// Triggers the web sign-in consistency dialog. This is done by calling
+// directly the current SceneController.
+// `url` that triggered the web sign-in/consistency dialog.
+- (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url;
+
+// Triggers the reauth dialog. This is done by sending ShowSigninCommand to
+// SceneController, without any UI interaction to open the dialog.
+// TODO(crbug.com/1454101): To be consistent, this method should be renamed to
+// `triggerSigninAndSyncReauthWithFakeIdentity:`.
+- (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity;
 
 // Induces a GREYAssert if `fakeIdentity` is not signed in to the active
 // profile.
@@ -66,6 +104,11 @@ enum class ConsentLevel;
 
 // Induces a GREYAssert if the Sync cell is not hidden.
 - (void)verifySyncUIIsHidden;
+
+- (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
+
+// Returns if the data type is enabled for the sync service.
+- (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type;
 
 @end
 

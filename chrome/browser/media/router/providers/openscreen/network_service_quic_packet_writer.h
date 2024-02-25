@@ -68,7 +68,7 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
       const quic::QuicSocketAddress& peer_address) override;
 
   void SetWritable() override;
-  absl::optional<int> MessageTooBigErrorCode() const override;
+  std::optional<int> MessageTooBigErrorCode() const override;
   bool SupportsReleaseTime() const override;
 
   quic::WriteResult WritePacket(const char* buffer,

@@ -55,7 +55,7 @@ void MojoHandle::Watch(gin::Arguments* arguments) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
 
-  std::vector<v8::Local<v8::Value>> args = arguments->GetAll();
+  v8::LocalVector<v8::Value> args = arguments->GetAll();
   CHECK_EQ(args.size(), 2u);
 
   // See third_party/blink/renderer/core/mojo/mojo_handle_signals.idl,
@@ -180,7 +180,7 @@ void MojoHandle::WriteMessage(gin::Arguments* arguments) {
   // third_party/blink/renderer/core/mojo/mojo_handle.idl defines this
   // method as:
   // MojoResult writeMessage(BufferSource buffer, sequence<MojoHandle> handles);
-  std::vector<v8::Local<v8::Value>> args = arguments->GetAll();
+  v8::LocalVector<v8::Value> args = arguments->GetAll();
   DCHECK_EQ(args.size(), 2u);
   DCHECK(args[0]->IsArrayBuffer() || args[0]->IsArrayBufferView());
   DCHECK(args[1]->IsArray());

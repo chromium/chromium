@@ -10,14 +10,14 @@ import './signin_shared.css.js';
 import './signin_vars.css.js';
 import './strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './dice_web_signin_intercept_app.html.js';
-import {DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
+import type {DiceWebSigninInterceptBrowserProxy, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
+import {DiceWebSigninInterceptBrowserProxyImpl} from './dice_web_signin_intercept_browser_proxy.js';
 
 const DiceWebSigninInterceptAppElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -49,20 +49,11 @@ export class DiceWebSigninInterceptAppElement extends
         type: Boolean,
         value: false,
       },
-
-      guestLink_: {
-        type: String,
-        value() {
-          return sanitizeInnerHtml(
-              loadTimeData.getString('guestLink'), {attrs: ['is']});
-        },
-      },
     };
   }
 
   private interceptionParameters_: InterceptionParameters;
   private acceptButtonClicked_: boolean;
-  private guestLink_: TrustedHTML;
   private diceWebSigninInterceptBrowserProxy_:
       DiceWebSigninInterceptBrowserProxy =
           DiceWebSigninInterceptBrowserProxyImpl.getInstance();
@@ -84,12 +75,6 @@ export class DiceWebSigninInterceptAppElement extends
           this.shadowRoot!.querySelector<HTMLElement>(
                               '#interceptDialog')!.offsetHeight;
       this.diceWebSigninInterceptBrowserProxy_.initializedWithHeight(height);
-      // |showGuestOption| is constant during the lifetime of this bubble,
-      // therefore it's safe to set the listener only during initialization.
-      if (this.interceptionParameters_.showGuestOption) {
-        this.shadowRoot!.querySelector('#footer-description a')!
-            .addEventListener('click', () => this.onGuest_());
-      }
     });
   }
 
@@ -100,14 +85,6 @@ export class DiceWebSigninInterceptAppElement extends
 
   private onCancel_() {
     this.diceWebSigninInterceptBrowserProxy_.cancel();
-  }
-
-  private onGuest_() {
-    if (this.acceptButtonClicked_) {
-      return;
-    }
-    this.acceptButtonClicked_ = true;
-    this.diceWebSigninInterceptBrowserProxy_.guest();
   }
 
   /** Called when the interception parameters are updated. */

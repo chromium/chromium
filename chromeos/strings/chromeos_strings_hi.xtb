@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1003363546227723021">जब आपकी स्क्रीन लॉक हो, तो फ़ोटो, समय, मौसम, और मीडिया की जानकारी दिखाएं</translation>
 <translation id="1014750484722996375">डेस्क</translation>
 <translation id="1018219910092211213">डीएनएस की समस्या को ठीक नहीं किया जा सकता</translation>
 <translation id="1018656279737460067">रद्द</translation>
 <translation id="1020274983236703756">खास <ph name="PRODUCT_NAME" /> ऐसेट अब उपलब्ध हैं</translation>
 <translation id="1022628058306505708">अर्थ फ़्लो</translation>
+<translation id="1026212596705997935">यह शॉर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" के लिए इस्तेमाल किया जा रहा है. कोई नया शॉर्टकट दबाएं. मौजूदा शॉर्टकट को बदलने के लिए, इस शॉर्टकट को फिर से दबाएं.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />गीगाहर्ट्ज़)</translation>
 <translation id="1047773237499189053">नई सुविधा उपलब्ध है, ज़्यादा जानने के लिए अप ऐरो बटन इस्तेमाल करें.</translation>
+<translation id="1049663189809099096">हल्के पीले</translation>
 <translation id="1059913517121127803">स्कैन करने की प्रोसेस शुरू नहीं हो सकी</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> में से <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -15,17 +18,21 @@
 <translation id="1075811647922107217">पेज का साइज़</translation>
 <translation id="1082009148392559545">स्क्रीन सेवर डाउनलोड हो रहा है</translation>
 <translation id="1094693127011229778">आईपी पता मौजूद नहीं है</translation>
+<translation id="1116694919640316211">इसके बारे में</translation>
 <translation id="1118572504348554005">इस फ़ॉर्म की मदद से सबमिट किए गए किसी भी सुझाव, शिकायत या राय को हम अपने पार्टनर के साथ शेयर कर सकते हैं. इससे हम उन गड़बड़ियों और अन्य समस्याओं को हल कर पाते हैं जिनकी शिकायत हमसे की जाती है. इस फ़ॉर्म में, पासवर्ड जैसी संवेदनशील जानकारी न दें.</translation>
 <translation id="1119447706177454957">आंतरिक गड़बड़ी</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">बाहरी डिवाइसों के लिए फ़र्मवेयर को अपडेट करने वाली विंडो खुली है. <ph name="NUM_UPDATES" /> अपडेट उपलब्ध हैं.</translation>
 <translation id="1145516343487477149">Chromebook से जुड़े सामान्य सवालों के लिए, सहायता लेख और जवाब ढूंढें</translation>
+<translation id="1154390310959620237">सिर्फ़ पांच शॉर्टकट को पसंद के मुताबिक बनाया जा सकता है. नया शॉर्टकट जोड़ने के लिए, कोई शॉर्टकट मिटाएं.</translation>
 <translation id="1164939766849482256">डॉन टू डार्क स्क्रीन सेवर</translation>
 <translation id="1167755866710282443">बटन को पसंद के मुताबिक बनाने के लिए मेन्यू खोलें. मेन्यू की जगह बदलने के लिए, उसे खींचें और छोड़ें.</translation>
+<translation id="1174073918202301297">शॉर्टकट जोड़ा गया</translation>
 <translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है.</translation>
 <translation id="1175951029573070619">सिग्नल ठीक-ठाक है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">हटाएं</translation>
+<translation id="1191518099344003522">एपीएन चालू है.</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
 <translation id="1196959502276349371">वर्शन <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">चलाएं/रोकें वाला बटन</translation>
@@ -33,13 +40,16 @@
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
 <translation id="1207734034680156868">आपकी जानकारी के आधार पर सुझाव दिए जाते हैं</translation>
 <translation id="121090498480012229">मीडिया चलाएं या रोकें</translation>
+<translation id="1223498995510244364">खास जानकारी दें</translation>
 <translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
+<translation id="1232610416724362657">वॉटरफ़ॉल</translation>
 <translation id="1238612778414822719">एचटीटीपीएस पेजों के खुलने में इंतज़ार का समय</translation>
-<translation id="1264369926465113395">क्रिएटर्स के लिए तैयार की गई, Chromebook की नई डिजिटल पत्रिका देखें</translation>
 <translation id="1270369111467284986">कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
+<translation id="1300115153046603471">एपीएन का टाइप डिफ़ॉल्ट और <ph name="ATTACH" /> पर सेट है.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">अपडेट हो रहा है (<ph name="PERCENTAGE_VALUE" />% हो गया)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> मिनट</translation>
 <translation id="1310380015393971138">कोई भी <ph name="NETWORK_NAME" /> नेटवर्क मौजूद नहीं है</translation>
 <translation id="131421566576084655">आखिरी बार डेटा किस तारीख को रीसेट किया गया था, इसकी जानकारी उपलब्ध नहीं है</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -49,17 +59,22 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कैन करने की जगह में फ़िट करें</translation>
 <translation id="1367951781824006909">कोई फ़ाइल चुनें</translation>
+<translation id="1371650399987522809">Google के एआई की मदद से बनाए गए वॉलपेपर के लिए सुझाव/राय दें या शिकायत करें</translation>
 <translation id="1387854245479784695">यह सभी कोर एक साथ दिखाता है</translation>
+<translation id="1393206549145430405">कैसल</translation>
 <translation id="1394661041439318933">डिवाइस के केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="1397738625398125236">गेटवे को पिंग किया जा सकता है</translation>
 <translation id="1398634363027580500">एचटीटीपीएस अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="1418991483994088776">ऑर्किड</translation>
 <translation id="142228117786570094">मेरे पास कुंजी का जोड़ा है</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> नहीं दबाया गया</translation>
+<translation id="1432110487435300883">अनुमानित नतीजा पाने के लिए, <ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से विभाजित करें</translation>
 <translation id="1435763214710588005">हर महीने, चुनी गई तारीख को डेटा के इस्तेमाल की जानकारी अपने-आप रीसेट हो जाती है</translation>
 <translation id="1442433966118452622">इमेज का सोर्स</translation>
+<translation id="1446954767133808402">सैफ़ायर</translation>
 <translation id="1449035143498573192">Google Search में खोलें</translation>
 <translation id="1451536289672181509">डिवाइस एक कीबोर्ड है.</translation>
 <translation id="1459693405370120464">मौसम</translation>
@@ -73,27 +88,35 @@
 <translation id="1499900233129743732">इस उपयोगकर्ता को <ph name="MANAGER" /> प्रबंधित करता है और यह किसी दूसरी जगह पर होते हुए भी सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता की गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="150962533380566081">गलत पीयूके.</translation>
 <translation id="1510238584712386396">लॉन्चर</translation>
+<translation id="1515129336378114413">ब्राउज़र का होम पेज</translation>
 <translation id="1526389707933164996">स्क्रीन सेवर का ऐनिमेशन</translation>
 <translation id="152892567002884378">वॉल्यूम बढ़ाएं</translation>
+<translation id="1531886272553347340">रैनॉनक्यूलस</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="155865706765934889">टचपैड</translation>
 <translation id="1561927818299383735">बैकलिट का रंग</translation>
+<translation id="1564356849266217610">ऑर्गैज़ा</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> को अपडेट नहीं किया जा सकता</translation>
 <translation id="1567064801249837505">एल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
 <translation id="1578784163189013834">स्क्रीन सेवर का बैकग्राउंड चुनें</translation>
 <translation id="160633243685262989">इमेज की झलक देखें</translation>
+<translation id="1611649489706141841">आगे जाएं</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
+<translation id="1615576200479539465">इमेज जनरेट की जा रही हैं...</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
+<translation id="1626590945318984973">शॉर्टकट उपलब्ध नहीं है. फ़ंक्शन और <ph name="META_KEY" /> बटनों के बिना, नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
 <translation id="1641857168437328880">डॉक्यूमेंट फ़ीडर (एक तरफ़ वाला)</translation>
 <translation id="1643449475550628585">वॉलपेपर रोज़ बदलें</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1651925268237749928">आपने शेयर किया गया एल्बम चुना है. इसमें अन्य लोग फ़ोटो जोड़ सकते हैं या बदल सकते हैं. आपके वॉलपेपर में ऐसी फ़ोटो इस्तेमाल की जा सकती हैं जो फ़िलहाल इस एल्बम में नहीं हैं.</translation>
+<translation id="1661865805917886535">खाते और सिस्टम की कुछ जानकारी Google को भेजी जा सकती है. इस जानकारी का इस्तेमाल हम तकनीकी समस्याओं को हल करने और हमारी सेवाओं को बेहतर बनाने के लिए करते हैं. ऐसा Google की निजता नीति (<ph name="PRIVACYPOLICYURL" />) और सेवा की शर्तों (<ph name="TERMSOFSERVICEURL" />) के मुताबिक किया जाता है. कॉन्टेंट में बदलावों का अनुरोध करने के लिए, कानूनी सहायता (<ph name="LEGALHELPPAGEURL" />) पेज पर जाएं.</translation>
 <translation id="1662989795263954667">बंद हो गया - स्याही खत्म हो गई</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> की झलक देखें</translation>
 <translation id="1668469839109562275">पहले से मौजूद वीपीएन</translation>
 <translation id="1669047024429367828">किसको दिखे</translation>
+<translation id="1670478569471758522">आपने जो विकल्प चुना है उसके बारे में ज़्यादा जानकारी</translation>
 <translation id="1672499492233627739">वेबकैम वीडियो फ़ीड</translation>
 <translation id="1676557873873341166">वीडियो रिकॉर्ड हो रहा है</translation>
 <translation id="1684279041537802716">एक्सेंट का रंग</translation>
@@ -103,37 +126,42 @@
 <translation id="1710499924611012470">सुलभता का नेविगेशन</translation>
 <translation id="1715359911173058521">स्कैनर से कनेक्ट करते समय कोई गड़बड़ी हुई. अपने नेटवर्क या यूएसबी कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="1717874160321062422">इसे <ph name="FIRST_MANAGER" /> और<ph name="SECOND_MANAGER" /> मैनेज करते हैं</translation>
+<translation id="1718553040985966377">झील</translation>
 <translation id="1726100011689679555">नेम सर्वर</translation>
 <translation id="1731082422893354635">ब्लूटूथ टचपैड</translation>
 <translation id="1738949837603788263">ज़ोन <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">इमेज लोड नहीं की जा सकीं. अपने इंटरनेट कनेक्शन की जांच करें या इमेज फिर से लोड करके देखें.</translation>
 <translation id="1751249301761991853">मनमुताबिक सेटिंग</translation>
 <translation id="1753496554272155572">वॉलपेपर की झलक से बाहर निकलें</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> के लिए 'बदलाव करें' बटन.</translation>
 <translation id="1755556344721611131">समस्या की जांच के लिए ऐप्लिकेशन</translation>
 <translation id="175763766237925754">सिग्नल अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">पुष्टि करने का तरीका</translation>
 <translation id="1776228893584526149">वॉलपेपर का रंग</translation>
+<translation id="1777913922912475695">पुल</translation>
 <translation id="1782199038061388045">अनुवाद</translation>
+<translation id="1788485524395674731">इस ऐप्लिकेशन को आपका एडमिन मैनेज करता है</translation>
 <translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
 <translation id="1801418420130173017">गहरे रंग वाली थीम बंद करें</translation>
 <translation id="1807246157184219062">हल्का</translation>
+<translation id="1808803439260407870">क्लासिक आर्ट</translation>
 <translation id="1827738518074806965">आर्ट गैलरी</translation>
 <translation id="1836553715834333258">सिस्टम का रंग</translation>
+<translation id="183675228220305365">रियलिस्ट</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
 <translation id="1840474674287087346">डेस्कटॉप का रंग</translation>
 <translation id="1851218745569890714">वीडियो कॉन्फ़्रेंसिंग</translation>
 <translation id="1852934301711881861">ChromeOS Flex इंस्टॉल करें</translation>
 <translation id="1856388568474281774">डाउन ऐरो</translation>
 <translation id="1858620243986915808">स्क्रीनशॉट अटैच करें</translation>
+<translation id="1871413952174074704">एपीएन में <ph name="CHAR_LIMIT" /> से ज़्यादा वर्ण नहीं हो सकते</translation>
 <translation id="1871569928317311284">गहरे रंग वाली थीम बंद करें</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">गहरे रंग वाला मोड बंद करें</translation>
-<translation id="1881188606372070653">कानूनी वजहों से कॉन्टेंट में बदलाव के अनुरोध के लिए, <ph name="BEGIN_LINK1" />कानूनी सहायता पेज<ph name="END_LINK1" /> पर जाएं. खाते और सिस्टम से जुड़ी कुछ जानकारी, Google को भेजी जा सकती है. हम आपसे मिली जानकारी का इस्तेमाल, तकनीकी समस्याएं हल करने और अपनी सेवाओं को बेहतर बनाने के लिए करेंगे. जानकारी का इस्तेमाल, हमारी <ph name="BEGIN_LINK2" />निजता नीति<ph name="END_LINK2" /> और <ph name="BEGIN_LINK3" />सेवा की शर्तों<ph name="END_LINK3" /> के मुताबिक किया जाता है.</translation>
 <translation id="1885577615937958993">मीडिया को तेज़ी से आगे बढ़ाएं</translation>
 <translation id="1887850431809612466">हार्डवेयर पुनरीक्षण</translation>
-<translation id="1897672602657312171">खोज बटन के बिना किसी शॉर्टकट का इस्तेमाल करने पर, कुछ ऐप्लिकेशन के शॉर्टकट में गड़बड़ी हो सकती है. इस शॉर्टकट का इस्तेमाल जारी रखने के लिए इसे फिर से दबाएं या खोज बटन का इस्तेमाल करके कोई नया शॉर्टकट दबाएं.</translation>
 <translation id="1904932688895783618">यहां आपकी मदद के लिए कुछ अन्य संसाधन दिए गए हैं:</translation>
 <translation id="1905710495812624430">अधिकतम स्वीकार्य प्रयासों की सीमा पार हो गई है.</translation>
 <translation id="1908234395526491708">यूडीपी अनुरोध पूरे नहीं हो पाए</translation>
@@ -141,11 +169,13 @@
 <translation id="1923388006036088459">एक्सेंट के रंग</translation>
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1954818433534793392">इमारत</translation>
 <translation id="1962550982027027473">डिफ़ॉल्ट एपीएन चालू करना ज़रूरी है</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google खाते पर प्रोफ़ाइल फ़ोटो</translation>
 <translation id="1979103255016296513">पासवर्ड बदलने का समय निकल चुका है</translation>
 <translation id="1999615961760456652">कैप्टिव पोर्टल</translation>
+<translation id="2004572381882349402">एयरब्रश स्टाइल</translation>
 <translation id="200669432486043882">फ़ाइल प्रतिस्‍थापित करें</translation>
 <translation id="2006864819935886708">कनेक्टिविटी</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
@@ -154,6 +184,7 @@
 <translation id="202500043506723828">ईआईडी</translation>
 <translation id="2047316797244836561">स्क्रीन सेवर देखने के लिए, नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2073232437457681324">विशाल महासागर</translation>
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
 <translation id="2085089206770112532">डिसप्ले की रोशनी कम करने वाला बटन</translation>
 <translation id="2102231663024125441">टेक्स्ट में बदलाव करना</translation>
@@ -166,21 +197,28 @@
 <translation id="2157660087437850958">इमोजी पिकर</translation>
 <translation id="2157959690810728433">कतार में है</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फिर से कोशिश करें</translation>
+<translation id="215916044711630446">'एपीएन जोड़ें' बटन अब बंद हो गया है</translation>
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
 <translation id="2161656808144014275">लेख संदेश</translation>
 <translation id="2163937499206714165">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="2180197493692062006">कोई गड़बड़ी हुई. ऐप्लिकेशन को फिर से खोलने की कोशिश करें.</translation>
 <translation id="2189104374785738357">एपीएन की जानकारी में बदलाव करना</translation>
+<translation id="2201758491318984023">साइकल</translation>
+<translation id="2203642483788377106">चट्टान</translation>
+<translation id="2208388655216963643">इंप्रेशनिस्ट</translation>
 <translation id="2209788852729124853">ट्रैफ़िक काउंटर रीसेट करें</translation>
 <translation id="2212733584906323460">होस्ट के नाम से आईपी पता बनाएं</translation>
+<translation id="2215920961700443347">इंटरनेट कनेक्शन नहीं है. इंटरनेट से कनेक्ट करें और फिर से कोशिश करें.</translation>
 <translation id="2217935453350629363">मौजूदा स्पीड</translation>
 <translation id="2224337661447660594">इंटरनेट कनेक्शन नहीं है</translation>
 <translation id="222447520299472966">कम से कम एक आर्ट गैलरी एल्बम को चुनना ज़रूरी है</translation>
 <translation id="2230005943220647148">सेल्सियस</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">ज़्यादा बनाएं</translation>
 <translation id="2236746079896696523">कीबोर्ड की बैकलाइट के लिए टॉगल बटन</translation>
 <translation id="2240366984605217732">लेआउट स्विच करने वाला बटन</translation>
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
+<translation id="2267285889943769271">स्क्रीनशॉट जोड़ें</translation>
 <translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
 <translation id="2276999893457278469">सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट</translation>
 <translation id="2279051792571591988">डिफ़ॉल्ट बटन लेबल पहले जैसा करें</translation>
@@ -192,6 +230,8 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2346474577291266260">सिग्नल बहुत अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2347064478402194325">कुर्सी</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> के लिए, बदलाव करने का डायलॉग बॉक्स खुला है.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2364498172489649528">जांच में पास</translation>
 <translation id="2367335866686097760">कीमैपिंग बटन</translation>
@@ -199,15 +239,19 @@
 <translation id="2391082728065870591">सुझाव, शिकायत या राय की रिपोर्ट भेजें</translation>
 <translation id="2407209115954268704">सिम लॉक स्टेटस</translation>
 <translation id="241419523391571119">जांच करने के लिए लिड को फिर से खोलें</translation>
+<translation id="2414660853550118611">वॉलपेपर के बारे में जानकारी</translation>
 <translation id="2414886740292270097">गहरा</translation>
 <translation id="2418150275289244458">'सेटिंग' में जाकर खोलें</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> में से <ph name="CURRENT_PAGE" /> की इमेज</translation>
 <translation id="2446553403094072641">फ़्लोटिंग पॉइंट ऐक्युरसी</translation>
 <translation id="2448312741937722512">प्रकार</translation>
+<translation id="2465272316171730950">फ़िलहाल, हम आपकी मदद नहीं कर सकते. कृपया कुछ देर बाद कोशिश करें.</translation>
 <translation id="248546197012830854">डिवाइस ऑफ़लाइन है. सहायता कॉन्टेंट देखने के लिए, वाई-फ़ाई नेटवर्क से कनेक्ट करें.</translation>
+<translation id="2486301288428798846">लकड़ी</translation>
 <translation id="2491955442992294626">दूसरी विंडो इस्तेमाल करने पर बटनों की जांच नहीं की जाती है</translation>
 <translation id="2493126929778606526">आपकी सबसे अच्छी फ़ोटो, अपने-आप चुन ली गईं</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2501126912075504550">ओपल</translation>
 <translation id="2505327257735685095">मौजूदा वॉलपेपर रीफ़्रेश करें</translation>
 <translation id="2512979179176933762">विंडो दिखाएं</translation>
 <translation id="2513396635448525189">लॉगिन इमेज बदलें</translation>
@@ -215,39 +259,53 @@
 <translation id="2521835766824839541">पिछला ट्रैक</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="253029298928638905">रीस्टार्ट हो रहा है…</translation>
+<translation id="2531772459602846206">हाइड्रैंजा</translation>
 <translation id="2533048460510040082">सुझाया गया सहायता कॉन्टेंट</translation>
 <translation id="2536159006530886390">इंटरनेट से कनेक्ट नहीं किया जा सका.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
 <translation id="2584559707064218956">सेट अप के लिए, सेटिंग पर जाएं</translation>
+<translation id="2586146417912237930">नीला और गहरा नीला</translation>
 <translation id="2597774443162333062">Google को फ़ाइलें डीबग करने के लिए भेजी जाएंगी</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
+<translation id="2617397783536231890">कॉटन</translation>
+<translation id="2618015542787108131">रेत के टीले</translation>
 <translation id="2619761439309613843">हर दिन रीफ़्रेश करें</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2638662041295312666">साइन इन इमेज</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चुना गया</translation>
 <translation id="2652403576514495859">लिखवाने की सुविधा को चालू या टॉगल करता है</translation>
+<translation id="2656001153562991489">Chromebook Plus के लिए खास तौर पर उपलब्ध</translation>
+<translation id="2665671725390405060">उच्चारण सुनें</translation>
 <translation id="267442004702508783">रीफ्रेश करें</translation>
 <translation id="268270014981824665">कीबोर्ड की रोशनी कम करें</translation>
 <translation id="2712812801627182647">TLS ऑथेंटिकेशन कुंजी</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
+<translation id="2715723665057727940">नदी</translation>
 <translation id="2717139507051041123">गहरे रंग वाला मोड चालू करें</translation>
+<translation id="2728460467788544679">पूरा प्रिंट इतिहास मिटाएं</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2744221223678373668">शेयर किए गए</translation>
 <translation id="2751739896257479635">EAP चरण 2 प्रमाणीकरण</translation>
+<translation id="2754757901767760034">लैंप</translation>
 <translation id="2783010256799387990">जांच में पास</translation>
+<translation id="2786429550992142861">लिनन</translation>
 <translation id="2787435249130282949">कीबोर्ड की रोशनी और बढ़ाएं</translation>
 <translation id="2805756323405976993">ऐप्लिकेशन</translation>
 <translation id="28232023175184696">इंटरनेट से कनेक्ट नहीं किया जा सका. फिर से कोशिश करने के लिए क्लिक करें.</translation>
+<translation id="2855718259207180827">ऊन</translation>
 <translation id="2859243502336719778">अहम अपडेट</translation>
 <translation id="2860473693272905224">स्कैनर पर कोई अन्य पेज रखें</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2873483161362553159">ब्राउज़र नेविगेशन</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
+<translation id="2875812231449496375">इस वॉलपेपर से जुड़े बेहतरीन नतीजे पाने के लिए, इसे चालू करें. इस सेटिंग को कभी भी बंद किया जा सकता है.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
 <translation id="2880569433548999039">क्लाउड फ़्लो स्क्रीन सेवर</translation>
+<translation id="2890557891229184386">ट्रॉपिकल आइलैंड</translation>
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
 <translation id="2940811910881150316">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए लिड को फिर से खोलें.</translation>
 <translation id="2941112035454246133">कम</translation>
+<translation id="2956070106555335453">सारांश</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
@@ -256,6 +314,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3069085583900247081">टेस्ट असफल रहा</translation>
+<translation id="3078740164268491126">टेबल</translation>
 <translation id="3083667275341675831">कनेक्टिविटी डाइग्नोस्टिक्स</translation>
 <translation id="3084958266922136097">स्क्रीन सेवर बंद करें</translation>
 <translation id="3091839911843451378">प्रिंट नहीं हो पाया - प्रिंटर बंद हो गया</translation>
@@ -263,12 +322,14 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">डिवाइस कनेक्ट है.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{पेज को हटाना चाहते हैं?}=1{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}one{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}other{पेज {PAGE_NUMBER} को हटाना चाहते हैं?}}</translation>
+<translation id="3146655726035122603">सिर्फ़ <ph name="PRODUCT_NAME" /> पर उपलब्ध</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है...</translation>
 <translation id="315738237743207937">कैप्टिव पोर्टल की पहचान की गई</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />सिस्टम और ऐप्लिकेशन की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> भेजें</translation>
 <translation id="3170673040743561620">अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="3174321110679064523">डॉन टू डार्क वॉलपेपर</translation>
+<translation id="3178532070248519384">अवांत-गार्द</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
 <translation id="319101249942218879">अवतार इमेज बदली गई</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
@@ -277,8 +338,9 @@
 <translation id="3211671540163313381">कीमैपिंग डी-पैड</translation>
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
 <translation id="3226657629376379887">लेआउट ऐक्शन मेन्यू</translation>
+<translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से विभाजित करें</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
-<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> के लिए खास</translation>
+<translation id="324961752321393509">आपका एडमिन इस ऐप्लिकेशन को बंद करने की अनुमति नहीं देता</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
 <translation id="3275729367986477355">अवतार इमेज की सेटिंग पर जाएं</translation>
 <translation id="3283504360622356314">{0,plural, =1{फ़ाइल में बदलाव करें}one{फ़ाइल में बदलाव करें}other{फ़ाइलों में बदलाव करें}}</translation>
@@ -296,7 +358,7 @@
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
 <translation id="3373141842870501561">अर्थ फ़्लो वॉलपेपर</translation>
-<translation id="337375748120863155">आपके चुने गए जवाबों से जुड़ी जानकारी. कंट्रोल को ऐक्सेस करने के लिए, लेफ़्ट या राइट ऐरो बटन इस्तेमाल करें.</translation>
+<translation id="3383623117265110236">खास वॉलपेपर</translation>
 <translation id="3404249063913988450">स्क्रीन सेवर चालू करें</translation>
 <translation id="3413935475507503304">अपडेट करने के लिए 'आगे बढ़ें' पर क्लिक करें.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -316,12 +378,14 @@
 <translation id="3517001332549868749">ChromeOS का अपडेट</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
+<translation id="3547264467365135390">फ़ॉर्मूला</translation>
 <translation id="3557205324756024651">लोकल आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="3565064564551103223">जिन आईपी को अनुमति दी गई है</translation>
 <translation id="3569407787324516067">स्क्रीन सेवर</translation>
 <translation id="3577473026931028326">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3583278742022654445">कमज़ोर सिग्नल. वाई-फ़ाई सिग्नल सोर्स के नज़दीक जाकर देखें.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" />, उपयोगकर्ता के लिए <ph name="APN_NAME" /> का आसान नाम है.</translation>
 <translation id="3595596368722241419">बैटरी पूरी चार्ज है</translation>
 <translation id="3600339377155080675">स्क्रीन शेयर करने वाला बटन</translation>
 <translation id="3602290021589620013">झलक देखें</translation>
@@ -329,10 +393,11 @@
 <translation id="3604713164406837697">वॉलपेपर बदलें</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
-<translation id="3607216139080387279">स्क्रीन सेवर दिखाएं</translation>
 <translation id="361575905210396100">आपके सुझाव, शिकायत या राय के लिए धन्यवाद</translation>
 <translation id="3632579075709132555">निजता स्क्रीन टॉगल करने वाला बटन</translation>
 <translation id="3651050199673793219">तापमान की इकाई चुनें</translation>
+<translation id="3654530588944650786"><ph name="FLOWER_COLOR" /> रंग का खिलता हुआ चमकीला <ph name="FLOWER_TYPE" /></translation>
+<translation id="3662461537616691585">बर्गंडी और मरून</translation>
 <translation id="3668449597372804501">क्लाउड फ़्लो वॉलपेपर</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
@@ -341,9 +406,9 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> समीक्षाएं)</translation>
 <translation id="3748026146096797577">कनेक्ट नहीं है</translation>
 <translation id="3749289110408117711">फ़ाइल नाम</translation>
-<translation id="3766934827878963937">1 घंटे के लिए</translation>
 <translation id="3771294271822695279">वीडियो फ़ाइलें</translation>
 <translation id="3784455785234192852">लॉक चालू है</translation>
+<translation id="3790109258688020991">पॉइंटिलिस्ट</translation>
 <translation id="380097101658023925">आरजीबी के लिए कंट्रोल</translation>
 <translation id="38114475217616659">सारा इतिहास मिटाएं</translation>
 <translation id="3820172043799983114">गलत पिन</translation>
@@ -355,10 +420,13 @@
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3862598938296403232">ब्यौरा देना ज़रूरी है</translation>
+<translation id="386280020966669610">वॉलपेपर के नए आइडिया दें</translation>
 <translation id="3865289341173661845">सहायता कॉन्टेंट उपलब्ध नहीं है.</translation>
 <translation id="3865414814144988605">रिज़ॉल्यूशन</translation>
 <translation id="3866249974567520381">वर्णन</translation>
+<translation id="3869314628814282185">ट्यूल</translation>
 <translation id="387301095347517405">इतनी बार आपकी बैटरी पूरी चार्ज हुई है</translation>
+<translation id="3877066159641251281">अनुवाद सुनें</translation>
 <translation id="3885327323343477505">स्क्रीन सेवर बदलें</translation>
 <translation id="391412459402535266">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए, लैपटॉप मोड पर स्विच करें.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट लें</translation>
@@ -372,10 +440,12 @@
 <translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="3969602104473960991">ChromeOS का पासवर्ड बदला गया</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
+<translation id="3981099166243641873">हल्के हरे</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3993704782688964914">अब आपका <ph name="DEVICE_NAME" /> अप-टू-डेट है</translation>
 <translation id="3998976413398910035">प्रिंटर मैनेज करें</translation>
 <translation id="4003384961948020559">प्रिंट नहीं हो पाया - प्रिंटर आउटपुट फ़ुल है</translation>
+<translation id="401147258241215701">ऑब्सीडियन</translation>
 <translation id="4021031199988160623">जांच करने के लिए, लैपटॉप मोड पर स्विच करें</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4044093238444069296">गेटवे से संपर्क नहीं किया जा सकता</translation>
@@ -383,14 +453,17 @@
 <translation id="404928562651467259">चेतावनी</translation>
 <translation id="4054683689023980771">इमेज डाउनलोड हो रही है</translation>
 <translation id="4060260348856573701">नया एपीएन</translation>
+<translation id="4063039537646912479">हल्के नीले</translation>
 <translation id="4093865285251893588">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="409427325554347132">जांच की जानकारी सेव करें</translation>
+<translation id="409469431304488632">एक्सपेरिमेंट</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">एल्बम चुनें <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">यूएसबी टचपैड</translation>
 <translation id="4113067922640381334">अब आपके पास नए <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> का ऐक्सेस है</translation>
 <translation id="4117637339509843559">गहरे रंग वाला मोड</translation>
 <translation id="4130035430755296270">लेआउट के ज़्यादा विकल्प देखने के लिए कर्सर घुमाते रहें</translation>
+<translation id="4130750466177569591">मैं सहमत हूं</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
 <translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -411,15 +484,21 @@
 <translation id="4244962993387259361">मेमोरी टेस्ट करने के लिए, 500 एमबी खाली मेमोरी की जगह होनी चाहिए. मेमोरी खाली करने के लिए, सेटिंग &gt; स्टोरेज मैनेजमेंट पर जाएं.</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4258281355379922695">एचटीटीपी अनुरोधों में इंतज़ार का समय</translation>
+<translation id="4266143281602681663">ऊन</translation>
 <translation id="4271957103967917607">फ़ुल स्क्रीन में देखें</translation>
 <translation id="4275663329226226506">मीडिया</translation>
+<translation id="4278766082079064416">यह शॉर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" के लिए इस्तेमाल किया जा रहा है. विवाद सुलझाने के लिए, उसमें बदलाव करें या हटाएं.</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4289849978083912975">स्लाइड शो</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
+<translation id="430786093962686457">शिफ़ॉन</translation>
+<translation id="4310735698903592804">Google के एआई की मदद से हाल ही में बनाए गए वॉलपेपर</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> दबाया गया</translation>
-<translation id="435692326371619097">नेटवर्क APN सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="4354430579665871434">बटन</translation>
+<translation id="4361257691546579041">एपीएन का टाइप डिफ़ॉल्ट पर सेट है.</translation>
 <translation id="437294888293595148">सभी शॉर्टकट को रीसेट करें</translation>
+<translation id="4376423484621194274">आपका एडमिन, <ph name="APP_NAME" /> को बंद करने की अनुमति नहीं देता</translation>
 <translation id="4378373042927530923">चल नहीं पाया</translation>
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
 <translation id="4382484599443659549">पीडीएफ़</translation>
@@ -427,6 +506,7 @@
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> को रीस्टार्ट किया जा रहा है</translation>
 <translation id="4395835743215824109">कीबोर्ड की रोशनी को पसंद के मुताबिक बनाएं</translation>
 <translation id="4415951057168511744">मौजूदा अवतार</translation>
+<translation id="4417830657741848074">आपके एडमिन ने कुछ ऐप्लिकेशन, अपने-आप चालू होने के लिए सेट अप किए हैं. ऐसा हो सकता है कि इनमें से कुछ ऐप्लिकेशन बंद न हों.</translation>
 <translation id="4422041425070339732">डाउन ऐरो</translation>
 <translation id="4425149324548788773">मेरी ड्राइव</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> बंद है</translation>
@@ -435,11 +515,14 @@
 <translation id="445059817448385655">पुराना पासवर्ड</translation>
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">स्कैन की हुई फ़ाइल यहां सेव करें</translation>
+<translation id="4456812688969919973">'एपीएन सेव करें' बटन अब बंद हो गया है</translation>
 <translation id="4469288414739283461">अर्थ फ़्लो स्क्रीन सेवर</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
+<translation id="4500722292849917410">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली कुंजी (ctrl, alt, shift बटन या <ph name="META_KEY" />) के साथ नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="4500966230243561393">इंटरफ़ेस का रंग</translation>
 <translation id="4503223151711056411">लेफ़्ट ऐरो</translation>
+<translation id="4503441351962730761">मॉर्डन आर्ट</translation>
 <translation id="4507392511610824664">स्क्रीन की रोशनी बढ़ाएं</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4521826082652183069">विषय के दूसरे नाम से मिलते-जुलते</translation>
@@ -449,6 +532,7 @@
 <translation id="4548483925627140043">सिग्नल नहीं मिला</translation>
 <translation id="4556753742174065117">फ़र्मवेयर अप-टू-डेट है</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh बैटरी</translation>
+<translation id="456077979087158257">सिटीस्केप</translation>
 <translation id="4561801978359312462">सिम अनलॉक है</translation>
 <translation id="4562494484721939086">कोई सेवा नहीं</translation>
 <translation id="4573777384450697571">प्रिंट नहीं हो सका - सर्टिफ़िकेट की समयसीमा खत्म हो गई है</translation>
@@ -460,6 +544,7 @@
 <translation id="4646949265910132906">सुरक्षित वाई-फ़ाई कनेक्शन</translation>
 <translation id="4650608062294027130">दाईं ओर का Shift बटन</translation>
 <translation id="4654549501020883054">रोज़ बदलें</translation>
+<translation id="4664651912255946953">फ़र</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्ड मेल नहीं खाते</translation>
 <translation id="467715984478005772">फ़ायरवॉल हो सकता है</translation>
@@ -467,23 +552,28 @@
 <translation id="469379815867856270">सिग्नल की क्षमता</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
+<translation id="4744944742468440486">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी</translation>
 <translation id="4771607256327216405">कीबोर्ड की रोशनी बढ़ाएं</translation>
 <translation id="4773299976671772492">रोक दिया गया</translation>
+<translation id="4778082030331381943">ऐमेथिस्ट</translation>
 <translation id="4782311465517282004">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर राइट क्लिक करें</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फ़ोटो</translation>
 <translation id="4793710386569335688">ज़्यादा मदद के लिए, <ph name="BEGIN_LINK" />सहायता केंद्र<ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="4793756956024303490">कंप्रेस करने का एल्गोरिदम</translation>
 <translation id="4794140124556169553">सीपीयू की जांच करने से सिस्टम की परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
 <translation id="4798078634453489142">नया एपीएन जोड़ने के लिए, कोई पुराना एपीएन हटाएं</translation>
+<translation id="479989351350248267">search</translation>
 <translation id="4800589996161293643">Chromebook समुदाय</translation>
 <translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
 <translation id="4809927044794281115">हल्के रंग वाली थीम</translation>
 <translation id="4813136279048157860">मेरी इमेज</translation>
 <translation id="4813345808229079766">कनेक्शन</translation>
+<translation id="4830894019733815633">घाटी</translation>
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
 <translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
-<translation id="4839698083503556542">अपनी खुद की फ़िल्म बनाएं</translation>
+<translation id="4838825304062068169">ग्लेशियर</translation>
+<translation id="48409034532829769">आपके एडमिन ने "<ph name="APP_NAME" />" को अपने-आप चालू होने के लिए सेट अप किया है. शायद इस ऐप्लिकेशन को बंद नहीं किया गया है.</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनी गई, <ph name="TOPIC_SOURCE" /> एल्बम चुनने के लिए Enter दबाएं</translation>
 <translation id="484790837831576105">(Android) डीएनएस रिज़ॉल्यूशन</translation>
@@ -491,8 +581,10 @@
 <translation id="4854586501323951986">पहले से मौजूद टचस्क्रीन</translation>
 <translation id="4855250849489639581">लेआउट के ज़्यादा विकल्प देखने के लिए, नीचे की ओर स्वाइप करें</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}one{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}other{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}}</translation>
+<translation id="4868181314237714900">फ़्लीस</translation>
 <translation id="4873827928179867585">पुष्टि करने का एल्गोरिदम</translation>
 <translation id="4880328057631981605">एक्सेस पॉइंट नाम</translation>
+<translation id="488307179443832524">यह शॉर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" के लिए इस्तेमाल किया जा रहा है. कोई नया शॉर्टकट दबाएं.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
@@ -506,16 +598,17 @@
 <translation id="4930320165497208503">किसी कनेक्शन को सेट अप या अपडेट करने के लिए, <ph name="BEGIN_LINK" />सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> फ़र्मवेयर को <ph name="VERSION" /> पर अपडेट कर दिया गया है</translation>
+<translation id="4965703485264574128">अनुमानित नतीजा पाने के लिए, <ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से गुणा करें</translation>
 <translation id="4969079779290789265">स्प्लिट स्क्रीन मोड</translation>
 <translation id="4972592110715526173">मोड बदलें</translation>
 <translation id="498186245079027698">स्कैनर की जांच करके फिर से कोशिश करें. पक्का करें कि स्कैन की गई फ़ाइलों को सेव करने के लिए, डिवाइस में खाली जगह हो.</translation>
+<translation id="4982627662315910959">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली एक और कुंजी (ctrl, alt, shift बटन या <ph name="META_KEY" />) के साथ-साथ shift इस्तेमाल करके नए शॉर्टकट का इस्तेमाल करें.</translation>
 <translation id="4985509611418653372">चलाएं</translation>
 <translation id="4987769320337599931">फ़ायरवॉल</translation>
 <translation id="4988526792673242964">पेज</translation>
 <translation id="4999333166442584738">रिपोर्ट छिपाएं</translation>
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">अगर स्क्रीन इस्तेमाल में न हो, तो फ़ोटो, समय, मौसम, और मीडिया की जानकारी दिखाएं.</translation>
 <translation id="5035083460461104704">थीम का रंग</translation>
 <translation id="5038292761217083259">कीबोर्ड की रोशनी के लिए एक से ज़्यादा रंग</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
@@ -526,11 +619,14 @@
 <translation id="5088172560898466307">सर्वर होस्‍टनाम</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5107243100836678918"><ph name="META_KEY" /> बटन के बिना किसी शॉर्टकट का इस्तेमाल करने पर, कुछ ऐप्लिकेशन के शॉर्टकट में गड़बड़ी हो सकती है. इस शॉर्टकट का इस्तेमाल जारी रखने के लिए कुंजियों को फिर से दबाएं या <ph name="KEY" /> बटन के साथ किसी नए शॉर्टकट का इस्तेमाल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="5108781503443873320">इसी अर्थ वाले दूसरे शब्द:</translation>
 <translation id="5137451382116112100">फ़ुलस्क्रीन मोड</translation>
 <translation id="5142961317498132443">पुष्टि करना</translation>
+<translation id="5144887194300568405">अनुवाद कॉपी करें</translation>
+<translation id="5145081769226915336">क्या गहरे रंग वाले मोड के अपने-आप चालू होने की सुविधा चालू करनी है?</translation>
 <translation id="5154917547274118687">मेमोरी</translation>
 <translation id="5160857336552977725">अपने <ph name="DEVICE_TYPE" /> में साइन इन करें</translation>
-<translation id="5166918508782100047">हाज़िर जवाब की सेटिंग</translation>
 <translation id="5168185087976003268">बैटरी की स्थिति</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5180712487038406644">एक्सप्रेसिव</translation>
@@ -541,6 +637,7 @@
 <translation id="5227902338748591677">गहरे रंग वाली थीम शेड्यूल करें</translation>
 <translation id="5229344016299762883">फ़ुलस्क्रीन मोड से बाहर निकलें</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" को अपने-आप चालू होने के लिए सेट अप किया है.}=2{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और 1 अन्य ऐप्लिकेशन को अपने-आप चालू होने के लिए सेट अप किया है.}one{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और # अन्य ऐप्लिकेशन को अपने-आप चालू होने के लिए सेट अप किया है.}other{आपके एडमिन ने आपके हर बार लॉग इन करने पर, "<ph name="APP_NAME" />" और # अन्य ऐप्लिकेशन, अपने-आप चालू होने के लिए सेट अप किए हैं.}}</translation>
 <translation id="5252456968953390977">रोमिंग</translation>
 <translation id="5257811368506016604">हल्के रंग वाला मोड चालू करें</translation>
 <translation id="5264277876637023664">सीपीयू टेस्ट चलाएं</translation>
@@ -560,6 +657,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">कोई नया पासवर्ड चुनें</translation>
 <translation id="5333530671332546086">पोर्टल की स्थिति की जानकारी नहीं है</translation>
+<translation id="5335373365677455232">गुलाबी</translation>
 <translation id="5346687412805619883">लोकल नेटवर्क</translation>
 <translation id="5358174242040570474">कोई गड़बड़ी हुई. कोई वॉलपेपर चुनकर कोशिश करें या ऐप्लिकेशन को फिर से खोलें.</translation>
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
@@ -567,6 +665,7 @@
 <translation id="5378184552853359930">आईपी टाइप</translation>
 <translation id="5389159777326897627">वॉलपेपर और स्टाइल</translation>
 <translation id="5389224261615877010">इंद्रधनुष</translation>
+<translation id="5396811372860835203">कैला लिली</translation>
 <translation id="5400907029458559844">डिवाइस कनेक्ट हो रहा है.</translation>
 <translation id="5401938042319910061">सभी रूटीन चलाएं</translation>
 <translation id="5423849171846380976">सक्रिय हुआ</translation>
@@ -574,22 +673,27 @@
 <translation id="5431318178759467895">रंग</translation>
 <translation id="5457599981699367932">मेहमान के रूप में ब्राउज़ करें</translation>
 <translation id="54609108002486618">प्रबंधित</translation>
+<translation id="5470776029649730099">बर्लैप</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{आप {0} बार और कोशिश कर सकते हैं}one{आप {0} बार और कोशिश कर सकते हैं}other{आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">स्कैन नहीं किया जा सका</translation>
 <translation id="5499762266711462226">कीबोर्ड का रंग वॉलपेपर के हिसाब से तय होता है</translation>
 <translation id="5502931783115429516">Android नहीं चल रहा है</translation>
+<translation id="550600468576850160">घास के मैदान</translation>
 <translation id="551689408806449779">डिवाइस को डिसकनेक्ट कर दिया गया है. टेस्ट करने के लिए, डिवाइस को फिर से कनेक्ट करने की कोशिश करें</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="554067135846762198">कोरल और टैन</translation>
+<translation id="5543701552415191873">लॉक है</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">शाम होने पर, अपने-आप गहरे रंग वाली थीम पर स्विच करें</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">दोबारा स्कैन करें</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">इस एपीएन को बंद नहीं किया जा सकता और न ही हटाया जा सकता. पक्का करें कि अटैच किए गए जिन एपीएन को चालू किया गया था उन्हें बंद कर दिया गया है या हटा दिया गया है.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की जांच की गई</translation>
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
-<translation id="5649768706273821470">सुनें</translation>
+<translation id="5630438231335788050">बाओहाउस</translation>
+<translation id="5631759159893697722">संक्षेप</translation>
+<translation id="5654356773042347102">लिली ऑफ़ द वैली</translation>
 <translation id="5655283760733841251">कीबोर्ड की रोशनी बढ़ाने वाला बटन</translation>
 <translation id="5655296450510165335">डिवाइस का नाम दर्ज करना</translation>
 <translation id="5655776422854483175">कोई प्रिंट जॉब नहीं है</translation>
@@ -602,20 +706,27 @@
 <translation id="5701381305118179107">मध्य</translation>
 <translation id="5703716265115423771">वॉल्‍यूम कम करें</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> का <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> के लिए 'बदलाव करें' बटन.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> को अपडेट करें</translation>
 <translation id="574392208103952083">मीडियम</translation>
 <translation id="5757187557809630523">अगला ट्रैक</translation>
 <translation id="5760715441271661976">पोर्टल की स्थिति</translation>
+<translation id="5763838252932650682"><ph name="APP_NAME" /> को रीस्टार्ट और अपडेट किया जा रहा है</translation>
 <translation id="576835345334454681">डिसप्ले की रोशनी बढ़ाने वाला बटन</translation>
 <translation id="57838592816432529">म्यूट करें</translation>
 <translation id="5784136236926853061">एचटीटीपी अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
+<translation id="5790391387506209808">लैपिस लैज़ूली</translation>
+<translation id="5810296156135698005">बरोक</translation>
+<translation id="5816802250591013230">कोई शॉर्टकट असाइन नहीं किया गया</translation>
 <translation id="5826644637650799838">कला के बारे में</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5843706793424741864">फ़ैरनहाइट</translation>
 <translation id="584953448295717128">एपीएन का अपने-आप पता चल जाता है.</translation>
 <translation id="5849570051105887917">'होम' पर काम करने वाली सेवाओं का कोड</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">आर्ट गैलरी एल्बम</translation>
+<translation id="5859969039821714932">शॉर्टकट उपलब्ध नहीं है. <ph name="KEY" /> के बिना, नया शॉर्टकट दबाएं.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5876385649737594562">विकल्प चुनने के लिए, ऐंबियंट मोड चालू करें</translation>
@@ -628,21 +739,26 @@
 <translation id="5916084858004523819">निषिद्ध</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}one{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}other{आपकी फ़ाइलें स्कैन कर दी गई हैं. साथ ही, उन्हें <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> के लिए 'मिटाएं' बटन.</translation>
+<translation id="5930669310554144537">ड्रीमस्केप</translation>
 <translation id="5931523347251946569">फ़ाइल नहीं मिली</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
 <translation id="594552776027197022">रैंडम कुंजी के जोड़े बनाएं</translation>
 <translation id="5946538341867151940">आपका डिवाइस अभी तक नेटवर्क से कनेक्ट नहीं है. अगर आपको मोबाइल और इंटरनेट सेवा देने वाली कंपनी, एक कस्टम एपीएन का सुझाव देती है, तो "नया एपीएन जोड़ें" चुनकर एपीएन की जानकारी दर्ज करें</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5975130252842127517">कोरल</translation>
 <translation id="5984145644188835034">डिफ़ॉल्ट वॉलपेपर</translation>
+<translation id="5996832681196460718">सिल्क</translation>
 <translation id="6017514345406065928">हरा</translation>
 <translation id="6019566113895157499">Keyboard Shortcuts</translation>
 <translation id="6034694447310538551">हर महीने के लिए, अपने-आप रीसेट होने की सुविधा चालू करें</translation>
 <translation id="6037291330010597344">स्कैनर का डॉक्यूमेंट फ़ीडर खाली है. डॉक्यूमेंट जोड़ें और फिर से कोशिश करें.</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6040852767465482106">अनाम पहचान</translation>
-<translation id="604124094241169006">स्वचालित</translation>
+<translation id="604124094241169006">ऑटोमेटिक</translation>
 <translation id="6048107060512778456">प्रिंट नहीं हो पाया - काग़ज़ फ़ंसा है</translation>
 <translation id="6050189528197190982">ग्रेस्‍केल</translation>
+<translation id="6054711098834486579">एक्स्प्रेशनिस्ट</translation>
 <translation id="6058625436358447366">पूरा करने के लिए, पुराना और नया पासवर्ड डालें</translation>
 <translation id="6061772781719867950">वे एचटीटीपी अनुरोध जो नहीं किए जा सके</translation>
 <translation id="6073292342939316679">कीबोर्ड की रोशनी कम करें</translation>
@@ -651,19 +767,23 @@
 <translation id="6104112872696127344">स्कैन करने की प्रोसेस रद्द कर दी गई है</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6108689792487843350">गेटवे से कनेक्ट नहीं किया जा सका</translation>
+<translation id="6108952804512516814">एआई की मदद से बनाएं</translation>
 <translation id="6112878310391905610">इस सेटिंग को आपके एडमिन मैनेज करते हैं</translation>
 <translation id="6113701710518389813">अप ऐरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> के अलावा <ph name="NUMBER" /> और एल्बम</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
 <translation id="6122277663991249694">ChromeOS के इनपुट के तरीके से जुड़ी सेवा</translation>
+<translation id="6127426868813166163">सफ़ेद</translation>
 <translation id="6136285399872347291">बैकस्पेस</translation>
 <translation id="6137767437444130246">उपयोगकर्ता प्रमाणपत्र</translation>
 <translation id="6146993107019042706">खत्म करने के लिए, नया पासवर्ड डालें</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319"><ph name="DATE" /> को बनाया गया</translation>
 <translation id="6189418609903030344">इस्तेमाल के साथ, बैटरी की क्षमता में कमी आती जाती है</translation>
 <translation id="6191293864534840972">इन नाम सर्वर के फ़ॉर्मैट सही नहीं हैं</translation>
+<translation id="6196607555925437199">फिर से बनाएं</translation>
 <translation id="6205145102504628069">क्लाउड फ़्लो</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कोई भी स्कैनर उपलब्ध नहीं है</translation>
@@ -675,13 +795,16 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">गहरे रंग वाली थीम चालू करें</translation>
 <translation id="628726841779494414">प्रिंटर की सेटिंग में जाकर, अपने प्रिंटर मैनेज करें</translation>
+<translation id="6292095526077353682">चार्ज करते समय, स्क्रीन सेवर इतने समय तक दिखाएं</translation>
 <translation id="629550705077076970">कीबोर्ड की रोशनी कम करें</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> टेस्ट को रद्द कर दिया गया है</translation>
 <translation id="631063167932043783">Explore ऐप्लिकेशन</translation>
 <translation id="6318437367327684789">हमेशा के लिए</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> के लिए फ़र्मवेयर अपडेट करें</translation>
 <translation id="6321407676395378991">स्क्रीन सेवर चालू करें</translation>
+<translation id="6324916366299863871">शॉर्टकट में बदलाव करें</translation>
 <translation id="6325525973963619867">विफल</translation>
+<translation id="6327262166342360252">इस वॉलपेपर को एआई की मदद से बनाया गया है. इसके लिए, यह टेक्स्ट इस्तेमाल किया गया: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">अपने-आप गहरे रंग वाली थीम</translation>
 <translation id="6340526405444716530">मनमुताबिक बनाना</translation>
 <translation id="6348738456043757611">उपयोगकर्ता नाम और पासवर्ड</translation>
@@ -692,6 +815,7 @@
 <translation id="6382182670717268353">स्क्रीन सेवर की झलक</translation>
 <translation id="6388847657025262518">स्कैनर का डॉक्यूमेंट फ़ीडर जाम हो गया है. फ़ीडर की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="6394634179843537518">फ़ाइल जोड़ें</translation>
+<translation id="6400680457268373900"><ph name="DREAMSCAPES_COLORS" /> रंगों में <ph name="DREAMSCAPES_MATERIAL" /> से बनी <ph name="DREAMSCAPES_OBJECT" /> की शानदार इमेज</translation>
 <translation id="6401427872449207797">ब्राउज़र सर्च</translation>
 <translation id="6410257289063177456">इमेज फ़ाइल</translation>
 <translation id="641081527798843608">विषय मिलान</translation>
@@ -701,8 +825,10 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">सिग्नल कमज़ोर है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाता सेटिंग पर जाएं</translation>
+<translation id="6462978824459367242">'एपीएन जोड़ें' बटन अब चालू है</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{पेज को दोबारा स्कैन करना चाहते हैं?}=1{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}one{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}other{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}}</translation>
 <translation id="6472207088655375767">एक बार इस्तेमाल होने वाला पासवर्ड (ओटीपी)</translation>
+<translation id="64778964625672495">गहरे लाल</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> मैनेज करता है</translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> का खास स्क्रीन सेवर</translation>
 <translation id="649050271426829538">बंद हो गया - काग़ज़ फंसा है</translation>
@@ -715,6 +841,7 @@
 <translation id="6526200165918397681">वॉलपेपर मैच करें</translation>
 <translation id="6527081081771465939">इस वाई-फ़ाई सुरक्षा प्रोटोकॉल की जानकारी नहीं है</translation>
 <translation id="6535178685492749208">आप ऑफ़लाइन हैं. आपका सुझाव, शिकायत या राय बाद में भेजी जाएगी.</translation>
+<translation id="6557784757915238407">एपीएन का टाइप <ph name="ATTACH" /> है.</translation>
 <translation id="65587193855025101">फ़्लैटबेड</translation>
 <translation id="6560196641871357166">वाइब्रेंट</translation>
 <translation id="6564646048574748301">प्रिंट नहीं हो पाया - प्रिंटर से कनेक्ट नहीं हो पा रहा है</translation>
@@ -735,22 +862,33 @@
 <translation id="6659594942844771486">ब्राउज़र टैब</translation>
 <translation id="6673898378497337661">कीबोर्ड की रोशनी बढ़ाएं</translation>
 <translation id="6692996468359469499">चुनी हुई सामग्री से जुड़ी जानकारी पाएं</translation>
+<translation id="6694534975463174713">लॉक करें</translation>
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
+<translation id="6712933881624804031">वादी</translation>
+<translation id="671733080802536771">नूवो कला</translation>
+<translation id="6721525125027474520">दलदल</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6723847290197874913">कीबोर्ड की बैकलाइट</translation>
 <translation id="672609503628871915">देखें कि नया क्या है</translation>
+<translation id="6740695858234317715">क्रीम और नारंगी</translation>
+<translation id="6741823073189174383">नाव</translation>
+<translation id="6744441848304920043">जंगल</translation>
 <translation id="6747215703636344499">बंद हो गया - आउटपुट भर गया</translation>
 <translation id="6749473226660745022">फ़ोटो</translation>
 <translation id="6753452347192452143">डिवाइस एक कंप्यूटर है.</translation>
 <translation id="6756731097889387912">स्कैन करने की प्रोसेस रद्द नहीं हो सकी</translation>
 <translation id="6760706756348334449">वॉल्यूम कम करें</translation>
+<translation id="6761537227090937007">हाई रिज़ॉल्यूशन वाली इमेज बनाई जा रही है…</translation>
 <translation id="6766275201586212568">वे डीएनएस रिज़ॉल्यूशन जो नहीं हो पाए</translation>
 <translation id="6768237774506518020">डीएनएस रिज़ॉल्यूशन नहीं हो पाने की बढ़ी हुई दर</translation>
 <translation id="6791471867139427246">कीबोर्ड की लाइट का रंग</translation>
+<translation id="6796229976413584781">शॉर्टकट मिटाया गया</translation>
 <translation id="6798678288485555829">टेक्स्ट नेविगेशन</translation>
 <translation id="680983167891198932">कुंजी</translation>
 <translation id="6816797338148849397">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी उपलब्ध है. इसे ऐक्सेस करने के लिए, अप ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="6853312040151791195">डिस्चार्ज होने की दर</translation>
+<translation id="6866732840889595464">डेज़ी</translation>
+<translation id="6871256179359663621">हल्के बैंगनी</translation>
 <translation id="6889786074662672253">रीस्टार्ट करते समय, न तो इस बाहरी डिवाइस को डिसकनेक्ट करें और न ही अपने कंप्यूटर को शट डाउन करें. इस विंडो को छोटा किया जा सकता है. रीस्टार्ट होने में कुछ मिनट लग सकते हैं. हो सकता है कि इस दौरान आपका बाहरी डिवाइस काम न करे.</translation>
 <translation id="6900701049656042631">इस एल्बम में कोई फ़ोटो नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> पर वापस जाएं</translation>
@@ -764,61 +902,84 @@
 <translation id="6965978654500191972">डिवाइस</translation>
 <translation id="6977381486153291903">फ़र्मवेयर पुनरीक्षण</translation>
 <translation id="6981982820502123353">सुलभता</translation>
+<translation id="6988803763488977828">विंडफ़्लावर</translation>
 <translation id="7005833343836210400">डिवाइस ऑफ़लाइन है</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7041549558901442110">डिवाइस कनेक्ट नहीं है.</translation>
+<translation id="7046522406494308071">क्या आपको सभी शॉर्टकट डिफ़ॉल्ट पर रीसेट करने हैं?</translation>
 <translation id="7058278511608979688">बंद करें और सेव करें</translation>
 <translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
+<translation id="7066538517128343186"><ph name="KEY" /> कुंजी</translation>
 <translation id="7068619307603204412">अपने डिवाइस को तैयार करें</translation>
+<translation id="7076851914315147928">कोई वॉलपेपर चुनें</translation>
 <translation id="708426984172631313">रोका गया</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">नहीं मिल सकी - अनुमति नहीं मिल सकी</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> में से <ph name="INDEX" /> डिवाइस, जिसका नाम <ph name="NAME" /> है.</translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> के लिए खास आर्टवर्क चुनें</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7119389851461848805">पावर</translation>
 <translation id="7130438335435247835">ऐक्सेस पॉइंट नेम (एपीएन)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नाम सर्वर}one{नाम सर्वर}other{नाम सर्वर}}</translation>
 <translation id="7135814714616751706">शॉर्टकट खोजें</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
+<translation id="7144954474087165241">पगोडा</translation>
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7154020516215182599">सुझाव, शिकायत या राय शेयर करें या अपनी समस्या के बारे में बताएं. अगर हो सके, तो अपनी समस्या के बारे में सिलसिलेवार तरीके से बताएं.</translation>
 <translation id="7155171745945906037">कैमरा या फ़ाइल से मौजूदा फ़ोटो</translation>
 <translation id="7162487448488904999">गैलरी</translation>
 <translation id="7170236477717446850">प्रोफ़ाइल फ़ोटो</translation>
+<translation id="7171665330126595869">गुफा</translation>
 <translation id="7171919371520438592">डॉक विंडो को स्क्रीन की <ph name="DIRECTION" /> ओर छोटे हिस्से पर रखें</translation>
 <translation id="7172721935181587524">एक इमेज</translation>
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7180865173735832675">पसंद के मुताबिक बनाएं</translation>
 <translation id="7184043045742675738">अपने बटन को पसंद के मुताबिक बनाने के लिए, किसी भी बटन पर क्लिक करें. माउस या ऐरो बटन की मदद से, बटन की जगह बदलें.</translation>
+<translation id="7206979415662233817">सेवा की शर्तें</translation>
+<translation id="7212547870105584639">नेटवर्क एपीएन सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाहरी डिवाइसों के लिए फ़र्मवेयर अपडेट</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
+<translation id="7233782086689993269">शॉर्टकट पहले जैसा किया गया</translation>
 <translation id="725133483556299729">ईमेल चुनें</translation>
+<translation id="7255187042098209569">गुलाबी और बैंगनी</translation>
+<translation id="7271000785316964275">क्लासिसिस्ट</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
+<translation id="7271932918253517778">जिस शॉर्टकट में सबसे ऊपर वाली पंक्ति के बटन शामिल हैं उसमें <ph name="META_KEY" /> बटन शामिल करना ज़रूरी है.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">फ़ील द ब्रीज़</translation>
 <translation id="7287310195820267359">वॉलपेपर कलेक्शन</translation>
 <translation id="7297226631177386107">फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>
 <translation id="7297726121602187087">गहरा हरा</translation>
+<translation id="7301262279595293068">कृपया ऐप्लिकेशन के अपडेट होने तक इंतज़ार करें</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook के सहायता फ़ोरम पर विशेषज्ञों से सवाल पूछें</translation>
 <translation id="7311368985037279727">कीबोर्ड का रंग</translation>
 <translation id="7317831949569936035">स्कूल में नाम दर्ज कराएं</translation>
 <translation id="7319430975418800333">ए3</translation>
+<translation id="7321055305895875150">हरा और टील</translation>
+<translation id="7328475450575141167">बर्ड ऑफ़ पैराडाइस</translation>
+<translation id="7331297744262591636">आपकी उम्र कम से कम 18 साल होनी चाहिए. साथ ही, आपको इस बात के लिए सहमति जतानी होगी कि एआई वॉलपेपर के आपके इस्तेमाल पर, <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google की सेवा की शर्तें<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> और <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />जनरेटिव एआई की सेवा की अन्य शर्तें<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> लागू होंगी.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          एआई की मदद से, सिर्फ़ निजी और गैर-व्यावसायिक इस्तेमाल के लिए वॉलपेपर बनाए जा सकते हैं. जब आपको वॉलपेपर के लिए मदद मिलती है, तब Google के एआई से जुड़े सभी सर्वर को टेक्स्ट भेजा जाता है, ताकि वॉलपेपर के लिए सुझाव जनरेट किए जा सकें. इस पर <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google की निजता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> लागू होती है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search में नतीजा देखने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> में से <ph name="LIST_POSITION" /> खोज का नतीजा: <ph name="SEARCH_RESULT_TEXT" />. शॉर्टकट पर जाने के लिए, Enter दबाएं.</translation>
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
 <translation id="73631062356239394">गड़बड़ी की जानकारी का डेटा शेयर करें</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7384004438856720753">पैलेस</translation>
 <translation id="7388959671917308825">पहले से मौजूद टचपैड</translation>
 <translation id="7397270852490618635">हल्के रंग वाली थीम बंद करें</translation>
+<translation id="7401543881546089382">शॉर्टकट मिटाएं</translation>
 <translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{आपके एडमिन ने आपके हर बार लॉग इन करने पर <ph name="APP_NAME_1" /> को अपने-आप चालू होने के लिए सेट किया है.}=2{आपके एडमिन ने आपके हर बार लॉग इन करने पर <ph name="APP_NAME_1" /> और <ph name="APP_NAME_2" /> को अपने-आप चालू होने के लिए सेट किया है.}=3{आपके एडमिन ने आपके हर बार लॉग इन करने पर <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, और <ph name="APP_NAME_3" /> को अपने-आप चालू होने के लिए सेट किया है.}one{आपके एडमिन ने आपके हर बार लॉग इन करने पर <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, और # अन्य ऐप्लिकेशन को अपने-आप चालू होने के लिए सेट किया है.}other{आपके एडमिन ने आपके हर बार लॉग इन करने पर <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, और # अन्य ऐप्लिकेशन को अपने-आप चालू होने के लिए सेट किया है.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">इस एपीएन को न तो बंद किया जा सकता है और न ही हटाया जा सकता है. पक्का करें कि जिन <ph name="ATTACH" /> एपीएन को चालू किया गया था उन्हें बंद कर दिया गया है या हटा दिया गया है.</translation>
 <translation id="7458970041932198923">अवतार देखने और उन्हें सेट करने के लिए, किसी नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
@@ -829,7 +990,9 @@
 <translation id="7502658306369382406">IPv6 पता</translation>
 <translation id="7513770521371759388">सबसे नीचे</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">बनाएं</translation>
 <translation id="7528507600602050979">सहायता कॉन्टेंट उपलब्ध नहीं है</translation>
+<translation id="753556296624075801">Google की ओर से</translation>
 <translation id="7535791657097741517">हल्के रंग वाली थीम चालू करें</translation>
 <translation id="7550715992156305117">डाइग्नोस्टिक्स रूटीन</translation>
 <translation id="7551123448725492271">डिवाइस एक ऑडियो डिवाइस है.</translation>
@@ -837,6 +1000,7 @@
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन मैनेज करता है</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">यूएसबी टचस्क्रीन</translation>
+<translation id="757747079855995705">पत्थर</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाकी हैं</translation>
 <translation id="7613724632293948900">माउस या ऐरो बटन की मदद से जगह बदलें.</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
@@ -846,19 +1010,23 @@
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="7656388927906093505">डिवाइस एक माउस है.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">अवतार बदलें</translation>
+<translation id="7673177760638264939">गार्डन रोज़</translation>
 <translation id="7683228889864052081">कीबोर्ड की रोशनी का रंग</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">कीबोर्ड की रोशनी</translation>
+<translation id="7730077286107534951">खाते और सिस्टम की कुछ जानकारी Google को भेजी जा सकती है. हम इस जानकारी का इस्तेमाल, तकनीकी समस्याएं हल करने और अपनी सेवाओं को बेहतर बनाने के लिए करते हैं. ऐसा Google की <ph name="BEGIN_LINK2" />निजता नीति<ph name="END_LINK2" /> और <ph name="BEGIN_LINK3" />सेवा की शर्तों<ph name="END_LINK3" /> के मुताबिक किया जाता है. कॉन्टेंट में बदलावों का अनुरोध करने के लिए, <ph name="BEGIN_LINK1" />कानूनी सहायता<ph name="END_LINK1" /> पेज पर जाएं.</translation>
 <translation id="773153675489693198">साइकल काउंट</translation>
+<translation id="7746357909584236306">बदलाव किया जा सकता है</translation>
 <translation id="7747039790905080783">पहले से शेयर की गई कुंजी</translation>
+<translation id="7752963721013053477">डॉन टू डार्क मोड - खास</translation>
 <translation id="7762130827864645708">आपने अपना पासवर्ड बदल लिया है. कृपया अपना नया पासवर्ड इस्तेमाल करना शुरू करें.</translation>
 <translation id="7763470514545477072">डोमेन सफ़िक्स से मिलते-जुलते</translation>
 <translation id="7769672763586021400">मॉडल आईडी</translation>
-<translation id="7770834998503326261">आपने जो चुना है उससे मिलती-जुलती ज़्यादा जानकारी</translation>
 <translation id="7778717409420828014">हमारी टीम आपकी शिकायत, राय या सुझाव की समीक्षा करेगी. इससे, हमें Chromebook इस्तेमाल करने के अनुभव को बेहतर बनाने में मदद मिलती है. फ़िलहाल, हमारे पास बहुत सारी रिपोर्ट आ रही हैं. इसलिए, हम जवाब नहीं दे पाएंगे.</translation>
 <translation id="7784116172884276937">कोई भी डीएनएस सर्वर सेट अप नहीं है</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
@@ -866,14 +1034,21 @@
 <translation id="7799817062559422778">हल्के रंग वाला मोड</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7805768142964895445">स्थिति</translation>
+<translation id="7813073042185856802">पहाड़</translation>
+<translation id="7819831665603418705">किसी टेंप्लेट का इस्तेमाल करें</translation>
 <translation id="7819857487979277519">PSK (WPA या RSN)</translation>
+<translation id="7824219488248240180">पोस्ट-इंप्रेशनिस्ट</translation>
 <translation id="7841134249932030522">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
+<translation id="7849737607196682401">लेस</translation>
+<translation id="7850847810298646851">यह वॉलपेपर Google के एआई की मदद से बनाया गया है</translation>
+<translation id="785170686607360576">टूलिप</translation>
 <translation id="7856267634822906833">टचस्क्रीन ब्लूटूथ</translation>
 <translation id="7869143217755017858">गहरे रंग वाला मोड बंद करें</translation>
 <translation id="7881066108824108340">डीएनएस</translation>
 <translation id="7882358943899516840">कंपनी का प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक कुंजी</translation>
+<translation id="7903695460270716054">चुनिंदा आर्टवर्क और इमेज चुनें</translation>
 <translation id="7915220255123750251">नेटवर्क एपीएन सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं.</translation>
 <translation id="7936303884198020182">कोई भी नाम सर्वर नहीं मिला</translation>
 <translation id="7942349550061667556">लाल</translation>
@@ -885,8 +1060,10 @@
 <translation id="7971535376154084247">सामान्य कंट्रोल</translation>
 <translation id="7977800524392185497">किसी <ph name="NETWORK_NAME" /> नेटवर्क से जुड़ने के लिए, सेटिंग पर जाएं</translation>
 <translation id="7978412674231730200">निजी कुंजी</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" अपने-आप चालू हो गया था}one{# ऐप्लिकेशन अपने-आप चालू हो गया था}other{# ऐप्लिकेशन अपने-आप चालू हो गए थे}}</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
+<translation id="8017679124341497925">शॉर्टकट में बदलाव किया गया</translation>
 <translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">अपने-आप रंग तय करने वाला मोड चालू करें</translation>
@@ -895,6 +1072,7 @@
 <translation id="8067126283828232460">एपीएन कनेक्ट है.</translation>
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
 <translation id="8076492880354921740">टैब</translation>
+<translation id="8079860070590459552">फूलों के खेत</translation>
 <translation id="8082366717211101304">Android ऐप्लिकेशन से डीएनएस की समस्या ठीक नहीं की जा सकती</translation>
 <translation id="8082644724189923105">कीबोर्ड ज़ोन</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
@@ -906,14 +1084,18 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनें</translation>
 <translation id="8151185429379586178">डेवलपर टूल</translation>
+<translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">अटैच करें</translation>
+<translation id="8183975772394450380">समुद्र तट</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8226628635270268143">अपनी पसंदीदा फ़ोटो और एल्बम चुनें</translation>
 <translation id="8227119283605456246">फ़ाइल अटैच करें</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
 <translation id="8246209727385807362">अज्ञात वाहक</translation>
+<translation id="8257572018929862473">हाज़िर जवाब की सुविधा की सेटिंग खोलें</translation>
+<translation id="8261506727792406068">मिटाएं</translation>
+<translation id="8262870577632766028">1 घंटा</translation>
 <translation id="827422111966801947">गहरा नीला</translation>
 <translation id="8286154143153872371">वॉलपेपर देखने के लिए, नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="8291967909914612644">'होम' पर काम करने वाली सेवाएं देने वाला देश</translation>
@@ -921,9 +1103,14 @@
 <translation id="8302368968391049045">एचटीटीपीएस फ़ायरवॉल</translation>
 <translation id="8312330582793120272">मीडिया चलाएं</translation>
 <translation id="8318753676953949627">कोई इमेज नहीं</translation>
+<translation id="8320910311642849813">जंगल</translation>
 <translation id="8329018942023753850">कैलकुलेटर ऐप्लिकेशन</translation>
 <translation id="8336739000755212683">डिवाइस खाते की इमेज बदलें</translation>
+<translation id="8339024191194156249">अपने-आप लॉन्च होने के बारे में ज़्यादा जानें</translation>
+<translation id="8347126826554447157"><ph name="SHORCTCUT1" /> या <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
+<translation id="8349826889576450703">लॉन्चर</translation>
+<translation id="8351482263741655895"><ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से गुणा करें</translation>
 <translation id="8351855506390808906">कीमैपिंग टच पॉइंट</translation>
 <translation id="8352772353338965963">एक से ज़्यादा साइन-इन के लिए कोई खाता जोड़ें. सभी साइन इन किए गए खातों को पासवर्ड के बिना एक्सेस किया जा सकता है, इसलिए इस सुविधा का इस्तेमाल सिर्फ़ विश्वसनीय खातों के साथ किया जाना चाहिए.</translation>
 <translation id="8364946094152050673">ये नाम सर्वर खाली हैं</translation>
@@ -932,6 +1119,7 @@
 <translation id="8380114448424469341">डॉक विंडो को <ph name="DIRECTION" /> ओर स्क्रीन के आधे हिस्से पर रखें</translation>
 <translation id="8395584934117017006">इस <ph name="DEVICE_TYPE" /> को एंटरप्राइज़ मैनेज करता है</translation>
 <translation id="8398927464629426868">वह दर जिस पर डिवाइस अभी चार्ज या डिस्चार्ज हो रहा है</translation>
+<translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> स्टाइल में बनी <ph name="ART_FEATURE" /> की पेंटिंग</translation>
 <translation id="8410244574650205435">एपीएन का पता अपने-आप लगाया जाता है</translation>
 <translation id="8420955526972171689">गड़बड़ी की जानकारी देने वाले टेस्ट करके, हार्डवेयर से जुड़ी समस्याओं को हल करता है</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -943,9 +1131,11 @@
 <translation id="8475690821716466388">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP PSK से सुरक्षित है</translation>
 <translation id="8476242415522716722">कीबोर्ड की रोशनी कम करें</translation>
 <translation id="8476942730579767658">विंडो और डेस्क</translation>
+<translation id="8477536061607044749">ग्राफ़िक डिज़ाइन</translation>
 <translation id="8477551185774834963">डीएनएस, इंतज़ार की समयसीमा से थोड़ा ऊपर है</translation>
 <translation id="8483248364096924578">आईपी पता</translation>
 <translation id="8491311378305535241">Android ऐप्लिकेशन से, फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>
+<translation id="8495070016475833911">फ़ेल्ट</translation>
 <translation id="8498220429738806196">ट्रैफ़िक काउंटर</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8503836310948963452">बस कुछ मिनट और...</translation>
@@ -974,8 +1164,10 @@
 <translation id="8726019395068607495">बंद हो गया - दरवाज़ा खुला है</translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8747900814994928677">बदलाव की पुष्टि करें</translation>
+<translation id="8755946156089753497">टावर</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos की एल्बम</translation>
+<translation id="8775713578693478175">मॉडम एपीएन</translation>
 <translation id="877985182522063539">ए4</translation>
 <translation id="879568662008399081">इस नेटवर्क में कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="8798099450830957504">डिफ़ॉल्ट</translation>
@@ -986,6 +1178,7 @@
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8834539327799336565">फ़िलहाल, कनेक्ट किए गए डिवाइस</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
+<translation id="8849799913685544685">लाइटहाउस</translation>
 <translation id="8851859208664803097">प्रिंट नहीं हो रहा है. प्रिंटर ऐक्सेस नहीं किया जा सकता</translation>
 <translation id="8855781559874488009">फ़ायरवॉल के ज़रिए, एचटीटीपी वेबसाइटों से नहीं जोड़ा जा सकता</translation>
 <translation id="885701979325669005">मेमोरी</translation>
@@ -996,6 +1189,7 @@
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>
+<translation id="8892443466059986410">शॉर्टकट में बदलाव करना रद्द करें</translation>
 <translation id="8898840733695078011">सिग्‍नल शक्ति</translation>
 <translation id="8909114361904403025">अप ऐरो</translation>
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>
@@ -1014,18 +1208,21 @@
 <translation id="8970109610781093811">फिर से चलाएं</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्कैन करें}=1{{NUMBER_OF_PAGES} स्कैन करें}one{{NUMBER_OF_PAGES} स्कैन करें}other{{NUMBER_OF_PAGES} स्कैन करें}}</translation>
+<translation id="89945434909472341">गांव</translation>
 <translation id="8997710128084572139">डिवाइस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ऐप्लिकेशन अपने-आप चालू हो गया था}one{# ऐप्लिकेशन अपने-आप चालू हो गया था}other{# ऐप्लिकेशन अपने-आप चालू हो गए थे}}</translation>
 <translation id="8998289560386111590">यह मोड आपके डिवाइस पर उपलब्ध नहीं है</translation>
 <translation id="9003704114456258138">आवृत्ति</translation>
+<translation id="901834265349196618">ईमेल</translation>
 <translation id="9024331582947483881">फ़ुल स्क्रीन</translation>
 <translation id="9025198690966128418">निजी डिवाइस के तौर पर इस्तेमाल करें</translation>
 <translation id="902638246363752736">कीबोर्ड सेटिंग</translation>
 <translation id="9028832514430399253">स्क्रीन सेवर के विकल्प चुनने के लिए, टॉगल करने की सुविधा चालू करें</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">'एपीएन सेव करें' बटन अब चालू है</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">डीएनएस रिज़ॉल्यूशन के इंतज़ार का समय ज़्यादा है</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
+<translation id="9068296451330120661">वॉटरकलर</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9082718469794970195">इस वीडियो का इस्तेमाल करें</translation>
@@ -1038,11 +1235,9 @@
 <translation id="9111102763498581341">अनलॉक करें</translation>
 <translation id="9122602430962285795">फिर से कनेक्ट करने के लिए, सेटिंग पर जाएं</translation>
 <translation id="9126720536733509015">सारे पेज सेव करके एक PDF बना लें</translation>
-<translation id="9133104754938025929">बैटरी बचाने के लिए, स्क्रीन सेवर की सुविधा सिर्फ़ डिवाइस को चार्ज करते समय काम करती है.</translation>
 <translation id="9133772297793293778">अपने कीबोर्ड पर 1-4 मॉडिफ़ायर और कोई दूसरा बटन दबाएं. बदलाव मोड से बाहर निकलने के लिए, alt + esc दबाएं.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">बाईं ओर का Shift बटन</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> मिनट के लिए</translation>
 <translation id="9149391708638971077">मेमोरी टेस्ट चलाएं</translation>
 <translation id="9161276708550942948">स्पेस</translation>
 <translation id="9173638680043580060">एक मिनट से कम बचा है</translation>
@@ -1057,8 +1252,13 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="952992212772159698">सक्रिय नहीं किया गया</translation>
+<translation id="95718197892796296">क्ले</translation>
 <translation id="960719561871045870">ऑपरेटर कोड</translation>
+<translation id="965918541715156800">पीला और टील</translation>
+<translation id="966787709310836684">मेन्यू</translation>
 <translation id="979450713603643090">हल्का गुलाबी</translation>
 <translation id="982713511914535780">डिस्चार्ज टेस्ट चलाएं</translation>
+<translation id="98515147261107953">लैंडस्केप</translation>
 <translation id="987264212798334818">सामान्य</translation>
+<translation id="995062385528875723">उच्चारण चिह्न वाले अक्षरों, गैर-लैटिन अक्षरों या प्रतीकों का इस्तेमाल नहीं किया जा सकता</translation>
 </translationbundle>

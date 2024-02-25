@@ -23,33 +23,33 @@ Running: testSetNonFiniteNumbers
 Running: testNegativeZero
 
 Running: testReleaseObjectIsCalled
-runtime-setPropertyValue.js:17 ===== Initial =====
-runtime-setPropertyValue.js:18 {"foo":1}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:17 ===== Set primitive =====
-runtime-setPropertyValue.js:18 {"foo":2}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:17 ===== Set handle =====
-runtime-setPropertyValue.js:18 {"foo":{"bar":2}}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:17 ===== Set undefined =====
-runtime-setPropertyValue.js:18 {}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:17 ===== Set zero =====
-runtime-setPropertyValue.js:18 {"foo":0}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:17 ===== Set null =====
-runtime-setPropertyValue.js:18 {"foo":null}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:17 ===== Set empty string =====
-runtime-setPropertyValue.js:18 {"foo":""}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:17 ===== Set exception =====
-runtime-setPropertyValue.js:18 {"foo":""}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:17 ===== Set non-finite numbers =====
-runtime-setPropertyValue.js:18 {"foo":"NaN","foo1":"Infinity","foo2":"-Infinity"}
-runtime-setPropertyValue.js:19 
-runtime-setPropertyValue.js:31 ===== Checking negative zero =====
-runtime-setPropertyValue.js:32 1/-0 = -Infinity
+runtime-setPropertyValue.js:19 ===== Initial =====
+runtime-setPropertyValue.js:20 {"foo":1}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:19 ===== Set primitive =====
+runtime-setPropertyValue.js:20 {"foo":2}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:19 ===== Set handle =====
+runtime-setPropertyValue.js:20 {"foo":{"bar":2}}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:19 ===== Set undefined =====
+runtime-setPropertyValue.js:20 {}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:19 ===== Set zero =====
+runtime-setPropertyValue.js:20 {"foo":0}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:19 ===== Set null =====
+runtime-setPropertyValue.js:20 {"foo":null}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:19 ===== Set empty string =====
+runtime-setPropertyValue.js:20 {"foo":""}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:19 ===== Set exception =====
+runtime-setPropertyValue.js:20 {"foo":""}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:19 ===== Set non-finite numbers =====
+runtime-setPropertyValue.js:20 {"foo":"NaN","foo1":"Infinity","foo2":"-Infinity"}
+runtime-setPropertyValue.js:21 
+runtime-setPropertyValue.js:33 ===== Checking negative zero =====
+runtime-setPropertyValue.js:34 1/-0 = -Infinity
 

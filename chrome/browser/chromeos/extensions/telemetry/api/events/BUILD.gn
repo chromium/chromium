@@ -175,6 +175,7 @@ source_set("unit_tests") {
     ":event_manager",
     ":event_router",
     ":test_support",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common:common",
     "//chrome/browser/ui",
     "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",

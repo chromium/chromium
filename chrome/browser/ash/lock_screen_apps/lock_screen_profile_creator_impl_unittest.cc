@@ -32,7 +32,9 @@
 #include "base/time/time.h"
 #include "base/traits_bag.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -185,10 +187,10 @@ class PendingProfileCreation : public Profile::Delegate {
   }
 
   base::FilePath path_;
-  raw_ptr<Profile::Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Profile::Delegate> delegate_ = nullptr;
   base::OnceClosure wait_quit_closure_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   bool success_ = false;
   bool is_new_profile_ = false;
 };
@@ -255,6 +257,9 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     CreatePrimaryProfile();
 
     InitExtensionSystem(primary_profile_);
+
+    apps::WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(primary_profile_));
 
     // Needed by note taking helper.
     arc_session_manager_ = arc::CreateTestArcSessionManager(
@@ -384,11 +389,9 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
-  raw_ptr<UnittestProfileManager, DanglingUntriaged | ExperimentalAsh>
-      profile_manager_;
+  raw_ptr<UnittestProfileManager, DanglingUntriaged> profile_manager_;
 
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      primary_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> primary_profile_ = nullptr;
 
   base::SimpleTestTickClock tick_clock_;
 

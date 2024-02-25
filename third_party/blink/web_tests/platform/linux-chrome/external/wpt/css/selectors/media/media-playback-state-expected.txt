@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 2 , harness_status.message = 
+[FAIL] Test :pseudo-class syntax is supported without throwing a SyntaxError
+  assert_unreached: :seeking is not supported Reached unreachable code
+[TIMEOUT] Test :playing pseudo-classes
+  Test timed out
+[NOTRUN] Test :paused pseudo-classes
+[NOTRUN] Test :seeking pseudo-class
+Harness: the test ran to completion.

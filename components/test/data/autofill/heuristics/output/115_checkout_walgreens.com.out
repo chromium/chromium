@@ -6,5 +6,5 @@ ADDRESS_HOME_STATE | addstate | State: |  | addfirstName_1
 ADDRESS_HOME_ZIP | addzipcode | ZIP Code: |  | addfirstName_1
 UNKNOWN_TYPE | addzipcodeExt | Optional |  | addfirstName_1
 EMAIL_ADDRESS | addemail | Email address: |  | addfirstName_1
-PHONE_HOME_WHOLE_NUMBER | addphone | Phone number: |  | addfirstName_1
+PHONE_HOME_CITY_AND_NUMBER | addphone | Phone number: |  | addfirstName_1
 UNKNOWN_TYPE | signupfordeals | Get Walgreens online and in-store deals. | option2 | addfirstName_1

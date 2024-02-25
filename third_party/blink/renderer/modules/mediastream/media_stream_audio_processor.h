@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_AUDIO_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/audio_processor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/aec_dump_agent_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
@@ -119,7 +119,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   void OnPlayoutDataSourceChanged() override;
   void OnRenderThreadChanged() override;
 
-  absl::optional<webrtc::AudioProcessing::Config>
+  std::optional<webrtc::AudioProcessing::Config>
   GetAudioProcessingModuleConfigForTesting() const {
     return audio_processor_->GetAudioProcessingModuleConfigForTesting();
   }

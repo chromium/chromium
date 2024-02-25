@@ -5,4 +5,5 @@ Version: 2.0.0
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/qr_code-2.0.0/LICENSE-APACHE.txt
 Revision: 341f62be3a91ecb05e6e0870e61f763308eaf2ff

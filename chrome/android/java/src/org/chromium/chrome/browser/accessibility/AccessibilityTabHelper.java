@@ -11,9 +11,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- *  Helper class that wraps accessibility state information for {Tab}.
- */
+/** Helper class that wraps accessibility state information for {Tab}. */
 public class AccessibilityTabHelper extends EmptyTabObserver implements UserData {
     public static final Class<AccessibilityTabHelper> USER_DATA_KEY = AccessibilityTabHelper.class;
 

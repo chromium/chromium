@@ -61,7 +61,7 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
   if (!target)
     return;
 
-  AXObject* ax_target = object->AXObjectCache().GetOrCreate(target);
+  AXObject* ax_target = object->AXObjectCache().Get(target);
   if (!ax_target)
     return;
   if (attribute == ax::mojom::blink::IntAttribute::kActivedescendantId &&
@@ -84,15 +84,14 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
   if (!element)
     return;
   HeapVector<Member<Element>>* attr_associated_elements =
-      element->GetElementArrayAttribute(qualified_name);
+      element->GetAttrAssociatedElements(qualified_name);
   if (!attr_associated_elements || attr_associated_elements->empty()) {
     return;
   }
   std::vector<int32_t> ax_ids;
 
   for (const auto& associated_element : *attr_associated_elements) {
-    AXObject* ax_element =
-        object->AXObjectCache().GetOrCreate(associated_element);
+    AXObject* ax_element = object->AXObjectCache().Get(associated_element);
     if (!ax_element)
       continue;
     if (!ax_element->AccessibilityIsIgnored())
@@ -215,7 +214,7 @@ void AXNodeDataAOMPropertyClient::AddStringProperty(AOMStringProperty property,
     default:
       return;
   }
-  node_data_.AddStringAttribute(attribute, value.Utf8());
+  node_data_->AddStringAttribute(attribute, value.Utf8());
 }
 
 void AXNodeDataAOMPropertyClient::AddBooleanProperty(
@@ -229,7 +228,7 @@ void AXNodeDataAOMPropertyClient::AddBooleanProperty(
     default:
       return;
   }
-  node_data_.AddBoolAttribute(attribute, value);
+  node_data_->AddBoolAttribute(attribute, value);
 }
 
 void AXNodeDataAOMPropertyClient::AddFloatProperty(AOMFloatProperty property,
@@ -248,11 +247,11 @@ void AXNodeDataAOMPropertyClient::AddRelationProperty(
   }
 
   Element* target = value.element();
-  AXObject* ax_target = ax_object_cache_->GetOrCreate(target);
+  AXObject* ax_target = ax_object_cache_->Get(target);
   if (!ax_target)
     return;
 
-  node_data_.AddIntAttribute(attribute, ax_target->AXObjectID());
+  node_data_->AddIntAttribute(attribute, ax_target->AXObjectID());
 }
 
 void AXNodeDataAOMPropertyClient::AddRelationListProperty(
@@ -281,13 +280,13 @@ void AXNodeDataAOMPropertyClient::AddRelationListProperty(
     AccessibleNode* accessible_node = relations.item(i);
     if (accessible_node) {
       Element* element = accessible_node->element();
-      AXObject* ax_element = ax_object_cache_->GetOrCreate(element);
+      AXObject* ax_element = ax_object_cache_->Get(element);
       if (ax_element && !ax_element->AccessibilityIsIgnored())
         ax_ids.push_back(ax_element->AXObjectID());
     }
   }
 
-  node_data_.AddIntListAttribute(attribute, ax_ids);
+  node_data_->AddIntListAttribute(attribute, ax_ids);
 }
 
 }  // namespace blink

@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 group("system") {
   testonly = true
@@ -53,9 +53,9 @@ android_library("system_impl_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//mojo/public/java:system_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -71,8 +71,8 @@ android_library("test_support_java") {
   srcjar_deps = [ ":test_support_jni" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
   ]
 }
@@ -91,8 +91,10 @@ source_set("test_support") {
 
 generate_jni("mojo_javatests_jni") {
   testonly = true
-  sources =
-      [ "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java" ]
+  sources = [
+    "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTestUtil.java",
+    "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java",
+  ]
 }
 
 android_library("mojo_javatests") {
@@ -104,12 +106,13 @@ android_library("mojo_javatests") {
     "javatests/src/org/chromium/mojo/bindings/BindingsTest.java",
     "javatests/src/org/chromium/mojo/bindings/BindingsTestUtils.java",
     "javatests/src/org/chromium/mojo/bindings/BindingsVersioningTest.java",
-    "javatests/src/org/chromium/mojo/bindings/CallbacksTest.java",
     "javatests/src/org/chromium/mojo/bindings/ConnectorTest.java",
     "javatests/src/org/chromium/mojo/bindings/ExecutorFactoryTest.java",
     "javatests/src/org/chromium/mojo/bindings/InterfacesTest.java",
     "javatests/src/org/chromium/mojo/bindings/MessageHeaderTest.java",
     "javatests/src/org/chromium/mojo/bindings/NameGeneratorTest.java",
+    "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTest.java",
+    "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTestUtil.java",
     "javatests/src/org/chromium/mojo/bindings/ReadAndDispatchMessageTest.java",
     "javatests/src/org/chromium/mojo/bindings/RouterTest.java",
     "javatests/src/org/chromium/mojo/bindings/SerializationTest.java",
@@ -126,13 +129,13 @@ android_library("mojo_javatests") {
     ":system_impl_java",
     ":test_support_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//mojo/public/interfaces/bindings/tests:test_interfaces_java",
     "//mojo/public/interfaces/bindings/tests:test_mojom_import2_java",
     "//mojo/public/interfaces/bindings/tests:test_mojom_import_java",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
   ]
 
@@ -144,6 +147,7 @@ shared_library_with_jni("mojo_java_unittests") {
 
   sources = [
     "javatests/init_library.cc",
+    "javatests/nullable_value_types_test_util.cc",
     "javatests/validation_test_util.cc",
   ]
 
@@ -155,7 +159,9 @@ shared_library_with_jni("mojo_java_unittests") {
     "//base/test:test_support",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
+    "//mojo/public/cpp/bindings/tests:test_types",
     "//mojo/public/cpp/test_support:test_utils",
+    "//mojo/public/interfaces/bindings/tests:test_interfaces",
   ]
   defines = [ "UNIT_TEST" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

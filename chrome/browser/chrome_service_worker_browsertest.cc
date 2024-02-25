@@ -5,6 +5,8 @@
 // This file tests that Service Workers (a Content feature) work in the Chromium
 // embedder.
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -63,7 +65,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -1134,7 +1135,7 @@ class ChromeWebUIServiceWorkerTest : public ChromeServiceWorkerTest {
     // Try to register the service worker.
     const GURL service_worker_url = base_url.Resolve("sw.js");
     base::RunLoop run_loop;
-    absl::optional<blink::ServiceWorkerStatusCode> result;
+    std::optional<blink::ServiceWorkerStatusCode> result;
     blink::mojom::ServiceWorkerRegistrationOptions options(
         base_url, blink::mojom::ScriptType::kClassic,
         blink::mojom::ServiceWorkerUpdateViaCache::kNone);
@@ -1426,7 +1427,7 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // The request that hit the "test" endpoint.
-  absl::optional<net::test_server::HttpRequest> received_request_;
+  std::optional<net::test_server::HttpRequest> received_request_;
 };
 
 // Tests navigation preload during a navigation in the top-level frame

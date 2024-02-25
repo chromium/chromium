@@ -62,8 +62,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // Clean up prior to deletion.
   void Shutdown();
 
-  ShelfBackgroundType GetBackgroundType() const;
-
   const Shelf* shelf() const { return shelf_; }
   void RegisterHotseatWidget(HotseatWidget* hotseat_widget);
   ShelfLayoutManager* shelf_layout_manager() { return shelf_layout_manager_; }
@@ -104,8 +102,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // is moved to its own widget.
   LoginShelfView* GetLoginShelfView();
 
-  void set_default_last_focusable_child(bool default_last_focusable_child);
-
   // views::Widget:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -117,9 +113,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   gfx::Rect GetTargetBounds() const override;
   void UpdateLayout(bool animate) override;
   void UpdateTargetBoundsForGesture(int shelf_position) override;
-
-  // Called when shelf layout manager detects a locale change.
-  void HandleLocaleChange();
 
   // TODO(manucornet): Remove this method when all this widget's layout
   // logic is part of this class.
@@ -141,9 +134,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   void OnUserSessionAdded(const AccountId& account_id) override;
 
   SkColor GetShelfBackgroundColor() const;
-  bool GetHitTestRects(aura::Window* target,
-                       gfx::Rect* hit_test_rect_mouse,
-                       gfx::Rect* hit_test_rect_touch);
 
   // Force to show hotseat in tablet mode. When the returned closure runner is
   // called or goes out of scope, it removes the caller as an instance to force
@@ -206,7 +196,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // Callback returned by ForceShowHotseatInTabletMode().
   void ResetForceShowHotseat();
 
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
   gfx::Rect target_bounds_;
   ShelfBackgroundAnimator background_animator_;
 
@@ -214,14 +204,14 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   std::unique_ptr<ShelfLayoutManager> shelf_layout_manager_owned_;
 
   // Owned by the shelf container's window.
-  raw_ptr<ShelfLayoutManager, ExperimentalAsh> shelf_layout_manager_;
+  raw_ptr<ShelfLayoutManager> shelf_layout_manager_;
 
   // Sets shelf opacity to 0 after all animations have completed.
   std::unique_ptr<ui::ImplicitAnimationObserver> hide_animation_observer_;
 
   // |delegate_view_| is the contents view of this widget and is cleaned up
   // during CloseChildWindows of the associated RootWindowController.
-  raw_ptr<DelegateView, DanglingUntriaged | ExperimentalAsh> delegate_view_;
+  raw_ptr<DelegateView, DanglingUntriaged> delegate_view_;
 
   // Animates the shelf background to/from the hotseat background during hotseat
   // transitions.
@@ -229,7 +219,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
 
   // View containing the shelf items for Login/Lock/OOBE/Add User screens.
   // Owned by the views hierarchy.
-  raw_ptr<LoginShelfView, ExperimentalAsh> login_shelf_view_;
+  raw_ptr<LoginShelfView> login_shelf_view_;
 
   ScopedSessionObserver scoped_session_observer_;
 

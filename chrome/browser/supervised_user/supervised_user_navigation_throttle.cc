@@ -17,8 +17,10 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -29,11 +31,8 @@ SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
-
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  if (!supervised_user_service ||
-      !supervised_user_service->IsURLFilteringEnabled()) {
+  CHECK(profile);
+  if (!supervised_user::IsUrlFilteringEnabled(*profile->GetPrefs())) {
     return nullptr;
   }
 
@@ -51,14 +50,14 @@ SupervisedUserNavigationThrottle::SupervisedUserNavigationThrottle(
                   navigation_handle->GetWebContents()->GetBrowserContext()))
               ->GetURLFilter()),
       deferred_(false),
-      behavior_(supervised_user::SupervisedUserURLFilter::INVALID) {}
+      behavior_(supervised_user::FilteringBehavior::kInvalid) {}
 
 SupervisedUserNavigationThrottle::~SupervisedUserNavigationThrottle() {}
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::CheckURL() {
   deferred_ = false;
-  DCHECK_EQ(supervised_user::SupervisedUserURLFilter::INVALID, behavior_);
+  DCHECK_EQ(supervised_user::FilteringBehavior::kInvalid, behavior_);
 
   // We do not yet support prerendering for supervised users.
   if (navigation_handle()->IsInPrerenderedMainFrame()) {
@@ -87,12 +86,12 @@ SupervisedUserNavigationThrottle::CheckURL() {
   }
 
   DCHECK_EQ(got_result,
-            behavior_ != supervised_user::SupervisedUserURLFilter::INVALID);
+            behavior_ != supervised_user::FilteringBehavior::kInvalid);
   // If we got a "not blocked" result synchronously, don't defer.
-  deferred_ = !got_result ||
-              (behavior_ == supervised_user::SupervisedUserURLFilter::BLOCK);
+  deferred_ =
+      !got_result || (behavior_ == supervised_user::FilteringBehavior::kBlock);
   if (got_result) {
-    behavior_ = supervised_user::SupervisedUserURLFilter::INVALID;
+    behavior_ = supervised_user::FilteringBehavior::kInvalid;
   }
   if (deferred_) {
     return NavigationThrottle::DEFER;
@@ -144,10 +143,10 @@ const char* SupervisedUserNavigationThrottle::GetNameForLogging() {
 
 void SupervisedUserNavigationThrottle::OnCheckDone(
     const GURL& url,
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
-  DCHECK_EQ(supervised_user::SupervisedUserURLFilter::INVALID, behavior_);
+  DCHECK_EQ(supervised_user::FilteringBehavior::kInvalid, behavior_);
 
   // If we got a result synchronously, pass it back to ShowInterstitialIfNeeded.
   if (!deferred_) {
@@ -171,7 +170,7 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
     }
   }
 
-  if (behavior == supervised_user::SupervisedUserURLFilter::BLOCK) {
+  if (behavior == supervised_user::FilteringBehavior::kBlock) {
     ShowInterstitial(url, reason);
   } else if (deferred_) {
     Resume();

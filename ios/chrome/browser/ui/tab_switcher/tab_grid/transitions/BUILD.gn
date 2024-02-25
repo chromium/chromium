@@ -17,15 +17,18 @@ source_set("transitions") {
     "tab_grid_transition_direction.h",
     "tab_grid_transition_handler.h",
     "tab_grid_transition_handler.mm",
+    "tab_grid_transition_item.h",
+    "tab_grid_transition_item.mm",
+    "tab_grid_transition_layout.h",
+    "tab_grid_transition_layout.mm",
+    "tab_grid_transition_layout_providing.h",
   ]
-
   deps = [
     "//base",
-    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations",
-    "//ios/chrome/common/ui/util",
   ]
 }

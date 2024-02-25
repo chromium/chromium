@@ -21,7 +21,7 @@ void TracingProcessSetMonitor::SessionAttached(DevToolsSession& session) {
   auto* const host =
       static_cast<DevToolsAgentHostImpl*>(session.GetAgentHost());
   CHECK(host);
-  if (bool inserted = hosts_.insert(host).second) {
+  if (bool inserted = hosts_.insert(host).second; inserted) {
     MaybeAddProcess(host);
   }
 }

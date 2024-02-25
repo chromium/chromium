@@ -436,9 +436,9 @@ struct FuzzTraits<base::File::Error> {
 template <>
 struct FuzzTraits<base::File::Info> {
   static bool Fuzz(base::File::Info* p, Fuzzer* fuzzer) {
-    double last_modified = p->last_modified.ToDoubleT();
-    double last_accessed = p->last_accessed.ToDoubleT();
-    double creation_time = p->creation_time.ToDoubleT();
+    double last_modified = p->last_modified.InSecondsFSinceUnixEpoch();
+    double last_accessed = p->last_accessed.InSecondsFSinceUnixEpoch();
+    double creation_time = p->creation_time.InSecondsFSinceUnixEpoch();
     if (!FuzzParam(&p->size, fuzzer))
       return false;
     if (!FuzzParam(&p->is_directory, fuzzer))
@@ -449,9 +449,9 @@ struct FuzzTraits<base::File::Info> {
       return false;
     if (!FuzzParam(&creation_time, fuzzer))
       return false;
-    p->last_modified = base::Time::FromDoubleT(last_modified);
-    p->last_accessed = base::Time::FromDoubleT(last_accessed);
-    p->creation_time = base::Time::FromDoubleT(creation_time);
+    p->last_modified = base::Time::FromSecondsSinceUnixEpoch(last_modified);
+    p->last_accessed = base::Time::FromSecondsSinceUnixEpoch(last_accessed);
+    p->creation_time = base::Time::FromSecondsSinceUnixEpoch(creation_time);
     return true;
   }
 };
@@ -963,15 +963,6 @@ struct FuzzTraits<gl::GpuPreference> {
 };
 
 template <>
-struct FuzzTraits<gpu::ColorSpace> {
-  static bool Fuzz(gpu::ColorSpace* p, Fuzzer* fuzzer) {
-    int color_space = RandInRange(gpu::ColorSpace::COLOR_SPACE_LAST + 1);
-    *p = static_cast<gpu::ColorSpace>(color_space);
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<gpu::CommandBuffer::State> {
   static bool Fuzz(gpu::CommandBuffer::State* p, Fuzzer* fuzzer) {
     if (!FuzzParam(&p->get_offset, fuzzer))
@@ -1008,8 +999,6 @@ struct FuzzTraits<gpu::ContextCreationAttribs> {
     if (!FuzzParam(&p->gpu_preference, fuzzer))
       return false;
     if (!FuzzParam(&p->context_type, fuzzer))
-      return false;
-    if (!FuzzParam(&p->color_space, fuzzer))
       return false;
     return true;
   }
@@ -1534,12 +1523,12 @@ struct FuzzTraits<url::Origin> {
     if (!FuzzParam(&port, fuzzer))
       return false;
 
-    absl::optional<url::Origin> origin;
+    std::optional<url::Origin> origin;
     if (!opaque) {
       origin = url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
           scheme, host, port);
     } else {
-      absl::optional<base::UnguessableToken> token;
+      std::optional<base::UnguessableToken> token;
       if (auto* nonce = p->GetNonceForSerialization()) {
         token = *nonce;
       } else {

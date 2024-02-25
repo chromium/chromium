@@ -35,7 +35,9 @@ std::string GetDangerTypeMetricSuffix(
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
       return ".Uncommon";
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
@@ -125,28 +127,13 @@ void RecordDownloadOpenedLatency(download::DownloadDangerType danger_type,
       /* sample */ download_opened_time - download_end_time,
       /* min */ base::Seconds(1),
       /* max */ base::Days(1), /* buckets */ 50);
-
-  RecordDownloadOpenedLatencyFileType(download_content, download_opened_time,
-                                      download_end_time);
-}
-
-void RecordDownloadOpenedLatencyFileType(
-    download::DownloadContent download_content,
-    base::Time download_opened_time,
-    base::Time download_end_time) {
-  base::UmaHistogramCustomTimes(
-      "SBClientDownload.SafeDownloadOpenedLatencyByContentType." +
-          download::GetDownloadContentString(download_content),
-      /* sample */ download_opened_time - download_end_time,
-      /* min */ base::Seconds(1),
-      /* max */ base::Days(1), /* buckets */ 50);
 }
 
 void RecordDownloadFileTypeAttributes(
     DownloadFileType::DangerLevel danger_level,
     bool has_user_gesture,
     bool visited_referrer_before,
-    absl::optional<base::Time> last_bypass_time) {
+    std::optional<base::Time> last_bypass_time) {
   if (danger_level != DownloadFileType::ALLOW_ON_USER_GESTURE) {
     return;
   }
@@ -173,11 +160,6 @@ void RecordDownloadFileTypeAttributes(
     base::UmaHistogramEnumeration(
         "SBClientDownload.UserGestureFileType.Attributes",
         UserGestureFileTypeAttributes::HAS_BYPASSED_DOWNLOAD_WARNING);
-    base::UmaHistogramCustomTimes(
-        "SBClientDownload.UserGestureFileType.LastBypassDownloadInterval",
-        /* sample */ base::Time::Now() - last_bypass_time.value(),
-        /* min */ base::Seconds(1),
-        /* max */ base::Days(1), /* buckets */ 50);
   }
 }
 

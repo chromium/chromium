@@ -1,0 +1,47 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "heck"
+  epoch = "0.4"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/kebab.rs",
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/lower_camel.rs",
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/shouty_kebab.rs",
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/shouty_snake.rs",
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/snake.rs",
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/title.rs",
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/train.rs",
+    "//third_party/rust/chromium_crates_io/vendor/heck-0.4.1/src/upper_camel.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "0.4.1"
+  cargo_pkg_authors = "Without Boats <woboats@gmail.com>"
+  cargo_pkg_name = "heck"
+  cargo_pkg_description = "heck is a case conversion library."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+}

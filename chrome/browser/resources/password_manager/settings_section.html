@@ -44,6 +44,11 @@
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
   }
+
+  /* Hide the default icon element.*/
+  cr-link-row[hide-icon]::part(icon) {
+    display: none;
+  }
 </style>
 <h2 class="page-title">$i18n{settings}</h2>
 <div class="card">
@@ -81,14 +86,23 @@
       </pref-toggle-button>
     </template>
   </if>
-  <template is="dom-if" if="[[isEligibleForAccountStorage]]">
     <pref-toggle-button id="accountStorageToggle" class="hr"
+        hidden="[[!isEligibleForAccountStorage]]"
         label="$i18n{accountStorageToggleLabel}"
-        sub-label="[[accountEmail]]"
+        sub-label="[[getToggleSubLabelForAccountStorageOptIn_(accountEmail)]]"
         checked="[[isAccountStoreUser]]"
         change-requires-validation
         on-validate-and-change-pref="changeAccountStorageOptIn_">
     </pref-toggle-button>
+  <template is="dom-if"
+      if="[[shouldShowMovePasswordsEntry_(isAccountStoreUser, passwordsOnDevice_)]]"
+      restamp>
+    <cr-link-row class="cr-row" non-clickable label="[[movePasswordsLabel_]]"
+        sub-label="$i18n{movePasswordsInSettingsSubLabel}" hide-icon>
+      <cr-button id="movePasswordsButton" on-click="onMovePasswordsClicked_">
+          $i18n{moveSinglePasswordButton}
+      </cr-button>
+    </cr-link-row>
   </template>
   <cr-link-row id="trustedVaultBanner" class="cr-row"
       label="[[getTrustedVaultBannerTitle_(trustedVaultBannerState_)]]"
@@ -113,6 +127,17 @@
         sub-label="$i18n{addShortcutDescription}" role-description="button">
     </cr-link-row>
   </template>
+  <if expr="is_macosx">
+    <template is="dom-if" if="[[createPasskeysInICloudKeychainToggleVisible_]]"
+              restamp>
+      <pref-toggle-button id="createPasskeysInICloudKeychainRow" class="hr"
+          label="$i18n{createPasskeysInICloudKeychainLabel}"
+          sub-label="$i18n{createPasskeysInICloudKeychainSubLabel}"
+          on-click="onCreatePasskeysInICloudKeychainClick_"
+          pref="{{prefs.webauthn.create_in_icloud_keychain}}">
+      </pref-link-row>
+    </template>
+  </if>
   <if expr="is_win or is_macosx">
     <template is="dom-if" if="[[hasPasskeys_]]" restamp>
       <cr-link-row id="managePasskeysRow" external
@@ -148,3 +173,9 @@
     </div>
   </div>
 </div>
+<template is="dom-if" if="[[showMovePasswordsDialog_]]" restamp>
+  <move-passwords-dialog on-close="onMovePasswordsDialogClose_"
+      id="movePasswordsDialog" passwords="[[passwordsOnDevice_]]"
+      trigger="[[getMovePasswordsDialogTrigger_()]]">
+  </move-passwords-dialog>
+</template>

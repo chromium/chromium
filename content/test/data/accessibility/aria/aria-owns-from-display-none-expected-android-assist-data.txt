@@ -1,0 +1,3 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++EditText textSize:13.3 style:0 htmlInfo:[{htmlTag="textarea"}, {display="block"}, {id="input-0"}]
+++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}]

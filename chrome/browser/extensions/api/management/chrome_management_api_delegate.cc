@@ -61,7 +61,9 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
@@ -149,7 +151,7 @@ class ManagementUninstallFunctionUninstallDialogDelegate
       source = extensions::UNINSTALL_SOURCE_CHROME_WEBSTORE;
       reason = extensions::UNINSTALL_REASON_CHROME_WEBSTORE;
     } else if (function->source_context_type() ==
-               extensions::Feature::WEBUI_CONTEXT) {
+               extensions::mojom::ContextType::kWebUi) {
       source = extensions::UNINSTALL_SOURCE_CHROME_EXTENSIONS_PAGE;
       // TODO: Update this to a new reason; it shouldn't be lumped in with
       // other uninstalls if it's from the chrome://extensions page.
@@ -188,7 +190,7 @@ class ManagementUninstallFunctionUninstallDialogDelegate
 
 void OnGenerateAppForLinkCompleted(
     extensions::ManagementGenerateAppForLinkFunction* function,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   const bool install_success =
       code == webapps::InstallResultCode::kSuccessNewInstall;
@@ -243,7 +245,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
   }
 
   extensions::api::management::ExtensionInfo CreateExtensionInfoFromWebApp(
-      const std::string& app_id,
+      const extensions::ExtensionId& app_id,
       content::BrowserContext* context) override {
     auto* provider = web_app::WebAppProvider::GetForWebApps(
         Profile::FromBrowserContext(context));
@@ -290,6 +292,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
       case web_app::DisplayMode::kWindowControlsOverlay:
       case web_app::DisplayMode::kTabbed:
       case web_app::DisplayMode::kBorderless:
+      case web_app::DisplayMode::kPictureInPicture:
       case web_app::DisplayMode::kUndefined:
         info.launch_type = extensions::api::management::LaunchType::kNone;
         break;
@@ -302,14 +305,14 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
   base::CancelableTaskTracker cancelable_task_tracker_;
 };
 
-void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
+void LaunchWebApp(const webapps::AppId& app_id, Profile* profile) {
   // Look at prefs to find the right launch container. If the user has not set a
   // preference, the default launch value will be returned.
   // TODO(crbug.com/1003602): Make AppLaunchParams launch container Optional or
   // add a "default" launch container enum value.
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
-  absl::optional<web_app::mojom::UserDisplayMode> display_mode =
+  std::optional<web_app::mojom::UserDisplayMode> display_mode =
       provider->registrar_unsafe().GetAppUserDisplayMode(app_id);
   auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
   if (display_mode == web_app::mojom::UserDisplayMode::kBrowser) {
@@ -331,7 +334,7 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
 }
 
 void OnWebAppInstallCompleted(InstallOrLaunchWebAppCallback callback,
-                              const web_app::AppId& app_id,
+                              const webapps::AppId& app_id,
                               webapps::InstallResultCode code) {
   InstallOrLaunchWebAppResult result =
       IsSuccess(code) ? InstallOrLaunchWebAppResult::kSuccess
@@ -344,7 +347,7 @@ void OnWebAppInstallabilityChecked(
     InstallOrLaunchWebAppCallback callback,
     std::unique_ptr<content::WebContents> web_contents,
     InstallableCheckResult result,
-    absl::optional<web_app::AppId> app_id) {
+    std::optional<webapps::AppId> app_id) {
   if (!profile) {
     return;
   }
@@ -366,8 +369,7 @@ void OnWebAppInstallabilityChecked(
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              blink::mojom::WindowFeatures());
       web_app::CreateWebAppFromManifest(
-          containing_contents, /*bypass_service_worker_check=*/true,
-          webapps::WebappInstallSource::MANAGEMENT_API,
+          containing_contents, webapps::WebappInstallSource::MANAGEMENT_API,
           base::BindOnce(&OnWebAppInstallCompleted, std::move(callback)));
       return;
   }
@@ -405,8 +407,7 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   apps::LaunchContainer launch_container =
       GetLaunchContainer(extensions::ExtensionPrefs::Get(context), extension);
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (extensions::IsExtensionUnsupportedDeprecatedApp(profile,
                                                       extension->id())) {
     return false;
@@ -536,7 +537,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
   // could still be installed with different start_url.
   if (provider->registrar_unsafe().IsLocallyInstalled(web_app_url)) {
     LaunchWebApp(
-        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_url),
+        web_app::GenerateAppId(/*manifest_id=*/std::nullopt, web_app_url),
         profile);
     std::move(callback).Run(InstallOrLaunchWebAppResult::kSuccess);
     return;
@@ -556,7 +557,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
 
 void ChromeManagementAPIDelegate::EnableExtension(
     content::BrowserContext* context,
-    const std::string& extension_id) const {
+    const extensions::ExtensionId& extension_id) const {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(context)->GetExtensionById(
           extension_id, extensions::ExtensionRegistry::EVERYTHING);
@@ -583,7 +584,7 @@ void ChromeManagementAPIDelegate::EnableExtension(
 void ChromeManagementAPIDelegate::DisableExtension(
     content::BrowserContext* context,
     const extensions::Extension* source_extension,
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     extensions::disable_reason::DisableReason disable_reason) const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   extensions::SupervisedUserExtensionsDelegate* extensions_delegate =
@@ -598,7 +599,7 @@ void ChromeManagementAPIDelegate::DisableExtension(
 
 bool ChromeManagementAPIDelegate::UninstallExtension(
     content::BrowserContext* context,
-    const std::string& transient_extension_id,
+    const extensions::ExtensionId& transient_extension_id,
     extensions::UninstallReason reason,
     std::u16string* error) const {
   return extensions::ExtensionSystem::Get(context)
@@ -608,7 +609,7 @@ bool ChromeManagementAPIDelegate::UninstallExtension(
 
 void ChromeManagementAPIDelegate::SetLaunchType(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     extensions::LaunchType launch_type) const {
   extensions::SetLaunchType(context, extension_id, launch_type);
 }

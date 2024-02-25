@@ -4,6 +4,7 @@
 
 #include "testing/perf/luci_test_result.h"
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -11,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perf_test {
 
@@ -43,10 +43,10 @@ class LuciTestResultTest : public testing::Test {
 
     std::string json;
     ASSERT_TRUE(ReadFileToString(GetResultFilePath(), &json));
-    absl::optional<base::Value> value = base::JSONReader::Read(json);
+    std::optional<base::Value> value = base::JSONReader::Read(json);
     ASSERT_TRUE(value.has_value());
 
-    absl::optional<base::Value> expected_value =
+    std::optional<base::Value> expected_value =
         base::JSONReader::Read(expected_json);
     ASSERT_TRUE(expected_value.has_value());
 
@@ -125,7 +125,7 @@ TEST_F(LuciTestResultTest, Status) {
   LuciTestResult result;
   result.set_test_path("FakeTestSuite.Status");
 
-  const std::string json_template =
+  static constexpr char kJsonTemplate[] =
       R"({
            "testResult":{
              "expected":false,
@@ -149,7 +149,7 @@ TEST_F(LuciTestResultTest, Status) {
   for (const auto& test_case : kTestCases) {
     result.set_status(test_case.status);
     const std::string expected_json =
-        base::StringPrintf(json_template.c_str(), test_case.status_text);
+        base::StringPrintf(kJsonTemplate, test_case.status_text);
     ValidateResult(result, expected_json);
   }
 }
@@ -175,7 +175,7 @@ TEST_P(LuciTestResultParameterizedTest, Variant) {
 
   result.set_duration(base::Milliseconds(1500));
 
-  const std::string json_template =
+  static constexpr char kJsonTemplate[] =
       R"({
            "testResult":{
              "expected":true,
@@ -188,7 +188,7 @@ TEST_P(LuciTestResultParameterizedTest, Variant) {
            }
          })";
   const std::string expected_json =
-      base::StringPrintf(json_template.c_str(), GetParam());
+      base::StringPrintf(kJsonTemplate, GetParam());
   ValidateResult(result, expected_json);
 }
 INSTANTIATE_TEST_SUITE_P(ZeroToFiveSequence,
@@ -223,7 +223,7 @@ TYPED_TEST_P(LuciTestResultTypedTest, Variant) {
   ASSERT_NE(pos, std::string::npos);
   std::string type_param_name = test_suite_name.substr(pos + 1);
 
-  const std::string json_template =
+  static constexpr char kJsonTemplate[] =
       R"({
            "testResult":{
              "expected":true,
@@ -237,7 +237,7 @@ TYPED_TEST_P(LuciTestResultTypedTest, Variant) {
   // Note that chromium has RTTI disabled. As a result, type_param() and
   // GetTypeName<> always returns a generic "<type>".
   const std::string expected_json =
-      base::StringPrintf(json_template.c_str(), type_param_name.c_str(),
+      base::StringPrintf(kJsonTemplate, type_param_name.c_str(),
                          testing::internal::GetTypeName<TypeParam>().c_str());
   this->ValidateResult(result, expected_json);
 }

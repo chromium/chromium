@@ -15,8 +15,8 @@ source_set("test_modality") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/test_modality",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/test_modality",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays:presentation_controller",
     "//ios/chrome/common/ui/util",
@@ -34,8 +34,8 @@ source_set("unit_tests") {
   deps = [
     ":test_modality",
     "//base/test:test_support",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/test_modality",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/test_modality",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/ui/overlays/test",

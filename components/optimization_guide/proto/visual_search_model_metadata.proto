@@ -11,7 +11,7 @@ option java_outer_classname = "VisualSearchModelMetadataProto";
 package optimization_guide.proto;
 
 message FeatureLibrary {
-  // Next id: 14
+  // Next id: 16
   enum ImageLevelFeatureName {
     IMAGE_LEVEL_UNSPECIFIED = 0;
 
@@ -39,9 +39,12 @@ message FeatureLibrary {
     // center of the viewport.
     IMAGE_DISTANCE_TO_VIEWPORT_CENTER = 13;
 
-    // Scores of the shopping and sens classifiers.
+    // Scores of the shopping, sens, natural world, and public figures
+    // classifiers.
     SHOPPING_CLASSIFIER_SCORE = 7;
     SENS_CLASSIFIER_SCORE = 8;
+    NAT_WORLD_CLASSIFIER_SCORE = 14;
+    PUB_FIGURES_CLASSIFIER_SCORE = 15;
   }
 
   // Enum listing the ways in which we can normalize a feature.

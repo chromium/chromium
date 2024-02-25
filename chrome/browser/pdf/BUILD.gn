@@ -15,6 +15,8 @@ source_set("pdf") {
     "pdf_extension_util.h",
     "pdf_frame_util.cc",
     "pdf_frame_util.h",
+    "pdf_viewer_stream_manager.cc",
+    "pdf_viewer_stream_manager.h",
   ]
   deps = [
     "//base",
@@ -26,6 +28,7 @@ source_set("pdf") {
     "//chrome/browser/resources/pdf:resources",
     "//chrome/common",
     "//components/pdf/browser:interceptors",
+    "//components/pdf/common:constants",
     "//components/prefs",
     "//components/services/screen_ai/buildflags",
     "//components/zoom",
@@ -33,9 +36,11 @@ source_set("pdf") {
     "//extensions/browser",
     "//extensions/common:common_constants",
     "//extensions/common/api",
+    "//mojo/public/cpp/bindings",
     "//pdf:buildflags",
     "//pdf:features",
     "//printing/buildflags",
+    "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/gfx:color_utils",
     "//url",
@@ -61,6 +66,28 @@ source_set("pdf_extension_test_utils") {
   ]
   deps = [
     "//base",
-    "//chrome/test:test_support",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//pdf:features",
+    "//testing/gtest",
+  ]
+}
+
+source_set("pdf_test_utils") {
+  testonly = true
+  sources = [
+    "pdf_test_util.cc",
+    "pdf_test_util.h",
+  ]
+  deps = [
+    "//base",
+    "//extensions/browser",
+    "//net",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
   ]
 }

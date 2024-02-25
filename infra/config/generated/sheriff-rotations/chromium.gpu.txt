@@ -1,3 +1,4 @@
+ci/Android FYI Experimental Release (Pixel 6)
 ci/Android FYI Release (NVIDIA Shield TV)
 ci/Android FYI Release (Nexus 5X)
 ci/Android FYI Release (Pixel 2)
@@ -7,8 +8,7 @@ ci/Android FYI Release (Samsung A13)
 ci/Android FYI Release (Samsung A23)
 ci/Android Release (Nexus 5X)
 ci/ChromeOS FYI Release (amd64-generic)
-ci/ChromeOS FYI Release (kevin)
-ci/ChromeOS FYI Release Skylab (kevin)
+ci/ChromeOS FYI Release Skylab (volteer)
 ci/GPU FYI Android arm Builder
 ci/GPU FYI Android arm64 Builder
 ci/GPU FYI Lacros x64 Builder
@@ -19,6 +19,7 @@ ci/GPU FYI Mac Builder (asan)
 ci/GPU FYI Mac Builder (dbg)
 ci/GPU FYI Mac arm64 Builder
 ci/GPU FYI Win Builder
+ci/GPU FYI Win arm64 Builder
 ci/GPU FYI Win x64 Builder
 ci/GPU FYI Win x64 Builder (dbg)
 ci/GPU FYI Win x64 DX12 Vulkan Builder
@@ -67,6 +68,7 @@ ci/Win10 FYI x64 Release XR Perf (NVIDIA)
 ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
+ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
 ci/linux-swangle-chromium-x64
 ci/linux-swangle-chromium-x64-exp
 ci/linux-swangle-tot-swiftshader-x64

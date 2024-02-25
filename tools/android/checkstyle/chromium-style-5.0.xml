@@ -112,7 +112,7 @@
       <property name="severity" value="info"/>
     </module>
     <module name="NeedBraces">
-      <property name="severity" value="error"/>
+      <property name="severity" value="warning"/>
       <property name="allowSingleLineStatement" value="true"/>
     </module>
     <module name="RegexpSinglelineJava">
@@ -219,6 +219,18 @@
       <property name="severity" value="warning"/>
       <property name="format" value="([dD]ummy)|([sS]anity)|([bB]lind)"/>
       <property name="message" value="&#xA;&#xA;Please use inclusive language where possible.&#xA;&#xA;Instead of 'dummy', use a term such as placeholder or empty (e.g. PlaceholderImpl, not DummyImpl).&#xA;Instead of 'sanity', use a term such as 'confidence' (e.g. confidence check, not sanity check).&#xA;Instead of 'blind', use a term such as unaware (e.g. being unaware of, not being blind to. unconfirmed change, not blind change).&#xA;&#xA;For more info see: https://developers.google.com/style/word-list&#xA;"/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="SettingsFragmentCheck"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="PreferenceFragment.*\ extends\ (PreferenceFragment|ChromeBaseSettingsFragment)"/>
+      <property name="message" value="Top level settings fragment should be named with suffix 'SettingsFragment' or 'Settings'. See //components/browser_ui/settings/README."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="ParamComments"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/"/>
+      <property name="message" value="Parameter comments should use the ErrorProne-aware syntax: /* paramName= */."/>
     </module>
   </module>
   <module name="RegexpMultiline">

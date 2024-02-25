@@ -1,0 +1,8 @@
+monorail: {
+  component: "UI>Browser>Mobile>Hub"
+}
+team_email: "clank-hub-dev@google.com"
+os: ANDROID
+buganizer_public: {
+  component_id: 1457490
+}

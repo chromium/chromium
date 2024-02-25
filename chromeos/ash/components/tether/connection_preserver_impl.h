@@ -82,18 +82,16 @@ class ConnectionPreserverImpl
       const std::string& device_id);
   void SetPreservedConnection(const std::string& device_id);
   void RemovePreservedConnectionIfPresent();
-  absl::optional<multidevice::RemoteDeviceRef> GetRemoteDevice(
+  std::optional<multidevice::RemoteDeviceRef> GetRemoteDevice(
       const std::string device_id);
 
   void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer_for_test);
 
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
-      tether_host_response_recorder_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
 
   std::unique_ptr<base::OneShotTimer> preserved_connection_timer_;
 

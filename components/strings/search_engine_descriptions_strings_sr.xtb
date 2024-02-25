@@ -1,0 +1,11 @@
+
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
+<translationbundle lang="sr">
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Пронађите оно што вам је потребно помоћу претраживача који се најчешће користи на свету.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Брз и лаган претраживач</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Независна, европска, не праћење претраживач</translation>
+</translationbundle>

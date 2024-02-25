@@ -322,9 +322,6 @@ void ConnectivityCheckerImpl::OnConnectivityCheckComplete(
   DVLOG(1) << "Connectivity check succeeded";
   check_errors_ = 0;
   SetConnected(true);
-  if (time_sync_tracker_) {
-    time_sync_tracker_->OnNetworkConnected();
-  }
   // Some products don't have an idle screen that makes periodic network
   // requests. Schedule another check to ensure connectivity hasn't dropped.
   delayed_check_.Reset(

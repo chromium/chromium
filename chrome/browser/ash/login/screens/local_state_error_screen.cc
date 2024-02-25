@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/local_state_error_screen.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -35,7 +36,7 @@ void LocalStateErrorScreen::HideImpl() {}
 void LocalStateErrorScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionRestartAndPowerwash) {
-    SessionManagerClient::Get()->StartDeviceWipe();
+    SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
     return;
   }
   BaseScreen::OnUserAction(args);

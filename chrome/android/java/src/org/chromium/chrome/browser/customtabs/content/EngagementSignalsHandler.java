@@ -24,10 +24,8 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 public class EngagementSignalsHandler {
     private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSession;
-    @Nullable
-    private EngagementSignalsInitialScrollObserver mInitialScrollObserver;
-    @Nullable
-    private RealtimeEngagementSignalObserver mObserver;
+    @Nullable private EngagementSignalsInitialScrollObserver mInitialScrollObserver;
+    @Nullable private RealtimeEngagementSignalObserver mObserver;
     private TabObserverRegistrar mTabObserverRegistrar;
     private EngagementSignalsCallback mCallback;
     private PrivacyPreferencesManager.Observer mPrivacyPreferencesObserver;
@@ -68,6 +66,12 @@ public class EngagementSignalsHandler {
         }
     }
 
+    public void notifyTabWillCloseAndReopenWithSessionReuse() {
+        if (mObserver != null) {
+            mObserver.suppressNextSessionEndedCall();
+        }
+    }
+
     private void createEngagementSignalsObserver() {
         if (!PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted()) {
             return;
@@ -79,49 +83,55 @@ public class EngagementSignalsHandler {
         }
         assert mTabObserverRegistrar != null;
         assert mCallback != null;
-        boolean hadScrollDown = mInitialScrollObserver != null
-                && mInitialScrollObserver.hasCurrentPageHadScrollDown();
-        mObserver = new RealtimeEngagementSignalObserver(
-                mTabObserverRegistrar, mConnection, mSession, mCallback, hadScrollDown);
+        boolean hadScrollDown =
+                mInitialScrollObserver != null
+                        && mInitialScrollObserver.hasCurrentPageHadScrollDown();
+        mObserver =
+                new RealtimeEngagementSignalObserver(
+                        mTabObserverRegistrar, mConnection, mSession, mCallback, hadScrollDown);
         if (mInitialScrollObserver != null) {
             mInitialScrollObserver.destroy();
             mInitialScrollObserver = null;
         }
 
-        mPrivacyPreferencesObserver = new Observer() {
-            @Override
-            public void onIsUsageAndCrashReportingPermittedChanged(boolean permitted) {
-                if (!permitted) {
-                    if (mObserver != null) {
-                        if (mCallback != null) {
-                            mCallback.onSessionEnded(false, Bundle.EMPTY);
+        mPrivacyPreferencesObserver =
+                new Observer() {
+                    @Override
+                    public void onIsUsageAndCrashReportingPermittedChanged(boolean permitted) {
+                        if (!permitted) {
+                            if (mObserver != null) {
+                                if (mCallback != null) {
+                                    mCallback.onSessionEnded(false, Bundle.EMPTY);
+                                }
+                                mObserver.destroy();
+                                mObserver = null;
+                            }
+                            PrivacyPreferencesManagerImpl.getInstance()
+                                    .removeObserver(mPrivacyPreferencesObserver);
+                            mPrivacyPreferencesObserver = null;
                         }
-                        mObserver.destroy();
-                        mObserver = null;
                     }
-                    PrivacyPreferencesManagerImpl.getInstance().removeObserver(
-                            mPrivacyPreferencesObserver);
-                    mPrivacyPreferencesObserver = null;
-                }
-            }
-        };
+                };
         PrivacyPreferencesManagerImpl.getInstance().addObserver(mPrivacyPreferencesObserver);
-        mTabObserverRegistrar.registerActivityTabObserver(new CustomTabTabObserver() {
-            @Override
-            protected void onAllTabsClosed() {
-                mTabObserverRegistrar.unregisterActivityTabObserver(this);
-                mTabObserverRegistrar = null;
-                if (mObserver != null) {
-                    mObserver.destroy();
-                    mObserver = null;
-                }
-                if (mPrivacyPreferencesObserver != null) {
-                    PrivacyPreferencesManagerImpl.getInstance().removeObserver(
-                            mPrivacyPreferencesObserver);
-                    mPrivacyPreferencesObserver = null;
-                }
-            }
-        });
+        mTabObserverRegistrar.registerActivityTabObserver(
+                new CustomTabTabObserver() {
+                    @Override
+                    protected void onAllTabsClosed() {
+                        if (mTabObserverRegistrar != null) {
+                            mTabObserverRegistrar.unregisterActivityTabObserver(this);
+                            mTabObserverRegistrar = null;
+                        }
+                        if (mObserver != null) {
+                            mObserver.destroy();
+                            mObserver = null;
+                        }
+                        if (mPrivacyPreferencesObserver != null) {
+                            PrivacyPreferencesManagerImpl.getInstance()
+                                    .removeObserver(mPrivacyPreferencesObserver);
+                            mPrivacyPreferencesObserver = null;
+                        }
+                    }
+                });
     }
 
     @VisibleForTesting

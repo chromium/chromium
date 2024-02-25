@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<button onclick="measureCost(4)">Measure cost of 4 parts</button>
+<button onclick="measureSlope()">Measure per-part cost (slow)</button>
+
+<script>
+function log(t) {
+  const el = document.createElement('div');
+  el.innerHTML = t;
+  document.body.appendChild(el);
+}
+
+// Feature checks.
+if (typeof document.getPartRoot !== "function") {
+  log('<h1>DOM Parts API is not supported in this browser. Use a late-model Canary and enable Experimental Web Platform Features</h1>');
+}
+if (!self.gc) {
+  log('<h1>It helps to include --js-flags="--expose-gc" on the command line.</h1>');
+}
+
+function buildTemplate(n) {
+  const tmpl = document.createElement('template');
+  const root = tmpl.content.getPartRoot();
+  for(let i=0;i<n;++i) {
+    const node = document.createElement('div');
+    tmpl.content.appendChild(node);
+    new NodePart(root,node);
+  }
+  return tmpl;
+}
+
+// Pick a number that gives ~5 seconds of run time.
+const nRuns = 1000000;
+
+// The test.
+async function runTest(n) {
+  log(`Running test for n=${n}...`);
+  const tmpl = buildTemplate(n);
+  const root = tmpl.content.getPartRoot();
+  const partCount = root.getParts().length;
+  if (partCount !== n) {
+    log(`<h1>Expected ${n} parts, got ${partCount}`);
+  }
+  self.gc && self.gc() && self.gc() && self.gc() && self.gc();
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  const startTime = performance.now();
+  let sumTime = 0, sumTime2 = 0;
+  for (let i = 0; i < nRuns; i++) {
+    // step (1): clone template
+    const tplCloneRoot = root.clone();
+    const tplClone = tplCloneRoot.rootContainer
+
+    // step (2): get parts
+    const t1 = performance.now();
+    const parts = tplCloneRoot.getParts();
+    const t2 = performance.now();
+    sumTime += t2-t1;
+
+    // get original parts (repeat call)
+    const t3 = performance.now();
+    root.getParts();
+    const t4 = performance.now();
+    sumTime2 += t4-t3;
+
+    // Technically cleaner to do GC each time, to avoid random GC affecting
+    // the timing. But GC makes the test quite slow.
+    // self.gc && self.gc();
+  }
+  const endTime = performance.now();
+  const elapsedTotalMs = endTime - startTime;
+  const usPerCallCold = 1000*sumTime/nRuns;
+  const usPerCallWarm = 1000*sumTime2/nRuns;
+
+  return {elapsedTotalMs,usPerCallCold,usPerCallWarm};
+}
+
+async function measureSlope() {
+  let nodeCounts = [4,8,16,32,64];
+  let coldTimes = [];
+  let warmTimes = [];
+  for(let i=0;i<nodeCounts.length;++i) {
+    const n = nodeCounts[i];
+    results = await runTest(n);
+    log(`Finished. Total time ${(results.elapsedTotalMs/1000).toFixed(2)} seconds.`);
+    log(`Fresh object: ${results.usPerCallCold.toFixed(3)} microseconds per call`);
+    log(`Repeat call: ${results.usPerCallWarm.toFixed(3)} microseconds per call`);
+    coldTimes.push(results.usPerCallCold);
+    warmTimes.push(results.usPerCallWarm);
+  }
+  log('');
+  log('NodePart count, us per call (Cold), us per call (Warm)');
+  for(let i=0;i<nodeCounts.length;++i) {
+    log(`${nodeCounts[i]}, ${coldTimes[i]}, ${warmTimes[i]}`);
+  }
+}
+
+async function measureCost(n) {
+  results = await runTest(n);
+  log(`Finished. Total time ${(results.elapsedTotalMs/1000).toFixed(2)} seconds.`);
+  log(`Fresh object: ${results.usPerCallCold.toFixed(3)} microseconds per call`);
+  log(`Repeat call: ${results.usPerCallWarm.toFixed(3)} microseconds per call`);
+}
+</script>

@@ -70,6 +70,12 @@ class CONTENT_EXPORT PlatformNotificationService {
   virtual void GetDisplayedNotifications(
       DisplayedNotificationsCallback callback) = 0;
 
+  // Retrieves the ids of all currently displaying notifications associated with
+  // `origin` and posts `callback` with the result.
+  virtual void GetDisplayedNotificationsForOrigin(
+      const GURL& origin,
+      DisplayedNotificationsCallback callback) = 0;
+
   // Schedules a job to run at |timestamp| and call TriggerNotifications
   // on all PlatformNotificationContext instances.
   virtual void ScheduleTrigger(base::Time timestamp) = 0;

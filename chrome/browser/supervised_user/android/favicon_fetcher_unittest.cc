@@ -39,9 +39,8 @@ favicon_base::LargeIconImageResult CreateEmptyTestImageResult() {
 }
 
 favicon_base::LargeIconImageResult CreateTestImageResult() {
-  return favicon_base::LargeIconImageResult(
-      gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(10, 10)),
-      StringToGURL("icon.com"));
+  return favicon_base::LargeIconImageResult(gfx::test::CreateImage(/*size=*/10),
+                                            StringToGURL("icon.com"));
 }
 
 class MockLargeIconService : public favicon::LargeIconService {

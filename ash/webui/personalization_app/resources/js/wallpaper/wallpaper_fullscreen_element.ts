@@ -7,17 +7,18 @@
  * viewing mode of the currently selected wallpaper.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../common/icons.html.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {CurrentWallpaper, WallpaperLayout} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {DisplayableImage} from './constants.js';
-import {getWallpaperLayoutEnum, isFilePath, isGooglePhotosPhoto} from './utils.js';
+import {getWallpaperLayoutEnum, isGooglePhotosPhoto} from './utils.js';
 import {setFullscreenEnabledAction} from './wallpaper_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
 import {getTemplate} from './wallpaper_fullscreen_element.html.js';
@@ -25,11 +26,11 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const fullscreenClass = 'fullscreen-preview';
 
-export interface WallpaperFullscreen {
+export interface WallpaperFullscreenElement {
   $: {container: HTMLDivElement, exit: HTMLElement};
 }
 
-export class WallpaperFullscreen extends WithPersonalizationStore {
+export class WallpaperFullscreenElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-fullscreen';
   }
@@ -87,16 +88,16 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     this.$.container.addEventListener(
         'fullscreenchange', this.onFullscreenChange_.bind(this));
 
-    this.watch<WallpaperFullscreen['visible_']>(
+    this.watch<WallpaperFullscreenElement['visible_']>(
         'visible_', state => state.wallpaper.fullscreen);
-    this.watch<WallpaperFullscreen['showLayoutOptions_']>(
+    this.watch<WallpaperFullscreenElement['showLayoutOptions_']>(
         'showLayoutOptions_',
         state => !!state.wallpaper.pendingSelected &&
-            (isFilePath(state.wallpaper.pendingSelected) ||
+            (isNonEmptyFilePath(state.wallpaper.pendingSelected) ||
              isGooglePhotosPhoto(state.wallpaper.pendingSelected)));
-    this.watch<WallpaperFullscreen['currentSelected_']>(
+    this.watch<WallpaperFullscreenElement['currentSelected_']>(
         'currentSelected_', state => state.wallpaper.currentSelected);
-    this.watch<WallpaperFullscreen['pendingSelected_']>(
+    this.watch<WallpaperFullscreenElement['pendingSelected_']>(
         'pendingSelected_', state => state.wallpaper.pendingSelected);
 
     // Visibility change will fire in case of alt+tab, closing the window, or
@@ -165,7 +166,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
 
   private async onClickLayout_(event: MouseEvent) {
     assert(
-        isFilePath(this.pendingSelected_) ||
+        isNonEmptyFilePath(this.pendingSelected_) ||
             isGooglePhotosPhoto(this.pendingSelected_),
         'pendingSelected must be a local image or a Google Photos image to set layout');
     const layout = getWallpaperLayoutEnum(
@@ -183,4 +184,5 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperFullscreen.is, WallpaperFullscreen);
+customElements.define(
+    WallpaperFullscreenElement.is, WallpaperFullscreenElement);

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -11,8 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/strong_alias.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -37,13 +39,13 @@
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
@@ -56,6 +58,10 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+constexpr char kBlockedContentUkmName[] = "FamilyLinkUser.BlockedContent";
+constexpr char kBlockedContentUkmMainFrameMetricName[] = "MainFrameBlocked";
+constexpr char kBlockedContentUkmIFrameMetricName[] = "NumBlockedIframes";
+
 using content::NavigationController;
 using content::NavigationEntry;
 using content::WebContents;
@@ -63,7 +69,7 @@ using content::WebContents;
 namespace {
 
 // Tests filtering for supervised users.
-class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
+class SupervisedUserURLFilterTestBase : public MixinBasedInProcessBrowserTest {
  public:
   // Indicates whether the interstitial should proceed or not.
   enum InterstitialAction {
@@ -71,16 +77,12 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
     INTERSTITIAL_DONTPROCEED,
   };
 
-  SupervisedUserURLFilterTest() {
+  SupervisedUserURLFilterTestBase() {
     // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
-    feature_list_.InitWithFeatures(
-        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-         supervised_user::kSupervisedPrefsControlledBySupervisedStore},
-        {features::kHttpsUpgrades});
-    supervision_mixin_.InitFeatures();
+    feature_list_.InitWithFeatures({}, {features::kHttpsUpgrades});
   }
-  ~SupervisedUserURLFilterTest() override = default;
+  ~SupervisedUserURLFilterTestBase() override { feature_list_.Reset(); }
 
   bool ShownPageIsInterstitial(Browser* browser) {
     WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
@@ -112,10 +114,6 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   }
 
  protected:
-  void SetUpOnMainThread() override {
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-  }
-
   // Acts like a synchronous call to history's QueryHistory. Modified from
   // history_querying_unittest.cc.
   void QueryHistory(history::HistoryService* history_service,
@@ -132,12 +130,16 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
     run_loop.Run();  // Will go until ...Complete calls Quit.
   }
 
+  supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {
+    return supervision_mixin_.api_mock_setup_mixin().api_mock();
+  }
+
   supervised_user::SupervisedUserService* GetSupervisedUserService() const {
     return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   }
 
+ private:
   base::test::ScopedFeatureList feature_list_;
-
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
@@ -149,22 +151,6 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
               {.resolver_rules_map_host_list =
                    "*.example.com, *.new-example.com"},
       }};
-};
-
-// Tests the filter mode in which all sites are blocked by default.
-class SupervisedUserBlockModeTest : public SupervisedUserURLFilterTest {
- public:
-  void SetUpOnMainThread() override {
-    SupervisedUserURLFilterTest::SetUpOnMainThread();
-    Profile* profile = browser()->profile();
-    supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service =
-            SupervisedUserSettingsServiceFactory::GetForKey(
-                profile->GetProfileKey());
-    supervised_user_settings_service->SetLocalSetting(
-        supervised_user::kContentPackDefaultFilteringBehavior,
-        base::Value(supervised_user::SupervisedUserURLFilter::BLOCK));
-  }
 };
 
 class TabClosingObserver : public TabStripModelObserver {
@@ -213,6 +199,363 @@ class TabClosingObserver : public TabStripModelObserver {
   raw_ptr<content::WebContents> contents_;
 };
 
+using SupervisedUserURLFilterTest = SupervisedUserURLFilterTestBase;
+
+// Navigates to a page in a new tab, then blocks it (which makes the
+// interstitial page behave differently from the preceding test, where the
+// navigation is blocked before it commits). The expected behavior is the same
+// though: the tab should be closed when going back.
+IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  WebContents* prev_tab = tab_strip->GetActiveWebContents();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Open URL in a new tab.
+  GURL test_url("http://www.example.com/simple.html");
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Check that there is no interstitial.
+  WebContents* tab = tab_strip->GetActiveWebContents();
+  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
+
+  // Check that no UKM is recorded.
+  EXPECT_TRUE(ukm_recorder
+                  .GetEntries(kBlockedContentUkmName,
+                              {kBlockedContentUkmMainFrameMetricName,
+                               kBlockedContentUkmIFrameMetricName})
+                  .empty());
+
+  {
+    // Block the current URL.
+    supervised_user::SupervisedUserSettingsService*
+        supervised_user_settings_service =
+            SupervisedUserSettingsServiceFactory::GetForKey(
+                browser()->profile()->GetProfileKey());
+    supervised_user_settings_service->SetLocalSetting(
+        supervised_user::kContentPackDefaultFilteringBehavior,
+        base::Value(
+            static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
+
+    supervised_user::SupervisedUserURLFilter* filter =
+        GetSupervisedUserService()->GetURLFilter();
+    ASSERT_EQ(supervised_user::FilteringBehavior::kBlock,
+              filter->GetFilteringBehaviorForURL(test_url));
+
+    content::TestNavigationObserver observer(tab);
+    observer.Wait();
+
+    // Check that we got the interstitial.
+    ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+    // Check that no UKM is recorded (because the mainframe was blocked due to
+    // a manual block rather than due to safesites).
+    EXPECT_TRUE(ukm_recorder
+                    .GetEntries(kBlockedContentUkmName,
+                                {kBlockedContentUkmMainFrameMetricName,
+                                 kBlockedContentUkmIFrameMetricName})
+                    .empty());
+  }
+
+  {
+    // On pressing the "back" button, the new tab should be closed, and we
+    // should get back to the previous active tab.
+    TabClosingObserver observer(tab_strip, tab);
+    GoBack(tab);
+    observer.WaitForContentsClosing();
+    EXPECT_EQ(prev_tab, tab_strip->GetActiveWebContents());
+  }
+}
+
+// Tests that we don't end up canceling an interstitial (thereby closing the
+// whole tab) by attempting to show a second one above it.
+IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+
+  // Open URL in a new tab.
+  GURL test_url("http://www.example.com/simple.html");
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Check that there is no interstitial.
+  WebContents* tab = tab_strip->GetActiveWebContents();
+  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
+
+  // Block the current URL.
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              browser()->profile()->GetProfileKey());
+  supervised_user_settings_service->SetLocalSetting(
+      supervised_user::kContentPackDefaultFilteringBehavior,
+      base::Value(
+          static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
+
+  supervised_user::SupervisedUserURLFilter* filter =
+      GetSupervisedUserService()->GetURLFilter();
+  ASSERT_EQ(supervised_user::FilteringBehavior::kBlock,
+            filter->GetFilteringBehaviorForURL(test_url));
+
+  content::TestNavigationObserver observer(tab);
+  observer.Wait();
+
+  // Check that we got the interstitial.
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  // Trigger a no-op change to the site lists, which will notify observers of
+  // the URL filter.
+  GetSupervisedUserService()->OnSiteListUpdated();
+
+  EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Ensure navigation completes.
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  // We start out at the initial navigation.
+  ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
+
+  GURL test_url("http://www.example.com/simple.html");
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
+
+  // Set the host as blocked and wait for the interstitial to appear.
+  base::Value::Dict dict;
+  dict.Set(test_url.host(), false);
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              browser()->profile()->GetProfileKey());
+  supervised_user_settings_service->SetLocalSetting(
+      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
+
+  supervised_user::SupervisedUserURLFilter* filter =
+      GetSupervisedUserService()->GetURLFilter();
+  ASSERT_EQ(supervised_user::FilteringBehavior::kBlock,
+            filter->GetFilteringBehaviorForURL(test_url));
+
+  content::TestNavigationObserver block_observer(web_contents);
+  block_observer.Wait();
+
+  content::LoadStopObserver observer(web_contents);
+  GoBack(web_contents);
+  observer.Wait();
+
+  // We should have gone back to the initial navigation.
+  EXPECT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
+}
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
+                       ClosingBlockedTabDoesNotCrash) {
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // Ensure navigation completes.
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
+
+  GURL test_url("http://www.example.com/simple.html");
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
+
+  // Set the host as blocked and wait for the interstitial to appear.
+  base::Value::Dict dict;
+  dict.Set(test_url.host(), false);
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              browser()->profile()->GetProfileKey());
+  supervised_user_settings_service->SetLocalSetting(
+      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
+
+  supervised_user::SupervisedUserURLFilter* filter =
+      GetSupervisedUserService()->GetURLFilter();
+  ASSERT_EQ(supervised_user::FilteringBehavior::kBlock,
+            filter->GetFilteringBehaviorForURL(test_url));
+
+  // Verify that there is no crash when closing the blocked tab
+  // (https://crbug.com/719708).
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+}
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
+  GURL test_url("http://www.example.com/simple.html");
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
+
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              browser()->profile()->GetProfileKey());
+  // Set the host as blocked and wait for the interstitial to appear.
+  {
+    base::Value::Dict dict;
+    dict.Set(test_url.host(), false);
+    supervised_user_settings_service->SetLocalSetting(
+        supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
+  }
+
+  supervised_user::SupervisedUserURLFilter* filter =
+      GetSupervisedUserService()->GetURLFilter();
+  ASSERT_EQ(supervised_user::FilteringBehavior::kBlock,
+            filter->GetFilteringBehaviorForURL(test_url));
+
+  content::TestNavigationObserver block_observer(web_contents);
+  block_observer.Wait();
+
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+  {
+    base::Value::Dict dict;
+    dict.Set(test_url.host(), true);
+    supervised_user_settings_service->SetLocalSetting(
+        supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
+    ASSERT_EQ(supervised_user::FilteringBehavior::kAllow,
+              filter->GetFilteringBehaviorForURL(test_url));
+  }
+
+  content::TestNavigationObserver unblock_observer(web_contents);
+  unblock_observer.Wait();
+
+  ASSERT_EQ(test_url, web_contents->GetLastCommittedURL());
+
+  EXPECT_FALSE(ShownPageIsInterstitial(browser()));
+}
+
+// Tests the filter mode in which all sites are blocked by default.
+class SupervisedUserBlockModeTest : public SupervisedUserURLFilterTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    SupervisedUserURLFilterTestBase::SetUpOnMainThread();
+    Profile* profile = browser()->profile();
+    supervised_user::SupervisedUserSettingsService*
+        supervised_user_settings_service =
+            SupervisedUserSettingsServiceFactory::GetForKey(
+                profile->GetProfileKey());
+    supervised_user_settings_service->SetLocalSetting(
+        supervised_user::kContentPackDefaultFilteringBehavior,
+        base::Value(
+            static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, RecordBlockedContentUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Open URL in a new tab, which is blocked by ClassifyUrl async checks.
+  GURL test_url("http://www.example.com/simple.html");
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Check that the interstitial is displayed.
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  // Check that a UKM is recorded for the main frame only.
+  const auto ukm_entries =
+      ukm_recorder.GetEntriesByName(kBlockedContentUkmName);
+  CHECK_EQ(ukm_entries.size(), 1u);
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], kBlockedContentUkmMainFrameMetricName, true);
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      ukm_entries[0], kBlockedContentUkmIFrameMetricName, 0);
+}
+
+// Tests that it's possible to navigate from a blocked page to another blocked
+// page.
+IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
+                       NavigateFromBlockedPageToBlockedPage) {
+  GURL test_url("http://www.example.com/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  GURL test_url2("http://www.a.com/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url2));
+
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+  EXPECT_EQ(test_url2, tab->GetVisibleURL());
+}
+
+// Tests whether a visit attempt adds a special history entry.
+IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+
+  GURL allowed_url("http://www.example.com/simple.html");
+  supervised_user::SupervisedUserURLFilter* filter =
+      GetSupervisedUserService()->GetURLFilter();
+
+  // Set the host as allowed.
+  base::Value::Dict dict;
+  dict.Set(allowed_url.host(), true);
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              browser()->profile()->GetProfileKey());
+  supervised_user_settings_service->SetLocalSetting(
+      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
+            filter->GetFilteringBehaviorForURL(allowed_url));
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
+            filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+  // Navigate to it and check that we don't get an interstitial.
+  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
+
+  // Query the history entry.
+  {
+    history::QueryResults results;
+    QueryHistory(history_service, &results);
+    ASSERT_EQ(1u, results.size());
+    EXPECT_EQ(allowed_url.spec(), results[0].url().spec());
+    EXPECT_FALSE(results[0].blocked_visit());
+  }
+
+  // Navigate to a blocked page and go back on the interstitial.
+  GURL blocked_url("http://www.new-example.com/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
+  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  GoBackAndWaitForNavigation(tab);
+
+  EXPECT_EQ(allowed_url.spec(), tab->GetLastCommittedURL().spec());
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
+            filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
+  EXPECT_EQ(supervised_user::FilteringBehavior::kBlock,
+            filter->GetFilteringBehaviorForURL(blocked_url.GetWithEmptyPath()));
+
+  // Query the history entry.
+  {
+    history::QueryResults results;
+    QueryHistory(history_service, &results);
+    ASSERT_EQ(2u, results.size());
+    EXPECT_EQ(allowed_url.spec(), results[0].url().spec());
+    EXPECT_FALSE(results[0].blocked_visit());
+    EXPECT_EQ(blocked_url.spec(), results[1].url().spec());
+    EXPECT_TRUE(results[1].blocked_visit());
+  }
+}
+
 // Navigates to a blocked URL.
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
                        SendAccessRequestOnBlockedURL) {
@@ -260,299 +603,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, OpenBlockedURLInNewTab) {
   EXPECT_EQ(prev_tab, tab_strip->GetActiveWebContents());
 }
 
-// Navigates to a page in a new tab, then blocks it (which makes the
-// interstitial page behave differently from the preceding test, where the
-// navigation is blocked before it commits). The expected behavior is the same
-// though: the tab should be closed when going back.
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  WebContents* prev_tab = tab_strip->GetActiveWebContents();
-
-  // Open URL in a new tab.
-  GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  // Check that there is no interstitial.
-  WebContents* tab = tab_strip->GetActiveWebContents();
-  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
-
-  {
-    // Block the current URL.
-    supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service =
-            SupervisedUserSettingsServiceFactory::GetForKey(
-                browser()->profile()->GetProfileKey());
-    supervised_user_settings_service->SetLocalSetting(
-        supervised_user::kContentPackDefaultFilteringBehavior,
-        base::Value(supervised_user::SupervisedUserURLFilter::BLOCK));
-
-    supervised_user::SupervisedUserURLFilter* filter =
-        GetSupervisedUserService()->GetURLFilter();
-    ASSERT_EQ(supervised_user::SupervisedUserURLFilter::BLOCK,
-              filter->GetFilteringBehaviorForURL(test_url));
-
-    content::TestNavigationObserver observer(tab);
-    observer.Wait();
-
-    // Check that we got the interstitial.
-    ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-  }
-
-  {
-    // On pressing the "back" button, the new tab should be closed, and we
-    // should get back to the previous active tab.
-    TabClosingObserver observer(tab_strip, tab);
-    GoBack(tab);
-    observer.WaitForContentsClosing();
-    EXPECT_EQ(prev_tab, tab_strip->GetActiveWebContents());
-  }
-}
-
-// Tests that we don't end up canceling an interstitial (thereby closing the
-// whole tab) by attempting to show a second one above it.
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-
-  // Open URL in a new tab.
-  GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  // Check that there is no interstitial.
-  WebContents* tab = tab_strip->GetActiveWebContents();
-  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
-
-  // Block the current URL.
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              browser()->profile()->GetProfileKey());
-  supervised_user_settings_service->SetLocalSetting(
-      supervised_user::kContentPackDefaultFilteringBehavior,
-      base::Value(supervised_user::SupervisedUserURLFilter::BLOCK));
-
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
-  ASSERT_EQ(supervised_user::SupervisedUserURLFilter::BLOCK,
-            filter->GetFilteringBehaviorForURL(test_url));
-
-  content::TestNavigationObserver observer(tab);
-  observer.Wait();
-
-  // Check that we got the interstitial.
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-
-  // Trigger a no-op change to the site lists, which will notify observers of
-  // the URL filter.
-  GetSupervisedUserService()->OnSiteListUpdated();
-
-  EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
-}
-
-// Tests that it's possible to navigate from a blocked page to another blocked
-// page.
-IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
-                       NavigateFromBlockedPageToBlockedPage) {
-  GURL test_url("http://www.example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-
-  GURL test_url2("http://www.a.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url2));
-
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-  EXPECT_EQ(test_url2, tab->GetVisibleURL());
-}
-
-// Tests whether a visit attempt adds a special history entry.
-IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(browser()->profile(),
-                                           ServiceAccessType::EXPLICIT_ACCESS);
-
-  GURL allowed_url("http://www.example.com/simple.html");
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
-
-  // Set the host as allowed.
-  base::Value::Dict dict;
-  dict.Set(allowed_url.host(), true);
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              browser()->profile()->GetProfileKey());
-  supervised_user_settings_service->SetLocalSetting(
-      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
-            filter->GetFilteringBehaviorForURL(allowed_url));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
-            filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
-  // Navigate to it and check that we don't get an interstitial.
-  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
-
-  // Query the history entry.
-  {
-    history::QueryResults results;
-    QueryHistory(history_service, &results);
-    ASSERT_EQ(1u, results.size());
-    EXPECT_EQ(allowed_url.spec(), results[0].url().spec());
-    EXPECT_FALSE(results[0].blocked_visit());
-  }
-
-  // Navigate to a blocked page and go back on the interstitial.
-  GURL blocked_url("http://www.new-example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  GoBackAndWaitForNavigation(tab);
-
-  EXPECT_EQ(allowed_url.spec(), tab->GetLastCommittedURL().spec());
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
-            filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::BLOCK,
-            filter->GetFilteringBehaviorForURL(blocked_url.GetWithEmptyPath()));
-
-  // Query the history entry.
-  {
-    history::QueryResults results;
-    QueryHistory(history_service, &results);
-    ASSERT_EQ(2u, results.size());
-    EXPECT_EQ(allowed_url.spec(), results[0].url().spec());
-    EXPECT_FALSE(results[0].blocked_visit());
-    EXPECT_EQ(blocked_url.spec(), results[1].url().spec());
-    EXPECT_TRUE(results[1].blocked_visit());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  // Ensure navigation completes.
-  EXPECT_TRUE(WaitForLoadStop(web_contents));
-  // We start out at the initial navigation.
-  ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
-
-  GURL test_url("http://www.example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
-
-  // Set the host as blocked and wait for the interstitial to appear.
-  base::Value::Dict dict;
-  dict.Set(test_url.host(), false);
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              browser()->profile()->GetProfileKey());
-  supervised_user_settings_service->SetLocalSetting(
-      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
-
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
-  ASSERT_EQ(supervised_user::SupervisedUserURLFilter::BLOCK,
-            filter->GetFilteringBehaviorForURL(test_url));
-
-  content::TestNavigationObserver block_observer(web_contents);
-  block_observer.Wait();
-
-  content::LoadStopObserver observer(web_contents);
-  GoBack(web_contents);
-  observer.Wait();
-
-  // We should have gone back to the initial navigation.
-  EXPECT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
-}
-
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
-                       ClosingBlockedTabDoesNotCrash) {
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  // Ensure navigation completes.
-  EXPECT_TRUE(WaitForLoadStop(web_contents));
-  ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
-
-  GURL test_url("http://www.example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
-
-  // Set the host as blocked and wait for the interstitial to appear.
-  base::Value::Dict dict;
-  dict.Set(test_url.host(), false);
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              browser()->profile()->GetProfileKey());
-  supervised_user_settings_service->SetLocalSetting(
-      supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
-
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
-  ASSERT_EQ(supervised_user::SupervisedUserURLFilter::BLOCK,
-            filter->GetFilteringBehaviorForURL(test_url));
-
-  // Verify that there is no crash when closing the blocked tab
-  // (https://crbug.com/719708).
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      0, TabCloseTypes::CLOSE_USER_GESTURE);
-}
-
-IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
-  GURL test_url("http://www.example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_FALSE(ShownPageIsInterstitial(browser()));
-
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              browser()->profile()->GetProfileKey());
-  // Set the host as blocked and wait for the interstitial to appear.
-  {
-    base::Value::Dict dict;
-    dict.Set(test_url.host(), false);
-    supervised_user_settings_service->SetLocalSetting(
-        supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
-  }
-
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
-  ASSERT_EQ(supervised_user::SupervisedUserURLFilter::BLOCK,
-            filter->GetFilteringBehaviorForURL(test_url));
-
-  content::TestNavigationObserver block_observer(web_contents);
-  block_observer.Wait();
-
-  ASSERT_TRUE(ShownPageIsInterstitial(browser()));
-  {
-    base::Value::Dict dict;
-    dict.Set(test_url.host(), true);
-    supervised_user_settings_service->SetLocalSetting(
-        supervised_user::kContentPackManualBehaviorHosts, std::move(dict));
-    ASSERT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
-              filter->GetFilteringBehaviorForURL(test_url));
-  }
-
-  content::TestNavigationObserver unblock_observer(web_contents);
-  unblock_observer.Wait();
-
-  ASSERT_EQ(test_url, web_contents->GetLastCommittedURL());
-
-  EXPECT_FALSE(ShownPageIsInterstitial(browser()));
-}
-
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
   GURL test_url("http://www.example.com/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
@@ -576,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
 
   supervised_user::SupervisedUserURLFilter* filter =
       GetSupervisedUserService()->GetURLFilter();
-  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
             filter->GetFilteringBehaviorForURL(test_url.GetWithEmptyPath()));
 
   observer.Wait();
@@ -600,14 +650,13 @@ class MockSupervisedUserURLFilterObserver
 
   // SupervisedUserURLFilter::Observer:
   void OnSiteListUpdated() override {}
-  MOCK_METHOD(
-      void,
-      OnURLChecked,
-      (const GURL& url,
-       supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
-       supervised_user::FilteringBehaviorReason reason,
-       bool uncertain),
-      (override));
+  MOCK_METHOD(void,
+              OnURLChecked,
+              (const GURL& url,
+               supervised_user::FilteringBehavior behavior,
+               supervised_user::FilteringBehaviorReason reason,
+               bool uncertain),
+              (override));
 
  private:
   const raw_ptr<supervised_user::SupervisedUserURLFilter> filter_;
@@ -641,6 +690,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterPrerenderingTest, OnURLChecked) {
 
   GURL test_url("http://www.example.com/simple.html");
   EXPECT_CALL(observer, OnURLChecked).Times(1);
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   testing::Mock::VerifyAndClearExpectations(&observer);
 

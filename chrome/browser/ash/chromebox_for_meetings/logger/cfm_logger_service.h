@@ -84,7 +84,7 @@ class CfmLoggerService : public CfmObserver,
   void SetDelegate(Delegate* delegate);
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<chromeos::cfm::mojom::MeetDevicesLogger> receivers_;
   chromeos::cfm::mojom::LoggerState current_logger_state_;

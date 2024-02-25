@@ -132,4 +132,34 @@ TEST_F(HTMLLinkElementSimTest, CanonicalNotCountedInSubFrame) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelCanonical));
 }
 
+// This tests whether `rel=privacy-policy` is properly counted.
+TEST_F(HTMLLinkElementTest, PrivacyPolicyCounter) {
+  // <link rel="privacy-policy"> is not counted when absent
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="not-privacy-policy" href="/">
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelPrivacyPolicy));
+
+  // <link rel="privacy-policy"> is counted when present.
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="privacy-policy" href="/">
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelPrivacyPolicy));
+}
+
+// This tests whether `rel=terms-of-service` is properly counted.
+TEST_F(HTMLLinkElementTest, TermsOfServiceCounter) {
+  // <link rel="terms-of-service"> is not counted when absent
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="not-terms-of-service" href="/">
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelTermsOfService));
+
+  // <link rel="terms-of-service"> is counted when present.
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="terms-of-service" href="/">
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelTermsOfService));
+}
+
 }  // namespace blink

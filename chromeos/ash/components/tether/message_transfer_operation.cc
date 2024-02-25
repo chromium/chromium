@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
-#include "chromeos/ash/components/tether/timer_factory.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "components/cross_device/timer_factory/timer_factory_impl.h"
 
 namespace ash {
 
@@ -95,7 +95,7 @@ MessageTransferOperation::MessageTransferOperation(
       device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
       connection_priority_(connection_priority),
-      timer_factory_(std::make_unique<TimerFactory>()) {}
+      timer_factory_(cross_device::TimerFactoryImpl::Factory::Create()) {}
 
 MessageTransferOperation::~MessageTransferOperation() {
   // If initialization never occurred, devices were never registered.
@@ -118,7 +118,7 @@ void MessageTransferOperation::Initialize() {
     return;
   }
 
-  absl::optional<multidevice::RemoteDeviceRef> local_device =
+  std::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
     PA_LOG(ERROR) << "MessageTransferOperation::" << __func__
@@ -151,7 +151,7 @@ void MessageTransferOperation::Initialize() {
 
 void MessageTransferOperation::OnMessageReceived(const std::string& device_id,
                                                  const std::string& payload) {
-  absl::optional<multidevice::RemoteDeviceRef> remote_device =
+  std::optional<multidevice::RemoteDeviceRef> remote_device =
       GetRemoteDevice(device_id);
   if (!remote_device) {
     // If the device from which the message has been received does not
@@ -289,18 +289,18 @@ void MessageTransferOperation::OnTimeout(
   UnregisterDevice(remote_device);
 }
 
-absl::optional<multidevice::RemoteDeviceRef>
+std::optional<multidevice::RemoteDeviceRef>
 MessageTransferOperation::GetRemoteDevice(const std::string& device_id) {
   for (auto& remote_device : remote_devices_) {
     if (remote_device.GetDeviceId() == device_id)
       return remote_device;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void MessageTransferOperation::SetTimerFactoryForTest(
-    std::unique_ptr<TimerFactory> timer_factory_for_test) {
+    std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test) {
   timer_factory_ = std::move(timer_factory_for_test);
 }
 

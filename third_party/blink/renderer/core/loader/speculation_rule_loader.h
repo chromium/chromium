@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -30,12 +29,11 @@ class CORE_EXPORT SpeculationRuleLoader final : public ResourceFinishObserver,
   }
   String DebugName() const override { return "SpeculationRuleLoader"; }
 
-  void LoadResource(SpeculationRulesResource*, const KURL&);
+  void LoadResource(SpeculationRulesResource*);
 
  private:
   void NotifyFinished() override;
 
-  KURL base_url_;
   Member<Document> document_;
   Member<SpeculationRulesResource> resource_;
   base::TimeTicks start_time_;

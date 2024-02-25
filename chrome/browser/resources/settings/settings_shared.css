@@ -8,13 +8,7 @@
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=//resources/cr_elements/search_highlight_style.css.js
  * #import=./settings_vars.css.js
-<if expr='not chromeos_ash'>
  * #include=cr-shared-style search-highlight-style
-</if>
-<if expr='chromeos_ash'>
- * #import=//resources/cr_elements/chromeos/cros_color_overrides.css.js
- * #include=cr-shared-style search-highlight-style cros-color-overrides
-</if>
  * #css_wrapper_metadata_end */
 
 /* Common styles for Material Design settings. */
@@ -85,15 +79,6 @@ a[href] {
 /* For elements that are simple out-links but don't look like anchors. */
 .inherit-color {
   color: inherit !important;
-}
-
-.primary-toggle {
-  color: var(--cr-secondary-text-color);
-  font-weight: 500;
-}
-
-.primary-toggle[checked] {
-  color: var(--google-blue-500);
 }
 
 collapse-radio-button,

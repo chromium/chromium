@@ -180,7 +180,8 @@ base::Value::Dict ClientDirectiveToReadableDictionary(
 
   dict.Set("Directive creation time",
            base::TimeFormatShortDateAndTimeWithTimeZone(
-               base::Time::FromJavaTime(directive.create_time_millis())));
+               base::Time::FromMillisecondsSinceUnixEpoch(
+                   directive.create_time_millis())));
 
   base::Value::List invoke_next_list;
   for (const auto& invoke_next : directive.invoke_next()) {
@@ -282,7 +283,8 @@ base::Value::Dict FeatureStatusToReadableDictionary(
       .Set("Enabled?", status.enabled())
       .Set("Last modified time (BatchGet* only)",
            base::TimeFormatShortDateAndTimeWithTimeZone(
-               base::Time::FromJavaTime(status.last_modified_time_millis())))
+               base::Time::FromMillisecondsSinceUnixEpoch(
+                   status.last_modified_time_millis())))
       .Set("Enable exclusively (BatchSet* only)?", status.enable_exclusively());
 }
 
@@ -371,11 +373,12 @@ std::ostream& operator<<(std::ostream& stream,
 base::Value::Dict BeaconSeedToReadableDictionary(const BeaconSeed& seed) {
   return base::Value::Dict()
       .Set("Data", TruncateStringForLogs(Encode(seed.data())))
-      .Set("Start time",
-           base::TimeFormatShortDateAndTimeWithTimeZone(
-               base::Time::FromJavaTime(seed.start_time_millis())))
+      .Set("Start time", base::TimeFormatShortDateAndTimeWithTimeZone(
+                             base::Time::FromMillisecondsSinceUnixEpoch(
+                                 seed.start_time_millis())))
       .Set("End time", base::TimeFormatShortDateAndTimeWithTimeZone(
-                           base::Time::FromJavaTime(seed.end_time_millis())));
+                           base::Time::FromMillisecondsSinceUnixEpoch(
+                               seed.end_time_millis())));
 }
 
 std::ostream& operator<<(std::ostream& stream, const BeaconSeed& seed) {

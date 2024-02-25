@@ -15,7 +15,7 @@ Vector<FontPalette::FontPaletteOverride> PaletteInterpolation::MixColorRecords(
     double percentage,
     double alpha_multiplier,
     Color::ColorSpace color_interpolation_space,
-    absl::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
+    std::optional<Color::HueInterpolationMethod> hue_interpolation_method) {
   Vector<FontPalette::FontPaletteOverride> result_color_records;
 
   DCHECK_EQ(start_color_records.size(), end_color_records.size());
@@ -37,7 +37,7 @@ Vector<FontPalette::FontPaletteOverride> PaletteInterpolation::MixColorRecords(
   return result_color_records;
 }
 
-absl::optional<uint16_t> PaletteInterpolation::RetrievePaletteIndex(
+std::optional<uint16_t> PaletteInterpolation::RetrievePaletteIndex(
     const FontPalette* palette) const {
   if (palette->GetPaletteNameKind() == FontPalette::kLightPalette ||
       palette->GetPaletteNameKind() == FontPalette::kDarkPalette) {
@@ -68,9 +68,9 @@ absl::optional<uint16_t> PaletteInterpolation::RetrievePaletteIndex(
         return base_palette_index.index;
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 Vector<FontPalette::FontPaletteOverride>
@@ -91,8 +91,9 @@ PaletteInterpolation::RetrieveColorRecords(const FontPalette* palette,
     }
   }
   Vector<FontPalette::FontPaletteOverride> color_records(colors_size);
+  DCHECK_LT(colors_size, std::numeric_limits<std::uint16_t>::max());
   for (wtf_size_t i = 0; i < colors_size; i++) {
-    color_records[i] = {static_cast<int>(i), colors[i]};
+    color_records[i] = {static_cast<uint16_t>(i), colors[i]};
   }
   return color_records;
 }
@@ -101,7 +102,7 @@ Vector<FontPalette::FontPaletteOverride>
 PaletteInterpolation::ComputeInterpolableFontPalette(
     const FontPalette* palette) const {
   if (!palette->IsInterpolablePalette()) {
-    absl::optional<uint16_t> retrieved_palette_index =
+    std::optional<uint16_t> retrieved_palette_index =
         RetrievePaletteIndex(palette);
     unsigned int new_palette_index =
         retrieved_palette_index.has_value() ? *retrieved_palette_index : 0;

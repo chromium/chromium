@@ -11,8 +11,8 @@ enum class ExclusiveAccessBubbleHideReason {
   // The bubble was never shown. e.g.
   // 1. View destroyed before the bubble could be shown.
   // 2. This is a request to dismiss bubble. e.g.
-  //    a. |MouseLockController| sends request A to lock mouse, then
-  //    b. |MLC| sends request B to unlock mouse with NULL bubble type.
+  //    a. |PointerLockController| sends request A to lock pointer, then
+  //    b. |PLC| sends request B to unlock mouse pointer with NULL bubble type.
   //    Resulted callbacks: A <= |kInterrupted|, B <= |kNotShown|.
   kNotShown,
 
@@ -20,7 +20,7 @@ enum class ExclusiveAccessBubbleHideReason {
   // |ExclusiveAccessBubble::kInitialDelayMs|, and was dismissed due to user
   // or script actions. e.g.
   // 1. User pressed ESC or switched to another window;
-  // 2. Script called |exitPointerLock()|, or triggered mouse lock and
+  // 2. Script called |exitPointerLock()|, or triggered pointer lock and
   //    fullscreen at the same time.
   kInterrupted,
 

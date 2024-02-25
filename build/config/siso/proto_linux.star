@@ -9,12 +9,13 @@ load("@builtin//struct.star", "module")
 load("./config.star", "config")
 load("./protoc_wrapper.star", "protoc_wrapper")
 
-__filegroups = {
-    "third_party/protobuf/python/google:pyprotolib": {
-        "type": "glob",
-        "includes": ["*.py"],
-    },
-}
+def __filegroups(ctx):
+    return {
+        "third_party/protobuf/python/google:pyprotolib": {
+            "type": "glob",
+            "includes": ["*.py"],
+        },
+    }
 
 def __protoc_wrapper(ctx, cmd):
     inputs = protoc_wrapper.scandeps(ctx, cmd.args)
@@ -33,7 +34,7 @@ def __step_config(ctx, step_config):
     })
     step_config["rules"].extend([
         {
-            "name": "proto_linux/protoc_wrapper",
+            "name": "proto/protoc_wrapper",
             "command_prefix": "python3 ../../tools/protoc_wrapper/protoc_wrapper.py",
             "indirect_inputs": {
                 "includes": ["*.proto"],

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "mojo/core/ports/node_delegate.h"
 #include "mojo/core/ports/port_locker.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_NACL)
 #include "crypto/random.h"
@@ -1290,7 +1290,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
     PortLocker::AssertNoPortsLockedOnCurrentThread();
     base::ReleasableAutoLock ports_locker(&ports_lock_);
 
-    absl::optional<PortLocker> locker(absl::in_place, port_refs, 2);
+    std::optional<PortLocker> locker(std::in_place, port_refs, 2);
     auto* port0 = locker->GetPort(port0_ref);
     auto* port1 = locker->GetPort(port1_ref);
 

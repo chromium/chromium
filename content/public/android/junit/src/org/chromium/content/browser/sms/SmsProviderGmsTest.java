@@ -24,9 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Unit tests for SmsProviderGms.
- */
+/** Unit tests for SmsProviderGms. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SmsProviderGmsTest {
@@ -48,18 +46,24 @@ public class SmsProviderGmsTest {
     }
 
     private void createSmsProviderGms(@GmsBackend int backend) {
-        mProvider = new SmsProviderGms(
-                /*native_identifier=*/0, backend, /*isVerificationBackendAvailable=*/true);
+        mProvider =
+                new SmsProviderGms(
+                        /* native_identifier= */ 0,
+                        backend,
+                        /* isVerificationBackendAvailable= */ true);
         mProvider.setUserConsentReceiverForTesting(mUserConsentReceiver);
         mProvider.setVerificationReceiverForTesting(mVerificationReceiver);
     }
 
     @Test
     public void testVerificationReceiverCreationWithUserConsentBackend() {
-        SmsProviderGms provider = new SmsProviderGms(
-                /*native_identifier=*/0, GmsBackend.USER_CONSENT,
-                /*isVerificationBackendAvailable=*/true);
-        assertNotNull("SmsVerificationReceiver should be created regardless of the backend",
+        SmsProviderGms provider =
+                new SmsProviderGms(
+                        /* native_identifier= */ 0,
+                        GmsBackend.USER_CONSENT,
+                        /* isVerificationBackendAvailable= */ true);
+        assertNotNull(
+                "SmsVerificationReceiver should be created regardless of the backend",
                 provider.getVerificationReceiverForTesting());
     }
 
@@ -161,7 +165,7 @@ public class SmsProviderGmsTest {
     public void testUserConsentBackendWithoutWindow() {
         createSmsProviderGms(GmsBackend.USER_CONSENT);
         boolean isLocalRequest = true;
-        mProvider.listen(/*window=*/null, isLocalRequest);
+        mProvider.listen(/* window= */ null, isLocalRequest);
         Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).listen(null);
     }
 
@@ -169,7 +173,7 @@ public class SmsProviderGmsTest {
     public void testVerificationBackendWithoutWindow() {
         createSmsProviderGms(GmsBackend.VERIFICATION);
         boolean isLocalRequest = true;
-        mProvider.listen(/*window=*/null, isLocalRequest);
+        mProvider.listen(/* window= */ null, isLocalRequest);
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
                 .listen(isLocalRequest);
     }
@@ -178,7 +182,7 @@ public class SmsProviderGmsTest {
     public void testAutoBackendWithoutWindow() {
         createSmsProviderGms(GmsBackend.AUTO);
         boolean isLocalRequest = true;
-        mProvider.listen(/*window=*/null, isLocalRequest);
+        mProvider.listen(/* window= */ null, isLocalRequest);
         Mockito.verify(mProvider.getUserConsentReceiverForTesting(), times(0)).listen(null);
         Mockito.verify(mProvider.getVerificationReceiverForTesting(), times(1))
                 .listen(isLocalRequest);

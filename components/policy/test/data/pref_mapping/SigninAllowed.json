@@ -1,0 +1,27 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SigninAllowed": true
+        },
+        "prefs": {
+          "signin.allowed_on_next_startup": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  }
+]

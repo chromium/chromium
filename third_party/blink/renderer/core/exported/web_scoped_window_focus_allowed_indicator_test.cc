@@ -29,17 +29,18 @@
  */
 
 #include "third_party/blink/public/web/web_scoped_window_focus_allowed_indicator.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(WebScopedWindowFocusAllowedIndicatorTest, Basic) {
+  test::TaskEnvironment task_environment;
   auto dummy = std::make_unique<DummyPageHolder>();
   auto* window = dummy->GetFrame().DomWindow();
   WebDocument web_document(&dummy->GetDocument());

@@ -45,7 +45,7 @@ void NoStatePrefetchHandle::OnCancel() {
 bool NoStatePrefetchHandle::IsPrefetching() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return prefetch_data_.get() != nullptr &&
-         !prefetch_data_->contents()->prerendering_has_been_cancelled();
+         !prefetch_data_->contents()->prefetching_has_been_cancelled();
 }
 
 bool NoStatePrefetchHandle::IsFinishedLoading() const {
@@ -63,8 +63,8 @@ NoStatePrefetchContents* NoStatePrefetchHandle::contents() const {
   return prefetch_data_ ? prefetch_data_->contents() : nullptr;
 }
 
-const GURL& NoStatePrefetchHandle::prerender_url() const {
-  return prerender_url_;
+const GURL& NoStatePrefetchHandle::prefetch_url() const {
+  return prefetch_url_;
 }
 
 NoStatePrefetchHandle::NoStatePrefetchHandle(
@@ -75,7 +75,7 @@ NoStatePrefetchHandle::NoStatePrefetchHandle(
     prefetch_data_ = prefetch_data->AsWeakPtr();
     prefetch_data->OnHandleCreated(this);
     if (prefetch_data->contents()) {
-      prerender_url_ = prefetch_data->contents()->prerender_url();
+      prefetch_url_ = prefetch_data->contents()->prefetch_url();
     }
   }
 }

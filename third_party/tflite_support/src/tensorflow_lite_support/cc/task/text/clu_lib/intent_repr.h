@@ -18,7 +18,7 @@ limitations under the License.
 
 #include <string>
 
-#include "absl/status/statusor.h"      // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 
 namespace tflite::task::text::clu {
@@ -30,8 +30,7 @@ class IntentRepr {
   const std::string& Name() const { return name_; }
   std::string FullName() const;
   static absl::StatusOr<IntentRepr> CreateFromFullName(const absl::string_view);
-  static IntentRepr Create(absl::string_view name,
-                           absl::string_view domain,
+  static IntentRepr Create(absl::string_view name, absl::string_view domain,
                            const bool share_across_domains);
 
  private:

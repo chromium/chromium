@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<script src="../../resources/gc.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+
+<div id='breadBox'>
+  <div id='bread'></div>
+</div>
+<div id='toaster'></div>
+
+<div id='fruitBowl'></div>
+
+<script>
+'use strict';
+(() => {
+
+if (!window.internals) {
+  // Requires observeGC
+  return;
+}
+
+promise_test((t) => {
+  // We may not want to land this test, including for now as an example of how
+  // this interface behaves in a way that is independent of our feature.
+  var trash_observation = null;
+  (() => {
+    // Construct a node which we do not attach or insert in any way.
+    // This should DEFINITELY be collected.
+    const trash = document.createElement("div");
+
+    trash_observation = internals.observeGC(trash);
+  })();
+
+  return asyncGC().then(() => {
+    assert_true(trash_observation.wasCollected,
+      "|trash| really should have been collected");
+  });
+}, 'Testing collection works as expected');
+promise_test((t) => {
+  var apple_observation = null;
+  var banana_observation = null;
+  var pear_observation = null;
+  (() => {
+    const apple = document.createElement("div");
+    apple.setAttribute("id", "apple");
+
+    const banana = document.createElement("div");
+    banana.setAttribute("id", "banana");
+
+    const pear = document.createElement("div");
+    pear.setAttribute("id", "pear");
+
+    // Insert all 3 pieces of fruit into fruitBowl.
+    fruitBowl.appendChild(apple);
+    fruitBowl.appendChild(banana);
+    fruitBowl.appendChild(pear);
+
+    // Set describedBy based on the order of my fruit preferences.
+    fruitBowl.ariaLabelledByElements = [pear, apple, banana];
+    assert_array_equals(fruitBowl.ariaLabelledByElements, [pear, apple, banana]);
+    assert_equals(fruitBowl.getAttribute("aria-labelledby"), "");
+
+    // Someone else comes along and eats the apple.
+    apple.remove();
+    assert_array_equals(fruitBowl.ariaLabelledByElements, [pear, banana]);
+
+    // only |apple| should be collectable by the GC.
+    apple_observation = internals.observeGC(apple);
+    banana_observation = internals.observeGC(banana);
+    pear_observation = internals.observeGC(pear);
+  })();
+
+  return asyncGC().then(() => {
+    assert_true(apple_observation.wasCollected,
+                'Invalid ER should not prevent GC');
+    assert_false(banana_observation.wasCollected,
+                'Valid ER should prevent GC');
+    assert_false(pear_observation.wasCollected,
+                'Valid ER should prevent GC');
+  });
+}, 'Element reflection arrayAttributes garbage collection test');
+
+})();
+</script>

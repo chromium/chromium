@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/ash_element_identifiers.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -13,6 +15,7 @@ namespace ash {
 LegacyDeskBarView::LegacyDeskBarView(base::WeakPtr<OverviewGrid> overview_grid)
     : DeskBarViewBase(overview_grid->root_window(),
                       DeskBarViewBase::Type::kOverview) {
+  SetProperty(views::kElementIdentifierKey, kOverviewDeskBarElementId);
   overview_grid_ = overview_grid;
 }
 
@@ -23,7 +26,13 @@ gfx::Size LegacyDeskBarView::CalculatePreferredSize() const {
           GetPreferredBarHeight(root_, type_, state_)};
 }
 
-BEGIN_METADATA(LegacyDeskBarView, DeskBarViewBase)
+gfx::Rect LegacyDeskBarView::GetAvailableBounds() const {
+  // Information is retrieved from the widget as it comes with the full
+  // available bounds at initialization time and remains unchanged.
+  return GetWidget()->GetRootView()->bounds();
+}
+
+BEGIN_METADATA(LegacyDeskBarView)
 END_METADATA
 
 }  // namespace ash

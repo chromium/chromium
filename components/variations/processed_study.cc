@@ -234,17 +234,17 @@ bool ProcessedStudy::Init(const Study* study) {
   return true;
 }
 
-bool ProcessedStudy::ShouldStudyUseLowEntropy() const {
+bool ProcessedStudy::AllowsHighEntropy() const {
   // This should be kept in sync with the server-side layer validation
   // code: go/chrome-variations-layer-validation
   for (const auto& experiment : study_->experiment()) {
     if (experiment.has_google_web_experiment_id() ||
         experiment.has_google_web_trigger_experiment_id() ||
         experiment.has_chrome_sync_experiment_id()) {
-      return true;
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 const base::FieldTrial::EntropyProvider&
@@ -260,7 +260,7 @@ ProcessedStudy::SelectEntropyProviderForStudy(
     return entropy_providers.session_entropy();
   }
   if (entropy_providers.default_entropy_is_high_entropy() &&
-      !ShouldStudyUseLowEntropy()) {
+      AllowsHighEntropy()) {
     // We can use the high entropy source to randomize this study, which will
     // be uniform even if the study is conditioned on layer membership.
     return entropy_providers.default_entropy();

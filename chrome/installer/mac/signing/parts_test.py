@@ -108,6 +108,12 @@ class TestGetParts(unittest.TestCase):
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL
             | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['web-app-shortcut-copier'].options)
+        self.assertEqual(
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION
+            | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
             all_parts['privileged-helper'].options)
 
 

@@ -102,8 +102,9 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       // handle values produced by progress based timelines. At this point it
       // can be assumed that EndTimeInternal() will give us a good value.
 
-      const AnimationTimeDelta active_duration = MultiplyZeroAlwaysGivesZero(
-          timing_.iteration_duration.value(), timing_.iteration_count);
+      const AnimationTimeDelta active_duration =
+          TimingCalculations::MultiplyZeroAlwaysGivesZero(
+              timing_.iteration_duration.value(), timing_.iteration_count);
       DCHECK_GE(active_duration, AnimationTimeDelta());
 
       // Per the spec, the end time has a lower bound of 0.0:
@@ -191,8 +192,9 @@ void AnimationEffect::EnsureNormalizedTiming() const {
         timing_.iteration_duration.value_or(AnimationTimeDelta());
   }
 
-  normalized_->active_duration = MultiplyZeroAlwaysGivesZero(
-      normalized_->iteration_duration, timing_.iteration_count);
+  normalized_->active_duration =
+      TimingCalculations::MultiplyZeroAlwaysGivesZero(
+          normalized_->iteration_duration, timing_.iteration_count);
 
   // Per the spec, the end time has a lower bound of 0.0:
   // https://w3.org/TR/web-animations-1/#end-time#end-time
@@ -259,7 +261,7 @@ ComputedEffectTiming* AnimationEffect::getComputedTiming() {
   // A composited animation does not need to tick main frame updates, and
   // the cached state for localTime can become stale.
   if (Animation* animation = GetAnimation()) {
-    absl::optional<AnimationTimeDelta> current_time =
+    std::optional<AnimationTimeDelta> current_time =
         animation->CurrentTimeInternal();
     if (current_time != last_update_time_ || animation->Outdated()) {
       animation->Update(kTimingUpdateOnDemand);
@@ -325,7 +327,7 @@ void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
 }
 
 void AnimationEffect::UpdateInheritedTime(
-    absl::optional<AnimationTimeDelta> inherited_time,
+    std::optional<AnimationTimeDelta> inherited_time,
     bool is_idle,
     double inherited_playback_rate,
     TimingUpdateReason reason) const {

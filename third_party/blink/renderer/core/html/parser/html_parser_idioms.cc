@@ -70,6 +70,30 @@ String StripLeadingAndTrailingHTMLSpaces(const String& string) {
   });
 }
 
+// TODO(iclelland): Consider refactoring this into a general
+// String::Split(predicate) method
+Vector<String> SplitOnASCIIWhitespace(const String& input) {
+  Vector<String> output;
+  unsigned length = input.length();
+  if (!length) {
+    return output;
+  }
+  WTF::VisitCharacters(input, [&](const auto* cursor, unsigned length) {
+    using CharacterType = std::decay_t<decltype(*cursor)>;
+    const CharacterType* string_start = cursor;
+    const CharacterType* string_end = cursor + length;
+    SkipWhile<CharacterType, IsHTMLSpace>(cursor, string_end);
+    while (cursor < string_end) {
+      const CharacterType* token_start = cursor;
+      SkipUntil<CharacterType, IsHTMLSpace>(cursor, string_end);
+      output.push_back(input.Substring((unsigned)(token_start - string_start),
+                                       (unsigned)(cursor - token_start)));
+      SkipWhile<CharacterType, IsHTMLSpace>(cursor, string_end);
+    }
+  });
+  return output;
+}
+
 String SerializeForNumberType(const Decimal& number) {
   if (number.IsZero()) {
     // Decimal::toString appends exponent, e.g. "0e-18"

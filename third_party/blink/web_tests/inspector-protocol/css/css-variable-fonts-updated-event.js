@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startHTML(
     `some text`,
     'Verifies that CSS.fontsUpdated events contain additional information for variable fonts'

@@ -107,18 +107,22 @@ FetchRequestData* FetchRequestData::Create(
 
   if (fetch_api_request->blob) {
     DCHECK(fetch_api_request->body.IsEmpty());
-    request->SetBuffer(BodyStreamBuffer::Create(
-        script_state,
-        MakeGarbageCollected<BlobBytesConsumer>(
-            ExecutionContext::From(script_state), fetch_api_request->blob),
-        nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr));
+    request->SetBuffer(
+        BodyStreamBuffer::Create(
+            script_state,
+            MakeGarbageCollected<BlobBytesConsumer>(
+                ExecutionContext::From(script_state), fetch_api_request->blob),
+            nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr),
+        fetch_api_request->blob->size());
   } else if (fetch_api_request->body.FormBody()) {
-    request->SetBuffer(BodyStreamBuffer::Create(
-        script_state,
-        MakeGarbageCollected<FormDataBytesConsumer>(
-            ExecutionContext::From(script_state),
-            fetch_api_request->body.FormBody()),
-        nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr));
+    request->SetBuffer(
+        BodyStreamBuffer::Create(script_state,
+                                 MakeGarbageCollected<FormDataBytesConsumer>(
+                                     ExecutionContext::From(script_state),
+                                     fetch_api_request->body.FormBody()),
+                                 nullptr /* AbortSignal */,
+                                 /*cached_metadata_handler=*/nullptr),
+        fetch_api_request->body.FormBody()->SizeInBytes());
   } else if (fetch_api_request->body.StreamBody()) {
     mojo::ScopedDataPipeConsumerHandle readable;
     mojo::ScopedDataPipeProducerHandle writable;
@@ -198,7 +202,7 @@ FetchRequestData* FetchRequestData::Create(
       DCHECK(RuntimeEnabledFeatures::PrivateStateTokensEnabled(
           ExecutionContext::From(script_state)));
     }
-    absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params =
+    std::optional<network::mojom::blink::TrustTokenParams> trust_token_params =
         std::move(*(fetch_api_request->trust_token_params->Clone().get()));
     request->SetTrustTokenParams(trust_token_params);
   }
@@ -264,6 +268,7 @@ FetchRequestData* FetchRequestData::Clone(ScriptState* script_state,
       return nullptr;
     buffer_ = new1;
     request->buffer_ = new2;
+    request->buffer_byte_length_ = buffer_byte_length_;
   }
   if (url_loader_factory_.is_bound()) {
     url_loader_factory_->Clone(
@@ -274,14 +279,17 @@ FetchRequestData* FetchRequestData::Clone(ScriptState* script_state,
   return request;
 }
 
-FetchRequestData* FetchRequestData::Pass(ScriptState* script_state) {
+FetchRequestData* FetchRequestData::Pass(ScriptState* script_state,
+                                         ExceptionState& exception_state) {
   FetchRequestData* request = FetchRequestData::CloneExceptBody();
   if (buffer_) {
     request->buffer_ = buffer_;
+    request->buffer_byte_length_ = buffer_byte_length_;
     buffer_ = BodyStreamBuffer::Create(
         script_state, BytesConsumer::CreateClosed(), nullptr /* AbortSignal */,
         /*cached_metadata_handler=*/nullptr);
-    buffer_->CloseAndLockAndDisturb();
+    buffer_->CloseAndLockAndDisturb(exception_state);
+    buffer_byte_length_ = 0;
   }
   request->url_loader_factory_ = std::move(url_loader_factory_);
   return request;

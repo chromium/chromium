@@ -5,18 +5,23 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_MIRRORING_SERVICE_H_
 #define COMPONENTS_MIRRORING_SERVICE_MIRRORING_SERVICE_H_
 
+#include <memory>
+
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/values.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace gfx {
+class Size;
+}
+
 namespace mirroring {
 
-class Session;
 class OpenscreenSessionHost;
 
 class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
@@ -50,9 +55,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
 
   // The IO task runner for this utility process.
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  // The current legacy mirroring session, if any.
-  std::unique_ptr<Session> session_;
 
   // The current Open Screen session host, if any.
   std::unique_ptr<OpenscreenSessionHost> session_host_;

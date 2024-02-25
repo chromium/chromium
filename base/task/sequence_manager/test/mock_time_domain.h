@@ -5,9 +5,10 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TEST_MOCK_TIME_DOMAIN_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TEST_MOCK_TIME_DOMAIN_H_
 
+#include <optional>
+
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -27,7 +28,7 @@ class MockTimeDomain : public TimeDomain {
   TimeTicks NowTicks() const override;
 
   // TimeDomain implementation:
-  bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> next_wake_up,
+  bool MaybeFastForwardToWakeUp(std::optional<WakeUp> next_wake_up,
                                 bool quit_when_idle_requested) override;
   const char* GetName() const override;
 

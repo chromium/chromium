@@ -4,6 +4,8 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_OBSERVER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -27,7 +29,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/character_composer.h"
 
@@ -63,7 +64,6 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void OnFocus(const std::string& engine_id,
                int context_id,
                const TextInputMethod::InputContext& context) override;
-  void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur(const std::string& engine_id, int context_id) override;
   void OnKeyEvent(const std::string& engine_id,
                   const ui::KeyEvent& event,
@@ -112,7 +112,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
                           RequestSuggestionsCallback callback) override;
   void DisplaySuggestions(
       const std::vector<ime::AssistiveSuggestion>& suggestions,
-      const absl::optional<ime::SuggestionsTextContext>& context) override;
+      const std::optional<ime::SuggestionsTextContext>& context) override;
   void UpdateCandidatesWindow(ime::mojom::CandidatesWindowPtr window) override;
   void RecordUkm(ime::mojom::UkmEntryPtr entry) override;
   void DEPRECATED_ReportKoreanAction(ime::mojom::KoreanAction action) override;
@@ -183,7 +183,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
                   ime::mojom::InputMethodMetadataPtr metadata);
 
   // Not owned by this class.
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
   raw_ptr<EditorEventSink> editor_event_sink_;
 
   std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
@@ -200,13 +200,13 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   std::unique_ptr<SuggestionsCollector> suggestions_collector_;
   std::unique_ptr<GrammarManager> grammar_manager_;
 
-  absl::optional<PrefChangeRecorder> pref_change_recorder_;
+  std::optional<PrefChangeRecorder> pref_change_recorder_;
 
   ui::CharacterComposer character_composer_;
 
   SurroundingText last_surrounding_text_;
 
-  absl::optional<TextClient> text_client_;
+  std::optional<TextClient> text_client_;
 
   // |use_ime_service| should always be |true| in prod code, and may only be
   // |false| in browser tests that need to avoid connecting to the Mojo IME

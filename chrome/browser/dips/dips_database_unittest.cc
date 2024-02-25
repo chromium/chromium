@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,6 @@
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::Time;
 
@@ -38,12 +37,12 @@ class DIPSDatabase;
 
 namespace {
 
-const int kCurrentVersionNumber = 4;
-const int kCompatibleVersionNumber = 4;
+const int kCurrentVersionNumber = 5;
+const int kCompatibleVersionNumber = 5;
 
 class TestDatabase : public DIPSDatabase {
  public:
-  explicit TestDatabase(const absl::optional<base::FilePath>& db_path)
+  explicit TestDatabase(const std::optional<base::FilePath>& db_path)
       : DIPSDatabase(db_path) {}
   void LogDatabaseMetricsForTesting() { LogDatabaseMetrics(); }
 };
@@ -61,7 +60,8 @@ class DIPSDatabaseTest : public testing::Test {
  public:
   explicit DIPSDatabaseTest(bool in_memory) : in_memory_(in_memory) {}
 
-  // Small delta used to test before/after timestamps made with FromDoubleT.
+  // Small delta used to test before/after timestamps made with
+  // FromSecondsSinceUnixEpoch.
   base::TimeDelta tiny_delta = base::Milliseconds(1);
 
   TimestampRange ToRange(base::Time& time) { return {{time, time}}; }
@@ -75,7 +75,7 @@ class DIPSDatabaseTest : public testing::Test {
   // Test setup.
   void SetUp() override {
     if (in_memory_) {
-      db_ = std::make_unique<TestDatabase>(absl::nullopt);
+      db_ = std::make_unique<TestDatabase>(std::nullopt);
     } else {
       ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
       db_path_ = temp_dir_.GetPath().AppendASCII("DIPS.db");
@@ -183,7 +183,7 @@ TEST_P(DIPSDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
       "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
       "first_bounce_time,last_bounce_time) VALUES ('',2,4,1,5)"));
   EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces), 1u);
-  EXPECT_EQ(db_->Read(""), absl::nullopt);
+  EXPECT_EQ(db_->Read(""), std::nullopt);
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 DIPSErrorCode::kRead_EmptySite_InDb, 1);
   // Verify the entry was deleted during the read attempt.
@@ -192,7 +192,7 @@ TEST_P(DIPSDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
 
 TEST_P(DIPSDatabaseErrorHistogramsTest, Read_EmptySite_NotInDb) {
   base::HistogramTester histograms;
-  EXPECT_EQ(db_->Read(""), absl::nullopt);
+  EXPECT_EQ(db_->Read(""), std::nullopt);
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 DIPSErrorCode::kRead_EmptySite_NotInDb, 1);
 }
@@ -201,7 +201,8 @@ TEST_P(DIPSDatabaseErrorHistogramsTest, Write_EmptySite) {
   base::HistogramTester histograms;
   // Attempt to add a bounce for an empty site.
   const std::string empty_site = GetSiteForDIPS(GURL(""));
-  TimestampRange bounce({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  TimestampRange bounce(
+      {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_FALSE(db_->Write(empty_site, TimestampRange(), TimestampRange(),
                           TimestampRange(), bounce, TimestampRange()));
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
@@ -214,7 +215,8 @@ TEST_P(DIPSDatabaseErrorHistogramsTest, Write_None) {
   base::HistogramTester histograms;
   // Add a bounce for a non-empty site.
   const std::string site = GetSiteForDIPS(GURL("https://example.test"));
-  TimestampRange bounce({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  TimestampRange bounce(
+      {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(db_->Write(site, TimestampRange(), TimestampRange(),
                          TimestampRange(), bounce, TimestampRange()));
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
@@ -261,7 +263,7 @@ class DIPSDatabaseAllColumnTest
                       column_ == kWebAuthnAssertion ? times : TimestampRange());
   }
 
-  TimestampRange ReadValueForVariableColumn(absl::optional<StateValue> value) {
+  TimestampRange ReadValueForVariableColumn(std::optional<StateValue> value) {
     switch (column_) {
       case ColumnType::kSiteStorage:
         return value->site_storage_times;
@@ -300,7 +302,8 @@ class DIPSDatabaseAllColumnTest
 TEST_P(DIPSDatabaseAllColumnTest, AddBounce) {
   // Add a bounce for site.
   const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
-  TimestampRange bounce_1({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  TimestampRange bounce_1(
+      {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(WriteToVariableColumn(site, bounce_1));
   // Verify that site is in `bounces` using Read().
   EXPECT_TRUE(db_->Read(site).has_value());
@@ -310,14 +313,16 @@ TEST_P(DIPSDatabaseAllColumnTest, AddBounce) {
 TEST_P(DIPSDatabaseAllColumnTest, UpdateBounce) {
   // Add a bounce for site.
   const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
-  TimestampRange bounce_1({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  TimestampRange bounce_1(
+      {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(WriteToVariableColumn(site, bounce_1));
 
   // Verify that site's entry in `bounces` is now at t = 1
   EXPECT_EQ(ReadValueForVariableColumn(db_->Read(site)), bounce_1);
 
   // Update site's entry with a bounce at t = 2
-  TimestampRange bounce_2({Time::FromDoubleT(2), Time::FromDoubleT(3)});
+  TimestampRange bounce_2(
+      {Time::FromSecondsSinceUnixEpoch(2), Time::FromSecondsSinceUnixEpoch(3)});
   EXPECT_TRUE(WriteToVariableColumn(site, bounce_2));
 
   // Verify that site's entry in `bounces` is now at t = 2
@@ -328,7 +333,8 @@ TEST_P(DIPSDatabaseAllColumnTest, UpdateBounce) {
 TEST_P(DIPSDatabaseAllColumnTest, DeleteBounce) {
   // Add a bounce for site.
   const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
-  TimestampRange bounce({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  TimestampRange bounce(
+      {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(WriteToVariableColumn(site, bounce));
 
   // Verify that site has state tracked in bounces.
@@ -347,7 +353,8 @@ TEST_P(DIPSDatabaseAllColumnTest, DeleteSeveralBounces) {
   const std::string site1 = GetSiteForDIPS(GURL("http://www.youtube.com/"));
   const std::string site2 = GetSiteForDIPS(GURL("http://www.picasa.com/"));
 
-  TimestampRange bounce({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  TimestampRange bounce(
+      {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(WriteToVariableColumn(site1, bounce));
   EXPECT_TRUE(WriteToVariableColumn(site2, bounce));
 
@@ -368,7 +375,8 @@ TEST_P(DIPSDatabaseAllColumnTest, ReadBounce) {
   // Add a bounce for site.
   const std::string site = GetSiteForDIPS(GURL("https://example.test"));
 
-  TimestampRange bounce({Time::FromDoubleT(1), Time::FromDoubleT(1)});
+  TimestampRange bounce(
+      {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(WriteToVariableColumn(site, bounce));
   EXPECT_EQ(ReadValueForVariableColumn(db_->Read(site)), bounce);
 
@@ -391,14 +399,18 @@ TEST_P(DIPSDatabasePopupsTest, AddPopup) {
   const std::string popup_site =
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
   uint64_t access_id = 123;
-  base::Time popup_time = Time::FromDoubleT(1);
+  base::Time popup_time = Time::FromSecondsSinceUnixEpoch(1);
+  bool is_current_interaction = true;
 
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
+                              is_current_interaction));
 
   auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
   ASSERT_TRUE(popups_state_value.has_value());
   EXPECT_EQ(popups_state_value.value().access_id, access_id);
   EXPECT_EQ(popups_state_value.value().last_popup_time, popup_time);
+  EXPECT_EQ(popups_state_value.value().is_current_interaction,
+            is_current_interaction);
 }
 
 // Test updating entries in the `popups` table of the DIPSDatabase.
@@ -409,12 +421,13 @@ TEST_P(DIPSDatabasePopupsTest, UpdatePopup) {
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
   uint64_t first_access_id = 123;
   uint64_t second_access_id = 456;
-  base::Time first_popup_time = Time::FromDoubleT(1);
-  base::Time second_popup_time = Time::FromDoubleT(2);
+  base::Time first_popup_time = Time::FromSecondsSinceUnixEpoch(1);
+  base::Time second_popup_time = Time::FromSecondsSinceUnixEpoch(2);
 
   // Write the initial entry and verify it was added to the db.
   EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, first_access_id,
-                              first_popup_time));
+                              first_popup_time,
+                              /*is_current_interaction=*/true));
   EXPECT_EQ(db_->ReadPopup(opener_site, popup_site)
                 .value_or(PopupsStateValue())
                 .last_popup_time,
@@ -422,13 +435,15 @@ TEST_P(DIPSDatabasePopupsTest, UpdatePopup) {
 
   // Update the entry with a new popup time of t = 2.
   EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, second_access_id,
-                              second_popup_time));
+                              second_popup_time,
+                              /*is_current_interaction=*/false));
 
   // Verify the new entry.
   auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
   ASSERT_TRUE(popups_state_value.has_value());
   EXPECT_EQ(popups_state_value.value().access_id, second_access_id);
   EXPECT_EQ(popups_state_value.value().last_popup_time, second_popup_time);
+  EXPECT_EQ(popups_state_value.value().is_current_interaction, false);
 }
 
 // Test deleting an entry from the `popups` table of the DIPSDatabase. An entry
@@ -440,10 +455,11 @@ TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
   const std::string popup_site =
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
   uint64_t access_id = 123;
-  base::Time popup_time = Time::FromDoubleT(1);
+  base::Time popup_time = Time::FromSecondsSinceUnixEpoch(1);
 
   // Write the popup to db, and verify.
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
+                              /*is_current_interaction=*/true));
   EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Delete the entry in db by opener_site, and verify.
@@ -451,7 +467,8 @@ TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
   EXPECT_FALSE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Write the popup to db, and verify.
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time));
+  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
+                              /*is_current_interaction=*/true));
   EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Delete the entry in db by popup_site, and verify.
@@ -469,9 +486,13 @@ TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
   const std::string popup_site =
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
   EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
-                              /*access_id=*/123, Time::FromDoubleT(1)));
+                              /*access_id=*/123,
+                              Time::FromSecondsSinceUnixEpoch(1),
+                              /*is_current_interaction=*/true));
   EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
-                              /*access_id=*/456, Time::FromDoubleT(2)));
+                              /*access_id=*/456,
+                              Time::FromSecondsSinceUnixEpoch(2),
+                              /*is_current_interaction=*/true));
 
   // Verify that both sites are in the `popups` table.
   EXPECT_TRUE(db_->ReadPopup(opener_site_1, popup_site).has_value());
@@ -484,6 +505,49 @@ TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
   // Verify that both sites are deleted from the `popups` table.
   EXPECT_FALSE(db_->Read(opener_site_1).has_value());
   EXPECT_FALSE(db_->Read(opener_site_2).has_value());
+}
+
+// Test the `ReadRecentPopupsWithInteraction` function which retrieves a list of
+// `popups` table entries with recent popup timestamps.
+TEST_P(DIPSDatabasePopupsTest, ReadRecentPopupsWithInteraction) {
+  base::Time now = Now();
+
+  // Add popups to db.
+  const std::string opener_site_1 =
+      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string opener_site_2 =
+      GetSiteForDIPS(GURL("http://www.picasa.com/"));
+  const std::string opener_site_3 =
+      GetSiteForDIPS(GURL("http://www.google.com/"));
+  const std::string popup_site =
+      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+  EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
+                              /*access_id=*/123, now - base::Seconds(10),
+                              /*is_current_interaction=*/true));
+  EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
+                              /*access_id=*/456, now - base::Seconds(10),
+                              /*is_current_interaction=*/false));
+  EXPECT_TRUE(db_->WritePopup(opener_site_3, popup_site,
+                              /*access_id=*/789, now - base::Seconds(30),
+                              /*is_current_interaction=*/true));
+
+  // Verify that all three sites are in the `popups` table.
+  EXPECT_TRUE(db_->ReadPopup(opener_site_1, popup_site).has_value());
+  EXPECT_TRUE(db_->ReadPopup(opener_site_2, popup_site).has_value());
+  EXPECT_TRUE(db_->ReadPopup(opener_site_3, popup_site).has_value());
+
+  // Expect no popups recorded in the last 5 seconds.
+  std::vector<PopupWithTime> very_recent_popups =
+      db_->ReadRecentPopupsWithInteraction(base::Seconds(5));
+  EXPECT_TRUE(very_recent_popups.empty());
+
+  // Expect one popup in the last 20 seconds with a current interaction.
+  std::vector<PopupWithTime> recent_popups =
+      db_->ReadRecentPopupsWithInteraction(base::Seconds(20));
+  ASSERT_EQ(recent_popups.size(), 1u);
+  EXPECT_EQ(recent_popups.at(0).opener_site, opener_site_1);
+  EXPECT_EQ(recent_popups.at(0).popup_site, popup_site);
+  EXPECT_EQ(recent_popups.at(0).last_popup_time, now - base::Seconds(10));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, DIPSDatabasePopupsTest, ::testing::Bool());
@@ -578,7 +642,7 @@ class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
   }
 
  protected:
-  base::Time dummy_time = Time::FromDoubleT(100);
+  base::Time dummy_time = Time::FromSecondsSinceUnixEpoch(100);
 };
 
 TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromBouncesTable) {
@@ -629,22 +693,22 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 
   AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() + tiny_delta);
-  EXPECT_EQ(db_->Read("case1.test"), absl::nullopt);
+  EXPECT_EQ(db_->Read("case1.test"), std::nullopt);
   EXPECT_TRUE(db_->Read("case2.test").has_value());
-  EXPECT_EQ(db_->Read("case3.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case4.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case5.test"), absl::nullopt);
+  EXPECT_EQ(db_->Read("case3.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case4.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case5.test"), std::nullopt);
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 
   // Time travel to a point by which all interactions and WAAs should've
   // expired.
   AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() +
                 tiny_delta * 2);
-  EXPECT_EQ(db_->Read("case1.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case2.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case3.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case4.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case5.test"), absl::nullopt);
+  EXPECT_EQ(db_->Read("case1.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case2.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case3.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case4.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case5.test"), std::nullopt);
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 }
 
@@ -656,13 +720,15 @@ TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
       GetSiteForDIPS(GURL("http://www.picasa.com/"));
   const std::string popup_site =
       GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
-  const base::Time first_popup_time = Time::FromDoubleT(1);
-  const base::Time second_popup_time = Time::FromDoubleT(2);
+  const base::Time first_popup_time = Time::FromSecondsSinceUnixEpoch(1);
+  const base::Time second_popup_time = Time::FromSecondsSinceUnixEpoch(2);
 
   EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
-                              /*access_id=*/123, first_popup_time));
+                              /*access_id=*/123, first_popup_time,
+                              /*is_current_interaction=*/true));
   EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
-                              /*access_id=*/456, second_popup_time));
+                              /*access_id=*/456, second_popup_time,
+                              /*is_current_interaction=*/true));
 
   // Advance to just before the first popup expires.
   AdvanceTimeTo(first_popup_time + DIPSDatabase::kPopupTtl - tiny_delta);
@@ -772,7 +838,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedDuringGracePeriod) {
   // in their grace period after first performing a DIPS-triggering event.
   QueryMethod query = GetQueryMethodUnderTest();
 
-  base::Time event = Time::FromDoubleT(1);
+  base::Time event = Time::FromSecondsSinceUnixEpoch(1);
   TimestampRange event_times = {{event, event}};
 
   WriteForCurrentAction("site.test", event_times, {}, {});
@@ -799,9 +865,9 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionBeforeGracePeriod) {
   // interactions from the user before performing a DIPS-triggering event.
   QueryMethod query = GetQueryMethodUnderTest();
 
-  base::Time interaction = Time::FromDoubleT(1);
+  base::Time interaction = Time::FromSecondsSinceUnixEpoch(1);
   TimestampRange interaction_times = {{interaction, interaction}};
-  base::Time event = Time::FromDoubleT(2);
+  base::Time event = Time::FromSecondsSinceUnixEpoch(2);
   TimestampRange event_times = {{event, event}};
 
   WriteForCurrentAction("site.test", event_times, interaction_times, {});
@@ -842,7 +908,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaBeforeGracePeriod) {
 
   // Set up an event that happens after the WAA.
   {
-    auto waa_time = Time::FromDoubleT(100);
+    auto waa_time = Time::FromSecondsSinceUnixEpoch(100);
     base::Time event_time = waa_time + tiny_delta;
     WriteForCurrentAction(site, {{event_time, event_time}}, {},
                           {{waa_time, waa_time}});
@@ -867,7 +933,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaBeforeGracePeriod) {
     // protected) after WAA expiry:
     AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
     EXPECT_THAT(query.Run(), testing::IsEmpty());
-    EXPECT_EQ(db_->Read(site), absl::nullopt);
+    EXPECT_EQ(db_->Read(site), std::nullopt);
   }
 
   // Set up an event that happens after WAA expired and the old entry cleared.
@@ -890,9 +956,9 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionDuringGracePeriod) {
   QueryMethod query = GetQueryMethodUnderTest();
 
   // Set up an interaction that happens during the event's grace period.
-  base::Time event = Time::FromDoubleT(1);
+  base::Time event = Time::FromSecondsSinceUnixEpoch(1);
   TimestampRange event_times = {{event, event}};
-  base::Time interaction = Time::FromDoubleT(4);
+  base::Time interaction = Time::FromSecondsSinceUnixEpoch(4);
   TimestampRange interaction_times = {{interaction, interaction}};
   ASSERT_TRUE(interaction < event + grace_period);
 
@@ -935,7 +1001,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaDuringGracePeriod) {
   // Set up an event with a WAA happening before the end of the event's
   // `grace_period`.
   {
-    auto event_time = Time::FromDoubleT(100);
+    auto event_time = Time::FromSecondsSinceUnixEpoch(100);
     base::Time waa_time = event_time + grace_period;
     WriteForCurrentAction(site, {{event_time, event_time}}, {},
                           {{waa_time, waa_time}});
@@ -960,7 +1026,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaDuringGracePeriod) {
     // protected) after WAA expiry:
     AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
     EXPECT_THAT(query.Run(), testing::IsEmpty());
-    EXPECT_EQ(db_->Read(site), absl::nullopt);
+    EXPECT_EQ(db_->Read(site), std::nullopt);
   }
 
   // Set up an event that happens after WAA expired and the old entry cleared.
@@ -985,7 +1051,7 @@ TEST_P(DIPSDatabaseQueryTest, SiteWithoutInteractionsAreUnprotected) {
       GetQueryMethodUnderTest();
 
   // Set up an event with no corresponding interaction.
-  base::Time event = Time::FromDoubleT(2);
+  base::Time event = Time::FromSecondsSinceUnixEpoch(2);
   TimestampRange event_times = {{event, event}};
 
   WriteForCurrentAction("site.test", event_times, {}, {});
@@ -1003,7 +1069,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaAfterGracePeriod) {
 
   // Sets up an event with a WAA happening after the end of the event's
   // `grace_period` but before the subsequent DIPS-trigger:
-  auto event_time = Time::FromDoubleT(100);
+  auto event_time = Time::FromSecondsSinceUnixEpoch(100);
   auto waa_time = event_time + grace_period + tiny_delta;
   WriteForCurrentAction(site, {{event_time, event_time}}, {},
                         {{waa_time, waa_time}});
@@ -1022,7 +1088,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaAfterGracePeriod) {
   // after WAA expiry:
   AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
-  EXPECT_EQ(db_->Read(site), absl::nullopt);
+  EXPECT_EQ(db_->Read(site), std::nullopt);
 }
 
 TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionThenWaa) {
@@ -1031,7 +1097,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionThenWaa) {
 
   // Sets up an event with a interaction happening before the end of the event's
   // `grace_period` and an WAA some moments later:
-  auto event_time = Time::FromDoubleT(100);
+  auto event_time = Time::FromSecondsSinceUnixEpoch(100);
   auto interaction_time = event_time + grace_period;
   auto waa_time = interaction_time + tiny_delta;
   WriteForCurrentAction(site, {{event_time, event_time}},
@@ -1052,7 +1118,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionThenWaa) {
   // after WAA expiry:
   AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
-  EXPECT_EQ(db_->Read(site), absl::nullopt);
+  EXPECT_EQ(db_->Read(site), std::nullopt);
 }
 
 TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaThenInteraction) {
@@ -1061,7 +1127,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaThenInteraction) {
 
   // Sets up an event with a WAA happening before the end of the event's
   // `grace_period` and an interaction some moments later:
-  auto event_time = Time::FromDoubleT(100);
+  auto event_time = Time::FromSecondsSinceUnixEpoch(100);
   auto waa_time = event_time + tiny_delta;
   auto interaction_time = waa_time + grace_period;
   WriteForCurrentAction(site, {{event_time, event_time}},
@@ -1082,7 +1148,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaThenInteraction) {
   // after interaction expiry:
   AdvanceTimeTo(interaction_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
-  EXPECT_EQ(db_->Read(site), absl::nullopt);
+  EXPECT_EQ(db_->Read(site), std::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1133,7 +1199,8 @@ class DIPSDatabaseGarbageCollectionTest
                              waa_times));
     } else {
       ASSERT_TRUE(db_->WritePopup(site, "doubleclick.net", /*access_id=*/123,
-                                  interaction_times->second));
+                                  interaction_times->second,
+                                  /*is_current_interaction=*/true));
     }
   }
 
@@ -1153,7 +1220,7 @@ class DIPSDatabaseGarbageCollectionTest
   }
 
   void LoadDatabase() {
-    clock_.SetNow(Time::FromDoubleT(100));
+    clock_.SetNow(Time::FromSecondsSinceUnixEpoch(100));
     std::vector<base::Time> times{Now(), Now() + tiny_delta,
                                   Now() + tiny_delta * 2};
 
@@ -1165,7 +1232,8 @@ class DIPSDatabaseGarbageCollectionTest
       } else {
         ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
                                     "doubleclick.net", /*access_id=*/123,
-                                    times[(i + 1) % 3]));
+                                    times[(i + 1) % 3],
+                                    /*is_current_interaction=*/true));
       }
       for (auto& time : times) {
         time += tiny_delta * 3;
@@ -1180,7 +1248,8 @@ class DIPSDatabaseGarbageCollectionTest
       } else {
         ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
                                     "doubleclick.net", /*access_id=*/123,
-                                    times[(i + 1) % 3]));
+                                    times[(i + 1) % 3],
+                                    /*is_current_interaction=*/true));
       }
       for (auto& time : times) {
         time += tiny_delta * 3;
@@ -1204,7 +1273,7 @@ class DIPSDatabaseGarbageCollectionTest
 
   base::Time recent_interaction;
   base::Time old_interaction;
-  base::Time storage = Time::FromDoubleT(2);
+  base::Time storage = Time::FromSecondsSinceUnixEpoch(2);
 };
 
 // More than |max_entries_| entries with recent user interaction; garbage
@@ -1394,10 +1463,11 @@ TEST_F(DIPSDatabaseHistogramTest, HealthMetrics) {
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseEntryCount", 0, 1);
 
   // Write an entry to the db.
-  db_->Write(
-      "url1.test", {},
-      /*interaction_times=*/{{Time::FromDoubleT(1), Time::FromDoubleT(1)}}, {},
-      {}, {});
+  db_->Write("url1.test", {},
+             /*interaction_times=*/
+             {{Time::FromSecondsSinceUnixEpoch(1),
+               Time::FromSecondsSinceUnixEpoch(1)}},
+             {}, {}, {});
   db_->LogDatabaseMetricsForTesting();
 
   // These should be unchanged.
@@ -1421,10 +1491,11 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 1);
 
   // Write an entry to the db.
-  db_->Write(
-      "url1.test", {},
-      /*interaction_times=*/{{Time::FromDoubleT(1), Time::FromDoubleT(1)}}, {},
-      {}, {});
+  db_->Write("url1.test", {},
+             /*interaction_times=*/
+             {{Time::FromSecondsSinceUnixEpoch(1),
+               Time::FromSecondsSinceUnixEpoch(1)}},
+             {}, {}, {});
   EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces),
             static_cast<size_t>(1));
 
@@ -1449,6 +1520,25 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 1);
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseErrors",
                                   sql::SqliteLoggedResultCode::kCorrupt, 1);
+}
+
+TEST_F(DIPSDatabaseHistogramTest, PerformanceMetrics) {
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.WriteTime", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.ReadTime", 0);
+
+  // Write an entry to the db.
+  db_->Write("url.test", {},
+             /*interaction_times=*/
+             {{Time::FromSecondsSinceUnixEpoch(1),
+               Time::FromSecondsSinceUnixEpoch(1)}},
+             {}, {}, {});
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.ReadTime", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.WriteTime", 1);
+
+  // Read back the entry from the db.
+  db_->Read("site.test");
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.ReadTime", 1);
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.WriteTime", 1);
 }
 
 class DIPSDatabaseMigrationTest : public testing::Test {
@@ -1524,9 +1614,14 @@ class DIPSDatabaseMigrationTest : public testing::Test {
     ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
   }
 
-  std::string DbToString(sql::Database* db) {
+  std::string DbBouncesToString(sql::Database* db) {
     return sql::test::ExecuteWithResults(
         db, "SELECT * FROM bounces ORDER BY site", "|", "\n");
+  }
+
+  std::string DbPopupsToString(sql::Database* db) {
+    return sql::test::ExecuteWithResults(
+        db, "SELECT * FROM popups ORDER BY opener_site", "|", "\n");
   }
 
  private:
@@ -1607,7 +1702,7 @@ TEST_F(DIPSDatabaseMigrationTest, RazeIfIncompatible_TooNew) {
               kCurrentVersionNumber + tiny_increment);
 
     // These values are all set in v2.sql.
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6\n"
               "stateful-bounce.test|||4|4|1|1||\n"
               "stateless-bounce.test|||4|4|||1|1\n"
@@ -1634,7 +1729,7 @@ TEST_F(DIPSDatabaseMigrationTest, RazeIfIncompatible_TooNew) {
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
     // As expected the database is razed after migration.
-    EXPECT_EQ(DbToString(&db), "");
+    EXPECT_EQ(DbBouncesToString(&db), "");
   }
 }
 
@@ -1660,7 +1755,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
         db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
     // These values are all set in v1.sql.
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|0|0|4|4|1|4|2|6\n"
               "stateful-bounce.test|0|0|4|4|1|1|0|0\n"
               "stateless-bounce.test|0|0|4|4|0|0|1|1\n"
@@ -1729,7 +1824,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
     // Notably:
     // - All zeros are transformed to NULL, and
     // - Four extra columns were added.
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|1|6||\n"
               "stateful-bounce.test|||4|4|1|1|1|1||\n"
               "stateless-bounce.test|||4|4|||1|1||\n"
@@ -1791,7 +1886,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
     EXPECT_FALSE(
         db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6\n"
               "stateful-bounce.test|||4|4|1|1||\n"
               "stateless-bounce.test|||4|4|||1|1\n"
@@ -1816,7 +1911,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
               "stateful-bounce.test|||4|4|1|1||||\n"
               "stateless-bounce.test|||4|4|||1|1||\n"
@@ -1838,7 +1933,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV3ToCurrentVersion) {
 
     EXPECT_FALSE(db.DoesTableExist("popups"));
 
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
               "stateful-bounce.test|||4|4|1|1||||\n"
               "stateless-bounce.test|||4|4|||1|1||\n"
@@ -1863,10 +1958,53 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV3ToCurrentVersion) {
     EXPECT_TRUE(db.DoesColumnExist("popups", "access_id"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "last_popup_time"));
 
-    EXPECT_EQ(DbToString(&db),
+    EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
               "stateful-bounce.test|||4|4|1|1||||\n"
               "stateless-bounce.test|||4|4|||1|1||\n"
               "storage.test|1|1|4|4||||||");
+  }
+}
+
+TEST_F(DIPSDatabaseMigrationTest, MigrateV4ToCurrentVersion) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase("v4.sql"));
+
+  // Verify pre migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 4);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 4);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+
+    EXPECT_TRUE(db.DoesColumnExist("popups", "opener_site"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "popup_site"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "access_id"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "last_popup_time"));
+
+    EXPECT_EQ(DbPopupsToString(&db),
+              "site1.com|3p-site.com|123|2023-10-01 12:00:00\n"
+              "site2.com|3p-site.com|456|2023-10-02 12:00:00");
+  }
+
+  MigrateDatabase();
+
+  // Verify post migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+
+    ASSERT_TRUE(db.DoesTableExist("bounces"));
+    ASSERT_TRUE(db.DoesTableExist("popups"));
+    EXPECT_TRUE(db.DoesColumnExist("popups", "is_current_interaction"));
+
+    EXPECT_EQ(DbPopupsToString(&db),
+              "site1.com|3p-site.com|123|2023-10-01 12:00:00|\n"
+              "site2.com|3p-site.com|456|2023-10-02 12:00:00|");
   }
 }

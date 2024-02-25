@@ -34,9 +34,9 @@ class HoldingSpaceViewDelegate;
 // animated out.
 class ASH_EXPORT HoldingSpaceItemView : public views::View,
                                         public HoldingSpaceModelObserver {
- public:
-  METADATA_HEADER(HoldingSpaceItemView);
+  METADATA_HEADER(HoldingSpaceItemView, views::View)
 
+ public:
   HoldingSpaceItemView(HoldingSpaceViewDelegate*, const HoldingSpaceItem*);
   HoldingSpaceItemView(const HoldingSpaceItemView&) = delete;
   HoldingSpaceItemView& operator=(const HoldingSpaceItemView&) = delete;
@@ -67,8 +67,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   void OnThemeChanged() override;
 
   // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
-                                 uint32_t updated_fields) override;
+  void OnHoldingSpaceItemUpdated(
+      const HoldingSpaceItem* item,
+      const HoldingSpaceItemUpdatedFields& updated_fields) override;
 
   // Starts a drag from this view at the location specified by the given `event`
   // and with the specified `source`. Note that this method copies the logic of
@@ -104,8 +105,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   // NOTE: This view may outlive `delegate_` and/or `item_` during destruction
   // since the widget is closed asynchronously and the model is updated prior
   // to animation completion.
-  raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_ = nullptr;
-  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> item_ = nullptr;
+  raw_ptr<HoldingSpaceViewDelegate> delegate_ = nullptr;
+  raw_ptr<const HoldingSpaceItem> item_ = nullptr;
 
   // Cache the id of the associated holding space item so that it can be
   // accessed even after `item_` has been destroyed. Note that `item_` may be
@@ -113,11 +114,10 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   const std::string item_id_;
 
   // Owned by view hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> checkmark_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> primary_action_container_ = nullptr;
-  raw_ptr<views::ImageButton, ExperimentalAsh> primary_action_cancel_ = nullptr;
-  raw_ptr<views::ToggleImageButton, ExperimentalAsh> primary_action_pin_ =
-      nullptr;
+  raw_ptr<views::ImageView> checkmark_ = nullptr;
+  raw_ptr<views::View> primary_action_container_ = nullptr;
+  raw_ptr<views::ImageButton> primary_action_cancel_ = nullptr;
+  raw_ptr<views::ToggleImageButton> primary_action_pin_ = nullptr;
 
   // Owners for the layers used to paint focused and selected states.
   std::unique_ptr<ui::LayerOwner> selected_layer_owner_;

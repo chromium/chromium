@@ -52,6 +52,22 @@ struct FocusRingInfo {
 // Provides control over the user interface. Implemented in the main OS
 // browser process and called from Accessibility Service javascript in V8.
 interface UserInterface {
+    // Darkens or undarkens the screen - true to darken screen, false to
+    // undarken screen.
+    DarkenScreen(bool darken);
+
+    // Opens a specified ChromeOS settings subpage. For example, to open a page
+    // with the url 'chrome://settings/manageAccessibility/tts', pass in the
+    // substring 'manageAccessibility/tts'.
+    OpenSettingsSubpage(string subpage);
+
+    // Shows a confirmation dialog, given the title of the confirmation dialog,
+    // the description to show within the confirmation dialog, and the
+    // human-readable name of the cancel button. Returns true if the dialog was
+    // confirmed, false if it was canceled or closed.
+    ShowConfirmationDialog(string title, string description, string? cancelName)
+        => (bool confirmed);
+
     // Sets the given accessibility focus rings for the given `at_type`
     // or clears them if the list is empty.
     // TODO(b/293348920): Cleanup after migration: pass a map of id to
@@ -59,4 +75,10 @@ interface UserInterface {
     // FocusRingInfo.
     SetFocusRings(array<FocusRingInfo> focus_rings,
         AssistiveTechnologyType at_type);
+
+    // Sets the bounds and color of the accessibility highlight.
+    SetHighlights(array<gfx.mojom.Rect> rects, skia.mojom.SkColor color);
+
+    // Shows or hides the virtual keyboard.
+    SetVirtualKeyboardVisible(bool is_visible);
 };

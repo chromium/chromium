@@ -13,9 +13,7 @@ import org.chromium.components.omnibox.action.OmniboxActionFactory;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
 
-/**
- * A factory creating the OmniboxAction instances.
- */
+/** A factory creating the OmniboxAction instances. */
 public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
     private static OmniboxActionFactoryImpl sFactory;
     private boolean mDialerAvailable;
@@ -41,30 +39,34 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
     }
 
     /**
-     * Initialize (if not already done) and return the instance of the OmniboxActionFactory
-     * to be used until application is destroyed.
+     * Initialize (if not already done) and return the instance of the OmniboxActionFactory to be
+     * used until application is destroyed.
      */
     public void initNativeFactory() {
         OmniboxActionFactoryJni.get().setFactory(this);
     }
 
-    /**
-     * Destroy the OmniboxActionFactory if previously created.
-     */
+    /** Destroy the OmniboxActionFactory if previously created. */
     public void destroyNativeFactory() {
         OmniboxActionFactoryJni.get().setFactory(null);
     }
 
     @Override
-    public @Nullable OmniboxAction buildOmniboxPedal(long nativeInstance, @NonNull String hint,
-            @NonNull String accessibilityHint, @OmniboxPedalId int pedalId) {
+    public @Nullable OmniboxAction buildOmniboxPedal(
+            long nativeInstance,
+            @NonNull String hint,
+            @NonNull String accessibilityHint,
+            @OmniboxPedalId int pedalId) {
         return new OmniboxPedal(nativeInstance, hint, accessibilityHint, pedalId);
     }
 
     @Override
-    public @Nullable OmniboxAction buildActionInSuggest(long nativeInstance, @NonNull String hint,
+    public @Nullable OmniboxAction buildActionInSuggest(
+            long nativeInstance,
+            @NonNull String hint,
             @NonNull String accessibilityHint,
-            /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri) {
+            /* EntityInfoProto.ActionInfo.ActionType */ int actionType,
+            @NonNull String actionUri) {
         if (actionType == EntityInfoProto.ActionInfo.ActionType.CALL_VALUE && !mDialerAvailable) {
             return null;
         }
@@ -73,8 +75,11 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
     }
 
     @Override
-    public @Nullable OmniboxAction buildHistoryClustersAction(long nativeInstance,
-            @NonNull String hint, @NonNull String accessibilityHint, @NonNull String query) {
+    public @Nullable OmniboxAction buildHistoryClustersAction(
+            long nativeInstance,
+            @NonNull String hint,
+            @NonNull String accessibilityHint,
+            @NonNull String query) {
         return new HistoryClustersAction(nativeInstance, hint, accessibilityHint, query);
     }
 }

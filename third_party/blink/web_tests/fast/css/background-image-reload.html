@@ -14,14 +14,14 @@
 <script>
 if (window.testRunner) {
     if (window.localStorage.getItem("finish-during-reload") == null)
-        testRunner.setImagesAllowed(false);
+        internals.settings.setImagesEnabled(false);
     testRunner.waitUntilDone();
 }
 
 function test() {
     if (window.localStorage.getItem("finish-during-reload") == null) {
         window.localStorage.setItem("finish-during-reload", "reload");
-        testRunner.setImagesAllowed(true);
+        internals.settings.setImagesEnabled(true);
         internals.forceReload(false);
     } else {
         window.localStorage.clear();

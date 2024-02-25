@@ -29,11 +29,11 @@ bool XRProjectionLayer::ignoreDepthValues() const {
   return ignore_depth_values_;
 }
 
-absl::optional<float> XRProjectionLayer::fixedFoveation() const {
+std::optional<float> XRProjectionLayer::fixedFoveation() const {
   return fixed_foveation_;
 }
 
-void XRProjectionLayer::setFixedFoveation(absl::optional<float> value) {
+void XRProjectionLayer::setFixedFoveation(std::optional<float> value) {
   fixed_foveation_ = value;
 }
 

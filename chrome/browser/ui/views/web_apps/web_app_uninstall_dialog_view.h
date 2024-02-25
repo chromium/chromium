@@ -13,11 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
@@ -30,27 +31,26 @@ class Profile;
 namespace webapps {
 enum class UninstallResultCode;
 enum class WebappUninstallSource;
-}
+}  // namespace webapps
 
 namespace views {
 class Checkbox;
 }
 
-using UninstallChoiceCallback = base::OnceCallback<void(bool)>;
-
 // The dialog's view, owned by the views framework.
 class WebAppUninstallDialogDelegateView
     : public views::DialogDelegateView,
       public web_app::WebAppInstallManagerObserver {
+  METADATA_HEADER(WebAppUninstallDialogDelegateView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(WebAppUninstallDialogDelegateView);
   // Constructor for view component of dialog.
   WebAppUninstallDialogDelegateView(
       Profile* profile,
-      web_app::AppId app_id,
+      webapps::AppId app_id,
       webapps::WebappUninstallSource uninstall_source,
-      std::map<SquareSizePx, SkBitmap> icon_bitmaps,
-      UninstallChoiceCallback uninstall_choice_callback);
+      std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps,
+      web_app::UninstallDialogCallback uninstall_choice_callback);
   WebAppUninstallDialogDelegateView(const WebAppUninstallDialogDelegateView&) =
       delete;
   WebAppUninstallDialogDelegateView& operator=(
@@ -64,27 +64,24 @@ class WebAppUninstallDialogDelegateView
   ui::ImageModel GetWindowIcon() override;
 
   // Uninstalls the web app.
-  void Uninstall();
-  void ClearWebAppSiteData();
+  void Uninstall(bool clear_site_data);
 
   void OnDialogAccepted();
   void OnDialogCanceled();
 
   // web_app::WebAppInstallManagerObserver:
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
   gfx::ImageSkia image_;
 
   // The web app we are showing the dialog for.
-  const web_app::AppId app_id_;
+  const webapps::AppId app_id_;
 
-  // The dialog needs start_url copy even if app gets uninstalled.
-  GURL app_start_url_;
   const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
   base::WeakPtr<web_app::WebAppProvider> provider_;
-  UninstallChoiceCallback uninstall_choice_callback_;
+  web_app::UninstallDialogCallback uninstall_choice_callback_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

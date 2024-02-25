@@ -25,22 +25,22 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for the "Save Passwords" settings screen.
- */
+/** Tests for the "Save Passwords" settings screen. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class PasswordReauthenticationFragmentTest {
     // All reauthentication scopes to be checked in the tests.
-    private static final int[] ALL_SCOPES = {ReauthenticationManager.ReauthScope.ONE_AT_A_TIME,
-            ReauthenticationManager.ReauthScope.BULK};
+    private static final int[] ALL_SCOPES = {
+        ReauthenticationManager.ReauthScope.ONE_AT_A_TIME, ReauthenticationManager.ReauthScope.BULK
+    };
 
     /**
      * Creates a dummy fragment, pushes the reauth fragment on top of it, then resolves the activity
      * for the reauth fragment and checks that back stack is in a correct state.
+     *
      * @param resultCode The code which is passed to the reauth fragment as the result of the
-     *                   activity.
+     *     activity.
      * @param scope The scope of the reauthentication.
      */
     private void checkPopFromBackStackOnResult(
@@ -73,7 +73,8 @@ public class PasswordReauthenticationFragmentTest {
         fragmentTransaction2.commit();
 
         passwordReauthentication.onActivityResult(
-                PasswordReauthenticationFragment.CONFIRM_DEVICE_CREDENTIAL_REQUEST_CODE, resultCode,
+                PasswordReauthenticationFragment.CONFIRM_DEVICE_CREDENTIAL_REQUEST_CODE,
+                resultCode,
                 returnIntent);
         fragmentManager.executePendingTransactions();
 

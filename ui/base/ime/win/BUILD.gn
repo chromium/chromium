@@ -7,12 +7,8 @@ assert(is_win)
 component("win") {
   output_name = "ui_base_ime_win"
   sources = [
-    "imm32_manager.cc",
-    "imm32_manager.h",
     "input_method_win_base.cc",
     "input_method_win_base.h",
-    "input_method_win_imm32.cc",
-    "input_method_win_imm32.h",
     "input_method_win_tsf.cc",
     "input_method_win_tsf.h",
     "mock_tsf_bridge.cc",
@@ -41,8 +37,4 @@ component("win") {
     "//ui/base",
     "//ui/display",
   ]
-
-  libs = [ "imm32.lib" ]
-
-  ldflags = [ "/DELAYLOAD:imm32.dll" ]
 }

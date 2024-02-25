@@ -159,7 +159,7 @@ TEST(FakePowerManagerClientTest, UpdatePowerPropertiesWithNullTest) {
   EXPECT_EQ(kInitialBatteryState, client.GetLastStatus()->battery_state());
   EXPECT_EQ(kInitialExternalPower, client.GetLastStatus()->external_power());
 
-  client.UpdatePowerProperties(absl::nullopt);
+  client.UpdatePowerProperties(std::nullopt);
 
   EXPECT_FALSE(client.GetLastStatus().has_value());
 }
@@ -187,7 +187,7 @@ TEST(FakePowerManagerClientTest,
 
   // Check when update power properties with null,
   // the observer isn't notified and the props from observer doesn't change.
-  client.UpdatePowerProperties(absl::nullopt);
+  client.UpdatePowerProperties(std::nullopt);
 
   EXPECT_EQ(1, test_observer.num_power_changed());
   EXPECT_EQ(kInitialBatteryPercent, test_observer.props().battery_percent());
@@ -229,7 +229,7 @@ TEST(FakePowerManagerClientTest, BatterySaverState) {
     bool called = false;
     client.GetBatterySaverModeState(base::BindOnce(
         [](std::reference_wrapper<bool> called_ref,
-           absl::optional<power_manager::BatterySaverModeState> state) {
+           std::optional<power_manager::BatterySaverModeState> state) {
           EXPECT_TRUE(state.has_value());
           EXPECT_TRUE(state->has_enabled());
           EXPECT_TRUE(state->enabled());
@@ -266,7 +266,7 @@ TEST(FakePowerManagerClientTest, BatterySaverState) {
     bool called = false;
     client.GetBatterySaverModeState(base::BindOnce(
         [](std::reference_wrapper<bool> called_ref,
-           absl::optional<power_manager::BatterySaverModeState> state) {
+           std::optional<power_manager::BatterySaverModeState> state) {
           EXPECT_TRUE(state.has_value());
           EXPECT_TRUE(state->has_enabled());
           EXPECT_FALSE(state->enabled());

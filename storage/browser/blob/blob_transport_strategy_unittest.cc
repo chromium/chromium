@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -27,7 +28,6 @@
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/test/mock_bytes_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 
 namespace storage {
@@ -89,7 +89,7 @@ class BlobTransportStrategyTest : public testing::Test {
 
   mojo::PendingRemote<blink::mojom::BytesProvider> CreateBytesProvider(
       const std::string& bytes,
-      absl::optional<base::Time> time) {
+      std::optional<base::Time> time) {
     mojo::PendingRemote<blink::mojom::BytesProvider> result;
     auto provider = std::make_unique<MockBytesProvider>(
         std::vector<uint8_t>(bytes.begin(), bytes.end()), &reply_request_count_,
@@ -107,7 +107,7 @@ class BlobTransportStrategyTest : public testing::Test {
   base::Time mock_time_;
   BlobStorageLimits limits_;
 
-  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
+  std::optional<base::ScopedDisallowBlocking> disallow_blocking_;
 
   std::vector<std::string> bad_messages_;
 
@@ -182,7 +182,7 @@ TEST_P(BasicTests, WithBytes) {
   expected.AppendData(data);
 
   data = base::RandBytesAsString(10);
-  blink::mojom::DataElementBytes bytes3(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes3(data.size(), std::nullopt,
                                         mojo::NullRemote());
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider3(
       CreateBytesProvider(data, mock_time_));
@@ -243,7 +243,7 @@ TEST_P(BasicErrorTests, NotEnoughBytesInProvider) {
       limits_);
 
   std::string data = base::RandBytesAsString(7);
-  blink::mojom::DataElementBytes bytes(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes(data.size(), std::nullopt,
                                        mojo::NullRemote());
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
       CreateBytesProvider(data.substr(0, 4), mock_time_));
@@ -273,7 +273,7 @@ TEST_P(BasicErrorTests, TooManyBytesInProvider) {
       limits_);
 
   std::string data = base::RandBytesAsString(4);
-  blink::mojom::DataElementBytes bytes(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes(data.size(), std::nullopt,
                                        mojo::NullRemote());
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
       CreateBytesProvider(data + "foobar", mock_time_));
@@ -315,7 +315,7 @@ TEST_F(BlobTransportStrategyTest, DataStreamChunksData) {
 
   std::string data =
       base::RandBytesAsString(kTestBlobStorageMaxSharedMemoryBytes * 3 + 13);
-  blink::mojom::DataElementBytes bytes(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes(data.size(), std::nullopt,
                                        mojo::NullRemote());
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
       CreateBytesProvider(data, mock_time_));
@@ -371,12 +371,12 @@ TEST_F(BlobTransportStrategyTest, Files_WriteFailed) {
 
   base::RunLoop loop;
   std::string data = base::RandBytesAsString(kTestBlobStorageMaxFileSizeBytes);
-  blink::mojom::DataElementBytes bytes(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes(data.size(), std::nullopt,
                                        mojo::NullRemote());
 
   // Must outlive `strategy`.
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
-      CreateBytesProvider(data, absl::nullopt));
+      CreateBytesProvider(data, std::nullopt));
 
   BlobStatus status = BlobStatus::PENDING_TRANSPORT;
   auto strategy = BlobTransportStrategy::Create(
@@ -419,7 +419,7 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesOneElement) {
   base::RunLoop loop;
   std::string data =
       base::RandBytesAsString(kTestBlobStorageMaxBlobMemorySize + 42);
-  blink::mojom::DataElementBytes bytes(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes(data.size(), std::nullopt,
                                        mojo::NullRemote());
 
   // Must outlive `strategy`.
@@ -480,19 +480,19 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesMultipleElements) {
       base::RandBytesAsString(kTestBlobStorageMaxBlobMemorySize / 3);
 
   // These must outlive `strategy`.
-  blink::mojom::DataElementBytes bytes1(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes1(data.size(), std::nullopt,
                                         mojo::NullRemote());
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider1(
       CreateBytesProvider(data, mock_time_));
-  blink::mojom::DataElementBytes bytes2(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes2(data.size(), std::nullopt,
                                         mojo::NullRemote());
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider2(
       CreateBytesProvider(data, mock_time_));
-  blink::mojom::DataElementBytes bytes3(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes3(data.size(), std::nullopt,
                                         mojo::NullRemote());
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider3(
       CreateBytesProvider(data, mock_time_));
-  blink::mojom::DataElementBytes bytes4(data.size(), absl::nullopt,
+  blink::mojom::DataElementBytes bytes4(data.size(), std::nullopt,
                                         mojo::NullRemote());
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider4(
       CreateBytesProvider(data, mock_time_));

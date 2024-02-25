@@ -92,7 +92,7 @@ class ASH_EXPORT WallpaperWidgetController
   // Copies and fades out the existing wallpaper.
   void ApplyCrossFadeAnimation(base::TimeDelta duration);
 
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // The current wallpaper widget.
   std::unique_ptr<views::Widget> widget_;

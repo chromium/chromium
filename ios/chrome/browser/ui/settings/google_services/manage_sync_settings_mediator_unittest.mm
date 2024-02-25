@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -22,24 +23,24 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_central_account_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -77,8 +78,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
 
-    sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
-        SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -107,8 +106,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
                                   browser_state_.get())
         accountManagerService:ChromeAccountManagerServiceFactory::
                                   GetForBrowserState(browser_state_.get())
+                  prefService:browser_state_->GetPrefs()
           initialAccountState:initialAccountState];
-    mediator_.syncSetupService = sync_setup_service_mock_;
     mediator_.consumer = consumer_;
   }
 
@@ -117,7 +116,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
             IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
@@ -125,11 +125,15 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     account_info.email = base::SysNSStringToUTF8(fakeSystemIdentity_.userEmail);
     ON_CALL(*sync_service_mock_, GetAccountInfo())
         .WillByDefault(Return(account_info));
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsCustomPassphraseAllowed())
+        .WillByDefault(Return(true));
   }
 
   void SimulateFirstSetupSyncOff() {
     ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
-    ON_CALL(*sync_setup_service_mock_, IsSyncEverythingEnabled())
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsSyncEverythingEnabled())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
@@ -137,6 +141,9 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     account_info.email = base::SysNSStringToUTF8(fakeSystemIdentity_.userEmail);
     ON_CALL(*sync_service_mock_, GetAccountInfo())
         .WillByDefault(Return(account_info));
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsCustomPassphraseAllowed())
+        .WillByDefault(Return(true));
   }
 
   void SimulateFirstSetupSyncOffWithSignedInAccount() {
@@ -159,8 +166,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   // Needed for the initialization of authentication service.
   IOSChromeScopedTestingLocalState local_state_;
 
-  syncer::MockSyncService* sync_service_mock_;
-  SyncSetupServiceMock* sync_setup_service_mock_;
+  raw_ptr<syncer::MockSyncService> sync_service_mock_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
   ManageSyncSettingsMediator* mediator_ = nullptr;
@@ -239,6 +245,28 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithEncryption) {
       hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
 }
 
+// Tests that encryption is not accessible when disabled by user settings.
+TEST_F(ManageSyncSettingsMediatorTest,
+       SyncServiceEnabledWithEncryptionDisabledByUserSettings) {
+  CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSyncing);
+  SimulateFirstSetupSyncOnWithConsentEnabled();
+
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsCustomPassphraseAllowed())
+      .WillByDefault(Return(false));
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       AdvancedSettingsSectionIdentifier];
+  ASSERT_EQ(3UL, advanced_settings_items.count);
+
+  TableViewImageItem* encryption_item = advanced_settings_items[0];
+  EXPECT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
+  EXPECT_FALSE(encryption_item.enabled);
+}
+
 // Tests that "Turn off Sync" is hidden when Sync is disabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledWithTurnOffSync) {
   CreateManageSyncSettingsMediator(
@@ -298,14 +326,16 @@ TEST_F(ManageSyncSettingsMediatorTest,
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
   CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSyncing);
   SimulateFirstSetupSyncOnWithConsentEnabled();
-  EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
-      .WillOnce(Return(syncer::SyncService::DisableReasonSet()))
-      .WillOnce(Return(syncer::SyncService::DisableReasonSet(
-          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
+  syncer::SyncService::DisableReasonSet disable_reasons =
+      syncer::SyncService::DisableReasonSet();
+  ON_CALL(*sync_service_mock_, GetDisableReasons())
+      .WillByDefault([&disable_reasons]() { return disable_reasons; });
 
   // Loads the Sync page once in success state.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
   // Loads the Sync page again in disabled state.
+  disable_reasons = syncer::SyncService::DisableReasonSet(
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
   [mediator_ onSyncStateChanged];
 
   EXPECT_TRUE([mediator_.consumer.tableViewModel

@@ -11,12 +11,19 @@
 #include <gtk/gtk.h>
 #include <gtk/gtkunixprint.h>
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gtk/gtk_types.h"
+
+#if GTK_CHECK_VERSION(4, 1, 1)
+#define UI_GTK_CONST const
+#else
+#define UI_GTK_CONST
+#endif
 
 extern "C" {
 #include "ui/gtk/gdk.sigs"
@@ -61,8 +68,8 @@ SkColor GtkStyleContextGetColor(GtkStyleContext* context);
 SkColor GtkStyleContextGetBackgroundColor(GtkStyleContext* context);
 
 // Only available in Gtk3.
-absl::optional<SkColor> GtkStyleContextLookupColor(GtkStyleContext* context,
-                                                   const gchar* color_name);
+std::optional<SkColor> GtkStyleContextLookupColor(GtkStyleContext* context,
+                                                  const gchar* color_name);
 
 bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event);
 

@@ -80,8 +80,7 @@ class NetworkIconImpl {
   void GenerateImage(const NetworkStateProperties* network);
 
   // Gets the color for the icon
-  raw_ptr<const ui::ColorProvider, DanglingUntriaged | ExperimentalAsh>
-      color_provider_;
+  raw_ptr<const ui::ColorProvider, DanglingUntriaged> color_provider_;
 
   // Defines color theme and VPN badging
   const IconType icon_type_;
@@ -589,6 +588,14 @@ gfx::ImageSkia GetImageForPSimPendingActivationWhileLoggedOut(
     IconType icon_type) {
   return gfx::CreateVectorIcon(
       kUnifiedMenuCellularUnactivatedIcon,
+      GetDefaultColorForIconType(color_provider, icon_type));
+}
+
+gfx::ImageSkia GetImageForCarrierLockedNetwork(
+    const ui::ColorProvider* color_provider,
+    IconType icon_type) {
+  return gfx::CreateVectorIcon(
+      kCarrierLockedIcon,
       GetDefaultColorForIconType(color_provider, icon_type));
 }
 

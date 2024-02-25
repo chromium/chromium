@@ -15,11 +15,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
@@ -28,13 +29,12 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Tests for {@link FontSizePrefs}.
  *
- * TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
+ * <p>TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
  * good way of testing with native code there.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class FontSizePrefsTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private static final float EPSILON = 0.001f;
     private FontSizePrefs mFontSizePrefs;
@@ -48,7 +48,7 @@ public class FontSizePrefsTest {
     }
 
     private void resetSharedPrefs() {
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.removeKey(ChromePreferenceKeys.FONT_USER_SET_FORCE_ENABLE_ZOOM);
         prefs.removeKey(ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR);
     }
@@ -153,7 +153,7 @@ public class FontSizePrefsTest {
 
         // Delete PREF_USER_FONT_SCALE_FACTOR. This simulates the condition just after upgrading to
         // M51, when userFontScaleFactor was added.
-        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.removeKey(ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR);
 
         // Intial userFontScaleFactor should be set to fontScaleFactor / systemFontScale.
@@ -178,25 +178,28 @@ public class FontSizePrefsTest {
         }
 
         private void assertConsistent() {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Assert.assertEquals(getUserFontScaleFactor(), mUserFontScaleFactor, EPSILON);
-                Assert.assertEquals(getFontScaleFactor(), mFontScaleFactor, EPSILON);
-                Assert.assertEquals(getForceEnableZoom(), mForceEnableZoom);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Assert.assertEquals(
+                                getUserFontScaleFactor(), mUserFontScaleFactor, EPSILON);
+                        Assert.assertEquals(getFontScaleFactor(), mFontScaleFactor, EPSILON);
+                        Assert.assertEquals(getForceEnableZoom(), mForceEnableZoom);
+                    });
         }
     }
 
     private FontSizePrefs getFontSizePrefs(final Context context) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile()));
+                () -> FontSizePrefs.getInstance(ProfileManager.getLastUsedRegularProfile()));
     }
 
     private TestingObserver createAndAddFontSizePrefsObserver() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            TestingObserver observer = new TestingObserver();
-            mFontSizePrefs.addObserver(observer);
-            return observer;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    TestingObserver observer = new TestingObserver();
+                    mFontSizePrefs.addObserver(observer);
+                    return observer;
+                });
     }
 
     private void setUserFontScaleFactor(final float fontsize) {
@@ -225,9 +228,10 @@ public class FontSizePrefsTest {
     }
 
     private void setSystemFontScaleForTest(final float systemFontScale) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFontSizePrefs.setSystemFontScaleForTest(systemFontScale);
-            mFontSizePrefs.onSystemFontScaleChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFontSizePrefs.setSystemFontScaleForTest(systemFontScale);
+                    mFontSizePrefs.onSystemFontScaleChanged();
+                });
     }
 }

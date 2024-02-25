@@ -5,26 +5,109 @@
 #ifndef UI_GFX_X_CONNECTION_H_
 #define UI_GFX_X_CONNECTION_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/x/event_observer.h"
 #include "ui/gfx/x/extension_manager.h"
+#include "ui/gfx/x/future.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_types.h"
 
 typedef struct xcb_connection_t xcb_connection_t;
 
 namespace x11 {
 
+class AtomCache;
 class Event;
 class KeyboardState;
+class PropertyCache;
+class VisualManager;
+class WmSync;
 class WriteBuffer;
+
+enum WmState : uint32_t {
+  WM_STATE_WITHDRAWN = 0,
+  WM_STATE_NORMAL = 1,
+  WM_STATE_ICONIC = 3,
+};
+
+enum SizeHintsFlags : int32_t {
+  SIZE_HINT_US_POSITION = 1 << 0,
+  SIZE_HINT_US_SIZE = 1 << 1,
+  SIZE_HINT_P_POSITION = 1 << 2,
+  SIZE_HINT_P_SIZE = 1 << 3,
+  SIZE_HINT_P_MIN_SIZE = 1 << 4,
+  SIZE_HINT_P_MAX_SIZE = 1 << 5,
+  SIZE_HINT_P_RESIZE_INC = 1 << 6,
+  SIZE_HINT_P_ASPECT = 1 << 7,
+  SIZE_HINT_BASE_SIZE = 1 << 8,
+  SIZE_HINT_P_WIN_GRAVITY = 1 << 9,
+};
+
+struct SizeHints {
+  // User specified flags
+  int32_t flags;
+  // User-specified position
+  int32_t x, y;
+  // User-specified size
+  int32_t width, height;
+  // Program-specified minimum size
+  int32_t min_width, min_height;
+  // Program-specified maximum size
+  int32_t max_width, max_height;
+  // Program-specified resize increments
+  int32_t width_inc, height_inc;
+  // Program-specified minimum aspect ratios
+  int32_t min_aspect_num, min_aspect_den;
+  // Program-specified maximum aspect ratios
+  int32_t max_aspect_num, max_aspect_den;
+  // Program-specified base size
+  int32_t base_width, base_height;
+  // Program-specified window gravity
+  uint32_t win_gravity;
+};
+
+enum WmHintsFlags : uint32_t {
+  WM_HINT_INPUT = 1L << 0,
+  WM_HINT_STATE = 1L << 1,
+  WM_HINT_ICON_PIXMAP = 1L << 2,
+  WM_HINT_ICON_WINDOW = 1L << 3,
+  WM_HINT_ICON_POSITION = 1L << 4,
+  WM_HINT_ICON_MASK = 1L << 5,
+  WM_HINT_WINDOW_GROUP = 1L << 6,
+  // 1L << 7 doesn't have any defined meaning
+  WM_HINT_X_URGENCY = 1L << 8
+};
+
+struct WmHints {
+  // Marks which fields in this structure are defined
+  int32_t flags;
+  // Does this application rely on the window manager to get keyboard input?
+  uint32_t input;
+  // See below
+  int32_t initial_state;
+  // Pixmap to be used as icon
+  Pixmap icon_pixmap;
+  // Window to be used as icon
+  Window icon_window;
+  // Initial position of icon
+  int32_t icon_x, icon_y;
+  // Icon mask bitmap
+  Pixmap icon_mask;
+  // Identifier of related window group
+  Window window_group;
+};
 
 // On the wire, sequence IDs are 16 bits.  In xcb, they're usually extended to
 // 32 and sometimes 64 bits.  In Xlib, they're extended to unsigned long, which
@@ -47,31 +130,13 @@ auto CompareSequenceIds(T t, U u) {
   return static_cast<SignedType>(t0 - u0);
 }
 
-// This interface is used by classes wanting to receive
-// Events directly.  For input events (mouse, keyboard, touch), a
-// PlatformEventObserver should be used instead.
-class EVENTS_EXPORT EventObserver {
- public:
-  virtual void OnEvent(const Event& xevent) = 0;
-
- protected:
-  virtual ~EventObserver() = default;
-};
-
 // Represents a socket to the X11 server.
-class COMPONENT_EXPORT(X11) Connection : public XProto,
-                                         public ExtensionManager {
+class COMPONENT_EXPORT(X11) Connection final : public XProto,
+                                               public ExtensionManager {
  public:
-  using ErrorHandler = base::RepeatingCallback<void(const Error*, const char*)>;
   using IOErrorHandler = base::OnceClosure;
-  using RawReply = scoped_refptr<base::RefCountedMemory>;
-  using RawError = scoped_refptr<base::RefCountedMemory>;
-  using ResponseCallback =
-      base::OnceCallback<void(RawReply reply, std::unique_ptr<Error> error)>;
 
-  // xcb returns unsigned int when making requests.  This may be updated to
-  // uint16_t if/when we stop using xcb for socket IO.
-  using SequenceType = unsigned int;
+  using ExtensionVersion = std::pair<uint32_t, uint32_t>;
 
   struct VisualInfo {
     raw_ptr<const Format> format;
@@ -96,7 +161,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
                             bool reply_has_fds) {
     bool generates_reply = !std::is_void<Reply>::value;
     return Future<Reply>(
-        SendRequest(buf, request_name, generates_reply, reply_has_fds));
+        SendRequestImpl(buf, request_name, generates_reply, reply_has_fds));
   }
 
   explicit Connection(const std::string& address = "");
@@ -108,10 +173,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // Obtain an Xlib display that's connected to the same server as |this|.  This
   // is meant to be used only for compatibility with components like GLX,
   // Vulkan, and VAAPI.  The underlying socket is not shared, so synchronization
-  // with |this| may be necessary.  The |type| parameter can be used to achieve
-  // synchronization.  The returned wrapper should not be saved.
-  XlibDisplayWrapper GetXlibDisplay(
-      XlibDisplayType type = XlibDisplayType::kNormal);
+  // with |this| may be necessary.
+  XlibDisplay& GetXlibDisplay();
 
   size_t MaxRequestSizeInBytes() const;
 
@@ -140,6 +203,42 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return dispatching_event_;
   }
+
+  ExtensionVersion randr_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return randr_version_;
+  }
+
+  ExtensionVersion render_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return render_version_;
+  }
+
+  ExtensionVersion screensaver_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return screensaver_version_;
+  }
+
+  ExtensionVersion shm_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return shm_version_;
+  }
+
+  ExtensionVersion sync_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return sync_version_;
+  }
+
+  ExtensionVersion xinput_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return xinput_version_;
+  }
+
+  WindowEventManager& window_event_manager() { return window_event_manager_; }
+
+  // Indicates if the connection was able to successfully sync with the
+  // window manager.
+  bool synced_with_wm() const { return synced_with_wm_; }
 
   // Returns the underlying socket's FD if the connection is valid, or -1
   // otherwise.
@@ -173,8 +272,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // Returns true if an event was read.
   bool ReadResponse(bool queued);
 
-  Event WaitForNextEvent();
-
   // Are there any events, errors, or replies already buffered?
   bool HasPendingResponses();
 
@@ -189,9 +286,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   // Directly dispatch an event, bypassing the event queue.
   void DispatchEvent(const Event& event);
-
-  // Returns the old error handler.
-  ErrorHandler SetErrorHandler(ErrorHandler new_handler);
 
   void SetIOErrorHandler(IOErrorHandler new_handler);
 
@@ -208,8 +302,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   uint32_t KeycodeToKeysym(KeyCode keycode, uint32_t modifiers) const;
 
   // Access the event buffer.  Clients may modify the queue, including
-  // "deleting" events by setting events[i] = x11::Event(), which will
-  // guarantee all calls to x11::Event::As() will return nullptr.
+  // "deleting" events by setting events[i] = Event(), which will
+  // guarantee all calls to Event::As() will return nullptr.
   base::circular_deque<Event>& events() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return events_;
@@ -220,6 +314,137 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // Releases ownership of this connection to a different thread.
   void DetachFromSequence();
 
+  ////////////////////////////////////////
+  // Utilities
+  ////////////////////////////////////////
+
+  template <typename T>
+  Future<void> SendEvent(const T& event, Window target, EventMask mask) {
+    static_assert(T::type_id > 0, "T must be an *Event type");
+    auto write_buffer = Write(event);
+    CHECK_EQ(write_buffer.GetBuffers().size(), 1ul);
+    auto& first_buffer = write_buffer.GetBuffers()[0];
+    CHECK_LE(first_buffer->size(), 32ul);
+    std::vector<uint8_t> event_bytes(32);
+    memcpy(event_bytes.data(), first_buffer->data(), first_buffer->size());
+
+    SendEventRequest send_event{false, target, mask};
+    base::ranges::copy(event_bytes, send_event.event.begin());
+    return XProto::SendEvent(send_event);
+  }
+
+  template <typename T>
+  bool GetArrayProperty(Window window,
+                        Atom name,
+                        std::vector<T>* value,
+                        Atom* out_type = nullptr,
+                        size_t amount = 0) {
+    static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
+
+    size_t bytes = amount * sizeof(T);
+    // The length field specifies the maximum amount of data we would like the
+    // server to give us.  It's specified in units of 4 bytes, so divide by 4.
+    // Add 3 before division to round up.
+    size_t length = (bytes + 3) / 4;
+    using lentype = decltype(GetPropertyRequest::long_length);
+    auto response =
+        GetProperty(
+            GetPropertyRequest{
+                .window = static_cast<Window>(window),
+                .property = name,
+                .long_length = static_cast<uint32_t>(
+                    amount ? length : std::numeric_limits<lentype>::max())})
+            .Sync();
+    if (!response || response->format != CHAR_BIT * sizeof(T)) {
+      return false;
+    }
+
+    CHECK_EQ(response->format / CHAR_BIT * response->value_len,
+             response->value->size());
+    value->resize(response->value_len);
+    if (response->value_len > 0) {
+      memcpy(value->data(), response->value->data(), response->value->size());
+    }
+    if (out_type) {
+      *out_type = response->type;
+    }
+    return true;
+  }
+
+  template <typename T>
+  bool GetPropertyAs(Window window, const Atom name, T* value) {
+    std::vector<T> values;
+    if (!GetArrayProperty(window, name, &values, nullptr, 1) ||
+        values.empty()) {
+      return false;
+    }
+    *value = values[0];
+    return true;
+  }
+
+  template <typename T>
+  Future<void> SetArrayProperty(Window window,
+                                Atom name,
+                                Atom type,
+                                const std::vector<T>& values) {
+    static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
+    std::vector<uint8_t> data(sizeof(T) * values.size());
+    if (values.size() > 0) {
+      memcpy(data.data(), values.data(), sizeof(T) * values.size());
+    }
+    return ChangeProperty(ChangePropertyRequest{
+        .window = static_cast<Window>(window),
+        .property = name,
+        .type = type,
+        .format = CHAR_BIT * sizeof(T),
+        .data_len = static_cast<uint32_t>(values.size()),
+        .data = base::RefCountedBytes::TakeVector(&data)});
+  }
+
+  template <typename T>
+  Future<void> SetProperty(Window window,
+                           Atom name,
+                           Atom type,
+                           const T& value) {
+    return SetArrayProperty(window, name, type, std::vector<T>{value});
+  }
+
+  void DeleteProperty(Window window, Atom name);
+
+  void SetStringProperty(Window window,
+                         Atom property,
+                         Atom type,
+                         const std::string& value);
+
+  Window CreateDummyWindow(const std::string& name = std::string());
+
+  VisualManager& GetOrCreateVisualManager();
+
+  bool GetWmNormalHints(Window window, SizeHints* hints);
+
+  void SetWmNormalHints(Window window, const SizeHints& hints);
+
+  bool GetWmHints(Window window, WmHints* hints);
+
+  void SetWmHints(Window window, const WmHints& hints);
+
+  void WithdrawWindow(Window window);
+
+  void RaiseWindow(Window window);
+
+  void LowerWindow(Window window);
+
+  void DefineCursor(Window window, Cursor cursor);
+
+  ScopedEventSelector ScopedSelectEvent(Window window, EventMask event_mask);
+
+  Atom GetAtom(const char* name) const;
+
+  // Returns an empty string if there is no window manager or the WM is unnamed.
+  std::string GetWmName() const;
+
+  bool WmSupportsHint(Atom atom) const;
+
   // The viz compositor thread hangs a PlatformEventSource off the connection so
   // that it gets destroyed at the appropriate time.
   // TODO(thomasanderson): This is a layering violation and this should be moved
@@ -228,45 +453,9 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
  private:
   friend class FutureBase;
+  friend class FutureImpl;
   template <typename Reply>
   friend class Future;
-
-  class COMPONENT_EXPORT(X11) FutureImpl {
-   public:
-    FutureImpl(Connection* connection,
-               SequenceType sequence,
-               bool generates_reply,
-               const char* request_name_for_tracing);
-
-    void Wait();
-
-    void DispatchNow();
-
-    bool AfterEvent(const Event& event) const;
-
-    void Sync(RawReply* raw_reply, std::unique_ptr<Error>* error);
-
-    void OnResponse(ResponseCallback callback);
-
-    // Update an existing Request with a new handler.  |sequence| must
-    // correspond to a request in the queue that has not already been processed
-    // out-of-order.
-    void UpdateRequestHandler(ResponseCallback callback);
-
-    // Call the response handler for request |sequence| now (out-of-order).  The
-    // response must already have been obtained from a call to
-    // WaitForResponse().
-    void ProcessResponse();
-
-    // Clear the response handler for request |sequence| and take the response.
-    // The response must already have been obtained using WaitForResponse().
-    void TakeResponse(RawReply* reply, std::unique_ptr<Error>* error);
-
-    raw_ptr<Connection, DanglingUntriaged> connection = nullptr;
-    SequenceType sequence = 0;
-    bool generates_reply = false;
-    const char* request_name_for_tracing = nullptr;
-  };
 
   struct Request {
     explicit Request(ResponseCallback callback);
@@ -293,6 +482,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   void InitRootDepthAndVisual();
 
+  void InitializeExtensions();
+
   void ProcessNextEvent();
 
   void ProcessNextResponse();
@@ -305,10 +496,11 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // |request_name_for_tracing| must be valid until the response is
   // dispatched; currently the string values are only stored in .rodata, so
   // this constraint is satisfied.
-  std::unique_ptr<FutureImpl> SendRequest(WriteBuffer* buf,
-                                          const char* request_name_for_tracing,
-                                          bool generates_reply,
-                                          bool reply_has_fds);
+  std::unique_ptr<FutureImpl> SendRequestImpl(
+      WriteBuffer* buf,
+      const char* request_name_for_tracing,
+      bool generates_reply,
+      bool reply_has_fds);
 
   // Block until the reply or error for request |sequence| is received.
   void WaitForResponse(FutureImpl* future);
@@ -326,6 +518,14 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t GenerateIdImpl();
 
+  void OnRootPropertyChanged(Atom property, const GetPropertyResponse& value);
+
+  bool WmSupportsEwmh() const;
+
+  void AttemptSyncWithWm();
+
+  void OnWmSynced();
+
   std::string display_string_;
   int default_screen_id_ = 0;
   std::unique_ptr<xcb_connection_t, void (*)(xcb_connection_t*)> connection_ = {
@@ -335,7 +535,14 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   bool synchronous_ = false;
   bool syncing_ = false;
 
+  // Extension data.
   uint32_t extended_max_request_length_ = 0;
+  ExtensionVersion randr_version_ = {0, 0};
+  ExtensionVersion render_version_ = {0, 0};
+  ExtensionVersion screensaver_version_ = {0, 0};
+  ExtensionVersion shm_version_ = {0, 0};
+  ExtensionVersion sync_version_ = {0, 0};
+  ExtensionVersion xinput_version_ = {0, 0};
 
   Setup setup_;
   raw_ptr<Screen> default_screen_ = nullptr;
@@ -359,18 +566,46 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // the 0'th request is handled internally by XCB when opening the connection.
   SequenceType first_request_id_ = 1;
   // If any request in |requests_| will generate a reply, this is the ID of the
-  // latest one, otherwise this is absl::nullopt.
-  absl::optional<SequenceType> last_non_void_request_id_;
+  // latest one, otherwise this is std::nullopt.
+  std::optional<SequenceType> last_non_void_request_id_;
 
   using ErrorParser = std::unique_ptr<Error> (*)(RawError error_bytes);
   std::array<ErrorParser, 256> error_parsers_{};
 
-  ErrorHandler error_handler_;
   IOErrorHandler io_error_handler_;
 
+  WindowEventManager window_event_manager_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Must be after `sequence_checker_`.
+  std::unique_ptr<VisualManager> visual_manager_;
+
+  std::unique_ptr<AtomCache> atom_cache_;
+
+  std::unique_ptr<WmSync> wm_sync_;
+  bool synced_with_wm_ = false;
+
+  std::unique_ptr<PropertyCache> root_props_;
+  std::unique_ptr<PropertyCache> wm_props_;
 };
 
 }  // namespace x11
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<x11::Connection, x11::EventObserver> {
+  static void AddObserver(x11::Connection* connection,
+                          x11::EventObserver* observer) {
+    connection->AddEventObserver(observer);
+  }
+  static void RemoveObserver(x11::Connection* connection,
+                             x11::EventObserver* observer) {
+    connection->RemoveEventObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // UI_GFX_X_CONNECTION_H_

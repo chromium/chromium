@@ -99,6 +99,7 @@
 <translation id="1559739829547075274">Артқа өту</translation>
 <translation id="1565432156062359693">Келесі тізім жоқ.</translation>
 <translation id="1571643229714746283">ChromeVox дайын</translation>
+<translation id="1588252353131492116">Пернелерді жабыстыру режимі қосулы болса, өткізіп жіберу қолжетімді болмайды</translation>
 <translation id="1594072653727561613">mnu</translation>
 <translation id="1610130962244179598">6 нүктелі Брайль қарібіне ауысу</translation>
 <translation id="161042844686301425">Көгілдір</translation>
@@ -194,6 +195,7 @@
 <translation id="2318372665160196757">Басты</translation>
 <translation id="2329324941084714723">Қойынды панелі</translation>
 <translation id="2347456970887948350">Сілтеме</translation>
+<translation id="2363753371702255035">таңбалауыш</translation>
 <translation id="2365384324219615024">Сонымен қатар элементтерді белсендіру үшін Enter пернесін басыңыз. Мысалы, Enter пернесін басып, үлгіге мәтін енгізуге болады. Жалғастыру үшін Enter пернесін басыңыз.</translation>
 <translation id="2381733276052567791">Дауыстап оқуды қосу немесе өшіру</translation>
 <translation id="2390264819538553347">Келесі бетке өту үшін Enter пернесін, ал кері қайту үшін Backspace пернесін басыңыз.</translation>
@@ -869,7 +871,7 @@
 <translation id="7039555289296502784">Сұрқай жасыл</translation>
 <translation id="7041173719775863268">Соңғы таңдау</translation>
 <translation id="7043850226734279132">Қоңыр жасыл</translation>
-<translation id="7051308646573997571">Маржан</translation>
+<translation id="7051308646573997571">Қызыл маржан</translation>
 <translation id="7062635574500127092">Көкшіл жасыл</translation>
 <translation id="7086377898680121060">Жарықтық деңгейін арттыру</translation>
 <translation id="7088743565397416204">Ерекшеленген элементті іске қосу үшін оны екі рет түртіңіз</translation>

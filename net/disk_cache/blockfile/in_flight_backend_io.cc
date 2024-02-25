@@ -63,10 +63,15 @@ BackendIO::BackendIO(InFlightBackendIO* controller, BackendImpl* backend)
 
 // Runs on the background thread.
 void BackendIO::ExecuteOperation() {
-  if (IsEntryOperation())
-    return ExecuteEntryOperation();
-
-  ExecuteBackendOperation();
+  if (IsEntryOperation()) {
+    ExecuteEntryOperation();
+  } else {
+    ExecuteBackendOperation();
+  }
+  // Clear our pointer to entry we operated on.  We don't need it any more, and
+  // it's possible by the time ~BackendIO gets destroyed on the main thread the
+  // entry will have been closed and freed on the cache/background thread.
+  entry_ = nullptr;
 }
 
 // Runs on the background thread.
@@ -120,9 +125,9 @@ void BackendIO::RunEntryResultCallback() {
   if (result_ != net::OK) {
     entry_result = EntryResult::MakeError(static_cast<net::Error>(result()));
   } else if (out_entry_opened_) {
-    entry_result = EntryResult::MakeOpened(out_entry_);
+    entry_result = EntryResult::MakeOpened(out_entry_.ExtractAsDangling());
   } else {
-    entry_result = EntryResult::MakeCreated(out_entry_);
+    entry_result = EntryResult::MakeCreated(out_entry_.ExtractAsDangling());
   }
   std::move(entry_result_callback_).Run(std::move(entry_result));
 }
@@ -272,17 +277,14 @@ void BackendIO::ReadyForSparseIO(EntryImpl* entry) {
 BackendIO::~BackendIO() {
   if (!did_notify_controller_io_signalled() && out_entry_) {
     // At this point it's very likely the Entry does not have a
-    // `background_queue_` so that Close() would do nothing. Post an empty
-    // task to the background task runner, which should effectively destroy
-    // the entry as there are no more references. Destruction has to happen
+    // `background_queue_` so that Close() would do nothing. Post a task to the
+    // background task runner to drop the reference, which should effectively
+    // destroy if there are no more references. Destruction has to happen
     // on the background task runner.
-    scoped_refptr<EntryImpl> entry(out_entry_.ExtractAsDangling());
-    // This balances the ref taken in LeakEntryImpl().
-    entry->Release();
-    // This should be the last ref.
-    DCHECK(entry->HasOneRef());
     background_task_runner_->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(entry)));
+        FROM_HERE,
+        base::BindOnce(&EntryImpl::Release,
+                       base::Unretained(out_entry_.ExtractAsDangling())));
   }
 }
 

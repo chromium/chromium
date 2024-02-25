@@ -58,8 +58,7 @@ class FakeController : public KioskAppLauncher::NetworkDelegate,
   // KioskAppLauncher::Delegate:
   bool IsNetworkReady() const override { return true; }
 
-  void OnAppWindowCreated(
-      const absl::optional<std::string>& app_name) override {
+  void OnAppWindowCreated(const std::optional<std::string>& app_name) override {
     window_created_signal_.SetValue();
   }
 
@@ -81,7 +80,7 @@ class FakeController : public KioskAppLauncher::NetworkDelegate,
   TestFuture<void> window_created_signal_;
   TestFuture<void> app_prepared_signal_;
 
-  raw_ptr<ArcKioskAppService, ExperimentalAsh> service_;
+  raw_ptr<ArcKioskAppService> service_;
 };
 
 class ArcKioskAppServiceTest : public testing::Test {
@@ -175,8 +174,7 @@ class ArcKioskAppServiceTest : public testing::Test {
   std::unique_ptr<ArcKioskAppManager> app_manager_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 
-  raw_ptr<arc::ArcPolicyBridge, DanglingUntriaged | ExperimentalAsh>
-      arc_policy_bridge_;
+  raw_ptr<arc::ArcPolicyBridge, DanglingUntriaged> arc_policy_bridge_;
 };
 
 TEST_F(ArcKioskAppServiceTest, LaunchConditions) {

@@ -16,9 +16,9 @@
 // The dialog informing the user they are about to be logged out or locked
 // because they removed their security token (smart card).
 class SecurityTokenSessionRestrictionView : public AppDialogView {
- public:
-  METADATA_HEADER(SecurityTokenSessionRestrictionView);
+  METADATA_HEADER(SecurityTokenSessionRestrictionView, AppDialogView)
 
+ public:
   // Creates the dialog.
   // `duration`: Initial countdown time, will be displayed in seconds.
   // `accept_callback`: Callback when the user accepts the dialog.
@@ -42,7 +42,7 @@ class SecurityTokenSessionRestrictionView : public AppDialogView {
   void UpdateLabel();
 
   const ash::login::SecurityTokenSessionController::Behavior behavior_;
-  raw_ptr<const base::TickClock, ExperimentalAsh> clock_;
+  raw_ptr<const base::TickClock> clock_;
   const std::string domain_;
   base::TimeTicks end_time_;
   base::RepeatingTimer update_timer_;

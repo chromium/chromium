@@ -21,6 +21,10 @@
 // Returns true if the view controller should apply parental controls.
 - (BOOL)isViewControllerSubjectToParentalControls;
 
+// Called when the model should handle a selected row at `indexPath`.
+- (void)googleServicesSettingsViewControllerDidSelectItemAtIndexPath:
+    (NSIndexPath*)indexPath;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_VIEW_CONTROLLER_MODEL_DELEGATE_H_

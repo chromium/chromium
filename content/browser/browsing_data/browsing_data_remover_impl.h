@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/cancelable_callback.h"
@@ -23,7 +24,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
@@ -51,7 +51,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   // If |storage_partition_config| is null, the operation will take place
   // on the profile's default storage partition.
   void RemoveStorageBucketsAndReply(
-      const absl::optional<StoragePartitionConfig> storage_partition_config,
+      const std::optional<StoragePartitionConfig> storage_partition_config,
       const blink::StorageKey& storage_key,
       const std::set<std::string>& storage_buckets,
       base::OnceClosure callback);
@@ -96,7 +96,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   const base::Time& GetLastUsedBeginTimeForTesting() override;
   uint64_t GetLastUsedRemovalMaskForTesting() override;
   uint64_t GetLastUsedOriginTypeMaskForTesting() override;
-  absl::optional<StoragePartitionConfig>
+  std::optional<StoragePartitionConfig>
   GetLastUsedStoragePartitionConfigForTesting() override;
   uint64_t GetPendingTaskCountForTesting() override;
 
@@ -175,7 +175,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     uint64_t remove_mask;
     uint64_t origin_type_mask;
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder;
-    std::vector<Observer*> observers;
+    std::vector<raw_ptr<Observer, VectorExperimental>> observers;
     base::TimeTicks task_started;
   };
 
@@ -229,7 +229,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   void RecordUnfinishedSubTasks();
 
   StoragePartition* GetStoragePartition(
-      absl::optional<StoragePartitionConfig> storage_partition_config);
+      std::optional<StoragePartitionConfig> storage_partition_config);
 
   // This does the actual clearing of the client hint cache for the provided
   // origin. It should be invoked only via ClearClientHintCacheAndReply.
@@ -260,8 +260,8 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
 
   // The StoragePartition from which data should be removed, or the default
   // if absent.
-  absl::optional<StoragePartitionConfig> storage_partition_config_ =
-      absl::nullopt;
+  std::optional<StoragePartitionConfig> storage_partition_config_ =
+      std::nullopt;
 
   std::vector<std::string> domains_for_deferred_cookie_deletion_;
 

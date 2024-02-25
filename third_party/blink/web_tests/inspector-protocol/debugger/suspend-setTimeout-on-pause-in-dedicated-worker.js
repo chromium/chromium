@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank('Tests that setTimeout callback will not fire while script execution is paused. Bug 377926.');
 
   await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true,

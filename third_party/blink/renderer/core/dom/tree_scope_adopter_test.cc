@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -27,6 +28,7 @@ class DoNothingListener : public NativeEventListener {
 // TODO(hayato): It's hard to see what's happening in these tests.
 // It would be better to refactor these tests.
 TEST(TreeScopeAdopterTest, SimpleMove) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* doc1 = Document::CreateForTest(execution_context.GetExecutionContext());
   auto* doc2 = Document::CreateForTest(execution_context.GetExecutionContext());
@@ -56,6 +58,7 @@ TEST(TreeScopeAdopterTest, SimpleMove) {
 }
 
 TEST(TreeScopeAdopterTest, MoveNestedShadowRoots) {
+  test::TaskEnvironment task_environment;
   DummyPageHolder source_page_holder;
   auto* source_doc = &source_page_holder.GetDocument();
   NativeEventListener* listener = MakeGarbageCollected<DoNothingListener>();
@@ -66,7 +69,7 @@ TEST(TreeScopeAdopterTest, MoveNestedShadowRoots) {
   html->AppendChild(outer_div);
 
   ShadowRoot& outer_shadow =
-      outer_div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      outer_div->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   Element* middle_div = source_doc->CreateRawElement(html_names::kDivTag);
   outer_shadow.AppendChild(middle_div);
 
@@ -78,7 +81,7 @@ TEST(TreeScopeAdopterTest, MoveNestedShadowRoots) {
                                               listener, false));
 
   ShadowRoot& middle_shadow =
-      middle_div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      middle_div->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   Element* inner_div = source_doc->CreateRawElement(html_names::kDivTag);
   middle_shadow.AppendChild(inner_div);
   // This event listener may force a consistency check in EventHandlerRegistry,

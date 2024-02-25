@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<style>
+    #output {
+        width: 90px;
+        height: 90px;
+        image-rendering: pixelated;
+    }
+</style>
+<body>
+<canvas id="output" width="3" height="3"></canvas>
+<script>
+function draw() {
+    const offscreen = new OffscreenCanvas(3, 3);
+    const ctx = offscreen.getContext('2d');
+    ctx.fillStyle = 'yellow';
+    ctx.fillRect(0, 0, 3, 3);
+    ctx.fillStyle = 'blue';
+    for (let i = 0; i < 3; ++i) {
+        ctx.fillRect(i, i, 1, 1);
+    }
+    const bitmap = offscreen.transferToImageBitmap();
+
+    var canvas = document.getElementById('output');
+    const bmCtx = canvas.getContext('bitmaprenderer');
+    bmCtx.transferFromImageBitmap(bitmap);
+}
+
+window.onload = draw;
+</script>
+</body>
+</html>

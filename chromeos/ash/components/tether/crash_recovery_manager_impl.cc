@@ -147,7 +147,7 @@ void CrashRecoveryManagerImpl::RestoreConnectedState(
 void CrashRecoveryManagerImpl::OnActiveHostFetched(
     base::OnceClosure on_restoration_finished,
     ActiveHost::ActiveHostStatus active_host_status,
-    absl::optional<multidevice::RemoteDeviceRef> active_host,
+    std::optional<multidevice::RemoteDeviceRef> active_host,
     const std::string& tether_network_guid,
     const std::string& wifi_network_guid) {
   DCHECK(ActiveHost::ActiveHostStatus::CONNECTED == active_host_status);

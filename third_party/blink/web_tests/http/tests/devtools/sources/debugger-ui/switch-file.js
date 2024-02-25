@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests how switch to next file with the same name and different extension feature works.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var files = [
@@ -34,7 +35,7 @@ import {SDKTestRunner} from 'sdk_test_runner';
 
   TestRunner.addResult('Dumping next file for each file:');
   for (var uiSourceCode of uiSourceCodes) {
-    var nextUISourceCode = Sources.SourcesView.SwitchFileActionDelegate.nextFile(uiSourceCode);
+    var nextUISourceCode = SourcesModule.SourcesView.SwitchFileActionDelegate.nextFile(uiSourceCode);
     var nextURI = nextUISourceCode ? nextUISourceCode.url() : '<none>';
     TestRunner.addResult(`Next file for ${uiSourceCode.url()} is ${nextURI}.`);
   }

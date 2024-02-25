@@ -14,11 +14,11 @@ from contextlib import ExitStack
 from typing import List
 
 from common import register_common_args, register_device_args, \
-                   register_log_args, resolve_packages, set_ffx_isolate_dir, \
-                   start_ffx_daemon, stop_ffx_daemon
+                   register_log_args, resolve_packages
 from compatible_utils import running_unattended
-from ffx_integration import ScopedFfxConfig, test_connection
+from ffx_integration import ScopedFfxConfig
 from flash_device import register_update_args, update
+from isolate_daemon import IsolateDaemon
 from log_manager import LogManager, start_system_log
 from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
@@ -28,8 +28,8 @@ from run_telemetry_test import TelemetryTestRunner
 from run_webpage_test import WebpageTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
+from test_connection import test_connection, test_device_connection
 from test_runner import TestRunner
-from ermine_ctl import ErmineCtl
 
 
 def _get_test_runner(runner_args: argparse.Namespace,
@@ -73,7 +73,7 @@ def main():
     register_device_args(parser)
     register_emulator_args(parser)
     register_executable_test_args(parser)
-    register_update_args(parser, default_os_check='ignore', default_pave=False)
+    register_update_args(parser, default_os_check='ignore')
     register_log_args(parser)
     register_package_args(parser, allow_temp_repo=True)
     register_serve_args(parser)
@@ -88,26 +88,22 @@ def main():
         runner_args.device = True
 
     with ExitStack() as stack:
+        log_manager = LogManager(runner_args.logs_dir)
         if running_unattended():
-            # Updating configurations to meet the requirement of isolate.
-            os.environ['FUCHSIA_ANALYTICS_DISABLED'] = '1'
-            stop_ffx_daemon()
             if runner_args.extra_path:
                 os.environ['PATH'] += os.pathsep + os.pathsep.join(
                     runner_args.extra_path)
-            set_ffx_isolate_dir(
-                stack.enter_context(tempfile.TemporaryDirectory()))
-            # The following configurations are persistent, they are less
-            # problematic if ScopedFfxConfig cannot clear them correctly.
-            stack.enter_context(
-                ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
-            stack.enter_context(ScopedFfxConfig('daemon.autostart', 'false'))
-            stack.enter_context(
-                ScopedFfxConfig('discovery.zedboot.enabled', 'true'))
-            stack.enter_context(ScopedFfxConfig('log.level', 'debug'))
-            log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
-            start_ffx_daemon()
-            stack.callback(stop_ffx_daemon)
+
+            extra_inits = [log_manager]
+            if runner_args.everlasting:
+                # Setting the emu.instance_dir to match the named cache, so
+                # we can keep these files across multiple runs.
+                extra_inits.append(
+                    ScopedFfxConfig(
+                        'emu.instance_dir',
+                        os.path.join(os.environ['HOME'],
+                                     '.fuchsia_emulator/')))
+            stack.enter_context(IsolateDaemon(extra_inits))
         else:
             if runner_args.logs_dir:
                 logging.warning(
@@ -115,17 +111,19 @@ def main():
                     'daemon is started with the logs.dir config '
                     'updated. We won\'t restart the daemon randomly'
                     ' anymore.')
-            log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
+            stack.enter_context(log_manager)
 
         if runner_args.device:
             update(runner_args.system_image_dir, runner_args.os_check,
-                   runner_args.target_id, runner_args.serial_num,
-                   runner_args.pave)
+                   runner_args.target_id, runner_args.serial_num)
+            # Try to reboot the device if necessary since the ffx may ignore the
+            # device state after the flash. See
+            # https://cs.opensource.google/fuchsia/fuchsia/+/main:src/developer/ffx/lib/fastboot/src/common/fastboot.rs;drc=cfba0bdd4f8857adb6409f8ae9e35af52c0da93e;l=454
+            test_device_connection(runner_args.target_id)
         else:
             runner_args.target_id = stack.enter_context(
                 create_emulator_from_args(runner_args))
-
-        test_connection(runner_args.target_id)
+            test_connection(runner_args.target_id)
 
         test_runner = _get_test_runner(runner_args, test_args)
         package_deps = test_runner.package_deps
@@ -144,10 +142,6 @@ def main():
         # so that logging will not be interrupted.
         start_system_log(log_manager, False, package_deps.values(),
                          ('--since', 'now'), runner_args.target_id)
-
-        ermine = ErmineCtl(runner_args.target_id)
-        if ermine.exists:
-            ermine.take_to_shell()
 
         resolve_packages(package_deps.keys(), runner_args.target_id)
         return test_runner.run_test().returncode

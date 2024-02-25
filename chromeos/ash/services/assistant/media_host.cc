@@ -54,19 +54,19 @@ class MediaHost::ChromeosMediaStateObserver
     UpdateMediaState();
   }
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override {
+      const std::optional<media_session::MediaMetadata>& metadata) override {
     media_metadata_ = std::move(metadata);
     UpdateMediaState();
   }
   void MediaSessionActionsChanged(
       const std::vector<MediaSessionAction>& action) override {}
   void MediaSessionChanged(
-      const absl::optional<base::UnguessableToken>& request_id) override {
+      const std::optional<base::UnguessableToken>& request_id) override {
     if (request_id.has_value())
       media_session_audio_focus_id_ = std::move(request_id.value());
   }
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override {}
+      const std::optional<media_session::MediaPosition>& position) override {}
 
   void UpdateMediaState() {
     if (media_session_info_ptr_) {
@@ -116,14 +116,14 @@ class MediaHost::ChromeosMediaStateObserver
                               std::move(media_state));
   }
 
-  const raw_ptr<MediaHost, ExperimentalAsh> parent_;
+  const raw_ptr<MediaHost> parent_;
   mojo::Receiver<media_session::mojom::MediaControllerObserver> receiver_{this};
 
   // Info associated to the active media session.
   MediaSessionInfoPtr media_session_info_ptr_;
   // The metadata for the active media session. It can be null to be reset,
   // e.g. the media that was being played has been stopped.
-  absl::optional<media_session::MediaMetadata> media_metadata_ = absl::nullopt;
+  std::optional<media_session::MediaMetadata> media_metadata_ = std::nullopt;
 
   base::UnguessableToken media_session_audio_focus_id_ =
       base::UnguessableToken::Null();
@@ -197,7 +197,7 @@ class MediaHost::LibassistantMediaDelegate
     return *parent_->chromeos_media_controller_;
   }
 
-  const raw_ptr<MediaHost, ExperimentalAsh> parent_;
+  const raw_ptr<MediaHost> parent_;
   mojo::Receiver<MediaDelegate> receiver_;
 };
 

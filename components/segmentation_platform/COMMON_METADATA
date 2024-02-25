@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "Internals>SegmentationPlatform"
 }
-
 team_email: "chrome-segmentation-platform@google.com"
+buganizer_public: {
+  component_id: 1456220
+}

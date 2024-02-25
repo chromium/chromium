@@ -14,6 +14,8 @@ import android.graphics.Color;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.NonNull;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
@@ -26,9 +28,11 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureListJni;
+import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -40,7 +44,6 @@ import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
@@ -49,6 +52,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
@@ -65,44 +69,33 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
-import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Custom TestRule for tests using StartSurfaceCoordinator
- */
+/** Custom TestRule for tests using StartSurfaceCoordinator */
 public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
-    @Rule
-    public BookmarkNativesMockRule mBookmarkNativesMockRule = new BookmarkNativesMockRule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule public BookmarkNativesMockRule mBookmarkNativesMockRule = new BookmarkNativesMockRule();
 
     private TabModelSelector mTabModelSelector;
     private ViewGroup mContainerView;
@@ -119,16 +112,25 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     private static class MockTabModelFilterProvider extends TabModelFilterProvider {
         public MockTabModelFilterProvider(Activity activity) {
             List<TabModel> tabModels = new ArrayList<>();
-            tabModels.add(new MockTabModel(false, null));
-            MockTabModel tabModel = new MockTabModel(true, null);
-            tabModel.setAsActiveModelForTesting();
-            tabModels.add(tabModel);
+            MockTabModelSelector selector =
+                    new MockTabModelSelector(
+                            ProfileManager.getLastUsedRegularProfile(),
+                            ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                            0,
+                            0,
+                            null);
+            tabModels.add(selector.getModel(false));
+            tabModels.add(selector.getModel(true));
+            selector.selectModel(true);
 
-            init(new ChromeTabModelFilterFactory(activity), tabModels);
+            init(new ChromeTabModelFilterFactory(activity), selector, tabModels);
         }
 
         @Override
-        public void init(TabModelFilterFactory tabModelFilterFactory, List<TabModel> tabModels) {
+        public void init(
+                @NonNull TabModelFilterFactory tabModelFilterFactory,
+                @NonNull TabModelSelector tabModelSelector,
+                @NonNull List<TabModel> tabModels) {
             assert mTabModelFilterList.isEmpty();
             assert tabModels.size() > 0;
 
@@ -148,6 +150,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
             @Override
             public void evaluate() {
                 ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
+                ChromeFeatureList.sShowNtpAtStartupAndroid.setForTesting(false);
 
                 mTabModelSelector = Mockito.mock(TabModelSelector.class);
                 mContainerView = Mockito.mock(ViewGroup.class);
@@ -172,9 +175,13 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     }
 
     private void initJniMocks() {
+        Profile incognitoProfile = Mockito.mock(Profile.class);
+        Mockito.when(incognitoProfile.isOffTheRecord()).thenReturn(true);
         Profile profile = Mockito.mock(Profile.class);
+        Mockito.when(profile.getPrimaryOTRProfile(Mockito.anyBoolean()))
+                .thenReturn(incognitoProfile);
         PrefService prefService = Mockito.mock(PrefService.class);
-        Profile.setLastUsedProfileForTesting(profile);
+        ProfileManager.setLastUsedProfileForTesting(profile);
 
         mSuggestionsDeps.getFactory().offlinePageBridge = new FakeOfflinePageBridge();
         mSuggestionsDeps.getFactory().mostVisitedSites = new FakeMostVisitedSites();
@@ -201,17 +208,11 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 .thenReturn(Mockito.mock(SigninManager.class));
         mJniMocker.mock(IdentityServicesProviderJni.TEST_HOOKS, identityServicesProviderJniMock);
 
-        // Set home page url.
-        GURL homePageGURL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
-        UrlFormatter.Natives urlFormatterJniMock = Mockito.mock(UrlFormatter.Natives.class);
-        when(urlFormatterJniMock.fixupUrl(HomepageManager.getHomepageUri()))
-                .thenReturn(homePageGURL);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, urlFormatterJniMock);
-
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, Mockito.mock(FaviconHelper.Natives.class));
         mJniMocker.mock(
                 FeedServiceBridgeJni.TEST_HOOKS, Mockito.mock(FeedServiceBridge.Natives.class));
-        mJniMocker.mock(CookieControlsServiceBridgeJni.TEST_HOOKS,
+        mJniMocker.mock(
+                CookieControlsServiceBridgeJni.TEST_HOOKS,
                 Mockito.mock(CookieControlsServiceBridge.Natives.class));
         mJniMocker.mock(FeatureListJni.TEST_HOOKS, Mockito.mock(FeatureList.Natives.class));
     }
@@ -226,8 +227,10 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
         ViewGroup coordinatorView = Mockito.mock(ViewGroup.class);
         when(coordinatorView.generateLayoutParams(any()))
-                .thenReturn(new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                .thenReturn(
+                        new ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
         when(coordinatorView.findViewById(org.chromium.chrome.tab_ui.R.id.dialog_parent_view))
                 .thenReturn(Mockito.mock(TabGridDialogView.class));
         when(mActivity.findViewById(org.chromium.chrome.tab_ui.R.id.coordinator))
@@ -236,17 +239,21 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
     private void setUpCoordinator() {
         ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(mActivity, new ScrimCoordinator.SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {
-                        // Intentional noop
-                    }
+                new ScrimCoordinator(
+                        mActivity,
+                        new ScrimCoordinator.SystemUiScrimDelegate() {
+                            @Override
+                            public void setStatusBarScrimFraction(float scrimFraction) {
+                                // Intentional noop
+                            }
 
-                    @Override
-                    public void setNavigationBarScrimFraction(float scrimFraction) {
-                        // Intentional noop
-                    }
-                }, mContainerView, Color.WHITE);
+                            @Override
+                            public void setNavigationBarScrimFraction(float scrimFraction) {
+                                // Intentional noop
+                            }
+                        },
+                        mContainerView,
+                        Color.WHITE);
 
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         BrowserControlsManager browserControlsManager = new BrowserControlsManager(mActivity, 0);
@@ -261,19 +268,40 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         when(voiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
         mIncognitoReauthControllerSupplier.set(Mockito.mock(IncognitoReauthController.class));
 
-        mCoordinator = new StartSurfaceCoordinator(mActivity, scrimCoordinator,
-                Mockito.mock(BottomSheetController.class), new OneshotSupplierImpl<>(),
-                new ObservableSupplierImpl<>(), false, windowAndroid, mContainerView,
-                new ObservableSupplierImpl<>(), mTabModelSelector, browserControlsManager,
-                snackbarManager, new ObservableSupplierImpl<>(),
-                ()
-                        -> omniboxStub,
-                tabContentManager, new FakeModalDialogManager(ModalDialogType.APP),
-                Mockito.mock(ChromeActivityNativeDelegate.class),
-                new ActivityLifecycleDispatcherImpl(mActivity), new MockTabCreatorManager(),
-                Mockito.mock(MenuOrKeyboardActionController.class),
-                new MultiWindowModeStateDispatcherImpl(mActivity), new ObservableSupplierImpl<>(),
-                new BackPressManager(), mIncognitoReauthControllerSupplier, null, mProfileSupplier);
+        var tabStripHeightSupplier = new ObservableSupplierImpl<Integer>();
+        tabStripHeightSupplier.set(0);
+
+        mCoordinator =
+                new StartSurfaceCoordinator(
+                        mActivity,
+                        scrimCoordinator,
+                        Mockito.mock(BottomSheetController.class),
+                        new OneshotSupplierImpl<>(),
+                        new ObservableSupplierImpl<>(),
+                        false,
+                        windowAndroid,
+                        new PlaceholderJankTracker(),
+                        mContainerView,
+                        new ObservableSupplierImpl<>(),
+                        mTabModelSelector,
+                        browserControlsManager,
+                        snackbarManager,
+                        new ObservableSupplierImpl<>(),
+                        () -> omniboxStub,
+                        tabContentManager,
+                        new FakeModalDialogManager(ModalDialogType.APP),
+                        Mockito.mock(ChromeActivityNativeDelegate.class),
+                        new ActivityLifecycleDispatcherImpl(mActivity),
+                        new MockTabCreatorManager(),
+                        Mockito.mock(MenuOrKeyboardActionController.class),
+                        new MultiWindowModeStateDispatcherImpl(mActivity),
+                        new ObservableSupplierImpl<>(),
+                        new BackPressManager(),
+                        mIncognitoReauthControllerSupplier,
+                        null,
+                        mProfileSupplier,
+                        tabStripHeightSupplier,
+                        new OneshotSupplierImpl<>());
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);

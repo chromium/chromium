@@ -270,17 +270,13 @@ void FullscreenController::FullscreenElementChanged(
 
       frame->GetLocalFrameHostRemote().FullscreenStateChanged(
           in_fullscreen, std::move(mojo_options));
-      if (IsSpatialNavigationEnabled(frame)) {
-        doc.GetPage()->GetSpatialNavigationController().FullscreenStateChanged(
-            new_element);
-      }
     }
   }
 }
 
 void FullscreenController::RestoreBackgroundColorOverride() {
   web_view_base_->SetBackgroundColorOverrideForFullscreenController(
-      absl::nullopt);
+      std::nullopt);
 }
 
 void FullscreenController::NotifyFramesOfFullscreenEntry(bool granted) {

@@ -62,11 +62,14 @@ bool TestLifecycleUnit::Load() {
 }
 
 int TestLifecycleUnit::GetEstimatedMemoryFreedOnDiscardKB() const {
-  return 0;
+  return estimated_memory_freed_kb_;
 }
 
 bool TestLifecycleUnit::CanDiscard(mojom::LifecycleUnitDiscardReason reason,
                                    DecisionDetails* decision_details) const {
+  if (failure_reason_) {
+    decision_details->AddReason(*failure_reason_);
+  }
   return can_discard_;
 }
 

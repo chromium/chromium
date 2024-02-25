@@ -11,30 +11,17 @@
 
 namespace quick_answers {
 
-const char kRuleSetPath[] = "unitConversionResult.conversions";
-const char kSourceUnitPath[] = "unitConversionResult.sourceUnit";
-const char kSourceAmountPath[] = "unitConversionResult.sourceAmount";
-const char kDestAmountPath[] = "unitConversionResult.destAmount";
-const char kDestTextPath[] =
-    "unitConversionResult.destination.valueAndUnit.rawText";
-
-const char kCategoryPath[] = "category";
-const char kConversionRateAPath[] = "conversionToSiA";
-const char kResultValueTemplate[] = "%.3f";
-const char kNamePath[] = "name";
-const char kUnitsPath[] = "units";
-
-constexpr char kPoundName[] = "Pound";
-
-// TODO(b/182389513): Handle the proper plural case for the display text.
+// TODO(b/323408178): Handle the proper plural case for the display text.
+// Also update to pluralize dependent on unit amount (i.e. >= 1).
 std::string GetUnitDisplayText(const std::string& name) {
   constexpr auto kUnitDisplayTextMap =
       base::MakeFixedFlatMap<base::StringPiece, int>(
           {{kPoundName, IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT}});
 
   const auto* it = kUnitDisplayTextMap.find(name);
-  if (it == kUnitDisplayTextMap.end())
+  if (it == kUnitDisplayTextMap.end()) {
     return name;
+  }
 
   return l10n_util::GetStringUTF8(it->second);
 }

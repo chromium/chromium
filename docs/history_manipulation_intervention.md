@@ -29,7 +29,9 @@ experiences in all browsers. That work is tracked at
 https://github.com/whatwg/html/issues/7832
 
 ## Invariants
-The intervention guarantees the following invariants:
+At a high level, the intervention ensures the back/forward buttons always
+navigate to a page the user either navigated to or interacted with. It
+guarantees the following invariants:
 1. Only back/forward navigations triggered by the back/forward buttons will ever
    skip history entries. This ensures that the history API's behavior is
    unaffected.
@@ -38,7 +40,10 @@ The intervention guarantees the following invariants:
 3. If a document receives a user activation (before or after creating history
    entries), its history entry is not skippable. With an activation, the
    document can create many unskippable same-document history entries, until
-   either a cross-document navigation or a back/forward occurs.
+   either a cross-document navigation or a back/forward occurs. Note that
+   same-document back/forwards do not normally reset any prior user activation,
+   but the intervention stops honoring such activations for creating new
+   entries until a new activation is received, per https://crbug.com/1248529.
 4. All same-document history entries will have the same skippable state. When
    marking an entry unskippable after a user activation, this ensures that the
    rest of the document's entries work as well. When marking an entry as

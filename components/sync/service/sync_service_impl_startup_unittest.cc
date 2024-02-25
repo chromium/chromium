@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
 #include "components/sync/service/sync_service_impl.h"
 
-#include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/test/fake_data_type_controller.h"
@@ -79,7 +76,7 @@ class SyncServiceImplStartupTest : public testing::Test {
         kEmail, signin::ConsentLevel::kSignin);
   }
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   void SignInWithSyncConsent() {
@@ -101,7 +98,7 @@ class SyncServiceImplStartupTest : public testing::Test {
     sync_service_impl_bundle_.identity_test_env()->WaitForRefreshTokensLoaded();
   }
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   void SignInWithSyncConsentWithoutRefreshToken() {
@@ -138,8 +135,9 @@ class SyncServiceImplStartupTest : public testing::Test {
   void SetSyncFeatureEnabledPrefs() {
     CHECK(!sync_service_);
 
-    sync_prefs_.SetSyncRequested(true);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     sync_prefs_.SetInitialSyncFeatureSetupComplete();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   SyncPrefs* sync_prefs() { return &sync_prefs_; }
@@ -289,6 +287,10 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   base::HistogramTester histogram_tester;
   SignInWithSyncConsent();
   SetSyncFeatureEnabledPrefs();
+
+  // Deferred startup is only possible if first sync completed earlier.
+  component_factory()->set_first_time_sync_configure_done(true);
+
   CreateSyncService();
   sync_service()->Initialize();
 
@@ -390,7 +392,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
   // We've never completed startup.
-  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 
   // On ChromeOS, the user is always immediately signed in, but a refresh token
   // isn't necessarily available yet.
@@ -415,7 +417,7 @@ TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
 
 TEST_F(SyncServiceImplStartupTest, StartAshFirstTime) {
   // We've never completed Sync startup.
-  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 
   // There is already a signed-in user.
   SignInWithSyncConsent();
@@ -450,9 +452,21 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
-  // Sync-the-feature is still considered off.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash, sync-the-feature remains on. Note however that this is not a
+  // common scenario, because in most case StopAndClear() would be issued from
+  // a codepath that would prevent either sync-the-feature (e.g. dashboard
+  // reset) or sync-the-transport (e.g. unrecoverable error) from starting.
+  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  // Except for Ash, StopAndClear() turns sync-the-feature off because
+  // IsInitialSyncFeatureSetupComplete() becomes false.
+  EXPECT_FALSE(
+      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Call StopAndClear() again while the sync service is already in transport
   // mode. It should immediately start up again in transport mode.
@@ -469,7 +483,7 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
 TEST_F(SyncServiceImplStartupTest, HonorsExistingDatatypePrefs) {
   // Explicitly set Keep Everything Synced to false and have only bookmarks
   // enabled.
-  sync_prefs()->SetSelectedTypes(
+  sync_prefs()->SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/false,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/{UserSelectableType::kBookmarks});
@@ -505,26 +519,7 @@ TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   EXPECT_FALSE(engine());
 }
 
-class SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature
-    : public SyncServiceImplStartupTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatureState(
-        kSyncIgnoreSyncRequestedPreference, GetParam());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  ~SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
-       SwitchManaged) {
+TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   // Sync starts out fully set up and enabled.
   SetSyncFeatureEnabledPrefs();
   SignInWithSyncConsent();
@@ -541,7 +536,7 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
             sync_service()->GetTransportState());
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
-  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 
   // The service should stop when switching to managed mode.
   pref_service()->SetBoolean(prefs::internal::kSyncManaged, true);
@@ -556,7 +551,7 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
             sync_service()->GetTransportState());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
-  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 
   // When switching back to unmanaged, Sync-the-transport should start up
   // automatically, which causes (re)creation of SyncEngine and
@@ -577,7 +572,8 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   // removed, for historic reasons. It is unclear if this behavior is optional,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
   // It can be resolved by invoking SetSyncFeatureRequested().
-  EXPECT_TRUE(sync_service()->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_TRUE(
+      sync_service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
 #else
   EXPECT_FALSE(
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
@@ -587,16 +583,14 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    SyncIgnoreSyncRequestedPreference,
-    SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
-    ::testing::Values(false, true));
-
 TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
-  sync_prefs()->SetSyncRequested(true);
   CreateSyncService();
   SignInWithSyncConsent();
+  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Prevent automatic (and successful) completion of engine initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
@@ -621,6 +615,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 
   CreateSyncService({SESSIONS});
   sync_service()->Initialize();
@@ -753,6 +748,10 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
 TEST_F(SyncServiceImplStartupTest, DeferredStartInterruptedByDataType) {
   base::HistogramTester histogram_tester;
   SetSyncFeatureEnabledPrefs();
+
+  // Deferred startup is only possible if first sync completed earlier.
+  component_factory()->set_first_time_sync_configure_done(true);
+
   SignInWithSyncConsent();
   CreateSyncService();
 
@@ -810,7 +809,7 @@ TEST_F(SyncServiceImplStartupTest,
        ShouldClearMetadataForAlreadyDisabledTypesBeforeConfigurationDone) {
   SetSyncFeatureEnabledPrefs();
   // Simulate types disabled during previous run.
-  sync_prefs()->SetSelectedTypes(
+  sync_prefs()->SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/false,
       /*registered_types=*/
       {UserSelectableType::kBookmarks, UserSelectableType::kReadingList},
@@ -823,10 +822,9 @@ TEST_F(SyncServiceImplStartupTest,
   sync_service()->Initialize();
 
   // Metadata was cleared for disabled types ...
-  EXPECT_EQ(1,
-            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(READING_LIST)->model()->clear_metadata_count());
   // ... but not for the ones not disabled.
-  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncServiceImplStartupTest,
@@ -844,7 +842,7 @@ TEST_F(SyncServiceImplStartupTest,
   std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
       sync_service()->GetSetupInProgressHandle();
   // Disable READING_LIST type before engine init is over.
-  sync_prefs()->SetSelectedTypes(
+  sync_prefs()->SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/false,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/{UserSelectableType::kBookmarks});
@@ -853,10 +851,9 @@ TEST_F(SyncServiceImplStartupTest,
   engine()->TriggerInitializationCompletion(/*success=*/true);
   ASSERT_TRUE(sync_service()->IsEngineInitialized());
   // Metadata was cleared for disabled types ...
-  EXPECT_EQ(1,
-            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(READING_LIST)->model()->clear_metadata_count());
   // ... but not for the ones not disabled.
-  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncServiceImplStartupTest,
@@ -877,7 +874,7 @@ TEST_F(SyncServiceImplStartupTest,
   ASSERT_TRUE(sync_service()->IsEngineInitialized());
 
   // Disable READING_LIST type.
-  sync_prefs()->SetSelectedTypes(
+  sync_prefs()->SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/false,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/{UserSelectableType::kBookmarks});
@@ -886,10 +883,9 @@ TEST_F(SyncServiceImplStartupTest,
   setup_in_progress_handle.reset();
 
   // Metadata was cleared for disabled types ...
-  EXPECT_EQ(1,
-            get_controller(READING_LIST)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, get_controller(READING_LIST)->model()->clear_metadata_count());
   // ... but not for the ones not disabled.
-  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 }  // namespace syncer

@@ -381,11 +381,15 @@ function processElementForFindElementAtPoint(
       x: centerX - element.offsetLeft,
       y: centerY - element.offsetTop,
     };
-    // The message will not be sent if `targetOrigin` is null, so use * which
-    // allows the message to be delievered to the contentWindow regardless of
-    // the origin.
+    // The message will not be sent if `targetOrigin` is null or "about:blank",
+    // so use * which allows the message to be delievered to the contentWindow
+    // regardless of the origin.
     if (element instanceof HTMLIFrameElement) {
-      const targetOrigin = element.src || '*';
+      let targetOrigin = '*';
+      const iframeSrc = element.src;
+      if (iframeSrc && !iframeSrc.startsWith('about:')) {
+        targetOrigin = iframeSrc;
+      }
       if (element.contentWindow) {
         element.contentWindow.postMessage(payload, targetOrigin);
       }
@@ -615,6 +619,9 @@ function extractUrlFromBackgroundImageString(backgroundImageString: string):
  */
 window.addEventListener('message', function(message) {
   const payload = message.data;
+  if (!payload || typeof payload !== 'object') {
+    return;
+  }
   if (payload.hasOwnProperty('type') &&
       payload.type === 'org.chromium.contextMenuMessage') {
     findElementAtPointInPageCoordinates(

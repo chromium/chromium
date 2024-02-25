@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_NOTIFICATION_MANAGER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +18,6 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NotificationDisplayService;
 class PrefService;
@@ -173,11 +174,11 @@ class NearbyNotificationManager : public TransferUpdateCallback,
                            ReceivedContentType type,
                            const SkBitmap& image);
 
-  raw_ptr<NotificationDisplayService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NotificationDisplayService, DanglingUntriaged>
       notification_display_service_;
-  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_service_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<NearbySharingService> nearby_service_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<SettingsOpener> settings_opener_;
 
   // Maps notification ids to notification delegates.
@@ -185,11 +186,11 @@ class NearbyNotificationManager : public TransferUpdateCallback,
       delegate_map_;
 
   // ShareTarget of the current transfer.
-  absl::optional<ShareTarget> share_target_;
+  std::optional<ShareTarget> share_target_;
 
   // Last transfer status reported to OnTransferUpdate(). Null when no transfer
   // is in progress.
-  absl::optional<TransferMetadata::Status> last_transfer_status_;
+  std::optional<TransferMetadata::Status> last_transfer_status_;
 
   // The last time that 'Nearby device is trying to share' notification was
   // shown.

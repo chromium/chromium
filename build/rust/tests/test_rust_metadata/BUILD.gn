@@ -3,14 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
+import("//build/rust/cargo_crate.gni")
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/rust/rust_unit_test.gni")
 
 # This target depends on two variants of the same crate: one directly, and one
 # transitively. With correct metadata handling, this will work.
-rust_static_library("test_rust_metadata_lib") {
-  crate_name = "lib"
+rust_static_library("lib") {
   crate_root = "lib.rs"
   sources = [ "lib.rs" ]
   deps = [
@@ -36,24 +36,24 @@ if (can_build_rust_unit_tests) {
   rust_unit_test("test_rust_metadata_unittests") {
     crate_root = "tests.rs"
     sources = [ "tests.rs" ]
-    deps = [ ":test_rust_metadata_lib" ]
+    deps = [ ":lib" ]
   }
 }
 
 rust_executable("test_rust_metadata_exe") {
   crate_root = "main.rs"
   sources = [ "main.rs" ]
-  deps = [ ":test_rust_metadata_lib" ]
+  deps = [ ":lib" ]
 }
 
 # Check that the metadata handling works when linking into a C++ binary too.
 executable("test_rust_metadata_cc_exe") {
   sources = [ "main.cc" ]
-  deps = [ ":test_rust_metadata_lib" ]
+  deps = [ ":lib" ]
 }
 
 # A source file whose behavior depends on cfg options.
-rust_static_library("transitive_dep_1") {
+cargo_crate("transitive_dep_1") {
   crate_name = "transitive_dep"
   crate_root = "transitive_dep.rs"
   sources = [ "transitive_dep.rs" ]
@@ -63,7 +63,7 @@ rust_static_library("transitive_dep_1") {
 
 # Build the same source again, but with a feature enabled. The metadata should
 # disambiguate the symbols when linking.
-rust_static_library("transitive_dep_2") {
+cargo_crate("transitive_dep_2") {
   crate_name = "transitive_dep"
   crate_root = "transitive_dep.rs"
   sources = [ "transitive_dep.rs" ]

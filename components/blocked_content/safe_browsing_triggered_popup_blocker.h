@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_BLOCKED_CONTENT_SAFE_BROWSING_TRIGGERED_POPUP_BLOCKER_H_
 #define COMPONENTS_BLOCKED_CONTENT_SAFE_BROWSING_TRIGGERED_POPUP_BLOCKER_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
@@ -14,7 +16,6 @@
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -144,7 +145,7 @@ class SafeBrowsingTriggeredPopupBlocker
     explicit NavigationHandleData(content::NavigationHandle&);
     ~NavigationHandleData() override;
 
-    absl::optional<safe_browsing::SubresourceFilterLevel>&
+    std::optional<safe_browsing::SubresourceFilterLevel>&
     level_for_next_committed_navigation() {
       return level_for_next_committed_navigation_;
     }
@@ -154,7 +155,7 @@ class SafeBrowsingTriggeredPopupBlocker
    private:
     // Whether this navigation should trigger the stronger popup blocker in
     // enforce or warn mode.
-    absl::optional<safe_browsing::SubresourceFilterLevel>
+    std::optional<safe_browsing::SubresourceFilterLevel>
         level_for_next_committed_navigation_;
   };
 

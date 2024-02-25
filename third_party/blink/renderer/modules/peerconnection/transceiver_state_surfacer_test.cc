@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using testing::AnyNumber;
 using testing::Return;
@@ -91,8 +92,8 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
                 : cricket::MEDIA_TYPE_VIDEO,
             CreateWebRtcSender(local_track, local_stream_id),
             CreateWebRtcReceiver(remote_track_id, remote_stream_id),
-            absl::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
-            absl::nullopt));
+            std::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
+            std::nullopt));
     if (transport.get()) {
       transceiver->SetTransport(transport);
     }
@@ -275,6 +276,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   CrossThreadPersistent<MockPeerConnectionDependencyFactory>
       dependency_factory_;

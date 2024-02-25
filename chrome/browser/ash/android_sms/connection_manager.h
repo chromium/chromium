@@ -99,31 +99,30 @@ class ConnectionManager
           feature_state_map) override;
 
   void UpdateConnectionStatus();
-  absl::optional<GURL> GenerateEnabledPwaUrl();
+  std::optional<GURL> GenerateEnabledPwaUrl();
   content::ServiceWorkerContext* GetCurrentServiceWorkerContext();
 
   void SetServiceWorkerProviderForTesting(
       std::unique_ptr<ServiceWorkerProvider> service_worker_provider);
 
   std::unique_ptr<ConnectionEstablisher> connection_establisher_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<AndroidSmsAppManager, ExperimentalAsh> android_sms_app_manager_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AndroidSmsAppManager> android_sms_app_manager_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
 
   std::unique_ptr<ServiceWorkerProvider> service_worker_provider_;
 
   // Version ID of the Android Messages for Web service worker that's currently
   // active i.e., capable of handling messages and controlling pages.
-  absl::optional<int64_t> active_version_id_;
+  std::optional<int64_t> active_version_id_;
 
   // Version ID of the previously active Android Messages for Web
   // service worker.
-  absl::optional<int64_t> prev_active_version_id_;
+  std::optional<int64_t> prev_active_version_id_;
 
   // The URL of the Android Messages PWA, if it is currently enabled. If the
   // feature is not currently enabled, this field is null.
-  absl::optional<GURL> enabled_pwa_url_;
+  std::optional<GURL> enabled_pwa_url_;
 };
 
 }  // namespace android_sms

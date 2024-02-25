@@ -17,12 +17,12 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/flags/flag.h"     // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
 #include "tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "tensorflow/lite/mutable_op_resolver.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
@@ -59,8 +59,8 @@ constexpr char kMobileNetV3[] = "mobilenet_v3_small_100_224_embedder.tflite";
 constexpr double kSimilarityTolerancy = 1e-6;
 
 StatusOr<ImageData> LoadImage(std::string image_name) {
-  return DecodeImageFromFile(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, image_name));
+  return DecodeImageFromFile(JoinPath("./" /*test src dir*/,
+                                      kTestDataDirectory, image_name));
 }
 
 class MobileNetV3OpResolver : public ::tflite::MutableOpResolver {
@@ -89,12 +89,12 @@ class MobileNetV3OpResolver : public ::tflite::MutableOpResolver {
   MobileNetV3OpResolver(const MobileNetV3OpResolver& r) = delete;
 };
 
-class CreateFromOptionsTest : public tflite_shims::testing::Test {};
+class CreateFromOptionsTest : public tflite::testing::Test {};
 
 TEST_F(CreateFromOptionsTest, SucceedsWithSelectiveOpResolver) {
   ImageEmbedderOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
 
   SUPPORT_ASSERT_OK(ImageEmbedder::CreateFromOptions(
       options, absl::make_unique<MobileNetV3OpResolver>()));
@@ -113,8 +113,8 @@ class MobileNetV3OpResolverMissingOps : public ::tflite::MutableOpResolver {
 
 TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
   ImageEmbedderOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
 
   auto image_embedder_or = ImageEmbedder::CreateFromOptions(
       options, absl::make_unique<MobileNetV3OpResolverMissingOps>());
@@ -231,9 +231,8 @@ TEST(CosineSimilarityTest, Succeeds) {
   // Prevent literal from being interpreted as null-terminated C-style string.
   *v_quantized.mutable_value_string() = std::string("\x80\x00\x00\x00", 4);
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      double float_similarity,
-      ImageEmbedder::CosineSimilarity(u_float, v_float));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(double float_similarity,
+                       ImageEmbedder::CosineSimilarity(u_float, v_float));
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       double quantized_similarity,
       ImageEmbedder::CosineSimilarity(u_quantized, v_quantized));
@@ -247,10 +246,10 @@ TEST(CosineSimilarityTest, Succeeds) {
 TEST(EmbedTest, SucceedsWithoutL2Normalization) {
   // Create embedder.
   ImageEmbedderOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageEmbedder> embedder,
-                               ImageEmbedder::CreateFromOptions(options));
+                       ImageEmbedder::CreateFromOptions(options));
   // Load images: one is a crop of the other.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
   std::unique_ptr<FrameBuffer> image_frame_buffer = CreateFromRgbRawBuffer(
@@ -261,10 +260,10 @@ TEST(EmbedTest, SucceedsWithoutL2Normalization) {
 
   // Extract both embeddings.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const EmbeddingResult& image_result,
-                               embedder->Embed(*image_frame_buffer));
+                       embedder->Embed(*image_frame_buffer));
   ImageDataFree(&image);
   SUPPORT_ASSERT_OK_AND_ASSIGN(const EmbeddingResult& crop_result,
-                               embedder->Embed(*crop_frame_buffer));
+                       embedder->Embed(*crop_frame_buffer));
   ImageDataFree(&crop);
 
   // Check results sizes
@@ -277,9 +276,9 @@ TEST(EmbedTest, SucceedsWithoutL2Normalization) {
       crop_result.embeddings(0).feature_vector();
   EXPECT_EQ(crop_feature_vector.value_float_size(), 1024);
   // Check cosine similarity.
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      double similarity, ImageEmbedder::CosineSimilarity(image_feature_vector,
-                                                         crop_feature_vector));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(double similarity,
+                       ImageEmbedder::CosineSimilarity(image_feature_vector,
+                                                       crop_feature_vector));
   double expected_similarity = 0.932738;
   EXPECT_LE(abs(similarity - expected_similarity), kSimilarityTolerancy);
 }
@@ -288,11 +287,11 @@ TEST(EmbedTest, SucceedsWithoutL2Normalization) {
 TEST(EmbedTest, SucceedsWithL2Normalization) {
   // Create embedder.
   ImageEmbedderOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
   options.set_l2_normalize(true);
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageEmbedder> embedder,
-                               ImageEmbedder::CreateFromOptions(options));
+                       ImageEmbedder::CreateFromOptions(options));
   // Load images: one is a crop of the other.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
   std::unique_ptr<FrameBuffer> image_frame_buffer = CreateFromRgbRawBuffer(
@@ -303,10 +302,10 @@ TEST(EmbedTest, SucceedsWithL2Normalization) {
 
   // Extract both embeddings.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const EmbeddingResult& image_result,
-                               embedder->Embed(*image_frame_buffer));
+                       embedder->Embed(*image_frame_buffer));
   ImageDataFree(&image);
   SUPPORT_ASSERT_OK_AND_ASSIGN(const EmbeddingResult& crop_result,
-                               embedder->Embed(*crop_frame_buffer));
+                       embedder->Embed(*crop_frame_buffer));
   ImageDataFree(&crop);
 
   // Check results sizes
@@ -319,9 +318,9 @@ TEST(EmbedTest, SucceedsWithL2Normalization) {
       crop_result.embeddings(0).feature_vector();
   EXPECT_EQ(crop_feature_vector.value_float_size(), 1024);
   // Check cosine similarity.
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      double similarity, ImageEmbedder::CosineSimilarity(image_feature_vector,
-                                                         crop_feature_vector));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(double similarity,
+                       ImageEmbedder::CosineSimilarity(image_feature_vector,
+                                                       crop_feature_vector));
   double expected_similarity = 0.932738;
   EXPECT_LE(abs(similarity - expected_similarity), kSimilarityTolerancy);
 }
@@ -332,12 +331,12 @@ TEST(EmbedTest, SucceedsWithL2Normalization) {
 TEST(EmbedTest, SucceedsWithQuantization) {
   // Create embedder.
   ImageEmbedderOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
   options.set_l2_normalize(true);
   options.set_quantize(true);
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageEmbedder> embedder,
-                               ImageEmbedder::CreateFromOptions(options));
+                       ImageEmbedder::CreateFromOptions(options));
   // Load images: one is a crop of the other.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
   std::unique_ptr<FrameBuffer> image_frame_buffer = CreateFromRgbRawBuffer(
@@ -348,10 +347,10 @@ TEST(EmbedTest, SucceedsWithQuantization) {
 
   // Extract both embeddings.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const EmbeddingResult& image_result,
-                               embedder->Embed(*image_frame_buffer));
+                       embedder->Embed(*image_frame_buffer));
   ImageDataFree(&image);
   SUPPORT_ASSERT_OK_AND_ASSIGN(const EmbeddingResult& crop_result,
-                               embedder->Embed(*crop_frame_buffer));
+                       embedder->Embed(*crop_frame_buffer));
   ImageDataFree(&crop);
 
   // Check results sizes
@@ -364,9 +363,9 @@ TEST(EmbedTest, SucceedsWithQuantization) {
       crop_result.embeddings(0).feature_vector();
   EXPECT_EQ(crop_feature_vector.value_string().size(), 1024);
   // Check cosine similarity.
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      double similarity, ImageEmbedder::CosineSimilarity(image_feature_vector,
-                                                         crop_feature_vector));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(double similarity,
+                       ImageEmbedder::CosineSimilarity(image_feature_vector,
+                                                       crop_feature_vector));
   // Close to but expectedly different from the above tests due to slight loss
   // of precision during quantization:
   double expected_similarity = 0.929717;
@@ -379,10 +378,10 @@ TEST(EmbedTest, SucceedsWithQuantization) {
 TEST(EmbedTest, SucceedsWithRegionOfInterest) {
   // Create embedder.
   ImageEmbedderOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageEmbedder> embedder,
-                               ImageEmbedder::CreateFromOptions(options));
+                       ImageEmbedder::CreateFromOptions(options));
   // Load images: one is a crop of the other.
   SUPPORT_ASSERT_OK_AND_ASSIGN(ImageData image, LoadImage("burger.jpg"));
   std::unique_ptr<FrameBuffer> image_frame_buffer = CreateFromRgbRawBuffer(
@@ -399,10 +398,10 @@ TEST(EmbedTest, SucceedsWithRegionOfInterest) {
 
   // Extract both embeddings.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const EmbeddingResult& image_result,
-                               embedder->Embed(*image_frame_buffer, roi));
+                       embedder->Embed(*image_frame_buffer, roi));
   ImageDataFree(&image);
   SUPPORT_ASSERT_OK_AND_ASSIGN(const EmbeddingResult& crop_result,
-                               embedder->Embed(*crop_frame_buffer));
+                       embedder->Embed(*crop_frame_buffer));
   ImageDataFree(&crop);
 
   // Check results sizes
@@ -415,9 +414,9 @@ TEST(EmbedTest, SucceedsWithRegionOfInterest) {
       crop_result.embeddings(0).feature_vector();
   EXPECT_EQ(crop_feature_vector.value_float_size(), 1024);
   // Check cosine similarity.
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      double similarity, ImageEmbedder::CosineSimilarity(image_feature_vector,
-                                                         crop_feature_vector));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(double similarity,
+                       ImageEmbedder::CosineSimilarity(image_feature_vector,
+                                                       crop_feature_vector));
   double expected_similarity = 0.999914;
   EXPECT_LE(abs(similarity - expected_similarity), kSimilarityTolerancy);
 }
@@ -425,10 +424,10 @@ TEST(EmbedTest, SucceedsWithRegionOfInterest) {
 TEST(GetEmbeddingDimension, Succeeds) {
   // Create embedder.
   ImageEmbedderOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageEmbedder> embedder,
-                               ImageEmbedder::CreateFromOptions(options));
+                       ImageEmbedder::CreateFromOptions(options));
 
   EXPECT_EQ(embedder->GetEmbeddingDimension(0), 1024);
   EXPECT_EQ(embedder->GetEmbeddingDimension(1), -1);
@@ -437,10 +436,10 @@ TEST(GetEmbeddingDimension, Succeeds) {
 TEST(GetNumberOfOutputLayers, Succeeds) {
   // Create embedder.
   ImageEmbedderOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
+  options.mutable_model_file_with_metadata()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<ImageEmbedder> embedder,
-                               ImageEmbedder::CreateFromOptions(options));
+                       ImageEmbedder::CreateFromOptions(options));
 
   EXPECT_EQ(embedder->GetNumberOfOutputLayers(), 1);
 }

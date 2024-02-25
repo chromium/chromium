@@ -9,6 +9,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/time/time.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 
@@ -91,7 +91,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
     CableEidArray authenticator_eid;
     CableSessionPreKeyArray session_pre_key;
   };
-  absl::optional<V1Data> v1;
+  std::optional<V1Data> v1;
 
   // For caBLEv2, the payload is the server-link data provided in the extension
   // as the "sessionPreKey".
@@ -105,7 +105,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
     std::vector<uint8_t> server_link_data;
     std::vector<uint8_t> experiments;
   };
-  absl::optional<V2Data> v2;
+  std::optional<V2Data> v2;
 };
 
 namespace cablev2 {
@@ -138,7 +138,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   // Parse builds a `Pairing` from an authenticator message. The signature
   // within the structure is validated by using `local_identity_seed` and
   // `handshake_hash`.
-  static absl::optional<std::unique_ptr<Pairing>> Parse(
+  static std::optional<std::unique_ptr<Pairing>> Parse(
       const cbor::Value& cbor,
       tunnelserver::KnownDomainID domain,
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,

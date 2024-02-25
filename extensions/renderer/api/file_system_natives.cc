@@ -71,11 +71,10 @@ void FileSystemNatives::GetIsolatedFileSystem(
   GURL root_url(storage::GetIsolatedFileSystemRootURIString(
       origin, file_system_id, optional_root_name));
 
-  args.GetReturnValue().Set(
-      blink::WebDOMFileSystem::Create(
-          webframe, blink::kWebFileSystemTypeIsolated,
-          blink::WebString::FromUTF8(name), root_url)
-          .ToV8Value(context()->v8_context()->Global(), isolate));
+  args.GetReturnValue().Set(blink::WebDOMFileSystem::Create(
+                                webframe, blink::kWebFileSystemTypeIsolated,
+                                blink::WebString::FromUTF8(name), root_url)
+                                .ToV8Value(isolate));
 }
 
 void FileSystemNatives::GetFileEntry(
@@ -114,8 +113,7 @@ void FileSystemNatives::GetFileEntry(
           webframe, type, blink::WebString::FromUTF8(file_system_name),
           file_system_root_url)
           .CreateV8Entry(blink::WebString::FromUTF8(file_path_string),
-                         entry_type, context()->v8_context()->Global(),
-                         args.GetIsolate()));
+                         entry_type, args.GetIsolate()));
 }
 
 void FileSystemNatives::CrackIsolatedFileSystemName(

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALL_COMMAND_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,8 +18,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/webapps/browser/installable/installable_logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -39,12 +40,29 @@ class WebAppDataRetriever;
 class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
+// Copies the file being installed to the profile directory.
+// On success returns a new owned location in the callback.
+void CopyLocationToProfileDirectory(
+    const base::FilePath& profile_dir,
+    const IsolatedWebAppLocation& location,
+    base::OnceCallback<
+        void(base::expected<IsolatedWebAppLocation, std::string>)> callback);
+
+// Removes the IWA's randomly named directory in the profile directory.
+// Calls the closure on complete.
+void CleanupLocationIfOwned(const base::FilePath& profile_dir,
+                            const IsolatedWebAppLocation& location,
+                            base::OnceClosure closure);
+
 // This is a helper class that contains methods which are shared between both
 // install and update commands.
 class IsolatedWebAppInstallCommandHelper {
  public:
   static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
   CreateDefaultResponseReaderFactory(const PrefService& prefs);
+
+  static std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
+      Profile& profile);
 
   IsolatedWebAppInstallCommandHelper(
       IsolatedWebAppUrlInfo url_info,
@@ -92,7 +110,7 @@ class IsolatedWebAppInstallCommandHelper {
 
   base::expected<WebAppInstallInfo, std::string>
   ValidateManifestAndCreateInstallInfo(
-      const absl::optional<base::Version>& expected_version,
+      const std::optional<base::Version>& expected_version,
       const ManifestAndUrl& manifest_and_url);
 
   void RetrieveIconsAndPopulateInstallInfo(
@@ -128,8 +146,8 @@ class IsolatedWebAppInstallCommandHelper {
       base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
           callback,
       IconsDownloadedResult result,
-      std::map<GURL, std::vector<SkBitmap>> icons_map,
-      std::map<GURL, int /*http_status_code*/> unused_icons_http_results);
+      IconsMap icons_map,
+      DownloadedIconsHttpResults unused_icons_http_results);
 
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;

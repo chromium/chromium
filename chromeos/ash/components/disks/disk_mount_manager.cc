@@ -1089,8 +1089,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Mount event change observers.
   base::ObserverList<DiskMountManager::Observer> observers_;
 
-  const raw_ptr<CrosDisksClient, ExperimentalAsh> cros_disks_client_ =
-      CrosDisksClient::Get();
+  const raw_ptr<CrosDisksClient> cros_disks_client_ = CrosDisksClient::Get();
 
   // The list of disks found.
   Disks disks_;

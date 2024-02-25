@@ -18,8 +18,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -52,7 +50,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/lacros/window_properties.h"
 #else
-#include "chrome/browser/ui/ash/window_pin_util.h"
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #endif
 
 using content::OpenURLParams;
@@ -98,7 +96,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
 
   int num_popups_seen = 0;
   int num_app_popups_seen = 0;
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b == browser)
       continue;
 
@@ -124,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, BrowserIsApp) {
 
   EXPECT_TRUE(WaitForTabsPopupsApps(browser(), 0, 0, 2));
 
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b == browser())
       ASSERT_FALSE(b->is_type_app_popup());
     else

@@ -16,7 +16,7 @@
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/common/referrer.h"
@@ -25,7 +25,8 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
+#include "net/ssl/ssl_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
+#include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -47,7 +49,6 @@ class GURL;
 namespace net {
 class HttpRequestHeaders;
 class HttpResponseHeaders;
-class ProxyServer;
 }  // namespace net
 
 namespace perfetto::protos::pbzero {
@@ -81,7 +82,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // some may change during navigation (e.g. due to server redirects).
 
   // Get a unique ID for this navigation.
-  virtual int64_t GetNavigationId() = 0;
+  virtual int64_t GetNavigationId() const = 0;
 
   // Get the page UKM ID that will be in use once this navigation fully commits
   // (typically the eventual value of
@@ -175,9 +176,6 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual bool IsRendererInitiated() = 0;
 
   // The navigation initiator's user activation and ad status.
-  //
-  // TODO(yaoxia): this will be used for recording a page load UKM
-  // (https://crrev.com/c/4080612).
   virtual blink::mojom::NavigationInitiatorActivationAndAdStatus
   GetNavigationInitiatorActivationAndAdStatus() = 0;
 
@@ -236,11 +234,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual const std::string& GetSearchableFormEncoding() = 0;
 
   // Returns the reload type for this navigation.
-  virtual ReloadType GetReloadType() = 0;
+  virtual ReloadType GetReloadType() const = 0;
 
   // Returns the restore type for this navigation. RestoreType::NONE is returned
   // if the navigation is not a restore.
-  virtual RestoreType GetRestoreType() = 0;
+  virtual RestoreType GetRestoreType() const = 0;
 
   // Used for specifying a base URL for pages loaded via data URLs.
   virtual const GURL& GetBaseURLForDataURL() = 0;
@@ -302,12 +300,26 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // they don't commit a new document into a renderer process.
   virtual RenderFrameHost* GetRenderFrameHost() const = 0;
 
-  // Returns the id of the RenderFrameHost this navigation is committing from.
+  // Returns the id of the "current RenderFrameHost" before this navigation
+  // commits (which would potentially replace the "current RenderFrameHost").
   // In case a navigation happens within the same RenderFrameHost,
   // GetRenderFrameHost() and GetPreviousRenderFrameHostId() will refer to the
   // same RenderFrameHost.
-  // Note: This is not guaranteed to refer to a RenderFrameHost that still
-  // exists.
+  // Note: The value returned by this function may change over time, e.g. if
+  // another navigation committed a different RenderFrameHost during the
+  // lifetime of this navigation, causing the "current RenderFrameHost" to
+  // change to another RenderFrameHost. The value will only be guaranteed to
+  // not change again after the navigation reaches the "ReadyToCommit" stage,
+  // as at that point only that navigation can commit, guaranteeing no further
+  // changes to the "current RenderFrameHost" until that navigation itself
+  // potentially replaces the "current RenderFrameHost".
+  // Note 2: Because of the potential "current RenderFrameHost" changes in the
+  // middle of this navigation's lifetime, this function should not be assumed
+  // to be the value of the "original current RenderFrameHost" (i.e. the current
+  // RenderFrameHost value at NavigationHandle construction time). There is
+  // currently no way to get that value, but it is tracked internally in
+  // `NavigationRequest::current_render_frame_host_id_at_construction_`, so it
+  // can potentially be exposed if needed in the future.
   virtual GlobalRenderFrameHostId GetPreviousRenderFrameHostId() = 0;
 
   // Returns the id of the RenderProcessHost this navigation is expected to
@@ -414,19 +426,19 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual const net::HttpResponseHeaders* GetResponseHeaders() = 0;
 
   // Returns the connection info for the request, the default value is
-  // CONNECTION_INFO_UNKNOWN if there hasn't been a response (or redirect)
+  // HttpConnectionInfo::kUNKNOWN if there hasn't been a response (or redirect)
   // yet. The connection info may change during the navigation (e.g. after
   // encountering a server redirect).
-  virtual net::HttpResponseInfo::ConnectionInfo GetConnectionInfo() = 0;
+  virtual net::HttpConnectionInfo GetConnectionInfo() = 0;
 
   // Returns the SSLInfo for a request that succeeded or failed due to a
   // certificate error. In the case of other request failures or of a non-secure
   // scheme, returns an empty object.
-  virtual const absl::optional<net::SSLInfo>& GetSSLInfo() = 0;
+  virtual const std::optional<net::SSLInfo>& GetSSLInfo() = 0;
 
   // Returns the AuthChallengeInfo for the request, if the response contained an
   // authentication challenge.
-  virtual const absl::optional<net::AuthChallengeInfo>&
+  virtual const std::optional<net::AuthChallengeInfo>&
   GetAuthChallengeInfo() = 0;
 
   // Returns host resolution error info associated with the request.
@@ -468,9 +480,6 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns true if the navigation response was cached.
   virtual bool WasResponseCached() = 0;
 
-  // Returns the proxy server used for this navigation, if any.
-  virtual const net::ProxyServer& GetProxyServer() = 0;
-
   // Returns the value of the hrefTranslate attribute if this navigation was
   // initiated from a link that had that attribute set.
   virtual const std::string& GetHrefTranslate() = 0;
@@ -478,14 +487,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns, if available, the impression associated with the link clicked to
   // initiate this navigation. The impression is available for the entire
   // lifetime of the navigation.
-  virtual const absl::optional<blink::Impression>& GetImpression() = 0;
+  virtual const std::optional<blink::Impression>& GetImpression() = 0;
 
   // Returns the frame token associated with the frame that initiated the
   // navigation. This can be nullptr if the navigation was not associated with a
   // frame, or may return a valid frame token to a frame that no longer exists
   // because it was deleted before the navigation began. This parameter is
   // defined if and only if GetInitiatorProcessId below is.
-  virtual const absl::optional<blink::LocalFrameToken>&
+  virtual const std::optional<blink::LocalFrameToken>&
   GetInitiatorFrameToken() = 0;
 
   // Return the ID of the renderer process of the frame host that initiated the
@@ -501,12 +510,12 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // original navigation, but the history navigation was initiated by
   // javascript, the initiator origin will be null even though
   // IsRendererInitiated() returns true.
-  virtual const absl::optional<url::Origin>& GetInitiatorOrigin() = 0;
+  virtual const std::optional<url::Origin>& GetInitiatorOrigin() = 0;
 
   // Returns, for renderer-initiated about:blank and about:srcdoc navigations,
   // the base url of the document that has initiated the navigation for this
   // NavigationHandle. The same caveats apply here as for GetInitiatorOrigin().
-  virtual const absl::optional<GURL>& GetInitiatorBaseUrl() = 0;
+  virtual const std::optional<GURL>& GetInitiatorBaseUrl() = 0;
 
   // Retrieves any DNS aliases for the requested URL. Includes all known
   // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
@@ -518,7 +527,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual bool IsSameProcess() = 0;
 
   // Returns the NavigationEntry associated with this, which may be null.
-  virtual NavigationEntry* GetNavigationEntry() = 0;
+  virtual NavigationEntry* GetNavigationEntry() const = 0;
 
   // Returns the offset between the indices of the previous last committed and
   // the newly committed navigation entries.
@@ -630,7 +639,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Prerender2:
   // Used for metrics.
-  virtual PrerenderTriggerType GetPrerenderTriggerType() = 0;
+  virtual PreloadingTriggerType GetPrerenderTriggerType() = 0;
   virtual std::string GetPrerenderEmbedderHistogramSuffix() = 0;
 
   // Returns a SafeRef to this handle.
@@ -683,6 +692,22 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // will be lost.
   virtual blink::RuntimeFeatureStateContext&
   GetMutableRuntimeFeatureStateContext() = 0;
+
+  // Some content settings must be enforced by the renderer (e.g. whether
+  // running javascript is allowed). See ContentSettingsType for more details.
+  virtual void SetContentSettings(
+      blink::mojom::RendererContentSettingsPtr content_settings) = 0;
+
+  // Makes a copy of the content settings.
+  virtual blink::mojom::RendererContentSettingsPtr
+  GetContentSettingsForTesting() = 0;
+
+  // Allows the embedder to mark whether this navigation handle is being used
+  // for advertising purposes. This is expected to be best-effort, and may be
+  // inaccurate. Notably, this defers from the status from
+  // `GetNavigationInitiatorActivationAndAdStatus()` as it can include other
+  // signals outside of the initiator.
+  virtual void SetIsAdTagged() = 0;
 };
 
 }  // namespace content

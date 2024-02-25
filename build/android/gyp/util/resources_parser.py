@@ -89,11 +89,8 @@ class RTxtGenerator:
 
     assert root.tag == 'resources'
     for child in root:
-      if child.tag == 'eat-comment':
-        # eat-comment is just a dummy documentation element.
-        continue
-      if child.tag == 'skip':
-        # skip is just a dummy element.
+      if child.tag in ('eat-comment', 'skip', 'overlayable', 'macro'):
+        # These tags do not create real resources
         continue
       if child.tag == 'declare-styleable':
         ret.update(self._ParseDeclareStyleable(child))
@@ -109,7 +106,7 @@ class RTxtGenerator:
             f'Infered resource type ({resource_type}) from xml entry '
             f'({parsed_element}) (found in {xml_path}) is not listed in '
             'resource_utils.ALL_RESOURCE_TYPES. Teach resources_parser.py how '
-            'to parse this entry and/or add to the list.')
+            'to parse this entry and then add to the list.')
         name = _ResourceNameToJavaSymbol(child.attrib['name'])
         ret.add(_TextSymbolEntry('int', resource_type, name, _DUMMY_RTXT_ID))
     return ret

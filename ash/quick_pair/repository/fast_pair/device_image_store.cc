@@ -4,13 +4,13 @@
 
 #include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "ash/shell.h"
 #include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -84,7 +84,7 @@ bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
   DeviceImageInfo& images = model_id_to_images_[model_id];
 
   if (!DeviceImageInfoHasImages(images)) {
-    QP_LOG(WARNING)
+    CD_LOG(WARNING, Feature::FP)
         << __func__
         << ": Attempted to persist non-existent images for model ID: " +
                model_id;
@@ -92,16 +92,17 @@ bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
   }
   PrefService* local_state = Shell::Get()->local_state();
   if (!local_state) {
-    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No shell local state available.";
     return false;
   }
   ScopedDictPrefUpdate device_image_store(local_state, kDeviceImageStorePref);
   // TODO(dclasson): Once we add TrueWireless support, need to modify this to
   // merge new & persisted images objects.
   if (!device_image_store->Set(model_id, images.ToDictionaryValue())) {
-    QP_LOG(WARNING) << __func__
-                    << ": Failed to persist images to prefs for model ID: " +
-                           model_id;
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": Failed to persist images to prefs for model ID: " + model_id;
     return false;
   }
   return true;
@@ -110,20 +111,21 @@ bool DeviceImageStore::PersistDeviceImages(const std::string& model_id) {
 bool DeviceImageStore::EvictDeviceImages(const std::string& model_id) {
   PrefService* local_state = Shell::Get()->local_state();
   if (!local_state) {
-    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No shell local state available.";
     return false;
   }
   ScopedDictPrefUpdate device_image_store(local_state, kDeviceImageStorePref);
   if (!device_image_store->Remove(model_id)) {
-    QP_LOG(WARNING) << __func__
-                    << ": Failed to evict images from prefs for model ID: " +
-                           model_id;
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": Failed to evict images from prefs for model ID: " + model_id;
     return false;
   }
   return true;
 }
 
-absl::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
+std::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
     const std::string& model_id) {
   // Lazily load saved images from prefs the first time we get an image.
   if (!loaded_images_from_prefs_) {
@@ -134,7 +136,7 @@ absl::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
   DeviceImageInfo& images = model_id_to_images_[model_id];
 
   if (!DeviceImageInfoHasImages(images)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return images;
 }
@@ -142,19 +144,20 @@ absl::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
 void DeviceImageStore::LoadPersistedImagesFromPrefs() {
   PrefService* local_state = Shell::Get()->local_state();
   if (!local_state) {
-    QP_LOG(WARNING) << __func__ << ": No shell local state available.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": No shell local state available.";
     return;
   }
   const base::Value::Dict& device_image_store =
       local_state->GetDict(kDeviceImageStorePref);
   for (auto [model_id, image_dict] : device_image_store) {
-    absl::optional<DeviceImageInfo> images;
+    std::optional<DeviceImageInfo> images;
     if (image_dict.is_dict()) {
       images = DeviceImageInfo::FromDictionaryValue(image_dict.GetDict());
     }
     if (!images) {
-      QP_LOG(WARNING) << __func__
-                      << ": Failed to load persisted images from prefs.";
+      CD_LOG(WARNING, Feature::FP)
+          << __func__ << ": Failed to load persisted images from prefs.";
       continue;
     }
     model_id_to_images_[model_id] = images.value();
@@ -186,7 +189,8 @@ void DeviceImageStore::SaveImageAsBase64(
     FetchDeviceImagesCallback on_images_saved_callback,
     gfx::Image image) {
   if (image.IsEmpty()) {
-    QP_LOG(WARNING) << __func__ << ": Failed to fetch device image.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to fetch device image.";
     std::move(on_images_saved_callback)
         .Run(std::make_pair(image_type, FetchDeviceImagesResult::kFailure));
     return;
@@ -205,8 +209,8 @@ void DeviceImageStore::SaveImageAsBase64(
   } else if (image_type == DeviceImageType::kCase) {
     model_id_to_images_[model_id].case_image_ = encoded_image;
   } else {
-    QP_LOG(WARNING) << __func__
-                    << ": Can't save device image to invalid image field.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Can't save device image to invalid image field.";
     std::move(on_images_saved_callback)
         .Run(std::make_pair(DeviceImageType::kNotSupportedType,
                             FetchDeviceImagesResult::kFailure));
@@ -219,7 +223,7 @@ void DeviceImageStore::SaveImageAsBase64(
 }
 
 void DeviceImageStore::RefreshCacheForTest() {
-  QP_LOG(INFO) << __func__;
+  CD_LOG(INFO, Feature::FP) << __func__;
   model_id_to_images_.clear();
   LoadPersistedImagesFromPrefs();
 }

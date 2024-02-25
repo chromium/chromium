@@ -46,9 +46,12 @@ class CORE_EXPORT CSSParserTokenStream {
     STACK_ALLOCATED();
 
    public:
-    explicit BlockGuard(CSSParserTokenStream& stream) : stream_(stream) {
+    explicit BlockGuard(CSSParserTokenStream& stream)
+        : stream_(stream), boundaries_(stream.boundaries_) {
       const CSSParserToken next = stream.ConsumeInternal();
       DCHECK_EQ(next.GetBlockType(), CSSParserToken::kBlockStart);
+      // Boundaries do not apply within blocks.
+      stream.boundaries_ = FlagForTokenType(kEOFToken);
     }
 
     void SkipToEndOfBlock() {
@@ -62,11 +65,13 @@ class CORE_EXPORT CSSParserTokenStream {
       if (!skipped_to_end_of_block_) {
         SkipToEndOfBlock();
       }
+      stream_.boundaries_ = boundaries_;
     }
 
    private:
     CSSParserTokenStream& stream_;
     bool skipped_to_end_of_block_ = false;
+    uint64_t boundaries_;
   };
 
   static constexpr uint64_t FlagForTokenType(CSSParserTokenType token_type) {
@@ -74,7 +79,13 @@ class CORE_EXPORT CSSParserTokenStream {
   }
 
   // The specified token type will be treated as kEOF while the Boundary is on
-  // the stack.
+  // the stack. However, this does not apply within blocks. For example, if the
+  // current boundary is kSemicolonToken, the parsing following will only treat
+  // the ';' between 'b' and 'c' as kEOF, because the other ';'-tokens are
+  // within a block:
+  //
+  //  a[1;2;3]b;c
+  //
   class Boundary {
     STACK_ALLOCATED();
 
@@ -249,19 +260,30 @@ class CORE_EXPORT CSSParserTokenStream {
     return CSSParserTokenRange(buffer_);
   }
 
+  // https://drafts.csswg.org/css-syntax-3/#consume-a-component-value
+  //
+  // This is similar to ConsumeUntilPeekedTypeIs, in that it returns
+  // a range to an internal buffer that's invalidated on the next call
+  // to either ConsumeComponentValue() or ConsumeUntilPeekedTypeIs(),
+  // but instead of consuming until a specified token type, it just consumes
+  // a single component value and returns the corresponding range.
+  CSSParserTokenRange ConsumeComponentValue();
+
+  CSSParserTokenRange ConsumeComponentValueIncludingWhitespace() {
+    CSSParserTokenRange range = ConsumeComponentValue();
+    ConsumeWhitespace();
+    return range;
+  }
+
   // Restarts
   // ========
   //
   // CSSParserTokenStream has limited restart capabilities through the
   // Save and Restore functions.
   //
-  // Saving the stream is allowed under the following conditions:
-  //
-  //  1. There are no boundaries, except for the regular EOF boundary.
-  //     (See inner class Boundary). This avoids having to store the boundaries
-  //     in the stream snapshot.
-  //  2. The lookahead token is present. (See HasLookAhead). This avoids having
-  //     to store whether or not we have a lookahead token.
+  // Saving the stream is allowed under the condition that the lookahead token
+  // is present. (See HasLookAhead). This avoids having to store whether or not
+  // we have a lookahead token.
   //
   // Restoring the stream is allowed under the following conditions:
   //
@@ -269,6 +291,8 @@ class CORE_EXPORT CSSParserTokenStream {
   //     important for undoing mutations to the tokenizer's block stack (see
   //     CSSTokenizer::Restore).
   //  2. The Save/Restore pair does not cross a BlockGuard.
+  //  3. The Save/Restore pair does not cross a Boundary. (See section below).
+  //     This limitation avoids having to store the boundary.
   //
   //
   // Restoring
@@ -351,19 +375,161 @@ class CORE_EXPORT CSSParserTokenStream {
   // current block during a BlockGuard. For these reasons, we only ever need to
   // undo at most one mutation to the block stack: the block stack mutation
   // caused by the "final" lookahead before the restore process.
+  //
+  // Boundaries
+  // ==========
+  //
+  // The state may be saved and restored during a Boundary, but the boundary
+  // conditions must be the same during the call to Restore as they were
+  // during the call to Save. For example, can you use a boundary that's
+  // created and destroyed between the Save/Restore calls:
+  //
+  //  State s = stream.Save();
+  //  {
+  //    CSSParserTokenStream::Boundary boundary(...);
+  //    ConsumeSomething(stream);
+  //  }
+  //  stream.Restore(s);
+  //
+  // Or you can use a boundary that exists during both Save and Restore calls:
+  //
+  //  CSSParserTokenStream::Boundary boundary(...);
+  //  State s = stream.Save();
+  //  ConsumeSomething(stream);
+  //  stream.Restore(s);
+  //
+  // However, a Save/Restore pair must not cross the boundary. The following
+  // will trigger a DCHECK:
+  //
+  //  State s = stream.Save();
+  //  ConsumeSomething(stream);
+  //  {
+  //    CSSParserTokenStream::Boundary boundary(...);
+  //    stream.Restore(s);
+  //  }
 
-  wtf_size_t Save() const {
-    DCHECK_EQ(boundaries_, FlagForTokenType(kEOFToken));
+#if DCHECK_IS_ON()
+  struct State {
+    STACK_ALLOCATED();
+
+   private:
+    friend class CSSParserTokenStream;
+    State(wtf_size_t offset, uint64_t boundaries)
+        : offset_(offset), boundaries_(boundaries) {}
+    wtf_size_t offset_;
+    uint64_t boundaries_;
+  };
+#else   // !DCHECK_IS_ON()
+  using State = wtf_size_t;
+#endif  // DCHECK_IS_ON()
+
+  State Save() const {
     DCHECK(has_look_ahead_);
+#if DCHECK_IS_ON()
+    return State(offset_, boundaries_);
+#else   // !DCHECK_IS_ON()
     return offset_;
+#endif  // DCHECK_IS_ON()
   }
 
-  void Restore(wtf_size_t offset) {
+  void Restore(State state) {
     DCHECK(has_look_ahead_);
-    offset_ = offset;
-    boundaries_ = FlagForTokenType(kEOFToken);
+#if DCHECK_IS_ON()
+    offset_ = state.offset_;
+    DCHECK_EQ(state.boundaries_, boundaries_) << "Boundary-crossing restore";
+#else   // !DCHECK_IS_ON()
+    offset_ = state;
+#endif  // DCHECK_IS_ON()
     next_ = tokenizer_.Restore(next_, offset_);
   }
+
+  // A RestoringBlockGuard is an object that allows you to enter a block,
+  // and guarantees that (once destroyed) the stream is not left in the middle
+  // of that block. This guarantee is met one of two ways:
+  //
+  //  1. The guard is *released*, and no action is taken when it goes
+  //     out of scope, except consuming the block-end. Releasing a guard
+  //     is only possible at the block-end (or EOF).
+  //  2. The guard is not released, and the stream is restored to the
+  //     specified state when the guard goes out of scope. This is the default
+  //     behavior.
+  //
+  // This is useful in situations where you need to speculatively enter a block,
+  // but then expect to "abort" parsing depending on the first few tokens within
+  // that block.
+  //
+  // Note that the provided state must not cross another [Restoring]BlockGuard.
+  class RestoringBlockGuard {
+    STACK_ALLOCATED();
+
+   public:
+    RestoringBlockGuard(CSSParserTokenStream& stream, State state)
+        : stream_(stream), boundaries_(stream.boundaries_), state_(state) {
+      const CSSParserToken next = stream.ConsumeInternal();
+      DCHECK_EQ(next.GetBlockType(), CSSParserToken::kBlockStart);
+      stream.boundaries_ = FlagForTokenType(kEOFToken);
+    }
+
+    // Attempts to release the guard. If the guard could not be released
+    // (i.e. we are not at the end of the block or EOF), then this call
+    // has no effect, and ~RestoringBlockGuard will restore the stream to
+    // the pre-guard state.
+    //
+    // The return value of this function is useful for checking whether or
+    // not we are at the end of the block. If we expect to be at the end
+    // of a block, we can try to Release the guard. If that succeeded
+    // we were indeed at the end, otherwise we had unexpected trailing
+    // tokens (a parse failure of whatever we're trying to parse).
+    //
+    // Note that the following examples ignore whitespace tokens.
+    //
+    //  Example 1: rgb(0, 128, 64)
+    //                           ^
+    //  After consuming '64' from this stream, we try to Release the guard.
+    //  Since we're at the end of the block, the guard is released.
+    //
+    //  Example 2: rgb(0, 128, 64 nonsense)
+    //                            ^
+    //  After consuming '64' from this stream, we try to Release the guard.
+    //  Since we're not at the end of the block, the guard isn't released,
+    //  which means that we have unknown trailing tokens.
+    bool Release() {
+      stream_.EnsureLookAhead();
+      if (stream_.next_.IsEOF() ||
+          stream_.next_.GetBlockType() == CSSParserToken::kBlockEnd) {
+        released_ = true;
+        return true;
+      }
+      return false;
+    }
+
+    ~RestoringBlockGuard() {
+      stream_.EnsureLookAhead();
+      if (released_) {
+        // The guard has been released, nothing to do except move past
+        // the block-end.
+        const CSSParserToken& token = stream_.UncheckedConsumeInternal();
+        DCHECK(token.GetType() == kEOFToken ||
+               token.GetBlockType() == CSSParserToken::kBlockEnd);
+      } else {
+        // The guard has not been released, and we need to restore to the
+        // pre-guard state.
+        stream_.Restore(state_);
+        // Pops the item pushed by the call to UncheckedConsumeInternal.
+        // Note that if we happen to be at the end of the block, then we already
+        // popped the block stack, but Restore would have pushed to the stack
+        // again.
+        stream_.PopBlockStack();
+      }
+      stream_.boundaries_ = boundaries_;
+    }
+
+   private:
+    CSSParserTokenStream& stream_;
+    uint64_t boundaries_;
+    State state_;
+    bool released_ = false;
+  };
 
  private:
   template <CSSParserTokenType... EndTypes>
@@ -399,6 +565,8 @@ class CORE_EXPORT CSSParserTokenStream {
   // until the matching BlockEnd token or EOF. Requires but does _not_
   // leave a lookahead token active (for unknown reasons).
   void UncheckedSkipToEndOfBlock();
+
+  void PopBlockStack() { tokenizer_.block_stack_.pop_back(); }
 
   Vector<CSSParserToken, kInitialBufferSize> buffer_;
   CSSTokenizer& tokenizer_;

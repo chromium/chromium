@@ -25,6 +25,6 @@ Verifies that the range of i-th payload corresponds to the state at the end of i
 
 Running test: removeTwoStyleTexts
 StylePayload result ranges:
-    range #0: {4, 7, 4, 7}
+    range #0: {2, 7, 2, 7}
     range #1: {0, 7, 0, 7}
 

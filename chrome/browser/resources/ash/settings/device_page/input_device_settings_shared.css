@@ -4,7 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
- * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
 :host(:not([is-last-device])) .bottom-divider {
@@ -12,7 +12,7 @@
 }
 
 .subsection {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   padding-inline-start: var(--cr-section-indent-width);
 }
 
@@ -39,14 +39,46 @@
   padding: 6px;
 }
 
-/* TODO(b/281116317) Remove once Jelly is launched */
-:host-context(body:not(.jelly-enabled)) .key-container {
-  font-family: 'Google Sans', Roboto, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 20px;
-}
-
 #keyLabel {
   padding-inline: 6px;
+}
+
+cr-dialog [slot='button-container'] {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 32px 28px 32px;
+}
+
+cr-dialog [slot='body'] {
+  padding: 24px 32px;
+}
+
+cr-dialog [slot='title'] {
+  padding: 32px 32px 0 32px;
+}
+
+cr-dialog #cancelButton,
+cr-dialog #editButton {
+  background-color: var(--cros-bg-color);
+  border: solid 1px var(--cros-button-stroke-color-secondary);
+}
+
+.subpage-description {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.subpage-description > span {
+  color: var(--cros-text-color-secondary);
+  font-family: var(--cros-body-2-font-family);
+  line-height: 20px;
+  padding: 14px 0;
+}
+
+.subpage-description > iron-icon {
+  margin: 6px;
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  --iron-icon-fill-color: var(--cros-text-color-secondary);
 }

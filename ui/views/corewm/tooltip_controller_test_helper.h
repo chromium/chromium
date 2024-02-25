@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
@@ -85,6 +86,8 @@ class TooltipControllerTestHelper : public aura::WindowObserver {
 
 // Trivial View subclass that lets you set the tooltip text.
 class TooltipTestView : public views::View {
+  METADATA_HEADER(TooltipTestView, views::View)
+
  public:
   TooltipTestView();
 

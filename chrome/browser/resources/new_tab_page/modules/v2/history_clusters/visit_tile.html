@@ -4,7 +4,17 @@
     border-radius: var(--ntp-module-item-border-radius);
     display: inline-flex;
     height: 100%;
+    min-width: 0;
     width: 100%;
+  }
+
+  .hover-layer {
+    display: none;
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    border-radius: var(--ntp-module-item-border-radius);
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
   }
 
   a:link,
@@ -14,14 +24,12 @@
     text-decoration: none;
   }
 
-  a:hover {
-    background: var(--color-new-tab-page-module-item-background-hovered);
-    border-radius: var(--ntp-module-item-border-radius);
+  a:hover .hover-layer {
+    display: block;
   }
 
-  a:active {
-    background-color: var(--color-new-tab-page-active-background);
-    border-radius: var(--ntp-module-item-border-radius);
+  a:active .hover-layer {
+    background: var(--color-new-tab-page-active-background);
   }
 
   :host-context(.focus-outline-visible) a:focus,
@@ -33,6 +41,7 @@
 
   #content {
     flex: 1;
+    min-width: 0;
     position: relative;
   }
 
@@ -46,7 +55,10 @@
   }
 
   :host([images-enabled]) #label-container {
-    border-radius: var(--ntp-module-item-border-radius);
+    background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.4) 69.79%);
+    border-radius: var(--ntp-module-item-border-radius)
+        var(--ntp-module-item-border-radius) 0 0;
     color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     font-size: 11px;
@@ -55,11 +67,6 @@
     margin: 4px;
     width: calc(100% - 8px); /* Subtract parent margin */
     z-index: 1;
-  }
-
-  :host([images-enabled]) #label-container {
-    background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.4) 69.79%);
   }
 
   #label {
@@ -104,6 +111,9 @@
   }
 
   #icon {
+    background-color: white;
+    /* Need both this and size so default icon shrinks. */
+    background-size: 10px;
     height: 16px;
     margin-inline-end: 8px;
     width: 16px;
@@ -172,14 +182,15 @@
   :host([has-discount]) #title {
     -webkit-line-clamp: 1;
     height: 20px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]"
-   aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">
+    aria-label$="[[tileLabel_]]">
+  <div class="hover-layer"></div>
   <div id="label-container">
     <page-favicon id="icon" url="[[visit.normalizedUrl]]"
-                  is-known-to-sync="[[visit.isKnownToSync]]">
+                  is-known-to-sync="[[visit.isKnownToSync]]" size="10">
     </page-favicon>
     <div id="label" class="truncate">[[label_]]</div>
   </div>
@@ -197,7 +208,7 @@
   </div>
   <div id="title" class="truncate">[[visit.pageTitle]]</div>
   <template is="dom-if" if="[[hasDiscount]]" restamp>
-    <div id="discountChip"></div>
+    <div id="discountChip">[[discount]]</div>
   </template>
   <template is="dom-if" if="[[annotation_]]">
         <div id="annotation">[[annotation_]]</div>

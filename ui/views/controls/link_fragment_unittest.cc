@@ -37,6 +37,11 @@ class LinkFragmentTest : public test::BaseControlTestWidget {
         GetContext(), widget()->GetNativeWindow());
   }
 
+  void TearDown() override {
+    fragments_.fill(nullptr);
+    test::BaseControlTestWidget::TearDown();
+  }
+
  protected:
   void CreateWidgetContent(View* container) override {
     // Fragment 0 is stand-alone.
@@ -71,7 +76,7 @@ class LinkFragmentTest : public test::BaseControlTestWidget {
   }
 
  private:
-  std::array<raw_ptr<LinkFragment, AcrossTasksDanglingUntriaged>, 3> fragments_;
+  std::array<raw_ptr<LinkFragment>, 3> fragments_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 

@@ -12,12 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/cast_audio_manager_helper.h"
 #include "media/audio/audio_manager_base.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 // NOTE: CastAudioManager receives a |device_id| from the audio service, and
 // passes it to CastAudioOutputStream as a |device_id_or_group_id|.
@@ -54,7 +50,6 @@ class CastAudioManager : public ::media::AudioManagerBase {
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      external_service_support::ExternalConnector* connector,
       bool use_mixer);
 
   CastAudioManager(const CastAudioManager&) = delete;
@@ -112,7 +107,6 @@ class CastAudioManager : public ::media::AudioManagerBase {
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      external_service_support::ExternalConnector* connector,
       bool use_mixer,
       bool force_use_cma_backend_for_output);
 

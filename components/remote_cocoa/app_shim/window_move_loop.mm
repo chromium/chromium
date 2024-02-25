@@ -4,12 +4,13 @@
 
 #include "components/remote_cocoa/app_shim/window_move_loop.h"
 
+#include <map>
 #include <memory>
+#include <utility>
+#include <vector>
 
-#include "base/debug/stack_trace.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "components/crash/core/common/crash_key.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
@@ -43,6 +44,54 @@
 }
 @end
 
+namespace {
+
+// This class addresses a macOS 14 issue where child windows don't follow
+// the parent during tab dragging.
+class ChildWindowMover {
+ public:
+  ChildWindowMover(NSWindow* window) : window_(window) {
+    initial_parent_origin_ = gfx::Point(window.frame.origin);
+    for (NSWindow* child in window.childWindows) {
+      initial_origins_.emplace_back(child, child.frame.origin);
+    }
+  }
+
+  // Moves child windows based on a parent origin offset relative to their
+  // initial origins captured at the construction of this class.
+  void MoveByOriginOffset() {
+    if (!window_) {
+      return;
+    }
+
+    gfx::Point parent_origin = gfx::Point(window_.frame.origin);
+    gfx::Vector2d origin_offset(parent_origin.x() - initial_parent_origin_.x(),
+                                parent_origin.y() - initial_parent_origin_.y());
+
+    for (const auto& [child, initial_origin] : initial_origins_) {
+      if (!child || child.parentWindow != window_) {
+        continue;
+      }
+
+      gfx::Point expected_origin = initial_origin + origin_offset;
+      // On macOS 14, child windows occasionally fail to follow their parent
+      // during tab dragging. A workaround for this issue is to temporarily
+      // remove the child window, set its frame origin, and then re-add it.
+      [window_ removeChildWindow:child];
+      [child
+          setFrameOrigin:NSMakePoint(expected_origin.x(), expected_origin.y())];
+      [window_ addChildWindow:child ordered:NSWindowAbove];
+    }
+  }
+
+ private:
+  NSWindow* __weak window_;
+  std::vector<std::pair<NSWindow * __weak, gfx::Point>> initial_origins_;
+  gfx::Point initial_parent_origin_;
+};
+
+}  // namespace
+
 namespace remote_cocoa {
 
 CocoaWindowMoveLoop::CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
@@ -52,13 +101,6 @@ CocoaWindowMoveLoop::CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
       weak_factory_(this) {}
 
 CocoaWindowMoveLoop::~CocoaWindowMoveLoop() {
-  // Record the address and stack to help catch https://crbug.com/876493.
-  static crash_reporter::CrashKeyString<19> address_key("move_loop_address");
-  address_key.Set(base::StringPrintf("%p", this));
-
-  static crash_reporter::CrashKeyString<1024> stack_key("move_loop_stack");
-  crash_reporter::SetCrashKeyStringToStackTrace(&stack_key,
-                                                base::debug::StackTrace());
   // Handle the pathological case, where |this| is destroyed while running.
   if (exit_reason_ref_) {
     *exit_reason_ref_ = WINDOW_DESTROYED;
@@ -73,6 +115,7 @@ bool CocoaWindowMoveLoop::Run() {
   exit_reason_ref_ = &exit_reason;
   NSWindow* window = owner_->ns_window();
   const NSRect initial_frame = [window frame];
+  __block ChildWindowMover child_window_mover(window);
 
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
@@ -105,11 +148,13 @@ bool CocoaWindowMoveLoop::Run() {
 
     if ([event type] == NSEventTypeLeftMouseDragged) {
       const NSPoint mouse_in_screen = [NSEvent mouseLocation];
-
-      NSRect ns_frame = NSOffsetRect(
-          initial_frame, mouse_in_screen.x - initial_mouse_in_screen_.x,
+      gfx::Vector2d mouse_offset(
+          mouse_in_screen.x - initial_mouse_in_screen_.x,
           mouse_in_screen.y - initial_mouse_in_screen_.y);
+      NSRect ns_frame =
+          NSOffsetRect(initial_frame, mouse_offset.x(), mouse_offset.y());
       [window setFrame:ns_frame display:NO animate:NO];
+      child_window_mover.MoveByOriginOffset();
       // `setFrame:...` may have destroyed `this`, so do the weak check again.
       bool is_valid = [weak_cocoa_window_move_loop weak].get() == strong;
       if (is_valid && !has_moved) {

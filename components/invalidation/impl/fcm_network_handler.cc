@@ -125,13 +125,9 @@ void RecordFCMMessageStatus(InvalidationParsingStatus status,
   // Also split the histogram by a few well-known senders. The actual constants
   // aren't accessible here (they're defined in higher layers), so we simply
   // duplicate them here, strictly only for the purpose of metrics.
-  // TODO(crbug.com/1404927): clean up sync-related metrics.
-  constexpr char kInvalidationGCMSenderId[] = "8181035976";
   constexpr char kDriveFcmSenderId[] = "947318989803";
   constexpr char kPolicyFCMInvalidationSenderID[] = "1013309121859";
-  if (sender_id == kInvalidationGCMSenderId) {
-    UMA_HISTOGRAM_ENUMERATION("FCMInvalidations.FCMMessageStatus.Sync", status);
-  } else if (sender_id == kDriveFcmSenderId) {
+  if (sender_id == kDriveFcmSenderId) {
     UMA_HISTOGRAM_ENUMERATION("FCMInvalidations.FCMMessageStatus.Drive",
                               status);
   } else if (sender_id == kPolicyFCMInvalidationSenderID) {
@@ -175,7 +171,6 @@ void FCMNetworkHandler::StartListening() {
   // Being the listener is pre-requirement for token operations.
   gcm_driver_->AddAppHandler(app_id_, this);
 
-  diagnostic_info_.instance_id_token_requested = base::Time::Now();
   instance_id_driver_->GetInstanceID(app_id_)->GetToken(
       sender_id_, kGCMScope, GetTimeToLive(sender_id_),
       /*flags=*/{InstanceID::Flags::kIsLazy},
@@ -196,9 +191,6 @@ void FCMNetworkHandler::DidRetrieveToken(const std::string& subscription_token,
                                          InstanceID::Result result) {
   base::UmaHistogramEnumeration("FCMInvalidations.InitialTokenRetrievalStatus",
                                 result);
-  diagnostic_info_.registration_result = result;
-  diagnostic_info_.token = subscription_token;
-  diagnostic_info_.instance_id_token_was_received = base::Time::Now();
   switch (result) {
     case InstanceID::SUCCESS:
       // The received token is assumed to be valid, therefore, we reschedule
@@ -233,8 +225,6 @@ void FCMNetworkHandler::ScheduleNextTokenValidation() {
 void FCMNetworkHandler::StartTokenValidation() {
   DCHECK(IsListening());
 
-  diagnostic_info_.instance_id_token_verification_requested = base::Time::Now();
-  diagnostic_info_.token_validation_requested_num++;
   instance_id_driver_->GetInstanceID(app_id_)->GetToken(
       sender_id_, kGCMScope, GetTimeToLive(sender_id_),
       /*flags=*/{InstanceID::Flags::kIsLazy},
@@ -251,12 +241,9 @@ void FCMNetworkHandler::DidReceiveTokenForValidation(
     return;
   }
 
-  diagnostic_info_.instance_id_token_verified = base::Time::Now();
-  diagnostic_info_.token_verification_result = result;
   if (result == InstanceID::SUCCESS) {
     UpdateChannelState(FcmChannelState::ENABLED);
     if (token_ != new_token) {
-      diagnostic_info_.token_changed = true;
       token_ = new_token;
       DeliverToken(new_token);
     }
@@ -316,62 +303,6 @@ void FCMNetworkHandler::OnSendAcknowledged(const std::string& app_id,
 void FCMNetworkHandler::SetTokenValidationTimerForTesting(
     std::unique_ptr<base::OneShotTimer> token_validation_timer) {
   token_validation_timer_ = std::move(token_validation_timer);
-}
-
-void FCMNetworkHandler::RequestDetailedStatus(
-    const base::RepeatingCallback<void(base::Value::Dict)>& callback) {
-  callback.Run(diagnostic_info_.CollectDebugData());
-}
-
-FCMNetworkHandler::FCMNetworkHandlerDiagnostic::FCMNetworkHandlerDiagnostic() =
-    default;
-
-base::Value::Dict
-FCMNetworkHandler::FCMNetworkHandlerDiagnostic::CollectDebugData() const {
-  base::Value::Dict status;
-  status.SetByDottedPath("NetworkHandler.Registration-result-code",
-                         RegistrationResultToString(registration_result));
-  status.SetByDottedPath("NetworkHandler.Token", token);
-  status.SetByDottedPath(
-      "NetworkHandler.Token-was-requested",
-      base::TimeFormatShortDateAndTime(instance_id_token_requested));
-  status.SetByDottedPath(
-      "NetworkHandler.Token-was-received",
-      base::TimeFormatShortDateAndTime(instance_id_token_was_received));
-  status.SetByDottedPath("NetworkHandler.Token-verification-started",
-                         base::TimeFormatShortDateAndTime(
-                             instance_id_token_verification_requested));
-  status.SetByDottedPath(
-      "NetworkHandler.Token-was-verified",
-      base::TimeFormatShortDateAndTime(instance_id_token_verified));
-  status.SetByDottedPath("NetworkHandler.Verification-result-code",
-                         RegistrationResultToString(token_verification_result));
-  status.SetByDottedPath("NetworkHandler.Token-changed-when-verified",
-                         token_changed);
-  status.SetByDottedPath("NetworkHandler.Token-validation-requests",
-                         token_validation_requested_num);
-  return status;
-}
-
-std::string
-FCMNetworkHandler::FCMNetworkHandlerDiagnostic::RegistrationResultToString(
-    const instance_id::InstanceID::Result result) const {
-  switch (registration_result) {
-    case instance_id::InstanceID::SUCCESS:
-      return "InstanceID::SUCCESS";
-    case instance_id::InstanceID::INVALID_PARAMETER:
-      return "InstanceID::INVALID_PARAMETER";
-    case instance_id::InstanceID::DISABLED:
-      return "InstanceID::DISABLED";
-    case instance_id::InstanceID::ASYNC_OPERATION_PENDING:
-      return "InstanceID::ASYNC_OPERATION_PENDING";
-    case instance_id::InstanceID::SERVER_ERROR:
-      return "InstanceID::SERVER_ERROR";
-    case instance_id::InstanceID::UNKNOWN_ERROR:
-      return "InstanceID::UNKNOWN_ERROR";
-    case instance_id::InstanceID::NETWORK_ERROR:
-      return "InstanceID::NETWORK_ERROR";
-  }
 }
 
 }  // namespace invalidation

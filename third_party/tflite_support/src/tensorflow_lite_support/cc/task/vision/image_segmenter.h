@@ -21,7 +21,7 @@ limitations under the License.
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 #include "tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h"
@@ -79,7 +79,7 @@ class ImageSegmenter : public BaseVisionTaskApi<SegmentationResult> {
   CreateFromOptions(
       const ImageSegmenterOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Performs actual segmentation on the provided FrameBuffer.
   //
@@ -119,8 +119,7 @@ class ImageSegmenter : public BaseVisionTaskApi<SegmentationResult> {
   // results.
   tflite::support::StatusOr<SegmentationResult> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors,
-      const FrameBuffer& frame_buffer,
-      const BoundingBox& roi) override;
+      const FrameBuffer& frame_buffer, const BoundingBox& roi) override;
 
   // Performs sanity checks on the provided ImageSegmenterOptions.
   static absl::Status SanityCheckOptions(const ImageSegmenterOptions& options);
@@ -149,10 +148,7 @@ class ImageSegmenter : public BaseVisionTaskApi<SegmentationResult> {
   // Returns the output confidence at coordinates {x, y, depth}, dequantizing
   // on-the-fly if needed (i.e. if `has_uint8_outputs_` is true).
   tflite::support::StatusOr<float> GetOutputConfidence(
-      const TfLiteTensor& output_tensor,
-      int x,
-      int y,
-      int depth);
+      const TfLiteTensor& output_tensor, int x, int y, int depth);
 
   // Prebuilt list of ColoredLabel attached to each Segmentation result. The
   // i-th item in this list corresponds to the i-th label map item.

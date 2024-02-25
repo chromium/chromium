@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_form_filler.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -26,7 +27,10 @@ namespace autofill {
 
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver,
                                                        AutofillClient* client)
-    : BrowserAutofillManager(driver, client, "en-US") {}
+    : BrowserAutofillManager(driver, client, "en-US") {
+  test_api(*this).set_form_filler(
+      std::make_unique<TestFormFiller>(*this, log_manager(), "en-US"));
+}
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
@@ -101,15 +105,16 @@ bool TestBrowserAutofillManager::IsAutofillProfileEnabled() const {
   return autofill_profile_enabled_;
 }
 
-bool TestBrowserAutofillManager::IsAutofillCreditCardEnabled() const {
-  return autofill_credit_card_enabled_;
+bool TestBrowserAutofillManager::IsAutofillPaymentMethodsEnabled() const {
+  return autofill_payment_methods_enabled_;
 }
 
 void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
-    bool observed_submission) {
+    bool observed_submission,
+    const ukm::SourceId source_id) {
   submitted_form_signature_ = submitted_form->FormSignatureAsStr();
 
   if (observed_submission) {
@@ -118,8 +123,9 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     run_loop_->Quit();
   }
 
-  if (expected_observed_submission_ != absl::nullopt)
+  if (expected_observed_submission_ != std::nullopt) {
     EXPECT_EQ(expected_observed_submission_, observed_submission);
+  }
 
   // If we have expected field types set, make sure they match.
   if (!expected_submitted_field_types_.empty()) {
@@ -129,20 +135,20 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
       SCOPED_TRACE(base::StringPrintf(
           "Field %d with value %s", static_cast<int>(i),
           base::UTF16ToUTF8(submitted_form->field(i)->value).c_str()));
-      const ServerFieldTypeSet& possible_types =
+      const FieldTypeSet& possible_types =
           submitted_form->field(i)->possible_types();
       EXPECT_EQ(expected_submitted_field_types_[i].size(),
                 possible_types.size());
       for (auto it : expected_submitted_field_types_[i]) {
         EXPECT_TRUE(possible_types.count(it))
-            << "Expected type: " << AutofillType(it).ToString();
+            << "Expected type: " << AutofillType(it).ToStringView();
       }
     }
   }
 
   BrowserAutofillManager::UploadVotesAndLogQuality(
       std::move(submitted_form), interaction_time, submission_time,
-      observed_submission);
+      observed_submission, source_id);
 }
 
 void TestBrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
@@ -156,12 +162,6 @@ void TestBrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
 const gfx::Image& TestBrowserAutofillManager::GetCardImage(
     const CreditCard& credit_card) {
   return card_image_;
-}
-
-void TestBrowserAutofillManager::ScheduleRefill(
-    const FormData& form,
-    const AutofillTriggerDetails& trigger_details) {
-  test_api(*this).TriggerRefill(form, trigger_details);
 }
 
 bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
@@ -182,22 +182,23 @@ bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
-    const std::vector<ServerFieldType>& heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
+    const std::vector<FieldType>& heuristic_types,
+    const std::vector<FieldType>& server_types,
     bool preserve_values_in_form_structure) {
-  std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>
+  std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>
       all_heuristic_types;
-  for (ServerFieldType type : heuristic_types)
-    all_heuristic_types.push_back({{GetActivePatternSource(), type}});
+  for (FieldType type : heuristic_types) {
+    all_heuristic_types.push_back({{GetActiveHeuristicSource(), type}});
+  }
   AddSeenForm(form, all_heuristic_types, server_types,
               preserve_values_in_form_structure);
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
-    const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+    const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
         heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
+    const std::vector<FieldType>& server_types,
     bool preserve_values_in_form_structure) {
   auto form_structure = std::make_unique<FormStructure>(
       preserve_values_in_form_structure ? form : test::WithoutValues(form));
@@ -243,18 +244,18 @@ void TestBrowserAutofillManager::SetAutofillProfileEnabled(
   }
 }
 
-void TestBrowserAutofillManager::SetAutofillCreditCardEnabled(
+void TestBrowserAutofillManager::SetAutofillPaymentMethodsEnabled(
     TestAutofillClient& client,
-    bool autofill_credit_card_enabled) {
-  autofill_credit_card_enabled_ = autofill_credit_card_enabled;
-  if (!autofill_credit_card_enabled_) {
+    bool autofill_payment_methods_enabled) {
+  autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
+  if (!autofill_payment_methods_enabled) {
     // Credit card data is refreshed when this pref is changed.
     client.GetPersonalDataManager()->ClearCreditCards();
   }
 }
 
 void TestBrowserAutofillManager::SetExpectedSubmittedFieldTypes(
-    const std::vector<ServerFieldTypeSet>& expected_types) {
+    const std::vector<FieldTypeSet>& expected_types) {
   expected_submitted_field_types_ = expected_types;
 }
 

@@ -76,7 +76,7 @@ TEST(PhoneStatusModelTest, ReceptionWithNoMetdata) {
   // available, the status is set back to no reception.
   PhoneStatusModel no_connection_metadata(
       PhoneStatusModel::MobileStatus::kSimWithReception,
-      /*mobile_connection_metadata=*/absl::nullopt,
+      /*mobile_connection_metadata=*/std::nullopt,
       PhoneStatusModel::ChargingState::kNotCharging,
       PhoneStatusModel::BatterySaverState::kOff,
       /*battery_percentage=*/100u);

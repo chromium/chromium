@@ -1,0 +1,19 @@
+Test that fetch responses can be streamed
+1
+Network.streamResourceContent response after request has finished: {
+    error : {
+        code : -32602
+        message : Request with the provided ID has already finished loading
+    }
+    id : <number>
+    sessionId : <string>
+}
+Network.streamResourceContent response on wrong requestId: {
+    error : {
+        code : -32602
+        message : Request with the provided ID does not exists
+    }
+    id : <number>
+    sessionId : <string>
+}
+

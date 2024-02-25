@@ -31,53 +31,18 @@ class LayoutBox;
 //   containing block chain) scroll container.
 //
 // For more information see spec: https://drafts.csswg.org/css-snappoints/
-class CORE_EXPORT SnapCoordinator final
-    : public GarbageCollected<SnapCoordinator> {
+class CORE_EXPORT SnapCoordinator final {
+  STATIC_ONLY(SnapCoordinator);
+
  public:
-  explicit SnapCoordinator();
-  SnapCoordinator(const SnapCoordinator&) = delete;
-  SnapCoordinator& operator=(const SnapCoordinator&) = delete;
-  ~SnapCoordinator();
-  void Trace(Visitor* visitor) const;
-
-  void AddSnapContainer(LayoutBox& snap_container);
-  void RemoveSnapContainer(LayoutBox& snap_container);
-
-  void SnapContainerDidChange(LayoutBox&);
-  void SnapAreaDidChange(LayoutBox&, cc::ScrollSnapAlign);
-
   // Calculate the SnapAreaData for the specific snap area in its snap
   // container.
   static cc::SnapAreaData CalculateSnapAreaData(
       const LayoutBox& snap_area,
       const LayoutBox& snap_container);
 
-  bool AnySnapContainerDataNeedsUpdate() const {
-    DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
-    return any_snap_container_data_needs_update_;
-  }
-  void SetAnySnapContainerDataNeedsUpdate(bool needs_update) {
-    DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
-    any_snap_container_data_needs_update_ = needs_update;
-  }
-  // Called by Document::PerformScrollSnappingTasks() whenever a style or layout
-  // change happens. This will update all snap container data that was affected
-  // by the style/layout change.
-  void UpdateAllSnapContainerDataIfNeeded();
-
-  static void UpdateSnapContainerData(LayoutBox&);
-
-#ifndef NDEBUG
-  void ShowSnapAreaMap();
-  void ShowSnapAreasFor(const LayoutBox*);
-  void ShowSnapDataFor(const LayoutBox*);
-#endif
-
- private:
-  friend class SnapCoordinatorTest;
-
-  HeapHashSet<Member<LayoutBox>> snap_containers_;
-  bool any_snap_container_data_needs_update_ = true;
+  // Returns true if the SnapContainerData actually changed.
+  static bool UpdateSnapContainerData(LayoutBox&);
 };
 
 }  // namespace blink

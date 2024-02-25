@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -93,9 +94,9 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   CSSNestingType nesting_type = parent_rule_for_nesting
                                     ? CSSNestingType::kNesting
                                     : CSSNestingType::kNone;
-  base::span<CSSSelector> selector_vector =
-      CSSParser::ParseSelector(context, nesting_type, parent_rule_for_nesting,
-                               parent_contents, selector_text, arena);
+  base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
+      context, nesting_type, parent_rule_for_nesting, /*is_within_scope=*/false,
+      parent_contents, selector_text, arena);
   if (selector_vector.empty()) {
     return;
   }
@@ -140,7 +141,7 @@ String CSSStyleRule::cssText() const {
   for (unsigned i = 0; i < size; ++i) {
     // Step 6.2 for rules.
     rules.Append("\n  ");
-    rules.Append(Item(i)->cssText());
+    rules.Append(ItemInternal(i)->cssText());
   }
 
   // Step 4.
@@ -202,7 +203,7 @@ unsigned CSSStyleRule::length() const {
   }
 }
 
-CSSRule* CSSStyleRule::Item(unsigned index) const {
+CSSRule* CSSStyleRule::Item(unsigned index, bool trigger_use_counters) const {
   if (index >= length()) {
     return nullptr;
   }
@@ -211,7 +212,7 @@ CSSRule* CSSStyleRule::Item(unsigned index) const {
   Member<CSSRule>& rule = child_rule_cssom_wrappers_[index];
   if (!rule) {
     rule = (*style_rule_->ChildRules())[index]->CreateCSSOMWrapper(
-        index, const_cast<CSSStyleRule*>(this));
+        index, const_cast<CSSStyleRule*>(this), trigger_use_counters);
   }
   return rule.Get();
 }
@@ -255,6 +256,7 @@ unsigned CSSStyleRule::insertRule(const ExecutionContext* execution_context,
     CSSStyleSheet::RuleMutationScope mutation_scope(this);
     style_rule_->WrapperInsertRule(index, new_rule);
     child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
+    UseCountForSignalAffected();
     return index;
   }
 }
@@ -280,6 +282,13 @@ void CSSStyleRule::deleteRule(unsigned index, ExceptionState& exception_state) {
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
+  UseCountForSignalAffected();
+}
+
+void CSSStyleRule::UseCountForSignalAffected() {
+  if (style_rule_->HasSignalingChildRule()) {
+    CountUse(WebFeature::kCSSRuleWithSignalingChildModified);
+  }
 }
 
 }  // namespace blink

@@ -6,7 +6,7 @@ package org.chromium.android_webview.services;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
+import org.chromium.android_webview.common.SafeModeActionIds;
 
 /**
  * A {@link SafeModeAction} to ensure the variations seed is distributed on an app's first run.
@@ -16,7 +16,7 @@ import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 public class NonEmbeddedFastVariationsSeedSafeModeAction implements NonEmbeddedSafeModeAction {
     private static final String TAG = "FastVariationsSeed";
     // This ID should not be reused for NonEmbedded SafeMode Actions.
-    private static final String ID = VariationsFastFetchModeUtils.SAFEMODE_ACTION_ID;
+    private static final String ID = SafeModeActionIds.FAST_VARIATIONS_SEED;
     private static boolean sScheduleForTesting;
 
     @Override
@@ -27,7 +27,7 @@ public class NonEmbeddedFastVariationsSeedSafeModeAction implements NonEmbeddedS
 
     @Override
     public boolean onActivate() {
-        AwVariationsSeedFetcher.scheduleIfNeeded(/*requireFastMode=*/true);
+        AwVariationsSeedFetcher.scheduleIfNeeded(/* requireFastMode= */ true);
         return true;
     }
 

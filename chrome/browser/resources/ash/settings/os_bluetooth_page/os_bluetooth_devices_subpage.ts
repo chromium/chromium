@@ -14,16 +14,16 @@ import './settings_fast_pair_toggle.js';
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_devices_subpage.html.js';
@@ -32,7 +32,7 @@ import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserP
 const SettingsBluetoothDevicesSubpageElementBase = DeepLinkingMixin(PrefsMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsBluetoothDevicesSubpageElement extends
+export class SettingsBluetoothDevicesSubpageElement extends
     SettingsBluetoothDevicesSubpageElementBase {
   static get is() {
     return 'os-settings-bluetooth-devices-subpage' as const;
@@ -131,7 +131,7 @@ class SettingsBluetoothDevicesSubpageElement extends
   /**
    * RouteObserverMixin override
    */
-  override currentRouteChanged(route: Route, oldRoute?: Route) {
+  override currentRouteChanged(route: Route, oldRoute?: Route): void {
     // If we're navigating to a device's detail page, save the id of the device.
     if (route === routes.BLUETOOTH_DEVICE_DETAIL &&
         oldRoute === routes.BLUETOOTH_DEVICES) {
@@ -178,7 +178,7 @@ class SettingsBluetoothDevicesSubpageElement extends
   }
 
   private focusLastSelectedDeviceItem_(): void {
-    const focusItem = (deviceListSelector: string, index: number) => {
+    const focusItem = (deviceListSelector: string, index: number): void => {
       const deviceList =
           this.shadowRoot!.querySelector<HTMLElement>(deviceListSelector);
       const items = deviceList!.shadowRoot!.querySelectorAll(
@@ -211,7 +211,8 @@ class SettingsBluetoothDevicesSubpageElement extends
    * Observer for isBluetoothToggleOn_ that returns early until the previous
    * value was not undefined to avoid wrongly toggling the Bluetooth state.
    */
-  private onBluetoothToggleChanged_(_newValue: boolean, oldValue?: boolean) {
+  private onBluetoothToggleChanged_(_newValue: boolean, oldValue?: boolean):
+      void {
     if (oldValue === undefined) {
       return;
     }
@@ -267,7 +268,8 @@ class SettingsBluetoothDevicesSubpageElement extends
   private isFastPairSavedDevicesRowVisible_(): boolean {
     return loadTimeData.getBoolean('enableFastPairFlag') &&
         loadTimeData.getBoolean('enableSavedDevicesFlag') &&
-        !loadTimeData.getBoolean('isGuest');
+        !loadTimeData.getBoolean('isGuest') &&
+        loadTimeData.getBoolean('isCrossDeviceFeatureSuiteEnabled');
   }
 
   private onClicked_(event: Event): void {

@@ -4,58 +4,75 @@
 
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClient.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyConfig.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyUiDelegate.java",
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
+    "//chrome/browser/android/lifecycle:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
-  public_deps = [ ":utils_java" ]
 }
 
 android_library_factory("factory_java") {
-  deps = [ ":java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+  ]
 
   # This internal file will be replaced by a generated file so the resulting
   # android_library target does not actually depend on this internal file.
   sources = [ "internal/java/src/org/chromium/chrome/browser/ui/hats/SurveyClientFactory.java" ]
 }
 
-# Temporarily public to the rest of components during code movement.
-# TODO(crbug/1400731): Move into internal once public references are removed.
-android_library("utils_java") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/ui/hats/SurveyThrottler.java" ]
-
-  deps = [
-    "//base:base_java",
-    "//chrome/browser/first_run/android:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/preferences:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
+android_library("message_ui_delegate_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/MessageSurveyUiDelegate.java",
   ]
+  public_deps = [ ":java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/messages/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ui.hats"
 }
 
 robolectric_library("junit") {
   testonly = true
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/hats/SurveyThrottlerUnitTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/hats/MessageSurveyUiDelegateUnitTest.java" ]
   deps = [
-    ":utils_java",
+    ":message_ui_delegate_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//chrome/browser/first_run/android:java",
-    "//chrome/browser/preferences:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
+    "//components/messages/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }
 

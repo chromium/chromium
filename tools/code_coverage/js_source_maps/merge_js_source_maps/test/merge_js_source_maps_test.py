@@ -54,6 +54,21 @@ class MergeSourceMapsTest(unittest.TestCase):
     result = json.loads(stdout)
     return result['line'], result['column']
 
+  def _writeResponseFileContents(self, sources, outputs, manifest_file):
+    with tempfile.NamedTemporaryFile(mode='w+',
+                                     dir=self._out_folder,
+                                     delete=False) as response_file:
+      if manifest_file:
+        response_file.write('--manifest-files ')
+        response_file.write(manifest_file + ' ')
+      if sources:
+        response_file.write('--sources ')
+        response_file.write(str(sources.resolve()) + ' ')
+      if outputs:
+        response_file.write('--outputs ')
+        response_file.write(str(outputs.resolve()) + ' ')
+      return response_file.name
+
   def testMergingTwoSourcemaps(self):
     """ Test that merging 2 inline sourcemaps results in line numbers and
     columns that refer to positions in the original file.
@@ -68,12 +83,12 @@ class MergeSourceMapsTest(unittest.TestCase):
     original_file_name = 'original_file.ts'
     input_file_name = (_HERE_DIR / 'generated_file_pre_merge.js').resolve()
     output_file_name = (Path(self._out_folder) / "merged_maps.out").resolve()
+    response_file_name = self._writeResponseFileContents(
+        input_file_name, output_file_name, None)
     node.RunNode([
         str(_SOURCE_MAP_MERGER),
-        '--sources',
-        str(input_file_name),
-        '--outputs',
-        str(output_file_name),
+        '--response-file-name',
+        str(response_file_name),
         '--out-dir',
         'tsc',
     ])
@@ -167,14 +182,12 @@ class MergeSourceMapsTest(unittest.TestCase):
     original_file_name = 'original_file.ts'
     input_file_name = (_HERE_DIR / 'generated_file_pre_merge.js').resolve()
     output_file_name = (Path(self._out_folder) / "merged_maps.out").resolve()
+    response_file_name = self._writeResponseFileContents(
+        input_file_name, output_file_name, manifest_file)
     node.RunNode([
         str(_SOURCE_MAP_MERGER),
-        '--sources',
-        str(input_file_name),
-        '--outputs',
-        str(output_file_name),
-        '--manifest-files',
-        str(manifest_file),
+        '--response-file-name',
+        str(response_file_name),
         '--out-dir',
         'tsc',
     ])

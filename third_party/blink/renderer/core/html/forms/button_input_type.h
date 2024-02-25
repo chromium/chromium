@@ -42,7 +42,6 @@ class ButtonInputType final : public BaseButtonInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   bool SupportsValidation() const override;
   bool IsTextButton() const override;
 };

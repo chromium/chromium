@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/insecure_download_blocking.h"
 
+#include <optional>
+
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +26,6 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -164,7 +165,7 @@ std::string GetDownloadBlockingExtensionMetricName(
 // |insecure_nonunique| indicates whether the download was initiated by an
 // insecure non-unique hostname.
 InsecureDownloadSecurityStatus GetDownloadBlockingEnum(
-    absl::optional<url::Origin> initiator,
+    std::optional<url::Origin> initiator,
     bool dl_secure,
     bool inferred,
     bool insecure_nonunique) {
@@ -339,13 +340,14 @@ struct InsecureDownloadData {
       // who told us to download them (i.e. have an insecure initiator).
       is_insecure_download_ =
           ((initiator_.has_value() &&
-            !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL())) ||
+            (!initiator_->opaque() &&
+             !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL()))) ||
            !download_delivered_securely) &&
           !net::IsLocalhost(dl_url);
     }
   }
 
-  absl::optional<url::Origin> initiator_;
+  std::optional<url::Origin> initiator_;
   std::string extension_;
   raw_ptr<const download::DownloadItem> item_;
 
@@ -408,7 +410,7 @@ void PrintConsoleMessage(const InsecureDownloadData& data) {
 
 bool IsDownloadPermittedByContentSettings(
     Profile* profile,
-    const absl::optional<url::Origin>& initiator) {
+    const std::optional<url::Origin>& initiator) {
   // TODO(crbug.com/1048957): Checking content settings crashes unit tests on
   // Android. It shouldn't.
 #if !BUILDFLAG(IS_ANDROID)

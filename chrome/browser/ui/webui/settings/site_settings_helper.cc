@@ -23,6 +23,7 @@
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -94,6 +95,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::COOKIES, "cookies"},
     {ContentSettingsType::IMAGES, "images"},
     {ContentSettingsType::JAVASCRIPT, "javascript"},
+    {ContentSettingsType::JAVASCRIPT_JIT, "javascript-jit"},
     {ContentSettingsType::POPUPS, "popups"},
     {ContentSettingsType::GEOLOCATION, "location"},
     {ContentSettingsType::NOTIFICATIONS, "notifications"},
@@ -135,6 +137,10 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
     {ContentSettingsType::STORAGE_ACCESS, "storage-access"},
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, "auto-picture-in-picture"},
+    {ContentSettingsType::CAPTURED_SURFACE_CONTROL, "captured-surface-control"},
+    {ContentSettingsType::WEB_PRINTING, "web-printing"},
+    {ContentSettingsType::SPEAKER_SELECTION, "speaker-selection"},
+    {ContentSettingsType::AUTOMATIC_FULLSCREEN, "automatic-fullscreen"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -171,11 +177,11 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, nullptr},
     {ContentSettingsType::DISPLAY_CAPTURE, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_SHARING, nullptr},
-    {ContentSettingsType::JAVASCRIPT_JIT, nullptr},
     {ContentSettingsType::HTTP_ALLOWED, nullptr},
     {ContentSettingsType::HTTPS_ENFORCED, nullptr},
     {ContentSettingsType::FORMFILL_METADATA, nullptr},
-    {ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, nullptr},
+    {ContentSettingsType::DEPRECATED_FEDERATED_IDENTITY_ACTIVE_SESSION,
+     nullptr},
     {ContentSettingsType::AUTO_DARK_WEB_CONTENT, nullptr},
     {ContentSettingsType::REQUEST_DESKTOP_SITE, nullptr},
     {ContentSettingsType::NOTIFICATION_INTERACTIONS, nullptr},
@@ -196,8 +202,19 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr},
     {ContentSettingsType::ALL_SCREEN_CAPTURE, nullptr},
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr},
-    {ContentSettingsType::TPCD_SUPPORT, nullptr},
+    {ContentSettingsType::TPCD_TRIAL, nullptr},
     {ContentSettingsType::TPCD_METADATA_GRANTS, nullptr},
+    // TODO(crbug.com/1011533): Update the name once the design is finalized
+    // for the integration with Safety Hub.
+    {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
+    {ContentSettingsType::TPCD_HEURISTICS_GRANTS, nullptr},
+    {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, nullptr},
+    // TODO(crbug.com/1464851): Update name once UI design is done.
+    {ContentSettingsType::SMART_CARD_GUARD, nullptr},
+    {ContentSettingsType::SMART_CARD_DATA, nullptr},
+    {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
+    {ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS, nullptr},
+    {ContentSettingsType::DIRECT_SOCKETS, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==
@@ -247,8 +264,9 @@ SiteSettingSource CalculateSiteSettingSource(
     const GURL& origin,
     const content_settings::SettingInfo& info,
     const content::PermissionResult result) {
-  if (info.source == content_settings::SETTING_SOURCE_ALLOWLIST)
+  if (info.source == content_settings::SETTING_SOURCE_ALLOWLIST) {
     return SiteSettingSource::kAllowlist;  // Source #1.
+  }
 
   if (result.source == content::PermissionStatusSource::KILL_SWITCH) {
     return SiteSettingSource::kKillSwitch;  // Source #2.
@@ -263,8 +281,9 @@ SiteSettingSource CalculateSiteSettingSource(
     return SiteSettingSource::kPolicy;  // Source #4.
   }
 
-  if (info.source == content_settings::SETTING_SOURCE_EXTENSION)
+  if (info.source == content_settings::SETTING_SOURCE_EXTENSION) {
     return SiteSettingSource::kExtension;  // Source #5.
+  }
 
   if (content_type == ContentSettingsType::ADS &&
       base::FeatureList::IsEnabled(
@@ -302,13 +321,9 @@ SiteSettingSource CalculateSiteSettingSource(
   return SiteSettingSource::kPreference;
 }
 
-bool PatternAppliesToWebUISchemes(const ContentSettingPatternSource& pattern) {
-  return pattern.primary_pattern.GetScheme() ==
-             ContentSettingsPattern::SchemeType::SCHEME_CHROME ||
-         pattern.primary_pattern.GetScheme() ==
-             ContentSettingsPattern::SchemeType::SCHEME_CHROMEUNTRUSTED ||
-         pattern.primary_pattern.GetScheme() ==
-             ContentSettingsPattern::SchemeType::SCHEME_DEVTOOLS;
+bool IsFromWebUIAllowlistSource(const ContentSettingPatternSource& pattern) {
+  return HostContentSettingsMap::GetProviderTypeFromSource(pattern.source) ==
+         HostContentSettingsMap::WEBUI_ALLOWLIST_PROVIDER;
 }
 
 // If the given |pattern| represents an individual origin, Isolated Web App, or
@@ -392,8 +407,7 @@ std::string GetSourceStringForChooserException(
   // the |kSafeBrowsingSubresourceFilter| feature flag enabled, so an empty GURL
   // is used.
   SiteSettingSource calculated_source = CalculateSiteSettingSource(
-      profile, content_type, /*origin=*/GURL::EmptyGURL(), info,
-      permission_result);
+      profile, content_type, /*origin=*/GURL(), info, permission_result);
   DCHECK(calculated_source == SiteSettingSource::kPolicy ||
          calculated_source == SiteSettingSource::kPreference);
   return SiteSettingSourceToString(calculated_source);
@@ -495,7 +509,9 @@ base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type) {
   return base::StringPiece();
 }
 
-const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
+std::vector<ContentSettingsType> GetVisiblePermissionCategories(
+    const std::string& origin,
+    Profile* profile) {
   // First build the list of permissions that will be shown regardless of
   // `origin`. Some categories such as COOKIES store their data in a custom way,
   // so are not included here.
@@ -515,6 +531,7 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       ContentSettingsType::MEDIASTREAM_MIC,
       ContentSettingsType::MIDI_SYSEX,
       ContentSettingsType::MIXEDSCRIPT,
+      ContentSettingsType::JAVASCRIPT_JIT,
       ContentSettingsType::NOTIFICATIONS,
       ContentSettingsType::POPUPS,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -536,8 +553,9 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       base_types->push_back(ContentSettingsType::BLUETOOTH_SCANNING);
     }
 
-    if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps))
+    if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps)) {
       base_types->push_back(ContentSettingsType::PAYMENT_HANDLER);
+    }
 
     if (base::FeatureList::IsEnabled(features::kFedCm)) {
       base_types->push_back(ContentSettingsType::FEDERATED_IDENTITY_API);
@@ -563,10 +581,36 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       base_types->push_back(ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
     }
 
+    if (base::FeatureList::IsEnabled(blink::features::kWebPrinting)) {
+      base_types->push_back(ContentSettingsType::WEB_PRINTING);
+    }
+
+    if (base::FeatureList::IsEnabled(blink::features::kSpeakerSelection)) {
+      base_types->push_back(ContentSettingsType::SPEAKER_SELECTION);
+    }
+
     initialized = true;
   }
 
-  return *base_types;
+  // The permission categories below are only shown for certain origins.
+  std::vector<ContentSettingsType> types_for_origin = *base_types;
+  if (base::FeatureList::IsEnabled(
+          features::kAutomaticFullscreenContentSetting)) {
+    // Show for non-origin-specific lists, IWAs, and non-default values.
+    if (origin.empty() || GURL(origin).SchemeIs(chrome::kIsolatedAppScheme)) {
+      types_for_origin.push_back(ContentSettingsType::AUTOMATIC_FULLSCREEN);
+    } else if (profile) {
+      std::string source;
+      GetContentSettingForOrigin(
+          profile, HostContentSettingsMapFactory::GetForProfile(profile),
+          GURL(origin), ContentSettingsType::AUTOMATIC_FULLSCREEN, &source);
+      if (source != SiteSettingSourceToString(SiteSettingSource::kDefault)) {
+        types_for_origin.push_back(ContentSettingsType::AUTOMATIC_FULLSCREEN);
+      }
+    }
+  }
+
+  return types_for_origin;
 }
 
 std::string SiteSettingSourceToString(const SiteSettingSource source) {
@@ -609,7 +653,7 @@ base::Value::Dict GetFileSystemExceptionForPage(
     bool is_embargoed) {
   base::Value::Dict exception;
   exception.Set(kOrigin, origin);
-  // TODO(crbug.com/1373962): Replace `LossyDisplayName` method with a
+  // TODO(crbug.com/1011533): Replace `LossyDisplayName` method with a
   // new method that returns the full file path in a human-readable format.
   exception.Set(kDisplayName, file_path.LossyDisplayName());
   std::string setting_string =
@@ -829,36 +873,32 @@ void GetRawExceptionsForContentSettingsType(
     // Off-the-record HostContentSettingsMap contains incognito content settings
     // as well as normal content settings. Here, we use the incognito settings
     // only.
-    if (map->IsOffTheRecord() && !setting.incognito)
-      continue;
-
-    // Don't add WebUI settings.
-    if (PatternAppliesToWebUISchemes(setting)) {
+    if (map->IsOffTheRecord() && !setting.incognito) {
       continue;
     }
 
-    // Don't add auto granted permissions for storage access exceptions.
-    if (type == ContentSettingsType::STORAGE_ACCESS &&
-        setting.metadata.session_model() ==
-            content_settings::SessionModel::NonRestorableUserSession) {
+    // Don't add allowlisted settings.
+    if (IsFromWebUIAllowlistSource(setting)) {
+      continue;
+    }
+
+    // Don't add auto-granted permissions for storage access exceptions.
+    if (IsGrantedByRelatedWebsiteSets(type, setting.metadata) &&
+        !base::FeatureList::IsEnabled(
+            permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
       continue;
     }
 
     auto content_setting = setting.GetContentSetting();
-
+    // There is no user-facing concept of SESSION_ONLY cookie exceptions that
+    // use secondary patterns. These are instead presented as ALLOW.
+    // TODO(crbug.com/1404436): Perform a one time migration of the actual
+    // content settings when the extension API no-longer allows them to be
+    // created.
     if (type == ContentSettingsType::COOKIES &&
-        base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxSettings4)) {
-      // With the changes to settings introduced in PrivacySandboxSettings4,
-      // there is no user-facing concept of SESSION_ONLY cookie exceptions that
-      // use secondary patterns. These are instead presented as ALLOW.
-      // TODO(crbug.com/1404436): Perform a one time migration of the actual
-      // content settings when the extension API no-longer allows them to be
-      // created.
-      if (content_setting == ContentSetting::CONTENT_SETTING_SESSION_ONLY &&
-          setting.secondary_pattern != ContentSettingsPattern::Wildcard()) {
-        content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
-      }
+        content_setting == ContentSetting::CONTENT_SETTING_SESSION_ONLY &&
+        setting.secondary_pattern != ContentSettingsPattern::Wildcard()) {
+      content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
     }
 
     all_patterns_settings[{setting.primary_pattern, setting.source}][{
@@ -875,8 +915,9 @@ void GetRawExceptionsForContentSettingsType(
     // Off-the-record HostContentSettingsMap contains incognito content
     // settings as well as normal content settings. Here, we use the
     // incognito settings only.
-    if (map->IsOffTheRecord() && !setting.incognito)
+    if (map->IsOffTheRecord() && !setting.incognito) {
       continue;
+    }
 
     if (!permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
             type)) {
@@ -954,8 +995,9 @@ void GetExceptionsForContentType(ContentSettingsType type,
   }
 
   for (auto& one_provider_exceptions : all_provider_exceptions) {
-    for (auto& exception : one_provider_exceptions)
+    for (auto& exception : one_provider_exceptions) {
       exceptions->Append(std::move(exception));
+    }
   }
 }
 
@@ -1019,8 +1061,9 @@ void GetContentCategorySetting(const HostContentSettingsMap* map,
   DCHECK(!setting.empty());
 
   object->Set(kSetting, setting);
-  if (provider != SiteSettingSourceToString(SiteSettingSource::kDefault))
+  if (provider != SiteSettingSourceToString(SiteSettingSource::kDefault)) {
     object->Set(kSource, provider);
+  }
 }
 
 ContentSetting GetContentSettingForOrigin(Profile* profile,
@@ -1051,10 +1094,11 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
       permissions::PermissionDecisionAutoBlocker* auto_blocker =
           permissions::PermissionsClient::Get()
               ->GetPermissionDecisionAutoBlocker(profile);
-      absl::optional<content::PermissionResult> embargo_result =
+      std::optional<content::PermissionResult> embargo_result =
           auto_blocker->GetEmbargoResult(origin, content_type);
-      if (embargo_result)
+      if (embargo_result) {
         result = embargo_result.value();
+      }
     }
   }
 
@@ -1063,10 +1107,10 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
       CalculateSiteSettingSource(profile, content_type, origin, info, result));
 
   if (info.metadata.session_model() ==
-      content_settings::SessionModel::OneTime) {
+      content_settings::mojom::SessionModel::ONE_TIME) {
     DCHECK(
         permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type));
-    DCHECK_EQ(result.status, PermissionStatus::ASK);
+    DCHECK_EQ(result.status, PermissionStatus::GRANTED);
     return CONTENT_SETTING_DEFAULT;
   }
   return permissions::PermissionUtil::PermissionStatusToContentSetting(
@@ -1077,11 +1121,12 @@ std::vector<ContentSettingPatternSource>
 GetSingleOriginExceptionsForContentType(HostContentSettingsMap* map,
                                         ContentSettingsType content_type) {
   ContentSettingsForOneType entries = map->GetSettingsForOneType(content_type);
-  // Exclude any entries that don't represent a single webby top-frame origin.
+  // Exclude any entries that are allowlisted or don't represent a single
+  // top-frame origin.
   base::EraseIf(entries, [](const ContentSettingPatternSource& e) {
     return !content_settings::PatternAppliesToSingleOrigin(
                e.primary_pattern, e.secondary_pattern) ||
-           PatternAppliesToWebUISchemes(e);
+           IsFromWebUIAllowlistSource(e);
   });
   return entries;
 }
@@ -1118,8 +1163,9 @@ void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
 
 const ChooserTypeNameEntry* ChooserTypeFromGroupName(base::StringPiece name) {
   for (const auto& chooser_type : kChooserTypeGroupNames) {
-    if (chooser_type.name == name)
+    if (chooser_type.name == name) {
       return &chooser_type;
+    }
   }
   return nullptr;
 }
@@ -1193,8 +1239,9 @@ base::Value::List GetChooserExceptionListFromProfile(
   // by default.
   permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type.get_context(profile);
-  if (!chooser_context)
+  if (!chooser_context) {
     return exceptions;
+  }
 
   std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
       objects = chooser_context->GetAllGrantedObjects();
@@ -1219,8 +1266,9 @@ base::Value::List GetChooserExceptionListFromProfile(
       all_chooser_objects;
   for (const auto& object : objects) {
     // Don't include WebUI settings.
-    if (content::HasWebUIScheme(object->origin))
+    if (content::HasWebUIScheme(object->origin)) {
       continue;
+    }
 
     std::u16string name = chooser_context->GetObjectDisplayName(object->value);
     auto& chooser_exception_details = all_chooser_objects[std::make_pair(

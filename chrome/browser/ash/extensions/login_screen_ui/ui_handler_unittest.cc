@@ -171,8 +171,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
 
   void CheckCanCloseWindow(const extensions::Extension* extension) {
     base::MockCallback<UiHandler::WindowClosedCallback> callback;
-    EXPECT_CALL(callback,
-                Run(true, absl::optional<std::string>(absl::nullopt)));
+    EXPECT_CALL(callback, Run(true, std::optional<std::string>(std::nullopt)));
     ui_handler_->Close(extension, callback.Get());
     // Invoke close callback from dialog delegate because UiHandler::Close() is
     // synchronous and will invoke its callback after that.
@@ -194,14 +193,14 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
                               const std::string& expected_error) {
     base::MockCallback<UiHandler::WindowClosedCallback> callback;
     EXPECT_CALL(callback,
-                Run(false, absl::optional<std::string>(expected_error)));
+                Run(false, std::optional<std::string>(expected_error)));
     ui_handler_->Close(extension, callback.Get());
     // No need to invoke the close callback here since in case of no open window
     // we directly invoke the callback with an error.
   }
 
   void CheckCannotUseAPI(const extensions::Extension* extension) {
-    ::testing::FLAGS_gtest_death_test_style = "fast";
+    GTEST_FLAG_SET(death_test_style, "fast");
     std::string error;
     EXPECT_CHECK_DEATH(
         ui_handler_->Show(extension, kUrl, kCanBeClosedByUser, &error));
@@ -212,16 +211,13 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
 
   session_manager::SessionManager session_manager_;
   TestingProfileManager profile_manager_;
-  raw_ptr<ash::StubInstallAttributes, ExperimentalAsh>
-      stub_install_attributes_ = nullptr;
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_ =
-      nullptr;
+  raw_ptr<ash::StubInstallAttributes> stub_install_attributes_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
   scoped_refptr<const extensions::Extension> extension_;
 
   TestLoginScreen test_login_screen_;
 
-  raw_ptr<FakeWindowFactory, DanglingUntriaged | ExperimentalAsh>
-      fake_window_factory_ = nullptr;
+  raw_ptr<FakeWindowFactory, DanglingUntriaged> fake_window_factory_ = nullptr;
 
   std::unique_ptr<UiHandler> ui_handler_;
 };

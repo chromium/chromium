@@ -7,6 +7,7 @@ import("//build/config/gclient_args.gni")
 import("//build/config/mac/mac_sdk_overrides.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
+import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
 
 assert(
@@ -47,12 +48,12 @@ declare_args() {
   # The SDK version used when making official builds. This is a single exact
   # version, not a minimum. If this version isn't available official builds
   # will fail.
-  mac_sdk_official_version = "13.3"
+  mac_sdk_official_version = "14.0"
 
   # The SDK build version used when making official builds.  This is a single
   # exact version found at "System/Library/CoreServices/SystemVersion.plist"
   # inside the SDK.
-  mac_sdk_official_build_version = "21E226"
+  mac_sdk_official_build_version = "23A334"
 
   # Production builds should use hermetic Xcode. If you want to do production
   # builds with system Xcode to test new SDKs, set this.
@@ -93,7 +94,7 @@ if (!use_system_xcode) {
 
 # Goma RBE requires paths relative to source directory. When using system
 # Xcode, this is done by creating symbolic links in root_build_dir.
-if (use_system_xcode && (use_goma || use_remoteexec)) {
+if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
   sdk_info_args += [
     "--get_sdk_info",
     "--create_symlink_at",
@@ -107,7 +108,8 @@ sdk_info_args += [ mac_sdk_name ]
 _mac_sdk_result = exec_script(script_name, sdk_info_args, "scope")
 xcode_version = _mac_sdk_result.xcode_version
 xcode_build = _mac_sdk_result.xcode_build
-if (mac_sdk_path == "" && use_system_xcode && (use_goma || use_remoteexec)) {
+if (mac_sdk_path == "" && use_system_xcode &&
+    (use_goma || use_remoteexec || use_siso)) {
   mac_sdk_path = _mac_sdk_result.sdk_path
 }
 

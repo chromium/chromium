@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/Linux Builder (dbg)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -19,7 +22,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -42,7 +46,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "linux"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -76,6 +81,10 @@
           "group": "tryserver.chromium.linux"
         },
         {
+          "builder": "linux_chromium_compile_siso_dbg_ng",
+          "group": "tryserver.chromium.linux"
+        },
+        {
           "builder": "linux_chromium_dbg_ng",
           "group": "tryserver.chromium.linux"
         }
@@ -84,7 +93,7 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },

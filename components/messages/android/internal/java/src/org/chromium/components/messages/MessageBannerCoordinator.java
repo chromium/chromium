@@ -13,14 +13,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MockedInTests;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.components.messages.MessageStateHandler.Position;
+import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Coordinator responsible for creating a message banner.
- */
+/** Coordinator responsible for creating a message banner. */
 @MockedInTests
 class MessageBannerCoordinator {
     private final MessageBannerMediator mMediator;
@@ -48,16 +46,27 @@ class MessageBannerCoordinator {
      * banner.
      * @param onTimeUp A {@link Runnable} that will run if and when the auto dismiss timer is up.
      */
-    MessageBannerCoordinator(MessageBannerView view, PropertyModel model,
-            Supplier<Integer> maxTranslationSupplier, Supplier<Integer> topOffsetSupplier,
-            Resources resources, Runnable messageDismissed,
-            SwipeAnimationHandler swipeAnimationHandler, Supplier<Long> autodismissDurationMs,
+    MessageBannerCoordinator(
+            MessageBannerView view,
+            PropertyModel model,
+            Supplier<Integer> maxTranslationSupplier,
+            Supplier<Integer> topOffsetSupplier,
+            Resources resources,
+            Runnable messageDismissed,
+            SwipeAnimationHandler swipeAnimationHandler,
+            Supplier<Long> autodismissDurationMs,
             Runnable onTimeUp) {
         mView = view;
         mModel = model;
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
-        mMediator = new MessageBannerMediator(model, topOffsetSupplier, maxTranslationSupplier,
-                resources, messageDismissed, swipeAnimationHandler);
+        mMediator =
+                new MessageBannerMediator(
+                        model,
+                        topOffsetSupplier,
+                        maxTranslationSupplier,
+                        resources,
+                        messageDismissed,
+                        swipeAnimationHandler);
         mAutodismissDurationMs = autodismissDurationMs;
         mTimer = new MessageAutoDismissTimer();
         mOnTimeUp = onTimeUp;
@@ -97,7 +106,9 @@ class MessageBannerCoordinator {
      * @param messageDimensSupplier Supplier of dimensions of the message next to current one.
      * @return The animator which shows the message view.
      */
-    Animator show(@Position int fromIndex, @Position int toIndex,
+    Animator show(
+            @Position int fromIndex,
+            @Position int toIndex,
             Supplier<MessageDimens> messageDimensSupplier) {
         mView.dismissSecondaryMenuIfShown();
         int verticalOffset = 0;
@@ -114,32 +125,38 @@ class MessageBannerCoordinator {
             if (height < prevMessageDimens.getHeight()) {
                 verticalOffset = prevMessageDimens.getHeight() - height;
             } else if (height > prevMessageDimens.getHeight()) {
-                mView.resizeForStackingAnimation(prevMessageDimens.getTitleHeight(),
+                mView.resizeForStackingAnimation(
+                        prevMessageDimens.getTitleHeight(),
                         prevMessageDimens.getDescriptionHeight(),
                         prevMessageDimens.getPrimaryButtonLineCount());
             }
         } else if (fromIndex == Position.BACK && toIndex == Position.FRONT) {
             mView.resetForStackingAnimation();
         }
-        return mMediator.show(fromIndex, toIndex, verticalOffset, () -> {
-            if (toIndex != Position.FRONT) {
-                setOnTouchRunnable(null);
-                setOnTitleChanged(null);
-                mTimer.cancelTimer();
-                // Make it unable to be focused if it is not in the front.
-                mView.enableA11y(false);
-                announceForAccessibility(toIndex);
-            } else {
-                mView.enableA11y(true);
-                setOnTouchRunnable(mTimer::resetTimer);
-                announceForAccessibility(toIndex);
-                setOnTitleChanged(() -> {
-                    mTimer.resetTimer();
-                    announceForAccessibility(toIndex);
+        return mMediator.show(
+                fromIndex,
+                toIndex,
+                verticalOffset,
+                () -> {
+                    if (toIndex != Position.FRONT) {
+                        setOnTouchRunnable(null);
+                        setOnTitleChanged(null);
+                        mTimer.cancelTimer();
+                        // Make it unable to be focused if it is not in the front.
+                        mView.enableA11y(false);
+                        announceForAccessibility(toIndex);
+                    } else {
+                        mView.enableA11y(true);
+                        setOnTouchRunnable(mTimer::resetTimer);
+                        announceForAccessibility(toIndex);
+                        setOnTitleChanged(
+                                () -> {
+                                    mTimer.resetTimer();
+                                    announceForAccessibility(toIndex);
+                                });
+                        mTimer.startTimer(mAutodismissDurationMs.get(), mOnTimeUp);
+                    }
                 });
-                mTimer.startTimer(mAutodismissDurationMs.get(), mOnTimeUp);
-            }
-        });
     }
 
     /**
@@ -150,21 +167,31 @@ class MessageBannerCoordinator {
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      * @return The animator which hides the message view.
      */
-    Animator hide(@Position int fromIndex, @Position int toIndex, boolean animate,
+    Animator hide(
+            @Position int fromIndex,
+            @Position int toIndex,
+            boolean animate,
             Runnable messageHidden) {
         mView.dismissSecondaryMenuIfShown();
         mTimer.cancelTimer();
         // Skip animation if animation has been globally disabled.
         // Otherwise, child animator's listener's onEnd will be called immediately after onStart,
         // even before parent animatorSet's listener's onStart.
-        var isAnimationDisabled = Settings.Global.getFloat(mView.getContext().getContentResolver(),
-                                          Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
-                == 0;
-        return mMediator.hide(fromIndex, toIndex, animate && !isAnimationDisabled, () -> {
-            setOnTouchRunnable(null);
-            setOnTitleChanged(null);
-            messageHidden.run();
-        });
+        var isAnimationDisabled =
+                Settings.Global.getFloat(
+                                mView.getContext().getContentResolver(),
+                                Settings.Global.ANIMATOR_DURATION_SCALE,
+                                1f)
+                        == 0;
+        return mMediator.hide(
+                fromIndex,
+                toIndex,
+                animate && !isAnimationDisabled,
+                () -> {
+                    setOnTouchRunnable(null);
+                    setOnTitleChanged(null);
+                    messageHidden.run();
+                });
     }
 
     void cancelTimer() {
@@ -182,8 +209,10 @@ class MessageBannerCoordinator {
     private void announceForAccessibility(int toIndex) {
         String msg = "";
         if (toIndex == Position.FRONT) {
-            msg = mModel.get(MessageBannerProperties.TITLE) + " "
-                    + mView.getResources().getString(R.string.message_screen_position);
+            msg =
+                    mModel.get(MessageBannerProperties.TITLE)
+                            + " "
+                            + mView.getResources().getString(R.string.message_screen_position);
         } else {
             msg = mView.getResources().getString(R.string.message_new_actions_available);
         }

@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api_constants.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
@@ -58,10 +58,10 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using content::DevToolsAgentHost;
@@ -261,7 +261,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
       Profile* profile,
       DevToolsAgentHost* agent_host,
       scoped_refptr<const Extension> extension,
-      absl::optional<WorkerId> extension_service_worker_id,
+      std::optional<WorkerId> extension_service_worker_id,
       const Debuggee& debuggee);
 
   ExtensionDevToolsClientHost(const ExtensionDevToolsClientHost&) = delete;
@@ -273,7 +273,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   std::string GetTypeForMetrics() override { return "Extension"; }
 
   bool Attach();
-  const std::string& extension_id() { return extension_->id(); }
+  const ExtensionId& extension_id() { return extension_->id(); }
   DevToolsAgentHost* agent_host() { return agent_host_.get(); }
   void RespondDetachedToPendingRequests();
   void Close();
@@ -294,7 +294,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   bool IsTrusted() override;
   bool MayReadLocalFiles() override;
   bool MayWriteLocalFiles() override;
-  absl::optional<url::Origin> GetNavigationInitiatorOrigin() override;
+  std::optional<url::Origin> GetNavigationInitiatorOrigin() override;
 
  private:
   using PendingRequests =
@@ -314,7 +314,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   scoped_refptr<const Extension> extension_;
   // The WorkerId of the extension service worker that called attach() for this
   // client host, if any.
-  const absl::optional<WorkerId> extension_service_worker_id_;
+  const std::optional<WorkerId> extension_service_worker_id_;
 
   Debuggee debuggee_;
   base::CallbackListSubscription on_app_terminating_subscription_;
@@ -327,7 +327,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   // A service worker keepalive used to keep the associated worker alive while
   // this client is attached. Only used if `extension_service_worker_id_` has a
   // value.
-  absl::optional<base::Uuid> service_worker_keepalive_;
+  std::optional<base::Uuid> service_worker_keepalive_;
 
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
@@ -338,7 +338,7 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
     Profile* profile,
     DevToolsAgentHost* agent_host,
     scoped_refptr<const Extension> extension,
-    absl::optional<WorkerId> extension_service_worker_id,
+    std::optional<WorkerId> extension_service_worker_id,
     const Debuggee& debuggee)
     : profile_(profile),
       agent_host_(agent_host),
@@ -396,7 +396,6 @@ bool ExtensionDevToolsClientHost::Attach() {
 }
 
 ExtensionDevToolsClientHost::~ExtensionDevToolsClientHost() {
-  ExtensionDevToolsInfoBarDelegate::NotifyExtensionDetached(extension_id());
   g_attached_client_hosts.Get().erase(this);
 
   // Decrement the associated worker keepalive, if any.
@@ -495,7 +494,7 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
 
   base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
                                 message.size());
-  absl::optional<base::Value> result = base::JSONReader::Read(
+  std::optional<base::Value> result = base::JSONReader::Read(
       message_str, base::JSON_REPLACE_INVALID_CHARACTERS);
   if (!result || !result->is_dict()) {
     LOG(ERROR) << "Tried to send invalid message to extension: " << message_str;
@@ -503,7 +502,7 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
   }
   base::Value::Dict& dictionary = result->GetDict();
 
-  absl::optional<int> id = dictionary.FindInt("id");
+  std::optional<int> id = dictionary.FindInt("id");
   if (!id) {
     std::string* method_name = dictionary.FindString("method");
     if (!method_name)
@@ -557,7 +556,7 @@ bool ExtensionDevToolsClientHost::MayWriteLocalFiles() {
   return false;
 }
 
-absl::optional<url::Origin>
+std::optional<url::Origin>
 ExtensionDevToolsClientHost::GetNavigationInitiatorOrigin() {
   // Ensure that navigations started by debugger API are treated as
   // renderer-initiated by this extension, so that URL spoof defenses are in
@@ -631,7 +630,7 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
       // TODO(caseq): get rid of the below code, browser agent host should
       // really be a singleton.
       // Re-use existing browser agent hosts.
-      const std::string& extension_id = extension()->id();
+      const ExtensionId& extension_id = extension()->id();
       AttachedClientHosts& hosts = g_attached_client_hosts.Get();
       auto it = base::ranges::find_if(
           hosts, [&extension_id](ExtensionDevToolsClientHost* client_host) {
@@ -675,7 +674,7 @@ ExtensionDevToolsClientHost* DebuggerFunction::FindClientHost() {
   if (!agent_host_.get())
     return nullptr;
 
-  const std::string& extension_id = extension()->id();
+  const ExtensionId& extension_id = extension()->id();
   DevToolsAgentHost* agent_host = agent_host_.get();
   AttachedClientHosts& hosts = g_attached_client_hosts.Get();
   auto it = base::ranges::find_if(
@@ -695,7 +694,7 @@ DebuggerAttachFunction::DebuggerAttachFunction() = default;
 DebuggerAttachFunction::~DebuggerAttachFunction() = default;
 
 ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
-  absl::optional<Attach::Params> params = Attach::Params::Create(args());
+  std::optional<Attach::Params> params = Attach::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   CopyDebuggee(&debuggee_, params->target);
@@ -743,7 +742,7 @@ DebuggerDetachFunction::DebuggerDetachFunction() = default;
 DebuggerDetachFunction::~DebuggerDetachFunction() = default;
 
 ExtensionFunction::ResponseAction DebuggerDetachFunction::Run() {
-  absl::optional<Detach::Params> params = Detach::Params::Create(args());
+  std::optional<Detach::Params> params = Detach::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   CopyDebuggee(&debuggee_, params->target);
@@ -763,7 +762,7 @@ DebuggerSendCommandFunction::DebuggerSendCommandFunction() = default;
 DebuggerSendCommandFunction::~DebuggerSendCommandFunction() = default;
 
 ExtensionFunction::ResponseAction DebuggerSendCommandFunction::Run() {
-  absl::optional<SendCommand::Params> params =
+  std::optional<SendCommand::Params> params =
       SendCommand::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

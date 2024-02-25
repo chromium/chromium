@@ -14,7 +14,7 @@ import {driveDescriptor} from './drive/module.js';
 import {feedDescriptor} from './feed/module.js';
 import {HistoryClustersProxyImpl} from './history_clusters/history_clusters_proxy.js';
 import {historyClustersDescriptor} from './history_clusters/module.js';
-import {ModuleDescriptor} from './module_descriptor.js';
+import type {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor} from './recipes/module.js';
@@ -23,6 +23,7 @@ import {driveDescriptor as driveV2Descriptor} from './v2/drive/module.js';
 import {dummyV2Descriptor} from './v2/dummy/module.js';
 // </if>
 import {historyClustersDescriptor as historyClustersV2Descriptor} from './v2/history_clusters/module.js';
+import {tabResumptionDescriptor} from './v2/tab_resumption/module.js';
 
 const modulesRedesignedEnabled: boolean =
     loadTimeData.getBoolean('modulesRedesignedEnabled');
@@ -36,6 +37,8 @@ descriptors.push(feedDescriptor);
 descriptors.push(
     modulesRedesignedEnabled ? historyClustersV2Descriptor :
                                historyClustersDescriptor);
+
+descriptors.push(tabResumptionDescriptor);
 
 // <if expr="not is_official_build">
 if (modulesRedesignedEnabled) {

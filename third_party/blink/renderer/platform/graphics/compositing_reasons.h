@@ -67,8 +67,7 @@ using CompositingReasons = uint64_t;
   V(ViewTransitionElement)                                                     \
   V(ViewTransitionPseudoElement)                                               \
                                                                                \
-  /* For composited scrolling. In CompositeScrollAfterPaint, this is           \
-                            determined after paint. */                         \
+  /* For composited scrolling, determined after paint. */                      \
   V(OverflowScrolling)                                                         \
                                                                                \
   /* Element is participating in element capture. */                           \

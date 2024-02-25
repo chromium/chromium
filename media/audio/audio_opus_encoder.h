@@ -48,14 +48,15 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
  private:
   friend class AudioEncodersTest;
 
-  // Called synchronously by |fifo_| once enough audio frames have been
-  // buffered in |fifo_|. Calls libopus to do actual encoding.
-  void OnFifoOutput(AudioBus* audio_bus);
+  // Calls libopus to do actual encoding.
+  void DoEncode(const AudioBus* audio_bus);
+
+  void DrainFifoOutput();
 
   CodecDescription PrepareExtraData();
 
   EncoderStatus::Or<OwnedOpusEncoder> CreateOpusEncoder(
-      const absl::optional<AudioEncoder::OpusOptions>& opus_options);
+      const std::optional<AudioEncoder::OpusOptions>& opus_options);
 
   AudioParameters input_params_;
 

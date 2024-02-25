@@ -2,35 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorOption, Destination, DestinationOrigin, DpiOption, DuplexMode, DuplexOption, makeRecentDestination, MarginsType, PrinterType, PrintPreviewModelElement, PrintTicket, RecentDestination, ScalingType, Size} from 'chrome://print/print_preview.js';
-// <if expr="is_chromeos">
-import {GooglePromotedDestinationId, PrinterStatusReason} from 'chrome://print/print_preview.js';
-// </if>
+import type {ColorOption, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, RecentDestination} from 'chrome://print/print_preview.js';
+import {
+  // <if expr="is_chromeos">
+  ColorModeRestriction,
+  // </if>
+  Destination, DestinationOrigin, DuplexMode,
+  // <if expr="is_chromeos">
+  DuplexModeRestriction, GooglePromotedDestinationId,
+  // </if>
+  makeRecentDestination, MarginsType,
+  // <if expr="is_chromeos">
+  PinModeRestriction, PrinterStatusReason,
+  // </if>
+  PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
+import {
+  // <if expr="is_chromeos">
+  getCddTemplate,
+  // </if>
+  getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
 
-const model_test = {
-  suiteName: 'ModelTest',
-  TestNames: {
-    SetStickySettings: 'set sticky settings',
-    SetPolicySettings: 'set policy settings',
-    GetPrintTicket: 'get print ticket',
-    GetCloudPrintTicket: 'get cloud print ticket',
-    ChangeDestination: 'change destination',
-    RemoveUnsupportedDestinations: 'remove unsupported destinations',
-    PrintToGoogleDriveCros: 'print to google drive cros',
-    CddResetToDefault: 'CDD reset_to_default property',
-  },
-};
+// </if>
 
-Object.assign(window, {model_test: model_test});
-
-suite(model_test.suiteName, function() {
+suite('ModelTest', function() {
   let model: PrintPreviewModelElement;
 
   setup(function() {
@@ -43,7 +42,7 @@ suite(model_test.suiteName, function() {
    * Tests state restoration with all boolean settings set to true, scaling =
    * 90, dpi = 100, custom square paper, and custom margins.
    */
-  test(model_test.TestNames.SetStickySettings, function() {
+  test('SetStickySettings', function() {
     // Default state of the model.
     const stickySettingsDefault: {[key: string]: any} = {
       version: 2,
@@ -165,7 +164,7 @@ suite(model_test.suiteName, function() {
    * Tests that setSetting() won't change the value if there is already a
    * policy for that setting.
    */
-  test(model_test.TestNames.SetPolicySettings, function() {
+  test('SetPolicySettings', function() {
     model.setSetting('headerFooter', false);
     assertFalse(model.settings.headerFooter.value as boolean);
 
@@ -266,7 +265,7 @@ suite(model_test.suiteName, function() {
    * Tests that toggling each setting results in the expected change to the
    * print ticket.
    */
-  test(model_test.TestNames.GetPrintTicket, function() {
+  test('GetPrintTicket', function() {
     // <if expr="is_chromeos">
     const origin = DestinationOrigin.CROS;
     // </if>
@@ -331,6 +330,7 @@ suite(model_test.suiteName, function() {
     const newTicket = model.createPrintTicket(testDestination, false, false);
     const expectedNewTicketObject: PrintTicket = {
       mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
+      borderless: false,
       mediaType: testDestination.capabilities!.printer!.media_type!.option[1]!
                      .vendor_id,
       pageCount: 1,
@@ -383,7 +383,7 @@ suite(model_test.suiteName, function() {
    * Tests that toggling each setting results in the expected change to the
    * cloud job print ticket.
    */
-  test(model_test.TestNames.GetCloudPrintTicket, function() {
+  test('GetCloudPrintTicket', function() {
     initializeModel();
 
     // Create a test extension destination.
@@ -450,7 +450,7 @@ suite(model_test.suiteName, function() {
     assertEquals(expectedNewTicket, newTicket);
   });
 
-  test(model_test.TestNames.RemoveUnsupportedDestinations, function() {
+  test('RemoveUnsupportedDestinations', function() {
     const unsupportedPrivet =
         new Destination('PrivetDevice', DestinationOrigin.PRIVET, 'PrivetName');
     const unsupportedCloud =
@@ -488,7 +488,7 @@ suite(model_test.suiteName, function() {
     assertEquals('FooDevice', recentDestinations[0]!.id);
   });
 
-  test(model_test.TestNames.ChangeDestination, function() {
+  test('ChangeDestination', function() {
     const testDestination =
         new Destination('FooDevice', DestinationOrigin.LOCAL, 'FooName');
     testDestination.capabilities =
@@ -589,7 +589,7 @@ suite(model_test.suiteName, function() {
   // <if expr="is_chromeos">
   // Tests that printToGoogleDrive is set correctly on the print ticket for Save
   // to Drive CrOS.
-  test(model_test.TestNames.PrintToGoogleDriveCros, function() {
+  test('PrintToGoogleDriveCros', function() {
     const driveDestination = new Destination(
         GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationOrigin.LOCAL,
         'Save to Google Drive');
@@ -609,7 +609,7 @@ suite(model_test.suiteName, function() {
    * - if `reset_to_default`=false, the value of the setting will always be read
    * from the sticky settings.
    */
-  test(model_test.TestNames.CddResetToDefault, function() {
+  test('CddResetToDefault', function() {
     const cddColorEnabled = true;
     const stickyColorEnabled = false;
     const cddDuplexEnabled = false;
@@ -744,4 +744,101 @@ suite(model_test.suiteName, function() {
         model.settings.mediaSize.value.custom_display_name,
         stickyMediaSizeDisplayName);
   });
+
+  // <if expr="is_chromeos">
+  test('PolicyDefaultsOverrideDestinationDefaults', function() {
+    const testDestination1 = new Destination(
+        /*id_=*/ 'TestDestination1',
+        /*origin_=*/ DestinationOrigin.LOCAL,
+        /*displayName_=*/ 'TestDestination1');
+    testDestination1.capabilities =
+        getCddTemplate('TestDestination1').capabilities;
+    testDestination1.capabilities!.printer!.duplex = {
+      option: [
+        {type: 'NO_DUPLEX', is_default: true},
+        {type: 'LONG_EDGE'},
+        {type: 'SHORT_EDGE'},
+      ] as DuplexOption[],
+    };
+
+    const testDestination2 = new Destination(
+        /*id_=*/ 'TestDestination2',
+        /*origin_=*/ DestinationOrigin.LOCAL,
+        /*displayName_=*/ 'TestDestination2');
+    testDestination2.capabilities =
+        Object.assign({}, testDestination1.capabilities);
+
+    // Note that the default value set here differs from `testDestination1` and
+    // `testDestination2` defaults.
+    // TODO(b/303790797): fix overriding default printing destination settings
+    // for color and pin. Check that all three policy defaults are respected.
+    const policies = {
+      duplex: {
+        allowedMode: DuplexModeRestriction.UNSET,
+        defaultMode: DuplexModeRestriction.LONG_EDGE,
+      },
+    };
+
+    initializeModel();
+    model.destination = testDestination1;
+    model.setPolicySettings(policies);
+    model.applyStickySettings();
+
+    // Check that the initial settings correspond to defaults set by policies.
+    assertEquals(model.getSettingValue('duplex'), true);
+    assertEquals(model.getSettingValue('duplexShortEdge'), false);
+
+    // Check that changing the printing destination doesn't change the settings.
+    model.destination = testDestination2;
+    assertEquals(model.getSettingValue('duplex'), true);
+    assertEquals(model.getSettingValue('duplexShortEdge'), false);
+  });
+
+  test('UserSelectedOptionsOverridePolicyDefaults', function() {
+    const testDestination1 = new Destination(
+        /*id_=*/ 'TestDestination1',
+        /*origin_=*/ DestinationOrigin.LOCAL,
+        /*displayName_=*/ 'TestDestination1');
+    testDestination1.capabilities =
+        getCddTemplate('TestDestination1').capabilities;
+
+    const testDestination2 = new Destination(
+        /*id_=*/ 'TestDestination2',
+        /*origin_=*/ DestinationOrigin.LOCAL,
+        /*displayName_=*/ 'TestDestination2');
+    testDestination2.capabilities =
+        Object.assign({}, testDestination1.capabilities);
+
+    const policies = {
+      color: {
+        allowedMode: ColorModeRestriction.UNSET,
+        defaultMode: ColorModeRestriction.MONOCHROME,
+      },
+      duplex: {
+        allowedMode: DuplexModeRestriction.UNSET,
+        defaultMode: DuplexModeRestriction.LONG_EDGE,
+      },
+      pin: {
+        allowedMode: PinModeRestriction.UNSET,
+        defaultMode: PinModeRestriction.PIN,
+      },
+    };
+
+    initializeModel();
+    model.destination = testDestination1;
+    model.setPolicySettings(policies);
+    model.applyStickySettings();
+
+    // Toggle some settings.
+    model.setSetting('color', true);
+    model.setSetting('duplex', false);
+    model.setSetting('pin', false);
+
+    // Check that user selected values override policy defaults.
+    model.destination = testDestination2;
+    assertEquals(model.getSettingValue('color'), true);
+    assertEquals(model.getSettingValue('duplex'), false);
+    assertEquals(model.getSettingValue('pin'), false);
+  });
+  // </if>
 });

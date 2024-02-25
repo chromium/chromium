@@ -38,6 +38,9 @@ export const SmbAuthMethod = {
   CREDENTIALS: 'credentials',
 };
 
+/** @type {SmbBrowserProxy|null} */
+let instance = null;
+
 /** @interface */
 export class SmbBrowserProxy {
   /**
@@ -67,6 +70,13 @@ export class SmbBrowserProxy {
    * @param {string} password
    */
   updateCredentials(mountId, username, password) {}
+
+  /**
+   * Returns true if any SMB has been configured or saved before. Called when
+   * the settings page initially loads.
+   * @returns {Promise<boolean>}
+   */
+  hasAnySmbMountedBefore() {}
 }
 
 /** @implements {SmbBrowserProxy} */
@@ -91,16 +101,15 @@ export class SmbBrowserProxyImpl {
         saveCredentials);
   }
 
-  /** @override */
   startDiscovery() {
     chrome.send('startDiscovery');
   }
 
-  /** @override */
   updateCredentials(mountId, username, password) {
     chrome.send('updateCredentials', [mountId, username, password]);
   }
-}
 
-/** @type {?SmbBrowserProxy} */
-let instance = null;
+  hasAnySmbMountedBefore() {
+    return sendWithPromise('hasAnySmbMountedBefore');
+  }
+}

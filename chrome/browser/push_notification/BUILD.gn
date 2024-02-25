@@ -1,0 +1,46 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("push_notification") {
+  sources = [
+    "prefs/push_notification_prefs.cc",
+    "prefs/push_notification_prefs.h",
+    "push_notification_service_desktop_impl.cc",
+    "push_notification_service_desktop_impl.h",
+    "server_client/push_notification_desktop_api_call_flow.cc",
+    "server_client/push_notification_desktop_api_call_flow.h",
+    "server_client/push_notification_desktop_api_call_flow_impl.cc",
+    "server_client/push_notification_desktop_api_call_flow_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/push_notification/protos:proto",
+    "//components/cross_device/logging:logging",
+    "//components/keyed_service/content:content",
+    "//components/keyed_service/core:core",
+    "//components/prefs:prefs",
+    "//components/push_notification",
+    "//components/user_manager:user_manager",
+    "//content/public/browser:browser",
+    "//google_apis:google_apis",
+  ]
+}
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "push_notification_service_desktop_impl_unittest.cc",
+    "server_client/push_notification_desktop_api_call_flow_impl_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/push_notification:push_notification",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

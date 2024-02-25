@@ -222,8 +222,8 @@ void MockSurface::ReleaseBufferFenced(wl_resource* buffer,
   DCHECK(iter != linux_buffer_releases_.end());
   auto* linux_buffer_release = iter->second;
   if (!release_fence.is_null()) {
-    zwp_linux_buffer_release_v1_send_fenced_release(
-        linux_buffer_release, release_fence.owned_fd.get());
+    zwp_linux_buffer_release_v1_send_fenced_release(linux_buffer_release,
+                                                    release_fence.Peek());
   } else {
     zwp_linux_buffer_release_v1_send_immediate_release(linux_buffer_release);
   }

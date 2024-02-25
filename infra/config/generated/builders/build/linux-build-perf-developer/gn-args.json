@@ -1,0 +1,30 @@
+{
+  "phases": {
+    "ninja": {
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "use_remoteexec": true,
+        "use_siso": false
+      }
+    },
+    "siso_native": {
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "use_siso": true
+      }
+    },
+    "siso_reproxy": {
+      "gn_args": {
+        "is_component_build": true,
+        "is_debug": true,
+        "symbol_level": 2,
+        "use_remoteexec": true,
+        "use_siso": true
+      }
+    }
+  }
+}

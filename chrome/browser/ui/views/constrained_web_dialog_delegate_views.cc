@@ -47,8 +47,9 @@ class ConstrainedWebDialogDelegateViews;
 class ConstrainedDialogWebView : public views::WebView,
                                  public ConstrainedWebDialogDelegate,
                                  public views::WidgetDelegate {
+  METADATA_HEADER(ConstrainedDialogWebView, views::WebView)
+
  public:
-  METADATA_HEADER(ConstrainedDialogWebView);
   ConstrainedDialogWebView(content::BrowserContext* browser_context,
                            std::unique_ptr<ui::WebDialogDelegate> delegate,
                            content::WebContents* web_contents,
@@ -99,7 +100,7 @@ class ConstrainedDialogWebView : public views::WebView,
   std::unique_ptr<ConstrainedWebDialogDelegateViews> impl_;
 };
 
-BEGIN_METADATA(ConstrainedDialogWebView, views::WebView)
+BEGIN_METADATA(ConstrainedDialogWebView)
 END_METADATA
 
 class WebDialogWebContentsDelegateViews

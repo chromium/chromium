@@ -8,7 +8,7 @@ import com.google.protobuf.CodedOutputStream;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.WebServer;
@@ -18,9 +18,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 
-/**
- * A fake server which supplies Feedv2 content.
- */
+/** A fake server which supplies Feedv2 content. */
 public class TestFeedServer implements WebServer.RequestHandler {
     private static final String TAG = "TestFeedServer";
     private static final String FEED_RESPONSE_BINARYPB_PATH =
@@ -31,12 +29,13 @@ public class TestFeedServer implements WebServer.RequestHandler {
     public TestFeedServer() {
         try {
             mServer = new WebServer(0, false);
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                UserPrefs.get(Profile.getLastUsedRegularProfile())
-                        .setString(Pref.HOST_OVERRIDE_HOST, getBaseUrl());
-                UserPrefs.get(Profile.getLastUsedRegularProfile())
-                        .setString(Pref.DISCOVER_API_ENDPOINT_OVERRIDE, getBaseUrl());
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                .setString(Pref.HOST_OVERRIDE_HOST, getBaseUrl());
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                .setString(Pref.DISCOVER_API_ENDPOINT_OVERRIDE, getBaseUrl());
+                    });
             mServer.setRequestHandler(this);
         } catch (Exception e) {
             Log.e(TAG, "Unexpected exception", e);
@@ -68,7 +67,9 @@ public class TestFeedServer implements WebServer.RequestHandler {
             return;
         }
         if (request.getURI().contains("queryInteractiveFeed")) {
-            WebServer.writeResponse(output, WebServer.STATUS_OK,
+            WebServer.writeResponse(
+                    output,
+                    WebServer.STATUS_OK,
                     readFile(UrlUtils.getIsolatedTestFilePath(FEED_RESPONSE_BINARYPB_PATH)));
             return;
         }

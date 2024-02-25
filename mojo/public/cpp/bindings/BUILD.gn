@@ -115,6 +115,8 @@ component("bindings_base") {
     "tracing_helpers.h",
     "type_converter.h",
     "union_traits.h",
+    "urgent_message_scope.cc",
+    "urgent_message_scope.h",
   ]
 
   defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]
@@ -124,6 +126,8 @@ component("bindings_base") {
     "//base",
     "//mojo/public/cpp/system",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (enable_ipc_fuzzer) {
     all_dependent_configs = [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
@@ -208,6 +212,7 @@ component("bindings") {
     "receiver_set.h",
     "remote.h",
     "remote_set.h",
+    "runtime_features.h",
     "self_owned_associated_receiver.h",
     "self_owned_receiver.h",
     "sequence_local_sync_event_watcher.h",
@@ -254,6 +259,8 @@ component("bindings") {
     "//mojo/core/embedder",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_MOJO_CPP_BINDINGS_IMPL" ]
 }
 
@@ -266,6 +273,11 @@ source_set("struct_traits") {
     "string_traits.h",
     "struct_traits.h",
     "union_traits.h",
+  ]
+
+  deps = [
+    ":bindings_base",
+    "//base",
   ]
 }
 
@@ -285,8 +297,6 @@ source_set("protobuf_support") {
 if (use_blink) {
   component("wtf_support") {
     sources = [
-      "array_traits_web_vector.h",
-      "array_traits_wtf_vector.h",
       "lib/string_traits_wtf.cc",
       "lib/wtf_clone_equals_util.h",
       "lib/wtf_hash_util.h",
@@ -294,6 +304,8 @@ if (use_blink) {
       "map_traits_wtf_hash_map.h",
       "string_traits_wtf.h",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]
 

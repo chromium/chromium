@@ -47,7 +47,6 @@ void RecordQsSliderToggle(QsSliderCatalogName slider_catalog_name, bool enable);
 // because the number of feature tiles, and thus the number of settings pages,
 // may not be accurately represented upon opening (e.g. a feature tile's
 // visibility may only be known after some data is fetched asynchronously).
-// Should only be called when QsRevamp is enabled.
 void RecordQsPageCountOnClose(int page_count);
 
 }  // namespace ash::quick_settings_metrics_util

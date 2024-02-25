@@ -20,14 +20,22 @@ The main classes for the popup have the following hierarchy:
 ┌──┴────────────────────┐
 │ PopupViewViews        │
 └──┬────────────────────┘
-   │owns N
-┌──▼────────────────────┐ owns 1 ┌────────────────────┐
-│ PopupRowView          ├────────► PopupRowStrategy   │
-└──┬────────────────────┘        └────┬───────────────┘
-   │owns 1 or 2                       │
-┌──▼────────────────────┐  creates    │
-│ PopupCellView         ◄─────────────┘
+   │creates (via CreatePopupRowView()) and owns N
+┌──▼────────────────────┐
+│ PopupRowView          │
+└──┬────────────────────┘
+   │owns
+┌──▼────────────────────┐
+│ PopupRowContentView   │
 └───────────────────────┘
+
+┌───────────────────────┐
+│ PopupRowView          │
+└──▲────────────────────┘
+   │ extends
+┌──┴─────────────────────┐
+│ PopupRowWithButtonView │
+└────────────────────────┘
 ```
 
 These classes serve the following purposes:
@@ -42,30 +50,29 @@ These classes serve the following purposes:
    also contain rows that cannot be selected (e.g. a `PopupSeparatorView`).
    * It is responsible for processing keyboard events that change the cell selection across rows (e.g. cursor down)
      for announcing selection changes to the accessibility system.
-* [`PopupRowView`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_view.h): Represents a single row in a `PopupViewViews` that has selectable cells.
-   * It can have one or two cells (represented by a `PopupCellView`) and it renders them next to each other. The first
-     cell is the "content" cell; the optional second cell is a "control" cell, e.g. for displaying a delete button.
-   * It owns a `PopupRowStrategy` that it uses to create the contained cells at construction time.
-   * It is responsible for processing keyboard events that affect only elements inside the row (e.g. cursor right).
-* [`PopupCellView`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_cell_view.h): Represents the smallest selectable element in a popup, a cell.
-   * It processes mouse events and triggers callbacks (e.g. on mouse enter)
-   * By default, it is a container: `PopupRowStrategy` can add arbitrary content to it.
-* [`PopupRowStrategy`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_strategy.h): Acts as an interface to create `PopupCellView`s for different types of popup entries. It is passed
-   to `PopupRowView` at construction. The classes that extend it (e.g. a `PopupPasswordSuggestionStrategy`)
-   add content to the cell view and set the proper callbacks to the cell view for processing selection and
-   click events.
+* [`PopupRowView`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_view.h): Represents a single row in a `PopupViewViews`.
+   * It accepts a `PopupRowContentView` in its constructor and takes ownership of it. This content
+     view occupies the majority of the row view area and basically determines its appearance.
+   * It handles native mouse events and keyboard events (that pass through `RenderWidgetHost`) to control suggestion selection (form
+     preview) and acceptance (form filling).
+   * It automatically adds an expanding control for suggestions with children. Note that
+     the sub-popup is not controlled by the row, but in `PopupViewViews`
+* [`PopupRowWithButtonView`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h): An extension of `PopupRowView` that supports
+   a single button in the content view layout.
+   * It supports the subtleties of having a control inside a row view, e.g. selection/unselection
+     on button focusing.
+   * An example of usage is the Autocomplete suggestion with a "Delete" button
+* [`CreatePopupRowView()`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h): Row construction method.
+   * It is the entry point for creating rows of different types. Based on the suggestion (mostly
+     its `PopupItemId`) it instantiates a row class and its content view.
 
 
 ## Adding new popup content
 
-There are currently about ~30 different `PopupItemId`s, that correspond to a different type of popup row. When a new type is added and it cannot be properly processed by an existing `PopupRowStrategy`, use the
+There are currently about ~30 different `PopupItemId`s, that correspond to a different type of popup row. When a new type is added and it cannot be properly processed by `CreatePopupRowView()`, use the
 following steps to support it by the popup UI:
-* Create a new strategy that implements `PopupRowStrategy`:
-  * To customize the displayed content of a cell, simply add child views to the `PopupCellView` that `CreateContent()` or `CreateControl()` create - it behaves as any other container view.
-  * To customize the interaction behavior of a cell, use the callback methods that `PopupCellView` exposes. For
-    example, you can call `PopupCellView::SetOnAcceptedCallback(base::RepeatingClosure)` to set the behavior
-    for accepting a cell.
-* Add a switch case to [`PopupRowView::Create`](https://source.chromium.org/search?q=PopupRowView::Create) to
-  pass the new strategy when the `Suggestion` has the relevant `PopupItemId`.
-* Add tests to `popup_row_strategy_unittest.cc` to test the accessibility and selection behavior of the cells and
-  to `popup_view_views_browsertest.cc` to add pixel tests.
+* Create a new factory method for `PopupRowContentView` (or even for `PopupRowView` if needed, e.g. `CreateAutocompleteRowWithDeleteButton()`),
+  e.g. `CreatePasswordPopupRowContentView()` in [popup_row_factory_utils.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.cc).
+* Call it when appropriate in [`CreatePopupRowView()`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.cc).
+* Add/update tests in `popup_row_factory_utils_unittest.cc` if some testable logic was affected.
+* Add a pixel test to `popup_row_factory_utils_browsertest.cc`. In most cases adding the newly added suggestion type to `kSuggestions` will suffice.

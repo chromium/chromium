@@ -7,13 +7,14 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -33,7 +34,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMac
   };
 
   BluetoothAdvertisementMac(
-      absl::optional<BluetoothAdvertisement::UUIDList> service_uuids,
+      std::optional<BluetoothAdvertisement::UUIDList> service_uuids,
       BluetoothAdapter::CreateAdvertisementCallback callback,
       BluetoothAdapter::AdvertisementErrorCallback error_callback,
       BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager);
@@ -73,7 +74,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMac
 
   void InvokeSuccessCallback();
 
-  absl::optional<BluetoothAdvertisement::UUIDList> service_uuids_;
+  std::optional<BluetoothAdvertisement::UUIDList> service_uuids_;
   BluetoothAdapter::CreateAdvertisementCallback success_callback_;
   BluetoothAdapter::AdvertisementErrorCallback error_callback_;
   raw_ptr<BluetoothLowEnergyAdvertisementManagerMac> advertisement_manager_;

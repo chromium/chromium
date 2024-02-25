@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/ukm_background_recorder_service.h"
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -22,8 +22,8 @@ namespace {
 constexpr char kVisitedUrl[] = "https://foobar.com/baz";
 
 void DidGetRecordResult(base::OnceClosure quit_closure,
-                        absl::optional<ukm::SourceId>* out_result,
-                        absl::optional<ukm::SourceId> result) {
+                        std::optional<ukm::SourceId>* out_result,
+                        std::optional<ukm::SourceId> result) {
   *out_result = std::move(result);
   std::move(quit_closure).Run();
 }
@@ -52,9 +52,13 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
         GURL(kVisitedUrl), base::Time::Now(), history::SOURCE_BROWSED);
   }
 
+  void TearDownOnMainThread() override {
+    background_recorder_service_ = nullptr;
+  }
+
  protected:
-  absl::optional<ukm::SourceId> GetSourceId(const url::Origin& origin) {
-    absl::optional<ukm::SourceId> result;
+  std::optional<ukm::SourceId> GetSourceId(const url::Origin& origin) {
+    std::optional<ukm::SourceId> result;
 
     base::RunLoop run_loop;
     background_recorder_service_->GetBackgroundSourceIdIfAllowed(
@@ -66,8 +70,8 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<ukm::UkmBackgroundRecorderService, DanglingUntriaged>
-      background_recorder_service_;
+  raw_ptr<ukm::UkmBackgroundRecorderService> background_recorder_service_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(UkmBackgroundRecorderBrowserTest,

@@ -6,7 +6,6 @@
 #define COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observation.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -19,21 +18,19 @@ class GURL;
 class PrefService;
 class PrefChangeRegistrar;
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace commerce {
 
-extern const char kOAuthScope[];
-extern const char kOAuthName[];
-extern const char kGetHttpMethod[];
-extern const char kPostHttpMethod[];
-extern const char kContentType[];
-extern const char kEmptyPostData[];
 extern const char kNotificationsPrefUrl[];
 
 // Used to check user account status.
-class AccountChecker : public signin::IdentityManager::Observer {
+class AccountChecker {
  public:
   AccountChecker(const AccountChecker&) = delete;
-  ~AccountChecker() override;
+  virtual ~AccountChecker();
 
   virtual bool IsSignedIn();
 
@@ -43,8 +40,6 @@ class AccountChecker : public signin::IdentityManager::Observer {
   virtual bool IsSyncingBookmarks();
 
   virtual bool IsAnonymizedUrlDataCollectionEnabled();
-
-  virtual bool IsWebAndAppActivityEnabled();
 
   virtual bool IsSubjectToParentalControls();
 
@@ -69,29 +64,11 @@ class AccountChecker : public signin::IdentityManager::Observer {
       const std::string& http_method,
       const std::string& content_type,
       const std::vector<std::string>& scopes,
-      int64_t timeout_ms,
+      const base::TimeDelta& timeout,
       const std::string& post_data,
       const net::NetworkTrafficAnnotationTag& annotation_tag);
 
  private:
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event_details) override;
-
-  // Fetch users' consent status on web and app activity.
-  void FetchWaaStatus();
-
-  // Handle the responses for fetching users' web and app activity consent
-  // status.
-  void HandleFetchWaaResponse(
-      // Passing the endpoint_fetcher ensures the endpoint_fetcher's
-      // lifetime extends to the callback and is not destroyed
-      // prematurely (which would result in cancellation of the request).
-      // TODO(crbug.com/1362026): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
-
-  void OnFetchWaaJsonParsed(data_decoder::DataDecoder::ValueOrError result);
-
   // Called when the pref value on whether to receive price tracking emails
   // changes. We need to send the new value to server unless the change is
   // triggered by aligning with the server fetched value.
@@ -124,10 +101,6 @@ class AccountChecker : public signin::IdentityManager::Observer {
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   raw_ptr<syncer::SyncService> sync_service_;
-
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      scoped_identity_manager_observation_{this};
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

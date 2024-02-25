@@ -57,9 +57,10 @@ class FileSystemAccessCapacityTracker final
   // through the synchronous API of Access Handles.
   bool RequestFileCapacityChangeSync(int64_t required_capacity);
 
-  // Records a change of the file's size to `new_size`. The caller must make
-  // sure that `file_capacity` is at least `new_size`.
-  void CommitFileSizeChange(int64_t new_size);
+  // This method should be called for each modification to the file, even if the
+  // file's size does not change. The caller must make sure that
+  // `file_capacity_` is at least `new_size`.
+  void OnFileContentsModified(int64_t new_size);
 
   // GarbageCollected
   void Trace(Visitor* visitor) const {

@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_utils.h"
+#include "third_party/blink/renderer/core/layout/inline/line_utils.h"
 
 namespace blink {
 
@@ -64,8 +64,8 @@ class AbstractLineBox {
         cursor_.Current().Style().GetWritingMode());
     if (!logical_size.block_size)
       return false;
-    for (NGInlineCursor cursor(cursor_); cursor; cursor.MoveToNext()) {
-      const NGInlineCursorPosition& current = cursor.Current();
+    for (InlineCursor cursor(cursor_); cursor; cursor.MoveToNext()) {
+      const InlineCursorPosition& current = cursor.Current();
       if (current.GetLayoutObject() && current.IsInlineLeaf())
         return true;
     }
@@ -74,7 +74,7 @@ class AbstractLineBox {
 
   AbstractLineBox PreviousLine() const {
     DCHECK(IsNotNull());
-    NGInlineCursor previous_line = cursor_;
+    InlineCursor previous_line = cursor_;
     do {
       previous_line.MoveToPreviousIncludingFragmentainer();
     } while (previous_line && !previous_line.Current().IsLineBox());
@@ -85,7 +85,7 @@ class AbstractLineBox {
 
   AbstractLineBox NextLine() const {
     DCHECK(IsNotNull());
-    NGInlineCursor next_line = cursor_;
+    InlineCursor next_line = cursor_;
     do {
       next_line.MoveToNextIncludingFragmentainer();
     } while (next_line && !next_line.Current().IsLineBox());
@@ -119,7 +119,7 @@ class AbstractLineBox {
   }
 
  private:
-  explicit AbstractLineBox(const NGInlineCursor& cursor)
+  explicit AbstractLineBox(const InlineCursor& cursor)
       : cursor_(cursor), type_(Type::kLayoutNG) {
     DCHECK(cursor_.Current().IsLineBox());
   }
@@ -140,7 +140,7 @@ class AbstractLineBox {
 
   bool IsLayoutNG() const { return type_ == Type::kLayoutNG; }
 
-  static bool IsEditable(const NGInlineCursor& cursor) {
+  static bool IsEditable(const InlineCursor& cursor) {
     const LayoutObject* const layout_object =
         cursor.Current().GetLayoutObject();
     return layout_object && layout_object->GetNode() &&
@@ -148,7 +148,7 @@ class AbstractLineBox {
   }
 
   static PositionInFlatTreeWithAffinity PositionForPoint(
-      const NGInlineCursor& line,
+      const InlineCursor& line,
       const PhysicalOffset& point,
       bool only_editable_leaves) {
     DCHECK(line.Current().IsLineBox());
@@ -158,9 +158,9 @@ class AbstractLineBox {
                                 line.Current().BaseDirection()},
                                line.Current().Size(), unit_square);
     const LayoutUnit inline_offset = logical_point.inline_offset;
-    NGInlineCursor closest_leaf_child;
+    InlineCursor closest_leaf_child;
     LayoutUnit closest_leaf_distance;
-    for (NGInlineCursor cursor = line.CursorForDescendants(); cursor;
+    for (InlineCursor cursor = line.CursorForDescendants(); cursor;
          cursor.MoveToNext()) {
       if (!cursor.Current().GetLayoutObject())
         continue;
@@ -208,7 +208,7 @@ class AbstractLineBox {
 
   enum class Type { kNull, kLayoutNG };
 
-  NGInlineCursor cursor_;
+  InlineCursor cursor_;
   Type type_ = Type::kNull;
 };
 
@@ -225,7 +225,7 @@ AbstractLineBox AbstractLineBox::CreateFor(
   if (adjusted.IsNull())
     return AbstractLineBox();
 
-  const NGInlineCursor& line = NGContainingLineBoxOf(adjusted);
+  const InlineCursor& line = NGContainingLineBoxOf(adjusted);
   if (line)
     return AbstractLineBox(line);
   return AbstractLineBox();

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class BubblePresenter;
 @protocol OmniboxAssistiveKeyboardDelegate;
 @class OmniboxKeyboardAccessoryView;
 class TemplateURLService;
@@ -27,6 +28,7 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     UITextField* textField,
     NSString* dotComTLD,
     id<OmniboxAssistiveKeyboardDelegate> delegate,
-    TemplateURLService* templateURLService);
+    TemplateURLService* templateURLService,
+    BubblePresenter* bubblePresenter);
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_KEYBOARD_ASSIST_OMNIBOX_ASSISTIVE_KEYBOARD_VIEWS_H_

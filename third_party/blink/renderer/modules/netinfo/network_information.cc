@@ -91,7 +91,7 @@ double NetworkInformation::downlinkMax() const {
 
 String NetworkInformation::effectiveType() {
   MaybeShowWebHoldbackConsoleMsg();
-  absl::optional<WebEffectiveConnectionType> override_ect =
+  std::optional<WebEffectiveConnectionType> override_ect =
       GetNetworkStateNotifier().GetWebHoldbackEffectiveType();
   if (override_ect) {
     return NetworkStateNotifier::EffectiveConnectionTypeToString(
@@ -111,7 +111,7 @@ String NetworkInformation::effectiveType() {
 
 uint32_t NetworkInformation::rtt() {
   MaybeShowWebHoldbackConsoleMsg();
-  absl::optional<base::TimeDelta> override_rtt =
+  std::optional<base::TimeDelta> override_rtt =
       GetNetworkStateNotifier().GetWebHoldbackHttpRtt();
   if (override_rtt) {
     return GetNetworkStateNotifier().RoundRtt(Host(), override_rtt.value());
@@ -127,7 +127,7 @@ uint32_t NetworkInformation::rtt() {
 
 double NetworkInformation::downlink() {
   MaybeShowWebHoldbackConsoleMsg();
-  absl::optional<double> override_downlink_mbps =
+  std::optional<double> override_downlink_mbps =
       GetNetworkStateNotifier().GetWebHoldbackDownlinkThroughputMbps();
   if (override_downlink_mbps) {
     return GetNetworkStateNotifier().RoundMbps(Host(),
@@ -151,9 +151,9 @@ void NetworkInformation::ConnectionChange(
     WebConnectionType type,
     double downlink_max_mbps,
     WebEffectiveConnectionType effective_type,
-    const absl::optional<base::TimeDelta>& http_rtt,
-    const absl::optional<base::TimeDelta>& transport_rtt,
-    const absl::optional<double>& downlink_mbps,
+    const std::optional<base::TimeDelta>& http_rtt,
+    const std::optional<base::TimeDelta>& transport_rtt,
+    const std::optional<double>& downlink_mbps,
     bool save_data) {
   DCHECK(GetExecutionContext()->IsContextThread());
 
@@ -284,8 +284,8 @@ NetworkInformation::NetworkInformation(NavigatorBase& navigator)
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       web_holdback_console_message_shown_(false),
       context_stopped_(false) {
-  absl::optional<base::TimeDelta> http_rtt;
-  absl::optional<double> downlink_mbps;
+  std::optional<base::TimeDelta> http_rtt;
+  std::optional<double> downlink_mbps;
 
   GetNetworkStateNotifier().GetMetricsWithWebHoldback(
       &type_, &downlink_max_mbps_, &effective_type_, &http_rtt, &downlink_mbps,

@@ -10,24 +10,25 @@
 
 import '../icons.html.js';
 import '../settings_shared.css.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '/shared/settings/controls/settings_radio_group.js';
-import '/shared/settings/controls/settings_slider.js';
-import '/shared/settings/controls/settings_toggle_button.js';
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_slider.js';
+import '../controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {KeyboardPolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
@@ -40,7 +41,7 @@ const SettingsPerDeviceKeyboardElementBase =
 
 export class SettingsPerDeviceKeyboardElement extends
     SettingsPerDeviceKeyboardElementBase {
-  static get is(): string {
+  static get is() {
     return 'settings-per-device-keyboard';
   }
 
@@ -72,7 +73,11 @@ export class SettingsPerDeviceKeyboardElement extends
        */
       autoRepeatDelays: {
         type: Array,
-        value: [2000, 1500, 1000, 500, 300, 200, 150],
+        value() {
+          const autoRepeatDelays = [2000, 1500, 1000, 500, 300, 200, 150];
+          return isRevampWayfindingEnabled() ? autoRepeatDelays.reverse() :
+                                               autoRepeatDelays;
+        },
         readOnly: true,
       },
 
@@ -98,6 +103,14 @@ export class SettingsPerDeviceKeyboardElement extends
         ]),
       },
 
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
+
       /**
        * Whether the setting for long press diacritics should be shown
        */
@@ -110,12 +123,13 @@ export class SettingsPerDeviceKeyboardElement extends
   protected shouldShowDiacriticSetting: boolean =
       loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress');
   private prefs: chrome.settingsPrivate.PrefObject;
+  private readonly isRevampWayfindingEnabled_: boolean;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];
   private browserProxy: DevicePageBrowserProxy =
       DevicePageBrowserProxyImpl.getInstance();
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.browserProxy.initializeKeyboard();
@@ -131,7 +145,8 @@ export class SettingsPerDeviceKeyboardElement extends
   }
 
   private onKeyboardListUpdated(
-      newKeyboardList: Keyboard[], oldKeyboardList: Keyboard[]|undefined) {
+      newKeyboardList: Keyboard[],
+      oldKeyboardList: Keyboard[]|undefined): void {
     if (!oldKeyboardList) {
       return;
     }
@@ -156,8 +171,20 @@ export class SettingsPerDeviceKeyboardElement extends
     return this.keyboards.length > 0;
   }
 
-  private computeIsLastDevice(index: number) {
+  private computeIsLastDevice(index: number): boolean {
     return index === this.keyboards.length - 1;
+  }
+
+  private getRepeatDelaySliderLabelMin_(): string {
+    return this.i18n(
+        this.isRevampWayfindingEnabled_ ? 'keyRepeatDelayShort' :
+                                          'keyRepeatDelayLong');
+  }
+
+  private getRepeatDelaySliderLabelMax_(): string {
+    return this.i18n(
+        this.isRevampWayfindingEnabled_ ? 'keyRepeatDelayLong' :
+                                          'keyRepeatDelayShort');
   }
 }
 

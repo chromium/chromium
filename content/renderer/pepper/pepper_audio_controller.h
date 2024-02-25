@@ -7,6 +7,8 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
+
 namespace content {
 
 class PepperAudioOutputHost;
@@ -53,15 +55,15 @@ class PepperAudioController {
 
   // All active audio instances that are using the old
   // PPB_Audio interface.
-  std::set<PPB_Audio_Impl*> ppb_audios_;
+  std::set<raw_ptr<PPB_Audio_Impl, SetExperimental>> ppb_audios_;
 
   // All active audio output instances that are using the new
   // PPB_AudioOutput interface.
-  std::set<PepperAudioOutputHost*> audio_output_hosts_;
+  std::set<raw_ptr<PepperAudioOutputHost, SetExperimental>> audio_output_hosts_;
 
   // The Pepper instance which this controller is for. Will be null after
   // OnPepperInstanceDeleted() is called.
-  PepperPluginInstanceImpl* instance_;
+  raw_ptr<PepperPluginInstanceImpl> instance_;
 };
 
 }  // namespace content

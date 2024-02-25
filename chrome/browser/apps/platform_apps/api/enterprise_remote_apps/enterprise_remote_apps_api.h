@@ -73,7 +73,7 @@ class EnterpriseRemoteAppsDeleteAppFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnResult(const absl::optional<std::string>& error);
+  void OnResult(const std::optional<std::string>& error);
 };
 
 class EnterpriseRemoteAppsSortLauncherFunction : public ExtensionFunction {
@@ -95,7 +95,7 @@ class EnterpriseRemoteAppsSortLauncherFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnResult(const absl::optional<std::string>& error);
+  void OnResult(const std::optional<std::string>& error);
 };
 
 class EnterpriseRemoteAppsSetPinnedAppsFunction : public ExtensionFunction {
@@ -117,7 +117,7 @@ class EnterpriseRemoteAppsSetPinnedAppsFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnResult(const absl::optional<std::string>& error);
+  void OnResult(const std::optional<std::string>& error);
 };
 
 }  // namespace chrome_apps::api

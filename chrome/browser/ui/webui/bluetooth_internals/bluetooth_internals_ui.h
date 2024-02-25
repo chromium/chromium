@@ -6,10 +6,23 @@
 #define CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_UI_H_
 
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom-forward.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class BluetoothInternalsHandler;
+
+class BluetoothInternalsUIConfig : public content::WebUIConfig {
+ public:
+  BluetoothInternalsUIConfig();
+  ~BluetoothInternalsUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 // The WebUI for chrome://bluetooth-internals
 class BluetoothInternalsUI : public ui::MojoWebUIController {

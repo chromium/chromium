@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/client_hints.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/http/structured_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -118,23 +118,23 @@ const DecodeMap& GetDecodeMap() {
 
 }  // namespace
 
-absl::optional<std::vector<network::mojom::WebClientHintsType>>
+std::optional<std::vector<network::mojom::WebClientHintsType>>
 ParseClientHintsHeader(const std::string& header) {
   // Accept-CH is an sh-list of tokens; see:
   // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-header-structure-19#section-3.1
-  absl::optional<net::structured_headers::List> maybe_list =
+  std::optional<net::structured_headers::List> maybe_list =
       net::structured_headers::ParseList(header);
   if (!maybe_list.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Standard validation rules: we want a list of tokens, so this better
   // only have tokens (but params are OK!)
   for (const auto& list_item : maybe_list.value()) {
     // Make sure not a nested list.
     if (list_item.member.size() != 1u)
-      return absl::nullopt;
+      return std::nullopt;
     if (!list_item.member[0].item.is_token())
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   std::vector<network::mojom::WebClientHintsType> result;

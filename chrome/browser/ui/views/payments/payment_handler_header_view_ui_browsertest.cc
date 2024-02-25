@@ -13,8 +13,10 @@
 #include "components/payments/core/features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/views/controls/image_view.h"
 
 namespace payments {
@@ -34,8 +36,8 @@ class PaymentHandlerHeaderViewUITest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
-    if (minimal_header_ux_enabled_) {
-      command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+    if (!minimal_header_ux_enabled_) {
+      command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
                                       "PaymentHandlerMinimalHeaderUX");
     }
   }

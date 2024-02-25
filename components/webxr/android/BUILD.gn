@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android_utils") {
   sources = [
@@ -36,6 +37,8 @@ source_set("android") {
   # assert(enable_vr).
   if (enable_vr) {
     sources = [
+      "xr_activity_listener.cc",
+      "xr_activity_listener.h",
       "xr_session_coordinator.cc",
       "xr_session_coordinator.h",
     ]
@@ -55,6 +58,7 @@ source_set("android") {
       sources += [
         "cardboard_device_provider.cc",
         "cardboard_device_provider.h",
+        "cardboard_utils.cc",
         "vr_compositor_delegate_provider.cc",
         "vr_compositor_delegate_provider.h",
       ]
@@ -133,6 +137,7 @@ android_library("xr_java") {
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/VrCompositorDelegate.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/VrCompositorDelegateProvider.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/XrActivityListener.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateImpl.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrHostActivity.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrImmersiveOverlay.java",
@@ -141,9 +146,9 @@ android_library("xr_java") {
     ]
 
     deps += [
-      "//base:jni_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
   }
@@ -188,6 +193,7 @@ android_library("xr_java") {
     sources += [
       "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardClassProvider.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardOverlayDelegate.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardUtils.java",
     ]
     deps += [
       ":cardboard_java_resources",
@@ -205,10 +211,17 @@ android_library("xr_java") {
 }
 
 generate_jni("xr_jni_headers") {
-  sources = [ "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java" ]
+  sources = [
+    "//components/webxr/android/java/src/org/chromium/components/webxr/XrActivityListener.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java",
+  ]
 
   if (enable_arcore) {
     sources += [ "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java" ]
+  }
+
+  if (enable_cardboard) {
+    sources += [ "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardUtils.java" ]
   }
 }
 

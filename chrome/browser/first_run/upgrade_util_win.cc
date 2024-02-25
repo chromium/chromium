@@ -17,6 +17,7 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -33,6 +34,7 @@
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/win/browser_util.h"
@@ -160,6 +162,10 @@ bool SwapNewChromeExeIfPresent() {
 
   TRACE_EVENT0("startup", "upgrade_util::SwapNewChromeExeIfPresent");
 
+  // Renaming the chrome executable requires the process singleton to avoid
+  // any race condition.
+  CHECK(ChromeProcessSingleton::IsSingletonInstance());
+
   // If this is a system-level install, ask Google Update to launch an elevated
   // process to rename Chrome executables.
   if (install_static::IsSystemInstall())
@@ -219,6 +225,10 @@ bool DoUpgradeTasks(const base::CommandLine& command_line) {
   TRACE_EVENT0("startup", "upgrade_util::DoUpgradeTasks");
   // If there is no other instance already running then check if there is a
   // pending update and complete it by performing the swap and then relaunch.
+
+  // Upgrade tasks require the process singleton to avoid any race condition.
+  CHECK(ChromeProcessSingleton::IsSingletonInstance());
+
   bool did_swap = false;
   if (!browser_util::IsBrowserAlreadyRunning())
     did_swap = SwapNewChromeExeIfPresent();

@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_response_status[101-Switching Protocols]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: The user aborted a request.
+[FAIL] test_response_status[401-Unauthorized]
+  KeyError: 'authChallenges'
+[FAIL] test_response_status[407-Proxy Authentication Required]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: TypeError: Failed to fetch
+[FAIL] test_www_authenticate
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_INVALID_AUTH_CREDENTIALS)
+Harness: the test ran to completion.

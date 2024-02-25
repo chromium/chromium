@@ -6,9 +6,11 @@
 #define IOS_CHROME_BROWSER_SESSIONS_LIVE_TAB_CONTEXT_BROWSER_AGENT_H_
 
 #import <map>
+#import <optional>
 #import <string>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/sessions/core/live_tab_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -41,7 +43,7 @@ class LiveTabContextBrowserAgent
   std::map<std::string, std::string> GetExtraDataForTab(
       int index) const override;
   std::map<std::string, std::string> GetExtraDataForWindow() const override;
-  absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+  std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
       const tab_groups::TabGroupId& group) const override;
@@ -57,7 +59,7 @@ class LiveTabContextBrowserAgent
       int tab_index,
       int selected_navigation,
       const std::string& extension_app_id,
-      absl::optional<tab_groups::TabGroupId> group,
+      std::optional<tab_groups::TabGroupId> group,
       const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,
@@ -67,7 +69,7 @@ class LiveTabContextBrowserAgent
       const SessionID* tab_id) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
-      absl::optional<tab_groups::TabGroupId> group,
+      std::optional<tab_groups::TabGroupId> group,
       int selected_navigation,
       const std::string& extension_app_id,
       const sessions::PlatformSpecificTabData* tab_platform_data,
@@ -81,8 +83,8 @@ class LiveTabContextBrowserAgent
 
   explicit LiveTabContextBrowserAgent(Browser* browser);
 
-  ChromeBrowserState* browser_state_;
-  WebStateList* web_state_list_;
+  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<WebStateList> web_state_list_;
   SessionID session_id_;
 };
 

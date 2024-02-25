@@ -44,7 +44,9 @@ import java.util.List;
 
 /** Unit tests for JourneyManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {BackgroundShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public final class JourneyManagerTest {
     private static final int LAST_ENGAGEMENT_ELAPSED_MS = 5000;
@@ -52,29 +54,21 @@ public final class JourneyManagerTest {
     private static final long BASE_TIME_MS = 1000000L;
     private static final long NO_TIME_MS = 0L;
 
-    @Mock
-    private TabModel mTabModel;
+    @Mock private TabModel mTabModel;
 
-    @Mock
-    private TabModelSelector mTabModelSelector;
+    @Mock private TabModelSelector mTabModelSelector;
 
-    @Mock
-    private LayoutStateObserver mLayoutStateObserver;
+    @Mock private LayoutStateObserver mLayoutStateObserver;
 
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
 
-    @Mock
-    private Tab mTab;
+    @Mock private Tab mTab;
 
-    @Mock
-    private TabList mTabList;
+    @Mock private TabList mTabList;
 
-    @Mock
-    private ActivityLifecycleDispatcher mDispatcher;
+    @Mock private ActivityLifecycleDispatcher mDispatcher;
 
-    @Mock
-    private EngagementTimeUtil mEngagementTimeUtil;
+    @Mock private EngagementTimeUtil mEngagementTimeUtil;
 
     private JourneyManager mJourneyManager;
 
@@ -90,12 +84,14 @@ public final class JourneyManagerTest {
 
         MockitoAnnotations.initMocks(this);
 
-        mSharedPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
-                JourneyManager.PREFS_FILE, Context.MODE_PRIVATE);
+        mSharedPreferences =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(JourneyManager.PREFS_FILE, Context.MODE_PRIVATE);
         mSharedPreferences.edit().clear().commit();
 
-        mJourneyManager = new JourneyManager(
-                mTabModelSelector, mDispatcher, mLayoutStateProvider, mEngagementTimeUtil);
+        mJourneyManager =
+                new JourneyManager(
+                        mTabModelSelector, mDispatcher, mLayoutStateProvider, mEngagementTimeUtil);
         mTabModelSelectorTabObserver = mJourneyManager.getTabModelSelectorTabObserver();
         mTabModelSelectorTabModelObserver = mJourneyManager.getTabModelSelectorTabModelObserver();
         mLayoutStateObserver = mJourneyManager.getOverviewModeObserver();
@@ -143,7 +139,8 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onHidden(mTab, TabHidingType.ACTIVITY_HIDDEN);
         flushAsyncPrefs();
 
-        assertEquals(BASE_TIME_MS + LAST_ENGAGEMENT_ELAPSED_MS,
+        assertEquals(
+                BASE_TIME_MS + LAST_ENGAGEMENT_ELAPSED_MS,
                 mSharedPreferences.getLong(String.valueOf(mTab.getId()), -1));
     }
 
@@ -195,7 +192,8 @@ public final class JourneyManagerTest {
         mLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER);
         flushAsyncPrefs();
 
-        assertEquals(BASE_TIME_MS + LAST_ENGAGEMENT_ELAPSED_MS,
+        assertEquals(
+                BASE_TIME_MS + LAST_ENGAGEMENT_ELAPSED_MS,
                 mSharedPreferences.getLong(String.valueOf(mTab.getId()), -1));
     }
 

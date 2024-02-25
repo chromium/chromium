@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "url/origin.h"
 
@@ -31,7 +32,8 @@ class CredentialCache {
   // Saves credentials and blocklisted status for an origin so that they can be
   // used in the sheet.
   void SaveCredentialsAndBlocklistedForOrigin(
-      const std::vector<const PasswordForm*>& matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          matches,
       IsOriginBlocklisted is_blocklisted,
       const url::Origin& origin);
 

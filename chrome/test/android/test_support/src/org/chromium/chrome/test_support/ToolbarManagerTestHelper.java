@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.test_support;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 
-/**
- * Test support for injecting test behaviour from C++ tests into Java ToolbarManger.
- */
+/** Test support for injecting test behaviour from C++ tests into Java ToolbarManger. */
 @JNINamespace("toolbar_manager")
 public class ToolbarManagerTestHelper {
     /**
@@ -19,6 +18,7 @@ public class ToolbarManagerTestHelper {
      */
     @CalledByNative
     public static void setSkipRecreateForTesting(boolean skipRecreating) {
-        ToolbarManager.setSkipRecreateForTesting(skipRecreating);
+        ToolbarManager.setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(
+                skipRecreating);
     }
 }

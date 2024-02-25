@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/test_utils.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -160,6 +161,10 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
 
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta) override {}
 
+  void GetStats(GetStatsCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+
   void Close(network::mojom::blink::WebTransportCloseInfoPtr) override {}
 
  private:
@@ -272,6 +277,7 @@ void TestWrite(const V8TestingScope& scope,
 }
 
 TEST(BidirectionalStreamTest, CreateLocallyAndWrite) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -282,6 +288,7 @@ TEST(BidirectionalStreamTest, CreateLocallyAndWrite) {
 }
 
 TEST(BidirectionalStreamTest, CreateRemotelyAndWrite) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -317,6 +324,7 @@ void TestRead(V8TestingScope& scope,
 }
 
 TEST(BidirectionalStreamTest, CreateLocallyAndRead) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -327,6 +335,7 @@ TEST(BidirectionalStreamTest, CreateLocallyAndRead) {
 }
 
 TEST(BidirectionalStreamTest, CreateRemotelyAndRead) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -337,6 +346,7 @@ TEST(BidirectionalStreamTest, CreateRemotelyAndRead) {
 }
 
 TEST(BidirectionalStreamTest, IncomingStreamCleanClose) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -367,6 +377,7 @@ TEST(BidirectionalStreamTest, IncomingStreamCleanClose) {
 }
 
 TEST(BidirectionalStreamTest, OutgoingStreamCleanClose) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -395,6 +406,7 @@ TEST(BidirectionalStreamTest, OutgoingStreamCleanClose) {
 }
 
 TEST(BidirectionalStreamTest, CloseWebTransport) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -408,6 +420,7 @@ TEST(BidirectionalStreamTest, CloseWebTransport) {
 }
 
 TEST(BidirectionalStreamTest, RemoteDropWebTransport) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -423,6 +436,7 @@ TEST(BidirectionalStreamTest, RemoteDropWebTransport) {
 }
 
 TEST(BidirectionalStreamTest, WriteAfterCancellingIncoming) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -443,6 +457,7 @@ TEST(BidirectionalStreamTest, WriteAfterCancellingIncoming) {
 }
 
 TEST(BidirectionalStreamTest, WriteAfterIncomingClosed) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -462,6 +477,7 @@ TEST(BidirectionalStreamTest, WriteAfterIncomingClosed) {
 }
 
 TEST(BidirectionalStreamTest, ReadAfterClosingOutgoing) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -483,6 +499,7 @@ TEST(BidirectionalStreamTest, ReadAfterClosingOutgoing) {
 }
 
 TEST(BidirectionalStreamTest, ReadAfterAbortingOutgoing) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =
@@ -500,6 +517,7 @@ TEST(BidirectionalStreamTest, ReadAfterAbortingOutgoing) {
 }
 
 TEST(BidirectionalStreamTest, ReadAfterOutgoingAborted) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedWebTransport scoped_web_transport(scope);
   auto* bidirectional_stream =

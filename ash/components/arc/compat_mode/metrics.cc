@@ -41,11 +41,6 @@ void RecordResizeLockStateHistogram(ResizeLockStateHistogramType type,
   base::UmaHistogramEnumeration(GetStateHistogramName(type), state);
 }
 
-void RecordRightClickConversionResultHistogram(
-    RightClickConversionResultHistogramResult result) {
-  base::UmaHistogramEnumeration("Arc.CompatMode.RightClickConversion", result);
-}
-
 const char* GetResizeLockActionNameForTesting(  // IN-TEST
     ResizeLockActionType type) {
   return GetActionName(type);

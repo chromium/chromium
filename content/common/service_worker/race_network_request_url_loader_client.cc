@@ -9,65 +9,66 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "mojo/public/cpp/system/handle_signals_state.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace content {
 namespace {
-MojoResult CreateDataPipe(mojo::ScopedDataPipeProducerHandle& producer_handle,
-                          mojo::ScopedDataPipeConsumerHandle& consumer_handle,
-                          uint32_t capacity_num_bytes) {
-  MojoCreateDataPipeOptions options;
-
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  options.capacity_num_bytes = capacity_num_bytes;
-
-  return mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
-}
+const char kMainResourceHistogramLoadTiming[] =
+    "ServiceWorker.LoadTiming.MainFrame.MainResource";
+const char kSubresourceHistogramLoadTiming[] =
+    "ServiceWorker.LoadTiming.Subresource";
 }  // namespace
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
     ServiceWorkerRaceNetworkRequestURLLoaderClient(
         const network::ResourceRequest& request,
         base::WeakPtr<ServiceWorkerResourceLoader> owner,
-        mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
-        uint32_t data_pipe_capacity_num_bytes)
+        mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)
     : request_(request),
       owner_(std::move(owner)),
       forwarding_client_(std::move(forwarding_client)),
       body_consumer_watcher_(FROM_HERE,
                              mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                             base::SequencedTaskRunner::GetCurrentDefault()) {
-  // The feature param may override the buffer size.
-  uint32_t data_pipe_size = base::GetFieldTrialParamByFeatureAsInt(
-      features::kServiceWorkerBypassFetchHandler,
-      "data_pipe_capacity_num_bytes", data_pipe_capacity_num_bytes);
+                             base::SequencedTaskRunner::GetCurrentDefault()),
+      is_main_resource_(owner_->IsMainResourceLoader()),
+      request_start_(base::TimeTicks::Now()),
+      request_start_time_(base::Time::Now()) {
+  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
+                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
+                         "ServiceWorkerRaceNetworkRequestURLLoaderClient",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
+
   // Create two data pipes. One is for RaceNetworkRequest. The other is for the
   // corresponding request in the fetch handler.
-  if (CreateDataPipe(data_pipe_for_race_network_request_.producer,
-                     data_pipe_for_race_network_request_.consumer,
-                     data_pipe_size) != MOJO_RESULT_OK) {
+  if (!write_buffer_manager_for_race_network_request_.is_data_pipe_created()) {
     TransitionState(State::kAborted);
     return;
   }
-  if (CreateDataPipe(data_pipe_for_fetch_handler_.producer,
-                     data_pipe_for_fetch_handler_.consumer,
-                     data_pipe_size) != MOJO_RESULT_OK) {
+  if (!write_buffer_manager_for_fetch_handler_.is_data_pipe_created()) {
     TransitionState(State::kAborted);
     return;
   }
 }
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
-    ~ServiceWorkerRaceNetworkRequestURLLoaderClient() = default;
+    ~ServiceWorkerRaceNetworkRequestURLLoaderClient() {
+  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
+                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
+                         "~ServiceWorkerRaceNetworkRequestURLLoaderClient",
+                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+}
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnUploadProgress(
     int64_t current_position,
@@ -91,18 +92,31 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveEarlyHints(
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
-  TRACE_EVENT0(
-      "ServiceWorker",
-      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse");
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   if (!owner_) {
     return;
   }
-
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
   TransitionState(State::kResponseReceived);
+
+  // Set the response received time, and record the time delta between the
+  // response received time and the fetch handler end time if the fetch handler
+  // is already completed.
+  if (!response_received_time_) {
+    response_received_time_ = base::TimeTicks::Now();
+  }
+  MaybeRecordResponseReceivedToFetchHandlerEndTiming();
+
   switch (data_consume_policy_) {
     case DataConsumePolicy::kTeeResponse:
       head_ = std::move(head);
+      head_->load_timing.request_start = request_start_;
+      head_->load_timing.request_start_time = request_start_time_;
       cached_metadata_ = std::move(cached_metadata);
       body_ = std::move(body);
       WatchDataUpdate();
@@ -120,9 +134,16 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   if (!owner_) {
     return;
   }
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
   TransitionState(State::kRedirect);
   // If redirect happened, we don't have to create another data pipe.
   data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
+  response_received_time_ = base::TimeTicks::Now();
 
   // TODO(crbug.com/1420517): Return a redirect response to |owner| as a
   // RaceNetworkRequest result without breaking the cache storage compatibility.
@@ -170,6 +191,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
   if (!owner_) {
     return;
   }
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
   if (owner_->IsMainResourceLoader()) {
     base::UmaHistogramBoolean(
         "ServiceWorker.FetchEvent.MainResource.RaceNetworkRequest.Redirect",
@@ -200,31 +227,45 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
   if (!owner_) {
     return;
   }
+  TransitionState(State::kResponseCommitted);
   owner_->RecordFetchResponseFrom();
   owner_->CommitResponseHeaders(head_);
   owner_->CommitResponseBody(
-      head_, std::move(data_pipe_for_race_network_request_.consumer),
+      head_,
+      write_buffer_manager_for_race_network_request_.ReleaseConsumerHandle(),
       std::move(cached_metadata_));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
-  if (!owner_ || state_ != State::kResponseReceived) {
+  if (!owner_) {
     return;
   }
-  TransitionState(State::kResponseCommitted);
+
+  if (state_ == State::kResponseReceived) {
+    TransitionState(State::kDataTransferStarted);
+    forwarding_client_->OnReceiveResponse(
+        head_->Clone(),
+        write_buffer_manager_for_fetch_handler_.ReleaseConsumerHandle(),
+        std::nullopt);
+  }
+
+  if (state_ != State::kDataTransferStarted) {
+    return;
+  }
+
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // If the fetch handler result is a fallback, commit the
       // RaceNetworkRequest response. If the result is not a fallback and the
-      // response is not 200, use the other response from the fetch handler
-      // instead because it may have a response from the cache.
+      // response is not ok status, use the other response from the fetch
+      // handler instead because it may have a response from the cache.
       // TODO(crbug.com/1420517): More comprehensive error handling may be
       // needed, especially the case when HTTP cache hit or redirect happened.
       //
       // When the AutoPreload is enabled, RaceNetworkRequest works just for the
       // dedupe purpose. The fetch handler should always commit the response.
-      if (head_->headers->response_code() != net::HttpStatusCode::HTTP_OK) {
+      if (!network::IsSuccessfulStatus(head_->headers->response_code())) {
         owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       } else {
         owner_->SetCommitResponsibility(
@@ -247,10 +288,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
       NOTREACHED_NORETURN();
   }
-
-  forwarding_client_->OnReceiveResponse(
-      head_->Clone(), std::move(data_pipe_for_fetch_handler_.consumer),
-      absl::nullopt);
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCompleteResponse() {
@@ -271,6 +308,20 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
   if (!owner_) {
     return;
   }
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
+  bool is_aborted = false;
+  switch (state_) {
+    case State::kAborted:
+      is_aborted = true;
+      break;
+    default:
+      break;
+  }
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
@@ -284,6 +335,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
       // RaceNetworkRequest, do nothing. Defer the handling to the owner.
       break;
     case FetchResponseFrom::kWithoutServiceWorker:
+      if (is_aborted) {
+        owner_->CommitCompleted(completion_status_->error_code,
+                                "RaceNetworkRequest has aborted.");
+        return;
+      }
       TransitionState(State::kCompleted);
       owner_->CommitCompleted(completion_status_->error_code,
                               "RaceNetworkRequest has completed.");
@@ -291,13 +347,13 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
       NOTREACHED_NORETURN();
   }
-  data_pipe_for_race_network_request_.producer.reset();
+  write_buffer_manager_for_race_network_request_.ResetProducer();
   forwarding_client_->OnComplete(completion_status_.value());
-  data_pipe_for_fetch_handler_.producer.reset();
+  write_buffer_manager_for_fetch_handler_.ResetProducer();
   // Cancel watching data pipes here not to call watcher callbacks after
   // complete the response.
-  data_pipe_for_race_network_request_.watcher.Cancel();
-  data_pipe_for_fetch_handler_.watcher.Cancel();
+  write_buffer_manager_for_race_network_request_.CancelWatching();
+  write_buffer_manager_for_fetch_handler_.CancelWatching();
   body_consumer_watcher_.Cancel();
 }
 
@@ -305,185 +361,400 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
     CommitAndCompleteResponseIfDataTransferFinished() {
   if (state_ == State::kDataTransferFinished) {
     CommitResponse();
-    CompleteResponse();
+    // Step back to State::kDataTransferFinished since MaybeCompleteResponse()
+    // completes the response only when kDataTransferFinished is set.
+    TransitionState(State::kDataTransferFinished);
+    // When handling the fallback, the network request may return the initial
+    // response, but may not be completed yet. Commit is done only when the
+    // request is completed.
+    MaybeCompleteResponse();
   }
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
-  MaybeCommitResponse();
-  TRACE_EVENT0(
+  TRACE_EVENT_WITH_FLOW2(
       "ServiceWorker",
-      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete");
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "state", state_);
+  MaybeCommitResponse();
   TransitionState(State::kDataTransferFinished);
   MaybeCompleteResponse();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
+  auto callback_func =
+      base::GetFieldTrialParamByFeatureAsBool(
+          features::kServiceWorkerAutoPreload, "use_two_phase_write", true)
+          ? &ServiceWorkerRaceNetworkRequestURLLoaderClient::
+                ReadAndTwoPhaseWrite
+          : &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite;
+
   body_consumer_watcher_.Watch(
       body_.get(), MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(
-          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          weak_factory_.GetWeakPtr()));
+      MOJO_WATCH_CONDITION_SATISFIED,
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
   body_consumer_watcher_.ArmOrNotify();
-  data_pipe_for_race_network_request_.watcher.Watch(
-      data_pipe_for_race_network_request_.producer.get(),
-      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(
-          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          weak_factory_.GetWeakPtr()));
-  data_pipe_for_fetch_handler_.watcher.Watch(
-      data_pipe_for_fetch_handler_.producer.get(),
-      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(
-          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          weak_factory_.GetWeakPtr()));
+  write_buffer_manager_for_race_network_request_.Watch(
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
+  write_buffer_manager_for_fetch_handler_.Watch(
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  std::optional<base::span<const char>> read_buffer = StartReadData(result);
+  if (!read_buffer.has_value()) {
+    return;
+  }
+  uint32_t num_bytes_to_consume = 0;
+
+  if (write_buffer_manager_for_race_network_request_.IsWatching() &&
+      write_buffer_manager_for_fetch_handler_.IsWatching()) {
+    // If both data pipes are watched, write data to both pipes. Cancel writing
+    // process if one of them is failed.
+    result = write_buffer_manager_for_race_network_request_.BeginWriteData();
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        // The data pipe consumer is aborted.
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+        // The data pipe is not writable yet. We don't consume data from |body_|
+        // and write any data in this case. And retry it later.
+        body_->EndReadData(0);
+        write_buffer_manager_for_race_network_request_.EndWriteData(0);
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+    result = write_buffer_manager_for_fetch_handler_.BeginWriteData();
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+        // When the data pipe returns MOJO_RESULT_SHOULD_WAIT, the data pipe is
+        // not consumed yet but the buffer is full. Stop processing the data
+        // pipe for the fetch handler side, not to make the data transfer
+        // process for the race network request side being stuck.
+        body_->EndReadData(0);
+        write_buffer_manager_for_race_network_request_.EndWriteData(0);
+        write_buffer_manager_for_fetch_handler_.EndWriteData(0);
+        write_buffer_manager_for_fetch_handler_.CancelWatching();
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+    // The maximum byte size to consume data. Use the smallest number from
+    // 1) write size for the RaceNetworkRequest or 2) write size for the fetch
+    // handler. This cap is needed because read/write operations are processed
+    // sequentially, we should write the same size of data even if the available
+    // buffer sizes in 1) and 2) are different per buffer.
+    uint32_t max_num_bytes_to_consume =
+        std::min(write_buffer_manager_for_race_network_request_.buffer_size(),
+                 write_buffer_manager_for_fetch_handler_.buffer_size());
+    // Copy data and call EndWriteData.
+    uint32_t bytes_for_race_network_request =
+        write_buffer_manager_for_race_network_request_
+            .CopyAndCompleteWriteDataWithSize(read_buffer.value(),
+                                              max_num_bytes_to_consume);
+    uint32_t bytes_for_fetch_handler =
+        write_buffer_manager_for_fetch_handler_
+            .CopyAndCompleteWriteDataWithSize(read_buffer.value(),
+                                              max_num_bytes_to_consume);
+    CHECK_EQ(bytes_for_race_network_request, bytes_for_fetch_handler);
+    num_bytes_to_consume = bytes_for_race_network_request;
+  } else if (write_buffer_manager_for_race_network_request_.IsWatching()) {
+    // If the data pipe for RaceNetworkRequest is the only watcher, don't write
+    // data to the data pipe for the fetch handler.
+    result = write_buffer_manager_for_race_network_request_.BeginWriteData();
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+        body_->EndReadData(0);
+        write_buffer_manager_for_race_network_request_.EndWriteData(0);
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+    num_bytes_to_consume =
+        write_buffer_manager_for_race_network_request_.CopyAndCompleteWriteData(
+            read_buffer.value());
+  } else if (write_buffer_manager_for_fetch_handler_.IsWatching()) {
+    // If the data pipe for the fetch handler is the only watcher, don't write
+    // data to the data pipe for RaceNetworkRequest.
+    result = write_buffer_manager_for_fetch_handler_.BeginWriteData();
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+        body_->EndReadData(0);
+        write_buffer_manager_for_fetch_handler_.EndWriteData(0);
+        write_buffer_manager_for_fetch_handler_.ArmOrNotify();
+        return;
+    }
+    num_bytes_to_consume =
+        write_buffer_manager_for_fetch_handler_.CopyAndCompleteWriteData(
+            read_buffer.value());
+  }
+  CompleteReadData(num_bytes_to_consume);
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
-    MojoResult aresult) {
-  TRACE_EVENT0("ServiceWorker",
-               "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite");
-
-  if (!owner_) {
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  std::optional<base::span<const char>> read_buffer = StartReadData(result);
+  if (!read_buffer.has_value()) {
     return;
   }
 
-  std::string histogram_prefix = base::StrCat(
-      {"ServiceWorker.FetchEvent",
-       owner_->IsMainResourceLoader() ? ".MainResource" : ".Subresource",
-       ".RaceNetworkRequest.DataTransfer"});
+  size_t num_bytes_to_consume = read_buffer->size();
+  if (write_buffer_manager_for_race_network_request_.IsWatching() &&
+      write_buffer_manager_for_fetch_handler_.IsWatching()) {
+    // If both data pipes are watched, write data to both pipes.
+    std::pair<size_t, size_t> written_bytes;
+    std::tie(result, written_bytes.first) =
+        write_buffer_manager_for_race_network_request_.WriteData(
+            read_buffer.value());
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        // The data pipe consumer is aborted.
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_OUT_OF_RANGE:
+        // The data pipe is not writable yet. We don't consume data from |body_|
+        // and write any data in this case. And retry it later.
+        body_->EndReadData(0);
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+    std::tie(result, written_bytes.second) =
+        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer.value());
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_OUT_OF_RANGE:
+        // When the data pipe returns MOJO_RESULT_SHOULD_WAIT, the data pipe is
+        // not consumed yet but the buffer is full. Stop processing the data
+        // pipe for the fetch handler side, not to make the data transfer
+        // process for the race network request side being stuck.
+        body_->EndReadData(read_buffer.value().size());
+        write_buffer_manager_for_fetch_handler_.CancelWatching();
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+    CHECK_EQ(written_bytes.first, written_bytes.second);
+    num_bytes_to_consume = written_bytes.first;
+    CHECK_EQ(write_buffer_manager_for_race_network_request_.num_bytes_written(),
+             write_buffer_manager_for_fetch_handler_.num_bytes_written());
+  } else if (write_buffer_manager_for_race_network_request_.IsWatching()) {
+    // If the data pipe for RaceNetworkRequest is the only watcher, don't write
+    // data to the data pipe for the fetch handler.
+    std::tie(result, num_bytes_to_consume) =
+        write_buffer_manager_for_race_network_request_.WriteData(
+            read_buffer.value());
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_OUT_OF_RANGE:
+        body_->EndReadData(0);
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+  } else if (write_buffer_manager_for_fetch_handler_.IsWatching()) {
+    // If the data pipe for the fetch handler is the only watcher, don't write
+    // data to the data pipe for RaceNetworkRequest.
+    std::tie(result, num_bytes_to_consume) =
+        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer.value());
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_OUT_OF_RANGE:
+        body_->EndReadData(0);
+        write_buffer_manager_for_fetch_handler_.ArmOrNotify();
+        return;
+    }
+  }
+  CompleteReadData(num_bytes_to_consume);
+}
 
-  // Read data from |body_| data pipe.
-  const void* buffer;
-  // Contains the actual byte size for read/write data. The smallest number from
-  // 1) read size, 2) write size for the RaceNetworkRequest, 3) write size for
-  // the fetch handler, will be used.
-  uint32_t num_bytes_to_consume = 0;
+std::optional<base::span<const char>>
+ServiceWorkerRaceNetworkRequestURLLoaderClient::StartReadData(
+    MojoResult initial_mojo_result) {
+  if (!owner_) {
+    return std::nullopt;
+  }
+  if (state_ == State::kDataTransferFinished) {
+    return std::nullopt;
+  }
 
-  MojoResult result = body_->BeginReadData(&buffer, &num_bytes_to_consume,
-                                           MOJO_READ_DATA_FLAG_NONE);
-  base::UmaHistogramEnumeration(base::StrCat({histogram_prefix, ".Read"}),
-                                ConvertMojoResultForUMA(result));
+  RecordMojoResultForDataTransfer(initial_mojo_result, "Initial");
+  if (initial_mojo_result != MOJO_RESULT_OK) {
+    return std::nullopt;
+  }
+
+  auto [result, read_buffer] = BeginReadData();
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "read_data_result", result);
+  RecordMojoResultForDataTransfer(result, "Read");
   switch (result) {
     case MOJO_RESULT_OK:
-      break;
+      return read_buffer;
     case MOJO_RESULT_FAILED_PRECONDITION:
       // Successfully read the whole data.
       OnDataTransferComplete();
-      return;
+      return std::nullopt;
     case MOJO_RESULT_BUSY:
     case MOJO_RESULT_SHOULD_WAIT:
-      return;
+      return std::nullopt;
     default:
       NOTREACHED() << "BeginReadData result:" << result;
-      return;
+      return std::nullopt;
+  }
+}
+
+std::pair<MojoResult, base::span<const char>>
+ServiceWorkerRaceNetworkRequestURLLoaderClient::BeginReadData() {
+  const void* buffer;
+  uint32_t buffer_num_bytes = 0;
+  base::span<const char> read_buffer;
+  MojoResult result = body_->BeginReadData(&buffer, &buffer_num_bytes,
+                                           MOJO_BEGIN_READ_DATA_FLAG_NONE);
+  if (result == MOJO_RESULT_OK) {
+    SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_read_buffer",
+                            buffer_num_bytes);
+    volatile const char* buffer_v = static_cast<volatile const char*>(buffer);
+    for (size_t i = 0; i < buffer_num_bytes; ++i) {
+      buffer_v[i];
+    }
+    read_buffer =
+        base::make_span(static_cast<const char*>(buffer), buffer_num_bytes);
   }
 
-  void* write_buffer = nullptr;
-  void* write_buffer_for_fetch_handler = nullptr;
+  return std::make_pair(result, read_buffer);
+}
 
-  // Begin the write process for the response of the race network request.
-  result = data_pipe_for_race_network_request_.producer->BeginWriteData(
-      &write_buffer, &data_pipe_for_race_network_request_.num_write_bytes,
-      MOJO_WRITE_DATA_FLAG_NONE);
-  base::UmaHistogramEnumeration(
-      base::StrCat({histogram_prefix, ".WriteForRaceNetworkRequset"}),
-      ConvertMojoResultForUMA(result));
-  switch (result) {
-    case MOJO_RESULT_OK:
-      // Perhaps writable size may be smaller than the readable size. Choose the
-      // most smallest size.
-      num_bytes_to_consume =
-          std::min(num_bytes_to_consume,
-                   data_pipe_for_race_network_request_.num_write_bytes);
-      break;
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      // The data pipe consumer is aborted.
-      TransitionState(State::kAborted);
-      Abort();
-      return;
-    case MOJO_RESULT_SHOULD_WAIT:
-      // The data pipe is not writable yet. We don't consume data from |body_|
-      // and write any data in this case. And retry it later.
-      body_->EndReadData(0);
-      data_pipe_for_race_network_request_.producer->EndWriteData(0);
-      data_pipe_for_race_network_request_.watcher.ArmOrNotify();
-      return;
-  }
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::RecordMojoResultForWrite(
+    MojoResult result) {
+  RecordMojoResultForDataTransfer(result, "WriteForRaceNetworkRequset");
+}
 
-  // If the data consuming for the fetch handler is canceled, we process the
-  // consuming only for the race network request.
-  if (!data_pipe_for_fetch_handler_.watcher.IsWatching()) {
-    // Copy data and complete read/write process.
-    memcpy(write_buffer, buffer, num_bytes_to_consume);
-    result = data_pipe_for_race_network_request_.producer->EndWriteData(
-        num_bytes_to_consume);
-    CHECK_EQ(result, MOJO_RESULT_OK);
-    result = body_->EndReadData(num_bytes_to_consume);
-    CHECK_EQ(result, MOJO_RESULT_OK);
-    // Once data is written to the data pipe, start the commit process.
-    MaybeCommitResponse();
-    body_consumer_watcher_.ArmOrNotify();
-    return;
-  }
-
-  // Begin the write process for the response of the fetch handler.
-  result = data_pipe_for_fetch_handler_.producer->BeginWriteData(
-      &write_buffer_for_fetch_handler,
-      &data_pipe_for_fetch_handler_.num_write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
-  base::UmaHistogramEnumeration(
-      base::StrCat({histogram_prefix, ".WriteForFetchHandler"}),
-      ConvertMojoResultForUMA(result));
-  switch (result) {
-    case MOJO_RESULT_OK:
-      // Perhaps writable size may be smaller than the readable size. Choose
-      // the most smallest size.
-      num_bytes_to_consume = std::min(
-          num_bytes_to_consume, data_pipe_for_fetch_handler_.num_write_bytes);
-      break;
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      // The data pipe consumer is aborted.
-      TransitionState(State::kAborted);
-      Abort();
-      return;
-    case MOJO_RESULT_SHOULD_WAIT:
-      // When the data pipe returns MOJO_RESULT_SHOULD_WAIT, the data pipe is
-      // not consumed yet but the buffer is full. Stop processing the data pipe
-      // for the fetch handler side, not to make the data transfer process for
-      // the race network request side being stuck.
-      body_->EndReadData(0);
-      data_pipe_for_race_network_request_.producer->EndWriteData(0);
-      data_pipe_for_fetch_handler_.producer->EndWriteData(0);
-      data_pipe_for_fetch_handler_.watcher.Cancel();
-      data_pipe_for_race_network_request_.watcher.ArmOrNotify();
-      return;
-  }
-
-  // Copy data and complete read/write process.
-  memcpy(write_buffer, buffer, num_bytes_to_consume);
-  result = data_pipe_for_race_network_request_.producer->EndWriteData(
-      num_bytes_to_consume);
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteReadData(
+    uint32_t num_bytes_to_consume) {
+  MojoResult result = body_->EndReadData(num_bytes_to_consume);
   CHECK_EQ(result, MOJO_RESULT_OK);
-  memcpy(write_buffer_for_fetch_handler, buffer, num_bytes_to_consume);
-  result =
-      data_pipe_for_fetch_handler_.producer->EndWriteData(num_bytes_to_consume);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-  result = body_->EndReadData(num_bytes_to_consume);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-
   // Once data is written to the data pipe, start the commit process.
   MaybeCommitResponse();
   body_consumer_watcher_.ArmOrNotify();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::Abort() {
-  data_pipe_for_race_network_request_.producer.reset();
-  data_pipe_for_race_network_request_.consumer.reset();
-  data_pipe_for_race_network_request_.watcher.Cancel();
-  data_pipe_for_fetch_handler_.producer.reset();
-  data_pipe_for_fetch_handler_.consumer.reset();
-  data_pipe_for_fetch_handler_.watcher.Cancel();
+  write_buffer_manager_for_race_network_request_.Abort();
+  write_buffer_manager_for_fetch_handler_.Abort();
   body_consumer_watcher_.Cancel();
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::SetFetchHandlerEndTiming(
+    base::TimeTicks fetch_handler_end_time,
+    bool is_fallback) {
+  fetch_handler_end_time_ = fetch_handler_end_time;
+  is_fetch_handler_fallback_ = is_fallback;
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    MaybeRecordResponseReceivedToFetchHandlerEndTiming() {
+  if (response_received_time_ && fetch_handler_end_time_ &&
+      is_fetch_handler_fallback_.has_value()) {
+    RecordResponseReceivedToFetchHandlerEndTiming();
+  }
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    MaybeRecordResponseReceivedToFetchHandlerEndTiming(
+        base::TimeTicks fetch_handler_end_time,
+        bool is_fallback) {
+  SetFetchHandlerEndTiming(fetch_handler_end_time, is_fallback);
+  MaybeRecordResponseReceivedToFetchHandlerEndTiming();
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    RecordResponseReceivedToFetchHandlerEndTiming() {
+  if (!owner_) {
+    return;
+  }
+
+  base::UmaHistogramTimes(
+      base::StrCat({owner_->IsMainResourceLoader()
+                        ? kMainResourceHistogramLoadTiming
+                        : kSubresourceHistogramLoadTiming,
+                    ".AutoPreloadResponseReceivedToFetchHandlerEnd.",
+                    is_fetch_handler_fallback_ ? "WithoutServiceWorker"
+                                               : "ServiceWorker"}),
+      fetch_handler_end_time_.value() - response_received_time_.value());
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    RecordMojoResultForDataTransfer(MojoResult result,
+                                    const std::string& suffix) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ServiceWorker.FetchEvent",
+                    is_main_resource_ ? ".MainResource" : ".Subresource",
+                    ".RaceNetworkRequest.DataTransfer.", suffix}),
+      ConvertMojoResultForUMA(result));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
@@ -492,19 +763,30 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
     case State::kWaitForBody:
       NOTREACHED_NORETURN();
     case State::kRedirect:
-      CHECK_EQ(state_, State::kWaitForBody);
+      CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect)
+          << "state_:" << static_cast<int>(state_);
       break;
     case State::kResponseReceived:
-      CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect);
+      CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect)
+          << "state_:" << static_cast<int>(state_);
       break;
-    case State::kResponseCommitted:
+    case State::kDataTransferStarted:
       CHECK_EQ(state_, State::kResponseReceived);
       break;
+    case State::kResponseCommitted:
+      CHECK(state_ == State::kDataTransferStarted ||
+            state_ == State::kDataTransferFinished)
+          << "state_:" << static_cast<int>(state_);
+      break;
     case State::kDataTransferFinished:
-      CHECK_EQ(state_, State::kResponseCommitted);
+      CHECK(state_ == State::kDataTransferStarted ||
+            state_ == State::kResponseCommitted)
+          << "state_:" << static_cast<int>(state_);
       break;
     case State::kCompleted:
       CHECK(state_ == State::kWaitForBody ||
+            state_ == State::kResponseReceived ||
+            state_ == State::kDataTransferStarted ||
             state_ == State::kResponseCommitted ||
             state_ == State::kDataTransferFinished)
           << "state_:" << static_cast<int>(state_);
@@ -519,6 +801,28 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::DrainData(
     mojo::ScopedDataPipeConsumerHandle source) {
   data_drainer_ =
       std::make_unique<mojo::DataPipeDrainer>(this, std::move(source));
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::CancelWriteData(
+    FetchResponseFrom commit_responsibility) {
+  switch (commit_responsibility) {
+    case FetchResponseFrom::kServiceWorker:
+      write_buffer_manager_for_race_network_request_.CancelWatching();
+      write_buffer_manager_for_race_network_request_.ResetProducer();
+      break;
+    case FetchResponseFrom::kWithoutServiceWorker:
+      NOTIMPLEMENTED();
+      break;
+    default:
+      break;
+  }
+  // Calls body_consumer_watcher_.ArmOrNotify() to start the data transfer
+  // again as we create two data pipes and propergate data from the consumer
+  // handle |body_|. Even though one data pipe is canceled, the data transfer
+  // process to the other data pipe has to be continued.
+  if (body_consumer_watcher_.IsWatching()) {
+    body_consumer_watcher_.ArmOrNotify();
+  }
 }
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::MojoResultForUMA
@@ -565,14 +869,6 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::ConvertMojoResultForUMA(
       NOTREACHED_NORETURN();
   }
 }
-
-ServiceWorkerRaceNetworkRequestURLLoaderClient::DataPipeInfo::DataPipeInfo()
-    : watcher(FROM_HERE,
-              mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-              base::SequencedTaskRunner::GetCurrentDefault()),
-      num_write_bytes(0) {}
-ServiceWorkerRaceNetworkRequestURLLoaderClient::DataPipeInfo::~DataPipeInfo() =
-    default;
 
 net::NetworkTrafficAnnotationTag
 ServiceWorkerRaceNetworkRequestURLLoaderClient::NetworkTrafficAnnotationTag() {
@@ -630,4 +926,5 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::NetworkTrafficAnnotationTag() {
       "policies (or a combination of both) limits the scope of these requests."
 )");
 }
+
 }  // namespace content

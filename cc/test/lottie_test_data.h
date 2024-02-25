@@ -6,9 +6,9 @@
 #define CC_TEST_LOTTIE_TEST_DATA_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -18,7 +18,7 @@ namespace cc {
 
 // A skottie animation with solid green color for the first 2.5 seconds and then
 // a solid blue color for the next 2.5 seconds.
-constexpr base::StringPiece kLottieDataWithoutAssets1 =
+constexpr std::string_view kLottieDataWithoutAssets1 =
     R"({
       "v" : "4.12.0",
       "fr": 30,
@@ -49,20 +49,20 @@ constexpr base::StringPiece kLottieDataWithoutAssets1 =
       ]
     })";
 
-constexpr base::StringPiece kLottieDataWithoutAssets1Color1Node = "Color 1";
-constexpr base::StringPiece kLottieDataWithoutAssets1Color2Node = "Color 2";
+constexpr std::string_view kLottieDataWithoutAssets1Color1Node = "Color 1";
+constexpr std::string_view kLottieDataWithoutAssets1Color2Node = "Color 2";
 constexpr SkColor kLottieDataWithoutAssets1Color1 = SK_ColorGREEN;
 constexpr SkColor kLottieDataWithoutAssets1Color2 = SK_ColorBLUE;
 
 // Returns an animation with the same structure as |kLottieDataWithoutAssets1|
 // except with color node names specified by the caller.
 std::string CreateCustomLottieDataWith2ColorNodes(
-    base::StringPiece color_node_1,
-    base::StringPiece color_node_2);
+    std::string_view color_node_1,
+    std::string_view color_node_2);
 
 // A skottie animation with solid green color for the first second and then
 // a solid blue color for the next second.
-constexpr base::StringPiece kLottieDataWithoutAssets2 =
+constexpr std::string_view kLottieDataWithoutAssets2 =
     R"({
       "v" : "4.12.0",
       "fr": 30,
@@ -96,7 +96,7 @@ constexpr base::StringPiece kLottieDataWithoutAssets2 =
 constexpr int kLottieDataWith2AssetsWidth = 690;
 constexpr int kLottieDataWith2AssetsHeight = 455;
 constexpr base::TimeDelta kLottieDataWith2AssetsDuration = base::Seconds(2);
-constexpr base::StringPiece kLottieDataWith2Assets =
+constexpr std::string_view kLottieDataWith2Assets =
     R"({
   "v": "5.7.4",
   "fr": 60,
@@ -301,16 +301,16 @@ constexpr base::StringPiece kLottieDataWith2Assets =
 // Returns an animation with the same structure as |kLottieDataWith2Assets|
 // except with asset ids specified by the caller.
 std::string CreateCustomLottieDataWith2Assets(
-    base::StringPiece custom_asset_id_0,
-    base::StringPiece custom_asset_id_1);
+    std::string_view custom_asset_id_0,
+    std::string_view custom_asset_id_1);
 
 // cc/test/data/lottie/animation_with_2_text_nodes.json
 constexpr base::FilePath::CharType kLottieDataWith2TextFileName[] =
     FILE_PATH_LITERAL("animation_with_2_text_nodes.json");
-constexpr base::StringPiece kLottieDataWith2TextNode1 = "text_node_1";
-constexpr base::StringPiece kLottieDataWith2TextNode1Text = "test_text_1";
-constexpr base::StringPiece kLottieDataWith2TextNode2 = "text_node_2";
-constexpr base::StringPiece kLottieDataWith2TextNode2Text = "test_text_2";
+constexpr std::string_view kLottieDataWith2TextNode1 = "text_node_1";
+constexpr std::string_view kLottieDataWith2TextNode1Text = "test_text_1";
+constexpr std::string_view kLottieDataWith2TextNode2 = "text_node_2";
+constexpr std::string_view kLottieDataWith2TextNode2Text = "test_text_2";
 constexpr gfx::RectF kLottieDataWith2TextNode1Box =
     gfx::RectF(10, 20, 100, 200);
 constexpr gfx::RectF kLottieDataWith2TextNode2Box =
@@ -322,15 +322,15 @@ constexpr gfx::PointF kLottieDataWith2TextNode2Position = gfx::PointF(200, 400);
 // |kLottieDataWith2TextFileName| except with text node names specified by the
 // caller.
 std::string CreateCustomLottieDataWith2TextNodes(
-    base::StringPiece custom_text_node_name_0,
-    base::StringPiece custom_text_node_name_1);
+    std::string_view custom_text_node_name_0,
+    std::string_view custom_text_node_name_1);
 
-constexpr base::StringPiece kLottieDataWith2MarkersMarker1 = "TestMarker1";
-constexpr base::StringPiece kLottieDataWith2MarkersMarker2 = "TestMarker2";
+constexpr std::string_view kLottieDataWith2MarkersMarker1 = "TestMarker1";
+constexpr std::string_view kLottieDataWith2MarkersMarker2 = "TestMarker2";
 constexpr float kLottieDataWith2MarkersMarker1Time = .33f;
 constexpr float kLottieDataWith2MarkersMarker2Time = .67f;
 // Duration: 6 seconds. Marker 1 is at 2 seconds, and marker 2 is at 4 seconds.
-constexpr base::StringPiece kLottieDataWith2Markers =
+constexpr std::string_view kLottieDataWith2Markers =
     R"({
       "v" : "4.12.0",
       "fr": 30,

@@ -5,6 +5,7 @@
 #include "extensions/renderer/script_context.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -22,6 +23,7 @@
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/isolated_world_manager.h"
@@ -53,29 +55,29 @@ GURL GetEffectiveDocumentURL(
       allow_inaccessible_parents);
 }
 
-std::string GetContextTypeDescriptionString(Feature::Context context_type) {
+std::string GetContextTypeDescriptionString(mojom::ContextType context_type) {
   switch (context_type) {
-    case Feature::UNSPECIFIED_CONTEXT:
+    case mojom::ContextType::kUnspecified:
       return "UNSPECIFIED";
-    case Feature::BLESSED_EXTENSION_CONTEXT:
+    case mojom::ContextType::kPrivilegedExtension:
       return "BLESSED_EXTENSION";
-    case Feature::UNBLESSED_EXTENSION_CONTEXT:
+    case mojom::ContextType::kUnprivilegedExtension:
       return "UNBLESSED_EXTENSION";
-    case Feature::CONTENT_SCRIPT_CONTEXT:
+    case mojom::ContextType::kContentScript:
       return "CONTENT_SCRIPT";
-    case Feature::WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kWebPage:
       return "WEB_PAGE";
-    case Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kPrivilegedWebPage:
       return "BLESSED_WEB_PAGE";
-    case Feature::WEBUI_CONTEXT:
+    case mojom::ContextType::kWebUi:
       return "WEBUI";
-    case Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case mojom::ContextType::kUntrustedWebUi:
       return "WEBUI_UNTRUSTED";
-    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case mojom::ContextType::kLockscreenExtension:
       return "LOCK_SCREEN_EXTENSION";
-    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+    case mojom::ContextType::kOffscreenExtension:
       return "OFFSCREEN_EXTENSION_CONTEXT";
-    case Feature::USER_SCRIPT_CONTEXT:
+    case mojom::ContextType::kUserScript:
       return "USER_SCRIPT_CONTEXT";
   }
   NOTREACHED();
@@ -125,13 +127,15 @@ ScriptContext::ScopedFrameDocumentLoader::~ScopedFrameDocumentLoader() {
 
 ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
                              blink::WebLocalFrame* web_frame,
+                             const mojom::HostID& host_id,
                              const Extension* extension,
-                             Feature::Context context_type,
+                             mojom::ContextType context_type,
                              const Extension* effective_extension,
-                             Feature::Context effective_context_type)
+                             mojom::ContextType effective_context_type)
     : is_valid_(true),
       v8_context_(v8_context->GetIsolate(), v8_context),
       web_frame_(web_frame),
+      host_id_(host_id),
       extension_(extension),
       context_type_(context_type),
       effective_extension_(effective_extension),
@@ -144,6 +148,12 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
   v8_context_.AnnotateStrongRetainer("extensions::ScriptContext::v8_context_");
   if (web_frame_)
     url_ = GetAccessCheckedFrameURL(web_frame_);
+  // Enforce the invariant that an extension should have a HostID that's set to
+  // the extension id.
+  if (extension_) {
+    CHECK_EQ(host_id_.type, mojom::HostID::HostType::kExtensions);
+    CHECK_EQ(host_id_.id, extension_->id());
+  }
 }
 
 ScriptContext::~ScriptContext() {
@@ -244,9 +254,9 @@ void ScriptContext::SafeCallFunction(
           content::V8ValueConverter::Create()->FromV8Value(result,
                                                            v8_context());
       std::move(callback).Run(
-          value ? absl::make_optional(
+          value ? std::make_optional(
                       base::Value::FromUniquePtrValue(std::move(value)))
-                : absl::nullopt,
+                : std::nullopt,
           start_time);
     }
   }
@@ -275,7 +285,7 @@ Feature::Availability ScriptContext::GetAvailability(
 
   // Special case #2: If it's a user script world, there are specific knobs for
   // enabling or disabling APIs.
-  if (context_type_ == Feature::USER_SCRIPT_CONTEXT) {
+  if (context_type_ == mojom::ContextType::kUserScript) {
     CHECK(extension());
 
     static const constexpr char* kMessagingApis[] = {
@@ -421,12 +431,11 @@ bool ScriptContext::HasAPIPermission(mojom::APIPermissionID permission) const {
     return effective_extension_->permissions_data()->HasAPIPermission(
         permission);
   }
-  if (context_type() == Feature::WEB_PAGE_CONTEXT) {
+  if (context_type() == mojom::ContextType::kWebPage) {
     // Only web page contexts may be granted content capabilities. Other
     // contexts are either privileged WebUI or extensions with their own set of
     // permissions.
-    if (content_capabilities_.find(permission) != content_capabilities_.end())
-      return true;
+    return base::Contains(content_capabilities_, permission);
   }
   return false;
 }
@@ -477,7 +486,7 @@ std::string ScriptContext::GetDebugString() const {
       "  context_type:           %s\n"
       "  effective extension id: %s\n"
       "  effective context type: %s",
-      extension_.get() ? extension_->id().c_str() : "(none)", web_frame_,
+      extension_.get() ? extension_->id().c_str() : "(none)", web_frame_.get(),
       url_.spec().c_str(), GetContextTypeDescription().c_str(),
       effective_extension_.get() ? effective_extension_->id().c_str()
                                  : "(none)",
@@ -521,7 +530,7 @@ v8::Local<v8::Value> ScriptContext::RunScript(
       "extensions::%s", *v8::String::Utf8Value(isolate(), name));
 
   if (internal_name.size() >= v8::String::kMaxLength) {
-    NOTREACHED() << "internal_name is too long.";
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << "internal_name is too long.";
     return v8::Undefined(isolate());
   }
 

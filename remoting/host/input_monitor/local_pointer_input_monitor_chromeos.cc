@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -140,8 +141,8 @@ void LocalPointerInputMonitorChromeos::Core::HandlePointerMove(
   // Luckily the cursor manager remembers the display the mouse is on.
   const display::Display& current_display =
       ash::Shell::Get()->cursor_manager()->GetDisplay();
-  const aura::Window* window =
-      ash::Shell::Get()->GetRootWindowForDisplayId(current_display.id());
+  const aura::Window& window = CHECK_DEREF(
+      ash::Shell::Get()->GetRootWindowForDisplayId(current_display.id()));
 
   gfx::PointF location_in_window_in_pixels = located_event->location_f();
 

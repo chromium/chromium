@@ -1,0 +1,7 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="form"}, {display="block"}, {action="POST"}]
+++++Button textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {type="submit"}]
+++++++TextView text:"Submit" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag=""}, {display=""}]
+++View text:"Name" textSize:16.0 style:0 htmlInfo:[{htmlTag="form"}, {display="block"}, {action="POST"}, {aria-label="Name"}]
+++++Button textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {type="submit"}]
+++++++TextView text:"Submit" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag=""}, {display=""}]

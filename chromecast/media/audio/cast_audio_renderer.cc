@@ -200,7 +200,7 @@ void CastAudioRenderer::SetVolume(float volume) {
 }
 
 void CastAudioRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   NOTIMPLEMENTED();
 }
 
@@ -427,8 +427,17 @@ void CastAudioRenderer::FetchNextBuffer() {
 
   DCHECK(!is_pending_demuxer_read_);
   is_pending_demuxer_read_ = true;
-  demuxer_stream_->Read(base::BindOnce(&CastAudioRenderer::OnNewBuffer,
-                                       weak_factory_.GetWeakPtr()));
+  demuxer_stream_->Read(1, base::BindOnce(&CastAudioRenderer::OnNewBuffersRead,
+                                          weak_factory_.GetWeakPtr()));
+}
+
+void CastAudioRenderer::OnNewBuffersRead(
+    ::media::DemuxerStream::Status status,
+    ::media::DemuxerStream::DecoderBufferVector buffers_queue) {
+  CHECK_LE(buffers_queue.size(), 1u)
+      << "CastAudioRenderer only reads a single-buffer.";
+  OnNewBuffer(status,
+              buffers_queue.empty() ? nullptr : std::move(buffers_queue[0]));
 }
 
 void CastAudioRenderer::OnNewBuffer(
@@ -470,7 +479,7 @@ void CastAudioRenderer::OnNewBuffer(
   size_t io_buffer_size =
       audio_output_service::OutputSocket::kAudioMessageHeaderSize +
       filled_bytes;
-  auto io_buffer = base::MakeRefCounted<net::IOBuffer>(io_buffer_size);
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(io_buffer_size);
   if (buffer->end_of_stream()) {
     OnEndOfStream();
     return;

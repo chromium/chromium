@@ -1,0 +1,30 @@
+Tests that the parser correctly splits a property declaration in the presence of comments
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --a /* color: comment0 */
+        range : {
+            endColumn : 78
+            endLine : 2
+            startColumn : 4
+            startLine : 2
+        }
+        text : --a /* color: comment0 */ :/* color: comment1 */blue/* color: comment2 */;
+        value : /* color: comment1 */blue/* color: comment2 */
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --b
+        range : {
+            endColumn : 36
+            endLine : 3
+            startColumn : 4
+            startLine : 3
+        }
+        text : --b: /* color: comment0 */ blue;
+        value : /* color: comment0 */ blue
+    }
+]
+

@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_COLOR_INTERPOLATION_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_COLOR_INTERPOLATION_TYPE_H_
 
-#include <memory>
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
+#include "third_party/blink/renderer/core/animation/interpolable_style_color.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -33,13 +33,30 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                  const InterpolationValue& value,
                  double interpolation_fraction) const final;
 
-  static std::unique_ptr<InterpolableColor> CreateInterpolableColor(
-      const Color&);
-  static std::unique_ptr<InterpolableColor> CreateInterpolableColor(CSSValueID);
-  static std::unique_ptr<InterpolableColor> CreateInterpolableColor(
-      const StyleColor&);
-  static std::unique_ptr<InterpolableColor> MaybeCreateInterpolableColor(
-      const CSSValue&);
+  static void EnsureInterpolableStyleColor(InterpolableList& list,
+                                           wtf_size_t index);
+  static void EnsureCompatibleInterpolableColorTypes(InterpolableList& list_a,
+                                                     InterpolableList& list_b);
+
+  static InterpolableColor* CreateInterpolableColor(const Color&);
+  static InterpolableColor* CreateInterpolableColor(
+      CSSValueID,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
+  static InterpolableColor* CreateInterpolableColor(
+      const StyleColor&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
+  static InterpolableColor* MaybeCreateInterpolableColor(
+      const CSSValue&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
+
+  static BaseInterpolableColor* CreateBaseInterpolableColor(
+      const StyleColor&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
+
   static Color ResolveInterpolableColor(
       const InterpolableValue& interpolable_color,
       const StyleResolverState&,
@@ -67,11 +84,15 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
   static InterpolationValue ConvertStyleColorPair(
-      const absl::optional<StyleColor>&,
-      const absl::optional<StyleColor>&);
+      const std::optional<StyleColor>&,
+      const std::optional<StyleColor>&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
   static InterpolationValue ConvertStyleColorPair(
       const StyleColor& unvisited_color,
-      const StyleColor& visited_color);
+      const StyleColor& visited_color,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
 
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,

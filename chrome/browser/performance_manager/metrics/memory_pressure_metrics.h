@@ -34,9 +34,6 @@ class MemoryPressureMetrics : public GraphOwned,
   using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
   static constexpr int kInvalidSysRAMValue = 0;
 
-  // SystemNodeObserver:
-  void OnBeforeMemoryPressure(MemoryPressureLevel new_level) override;
-
   raw_ptr<Graph> graph_ = nullptr;
   int system_ram_mb_ = kInvalidSysRAMValue;
 };

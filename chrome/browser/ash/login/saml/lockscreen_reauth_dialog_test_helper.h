@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SAML_LOCKSCREEN_REAUTH_DIALOG_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SAML_LOCKSCREEN_REAUTH_DIALOG_TEST_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -29,13 +30,13 @@ class LockScreenReauthDialogTestHelper {
  public:
   // Triggers the online re-authentication dialog.
   // Precondition: A user is logged in and the lock screen is shown.
-  // Returns an empty `absl::optional` if the operation fails.
-  static absl::optional<LockScreenReauthDialogTestHelper> ShowDialogAndWait();
+  // Returns an empty `std::optional` if the operation fails.
+  static std::optional<LockScreenReauthDialogTestHelper> ShowDialogAndWait();
 
   // Triggers the online re-authentication dialog, clicks through VerifyAccount
-  // screen and waits for IdP page to load. Returns an empty `absl::optional` if
+  // screen and waits for IdP page to load. Returns an empty `std::optional` if
   // the operation fails.
-  static absl::optional<LockScreenReauthDialogTestHelper>
+  static std::optional<LockScreenReauthDialogTestHelper>
   StartSamlAndWaitForIdpPageLoad();
 
   ~LockScreenReauthDialogTestHelper();
@@ -74,16 +75,18 @@ class LockScreenReauthDialogTestHelper {
   // Clicks the 'Enter Google Account Info' button on the SAML screen.
   void ClickChangeIdPButtonOnSamlScreen();
 
-  // Waits for a screen with the `saml-container` element to be shown.
-  void WaitForSamlScreen();
+  // Check visibility of native Gaia button on online re-authentication dialog.
+  void ExpectGaiaButtonsVisible();
+  void ExpectGaiaButtonsHidden();
 
-  // Next members allow to check visibility for some screens ('verify account',
-  // ' error screen' and 'saml screen')
+  // Waits for sign-in webview to be shown.
+  void WaitForSigninWebview();
+
   void ExpectVerifyAccountScreenVisible();
   void ExpectVerifyAccountScreenHidden();
   void ExpectErrorScreenVisible();
-  void ExpectSamlScreenVisible();
-  void ExpectSamlScreenHidden();
+  void ExpectSigninWebviewVisible();
+  void ExpectSigninWebviewHidden();
 
   void ExpectGaiaScreenVisible();
 

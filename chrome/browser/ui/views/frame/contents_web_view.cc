@@ -14,15 +14,20 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/background.h"
+#include "ui/views/view_class_properties.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 #endif
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
+                                      kContentsWebViewElementId);
+
 ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
     : views::WebView(browser_context),
       status_bubble_(nullptr) {
+  SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
 }
 
 ContentsWebView::~ContentsWebView() {
@@ -47,6 +52,10 @@ void ContentsWebView::SetBackgroundVisible(bool background_visible) {
 }
 
 void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  if (background_radii_ == radii) {
+    return;
+  }
+
   background_radii_ = radii;
   if (GetWidget()) {
     UpdateBackgroundColor();
@@ -148,6 +157,6 @@ void ContentsWebView::RenderViewReady() {
   WebView::RenderViewReady();
 }
 
-BEGIN_METADATA(ContentsWebView, views::WebView)
+BEGIN_METADATA(ContentsWebView)
 ADD_PROPERTY_METADATA(StatusBubbleViews*, StatusBubble)
 END_METADATA

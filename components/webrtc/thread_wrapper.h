@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
@@ -21,7 +22,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
 #include "third_party/webrtc_overrides/api/location.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
@@ -55,7 +55,7 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // Creates ThreadWrapper for |task_runner| that runs tasks on the
   // current thread.
   static std::unique_ptr<ThreadWrapper> WrapTaskRunner(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      ::scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Returns thread wrapper for the current thread or nullptr if it doesn't
   // exist.
@@ -111,7 +111,7 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   class PostTaskLatencySampler;
 
   explicit ThreadWrapper(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      ::scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // rtc::Thread overrides.
   void BlockingCallImpl(rtc::FunctionView<void()> functor,
@@ -134,15 +134,15 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
 
   // Called before a task runs, returns an opaque optional timestamp which
   // should be passed into FinalizeRunTask.
-  absl::optional<base::TimeTicks> PrepareRunTask();
+  std::optional<base::TimeTicks> PrepareRunTask();
   // Called after a task has run. Move the return value of PrepareRunTask as
   // |task_start_timestamp|.
-  void FinalizeRunTask(absl::optional<base::TimeTicks> task_start_timestamp);
+  void FinalizeRunTask(std::optional<base::TimeTicks> task_start_timestamp);
 
   const base::AutoReset<ThreadWrapper*> resetter_;
 
   // Task runner used to execute messages posted on this thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  ::scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool send_allowed_;
 

@@ -23,7 +23,6 @@
 
 namespace blink {
 
-class Blob;
 class BlobDataHandle;
 class ExceptionState;
 class IDBValue;
@@ -200,7 +199,7 @@ class MODULES_EXPORT IDBValueWrapper {
 
   size_t original_data_length_ = 0;
 
-  absl::optional<unsigned> wrapping_threshold_override_;
+  std::optional<unsigned> wrapping_threshold_override_;
 
 #if DCHECK_IS_ON()
   // Accounting for lifecycle stages.

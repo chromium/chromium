@@ -6,6 +6,7 @@
 
 #import <string>
 
+#import "base/memory/raw_ptr.h"
 #import "components/content_settings/core/common/features.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -14,8 +15,8 @@
 #import "ios/chrome/browser/ui/ntp/incognito/revamped_incognito_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @interface IncognitoViewController () <NewTabPageURLLoaderDelegate>
@@ -30,7 +31,7 @@
   // TODO(crbug.com/1335402): View controllers should not have access to
   // model-layer objects. Create a mediator to connect model-layer class
   // `UrlLoadingBrowserAgent` to the view controller.
-  UrlLoadingBrowserAgent* _URLLoader;  // weak
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;  // weak
 }
 
 - (instancetype)initWithUrlLoader:(UrlLoadingBrowserAgent*)URLLoader {

@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.style.mojom;
+
+// Color scheme options used to generate the system UI's color palette.
+// These options are based off the user's wallpaper.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ColorScheme {
+  kStatic = 0,
+  kTonalSpot = 1,
+  kNeutral = 2,
+  kExpressive = 3,
+  kVibrant = 4,
+};

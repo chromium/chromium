@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -109,6 +109,24 @@ declare global {
       export function function29(): idl_other_namespace.SomeType;
 
       export function function30(): idl_other_namespace.SomeType[];
+
+      export function funcAsync(): Promise<MyType2[]>;
+
+      export function funcOptionalArgAndNotPromiseBased(
+          cb: (arg0?: string) => void): void;
+
+      export function funcOptionalArgCallback(): Promise<string|undefined>;
+
+      export function funcOptionalCallbackNotPromiseBased(
+          cb?: (x: number) => void): void;
+
+      export function funcOptionalCallback(): Promise<number>;
+
+      export function funcWithEntry(entries: Entry[]): void;
+
+      export function funcWithArrayObj(entries: Array<{
+        [key: string]: any,
+      }>): void;
 
       export const onFoo1: ChromeEvent<() => void>;
 

@@ -12,29 +12,17 @@
 
 namespace webapps {
 
-InstallableTask::InstallableTask() = default;
-
-InstallableTask::InstallableTask(const InstallableParams& params,
-                                 InstallableCallback callback)
-    : params(params), callback(std::move(callback)) {}
-
-InstallableTask::~InstallableTask() = default;
-
-InstallableTask::InstallableTask(InstallableTask&& other) = default;
-
-InstallableTask& InstallableTask::operator=(InstallableTask&& other) = default;
-
 InstallableTaskQueue::InstallableTaskQueue() = default;
 
 InstallableTaskQueue::~InstallableTaskQueue() = default;
 
-void InstallableTaskQueue::Add(InstallableTask task) {
+void InstallableTaskQueue::Add(std::unique_ptr<InstallableTask> task) {
   tasks_.push_back(std::move(task));
 }
 
 void InstallableTaskQueue::PauseCurrent() {
   DCHECK(HasCurrent());
-  paused_tasks_.push_back(std::move(Current()));
+  paused_tasks_.push_back(std::move(tasks_.front()));
   Next();
 }
 
@@ -55,7 +43,7 @@ bool InstallableTaskQueue::HasPaused() const {
 
 InstallableTask& InstallableTaskQueue::Current() {
   DCHECK(HasCurrent());
-  return tasks_.front();
+  return *tasks_.front().get();
 }
 
 void InstallableTaskQueue::Next() {
@@ -64,28 +52,13 @@ void InstallableTaskQueue::Next() {
 }
 
 void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
-  std::deque<InstallableTask> tasks = std::move(tasks_);
-  std::deque<InstallableTask> paused_tasks = std::move(paused_tasks_);
-  // Some callbacks might be already invalidated on certain resets, so we must
-  // check for that.
-  // Manifest is assumed to be non-null, so we create an empty one here.
-  blink::mojom::Manifest manifest;
-  mojom::WebPageMetadata metadata;
-  for (InstallableTask& task : tasks) {
-    if (task.callback) {
-      std::move(task.callback)
-          .Run(InstallableData({code}, GURL(), manifest, metadata, GURL(),
-                               nullptr, false, std::vector<Screenshot>(),
-                               false));
-    }
+  auto tasks = std::move(tasks_);
+  auto paused_tasks = std::move(paused_tasks_);
+  for (auto& task : tasks) {
+    task->ResetWithError(code);
   }
-  for (InstallableTask& task : paused_tasks) {
-    if (task.callback) {
-      std::move(task.callback)
-          .Run(InstallableData({code}, GURL(), manifest, metadata, GURL(),
-                               nullptr, false, std::vector<Screenshot>(),
-                               false));
-    }
+  for (auto& task : paused_tasks) {
+    task->ResetWithError(code);
   }
 }
 

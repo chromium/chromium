@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "base/synchronization/lock.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_constants.h"
@@ -110,6 +111,14 @@ std::unique_ptr<content_settings::RuleIterator> WebUIAllowlist::GetRuleIterator(
   return value_map_.GetRuleIterator(content_type);
 }
 
+std::unique_ptr<content_settings::Rule> WebUIAllowlist::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type) const {
+  base::AutoLock lock(value_map_.GetLock());
+  return value_map_.GetRule(primary_url, secondary_url, content_type);
+}
+
 void WebUIAllowlist::SetContentSettingsAndNotifyProvider(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -120,16 +129,15 @@ void WebUIAllowlist::SetContentSettingsAndNotifyProvider(
 
   {
     base::AutoLock auto_lock(value_map_.GetLock());
-    value_map_.SetValue(primary_pattern, secondary_pattern, type,
-                        base::Value(setting),
-                        /* metadata */ {});
+    if (!value_map_.SetValue(primary_pattern, secondary_pattern, type,
+                             base::Value(setting),
+                             /* metadata */ {})) {
+      return;
+    }
   }
 
   // Notify the provider. |provider_| can be nullptr if
   // HostContentSettingsRegistry is shutting down i.e. when Chrome shuts down.
-  //
-  // It's okay to notify the provider multiple times even if the setting isn't
-  // changed.
   if (provider_) {
     provider_->NotifyContentSettingChange(primary_pattern, secondary_pattern,
                                           type);

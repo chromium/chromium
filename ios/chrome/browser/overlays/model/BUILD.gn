@@ -1,0 +1,101 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  public = [
+    "public/overlay_browser_agent_base.h",
+    "public/overlay_callback_manager.h",
+    "public/overlay_dismissal_callback.h",
+    "public/overlay_dispatch_callback.h",
+    "public/overlay_modality.h",
+    "public/overlay_presentation_callback.h",
+    "public/overlay_presentation_context.h",
+    "public/overlay_presentation_context_observer.h",
+    "public/overlay_presenter.h",
+    "public/overlay_presenter_observer.h",
+    "public/overlay_presenter_observer_bridge.h",
+    "public/overlay_request.h",
+    "public/overlay_request_callback_installer.h",
+    "public/overlay_request_cancel_handler.h",
+    "public/overlay_request_config.h",
+    "public/overlay_request_queue.h",
+    "public/overlay_request_queue_callback_installer.h",
+    "public/overlay_request_queue_util.h",
+    "public/overlay_request_support.h",
+    "public/overlay_response.h",
+    "public/overlay_response_info.h",
+    "public/overlay_response_support.h",
+    "public/overlay_user_data.h",
+  ]
+  sources = [
+    "default_overlay_request_cancel_handler.h",
+    "default_overlay_request_cancel_handler.mm",
+    "overlay_browser_agent_base.mm",
+    "overlay_callback_manager_impl.cc",
+    "overlay_callback_manager_impl.h",
+    "overlay_dispatch_callback.cc",
+    "overlay_presenter_impl.h",
+    "overlay_presenter_impl.mm",
+    "overlay_presenter_observer.cc",
+    "overlay_presenter_observer_bridge.mm",
+    "overlay_request_callback_installer.cc",
+    "overlay_request_cancel_handler.mm",
+    "overlay_request_impl.cc",
+    "overlay_request_impl.h",
+    "overlay_request_queue_callback_installer_impl.h",
+    "overlay_request_queue_callback_installer_impl.mm",
+    "overlay_request_queue_impl.h",
+    "overlay_request_queue_impl.mm",
+    "overlay_request_queue_util.cc",
+    "overlay_request_support.cc",
+    "overlay_response_impl.cc",
+    "overlay_response_impl.h",
+    "overlay_response_support.cc",
+  ]
+
+  friend = [ ":unit_tests" ]
+
+  public_deps = [ "//base" ]
+  deps = [
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "default_overlay_request_cancel_handler_unittest.mm",
+    "overlay_browser_agent_base_unittest.mm",
+    "overlay_callback_manager_impl_unittest.mm",
+    "overlay_dispatch_callback_unittest.cc",
+    "overlay_presenter_impl_unittest.mm",
+    "overlay_presenter_observer_bridge_unittest.mm",
+    "overlay_request_callback_installer_unittest.cc",
+    "overlay_request_impl_unittest.mm",
+    "overlay_request_queue_callback_installer_unittest.mm",
+    "overlay_request_queue_impl_unittest.mm",
+    "overlay_request_queue_util_unittest.mm",
+    "overlay_request_support_unittest.cc",
+    "overlay_request_unittest.cc",
+    "overlay_response_support_unittest.cc",
+    "overlay_response_unittest.cc",
+  ]
+
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

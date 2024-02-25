@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
@@ -19,7 +20,6 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace arc {
@@ -85,7 +85,7 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
         kAuthority, kDocumentId,
         base::BindOnce(
             [](int* counter,
-               absl::optional<std::vector<mojom::DocumentPtr>> documents) {
+               std::optional<std::vector<mojom::DocumentPtr>> documents) {
               ++*counter;
             },
             counter));
@@ -101,7 +101,7 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
     runner_->GetMimeType(
         GURL(kUrl),
         base::BindOnce(
-            [](int* counter, const absl::optional<std::string>& mime_type) {
+            [](int* counter, const std::optional<std::string>& mime_type) {
               ++*counter;
             },
             counter));
@@ -109,12 +109,12 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
         kAuthority, kDocumentId,
         base::BindOnce(
             [](int* counter,
-               absl::optional<std::vector<mojom::DocumentPtr>> documents) {
+               std::optional<std::vector<mojom::DocumentPtr>> documents) {
               ++*counter;
             },
             counter));
     runner_->GetRoots(base::BindOnce(
-        [](int* counter, absl::optional<std::vector<mojom::RootPtr>> roots) {
+        [](int* counter, std::optional<std::vector<mojom::RootPtr>> roots) {
           ++*counter;
         },
         counter));

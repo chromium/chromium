@@ -15,10 +15,18 @@
     margin-bottom: var(--cr-section-vertical-margin);
   }
 
-  .explain-selected {
-    color: var(--cros-text-color-positive);
+  .explain-selected,
+  .language-packs-error {
     font-weight: initial;
     margin-top: 4px;
+  }
+
+  .explain-selected {
+    color: var(--cros-text-color-positive);
+  }
+
+  .language-packs-error {
+    color: var(--cros-text-color-alert);
   }
 
   .icon-external {
@@ -39,11 +47,20 @@
     margin-top: 8px;
   }
 
-  iron-icon[icon='cr:error'] {
+  iron-icon[icon='cr:error'],
+  iron-icon[icon='os-settings:multidevice-error'] {
     --iron-icon-fill-color: var(--cros-icon-color-alert);
-    height: var(--cr-icon-size);
     margin-inline-end: 4px;
+  }
+
+  iron-icon[icon='cr:error'] {
+    height: var(--cr-icon-size);
     width: var(--cr-icon-size);
+  }
+
+  iron-icon[icon='os-settings:multidevice-error'] {
+    height: 16px;
+    width: 16px;
   }
 
   iron-icon[icon='cr20:domain'] {
@@ -85,6 +102,11 @@
     padding-inline-start: 0;
   }
 
+  .subsection > settings-toggle-button:not(:first-of-type),
+  .subsection > cr-link-row:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
   .internal-wrapper,
   .external-wrapper {
     display: flex;
@@ -99,107 +121,132 @@
   cr-button[disabled] iron-icon {
     --iron-icon-fill-color: var(--cros-button-icon-color-primary-disabled);
   }
+
+  paper-spinner-lite {
+    height: 14px;
+    width: 14px;
+    --paper-spinner-stroke-width: 2px;
+  }
 </style>
 
-<div route-path="default">
-  <template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
-    <div class="cr-row first bottom-margin">
-      <localized-link id="languagePacksNotice"
-          class="cr-secondary-text"
-          localized-string="$i18n{languagePacksNotice}"
-          on-link-clicked="onLanguagePackNoticeLinkClick_">
-      </localized-link>
+<template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
+  <div class="settings-box first">
+    <localized-link id="languagePacksNotice"
+        class="cr-secondary-text"
+        localized-string="$i18n{languagePacksNotice}"
+        on-link-clicked="onLanguagePackNoticeLinkClick_">
+    </localized-link>
+  </div>
+</template>
+<settings-toggle-button
+    class="first" id="showImeMenu"
+    pref="{{prefs.settings.language.ime_menu_activated}}"
+    label="$i18n{showImeMenu}"
+    on-settings-boolean-control-change="onShowImeMenuChange_"
+    deep-link-focus-id$="[[Setting.kShowInputOptionsInShelf]]">
+</settings-toggle-button>
+
+<div class="hr bottom-margin">
+  <template is="dom-if" if="[[shouldShowShortcutReminder_(
+      shortcutReminderBody_.length)]]">
+    <keyboard-shortcut-banner header="$i18n{imeShortcutReminderTitle}"
+        body="[[shortcutReminderBody_]]"
+        on-dismiss="onShortcutReminderDismiss_">
+    </keyboard-shortcut-banner>
+  </template>
+  <h2>$i18n{inputMethodListTitle}</h2>
+  <template is="dom-if" if="[[inputMethodsLimitedByPolicy_(
+      prefs.settings.language.allowed_input_methods.*)]]">
+    <div class="cr-row continuation" id="inputMethodsManagedbyPolicy">
+      <iron-icon icon="cr20:domain"></iron-icon>
+      <div class="secondary">$i18n{inputMethodsManagedbyPolicy}</div>
     </div>
   </template>
-  <settings-toggle-button
-      class="first" id="showImeMenu"
-      pref="{{prefs.settings.language.ime_menu_activated}}"
-      label="$i18n{showImeMenu}"
-      on-settings-boolean-control-change="onShowImeMenuChange_"
-      deep-link-focus-id$="[[Setting.kShowInputOptionsInShelf]]">
-  </settings-toggle-button>
-
-  <div class="hr bottom-margin">
-    <template is="dom-if" if="[[shouldShowShortcutReminder_(
-        shortcutReminderBody_.length)]]">
-      <keyboard-shortcut-banner header="$i18n{imeShortcutReminderTitle}"
-          body="[[shortcutReminderBody_]]"
-          on-dismiss="onShortcutReminderDismiss_">
-      </keyboard-shortcut-banner>
-    </template>
-    <h2>$i18n{inputMethodListTitle}</h2>
-    <template is="dom-if" if="[[inputMethodsLimitedByPolicy_(
-        prefs.settings.language.allowed_input_methods.*)]]">
-      <div class="cr-row continuation" id="inputMethodsManagedbyPolicy">
-        <iron-icon icon="cr20:domain"></iron-icon>
-        <div class="secondary">$i18n{inputMethodsManagedbyPolicy}</div>
-      </div>
-    </template>
-    <div class="list-frame vertical-list" id="inputMethodsList">
-      <template is="dom-repeat"
-          items="[[languages.inputMethods.enabled]]">
-        <div class$="list-item [[getInputMethodItemClass_(
-            item.id, languages.inputMethods.currentId)]]"
-            actionable on-click="onInputMethodClick_"
-            on-keypress="onInputMethodKeyPress_"
-            tabindex$="[[getInputMethodTabIndex_(
-                item.id, languages.inputMethods.currentId)]]"
-            aria-labelledby$="language-[[index]]" role="button">
-          <div class="start" id="language-[[index]]" aria-hidden="true">
-            <div class="display-name">[[item.displayName]]</div>
-            <div class="explain-selected"
-                hidden="[[!isCurrentInputMethod_(
-                    item.id, languages.inputMethods.currentId)]]">
-              $i18n{inputMethodEnabled}
-            </div>
+  <div class="list-frame vertical-list" id="inputMethodsList">
+    <template is="dom-repeat"
+        items="[[languages.inputMethods.enabled]]">
+      <div class$="list-item [[getInputMethodItemClass_(
+          item.id, languages.inputMethods.currentId)]]"
+          actionable on-click="onInputMethodClick_"
+          on-keypress="onInputMethodKeyPress_"
+          tabindex$="[[getInputMethodTabIndex_(
+              item.id, languages.inputMethods.currentId)]]"
+          aria-labelledby$="language-[[index]]" role="button">
+        <div class="start" id="language-[[index]]" aria-hidden="true">
+          <div class="display-name">[[item.displayName]]</div>
+          <div class="explain-selected"
+              hidden="[[!isCurrentInputMethod_(
+                  item.id, languages.inputMethods.currentId)]]">
+            $i18n{inputMethodEnabled}
           </div>
-          <template is="dom-if"
-              if="[[hasOptionsPageInSettings_(item.id)]]">
-            <div class="internal-wrapper"
-                hidden="[[!item.hasOptionsPage]]">
-              <cr-icon-button class="subpage-arrow"
-                  aria-label$="[[getOpenOptionsPageLabel_(
-                  item.displayName)]]"
-                  on-click="navigateToOptionsPageInSettings_">
-              </cr-icon-button>
+          <template is="dom-if" if="[[shouldShowLanguagePackError_(
+                  item.id, languagePacksInSettingsEnabled_,
+                  languages.inputMethods.imeLanguagePackStatus.*)]]">
+            <div class="language-packs-error">
+              <iron-icon id="failure-icon" icon="os-settings:multidevice-error">
+              </iron-icon>
+              <span>
+                [[getLanguagePacksErrorMessage_(item.id,
+                    languages.inputMethods.imeLanguagePackStatus.*)]]
+              </span>
             </div>
           </template>
-          <template is="dom-if"
-              if="[[!hasOptionsPageInSettings_(item.id)]]">
-            <div class="external-wrapper"
-                hidden="[[!item.hasOptionsPage]]">
-              <cr-icon-button class="icon-external"
-                  aria-label$="[[getOpenOptionsPageLabel_(
-                  item.displayName)]]"
-                  on-click="openExtensionOptionsPage_">
-              </cr-icon-button>
-            </div>
-          </template>
-          <div class="separator"></div>
-          <cr-icon-button class="icon-clear"
-              disabled$="[[disableRemoveInputMethod_(item,
-                  languages.inputMethods.enabled.*)]]"
-              on-click="onRemoveInputMethodClick_"
-              title="[[getRemoveInputMethodTooltip_(item)]]">
-          </cr-icon-button>
         </div>
-      </template>
-      <div class="list-item">
-        <cr-button id="addInputMethod" on-click="onAddInputMethodClick_"
-            deep-link-focus-id$="[[Setting.kAddInputMethod]]">
-          <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
-          $i18n{addInputMethodLabel}
-        </cr-button>
+        <template is="dom-if"
+            if="[[shouldShowSpinner_(item.id, languagePacksInSettingsEnabled_,
+                  languages.inputMethods.imeLanguagePackStatus.*)]]">
+          <paper-spinner-lite aria-hidden="true" active>
+          </paper-spinner-lite>
+        </template>
+        <template is="dom-if"
+            if="[[hasOptionsPageInSettings_(item.id)]]">
+          <div class="internal-wrapper"
+              hidden="[[!item.hasOptionsPage]]">
+            <cr-icon-button class="subpage-arrow"
+                aria-label$="[[getOpenOptionsPageLabel_(
+                item.displayName)]]"
+                on-click="navigateToOptionsPageInSettings_">
+            </cr-icon-button>
+          </div>
+        </template>
+        <template is="dom-if"
+            if="[[!hasOptionsPageInSettings_(item.id)]]">
+          <div class="external-wrapper"
+              hidden="[[!item.hasOptionsPage]]">
+            <cr-icon-button class="icon-external"
+                aria-label$="[[getOpenOptionsPageLabel_(
+                item.displayName)]]"
+                on-click="openExtensionOptionsPage_">
+            </cr-icon-button>
+          </div>
+        </template>
+        <div class="separator"></div>
+        <cr-icon-button class="icon-clear"
+            disabled$="[[disableRemoveInputMethod_(item,
+                languages.inputMethods.enabled.*)]]"
+            on-click="onRemoveInputMethodClick_"
+            title="[[getRemoveInputMethodTooltip_(item)]]">
+        </cr-icon-button>
       </div>
+    </template>
+    <div class="list-item">
+      <cr-button id="addInputMethod" on-click="onAddInputMethodClick_"
+          deep-link-focus-id$="[[Setting.kAddInputMethod]]">
+        <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+        $i18n{addInputMethodLabel}
+      </cr-button>
     </div>
   </div>
+</div>
+
+<div class="hr bottom-margin">
   <template is="dom-if" if="[[onDeviceGrammarCheckEnabled_]]">
-    <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
+    <settings-toggle-button id="enableSpellcheckingToggle"
         label="$i18n{spellAndGrammarCheckTitle}"
         sub-label="$i18n{spellAndGrammarCheckDescription}"
         pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
         on-settings-boolean-control-change="onSpellcheckToggleChange_"
-        deep-link-focus-id$="[[Setting.kSpellCheck]]"
+        deep-link-focus-id$="[[Setting.kSpellCheckOnOff]]"
         aria-describedby="spellAndGrammarCheckDescription">
     </settings-toggle-button>
   </template>
@@ -208,15 +255,15 @@
          |getElementById|s to potentially fail.
          TODO: b/289955380 - Remove this toggle, or change the id of this
          toggle. -->
-    <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
+    <settings-toggle-button id="enableSpellcheckingToggle"
         label="$i18n{spellCheckTitle}"
         pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
         on-settings-boolean-control-change="onSpellcheckToggleChange_"
-        deep-link-focus-id$="[[Setting.kSpellCheck]]">
+        deep-link-focus-id$="[[Setting.kSpellCheckOnOff]]">
     </settings-toggle-button>
   </template>
-  <iron-collapse class="subsection" opened="[[
-      prefs.browser.enable_spellchecking.value]]">
+  <iron-collapse opened="[[prefs.browser.enable_spellchecking.value]]"
+      class="subsection">
     <template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
       <settings-toggle-button id="enhancedSpellCheckToggle"
           label="$i18n{spellCheckEnhancedLabel}"
@@ -290,6 +337,32 @@
   </iron-collapse>
 </div>
 
+<template is="dom-if" if="[[allowSuggestionSection_]]">
+  <div id="suggestionsSection" class="hr bottom-margin">
+    <h2>$i18n{suggestionsTitle}</h2>
+    <div class="subsection">
+      <template is="dom-if" if="[[allowOrca_]]">
+        <settings-toggle-button id="orcaToggle"
+            pref="{{prefs.assistive_input.orca_enabled}}"
+            label="$i18n{orcaTitle}"
+            sub-label="$i18n{orcaDescription}"
+            aria-label="$i18n{orcaTitle}"
+            deep-link-focus-id$="[[Setting.kShowOrca]]"
+            learn-more-url="$i18n{orcaLearnMoreUrl}">
+        </settings-toggle-button>
+      </template>
+
+      <settings-toggle-button id="emojiSuggestionToggle"
+          pref="{{prefs.assistive_input.emoji_suggestion_enabled}}"
+          label="$i18n{emojiSuggestionTitle}"
+          sub-label="$i18n{emojiSuggestionDescription}"
+          aria-label="$i18n{emojiSuggestionTitle}"
+          deep-link-focus-id$="[[Setting.kShowEmojiSuggestions]]">
+      </settings-toggle-button>
+    </div>
+  </div>
+</template>
+
 <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
   <os-settings-add-input-methods-dialog languages="[[languages]]"
       language-helper="[[languageHelper]]"
@@ -299,7 +372,7 @@
 
 <template is="dom-if" if="[[showAddSpellcheckLanguagesDialog_]]" restamp>
   <os-settings-add-spellcheck-languages-dialog languages="[[languages]]"
-      language-helper="[[languageHelper]]" prefs="{{prefs}}"
+      language-helper="[[languageHelper]]"
       on-close="onAddSpellcheckLanguagesDialogClose_">
   </os-settings-add-spellcheck-languages-dialog>
 </template>

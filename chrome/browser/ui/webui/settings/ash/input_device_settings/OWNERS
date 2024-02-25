@@ -1,4 +1,0 @@
-dpad@google.com
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS

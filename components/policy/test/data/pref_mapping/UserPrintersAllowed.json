@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "UserPrintersAllowed": true
+        },
+        "prefs": {
+          "native_printing.user_native_printers_allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

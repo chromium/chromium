@@ -462,7 +462,9 @@
       "827B5D482FADCE120F4694AD0FA0680E3717C6EC",  // http://crbug.com/1105137
       "A430CF8BD146137B32764433F69685A53BF11F03",  // http://crbug.com/1256996
       "F9AEB1FBFD91AFB39A16798763FB4707E5EB71C2",  // http://crbug.com/1256996
-      "A547E19FA29B6371C507EFF218B4948AF7B8597B"   // http://crbug.com/1256996
+      "A547E19FA29B6371C507EFF218B4948AF7B8597B",  // http://crbug.com/1256996
+      "A4CC6F00ACF41015AF38F1D5C98E97C2B8B3B320",  // http://crbug.com/1483151
+      "4E09F1C1EEC4D27F1F7DF18BA3643307107A7C41"   // http://crbug.com/1483151
     ]
   },
   {
@@ -496,7 +498,17 @@
       "5B9E39EA374B136CBE7AED2D872003107642EAD5",  // http://crbug.com/610452
       "E0E94FB0C01FFB9CDC7A5F098C99B5A8D2F95902",  // http://crbug.com/610452
       "52E0557059A7A28F74ED1D92DDD997E0CCD37806",  // http://crbug.com/610452
-      "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/839189
+      "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7",  // http://crbug.com/839189
+      "A4CC6F00ACF41015AF38F1D5C98E97C2B8B3B320",  // http://crbug.com/1483151
+      "4E09F1C1EEC4D27F1F7DF18BA3643307107A7C41"   // http://crbug.com/1483151
+    ]
+  },
+  "odfsConfigPrivate": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"  // ODFS extension
     ]
   },
   "offscreen": [{
@@ -533,22 +545,10 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
-  "socket": [
-    {
-      "channel": "stable",
-      "extension_types": ["platform_app"]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["extension"],
-      "allowlist": [
-        // The connectivity diagnostic utility is a component extension that is
-        // used to try to provide suggestions on how to fix connection issues.
-        // It should be the only non-app allowed to use the socket API.
-        "32A1BA997F8AB8DE29ED1BA94AAF00CF2A3FEFA7"
-      ]
-    }
-  ],
+  "socket": {
+    "channel": "stable",
+    "extension_types": ["platform_app"]
+  },
   "storage": [
     {
       "channel": "stable",
@@ -561,6 +561,7 @@
       "location": "policy",
       "platforms": ["chromeos"],
       "allowlist": [
+        "93B7178E8C275515C38D4F43D9DF4648F0EA9B03",   // Identity Card Connector
         "EC3DE21E048B67319893889529354DFBFA96FD23",   // https://crbug.com/1233881
         "A19608AC34215B127FF9D7C006D67F5C8ED8146D",   // https://crbug.com/1233881
         // https://crbug.com/1194693
@@ -654,7 +655,7 @@
     ]
   },
   "userScripts": {
-    "channel": "trunk",
+    "channel": "stable",
     "extension_types": [ "extension" ],
     "min_manifest_version": 3,
     "feature_flag": "ApiUserScripts"

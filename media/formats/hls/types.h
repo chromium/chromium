@@ -6,11 +6,12 @@
 #define MEDIA_FORMATS_HLS_TYPES_H_
 
 #include <cstdint>
+#include <optional>
+
 #include "base/containers/span.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/variable_dictionary.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls::types {
 
@@ -62,7 +63,7 @@ struct MEDIA_EXPORT ByteRangeExpression {
   // If not present, the sub-range begins at the next byte following that of the
   // previous segment. The previous segment must be a subrange of the same
   // resource.
-  absl::optional<types::DecimalInteger> offset;
+  std::optional<types::DecimalInteger> offset;
 };
 
 // This is similar to `ByteRangeExpression`, but with a stronger contract:
@@ -74,8 +75,8 @@ class MEDIA_EXPORT ByteRange {
   // Validates that the range given by `[offset,offset+length)` is non-empty and
   // that `GetEnd()` would not exceed the max value representable by a
   // `DecimalInteger`.
-  static absl::optional<ByteRange> Validate(DecimalInteger length,
-                                            DecimalInteger offset);
+  static std::optional<ByteRange> Validate(DecimalInteger length,
+                                           DecimalInteger offset);
 
   DecimalInteger GetLength() const { return length_; }
   DecimalInteger GetOffset() const { return offset_; }
@@ -135,7 +136,7 @@ struct MEDIA_EXPORT AttributeListIterator {
 // This is essentially a `base::fixed_flat_map`, with the advantage of erasing
 // the size of the map from its type.
 struct MEDIA_EXPORT AttributeMap {
-  using Item = std::pair<base::StringPiece, absl::optional<SourceString>>;
+  using Item = std::pair<base::StringPiece, std::optional<SourceString>>;
 
   // Constructs an AttributeMap using the given span to store the keys and
   // values. The keys present must be unique and sorted in alphabetical order.
@@ -162,7 +163,7 @@ struct MEDIA_EXPORT AttributeMap {
   // `keys` must be a set of unique key strings sorted in alphabetical order.
   template <typename... T>
   static constexpr std::array<Item, sizeof...(T)> MakeStorage(T... keys) {
-    return {{{keys, absl::nullopt}...}};
+    return {{{keys, std::nullopt}...}};
   }
 
  private:

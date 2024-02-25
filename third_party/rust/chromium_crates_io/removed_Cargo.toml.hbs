@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/removed_Cargo.toml
+# by tools/crates/gnrt. Do not edit!
+
+# This is an empty crate that has replaced the '{{this.name}}' crate, since
+# it was listed in `resolve.remove_crates` in gnrt_config.toml.
+
+[package]
+name = "{{this.name}}"
+version = "{{this.version}}"
+
+[features]
+{{#each this.features}}
+"{{this}}" = []
+{{/each}}
+
+{{#each this.dependencies}}
+[dependencies.{{this.name}}]
+version = "{{this.version}}"
+default_features = {{this.default_features}}
+features = [{{#each this.featuress}}{{#if @first}}{{this}}{{else}},{{this}}{{/if}}{{/each}}]
+{{/each}}

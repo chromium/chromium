@@ -11,12 +11,13 @@
 namespace blink {
 
 // static
-std::unique_ptr<InterpolableAspectRatio> InterpolableAspectRatio::MaybeCreate(
+InterpolableAspectRatio* InterpolableAspectRatio::MaybeCreate(
     const StyleAspectRatio& aspect_ratio) {
   // Auto aspect ratio cannot be interpolated to / from.
-  if (aspect_ratio.IsAuto())
+  if (aspect_ratio.IsAuto()) {
     return nullptr;
-  return std::make_unique<InterpolableAspectRatio>(aspect_ratio.GetRatio());
+  }
+  return MakeGarbageCollected<InterpolableAspectRatio>(aspect_ratio.GetRatio());
 }
 
 InterpolableAspectRatio::InterpolableAspectRatio(
@@ -25,7 +26,7 @@ InterpolableAspectRatio::InterpolableAspectRatio(
   // have a degenerate aspect ratio.
   DCHECK(aspect_ratio.height() > 0 && aspect_ratio.width() > 0);
 
-  value_ = std::make_unique<InterpolableNumber>(
+  value_ = MakeGarbageCollected<InterpolableNumber>(
       log(aspect_ratio.width() / aspect_ratio.height()));
 }
 

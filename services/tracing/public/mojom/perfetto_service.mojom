@@ -4,6 +4,7 @@
 
 module tracing.mojom;
 
+import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 
@@ -21,8 +22,6 @@ const string kSystemTraceDataSourceName = "org.chromium.trace_system";
 const string kArcTraceDataSourceName = "org.chromium.trace_arc";
 const string kSamplerProfilerSourceName = "org.chromium.sampler_profiler";
 const string kJavaHeapProfilerSourceName = "org.chromium.java_heap_profiler";
-const string kReachedCodeProfilerSourceName =
-    "org.chromium.reached_code_profiler";
 const string kNativeHeapProfilerSourceName =
     "org.chromium.native_heap_profiler";
 
@@ -100,14 +99,34 @@ struct ChromeConfig {
   TracingClientPriority client_priority;
 };
 
+enum ConsoleOutput {
+  kOutputUnspecified,
+  kOutputStdOut,
+  kOutputStdErr,
+};
+
+struct ConsoleConfig {
+  ConsoleOutput output;
+  bool enable_colors;
+};
+
+struct InterceptorConfig {
+  string name;
+  // `console_config` is optionally present only if `name` == "console".
+  // If not present, the default config is used.
+  ConsoleConfig? console_config;
+};
+
 struct DataSourceConfig {
   string name;
   uint32 target_buffer;
   uint32 trace_duration_ms;
   uint64 tracing_session_id;
   ChromeConfig chrome_config;
+  InterceptorConfig? interceptor_config;
   string legacy_config;
   string track_event_config_raw;
+  string etw_config_raw;
 };
 
 struct DataSourceRegistration {
@@ -220,6 +239,7 @@ struct TraceConfig {
 
   uint32 duration_ms;
   bool write_into_file;
+  mojo_base.mojom.Token? trace_uuid;
 };
 
 // The priority of the incoming EnableTracing request, used to determine

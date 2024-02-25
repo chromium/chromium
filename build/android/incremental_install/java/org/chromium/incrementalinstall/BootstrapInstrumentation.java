@@ -7,9 +7,7 @@ package org.chromium.incrementalinstall;
 import android.app.Instrumentation;
 import android.os.Bundle;
 
-/**
- * Notifies BootstrapApplication of the call to Instrumentation.onCreate().
- */
+/** Notifies BootstrapApplication of the call to Instrumentation.onCreate(). */
 public final class BootstrapInstrumentation extends Instrumentation {
     private final BootstrapApplication mApp;
 

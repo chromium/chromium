@@ -20,7 +20,7 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"      // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
 #include "absl/strings/str_split.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/text/tokenizers/sentencepiece_tokenizer.h"
 #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer_jni_lib.h"
@@ -34,9 +34,7 @@ using ::tflite::support::utils::GetMappedFileBuffer;
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeLoadResource(  // NOLINT
-    JNIEnv* env,
-    jobject obj,
-    jobject model_buffer) {
+    JNIEnv* env, jobject obj, jobject model_buffer) {
   auto model = GetMappedFileBuffer(env, model_buffer);
   auto handle =
       absl::make_unique<SentencePieceTokenizer>(model.data(), model.size());
@@ -45,28 +43,20 @@ Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeLo
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeUnloadResource(  // NOLINT
-    JNIEnv* env,
-    jobject obj,
-    jlong handle) {
+    JNIEnv* env, jobject obj, jlong handle) {
   delete reinterpret_cast<SentencePieceTokenizer*>(handle);
   return 0;
 }
 
 extern "C" JNIEXPORT jobjectArray JNICALL
 Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeTokenize(  // NOLINT
-    JNIEnv* env,
-    jobject thiz,
-    jlong handle,
-    jstring jtext) {
+    JNIEnv* env, jobject thiz, jlong handle, jstring jtext) {
   return nativeTokenize(env, handle, jtext);
 }
 
 extern "C" JNIEXPORT jintArray JNICALL
 Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeConvertTokensToIds(  // NOLINT
-    JNIEnv* env,
-    jobject thiz,
-    jlong handle,
-    jobjectArray jtokens) {
+    JNIEnv* env, jobject thiz, jlong handle, jobjectArray jtokens) {
   return nativeConvertTokensToIds(env, handle, jtokens);
 }
 

@@ -201,7 +201,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   // until the next navigation.
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) override;
   void UpdateOpener(
-      const absl::optional<blink::FrameToken>& opener_frame_token) override;
+      const std::optional<blink::FrameToken>& opener_frame_token) override;
   void DetachAndDispose() override;
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
@@ -212,7 +212,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void ChildProcessGone() override;
   void CreateRemoteChild(
       const RemoteFrameToken& token,
-      const absl::optional<FrameToken>& opener_frame_token,
+      const std::optional<FrameToken>& opener_frame_token,
       mojom::blink::TreeScopeType tree_scope_type,
       mojom::blink::FrameReplicationStatePtr replication_state,
       mojom::blink::FrameOwnerPropertiesPtr owner_properties,
@@ -222,6 +222,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       override;
   void CreateRemoteChildren(
       Vector<mojom::blink::CreateRemoteChildParamsPtr> params) override;
+  void ForwardFencedFrameEventToEmbedder(
+      const WTF::String& event_type) override;
 
   // Called only when this frame has a local frame owner.
   gfx::Size GetOutermostMainFrameSize() const override;
@@ -276,7 +278,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   Member<RemoteFrameView> view_;
   RemoteSecurityContext security_context_;
-  absl::optional<blink::FrameVisualProperties> sent_visual_properties_;
+  std::optional<blink::FrameVisualProperties> sent_visual_properties_;
   blink::FrameVisualProperties pending_visual_properties_;
   scoped_refptr<cc::Layer> cc_layer_;
   bool is_surface_layer_ = false;

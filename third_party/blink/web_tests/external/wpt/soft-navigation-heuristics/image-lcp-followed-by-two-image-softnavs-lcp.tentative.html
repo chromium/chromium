@@ -19,9 +19,6 @@
     const link = document.getElementById("link");
 
     promise_test(async t => {
-      if (!performance.softNavPaintMetricsSupported) {
-        return;
-      }
       validatePaintEntries('first-contentful-paint', 1);
       validatePaintEntries('first-paint', 1);
       const preClickLcp = await getLcpEntries();
@@ -31,7 +28,7 @@
 
       const first_click_paint_promise = waitOnPaintEntriesPromise();
 
-      click(link);
+      interact(link);
       await new Promise(resolve => {
         (new PerformanceObserver(resolve)).observe({
           type: 'soft-navigation'
@@ -54,7 +51,7 @@
 
       const second_click_paint_promise = waitOnPaintEntriesPromise();
       const preClickLcp2 = await getLcpEntries();
-      click(link);
+      interact(link);
       await new Promise(resolve => {
         (new PerformanceObserver(() => resolve())).observe({
           type: 'soft-navigation'

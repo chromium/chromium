@@ -57,6 +57,31 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertVolumeButtonRoutineArgumentPtr) {
+  constexpr auto kTimeout = base::Seconds(10);
+
+  auto input = crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
+  input->type = crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+      ButtonType::kVolumeUp;
+  input->timeout = kTimeout;
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->type,
+            healthd::VolumeButtonRoutineArgument::ButtonType::kVolumeUp);
+  EXPECT_EQ(result->timeout, kTimeout);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest, ConvertFanRoutineArgumentPtr) {
+  auto input = crosapi::TelemetryDiagnosticFanRoutineArgument::New();
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineStateInitializedPtr) {
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateInitialized::New()),
             crosapi::TelemetryDiagnosticRoutineStateInitialized::New());
@@ -126,9 +151,9 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
       {healthd::MemtesterTestItemEnum::kWalkingZeroes,
        crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes},
       {healthd::MemtesterTestItemEnum::k8BitWrites,
-       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites},
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites},
       {healthd::MemtesterTestItemEnum::k16BitWrites,
-       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites},
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites},
   };
 
   EXPECT_EQ(
@@ -153,8 +178,9 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   EXPECT_THAT(
       result->passed_items,
       testing::ElementsAre(
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites,
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites));
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites,
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+              kSixteenBitWrites));
 
   EXPECT_THAT(
       result->failed_items,
@@ -185,14 +211,31 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   EXPECT_THAT(
       result->result->passed_items,
       testing::ElementsAre(
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites,
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites));
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites,
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+              kSixteenBitWrites));
 
   EXPECT_THAT(
       result->result->failed_items,
       testing::ElementsAre(
           crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitFlip,
           crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kBitSpread));
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticFanRoutineDetailPtr) {
+  auto input = healthd::FanRoutineDetail::New();
+  input->passed_fan_ids = {0};
+  input->failed_fan_ids = {1};
+  input->fan_count_status = healthd::HardwarePresenceStatus::kMatched;
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_THAT(result->passed_fan_ids, testing::ElementsAre(0));
+  EXPECT_THAT(result->failed_fan_ids, testing::ElementsAre(1));
+  EXPECT_EQ(result->fan_count_status,
+            crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched);
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
@@ -205,6 +248,16 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
                 healthd::MemoryRoutineDetail::New())),
             crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
                 crosapi::TelemetryDiagnosticMemoryRoutineDetail::New()));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewVolumeButton(
+                healthd::VolumeButtonRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
+                crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New()));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewFan(
+                healthd::FanRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewFan(
+                crosapi::TelemetryDiagnosticFanRoutineDetail::New()));
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,

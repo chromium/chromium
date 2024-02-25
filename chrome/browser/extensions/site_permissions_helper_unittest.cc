@@ -41,10 +41,9 @@ using SiteInteraction = SitePermissionsHelper::SiteInteraction;
 
 class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
  public:
-  scoped_refptr<const extensions::Extension> InstallExtension(
-      const std::string& name);
+  scoped_refptr<const Extension> InstallExtension(const std::string& name);
 
-  scoped_refptr<const extensions::Extension> InstallExtensionWithPermissions(
+  scoped_refptr<const Extension> InstallExtensionWithPermissions(
       const std::string& name,
       const std::vector<std::string>& host_permissions,
       const std::vector<std::string>& permissions = {});
@@ -75,18 +74,18 @@ class SitePermissionsHelperUnitTest : public ExtensionServiceTestWithInstall {
   raw_ptr<PermissionsManager> permissions_manager_;
 };
 
-scoped_refptr<const extensions::Extension>
-SitePermissionsHelperUnitTest::InstallExtension(const std::string& name) {
+scoped_refptr<const Extension> SitePermissionsHelperUnitTest::InstallExtension(
+    const std::string& name) {
   return InstallExtensionWithPermissions(name, {}, {});
 }
 
-scoped_refptr<const extensions::Extension>
+scoped_refptr<const Extension>
 SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
     const std::string& name,
     const std::vector<std::string>& host_permissions,
     const std::vector<std::string>& permissions) {
   auto extension =
-      extensions::ExtensionBuilder(name)
+      ExtensionBuilder(name)
           .SetManifestVersion(3)
           .SetManifestKey("host_permissions", ToValueList(host_permissions))
           .AddPermissions(permissions)

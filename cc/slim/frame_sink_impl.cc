@@ -25,6 +25,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -62,12 +63,18 @@ FrameSinkImpl::FrameSinkImpl(
 }
 
 FrameSinkImpl::~FrameSinkImpl() {
-  // Iterate a copy of `uploaded_resources_` since it might be modified
-  // when `UIResourceReleased()` is called.
-  for (const auto& uploaded_resource_pair :
-       UploadedResourceMap(uploaded_resources_)) {
-    resource_provider_.RemoveImportedResource(
-        uploaded_resource_pair.second.viz_resource_id);
+  // Iterate a copy of the viz_resource_ids since `uploaded_resources_` might
+  // be modified when `UIResourceReleased()` is called.
+  // Also note that the DestroySharedImage() call in UIResourceRelease()
+  // requires the `ClientSharedImage` stored in the to-be-released resource to
+  // have precisely one reference. Therefore, it is advisable to avoid any
+  // operation that might alter the `ClientSharedImage`'s refcount, e.g.
+  // creating a full copy of `uploaded_resources_`.
+  auto resource_ids = base::MakeFlatSet<viz::ResourceId>(
+      uploaded_resources_, {},
+      [](auto& resource_pair) { return resource_pair.second.viz_resource_id; });
+  for (const auto& uploaded_resource_id : resource_ids) {
+    resource_provider_.RemoveImportedResource(uploaded_resource_id);
   }
   resource_provider_.ShutdownAndReleaseAllResources();
 }
@@ -157,24 +164,31 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
       break;
   }
 
+  // CreateSharedImage() with initial pixels doesn't support specifying
+  // non-standard stride so data must be exactly the minimum size required to
+  // hold all pixels.
+  DCHECK_EQ(format.EstimatedSizeInBytes(size), resource_bitmap.SizeInBytes());
+
   UploadedUIResource uploaded_resource;
   auto* sii = context_provider_->SharedImageInterface();
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  uploaded_resource.mailbox = sii->CreateSharedImage(
-      format, resource_bitmap.GetSize(), color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, shared_image_usage, "SlimCompositorUIResource",
+  uploaded_resource.shared_image = sii->CreateSharedImage(
+      {format, resource_bitmap.GetSize(), color_space, shared_image_usage,
+       "SlimCompositorUIResource"},
       base::span<const uint8_t>(resource_bitmap.GetPixels(),
                                 resource_bitmap.SizeInBytes()));
+  CHECK(uploaded_resource.shared_image);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-  GLenum texture_target = gpu::GetBufferTextureTarget(
+  GLenum texture_target = uploaded_resource.shared_image->GetTextureTarget(
       gfx::BufferUsage::SCANOUT,
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format), caps);
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::MakeGpu(
-          uploaded_resource.mailbox, texture_target, sync_token,
-          resource_bitmap.GetSize(), format, /*is_overlay_candidate=*/false),
+          uploaded_resource.shared_image, texture_target, sync_token,
+          resource_bitmap.GetSize(), format, /*is_overlay_candidate=*/false,
+          viz::TransferableResource::ResourceSource::kUI),
       base::BindOnce(&FrameSinkImpl::UIResourceReleased, base::Unretained(this),
                      resource_id));
   uploaded_resource.size = resource_bitmap.GetSize();
@@ -190,7 +204,7 @@ void FrameSinkImpl::UIResourceReleased(cc::UIResourceId ui_resource_id,
   auto itr = uploaded_resources_.find(ui_resource_id);
   DCHECK(itr != uploaded_resources_.end());
   auto* sii = context_provider_->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, itr->second.mailbox);
+  sii->DestroySharedImage(sync_token, std::move(itr->second.shared_image));
   uploaded_resources_.erase(itr);
 }
 
@@ -323,7 +337,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
         });
     frame_sink_->SubmitCompositorFrame(
         local_surface_id_, std::move(frame),
-        send_new_hit_test_region_list ? hit_test_region_list_ : absl::nullopt,
+        send_new_hit_test_region_list ? hit_test_region_list_ : std::nullopt,
         0);
   }
   num_unacked_frames_++;

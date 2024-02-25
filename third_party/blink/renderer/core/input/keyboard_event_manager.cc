@@ -257,7 +257,9 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
     should_send_key_events_to_js =
         display_mode == blink::mojom::DisplayMode::kMinimalUi ||
         display_mode == blink::mojom::DisplayMode::kStandalone ||
-        display_mode == blink::mojom::DisplayMode::kFullscreen;
+        display_mode == blink::mojom::DisplayMode::kFullscreen ||
+        display_mode == blink::mojom::DisplayMode::kBorderless ||
+        display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay;
   }
 
   // We have 2 level of not exposing key event to js, not send and send but not
@@ -376,7 +378,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
       if (initial_key_event.text[0] == 0) {
         return WebInputEventResult::kNotHandled;
       }
-      U_FALLTHROUGH;
+      [[fallthrough]];
     }
     case WebInputEvent::Type::kChar: {
       WebKeyboardEvent char_event = initial_key_event;
@@ -501,8 +503,7 @@ void KeyboardEventManager::DefaultArrowEventHandler(
     return;
 
   ExecutionContext* context = frame_->GetDocument()->GetExecutionContext();
-  if ((RuntimeEnabledFeatures::FocusgroupEnabled(context) ||
-       RuntimeEnabledFeatures::CSSTogglesEnabled(context)) &&
+  if (RuntimeEnabledFeatures::FocusgroupEnabled(context) &&
       FocusgroupController::HandleArrowKeyboardEvent(event, frame_)) {
     event->SetDefaultHandled();
     return;
@@ -629,19 +630,12 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
   }
 
-  bool cancel_skipped = false;
-  frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event,
-                                                              &cancel_skipped);
+  frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
 
   HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog();
   if (dialog && !RuntimeEnabledFeatures::CloseWatcherEnabled()) {
     auto* cancel_event = Event::CreateCancelable(event_type_names::kCancel);
     dialog->DispatchEvent(*cancel_event);
-    if (cancel_event->defaultPrevented() && cancel_skipped) {
-      UseCounter::Count(
-          frame_->GetDocument(),
-          WebFeature::kDialogCloseWatcherCancelSkippedAndDefaultPrevented);
-    }
     if (!cancel_event->defaultPrevented()) {
       dialog->close();
     }

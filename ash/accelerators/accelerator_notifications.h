@@ -6,6 +6,8 @@
 #define ASH_ACCELERATORS_ACCELERATOR_NOTIFICATIONS_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accelerator_actions.h"
+#include "ui/base/accelerators/accelerator.h"
 
 namespace ash {
 
@@ -17,11 +19,14 @@ ASH_EXPORT extern const char kHighContrastToggleAccelNotificationId[];
 // URL for keyboard shortcut help.
 ASH_EXPORT extern const char kKeyboardShortcutHelpPageUrl[];
 
-// Shows a warning the user is using a deprecated accelerator.
-ASH_EXPORT void ShowDeprecatedAcceleratorNotification(
+// Shows a warning if the user is using a deprecated accelerator and the
+// replacement accelerator is available.
+ASH_EXPORT void MaybeShowDeprecatedAcceleratorNotification(
     const char* notification_id,
     int message_id,
-    int new_shortcut_id);
+    int new_shortcut_id,
+    ui::Accelerator replacement,
+    AcceleratorAction action_id);
 
 ASH_EXPORT void ShowDockedMagnifierNotification();
 

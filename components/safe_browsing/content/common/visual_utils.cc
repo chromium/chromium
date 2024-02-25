@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/common/visual_utils.h"
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -176,31 +176,33 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool CanExtractVisualFeatures(bool is_extended_reporting,
-                              bool is_off_the_record,
-                              gfx::Size size) {
+CanExtractVisualFeaturesResult CanExtractVisualFeatures(
+    bool is_extended_reporting,
+    bool is_off_the_record,
+    gfx::Size size) {
 #else
-bool CanExtractVisualFeatures(bool is_extended_reporting,
-                              bool is_off_the_record,
-                              gfx::Size size,
-                              double zoom_level) {
+CanExtractVisualFeaturesResult CanExtractVisualFeatures(
+    bool is_extended_reporting,
+    bool is_off_the_record,
+    gfx::Size size,
+    double zoom_level) {
 #endif
   if (!is_extended_reporting)
-    return false;
+    return CanExtractVisualFeaturesResult::kNotExtendedReporting;
 
   if (is_off_the_record)
-    return false;
+    return CanExtractVisualFeaturesResult::kOffTheRecord;
 
   if (size.width() < GetMinWidthForVisualFeatures() ||
       size.height() < GetMinHeightForVisualFeatures())
-    return false;
+    return CanExtractVisualFeaturesResult::kBelowMinFrame;
 
 #if !BUILDFLAG(IS_ANDROID)
   if (zoom_level > kMaxZoomForVisualFeatures) {
-    return false;
+    return CanExtractVisualFeaturesResult::kAboveZoomLevel;
   }
 #endif
-  return true;
+  return CanExtractVisualFeaturesResult::kCanExtractVisualFeatures;
 }
 
 std::unique_ptr<VisualFeatures> ExtractVisualFeatures(

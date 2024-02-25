@@ -13,7 +13,7 @@ void FakeBlobURLStore::Register(
     const KURL& url,
     // TODO(https://crbug.com/1224926): Remove this once experiment is over.
     const base::UnguessableToken& unsafe_agent_cluster_id,
-    const absl::optional<BlinkSchemefulSite>& unsafe_top_level_site,
+    const std::optional<BlinkSchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
   registrations.insert(url, mojo::Remote<mojom::blink::Blob>(std::move(blob)));
   agent_registrations.insert(url, unsafe_agent_cluster_id);
@@ -29,7 +29,7 @@ void FakeBlobURLStore::Resolve(const KURL& url, ResolveCallback callback) {
   auto blob_it = registrations.find(url);
   auto agent_it = agent_registrations.find(url);
   if (blob_it == registrations.end() || agent_it == agent_registrations.end()) {
-    std::move(callback).Run(mojo::NullRemote(), absl::nullopt);
+    std::move(callback).Run(mojo::NullRemote(), std::nullopt);
     return;
   }
   mojo::PendingRemote<mojom::blink::Blob> blob;

@@ -83,14 +83,19 @@ ResultExpr RestrictGetSockoptForNetworkService() {
   ResultExpr socket_optname_switch =
       Switch(optname).Case(SO_ERROR, Allow()).Default(CrashSIGSYSSockopt());
   ResultExpr ipv6_optname_switch =
-      Switch(optname).Case(IPV6_V6ONLY, Allow()).Default(CrashSIGSYSSockopt());
+      Switch(optname)
+          .Cases({IPV6_V6ONLY, IPV6_TCLASS}, Allow())
+          .Default(CrashSIGSYSSockopt());
   ResultExpr tcp_optname_switch =
       Switch(optname).Case(TCP_INFO, Allow()).Default(CrashSIGSYSSockopt());
+  ResultExpr ip_optname_switch =
+      Switch(optname).Case(IP_TOS, Allow()).Default(CrashSIGSYSSockopt());
 
   return Switch(level)
       .Case(SOL_SOCKET, socket_optname_switch)
       .Case(SOL_IPV6, ipv6_optname_switch)
       .Case(SOL_TCP, tcp_optname_switch)
+      .Case(SOL_IP, ip_optname_switch)
       .Default(CrashSIGSYSSockopt());
 }
 

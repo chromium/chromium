@@ -193,8 +193,9 @@ public class PaymentRequestMultipleContactDetailsTest {
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
-    private void setUpAutofillProfiles(AutofillProfile[] profiles, int[] counts,
-            int[] daysSinceLastUsed) throws TimeoutException {
+    private void setUpAutofillProfiles(
+            AutofillProfile[] profiles, int[] counts, int[] daysSinceLastUsed)
+            throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
 
         // Add the profiles.
@@ -219,9 +220,14 @@ public class PaymentRequestMultipleContactDetailsTest {
     @Feature({"Payments"})
     public void testContactDetailsSuggestionOrdering() throws TimeoutException {
         // Set the use stats such that the profiles are in descending frecency score.
-        AutofillProfile[] profiles = new AutofillProfile[] {INCOMPLETE_PROFILE_NO_PHONE,
-                INCOMPLETE_PROFILE_NO_EMAIL, COMPLETE_PROFILE_1, COMPLETE_PROFILE_2,
-                INCOMPLETE_PROFILE_NO_PHONE_OR_EMAIL};
+        AutofillProfile[] profiles =
+                new AutofillProfile[] {
+                    INCOMPLETE_PROFILE_NO_PHONE,
+                    INCOMPLETE_PROFILE_NO_EMAIL,
+                    COMPLETE_PROFILE_1,
+                    COMPLETE_PROFILE_2,
+                    INCOMPLETE_PROFILE_NO_PHONE_OR_EMAIL
+                };
         int[] counts = new int[] {20, 15, 10, 5, 1};
         int[] daysSinceLastUsed = new int[] {5, 5, 5, 5, 5};
 
@@ -236,13 +242,17 @@ public class PaymentRequestMultipleContactDetailsTest {
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
-        Assert.assertEquals("Lisa Simpson\n555 123-4567\nlisa@simpson.com",
+        Assert.assertEquals(
+                "Lisa Simpson\n555 123-4567\nlisa@simpson.com",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(0));
-        Assert.assertEquals("Maggie Simpson\n555 123-4567\nmaggie@simpson.com",
+        Assert.assertEquals(
+                "Maggie Simpson\n555 123-4567\nmaggie@simpson.com",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(1));
-        Assert.assertEquals("Bart Simpson\nbart@simpson.com\nPhone number required",
+        Assert.assertEquals(
+                "Bart Simpson\nbart@simpson.com\nPhone number required",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(2));
-        Assert.assertEquals("Homer Simpson\n555 123-4567\nEmail required",
+        Assert.assertEquals(
+                "Homer Simpson\n555 123-4567\nEmail required",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(3));
     }
 
@@ -255,8 +265,12 @@ public class PaymentRequestMultipleContactDetailsTest {
     @Feature({"Payments"})
     public void testContactDetailsEditRequiredMessage() throws TimeoutException {
         AutofillProfile[] profiles =
-                new AutofillProfile[] {INCOMPLETE_PROFILE_NO_PHONE, INCOMPLETE_PROFILE_NO_EMAIL,
-                        INCOMPLETE_PROFILE_NO_PHONE_OR_EMAIL, INCOMPLETE_PROFILE_NO_NAME};
+                new AutofillProfile[] {
+                    INCOMPLETE_PROFILE_NO_PHONE,
+                    INCOMPLETE_PROFILE_NO_EMAIL,
+                    INCOMPLETE_PROFILE_NO_PHONE_OR_EMAIL,
+                    INCOMPLETE_PROFILE_NO_NAME
+                };
         int[] counts = new int[] {15, 10, 5, 1};
         int[] daysSinceLastUsed = new int[] {5, 5, 5, 5};
 
@@ -268,19 +282,21 @@ public class PaymentRequestMultipleContactDetailsTest {
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
-        Assert.assertEquals("Bart Simpson\nbart@simpson.com\nPhone number required",
+        Assert.assertEquals(
+                "Bart Simpson\nbart@simpson.com\nPhone number required",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(0));
-        Assert.assertEquals("Homer Simpson\n555 123-4567\nEmail required",
+        Assert.assertEquals(
+                "Homer Simpson\n555 123-4567\nEmail required",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(1));
-        Assert.assertEquals("555 123-4567\nmarge@simpson.com\nName required",
+        Assert.assertEquals(
+                "555 123-4567\nmarge@simpson.com\nName required",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(2));
-        Assert.assertEquals("Marge Simpson\nMore information required",
+        Assert.assertEquals(
+                "Marge Simpson\nMore information required",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(3));
     }
 
-    /**
-     * Makes sure that suggestions that are subsets of other fields (empty values) are deduped.
-     */
+    /** Makes sure that suggestions that are subsets of other fields (empty values) are deduped. */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -288,13 +304,14 @@ public class PaymentRequestMultipleContactDetailsTest {
         // Add the original profile and a bunch of similar profiles with missing fields.
         // Make sure the original profile is suggested last, to test that the suggestions are
         // sorted by completeness.
-        AutofillProfile[] profiles = new AutofillProfile[] {
-                COMPLETE_PROFILE_1,
-                DUPLICATE_PROFILE_WITH_NO_NAME,
-                DUPLICATE_PROFILE_WITH_NO_PHONE,
-                DUPLICATE_PROFILE_WITH_NO_EMAIL,
-                DUPLICATE_PROFILE_WITH_NO_PHONE_OR_EMAIL,
-        };
+        AutofillProfile[] profiles =
+                new AutofillProfile[] {
+                    COMPLETE_PROFILE_1,
+                    DUPLICATE_PROFILE_WITH_NO_NAME,
+                    DUPLICATE_PROFILE_WITH_NO_PHONE,
+                    DUPLICATE_PROFILE_WITH_NO_EMAIL,
+                    DUPLICATE_PROFILE_WITH_NO_PHONE_OR_EMAIL,
+                };
         int[] counts = new int[] {1, 20, 15, 10, 5};
         int[] daysSinceLastUsed = new int[] {4, 1, 2, 3, 4};
 
@@ -308,7 +325,8 @@ public class PaymentRequestMultipleContactDetailsTest {
 
         // Only the original profile with all the fields should be suggested.
         Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
-        Assert.assertEquals("Lisa Simpson\n555 123-4567\nlisa@simpson.com",
+        Assert.assertEquals(
+                "Lisa Simpson\n555 123-4567\nlisa@simpson.com",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(0));
     }
 
@@ -322,10 +340,10 @@ public class PaymentRequestMultipleContactDetailsTest {
     public void testContactDetailsDedupe_Capitalization() throws TimeoutException {
         // Add the original profile and the one where the the name is not capitalized.
         // Make sure the original profile is suggested first (no particular reason).
-        AutofillProfile[] profiles = new AutofillProfile[] {
-                COMPLETE_PROFILE_1,
-                DUPLICATE_PROFILE_WITH_MISMATCHED_CAPITALIZATION,
-        };
+        AutofillProfile[] profiles =
+                new AutofillProfile[] {
+                    COMPLETE_PROFILE_1, DUPLICATE_PROFILE_WITH_MISMATCHED_CAPITALIZATION,
+                };
         int[] counts = new int[] {15, 5};
         int[] daysSinceLastUsed = new int[] {2, 5};
 
@@ -337,7 +355,8 @@ public class PaymentRequestMultipleContactDetailsTest {
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
-        Assert.assertEquals("Lisa Simpson\n555 123-4567\nlisa@simpson.com",
+        Assert.assertEquals(
+                "Lisa Simpson\n555 123-4567\nlisa@simpson.com",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(0));
     }
 
@@ -352,10 +371,10 @@ public class PaymentRequestMultipleContactDetailsTest {
         // Add the original profile and the one where the email is a superset of the original.
         // Make sure the one with the superset is suggested first, because to test the subset one
         // needs to be added after.
-        AutofillProfile[] profiles = new AutofillProfile[] {
-                COMPLETE_PROFILE_1,
-                DUPLICATE_PROFILE_WITH_SUPERSET_EMAIL,
-        };
+        AutofillProfile[] profiles =
+                new AutofillProfile[] {
+                    COMPLETE_PROFILE_1, DUPLICATE_PROFILE_WITH_SUPERSET_EMAIL,
+                };
         int[] counts = new int[] {15, 25};
         int[] daysSinceLastUsed = new int[] {7, 5};
 
@@ -367,9 +386,11 @@ public class PaymentRequestMultipleContactDetailsTest {
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfContactDetailSuggestions());
-        Assert.assertEquals("Lisa Simpson\n555 123-4567\nfakelisa@simpson.com",
+        Assert.assertEquals(
+                "Lisa Simpson\n555 123-4567\nfakelisa@simpson.com",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(0));
-        Assert.assertEquals("Lisa Simpson\n555 123-4567\nlisa@simpson.com",
+        Assert.assertEquals(
+                "Lisa Simpson\n555 123-4567\nlisa@simpson.com",
                 mPaymentRequestTestRule.getContactDetailsSuggestionLabel(1));
     }
 }

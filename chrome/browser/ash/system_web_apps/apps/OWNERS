@@ -1,7 +1,5 @@
 file://ash/webui/PLATFORM_OWNERS
 
-tapted@chromium.org
-dstockwell@google.com
 bugsnash@chromium.org
 
 per-file chrome_camera_app*=file://ash/webui/camera_app_ui/OWNERS
@@ -10,5 +8,6 @@ per-file crosh*=file://chromeos/TERMINAL_OWNERS
 per-file diagnostics*=file://ash/webui/diagnostics_ui/OWNERS
 per-file file_manager*=file://ash/webui/file_manager/OWNERS
 per-file files_internals*=file://ash/webui/file_manager/OWNERS
+per-file print_preview_cros*=file://ash/webui/print_preview_cros/OWNERS
 per-file terminal*=file://chromeos/TERMINAL_OWNERS
 per-file eche*=file://ash/webui/eche_app_ui/OWNERS

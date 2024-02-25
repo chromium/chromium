@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_RECEIVER_BROWSER_BINDINGS_MESSAGE_PORT_CONNECTOR_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -74,10 +75,10 @@ class BindingsMessagePortConnector
 
  private:
   // Adds a new binding.
-  void AddBeforeLoadJavaScript(uint64_t id, base::StringPiece script);
+  void AddBeforeLoadJavaScript(uint64_t id, std::string_view script);
 
   // Callback for RegisterPortHandler().
-  void OnPortConnected(base::StringPiece port_name,
+  void OnPortConnected(std::string_view port_name,
                        std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   // PageStateObserver implementation:

@@ -1,8 +1,9 @@
 caption: Allow unaffiliated users to use ARC
+default: true
 desc: |-
   Unless ARC is turned off by other means, then setting the policy to True or leaving it unset lets users use ARC. Setting the policy to False means unaffiliated users may not use ARC.
 
-        Changes to the policy only apply while ARC isn't running, for example, while starting ChromeOS.
+  Changes to the policy only apply while ARC isn't running, for example, while starting ChromeOS.
 device_only: true
 example_value: false
 features:

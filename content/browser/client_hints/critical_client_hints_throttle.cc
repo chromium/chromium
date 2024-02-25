@@ -9,12 +9,12 @@
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -62,24 +62,25 @@ void CriticalClientHintsThrottle::WillStartRequest(
 void CriticalClientHintsThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer) {
+    RestartWithURLReset* restart_with_url_reset) {
   DCHECK_EQ(response_url, response_url_);
-  MaybeRestartWithHints(response_head);
+  MaybeRestartWithHints(response_head, restart_with_url_reset);
 }
 
 void CriticalClientHintsThrottle::BeforeWillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
-    bool* defer,
+    RestartWithURLReset* restart_with_url_reset,
     std::vector<std::string>* to_be_removed_request_headers,
     net::HttpRequestHeaders* modified_request_headers,
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
-  MaybeRestartWithHints(response_head);
+  MaybeRestartWithHints(response_head, restart_with_url_reset);
   response_url_ = redirect_info->new_url;
 }
 
 void CriticalClientHintsThrottle::MaybeRestartWithHints(
-    const network::mojom::URLResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head,
+    RestartWithURLReset* restart_with_url_reset) {
   if (!base::FeatureList::IsEnabled(features::kCriticalClientHint))
     return;
   FrameTreeNode* frame_tree_node =
@@ -177,7 +178,7 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
     if (!initial_request_headers_.HasHeader(modified_header.key)) {
       LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
       delegate_->DidRestartForCriticalClientHint();
-      delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
+      *restart_with_url_reset = RestartWithURLReset(true);
       return;
     }
   }

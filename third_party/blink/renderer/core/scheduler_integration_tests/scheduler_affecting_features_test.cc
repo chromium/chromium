@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 
 using testing::_;
@@ -72,6 +73,7 @@ TEST_F(SchedulingAffectingFeaturesTest, WebSocketIsTracked) {
               testing::UnorderedElementsAre(
                   SchedulingPolicy::Feature::kWebSocket,
                   SchedulingPolicy::Feature::kWebSocketSticky));
+  test::RunPendingTasks();
 
   MainFrame().ExecuteScript(WebScriptSource(WebString("socket.close();")));
 

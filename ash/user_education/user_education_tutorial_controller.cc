@@ -11,6 +11,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
+#include "components/user_education/common/tutorial_description.h"
 
 namespace ash {
 namespace {
@@ -45,6 +46,27 @@ UserEducationTutorialController* UserEducationTutorialController::Get() {
   return g_instance;
 }
 
+bool UserEducationTutorialController::IsTutorialRegistered(
+    TutorialId tutorial_id) const {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  const AccountId account_id = GetActiveAccountId();
+  CHECK(user_education_util::IsPrimaryAccountId(account_id));
+  return delegate_->IsTutorialRegistered(account_id, tutorial_id);
+}
+
+void UserEducationTutorialController::RegisterTutorial(
+    UserEducationPrivateApiKey,
+    TutorialId tutorial_id,
+    user_education::TutorialDescription tutorial_description) {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  const AccountId account_id = GetActiveAccountId();
+  CHECK(user_education_util::IsPrimaryAccountId(account_id));
+  delegate_->RegisterTutorial(account_id, tutorial_id,
+                              std::move(tutorial_description));
+}
+
 void UserEducationTutorialController::StartTutorial(
     UserEducationPrivateApiKey,
     TutorialId tutorial_id,
@@ -62,7 +84,7 @@ void UserEducationTutorialController::StartTutorial(
 
 void UserEducationTutorialController::AbortTutorial(
     UserEducationPrivateApiKey,
-    absl::optional<TutorialId> tutorial_id) {
+    std::optional<TutorialId> tutorial_id) {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
   const AccountId account_id = GetActiveAccountId();

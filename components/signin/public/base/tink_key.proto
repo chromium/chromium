@@ -1,0 +1,103 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This is a mirror of proto definitions from Tink Cryptographic library
+// https://github.com/google/tink/blob/master/proto/tink.proto.
+// Unused messages have been stripped from this file.
+syntax = "proto2";
+
+package tink;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+enum KeyStatusType {
+  UNKNOWN_STATUS = 0;
+  ENABLED = 1;    // Can be used for crypto operations.
+  DISABLED = 2;   // Cannot be used, but exists and can become ENABLED.
+  DESTROYED = 3;  // Key data does not exist in this Keyset any more.
+}
+
+// Tink produces and accepts ciphertexts or signatures that consist
+// of a prefix and a payload. The payload and its format is determined
+// entirely by the primitive, but the prefix has to be one of the following
+// 4 types:
+//   - Legacy: prefix is 5 bytes, starts with \x00 and followed by a 4-byte
+//             key id that is computed from the key material. In addition to
+//             that, signature schemes and MACs will add a \x00 byte to the
+//             end of the data being signed / MACed when operating on keys
+//             with this OutputPrefixType.
+//   - Crunchy: prefix is 5 bytes, starts with \x00 and followed by a 4-byte
+//             key id that is generated randomly.
+//   - Tink  : prefix is 5 bytes, starts with \x01 and followed by 4-byte
+//             key id that is generated randomly.
+//   - Raw   : prefix is 0 byte, i.e., empty.
+enum OutputPrefixType {
+  UNKNOWN_PREFIX = 0;
+  TINK = 1;
+  LEGACY = 2;
+  RAW = 3;
+  CRUNCHY = 4;
+}
+
+// Each *Key proto by convention contains a version field, which
+// identifies the version of the key.
+//   message SomeInstantiationKey {
+//     uint32 version = 1;
+//     ...
+//   }
+// If a key type does not mention anything else, only version 0 is currently
+// specified. An implementation must only accept keys with versions it knows,
+// and must reject all keys with unknown version.
+
+// For public key primitives, the public and private keys are distinct entities
+// and represent distinct primitives.  However, by convention, the private key
+// of a public-key primitive contains the corresponding public key proto.
+
+// The actual *Key-proto is wrapped in a KeyData message, which in addition
+// to this serialized proto contains also type_url identifying the
+// definition of *Key-proto (as in KeyFormat-message), and some extra metadata
+// about the type key material.
+message KeyData {
+  // In format type.googleapis.com/packagename.messagename
+  required string type_url = 1;
+  // Contains specific serialized *Key proto
+  required bytes value = 2;  // Placeholder for ctype.
+  enum KeyMaterialType {
+    UNKNOWN_KEYMATERIAL = 0;
+    SYMMETRIC = 1;
+    ASYMMETRIC_PRIVATE = 2;
+    ASYMMETRIC_PUBLIC = 3;
+    REMOTE = 4;  // points to a remote key, i.e., in a KMS.
+  }
+  required KeyMaterialType key_material_type = 3;
+}
+
+// A Tink user works usually not with single keys, but with keysets,
+// to enable key rotation.  The keys in a keyset can belong to different
+// implementations/key types, but must all implement the same primitive.
+// Any given keyset (and any given key) can be used for one primitive only.
+message Keyset {
+  message Key {
+    // Contains the actual, instantiation specific key proto.
+    // By convention, each key proto contains a version field.
+    required KeyData key_data = 1;
+
+    required KeyStatusType status = 2;
+
+    // Identifies a key within a keyset, is a part of metadata
+    // of a ciphertext/signature.
+    required uint32 key_id = 3;
+
+    // Determines the prefix of the ciphertexts/signatures produced by this key.
+    // This value is copied verbatim from the key template.
+    required OutputPrefixType output_prefix_type = 4;
+  }
+
+  // Identifies key used to generate new crypto data (encrypt, sign).
+  required uint32 primary_key_id = 1;
+
+  // Actual keys in the Keyset.
+  repeated Key key = 2;
+}

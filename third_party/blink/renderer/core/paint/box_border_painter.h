@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -38,7 +38,7 @@ class BoxBorderPainter {
                                      const ComputedStyle& style,
                                      const PhysicalRect& border_rect,
                                      int width,
-                                     const NGPhysicalBoxStrut& inner_outsets) {
+                                     const PhysicalBoxStrut& inner_outsets) {
     BoxBorderPainter(context, style, border_rect, width, inner_outsets).Paint();
   }
 
@@ -61,7 +61,7 @@ class BoxBorderPainter {
                    const ComputedStyle&,
                    const PhysicalRect& border_rect,
                    int width,
-                   const NGPhysicalBoxStrut& inner_outsets);
+                   const PhysicalBoxStrut& inner_outsets);
 
   void Paint() const;
 
@@ -121,9 +121,9 @@ class BoxBorderPainter {
                                     MiterType miter2,
                                     EBorderStyle);
 
-  NGPhysicalBoxStrut DoubleStripeOutsets(
+  PhysicalBoxStrut DoubleStripeOutsets(
       BorderEdge::DoubleBorderStripe stripe) const;
-  NGPhysicalBoxStrut CenterOutsets() const;
+  PhysicalBoxStrut CenterOutsets() const;
 
   bool ColorsMatchAtCorner(BoxSide side, BoxSide adjacent_side) const;
 
@@ -141,7 +141,7 @@ class BoxBorderPainter {
 
   // const inputs
   const PhysicalRect border_rect_;
-  const NGPhysicalBoxStrut outer_outsets_;
+  const PhysicalBoxStrut outer_outsets_;
   const ComputedStyle& style_;
   const BackgroundBleedAvoidance bleed_avoidance_;
   const PhysicalBoxSides sides_to_include_;

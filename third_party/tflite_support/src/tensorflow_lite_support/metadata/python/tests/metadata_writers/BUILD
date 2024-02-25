@@ -2,7 +2,6 @@
 # Placeholder for internal Python strict library compatibility macro.
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//visibility:public",
     ],

@@ -41,26 +41,19 @@ void RecordNotificationUserExperienceQuality(
           NotificationUserExperienceQuality_ARRAYSIZE);
 }
 
-// Records a histogram sample for the |warning_only| bit.
-void RecordWarningOnlyState(bool value) {
-  base::UmaHistogramBoolean("Permissions.CrowdDeny.PreloadData.WarningOnly",
-                            value);
-}
-
 // Attempts to decide which UI to use based on preloaded site reputation data,
-// or returns absl::nullopt if not possible. |site_reputation| can be nullptr.
-absl::optional<Decision> GetDecisionBasedOnSiteReputation(
+// or returns std::nullopt if not possible. |site_reputation| can be nullptr.
+std::optional<Decision> GetDecisionBasedOnSiteReputation(
     const CrowdDenyPreloadData::SiteReputation* site_reputation) {
   using Config = QuietNotificationPermissionUiConfig;
   if (!site_reputation) {
     RecordNotificationUserExperienceQuality(
         CrowdDenyPreloadData::SiteReputation::UNKNOWN);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   RecordNotificationUserExperienceQuality(
       site_reputation->notification_ux_quality());
-  RecordWarningOnlyState(site_reputation->warning_only());
 
   switch (site_reputation->notification_ux_quality()) {
     case CrowdDenyPreloadData::SiteReputation::ACCEPTABLE: {
@@ -70,7 +63,7 @@ absl::optional<Decision> GetDecisionBasedOnSiteReputation(
       if (site_reputation->warning_only())
         return Decision::UseNormalUiAndShowNoWarning();
       if (!Config::IsCrowdDenyTriggeringEnabled())
-        return absl::nullopt;
+        return std::nullopt;
       return Decision(QuietUiReason::kTriggeredByCrowdDeny,
                       Decision::ShowNoWarning());
     }
@@ -82,7 +75,7 @@ absl::optional<Decision> GetDecisionBasedOnSiteReputation(
                         WarningReason::kAbusiveRequests);
       }
       if (!Config::IsAbusiveRequestBlockingEnabled())
-        return absl::nullopt;
+        return std::nullopt;
       return Decision(QuietUiReason::kTriggeredDueToAbusiveRequests,
                       Decision::ShowNoWarning());
     }
@@ -94,7 +87,7 @@ absl::optional<Decision> GetDecisionBasedOnSiteReputation(
                         WarningReason::kAbusiveContent);
       }
       if (!Config::IsAbusiveContentTriggeredRequestBlockingEnabled())
-        return absl::nullopt;
+        return std::nullopt;
       return Decision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       Decision::ShowNoWarning());
     }
@@ -102,17 +95,17 @@ absl::optional<Decision> GetDecisionBasedOnSiteReputation(
       DCHECK(!site_reputation->warning_only());
 
       if (!Config::IsDisruptiveBehaviorRequestBlockingEnabled())
-        return absl::nullopt;
+        return std::nullopt;
       return Decision(QuietUiReason::kTriggeredDueToDisruptiveBehavior,
                       Decision::ShowNoWarning());
     }
     case CrowdDenyPreloadData::SiteReputation::UNKNOWN: {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Roll the dice to decide whether to use the normal UI even when the preload
@@ -184,7 +177,7 @@ void ContextualNotificationPermissionUiSelector::EvaluatePerSiteTriggers(
 void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
     const url::Origin& origin,
     const CrowdDenyPreloadData::SiteReputation* reputation) {
-  absl::optional<Decision> decision =
+  std::optional<Decision> decision =
       GetDecisionBasedOnSiteReputation(reputation);
 
   // If the PreloadData suggests this is an unacceptable site, ping Safe

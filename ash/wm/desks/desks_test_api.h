@@ -13,6 +13,7 @@ class Window;
 
 namespace views {
 class LabelButton;
+class MenuItemView;
 class ScrollView;
 class View;
 }  // namespace views
@@ -57,7 +58,12 @@ class DesksTestApi {
   static ui::LayerTreeOwner* GetMirroredContentsLayerTreeForRootAndDesk(
       aura::Window* root,
       Desk* desk);
+  static views::Label* GetDeskShortcutLabel(DeskMiniView* mini_view);
   static bool IsDeskShortcutViewVisible(DeskMiniView* mini_view);
+  static DeskProfilesButton* GetDeskProfileButton(DeskMiniView* mini_view);
+  static views::MenuItemView* GetDeskActionContextMenuItem(
+      DeskActionContextMenu* menu,
+      int command_id);
   static bool HasVerticalDotsButton();
   static bool DesksControllerHasDesk(Desk* desk);
   static bool DesksControllerCanUndoDeskRemoval();
@@ -73,6 +79,10 @@ class DesksTestApi {
 
   // Waits for `desk_bar_view` to finish its UI update.
   static void WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view);
+
+  // Invoke `done` when `desk_bar_view` finishes its UI updates.
+  static void SetDeskBarUiUpdateCallback(DeskBarViewBase* desk_bar_view,
+                                         base::OnceClosure done);
 };
 
 }  // namespace ash

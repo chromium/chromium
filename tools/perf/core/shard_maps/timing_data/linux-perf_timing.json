@@ -1785,7 +1785,7 @@
     },
     {
         "duration": "135.0",
-        "name": "jetstream2-minormc/JetStream2"
+        "name": "jetstream2-nominorms/JetStream2"
     },
     {
         "duration": "14.0",
@@ -1929,7 +1929,7 @@
     },
     {
         "duration": "45.0",
-        "name": "octane-minormc/Octane"
+        "name": "octane-nominorms/Octane"
     },
     {
         "duration": "39.0",
@@ -3461,7 +3461,7 @@
     },
     {
         "duration": "46.0",
-        "name": "speedometer2-minormc/Speedometer2"
+        "name": "speedometer2-nominorms/Speedometer2"
     },
     {
         "duration": "47.0",

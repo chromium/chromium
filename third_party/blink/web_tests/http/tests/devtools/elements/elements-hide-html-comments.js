@@ -9,7 +9,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Verifies show/hide HTML comments setting.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   // Add the full html so that comments can be inserted between head and body
   await TestRunner.loadHTML(`
@@ -38,7 +37,7 @@ import * as Common from 'devtools/core/common/common.js';
   function onNodeSelected() {
     TestRunner.addResult('HTML comments shown:');
     ElementsTestRunner.dumpElementsTree();
-    Common.Settings.settingForTest('showHTMLComments').set(false);
+    Common.Settings.settingForTest('show-html-comments').set(false);
     TestRunner.addResult('\nHTML comments hidden:');
     ElementsTestRunner.dumpElementsTree();
     TestRunner.completeTest();

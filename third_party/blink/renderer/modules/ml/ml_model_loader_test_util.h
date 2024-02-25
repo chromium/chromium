@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_MODEL_LOADER_TEST_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_MODEL_LOADER_TEST_UTIL_H_
 
+#include "base/memory/raw_ref.h"
 #include "components/ml/mojom/ml_service.mojom-blink.h"
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,8 +29,8 @@ class FakeMLService : public MLService {
   ~FakeMLService() override;
 
   using CreateModelLoaderFn =
-      base::OnceCallback<void(CreateModelLoaderOptionsPtr,
-                              MLService::CreateModelLoaderCallback)>;
+      base::RepeatingCallback<void(CreateModelLoaderOptionsPtr,
+                                   MLService::CreateModelLoaderCallback)>;
 
   void SetCreateModelLoader(CreateModelLoaderFn fn);
 
@@ -52,7 +53,7 @@ class ScopedSetMLServiceBinder {
   ~ScopedSetMLServiceBinder();
 
  private:
-  const BrowserInterfaceBrokerProxy& interface_broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy> interface_broker_;
 };
 
 // A fake MLModelLoader Mojo interface implementation that backs a Blink
@@ -64,8 +65,8 @@ class FakeMLModelLoader : public ModelLoader {
   FakeMLModelLoader(FakeMLModelLoader&&) = delete;
   ~FakeMLModelLoader() override;
 
-  using LoadFn =
-      base::OnceCallback<void(mojo_base::BigBuffer, ModelLoader::LoadCallback)>;
+  using LoadFn = base::RepeatingCallback<void(mojo_base::BigBuffer,
+                                              ModelLoader::LoadCallback)>;
   void SetLoad(LoadFn fn);
 
   FakeMLService::CreateModelLoaderFn CreateFromThis();

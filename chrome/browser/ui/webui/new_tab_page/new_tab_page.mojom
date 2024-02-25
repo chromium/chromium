@@ -44,6 +44,14 @@ struct CollectionImage {
   kFirstPartyThemeWithDailyRefresh,
   kThirdPartyTheme,
   kUploadedImage,
+  kWallpaperSearch,
+  kWallpaperSearchInspiration,
+};
+
+// Enum representing the in product help promo to trigger.
+enum IphFeature {
+  kCustomizeChrome,
+  kCustomizeModules,
 };
 
 // The background image URL and styling.
@@ -68,14 +76,14 @@ struct BackgroundImage {
 struct Theme {
   skia.mojom.SkColor text_color;
   skia.mojom.SkColor background_color;
+  // True if user color mode is baseline.
+  bool is_baseline;
   // True if the background is custom.
   bool is_custom_background;
   // True if daily refresh is enabled.
   bool daily_refresh_enabled;
   // True if the theme is dark (e.g. NTP background color is dark).
   bool is_dark;
-  // True if the realbox icons should be themed based on the background color.
-  bool theme_realbox_icons;
   // Color of Google logo. If not set show the logo multi-colored.
   skia.mojom.SkColor? logo_color;
   // Collection id of the background image.
@@ -174,6 +182,7 @@ enum CustomizeChromeSection {
   kAppearance,
   kShortcuts,
   kModules,
+  kWallpaperSearch,
 };
 
 struct PromoImagePart {
@@ -295,6 +304,9 @@ interface PageHandler {
   // `module_ids` is an array of module descriptor ids that identifies the
   // modules that loaded with data.
   OnModulesLoadedWithData(array<string> module_ids);
+  // Called when a user uses a module. May lead to a HaTS survey being
+  // displayed or an in product help promo being closed.
+  OnModuleUsed(string module_id);
   // Returns a list of available module id and name pairs.
   GetModulesIdNames() => (array<ModuleIdName> data);
   // Sets the order of modules.
@@ -316,8 +328,9 @@ interface PageHandler {
   // Increment the number of times the user has opened the side panel
   // with the customize chrome button.
   IncrementCustomizeChromeButtonOpenCount();
-  // Attempts to trigger in product help for customize chrome.
-  MaybeShowCustomizeChromeFeaturePromo();
+
+  // Attempts to trigger the specified in product help promo.
+  MaybeShowFeaturePromo(IphFeature iph_feature);
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
@@ -350,6 +363,7 @@ interface PageHandler {
   OnPromoLinkClicked();
   // Logs that the <ntp-app> element's |ready| callback method was called.
   OnAppRendered(double time);
+
 };
 
 // WebUI-side handler for requests from the browser.

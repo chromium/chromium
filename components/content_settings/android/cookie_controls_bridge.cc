@@ -42,61 +42,28 @@ void CookieControlsBridge::UpdateWebContents(
   content::BrowserContext* context = web_contents->GetBrowserContext();
   auto* permissions_client = permissions::PermissionsClient::Get();
 
-  old_observation_.Reset();
   observation_.Reset();
 
   controller_ = std::make_unique<CookieControlsController>(
       permissions_client->GetCookieSettings(context),
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr,
-      permissions_client->GetSettingsMap(context));
+      permissions_client->GetSettingsMap(context),
+      permissions_client->GetTrackingProtectionSettings(context));
 
-  old_observation_.Observe(controller_.get());
   observation_.Observe(controller_.get());
   controller_->Update(web_contents);
 }
 
 void CookieControlsBridge::OnStatusChanged(
-    CookieControlsStatus new_status,
-    CookieControlsEnforcement new_enforcement,
-    int allowed_cookies,
-    int blocked_cookies) {
-  if (status_ != new_status || enforcement_ != new_enforcement) {
-    status_ = new_status;
-    enforcement_ = new_enforcement;
-    JNIEnv* env = base::android::AttachCurrentThread();
-    // Only call status callback if status has changed
-    Java_CookieControlsBridge_onCookieBlockingStatusChanged(
-        env, jobject_, static_cast<int>(status_),
-        static_cast<int>(enforcement_));
-  }
-
-  OnCookiesCountChanged(allowed_cookies, blocked_cookies);
-}
-
-void CookieControlsBridge::OnCookiesCountChanged(int allowed_cookies,
-                                                 int blocked_cookies) {
-  // The cookie counts change quite frequently, so avoid unnecessary
-  // UI updates if possible.
-  if (allowed_cookies_ == allowed_cookies &&
-      blocked_cookies_ == blocked_cookies) {
-    return;
-  }
-
-  allowed_cookies_ = allowed_cookies;
-  blocked_cookies_ = blocked_cookies;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CookieControlsBridge_onCookiesCountChanged(
-      env, jobject_, allowed_cookies, blocked_cookies);
-}
-
-// This is a no-op for Android.
-void CookieControlsBridge::OnStatefulBounceCountChanged(int bounce_count) {}
-
-void CookieControlsBridge::OnStatusChanged(
     CookieControlsStatus status,
+    bool controls_visible,
+    bool protections_on,
     CookieControlsEnforcement enforcement,
+    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
+  // TODO(b/317975095): Utilize `controls_visible` and `protections_on` in place
+  // of CookieControlsStatus.
   // Only invoke the callback when there is a change.
   if (status_ == status && enforcement_ == enforcement &&
       expiration_ == expiration) {
@@ -108,7 +75,8 @@ void CookieControlsBridge::OnStatusChanged(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CookieControlsBridge_onStatusChanged(
       env, jobject_, static_cast<int>(status_), static_cast<int>(enforcement_),
-      expiration.ToJavaTime());
+      static_cast<int>(blocking_status),
+      expiration.InMillisecondsSinceUnixEpoch());
 }
 
 void CookieControlsBridge::OnSitesCountChanged(
@@ -128,16 +96,18 @@ void CookieControlsBridge::OnSitesCountChanged(
       blocked_third_party_sites_count);
 }
 
-void CookieControlsBridge::OnBreakageConfidenceLevelChanged(
-    CookieControlsBreakageConfidenceLevel level) {
-  if (level_ == level) {
-    return;
-  }
-
-  level_ = level;
+void CookieControlsBridge::OnCookieControlsIconStatusChanged(
+    bool icon_visible,
+    bool protections_on,
+    CookieBlocking3pcdStatus blocking_status,
+    bool should_highlight) {
+  // This function's main use is for web's User Bypass icon, which
+  // does not observe `OnStatusChanged`. Since the Clank icon does
+  // observe `OnStatusChanged`, the only variable we need to pass
+  // on from this function is `should_highlight`.
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CookieControlsBridge_onBreakageConfidenceLevelChanged(
-      env, jobject_, static_cast<int>(level));
+  Java_CookieControlsBridge_onHighlightCookieControl(
+      env, jobject_, static_cast<bool>(should_highlight));
 }
 
 void CookieControlsBridge::SetThirdPartyCookieBlockingEnabledForSite(
@@ -156,10 +126,6 @@ void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
 
 int CookieControlsBridge::GetCookieControlsStatus(JNIEnv* env) {
   return static_cast<int>(controller_->GetCookieControlsStatus());
-}
-
-int CookieControlsBridge::GetBreakageConfidenceLevel(JNIEnv* env) {
-  return static_cast<int>(controller_->GetBreakageConfidenceLevel());
 }
 
 CookieControlsBridge::~CookieControlsBridge() = default;

@@ -74,10 +74,10 @@ extern const CGFloat kLocationBarVerticalMarginDynamicType;
 extern const CGFloat kTopToolbarUnsplitMargin;
 // Height of the omnibox in the toolbar. Used for both toolbars.
 extern const CGFloat kToolbarOmniboxHeight;
-// Height of the primary toolbar with default font size.
-extern const CGFloat kPrimaryToolbarHeight;
-// Height of the secondary toolbar with default font size.
-extern const CGFloat kSecondaryToolbarHeight;
+// Height of the primary toolbar with omnibox with default font size.
+extern const CGFloat kPrimaryToolbarWithOmniboxHeight;
+// Height of the secondary toolbar without the omnibox with default font size.
+extern const CGFloat kSecondaryToolbarWithoutOmniboxHeight;
 // Height of the part of the toolbar not scaling up when the user changes the
 // preferred font size.
 extern const CGFloat kNonDynamicToolbarHeight;

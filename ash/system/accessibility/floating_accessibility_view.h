@@ -8,6 +8,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shell_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -21,9 +22,9 @@ class FloatingMenuButton;
 class TrayBackgroundView;
 
 class FloatingAccessibilityBubbleView : public TrayBubbleView {
- public:
-  METADATA_HEADER(FloatingAccessibilityBubbleView);
+  METADATA_HEADER(FloatingAccessibilityBubbleView, TrayBubbleView)
 
+ public:
   explicit FloatingAccessibilityBubbleView(
       const TrayBubbleView::InitParams& init_params);
   FloatingAccessibilityBubbleView(const FloatingAccessibilityBubbleView&) =
@@ -35,6 +36,8 @@ class FloatingAccessibilityBubbleView : public TrayBubbleView {
   // TrayBubbleView:
   bool IsAnchoredToStatusArea() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
@@ -50,10 +53,11 @@ END_VIEW_BUILDER
 // ----  | [Change menu location]
 class FloatingAccessibilityView : public views::BoxLayoutView,
                                   public views::ViewObserver,
-                                  public KeyboardControllerObserver {
- public:
-  METADATA_HEADER(FloatingAccessibilityView);
+                                  public KeyboardControllerObserver,
+                                  public SystemTrayObserver {
+  METADATA_HEADER(FloatingAccessibilityView, views::BoxLayoutView)
 
+ public:
   // Used for testing. Starts 1 because views IDs should not be 0.
   enum ButtonId {
     kPosition = 1,
@@ -101,21 +105,23 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   // KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool visible) override;
 
+  // SystemTrayObserver:
+  void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnImeMenuTrayBubbleShown() override;
+
   // Feature buttons:
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> dictation_button_ = nullptr;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> select_to_speak_button_ =
-      nullptr;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> virtual_keyboard_button_ =
-      nullptr;
+  raw_ptr<TrayBackgroundView> dictation_button_ = nullptr;
+  raw_ptr<TrayBackgroundView> select_to_speak_button_ = nullptr;
+  raw_ptr<TrayBackgroundView> virtual_keyboard_button_ = nullptr;
 
   // Button to list all available features.
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> a11y_tray_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> a11y_tray_button_ = nullptr;
   // Button to move the view around corners.
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> position_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> position_button_ = nullptr;
   // Button to list all available keyboard languages.
-  raw_ptr<ImeMenuTray, ExperimentalAsh> ime_button_ = nullptr;
+  raw_ptr<ImeMenuTray> ime_button_ = nullptr;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

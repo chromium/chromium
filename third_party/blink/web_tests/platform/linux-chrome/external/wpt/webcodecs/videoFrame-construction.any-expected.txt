@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test we can construct a VideoFrame from a <video>.
+  assert_equals: codedWidth expected 320 but got 384
+Harness: the test ran to completion.

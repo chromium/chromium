@@ -31,6 +31,10 @@ namespace tab_groups {
 // chrome/browser/resources/tab_search/tab_group_color_helper.ts. As such these
 // colors should be kept in sync. Ex: Adding orange in this file,
 // requires adding orange in the other file.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tab_groups
+//
 enum class TabGroupColorId {
   kGrey = 0,
   kBlue = 1,
@@ -51,6 +55,12 @@ using ColorLabelMap = base::flat_map<TabGroupColorId, std::u16string>;
 // map for valid values.
 COMPONENT_EXPORT(TAB_GROUPS)
 const ColorLabelMap& GetTabGroupColorLabelMap();
+
+// Returns the least-used color in the color set, breaking ties toward the first
+// color in the set. Used to initialize a new group's color, which should be as
+// distinct from the other groups as possible.
+COMPONENT_EXPORT(TAB_GROUPS)
+TabGroupColorId GetNextColor(const std::vector<TabGroupColorId>& used_colors);
 
 }  // namespace tab_groups
 

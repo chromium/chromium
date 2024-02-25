@@ -1,0 +1,7 @@
+declare_args() {
+  if (!defined(gn_configs_path)) {
+    gn_configs_path = "//build/config/fuchsia/gn_configs.gni"
+  }
+}
+
+import(gn_configs_path)

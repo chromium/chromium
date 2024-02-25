@@ -18,15 +18,16 @@ namespace loginScreenStorage {
     // |extensionIds|: IDs of the extensions that should have access to the
     // stored data.
     // |data|: The data to store.
-    [supportsPromises] static void storePersistentData(DOMString[] extensionIds,
-                                                       DOMString data,
-                                                       StoreCallback callback);
+    static void storePersistentData(
+        DOMString[] extensionIds,
+        DOMString data,
+        StoreCallback callback);
 
     // Retrieves persistent data that was previously stored using
     // $(ref:storePersistentData) for the caller's extension ID.
     // |ownerId|: ID of the extension that saved the data that the caller is
     // trying to retrieve.
-    [supportsPromises] static void retrievePersistentData(
+    static void retrievePersistentData(
         DOMString ownerId,
         RetrieveCallback callback);
 
@@ -36,14 +37,15 @@ namespace loginScreenStorage {
     // these credentials. Credentials stored using this method are deleted on
     // session exit.
     // |credentials|: The credentials to store.
-    [supportsPromises] static void storeCredentials(DOMString extensionId,
-                                                    DOMString credentials,
-                                                    StoreCallback callback);
+    static void storeCredentials(
+        DOMString extensionId,
+        DOMString credentials,
+        StoreCallback callback);
 
     // Retrieves credentials that were previosly stored using
     // $(ref:storeCredentials). The caller's extension ID should be the same as
     // the extension id passed to the $(ref:storeCredentials).
-    [supportsPromises] static void retrieveCredentials(
+    static void retrieveCredentials(
         RetrieveCallback callback);
   };
 };

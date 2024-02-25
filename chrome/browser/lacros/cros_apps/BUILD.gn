@@ -1,0 +1,15 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_lacros)
+
+group("all_browser_tests") {
+  testonly = true
+  deps = [
+    "//chrome/browser/lacros/cros_apps/api/diagnostics:browser_tests",
+    "//chrome/browser/lacros/cros_apps/api/kiosk:browser_tests",
+  ]
+}

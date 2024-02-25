@@ -4,21 +4,19 @@
 
 package org.chromium.chrome.browser.optimization_guide;
 
+import org.jni_zero.CalledByNative;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
-/**
- * Unit test helper for OptimizationGuidePushNotificationManager.
- */
+/** Unit test helper for OptimizationGuidePushNotificationManager. */
 public class OptimizationGuidePushNotificationTestHelper {
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
     @CalledByNative
     private OptimizationGuidePushNotificationTestHelper() {}
@@ -26,7 +24,7 @@ public class OptimizationGuidePushNotificationTestHelper {
     @CalledByNative
     public void setUpMocks() {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
     }
 
     @CalledByNative
@@ -53,8 +51,9 @@ public class OptimizationGuidePushNotificationTestHelper {
 
     @CalledByNative
     public static boolean didOverflow(int optType) {
-        for (OptimizationType type : OptimizationGuidePushNotificationManager
-                                             .getOptTypesThatOverflowedPushNotifications()) {
+        for (OptimizationType type :
+                OptimizationGuidePushNotificationManager
+                        .getOptTypesThatOverflowedPushNotifications()) {
             if (type.getNumber() == optType) {
                 return true;
             }

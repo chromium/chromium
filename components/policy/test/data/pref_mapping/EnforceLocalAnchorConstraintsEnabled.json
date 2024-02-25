@@ -1,0 +1,46 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Policy not set. (The actual value isn't used as long as the pref is unmanaged.)",
+        "policies": {},
+        "prefs": {
+          "enforce_local_anchor_constraints_enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnforceLocalAnchorConstraintsEnabled": false
+        },
+        "prefs": {
+          "enforce_local_anchor_constraints_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnforceLocalAnchorConstraintsEnabled": true
+        },
+        "prefs": {
+          "enforce_local_anchor_constraints_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

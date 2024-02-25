@@ -4,12 +4,13 @@
 
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 
+#include "base/test/bind.h"
+#include "base/time/time_override.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
-namespace {
 
 constexpr int kDecoderId = 2;
 constexpr auto kEntryType = cc::TransferCacheEntryType::kRawMemory;
@@ -23,7 +24,7 @@ std::unique_ptr<cc::ServiceTransferCacheEntry> CreateEntry(size_t size) {
 }
 
 TEST(ServiceTransferCacheTest, EnforcesOnPurgeMemory) {
-  ServiceTransferCache cache{GpuPreferences()};
+  ServiceTransferCache cache{GpuPreferences(), base::RepeatingClosure()};
   uint32_t entry_id = 0u;
   size_t entry_size = 1024u;
   uint32_t number_of_entry = 4u;
@@ -59,7 +60,7 @@ TEST(ServiceTransferCacheTest, EnforcesOnPurgeMemory) {
 }
 
 TEST(ServiceTransferCache, MultipleDecoderUse) {
-  ServiceTransferCache cache{GpuPreferences()};
+  ServiceTransferCache cache{GpuPreferences(), base::RepeatingClosure()};
   const uint32_t entry_id = 0u;
   const size_t entry_size = 1024u;
 
@@ -86,7 +87,7 @@ TEST(ServiceTransferCache, MultipleDecoderUse) {
 }
 
 TEST(ServiceTransferCache, DeleteEntriesForDecoder) {
-  ServiceTransferCache cache{GpuPreferences()};
+  ServiceTransferCache cache{GpuPreferences(), base::RepeatingClosure()};
   const size_t entry_size = 1024u;
   const size_t cache_size = 4 * entry_size;
   cache.SetCacheSizeLimitForTesting(cache_size);
@@ -113,5 +114,27 @@ TEST(ServiceTransferCache, DeleteEntriesForDecoder) {
             nullptr);
 }
 
-}  // namespace
+TEST(ServiceTransferCacheTest, PurgeEntryOnTimer) {
+  static base::TimeTicks now_value = base::TimeTicks::Now();
+  base::subtle::ScopedTimeClockOverrides time_override(
+      nullptr, []() { return now_value; }, nullptr);
+
+  bool flush_called = false;
+  ServiceTransferCache cache{
+      GpuPreferences(),
+      base::BindLambdaForTesting([&]() { flush_called = true; })};
+
+  uint32_t entry_id = 0u;
+  size_t entry_size = 1024u;
+  cache.CreateLocalEntry(
+      ServiceTransferCache::EntryKey(kDecoderId, kEntryType, ++entry_id),
+      CreateEntry(entry_size));
+  EXPECT_EQ(cache.entries_count_for_testing(), 1u);
+
+  now_value = now_value + base::Minutes(1);
+  cache.PruneOldEntries();
+  EXPECT_EQ(cache.entries_count_for_testing(), 0u);
+  EXPECT_TRUE(flush_called);
+}
+
 }  // namespace gpu

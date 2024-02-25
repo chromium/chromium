@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -36,6 +37,7 @@
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -44,7 +46,6 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/shared_image_stub.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -69,7 +70,7 @@ namespace {
 
 struct CleanUpContext {
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
-  raw_ptr<SharedContextState, ExperimentalAsh> shared_context_state = nullptr;
+  raw_ptr<SharedContextState> shared_context_state = nullptr;
   std::unique_ptr<SkiaImageRepresentation> skia_representation;
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> skia_scoped_access;
 };
@@ -226,7 +227,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
   }
 
   std::vector<sk_sp<SkImage>> plane_sk_images;
-  absl::optional<base::ScopedClosureRunner> notify_gl_state_changed;
+  std::optional<base::ScopedClosureRunner> notify_gl_state_changed;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Right now, we only support YUV 4:2:0 for the output of the decoder (either
   // as YV12 or NV12).
@@ -300,7 +301,8 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     if (!channel_->shared_image_stub()->CreateSharedImage(
             mailbox, std::move(plane_handle), plane_format, plane_size,
             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-            SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
+            SHARED_IMAGE_USAGE_RASTER_READ |
+                SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
             "ImageDecodeAccelerator")) {
       DLOG(ERROR) << "Could not create SharedImage";
       return;
@@ -383,7 +385,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
 
   {
     auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
-    absl::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (gr_shader_cache)
       cache_use.emplace(gr_shader_cache,
                         base::strict_cast<int32_t>(channel_->client_id()));

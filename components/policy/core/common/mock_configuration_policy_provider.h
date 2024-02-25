@@ -27,7 +27,7 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider,
 
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));
   MOCK_CONST_METHOD1(IsFirstPolicyLoadComplete, bool(PolicyDomain domain));
-  MOCK_METHOD0(RefreshPolicies, void());
+  MOCK_METHOD1(RefreshPolicies, void(PolicyFetchReason reason));
 
   // Use this for a more accurate policy update events. Not using this may
   // may result in flaky tests where we expect an event to be propagated and

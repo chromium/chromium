@@ -29,9 +29,7 @@ import org.chromium.base.Log;
 public class TintedDrawable extends BitmapDrawable {
     private static final String TAG = "TD";
 
-    /**
-     * The set of colors that just be used for tinting this bitmap drawable.
-     */
+    /** The set of colors that just be used for tinting this bitmap drawable. */
     protected ColorStateList mTint;
 
     public TintedDrawable(Context context, Bitmap bitmap) {
@@ -71,29 +69,28 @@ public class TintedDrawable extends BitmapDrawable {
         updateTintColor();
     }
 
-    /**
-     * Sets the tint color for the given Drawable for all states.
-     * @param tint The tint.
-     */
     @Override
     public void setTint(@ColorInt int tint) {
+        // Use our bespoke tint implementation instead of calling into the base class.
         setTint(ColorStateList.valueOf(tint));
     }
 
-    /**
-     * Factory method for creating a {@link TintedDrawable} with a resource id.
-     */
+    @Override
+    public void setTintList(ColorStateList tint) {
+        // Use our bespoke tint implementation instead of calling into the base class.
+        setTint(tint);
+    }
+
+    /** Factory method for creating a {@link TintedDrawable} with a resource id. */
     public static TintedDrawable constructTintedDrawable(Context context, int drawableId) {
         assert !isVectorDrawable(context, drawableId)
-            : "TintedDrawable doesn't support "
-              + "VectorDrawables! Please use UiUtils.getTintedDrawable() instead.";
+                : "TintedDrawable doesn't support "
+                        + "VectorDrawables! Please use UiUtils.getTintedDrawable() instead.";
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), drawableId);
         return new TintedDrawable(context, icon);
     }
 
-    /**
-     * Factory method for creating a {@link TintedDrawable} with a resource id and specific tint.
-     */
+    /** Factory method for creating a {@link TintedDrawable} with a resource id and specific tint. */
     public static TintedDrawable constructTintedDrawable(
             Context context, int drawableId, int tintColorId) {
         TintedDrawable drawable = constructTintedDrawable(context, drawableId);

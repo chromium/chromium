@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintersBulkAccessMode": 1
+        },
+        "prefs": {
+          "native_printing.recommended_printers_access_mode": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_client_runtime.h"
 
@@ -32,7 +33,7 @@ class IosClientRuntimeDelegate : public ChromotingClientRuntime::Delegate {
 
  private:
   std::unique_ptr<IosOauthTokenGetter> token_getter_;
-  ChromotingClientRuntime* runtime_;
+  raw_ptr<ChromotingClientRuntime> runtime_;
 
   base::WeakPtrFactory<IosClientRuntimeDelegate> weak_factory_;
 };

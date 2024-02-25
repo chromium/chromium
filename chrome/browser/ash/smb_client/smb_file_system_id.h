@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_SMB_CLIENT_SMB_FILE_SYSTEM_ID_H_
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_FILE_SYSTEM_ID_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // Creates a FileSystemId by concatenating a random filesystem identifier and
 // |share_path| with a delimiter. The random ID is used so that the same share
@@ -39,10 +38,9 @@ bool IsKerberosChromadFileSystemId(const std::string& file_system_id);
 // Returns the username if |file_system_id| was constructed with
 // CreateFileSystemIdForUser(). Returns nullopt if |file_system_id| does not
 // store the username.
-absl::optional<std::string> GetUserFromFileSystemId(
+std::optional<std::string> GetUserFromFileSystemId(
     const std::string& file_system_id);
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_FILE_SYSTEM_ID_H_

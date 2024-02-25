@@ -165,10 +165,10 @@ std::string GetPageTextContent(content::WebContents* web_contents) {
 }
 
 std::string GetCertFingerprint1(const net::X509Certificate& cert) {
-  unsigned char hash[base::kSHA1Length];
+  uint8_t hash[base::kSHA1Length];
   base::SHA1HashBytes(CRYPTO_BUFFER_data(cert.cert_buffer()),
                       CRYPTO_BUFFER_len(cert.cert_buffer()), hash);
-  return base::ToLowerASCII(base::HexEncode(hash, base::kSHA1Length));
+  return base::ToLowerASCII(base::HexEncode(hash));
 }
 
 // Generates a gtest failure whenever extension JS reports failure.

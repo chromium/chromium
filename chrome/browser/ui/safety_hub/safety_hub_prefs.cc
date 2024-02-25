@@ -9,4 +9,6 @@
 void RegisterSafetyHubProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
+  registry->RegisterDictionaryPref(
+      safety_hub_prefs::kMenuNotificationsPrefsKey);
 }

@@ -15,16 +15,16 @@
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
-#import "components/autofill/core/browser/payments/payments_client.h"
+#import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/autofill_prefs.h"
-#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/security_state/ios/security_state_utils.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
 #import "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
@@ -78,16 +78,17 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       autocomplete_history_manager_(autocomplete_history_manager),
       web_state_(web_state),
       identity_manager_(identity_manager),
-      payments_client_(std::make_unique<payments::PaymentsClient>(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              web_state_->GetBrowserState()->GetURLLoaderFactory()),
-          identity_manager_,
-          personal_data_manager_,
-          web_state_->GetBrowserState()->IsOffTheRecord())),
+      payments_network_interface_(
+          std::make_unique<payments::PaymentsNetworkInterface>(
+              base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                  web_state_->GetBrowserState()->GetURLLoaderFactory()),
+              identity_manager_,
+              personal_data_manager_,
+              web_state_->GetBrowserState()->IsOffTheRecord())),
       form_data_importer_(
           std::make_unique<FormDataImporter>(this,
-                                             payments_client_.get(),
                                              personal_data_manager_,
+                                             /*history_service=*/nullptr,
                                              locale)),
       strike_database_(strike_database),
       sync_service_(sync_service),
@@ -107,13 +108,14 @@ WebViewAutofillClientIOS::GetURLLoaderFactory() {
       web_state_->GetBrowserState()->GetURLLoaderFactory());
 }
 
-AutofillDownloadManager* WebViewAutofillClientIOS::GetDownloadManager() {
-  if (!download_manager_) {
+AutofillCrowdsourcingManager*
+WebViewAutofillClientIOS::GetCrowdsourcingManager() {
+  if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    download_manager_ = std::make_unique<AutofillDownloadManager>(
+    crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
         this, GetChannel(), GetLogManager());
   }
-  return download_manager_.get();
+  return crowdsourcing_manager_.get();
 }
 
 PersonalDataManager* WebViewAutofillClientIOS::GetPersonalDataManager() {
@@ -152,8 +154,19 @@ FormDataImporter* WebViewAutofillClientIOS::GetFormDataImporter() {
   return form_data_importer_.get();
 }
 
-payments::PaymentsClient* WebViewAutofillClientIOS::GetPaymentsClient() {
-  return payments_client_.get();
+payments::PaymentsAutofillClient*
+WebViewAutofillClientIOS::GetPaymentsAutofillClient() {
+  if (!payments_autofill_client_) {
+    payments_autofill_client_ =
+        std::make_unique<payments::IOSWebViewPaymentsAutofillClient>(bridge_);
+  }
+
+  return payments_autofill_client_.get();
+}
+
+payments::PaymentsNetworkInterface*
+WebViewAutofillClientIOS::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
 }
 
 StrikeDatabase* WebViewAutofillClientIOS::GetStrikeDatabase() {
@@ -197,7 +210,8 @@ translate::TranslateDriver* WebViewAutofillClientIOS::GetTranslateDriver() {
   return nullptr;
 }
 
-void WebViewAutofillClientIOS::ShowAutofillSettings(PopupType popup_type) {
+void WebViewAutofillClientIOS::ShowAutofillSettings(
+    FillingProduct main_filling_product) {
   NOTREACHED();
 }
 
@@ -215,25 +229,6 @@ void WebViewAutofillClientIOS::OnUnmaskVerificationResult(
   [bridge_ didReceiveUnmaskVerificationResult:result];
 }
 
-void WebViewAutofillClientIOS::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const std::u16string&)> callback) {
-  NOTREACHED();
-}
-
-void WebViewAutofillClientIOS::ConfirmExpirationDateFixFlow(
-    const CreditCard& card,
-    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-        callback) {
-  NOTREACHED();
-}
-
-void WebViewAutofillClientIOS::ConfirmSaveCreditCardLocally(
-    const CreditCard& card,
-    SaveCreditCardOptions options,
-    LocalSaveCardPromptCallback callback) {
-  // No op. ios/web_view does not support local saves of autofill data.
-}
-
 void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
@@ -244,10 +239,6 @@ void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
                       legalMessageLines:legal_message_lines
                   saveCreditCardOptions:options
                                callback:std::move(callback)];
-}
-
-void WebViewAutofillClientIOS::CreditCardUploadCompleted(bool card_saved) {
-  [bridge_ handleCreditCardUploadCompleted:card_saved];
 }
 
 void WebViewAutofillClientIOS::ConfirmCreditCardFillAssist(
@@ -266,28 +257,27 @@ void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
 }
 
 void WebViewAutofillClientIOS::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile) {
+    const AutofillProfile& profile,
+    AddressProfileSavePromptCallback on_user_decision_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
   NOTREACHED();
 }
 
-void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog() {
+void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
+    const AutofillProfile& profile,
+    AddressProfileDeleteDialogCallback delete_dialog_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
   NOTREACHED();
 }
 
-bool WebViewAutofillClientIOS::HasCreditCardScanFeature() {
+bool WebViewAutofillClientIOS::HasCreditCardScanFeature() const {
   return false;
 }
 
 void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
-}
-
-bool WebViewAutofillClientIOS::IsTouchToFillCreditCardSupported() {
-  return false;
 }
 
 bool WebViewAutofillClientIOS::ShowTouchToFillCreditCard(
@@ -308,8 +298,7 @@ void WebViewAutofillClientIOS::ShowAutofillPopup(
 }
 
 void WebViewAutofillClientIOS::UpdateAutofillPopupDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
 }
 
@@ -330,7 +319,7 @@ AutofillClient::PopupOpenArgs WebViewAutofillClientIOS::GetReopenPopupArgs(
 
 void WebViewAutofillClientIOS::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }
@@ -348,18 +337,8 @@ bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
       password_manager::prefs::kCredentialsEnableService);
 }
 
-void WebViewAutofillClientIOS::PropagateAutofillPredictionsDeprecated(
-    AutofillDriver* driver,
-    const std::vector<FormStructure*>& forms) {
-  [bridge_
-      propagateAutofillPredictionsForForms:forms
-                                   inFrame:(static_cast<AutofillDriverIOS*>(
-                                                driver))
-                                               ->web_frame()];
-}
-
 void WebViewAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
@@ -389,13 +368,16 @@ bool WebViewAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
   return [bridge_ isLastQueriedField:field_id];
 }
 
-void WebViewAutofillClientIOS::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  [bridge_ loadRiskData:std::move(callback)];
-}
-
 LogManager* WebViewAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
+}
+
+void WebViewAutofillClientIOS::set_bridge(
+    id<CWVAutofillClientIOSBridge> bridge) {
+  bridge_ = bridge;
+  if (payments_autofill_client_) {
+    payments_autofill_client_->set_bridge(bridge);
+  }
 }
 
 }  // namespace autofill

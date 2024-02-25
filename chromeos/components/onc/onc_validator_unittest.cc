@@ -84,7 +84,7 @@ class ONCValidatorTest : public ::testing::Test {
  private:
   Validator::Result validation_result_;
   base::Value::Dict original_object_;
-  absl::optional<base::Value::Dict> repaired_object_;
+  std::optional<base::Value::Dict> repaired_object_;
 };
 
 namespace {
@@ -118,7 +118,7 @@ struct OncParams {
 // Ensure that the constant |kEmptyUnencryptedConfiguration| describes a valid
 // ONC toplevel object.
 TEST_F(ONCValidatorTest, EmptyUnencryptedConfiguration) {
-  absl::optional<base::Value::Dict> dict =
+  std::optional<base::Value::Dict> dict =
       ReadDictionaryFromJson(kEmptyUnencryptedConfiguration);
   EXPECT_TRUE(dict.has_value());
   Validate(true, std::move(dict.value()), &kToplevelConfigurationSignature,
@@ -191,6 +191,22 @@ INSTANTIATE_TEST_SUITE_P(
                   ::onc::ONC_SOURCE_DEVICE_POLICY),
         // AllowTextMessages is only allowed for device policies.
         OncParams("managed_toplevel_with_cellular_text_messages.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
+        // RecommendedValuesAreEphemeral is only allowed for device policies.
+        OncParams("managed_toplevel_with_recommended_values_ephemeral.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
+        // UserCreatedNetworkConfigurationsAreEphemeral is only allowed for
+        // device policies.
+        OncParams("managed_toplevel_with_user_created_configs_ephemeral.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
+        // AllowModifyApns is only allowed for device policies.
+        OncParams("managed_toplevel_with_apns.onc",
                   &kToplevelConfigurationSignature,
                   true,
                   ::onc::ONC_SOURCE_DEVICE_POLICY),

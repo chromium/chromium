@@ -28,42 +28,32 @@ public class WebHistoryItemChromium extends WebHistoryItem {
         mFavicon = entry.getFavicon();
     }
 
-    /**
-     * See {@link android.webkit.WebHistoryItem#getId}.
-     */
+    /** See {@link android.webkit.WebHistoryItem#getId}. */
     @Override
     public int getId() {
         // This method is deprecated in superclass. Returning constant -1 now.
         return -1;
     }
 
-    /**
-     * See {@link android.webkit.WebHistoryItem#getUrl}.
-     */
+    /** See {@link android.webkit.WebHistoryItem#getUrl}. */
     @Override
     public String getUrl() {
         return mUrl.getSpec();
     }
 
-    /**
-     * See {@link android.webkit.WebHistoryItem#getOriginalUrl}.
-     */
+    /** See {@link android.webkit.WebHistoryItem#getOriginalUrl}. */
     @Override
     public String getOriginalUrl() {
         return mOriginalUrl.getSpec();
     }
 
-    /**
-     * See {@link android.webkit.WebHistoryItem#getTitle}.
-     */
+    /** See {@link android.webkit.WebHistoryItem#getTitle}. */
     @Override
     public String getTitle() {
         return mTitle;
     }
 
-    /**
-     * See {@link android.webkit.WebHistoryItem#getFavicon}.
-     */
+    /** See {@link android.webkit.WebHistoryItem#getFavicon}. */
     @Override
     public Bitmap getFavicon() {
         return mFavicon;
@@ -77,13 +67,10 @@ public class WebHistoryItemChromium extends WebHistoryItem {
         mFavicon = favicon;
     }
 
-    /**
-     * See {@link android.webkit.WebHistoryItem#clone}.
-     */
+    /** See {@link android.webkit.WebHistoryItem#clone}. */
     @SuppressWarnings("NoSynchronizedMethodCheck")
     @Override
-    public synchronized WebHistoryItemChromium
-    clone() {
+    public synchronized WebHistoryItemChromium clone() {
         return new WebHistoryItemChromium(mUrl, mOriginalUrl, mTitle, mFavicon);
     }
 }

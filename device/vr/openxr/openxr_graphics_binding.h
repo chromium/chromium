@@ -10,8 +10,12 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -20,6 +24,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gl/scoped_egl_image.h"
 #endif
@@ -32,7 +37,12 @@ namespace gpu {
 class SharedImageInterface;
 }  // namespace gpu
 
+namespace viz {
+class ContextProvider;
+}  // namespace viz
+
 namespace device {
+class OpenXrViewConfiguration;
 
 // TODO(https://crbug.com/1441072): Refactor this class.
 struct SwapChainInfo {
@@ -48,8 +58,10 @@ struct SwapChainInfo {
   SwapChainInfo& operator=(SwapChainInfo&&);
 
   void Clear();
+  gpu::MailboxHolder GetMailboxHolder() const;
 
-  gpu::MailboxHolder mailbox_holder;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  gpu::SyncToken sync_token;
 
 #if BUILDFLAG(IS_WIN)
   // When shared images are being used, there is a corresponding MailboxHolder
@@ -69,8 +81,8 @@ struct SwapChainInfo {
   // This property isn't android-specific but it is currently unused on Windows.
   gfx::Size shared_buffer_size{0, 0};
 
-  // Shared GpuMemoryBuffer
-  std::unique_ptr<gpu::GpuMemoryBufferImplAndroidHardwareBuffer> gmb;
+  // This owns a single reference to an AHardwareBuffer object.
+  base::android::ScopedHardwareBufferHandle scoped_ahb_handle;
 
   // This object keeps the image alive while processing a frame. That's
   // required because it owns underlying resources, and must still be
@@ -105,9 +117,6 @@ class OpenXrGraphicsBinding {
   virtual XrResult EnumerateSwapchainImages(
       const XrSwapchain& color_swapchain) = 0;
 
-  // Clears the list of images allocated during `EnumerateSwapchainImages`.
-  virtual void ClearSwapChainImages() = 0;
-
   // Returns a list of mutable SwapChainInfo objects. While the items themselves
   // are mutable, the list is not.
   // TODO(https://crbug.com/1441072): Make SwapChainInfo internal to the child
@@ -134,8 +143,23 @@ class OpenXrGraphicsBinding {
   virtual bool WaitOnFence(gfx::GpuFence& gpu_fence) = 0;
 
   // Causes the GraphicsBinding to render the currently active swapchain image.
-  // TODO(https://crbug.com/1454943): Make pure virtual
-  virtual bool Render();
+  virtual bool Render(
+      const scoped_refptr<viz::ContextProvider>& context_provider) = 0;
+
+  // Called when a frame is going to end without any attempt at rendering, in
+  // case there is any early cleanup to do that would otherwise occur during
+  // `Render`.
+  virtual void CleanupWithoutSubmit() = 0;
+
+  // Sets the layers for each view in the view configuration, which are
+  // submitted back to OpenXR on xrEndFrame. This is where we specify where in
+  // the texture each view is, as well as the properties of the views.
+  void PrepareViewConfigForRender(const XrSwapchain& color_swapchain,
+                                  OpenXrViewConfiguration& view_config);
+
+  // Returns whether or not the current Swapchain is actually using SharedImages
+  // or not.
+  bool IsUsingSharedImages();
 
   // Returns the previously set swapchain image size, or 0,0 if one is not set.
   gfx::Size GetSwapchainImageSize();
@@ -166,7 +190,54 @@ class OpenXrGraphicsBinding {
   // the next frame.
   XrResult ReleaseActiveSwapchainImage(XrSwapchain color_swapchain);
 
+  // Clears the list of images allocated during `EnumerateSwapchainImages` and
+  // if a context_provider is provided and the Swapchain entries have had
+  // corresponding SharedImages created via `CreateSharedImages` will also clean
+  // up those SharedImages.
+  void DestroySwapchainImages(viz::ContextProvider* context_provider);
+
+  // Called to indicate which of Overlay and WebXR content is expected to be
+  // composited during calls to `Render`.
+  virtual void SetOverlayAndWebXrVisibility(bool overlay_visible,
+                                            bool webxr_visible) = 0;
+
+// There are three different paths that submitting an image can take. In two of
+// them, we provide the surface/image for the page to draw into. The third is
+// only supported on Windows or via the overlay code and requires submitting
+// a texture handle to us, which we don't own. The first two rendering methods
+// will have their data tied to the active swapchain image, but for the third
+// method, we don't have to do any lifecycle management and will just hold a
+// reference to the latest submitted texture. It will be valid until we end the
+// frame, but can then be overwritten independently during the cycle. Since this
+// third code-path only exists on Windows we restrict this method to that
+// platform.
+#if BUILDFLAG(IS_WIN)
+  virtual void SetWebXrTexture(mojo::PlatformHandle texture_handle,
+                               const gpu::SyncToken& sync_token,
+                               const gfx::RectF& left,
+                               const gfx::RectF& right) = 0;
+#endif
+
+  // Much like the `SetWebXrTexture` path above, the texture submitted here is
+  // owned by the browser process with corresponding lifetime management
+  // and synchronization happening there. It's valid until we tell it we're done
+  // with the texture, but it's not tied to a swapchain info the same way that
+  // the page's textures are, so we provide this additional method and simply
+  // overwrite the overlay whenever we receive it.
+  virtual bool SetOverlayTexture(mojo::PlatformHandle texture_handle,
+                                 const gpu::SyncToken& sync_token,
+                                 const gfx::RectF& left,
+                                 const gfx::RectF& right) = 0;
+
  protected:
+  // Internal helper to clear the list of images allocated during
+  // `EnumerateSwapchainImages`, since the child classes own the actual list.
+  virtual void ClearSwapchainImages() = 0;
+
+  // Indicates whether the graphics binding expects the submitted image to need
+  // to be flipped when being submitted to the runtime.
+  virtual bool ShouldFlipSubmittedImage() = 0;
+
   // Will be called when SetSwapchainImageSize is called, even if a change is
   // not made, to allow child classes/concrete implementations to override any
   // state that they may need to override as a result of the swapchain image
@@ -178,11 +249,7 @@ class OpenXrGraphicsBinding {
   // Called at the end of ActivateSwapchainImage. Allows Children to setup the
   // appropriate image to be rendered to by, e.g. Render calls, if that needs
   // to happen ahead of time.
-  // TODO(https://crbug.com/1454938): Currently only used on Windows. Is it
-  // actually needed prior to the draw calls happening? Could the logic be
-  // condensed into Render along with the other calls needed to render to the
-  // texture?
-  virtual void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) {}
+  virtual void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) = 0;
 
   // Used to access the active swapchain index as returned by the system. This
   // class does not attempt to use the index in conjunction with

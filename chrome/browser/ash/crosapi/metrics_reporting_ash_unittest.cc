@@ -28,12 +28,12 @@ class TestObserver : public mojom::MetricsReportingObserver {
   // crosapi::mojom::MetricsReportingObserver:
   void OnMetricsReportingChanged(
       bool enabled,
-      const absl::optional<std::string>& client_id) override {
+      const std::optional<std::string>& client_id) override {
     metrics_enabled_ = enabled;
   }
 
   // Public because this is test code.
-  absl::optional<bool> metrics_enabled_;
+  std::optional<bool> metrics_enabled_;
   mojo::Receiver<mojom::MetricsReportingObserver> receiver_{this};
 };
 

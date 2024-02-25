@@ -16,15 +16,19 @@
 // The views-specific implementation of InfoBarContainer.
 class InfoBarContainerView : public views::AccessiblePaneView,
                              public infobars::InfoBarContainer {
+  METADATA_HEADER(InfoBarContainerView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(InfoBarContainerView);
   explicit InfoBarContainerView(Delegate* delegate);
   InfoBarContainerView(const InfoBarContainerView&) = delete;
   InfoBarContainerView& operator=(const InfoBarContainerView&) = delete;
   ~InfoBarContainerView() override;
 
+  // Returns true if there are no infobars.
+  bool IsEmpty() const;
+
   // views::AccessiblePaneView:
-  void Layout() override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
 

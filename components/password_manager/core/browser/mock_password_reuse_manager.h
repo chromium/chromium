@@ -19,13 +19,14 @@ class MockPasswordReuseManager : public PasswordReuseManager {
   MOCK_METHOD(void,
               Init,
               (PrefService * prefs,
+               PrefService* local_prefs,
                PasswordStoreInterface* profile_store,
-               PasswordStoreInterface* account_store),
+               PasswordStoreInterface* account_store,
+               std::unique_ptr<PasswordReuseDetector> password_reuse_detector,
+               signin::IdentityManager* identity_manager,
+               std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate),
               (override));
-  MOCK_METHOD(void,
-              ReportMetrics,
-              (const std::string& username, bool is_under_advanced_protection),
-              (override));
+  MOCK_METHOD(void, ReportMetrics, (const std::string& username), (override));
   MOCK_METHOD(void,
               CheckReuse,
               (const std::u16string& input,
@@ -66,6 +67,11 @@ class MockPasswordReuseManager : public PasswordReuseManager {
               (std::unique_ptr<PasswordStoreSigninNotifier> notifier),
               (override));
   MOCK_METHOD(void, ScheduleEnterprisePasswordURLUpdate, (), (override));
+  MOCK_METHOD(void,
+              MaybeSavePasswordHash,
+              (const PasswordForm* submitted_form,
+               PasswordManagerClient* client),
+              (override));
 };
 
 }  // namespace password_manager

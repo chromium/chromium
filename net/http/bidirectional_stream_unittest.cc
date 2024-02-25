@@ -22,6 +22,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_request_info.h"
 #include "net/http/http_network_session.h"
@@ -429,10 +430,11 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     session_deps_.socket_factory->AddSocketDataProvider(sequenced_data_.get());
     session_deps_.net_log = NetLog::Get();
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-    SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
-                       PRIVACY_MODE_DISABLED,
-                       SpdySessionKey::IsProxySession::kFalse, socket_tag,
-                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+    SpdySessionKey key(host_port_pair_, PRIVACY_MODE_DISABLED,
+                       ProxyChain::Direct(), SessionUsage::kDestination,
+                       socket_tag, NetworkAnonymizationKey(),
+                       SecureDnsPolicy::kAllow,
+                       /*disable_cert_verification_network_fetches=*/false);
     session_ =
         CreateSpdySession(http_session_.get(), key,
                           NetLogWithSource::Make(NetLogSourceType::NONE));
@@ -490,8 +492,7 @@ TEST_F(BidirectionalStreamTest, SimplePostRequest) {
   request_info->url = default_url_;
   request_info->extra_headers.SetHeader(net::HttpRequestHeaders::kContentLength,
                                         base::NumberToString(kBodyDataSize));
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(std::move(request_info), http_session_.get());
@@ -543,10 +544,8 @@ TEST_F(BidirectionalStreamTest, LoadTimingTwoRequests) {
   request_info2->url = default_url_;
   request_info2->end_stream_on_headers = true;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
-  scoped_refptr<IOBuffer> read_buffer2 =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
+  auto read_buffer2 = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   auto delegate2 =
@@ -621,18 +620,18 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   session_deps_.socket_factory->AddSocketDataProvider(&socket_data2);
 
   http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-  SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
-                     PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+  SpdySessionKey key(host_port_pair_, PRIVACY_MODE_DISABLED,
+                     ProxyChain::Direct(), SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false);
   auto request_info = std::make_unique<BidirectionalStreamRequestInfo>();
   request_info->method = "GET";
   request_info->url = default_url_;
   request_info->end_stream_on_headers = true;
   request_info->priority = LOWEST;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
 
@@ -691,8 +690,7 @@ TEST_F(BidirectionalStreamTest, TestReadDataAfterClose) {
   request_info->end_stream_on_headers = true;
   request_info->priority = LOWEST;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   // Create a MockTimer. Retain a raw pointer since the underlying
   // BidirectionalStreamImpl owns it.
   auto timer = std::make_unique<MockTimer>();
@@ -779,8 +777,7 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
       net::HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto timer = std::make_unique<MockTimer>();
   MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
@@ -916,8 +913,7 @@ TEST_F(BidirectionalStreamTest, TestInterleaveReadDataAndSendData) {
       net::HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto timer = std::make_unique<MockTimer>();
   MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
@@ -1007,8 +1003,7 @@ TEST_F(BidirectionalStreamTest, TestCoalesceSmallDataBuffers) {
       net::HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 1));
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto timer = std::make_unique<MockTimer>();
   auto delegate = std::make_unique<TestDelegateBase>(
       read_buffer.get(), kReadBufferSize, std::move(timer));
@@ -1097,8 +1092,7 @@ TEST_F(BidirectionalStreamTest, TestCompleteAsyncRead) {
   request_info->priority = LOWEST;
   request_info->end_stream_on_headers = true;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto timer = std::make_unique<MockTimer>();
   MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
@@ -1158,8 +1152,7 @@ TEST_F(BidirectionalStreamTest, TestBuffering) {
   request_info->priority = LOWEST;
   request_info->end_stream_on_headers = true;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto timer = std::make_unique<MockTimer>();
   MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
@@ -1232,8 +1225,7 @@ TEST_F(BidirectionalStreamTest, TestBufferingWithTrailers) {
 
   InitSession(reads, writes, SocketTag());
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto timer = std::make_unique<MockTimer>();
   MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
@@ -1307,8 +1299,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamAfterSendData) {
       net::HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->set_do_not_start_read(true);
@@ -1370,8 +1361,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringReadData) {
       net::HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->set_do_not_start_read(true);
@@ -1430,8 +1420,7 @@ TEST_F(BidirectionalStreamTest, PropagateProtocolError) {
       net::HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->SetRunUntilCompletion(true);
@@ -1491,8 +1480,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnHeadersReceived) {
   request_info->priority = LOWEST;
   request_info->end_stream_on_headers = true;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize,
       DeleteStreamDelegate::Phase::ON_HEADERS_RECEIVED);
@@ -1545,8 +1533,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnDataRead) {
   request_info->priority = LOWEST;
   request_info->end_stream_on_headers = true;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize,
       DeleteStreamDelegate::Phase::ON_DATA_READ);
@@ -1604,8 +1591,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnTrailersReceived) {
   request_info->priority = LOWEST;
   request_info->end_stream_on_headers = true;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize,
       DeleteStreamDelegate::Phase::ON_TRAILERS_RECEIVED);
@@ -1655,8 +1641,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnFailed) {
   request_info->priority = LOWEST;
   request_info->end_stream_on_headers = true;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize,
       DeleteStreamDelegate::Phase::ON_FAILED);
@@ -1709,8 +1694,7 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
   request_info->priority = LOWEST;
   request_info->end_stream_on_headers = true;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto timer = std::make_unique<MockTimer>();
   auto delegate = std::make_unique<TestDelegateBase>(
       read_buffer.get(), kReadBufferSize, std::move(timer));
@@ -1766,8 +1750,7 @@ TEST_F(BidirectionalStreamTest, Tagging) {
   request_info->extra_headers.SetHeader(net::HttpRequestHeaders::kContentLength,
                                         base::NumberToString(kBodyDataSize));
   request_info->socket_tag = tag;
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(std::move(request_info), http_session_.get());

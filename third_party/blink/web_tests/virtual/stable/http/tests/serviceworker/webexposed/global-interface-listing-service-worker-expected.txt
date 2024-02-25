@@ -537,6 +537,7 @@ interface FileSystemHandle
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
+    getter mode
     method constructor
     method seek
     method truncate
@@ -1202,6 +1203,7 @@ interface Request
     getter referrer
     getter referrerPolicy
     getter signal
+    getter targetAddressSpace
     getter url
     method arrayBuffer
     method blob
@@ -1283,6 +1285,23 @@ interface ServiceWorkerRegistration : EventTarget
     method unregister
     method update
     setter onupdatefound
+interface StorageBucket
+    attribute @@toStringTag
+    getter caches
+    getter indexedDB
+    getter name
+    method constructor
+    method estimate
+    method expires
+    method getDirectory
+    method persisted
+    method setExpires
+interface StorageBucketManager
+    attribute @@toStringTag
+    method constructor
+    method delete
+    method keys
+    method open
 interface StorageManager : EventTarget
     attribute @@toStringTag
     method constructor
@@ -1416,6 +1435,7 @@ interface TrustedTypePolicyFactory : EventTarget
     method isScript
     method isScriptURL
 interface URL
+    static method canParse
     attribute @@toStringTag
     getter hash
     getter host
@@ -1444,6 +1464,7 @@ interface URL
     setter username
 interface URLPattern
     attribute @@toStringTag
+    getter hasRegExpGroups
     getter hash
     getter hostname
     getter password
@@ -2040,6 +2061,7 @@ interface WebGL2RenderingContext
     attribute ZERO
     getter canvas
     getter drawingBufferColorSpace
+    getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
     getter unpackColorSpace
@@ -2120,6 +2142,7 @@ interface WebGL2RenderingContext
     method drawElements
     method drawElementsInstanced
     method drawRangeElements
+    method drawingBufferStorage
     method enable
     method enableVertexAttribArray
     method endQuery
@@ -2480,8 +2503,10 @@ interface WebGLRenderingContext
     attribute RGB
     attribute RGB565
     attribute RGB5_A1
+    attribute RGB8
     attribute RGBA
     attribute RGBA4
+    attribute RGBA8
     attribute SAMPLER_2D
     attribute SAMPLER_CUBE
     attribute SAMPLES
@@ -2596,6 +2621,7 @@ interface WebGLRenderingContext
     attribute ZERO
     getter canvas
     getter drawingBufferColorSpace
+    getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
     getter unpackColorSpace
@@ -2646,6 +2672,7 @@ interface WebGLRenderingContext
     method disableVertexAttribArray
     method drawArrays
     method drawElements
+    method drawingBufferStorage
     method enable
     method enableVertexAttribArray
     method finish
@@ -2901,6 +2928,7 @@ interface WorkerNavigator
     getter platform
     getter product
     getter storage
+    getter storageBuckets
     getter userAgent
     getter userAgentData
     method clearAppBadge

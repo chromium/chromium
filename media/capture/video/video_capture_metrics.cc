@@ -4,6 +4,7 @@
 
 #include "media/capture/video/video_capture_metrics.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -145,6 +146,14 @@ VideoResolutionDesignation ResolutionNameFromSize(gfx::Size frame_size) {
                                   : VideoResolutionDesignation::kUnknown;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class VideoEffectStatus {
+  kUnsupported = 0,
+  kSupported = 1,
+  kMaxValue = kSupported
+};
+
 }  // namespace
 
 namespace media {
@@ -199,6 +208,35 @@ void LogCaptureDeviceHashedModelId(
     }
   }
   UMA_HISTOGRAM_SPARSE("Media.VideoCapture.Device.Opened.ByModelId", mapping);
+}
+
+void LogCaptureDeviceEffects(mojom::PhotoStatePtr photo_state) {
+  const bool has_background_blur =
+      photo_state->supported_background_blur_modes &&
+      base::Contains(photo_state->supported_background_blur_modes.value(),
+                     mojom::BackgroundBlurMode::BLUR);
+  UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.Device.Effect.BackgroundBlur",
+                            has_background_blur
+                                ? VideoEffectStatus::kSupported
+                                : VideoEffectStatus::kUnsupported);
+
+  const bool has_face_framing =
+      photo_state->supported_face_framing_modes &&
+      photo_state->supported_face_framing_modes.value().size() > 0;
+  UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.Device.Effect.FaceFraming",
+                            has_face_framing ? VideoEffectStatus::kSupported
+                                             : VideoEffectStatus::kUnsupported);
+
+  const bool has_eye_gaze_correction =
+      photo_state->supported_eye_gaze_correction_modes &&
+      (base::Contains(photo_state->supported_eye_gaze_correction_modes.value(),
+                      mojom::EyeGazeCorrectionMode::ON) ||
+       base::Contains(photo_state->supported_eye_gaze_correction_modes.value(),
+                      mojom::EyeGazeCorrectionMode::STARE));
+  UMA_HISTOGRAM_ENUMERATION(
+      "Media.VideoCapture.Device.Effect.EyeGazeCorrection",
+      has_eye_gaze_correction ? VideoEffectStatus::kSupported
+                              : VideoEffectStatus::kUnsupported);
 }
 
 void LogCaptureCurrentDeviceResolution(int width, int height) {

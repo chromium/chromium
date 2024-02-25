@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 struct AutocompleteMatch;
@@ -32,16 +31,17 @@ class TabMatcher;
 class ZeroSuggestCacheService;
 class AutocompleteScoringModelService;
 class OnDeviceTailModelService;
+struct ProviderStateService;
 
 namespace bookmarks {
-class BookmarkModel;
+class CoreBookmarkModel;
 }
 
 namespace history {
 class HistoryService;
 class URLDatabase;
 class TopSites;
-}
+}  // namespace history
 
 namespace history_clusters {
 class HistoryClustersService;
@@ -79,8 +79,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual history::HistoryService* GetHistoryService() = 0;
   virtual history_clusters::HistoryClustersService* GetHistoryClustersService();
   virtual scoped_refptr<history::TopSites> GetTopSites() = 0;
-  virtual bookmarks::BookmarkModel* GetLocalOrSyncableBookmarkModel() = 0;
-  virtual bookmarks::BookmarkModel* GetAccountBookmarkModel() = 0;
+  virtual bookmarks::CoreBookmarkModel* GetBookmarkModel() = 0;
   virtual history::URLDatabase* GetInMemoryDatabase() = 0;
   virtual InMemoryURLIndex* GetInMemoryURLIndex() = 0;
   virtual TemplateURLService* GetTemplateURLService() = 0;
@@ -100,6 +99,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const = 0;
   virtual OnDeviceTailModelService* GetOnDeviceTailModelService() const = 0;
+  virtual ProviderStateService* GetProviderStateService() const = 0;
 
   // The value to use for Accept-Languages HTTP header when making an HTTP
   // request.
@@ -194,6 +194,11 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
 
   // Returns true if the sharing hub command is enabled.
   virtual bool IsSharingHubAvailable() const;
+
+  // Returns whether the app is currently in the background state (Mobile only).
+  virtual bool in_background_state() const;
+
+  virtual void set_in_background_state(bool in_background_state) {}
 
   // Gets a weak pointer to the client. Used when providers need to use the
   // client when the client may no longer be around.

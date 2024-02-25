@@ -15,8 +15,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 /**
  * Base class for tests related to checking connectivity.
  *
- * It includes a {@link ConnectivityTestServer} which is set up and torn down automatically
- * for tests.
+ * <p>It includes a {@link ConnectivityTestServer} which is set up and torn down automatically for
+ * tests.
  */
 public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
     public static final int TIMEOUT_MS = 5000;
@@ -30,34 +30,41 @@ public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                setUp();
-                base.evaluate();
-            }
-        }, description);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        setUp();
+                        base.evaluate();
+                    }
+                },
+                description);
     }
 
     public String getGenerated200Url() {
         return mGenerated200Url;
     }
+
     public String getGenerated204Url() {
         return mGenerated204Url;
     }
+
     public String getGenerated302Url() {
         return mGenerated302Url;
     }
+
     public String getGenerated404Url() {
         return mGenerated404Url;
     }
+
     public String getGeneratedSlowUrl() {
         return mGeneratedSlowUrl;
     }
 
     private void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mGenerated200Url = mTestServer.getURL("/echo?status=200");
         mGenerated204Url = mTestServer.getURL("/echo?status=204");
         mGenerated302Url = mTestServer.getURL("/echo?status=302");

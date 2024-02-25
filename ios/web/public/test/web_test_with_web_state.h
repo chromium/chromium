@@ -66,7 +66,7 @@ class WebTestWithWebState : public WebTest {
   void WaitForBackgroundTasks();
   // Blocks until known NSRunLoop-based have completed, known message-loop-based
   // background tasks have completed and `condition` evaluates to true.
-  void WaitForCondition(ConditionBlock condition);
+  [[nodiscard]] bool WaitForCondition(ConditionBlock condition);
   // Blocks until web_state() navigation and background tasks are
   // completed. Returns false when timed out.
   bool WaitUntilLoaded();

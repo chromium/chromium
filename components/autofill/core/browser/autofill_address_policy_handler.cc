@@ -16,7 +16,7 @@ AutofillAddressPolicyHandler::AutofillAddressPolicyHandler()
     : TypeCheckingPolicyHandler(policy::key::kAutofillAddressEnabled,
                                 base::Value::Type::BOOLEAN) {}
 
-AutofillAddressPolicyHandler::~AutofillAddressPolicyHandler() {}
+AutofillAddressPolicyHandler::~AutofillAddressPolicyHandler() = default;
 
 void AutofillAddressPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,

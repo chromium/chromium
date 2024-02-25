@@ -27,6 +27,8 @@ class ChromeGuestViewManagerDelegate
 
   // GuestViewManagerDelegate:
   void OnGuestAdded(content::WebContents* guest_web_contents) const override;
+  bool IsOwnedByControlledFrameEmbedder(
+      const guest_view::GuestViewBase* guest) override;
 };
 
 }  // namespace extensions

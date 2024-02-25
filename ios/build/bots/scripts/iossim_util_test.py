@@ -102,8 +102,9 @@ RUNTIMES_LIST = {
     "111111": {
         "build": "21A111111",
         "deletable": True,
-        "identifier": "11111",
+        "identifier": "111111",
         "kind": "Disk Image",
+        "lastUsedAt": "2023-09-28T21:57:06Z",
         "mountPath": "path/to/mount",
         "path": "path/to/runtime/111111.dmg",
         "platformIdentifier": "com.apple.platform.iphonesimulator",
@@ -141,6 +142,35 @@ RUNTIMES_LIST = {
         "sizeBytes": 12596879360,
         "state": "Ready",
         "version": "11.4"
+    },
+    "444444": {
+        "build": "21A444444",
+        "deletable": True,
+        "identifier": "444444",
+        "kind": "Disk Image",
+        "lastUsedAt": "2022-09-28T21:57:06Z",
+        "path": "path/to/runtime/444444.simruntime",
+        "platformIdentifier": "com.apple.platform.iphonesimulator",
+        "runtimeBundlePath": "path/to/bundle/runtime/444444.simruntime",
+        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-14-1",
+        "signatureState": "Unknown",
+        "sizeBytes": 12596879361,
+        "state": "Ready",
+        "version": "14.1"
+    },
+    "555555": {
+        "build": "555555",
+        "deletable": True,
+        "identifier": "555555",
+        "kind": "Disk Image",
+        "path": "path/to/runtime/555555.simruntime",
+        "platformIdentifier": "com.apple.platform.iphonesimulator",
+        "runtimeBundlePath": "path/to/bundle/runtime/555555.simruntime",
+        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-15-1",
+        "signatureState": "Unknown",
+        "sizeBytes": 12596879362,
+        "state": "Ready",
+        "version": "15.1"
     }
 }
 
@@ -187,9 +217,9 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     """Ensures that SimulatorNotFoundError raises if no runtime."""
     with self.assertRaises(test_runner.SimulatorNotFoundError) as context:
       iossim_util.get_simulator_runtime_by_version(
-          iossim_util.get_simulator_list(), '13.2')
+          iossim_util.get_simulator_list(), '13.3')
     expected_message = ('Simulator does not exist: Not found '
-                        '"13.2" SDK in runtimes')
+                        '"13.3" SDK in runtimes')
     self.assertTrue(expected_message in str(context.exception))
 
   def test_get_simulator_device_type_by_platform(self, _, _2):
@@ -302,6 +332,18 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     # ensure subprocess.check_call was only called 3 times
     self.assertEqual(check_call_mock.call_count, 3)
 
+  def test_get_simulator_runtime_info_by_build(self, _, _2):
+    runtime = iossim_util.get_simulator_runtime_info_by_build('21A111111')
+    self.assertIsNotNone(runtime)
+    self.assertEqual(runtime['version'], '13.1')
+    self.assertEqual(runtime['identifier'], '111111')
+
+  def test_get_simulator_runtime_info_by_id(self, _, _2):
+    runtime = iossim_util.get_simulator_runtime_info_by_id('111111')
+    self.assertIsNotNone(runtime)
+    self.assertEqual(runtime['version'], '13.1')
+    self.assertEqual(runtime['identifier'], '111111')
+
   def test_get_simulator_runtime_info(self, _, _2):
     runtime = iossim_util.get_simulator_runtime_info('13.1')
     self.assertIsNotNone(runtime)
@@ -359,23 +401,49 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertEqual(check_output_mock.call_count, 1)
 
   def test_delete_simulator_runtime_and_wait_success(self, _, _2):
-    with mock.patch('iossim_util.get_simulator_runtime_info') \
+    with mock.patch('iossim_util.get_simulator_runtime_info_by_id') \
+        as mock_get_runtime_info_by_id, \
+        mock.patch('iossim_util.get_simulator_runtime_info') \
         as mock_get_runtime_info, \
         mock.patch('iossim_util.delete_simulator_runtime') \
         as mock_delete_runtime:
-      mock_get_runtime_info.side_effect = [
+      mock_get_runtime_info_by_id.side_effect = [
           {
               'identifier': '111111',
               'state': 'deleting'
           },
           None,
       ]
+      mock_get_runtime_info.return_value = {
+          'identifier': '111111',
+          'state': 'ready'
+      }
       mock_delete_runtime.return_value = None
 
       iossim_util.delete_simulator_runtime_and_wait('13.1')
 
       mock_get_runtime_info.assert_called_with('13.1')
-      mock_delete_runtime.assert_called_once_with('111111')
+      mock_delete_runtime.assert_called_once_with('111111', True)
+
+  def test_delete_least_recently_used_simulator_runtimes(self, _, _2):
+    with mock.patch('iossim_util.delete_simulator_runtime') \
+       as mock_delete_simulator_runtime:
+      iossim_util.delete_least_recently_used_simulator_runtimes(1)
+
+      calls = [
+          mock.call('444444', True),
+          mock.call('555555', True),
+      ]
+
+      self.assertEqual(mock_delete_simulator_runtime.call_count, 2)
+      mock_delete_simulator_runtime.assert_has_calls(calls, any_order=True)
+
+  def test_delete_least_recently_used_simulator_runtimes_no_op(self, _, _2):
+    with mock.patch('iossim_util.delete_simulator_runtime') \
+       as mock_delete_simulator_runtime:
+      iossim_util.delete_least_recently_used_simulator_runtimes()
+
+      self.assertEqual(mock_delete_simulator_runtime.call_count, 0)
 
   def test_disable_hardware_keyboard(self, _, _2):
     """Ensures right commands are issued to disable hardware keyboard"""

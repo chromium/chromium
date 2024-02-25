@@ -51,6 +51,9 @@ class PolicyTestBase : public testing::Test {
   bool RegisterSchema(const PolicyNamespace& ns,
                       const std::string& schema);
 
+  // Register the actual Chrome schema containing supported policies.
+  void RegisterChromeSchema(const PolicyNamespace& ns);
+
   // Needs to be the first member
   base::test::TaskEnvironment task_environment_;
   SchemaRegistry schema_registry_;
@@ -73,6 +76,9 @@ class PolicyProviderTestHarness {
 
   // Actions to run at gtest SetUp() time.
   virtual void SetUp() = 0;
+
+  // Actions to run at gtest TearDown() time.
+  virtual void TearDown() {}
 
   // Create a new policy provider.
   virtual ConfigurationPolicyProvider* CreateProvider(

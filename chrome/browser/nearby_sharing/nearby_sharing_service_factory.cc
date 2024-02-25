@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/power_client_chromeos.h"
@@ -24,6 +24,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,8 +36,8 @@ namespace {
 constexpr char kServiceName[] = "NearbySharingService";
 constexpr char kServiceId[] = "NearbySharing";
 
-absl::optional<bool>& IsSupportedTesting() {
-  static absl::optional<bool> is_supported;
+std::optional<bool>& IsSupportedTesting() {
+  static std::optional<bool> is_supported;
   return is_supported;
 }
 
@@ -53,6 +54,11 @@ bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
     content::BrowserContext* context) {
   if (IsSupportedTesting().has_value()) {
     return *IsSupportedTesting();
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kAllowCrossDeviceFeatureSuite)) {
+    return false;
   }
 
   if (!base::FeatureList::IsEnabled(features::kNearbySharing)) {
@@ -122,8 +128,8 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<NearbyConnectionsManagerImpl>(process_manager,
                                                      kServiceId);
 
-  NS_LOG(VERBOSE) << __func__
-                  << ": creating NearbySharingService for primary profile";
+  CD_LOG(VERBOSE, Feature::NS)
+      << __func__ << ": creating NearbySharingService for primary profile";
 
   return std::make_unique<NearbySharingServiceImpl>(
       pref_service, notification_display_service, profile,

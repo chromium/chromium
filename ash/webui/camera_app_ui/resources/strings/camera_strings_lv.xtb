@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Dzēst <ph name="PAGE_NUMBER" />. lapu</translation>
 <translation id="1113173431709655881">Kameras režīms</translation>
 <translation id="1153190633558910465">Režģis izslēgts</translation>
-<translation id="1175958423215084756">Konstatēta saite. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. lapa ir izdzēsta</translation>
 <translation id="1258009455399840361">Pagriezt par 90 grādiem pulksteņrādītāja kustības virzienā</translation>
 <translation id="1417314334557041815">Rediģēt <ph name="INDEX" />. lapu</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Bīdīt pa labi</translation>
 <translation id="3081586908890909590">Ieslēdziet, lai ierakstītu videoklipu</translation>
 <translation id="313467653172006084">30 kadri/s</translation>
+<translation id="3158534262962737808">Pievienoties tīklam “<ph name="WIFINAME" />”</translation>
 <translation id="3227137524299004712">Mikrofons</translation>
 <translation id="3240426699337459095">Saite nokopēta</translation>
 <translation id="3354465018370944241">Fotoattēlu iestatījumi</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Notiek videoklipa apstrāde…</translation>
 <translation id="3789724198583203151">Pagriezt par 90 grādiem pretēji pulksteņrādītāju kustības virzienam</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="4060608699153044055">Nevar veikt ierakstīšanu, jo ierīces krātuvē ir maz brīvas vietas. Lai varētu sākt ierakstīšanu, ierīcē ir jāatbrīvo vieta.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pārtraukt ierakstīšanu</translation>
 <translation id="4121305183798804752">Konstatēts dokuments</translation>
 <translation id="414641094616694804">Šai kamerai nevar mainīt izšķirtspēju</translation>
 <translation id="4176463684765177261">Atspējota</translation>
-<translation id="4269820728363426813">Kopēt saites adresi</translation>
 <translation id="428234092390943511">Lapas sīktēls</translation>
 <translation id="4349714250734879769">Mērogot ietvarus atbilstoši pārlūkam Chrome</translation>
 <translation id="4383571725254449280">Drukāt veiktspējas žurnālus</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Pilna izšķirtspēja</translation>
 <translation id="4864143361253542638">Skenēto lapu saraksts</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopēt saites adresi: <ph name="URL" /></translation>
 <translation id="491895758387112773">Straumēt video ierakstu vairākos kanālos</translation>
 <translation id="495170559598752135">Darbības</translation>
 <translation id="4984613436295737187">QHD (1440p)</translation>
 <translation id="5034763830503483128">Fotoattēla malu attiecība</translation>
 <translation id="5057360777601936059">Kamera šobrīd nav pieejama.
         Lūdzu, pārbaudiet, vai kamera ir pareizi pievienota.</translation>
+<translation id="5157591164390831335">Tika konstatēts URL.</translation>
 <translation id="5163387177077603948">Pārvietojas pa labi</translation>
-<translation id="5219374179772385066">Tagad ir pieejams intervāla fotografēšanas režīms.</translation>
 <translation id="5235304959032763950">16 pret 9</translation>
 <translation id="5266635337630551423">Dokumenta augšējais kreisais stūris</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Paldies, ka sniedzat atsauksmi par lietotni Kamera.
 
 Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet fotoattēla vai videoklipa paraugu un aprakstiet problēmu. (Piemēram, norādiet, ja fotoattēls ir pārāk tumšs vai fotografējamā persona vai priekšmets nav fokusā.)</translation>
+<translation id="6519884562954018934">Pievienoties tīklam <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6617916774429601017">Rādīt visus risinājumus</translation>
 <translation id="6631515515009660915">Spogulis izslēgts</translation>
@@ -133,6 +133,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="7450541714075000668">Teksts ir nokopēts</translation>
 <translation id="7488619942230388918">Ierakstīt GIF videoklipu</translation>
 <translation id="7557677699350329807">Pārslēgties uz nākamo kameru</translation>
+<translation id="7562584071994185503">Kopēt tekstu: <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Apturēta</translation>
 <translation id="7608223098072244877">4 pa 4</translation>
 <translation id="761421184377987513">Pārvietojas uz leju un pa kreisi</translation>
@@ -155,10 +156,12 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="8346544573713510785">Mērogot ietvarus atbilstoši kameras HAL</translation>
 <translation id="8425673304802773841">Pavirzīt lejup</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
+<translation id="8609951387004618906">Atvērt vietni: <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofona izslēgšanas slēdzis. Mikrofons ir izslēgts.</translation>
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8732462232047530626">Priekšskatīt metadatus</translation>
+<translation id="874854738381978209">Tika atrasts Wi‑Fi tīkls.</translation>
 <translation id="8815966864175525708">Pārslēgt uz portretu uzņemšanu</translation>
 <translation id="8828441885228359828">Atsākt ierakstīšanu</translation>
 <translation id="8870695351537079478">Nevar sākt ierakstīšanu</translation>

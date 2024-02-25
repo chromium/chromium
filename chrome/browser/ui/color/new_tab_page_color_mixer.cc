@@ -27,9 +27,9 @@ constexpr float kNtpElementLuminosityChangeForDarkBackgroundParam = 0.2f;
 
 ui::ColorTransform GetContrastingColorTransform(
     ui::ColorTransform input_transform,
-    absl::optional<float> luminosity_change = absl::nullopt) {
+    std::optional<float> luminosity_change = std::nullopt) {
   const auto generator = [](ui::ColorTransform input_transform,
-                            const absl::optional<float> luminosity_change,
+                            const std::optional<float> luminosity_change,
                             SkColor input_color, const ui::ColorMixer& mixer) {
     const SkColor color = input_transform.Run(input_color, mixer);
     const float default_luminosity_change =
@@ -61,6 +61,38 @@ ui::ColorTransform IncreaseLightness(ui::ColorTransform input_transform,
     return result_color;
   };
   return base::BindRepeating(generator, std::move(input_transform), percent);
+}
+
+ui::ColorTransform SelectBasedOnNtpBackground(
+    ui::ColorTransform output_transform_for_white_input,
+    ui::ColorTransform output_transform_for_black_input,
+    ui::ColorTransform default_output_transform_for_input) {
+  const auto generator =
+      [](ui::ColorTransform output_transform_for_white_input,
+         ui::ColorTransform output_transform_for_black_input,
+         ui::ColorTransform default_output_transform_for_input,
+         SkColor input_color, const ui::ColorMixer& mixer) {
+        const ui::ColorTransform input_transform = {kColorNewTabPageBackground};
+        const SkColor color = input_transform.Run(input_color, mixer);
+        const auto& output_transform =
+            (color == SK_ColorWHITE)
+                ? output_transform_for_white_input
+                : ((color == SK_ColorBLACK)
+                       ? output_transform_for_black_input
+                       : default_output_transform_for_input);
+        const SkColor result_color = output_transform.Run(input_color, mixer);
+        DVLOG(2) << "ColorTransform SelectBasedOnNtpBackground:"
+                 << " Input Color: " << ui::SkColorName(input_color)
+                 << " Input Transform: " << ui::SkColorName(color)
+                 << " IsWhite: " << (color == SK_ColorWHITE ? "true" : "false")
+                 << " IsBlack: " << (color == SK_ColorBLACK ? "true" : "false")
+                 << " Result Color: " << ui::SkColorName(result_color);
+        return result_color;
+      };
+  return base::BindRepeating(generator,
+                             std::move(output_transform_for_white_input),
+                             std::move(output_transform_for_black_input),
+                             std::move(default_output_transform_for_input));
 }
 
 ui::ColorTransform SelectBasedOnWhiteInput(
@@ -103,9 +135,15 @@ ui::ColorTransform SelectBasedOnWhiteNtpBackground(
 // compute appropriate contrasting background and foreground element colors and
 // use these to style elements.
 void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
-  ui::ColorTransform element_background_color = SelectBasedOnWhiteNtpBackground(
-      kColorNewTabPageBackground,
-      GetContrastingColorTransform(kColorNewTabPageBackground));
+  ui::ColorTransform element_background_color =
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)
+          ? SelectBasedOnNtpBackground(
+                kColorNewTabPageBackground, {gfx::kGoogleGrey900},
+                GetContrastingColorTransform(kColorNewTabPageBackground))
+          : SelectBasedOnWhiteNtpBackground(
+                kColorNewTabPageBackground,
+                GetContrastingColorTransform(kColorNewTabPageBackground));
+
   ui::ColorTransform primary_foreground_color =
       ui::GetColorWithMaxContrast(element_background_color);
   ui::ColorTransform themed_foreground_color = SelectBasedOnWhiteNtpBackground(
@@ -147,11 +185,19 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageLogo] = element_background_color;
   mixer[kColorNewTabPageLink] = themed_foreground_color;
   mixer[kColorNewTabPageFirstRunBackground] = {kColorNewTabPageBackground};
-  mixer[kColorNewTabPageModuleBackground] = element_background_color;
+
   mixer[kColorNewTabPageChipBackground] =
       select_topmost_element_background_color;
   mixer[kColorNewTabPageChipForeground] =
       select_topmost_element_foreground_color;
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
+    mixer[kColorNewTabPageModuleBackground] =
+        SelectBasedOnWhiteInput({kColorNewTabPageBackground},
+                                gfx::kGoogleGrey100, element_background_color);
+  } else {
+    mixer[kColorNewTabPageModuleBackground] = element_background_color;
+  }
   mixer[kColorNewTabPageModuleItemBackground] = {kColorNewTabPageBackground};
 
   mixer[kColorNewTabPageHistoryClustersModuleItemBackground] =
@@ -160,6 +206,8 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
 
   mixer[kColorNewTabPageModuleControlBorder] = SelectBasedOnWhiteNtpBackground(
       gfx::kGoogleGrey300, kColorNewTabPageBackground);
+  mixer[kColorNewTabPageModuleElementDivider] = {
+      kColorNewTabPageModuleBackground};
   mixer[kColorNewTabPageMostVisitedForeground] = SelectBasedOnDarkInput(
       element_background_color, SK_ColorWHITE, gfx::kGoogleGrey800);
   mixer[kColorNewTabPageMostVisitedTileBackground] =
@@ -184,20 +232,6 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
                    /* 90% opacity */ 0.9 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageText] = SelectBasedOnDarkInput(
       element_background_color, gfx::kGoogleGrey200, gfx::kGoogleGrey900);
-
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kNtpComprehensiveThemeRealbox)) {
-    ui::ColorTransform background_color =
-        ui::GetColorWithMaxContrast(primary_foreground_color);
-    mixer[kColorRealboxBackground] = element_background_color;
-    mixer[kColorRealboxBackgroundHovered] = {
-        kColorToolbarBackgroundSubtleEmphasisHovered};
-    mixer[kColorRealboxForeground] = primary_foreground_color;
-    const ui::ColorTransform secondary_foreground_color =
-        SelectBasedOnWhiteNtpBackground(gfx::kGoogleGrey700,
-                                        primary_foreground_color);
-    mixer[kColorRealboxPlaceholder] = secondary_foreground_color;
-  }
 }
 
 // Dialog colors currently track the native theme and not the browser theme.
@@ -296,6 +330,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
 
+  mixer[kColorRealboxAnswerIconBackground] = {SkColorSetRGB(0xD3, 0xE3, 0xFD)};
+  mixer[kColorRealboxAnswerIconForeground] = {SkColorSetRGB(0x04, 0x1E, 0x49)};
   mixer[kColorRealboxBackground] = {SK_ColorWHITE};
   mixer[kColorRealboxBackgroundHovered] = {SK_ColorWHITE};
   mixer[kColorRealboxBorder] = {
@@ -308,10 +344,15 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorRealboxResultsBackgroundHovered] =
       ui::SetAlpha(gfx::kGoogleGrey900,
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
-  mixer[kColorRealboxResultsControlBackgroundHovered] =
-      ui::SetAlpha(gfx::kGoogleGrey900, /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
+  mixer[kColorRealboxResultsButtonHover] = {
+      kColorRealboxResultsBackgroundHovered};
 
+  mixer[kColorRealboxResultsActionChip] = {SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorRealboxResultsActionChipIcon] = {SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorRealboxResultsActionChipFocusOutline] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
   mixer[kColorRealboxResultsDimSelected] = {gfx::kGoogleGrey700};
+  mixer[kColorRealboxResultsFocusIndicator] = {gfx::kGoogleBlue600};
   mixer[kColorRealboxResultsForeground] = {SK_ColorBLACK};
   mixer[kColorRealboxResultsForegroundDimmed] = {gfx::kGoogleGrey700};
   mixer[kColorRealboxResultsIconSelected] = {gfx::kGoogleGrey700};
@@ -323,36 +364,6 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorRealboxShadow] =
       ui::SetAlpha(gfx::kGoogleGrey900,
                    (dark_mode ? /* % opacity */ 0.32 : 0.28) * SK_AlphaOPAQUE);
-
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kNtpComprehensiveThemeRealbox)) {
-    if (dark_mode) {
-      mixer[kColorRealboxBackground] = {kColorToolbarBackgroundSubtleEmphasis};
-      mixer[kColorRealboxBackgroundHovered] = {
-          kColorToolbarBackgroundSubtleEmphasisHovered};
-    }
-
-    mixer[kColorRealboxForeground] = {ui::kColorTextfieldForeground};
-    mixer[kColorRealboxPlaceholder] = {kColorOmniboxTextDimmed};
-    mixer[kColorRealboxResultsBackground] = {kColorOmniboxResultsBackground};
-    mixer[kColorRealboxResultsBackgroundHovered] = {
-        kColorOmniboxResultsBackgroundHovered};
-    mixer[kColorRealboxResultsControlBackgroundHovered] = ui::SetAlpha(
-        ui::SelectBasedOnDarkInput(kColorRealboxBackground, gfx::kGoogleGrey200,
-                                   gfx::kGoogleGrey900),
-        /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
-    mixer[kColorRealboxResultsDimSelected] = {
-        kColorOmniboxResultsTextDimmedSelected};
-    mixer[kColorRealboxResultsForeground] = {kColorOmniboxText};
-    mixer[kColorRealboxResultsForegroundDimmed] = {
-        kColorOmniboxResultsTextDimmed};
-    mixer[kColorRealboxResultsIcon] = {kColorOmniboxResultsIcon};
-    mixer[kColorRealboxResultsIconSelected] = {
-        kColorOmniboxResultsIconSelected};
-    mixer[kColorRealboxResultsUrl] = {kColorOmniboxResultsUrl};
-    mixer[kColorRealboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
-    mixer[kColorRealboxSearchIconBackground] = {kColorOmniboxResultsIcon};
-  }
 
   AddWebThemeNewTabPageColors(mixer, dark_mode);
 
@@ -434,16 +445,20 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
     if (dark_mode) {
-      mixer[kColorNewTabPageModuleBackground] = {kColorNewTabPageBackground};
+      mixer[kColorNewTabPageModuleBackground] = {gfx::kGoogleGrey800};
     } else {
       mixer[kColorNewTabPageModuleBackground] = {gfx::kGoogleGrey100};
     }
+    mixer[kColorNewTabPageModuleItemBackgroundHovered] = {
+        kColorNewTabPageControlBackgroundHovered};
   } else {
     mixer[kColorNewTabPageModuleBackground] = {
         kColorNewTabPageBackgroundOverride};
   }
 
   mixer[kColorNewTabPageModuleContextMenuDivider] = {
+      {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey600}};
+  mixer[kColorNewTabPageModuleElementDivider] = {
       {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey600}};
   mixer[kColorNewTabPageModuleItemBackground] = {
       kColorNewTabPageBackgroundOverride};

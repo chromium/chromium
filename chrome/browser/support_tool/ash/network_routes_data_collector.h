@@ -50,7 +50,7 @@ class NetworkRoutesDataCollector : public DataCollector {
   // Is called when a GetRoutes() call to DebugDaemonClient succeeds. Checks the
   // contents of `routes` and appends its contents to `network_routes_`.
   void OnGetRoutes(base::RepeatingClosure barrier_closure,
-                   absl::optional<std::vector<std::string>> routes);
+                   std::optional<std::vector<std::string>> routes);
 
   // Is called when all GetRoutes() calls are done. Runs PII detection on
   // `task_runner_for_redaction_tool` for `network_routes_` and calls

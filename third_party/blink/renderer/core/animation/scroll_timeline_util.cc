@@ -22,7 +22,7 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
 
   auto* scroll_snapshot_timeline = To<ScrollSnapshotTimeline>(timeline);
   Node* scroll_source = scroll_snapshot_timeline->ResolvedSource();
-  absl::optional<CompositorElementId> element_id =
+  std::optional<CompositorElementId> element_id =
       GetCompositorScrollElementId(scroll_source);
 
   LayoutBox* box = scroll_snapshot_timeline->IsActive()
@@ -37,11 +37,11 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
       scroll_snapshot_timeline->GetResolvedScrollOffsets());
 }
 
-absl::optional<CompositorElementId> GetCompositorScrollElementId(
+std::optional<CompositorElementId> GetCompositorScrollElementId(
     const Node* node) {
   if (!node || !node->GetLayoutObject() ||
       !node->GetLayoutObject()->FirstFragment().PaintProperties()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CompositorElementIdFromUniqueObjectId(
       node->GetLayoutObject()->UniqueId(),

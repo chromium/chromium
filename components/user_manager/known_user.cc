@@ -7,13 +7,14 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -23,7 +24,6 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 namespace {
@@ -116,6 +116,9 @@ const char kTokenHandleRotatedObsolete[] = "TokenHandleRotated";
 // Cache of the auth factors configured for the user.
 const char kAuthFactorPresenceCache[] = "AuthFactorsPresenceCache";
 
+// Records for each user whether Lacros is enabled.
+const char kLacrosEnabled[] = "lacros_enabled";
+
 // List containing all the known user preferences keys.
 const char* kReservedKeys[] = {kCanonicalEmail,
                                kGAIAIdKey,
@@ -139,7 +142,8 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kPasswordSyncToken,
                                kOnboardingCompletedVersion,
                                kPendingOnboardingScreen,
-                               kAuthFactorPresenceCache};
+                               kAuthFactorPresenceCache,
+                               kLacrosEnabled};
 
 // List containing all known user preference keys that used to be reserved and
 // are now obsolete.
@@ -209,18 +213,15 @@ void UpdateIdentity(const AccountId& account_id, base::Value::Dict& dict) {
 
 // Checks for platform-specific known users matching given |user_email|. If
 // data matches a known account, returns it.
-absl::optional<AccountId> GetPlatformKnownUserId(
+std::optional<AccountId> GetPlatformKnownUserId(
     const base::StringPiece user_email) {
   if (user_email == kStubUserEmail) {
     return StubAccountId();
   }
-  if (user_email == kStubAdUserEmail) {
-    return StubAdAccountId();
-  }
   if (user_email == kGuestUserName) {
     return GuestAccountId();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -257,7 +258,7 @@ const base::Value::Dict* KnownUser::FindPrefs(
 
 void KnownUser::SetPath(const AccountId& account_id,
                         const std::string& path,
-                        absl::optional<base::Value> opt_value) {
+                        std::optional<base::Value> opt_value) {
   // UserManager is usually NULL in unit tests.
   if (account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY &&
       UserManager::IsInitialized() &&
@@ -317,11 +318,11 @@ void KnownUser::SetStringPref(const AccountId& account_id,
   SetPath(account_id, path, base::Value(in_value));
 }
 
-absl::optional<bool> KnownUser::FindBoolPath(const AccountId& account_id,
-                                             base::StringPiece path) const {
+std::optional<bool> KnownUser::FindBoolPath(const AccountId& account_id,
+                                            base::StringPiece path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
-    return absl::nullopt;
+    return std::nullopt;
 
   return user_pref_dict->FindBoolByDottedPath(path);
 }
@@ -342,11 +343,11 @@ void KnownUser::SetBooleanPref(const AccountId& account_id,
   SetPath(account_id, path, base::Value(in_value));
 }
 
-absl::optional<int> KnownUser::FindIntPath(const AccountId& account_id,
-                                           base::StringPiece path) const {
+std::optional<int> KnownUser::FindIntPath(const AccountId& account_id,
+                                          base::StringPiece path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
-    return absl::nullopt;
+    return std::nullopt;
 
   return user_pref_dict->FindIntByDottedPath(path);
 }
@@ -389,12 +390,12 @@ void KnownUser::RemovePref(const AccountId& account_id,
   for (const std::string& key : kReservedKeys)
     CHECK_NE(path, key);
 
-  SetPath(account_id, path, absl::nullopt);
+  SetPath(account_id, path, std::nullopt);
 }
 
 AccountId KnownUser::GetAccountId(const std::string& user_email,
                                   const std::string& id,
-                                  const AccountType& account_type) {
+                                  const AccountType& account_type) const {
   DCHECK((id.empty() && account_type == AccountType::UNKNOWN) ||
          (!id.empty() && account_type != AccountType::UNKNOWN));
   // In tests empty accounts are possible.
@@ -405,7 +406,7 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
 
   // UserManager is usually NULL in unit tests.
   if (account_type == AccountType::UNKNOWN) {
-    if (absl::optional<AccountId> result = GetPlatformKnownUserId(user_email);
+    if (std::optional<AccountId> result = GetPlatformKnownUserId(user_email);
         result.has_value()) {
       return result.value();
     }
@@ -478,7 +479,7 @@ AccountId KnownUser::GetAccountIdByCryptohomeId(
     }
   }
 
-  if (absl::optional<AccountId> result =
+  if (std::optional<AccountId> result =
           GetPlatformKnownUserId(cryptohome_id.value());
       result.has_value()) {
     return result.value();
@@ -571,7 +572,7 @@ void KnownUser::SetDeviceId(const AccountId& account_id,
   SetStringPref(account_id, kDeviceId, device_id);
 }
 
-std::string KnownUser::GetDeviceId(const AccountId& account_id) {
+std::string KnownUser::GetDeviceId(const AccountId& account_id) const {
   const std::string* device_id = FindStringPath(account_id, kDeviceId);
   if (device_id)
     return *device_id;
@@ -619,7 +620,7 @@ void KnownUser::SetProfileRequiresPolicy(const AccountId& account_id,
 
 ProfileRequiresPolicy KnownUser::GetProfileRequiresPolicy(
     const AccountId& account_id) {
-  absl::optional<bool> requires_policy =
+  std::optional<bool> requires_policy =
       FindBoolPath(account_id, kProfileRequiresPolicy);
   if (requires_policy.has_value()) {
     return requires_policy.value() ? ProfileRequiresPolicy::kPolicyRequired
@@ -629,7 +630,7 @@ ProfileRequiresPolicy KnownUser::GetProfileRequiresPolicy(
 }
 
 void KnownUser::ClearProfileRequiresPolicy(const AccountId& account_id) {
-  SetPath(account_id, kProfileRequiresPolicy, absl::nullopt);
+  SetPath(account_id, kProfileRequiresPolicy, std::nullopt);
 }
 
 void KnownUser::UpdateReauthReason(const AccountId& account_id,
@@ -637,7 +638,7 @@ void KnownUser::UpdateReauthReason(const AccountId& account_id,
   SetIntegerPref(account_id, kReauthReasonKey, reauth_reason);
 }
 
-absl::optional<int> KnownUser::FindReauthReason(
+std::optional<int> KnownUser::FindReauthReason(
     const AccountId& account_id) const {
   return FindIntPath(account_id, kReauthReasonKey);
 }
@@ -664,7 +665,7 @@ base::Time KnownUser::GetLastOnlineSignin(const AccountId& account_id) {
   const base::Value* value = FindPath(account_id, kLastOnlineSignin);
   if (!value)
     return base::Time();
-  absl::optional<base::Time> time = base::ValueToTime(value);
+  std::optional<base::Time> time = base::ValueToTime(value);
   if (!time)
     return base::Time();
   return *time;
@@ -672,16 +673,16 @@ base::Time KnownUser::GetLastOnlineSignin(const AccountId& account_id) {
 
 void KnownUser::SetOfflineSigninLimit(
     const AccountId& account_id,
-    absl::optional<base::TimeDelta> time_delta) {
+    std::optional<base::TimeDelta> time_delta) {
   if (!time_delta) {
-    SetPath(account_id, kOfflineSigninLimit, absl::nullopt);
+    SetPath(account_id, kOfflineSigninLimit, std::nullopt);
   } else {
     SetPath(account_id, kOfflineSigninLimit,
             base::TimeDeltaToValue(time_delta.value()));
   }
 }
 
-absl::optional<base::TimeDelta> KnownUser::GetOfflineSigninLimit(
+std::optional<base::TimeDelta> KnownUser::GetOfflineSigninLimit(
     const AccountId& account_id) {
   return base::ValueToTimeDelta(FindPath(account_id, kOfflineSigninLimit));
 }
@@ -761,37 +762,37 @@ const std::string* KnownUser::GetPasswordSyncToken(
 }
 
 void KnownUser::ClearPasswordSyncToken(const AccountId& account_id) {
-  SetPath(account_id, kPasswordSyncToken, absl::nullopt);
+  SetPath(account_id, kPasswordSyncToken, std::nullopt);
 }
 
 void KnownUser::SetOnboardingCompletedVersion(
     const AccountId& account_id,
-    const absl::optional<base::Version> version) {
+    const std::optional<base::Version> version) {
   if (!version) {
-    SetPath(account_id, kOnboardingCompletedVersion, absl::nullopt);
+    SetPath(account_id, kOnboardingCompletedVersion, std::nullopt);
   } else {
     SetStringPref(account_id, kOnboardingCompletedVersion,
                   version.value().GetString());
   }
 }
 
-absl::optional<base::Version> KnownUser::GetOnboardingCompletedVersion(
+std::optional<base::Version> KnownUser::GetOnboardingCompletedVersion(
     const AccountId& account_id) {
   const std::string* str_version =
       FindStringPath(account_id, kOnboardingCompletedVersion);
 
   if (!str_version)
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Version version = base::Version(*str_version);
   if (!version.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   return version;
 }
 
 void KnownUser::RemoveOnboardingCompletedVersionForTests(
     const AccountId& account_id) {
-  SetPath(account_id, kOnboardingCompletedVersion, absl::nullopt);
+  SetPath(account_id, kOnboardingCompletedVersion, std::nullopt);
 }
 
 void KnownUser::SetPendingOnboardingScreen(const AccountId& account_id,
@@ -800,7 +801,7 @@ void KnownUser::SetPendingOnboardingScreen(const AccountId& account_id,
 }
 
 void KnownUser::RemovePendingOnboardingScreen(const AccountId& account_id) {
-  SetPath(account_id, kPendingOnboardingScreen, absl::nullopt);
+  SetPath(account_id, kPendingOnboardingScreen, std::nullopt);
 }
 
 std::string KnownUser::GetPendingOnboardingScreen(const AccountId& account_id) {
@@ -810,6 +811,17 @@ std::string KnownUser::GetPendingOnboardingScreen(const AccountId& account_id) {
   }
   // Return empty string if no screen is pending.
   return std::string();
+}
+
+void KnownUser::SetLacrosEnabled(const AccountId& account_id, bool enabled) {
+  SetBooleanPref(account_id, kLacrosEnabled, enabled);
+}
+
+bool KnownUser::GetLacrosEnabledForAnyUser() {
+  const std::vector<AccountId> account_ids = GetKnownAccountIds();
+  return base::ranges::any_of(account_ids, [this](const AccountId& account_id) {
+    return FindBoolPath(account_id, kLacrosEnabled).value_or(false);
+  });
 }
 
 bool KnownUser::UserExists(const AccountId& account_id) {
@@ -836,7 +848,7 @@ void KnownUser::CleanEphemeralUsers() {
     if (!value.is_dict())
       return false;
 
-    absl::optional<bool> is_ephemeral = value.GetDict().FindBool(kIsEphemeral);
+    std::optional<bool> is_ephemeral = value.GetDict().FindBool(kIsEphemeral);
     return is_ephemeral && *is_ephemeral;
   });
 }

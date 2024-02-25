@@ -23,6 +23,8 @@ source_set("test_support") {
     "//components/sync_preferences",
   ]
 
+  public_deps = [ "media_app/test:test_support" ]
+
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]
   }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha15" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha15">
+<issues format="6" by="lint 8.3.0-alpha12" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha12">
 
     <issue
         id="WrongConstant"
@@ -57,17 +57,6 @@
     </issue>
 
     <issue
-        id="WrongConstant"
-        message="Must be one of: InputMode.UNKNOWN, InputMode.TRACKPAD, InputMode.TOUCH"
-        errorLine1="        for (int i = 0; i &lt; InputMode.NUM_ENTRIES; i++) {"
-        errorLine2="                                      ~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="340"
-            column="39"/>
-    </issue>
-
-    <issue
         id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableStartCompat` instead of `android:drawableStart`"
         errorLine1="        android:drawableStart=&quot;@drawable/ic_host_online&quot;"
@@ -76,50 +65,6 @@
             file="../../remoting/android/java/res/layout/host_online.xml"
             line="28"
             column="9"/>
-    </issue>
-
-    <issue
-        id="IntentWithNullActionLaunch"
-        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
-        errorLine1="        Intent intent = new Intent(activity, HelpActivity.class);"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/src/org/chromium/chromoting/help/HelpActivity.java"
-            line="56"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="IntentWithNullActionLaunch"
-        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
-        errorLine1="            startActivity(new Intent(this, CreditsActivity.class));"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/src/org/chromium/chromoting/help/HelpActivity.java"
-            line="139"
-            column="27"/>
-    </issue>
-
-    <issue
-        id="IntentWithNullActionLaunch"
-        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
-        errorLine1="                    chromoting.startActivity(new Intent(chromoting, TermsOfServiceActivity.class));"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/src/org/chromium/chromoting/NavigationMenuAdapter.java"
-            line="60"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="IntentWithNullActionLaunch"
-        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
-        errorLine1="                    chromoting.startActivity(new Intent(chromoting, PrivacyPolicyActivity.class));"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/src/org/chromium/chromoting/NavigationMenuAdapter.java"
-            line="65"
-            column="46"/>
     </issue>
 
     <issue
@@ -150,7 +95,7 @@
         errorLine1="  &lt;application android:label=&quot;@string/product_name_android&quot; android:name=&quot;org.chromium.chromoting.RemotingApplication&quot; android:icon=&quot;@mipmap/ic_launcher&quot; android:theme=&quot;@style/BaseTheme&quot; android:allowBackup=&quot;false&quot; android:resizeableActivity=&quot;true&quot; android:supportsPictureInPicture=&quot;false&quot;>"
         errorLine2="                                                                                                                                                                                                                ~~~~~">
         <location
-            file="gen/remoting/android/remoting_apk__lint/gen/remoting/android/AndroidManifest.xml"
+            file="gen/remoting/android/remoting_apk__lint/AndroidManifest.xml"
             line="16"
             column="209"/>
     </issue>
@@ -181,7 +126,7 @@
         id="RtlEnabled"
         message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
         <location
-            file="gen/remoting/android/remoting_apk__lint/gen/remoting/android/AndroidManifest.xml"/>
+            file="gen/remoting/android/remoting_apk__lint/AndroidManifest.xml"/>
     </issue>
 
 </issues>

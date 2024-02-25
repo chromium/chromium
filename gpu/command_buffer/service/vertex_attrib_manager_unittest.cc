@@ -32,14 +32,8 @@ class VertexAttribManagerTest : public GpuServiceTest {
   void SetUp() override {
     GpuServiceTest::SetUp();
 
-    for (uint32_t ii = 0; ii < kNumVertexAttribs; ++ii) {
-      EXPECT_CALL(*gl_, VertexAttrib4f(ii, 0.0f, 0.0f, 0.0f, 1.0f))
-          .Times(1)
-          .RetiresOnSaturation();
-    }
-
     manager_ = new VertexAttribManager(false);
-    manager_->Initialize(kNumVertexAttribs, true);
+    manager_->Initialize(kNumVertexAttribs);
     manager_->SetIsBound(true);
   }
 

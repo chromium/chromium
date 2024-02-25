@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(`
     <math definitionURL="x" id="main"></math>
   `, 'Test that attribute case is preserved when modifying MathML elements.');

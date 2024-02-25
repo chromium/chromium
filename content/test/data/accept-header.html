@@ -42,5 +42,11 @@ if ("SharedWorker" in window)
 navigator.serviceWorker.register('/service_worker.js')
 .catch(function(error) {});
 
+// TOOD(crbug.com/v8/13856): Use `with` once it's unflagged
+import("/test-css-module", { assert: { type: "css" } })
+.catch(function(error) {});
+
+import("/test-json-module", { assert: { type: "json" } })
+.catch(function(error) {});
 </script>
 </html>

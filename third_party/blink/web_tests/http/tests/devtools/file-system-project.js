@@ -8,15 +8,16 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as Host from 'devtools/core/host/host.js';
+import * as Persistence from 'devtools/models/persistence/persistence.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests file system project.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   function fileSystemUISourceCodes() {
     var uiSourceCodes = [];
-    var fileSystemProjects = Workspace.workspace.projectsForType(Workspace.projectTypes.FileSystem);
+    var fileSystemProjects = Workspace.Workspace.WorkspaceImpl.instance().projectsForType(Workspace.Workspace.projectTypes.FileSystem);
     for (var project of fileSystemProjects) {
       for (const uiSourceCode of project.uiSourceCodes()) {
         uiSourceCodes.push(uiSourceCode);
@@ -31,7 +32,7 @@ import * as Host from 'devtools/core/host/host.js';
         uiSourceCode.contentType() === Common.ResourceType.resourceTypes.Document)
       TestRunner.addResult(
           'UISourceCode is content script: ' +
-          (uiSourceCode.project().type() === Workspace.projectTypes.ContentScripts));
+          (uiSourceCode.project().type() === Workspace.Workspace.projectTypes.ContentScripts));
     uiSourceCode.requestContent().then(didRequestContent);
 
     function didRequestContent(content, contentEncoded) {
@@ -98,13 +99,13 @@ import * as Host from 'devtools/core/host/host.js';
       fs1.reportCreated(function() {});
       fs2.reportCreated(function() {});
 
-      Workspace.workspace.addEventListener(Workspace.Workspace.Events.UISourceCodeAdded, onUISourceCode);
+      Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.UISourceCodeAdded, onUISourceCode);
 
       var count = 3;
       function onUISourceCode() {
         if (--count)
           return;
-        Workspace.workspace.removeEventListener(Workspace.Workspace.Events.UISourceCodeAdded, onUISourceCode);
+        Workspace.Workspace.WorkspaceImpl.instance().removeEventListener(Workspace.Workspace.Events.UISourceCodeAdded, onUISourceCode);
         onUISourceCodesLoaded();
       }
 
@@ -117,7 +118,7 @@ import * as Host from 'devtools/core/host/host.js';
 
       function uiSourceCodesDumped() {
         dumpUISourceCodeLocations(uiSourceCodes, 5);
-        Workspace.workspace.addEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, contentCommitted, this);
+        Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, contentCommitted, this);
         uiSourceCodes[0].addRevision('<Modified UISourceCode content>');
       }
 
@@ -146,7 +147,7 @@ import * as Host from 'devtools/core/host/host.js';
     },
 
     function testExcludesSettings(next) {
-      Common.Settings.Settings.instance().createLocalSetting('workspaceExcludedFolders', {}).set({'file:///var/www2': ['/html/']});
+      Common.Settings.Settings.instance().createLocalSetting('workspace-excluded-folders', {}).set({'file:///var/www2': ['/html/']});
       createFileSystem('/var/www2', dumpExcludes);
 
       function dumpExcludes(fs) {
@@ -206,7 +207,7 @@ import * as Host from 'devtools/core/host/host.js';
       fs.reportCreated(dumpGitFolders);
 
       function dumpGitFolders() {
-        var isolatedFileSystem = Persistence.isolatedFileSystemManager.fileSystem('file:///var/www3');
+        var isolatedFileSystem = Persistence.IsolatedFileSystemManager.IsolatedFileSystemManager.instance().fileSystem('file:///var/www3');
         var folders = isolatedFileSystem.initialGitFolders();
         folders.sort();
         for (var gitFolder of folders)

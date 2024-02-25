@@ -83,7 +83,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return Data()[index];
   }
 
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
+  v8::Local<v8::Value> Wrap(ScriptState*) override;
 
  private:
   // Helper to verify that a given sub-range of an ArrayBuffer is within range.

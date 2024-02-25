@@ -5,6 +5,7 @@
 module viz.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
+import "components/viz/service/debugger/mojom/viz_debugger.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom";
@@ -36,13 +37,6 @@ struct FrameSinkManagerParams {
   DebugRendererSettings debug_renderer_settings;
 };
 
-// This interface provides mechanism for the Viz Debugger to output data.
-[EnableIf=use_viz_debugger]
-interface VizDebugOutput {
- // Called by the VizDebugger instance at the end of each frame.
- LogFrame(mojo_base.mojom.Value frameData);
-};
-
 // This is the primordial interface used to (re)start the viz services.
 interface VizMain {
   CreateFrameSinkManager(FrameSinkManagerParams params);
@@ -52,8 +46,9 @@ interface VizMain {
       pending_remote<GpuHost> gpu_host,
       pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      mojo_base.mojom.UnsafeSharedMemoryRegion? use_shader_cache_shm_count,
-      gfx.mojom.SubpixelRendering subpixel_rendering);
+      mojo_base.mojom.UnsafeSharedMemoryRegion? use_shader_cache_shm_count);
+
+  SetSubpixelRendering(gfx.mojom.SubpixelRendering subpixel_rendering);
 
   // Create a GPU info collection service provided by the info-collection GPU
   // process.

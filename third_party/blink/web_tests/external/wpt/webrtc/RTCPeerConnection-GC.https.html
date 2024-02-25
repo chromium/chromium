@@ -21,7 +21,10 @@ promise_test(async t => {
   ctx.fillStyle = "blue";
   const drawCanvas = () => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    t.step_timeout(drawCanvas, 50);
   };
+
+  drawCanvas();
 
   let pc1 = new RTCPeerConnection();
   let pc2 = new RTCPeerConnection();
@@ -32,20 +35,16 @@ promise_test(async t => {
 
   const destVideo = document.createElement('video');
   destVideo.autoplay = true;
+  destVideo.muted = true;
   const onVideoChange = async () => {
     const start = performance.now();
     const width = destVideo.videoWidth;
     const height = destVideo.videoHeight;
-    const resizeEvent = new Promise(r => destVideo.onresize = r);
     while (destVideo.videoWidth == width && destVideo.videoHeight == height) {
       if (performance.now() - start > 5000) {
         throw new Error("Timeout waiting for video size change");
       }
-      drawCanvas();
-      await Promise.race([
-        resizeEvent,
-        new Promise(r => requestAnimationFrame(r)),
-      ]);
+      await new Promise(r => t.step_timeout(r, 50));
     }
   };
 
@@ -69,7 +68,7 @@ promise_test(async t => {
   destVideo.srcObject = new MediaStream([(await haveTrackEvent).track]);
 
   // Wait for video on the other side.
-  await onVideoChange();
+  await destVideo.play();
   const color = getVideoSignal(destVideo);
   assert_not_equals(color, 0);
 

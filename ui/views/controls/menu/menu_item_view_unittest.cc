@@ -12,7 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/gfx/canvas.h"
@@ -53,6 +56,8 @@ namespace {
 
 // A simple View class that will match its height to the available width.
 class SquareView : public views::View {
+  METADATA_HEADER(SquareView, views::View)
+
  public:
   SquareView() = default;
   ~SquareView() override = default;
@@ -61,6 +66,9 @@ class SquareView : public views::View {
   gfx::Size CalculatePreferredSize() const override { return gfx::Size(1, 1); }
   int GetHeightForWidth(int width) const override { return width; }
 };
+
+BEGIN_METADATA(SquareView)
+END_METADATA
 
 }  // namespace
 
@@ -179,9 +187,11 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
     widget_->Show();
 
     menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
-    menu_item_view_ = new TestMenuItemView(menu_delegate_.get());
+    auto menu_item_view_owning =
+        std::make_unique<TestMenuItemView>(menu_delegate_.get());
+    menu_item_view_ = menu_item_view_owning.get();
     menu_runner_ = std::make_unique<MenuRunner>(
-        menu_item_view_, MenuRunner::USE_ASH_SYS_UI_LAYOUT);
+        std::move(menu_item_view_owning), MenuRunner::USE_ASH_SYS_UI_LAYOUT);
     menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(),
                             MenuAnchorPosition::kTopLeft,
                             ui::MENU_SOURCE_KEYBOARD);
@@ -294,6 +304,8 @@ namespace {
 // A fake View to check if GetHeightForWidth() is called with the appropriate
 // width value.
 class FakeView : public View {
+  METADATA_HEADER(FakeView, View)
+
  public:
   explicit FakeView(int expected_width) : expected_width_(expected_width) {}
   ~FakeView() override = default;
@@ -308,6 +320,9 @@ class FakeView : public View {
  private:
   const int expected_width_;
 };
+
+BEGIN_METADATA(FakeView)
+END_METADATA
 
 }  // namespace
 
@@ -351,7 +366,9 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
     menu_delegate_ = CreateMenuDelegate();
-    menu_item_view_ = new MenuItemView(menu_delegate_.get());
+    auto menu_item_view_owning =
+        std::make_unique<MenuItemView>(menu_delegate_.get());
+    menu_item_view_ = menu_item_view_owning.get();
 
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
@@ -359,10 +376,12 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    menu_runner_ = std::make_unique<MenuRunner>(menu_item_view_, 0);
+    menu_runner_ =
+        std::make_unique<MenuRunner>(std::move(menu_item_view_owning), 0);
   }
 
   void TearDown() override {
+    menu_item_view_ = nullptr;
     widget_->CloseNow();
     ViewsTestBase::TearDown();
   }
@@ -374,7 +393,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
 
  private:
   // Owned by MenuRunner.
-  raw_ptr<MenuItemView, DanglingUntriaged> menu_item_view_;
+  raw_ptr<MenuItemView> menu_item_view_ = nullptr;
 
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
@@ -436,19 +455,19 @@ TEST_F(MenuItemViewPaintUnitTest, CustomColorAssertionCoverage) {
   ui::ColorId background_color = ui::kColorComboboxBackground;
   ui::ColorId foreground_color = ui::kColorDropdownForeground;
   ui::ColorId selected_color = ui::kColorMenuItemForegroundHighlighted;
-  AddItem(u"No custom colors", absl::nullopt, absl::nullopt, absl::nullopt);
+  AddItem(u"No custom colors", std::nullopt, std::nullopt, std::nullopt);
   AddItem(u"No selected color", background_color, foreground_color,
-          absl::nullopt);
-  AddItem(u"No foreground color", background_color, absl::nullopt,
+          std::nullopt);
+  AddItem(u"No foreground color", background_color, std::nullopt,
           selected_color);
-  AddItem(u"No background color", absl::nullopt, foreground_color,
+  AddItem(u"No background color", std::nullopt, foreground_color,
           selected_color);
-  AddItem(u"No background or foreground", absl::nullopt, absl::nullopt,
+  AddItem(u"No background or foreground", std::nullopt, std::nullopt,
           selected_color);
-  AddItem(u"No background or selected", absl::nullopt, foreground_color,
-          absl::nullopt);
-  AddItem(u"No foreground or selected", background_color, absl::nullopt,
-          absl::nullopt);
+  AddItem(u"No background or selected", std::nullopt, foreground_color,
+          std::nullopt);
+  AddItem(u"No foreground or selected", background_color, std::nullopt,
+          std::nullopt);
   AddItem(u"All colors", background_color, foreground_color, selected_color);
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
@@ -615,9 +634,9 @@ class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
  private:
   class DisallowMenuDelegate : public test::TestMenuDelegate {
    public:
-    absl::optional<SkColor> GetLabelColor(int command_id) const override {
+    std::optional<SkColor> GetLabelColor(int command_id) const override {
       EXPECT_NE(1, command_id);
-      return absl::nullopt;
+      return std::nullopt;
     }
   };
 };
@@ -627,6 +646,34 @@ class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
 // but not before.
 TEST_F(MenuItemViewAccessTest, DontAskForFontsWhenAddingSubmenu) {
   menu_item_view()->AppendSubMenu(1, u"My Submenu");
+}
+
+using MenuItemViewA11yTest = MenuItemViewPaintUnitTest;
+
+// A MenuItemView that has a submenu should open the submenu on kExpand and
+// close the submenu on kCollapse.
+TEST_F(MenuItemViewA11yTest, HandlesExpandCollapseActions) {
+  MenuItemView* submenu_item_view =
+      menu_item_view()->AppendSubMenu(1, u"Submenu");
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::MENU_SOURCE_KEYBOARD);
+
+  // Pre-conditions: An expandable submenu item.
+  ASSERT_TRUE(submenu_item_view->HasSubmenu());
+  ASSERT_FALSE(submenu_item_view->SubmenuIsShowing());
+
+  // Send an expand action to the menu item.
+  ui::AXActionData expand_action_data;
+  expand_action_data.action = ax::mojom::Action::kExpand;
+  submenu_item_view->HandleAccessibleAction(expand_action_data);
+  EXPECT_TRUE(submenu_item_view->SubmenuIsShowing());
+
+  // Send a collapse action to the menu item.
+  ui::AXActionData collapse_action_data;
+  collapse_action_data.action = ax::mojom::Action::kCollapse;
+  submenu_item_view->HandleAccessibleAction(collapse_action_data);
+  EXPECT_FALSE(submenu_item_view->SubmenuIsShowing());
 }
 
 }  // namespace views

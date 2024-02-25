@@ -13,8 +13,8 @@ MockMediaSessionPlayerObserver::MockMediaSessionPlayerObserver(
     media::MediaContentType media_content_type)
     : render_frame_host_global_id_(
           render_frame_host
-              ? absl::make_optional(render_frame_host->GetGlobalId())
-              : absl::nullopt),
+              ? std::make_optional(render_frame_host->GetGlobalId())
+              : std::nullopt),
       media_content_type_(media_content_type) {}
 
 MockMediaSessionPlayerObserver::MockMediaSessionPlayerObserver(
@@ -100,7 +100,7 @@ void MockMediaSessionPlayerObserver::OnRequestMediaRemoting(int player_id) {
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
 }
 
-absl::optional<media_session::MediaPosition>
+std::optional<media_session::MediaPosition>
 MockMediaSessionPlayerObserver::GetPosition(int player_id) const {
   EXPECT_GE(player_id, 0);
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));

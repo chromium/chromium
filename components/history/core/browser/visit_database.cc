@@ -190,7 +190,17 @@ bool VisitDatabase::InitVisitTable() {
             // (most common case) doesn't guarantee it's relevant for Most
             // Visited, since other requirements exist (e.g. certain page
             // transition types).
-            "consider_for_ntp_most_visited BOOLEAN DEFAULT FALSE NOT NULL)")) {
+            "consider_for_ntp_most_visited BOOLEAN DEFAULT FALSE NOT NULL,"
+            // VisitedLinkID this visit corresponds to (if any). If this visit
+            // does not has a transition type of `LINK` or `MANUAL_SUBFRAME`, it
+            // will not be stored in the VisitedLinkDatabase and the code will
+            // write its `visited_link_id` as 0 (kInvalidVisitedLinkID).
+            "visited_link_id INTEGER DEFAULT 0 NOT NULL,"
+            // Package name (e.g. com.google.android.youtube) of the app opening
+            // the Custom Tab that contributes to this visit. This is set to a
+            // non-null string only on Android, if the app identity is known to
+            // the Custom Tab.
+            "app_id TEXT)")) {
       return false;
     }
   }
@@ -263,6 +273,11 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->originator_opener_visit = statement.ColumnInt64(13);
   visit->is_known_to_sync = statement.ColumnBool(14);
   visit->consider_for_ntp_most_visited = statement.ColumnBool(15);
+  visit->visited_link_id = statement.ColumnInt64(16);
+  std::string app_id = statement.ColumnString(17);
+  if (!app_id.empty()) {
+    visit->app_id = app_id;
+  }
 }
 
 // static
@@ -325,8 +340,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       "segment_id, visit_duration, incremented_omnibox_typed_score,"
       "opener_visit, originator_cache_guid, originator_visit_id, "
       "originator_from_visit, originator_opener_visit, is_known_to_sync, "
-      "consider_for_ntp_most_visited) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+      "consider_for_ntp_most_visited, visited_link_id, app_id) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   // Although some columns are NULLable, we never write NULL. We write 0 or ""
   // instead for simplicity. See the CREATE TABLE comments for details.
   statement.BindInt64(0, visit->url_id);
@@ -344,6 +359,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(12, visit->originator_opener_visit);
   statement.BindBool(13, visit->is_known_to_sync);
   statement.BindBool(14, visit->consider_for_ntp_most_visited);
+  statement.BindInt64(15, visit->visited_link_id);
+  statement.BindString(16, visit->app_id ? *visit->app_id : "");
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -469,10 +486,11 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
       "url=?,visit_time=?,from_visit=?,external_referrer_url=?,transition=?,"
       "segment_id=?,visit_duration=?,incremented_omnibox_typed_score=?,"
       "opener_visit=?,originator_cache_guid=?,originator_visit_id=?,"
-      "is_known_to_sync=?,consider_for_ntp_most_visited=? "
-      "WHERE id=?"));
+      "is_known_to_sync=?,consider_for_ntp_most_visited=?,visited_link_id=?,"
+      "app_id=? WHERE id=?"));
   // Although some columns are NULLable, we never write NULL. We write 0 or ""
   // instead for simplicity. See the CREATE TABLE comments for details.
+  // |app_id| is not expected to be updated. Not included in the statement.
   statement.BindInt64(0, visit.url_id);
   statement.BindTime(1, visit.visit_time);
   statement.BindInt64(2, visit.referring_visit);
@@ -486,7 +504,9 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindInt64(10, visit.originator_visit_id);
   statement.BindInt64(11, visit.is_known_to_sync);
   statement.BindInt64(12, visit.consider_for_ntp_most_visited);
-  statement.BindInt64(13, visit.visit_id);
+  statement.BindInt64(13, visit.visited_link_id);
+  statement.BindString(14, visit.app_id ? *visit.app_id : "");
+  statement.BindInt64(15, visit.visit_id);
 
   return statement.Run();
 }
@@ -515,20 +535,41 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
 
   sql::Statement statement;
   if (options.visit_order == QueryOptions::RECENT_FIRST) {
-    statement.Assign(GetDB().GetCachedStatement(
-        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
-                       "WHERE url=? AND visit_time>=? AND visit_time<? "
-                       "ORDER BY visit_time DESC"));
+    if (options.app_id) {
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE,
+          "SELECT" HISTORY_VISIT_ROW_FIELDS
+          "FROM visits "
+          "WHERE url=? AND visit_time>=? AND visit_time<? AND app_id=? "
+          "ORDER BY visit_time DESC"));
+    } else {
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                         "WHERE url=? AND visit_time>=? AND visit_time<? "
+                         "ORDER BY visit_time DESC"));
+    }
   } else {
-    statement.Assign(GetDB().GetCachedStatement(
-        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
-                       "WHERE url=? AND visit_time>? AND visit_time<=? "
-                       "ORDER BY visit_time ASC"));
+    if (options.app_id) {
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE,
+          "SELECT" HISTORY_VISIT_ROW_FIELDS
+          "FROM visits "
+          "WHERE url=? AND visit_time>? AND visit_time<=? AND app_id=? "
+          "ORDER BY visit_time ASC"));
+    } else {
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                         "WHERE url=? AND visit_time>? AND visit_time<=? "
+                         "ORDER BY visit_time ASC"));
+    }
   }
 
   statement.BindInt64(0, url_id);
   statement.BindInt64(1, options.EffectiveBeginTime());
   statement.BindInt64(2, options.EffectiveEndTime());
+  if (options.app_id) {
+    statement.BindString(3, *options.app_id);
+  }
 
   return FillVisitVectorWithOptions(statement, options, visits);
 }
@@ -552,22 +593,36 @@ bool VisitDatabase::GetVisitsForTimes(const std::vector<base::Time>& times,
 
 bool VisitDatabase::GetAllVisitsInRange(base::Time begin_time,
                                         base::Time end_time,
+                                        std::optional<std::string> app_id,
                                         int max_results,
                                         VisitVector* visits) {
   visits->clear();
 
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
-                     "WHERE visit_time >= ? AND visit_time < ?"
-                     "ORDER BY visit_time LIMIT ?"));
+  sql::Statement statement;
+  if (app_id) {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                       "WHERE visit_time >= ? AND visit_time < ? AND app_id=? "
+                       "ORDER BY visit_time LIMIT ?"));
+  } else {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                       "WHERE visit_time >= ? AND visit_time < ? "
+                       "ORDER BY visit_time LIMIT ?"));
+  }
 
   // See GetVisibleVisitsInRange for more info on how these times are bound.
   int64_t end = end_time.ToInternalValue();
   statement.BindTime(0, begin_time);
   statement.BindInt64(1, end ? end : std::numeric_limits<int64_t>::max());
-  statement.BindInt64(
-      2, max_results ? max_results : std::numeric_limits<int64_t>::max());
-
+  if (app_id) {
+    statement.BindString(2, *app_id);
+    statement.BindInt64(
+        3, max_results ? max_results : std::numeric_limits<int64_t>::max());
+  } else {
+    statement.BindInt64(
+        2, max_results ? max_results : std::numeric_limits<int64_t>::max());
+  }
   return FillVisitVector(statement, visits);
 }
 
@@ -644,19 +699,36 @@ bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
 
   sql::Statement statement;
   if (options.visit_order == QueryOptions::RECENT_FIRST) {
-    statement.Assign(GetDB().GetCachedStatement(
-        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
-                       "WHERE visit_time>=? AND visit_time<? "
-                       "ORDER BY visit_time DESC, id DESC"));
+    if (options.app_id) {
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                         "WHERE visit_time>=? AND visit_time<? AND app_id=? "
+                         "ORDER BY visit_time DESC, id DESC"));
+    } else {
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                         "WHERE visit_time>=? AND visit_time<? "
+                         "ORDER BY visit_time DESC, id DESC"));
+    }
   } else {
-    statement.Assign(GetDB().GetCachedStatement(
-        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
-                       "WHERE visit_time>? AND visit_time<=? "
-                       "ORDER BY visit_time ASC, id DESC"));
+    if (options.app_id) {
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                         "WHERE visit_time>? AND visit_time<=? AND app_id=? "
+                         "ORDER BY visit_time ASC, id DESC"));
+    } else {
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                         "WHERE visit_time>? AND visit_time<=? "
+                         "ORDER BY visit_time ASC, id DESC"));
+    }
   }
 
   statement.BindInt64(0, options.EffectiveBeginTime());
   statement.BindInt64(1, options.EffectiveEndTime());
+  if (options.app_id) {
+    statement.BindString(2, *options.app_id);
+  }
 
   return FillVisitVectorWithOptions(statement, options, visits);
 }
@@ -1197,18 +1269,9 @@ bool VisitDatabase::MigrateVisitsWithoutPubliclyRoutableColumn() {
 }
 
 bool VisitDatabase::CanMigrateFlocAllowed() {
-  if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED() << " Visits table should exist before migration";
-    return false;
-  }
-
-  if (!GetDB().DoesColumnExist("visits", "publicly_routable")) {
-    NOTREACHED() << " publicly_routable column should exist in the visits "
-                    "table before migration";
-    return false;
-  }
-
-  return true;
+  // Migration expects a "visits" table with a "publicly_routable" column.
+  return GetDB().DoesTableExist("visits") &&
+         GetDB().DoesColumnExist("visits", "publicly_routable");
 }
 
 bool VisitDatabase::
@@ -1399,4 +1462,30 @@ bool VisitDatabase::MigrateVisitsAddExternalReferrerUrlColumn() {
   return true;
 }
 
+bool VisitDatabase::MigrateVisitsAddVisitedLinkIdColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+  if (!GetDB().DoesColumnExist("visits", "visited_link_id")) {
+    if (!GetDB().Execute(
+            "ALTER TABLE visits ADD COLUMN visited_link_id INTEGER")) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool VisitDatabase::MigrateVisitsAddAppId() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+  if (!GetDB().DoesColumnExist("visits", "app_id")) {
+    if (!GetDB().Execute("ALTER TABLE visits ADD COLUMN app_id TEXT")) {
+      return false;
+    }
+  }
+  return true;
+}
 }  // namespace history

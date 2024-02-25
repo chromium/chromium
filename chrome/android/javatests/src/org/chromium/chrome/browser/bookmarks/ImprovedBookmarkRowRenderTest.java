@@ -8,7 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -35,20 +36,20 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.power_bookmarks.ProductPrice;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -69,34 +70,33 @@ public class ImprovedBookmarkRowRenderTest {
 
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(true, true).name("VisualRow_NightModeEnabled"),
+            Arrays.asList(
+                    new ParameterSet().value(true, true).name("VisualRow_NightModeEnabled"),
                     new ParameterSet().value(true, false).name("VisualRow_NightModeDisabled"),
                     new ParameterSet().value(false, true).name("CompactRow_NightModeEnabled"),
                     new ParameterSet().value(false, false).name("CompactRow_NightModeDisabled"));
 
     @Rule
     public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(5)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
-    @Mock
-    private ShoppingService mShoppingService;
-    @Mock
-    private ImprovedBookmarkFolderViewCoordinator mImprovedBookmarkFolderViewCoordinator;
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
+    @Mock private ShoppingService mShoppingService;
 
     private final boolean mUseVisualRowLayout;
 
@@ -120,50 +120,69 @@ public class ImprovedBookmarkRowRenderTest {
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
-        doAnswer((invocation) -> { return "$" + invocation.getArgument(2); })
+        doAnswer(
+                        (invocation) -> {
+                            return "$" + invocation.getArgument(2);
+                        })
                 .when(mCurrencyFormatterJniMock)
                 .format(anyLong(), any(), any());
 
-        int bitmapSize = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
-                R.dimen.bookmark_favicon_display_size);
+        int bitmapSize =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bookmark_favicon_display_size);
         mBitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.GREEN);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mContentView = new LinearLayout(mActivityTestRule.getActivity());
-            mContentView.setBackgroundColor(Color.WHITE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContentView = new LinearLayout(mActivityTestRule.getActivity());
+                    mContentView.setBackgroundColor(Color.WHITE);
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            mActivityTestRule.getActivity().setContentView(mContentView, params);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    mActivityTestRule.getActivity().setContentView(mContentView, params);
 
-            mImprovedBookmarkRow = ImprovedBookmarkRow.buildView(
-                    mActivityTestRule.getActivity(), mUseVisualRowLayout);
-            mContentView.removeAllViews();
-            mContentView.addView(mImprovedBookmarkRow);
+                    mImprovedBookmarkRow =
+                            ImprovedBookmarkRow.buildView(
+                                    mActivityTestRule.getActivity(), mUseVisualRowLayout);
+                    mContentView.removeAllViews();
+                    mContentView.addView(mImprovedBookmarkRow);
 
-            mModel = new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS)
-                             .with(ImprovedBookmarkRowProperties.TITLE, "test title")
-                             .with(ImprovedBookmarkRowProperties.DESCRIPTION, "test description")
-                             .with(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
-                                     new BitmapDrawable(
-                                             mActivityTestRule.getActivity().getResources(),
-                                             mBitmap))
-                             .with(ImprovedBookmarkRowProperties.SELECTED, false)
-                             .with(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
-                                     () -> buildListMenu())
-                             .with(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
-                                     ImageVisibility.DRAWABLE)
-                             .with(ImprovedBookmarkRowProperties.START_ICON_TINT, null)
-                             .with(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR,
-                                     mImprovedBookmarkFolderViewCoordinator)
-                             .with(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
-                                     ImageVisibility.MENU)
-                             .build();
+                    mModel =
+                            new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS)
+                                    .with(ImprovedBookmarkRowProperties.TITLE, "test title")
+                                    .with(
+                                            ImprovedBookmarkRowProperties.DESCRIPTION,
+                                            "test description")
+                                    .with(
+                                            ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
+                                            LazyOneshotSupplier.fromSupplier(
+                                                    () ->
+                                                            new BitmapDrawable(
+                                                                    mActivityTestRule
+                                                                            .getActivity()
+                                                                            .getResources(),
+                                                                    mBitmap)))
+                                    .with(ImprovedBookmarkRowProperties.SELECTED, false)
+                                    .with(
+                                            ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
+                                            () -> buildListMenu())
+                                    .with(
+                                            ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                                            ImageVisibility.DRAWABLE)
+                                    .with(ImprovedBookmarkRowProperties.START_ICON_TINT, null)
+                                    .with(
+                                            ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
+                                            ImageVisibility.MENU)
+                                    .build();
 
-            PropertyModelChangeProcessor.create(
-                    mModel, mImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
-        });
+                    PropertyModelChangeProcessor.create(
+                            mModel, mImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
+                });
     }
 
     ListMenu buildListMenu() {
@@ -174,7 +193,8 @@ public class ImprovedBookmarkRowRenderTest {
         listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0));
 
         ListMenu.Delegate delegate = item -> {};
-        return new BasicListMenu(mActivityTestRule.getActivity(), listItems, delegate);
+        return BrowserUiListMenuUtils.getBasicListMenu(
+                mActivityTestRule.getActivity(), listItems, delegate);
     }
 
     @Test
@@ -187,24 +207,67 @@ public class ImprovedBookmarkRowRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testDisabled() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkRowProperties.ENABLED, false);
+                });
+        mRenderTestRule.render(mContentView, "disabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testEndImageVisibility() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(
-                    ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
-            mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_RES,
-                    R.drawable.outline_chevron_right_24dp);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
+                            ImageVisibility.DRAWABLE);
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.END_IMAGE_RES,
+                            R.drawable.outline_chevron_right_24dp);
+                });
         mRenderTestRule.render(mContentView, "end_image_visibility");
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testLocalBookmarkItem() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
+                });
+        mRenderTestRule.render(mContentView, "local_bookmark");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testLocalBookmarkItemWithChevron() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
+                            ImageVisibility.DRAWABLE);
+                    mModel.set(
+                            ImprovedBookmarkRowProperties.END_IMAGE_RES,
+                            R.drawable.outline_chevron_right_24dp);
+                });
+        mRenderTestRule.render(mContentView, "local_bookmark_wtih_chevron");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testSelected() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
-            mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+                    mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+                });
         mRenderTestRule.render(mContentView, "selected");
     }
 
@@ -212,27 +275,32 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal_withPriceTrackingEnabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingSpecifics specifics =
-                    ShoppingSpecifics.newBuilder()
-                            .setCurrentPrice(ProductPrice.newBuilder()
-                                                     .setCurrencyCode("USD")
-                                                     .setAmountMicros(50 * MICRO_CURRENCY_QUOTIENT)
-                                                     .build())
-                            .setPreviousPrice(
-                                    ProductPrice.newBuilder()
-                                            .setCurrencyCode("USD")
-                                            .setAmountMicros(100 * MICRO_CURRENCY_QUOTIENT)
-                                            .build())
-                            .build();
-            ShoppingAccessoryCoordinator coordinator = new ShoppingAccessoryCoordinator(
-                    mActivityTestRule.getActivity(), specifics, mShoppingService);
-            coordinator.setPriceTrackingEnabled(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ShoppingSpecifics specifics =
+                            ShoppingSpecifics.newBuilder()
+                                    .setCurrentPrice(
+                                            ProductPrice.newBuilder()
+                                                    .setCurrencyCode("USD")
+                                                    .setAmountMicros(50 * MICRO_CURRENCY_QUOTIENT)
+                                                    .build())
+                                    .setPreviousPrice(
+                                            ProductPrice.newBuilder()
+                                                    .setCurrencyCode("USD")
+                                                    .setAmountMicros(100 * MICRO_CURRENCY_QUOTIENT)
+                                                    .build())
+                                    .build();
+                    ShoppingAccessoryCoordinator coordinator =
+                            new ShoppingAccessoryCoordinator(
+                                    mActivityTestRule.getActivity(), specifics, mShoppingService);
+                    coordinator.setPriceTrackingEnabled(true);
 
-            if (mUseVisualRowLayout) {
-                mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, coordinator.getView());
-            }
-        });
+                    if (mUseVisualRowLayout) {
+                        mModel.set(
+                                ImprovedBookmarkRowProperties.ACCESSORY_VIEW,
+                                coordinator.getView());
+                    }
+                });
         mRenderTestRule.render(mContentView, "normal_with_price_tracking_enabled");
     }
 
@@ -240,27 +308,28 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal_withPriceTrackingDisabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingSpecifics specifics =
-                    ShoppingSpecifics.newBuilder()
-                            .setCurrentPrice(ProductPrice.newBuilder()
-                                                     .setCurrencyCode("USD")
-                                                     .setAmountMicros(50 * MICRO_CURRENCY_QUOTIENT)
-                                                     .build())
-                            .setPreviousPrice(
-                                    ProductPrice.newBuilder()
-                                            .setCurrencyCode("USD")
-                                            .setAmountMicros(100 * MICRO_CURRENCY_QUOTIENT)
-                                            .build())
-                            .build();
-            ShoppingAccessoryCoordinator coordinator = new ShoppingAccessoryCoordinator(
-                    mActivityTestRule.getActivity(), specifics, mShoppingService);
-            coordinator.setPriceTrackingEnabled(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ShoppingSpecifics specifics =
+                            ShoppingSpecifics.newBuilder()
+                                    .setCurrentPrice(
+                                            ProductPrice.newBuilder()
+                                                    .setCurrencyCode("USD")
+                                                    .setAmountMicros(50 * MICRO_CURRENCY_QUOTIENT)
+                                                    .build())
+                                    .setPreviousPrice(
+                                            ProductPrice.newBuilder()
+                                                    .setCurrencyCode("USD")
+                                                    .setAmountMicros(100 * MICRO_CURRENCY_QUOTIENT)
+                                                    .build())
+                                    .build();
+                    ShoppingAccessoryCoordinator coordinator =
+                            new ShoppingAccessoryCoordinator(
+                                    mActivityTestRule.getActivity(), specifics, mShoppingService);
+                    coordinator.setPriceTrackingEnabled(false);
 
-            if (mUseVisualRowLayout) {
-                mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, coordinator.getView());
-            }
-        });
+                    mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, coordinator.getView());
+                });
         mRenderTestRule.render(mContentView, "normal_with_price_tracking_disabled");
     }
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 
+#include <utility>
+
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -21,6 +23,7 @@
 #include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -118,10 +121,12 @@ int GetAlphaLeftMargin(int parent_width) {
 }  // namespace
 
 class InputMenuView::FeedbackButton : public views::LabelButton {
+  METADATA_HEADER(FeedbackButton, views::LabelButton)
+
  public:
   explicit FeedbackButton(PressedCallback callback = PressedCallback(),
                           const std::u16string& text = std::u16string())
-      : LabelButton(callback, text) {
+      : LabelButton(std::move(callback), text) {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK));
     SetBorder(views::CreateEmptyBorder(
@@ -154,6 +159,9 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
   FeedbackButton& operator=(const FeedbackButton&) = delete;
   ~FeedbackButton() override = default;
 };
+
+BEGIN_METADATA(InputMenuView, FeedbackButton)
+END_METADATA
 
 // static
 std::unique_ptr<InputMenuView> InputMenuView::BuildMenuView(
@@ -222,7 +230,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
         ash::login_views_utils::CreateThemedBubbleLabel(
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
             /*view_defining_max_width=*/nullptr,
-            /*enabled_color_type=*/cros_tokens::kColorSelection,
+            /*enabled_color_type=*/cros_tokens::kCrosSysPrimary,
             gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
                           gfx::Font::Weight::MEDIUM)));
@@ -231,7 +239,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
         alpha_label->GetPreferredSize().width() + 2 * kAlphaSidePadding,
         kAlphaHeight));
     alpha_label->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kHighlightColor, kAlphaCornerRadius));
+        cros_tokens::kCrosSysHighlightShape, kAlphaCornerRadius));
 
     game_control_toggle_ =
         header_view->AddChildView(std::make_unique<views::ToggleButton>(
@@ -444,8 +452,9 @@ gfx::Insets InputMenuView::CalculateInsets(views::View* view,
                                            int other_spacing,
                                            int menu_width) const {
   int total_width = 0;
-  for (auto* child : view->children())
+  for (views::View* child : view->children()) {
     total_width += child->GetPreferredSize().width();
+  }
 
   int right_inset =
       std::max(0, menu_width - (total_width + left + right + other_spacing));
@@ -453,19 +462,19 @@ gfx::Insets InputMenuView::CalculateInsets(views::View* view,
 }
 
 void InputMenuView::SetCustomToggleColor(views::ToggleButton* toggle) {
-  auto* color_provider = ash::AshColorProvider::Get();
-  if (!color_provider) {
-    return;
+  if (const auto* color_provider = ash::AshColorProvider::Get()) {
+    toggle->SetThumbOnColor(color_provider->GetContentLayerColor(
+        ash::AshColorProvider::ContentLayerType::kSwitchKnobColorActive));
+    toggle->SetThumbOffColor(color_provider->GetContentLayerColor(
+        ash::AshColorProvider::ContentLayerType::kSwitchKnobColorInactive));
+    toggle->SetTrackOnColor(color_provider->GetContentLayerColor(
+        ash::AshColorProvider::ContentLayerType::kSwitchTrackColorActive));
+    toggle->SetTrackOffColor(color_provider->GetContentLayerColor(
+        ash::AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
   }
-
-  toggle->SetThumbOnColor(color_provider->GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kSwitchKnobColorActive));
-  toggle->SetThumbOffColor(color_provider->GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kSwitchKnobColorInactive));
-  toggle->SetTrackOnColor(color_provider->GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kSwitchTrackColorActive));
-  toggle->SetTrackOffColor(color_provider->GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
 }
+
+BEGIN_METADATA(InputMenuView)
+END_METADATA
 
 }  // namespace arc::input_overlay

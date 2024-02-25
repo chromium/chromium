@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TRACE_EVENTS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/trace_event/trace_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -50,7 +50,6 @@ class Element;
 class EncodedFormData;
 class Event;
 class ExecutionContext;
-class Frame;
 class HitTestLocation;
 class HitTestRequest;
 class HitTestResult;
@@ -90,7 +89,8 @@ class CORE_EXPORT InspectorTraceEvents
   InspectorTraceEvents(const InspectorTraceEvents&) = delete;
   InspectorTraceEvents& operator=(const InspectorTraceEvents&) = delete;
 
-  void WillSendRequest(DocumentLoader*,
+  void WillSendRequest(ExecutionContext*,
+                       DocumentLoader*,
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
@@ -195,9 +195,6 @@ void PseudoChange(perfetto::TracedValue context,
                   Element&,
                   const InvalidationSet&,
                   CSSSelector::PseudoType);
-void RuleSetInvalidation(perfetto::TracedValue context,
-                         ContainerNode&,
-                         const InvalidationSet&);
 }  // namespace inspector_schedule_style_invalidation_tracking_event
 
 #define TRACE_SCHEDULE_STYLE_INVALIDATION(element, invalidationSet,        \
@@ -318,11 +315,14 @@ void Data(perfetto::TracedValue context,
 
 namespace inspector_send_request_event {
 void Data(perfetto::TracedValue context,
+          ExecutionContext* execution_context,
           DocumentLoader*,
           uint64_t identifier,
           LocalFrame*,
           const ResourceRequest&,
-          RenderBlockingBehavior);
+          ResourceType resource_type,
+          RenderBlockingBehavior,
+          const ResourceLoaderOptions&);
 }
 
 namespace inspector_change_render_blocking_behavior_event {
@@ -433,7 +433,7 @@ void Data(perfetto::TracedValue context, ExecutionContext*, XMLHttpRequest*);
 //     associated with this event is the bounding damage rect.
 namespace inspector_paint_event {
 void Data(perfetto::TracedValue context,
-          Frame*,
+          LocalFrame*,
           const LayoutObject*,
           const gfx::QuadF& quad,
           int layer_id);
@@ -479,6 +479,7 @@ void Data(perfetto::TracedValue context, LocalFrame*);
 
 namespace inspector_evaluate_script_event {
 void Data(perfetto::TracedValue context,
+          v8::Isolate*,
           LocalFrame*,
           const String& url,
           const WTF::TextPosition&);
@@ -508,7 +509,7 @@ struct V8ConsumeCacheResult {
 void Data(perfetto::TracedValue context,
           const String& url,
           const WTF::TextPosition&,
-          absl::optional<V8ConsumeCacheResult>,
+          std::optional<V8ConsumeCacheResult>,
           bool eager,
           bool streamed,
           ScriptStreamer::NotStreamingReason);
@@ -528,7 +529,7 @@ void Data(perfetto::TracedValue context,
 }
 
 namespace inspector_update_counters_event {
-void Data(perfetto::TracedValue context);
+void Data(perfetto::TracedValue context, v8::Isolate* isolate);
 }
 
 namespace inspector_invalidate_layout_event {
@@ -540,7 +541,7 @@ void Data(perfetto::TracedValue context, LocalFrame*);
 }
 
 namespace inspector_event_dispatch_event {
-void Data(perfetto::TracedValue context, const Event&);
+void Data(perfetto::TracedValue context, const Event&, v8::Isolate*);
 }
 
 namespace inspector_time_stamp_event {
@@ -591,7 +592,8 @@ void Data(perfetto::TracedValue context, const StringView&);
 }
 
 CORE_EXPORT String ToHexString(const void* p);
-CORE_EXPORT void SetCallStack(perfetto::TracedDictionary&);
+CORE_EXPORT void SetCallStack(v8::Isolate* isolate,
+                              perfetto::TracedDictionary&);
 
 }  // namespace blink
 

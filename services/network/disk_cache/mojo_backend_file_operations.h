@@ -34,7 +34,7 @@ class MojoBackendFileOperations final
   bool ReplaceFile(const base::FilePath& from_path,
                    const base::FilePath& to_path,
                    base::File::Error* error) override;
-  absl::optional<base::File::Info> GetFileInfo(
+  std::optional<base::File::Info> GetFileInfo(
       const base::FilePath& path) override;
   std::unique_ptr<disk_cache::BackendFileOperations::FileEnumerator>
   EnumerateFiles(const base::FilePath& path) override;

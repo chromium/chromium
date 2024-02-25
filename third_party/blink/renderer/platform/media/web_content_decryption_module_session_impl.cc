@@ -27,7 +27,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
+#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
 #include "third_party/blink/renderer/platform/media/cdm_session_adapter.h"
@@ -501,10 +501,12 @@ void WebContentDecryptionModuleSessionImpl::OnSessionExpirationUpdate(
     base::Time new_expiry_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // The check works around an issue in base::Time that converts null base::Time
-  // to |1601-01-01 00:00:00 UTC| in ToJsTime(). See http://crbug.com/679079
+  // to |1601-01-01 00:00:00 UTC| in InMillisecondsFSinceUnixEpoch(). See
+  // http://crbug.com/679079
   client_->OnSessionExpirationUpdate(
-      new_expiry_time.is_null() ? std::numeric_limits<double>::quiet_NaN()
-                                : new_expiry_time.ToJsTime());
+      new_expiry_time.is_null()
+          ? std::numeric_limits<double>::quiet_NaN()
+          : new_expiry_time.InMillisecondsFSinceUnixEpoch());
 }
 
 void WebContentDecryptionModuleSessionImpl::OnSessionClosed(

@@ -24,10 +24,12 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -53,9 +55,10 @@ std::vector<const extensions::Extension*> GetExtensions(
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
     Browser* browser,
     ExtensionsContainer* extensions_container)
-    : ToolbarButton(
+    : ToolbarChipButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
-                              base::Unretained(this))),
+                              base::Unretained(this)),
+          ToolbarChipButton::Edge::kRight),
       browser_(browser),
       extensions_container_(extensions_container),
       hover_card_coordinator_(
@@ -81,7 +84,7 @@ void ExtensionsRequestAccessButton::Update(
   // TODO(crbug.com/1239772): Set the label and background color without borders
   // separately to match the mocks. For now, using SetHighlight to display that
   // adds a border and highlight color in addition to the label.
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   SetHighlight(
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
                                     static_cast<int>(extension_ids_.size())),
@@ -104,7 +107,7 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
 
 void ExtensionsRequestAccessButton::ResetConfirmation() {
   SetVisible(false);
-  confirmation_origin_ = absl::nullopt;
+  confirmation_origin_ = std::nullopt;
   collapse_timer_.AbandonAndStop();
 }
 
@@ -134,9 +137,15 @@ bool ExtensionsRequestAccessButton::IsShowingConfirmationFor(
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
     const gfx::Point& p) const {
   std::vector<std::u16string> tooltip_parts;
+  content::WebContents* active_contents = GetActiveWebContents();
+
+  // Active contents can be null if the window is closing.
+  if (!active_contents) {
+    return std::u16string();
+  }
   tooltip_parts.push_back(l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
-      GetCurrentHost(GetActiveWebContents())));
+      GetCurrentHost(active_contents)));
   for (const auto& extension_id : extension_ids_) {
     ToolbarActionViewController* action =
         extensions_container_->GetActionForId(extension_id);
@@ -180,7 +189,7 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   action_runner->GrantTabPermissions(extensions_to_run);
 
   // Show confirmation message, and disable the button, for a specific duration.
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   SetHighlight(l10n_util::GetStringUTF16(
                    IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT),
                color);
@@ -201,3 +210,6 @@ content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()
     const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
+
+BEGIN_METADATA(ExtensionsRequestAccessButton)
+END_METADATA

@@ -152,10 +152,7 @@ void AwBrowserProcess::CreateSafeBrowsingAllowlistManager() {
 
 safe_browsing::RemoteSafeBrowsingDatabaseManager*
 AwBrowserProcess::GetSafeBrowsingDBManager() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!safe_browsing_db_manager_) {
     safe_browsing_db_manager_ =
@@ -257,7 +254,7 @@ static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
     const base::android::JavaParamRef<jstring>& processName) {
   static ::crash_reporter::CrashKeyString<64> crash_key(
       crash_keys::kAppProcessName);
-  crash_key.Set(ConvertJavaStringToUTF8(env, processName));
+  crash_key.Set(base::android::ConvertJavaStringToUTF8(env, processName));
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>

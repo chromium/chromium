@@ -51,6 +51,9 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#endif
 
 using ::testing::Mock;
 using ::testing::_;
@@ -173,7 +176,13 @@ std::u16string ConcatenateGaiaAndProfileNames(
 class ProfileAttributesStorageTest : public testing::Test {
  public:
   ProfileAttributesStorageTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_cros_settings_test_helper_ =
+        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
+#endif
+  }
+
   ~ProfileAttributesStorageTest() override {}
 
  protected:
@@ -286,6 +295,10 @@ class ProfileAttributesStorageTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
+      scoped_cros_settings_test_helper_;
+#endif
   ProfileAttributesTestObserver observer_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
@@ -920,7 +933,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileActiveTime) {
   base::Time past = base::Time::Now() - base::Minutes(10);
   lower_bound = past - base::Seconds(1);
   upper_bound = past + base::Seconds(1);
-  ASSERT_TRUE(entry->SetDouble(kActiveTimeKey, past.ToDoubleT()));
+  ASSERT_TRUE(
+      entry->SetDouble(kActiveTimeKey, past.InSecondsFSinceUnixEpoch()));
   base::Time stored_time = entry->GetActiveTime();
   ASSERT_LE(lower_bound, stored_time);
   ASSERT_GE(upper_bound, stored_time);
@@ -1685,10 +1699,10 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   native_theme->set_use_dark_colors(false);
   EXPECT_EQ(entry->GetProfileThemeColors(), colors);
 
-  // absl::nullopt resets the colors to default.
+  // std::nullopt resets the colors to default.
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileThemeColorsChanged(profile_path)).Times(1);
-  entry->SetProfileThemeColors(absl::nullopt);
+  entry->SetProfileThemeColors(std::nullopt);
   EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
   VerifyAndResetCallExpectations();
 }
@@ -1784,7 +1798,7 @@ TEST_F(ProfileAttributesStorageTest, PersistGAIAPicture) {
   VerifyAndResetCallExpectations();
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
-  gfx::Image gaia_image(gfx::test::CreateImage());
+  gfx::Image gaia_image(gfx::test::CreateImage(100, 50));
 
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
@@ -1826,7 +1840,7 @@ TEST_F(ProfileAttributesStorageTest, EmptyGAIAInfo) {
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
 
-  gfx::Image gaia_image(gfx::test::CreateImage());
+  gfx::Image gaia_image(gfx::test::CreateImage(100, 50));
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_0", gaia_image);
@@ -1875,7 +1889,7 @@ TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
 
-  gfx::Image gaia_image(gfx::test::CreateImage());
+  gfx::Image gaia_image(gfx::test::CreateImage(100, 50));
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_0", gaia_image);
@@ -2101,11 +2115,15 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
   AddSimpleTestingProfileWithName(u"C");
   AddSimpleTestingProfileWithName(u"D");
 
+  base::HistogramTester histogram_tester;
+
   {
     std::vector<std::string> expected_keys{"A", "B", "C", "D"};
     ASSERT_EQ(
         EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
         expected_keys);
+    histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true,
+                                        0u);
   }
 
   {
@@ -2114,6 +2132,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
     EXPECT_EQ(
         EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
         expected_keys);
+    histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true,
+                                        1u);
   }
 
   {
@@ -2122,6 +2142,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
     EXPECT_EQ(
         EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
         expected_keys);
+    histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true,
+                                        2u);
   }
 }
 
@@ -2135,6 +2157,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefIsSymetric) {
   AddSimpleTestingProfileWithName(u"B");
   AddSimpleTestingProfileWithName(u"C");
   AddSimpleTestingProfileWithName(u"D");
+
+  base::HistogramTester histogram_tester;
 
   std::vector<std::string> initial_keys_order{"A", "B", "C", "D"};
   ASSERT_EQ(
@@ -2157,6 +2181,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefIsSymetric) {
   EXPECT_EQ(
       EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
       initial_keys_order);
+
+  histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true, 2u);
 }
 
 TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefSameIndex) {
@@ -2165,6 +2191,8 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefSameIndex) {
   AddSimpleTestingProfileWithName(u"A");
   AddSimpleTestingProfileWithName(u"B");
   AddSimpleTestingProfileWithName(u"C");
+
+  base::HistogramTester histogram_tester;
 
   std::vector<std::string> initial_keys_order{"A", "B", "C"};
   ASSERT_EQ(
@@ -2179,6 +2207,7 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefSameIndex) {
   EXPECT_EQ(
       EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
       initial_keys_order);
+  histogram_tester.ExpectUniqueSample("Profile.ProfilesOrderChanged", true, 0u);
 }
 
 class ProfileAttributesStorageTestWithProfileReorderingParam

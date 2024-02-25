@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -57,6 +58,7 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   };
 
   PageTestBase();
+  PageTestBase(base::test::TaskEnvironment::TimeSource time_source);
   ~PageTestBase() override;
 
   void EnableCompositing();
@@ -127,17 +129,31 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // the source file).
   virtual const base::TickClock* GetTickClock();
 
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>&
-  platform() {
-    return *platform_;
+  TestingPlatformSupport* platform() {
+    if (platform_with_scheduler_) {
+      return platform_with_scheduler_->GetTestingPlatformSupport();
+    }
+    DCHECK(platform_);
+    return platform_->GetTestingPlatformSupport();
   }
 
+  test::TaskEnvironment& task_environment() { return task_environment_; }
+
+  void FastForwardBy(base::TimeDelta);
+  void FastForwardUntilNoTasksRemain();
+  void AdvanceClock(base::TimeDelta);
+
  private:
+  test::TaskEnvironment task_environment_;
   // The order is important: |platform_| must be destroyed after
   // |dummy_page_holder_| is destroyed.
+  std::unique_ptr<ScopedTestingPlatformSupport<TestingPlatformSupport>>
+      platform_;
+  // TODO(crbug.com/1315595): Remove once TaskEnvironment becomes the default in
+  // blink_unittests_v2
   std::unique_ptr<
       ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>>
-      platform_;
+      platform_with_scheduler_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   bool enable_compositing_ = false;
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_H_
 
 #include <stddef.h>
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -19,6 +20,7 @@
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_users.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
 class SupervisedUserServiceObserver;
@@ -36,10 +38,6 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 namespace supervised_user {
 class SupervisedUserSettingsService;
 
@@ -56,12 +54,20 @@ class SupervisedUserService : public KeyedService,
     virtual void SetActive(bool active) = 0;
   };
 
+  // Delegate encapsulating platform-specific logic that is invoked from SUS.
+  class PlatformDelegate {
+   public:
+    virtual ~PlatformDelegate() {}
+
+    // Close all incognito tabs for this service. Called the profile becomes
+    // supervised.
+    virtual void CloseIncognitoTabs() = 0;
+  };
+
   SupervisedUserService(const SupervisedUserService&) = delete;
   SupervisedUserService& operator=(const SupervisedUserService&) = delete;
 
   ~SupervisedUserService() override;
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   supervised_user::RemoteWebApprovalsManager& remote_web_approvals_manager() {
     return remote_web_approvals_manager_;
@@ -104,12 +110,6 @@ class SupervisedUserService : public KeyedService,
   // is empty, or the empty string if there is no second custodian.
   std::string GetSecondCustodianName() const;
 
-  // Returns true if the extensions permissions parental control is enabled.
-  bool AreExtensionsPermissionsEnabled() const;
-
-  // Returns true if the URL filtering parental control is enabled.
-  bool IsURLFilteringEnabled() const;
-
   // Returns true if there is a custodian for the child.  A child can have
   // up to 2 custodians, and this returns true if they have at least 1.
   bool HasACustodian() const;
@@ -132,18 +132,6 @@ class SupervisedUserService : public KeyedService,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // TODO(https://crbug.com/1288986): Enable web filter metrics reporting in
-  // LaCrOS.
-  // Reports FamilyUser.WebFilterType and FamilyUser.ManagedSiteList
-  // metrics. Ignores reporting when AreWebFilterPrefsDefault() is true.
-  void ReportNonDefaultWebFilterValue() const;
-
-  // Returns true if both: the user is a type of Family Link supervised account
-  // and the platform supports Family Link supervision features.
-  // This method should be prefered on gating child-specific features if there
-  // is no dedicated method for the feature (e.g IsURLFilteringEnabled).
-  virtual bool IsSubjectToParentalControls() const;
-
   // Updates the kFirstTimeInterstitialBannerState pref to indicate that the
   // user has been shown the interstitial banner. This will only update users
   // who haven't yet seen the banner.
@@ -152,22 +140,20 @@ class SupervisedUserService : public KeyedService,
   // Returns true if the interstitial banner needs to be shown to user.
   bool ShouldShowFirstTimeInterstitialBanner() const;
 
-  // Some Google-affiliated domains are not allowed to delete cookies for
-  // supervised users.
-  bool IsCookieDeletionDisabled(const GURL& origin) const;
-
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
   // Public to allow visibility to iOS factory.
   SupervisedUserService(
       signin::IdentityManager* identity_manager,
-      KidsChromeManagementClient* kids_chrome_management_client,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
-      syncer::SyncService& sync_service,
+      syncer::SyncService* sync_service,
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
+      std::unique_ptr<supervised_user::SupervisedUserService::PlatformDelegate>
+          platform_delegate,
       bool can_show_first_time_interstitial_banner);
 
  private:
@@ -179,6 +165,16 @@ class SupervisedUserService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(
       SupervisedUserServiceExtensionTest,
       ExtensionManagementPolicyProviderWithSUInitiatedInstalls);
+  FRIEND_TEST_ALL_PREFIXES(SupervisedUserServiceTest, InterstitialBannerState);
+  FRIEND_TEST_ALL_PREFIXES(SupervisedUserNavigationThrottleTest,
+                           BlockedMatureSitesRecordedInBlockSafeSitesBucket);
+
+  // Method used in testing to set the given test_filter as the url_filter_
+  void SetURLFilterForTesting(
+      std::unique_ptr<SupervisedUserURLFilter> test_filter);
+
+  FirstTimeInterstitialBannerState GetUpdatedBannerState(
+      FirstTimeInterstitialBannerState original_state);
 
   void SetActive(bool active);
 
@@ -188,11 +184,7 @@ class SupervisedUserService : public KeyedService,
 
   void OnDefaultFilteringBehaviorChanged();
 
-  bool IsSafeSitesEnabled() const;
-
   void OnSafeSitesSettingChanged();
-
-  void UpdateAsyncUrlChecker();
 
   // Updates the manual overrides for hosts in the URL filters when the
   // corresponding preference is changed.
@@ -207,15 +199,17 @@ class SupervisedUserService : public KeyedService,
   const raw_ref<supervised_user::SupervisedUserSettingsService>
       settings_service_;
 
-  const raw_ref<syncer::SyncService> sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 
-  raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   bool active_ = false;
 
   raw_ptr<Delegate> delegate_;
+
+  std::unique_ptr<PlatformDelegate> platform_delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
@@ -225,7 +219,7 @@ class SupervisedUserService : public KeyedService,
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;
 
-  SupervisedUserURLFilter url_filter_;
+  std::unique_ptr<SupervisedUserURLFilter> url_filter_;
 
   const bool can_show_first_time_interstitial_banner_;
 
@@ -245,8 +239,7 @@ class SupervisedUserService : public KeyedService,
   // prefs::kDefaultSupervisedUserFilteringBehavior and
   // prefs::kSupervisedUserSafeSites change. Uses this member to avoid duplicate
   // reports. Initialized in the SetActive().
-  SupervisedUserURLFilter::WebFilterType current_web_filter_type_ =
-      SupervisedUserURLFilter::WebFilterType::kMaxValue;
+  WebFilterType current_web_filter_type_ = WebFilterType::kMaxValue;
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 };

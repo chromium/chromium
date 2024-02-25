@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -31,7 +32,6 @@
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_source.h"
 #include "components/webapps/common/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace user_prefs {
@@ -88,7 +88,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   class HomepageClient {
    public:
     using TitleCallback =
-        base::OnceCallback<void(const absl::optional<std::u16string>& title)>;
+        base::OnceCallback<void(const std::optional<std::u16string>& title)>;
 
     virtual ~HomepageClient() = default;
     virtual bool IsHomepageTileEnabled() const = 0;
@@ -311,7 +311,7 @@ class MostVisitedSites : public history::TopSitesObserver,
                                 const std::u16string& title) const;
 
   void OnHomepageTitleDetermined(NTPTilesVector tiles,
-                                 const absl::optional<std::u16string>& title);
+                                 const std::optional<std::u16string>& title);
 
   // Returns true if there is a valid homepage that can be pinned as tile.
   bool ShouldAddHomeTile() const;
@@ -355,7 +355,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Current set of tiles. Optional so that the observer can be notified
   // whenever it changes, including possibily an initial change from
   // !current_tiles_.has_value() to current_tiles_->empty().
-  absl::optional<NTPTilesVector> current_tiles_;
+  std::optional<NTPTilesVector> current_tiles_;
 
   // Whether has started observing data sources.
   bool is_observing_;

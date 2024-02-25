@@ -16,7 +16,7 @@
 
   [CallWith=ScriptState, Measure] Promise<StorageEstimate> estimate();
 
-  [CallWith=ScriptState, Measure] Promise<StorageBucketDurability> durability();
+  [CallWith=ScriptState, RuntimeEnabled=StorageBucketsDurability, Measure] Promise<StorageBucketDurability> durability();
 
   [CallWith=ScriptState, Measure] Promise<void> setExpires(DOMHighResTimeStamp expires);
   [CallWith=ScriptState, Measure] Promise<DOMHighResTimeStamp?> expires();

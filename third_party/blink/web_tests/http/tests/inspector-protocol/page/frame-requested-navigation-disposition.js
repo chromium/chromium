@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL('resources/frame-requested-navigation-disposition.html', 'Tests that dispostion for client-requested navigation is properly reported.');
 
   await dp.Page.enable();

@@ -5,9 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_UTIL_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_UTIL_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::assistant {
 struct AndroidAppInfo;
@@ -31,8 +30,8 @@ namespace ash::libassistant {
 
 // Creates the configuration for libassistant.
 std::string CreateLibAssistantConfig(
-    absl::optional<std::string> s3_server_uri_override,
-    absl::optional<std::string> device_id_override);
+    std::optional<std::string> s3_server_uri_override,
+    std::optional<std::string> device_id_override);
 
 // Returns the path where all downloaded LibAssistant resources are stored.
 base::FilePath GetBaseAssistantDir();

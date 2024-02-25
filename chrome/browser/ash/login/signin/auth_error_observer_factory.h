@@ -35,7 +35,7 @@ class AuthErrorObserverFactory : public ProfileKeyedServiceFactory {
   ~AuthErrorObserverFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

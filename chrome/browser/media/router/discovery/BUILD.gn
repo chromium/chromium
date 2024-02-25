@@ -8,28 +8,6 @@ assert(!is_android)
 
 static_library("discovery") {
   inputs = [ "$root_gen_dir/chrome/grit/generated_resources.h" ]
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/media/router:data_decoder_util",
-    "//chrome/browser/media/router:logger_list",
-    "//chrome/browser/media/router:media_router_feature",
-    "//chrome/common:constants",
-    "//components/media_router/browser",
-    "//components/media_router/common",
-    "//components/media_router/common/mojom:logger",
-    "//components/media_router/common/providers/cast/channel",
-    "//components/net_log",
-    "//components/prefs",
-    "//components/version_info",
-    "//content/public/browser",
-    "//content/public/common",
-    "//services/network/public/cpp",
-    "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
-  ]
   sources = [
     "dial/device_description_fetcher.cc",
     "dial/device_description_fetcher.h",
@@ -79,6 +57,29 @@ static_library("discovery") {
     "media_sink_discovery_metrics.cc",
     "media_sink_discovery_metrics.h",
   ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/media/router:data_decoder_util",
+    "//chrome/browser/media/router:logger_list",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/common:constants",
+    "//components/media_router/browser",
+    "//components/media_router/common",
+    "//components/media_router/common/mojom:logger",
+    "//components/media_router/common/providers/cast/channel",
+    "//components/net_log",
+    "//components/prefs",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/cpp",
+    "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_linux || is_chromeos) {
     sources += [ "discovery_network_list_wifi_linux.cc" ]
@@ -102,7 +103,46 @@ static_library("discovery") {
   }
 
   if (is_win) {
-    sources += [ "discovery_network_list_win.cc" ]
+    sources += [
+      "discovery_network_list_win.cc",
+      "discovery_network_list_win.h",
+    ]
     libs = [ "iphlpapi.lib" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  cflags = []
+
+  sources = []
+
+  if (is_win) {
+    # Disable warnings about deprecated declarations in Windows SDK headers.
+    # FakeConnectionProfile implements the WinRT interface IConnectionProfile,
+    # which contains a few deprecated functions that are not used by Chromium.
+    cflags += [ "-Wno-deprecated-declarations" ]
+
+    sources += [
+      "test_support/win/fake_connection_profile.cc",
+      "test_support/win/fake_connection_profile.h",
+      "test_support/win/fake_ip_adapter_addresses.cc",
+      "test_support/win/fake_ip_adapter_addresses.h",
+      "test_support/win/fake_ip_helper.cc",
+      "test_support/win/fake_ip_helper.h",
+      "test_support/win/fake_mib_table.cc",
+      "test_support/win/fake_mib_table.h",
+      "test_support/win/fake_network_adapter.cc",
+      "test_support/win/fake_network_adapter.h",
+      "test_support/win/fake_network_information_statics.cc",
+      "test_support/win/fake_network_information_statics.h",
+      "test_support/win/fake_vector_view.h",
+      "test_support/win/fake_winrt_network_environment.cc",
+      "test_support/win/fake_winrt_network_environment.h",
+      "test_support/win/fake_wlan_connection_profile_details.cc",
+      "test_support/win/fake_wlan_connection_profile_details.h",
+    ]
+  }
+  deps = [ "//base" ]
 }

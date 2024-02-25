@@ -4,15 +4,14 @@
 
 #include "components/sync/engine/backoff_delay_provider.h"
 
-#include <stdint.h>
-
 #include <algorithm>
 
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
-#include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
 #include "components/sync/engine/polling_constants.h"
+#include "components/sync/engine/sync_protocol_error.h"
+#include "components/sync/engine/syncer_error.h"
 
 namespace syncer {
 
@@ -69,14 +68,13 @@ base::TimeDelta BackoffDelayProvider::GetDelay(
 
 base::TimeDelta BackoffDelayProvider::GetInitialDelay(
     const ModelNeutralState& state) const {
-  // NETWORK_CONNECTION_UNAVAILABLE implies we did not receive HTTP response
-  // from server because of some network error. If network is unavailable then
-  // on next connection type or address change scheduler will run canary job.
-  // Otherwise we'll retry in 30 seconds.
-  if (state.commit_result.value() ==
-          SyncerError::NETWORK_CONNECTION_UNAVAILABLE ||
-      state.last_download_updates_result.value() ==
-          SyncerError::NETWORK_CONNECTION_UNAVAILABLE) {
+  // kNetworkError implies we did not receive HTTP response from server because
+  // of some network error. If network is unavailable then on next connection
+  // type or address change scheduler will run canary job. Otherwise we'll retry
+  // in 30 seconds.
+  if (state.commit_result.type() == SyncerError::Type::kNetworkError ||
+      state.last_download_updates_result.type() ==
+          SyncerError::Type::kNetworkError) {
     return default_initial_backoff_;
   }
 
@@ -89,10 +87,15 @@ base::TimeDelta BackoffDelayProvider::GetInitialDelay(
   // on commit, it means that download updates succeeded.  Therefore, we only
   // need to check if either code is equal to SERVER_RETURN_MIGRATION_DONE,
   // and not if there were any more serious errors requiring the long retry.
-  if (state.last_download_updates_result.value() ==
-          SyncerError::SERVER_RETURN_MIGRATION_DONE ||
-      state.commit_result.value() ==
-          SyncerError::SERVER_RETURN_MIGRATION_DONE) {
+  if (state.last_download_updates_result.type() ==
+          SyncerError::Type::kProtocolError &&
+      state.last_download_updates_result.GetProtocolErrorOrDie() ==
+          SyncProtocolErrorType::MIGRATION_DONE) {
+    return short_initial_backoff_;
+  }
+  if (state.commit_result.type() == SyncerError::Type::kProtocolError &&
+      state.commit_result.GetProtocolErrorOrDie() ==
+          SyncProtocolErrorType::MIGRATION_DONE) {
     return short_initial_backoff_;
   }
 
@@ -104,8 +107,11 @@ base::TimeDelta BackoffDelayProvider::GetInitialDelay(
   // TODO(sync): We shouldn't need to handle this in BackoffDelayProvider.
   // There should be a way to deal with protocol errors before we get to this
   // point.
-  if (state.commit_result.value() == SyncerError::SERVER_RETURN_CONFLICT)
+  if (state.commit_result.type() == SyncerError::Type::kProtocolError &&
+      state.commit_result.GetProtocolErrorOrDie() ==
+          SyncProtocolErrorType::CONFLICT) {
     return short_initial_backoff_;
+  }
 
   return default_initial_backoff_;
 }

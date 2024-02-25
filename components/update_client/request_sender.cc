@@ -26,10 +26,10 @@ namespace update_client {
 namespace {
 
 // This is an ECDSA prime256v1 named-curve key.
-constexpr int kKeyVersion = 13;
+constexpr int kKeyVersion = 14;
 constexpr char kKeyPubBytesBase64[] =
-    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE82WKnMkb4neVRYgyGaXoEY5nDaiO"
-    "renjt0LMSK/WiPs4+fsjz9kQs+T1PjJR7Hv2upGrsJcSaF8E1nK4WrSucA==";
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnQ80VXAOPbNgBiGyIPbbfbUkcW755cP7wqinrY"
+    "cBeh0mtiIDBGnTrTLxM4uhXjOB0Esy9YHM/oubH5w5KjinYA==";
 
 // The content type for all protocol requests.
 constexpr char kContentType[] = "application/json";
@@ -75,9 +75,10 @@ void RequestSender::Send(
 
   if (use_signing_) {
     public_key_ = GetKey(kKeyPubBytesBase64);
-    if (public_key_.empty())
+    if (public_key_.empty()) {
       return HandleSendError(
           static_cast<int>(ProtocolError::MISSING_PUBLIC_KEY), 0);
+    }
   }
 
   SendInternal();
@@ -181,16 +182,18 @@ void RequestSender::OnNetworkFetcherComplete(
   VLOG(1) << "Request completed from url: " << original_url.spec();
 
   int error = -1;
-  if (!net_error && response_code_ == 200)
+  if (!net_error && response_code_ == 200) {
     error = 0;
-  else if (response_code_ != -1)
+  } else if (response_code_ != -1) {
     error = response_code_;
-  else
+  } else {
     error = net_error;
+  }
 
   int retry_after_sec = -1;
-  if (original_url.SchemeIsCryptographic() && error > 0)
+  if (original_url.SchemeIsCryptographic() && error > 0) {
     retry_after_sec = base::saturated_cast<int>(xheader_retry_after_sec);
+  }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

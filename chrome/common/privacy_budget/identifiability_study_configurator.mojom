@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+// Configures the IdentifiabilityStudy in the renderer.
+interface IdentifiabilityStudyConfigurator {
+  // Configures the Identifiability Study, by telling the renderer whether the
+  // meta experiment is active or not. This message should be sent once, and the
+  // configuration won't change afterwards.
+  ConfigureIdentifiabilityStudy(bool meta_experiment_active);
+};

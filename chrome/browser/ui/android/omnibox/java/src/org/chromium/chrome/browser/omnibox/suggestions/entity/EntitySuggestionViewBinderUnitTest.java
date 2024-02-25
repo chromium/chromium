@@ -21,9 +21,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewPrope
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Tests for {@link EntitySuggestionViewBinder}.
- */
+/** Tests for {@link EntitySuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class EntitySuggestionViewBinderUnitTest {
     private BaseSuggestionView<View> mView;
@@ -31,8 +29,9 @@ public class EntitySuggestionViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        mView = new BaseSuggestionView<View>(
-                ContextUtils.getApplicationContext(), R.layout.omnibox_basic_suggestion);
+        mView =
+                new BaseSuggestionView<View>(
+                        ContextUtils.getApplicationContext(), R.layout.omnibox_basic_suggestion);
         mModel = new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(mModel, mView, EntitySuggestionViewBinder::bind);
     }

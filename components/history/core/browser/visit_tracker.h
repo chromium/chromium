@@ -6,10 +6,10 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_VISIT_TRACKER_H__
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "components/history/core/browser/history_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history {
 
@@ -96,7 +96,7 @@ class VisitTracker {
   // This is not recalculated during removal as it would be expensive and is
   // generally unnecessary (because AddVisit() is typically called with
   // increasing visit-ids).
-  absl::optional<VisitIdRange> visit_id_range_if_sorted_;
+  std::optional<VisitIdRange> visit_id_range_if_sorted_;
 };
 
 }  // namespace history

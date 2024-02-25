@@ -4,10 +4,11 @@
 
 #include "media/formats/hls/items.h"
 
+#include <optional>
+
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "media/formats/hls/parse_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media::hls {
@@ -22,7 +23,7 @@ TagItem GetTagItem(SourceString tag) {
   // Extract name and content
   const auto name_str = tag.Substr(0, colon_index);
 
-  absl::optional<SourceString> content;
+  std::optional<SourceString> content;
   if (colon_index != base::StringPiece::npos) {
     content = tag.Substr(colon_index + 1);
   }

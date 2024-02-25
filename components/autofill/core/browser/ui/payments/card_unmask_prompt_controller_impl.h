@@ -56,15 +56,19 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   void OnUnmaskPromptAccepted(const std::u16string& cvc,
                               const std::u16string& exp_month,
                               const std::u16string& exp_year,
-                              bool enable_fido_auth) override;
+                              bool enable_fido_auth,
+                              bool was_checkbox_visible) override;
   void NewCardLinkClicked() override;
+#if BUILDFLAG(IS_IOS)
+  std::u16string GetNavigationTitle() const override;
+#endif
   std::u16string GetWindowTitle() const override;
   std::u16string GetInstructionsMessage() const override;
   std::u16string GetOkButtonLabel() const override;
   int GetCvcImageRid() const override;
   bool ShouldRequestExpirationDate() const override;
 #if BUILDFLAG(IS_ANDROID)
-  std::string GetCardIconString() const override;
+  Suggestion::Icon GetCardIcon() const override;
   std::u16string GetCardName() const override;
   std::u16string GetCardLastFourDigits() const override;
   std::u16string GetCardExpiration() const override;
@@ -82,6 +86,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   base::TimeDelta GetSuccessMessageDuration() const override;
   AutofillClient::PaymentsRpcResult GetVerificationResult() const override;
   bool IsVirtualCard() const override;
+  const CreditCard& GetCreditCard() const override;
 #if !BUILDFLAG(IS_IOS)
   int GetCvcTooltipResourceId() override;
 #endif

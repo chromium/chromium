@@ -29,8 +29,10 @@ class OtpVerificationDialogMediator
     private Delegate mDelegate;
     private PropertyModel mOtpVerificationDialogModel;
 
-    OtpVerificationDialogMediator(ModalDialogManager modalDialogManager,
-            PropertyModel.Builder dialogModelBuilder, Delegate delegate) {
+    OtpVerificationDialogMediator(
+            ModalDialogManager modalDialogManager,
+            PropertyModel.Builder dialogModelBuilder,
+            Delegate delegate) {
         mModalDialogManager = modalDialogManager;
         mModalDialogModel = dialogModelBuilder.with(ModalDialogProperties.CONTROLLER, this).build();
         mDelegate = delegate;
@@ -62,7 +64,8 @@ class OtpVerificationDialogMediator
 
     @Override
     public void onTextChanged(CharSequence s) {
-        mModalDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
+        mModalDialogModel.set(
+                ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
                 s.length() != mOtpVerificationDialogModel.get(OTP_LENGTH));
         mOtpVerificationDialogModel.set(OTP_ERROR_MESSAGE, Optional.empty());
         mOtpVerificationDialogModel.set(EDIT_TEXT, Optional.of(s));
@@ -120,8 +123,9 @@ class OtpVerificationDialogMediator
      */
     void showConfirmationAndDismissDialog(String confirmationMessage) {
         mOtpVerificationDialogModel.set(SHOW_CONFIRMATION, confirmationMessage);
-        new Handler().postDelayed(
-                this::dismissDialog, DELAY_BETWEEN_CONFIRMATION_SHOWN_AND_DISMISSAL_MS);
+        new Handler()
+                .postDelayed(
+                        this::dismissDialog, DELAY_BETWEEN_CONFIRMATION_SHOWN_AND_DISMISSAL_MS);
     }
 
     void onNewOtpRequested() {

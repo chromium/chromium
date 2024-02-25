@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
@@ -305,9 +306,9 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void LoginToRegularUser() {
+  void LoginToUser(LoginState::LoggedInUserType user_type) {
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
-                                        LoginState::LOGGED_IN_USER_REGULAR);
+                                        user_type);
     task_environment_.RunUntilIdle();
   }
 
@@ -434,6 +435,27 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetCellularSimCarrierLocked() {
+    // Simulate a locked SIM.
+    base::Value::Dict sim_lock_status;
+    sim_lock_status.Set(shill::kSIMLockTypeProperty, shill::kSIMLockNetworkPin);
+    helper_.device_test()->SetDeviceProperty(
+        kTestCellularDevicePath, shill::kSIMLockStatusProperty,
+        base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
+
+    // Set the cellular service to be the active profile.
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
+    sim_slot_infos.Append(std::move(slot_info_item));
+    helper_.device_test()->SetDeviceProperty(
+        kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
+        base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
   void AddNonConnectablePSimService() {
     AddCellularDevice();
     AddCellularService(/*has_eid=*/false);
@@ -521,6 +543,9 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   FakeTetherDelegate* fake_tether_delegate() {
     return fake_tether_delegate_.get();
   }
+  std::string UserProfilePath() {
+    return helper_.ProfilePathUser();
+  }
 
  private:
   void AddCellularDevice() {
@@ -590,6 +615,28 @@ TEST_F(NetworkConnectionHandlerImplTest,
 }
 
 TEST_F(NetworkConnectionHandlerImplTest,
+       NetworkConnectionHandlerConnectSuccess_GuestUser) {
+  Init();
+
+  ProhibitVpnForNetworkHandler();
+
+  LoginToUser(LoginState::LOGGED_IN_USER_GUEST);
+  std::string wifi0_service_path = ConfigureService(kConfigWifi0Connectable);
+  ASSERT_FALSE(wifi0_service_path.empty());
+  Connect(wifi0_service_path);
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+  // Observer expectations
+  EXPECT_TRUE(network_connection_observer()->GetRequested(wifi0_service_path));
+  EXPECT_EQ(kSuccessResult,
+            network_connection_observer()->GetResult(wifi0_service_path));
+  EXPECT_EQ(
+      UserProfilePath(),
+      GetServiceStringProperty(wifi0_service_path, shill::kProfileProperty));
+
+  NetworkHandler::Shutdown();
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
        NetworkConnectionHandlerConnectBlockedByManagedOnly) {
   Init();
 
@@ -599,7 +646,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect, true);
   SetupDevicePolicy("[]", global_config);
   SetupUserPolicy("[]");
-  LoginToRegularUser();
+  LoginToUser(LoginState::LOGGED_IN_USER_REGULAR);
   Connect(wifi0_service_path);
   EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
             GetResultAndReset());
@@ -624,7 +671,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
   SetupDevicePolicy("[]", global_config);
   SetupUserPolicy("[]");
 
-  LoginToRegularUser();
+  LoginToUser(LoginState::LOGGED_IN_USER_REGULAR);
 
   Connect(wifi0_service_path);
   EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
@@ -721,7 +768,7 @@ TEST_F(NetworkConnectionHandlerImplTest, IgnoreConnectInProgressError_Fails) {
 
 namespace {
 
-const char* kPolicyWithCertPatternTemplate =
+constexpr char kPolicyWithCertPatternTemplate[] =
     "[ { \"GUID\": \"wifi4\","
     "    \"Name\": \"wifi4\","
     "    \"Type\": \"WiFi\","
@@ -1153,7 +1200,21 @@ TEST_F(NetworkConnectionHandlerImplTest, SimLocked) {
   SetCellularServiceConnectable();
 
   Connect(kTestCellularServicePath);
-  EXPECT_EQ(NetworkConnectionHandler::kErrorSimLocked, GetResultAndReset());
+  EXPECT_EQ(NetworkConnectionHandler::kErrorSimPinPukLocked,
+            GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, SimCarrierLocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  Init();
+  AddNonConnectablePSimService();
+  SetCellularSimCarrierLocked();
+  SetCellularServiceConnectable();
+
+  Connect(kTestCellularServicePath);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorSimCarrierLocked,
+            GetResultAndReset());
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_AlreadyConnectable) {

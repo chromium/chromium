@@ -101,6 +101,17 @@ void FakeDlpClient::RequestFileAccess(
   std::move(callback).Run(response, base::ScopedFD());
 }
 
+void FakeDlpClient::GetDatabaseEntries(GetDatabaseEntriesCallback callback) {
+  dlp::GetDatabaseEntriesResponse response;
+  for (auto& [path, urls] : files_database_) {
+    auto* file_entry = response.add_files_entries();
+    file_entry->set_source_url(urls.first);
+    file_entry->set_referrer_url(urls.second);
+    file_entry->set_path(path);
+  }
+  std::move(callback).Run(response);
+}
+
 bool FakeDlpClient::IsAlive() const {
   return is_alive_;
 }

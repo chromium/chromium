@@ -25,13 +25,13 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
@@ -42,33 +42,23 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
-using content_settings::URLToSchemefulSitePattern;
-
 namespace {
 
-// `kPermissionStorageAccessAPI` enables StorageAccessAPIwithPrompts
-// (https://chromestatus.com/feature/5085655327047680). StorageAccessAPI is
-// considered enabled when either feature is enabled (by different field trial
-// studies).
-bool StorageAccessAPIEnabled() {
-  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
-         base::FeatureList::IsEnabled(
-             permissions::features::kPermissionStorageAccessAPI);
-}
+// This is mutable for testing purposes.
+static int implicit_grant_limit = 0;
+
+// How far back to look when requiring top-level user interaction on the
+// requesting site for Storage Access API permission grants. If this value is an
+// empty duration (e.g. "0s"), then no top-level user interaction is required.
+constexpr base::TimeDelta kStorageAccessAPITopLevelUserInteractionBound =
+    base::Days(30);
 
 // `kPermissionStorageAccessAPI` enables StorageAccessAPIwithPrompts
 // (https://chromestatus.com/feature/5085655327047680), which should not
 // auto-deny if FPS is irrelevant.
 bool ShouldAutoDenyOutsideFPS() {
-  return blink::features::kStorageAccessAPIAutoDenyOutsideFPS.Get() &&
-         !base::FeatureList::IsEnabled(
-             permissions::features::kPermissionStorageAccessAPI);
-}
-
-bool NeedsFirstPartySetMetadata() {
-  return base::FeatureList::IsEnabled(features::kFirstPartySets) &&
-         (blink::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
-          ShouldAutoDenyOutsideFPS());
+  return !base::FeatureList::IsEnabled(
+      permissions::features::kPermissionStorageAccessAPI);
 }
 
 // Returns true if the request wasn't answered by the user explicitly.
@@ -130,8 +120,7 @@ RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
       return persist ? RequestOutcome::kDeniedByUser
                      : RequestOutcome::kReusedPreviousDecision;
     default:
-      NOTREACHED();
-      return RequestOutcome::kDeniedByUser;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -145,15 +134,15 @@ content_settings::ContentSettingConstraints ComputeConstraints(
   switch (outcome) {
     case RequestOutcome::kGrantedByFirstPartySet:
       constraints.set_lifetime(
-          blink::features::kStorageAccessAPIImplicitPermissionLifetime.Get());
+          permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
       constraints.set_session_model(
-          content_settings::SessionModel::NonRestorableUserSession);
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
       return constraints;
     case RequestOutcome::kGrantedByAllowance:
       constraints.set_lifetime(
-          blink::features::kStorageAccessAPIImplicitPermissionLifetime.Get());
+          permissions::kStorageAccessAPIImplicitPermissionLifetime);
       constraints.set_session_model(
-          content_settings::SessionModel::UserSession);
+          content_settings::mojom::SessionModel::USER_SESSION);
       return constraints;
     case RequestOutcome::kDismissedByUser:
     case RequestOutcome::kDeniedByFirstPartySet:
@@ -169,8 +158,9 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
       constraints.set_lifetime(
-          blink::features::kStorageAccessAPIExplicitPermissionLifetime.Get());
-      constraints.set_session_model(content_settings::SessionModel::Durable);
+          permissions::kStorageAccessAPIExplicitPermissionLifetime);
+      constraints.set_session_model(
+          content_settings::mojom::SessionModel::DURABLE);
       return constraints;
   }
 }
@@ -197,6 +187,17 @@ bool ShouldPersistSetting(bool permission_allowed,
 
 }  // namespace
 
+// static
+int StorageAccessGrantPermissionContext::GetImplicitGrantLimitForTesting() {
+  return implicit_grant_limit;
+}
+
+// static
+void StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
+    int limit) {
+  implicit_grant_limit = limit;
+}
+
 StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(
@@ -208,24 +209,36 @@ StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =
     default;
 
 void StorageAccessGrantPermissionContext::DecidePermissionForTesting(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback) {
-  DecidePermission(id, requesting_origin, embedding_origin, user_gesture,
-                   std::move(callback));
+  DecidePermission(std::move(request_data), std::move(callback));
 }
 
 void StorageAccessGrantPermissionContext::DecidePermission(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(requesting_origin.is_valid());
-  CHECK(embedding_origin.is_valid());
+  CHECK(request_data.requesting_origin.is_valid());
+  CHECK(request_data.embedding_origin.is_valid());
+
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_data.id.global_render_frame_host_id());
+  CHECK(rfh);
+
+  if (rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
+      rfh->IsNestedWithinFencedFrame() ||
+      rfh->IsSandboxed(
+          network::mojom::WebSandboxFlags::kStorageAccessByUserActivation)) {
+    // No need to log anything here, since well-behaved renderers have already
+    // done these checks and have logged to the console. This block is to handle
+    // compromised renderers.
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
+    mojo::ReportBadMessage(
+        "requestStorageAccess: Must not be called by a fenced frame, iframe "
+        "with an opaque origin, credentialless iframe, or sandboxed iframe");
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
+  }
 
   // Return early without letting SAA override any explicit user settings to
   // block 3p cookies.
@@ -233,16 +246,13 @@ void StorageAccessGrantPermissionContext::DecidePermission(
       HostContentSettingsMapFactory::GetForProfile(browser_context());
   CHECK(settings_map);
   ContentSetting setting = settings_map->GetContentSetting(
-      requesting_origin, embedding_origin, ContentSettingsType::COOKIES);
+      request_data.requesting_origin, request_data.embedding_origin,
+      ContentSettingsType::COOKIES);
   if (setting == CONTENT_SETTING_BLOCK) {
     RecordOutcomeSample(RequestOutcome::kDeniedByCookieSettings);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
-
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
-  CHECK(rfh);
 
   // Return early without prompting users if cookie access is already allowed.
   // This does not take previously granted SAA permission into account.
@@ -252,15 +262,15 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   net::CookieSettingOverrides overrides = rfh->GetCookieSettingOverrides();
   overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
   if (cookie_settings->IsFullCookieAccessAllowed(
-          requesting_origin, net::SiteForCookies(),
-          url::Origin::Create(embedding_origin), overrides)) {
+          request_data.requesting_origin, net::SiteForCookies(),
+          url::Origin::Create(request_data.embedding_origin), overrides)) {
     RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings);
     std::move(callback).Run(CONTENT_SETTING_ALLOW);
     return;
   }
 
-  net::SchemefulSite requesting_site(requesting_origin);
-  net::SchemefulSite embedding_site(embedding_origin);
+  net::SchemefulSite requesting_site(request_data.requesting_origin);
+  net::SchemefulSite embedding_site(request_data.embedding_origin);
 
   // Return early without prompting users if the requesting frame is same-site
   // with the top-level frame.
@@ -270,22 +280,36 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
-  if (!user_gesture || !StorageAccessAPIEnabled()) {
-    if (!user_gesture) {
-      rfh->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "requestStorageAccess: Must be handling a user gesture to use.");
+  {
+    // Normally a previous prompt rejection would already be filtered before
+    // reaching `StorageAccessGrantPermissionContext::DecidePermission`, but the
+    // requirement not to surface the user's denial back to the caller means
+    // this code is reachable even after permission has been blocked.
+    // Accordingly, check the default implementation, and if a denial has been
+    // persisted, respect that decision.
+    ContentSetting existing_setting =
+        PermissionContextBase::GetPermissionStatusInternal(
+            rfh, request_data.requesting_origin, request_data.embedding_origin);
+    // ALLOW grants are handled by PermissionContextBase so they never reach
+    // this point.
+    CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
+    if (existing_setting == CONTENT_SETTING_BLOCK) {
+      NotifyPermissionSetInternal(
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
+          /*persist=*/false, existing_setting,
+          RequestOutcome::kReusedPreviousDecision);
+      return;
     }
-    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
-    return;
+    CHECK_EQ(existing_setting, CONTENT_SETTING_ASK);
   }
 
-  if (!NeedsFirstPartySetMetadata()) {
-    // First-Party Sets is disabled, or Auto-grants and auto-denials are both
-    // disabled, so don't bother getting First-Party Sets data.
-    UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
-                             user_gesture, std::move(callback));
+  if (!request_data.user_gesture) {
+    rfh->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "requestStorageAccess: Must be handling a user gesture to use.");
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
 
@@ -295,151 +319,95 @@ void StorageAccessGrantPermissionContext::DecidePermission(
           requesting_site, &embedding_site,
           base::BindOnce(&StorageAccessGrantPermissionContext::
                              CheckForAutoGrantOrAutoDenial,
-                         weak_factory_.GetWeakPtr(), id, requesting_origin,
-                         embedding_origin, user_gesture, std::move(callback)));
+                         weak_factory_.GetWeakPtr(), std::move(request_data),
+                         std::move(callback)));
 }
 
 void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback,
     net::FirstPartySetMetadata metadata) {
-  // We should only run this method if something might need the FPS metadata.
-  CHECK(blink::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
-        ShouldAutoDenyOutsideFPS());
-
   if (metadata.AreSitesInSameFirstPartySet()) {
-    if (blink::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
-      // Service domains are not allowed to request storage access on behalf
-      // of other domains, even in the same First-Party Set.
-      if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
-        NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
-                                    std::move(callback),
-                                    /*persist=*/false, CONTENT_SETTING_BLOCK,
-                                    RequestOutcome::kDeniedByPrerequisites);
+    switch (metadata.top_frame_entry()->site_type()) {
+      case net::SiteType::kPrimary:
+      case net::SiteType::kAssociated:
+        // Since the sites are in the same First-Party Set, risk of abuse due
+        // to allowing access is considered to be low.
+        NotifyPermissionSetInternal(
+            request_data.id, request_data.requesting_origin,
+            request_data.embedding_origin, std::move(callback),
+            /*persist=*/true, CONTENT_SETTING_ALLOW,
+            RequestOutcome::kGrantedByFirstPartySet);
         return;
-      }
-      // Since the sites are in the same First-Party Set, risk of abuse due to
-      // allowing access is considered to be low.
-      NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
-                                  std::move(callback),
-                                  /*persist=*/true, CONTENT_SETTING_ALLOW,
-                                  RequestOutcome::kGrantedByFirstPartySet);
-      return;
+      case net::SiteType::kService:
+        break;
     }
-    // Not autogranting; fall back to implicit grants or prompt.
-  } else {
-    if (ShouldAutoDenyOutsideFPS()) {
-      NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
-                                  std::move(callback),
-                                  /*persist=*/true, CONTENT_SETTING_BLOCK,
-                                  RequestOutcome::kDeniedByFirstPartySet);
-      return;
-    }
-    // Not autodenying; fall back to implicit grants or prompt.
   }
-
-  return UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
-                                  user_gesture, std::move(callback));
-}
-
-void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
-    permissions::BrowserPermissionCallback callback) {
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser_context());
-  CHECK(settings_map);
-
-  // Normally a previous prompt rejection would already be filtered, but the
-  // requirement not to surface the user's denial back to the caller means this
-  // path can be reached on subsequent requests. Accordingly, check the default
-  // implementation, and if a denial has been persisted, respect that decision.
-  content::RenderFrameHost* const rfh =
-      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
-
-  if (!rfh) {
-    // After async steps, the RenderFrameHost is not guaranteed to still be
-    // alive.
-    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
-    return;
-  }
-
-  ContentSetting existing_setting =
-      PermissionContextBase::GetPermissionStatusInternal(rfh, requesting_origin,
-                                                         embedding_origin);
-  // ALLOW grants are handled by PermissionContextBase so they never reach this
-  // point. StorageAccessGrantPermissionContext::GetPermissionStatusInternal
-  // rewrites BLOCK to ASK, so we need to handle BLOCK here explicitly.
-  CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
-  if (existing_setting == CONTENT_SETTING_BLOCK) {
-    NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
+  if (ShouldAutoDenyOutsideFPS()) {
+    NotifyPermissionSetInternal(request_data.id, request_data.requesting_origin,
+                                request_data.embedding_origin,
                                 std::move(callback),
-                                /*persist=*/false, existing_setting,
-                                RequestOutcome::kReusedPreviousDecision);
+                                /*persist=*/true, CONTENT_SETTING_BLOCK,
+                                RequestOutcome::kDeniedByFirstPartySet);
     return;
   }
 
   // Get all of our implicit grants and see which ones apply to our
   // |requesting_origin|.
-  ContentSettingsForOneType implicit_grants =
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::STORAGE_ACCESS,
-          content_settings::SessionModel::UserSession);
+  if (implicit_grant_limit > 0) {
+    HostContentSettingsMap* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(browser_context());
+    CHECK(settings_map);
+    ContentSettingsForOneType implicit_grants =
+        settings_map->GetSettingsForOneType(
+            ContentSettingsType::STORAGE_ACCESS,
+            content_settings::mojom::SessionModel::USER_SESSION);
 
-  const int existing_implicit_grants = base::ranges::count_if(
-      implicit_grants, [requesting_origin](const auto& entry) {
-        return entry.primary_pattern.Matches(requesting_origin);
-      });
+    const int existing_implicit_grants = base::ranges::count_if(
+        implicit_grants, [&request_data](const auto& entry) {
+          return entry.primary_pattern.Matches(request_data.requesting_origin);
+        });
 
-  // If we have fewer grants than our limit, we can just set an implicit grant
-  // now and skip prompting the user.
-  if (existing_implicit_grants <
-      blink::features::kStorageAccessAPIImplicitGrantLimit.Get()) {
-    NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
-                                std::move(callback),
-                                /*persist=*/true, CONTENT_SETTING_ALLOW,
-                                RequestOutcome::kGrantedByAllowance);
-    return;
+    // If we have fewer grants than our limit, we can just set an implicit grant
+    // now and skip prompting the user.
+    if (existing_implicit_grants < implicit_grant_limit) {
+      NotifyPermissionSetInternal(
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
+          /*persist=*/true, CONTENT_SETTING_ALLOW,
+          RequestOutcome::kGrantedByAllowance);
+      return;
+    }
   }
 
   // We haven't found a reason to auto-grant permission, but before we prompt
   // there's one more hurdle: the user must have interacted with the requesting
   // site in a top-level context recently.
   DIPSService* dips_service = DIPSService::Get(browser_context());
-  const base::TimeDelta bound =
-      blink::features::kStorageAccessAPITopLevelUserInteractionBound.Get();
-  if (bound != base::TimeDelta() && dips_service) {
-    dips_service->DidSiteHaveInteractionSince(
-        requesting_origin, base::Time::Now() - bound,
-        base::BindOnce(&StorageAccessGrantPermissionContext::
-                           OnCheckedUserInteractionHeuristic,
-                       weak_factory_.GetWeakPtr(), id, requesting_origin,
-                       embedding_origin, user_gesture, std::move(callback)));
+  if (!dips_service ||
+      kStorageAccessAPITopLevelUserInteractionBound == base::TimeDelta()) {
+    // If we don't have access to this kind of historical info or the time bound
+    // is empty, we waive the requirement, and show the prompt.
+    PermissionContextBase::DecidePermission(std::move(request_data),
+                                            std::move(callback));
     return;
   }
 
-  // If we don't have access to this kind of historical info or the time bound
-  // is empty, we waive the requirement, and show the prompt.
-  PermissionContextBase::DecidePermission(id, requesting_origin,
-                                          embedding_origin, user_gesture,
-                                          std::move(callback));
+  GURL site(request_data.requesting_origin);
+  dips_service->DidSiteHaveInteractionSince(
+      site, base::Time::Now() - kStorageAccessAPITopLevelUserInteractionBound,
+      base::BindOnce(&StorageAccessGrantPermissionContext::
+                         OnCheckedUserInteractionHeuristic,
+                     weak_factory_.GetWeakPtr(), std::move(request_data),
+                     std::move(callback)));
 }
 
 void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
+    permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback,
     bool had_top_level_user_interaction) {
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_data.id.global_render_frame_host_id());
 
   if (!rfh) {
     // After async steps, the RenderFrameHost is not guaranteed to still be
@@ -455,7 +423,8 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
         "requestStorageAccess: Request denied because the embedded site has "
         "never been interacted with as a top-level context");
     NotifyPermissionSetInternal(
-        id, requesting_origin, embedding_origin, std::move(callback),
+        request_data.id, request_data.requesting_origin,
+        request_data.embedding_origin, std::move(callback),
         /*persist=*/false, CONTENT_SETTING_BLOCK,
         RequestOutcome::kDeniedByTopLevelInteractionHeuristic);
     return;
@@ -465,8 +434,7 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
   // is still alive.
   CHECK(rfh);
   // Show prompt.
-  PermissionContextBase::DecidePermission(id, requesting_origin,
-                                          embedding_origin, user_gesture,
+  PermissionContextBase::DecidePermission(std::move(request_data),
                                           std::move(callback));
 }
 
@@ -474,10 +442,6 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (!StorageAccessAPIEnabled()) {
-    return CONTENT_SETTING_BLOCK;
-  }
-
   // Permission query from top-level frame should be "granted" by default.
   if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
     return CONTENT_SETTING_ALLOW;
@@ -516,12 +480,12 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
                             ContentSettingsType::STORAGE_ACCESS, &info);
 
     switch (info.metadata.session_model()) {
-      case content_settings::SessionModel::NonRestorableUserSession:
-      case content_settings::SessionModel::UserSession:
+      case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
+      case content_settings::mojom::SessionModel::USER_SESSION:
         outcome = RequestOutcome::kReusedImplicitGrant;
         break;
-      case content_settings::SessionModel::Durable:
-      case content_settings::SessionModel::OneTime:
+      case content_settings::mojom::SessionModel::DURABLE:
+      case content_settings::mojom::SessionModel::ONE_TIME:
         break;
     }
   }
@@ -539,10 +503,6 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     ContentSetting content_setting,
     RequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!StorageAccessAPIEnabled()) {
-    return;
-  }
 
   RecordOutcomeSample(outcome);
 
@@ -601,8 +561,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   browser_context()
       ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
-      ->SetStorageAccessGrantSettings(
-          grants, base::BindOnce(std::move(callback), content_setting));
+      ->SetContentSettings(
+          ContentSettingsType::STORAGE_ACCESS, grants,
+          base::BindOnce(std::move(callback), content_setting));
 }
 
 void StorageAccessGrantPermissionContext::UpdateContentSetting(

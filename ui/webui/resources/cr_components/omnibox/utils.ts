@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from '//resources/js/assert_ts.js';
-import {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {TimeTicks} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import {assertNotReached} from '//resources/js/assert.js';
+import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {TimeTicks} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {SideType} from './omnibox.mojom-webui.js';
+import {RenderType, SideType} from './omnibox.mojom-webui.js';
 
 /** Converts a String16 to a JavaScript String. */
 export function decodeString16(str: String16|null): string {
@@ -39,5 +39,19 @@ export function sideTypeToClass(sideType: SideType): string {
       return 'secondary-side';
     default:
       assertNotReached('Unexpected side type');
+  }
+}
+
+/** Converts a render type to a string to be used in CSS. */
+export function renderTypeToClass(renderType: RenderType): string {
+  switch (renderType) {
+    case RenderType.kDefaultVertical:
+      return 'vertical';
+    case RenderType.kHorizontal:
+      return 'horizontal';
+    case RenderType.kGrid:
+      return 'grid';
+    default:
+      assertNotReached('Unexpected render type');
   }
 }

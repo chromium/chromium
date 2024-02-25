@@ -94,6 +94,18 @@ struct MEDIA_EXPORT H265ScalingListData {
                             [kScalingListSizeId1To3Count];
   uint8_t scaling_list_32x32[kNumScalingListMatrices]
                             [kScalingListSizeId1To3Count];
+
+  // The following methods provide a raster scan order view into the matrix
+  // represented by the corresponding |scaling_list_NxN[matrix_id]| array (which
+  // is expected to be in up-right diagonal scan order per the specification).
+  uint8_t GetScalingList4x4EntryInRasterOrder(size_t matrix_id,
+                                              size_t raster_idx) const;
+  uint8_t GetScalingList8x8EntryInRasterOrder(size_t matrix_id,
+                                              size_t raster_idx) const;
+  uint8_t GetScalingList16x16EntryInRasterOrder(size_t matrix_id,
+                                                size_t raster_idx) const;
+  uint8_t GetScalingList32x32EntryInRasterOrder(size_t matrix_id,
+                                                size_t raster_idx) const;
 };
 
 struct MEDIA_EXPORT H265StRefPicSet {
@@ -150,7 +162,9 @@ struct MEDIA_EXPORT H265VPS {
   int vps_max_latency_increase_plus1[kMaxSubLayers];
   int vps_max_layer_id;
   int vps_num_layer_sets_minus1;
-  bool vps_timing_info_present_flag;
+
+  // Computed from ScalabilityId
+  int aux_alpha_layer_id;
 
   // skipped the rest
 };

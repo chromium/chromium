@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL('../resources/dom-snapshot-input-value.html', 'Tests DOMSnapshot.getSnapshot method returning input values.');
 
   const response = await dp.DOMSnapshot.getSnapshot({'computedStyleWhitelist': [], 'includeUserAgentShadowTree': true});

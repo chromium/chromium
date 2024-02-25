@@ -604,6 +604,7 @@ artifact_zip("updater_zip") {
     "$root_build_dir/Updater Packaging/sign_updater.py",
     "$root_build_dir/Updater Packaging/signing/build_props_config.py",
     "$root_build_dir/Updater Packaging/signing/pkg-dmg",
+    "$root_build_dir/Updater Packaging/signing/pkg/postinstall",
     "$root_build_dir/chrome/updater/.install",
     "$root_build_dir/UpdaterSetup",
     "$root_build_dir/qualification_app",

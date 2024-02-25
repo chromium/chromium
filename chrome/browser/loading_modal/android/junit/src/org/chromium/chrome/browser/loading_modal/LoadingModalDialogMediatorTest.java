@@ -30,22 +30,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for {@link LoadingModalDialogMediator}.
- */
+/** Tests for {@link LoadingModalDialogMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LoadingModalDialogMediatorTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private ModalDialogManager mModalDialogManager;
+    @Mock private ModalDialogManager mModalDialogManager;
 
-    @Mock
-    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
-    @Mock
-    private LoadingModalDialogCoordinator.Observer mDialogCoordinatorObserver;
+    @Mock private LoadingModalDialogCoordinator.Observer mDialogCoordinatorObserver;
 
     private LoadingModalDialogMediator mMediator;
     private PropertyModel mModel;
@@ -54,9 +48,10 @@ public class LoadingModalDialogMediatorTest {
     public void setUp() {
         Mockito.when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
         mMediator = new LoadingModalDialogMediator(mModalDialogManagerSupplier, new Handler());
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.CONTROLLER, mMediator)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, mMediator)
+                        .build();
         mMediator.addObserver(mDialogCoordinatorObserver);
     }
 

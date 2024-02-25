@@ -43,7 +43,7 @@ class InputMethodPersistence : public InputMethodManager::Observer {
       Profile* profile);
 
  private:
-  raw_ptr<InputMethodManager, ExperimentalAsh> input_method_manager_;
+  raw_ptr<InputMethodManager> input_method_manager_;
 };
 
 void SetUserLastInputMethodPreferenceForTesting(

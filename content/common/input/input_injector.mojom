@@ -39,6 +39,13 @@ enum SyntheticButton {
   kForward,
 };
 
+enum InputEventPattern {
+  kDefaultPattern,
+  kOnePerVsync,
+  kTwoPerVsync,
+  kEveryOtherVsync,
+};
+
 // The smooth drag gesture parameters sent by the renderer to the browser, that
 // are needed to queue the synthetic smooth drag gesture.
 struct SyntheticSmoothDrag {
@@ -46,6 +53,8 @@ struct SyntheticSmoothDrag {
   gfx.mojom.PointF start_point;
   array<gfx.mojom.Vector2dF> distances;
   float speed_in_pixels_s;
+  float vsync_offset_ms;
+  InputEventPattern input_event_pattern;
 };
 
 // The smooth drag gesture parameters sent by the renderer to the browser, that
@@ -60,6 +69,8 @@ struct SyntheticSmoothScroll {
   float fling_velocity_y;
   ui.mojom.ScrollGranularity granularity;
   int32 modifiers;
+  float vsync_offset_ms;
+  InputEventPattern input_event_pattern;
 };
 
 // The pinth parameters sent by the renderer to the browser, that are needed to
@@ -68,6 +79,8 @@ struct SyntheticPinch {
   float scale_factor;
   gfx.mojom.PointF anchor;
   float relative_pointer_speed_in_pixels_s;
+  float vsync_offset_ms;
+  InputEventPattern input_event_pattern;
 };
 
 // The tap parameters sent by the renderer to the browser, that are needed to

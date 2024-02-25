@@ -61,13 +61,15 @@ const User* FakeUserManager::AddUser(const AccountId& account_id) {
 }
 
 const User* FakeUserManager::AddChildUser(const AccountId& account_id) {
-  User* user = User::CreateRegularUser(account_id, USER_TYPE_CHILD);
+  User* user = User::CreateRegularUser(account_id, UserType::kChild);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
 
 const User* FakeUserManager::AddGuestUser(const AccountId& account_id) {
   User* user = User::CreateGuestUser(account_id);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -75,23 +77,33 @@ const User* FakeUserManager::AddGuestUser(const AccountId& account_id) {
 const User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   User* user = User::CreateKioskAppUser(account_id);
   user->set_username_hash(GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
+  users_.push_back(user);
+  return user;
+}
+
+const User* FakeUserManager::AddArcKioskAppUser(const AccountId& account_id) {
+  User* user = User::CreateArcKioskAppUser(account_id);
+  user->set_username_hash(GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
 
 const User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
                                                     bool is_affiliated) {
-  User* user = User::CreateRegularUser(account_id, USER_TYPE_REGULAR);
+  User* user = User::CreateRegularUser(account_id, UserType::kRegular);
   user->SetAffiliation(is_affiliated);
   user->set_username_hash(GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
 
 const user_manager::User* FakeUserManager::AddPublicAccountUser(
     const AccountId& account_id) {
-  user_manager::User* user =
-      user_manager::User::CreatePublicAccountUserForTesting(account_id);
+  User* user = User::CreatePublicAccountUserForTesting(account_id);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -100,15 +112,16 @@ void FakeUserManager::RemoveUserFromList(const AccountId& account_id) {
   const UserList::iterator it =
       base::ranges::find(users_, account_id, &User::GetAccountId);
   if (it != users_.end()) {
-    if (primary_user_ == *it)
-      primary_user_ = nullptr;
-    if (active_user_ != *it)
-      delete *it;
-    users_.erase(it);
+    DeleteUser(*it);
   }
 }
 
 void FakeUserManager::RemoveUserFromListForRecreation(
+    const AccountId& account_id) {
+  RemoveUserFromList(account_id);
+}
+
+void FakeUserManager::CleanStaleUserInformationFor(
     const AccountId& account_id) {
   RemoveUserFromList(account_id);
 }
@@ -120,8 +133,9 @@ const UserList& FakeUserManager::GetUsers() const {
 UserList FakeUserManager::GetUsersAllowedForMultiProfile() const {
   UserList result;
   for (UserList::const_iterator it = users_.begin(); it != users_.end(); ++it) {
-    if ((*it)->GetType() == USER_TYPE_REGULAR && !(*it)->is_logged_in())
+    if ((*it)->GetType() == UserType::kRegular && !(*it)->is_logged_in()) {
       result.push_back(*it);
+    }
   }
   return result;
 }
@@ -160,11 +174,10 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,
                                    bool is_child) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->set_is_logged_in(true);
       user->set_username_hash(username_hash);
-      user->SetProfileIsCreated();
       logged_in_users_.push_back(user);
       if (!primary_user_)
         primary_user_ = user;
@@ -175,7 +188,7 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
   }
 
   if (!active_user_ && IsEphemeralAccountId(account_id)) {
-    RegularUserLoggedInAsEphemeral(account_id, USER_TYPE_REGULAR);
+    RegularUserLoggedInAsEphemeral(account_id, UserType::kRegular);
   }
 }
 
@@ -208,7 +221,7 @@ void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {
   for (UserList::const_iterator it = logged_in_users_.begin();
        it != logged_in_users_.end(); ++it) {
     if ((*it)->GetAccountId() == account_id) {
-      active_user_ = *it;
+      active_user_ = (*it).get();
       break;
     }
   }
@@ -244,30 +257,21 @@ const User* FakeUserManager::FindUser(const AccountId& account_id) const {
   if (active_user_ != nullptr && active_user_->GetAccountId() == account_id)
     return active_user_;
 
-  const UserList& users = GetUsers();
-  for (UserList::const_iterator it = users.begin(); it != users.end(); ++it) {
-    if ((*it)->GetAccountId() == account_id)
-      return *it;
+  for (const User* user : users_) {
+    if (user->GetAccountId() == account_id) {
+      return user;
+    }
   }
 
   return nullptr;
 }
 
 User* FakeUserManager::FindUserAndModify(const AccountId& account_id) {
-  return nullptr;
+  return const_cast<User*>(FindUser(account_id));
 }
 
-std::u16string FakeUserManager::GetUserDisplayName(
-    const AccountId& account_id) const {
-  return std::u16string();
-}
-
-absl::optional<std::string> FakeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : absl::nullopt;
-}
-
-bool FakeUserManager::IsCurrentUserOwner() const {
-  return is_current_user_owner_;
+std::optional<std::string> FakeUserManager::GetOwnerEmail() {
+  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
@@ -288,29 +292,27 @@ bool FakeUserManager::IsLoggedInAsUserWithGaiaAccount() const {
 
 bool FakeUserManager::IsLoggedInAsManagedGuestSession() const {
   const User* active_user = GetActiveUser();
-  return active_user && active_user->GetType() == USER_TYPE_PUBLIC_ACCOUNT;
+  return active_user && active_user->GetType() == UserType::kPublicAccount;
 }
 
 bool FakeUserManager::IsLoggedInAsGuest() const {
   const User* active_user = GetActiveUser();
-  return active_user && active_user->GetType() == USER_TYPE_GUEST;
+  return active_user && active_user->GetType() == UserType::kGuest;
 }
 
 bool FakeUserManager::IsLoggedInAsKioskApp() const {
   const User* active_user = GetActiveUser();
-  return active_user ? active_user->GetType() == USER_TYPE_KIOSK_APP : false;
+  return active_user ? active_user->GetType() == UserType::kKioskApp : false;
 }
 
 bool FakeUserManager::IsLoggedInAsArcKioskApp() const {
   const User* active_user = GetActiveUser();
-  return active_user ? active_user->GetType() == USER_TYPE_ARC_KIOSK_APP
-                     : false;
+  return active_user ? active_user->GetType() == UserType::kArcKioskApp : false;
 }
 
 bool FakeUserManager::IsLoggedInAsWebKioskApp() const {
   const User* active_user = GetActiveUser();
-  return active_user ? active_user->GetType() == USER_TYPE_WEB_KIOSK_APP
-                     : false;
+  return active_user ? active_user->GetType() == UserType::kWebKioskApp : false;
 }
 
 bool FakeUserManager::IsLoggedInAsAnyKioskApp() const {
@@ -368,22 +370,9 @@ void FakeUserManager::AsyncRemoveCryptohome(const AccountId& account_id) const {
   NOTIMPLEMENTED();
 }
 
-bool FakeUserManager::IsStubAccountId(const AccountId& account_id) const {
-  return account_id == StubAccountId();
-}
-
 bool FakeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return false;
-}
-
-const gfx::ImageSkia& FakeUserManager::GetResourceImagekiaNamed(int id) const {
-  NOTIMPLEMENTED();
-  return empty_image_;
-}
-
-std::u16string FakeUserManager::GetResourceStringUTF16(int string_id) const {
-  return std::u16string();
 }
 
 void FakeUserManager::ScheduleResolveLocale(
@@ -397,6 +386,12 @@ void FakeUserManager::ScheduleResolveLocale(
 bool FakeUserManager::IsValidDefaultUserImageId(int image_index) const {
   NOTIMPLEMENTED();
   return false;
+}
+
+MultiUserSignInPolicyController*
+FakeUserManager::GetMultiUserSignInPolicyController() {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 }  // namespace user_manager

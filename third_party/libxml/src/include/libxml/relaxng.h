@@ -11,8 +11,9 @@
 #define __XML_RELAX_NG__
 
 #include <libxml/xmlversion.h>
-#include <libxml/hash.h>
+#include <libxml/xmlerror.h>
 #include <libxml/xmlstring.h>
+#include <libxml/tree.h>
 
 #ifdef LIBXML_SCHEMAS_ENABLED
 

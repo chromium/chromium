@@ -10,9 +10,11 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -27,7 +29,6 @@
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/channel_layout.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -152,7 +153,6 @@ class MODULES_EXPORT WebRtcAudioRenderer
   void Stop() override;
   void SetVolume(float volume) override;
   base::TimeDelta GetCurrentRenderTime() override;
-  bool IsLocalRenderer() override;
   void SwitchOutputDevice(const std::string& device_id,
                           media::OutputDeviceStatusCB callback) override;
 
@@ -197,7 +197,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
 
     // Using a raw pointer is safe since the OC instance will outlive this
     // object.
-    WebRtcAudioRenderer* const renderer_;
+    const raw_ptr<WebRtcAudioRenderer> renderer_;
 
     // Stores when the timer starts. Used to calculate the stream duration.
     const base::TimeTicks start_time_;
@@ -242,7 +242,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
  private:
   // Holds raw pointers to PlaingState objects.  Ownership is managed outside
   // of this type.
-  typedef std::vector<PlayingState*> PlayingStates;
+  typedef std::vector<raw_ptr<PlayingState, VectorExperimental>> PlayingStates;
   // Maps an audio source to a list of playing states that collectively hold
   // volume information for that source.
   typedef std::map<webrtc::AudioSourceInterface*, PlayingStates>
@@ -325,7 +325,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // Audio data source from the browser process.
   //
   // TODO(crbug.com/704136): Make it a Member.
-  WebRtcAudioRendererSource* source_;
+  raw_ptr<WebRtcAudioRendererSource> source_;
 
   // Protects access to |state_|, |source_|, |audio_fifo_|,
   // |audio_delay_milliseconds_|, |fifo_delay_milliseconds_|, |current_time_|,
@@ -373,7 +373,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // Used for keeping track of and logging stats for playing audio streams.
   // Created when a stream starts and destroyed when a stream stops.
   // See comments for AudioStreamTracker for more details.
-  absl::optional<AudioStreamTracker> audio_stream_tracker_;
+  std::optional<AudioStreamTracker> audio_stream_tracker_;
 
   base::RepeatingCallback<void()> on_render_error_callback_;
 

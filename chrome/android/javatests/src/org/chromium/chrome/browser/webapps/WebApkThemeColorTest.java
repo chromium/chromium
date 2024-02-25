@@ -25,14 +25,11 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for status bar color with EXTRA_THEME_COLOR specified in the Intent.
- */
+/** Tests for status bar color with EXTRA_THEME_COLOR specified in the Intent. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebApkThemeColorTest {
-    @Rule
-    public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
+    @Rule public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
 
     @Test
     @SmallTest
@@ -43,10 +40,13 @@ public class WebApkThemeColorTest {
         final int intentThemeColor = Color.MAGENTA;
         final int pageThemeColor = Color.RED;
         final int white = Color.WHITE;
-        String pageWithThemeColorUrl = mActivityTestRule.getTestServer().getURL(
-                "/chrome/test/data/android/theme_color_test.html");
+        String pageWithThemeColorUrl =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/theme_color_test.html");
         Intent intent =
-                mActivityTestRule.createIntent()
+                mActivityTestRule
+                        .createIntent()
                         .putExtra(WebappConstants.EXTRA_URL, pageWithThemeColorUrl)
                         .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) intentThemeColor);
         mActivityTestRule.startWebApkActivity(intent);

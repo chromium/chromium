@@ -2,24 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationOrigin, PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
+import type {PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-const destination_list_test = {
-  suiteName: 'DestinationListTest',
-  TestNames: {
-    FilterDestinations: 'FilterDestinations',
-    FireDestinationSelected: 'FireDestinationSelected',
-  },
-};
-
-Object.assign(window, {destination_list_test: destination_list_test});
-
-suite(destination_list_test.suiteName, function() {
+suite('DestinationListTest', function() {
   let list: PrintPreviewDestinationListElement;
 
   setup(function() {
@@ -55,7 +46,7 @@ suite(destination_list_test.suiteName, function() {
 
   // Tests that the list correctly shows and hides destinations based on the
   // value of the search query.
-  test(destination_list_test.TestNames.FilterDestinations, function() {
+  test('FilterDestinations', function() {
     const items = list.shadowRoot!.querySelectorAll(
         'print-preview-destination-list-item');
     const noMatchHint = list.shadowRoot!.querySelector<HTMLElement>(
@@ -131,7 +122,7 @@ suite(destination_list_test.suiteName, function() {
   // Tests that the list correctly fires the destination selected event when
   // the destination is clicked or the enter key is pressed.
   test(
-      destination_list_test.TestNames.FireDestinationSelected, function() {
+      'FireDestinationSelected', function() {
         const items = list.shadowRoot!.querySelectorAll(
             'print-preview-destination-list-item');
         let whenDestinationSelected =

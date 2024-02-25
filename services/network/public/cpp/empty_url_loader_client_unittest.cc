@@ -39,7 +39,7 @@ void CheckBodyIsDrained(const std::string& body) {
 
   // Upcasting to mojom::URLLoaderClient to access mojom methods.
   mojom::URLLoaderClient* client = empty_client.get();
-  client->OnReceiveResponse(nullptr, std::move(consumer_handle), absl::nullopt);
+  client->OnReceiveResponse(nullptr, std::move(consumer_handle), std::nullopt);
   client->OnComplete(URLLoaderCompletionStatus(net::OK));
 
   EXPECT_TRUE(mojo::BlockingCopyFromString(body, producer_handle));

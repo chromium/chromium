@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_PROVIDER_PROXY_H_
 
 #include "services/device/public/mojom/sensor.mojom-blink-forward.h"
-#include "services/device/public/mojom/sensor_provider.mojom-blink.h"
+#include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -37,10 +37,7 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
   SensorProxy* CreateSensorProxy(device::mojom::blink::SensorType, Page*);
   SensorProxy* GetSensorProxy(device::mojom::blink::SensorType);
   void GetSensor(device::mojom::blink::SensorType,
-                 device::mojom::blink::SensorProviderProxy::GetSensorCallback);
-
-  void set_inspector_mode(bool flag) { inspector_mode_ = flag; }
-  bool inspector_mode() const { return inspector_mode_; }
+                 mojom::blink::WebSensorProviderProxy::GetSensorCallback);
 
   void Trace(Visitor*) const override;
 
@@ -55,8 +52,7 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
   void OnSensorProviderConnectionError();
 
   HeapHashSet<WeakMember<SensorProxy>> sensor_proxies_;
-  HeapMojoRemote<device::mojom::blink::SensorProvider> sensor_provider_;
-  bool inspector_mode_;
+  HeapMojoRemote<mojom::blink::WebSensorProvider> sensor_provider_;
 };
 
 }  // namespace blink

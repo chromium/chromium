@@ -38,6 +38,7 @@ class MockTermsOfServiceDelegateNonStrict
                     bool is_location_service_enabled));
   MOCK_METHOD0(OnTermsRejected, void());
   MOCK_METHOD0(OnTermsRetryClicked, void());
+  MOCK_METHOD1(OnTermsLoadResult, void(bool success));
 };
 
 using MockTermsOfServiceDelegate =
@@ -49,6 +50,7 @@ class MockErrorDelegateNonStrict : public ArcSupportHost::ErrorDelegate {
   MOCK_METHOD0(OnRetryClicked, void());
   MOCK_METHOD0(OnSendFeedbackClicked, void());
   MOCK_METHOD0(OnRunNetworkTestsClicked, void());
+  MOCK_METHOD1(OnErrorPageShown, void(bool network_tests_shown));
 };
 
 using MockErrorDelegate = StrictMock<MockErrorDelegateNonStrict>;
@@ -66,8 +68,7 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     // The code under test should not be tied to browser sync consent.
@@ -86,7 +87,7 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
     fake_arc_support_.reset();
     support_host_.reset();
     identity_test_env_adaptor_.reset();
-    user_manager_enabler_.reset();
+    fake_user_manager_.Reset();
 
     BrowserWithTestWindowTest::TearDown();
   }
@@ -122,9 +123,10 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
   }
 
  private:
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
@@ -172,6 +174,7 @@ TEST_F(ArcSupportHostTest, TermsOfServiceRetryOnError) {
   MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
   support_host()->SetErrorDelegate(error_delegate);
 
+  EXPECT_CALL(*error_delegate, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
@@ -199,6 +202,7 @@ TEST_F(ArcSupportHostTest, RetryOnGeneralError) {
   MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
   support_host()->SetErrorDelegate(error_delegate);
 
+  EXPECT_CALL(*error_delegate, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
@@ -213,6 +217,7 @@ TEST_F(ArcSupportHostTest, SendFeedbackOnError) {
   MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
   support_host()->SetErrorDelegate(error_delegate);
 
+  EXPECT_CALL(*error_delegate, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
@@ -227,6 +232,7 @@ TEST_F(ArcSupportHostTest, RunNetworkTestsOnError) {
   MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
   support_host()->SetErrorDelegate(error_delegate);
 
+  EXPECT_CALL(*error_delegate, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
@@ -235,6 +241,16 @@ TEST_F(ArcSupportHostTest, RunNetworkTestsOnError) {
 
   EXPECT_CALL(*error_delegate, OnRunNetworkTestsClicked());
   fake_arc_support()->ClickRunNetworkTestsButton();
+}
+
+TEST_F(ArcSupportHostTest, TosLoadResult) {
+  MockTermsOfServiceDelegate* tos_delegate = CreateMockTermsOfServiceDelegate();
+  support_host()->SetTermsOfServiceDelegate(tos_delegate);
+
+  support_host()->ShowTermsOfService();
+
+  EXPECT_CALL(*tos_delegate, OnTermsLoadResult(true));
+  fake_arc_support()->TosLoadResult(true);
 }
 
 }  // namespace

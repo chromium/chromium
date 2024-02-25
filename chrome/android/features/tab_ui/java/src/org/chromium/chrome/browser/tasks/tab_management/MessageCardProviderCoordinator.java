@@ -23,10 +23,13 @@ public class MessageCardProviderCoordinator {
     private final MessageCardProviderMediator mMediator;
     private final List<MessageService> mMessageServices = new ArrayList<>();
 
-    MessageCardProviderCoordinator(Context context, Supplier<Boolean> isIncognitoSupplier,
+    MessageCardProviderCoordinator(
+            Context context,
+            Supplier<Boolean> isIncognitoSupplier,
             MessageCardView.DismissActionProvider uiDismissActionProvider) {
-        mMediator = new MessageCardProviderMediator(
-                context, isIncognitoSupplier, uiDismissActionProvider);
+        mMediator =
+                new MessageCardProviderMediator(
+                        context, isIncognitoSupplier, uiDismissActionProvider);
     }
 
     /**
@@ -67,9 +70,7 @@ public class MessageCardProviderCoordinator {
         return mMediator.isMessageShown(messageType, identifier);
     }
 
-    /**
-     * Clean up all member fields.
-     */
+    /** Clean up all member fields. */
     public void destroy() {
         for (int i = 0; i < mMessageServices.size(); i++) {
             mMessageServices.get(i).removeObserver(mMediator);

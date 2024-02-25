@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -13,10 +14,12 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -46,7 +49,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -125,8 +127,8 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
 // Returns the PSM protocol execution result if prefs::kEnrollmentPsmResult is
 // set, and its value is within the
 // em::DeviceRegisterRequest::PsmExecutionResult enum range. Otherwise,
-// absl::nullopt.
-absl::optional<PsmExecutionResult> GetPsmExecutionResult(
+// std::nullopt.
+std::optional<PsmExecutionResult> GetPsmExecutionResult(
     const PrefService& local_state) {
   const PrefService::Preference* has_psm_execution_result_pref =
       local_state.FindPreference(prefs::kEnrollmentPsmResult);
@@ -134,7 +136,7 @@ absl::optional<PsmExecutionResult> GetPsmExecutionResult(
   if (!has_psm_execution_result_pref ||
       has_psm_execution_result_pref->IsDefaultValue() ||
       !has_psm_execution_result_pref->GetValue()->is_int()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int psm_execution_result =
@@ -144,7 +146,7 @@ absl::optional<PsmExecutionResult> GetPsmExecutionResult(
   // em::DeviceRegisterRequest::PsmExecutionResult enum.
   if (!em::DeviceRegisterRequest::PsmExecutionResult_IsValid(
           psm_execution_result))
-    return absl::nullopt;
+    return std::nullopt;
 
   // Cast the psm_execution_result integer value to its corresponding enum
   // entry.
@@ -152,15 +154,15 @@ absl::optional<PsmExecutionResult> GetPsmExecutionResult(
 }
 
 // Returns the PSM determination timestamp in ms if
-// prefs::kEnrollmentPsmDeterminationTime is set. Otherwise, absl::nullopt.
-absl::optional<int64_t> GetPsmDeterminationTimestamp(
+// prefs::kEnrollmentPsmDeterminationTime is set. Otherwise, std::nullopt.
+std::optional<int64_t> GetPsmDeterminationTimestamp(
     const PrefService& local_state) {
   const PrefService::Preference* has_psm_determination_timestamp_pref =
       local_state.FindPreference(prefs::kEnrollmentPsmDeterminationTime);
 
   if (!has_psm_determination_timestamp_pref ||
       has_psm_determination_timestamp_pref->IsDefaultValue()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Time psm_determination_timestamp =
@@ -170,7 +172,7 @@ absl::optional<int64_t> GetPsmDeterminationTimestamp(
   // we already checked the existence of the pref with non-default value.
   DCHECK(!psm_determination_timestamp.is_null());
 
-  return psm_determination_timestamp.ToJavaTime();
+  return psm_determination_timestamp.InMillisecondsSinceUnixEpoch();
 }
 
 }  // namespace
@@ -254,14 +256,14 @@ void EnrollmentHandler::StartEnrollment() {
 
   if (client_->machine_id().empty()) {
     LOG(ERROR) << "Machine id empty.";
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::NO_MACHINE_IDENTIFICATION));
+    ReportResult(EnrollmentStatus::ForEnrollmentCode(
+        EnrollmentStatus::Code::kNoMachineIdentification));
     return;
   }
   if (client_->machine_model().empty()) {
     LOG(ERROR) << "Machine model empty.";
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::NO_MACHINE_IDENTIFICATION));
+    ReportResult(EnrollmentStatus::ForEnrollmentCode(
+        EnrollmentStatus::Code::kNoMachineIdentification));
     return;
   }
 
@@ -325,7 +327,6 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
   if (enrollment_step_ != STEP_REGISTRATION || !client_->is_registered()) {
     LOG(FATAL) << "Registration state changed to " << client_->is_registered()
                << " in step " << enrollment_step_ << ".";
-    return;
   }
 
   device_mode_ = client_->device_mode();
@@ -337,14 +338,14 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
       break;
     default:
       LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
-      ReportResult(
-          EnrollmentStatus::ForStatus(EnrollmentStatus::REGISTRATION_BAD_MODE));
+      ReportResult(EnrollmentStatus::ForEnrollmentCode(
+          EnrollmentStatus::Code::kRegistrationBadMode));
       return;
   }
   // Only use DMToken from now on.
   dm_auth_ = DMAuth::FromDMToken(client_->dm_token());
   SetStep(STEP_POLICY_FETCH);
-  client_->FetchPolicy();
+  client_->FetchPolicy(PolicyFetchReason::kDeviceEnrollment);
 }
 
 void EnrollmentHandler::OnClientError(CloudPolicyClient* client) {
@@ -373,7 +374,8 @@ void EnrollmentHandler::OnStoreLoaded(CloudPolicyStore* store) {
     // again after the store finishes loading.
     StartRegistration();
   } else if (enrollment_step_ == STEP_STORE_POLICY) {
-    ReportResult(EnrollmentStatus::ForStatus(EnrollmentStatus::SUCCESS));
+    ReportResult(
+        EnrollmentStatus::ForEnrollmentCode(EnrollmentStatus::Code::kSuccess));
   }
 }
 
@@ -408,8 +410,8 @@ void EnrollmentHandler::HandleStateKeysResult(
         state_keys_broker_->current_state_key();
     if (state_keys.empty() || register_params_->current_state_key.empty()) {
       LOG(ERROR) << "State keys empty.";
-      ReportResult(
-          EnrollmentStatus::ForStatus(EnrollmentStatus::NO_STATE_KEYS));
+      ReportResult(EnrollmentStatus::ForEnrollmentCode(
+          EnrollmentStatus::Code::kNoStateKeys));
       return;
     }
   }
@@ -489,7 +491,7 @@ void EnrollmentHandler::OnGetFeaturesReady(
       /*force_new_key=*/true,
       /*key_crypto_type=*/key_crypto_type,
       /*key_name=*/ash::attestation::kEnterpriseEnrollmentKey,
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(callback));
 }
 
@@ -497,8 +499,7 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
     ash::attestation::AttestationStatus status,
     const std::string& pem_certificate_chain) {
   if (status != ash::attestation::ATTESTATION_SUCCESS) {
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED));
+    ReportResult(EnrollmentStatus::ForAttestationError(status));
     return;
   }
 
@@ -539,8 +540,8 @@ void EnrollmentHandler::HandlePolicyValidationResult(
 
   if (GetDeviceBlockDevModePolicyValue(*policy_) &&
       !IsDeviceBlockDevModePolicyAllowed()) {
-    ReportResult(
-        EnrollmentStatus::ForStatus(EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE));
+    ReportResult(EnrollmentStatus::ForEnrollmentCode(
+        EnrollmentStatus::Code::kMayNotBlockDevMode));
     return;
   }
 
@@ -559,20 +560,20 @@ void EnrollmentHandler::OnDeviceAccountTokenFetched(bool empty_token) {
 }
 
 void EnrollmentHandler::OnDeviceAccountTokenFetchError(
-    absl::optional<DeviceManagementStatus> dm_status) {
+    std::optional<DeviceManagementStatus> dm_status) {
   CHECK_EQ(enrollment_step_, STEP_ROBOT_AUTH_FETCH);
   if (dm_status.has_value()) {
     ReportResult(EnrollmentStatus::ForRobotAuthFetchError(dm_status.value()));
   } else {
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED));
+    ReportResult(EnrollmentStatus::ForEnrollmentCode(
+        EnrollmentStatus::Code::kRobotRefreshFetchFailed));
   }
 }
 
 void EnrollmentHandler::OnDeviceAccountTokenStoreError() {
   CHECK_EQ(enrollment_step_, STEP_STORE_ROBOT_AUTH);
-  ReportResult(EnrollmentStatus::ForStatus(
-      EnrollmentStatus::ROBOT_REFRESH_STORE_FAILED));
+  ReportResult(EnrollmentStatus::ForEnrollmentCode(
+      EnrollmentStatus::Code::kRobotRefreshStoreFailed));
 }
 
 void EnrollmentHandler::OnDeviceAccountClientError(
@@ -618,14 +619,14 @@ void EnrollmentHandler::SetFirmwareManagementParametersData() {
 }
 
 void EnrollmentHandler::OnFirmwareManagementParametersDataSet(
-    absl::optional<user_data_auth::SetFirmwareManagementParametersReply>
+    std::optional<device_management::SetFirmwareManagementParametersReply>
         reply) {
   DCHECK_EQ(STEP_SET_FWMP_DATA, enrollment_step_);
   if (!reply.has_value()) {
     LOG(ERROR) << "Failed to update firmware management parameters in TPM due "
                   "to DBus error.";
-  } else if (reply->error() !=
-             user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+  } else if (reply->error() != device_management::DeviceManagementErrorCode::
+                                   DEVICE_MANAGEMENT_ERROR_NOT_SET) {
     LOG(ERROR) << "Failed to update firmware management parameters in TPM, "
                   "error code: "
                << static_cast<int>(reply->error());
@@ -694,10 +695,28 @@ void EnrollmentHandler::StartStoreRobotAuth() {
   device_account_initializer_->StoreToken();
 }
 
+void EnrollmentHandler::StoreVersion() {
+  DCHECK_EQ(STEP_STORE_VERSION, enrollment_step_);
+  PrefService* prefs = g_browser_process->local_state();
+  prefs->SetString(prefs::kEnrollmentVersionOS,
+                   base::SysInfo::OperatingSystemVersion());
+  prefs->SetString(prefs::kEnrollmentVersionBrowser,
+                   version_info::GetVersionNumber());
+  prefs->CommitPendingWrite();
+
+  SetStep(STEP_STORE_POLICY);
+  StartStoreDevicePolicy();
+}
+
+void EnrollmentHandler::StartStoreDevicePolicy() {
+  DCHECK_EQ(STEP_STORE_POLICY, enrollment_step_);
+  store_->InstallInitialPolicy(*policy_);
+}
+
 void EnrollmentHandler::OnDeviceAccountTokenStored() {
   DCHECK_EQ(STEP_STORE_ROBOT_AUTH, enrollment_step_);
-  SetStep(STEP_STORE_POLICY);
-  store_->InstallInitialPolicy(*policy_);
+  SetStep(STEP_STORE_VERSION);
+  StoreVersion();
 }
 
 void EnrollmentHandler::Stop() {
@@ -716,8 +735,8 @@ void EnrollmentHandler::ReportResult(EnrollmentStatus status) {
   EnrollmentCallback callback = std::move(completion_callback_);
   Stop();
 
-  if (status.status() != EnrollmentStatus::SUCCESS) {
-    LOG(WARNING) << "Enrollment failed: " << status.status()
+  if (status.enrollment_code() != EnrollmentStatus::Code::kSuccess) {
+    LOG(WARNING) << "Enrollment failed: " << status.enrollment_code()
                  << ", client: " << status.client_status()
                  << ", validation: " << status.validation_status()
                  << ", store: " << status.store_status()

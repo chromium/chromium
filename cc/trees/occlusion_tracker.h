@@ -62,7 +62,7 @@ class CC_EXPORT OcclusionTracker {
   struct StackObject {
     StackObject() : target(nullptr) {}
     explicit StackObject(const RenderSurfaceImpl* target) : target(target) {}
-    // Not a raw_ptr<...> for performance reasons: on-stack (temporary) vector +
+    // RAW_PTR_EXCLUSION: Performance reasons: on-stack (temporary) vector +
     // based on analysis of sampling profiler data
     // (LayerTreeImpl::UpdateDrawProperties -> OcclusionTracker::EnterLayer ->
     // OcclusionTracker::EnterRenderTarget -> emplaces StackObject in a vector;

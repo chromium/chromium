@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/time/time_of_day.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
@@ -45,14 +46,14 @@ constexpr int kDefaultSunriseTimeOffsetMinutes = 6 * 60;
 }  // namespace
 
 GeolocationController::GeolocationController(
-    scoped_refptr<network::SharedURLLoaderFactory> factory)
-    : simple_geolocation_provider_(std::make_unique<SimpleGeolocationProvider>(
-          this,
-          std::move(factory),
-          SimpleGeolocationProvider::DefaultGeolocationProviderURL())),
+    SimpleGeolocationProvider* const geolocation_provider)
+    : geolocation_provider_(geolocation_provider),
       backoff_delay_(kMinimumDelayAfterFailure),
       timer_(std::make_unique<base::OneShotTimer>()),
       scoped_session_observer_(this) {
+  // Subscribe to geolocation changes.
+  geolocation_provider_->AddObserver(this);
+
   auto* timezone_settings = system::TimezoneSettings::GetInstance();
   current_timezone_id_ = timezone_settings->GetCurrentTimezoneID();
   timezone_settings->AddObserver(this);
@@ -62,6 +63,8 @@ GeolocationController::GeolocationController(
 GeolocationController::~GeolocationController() {
   system::TimezoneSettings::GetInstance()->RemoveObserver(this);
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  geolocation_provider_->RemoveObserver(this);
+  geolocation_provider_ = nullptr;
 }
 
 // static
@@ -81,7 +84,8 @@ void GeolocationController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void GeolocationController::AddObserver(Observer* observer) {
   const bool is_first_observer = observers_.empty();
   observers_.AddObserver(observer);
-  if (is_first_observer && IsSystemGeolocationAllowed()) {
+  if (is_first_observer &&
+      geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
     ScheduleNextRequest(base::Seconds(0));
   }
 }
@@ -90,6 +94,20 @@ void GeolocationController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
   if (observers_.empty()) {
     timer_->Stop();
+  }
+}
+
+void GeolocationController::OnGeolocationPermissionChanged(bool enabled) {
+  // Drop all pending requests when system geolocation access is denied.
+  if (!enabled) {
+    timer_->Stop();
+    return;
+  }
+
+  // System geolocation access was granted, only resume scheduling when clients
+  // are present. Post an immediate geolocation request.
+  if (!observers_.empty()) {
+    ScheduleNextRequest(base::Seconds(0));
   }
 }
 
@@ -104,33 +122,16 @@ void GeolocationController::TimezoneChanged(const icu::TimeZone& timezone) {
 
   // On timezone changes, request an immediate geoposition if the system
   // geolocation allows.
-  if (IsSystemGeolocationAllowed()) {
+  if (geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
     ScheduleNextRequest(base::Seconds(0));
   }
 }
 
 void GeolocationController::SuspendDone(base::TimeDelta sleep_duration) {
-  if (sleep_duration >= kNextRequestDelayAfterSuccess) {
+  if (sleep_duration >= kNextRequestDelayAfterSuccess &&
+      geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
     ScheduleNextRequest(base::Seconds(0));
   }
-}
-
-bool GeolocationController::IsSystemGeolocationAllowed() const {
-  // TODO(b/276715041): Refactor the `SimpleGeolocationProvider` class to
-  // eliminate the `Shell`-dependency of this class.
-  Shell* const shell = Shell::Get();
-  const PrefService* primary_user_prefs =
-      shell->session_controller()->GetPrimaryUserPrefService();
-
-  // Follow device preference on log-in screen.
-  if (!primary_user_prefs) {
-    return shell->local_state()->GetInteger(
-               ash::prefs::kDeviceGeolocationAllowed) ==
-           static_cast<int>(PrivacyHubController::AccessLevel::kAllowed);
-  }
-
-  // Inside user session check geolocation user preference.
-  return primary_user_prefs->GetBoolean(ash::prefs::kUserGeolocationAllowed);
 }
 
 void GeolocationController::OnActiveUserPrefServiceChanged(
@@ -143,62 +144,49 @@ void GeolocationController::OnActiveUserPrefServiceChanged(
   LoadCachedGeopositionIfNeeded();
 }
 
-void GeolocationController::OnSystemGeolocationPermissionChanged(bool enabled) {
-  // Drop all pending requests when system geolocation is toggled OFF.
-  if (!enabled) {
-    timer_->Stop();
-    return;
-  }
-
-  // System geolocation toggled ON, post an immediate new geolocation request to
-  // resume continuous scheduling.
-  ScheduleNextRequest(base::Seconds(0));
-}
-
 // static
 base::TimeDelta
 GeolocationController::GetNextRequestDelayAfterSuccessForTesting() {
+  CHECK_IS_TEST();
   return kNextRequestDelayAfterSuccess;
-}
-
-network::SharedURLLoaderFactory*
-GeolocationController::GetSharedURLLoaderFactoryForTesting() {
-  return simple_geolocation_provider_->GetSharedURLLoaderFactoryForTesting();
 }
 
 void GeolocationController::SetTimerForTesting(
     std::unique_ptr<base::OneShotTimer> timer) {
+  CHECK_IS_TEST();
   timer_ = std::move(timer);
 }
 
 void GeolocationController::SetClockForTesting(base::Clock* clock) {
+  CHECK_IS_TEST();
   clock_ = clock;
 }
 
 void GeolocationController::SetLocalTimeConverterForTesting(
     const LocalTimeConverter* local_time_converter) {
+  CHECK_IS_TEST();
   local_time_converter_ = local_time_converter;
-}
-
-void GeolocationController::SetGeolocationProviderForTesting(
-    std::unique_ptr<SimpleGeolocationProvider> simple_geolocation_provider) {
-  simple_geolocation_provider_ = std::move(simple_geolocation_provider);
-  // Immediately schedule a new request to receive a geoposition event.
-  ScheduleNextRequest(base::Seconds(0));
 }
 
 void GeolocationController::SetCurrentTimezoneIdForTesting(
     const std::u16string& timezone_id) {
+  CHECK_IS_TEST();
   current_timezone_id_ = timezone_id;
+}
+
+void GeolocationController::RequestImmediateGeopositionForTesting() {
+  CHECK_IS_TEST();
+  ScheduleNextRequest(base::Seconds(0));
 }
 
 void GeolocationController::OnGeoposition(const Geoposition& position,
                                           bool server_error,
                                           const base::TimeDelta elapsed) {
-  if (!IsSystemGeolocationAllowed() || observers_.empty()) {
+  if (!geolocation_provider_->IsGeolocationUsageAllowedForSystem() ||
+      observers_.empty()) {
     // The request might come after the user disabled the system geolocation
     // access or if all observers unsubscribed, in which case we should stop
-    // processing the geolocation responses.
+    // processing the geolocation responses and stop scheduling new requests.
     return;
   }
 
@@ -214,8 +202,10 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
     return;
   }
 
-  absl::optional<base::Time> previous_sunset;
-  absl::optional<base::Time> previous_sunrise;
+  base::expected<base::Time, SunRiseSetError> previous_sunset =
+      kSunRiseSetUnavailable;
+  base::expected<base::Time, SunRiseSetError> previous_sunrise =
+      kSunRiseSetUnavailable;
   bool possible_change_in_timezone = !geoposition_;
   if (geoposition_) {
     previous_sunset = GetSunsetTime();
@@ -229,26 +219,27 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
   is_current_geoposition_from_cache_ = false;
   StoreCachedGeoposition();
 
-  if (previous_sunset && previous_sunrise) {
-    const base::Time new_sunset = GetSunsetTime();
-    const base::Time new_sunrise = GetSunriseTime();
-    if (previous_sunset.value() == kNoSunRiseSet ||
-        previous_sunrise.value() == kNoSunRiseSet ||
-        new_sunrise == kNoSunRiseSet || new_sunset == kNoSunRiseSet) {
-      // Any time an area with no sunrise|set is involved, consider it a
-      // *possible* change. Sunrise|set timestamps for these areas are all the
-      // same, so there's no way to tell if it implies a timezone change.
-      possible_change_in_timezone = true;
-    } else {
-      // If the change in geoposition results in an hour or more in either
-      // sunset or sunrise times indicates of a possible timezone change.
-      constexpr base::TimeDelta kOneHourDuration = base::Hours(1);
-      possible_change_in_timezone =
-          (GetSunsetTime() - previous_sunset.value()).magnitude() >
-              kOneHourDuration ||
-          (GetSunriseTime() - previous_sunrise.value()).magnitude() >
-              kOneHourDuration;
-    }
+  const base::expected<base::Time, SunRiseSetError> new_sunset =
+      GetSunsetTime();
+  const base::expected<base::Time, SunRiseSetError> new_sunrise =
+      GetSunriseTime();
+  if (previous_sunset.has_value() && previous_sunrise.has_value() &&
+      new_sunset.has_value() && new_sunrise.has_value()) {
+    // If the change in geoposition results in an hour or more in either
+    // sunset or sunrise times indicates of a possible timezone change.
+    constexpr base::TimeDelta kOneHourDuration = base::Hours(1);
+    possible_change_in_timezone =
+        (new_sunset.value() - previous_sunset.value()).magnitude() >
+            kOneHourDuration ||
+        (new_sunrise.value() - previous_sunrise.value()).magnitude() >
+            kOneHourDuration;
+  } else if (previous_sunset == kNoSunRiseSet ||
+             previous_sunrise == kNoSunRiseSet ||
+             new_sunrise == kNoSunRiseSet || new_sunset == kNoSunRiseSet) {
+    // Any time an area with no sunrise|set is involved, consider it a
+    // *possible* change. Sunrise|set timestamps for these areas are all the
+    // same, so there's no way to tell if it implies a timezone change.
+    possible_change_in_timezone = true;
   }
 
   NotifyGeopositionChange(possible_change_in_timezone);
@@ -259,18 +250,8 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
   ScheduleNextRequest(kNextRequestDelayAfterSuccess);
 }
 
-base::Time GeolocationController::GetNow() const {
-  return clock_ ? clock_->Now() : base::Time::Now();
-}
-
 void GeolocationController::ScheduleNextRequest(base::TimeDelta delay) {
-  // Drop all pending geolocation requests while system permission is
-  // denied. Toggling system geolocation ON will trigger a fresh geolocation
-  // request.
-  if (!IsSystemGeolocationAllowed()) {
-    return;
-  }
-
+  CHECK(geolocation_provider_->IsGeolocationUsageAllowedForSystem());
   timer_->Start(FROM_HERE, delay, this,
                 &GeolocationController::RequestGeoposition);
 }
@@ -284,26 +265,28 @@ void GeolocationController::NotifyGeopositionChange(
 
 void GeolocationController::RequestGeoposition() {
   VLOG(1) << "Requesting a new geoposition";
-  simple_geolocation_provider_->RequestGeolocation(
+  geolocation_provider_->RequestGeolocation(
       kGeolocationRequestTimeout, /*send_wifi_access_points=*/false,
       /*send_cell_towers=*/false,
       base::BindOnce(&GeolocationController::OnGeoposition,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
+base::expected<base::Time, GeolocationController::SunRiseSetError>
+GeolocationController::GetSunRiseSet(bool sunrise) const {
   if (!geoposition_) {
     VLOG(1) << "Invalid geoposition. Using default time for "
             << (sunrise ? "sunrise." : "sunset.");
-    const absl::optional<base::Time> default_value =
+    const std::optional<base::Time> default_value =
         TimeOfDay(sunrise ? kDefaultSunriseTimeOffsetMinutes
                           : kDefaultSunsetTimeOffsetMinutes)
             .SetClock(clock_)
             .SetLocalTimeConverter(local_time_converter_)
             .ToTimeToday();
-    // TODO(b/294437057): Change this method's return value to return a type
-    // that makes this failure more obvious to the caller.
-    return default_value.value_or(base::Time());
+    if (default_value) {
+      return base::ok(*default_value);
+    }
+    return kSunRiseSetUnavailable;
   }
 
   icu::CalendarAstronomer astro(geoposition_->longitude,
@@ -312,26 +295,25 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   // icu::CalendarAstronomer object should be set to a time near local noon.
   // This avoids having the computation flopping over into an adjacent day.
   // See the documentation of icu::CalendarAstronomer::getSunRiseSet().
-  // Note that the icu calendar works with milliseconds since epoch, and
-  // base::Time::FromDoubleT() / ToDoubleT() work with seconds since epoch.
-  const absl::optional<base::Time> midday_today =
+  const std::optional<base::Time> midday_today =
       TimeOfDay(12 * 60)
           .SetClock(clock_)
           .SetLocalTimeConverter(local_time_converter_)
           .ToTimeToday();
   if (!midday_today) {
-    // TODO(b/294437057): Change this method's return value to return a type
-    // that makes this failure more obvious to the caller.
-    return base::Time();
+    return kSunRiseSetUnavailable;
   }
 
-  astro.setTime(midday_today->ToDoubleT() * 1000.0);
+  astro.setTime(midday_today->InMillisecondsFSinceUnixEpoch());
   const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
   // If there is 24 hours of daylight or darkness, `CalendarAstronomer` returns
   // a very large negative value. Any timestamp before or at the epoch
   // definitely does not make sense, so assume `kNoSunRiseSet`.
-  return sun_rise_set_ms > 0 ? base::Time::FromDoubleT(sun_rise_set_ms / 1000.0)
-                             : kNoSunRiseSet;
+  if (sun_rise_set_ms > 0) {
+    return base::ok(
+        base::Time::FromMillisecondsSinceUnixEpoch(sun_rise_set_ms));
+  }
+  return kNoSunRiseSet;
 }
 
 void GeolocationController::LoadCachedGeopositionIfNeeded() {

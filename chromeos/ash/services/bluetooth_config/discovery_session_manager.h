@@ -90,9 +90,8 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
                  std::unique_ptr<DevicePairingHandler>>
       id_to_pairing_handler_map_;
 
-  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
-  raw_ptr<DiscoveredDevicesProvider, ExperimentalAsh>
-      discovered_devices_provider_;
+  raw_ptr<AdapterStateController> adapter_state_controller_;
+  raw_ptr<DiscoveredDevicesProvider> discovered_devices_provider_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

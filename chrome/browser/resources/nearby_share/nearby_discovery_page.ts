@@ -7,8 +7,8 @@
  * the Nearby Share flow. It shows a list of devices to select from.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_lottie/cr_lottie.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -17,14 +17,16 @@ import '/shared/nearby_page_template.js';
 import '/shared/nearby_preview.js';
 import './strings.m.js';
 
-import {NearbyDeviceElement} from '/shared/nearby_device.js';
-import {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview, SelectShareTargetResult, ShareTarget, ShareTargetListenerCallbackRouter, StartDiscoveryResult, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import type {NearbyDeviceElement} from '/shared/nearby_device.js';
+import type {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview, ShareTarget, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
+import {SelectShareTargetResult, ShareTargetListenerCallbackRouter, StartDiscoveryResult} from '/shared/nearby_share.mojom-webui.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {ArraySelector, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {ArraySelector} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager, observeDiscoveryManager} from './discovery_manager.js';
 import {getTemplate} from './nearby_discovery_page.html.js';
@@ -43,26 +45,10 @@ function tokensEqual(a: UnguessableToken, b: UnguessableToken): boolean {
   return a.high === b.high && a.low === b.low;
 }
 
-// TODO(TODO(b/279623883): Remove dark mode handling.
-
 /**
- * The pulse animation asset URL for light mode.
+ * The pulse animation asset URL.
  */
-const PULSE_ANIMATION_URL_LIGHT: string =
-    'nearby_share_pulse_animation_light.json';
-
-/**
- * The pulse animation asset URL for dark mode.
- */
-const PULSE_ANIMATION_URL_DARK: string =
-    'nearby_share_pulse_animation_dark.json';
-
-/**
- * The pulse animation asset URL for jelly mode.
- */
-const PULSE_ANIMATION_URL_JELLY: string =
-    'nearby_share_pulse_animation_jelly.json';
-
+const PULSE_ANIMATION_URL: string = 'nearby_share_pulse_animation.json';
 
 const NearbyDiscoveryPageElementBase = I18nMixin(PolymerElement);
 
@@ -160,26 +146,6 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
       },
 
       /**
-       * Whether the discovery page is being rendered in dark mode.
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Return true if the Jelly feature flag is enabled.
-       */
-      isJellyEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isJellyEnabled') &&
-              loadTimeData.getBoolean('isJellyEnabled');
-        },
-      },
-
-      /**
        * Return true if the Nearby Share Self Share feature flag is enabled.
        */
       isSelfShareEnabled: {
@@ -204,8 +170,6 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   private nonSelfShareTargets_: ShareTarget[];
   private errorTitle_: string|null;
   private errorDescription_: string|null;
-  private isDarkModeActive_: boolean;
-  private isJellyEnabled_: boolean;
 
   private mojoEventTarget_: ShareTargetListenerCallbackRouter|null = null;
   private listenerIds_: number[]|null = null;
@@ -654,14 +618,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * pulsing background animation
    */
   private getAnimationUrl_(): string {
-    if (this.isJellyEnabled_) {
-      return PULSE_ANIMATION_URL_JELLY;
-    }
-
-    // TODO(b/279623883): Clean up dark mode logic and duplicate assets after
-    // Jelly is launched.
-    return this.isDarkModeActive_ ? PULSE_ANIMATION_URL_DARK :
-                                    PULSE_ANIMATION_URL_LIGHT;
+    return PULSE_ANIMATION_URL;
   }
 
   /**

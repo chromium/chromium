@@ -34,18 +34,18 @@ class VirtualTask {
   // started running, if there are async steps.
   virtual bool Execute(Profile* profile,
                        const TaskDescriptor& task,
-                       const std::vector<FileSystemURL>& file_urls,
-                       gfx::NativeWindow modal_parent) const = 0;
+                       const std::vector<FileSystemURL>& file_urls) const = 0;
   // Whether this task should be included in |FindVirtualTasks()|. This can be
   // used to disable tasks based on a flag or other runtime conditions.
   virtual bool IsEnabled(Profile* profile) const = 0;
   // Whether this task should be available to execute on the supplied files, if
   // enabled. |Matches()| can return true even if the task is disabled - in this
-  // case the task will not be found by |FindVirtualTasks()|.
-  virtual bool Matches(
-      const std::vector<extensions::EntryInfo>& entries,
-      const std::vector<GURL>& file_urls,
-      const std::vector<std::string>& dlp_source_urls) const = 0;
+  // case the task will not be found by |FindVirtualTasks()|. Note this has a
+  // default implementation which matches against file extensions and mime types
+  // in |matcher_mime_types_| and |matcher_file_extensions_|.
+  virtual bool Matches(const std::vector<extensions::EntryInfo>& entries,
+                       const std::vector<GURL>& file_urls,
+                       const std::vector<std::string>& dlp_source_urls) const;
 
   // The ID of this task, which is unique across all virtual tasks. Used for
   // storing in preferences, and referring to this task in a TaskDescriptor.
@@ -57,6 +57,11 @@ class VirtualTask {
   // The user-visible title in Files app - make sure it's translated. This can
   // be overridden in Files app frontend in file_tasks.ts, based on action ID.
   virtual std::string title() const = 0;
+
+ protected:
+  std::vector<std::string> matcher_mime_types_;
+  // File extensions without the leading ".".
+  std::vector<std::string> matcher_file_extensions_;
 };
 
 // Appends any virtual tasks that are enabled and match |entries|/|file_urls| to
@@ -70,8 +75,7 @@ void FindVirtualTasks(Profile* profile,
 // Run |task| by calling |Execute()| on the associated VirtualTask.
 bool ExecuteVirtualTask(Profile* profile,
                         const TaskDescriptor& task,
-                        const std::vector<FileSystemURL>& file_urls,
-                        gfx::NativeWindow modal_parent);
+                        const std::vector<FileSystemURL>& file_urls);
 
 // Whether |task| is a virtual task and can be executed using
 // |ExecuteVirtualTask()|. Returns true for disabled tasks, too.

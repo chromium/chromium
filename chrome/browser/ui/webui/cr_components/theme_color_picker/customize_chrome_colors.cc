@@ -10,6 +10,7 @@
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "ui/base/mojom/themes.mojom.h"
+#include "ui/color/color_provider_utils.h"
 
 namespace {
 
@@ -93,3 +94,8 @@ const decltype(kDynamicCustomizeChromeColors) kDynamicCustomizeChromeColors =
                          IDS_NTP_COLORS_VIOLET,
                          ui::mojom::BrowserColorVariant::kTonalSpot),
     };
+
+SkColor HueToSkColor(float hue) {
+  return color_utils::HSLToSkColor({std::clamp(hue / 360, 0.0f, 1.0f), 1, .5},
+                                   255);
+}

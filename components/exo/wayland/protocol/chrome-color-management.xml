@@ -43,7 +43,7 @@
   over the course of our development.
   </description>
 
-  <interface name="zcr_color_manager_v1" version="5">
+  <interface name="zcr_color_manager_v1" version="6">
     <description summary="color manager singleton">
 	A global interface used for getting color management surface and color
 	management output objects as well as creating color space objects from
@@ -81,6 +81,7 @@
       <entry name="scrgb_linear_80_nits" value="18" summary="SCRGB Linear transfer function" since="5"/>
       <entry name="gamma18" value="19" summary="GAMMA18 transfer function" since="5"/>
       <entry name="gamma28" value="20" summary="GAMMA28 transfer function" since="5"/>
+      <entry name="srgb_hdr" value="21" summary="sRGB transfer function" since="6"/>
     </enum>
 
     <enum name="chromaticity_names">

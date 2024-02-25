@@ -36,6 +36,9 @@ class ManagementContextMixinBrowser : public ManagementContextMixin {
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
 
+  // ManagementContextMixin:
+  void SetUpInProcessBrowserTestFixture() override;
+
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override;
 #endif
@@ -43,7 +46,7 @@ class ManagementContextMixinBrowser : public ManagementContextMixin {
   // ManagementContextMixin:
   void ManageCloudMachine() override;
   void SetCloudMachinePolicies(
-      base::flat_map<std::string, absl::optional<base::Value>> policy_entries)
+      base::flat_map<std::string, std::optional<base::Value>> policy_entries)
       override;
 
  private:

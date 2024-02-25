@@ -1,11 +1,11 @@
 Tests curl command generation
 
 cURL Windows:
-curl "http://example.org/path" --compressed
+curl "http://example.org/path"
 
 
 cURL Unix:
-curl 'http://example.org/path' --compressed
+curl 'http://example.org/path'
 
 
 Powershell:
@@ -27,15 +27,11 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  --data-raw "123" ^
-  --compressed
+curl "http://example.org/path" --data-raw "123"
 
 
 cURL Unix:
-curl 'http://example.org/path' \
-  --data-raw '123' \
-  --compressed
+curl 'http://example.org/path' --data-raw '123'
 
 
 Powershell:
@@ -63,15 +59,13 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/x-www-form-urlencoded" ^
-  --data-raw "1&b" ^
-  --compressed
+  --data-raw "1&b"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
-  --data-raw '1&b' \
-  --compressed
+  --data-raw '1&b'
 
 
 Powershell:
@@ -106,15 +100,13 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/json" ^
-  --data-raw "^{^\^"a^\^":1^}" ^
-  --compressed
+  --data-raw ^"^{^\^"a^\^":1^}^"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/json' \
-  --data-raw '{"a":1}' \
-  --compressed
+  --data-raw '{"a":1}'
 
 
 Powershell:
@@ -151,15 +143,13 @@ curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
   --data-raw ^"1234^
 
-00^^^^'^\^"^!^" ^
-  --compressed
+00^^^^'^\^"^!^"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-raw $'1234\r\n00\u0002\u0003\u0004\u0005\'"\u0021' \
-  --compressed
+  --data-raw $'1234\r\n00\u0002\u0003\u0004\u0005\'"\u0021'
 
 
 Powershell:
@@ -196,15 +186,13 @@ curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
   --data-raw ^"1234^
 
-^00^^^^'^\^"^!^" ^
-  --compressed
+^00^^^^'^\^"^!^"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-raw $'1234\r\n\u000100\u0002\u0003\u0004\u0005\'"\u0021' \
-  --compressed
+  --data-raw $'1234\r\n\u000100\u0002\u0003\u0004\u0005\'"\u0021'
 
 
 Powershell:
@@ -243,15 +231,13 @@ curl "http://example.org/path" ^
 
 ^%^%^OS^%^%^
 
-^\^"^\^\^\^"'^$&^!^" ^
-  --compressed
+^\^"^\^\^\^"'^$&^!^"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-raw $'%OS%\r\n%%OS%%\r\n"\\"\'$&\u0021' \
-  --compressed
+  --data-raw $'%OS%\r\n%%OS%%\r\n"\\"\'$&\u0021'
 
 
 Powershell:
@@ -294,15 +280,13 @@ t^
 
 ^
 
-yuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM^" ^
-  --compressed
+yuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM^"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-raw $'\u0021@#$%^&*()_+~`1234567890-=[]{};\':",./\r<>?\r\nqwer\nt\n\nyuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM' \
-  --compressed
+  --data-raw $'\u0021@#$%^&*()_+~`1234567890-=[]{};\':",./\r<>?\r\nqwer\nt\n\nyuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM'
 
 
 Powershell:
@@ -337,15 +321,13 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-raw "^^^^ÿ	^܀" ^
-  --compressed
+  --data-raw ^"^^^^ÿ	^܀^"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-raw $'\u007f\u0080\u0090ÿ\u0009܀' \
-  --compressed
+  --data-raw $'\u007f\u0080\u0090ÿ\u0009܀'
 
 
 Powershell:
@@ -378,11 +360,11 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://labs.ft.com/?querystring=^\[^\]^\{^\}" --compressed
+curl ^"http://labs.ft.com/?querystring=^\[^\]^\{^\}^"
 
 
 cURL Unix:
-curl 'http://labs.ft.com/?querystring=\[\]\{\}' --compressed
+curl 'http://labs.ft.com/?querystring=\[\]\{\}'
 
 
 Powershell:
@@ -408,15 +390,13 @@ fetch("http://labs.ft.com/?querystring=[]{}", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-raw "^%^PATH^%^$PATH" ^
-  --compressed
+  --data-raw ^"^%^PATH^%^$PATH^"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-raw '%PATH%$PATH' \
-  --compressed
+  --data-raw '%PATH%$PATH'
 
 
 Powershell:
@@ -449,11 +429,11 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" --compressed
+curl "http://example.org/path"
 
 
 cURL Unix:
-curl 'http://example.org/path' --compressed
+curl 'http://example.org/path'
 
 
 Powershell:
@@ -477,15 +457,11 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Cookie: _x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117" ^
-  --compressed
+curl "http://example.org/path" -H "Cookie: _x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117"
 
 
 cURL Unix:
-curl 'http://example.org/path' \
-  -H 'Cookie: _x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117' \
-  --compressed
+curl 'http://example.org/path' -H 'Cookie: _x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117'
 
 
 Powershell:
@@ -510,15 +486,11 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -X "^|evilcommand^|" ^
-  --compressed
+curl "http://example.org/path" -X ^"^|evilcommand^|^"
 
 
 cURL Unix:
-curl 'http://example.org/path' \
-  -X '|evilcommand|' \
-  --compressed
+curl 'http://example.org/path' -X '|evilcommand|'
 
 
 Powershell:
@@ -544,15 +516,13 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/x-www-form-urlencoded" ^
-  --data-raw "^@/etc/passwd" ^
-  --compressed
+  --data-raw ^"^@/etc/passwd^"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
-  --data-raw '@/etc/passwd' \
-  --compressed
+  --data-raw '@/etc/passwd'
 
 
 Powershell:
@@ -585,15 +555,11 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "Referer: https://example.com" ^
-  --compressed
+curl "http://example.org/path" -H "Referer: https://example.com"
 
 
 cURL Unix:
-curl 'http://example.org/path' \
-  -H 'Referer: https://example.com' \
-  --compressed
+curl 'http://example.org/path' -H 'Referer: https://example.com'
 
 
 Powershell:
@@ -621,15 +587,11 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl "http://example.org/path" ^
-  -H "No-Value-Header;" ^
-  --compressed
+curl "http://example.org/path" -H "No-Value-Header;"
 
 
 cURL Unix:
-curl 'http://example.org/path' \
-  -H 'No-Value-Header;' \
-  --compressed
+curl 'http://example.org/path' -H 'No-Value-Header;'
 
 
 Powershell:
@@ -721,15 +683,13 @@ fetch (for nodejs):
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: foo/bar" ^
-  --data-raw "baz" ^
-  --compressed
+  --data-raw "baz"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: foo/bar' \
-  --data-raw 'baz' \
-  --compressed
+  --data-raw 'baz'
 
 
 Powershell:
@@ -764,15 +724,13 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: foo/bar" ^
-  --data-raw "baz" ^
-  --compressed
+  --data-raw "baz"
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: foo/bar' \
-  --data-raw 'baz' \
-  --compressed
+  --data-raw 'baz'
 
 
 Powershell:

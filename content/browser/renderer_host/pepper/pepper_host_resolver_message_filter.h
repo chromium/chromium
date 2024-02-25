@@ -71,12 +71,12 @@ class PepperHostResolverMessageFilter
   // network::mojom::ResolveHostClient overrides.
   void OnComplete(int result,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override;
 
   void OnLookupFinished(int net_result,
-                        const absl::optional<net::AddressList>& addresses,
+                        const std::optional<net::AddressList>& addresses,
                         const ppapi::host::ReplyMessageContext& bound_info);
   void SendResolveReply(int32_t result,
                         const std::string& canonical_name,

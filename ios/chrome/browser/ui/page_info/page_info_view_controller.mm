@@ -7,9 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -24,6 +23,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/page_info/features.h"
+#import "ios/chrome/browser/ui/page_info/page_info_about_this_site_info.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -39,23 +40,24 @@
 namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSecurityContent = kSectionIdentifierEnumZero,
+  SectionIdentifierSecurityContent,
   SectionIdentifierPermissions,
+  SectionIdentifierAboutThisSite,
 };
 
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeSecurityHeader = kItemTypeEnumZero,
-  ItemTypeSecurityDescription,
-  ItemTypePermissionsHeader,
-  ItemTypePermissionsCamera,
-  ItemTypePermissionsMicrophone,
-  ItemTypePermissionsDescription,
+typedef NS_ENUM(NSInteger, ItemIdentifier) {
+  ItemIdentifierSecurityHeader,
+  ItemIdentifierPermissionsCamera,
+  ItemIdentifierPermissionsMicrophone,
+  ItemIdentifierAboutThisSiteHeader
 };
 
-// The vertical padding between the navigation bar and the Security header.
-float kPaddingSecurityHeader = 28.0f;
 // The minimum scale factor of the title label showing the URL.
-float kTitleLabelMinimumScaleFactor = 0.7f;
+const float kTitleLabelMinimumScaleFactor = 0.7f;
+
+// The maximum number of lines we should show for a page's description in the
+// AboutThisSite section.
+const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 
 }  // namespace
 
@@ -66,11 +68,15 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
     PageInfoSiteSecurityDescription* pageInfoSecurityDescription;
 
 // The list of permissions info used to create switches.
-@property(nonatomic, copy) NSArray<PermissionInfo*>* permissionsInfo;
+@property(nonatomic, copy)
+    NSMutableDictionary<NSNumber*, NSNumber*>* permissionsInfo;
 
 @end
 
-@implementation PageInfoViewController
+@implementation PageInfoViewController {
+  UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  PageInfoAboutThisSiteInfo* _aboutThisSiteInfo;
+}
 
 #pragma mark - UIViewController
 
@@ -87,9 +93,16 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.navigationItem.titleView =
-      [self titleViewLabelForURL:self.pageInfoSecurityDescription.siteURL];
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_INFORMATION);
+  if (IsRevampPageInfoIosEnabled()) {
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeNever;
+    self.navigationItem.prompt = self.pageInfoSecurityDescription.siteURL;
+  } else {
+    self.navigationItem.titleView =
+        [self titleViewLabelForURL:self.pageInfoSecurityDescription.siteURL];
+  }
+
   self.tableView.accessibilityIdentifier = kPageInfoViewAccessibilityIdentifier;
   self.navigationController.navigationBar.accessibilityIdentifier =
       kPageInfoViewNavigationBarAccessibilityIdentifier;
@@ -100,8 +113,10 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
                            action:@selector(hidePageInfo)];
   self.navigationItem.rightBarButtonItem = dismissButton;
   self.tableView.separatorInset =
-      UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
-  self.tableView.allowsSelection = NO;
+      UIEdgeInsetsMake(0, kPageInfoTableViewSeparatorInset, 0, 0);
+  if (!IsRevampPageInfoIosEnabled()) {
+    self.tableView.allowsSelection = NO;
+  }
 
   if (self.pageInfoSecurityDescription.isEmpty) {
     [self addEmptyTableViewWithMessage:self.pageInfoSecurityDescription.message
@@ -114,140 +129,155 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   [self loadModel];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
-  [super loadModel];
+  __weak __typeof(self) weakSelf = self;
+  _dataSource = [[UITableViewDiffableDataSource alloc]
+      initWithTableView:self.tableView
+           cellProvider:^UITableViewCell*(UITableView* tableView,
+                                          NSIndexPath* indexPath,
+                                          NSNumber* itemIdentifier) {
+             return
+                 [weakSelf cellForTableView:tableView
+                                  indexPath:indexPath
+                             itemIdentifier:static_cast<ItemIdentifier>(
+                                                itemIdentifier.integerValue)];
+           }];
 
-  [self.tableViewModel
-      addSectionWithIdentifier:SectionIdentifierSecurityContent];
+  RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
+  RegisterTableViewCell<TableViewSwitchCell>(self.tableView);
+  RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
+  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
+  RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
+      self.tableView);
 
-  // Site Security section.
-  TableViewDetailIconItem* securityHeader =
-      [[TableViewDetailIconItem alloc] initWithType:ItemTypeSecurityHeader];
-  securityHeader.text = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_SECURITY);
-  securityHeader.detailText = self.pageInfoSecurityDescription.status;
-  securityHeader.iconImage = self.pageInfoSecurityDescription.iconImage;
-  securityHeader.iconTintColor = UIColor.whiteColor;
-  securityHeader.iconBackgroundColor =
-      self.pageInfoSecurityDescription.iconBackgroundColor;
-  securityHeader.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
-  [self.tableViewModel addItem:securityHeader
-       toSectionWithIdentifier:SectionIdentifierSecurityContent];
-
-  TableViewLinkHeaderFooterItem* securityDescription =
-      [[TableViewLinkHeaderFooterItem alloc]
-          initWithType:ItemTypeSecurityDescription];
-  securityDescription.text = self.pageInfoSecurityDescription.message;
-  securityDescription.urls =
-      @[ [[CrURL alloc] initWithGURL:GURL(kPageInfoHelpCenterURL)] ];
-  [self.tableViewModel setFooter:securityDescription
-        forSectionWithIdentifier:SectionIdentifierSecurityContent];
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot
+      appendSectionsWithIdentifiers:@[ @(SectionIdentifierSecurityContent) ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierSecurityHeader) ]];
 
   // Permissions section.
-  if (@available(iOS 15.0, *)) {
-    if ([self.permissionsInfo count]) {
-      [self loadPermissionsModel];
-    }
-  }
-}
-
-// Loads the "Permissions" section in this table view.
-- (void)loadPermissionsModel API_AVAILABLE(ios(15.0)) {
-  [self.tableViewModel addSectionWithIdentifier:SectionIdentifierPermissions];
-
-  TableViewTextHeaderFooterItem* permissionsHeaderItem =
-      [[TableViewTextHeaderFooterItem alloc]
-          initWithType:ItemTypePermissionsHeader];
-  permissionsHeaderItem.text =
-      l10n_util::GetNSString(IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER);
-  [self.tableViewModel setHeader:permissionsHeaderItem
-        forSectionWithIdentifier:SectionIdentifierPermissions];
-
-  for (id permission in self.permissionsInfo) {
-    [self updateSwitchForPermission:permission tableViewLoaded:NO];
+  for (NSNumber* permission in self.permissionsInfo.allKeys) {
+    [self updateSnapshot:snapshot forPermission:permission];
   }
 
-  TableViewAttributedStringHeaderFooterItem* permissionsDescription =
-      [[TableViewAttributedStringHeaderFooterItem alloc]
-          initWithType:ItemTypePermissionsDescription];
-  NSString* description = l10n_util::GetNSStringF(
-      IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION,
-      base::SysNSStringToUTF16(self.pageInfoSecurityDescription.siteURL));
-  NSMutableAttributedString* descriptionAttributedString =
-      [[NSMutableAttributedString alloc]
-          initWithAttributedString:PutBoldPartInString(
-                                       description, UIFontTextStyleFootnote)];
-  [descriptionAttributedString
-      addAttributes:@{
-        NSForegroundColorAttributeName :
-            [UIColor colorNamed:kTextSecondaryColor]
-      }
-              range:NSMakeRange(0, descriptionAttributedString.length)];
-  permissionsDescription.attributedString = descriptionAttributedString;
-  [self.tableViewModel setFooter:permissionsDescription
-        forSectionWithIdentifier:SectionIdentifierPermissions];
+  if (IsRevampPageInfoIosEnabled()) {
+    [self updateSnapshotForAboutThisSite:snapshot];
+  }
+
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 #pragma mark - UITableViewDelegate
 
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  DCHECK(self.pageInfoPresentationHandler);
+  ItemIdentifier itemType = static_cast<ItemIdentifier>(
+      [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
+  switch (itemType) {
+    case ItemIdentifierSecurityHeader:
+      if (IsRevampPageInfoIosEnabled()) {
+        [self.pageInfoPresentationHandler showSecurityPage];
+      }
+      break;
+    case ItemIdentifierAboutThisSiteHeader:
+      if (IsRevampPageInfoIosEnabled()) {
+        [self.pageInfoPresentationHandler
+            showAboutThisSitePage:_aboutThisSiteInfo.moreAboutURL];
+      }
+      break;
+    default:
+      break;
+  }
+
+  // Deselect the row so the UI seems responsive when the action triggered by
+  // the selection (e.g. opening a new tab, opening a subpage) takes a bit
+  // longer to happen.
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
-  return section == SectionIdentifierSecurityContent
-             ? kPaddingSecurityHeader
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+
+  if (IsRevampPageInfoIosEnabled()) {
+    // Calculate the actual height of the header view for Permessions since it's
+    // not empty.
+    if (sectionIdentifier == SectionIdentifierPermissions) {
+      return UITableViewAutomaticDimension;
+    }
+    return ChromeTableViewHeightForHeaderInSection(sectionIdentifier);
+  }
+
+  return sectionIdentifier == SectionIdentifierSecurityContent
+             ? kPageInfoPaddingFirstSectionHeader
              : UITableViewAutomaticDimension;
 }
 
 - (UIView*)tableView:(UITableView*)tableView
-    viewForFooterInSection:(NSInteger)section {
-  UIView* view = [super tableView:tableView viewForFooterInSection:section];
-  NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+    viewForHeaderInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
   switch (sectionIdentifier) {
-    case SectionIdentifierSecurityContent: {
-      TableViewLinkHeaderFooterView* linkView =
-          base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
-      linkView.delegate = self;
-    } break;
+    case SectionIdentifierSecurityContent:
+    case SectionIdentifierAboutThisSite:
+      return nil;
+    case SectionIdentifierPermissions: {
+      TableViewTextHeaderFooterView* header =
+          DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(
+              self.tableView);
+      header.textLabel.text =
+          l10n_util::GetNSString(IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER);
+      [header setSubtitle:nil];
+      return header;
+    }
   }
-  return view;
 }
 
-#pragma mark - UITableViewDataSource
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  switch (sectionIdentifier) {
+    case SectionIdentifierSecurityContent: {
+      if (IsRevampPageInfoIosEnabled()) {
+        // Don't show the security footer in the revamp UI.
+        return nil;
+      }
 
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  ItemType itemType =
-      (ItemType)[self.tableViewModel itemTypeForIndexPath:indexPath];
-  switch (itemType) {
-    case ItemTypePermissionsCamera:
-    case ItemTypePermissionsMicrophone: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      switchCell.switchView.tag = itemType;
-      [switchCell.switchView addTarget:self
-                                action:@selector(permissionSwitchToggled:)
-                      forControlEvents:UIControlEventValueChanged];
-      break;
+      TableViewLinkHeaderFooterView* footer =
+          DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
+              self.tableView);
+      footer.urls =
+          @[ [[CrURL alloc] initWithGURL:GURL(kPageInfoHelpCenterURL)] ];
+      [footer setText:self.pageInfoSecurityDescription.message
+            withColor:[UIColor colorNamed:kTextSecondaryColor]];
+      footer.delegate = self;
+      footer.accessibilityIdentifier =
+          kPageInfoSecurityFooterAccessibilityIdentifier;
+      return footer;
     }
-    case ItemTypeSecurityHeader:
-    case ItemTypeSecurityDescription:
-    case ItemTypePermissionsHeader:
-    case ItemTypePermissionsDescription: {
-      // Not handled.
-      break;
+    case SectionIdentifierPermissions: {
+      TableViewAttributedStringHeaderFooterView* footer =
+          DequeueTableViewHeaderFooter<
+              TableViewAttributedStringHeaderFooterView>(self.tableView);
+      footer.attributedString = [self permissionFooterAttributedString];
+      return footer;
     }
+    default:
+      return nil;
   }
-  return cell;
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   DCHECK(URL.gurl == GURL(kPageInfoHelpCenterURL));
-  [self.pageInfoCommandsHandler showSecurityHelpPage];
+  [self.pageInfoPresentationHandler showSecurityHelpPage];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -276,7 +306,118 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
 #pragma mark - Private
 
-// Returns the navigationItem titleView for `siteURL`.
+// Returns a cell.
+- (UITableViewCell*)cellForTableView:(UITableView*)tableView
+                           indexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(ItemIdentifier)itemIdentifier {
+  switch (itemIdentifier) {
+    case ItemIdentifierSecurityHeader: {
+      TableViewDetailIconCell* cell =
+          DequeueTableViewCell<TableViewDetailIconCell>(tableView);
+      cell.textLabel.text = l10n_util::GetNSString(
+          IsRevampPageInfoIosEnabled() ? IDS_IOS_PAGE_INFO_CONNECTION
+                                       : IDS_IOS_PAGE_INFO_SITE_SECURITY);
+      cell.detailText = self.pageInfoSecurityDescription.status;
+      [cell setIconImage:self.pageInfoSecurityDescription.iconImage
+                tintColor:UIColor.whiteColor
+          backgroundColor:self.pageInfoSecurityDescription.iconBackgroundColor
+             cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+
+      if (IsRevampPageInfoIosEnabled()) {
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      }
+
+      return cell;
+    }
+    case ItemIdentifierPermissionsCamera: {
+      TableViewSwitchCell* cell =
+          DequeueTableViewCell<TableViewSwitchCell>(tableView);
+      BOOL permissionOn =
+          self.permissionsInfo[@(web::PermissionCamera)].unsignedIntValue ==
+          web::PermissionStateAllowed;
+      NSString* title = l10n_util::GetNSString(IDS_IOS_PERMISSIONS_CAMERA);
+      [cell configureCellWithTitle:title
+                          subtitle:nil
+                     switchEnabled:YES
+                                on:permissionOn];
+      cell.accessibilityIdentifier =
+          kPageInfoCameraSwitchAccessibilityIdentifier;
+      cell.switchView.tag = itemIdentifier;
+      [cell.switchView addTarget:self
+                          action:@selector(permissionSwitchToggled:)
+                forControlEvents:UIControlEventValueChanged];
+      return cell;
+    }
+    case ItemIdentifierPermissionsMicrophone: {
+      TableViewSwitchCell* cell =
+          DequeueTableViewCell<TableViewSwitchCell>(tableView);
+      BOOL permissionOn =
+          self.permissionsInfo[@(web::PermissionMicrophone)].unsignedIntValue ==
+          web::PermissionStateAllowed;
+      NSString* title = l10n_util::GetNSString(IDS_IOS_PERMISSIONS_MICROPHONE);
+      [cell configureCellWithTitle:title
+                          subtitle:nil
+                     switchEnabled:YES
+                                on:permissionOn];
+      cell.accessibilityIdentifier =
+          kPageInfoMicrophoneSwitchAccessibilityIdentifier;
+      cell.switchView.tag = itemIdentifier;
+      [cell.switchView addTarget:self
+                          action:@selector(permissionSwitchToggled:)
+                forControlEvents:UIControlEventValueChanged];
+      return cell;
+    }
+    case ItemIdentifierAboutThisSiteHeader: {
+      TableViewDetailIconCell* cell =
+          DequeueTableViewCell<TableViewDetailIconCell>(tableView);
+      cell.textLabel.text =
+          l10n_util::GetNSString(IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE);
+      cell.detailText = _aboutThisSiteInfo.summary;
+      cell.detailTextNumberOfLines = kAboutThisSiteDetailTextNumberOfLines;
+      cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+
+      UIImage* icon =
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+          CustomSymbolTemplateWithPointSize(kPageInsightsSymbol,
+                                            kPageInfoSymbolPointSize);
+#else
+          DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                             kPageInfoSymbolPointSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS),
+
+      [cell setIconImage:icon
+                tintColor:UIColor.whiteColor
+          backgroundColor:[UIColor colorNamed:kPurple500Color]
+             cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+
+      cell.accessoryView = [[UIImageView alloc]
+          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                            kExternalLinkSymbol)];
+      cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+      return cell;
+    }
+  }
+}
+
+// Returns the attributed string for the permission footer.
+- (NSAttributedString*)permissionFooterAttributedString {
+  NSString* description = l10n_util::GetNSStringF(
+      IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION,
+      base::SysNSStringToUTF16(self.pageInfoSecurityDescription.siteURL));
+  NSMutableAttributedString* descriptionAttributedString =
+      [[NSMutableAttributedString alloc]
+          initWithAttributedString:PutBoldPartInString(
+                                       description, UIFontTextStyleFootnote)];
+  [descriptionAttributedString
+      addAttributes:@{
+        NSForegroundColorAttributeName :
+            [UIColor colorNamed:kTextSecondaryColor]
+      }
+              range:NSMakeRange(0, descriptionAttributedString.length)];
+  return descriptionAttributedString;
+}
+
+// Returns an UILabel for the navigationItem titleView for `siteURL`.
 - (UILabel*)titleViewLabelForURL:(NSString*)siteURL {
   UILabel* labelURL = [[UILabel alloc] init];
   labelURL.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -287,138 +428,121 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   return labelURL;
 }
 
-// Updates the switch of the given permission.
-- (void)updateSwitchForPermission:(PermissionInfo*)permissionInfo
-                  tableViewLoaded:(BOOL)tableViewLoaded {
-  switch (permissionInfo.permission) {
+// Updates `snapshot` to reflect the changes to AboutThisSite info.
+- (void)updateSnapshotForAboutThisSite:
+    (NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>*)snapshot {
+  if (!_aboutThisSiteInfo || !self.pageInfoSecurityDescription.secure) {
+    return;
+  }
+
+  NSInteger sectionIndex =
+      [snapshot indexOfSectionIdentifier:@(SectionIdentifierPermissions)];
+  SectionIdentifier afterSectionWithIdentifier =
+      (sectionIndex == NSNotFound) ? SectionIdentifierSecurityContent
+                                   : SectionIdentifierPermissions;
+  [snapshot insertSectionsWithIdentifiers:@[ @(SectionIdentifierAboutThisSite) ]
+               afterSectionWithIdentifier:@(afterSectionWithIdentifier)];
+
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierAboutThisSiteHeader) ]
+             intoSectionWithIdentifier:@(SectionIdentifierAboutThisSite)];
+}
+
+// Updates `snapshot` to reflect the changes done to `permissions`.
+- (void)updateSnapshot:
+            (NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>*)snapshot
+         forPermission:(NSNumber*)permission {
+  web::PermissionState state = static_cast<web::PermissionState>(
+      self.permissionsInfo[permission].unsignedIntegerValue);
+  ItemIdentifier itemIdentifier;
+  switch (static_cast<web::Permission>(permission.unsignedIntValue)) {
     case web::PermissionCamera:
-      [self updateSwitchForPermissionState:permissionInfo.state
-                                 withLabel:l10n_util::GetNSString(
-                                               IDS_IOS_PERMISSIONS_CAMERA)
-                                    toItem:ItemTypePermissionsCamera
-                           tableViewLoaded:tableViewLoaded];
+      itemIdentifier = ItemIdentifierPermissionsCamera;
       break;
     case web::PermissionMicrophone:
-      [self updateSwitchForPermissionState:permissionInfo.state
-                                 withLabel:l10n_util::GetNSString(
-                                               IDS_IOS_PERMISSIONS_MICROPHONE)
-                                    toItem:ItemTypePermissionsMicrophone
-                           tableViewLoaded:tableViewLoaded];
+      itemIdentifier = ItemIdentifierPermissionsMicrophone;
       break;
   }
+  [self updateSnapshot:snapshot forPermissionState:state toItem:itemIdentifier];
 }
 
 // Invoked when a permission switch is toggled.
 - (void)permissionSwitchToggled:(UISwitch*)sender {
-  if (@available(iOS 15.0, *)) {
-    web::Permission permission;
-    switch (sender.tag) {
-      case ItemTypePermissionsCamera:
-        permission = web::PermissionCamera;
-        break;
-      case ItemTypePermissionsMicrophone:
-        permission = web::PermissionMicrophone;
-        break;
-      case ItemTypePermissionsDescription:
-        NOTREACHED();
-        return;
+  web::Permission permission;
+  switch (sender.tag) {
+    case ItemIdentifierPermissionsCamera:
+      permission = web::PermissionCamera;
+      break;
+    case ItemIdentifierPermissionsMicrophone:
+      permission = web::PermissionMicrophone;
+      break;
+  }
+  PermissionInfo* permissionsDescription = [[PermissionInfo alloc] init];
+  permissionsDescription.permission = permission;
+  permissionsDescription.state =
+      sender.isOn ? web::PermissionStateAllowed : web::PermissionStateBlocked;
+  [self.permissionsDelegate updateStateForPermission:permissionsDescription];
+}
+
+// Updates the `snapshot` (including adds/removes section) to reflect changes to
+// `itemIdentifier`'s `state`.
+- (void)updateSnapshot:
+            (NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>*)snapshot
+    forPermissionState:(web::PermissionState)state
+                toItem:(ItemIdentifier)itemIdentifier {
+  NSInteger sectionIndex =
+      [snapshot indexOfSectionIdentifier:@(SectionIdentifierPermissions)];
+  if (sectionIndex == NSNotFound) {
+    [snapshot
+        insertSectionsWithIdentifiers:@[ @(SectionIdentifierPermissions) ]
+           afterSectionWithIdentifier:@(SectionIdentifierSecurityContent)];
+  }
+
+  BOOL itemVisible = state != web::PermissionStateNotAccessible;
+  if (itemVisible) {
+    if ([_dataSource indexPathForItemIdentifier:@(itemIdentifier)]) {
+      [snapshot reconfigureItemsWithIdentifiers:@[ @(itemIdentifier) ]];
+    } else {
+      if (itemIdentifier == ItemIdentifierPermissionsCamera &&
+          [_dataSource indexPathForItemIdentifier:
+                           @(ItemIdentifierPermissionsMicrophone)]) {
+        [snapshot
+            insertItemsWithIdentifiers:@[ @(itemIdentifier) ]
+              beforeItemWithIdentifier:@(ItemIdentifierPermissionsMicrophone)];
+      } else {
+        [snapshot appendItemsWithIdentifiers:@[ @(itemIdentifier) ]
+                   intoSectionWithIdentifier:@(SectionIdentifierPermissions)];
+      }
     }
-    PermissionInfo* permissionsDescription = [[PermissionInfo alloc] init];
-    permissionsDescription.permission = permission;
-    permissionsDescription.state =
-        sender.isOn ? web::PermissionStateAllowed : web::PermissionStateBlocked;
-    [self.permissionsDelegate updateStateForPermission:permissionsDescription];
+  } else {
+    [snapshot deleteItemsWithIdentifiers:@[ @(itemIdentifier) ]];
+  }
+
+  if ([snapshot numberOfItemsInSection:@(SectionIdentifierPermissions)] == 0) {
+    [snapshot
+        deleteSectionsWithIdentifiers:@[ @(SectionIdentifierPermissions) ]];
   }
 }
 
-// Adds or removes a switch depending on the value of the PermissionState.
-- (void)updateSwitchForPermissionState:(web::PermissionState)state
-                             withLabel:(NSString*)label
-                                toItem:(ItemType)itemType
-                       tableViewLoaded:(BOOL)tableViewLoaded {
-  if ([self.tableViewModel hasItemForItemType:itemType
-                            sectionIdentifier:SectionIdentifierPermissions]) {
-    NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
+#pragma mark - PageInfoAboutThisSiteConsumer
 
-    // Remove the switch item if the permission is not accessible.
-    if (state == web::PermissionStateNotAccessible) {
-      [self removeFromModelItemAtIndexPaths:@[ index ]];
-      [self.tableView deleteRowsAtIndexPaths:@[ index ]
-                            withRowAnimation:UITableViewRowAnimationAutomatic];
-    } else {
-      TableViewSwitchItem* currentItem =
-          base::apple::ObjCCastStrict<TableViewSwitchItem>(
-              [self.tableViewModel itemAtIndexPath:index]);
-      TableViewSwitchCell* currentCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(
-              [self.tableView cellForRowAtIndexPath:index]);
-      currentItem.on = state == web::PermissionStateAllowed;
-      // Reload the switch cell if its value is outdated.
-      if (currentItem.isOn != currentCell.switchView.isOn) {
-        [self.tableView
-            reloadRowsAtIndexPaths:@[ index ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-      }
-    }
-    return;
-  }
-
-  // Don't add a switch item if the permission is not accessible.
-  if (state == web::PermissionStateNotAccessible) {
-    return;
-  }
-
-  TableViewSwitchItem* switchItem =
-      [[TableViewSwitchItem alloc] initWithType:itemType];
-  switchItem.text = label;
-  switchItem.on = state == web::PermissionStateAllowed;
-  switchItem.accessibilityIdentifier =
-      itemType == ItemTypePermissionsCamera
-          ? kPageInfoCameraSwitchAccessibilityIdentifier
-          : kPageInfoMicrophoneSwitchAccessibilityIdentifier;
-
-  // If ItemTypePermissionsMicrophone is already added, insert the
-  // ItemTypePermissionsCamera before the ItemTypePermissionsMicrophone.
-  if (itemType == ItemTypePermissionsCamera &&
-      [self.tableViewModel hasItemForItemType:ItemTypePermissionsMicrophone
-                            sectionIdentifier:SectionIdentifierPermissions]) {
-    NSIndexPath* index = [self.tableViewModel
-        indexPathForItemType:ItemTypePermissionsMicrophone];
-    [self.tableViewModel insertItem:switchItem
-            inSectionWithIdentifier:SectionIdentifierPermissions
-                            atIndex:index.row];
-  } else {
-    [self.tableViewModel addItem:switchItem
-         toSectionWithIdentifier:SectionIdentifierPermissions];
-  }
-
-  if (tableViewLoaded) {
-    NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
-    [self.tableView insertRowsAtIndexPaths:@[ index ]
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
-  }
+- (void)setAboutThisSiteSection:(PageInfoAboutThisSiteInfo*)info {
+  _aboutThisSiteInfo = info;
 }
 
 #pragma mark - PermissionsConsumer
 
-- (void)setPermissionsInfo:(NSArray<PermissionInfo*>*)permissionsInfo {
-  _permissionsInfo = permissionsInfo;
+- (void)setPermissionsInfo:
+    (NSDictionary<NSNumber*, NSNumber*>*)permissionsInfo {
+  _permissionsInfo = [permissionsInfo mutableCopy];
 }
 
 - (void)permissionStateChanged:(PermissionInfo*)permissionInfo {
-  if (@available(iOS 15.0, *)) {
-    // Add the Permissions section if it doesn't exist.
-    if (![self.tableViewModel
-            hasSectionForSectionIdentifier:SectionIdentifierPermissions]) {
-      [self loadPermissionsModel];
-      NSUInteger index = [self.tableViewModel
-          sectionForSectionIdentifier:SectionIdentifierPermissions];
-      [self.tableView insertSections:[NSIndexSet indexSetWithIndex:index]
-                    withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
+  self.permissionsInfo[@(permissionInfo.permission)] = @(permissionInfo.state);
 
-    [self updateSwitchForPermission:permissionInfo tableViewLoaded:YES];
-  }
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [self updateSnapshot:snapshot forPermission:@(permissionInfo.permission)];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 @end

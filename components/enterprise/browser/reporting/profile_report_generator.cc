@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
@@ -69,13 +70,15 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
     auto client = delegate_->MakePolicyConversionsClient();
     // `client` may not be provided in unit test.
     if (client) {
-      policies_ = policy::DictionaryPolicyConversions(std::move(client))
+      policies_ = policy::PolicyConversions(std::move(client))
                       .EnableConvertTypes(false)
                       .EnablePrettyPrint(false)
                       .ToValueDict();
       GetChromePolicyInfo();
       GetExtensionPolicyInfo();
       GetPolicyFetchTimestampInfo();
+    } else {
+      CHECK_IS_TEST();
     }
   }
 

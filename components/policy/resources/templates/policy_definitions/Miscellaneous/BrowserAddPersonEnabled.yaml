@@ -17,7 +17,7 @@ items:
 - caption: Disallow adding new profiles
   value: false
 owners:
-- mlerman@chromium.org
+- droger@chromium.org
 - zmin@chromium.org
 schema:
   type: boolean

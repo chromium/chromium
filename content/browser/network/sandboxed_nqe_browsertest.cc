@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/network/network_service_util_internal.h"

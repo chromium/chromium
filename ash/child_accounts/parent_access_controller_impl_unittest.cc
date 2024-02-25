@@ -127,7 +127,7 @@ class ParentAccessControllerImplTest : public LoginTestBase {
 
     const std::string all_results_histogram =
         ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
-            absl::nullopt);
+            std::nullopt);
 
     histogram_tester_.ExpectBucketCount(all_results_histogram, result,
                                         bucket_count);
@@ -164,7 +164,7 @@ class ParentAccessControllerImplTest : public LoginTestBase {
 
   base::HistogramTester histogram_tester_;
 
-  raw_ptr<PinRequestView, DanglingUntriaged | ExperimentalAsh> view_ =
+  raw_ptr<PinRequestView, DanglingUntriaged> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 };
 

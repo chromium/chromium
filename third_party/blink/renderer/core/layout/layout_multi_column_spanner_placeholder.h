@@ -18,10 +18,9 @@ namespace blink {
 // multicol container.
 class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
  public:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutMultiColumnSpannerPlaceholder() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectMultiColumnSpannerPlaceholder ||
-           LayoutBox::IsOfType(type);
+    return true;
   }
 
   static LayoutMultiColumnSpannerPlaceholder* CreateAnonymous(
@@ -42,16 +41,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
 
   LayoutBox* LayoutObjectInFlowThread() const {
     NOT_DESTROYED();
-    return layout_object_in_flow_thread_;
-  }
-  void MarkForLayoutIfObjectInFlowThreadNeedsLayout() {
-    NOT_DESTROYED();
-    if (!layout_object_in_flow_thread_->NeedsLayout())
-      return;
-    // The containing block of a spanner is the multicol container (our parent
-    // here), but the spanner is laid out via its spanner set (us), so we need
-    // to make sure that we enter it.
-    SetChildNeedsLayout(kMarkOnlyThis);
+    return layout_object_in_flow_thread_.Get();
   }
 
   bool AnonymousHasStylePropagationOverride() final {
@@ -72,13 +62,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
  protected:
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
-  void RecalcVisualOverflow() override;
   void UpdateLayout() override;
-  void Paint(const PaintInfo&) const override;
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   HitTestPhase) override;
 
  private:
   LayoutPoint LocationInternal() const override;

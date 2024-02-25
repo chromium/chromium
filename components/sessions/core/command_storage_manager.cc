@@ -61,9 +61,7 @@ CommandStorageManager::CreateDefaultBackendTaskRunner() {
 
 // static
 std::vector<uint8_t> CommandStorageManager::CreateCryptoKey() {
-  std::vector<uint8_t> key(32);
-  crypto::RandBytes(&(key.front()), key.size());
-  return key;
+  return crypto::RandBytesAsVector(32);
 }
 
 void CommandStorageManager::ScheduleCommand(

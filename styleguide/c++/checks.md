@@ -19,6 +19,59 @@ of the program. In the future we may let the compiler assume and optimize around
 `DCHECK()`s holding true in non-DCHECK builds using `__builtin_assume()`, which
 further formalizes undefined behavior.
 
+## Failures beyond Chromium's control
+
+Failure can come from beyond Chromium's ability to control. These failures
+should not be caught with invariants, but handled as part of regular control
+flow. In the rare case where it's impossible to safely recover from failure use
+`base::ImmediateCrash()` to terminate the process instead of using `CHECK()`
+etc. Doing so avoids implying that the generated crash reports should be triaged
+as bugs in Chromium. Fatally aborting is a last-resort measure.
+
+We must be resilient to a bad prior release of Chromium which may have persisted
+bad data to disk or a bad server-side rollout which may be sending us incorrect
+or unexpected configs.
+
+Note that wherever `CHECK()` is inappropriate, `DCHECK()` is inappropriate as
+well. `DCHECK()` should still only be used for invariants. Ideally we'd have
+better test coverage for failures created from outside Chromium's control.
+
+Non-exhaustive list of failures beyond Chromium's control:
+
+* *Exhausted resources:* Running out of memory, FD handles, etc. should be made
+  unlikely to happen, but is not entirely within our control. When we can't
+  gracefully degrade, use a non-asserting `base::ImmediateCrash()`.
+* *Untrusted data:* Data provided by end users or website developers. Don't
+  `CHECK()` for bad syntax, etc.
+* *Serialized data out of sync with binary:* Any data persisted to disk may come
+  from a past or future version of Chrome. Server data such as experiments
+  should also not be verified with `CHECK()`s as a bad server-side rollout
+  shouldn't be able to bring down the client. Note that you may `CHECK()` that
+  data is valid after the caller should've validated it.
+* *Disk corruption:* We should be able to recover from a bad disk read/write. Do
+  not assume that the data comes from a current (or even past) version of
+  Chromium. This includes preferences which are persisted to disk.
+* *Data across security boundaries:* A compromised renderer should not be able
+  to bring down the browser process (higher privilege). Bad IPC messages should
+  be safely [rejected](../../docs/security/mojo.md#explicitly-reject-bad-input)
+  by Chromium without the use of `base::ImmediateCrash()` or `CHECK()` etc.
+  as part of normal control flow.
+* *Bad/untrusted/changing driver, kernel API, hardware failure:* A misbehaving
+  GPU driver may cause us to be unable to proceed. This is not an invariant
+  failure. On platforms where we are wary that a kernel API may change without
+  sufficient prior notice we should not `CHECK()` its result as we expect the
+  rug to be pulled from under our feet. In the case of hardware failure we
+  should not for instance `CHECK()` that a write succeeded.
+
+In some cases (malware, ..., dll injection, etc.) third-party code outside of
+our control can cause us to trigger various CHECK() failures, due to injecting
+code or unexpected state into Chrome. These can create "weird machines" that are
+useful to attackers. We don't remove CHECKs just to support them, though we may
+handle these unexpected states if possible and necessary. Chromium is not
+designed to run against arbitrary code modification.
+
+## Invariant-verification mechanisms
+
 Prefer `CHECK()` and `NOTREACHED_NORETURN()` as they ensure that if an invariant
 fails, the program does not continue in an unexpected state, and we hear about
 the failure either through a test failure or a crash report. This helps prevent
@@ -46,6 +99,8 @@ unreachable, however it disappears in production builds and we have observed
 that these are in fact commonly reached. Prefer `NOTREACHED_NORETURN()` in new
 code, while we migrate the preexisting cases to it with care. See
 https://crbug.com/851128.
+
+## Examples
 
 Below are some examples to explore the choice of `CHECK()` and its variants:
 
@@ -97,41 +152,40 @@ if (!bar) {
 }
 ```
 
-## Failures beyond Chromium's control
+## More cautious CHECK() rollouts and DCHECK() upgrades
 
-In some cases, a failure comes from beyond Chromium's ability to control, such
-as unexpected out-of-memory conditions, a misbehaving driver, kernel API, or
-hardware failure. Where it's impossible to safely recover from these failures,
-use `base::ImmediateCrash()` to terminate the process instead of `CHECK()` etc.
-Doing so avoids implying that the generated crash reports should be triaged as
-bugs in Chromium.
+If you're not confident that an unexpected situation can't happen in practice,
+an additional `base::NotFatalUntil::M120` argument after the condition may be
+used to gather non-fatal diagnostics before turning fatal in a future milestone.
+Make sure to either prioritize these invariant failures once discovered, and
+punt the milestone where this invocation turns fatal to avoid rolling out a
+stability risk. Macros with a `base::NotFatalUntil` argument will provide
+non-fatal crash reports before the fatal milestone is hit. They preserve and upload logged arguments that are uploaded along the report which is useful
+for debugging failures as well.
 
-Note that bad IPC messages should be safely rejected by Chromium without the use
-of `base::ImmediateCrash()` or `CHECK()` etc. as part of normal control flow.
+This extra argument can be used to more cautiously add or upgrade to `CHECK()`s.
+This is appropriate when we're uncertain of whether the invariant currently
+holds true or when there's low pre-stable coverage. Specifically consider using
+these:
 
-## Less fatal options
+* When working on iOS code (low pre-stable coverage).
+* Upgrading `DCHECK()s`.
+* Working on code that's not flag guarded.
 
-If an unexpected situation is happening, `DUMP_WILL_BE_CHECK()` can be used to
-help debug in production. This macro generates a non-fatal crash report if the
-condition passed to it does not hold. This macro preserves log-stream parameters
-(like CHECK() in a local build), so additional information can be streamed to it
-on failure to help debugging. Note that this does not abort on failure so be
-sure to handle the situation in a way that doesn't leave the process in a bad
-state.
+As `base::NotFatalUntil` automatically turns fatal, keep an extra eye on
+automatically-filed bugs for failures in the wild. Discovered failures, like
+other invariant failures, are high-priority issues. Once resolved, either by
+handling the unexpected situation or making sure it no longer happens, the
+milestone number should be bumped to allow for validation in stable channels
+before turning fatal.
 
-This macro can also be used to more cautiously add a new `CHECK()`. This may be
-used when it's hard to reason about whether a new invariant currently holds
-globally, you suspect that a DCHECK is currently firing or you have a small
-pre-stable population (iOS for instance). Do not be overly cautious about adding
-new CHECKs if you have reasonable pre-stable coverage, or the invariant is
-inside a new feature already guarded by a feature flag.
+Failing instances should not downgrade to DCHECKs as that hides the ongoing
+problem rather than resolving it. In rare exceptions you could use
+`DUMP_WILL_BE_CHECK()` macros for similar semantics (report on failure) without
+timeline expectations, though in this case you must also handle failure as best
+you can as failures are known to happen.
 
-This macro is only to be used temporarily, so `DUMP_WILL_BE_CHECK()` instances
-should always be tagged with a bug like `// TODO(crbug.com/nnnn)`. Use
-NextAction date to remember to revisit and clean up this macro (replace with a
-`CHECK()`) once sufficiently certain. Instances that are left unattended for too
-long may be upgraded as we presumably are not generating enough
-invariant-failure reports for a `CHECK()` to be a stability concern here.
+## Alternatives in tests
 
 For failures in tests, GoogleTest macros such as `EXPECT_*`, `ASSERT_*` or
 `ADD_FAILURE()` are more appropriate than `CHECKing`. For production code:

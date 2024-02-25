@@ -46,7 +46,7 @@ class AudioFocusDelegateDefault : public AudioFocusDelegate {
   // AudioFocusDelegate implementation.
   AudioFocusResult RequestAudioFocus(AudioFocusType audio_focus_type) override;
   void AbandonAudioFocus() override;
-  absl::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
+  std::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
       const override;
   void MediaSessionInfoChanged(
       const media_session::mojom::MediaSessionInfoPtr&) override;
@@ -77,7 +77,7 @@ class AudioFocusDelegateDefault : public AudioFocusDelegate {
   raw_ptr<MediaSessionImpl> media_session_;
 
   // The last requested AudioFocusType by the associated |media_session_|.
-  absl::optional<AudioFocusType> audio_focus_type_;
+  std::optional<AudioFocusType> audio_focus_type_;
 
   // ID to uniquely identify the audio focus delegate.
   base::UnguessableToken const request_id_ = base::UnguessableToken::Create();
@@ -142,7 +142,7 @@ void AudioFocusDelegateDefault::AbandonAudioFocus() {
   audio_focus_.reset();
 }
 
-absl::optional<media_session::mojom::AudioFocusType>
+std::optional<media_session::mojom::AudioFocusType>
 AudioFocusDelegateDefault::GetCurrentFocusType() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return audio_focus_type_;

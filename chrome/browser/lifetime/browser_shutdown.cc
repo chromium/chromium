@@ -259,8 +259,8 @@ bool RecordShutdownInfoPrefs() {
 
 void ShutdownPostThreadsStop(RestartMode restart_mode) {
   CheckAccessedOnCorrectThread();
-  delete g_browser_process;
-  g_browser_process = nullptr;
+  // At this point, no BrowserProcess instance should exist.
+  CHECK(!g_browser_process);
 
   // crbug.com/95079 - This needs to happen after the browser process object
   // goes away.

@@ -75,7 +75,7 @@ class DummyTextInputClient : public TextInputClient {
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() const override;
+  std::optional<GrammarFragment> GetGrammarFragmentAtCursor() const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<GrammarFragment>& fragments) override;
@@ -83,8 +83,8 @@ class DummyTextInputClient : public TextInputClient {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) override;
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) override;
 #endif
 #if BUILDFLAG(IS_WIN)
   void SetActiveCompositionForAccessibility(

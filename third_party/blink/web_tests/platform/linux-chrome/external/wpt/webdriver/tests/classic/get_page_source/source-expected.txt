@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  assert 200 == 404
+Harness: the test ran to completion.

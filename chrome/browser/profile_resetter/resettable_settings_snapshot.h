@@ -15,9 +15,6 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 
-namespace base {
-class ListValue;
-}
 namespace reset_report {
 class ChromeResetReport;
 }

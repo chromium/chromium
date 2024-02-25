@@ -82,13 +82,14 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
     if (!calling_process.IsValid())
       return kErrorCouldNotObtainCallingProcess;
 
-    const std::string validation_data =
+    auto validation_data =
         GenerateValidationData(protection_level, calling_process);
-    if (validation_data.empty())
-      return kErrorCouldNotGenerateValidationData;
+    if (!validation_data.has_value()) {
+      return validation_data.error();
+    }
 
     std::string data_to_encrypt;
-    AppendStringWithLength(validation_data, data_to_encrypt);
+    AppendStringWithLength(*validation_data, data_to_encrypt);
     AppendStringWithLength(
         std::string(reinterpret_cast<char*>(plaintext), length),
         data_to_encrypt);

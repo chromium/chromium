@@ -2,26 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
-import {GetSsrcFromReport, SsrcInfoManager} from './ssrc_info_manager.js';
 import {generateStatsLabel} from './stats_helper.js';
 
 /**
  * Maintains the stats table.
- * @param {SsrcInfoManager} ssrcInfoManager The source of the ssrc info.
  */
 export class StatsTable {
-  /**
-   * @param {SsrcInfoManager} ssrcInfoManager The source of the ssrc info.
-   */
-  constructor(ssrcInfoManager) {
-    /**
-     * @type {SsrcInfoManager}
-     * @private
-     */
-    this.ssrcInfoManager_ = ssrcInfoManager;
-  }
+  constructor() {}
 
   /**
    * Adds |report| to the stats table of |peerConnectionElement|.
@@ -126,15 +115,6 @@ export class StatsTable {
 
       table.appendChild($('trth-template').content.cloneNode(true));
       table.rows[0].cells[0].textContent = 'Statistics ' + report.id;
-
-      // Only for legacy stats.
-      if (report.type === 'ssrc') {
-        table.insertRow(1);
-        table.rows[1].appendChild(
-            $('td-colspan-template').content.cloneNode(true));
-        this.ssrcInfoManager_.populateSsrcInfo(
-            table.rows[1].cells[0], GetSsrcFromReport(report));
-      }
     }
     return table;
   }
@@ -157,8 +137,16 @@ export class StatsTable {
     const metricsContainer = statsTable.firstChild;
     for (let i = 0; i < metricsContainer.children.length; ++i) {
       const metricElement = metricsContainer.children[i];
-      const metricName =
+      // `metricElement` IDs have the format `bla-bla-bla-bla-${metricName}`.
+      let metricName =
           metricElement.id.substring(metricElement.id.lastIndexOf('-') + 1);
+      if (metricName.endsWith(']')) {
+        // Computed metrics may contain the '-' character (e.g.
+        // `DifferenceCalculator` based metrics) in which case `metricName` will
+        // not have been parsed correctly. Instead look for starting '['.
+        metricName =
+            metricElement.id.substring(metricElement.id.indexOf('['));
+      }
       if (metricName && metricName != 'timestamp' &&
           !definedMetrics.has(metricName)) {
         this.updateStatsTableRow_(statsTable, metricName, '(removed)');

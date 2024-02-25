@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 
 #include <initializer_list>
+#include <optional>
 #include <random>
 
 #include "base/check.h"
@@ -14,7 +15,6 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
@@ -89,7 +89,7 @@ class ThreadsafeSettingsWrapper {
   }
 
  private:
-  absl::optional<IdentifiabilityStudySettings> initialized_settings_;
+  std::optional<IdentifiabilityStudySettings> initialized_settings_;
   const IdentifiabilityStudySettings default_settings_;
   base::AtomicFlag initialized_;
 };
@@ -105,7 +105,8 @@ IdentifiabilityStudySettings::IdentifiabilityStudySettings(
     std::unique_ptr<IdentifiabilityStudySettingsProvider> provider)
     : provider_(std::move(provider)),
       is_enabled_(provider_->IsActive()),
-      is_any_surface_or_type_blocked_(provider_->IsAnyTypeOrSurfaceBlocked()) {}
+      is_any_surface_or_type_blocked_(provider_->IsAnyTypeOrSurfaceBlocked()),
+      is_meta_experiment_active_(provider_->IsMetaExperimentActive()) {}
 
 IdentifiabilityStudySettings::~IdentifiabilityStudySettings() = default;
 
@@ -125,7 +126,7 @@ void IdentifiabilityStudySettings::ResetStateForTesting() {
 }
 
 bool IdentifiabilityStudySettings::IsActive() const {
-  return is_enabled_;
+  return is_enabled_ || is_meta_experiment_active_;
 }
 
 bool IdentifiabilityStudySettings::ShouldSampleWebFeature(
@@ -142,6 +143,10 @@ bool IdentifiabilityStudySettings::ShouldSampleSurface(
   if (LIKELY(!is_any_surface_or_type_blocked_))
     return true;
 
+  if (is_meta_experiment_active_) {
+    return true;
+  }
+
   return provider_->IsSurfaceAllowed(surface);
 }
 
@@ -152,6 +157,10 @@ bool IdentifiabilityStudySettings::ShouldSampleType(
 
   if (LIKELY(!is_any_surface_or_type_blocked_))
     return true;
+
+  if (is_meta_experiment_active_) {
+    return true;
+  }
 
   return provider_->IsTypeAllowed(type);
 }
@@ -164,6 +173,10 @@ bool IdentifiabilityStudySettings::ShouldSampleAnyType(
   if (LIKELY(!is_any_surface_or_type_blocked_))
     return true;
 
+  if (is_meta_experiment_active_) {
+    return true;
+  }
+
   for (IdentifiableSurface::Type type : types) {
     if (provider_->IsTypeAllowed(type))
       return true;
@@ -174,17 +187,6 @@ bool IdentifiabilityStudySettings::ShouldSampleAnyType(
 
 bool IdentifiabilityStudySettings::ShouldSampleAnything() const {
   return IsActive() || IdentifiabilityTracingEnabled();
-}
-
-bool IdentifiabilityStudySettings::ShouldActivelySample() const {
-  if (LIKELY(!IsActive()))
-    return false;
-  return provider_->ShouldActivelySample();
-}
-
-std::vector<std::string>
-IdentifiabilityStudySettings::FontFamiliesToActivelySample() const {
-  return provider_->FontFamiliesToActivelySample();
 }
 
 }  // namespace blink

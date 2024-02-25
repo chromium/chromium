@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SystemFeaturesDisableList": [
+            "os_settings",
+            "scanning"
+          ]
+        },
+        "prefs": {
+          "os_settings_enabled": {
+            "location": "local_state",
+            "value": false
+          },
+          "policy.system_features_disable_list": {
+            "location": "local_state",
+            "value": [
+              3,
+              4
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

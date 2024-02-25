@@ -13,10 +13,6 @@ namespace media {
 // Described in ISO 23001-8:2016
 class MEDIA_EXPORT VideoColorSpace {
  public:
-  // These values are persisted to logs. Entries should not be renumbered or
-  // removed and numeric values should never be reused.
-  // Please keep in sync with "VideoColorSpace.PrimaryID"
-  // in src/tools/metrics/histograms/enums.xml.
   // Table 2
   enum class PrimaryID : uint8_t {
     INVALID = 0,
@@ -35,10 +31,6 @@ class MEDIA_EXPORT VideoColorSpace {
     kMaxValue = EBU_3213_E,
   };
 
-  // These values are persisted to logs. Entries should not be renumbered or
-  // removed and numeric values should never be reused.
-  // Please keep in sync with "VideoColorSpace.TransferID"
-  // in src/tools/metrics/histograms/enums.xml.
   // Table 3
   enum class TransferID : uint8_t {
     INVALID = 0,
@@ -94,7 +86,8 @@ class MEDIA_EXPORT VideoColorSpace {
 
   bool operator==(const VideoColorSpace& other) const;
   bool operator!=(const VideoColorSpace& other) const;
-  // Returns true if any of the fields have a value other
+
+  // Returns true if all of the fields have a value other
   // than INVALID or UNSPECIFIED.
   bool IsSpecified() const;
 

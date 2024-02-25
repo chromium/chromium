@@ -11,6 +11,9 @@
 
 #include "media/base/media_export.h"
 
+namespace gfx {
+class SingletonHwndObserver;
+}
 namespace media {
 
 class MEDIA_EXPORT SystemMessageWindowWin {
@@ -25,28 +28,11 @@ class MEDIA_EXPORT SystemMessageWindowWin {
   virtual LRESULT OnDeviceChange(UINT event_type, LPARAM data);
 
  private:
-  void Init();
+  void WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
-  LRESULT CALLBACK WndProc(HWND hwnd,
-                           UINT message,
-                           WPARAM wparam,
-                           LPARAM lparam);
-
-  static LRESULT CALLBACK WndProcThunk(HWND hwnd,
-                                       UINT message,
-                                       WPARAM wparam,
-                                       LPARAM lparam) {
-    SystemMessageWindowWin* msg_wnd = reinterpret_cast<SystemMessageWindowWin*>(
-        GetWindowLongPtr(hwnd, GWLP_USERDATA));
-    if (msg_wnd)
-      return msg_wnd->WndProc(hwnd, message, wparam, lparam);
-    return ::DefWindowProc(hwnd, message, wparam, lparam);
-  }
-
-  HMODULE instance_;
-  HWND window_;
   class DeviceNotifications;
   std::unique_ptr<DeviceNotifications> device_notifications_;
+  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 };
 
 }  // namespace media

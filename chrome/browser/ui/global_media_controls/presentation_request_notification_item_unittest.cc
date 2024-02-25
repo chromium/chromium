@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/test/mock_media_session.h"
 #include "services/media_session/public/cpp/media_image.h"
@@ -12,40 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class MockDevicePickerProvider
-    : public global_media_controls::mojom::DevicePickerProvider {
- public:
-  ~MockDevicePickerProvider() override { receiver_.FlushForTesting(); }
-
-  mojo::PendingRemote<global_media_controls::mojom::DevicePickerProvider>
-  PassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  MOCK_METHOD(void, CreateItem, (const base::UnguessableToken& source_id));
-  MOCK_METHOD(void, ShowItem, ());
-  MOCK_METHOD(void, HideItem, ());
-  MOCK_METHOD(void, DeleteItem, ());
-  MOCK_METHOD(void,
-              OnMetadataChanged,
-              (const media_session::MediaMetadata& metadata));
-  MOCK_METHOD(void,
-              OnArtworkImageChanged,
-              (const gfx::ImageSkia& artwork_image));
-  MOCK_METHOD(void,
-              OnFaviconImageChanged,
-              (const gfx::ImageSkia& favicon_image));
-  MOCK_METHOD(
-      void,
-      AddObserver,
-      (mojo::PendingRemote<global_media_controls::mojom::DevicePickerObserver>
-           observer));
-  MOCK_METHOD(void, HideMediaUI, ());
-
- private:
-  mojo::Receiver<global_media_controls::mojom::DevicePickerProvider> receiver_{
-      this};
-};
+using global_media_controls::test::MockDevicePickerProvider;
 
 class PresentationRequestNotificationItemTest
     : public ChromeRenderViewHostTestHarness {
@@ -66,6 +34,7 @@ class PresentationRequestNotificationItemTest
 
   void TearDown() override {
     item_.reset();
+    provider_->FlushForTesting();
     provider_.reset();
     PresentationRequestNotificationItem::SetMediaSessionForTest(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();

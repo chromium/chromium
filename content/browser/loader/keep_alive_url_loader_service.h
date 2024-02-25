@@ -5,17 +5,20 @@
 #ifndef CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_SERVICE_H_
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_SERVICE_H_
 
-#include <map>
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/weak_document_ptr.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 
 namespace content {
 
@@ -50,6 +53,77 @@ class PolicyContainerHost;
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class CONTENT_EXPORT KeepAliveURLLoaderService {
  public:
+  // A context for the receiver of a `KeepAliveURLLoaderFactoriesBase`
+  // connection between a renderer and the browser.
+  //
+  // A FactoryContext is created whenever `BindFactory()` or
+  // `BindFetchLaterLoaderFactory()` is called by
+  // RenderFrameHostImpl::CommitNavigation(). It can also be cloned by the same
+  // corresponding renderer, or when new window or new child frame is created.
+  //
+  // See `mojo::ReceiverSetBase` for more details.
+  struct CONTENT_EXPORT FactoryContext {
+    FactoryContext(
+        scoped_refptr<network::SharedURLLoaderFactory> factory,
+        scoped_refptr<PolicyContainerHost> frame_policy_container_host);
+    // Called when a factory is cloned by URLLoaderFactory::Clone().
+    explicit FactoryContext(const std::unique_ptr<FactoryContext>& other);
+    ~FactoryContext();
+    // Not Copyable.
+    FactoryContext(const FactoryContext&) = delete;
+    FactoryContext& operator=(const FactoryContext&) = delete;
+
+    // Updates `weak_document_ptr` and other document-related fields.
+    void OnDidCommitNavigation(WeakDocumentPtr committed_document);
+
+    // Updates `factory` using the given `new_factory`.
+    //
+    // Only called either
+    // (1) when DevTools tries to intercept every URLLoaderFactory
+    // (2) after network service crashes
+    //
+    // The default subresources loading, including non-keepalive fetch requests,
+    // don't go through browser. Hence, their intercepted URLLoaderFactory are
+    // updated via SubresourceLoaderUpdater::UpdateSubresourceLoaderFactories().
+    // On the other hand, calling this method can update the fetch keepalive
+    // factory directly in-browser.
+    void UpdateFactory(
+        scoped_refptr<network::SharedURLLoaderFactory> new_factory);
+
+    // The factory to use for the requests initiated from this context.
+    scoped_refptr<network::SharedURLLoaderFactory> factory;
+
+    // Upon NavigationRequest::DidCommitNavigation(), `weak_document_ptr` will
+    // be set to the document that this `BindContext` is associated with. It
+    // will become null whenever the document navigates away.
+    WeakDocumentPtr weak_document_ptr;
+
+    // The `PolicyContainerHost` of the document connecting to an implementation
+    // of `KeepAliveURLLoaderFactoriesBase` using this context.
+    //
+    // This field keeps the pointed object alive such that any pending keepalive
+    // redirect requests can still be verified against these same policies.
+    //
+    // When `this` is constructed, this field is set to the PolicyContainerHost
+    // of the requesting RenderFrameHostImpl, which may be inherited from its
+    // creator (See `RenderFrameHostImpl::InitializePolicyContainerHost()`):
+    // when a factory is cloned due to creating new window/new child frame,
+    // this field will initially inherit the same value; if the new window/new
+    // child frame commits a new document after that, this field will be updated
+    // by `OnDidCommitNavigation()`.
+    scoped_refptr<PolicyContainerHost> policy_container_host;
+
+    // Attribution responses might be processed from keep alive requests. For
+    // them to be processed, the request must have been sent from a suitable
+    // context and information from that context is needed. Upon
+    // NavigationRequest::DidCommitNavigation(), if the context is suitable,
+    // the `attribution_context` is created.
+    std::optional<AttributionSuitableContext> attribution_context;
+
+    // This must be the last member.
+    base::WeakPtrFactory<FactoryContext> weak_ptr_factory{this};
+  };
+
   // `browser_context` owns the StoragePartition creating the instance of this
   // service. It must not be null and surpass the lifetime of this service.
   explicit KeepAliveURLLoaderService(BrowserContext* browser_context);
@@ -68,11 +142,29 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   //
   // `policy_container_host` is the policy host of the requester frame going to
   // use the remote of `receiver` to load requests. It must not be null.
-  void BindFactory(
+  //
+  // Returns a `FactoryContext` bound to the new factory connecting with
+  // `receiver`. The caller can update the context when necessary.
+  base::WeakPtr<FactoryContext> BindFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<network::SharedURLLoaderFactory>
           subresource_proxying_factory_bundle,
       scoped_refptr<PolicyContainerHost> policy_container_host);
+
+  // Binds the pending FetchLaterLoaderFactory `receiver` with this service,
+  // which uses `factory` to load FetchLater URL requests.
+  // See also `BindFactory()` for other parameters. Note that the returned
+  // `FactoryContext` here is different from the one of `BindFactory()`.
+  base::WeakPtr<FactoryContext> BindFetchLaterLoaderFactory(
+      mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
+          receiver,
+      scoped_refptr<network::SharedURLLoaderFactory>
+          subresource_proxying_factory_bundle,
+      scoped_refptr<PolicyContainerHost> policy_container_host);
+
+  // Called when the `browser_context_` that owns this instance is shutting
+  // down.
+  void Shutdown();
 
   // For testing only:
   size_t NumLoadersForTesting() const;
@@ -84,7 +176,14 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
           url_loader_throttles_getter_for_testing);
 
  private:
-  class KeepAliveURLLoaderFactory;
+  template <typename Interface,
+            template <typename>
+            class PendingReceiverType,
+            template <typename, typename>
+            class ReceiverSetType>
+  class KeepAliveURLLoaderFactoriesBase;
+  class KeepAliveURLLoaderFactories;
+  class FetchLaterLoaderFactories;
 
   // Handles every disconnection notification for `loader_receivers_`.
   void OnLoaderDisconnected();
@@ -96,22 +195,12 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // The browsing session that owns this instance of the service.
   const raw_ptr<BrowserContext> browser_context_;
 
-  // Many-to-one mojo receiver of URLLoaderFactory.
-  std::unique_ptr<KeepAliveURLLoaderFactory> factory_;
+  // Many-to-one mojo receiver of URLLoaderFactory for Fetch keepalive requests.
+  std::unique_ptr<KeepAliveURLLoaderFactories> url_loader_factories_;
 
-  // Holds all the KeepAliveURLLoader connected with remotes in renderers.
-  // Each of them corresponds to the handling of one pending keepalive request.
-  // Once a receiver is disconnected, its context should be moved to
-  // `disconnected_loaders_`.
-  mojo::ReceiverSet<network::mojom::URLLoader,
-                    std::unique_ptr<KeepAliveURLLoader>>
-      loader_receivers_;
-
-  // Holds all the KeepAliveURLLoader that has been disconnected from renderers.
-  // They should be kept alive until the request completes or fails.
-  // The key is the mojo::ReceiverId assigned by `loader_receivers_`.
-  std::map<mojo::ReceiverId, std::unique_ptr<KeepAliveURLLoader>>
-      disconnected_loaders_;
+  // Many-to-one mojo receiver of FetchLaterLoaderFactory for FetchLater
+  // keepalive requests.
+  std::unique_ptr<FetchLaterLoaderFactories> fetch_later_loader_factories_;
 
   // For testing only:
   // Not owned.

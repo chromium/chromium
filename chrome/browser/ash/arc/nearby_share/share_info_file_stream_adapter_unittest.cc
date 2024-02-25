@@ -70,7 +70,7 @@ class ShareInfoFileStreamAdapterTest : public testing::Test {
 
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        /*bucket=*/absl::nullopt, storage::kFileSystemTypeTemporary,
+        /*bucket=*/std::nullopt, storage::kFileSystemTypeTemporary,
         storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindOnce([](const storage::FileSystemURL& root_url,
                           const std::string& name, base::File::Error result) {
@@ -87,8 +87,7 @@ class ShareInfoFileStreamAdapterTest : public testing::Test {
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFileWithData(
-                  file_system_context_.get(), url_, test_data_.data(),
-                  test_data_.size()));
+                  file_system_context_.get(), url_, test_data_));
   }
 
   void TearDown() override { stream_adapter_.reset(); }

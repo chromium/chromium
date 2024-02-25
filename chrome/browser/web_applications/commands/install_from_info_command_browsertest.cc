@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -37,7 +38,7 @@ class InstallFromInfoCommandTest : public WebAppControllerBrowserTest {
         });
   }
 
-  std::map<SquareSizePx, SkBitmap> ReadIcons(const AppId& app_id,
+  std::map<SquareSizePx, SkBitmap> ReadIcons(const webapps::AppId& app_id,
                                              IconPurpose purpose,
                                              const SortedSizesPx& sizes_px) {
     std::map<SquareSizePx, SkBitmap> result;
@@ -60,6 +61,7 @@ class InstallFromInfoCommandTest : public WebAppControllerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   auto info = std::make_unique<WebAppInstallInfo>();
+  base::HistogramTester tester;
   info->title = u"Test name";
   info->start_url = GURL("http://test.com/path");
 
@@ -71,12 +73,12 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
 #endif
 
   base::RunLoop loop;
-  AppId result_app_id;
+  webapps::AppId result_app_id;
   provider().scheduler().InstallFromInfo(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false, install_source,
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             result_app_id = app_id;
             loop.Quit();
@@ -84,6 +86,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   loop.Run();
 
   EXPECT_TRUE(provider().registrar_unsafe().IsActivelyInstalled(result_app_id));
+
+  // Ensure histogram is only measured once.
+  tester.ExpectBucketCount("WebApp.Install.Result", /*sample=*/true,
+                           /*expected_count=*/1);
   EXPECT_EQ(os_integration_manager()->num_create_shortcuts_calls(), 0u);
 
   const WebApp* web_app =
@@ -109,13 +115,13 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
   install_params.add_to_desktop = true;
 
   base::RunLoop loop;
-  AppId result_app_id;
+  webapps::AppId result_app_id;
   provider().scheduler().InstallFromInfoWithParams(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             EXPECT_TRUE(
                 provider().registrar_unsafe().IsActivelyInstalled(app_id));
@@ -130,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
   EXPECT_TRUE(options->add_to_quick_launch_bar);
   EXPECT_FALSE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
+    std::optional<proto::WebAppOsIntegrationState> os_state =
         provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
             result_app_id);
     ASSERT_TRUE(os_state.has_value());
@@ -148,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest,
   os_integration_manager()->SetShortcutManager(std::move(shortcut_manager));
 
   GURL old_app_url("http://old-app.com");
-  const AppId old_app =
+  const webapps::AppId old_app =
       test::InstallDummyWebApp(profile(), "old_app", old_app_url);
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->url = old_app_url;
@@ -171,12 +177,12 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest,
   install_params.add_to_desktop = true;
 
   base::RunLoop loop;
-  AppId result_app_id;
+  webapps::AppId result_app_id;
   provider().scheduler().InstallFromInfoWithParams(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      base::BindLambdaForTesting([&](const AppId& app_id,
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id,
                                      webapps::InstallResultCode code,
                                      bool did_uninstall_and_replace) {
         EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -193,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest,
   EXPECT_TRUE(options->add_to_quick_launch_bar);
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
+    std::optional<proto::WebAppOsIntegrationState> os_state =
         provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
             result_app_id);
     ASSERT_TRUE(os_state.has_value());

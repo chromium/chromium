@@ -176,7 +176,7 @@ void OpenDeviceAsync(const base::FilePath& device_path,
 
 struct DisplayCard {
   base::FilePath path;
-  absl::optional<std::string> driver;
+  std::optional<std::string> driver;
 };
 
 std::vector<DisplayCard> GetValidDisplayCards() {
@@ -240,7 +240,6 @@ base::FilePath GetPrimaryDisplayCardPath() {
   }
 
   LOG(FATAL) << "Failed to open primary graphics device.";
-  return base::FilePath();  // Not reached.
 }
 
 }  // namespace
@@ -268,7 +267,6 @@ DrmDisplayHostManager::DrmDisplayHostManager(
                                         /*is_primary_device=*/true);
     if (!primary_drm_device_) {
       LOG(FATAL) << "Failed to open primary graphics card";
-      return;
     }
     host_properties->supports_overlays = primary_drm_device_->is_atomic();
     drm_devices_[primary_graphics_card_path_] =
@@ -634,7 +632,7 @@ void DrmDisplayHostManager::GpuTookDisplayControl(bool status) {
   DCHECK(display_control_change_pending_);
 
   if (status) {
-    input_controller_->SetInputDevicesEnabled(true);
+    scoped_input_devices_disabler_.reset();
     display_externally_controlled_ = false;
   }
 
@@ -655,7 +653,7 @@ void DrmDisplayHostManager::GpuRelinquishedDisplayControl(bool status) {
   DCHECK(display_control_change_pending_);
 
   if (status) {
-    input_controller_->SetInputDevicesEnabled(false);
+    scoped_input_devices_disabler_ = input_controller_->DisableInputDevices();
     display_externally_controlled_ = true;
   }
 
@@ -677,7 +675,7 @@ void DrmDisplayHostManager::GpuShouldDisplayEventTriggerConfiguration(
 
 void DrmDisplayHostManager::RunUpdateDisplaysCallback(
     display::GetDisplaysCallback callback) const {
-  std::vector<display::DisplaySnapshot*> snapshots;
+  std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>> snapshots;
   for (const auto& display : displays_)
     snapshots.push_back(display->snapshot());
 

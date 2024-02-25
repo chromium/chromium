@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/ext/skcolorspace_trfn.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -106,6 +107,15 @@ bool PrimaryIdContainsSRGB(ColorSpace::PrimaryID id) {
   }
 }
 
+float GetSDRWhiteLevelFromPQSkTransferFunction(
+    const skcms_TransferFunction& fn) {
+  DCHECK_EQ(fn.g, SkNamedTransferFn::kPQ.g);
+  const double ws_a = static_cast<double>(fn.a) / SkNamedTransferFn::kPQ.a;
+  const double w_a = pow(ws_a, fn.f);
+  const double sdr_white_level_a = 10000.0f / w_a;
+  return sdr_white_level_a;
+}
+
 }  // namespace
 
 // static
@@ -143,6 +153,7 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
     transfer_ = TransferID::HLG;
   } else if (skcms_TransferFunction_isPQish(&fn)) {
     transfer_ = TransferID::PQ;
+    transfer_params_[0] = GetSDRWhiteLevelFromPQSkTransferFunction(fn);
   } else {
     // Construct an invalid result: Unable to extract necessary parameters
     return;
@@ -299,6 +310,8 @@ size_t ColorSpace::TransferParamCount(TransferID transfer) {
       return 7;
     case TransferID::PIECEWISE_HDR:
       return 2;
+    case TransferID::PQ:
+      return 1;
     default:
       return 0;
   }
@@ -517,8 +530,7 @@ std::string ColorSpace::ToString() const {
     case TransferID::CUSTOM: {
       skcms_TransferFunction fn;
       GetTransferFunction(&fn);
-      ss << fn.c << "*x + " << fn.f << " if x < " << fn.d << " else (" << fn.a
-         << "*x + " << fn.b << ")**" << fn.g << " + " << fn.e;
+      ss << skia::SkcmsTransferFunctionToString(fn);
       break;
     }
     case TransferID::CUSTOM_HDR: {
@@ -529,8 +541,7 @@ std::string ColorSpace::ToString() const {
         ss << "LINEAR_HDR (slope " << fn.a << ")";
         break;
       }
-      ss << fn.c << "*x + " << fn.f << " if |x| < " << fn.d << " else sign(x)*("
-         << fn.a << "*|x| + " << fn.b << ")**" << fn.g << " + " << fn.e;
+      ss << skia::SkcmsTransferFunctionToString(fn);
       break;
     }
     case TransferID::PIECEWISE_HDR: {
@@ -649,8 +660,15 @@ ColorSpace ColorSpace::GetWithMatrixAndRange(MatrixID matrix,
   return result;
 }
 
+ColorSpace ColorSpace::GetWithSdrWhiteLevel(float sdr_white_level) const {
+  if (!IsAffectedBySDRWhiteLevel())
+    return *this;
+
+  return gfx::ColorSpace(*ToSkColorSpace(sdr_white_level), /*is_hdr=*/true);
+}
+
 sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
-    absl::optional<float> sdr_white_level) const {
+    std::optional<float> sdr_white_level) const {
   // Handle only valid, full-range RGB spaces.
   if (!IsValid() || matrix_ != MatrixID::RGB || range_ != RangeID::FULL)
     return nullptr;
@@ -677,7 +695,7 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
       break;
     case TransferID::PQ:
       transfer_fn = GetPQSkTransferFunction(
-          sdr_white_level.value_or(kDefaultSDRWhiteLevel));
+          sdr_white_level.value_or(transfer_params_[0]));
       break;
     default:
       if (!GetTransferFunction(&transfer_fn, sdr_white_level)) {
@@ -876,7 +894,7 @@ void ColorSpace::GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const {
 SkM44 ColorSpace::GetPrimaryMatrix() const {
   skcms_Matrix3x3 toXYZ_3x3;
   GetPrimaryMatrix(&toXYZ_3x3);
-  return SkM44FromRowMajor3x3(&toXYZ_3x3.vals[0][0]);
+  return SkM44FromSkcmsMatrix3x3(toXYZ_3x3);
 }
 
 // static
@@ -956,7 +974,7 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
 
 bool ColorSpace::GetTransferFunction(
     skcms_TransferFunction* fn,
-    absl::optional<float> sdr_white_level) const {
+    std::optional<float> sdr_white_level) const {
   switch (transfer_) {
     case TransferID::CUSTOM:
     case TransferID::CUSTOM_HDR:
@@ -990,7 +1008,7 @@ bool ColorSpace::GetTransferFunction(
 
 bool ColorSpace::GetInverseTransferFunction(
     skcms_TransferFunction* fn,
-    absl::optional<float> sdr_white_level) const {
+    std::optional<float> sdr_white_level) const {
   if (!GetTransferFunction(fn, sdr_white_level))
     return false;
   *fn = SkTransferFnInverse(*fn);

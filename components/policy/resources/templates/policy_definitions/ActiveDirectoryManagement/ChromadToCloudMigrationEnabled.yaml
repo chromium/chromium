@@ -1,4 +1,5 @@
 caption: Enable the migration of Chromad devices into cloud management
+deprecated: true
 default: false
 desc: |-
   Enable the migration of <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed devices into cloud management. This policy allows for a remote start of a touchless migration of multiple devices in a company. Additionally, the migration will be as transparent as possible to the end users.
@@ -24,9 +25,7 @@ owners:
 - file://chrome/browser/ash/authpolicy/OWNERS
 schema:
   type: boolean
-supported_chrome_os_management:
-- active_directory
 supported_on:
-- chrome_os:98-
+- chrome_os:98-114
 tags: []
 type: main

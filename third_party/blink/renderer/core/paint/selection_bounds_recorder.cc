@@ -132,8 +132,8 @@ SelectionBoundsRecorder::~SelectionBoundsRecorder() {
   if (state_ == SelectionState::kInside)
     return;
 
-  absl::optional<PaintedSelectionBound> start;
-  absl::optional<PaintedSelectionBound> end;
+  std::optional<PaintedSelectionBound> start;
+  std::optional<PaintedSelectionBound> end;
   gfx::Rect selection_rect = ToPixelSnappedRect(selection_rect_);
   const bool is_ltr = IsLtr(text_direction_);
   BoundEdges edges = GetBoundEdges(writing_mode_, is_ltr);

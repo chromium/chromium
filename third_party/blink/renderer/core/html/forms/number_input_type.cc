@@ -96,10 +96,6 @@ void NumberInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeNumber);
 }
 
-const AtomicString& NumberInputType::FormControlType() const {
-  return input_type_names::kNumber;
-}
-
 void NumberInputType::SetValue(const String& sanitized_value,
                                bool value_changed,
                                TextFieldEventBehavior event_behavior,
@@ -343,6 +339,13 @@ String NumberInputType::RangeOverflowText(const Decimal& maximum) const {
 String NumberInputType::RangeUnderflowText(const Decimal& minimum) const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_UNDERFLOW,
                                  LocalizeValue(Serialize(minimum)));
+}
+
+String NumberInputType::RangeInvalidText(const Decimal& minimum,
+                                         const Decimal& maximum) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_REVERSED,
+                                 LocalizeValue(Serialize(minimum)),
+                                 LocalizeValue(Serialize(maximum)));
 }
 
 bool NumberInputType::SupportsPlaceholder() const {

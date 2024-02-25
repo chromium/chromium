@@ -1,0 +1,56 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  srcjar_deps = [ ":device_lock_bridge_jni_headers" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockActivityLauncher.java",
+    "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockActivityLauncherSupplier.java",
+    "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockBridge.java",
+    "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockDialogMetrics.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "device_lock_bridge.cc",
+    "device_lock_bridge.h",
+  ]
+
+  deps = [
+    ":device_lock_bridge_jni_headers",
+    "//base",
+    "//ui/android:android",
+  ]
+}
+
+generate_jni("device_lock_bridge_jni_headers") {
+  sources = [ "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockBridge.java" ]
+}
+
+source_set("test_support") {
+  sources = [
+    "test_device_lock_bridge.cc",
+    "test_device_lock_bridge.h",
+  ]
+
+  deps = [
+    ":android",
+    ":device_lock_bridge_jni_headers",
+    "//base",
+    "//ui/android:android",
+  ]
+}

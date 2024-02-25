@@ -5,13 +5,12 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_UTIL_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -20,6 +19,10 @@
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace chromeos {
+class FrameHeader;
+}  // namespace chromeos
 
 namespace gfx {
 class PointF;
@@ -182,12 +185,12 @@ struct AnimationParams {
 // `target_visibility` is different than the current.
 bool SetWidgetVisibility(views::Widget* widget,
                          bool target_visibility,
-                         absl::optional<AnimationParams> animation_params);
+                         std::optional<AnimationParams> animation_params);
 
 // Gets the root window associated with `location_in_screen` if given, otherwise
 // gets the root window associated with the `CursorManager`.
 aura::Window* GetPreferredRootWindow(
-    absl::optional<gfx::Point> location_in_screen = absl::nullopt);
+    std::optional<gfx::Point> location_in_screen = std::nullopt);
 
 // Configures style for the `label_view` in the settings menu.
 void ConfigLabelView(views::Label* label_view);
@@ -218,6 +221,14 @@ ASH_EXPORT gfx::Rect CalculateHighlightLayerBounds(
 void SetHighlightBorder(views::View* view,
                         int corner_radius,
                         views::HighlightBorder::Type type);
+
+// Returns the frame header of the given `window` if any, nullptr otherwise.
+ASH_EXPORT chromeos::FrameHeader* GetWindowFrameHeader(aura::Window* window);
+
+// Returns the bounds within which the on-capture-surface UI elements (e.g. the
+// selfie camera, or the demo tools key combo widgets) will be confined, when
+// the given non-root `window` is being captured.
+ASH_EXPORT gfx::Rect GetCaptureWindowConfineBounds(aura::Window* window);
 
 }  // namespace capture_mode_util
 

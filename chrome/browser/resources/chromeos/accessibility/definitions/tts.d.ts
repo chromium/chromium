@@ -67,6 +67,8 @@ declare global {
       export function getVoices(callback?: (param: TtsVoice[]) => void): void;
 
       export const onEvent: ChromeEvent<(event: TtsEvent) => void>;
+
+      export const onVoicesChanged: ChromeEvent<() => void>;
     }
   }
 }

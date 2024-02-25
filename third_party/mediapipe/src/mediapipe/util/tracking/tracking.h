@@ -26,12 +26,13 @@
 #include <vector>
 
 #include "absl/container/flat_hash_set.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/tracking/flow_packager.pb.h"
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/motion_models.pb.h"
 #include "mediapipe/util/tracking/tracking.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -315,8 +316,8 @@ class MotionBox {
   MotionBoxState StateAtFrame(int frame) const {
     if (frame < queue_start_ ||
         frame >= queue_start_ + static_cast<int>(states_.size())) {
-      LOG(ERROR) << "Requesting state at unknown frame " << frame
-                 << ". Returning UNTRACKED.";
+      ABSL_LOG(ERROR) << "Requesting state at unknown frame " << frame
+                      << ". Returning UNTRACKED.";
       MotionBoxState invalid;
       invalid.set_track_status(MotionBoxState::BOX_UNTRACKED);
       return invalid;
@@ -561,7 +562,7 @@ class MotionBox {
       // Filter out abnormal homography. Otherwise the determinant of
       // projected affine matrix will be negative.
       if (!IsInverseStable(homography)) {
-        LOG(WARNING) << "Homography matrix is not stable.";
+        ABSL_LOG(WARNING) << "Homography matrix is not stable.";
         return false;
       }
 

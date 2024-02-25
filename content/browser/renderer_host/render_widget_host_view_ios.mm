@@ -8,19 +8,22 @@
 
 #include <cstdint>
 
+#include "base/command_line.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_ios.h"
-#include "content/browser/renderer_host/input/web_input_event_builders_ios.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/input/web_input_event_builders_ios.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/common/content_switches.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -28,10 +31,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/size_conversions.h"
-
-// Used for settng the requested renderer size when testing.
-constexpr int kDefaultWidthForTesting = 980;
-constexpr int kDefaultHeightForTesting = 735;
 
 static void* kObservingContext = &kObservingContext;
 
@@ -46,9 +45,23 @@ static void* kObservingContext = &kObservingContext;
 @end
 
 namespace {
+
+// Used for setting the requested renderer size when testing.
+constexpr gfx::Size kDefaultSizeForTesting = gfx::Size(800, 600);
+constexpr gfx::Size KDefaultSizeForPreventResizingForTesting =
+    gfx::Size(980, 735);
+
 bool IsTesting() {
   return [[UIApplication sharedApplication] isRunningTests];
 }
+
+gfx::Rect GetDefaultSizeForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kPreventResizingContentsForTesting)
+             ? gfx::Rect(KDefaultSizeForPreventResizingForTesting)
+             : gfx::Rect(kDefaultSizeForTesting);
+}
+
 }  // namespace
 
 // TODO(dtapuska): Change this to be UITextInput and handle the other
@@ -65,7 +78,7 @@ bool IsTesting() {
 
 @interface RenderWidgetUIView : CALayerFrameSinkProvider {
   base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
-  absl::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
+  std::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
 }
 
 // TextInput state.
@@ -104,7 +117,8 @@ bool IsTesting() {
     // policy is manual.
     if (state.last_vk_visibility_request ==
         ui::mojom::VirtualKeyboardVisibilityRequest::SHOW) {
-      [self showKeyboard:!state.value->empty() withBounds:bounds];
+      [self showKeyboard:(state.value && !state.value->empty())
+              withBounds:bounds];
     } else if (state.last_vk_visibility_request ==
                ui::mojom::VirtualKeyboardVisibilityRequest::HIDE) {
       [self hideKeyboard];
@@ -116,7 +130,8 @@ bool IsTesting() {
     if (hide) {
       [self hideKeyboard];
     } else if (state.show_ime_if_needed) {
-      [self showKeyboard:!state.value->empty() withBounds:bounds];
+      [self showKeyboard:(state.value && !state.value->empty())
+              withBounds:bounds];
     }
   }
 }
@@ -347,7 +362,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       host()->GetFrameSinkId());
 
   if (IsTesting()) {
-    view_bounds_ = gfx::Rect(kDefaultWidthForTesting, kDefaultHeightForTesting);
+    view_bounds_ = GetDefaultSizeForTesting();
     browser_compositor_->UpdateSurfaceFromUIView(GetViewBounds().size());
   }
 
@@ -429,13 +444,14 @@ bool RenderWidgetHostViewIOS::HasFocus() {
 gfx::Rect RenderWidgetHostViewIOS::GetViewBounds() {
   return view_bounds_;
 }
-blink::mojom::PointerLockResult RenderWidgetHostViewIOS::LockMouse(bool) {
+blink::mojom::PointerLockResult RenderWidgetHostViewIOS::LockPointer(bool) {
   return {};
 }
-blink::mojom::PointerLockResult RenderWidgetHostViewIOS::ChangeMouseLock(bool) {
+blink::mojom::PointerLockResult RenderWidgetHostViewIOS::ChangePointerLock(
+    bool) {
   return {};
 }
-void RenderWidgetHostViewIOS::UnlockMouse() {}
+void RenderWidgetHostViewIOS::UnlockPointer() {}
 
 uint32_t RenderWidgetHostViewIOS::GetCaptureSequenceNumber() const {
   return latest_capture_sequence_number_;
@@ -458,6 +474,12 @@ RenderWidgetHostViewIOS::CreateSyntheticGestureTarget() {
 
 const viz::LocalSurfaceId& RenderWidgetHostViewIOS::GetLocalSurfaceId() const {
   return browser_compositor_->GetRendererLocalSurfaceId();
+}
+
+void RenderWidgetHostViewIOS::UpdateFrameSinkIdRegistration() {
+  RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
+  browser_compositor_->GetDelegatedFrameHost()->SetIsFrameSinkIdOwner(
+      is_frame_sink_id_owner());
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewIOS::GetFrameSinkId() const {
@@ -509,9 +531,29 @@ void RenderWidgetHostViewIOS::ShowWithVisibility(
 
 void RenderWidgetHostViewIOS::NotifyHostAndDelegateOnWasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  // SetRenderWidgetHostIsHidden may cause a state transition that switches to
+  // a new instance of DelegatedFrameHost and calls WasShown, which causes
+  // HasSavedFrame to always return true. So cache the HasSavedFrame result
+  // before the transition, and do not save this DelegatedFrameHost* locally.
+  bool has_saved_frame =
+      browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame();
+
   browser_compositor_->SetRenderWidgetHostIsHidden(false);
 
-  host()->WasShown(blink::mojom::RecordContentToVisibleTimeRequestPtr());
+  const bool renderer_should_record_presentation_time = !has_saved_frame;
+  host()->WasShown(renderer_should_record_presentation_time
+                       ? visible_time_request.Clone()
+                       : blink::mojom::RecordContentToVisibleTimeRequestPtr());
+
+  // If the frame for the renderer is already available, then the
+  // tab-switching time is the presentation time for the browser-compositor.
+  // SetRenderWidgetHostIsHidden above will show the DelegatedFrameHost
+  // in this state, but doesn't include the presentation time request.
+  if (has_saved_frame && visible_time_request) {
+    browser_compositor_->GetDelegatedFrameHost()
+        ->RequestSuccessfulPresentationTimeForNextFrame(
+            std::move(visible_time_request));
+  }
 }
 
 void RenderWidgetHostViewIOS::Hide() {
@@ -528,6 +570,10 @@ void RenderWidgetHostViewIOS::Hide() {
 }
 
 bool RenderWidgetHostViewIOS::IsShowing() {
+  // In testing, `view_` is not attached to the window.
+  if (IsTesting()) {
+    return is_visible_;
+  }
   return is_visible_ && [ui_view_->view_ window];
 }
 
@@ -539,8 +585,8 @@ gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
   return GetViewBounds().size();
 }
 
-absl::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
-  return absl::nullopt;
+std::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
+  return std::nullopt;
 }
 void RenderWidgetHostViewIOS::SetDisplayFeatureForTesting(
     const DisplayFeature* display_feature) {}
@@ -550,12 +596,24 @@ void RenderWidgetHostViewIOS::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
         blink::mojom::RecordContentToVisibleTimeRequestPtr
             visible_time_request) {
-  host()->RequestSuccessfulPresentationTimeForNextFrame(
-      std::move(visible_time_request));
+  // No state transition here so don't use
+  // has_saved_frame_before_state_transition.
+  if (browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame()) {
+    // If the frame for the renderer is already available, then the
+    // tab-switching time is the presentation time for the browser-compositor.
+    browser_compositor_->GetDelegatedFrameHost()
+        ->RequestSuccessfulPresentationTimeForNextFrame(
+            std::move(visible_time_request));
+  } else {
+    host()->RequestSuccessfulPresentationTimeForNextFrame(
+        std::move(visible_time_request));
+  }
 }
 void RenderWidgetHostViewIOS::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
   host()->CancelSuccessfulPresentationTimeRequest();
+  browser_compositor_->GetDelegatedFrameHost()
+      ->CancelSuccessfulPresentationTimeRequest();
 }
 
 SkColor RenderWidgetHostViewIOS::BrowserCompositorIOSGetGutterColor() {
@@ -605,10 +663,16 @@ void RenderWidgetHostViewIOS::UpdateCALayerTree(
   display_tree_->UpdateCALayerTree(ca_layer_params);
 }
 
-void RenderWidgetHostViewIOS::DidNavigateMainFramePreCommit() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+void RenderWidgetHostViewIOS::OnOldViewDidNavigatePreCommit() {
+  if (base::FeatureList::IsEnabled(
+          features::kInvalidateLocalSurfaceIdPreCommit)) {
+    CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+    browser_compositor_->DidNavigateMainFramePreCommit();
+  }
+}
+
+void RenderWidgetHostViewIOS::OnNewViewDidNavigatePostCommit() {
   gesture_provider_.ResetDetection();
-  browser_compositor_->DidNavigateMainFramePreCommit();
 }
 
 void RenderWidgetHostViewIOS::DidEnterBackForwardCache() {
@@ -675,6 +739,10 @@ void RenderWidgetHostViewIOS::TransformPointToRootSurface(gfx::PointF* point) {
   browser_compositor_->TransformPointToRootSurface(point);
 }
 
+bool RenderWidgetHostViewIOS::HasFallbackSurface() const {
+  return browser_compositor_->GetDelegatedFrameHost()->HasFallbackSurface();
+}
+
 bool RenderWidgetHostViewIOS::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     RenderWidgetHostViewBase* target_view,
@@ -713,7 +781,7 @@ void RenderWidgetHostViewIOS::SetActive(bool active) {
   // if (HasFocus())
   //  SetTextInputActive(active);
   if (!active) {
-    UnlockMouse();
+    UnlockPointer();
   }
 }
 
@@ -816,13 +884,25 @@ void RenderWidgetHostViewIOS::InjectGestureEvent(
 void RenderWidgetHostViewIOS::InjectMouseEvent(
     const blink::WebMouseEvent& web_mouse,
     const ui::LatencyInfo& latency_info) {
-  NOTIMPLEMENTED();
+  if (ShouldRouteEvents()) {
+    blink::WebMouseEvent mouse_event(web_mouse);
+    host()->delegate()->GetInputEventRouter()->RouteMouseEvent(
+        this, &mouse_event, latency_info);
+  } else {
+    host()->ForwardMouseEventWithLatencyInfo(web_mouse, latency_info);
+  }
 }
 
 void RenderWidgetHostViewIOS::InjectMouseWheelEvent(
     const blink::WebMouseWheelEvent& web_wheel,
     const ui::LatencyInfo& latency_info) {
-  NOTIMPLEMENTED();
+  if (ShouldRouteEvents()) {
+    blink::WebMouseWheelEvent mouse_wheel_event(web_wheel);
+    host()->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
+        this, &mouse_wheel_event, latency_info);
+  } else {
+    host()->ForwardWheelEventWithLatencyInfo(web_wheel, latency_info);
+  }
 }
 
 bool RenderWidgetHostViewIOS::CanBecomeFirstResponderForTesting() const {
@@ -913,8 +993,11 @@ ui::Compositor* RenderWidgetHostViewIOS::GetCompositor() {
 
 void RenderWidgetHostViewIOS::GestureEventAck(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
+  // Stop flinging if a GSU event with momentum phase is sent to the renderer
+  // but not consumed.
+  StopFlingingIfNecessary(event, ack_result);
+
   UIScrollView* scrollView = (UIScrollView*)[ui_view_->view_ superview];
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kGestureScrollBegin:
@@ -925,10 +1008,11 @@ void RenderWidgetHostViewIOS::GestureEventAck(
       [[scrollView delegate] scrollViewWillBeginDragging:scrollView];
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
-      if (scroll_result_data && scroll_result_data->root_scroll_offset) {
-        ApplyRootScrollOffsetChanged(*scroll_result_data->root_scroll_offset,
-                                     /*force=*/false);
-      }
+      // TODO(crbug.com/1458640): Since ScrollResultData has been removed from
+      // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here
+      // has also been eliminated for now. We should address the
+      // GestureScrollUpdate event after examining how the bug implements
+      // GestureEventAck.
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd: {
       // Make sure our cached view bounds gets updated.
@@ -955,12 +1039,11 @@ void RenderWidgetHostViewIOS::GestureEventAck(
 
 void RenderWidgetHostViewIOS::ChildDidAckGestureEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
-  if (scroll_result_data && scroll_result_data->root_scroll_offset) {
-    ApplyRootScrollOffsetChanged(*scroll_result_data->root_scroll_offset,
-                                 /*force=*/false);
-  }
+    blink::mojom::InputEventResultState ack_result) {
+  // TODO(crbug.com/1458640): Since ScrollResultData has been removed from
+  // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here has
+  // also been eliminated for now. We should address the GestureScrollUpdate
+  // event after examining how the bug implements GestureEventAck.
 }
 
 void RenderWidgetHostViewIOS::UpdateFrameBounds() {

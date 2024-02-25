@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/auth/arc_auth_service.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -52,7 +53,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -122,7 +122,7 @@ mojom::AccountInfoPtr CreateAccountInfo(bool is_enforced,
   account_info->account_name = account_name;
 
   if (!is_enforced) {
-    account_info->auth_code = absl::nullopt;
+    account_info->auth_code = std::nullopt;
   } else {
     account_info->auth_code = auth_info;
   }

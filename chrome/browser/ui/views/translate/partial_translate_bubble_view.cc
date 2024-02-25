@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -82,21 +83,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-
-// Container for |advanced_view_|. When the text on the "Translate"/"Done"
-// button changes a layout is required.
-class AdvancedViewContainer : public views::View {
- public:
-  METADATA_HEADER(AdvancedViewContainer);
-  AdvancedViewContainer() = default;
-  AdvancedViewContainer(const AdvancedViewContainer&) = delete;
-  AdvancedViewContainer& operator=(const AdvancedViewContainer&) = delete;
-
-  void ChildPreferredSizeChanged(views::View* child) override { Layout(); }
-};
-
-BEGIN_METADATA(AdvancedViewContainer, views::View)
-END_METADATA
 
 bool UseGoogleTranslateBranding() {
   // Only use Google Translate branding in Chrome branded builds.
@@ -247,8 +233,9 @@ void PartialTranslateBubbleView::WindowClosing() {
   // We have to reset the controller reference to the view here, not in our
   // destructor, because we'll be destroyed asynchronously and the shown state
   // will be checked before then.
-  if (on_closing_)
+  if (on_closing_) {
     std::move(on_closing_).Run();
+  }
 }
 
 bool PartialTranslateBubbleView::AcceleratorPressed(
@@ -283,8 +270,9 @@ bool PartialTranslateBubbleView::AcceleratorPressed(
 
 gfx::Size PartialTranslateBubbleView::CalculatePreferredSize() const {
   int width = 0;
-  for (const views::View* child : children())
+  for (const views::View* child : children()) {
     width = std::max(width, child->GetPreferredSize().width());
+  }
   return gfx::Size(width, GetCurrentView()->GetPreferredSize().height());
 }
 
@@ -375,9 +363,10 @@ PartialTranslateBubbleView::PartialTranslateBubbleView(
   previous_source_language_index_ = model_->GetSourceLanguageIndex();
   previous_target_language_index_ = model_->GetTargetLanguageIndex();
 
-  if (web_contents)  // web_contents can be null in unit_tests.
+  if (web_contents) {  // web_contents can be null in unit_tests.
     mouse_handler_ =
         std::make_unique<WebContentMouseHandler>(this, web_contents);
+  }
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetFootnoteView(CreateWordmarkView());
   SetProperty(views::kElementIdentifierKey, kIdentifier);
@@ -480,12 +469,13 @@ void PartialTranslateBubbleView::TargetLanguageChanged() {
 }
 
 void PartialTranslateBubbleView::UpdateChildVisibilities() {
-  for (views::View* view : children())
+  for (views::View* view : children()) {
     view->SetVisible(view == GetCurrentView());
+  }
 
   // BoxLayout only considers visible children, so ensure any newly visible
   // child views are positioned correctly.
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 std::unique_ptr<views::View> PartialTranslateBubbleView::CreateEmptyPane() {
@@ -807,9 +797,8 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewAdvanced(
   const int horizontal_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
 
-  auto view = std::make_unique<AdvancedViewContainer>();
-  auto* layout = view->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->set_between_child_spacing(horizontal_spacing);
+  auto view = std::make_unique<views::BoxLayoutView>();
+  view->SetBetweenChildSpacing(horizontal_spacing);
 
   std::unique_ptr<views::ImageView> language_icon = CreateTranslateIcon();
   if (!UseGoogleTranslateBranding()) {
@@ -823,14 +812,15 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewAdvanced(
     icon_view->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(vertical_spacing, 0));
   }
-  auto* form_view = view->AddChildView(std::make_unique<views::View>());
+  auto* form_view = view->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(vertical_spacing)
+          .Build());
   // Stretch |form_view| to fit the rest of bubble's width. Note that because no
   // other view has flex set, the flex argument here can be any positive
   // integer.
-  layout->SetFlexForView(form_view, 1);
-  form_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      vertical_spacing));
+  view->SetFlexForView(form_view, 1);
 
   language_title_label->SetProperty(
       views::kMarginsKey,
@@ -878,10 +868,7 @@ PartialTranslateBubbleView::CreateTranslateIcon() {
   const int language_icon_id = IDR_TRANSLATE_BUBBLE_ICON;
   std::unique_ptr<views::ImageView> language_icon =
       std::make_unique<views::ImageView>();
-  gfx::ImageSkia* language_icon_image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          language_icon_id);
-  language_icon->SetImage(*language_icon_image);
+  language_icon->SetImage(ui::ImageModel::FromResourceId(language_icon_id));
   return language_icon;
 }
 
@@ -951,11 +938,13 @@ void PartialTranslateBubbleView::SetWindowTitle(
 
 void PartialTranslateBubbleView::ComputeLargestViewStateWidth() {
   for (views::View* view : children()) {
-    if (view == translate_view_)
+    if (view == translate_view_) {
       continue;
+    }
     int width = view->GetPreferredSize().width();
-    if (width > largest_view_state_width_)
+    if (width > largest_view_state_width_) {
       largest_view_state_width_ = width;
+    }
   }
 }
 
@@ -1051,29 +1040,15 @@ void PartialTranslateBubbleView::AnnounceForAccessibility(
     std::u16string full_text = l10n_util::GetStringFUTF16(
         IDS_CONCAT_TWO_STRINGS_WITH_COMMA, base_text, model_->GetTargetText());
 
-#if BUILDFLAG(IS_MAC)
-    partial_text_label_->GetViewAccessibility().OverrideName(full_text);
-    partial_text_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                  true);
-#else
     if (target_language_changed_) {
       partial_text_label_->GetViewAccessibility().AnnounceText(full_text);
     } else {
       partial_text_label_->GetViewAccessibility().AnnounceText(base_text);
     }
-#endif
   } else if (view_state == PartialTranslateBubbleModel::VIEW_STATE_ERROR) {
-#if BUILDFLAG(IS_MAC)
-    partial_text_label_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(
-            IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE));
-    partial_text_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                  true);
-#else
     partial_text_label_->GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(
             IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE));
-#endif
   }
 }
 void PartialTranslateBubbleView::SwitchTabForViewState(
@@ -1118,7 +1093,7 @@ void PartialTranslateBubbleView::UpdateAdvancedView() {
         changed ? IDS_TRANSLATE_BUBBLE_ACCEPT : IDS_DONE));
     advanced_reset_button_target_->SetEnabled(changed);
   }
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void PartialTranslateBubbleView::UpdateInsets(
@@ -1165,3 +1140,6 @@ void PartialTranslateBubbleView::SetTextAlignmentForLocaleTextDirection(
         gfx::HorizontalAlignment::ALIGN_RIGHT);
   }
 }
+
+BEGIN_METADATA(PartialTranslateBubbleView)
+END_METADATA

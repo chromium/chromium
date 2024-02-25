@@ -25,9 +25,9 @@ namespace hud_display {
 
 // Draws opaque reference lines on top of the graphs.
 class ReferenceLines : public views::View {
- public:
-  METADATA_HEADER(ReferenceLines);
+  METADATA_HEADER(ReferenceLines, views::View)
 
+ public:
   // |left|, |top|, |right|, |bottom| are labels to be attached to the axes.
   // |x_unit|, |y_unit| - dimentional labels, like "s", "Gb", ...
   // To draw horizontal ticks, graph data is assumed to have
@@ -50,7 +50,7 @@ class ReferenceLines : public views::View {
   ~ReferenceLines() override;
 
   // views::View
-  void Layout() override;
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   // The following methods update reference line parameters.
@@ -80,14 +80,10 @@ class ReferenceLines : public views::View {
   float vertical_ticks_interval_ = 0;
 
   // Graph labels
-  raw_ptr<views::Label, ExperimentalAsh> right_top_label_ =
-      nullptr;  // not owned
-  raw_ptr<views::Label, ExperimentalAsh> right_middle_label_ =
-      nullptr;  // not owned
-  raw_ptr<views::Label, ExperimentalAsh> right_bottom_label_ =
-      nullptr;  // not owned
-  raw_ptr<views::Label, ExperimentalAsh> left_bottom_label_ =
-      nullptr;  // not owned
+  raw_ptr<views::Label> right_top_label_ = nullptr;     // not owned
+  raw_ptr<views::Label> right_middle_label_ = nullptr;  // not owned
+  raw_ptr<views::Label> right_bottom_label_ = nullptr;  // not owned
+  raw_ptr<views::Label> left_bottom_label_ = nullptr;   // not owned
 };
 
 }  // namespace hud_display

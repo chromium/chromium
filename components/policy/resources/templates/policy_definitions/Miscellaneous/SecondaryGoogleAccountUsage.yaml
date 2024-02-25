@@ -1,6 +1,8 @@
 caption: Add restrictions on a managed account's usage as a secondary account on ChromeOS
 default: all
+deprecated: true
 desc: |-
+  Removed in M122 - this is a server-side-only policy that never used the ChromeOS policy infrastructure for its propagation.
   If this policy is set to <ph name="POLICY_VALUE_ALL">'all'</ph> or not set, all usages of managed accounts are allowed. This may result in a managed account being a secondary account, which would only receive policies when the account is signed-in as a primary account in a browser Profile.
         Policies set to the account won't be enforced in the following scenarios:
           -  Being a secondary account at the OS level (Account Settings)
@@ -28,6 +30,6 @@ schema:
   - primary_account_signin
   type: string
 supported_on:
-- chrome_os:103-
+- chrome_os:103-121
 tags: []
 type: string-enum

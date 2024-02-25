@@ -41,8 +41,9 @@ const char kRealTimeUrlChecksAllowlistManifestName[] =
 
 void LoadFromDisk(const base::FilePath& pb_path) {
   base::UmaHistogramBoolean(kInstallerLoadFromDiskPbFileEmpty, pb_path.empty());
-  if (pb_path.empty())
+  if (pb_path.empty()) {
     return;
+  }
 
   std::string binary_pb;
   if (!base::ReadFileToString(pb_path, &binary_pb)) {

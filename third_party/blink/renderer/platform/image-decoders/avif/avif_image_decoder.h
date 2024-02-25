@@ -36,7 +36,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   bool ImageIsHighBitDepth() override;
-  void OnSetData(SegmentReader* data) override;
+  void OnSetData(scoped_refptr<SegmentReader> data) override;
   bool GetGainmapInfoAndData(
       SkGainmapInfo& out_gainmap_info,
       scoped_refptr<SegmentReader>& out_gainmap_data) const override;
@@ -45,11 +45,11 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   uint8_t GetYUVBitDepth() const override;
-  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   void DecodeToYUV() override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
-  absl::optional<base::TimeDelta> FrameTimestampAtIndex(
+  std::optional<base::TimeDelta> FrameTimestampAtIndex(
       wtf_size_t) const override;
   base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
   bool ImageHasBothStillAndAnimatedSubImages() const override;
@@ -76,10 +76,11 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
   struct AvifIOData {
     AvifIOData();
-    AvifIOData(const SegmentReader* reader, bool all_data_received);
+    AvifIOData(scoped_refptr<const SegmentReader> reader,
+               bool all_data_received);
     ~AvifIOData();
 
-    const SegmentReader* reader = nullptr;
+    scoped_refptr<const SegmentReader> reader;
     std::vector<uint8_t> buffer ALLOW_DISCOURAGED_TYPE("Required by libavif");
     bool all_data_received = false;
   };
@@ -137,7 +138,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   bool decode_to_half_float_ = false;
   uint8_t chroma_shift_x_ = 0;
   uint8_t chroma_shift_y_ = 0;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
   bool progressive_ = false;
   // Number of displayed rows for a non-progressive still image.
   int incrementally_displayed_height_ = 0;
@@ -145,10 +146,10 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   wtf_size_t decoded_frame_count_ = 0;
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
-  // Used to call UpdateBppHistogram() at most once to record the
+  // Used to call UpdateBppHistogram<"Avif">() at most once to record the
   // bits-per-pixel value of the image when the image is successfully decoded.
   base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
-  absl::optional<AVIFCleanApertureType> clap_type_;
+  std::optional<AVIFCleanApertureType> clap_type_;
   // Whether the 'clap' (clean aperture) property should be ignored, e.g.
   // because the 'clap' property is invalid or unsupported.
   bool ignore_clap_ = false;
@@ -163,7 +164,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // Set by a successful DecodeImage() call to either decoder_->image or
   // cropped_image_.get() depending on whether the image has a 'clap' (clean
   // aperture) property.
-  const avifImage* decoded_image_ = nullptr;
+  raw_ptr<const avifImage, DanglingUntriaged> decoded_image_ = nullptr;
   std::unique_ptr<avifDecoder, decltype(&avifDecoderDestroy)> decoder_{
       nullptr, avifDecoderDestroy};
   avifIO avif_io_ = {};

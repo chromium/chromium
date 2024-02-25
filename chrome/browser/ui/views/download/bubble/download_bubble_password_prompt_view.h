@@ -14,14 +14,14 @@ class Textfield;
 }  // namespace views
 
 class DownloadBubblePasswordPromptView : public views::TableLayoutView {
+  METADATA_HEADER(DownloadBubblePasswordPromptView, views::TableLayoutView)
+
  public:
   enum class State {
     kValid,
     kInvalid,
     kInvalidEmpty,
   };
-
-  METADATA_HEADER(DownloadBubblePasswordPromptView);
   DownloadBubblePasswordPromptView();
   ~DownloadBubblePasswordPromptView() override;
 
@@ -31,6 +31,7 @@ class DownloadBubblePasswordPromptView : public views::TableLayoutView {
  private:
   bool IsError(State state) const;
   std::u16string GetErrorMessage(State state) const;
+  std::u16string GetAccessibleName(State state) const;
 
   raw_ptr<views::Label> error_message_ = nullptr;
   raw_ptr<views::Textfield> password_field_ = nullptr;

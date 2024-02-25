@@ -7,14 +7,14 @@
  * SWA.
  */
 
-import {emptyState, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {emptyState, getSeaPenStore, PersonalizationState, SeaPenStoreAdapter, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setSeaPenProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 import {TestThemeProvider} from './test_theme_interface_provider.js';
 import {TestUserProvider} from './test_user_interface_provider.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
@@ -60,26 +60,23 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
   setThemeProviderForTesting(themeProvider);
   const userProvider = new TestUserProvider();
   setUserProviderForTesting(userProvider);
+  const seaPenProvider = new TestSeaPenProvider();
+  setSeaPenProviderForTesting(seaPenProvider);
   const personalizationStore = new TestPersonalizationStore(initialState);
   personalizationStore.replaceSingleton();
+  // Re-init SeaPenStoreAdapter so that it sees TestPersonalizationStore.
+  SeaPenStoreAdapter.initSeaPenStore();
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   return {
     ambientProvider,
     keyboardBacklightProvider,
+    seaPenProvider,
     themeProvider,
     userProvider,
     wallpaperProvider,
     personalizationStore,
+    seaPenStore: getSeaPenStore(),
   };
-}
-
-/** Returns a |String16| from the specified |value|. */
-export function toString16(value: string): String16 {
-  const data = [];
-  for (let i = 0; i < value.length; ++i) {
-    data[i] = value.charCodeAt(i);
-  }
-  return {data};
 }
 
 /**
@@ -128,4 +125,36 @@ export function dispatchKeydown(element: HTMLElement, key: string) {
 /** Returns the active element in the given element's shadow DOM. */
 export function getActiveElement(element: Element): HTMLElement {
   return (element.shadowRoot!.activeElement as HTMLElement);
+}
+
+/**
+ * Get a sub-property in obj. Splits on '.'
+ */
+function getProperty(obj: object, key: string): unknown {
+  let ref: any = obj;
+  for (const part of key.split('.')) {
+    ref = ref[part];
+  }
+  return ref;
+}
+
+/**
+ * Returns a function that returns only nested subproperties in state.
+ */
+export function filterAndFlattenState(keys: string[]): (state: any) => any {
+  return (state) => {
+    const result: any = {};
+    for (const key of keys) {
+      result[key] = getProperty(state, key);
+    }
+    return result;
+  };
+}
+
+/**
+ * Forces typescript compiler to check that an anonymous value is a specific
+ * type.
+ */
+export function typeCheck<T>(value: T): T {
+  return value;
 }

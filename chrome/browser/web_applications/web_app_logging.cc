@@ -7,12 +7,13 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "net/http/http_status_code.h"
 
 namespace web_app {
@@ -70,10 +71,11 @@ void InstallErrorLogEntry::LogUrlLoaderError(const char* stage,
   LogErrorObject(stage, url, std::move(url_loader_error));
 }
 
-void InstallErrorLogEntry::LogExpectedAppIdError(const char* stage,
-                                                 const std::string& url,
-                                                 const AppId& app_id,
-                                                 const AppId& expected_app_id) {
+void InstallErrorLogEntry::LogExpectedAppIdError(
+    const char* stage,
+    const std::string& url,
+    const webapps::AppId& app_id,
+    const webapps::AppId& expected_app_id) {
   if (!error_dict_)
     return;
 
@@ -98,7 +100,7 @@ void InstallErrorLogEntry::LogDownloadedIconsErrors(
     base::Value::List icons_http_errors;
 
     for (const auto& url_and_http_code : icons_http_results) {
-      const GURL& icon_url = url_and_http_code.first;
+      const GURL& icon_url = url_and_http_code.first.url;
       int http_status_code = url_and_http_code.second;
       const char* http_code_desc = net::GetHttpReasonPhrase(
           static_cast<net::HttpStatusCode>(http_status_code));
@@ -109,6 +111,8 @@ void InstallErrorLogEntry::LogDownloadedIconsErrors(
         base::Value::Dict icon_http_error;
 
         icon_http_error.Set("icon_url", icon_url.spec());
+        icon_http_error.Set("icon_size",
+                            url_and_http_code.first.size.ToString());
         icon_http_error.Set("http_status_code", http_status_code);
         icon_http_error.Set("http_code_desc", http_code_desc);
 

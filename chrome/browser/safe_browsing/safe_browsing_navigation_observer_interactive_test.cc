@@ -90,9 +90,8 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     return observer_manager_->navigation_event_list();
   }
 
-  void CopyUrlToWebClipboard(
-      std::string urlToCopy,
-      absl::optional<int> subframe_index = absl::nullopt) {
+  void CopyUrlToWebClipboard(std::string urlToCopy,
+                             std::optional<int> subframe_index = std::nullopt) {
     TabStripModel* tab_strip = browser()->tab_strip_model();
     content::WebContents* current_web_contents =
         tab_strip->GetActiveWebContents();

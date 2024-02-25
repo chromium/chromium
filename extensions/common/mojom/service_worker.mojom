@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "extensions/common/mojom/message_port.mojom";
+import "extensions/common/mojom/permission_set.mojom";
+
+// An interface for an extension Service Worker. Implemented
+// in the renderer.
+interface ServiceWorker {
+  // Tells the worker to update an extension's permission set.
+  UpdatePermissions(PermissionSet active_permissions,
+                    PermissionSet withheld_permissions);
+  // Dispatch the Port.onConnect event for message channels.
+  DispatchOnConnect(
+    extensions.mojom.PortId port_id,
+    extensions.mojom.ChannelType channel_type,
+    string channel_name,
+    extensions.mojom.TabConnectionInfo tab_info,
+    extensions.mojom.ExternalConnectionInfo external_connection_info,
+    pending_associated_receiver<extensions.mojom.MessagePort> port,
+    pending_associated_remote<extensions.mojom.MessagePortHost> port_host) =>
+      (bool success);
+};

@@ -75,7 +75,7 @@ class ASH_PUBLIC_EXPORT WindowBackdrop {
 
   // The window that this WindowBackdrop associates with. Will be valid during
   // this WindowBackdrop's lifetime.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   BackdropMode mode_ = BackdropMode::kAuto;
   BackdropType type_ = BackdropType::kOpaque;

@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -27,7 +26,7 @@ void UpdateEngineMetricsProvider::ProvideCurrentSessionData(
 }
 
 bool UpdateEngineMetricsProvider::IsConsumerAutoUpdateToggleEligible() {
-  const ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
+  const auto* user_manager = user_manager::UserManager::Get();
   if (!user_manager || user_manager->IsEnterpriseManaged() ||
       !user_manager->IsCurrentUserOwner())
     return false;

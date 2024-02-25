@@ -127,14 +127,6 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
       content::WebContents* web_contents) = 0;
 #endif
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  // Binds the |phishing_detector| to the appropriate interface, as provided by
-  // |provider|.
-  virtual void GetPhishingDetector(
-      service_manager::InterfaceProvider* provider,
-      mojo::Remote<mojom::PhishingDetector>* phishing_detector);
-#endif
-
   // Called when a new navigation is starting to create a deferring condition
   // if there is a pending sync password reuse ping or if there is a modal
   // warning dialog showing in the corresponding web contents.

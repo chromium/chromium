@@ -6,15 +6,15 @@
 import os
 import sys
 
-import model
+from sync import model
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import presubmit_util
 
 def main(argv):
   dirname = os.path.dirname(os.path.realpath(__file__))
-  xml = dirname + '/structured.xml'
-  old_xml = dirname + '/structured.old.xml'
+  xml = dirname + '/sync/structured.xml'
+  old_xml = dirname + '/sync/structured.old.xml'
   presubmit_util.DoPresubmitMain(argv, xml,
                                  old_xml, lambda x: repr(model.Model(x)))
 

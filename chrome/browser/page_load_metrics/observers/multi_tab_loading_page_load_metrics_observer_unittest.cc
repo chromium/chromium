@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer.h"
 
 #include <memory>
+#include <optional>
 
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
@@ -12,7 +13,6 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -57,7 +57,7 @@ class MultiTabLoadingPageLoadMetricsObserverTest
 
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
-    timing.navigation_start = base::Time::FromDoubleT(1);
+    timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     timing.parse_timing->parse_start = base::Milliseconds(300);
     timing.paint_timing->first_contentful_paint = base::Milliseconds(300);
     timing.paint_timing->first_meaningful_paint = base::Milliseconds(700);
@@ -176,8 +176,8 @@ class MultiTabLoadingPageLoadMetricsObserverTest
   }
 
  private:
-  absl::optional<int> number_of_tabs_with_inflight_load_;
-  absl::optional<int> number_of_tabs_;
+  std::optional<int> number_of_tabs_with_inflight_load_;
+  std::optional<int> number_of_tabs_;
 };
 
 TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, SingleTabLoading) {

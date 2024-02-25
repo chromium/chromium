@@ -1,0 +1,13 @@
+[Stable=True, SandboxType=mojo.foo.bar.SandboxType.VerySandboxedAndSecure,
+    Uuid="15580FD4-AEFF-45EB-8252-9F925F3BB4DA"]
+struct Struct {
+  // These two fields.
+  string a@1;
+  bool? b@2;
+
+  // Break.
+
+  // Another field.
+  [ShouldWeEscapeQuotes="did you say\"yes?\""]
+  string c@3;  // End comment.
+};

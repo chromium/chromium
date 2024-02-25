@@ -6,10 +6,11 @@
 #define UI_VIEWS_CONTROLS_PROGRESS_BAR_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/animation/animation_delegate.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -20,13 +21,10 @@ namespace views {
 
 // Progress bar is a control that indicates progress visually.
 class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
- public:
-  METADATA_HEADER(ProgressBar);
+  METADATA_HEADER(ProgressBar, View)
 
-  // The preferred height parameter makes it easier to use a ProgressBar with
-  // layout managers that size to preferred size.
-  explicit ProgressBar(int preferred_height = 5,
-                       bool allow_round_corner = true);
+ public:
+  ProgressBar();
 
   ProgressBar(const ProgressBar&) = delete;
   ProgressBar& operator=(const ProgressBar&) = delete;
@@ -51,14 +49,27 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // The color of the progress portion.
   SkColor GetForegroundColor() const;
   void SetForegroundColor(SkColor color);
-  absl::optional<ui::ColorId> GetForegroundColorId() const;
-  void SetForegroundColorId(absl::optional<ui::ColorId> color_id);
+  std::optional<ui::ColorId> GetForegroundColorId() const;
+  void SetForegroundColorId(std::optional<ui::ColorId> color_id);
 
   // The color of the portion that displays potential progress.
   SkColor GetBackgroundColor() const;
   void SetBackgroundColor(SkColor color);
-  absl::optional<ui::ColorId> GetBackgroundColorId() const;
-  void SetBackgroundColorId(absl::optional<ui::ColorId> color_id);
+  std::optional<ui::ColorId> GetBackgroundColorId() const;
+  void SetBackgroundColorId(std::optional<ui::ColorId> color_id);
+
+  int GetPreferredHeight() const;
+  void SetPreferredHeight(const int preferred_height);
+
+  // Calculates the rounded corners of the view based on
+  // `preferred_corner_radii_`. If `preferred_corner_radii_` was not provided,
+  // empty corners will be returned . If any corner radius in
+  // `preferred_corner_radii_` is greater than the height of the bar, its value
+  // will be capped to the height of the bar.
+  gfx::RoundedCornersF GetPreferredCornerRadii() const;
+
+  void SetPreferredCornerRadii(
+      const std::optional<gfx::RoundedCornersF> preferred_corner_radii);
 
  protected:
   int preferred_height() const { return preferred_height_; }
@@ -81,15 +92,20 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // Is the progress bar paused.
   bool is_paused_ = false;
 
-  // In DP, the preferred height of this progress bar.
-  const int preferred_height_;
+  // In DP, the preferred height of this progress bar. This makes it easier to
+  // use a ProgressBar with layout managers that size to preferred size.
+  int preferred_height_ = 5;
 
-  const bool allow_round_corner_;
+  // The radii to round the progress bar corners with. A value of
+  // `std::nullopt` will produce a bar with no rounded corners, otherwise a
+  // default value of 3 on all corners will be used.
+  std::optional<gfx::RoundedCornersF> preferred_corner_radii_ =
+      gfx::RoundedCornersF(3);
 
-  absl::optional<SkColor> foreground_color_;
-  absl::optional<ui::ColorId> foreground_color_id_;
-  absl::optional<SkColor> background_color_;
-  absl::optional<ui::ColorId> background_color_id_;
+  std::optional<SkColor> foreground_color_;
+  std::optional<ui::ColorId> foreground_color_id_;
+  std::optional<SkColor> background_color_;
+  std::optional<ui::ColorId> background_color_id_;
 
   std::unique_ptr<gfx::LinearAnimation> indeterminate_bar_animation_;
 

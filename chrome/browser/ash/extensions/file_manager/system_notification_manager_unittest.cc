@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 
+#include <optional>
 #include <set>
+#include <string_view>
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -12,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -43,8 +44,9 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace file_manager {
 namespace {
@@ -56,19 +58,10 @@ using ash::disks::Disk;
 using base::BindOnce;
 using base::FilePath;
 using extensions::Event;
-using fmp::DriveSyncErrorEvent;
-using fmp::FileTransferStatus;
-using fmp::MountCompletedEvent;
-using fmp::ToString;
 using message_center::NotificationDelegate;
 using testing::IsEmpty;
 
 using enum extensions::events::HistogramValue;
-using enum fmp::BulkPinStage;
-using enum fmp::DriveSyncErrorType;
-using enum fmp::MountCompletedEventType;
-using enum fmp::MountError;
-using enum fmp::TransferState;
 
 // Strings that would be seen on a notification.
 struct Strings {
@@ -131,7 +124,7 @@ class TestNotificationPlatformBridgeDelegator
       return;
     }
 
-    it->second->Click(button_index, absl::nullopt);
+    it->second->Click(button_index, std::nullopt);
   }
 
   // Clicks a notification body.
@@ -142,7 +135,7 @@ class TestNotificationPlatformBridgeDelegator
       return;
     }
 
-    it->second->Click(absl::nullopt, absl::nullopt);
+    it->second->Click(std::nullopt, std::nullopt);
   }
 
  private:
@@ -285,10 +278,9 @@ class SystemNotificationManagerTest
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   // Externally owned raw pointers:
   // profile_ is owned by TestingProfileManager.
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   // notification_display_service is owned by NotificationDisplayServiceFactory.
-  raw_ptr<NotificationDisplayServiceImpl, DanglingUntriaged | ExperimentalAsh>
-      display_service_;
+  raw_ptr<NotificationDisplayServiceImpl, DanglingUntriaged> display_service_;
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouterImpl> event_router_;
 
@@ -298,13 +290,10 @@ class SystemNotificationManagerTest
   size_t notification_count_ = 0;
 
   // notification_platform_bridge is owned by NotificationDisplayService.
-  raw_ptr<TestNotificationPlatformBridgeDelegator,
-          DanglingUntriaged | ExperimentalAsh>
-      bridge_;
+  raw_ptr<TestNotificationPlatformBridgeDelegator, DanglingUntriaged> bridge_;
 
   // Used for tests with IOTask:
-  raw_ptr<io_task::IOTaskController, DanglingUntriaged | ExperimentalAsh>
-      io_task_controller;
+  raw_ptr<io_task::IOTaskController, DanglingUntriaged> io_task_controller;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Keep track of the task state transitions.
@@ -488,10 +477,10 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_SUCCESS;
+  event.status = fmp::MountError::kSuccess;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -525,10 +514,10 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/true, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_SUCCESS;
+  event.status = fmp::MountError::kSuccess;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -566,10 +555,10 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_SUCCESS;
+  event.status = fmp::MountError::kSuccess;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -605,10 +594,10 @@ TEST_F(SystemNotificationManagerTest,
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_SUCCESS;
+  event.status = fmp::MountError::kSuccess;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -637,10 +626,10 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_SUCCESS;
+  event.status = fmp::MountError::kSuccess;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -677,10 +666,10 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedDefault) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")), "",
       "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
+  event.status = fmp::MountError::kUnsupportedFilesystem;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -710,10 +699,10 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedNamed) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
+  event.status = fmp::MountError::kUnsupportedFilesystem;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -747,10 +736,10 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")), "",
       "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_SUCCESS;
+  event.status = fmp::MountError::kSuccess;
   notification_manager_->HandleMountCompletedEvent(event, *volume1.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -770,7 +759,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")), "",
       "unsupported"));
-  event.status = MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
+  event.status = fmp::MountError::kUnsupportedFilesystem;
   notification_manager_->HandleMountCompletedEvent(event, *volume2.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -802,10 +791,10 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_SUCCESS;
+  event.status = fmp::MountError::kSuccess;
   notification_manager_->HandleMountCompletedEvent(event, *volume1.get());
   // Ignore checking for the device navigation notification.
   // Build an unsupported file system volume and mount it on the same device.
@@ -814,7 +803,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unsupported"));
-  event.status = MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
+  event.status = fmp::MountError::kUnsupportedFilesystem;
   notification_manager_->HandleMountCompletedEvent(event, *volume2.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -848,10 +837,10 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")), "",
       "unknown"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_UNKNOWN_FILESYSTEM;
+  event.status = fmp::MountError::kUnknownFilesystem;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -885,10 +874,10 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/false, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unknown"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_UNKNOWN_FILESYSTEM;
+  event.status = fmp::MountError::kUnknownFilesystem;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -924,10 +913,10 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/true, FilePath(FILE_PATH_LITERAL("/device/test")), "",
       "unknown"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_UNKNOWN_FILESYSTEM;
+  event.status = fmp::MountError::kUnknownFilesystem;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -957,10 +946,10 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
       VolumeType::VOLUME_TYPE_TESTING, DeviceType::kUSB,
       /*read_only=*/true, FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unknown"));
-  MountCompletedEvent event;
-  event.event_type = MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  fmp::MountCompletedEvent event;
+  event.event_type = fmp::MountCompletedEventType::kMount;
   event.should_notify = true;
-  event.status = MOUNT_ERROR_UNKNOWN_FILESYSTEM;
+  event.status = fmp::MountError::kUnknownFilesystem;
   notification_manager_->HandleMountCompletedEvent(event, *volume.get());
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
@@ -988,7 +977,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
 
   // Send the copy begin/queued progress.
@@ -1032,7 +1021,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressExtract) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   status.sources.emplace_back(CreateTestFile("volume/src_file.zip"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/src_file/"));
 
   // Send the copy begin/queued progress.
@@ -1076,7 +1065,7 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   auto src = CreateTestFile("volume/src_file.txt");
-  status.sources.emplace_back(src, absl::nullopt);
+  status.sources.emplace_back(src, std::nullopt);
   auto dst = CreateTestFile("volume/dest_dir/");
   status.SetDestinationFolder(dst);
 
@@ -1111,7 +1100,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
   status.bytes_transferred = 123;
   status.sources_scanned = 1;
   status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
 
   // Send the scanning progress.
@@ -1125,7 +1114,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
   // Check: the expected strings match.
   EXPECT_EQ(strings.title, u"Files");
   EXPECT_EQ(strings.message,
-            u"Checking files with your organization's security policies.");
+            l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SCANNING_LABEL));
 
   // Send the success progress status.
   status.bytes_transferred = 100;
@@ -1141,7 +1130,7 @@ std::u16string kGoogleDrive = u"Google Drive";
 // Tests the bulk-pinning notifications.
 TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   using List = base::Value::List;
-  const base::StringPiece event_name = "unused-event-name";
+  const std::string_view event_name = "unused-event-name";
 
   // Event with no args should be ignored.
   notification_manager_->HandleEvent(
@@ -1154,6 +1143,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   EXPECT_EQ(0u, notification_count_);
 
   file_manager_private::BulkPinProgress progress;
+  progress.should_pin = true;
 
   // Handle an unparsable event.
   notification_manager_->HandleEvent(
@@ -1168,7 +1158,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
 
   // Not enough space without going through syncing phase.
   EXPECT_FALSE(progress.emptied_queue);
-  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1179,8 +1169,8 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
 
-  // Syncing.
-  progress.stage = BULK_PIN_STAGE_SYNCING;
+  // Listing files.
+  progress.stage = fmp::BulkPinStage::kListingFiles;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1191,8 +1181,8 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
 
-  // Not enough space after syncing phase.
-  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  // Not enough space after listing phase.
+  progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1222,8 +1212,50 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
 
+  // Syncing.
+  progress.stage = fmp::BulkPinStage::kSyncing;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Not enough space after syncing phase.
+  progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be one notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(1u, notification_count_);
+
+  // Get the strings for the displayed notification.
+  {
+    const Strings strings = bridge_->GetStrings(notification_id);
+    EXPECT_EQ(strings.title, u"Couldn’t finish setting up file sync");
+    EXPECT_EQ(strings.message,
+              u"There isn’t enough storage space to sync all of your files");
+    EXPECT_THAT(strings.buttons, IsEmpty());
+  }
+
+  // Click the notification body.
+  bridge_->ClickNotification(notification_id);
+
+  // The notification should have been closed.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
   // Not enough space without going through syncing phase.
-  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1235,7 +1267,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   EXPECT_EQ(0u, notification_count_);
 
   // Back to syncing stage. Pretend that everything has been synced.
-  progress.stage = BULK_PIN_STAGE_SYNCING;
+  progress.stage = fmp::BulkPinStage::kSyncing;
   progress.emptied_queue = true;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
@@ -1248,7 +1280,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   EXPECT_EQ(0u, notification_count_);
 
   // Not enough space after syncing phase.
-  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1278,7 +1310,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   EXPECT_EQ(0u, notification_count_);
 
   // Back to syncing stage.
-  progress.stage = BULK_PIN_STAGE_SYNCING;
+  progress.stage = fmp::BulkPinStage::kSyncing;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1289,8 +1321,8 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
 
-  // Error duing syncing phase.
-  progress.stage = BULK_PIN_STAGE_CANNOT_GET_FREE_SPACE;
+  // Error during syncing phase.
+  progress.stage = fmp::BulkPinStage::kCannotGetFreeSpace;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1317,13 +1349,38 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
+
+  // Listing files without having the intent of pinning them.
+  progress.stage = fmp::BulkPinStage::kListingFiles;
+  progress.should_pin = false;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Not enough space after listing phase.
+  progress.stage = fmp::BulkPinStage::kNotEnoughSpace;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
 }
 
 // Tests all the various error notifications.
 TEST_F(SystemNotificationManagerTest, Errors) {
   // Build a Drive sync error object.
-  DriveSyncErrorEvent sync_error;
-  sync_error.type = DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION;
+  fmp::DriveSyncErrorEvent sync_error;
+  sync_error.type = fmp::DriveSyncErrorType::kDeleteWithoutPermission;
   sync_error.file_url = "drivefs://fake.txt";
 
   // Send the delete without permission sync error event.
@@ -1347,7 +1404,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
             u"because you do not own it.");
 
   // Setup for the service unavailable error.
-  sync_error.type = DRIVE_SYNC_ERROR_TYPE_SERVICE_UNAVAILABLE;
+  sync_error.type = fmp::DriveSyncErrorType::kServiceUnavailable;
 
   // Send the service unavailable sync error event.
   notification_manager_->HandleEvent(
@@ -1370,7 +1427,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
             u"automatically restart once Google Drive is back.");
 
   // Setup for the no server space error.
-  sync_error.type = DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE;
+  sync_error.type = fmp::DriveSyncErrorType::kNoServerSpace;
 
   // Send the service unavailable sync error event.
   notification_manager_->HandleEvent(
@@ -1393,7 +1450,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
             u"the upload.");
 
   // Setup for the no local space error.
-  sync_error.type = DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE;
+  sync_error.type = fmp::DriveSyncErrorType::kNoLocalSpace;
 
   // Send the service unavailable sync error event.
   notification_manager_->HandleEvent(
@@ -1414,7 +1471,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
   EXPECT_EQ(strings.message, u"You have run out of space");
 
   // Setup for the miscellaneous sync error.
-  sync_error.type = DRIVE_SYNC_ERROR_TYPE_MISC;
+  sync_error.type = fmp::DriveSyncErrorType::kMisc;
 
   // Send the service unavailable sync error event.
   notification_manager_->HandleEvent(
@@ -1443,7 +1500,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
 TEST_F(SystemNotificationManagerTest, EnableDocsOffline) {
   file_manager_private::DriveConfirmDialogEvent drive_event;
   drive_event.type =
-      file_manager_private::DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+      file_manager_private::DriveConfirmDialogType::kEnableDocsOffline;
   drive_event.file_url = "drivefs://fake";
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG,
@@ -1462,254 +1519,6 @@ TEST_F(SystemNotificationManagerTest, EnableDocsOffline) {
   EXPECT_EQ(strings.message,
             u"Enable Google Docs Offline to make Docs, Sheets and Slides "
             u"available offline.");
-}
-
-TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
-  // Setup a sync progress status object.
-  FileTransferStatus status;
-  status.transfer_state = TRANSFER_STATE_IN_PROGRESS;
-  status.num_total_jobs = 1;
-  status.file_url =
-      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
-  status.processed = 0;
-  status.total = 100;
-  status.show_notification = true;
-
-  // Send the transfers updated event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have one notification.
-  ASSERT_EQ(1u, notification_count_);
-  // Get the strings for the displayed notification.
-  Strings strings = bridge_->GetStrings("swa-drive-sync");
-  // Check: the expected strings match.
-  EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message, u"Syncing file.txt\x2026");
-  // Setup an completed transfer event.
-  status.transfer_state = TRANSFER_STATE_COMPLETED;
-  status.num_total_jobs = 0;
-
-  // Send the completed transfer event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0u, notification_count_);
-  // Start another transfer that ends in error.
-  status.transfer_state = TRANSFER_STATE_IN_PROGRESS;
-
-  // Send the transfers updated event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have one notification.
-  ASSERT_EQ(1u, notification_count_);
-  // Setup an completed transfer event.
-  status.transfer_state = TRANSFER_STATE_FAILED;
-  status.num_total_jobs = 0;
-
-  // Send the completed transfer event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0u, notification_count_);
-}
-
-TEST_F(SystemNotificationManagerTest, SyncProgressIgnoreNotification) {
-  // Setup a sync progress status.
-  FileTransferStatus status;
-  status.transfer_state = TRANSFER_STATE_IN_PROGRESS;
-  status.num_total_jobs = 1;
-  status.file_url =
-      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
-  status.processed = 25;
-  status.total = 100;
-  status.show_notification = true;
-
-  // Send the transfers updated event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have one notification.
-  ASSERT_EQ(1u, notification_count_);
-
-  // Update the transfer event to hide the notification.
-  status.transfer_state = TRANSFER_STATE_COMPLETED;
-  status.num_total_jobs = 0;
-  status.processed = 0;
-  status.total = 0;
-  status.show_notification = false;
-
-  // Send the transfers updated event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have no notification.
-  ASSERT_EQ(0u, notification_count_);
-}
-
-TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
-  // Setup a sync progress status object.
-  FileTransferStatus status;
-  status.transfer_state = TRANSFER_STATE_IN_PROGRESS;
-  status.num_total_jobs = 10;
-  status.file_url =
-      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
-  status.processed = 0;
-  status.total = 100;
-  status.show_notification = true;
-
-  // Send the transfers updated event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have one notification.
-  ASSERT_EQ(1u, notification_count_);
-  // Get the strings for the displayed notification.
-  Strings strings = bridge_->GetStrings("swa-drive-sync");
-  // Check: the expected strings match.
-  EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message, u"Syncing 10 items\x2026");
-}
-
-TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
-  // Setup a pin progress status object.
-  FileTransferStatus status;
-  status.transfer_state = TRANSFER_STATE_IN_PROGRESS;
-  status.num_total_jobs = 1;
-  status.file_url =
-      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
-  status.processed = 0;
-  status.total = 100;
-  status.show_notification = true;
-
-  // Send the transfers updated event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have one notification.
-  ASSERT_EQ(1u, notification_count_);
-  // Get the strings for the displayed notification.
-  Strings strings = bridge_->GetStrings("swa-drive-pin");
-  // Check: the expected strings match.
-  EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message, u"Making file.txt available offline");
-  // Setup an completed transfer event.
-  status.transfer_state = TRANSFER_STATE_COMPLETED;
-  status.num_total_jobs = 0;
-
-  // Send the completed transfer event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0u, notification_count_);
-
-  // Start another transfer that ends in error.
-  status.transfer_state = TRANSFER_STATE_IN_PROGRESS;
-
-  // Send the transfers updated event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have one notification.
-  ASSERT_EQ(1u, notification_count_);
-  // Setup an completed transfer event.
-  status.transfer_state = TRANSFER_STATE_FAILED;
-  status.num_total_jobs = 0;
-
-  // Send the completed transfer event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0u, notification_count_);
-}
-
-TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
-  // Setup a pin progress status object.
-  FileTransferStatus status;
-  status.transfer_state = TRANSFER_STATE_IN_PROGRESS;
-  status.num_total_jobs = 10;
-  status.file_url =
-      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
-  status.processed = 0;
-  status.total = 100;
-  status.show_notification = true;
-
-  // Send the transfers updated event.
-  notification_manager_->HandleEvent(
-      Event(FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED,
-            file_manager_private::OnFileTransfersUpdated::kEventName,
-            file_manager_private::OnFileTransfersUpdated::Create(status)));
-  // Get the number of notifications from the NotificationDisplayService.
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
-      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
-               weak_ptr_factory_.GetWeakPtr()));
-  // Check: We have one notification.
-  ASSERT_EQ(1u, notification_count_);
-  // Get the strings for the displayed notification.
-  Strings strings = bridge_->GetStrings("swa-drive-pin");
-  // Check: the expected strings match.
-  EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message, u"Making 10 files available offline");
 }
 
 class SystemNotificationManagerPolicyTest
@@ -1742,9 +1551,8 @@ class SystemNotificationManagerPolicyTest
     return fpnm;
   }
 
-  raw_ptr<policy::MockFilesPolicyNotificationManager,
-          DanglingUntriaged | ExperimentalAsh>
-      fpnm_ = nullptr;
+  raw_ptr<policy::MockFilesPolicyNotificationManager, DanglingUntriaged> fpnm_ =
+      nullptr;
 };
 
 TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressWarning) {
@@ -1756,9 +1564,9 @@ TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressWarning) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   status.sources.emplace_back(CreateTestFile("volume/src_file1.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.sources.emplace_back(CreateTestFile("volume/src_file2.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
 
   // Send the copy begin/queued progress.
@@ -1802,7 +1610,7 @@ TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressPolicyError) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
 
   // Send the copy begin/queued progress.

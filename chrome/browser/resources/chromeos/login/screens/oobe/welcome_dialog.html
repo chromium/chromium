@@ -15,10 +15,10 @@ found in the LICENSE file.
     padding-top: var(--oobe-adaptive-dialog-back-button-vertical-padding);
     width: var(--oobe-adaptive-dialog-width);
   }
-  :host(:host-context(.simon-enabled[orientation='vertical'])) {
+  :host(:host-context(.boot-animation-enabled[orientation='vertical'])) {
     padding-inline-start: calc(var(--oobe-adaptive-dialog-width) / 3);
   }
-  :host(:host-context(.simon-enabled[orientation='horizontal'])) {
+  :host(:host-context(.boot-animation-enabled[orientation='horizontal'])) {
     padding-inline-start: calc(
       var(--oobe-welcome-dialog-horizontal-padding)
       + var(--oobe-adaptive-dialog-width) / 2);
@@ -34,7 +34,7 @@ found in the LICENSE file.
     flex-grow: 1;
     min-height: 0;
   }
-  :host-context(.simon-enabled) #content {
+  :host-context(.boot-animation-enabled) #content {
     flex-grow: 0;
   }
   :host-context([orientation='vertical']) #content {
@@ -45,7 +45,7 @@ found in the LICENSE file.
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   }
-  :host-context(.simon-enabled[orientation='horizontal']) #content {
+  :host-context(.boot-animation-enabled[orientation='horizontal']) #content {
     grid-template-columns: auto;
   }
 
@@ -66,7 +66,7 @@ found in the LICENSE file.
     align-self: center;
     justify-self: center;
   }
-  :host-context(.simon-enabled[orientation='vertical']) #buttons {
+  :host-context(.boot-animation-enabled[orientation='vertical']) #buttons {
     align-items: normal;
     align-self: start;
     justify-self: start;
@@ -88,7 +88,7 @@ found in the LICENSE file.
     grid-row: 2 / span 1;
     justify-self: start;
   }
-  :host-context(.simon-enabled) #bottomButtons {
+  :host-context(.boot-animation-enabled) #bottomButtons {
     justify-self: end;
     margin-top: 72px;
   }
@@ -138,7 +138,7 @@ found in the LICENSE file.
   :host-context([orientation='vertical']) #title {
     margin-top: 40px;
   }
-  :host-context(.simon-enabled) #title {
+  :host-context(.boot-animation-enabled) #title {
     font-size: var(--oobe-welcome-header-font-size);
     line-height: var(--oobe-welcome-header-line-height);
     margin-bottom: 48px;
@@ -174,7 +174,8 @@ found in the LICENSE file.
     align-self: center;
     text-align: center;
   }
-  :host-context(.simon-enabled[orientation='vertical']) .welcome-header-text {
+  :host-context(.boot-animation-enabled[orientation='vertical'])
+  .welcome-header-text {
     align-self: auto;
     text-align: start;
   }
@@ -196,7 +197,7 @@ found in the LICENSE file.
   <h1 id="title" class="welcome-header-text">
     [[i18nDynamic(locale, 'welcomeScreenGreeting')]]
   </h1>
-  <template is="dom-if" if="[[!isSimon_]]">
+  <template is="dom-if" if="[[!isBootAnimation]]">
     <div id="subtitle" class="welcome-header-text">
       [[i18nDynamic(locale, 'welcomeScreenGreetingSubtitle')]]
     </div>
@@ -208,7 +209,7 @@ found in the LICENSE file.
         id="languageSelectionButton"
         icon1x="oobe-20:welcome-language"
         icon2x="oobe-40:welcome-language"
-        on-click="onLanguageClicked_"
+        on-click="onLanguageClicked"
         label-for-aria="[[i18nDynamic(locale, 'languageButtonLabel',
                   currentLanguage)]]"
       >
@@ -220,7 +221,7 @@ found in the LICENSE file.
         text-key="accessibilityLink"
         icon1x="oobe-20:welcome-accessibility"
         icon2x="oobe-40:welcome-accessibility"
-        on-click="onAccessibilityClicked_"
+        on-click="onAccessibilityClicked"
       >
       </oobe-icon-button>
       <oobe-icon-button
@@ -229,7 +230,7 @@ found in the LICENSE file.
         text-key="timezoneButtonText"
         icon1x="oobe-32:timezone"
         icon2x="oobe-32:timezone"
-        on-click="onTimezoneClicked_"
+        on-click="onTimezoneClicked"
         hidden="[[!timezoneButtonVisible]]"
       >
       </oobe-icon-button>
@@ -239,34 +240,31 @@ found in the LICENSE file.
         text-key="debuggingFeaturesLink"
         icon1x="oobe-32:chromebook"
         icon2x="oobe-32:chromebook"
-        on-click="onDebuggingLinkClicked_"
+        on-click="onDebuggingLinkClicked"
         hidden="[[!debuggingLinkVisible]]"
       >
       </oobe-icon-button>
     </div>
     <div id="bottomButtons" class="layout horizontal">
-      <oobe-icon-button
-        id="quickStart"
-        on-click="onQuickStartClicked_"
+      <quick-start-entry-point
+        id="quickStartWelcomeEntryPoint"
+        quick-start-text-key="welcomeScreenQuickStart"
         hidden="[[!isQuickStartEnabled]]"
-        text-key="welcomeScreenQuickStart"
-        icon1x="oobe-20:quick-start-android-device"
-        icon2x="oobe-20:quick-start-android-device"
       >
-      </oobe-icon-button>
+      </quick-start-entry-point>
       <oobe-text-button
         id="getStarted"
         inverse
-        on-click="onNextClicked_"
+        on-click="onNextClicked"
         text-key="welcomeScreenGetStarted"
       >
       </oobe-text-button>
     </div>
     <template is="dom-if" if="[[showAnimationSlot()]]">
       <div id="welcomeAnimationSlot">
-        <template is="dom-if" if="[[!isMeet_]]">
+        <template is="dom-if" if="[[!isMeet]]">
           <iron-icon id="welcomeAnimationFirstFrame" icon="oobe-illos:connect-illo"
-              class="illustration-jelly stacked-animations" hidden="[[isOobeLoaded_]]">
+              class="illustration-jelly stacked-animations" hidden="[[isOobeLoaded]]">
           </iron-icon>
           <oobe-cr-lottie
             id="welcomeAnimation" preload
@@ -275,7 +273,7 @@ found in the LICENSE file.
           >
           </oobe-cr-lottie>
         </template>
-        <template is="dom-if" if="[[isMeet_]]">
+        <template is="dom-if" if="[[isMeet]]">
           <img
             src="/images/cfm/welcome.svg"
             class="oobe-illustration"
@@ -288,44 +286,20 @@ found in the LICENSE file.
   </div>
 </div>
 <oobe-modal-dialog id="chromeVoxHint">
-  <template is="dom-if" if="[[isChromeVoxHintImprovementsEnabled_]]">
-    <!-- New version of ChromeVox hint dialog -->
-    <div id="chromeVoxHintTitle"
-      slot="title">
-      <hd-iron-icon icon1x="oobe-20:welcome-accessibility"
-        icon2x="oobe-40:welcome-accessibility"></hd-iron-icon>
-      <p>[[i18nDynamic(locale, 'chromevoxHintTitle')]]</p>
-    </div>
-    <div id="chromeVoxHintContent"
-      slot="content">[[i18nDynamic(locale, 'chromeVoxHintTextExpanded')]]</div>
-    <div slot="buttons">
-      <oobe-text-button
-        id="dismissChromeVoxButton"
-        on-click="dismissChromeVoxHint_"
-        text-key="chromevoxHintClose"
-      >
-      </oobe-text-button>
-    </div>
-  </template>
-  <template is="dom-if" if="[[!isChromeVoxHintImprovementsEnabled_]]">
-    <!-- Old version of ChromeVox hint dialog -->
-    <div slot="title">
-      [[i18nDynamic(locale, 'chromeVoxHintText')]]
-    </div>
-    <div slot="buttons">
-      <oobe-text-button
-        id="dismissChromeVoxButton"
-        on-click="dismissChromeVoxHint_"
-        text-key="continueWithoutChromeVox"
-      >
-      </oobe-text-button>
-      <oobe-text-button
-        id="activateChromeVoxButton"
-        inverse
-        on-click="activateChromeVox_"
-        text-key="activateChromeVox"
-      >
-      </oobe-text-button>
-    </div>
-  </template>
+  <div id="chromeVoxHintTitle"
+    slot="title">
+    <hd-iron-icon icon1x="oobe-20:welcome-accessibility"
+      icon2x="oobe-40:welcome-accessibility"></hd-iron-icon>
+    <p>[[i18nDynamic(locale, 'chromevoxHintTitle')]]</p>
+  </div>
+  <div id="chromeVoxHintContent"
+    slot="content">[[i18nDynamic(locale, 'chromeVoxHintTextExpanded')]]</div>
+  <div slot="buttons">
+    <oobe-text-button
+      id="dismissChromeVoxButton"
+      on-click="dismissChromeVoxHint"
+      text-key="chromevoxHintClose"
+    >
+    </oobe-text-button>
+  </div>
 </oobe-modal-dialog>

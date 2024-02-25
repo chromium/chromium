@@ -19,14 +19,44 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 
-// Obj-C bridge class that is the target of all items in the context menu.
-// Relies on the tag being set to the command id.
+// macOS implementation of the ToolkitDelegate.
+// This simply (re)delegates calls to RVContextMenuMac.
+class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
+ public:
+  explicit ToolkitDelegateMacCocoa(RenderViewContextMenuMac* context_menu)
+      : context_menu_(context_menu) {}
+
+  ToolkitDelegateMacCocoa(const ToolkitDelegateMacCocoa&) = delete;
+  ToolkitDelegateMacCocoa& operator=(const ToolkitDelegateMacCocoa&) = delete;
+
+  ~ToolkitDelegateMacCocoa() override {}
+
+ private:
+  // ToolkitDelegate:
+  void Init(ui::SimpleMenuModel* menu_model) override {
+    context_menu_->InitToolkitMenu();
+  }
+
+  void Cancel() override { context_menu_->CancelToolkitMenu(); }
+
+  void UpdateMenuItem(int command_id,
+                      bool enabled,
+                      bool hidden,
+                      const std::u16string& title) override {
+    context_menu_->UpdateToolkitMenuItem(command_id, enabled, hidden, title);
+  }
+
+  raw_ptr<RenderViewContextMenuMac> context_menu_;
+};
 
 RenderViewContextMenuMac::RenderViewContextMenuMac(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenu(render_frame_host, params),
-      text_services_context_menu_(this) {}
+      text_services_context_menu_(this) {
+  auto delegate = std::make_unique<ToolkitDelegateMacCocoa>(this);
+  set_toolkit_delegate(std::move(delegate));
+}
 
 RenderViewContextMenuMac::~RenderViewContextMenuMac() {
 }
@@ -82,9 +112,17 @@ void RenderViewContextMenuMac::UpdateTextDirection(
   if (direction == base::i18n::RIGHT_TO_LEFT)
     command_id = IDC_WRITING_DIRECTION_RTL;
 
-  content::RenderViewHost* view_host = GetRenderViewHost();
-  view_host->GetWidget()->UpdateTextDirection(direction);
-  view_host->GetWidget()->NotifyTextDirection();
+  // Note: we get the local render frame host so that the writing mode settings
+  // changes apply to the correct frame. See crbug.com/1129073 for a
+  // description of what happens if we use the outermost frame.
+  content::RenderFrameHost* rfh = GetRenderFrameHost();
+  // It's possible that the frame drops out from under us while the context
+  // menu is open. In this case, we'll not perform the action, but still record
+  // metrics.
+  if (rfh) {
+    rfh->GetRenderWidgetHost()->UpdateTextDirection(direction);
+    rfh->GetRenderWidgetHost()->NotifyTextDirection();
+  }
 
   RenderViewContextMenu::RecordUsedItem(command_id);
 }
@@ -94,15 +132,16 @@ void RenderViewContextMenuMac::AppendPlatformEditableItems() {
 }
 
 void RenderViewContextMenuMac::InitToolkitMenu() {
-  if (params_.input_field_type ==
-      blink::mojom::ContextMenuDataInputFieldType::kPassword)
+  if (params_.form_control_type ==
+      blink::mojom::FormControlType::kInputPassword) {
     return;
+  }
 
   if (!params_.selection_text.empty() && params_.link_url.is_empty()) {
     // In case the user has selected a word that triggers spelling suggestions,
     // show the dictionary lookup under the group that contains the command to
     // “Add to Dictionary.”
-    const absl::optional<size_t> index_opt =
+    const std::optional<size_t> index_opt =
         menu_model_.GetIndexOfCommandId(IDC_SPELLCHECK_ADD_TO_DICTIONARY);
     size_t index = index_opt.value_or(0);
     if (index_opt.has_value()) {
@@ -127,7 +166,7 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
 
 void RenderViewContextMenuMac::LookUpInDictionary() {
   content::RenderWidgetHostView* view =
-      GetRenderViewHost()->GetWidget()->GetView();
+      GetRenderFrameHost()->GetRenderWidgetHost()->GetView();
   if (view)
     view->ShowDefinitionForSelection();
 }

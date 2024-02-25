@@ -42,20 +42,23 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
  protected:
   ScriptContextSet& script_context_set() { return script_context_set_; }
 
+  v8::Isolate* Isolate() {
+    return web_frame_.frame()->GetAgentGroupScheduler()->Isolate();
+  }
+
   v8::Local<v8::Context> v8_context() {
-    return v8::Local<v8::Context>::New(v8::Isolate::GetCurrent(), v8_context_);
+    return v8::Local<v8::Context>::New(Isolate(), v8_context_);
   }
 
   ScriptContext* RegisterScriptContext() {
     // No world ID.
     return script_context_set_.Register(
-        web_frame_.frame(),
-        v8::Local<v8::Context>::New(v8::Isolate::GetCurrent(), v8_context_),
+        web_frame_.frame(), v8::Local<v8::Context>::New(Isolate(), v8_context_),
         /*world_id=*/0, /*is_webview=*/false);
   }
 
   void RequestGarbageCollection() {
-    v8::Isolate::GetCurrent()->RequestGarbageCollectionForTesting(
+    Isolate()->RequestGarbageCollectionForTesting(
         v8::Isolate::kFullGarbageCollection);
   }
 
@@ -102,7 +105,7 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
 
  private:
   void SetUp() override {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    v8::Isolate* isolate = Isolate();
     v8::HandleScope handle_scope(isolate);
     // We need a context that has been initialized by blink; grab the main world
     // context from the web frame.
@@ -132,7 +135,7 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
 };
 
 TEST_P(GCCallbackTest, GCBeforeContextInvalidated) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(v8_context());
 
@@ -158,7 +161,7 @@ TEST_P(GCCallbackTest, GCBeforeContextInvalidated) {
 }
 
 TEST_P(GCCallbackTest, ContextInvalidatedBeforeGC) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(v8_context());
 
@@ -189,7 +192,7 @@ TEST_P(GCCallbackTest, ContextInvalidatedBeforeGC) {
 // callback has a chance to run.
 TEST_P(GCCallbackTest,
        ContextInvalidatedBetweenGarbageCollectionAndCallbackRunning) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(v8_context());
 

@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_IMAGECAPTURE_IMAGE_CAPTURE_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/time/time.h"
 #include "media/capture/mojom/image_capture.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -20,6 +22,7 @@
 namespace blink {
 
 class ExceptionState;
+class ImageBitmap;
 class ImageCaptureFrameGrabber;
 class MediaStreamTrack;
 class MediaTrackCapabilities;
@@ -28,7 +31,6 @@ class MediaTrackConstraintSet;
 class MediaTrackSettings;
 class PhotoCapabilities;
 class PhotoSettings;
-class ScriptPromise;
 class ScriptPromiseResolver;
 
 class MODULES_EXPORT ImageCapture final
@@ -49,7 +51,8 @@ class MODULES_EXPORT ImageCapture final
   ImageCapture(ExecutionContext*,
                MediaStreamTrack*,
                bool pan_tilt_zoom_allowed,
-               base::OnceClosure initialized_callback);
+               base::OnceClosure initialized_callback,
+               base::TimeDelta grab_frame_timeout = base::Seconds(2));
   ~ImageCapture() override;
 
   // ExecutionContextLifecycleObserver
@@ -60,7 +63,7 @@ class MODULES_EXPORT ImageCapture final
   ScriptPromise getPhotoCapabilities(ScriptState*);
   ScriptPromise getPhotoSettings(ScriptState*);
   ScriptPromise takePhoto(ScriptState*, const PhotoSettings*);
-  ScriptPromise grabFrame(ScriptState*);
+  ScriptPromiseTyped<ImageBitmap> grabFrame(ScriptState*);
 
   bool CheckAndApplyMediaTrackConstraintsToSettings(
       media::mojom::blink::PhotoSettings*,
@@ -128,16 +131,16 @@ class MODULES_EXPORT ImageCapture final
                              bool result);
   void OnMojoTakePhoto(ScriptPromiseResolver*, media::mojom::blink::BlobPtr);
 
-  // If getUserMedia contains either pan, tilt, or zoom constraints, the
+  // If getUserMedia contains Image Capture constraints, the
   // corresponding settings will be set when image capture is created.
-  void SetPanTiltZoomSettingsFromTrack(
+  void SetVideoTrackDeviceSettingsFromTrack(
       base::OnceClosure callback,
       media::mojom::blink::PhotoStatePtr photo_state);
-  // Update local track settings and capabilities once pan, tilt, and zoom
+  // Update local track settings and capabilities once Image Capture
   // settings have been set. |done_callback| will be called when settings and
   // capabilities are retrieved.
-  void OnSetPanTiltZoomSettingsFromTrack(base::OnceClosure done_callback,
-                                         bool result);
+  void OnSetVideoTrackDeviceSettingsFromTrack(base::OnceClosure done_callback,
+                                              bool result);
   // Update local track settings and capabilities and call
   // |initialized_callback| to indicate settings and capabilities have been
   // retrieved.
@@ -167,8 +170,7 @@ class MODULES_EXPORT ImageCapture final
 
   // Get the name a constraint for which the existence of the capability or
   // the permission to access the capability does not match the constraint.
-  const absl::optional<const char*>
-  GetConstraintWithCapabilityExistenceMismatch(
+  const std::optional<const char*> GetConstraintWithCapabilityExistenceMismatch(
       const MediaTrackConstraintSet* constraint_set,
       MediaTrackConstraintSetType) const;
 
@@ -191,6 +193,8 @@ class MODULES_EXPORT ImageCapture final
   Member<PhotoCapabilities> photo_capabilities_;
 
   HeapHashSet<Member<ScriptPromiseResolver>> service_requests_;
+
+  const base::TimeDelta grab_frame_timeout_;
 };
 
 }  // namespace blink

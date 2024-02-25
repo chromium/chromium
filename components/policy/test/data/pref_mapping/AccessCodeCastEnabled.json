@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "media_router.access_code_cast.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "AccessCodeCastEnabled": false
+        },
+        "prefs": {
+          "media_router.access_code_cast.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "AccessCodeCastEnabled": true
+        },
+        "prefs": {
+          "media_router.access_code_cast.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

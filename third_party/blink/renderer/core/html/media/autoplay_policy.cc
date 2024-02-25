@@ -200,10 +200,12 @@ void AutoplayPolicy::StartAutoplayMutedWhenVisible() {
     return;
 
   autoplay_intersection_observer_ = IntersectionObserver::Create(
-      {}, {IntersectionObserver::kMinimumThreshold}, &element_->GetDocument(),
+      element_->GetDocument(),
       WTF::BindRepeating(&AutoplayPolicy::OnIntersectionChangedForAutoplay,
                          WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kMediaIntersectionObserver);
+      LocalFrameUkmAggregator::kMediaIntersectionObserver,
+      IntersectionObserver::Params{
+          .thresholds = {IntersectionObserver::kMinimumThreshold}});
   autoplay_intersection_observer_->observe(element_);
 }
 
@@ -263,9 +265,27 @@ bool AutoplayPolicy::RequestAutoplayByAttribute() {
   return false;
 }
 
-absl::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
-  if (!LocalFrame::HasTransientUserActivation(
-          element_->GetDocument().GetFrame())) {
+bool AutoplayPolicy::HasTransientUserActivation() const {
+  LocalFrame* frame = element_->GetDocument().GetFrame();
+  if (!frame) {
+    return false;
+  }
+
+  if (LocalFrame::HasTransientUserActivation(frame)) {
+    return true;
+  }
+
+  Frame* opener = frame->Opener();
+  if (opener && opener->IsLocalFrame() &&
+      LocalFrame::HasTransientUserActivation(To<LocalFrame>(opener))) {
+    return true;
+  }
+
+  return false;
+}
+
+std::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
+  if (!HasTransientUserActivation()) {
     autoplay_uma_helper_->OnAutoplayInitiated(AutoplaySource::kMethod);
     if (IsGestureNeededForPlayback())
       return DOMExceptionCode::kNotAllowedError;
@@ -275,7 +295,7 @@ absl::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
 
   MaybeSetAutoplayInitiated();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool AutoplayPolicy::IsAutoplayingMutedInternal(bool muted) const {

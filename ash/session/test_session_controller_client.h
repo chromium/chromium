@@ -96,7 +96,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   // discussion.
   void AddUserSession(
       const std::string& display_email,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
       bool provide_pref_service = true,
       bool is_new_profile = false,
       const std::string& given_name = std::string(),
@@ -106,7 +106,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   void AddUserSession(
       const AccountId& account_id,
       const std::string& display_email,
-      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
       bool provide_pref_service = true,
       bool is_new_profile = false,
       const std::string& given_name = std::string(),
@@ -146,8 +146,9 @@ class TestSessionControllerClient : public SessionControllerClient {
   void EmitAshInitialized() override;
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
+  base::FilePath GetProfilePath(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
-  absl::optional<int> GetExistingUsersCount() const override;
+  std::optional<int> GetExistingUsersCount() const override;
 
   // By default `LockScreen()` only changes the session state but no UI views
   // will be created.  If your tests requires the lock screen to be created,
@@ -167,9 +168,8 @@ class TestSessionControllerClient : public SessionControllerClient {
  private:
   void DoSwitchUser(const AccountId& account_id, bool switch_user);
 
-  const raw_ptr<SessionControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_;
-  const raw_ptr<TestPrefServiceProvider, ExperimentalAsh> prefs_provider_;
+  const raw_ptr<SessionControllerImpl, DanglingUntriaged> controller_;
+  const raw_ptr<TestPrefServiceProvider> prefs_provider_;
 
   int fake_session_id_ = 0;
   SessionInfo session_info_;

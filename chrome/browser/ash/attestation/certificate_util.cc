@@ -9,8 +9,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 namespace ash {
 namespace attestation {
@@ -21,12 +21,12 @@ CertificateExpiryStatus CheckCertificateExpiry(
   bool is_expiring_soon = false;
   bool invalid_certificate_found = false;
   bool any_certificate_found = false;
-  net::PEMTokenizer pem_tokenizer(certificate_chain, {"CERTIFICATE"});
+  bssl::PEMTokenizer pem_tokenizer(certificate_chain, {"CERTIFICATE"});
   while (pem_tokenizer.GetNext()) {
     any_certificate_found = true;
     scoped_refptr<net::X509Certificate> x509 =
         net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(pem_tokenizer.data())));
+            base::as_byte_span(pem_tokenizer.data()));
     if (!x509.get() || x509->valid_expiry().is_null()) {
       // In theory this should not happen but in practice parsing X.509 can be
       // brittle and there are a lot of factors including which underlying

@@ -6,21 +6,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("supervised_user_preferences") {
-  sources = [
-    "supervised_user_preferences.cc",
-    "supervised_user_preferences.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/keyed_service/core",
-    "//components/prefs",
-    "//components/supervised_user/core/browser/proto",
-    "//components/supervised_user/core/common",
-  ]
-}
-
 static_library("list_family_members_service") {
   sources = [
     "list_family_members_service.cc",
@@ -45,6 +30,7 @@ static_library("fetcher_config") {
     "fetcher_config.h",
   ]
   deps = [
+    "//components/signin/public/identity_manager:identity_manager",
     "//google_apis",
     "//net/traffic_annotation",
   ]
@@ -90,12 +76,10 @@ static_library("browser") {
   sources = [
     "child_account_service.cc",
     "child_account_service.h",
-    "kids_chrome_management_client.cc",
-    "kids_chrome_management_client.h",
-    "kids_management_url_checker_client.cc",
-    "kids_management_url_checker_client.h",
-    "parental_control_metrics.cc",
-    "parental_control_metrics.h",
+    "family_link_user_log_record.cc",
+    "family_link_user_log_record.h",
+    "kids_chrome_management_url_checker_client.cc",
+    "kids_chrome_management_url_checker_client.h",
     "permission_request_creator.h",
     "permission_request_creator_impl.cc",
     "permission_request_creator_impl.h",
@@ -111,6 +95,8 @@ static_library("browser") {
     "supervised_user_metrics_service.h",
     "supervised_user_pref_store.cc",
     "supervised_user_pref_store.h",
+    "supervised_user_preferences.cc",
+    "supervised_user_preferences.h",
     "supervised_user_service.cc",
     "supervised_user_service.h",
     "supervised_user_service_observer.h",
@@ -120,6 +106,8 @@ static_library("browser") {
     "supervised_user_settings_service.h",
     "supervised_user_url_filter.cc",
     "supervised_user_url_filter.h",
+    "supervised_user_utils.cc",
+    "supervised_user_utils.h",
     "web_content_handler.cc",
     "web_content_handler.h",
   ]
@@ -131,6 +119,7 @@ static_library("browser") {
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
     "//components/safe_search_api",
+    "//components/safe_search_api:safe_search_client",
     "//components/supervised_user/core/browser/proto",
     "//extensions/buildflags",
     "//third_party/protobuf:protobuf_lite",
@@ -140,7 +129,6 @@ static_library("browser") {
     ":fetcher",
     ":fetcher_config",
     ":list_family_members_service",
-    ":supervised_user_preferences",
     "//base",
     "//components/content_settings/core/browser",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
@@ -161,6 +149,16 @@ static_library("browser") {
     "//ui/base",
     "//url",
   ]
+
+  if (is_android) {
+    deps += [ "//components/supervised_user/android:supervised_user_preferences_jni_headers" ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("supervised_user_utils_enum_javagen") {
+    sources = [ "supervised_user_utils.h" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -168,9 +166,10 @@ source_set("unit_tests") {
   sources = [
     "api_access_token_fetcher_unittest.cc",
     "child_account_service_unittest.cc",
-    "kids_management_url_checker_client_unittest.cc",
+    "family_link_user_log_record_unittest.cc",
+    "fetcher_config_unittest.cc",
+    "kids_chrome_management_url_checker_client_unittest.cc",
     "list_family_members_service_unittest.cc",
-    "parental_control_metrics_unittest.cc",
     "proto_fetcher_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
     "supervised_user_content_settings_provider_unittest.cc",
@@ -189,12 +188,12 @@ source_set("unit_tests") {
     ":fetcher",
     ":fetcher_config",
     ":list_family_members_service",
-    ":supervised_user_preferences",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser:test_support",
     "//components/prefs:test_support",
     "//components/resources:components_resources",
+    "//components/safe_search_api:test_support",
     "//components/signin/public/base",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",
@@ -212,10 +211,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
-}
-
-if (is_android) {
-  java_cpp_enum("supervised_user_url_filter_enum_javagen") {
-    sources = [ "supervised_user_url_filter.h" ]
-  }
 }

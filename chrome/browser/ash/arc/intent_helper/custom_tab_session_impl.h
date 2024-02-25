@@ -60,7 +60,7 @@ class CustomTabSessionImpl : public arc::mojom::CustomTabSession,
 
   // The browser object provides windowing and command controller for the
   // custom tab.
-  raw_ptr<Browser, ExperimentalAsh> browser_;
+  raw_ptr<Browser> browser_;
 
   // The custom tab object.
   std::unique_ptr<arc::CustomTab> custom_tab_;

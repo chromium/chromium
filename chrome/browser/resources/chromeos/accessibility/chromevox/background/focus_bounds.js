@@ -7,7 +7,8 @@
  * ring location.
  */
 
-import {constants} from '../../common/constants.js';
+import {constants} from '/common/constants.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 export const FocusBounds = {
   /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
@@ -31,3 +32,5 @@ export const FocusBounds = {
 
 /** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
 FocusBounds.current_ = [];
+
+TestImportManager.exportForTesting(['FocusBounds', FocusBounds]);

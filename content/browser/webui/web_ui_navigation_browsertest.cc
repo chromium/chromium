@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   TestUntrustedDataSourceHeaders headers;
   std::vector<std::string> frame_ancestors({"chrome://web-ui"});
   headers.frame_ancestors =
-      absl::make_optional<std::vector<std::string>>(std::move(frame_ancestors));
+      std::make_optional<std::vector<std::string>>(std::move(frame_ancestors));
 
   // Add a DataSource for the chrome-untrusted:// iframe with frame ancestor
   // chrome://web-ui.

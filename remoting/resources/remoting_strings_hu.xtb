@@ -4,7 +4,6 @@
 <translation id="1002108253973310084">A rendszer nem kompatibilis protokollverziót észlelt. Győződjön meg róla, hogy a szoftver legfrissebb verziója van telepítve mindkét számítógépen, majd próbálja újra.</translation>
 <translation id="1008557486741366299">Ne most</translation>
 <translation id="1201402288615127009">Tovább</translation>
-<translation id="1296511125400541222">Copyright 2023 – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="1297009705180977556">Hiba a következőhöz való csatlakozáskor: <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">A kért objektum nem létezik.</translation>
 <translation id="1480046233931937785">Készítők</translation>
@@ -89,7 +88,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="4808503597364150972">Kérjük, adja meg a(z) <ph name="HOSTNAME" /> PIN kódját.</translation>
 <translation id="4812684235631257312">Gazdagép</translation>
 <translation id="4867841927763172006">PrtScn küldése</translation>
-<translation id="4960795469833295568">Copyright 2023 – Google LLC. Minden jog fenntartva.</translation>
 <translation id="4974476491460646149">Megszakítva a kapcsolat a következővel: <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Előbb be kell állítania számítógépén a távoli hozzáférést.</translation>
 <translation id="4987330545941822761">A Chrome távoliasztal-szolgáltatás nem tudja meghatározni az URL-ek helyi megnyitásához szükséges böngészőt. Válassza ki a böngészőt az alábbi listáról.</translation>
@@ -154,6 +152,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="7693372326588366043">Gazdagépek listájának frissítése</translation>
 <translation id="7714222945760997814">Bejelentés</translation>
 <translation id="7868137160098754906">Kérjük, adja meg a PIN kódot a távoli számítógéphez.</translation>
+<translation id="7881455334687220899">Copyright 2024 – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="7895403300744144251">A távoli számítógép biztonsági házirendjei nem engedélyeznek kapcsolatokat a fiókja felől.</translation>
 <translation id="7936528439960309876">Rögzítés jobbra</translation>
 <translation id="7970576581263377361">A hitelesítés nem sikerült. Kérjük, jelentkezzen be újra a Chromiumba.</translation>
@@ -185,6 +184,7 @@ Ha már be van jelölve a(z) „<ph name="SERVICE_SCRIPT_NAME" />” melletti n�
 <translation id="8747048596626351634">A munkamenet összeomlott vagy nem tudott elindulni. Ha található ~/.chrome-remote-desktop-session munkamenet a távoli számítógépen, győződjön meg arról, hogy hosszú ideig, előtérben futó folyamatot indít el, például asztali környezetet vagy ablakkezelőt.</translation>
 <translation id="8804164990146287819">Adatvédelmi irányelvek</translation>
 <translation id="8906511416443321782">Mikrofonhoz való hozzáférés szükséges a hanganyagok rögzítéséhez és a Chrome távoliasztal-szolgáltatást használó kliensre való streameléséhez.</translation>
+<translation id="9042277333359847053">Copyright 2024 – Google LLC. Minden jog fenntartva.</translation>
 <translation id="9111855907838866522">Csatlakozott a távoli eszközhöz. A menü megnyitásához koppintson négy ujjal a képernyőre.</translation>
 <translation id="9126115402994542723">Ne kérje újra a PIN kódot, amikor erről az eszközről csatlakozom a szerverhez.</translation>
 <translation id="916856682307586697">Az alapértelmezett XSession indítása</translation>

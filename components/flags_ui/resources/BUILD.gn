@@ -7,19 +7,17 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "flags_ui"
 
-  static_files = [
-    "flags.css",
-    "flags.html",
-  ]
+  static_files = [ "flags.html" ]
 
-  web_component_files = [ "experiment.ts" ]
+  web_component_files = [
+    "experiment.ts",
+    "app.ts",
+  ]
   html_to_wrapper_template = "native"
 
-  non_web_component_files = [
-    "flags.ts",
-    "flags_browser_proxy.ts",
-  ]
+  non_web_component_files = [ "flags_browser_proxy.ts" ]
 
+  ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
 

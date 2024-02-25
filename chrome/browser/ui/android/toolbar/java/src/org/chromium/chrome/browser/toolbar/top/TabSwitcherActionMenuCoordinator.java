@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuDivider;
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
+import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.content.Context;
 import android.view.View;
@@ -21,11 +21,12 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
@@ -42,8 +43,12 @@ public class TabSwitcherActionMenuCoordinator {
     private View mContentView;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MenuItemType.DIVIDER, MenuItemType.CLOSE_TAB, MenuItemType.NEW_TAB,
-            MenuItemType.NEW_INCOGNITO_TAB})
+    @IntDef({
+        MenuItemType.DIVIDER,
+        MenuItemType.CLOSE_TAB,
+        MenuItemType.NEW_TAB,
+        MenuItemType.NEW_INCOGNITO_TAB
+    })
     public @interface MenuItemType {
         int DIVIDER = 0;
         int CLOSE_TAB = 1;
@@ -64,12 +69,16 @@ public class TabSwitcherActionMenuCoordinator {
             TabSwitcherActionMenuCoordinator menu, Callback<Integer> onItemClicked) {
         return (view) -> {
             Context context = view.getContext();
-            menu.displayMenu(context, (ListMenuButton) view, menu.buildMenuItems(), (id) -> {
-                // TODO(crbug.com/1317817): Refactor to allow subclasses to record different user
-                // actions and update StartSurfaceTabSwitcherActionMenuCoordinator.
-                recordUserActions(id);
-                onItemClicked.onResult(id);
-            });
+            menu.displayMenu(
+                    context,
+                    (ListMenuButton) view,
+                    menu.buildMenuItems(),
+                    (id) -> {
+                        // TODO(crbug.com/1317817): Refactor to allow subclasses to record different
+                        // user actions and update StartSurfaceTabSwitcherActionMenuCoordinator.
+                        recordUserActions(id);
+                        onItemClicked.onResult(id);
+                    });
             return true;
         };
     }
@@ -93,30 +102,42 @@ public class TabSwitcherActionMenuCoordinator {
      * @param onItemClicked  The clicked listener handling clicks on TabSwitcherActionMenu.
      */
     @VisibleForTesting
-    void displayMenu(final Context context, ListMenuButton anchorView, ModelList listItems,
+    void displayMenu(
+            final Context context,
+            ListMenuButton anchorView,
+            ModelList listItems,
             Callback<Integer> onItemClicked) {
         RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
-        BasicListMenu listMenu = new BasicListMenu(context, listItems, (model) -> {
-            onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        });
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        context,
+                        listItems,
+                        (model) -> {
+                            onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                        });
 
         mContentView = listMenu.getContentView();
-        int verticalPadding = context.getResources().getDimensionPixelOffset(
-                R.dimen.tab_switcher_menu_vertical_padding);
+        int verticalPadding =
+                context.getResources()
+                        .getDimensionPixelOffset(R.dimen.tab_switcher_menu_vertical_padding);
         ListView listView = listMenu.getListView();
-        listView.setPaddingRelative(listView.getPaddingStart(), verticalPadding,
-                listView.getPaddingEnd(), verticalPadding);
-        ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
-            @Override
-            public ListMenu getListMenu() {
-                return listMenu;
-            }
+        listView.setPaddingRelative(
+                listView.getPaddingStart(),
+                verticalPadding,
+                listView.getPaddingEnd(),
+                verticalPadding);
+        ListMenuButtonDelegate delegate =
+                new ListMenuButtonDelegate() {
+                    @Override
+                    public ListMenu getListMenu() {
+                        return listMenu;
+                    }
 
-            @Override
-            public RectProvider getRectProvider(View listMenuButton) {
-                return rectProvider;
-            }
-        };
+                    @Override
+                    public RectProvider getRectProvider(View listMenuButton) {
+                        return rectProvider;
+                    }
+                };
 
         anchorView.setDelegate(delegate, false);
         anchorView.showMenu();
@@ -144,8 +165,10 @@ public class TabSwitcherActionMenuCoordinator {
                 return buildMenuListItem(
                         R.string.menu_new_tab, R.id.new_tab_menu_id, R.drawable.new_tab_icon);
             case MenuItemType.NEW_INCOGNITO_TAB:
-                return buildMenuListItem(R.string.menu_new_incognito_tab,
-                        R.id.new_incognito_tab_menu_id, R.drawable.incognito_simple,
+                return buildMenuListItem(
+                        R.string.menu_new_incognito_tab,
+                        R.id.new_incognito_tab_menu_id,
+                        R.drawable.incognito_simple,
                         IncognitoUtils.isIncognitoModeEnabled());
             case MenuItemType.DIVIDER:
             default:

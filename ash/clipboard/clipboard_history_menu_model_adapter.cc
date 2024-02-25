@@ -4,7 +4,10 @@
 
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/clipboard/clipboard_history.h"
@@ -27,7 +30,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
@@ -75,12 +77,8 @@ bool IsHeaderRequired() {
 // Returns whether the clipboard history menu requires a footer.
 bool IsFooterRequired(
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
-    const absl::optional<base::Time>& menu_last_time_shown,
-    const absl::optional<base::Time>& nudge_last_time_shown) {
-  if (!features::IsClipboardHistoryFooterEnabled()) {
-    return false;
-  }
-
+    const std::optional<base::Time>& menu_last_time_shown,
+    const std::optional<base::Time>& nudge_last_time_shown) {
   // A footer is always required when the menu is shown via Ctrl+V long press.
   using crosapi::mojom::ClipboardHistoryControllerShowSource;
   if (show_source == ClipboardHistoryControllerShowSource::kControlVLongpress) {
@@ -338,8 +336,7 @@ class ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore {
     }
   }
 
-  const raw_ptr<ClipboardHistoryMenuModelAdapter, ExperimentalAsh>
-      menu_model_adapter_;
+  const raw_ptr<ClipboardHistoryMenuModelAdapter> menu_model_adapter_;
 };
 
 // ClipboardHistoryMenuModelAdapter --------------------------------------------
@@ -363,8 +360,8 @@ void ClipboardHistoryMenuModelAdapter::Run(
     const gfx::Rect& anchor_rect,
     ui::MenuSourceType source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
-    const absl::optional<base::Time>& menu_last_time_shown,
-    const absl::optional<base::Time>& nudge_last_time_shown) {
+    const std::optional<base::Time>& menu_last_time_shown,
+    const std::optional<base::Time>& nudge_last_time_shown) {
   DCHECK(!root_view_);
   DCHECK(model_);
   DCHECK(item_snapshots_.empty());
@@ -414,13 +411,14 @@ void ClipboardHistoryMenuModelAdapter::Run(
     clipboard_image_factory->Activate();
   }
 
-  root_view_ = CreateMenu();
+  std::unique_ptr<views::MenuItemView> root_view = CreateMenu();
+  root_view_ = root_view.get();
   root_view_->SetTitle(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_TITLE));
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      root_view_, views::MenuRunner::CONTEXT_MENU |
-                      views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
-                      views::MenuRunner::FIXED_ANCHOR);
+      std::move(root_view), views::MenuRunner::CONTEXT_MENU |
+                                views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
+                                views::MenuRunner::FIXED_ANCHOR);
   menu_runner_->RunMenuAt(
       /*parent=*/nullptr, /*button_controller=*/nullptr, anchor_rect,
       views::MenuAnchorPosition::kBubbleBottomRight, source_type);
@@ -436,10 +434,9 @@ void ClipboardHistoryMenuModelAdapter::Cancel(bool will_paste_item) {
   menu_runner_->Cancel();
 }
 
-absl::optional<int>
-ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
+std::optional<int> ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
   if (item_views_by_command_id_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::ranges::min(item_views_by_command_id_, /*comp=*/{},
@@ -447,15 +444,15 @@ ClipboardHistoryMenuModelAdapter::GetFirstMenuItemCommand() {
       .first;
 }
 
-absl::optional<int>
+std::optional<int>
 ClipboardHistoryMenuModelAdapter::GetSelectedMenuItemCommand() const {
   DCHECK(root_view_);
 
   // `root_view_` may be selected if no menu item is under selection.
   auto* menu_item = root_view_->GetMenuController()->GetSelectedMenuItem();
   return menu_item && menu_item != root_view_
-             ? absl::make_optional(menu_item->GetCommand())
-             : absl::nullopt;
+             ? std::make_optional(menu_item->GetCommand())
+             : std::nullopt;
 }
 
 const ClipboardHistoryItem&
@@ -501,7 +498,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
   // Calculate `new_selected_command_id` before removing the item specified by
   // `command_id` from data structures because the item to be removed is
   // needed in calculation.
-  absl::optional<int> new_selected_command_id =
+  std::optional<int> new_selected_command_id =
       CalculateSelectedCommandIdAfterDeletion(command_id);
 
   // Disable a11y for all item views. It ensures that when deleting multiple
@@ -529,7 +526,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
       item_view_to_delete->GetViewAccessibility();
 
   // Polish the a11y announcement for deletion operation.
-  view_accessibility.OverrideDescription(
+  view_accessibility.SetDescription(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_ITEM_DELETION));
 
   // Enable a11y announcement for the view to be deleted.
@@ -537,15 +534,16 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
 
   // Disabling `item_view_to_delete` is more like implementation details.
   // So do not expose it to users.
-  view_accessibility.OverrideIsEnabled(true);
+  view_accessibility.SetIsEnabled(true);
 
-  // Specify `item_view_to_delete`'s position in the set. Without calling
-  // `OverridePosInSet()`, the menu's size after deletion may be announced.
+  // Specify `item_view_to_delete`'s position in the set. Without updating the
+  // position in set and set size, the menu's size after deletion may be
+  // announced.
   const int pos_in_set = std::distance(item_views_by_command_id_.begin(),
                                        item_view_to_delete_iter) +
                          1;
-  view_accessibility.OverridePosInSet(pos_in_set,
-                                      item_views_by_command_id_.size());
+  view_accessibility.SetPosInSet(pos_in_set);
+  view_accessibility.SetSetSize(item_views_by_command_id_.size());
 
   // Disable views to be removed in order to prevent them from handling
   // events.
@@ -568,7 +566,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
 }
 
 void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocus(bool reverse) {
-  absl::optional<int> selected_command = GetSelectedMenuItemCommand();
+  std::optional<int> selected_command = GetSelectedMenuItemCommand();
 
   // If no item is selected, select the topmost or bottom menu item depending
   // on the focus move direction.
@@ -624,7 +622,7 @@ ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(
 
 void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocusFromSelectedItem(
     bool reverse) {
-  absl::optional<int> selected_item_command = GetSelectedMenuItemCommand();
+  std::optional<int> selected_item_command = GetSelectedMenuItemCommand();
   DCHECK(selected_item_command.has_value());
   auto selected_item_iter =
       item_views_by_command_id_.find(*selected_item_command);
@@ -687,7 +685,7 @@ int ClipboardHistoryMenuModelAdapter::CalculateSelectedCommandIdAfterDeletion(
 }
 
 void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {
-  absl::optional<int> original_selected_command_id =
+  std::optional<int> original_selected_command_id =
       GetSelectedMenuItemCommand();
 
   // The menu item view and its corresponding command should be removed at the

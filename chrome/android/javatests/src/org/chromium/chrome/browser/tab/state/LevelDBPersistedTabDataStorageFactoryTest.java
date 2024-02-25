@@ -29,26 +29,20 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/**
- * Tests relating to {@link LevelDBPersistedTabDataStorageFactory}
- */
+/** Tests relating to {@link LevelDBPersistedTabDataStorageFactory} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LevelDBPersistedTabDataStorageFactoryTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock
-    private Profile mProfile1;
+    @Mock private Profile mProfile1;
 
-    @Mock
-    private Profile mProfile2;
+    @Mock private Profile mProfile2;
 
-    @Mock
-    private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
+    @Mock private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
 
     @Before
     public void setUp() throws Exception {
@@ -68,25 +62,25 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
     @SmallTest
     @Test
     public void testFactoryMethod() {
-        Profile realProfile = Profile.getLastUsedRegularProfile();
+        Profile realProfile = ProfileManager.getLastUsedRegularProfile();
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
-        Profile.setLastUsedProfileForTesting(mProfile1);
+        ProfileManager.setLastUsedProfileForTesting(mProfile1);
         LevelDBPersistedTabDataStorage profile1Storage = factory.create();
-        Profile.setLastUsedProfileForTesting(mProfile2);
+        ProfileManager.setLastUsedProfileForTesting(mProfile2);
         LevelDBPersistedTabDataStorage profile2Storage = factory.create();
-        Profile.setLastUsedProfileForTesting(mProfile1);
+        ProfileManager.setLastUsedProfileForTesting(mProfile1);
         LevelDBPersistedTabDataStorage profile1StorageAgain = factory.create();
         Assert.assertEquals(profile1Storage, profile1StorageAgain);
         Assert.assertNotEquals(profile1Storage, profile2Storage);
         // Restore the original profile so the Activity can shut down correctly.
-        Profile.setLastUsedProfileForTesting(realProfile);
+        ProfileManager.setLastUsedProfileForTesting(realProfile);
     }
 
     @UiThreadTest
     @SmallTest
     @Test
     public void testStorageDestroyedWhenProfileDestroyed() {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
         LevelDBPersistedTabDataStorage storage = factory.create();
         ProfileManager.onProfileDestroyed(profile);

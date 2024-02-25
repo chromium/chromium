@@ -5,18 +5,20 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -59,9 +61,10 @@ MenuEntryView* MenuEntryView::Show(
     DisplayOverlayController* display_overlay_controller) {
   auto* menu_entry =
       display_overlay_controller->GetOverlayWidgetContentsView()->AddChildView(
-          std::make_unique<MenuEntryView>(pressed_callback,
-                                          on_position_changed_callback,
-                                          display_overlay_controller));
+          std::make_unique<MenuEntryView>(
+              std::move(pressed_callback),
+              std::move(on_position_changed_callback),
+              display_overlay_controller));
   menu_entry->Init();
   return menu_entry;
 }
@@ -100,7 +103,7 @@ void MenuEntryView::OnMouseDragEndCallback() {
   // underneath the overlay. So it needs to leave focus to make event target
   // leave from the overlay layer.
   on_position_changed_callback_.Run(/*leave_focus=*/true,
-                                    absl::make_optional(origin()));
+                                    std::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kMouseDragRepostion,
@@ -110,7 +113,7 @@ void MenuEntryView::OnMouseDragEndCallback() {
 void MenuEntryView::OnGestureDragEndCallback() {
   ChangeMenuEntryOnDrag(/*is_dragging=*/false);
   on_position_changed_callback_.Run(/*leave_focus=*/true,
-                                    absl::make_optional(origin()));
+                                    std::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kTouchscreenDragRepostion,
@@ -119,7 +122,7 @@ void MenuEntryView::OnGestureDragEndCallback() {
 
 void MenuEntryView::OnKeyReleasedCallback() {
   on_position_changed_callback_.Run(/*leave_focus=*/false,
-                                    absl::make_optional(origin()));
+                                    std::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,
@@ -159,8 +162,8 @@ void MenuEntryView::Init() {
 
   SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kGameControlsGamepadIcon, SK_ColorBLACK,
-                                     kMenuEntryIconSize));
+      ui::ImageModel::FromVectorIcon(chromeos::kGameDashboardGamepadIcon,
+                                     SK_ColorBLACK, kMenuEntryIconSize));
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
@@ -175,21 +178,20 @@ void MenuEntryView::Init() {
   focus_ring->SetHaloThickness(kHaloThickness);
   focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
 
-  auto position = CalculatePosition();
+  const auto position = CalculatePosition();
   SetBounds(position.x(), position.y(), kMenuEntrySize, kMenuEntrySize);
 }
 
 gfx::Point MenuEntryView::CalculatePosition() const {
   const auto* touch_injector = display_overlay_controller_->touch_injector();
-  auto normalized_location = touch_injector->menu_entry_location();
-  if (normalized_location) {
-    auto content_bounds = touch_injector->content_bounds_f();
+  if (auto normalized_location = touch_injector->menu_entry_location()) {
+    const auto content_bounds = touch_injector->content_bounds_f();
     return gfx::Point(static_cast<int>(std::round(normalized_location->x() *
                                                   content_bounds.width())),
                       static_cast<int>(std::round(normalized_location->y() *
                                                   content_bounds.height())));
   } else {
-    auto* parent_view =
+    const auto* parent_view =
         display_overlay_controller_->GetOverlayWidgetContentsView();
     if (!parent_view || parent_view->bounds().IsEmpty()) {
       return gfx::Point();
@@ -237,9 +239,8 @@ void MenuEntryView::ChangeMenuEntryOnDrag(bool is_dragging) {
 }
 
 void MenuEntryView::SetCursor(ui::mojom::CursorType cursor_type) {
-  auto* widget = GetWidget();
   // widget is null for test.
-  if (widget) {
+  if (auto* widget = GetWidget()) {
     widget->SetCursor(cursor_type);
   }
 }
@@ -259,5 +260,8 @@ void MenuEntryView::SetRepositionController() {
   reposition_controller_->set_key_released_callback(base::BindRepeating(
       &MenuEntryView::OnKeyReleasedCallback, base::Unretained(this)));
 }
+
+BEGIN_METADATA(MenuEntryView)
+END_METADATA
 
 }  // namespace arc::input_overlay

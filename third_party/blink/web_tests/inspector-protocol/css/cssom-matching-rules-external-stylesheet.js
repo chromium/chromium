@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <link rel="stylesheet" type="text/css" href="${testRunner.url("resources/cssom-matching-rules-modify-rule.css")}">
 <link rel="stylesheet" type="text/css" href="${testRunner.url("resources/cssom-matching-rules-insert-rule.css")}">

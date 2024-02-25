@@ -5,6 +5,7 @@
 #ifndef NET_DNS_HOST_RESOLVER_SYSTEM_TASK_H_
 #define NET_DNS_HOST_RESOLVER_SYSTEM_TASK_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "net/base/network_handle.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -105,11 +105,11 @@ class NET_EXPORT HostResolverSystemTask {
       const NetLogWithSource& job_net_log = NetLogWithSource(),
       handles::NetworkHandle network = handles::kInvalidNetworkHandle);
 
-  // If `hostname` is absl::nullopt, resolves the result of GetHostName().
+  // If `hostname` is std::nullopt, resolves the result of GetHostName().
   // Prefer using the above 2 static functions for constructing a
   // HostResolverSystemTask.
   HostResolverSystemTask(
-      absl::optional<std::string> hostname,
+      std::optional<std::string> hostname,
       AddressFamily address_family,
       HostResolverFlags flags,
       const Params& params = Params(nullptr, 0),
@@ -143,9 +143,9 @@ class NET_EXPORT HostResolverSystemTask {
                         const int os_error,
                         int error);
 
-  // If `hostname_` is absl::nullopt, this class should resolve the result of
+  // If `hostname_` is std::nullopt, this class should resolve the result of
   // net::GetHostName() (the machine's own hostname).
-  const absl::optional<std::string> hostname_;
+  const std::optional<std::string> hostname_;
   const AddressFamily address_family_;
   const HostResolverFlags flags_;
 
@@ -209,7 +209,7 @@ NET_EXPORT_PRIVATE void SetSystemDnsResolutionTaskRunnerForTesting(
 // invoked on the main thread.
 // The override should never invoke `results_cb` synchronously.
 NET_EXPORT void SetSystemDnsResolverOverride(
-    base::RepeatingCallback<void(const absl::optional<std::string>& host,
+    base::RepeatingCallback<void(const std::optional<std::string>& host,
                                  AddressFamily address_family,
                                  HostResolverFlags host_resolver_flags,
                                  SystemDnsResultsCallback results_cb,

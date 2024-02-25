@@ -17,7 +17,7 @@
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
-#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
+#include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -26,8 +26,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace dnr_api = api::declarative_net_request;
 
@@ -155,7 +154,7 @@ std::ostream& operator<<(std::ostream& output, const RequestAction& action) {
 }
 
 std::ostream& operator<<(std::ostream& output,
-                         const absl::optional<RequestAction>& action) {
+                         const std::optional<RequestAction>& action) {
   if (!action)
     return output << "empty Optional<RequestAction>";
   return output << *action;
@@ -288,20 +287,20 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_INVALID_ALLOW_ALL_REQUESTS_RESOURCE_TYPE:
       output << "ERROR_INVALID_ALLOW_ALL_REQUESTS_RESOURCE_TYPE";
       break;
-    case ParseResult::ERROR_NO_HEADERS_SPECIFIED:
-      output << "ERROR_NO_HEADERS_SPECIFIED";
+    case ParseResult::ERROR_NO_HEADERS_TO_MODIFY_SPECIFIED:
+      output << "ERROR_NO_HEADERS_TO_MODIFY_SPECIFIED";
       break;
-    case ParseResult::ERROR_EMPTY_REQUEST_HEADERS_LIST:
-      output << "ERROR_EMPTY_REQUEST_HEADERS_LIST";
+    case ParseResult::ERROR_EMPTY_MODIFY_REQUEST_HEADERS_LIST:
+      output << "ERROR_EMPTY_MODIFY_REQUEST_HEADERS_LIST";
       break;
-    case ParseResult::ERROR_EMPTY_RESPONSE_HEADERS_LIST:
-      output << "ERROR_EMPTY_RESPONSE_HEADERS_LIST";
+    case ParseResult::ERROR_EMPTY_MODIFY_RESPONSE_HEADERS_LIST:
+      output << "ERROR_EMPTY_MODIFY_RESPONSE_HEADERS_LIST";
       break;
-    case ParseResult::ERROR_INVALID_HEADER_NAME:
-      output << "ERROR_INVALID_HEADER_NAME";
+    case ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_NAME:
+      output << "ERROR_INVALID_HEADER_TO_MODIFY_NAME";
       break;
-    case ParseResult::ERROR_INVALID_HEADER_VALUE:
-      output << "ERROR_INVALID_HEADER_VALUE";
+    case ParseResult::ERROR_INVALID_HEADER_TO_MODIFY_VALUE:
+      output << "ERROR_INVALID_HEADER_TO_MODIFY_VALUE";
       break;
     case ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED:
       output << "ERROR_HEADER_VALUE_NOT_SPECIFIED";
@@ -320,6 +319,27 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
       break;
     case ParseResult::ERROR_TAB_ID_DUPLICATED:
       output << "ERROR_TAB_ID_DUPLICATED";
+      break;
+    case ParseResult::ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST:
+      output << "ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST";
+      break;
+    case ParseResult::ERROR_EMPTY_EXCLUDED_RESPONSE_HEADER_MATCHING_LIST:
+      output << "ERROR_EMPTY_EXCLUDED_RESPONSE_HEADER_MATCHING_LIST";
+      break;
+    case ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME:
+      output << "ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME";
+      break;
+    case ParseResult::ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME:
+      output << "ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME";
+      break;
+    case ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE:
+      output << "ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE";
+      break;
+    case ParseResult::ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED:
+      output << "ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED";
+      break;
+    case ParseResult::ERROR_RESPONSE_HEADER_RULE_CANNOT_MODIFY_REQUEST_HEADERS:
+      output << "ERROR_RESPONSE_HEADER_RULE_CANNOT_MODIFY_REQUEST_HEADERS";
       break;
   }
   return output;
@@ -349,9 +369,12 @@ std::ostream& operator<<(std::ostream& output, LoadRulesetResult result) {
   return output;
 }
 
-std::ostream& operator<<(std::ostream& output, const RulesCountPair& count) {
-  output << "\nRulesCountPair\n";
+std::ostream& operator<<(std::ostream& output, const RuleCounts& count) {
+  output << "\nRuleCounts\n";
   output << "|rule_count| " << count.rule_count << "\n";
+  if (count.unsafe_rule_count.has_value()) {
+    output << "|unsafe_rule_count| " << *(count.unsafe_rule_count) << "\n";
+  }
   output << "|regex_rule_count| " << count.regex_rule_count << "\n";
   return output;
 }
@@ -431,12 +454,12 @@ FileBackedRulesetSource CreateTemporarySource(RulesetID id,
 dnr_api::ModifyHeaderInfo CreateModifyHeaderInfo(
     dnr_api::HeaderOperation operation,
     std::string header,
-    absl::optional<std::string> value) {
+    std::optional<std::string> value) {
   dnr_api::ModifyHeaderInfo header_info;
 
-  header_info.operation = operation;
-  header_info.header = header;
-  header_info.value = value;
+  header_info.operation = std::move(operation);
+  header_info.header = std::move(header);
+  header_info.value = std::move(value);
 
   return header_info;
 }
@@ -447,6 +470,19 @@ bool EqualsForTesting(const dnr_api::ModifyHeaderInfo& lhs,
                                                  : lhs.value == rhs.value;
   return lhs.operation == rhs.operation && lhs.header == rhs.header &&
          are_values_equal;
+}
+
+dnr_api::HeaderInfo CreateHeaderInfo(
+    std::string header,
+    std::optional<std::vector<std::string>> values,
+    std::optional<std::vector<std::string>> excluded_values) {
+  dnr_api::HeaderInfo header_info;
+
+  header_info.header = std::move(header);
+  header_info.values = std::move(values);
+  header_info.excluded_values = std::move(excluded_values);
+
+  return header_info;
 }
 
 RulesetManagerObserver::RulesetManagerObserver(RulesetManager* manager)
@@ -538,5 +574,4 @@ base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
   return {};
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

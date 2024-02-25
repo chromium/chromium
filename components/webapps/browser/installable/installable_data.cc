@@ -13,7 +13,7 @@
 
 namespace webapps {
 
-Screenshot::Screenshot(SkBitmap image, absl::optional<std::u16string> label)
+Screenshot::Screenshot(SkBitmap image, std::optional<std::u16string> label)
     : image(std::move(image)), label(label) {}
 
 Screenshot::Screenshot(const Screenshot& screenshot) = default;
@@ -29,7 +29,7 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
                                  const SkBitmap* primary_icon,
                                  bool has_maskable_primary_icon,
                                  const std::vector<Screenshot>& screenshots,
-                                 bool valid_manifest)
+                                 bool installable_check_passed)
     : errors(std::move(errors)),
       manifest_url(manifest_url),
       manifest(manifest),
@@ -38,7 +38,7 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
       primary_icon(primary_icon),
       has_maskable_primary_icon(has_maskable_primary_icon),
       screenshots(screenshots),
-      valid_manifest(valid_manifest) {}
+      installable_check_passed(installable_check_passed) {}
 
 InstallableData::~InstallableData() = default;
 

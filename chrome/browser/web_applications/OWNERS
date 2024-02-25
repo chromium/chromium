@@ -11,11 +11,6 @@ glenrob@chromium.org
 
 # Secondary
 cmp@chromium.org
-dominickn@chromium.org
-ortuno@chromium.org
-
-# OS shortcuts
-tapted@chromium.org
 
 per-file web_app_default_offline*=finnur@chromium.org
 per-file web_app_id_constants.*=dominickn@chromium.org

@@ -13,12 +13,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -147,8 +146,7 @@ std::u16string ExpandToFullWord(std::u16string trimmed_text,
     // Cut off the common prefix.
     const auto cut_match_text = match_text.substr(trimmed_lower_text.length());
     // Find the 1st word of the cut `match_text`.
-    TailoredWordBreakIterator iter(cut_match_text,
-                                   base::i18n::BreakIterator::BREAK_WORD);
+    TailoredWordBreakIterator iter(cut_match_text);
     // Append that word to the text.
     if (iter.Init() && iter.Advance() && iter.IsWord())
       return base::StrCat({trimmed_text, iter.GetString()});
@@ -320,6 +318,14 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   if (text_trimmed.empty())
     return;
 
+  // On mobile on focus, zero suggest navigations have a non-empty `text` (it
+  // contains the current page URL). Ignore these navigations as shortcut
+  // suggestions are not provided in zero suggest.
+  if (match.provider &&
+      match.provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST) {
+    return;
+  }
+
   const std::u16string text_trimmed_lowercase(
       base::i18n::ToLower(text_trimmed));
   const base::Time now(base::Time::Now());
@@ -409,6 +415,7 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
 
 void ShortcutsBackend::ShutdownOnUIThread() {
   history_service_observation_.Reset();
+  template_url_service_ = nullptr;
 }
 
 void ShortcutsBackend::OnURLsDeleted(

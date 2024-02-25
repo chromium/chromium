@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Pagina <ph name="PAGE_NUMBER" /> verwijderen</translation>
 <translation id="1113173431709655881">Cameramodus</translation>
 <translation id="1153190633558910465">Raster uit</translation>
-<translation id="1175958423215084756">Link gevonden. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Pagina <ph name="PAGE_NUMBER" /> verwijderd</translation>
 <translation id="1258009455399840361">90 graden rechtsom draaien</translation>
 <translation id="1417314334557041815">Pagina <ph name="INDEX" /> bewerken</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Naar rechts schuiven</translation>
 <translation id="3081586908890909590">Naar video opnemen</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Verbinding maken met <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Microfoon</translation>
 <translation id="3240426699337459095">Link gekopieerd</translation>
 <translation id="3354465018370944241">Foto-instellingen</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Video verwerken…</translation>
 <translation id="3789724198583203151">90 graden linksom draaien</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="4060608699153044055">Je kunt niet opnemen vanwege onvoldoende opslagruimte op het apparaat. Als je wilt opnemen, moet je ruimte vrijmaken op je apparaat.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Opname onderbreken</translation>
 <translation id="4121305183798804752">Document waargenomen</translation>
 <translation id="414641094616694804">Deze camera kan de resolutie niet wijzigen</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
-<translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="428234092390943511">Paginathumbnail</translation>
 <translation id="4349714250734879769">Frames schalen met Chrome</translation>
 <translation id="4383571725254449280">Prestatielogboeken afdrukken</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Volledige resolutie</translation>
 <translation id="4864143361253542638">Lijst met gescande pagina's</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Linkadres <ph name="URL" /> kopiëren</translation>
 <translation id="491895758387112773">Multistream-video opnemen</translation>
 <translation id="495170559598752135">Acties</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Beeldverhouding van foto</translation>
 <translation id="5057360777601936059">Je camera is momenteel niet beschikbaar.
         Controleer of de camera correct is aangesloten.</translation>
+<translation id="5157591164390831335">URL gevonden.</translation>
 <translation id="5163387177077603948">Beweegt naar rechts</translation>
-<translation id="5219374179772385066">De timelapse-modus is nu beschikbaar.</translation>
 <translation id="5235304959032763950">16 bij 9</translation>
 <translation id="5266635337630551423">Linkerbovenhoek van document</translation>
 <translation id="5317780077021120954">Opslaan</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Bedankt dat je feedback over de Camera-app geeft.
 
 Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbeeldfoto of -video bij en beschrijf wat het probleem is. (Voorbeeld: de foto is te donker of het onderwerp is niet scherp in beeld.)</translation>
+<translation id="6519884562954018934">Verbinding maken met <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Delen</translation>
 <translation id="6617916774429601017">Alle resoluties tonen</translation>
 <translation id="6631515515009660915">Spiegelen uit</translation>
@@ -133,6 +133,7 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="7450541714075000668">Tekst gekopieerd</translation>
 <translation id="7488619942230388918">Gif-video opnemen</translation>
 <translation id="7557677699350329807">Naar volgende camera</translation>
+<translation id="7562584071994185503">Tekst <ph name="TEXT" /> kopiëren</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7608223098072244877">4 bij 4</translation>
 <translation id="761421184377987513">Beweegt naar linksonder</translation>
@@ -155,10 +156,12 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8346544573713510785">Frames schalen met Camera HAL</translation>
 <translation id="8425673304802773841">Naar beneden kantelen</translation>
 <translation id="8428213095426709021">Instellingen</translation>
+<translation id="8609951387004618906"><ph name="URL" /> openen</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Geluid uitzetten voor microfoon schakelen. Geluid uit staat aan</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8732462232047530626">Voorbeeld van metadata bekijken</translation>
+<translation id="874854738381978209">Wifi-netwerk gevonden.</translation>
 <translation id="8815966864175525708">Knop om een foto in portretmodus te maken</translation>
 <translation id="8828441885228359828">Opname hervatten</translation>
 <translation id="8870695351537079478">Kan opname niet starten</translation>

@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNALS_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
@@ -78,15 +79,14 @@ class Page;
 class Range;
 class ReadableStream;
 class RecordTest;
-class ScriptPromiseResolver;
 class ScriptState;
-class ScrollState;
 class SequenceTest;
 class ShadowRoot;
 class StaticSelection;
 class Text;
 class TypeConversions;
 class UnionTypesTest;
+class HTMLImageElement;
 
 template <typename NodeType>
 class StaticNodeTypeList;
@@ -111,13 +111,15 @@ class Internals final : public ScriptWrappable {
   bool isLoading(const String& url);
   bool isLoadingFromMemoryCache(const String& url);
 
-  ScriptPromise getInitialResourcePriority(ScriptState*,
-                                           const String& url,
-                                           Document*,
-                                           bool new_load_only = false);
-  ScriptPromise getInitialResourcePriorityOfNewLoad(ScriptState*,
-                                                    const String& url,
-                                                    Document*);
+  ScriptPromiseTyped<IDLLong> getInitialResourcePriority(
+      ScriptState*,
+      const String& url,
+      Document*,
+      bool new_load_only = false);
+  ScriptPromiseTyped<IDLLong> getInitialResourcePriorityOfNewLoad(
+      ScriptState*,
+      const String& url,
+      Document*);
   String getResourceHeader(const String& url, const String& header, Document*);
 
   bool doesWindowHaveUrlFragment(DOMWindow*);
@@ -134,7 +136,7 @@ class Internals final : public ScriptWrappable {
   ShadowRoot* createUserAgentShadowRoot(Element* host);
 
   ShadowRoot* shadowRoot(Element* host);
-  String shadowRootType(const Node*, ExceptionState&) const;
+  String ShadowRootMode(const Node*, ExceptionState&) const;
   uint32_t countElementShadow(const Node*, ExceptionState&) const;
   const AtomicString& shadowPseudoId(Element*);
 
@@ -349,8 +351,6 @@ class Internals final : public ScriptWrappable {
 
   unsigned numberOfScrollableAreas(Document*);
 
-  bool isPageBoxVisible(Document*, int page_number);
-
   InternalSettings* settings() const;
   InternalRuntimeFlags* runtimeFlags() const;
   unsigned workerThreadCount() const;
@@ -393,16 +393,6 @@ class Internals final : public ScriptWrappable {
   String pageProperty(String,
                       unsigned,
                       ExceptionState& = ASSERT_NO_EXCEPTION) const;
-  String pageSizeAndMarginsInPixels(
-      unsigned,
-      int,
-      int,
-      int,
-      int,
-      int,
-      int,
-      ExceptionState& = ASSERT_NO_EXCEPTION) const;
-
   float pageScaleFactor(ExceptionState&);
   void setPageScaleFactor(float scale_factor, ExceptionState&);
   void setPageScaleFactorLimits(float min_scale_factor,
@@ -447,6 +437,7 @@ class Internals final : public ScriptWrappable {
 
   DOMRectList* draggableRegions(Document*, ExceptionState&);
   DOMRectList* nonDraggableRegions(Document*, ExceptionState&);
+  void SetSupportsAppRegion(bool supports_app_region);
 
   DOMArrayBuffer* serializeObject(v8::Isolate* isolate,
                                   const ScriptValue&,
@@ -488,7 +479,7 @@ class Internals final : public ScriptWrappable {
 
   void setShouldRevealPassword(Element*, bool, ExceptionState&);
 
-  ScriptPromise createResolvedPromise(ScriptState*, ScriptValue);
+  ScriptPromiseTyped<IDLAny> createResolvedPromise(ScriptState*, ScriptValue);
   ScriptPromise createRejectedPromise(ScriptState*, ScriptValue);
   ScriptPromise addOneToPromise(ScriptState*, ScriptPromise);
   ScriptPromise promiseCheck(ScriptState*,
@@ -514,8 +505,6 @@ class Internals final : public ScriptWrappable {
   void setFocused(bool);
   void setInitialFocus(bool);
 
-  Element* interestedElement();
-
   // Check if frame associated with current internals object is
   // active or not.
   bool isActivated();
@@ -527,10 +516,7 @@ class Internals final : public ScriptWrappable {
 
   void forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
                               const String& context_type);
-
-  void setScrollChain(ScrollState*,
-                      const HeapVector<Member<Element>>& elements,
-                      ExceptionState&);
+  void disableCanvasAcceleration(HTMLCanvasElement* canvas);
 
   String selectedHTMLForClipboard();
   String selectedTextForClipboard();
@@ -642,6 +628,12 @@ class Internals final : public ScriptWrappable {
 
   InternalsUkmRecorder* initializeUKMRecorder();
 
+  // Returns scripts that created an image, as observed by
+  // the LCPScriptObserver Probe.
+  Vector<String> getCreatorScripts(HTMLImageElement* img);
+
+  ScriptPromise LCPPrediction(ScriptState*, Document* document);
+
  private:
   Document* ContextDocument() const;
   Vector<String> IconURLs(Document*, int icon_types_mask) const;
@@ -658,10 +650,11 @@ class Internals final : public ScriptWrappable {
                            const String& marker_type,
                            unsigned index,
                            ExceptionState&);
-  void ResolveResourcePriority(ScriptPromiseResolver*,
+  void ResolveResourcePriority(ScriptPromiseResolverTyped<IDLLong>*,
                                int resource_load_priority);
   Member<InternalRuntimeFlags> runtime_flags_;
   Member<Document> document_;
+  std::optional<ColorSchemeHelper> color_scheme_helper_;
 };
 
 }  // namespace blink

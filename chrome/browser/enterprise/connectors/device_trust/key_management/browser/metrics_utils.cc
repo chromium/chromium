@@ -17,6 +17,8 @@ namespace {
 constexpr char kLoadedKeyTrustLevelHistogram[] =
     "Enterprise.DeviceTrust.Key.TrustLevel";
 constexpr char kLoadedKeyTypeHistogram[] = "Enterprise.DeviceTrust.Key.Type";
+constexpr char kLoadPersistedKeyResultHistogram[] =
+    "Enterprise.DeviceTrust.Key.LoadPersistedKeyResult";
 constexpr char kKeyCreationResultHistogram[] =
     "Enterprise.DeviceTrust.Key.CreationResult";
 constexpr char kKeyRotationResultHistogram[] =
@@ -75,13 +77,26 @@ DTKeyRotationResult ResultFromStatus(KeyRotationCommand::Status status) {
       return DTKeyRotationResult::kFailedInvalidPermissions;
     case KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION:
       return DTKeyRotationResult::kFailedInvalidInstallation;
+    case KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN_STORAGE:
+      return DTKeyRotationResult::kFailedInvalidDmTokenStorage;
+    case KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN:
+      return DTKeyRotationResult::kFailedInvalidDmToken;
+    case KeyRotationCommand::Status::FAILED_INVALID_MANAGEMENT_SERVICE:
+      return DTKeyRotationResult::kFailedInvalidManagementService;
+    case KeyRotationCommand::Status::FAILED_INVALID_DMSERVER_URL:
+      return DTKeyRotationResult::kFailedInvalidDmServerUrl;
+    case KeyRotationCommand::Status::FAILED_INVALID_COMMAND:
+      return DTKeyRotationResult::kFailedInvalidCommand;
   }
 }
 
 }  // namespace
 
 void LogKeyLoadingResult(
-    absl::optional<DeviceTrustKeyManager::KeyMetadata> key_metadata) {
+    std::optional<DeviceTrustKeyManager::KeyMetadata> key_metadata,
+    LoadPersistedKeyResult result) {
+  base::UmaHistogramEnumeration(kLoadPersistedKeyResultHistogram, result);
+
   if (!key_metadata.has_value()) {
     return;
   }

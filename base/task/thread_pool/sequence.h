@@ -36,7 +36,7 @@ namespace internal {
 // architecture: Sequence -> Task -> TaskRunner -> Sequence -> ...
 // This is okay so long as the other owners of Sequence (PriorityQueue and
 // WorkerThread in alternation and
-// ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork()
+// ThreadGroup::WorkerThreadDelegateImpl::GetWork()
 // temporarily) keep running it (and taking Tasks from it as a result). A
 // dangling reference cycle would only occur should they release their reference
 // to it while it's not empty. In other words, it is only correct for them to
@@ -85,7 +85,7 @@ class BASE_EXPORT Sequence : public TaskSource {
   // case |execution_mode| must be kParallel. Otherwise, |execution_mode| is the
   // execution mode of |task_runner|.
   Sequence(const TaskTraits& traits,
-           TaskRunner* task_runner,
+           SequencedTaskRunner* task_runner,
            TaskSourceExecutionMode execution_mode);
   Sequence(const Sequence&) = delete;
   Sequence& operator=(const Sequence&) = delete;
@@ -115,6 +115,12 @@ class BASE_EXPORT Sequence : public TaskSource {
   bool is_immediate_for_testing() const { return is_immediate_; }
   bool IsEmptyForTesting() const NO_THREAD_SAFETY_ANALYSIS { return IsEmpty(); }
 
+  // A reference to TaskRunner is only retained between
+  // PushImmediateTask()/PushDelayedTask() and when DidProcessTask() returns
+  // false, guaranteeing it is safe to dereference this pointer. Otherwise, the
+  // caller should guarantee such TaskRunner still exists before dereferencing.
+  SequencedTaskRunner* task_runner() const { return task_runner_; }
+
  private:
   ~Sequence() override;
 
@@ -125,7 +131,7 @@ class BASE_EXPORT Sequence : public TaskSource {
   // TaskSource:
   RunStatus WillRunTask() override;
   Task TakeTask(TaskSource::Transaction* transaction) override;
-  Task Clear(TaskSource::Transaction* transaction) override;
+  std::optional<Task> Clear(TaskSource::Transaction* transaction) override;
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
   bool WillReEnqueue(TimeTicks now,
                      TaskSource::Transaction* transaction) override;
@@ -159,6 +165,15 @@ class BASE_EXPORT Sequence : public TaskSource {
   void ReleaseTaskRunner();
 
   const SequenceToken token_ = SequenceToken::Create();
+
+  // A pointer to the TaskRunner that posts to this TaskSource, if any. The
+  // derived class is responsible for calling AddRef() when a TaskSource from
+  // which no Task is executing becomes non-empty and Release() when
+  // it becomes empty again (e.g. when DidProcessTask() returns false).
+  //
+  // In practise, this pointer is going to become dangling. See task_runner()
+  // comment.
+  raw_ptr<SequencedTaskRunner, DisableDanglingPtrDetection> task_runner_;
 
   // Queues of tasks to execute.
   base::queue<Task> queue_ GUARDED_BY(lock_);

@@ -11,20 +11,36 @@
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
 
 PrefServiceAndroid::PrefServiceAndroid(PrefService* pref_service)
     : pref_service_(pref_service) {}
 
 PrefServiceAndroid::~PrefServiceAndroid() {
   if (java_ref_) {
-    Java_PrefService_clearNativePtr(base::android::AttachCurrentThread(),
-                                    java_ref_);
+    Java_PrefService_clearNativePtr(AttachCurrentThread(), java_ref_);
     java_ref_.Reset();
   }
 }
 
+// static
+PrefService* PrefServiceAndroid::FromPrefServiceAndroid(
+    const JavaParamRef<jobject>& obj) {
+  if (obj.is_null()) {
+    return nullptr;
+  }
+
+  PrefServiceAndroid* pref_service_android =
+      reinterpret_cast<PrefServiceAndroid*>(
+          Java_PrefService_getNativePointer(AttachCurrentThread(), obj));
+  if (!pref_service_android) {
+    return nullptr;
+  }
+  return pref_service_android->pref_service_;
+}
+
 ScopedJavaLocalRef<jobject> PrefServiceAndroid::GetJavaObject() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   if (!java_ref_) {
     java_ref_.Reset(
         Java_PrefService_create(env, reinterpret_cast<intptr_t>(this)));
@@ -69,6 +85,20 @@ void PrefServiceAndroid::SetInteger(JNIEnv* env,
                                     const JavaParamRef<jstring>& j_preference,
                                     const jint j_value) {
   pref_service_->SetInteger(
+      base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
+}
+
+jdouble PrefServiceAndroid::GetDouble(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_preference) {
+  return pref_service_->GetDouble(
+      base::android::ConvertJavaStringToUTF8(env, j_preference));
+}
+
+void PrefServiceAndroid::SetDouble(JNIEnv* env,
+                                   const JavaParamRef<jstring>& j_preference,
+                                   const jdouble j_value) {
+  pref_service_->SetDouble(
       base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
 }
 

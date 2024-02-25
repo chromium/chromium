@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_opus_encoder.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -148,13 +148,15 @@ void AudioTrackOpusEncoder::OnSetFormat(
       (bits_per_second_ > 0)
           ? base::saturated_cast<opus_int32>(bits_per_second_)
           : OPUS_AUTO;
-  if (opus_encoder_ctl(opus_encoder_, OPUS_SET_BITRATE(bitrate)) != OPUS_OK) {
+  if (opus_encoder_ctl(opus_encoder_.get(), OPUS_SET_BITRATE(bitrate)) !=
+      OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus bitrate: " << bitrate;
     return;
   }
 
   const opus_int32 vbr_enabled = static_cast<opus_int32>(vbr_enabled_);
-  if (opus_encoder_ctl(opus_encoder_, OPUS_SET_VBR(vbr_enabled)) != OPUS_OK) {
+  if (opus_encoder_ctl(opus_encoder_.get(), OPUS_SET_VBR(vbr_enabled)) !=
+      OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus VBR mode: " << vbr_enabled;
     return;
   }
@@ -194,7 +196,7 @@ void AudioTrackOpusEncoder::EncodeAudio(
           capture_time - media::AudioTimestampHelper::FramesToTime(
                              input_bus->frames(), input_params_.sample_rate());
       on_encoded_audio_cb_.Run(converted_params_, std::move(encoded_data),
-                               absl::nullopt, capture_time_of_first_sample);
+                               std::nullopt, capture_time_of_first_sample);
     }
   }
 }

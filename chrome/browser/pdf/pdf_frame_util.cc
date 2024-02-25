@@ -7,12 +7,41 @@
 #include <functional>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/common/pdf_util.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "pdf/pdf_features.h"
 
 namespace pdf_frame_util {
+
+content::RenderFrameHost* FindFullPagePdfExtensionHost(
+    content::WebContents* contents) {
+  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+
+  // MIME type associated with `contents` must be `application/pdf` for a
+  // full-page PDF.
+  if (contents->GetContentsMimeType() != pdf::kPDFMimeType) {
+    return nullptr;
+  }
+
+  // A full-page PDF embedder host should have a child PDF extension host.
+  content::RenderFrameHost* extension_host = nullptr;
+  contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&extension_host](content::RenderFrameHost* child_host) {
+        if (!IsPdfExtensionOrigin(child_host->GetLastCommittedOrigin())) {
+          return;
+        }
+
+        CHECK(!extension_host);
+        extension_host = child_host;
+      });
+
+  return extension_host;
+}
 
 content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
   if (!IsPdfInternalPluginAllowedOrigin(rfh->GetLastCommittedOrigin()))
@@ -31,6 +60,23 @@ content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
       });
 
   return pdf_rfh;
+}
+
+content::RenderFrameHost* GetEmbedderHost(
+    content::RenderFrameHost* content_host) {
+  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+
+  if (!content_host) {
+    return nullptr;
+  }
+
+  content::RenderFrameHost* extension_host = content_host->GetParent();
+  if (!extension_host ||
+      !IsPdfExtensionOrigin(extension_host->GetLastCommittedOrigin())) {
+    return nullptr;
+  }
+
+  return extension_host->GetParent();
 }
 
 }  // namespace pdf_frame_util

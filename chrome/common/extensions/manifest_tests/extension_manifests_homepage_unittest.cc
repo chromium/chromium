@@ -11,8 +11,7 @@
 
 namespace errors = extensions::manifest_errors;
 
-class HomepageURLManifestTest : public ChromeManifestTest {
-};
+using HomepageURLManifestTest = ChromeManifestTest;
 
 TEST_F(HomepageURLManifestTest, ParseHomepageURLs) {
   scoped_refptr<extensions::Extension> extension(

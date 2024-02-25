@@ -13,10 +13,6 @@
 
 namespace network::shared_dictionary {
 
-// The default value (1 year) of expiration time in "use-as-dictionary"
-// HTTP header.
-constexpr base::TimeDelta kDefaultExpiration = base::Seconds(31536000);
-
 // The max expiration time (30 days) for Origin Trial. This is used when
 // CompressionDictionaryTransport feature is disabled in the network service.
 // TODO(crbug.com/1413922): Remove this after the Origin Trial experiment.
@@ -34,33 +30,31 @@ COMPONENT_EXPORT(NETWORK_SERVICE)
 base::ScopedClosureRunner SetDictionarySizeLimitForTesting(
     size_t dictionary_size_limit);
 
-// The content encoding name of "sbr".
+// The header name of "available-dictionary".
 COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kSbrContentEncodingName[];
-
-// The content encoding name of "zstd-d".
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kZstdDContentEncodingName[];
-
-// The header name of "sec-available-dictionary".
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kSecAvailableDictionaryHeaderName[];
+extern const char kAvailableDictionaryHeaderName[];
 
 // The header name of "use-as-dictionary".
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kUseAsDictionaryHeaderName[];
 
+// The header name of "content-dictionary".
+COMPONENT_EXPORT(NETWORK_SERVICE)
+extern const char kContentDictionaryHeaderName[];
+
 // The dictionary option name of "match".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];
 
-// The dictionary option name of "expires".
-COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameExpires[];
-
-// The dictionary option name of "algorithms".
-COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameAlgorithms[];
+// The dictionary option name of "match-dest".
+COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatchDest[];
 
 // The dictionary option name of "type".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameType[];
+
+// The dictionary option name of "id".
+COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameId[];
+// The max length of dictionary id.
+inline constexpr uint64_t kDictionaryIdMaxLength = 1024;
 
 }  // namespace network::shared_dictionary
 

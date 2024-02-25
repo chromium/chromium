@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"No id" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}, {id="para2"}]
+++++TextView text:"Has id" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

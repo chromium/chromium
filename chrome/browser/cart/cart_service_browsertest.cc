@@ -35,7 +35,7 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
   proto.set_merchant_cart_url(merchant_url);
-  proto.set_timestamp(base::Time::Now().ToDoubleT());
+  proto.set_timestamp(base::Time::Now().InSecondsFSinceUnixEpoch());
   return proto;
 }
 
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserDiscountTest,
   added_discount->set_rule_id("fake_id");
   added_discount->set_percent_off(5);
   added_discount->set_raw_merchant_offer_id("fake_offer_id");
-  service_->AddCart(GURL(kFakeMerchantURLA), absl::nullopt, merchant_proto);
+  service_->AddCart(GURL(kFakeMerchantURLA), std::nullopt, merchant_proto);
 
   GURL foo_url("https://www.foo.com/cart.html");
   GURL bar_url("https://www.bar.com/cart.html");

@@ -24,7 +24,7 @@ class UserContext;
 // Callbacks will be called on the UI thread:
 // 1. On successful authentication, will call consumer_->OnAuthSuccess().
 // 2. On failure, will call consumer_->OnAuthFailure().
-// 3. On password change, will call consumer_->OnPasswordChangeDetected().
+// 3. On password change, will call consumer_->OnOnlinePasswordUnusable().
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) Authenticator
     : public base::RefCountedThreadSafe<Authenticator> {
  public:
@@ -114,7 +114,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) Authenticator
  protected:
   virtual ~Authenticator();
 
-  raw_ptr<AuthStatusConsumer, DanglingUntriaged | ExperimentalAsh> consumer_;
+  raw_ptr<AuthStatusConsumer, DanglingUntriaged> consumer_;
 
  private:
   friend class base::RefCountedThreadSafe<Authenticator>;

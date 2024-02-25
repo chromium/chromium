@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
-#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -35,11 +35,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
 }  // namespace
 
-// Disables send_tab_to_self::kSendTabToSelfSigninPromo.
-@interface SendTabToSelfCoordinatorWithoutPromoTestCase : ChromeTestCase
+@interface SendTabToSelfCoordinatorTestCase : ChromeTestCase
 @end
 
-@implementation SendTabToSelfCoordinatorWithoutPromoTestCase
+@implementation SendTabToSelfCoordinatorTestCase
 
 - (void)setUp {
   [super setUp];
@@ -51,92 +50,6 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(
-      send_tab_to_self::kSendTabToSelfSigninPromo);
-  return config;
-}
-
-- (void)testHideButtonIfSignedOutAndNoDeviceAccount {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
-
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
-  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:sendTabToSelf];
-}
-
-- (void)testHideButtonIfSignedOutAndHasDeviceAccount {
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
-
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
-  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:sendTabToSelf];
-}
-
-- (void)testHideButtonIfSignedInAndNoTargetDevice {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
-
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
-  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:sendTabToSelf];
-}
-
-- (void)testShowDevicePickerIfSignedInAndHasTargetDevice {
-  // Setting a recent timestamp here is necessary, otherwise the device will be
-  // considered expired and won't be displayed.
-  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
-                         lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
-
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
-  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-@end
-
-// Enables send_tab_to_self::kSendTabToSelfSigninPromo.
-@interface SendTabToSelfCoordinatorWithPromoTestCase : ChromeTestCase
-@end
-
-@implementation SendTabToSelfCoordinatorWithPromoTestCase
-
-- (void)setUp {
-  [super setUp];
-
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&RespondWithConstantPage));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      send_tab_to_self::kSendTabToSelfSigninPromo);
   if ([self isRunningTest:@selector
             (testHideButtonIfSignedOutAndNoDeviceAccount)]) {
     config.features_disabled.push_back(kConsistencyNewAccountInterface);
@@ -203,8 +116,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 }
 
 - (void)testShowMessageIfSignedInAndNoTargetDevice {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
 
@@ -225,8 +137,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // considered expired and won't be displayed.
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
 

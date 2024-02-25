@@ -4,6 +4,8 @@ desc: |-
   If set to Enabled or not set, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME">Google Search Side Panel</ph> is allowed on all web pages.
 
   If set to Disabled, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME">Google Search Side Panel</ph> is not available on any webpage.
+
+  GenAI capabilities that are part of this feature are not available for Educational or Enterprise accounts.
 default: true
 example_value: true
 features:

@@ -10,7 +10,7 @@ package form_data_fuzzer;
 // being fuzzed.
 message FormField {
   bool is_focusable = 1;
-  string form_control_type = 2;
+  int32 form_control_type = 2;
   string autocomplete_attribute = 3;
   string label = 4;
   string name = 5;

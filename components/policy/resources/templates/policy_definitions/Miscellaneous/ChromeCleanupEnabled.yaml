@@ -1,5 +1,6 @@
 caption: Enable Chrome Cleanup on Windows
 default: true
+deprecated: true
 desc: |-
   Setting the policy to Enabled or leaving it unset means Chrome Cleanup periodically scans the system for unwanted software and should any be found, will ask the user if they wish to remove it. Manually triggering Chrome Cleanup from chrome://settings is allowed.
 
@@ -21,7 +22,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.win:68-
+- chrome.win:68-118
 tags:
 - system-security
 type: main

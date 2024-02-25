@@ -22,14 +22,11 @@ import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Test suite for interaction between permissions requests and navigation.
- */
+/** Test suite for interaction between permissions requests and navigation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PermissionNavigationTest {
-    @Rule
-    public PermissionTestRule mPermissionRule = new PermissionTestRule();
+    @Rule public PermissionTestRule mPermissionRule = new PermissionTestRule();
 
     private static final String TEST_FILE = "/content/test/data/android/permission_navigation.html";
 
@@ -61,13 +58,14 @@ public class PermissionNavigationTest {
 
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         final CallbackHelper callbackHelper = new CallbackHelper();
-        EmptyTabObserver navigationWaiter = new EmptyTabObserver() {
-            @Override
-            public void onDidFinishNavigationInPrimaryMainFrame(
-                    Tab tab, NavigationHandle navigation) {
-                callbackHelper.notifyCalled();
-            }
-        };
+        EmptyTabObserver navigationWaiter =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onDidFinishNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigation) {
+                        callbackHelper.notifyCalled();
+                    }
+                };
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(navigationWaiter));
 
         mPermissionRule.runJavaScriptCodeInCurrentTab("navigate()");

@@ -47,8 +47,7 @@ class PeImageReaderTest : public testing::TestWithParam<const TestData*> {
 
     ASSERT_TRUE(data_file_.Initialize(data_file_path_));
 
-    ASSERT_TRUE(
-        image_reader_.Initialize(data_file_.data(), data_file_.length()));
+    ASSERT_TRUE(image_reader_.Initialize(data_file_.bytes()));
   }
 
   raw_ptr<const TestData> expected_data_;
@@ -76,11 +75,9 @@ TEST_P(PeImageReaderTest, GetCoffFileHeader) {
 }
 
 TEST_P(PeImageReaderTest, GetOptionalHeaderData) {
-  size_t optional_header_size = 0;
-  const uint8_t* optional_header_data =
-      image_reader_.GetOptionalHeaderData(&optional_header_size);
-  ASSERT_NE(nullptr, optional_header_data);
-  EXPECT_EQ(expected_data_->optional_header_size, optional_header_size);
+  span<const uint8_t> optional_header_data =
+      image_reader_.GetOptionalHeaderData();
+  ASSERT_THAT(optional_header_data, testing::Not(testing::IsEmpty()));
 }
 
 TEST_P(PeImageReaderTest, GetNumberOfSections) {
@@ -108,19 +105,17 @@ TEST_P(PeImageReaderTest, InitializeFailTruncatedFile) {
   PeImageReader short_reader;
 
   // Initialize should succeed when all headers are present.
-  EXPECT_TRUE(short_reader.Initialize(data_file_.data(), header_size));
+  EXPECT_TRUE(short_reader.Initialize(data_file_.bytes().first(header_size)));
 
   // But fail if anything is missing.
   for (size_t i = 0; i < header_size; ++i) {
-    EXPECT_FALSE(short_reader.Initialize(data_file_.data(), i));
+    EXPECT_FALSE(short_reader.Initialize(data_file_.bytes().first(i)));
   }
 }
 
 TEST_P(PeImageReaderTest, GetExportSection) {
-  size_t section_size = 0;
-  const uint8_t* export_section = image_reader_.GetExportSection(&section_size);
-  ASSERT_NE(nullptr, export_section);
-  EXPECT_NE(0U, section_size);
+  span<const uint8_t> export_section = image_reader_.GetExportSection();
+  EXPECT_THAT(export_section, testing::Not(testing::IsEmpty()));
 }
 
 TEST_P(PeImageReaderTest, GetNumberOfDebugEntries) {
@@ -131,13 +126,11 @@ TEST_P(PeImageReaderTest, GetNumberOfDebugEntries) {
 TEST_P(PeImageReaderTest, GetDebugEntry) {
   size_t number_of_debug_entries = image_reader_.GetNumberOfDebugEntries();
   for (size_t i = 0; i < number_of_debug_entries; ++i) {
-    const uint8_t* raw_data = nullptr;
-    size_t raw_data_size = 0;
+    span<const uint8_t> raw_data;
     const IMAGE_DEBUG_DIRECTORY* entry =
-        image_reader_.GetDebugEntry(i, &raw_data, &raw_data_size);
-    EXPECT_NE(nullptr, entry);
-    EXPECT_NE(nullptr, raw_data);
-    EXPECT_NE(0U, raw_data_size);
+        image_reader_.GetDebugEntry(i, raw_data);
+    EXPECT_THAT(entry, testing::NotNull());
+    EXPECT_THAT(raw_data, testing::Not(testing::IsEmpty()));
   }
 }
 
@@ -222,8 +215,7 @@ class PeImageReaderCertificateTest
     data_file_path_ = data_file_path_.AppendASCII("pe_image_reader");
     data_file_path_ = data_file_path_.AppendASCII(expected_data_->filename);
     ASSERT_TRUE(data_file_.Initialize(data_file_path_));
-    ASSERT_TRUE(
-        image_reader_.Initialize(data_file_.data(), data_file_.length()));
+    ASSERT_TRUE(image_reader_.Initialize(data_file_.bytes()));
   }
 
   raw_ptr<const CertificateTestData> expected_data_;

@@ -4,29 +4,55 @@
 
 #include "remoting/host/host_config.h"
 
+#include <optional>
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
 namespace {
 
-const char* kTestConfig =
-    "{\n"
-    "  \"xmpp_login\" : \"test@gmail.com\",\n"
-    "  \"oauth_refresh_token\" : \"TEST_REFRESH_TOKEN\",\n"
-    "  \"host_id\" : \"TEST_HOST_ID\",\n"
-    "  \"host_name\" : \"TEST_MACHINE_NAME\",\n"
-    "  \"private_key\" : \"TEST_PRIVATE_KEY\"\n"
-    "}\n";
+constexpr char kHostOwnerJid[] = "obfuscated_value@id.talk.google.com";
+constexpr char kHostOwnerEmail[] = "host_owner@gmail.com";
+constexpr char kServiceAccountEmail[] =
+    "aaaaaaaabbbbccccddddeeeeeeeeeeee@chromoting.gserviceaccount.com";
+constexpr char kHostId[] = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+constexpr char kHostName[] = "TEST_MACHINE_NAME";
+constexpr char kRefreshToken[] = "TEST_REFRESH_TOKEN";
+constexpr char kPrivateKey[] = "TEST_PRIVATE_KEY";
+
+constexpr char kNewRefreshToken[] = "NEW_REFRESH_TOKEN";
+
+auto kBaseConfig = base::Value::Dict()
+                       .Set(kOAuthRefreshTokenConfigPath, kRefreshToken)
+                       .Set(kHostIdConfigPath, kHostId)
+                       .Set(kHostNameConfigPath, kHostName)
+                       .Set(kPrivateKeyConfigPath, kPrivateKey);
+
+auto kTestConfig = base::Value::Dict(kBaseConfig.Clone())
+                       .Set(kHostOwnerConfigPath, kHostOwnerEmail)
+                       .Set(kServiceAccountConfigPath, kServiceAccountEmail);
+
+auto kLegacyTestConfig =
+    base::Value::Dict(kBaseConfig.Clone())
+        .Set(kHostOwnerConfigPath, kHostOwnerJid)
+        .Set(kDeprecatedHostOwnerEmailConfigPath, kHostOwnerEmail)
+        .Set(kDeprecatedXmppLoginConfigPath, kServiceAccountEmail);
+
+void WriteTestFile(const base::FilePath& filename,
+                   const base::Value::Dict& file_contents) {
+  auto json = base::WriteJson(file_contents);
+  ASSERT_TRUE(json.has_value());
+  base::WriteFile(filename, *json);
+}
 
 }  // namespace
 
-class HostConfigTest : public testing::Test {
+class HostConfigTest : public ::testing::TestWithParam<base::Value::Dict*> {
  public:
   HostConfigTest(const HostConfigTest&) = delete;
   HostConfigTest& operator=(const HostConfigTest&) = delete;
@@ -34,69 +60,112 @@ class HostConfigTest : public testing::Test {
  protected:
   HostConfigTest() = default;
 
-  static void WriteTestFile(const base::FilePath& filename) {
-    base::WriteFile(filename, kTestConfig);
-  }
-
   // The temporary directory used to contain the test operations.
   base::ScopedTempDir test_dir_;
 };
 
-TEST_F(HostConfigTest, InvalidFile) {
-  ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
+TEST(HostConfigTest, InvalidFile) {
+  base::ScopedTempDir test_dir;
+  ASSERT_TRUE(test_dir.CreateUniqueTempDir());
   base::FilePath non_existent_file =
-      test_dir_.GetPath().AppendASCII("non_existent.json");
-  EXPECT_FALSE(HostConfigFromJsonFile(non_existent_file));
+      test_dir.GetPath().AppendASCII("non_existent.json");
+  ASSERT_FALSE(HostConfigFromJsonFile(non_existent_file));
 }
 
-TEST_F(HostConfigTest, Read) {
+TEST_P(HostConfigTest, ReadConfigFromFile) {
+  // Write file directly using base libraries.
   ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
-  base::FilePath test_file = test_dir_.GetPath().AppendASCII("read.json");
-  WriteTestFile(test_file);
-  absl::optional<base::Value::Dict> target(HostConfigFromJsonFile(test_file));
+  base::FilePath test_file_path = test_dir_.GetPath().AppendASCII("read.json");
+  WriteTestFile(test_file_path, *GetParam());
+
+  // Read the config from the test file.
+  auto target(HostConfigFromJsonFile(test_file_path));
   ASSERT_TRUE(target.has_value());
 
-  std::string* value = target->FindString(kXmppLoginConfigPath);
-  EXPECT_EQ("test@gmail.com", *value);
+  // Verify the expected values.
+  std::string* value = target->FindString(kHostOwnerConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostOwnerEmail);
+  value = target->FindString(kServiceAccountConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kServiceAccountEmail);
   value = target->FindString(kOAuthRefreshTokenConfigPath);
-  EXPECT_EQ("TEST_REFRESH_TOKEN", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kRefreshToken);
   value = target->FindString(kHostIdConfigPath);
-  EXPECT_EQ("TEST_HOST_ID", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostId);
   value = target->FindString(kHostNameConfigPath);
-  EXPECT_EQ("TEST_MACHINE_NAME", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostName);
   value = target->FindString(kPrivateKeyConfigPath);
-  EXPECT_EQ("TEST_PRIVATE_KEY", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kPrivateKey);
 
+  // Verify deprecated values are not present.
+  value = target->FindString(kDeprecatedXmppLoginConfigPath);
+  EXPECT_EQ(value, nullptr);
+  value = target->FindString(kDeprecatedHostOwnerEmailConfigPath);
+  EXPECT_EQ(value, nullptr);
+
+  // Verify non-existent values are not present.
   value = target->FindString("non_existent_value");
-  EXPECT_EQ(nullptr, value);
+  EXPECT_EQ(value, nullptr);
 }
 
-TEST_F(HostConfigTest, Write) {
+TEST_P(HostConfigTest, WriteConfigToFile) {
+  // Write file directly using base libraries.
   ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
+  base::FilePath test_file_path = test_dir_.GetPath().AppendASCII("write.json");
+  WriteTestFile(test_file_path, *GetParam());
 
-  base::FilePath test_file = test_dir_.GetPath().AppendASCII("write.json");
-  WriteTestFile(test_file);
-  absl::optional<base::Value::Dict> target(HostConfigFromJsonFile(test_file));
+  // Read from the test file.
+  auto target(HostConfigFromJsonFile(test_file_path));
   ASSERT_TRUE(target.has_value());
 
-  std::string new_refresh_token_value = "NEW_REFRESH_TOKEN";
-  target->Set(kOAuthRefreshTokenConfigPath, new_refresh_token_value);
-  ASSERT_TRUE(HostConfigToJsonFile(*target, test_file));
+  // Modify a value.
+  target->Set(kOAuthRefreshTokenConfigPath, kNewRefreshToken);
+  ASSERT_TRUE(HostConfigToJsonFile(*target, test_file_path));
 
   // Now read the file again and check that the value has been written.
-  absl::optional<base::Value> reader(HostConfigFromJsonFile(test_file));
-  ASSERT_TRUE(reader);
+  auto reader(HostConfigFromJsonFile(test_file_path));
+  ASSERT_TRUE(reader.has_value());
 
-  std::string* value = target->FindString(kXmppLoginConfigPath);
-  EXPECT_EQ("test@gmail.com", *value);
-  value = target->FindString(kOAuthRefreshTokenConfigPath);
-  EXPECT_EQ(new_refresh_token_value, *value);
+  // Verify the update value was persisted.
+  std::string* value = target->FindString(kOAuthRefreshTokenConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kNewRefreshToken);
+
+  // Verify the rest of the expected values.
+  value = target->FindString(kHostOwnerConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostOwnerEmail);
+  value = target->FindString(kServiceAccountConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kServiceAccountEmail);
   value = target->FindString(kHostIdConfigPath);
-  EXPECT_EQ("TEST_HOST_ID", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostId);
   value = target->FindString(kHostNameConfigPath);
-  EXPECT_EQ("TEST_MACHINE_NAME", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kHostName);
   value = target->FindString(kPrivateKeyConfigPath);
-  EXPECT_EQ("TEST_PRIVATE_KEY", *value);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kPrivateKey);
+
+  // Verify deprecated values are not present.
+  value = target->FindString(kDeprecatedXmppLoginConfigPath);
+  EXPECT_EQ(value, nullptr);
+  value = target->FindString(kDeprecatedHostOwnerEmailConfigPath);
+  EXPECT_EQ(value, nullptr);
+
+  // Verify non-existent values are not present.
+  value = target->FindString("non_existent_value");
+  EXPECT_EQ(value, nullptr);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostConfigTest,
+                         testing::Values(&kTestConfig, &kLegacyTestConfig));
 
 }  // namespace remoting

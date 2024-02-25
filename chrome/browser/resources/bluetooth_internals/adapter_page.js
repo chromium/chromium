@@ -8,7 +8,7 @@
 
 import './object_fieldset.js';
 
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {Page} from './page.js';
 
@@ -41,6 +41,14 @@ export class AdapterPage extends Page {
       this.refreshBtn_.disabled = true;
       this.pageDiv.dispatchEvent(new CustomEvent('refreshpressed'));
     });
+
+    // <if expr="chromeos_ash">
+    const restartBluetoothBtn = $('restart-bluetooth-btn');
+    restartBluetoothBtn.addEventListener('click', () => {
+      restartBluetoothBtn.disabled = true;
+      this.pageDiv.dispatchEvent(new CustomEvent('restart-bluetooth-click'));
+    });
+    // </if>
   }
 
   /**

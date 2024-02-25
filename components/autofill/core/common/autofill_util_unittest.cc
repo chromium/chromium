@@ -14,67 +14,6 @@
 
 namespace autofill {
 
-// Tests for FieldIsSuggestionSubstringStartingOnTokenBoundary().
-struct FieldIsTokenBoundarySubstringCase {
-  const char* const field_suggestion;
-  const char* const field_contents;
-  const bool case_sensitive;
-  const bool expected_result;
-};
-
-class FieldIsTokenBoundarySubstringCaseTest
-    : public testing::TestWithParam<FieldIsTokenBoundarySubstringCase> {};
-
-TEST_P(FieldIsTokenBoundarySubstringCaseTest,
-       FieldIsSuggestionSubstringStartingOnTokenBoundary) {
-  {
-    base::test::ScopedFeatureList features_disabled;
-    features_disabled.InitAndDisableFeature(
-        features::kAutofillTokenPrefixMatching);
-
-    // FieldIsSuggestionSubstringStartingOnTokenBoundary should not work yet
-    // without a flag.
-    EXPECT_FALSE(FieldIsSuggestionSubstringStartingOnTokenBoundary(
-        u"ab@cd.b", u"b", false));
-  }
-
-  base::test::ScopedFeatureList features_enabled;
-  features_enabled.InitAndEnableFeature(features::kAutofillTokenPrefixMatching);
-
-  auto test_case = GetParam();
-  SCOPED_TRACE(testing::Message()
-               << "suggestion = " << test_case.field_suggestion
-               << ", contents = " << test_case.field_contents
-               << ", case_sensitive = " << test_case.case_sensitive);
-
-  EXPECT_EQ(test_case.expected_result,
-            FieldIsSuggestionSubstringStartingOnTokenBoundary(
-                base::ASCIIToUTF16(test_case.field_suggestion),
-                base::ASCIIToUTF16(test_case.field_contents),
-                test_case.case_sensitive));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillUtilTest,
-    FieldIsTokenBoundarySubstringCaseTest,
-    testing::Values(
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "a", false, true},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "b", false, true},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "Ab", false, true},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "Ab", true, false},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "cd", true, true},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "d", false, false},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "b@", true, false},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "ab", false, true},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "cd.b", true, true},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "b@cd", false, false},
-        FieldIsTokenBoundarySubstringCase{"ab@cd.b", "ab@c", false, true},
-        FieldIsTokenBoundarySubstringCase{"ba.a.ab", "a.a", false, true},
-        FieldIsTokenBoundarySubstringCase{"", "ab", false, false},
-        FieldIsTokenBoundarySubstringCase{"", "ab", true, false},
-        FieldIsTokenBoundarySubstringCase{"ab", "", false, true},
-        FieldIsTokenBoundarySubstringCase{"ab", "", true, true}));
-
 struct AtSignPrefixCase {
   const char* const field_suggestion;
   const char* const field_contents;

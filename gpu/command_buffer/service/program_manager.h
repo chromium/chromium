@@ -22,6 +22,10 @@
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "gpu/gpu_gles2_export.h"
 
+namespace gl {
+class ProgressReporter;
+}
+
 namespace gpu {
 
 class DecoderClient;
@@ -32,7 +36,6 @@ namespace gles2 {
 class FeatureInfo;
 class ProgramCache;
 class ProgramManager;
-class ProgressReporter;
 class Shader;
 class ShaderManager;
 
@@ -75,8 +78,6 @@ inline constexpr UniformApiType operator&(UniformApiType a, UniformApiType b) {
 class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
  public:
   static const int kMaxAttachedShaders = 2;
-
-  enum VaryingsPackingOption { kCountOnlyStaticallyUsed, kCountAll };
 
   struct ProgramOutputInfo {
     ProgramOutputInfo(GLuint _color_name,
@@ -319,7 +320,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
 
   // Performs glLinkProgram and related activities.
   bool Link(ShaderManager* manager,
-            VaryingsPackingOption varyings_packing_option,
             DecoderClient* client);
 
   // Performs glValidateProgram and related activities.
@@ -393,7 +393,7 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
 
   // Return false if varyings can't be packed into the max available
   // varying registers.
-  bool CheckVaryingsPacking(VaryingsPackingOption option) const;
+  bool CheckVaryingsPacking() const;
 
   void TransformFeedbackVaryings(GLsizei count, const char* const* varyings,
       GLenum buffer_mode);
@@ -498,9 +498,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
 
   // Updates the program log info from GL
   void UpdateLogInfo();
-
-  // Clears all the uniforms.
-  void ClearUniforms(std::vector<uint8_t>* zero_buffer);
 
   // Updates the draw id uniform location used by ANGLE_multi_draw
   void UpdateDrawIDUniformLocation();
@@ -683,9 +680,6 @@ class GPU_GLES2_EXPORT ProgramManager {
 
   // Makes a program as unused. If deleted the program will be removed.
   void UnuseProgram(ShaderManager* shader_manager, Program* program);
-
-  // Clears the uniforms for this program.
-  void ClearUniforms(Program* program);
 
   // Updates the draw id location for this program for ANGLE_multi_draw
   void UpdateDrawIDUniformLocation(Program* program);

@@ -188,7 +188,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                      spdy::SpdyStreamId promised_stream_id,
                      bool end) override;
   void OnAltSvc(spdy::SpdyStreamId stream_id,
-                absl::string_view origin,
+                std::string_view origin,
                 const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector&
                     altsvc_vector) override;
   void OnDataFrameHeader(spdy::SpdyStreamId stream_id,
@@ -202,7 +202,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                   int weight,
                   bool exclusive) override {}
   void OnPriorityUpdate(spdy::SpdyStreamId prioritized_stream_id,
-                        absl::string_view priority_field_value) override {}
+                        std::string_view priority_field_value) override {}
   bool OnUnknownFrame(spdy::SpdyStreamId stream_id,
                       uint8_t frame_type) override;
   void OnUnknownFrameStart(spdy::SpdyStreamId stream_id,
@@ -210,7 +210,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                            uint8_t type,
                            uint8_t flags) override {}
   void OnUnknownFramePayload(spdy::SpdyStreamId stream_id,
-                             absl::string_view payload) override {}
+                             std::string_view payload) override {}
 
   // spdy::SpdyFramer methods.
   size_t ProcessInput(const char* data, size_t len);

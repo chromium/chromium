@@ -25,6 +25,8 @@ static_library("calendar") {
     "//net",
     "//services/network/public/cpp",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
@@ -140,52 +141,49 @@ const base::FilePath::CharType kDocumentsProviderMountPointPath[] =
     "/special/arc-documents-provider";
 const char kAndroidDirectoryMimeType[] = "vnd.android.document/directory";
 
-base::FilePath GetDocumentsProviderMountPath(
-    const std::string& authority,
-    const std::string& root_document_id) {
+base::FilePath GetDocumentsProviderMountPath(const std::string& authority,
+                                             const std::string& root_id) {
   return base::FilePath(kDocumentsProviderMountPointPath)
-      .Append(GetDocumentsProviderMountPathSuffix(authority, root_document_id));
+      .Append(GetDocumentsProviderMountPathSuffix(authority, root_id));
 }
 
-base::FilePath GetDocumentsProviderMountPathSuffix(
-    const std::string& authority,
-    const std::string& root_document_id) {
+base::FilePath GetDocumentsProviderMountPathSuffix(const std::string& authority,
+                                                   const std::string& root_id) {
   return base::FilePath(EscapePathComponent(authority))
-      .Append(EscapePathComponent(root_document_id));
+      .Append(EscapePathComponent(root_id));
 }
 
 bool ParseDocumentsProviderPath(const base::FilePath& path,
                                 std::string* authority,
-                                std::string* root_document_id) {
+                                std::string* root_id) {
   if (!base::FilePath(kDocumentsProviderMountPointPath).IsParent(path))
     return false;
 
   // Filesystem path format for documents provider is:
-  // /special/arc-documents-provider/<authority>/<root_doc_id>/<relative_path>
+  // /special/arc-documents-provider/<authority>/<root_id>/<relative_path>
   std::vector<base::FilePath::StringType> components = path.GetComponents();
   if (components.size() < 5)
     return false;
 
   *authority = UnescapePathComponent(components[3]);
-  *root_document_id = UnescapePathComponent(components[4]);
+  *root_id = UnescapePathComponent(components[4]);
   return true;
 }
 
 bool ParseDocumentsProviderUrl(const storage::FileSystemURL& url,
                                std::string* authority,
-                               std::string* root_document_id,
+                               std::string* root_id,
                                base::FilePath* path) {
   if (url.type() != storage::kFileSystemTypeArcDocumentsProvider)
     return false;
   base::FilePath url_path_stripped = url.path().StripTrailingSeparators();
 
-  if (!ParseDocumentsProviderPath(url_path_stripped, authority,
-                                  root_document_id)) {
+  if (!ParseDocumentsProviderPath(url_path_stripped, authority, root_id)) {
     return false;
   }
 
   base::FilePath root_path =
-      GetDocumentsProviderMountPath(*authority, *root_document_id);
+      GetDocumentsProviderMountPath(*authority, *root_id);
   // Special case: AppendRelativePath() fails for identical paths.
   if (url_path_stripped == root_path) {
     path->clear();
@@ -259,7 +257,7 @@ std::string StripMimeSubType(const std::string& mime_type) {
 // This is based on net/base/mime_util.cc: net::FindMimeType.
 std::string FindArcMimeTypeFromExtension(const std::string& ext) {
   for (const auto& mapping : kAndroidMimeTypeMappings) {
-    std::vector<base::StringPiece> extensions = base::SplitStringPiece(
+    std::vector<std::string_view> extensions = base::SplitStringPiece(
         mapping.extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (base::Contains(extensions, ext))
       return mapping.mime_type;

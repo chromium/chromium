@@ -22,6 +22,10 @@
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/ppb_graphics_3d_impl.h"
 #include "content/renderer/pepper/video_decoder_shim.h"
+#include "content/renderer/render_thread_impl.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "media/base/limits.h"
 #include "media/base/media_util.h"
@@ -132,6 +136,19 @@ PepperVideoDecoderHost::MappedBuffer::MappedBuffer(MappedBuffer&&) = default;
 PepperVideoDecoderHost::MappedBuffer& PepperVideoDecoderHost::MappedBuffer::
 operator=(MappedBuffer&&) = default;
 
+PepperVideoDecoderHost::SharedImage::SharedImage(
+    gfx::Size size,
+    PictureBufferState state,
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image)
+    : size(size),
+      state(state),
+      client_shared_image(std::move(client_shared_image)) {}
+
+PepperVideoDecoderHost::SharedImage::SharedImage(
+    const SharedImage& shared_image) = default;
+
+PepperVideoDecoderHost::SharedImage::~SharedImage() = default;
+
 PepperVideoDecoderHost::PepperVideoDecoderHost(RendererPpapiHost* host,
                                                PP_Instance instance,
                                                PP_Resource resource)
@@ -139,6 +156,34 @@ PepperVideoDecoderHost::PepperVideoDecoderHost(RendererPpapiHost* host,
       renderer_ppapi_host_(host) {}
 
 PepperVideoDecoderHost::~PepperVideoDecoderHost() {
+  if (decoder_) {
+    scoped_refptr<viz::RasterContextProvider> context_provider =
+        decoder_->context_provider();
+    // Destroy `decoder_`, so it will destroy all available shared images.
+    decoder_->Destroy();
+
+    // If video decoder was destroyed before plugin returned all shared images,
+    // this is our last chance to destroy them.
+    if (!shared_images_.empty()) {
+      CHECK(context_provider);
+      // Plugin's GLES2Interface and Renderer's RasterInterface are synchronized
+      // by issued `ShallowFlushCHROMIUM` after each work. To synchronize with
+      // SharedImageInterface we generate sync token here.
+      gpu::SyncToken sync_token;
+      context_provider->RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(
+          sync_token.GetData());
+
+      auto* sii = context_provider->SharedImageInterface();
+
+      for (auto& shared_image : shared_images_) {
+        // All assigned textures should have been destroyed by `decoder_`
+        CHECK_NE(shared_image.second.state, PictureBufferState::ASSIGNED);
+        sii->DestroySharedImage(
+            sync_token, std::move(shared_image.second.client_shared_image));
+      }
+    }
+  }
+
   auto hw_behavior = HardwareAccelerationBehavior::kOther;
   if (software_fallback_used_) {
     if (mojo_video_decoder_path_initialized_) {
@@ -166,10 +211,9 @@ int32_t PepperVideoDecoderHost::OnResourceMessageReceived(
                                       OnHostMsgGetShm)
     PPAPI_DISPATCH_HOST_RESOURCE_CALL(PpapiHostMsg_VideoDecoder_Decode,
                                       OnHostMsgDecode)
-    PPAPI_DISPATCH_HOST_RESOURCE_CALL(PpapiHostMsg_VideoDecoder_AssignTextures,
-                                      OnHostMsgAssignTextures)
-    PPAPI_DISPATCH_HOST_RESOURCE_CALL(PpapiHostMsg_VideoDecoder_RecyclePicture,
-                                      OnHostMsgRecyclePicture)
+    PPAPI_DISPATCH_HOST_RESOURCE_CALL(
+        PpapiHostMsg_VideoDecoder_RecycleSharedImage,
+        OnHostMsgRecycleSharedImage)
     PPAPI_DISPATCH_HOST_RESOURCE_CALL_0(PpapiHostMsg_VideoDecoder_Flush,
                                         OnHostMsgFlush)
     PPAPI_DISPATCH_HOST_RESOURCE_CALL_0(PpapiHostMsg_VideoDecoder_Reset,
@@ -212,10 +256,8 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
         std::max(shim_texture_pool_size, min_picture_count_);
     auto new_decoder = VideoDecoderShim::Create(this, shim_texture_pool_size,
                                                 /*use_hw_decoder=*/true);
-    if (new_decoder &&
-        new_decoder->Initialize(media::VideoDecodeAccelerator::Config(profile_),
-                                this)) {
-      decoder_.reset(new_decoder.release());
+    if (new_decoder && new_decoder->Initialize(profile_)) {
+      decoder_ = std::move(new_decoder);
       initialized_ = true;
       mojo_video_decoder_path_initialized_ = true;
       return PP_OK;
@@ -315,91 +357,31 @@ int32_t PepperVideoDecoderHost::OnHostMsgDecode(
   return PP_OK_COMPLETIONPENDING;
 }
 
-int32_t PepperVideoDecoderHost::OnHostMsgAssignTextures(
+int32_t PepperVideoDecoderHost::OnHostMsgRecycleSharedImage(
     ppapi::host::HostMessageContext* context,
-    const PP_Size& size,
-    const std::vector<uint32_t>& texture_ids,
-    const std::vector<gpu::Mailbox>& mailboxes) {
-  if (!initialized_)
+    const gpu::Mailbox& mailbox) {
+  if (!initialized_) {
     return PP_ERROR_FAILED;
-  if (texture_ids.size() != mailboxes.size())
-    return PP_ERROR_FAILED;
+  }
+
   DCHECK(decoder_);
 
-  pending_texture_requests_--;
-  DCHECK_GE(pending_texture_requests_, 0);
-
-  // If |assign_textures_messages_to_dismiss_| is not 0 then decrement it and
-  // dismiss the textures. This is necessary to ensure that after SW decoder
-  // fallback the textures that were requested by the failed HW decoder are not
-  // passed to the SW decoder.
-  if (assign_textures_messages_to_dismiss_ > 0) {
-    assign_textures_messages_to_dismiss_--;
-    PictureBufferMap pictures_pending_dismission;
-    for (auto& texture_id : texture_ids) {
-      host()->SendUnsolicitedReply(
-          pp_resource(),
-          PpapiPluginMsg_VideoDecoder_DismissPicture(texture_id));
-    }
-    picture_buffer_map_.swap(pictures_pending_dismission);
-    return PP_OK;
-  }
-
-  // Verify that the new texture IDs are unique and store them in
-  // |new_textures|.
-  PictureBufferMap new_textures;
-  for (uint32_t texture_id : texture_ids) {
-    if (base::Contains(picture_buffer_map_, texture_id) ||
-        base::Contains(new_textures, texture_id)) {
-      // Can't assign the same texture more than once.
-      return PP_ERROR_BADARGUMENT;
-    }
-    new_textures.insert(
-        std::make_pair(texture_id, PictureBufferState::ASSIGNED));
-  }
-
-  picture_buffer_map_.insert(new_textures.begin(), new_textures.end());
-
-  std::vector<media::PictureBuffer> picture_buffers;
-  for (uint32_t i = 0; i < texture_ids.size(); i++) {
-    media::PictureBuffer::TextureIds ids;
-    ids.push_back(texture_ids[i]);
-    media::PictureBuffer buffer(
-        texture_ids[i],  // Use the texture_id to identify the buffer.
-        gfx::Size(size.width, size.height), ids);
-    picture_buffers.push_back(buffer);
-  }
-  texture_mailboxes_ = mailboxes;
-  decoder_->AssignPictureBuffers(picture_buffers);
-  return PP_OK;
-}
-
-int32_t PepperVideoDecoderHost::OnHostMsgRecyclePicture(
-    ppapi::host::HostMessageContext* context,
-    uint32_t texture_id) {
-  if (!initialized_)
-    return PP_ERROR_FAILED;
-  DCHECK(decoder_);
-
-  auto it = picture_buffer_map_.find(texture_id);
-  if (it == picture_buffer_map_.end())
+  auto it = shared_images_.find(mailbox);
+  if (it == shared_images_.end()) {
     return PP_ERROR_BADARGUMENT;
+  }
 
-  switch (it->second) {
+  switch (it->second.state) {
     case PictureBufferState::ASSIGNED:
       return PP_ERROR_BADARGUMENT;
 
     case PictureBufferState::IN_USE:
-      it->second = PictureBufferState::ASSIGNED;
-      decoder_->ReusePictureBuffer(texture_id);
+      it->second.state = PictureBufferState::ASSIGNED;
+      decoder_->ReuseSharedImage(mailbox, it->second.size);
       break;
 
     case PictureBufferState::DISMISSED:
-      picture_buffer_map_.erase(it);
-      // The texture was already dismissed by the decoder. Notify the plugin.
-      host()->SendUnsolicitedReply(
-          pp_resource(),
-          PpapiPluginMsg_VideoDecoder_DismissPicture(texture_id));
+      DestroySharedImageInternal(it);
       break;
   }
 
@@ -434,56 +416,78 @@ int32_t PepperVideoDecoderHost::OnHostMsgReset(
   return PP_OK_COMPLETIONPENDING;
 }
 
-void PepperVideoDecoderHost::ProvidePictureBuffers(
-    uint32_t requested_num_of_buffers,
-    media::VideoPixelFormat format,
-    uint32_t textures_per_buffer,
-    const gfx::Size& dimensions,
-    uint32_t texture_target) {
-  DCHECK_EQ(1u, textures_per_buffer);
-  coded_size_ = dimensions;
-  pending_texture_requests_++;
-  host()->SendUnsolicitedReply(
-      pp_resource(), PpapiPluginMsg_VideoDecoder_RequestTextures(
-                         std::max(min_picture_count_, requested_num_of_buffers),
-                         PP_MakeSize(dimensions.width(), dimensions.height()),
-                         texture_target));
+gpu::Mailbox PepperVideoDecoderHost::CreateSharedImage(gfx::Size size) {
+  CHECK(decoder_);
+  const auto& context_provider = decoder_->context_provider();
+  CHECK(context_provider);
+
+  auto* sii = context_provider->SharedImageInterface();
+  auto* rii = context_provider->RasterInterface();
+
+  // These shared images have the contents of VideoFrames copied into them via
+  // the raster interface and then are read and/or written by the plugin via GL.
+  auto client_shared_image = sii->CreateSharedImage(
+      {viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+       gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+           gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
+       "PepperVideoDecoder"},
+      gpu::SurfaceHandle());
+  CHECK(client_shared_image);
+  auto mailbox = client_shared_image->mailbox();
+
+  // This SI will be used on raster interface later, to avoid plumbing
+  // SyncTokens just for creation wait on it here.
+  rii->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+  shared_images_.emplace(mailbox,
+                         SharedImage{size, PictureBufferState::ASSIGNED,
+                                     std::move(client_shared_image)});
+  return mailbox;
 }
 
-void PepperVideoDecoderHost::PictureReady(const media::Picture& picture) {
-  auto it = picture_buffer_map_.find(picture.picture_buffer_id());
-  DCHECK(it != picture_buffer_map_.end());
-  // VDA might send the same picture multiple times in VP9 video. However the
-  // Pepper client might not able to handle it. Therefore we just catch it here.
-  // https://crbug.com/755887
-  CHECK(it->second == PictureBufferState::ASSIGNED);
-  it->second = PictureBufferState::IN_USE;
+void PepperVideoDecoderHost::DestroySharedImage(const gpu::Mailbox& mailbox) {
+  auto it = shared_images_.find(mailbox);
+  CHECK(it != shared_images_.end());
 
-  // Don't bother validating the visible rect, since the plugin process is less
-  // trusted than the gpu process.
-  PP_Rect visible_rect = PP_FromGfxRect(picture.visible_rect());
+  // VideoDecoderShim tracks only assigned images.
+  CHECK_EQ(it->second.state, PictureBufferState::ASSIGNED);
+  DestroySharedImageInternal(it);
+}
+
+void PepperVideoDecoderHost::DestroySharedImageInternal(
+    std::map<gpu::Mailbox, SharedImage>::iterator it) {
+  CHECK(decoder_);
+  const auto& context_provider = decoder_->context_provider();
+  CHECK(context_provider);
+
+  // Plugin's GLES2Interface and Renderer's RasterInterface are synchronized by
+  // issued `ShallowFlushCHROMIUM` after each work. To synchronize with
+  // SharedImageInterface we generate sync token here.
+  gpu::SyncToken sync_token;
+  context_provider->RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(
+      sync_token.GetData());
+
+  auto* sii = context_provider->SharedImageInterface();
+  sii->DestroySharedImage(sync_token,
+                          std::move(it->second.client_shared_image));
+  shared_images_.erase(it);
+}
+
+void PepperVideoDecoderHost::SharedImageReady(int32_t bitstream_id,
+                                              const gpu::Mailbox& mailbox,
+                                              gfx::Size size,
+                                              const gfx::Rect& visible_rect) {
+  auto it = shared_images_.find(mailbox);
+  CHECK(it != shared_images_.end());
+  CHECK_EQ(it->second.state, PictureBufferState::ASSIGNED);
+  it->second.state = PictureBufferState::IN_USE;
+
   host()->SendUnsolicitedReply(pp_resource(),
-                               PpapiPluginMsg_VideoDecoder_PictureReady(
-                                   picture.bitstream_buffer_id(),
-                                   picture.picture_buffer_id(), visible_rect));
-}
-
-void PepperVideoDecoderHost::DismissPictureBuffer(int32_t picture_buffer_id) {
-  auto it = picture_buffer_map_.find(picture_buffer_id);
-  DCHECK(it != picture_buffer_map_.end());
-
-  // If the texture is still used by the plugin keep it until the plugin
-  // recycles it.
-  if (it->second == PictureBufferState::IN_USE) {
-    it->second = PictureBufferState::DISMISSED;
-    return;
-  }
-
-  DCHECK(it->second == PictureBufferState::ASSIGNED);
-  picture_buffer_map_.erase(it);
-  host()->SendUnsolicitedReply(
-      pp_resource(),
-      PpapiPluginMsg_VideoDecoder_DismissPicture(picture_buffer_id));
+                               PpapiPluginMsg_VideoDecoder_SharedImageReady(
+                                   bitstream_id, mailbox, PP_FromGfxSize(size),
+                                   PP_FromGfxRect(visible_rect)));
 }
 
 void PepperVideoDecoderHost::NotifyEndOfBitstreamBuffer(
@@ -558,31 +562,27 @@ bool PepperVideoDecoderHost::TryFallbackToSoftwareDecoder() {
                                     min_picture_count_);
   std::unique_ptr<VideoDecoderShim> new_decoder(VideoDecoderShim::Create(
       this, shim_texture_pool_size, /*use_hw_decoder=*/false));
-  if (!new_decoder->Initialize(media::VideoDecodeAccelerator::Config(profile_),
-                               this)) {
+  if (!new_decoder || !new_decoder->Initialize(profile_)) {
     return false;
   }
 
   software_fallback_used_ = true;
-  decoder_.reset(new_decoder.release());
 
-  // Dismiss all assigned pictures and mark all pictures in use as DISMISSED.
-  PictureBufferMap pictures_pending_dismission;
-  for (auto& picture : picture_buffer_map_) {
-    if (picture.second == PictureBufferState::ASSIGNED) {
-      host()->SendUnsolicitedReply(
-          pp_resource(),
-          PpapiPluginMsg_VideoDecoder_DismissPicture(picture.first));
-    } else {
-      pictures_pending_dismission.insert(
-          std::make_pair(picture.first, PictureBufferState::DISMISSED));
-    }
+  if (decoder_) {
+    decoder_->Destroy();
+    decoder_.reset();
   }
-  picture_buffer_map_.swap(pictures_pending_dismission);
+  decoder_ = std::move(new_decoder);
 
-  // Dismiss all outstanding texture requests.
-  DCHECK_EQ(assign_textures_messages_to_dismiss_, 0);
-  assign_textures_messages_to_dismiss_ = pending_texture_requests_;
+  for (auto& shared_image : shared_images_) {
+    // All ASSIGNED images were deleted by decoder. And there shouldn't be any
+    // DISMISSED images yet, because it's set only in this function and this
+    // point can only be reached once.
+
+    CHECK_EQ(shared_image.second.state, PictureBufferState::IN_USE);
+    // Mark as dismissed and delete once plug-in returns them.
+    shared_image.second.state = PictureBufferState::DISMISSED;
+  }
 
   // If there was a pending Reset() it can be finished now.
   if (reset_reply_context_.is_valid()) {

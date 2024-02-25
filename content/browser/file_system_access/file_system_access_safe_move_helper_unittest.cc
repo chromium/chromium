@@ -194,9 +194,9 @@ class FileSystemAccessSafeMoveHelperTest : public testing::Test {
 
   base::ScopedTempDir dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  raw_ptr<TestFileSystemBackend> test_file_system_backend_;
+  raw_ptr<TestFileSystemBackend> test_file_system_backend_ = nullptr;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
-  raw_ptr<storage::BlobStorageContext> blob_context_;
+  raw_ptr<storage::BlobStorageContext> blob_context_ = nullptr;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
   FileSystemURL test_dest_url_;
@@ -395,11 +395,7 @@ TEST_F(FileSystemAccessSafeMoveHelperTest, LocalToLocalSameExtension) {
 
   InitializeHelperWithUrls(source_url, dest_url);
 
-  EXPECT_NE(
-      helper_->RequireAfterWriteChecksForTesting(),
-      base::FeatureList::IsEnabled(
-          features::
-              kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension));
+  EXPECT_FALSE(helper_->RequireAfterWriteChecksForTesting());
   EXPECT_TRUE(helper_->RequireQuarantineForTesting());
 }
 
@@ -573,12 +569,6 @@ TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest, Block) {
 
 TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest,
        LocalNoExtensionChange) {
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension)) {
-    return;
-  }
-
   auto source_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeLocal,
       dir_.GetPath().AppendASCII("source.txt"));
@@ -607,12 +597,6 @@ TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest,
 
 TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest,
        LocalNoExtensionChangeSecurityCheckFailed) {
-  if (!base::FeatureList::IsEnabled(
-          features::
-              kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension)) {
-    return;
-  }
-
   auto source_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeLocal,
       dir_.GetPath().AppendASCII("source.txt"));

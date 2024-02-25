@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
@@ -129,8 +129,8 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       @"Inactive tabs preference is not set to default value.");
 
   // Mark the User Education screen as already-seen by default.
-  [ChromeEarlGrey setUserDefaultObject:@YES
-                                forKey:kInactiveTabsUserEducationShownOnceKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES
+                                 forKey:kInactiveTabsUserEducationShownOnceKey];
 }
 
 // Sets up the EmbeddedTestServer as needed for tests.
@@ -147,32 +147,6 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
       kTabInactivityThresholdParameterName + "/" +
       kTabInactivityThresholdImmediateDemoParam);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
-// Relaunches the app with Inactive Tabs still enabled, and the
-// Show Inactive Tabs Count feature enabled.
-- (void)relaunchAppWithInactiveTabsAndShowCountEnabled {
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdImmediateDemoParam + "," +
-      std::string(kShowInactiveTabsCount.name));
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
-// Relaunches the app with Inactive Tabs still enabled, and the
-// Show Inactive Tabs Count feature explicitly disabled.
-- (void)relaunchAppWithInactiveTabsEnabledAndShowCountDisabled {
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdImmediateDemoParam);
-  config.features_disabled.push_back(kShowInactiveTabsCount);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -413,7 +387,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that long-pressing on an inactive tab and closing it works as
 // expected.
-- (void)testCloseInactiveTab {
+- (void)testCloseInactiveTabByLongPressing {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
                            @"only supported on iPhone.");
@@ -451,6 +425,42 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Incognito tab count should be 0");
   GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
                  @"Inactive tab count should be 0");
+}
+
+// Checks tap on X symbols closes the inactive tab.
+- (void)testCloseInactiveTabByCellCloseSymbol {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
+                           @"only supported on iPhone.");
+  }
+  CreateRegularTab(self.testServer, @"Tab1");
+  [self relaunchAppWithInactiveTabsEnabled];
+
+  // Open the Tab Grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // There should be one inactive tab.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
+                 @"Main tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 1,
+                 @"Inactive tab count should be 1");
+
+  // Enter the Inactive Tabs grid.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // There should be no inactive tab anymore, just the initial NTP.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
+                 @"Main tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  [ChromeEarlGrey waitForInactiveTabCount:0];
 }
 
 // Checks that long-pressing on an inactive tab and sharing it opens the share
@@ -500,7 +510,8 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that long-pressing on an inactive tab and bookmarking it opens the
 // "added bookmark" snackbar.
-- (void)testBookmarkInactiveTab {
+// TODO(crbug.com/1520513): Failing on iPhone, re-enable when fixed.
+- (void)DISABLED_testBookmarkInactiveTab {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
                            @"only supported on iPhone.");
@@ -528,7 +539,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       performAction:grey_longPress()];
 
   NSString* snackbarMessage = base::SysUTF16ToNSString(
-      l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED, 1));
+      l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, 1));
   WaitForSnackbarTriggeredByTappingItem(snackbarMessage,
                                         AddToBookmarksButton());
 
@@ -693,6 +704,16 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   // Check that Inactive Tabs Settings are open.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsSettings()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss the settings screen.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  // The Inactive Tabs grid should be visible again.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsGrid()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Checks that changing settings when presented from the Inactive Tabs grid
@@ -741,8 +762,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 0");
 }
 
-// Checks that the count of inactive tabs only appear when the
-// show-inactive-tabs-count feature is enabled.
+// Checks that the count of inactive tabs appears.
 - (void)testShowCount {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
@@ -750,20 +770,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   }
   CreateRegularTabs(3, self.testServer);
 
-  // Relaunch without the Show Inactive Tabs Count feature enabled.
-  [self relaunchAppWithInactiveTabsEnabledAndShowCountDisabled];
-
-  // Open the Tab Grid.
-  [ChromeEarlGreyUI openTabGrid];
-
-  // The Inactive Tabs count should not be appended at the end of the button's
-  // label.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
-      assertWithMatcher:grey_accessibilityLabel(
-                            @"Inactive Tabs, Tabs not used for 0 days")];
-
-  // Relaunch with the Show Inactive Tabs Count feature enabled.
-  [self relaunchAppWithInactiveTabsAndShowCountEnabled];
+  [self relaunchAppWithInactiveTabsEnabled];
 
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
@@ -784,7 +791,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   }
   // Reset the User-Education marker.
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kInactiveTabsUserEducationShownOnceKey];
+      removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
 
   // Set up one inactive tab.
   CreateRegularTabs(1, self.testServer);
@@ -820,7 +827,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   }
   // Reset the User-Education marker.
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kInactiveTabsUserEducationShownOnceKey];
+      removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
   // Set up one inactive tab.
   CreateRegularTabs(1, self.testServer);
   [self relaunchAppWithInactiveTabsEnabled];

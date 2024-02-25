@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_pane_view.h"
 
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -13,18 +14,20 @@
 DesktopMediaPaneView::DesktopMediaPaneView(
     std::unique_ptr<views::View> content_view,
     std::unique_ptr<ShareAudioView> share_audio_view) {
+  float bottom_radius = features::IsChromeRefresh2023() ? 8 : 4;
   SetBackground(views::CreateThemedRoundedRectBackground(
       features::IsChromeRefresh2023() ? ui::kColorSysSurface4
                                       : ui::kColorSubtleEmphasisBackground,
-      /*top_radius=*/0,
-      /*bottom_radius=*/features::IsChromeRefresh2023() ? 8 : 4,
-      /*for_border_thickness=*/0));
+      /*top_radius=*/0, bottom_radius));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(0)));
   layout->SetFlexForView(AddChildView(std::move(content_view)), 1);
 
   if (!share_audio_view) {
+    SetPaintToLayer();
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(0, 0, bottom_radius, bottom_radius));
     return;
   }
 
@@ -48,4 +51,9 @@ bool DesktopMediaPaneView::IsAudioSharingApprovedByUser() const {
 void DesktopMediaPaneView::SetAudioSharingApprovedByUser(bool is_on) {
   CHECK(share_audio_view_);
   share_audio_view_->SetAudioSharingApprovedByUser(is_on);
+}
+
+std::u16string DesktopMediaPaneView::GetAudioLabelText() const {
+  return share_audio_view_ ? share_audio_view_->GetAudioLabelText()
+                           : std::u16string();
 }

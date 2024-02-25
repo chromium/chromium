@@ -25,7 +25,7 @@
 namespace device {
 namespace pin {
 
-absl::optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
+std::optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
     const EC_GROUP* group,
     const KeyAgreementResponse& response) {
   bssl::UniquePtr<EC_POINT> ret(EC_POINT_new(group));
@@ -38,7 +38,7 @@ absl::optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
                                           y_bn.get(), nullptr /* ctx */) == 1;
 
   if (!on_curve) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ret;
@@ -55,7 +55,7 @@ class ProtocolV1 : public Protocol {
       std::vector<uint8_t>* out_shared_key) const override {
     bssl::UniquePtr<EC_KEY> key(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
     CHECK(EC_KEY_generate_key(key.get()));
-    absl::optional<bssl::UniquePtr<EC_POINT>> peers_point =
+    std::optional<bssl::UniquePtr<EC_POINT>> peers_point =
         PointFromKeyAgreementResponse(EC_KEY_get0_group(key.get()), peers_key);
     *out_shared_key = CalculateSharedKey(key.get(), peers_point->get());
     // KeyAgreementResponse parsing ensures that the point is on the curve.
@@ -177,8 +177,7 @@ class ProtocolV2 : public ProtocolV1 {
   static base::span<const uint8_t, kHMACKeyLength> GetHMACSubKey(
       base::span<const uint8_t, kSharedKeyLength> shared_key) {
     CHECK_EQ(shared_key.size(), kSharedKeyLength);
-    return base::make_span<kHMACKeyLength>(
-        shared_key.subspan(0, kHMACKeyLength));
+    return base::make_span<kHMACKeyLength>(shared_key.first(kHMACKeyLength));
   }
 
   // GetAESSubKey returns the HMAC-key portion of the shared secret.
@@ -197,9 +196,9 @@ class ProtocolV2 : public ProtocolV1 {
 
     std::vector<uint8_t> result(AES_BLOCK_SIZE + plaintext.size());
     const base::span<uint8_t> iv =
-        base::make_span(result).subspan(0, AES_BLOCK_SIZE);
+        base::make_span(result).first<AES_BLOCK_SIZE>();
     const base::span<uint8_t> ciphertext =
-        base::make_span(result).subspan(AES_BLOCK_SIZE);
+        base::make_span(result).subspan<AES_BLOCK_SIZE>();
 
     crypto::RandBytes(iv);
 
@@ -221,8 +220,9 @@ class ProtocolV2 : public ProtocolV1 {
 
     const base::span<const uint8_t, kAESKeyLength> aes_key =
         GetAESSubKey(base::make_span<kSharedKeyLength>(shared_key));
-    const base::span<const uint8_t> iv = input.subspan(0, AES_BLOCK_SIZE);
-    const base::span<const uint8_t> ciphertext = input.subspan(AES_BLOCK_SIZE);
+    const base::span<const uint8_t> iv = input.first<AES_BLOCK_SIZE>();
+    const base::span<const uint8_t> ciphertext =
+        input.subspan<AES_BLOCK_SIZE>();
     std::vector<uint8_t> plaintext(ciphertext.size());
 
     EVP_CIPHER_CTX aes_ctx;
@@ -283,11 +283,10 @@ class ProtocolV2 : public ProtocolV1 {
   static void* KDF(const void* in, size_t in_len, void* out, size_t* out_len) {
     static_assert(kSharedKeyLength == 2 * SHA256_DIGEST_LENGTH, "");
     DCHECK_GE(*out_len, static_cast<size_t>(kSharedKeyLength));
-    auto hmac_key_out =
-        base::make_span(reinterpret_cast<uint8_t*>(out),
-                        static_cast<size_t>(SHA256_DIGEST_LENGTH));
+    auto hmac_key_out = base::make_span(
+        static_cast<uint8_t*>(out), static_cast<size_t>(SHA256_DIGEST_LENGTH));
     auto aes_key_out =
-        base::make_span(reinterpret_cast<uint8_t*>(out) + SHA256_DIGEST_LENGTH,
+        base::make_span(static_cast<uint8_t*>(out) + SHA256_DIGEST_LENGTH,
                         static_cast<size_t>(SHA256_DIGEST_LENGTH));
 
     constexpr uint8_t kHMACKeyInfo[] = "CTAP2 HMAC key";

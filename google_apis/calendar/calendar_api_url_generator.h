@@ -7,9 +7,9 @@
 
 #include <string>
 
+#include <optional>
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace google_apis {
@@ -26,25 +26,33 @@ class CalendarApiUrlGenerator {
   ~CalendarApiUrlGenerator();
 
   // Returns a URL to fetch a list of calendar events.
+  // |calendar_id|   ID of the calendar to fetch events from. If empty,
+  //                 kPrimaryCalendarID is used in its place.
   // |start_time|    Start time of the event window
   // |end_time|      End time of the aforementioned window
   // |single_events| If true, expand recurring events into instances and only
   //                 return single one-off events and instances of recurring
   //                 events, but not the underlying recurring events
-  //                 themselves
+  //                 themselves.
   // |max_attendees| The maximum number of attendees to include in the response.
   //                 If there are more than the specified number of attendees,
   //                 only the participant is returned. Optional.
   // |max_results|   Maximum number of events returned on one result page.
   //                 Optional.
-  GURL GetCalendarEventListUrl(const base::Time& start_time,
+  GURL GetCalendarEventListUrl(const std::string& calendar_id,
+                               const base::Time& start_time,
                                const base::Time& end_time,
                                bool single_events,
-                               absl::optional<int> max_attendees,
-                               absl::optional<int> max_results) const;
+                               std::optional<int> max_attendees,
+                               std::optional<int> max_results) const;
 
   // Returns a URL to fetch a map of calendar color id to color code.
   GURL GetCalendarColorListUrl() const;
+
+  // Returns a URL to fetch a list of calendars.
+  // max_results   Maximum number of calendars returned on one result page.
+  //               Optional.
+  GURL GetCalendarListUrl(std::optional<int> max_results) const;
 
   // The base url can be set here. It defaults to the production base url.
   void SetBaseUrlForTesting(const std::string& url) { base_url_ = GURL(url); }

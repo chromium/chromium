@@ -5,7 +5,8 @@
 #ifndef UI_VIEWS_CONTROLS_FOCUSABLE_BORDER_H_
 #define UI_VIEWS_CONTROLS_FOCUSABLE_BORDER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -32,7 +33,7 @@ class VIEWS_EXPORT FocusableBorder : public Border {
 
   // Sets the color id to use for this border. When unsupplied, the color will
   // depend on the focus state.
-  void SetColorId(const absl::optional<ui::ColorId>& color_id);
+  void SetColorId(const std::optional<ui::ColorId>& color_id);
 
   // Sets the corner radius.
   void SetCornerRadius(float corner_radius);
@@ -48,7 +49,7 @@ class VIEWS_EXPORT FocusableBorder : public Border {
  private:
   gfx::Insets insets_;
   float corner_radius_;
-  absl::optional<ui::ColorId> override_color_id_;
+  std::optional<ui::ColorId> override_color_id_;
   bool should_scale_;
 };
 

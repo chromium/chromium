@@ -31,8 +31,7 @@ import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeFieldsTest {
-    @Rule
-    public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
+    @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestObject extends Controller {
         private String mStringValue;
@@ -43,6 +42,7 @@ public class JavaBridgeFieldsTest {
             mStringValue = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized String waitForStringValue() {
             waitForResult();
@@ -63,8 +63,7 @@ public class JavaBridgeFieldsTest {
     }
 
     // A custom type used when testing passing objects.
-    private static class CustomType {
-    }
+    private static class CustomType {}
 
     @UseMethodParameterBefore(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void setupMojoTest(boolean useMojo) {
@@ -112,7 +111,8 @@ public class JavaBridgeFieldsTest {
                 "undefined", executeJavaScriptAndGetStringResult("typeof testObject.objectField"));
         Assert.assertEquals(
                 "undefined", executeJavaScriptAndGetStringResult("typeof testObject.stringField"));
-        Assert.assertEquals("undefined",
+        Assert.assertEquals(
+                "undefined",
                 executeJavaScriptAndGetStringResult("typeof testObject.customTypeField"));
     }
 }

@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_NAVIGATION_NAVIGATION_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_NAVIGATION_NAVIGATION_JAVA_SCRIPT_FEATURE_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
@@ -28,7 +30,7 @@ class NavigationJavaScriptFeature : public web::JavaScriptFeature {
       delete;
 
   // JavaScriptFeature:
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 };

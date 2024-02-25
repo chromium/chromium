@@ -28,32 +28,6 @@
 #include "media/capture/video/mac/uvc_control_mac.h"
 #endif
 
-@implementation DeviceNameAndTransportType {
-  NSString* __strong _deviceName;
-  // The transport type of the device (USB, PCI, etc), values are defined in
-  // <IOKit/audio/IOAudioTypes.h> as kIOAudioDeviceTransportType*.
-  media::VideoCaptureTransportType _transportType;
-}
-
-- (instancetype)initWithName:(NSString*)deviceName
-               transportType:(media::VideoCaptureTransportType)transportType {
-  if (self = [super init]) {
-    _deviceName = [deviceName copy];
-    _transportType = transportType;
-  }
-  return self;
-}
-
-- (NSString*)deviceName {
-  return _deviceName;
-}
-
-- (media::VideoCaptureTransportType)deviceTransportType {
-  return _transportType;
-}
-
-@end  // @implementation DeviceNameAndTransportType
-
 namespace media {
 
 namespace {
@@ -276,11 +250,9 @@ void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
                      ", and expected " + capture_format_.frame_size.ToString());
     return;
   }
-  // TODO(https://crbug.com/1440075): Remove the `scaled_buffers` argument
-  // because the vector is always empty and no consumers are interested in them.
   client_->OnIncomingCapturedExternalBuffer(
-      std::move(frame), std::vector<CapturedExternalVideoBuffer>(),
-      base::TimeTicks::Now(), timestamp, gfx::Rect(capture_format_.frame_size));
+      std::move(frame), base::TimeTicks::Now(), timestamp,
+      gfx::Rect(capture_format_.frame_size));
 }
 
 void VideoCaptureDeviceApple::OnPhotoTaken(const uint8_t* image_data,

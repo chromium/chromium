@@ -5,8 +5,9 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_SUPPORTS_LOADING_MODE_SUPPORTS_LOADING_MODE_PARSER_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_SUPPORTS_LOADING_MODE_SUPPORTS_LOADING_MODE_PARSER_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom-forward.h"
 
 namespace net {
@@ -23,7 +24,7 @@ namespace network {
 // Returns nullptr if the header syntax was invalid.
 COMPONENT_EXPORT(NETWORK_CPP)
 mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
-    base::StringPiece header_value);
+    std::string_view header_value);
 
 // Parse Supports-Loading-Modes from HTTP response headers. If multiple headers
 // are found, they are assumed to be canonicalized by joining them with commas,

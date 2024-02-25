@@ -1,0 +1,177 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("drive_availability") {
+  sources = [
+    "drive_availability.h",
+    "drive_availability.mm",
+  ]
+  deps = [
+    ":drive_service",
+    ":policy",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("drive_tab_helper") {
+  sources = [
+    "drive_tab_helper.h",
+    "drive_tab_helper.mm",
+  ]
+  deps = [
+    ":drive_file_uploader",
+    ":drive_upload_task",
+    "//base",
+    "//ios/chrome/browser/drive/model:drive_service",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/download",
+  ]
+}
+
+source_set("drive_upload_task") {
+  sources = [
+    "drive_upload_task.h",
+    "drive_upload_task.mm",
+  ]
+  deps = [
+    ":metrics",
+    "//base",
+    "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//net",
+    "//url",
+  ]
+  public_deps = [
+    ":drive_file_uploader",
+    ":upload_task",
+  ]
+}
+
+source_set("upload_task") {
+  sources = [
+    "upload_task.h",
+    "upload_task.mm",
+    "upload_task_observer.h",
+    "upload_task_observer.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("drive_service") {
+  sources = [
+    "drive_service.h",
+    "drive_service.mm",
+    "drive_service_configuration.h",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("drive_file_uploader") {
+  sources = [
+    "drive_file_uploader.h",
+    "drive_file_uploader.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("drive_service_factory") {
+  sources = [
+    "drive_service_factory.h",
+    "drive_service_factory.mm",
+  ]
+  deps = [
+    ":drive_service",
+    "//base",
+    "//components/keyed_service/ios",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+    "//ios/public/provider/chrome/browser/drive:drive_api",
+  ]
+}
+
+source_set("manage_storage_url_util") {
+  sources = [
+    "manage_storage_url_util.h",
+    "manage_storage_url_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("metrics") {
+  sources = [
+    "drive_metrics.h",
+    "drive_metrics.mm",
+  ]
+}
+
+source_set("policy") {
+  sources = [ "drive_policy.h" ]
+}
+
+source_set("test_constants") {
+  testonly = true
+  sources = [
+    "test_constants.h",
+    "test_constants.mm",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_drive_file_uploader.h",
+    "test_drive_file_uploader.mm",
+    "test_drive_service.h",
+    "test_drive_service.mm",
+  ]
+  public_deps = [
+    ":drive_file_uploader",
+    ":drive_service",
+    ":test_constants",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "drive_service_factory_unittest.mm",
+    "drive_tab_helper_unittest.mm",
+    "drive_upload_task_unittest.mm",
+    "test_upload_task_observer.h",
+    "test_upload_task_observer.mm",
+    "upload_task_unittest.mm",
+  ]
+  deps = [
+    ":drive_service_factory",
+    ":drive_tab_helper",
+    ":drive_upload_task",
+    ":metrics",
+    ":test_support",
+    "//base/test:test_support",
+    "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/drive/model:upload_task",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

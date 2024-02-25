@@ -39,6 +39,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -79,7 +80,7 @@ class LocalFrameClientImplTest : public testing::Test {
   WebString UserAgent() {
     // The test always returns the same user agent .
     std::string user_agent = GetLocalFrameClient().UserAgent().Utf8();
-    return WebString::FromUTF8(user_agent.c_str(), user_agent.length());
+    return WebString::FromUTF8(user_agent);
   }
 
   WebLocalFrameImpl* MainFrame() { return helper_.LocalMainFrame(); }
@@ -92,6 +93,7 @@ class LocalFrameClientImplTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   LocalFrameMockWebFrameClient web_frame_client_;
   frame_test_helpers::WebViewHelper helper_;
 };

@@ -53,8 +53,12 @@ public class BlankCTATabInitialStateRule implements TestRule {
             public void evaluate() throws Throwable {
                 if (sActivity == null) {
                     TestThreadUtils.runOnUiThreadBlocking(
-                            () -> { FirstRunStatus.setFirstRunFlowComplete(true); });
-                    mActivityTestRule.startMainActivityOnBlankPage();
+                            () -> {
+                                FirstRunStatus.setFirstRunFlowComplete(true);
+                            });
+                    if (mActivityTestRule.getActivity() == null) {
+                        mActivityTestRule.startMainActivityOnBlankPage();
+                    }
                     sActivity = mActivityTestRule.getActivity();
 
                     // Previous tests may have left tabs open and finished the Activity.
@@ -83,7 +87,9 @@ public class BlankCTATabInitialStateRule implements TestRule {
 
     private int regularTabCount() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return sActivity.getTabModelSelector().getModel(false).getCount(); });
+                () -> {
+                    return sActivity.getTabModelSelector().getModel(false).getCount();
+                });
     }
 
     private boolean shouldPerformFastReset() {
@@ -94,39 +100,46 @@ public class BlankCTATabInitialStateRule implements TestRule {
     // Avoids closing the primary tab (and killing the renderer) in order to reset tab state
     // quickly, at the cost of thoroughness. This should be adequate for most tests.
     private void resetTabStateFast() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IncognitoTabHostUtils.closeAllIncognitoTabs();
-            // Close all but the first regular tab as these tests expect to start with a single
-            // tab.
-            TabModel regularTabModel =
-                    sActivity.getTabModelSelector().getModel(/*incognito=*/false);
-            while (TabModelUtils.closeTabByIndex(regularTabModel, 1)) {
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IncognitoTabHostUtils.closeAllIncognitoTabs();
+                    // Close all but the first regular tab as these tests expect to start with a
+                    // single tab.
+                    TabModel regularTabModel =
+                            sActivity.getTabModelSelector().getModel(/* incognito= */ false);
+                    while (TabModelUtils.closeTabByIndex(regularTabModel, 1)) {}
+                });
         mActivityTestRule.loadUrl("about:blank");
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivity.getCurrentWebContents().getNavigationController().clearHistory();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivity.getCurrentWebContents().getNavigationController().clearHistory();
+                });
     }
 
     // Thoroughly resets tab state by closing all tabs before restoring the primary tab to
     // about:blank state.
     private void resetTabStateThorough() {
-        Tab createdTab = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            // We have to avoid closing all tabs and triggering CTA's self-finish logic when all
-            // tabs are closed.
-            Tab newTab = sActivity.getTabCreator(false).launchUrl(
-                    "about:blank", TabLaunchType.FROM_CHROME_UI);
-            IncognitoTabHostUtils.closeAllIncognitoTabs();
+        Tab createdTab =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            // We have to avoid closing all tabs and triggering CTA's self-finish
+                            // logic when all tabs are closed.
+                            Tab newTab =
+                                    sActivity
+                                            .getTabCreator(false)
+                                            .launchUrl("about:blank", TabLaunchType.FROM_CHROME_UI);
+                            IncognitoTabHostUtils.closeAllIncognitoTabs();
 
-            TabModel regularTabModel =
-                    sActivity.getTabModelSelector().getModel(/*incognito=*/false);
-            for (int i = regularTabModel.getCount() - 1; i >= 0; i--) {
-                Tab tab = regularTabModel.getTabAt(i);
-                if (tab != newTab) regularTabModel.closeTab(tab);
-            }
-            return newTab;
-        });
+                            TabModel regularTabModel =
+                                    sActivity
+                                            .getTabModelSelector()
+                                            .getModel(/* incognito= */ false);
+                            for (int i = regularTabModel.getCount() - 1; i >= 0; i--) {
+                                Tab tab = regularTabModel.getTabAt(i);
+                                if (tab != newTab) regularTabModel.closeTab(tab);
+                            }
+                            return newTab;
+                        });
         ChromeTabUtils.waitForTabPageLoaded(createdTab, "about:blank");
     }
 }

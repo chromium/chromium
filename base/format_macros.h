@@ -39,33 +39,9 @@
 
 #include <inttypes.h>
 
-#if BUILDFLAG(IS_WIN)
-
-#if !defined(PRId64) || !defined(PRIu64) || !defined(PRIx64)
-#error "inttypes.h provided by win toolchain should define these."
-#endif
-
-#define WidePRId64 L"I64d"
-#define WidePRIu64 L"I64u"
-#define WidePRIx64 L"I64x"
-
-#if !defined(PRIuS)
-#define PRIuS "Iu"
-#endif
-
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-
-// GCC will concatenate wide and narrow strings correctly, so nothing needs to
-// be done here.
-#define WidePRId64 PRId64
-#define WidePRIu64 PRIu64
-#define WidePRIx64 PRIx64
-
 #if !defined(PRIuS)
 #define PRIuS "zu"
 #endif
-
-#endif  // BUILDFLAG(IS_WIN)
 
 // The size of NSInteger and NSUInteger varies between 32-bit and 64-bit
 // architectures and Apple does not provides standard format macros and

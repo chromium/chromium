@@ -148,22 +148,20 @@ void CastDialogSinkButton::OnEnabledChanged() {
   if (sink_.state != UIMediaSinkState::AVAILABLE)
     return;
 
+  ui::ImageModel icon;
   if (GetEnabled()) {
-    if (saved_status_text_)
+    if (saved_status_text_) {
       RestoreStatusText();
-    static_cast<views::ImageView*>(icon_view())
-        ->SetImage(CreateSinkIcon(sink_.icon_type));
-  } else {
-    if (IsIncompatibleDialSink(sink_)) {
-      OverrideStatusText(
-          l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_AVAILABLE_SPECIFIC_SITES));
-    } else {
-      OverrideStatusText(
-          l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SOURCE_NOT_SUPPORTED));
     }
-    static_cast<views::ImageView*>(icon_view())
-        ->SetImage(CreateDisabledSinkIcon(sink_.icon_type));
+    icon = CreateSinkIcon(sink_.icon_type);
+  } else {
+    int status_text = IsIncompatibleDialSink(sink_)
+                          ? IDS_MEDIA_ROUTER_AVAILABLE_SPECIFIC_SITES
+                          : IDS_MEDIA_ROUTER_SOURCE_NOT_SUPPORTED;
+    OverrideStatusText(l10n_util::GetStringUTF16(status_text));
+    icon = CreateDisabledSinkIcon(sink_.icon_type);
   }
+  static_cast<views::ImageView*>(icon_view())->SetImage(icon);
 
   if (GetWidget())
     UpdateTitleTextStyle();
@@ -174,7 +172,7 @@ void CastDialogSinkButton::UpdateTitleTextStyle() {
       GetColorProvider()->GetColor(ui::kColorDialogBackground);
   SetTitleTextStyle(
       GetEnabled() ? views::style::STYLE_PRIMARY : views::style::STYLE_DISABLED,
-      background_color);
+      background_color, /*color_id=*/std::nullopt);
 }
 
 void CastDialogSinkButton::RequestFocus() {
@@ -246,7 +244,7 @@ const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(UIMediaSink sink) {
                     : GetVectorIcon(sink.icon_type);
 }
 
-BEGIN_METADATA(CastDialogSinkButton, HoverButton)
+BEGIN_METADATA(CastDialogSinkButton)
 END_METADATA
 
 }  // namespace media_router

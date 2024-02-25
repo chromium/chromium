@@ -23,7 +23,7 @@ class CroshSystemAppDelegate : public ash::SystemWebAppDelegate {
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
-  bool ShouldShowInSearch() const override;
+  bool ShouldShowInSearchAndShelf() const override;
   bool ShouldHaveTabStrip() const override;
   bool UseSystemThemeColor() const override;
 };

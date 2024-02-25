@@ -9,7 +9,9 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
@@ -17,7 +19,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
@@ -56,6 +57,9 @@ class BASE_EXPORT SysInfo {
   // system, but could instead be the number of physical cores when
   // SetCpuSecurityMitigationsEnabled() has been invoked to indicate that CPU
   // security mitigations are enabled on Mac.
+  // On some platforms this may cache the resulting value in its implementation,
+  // e.g. on Linux/ChromeOS where this function cannot run in a sandbox and so
+  // a cached value must be returned.
   static int NumberOfProcessors();
 
   // Returns the number of the most efficient logical processors for the current
@@ -113,9 +117,46 @@ class BASE_EXPORT SysInfo {
   // Returns a descriptive string for the current machine model or an empty
   // string if the machine model is unknown or an error occurred.
   // e.g. "MacPro1,1" on Mac, "iPhone9,3" on iOS or "Nexus 5" on Android. Only
-  // implemented on OS X, iOS, Android, Chrome OS and Windows. This returns an
+  // implemented on macOS, iOS, Android, Chrome OS and Windows. This returns an
   // empty string on other platforms.
+  //
+  // For macOS, a useful reference of the resulting strings returned by this
+  // function and their corresponding hardware can be found at
+  // https://everymac.com/systems/by_capability/mac-specs-by-machine-model-machine-id.html
   static std::string HardwareModelName();
+
+#if BUILDFLAG(IS_MAC)
+  struct HardwareModelNameSplit {
+    std::string category;
+    int model = 0;
+    int variant = 0;
+  };
+  // Hardware model names on the Mac are of the shape "Mac𝓍,𝓎" where the
+  // prefix is the general category, the 𝓍 is the model, and the 𝓎 is the
+  // variant. This function takes the hardware model name as returned by
+  // HardwareModelName() above, and returns it split into its constituent parts.
+  // Returns nullopt if the value cannot be parsed.
+  //
+  // /!\ WARNING
+  //
+  // This is NOT A USEFUL FUNCTION and SHOULD NOT BE USED. While the `model`
+  // value does inform as to what generation of hardware it is within the
+  // `category`, this is not useful in determining the capabilities of the
+  // hardware. Instead of using the `model` value, check the actual capabilities
+  // of the hardware to verify what it can do rather than relying on a hardware
+  // model name. In addition, while the `category` value used to have meaning
+  // and could be used to determine the type of hardware (e.g. desktop vs
+  // laptop), in 2022 Apple started using the generic category of "Mac", thus
+  // removing its usefulness when used alone. While the entire model string as
+  // returned by HardwareModelName() above can be useful for identifying a
+  // specific piece of equipment, splitting apart it is not useful.
+  //
+  // Do not add any further callers! When the aforementioned 2022-era hardware
+  // is the minimum requirement for Chromium, remove this function and adjust
+  // all callers appropriately.
+  static std::optional<HardwareModelNameSplit> SplitHardwareModelNameDoNotUse(
+      std::string_view name);
+#endif
 
   struct HardwareInfo {
     std::string manufacturer;
@@ -123,7 +164,7 @@ class BASE_EXPORT SysInfo {
   };
   // Returns via |callback| a struct containing descriptive UTF-8 strings for
   // the current machine manufacturer and model, or empty strings if the
-  // information is unknown or an error occurred. Implemented on Windows, OS X,
+  // information is unknown or an error occurred. Implemented on Windows, macOS,
   // iOS, Linux, Chrome OS and Android.
   static void GetHardwareInfo(base::OnceCallback<void(HardwareInfo)> callback);
 
@@ -135,9 +176,10 @@ class BASE_EXPORT SysInfo {
 
   // Retrieves detailed numeric values for the OS version.
   // DON'T USE THIS ON THE MAC OR WINDOWS to determine the current OS release
-  // for OS version-specific feature checks and workarounds. If you must use
-  // an OS version check instead of a feature check, use the base::mac::IsOS*
-  // family from base/mac/mac_util.h, or base::win::GetVersion from
+  // for OS version-specific feature checks and workarounds. If you must use an
+  // OS version check instead of a feature check, use
+  // base::mac::MacOSVersion()/MacOSMajorVersion() family from
+  // base/mac/mac_util.h, or base::win::GetVersion() from
   // base/win/windows_version.h.
   static void OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
@@ -205,7 +247,8 @@ class BASE_EXPORT SysInfo {
   static std::string KernelVersion();
 
   // Crashes if running on Chrome OS non-test image. Use only for really
-  // sensitive and risky use cases.
+  // sensitive and risky use cases. Only works while running in verified mode,
+  // this check an easily be bypassed in dev mode.
   static void CrashIfChromeOSNonTestImage();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -218,9 +261,6 @@ class BASE_EXPORT SysInfo {
 
   // Returns the Android hardware EGL system property.
   static std::string GetAndroidHardwareEGL();
-
-  static int DalvikHeapSizeMB();
-  static int DalvikHeapGrowthLimitMB();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
@@ -254,6 +294,20 @@ class BASE_EXPORT SysInfo {
   static bool IsLowEndDeviceOrPartialLowEndModeEnabled(
       const FeatureParam<bool>& param_for_exclusion);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  // Returns true for Android devices whose memory is X GB, considering
+  // carveouts. The carveouts is memory reserved by the system, e.g.
+  // for drivers, MTE, etc. It's very common for querying app to see
+  // hundreds MBs less than actual physical memory installed on the system.
+  // Addendum: This logic should also work for ChromeOS.
+  static bool Is3GbDevice();
+  static bool Is4GbDevice();
+  static bool Is6GbDevice();
+  // Returns true for Android devices whose memory is 4GB or 6GB, considering
+  // carveouts.
+  static bool Is4GbOr6GbDevice();
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_MAC)
   // Indicates that CPU security mitigations are enabled for the current
   // process. This is used to control the behavior of NumberOfProcessors(), see
@@ -283,7 +337,7 @@ class BASE_EXPORT SysInfo {
 
   // Sets the amount of physical memory in MB for testing, thus allowing tests
   // to run irrespective of the host machine's configuration.
-  static absl::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
+  static std::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
       uint64_t amount_of_memory_mb);
   static void ClearAmountOfPhysicalMemoryMbForTesting();
 };

@@ -80,13 +80,6 @@ const cryptauth::GcmDeviceInfo& GcmDeviceInfoProviderImpl::GetGcmDeviceInfo()
     gcm_device_info.add_supported_software_features(
         cryptauth::SoftwareFeature::BETTER_TOGETHER_CLIENT);
 
-    // Disable Messages integration when pre-installing app on all devices.
-    if (!base::FeatureList::IsEnabled(
-            features::kDisableMessagesCrossDeviceIntegration)) {
-      gcm_device_info.add_supported_software_features(
-          cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT);
-    }
-
     // Instant Tethering is only supported if the associated flag is enabled.
     if (base::FeatureList::IsEnabled(features::kInstantTethering)) {
       gcm_device_info.add_supported_software_features(

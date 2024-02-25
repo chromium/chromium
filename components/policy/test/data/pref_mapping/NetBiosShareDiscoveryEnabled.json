@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NetBiosShareDiscoveryEnabled": true
+        },
+        "prefs": {
+          "network_file_shares.netbios_discovery.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

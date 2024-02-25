@@ -2,18 +2,15 @@
 # subdirectories that have specific owners who are the experts in reviewing that
 # code. Top level content/OWNERS are reviewers who are qualified to review
 # changes across all of content and are responsible for its architecture. They
-# will defer to subdirectory owners as needed. As such we expect that a
-# content/OWNER has made substantial contributions to content/ in the recent
-# past, specifically both in the browser and renderer subdirectories as they
-# encapsulate the main architecture, and demonstrated overall knowledge of the
-# content architecture by doing code reviews for changes that affect different
-# parts of content even before being a content/OWNER.
+# will defer to subdirectory owners as needed. For more information about owner
+# responsibilities as well as how to become a top-level owner, please see
+# //content/README.md#content-owners.
 #
 # For public questions directed to OWNERS, you can send email
 # to content-owners@chromium.org.
 
 set noparent
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 alexmos@chromium.org
 altimin@chromium.org
@@ -22,11 +19,12 @@ avi@chromium.org
 clamy@chromium.org
 creis@chromium.org
 dgozman@chromium.org
+dtapuska@chromium.org
 jam@chromium.org
 kinuko@chromium.org
 nasko@chromium.org
 rakina@chromium.org
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 
 # per-file rules:
@@ -51,15 +49,12 @@ per-file ...fuchsia*=file://build/fuchsia/OWNERS
 per-file ..._mac.*=ellyjones@chromium.org
 per-file ..._mac.*=mark@chromium.org
 per-file ..._mac.*=rsesek@chromium.org
-per-file ..._mac.*=tapted@chromium.org
 per-file ..._mac_*=ellyjones@chromium.org
 per-file ..._mac_*=mark@chromium.org
 per-file ..._mac_*=rsesek@chromium.org
-per-file ..._mac_*=tapted@chromium.org
 per-file ....mm=ellyjones@chromium.org
 per-file ....mm=mark@chromium.org
 per-file ....mm=rsesek@chromium.org
-per-file ....mm=tapted@chromium.org
 
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

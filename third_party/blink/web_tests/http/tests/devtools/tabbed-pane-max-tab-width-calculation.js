@@ -4,11 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`Tests tabbed pane max tab element width calculation.\n`);
 
   function calculateAndDumpMaxWidth(measuredWidths, totalWidth) {
-    var maxWidth = UI.TabbedPane.prototype.calculateMaxWidth(measuredWidths, totalWidth);
+    var maxWidth = UIModule.TabbedPane.TabbedPane.prototype.calculateMaxWidth(measuredWidths, totalWidth);
     TestRunner.addResult(
         'measuredWidths = [' + String(measuredWidths) + '], totalWidth = ' + totalWidth + ', maxWidth = ' + maxWidth +
         '.');

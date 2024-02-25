@@ -38,6 +38,8 @@ component("platform") {
     "ax_platform_tree_manager_delegate.h",
 
     # Used by browser_accessibility_state_impl.cc.
+    "ax_platform.cc",
+    "ax_platform.h",
     "ax_platform_node.cc",
     "ax_platform_node.h",
     "ax_platform_node_delegate.cc",
@@ -92,9 +94,9 @@ component("platform") {
     "//ui/display",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions || is_fuchsia) {
     sources += [
-      # Use by the Automation API.
+      # Use by the Automation API and the Accessibility service.
       # TODO(crbug.com/1357889): Rename to atp/ or javascript/?
       "automation/automation_api_util.cc",
       "automation/automation_api_util.h",
@@ -106,6 +108,7 @@ component("platform") {
       "automation/automation_tree_manager_owner.h",
       "automation/automation_v8_bindings.cc",
       "automation/automation_v8_bindings.h",
+      "automation/automation_v8_router.cc",
       "automation/automation_v8_router.h",
       "automation/v8_handler_function_wrapper.cc",
       "automation/v8_handler_function_wrapper.h",

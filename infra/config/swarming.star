@@ -63,6 +63,9 @@ swarming.pool_realm(
 swarming.task_triggerers(
     builder_realm = "ci",
     pool_realm = "pools/ci",
+    groups = [
+        "mdb/chrome-build-access-sphinx",
+    ],
     users = [
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
 
@@ -84,6 +87,9 @@ swarming.task_triggerers(
     builder_realm = "try",
     pool_realm = "pools/try",
     groups = [
+        "mdb/chrome-build-access-sphinx",
+        # Prefer the above sphinx group for led access. But if folks outside
+        # Chrome need access, can add them to chromium-led-users.
         "chromium-led-users",
     ],
     users = [

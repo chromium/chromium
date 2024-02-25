@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -43,9 +44,6 @@ class TestSyncService : public SyncService {
   void SetAccountInfo(const CoreAccountInfo& account_info);
   void SetHasSyncConsent(bool has_consent);
   void SetSetupInProgress(bool in_progress);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetSyncFeatureDisabledViaDashboard(bool disabled_via_dashboard);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().
@@ -71,6 +69,16 @@ class TestSyncService : public SyncService {
   void SetDownloadStatusFor(const ModelTypeSet& types,
                             ModelTypeDownloadStatus download_status);
   void SetTypesWithUnsyncedData(const ModelTypeSet& types);
+  void SetLocalDataDescriptions(
+      const std::map<ModelType, LocalDataDescription>& local_data_descriptions);
+
+  // If the passed callback is non-null,
+  // SupportsExplicitPassphrasePlatformClient() will return true and every
+  // SendExplicitPassphraseToPlatformClient() call will invoke it.
+  // Otherwise, SupportsExplicitPassphrasePlatformClient() will return false
+  // and SendExplicitPassphraseToPlatformClient() no-ops.
+  void SetPassphrasePlatformClientCallback(
+      const base::RepeatingClosure& send_passphrase_to_platform_client_cb);
 
   void FireStateChanged();
   void FirePaymentsIntegrationEnabledChanged();
@@ -93,9 +101,6 @@ class TestSyncService : public SyncService {
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool IsSyncFeatureDisabledViaDashboard() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
@@ -129,15 +134,23 @@ class TestSyncService : public SyncService {
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
+  void RecordReasonIfWaitingForUpdates(
+      ModelType type,
+      const std::string& histogram_name) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+  bool SupportsExplicitPassphrasePlatformClient() override;
+  void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
+      ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> cb) const override;
+  void GetLocalDataDescriptions(
+      ModelTypeSet types,
+      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+          callback) override;
+  void TriggerLocalDataMigration(ModelTypeSet types) override;
 
   // KeyedService implementation.
   void Shutdown() override;
-
- protected:
-  bool IsSyncFeatureConsideredRequested() const override;
 
  private:
   TestSyncUserSettings user_settings_;
@@ -148,9 +161,6 @@ class TestSyncService : public SyncService {
   CoreAccountInfo account_info_;
   bool has_sync_consent_ = true;
   bool setup_in_progress_ = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool sync_feature_disabled_via_dashboard_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ModelTypeSet failed_data_types_;
 
@@ -166,6 +176,11 @@ class TestSyncService : public SyncService {
   GURL sync_service_url_;
 
   ModelTypeSet unsynced_types_;
+
+  std::map<ModelType, LocalDataDescription> local_data_descriptions_;
+
+  // Nullable.
+  base::RepeatingClosure send_passphrase_to_platform_client_cb_;
 };
 
 }  // namespace syncer

@@ -15,14 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace base {
-namespace android {
-class ApplicationStatusListener;
-}  // namespace android
 class FilePath;
 }  //  namespace base
 
@@ -55,7 +53,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       uint64_t cache_max_size,
       uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
-      base::android::ApplicationStatusListener* app_status_listener,
+      disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
       scoped_refptr<disk_cache::BackendFileOperationsFactory>
           file_operations_factory);
@@ -139,6 +137,11 @@ network::mojom::SharedDictionaryInfoPtr ToMojoSharedDictionaryInfo(
     const DictionaryInfoType& info) {
   auto mojo_info = network::mojom::SharedDictionaryInfo::New();
   mojo_info->match = info.match();
+  for (const auto dest : info.match_dest()) {
+    mojo_info->match_dest.push_back(dest);
+  }
+  std::sort(mojo_info->match_dest.begin(), mojo_info->match_dest.end());
+  mojo_info->id = info.id();
   mojo_info->dictionary_url = info.url();
   mojo_info->response_time = info.response_time();
   mojo_info->expiration = info.expiration();

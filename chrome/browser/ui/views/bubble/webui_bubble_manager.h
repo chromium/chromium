@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_MANAGER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -13,11 +15,13 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service_factory.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -26,6 +30,25 @@
 class GURL;
 class Profile;
 class WebUIBubbleDialogView;
+
+// The readiness levels of the browser prior to showing a new WebUI bubble,
+// ordered by increasing readiness. Higher levels have lower latency at the cost
+// of greater memory use.
+enum class WebUIBubbleWarmUpLevel {
+  // No render process is available. No pre-existing process, including spare
+  // renderers, can be used or reused for this WebUI.
+  kNoRenderer,
+  // Uses a spare render process for this WebUI.
+  kSpareRenderer,
+  // Uses a render process that already hosts other WebUIs prior to this WebUI.
+  kDedicatedRenderer,
+  // Uses a WebContents that is initially on a different domain and requires
+  // redirection to this WebUI.
+  // Note: this is not currently used anywhere, but worth further investigation.
+  kRedirectedWebContents,
+  // Uses a WebContents that has already navigated to this WebUI.
+  kNavigatedWebContents,
+};
 
 // WebUIBubbleManager handles the creation / destruction of the WebUI bubble.
 // This is needed to deal with the asynchronous presentation of WebUI.
@@ -37,7 +60,7 @@ class WebUIBubbleManager : public views::WidgetObserver {
   ~WebUIBubbleManager() override;
 
   bool ShowBubble(
-      const absl::optional<gfx::Rect>& anchor = absl::nullopt,
+      const std::optional<gfx::Rect>& anchor = std::nullopt,
       views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT,
       ui::ElementIdentifier identifier = ui::ElementIdentifier());
   void CloseBubble();
@@ -45,11 +68,15 @@ class WebUIBubbleManager : public views::WidgetObserver {
   bool bubble_using_cached_web_contents() const {
     return bubble_using_cached_web_contents_;
   }
+  WebUIBubbleWarmUpLevel bubble_warmup_level() const {
+    CHECK(bubble_warmup_level_.has_value());
+    return *bubble_warmup_level_;
+  }
 
   // Creates the persistent renderer process if the feature is enabled.
   virtual void MaybeInitPersistentRenderer() = 0;
   virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
-      const absl::optional<gfx::Rect>& anchor,
+      const std::optional<gfx::Rect>& anchor,
       views::BubbleBorder::Arrow arrow) = 0;
 
   // views::WidgetObserver:
@@ -62,30 +89,34 @@ class WebUIBubbleManager : public views::WidgetObserver {
   void DisableCloseBubbleHelperForTesting();
 
  protected:
-  BubbleContentsWrapper* cached_contents_wrapper() {
+  WebUIContentsWrapper* cached_contents_wrapper() {
     return cached_contents_wrapper_.get();
   }
   void set_cached_contents_wrapper(
-      std::unique_ptr<BubbleContentsWrapper> cached_contents_wrapper) {
+      std::unique_ptr<WebUIContentsWrapper> cached_contents_wrapper) {
     cached_contents_wrapper_ = std::move(cached_contents_wrapper);
   }
   void set_bubble_using_cached_web_contents(bool is_cached) {
     bubble_using_cached_web_contents_ = is_cached;
   }
 
-  absl::optional<base::TimeTicks> bubble_init_start_time_;
+  std::optional<base::TimeTicks> bubble_init_start_time_;
 
  private:
   void ResetContentsWrapper();
 
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 
-  // Stores a cached BubbleContentsWrapper for reuse in the WebUIBubbleDialog.
-  std::unique_ptr<BubbleContentsWrapper> cached_contents_wrapper_;
+  // Stores a cached WebUIContentsWrapper for reuse in the WebUIBubbleDialog.
+  std::unique_ptr<WebUIContentsWrapper> cached_contents_wrapper_;
 
   // Tracks whether the current bubble was created by reusing a preloaded web
   // contents.
   bool bubble_using_cached_web_contents_ = false;
+
+  // The readiness of the browser when it is about to show this
+  // bubble. See WebUIBubbleWarmUpLevel.
+  std::optional<WebUIBubbleWarmUpLevel> bubble_warmup_level_;
 
   // A timer controlling how long the |cached_web_view_| is cached for.
   std::unique_ptr<base::RetainingOneShotTimer> cache_timer_;
@@ -118,32 +149,33 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
     if (base::FeatureList::IsEnabled(
             features::kWebUIBubblePerProfilePersistence)) {
       auto* service =
-          BubbleContentsWrapperServiceFactory::GetForProfile(profile_, true);
-      if (service && !service->GetBubbleContentsWrapperFromURL(webui_url_)) {
-        service->template InitBubbleContentsWrapper<T>(webui_url_,
-                                                       task_manager_string_id_);
+          WebUIContentsWrapperServiceFactory::GetForProfile(profile_, true);
+      if (service && !service->GetWebUIContentsWrapperFromURL(webui_url_)) {
+        service->template InitWebUIContentsWrapper<T>(webui_url_,
+                                                      task_manager_string_id_);
       }
     }
   }
 
   base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
-      const absl::optional<gfx::Rect>& anchor,
+      const std::optional<gfx::Rect>& anchor,
       views::BubbleBorder::Arrow arrow) override {
-    BubbleContentsWrapper* contents_wrapper = nullptr;
+    WebUIContentsWrapper* contents_wrapper = nullptr;
 
     // Only use per profile peristence if the flag is set and if a
-    // BubbleContentsWrapperService exists for the current profile. The service
+    // WebUIContentsWrapperService exists for the current profile. The service
     // may not exist for off the record profiles.
     auto* service =
-        BubbleContentsWrapperServiceFactory::GetForProfile(profile_, true);
+        WebUIContentsWrapperServiceFactory::GetForProfile(profile_, true);
     if (service && base::FeatureList::IsEnabled(
                        features::kWebUIBubblePerProfilePersistence)) {
-      set_bubble_using_cached_web_contents(true);
+      set_bubble_using_cached_web_contents(
+          !!service->GetWebUIContentsWrapperFromURL(webui_url_));
 
       // If using per-profile WebContents persistence get the associated
-      // BubbleContentsWrapper from the BubbleContentsWrapperService.
+      // WebUIContentsWrapper from the WebUIContentsWrapperService.
       MaybeInitPersistentRenderer();
-      contents_wrapper = service->GetBubbleContentsWrapperFromURL(webui_url_);
+      contents_wrapper = service->GetWebUIContentsWrapperFromURL(webui_url_);
       DCHECK(contents_wrapper);
 
       // If there is a host currently associated to this contents wrapper ensure
@@ -160,7 +192,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
       set_bubble_using_cached_web_contents(!!cached_contents_wrapper());
 
       if (!cached_contents_wrapper()) {
-        set_cached_contents_wrapper(std::make_unique<BubbleContentsWrapperT<T>>(
+        set_cached_contents_wrapper(std::make_unique<WebUIContentsWrapperT<T>>(
             webui_url_, profile_, task_manager_string_id_));
         cached_contents_wrapper()->ReloadWebContents();
       }
@@ -169,7 +201,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
     }
 
     auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
-        anchor_view_, contents_wrapper, anchor, arrow);
+        anchor_view_, contents_wrapper->GetWeakPtr(), anchor, arrow);
 
     // Register callback to emit histogram when the widget is created
     if (bubble_init_start_time_) {
@@ -194,5 +226,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
   const GURL webui_url_;
   const int task_manager_string_id_;
 };
+
+std::string ToString(WebUIBubbleWarmUpLevel warmup_level);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_MANAGER_H_

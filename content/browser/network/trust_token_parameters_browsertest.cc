@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -90,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
                    expected_params_and_serialization.serialized_params + "});");
 
   monitor.WaitForUrls();
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(trust_token_url);
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->trust_token_params);
@@ -130,7 +131,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
                          expected_params_and_serialization.serialized_params)));
 
   monitor.WaitForUrls();
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(trust_token_url);
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->trust_token_params);
@@ -157,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
 
   EXPECT_TRUE(
       ExecJs(shell(),
-             base::StringPrintf(
+             base::StringPrintfNonConstexpr(
                  JsReplace("let request = new XMLHttpRequest();"
                            "request.open($1, $2);"
                            "request.setPrivateToken(%s);"
@@ -167,7 +168,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
                  expected_params_and_serialization.serialized_params.c_str())));
 
   monitor.WaitForUrls();
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(trust_token_url);
   ASSERT_TRUE(request);
 

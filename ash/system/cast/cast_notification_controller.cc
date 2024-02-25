@@ -164,7 +164,7 @@ void CastNotificationController::OnDevicesUpdated(
 }
 
 void CastNotificationController::PressedCallback(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (freeze_button_index_ && button_index == freeze_button_index_) {
     FreezePressed();
   } else {

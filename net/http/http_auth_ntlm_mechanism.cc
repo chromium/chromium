@@ -50,11 +50,8 @@ int SetAuthTokenFromBinaryToken(std::string* auth_token,
   if (next_token.empty())
     return ERR_UNEXPECTED;
 
-  std::string encode_output;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(next_token.data()),
-                        next_token.size()),
-      &encode_output);
+  std::string encode_output = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(next_token.data()), next_token.size()));
 
   *auth_token = std::string("NTLM ") + encode_output;
   return OK;
@@ -155,7 +152,7 @@ int HttpAuthNtlmMechanism::GenerateAuthToken(
   auto next_token = ntlm_client_.GenerateAuthenticateMessage(
       domain, user, credentials->password(), hostname, channel_bindings, spn,
       g_get_ms_time_proc(), client_challenge,
-      base::as_bytes(base::make_span(challenge_token_)));
+      base::as_byte_span(challenge_token_));
 
   return SetAuthTokenFromBinaryToken(auth_token, next_token);
 }

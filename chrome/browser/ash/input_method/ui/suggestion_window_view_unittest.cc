@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/suggestion_window_view.h"
-#include "base/memory/raw_ptr.h"
 
+#include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
@@ -18,7 +19,6 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/controls/button/image_button.h"
@@ -74,19 +74,18 @@ class SuggestionWindowViewTest
         children, [](const views::View* v) { return !!v->background(); });
   }
 
-  absl::optional<int> GetHighlightedIndex() const {
+  std::optional<int> GetHighlightedIndex() const {
     const auto& children =
         suggestion_window_view_->multiple_candidate_area_for_testing()
             ->children();
     const auto it = base::ranges::find_if(
         children, [](const views::View* v) { return !!v->background(); });
     return (it == children.cend())
-               ? absl::nullopt
-               : absl::make_optional(std::distance(children.cbegin(), it));
+               ? std::nullopt
+               : std::make_optional(std::distance(children.cbegin(), it));
   }
 
-  raw_ptr<SuggestionWindowView, DanglingUntriaged | ExperimentalAsh>
-      suggestion_window_view_;
+  raw_ptr<SuggestionWindowView, DanglingUntriaged> suggestion_window_view_;
   std::unique_ptr<MockAssistiveDelegate> delegate_ =
       std::make_unique<MockAssistiveDelegate>();
   std::vector<std::u16string> candidates_;

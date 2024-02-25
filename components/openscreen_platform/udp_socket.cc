@@ -152,8 +152,8 @@ void UdpSocket::SetDscp(openscreen::UdpSocket::DscpMode state) {}
 
 void UdpSocket::OnReceived(
     int32_t net_result,
-    const absl::optional<net::IPEndPoint>& source_endpoint,
-    absl::optional<base::span<const uint8_t>> data) {
+    const std::optional<net::IPEndPoint>& source_endpoint,
+    std::optional<base::span<const uint8_t>> data) {
   if (net_result != net::OK) {
     client_->OnRead(this, Error::Code::kSocketReadFailure);
   } else if (data) {
@@ -169,7 +169,7 @@ void UdpSocket::OnReceived(
 }
 
 void UdpSocket::BindCallback(int32_t result,
-                             const absl::optional<net::IPEndPoint>& address) {
+                             const std::optional<net::IPEndPoint>& address) {
   if (result != net::OK) {
     client_->OnError(this, Error(Error::Code::kSocketBindFailure,
                                  net::ErrorToString(result)));

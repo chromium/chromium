@@ -6,9 +6,9 @@
 #define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_MESSAGE_PORT_SERVICE_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 
 namespace cast_api_bindings {
 class MessagePort;
@@ -28,7 +28,7 @@ class MessagePortService {
 
   // Connects |port| to the remote port with name |port_name| asynchronously.
   virtual void ConnectToPortAsync(
-      base::StringPiece port_name,
+      std::string_view port_name,
       std::unique_ptr<cast_api_bindings::MessagePort> port) = 0;
 
   // Registers a port opened locally via a port transfer. This allocates a new

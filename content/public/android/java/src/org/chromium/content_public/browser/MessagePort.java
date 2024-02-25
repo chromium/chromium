@@ -9,14 +9,10 @@ import android.os.Handler;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.content.browser.AppWebMessagePort;
 
-/**
- * Interface for message ports that handle postMessage requests.
- */
+/** Interface for message ports that handle postMessage requests. */
 @UsedByReflection("")
 public interface MessagePort {
-    /**
-     * The message callback for receiving messages.
-     */
+    /** The message callback for receiving messages. */
     public interface MessageCallback {
         /**
          * Sent when the associated {@link MessagePort} gets a postMessage.
@@ -34,9 +30,7 @@ public interface MessagePort {
         return AppWebMessagePort.createPair();
     }
 
-    /**
-     * Close the port for use.
-     */
+    /** Close the port for use. */
     void close();
 
     /**

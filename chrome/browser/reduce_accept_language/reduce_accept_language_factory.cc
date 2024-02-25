@@ -35,11 +35,12 @@ ReduceAcceptLanguageFactory::ReduceAcceptLanguageFactory()
 
 ReduceAcceptLanguageFactory::~ReduceAcceptLanguageFactory() = default;
 
-KeyedService* ReduceAcceptLanguageFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ReduceAcceptLanguageFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
-  return new reduce_accept_language::ReduceAcceptLanguageService(
+  return std::make_unique<reduce_accept_language::ReduceAcceptLanguageService>(
       HostContentSettingsMapFactory::GetForProfile(context), prefs,
       profile->IsIncognitoProfile());
 }

@@ -5,8 +5,10 @@
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
 
 #include <inttypes.h>
+
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -33,7 +35,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -143,7 +144,7 @@ class RenderFrameAudioOutputStreamFactory::Core final
   void RequestDeviceAuthorization(
       mojo::PendingReceiver<media::mojom::AudioOutputStreamProvider>
           provider_receiver,
-      const absl::optional<base::UnguessableToken>& session_id,
+      const std::optional<base::UnguessableToken>& session_id,
       const std::string& device_id,
       RequestDeviceAuthorizationCallback callback) final;
 
@@ -266,7 +267,7 @@ void RenderFrameAudioOutputStreamFactory::Core::
 void RenderFrameAudioOutputStreamFactory::Core::RequestDeviceAuthorization(
     mojo::PendingReceiver<media::mojom::AudioOutputStreamProvider>
         provider_receiver,
-    const absl::optional<base::UnguessableToken>& session_id,
+    const std::optional<base::UnguessableToken>& session_id,
     const std::string& device_id,
     RequestDeviceAuthorizationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

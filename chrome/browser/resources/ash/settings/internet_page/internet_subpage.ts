@@ -8,14 +8,14 @@
  */
 
 import 'chrome://resources/ash/common/network/network_list.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
@@ -28,18 +28,17 @@ import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AlwaysOnVpnMode, AlwaysOnVpnProperties, CrosNetworkConfigInterface, FilterType, GlobalPolicy, NO_LIMIT, VpnProvider, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
-import {recordSettingChange} from '../metrics_recorder.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
@@ -57,7 +56,7 @@ const SettingsInternetSubpageElementBase =
           CrPolicyNetworkBehaviorMojoInterface,
     };
 
-class SettingsInternetSubpageElement extends
+export class SettingsInternetSubpageElement extends
     SettingsInternetSubpageElementBase {
   static get is() {
     return 'settings-internet-subpage' as const;
@@ -126,6 +125,17 @@ class SettingsInternetSubpageElement extends
         type: Object,
         value() {
           return {};
+        },
+      },
+
+      /**
+       * Return true if instant hotspot rebrand feature flag is enabled.
+       */
+      isInstantHotspotRebrandEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
+              loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
         },
       },
 
@@ -236,6 +246,7 @@ class SettingsInternetSubpageElement extends
   private alwaysOnVpnService_: string|undefined;
   private browserProxy_: InternetPageBrowserProxy;
   private hasCompletedScanSinceLastEnabled_: boolean;
+  private isInstantHotspotRebrandEnabled_: boolean;
   private isManaged_: boolean;
   private isShowingVpn_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
@@ -497,7 +508,8 @@ class SettingsInternetSubpageElement extends
     }
 
     // For the Cellular/Mobile subpage, also request Tether networks.
-    if (this.deviceState.type === NetworkType.kCellular &&
+    if (!this.isInstantHotspotRebrandEnabled_ &&
+        this.deviceState.type === NetworkType.kCellular &&
         this.tetherDeviceState) {
       const filter = {
         filter: FilterType.kVisible,
@@ -606,7 +618,9 @@ class SettingsInternetSubpageElement extends
   private enableToggleIsVisible_(deviceState: OncMojo.DeviceStateProperties|
                                  undefined): boolean {
     return !!deviceState && deviceState.type !== NetworkType.kEthernet &&
-        deviceState.type !== NetworkType.kVPN;
+        deviceState.type !== NetworkType.kVPN &&
+        (!this.isInstantHotspotRebrandEnabled_ ||
+         deviceState.type !== NetworkType.kTether);
   }
 
   private enableToggleIsEnabled_(deviceState: OncMojo.DeviceStateProperties|
@@ -637,6 +651,7 @@ class SettingsInternetSubpageElement extends
     }
     switch (deviceState!.type) {
       case NetworkType.kTether:
+        return this.i18n('internetToggleTetherA11yLabel');
       case NetworkType.kCellular:
         return this.i18n('internetToggleMobileA11yLabel');
       case NetworkType.kWiFi:
@@ -693,7 +708,7 @@ class SettingsInternetSubpageElement extends
   private onAddThirdPartyVpnClick_(event: DomRepeatEvent<VpnProvider>): void {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for adding third party VPN.
   }
 
   private knownNetworksIsVisible_(deviceState: OncMojo.DeviceStateProperties|
@@ -760,7 +775,7 @@ class SettingsInternetSubpageElement extends
         detail: {networkState},
       });
       this.dispatchEvent(networkConnectEvent);
-      recordSettingChange();
+      // TODO(b/282233232) recordSettingChange() for connecting to network.
       return;
     }
 
@@ -869,7 +884,8 @@ class SettingsInternetSubpageElement extends
       _tetherDeviceState: OncMojo.DeviceStateProperties|undefined): string {
     const type = deviceState.type;
     if (type === NetworkType.kTether ||
-        (type === NetworkType.kCellular && this.tetherDeviceState)) {
+        (!this.isInstantHotspotRebrandEnabled_ &&
+         type === NetworkType.kCellular && this.tetherDeviceState)) {
       return this.i18nAdvanced('internetNoNetworksMobileData').toString();
     }
 

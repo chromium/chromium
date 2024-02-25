@@ -8,8 +8,8 @@
 # with sections copied from:
 # //build/scripts/slave/slave_utils.py
 
+import argparse
 import json
-import optparse  # pylint: disable=deprecated-module
 import os
 import re
 import shutil
@@ -39,54 +39,63 @@ def _CommitPositionNumber(commit_pos):
   return int(re.search(r'{#(\d+)}', commit_pos).group(1))
 
 
-def _GetDashboardJson(options):
-  main_revision = _CommitPositionNumber(options.got_revision_cp)
-  revisions = _GetPerfDashboardRevisionsWithProperties(
-    options.got_webrtc_revision, options.got_v8_revision,
-    options.git_revision, main_revision)
-  reference_build = 'reference' in options.name
-  stripped_test_name = options.name.replace('.reference', '')
+def _GetDashboardJson(args):
+  main_revision = _CommitPositionNumber(args.got_revision_cp)
+  revisions = _GetPerfDashboardRevisionsWithProperties(args.got_webrtc_revision,
+                                                       args.got_v8_revision,
+                                                       args.git_revision,
+                                                       main_revision)
+  reference_build = 'reference' in args.name
+  stripped_test_name = args.name.replace('.reference', '')
   results = {}
-  logging.info('Opening results file %s' % options.results_file)
-  with open(options.results_file) as f:
+  logging.info('Opening results file %s' % args.results_file)
+  with open(args.results_file) as f:
     results = json.load(f)
   dashboard_json = {}
   if 'charts' not in results:
     # These are legacy results.
     dashboard_json = results_dashboard.MakeListOfPoints(
-      results, options.configuration_name, stripped_test_name,
-      options.project, options.buildbucket,
-      options.buildername, options.buildnumber, {},
-      options.perf_dashboard_machine_group,
-      revisions_dict=revisions)
+        results,
+        args.configuration_name,
+        stripped_test_name,
+        args.project,
+        args.buildbucket,
+        args.buildername,
+        args.buildnumber, {},
+        args.perf_dashboard_machine_group,
+        revisions_dict=revisions)
   else:
     dashboard_json = results_dashboard.MakeDashboardJsonV1(
-      results,
-      revisions, stripped_test_name, options.configuration_name,
-      options.project, options.buildbucket,
-      options.buildername, options.buildnumber,
-      {}, reference_build,
-      perf_dashboard_machine_group=options.perf_dashboard_machine_group)
+        results,
+        revisions,
+        stripped_test_name,
+        args.configuration_name,
+        args.project,
+        args.buildbucket,
+        args.buildername,
+        args.buildnumber, {},
+        reference_build,
+        perf_dashboard_machine_group=args.perf_dashboard_machine_group)
   return dashboard_json
 
 
-def _GetDashboardHistogramData(options):
+def _GetDashboardHistogramData(args):
   revisions = {}
 
-  if options.got_revision_cp:
+  if args.got_revision_cp:
     revisions['--chromium_commit_positions'] = \
-        _CommitPositionNumber(options.got_revision_cp)
-  if options.git_revision:
-    revisions['--chromium_revisions'] = options.git_revision
-  if options.got_webrtc_revision:
-    revisions['--webrtc_revisions'] = options.got_webrtc_revision
-  if options.got_v8_revision:
-    revisions['--v8_revisions'] = options.got_v8_revision
-  if options.got_angle_revision:
-    revisions['--angle_revisions'] = options.got_angle_revision
+        _CommitPositionNumber(args.got_revision_cp)
+  if args.git_revision:
+    revisions['--chromium_revisions'] = args.git_revision
+  if args.got_webrtc_revision:
+    revisions['--webrtc_revisions'] = args.got_webrtc_revision
+  if args.got_v8_revision:
+    revisions['--v8_revisions'] = args.got_v8_revision
+  if args.got_angle_revision:
+    revisions['--angle_revisions'] = args.got_angle_revision
 
-  is_reference_build = 'reference' in options.name
-  stripped_test_name = options.name.replace('.reference', '')
+  is_reference_build = 'reference' in args.name
+  stripped_test_name = args.name.replace('.reference', '')
 
   max_bytes = 1 << 20
   output_dir = tempfile.mkdtemp()
@@ -94,12 +103,16 @@ def _GetDashboardHistogramData(options):
   try:
     begin_time = time.time()
     results_dashboard.MakeHistogramSetWithDiagnostics(
-        histograms_file=options.results_file, test_name=stripped_test_name,
-        bot=options.configuration_name, buildername=options.buildername,
-        buildnumber=options.buildnumber,
-        project=options.project, buildbucket=options.buildbucket,
-        revisions_dict=revisions, is_reference_build=is_reference_build,
-        perf_dashboard_machine_group=options.perf_dashboard_machine_group,
+        histograms_file=args.results_file,
+        test_name=stripped_test_name,
+        bot=args.configuration_name,
+        buildername=args.buildername,
+        buildnumber=args.buildnumber,
+        project=args.project,
+        buildbucket=args.buildbucket,
+        revisions_dict=revisions,
+        is_reference_build=is_reference_build,
+        perf_dashboard_machine_group=args.perf_dashboard_machine_group,
         output_dir=output_dir,
         max_bytes=max_bytes)
     end_time = time.time()
@@ -118,49 +131,46 @@ def _GetDashboardHistogramData(options):
 
 
 def _CreateParser():
-  # Parse options
-  parser = optparse.OptionParser()
-  parser.add_option('--name')
-  parser.add_option('--results-file')
-  parser.add_option('--output-json-file')
-  parser.add_option('--got-revision-cp')
-  parser.add_option('--configuration-name')
-  parser.add_option('--results-url')
-  parser.add_option('--perf-dashboard-machine-group')
-  parser.add_option('--project')
-  parser.add_option('--buildbucket')
-  parser.add_option('--buildername')
-  parser.add_option('--buildnumber')
-  parser.add_option('--got-webrtc-revision')
-  parser.add_option('--got-v8-revision')
-  parser.add_option('--got-angle-revision')
-  parser.add_option('--git-revision')
-  parser.add_option('--output-json-dashboard-url')
-  parser.add_option('--send-as-histograms', action='store_true')
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--name')
+  parser.add_argument('--results-file')
+  parser.add_argument('--output-json-file')
+  parser.add_argument('--got-revision-cp')
+  parser.add_argument('--configuration-name')
+  parser.add_argument('--results-url')
+  parser.add_argument('--perf-dashboard-machine-group')
+  parser.add_argument('--project')
+  parser.add_argument('--buildbucket')
+  parser.add_argument('--buildername')
+  parser.add_argument('--buildnumber')
+  parser.add_argument('--got-webrtc-revision')
+  parser.add_argument('--got-v8-revision')
+  parser.add_argument('--got-angle-revision')
+  parser.add_argument('--git-revision')
+  parser.add_argument('--output-json-dashboard-url')
+  parser.add_argument('--send-as-histograms', action='store_true')
   return parser
 
 
-def main(args):
+def main(argv):
   parser = _CreateParser()
-  options, extra_args = parser.parse_args(args)
+  args = parser.parse_args(argv)
 
-  # Validate options.
-  if extra_args:
-    parser.error('Unexpected command line arguments')
-  if not options.configuration_name or not options.results_url:
+  # Validate args.
+  if not args.configuration_name or not args.results_url:
     parser.error('configuration_name and results_url are required.')
 
-  if not options.perf_dashboard_machine_group:
+  if not args.perf_dashboard_machine_group:
     logging.error('Invalid perf dashboard machine group')
     return 1
 
-  if not options.send_as_histograms:
-    dashboard_json = _GetDashboardJson(options)
+  if not args.send_as_histograms:
+    dashboard_json = _GetDashboardJson(args)
     dashboard_jsons = []
     if dashboard_json:
       dashboard_jsons.append(dashboard_json)
   else:
-    dashboard_jsons = _GetDashboardHistogramData(options)
+    dashboard_jsons = _GetDashboardHistogramData(args)
 
     # The HistogramSet might have been batched if it would be too large to
     # upload together. It's safe to concatenate the batches in order to write
@@ -168,34 +178,30 @@ def main(args):
     # TODO(crbug.com/918208): Use a script in catapult to merge dashboard_jsons.
     dashboard_json = sum(dashboard_jsons, [])
 
-  if options.output_json_file:
-    json.dump(dashboard_json, options.output_json_file,
-        indent=4, separators=(',', ': '))
+  if args.output_json_file:
+    with open(args.output_json_file, 'w') as outfile:
+      json.dump(dashboard_json, outfile, indent=4, separators=(',', ': '))
 
   if dashboard_jsons:
-    if options.output_json_dashboard_url:
+    if args.output_json_dashboard_url:
       # Dump dashboard url to file.
-      dashboard_url = GetDashboardUrl(options.name,
-          options.configuration_name, options.results_url,
-          options.got_revision_cp,
-          options.perf_dashboard_machine_group)
-      with open(options.output_json_dashboard_url, 'w') as f:
+      dashboard_url = GetDashboardUrl(args.name, args.configuration_name,
+                                      args.results_url, args.got_revision_cp,
+                                      args.perf_dashboard_machine_group)
+      with open(args.output_json_dashboard_url, 'w') as f:
         json.dump(dashboard_url if dashboard_url else '', f)
 
     for batch in dashboard_jsons:
       if not results_dashboard.SendResults(
           batch,
-          options.name,
-          options.results_url,
-          send_as_histograms=options.send_as_histograms):
+          args.name,
+          args.results_url,
+          send_as_histograms=args.send_as_histograms):
         return 1
   else:
     # The upload didn't fail since there was no data to upload.
     logging.warning('No perf dashboard JSON was produced.')
   return 0
-
-if __name__ == '__main__':
-  sys.exit(main((sys.argv[1:])))
 
 
 def GetDashboardUrl(name, configuration_name, results_url,
@@ -226,3 +232,7 @@ def _GetPerfDashboardRevisionsWithProperties(
   # There are a lot of "bad" revisions to check for, so clean them all up here.
   new_versions = {k: v for k, v in versions.items() if v and v != 'undefined'}
   return new_versions
+
+
+if __name__ == '__main__':
+  sys.exit(main((sys.argv[1:])))

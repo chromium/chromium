@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/common/buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -136,9 +136,9 @@ class AvatarMenu :
   size_t GetIndexOfItemWithProfilePathForTesting(
       const base::FilePath& path) const;
 
-  // Returns the index of the active profile or `absl::nullopt` if there is no
+  // Returns the index of the active profile or `std::nullopt` if there is no
   // active profile.
-  absl::optional<size_t> GetActiveProfileIndex() const;
+  std::optional<size_t> GetActiveProfileIndex() const;
 
   // This menu is also used for the always-present Mac and Linux system menubar.
   // If the last active browser changes, the menu will need to reference that

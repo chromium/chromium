@@ -27,6 +27,7 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -36,6 +37,13 @@ using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpLevelOfDetail;
 
 namespace cc {
+
+ResourcePool::GpuBacking::GpuBacking() = default;
+ResourcePool::GpuBacking::~GpuBacking() = default;
+
+ResourcePool::SoftwareBacking::SoftwareBacking() = default;
+ResourcePool::SoftwareBacking::~SoftwareBacking() = default;
+
 namespace {
 
 // Process-unique number for each resource pool.
@@ -306,7 +314,9 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
   busy_resources_.erase(busy_it);
 }
 
-bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
+bool ResourcePool::PrepareForExport(
+    const InUsePoolResource& in_use_resource,
+    viz::TransferableResource::ResourceSource resource_source) {
   PoolResource* resource = in_use_resource.resource_;
   // Exactly one of gpu or software backing should exist.
   DCHECK(resource->gpu_backing() || resource->software_backing());
@@ -314,7 +324,7 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
   viz::TransferableResource transferable;
   if (resource->gpu_backing()) {
     GpuBacking* gpu_backing = resource->gpu_backing();
-    if (gpu_backing->mailbox.IsZero()) {
+    if (!gpu_backing->shared_image) {
       // This can happen if we failed to allocate a GpuMemoryBuffer. Avoid
       // sending an invalid resource to the parent in that case, and avoid
       // caching/reusing the resource.
@@ -323,16 +333,21 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
       return false;
     }
     transferable = viz::TransferableResource::MakeGpu(
-        gpu_backing->mailbox, gpu_backing->texture_target,
+        gpu_backing->shared_image->mailbox(), gpu_backing->texture_target,
         gpu_backing->mailbox_sync_token, resource->size(), resource->format(),
-        gpu_backing->overlay_candidate);
+        gpu_backing->overlay_candidate, resource_source);
     if (gpu_backing->wait_on_fence_required)
       transferable.synchronization_type =
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
+    SoftwareBacking* software_backing = resource->software_backing();
+    const gpu::Mailbox& mailbox =
+        software_backing->shared_image
+            ? software_backing->shared_image->mailbox()
+            : software_backing->shared_bitmap_id;
     transferable = viz::TransferableResource::MakeSoftware(
-        resource->software_backing()->shared_bitmap_id, resource->size(),
-        resource->format());
+        mailbox, software_backing->mailbox_sync_token, resource->size(),
+        resource->format(), resource_source);
   }
   transferable.color_space = resource->color_space();
   resource->set_resource_id(resource_provider_->ImportResource(
@@ -570,7 +585,7 @@ void ResourcePool::FlushEvictedResources() {
 
 bool ResourcePool::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                 base::trace_event::ProcessMemoryDump* pmd) {
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND) {
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
     std::string dump_name =
         base::StringPrintf("cc/tile_memory/provider_0x%x", tracing_id_);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);

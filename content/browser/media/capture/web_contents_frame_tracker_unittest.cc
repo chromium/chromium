@@ -19,6 +19,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_switches.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,11 +46,10 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   ~SimpleContext() override = default;
 
   // WebContentsFrameTracker::Context overrides.
-  absl::optional<gfx::Rect> GetScreenBounds() override {
-    return screen_bounds_;
-  }
-  viz::FrameSinkId GetFrameSinkIdForCapture() override {
-    return frame_sink_id_;
+  std::optional<gfx::Rect> GetScreenBounds() override { return screen_bounds_; }
+
+  WebContentsImpl::CaptureTarget GetCaptureTarget() override {
+    return WebContentsImpl::CaptureTarget{frame_sink_id_, gfx::NativeView{}};
   }
   void IncrementCapturerCount(const gfx::Size& capture_size) override {
     ++capturer_count_;
@@ -67,7 +67,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   void set_frame_sink_id(viz::FrameSinkId frame_sink_id) {
     frame_sink_id_ = frame_sink_id;
   }
-  void set_screen_bounds(absl::optional<gfx::Rect> screen_bounds) {
+  void set_screen_bounds(std::optional<gfx::Rect> screen_bounds) {
     screen_bounds_ = std::move(screen_bounds);
   }
   float scale_override() const { return scale_override_; }
@@ -76,18 +76,24 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   int capturer_count_ = 0;
   viz::FrameSinkId frame_sink_id_ = kInitSinkId;
   gfx::Size last_capture_size_;
-  absl::optional<gfx::Rect> screen_bounds_;
+  std::optional<gfx::Rect> screen_bounds_;
   float scale_override_ = 1.0f;
 };
 
 // The capture device is mostly for interacting with the frame tracker. We do
 // care about the frame tracker pushing back target updates, however.
-class MockCaptureDevice : public WebContentsVideoCaptureDevice,
-                          public base::SupportsWeakPtr<MockCaptureDevice> {
+class MockCaptureDevice : public WebContentsVideoCaptureDevice {
  public:
   MOCK_METHOD2(OnTargetChanged,
-               void(const absl::optional<viz::VideoCaptureTarget>&, uint32_t));
+               void(const std::optional<viz::VideoCaptureTarget>&, uint32_t));
   MOCK_METHOD0(OnTargetPermanentlyLost, void());
+
+  base::WeakPtr<MockCaptureDevice> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockCaptureDevice> weak_ptr_factory_{this};
 };
 
 // This test class is intentionally quite similar to
@@ -157,7 +163,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     raw_context_->set_screen_bounds(gfx::Rect{size});
   }
 
-  void SetFrameSinkId(const viz::FrameSinkId id) {
+  void SetFrameSinkId(viz::FrameSinkId id) {
     raw_context_->set_frame_sink_id(id);
   }
 
@@ -183,7 +189,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   // The controller is ignored on Android, and must be initialized on all
   // other platforms.
   MouseCursorOverlayController* controller() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     return nullptr;
 #else
     return &controller_;
@@ -194,7 +200,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   StrictMock<MockCaptureDevice>* device() { return device_.get(); }
 
  private:
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MouseCursorOverlayController controller_;
 #endif
 
@@ -347,8 +353,8 @@ TEST_F(WebContentsFrameTrackerTest, NotifiesOfTargetChanges) {
   SetFrameSinkId(kNewId);
   EXPECT_CALL(
       *device(),
-      OnTargetChanged(absl::make_optional<viz::VideoCaptureTarget>(kNewId),
-                      /*crop_version=*/0))
+      OnTargetChanged(std::make_optional<viz::VideoCaptureTarget>(kNewId),
+                      /*sub_capture_target_version=*/0))
       .Times(1);
 
   // The tracker doesn't actually use the frame host information, just
@@ -363,21 +369,24 @@ TEST_F(WebContentsFrameTrackerTest,
 
   // Expect the callback handed to Crop() to be invoke with kSuccess.
   bool success = false;
-  base::OnceCallback<void(media::mojom::CropRequestResult)> callback =
+  base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)> callback =
       base::BindOnce(
-          [](bool* success, media::mojom::CropRequestResult result) {
-            *success = (result == media::mojom::CropRequestResult::kSuccess);
+          [](bool* success, media::mojom::ApplySubCaptureTargetResult result) {
+            *success =
+                (result == media::mojom::ApplySubCaptureTargetResult::kSuccess);
           },
           &success);
 
   // Expect OnTargetChanged() to be invoked once with the crop-ID.
   EXPECT_CALL(*device(),
-              OnTargetChanged(absl::make_optional<viz::VideoCaptureTarget>(
+              OnTargetChanged(std::make_optional<viz::VideoCaptureTarget>(
                                   kInitSinkId, kCropId),
-                              /*crop_version=*/1))
+                              /*sub_capture_target_version=*/1))
       .Times(1);
 
-  tracker()->Crop(kCropId, /*crop_version=*/1, std::move(callback));
+  tracker()->ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType::kCropTarget, kCropId,
+      /*sub_capture_target_version=*/1, std::move(callback));
 
   RunAllTasksUntilIdle();
   EXPECT_TRUE(success);

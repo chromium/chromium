@@ -11,6 +11,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
+import org.junit.runner.notification.RunListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -29,31 +31,42 @@ import java.util.regex.Pattern;
  *  provided filter configurations.
  */
 public final class JunitTestMain {
-    /** Enforced by {@link org.chromium.tools.errorprone.plugin.TestClassNameCheck}. */
-    private static final String TEST_CLASS_FILE_END = "Test.class";
-    private static final String CLASS_FILE_EXT = ".class";
+    private static final int CLASS_SUFFIX_LEN = ".class".length();
     private static final Pattern COLON = Pattern.compile(":");
     private static final Pattern FORWARD_SLASH = Pattern.compile("/");
 
-    private JunitTestMain() {
+    private JunitTestMain() {}
+
+    /** ServiceLoader interface for adding RunListeners. */
+    public interface ExtraRunListenerProvider {
+        RunListener provideRunListener();
     }
 
-    /**
-     *  Finds all test classes on the class path annotated with RunWith.
-     */
+    /** Finds all test classes on the class path annotated with RunWith. */
     public static Class[] findClassesFromClasspath() {
         String[] jarPaths = COLON.split(System.getProperty("java.class.path"));
         List<Class> classes = new ArrayList<Class>();
         for (String jp : jarPaths) {
+            // Do not look at android.jar.
+            if (jp.contains("third_party/android_sdk")) {
+                continue;
+            }
             try {
                 JarFile jf = new JarFile(jp);
-                for (Enumeration<JarEntry> eje = jf.entries(); eje.hasMoreElements();) {
+                for (Enumeration<JarEntry> eje = jf.entries(); eje.hasMoreElements(); ) {
                     JarEntry je = eje.nextElement();
                     String cn = je.getName();
-                    if (!cn.endsWith(TEST_CLASS_FILE_END) || cn.indexOf('$') != -1) {
+                    // Skip classes in common libraries.
+                    if (cn.startsWith("androidx.") || cn.startsWith("junit")) {
                         continue;
                     }
-                    cn = cn.substring(0, cn.length() - CLASS_FILE_EXT.length());
+                    // Skip nested classes and classes that do not end with "Test".
+                    // That tests end with "Test" is enforced by TestClassNameCheck ErrorProne
+                    // check.
+                    if (cn.contains("$") || !cn.endsWith("Test.class")) {
+                        continue;
+                    }
+                    cn = cn.substring(0, cn.length() - CLASS_SUFFIX_LEN);
                     cn = FORWARD_SLASH.matcher(cn).replaceAll(".");
                     Class<?> c = classOrNull(cn);
                     if (c != null && c.isAnnotationPresent(RunWith.class)) {
@@ -73,7 +86,7 @@ public final class JunitTestMain {
             // Do not initialize classes (clinit) yet, Android methods are all
             // stubs until robolectric loads the real implementations.
             return Class.forName(
-                    className, /*initialize*/ false, JunitTestMain.class.getClassLoader());
+                    className, /* initialize= */ false, JunitTestMain.class.getClassLoader());
         } catch (ClassNotFoundException e) {
             System.err.println("Class not found: " + className);
         } catch (NoClassDefFoundError e) {
@@ -116,6 +129,11 @@ public final class JunitTestMain {
         JsonLogger jsonLogger = new JsonLogger(new File(parser.mJsonOutput));
         core.addListener(new JsonListener(jsonLogger));
         Computer computer = new GtestComputer(gtestLogger);
+
+        for (ExtraRunListenerProvider listenerProvider :
+                ServiceLoader.load(ExtraRunListenerProvider.class)) {
+            core.addListener(listenerProvider.provideRunListener());
+        }
 
         Request testRequest =
                 Request.classes(computer, classes).filterWith(new ConfigFilter(jsonConfig));

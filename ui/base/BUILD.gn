@@ -17,6 +17,7 @@ import("//build/util/branding.gni")
 import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/qt/qt.gni")
@@ -194,8 +195,6 @@ component("base") {
     "models/tree_model.h",
     "models/tree_node_iterator.h",
     "models/tree_node_model.h",
-    "moving_max.cc",
-    "moving_max.h",
     "nine_image_painter_factory.cc",
     "nine_image_painter_factory.h",
     "page_transition_types.cc",
@@ -328,6 +327,8 @@ component("base") {
       "cocoa/find_pasteboard.mm",
       "cocoa/menu_controller.h",
       "cocoa/menu_controller.mm",
+      "cocoa/menu_utils.h",
+      "cocoa/menu_utils.mm",
       "cocoa/nsmenu_additions.h",
       "cocoa/nsmenu_additions.mm",
       "cocoa/nsmenuitem_additions.h",
@@ -409,7 +410,6 @@ component("base") {
       "owned_window_anchor.h",
       "pointer/pointer_device.h",
       "pointer/pointer_device_util.cc",
-      "pointer/touch_editing_controller.cc",
       "pointer/touch_editing_controller.h",
       "text/bytes_formatting.cc",
       "text/bytes_formatting.h",
@@ -493,7 +493,6 @@ component("base") {
     "//base",
     "//skia",
     "//third_party/abseil-cpp:absl",
-    "//ui/color:color_headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
@@ -515,11 +514,8 @@ component("base") {
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/dragdrop/mojom",
-    "//ui/color",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
-    "//ui/events",
-    "//ui/events/devices",
     "//ui/resources:webui_resources_grd",
     "//ui/strings",
     "//url",
@@ -548,12 +544,15 @@ component("base") {
       ":l10n_util_ios",
       "//base",
     ]
-    if (!use_blink) {
-      deps -= [
-        "//ui/events",
-        "//ui/events/devices",
-      ]
-    }
+  }
+
+  if (use_blink) {
+    deps += [
+      "//ui/color",
+      "//ui/events",
+      "//ui/events/devices",
+    ]
+    public_deps += [ "//ui/color:color_headers" ]
   }
 
   if (is_win) {
@@ -593,8 +592,9 @@ component("base") {
     sources += [
       "glib/glib_cast.h",
       "glib/glib_integers.h",
-      "glib/glib_signal.h",
       "glib/scoped_gobject.h",
+      "glib/scoped_gsignal.cc",
+      "glib/scoped_gsignal.h",
     ]
   }
 
@@ -628,6 +628,10 @@ component("base") {
       "Foundation.framework",
       "QuartzCore.framework",
     ]
+
+    weak_frameworks = [
+      "ScreenCaptureKit.framework",  # Available in macOS 12.3, stable in 13.2.
+    ]
   }
 
   if (!toolkit_views && !use_aura) {
@@ -650,7 +654,6 @@ component("base") {
     sources -= [
       "l10n/l10n_font_util.cc",
       "models/button_menu_item_model.cc",
-      "pointer/touch_editing_controller.cc",
       "theme_provider.cc",
     ]
   }
@@ -778,6 +781,7 @@ static_library("test_support") {
     "interaction/interactive_test.h",
     "interaction/interactive_test_internal.cc",
     "interaction/interactive_test_internal.h",
+    "interaction/polling_state_observer.h",
     "interaction/state_observer.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",
@@ -984,6 +988,7 @@ source_set("run_all_unittests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//mojo/core/embedder:embedder",
     "//skia",
     "//testing/gtest",
     "//ui/base",
@@ -1010,7 +1015,6 @@ test("ui_base_unittests") {
     "models/simple_combobox_model_unittest.cc",
     "models/simple_menu_model_unittest.cc",
     "models/tree_node_iterator_unittest.cc",
-    "moving_max_unittest.cc",
     "pointer/touch_ui_controller_unittest.cc",
     "prediction/empty_filter_unittests.cc",
     "prediction/input_filter_unittest_helpers.cc",
@@ -1064,10 +1068,7 @@ test("ui_base_unittests") {
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction:prediction",
-    "//ui/color",
     "//ui/display",
-    "//ui/events:events_base",
-    "//ui/events:test_support",
     "//ui/gfx:test_support",
     "//ui/resources",
     "//ui/resources:ui_test_pak",
@@ -1109,12 +1110,6 @@ test("ui_base_unittests") {
       "test/ios/ui_image_test_utils_unittest.mm",
     ]
     deps += [ ":l10n_util_ios" ]
-    if (!use_blink) {
-      deps -= [
-        "//ui/events:events_base",
-        "//ui/events:test_support",
-      ]
-    }
   } else {  # !is_ios
     sources += [
       "accelerators/accelerator_manager_unittest.cc",
@@ -1129,6 +1124,14 @@ test("ui_base_unittests") {
       "text/bytes_formatting_unittest.cc",
       "themed_vector_icon_unittest.cc",
       "webui/web_ui_util_unittest.cc",
+    ]
+  }
+
+  if (use_blink) {
+    deps += [
+      "//ui/color",
+      "//ui/events:events_base",
+      "//ui/events:test_support",
     ]
   }
 
@@ -1159,7 +1162,6 @@ test("ui_base_unittests") {
     ]
     if (is_win) {
       sources += [
-        "ime/win/imm32_manager_unittest.cc",
         "ime/win/on_screen_keyboard_display_manager_unittest.cc",
         "ime/win/tsf_input_scope_unittest.cc",
         "ime/win/tsf_text_store_unittest.cc",
@@ -1301,6 +1303,10 @@ test("ui_base_unittests") {
   if (is_chromeos_ash || ozone_platform_wayland) {
     deps += [ "//ui/base/wayland:unittests" ]
   }
+
+  if (use_glib) {
+    sources += [ "glib/scoped_gsignal_unittest.cc" ]
+  }
 }
 
 if (is_mac) {
@@ -1384,4 +1390,13 @@ action("locales_list_gen") {
 source_set("locales_list") {
   deps = [ ":locales_list_gen" ]
   sources = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
+}
+
+buildflag_header("ozone_buildflags") {
+  header = "ozone_buildflags.h"
+
+  flags = [
+    "IS_OZONE_WAYLAND=$ozone_platform_wayland",
+    "IS_OZONE_X11=$ozone_platform_x11",
+  ]
 }

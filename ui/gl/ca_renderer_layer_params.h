@@ -5,8 +5,9 @@
 #ifndef UI_GL_CA_RENDERER_LAYER_PARAMS_H_
 #define UI_GL_CA_RENDERER_LAYER_PARAMS_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"

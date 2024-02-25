@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   TestRunner.addResult(`This test checks text editor enter behaviour.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function codeSnippet() {
@@ -40,57 +41,57 @@ function testFunction()
     function testEnterInTheLineEnd(next) {
       textEditor.setText(testFunction.toString());
       var line = textEditor.line(2);
-      textEditor.setSelection(TextUtils.TextRange.createFromLocation(2, line.length));
+      textEditor.setSelection(TextUtils.TextRange.TextRange.createFromLocation(2, line.length));
       hitEnterDumpTextAndNext(next);
     },
 
     function testEnterAfterOpenCurlyBrace(next) {
       textEditor.setText(testFunction.toString());
       var line = textEditor.line(1);
-      textEditor.setSelection(TextUtils.TextRange.createFromLocation(1, line.length));
+      textEditor.setSelection(TextUtils.TextRange.TextRange.createFromLocation(1, line.length));
       hitEnterDumpTextAndNext(next);
     },
 
     function testEnterInTheMiddleOfLine(next) {
       textEditor.setText(testFunction.toString());
       var line = textEditor.line(2);
-      textEditor.setSelection(TextUtils.TextRange.createFromLocation(2, line.length / 2));
+      textEditor.setSelection(TextUtils.TextRange.TextRange.createFromLocation(2, line.length / 2));
       hitEnterDumpTextAndNext(next);
     },
 
     function testEnterInTheBeginningOfTheLine(next) {
       textEditor.setText(testFunction.toString());
-      textEditor.setSelection(TextUtils.TextRange.createFromLocation(2, 0));
+      textEditor.setSelection(TextUtils.TextRange.TextRange.createFromLocation(2, 0));
       hitEnterDumpTextAndNext(next);
     },
 
     function testEnterWithTheSelection(next) {
       textEditor.setText(testFunction.toString());
-      textEditor.setSelection(new TextUtils.TextRange(2, 2, 2, 4));
+      textEditor.setSelection(new TextUtils.TextRange.TextRange(2, 2, 2, 4));
       hitEnterDumpTextAndNext(next);
     },
 
     function testEnterWithReversedSelection(next) {
       textEditor.setText(testFunction.toString());
-      textEditor.setSelection(new TextUtils.TextRange(2, 4, 2, 2));
+      textEditor.setSelection(new TextUtils.TextRange.TextRange(2, 4, 2, 2));
       hitEnterDumpTextAndNext(next);
     },
 
     function testEnterWithTheMultiLineSelection(next) {
       textEditor.setText(testFunction.toString());
-      textEditor.setSelection(new TextUtils.TextRange(2, 0, 8, 4));
+      textEditor.setSelection(new TextUtils.TextRange.TextRange(2, 0, 8, 4));
       hitEnterDumpTextAndNext(next);
     },
 
     function testEnterWithFullLineSelection(next) {
       textEditor.setText(testFunction.toString());
-      textEditor.setSelection(new TextUtils.TextRange(2, 0, 3, 0));
+      textEditor.setSelection(new TextUtils.TextRange.TextRange(2, 0, 3, 0));
       hitEnterDumpTextAndNext(next);
     },
 
     function testEnterBeforeOpenBrace(next) {
       textEditor.setText(testFunction.toString());
-      textEditor.setSelection(new TextUtils.TextRange(8, 0, 8, 0));
+      textEditor.setSelection(new TextUtils.TextRange.TextRange(8, 0, 8, 0));
       hitEnterDumpTextAndNext(next);
     },
 

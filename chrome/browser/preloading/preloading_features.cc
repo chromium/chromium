@@ -4,10 +4,4 @@
 
 #include "chrome/browser/preloading/preloading_features.h"
 
-namespace features {
-
-BASE_FEATURE(kPerformanceSettingsPreloadingSubpage,
-             "PerformanceSettingsPreloadingSubpage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace features
+namespace features {}  // namespace features

@@ -39,6 +39,14 @@ id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id) {
   return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:message_id];
 }
 
+id<GREYMatcher> ButtonWithForegroundColor(NSString* colorName) {
+  return [ChromeMatchersAppInterface buttonWithForegroundColor:colorName];
+}
+
+id<GREYMatcher> ButtonWithBackgroundColor(NSString* colorName) {
+  return [ChromeMatchersAppInterface buttonWithBackgroundColor:colorName];
+}
+
 id<GREYMatcher> ContextMenuItemWithAccessibilityLabel(NSString* label) {
   return
       [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabel:label];
@@ -51,6 +59,12 @@ id<GREYMatcher> ContextMenuItemWithAccessibilityLabelId(int message_id) {
 
 id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName) {
   return [ChromeMatchersAppInterface imageViewWithImageNamed:imageName];
+}
+
+id<GREYMatcher> ImageViewWithCustomSymbolNameAndPointSize(NSString* symbolName,
+                                                          CGFloat pointSize) {
+  return [ChromeMatchersAppInterface imageViewWithCustomSymbolNamed:symbolName
+                                                          pointSize:pointSize];
 }
 
 id<GREYMatcher> ImageViewWithImage(UIImage* image) {
@@ -123,10 +137,6 @@ id<GREYMatcher> NavigationBarCancelButton() {
   return [ChromeMatchersAppInterface navigationBarCancelButton];
 }
 
-id<GREYMatcher> CloseButton() {
-  return [ChromeMatchersAppInterface closeButton];
-}
-
 id<GREYMatcher> ForwardButton() {
   return [ChromeMatchersAppInterface forwardButton];
 }
@@ -145,6 +155,14 @@ id<GREYMatcher> StopButton() {
 
 id<GREYMatcher> Omnibox() {
   return [ChromeMatchersAppInterface omnibox];
+}
+
+id<GREYMatcher> OmniboxAtBottom() {
+  return [ChromeMatchersAppInterface omniboxAtBottom];
+}
+
+id<GREYMatcher> OmniboxOnTop() {
+  return [ChromeMatchersAppInterface omniboxOnTop];
 }
 
 id<GREYMatcher> OmniboxPopupRow() {
@@ -343,6 +361,14 @@ id<GREYMatcher> SecondarySignInButton() {
   return [ChromeMatchersAppInterface secondarySignInButton];
 }
 
+id<GREYMatcher> IdentityChooserScrim() {
+  return [ChromeMatchersAppInterface identityChooserScrim];
+}
+
+id<GREYMatcher> FakeAddAccountScreenCancelButton() {
+  return [ChromeMatchersAppInterface fakeFakeAddAccountScreenCancelButton];
+}
+
 id<GREYMatcher> SettingsAccountButton() {
   return [ChromeMatchersAppInterface settingsAccountButton];
 }
@@ -419,6 +445,10 @@ id<GREYMatcher> GoogleServicesSettingsView() {
   return [ChromeMatchersAppInterface googleServicesSettingsView];
 }
 
+id<GREYMatcher> SettingsNavigationBar() {
+  return [ChromeMatchersAppInterface settingsNavigationBar];
+}
+
 id<GREYMatcher> SettingsMenuBackButton() {
   return [ChromeMatchersAppInterface settingsMenuBackButton];
 }
@@ -438,6 +468,10 @@ id<GREYMatcher> SettingsMenuNotificationsButton() {
 
 id<GREYMatcher> SettingsMenuPasswordsButton() {
   return [ChromeMatchersAppInterface settingsMenuPasswordsButton];
+}
+
+id<GREYMatcher> SettingsMenuSafetyCheckButton() {
+  return [ChromeMatchersAppInterface settingsMenuSafetyCheckButton];
 }
 
 id<GREYMatcher> PaymentRequestView() {
@@ -661,6 +695,10 @@ id<GREYMatcher> TabGridNormalModePageControl() {
   return [ChromeMatchersAppInterface tabGridNormalModePageControl];
 }
 
+id<GREYMatcher> TabGridInactiveTabsButton() {
+  return [ChromeMatchersAppInterface tabGridInactiveTabsButton];
+}
+
 id<GREYMatcher> TabGridBackground() {
   return [ChromeMatchersAppInterface tabGridBackground];
 }
@@ -868,11 +906,6 @@ id<GREYMatcher> ManualFallbackOtherPasswordsDismissMatcher() {
 
 id<GREYMatcher> ManualFallbackPasswordButtonMatcher() {
   return [ChromeMatchersAppInterface manualFallbackPasswordButtonMatcher];
-}
-
-id<GREYMatcher> ManualFallbackPasswordTableViewWindowMatcher() {
-  return
-      [ChromeMatchersAppInterface manualFallbackPasswordTableViewWindowMatcher];
 }
 
 id<GREYMatcher> ManualFallbackProfilesIconMatcher() {

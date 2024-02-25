@@ -9,59 +9,66 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 TEST(CSSParserFastPathsTest, ParseKeyword) {
-  CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-      CSSPropertyID::kFloat, "left", kHTMLStandardMode);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSValue* value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kFloat,
+                                                        "left", context);
   ASSERT_NE(nullptr, value);
   CSSIdentifierValue* identifier_value = To<CSSIdentifierValue>(value);
   EXPECT_EQ(CSSValueID::kLeft, identifier_value->GetValueID());
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kFloat, "foo",
-                                              kHTMLStandardMode);
+                                              context);
   ASSERT_EQ(nullptr, value);
 }
 
 TEST(CSSParserFastPathsTest, ParseCSSWideKeywords) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-      CSSPropertyID::kMarginTop, "inherit", kHTMLStandardMode);
+      CSSPropertyID::kMarginTop, "inherit", context);
   ASSERT_NE(nullptr, value);
   EXPECT_TRUE(value->IsInheritedValue());
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kMarginRight,
-                                              "InHeriT", kHTMLStandardMode);
+                                              "InHeriT", context);
   ASSERT_NE(nullptr, value);
   EXPECT_TRUE(value->IsInheritedValue());
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kMarginBottom,
-                                              "initial", kHTMLStandardMode);
+                                              "initial", context);
   ASSERT_NE(nullptr, value);
   EXPECT_TRUE(value->IsInitialValue());
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kMarginLeft,
-                                              "IniTiaL", kHTMLStandardMode);
+                                              "IniTiaL", context);
   ASSERT_NE(nullptr, value);
   EXPECT_TRUE(value->IsInitialValue());
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kMarginTop,
-                                              "unset", kHTMLStandardMode);
+                                              "unset", context);
   ASSERT_NE(nullptr, value);
   EXPECT_TRUE(value->IsUnsetValue());
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kMarginLeft,
-                                              "unsEt", kHTMLStandardMode);
+                                              "unsEt", context);
   ASSERT_NE(nullptr, value);
   EXPECT_TRUE(value->IsUnsetValue());
   // Fast path doesn't handle short hands.
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kMargin, "initial",
-                                              kHTMLStandardMode);
+                                              context);
   ASSERT_EQ(nullptr, value);
 }
 
 TEST(CSSParserFastPathsTest, ParseRevert) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   // Revert enabled, IsHandledByKeywordFastPath=false
   {
     DCHECK(!CSSParserFastPaths::IsHandledByKeywordFastPath(
         CSSPropertyID::kMarginTop));
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kMarginTop, "revert", kHTMLStandardMode);
+        CSSPropertyID::kMarginTop, "revert", context);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertValue());
   }
@@ -71,19 +78,21 @@ TEST(CSSParserFastPathsTest, ParseRevert) {
     DCHECK(CSSParserFastPaths::IsHandledByKeywordFastPath(
         CSSPropertyID::kDirection));
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kDirection, "revert", kHTMLStandardMode);
+        CSSPropertyID::kDirection, "revert", context);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertValue());
   }
 }
 
 TEST(CSSParserFastPathsTest, ParseRevertLayer) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   // 'revert-layer' enabled, IsHandledByKeywordFastPath=false
   {
     DCHECK(!CSSParserFastPaths::IsHandledByKeywordFastPath(
         CSSPropertyID::kMarginTop));
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kMarginTop, "revert-layer", kHTMLStandardMode);
+        CSSPropertyID::kMarginTop, "revert-layer", context);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertLayerValue());
   }
@@ -93,51 +102,55 @@ TEST(CSSParserFastPathsTest, ParseRevertLayer) {
     DCHECK(CSSParserFastPaths::IsHandledByKeywordFastPath(
         CSSPropertyID::kDirection));
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kDirection, "revert-layer", kHTMLStandardMode);
+        CSSPropertyID::kDirection, "revert-layer", context);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertLayerValue());
   }
 }
 
 TEST(CSSParserFastPathsTest, ParseSimpleLength) {
-  CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-      CSSPropertyID::kWidth, "234px", kHTMLStandardMode);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSValue* value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth,
+                                                        "234px", context);
   ASSERT_NE(nullptr, value);
   EXPECT_FALSE(value->IsValueList());
   EXPECT_EQ("234px", value->CssText());
 
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth,
-                                              "234.567px", kHTMLStandardMode);
+                                              "234.567px", context);
   ASSERT_NE(nullptr, value);
   EXPECT_FALSE(value->IsValueList());
   EXPECT_EQ("234.567px", value->CssText());
 
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, ".567px",
-                                              kHTMLStandardMode);
+                                              context);
   ASSERT_NE(nullptr, value);
   EXPECT_FALSE(value->IsValueList());
   EXPECT_EQ("0.567px", value->CssText());
 
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234.px",
-                                              kHTMLStandardMode);
+                                              context);
   EXPECT_EQ(nullptr, value);
 
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234.e2px",
-                                              kHTMLStandardMode);
+                                              context);
   EXPECT_EQ(nullptr, value);
 
-  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, ".",
-                                              kHTMLStandardMode);
+  value =
+      CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, ".", context);
   EXPECT_EQ(nullptr, value);
 
   // This is legal, but we don't support it in the fast path.
   value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth, "234e2px",
-                                              kHTMLStandardMode);
+                                              context);
   EXPECT_EQ(nullptr, value);
 }
 
 // Mostly to stress-test the SIMD paths.
 TEST(CSSParserFastPathsTest, VariousNumberOfDecimalsInLength) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   const std::pair<std::string, double> kTestCases[] = {
       {"0.1px", 0.1},
       {"0.12px", 0.12},
@@ -151,8 +164,8 @@ TEST(CSSParserFastPathsTest, VariousNumberOfDecimalsInLength) {
   };
   for (const auto& [str, expected_val] : kTestCases) {
     SCOPED_TRACE(str);
-    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-        CSSPropertyID::kWidth, str.c_str(), kHTMLStandardMode);
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kWidth,
+                                                          str.c_str(), context);
     ASSERT_NE(nullptr, value);
     EXPECT_FALSE(value->IsValueList());
     EXPECT_DOUBLE_EQ(expected_val,
@@ -161,21 +174,24 @@ TEST(CSSParserFastPathsTest, VariousNumberOfDecimalsInLength) {
 }
 
 TEST(CSSParserFastPathsTest, ParseTransform) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-      CSSPropertyID::kTransform, "translate(5.5px, 5px)", kHTMLStandardMode);
+      CSSPropertyID::kTransform, "translate(5.5px, 5px)", context);
   ASSERT_NE(nullptr, value);
   ASSERT_TRUE(value->IsValueList());
   ASSERT_EQ("translate(5.5px, 5px)", value->CssText());
 
-  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kTransform,
-                                              "translate3d(5px, 5px, 10.1px)",
-                                              kHTMLStandardMode);
+  value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kTransform, "translate3d(5px, 5px, 10.1px)", context);
   ASSERT_NE(nullptr, value);
   ASSERT_TRUE(value->IsValueList());
   ASSERT_EQ("translate3d(5px, 5px, 10.1px)", value->CssText());
 }
 
 TEST(CSSParserFastPathsTest, ParseComplexTransform) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   // Random whitespace is on purpose.
   static const char* kComplexTransform =
       "translateX(5px) "
@@ -190,29 +206,32 @@ TEST(CSSParserFastPathsTest, ParseComplexTransform) {
       "scale3d(0.5, 1, 0.7) "
       "matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)";
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-      CSSPropertyID::kTransform, kComplexTransform, kHTMLStandardMode);
+      CSSPropertyID::kTransform, kComplexTransform, context);
   ASSERT_NE(nullptr, value);
   ASSERT_TRUE(value->IsValueList());
   ASSERT_EQ(kComplexTransformNormalized, value->CssText());
 }
 
 TEST(CSSParserFastPathsTest, ParseTransformNotFastPath) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-      CSSPropertyID::kTransform, "rotateX(1deg)", kHTMLStandardMode);
+      CSSPropertyID::kTransform, "rotateX(1deg)", context);
   ASSERT_EQ(nullptr, value);
-  value = CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kTransform,
-                                              "translateZ(1px) rotateX(1deg)",
-                                              kHTMLStandardMode);
+  value = CSSParserFastPaths::MaybeParseValue(
+      CSSPropertyID::kTransform, "translateZ(1px) rotateX(1deg)", context);
   ASSERT_EQ(nullptr, value);
 }
 
 TEST(CSSParserFastPathsTest, ParseInvalidTransform) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(
-      CSSPropertyID::kTransform, "rotateX(1deg", kHTMLStandardMode);
+      CSSPropertyID::kTransform, "rotateX(1deg", context);
   ASSERT_EQ(nullptr, value);
   value = CSSParserFastPaths::MaybeParseValue(
       CSSPropertyID::kTransform, "translateZ(1px) (1px, 1px) rotateX(1deg",
-      kHTMLStandardMode);
+      context);
   ASSERT_EQ(nullptr, value);
 }
 

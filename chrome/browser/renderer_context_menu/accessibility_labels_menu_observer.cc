@@ -100,7 +100,7 @@ void AccessibilityLabelsMenuObserver::ExecuteCommand(int command_id) {
       ShowConfirmBubble(profile, false /* enable once only */);
     } else {
       AccessibilityLabelsServiceFactory::GetForProfile(profile)
-          ->EnableLabelsServiceOnce();
+          ->EnableLabelsServiceOnce(proxy_->GetWebContents());
     }
   }
 }
@@ -121,8 +121,14 @@ bool AccessibilityLabelsMenuObserver::ShouldShowLabelsItem() {
 void AccessibilityLabelsMenuObserver::ShowConfirmBubble(Profile* profile,
                                                         bool enable_always) {
   content::WebContents* web_contents = proxy_->GetWebContents();
+  // We use the web contents' primary main frame here rather than getting the
+  // view from the local render frame host because we want to ensure that it is
+  // non-null (proxy_->GetRenderFrameHost() can return nullptr if the frame goes
+  // away). In these cases, the spelling preference changes are still valid
+  // (tied to the BrowsingContext / WebContents) so we still want to show the
+  // confirmation bubble.
   content::RenderWidgetHostView* view =
-      proxy_->GetRenderViewHost()->GetWidget()->GetView();
+      web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()->GetView();
   gfx::Rect rect = view->GetViewBounds();
   auto model = std::make_unique<AccessibilityLabelsBubbleModel>(
       profile, web_contents, enable_always);

@@ -26,10 +26,15 @@ class ObjectTracker {
   ~ObjectTracker() = default;
 
   template <class... Args>
-  typename T::IdType CreateObject(Args... args) {
+  typename T::IdType CreateObject(Args&&... args) {
     base::AutoLock lock(lock_);
 
-    objects_.push_back(std::make_unique<T>(next_id_, args...));
+    // This ConstructObject<Args...>() trick creates an object of type T
+    // preferring its constructor. If the constructor is not available (e.g.,
+    // it's private), it creates the object using a static T::Create() method.
+    objects_.push_back(
+        ConstructObject<Args...>(next_id_, std::forward<Args>(args)...));
+    CHECK(objects_.back());
 
     do {
       CHECK_LT(next_id_, std::numeric_limits<typename T::IdType>::max());
@@ -80,6 +85,28 @@ class ObjectTracker {
   }
 
  private:
+  // Constructs an object of type T through the regular constructor using |id|
+  // and |args|.
+  template <class... Args,
+            typename std::enable_if<
+                std::is_constructible_v<T, typename T::IdType, Args...>,
+                bool>::type = true>
+  static std::unique_ptr<T> ConstructObject(typename T::IdType id,
+                                            Args&&... args) {
+    return std::make_unique<T>(id, std::forward<Args>(args)...);
+  }
+
+  // Constructs an object of type T through the T::Create() static method using
+  // |id| and |args|.
+  template <class... Args,
+            typename std::enable_if<
+                !std::is_constructible_v<T, typename T::IdType, Args...>,
+                bool>::type = true>
+  static std::unique_ptr<T> ConstructObject(typename T::IdType id,
+                                            Args&&... args) {
+    return T::Create(id, std::forward<Args>(args)...);
+  }
+
   base::Lock lock_;
   std::vector<std::unique_ptr<T>> GUARDED_BY(lock_) objects_;
   typename T::IdType GUARDED_BY(lock_) next_id_ =

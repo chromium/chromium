@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_suggestions_delegate.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -34,8 +35,9 @@ bool ItemIsPinnedSuggestion(
     return false;
 
   for (const auto& [_, suggested_file_paths] : suggestions_by_type) {
-    if (base::Contains(suggested_file_paths, item->file_path()))
+    if (base::Contains(suggested_file_paths, item->file().file_path)) {
       return true;
+    }
   }
 
   return false;
@@ -93,7 +95,7 @@ void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
   for (const auto& item : base::Reversed(model()->items())) {
     // Skip if `item` is not a suggestion.
     if (HoldingSpaceItem::IsSuggestionType(item->type())) {
-      suggestions_by_type_[item->type()].push_back(item->file_path());
+      suggestions_by_type_[item->type()].push_back(item->file().file_path);
     }
   }
 
@@ -140,7 +142,7 @@ void HoldingSpaceSuggestionsDelegate::MaybeScheduleUpdateSuggestionsInModel() {
 
 void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
     FileSuggestionType type,
-    const absl::optional<std::vector<FileSuggestData>>& suggestions) {
+    const std::optional<std::vector<FileSuggestData>>& suggestions) {
   // Mark that the suggestions of `type` have been fetched.
   size_t deleted_size = pending_fetches_.erase(type);
   DCHECK_EQ(1u, deleted_size);

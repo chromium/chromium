@@ -17,8 +17,7 @@ import org.chromium.base.test.util.Features.JUnitProcessor;
 /** Unit tests for {@link FeatureList}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FeatureListUnitTest {
-    @Rule
-    public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private static final String FEATURE_A = "FeatureA";
     private static final String FEATURE_A_PARAM_1 = "Param1InFeatureA";
@@ -27,7 +26,8 @@ public class FeatureListUnitTest {
 
     @Test
     public void test_getTestValueForFeature_noOverride_throwsException() {
-        Assert.assertThrows(IllegalArgumentException.class,
+        Assert.assertThrows(
+                IllegalArgumentException.class,
                 () -> FeatureList.getTestValueForFeature(FEATURE_A));
     }
 
@@ -63,7 +63,8 @@ public class FeatureListUnitTest {
         testValues.addFieldTrialParamOverride(FEATURE_A, FEATURE_A_PARAM_1, "paramValue");
         FeatureList.setTestValues(testValues);
 
-        Assert.assertEquals("paramValue",
+        Assert.assertEquals(
+                "paramValue",
                 FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
 
         // Other params should still return null
@@ -76,7 +77,8 @@ public class FeatureListUnitTest {
         testValues.addFeatureFlagOverride(FEATURE_A, true);
         FeatureList.setTestValues(testValues);
 
-        Assert.assertThrows(IllegalArgumentException.class,
+        Assert.assertThrows(
+                IllegalArgumentException.class,
                 () -> FeatureList.getTestValueForFeature(FEATURE_B));
     }
 
@@ -95,9 +97,11 @@ public class FeatureListUnitTest {
 
         Assert.assertEquals(false, FeatureList.getTestValueForFeature(FEATURE_A));
         Assert.assertEquals(true, FeatureList.getTestValueForFeature(FEATURE_B));
-        Assert.assertEquals("paramValue1",
+        Assert.assertEquals(
+                "paramValue1",
                 FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
-        Assert.assertEquals("paramValue2",
+        Assert.assertEquals(
+                "paramValue2",
                 FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
     }
 

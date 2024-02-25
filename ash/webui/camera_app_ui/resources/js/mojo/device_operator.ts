@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertNotReached} from '../assert.js';
-import {AsyncJobQueue} from '../async_job_queue.js';
+import {AsyncJobWithResultQueue} from '../async_job_queue.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import {isLocalDev} from '../models/load_time_data.js';
 import * as state from '../state.js';
 import {
   CameraSuspendError,
+  CropRegionRect,
   ErrorLevel,
   ErrorType,
   Facing,
@@ -39,6 +40,7 @@ import {
   GetCameraAppDeviceStatus,
   MojoBlob,
   PointF,
+  PortraitModeSegResult,
   ResultMetadataObserverCallbackRouter,
   StillCaptureResultObserverCallbackRouter,
   StreamType,
@@ -121,7 +123,7 @@ let instance: DeviceOperator|null|undefined = undefined;
 /**
  * Job queue to sequentialize devices operations.
  */
-const operationQueue = new AsyncJobQueue();
+const operationQueue = new AsyncJobWithResultQueue();
 
 /**
  * Operates video capture device through CrOS Camera App Mojo interface.
@@ -230,7 +232,7 @@ export class DeviceOperator {
         assert(this.deviceProvider !== null);
         const {device, status} =
             await this.deviceProvider.getCameraAppDevice(deviceId);
-        if (status === GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
+        if (status === GetCameraAppDeviceStatus.kErrorInvalidId) {
           throw new Error(`Invalid device id`);
         }
         if (device === null) {
@@ -615,16 +617,11 @@ export class DeviceOperator {
    *     operation is not supported.
    */
   async takePortraitModePhoto(deviceId: string): Promise<Array<Promise<Blob>>> {
-    // TODO(b/244503017): Add definitions for the portrait mode segmentation
-    // result in the mojom file.
-    const PORTRAIT_SUCCESS = 0;
-    const PORTRAIT_NO_FACES = 3;
-
     const normalCapture = new CancelableEvent<Blob>();
     const portraitCapture = new CancelableEvent<Blob>();
     const portraitEvents = new Map([
-      [Effect.NO_EFFECT, normalCapture],
-      [Effect.PORTRAIT_MODE, portraitCapture],
+      [Effect.kNoEffect, normalCapture],
+      [Effect.kPortraitMode, portraitCapture],
     ]);
     const callbacks = [normalCapture.wait(), portraitCapture.wait()];
 
@@ -637,11 +634,12 @@ export class DeviceOperator {
             event.signalError(new Error(`Capture failed.`));
             return;
           }
-          if (effect === Effect.PORTRAIT_MODE && status !== PORTRAIT_SUCCESS) {
+          if (effect === Effect.kPortraitMode &&
+              status !== PortraitModeSegResult.kSuccess) {
             // We only appends the blob result to the output when the status
-            // code is `PORTRAIT_SUCCESS`. For any other status code, the blob
+            // code is `kSuccess`. For any other status code, the blob
             // will be the original photo and will not be shown to the user.
-            if (status === PORTRAIT_NO_FACES) {
+            if (status === PortraitModeSegResult.kNoFaces) {
               event.signalError(new PortraitErrorNoFaceDetected());
               return;
             }
@@ -667,7 +665,8 @@ export class DeviceOperator {
     await device.takePortraitModePhoto(
         listenerCallbacksRouter.$.bindNewPipeAndPassRemote());
 
-    Promise.allSettled(callbacks).then(() => {
+    // This is for cleanup after all effects are settled.
+    void Promise.allSettled(callbacks).then(() => {
       state.removeObserver(state.State.SUSPEND, suspendObserver);
       closeEndpoint(listenerCallbacksRouter);
     });
@@ -814,6 +813,24 @@ export class DeviceOperator {
       AndroidInfoSupportedHardwareLevel.ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL_3,
     ];
     return supportedLevel.includes(level);
+  }
+
+  /**
+   * Sets the crop region for the configured stream on camera with |deviceId|.
+   */
+  async setCropRegion(deviceId: string, cropRegion: CropRegionRect):
+      Promise<void> {
+    const device = await this.getDevice(deviceId);
+    await device.setCropRegion(cropRegion);
+  }
+
+  /**
+   * Resets the crop region for the camera with |deviceId| to let the camera
+   * stream back to full frame.
+   */
+  async resetCropRegion(deviceId: string): Promise<void> {
+    const device = await this.getDevice(deviceId);
+    await device.resetCropRegion();
   }
 
   /**

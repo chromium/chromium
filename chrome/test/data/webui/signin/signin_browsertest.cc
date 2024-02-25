@@ -49,6 +49,11 @@ IN_PROC_BROWSER_TEST_F(SigninTest, DiceWebSigninIntercept) {
   set_test_loader_host(chrome::kChromeUIDiceWebSigninInterceptHost);
   RunTest("signin/dice_web_signin_intercept_test.js", "mocha.run()");
 }
+IN_PROC_BROWSER_TEST_F(SigninTest, DiceWebSigninInterceptChromeSignin) {
+  set_test_loader_host(chrome::kChromeUIDiceWebSigninInterceptHost);
+  RunTest("signin/dice_web_signin_intercept_chrome_signin_test.js",
+          "mocha.run()");
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 IN_PROC_BROWSER_TEST_F(SigninTest, ProfileCustomizationTest) {
@@ -56,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(SigninTest, ProfileCustomizationTest) {
   RunTest("signin/profile_customization_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SigninTest, SigninEnterpriseProfileWelcome) {
-  set_test_loader_host(chrome::kChromeUIEnterpriseProfileWelcomeHost);
-  RunTest("signin/enterprise_profile_welcome_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SigninTest, SigninManagedUserProfileNotice) {
+  set_test_loader_host(chrome::kChromeUIManagedUserProfileNoticeHost);
+  RunTest("signin/managed_user_profile_notice_test.js", "mocha.run()");
 }

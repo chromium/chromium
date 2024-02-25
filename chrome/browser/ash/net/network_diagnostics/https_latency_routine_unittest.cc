@@ -144,7 +144,8 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
     test_profile_ = profile_manager_.CreateTestingProfile(kFakeTestProfile);
 
     // Set up routine with fakes.
-    https_latency_routine_ = std::make_unique<HttpsLatencyRoutine>();
+    https_latency_routine_ = std::make_unique<HttpsLatencyRoutine>(
+        mojom::RoutineCallSource::kDiagnosticsUI);
     https_latency_routine_->set_network_context_getter(base::BindRepeating(
         &HttpsLatencyRoutineTest::GetNetworkContext, base::Unretained(this)));
     https_latency_routine_->set_http_request_manager_getter(
@@ -172,8 +173,7 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh>
-      test_profile_;  // Unowned
+  raw_ptr<Profile, DanglingUntriaged> test_profile_;  // Unowned
   TestingProfileManager profile_manager_;
   std::unique_ptr<HttpsLatencyRoutine> https_latency_routine_;
   base::WeakPtrFactory<HttpsLatencyRoutineTest> weak_factory_{this};
@@ -190,14 +190,14 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedDnsResolution) {
           std::make_unique<FakeNetworkContext::DnsResult>(
               net::ERR_NAME_NOT_RESOLVED,
               net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-              /*resolved_addresses=*/absl::nullopt,
-              /*endpoint_results_with_metadata=*/absl::nullopt));
+              /*resolved_addresses=*/std::nullopt,
+              /*endpoint_results_with_metadata=*/std::nullopt));
     } else {
       fake_dns_results.emplace_back(
           std::make_unique<FakeNetworkContext::DnsResult>(
               net::OK, net::ResolveErrorInfo(net::OK),
               net::AddressList(FakeIPAddress()),
-              /*endpoint_results_with_metadata=*/absl::nullopt));
+              /*endpoint_results_with_metadata=*/std::nullopt));
     }
   }
 
@@ -220,7 +220,7 @@ TEST_F(HttpsLatencyRoutineTest, TestLowLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*endpoint_results_with_metadata=*/absl::nullopt));
+            /*endpoint_results_with_metadata=*/std::nullopt));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -241,7 +241,7 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedHttpRequest) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*endpoint_results_with_metadata=*/absl::nullopt));
+            /*endpoint_results_with_metadata=*/std::nullopt));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -263,7 +263,7 @@ TEST_F(HttpsLatencyRoutineTest, TestHighLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*endpoint_results_with_metadata=*/absl::nullopt));
+            /*endpoint_results_with_metadata=*/std::nullopt));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -285,7 +285,7 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*endpoint_results_with_metadata=*/absl::nullopt));
+            /*endpoint_results_with_metadata=*/std::nullopt));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =

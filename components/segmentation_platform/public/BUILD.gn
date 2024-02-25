@@ -5,6 +5,7 @@
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("public") {
@@ -13,6 +14,8 @@ source_set("public") {
     "config.h",
     "constants.cc",
     "constants.h",
+    "database_client.cc",
+    "database_client.h",
     "features.cc",
     "features.h",
     "field_trial_register.h",
@@ -23,6 +26,7 @@ source_set("public") {
     "local_state_helper.h",
     "model_provider.cc",
     "model_provider.h",
+    "prediction_options.cc",
     "prediction_options.h",
     "result.cc",
     "result.h",
@@ -41,6 +45,7 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//components/keyed_service/core",
     "//url",
   ]
@@ -49,13 +54,12 @@ source_set("public") {
     sources += [
       "android/input_context_android.cc",
       "android/input_context_android.h",
+      "android/prediction_options_android.cc",
+      "android/prediction_options_android.h",
       "android/segmentation_platform_conversion_bridge.cc",
       "android/segmentation_platform_conversion_bridge.h",
     ]
-    deps += [
-      ":jni_headers",
-      "//url:gurl_android",
-    ]
+    deps += [ ":jni_headers" ]
   }
 }
 
@@ -76,7 +80,6 @@ source_set("unit_tests") {
 
     deps += [
       "//base:base",
-      "//url:gurl_android",
       "//url:url",
     ]
   }
@@ -85,7 +88,10 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
 
-  sources = [ "testing/mock_segmentation_platform_service.h" ]
+  sources = [
+    "testing/mock_database_client.h",
+    "testing/mock_segmentation_platform_service.h",
+  ]
 
   deps = [
     ":public",
@@ -98,8 +104,10 @@ source_set("test_support") {
 if (is_android) {
   android_library("public_java") {
     sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/ClassificationResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/Constants.java",
       "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
+      "android/java/src/org/chromium/components/segmentation_platform/PredictionOptions.java",
       "android/java/src/org/chromium/components/segmentation_platform/ProcessedValue.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
@@ -108,14 +116,15 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]
 
     srcjar_deps = [
+      ":execution_status_enums_java",
       ":jni_headers",
       ":processed_value_enums_java",
     ]
@@ -132,8 +141,8 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_java_test_support_uncommon",
       "//base:base_junit_test_support",
-      "//base:jni_java",
       "//content/public/android:content_full_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
@@ -147,6 +156,7 @@ if (is_android) {
 
     sources = [
       "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
+      "android/java/src/org/chromium/components/segmentation_platform/PredictionOptions.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
     ]
   }

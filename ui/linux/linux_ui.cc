@@ -56,15 +56,24 @@ void LinuxUi::RemoveDeviceScaleFactorObserver(
 void LinuxUi::AddCursorThemeObserver(CursorThemeManagerObserver* observer) {
   cursor_theme_observer_list_.AddObserver(observer);
   std::string name = GetCursorThemeName();
-  if (!name.empty())
+  if (!name.empty()) {
     observer->OnCursorThemeNameChanged(name);
+  }
   int size = GetCursorThemeSize();
-  if (size)
+  if (size) {
     observer->OnCursorThemeSizeChanged(size);
+  }
 }
 
 void LinuxUi::RemoveCursorThemeObserver(CursorThemeManagerObserver* observer) {
   cursor_theme_observer_list_.RemoveObserver(observer);
+}
+
+LinuxUi::FontSettings LinuxUi::GetDefaultFontDescription() {
+  if (!default_font_settings_.has_value()) {
+    InitializeFontSettings();
+  }
+  return *default_font_settings_;
 }
 
 // static
@@ -72,8 +81,9 @@ LinuxUi::CmdLineArgs LinuxUi::CopyCmdLine(
     const base::CommandLine& command_line) {
   const auto& argv = command_line.argv();
   size_t args_chars = 0;
-  for (const auto& arg : argv)
+  for (const auto& arg : argv) {
     args_chars += arg.size() + 1;
+  }
 
   CmdLineArgs cmd_line;
   cmd_line.args = std::vector<char>(args_chars);
@@ -94,15 +104,17 @@ LinuxUiTheme::~LinuxUiTheme() = default;
 
 // static
 LinuxUiTheme* LinuxUiTheme::GetForWindow(aura::Window* window) {
-  if (auto* getter = LinuxUiGetter::instance())
+  if (auto* getter = LinuxUiGetter::instance()) {
     return getter->GetForWindow(window);
+  }
   return nullptr;
 }
 
 // static
 LinuxUiTheme* LinuxUiTheme::GetForProfile(Profile* profile) {
-  if (auto* getter = LinuxUiGetter::instance())
+  if (auto* getter = LinuxUiGetter::instance()) {
     return getter->GetForProfile(profile);
+  }
   return nullptr;
 }
 

@@ -6,6 +6,7 @@
 #       instructions on how to regenerate. Otherwise, do not edit.
 data/http_server_files/autofill_smoke_test.html
 data/http_server_files/browsing_prevent_default_test_page.html
+data/http_server_files/bundle.pkpasses
 data/http_server_files/chromium_logo.png
 data/http_server_files/chromium_logo_page.html
 data/http_server_files/complex_document.pdf
@@ -24,6 +25,7 @@ data/http_server_files/history_go.html
 data/http_server_files/history_go.js
 data/http_server_files/iframe_form.html
 data/http_server_files/iframe_host.html
+data/http_server_files/insecure_form.html
 data/http_server_files/links.html
 data/http_server_files/memory_usage.html
 data/http_server_files/multi_field_form.html
@@ -33,6 +35,7 @@ data/http_server_files/opensearch.xml
 data/http_server_files/permissions/camera_and_microphone.html
 data/http_server_files/permissions/camera_only.html
 data/http_server_files/permissions/microphone_only.html
+data/http_server_files/email_signup_form.html
 data/http_server_files/pony.html
 data/http_server_files/profile_form.html
 data/http_server_files/readonly_form.html
@@ -40,7 +43,11 @@ data/http_server_files/redchair.usdz
 data/http_server_files/redirect_refresh.html
 data/http_server_files/sample.ics
 data/http_server_files/sample.mobileconfig
+data/http_server_files/semi_bundle.pkpasses
 data/http_server_files/simple_login_form.html
+data/http_server_files/simple_login_form_empty.html
+data/http_server_files/simple_login_form_empty_autofocus.html
+data/http_server_files/simple_login_form_empty_passkey.html
 data/http_server_files/simple_signup_form.html
 data/http_server_files/single_page_wide.pdf
 data/http_server_files/state_operations.html
@@ -48,6 +55,7 @@ data/http_server_files/state_operations.js
 data/http_server_files/tall_page.html
 data/http_server_files/testpage.pdf
 data/http_server_files/two_pages.pdf
+data/http_server_files/uff_login_forms.html
 data/http_server_files/user_agent_test_page.html
 data/http_server_files/username_password_field_form.html
 data/http_server_files/vcard.vcf

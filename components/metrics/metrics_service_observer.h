@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_METRICS_SERVICE_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/metrics_logs_event_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 
@@ -51,7 +51,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
       double timestampMs;
 
       // An optional message associated with the event.
-      absl::optional<std::string> message;
+      std::optional<std::string> message;
     };
 
     Log();
@@ -76,7 +76,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
 
     // The type of log (stability, ongoing, independent). This is only set if
     // this log is a UMA log.
-    absl::optional<MetricsLog::LogType> type;
+    std::optional<MetricsLog::LogType> type;
   };
 
   // |service_type| is the type of service this observer will be observing from.
@@ -96,7 +96,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   void OnLogEvent(MetricsLogsEventManager::LogEvent event,
                   base::StringPiece log_hash,
                   base::StringPiece message) override;
-  void OnLogType(absl::optional<MetricsLog::LogType> log_type) override;
+  void OnLogType(std::optional<MetricsLog::LogType> log_type) override;
 
   // Exports |logs_| to a JSON string and writes it to |json_output|. If
   // |include_log_proto_data| is true, the protos of the logs will be included.
@@ -165,7 +165,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   // Keeps track of the type of UMA logs (ongoing, stability, independent) that
   // are being created. This should only be set for UMA logs, since the concept
   // of log type only exists in UMA.
-  absl::optional<MetricsLog::LogType> uma_log_type_;
+  std::optional<MetricsLog::LogType> uma_log_type_;
 
   // List of callbacks to run whenever this observer is notified. Note that
   // OnLogType() will not trigger the callbacks.

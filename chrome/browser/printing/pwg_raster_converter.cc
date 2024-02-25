@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/cancelable_callback.h"
@@ -28,7 +29,6 @@
 #include "printing/pdf_render_settings.h"
 #include "printing/pwg_raster_settings.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -48,7 +48,7 @@ class PwgRasterConverterHelper
   PwgRasterConverterHelper(const PwgRasterConverterHelper&) = delete;
   PwgRasterConverterHelper& operator=(const PwgRasterConverterHelper&) = delete;
 
-  void Convert(const absl::optional<bool>& use_skia,
+  void Convert(const std::optional<bool>& use_skia,
                const base::RefCountedMemory* data,
                PwgRasterConverter::ResultCallback callback);
 
@@ -79,7 +79,7 @@ PwgRasterConverterHelper::~PwgRasterConverterHelper() {
 }
 
 void PwgRasterConverterHelper::Convert(
-    const absl::optional<bool>& use_skia,
+    const std::optional<bool>& use_skia,
     const base::RefCountedMemory* data,
     PwgRasterConverter::ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -139,7 +139,7 @@ class PwgRasterConverterImpl : public PwgRasterConverter {
 
   ~PwgRasterConverterImpl() override;
 
-  void Start(const absl::optional<bool>& use_skia,
+  void Start(const std::optional<bool>& use_skia,
              const base::RefCountedMemory* data,
              const PdfRenderSettings& conversion_settings,
              const PwgRasterSettings& bitmap_settings,
@@ -157,7 +157,7 @@ PwgRasterConverterImpl::PwgRasterConverterImpl() = default;
 
 PwgRasterConverterImpl::~PwgRasterConverterImpl() = default;
 
-void PwgRasterConverterImpl::Start(const absl::optional<bool>& use_skia,
+void PwgRasterConverterImpl::Start(const std::optional<bool>& use_skia,
                                    const base::RefCountedMemory* data,
                                    const PdfRenderSettings& conversion_settings,
                                    const PwgRasterSettings& bitmap_settings,

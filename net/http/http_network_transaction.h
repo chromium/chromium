@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -32,9 +34,8 @@
 #include "net/net_buildflags.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/connection_attempts.h"
-#include "net/ssl/ssl_config_service.h"
+#include "net/ssl/ssl_config.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -100,33 +101,27 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
       base::RepeatingCallback<bool()> callback) override;
   int ResumeNetworkStart() override;
   void CloseConnectionOnDestruction() override;
+  bool IsMdlMatchForMetrics() const override;
 
   // HttpStreamRequest::Delegate methods:
-  void OnStreamReady(const SSLConfig& used_ssl_config,
-                     const ProxyInfo& used_proxy_info,
+  void OnStreamReady(const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override;
   void OnBidirectionalStreamImplReady(
-      const SSLConfig& used_ssl_config,
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<BidirectionalStreamImpl> stream) override;
   void OnWebSocketHandshakeStreamReady(
-      const SSLConfig& used_ssl_config,
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override;
   void OnStreamFailed(int status,
                       const NetErrorDetails& net_error_details,
-                      const SSLConfig& used_ssl_config,
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override;
   void OnCertificateError(int status,
-                          const SSLConfig& used_ssl_config,
                           const SSLInfo& ssl_info) override;
   void OnNeedsProxyAuth(const HttpResponseInfo& response_info,
-                        const SSLConfig& used_ssl_config,
                         const ProxyInfo& used_proxy_info,
                         HttpAuthController* auth_controller) override;
-  void OnNeedsClientAuth(const SSLConfig& used_ssl_config,
-                         SSLCertRequestInfo* cert_info) override;
+  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override;
 
   void OnQuicBroken() override;
   ConnectionAttempts GetConnectionAttempts() const override;
@@ -296,7 +291,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     kQuicProtocolError = 18,
     kMaxValue = kQuicProtocolError,
   };
-  static absl::optional<RetryReason> GetRetryReasonForIOError(int error);
+  static std::optional<RetryReason> GetRetryReasonForIOError(int error);
 
   // Resets the connection and the request headers for resend.  Called when
   // ShouldResendRequest() is true.
@@ -412,15 +407,10 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // configured in this transaction.
   bool configured_client_cert_for_server_ = false;
 
-  // SSL configuration used for the server and proxy, respectively. Note
-  // |server_ssl_config_| may be updated from the HttpStreamFactory, which will
-  // be applied on retry.
-  //
-  // TODO(davidben): Mutating it is weird and relies on HttpStreamFactory
-  // modifications being idempotent. Address this as part of other work to make
-  // sense of SSLConfig (related to https://crbug.com/488043).
-  SSLConfig server_ssl_config_;
-  SSLConfig proxy_ssl_config_;
+  // Previously observed bad certs when establishing a connection. If the caller
+  // chooses to retry despite the error, future connection attempts will be
+  // configured to ignore these errors.
+  std::vector<SSLConfig::CertAndStatus> observed_bad_certs_;
 
   HttpRequestHeaders request_headers_;
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -515,7 +505,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Set to true when the server required HTTP/1.1 fallback.
   bool http_1_1_was_required_ = false;
 
-  absl::optional<base::TimeDelta> quic_protocol_error_retry_delay_;
+  std::optional<base::TimeDelta> quic_protocol_error_retry_delay_;
 };
 
 }  // namespace net

@@ -58,6 +58,9 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   // content::WebContentsObserver
   void WebContentsDestroyed() override;
 
+ protected:
+  Observer* GetObserverForTesting();
+
  private:
   raw_ptr<content::WebContents> source_window_{nullptr};
   raw_ptr<content::WebContents> popup_window_{nullptr};

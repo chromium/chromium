@@ -32,15 +32,16 @@ void ResetMockAuthentication();
 // and resets kIosBookmarkPromoAlreadySeen flag for bookmarks.
 void ResetSigninPromoPreferences();
 
-// Resets UserApprovedAccountListManager preferences.
-void ResetUserApprovedAccountListManager();
-
 // Revokes the Sync consent of the primary account. The user will be in the
 // signed-in state.
 void SignInWithoutSync(id<SystemIdentity> identity);
 
-// Resets all the selected data types to be turned on in the sync engine.
-void ResetSyncSelectedDataTypes();
+// Resets all preferences related to History Sync Opt-In.
+void ResetHistorySyncPreferencesForTesting();
+
+// Resets all the selected data types to be turned on in the sync engine. And
+// clear per-account passphrases.
+void ResetSyncAccountSettingsPrefs();
 
 }  // namespace chrome_test_util
 

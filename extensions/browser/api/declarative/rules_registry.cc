@@ -17,8 +17,6 @@
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_prefs.h"
@@ -28,6 +26,7 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/common/api/declarative/declarative_manifest_data.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_constants.h"
 
@@ -49,7 +48,7 @@ base::Value::List RulesToValue(
 }
 
 std::vector<api::events::Rule> RulesFromValue(
-    const absl::optional<base::Value>& value) {
+    const std::optional<base::Value>& value) {
   std::vector<api::events::Rule> rules;
 
   if (!value || !value->is_list())
@@ -59,9 +58,9 @@ std::vector<api::events::Rule> RulesFromValue(
   for (const base::Value& dict_value : value->GetList()) {
     if (!dict_value.is_dict())
       continue;
-    api::events::Rule rule;
-    if (api::events::Rule::Populate(dict_value.GetDict(), rule)) {
-      rules.push_back(std::move(rule));
+    auto rule = api::events::Rule::FromValue(dict_value.GetDict());
+    if (rule) {
+      rules.push_back(std::move(rule).value());
     }
   }
 
@@ -79,11 +78,9 @@ std::string ToId(int identifier) {
 
 RulesRegistry::RulesRegistry(content::BrowserContext* browser_context,
                              const std::string& event_name,
-                             content::BrowserThread::ID owner_thread,
                              RulesCacheDelegate* cache_delegate,
                              int id)
     : browser_context_(browser_context),
-      owner_thread_(owner_thread),
       event_name_(event_name),
       id_(id),
       ready_(/*signaled=*/!cache_delegate),  // Immediately ready if no cache
@@ -96,11 +93,11 @@ RulesRegistry::RulesRegistry(content::BrowserContext* browser_context,
 }
 
 std::string RulesRegistry::AddRulesNoFill(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::vector<api::events::Rule> rules_in,
     RulesDictionary* destination,
     std::vector<const api::events::Rule*>* rules_out) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Verify that all rule IDs are new.
   for (const auto& rule : rules_in) {
@@ -143,7 +140,7 @@ std::string RulesRegistry::AddRulesNoFill(
 }
 
 std::string RulesRegistry::AddRules(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::vector<api::events::Rule> rules_in,
     std::vector<const api::events::Rule*>* rules_out) {
   return AddRulesInternal(extension_id, std::move(rules_in), &rules_,
@@ -151,11 +148,11 @@ std::string RulesRegistry::AddRules(
 }
 
 std::string RulesRegistry::AddRulesInternal(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::vector<api::events::Rule> rules_in,
     RulesDictionary* destination,
     std::vector<const api::events::Rule*>* rules_out) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string error = CheckAndFillInOptionalRules(extension_id, &rules_in);
   if (!error.empty())
@@ -167,9 +164,9 @@ std::string RulesRegistry::AddRulesInternal(
 }
 
 std::string RulesRegistry::RemoveRules(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::vector<std::string>& rule_identifiers) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Check if any of the rules are non-removable.
   for (RuleId rule_id : rule_identifiers) {
@@ -194,7 +191,7 @@ std::string RulesRegistry::RemoveRules(
   return kSuccess;
 }
 
-std::string RulesRegistry::RemoveAllRules(const std::string& extension_id) {
+std::string RulesRegistry::RemoveAllRules(const ExtensionId& extension_id) {
   std::string result =
       RulesRegistry::RemoveAllRulesNoStoreUpdate(extension_id, false);
   MaybeProcessChangedRules(extension_id);  // Now update the prefs and store.
@@ -202,9 +199,9 @@ std::string RulesRegistry::RemoveAllRules(const std::string& extension_id) {
 }
 
 std::string RulesRegistry::RemoveAllRulesNoStoreUpdate(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool remove_manifest_rules) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string error = RemoveAllRulesImpl(extension_id);
 
@@ -227,10 +224,10 @@ std::string RulesRegistry::RemoveAllRulesNoStoreUpdate(
   return kSuccess;
 }
 
-void RulesRegistry::GetRules(const std::string& extension_id,
+void RulesRegistry::GetRules(const ExtensionId& extension_id,
                              const std::vector<std::string>& rule_identifiers,
                              std::vector<const api::events::Rule*>* out) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const auto& i : rule_identifiers) {
     RulesDictionaryKey lookup_key(extension_id, i);
@@ -243,7 +240,7 @@ void RulesRegistry::GetRules(const std::string& extension_id,
   }
 }
 
-void RulesRegistry::GetRules(const std::string& extension_id,
+void RulesRegistry::GetRules(const ExtensionId& extension_id,
                              RulesDictionary* rules,
                              std::vector<const api::events::Rule*>* out) {
   for (auto& i : *rules) {
@@ -253,29 +250,33 @@ void RulesRegistry::GetRules(const std::string& extension_id,
   }
 }
 
-void RulesRegistry::GetAllRules(const std::string& extension_id,
+void RulesRegistry::GetAllRules(const ExtensionId& extension_id,
                                 std::vector<const api::events::Rule*>* out) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   GetRules(extension_id, &manifest_rules_, out);
   GetRules(extension_id, &rules_, out);
 }
 
+void RulesRegistry::OnShutdown() {
+  browser_context_ = nullptr;
+}
+
 void RulesRegistry::OnExtensionUnloaded(const Extension* extension) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string error = RemoveAllRulesImpl(extension->id());
   if (!error.empty())
     ReportInternalError(extension->id(), error);
 }
 
 void RulesRegistry::OnExtensionUninstalled(const Extension* extension) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string error = RemoveAllRulesNoStoreUpdate(extension->id(), true);
   if (!error.empty())
     ReportInternalError(extension->id(), error);
 }
 
 void RulesRegistry::OnExtensionLoaded(const Extension* extension) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::vector<const api::events::Rule*> rules;
   GetAllRules(extension->id(), &rules);
@@ -310,9 +311,9 @@ size_t RulesRegistry::GetNumberOfUsedRuleIdentifiersForTesting() const {
   return entry_count;
 }
 
-void RulesRegistry::DeserializeAndAddRules(const std::string& extension_id,
-                                           absl::optional<base::Value> rules) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+void RulesRegistry::DeserializeAndAddRules(const ExtensionId& extension_id,
+                                           std::optional<base::Value> rules) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Since this is called in response to asynchronously loading rules from
   // storage, the extension may have been unloaded by the time this is called.
@@ -328,10 +329,10 @@ void RulesRegistry::DeserializeAndAddRules(const std::string& extension_id,
     ReportInternalError(extension_id, error);
 }
 
-void RulesRegistry::ReportInternalError(const std::string& extension_id,
+void RulesRegistry::ReportInternalError(const ExtensionId& extension_id,
                                         const std::string& error) {
   std::unique_ptr<ExtensionError> error_instance(new InternalError(
-      extension_id, base::ASCIIToUTF16(error), logging::LOG_ERROR));
+      extension_id, base::ASCIIToUTF16(error), logging::LOGGING_ERROR));
   ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                               std::move(error_instance));
 }
@@ -339,32 +340,23 @@ void RulesRegistry::ReportInternalError(const std::string& extension_id,
 RulesRegistry::~RulesRegistry() {
 }
 
-void RulesRegistry::MarkReady(base::Time storage_init_time) {
-  DCHECK_CURRENTLY_ON(owner_thread());
-
-  if (!storage_init_time.is_null()) {
-    UMA_HISTOGRAM_TIMES("Extensions.DeclarativeRulesStorageInitialization",
-                        base::Time::Now() - storage_init_time);
-  }
-
+void RulesRegistry::MarkReady() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ready_.Signal();
 }
 
-void RulesRegistry::ProcessChangedRules(const std::string& extension_id) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+void RulesRegistry::ProcessChangedRules(const ExtensionId& extension_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DCHECK(base::Contains(process_changed_rules_requested_, extension_id));
   process_changed_rules_requested_[extension_id] = NOT_SCHEDULED_FOR_PROCESSING;
 
   std::vector<const api::events::Rule*> new_rules;
   GetRules(extension_id, &rules_, &new_rules);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RulesCacheDelegate::UpdateRules, cache_delegate_,
-                     extension_id, RulesToValue(new_rules)));
+  cache_delegate_->UpdateRules(extension_id, RulesToValue(new_rules));
 }
 
-void RulesRegistry::MaybeProcessChangedRules(const std::string& extension_id) {
+void RulesRegistry::MaybeProcessChangedRules(const ExtensionId& extension_id) {
   // Read and initialize |process_changed_rules_requested_[extension_id]| if
   // necessary. (Note that the insertion below will not overwrite
   // |process_changed_rules_requested_[extension_id]| if that already exists.
@@ -381,7 +373,7 @@ void RulesRegistry::MaybeProcessChangedRules(const std::string& extension_id) {
                              weak_ptr_factory_.GetWeakPtr(), extension_id));
 }
 
-bool RulesRegistry::IsUniqueId(const std::string& extension_id,
+bool RulesRegistry::IsUniqueId(const ExtensionId& extension_id,
                                const std::string& rule_id) const {
   auto identifiers = used_rule_identifiers_.find(extension_id);
   if (identifiers == used_rule_identifiers_.end())
@@ -389,14 +381,14 @@ bool RulesRegistry::IsUniqueId(const std::string& extension_id,
   return identifiers->second.find(rule_id) == identifiers->second.end();
 }
 
-std::string RulesRegistry::GenerateUniqueId(const std::string& extension_id) {
+std::string RulesRegistry::GenerateUniqueId(const ExtensionId& extension_id) {
   while (!IsUniqueId(extension_id, ToId(last_generated_rule_identifier_id_)))
     ++last_generated_rule_identifier_id_;
   return ToId(last_generated_rule_identifier_id_);
 }
 
 std::string RulesRegistry::CheckAndFillInOptionalRules(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::vector<api::events::Rule>* rules) {
   // IDs we have inserted, in case we need to rollback this operation.
   // TODO(rdevlin.cronin, avi): Um, this variable is never inserted into; is
@@ -435,7 +427,7 @@ void RulesRegistry::FillInOptionalPriorities(
 }
 
 void RulesRegistry::RemoveUsedRuleIdentifiers(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::vector<std::string>& identifiers) {
   std::vector<std::string>::const_iterator i;
   for (i = identifiers.begin(); i != identifiers.end(); ++i)
@@ -443,7 +435,7 @@ void RulesRegistry::RemoveUsedRuleIdentifiers(
 }
 
 void RulesRegistry::RemoveAllUsedRuleIdentifiers(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   used_rule_identifiers_.erase(extension_id);
 }
 

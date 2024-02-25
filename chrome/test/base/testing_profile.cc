@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -92,9 +93,9 @@
 #include "content/public/browser/cookie_store_factory.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/zoom_level_delegate.h"
-#include "content/public/test/mock_resource_context.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -121,6 +122,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -157,6 +159,25 @@ std::unique_ptr<KeyedService> BuildPersonalDataManagerInstanceFor(
 
 }  // namespace
 
+TestingProfile::TestingFactory::TestingFactory(
+    BrowserContextKeyedServiceFactory* service_factory,
+    BrowserContextKeyedServiceFactory::TestingFactory testing_factory)
+    : service_factory_and_testing_factory(
+          std::pair(service_factory, std::move(testing_factory))) {}
+
+TestingProfile::TestingFactory::TestingFactory(
+    RefcountedBrowserContextKeyedServiceFactory* service_factory,
+    RefcountedBrowserContextKeyedServiceFactory::TestingFactory testing_factory)
+    : service_factory_and_testing_factory(
+          std::pair(service_factory, std::move(testing_factory))) {}
+
+TestingProfile::TestingFactory::TestingFactory(const TestingFactory&) = default;
+
+TestingProfile::TestingFactory& TestingProfile::TestingFactory::operator=(
+    const TestingFactory&) = default;
+
+TestingProfile::TestingFactory::~TestingFactory() = default;
+
 // static
 const char TestingProfile::kDefaultProfileUserName[] = "testing_profile@test";
 
@@ -176,6 +197,13 @@ TestingProfile::TestingProfile(const base::FilePath& path)
 
 TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
     : profile_path_(path), delegate_(delegate) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!user_manager::UserManager::IsInitialized()) {
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<ash::FakeChromeUserManager>());
+  }
+#endif
+
   if (profile_path_.empty()) {
     profile_path_ = base::CreateUniqueTempDirectoryScopedToTest();
   }
@@ -212,8 +240,8 @@ TestingProfile::TestingProfile(
     std::unique_ptr<policy::PolicyService> policy_service,
     TestingFactories testing_factories,
     const std::string& profile_name,
-    absl::optional<bool> override_policy_connector_is_managed,
-    absl::optional<OTRProfileID> otr_profile_id,
+    std::optional<bool> override_policy_connector_is_managed,
+    std::optional<OTRProfileID> otr_profile_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : prefs_(std::move(prefs)),
       original_profile_(parent),
@@ -235,6 +263,13 @@ TestingProfile::TestingProfile(
       otr_profile_id_(otr_profile_id),
       policy_service_(std::move(policy_service)),
       url_loader_factory_(url_loader_factory) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!user_manager::UserManager::IsInitialized()) {
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<ash::FakeChromeUserManager>());
+  }
+#endif
+
   if (parent)
     parent->SetOffTheRecordProfile(std::unique_ptr<Profile>(this));
 
@@ -247,8 +282,11 @@ TestingProfile::TestingProfile(
   }
 
   // Set any testing factories prior to initializing the services.
-  for (TestingFactories::value_type& pair : testing_factories)
-    pair.first->SetTestingFactory(this, std::move(pair.second));
+  for (const auto& f : testing_factories) {
+    absl::visit(
+        [this](const auto& p) { p.first->SetTestingFactory(this, p.second); },
+        f.service_factory_and_testing_factory);
+  }
   testing_factories.clear();
 
   Init(is_supervised_profile);
@@ -304,7 +342,7 @@ void TestingProfile::Init(bool is_supervised_profile) {
   if (!IsOffTheRecord()) {
     supervised_user::SupervisedUserSettingsService* settings_service =
         SupervisedUserSettingsServiceFactory::GetForKey(key_.get());
-    supervised_user_pref_store_ = new TestingPrefStore();
+    supervised_user_pref_store_ = base::MakeRefCounted<TestingPrefStore>();
     settings_service->Init(supervised_user_pref_store_.get());
     settings_service->MergeDataAndStartSyncing(
         syncer::SUPERVISED_USER_SETTINGS, syncer::SyncDataList(),
@@ -325,6 +363,8 @@ void TestingProfile::Init(bool is_supervised_profile) {
 #endif
   else
     CreateTestingPrefService();
+
+  MigrateObsoleteProfilePrefs(prefs_.get(), GetPath());
 
   if (is_supervised_profile)
     SetIsSupervisedProfile();
@@ -509,12 +549,12 @@ TestingProfile::~TestingProfile() {
 
   // Make sure SharedProtoDatabase doesn't post delayed tasks anymore.
   ForEachLoadedStoragePartition(
-      base::BindRepeating([](content::StoragePartition* storage_partition) {
+      [](content::StoragePartition* storage_partition) {
         if (auto* provider =
                 storage_partition->GetProtoDatabaseProviderForTesting()) {
           provider->SetSharedDBDeleteObsoleteDelayForTesting(base::TimeDelta());
         }
-      }));
+      });
 
   // Shutdown storage partitions before we post a task to delete
   // the resource context.
@@ -723,12 +763,14 @@ void TestingProfile::CreatePrefServiceForSupervisedUser() {
 
   // Construct testing_prefs_ by hand to add the supervised user pref store.
   testing_prefs_ = new sync_preferences::TestingPrefServiceSyncable(
-      /*managed_prefs=*/new TestingPrefStore, supervised_user_pref_store_,
-      /*extension_prefs=*/new TestingPrefStore,
-      /*standalone_browser_prefs=*/new TestingPrefStore,
-      /*user_prefs=*/new TestingPrefStore,
-      /*recommended_prefs=*/new TestingPrefStore,
-      new user_prefs::PrefRegistrySyncable, new PrefNotifierImpl);
+      /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+      supervised_user_pref_store_,
+      /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+      /*standalone_browser_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+      /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+      /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+      base::MakeRefCounted<user_prefs::PrefRegistrySyncable>(),
+      std::make_unique<PrefNotifierImpl>());
   prefs_.reset(testing_prefs_);
   user_prefs::UserPrefs::Set(this, prefs_.get());
   RegisterUserProfilePrefs(testing_prefs_->registry());
@@ -750,7 +792,9 @@ void TestingProfile::CreateProfilePolicyConnector() {
       BuildSchemaRegistryServiceForProfile(this, policy::Schema(), nullptr);
 
   if (!policy_service_) {
-    std::vector<policy::ConfigurationPolicyProvider*> providers;
+    std::vector<
+        raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>
+        providers;
     std::unique_ptr<policy::PolicyServiceImpl> policy_service =
         std::make_unique<policy::PolicyServiceImpl>(std::move(providers));
     policy_service_ = std::move(policy_service);
@@ -785,19 +829,6 @@ DownloadManagerDelegate* TestingProfile::GetDownloadManagerDelegate() {
 scoped_refptr<network::SharedURLLoaderFactory>
 TestingProfile::GetURLLoaderFactory() {
   return url_loader_factory_;
-}
-
-content::ResourceContext* TestingProfile::GetResourceContext() {
-  // TODO(arthursonzogni): This should only be called on the IO thread. Consider
-  // adding a DCHECK_CURRENTLY_ON(content::BrowserThread::IO) after fixing the
-  // non compliant tests: SpellingMenuObserverTest.SuggestionsForceTopSeparator
-  if (!resource_context_) {
-    resource_context_ =
-        std::unique_ptr<content::MockResourceContext,
-                        content::BrowserThread::DeleteOnIOThread>(
-            new content::MockResourceContext);
-  }
-  return resource_context_.get();
 }
 
 content::BrowserPluginGuestManager* TestingProfile::GetGuestManager() {
@@ -843,6 +874,12 @@ TestingProfile::GetPolicySchemaRegistryService() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void TestingProfile::SetUserCloudPolicyManagerAsh(
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh>
+        user_cloud_policy_manager) {
+  user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
+}
+
 policy::UserCloudPolicyManagerAsh*
 TestingProfile::GetUserCloudPolicyManagerAsh() {
   return user_cloud_policy_manager_.get();
@@ -1104,6 +1141,14 @@ TestingProfile::Builder& TestingProfile::Builder::AddTestingFactory(
   return *this;
 }
 
+TestingProfile::Builder& TestingProfile::Builder::AddTestingFactory(
+    RefcountedBrowserContextKeyedServiceFactory* service_factory,
+    RefcountedBrowserContextKeyedServiceFactory::TestingFactory
+        testing_factory) {
+  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
+  return *this;
+}
+
 TestingProfile::Builder& TestingProfile::Builder::AddTestingFactories(
     const TestingFactories& testing_factories) {
   testing_factories_.insert(testing_factories_.end(), testing_factories.begin(),
@@ -1127,7 +1172,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
-      override_policy_connector_is_managed_, absl::optional<OTRProfileID>(),
+      override_policy_connector_is_managed_, std::optional<OTRProfileID>(),
       url_loader_factory_);
 }
 
@@ -1152,7 +1197,7 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_,
-      absl::optional<OTRProfileID>(otr_profile_id), url_loader_factory_);
+      std::optional<OTRProfileID>(otr_profile_id), url_loader_factory_);
 }
 
 TestingProfile* TestingProfile::Builder::BuildIncognito(

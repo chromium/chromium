@@ -32,7 +32,6 @@ class MockDownloadController : public DownloadControllerBase {
   void SetApproveFileAccessRequestForTesting(bool approve) override;
   void CreateAndroidDownload(const content::WebContents::Getter& wc_getter,
                              const DownloadInfo& info) override;
-  void AboutToResumeDownload(download::DownloadItem* download_item) override;
 
  private:
   bool approve_file_access_request_;

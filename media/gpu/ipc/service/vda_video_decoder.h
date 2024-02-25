@@ -134,12 +134,10 @@ class VdaVideoDecoder : public VideoDecoder,
   void NotifyInitializationComplete(DecoderStatus status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              VideoPixelFormat format,
-                             uint32_t textures_per_buffer,
                              const gfx::Size& dimensions,
                              uint32_t texture_target) override;
   void ProvidePictureBuffersWithVisibleRect(uint32_t requested_num_of_buffers,
                                             VideoPixelFormat format,
-                                            uint32_t textures_per_buffer,
                                             const gfx::Size& dimensions,
                                             const gfx::Rect& visible_rect,
                                             uint32_t texture_target) override;
@@ -167,7 +165,6 @@ class VdaVideoDecoder : public VideoDecoder,
   void NotifyErrorOnParentThread(VideoDecodeAccelerator::Error error);
   void ProvidePictureBuffersAsync(uint32_t count,
                                   VideoPixelFormat pixel_format,
-                                  uint32_t planes,
                                   gfx::Size texture_size,
                                   GLenum texture_target);
   void ReusePictureBuffer(int32_t picture_buffer_id);

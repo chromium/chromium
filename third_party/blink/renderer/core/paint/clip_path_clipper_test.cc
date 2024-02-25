@@ -20,7 +20,7 @@ TEST_F(ClipPathClipperTest, ClipPathBoundingBoxClamped) {
     </div>
   )HTML");
   auto& object = *GetLayoutObjectByElementId("e");
-  absl::optional<gfx::RectF> bounding_box =
+  std::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(object);
   ASSERT_TRUE(bounding_box.has_value());
   EXPECT_EQ(gfx::RectF(InfiniteIntRect()), *bounding_box);

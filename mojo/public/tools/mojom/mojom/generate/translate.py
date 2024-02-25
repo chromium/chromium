@@ -176,7 +176,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:ash.ime.mojom.PersonalizationMode',
     'x:ash.language.mojom.FeatureId',
     'x:blink.mojom.ScrollRestorationType',
-    'x:chrome_cleaner.mojom.PromptAcceptance',
     'x:chromeos.cdm.mojom.CdmKeyStatus',
     'x:chromeos.cdm.mojom.CdmMessageType',
     'x:chromeos.cdm.mojom.CdmSessionType',
@@ -211,9 +210,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:chromeos.network_config.mojom.OncSource',
     'x:chromeos.network_config.mojom.PolicySource',
     'x:chromeos.network_config.mojom.PortalState',
-    'x:chromeos.wilco_dtc_supportd.mojom.WilcoDtcSupportdEvent',
-    'x:chromeos.wilco_dtc_supportd.mojom.WilcoDtcSupportdWebRequestHttpMethod',
-    'x:chromeos.wilco_dtc_supportd.mojom.WilcoDtcSupportdWebRequestStatus',
     'x:cros.mojom.CameraClientType',
     'x:cros.mojom.CameraMetadataSectionStart',
     'x:cros.mojom.CameraMetadataTag',
@@ -346,14 +342,14 @@ def _ProcessElements(scope, elements, operations_by_type):
     # pylint: disable=unidiomatic-typecheck
     element_type = type(element)
     if element_type in operations_by_type:
-      if element.mojom_name in names_in_this_scope:
+      if element.mojom_name.name in names_in_this_scope:
         raise Exception('Names must be unique within a scope. The name "%s" is '
                         'used more than once within the scope "%s".' %
                         (duplicate_name, scope))
       operations_by_type[element_type](element)
 
 
-def _MapKind(kind):
+def _MapKind(typename):
   map_to_kind = {
       'bool': 'b',
       'int8': 'i8',
@@ -374,65 +370,81 @@ def _MapKind(kind):
       'handle<shared_buffer>': 'h:s',
       'handle<platform>': 'h:p'
   }
-  if kind.endswith('?'):
-    base_kind = _MapKind(kind[0:-1])
-    return '?' + base_kind
-  if kind.endswith('}'):
-    lbracket = kind.rfind('{')
-    value = kind[0:lbracket]
-    return 'm[' + _MapKind(kind[lbracket + 1:-1]) + '][' + _MapKind(value) + ']'
-  if kind.endswith(']'):
-    lbracket = kind.rfind('[')
-    typename = kind[0:lbracket]
-    return 'a' + kind[lbracket + 1:-1] + ':' + _MapKind(typename)
-  if kind.startswith('asso<'):
-    assert kind.endswith('>')
-    return 'asso:' + _MapKind(kind[5:-1])
-  if kind.startswith('rmt<'):
-    assert kind.endswith('>')
-    return 'rmt:' + _MapKind(kind[4:-1])
-  if kind.startswith('rcv<'):
-    assert kind.endswith('>')
-    return 'rcv:' + _MapKind(kind[4:-1])
-  if kind.startswith('rma<'):
-    assert kind.endswith('>')
-    return 'rma:' + _MapKind(kind[4:-1])
-  if kind.startswith('rca<'):
-    assert kind.endswith('>')
-    return 'rca:' + _MapKind(kind[4:-1])
-  if kind in map_to_kind:
-    return map_to_kind[kind]
-  return 'x:' + kind
+
+  if isinstance(typename, ast.Typename):
+    opt = '?' if typename.nullable else ''
+    return f'{opt}{_MapKind(typename.identifier)}'
+
+  assert isinstance(typename,
+                    ast.Identifier), f'Got {type(typename)} ({repr(typename)})'
+  ident = typename
+
+  if isinstance(ident, ast.Array):
+    size = ident.fixed_size or ''
+    return f'a{size}:{_MapKind(ident.value_type)}'
+  if isinstance(ident, ast.Map):
+    return f'm[{_MapKind(ident.key_type)}][{_MapKind(ident.value_type)}]'
+  if isinstance(ident, ast.Remote):
+    t = 'rmt' if not ident.associated else 'rma'
+    return f'{t}:{_MapKind(ident.interface)}'
+  if isinstance(ident, ast.Receiver):
+    t = 'rcv' if not ident.associated else 'rca'
+    return f'{t}:{_MapKind(ident.interface)}'
+  if ident.id in map_to_kind:
+    return map_to_kind[ident.id]
+  return f'x:{ident.id}'
 
 
-def _MapValueToEnum(module, value):
-  # True/False/None
+def _MapAttributeValue(module, kind, value):
+  """Resolves the right-hand-side of an EQUALS in an Attribute to a constant
+  value."""
   if value is None:
     return value
-  if not isinstance(value, str):
+
+  if isinstance(value, ast.Identifier):
+    # Reference to a module-qualified constant.
+    value_name = value.id
+  elif isinstance(value, ast.Name):
+    # Reference to either an intra-module name, but because it was not
+    # dot-qualified it was ambiguous as an Identifier, or an un-referenceable
+    # name, e.g. `EnableIf=<ast.Name>`.
+    value_name = value.name
+  else:
+    # True/False
     return value
-  # Otherwise try to find it.
+  # Is the attribute value the name of a feature?
   try:
-    trial = _LookupValue(module, None, None, ('IDENTIFIER', value))
+    # Features cannot be nested in other types, so lookup in the global scope.
+    trial = _LookupKind(module.kinds, 'x:' + value_name,
+                        _GetScopeForKind(module, kind))
+    if isinstance(trial, mojom.Feature):
+      return trial
+  except ValueError:
+    pass
+  # Is the attribute value a constant or enum value?
+  try:
+    trial = _LookupValue(module, None, None, value)
     if isinstance(trial, mojom.ConstantValue):
       return trial.constant
     if isinstance(trial, mojom.EnumValue):
       return trial
   except ValueError:
     pass
-  # Return the string if it did not resolve to a constant or enum.
-  return value
+  # If not a referenceable mojo type - return as a string.
+  return value_name
 
 
-def _AttributeListToDict(module, attribute_list):
+def _AttributeListToDict(module, kind, attribute_list):
   if attribute_list is None:
     return None
   assert isinstance(attribute_list, ast.AttributeList)
   attributes = dict()
   for attribute in attribute_list:
-    if attribute.key in attributes:
-      raise Exception("Duplicate key (%s) in attribute list" % attribute.key)
-    attributes[attribute.key] = _MapValueToEnum(module, attribute.value)
+    if attribute.key.name in attributes:
+      raise Exception("Duplicate key (%s) in attribute list" %
+                      attribute.key.name)
+    attributes[attribute.key.name] = _MapAttributeValue(module, kind,
+                                                        attribute.value)
   return attributes
 
 
@@ -496,21 +508,24 @@ def _LookupValueInScope(module, kind, identifier):
 
 
 def _LookupValue(module, parent_kind, implied_kind, ast_leaf_node):
-  """Resolves a leaf node in the form ('IDENTIFIER', 'x') to a constant value
-  identified by 'x' in some mojom definition. parent_kind is used as context
-  when resolving the identifier. If the given leaf node is not an IDENTIFIER
-  (e.g. already a constant value), it is returned as-is.
+  """Resolves a leaf node from the right-hand-side of an EQUALS to its constant
+  value. If implied_kind is provided, the parsed identifier may also be
+  resolved within its scope as fallback. This can be useful for more concise
+  value references when assigning enum-typed constants or field values."""
+  if not ast_leaf_node:
+    return None
+  if isinstance(ast_leaf_node, ast.Literal):
+    return ast_leaf_node.value
 
-  If implied_kind is provided, the parsed identifier may also be resolved within
-  its scope as fallback. This can be useful for more concise value references
-  when assigning enum-typed constants or field values."""
-  if not isinstance(ast_leaf_node, tuple) or ast_leaf_node[0] != 'IDENTIFIER':
-    return ast_leaf_node
+  if isinstance(ast_leaf_node, ast.Identifier):
+    identifier = ast_leaf_node.id
+  elif isinstance(ast_leaf_node, ast.Name):
+    identifier = ast_leaf_node.name
+  else:
+    raise TypeError(f'Unexpected type {repr(ast_leaf_node)}')
 
   # First look for a known user-defined identifier to resolve this within the
   # enclosing scope.
-  identifier = ast_leaf_node[1]
-
   value = _LookupValueInScope(module, parent_kind, identifier)
   if value:
     return value
@@ -553,18 +568,10 @@ def _Kind(kinds, spec, scope):
     kind = kind.MakeNullableKind()
   elif spec.startswith('a:'):
     kind = mojom.Array(_Kind(kinds, spec[2:], scope))
-  elif spec.startswith('asso:'):
-    inner_kind = _Kind(kinds, spec[5:], scope)
-    if isinstance(inner_kind, mojom.InterfaceRequest):
-      kind = mojom.AssociatedInterfaceRequest(inner_kind)
-    else:
-      kind = mojom.AssociatedInterface(inner_kind)
   elif spec.startswith('a'):
     colon = spec.find(':')
     length = int(spec[1:colon])
     kind = mojom.Array(_Kind(kinds, spec[colon + 1:], scope), length)
-  elif spec.startswith('r:'):
-    kind = mojom.InterfaceRequest(_Kind(kinds, spec[2:], scope))
   elif spec.startswith('rmt:'):
     kind = mojom.PendingRemote(_Kind(kinds, spec[4:], scope))
   elif spec.startswith('rcv:'):
@@ -596,7 +603,8 @@ def _Kind(kinds, spec, scope):
 
 def _Import(module, import_module):
   # Copy the struct kinds from our imports into the current module.
-  importable_kinds = (mojom.Struct, mojom.Union, mojom.Enum, mojom.Interface)
+  importable_kinds = (mojom.Struct, mojom.Union, mojom.Enum, mojom.Interface,
+                      mojom.Feature)
   for kind in import_module.kinds.values():
     if (isinstance(kind, importable_kinds)
         and kind.module.path == import_module.path):
@@ -609,6 +617,32 @@ def _Import(module, import_module):
   return import_module
 
 
+def _Feature(module, parsed_feature):
+  """
+  Args:
+    module: {mojom.Module} Module currently being constructed.
+    parsed_feature: {ast.Feature} Parsed feature.
+
+  Returns:
+    {mojom.Feature} AST feature.
+  """
+  feature = mojom.Feature(module=module)
+  feature.mojom_name = parsed_feature.mojom_name.name
+  feature.spec = 'x:' + module.GetNamespacePrefix() + feature.mojom_name
+  module.kinds[feature.spec] = feature
+  feature.constants = []
+  _ProcessElements(
+      parsed_feature.mojom_name, parsed_feature.body, {
+          ast.Const:
+          lambda const: feature.constants.append(
+              _Constant(module, const, feature)),
+      })
+
+  feature.attributes = _AttributeListToDict(module, feature,
+                                            parsed_feature.attribute_list)
+  return feature
+
+
 def _Struct(module, parsed_struct):
   """
   Args:
@@ -619,7 +653,7 @@ def _Struct(module, parsed_struct):
     {mojom.Struct} AST struct.
   """
   struct = mojom.Struct(module=module)
-  struct.mojom_name = parsed_struct.mojom_name
+  struct.mojom_name = parsed_struct.mojom_name.name
   struct.native_only = parsed_struct.body is None
   struct.spec = 'x:' + module.GetNamespacePrefix() + struct.mojom_name
   module.kinds[struct.spec] = struct
@@ -638,7 +672,8 @@ def _Struct(module, parsed_struct):
             struct.fields_data.append,
         })
 
-  struct.attributes = _AttributeListToDict(module, parsed_struct.attribute_list)
+  struct.attributes = _AttributeListToDict(module, struct,
+                                           parsed_struct.attribute_list)
 
   # Enforce that a [Native] attribute is set to make native-only struct
   # declarations more explicit.
@@ -663,14 +698,15 @@ def _Union(module, parsed_union):
     {mojom.Union} AST union.
   """
   union = mojom.Union(module=module)
-  union.mojom_name = parsed_union.mojom_name
+  union.mojom_name = parsed_union.mojom_name.name
   union.spec = 'x:' + module.GetNamespacePrefix() + union.mojom_name
   module.kinds[union.spec] = union
   # Stash fields parsed_union here temporarily.
   union.fields_data = []
   _ProcessElements(parsed_union.mojom_name, parsed_union.body,
                    {ast.UnionField: union.fields_data.append})
-  union.attributes = _AttributeListToDict(module, parsed_union.attribute_list)
+  union.attributes = _AttributeListToDict(module, union,
+                                          parsed_union.attribute_list)
   return union
 
 
@@ -685,13 +721,14 @@ def _StructField(module, parsed_field, struct):
     {mojom.StructField} AST struct field.
   """
   field = mojom.StructField()
-  field.mojom_name = parsed_field.mojom_name
+  field.mojom_name = parsed_field.mojom_name.name
   field.kind = _Kind(module.kinds, _MapKind(parsed_field.typename),
                      (module.mojom_namespace, struct.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = _LookupValue(module, struct, field.kind,
                                parsed_field.default_value)
-  field.attributes = _AttributeListToDict(module, parsed_field.attribute_list)
+  field.attributes = _AttributeListToDict(module, field,
+                                          parsed_field.attribute_list)
   return field
 
 
@@ -706,17 +743,16 @@ def _UnionField(module, parsed_field, union):
     {mojom.UnionField} AST union.
   """
   field = mojom.UnionField()
-  field.mojom_name = parsed_field.mojom_name
+  field.mojom_name = parsed_field.mojom_name.name
   # Disallow unions from being self-recursive.
-  parsed_typename = parsed_field.typename
-  if parsed_typename.endswith('?'):
-    parsed_typename = parsed_typename[:-1]
+  parsed_typename = parsed_field.typename.identifier.id
   assert parsed_typename != union.mojom_name
   field.kind = _Kind(module.kinds, _MapKind(parsed_field.typename),
                      (module.mojom_namespace, union.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = None
-  field.attributes = _AttributeListToDict(module, parsed_field.attribute_list)
+  field.attributes = _AttributeListToDict(module, field,
+                                          parsed_field.attribute_list)
   if field.is_default and not mojom.IsNullableKind(field.kind) and \
      not mojom.IsIntegralKind(field.kind):
     raise Exception(
@@ -736,13 +772,13 @@ def _Parameter(module, parsed_param, interface):
     {mojom.Parameter} AST parameter.
   """
   parameter = mojom.Parameter()
-  parameter.mojom_name = parsed_param.mojom_name
+  parameter.mojom_name = parsed_param.mojom_name.name
   parameter.kind = _Kind(module.kinds, _MapKind(parsed_param.typename),
                          (module.mojom_namespace, interface.mojom_name))
   parameter.ordinal = (parsed_param.ordinal.value
                        if parsed_param.ordinal else None)
   parameter.default = None  # TODO(tibell): We never have these. Remove field?
-  parameter.attributes = _AttributeListToDict(module,
+  parameter.attributes = _AttributeListToDict(module, parameter,
                                               parsed_param.attribute_list)
   return parameter
 
@@ -759,7 +795,7 @@ def _Method(module, parsed_method, interface):
   """
   method = mojom.Method(
       interface,
-      parsed_method.mojom_name,
+      parsed_method.mojom_name.name,
       ordinal=parsed_method.ordinal.value if parsed_method.ordinal else None)
   method.parameters = list(
       map(lambda parameter: _Parameter(module, parameter, interface),
@@ -768,7 +804,8 @@ def _Method(module, parsed_method, interface):
     method.response_parameters = list(
         map(lambda parameter: _Parameter(module, parameter, interface),
             parsed_method.response_parameter_list))
-  method.attributes = _AttributeListToDict(module, parsed_method.attribute_list)
+  method.attributes = _AttributeListToDict(module, method,
+                                           parsed_method.attribute_list)
 
   # Enforce that only methods with response can have a [Sync] attribute.
   if method.sync and method.response_parameters is None:
@@ -793,10 +830,10 @@ def _Interface(module, parsed_iface):
     {mojom.Interface} AST interface.
   """
   interface = mojom.Interface(module=module)
-  interface.mojom_name = parsed_iface.mojom_name
+  interface.mojom_name = parsed_iface.mojom_name.name
   interface.spec = 'x:' + module.GetNamespacePrefix() + interface.mojom_name
   module.kinds[interface.spec] = interface
-  interface.attributes = _AttributeListToDict(module,
+  interface.attributes = _AttributeListToDict(module, interface,
                                               parsed_iface.attribute_list)
   interface.enums = []
   interface.constants = []
@@ -825,9 +862,10 @@ def _EnumField(module, enum, parsed_field):
     {mojom.EnumField} AST enum field.
   """
   field = mojom.EnumField()
-  field.mojom_name = parsed_field.mojom_name
+  field.mojom_name = parsed_field.mojom_name.name
   field.value = _LookupValue(module, enum, None, parsed_field.value)
-  field.attributes = _AttributeListToDict(module, parsed_field.attribute_list)
+  field.attributes = _AttributeListToDict(module, field,
+                                          parsed_field.attribute_list)
   value = mojom.EnumValue(module, enum, field)
   module.values[value.GetSpec()] = value
   return field
@@ -865,7 +903,10 @@ def _ResolveNumericEnumValues(enum):
     else:
       raise Exception('Unresolved enum value for %s' % field.value.GetSpec())
 
-    #resolved_enum_values[field.mojom_name] = prev_value
+    if prev_value in (-128, -127):
+      raise Exception(f'{field.mojom_name} in {enum.spec} has the value '
+                      f'{prev_value}, which is reserved for WTF::HashTrait\'s '
+                      'default enum specialization and may not be used.')
     field.numeric_value = prev_value
     if min_value is None or prev_value < min_value:
       min_value = prev_value
@@ -886,14 +927,15 @@ def _Enum(module, parsed_enum, parent_kind):
     {mojom.Enum} AST enum.
   """
   enum = mojom.Enum(module=module)
-  enum.mojom_name = parsed_enum.mojom_name
+  enum.mojom_name = parsed_enum.mojom_name.name
   enum.native_only = parsed_enum.enum_value_list is None
   mojom_name = enum.mojom_name
   if parent_kind:
     mojom_name = parent_kind.mojom_name + '.' + mojom_name
   enum.spec = 'x:%s.%s' % (module.mojom_namespace, mojom_name)
   enum.parent_kind = parent_kind
-  enum.attributes = _AttributeListToDict(module, parsed_enum.attribute_list)
+  enum.attributes = _AttributeListToDict(module, enum,
+                                         parsed_enum.attribute_list)
 
   if not enum.native_only:
     enum.fields = list(
@@ -940,7 +982,7 @@ def _Constant(module, parsed_const, parent_kind):
     {mojom.Constant} AST constant.
   """
   constant = mojom.Constant()
-  constant.mojom_name = parsed_const.mojom_name
+  constant.mojom_name = parsed_const.mojom_name.name
   if parent_kind:
     scope = (module.mojom_namespace, parent_kind.mojom_name)
   else:
@@ -975,8 +1017,7 @@ def _CollectReferencedKinds(module, all_defined_kinds):
     if mojom.IsMapKind(kind):
       return (extract_referenced_user_kinds(kind.key_kind) +
               extract_referenced_user_kinds(kind.value_kind))
-    if (mojom.IsInterfaceRequestKind(kind) or mojom.IsAssociatedKind(kind)
-        or mojom.IsPendingRemoteKind(kind)
+    if (mojom.IsAssociatedKind(kind) or mojom.IsPendingRemoteKind(kind)
         or mojom.IsPendingReceiverKind(kind)):
       return [kind.kind]
     if mojom.IsStructKind(kind):
@@ -1086,7 +1127,7 @@ def _Module(tree, path, imports):
 
   module.values = {}
 
-  module.mojom_namespace = tree.module.mojom_namespace[1] if tree.module else ''
+  module.mojom_namespace = tree.module.mojom_namespace.id if tree.module else ''
   # Imports must come first, because they add to module.kinds which is used
   # by by the others.
   module.imports = [
@@ -1095,7 +1136,7 @@ def _Module(tree, path, imports):
   if tree.module and tree.module.attribute_list:
     assert isinstance(tree.module.attribute_list, ast.AttributeList)
     # TODO(vtl): Check for duplicate keys here.
-    module.attributes = dict((attribute.key, attribute.value)
+    module.attributes = dict((attribute.key.name, attribute.value)
                              for attribute in tree.module.attribute_list)
 
   filename = os.path.basename(path)
@@ -1105,6 +1146,8 @@ def _Module(tree, path, imports):
   module.structs = []
   module.unions = []
   module.interfaces = []
+  module.features = []
+
   _ProcessElements(
       filename, tree.definition_list, {
           ast.Const:
@@ -1118,6 +1161,8 @@ def _Module(tree, path, imports):
           ast.Interface:
           lambda interface: module.interfaces.append(
               _Interface(module, interface)),
+          ast.Feature:
+          lambda feature: module.features.append(_Feature(module, feature)),
       })
 
   # Second pass expands fields and methods. This allows fields and parameters
@@ -1132,6 +1177,9 @@ def _Module(tree, path, imports):
     all_defined_kinds[struct.spec] = struct
     for enum in struct.enums:
       all_defined_kinds[enum.spec] = enum
+
+  for feature in module.features:
+    all_defined_kinds[feature.spec] = feature
 
   for union in module.unions:
     union.fields = list(

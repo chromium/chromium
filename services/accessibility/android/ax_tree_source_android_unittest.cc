@@ -5,8 +5,10 @@
 #include "services/accessibility/android/ax_tree_source_android.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
@@ -15,7 +17,6 @@
 #include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -86,7 +87,7 @@ class MockAutomationEventRouter
 
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override {}
+      const std::optional<gfx::Rect>& rect) override {}
 
   std::vector<ui::AXEvent> last_dispatched_events() const {
     return last_dispatched_events_;
@@ -138,7 +139,8 @@ class AXTreeSourceAndroidTest : public testing::Test,
     tree_source_->NotifyAccessibilityEvent(event_data);
   }
 
-  const std::vector<ui::AXNode*>& GetChildren(int32_t node_id) {
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& GetChildren(
+      int32_t node_id) {
     ui::AXNode* ax_node = tree()->GetFromId(node_id);
     return ax_node->children();
   }
@@ -249,7 +251,7 @@ TEST_F(AXTreeSourceAndroidTest, ReorderChildrenByLayout) {
 
   // Trigger an update which refreshes the computed bounds used for reordering.
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> top_to_bottom;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> top_to_bottom;
   top_to_bottom = GetChildren(root->id);
   ASSERT_EQ(2U, top_to_bottom.size());
   EXPECT_EQ(12, top_to_bottom[0]->id());
@@ -268,7 +270,7 @@ TEST_F(AXTreeSourceAndroidTest, ReorderChildrenByLayout) {
   button1->bounds_in_screen = gfx::Rect(101, 100, 99, 100);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> left_to_right;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> left_to_right;
   left_to_right = GetChildren(root->id);
   ASSERT_EQ(2U, left_to_right.size());
   EXPECT_EQ(12, left_to_right[0]->id());
@@ -305,7 +307,7 @@ TEST_F(AXTreeSourceAndroidTest, ReorderChildrenByLayout) {
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 10);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<ui::AXNode*> dimension;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> dimension;
   dimension = GetChildren(event->node_data[0].get()->id);
   ASSERT_EQ(2U, dimension.size());
   EXPECT_EQ(12, dimension[0]->id());
@@ -579,7 +581,7 @@ TEST_F(AXTreeSourceAndroidTest, ComplexTreeStructure) {
   CallNotifyAccessibilityEvent(event.get());
 
   // Check that each node subtree tree was added, and that it is correct.
-  std::vector<ui::AXNode*> children;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> children;
   for (int i = 0; i < num_trees; i++) {
     children = GetChildren(event->node_data.at(i * tree_size).get()->id);
     ASSERT_EQ(1U, children.size());
@@ -1191,7 +1193,7 @@ TEST_F(AXTreeSourceAndroidTest, SerializeVirtualNode) {
   ASSERT_FALSE(data.IsIgnored());
 
   // Children are not reordered under WebView.
-  std::vector<ui::AXNode*> children;
+  std::vector<raw_ptr<ui::AXNode, VectorExperimental>> children;
   children = GetChildren(webview->id);
   ASSERT_EQ(2U, children.size());
   EXPECT_EQ(button1->id, children[0]->id());
@@ -1582,4 +1584,102 @@ TEST_F(AXTreeSourceAndroidTest, EventFrom) {
   EXPECT_EQ(ax::mojom::EventFrom::kAction, actual.event_from);
   EXPECT_EQ(ax::mojom::Action::kDoDefault, actual.event_from_action);
 }
+
+TEST_F(AXTreeSourceAndroidTest, UpdateChangeFromNameMergedNode) {
+  set_full_focus_mode(true);
+
+  auto event = AXEventData::New();
+  event->source_id = 10;  // root
+  event->task_id = 1;
+  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
+
+  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* root_window = event->window_data->back().get();
+  root_window->window_id = 100;
+  root_window->root_node_id = 10;
+
+  /* AXTree of this test:
+    [10] root
+    --[1] node1 clickable container
+    ----[2] node2 text node, not clickable
+    ----[3] node3 button node, clickable
+  */
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* root = event->node_data.back().get();
+  root->id = 10;
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node1 = event->node_data.back().get();
+  node1->id = 1;
+  SetProperty(node1, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node1, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node1, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(node1, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({2, 3}));
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node2 = event->node_data.back().get();
+  node2->id = 2;
+  SetProperty(node2, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node2, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node2, AXStringProperty::TEXT, "text");
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node3 = event->node_data.back().get();
+  node3->id = 3;
+  SetProperty(node3, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node3, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node3, AXBooleanProperty::CLICKABLE, true);
+  SetProperty(node3, AXStringProperty::TEXT, "button");
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  ui::AXNodeData data;
+  std::string name;
+
+  // (Precondition) First, check name computation from children.
+
+  data = GetSerializedNode(node1->id);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  EXPECT_EQ("text", name);
+
+  data = GetSerializedNode(node2->id);
+  ASSERT_TRUE(data.IsIgnored());
+
+  data = GetSerializedNode(node3->id);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  EXPECT_EQ("button", name);
+
+  // Update button text.
+  event->source_id = node3->id;
+  event->event_type = AXEventType::VIEW_TEXT_CHANGED;
+  SetProperty(node3, AXStringProperty::TEXT, "button2");
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = GetSerializedNode(node3->id);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  EXPECT_EQ("button2", name);
+
+  // Update text in node2.
+  // This text is used by node1, but event source is node2.
+  // AXTreeSourceAndroid should handle and update the tree.
+  event->source_id = node2->id;
+  event->event_type = AXEventType::VIEW_TEXT_CHANGED;
+  SetProperty(node2, AXStringProperty::TEXT, "text2");
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = GetSerializedNode(node1->id);
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  EXPECT_EQ("text2", name);
+}
+
 }  // namespace ax::android

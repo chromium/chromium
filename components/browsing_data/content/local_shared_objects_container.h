@@ -13,7 +13,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/cookie_helper.h"
-#include "storage/common/file_system/file_system_types.h"
 
 class GURL;
 
@@ -22,13 +21,7 @@ class StoragePartition;
 }
 
 namespace browsing_data {
-class CannedCacheStorageHelper;
 class CannedCookieHelper;
-class CannedDatabaseHelper;
-class CannedFileSystemHelper;
-class CannedIndexedDBHelper;
-class CannedServiceWorkerHelper;
-class CannedSharedWorkerHelper;
 class CannedLocalStorageHelper;
 
 class LocalSharedObjectsContainer {
@@ -36,7 +29,6 @@ class LocalSharedObjectsContainer {
   LocalSharedObjectsContainer(
       content::StoragePartition* storage_partition,
       bool ignore_empty_localstorage,
-      const std::vector<storage::FileSystemType>& additional_file_system_types,
       browsing_data::CookieHelper::IsDeletionDisabledCallback callback);
 
   LocalSharedObjectsContainer(const LocalSharedObjectsContainer&) = delete;
@@ -71,20 +63,8 @@ class LocalSharedObjectsContainer {
   void Reset();
 
   CannedCookieHelper* cookies() const { return cookies_.get(); }
-  CannedDatabaseHelper* databases() const { return databases_.get(); }
-  CannedFileSystemHelper* file_systems() const { return file_systems_.get(); }
-  CannedIndexedDBHelper* indexed_dbs() const { return indexed_dbs_.get(); }
   CannedLocalStorageHelper* local_storages() const {
     return local_storages_.get();
-  }
-  CannedServiceWorkerHelper* service_workers() const {
-    return service_workers_.get();
-  }
-  CannedSharedWorkerHelper* shared_workers() const {
-    return shared_workers_.get();
-  }
-  CannedCacheStorageHelper* cache_storages() const {
-    return cache_storages_.get();
   }
   CannedLocalStorageHelper* session_storages() const {
     return session_storages_.get();
@@ -94,13 +74,7 @@ class LocalSharedObjectsContainer {
   std::map<url::Origin, int> GetObjectCountPerOriginMap() const;
 
   scoped_refptr<CannedCookieHelper> cookies_;
-  scoped_refptr<CannedDatabaseHelper> databases_;
-  scoped_refptr<CannedFileSystemHelper> file_systems_;
-  scoped_refptr<CannedIndexedDBHelper> indexed_dbs_;
   scoped_refptr<CannedLocalStorageHelper> local_storages_;
-  scoped_refptr<CannedServiceWorkerHelper> service_workers_;
-  scoped_refptr<CannedSharedWorkerHelper> shared_workers_;
-  scoped_refptr<CannedCacheStorageHelper> cache_storages_;
   scoped_refptr<CannedLocalStorageHelper> session_storages_;
 };
 

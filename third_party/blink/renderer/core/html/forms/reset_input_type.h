@@ -42,7 +42,6 @@ class ResetInputType final : public BaseButtonInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   bool SupportsValidation() const override;
   void HandleDOMActivateEvent(Event&) override;
   String DefaultLabel() const override;

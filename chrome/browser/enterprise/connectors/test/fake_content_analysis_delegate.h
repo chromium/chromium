@@ -98,7 +98,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       std::string contents,
       base::FilePath path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-      absl::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
+      std::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
           file_request_callback,
       bool is_image_request);
 

@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 #include <vector>
 
 #include "Eigen/Dense"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
@@ -30,7 +33,6 @@
 #include "mediapipe/modules/objectron/calculators/decoder.h"
 #include "mediapipe/modules/objectron/calculators/tensor_util.h"
 #include "mediapipe/modules/objectron/calculators/tensors_to_objects_calculator.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace {
 constexpr char kInputStreamTag[] = "TENSORS";
@@ -76,7 +78,7 @@ class TensorsToObjectsCalculator : public CalculatorBase {
   // In a single MediaPipe session, the IDs are unique.
   // Also assign timestamp for the FrameAnnotation to be the input packet
   // timestamp.
-  void AssignObjectIdAndTimestamp(int64 timestamp_us,
+  void AssignObjectIdAndTimestamp(int64_t timestamp_us,
                                   FrameAnnotation* annotation);
 
   int num_classes_ = 0;
@@ -149,7 +151,7 @@ absl::Status TensorsToObjectsCalculator::ProcessCPU(
   auto status = decoder_->Lift2DTo3D(projection_matrix_, /*portrait*/ true,
                                      output_objects);
   if (!status.ok()) {
-    LOG(ERROR) << status;
+    ABSL_LOG(ERROR) << status;
     return status;
   }
   Project3DTo2D(/*portrait*/ true, output_objects);
@@ -200,7 +202,7 @@ void TensorsToObjectsCalculator::Project3DTo2D(
 }
 
 void TensorsToObjectsCalculator::AssignObjectIdAndTimestamp(
-    int64 timestamp_us, FrameAnnotation* annotation) {
+    int64_t timestamp_us, FrameAnnotation* annotation) {
   for (auto& ann : *annotation->mutable_annotations()) {
     ann.set_object_id(GetNextObjectId());
   }

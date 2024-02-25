@@ -68,15 +68,17 @@ AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
     : connected_to_parent_tree_node_(false),
       ax_tree_(std::move(tree)),
       event_generator_(ax_tree()) {
-  DCHECK(ax_tree_);
-
   // Do not register the tree in the map if it has no ID. It will be registered
   // later in OnTreeDataChanged().
   if (HasValidTreeID()) {
     GetMap().AddTreeManager(GetTreeID(), this);
   }
 
-  tree_observation_.Observe(ax_tree());
+  // This is temporary until the ViewAXTreeManager is not needed anymore. After
+  // that, we could instead have a DCHECK(ax_tree()). See crbug.com/1468416.
+  if (ax_tree()) {
+    tree_observation_.Observe(ax_tree());
+  }
 }
 
 void AXTreeManager::FireFocusEvent(AXNode* node) {
@@ -116,6 +118,10 @@ bool AXTreeManager::CanFireEvents() const {
   }
 
   return true;
+}
+
+bool AXTreeManager::IsView() const {
+  return false;
 }
 
 AXNode* AXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
@@ -158,10 +164,10 @@ void AXTreeManager::WillBeRemovedFromMap() {
 }
 
 // static
-absl::optional<AXNodeID> AXTreeManager::last_focused_node_id_ = {};
+std::optional<AXNodeID> AXTreeManager::last_focused_node_id_ = {};
 
 // static
-absl::optional<AXTreeID> AXTreeManager::last_focused_node_tree_id_ = {};
+std::optional<AXTreeID> AXTreeManager::last_focused_node_tree_id_ = {};
 
 // static
 void AXTreeManager::SetLastFocusedNode(AXNode* node) {
@@ -230,7 +236,10 @@ AXNode* AXTreeManager::GetLastFocusedNode() {
 }
 
 AXTreeManager::~AXTreeManager() {
-  AXNode* parent = GetParentNodeFromParentTree();
+  AXNode* parent = nullptr;
+  if (connected_to_parent_tree_node_) {
+    parent = GetParentNodeFromParentTree();
+  }
 
   // Fire any events that need to be fired when tree nodes get deleted. For
   // example, events that fire every time "OnSubtreeWillBeDeleted" is called.
@@ -249,8 +258,32 @@ AXTreeManager::~AXTreeManager() {
     }
   }
 
-  // TODO(accessibility) Consider using AXTreeManagerBase::DetachChildTree().
   ParentConnectionChanged(parent);
+}
+
+std::unique_ptr<AXTree> AXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
+  if (!tree) {
+    NOTREACHED_NORETURN()
+        << "Attempting to set a new tree, but no tree has been provided.";
+  }
+
+  if (tree->GetAXTreeID().type() == ax::mojom::AXTreeIDType::kUnknown) {
+    NOTREACHED_NORETURN() << "Invalid tree ID.\n" << tree->ToString();
+  }
+
+  if (ax_tree_) {
+    ax_tree_->NotifyTreeManagerWillBeRemoved(GetTreeID());
+    GetMap().RemoveTreeManager(GetTreeID());
+  }
+
+  std::swap(ax_tree_, tree);
+  GetMap().AddTreeManager(GetTreeID(), this);
+  return tree;
+}
+
+std::unique_ptr<AXTree> AXTreeManager::SetTree(
+    const AXTreeUpdate& initial_state) {
+  return SetTree(std::make_unique<AXTree>(initial_state));
 }
 
 void AXTreeManager::OnTreeDataChanged(AXTree* tree,
@@ -370,19 +403,7 @@ void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
   }
   connected_to_parent_tree_node_ = true;
 
-  // Ensure all the correct callbacks are used for a tree update --
-  // OnAtomicUpdateFinished() is particularly important for updating the
-  // parent's hypertext.
-  // ScopedTreeUpdateInProgressStateSetter is not necessary here because there
-  // is no point where the tree structure is incomplete such that calling AXNode
-  // parent/child navigation methods is dangerous.
   parent->tree()->NotifyChildTreeConnectionChanged(parent, ax_tree_.get());
-  for (AXTreeObserver& observer : parent->tree()->observers()) {
-    observer.OnAtomicUpdateFinished(
-        parent->tree(), /* root_changed= */ false,
-        {{parent, AXTreeObserver::ChangeType::NODE_CHANGED}});
-  }
-
   UpdateAttributesOnParent(parent);
   AXTreeManager* parent_manager = parent->GetManager();
   parent = parent_manager->RetargetForEvents(

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_item.h"
 
 namespace base {
@@ -41,7 +42,8 @@ class Value;
 // query.Search(all_items.begin(), all_items.end(), &results);
 class DownloadQuery {
  public:
-  typedef std::vector<download::DownloadItem*> DownloadVector;
+  typedef std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+      DownloadVector;
 
   // FilterCallback is a Callback that takes a DownloadItem and returns true if
   // the item matches the filter and false otherwise.

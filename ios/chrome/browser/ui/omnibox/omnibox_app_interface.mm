@@ -11,11 +11,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/history/core/browser/top_sites.h"
+#import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
-#import "ios/chrome/browser/history/top_sites_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
+#import "ios/chrome/browser/history/model/top_sites_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/omnibox/test_fake_suggestions_service.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -45,7 +47,7 @@ bool GoogleToLocalhostURLRewriter(GURL* url, web::BrowserState* browser_state) {
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("ios")
         .AppendASCII("chrome")
         .AppendASCII("test")
@@ -106,6 +108,26 @@ const base::FilePath& GetTestDataDir() {
 
   TestFakeSuggestionsService::GetInstance()->TearDown(remoteSuggestionsService,
                                                       urlLoaderFactory);
+}
+
++ (BOOL)shortcutsBackendInitialized {
+  scoped_refptr<ShortcutsBackend> shortcuts_backend =
+      ios::ShortcutsBackendFactory::GetInstance()->GetForBrowserStateIfExists(
+          chrome_test_util::GetOriginalBrowserState());
+  if (shortcuts_backend) {
+    return shortcuts_backend->initialized();
+  }
+  return NO;
+}
+
++ (NSInteger)numberOfShortcutsInDatabase {
+  scoped_refptr<ShortcutsBackend> shortcuts_backend =
+      ios::ShortcutsBackendFactory::GetInstance()->GetForBrowserStateIfExists(
+          chrome_test_util::GetOriginalBrowserState());
+  if (shortcuts_backend && shortcuts_backend->initialized()) {
+    return static_cast<NSInteger>(shortcuts_backend->shortcuts_map().size());
+  }
+  return 0;
 }
 
 @end

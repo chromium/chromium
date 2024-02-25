@@ -11,16 +11,16 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_reporting_default_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -37,11 +37,20 @@ class NetworkTimeTracker;
 
 namespace metrics {
 
+// This SourceType is saved in Local state by unsent_log_store.cc and entries
+// should not be renumbered.
+enum UkmLogSourceType {
+  UKM_ONLY = 0,            // Log contains only UKM data.
+  APPKM_ONLY = 1,          // Log contains only AppKM data.
+  BOTH_UKM_AND_APPKM = 2,  // Log contains both AppKM and UKM data.
+};
+
 // Holds optional metadata associated with a log to be stored.
 struct LogMetadata {
   LogMetadata();
-  LogMetadata(absl::optional<base::HistogramBase::Count> samples_count,
-              absl::optional<uint64_t> user_id);
+  LogMetadata(std::optional<base::HistogramBase::Count> samples_count,
+              std::optional<uint64_t> user_id,
+              std::optional<UkmLogSourceType> log_source_type);
   LogMetadata(const LogMetadata& other);
   ~LogMetadata();
 
@@ -50,10 +59,13 @@ struct LogMetadata {
   void AddSampleCount(base::HistogramBase::Count sample_count);
 
   // The total number of samples in this log if applicable.
-  absl::optional<base::HistogramBase::Count> samples_count;
+  std::optional<base::HistogramBase::Count> samples_count;
 
   // User id associated with the log.
-  absl::optional<uint64_t> user_id;
+  std::optional<uint64_t> user_id;
+
+  // For UKM logs, indicates the type of data.
+  std::optional<UkmLogSourceType> log_source_type;
 };
 
 class MetricsServiceClient;
@@ -190,7 +202,7 @@ class MetricsLog {
   void FinalizeLog(
       bool truncate_events,
       const std::string& current_app_version,
-      absl::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
+      std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
       std::string* encoded_log);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

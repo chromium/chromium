@@ -5,10 +5,11 @@
 #include "components/google/core/common/google_util.h"
 
 #include "base/command_line.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "components/google/core/common/google_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 using google_util::IsGoogleDomainUrl;
 
@@ -16,9 +17,9 @@ using google_util::IsGoogleDomainUrl;
 
 namespace {
 
-const std::string kValidSearchSchemes[] = {"http", "https"};
+constexpr const char* kValidSearchSchemes[] = {"http", "https"};
 
-const std::string kValidSearchQueryParams[] = {
+constexpr const char* kValidSearchQueryParams[] = {
     "q",
     "as_q"  // Advanced search uses "as_q" instead of "q" as the query param.
 };
@@ -131,55 +132,58 @@ TEST(GoogleUtilTest, BadHomePages) {
 }
 
 TEST(GoogleUtilTest, GoodSearches) {
-  const std::string patterns[] = {
+  constexpr struct {
+    const char* before_query_param;
+    const char* after_query_param;
+  } kPatterns[] = {
       // Queries with path "/search" need to have the query parameter in either
       // the url parameter or the hash fragment.
-      "%s://www.google.com/search?%s=something",
-      "%s://www.google.com/search#%s=something",
-      "%s://www.google.com/search?name=bob&%s=something",
-      "%s://www.google.com/search?name=bob#%s=something",
-      "%s://www.google.com/search?name=bob#age=24&%s=thng",
-      "%s://www.google.co.uk/search?%s=something",
+      {"www.google.com/search?", "=something"},
+      {"www.google.com/search#", "=something"},
+      {"www.google.com/search?name=bob&", "=something"},
+      {"www.google.com/search?name=bob#", "=something"},
+      {"www.google.com/search?name=bob#age=24&", "=thng"},
+      {"www.google.co.uk/search?", "=something"},
       // It's actually valid for both to have the query parameter.
-      "%s://www.google.com/search?%s=something#q=other",
+      {"www.google.com/search?", "=something#q=other"},
       // Also valid to have an empty query parameter
-      "%s://www.google.com/search?%s=",
+      {"www.google.com/search?", "="},
 
       // Queries with path "/webhp", "/" or "" need to have the query parameter
       // in the hash fragment.
-      "%s://www.google.com/webhp#%s=something",
-      "%s://www.google.com/webhp#name=bob&%s=something",
-      "%s://www.google.com/webhp?name=bob#%s=something",
-      "%s://www.google.com/webhp?name=bob#age=24&%s=thing",
+      {"www.google.com/webhp#", "=something"},
+      {"www.google.com/webhp#name=bob&", "=something"},
+      {"www.google.com/webhp?name=bob#", "=something"},
+      {"www.google.com/webhp?name=bob#age=24&", "=thing"},
 
-      "%s://www.google.com/#%s=something",
-      "%s://www.google.com/#name=bob&%s=something",
-      "%s://www.google.com/?name=bob#%s=something",
-      "%s://www.google.com/?name=bob#age=24&%s=something",
+      {"www.google.com/#", "=something"},
+      {"www.google.com/#name=bob&", "=something"},
+      {"www.google.com/?name=bob#", "=something"},
+      {"www.google.com/?name=bob#age=24&", "=something"},
 
-      "%s://www.google.com#%s=something",
-      "%s://www.google.com#name=bob&%s=something",
-      "%s://www.google.com?name=bob#%s=something",
-      "%s://www.google.com?name=bob#age=24&%s=something",
+      {"www.google.com#", "=something"},
+      {"www.google.com#name=bob&", "=something"},
+      {"www.google.com?name=bob#", "=something"},
+      {"www.google.com?name=bob#age=24&", "=something"},
 
       // Google subdomain queries.
-      "%s://ipv4.google.com/search?%s=something",
-      "%s://ipv4.google.com#name=bob&%s=something",
-      "%s://ipv6.google.com?name=bob#%s=something",
-      "%s://ipv6.google.com?name=bob#age=24&%s=something",
+      {"ipv4.google.com/search?", "=something"},
+      {"ipv4.google.com#name=bob&", "=something"},
+      {"ipv6.google.com?name=bob#", "=something"},
+      {"ipv6.google.com?name=bob#age=24&", "=something"},
 
       // Trailing dots in the hosts.
-      "%s://www.google.com./#%s=something",
-      "%s://www.google.de./#%s=something",
-      "%s://ipv4.google.com./#%s=something",
-      "%s://ipv6.google.com./#%s=something",
-  };
+      {"www.google.com./#", "=something"},
+      {"www.google.de./#", "=something"},
+      {"ipv4.google.com./#", "=something"},
+      {"ipv6.google.com./#", "=something"}};
 
-  for (const std::string& pattern : patterns) {
-    for (const std::string& scheme : kValidSearchSchemes) {
-      for (const std::string& query_param : kValidSearchQueryParams) {
-        EXPECT_TRUE(IsSearch(base::StringPrintf(pattern.c_str(), scheme.c_str(),
-                                                query_param.c_str())));
+  for (const auto& pattern : kPatterns) {
+    for (const char* scheme : kValidSearchSchemes) {
+      for (const char* query_param : kValidSearchQueryParams) {
+        EXPECT_TRUE(IsSearch(base::StrCat(
+            {scheme, url::kStandardSchemeSeparator, pattern.before_query_param,
+             query_param, pattern.after_query_param})));
       }
     }
   }
@@ -198,39 +202,44 @@ TEST(GoogleUtilTest, BadSearches) {
   // Empty URL is invalid.
   EXPECT_FALSE(IsSearch(std::string()));
 
-  const std::string patterns[] = {"%s://google.com", "%s://www.google.com",
-                                  "%s://www.google.com/search",
-                                  "%s://www.google.com/search?"};
+  constexpr const char* kPatterns[] = {"google.com", "www.google.com",
+                                       "www.google.com/search",
+                                       "www.google.com/search?"};
 
-  for (const std::string& pattern : patterns) {
-    for (const std::string& scheme : kValidSearchSchemes) {
-      EXPECT_FALSE(
-          IsSearch(base::StringPrintf(pattern.c_str(), scheme.c_str())));
+  for (const char* pattern : kPatterns) {
+    for (const char* scheme : kValidSearchSchemes) {
+      EXPECT_FALSE(IsSearch(
+          base::StrCat({scheme, url::kStandardSchemeSeparator, pattern})));
     }
   }
 
-  const std::string patterns_q[] = {
+  constexpr struct {
+    const char* before_query_param;
+    const char* after_query_param;
+  } kPatternsQ[] = {
       // Home page searches without a hash fragment query parameter are invalid.
-      "%s://www.google.com/webhp?%s=something",
-      "%s://www.google.com/webhp?%s=something#no=good",
-      "%s://www.google.com/webhp?name=bob&%s=something",
-      "%s://www.google.com/?%s=something", "%s://www.google.com?%s=something",
+      {"www.google.com/webhp?", "=something"},
+      {"www.google.com/webhp?", "=something#no=good"},
+      {"www.google.com/webhp?name=bob&", "=something"},
+      {"www.google.com/?", "=something"},
+      {"www.google.com?", "=something"},
 
       // Some paths are outright invalid as searches.
-      "%s://www.google.com/notreal?%s=something",
-      "%s://www.google.com/chrome?%s=something",
-      "%s://www.google.com/search/nogood?%s=something",
-      "%s://www.google.com/webhp/nogood#%s=something",
+      {"www.google.com/notreal?", "=something"},
+      {"www.google.com/chrome?", "=something"},
+      {"www.google.com/search/nogood?", "=something"},
+      {"www.google.com/webhp/nogood#", "=something"},
 
       // Case sensitive paths.
-      "%s://www.google.com/SEARCH?%s=something",
-      "%s://www.google.com/WEBHP#%s=something"};
+      {"www.google.com/SEARCH?", "=something"},
+      {"www.google.com/WEBHP#", "=something"}};
 
-  for (const std::string& pattern : patterns_q) {
-    for (const std::string& scheme : kValidSearchSchemes) {
-      for (const std::string& query_param : kValidSearchQueryParams) {
-        EXPECT_FALSE(IsSearch(base::StringPrintf(
-            pattern.c_str(), scheme.c_str(), query_param.c_str())));
+  for (const auto& pattern : kPatternsQ) {
+    for (const char* scheme : kValidSearchSchemes) {
+      for (const char* query_param : kValidSearchQueryParams) {
+        EXPECT_FALSE(IsSearch(base::StrCat(
+            {scheme, url::kStandardSchemeSeparator, pattern.before_query_param,
+             query_param, pattern.after_query_param})));
       }
     }
   }

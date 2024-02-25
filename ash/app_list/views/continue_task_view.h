@@ -38,6 +38,8 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
                                     public views::ContextMenuController,
                                     public ui::SimpleMenuModel::Delegate,
                                     public SearchResultObserver {
+  METADATA_HEADER(ContinueTaskView, views::Button)
+
  public:
   // The type of result for the task.
   // These values are used for metrics and should not be changed.
@@ -47,8 +49,6 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
     kUnknown = 2,
     kMaxValue = kUnknown,
   };
-
-  METADATA_HEADER(ContinueTaskView);
 
   ContinueTaskView(AppListViewDelegate* view_delegate, bool tablet_mode);
   ContinueTaskView(const ContinueTaskView&) = delete;
@@ -110,13 +110,13 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   void LogMetricsOnResultRemoved();
 
   // The index of this view within a |SearchResultContainerView| that holds it.
-  absl::optional<int> index_in_container_;
+  std::optional<int> index_in_container_;
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> subtitle_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<SearchResult, ExperimentalAsh> result_ =
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> subtitle_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<SearchResult> result_ =
       nullptr;  // Owned by SearchModel::SearchResults.
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;

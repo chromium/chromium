@@ -38,12 +38,16 @@ def copy_file(src, dst):
   return None
 
 
+_DOC_LINK = ('https://chromium.googlesource.com/chromium/src'
+             '/+/HEAD/infra/config/targets#tests-in-starlark')
+
+
 def check_file(src, dst):
   if os.path.exists(dst) and filecmp.cmp(src, dst):
     return None
   return ('files in //testing/buildbot differ from those in'
-          ' //infra/config/generated/testing,'
-          ' please run //infra/config/scripts/sync-pyl-files.py')
+          f' //infra/config/generated/testing, see {_DOC_LINK} for information'
+          ' on the process for updating pyl files')
 
 
 def parse_args(argv):
@@ -58,7 +62,12 @@ def parse_args(argv):
 
 
 def main(args):
-  for f in ('gn_isolate_map.pyl', 'mixins.pyl', 'variants.pyl'):
+  for f in (
+      'gn_isolate_map.pyl',
+      'mixins.pyl',
+      'test_suites.pyl',
+      'variants.pyl',
+  ):
     error = args.func(os.path.normpath(f'{GENERATED_TESTING_DIR}/{f}'),
                       os.path.normpath(f'{TESTING_BUILDBOT_DIR}/{f}'))
     if error is not None:

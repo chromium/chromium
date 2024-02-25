@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
@@ -74,7 +75,7 @@ class TouchModeMouseRewriter : public aura::WindowObserver,
   base::TimeDelta scroll_timeout_;
 
   std::multiset<aura::WindowTreeHost*> hosts_;
-  std::set<const aura::Window*> enabled_windows_;
+  std::set<raw_ptr<const aura::Window, SetExperimental>> enabled_windows_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};

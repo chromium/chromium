@@ -61,8 +61,7 @@ class ASH_EXPORT AssistantWebUiController : public views::WidgetObserver,
   AssistantWebViewDelegateImpl view_delegate_;
 
   // Owned by view hierarchy.
-  raw_ptr<AssistantWebContainerView, ExperimentalAsh> web_container_view_ =
-      nullptr;
+  raw_ptr<AssistantWebContainerView> web_container_view_ = nullptr;
 
   // Observes key press events on the |web_container_view_|.
   std::unique_ptr<AssistantWebContainerEventObserver> event_observer_;

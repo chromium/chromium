@@ -14,16 +14,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for the {@link PlayerFrameViewport} class.
- */
+/** Tests for the {@link PlayerFrameViewport} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayerFrameViewportTest {
     private static final float TOLERANCE = 0.001f;
 
-    /**
-     * Tests that viewport size is set/get correctly.
-     */
+    /** Tests that viewport size is set/get correctly. */
     @Test
     public void testViewportSize() {
         PlayerFrameViewport viewport = new PlayerFrameViewport();
@@ -45,9 +41,7 @@ public class PlayerFrameViewportTest {
         Assert.assertEquals(200, visibleRect.height());
     }
 
-    /**
-     * Tests that viewport size is set/get correctly.
-     */
+    /** Tests that viewport size is set/get correctly. */
     @Test
     public void testVisibleViewport() {
         PlayerFrameViewport viewport = new PlayerFrameViewport();
@@ -97,9 +91,7 @@ public class PlayerFrameViewportTest {
         Assert.assertTrue(viewport.isVisible(true));
     }
 
-    /**
-     * Tests that bitmap tile size is set correctly.
-     */
+    /** Tests that bitmap tile size is set correctly. */
     @Test
     public void testBitmapTileSize() {
         PlayerFrameViewport viewport = new PlayerFrameViewport();
@@ -129,9 +121,7 @@ public class PlayerFrameViewportTest {
         Assert.assertEquals(2500, tileSize.getHeight());
     }
 
-    /**
-     * Tests that viewport translation is set/get correctly.
-     */
+    /** Tests that viewport translation is set/get correctly. */
     @Test
     public void testViewportTranslation() {
         PlayerFrameViewport viewport = new PlayerFrameViewport();
@@ -168,9 +158,7 @@ public class PlayerFrameViewportTest {
         Assert.assertEquals(200, viewportRect.height());
     }
 
-    /**
-     * Tests that viewport scaling works correctly.
-     */
+    /** Tests that viewport scaling works correctly. */
     @Test
     public void testViewportScaling() {
         PlayerFrameViewport viewport = new PlayerFrameViewport();

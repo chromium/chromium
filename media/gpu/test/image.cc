@@ -21,8 +21,7 @@ namespace {
 // Resolve the specified test file path to an absolute path. The path can be
 // either an absolute path, a path relative to the current directory, or a path
 // relative to the test data path.
-absl::optional<base::FilePath> ResolveFilePath(
-    const base::FilePath& file_path) {
+std::optional<base::FilePath> ResolveFilePath(const base::FilePath& file_path) {
   base::FilePath resolved_path = file_path;
 
   // Try to resolve the path into an absolute path. If the path doesn't exist,
@@ -35,8 +34,8 @@ absl::optional<base::FilePath> ResolveFilePath(
   }
 
   return PathExists(resolved_path)
-             ? absl::optional<base::FilePath>(resolved_path)
-             : absl::nullopt;
+             ? std::optional<base::FilePath>(resolved_path)
+             : std::nullopt;
 }
 
 // Converts the |pixel_format| string into a VideoPixelFormat.
@@ -75,7 +74,7 @@ bool Image::Load() {
   DCHECK(!file_path_.empty());
   DCHECK(!IsLoaded());
 
-  absl::optional<base::FilePath> resolved_path = ResolveFilePath(file_path_);
+  std::optional<base::FilePath> resolved_path = ResolveFilePath(file_path_);
   if (!resolved_path) {
     LOG(ERROR) << "Image file not found: " << file_path_;
     return false;
@@ -95,7 +94,7 @@ bool Image::Load() {
 
   // Verify that the image's checksum matches the checksum in the metadata.
   base::MD5Digest digest;
-  base::MD5Sum(mapped_file_.data(), mapped_file_.length(), &digest);
+  base::MD5Sum(mapped_file_.bytes(), &digest);
   if (base::MD5DigestToBase16(digest) != checksum_) {
     LOG(ERROR) << "Image checksum not matching metadata";
     return false;
@@ -114,7 +113,7 @@ bool Image::LoadMetadata() {
   }
 
   base::FilePath json_path = file_path_.AddExtension(kMetadataSuffix);
-  absl::optional<base::FilePath> resolved_path = ResolveFilePath(json_path);
+  std::optional<base::FilePath> resolved_path = ResolveFilePath(json_path);
   if (!resolved_path) {
     LOG(ERROR) << "Image metadata file not found: " << json_path;
     return false;
@@ -154,12 +153,12 @@ bool Image::LoadMetadata() {
   }
 
   // Get the image dimensions from the json data.
-  absl::optional<int> width = metadata.FindInt("width");
+  std::optional<int> width = metadata.FindInt("width");
   if (!width.has_value()) {
     VLOGF(1) << "Key \"width\" is not found in " << json_path;
     return false;
   }
-  absl::optional<int> height = metadata.FindInt("height");
+  std::optional<int> height = metadata.FindInt("height");
   if (!height) {
     VLOGF(1) << "Key \"height\" is not found in " << json_path;
     return false;
@@ -187,7 +186,7 @@ bool Image::LoadMetadata() {
   }
 
   // Get the image rotation info from the json data.
-  absl::optional<int> rotation = metadata.FindInt("rotation");
+  std::optional<int> rotation = metadata.FindInt("rotation");
   if (!rotation.has_value()) {
     // Default rotation value is VIDEO_ROTATION_0
     rotation_ = VIDEO_ROTATION_0;

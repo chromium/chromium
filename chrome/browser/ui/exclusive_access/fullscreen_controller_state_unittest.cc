@@ -449,7 +449,7 @@ TEST_F(FullscreenControllerStateUnitTest,
   GetFullscreenController()->RunOrDeferUntilTransitionIsComplete(
       base::BindLambdaForTesting([&lambda_called]() { lambda_called = true; }));
   EXPECT_FALSE(lambda_called);
-  GetFullscreenController()->FullscreenTransititionCompleted();
+  GetFullscreenController()->FullscreenTransitionCompleted();
   EXPECT_TRUE(lambda_called);
 }
 
@@ -822,8 +822,7 @@ TEST_F(FullscreenControllerStateUnitTest, TabToBrowserFullscreenCausesResize) {
 
   // The second parameter in DidToggleFullscreenModeForTab should be false,
   // indicating that the fullscreen change will *not* cause a resize.
-  EXPECT_CALL(fullscreenObserver,
-              DidToggleFullscreenModeForTab(false, false));
+  EXPECT_CALL(fullscreenObserver, DidToggleFullscreenModeForTab(false, false));
   ASSERT_TRUE(InvokeEvent(EXIT_TAB_FULLSCREEN));
   testing::Mock::VerifyAndClearExpectations(&fullscreenObserver);
 
@@ -840,8 +839,7 @@ TEST_F(FullscreenControllerStateUnitTest, TabToBrowserFullscreenCausesResize) {
 
   // The second parameter in DidToggleFullscreenModeForTab should now be true,
   // indicating that the fullscreen change *will* cause a resize.
-  EXPECT_CALL(fullscreenObserver,
-              DidToggleFullscreenModeForTab(false, true));
+  EXPECT_CALL(fullscreenObserver, DidToggleFullscreenModeForTab(false, true));
   ASSERT_TRUE(InvokeEvent(EXIT_TAB_FULLSCREEN));
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   testing::Mock::VerifyAndClearExpectations(&fullscreenObserver);

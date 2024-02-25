@@ -28,7 +28,6 @@ inline constexpr char kGuestOsRegistry[] = "crostini.registry";
 
 // Keys for the |kGuestOsRegistry| Dictionary stored in prefs for each app.
 inline constexpr char kAppDesktopFileIdKey[] = "desktop_file_id";
-inline constexpr char kAppCommentKey[] = "comment";
 inline constexpr char kAppExtensionsKey[] = "extensions";
 inline constexpr char kAppMimeTypesKey[] = "mime_types";
 inline constexpr char kAppKeywordsKey[] = "keywords";

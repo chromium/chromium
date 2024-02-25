@@ -10,10 +10,10 @@
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 
 namespace blink {
 
@@ -28,9 +28,9 @@ void AutomaticGridFocusgroupStructureInfo::Trace(Visitor* visitor) const {
   visitor->Trace(table_);
 }
 
-const LayoutNGTable* AutomaticGridFocusgroupStructureInfo::Table() {
+const LayoutTable* AutomaticGridFocusgroupStructureInfo::Table() {
   CHECK(table_->IsTable());
-  return To<LayoutNGTable>(table_.Get());
+  return To<LayoutTable>(table_.Get());
 }
 
 Element* AutomaticGridFocusgroupStructureInfo::Root() {
@@ -44,17 +44,13 @@ FocusgroupFlags AutomaticGridFocusgroupStructureInfo::Flags() {
 unsigned AutomaticGridFocusgroupStructureInfo::ColumnCount() {
   // The actual column count of a table is not stored on an HTMLTableElement,
   // but it is on its associated layout object.
-  auto* section = Table()->FirstSection();
-  if (!section)
-    return 0;
-
-  return section->NumEffectiveColumns();
+  return Table()->EffectiveColumnCount();
 }
 
 Element* AutomaticGridFocusgroupStructureInfo::PreviousCellInRow(
     const Element* cell_element) {
   DCHECK(cell_element);
-  auto* cell = DynamicTo<LayoutNGTableCell>(cell_element->GetLayoutObject());
+  auto* cell = DynamicTo<LayoutTableCell>(cell_element->GetLayoutObject());
   if (!cell)
     return nullptr;
 
@@ -73,7 +69,7 @@ Element* AutomaticGridFocusgroupStructureInfo::PreviousCellInRow(
 Element* AutomaticGridFocusgroupStructureInfo::NextCellInRow(
     const Element* cell_element) {
   DCHECK(cell_element);
-  auto* cell = DynamicTo<LayoutNGTableCell>(cell_element->GetLayoutObject());
+  auto* cell = DynamicTo<LayoutTableCell>(cell_element->GetLayoutObject());
   if (!cell)
     return nullptr;
 
@@ -98,8 +94,9 @@ Element* AutomaticGridFocusgroupStructureInfo::NextCellInRow(
 
 Element* AutomaticGridFocusgroupStructureInfo::FirstCellInRow(Element* row) {
   DCHECK(row);
-  if (!IsA<LayoutNGTableRow>(row->GetLayoutObject()))
+  if (!IsA<LayoutTableRow>(row->GetLayoutObject())) {
     return nullptr;
+  }
 
   return CellAtIndexInRow(0, row,
                           NoCellFoundAtIndexBehavior::kFindNextCellInRow);
@@ -107,8 +104,9 @@ Element* AutomaticGridFocusgroupStructureInfo::FirstCellInRow(Element* row) {
 
 Element* AutomaticGridFocusgroupStructureInfo::LastCellInRow(Element* row) {
   DCHECK(row);
-  if (!IsA<LayoutNGTableRow>(row->GetLayoutObject()))
+  if (!IsA<LayoutTableRow>(row->GetLayoutObject())) {
     return nullptr;
+  }
 
   return CellAtIndexInRow(ColumnCount() - 1, row,
                           NoCellFoundAtIndexBehavior::kFindPreviousCellInRow);
@@ -120,7 +118,7 @@ unsigned AutomaticGridFocusgroupStructureInfo::ColumnIndexForCell(
 
   // The actual column index takes into account the previous rowspan/colspan
   // values that might affect this cell's col index.
-  auto* cell = DynamicTo<LayoutNGTableCell>(cell_element->GetLayoutObject());
+  auto* cell = DynamicTo<LayoutTableCell>(cell_element->GetLayoutObject());
   if (!cell)
     return 0;
 
@@ -130,7 +128,7 @@ unsigned AutomaticGridFocusgroupStructureInfo::ColumnIndexForCell(
 Element* AutomaticGridFocusgroupStructureInfo::PreviousCellInColumn(
     const Element* cell_element) {
   DCHECK(cell_element);
-  auto* cell = DynamicTo<LayoutNGTableCell>(cell_element->GetLayoutObject());
+  auto* cell = DynamicTo<LayoutTableCell>(cell_element->GetLayoutObject());
   if (!cell) {
     return nullptr;
   }
@@ -156,7 +154,7 @@ Element* AutomaticGridFocusgroupStructureInfo::NextCellInColumn(
     const Element* cell_element) {
   DCHECK(cell_element);
 
-  auto* cell = DynamicTo<LayoutNGTableCell>(cell_element->GetLayoutObject());
+  auto* cell = DynamicTo<LayoutTableCell>(cell_element->GetLayoutObject());
   if (!cell)
     return nullptr;
 
@@ -201,7 +199,7 @@ Element* AutomaticGridFocusgroupStructureInfo::LastCellInColumn(
 Element* AutomaticGridFocusgroupStructureInfo::PreviousRow(
     Element* row_element) {
   DCHECK(row_element);
-  auto* row = DynamicTo<LayoutNGTableRow>(row_element->GetLayoutObject());
+  auto* row = DynamicTo<LayoutTableRow>(row_element->GetLayoutObject());
   if (!row)
     return nullptr;
 
@@ -214,7 +212,7 @@ Element* AutomaticGridFocusgroupStructureInfo::PreviousRow(
 
 Element* AutomaticGridFocusgroupStructureInfo::NextRow(Element* row_element) {
   DCHECK(row_element);
-  auto* row = DynamicTo<LayoutNGTableRow>(row_element->GetLayoutObject());
+  auto* row = DynamicTo<LayoutTableRow>(row_element->GetLayoutObject());
   if (!row)
     return nullptr;
 
@@ -256,7 +254,7 @@ Element* AutomaticGridFocusgroupStructureInfo::LastRow() {
 
 Element* AutomaticGridFocusgroupStructureInfo::RowForCell(
     Element* cell_element) {
-  auto* cell = DynamicTo<LayoutNGTableCell>(cell_element->GetLayoutObject());
+  auto* cell = DynamicTo<LayoutTableCell>(cell_element->GetLayoutObject());
   if (!cell) {
     return nullptr;
   }
@@ -272,7 +270,7 @@ Element* AutomaticGridFocusgroupStructureInfo::CellAtIndexInRow(
     unsigned index,
     Element* row_element,
     NoCellFoundAtIndexBehavior behavior) {
-  auto* row = DynamicTo<LayoutNGTableRow>(row_element->GetLayoutObject());
+  auto* row = DynamicTo<LayoutTableRow>(row_element->GetLayoutObject());
   if (!row) {
     return nullptr;
   }
@@ -328,10 +326,10 @@ Element* AutomaticGridFocusgroupStructureInfo::CellAtIndexInRow(
   return DynamicTo<Element>(cell->GetNode());
 }
 
-LayoutNGTableRow* AutomaticGridFocusgroupStructureInfo::PreviousRow(
-    LayoutNGTableRow* current_row) {
+LayoutTableRow* AutomaticGridFocusgroupStructureInfo::PreviousRow(
+    LayoutTableRow* current_row) {
   auto* current_section = current_row->Section();
-  LayoutNGTableRow* previous_row = current_row->PreviousRow();
+  LayoutTableRow* previous_row = current_row->PreviousRow();
 
   // Here, it's possible the previous row has no cells at all if the nth
   // previous row has a rowspan attribute of value n + 1 and a colspan value
@@ -359,10 +357,10 @@ LayoutNGTableRow* AutomaticGridFocusgroupStructureInfo::PreviousRow(
   return previous_row;
 }
 
-LayoutNGTableRow* AutomaticGridFocusgroupStructureInfo::NextRow(
-    LayoutNGTableRow* current_row) {
+LayoutTableRow* AutomaticGridFocusgroupStructureInfo::NextRow(
+    LayoutTableRow* current_row) {
   auto* current_section = current_row->Section();
-  LayoutNGTableRow* next_row = current_row->NextRow();
+  LayoutTableRow* next_row = current_row->NextRow();
 
   // Here, it's possible the next row has no cells at all if the current row (or
   // a previous sibling) has a rowspan attribute that encapsulates the next row
@@ -390,11 +388,11 @@ LayoutNGTableRow* AutomaticGridFocusgroupStructureInfo::NextRow(
   return next_row;
 }
 
-LayoutNGTableCell*
+LayoutTableCell*
 AutomaticGridFocusgroupStructureInfo::TableCellAtIndexInRowRecursive(
     unsigned index,
-    LayoutNGTableRow* row,
-    absl::optional<unsigned> expected_rowspan) {
+    LayoutTableRow* row,
+    std::optional<unsigned> expected_rowspan) {
   if (!row)
     return nullptr;
 
@@ -410,7 +408,7 @@ AutomaticGridFocusgroupStructureInfo::TableCellAtIndexInRowRecursive(
     auto* table_cell =
         DynamicTo<HTMLTableCellElement>(table_row->cells()->item(index));
     if (table_cell) {
-      cell = To<LayoutNGTableCell>(table_cell->GetLayoutObject());
+      cell = To<LayoutTableCell>(table_cell->GetLayoutObject());
     }
   }
 

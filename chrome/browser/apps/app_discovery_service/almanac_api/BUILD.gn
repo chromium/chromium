@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "launcher_app.proto" ]
+
+  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+}
+
+# Note that unlike the .cc and .h pb files the descriptor is generated in
+# "$root_gen_dir/launcher_app.descriptor" unless we specify proto_out_dir
+# because of the way we set proto_in_dir.
+# Check third_party/protobuf/proto_library.gni for more details.
+proto_library("launcher_app_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "chrome/browser/apps/app_discovery_service/almanac_api"
+  sources = [ "launcher_app.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "launcher_app.descriptor"
+  proto_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+}

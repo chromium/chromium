@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/modules/eventsource/event_source_parser.h"
 
+#include <string.h>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/eventsource/event_source.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
-
-#include <string.h>
 
 namespace blink {
 
@@ -107,6 +108,7 @@ class EventSourceParserTest : public testing::Test {
 
   EventSourceParser* Parser() { return parser_; }
 
+  test::TaskEnvironment task_environment_;
   Persistent<Client> client_;
   Persistent<EventSourceParser> parser_;
 };
@@ -373,6 +375,7 @@ TEST_F(EventSourceParserTest, InvalidUTF8Sequence) {
 }
 
 TEST(EventSourceParserStoppingTest, StopWhileParsing) {
+  test::TaskEnvironment task_environment;
   StoppingClient* client = MakeGarbageCollected<StoppingClient>();
   EventSourceParser* parser =
       MakeGarbageCollected<EventSourceParser>(AtomicString(), client);

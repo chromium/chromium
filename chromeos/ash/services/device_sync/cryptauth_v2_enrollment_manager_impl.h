@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_ENROLLMENT_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_scheduler.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -111,7 +111,7 @@ class CryptAuthV2EnrollmentManagerImpl
   void Start() override;
   void ForceEnrollmentNow(
       cryptauth::InvocationReason invocation_reason,
-      const absl::optional<std::string>& session_id) override;
+      const std::optional<std::string>& session_id) override;
   bool IsEnrollmentValid() const override;
   base::Time GetLastEnrollmentTime() const override;
   base::TimeDelta GetTimeToNextAttempt() const override;
@@ -122,13 +122,13 @@ class CryptAuthV2EnrollmentManagerImpl
 
   // CryptAuthScheduler::EnrollmentDelegate:
   void OnEnrollmentRequested(const cryptauthv2::ClientMetadata& client_metadata,
-                             const absl::optional<cryptauthv2::PolicyReference>&
+                             const std::optional<cryptauthv2::PolicyReference>&
                                  client_directive_policy_reference) override;
 
   // CryptAuthGCMManager::Observer:
   void OnReenrollMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type) override;
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type) override;
 
   void Enroll();
   void OnEnrollmentFinished(const CryptAuthEnrollmentResult& enrollment_result);
@@ -142,17 +142,17 @@ class CryptAuthV2EnrollmentManagerImpl
   void AddV1UserKeyPairToRegistryIfNecessary();
 
   cryptauthv2::ClientAppMetadata client_app_metadata_;
-  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> key_registry_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_;
-  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_;
-  raw_ptr<CryptAuthScheduler, ExperimentalAsh> scheduler_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<CryptAuthKeyRegistry> key_registry_;
+  raw_ptr<CryptAuthClientFactory> client_factory_;
+  raw_ptr<CryptAuthGCMManager> gcm_manager_;
+  raw_ptr<CryptAuthScheduler> scheduler_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<base::Clock> clock_;
 
   bool initial_v1_and_v2_user_key_pairs_disagree_ = false;
 
-  absl::optional<cryptauthv2::ClientMetadata> current_client_metadata_;
-  absl::optional<cryptauthv2::PolicyReference>
+  std::optional<cryptauthv2::ClientMetadata> current_client_metadata_;
+  std::optional<cryptauthv2::PolicyReference>
       client_directive_policy_reference_;
   std::unique_ptr<CryptAuthV2Enroller> enroller_;
 

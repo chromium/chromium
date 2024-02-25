@@ -243,7 +243,7 @@ Notification* MessageCenterImpl::FindParentNotification(
       if (notifications.size() < 4) {
         return nullptr;
       }
-      for (auto* n : notifications) {
+      for (Notification* n : notifications) {
         if (n->group_parent() || n->group_child()) {
           continue;
         }
@@ -521,7 +521,7 @@ void MessageCenterImpl::ClickOnNotification(const std::string& id) {
 
   lock_screen_controller_->DismissLockScreenThenExecute(
       base::BindOnce(&MessageCenterImpl::ClickOnNotificationUnlocked,
-                     base::Unretained(this), id, absl::nullopt, absl::nullopt),
+                     base::Unretained(this), id, std::nullopt, std::nullopt),
       base::OnceClosure());
 }
 
@@ -534,7 +534,7 @@ void MessageCenterImpl::ClickOnNotificationButton(const std::string& id,
 
   lock_screen_controller_->DismissLockScreenThenExecute(
       base::BindOnce(&MessageCenterImpl::ClickOnNotificationUnlocked,
-                     base::Unretained(this), id, button_index, absl::nullopt),
+                     base::Unretained(this), id, button_index, std::nullopt),
       base::OnceClosure());
 }
 
@@ -555,8 +555,8 @@ void MessageCenterImpl::ClickOnNotificationButtonWithReply(
 
 void MessageCenterImpl::ClickOnNotificationUnlocked(
     const std::string& id,
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This method must be called under unlocked screen.
@@ -592,7 +592,7 @@ void MessageCenterImpl::ClickOnSettingsButton(const std::string& id) {
   Notification* notification = notification_list_->GetNotificationById(id);
 
   bool handled_by_delegate =
-      notification &&
+      notification && notification->delegate() &&
       (notification->rich_notification_data().settings_button_handler ==
        SettingsButtonHandler::DELEGATE);
   if (handled_by_delegate) {
@@ -601,6 +601,17 @@ void MessageCenterImpl::ClickOnSettingsButton(const std::string& id) {
 
   for (MessageCenterObserver& observer : observer_list_) {
     observer.OnNotificationSettingsClicked(handled_by_delegate);
+  }
+}
+
+void MessageCenterImpl::ClickOnSnoozeButton(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  Notification* notification = notification_list_->GetNotificationById(id);
+
+  bool handled_by_delegate =
+      notification && notification_list_->GetNotificationDelegate(id);
+  if (handled_by_delegate) {
+    notification->delegate()->SnoozeButtonClicked();
   }
 }
 
@@ -669,15 +680,22 @@ void MessageCenterImpl::DisplayedNotification(const std::string& id,
   }
 }
 
-void MessageCenterImpl::SetQuietMode(bool in_quiet_mode) {
+void MessageCenterImpl::SetQuietMode(bool in_quiet_mode,
+                                     QuietModeSourceType type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (in_quiet_mode != notification_list_->quiet_mode()) {
+    last_quiet_mode_change_source_type_ = type;
     notification_list_->SetQuietMode(in_quiet_mode);
     for (MessageCenterObserver& observer : observer_list_) {
       observer.OnQuietModeChanged(in_quiet_mode);
     }
   }
   quiet_mode_timer_.Stop();
+}
+
+QuietModeSourceType MessageCenterImpl::GetLastQuietModeChangeSourceType()
+    const {
+  return last_quiet_mode_change_source_type_;
 }
 
 void MessageCenterImpl::SetSpokenFeedbackEnabled(bool enabled) {
@@ -696,9 +714,10 @@ void MessageCenterImpl::EnterQuietModeWithExpire(
   }
 
   // This will restart the timer if it is already running.
-  quiet_mode_timer_.Start(FROM_HERE, expires_in,
-                          base::BindOnce(&MessageCenterImpl::SetQuietMode,
-                                         base::Unretained(this), false));
+  quiet_mode_timer_.Start(
+      FROM_HERE, expires_in,
+      base::BindOnce(&MessageCenterImpl::SetQuietMode, base::Unretained(this),
+                     false, QuietModeSourceType::kUserAction));
 }
 
 void MessageCenterImpl::RestartPopupTimers() {

@@ -60,14 +60,14 @@ void SerialDeviceEnumerator::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-absl::optional<base::FilePath> SerialDeviceEnumerator::GetPathFromToken(
+std::optional<base::FilePath> SerialDeviceEnumerator::GetPathFromToken(
     const base::UnguessableToken& token,
     bool use_alternate_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = ports_.find(token);
   if (it == ports_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
 #if BUILDFLAG(IS_MAC)
   if (use_alternate_path)

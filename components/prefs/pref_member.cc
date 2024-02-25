@@ -46,8 +46,8 @@ void PrefMemberBase::Init(const std::string& pref_name, PrefService* prefs) {
 void PrefMemberBase::Destroy() {
   if (prefs_ && !pref_name_.empty()) {
     prefs_->RemovePrefObserver(pref_name_, this);
-    prefs_ = nullptr;
   }
+  prefs_ = nullptr;
 }
 
 void PrefMemberBase::MoveToSequence(
@@ -208,7 +208,7 @@ template <>
 bool PrefMember<base::FilePath>::Internal::UpdateValueInternal(
     const base::Value& value)
     const {
-  absl::optional<base::FilePath> path = base::ValueToFilePath(value);
+  std::optional<base::FilePath> path = base::ValueToFilePath(value);
   if (!path)
     return false;
   value_ = *path;

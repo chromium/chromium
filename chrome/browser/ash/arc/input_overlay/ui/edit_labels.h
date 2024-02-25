@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
@@ -21,6 +22,8 @@ class NameTag;
 
 // EditLabels wraps the input labels belonging to one action.
 class EditLabels : public views::View {
+  METADATA_HEADER(EditLabels, views::View)
+
  public:
   // Create key layout view depending on action type.
   // ActionTap for keyboard binding:
@@ -38,12 +41,12 @@ class EditLabels : public views::View {
       DisplayOverlayController* controller,
       Action* action,
       NameTag* name_tag,
-      bool set_title);
+      bool for_editing_list);
 
   EditLabels(DisplayOverlayController* controller,
              Action* action,
              NameTag* name_tag,
-             bool set_title);
+             bool for_editing_list);
 
   EditLabels(const EditLabels&) = delete;
   EditLabels& operator=(const EditLabels&) = delete;
@@ -52,9 +55,21 @@ class EditLabels : public views::View {
   void OnActionInputBindingUpdated();
 
   void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
+  void RemoveNewState();
+  // Called when this view is clicked upon.
+  void FocusLabel();
+
+  // Returns Action name, such as "Joystick wasd".
+  std::u16string CalculateActionName();
+  // Returns key list, such as "w, a, s, d" or "w".
+  std::u16string CalculateKeyListForA11yLabel() const;
+
+  void PerformPulseAnimationOnFirstLabel();
 
  private:
+  friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
+  friend class OverlayViewTestBase;
 
   void Init();
   void InitForActionTapKeyboard();
@@ -62,22 +77,17 @@ class EditLabels : public views::View {
 
   // Called when `labels_` is initiated or changes the content.
   void UpdateNameTag();
-  // Called when the editing list is first loaded to assign name labels to
-  // name tags, if available.
-  void UpdateNameTagTitle();
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
   // Displays the content in `labels_`.
   raw_ptr<NameTag, DanglingUntriaged> name_tag_ = nullptr;
+  const bool for_editing_list_ = false;
 
-  std::vector<EditLabel*> labels_;
+  std::vector<raw_ptr<EditLabel, VectorExperimental>> labels_;
 
   // It is true that at least one of `labels_` is unassigned.
   bool missing_assign_ = false;
-
-  // Allows for title modification if true.
-  bool set_title_ = false;
 };
 }  // namespace arc::input_overlay
 

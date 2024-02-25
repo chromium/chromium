@@ -36,7 +36,7 @@ void BluetoothLowEnergyScanSessionFloss::OnActivate(uint8_t scanner_id,
   }
 
   has_activated_ = true;
-  delegate_->OnSessionStarted(this, /*error_code=*/absl::nullopt);
+  delegate_->OnSessionStarted(this, /*error_code=*/std::nullopt);
 }
 
 void BluetoothLowEnergyScanSessionFloss::OnRelease() {
@@ -76,10 +76,10 @@ void BluetoothLowEnergyScanSessionFloss::OnRegistered(
   uuid_ = uuid;
 }
 
-absl::optional<ScanFilter>
+std::optional<ScanFilter>
 BluetoothLowEnergyScanSessionFloss::GetFlossScanFilter() {
   if (!filter_)
-    return absl::nullopt;
+    return std::nullopt;
 
   ScanFilter filter;
   filter.rssi_high_threshold = filter_->device_found_rssi_threshold();

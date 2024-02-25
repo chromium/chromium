@@ -27,8 +27,8 @@ void EncodeVarInt(int64_t from, std::string* into) {
   into->append(temp, temp_index);
 }
 
-bool DecodeVarInt(base::StringPiece* from, int64_t* into) {
-  base::StringPiece::const_iterator it = from->begin();
+bool DecodeVarInt(std::string_view* from, int64_t* into) {
+  std::string_view::const_iterator it = from->begin();
   int shift = 0;
   uint64_t ret = 0;
   do {

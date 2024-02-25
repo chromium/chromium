@@ -12,12 +12,10 @@ import android.view.SurfaceControl;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
-/**
- * A wrapper for marshalling a Surface without self-destruction.
- */
+/** A wrapper for marshalling a Surface without self-destruction. */
 @JNINamespace("content")
 public class SurfaceWrapper implements Parcelable {
     private final boolean mWrapsSurface;

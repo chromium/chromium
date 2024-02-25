@@ -29,7 +29,7 @@ class FullRestoreDataHandler : public apps::AppRegistryCache::Observer {
       apps::AppRegistryCache* cache) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

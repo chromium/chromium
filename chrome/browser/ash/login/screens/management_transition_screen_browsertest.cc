@@ -124,14 +124,14 @@ class ManagementTransitionScreenTest
 
   bool use_managed_account() { return GetParam().use_managed_account; }
 
-  absl::optional<AccountId> GetAccountId() {
+  std::optional<AccountId> GetAccountId() {
     if (use_managed_account()) {
       return AccountId::FromUserEmailGaiaId(
           FakeGaiaMixin::kEnterpriseUser1,
           FakeGaiaMixin::kEnterpriseUser1GaiaId);
     }
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  protected:

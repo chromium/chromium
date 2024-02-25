@@ -35,7 +35,7 @@ class ASH_EXPORT DictationNudge : public SystemNudge {
   friend class DictationNudgeControllerTest;
 
   // Unowned. The DictationNudgeController owns |this|.
-  const raw_ptr<const DictationNudgeController, ExperimentalAsh> controller_;
+  const raw_ptr<const DictationNudgeController> controller_;
 };
 
 }  // namespace ash

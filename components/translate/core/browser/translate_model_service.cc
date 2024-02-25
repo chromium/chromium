@@ -62,7 +62,7 @@ TranslateModelService::TranslateModelService(
     : opt_guide_(opt_guide), background_task_runner_(background_task_runner) {
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      /*model_metadata=*/absl::nullopt, this);
+      /*model_metadata=*/std::nullopt, this);
 }
 
 TranslateModelService::~TranslateModelService() {

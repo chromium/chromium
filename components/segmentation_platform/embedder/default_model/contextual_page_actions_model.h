@@ -24,6 +24,8 @@ class ContextualPageActionsModel : public DefaultModelProvider {
   std::unique_ptr<ModelConfig> GetModelConfig() override;
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
+
+  static const int64_t kShareOutputCollectionDelayInSec = 300;
 };
 
 }  // namespace segmentation_platform

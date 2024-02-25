@@ -107,4 +107,16 @@ void H265DPB::AppendReferencePics(H265Picture::Vector* out) {
   }
 }
 
+std::set<uint32_t> H265DPB::GetBufferIdsInUse() const {
+  std::set<uint32_t> buffer_ids_in_use;
+
+  for (const auto& pic : pics_) {
+    if (pic->reference_type_ != H265Picture::kUnused || !pic->outputted_) {
+      buffer_ids_in_use.insert(pic->capture_queue_buffer_id_);
+    }
+  }
+
+  return buffer_ids_in_use;
+}
+
 }  // namespace media::v4l2_test

@@ -14,11 +14,23 @@
 
 #include "dpf/internal/proto_validator.h"
 
+#include <stdint.h>
+
+#include <cmath>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
+#include "dpf/distributed_point_function.pb.h"
 #include "dpf/internal/proto_validator_test_textproto_embed.h"
 #include "dpf/internal/status_matchers.h"
 #include "dpf/tuple.h"
 #include "gmock/gmock.h"
+#include "google/protobuf/repeated_field.h"
 #include "google/protobuf/text_format.h"
 #include "gtest/gtest.h"
 

@@ -13,13 +13,12 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
-#include "ui/gfx/x/xproto_util.h"
+#include "ui/gfx/x/window_event_manager.h"
 
 namespace remoting {
 
@@ -27,7 +26,7 @@ namespace {
 
 // For X11, webrtc::ScreenId is implemented as a RANDR Monitor ID, which
 // requires XRANDR 1.5.
-constexpr int kMinRandrVersion = 105;
+constexpr std::pair<uint32_t, uint32_t> kMinRandrVersion{1, 5};
 
 }  // namespace
 
@@ -75,7 +74,7 @@ class ActiveDisplayMonitorX11::Core : public x11::EventObserver {
 
   raw_ptr<x11::Connection> connection_ = nullptr;
 
-  std::unique_ptr<x11::XScopedEventSelector> root_window_event_selector_;
+  x11::ScopedEventSelector root_window_event_selector_;
 
   x11::Atom net_active_window_atom_{};
 
@@ -95,13 +94,14 @@ ActiveDisplayMonitorX11::Core::~Core() {
 
 void ActiveDisplayMonitorX11::Core::Init() {
   connection_ = x11::Connection::Get();
-  int xrandr_version = ui::GetXrandrVersion();
+  auto xrandr_version = connection_->randr_version();
   if (xrandr_version < kMinRandrVersion) {
-    LOG(ERROR) << "XRANDR version (" << xrandr_version << ") is unsupported.";
+    LOG(ERROR) << "XRANDR version (" << xrandr_version.first << ", "
+               << xrandr_version.second << ") is unsupported.";
     return;
   }
 
-  root_window_event_selector_ = std::make_unique<x11::XScopedEventSelector>(
+  root_window_event_selector_ = connection_->ScopedSelectEvent(
       ui::GetX11RootWindow(), x11::EventMask::PropertyChange);
 
   net_active_window_atom_ = x11::GetAtom("_NET_ACTIVE_WINDOW");
@@ -171,8 +171,8 @@ void ActiveDisplayMonitorX11::Core::GetAndSendActiveDisplay() {
 
 x11::Window ActiveDisplayMonitorX11::Core::GetFocusedWindow() const {
   x11::Window focused_window;
-  if (!x11::GetProperty(ui::GetX11RootWindow(), net_active_window_atom_,
-                        &focused_window)) {
+  if (!x11::Connection::Get()->GetPropertyAs(
+          ui::GetX11RootWindow(), net_active_window_atom_, &focused_window)) {
     LOG(ERROR) << "Failed to read _NET_ACTIVE_WINDOW on root window.";
     return x11::Window::None;
   }

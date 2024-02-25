@@ -14,6 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -31,6 +32,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -150,7 +152,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    WebAppToolbarButtonContainer::DisableAnimationForTesting();
+    WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
   }
 
   void InstallAndLaunchWebApp() {
@@ -161,7 +163,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
       web_app_info->theme_color = *theme_color_;
     }
 
-    web_app::AppId app_id = web_app::test::InstallWebApp(
+    webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetStartURL());
     navigation_observer.StartWatchingNewWebContents();
@@ -179,7 +181,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
     DCHECK(web_app_frame_toolbar_->GetVisible());
   }
 
-  absl::optional<SkColor> theme_color_ = SK_ColorBLUE;
+  std::optional<SkColor> theme_color_ = SK_ColorBLUE;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<BrowserFrameViewWin, AcrossTasksDanglingUntriaged> frame_view_ =
@@ -195,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, ThemeColor) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, NoThemeColor) {
-  theme_color_ = absl::nullopt;
+  theme_color_ = std::nullopt;
   InstallAndLaunchWebApp();
 
   EXPECT_EQ(
@@ -289,7 +291,7 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     web_app_info->title = u"A Web App";
     web_app_info->display_override = display_overrides;
 
-    web_app::AppId app_id = web_app::test::InstallWebApp(
+    webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
 
     content::TestNavigationObserver navigation_observer(start_url);
@@ -302,7 +304,7 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     // during testing.
     app_browser->app_controller()->SetOnUpdateDraggableRegionForTesting(
         loop.QuitClosure());
-    web_app::NavigateToURLAndWait(app_browser, start_url);
+    web_app::NavigateViaLinkClickToURLAndWait(app_browser, start_url);
     loop.Run();
     navigation_observer.WaitForNavigationFinished();
 
@@ -443,3 +445,43 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
   EXPECT_EQ(web_app_frame_toolbar->width(),
             web_app_frame_toolbar->get_right_container_for_testing()->width());
 }
+
+class WebAppBrowserFrameViewWinWebAppIconInTitlebarTest
+    : public WebAppBrowserFrameViewWinTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebAppBrowserFrameViewWinWebAppIconInTitlebarTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kWebAppIconInTitlebar);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kWebAppIconInTitlebar);
+    }
+  }
+  WebAppBrowserFrameViewWinWebAppIconInTitlebarTest(
+      const WebAppBrowserFrameViewWinWebAppIconInTitlebarTest&) = delete;
+  WebAppBrowserFrameViewWinWebAppIconInTitlebarTest& operator=(
+      const WebAppBrowserFrameViewWinWebAppIconInTitlebarTest&) = delete;
+
+  ~WebAppBrowserFrameViewWinWebAppIconInTitlebarTest() override = default;
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "Enabled" : "Disabled";
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that the icon is present if the feature is enabled.
+IN_PROC_BROWSER_TEST_P(WebAppBrowserFrameViewWinWebAppIconInTitlebarTest,
+                       WebAppIconInTitlebar) {
+  InstallAndLaunchWebApp();
+
+  ASSERT_EQ(GetParam(), frame_view_->window_icon_for_testing()->GetVisible());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppBrowserFrameViewWinWebAppIconInTitlebarTest,
+    testing::Bool(),
+    WebAppBrowserFrameViewWinWebAppIconInTitlebarTest::DescribeParams);

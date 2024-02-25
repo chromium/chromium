@@ -27,7 +27,8 @@ void GetServiceWorkerErrorTypeForRegistration(
     *out_message = blink::ServiceWorkerStatusToString(status);
   switch (status) {
     case blink::ServiceWorkerStatusCode::kOk:
-      NOTREACHED() << "Calling this when status == OK is not allowed";
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Calling this when status == OK is not allowed";
       return;
 
     case blink::ServiceWorkerStatusCode::kErrorInstallWorkerFailed:
@@ -86,8 +87,9 @@ void GetServiceWorkerErrorTypeForRegistration(
                           static_cast<uint32_t>(status));
   SCOPED_CRASH_KEY_STRING256("GetSWErrTypeForReg", "status_str",
                              blink::ServiceWorkerStatusToString(status));
-  NOTREACHED() << "Got unexpected error code: " << static_cast<uint32_t>(status)
-               << " " << blink::ServiceWorkerStatusToString(status);
+  DUMP_WILL_BE_NOTREACHED_NORETURN()
+      << "Got unexpected error code: " << static_cast<uint32_t>(status) << " "
+      << blink::ServiceWorkerStatusToString(status);
 }
 
 }  // namespace content

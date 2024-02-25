@@ -20,8 +20,8 @@ limitations under the License.
 
 #include "absl/container/flat_hash_map.h"  // from @com_google_absl
 #include "absl/container/flat_hash_set.h"  // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
-#include "absl/strings/string_view.h"      // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 
 namespace tflite {
@@ -49,8 +49,7 @@ struct LabelMapItem {
 // Returns an error e.g. if there's a mismatch between the number of labels and
 // display names.
 tflite::support::StatusOr<std::vector<LabelMapItem>> BuildLabelMapFromFiles(
-    absl::string_view labels_file,
-    absl::string_view display_names_file);
+    absl::string_view labels_file, absl::string_view display_names_file);
 
 // A class that represents a hierarchy of labels as specified in a label map.
 //

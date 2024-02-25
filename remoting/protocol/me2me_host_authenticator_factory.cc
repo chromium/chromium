@@ -4,14 +4,17 @@
 
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/negotiating_host_authenticator.h"
 #include "remoting/protocol/rejecting_authenticator.h"
 #include "remoting/protocol/token_validator.h"
@@ -21,45 +24,13 @@
 
 namespace remoting::protocol {
 
-// static
-std::unique_ptr<AuthenticatorFactory>
-Me2MeHostAuthenticatorFactory::CreateWithPin(
+Me2MeHostAuthenticatorFactory::Me2MeHostAuthenticatorFactory(
     const std::string& host_owner,
-    const std::string& local_cert,
-    scoped_refptr<RsaKeyPair> key_pair,
     std::vector<std::string> required_client_domain_list,
-    const std::string& pin_hash,
-    scoped_refptr<PairingRegistry> pairing_registry) {
-  std::unique_ptr<Me2MeHostAuthenticatorFactory> result(
-      new Me2MeHostAuthenticatorFactory());
-  result->canonical_host_owner_email_ = GetCanonicalEmail(host_owner);
-  result->local_cert_ = local_cert;
-  result->key_pair_ = key_pair;
-  result->required_client_domain_list_ = std::move(required_client_domain_list);
-  result->pin_hash_ = pin_hash;
-  result->pairing_registry_ = pairing_registry;
-  return std::move(result);
-}
-
-// static
-std::unique_ptr<AuthenticatorFactory>
-Me2MeHostAuthenticatorFactory::CreateWithThirdPartyAuth(
-    const std::string& host_owner,
-    const std::string& local_cert,
-    scoped_refptr<RsaKeyPair> key_pair,
-    std::vector<std::string> required_client_domain_list,
-    scoped_refptr<TokenValidatorFactory> token_validator_factory) {
-  std::unique_ptr<Me2MeHostAuthenticatorFactory> result(
-      new Me2MeHostAuthenticatorFactory());
-  result->canonical_host_owner_email_ = GetCanonicalEmail(host_owner);
-  result->local_cert_ = local_cert;
-  result->key_pair_ = key_pair;
-  result->required_client_domain_list_ = std::move(required_client_domain_list);
-  result->token_validator_factory_ = token_validator_factory;
-  return std::move(result);
-}
-
-Me2MeHostAuthenticatorFactory::Me2MeHostAuthenticatorFactory() = default;
+    std::unique_ptr<HostAuthenticationConfig> config)
+    : canonical_host_owner_email_(GetCanonicalEmail(host_owner)),
+      required_client_domain_list_(std::move(required_client_domain_list)),
+      config_(std::move(config)) {}
 
 Me2MeHostAuthenticatorFactory::~Me2MeHostAuthenticatorFactory() = default;
 
@@ -105,19 +76,13 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
     }
   }
 
-  if (!local_cert_.empty() && key_pair_.get()) {
+  if (!config_->local_cert.empty() && config_->key_pair.get()) {
     std::string normalized_local_jid = NormalizeSignalingId(local_jid);
     std::string normalized_remote_jid = NormalizeSignalingId(remote_jid);
 
-    if (token_validator_factory_) {
-      return NegotiatingHostAuthenticator::CreateWithThirdPartyAuth(
-          normalized_local_jid, normalized_remote_jid, local_cert_, key_pair_,
-          token_validator_factory_);
-    }
-
-    return NegotiatingHostAuthenticator::CreateWithSharedSecret(
-        normalized_local_jid, normalized_remote_jid, local_cert_, key_pair_,
-        pin_hash_, pairing_registry_);
+    return std::make_unique<NegotiatingHostAuthenticator>(
+        normalized_local_jid, normalized_remote_jid,
+        std::make_unique<HostAuthenticationConfig>(*config_));
   }
 
   return base::WrapUnique(new RejectingAuthenticator(

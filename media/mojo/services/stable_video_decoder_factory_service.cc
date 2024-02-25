@@ -46,7 +46,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
   // MojoMediaClient implementation.
   std::vector<SupportedVideoDecoderConfig> GetSupportedVideoDecoderConfigs()
       final {
-    absl::optional<std::vector<SupportedVideoDecoderConfig>> configs;
+    std::optional<std::vector<SupportedVideoDecoderConfig>> configs;
     switch (GetDecoderImplementationType()) {
       case VideoDecoderType::kVaapi:
       case VideoDecoderType::kV4L2:
@@ -124,7 +124,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
           std::move(log), target_color_space, gpu::GpuPreferences(),
           gpu_driver_bug_workarounds_,
           /*get_stub_cb=*/base::NullCallback(),
-          VideoDecodeAccelerator::Config::OutputMode::IMPORT);
+          VideoDecodeAccelerator::Config::OutputMode::kImport);
     } else {
       return VideoDecoderPipeline::Create(
           gpu_driver_bug_workarounds_,
@@ -133,7 +133,8 @@ class MojoMediaClientImpl : public MojoMediaClient {
           /*frame_converter=*/nullptr,
           VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
           std::move(log),
-          /*oop_video_decoder=*/{});
+          /*oop_video_decoder=*/{},
+          /*in_video_decoder_process=*/true);
     }
   }
 

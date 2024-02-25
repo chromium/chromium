@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -30,8 +29,15 @@ gfx::Transform XrPoseToGfxTransform(const XrPosef& pose) {
   return gfx::Transform::Compose(decomp);
 }
 
+device::Pose XrPoseToDevicePose(const XrPosef& pose) {
+  gfx::Quaternion orientation{pose.orientation.x, pose.orientation.y,
+                              pose.orientation.z, pose.orientation.w};
+  gfx::Point3F position{pose.position.x, pose.position.y, pose.position.z};
+  return device::Pose{position, orientation};
+}
+
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
-  absl::optional<gfx::DecomposedTransform> decomposed_transform =
+  std::optional<gfx::DecomposedTransform> decomposed_transform =
       transform.Decompose();
   // This pose should always be a simple translation and rotation so this should
   // always be true

@@ -18,7 +18,6 @@
 #include "android_webview/browser/aw_form_database_service.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_quota_manager_bridge.h"
-#include "android_webview/browser/aw_resource_context.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
@@ -46,7 +45,6 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
@@ -92,9 +90,6 @@ namespace android_webview {
 namespace {
 
 const void* const kDownloadManagerDelegateKey = &kDownloadManagerDelegateKey;
-
-crash_reporter::CrashKeyString<1> g_web_view_compat_crash_key(
-    crash_keys::kWeblayerWebViewCompatMode);
 
 // Empty method to skip origin security check as DownloadManager will set its
 // own method.
@@ -192,7 +187,6 @@ AwBrowserContext::AwBrowserContext(std::string name,
       this, profile_metrics::BrowserProfileType::kRegular);
 
   if (IsDefaultBrowserContext()) {
-    g_web_view_compat_crash_key.Set("0");
     MigrateProfileData(GetHttpCachePath(), GetPath());
   } else {
     cookie_manager_ = std::make_unique<CookieManager>(this);
@@ -366,25 +360,8 @@ AwQuotaManagerBridge* AwBrowserContext::GetQuotaManagerBridge() {
   return quota_manager_bridge_.get();
 }
 
-void AwBrowserContext::SetWebLayerRunningInSameProcess(JNIEnv* env) {
-  g_web_view_compat_crash_key.Set("1");
-}
-
 AwFormDatabaseService* AwBrowserContext::GetFormDatabaseService() {
   return form_database_service_.get();
-}
-
-autofill::AutocompleteHistoryManager*
-AwBrowserContext::GetAutocompleteHistoryManager() {
-  if (!autocomplete_history_manager_) {
-    autocomplete_history_manager_ =
-        std::make_unique<autofill::AutocompleteHistoryManager>();
-    autocomplete_history_manager_->Init(
-        form_database_service_->get_autofill_webdata_service(),
-        user_pref_service_.get(), IsOffTheRecord());
-  }
-
-  return autocomplete_history_manager_.get();
 }
 
 CookieManager* AwBrowserContext::GetCookieManager() {
@@ -411,13 +388,6 @@ base::FilePath AwBrowserContext::GetPath() {
 bool AwBrowserContext::IsOffTheRecord() {
   // Android WebView does not support off the record profile yet.
   return false;
-}
-
-content::ResourceContext* AwBrowserContext::GetResourceContext() {
-  if (!resource_context_) {
-    resource_context_ = std::make_unique<AwResourceContext>();
-  }
-  return resource_context_.get();
 }
 
 content::DownloadManagerDelegate*
@@ -650,7 +620,7 @@ AwBrowserContext::GetJavaBrowserContext() {
         env, reinterpret_cast<intptr_t>(this),
         base::android::ConvertUTF8ToJavaString(env, name_),
         base::android::ConvertUTF8ToJavaString(env, relative_path_.value()),
-        IsDefaultBrowserContext());
+        GetCookieManager()->GetJavaCookieManager(), IsDefaultBrowserContext());
   }
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
 }
@@ -687,66 +657,21 @@ std::string AwBrowserContext::GetExtraHeaders(const GURL& url) {
   return iter != extra_headers_.end() ? iter->second : std::string();
 }
 
-jboolean JNI_AwBrowserContext_CheckNamedContextExists(
+void AwBrowserContext::SetServiceWorkerIoThreadClient(
     JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return AwBrowserContextStore::GetInstance()->Exists(
-      base::android::ConvertJavaStringToUTF8(env, jname));
+    const base::android::JavaParamRef<jobject>& io_thread_client) {
+  sw_io_thread_client_ =
+      base::android::ScopedJavaGlobalRef<jobject>(io_thread_client);
 }
 
-base::android::ScopedJavaLocalRef<jobject>
-JNI_AwBrowserContext_GetNamedContextJava(
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname,
-    jboolean create_if_needed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  AwBrowserContext* context = AwBrowserContextStore::GetInstance()->Get(
-      base::android::ConvertJavaStringToUTF8(env, jname), create_if_needed);
-  return context ? context->GetJavaBrowserContext() : nullptr;
-}
-
-jboolean JNI_AwBrowserContext_DeleteNamedContext(
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
-  AwBrowserContextStore::DeletionResult result =
-      AwBrowserContextStore::GetInstance()->Delete(name);
-  switch (result) {
-    case AwBrowserContextStore::DeletionResult::kDeleted:
-      return true;
-    case AwBrowserContextStore::DeletionResult::kDoesNotExist:
-      return false;
-    case AwBrowserContextStore::DeletionResult::kInUse:
-      const std::string error_message =
-          base::StrCat({"Cannot delete in-use profile ", name});
-      env->ThrowNew(env->FindClass("java/lang/IllegalStateException"),
-                    error_message.c_str());
-      return false;
+std::unique_ptr<AwContentsIoThreadClient>
+AwBrowserContext::GetServiceWorkerIoThreadClientThreadSafe() {
+  base::android::ScopedJavaLocalRef<jobject> java_delegate =
+      base::android::ScopedJavaLocalRef<jobject>(sw_io_thread_client_);
+  if (java_delegate) {
+    return std::make_unique<AwContentsIoThreadClient>(java_delegate);
   }
-}
-
-base::android::ScopedJavaLocalRef<jstring>
-JNI_AwBrowserContext_GetNamedContextPathForTesting(  // IN-TEST
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
-  AwBrowserContextStore* store = AwBrowserContextStore::GetInstance();
-  if (!store->Exists(name)) {
-    return nullptr;
-  }
-  base::FilePath path = store->GetRelativePathForTesting(name);  // IN-TEST
-  return base::android::ConvertUTF8ToJavaString(env, path.value());
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray>
-JNI_AwBrowserContext_ListAllContexts(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const std::vector<std::string> names =
-      AwBrowserContextStore::GetInstance()->List();
-  return base::android::ToJavaArrayOfStrings(env, names);
+  return nullptr;
 }
 
 // static
@@ -787,6 +712,10 @@ void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
   CHECK(storage_deleted);
   bool cache_deleted = base::DeletePathRecursively(cache_path);
   CHECK(cache_deleted);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AwBrowserContext_deleteSharedPreferences(
+      env, base::android::ConvertUTF8ToJavaString(env, relative_path.value()));
 }
 
 }  // namespace android_webview

@@ -55,7 +55,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback created_callback) override {
     if (should_fail_) {
-      std::move(created_callback).Run(nullptr, initially_muted_, absl::nullopt);
+      std::move(created_callback).Run(nullptr, initially_muted_, std::nullopt);
       return;
     }
 
@@ -71,7 +71,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
     base::SyncSocket socket1, socket2;
     base::SyncSocket::CreatePair(&socket1, &socket2);
     std::move(created_callback)
-        .Run({absl::in_place,
+        .Run({std::in_place,
               base::ReadOnlySharedMemoryRegion::Create(kShMemSize).region,
               mojo::PlatformHandle(socket1.Take())},
              initially_muted_, base::UnguessableToken::Create());

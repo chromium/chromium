@@ -122,7 +122,7 @@ class BlinkApiProto(object):
 
         idl_type.apply_to_all_composing_elements(capture_inner_type)
         depends_on.remove(idl_type.type_name_without_extended_attributes)
-        dest.depends_on[:] = list(depends_on)
+        dest.depends_on[:] = sorted(depends_on)
 
     def _ConvertExtendedAttributes(self, dest, member, interface):
         attr = member.extended_attributes

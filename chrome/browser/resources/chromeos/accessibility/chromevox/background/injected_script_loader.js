@@ -15,17 +15,28 @@ export class InjectedScriptLoader {
     this.resolveXhr_ = {};
   }
 
-  /**
-   * Inject the content scripts into already existing tabs.
-   * @param {!Array<!Tab>} tabs The tabs where ChromeVox scripts should be
-   *     injected.
-   */
-  static async injectContentScript(tabs) {
-    if (!InjectedScriptLoader.instance) {
-      InjectedScriptLoader.instance = new InjectedScriptLoader();
+  static injectContentScriptForGoogleDocs() {
+    // Build a regexp to match all allowed urls.
+    let matches = [];
+    try {
+      matches = chrome.runtime.getManifest()['content_scripts'][0]['matches'];
+    } catch (e) {
+      throw new Error(
+          'Unable to find content script matches entry in manifest.');
     }
-    await InjectedScriptLoader.instance.fetchCode_(contentScriptFiles);
-    await InjectedScriptLoader.instance.executeCodeInAllTabs_(tabs);
+
+    // Build one large regexp.
+    const docsRe = new RegExp(matches.join('|'));
+
+    // Inject the content script into all running tabs allowed by the
+    // manifest. This block is still necessary because the extension system
+    // doesn't re-inject content scripts into already running tabs.
+    chrome.windows.getAll({'populate': true}, windows => {
+      for (let i = 0; i < windows.length; i++) {
+        const tabs = windows[i].tabs.filter(tab => docsRe.test(tab.url));
+        InjectedScriptLoader.injectContentScript_(tabs);
+      }
+    });
   }
 
   /**
@@ -99,8 +110,23 @@ export class InjectedScriptLoader {
   async executeCodeInAllTabs_(tabs) {
     for (const tab of tabs) {
       // Inject the ChromeVox content script code into the tab.
-      await Promise.all(this.code_.map(script => this.execute_(script, tab)));
+      await Promise.all(
+          Object.values(this.code_).map(script => this.execute_(script, tab)));
     }
+  }
+
+  /**
+   * Inject the content scripts into already existing tabs.
+   * @param {!Array<!Tab>} tabs The tabs where ChromeVox scripts should be
+   *     injected.
+   * @private
+   */
+  static async injectContentScript_(tabs) {
+    if (!InjectedScriptLoader.instance) {
+      InjectedScriptLoader.instance = new InjectedScriptLoader();
+    }
+    await InjectedScriptLoader.instance.fetchCode_(contentScriptFiles);
+    await InjectedScriptLoader.instance.executeCodeInAllTabs_(tabs);
   }
 
   /**

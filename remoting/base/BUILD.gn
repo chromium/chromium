@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
+import("//remoting/build/config/remoting_build.gni")
 import("//remoting/build/config/remoting_logging.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -18,6 +20,11 @@ process_version("remoting_base_version") {
   output = "$target_gen_dir/version.h"
 }
 
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "REMOTING_INTERNAL=$remoting_internal" ]
+}
+
 source_set("base") {
   sources = [
     "auto_thread.cc",
@@ -28,16 +35,29 @@ source_set("base") {
     "buffered_socket_writer.h",
     "capabilities.cc",
     "capabilities.h",
+    "certificate_helpers.cc",
+    "certificate_helpers.h",
     "chromoting_event.cc",
     "chromoting_event.h",
     "compound_buffer.cc",
     "compound_buffer.h",
     "constants.cc",
     "constants.h",
+    "corp_service_client.cc",
+    "corp_service_client.h",
+    "corp_session_authz_service_client.cc",
+    "corp_session_authz_service_client.h",
+    "corp_session_authz_service_client_factory.cc",
+    "corp_session_authz_service_client_factory.h",
     "cpu_utils.cc",
     "cpu_utils.h",
     "directory_service_client.cc",
     "directory_service_client.h",
+    "hostname.cc",
+    "hostname.h",
+    "internal_headers.h",
+    "is_google_email.cc",
+    "is_google_email.h",
     "leaky_bucket.cc",
     "leaky_bucket.h",
     "name_value_map.h",
@@ -68,6 +88,8 @@ source_set("base") {
     "scoped_protobuf_http_request.h",
     "service_urls.cc",
     "service_urls.h",
+    "session_authz_service_client.h",
+    "session_authz_service_client_factory.h",
     "session_options.cc",
     "session_options.h",
     "socket_reader.cc",
@@ -76,6 +98,8 @@ source_set("base") {
     "telemetry_log_writer.cc",
     "telemetry_log_writer.h",
     "typed_buffer.h",
+    "url_loader_network_service_observer.cc",
+    "url_loader_network_service_observer.h",
     "url_request_context_getter.cc",
     "url_request_context_getter.h",
     "util.cc",
@@ -100,10 +124,14 @@ source_set("base") {
   ]
   deps = [
     ":authorization",
+    ":buildflags",
+    ":logging",
     ":protobuf_http_client_messages_proto",
+    ":remoting_base_version",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//google_apis",
+    "//remoting/proto:internal_structs",
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
     "//services/network/public/cpp",
@@ -114,8 +142,21 @@ source_set("base") {
     "//url",
   ]
 
+  if (remoting_internal) {
+    deps += [
+      "//remoting/internal/base",
+      "//remoting/internal/proto",
+    ]
+  } else {
+    deps += [
+      ":api_key_stubs",
+      "//remoting/proto:internal_stubs",
+    ]
+  }
+
   if (is_win) {
     sources += [ "scoped_sc_handle_win.h" ]
+    libs = [ "crypt32.lib" ]  # For CryptoAPI functions in certificate_helpers
   } else if (is_linux || is_chromeos) {
     sources += [
       "file_path_util_linux.cc",
@@ -253,6 +294,8 @@ static_library("test_support") {
     "fake_oauth_token_getter.h",
     "mock_oauth_client.cc",
     "mock_oauth_client.h",
+    "mock_session_authz_service_client.cc",
+    "mock_session_authz_service_client.h",
     "protobuf_http_test_responder.cc",
     "protobuf_http_test_responder.h",
     "test_rsa_key_pair.h",
@@ -263,7 +306,9 @@ static_library("test_support") {
     ":protobuf_http_client_messages_proto",
     "//base/test:test_support",
     "//remoting/proto",
+    "//remoting/proto:internal_structs",
     "//services/network:test_support",
+    "//testing/gmock",
   ]
   public_deps = [
     ":authorization",
@@ -280,6 +325,15 @@ proto_library("test_proto") {
   testonly = true
 
   sources = [ "protobuf_http_client_test_messages.proto" ]
+}
+
+source_set("api_key_stubs") {
+  public = [ "api_key_stubs.h" ]
+
+  sources = [
+    "api_key_stubs.cc",
+    "api_key_stubs.h",
+  ]
 }
 
 source_set("run_all_unittests") {

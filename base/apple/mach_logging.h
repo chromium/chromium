@@ -45,8 +45,17 @@ class BASE_EXPORT MachLogMessage : public logging::LogMessage {
 
   ~MachLogMessage() override;
 
+ protected:
+  void AppendError();
+
  private:
   mach_error_t mach_err_;
+};
+
+class BASE_EXPORT MachLogMessageFatal final : public MachLogMessage {
+ public:
+  using MachLogMessage::MachLogMessage;
+  [[noreturn]] ~MachLogMessageFatal() override;
 };
 
 }  // namespace logging
@@ -114,8 +123,17 @@ class BASE_EXPORT BootstrapLogMessage : public logging::LogMessage {
 
   ~BootstrapLogMessage() override;
 
+ protected:
+  void AppendError();
+
  private:
   kern_return_t bootstrap_err_;
+};
+
+class BASE_EXPORT BootstrapLogMessageFatal final : public BootstrapLogMessage {
+ public:
+  using BootstrapLogMessage::BootstrapLogMessage;
+  [[noreturn]] ~BootstrapLogMessageFatal() override;
 };
 
 }  // namespace logging

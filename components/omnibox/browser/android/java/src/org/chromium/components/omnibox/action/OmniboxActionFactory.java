@@ -6,12 +6,10 @@ package org.chromium.components.omnibox.action;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
-/**
- * An interface for creation of the OmniboxAction instances.
- */
+/** An interface for creation of the OmniboxAction instances. */
 public interface OmniboxActionFactory {
     /**
      * Create a new OmniboxPedal.
@@ -23,24 +21,30 @@ public interface OmniboxActionFactory {
      */
     @CalledByNative
     @NonNull
-    OmniboxAction buildOmniboxPedal(long instance, @NonNull String hint,
-            @NonNull String accessibilityHint, @OmniboxPedalId int pedalId);
+    OmniboxAction buildOmniboxPedal(
+            long instance,
+            @NonNull String hint,
+            @NonNull String accessibilityHint,
+            @OmniboxPedalId int pedalId);
 
     /**
      * Create a new OmniboxActionInSuggest.
      *
      * @param hint the title displayed on the chip
      * @param accessibilityHint the text to be announced to the accessibility-enabled users
-     * @param actionType the specific type of an action matching the
-     *         {@link EntityInfoProto.ActionInfo.ActionType}
+     * @param actionType the specific type of an action matching the {@link
+     *     EntityInfoProto.ActionInfo.ActionType}
      * @param actionUri the corresponding action URI/URL (serialized intent)
      * @return new instance of an OmniboxActionInSuggest
      */
     @CalledByNative
     @NonNull
-    OmniboxAction buildActionInSuggest(long instance, @NonNull String hint,
+    OmniboxAction buildActionInSuggest(
+            long instance,
+            @NonNull String hint,
             @NonNull String accessibilityHint,
-            /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri);
+            /* EntityInfoProto.ActionInfo.ActionType */ int actionType,
+            @NonNull String actionUri);
 
     /**
      * Create a new HistoryClustersAction.
@@ -52,8 +56,11 @@ public interface OmniboxActionFactory {
      */
     @CalledByNative
     @NonNull
-    OmniboxAction buildHistoryClustersAction(long instance, @NonNull String hint,
-            @NonNull String accessibilityHint, @NonNull String query);
+    OmniboxAction buildHistoryClustersAction(
+            long instance,
+            @NonNull String hint,
+            @NonNull String accessibilityHint,
+            @NonNull String query);
 
     @NativeMethods
     public interface Natives {

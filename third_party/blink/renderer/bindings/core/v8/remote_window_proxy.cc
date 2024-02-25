@@ -45,8 +45,8 @@ namespace blink {
 
 RemoteWindowProxy::RemoteWindowProxy(v8::Isolate* isolate,
                                      RemoteFrame& frame,
-                                     scoped_refptr<DOMWrapperWorld> world)
-    : WindowProxy(isolate, frame, std::move(world)) {}
+                                     DOMWrapperWorld* world)
+    : WindowProxy(isolate, frame, world) {}
 
 void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
                                        FrameReuseStatus) {
@@ -73,12 +73,18 @@ void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
        next_status == Lifecycle::kGlobalObjectIsDetached) &&
       !global_proxy_.IsEmpty()) {
     v8::HandleScope handle_scope(GetIsolate());
-    global_proxy_.SetWrapperClassId(0);
-    V8DOMWrapper::ClearNativeInfo(GetIsolate(),
-                                  global_proxy_.Get(GetIsolate()));
+    v8::Local<v8::Object> global = global_proxy_.Get(GetIsolate());
+    V8DOMWrapper::ClearNativeInfo(GetIsolate(), global);
+    world_->DomDataStore().ClearIfEqualTo(GetFrame()->DomWindow(), global);
 #if DCHECK_IS_ON()
+    HeapVector<Member<DOMWrapperWorld>> all_worlds;
+    DOMWrapperWorld::AllWorldsInIsolate(GetIsolate(), all_worlds);
+    for (auto& world : all_worlds) {
+      DCHECK(!world->DomDataStore().EqualTo(GetFrame()->DomWindow(), global));
+    }
+
     DidDetachGlobalObject();
-#endif
+#endif  // DCHECK_IS_ON()
   }
 
   DCHECK_EQ(lifecycle_, Lifecycle::kContextIsInitialized);
@@ -135,9 +141,9 @@ void RemoteWindowProxy::SetupWindowPrototypeChain() {
   v8::Local<v8::Object> global_proxy = global_proxy_.Get(GetIsolate());
   V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, wrapper_type_info,
                               window);
-  // Mark the handle to be traced by Oilpan, since the global proxy has a
-  // reference to the DOMWindow.
-  global_proxy_.SetWrapperClassId(wrapper_type_info->wrapper_class_id);
+  CHECK(global_proxy == window->AssociateWithWrapper(GetIsolate(), world_,
+                                                     wrapper_type_info,
+                                                     global_proxy));
 
   // The global object, aka window wrapper object.
   v8::Local<v8::Object> window_wrapper =

@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SourcesModule from 'devtools/panels/sources/sources.js';
+
 (async function() {
   TestRunner.addResult(`Tests "Show more" button in CallStackSidebarPane.`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function callWithAsyncStack(f, depth) {
@@ -27,19 +28,19 @@ import {SourcesTestRunner} from 'sources_test_runner';
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);
   await SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();
   await TestRunner.addSnifferPromise(
-      Sources.CallStackSidebarPane.prototype, 'updatedForTest');
+      SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest');
   dumpCallStackSidebarPane();
 
   TestRunner.addResult('\n---------------\nClicks show more..');
-  const pane = Sources.CallStackSidebarPane.instance();
+  const pane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
   pane.contentElement.querySelector('.show-more-message > .link').click();
   await TestRunner.addSnifferPromise(
-      Sources.CallStackSidebarPane.prototype, 'updatedForTest');
+      SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest');
   dumpCallStackSidebarPane();
   SourcesTestRunner.completeDebuggerTest();
 
   function dumpCallStackSidebarPane() {
-    const pane = Sources.CallStackSidebarPane.instance();
+    const pane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
     for (const element of pane.contentElement.querySelectorAll(
              '.call-frame-item'))
       TestRunner.addResult(element.deepTextContent().replace(/VM\d+/g, 'VM'));

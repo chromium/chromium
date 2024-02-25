@@ -7,6 +7,7 @@
 #include <unordered_set>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "components/ui_devtools/agent_util.h"
 #include "components/ui_devtools/ui_element.h"
@@ -17,8 +18,9 @@ namespace ui_devtools {
 
 namespace {
 
-void PaintRectVector(std::vector<UIElement*> child_elements) {
-  for (auto* element : child_elements) {
+void PaintRectVector(
+    std::vector<raw_ptr<UIElement, VectorExperimental>> child_elements) {
+  for (ui_devtools::UIElement* element : child_elements) {
     if (element->type() == UIElementType::VIEW) {
       element->PaintRect();
     }
@@ -33,7 +35,7 @@ std::unordered_set<std::string> GetSources(UIElement* root) {
     ret.insert(source.path_ + "?l=" + base::NumberToString(source.line_));
   }
 
-  for (auto* child : root->children()) {
+  for (ui_devtools::UIElement* child : root->children()) {
     for (auto& child_source : GetSources(child)) {
       ret.insert(child_source);
     }

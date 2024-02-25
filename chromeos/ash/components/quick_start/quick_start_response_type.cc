@@ -27,6 +27,12 @@ std::ostream& operator<<(std::ostream& stream,
     case QuickStartResponseType::kAssertion:
       stream << "Assertion";
       break;
+    case QuickStartResponseType::kBootstrapStateCancel:
+      stream << "BootstrapStateCancel";
+      break;
+    case QuickStartResponseType::kBootstrapStateComplete:
+      stream << "BootstrapStateComplete";
+      break;
   }
   return stream;
 }

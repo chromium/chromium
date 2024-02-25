@@ -30,21 +30,21 @@ CertificateScope CertificateScope::Default() {
 }
 
 // static
-absl::optional<CertificateScope> CertificateScope::ParseFromOncValue(
+std::optional<CertificateScope> CertificateScope::ParseFromOncValue(
     const base::Value::Dict& scope_dict) {
   const std::string* scope_type_str =
       scope_dict.FindString(::onc::scope::kType);
   const std::string* scope_id_str = scope_dict.FindString(::onc::scope::kId);
 
   if (!scope_type_str || !scope_id_str)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (*scope_type_str == ::onc::scope::kDefault)
     return Default();
   if (*scope_type_str == ::onc::scope::kExtension)
     return ForExtension(*scope_id_str);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 CertificateScope& CertificateScope::operator=(const CertificateScope& other) =

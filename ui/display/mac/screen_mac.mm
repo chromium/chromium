@@ -23,6 +23,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
@@ -110,8 +111,18 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
       screen.maximumExtendedDynamicRangeColorComponentValue;
   if (max_potential_edr_value > 1.f) {
     enable_hdr = true;
-    hdr_max_lum_relative =
-        std::max(kMinHDRCapableMaxLuminanceRelative, max_edr_value);
+#if defined(ARCH_CPU_X86_64)
+    // Disable HDR on Intel laptop screens because performance is unacceptably
+    // bad.
+    // https://crbug.com/1402882
+    if (CGDisplayIsBuiltin(display_id) && max_potential_edr_value <= 2.f) {
+      enable_hdr = false;
+    }
+#endif
+    if (enable_hdr) {
+      hdr_max_lum_relative =
+          std::max(kMinHDRCapableMaxLuminanceRelative, max_edr_value);
+    }
   }
 
   // Compute DisplayColorSpaces.
@@ -122,13 +133,14 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
       base::apple::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
           CGColorSpaceCopyICCData(cg_color_space));
       if (cf_icc_profile) {
-        icc_profile = gfx::ICCProfile::FromData(
-            CFDataGetBytePtr(cf_icc_profile), CFDataGetLength(cf_icc_profile));
+        icc_profile =
+            gfx::ICCProfile::FromData(CFDataGetBytePtr(cf_icc_profile.get()),
+                                      CFDataGetLength(cf_icc_profile.get()));
       }
     }
   }
   gfx::DisplayColorSpaces display_color_spaces(icc_profile.GetColorSpace(),
-                                               gfx::BufferFormat::RGBA_8888);
+                                               gfx::BufferFormat::BGRA_8888);
   if (HasForceDisplayColorProfile()) {
     if (Display::HasEnsureForcedColorProfile()) {
       if (display_color_spaces != display.GetColorSpaces()) {
@@ -183,8 +195,10 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   display.SetRotationAsDegree(static_cast<int>(CGDisplayRotation(display_id)));
 
   // TODO(crbug.com/1078903): Support multiple internal displays.
-  if (CGDisplayIsBuiltin(display_id))
+  // CGDisplayIsBuiltin may return -1 on [dis]connect; see crbug.com/1457025.
+  if (CGDisplayIsBuiltin(display_id) == YES) {
     SetInternalDisplayIds({display_id});
+  }
 
   display.set_label(base::SysNSStringToUTF8(screen.localizedName));
 

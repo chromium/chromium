@@ -131,9 +131,9 @@ otherwise.
 Asserts that `chrome.runtime.lastError.message` is equivalent to
 `expectedError`, printing out the expected and actual errors otherwise.
 
-#### assertThrows(fn, self?, args, expectedError?)
+#### assertThrows(fn, self?, args[], expectedError?)
 Asserts that executing `fn` with the context object of `self` (if defined) and
-the specified `arguments` throws a runtime error, which is then validated
+the specified `args` array throws a runtime error, which is then validated
 against `expectedError`.  `expectedError` may be either a string (which must
 match exactly) or a `RegExp`.
 
@@ -170,8 +170,8 @@ chrome.test.runTests([
 Here, we want to have `step1()` finish after both the new tab has been created
 and a storage value has been set (again, this is admittedly contrived).  There
 is no hard guarantee about which function will finish first, so putting a
-chrome.test.succeed() call in either may result in succeeding and continuing to
-the next step too early.  Putting a `chrome.test.succeed()` call in both will
+`chrome.test.succeed()` call in either may result in succeeding and continuing
+to the next step too early.  Putting a `chrome.test.succeed()` call in both will
 result in badness (see the [Do's And Don't's]).
 
 `callbackPass()` lets the testing infrastructure handle this.  `callbackPass()`
@@ -240,16 +240,16 @@ two separate test functions, passed serially in the array to
 ```js
 chrome.test.runTests([
   function createTab() {
-    chrome.tabs.create({url: 'http://example.com'}, callbackPass(() => {
+    chrome.tabs.create({url: 'http://example.com'}, () => {
       <verify state>
       chrome.test.succeed();
-    }));
+    });
   },
   function initializeStorage() {
-    chrome.storage.local.set({foo: 'bar'}, callbackPass(() => {
+    chrome.storage.local.set({foo: 'bar'}, () => {
       <verify state>
       chrome.test.succeed();
-    }));
+    });
   },
   function nextStep() {
     ...
@@ -305,7 +305,12 @@ const tab =
 <verify state>
 ```
 
-This, too, will be even more readable with Promise-based APIs.
+For Promise-based calls in MV3 tests this can be simplified even more:
+
+```js
+const tab = await chrome.tabs.create({url: url});
+<verify state>
+```
 
 ### listenOnce() and listenForever()
 `chrome.test.listenOnce()` and `chrome.test.listenForever()` are utility
@@ -387,7 +392,7 @@ unless the use of it is explicitly necessary for the test.)
 ### **Don't** Mix chrome.test.notifyPass() and chrome.test.runTests()
 `chrome.test.notifyPass()` (or `chrome.test.notifyFail()`) will finish the
 entire suite.  It should not be used with `chrome.test.runTests()`.  Instead,
-use chrome.test.succeed().
+use `chrome.test.succeed()`.
 
 ### **Don't** Mix chrome.test.callbackPass() et al. and chrome.test.succeed()
 If the callback counter is incremented anywhere in a test function, the test

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] module: Run #5
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/imports-a.js"
+Harness: the test ran to completion.
+

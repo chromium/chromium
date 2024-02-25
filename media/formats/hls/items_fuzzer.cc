@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/formats/hls/items.h"
+
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 
 #include "base/check.h"
 #include "base/strings/string_piece.h"
-#include "media/formats/hls/items.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
@@ -18,7 +19,7 @@ bool IsSubstring(base::StringPiece sub, base::StringPiece base) {
          base.data() + base.size() >= sub.data() + sub.size();
 }
 
-absl::optional<media::hls::SourceString> GetItemContent(
+std::optional<media::hls::SourceString> GetItemContent(
     media::hls::TagItem tag) {
   // Ensure the tag kind returned was valid
   if (tag.GetName()) {
@@ -30,7 +31,7 @@ absl::optional<media::hls::SourceString> GetItemContent(
   return tag.GetContent();
 }
 
-absl::optional<media::hls::SourceString> GetItemContent(
+std::optional<media::hls::SourceString> GetItemContent(
     media::hls::UriItem uri) {
   return uri.content;
 }

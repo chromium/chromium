@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_RENDERER_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 
 namespace gfx {
@@ -80,7 +80,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   // Cached pointer id that matches the most recent metadata. This is set when
   // a metadata arrives, and if no stored DelegatedInkPoints match the metadata,
   // then it is null.
-  absl::optional<int32_t> pointer_id_;
+  std::optional<int32_t> pointer_id_;
 
   // The points that arrived from the browser process and may be drawn as part
   // of the ink trail are stored according to their pointer ids so that if

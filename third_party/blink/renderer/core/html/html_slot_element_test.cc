@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -26,6 +27,7 @@ class HTMLSlotElementTest : public testing::Test {
   Vector<HTMLSlotElement::LCSArray<size_t, kTableSize>, kTableSize> lcs_table_;
   Vector<HTMLSlotElement::LCSArray<Backtrack, kTableSize>, kTableSize>
       backtrack_table_;
+  test::TaskEnvironment task_environment_;
 };
 
 Vector<char> HTMLSlotElementTest::LongestCommonSubsequence(const Seq& seq1,
@@ -143,6 +145,7 @@ class HTMLSlotElementInDocumentTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
@@ -155,7 +158,7 @@ TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
   Element& span = *GetDocument().getElementById(AtomicString("span"));
 
   ShadowRoot& shadow_root =
-      host.AttachShadowRootInternal(ShadowRootType::kOpen);
+      host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   shadow_root.setInnerHTML(R"HTML(<span><slot /></span>)HTML");
 
@@ -179,7 +182,7 @@ TEST_F(HTMLSlotElementInDocumentTest, SlotableFallback) {
 
   Element& host = *GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host.AttachShadowRootInternal(ShadowRootType::kOpen);
+      host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
   shadow_root.setInnerHTML(R"HTML(<slot><span></span><!-- -->text</slot>)HTML");
 

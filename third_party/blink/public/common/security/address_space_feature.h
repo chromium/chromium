@@ -31,8 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SECURITY_ADDRESS_SPACE_FEATURE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SECURITY_ADDRESS_SPACE_FEATURE_H_
 
+#include <optional>
+
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
@@ -59,7 +60,7 @@ enum class FetchType {
 //
 // Returns nullopt if the load is not a private network request, as defined in:
 // https://wicg.github.io/private-network-access/#private-network-request
-absl::optional<mojom::WebFeature> BLINK_COMMON_EXPORT
+std::optional<mojom::WebFeature> BLINK_COMMON_EXPORT
 AddressSpaceFeature(FetchType fetch_type,
                     network::mojom::IPAddressSpace client_address_space,
                     bool client_is_secure_context,

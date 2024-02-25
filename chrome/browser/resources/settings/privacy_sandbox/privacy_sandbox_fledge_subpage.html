@@ -1,0 +1,188 @@
+<style include="cr-shared-style">
+  #currentSitesSection {
+    align-items: center;
+    display: flex;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #currentSitesSectionWrapper {
+    width: 100%;
+  }
+
+  #currentSitesHeading {
+    color: var(--cr-secondary-text-color);
+    font-size: 100%;
+    font-weight: 500;
+    margin: 0;
+    padding-block-start: var(--cr-section-vertical-padding);
+  }
+
+  #currentSitesDescription {
+    padding-block-end: var(--cr-section-vertical-padding);
+  }
+
+  #learnMoreLink {
+    background: none;
+    border: none;
+    color: var(--cr-link-color);
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  .no-sites {
+    padding-block-end: 32px;
+    padding-block-start: 16px;
+    padding-inline-start: 40px;
+  }
+
+  #blockedSitesDescription {
+    min-height: auto;
+    padding-block-end: 16px;
+    padding-block-start: 16px;
+  }
+
+  .no-blocked-sites {
+    padding-inline-start: 60px;
+  }
+
+  #blockedSitesList {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #footer {
+    padding-block-end: 16px;
+    padding-block-start: 16px;
+  }
+
+  #dialog p {
+    margin: 0;
+    padding-block-end: 16px;
+    padding-block-start: 4px;
+  }
+
+  .footer {
+    padding: 16px var(--cr-section-padding);
+  }
+
+  #secondDescription {
+    padding: 0 var(--cr-section-padding) var(--cr-section-vertical-padding);
+  }
+
+  a {
+    color: var(--cr-link-color);
+  }
+</style>
+
+<settings-toggle-button
+    id="fledgeToggle"
+    pref="{{prefs.privacy_sandbox.m1.fledge_enabled}}"
+    label="$i18n{fledgePageToggleLabel}"
+    sub-label="$i18n{fledgePageToggleSubLabel}"
+    on-settings-boolean-control-change="onToggleChange_">
+</settings-toggle-button>
+<div id="secondDescription" class="cr-secondary-text"
+    hidden="[[!shouldShowV2_]]">
+  $i18n{fledgePageExplanation}
+</div>
+<template is="dom-if" if="[[!isFledgePrefManaged_(
+    prefs.privacy_sandbox.m1.fledge_enabled.enforcement)]]" restamp>
+  <div id="currentSitesSection">
+    <div id="currentSitesSectionWrapper" class="hr">
+      <h2 id="currentSitesHeading">
+        $i18n{fledgePageCurrentSitesHeading}
+      </h2>
+      <div id="currentSitesDescription" class="cr-secondary-text">
+        $i18n{fledgePageCurrentSitesDescription}
+        <!-- TODO(b/264024469): Add "Learn more" into current sites description
+             string. -->
+        <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
+            "$i18n{fledgePageCurrentSitesDescriptionLearnMoreA11yLabel}">
+          $i18n{fledgePageCurrentSitesDescriptionLearnMore}
+        </button>
+      </div>
+      <template is="dom-if" if="[[isFledgeEnabledAndLoaded_(
+          prefs.privacy_sandbox.m1.fledge_enabled.value, isSitesListLoaded_)]]"
+          restamp>
+        <div role="region"
+            aria-label="$i18n{fledgePageCurrentSitesRegionA11yDescription}">
+          <template is="dom-repeat" items="[[mainSitesList_]]">
+            <privacy-sandbox-interest-item interest="[[item]]"
+                on-interest-changed="onInterestChanged_">
+            </privacy-sandbox-interest-item>
+          </template>
+        </div>
+        <template is="dom-if" if="[[!isRemainingSitesListEmpty_(
+            remainingSitesList_.length)]]" restamp>
+          <cr-expand-button id="seeAllSites"
+              expanded="{{seeAllSitesExpanded_}}">
+            $i18n{fledgePageSeeAllSitesLabel}
+          </cr-expand-button>
+          <iron-collapse opened="[[seeAllSitesExpanded_]]">
+            <div role="region"
+                aria-label="$i18n{fledgePageCurrentSitesRegionA11yDescription}">
+              <template is="dom-repeat" items="[[remainingSitesList_]]">
+                <privacy-sandbox-interest-item interest="[[item]]"
+                    on-interest-changed="onInterestChanged_">
+                </privacy-sandbox-interest-item>
+              </template>
+            </div>
+          </iron-collapse>
+        </template>
+        <div id="currentSitesDescriptionEmpty"
+            class="no-sites cr-secondary-text"
+            hidden="[[!isSitesListEmpty_(sitesList_.length)]]">
+          $i18n{fledgePageCurrentSitesDescriptionEmpty}
+        </div>
+      </template>
+      <div id="currentSitesDescriptionDisabled"
+          class="no-sites cr-secondary-text"
+          hidden="[[prefs.privacy_sandbox.m1.fledge_enabled.value]]">
+        $i18n{fledgePageCurrentSitesDescriptionDisabled}
+      </div>
+    </div>
+  </div>
+</template>
+<cr-expand-button id="blockedSitesRow" class="cr-row"
+    expanded="{{blockedSitesExpanded_}}">
+  $i18n{fledgePageBlockedSitesHeading}
+</cr-expand-button>
+<iron-collapse opened="[[blockedSitesExpanded_]]">
+  <div id="blockedSitesDescription"
+      class$="[[getBlockedSitesDescriptionClass_(blockedSitesList_.length)]]">
+    [[computeBlockedSitesDescription_(blockedSitesList_.length)]]
+  </div>
+  <div id="blockedSitesList" role="region"
+      aria-label="$i18n{fledgePageBlockedSitesRegionA11yDescription}">
+    <template is="dom-repeat" items="[[blockedSitesList_]]">
+      <privacy-sandbox-interest-item interest="[[item]]"
+          on-interest-changed="onInterestChanged_">
+      </privacy-sandbox-interest-item>
+    </template>
+  </div>
+</iron-collapse>
+<div id="footer" class="cr-secondary-text hr footer"
+    hidden="[[shouldShowV2_]]">
+  $i18nRaw{fledgePageFooter}
+</div>
+<div id="footerV2" class="cr-secondary-text hr footer"
+    hidden="[[!shouldShowV2_]]">
+  $i18nRaw{fledgePageFooterV2}
+</div>
+<template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
+  <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>
+    <div slot="title">$i18n{fledgePageLearnMoreHeading}</div>
+    <div slot="body">
+      <p>$i18n{fledgePageLearnMoreBullet1}</p>
+      <p>$i18n{fledgePageLearnMoreBullet2}</p>
+      <p>$i18nRaw{fledgePageLearnMoreBullet3}</p>
+    </div>
+    <div slot="button-container">
+      <cr-button id="closeButton" class="cancel-button" autofocus
+          on-click="onCloseDialog_">
+        $i18n{close}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -100,7 +101,7 @@ class SandboxedNetworkListBrowserTest : public ContentBrowserTest {
     GetNetworkService()->GetNetworkList(
         net::EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
         base::BindLambdaForTesting(
-            [&](const absl::optional<std::vector<net::NetworkInterface>>& ret) {
+            [&](const std::optional<std::vector<net::NetworkInterface>>& ret) {
               interfaces = *ret;
               run_loop.Quit();
             }));

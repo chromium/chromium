@@ -1,0 +1,162 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module on_device_model.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// Opened file resources needed to define an adaptation.
+struct AdaptationAssets {
+  mojo_base.mojom.ReadOnlyFile? model;
+  // TODO(b/313919363): This should also be a ReadOnlyFile.
+  mojo_base.mojom.File? weights;
+};
+
+// Conveys the result of a language detection attempt on output text.
+struct LanguageDetectionResult {
+  // Language code of the detected language. If detection was indeterminate,
+  // this is "und" per ISO 639-2.
+  string code;
+
+  // Reliability of this result, in the range [0, 1].
+  float reliability;
+};
+
+// Aggregated text safety evaluation results.
+struct SafetyInfo {
+  // Independent safety class probabilities in the range [0, 1].
+  array<float> class_scores;
+
+  // Language detection information. Present if and only if the safety config is
+  // restricted by language.
+  LanguageDetectionResult? language;
+};
+
+// Partial response received via StreamingResponder.OnResponse().
+struct ResponseChunk {
+  // Text for this chunk of the response.
+  string text;
+
+  // Optional safety information computed against the full response so far, up
+  // to and including `text`.
+  SafetyInfo? safety_info;
+};
+
+// Information pertaining to a complete response that was streamed by a
+// StreamingResponder.
+struct ResponseSummary {
+  // Optional safety information computed against the full response.
+  SafetyInfo? safety_info;
+};
+
+// Streams a response from a call to execute a model. Close this pipe to cancel
+// the call to |Execute()|.
+interface StreamingResponder {
+  // This is called each time a new chunk of text is available.
+  OnResponse(ResponseChunk chunk);
+
+  // This is called once when all text for the query has been returned. No other
+  // methods on this interface will be called after OnComplete(). `summary`
+  // conveys metadata about the response that was streamed.
+  OnComplete(ResponseSummary summary);
+};
+
+// Notifies the caller when the model is done processing context. Close this
+// pipe to cancel the call to |AddContext()|.
+interface ContextClient {
+  // Called when the context has finished processing with the number of tokens
+  // processed.
+  OnComplete(uint32 tokens_processed);
+};
+
+// Params to describe the adaptation to load.
+struct LoadAdaptationParams {
+  // Assets for an adaptation.
+  AdaptationAssets assets;
+};
+
+// Options to control how the model handles input.
+struct InputOptions {
+  // The text for this input.
+  string text;
+
+  // The maximum number of tokens that should be processed. If not set, will
+  // process all tokens from this input.
+  uint32? max_tokens;
+
+  // After text is tokenized, the offset into that vector to start processing.
+  // If not set, will start at the first token.
+  uint32? token_offset;
+
+  // If this is true, indicates this is a one-off call that wants to ignore the
+  // context for this input. Note that this is less efficient than running on
+  // top of the current context, so only use when necessary.
+  bool ignore_context;
+
+  // The maximum number of tokens that should be output from a call to
+  // Execute(). If not set, will output tokens until an end token or the maximum
+  // sequence length.
+  uint32? max_output_tokens;
+
+  // The interval (in number of tokens) between periodic safety evaluations to
+  // be performed by the service. If this is null, no safety evaluations are
+  // performed and no SafetyInfo results are sent to the client; if 0, safety is
+  // only evaluated during response completion; otherwise for a value of N, a
+  // safety update will be provided after every Nth token, as well as during
+  // response completion.
+  uint32? safety_interval;
+};
+
+// A session for a model that allows adding context and then executing an input
+// with that context.
+interface Session {
+  // Adds context to this session. Any context added here will build off of
+  // previous calls to |AddContext()|.
+  AddContext(InputOptions input, pending_remote<ContextClient>? client);
+
+  // Executes model on the given input. The input will be added on top of the
+  // context provided by |AddContext()|. The response will be streamed to
+  // |response|. To cancel the request, close the |response| pipe.
+  Execute(InputOptions input, pending_remote<StreamingResponder> response);
+};
+
+// A loaded model which can be queried. This interface must be controlled by the
+// browser and consumers must take care to sanitize inputs.
+interface OnDeviceModel {
+  // Starts a session with this model. If a session starts before the previous
+  // one has completed, the previous session will be canceled.
+  StartSession(pending_receiver<Session> session);
+
+  // Loads an adaptation with the specified params. This will always load the
+  // adaptation on top of the base model.
+  LoadAdaptation(
+      LoadAdaptationParams params,
+      pending_receiver<OnDeviceModel> model) => (LoadModelResult result);
+};
+
+// Classifies the device based on how fast it is estimated to be able to run a
+// model.
+enum PerformanceClass {
+  // There was an error running the benchmark. The device is likely not able to
+  // run any models.
+  kError,
+  // The GPU was blocked so the benchmark could not run.
+  kGpuBlocked,
+  // The library failed to load so the benchmark could not run.
+  kFailedToLoadLibrary,
+
+  // The values below classify devices into a range of performance buckets.
+  kVeryLow,
+  kLow,
+  kMedium,
+  kHigh,
+  kVeryHigh,
+};
+
+enum LoadModelResult {
+  kSuccess,
+  kGpuBlocked,
+  kFailedToLoadLibrary,
+};

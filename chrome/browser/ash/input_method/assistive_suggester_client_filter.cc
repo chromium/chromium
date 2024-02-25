@@ -136,7 +136,7 @@ const char* kDeniedDomainsForDiacritics[] = {
     "cider-v.corp.google",  // Cider-v
 };
 
-bool IsTestUrl(const absl::optional<GURL>& url) {
+bool IsTestUrl(const std::optional<GURL>& url) {
   if (!url)
     return false;
   std::string filename = url->ExtractFileName();
@@ -148,7 +148,7 @@ bool IsTestUrl(const absl::optional<GURL>& url) {
   return false;
 }
 
-bool IsInternalWebsite(const absl::optional<GURL>& url) {
+bool IsInternalWebsite(const std::optional<GURL>& url) {
   if (!url)
     return false;
   std::string host = url->host();
@@ -160,7 +160,7 @@ bool IsInternalWebsite(const absl::optional<GURL>& url) {
   return false;
 }
 
-bool AtDomainWithPathPrefix(const absl::optional<GURL>& url,
+bool AtDomainWithPathPrefix(const std::optional<GURL>& url,
                             const std::string& domain,
                             const std::string& prefix) {
   if (!url)
@@ -171,7 +171,7 @@ bool AtDomainWithPathPrefix(const absl::optional<GURL>& url,
 
 template <size_t N>
 bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
-                                const absl::optional<GURL>& url) {
+                                const std::optional<GURL>& url) {
   if (!url)
     return false;
   for (size_t i = 0; i < N; i++) {
@@ -186,7 +186,7 @@ bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
 
 template <size_t N>
 bool IsMatchedExactUrl(const char* (&expected_urls)[N],
-                       const absl::optional<GURL>& url) {
+                       const std::optional<GURL>& url) {
   if (!url)
     return false;
   for (size_t i = 0; i < N; i++) {
@@ -218,7 +218,7 @@ bool IsMatchedApp(const char* (&expected_app_ids_or_package_names)[N],
 
 template <size_t N>
 bool IsMatchedSubDomain(const char* (&expected_domains)[N],
-                        const absl::optional<GURL>& url) {
+                        const std::optional<GURL>& url) {
   if (!url.has_value()) {
     return false;
   }
@@ -233,7 +233,7 @@ bool IsMatchedSubDomain(const char* (&expected_domains)[N],
 template <size_t N>
 bool IsMatchedSubDomainWithPathPrefix(
     const char* (&expected_domains_and_paths)[N][2],
-    const absl::optional<GURL>& url) {
+    const std::optional<GURL>& url) {
   if (!url.has_value()) {
     return false;
   }
@@ -276,7 +276,7 @@ void AssistiveSuggesterClientFilter::ReturnEnabledSuggestions(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
     WindowProperties window_properties,
     const TextInputMethod::InputContext& context,
-    const absl::optional<GURL>& current_url) {
+    const std::optional<GURL>& current_url) {
   // Deny-list (will block if matched, otherwise allow)
   bool diacritic_suggestions_allowed =
       !IsMatchedSubDomain(kDeniedDomainsForDiacritics, current_url) &&

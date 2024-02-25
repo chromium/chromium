@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -59,7 +61,7 @@ aura::Window* GetWindowWithBrowser(Browser* browser) {
 }
 
 aura::Window* GetWindowWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->tab_strip_model() == tab_strip_model) {
       return GetWindowWithBrowser(browser);
     }
@@ -125,8 +127,10 @@ void WebsiteMetrics::ActiveTabWebContentsObserver::WebContentsDestroyed() {
 }
 
 void WebsiteMetrics::ActiveTabWebContentsObserver::
-    OnInstallableWebAppStatusUpdated() {
-  owner_->OnInstallableWebAppStatusUpdated(web_contents());
+    OnInstallableWebAppStatusUpdated(
+        webapps::InstallableWebAppCheckResult result,
+        const std::optional<webapps::WebAppBannerData>& data) {
+  owner_->OnInstallableWebAppStatusUpdated(web_contents(), result, data);
 }
 
 WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
@@ -135,7 +139,7 @@ WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
     return;
   }
 
-  absl::optional<base::TimeDelta> running_time_value =
+  std::optional<base::TimeDelta> running_time_value =
       base::ValueToTimeDelta(data_dict->Find(kRunningTimeKey));
   if (!running_time_value.has_value()) {
     return;
@@ -416,7 +420,15 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
       auto it = webcontents_to_observer_map_.find(new_contents);
       if (it != webcontents_to_observer_map_.end()) {
         it->second->OnPrimaryPageChanged();
-        it->second->OnInstallableWebAppStatusUpdated();
+
+        auto* app_banner_manager =
+            webapps::AppBannerManager::FromWebContents(new_contents);
+        // In some test cases, AppBannerManager might be null.
+        if (app_banner_manager) {
+          it->second->OnInstallableWebAppStatusUpdated(
+              app_banner_manager->GetInstallableWebAppCheckResult(),
+              app_banner_manager->GetCurrentWebAppBannerData());
+        }
       }
       return;
     }
@@ -440,14 +452,22 @@ void WebsiteMetrics::OnTabClosed(content::WebContents* web_contents) {
 
 void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   // If there is an app for the url, we don't need to record the url, because
-  // the app metrics can record the usage time metrics.
+  // the app metrics can record the usage time metrics. We need to ensure we
+  // notify observers of previous URL being closed if we happen to be tracking
+  // it.
   if (GetInstanceAppIdForWebContents(web_contents).has_value()) {
-    webcontents_to_ukm_key_.erase(web_contents);
+    if (const auto web_contents_it = webcontents_to_ukm_key_.find(web_contents);
+        web_contents_it != webcontents_to_ukm_key_.end()) {
+      for (auto& observer : observers_) {
+        observer.OnUrlClosed(web_contents_it->second, web_contents);
+      }
+      webcontents_to_ukm_key_.erase(web_contents);
+    }
     return;
   }
 
-  auto* window =
-      GetWindowWithBrowser(chrome::FindBrowserWithWebContents(web_contents));
+  auto* const window =
+      GetWindowWithBrowser(chrome::FindBrowserWithTab(web_contents));
   if (!window) {
     return;
   }
@@ -500,7 +520,9 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
 }
 
 void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    webapps::InstallableWebAppCheckResult result,
+    const std::optional<webapps::WebAppBannerData>& data) {
   auto it = webcontents_to_ukm_key_.find(web_contents);
   if (it == webcontents_to_ukm_key_.end()) {
     // If the `web_contents` has been removed or replaced, we don't need to set
@@ -512,13 +534,8 @@ void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
   // web apps opened in tabs are filtered out too. So every WebContents here
   // must be a website not installed. Check the manifest to get the scope or the
   // start url if there is a manifest.
-  auto* app_banner_manager =
-      webapps::AppBannerManager::FromWebContents(web_contents);
-
-  // In some test cases, AppBannerManager might be null.
-  if (!app_banner_manager ||
-      blink::IsEmptyManifest(app_banner_manager->manifest()) ||
-      app_banner_manager->manifest().scope.is_empty()) {
+  if (!data || blink::IsEmptyManifest(data->manifest()) ||
+      data->manifest().scope.is_empty()) {
     return;
   }
 

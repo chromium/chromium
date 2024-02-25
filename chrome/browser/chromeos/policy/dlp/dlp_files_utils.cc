@@ -53,7 +53,8 @@ bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
     policy::DlpRulesManager::RuleMetadata out_rule_metadata;
     if (rules_manager->IsRestrictedComponent(
             GURL(src), component,
-            policy::DlpRulesManagerBase::Restriction::kFiles, &out_src_pattern,
+            data_controls::DlpRulesManagerBase::Restriction::kFiles,
+            &out_src_pattern,
             &out_rule_metadata) == policy::DlpRulesManager::Level::kBlock) {
       return true;
     }
@@ -62,12 +63,10 @@ bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
   return false;
 }
 
-void OpenLearnMore() {
-  // TODO(b/291896216): Open page based on policy.
+void OpenLearnMore(const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(dlp::kDlpLearnMoreUrl),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

@@ -1,0 +1,702 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AndroidSmsFcmMessageType">
+  <int value="0" label="Start"/>
+  <int value="1" label="Resume"/>
+  <int value="2" label="Stop"/>
+</enum>
+
+<enum name="BooleanDuplicate">
+  <int value="0" label="Not Duplicate"/>
+  <int value="1" label="Duplicate"/>
+</enum>
+
+<enum name="BooleanExpected">
+  <int value="0" label="Unexpected"/>
+  <int value="1" label="Expected"/>
+</enum>
+
+<enum name="CryptAuthApiCallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Network Request Error: Offline"/>
+  <int value="3" label="Network Request Error: Endpoint Not Found"/>
+  <int value="4" label="Network Request Error: Authentication Error"/>
+  <int value="5" label="Network Request Error: Bad Request"/>
+  <int value="6" label="Network Request Error: Response Malformed"/>
+  <int value="7" label="Network Request Error: Internal Server Error"/>
+  <int value="8" label="Network Request Error: Unknown"/>
+</enum>
+
+<enum name="CryptAuthAsyncTaskResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<enum name="CryptAuthFeatureType">
+  <int value="0" label="Better Together Host (Supported)"/>
+  <int value="1" label="Better Together Host (Enabled)"/>
+  <int value="2" label="Better Together Client (Supported)"/>
+  <int value="3" label="Better Together Client (Enabled)"/>
+  <int value="4" label="Easy Unlock Host (Supported)"/>
+  <int value="5" label="Easy Unlock Host (Enabled)"/>
+  <int value="6" label="Easy Unlock Client (Supported)"/>
+  <int value="7" label="Easy Unlock Client (Enabled)"/>
+  <int value="8" label="Magic Tether Host (Supported)"/>
+  <int value="9" label="Magic Tether Host (Enabled)"/>
+  <int value="10" label="Magic Tether Client (Supported)"/>
+  <int value="11" label="Magic Tether Client (Enabled)"/>
+  <int value="12" label="SMS Connect Host (Supported)"/>
+  <int value="13" label="SMS Connect Host (Enabled)"/>
+  <int value="14" label="SMS Connect Client (Supported)"/>
+  <int value="15" label="SMS Connect Client (Enabled)"/>
+</enum>
+
+<enum name="CryptAuthSoftwareFeature">
+  <int value="0" label="UNKNOWN_FEATURE"/>
+  <int value="1" label="BETTER_TOGETHER_HOST"/>
+  <int value="2" label="BETTER_TOGETHER_CLIENT"/>
+  <int value="3" label="EASY_UNLOCK_HOST"/>
+  <int value="4" label="EASY_UNLOCK_CLIENT"/>
+  <int value="5" label="MAGIC_TETHER_HOST"/>
+  <int value="6" label="MAGIC_TETHER_CLIENT"/>
+  <int value="7" label="SMS_CONNECT_HOST"/>
+  <int value="8" label="SMS_CONNECT_CLIENT"/>
+</enum>
+
+<enum name="CryptAuthTargetService">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Enrollment"/>
+  <int value="2" label="DeviceSync"/>
+</enum>
+
+<enum name="CryptAuthV2DeviceSyncResultCode">
+  <int value="0" label="Success"/>
+  <int value="1" label="Finished with non-fatal errors"/>
+  <int value="2" label="Error: ClientAppMetadata fetch failed"/>
+  <int value="3" label="Error: Missing user key pair"/>
+  <int value="4" label="Error: Could not create group key"/>
+  <int value="5" label="Error: Could not encrypt device metadata"/>
+  <int value="6" label="Error: Could not establish group public key"/>
+  <int value="7" label="Error: No metadata in response"/>
+  <int value="8" label="Error: All metadata in response invalid"/>
+  <int value="9" label="Error: No local device metadata in response"/>
+  <int value="10" label="Error: Missing local device feature statuses"/>
+  <int value="11"
+      label="Error: Missing local device DeviceSyncBetterTogether key"/>
+  <int value="12" label="Error: Could not decrypt group private key"/>
+  <int value="13" label="Error: Could not encrypt group private key"/>
+  <int value="14" label="Error (SyncMetadata API call): Offline"/>
+  <int value="15" label="Error (SyncMetadata API call): Endpoint not found"/>
+  <int value="16" label="Error (SyncMetadata API call): Authentication error"/>
+  <int value="17" label="Error (SyncMetadata API call): Bad request"/>
+  <int value="18" label="Error (SyncMetadata API call): Response malformed"/>
+  <int value="19" label="Error (SyncMetadata API call): Internal server error"/>
+  <int value="20" label="Error (SyncMetadata API call): Unknown error"/>
+  <int value="21" label="Error (BatchGetFeatureStatuses API call): Offline"/>
+  <int value="22"
+      label="Error (BatchGetFeatureStatuses API call): Endpoint not found"/>
+  <int value="23"
+      label="Error (BatchGetFeatureStatuses API call): Authentication error"/>
+  <int value="24"
+      label="Error (BatchGetFeatureStatuses API call): Bad request"/>
+  <int value="25"
+      label="Error (BatchGetFeatureStatuses API call): Response malformed"/>
+  <int value="26"
+      label="Error (BatchGetFeatureStatuses API call): Internal server error"/>
+  <int value="27"
+      label="Error (BatchGetFeatureStatuses API call): Unknown error"/>
+  <int value="28" label="Error (ShareGroupPrivateKey API call): Offline"/>
+  <int value="29"
+      label="Error (ShareGroupPrivateKey API call): Endpoint not found"/>
+  <int value="30"
+      label="Error (ShareGroupPrivateKey API call): Authentication error"/>
+  <int value="31" label="Error (ShareGroupPrivateKey API call): Bad request"/>
+  <int value="32"
+      label="Error (ShareGroupPrivateKey API call): Response malformed"/>
+  <int value="33"
+      label="Error (ShareGroupPrivateKey API call): Internal server error"/>
+  <int value="34" label="Error (ShareGroupPrivateKey API call): Unknown error"/>
+  <int value="35" label="Error: Timeout waiting for group key creation"/>
+  <int value="36" label="Error: Timeout waiting for ClientAppMetadata"/>
+  <int value="37"
+      label="Error: Timeout waiting for local device metadata encryption"/>
+  <int value="38"
+      label="Error: Timeout waiting for first SyncMetadata response"/>
+  <int value="39"
+      label="Error: Timeout waiting for second SyncMetadata response"/>
+  <int value="40"
+      label="Error: Timeout waiting for group private key decryption"/>
+  <int value="41"
+      label="Error: Timeout waiting for device metadata decryption"/>
+  <int value="42"
+      label="Error: Timeout waiting for BatchGetFeatureStatuses response"/>
+  <int value="43"
+      label="Error: Timeout waiting for group private key encryption"/>
+  <int value="44"
+      label="Error: Timeout waiting for ShareGroupPrivateKey response"/>
+</enum>
+
+<enum name="CryptAuthV2DeviceSyncResultType">
+  <int value="0" label="Success"/>
+  <int value="1" label="Non-fatal error"/>
+  <int value="2" label="Fatal error"/>
+</enum>
+
+<enum name="CryptAuthV2EnrollmentResult">
+  <int value="0" label="Success: No new keys needed"/>
+  <int value="1" label="Success: New keys enrolled"/>
+  <int value="2" label="Error (SyncKeys API call): Offline"/>
+  <int value="3" label="Error (SyncKeys API call): Endpoint not found"/>
+  <int value="4" label="Error (SyncKeys API call): Authentication error"/>
+  <int value="5" label="Error (SyncKeys API call): Bad request"/>
+  <int value="6" label="Error (SyncKeys API call): Response malformed"/>
+  <int value="7" label="Error (SyncKeys API call): Internal server error"/>
+  <int value="8" label="Error (SyncKeys API call): Unknown error"/>
+  <int value="9" label="Error (EnrollKeys API call): Offline"/>
+  <int value="10" label="Error (EnrollKeys API call): Endpoint not found"/>
+  <int value="11" label="Error (EnrollKeys API call): Authentication error"/>
+  <int value="12" label="Error (EnrollKeys API call): Bad request"/>
+  <int value="13" label="Error (EnrollKeys API call): Response malformed"/>
+  <int value="14" label="Error (EnrollKeys API call): Internal server error"/>
+  <int value="15" label="Error (EnrollKeys API call): Unknown error"/>
+  <int value="16" label="Error: CryptAuth server overloaded"/>
+  <int value="17" label="Error: SyncKeysResponse missing random session ID"/>
+  <int value="18" label="Error: SyncKeysResponse invalid ClientDirective"/>
+  <int value="19" label="Error: Wrong number of SyncSingleKeyResponses"/>
+  <int value="20" label="Error: Wrong number of KeyActions"/>
+  <int value="21" label="Error: Invalid KeyAction enum value"/>
+  <int value="22" label="Error: KeyActions specify multiple active keys"/>
+  <int value="23" label="Error: KeyActions do not specify an active key"/>
+  <int value="24" label="Error: Key creation KeyType not supported"/>
+  <int value="25" label="Error: User key pair creation instructions invalid"/>
+  <int value="26"
+      label="Error: Symmetric key creation missing server Diffie-Hellman"/>
+  <int value="27" label="Error: Key proof computation failed"/>
+  <int value="28" label="Error: Timeout waiting for SyncKeys response"/>
+  <int value="29" label="Error: Timeout waiting for key creation"/>
+  <int value="30" label="Error: Timeout waiting for EnrollKeys response"/>
+  <int value="31" label="Error: GCM registration failed"/>
+  <int value="32" label="Error: ClientAppMetadata fetch failed"/>
+  <int value="33" label="Error: Timeout waiting for GCM registration"/>
+  <int value="34" label="Error: Timeout waiting for ClientAppMetadata"/>
+  <int value="35" label="Error: Failed to create user key pair"/>
+  <int value="36" label="Error: Failed to create legacy main key"/>
+  <int value="37"
+      label="Error: Failed to create DeviceSync:BetterTogether key"/>
+</enum>
+
+<enum name="CryptAuthV2EnrollmentUserKeyPairState">
+  <int value="0" label="v1 and v2 do not exist"/>
+  <int value="1" label="v1 exists but not v2"/>
+  <int value="2" label="v2 exists but not v1"/>
+  <int value="3" label="v1 and v2 exist and agree"/>
+  <int value="4" label="v1 and v2 exist and disagree"/>
+</enum>
+
+<enum name="CryptAuthV2InvocationReason">
+  <int value="0" label="Invocation reason unspecified"/>
+  <int value="1" label="Initialization"/>
+  <int value="2" label="Periodic"/>
+  <int value="3" label="Slow periodic"/>
+  <int value="4" label="Fast periodic"/>
+  <int value="5" label="Expiration"/>
+  <int value="6" label="Failure recovery"/>
+  <int value="7" label="New account"/>
+  <int value="8" label="Changed account"/>
+  <int value="9" label="Feature toggled"/>
+  <int value="10" label="Server initiated"/>
+  <int value="11" label="Address change"/>
+  <int value="12" label="Software update"/>
+  <int value="13" label="Manual"/>
+  <int value="14" label="Custom key invalidation"/>
+  <int value="15" label="Proximity periodic"/>
+</enum>
+
+<enum name="EasyUnlockAuthEvent">
+  <int value="0" label="Smart Lock success"/>
+  <int value="1" label="Smart Lock failure"/>
+  <int value="2" label="(Deprecated) Password entry: No pairing"/>
+  <int value="3" label="(Deprecated) Password entry: Pairing changed"/>
+  <int value="4" label="(Deprecated) Password entry: User hardlock"/>
+  <int value="5" label="Password entry: Service not active"/>
+  <int value="6" label="Password entry: No Bluetooth"/>
+  <int value="7" label="Password entry: Bluetooth connecting"/>
+  <int value="8" label="Password entry: No phone"/>
+  <int value="9" label="Password entry: Phone not authenticated"/>
+  <int value="10" label="Password entry: Phone locked"/>
+  <int value="11" label="Password entry: Phone not lockable"/>
+  <int value="12" label="Password entry: RSSI too low"/>
+  <int value="13" label="(Deprecated) Password entry: Phone not supported"/>
+  <int value="14" label="Password entry: Phone authenticated"/>
+  <int value="15" label="(Deprecated) Password entry: Tx power too high"/>
+  <int value="16" label="(Deprecated) Password entry: Easy sign-in failed"/>
+  <int value="17" label="(Deprecated) Password entry: Pairing added"/>
+  <int value="18" label="Password entry: No Smart Lock state handler"/>
+  <int value="19" label="Password entry: Phone locked and tx power too high"/>
+  <int value="20" label="(Deprecated) Password entry: Forced re-auth"/>
+  <int value="21"
+      label="(Deprecated) Password entry: Sign-in with Smart Lock disabled"/>
+  <int value="22" label="Password entry: Primary user absent"/>
+</enum>
+
+<enum name="EasyUnlockDeviceModelHash">
+  <int value="-1829584143" label="Motorola XT1097"/>
+  <int value="-1429808627" label="HTC One"/>
+  <int value="-1168032746" label="Motorola Nexus 6"/>
+  <int value="-617422855" label="LGE Nexus 4"/>
+  <int value="684891985" label="Motorola Moto X"/>
+  <int value="1286382027" label="Motorola XT1095"/>
+  <int value="1412446710" label="Motorola XT1096"/>
+  <int value="1881443083" label="LGE Nexus 5"/>
+</enum>
+
+<enum name="EasyUnlockDidUserManuallyUnlockPhone">
+  <int value="0" label="Never locked"/>
+  <int value="1" label="Manually unlocked"/>
+</enum>
+
+<enum name="EasyUnlockRemoteLockScreenState">
+  <int value="0" label="Unknown state"/>
+  <int value="1" label="Lock screen disabled, trust agent unsupported"/>
+  <int value="2" label="Lock screen disabled, trust agent disabled"/>
+  <int value="3" label="Lock screen disabled, trust agent enabled"/>
+  <int value="4" label="Lock screen enabled, trust agent unsupported"/>
+  <int value="5" label="Lock screen enabled, trust agent disabled"/>
+  <int value="6" label="Lock screen enabled, trust agent enabled"/>
+</enum>
+
+<enum name="FirstSmartLockStatus">
+  <int value="0" label="Bluetooth disabled"/>
+  <int value="1" label="Phone not lockable"/>
+  <int value="2" label="Phone not found"/>
+  <int value="3" label="Phone not authenticated"/>
+  <int value="4" label="Phone found but locked and distant"/>
+  <int value="5" label="Phone found and nearby but locked"/>
+  <int value="6" label="Phone found and unlocked but distant"/>
+  <int value="7" label="Phone authenticated, ready to unlock Chromebook"/>
+  <int value="8" label="Primary user absent"/>
+</enum>
+
+<enum name="GCMClientResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid parameter"/>
+  <int value="2" label="GCM disabled"/>
+  <int value="3" label="Async operation pending"/>
+  <int value="4" label="Network error"/>
+  <int value="5" label="Server error"/>
+  <int value="6" label="TTL exceeded"/>
+  <int value="7" label="Unknown error"/>
+</enum>
+
+<enum name="InstantTethering_ConnectionToHostResult_EndResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Internal error"/>
+  <int value="2" label="User cancelled connection attempt"/>
+  <int value="3" label="Provisioning failed"/>
+  <int value="4" label="No cellular data"/>
+  <int value="5" label="Tethering unsupported"/>
+</enum>
+
+<enum name="InstantTethering_ConnectionToHostResult_Failure">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Tethering timed out"/>
+  <int value="2" label="Client connection error"/>
+  <int value="3" label="(obsolete) Tethering unsupported"/>
+  <int value="4" label="(obsolete) No cellular data"/>
+  <int value="5" label="Enabling hotspot failed"/>
+  <int value="6" label="Enabling hotspot timed out"/>
+  <int value="7" label="No response"/>
+  <int value="8" label="Invalid hotspot credentials"/>
+  <int value="9"
+      label="Successful request but no ConnectTetheringResponse message"/>
+  <int value="10" label="Unrecognized response error"/>
+  <int value="11" label="Invalid active existing soft AP config"/>
+  <int value="12" label="Invalid new soft AP config"/>
+  <int value="13" label="Invalid Wifi AP config"/>
+</enum>
+
+<enum name="InstantTethering_ConnectionToHostResult_Failure_ClientConnection">
+  <int value="0" label="Timeout while waiting to connect"/>
+  <int value="1" label="(obsolete) Canceled"/>
+  <int value="2" label="Internal error"/>
+  <int value="3" label="Network Connection Handler Failed"/>
+  <int value="4" label="Network State was null"/>
+  <int value="5" label="Wifi failed to enable"/>
+</enum>
+
+<enum name="InstantTethering_ConnectionToHostResult_Failure_TetheringTimeout">
+  <int value="0" label="First-time setup was required"/>
+  <int value="1" label="First-time setup was not required"/>
+</enum>
+
+<enum name="InstantTethering_ConnectionToHostResult_ProvisioningFailureRate">
+  <int value="0" label="Provisioning failed"/>
+  <int value="1" label="Other"/>
+</enum>
+
+<enum name="InstantTethering_ConnectionToHostResult_SuccessRate">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+</enum>
+
+<enum name="InstantTethering_ConnectionToHostResult_UnavoidableError">
+  <int value="0" label="Other"/>
+  <int value="1" label="Provisioning failed"/>
+  <int value="2" label="User cancellation"/>
+  <int value="3" label="Tethering unsupported"/>
+  <int value="4" label="No cellular data"/>
+  <int value="5" label="Feature shut down during connection attempt"/>
+  <int value="6" label="Cancelled for newer connection attempt"/>
+</enum>
+
+<enum name="InstantTethering_FeatureState">
+  <int value="0" label="Shut down (deprecated)"/>
+  <int value="1" label="BLE advertising not supported"/>
+  <int value="2" label="Screen locked (deprecated)"/>
+  <int value="3" label="No available hosts"/>
+  <int value="4" label="Cellular disabled"/>
+  <int value="5" label="Prohibited"/>
+  <int value="6" label="Bluetooth disabled"/>
+  <int value="7" label="User preference disabled"/>
+  <int value="8" label="Enabled"/>
+  <int value="9" label="BLE not present"/>
+  <int value="10" label="WiFi not present"/>
+  <int value="11" label="Suspended"/>
+  <int value="12" label="Better Together suite disabled"/>
+</enum>
+
+<enum name="InstantTethering_HostScanResult">
+  <int value="0" label="No hosts found"/>
+  <int value="1" label="Notification shown for single host"/>
+  <int value="2" label="Notification shown for multiple hosts"/>
+  <int value="3" label="Hosts found but no notification shown"/>
+</enum>
+
+<enum name="InstantTethering_NotificationInteractionType">
+  <int value="0" label="Notification body clicked: Single host nearby"/>
+  <int value="1" label="Notification body clicked: Multiple hosts nearby"/>
+  <int value="2" label="Notification body clicked: Setup required"/>
+  <int value="3" label="Notification body clicked: Connection failed"/>
+  <int value="4" label="Notification button clicked: Single host nearby"/>
+</enum>
+
+<enum name="InstantTethering_SessionCompletionReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="User disconnected"/>
+  <int value="2" label="Connection dropped"/>
+  <int value="3" label="User logged out"/>
+  <int value="4" label="User closed lid"/>
+  <int value="5" label="Pref disabled"/>
+  <int value="6" label="Bluetooth disabled"/>
+  <int value="7" label="Cellular disabled"/>
+  <int value="8" label="Wi-Fi disabled"/>
+  <int value="9" label="Bluetooth controller disappeared"/>
+  <int value="10" label="MultiDevice host unverified"/>
+  <int value="11" label="Better Together suite disabled"/>
+</enum>
+
+<enum name="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason">
+  <int value="0" label="Requested succeeded but unexpected result"/>
+  <int value="1" label="Service not yet initialized"/>
+  <int value="2" label="Device offline"/>
+  <int value="3" label="Server endpoint not found"/>
+  <int value="4" label="Authentication error"/>
+  <int value="5" label="Bad request"/>
+  <int value="6" label="Response malformed"/>
+  <int value="7" label="Internal server error"/>
+  <int value="8" label="Unknown network error"/>
+  <int value="9" label="Unknown error"/>
+</enum>
+
+<enum name="MultiDevice_DeviceSyncService_Features">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Better Together Suite"/>
+  <int value="2" label="Smart Lock"/>
+  <int value="3" label="Instant Tethering"/>
+  <int value="4" label="Messages"/>
+  <int value="5" label="Unexpected Client Feature"/>
+</enum>
+
+<enum name="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Service not ready"/>
+</enum>
+
+<enum name="MultiDevice_PostOOBESetupFlow_Page">
+  <int value="0" label="Unknown page"/>
+  <int value="1" label="Start page"/>
+  <int value="2" label="Password page"/>
+  <int value="3" label="Success page"/>
+</enum>
+
+<enum name="MultiDevice_Setup_HostStatus">
+  <int value="0" label="No eligible hosts"/>
+  <int value="1" label="Eligible host exists but no host set"/>
+  <int value="2" label="Host set locally but waiting for backend confirmation"/>
+  <int value="3" label="Host set but not yet verified"/>
+  <int value="4" label="Host verified"/>
+</enum>
+
+<enum name="MultiDevice_VerifyAndForgetHostConfirmationState">
+  <int value="0" label="Button clicked"/>
+  <int value="1" label="Completed Setup"/>
+</enum>
+
+<enum name="MultiDeviceNearbyConnectionsInitiatorResult">
+  <int value="0" label="Connection Success"/>
+  <int value="1" label="(Obsolete) Timeout Discovering Device"/>
+  <int value="2" label="(Obsolete) Nearby Api Error"/>
+  <int value="3" label="(Obsolete) Connection Rejected"/>
+  <int value="4" label="Connectivity Error"/>
+  <int value="5" label="Authentication Error"/>
+</enum>
+
+<enum name="MultiDeviceNearbyDisconnectionReason">
+  <int value="0" label="Disconnection requested by client"/>
+  <int value="1" label="Failed discovery"/>
+  <int value="2" label="Timeout during discovery"/>
+  <int value="3" label="Failed requesting connection"/>
+  <int value="4" label="Timeout during RequestConnection() call"/>
+  <int value="5" label="Failed accepting connection"/>
+  <int value="6" label="Timeout during AcceptConnection() call"/>
+  <int value="7" label="Connection rejected"/>
+  <int value="8" label="Timeout waiting for connection to be accepted"/>
+  <int value="9" label="SendMessage() failed"/>
+  <int value="10" label="Received unexpected payload type"/>
+  <int value="11" label="Connection lost"/>
+  <int value="12" label="Nearby process crash"/>
+  <int value="13" label="Nearby process Mojo dependency disconnection"/>
+  <int value="14" label="Received file paylad that wasn't registered"/>
+</enum>
+
+<enum name="MultiDeviceNearbyFileAction">
+  <int value="0" label="Registered file received"/>
+  <int value="1" label="Unexpected file received"/>
+</enum>
+
+<enum name="MultiDeviceNearbyFileTransferResult">
+  <int value="0" label="File transfer success"/>
+  <int value="1" label="File transfer failure"/>
+  <int value="2" label="File transfer canceled"/>
+</enum>
+
+<enum name="MultiDeviceNearbyMessageAction">
+  <int value="0" label="Message Sent"/>
+  <int value="1" label="Message Received"/>
+</enum>
+
+<enum name="MultiDeviceSetupDialogEntrypoint">
+  <int value="0" label="Opened from settings page"/>
+  <int value="1" label="Opened from setup notification"/>
+  <int value="2" label="Opened from Phone Hub bubble"/>
+  <int value="3" label="Opened from Phone Hub bubble after nudge"/>
+</enum>
+
+<enum name="MultiDeviceSetupNotification">
+  <int value="0" label="New user, potential host exists"/>
+  <int value="1" label="Existing user, host switched"/>
+  <int value="2" label="Existing user, new Chromebook added"/>
+  <int value="3" label="Unknown (error case)"/>
+  <int value="4" label="Wi-Fi Sync Announcement"/>
+</enum>
+
+<enum name="MultideviceSetupNudgeInteraction">
+  <int value="0" label="Click on nudge"/>
+  <int value="1" label="Click on Phone Hub icon when nudge is visible"/>
+</enum>
+
+<enum name="MultiDeviceSetupOOBEUserChoice">
+  <int value="0" label="MULTI_DEVICE_SETUP_OOBE_USER_CHOICE_ACCEPTED">
+    Accepted MultiDevice OOBE Setup.
+  </int>
+  <int value="1" label="MULTI_DEVICE_SETUP_OOBE_USER_CHOICE_DECLINED">
+    Declined MultiDevice OOBE Setup.
+  </int>
+</enum>
+
+<enum name="NearbyConnectionsStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Out-of-order API call"/>
+  <int value="3" label="Already have active strategy"/>
+  <int value="4" label="Already advertising"/>
+  <int value="5" label="Already discovering"/>
+  <int value="6" label="Endpoint IO error"/>
+  <int value="7" label="Endpoint unknown"/>
+  <int value="8" label="Connection rejected"/>
+  <int value="9" label="Already connected to endpoint"/>
+  <int value="10" label="Not connected to endpoint"/>
+  <int value="11" label="Bluetooth error"/>
+  <int value="12" label="BLE error"/>
+  <int value="13" label="Wi-Fi LAN error"/>
+  <int value="14" label="Payload unknown"/>
+  <int value="15" label="Already listening"/>
+  <int value="16" label="Connection was reset"/>
+  <int value="17" label="Connection timed out"/>
+  <int value="18" label="Unknown failure"/>
+</enum>
+
+<enum name="ProximityAuth_BleWeaveConnectionResult">
+  <int value="0" label="Closed normally"/>
+  <int value="1" label="(Deprecated) Timeout: Setting connection latency"/>
+  <int value="2" label="Timeout: Creating GATT connection"/>
+  <int value="3" label="Timeout: Starting notify session"/>
+  <int value="4" label="Timeout: Finding GATT characteristics"/>
+  <int value="5" label="Timeout: Waiting for connection response"/>
+  <int value="6" label="Error: Bluetooth device not available"/>
+  <int value="7" label="Error: Creating GATT connection"/>
+  <int value="8" label="Error: Starting notify session"/>
+  <int value="9" label="Error: Finding GATT characteristics"/>
+  <int value="10" label="Error: Writing GATT characteristics"/>
+  <int value="11" label="Error: GATT characteristics not available"/>
+  <int value="12" label="Error: Write queue out of sync"/>
+  <int value="13" label="Error: Device lost"/>
+  <int value="14" label="Error: Connection dropped"/>
+  <int value="15" label="Timeout: Waiting for message to send"/>
+</enum>
+
+<enum name="ProximityAuth_BluetoothGattConnectionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Auth canceled"/>
+  <int value="2" label="Error: Auth failed"/>
+  <int value="3" label="Error: Auth rejected"/>
+  <int value="4" label="Error: Auth timeout"/>
+  <int value="5" label="Error: Failed"/>
+  <int value="6" label="Error: In progress"/>
+  <int value="7" label="Error: Unknown"/>
+  <int value="8" label="Error: Unsupported device"/>
+  <int value="9" label="Unknown result"/>
+</enum>
+
+<enum name="ProximityAuth_BluetoothGattServiceOperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Unknown"/>
+  <int value="2" label="Error: Failed"/>
+  <int value="3" label="Error: In progress"/>
+  <int value="4" label="Error: Invalid length"/>
+  <int value="5" label="Error: Not permitted"/>
+  <int value="6" label="Error: Not authorized"/>
+  <int value="7" label="Error: Not paired"/>
+  <int value="8" label="Error: Not supported"/>
+  <int value="9" label="Unknown result"/>
+</enum>
+
+<enum name="SecureChannelNearbyConnectionMedium">
+  <int value="0" label="Connected via Bluetooth"/>
+  <int value="1" label="Upgraded bandwidth to WebRTC"/>
+  <int value="2"
+      label="Disconnected in under 30s without WebRTC upgrade; not provided
+             enough time to complete bandwidth upgrade process"/>
+</enum>
+
+<enum name="SmartLockAuthEventPasswordState">
+  <int value="0" label="Unknown state"/>
+  <int value="1" label="(obsolete) No pairing"/>
+  <int value="2" label="(obsolete) Pairing changed"/>
+  <int value="3" label="(obsolete) User hardlock"/>
+  <int value="4" label="Service not active"/>
+  <int value="5" label="No Bluetooth"/>
+  <int value="6" label="Bluetooth connecting"/>
+  <int value="7" label="Could not connect to phone"/>
+  <int value="8" label="Phone not authenticated"/>
+  <int value="9" label="Phone locked"/>
+  <int value="10" label="RSSI too low"/>
+  <int value="11" label="Phone authenticated"/>
+  <int value="12" label="(obsolete) Sign-in failed"/>
+  <int value="13" label="(obsolete) Pairing added"/>
+  <int value="14" label="(obsolete) No screenlock state handler"/>
+  <int value="15" label="Phone locked and RSSI too low"/>
+  <int value="16" label="(obsolete) Forced Reauthentication"/>
+  <int value="17" label="(obsolete) Sign-in with Smart Lock disabled"/>
+  <int value="18" label="Phone not lockable"/>
+  <int value="19" label="Primary user absent"/>
+</enum>
+
+<enum name="SmartLockAuthMethodChoice">
+  <int value="0" label="Smart Lock"/>
+  <int value="1" label="Other"/>
+</enum>
+
+<enum name="SmartLockAuthResultFailureReason">
+  <int value="0" label="Unlock not allowed"/>
+  <int value="1" label="(obsolete) Already attempting auth"/>
+  <int value="2" label="Empty user account"/>
+  <int value="3" label="Invalid account id"/>
+  <int value="4" label="Auth attempt cannot start"/>
+  <int value="5" label="No pending or active host"/>
+  <int value="6" label="Authentication channel dropped"/>
+  <int value="7" label="Failed to send unlock request"/>
+  <int value="8" label="(obsolete) Failed to decrypt sign-in"/>
+  <int value="9" label="Failed to notify host device that Smart Lock was used"/>
+  <int value="10" label="Authentication attempt timed out"/>
+  <int value="11" label="Unlock event sent but not attempting auth"/>
+  <int value="12" label="Unlock request sent but not attempting auth"/>
+  <int value="13" label="(obsolete) Login display host does not exist"/>
+  <int value="14" label="(obsolete) User controller sign in failure"/>
+</enum>
+
+<enum name="SmartLockEnabledState">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Unset"/>
+</enum>
+
+<enum name="SmartLockFindAndConnectToHostResult">
+  <int value="0" label="Found and connected to host"/>
+  <int value="1" label="Canceled, Bluetooth disabled"/>
+  <int value="2" label="Canceled, user entered password"/>
+  <int value="3" label="Connection attempt failure with SecureChannel service"/>
+  <int value="4"
+      label="Timed out (phone is too far, it or its Bluetooth is off, or a
+             connection error occurred)"/>
+</enum>
+
+<enum name="SmartLockGetRemoteStatusResultFailureReason">
+  <int value="0" label="Canceled, Bluetooth disabled"/>
+  <int value="1"
+      label="(Deprecated) Timed out could not establish authenticated channel"/>
+  <int value="2" label="Timed out did not receive remote status update"/>
+  <int value="3"
+      label="(Deprecated) User entered password while Bluetooth disabled"/>
+  <int value="4" label="Canceled, user entered password"/>
+  <int value="5" label="Authenticated channel dropped"/>
+</enum>
+
+<enum name="SmartLockToggle">
+  <int value="0" label="Enabled on multidevice page"/>
+  <int value="1" label="Disabled on multidevice page"/>
+  <int value="2" label="Enabled on lock screen settings"/>
+  <int value="3" label="Disabled on lock screen settings"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

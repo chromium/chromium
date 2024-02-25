@@ -34,8 +34,6 @@
                 "icudtl.dat"
             ],
             "dirs": [
-                "blink_deprecated_test_plugin.plugin",
-                "blink_test_plugin.plugin",
                 "Content Shell.app",
                 "resources"
             ],
@@ -53,15 +51,6 @@
             ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Mac/{%position%}/devtools-frontend.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
-        },
-        {
-            "dirs": ["pnacl"],
-            "rename_dirs": [
-                {"from_dir": ".", "to_dir": "pnacl"}
-            ],
-            "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Mac/{%position%}/pncal.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {

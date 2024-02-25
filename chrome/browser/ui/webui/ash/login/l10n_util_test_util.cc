@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/login/l10n_util_test_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include <optional>
 
 #include <vector>
 
@@ -27,7 +28,7 @@ void MockInputMethodManagerWithInputMethods::AddInputMethod(
   languages.push_back(language_code);
   descriptors_.push_back(input_method::InputMethodDescriptor(
       id, std::string(), std::string(), layout, languages, true, GURL(), GURL(),
-      /*handwriting_language=*/absl::nullopt));
+      /*handwriting_language=*/std::nullopt));
 }
 
 }  // namespace ash

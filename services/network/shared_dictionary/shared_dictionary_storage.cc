@@ -5,8 +5,11 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
@@ -15,9 +18,10 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/request_destination.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -27,78 +31,115 @@ namespace {
 
 constexpr std::string_view kDefaultTypeRaw = "raw";
 
-class UseAsDictionaryHeaderInfo {
+class DictionaryHeaderInfo {
  public:
-  UseAsDictionaryHeaderInfo(std::string match,
-                            absl::optional<base::TimeDelta> expiration,
-                            absl::optional<std::vector<std::string>> algorithms,
-                            std::string type)
+  DictionaryHeaderInfo(std::string match,
+                       std::set<network::mojom::RequestDestination> match_dest,
+                       base::TimeDelta expiration,
+                       std::string type,
+                       std::string id)
       : match(std::move(match)),
+        match_dest(std::move(match_dest)),
         expiration(expiration),
-        algorithms(std::move(algorithms)),
-        type(std::move(type)) {}
-  ~UseAsDictionaryHeaderInfo() = default;
+        type(std::move(type)),
+        id(std::move(id)) {}
+  ~DictionaryHeaderInfo() = default;
 
   std::string match;
-  absl::optional<base::TimeDelta> expiration;
-  absl::optional<std::vector<std::string>> algorithms;
+  std::set<network::mojom::RequestDestination> match_dest;
+  base::TimeDelta expiration;
   std::string type;
+  std::string id;
 };
 
-absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
-    const net::HttpResponseHeaders& headers) {
+std::optional<DictionaryHeaderInfo> ParseDictionaryHeaderInfo(
+    const net::HttpResponseHeaders& headers,
+    const base::Time request_time,
+    const base::Time response_time) {
   std::string use_as_dictionary_header;
   if (!headers.GetNormalizedHeader(
           shared_dictionary::kUseAsDictionaryHeaderName,
           &use_as_dictionary_header)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<net::structured_headers::Dictionary> dictionary =
+  std::optional<net::structured_headers::Dictionary> dictionary =
       net::structured_headers::ParseDictionary(use_as_dictionary_header);
   if (!dictionary) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::string> match_value;
-  absl::optional<base::TimeDelta> expires_value;
-  absl::optional<std::vector<std::string>> algorithms_value;
+  std::optional<std::string> match_value;
+  // Maybe we don't need to support multiple match-dest.
+  // https://github.com/httpwg/http-extensions/issues/2722
+  std::set<network::mojom::RequestDestination> match_dest_values;
   std::string type_value = std::string(kDefaultTypeRaw);
+  std::string id_value;
   for (const auto& entry : dictionary.value()) {
     if (entry.first == shared_dictionary::kOptionNameMatch) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_string()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       match_value = entry.second.member.front().item.GetString();
-    } else if (entry.first == shared_dictionary::kOptionNameExpires) {
-      if ((entry.second.member.size() != 1u) ||
-          !entry.second.member.front().item.is_integer()) {
-        return absl::nullopt;
+    } else if (entry.first == shared_dictionary::kOptionNameMatchDest) {
+      if (!entry.second.member_is_inner_list) {
+        // `match-dest` must be a list.
+        return std::nullopt;
       }
-      expires_value =
-          base::Seconds(entry.second.member.front().item.GetInteger());
-    } else if (entry.first == shared_dictionary::kOptionNameAlgorithms) {
-      std::vector<std::string> tmp_vec;
-      for (const auto& algorithms_item : entry.second.member) {
-        if (!algorithms_item.item.is_token()) {
-          return absl::nullopt;
+      for (const auto& item : entry.second.member) {
+        if (!item.item.is_string()) {
+          return std::nullopt;
         }
-        tmp_vec.push_back(algorithms_item.item.GetString());
+        // We use the empty string "" for RequestDestination::kEmpty in
+        // `match-dest`.
+        std::optional<network::mojom::RequestDestination> dest_value =
+            RequestDestinationFromString(
+                item.item.GetString(),
+                EmptyRequestDestinationOption::kUseTheEmptyString);
+        if (dest_value) {
+          match_dest_values.insert(*dest_value);
+        }
       }
-      algorithms_value = std::move(tmp_vec);
     } else if (entry.first == shared_dictionary::kOptionNameType) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_token()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       type_value = entry.second.member.front().item.GetString();
+    } else if (entry.first == shared_dictionary::kOptionNameId) {
+      if ((entry.second.member.size() != 1u) ||
+          !entry.second.member.front().item.is_string()) {
+        return std::nullopt;
+      }
+      id_value = entry.second.member.front().item.GetString();
+      if (id_value.size() > shared_dictionary::kDictionaryIdMaxLength) {
+        return std::nullopt;
+      }
     }
   }
   if (!match_value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return UseAsDictionaryHeaderInfo(*match_value, std::move(expires_value),
-                                   std::move(algorithms_value), type_value);
+
+  // Use the fressness lifetime caliculated from the response header.
+  net::HttpResponseHeaders::FreshnessLifetimes lifetimes =
+      headers.GetFreshnessLifetimes(response_time);
+  // We calculate `expires_value` which is a delta from the response time to
+  // the expiration time. So we get the age of the response on the response
+  // time by setting `current_time` argument to `response_time`.
+  base::TimeDelta age_on_response_time =
+      headers.GetCurrentAge(request_time, response_time,
+                            /*current_time=*/response_time);
+  // We can use `freshness + staleness - current_age` as the expiration time.
+  base::TimeDelta expiration =
+      lifetimes.freshness + lifetimes.staleness - age_on_response_time;
+  if (expiration <= base::TimeDelta()) {
+    return std::nullopt;
+  }
+
+  return DictionaryHeaderInfo(std::move(*match_value),
+                              std::move(match_dest_values), expiration,
+                              std::move(type_value), std::move(id_value));
 }
 
 }  // namespace
@@ -110,19 +151,17 @@ SharedDictionaryStorage::~SharedDictionaryStorage() = default;
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryStorage::MaybeCreateWriter(
     const GURL& url,
-    base::Time response_time,
+    const base::Time request_time,
+    const base::Time response_time,
     const net::HttpResponseHeaders& headers,
     bool was_fetched_via_cache,
     base::OnceCallback<bool()> access_allowed_check_callback) {
-  absl::optional<UseAsDictionaryHeaderInfo> info =
-      ParseUseAsDictionaryHeaderInfo(headers);
+  std::optional<DictionaryHeaderInfo> info =
+      ParseDictionaryHeaderInfo(headers, request_time, response_time);
   if (!info) {
     return nullptr;
   }
-  base::TimeDelta expiration = shared_dictionary::kDefaultExpiration;
-  if (info->expiration) {
-    expiration = *info->expiration;
-  }
+  base::TimeDelta expiration = info->expiration;
   if (!base::FeatureList::IsEnabled(
           network::features::kCompressionDictionaryTransport)) {
     // During the Origin Trial experiment, kCompressionDictionaryTransport is
@@ -130,15 +169,6 @@ SharedDictionaryStorage::MaybeCreateWriter(
     // expiration time on the dictionary entry to keep the duration constrained.
     expiration =
         std::min(expiration, shared_dictionary::kMaxExpirationForOriginTrial);
-  }
-  if (info->algorithms) {
-    // Currently we only support support sha-256.
-    // TODO(crbug.com/1413922): Investigate the spec and decide whether to
-    // support non lowercase token or not.
-    if (std::find(info->algorithms->begin(), info->algorithms->end(),
-                  "sha-256") == info->algorithms->end()) {
-      return nullptr;
-    }
   }
   if (info->type != kDefaultTypeRaw) {
     // Currently we only support `raw` type.
@@ -150,7 +180,8 @@ SharedDictionaryStorage::MaybeCreateWriter(
   // dictionary storage has its own cache eviction logic, which is different
   // from the HTTP Caches's eviction logic.
   if (was_fetched_via_cache &&
-      IsAlreadyRegistered(url, response_time, expiration, info->match)) {
+      IsAlreadyRegistered(url, response_time, expiration, info->match,
+                          info->match_dest, info->id)) {
     return nullptr;
   }
 
@@ -158,7 +189,8 @@ SharedDictionaryStorage::MaybeCreateWriter(
     return nullptr;
   }
 
-  return CreateWriter(url, response_time, expiration, info->match);
+  return CreateWriter(url, response_time, expiration, info->match,
+                      info->match_dest, info->id);
 }
 
 }  // namespace network

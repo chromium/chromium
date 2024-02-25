@@ -169,11 +169,12 @@ public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase 
     @MediumTest
     public void testOutOfOrderExpectations_success() {
         // Arrange
-        mWatcher = HistogramWatcher.newBuilder()
-                           .expectIntRecord(TIMES_HISTOGRAM_1, 8000)
-                           .expectIntRecord(TIMES_HISTOGRAM_1, 6000)
-                           .expectIntRecord(TIMES_HISTOGRAM_1, 7000)
-                           .build();
+        mWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(TIMES_HISTOGRAM_1, 8000)
+                        .expectIntRecord(TIMES_HISTOGRAM_1, 6000)
+                        .expectIntRecord(TIMES_HISTOGRAM_1, 7000)
+                        .build();
 
         // Act
         RecordHistogram.recordTimesHistogram(TIMES_HISTOGRAM_1, 6000);
@@ -188,11 +189,12 @@ public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase 
     @MediumTest
     public void testOutOfOrderExpectations_failure() {
         // Arrange
-        mWatcher = HistogramWatcher.newBuilder()
-                           .expectIntRecord(TIMES_HISTOGRAM_1, 8000)
-                           .expectIntRecord(TIMES_HISTOGRAM_1, 6000)
-                           .expectIntRecord(TIMES_HISTOGRAM_1, 7000)
-                           .build();
+        mWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(TIMES_HISTOGRAM_1, 8000)
+                        .expectIntRecord(TIMES_HISTOGRAM_1, 6000)
+                        .expectIntRecord(TIMES_HISTOGRAM_1, 7000)
+                        .build();
 
         // Act
         RecordHistogram.recordTimesHistogram(TIMES_HISTOGRAM_1, 7000);
@@ -214,9 +216,10 @@ public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase 
     @MediumTest
     public void testZeroCountExpectations_failure() {
         try {
-            mWatcher = HistogramWatcher.newBuilder()
-                               .expectIntRecordTimes(TIMES_HISTOGRAM_1, 1, 0)
-                               .build();
+            mWatcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecordTimes(TIMES_HISTOGRAM_1, 1, 0)
+                            .build();
         } catch (IllegalArgumentException e) {
             assertContains("zero", e.getMessage());
             return;
@@ -228,9 +231,10 @@ public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase 
     @MediumTest
     public void testNegativeCountExpectations_failure() {
         try {
-            mWatcher = HistogramWatcher.newBuilder()
-                               .expectIntRecordTimes(TIMES_HISTOGRAM_1, 1, -1)
-                               .build();
+            mWatcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecordTimes(TIMES_HISTOGRAM_1, 1, -1)
+                            .build();
         } catch (IllegalArgumentException e) {
             assertContains("negative", e.getMessage());
             return;

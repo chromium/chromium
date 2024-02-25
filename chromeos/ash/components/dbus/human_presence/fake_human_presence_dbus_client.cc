@@ -4,10 +4,11 @@
 
 #include "chromeos/ash/components/dbus/human_presence/fake_human_presence_dbus_client.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

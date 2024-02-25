@@ -107,6 +107,42 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
                            cx_diag::MemtesterTestItemEnum::kCompareSub));
 }
 
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     VolumeButtonRoutineFinishedInfo) {
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto input = crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New();
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+}
+
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     FanRoutineFinishedInfo) {
+  auto input = crosapi::TelemetryDiagnosticFanRoutineDetail::New();
+  input->passed_fan_ids = {0};
+  input->failed_fan_ids = {1};
+  input->fan_count_status =
+      crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched;
+
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+}
+
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterResult) {
   auto input = crosapi::TelemetryDiagnosticMemtesterResult::New();
   input->passed_items = {
@@ -128,6 +164,19 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterResult) {
                            cx_diag::MemtesterTestItemEnum::kCompareSub));
 }
 
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, ExceptionReason) {
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryExtensionException::Reason::kUnmappedEnumField),
+      cx_diag::ExceptionReason::kUnknown);
+  EXPECT_EQ(Convert(crosapi::TelemetryExtensionException::Reason::
+                        kMojoDisconnectWithoutReason),
+            cx_diag::ExceptionReason::kUnknown);
+  EXPECT_EQ(Convert(crosapi::TelemetryExtensionException::Reason::kUnexpected),
+            cx_diag::ExceptionReason::kUnexpected);
+  EXPECT_EQ(Convert(crosapi::TelemetryExtensionException::Reason::kUnsupported),
+            cx_diag::ExceptionReason::kUnsupported);
+}
+
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingReason) {
   EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
                         kUnmappedEnumField),
@@ -145,7 +194,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingReason) {
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterTestItemEnum) {
   EXPECT_EQ(Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
                         kUnmappedEnumField),
-            cx_diag::MemtesterTestItemEnum::kNone);
+            cx_diag::MemtesterTestItemEnum::kUnknown);
   EXPECT_EQ(
       Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kUnknown),
       cx_diag::MemtesterTestItemEnum::kUnknown);
@@ -200,11 +249,13 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterTestItemEnum) {
           crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes),
       cx_diag::MemtesterTestItemEnum::kWalkingZeroes);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites),
-      cx_diag::MemtesterTestItemEnum::kByteWrites);
+      Convert(
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites),
+      cx_diag::MemtesterTestItemEnum::kEightBitWrites);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites),
-      cx_diag::MemtesterTestItemEnum::kWordWrites);
+      Convert(
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites),
+      cx_diag::MemtesterTestItemEnum::kSixteenBitWrites);
 }
 
 }  // namespace chromeos::converters::routines

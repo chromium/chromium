@@ -11,10 +11,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/skia_util.h"
 
@@ -56,6 +57,8 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result) {
       return os << "kAppIsIsolatedWebApp";
     case ManifestUpdateResult::kCancelledDueToMainFrameNavigation:
       return os << "kCancelledDueToMainFrameNavigation";
+    case ManifestUpdateResult::kShortcutIgnoresManifest:
+      return os << "kkShortcutIgnoresManifest";
   }
 }
 
@@ -130,7 +133,7 @@ ManifestUpdateResult FinalResultFromManifestUpdateCheckResult(
   }
 }
 
-absl::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
+std::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
     const IconBitmaps& existing_app_icon_bitmaps,
     const IconBitmaps& new_app_icon_bitmaps) {
   for (IconPurpose purpose : kIconPurposes) {
@@ -158,7 +161,7 @@ absl::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void RecordIconDownloadMetrics(IconsDownloadedResult result,
@@ -185,7 +188,8 @@ bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app) {
   // WebAppChromeOsData::oem_installed will be migrated to
   // WebAppManagement::kOem eventually.
   return web_app.IsPreinstalledApp() || web_app.IsKioskInstalledApp() ||
-         web_app.GetSources().Has(WebAppManagement::kOem);
+         web_app.GetSources().HasAny(
+             {WebAppManagement::kOem, WebAppManagement::kApsDefault});
 }
 
 bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,

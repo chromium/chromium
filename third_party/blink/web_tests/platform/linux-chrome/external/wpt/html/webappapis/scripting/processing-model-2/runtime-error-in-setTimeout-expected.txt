@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] window.onerror - runtime error in setTimeout
+  assert_equals: second arg expected "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/runtime-error-in-setTimeout.html" but got ""
+Harness: the test ran to completion.

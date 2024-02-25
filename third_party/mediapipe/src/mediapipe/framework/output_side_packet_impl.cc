@@ -14,10 +14,10 @@
 
 #include "mediapipe/framework/output_side_packet_impl.h"
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/source_location.h"
 #include "mediapipe/framework/port/status_builder.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/ash/components/network/enterprise_managed_metadata_store.h"
+#include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_configuration_handler.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
@@ -43,8 +44,11 @@ class HotspotFeatureUsageMetricsTest : public testing::Test {
         std::make_unique<EnterpriseManagedMetadataStore>();
     hotspot_capabilities_provider_ =
         std::make_unique<HotspotCapabilitiesProvider>();
+    hotspot_allowed_flag_handler_ =
+        std::make_unique<HotspotAllowedFlagHandler>();
     hotspot_capabilities_provider_->Init(
-        network_state_test_helper_.network_state_handler());
+        network_state_test_helper_.network_state_handler(),
+        hotspot_allowed_flag_handler_.get());
     hotspot_feature_usage_metrics_ =
         std::make_unique<HotspotFeatureUsageMetrics>();
     hotspot_feature_usage_metrics_->Init(
@@ -67,6 +71,7 @@ class HotspotFeatureUsageMetricsTest : public testing::Test {
       /*use_default_devices_and_services=*/false};
   std::unique_ptr<EnterpriseManagedMetadataStore>
       enterprise_managed_metadata_store_;
+  std::unique_ptr<HotspotAllowedFlagHandler> hotspot_allowed_flag_handler_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotFeatureUsageMetrics> hotspot_feature_usage_metrics_;
 };

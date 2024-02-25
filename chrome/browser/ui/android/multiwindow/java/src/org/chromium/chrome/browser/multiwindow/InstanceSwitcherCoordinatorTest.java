@@ -33,7 +33,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -44,9 +44,7 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
-/**
- *  Unit tests for {@link InstanceSwitcherCoordinator}.
- */
+/** Unit tests for {@link InstanceSwitcherCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase {
@@ -59,40 +57,56 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     public void setUp() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAppModalPresenter = new AppModalPresenter(getActivity());
-            mModalDialogManager = new ModalDialogManager(
-                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
-        });
-        mIconBridge = new LargeIconBridge() {
-            @Override
-            public boolean getLargeIconForUrl(
-                    final GURL pageUrl, int desiredSizePx, final LargeIconCallback callback) {
-                return true;
-            }
-        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAppModalPresenter = new AppModalPresenter(getActivity());
+                    mModalDialogManager =
+                            new ModalDialogManager(
+                                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+                });
+        mIconBridge =
+                new LargeIconBridge() {
+                    @Override
+                    public boolean getLargeIconForUrl(
+                            final GURL pageUrl,
+                            int desiredSizePx,
+                            final LargeIconCallback callback) {
+                        return true;
+                    }
+                };
     }
 
     @After
     public void tearDown() throws Exception {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, false);
     }
 
     @Test
     @SmallTest
     public void testOpenWindow() throws Exception {
-        InstanceInfo[] instances = new InstanceInfo[] {
-                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)};
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
-                    openCallback, null, null, false, Arrays.asList(instances));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            openCallback,
+                            null,
+                            null,
+                            false,
+                            Arrays.asList(instances));
+                });
         onData(anything()).atPosition(1).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
@@ -100,17 +114,27 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     @Test
     @SmallTest
     public void testNewWindow() throws Exception {
-        InstanceInfo[] instances = new InstanceInfo[] {
-                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)};
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
-                    null, null, itemClickCallbackHelper::notifyCalled, true,
-                    Arrays.asList(instances));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null,
+                            null,
+                            itemClickCallbackHelper::notifyCalled,
+                            true,
+                            Arrays.asList(instances));
+                });
         // 0 ~ 2: instances. 3: 'new window' command.
         onData(anything()).atPosition(3).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
@@ -119,17 +143,28 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     @Test
     @SmallTest
     public void testCloseWindow() throws Exception {
-        InstanceInfo[] instances = new InstanceInfo[] {
-                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)};
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> closeCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
-                    null, closeCallback, null, true, Arrays.asList(instances));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null,
+                            closeCallback,
+                            null,
+                            true,
+                            Arrays.asList(instances));
+                });
 
         // Verify that we have only [cancel] button.
         onView(withId(R.id.positive_button)).check(matches(withEffectiveVisibility(GONE)));
@@ -152,17 +187,28 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     @SmallTest
     @SuppressWarnings("unchecked")
     public void testMaxNumberOfWindows() throws Exception {
-        InstanceInfo[] instances = new InstanceInfo[] {
-                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false),
-                new InstanceInfo(3, 60, InstanceInfo.Type.OTHER, "url3", "title3", 1, 1, false),
-                new InstanceInfo(4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false)};
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false),
+                    new InstanceInfo(3, 60, InstanceInfo.Type.OTHER, "url3", "title3", 1, 1, false),
+                    new InstanceInfo(4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false)
+                };
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
-                    null, null, null, false, Arrays.asList(instances));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null,
+                            null,
+                            null,
+                            false,
+                            Arrays.asList(instances));
+                });
 
         // Verify that we show a info message that users can have up to 5 windows when there are
         // already maximum number of windows.
@@ -175,17 +221,28 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     @Test
     @SmallTest
     public void testSkipCloseConfirmation() throws Exception {
-        InstanceInfo[] instances = new InstanceInfo[] {
-                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)};
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 0, 0, false)
+                };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         int itemClickCount = closeCallbackHelper.getCallCount();
         Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
-                    null, closeCallback, null, true, Arrays.asList(instances));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null,
+                            closeCallback,
+                            null,
+                            true,
+                            Arrays.asList(instances));
+                });
 
         // Closing a hidden, tab-less instance skips the confirmation.
         onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
@@ -208,14 +265,25 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     @Test
     @SmallTest
     public void testBackOnConfirmDialog() throws Exception {
-        InstanceInfo[] instances = new InstanceInfo[] {
-                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)};
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
-                    null, null, null, true, Arrays.asList(instances));
-        });
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null,
+                            null,
+                            null,
+                            true,
+                            Arrays.asList(instances));
+                });
 
         onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
         onView(withText(R.string.instance_switcher_close_window))

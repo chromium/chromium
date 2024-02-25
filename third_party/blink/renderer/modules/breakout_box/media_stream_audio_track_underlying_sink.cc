@@ -82,6 +82,18 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     return ScriptPromise();
   }
 
+  const auto& data = audio_data->data();
+  media::AudioParameters params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Guess(data->channel_count()),
+      data->sample_rate(), data->frame_count());
+  if (!params.IsValid()) {
+    audio_data->close();
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Invalid audio data");
+    return ScriptPromise();
+  }
+
   source_broker_->PushAudioData(audio_data->data());
   audio_data->close();
 

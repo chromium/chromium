@@ -7,13 +7,14 @@
 #import "base/notreached.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
@@ -38,9 +39,6 @@
 // Coordinator that manages the tailored promo modals.
 @property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
 
-// Tracks whether or not the Video promo FET should be dismissed.
-@property(nonatomic, assign) BOOL shouldDismissVideoPromoFET;
-
 // Feature engagement tracker reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
@@ -57,19 +55,14 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   self.tracker = feature_engagement::TrackerFactory::GetForBrowserState(
       self.browser->GetBrowserState());
+  policy::UserCloudPolicyManager* user_policy_manager =
+      browserState->GetUserCloudPolicyManager();
 
-  if (IsUserPolicyNotificationNeeded(authService, prefService)) {
+  if (IsUserPolicyNotificationNeeded(authService, prefService,
+                                     user_policy_manager)) {
     // Showing the User Policy notification has priority over showing the
     // default browser promo. Both dialogs are competing for the same time slot
     // which is after the browser startup and the browser UI is initialized.
-    [self hidePromo];
-    return;
-  }
-
-  // Don't show the default browser promo if the user is in the default browser
-  // blue dot experiment.
-  // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
-  if (!AreDefaultBrowserPromosEnabled()) {
     [self hidePromo];
     return;
   }
@@ -90,10 +83,8 @@
     return;
   }
 
-  // Video promo takes priority over other default browser promos.
-  BOOL isDBVideoPromoEnabled =
-      IsDBVideoPromoHalfscreenEnabled() || IsDBVideoPromoFullscreenEnabled();
-  if (isDBVideoPromoEnabled && [self maybeTriggerVideoPromoWithFET]) {
+  if (self.promoWasFromRemindMeLater) {
+    [self showPromo:DefaultPromoTypeVideo];
     return;
   }
 
@@ -101,39 +92,15 @@
 
   // Tailored promos take priority over general promo.
   if (IsTailoredPromoEligibleUser(isSignedIn)) {
-    // Show the generic default browser promo when the default browser promo
-    // generic and tailored train experiment is enabled with the only-generic
-    // arm.
-    if (IsDefaultBrowserPromoGenericTailoredTrainEnabled() &&
-        IsDefaultBrowserPromoOnlyGenericArmTrain()) {
-      if (IsDefaultBrowserVideoPromoEnabled()) {
-        [self showPromo:DefaultPromoTypeVideo];
-        return;
-      }
-
-      [self showPromo:DefaultPromoTypeGeneral];
-      return;
-    }
-
     // Should only show tailored promos
     [self showPromo:MostRecentInterestDefaultPromoType(!isSignedIn)];
     return;
   }
 
-  // When the default browser promo generic and tailored train experiment is
-  // enabled, the generic default browser promo will only be shown when the user
-  // is eligible for a tailored promo.
-  if (IsDefaultBrowserPromoGenericTailoredTrainEnabled()) {
-    [self hidePromo];
-    return;
-  }
-
-  // When the default browser video promo with generic triggering conditions is
-  // enabled, the generic default btowser promo is replaced with the video
-  // promo.
-  BOOL isGenericPromoVideo = IsDBVideoPromoWithGenericFullscreenEnabled() ||
-                             IsDBVideoPromoWithGenericHalfscreenEnabled();
-  if (isGenericPromoVideo) {
+  // When the default browser video promo is enabled, show the video promo.
+  BOOL isVideoPromoEnabled =
+      IsDBVideoPromoFullscreenEnabled() || IsDBVideoPromoHalfscreenEnabled();
+  if (isVideoPromoEnabled) {
     [self showPromo:DefaultPromoTypeVideo];
     return;
   }
@@ -143,9 +110,9 @@
 
 - (void)stop {
   [self.videoDefaultPromoCoordinator stop];
-  if (self.shouldDismissVideoPromoFET && self.tracker) {
+  if (self.promoWasFromRemindMeLater && self.tracker) {
     self.tracker->Dismissed(
-        feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature);
+        feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
   }
   self.videoDefaultPromoCoordinator = nil;
 
@@ -215,8 +182,12 @@
                              browser:self.browser];
   self.videoDefaultPromoCoordinator.handler = self;
   self.videoDefaultPromoCoordinator.isHalfScreen =
-      IsDBVideoPromoHalfscreenEnabled() ||
-      IsDBVideoPromoWithGenericHalfscreenEnabled();
+      IsDBVideoPromoHalfscreenEnabled();
+  BOOL showRemindMeLater =
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
+      !self.promoWasFromRemindMeLater;
+  self.videoDefaultPromoCoordinator.showRemindMeLater = showRemindMeLater;
   [self.videoDefaultPromoCoordinator start];
 }
 
@@ -236,19 +207,6 @@
                             type:type];
   self.tailoredPromoCoordinator.handler = self;
   [self.tailoredPromoCoordinator start];
-}
-
-- (BOOL)maybeTriggerVideoPromoWithFET {
-  if (self.tracker && IsVideoPromoEligibleUser(self.tracker)) {
-    if (self.tracker->ShouldTriggerHelpUI(
-            feature_engagement::
-                kIPHiOSDefaultBrowserVideoPromoTriggerFeature)) {
-      self.shouldDismissVideoPromoFET = true;
-      [self showPromo:DefaultPromoTypeVideo];
-      return true;
-    }
-  }
-  return false;
 }
 
 @end

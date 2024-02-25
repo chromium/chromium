@@ -16,6 +16,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/browser_list.h"
@@ -91,8 +92,17 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   }
 #endif
 
-  const GURL caller = download::BaseFile::GetEffectiveAuthorityURL(
+  GURL caller = download::BaseFile::GetEffectiveAuthorityURL(
       download_item_->GetURL(), download_item_->GetReferrerUrl());
+  // Blob URLs are not set as referrer of downloads of them. If the download url
+  // itself has no authority part, their is no authority url. For dlp we want to
+  // use the blob's origin in that case.
+  auto* render_frame_host =
+      content::DownloadItemUtils::GetRenderFrameHost(download_item_);
+  if (!caller.is_valid() && render_frame_host &&
+      render_frame_host->GetLastCommittedURL().SchemeIsBlob()) {
+    caller = render_frame_host->GetLastCommittedOrigin().GetURL();
+  }
 
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
@@ -101,31 +111,29 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
 }
 
 DownloadFilePicker::~DownloadFilePicker() {
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
 
-  if (download_item_)
+  if (download_item_) {
     download_item_->RemoveObserver(this);
+  }
 }
 
-void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
+void DownloadFilePicker::FileSelected(const ui::SelectedFileInfo& file,
+                                      int index,
+                                      void* params) {
   std::move(file_selected_callback_)
-      .Run(path.empty() ? DownloadConfirmationResult::CANCELED
-                        : DownloadConfirmationResult::CONFIRMED,
-           path);
+      .Run(DownloadConfirmationResult::CONFIRMED, file);
+
   delete this;
 }
 
-void DownloadFilePicker::FileSelected(const base::FilePath& path,
-                                      int index,
-                                      void* params) {
-  OnFileSelected(path);
-  // Deletes |this|
-}
-
 void DownloadFilePicker::FileSelectionCanceled(void* params) {
-  OnFileSelected(base::FilePath());
-  // Deletes |this|
+  std::move(file_selected_callback_)
+      .Run(DownloadConfirmationResult::CANCELED, ui::SelectedFileInfo());
+
+  delete this;
 }
 
 // static

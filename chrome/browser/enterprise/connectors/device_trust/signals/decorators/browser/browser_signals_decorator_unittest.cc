@@ -4,7 +4,12 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -22,7 +27,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -140,13 +144,20 @@ class BrowserSignalsDecoratorTest : public testing::Test {
     enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(
         /*should_force=*/true);
 
+    auto mock_browser_cloud_policy_store =
+        std::make_unique<policy::MockCloudPolicyStore>();
+    mock_browser_cloud_policy_store_ = mock_browser_cloud_policy_store.get();
     mock_browser_cloud_policy_manager_ =
         std::make_unique<policy::MockCloudPolicyManager>(
-            &mock_browser_cloud_policy_store_,
+            std::move(mock_browser_cloud_policy_store),
             task_environment_.GetMainThreadTaskRunner());
+
+    auto mock_user_cloud_policy_store =
+        std::make_unique<policy::MockCloudPolicyStore>();
+    mock_user_cloud_policy_store_ = mock_user_cloud_policy_store.get();
     mock_user_cloud_policy_manager_ =
         std::make_unique<policy::MockCloudPolicyManager>(
-            &mock_user_cloud_policy_store_,
+            std::move(mock_user_cloud_policy_store),
             task_environment_.GetMainThreadTaskRunner());
   }
 
@@ -158,14 +169,14 @@ class BrowserSignalsDecoratorTest : public testing::Test {
   void SetFakeBrowserPolicyData() {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_managed_by(kFakeBrowserEnrollmentDomain);
-    mock_browser_cloud_policy_store_.set_policy_data_for_testing(
+    mock_browser_cloud_policy_store_->set_policy_data_for_testing(
         std::move(policy_data));
   }
 
   void SetFakeUserPolicyData() {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_managed_by(kFakeUserEnrollmentDomain);
-    mock_user_cloud_policy_store_.set_policy_data_for_testing(
+    mock_user_cloud_policy_store_->set_policy_data_for_testing(
         std::move(policy_data));
   }
 
@@ -201,8 +212,8 @@ class BrowserSignalsDecoratorTest : public testing::Test {
       mock_browser_cloud_policy_manager_;
   std::unique_ptr<policy::MockCloudPolicyManager>
       mock_user_cloud_policy_manager_;
-  policy::MockCloudPolicyStore mock_browser_cloud_policy_store_;
-  policy::MockCloudPolicyStore mock_user_cloud_policy_store_;
+  raw_ptr<policy::MockCloudPolicyStore> mock_browser_cloud_policy_store_;
+  raw_ptr<policy::MockCloudPolicyStore> mock_user_cloud_policy_store_;
   StrictMock<device_signals::MockSignalsAggregator> mock_aggregator_;
 };
 

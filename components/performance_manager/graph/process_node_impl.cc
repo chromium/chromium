@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_util.h"
@@ -22,38 +23,69 @@ namespace performance_manager {
 
 namespace {
 
+// CHECK's that `process_type` is appropriate for a BrowserChildProcessHost and
+// returns it. This is called from a ProcessNodeImpl initializer so that the
+// type is checked before the constructor body.
+content::ProcessType ValidateBrowserChildProcessType(
+    content::ProcessType process_type) {
+  CHECK_NE(process_type, content::PROCESS_TYPE_BROWSER);
+  CHECK_NE(process_type, content::PROCESS_TYPE_RENDERER);
+  return process_type;
+}
+
 void FireBackgroundTracingTriggerOnUI(const std::string& trigger_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::BackgroundTracingManager::EmitNamedTrigger(
+  base::trace_event::EmitNamedTrigger(
       content::BackgroundTracingManager::kContentTriggerConfig);
 }
 
 }  // namespace
 
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
-    : process_type_(content::PROCESS_TYPE_BROWSER) {
-  weak_this_ = weak_factory_.GetWeakPtr();
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+    : ProcessNodeImpl(content::PROCESS_TYPE_BROWSER,
+                      AnyChildProcessHostProxy{},
+                      base::TaskPriority::HIGHEST) {}
 
-ProcessNodeImpl::ProcessNodeImpl(
-    RenderProcessHostProxy render_process_host_proxy)
-    : process_type_(content::PROCESS_TYPE_RENDERER),
-      child_process_host_proxy_(std::move(render_process_host_proxy)) {
-  weak_this_ = weak_factory_.GetWeakPtr();
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+ProcessNodeImpl::ProcessNodeImpl(RenderProcessHostProxy proxy,
+                                 base::TaskPriority priority)
+    : ProcessNodeImpl(content::PROCESS_TYPE_RENDERER,
+                      AnyChildProcessHostProxy(std::move(proxy)),
+                      priority) {}
 
-ProcessNodeImpl::ProcessNodeImpl(
-    content::ProcessType process_type,
-    BrowserChildProcessHostProxy browser_child_process_host_proxy)
+ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
+                                 BrowserChildProcessHostProxy proxy)
+    : ProcessNodeImpl(ValidateBrowserChildProcessType(process_type),
+                      AnyChildProcessHostProxy(std::move(proxy)),
+                      base::TaskPriority::HIGHEST) {}
+
+ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
+                                 AnyChildProcessHostProxy proxy,
+                                 base::TaskPriority priority)
     : process_type_(process_type),
-      child_process_host_proxy_(std::move(browser_child_process_host_proxy)) {
-  DCHECK_NE(process_type, content::PROCESS_TYPE_BROWSER);
-  DCHECK_NE(process_type, content::PROCESS_TYPE_RENDERER);
-  weak_this_ = weak_factory_.GetWeakPtr();
+      child_process_host_proxy_(std::move(proxy)),
+      priority_(priority) {
+  // Nodes are created on the UI thread, then accessed on the PM sequence.
+  // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
+  // on the PM sequence.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  weak_this_ = weak_factory_.GetWeakPtr();
+
+  // Child process nodes must have a valid proxy.
+  switch (process_type) {
+    case content::PROCESS_TYPE_BROWSER:
+      // Do nothing.
+      break;
+    case content::PROCESS_TYPE_RENDERER:
+      CHECK(absl::get<RenderProcessHostProxy>(child_process_host_proxy_)
+                .is_valid());
+      break;
+    default:
+      CHECK(absl::get<BrowserChildProcessHostProxy>(child_process_host_proxy_)
+                .is_valid());
+      break;
+  }
 }
 
 ProcessNodeImpl::~ProcessNodeImpl() {
@@ -159,6 +191,99 @@ void ProcessNodeImpl::FireBackgroundTracingTrigger(
       base::BindOnce(&FireBackgroundTracingTriggerOnUI, trigger_name));
 }
 
+content::ProcessType ProcessNodeImpl::GetProcessType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return process_type_;
+}
+
+base::ProcessId ProcessNodeImpl::GetProcessId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return process_id_;
+}
+
+const base::Process& ProcessNodeImpl::GetProcess() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return process_.value();
+}
+
+resource_attribution::ProcessContext ProcessNodeImpl::GetResourceContext()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resource_attribution::ProcessContext::FromProcessNode(this);
+}
+
+base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return launch_time_;
+}
+
+std::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return exit_status_;
+}
+
+const std::string& ProcessNodeImpl::GetMetricsName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return metrics_name_;
+}
+
+bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return main_thread_task_load_is_low_.value();
+}
+
+uint64_t ProcessNodeImpl::GetPrivateFootprintKb() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_footprint_kb_;
+}
+
+uint64_t ProcessNodeImpl::GetResidentSetKb() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resident_set_kb_;
+}
+
+RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {
+  return GetRenderProcessHostProxy().render_process_host_id();
+}
+
+const RenderProcessHostProxy& ProcessNodeImpl::GetRenderProcessHostProxy()
+    const {
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return absl::get<RenderProcessHostProxy>(child_process_host_proxy_);
+}
+
+const BrowserChildProcessHostProxy&
+ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
+  DCHECK_NE(process_type_, content::PROCESS_TYPE_RENDERER);
+  return absl::get<BrowserChildProcessHostProxy>(child_process_host_proxy_);
+}
+
+base::TaskPriority ProcessNodeImpl::GetPriority() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return priority_.value();
+}
+
+ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return hosted_content_types_;
+}
+
+const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return frame_nodes_;
+}
+
+const base::flat_set<WorkerNodeImpl*>& ProcessNodeImpl::worker_nodes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return worker_nodes_;
+}
+
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This may occur as the first event seen in the case where the process
@@ -188,37 +313,6 @@ void ProcessNodeImpl::SetProcess(base::Process process,
 
   base::ProcessId pid = process.Pid();
   SetProcessImpl(std::move(process), pid, launch_time);
-}
-
-const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return frame_nodes_;
-}
-
-const base::flat_set<WorkerNodeImpl*>& ProcessNodeImpl::worker_nodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return worker_nodes_;
-}
-
-PageNodeImpl* ProcessNodeImpl::GetPageNodeIfExclusive() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-
-  PageNodeImpl* page_node = nullptr;
-  for (auto* frame_node : frame_nodes_) {
-    if (!page_node)
-      page_node = frame_node->page_node();
-    if (page_node != frame_node->page_node())
-      return nullptr;
-  }
-  return page_node;
-}
-
-RenderProcessHostId ProcessNodeImpl::GetRenderProcessId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_process_host_proxy().render_process_host_id();
 }
 
 void ProcessNodeImpl::AddFrame(FrameNodeImpl* frame_node) {
@@ -267,7 +361,7 @@ void ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(
 }
 
 base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtrOnUIThread() {
-  // TODO(siggi): Validate thread context.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return weak_this_;
 }
 
@@ -299,42 +393,24 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
   process_.SetAndNotify(this, std::move(process));
 }
 
-content::ProcessType ProcessNodeImpl::GetProcessType() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process_type();
-}
-
-base::ProcessId ProcessNodeImpl::GetProcessId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process_id();
-}
-
-const base::Process& ProcessNodeImpl::GetProcess() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process();
-}
-
-base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return launch_time();
-}
-
-absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return exit_status();
-}
-
-const std::string& ProcessNodeImpl::GetMetricsName() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return metrics_name();
-}
-
 bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
   for (auto* frame_impl : frame_nodes()) {
     const FrameNode* frame = frame_impl;
     if (!visitor(frame)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ProcessNodeImpl::VisitWorkerNodes(const WorkerNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  for (auto* worker_impl : worker_nodes_) {
+    const WorkerNode* worker = worker_impl;
+    if (!visitor(worker)) {
       return false;
     }
   }
@@ -351,57 +427,20 @@ base::flat_set<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes() const {
   return UpcastNodeSet<WorkerNode>(worker_nodes_);
 }
 
-bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return main_thread_task_load_is_low();
-}
-
-uint64_t ProcessNodeImpl::GetPrivateFootprintKb() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb();
-}
-
-uint64_t ProcessNodeImpl::GetResidentSetKb() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb();
-}
-
-RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetRenderProcessId();
-}
-
-const RenderProcessHostProxy& ProcessNodeImpl::GetRenderProcessHostProxy()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return render_process_host_proxy();
-}
-
-const BrowserChildProcessHostProxy&
-ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
-  DCHECK_NE(process_type_, content::PROCESS_TYPE_RENDERER);
-  return browser_child_process_host_proxy();
-}
-
-base::TaskPriority ProcessNodeImpl::GetPriority() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority();
-}
-
-ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return hosted_content_types();
-}
-
 void ProcessNodeImpl::OnAllFramesInProcessFrozen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
   for (auto* observer : GetObservers())
     observer->OnAllFramesInProcessFrozen(this);
+}
+
+void ProcessNodeImpl::OnJoiningGraph() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Make sure all weak pointers, even `weak_this_` that was created on the UI
+  // thread in the constructor, can only be dereferenced on the graph sequence.
+  weak_factory_.BindToCurrentSequence(
+      base::subtle::BindWeakPtrFactoryPassKey());
 }
 
 void ProcessNodeImpl::OnBeforeLeavingGraph() {

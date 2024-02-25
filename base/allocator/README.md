@@ -35,8 +35,7 @@ indirectly, on `base` within the scope of a linker unit.
 More importantly, **no other place outside of `/base` should depend on the
 specific allocator**.
 If such a functional dependency is required that should be achieved using
-abstractions in `base` (see `/base/allocator/allocator_extension.h` and
-`/base/memory/`)
+abstractions in `base` (see `/base/memory/`)
 
 **Why `base` depends on `allocator`?**
 Because it needs to provide services that depend on the actual allocator

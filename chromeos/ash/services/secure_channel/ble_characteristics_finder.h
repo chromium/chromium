@@ -101,7 +101,7 @@ class BluetoothLowEnergyCharacteristicsFinder
   void TryToVerifyEid(device::BluetoothRemoteGattCharacteristic* eid_char);
   void OnRemoteCharacteristicRead(
       const std::string& service_id,
-      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
   bool DoesEidMatchExpectedDevice(const std::vector<uint8_t>& eid_value_read);
 
@@ -109,8 +109,7 @@ class BluetoothLowEnergyCharacteristicsFinder
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
   // The Bluetooth device to which the connection was established.
-  raw_ptr<device::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-      bluetooth_device_;
+  raw_ptr<device::BluetoothDevice, DanglingUntriaged> bluetooth_device_;
 
   // Remote service the |connection_| was established with.
   RemoteAttribute remote_service_;

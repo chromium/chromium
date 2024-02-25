@@ -49,7 +49,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -69,14 +69,10 @@ public class SingleTabModuleViewBinderUnitTest {
             mPropertyModelChangeProcessor;
     private PropertyModel mPropertyModel;
 
-    @Mock
-    private View.OnClickListener mClickListener;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
-    @Mock
-    private TabListFaviconProvider mTabListFaviconProvider;
+    @Mock private View.OnClickListener mClickListener;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
+    @Mock private TabListFaviconProvider mTabListFaviconProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -84,13 +80,17 @@ public class SingleTabModuleViewBinderUnitTest {
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mSingleTabModuleView = (SingleTabView) mActivity.getLayoutInflater().inflate(
-                R.layout.single_tab_module_layout, null);
+        mSingleTabModuleView =
+                (SingleTabView)
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.single_tab_module_layout, null);
         mActivity.setContentView(mSingleTabModuleView);
 
         mPropertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mPropertyModel, mSingleTabModuleView, SingleTabViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel, mSingleTabModuleView, SingleTabViewBinder::bind);
     }
 
     @After
@@ -154,7 +154,6 @@ public class SingleTabModuleViewBinderUnitTest {
         mSingleTabModuleView.layout(0, 0, 100, 100);
 
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
-        assertNull(thumbnail.getDrawable());
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
@@ -167,7 +166,6 @@ public class SingleTabModuleViewBinderUnitTest {
     @SmallTest
     public void testSetTabThumbnailUpdateMatrixOnResize() {
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
-        assertNull(thumbnail.getDrawable());
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
@@ -197,16 +195,24 @@ public class SingleTabModuleViewBinderUnitTest {
         doReturn(mTabId).when(mTabModelSelector).getCurrentTabId();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         SingleTabSwitcherMediator mediator =
-                new SingleTabSwitcherMediator(ContextUtils.getApplicationContext(), mPropertyModel,
-                        mTabModelSelector, mTabListFaviconProvider, null, false);
+                new SingleTabSwitcherMediator(
+                        ContextUtils.getApplicationContext(),
+                        mPropertyModel,
+                        mTabModelSelector,
+                        mTabListFaviconProvider,
+                        /* TabContentManager= */ null,
+                        /* singleTabCardClickedCallback= */ null,
+                        /* isSurfacePolishEnabled= */ false,
+                        /* moduleDelegate= */ null);
         mediator.setOnTabSelectingListener(mOnTabSelectingListener);
         mSingleTabModuleView.performClick();
-        assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK
+        assertEquals(
+                HISTOGRAM_START_SURFACE_MODULE_CLICK
                         + " is not recorded correctly when clicking on the single tab card.",
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD));
+                        ModuleTypeOnStartAndNtp.SINGLE_TAB_CARD));
     }
 
     @Test

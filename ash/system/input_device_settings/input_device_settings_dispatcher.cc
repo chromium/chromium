@@ -12,18 +12,49 @@
 
 namespace ash {
 
+namespace {
+
+bool ShouldModifiersBeBlockedForKeyEventsWithRestriction(
+    mojom::CustomizationRestriction customization_restriction) {
+  switch (customization_restriction) {
+    case mojom::CustomizationRestriction::kAllowCustomizations:
+    case mojom::CustomizationRestriction::kDisallowCustomizations:
+    case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
+    case mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites:
+    case mojom::CustomizationRestriction::
+        kAllowAlphabetOrNumberKeyEventRewrites:
+    case mojom::CustomizationRestriction::kAllowHorizontalScrollWheelRewrites:
+      return false;
+    case mojom::CustomizationRestriction::kAllowTabEventRewrites:
+      return true;
+  }
+}
+
+}  // namespace
+
 InputDeviceSettingsDispatcher::InputDeviceSettingsDispatcher(
     ui::InputController* input_controller)
     : input_controller_(input_controller) {
-  DCHECK(input_controller_);
   if (features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->input_device_settings_controller()->AddObserver(this);
+    input_device_settings_controller_ =
+        Shell::Get()->input_device_settings_controller();
+    input_device_settings_controller_->AddObserver(this);
+  }
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    duplicate_id_finder_ =
+        &input_device_settings_controller_->duplicate_id_finder();
+    duplicate_id_finder_->AddObserver(this);
   }
 }
 
 InputDeviceSettingsDispatcher::~InputDeviceSettingsDispatcher() {
   if (features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
+    input_device_settings_controller_->RemoveObserver(this);
+  }
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    duplicate_id_finder_->RemoveObserver(this);
   }
 }
 
@@ -71,6 +102,12 @@ void InputDeviceSettingsDispatcher::DispatchMouseSettings(
   input_controller_->SetMouseScrollSensitivity(mouse.id,
                                                settings.scroll_sensitivity);
   input_controller_->SetPrimaryButtonRight(mouse.id, settings.swap_right);
+
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    return;
+  }
+
+  UpdateDevicesToBlockModifiers();
 }
 
 void InputDeviceSettingsDispatcher::DispatchTouchpadSettings(
@@ -103,6 +140,108 @@ void InputDeviceSettingsDispatcher::DispatchPointingStickSettings(
                                                  settings.sensitivity);
   input_controller_->SetPointingStickPrimaryButtonRight(pointing_stick.id,
                                                         settings.swap_right);
+}
+
+void InputDeviceSettingsDispatcher::UpdateDevicesToBlockModifiers() {
+  devices_with_blocked_modifiers_.clear();
+
+  auto mice = input_device_settings_controller_->GetConnectedMice();
+  for (const auto& mouse : mice) {
+    if (!ShouldModifiersBeBlockedForKeyEventsWithRestriction(
+            mouse->customization_restriction)) {
+      continue;
+    }
+
+    bool block_current_mouse = false;
+    for (const auto& button_remapping : mouse->settings->button_remappings) {
+      if (button_remapping->button->is_customizable_button()) {
+        continue;
+      }
+
+      // If the action is supposed to be "default", do nothing
+      if (button_remapping->remapping_action.is_null()) {
+        continue;
+      }
+
+      block_current_mouse = true;
+      break;
+    }
+
+    if (!block_current_mouse) {
+      continue;
+    }
+
+    auto vid_pid = duplicate_id_finder_->GetVendorProductIdForDevice(mouse->id);
+    if (!vid_pid) {
+      continue;
+    }
+
+    devices_with_blocked_modifiers_.insert(*vid_pid);
+  }
+
+  DispatchDevicesToBlockModifiers();
+}
+
+void InputDeviceSettingsDispatcher::OnDuplicateDevicesUpdated() {
+  DispatchDevicesToBlockModifiers();
+}
+
+void InputDeviceSettingsDispatcher::DispatchDevicesToBlockModifiers() {
+  std::vector<int> device_ids;
+  for (const auto& vid_pid : devices_with_blocked_modifiers_) {
+    auto* duplicate_ids = duplicate_id_finder_->GetDuplicateDeviceIds(vid_pid);
+    if (!duplicate_ids) {
+      continue;
+    }
+
+    device_ids.reserve(device_ids.size() + duplicate_ids->size());
+    device_ids.insert(device_ids.end(), duplicate_ids->begin(),
+                      duplicate_ids->end());
+  }
+
+  // Insert devices from `devices_with_blocked_modifiers_from_observing_` but
+  // check to make sure we are not duplicating anything.
+  for (const auto& vid_pid : devices_with_blocked_modifiers_from_observing_) {
+    if (devices_with_blocked_modifiers_.contains(vid_pid)) {
+      continue;
+    }
+
+    auto* duplicate_ids = duplicate_id_finder_->GetDuplicateDeviceIds(vid_pid);
+    if (!duplicate_ids) {
+      continue;
+    }
+
+    device_ids.reserve(device_ids.size() + duplicate_ids->size());
+    device_ids.insert(device_ids.end(), duplicate_ids->begin(),
+                      duplicate_ids->end());
+  }
+
+  input_controller_->BlockModifiersOnDevices(std::move(device_ids));
+}
+
+void InputDeviceSettingsDispatcher::OnCustomizableMouseObservingStarted(
+    const mojom::Mouse& mouse) {
+  if (!ShouldModifiersBeBlockedForKeyEventsWithRestriction(
+          mouse.customization_restriction)) {
+    return;
+  }
+
+  auto vid_pid = duplicate_id_finder_->GetVendorProductIdForDevice(mouse.id);
+  if (!vid_pid) {
+    return;
+  }
+
+  devices_with_blocked_modifiers_from_observing_.insert(*vid_pid);
+  DispatchDevicesToBlockModifiers();
+}
+
+void InputDeviceSettingsDispatcher::OnCustomizableMouseObservingStopped() {
+  if (devices_with_blocked_modifiers_from_observing_.empty()) {
+    return;
+  }
+
+  devices_with_blocked_modifiers_from_observing_.clear();
+  DispatchDevicesToBlockModifiers();
 }
 
 }  // namespace ash

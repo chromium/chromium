@@ -10,13 +10,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/printer_query.h"
@@ -27,18 +27,21 @@
 #include "printing/printed_document.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <optional>
+
 #include "base/command_line.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/pdf_to_emf_converter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "printing/backend/win_helper.h"
 #include "printing/page_number.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/printed_page_win.h"
 #include "printing/printing_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #endif
 
@@ -219,6 +222,20 @@ void PrintJob::StartPrinting() {
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  // Do not collect duration metric if the print job will need to invoke a
+  // "Save Print Output As" dialog that waits on a user to select a filename.
+  const std::string printer_name =
+      base::UTF16ToUTF8(document_->settings().device_name());
+  const bool capture_printing_time =
+      !DoesDriverDisplayFileDialogForPrinting(printer_name);
+#else
+  constexpr bool capture_printing_time = true;
+#endif
+  if (capture_printing_time) {
+    printing_start_time_ = base::TimeTicks::Now();
+  }
+
   // Real work is done in `PrintJobWorker::StartPrinting()`.
   worker_->PostTask(
       FROM_HERE, base::BindOnce(&HoldRefCallback, base::WrapRefCounted(this),
@@ -329,7 +346,7 @@ class PrintJob::PdfConversionState {
  public:
   PdfConversionState(const gfx::Size& page_size,
                      const gfx::Rect& content_area,
-                     const absl::optional<bool>& use_skia,
+                     const std::optional<bool>& use_skia,
                      const GURL& url)
       : page_size_(page_size),
         content_area_(content_area),
@@ -370,7 +387,7 @@ class PrintJob::PdfConversionState {
   int pages_in_progress_ = 0;
   const gfx::Size page_size_;
   const gfx::Rect content_area_;
-  const absl::optional<bool> use_skia_;
+  const std::optional<bool> use_skia_;
   const GURL url_;
   std::unique_ptr<PdfConverter> converter_;
 };
@@ -552,6 +569,13 @@ void PrintJob::OnFailed() {
 
 void PrintJob::OnDocDone(int job_id, PrintedDocument* document) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (printing_start_time_.has_value()) {
+    base::UmaHistogramMediumTimes(
+        "Printing.PrintDuration.Success",
+        base::TimeTicks::Now() - printing_start_time_.value());
+    printing_start_time_.reset();
+  }
 
   print_job_manager_->OnDocDone(this, document, job_id);
 

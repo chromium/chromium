@@ -12,7 +12,9 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/share_target_discovered_callback.h"
+#include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom-shared.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class NearbyNotificationDelegate;
@@ -71,7 +73,7 @@ class NearbySharingService : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnHighVisibilityChangeRequested() {}
-    virtual void OnHighVisibilityChanged(bool in_high_visibility) = 0;
+    virtual void OnHighVisibilityChanged(bool in_high_visibility) {}
 
     virtual void OnNearbyProcessStopped() {}
     virtual void OnStartAdvertisingFailure() {}
@@ -83,7 +85,31 @@ class NearbySharingService : public KeyedService {
 
     // Called during the |KeyedService| shutdown, but before everything has been
     // cleaned up. It is safe to remove any observers on this event.
-    virtual void OnShutdown() = 0;
+    virtual void OnShutdown() {}
+
+    // Share target specific events.
+    virtual void OnShareTargetDiscoveryStarted() {}
+    virtual void OnShareTargetDiscoveryStopped() {}
+    virtual void OnShareTargetAdded(const ShareTarget& share_target) {}
+    virtual void OnShareTargetRemoved(const ShareTarget& share_target) {}
+    virtual void OnShareTargetSelected(const ShareTarget& share_target) {}
+    virtual void OnShareTargetConnected(const ShareTarget& share_target) {}
+
+    // Transfer specific events.
+    virtual void OnTransferAccepted(const ShareTarget& share_target) {}
+    // Note: Senders and receivers will emit this metric at different times.
+    // Senders start transfers as soon as the receiver accepts it, but receivers
+    // will end up starting the transfer a bit later due to the round-trip of
+    // the accept message to the sender.
+    virtual void OnTransferStarted(const ShareTarget& share_target,
+                                   long total_bytes) {}
+    virtual void OnTransferUpdated(const ShareTarget& share_target,
+                                   float percentage_complete) {}
+    virtual void OnTransferCompleted(const ShareTarget& share_target,
+                                     TransferMetadata::Status status) {}
+    virtual void OnBandwidthUpgrade(const ShareTarget& share_target,
+                                    nearby::connections::mojom::Medium medium) {
+    }
   };
 
   using StatusCodesCallback =

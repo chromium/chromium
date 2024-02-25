@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {millisecondsToString} from './util.js';
 
@@ -14,7 +14,9 @@ const ClientRendererCss = {
   NO_PLAYERS_SELECTED: 'no-players-selected',
   NO_COMPONENTS_SELECTED: 'no-components-selected',
   SELECTABLE_BUTTON: 'selectable-button',
-  DESTRUCTED_PLAYER: 'destructed-player',
+  ERRORED_PLAYER: 'errored-player',
+  ENDED_PLAYER: 'ended-player',
+  ACTIVE_PLAYER: 'active-player',
 };
 
 function removeChildren(element) {
@@ -24,29 +26,31 @@ function removeChildren(element) {
 }
 
 function createSelectableButton(
-    id, groupName, buttonLabel, select_cb, isDestructed) {
+    id, groupName, buttonLabel, selectCb, playerState) {
   // For CSS styling.
-  var radioButton = document.createElement('input');
+  const radioButton = document.createElement('input');
   radioButton.classList.add(ClientRendererCss.SELECTABLE_BUTTON);
   radioButton.type = 'radio';
   radioButton.id = id;
   radioButton.name = groupName;
 
   buttonLabel.classList.add(ClientRendererCss.SELECTABLE_BUTTON);
-  if (isDestructed) {
-    buttonLabel.classList.add(ClientRendererCss.DESTRUCTED_PLAYER);
+  if (playerState === 'errored') {
+    buttonLabel.classList.add(ClientRendererCss.ERRORED_PLAYER);
+  } else if (playerState === 'ended') {
+    buttonLabel.classList.add(ClientRendererCss.ENDED_PLAYER);
+  } else {
+    buttonLabel.classList.add(ClientRendererCss.ACTIVE_PLAYER);
   }
   buttonLabel.setAttribute('for', radioButton.id);
 
-  var fragment = document.createDocumentFragment();
+  const fragment = document.createDocumentFragment();
   fragment.appendChild(radioButton);
   fragment.appendChild(buttonLabel);
 
   // Listen to 'change' rather than 'click' to keep styling in sync with
   // button behavior.
-  radioButton.addEventListener('change', function() {
-    select_cb();
-  });
+  radioButton.addEventListener('change', selectCb);
 
   return fragment;
 }
@@ -54,7 +58,7 @@ function createSelectableButton(
 function selectSelectableButton(id) {
   // |id| is usually not a valid selector for querySelector so we cannot use $
   // here.
-  var element = document.getElementById(id);
+  const element = document.getElementById(id);
   if (!element) {
     console.error('failed to select button with id: ' + id);
     return;
@@ -64,8 +68,8 @@ function selectSelectableButton(id) {
 }
 
 function downloadLog(text) {
-  var file = new Blob([text], {type: 'text/plain'});
-  var a = document.createElement('a');
+  const file = new Blob([text], {type: 'text/plain'});
+  const a = document.createElement('a');
   a.href = URL.createObjectURL(file);
   a.download = 'media-internals.txt';
   a.click();
@@ -74,15 +78,15 @@ function downloadLog(text) {
 export class ClientRenderer {
   constructor() {
     this.playerListElement = $('player-list');
-    var audioTableElement = $('audio-property-table');
+    const audioTableElement = $('audio-property-table');
     if (audioTableElement) {
       this.audioPropertiesTable = audioTableElement.querySelector('tbody');
     }
-    var playerTableElement = $('player-property-table');
+    const playerTableElement = $('player-property-table');
     if (playerTableElement) {
       this.playerPropertiesTable = playerTableElement.querySelector('tbody');
     }
-    var logElement = $('log');
+    const logElement = $('log');
     if (logElement) {
       this.logTable = logElement.querySelector('tbody');
     }
@@ -90,7 +94,7 @@ export class ClientRenderer {
     this.audioPropertyName = $('audio-property-name');
     this.audioFocusSessionListElement_ = $('audio-focus-session-list');
     this.cdmListElement_ =  $('cdm-list');
-    var generalAudioInformationTableElement = $('general-audio-info-table');
+    const generalAudioInformationTableElement = $('general-audio-info-table');
     if (generalAudioInformationTableElement) {
       this.generalAudioInformationTable =
           generalAudioInformationTableElement.querySelector('tbody');
@@ -118,17 +122,17 @@ export class ClientRenderer {
       this.clipboardTextarea.onblur = this.hideClipboard_.bind(this);
     }
 
-    var copyPropertiesButtons =
+    const copyPropertiesButtons =
         document.getElementsByClassName('copy-properties-button');
     if (copyPropertiesButtons) {
-      for (var i = 0; i < copyPropertiesButtons.length; i++) {
+      for (let i = 0; i < copyPropertiesButtons.length; i++) {
         copyPropertiesButtons[i].onclick = this.copyProperties_.bind(this);
       }
     }
 
-    var copyLogButtons = document.getElementsByClassName('copy-log-button');
+    const copyLogButtons = document.getElementsByClassName('copy-log-button');
     if (copyLogButtons) {
-      for (var i = 0; i < copyLogButtons.length; i++) {
+      for (let i = 0; i < copyLogButtons.length; i++) {
         copyLogButtons[i].onclick = this.copyLog_.bind(this);
       }
     }
@@ -247,8 +251,12 @@ export class ClientRenderer {
       this.drawProperties_(player.properties, this.playerPropertiesTable);
       this.drawLog_();
     }
-    if (key === 'event' && value === 'WEBMEDIAPLAYER_DESTROYED') {
-      player.destructed = true;
+    if (key === 'error') {
+      player.playerState = 'errored';
+    } else if (
+        key === 'event' && value === 'kWebMediaPLayerDestroyed' &&
+        player.playerState !== 'errored') {
+      player.playerState = 'ended';
     }
     if ([
           'url',
@@ -259,6 +267,7 @@ export class ClientRenderer {
           'width',
           'height',
           'event',
+          'error',
         ].includes(key)) {
       this.redrawPlayerList_(players);
     }
@@ -269,21 +278,21 @@ export class ClientRenderer {
       return document.createTextNode('No formats');
     }
 
-    var table = document.createElement('table');
-    var thead = document.createElement('thead');
-    var theadRow = document.createElement('tr');
-    for (var key in formats[0]) {
-      var th = document.createElement('th');
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const theadRow = document.createElement('tr');
+    for (const key in formats[0]) {
+      const th = document.createElement('th');
       th.appendChild(document.createTextNode(key));
       theadRow.appendChild(th);
     }
     thead.appendChild(theadRow);
     table.appendChild(thead);
-    var tbody = document.createElement('tbody');
-    for (var i = 0; i < formats.length; ++i) {
-      var tr = document.createElement('tr');
-      for (var key in formats[i]) {
-        var td = document.createElement('td');
+    const tbody = document.createElement('tbody');
+    for (let i = 0; i < formats.length; ++i) {
+      const tr = document.createElement('tr');
+      for (const key in formats[i]) {
+        const td = document.createElement('td');
         td.appendChild(document.createTextNode(formats[i][key]));
         tr.appendChild(td);
       }
@@ -295,21 +304,21 @@ export class ClientRenderer {
   }
 
   redrawVideoCaptureCapabilities(videoCaptureCapabilities, keys) {
-    var copyButtonElement = $('video-capture-capabilities-copy-button');
+    const copyButtonElement = $('video-capture-capabilities-copy-button');
     copyButtonElement.onclick = function() {
       this.showClipboard(JSON.stringify(videoCaptureCapabilities, null, 2));
     }.bind(this);
 
-    var videoTableBodyElement = $('video-capture-capabilities-tbody');
+    const videoTableBodyElement = $('video-capture-capabilities-tbody');
     removeChildren(videoTableBodyElement);
 
-    for (var component in videoCaptureCapabilities) {
-      var tableRow = document.createElement('tr');
-      var device = videoCaptureCapabilities[component];
-      for (var i in keys) {
-        var value = device[keys[i]];
-        var tableCell = document.createElement('td');
-        var cellElement;
+    for (const component in videoCaptureCapabilities) {
+      const tableRow = document.createElement('tr');
+      const device = videoCaptureCapabilities[component];
+      for (const i in keys) {
+        const value = device[keys[i]];
+        const tableCell = document.createElement('td');
+        let cellElement;
         if ((typeof value) === (typeof[])) {
           cellElement = this.createVideoCaptureFormatTable(value);
         } else {
@@ -324,7 +333,7 @@ export class ClientRenderer {
   }
 
   getAudioComponentName_(componentType, id) {
-    var baseName;
+    let baseName;
     switch (componentType) {
       case 0:
       case 1:
@@ -342,7 +351,7 @@ export class ClientRenderer {
   }
 
   getListElementForAudioComponent_(componentType) {
-    var listElement;
+    let listElement;
     switch (componentType) {
       case 0:
         listElement = $('audio-input-controller-list');
@@ -364,22 +373,22 @@ export class ClientRenderer {
   redrawAudioComponentList_(componentType, components) {
     // Group name imposes rule that only one component can be selected
     // (and have its properties displayed) at a time.
-    var buttonGroupName = 'audio-components';
+    const buttonGroupName = 'audio-components';
 
-    var listElement = this.getListElementForAudioComponent_(componentType);
+    const listElement = this.getListElementForAudioComponent_(componentType);
     if (!listElement) {
       console.error(
           'Failed to find list element for component type: ' + componentType);
       return;
     }
 
-    var fragment = document.createDocumentFragment();
-    for (var id in components) {
-      var li = document.createElement('li');
-      var buttonCb = this.selectAudioComponent_.bind(
+    const fragment = document.createDocumentFragment();
+    for (const id in components) {
+      const li = document.createElement('li');
+      const buttonCb = this.selectAudioComponent_.bind(
           this, componentType, id, components[id]);
-      var friendlyName = this.getAudioComponentName_(componentType, id);
-      var label = document.createElement('label');
+      const friendlyName = this.getAudioComponentName_(componentType, id);
+      const label = document.createElement('label');
       label.appendChild(document.createTextNode(friendlyName));
       li.appendChild(
           createSelectableButton(id, buttonGroupName, label, buttonCb));
@@ -414,38 +423,38 @@ export class ClientRenderer {
 
     // Group name imposes rule that only one component can be selected
     // (and have its properties displayed) at a time.
-    var buttonGroupName = 'player-buttons';
+    const buttonGroupName = 'player-buttons';
 
-    var hasPlayers = false;
-    var fragment = document.createDocumentFragment();
-    for (var id in players) {
+    let hasPlayers = false;
+    const fragment = document.createDocumentFragment();
+    for (const id in players) {
       hasPlayers = true;
-      var player = players[id];
-      var p = player.properties;
-      var label = document.createElement('label');
+      const player = players[id];
+      const p = player.properties;
+      const label = document.createElement('label');
 
-      var nameText = p.url || 'Player ' + player.id;
-      var nameNode = document.createElement('div');
+      const nameText = p.url || 'Player ' + player.id;
+      const nameNode = document.createElement('div');
       nameNode.appendChild(document.createTextNode(nameText));
       nameNode.className = 'player-name';
       label.appendChild(nameNode);
 
-      var frame = [];
+      const frame = [];
       if (p.frame_title) {
         frame.push(p.frame_title);
       }
       if (p.frame_url) {
         frame.push(p.frame_url);
       }
-      var frameText = frame.join(' - ');
+      const frameText = frame.join(' - ');
       if (frameText) {
-        var frameNode = document.createElement('div');
+        const frameNode = document.createElement('div');
         frameNode.className = 'player-frame';
         frameNode.appendChild(document.createTextNode(frameText));
         label.appendChild(frameNode);
       }
 
-      var desc = [];
+      const desc = [];
       if (p.width && p.height) {
         desc.push(p.width + 'x' + p.height);
       }
@@ -461,18 +470,18 @@ export class ClientRenderer {
       if (p.event) {
         desc.push('(' + p.event + ')');
       }
-      var descText = desc.join(' ');
+      const descText = desc.join(' ');
       if (descText) {
-        var descNode = document.createElement('div');
+        const descNode = document.createElement('div');
         descNode.className = 'player-desc';
         descNode.appendChild(document.createTextNode(descText));
         label.appendChild(descNode);
       }
 
-      var li = document.createElement('li');
-      var buttonCb = this.selectPlayer_.bind(this, player);
+      const li = document.createElement('li');
+      const buttonCb = this.selectPlayer_.bind(this, player);
       li.appendChild(createSelectableButton(
-          id, buttonGroupName, label, buttonCb, player.destructed));
+          id, buttonGroupName, label, buttonCb, player.playerState));
       fragment.appendChild(li);
     }
     removeChildren(this.playerListElement);
@@ -503,17 +512,17 @@ export class ClientRenderer {
 
   drawProperties_(propertyMap, propertiesTable) {
     removeChildren(propertiesTable);
-    var sortedKeys = Object.keys(propertyMap).sort();
-    for (var i = 0; i < sortedKeys.length; ++i) {
-      var key = sortedKeys[i];
+    const sortedKeys = Object.keys(propertyMap).sort();
+    for (let i = 0; i < sortedKeys.length; ++i) {
+      const key = sortedKeys[i];
       if (this.hiddenKeys.indexOf(key) >= 0) {
         continue;
       }
 
-      var value = propertyMap[key];
-      var row = propertiesTable.insertRow(-1);
-      var keyCell = row.insertCell(-1);
-      var valueCell = row.insertCell(-1);
+      const value = propertyMap[key];
+      const row = propertiesTable.insertRow(-1);
+      const keyCell = row.insertCell(-1);
+      const valueCell = row.insertCell(-1);
 
       keyCell.appendChild(document.createTextNode(key));
       valueCell.appendChild(document.createTextNode(JSON.stringify(value)));
@@ -522,9 +531,9 @@ export class ClientRenderer {
 
   appendEventToLog_(event) {
     if (this.filterFunction(event.key)) {
-      var row = this.logTable.insertRow(-1);
+      const row = this.logTable.insertRow(-1);
 
-      var timestampCell = row.insertCell(-1);
+      const timestampCell = row.insertCell(-1);
       timestampCell.classList.add('timestamp');
       timestampCell.appendChild(
           document.createTextNode(millisecondsToString(event.time)));
@@ -535,16 +544,16 @@ export class ClientRenderer {
   }
 
   drawLog_() {
-    var toDraw =
+    const toDraw =
         this.selectedPlayer.allEvents.slice(this.selectedPlayerLogIndex);
     toDraw.forEach(this.appendEventToLog_.bind(this));
     this.selectedPlayerLogIndex = this.selectedPlayer.allEvents.length;
   }
 
   saveLog_() {
-    var strippedPlayers = [];
-    for (var id in this.players) {
-      var p = this.players[id];
+    const strippedPlayers = [];
+    for (const id in this.players) {
+      const p = this.players[id];
       strippedPlayers.push({properties: p.properties, events: p.allEvents});
     }
     downloadLog(JSON.stringify(strippedPlayers, null, 2));
@@ -557,8 +566,8 @@ export class ClientRenderer {
 
     // Copy both properties and events for convenience since both are useful
     // in bug reports.
-    var p = this.selectedPlayer;
-    var playerLog = {properties: p.properties, events: p.allEvents};
+    const p = this.selectedPlayer;
+    const playerLog = {properties: p.properties, events: p.allEvents};
 
     this.showClipboard(JSON.stringify(playerLog, null, 2));
   }
@@ -580,12 +589,12 @@ export class ClientRenderer {
     if (!this.selectedPlayer && !this.selectedAudioCompontentData) {
       return;
     }
-    var properties =
+    const properties =
         this.selectedAudioCompontentData || this.selectedPlayer.properties;
-    var stringBuffer = [];
+    const stringBuffer = [];
 
-    for (var key in properties) {
-      var value = properties[key];
+    for (const key in properties) {
+      const value = properties[key];
       stringBuffer.push(key.toString());
       stringBuffer.push(': ');
       stringBuffer.push(value.toString());
@@ -596,14 +605,14 @@ export class ClientRenderer {
   }
 
   onTextChange_(event) {
-    var text = this.filterText.value.toLowerCase();
-    var parts = text.split(',')
-                    .map(function(part) {
-                      return part.trim();
-                    })
-                    .filter(function(part) {
-                      return part.trim().length > 0;
-                    });
+    const text = this.filterText.value.toLowerCase();
+    const parts = text.split(',')
+                      .map(function(part) {
+                        return part.trim();
+                      })
+                      .filter(function(part) {
+                        return part.trim().length > 0;
+                      });
 
     this.filterFunction = function(text) {
       text = text.toLowerCase();

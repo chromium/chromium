@@ -31,6 +31,7 @@ component("linux_ui") {
   deps = [
     "//base",
     "//ui/base:types",
+    "//ui/display/types",
     "//ui/gfx/geometry",
   ]
   public_deps = [ "//printing/buildflags" ]
@@ -79,6 +80,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//skia",
+    "//ui/base/ime/linux",
     "//ui/gfx",
     "//ui/native_theme",
     "//ui/shell_dialogs",

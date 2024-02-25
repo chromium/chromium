@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_close_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_stream_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_impl.h"
+#include "third_party/blink/renderer/modules/websockets/websocket_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -36,14 +38,24 @@
 
 namespace blink {
 
+namespace {
+
+// This is used in several places, so use a constant to avoid typos.
+constexpr char kWebSocketNotCleanlyClosedErrorMessage[] =
+    "WebSocket was not cleanly closed.";
+
+}  // namespace
+
 class WebSocketStream::UnderlyingSource final : public UnderlyingSourceBase {
  public:
   UnderlyingSource(ScriptState* script_state, WebSocketStream* creator)
       : UnderlyingSourceBase(script_state), creator_(creator) {}
 
   // UnderlyingSourceBase implementation.
-  ScriptPromise pull(ScriptState*) override;
-  ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
+  ScriptPromise Pull(ScriptState*, ExceptionState&) override;
+  ScriptPromise Cancel(ScriptState*,
+                       ScriptValue reason,
+                       ExceptionState&) override;
 
   // API for WebSocketStream.
   void DidReceiveTextMessage(const String&);
@@ -115,19 +127,20 @@ class WebSocketStream::UnderlyingSink final : public UnderlyingSinkBase {
   bool is_writing_ = false;
 };
 
-ScriptPromise WebSocketStream::UnderlyingSource::pull(
-    ScriptState* script_state) {
-  DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " pull()";
+ScriptPromise WebSocketStream::UnderlyingSource::Pull(ScriptState* script_state,
+                                                      ExceptionState&) {
+  DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " Pull()";
   creator_->channel_->RemoveBackpressure();
   return ScriptPromise::CastUndefined(script_state);
 }
 
 ScriptPromise WebSocketStream::UnderlyingSource::Cancel(
     ScriptState* script_state,
-    ScriptValue reason) {
+    ScriptValue reason,
+    ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " Cancel()";
   closed_ = true;
-  creator_->CloseMaybeWithReason(reason);
+  creator_->CloseMaybeWithReason(reason, exception_state);
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -137,7 +150,8 @@ void WebSocketStream::UnderlyingSource::DidReceiveTextMessage(
            << " DidReceiveTextMessage() string=" << string;
 
   DCHECK(!closed_);
-  Controller()->Enqueue(string);
+  Controller()->Enqueue(
+      V8String(creator_->script_state_->GetIsolate(), string));
   creator_->channel_->ApplyBackpressure();
 }
 
@@ -177,7 +191,8 @@ void WebSocketStream::UnderlyingSource::DidClose(bool was_clean,
     return;
   }
 
-  Controller()->Error(creator_->CreateNetworkErrorDOMException());
+  Controller()->Error(creator_->CreateWebSocketError(
+      kWebSocketNotCleanlyClosedErrorMessage, code, reason));
 }
 
 ScriptPromise WebSocketStream::UnderlyingSink::start(
@@ -214,7 +229,7 @@ ScriptPromise WebSocketStream::UnderlyingSink::close(
     ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " close()";
   closed_ = true;
-  creator_->CloseWithUnspecifiedCode();
+  creator_->CloseWithUnspecifiedCode(exception_state);
   DCHECK(!close_resolver_);
   close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
@@ -228,7 +243,7 @@ ScriptPromise WebSocketStream::UnderlyingSink::abort(
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " abort()";
 
   closed_ = true;
-  creator_->CloseMaybeWithReason(reason);
+  creator_->CloseMaybeWithReason(reason, exception_state);
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -263,9 +278,11 @@ void WebSocketStream::UnderlyingSink::DidClose(bool was_clean,
   }
 
   ScriptState* script_state = creator_->script_state_;
-  Controller()->error(script_state,
-                      ScriptValue(script_state->GetIsolate(),
-                                  creator_->CreateNetworkErrorDOMException()));
+  Controller()->error(
+      script_state,
+      ScriptValue(script_state->GetIsolate(),
+                  creator_->CreateWebSocketError(
+                      kWebSocketNotCleanlyClosedErrorMessage, code, reason)));
 }
 
 void WebSocketStream::UnderlyingSink::ErrorControllerBecauseClosed() {
@@ -296,7 +313,8 @@ void WebSocketStream::UnderlyingSink::ResolveClose(bool was_clean) {
     return;
   }
 
-  close_resolver_->Reject(creator_->CreateNetworkErrorDOMException());
+  close_resolver_->Reject(
+      creator_->CreateWebSocketError(kWebSocketNotCleanlyClosedErrorMessage));
 }
 
 void WebSocketStream::UnderlyingSink::SendAny(ScriptState* script_state,
@@ -461,14 +479,9 @@ ScriptPromise WebSocketStream::closed(ScriptState* script_state) const {
 void WebSocketStream::close(WebSocketCloseInfo* info,
                             ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream " << this << " close() info=" << info;
-  int code = WebSocketChannel::kCloseEventCodeNotSpecified;
-  String reason = info->reason();
-  if (info->hasCode()) {
-    code = info->code();
-  } else if (!reason.IsNull() && !reason.empty()) {
-    code = WebSocketChannel::kCloseEventCodeNormalClosure;
-  }
-  CloseInternal(code, info->reason(), exception_state);
+  CloseInternal(info->hasCloseCode() ? std::make_optional(info->closeCode())
+                                     : std::nullopt,
+                info->reason(), exception_state);
 }
 
 void WebSocketStream::DidConnect(const String& subprotocol,
@@ -554,7 +567,8 @@ void WebSocketStream::DidClose(
 
   ScriptState::Scope scope(script_state_);
   if (!was_ever_connected_) {
-    opened_resolver_->Reject(CreateNetworkErrorDOMException());
+    opened_resolver_->Reject(
+        CreateWebSocketError("WebSocket closed before handshake complete."));
   }
   bool all_data_was_consumed = sink_ ? sink_->AllDataHasBeenConsumed() : true;
   bool was_clean = common_.GetState() == WebSocketCommon::kClosing &&
@@ -573,7 +587,8 @@ void WebSocketStream::DidClose(
   if (was_clean) {
     closed_resolver_->Resolve(MakeCloseInfo(code, reason));
   } else {
-    closed_resolver_->Reject(CreateNetworkErrorDOMException());
+    closed_resolver_->Reject(
+        CreateWebSocketError(kWebSocketNotCleanlyClosedErrorMessage));
   }
 }
 
@@ -589,7 +604,7 @@ void WebSocketStream::ContextDestroyed() {
 }
 
 bool WebSocketStream::HasPendingActivity() const {
-  return channel_;
+  return channel_ != nullptr;
 }
 
 void WebSocketStream::Trace(Visitor* visitor) const {
@@ -666,50 +681,45 @@ void WebSocketStream::Connect(ScriptState* script_state,
 
 // If |maybe_reason| contains a valid code and reason, then closes with it,
 // otherwise closes with unspecified code and reason.
-void WebSocketStream::CloseMaybeWithReason(ScriptValue maybe_reason) {
+void WebSocketStream::CloseMaybeWithReason(ScriptValue maybe_reason,
+                                           ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream " << this << " CloseMaybeWithReason()";
-
-  // Exceptions thrown here are ignored.
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
-  WebSocketCloseInfo* info = NativeValueTraits<WebSocketCloseInfo>::NativeValue(
-      script_state_->GetIsolate(), maybe_reason.V8Value(), exception_state);
-  if (!exception_state.HadException() && info->hasCode()) {
-    CloseInternal(info->code(), info->reason(), exception_state);
-    if (!exception_state.HadException())
-      return;
+  WebSocketError* info = V8WebSocketError::ToWrappable(
+      script_state_->GetIsolate(), maybe_reason.V8Value());
+  if (info) {
+    CloseInternal(info->closeCode(), info->reason(), exception_state);
+  } else {
+    CloseWithUnspecifiedCode(exception_state);
   }
-
-  // We couldn't convert it, but that's okay.
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
-  }
-  CloseWithUnspecifiedCode();
 }
 
-void WebSocketStream::CloseWithUnspecifiedCode() {
+void WebSocketStream::CloseWithUnspecifiedCode(
+    ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream " << this << " CloseWithUnspecifiedCode()";
-
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
-  CloseInternal(WebSocketChannel::kCloseEventCodeNotSpecified, String(),
-                exception_state);
+  CloseInternal(std::nullopt, String(), exception_state);
   DCHECK(!exception_state.HadException());
 }
 
-void WebSocketStream::CloseInternal(int code,
+void WebSocketStream::CloseInternal(std::optional<uint16_t> code,
                                     const String& reason,
                                     ExceptionState& exception_state) {
-  DVLOG(1) << "WebSocketStream " << this << " CloseInternal() code=" << code
+  DVLOG(1) << "WebSocketStream " << this
+           << " CloseInternal() code=" << (code ? code.value() : uint16_t{0})
            << " reason=" << reason;
 
   common_.CloseInternal(code, reason, channel_, exception_state);
 }
 
-v8::Local<v8::Value> WebSocketStream::CreateNetworkErrorDOMException() {
-  return V8ThrowDOMException::CreateOrEmpty(script_state_->GetIsolate(),
-                                            DOMExceptionCode::kNetworkError,
-                                            "A network error occurred");
+v8::Local<v8::Value> WebSocketStream::CreateWebSocketError(
+    String message,
+    std::optional<uint16_t> close_code,
+    String reason) {
+  // This method should not be called with invalid `close_code` and `reason`,
+  // but the use of ASSERT_NO_EXCEPTION here is bad practice.
+  // TODO(ricea): Do something else.
+  return WebSocketError::Create(script_state_->GetIsolate(), std::move(message),
+                                close_code, std::move(reason),
+                                ASSERT_NO_EXCEPTION);
 }
 
 void WebSocketStream::OnAbort() {
@@ -729,13 +739,13 @@ void WebSocketStream::OnAbort() {
   abort_handle_.Clear();
 }
 
-WebSocketCloseInfo* WebSocketStream::MakeCloseInfo(uint16_t code,
+WebSocketCloseInfo* WebSocketStream::MakeCloseInfo(uint16_t close_code,
                                                    const String& reason) {
-  DVLOG(1) << "WebSocketStream MakeCloseInfo() code=" << code
+  DVLOG(1) << "WebSocketStream MakeCloseInfo() code=" << close_code
            << " reason=" << reason;
 
   auto* info = MakeGarbageCollected<WebSocketCloseInfo>();
-  info->setCode(code);
+  info->setCloseCode(close_code);
   info->setReason(reason);
   return info;
 }

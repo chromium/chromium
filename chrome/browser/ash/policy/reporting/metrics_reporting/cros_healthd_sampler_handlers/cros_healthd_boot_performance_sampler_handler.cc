@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_boot_performance_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -22,7 +22,7 @@ void CrosHealthdBootPerformanceSamplerHandler::HandleResult(
     OptionalMetricCallback callback,
     cros_healthd::TelemetryInfoPtr result) const {
   const std::string kShutdownReasonNotApplicable = "N/A";
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
 
   const auto& boot_performance_result = result->boot_performance_result;
   if (!boot_performance_result.is_null()) {
@@ -41,7 +41,7 @@ void CrosHealthdBootPerformanceSamplerHandler::HandleResult(
           break;
         }
 
-        metric_data = absl::make_optional<MetricData>();
+        metric_data = std::make_optional<MetricData>();
         auto* const boot_info_out = metric_data->mutable_telemetry_data()
                                         ->mutable_boot_performance_telemetry();
         // Gather boot performance info.

@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,8 +41,6 @@ class DataCollectorDelegateImpl : public DataCollector::Delegate {
   bool IsPrivacyScreenSupported() override;
   bool IsPrivacyScreenManaged() override;
   void SetPrivacyScreenState(bool state) override;
-  bool IsOutputForceMuted() override;
-  void SetOutputMute(bool mute_on) override;
 };
 
 DataCollectorDelegateImpl::DataCollectorDelegateImpl() = default;
@@ -95,14 +93,6 @@ bool DataCollectorDelegateImpl::IsPrivacyScreenManaged() {
 
 void DataCollectorDelegateImpl::SetPrivacyScreenState(bool state) {
   Shell::Get()->privacy_screen_controller()->SetEnabled(state);
-}
-
-bool DataCollectorDelegateImpl::IsOutputForceMuted() {
-  return CrasAudioHandler::Get()->IsOutputForceMuted();
-}
-
-void DataCollectorDelegateImpl::SetOutputMute(bool mute_on) {
-  CrasAudioHandler::Get()->SetOutputMute(mute_on);
 }
 
 DataCollectorDelegateImpl* GetDataCollectorDelegate() {
@@ -182,7 +172,11 @@ void DataCollector::GetTouchscreenDevices(
 
 void DataCollector::GetTouchpadLibraryName(
     GetTouchpadLibraryNameCallback callback) {
-  std::move(callback).Run(delegate_->GetTouchpadLibraryName());
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&Delegate::GetTouchpadLibraryName,
+                     base::Unretained(delegate_)),
+      std::move(callback));
 }
 
 void DataCollector::SetPrivacyScreenState(
@@ -198,15 +192,10 @@ void DataCollector::SetPrivacyScreenState(
   std::move(callback).Run(true);
 }
 
-void DataCollector::SetAudioOutputMute(bool mute_on,
-                                       SetAudioOutputMuteCallback callback) {
-  if (!mute_on && delegate_->IsOutputForceMuted()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  delegate_->SetOutputMute(mute_on);
-  std::move(callback).Run(true);
+void DataCollector::DEPRECATED_SetAudioOutputMute(
+    bool mute_on,
+    DEPRECATED_SetAudioOutputMuteCallback callback) {
+  std::move(callback).Run(/*success*/ false);
 }
 
 void DataCollector::Request(

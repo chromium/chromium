@@ -30,7 +30,7 @@ class DefaultDelegateImpl : public CrostiniThrottle::Delegate {
   }
 
  private:
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 };
 
 class CrostiniThrottleFactory : public ProfileKeyedServiceFactory {

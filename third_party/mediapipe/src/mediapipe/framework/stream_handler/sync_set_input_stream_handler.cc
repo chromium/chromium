@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/check.h"
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/collection_item_id.h"
@@ -29,7 +29,6 @@
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/stream_handler/sync_set_input_stream_handler.pb.h"
 #include "mediapipe/framework/timestamp.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -54,7 +53,8 @@ void SyncSetInputStreamHandler::PrepareForRun(
         int index;
         MEDIAPIPE_CHECK_OK(tool::ParseTagIndex(tag_index, &tag, &index));
         CollectionItemId id = input_stream_managers_.GetId(tag, index);
-        ABSL_CHECK(id.IsValid()) << "stream \"" << tag_index << "\" is not found.";
+        ABSL_CHECK(id.IsValid())
+            << "stream \"" << tag_index << "\" is not found.";
         ABSL_CHECK(!mediapipe::ContainsKey(used_ids, id))
             << "stream \"" << tag_index << "\" is in more than one sync set.";
         used_ids.insert(id);

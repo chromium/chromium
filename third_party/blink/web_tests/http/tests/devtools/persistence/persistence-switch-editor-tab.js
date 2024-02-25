@@ -6,18 +6,20 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
+
 (async function() {
   'use strict';
   TestRunner.addResult(
       `Verify that a network file tab gets substituted with filesystem tab when persistence binding comes.\n`);
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/foo.js');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
   TestRunner.runTestSuite([
     function openNetworkTab(next) {
-      TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.Network)
+      TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.Network)
           .then(sourceCode => SourcesTestRunner.showUISourceCodePromise(sourceCode))
           .then(onSourceFrame);
 
@@ -42,7 +44,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   ]);
 
   function dumpEditorTabs() {
-    var editorContainer = UI.panels.sources.sourcesView().editorContainer;
+    var editorContainer = Sources.SourcesPanel.SourcesPanel.instance().sourcesView().editorContainer;
     var openedUISourceCodes = [...editorContainer.tabIds.keys()];
     openedUISourceCodes.sort((a, b) => a.url > b.url ? 1 : b.url > a.url ? -1 : 0);
     TestRunner.addResult('Opened tabs: ');

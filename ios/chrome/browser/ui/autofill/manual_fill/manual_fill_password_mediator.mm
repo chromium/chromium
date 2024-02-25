@@ -8,21 +8,24 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_save_manager_impl.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/sync/base/model_type.h"
-#import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credential+PasswordForm.h"
@@ -30,7 +33,9 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_consumer.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
+#import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/favicon_size.h"
@@ -65,33 +70,25 @@ BOOL AreCredentialsAtIndexesConnected(
 @interface ManualFillPasswordMediator () <CRWWebStateObserver,
                                           FormActivityObserver,
                                           ManualFillContentInjector,
-                                          PasswordFetcherDelegate> {
-  // The interfaces for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStoreInterface> _profilePasswordStore;
-  scoped_refptr<password_manager::PasswordStoreInterface> _accountPasswordStore;
-}
-
-// The password fetcher to query the user profile.
-@property(nonatomic, strong) PasswordFetcher* passwordFetcher;
+                                          SavedPasswordsPresenterObserver>
 
 // The favicon loader used in TableViewFaviconDataSource.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 
-// A cache of the credentials fetched from the store, not synced. Useful to
-// reuse the mediator.
+// A cache of the saved credentials to present.
 @property(nonatomic, strong) NSArray<ManualFillCredential*>* credentials;
 
-// YES if the password fetcher has completed at least one fetch.
-@property(nonatomic, assign) BOOL passwordFetcherDidFetch;
+// YES if passwords were fetched at least once.
+@property(nonatomic, assign) BOOL passwordsWereFetched;
 
-// YES if the active field is of type 'password'.
-@property(nonatomic, assign) BOOL activeFieldIsPassword;
+// YES if the active field is obfuscated.
+@property(nonatomic, assign) BOOL activeFieldIsObfuscated;
 
 // The relevant active web state.
 @property(nonatomic, assign) web::WebState* webState;
 
-// Sync setup service.
-@property(nonatomic, assign) SyncSetupService* syncService;
+// Sync service.
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
@@ -105,30 +102,30 @@ BOOL AreCredentialsAtIndexesConnected(
 
   // Origin to fetch passwords for.
   GURL _URL;
+
+  // Service which gives us a view on users' saved passwords. Only set this
+  // property if there's a need to fetch all of the user's saved passwords.
+  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
+
+  // Bridge to observe changes in saved passwords. This variable will only be
+  // initialized if the `_savedPasswordsPresenter` variable is set.
+  std::unique_ptr<SavedPasswordsPresenterObserverBridge>
+      _savedPasswordsPresenterObserver;
 }
 
-- (instancetype)
-    initWithProfilePasswordStore:
-        (scoped_refptr<password_manager::PasswordStoreInterface>)
-            profilePasswordStore
-            accountPasswordStore:
-                (scoped_refptr<password_manager::PasswordStoreInterface>)
-                    accountPasswordStore
-                   faviconLoader:(FaviconLoader*)faviconLoader
-                        webState:(web::WebState*)webState
-                     syncService:(SyncSetupService*)syncService
-                             URL:(const GURL&)URL
-          invokedOnPasswordField:(BOOL)invokedOnPasswordField {
+- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
+                             webState:(web::WebState*)webState
+                          syncService:(syncer::SyncService*)syncService
+                                  URL:(const GURL&)URL
+             invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
   self = [super init];
   if (self) {
     _credentials = @[];
-    _profilePasswordStore = profilePasswordStore;
-    _accountPasswordStore = accountPasswordStore;
     _faviconLoader = faviconLoader;
     _webState = webState;
     _syncService = syncService;
     _URL = URL;
-    _activeFieldIsPassword = invokedOnPasswordField;
+    _activeFieldIsObfuscated = invokedOnObfuscatedField;
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserverBridge.get());
@@ -138,36 +135,46 @@ BOOL AreCredentialsAtIndexesConnected(
   return self;
 }
 
-- (void)dealloc {
+- (void)disconnect {
   if (_webState) {
     [self webStateDestroyed:_webState];
   }
+  if (_savedPasswordsPresenter) {
+    _savedPasswordsPresenter->RemoveObserver(
+        _savedPasswordsPresenterObserver.get());
+    _savedPasswordsPresenterObserver.reset();
+    _savedPasswordsPresenter = nullptr;
+  }
 }
 
-- (void)fetchPasswords {
-  self.credentials = @[];
-  self.passwordFetcher = [[PasswordFetcher alloc]
-      initWithProfilePasswordStore:_profilePasswordStore
-              accountPasswordStore:_accountPasswordStore
-                          delegate:self
-                               URL:_URL];
+- (void)fetchPasswordsForForm:(const autofill::FormRendererId)formID
+                        frame:(const std::string&)frameID {
+  self.credentials = [self fetchCredentialsForForm:formID
+                                          webState:self.webState
+                                        webFrameId:frameID];
+  self.passwordsWereFetched = YES;
+  [self postDataToConsumer];
 }
 
-#pragma mark - PasswordFetcherDelegate
+- (void)fetchAllPasswords {
+  CHECK(_savedPasswordsPresenter);
 
-- (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
-      didFetchPasswords:
-          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
-              passwords {
+  std::vector<password_manager::CredentialUIEntry> savedCredentials =
+      _savedPasswordsPresenter->GetSavedCredentials();
+
+  std::vector<password_manager::PasswordForm> forms =
+      [self passwordFormsFromCredentials:savedCredentials];
+
+  // Create Manual Fill Credentials from the list of Password Forms.
   NSMutableArray<ManualFillCredential*>* credentials =
-      [[NSMutableArray alloc] initWithCapacity:passwords.size()];
-  for (const auto& form : passwords) {
+      [[NSMutableArray alloc] initWithCapacity:savedCredentials.size()];
+  for (const auto& form : forms) {
     ManualFillCredential* credential =
-        [[ManualFillCredential alloc] initWithPasswordForm:*form];
+        [[ManualFillCredential alloc] initWithPasswordForm:form];
     [credentials addObject:credential];
   }
   self.credentials = credentials;
-  self.passwordFetcherDidFetch = YES;
+  self.passwordsWereFetched = YES;
   [self postDataToConsumer];
 }
 
@@ -200,7 +207,7 @@ BOOL AreCredentialsAtIndexesConnected(
   // consumer, only post credentials if at least the first fetch is done. Or
   // else there will be spam metrics with 0 passwords everytime the screen is
   // open.
-  if (self.passwordFetcherDidFetch) {
+  if (self.passwordsWereFetched) {
     [self postCredentialsToConsumer];
     [self postActionsToConsumer];
   }
@@ -247,21 +254,17 @@ BOOL AreCredentialsAtIndexesConnected(
         [[NSMutableArray alloc] init];
     __weak __typeof(self) weakSelf = self;
 
-    bool useUpdatedStrings = base::FeatureList::IsEnabled(
-        password_manager::features::kIOSPasswordUISplit);
-
     password_manager::PasswordManagerClient* passwordManagerClient =
         _webState ? PasswordTabHelper::FromWebState(_webState)
                         ->GetPasswordManagerClient()
                   : nullptr;
-    if (_syncService && _syncService->IsDataTypeActive(syncer::PASSWORDS) &&
+    if (_syncService &&
+        _syncService->GetActiveDataTypes().Has(syncer::PASSWORDS) &&
         passwordManagerClient &&
         passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
-        _activeFieldIsPassword) {
+        _activeFieldIsObfuscated) {
       NSString* suggestPasswordTitleString = l10n_util::GetNSString(
-          useUpdatedStrings
-              ? IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS
-              : IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
+          IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS);
       ManualFillActionItem* suggestPasswordItem = [[ManualFillActionItem alloc]
           initWithTitle:suggestPasswordTitleString
                  action:^{
@@ -275,9 +278,7 @@ BOOL AreCredentialsAtIndexesConnected(
     }
 
     NSString* otherPasswordsTitleString = l10n_util::GetNSString(
-        useUpdatedStrings
-            ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS
-            : IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
+        IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS);
     ManualFillActionItem* otherPasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:otherPasswordsTitleString
                action:^{
@@ -303,25 +304,75 @@ BOOL AreCredentialsAtIndexesConnected(
         manual_fill::ManagePasswordsAccessibilityIdentifier;
     [actions addObject:managePasswordsItem];
 
-    // "Manage Settings..." also appears when updated strings are enabled.
-    if (useUpdatedStrings) {
-      NSString* manageSettingsTitle =
-          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS);
-      ManualFillActionItem* manageSettingsItem = [[ManualFillActionItem alloc]
-          initWithTitle:manageSettingsTitle
-                 action:^{
-                   base::RecordAction(base::UserMetricsAction(
-                       "ManualFallback_Password_OpenManageSettings"));
-                   [weakSelf.navigator openPasswordSettings];
-                 }];
-      manageSettingsItem.accessibilityIdentifier =
-          manual_fill::ManageSettingsAccessibilityIdentifier;
+    NSString* manageSettingsTitle =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS);
+    ManualFillActionItem* manageSettingsItem = [[ManualFillActionItem alloc]
+        initWithTitle:manageSettingsTitle
+               action:^{
+                 base::RecordAction(base::UserMetricsAction(
+                     "ManualFallback_Password_OpenManageSettings"));
+                 [weakSelf.navigator openPasswordSettings];
+               }];
+    manageSettingsItem.accessibilityIdentifier =
+        manual_fill::ManageSettingsAccessibilityIdentifier;
 
-      [actions addObject:manageSettingsItem];
-    }
+    [actions addObject:manageSettingsItem];
 
     [self.consumer presentActions:actions];
   }
+}
+
+// Fetches credentials related to the current form.
+- (NSArray<ManualFillCredential*>*)
+    fetchCredentialsForForm:(autofill::FormRendererId)formId
+                   webState:(web::WebState*)webState
+                 webFrameId:(const std::string&)frameId {
+  PasswordTabHelper* tabHelper = PasswordTabHelper::FromWebState(webState);
+  if (!tabHelper) {
+    return @[];
+  }
+
+  password_manager::PasswordManager* passwordManager =
+      tabHelper->GetPasswordManager();
+  CHECK(passwordManager);
+
+  web::WebFramesManager* webFramesManager =
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          webState);
+  web::WebFrame* frame = webFramesManager->GetFrameWithId(frameId);
+
+  password_manager::PasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
+  const std::vector<raw_ptr<const password_manager::PasswordForm,
+                            VectorExperimental>>* passwordForms =
+      passwordManager->GetBestMatches(driver, formId);
+  if (!passwordForms) {
+    return @[];
+  }
+
+  NSMutableArray<ManualFillCredential*>* credentials =
+      [[NSMutableArray alloc] initWithCapacity:passwordForms->size()];
+  for (const password_manager::PasswordForm* form : *passwordForms) {
+    ManualFillCredential* credential =
+        [[ManualFillCredential alloc] initWithPasswordForm:*form];
+    [credentials addObject:credential];
+  }
+
+  return credentials;
+}
+
+// Fetches all Password Forms related to the given list of saved credentials.
+- (std::vector<password_manager::PasswordForm>)passwordFormsFromCredentials:
+    (const std::vector<password_manager::CredentialUIEntry>&)credentials {
+  std::vector<password_manager::PasswordForm> forms;
+  forms.reserve(credentials.size());
+
+  for (const auto& credential : credentials) {
+    std::vector<password_manager::PasswordForm> test =
+        _savedPasswordsPresenter->GetCorrespondingPasswordForms(credential);
+    forms.insert(forms.end(), test.begin(), test.end());
+  }
+  return forms;
 }
 
 #pragma mark - Setters
@@ -332,6 +383,18 @@ BOOL AreCredentialsAtIndexesConnected(
   }
   _consumer = consumer;
   [self postDataToConsumer];
+}
+
+- (void)setSavedPasswordsPresenter:
+    (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter {
+  if (_savedPasswordsPresenter == savedPasswordsPresenter) {
+    return;
+  }
+
+  _savedPasswordsPresenter = savedPasswordsPresenter;
+  _savedPasswordsPresenterObserver =
+      std::make_unique<SavedPasswordsPresenterObserverBridge>(
+          self, _savedPasswordsPresenter);
 }
 
 #pragma mark - ManualFillContentInjector
@@ -366,9 +429,10 @@ BOOL AreCredentialsAtIndexesConnected(
     didRegisterFormActivity:(const autofill::FormActivityParams&)params
                     inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
-  if (_activeFieldIsPassword !=
-      (params.field_type == autofill::kPasswordFieldType)) {
-    _activeFieldIsPassword = params.field_type == autofill::kPasswordFieldType;
+  if (_activeFieldIsObfuscated !=
+      (params.field_type == autofill::kObfuscatedFieldType)) {
+    _activeFieldIsObfuscated =
+        params.field_type == autofill::kObfuscatedFieldType;
     [self postActionsToConsumer];
   }
 }
@@ -383,6 +447,12 @@ BOOL AreCredentialsAtIndexesConnected(
   }
   _webStateObserverBridge.reset();
   _formActivityObserverBridge.reset();
+}
+
+#pragma mark - SavedPasswordsPresenterBridge
+
+- (void)savedPasswordsDidChange {
+  [self fetchAllPasswords];
 }
 
 @end

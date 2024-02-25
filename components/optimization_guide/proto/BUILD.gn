@@ -12,12 +12,24 @@ proto_library("optimization_guide_proto") {
   proto_in_dir = "//"
   sources = [
     "autocomplete_scoring_model_metadata.proto",
+    "autofill_field_classification_model_metadata.proto",
     "client_side_phishing_model_metadata.proto",
     "common_types.proto",
+    "features/common_quality_data.proto",
+    "features/compose.proto",
+    "features/default.proto",
+    "features/history_document.proto",
+    "features/history_query.proto",
+    "features/tab_organization.proto",
+    "features/wallpaper_search.proto",
     "hint_cache.proto",
     "hints.proto",
     "loading_predictor_metadata.proto",
+    "model_execution.proto",
+    "model_quality_metadata.proto",
+    "model_quality_service.proto",
     "models.proto",
+    "on_device_base_model_metadata.proto",
     "on_device_tail_suggest_model_metadata.proto",
     "page_entities_metadata.proto",
     "page_entities_model_metadata.proto",
@@ -25,8 +37,18 @@ proto_library("optimization_guide_proto") {
     "page_topics_override_list.proto",
     "push_notification.proto",
     "salient_image_metadata.proto",
+    "string_value.proto",
+    "text_safety_model_metadata.proto",
     "visual_search_model_metadata.proto",
   ]
+
+  # Python stubs are needed at runtime for model validation tests.
+  generate_py_runtime = true
+
+  # These are required to import system_profile.proto in
+  # model_quality_metadata.proto.
+  proto_deps = [ "//third_party/metrics_proto:metrics_proto" ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
 if (is_android) {
@@ -40,4 +62,24 @@ if (is_android) {
       "push_notification.proto",
     ]
   }
+}
+
+proto_library("compose_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/compose.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "compose.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("string_value_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "string_value.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "string_value.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
 }

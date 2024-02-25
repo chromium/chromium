@@ -57,6 +57,7 @@ bool LoadFromApkOrFile(const char* apk_path,
   bool success = *out_fd >= 0;
   if (!success) {
     LOG(ERROR) << "Failed to open pak file: " << apk_path;
+    base::android::DumpLastOpenApkAssetFailure();
   }
   return success;
 }

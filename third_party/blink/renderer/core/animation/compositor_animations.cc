@@ -555,7 +555,7 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
     // DCHECK_GE(GetDocument().Lifecycle().GetState(),
     //           DocumentLifecycle::kPrePaintClean);
     bool has_direct_compositing_reasons = false;
-    if (layout_object->FirstFragment().NextFragment()) {
+    if (layout_object->IsFragmented()) {
       // Composited animation on multiple fragments is not supported.
       reasons |= kTargetHasInvalidCompositingState;
     } else if (const auto* paint_properties =
@@ -647,7 +647,7 @@ void CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
 void CompositorAnimations::StartAnimationOnCompositor(
     const Element& element,
     int group,
-    absl::optional<double> start_time,
+    std::optional<double> start_time,
     base::TimeDelta time_offset,
     const Timing& timing,
     const Timing::NormalizedTiming& normalized_timing,
@@ -864,7 +864,8 @@ void AddKeyframeToCurve(cc::KeyframedFilterAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function) {
-  FilterEffectBuilder builder(gfx::RectF(), 1);
+  FilterEffectBuilder builder(gfx::RectF(), 1, Color::kBlack,
+                              mojom::blink::ColorScheme::kLight);
   CompositorFilterOperations operations = builder.BuildFilterOperations(
       To<CompositorKeyframeFilterOperations>(value)->Operations());
   std::unique_ptr<cc::FilterKeyframe> filter_keyframe =
@@ -955,7 +956,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     const Timing& timing,
     const Timing::NormalizedTiming& normalized_timing,
     int group,
-    absl::optional<double> start_time,
+    std::optional<double> start_time,
     base::TimeDelta time_offset,
     const KeyframeEffectModelBase& effect,
     Vector<std::unique_ptr<cc::KeyframeModel>>& keyframe_models,
@@ -983,8 +984,8 @@ void CompositorAnimations::GetAnimationOnCompositor(
 
     std::unique_ptr<gfx::AnimationCurve> curve;
     DCHECK(timing.timing_function);
-    absl::optional<cc::KeyframeModel::TargetPropertyId> target_property_id =
-        absl::nullopt;
+    std::optional<cc::KeyframeModel::TargetPropertyId> target_property_id =
+        std::nullopt;
     CSSPropertyID css_property_id = property.GetCSSProperty().PropertyID();
     switch (css_property_id) {
       case CSSPropertyID::kOpacity: {
@@ -1128,35 +1129,31 @@ void CompositorAnimations::GetAnimationOnCompositor(
   DCHECK(!keyframe_models.empty());
 }
 
-bool CompositorAnimations::CheckUsesCompositedScrolling(Node* target) {
-  if (!target)
+bool CompositorAnimations::CanStartScrollTimelineOnCompositor(Node* target) {
+  if (!target) {
     return false;
-  DCHECK(target->GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kPrePaintClean);
-  auto* layout_box_model_object = target->GetLayoutBoxModelObject();
-  if (!layout_box_model_object)
-    return false;
-
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-        target->GetDocument().Lifecycle().GetState() <
-            DocumentLifecycle::kPaintClean) {
-      // TODO(crbug.com/1434728): This happens when we paint a scroll-driven
-      // animating background.
-      return false;
-    }
-    const auto* properties =
-        layout_box_model_object->FirstFragment().PaintProperties();
-    if (!properties || !properties->Scroll()) {
-      return false;
-    }
-    const auto* paint_artifact_compositor =
-        layout_box_model_object->GetFrameView()->GetPaintArtifactCompositor();
-    return paint_artifact_compositor &&
-           paint_artifact_compositor->UsesCompositedScrolling(
-               *properties->Scroll());
   }
-  return layout_box_model_object->UsesCompositedScrolling();
+  if (!RuntimeEnabledFeatures::ScrollTimelineOnCompositorEnabled()) {
+    return false;
+  }
+  DCHECK_GE(target->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+  auto* layout_box = target->GetLayoutBox();
+  if (!layout_box) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::ScrollTimelineAlwaysOnCompositorEnabled()) {
+    return layout_box->FirstFragment().PaintProperties() &&
+           layout_box->FirstFragment().PaintProperties()->Scroll();
+  }
+  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+      target->GetDocument().Lifecycle().GetState() <
+          DocumentLifecycle::kPaintClean) {
+    // TODO(crbug.com/1434728): This happens when we paint a scroll-driven
+    // animating background.
+    return false;
+  }
+  return layout_box->UsesCompositedScrolling();
 }
 
 CompositorAnimations::FailureReasons

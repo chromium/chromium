@@ -82,8 +82,9 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
                          bool force_blocking = false);
 
   void ElementDidMoveToNewDocument();
+  void OnAttachLayoutTree();
 
-  Element* GetElement() const { return element_; }
+  Element* GetElement() const { return element_.Get(); }
   bool ImageComplete() const { return image_complete_; }
 
   ImageResourceContent* GetContent() const { return image_content_.Get(); }
@@ -164,9 +165,8 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   // Called from the task or from updateFromElement to initiate the load.
   // force_blocking ensures that the image will block the load event.
-  void DoUpdateFromElement(scoped_refptr<const DOMWrapperWorld> world,
+  void DoUpdateFromElement(const DOMWrapperWorld* world,
                            UpdateFromElementBehavior,
-                           base::TimeTicks discovery_time,
                            UpdateType = UpdateType::kAsync,
                            bool force_blocking = false);
 
@@ -190,8 +190,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   void ClearFailedLoadURL();
   void DispatchErrorEvent();
   void CrossSiteOrCSPViolationOccurred(AtomicString);
-  void EnqueueImageLoadingMicroTask(UpdateFromElementBehavior update_behavior,
-                                    base::TimeTicks discovery_time);
+  void EnqueueImageLoadingMicroTask(UpdateFromElementBehavior update_behavior);
 
   KURL ImageSourceToKURL(AtomicString) const;
 

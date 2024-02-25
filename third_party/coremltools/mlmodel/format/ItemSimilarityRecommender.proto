@@ -1,0 +1,75 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification;
+
+/*
+ * Item Similarity Recommender
+ *
+ *  The Item Similarity recommender takes as input a list of items and scores,
+ *  then uses that information and a table of item similarities to predict
+ * similarity scores for all items.  By default, the items predicted are most
+ * similar to the given items but not part of that item set.
+ *
+ *  The predicted score for a given item k is
+ *    sum_(i in observed items)   sim_(k,i) * (score_i - shift_k)
+ *
+ *  Because only the most similar scores for each item i are stored,
+ *  sim_(k,i) is often zero.
+ *
+ *  For many models, the score adjustment parameter shift_j is zero -- it's
+ * occasionally used to counteract global biases for popular items.
+ *
+ *
+ *  References:
+ */
+message ItemSimilarityRecommender {
+  /* The items similar to a given base item.
+   */
+  message ConnectedItem {
+    uint64 itemId = 1;
+    double similarityScore = 2;
+  }
+
+  /*  The formula for the score of a given model as given above, with shift_k
+   *   parameter given by itemScoreAdjustment, and the similar item list filling
+   * in all the known sim(k,i) scores for i given by itemID and k given by the
+   * itemID parameter in the similarItemList.
+   */
+  message SimilarItems {
+    uint64 itemId = 1;
+    repeated ConnectedItem similarItemList = 2;
+    double itemScoreAdjustment = 3;
+  }
+
+  repeated SimilarItems itemItemSimilarities = 1;
+
+  /* One or none of these are given.  If none are given, then the items must
+   * number 0, 1, ..., num_items - 1. If either is given, the length must be
+   * exactly num_items.
+   */
+  StringVector itemStringIds = 2;
+  Int64Vector itemInt64Ids = 3;
+
+  /* Input parameter names specifying different possible inputs to the
+   * recommender.
+   */
+  string itemInputFeatureName = 10; /* Required */
+  string numRecommendationsInputFeatureName =
+      11; /* Optional; defaults to all items if not given.*/
+  string itemRestrictionInputFeatureName = 12; /* Optional. */
+  string itemExclusionInputFeatureName =
+      13; /* Optional; defaults to input item list if not given. */
+
+  /* The predicted outputs.  At least one of these must be specified.
+   */
+  string recommendedItemListOutputFeatureName = 20;
+  string recommendedItemScoreOutputFeatureName = 21;
+}

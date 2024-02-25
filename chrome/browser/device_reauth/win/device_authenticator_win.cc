@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -17,6 +18,9 @@
 namespace {
 
 void SaveAvailability(BiometricAuthenticationStatusWin availability) {
+  CHECK(g_browser_process);
+  CHECK(g_browser_process->local_state());
+
   bool is_available =
       availability == BiometricAuthenticationStatusWin::kAvailable;
   g_browser_process->local_state()->SetBoolean(
@@ -32,17 +36,15 @@ void SaveAvailability(BiometricAuthenticationStatusWin availability) {
 }  // namespace
 
 DeviceAuthenticatorWin::DeviceAuthenticatorWin(
-    std::unique_ptr<AuthenticatorWinInterface> authenticator)
-    : authenticator_(std::move(authenticator)) {}
+    std::unique_ptr<AuthenticatorWinInterface> authenticator,
+    DeviceAuthenticatorProxy* proxy,
+    const device_reauth::DeviceAuthParams& params)
+    : DeviceAuthenticatorCommon(proxy,
+                                params.GetAuthenticationValidityPeriod(),
+                                params.GetAuthResultHistogram()),
+      authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorWin::~DeviceAuthenticatorWin() = default;
-
-// static
-scoped_refptr<DeviceAuthenticatorWin> DeviceAuthenticatorWin::CreateForTesting(
-    std::unique_ptr<AuthenticatorWinInterface> authenticator) {
-  return base::WrapRefCounted(
-      new DeviceAuthenticatorWin(std::move(authenticator)));
-}
 
 bool DeviceAuthenticatorWin::CanAuthenticateWithBiometrics() {
   // Setting that pref happens once when the ChromeDeviceAuthenticatorFactory
@@ -57,17 +59,12 @@ bool DeviceAuthenticatorWin::CanAuthenticateWithBiometricOrScreenLock() {
          authenticator_->CanAuthenticateWithScreenLock();
 }
 
-void DeviceAuthenticatorWin::Authenticate(
-    device_reauth::DeviceAuthRequester requester,
-    AuthenticateCallback callback,
-    bool use_last_valid_auth) {
-  NOTIMPLEMENTED();
-}
-
 void DeviceAuthenticatorWin::AuthenticateWithMessage(
     const std::u16string& message,
     AuthenticateCallback callback) {
   if (!NeedsToAuthenticate()) {
+    RecordAuthResultSkipped();
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
     return;
@@ -79,14 +76,15 @@ void DeviceAuthenticatorWin::AuthenticateWithMessage(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DeviceAuthenticatorWin::Cancel(
-    device_reauth::DeviceAuthRequester requester) {
+void DeviceAuthenticatorWin::Cancel() {
   // TODO(crbug.com/1354552): Add implementation of the Cancel method.
   NOTIMPLEMENTED();
 }
 
-void DeviceAuthenticatorWin::CacheIfBiometricsAvailable() {
-  authenticator_->CheckIfBiometricsAvailable(base::BindOnce(&SaveAvailability));
+// static
+void DeviceAuthenticatorWin::CacheIfBiometricsAvailable(
+    AuthenticatorWinInterface* authenticator) {
+  authenticator->CheckIfBiometricsAvailable(base::BindOnce(&SaveAvailability));
 }
 
 void DeviceAuthenticatorWin::OnAuthenticationCompleted(

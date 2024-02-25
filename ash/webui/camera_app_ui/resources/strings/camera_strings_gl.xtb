@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Eliminar páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1153190633558910465">Sen grade</translation>
-<translation id="1175958423215084756">Detectouse unha ligazón. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Eliminouse a páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Xirar 90 graos cara á dereita</translation>
 <translation id="1417314334557041815">Editar páxina <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Desprazar cara á dereita</translation>
 <translation id="3081586908890909590">Cambiar a gravar vídeo</translation>
 <translation id="313467653172006084">30 fps</translation>
+<translation id="3158534262962737808">Unirse a <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3240426699337459095">Copiouse a ligazón</translation>
 <translation id="3354465018370944241">Configuración de fotos</translation>
@@ -55,19 +55,17 @@
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3517926952904427380">Non se puido facer a foto de retrato</translation>
 <translation id="3566302376254083266">Desprazándose cara arriba e á esquerda</translation>
-<translation id="3573890771273113519">Cambiar a modo de escaneo</translation>
+<translation id="3573890771273113519">Cambiar a modo de escaneamento</translation>
 <translation id="3583444040776960729">Esquina inferior esquerda do documento</translation>
 <translation id="3642192109456033823">Procesando vídeo...</translation>
 <translation id="3789724198583203151">Xirar 90 graos cara á esquerda</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3892148308691398805">Copiar texto</translation>
 <translation id="4060608699153044055">Non podes realizar gravacións porque tes pouco espazo de almacenamento no dispositivo. Para comezar a gravar, terás que liberar espazo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pór gravación en pausa</translation>
 <translation id="4121305183798804752">Detectouse un documento</translation>
 <translation id="414641094616694804">Esta cámara non pode cambiar a resolución</translation>
 <translation id="4176463684765177261">Desactivado</translation>
-<translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
 <translation id="428234092390943511">Miniatura da páxina</translation>
 <translation id="4349714250734879769">Axustar fotogramas con Chrome</translation>
 <translation id="4383571725254449280">Rexistros de rendemento de impresión</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Máxima resolución</translation>
 <translation id="4864143361253542638">Lista de páxinas escaneadas</translation>
 <translation id="4890010094662541459">3 × 3</translation>
+<translation id="4892746741161549733">Copiar enderezo da ligazón <ph name="URL" /></translation>
 <translation id="491895758387112773">Gravación de múltiples emisións de vídeo</translation>
 <translation id="495170559598752135">Accións</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Proporción da foto</translation>
 <translation id="5057360777601936059">A cámara non está dispoñible nestes momentos.
         Comproba se está conectada correctamente.</translation>
+<translation id="5157591164390831335">URL detectado.</translation>
 <translation id="5163387177077603948">Desprazándose cara á dereita</translation>
-<translation id="5219374179772385066">Xa está dispoñible o modo Secuencia acelerada</translation>
 <translation id="5235304959032763950">16 a 9</translation>
 <translation id="5266635337630551423">Esquina superior esquerda do documento</translation>
 <translation id="5317780077021120954">Gardar</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Grazas polo teu comentario sobre a aplicación Cámara.
 
 Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un vídeo de mostra e indica cal é o problema (por exemplo, a foto está demasiado escura ou desenfocada).</translation>
+<translation id="6519884562954018934">Unirse a <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6617916774429601017">Mostrar todas as resolucións</translation>
 <translation id="6631515515009660915">Espello desactivado</translation>
@@ -133,6 +133,7 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="7450541714075000668">Copiouse o texto</translation>
 <translation id="7488619942230388918">Gravar vídeo GIF</translation>
 <translation id="7557677699350329807">Cambiar á seguinte cámara</translation>
+<translation id="7562584071994185503">Copiar texto <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="761421184377987513">Desprazándose cara abaixo e á esquerda</translation>
@@ -155,10 +156,12 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="8346544573713510785">Axustar fotogramas coa HAL da cámara</translation>
 <translation id="8425673304802773841">Inclinar cara abaixo</translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8609951387004618906">Abrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Activar son do micrófono. A función de silenciar está activada</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8732462232047530626">Mostrar vista previa dos metadatos</translation>
+<translation id="874854738381978209">Rede wifi detectada.</translation>
 <translation id="8815966864175525708">Cambiar para facer unha foto de retrato</translation>
 <translation id="8828441885228359828">Retomar gravación</translation>
 <translation id="8870695351537079478">Non se puido iniciar a gravación</translation>

@@ -5,7 +5,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 
 #include "ash/accessibility/a11y_feature_type.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -146,14 +146,6 @@ base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name) {
   const bool result = base::CreateDirectory(folder_on_drive_fs);
   EXPECT_TRUE(result);
   return folder_on_drive_fs;
-}
-
-void SendKey(ui::KeyboardCode key_code,
-             ui::test::EventGenerator* event_generator,
-             int flags,
-             int count) {
-  for (int i = 0; i < count; ++i)
-    event_generator->PressAndReleaseKey(key_code, flags);
 }
 
 void WaitForSeconds(int seconds) {
@@ -357,7 +349,7 @@ IconButton* GetCloseButton() {
 const message_center::Notification* GetPreviewNotification() {
   const message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  for (const auto* notification : notifications) {
+  for (const message_center::Notification* notification : notifications) {
     if (notification->id() == kScreenCaptureNotificationId) {
       return notification;
     }
@@ -365,10 +357,10 @@ const message_center::Notification* GetPreviewNotification() {
   return nullptr;
 }
 
-void ClickOnNotification(absl::optional<int> button_index) {
+void ClickOnNotification(std::optional<int> button_index) {
   const message_center::Notification* notification = GetPreviewNotification();
   CHECK(notification);
-  notification->delegate()->Click(button_index, absl::nullopt);
+  notification->delegate()->Click(button_index, std::nullopt);
 }
 
 void AddFakeCamera(const std::string& device_id,

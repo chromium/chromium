@@ -65,7 +65,7 @@ class DummyServerSocket : public net::ServerSocket {
   // net::ServerSocket "implementation"
   int Listen(const net::IPEndPoint& address,
              int backlog,
-             absl::optional<bool> ipv6_only) override {
+             std::optional<bool> ipv6_only) override {
     return net::OK;
   }
 
@@ -468,7 +468,7 @@ class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerTest {
     request->Start();
     delegate.RunUntilComplete();
     EXPECT_GE(delegate.request_status(), 0);
-    absl::optional<base::Value> response =
+    std::optional<base::Value> response =
         base::JSONReader::Read(delegate.data_received());
     base::Value::Dict* dict = response->GetIfDict();
     // Compute HTTP upgrade request URL.

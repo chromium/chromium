@@ -102,8 +102,8 @@ void CrosBluetoothConfig::SetBluetoothEnabledState(bool enabled) {
   bluetooth_power_controller_->SetBluetoothEnabledState(enabled);
 }
 
-void CrosBluetoothConfig::SetBluetoothHidDetectionActive() {
-  bluetooth_power_controller_->SetBluetoothHidDetectionActive();
+void CrosBluetoothConfig::SetBluetoothEnabledWithoutPersistence() {
+  bluetooth_power_controller_->SetBluetoothEnabledWithoutPersistence();
 }
 
 void CrosBluetoothConfig::SetBluetoothHidDetectionInactive(

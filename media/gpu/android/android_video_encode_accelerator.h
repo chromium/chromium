@@ -50,8 +50,10 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
                   std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const Bitrate& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
 
  private:
@@ -131,7 +133,7 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   bool error_occurred_ = false;
 
   // Required for encoders which are missing stride information.
-  absl::optional<gfx::Size> aligned_size_;
+  std::optional<gfx::Size> aligned_size_;
 };
 
 }  // namespace media

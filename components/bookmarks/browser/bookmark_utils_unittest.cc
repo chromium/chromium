@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -314,7 +315,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_CopyPaste) {
                                            GURL("http://www.google.com"));
 
   // Copy a node to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(node);
   CopyToClipboard(model.get(), nodes, false,
                   metrics::BookmarkEditSource::kOther);
@@ -348,7 +349,7 @@ TEST_F(BookmarkUtilsTest, MakeTitleUnique) {
   EXPECT_EQ(title_text, bookmark_bar_node->children()[0]->GetTitle());
 
   // Copy a node to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(node);
   CopyToClipboard(model.get(), nodes, false,
                   metrics::BookmarkEditSource::kOther);
@@ -375,7 +376,7 @@ TEST_F(BookmarkUtilsTest, CopyPasteMetaInfo) {
   model->SetNodeMetaInfo(node, "someotherkey", "someothervalue");
 
   // Copy a node to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(node);
   CopyToClipboard(model.get(), nodes, false,
                   metrics::BookmarkEditSource::kOther);
@@ -420,7 +421,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_CutToClipboard) {
   const BookmarkNode* n2 = model->AddURL(model->other_node(), 1, title, url);
 
   // Cut the nodes to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(n1);
   nodes.push_back(n2);
   CopyToClipboard(model.get(), nodes, true,
@@ -453,7 +454,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_PasteNonEditableNodes) {
                                            GURL("http://www.google.com"));
 
   // Copy a node to the clipboard.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(node);
   CopyToClipboard(model.get(), nodes, false,
                   metrics::BookmarkEditSource::kOther);
@@ -463,7 +464,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_PasteNonEditableNodes) {
 
   // But it can't be pasted into a non-editable folder.
   BookmarkClient* upcast = model->client();
-  EXPECT_FALSE(upcast->CanBeEditedByUser(managed_node));
+  EXPECT_TRUE(upcast->IsNodeManaged(managed_node));
   EXPECT_FALSE(CanPasteFromClipboard(model.get(), managed_node));
 }
 #endif  // !BUILDFLAG(IS_IOS)
@@ -472,7 +473,7 @@ TEST_F(BookmarkUtilsTest, GetParentForNewNodes) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   // This tests the case where selection contains one item and that item is a
   // folder.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
   nodes.push_back(model->bookmark_bar_node());
   size_t index = static_cast<size_t>(-1);
   const BookmarkNode* real_parent =
@@ -560,55 +561,6 @@ TEST_F(BookmarkUtilsTest, CloneMetaInfo) {
   histogram()->ExpectBucketCount("Bookmarks.Clone.NumCloned", 1, 1);
 }
 
-// Verifies that meta info fields in the non cloned set are not copied when
-// cloning a bookmark.
-TEST_F(BookmarkUtilsTest, CloneBookmarkResetsNonClonedKey) {
-  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  model->AddNonClonedKey("foo");
-  const BookmarkNode* parent = model->other_node();
-  const BookmarkNode* node =
-      model->AddURL(parent, 0, u"title", GURL("http://www.google.com"));
-  model->SetNodeMetaInfo(node, "foo", "ignored value");
-  model->SetNodeMetaInfo(node, "bar", "kept value");
-  std::vector<BookmarkNodeData::Element> elements;
-  BookmarkNodeData::Element node_data(node);
-  elements.push_back(node_data);
-
-  // Cloning a bookmark should clear the non cloned key.
-  CloneBookmarkNode(model.get(), elements, parent, 0, true);
-  ASSERT_EQ(2u, parent->children().size());
-  std::string value;
-  EXPECT_FALSE(parent->children().front()->GetMetaInfo("foo", &value));
-
-  // Other keys should still be cloned.
-  EXPECT_TRUE(parent->children().front()->GetMetaInfo("bar", &value));
-  EXPECT_EQ("kept value", value);
-}
-
-// Verifies that meta info fields in the non cloned set are not copied when
-// cloning a folder.
-TEST_F(BookmarkUtilsTest, CloneFolderResetsNonClonedKey) {
-  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  model->AddNonClonedKey("foo");
-  const BookmarkNode* parent = model->other_node();
-  const BookmarkNode* node = model->AddFolder(parent, 0, u"title");
-  model->SetNodeMetaInfo(node, "foo", "ignored value");
-  model->SetNodeMetaInfo(node, "bar", "kept value");
-  std::vector<BookmarkNodeData::Element> elements;
-  BookmarkNodeData::Element node_data(node);
-  elements.push_back(node_data);
-
-  // Cloning a folder should clear the non cloned key.
-  CloneBookmarkNode(model.get(), elements, parent, 0, true);
-  ASSERT_EQ(2u, parent->children().size());
-  std::string value;
-  EXPECT_FALSE(parent->children().front()->GetMetaInfo("foo", &value));
-
-  // Other keys should still be cloned.
-  EXPECT_TRUE(parent->children().front()->GetMetaInfo("bar", &value));
-  EXPECT_EQ("kept value", value);
-}
-
 TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
   // Load a model with an managed node that is not editable.
   auto client = std::make_unique<TestBookmarkClient>();
@@ -628,19 +580,25 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
   model->AddURL(model->mobile_node(), 0, title, url);
   model->AddURL(managed_node, 0, title, url);
 
-  std::vector<const BookmarkNode*> nodes;
-  model->GetNodesByURL(url, &nodes);
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+      model->GetNodesByURL(url);
   ASSERT_EQ(4u, nodes.size());
 
   RemoveAllBookmarks(model.get(), url);
 
-  nodes.clear();
-  model->GetNodesByURL(url, &nodes);
+  nodes = model->GetNodesByURL(url);
   ASSERT_EQ(1u, nodes.size());
   EXPECT_TRUE(model->bookmark_bar_node()->children().empty());
   EXPECT_TRUE(model->other_node()->children().empty());
   EXPECT_TRUE(model->mobile_node()->children().empty());
   EXPECT_EQ(1u, managed_node->children().size());
+}
+
+TEST_F(BookmarkUtilsTest, CleanUpUrlForMatching) {
+  EXPECT_EQ(u"http://foo.com/", CleanUpUrlForMatching(GURL("http://foo.com"),
+                                                      /*adjustments=*/nullptr));
+  EXPECT_EQ(u"http://foo.com/", CleanUpUrlForMatching(GURL("http://Foo.com"),
+                                                      /*adjustments=*/nullptr));
 }
 
 }  // namespace

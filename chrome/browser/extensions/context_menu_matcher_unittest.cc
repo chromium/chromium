@@ -3,18 +3,25 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/context_menu_matcher.h"
+#include <string>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
+#include "chrome/browser/extensions/test_extension_menu_icon_loader.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/utils/extension_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/models/simple_menu_model.h"
 
 namespace extensions {
 
@@ -38,6 +45,23 @@ class ContextMenuMatcherTest : public testing::Test {
                                            const std::string& string_id,
                                            bool visible) {
     MenuItem::Id id(false, MenuItem::ExtensionKey(extension->id()));
+    id.string_uid = string_id;
+    return std::make_unique<MenuItem>(
+        id, "test", false, visible, true, MenuItem::NORMAL,
+        MenuItem::ContextList(MenuItem::LAUNCHER));
+  }
+
+  // Returns a test item with the given string ID for WebView.
+  std::unique_ptr<MenuItem> CreateTestItem(Extension* extension,
+                                           int webview_embedder_process_id,
+                                           int webview_embedder_frame_id,
+                                           int webview_instance_id,
+                                           const std::string& string_id,
+                                           bool visible) {
+    const ExtensionId& extension_id = MaybeGetExtensionId(extension);
+    MenuItem::Id id(false, MenuItem::ExtensionKey(
+                               extension_id, webview_embedder_process_id,
+                               webview_embedder_frame_id, webview_instance_id));
     id.string_uid = string_id;
     return std::make_unique<MenuItem>(
         id, "test", false, visible, true, MenuItem::NORMAL,
@@ -139,6 +163,89 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsWithVisibleSubmenu) {
       extension_items->ConvertToExtensionsCustomCommandId(child_index)));
 }
 
+TEST_F(ContextMenuMatcherTest, AppendExtensionItemsGroupTitle) {
+  Extension* extension = AddExtension("test");
+
+  // Add a parent item, with a visible child item.
+  std::unique_ptr<MenuItem> parent = CreateTestItem(extension, "parent", true);
+  MenuItem::Id parent_id = parent->id();
+  int parent_index = 0;
+  std::unique_ptr<MenuItem> child = CreateTestItem(extension, "child", true);
+  int child_index = 1;
+  ASSERT_TRUE(manager_->AddContextItem(extension, std::move(parent)));
+  manager_->AddChildItem(parent_id, std::move(child));
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
+
+  std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
+      std::make_unique<extensions::ContextMenuMatcher>(
+          profile_.get(), nullptr, menu_model.get(),
+          base::BindRepeating(MenuItemHasAnyContext));
+
+  // Add the items associated with the test extension.
+  int index = 0;
+  std::u16string group_title = base::UTF8ToUTF16(extension->name());
+  extension_items->AppendExtensionItems(MenuItem::ExtensionKey(extension->id()),
+                                        std::u16string(), &index, false,
+                                        group_title);
+
+  // Verify both parent and child are visible.
+  EXPECT_TRUE(extension_items->IsCommandIdVisible(
+      extension_items->ConvertToExtensionsCustomCommandId(parent_index)));
+  EXPECT_TRUE(extension_items->IsCommandIdVisible(
+      extension_items->ConvertToExtensionsCustomCommandId(child_index)));
+  EXPECT_EQ(menu_model->GetLabelAt(0), group_title);
+}
+
+TEST_F(ContextMenuMatcherTest,
+       AppendExtensionItemsGroupTitleWithNullExtension) {
+  static constexpr int kFakeWebViewEmbedderPid = 1;
+  static constexpr int kFakeWebViewEmbedderFrameId = 1;
+  static constexpr int kFakeWebViewInstanceId = 1;
+  // Add a parent item, with a visible child item.
+  std::unique_ptr<MenuItem> parent =
+      CreateTestItem(/*extension=*/nullptr, kFakeWebViewEmbedderPid,
+                     kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
+                     "parent", /*visible=*/true);
+  MenuItem::Id parent_id = parent->id();
+  manager_->SetMenuIconLoader(parent->id().extension_key,
+                              std::make_unique<TestExtensionMenuIconLoader>());
+
+  int parent_index = 0;
+  std::unique_ptr<MenuItem> child =
+      CreateTestItem(/*extension=*/nullptr, kFakeWebViewEmbedderPid,
+                     kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
+                     "child", /*visible=*/true);
+  int child_index = 1;
+  ASSERT_TRUE(
+      manager_->AddContextItem(/*extension=*/nullptr, std::move(parent)));
+  manager_->AddChildItem(parent_id, std::move(child));
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
+
+  std::unique_ptr<extensions::ContextMenuMatcher> extension_items =
+      std::make_unique<extensions::ContextMenuMatcher>(
+          profile_.get(), nullptr, menu_model.get(),
+          base::BindRepeating(MenuItemHasAnyContext));
+
+  // Add the items associated with the test extension.
+  int index = 0;
+  std::u16string group_title = u"test";
+  extension_items->AppendExtensionItems(
+      MenuItem::ExtensionKey(/*extension_id=*/"", kFakeWebViewEmbedderPid,
+                             kFakeWebViewEmbedderFrameId,
+                             kFakeWebViewInstanceId),
+      /*selection_text=*/u"test", &index, /*is_action_menu=*/false,
+      group_title);
+
+  // Verify both parent and child are visible.
+  EXPECT_TRUE(extension_items->IsCommandIdVisible(
+      extension_items->ConvertToExtensionsCustomCommandId(parent_index)));
+  EXPECT_TRUE(extension_items->IsCommandIdVisible(
+      extension_items->ConvertToExtensionsCustomCommandId(child_index)));
+  EXPECT_EQ(menu_model->GetLabelAt(0), group_title);
+}
+
 // Tests appending a visible extension item with an invisible child.
 // The child has an invisible submenu.
 TEST_F(ContextMenuMatcherTest, AppendExtensionItemWithInvisibleSubmenu) {
@@ -188,6 +295,34 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemWithInvisibleSubmenu) {
       extension_items->ConvertToExtensionsCustomCommandId(child2_index)));
   EXPECT_FALSE(extension_items->IsCommandIdVisible(
       extension_items->ConvertToExtensionsCustomCommandId(child3_index)));
+}
+
+TEST_F(ContextMenuMatcherTest, GetIconFromMenuIconLoader) {
+  Extension* extension = AddExtension("test");
+
+  std::unique_ptr<MenuItem> item =
+      CreateTestItem(extension, "id", /*visible=*/true);
+  MenuItem::Id item_id = item->id();
+  auto menu_icon_loader = std::make_unique<TestExtensionMenuIconLoader>();
+  TestExtensionMenuIconLoader* extension_menu_icon_loader =
+      menu_icon_loader.get();
+
+  manager_->SetMenuIconLoader(item_id.extension_key,
+                              std::move(menu_icon_loader));
+  manager_->AddContextItem(extension, std::move(item));
+  EXPECT_EQ(1, extension_menu_icon_loader->load_icon_calls());
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(/*delegate=*/nullptr);
+  auto extension_items = std::make_unique<extensions::ContextMenuMatcher>(
+      profile_.get(), /*delegate=*/nullptr, menu_model.get(),
+      base::BindRepeating(MenuItemHasAnyContext));
+
+  // Add the items associated with the test extension.
+  int index = 0;
+  extension_items->AppendExtensionItems(MenuItem::ExtensionKey(extension->id()),
+                                        std::u16string(), &index,
+                                        /*is_action_menu=*/false);
+  EXPECT_EQ(1, extension_menu_icon_loader->get_icon_calls());
 }
 
 }  // namespace extensions

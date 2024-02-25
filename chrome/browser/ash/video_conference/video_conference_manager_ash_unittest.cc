@@ -66,7 +66,7 @@ class FakeVcManagerCppClient
   // Public for testing.
   base::UnguessableToken id_;
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps_;
-  const raw_ref<FakeVideoConferenceManagerAsh, ExperimentalAsh> vc_manager_;
+  const raw_ref<FakeVideoConferenceManagerAsh> vc_manager_;
 };
 
 class VideoConferenceManagerAshTest : public testing::Test {
@@ -116,7 +116,7 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
       /*last_activity_time=*/now,
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/true, /*title=*/u"Test App0",
-      /*url=*/absl::nullopt));
+      /*url=*/std::nullopt));
 
   vc_manager().RegisterCppClient(client1.get(), client1->id_);
 
@@ -141,7 +141,7 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
       /*last_activity_time=*/now + duration * 10,
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/true, /*title=*/u"Test App1",
-      /*url=*/absl::nullopt));
+      /*url=*/std::nullopt));
 
   base::RunLoop run_loop2;
   vc_manager().GetMediaApps(base::BindLambdaForTesting(
@@ -168,7 +168,7 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
         /*last_activity_time=*/now + duration * 2,
         /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
         /*is_capturing_screen=*/false, /*title=*/u"Test App2",
-        /*url=*/absl::nullopt));
+        /*url=*/std::nullopt));
 
     vc_manager().RegisterCppClient(client2.get(), client2->id_);
 

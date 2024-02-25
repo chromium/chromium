@@ -14,6 +14,7 @@
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -101,7 +102,7 @@ scoped_refptr<VideoFrame> MojoVideoFrameToMediaVideoFrame(
     return nullptr;
   }
 
-  absl::optional<gfx::BufferFormat> buffer_format =
+  std::optional<gfx::BufferFormat> buffer_format =
       VideoPixelFormatToGfxBufferFormat(mojo_frame->format);
   if (!buffer_format) {
     VLOGF(2) << "Could not convert the incoming frame's format to a "
@@ -152,7 +153,7 @@ class OOPVideoDecoderSupportedConfigsManager {
     return *instance;
   }
 
-  absl::optional<SupportedVideoDecoderConfigs> Get() {
+  std::optional<SupportedVideoDecoderConfigs> Get() {
     base::AutoLock lock(lock_);
     return configs_;
   }
@@ -250,8 +251,8 @@ class OOPVideoDecoderSupportedConfigsManager {
   void OnDecoderDisconnected() {
     base::AutoLock lock(lock_);
     configs_.emplace();
-    decoder_type_ = absl::nullopt;
-    interface_version_ = absl::nullopt;
+    decoder_type_ = std::nullopt;
+    interface_version_ = std::nullopt;
     disconnected_ = true;
     MaybeNotifyWaitingCallbacks();
   }
@@ -333,9 +334,9 @@ class OOPVideoDecoderSupportedConfigsManager {
 
   // The cached supported video decoder configurations, decoder type, and
   // interface version.
-  absl::optional<SupportedVideoDecoderConfigs> configs_ GUARDED_BY(lock_);
-  absl::optional<VideoDecoderType> decoder_type_ GUARDED_BY(lock_);
-  absl::optional<uint32_t> interface_version_ GUARDED_BY(lock_);
+  std::optional<SupportedVideoDecoderConfigs> configs_ GUARDED_BY(lock_);
+  std::optional<VideoDecoderType> decoder_type_ GUARDED_BY(lock_);
+  std::optional<uint32_t> interface_version_ GUARDED_BY(lock_);
 
   // This tracks everything that's needed to call a callback passed to
   // NotifySupportKnown() that had to be queued because there was a query in
@@ -386,7 +387,7 @@ void OOPVideoDecoder::NotifySupportKnown(
 }
 
 // static
-absl::optional<SupportedVideoDecoderConfigs>
+std::optional<SupportedVideoDecoderConfigs>
 OOPVideoDecoder::GetSupportedConfigs() {
   return OOPVideoDecoderSupportedConfigsManager::Instance().Get();
 }
@@ -465,7 +466,7 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                  bool low_delay,
                                  CdmContext* cdm_context,
                                  InitCB init_cb,
-                                 const OutputCB& output_cb,
+                                 const PipelineOutputCB& output_cb,
                                  const WaitingCB& waiting_cb) {
   DVLOGF(2) << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -954,7 +955,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   const gfx::Rect visible_rect = frame->visible_rect;
   const gfx::Size natural_size = frame->natural_size;
   const gfx::ColorSpace color_space = frame->color_space;
-  const absl::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata;
+  const std::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata;
   const VideoFrameMetadata metadata = frame->metadata;
   const gfx::GpuMemoryBufferId received_gmb_id =
       frame->gpu_memory_buffer_handle.id;
@@ -1000,8 +1001,8 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
       return;
     }
     received_id_to_decoded_frame_map_[received_gmb_id] = gmb_frame;
-    generated_id_to_decoded_frame_map_[gmb_frame->GetGpuMemoryBuffer()
-                                           ->GetId()] = gmb_frame.get();
+    generated_id_to_decoded_frame_map_[GetSharedMemoryId(*gmb_frame)] =
+        gmb_frame.get();
     frame_to_wrap = std::move(gmb_frame);
   }
 
@@ -1028,7 +1029,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   can_read_without_stalling_ = can_read_without_stalling;
 
   if (output_cb_)
-    output_cb_.Run(std::move(wrapped_frame));
+    output_cb_.Run(VideoFrameResource::Create(std::move(wrapped_frame)));
 }
 
 void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
@@ -1063,12 +1064,12 @@ void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
   //   media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
 }
 
-VideoFrame* OOPVideoDecoder::UnwrapFrame(const VideoFrame& wrapped_frame) {
+VideoFrame* OOPVideoDecoder::GetOriginalFrame(
+    gfx::GenericSharedMemoryId frame_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(wrapped_frame.HasGpuMemoryBuffer());
-  auto it = generated_id_to_decoded_frame_map_.find(
-      wrapped_frame.GetGpuMemoryBuffer()->GetId());
+  CHECK(frame_id.is_valid());
+  auto it = generated_id_to_decoded_frame_map_.find(frame_id);
   return (it == generated_id_to_decoded_frame_map_.end()) ? nullptr
                                                           : it->second;
 }

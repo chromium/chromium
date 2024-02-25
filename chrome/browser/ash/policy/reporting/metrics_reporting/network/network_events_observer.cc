@@ -135,7 +135,7 @@ void NetworkEventsObserver::OnConnectionStateChanged(
 void NetworkEventsObserver::OnSignalStrengthChanged(
     const std::string& guid,
     chromeos::network_health::mojom::UInt32ValuePtr signal_strength) {
-  DCHECK(signal_strength) << "Signal strength should have a value.";
+  CHECK(signal_strength) << "Signal strength should have a value.";
 
   const auto* network_state = ::ash::NetworkHandler::Get()
                                   ->network_state_handler()
@@ -207,7 +207,7 @@ void NetworkEventsObserver::SetReportingEnabled(bool is_enabled) {
   if (!network_state || !network_state->IsConnectedState()) {
     return;
   }
-  DCHECK(IsConnectedWifiNetwork(network_state));
+  CHECK(IsConnectedWifiNetwork(network_state));
   CheckForSignalStrengthEvent(network_state);
 }
 

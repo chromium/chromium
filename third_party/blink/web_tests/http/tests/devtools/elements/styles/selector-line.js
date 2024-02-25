@@ -8,8 +8,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that selector line is computed correctly regardless of its start column. Bug 110732.\n`);
-  await TestRunner.loadLegacyModule('elements');
-  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`

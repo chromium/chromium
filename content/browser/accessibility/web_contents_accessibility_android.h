@@ -16,7 +16,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/public/common/content_features.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -66,6 +65,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       jlong ax_tree_update_ptr,
       const base::android::JavaParamRef<jobject>&
           jaccessibility_node_info_builder);
+  WebContentsAccessibilityAndroid(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jassist_data_builder,
+      WebContents* web_contents);
 
   WebContentsAccessibilityAndroid(const WebContentsAccessibilityAndroid&) =
       delete;
@@ -144,6 +148,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   base::android::ScopedJavaLocalRef<jintArray> GetAbsolutePositionForNode(
       JNIEnv* env,
       jint unique_id);
+
+  // This block of methods is experimental.
+  jboolean UpdateCachedAccessibilityNodeInfo_exp(JNIEnv* env, jint id);
+  jboolean PopulateAccessibilityNodeInfo_exp(JNIEnv* env, jint id);
+  void UpdateAccessibilityNodeInfoBoundsRect_exp(
+      JNIEnv* env,
+      const base::android::ScopedJavaLocalRef<jobject>& obj,
+      jint id,
+      BrowserAccessibilityAndroid* node);
 
   // Populate Java accessibility data structures with info about a node.
   jboolean UpdateCachedAccessibilityNodeInfo(
@@ -305,8 +318,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       std::u16string str) {
     // Check if this string has already been added to the cache.
-    if (common_string_cache_.find(str) != common_string_cache_.end()) {
-      return common_string_cache_[str];
+    auto it = common_string_cache_.find(str);
+    if (it != common_string_cache_.end()) {
+      return it->second;
     }
 
     // Otherwise, convert the string and add it to the cache, then return.
@@ -315,6 +329,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
     DCHECK(common_string_cache_.size() < 500);
     return common_string_cache_[str];
   }
+
+  void RequestAccessibilityTreeSnapshot(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& view_structure_root,
+      const base::android::JavaParamRef<jobject>& on_done_callback);
 
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager
@@ -325,12 +344,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // user settings available in Java-side code, passed here through the JNI.
   bool should_allow_image_descriptions() const {
     return allow_image_descriptions_;
-  }
-  bool should_respect_displayed_password_text() const {
-    return should_respect_displayed_password_text_;
-  }
-  bool should_expose_password_text() const {
-    return should_expose_password_text_;
   }
 
   void HandlePageLoaded(int32_t unique_id);
@@ -374,21 +387,20 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   JavaObjectWeakGlobalRef java_ref_;
   JavaObjectWeakGlobalRef java_anib_ref_;
 
+  // A weak reference to the AssistData tree builder which will only be
+  // instantiated after a request from the Android framework.
+  JavaObjectWeakGlobalRef java_adb_ref_;
+
   raw_ptr<WebContentsImpl> web_contents_;
+
+  // Used by the accessibility tree snapshotter when snapshot is completed.
+  base::android::ScopedJavaGlobalRef<jobject> on_done_callback_;
 
   bool frame_info_initialized_;
 
   // True if this instance should allow image descriptions, false if the
   // feature should be disabled (dependent on embedder behavior). Default false.
   bool allow_image_descriptions_ = false;
-
-  // True if this instance should respect the displayed password text (available
-  // in the shadow DOM), false if it should return bullets. Default false.
-  bool should_respect_displayed_password_text_ = false;
-
-  // True if this instance should expose password text to AT (e.g. as a user is
-  // typing in a field), false if it should return bullets. Default true.
-  bool should_expose_password_text_ = true;
 
   float page_scale_ = 1.f;
 

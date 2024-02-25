@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_STORAGE_BLINK_STORAGE_KEY_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_STORAGE_BLINK_STORAGE_KEY_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -36,7 +37,7 @@ struct PLATFORM_EXPORT
     return input.GetTopLevelSite();
   }
 
-  static const absl::optional<base::UnguessableToken>& nonce(
+  static const std::optional<base::UnguessableToken>& nonce(
       const blink::BlinkStorageKey& input) {
     return input.GetNonce();
   }

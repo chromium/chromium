@@ -23,6 +23,8 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(void, InitNativeWidget, (Widget::InitParams), (override));
   MOCK_METHOD(void, OnWidgetInitDone, (), (override));
 
+  MOCK_METHOD(void, ReparentNativeViewImpl, (gfx::NativeView), (override));
+
   MOCK_METHOD(std::unique_ptr<NonClientFrameView>,
               CreateNonClientFrameView,
               (),
@@ -159,7 +161,6 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
               SetVisibilityAnimationTransition,
               (Widget::VisibilityTransition transition),
               (override));
-  MOCK_METHOD(bool, IsTranslucentWindowOpacitySupported, (), (const override));
   MOCK_METHOD(ui::GestureRecognizer*, GetGestureRecognizer, (), (override));
   MOCK_METHOD(ui::GestureConsumer*, GetGestureConsumer, (), (override));
   MOCK_METHOD(void, OnSizeConstraintsChanged, (), (override));

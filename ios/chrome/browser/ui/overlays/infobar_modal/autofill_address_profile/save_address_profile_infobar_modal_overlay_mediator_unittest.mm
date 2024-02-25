@@ -6,14 +6,15 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_responses.h"
-#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_modal/save_address_profile_infobar_modal_overlay_responses.h"
+#import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_consumer.h"
@@ -28,8 +29,6 @@ using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
 using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
-using save_address_profile_infobar_modal_responses::
-    LegacyEditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 // Test fixture for SaveAddressProfileInfobarModalOverlayMediator.
@@ -37,8 +36,7 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   SaveAddressProfileInfobarModalOverlayMediatorTest()
       : callback_installer_(&callback_receiver_,
-                            {LegacyEditedProfileSaveAction::ResponseSupport(),
-                             EditedProfileSaveAction::ResponseSupport(),
+                            {EditedProfileSaveAction::ResponseSupport(),
                              CancelViewAction::ResponseSupport(),
                              NoThanksViewAction::ResponseSupport()}),
         mediator_delegate_(
@@ -48,7 +46,7 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
         delegate = std::make_unique<
             autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
             profile, /*original_profile=*/nullptr,
-            /*user_email=*/absl::nullopt,
+            /*user_email=*/std::nullopt,
             /*locale=*/"en-US",
             autofill::AutofillClient::SaveAddressProfilePromptOptions{},
             base::DoNothing());
@@ -73,7 +71,7 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate_;
+  raw_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS> delegate_;
   std::unique_ptr<InfoBarIOS> infobar_;
   MockOverlayRequestCallbackReceiver callback_receiver_;
   FakeOverlayRequestCallbackInstaller callback_installer_;
@@ -113,21 +111,11 @@ TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, SetUpEditConsumer) {
   }
 }
 
-// Tests that calling saveEditedProfileWithData: triggers a
-// LegacyEditedProfileSaveAction response.
-TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, LegacyEditAction) {
-  EXPECT_CALL(
-      callback_receiver_,
-      DispatchCallback(request_.get(),
-                       LegacyEditedProfileSaveAction::ResponseSupport()));
-  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
-  [mediator_ saveEditedProfileWithData:@{}.mutableCopy];
-}
-
 // Tests that calling saveEditedProfileWithProfileData: triggers a
 // EditedProfileSaveAction response.
 TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, EditAction) {
-  autofill::AutofillProfile profile;
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   EXPECT_CALL(callback_receiver_,
               DispatchCallback(request_.get(),
                                EditedProfileSaveAction::ResponseSupport()));

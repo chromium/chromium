@@ -5,12 +5,12 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels} from 'chrome://shimless-rma/fake_data.js';
+import {fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkuDescriptions, fakeDeviceSkus} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {BooleanOrDefaultOptions, ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {FeatureLevel} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {FeatureLevel} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -28,11 +28,11 @@ const fakeDramPartNumber = 'dram# 0123';
  * @suppress {visibility}
  */
 function suppressedComponentOnSelectedChange_(component) {
-  component.onSelectedRegionChange_('ignored');
-  component.onSelectedWhiteLabelChange_('ignored');
-  component.onSelectedSkuChange_('ignored');
-  component.onIsChassisBrandedChange_('ignored');
-  component.onDoesMeetRequirementsChange_('ignored');
+  component.onSelectedRegionChange('ignored');
+  component.onSelectedCustomLabelChange('ignored');
+  component.onSelectedSkuChange('ignored');
+  component.onIsChassisBrandedChange('ignored');
+  component.onDoesMeetRequirementsChange('ignored');
 }
 
 /**
@@ -48,12 +48,12 @@ function setSetDeviceInformationForMockService(
   result.callCounter = 0;
   fakeShimlessService.setDeviceInformation =
       (resultSerialNumber, resultRegionIndex, resultSkuIndex,
-       resultWhiteLabelIndex, resultDramPartNumber, resultIsChassisBranded,
+       resultCustomLabelIndex, resultDramPartNumber, resultIsChassisBranded,
        resultHwComplianceVersion) => {
         result.callCounter++;
         result.serialNumber = resultSerialNumber;
         result.regionIndex = resultRegionIndex;
-        result.whiteLabelIndex = resultWhiteLabelIndex;
+        result.customLabelIndex = resultCustomLabelIndex;
         result.skuIndex = resultSkuIndex;
         result.dramPartNumber = resultDramPartNumber;
         result.isChassisBranded = resultIsChassisBranded;
@@ -86,9 +86,10 @@ suite('reimagingDeviceInformationPageTest', function() {
     service.setGetOriginalSerialNumberResult(fakeSerialNumber);
     service.setGetRegionListResult(fakeDeviceRegions);
     service.setGetOriginalRegionResult(2);
-    service.setGetWhiteLabelListResult(fakeDeviceWhiteLabels);
-    service.setGetOriginalWhiteLabelResult(3);
+    service.setGetCustomLabelListResult(fakeDeviceCustomLabels);
+    service.setGetOriginalCustomLabelResult(3);
     service.setGetSkuListResult(fakeDeviceSkus);
+    service.setGetSkuDescriptionListResult(fakeDeviceSkuDescriptions);
     service.setGetOriginalSkuResult(1);
     service.setGetOriginalDramPartNumberResult(fakeDramPartNumber);
     service.setGetOriginalFeatureLevelResult(
@@ -118,24 +119,24 @@ suite('reimagingDeviceInformationPageTest', function() {
         component.shadowRoot.querySelector('#serialNumber');
     const regionSelectComponent =
         component.shadowRoot.querySelector('#regionSelect');
-    const whiteLabelSelectComponent =
-        component.shadowRoot.querySelector('#whiteLabelSelect');
+    const customLabelSelectComponent =
+        component.shadowRoot.querySelector('#customLabelSelect');
     const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
     const resetSerialNumberComponent =
         component.shadowRoot.querySelector('#resetSerialNumber');
     const resetRegionComponent =
         component.shadowRoot.querySelector('#resetRegion');
-    const resetWhiteLabelComponent =
-        component.shadowRoot.querySelector('#resetWhiteLabel');
+    const resetCustomLabelComponent =
+        component.shadowRoot.querySelector('#resetCustomLabel');
     const resetSkuComponent = component.shadowRoot.querySelector('#resetSku');
 
     assertEquals(fakeSerialNumber, serialNumberComponent.value);
     assertEquals(2, regionSelectComponent.selectedIndex);
-    assertEquals(3, whiteLabelSelectComponent.selectedIndex);
+    assertEquals(3, customLabelSelectComponent.selectedIndex);
     assertEquals(1, skuSelectComponent.selectedIndex);
     assertTrue(resetSerialNumberComponent.disabled);
     assertTrue(resetRegionComponent.disabled);
-    assertTrue(resetWhiteLabelComponent.disabled);
+    assertTrue(resetCustomLabelComponent.disabled);
     assertTrue(resetSkuComponent.disabled);
   });
 
@@ -148,19 +149,19 @@ suite('reimagingDeviceInformationPageTest', function() {
         component.shadowRoot.querySelector('#serialNumber');
     const regionSelectComponent =
         component.shadowRoot.querySelector('#regionSelect');
-    const whiteLabelSelectComponent =
-        component.shadowRoot.querySelector('#whiteLabelSelect');
+    const customLabelSelectComponent =
+        component.shadowRoot.querySelector('#customLabelSelect');
     const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
     const dramPartNumberComponent =
         component.shadowRoot.querySelector('#dramPartNumber');
     const expectedSerialNumber = 'expected serial number';
     const expectedRegionIndex = 0;
-    const expectedWhiteLabelIndex = 1;
+    const expectedCustomLabelIndex = 1;
     const expectedSkuIndex = 2;
     const expectedDramPartNumber = 'expected dram part number';
     serialNumberComponent.value = expectedSerialNumber;
     regionSelectComponent.selectedIndex = expectedRegionIndex;
-    whiteLabelSelectComponent.selectedIndex = expectedWhiteLabelIndex;
+    customLabelSelectComponent.selectedIndex = expectedCustomLabelIndex;
     skuSelectComponent.selectedIndex = expectedSkuIndex;
     dramPartNumberComponent.value = expectedDramPartNumber;
     // TODO(gavindodd) how to update selectedIndex and trigger on-change
@@ -184,7 +185,7 @@ suite('reimagingDeviceInformationPageTest', function() {
         expectedSerialNumber, setDeviceInformationResults.serialNumber);
     assertEquals(expectedRegionIndex, setDeviceInformationResults.regionIndex);
     assertEquals(
-        expectedWhiteLabelIndex, setDeviceInformationResults.whiteLabelIndex);
+        expectedCustomLabelIndex, setDeviceInformationResults.customLabelIndex);
     assertEquals(expectedSkuIndex, setDeviceInformationResults.skuIndex);
     assertEquals(
         expectedDramPartNumber, setDeviceInformationResults.dramPartNumber);
@@ -225,22 +226,22 @@ suite('reimagingDeviceInformationPageTest', function() {
     const regionSelect = component.shadowRoot.querySelector('#regionSelect');
     const skuSelect = component.shadowRoot.querySelector('#skuSelect');
     const dramSelect = component.shadowRoot.querySelector('#dramPartNumber');
-    const whiteLabelSelect =
-        component.shadowRoot.querySelector('#whiteLabelSelect');
+    const customLabelSelect =
+        component.shadowRoot.querySelector('#customLabelSelect');
 
     component.allButtonsDisabled = false;
     assertFalse(serialNumberInput.disabled);
     assertFalse(regionSelect.disabled);
     assertFalse(skuSelect.disabled);
     assertFalse(dramSelect.disabled);
-    assertFalse(whiteLabelSelect.disabled);
+    assertFalse(customLabelSelect.disabled);
 
     component.allButtonsDisabled = true;
     assertTrue(serialNumberInput.disabled);
     assertTrue(regionSelect.disabled);
     assertTrue(skuSelect.disabled);
     assertTrue(dramSelect.disabled);
-    assertTrue(whiteLabelSelect.disabled);
+    assertTrue(customLabelSelect.disabled);
   });
 
   test(
@@ -360,7 +361,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertFalse(disableNextButton);
   });
 
-  test('WhiteLabelUpdatesNextDisable', async () => {
+  test('CustomLabelUpdatesNextDisable', async () => {
     const resolver = new PromiseResolver();
     initializeReimagingDeviceInformationPage();
     await initializeComponent();
@@ -371,9 +372,9 @@ suite('reimagingDeviceInformationPageTest', function() {
       disableNextButton = e.detail;
     });
 
-    const whiteLabelSelectComponent =
-        component.shadowRoot.querySelector('#whiteLabelSelect');
-    whiteLabelSelectComponent.selectedIndex = -1;
+    const customLabelSelectComponent =
+        component.shadowRoot.querySelector('#customLabelSelect');
+    customLabelSelectComponent.selectedIndex = -1;
     suppressedComponentOnSelectedChange_(component);
     await flushTasks();
 
@@ -381,7 +382,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertTrue(disableNextButton);
 
     disableNextButtonEventFired = false;
-    whiteLabelSelectComponent.selectedIndex = 1;
+    customLabelSelectComponent.selectedIndex = 1;
     suppressedComponentOnSelectedChange_(component);
     await flushTasks();
 
@@ -757,6 +758,30 @@ suite('reimagingDeviceInformationPageTest', function() {
             complianceStatusString.textContent.trim(),
             component.i18n('confirmDeviceInfoDeviceCompliant'));
       });
+
+  test('SkuDescriptionEnabled', async () => {
+    loadTimeData.overrideValues({skuDescriptionEnabled: true});
+
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
+    await waitAfterNextRender(component);
+
+    const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
+    assertEquals(
+        `${fakeDeviceSkus[1]}: ${fakeDeviceSkuDescriptions[1]}`,
+        skuSelectComponent.value);
+  });
+
+  test('SkuDescriptionDisabled', async () => {
+    loadTimeData.overrideValues({skuDescriptionEnabled: false});
+
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
+    await waitAfterNextRender(component);
+
+    const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
+    assertEquals(`${fakeDeviceSkus[1]}`, skuSelectComponent.value);
+  });
 
   // TODO(gavindodd): Add tests for the selection lists when they are
   // reimplemented and bound.

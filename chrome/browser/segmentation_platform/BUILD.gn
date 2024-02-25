@@ -5,6 +5,7 @@
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 if (is_android) {
@@ -14,11 +15,31 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//components/segmentation_platform/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("javatests") {
+    testonly = true
+
+    sources = [ "android/javatests/src/org/chromium/chrome/browser/segmentation_platform/SegmentationPlatformServiceFactoryTest.java" ]
+    deps = [
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/segmentation_platform:factory_java",
+      "//chrome/test/android:chrome_java_integration_test_support",
+      "//components/segmentation_platform/public:public_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
+      "//third_party/junit:junit",
+      "//url:gurl_java",
     ]
   }
 

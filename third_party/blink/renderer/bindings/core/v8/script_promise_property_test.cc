@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -59,14 +60,14 @@ class StubFunction : public ScriptFunction::Callable {
 
 class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
  public:
-  typedef ScriptPromiseProperty<Member<GarbageCollectedScriptWrappable>,
-                                Member<GarbageCollectedScriptWrappable>>
+  typedef ScriptPromiseProperty<GarbageCollectedScriptWrappable,
+                                GarbageCollectedScriptWrappable>
       Property;
   GarbageCollectedHolder(ExecutionContext* execution_context)
       : GarbageCollectedScriptWrappable("holder"),
         property_(MakeGarbageCollected<Property>(execution_context)) {}
 
-  Property* GetProperty() { return property_; }
+  Property* GetProperty() { return property_.Get(); }
   GarbageCollectedScriptWrappable* ToGarbageCollectedScriptWrappable() {
     return this;
   }
@@ -82,9 +83,8 @@ class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
 
 class ScriptPromisePropertyResetter : public ScriptFunction::Callable {
  public:
-  using Property =
-      ScriptPromiseProperty<Member<GarbageCollectedScriptWrappable>,
-                            Member<GarbageCollectedScriptWrappable>>;
+  using Property = ScriptPromiseProperty<GarbageCollectedScriptWrappable,
+                                         GarbageCollectedScriptWrappable>;
 
   explicit ScriptPromisePropertyResetter(Property* property)
       : property_(property) {}
@@ -165,18 +165,19 @@ class ScriptPromisePropertyTestBase {
         ->V8Function();
   }
 
-  template <typename T>
-  ScriptValue Wrap(DOMWrapperWorld& world, const T& value) {
+  ScriptValue Wrap(DOMWrapperWorld& world,
+                   GarbageCollectedScriptWrappable* value) {
     v8::HandleScope handle_scope(GetIsolate());
     ScriptState* script_state =
         ScriptState::From(ToV8Context(DomWindow(), world));
     ScriptState::Scope scope(script_state);
     return ScriptValue(
         GetIsolate(),
-        ToV8(value, script_state->GetContext()->Global(), GetIsolate()));
+        ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(script_state, value));
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_;
   Persistent<ScriptState> other_script_state_;
 };
@@ -211,15 +212,18 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
       public testing::Test {
  public:
   template <typename T>
-  void Test(const T& value, const char* expected, const char* file, int line) {
-    typedef ScriptPromiseProperty<T, ToV8UndefinedGenerator> Property;
+  void Test(const T::ImplType& value,
+            const char* expected,
+            const char* file,
+            int line) {
+    typedef ScriptPromiseProperty<T, IDLUndefined> Property;
     Property* property = MakeGarbageCollected<Property>(DomWindow());
     size_t n_resolve_calls = 0;
     ScriptValue actual_value;
     String actual;
     {
       ScriptState::Scope scope(MainScriptState());
-      property->Promise(DOMWrapperWorld::MainWorld())
+      property->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
           .Then(Stub(CurrentScriptState(), actual_value, n_resolve_calls),
                 NotReached(CurrentScriptState()));
     }
@@ -227,7 +231,8 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
     PerformMicrotaskCheckpoint();
     {
       ScriptState::Scope scope(MainScriptState());
-      actual = ToCoreString(actual_value.V8Value()
+      actual = ToCoreString(MainScriptState()->GetIsolate(),
+                            actual_value.V8Value()
                                 ->ToString(MainScriptState()->GetContext())
                                 .ToLocalChecked());
     }
@@ -244,8 +249,10 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        Promise_IsStableObjectInMainWorld) {
-  ScriptPromise v = GetProperty()->Promise(DOMWrapperWorld::MainWorld());
-  ScriptPromise w = GetProperty()->Promise(DOMWrapperWorld::MainWorld());
+  ScriptPromise v =
+      GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
+  ScriptPromise w =
+      GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   EXPECT_EQ(v, w);
   ASSERT_FALSE(v.IsEmpty());
   {
@@ -259,8 +266,10 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        Promise_IsStableObjectInVariousWorlds) {
   ScriptPromise u = GetProperty()->Promise(OtherWorld());
-  ScriptPromise v = GetProperty()->Promise(DOMWrapperWorld::MainWorld());
-  ScriptPromise w = GetProperty()->Promise(DOMWrapperWorld::MainWorld());
+  ScriptPromise v =
+      GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
+  ScriptPromise w =
+      GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   EXPECT_NE(MainScriptState(), OtherScriptState());
   EXPECT_NE(&MainWorld(), &OtherWorld());
   EXPECT_NE(u, v);
@@ -282,14 +291,14 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        Promise_IsStableObjectAfterSettling) {
-  ScriptPromise v = Promise(DOMWrapperWorld::MainWorld());
+  ScriptPromise v = Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   GarbageCollectedScriptWrappable* value =
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("value");
 
   GetProperty()->Resolve(value);
   EXPECT_EQ(Property::kResolved, GetProperty()->GetState());
 
-  ScriptPromise w = Promise(DOMWrapperWorld::MainWorld());
+  ScriptPromise w = Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   EXPECT_EQ(v, w);
   EXPECT_FALSE(v.IsEmpty());
 }
@@ -303,7 +312,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
     Holder()->GetProperty()->Resolve(Holder());
 
     observation = MakeGarbageCollected<GCObservation>(
-        Promise(DOMWrapperWorld::MainWorld()).V8Value());
+        GetIsolate(),
+        Promise(DOMWrapperWorld::MainWorld(GetIsolate())).V8Value());
   }
 
   Gc();
@@ -317,7 +327,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        Resolve_ResolvesScriptPromise) {
-  ScriptPromise promise = GetProperty()->Promise(DOMWrapperWorld::MainWorld());
+  ScriptPromise promise =
+      GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   ScriptPromise other_promise = GetProperty()->Promise(OtherWorld());
   ScriptValue actual, other_actual;
   size_t n_resolve_calls = 0;
@@ -353,7 +364,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        ResolveAndGetPromiseOnOtherWorld) {
-  ScriptPromise promise = GetProperty()->Promise(DOMWrapperWorld::MainWorld());
+  ScriptPromise promise =
+      GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   ScriptPromise other_promise = GetProperty()->Promise(OtherWorld());
   ScriptValue actual, other_actual;
   size_t n_resolve_calls = 0;
@@ -402,7 +414,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
   {
     ScriptState::Scope scope(MainScriptState());
     GetProperty()
-        ->Promise(DOMWrapperWorld::MainWorld())
+        ->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
         .Then(NotReached(CurrentScriptState()),
               Stub(CurrentScriptState(), actual, n_reject_calls));
   }
@@ -424,20 +436,22 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, Promise_DeadContext) {
+  v8::Isolate* isolate = GetIsolate();
   GetProperty()->Resolve(
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("value"));
   EXPECT_EQ(Property::kResolved, GetProperty()->GetState());
 
   DestroyContext();
 
-  EXPECT_TRUE(GetProperty()->Promise(DOMWrapperWorld::MainWorld()).IsEmpty());
+  EXPECT_TRUE(
+      GetProperty()->Promise(DOMWrapperWorld::MainWorld(isolate)).IsEmpty());
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, Resolve_DeadContext) {
   {
     ScriptState::Scope scope(MainScriptState());
     GetProperty()
-        ->Promise(DOMWrapperWorld::MainWorld())
+        ->Promise(DOMWrapperWorld::MainWorld(GetIsolate()))
         .Then(NotReached(CurrentScriptState()),
               NotReached(CurrentScriptState()));
   }
@@ -500,7 +514,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
     // Unhandled promise.
     ScriptState::Scope scope(MainScriptState());
     ScriptPromise promise =
-        GetProperty()->Promise(DOMWrapperWorld::MainWorld());
+        GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
     GarbageCollectedScriptWrappable* reason =
         MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
     GetProperty()->Reject(reason);
@@ -514,7 +528,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
     ScriptState::Scope scope(MainScriptState());
     GetProperty()->MarkAsHandled();
     ScriptPromise promise =
-        GetProperty()->Promise(DOMWrapperWorld::MainWorld());
+        GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
     GarbageCollectedScriptWrappable* reason =
         MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
     GetProperty()->Reject(reason);
@@ -527,7 +541,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
     // MarkAsHandled applies to previously vended promises.
     ScriptState::Scope scope(MainScriptState());
     ScriptPromise promise =
-        GetProperty()->Promise(DOMWrapperWorld::MainWorld());
+        GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
     GetProperty()->MarkAsHandled();
     GarbageCollectedScriptWrappable* reason =
         MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
@@ -538,7 +552,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
   // Call getters to create resolvers in the property.
-  GetProperty()->Promise(DOMWrapperWorld::MainWorld());
+  GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   GetProperty()->Promise(OtherWorld());
 
   auto* resolution =
@@ -553,7 +567,6 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
         v8::MicrotasksScope::kDoNotRunMicrotasks);
     main_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
                              MainScriptState(), resolution)
-                             .ToLocalChecked()
                              .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         MakeGarbageCollected<ScriptFunction>(
@@ -574,7 +587,6 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
         v8::MicrotasksScope::kDoNotRunMicrotasks);
     other_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
                               OtherScriptState(), resolution)
-                              .ToLocalChecked()
                               .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         MakeGarbageCollected<ScriptFunction>(
@@ -596,17 +608,17 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithUndefined) {
-  Test(ToV8UndefinedGenerator(), "undefined", __FILE__, __LINE__);
+  Test<IDLUndefined>(ToV8UndefinedGenerator(), "undefined", __FILE__, __LINE__);
 }
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithString) {
-  Test(String("hello"), "hello", __FILE__, __LINE__);
+  Test<IDLString>(String("hello"), "hello", __FILE__, __LINE__);
 }
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithInteger) {
-  Test(-1, "-1", __FILE__, __LINE__);
+  Test<IDLLong>(-1, "-1", __FILE__, __LINE__);
 }
 
 }  // namespace blink

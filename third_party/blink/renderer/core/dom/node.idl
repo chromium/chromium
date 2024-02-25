@@ -40,10 +40,6 @@
 
     readonly attribute USVString baseURI;
 
-    // Scroll Customization API. See crbug.com/410974 for details.
-    [RuntimeEnabled=ScrollCustomization] void setApplyScroll(ScrollStateCallback scrollStateCallback, NativeScrollBehavior nativeScrollBehavior);
-    [RuntimeEnabled=ScrollCustomization] void setDistributeScroll(ScrollStateCallback scrollStateCallback, NativeScrollBehavior nativeScrollBehavior);
-
     [Measure] readonly attribute boolean isConnected;
     [PerWorldBindings] readonly attribute Document? ownerDocument;
     [PerWorldBindings] readonly attribute Node? parentNode;

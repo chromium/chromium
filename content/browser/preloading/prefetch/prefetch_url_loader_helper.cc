@@ -60,9 +60,18 @@ void OnComplete(int frame_tree_node_id,
                 GetPrefetchCallback get_prefetch_callback,
                 PrefetchContainer::Reader reader,
                 PrefetchProbeResult probe_result) {
-  if (!reader || !reader.IsPrefetchServable(PrefetchCacheableDuration())) {
+  if (!reader) {
     std::move(get_prefetch_callback).Run({});
     return;
+  }
+
+  switch (reader.GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      std::move(get_prefetch_callback).Run({});
+      return;
+    case PrefetchContainer::ServableState::kServable:
+      break;
   }
 
   // Delay updating the prefetch with the probe result in case it becomes not
@@ -92,7 +101,7 @@ void OnCookieCopyComplete(int frame_tree_node_id,
                           PrefetchProbeResult probe_result,
                           base::TimeTicks cookie_copy_start_time) {
   base::TimeDelta wait_time = base::TimeTicks::Now() - cookie_copy_start_time;
-  DCHECK_GT(wait_time, base::TimeDelta());
+  CHECK_GE(wait_time, base::TimeDelta());
   RecordCookieWaitTime(wait_time);
   OnComplete(frame_tree_node_id, std::move(get_prefetch_callback),
              std::move(reader), probe_result);
@@ -184,6 +193,11 @@ void OnGotPrefetchToServe(
     const network::ResourceRequest& tentative_resource_request,
     GetPrefetchCallback get_prefetch_callback,
     PrefetchContainer::Reader reader) {
+  // TODO(crbug.com/1462206): With multiple prefetches matching, we should
+  // move some of the checks here in `PrefetchService::ReturnPrefetchToServe`.
+  // Why ? Because we might be able to serve a different prefetch if the
+  // prefetch in the `reader` cannot be served.
+
   // The |tentative_resource_request.url| might be different from
   // |GetCurrentURLToServe()| because of No-Vary-Search non-exact url
   // match.
@@ -197,21 +211,31 @@ void OnGotPrefetchToServe(
   }
 #endif
 
-  if (!reader || !reader.IsPrefetchServable(PrefetchCacheableDuration())) {
+  if (!reader) {
     std::move(get_prefetch_callback).Run({});
     return;
   }
 
-  if (reader.HaveDefaultContextCookiesChanged()) {
-    reader.GetPrefetchContainer()->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-    reader.GetPrefetchContainer()->UpdateServingPageMetrics();
-    reader.GetPrefetchContainer()->ResetAllStreamingURLLoaders();
-
-    std::move(get_prefetch_callback).Run({});
-    return;
+  switch (reader.GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      std::move(get_prefetch_callback).Run({});
+      return;
+    case PrefetchContainer::ServableState::kServable:
+      break;
   }
 
+  // We should not reach here if the cookies have changed. This should already
+  // have been checked in one of the call sites:
+  // 1) PrefetchService::ReturnPrefetchToServe (in which case |reader| should be
+  //    empty)
+  // 2) PrefetchURLLoaderInterceptor::MaybeCreateLoader (before serving the next
+  //    next redirect hop)
+  CHECK(!reader.HaveDefaultContextCookiesChanged());
+
+  // TODO(crbug.com/1462206): Should we check for existence of an
+  // `origin_prober` earlier instead of waiting until we have a matching
+  // prefetch?
   PrefetchOriginProber* origin_prober =
       GetPrefetchOriginProber(frame_tree_node_id);
   if (!origin_prober) {

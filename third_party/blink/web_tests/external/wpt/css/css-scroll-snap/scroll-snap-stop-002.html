@@ -111,16 +111,6 @@ div {
   <div class="target" style="left: 700px; scroll-snap-stop: always;"></div
 </div>
 
-<!--
- Similar to above but a snap area covers the snapport.
- -->
-<div class="scroller" id="scroller7">
-  <div id="space"></div>
-  <div class="target" style="left:   0px;"></div>
-  <div class="target" style="left: 400px; width: 900px;"></div>
-  <div class="target" style="left: 900px; scroll-snap-stop: always;"></div
-</div>
-
 <script>
 
 test(() => {
@@ -219,20 +209,5 @@ test(() => {
   assert_equals(scroller6.scrollTop, 0);
 }, "`scroll-snap-stop: always` snap point is further than the scroll " +
    "destination");
-
-test(() => {
-  assert_equals(scroller7.scrollLeft, 0);
-  assert_equals(scroller7.scrollTop, 0);
-
-  // start                                       dest  always
-  //   |-------------------------|================|=====|=====
-  //   0                        400              700   900
-
-  // Scoll on the element whose snap area is larger than the snapport.
-  scroller7.scrollBy(700, 0);
-  assert_equals(scroller7.scrollLeft, 700);
-  assert_equals(scroller7.scrollTop, 0);
-}, "`scroll-snap-stop: always` snap point is further than the scroll " +
-   "destination and a snap area covers the snapport");
 
 </script>

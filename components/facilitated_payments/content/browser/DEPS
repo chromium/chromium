@@ -1,0 +1,12 @@
+include_rules = [
+  "+content/public/browser",
+  "+mojo/public/cpp/bindings",
+  "+third_party/blink/public/common",
+]
+
+specific_include_rules = {
+   "content_facilitated_payments_driver_unittest.cc": [
+      "+components/optimization_guide/core",
+      "+content/public/test",
+   ],
+}

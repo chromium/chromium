@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -15,11 +16,10 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -55,6 +55,7 @@ FORWARD_DECLARE_TEST(AppListControllerImplTest,
 // definitions in this header.
 class ASH_EXPORT AppListView : public views::WidgetDelegateView,
                                public aura::WindowObserver {
+  METADATA_HEADER(AppListView, views::WidgetDelegateView)
  public:
   class TestApi {
    public:
@@ -68,7 +69,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     PagedAppsGridView* GetRootAppsGridView();
 
    private:
-    const raw_ptr<AppListView, ExperimentalAsh> view_;
+    const raw_ptr<AppListView> view_;
   };
 
   class ASH_EXPORT ScopedAccessibilityAnnouncementLock {
@@ -83,7 +84,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     }
 
    private:
-    const raw_ptr<AppListView, ExperimentalAsh> view_;
+    const raw_ptr<AppListView> view_;
   };
 
   // Used to prevent the app list contents from being reset when the app list
@@ -99,9 +100,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     ~ScopedContentsResetDisabler();
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION AppListView* const view_;
+    const raw_ptr<AppListView> view_;
   };
 
   // Does not take ownership of |delegate|.
@@ -154,9 +153,8 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -309,20 +307,19 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // is snapped.
   void ResetSubpixelPositionOffset(ui::Layer* layer);
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AppListViewDelegate> delegate_;
 
   // Keeps track of the number of locks that prevent the app list view
   // from creating app list transition accessibility events. This is used to
   // prevent A11Y announcements when showing the assistant UI.
   int accessibility_event_disablers_ = 0;
-  raw_ptr<AppListMainView, DanglingUntriaged | ExperimentalAsh>
-      app_list_main_view_ = nullptr;
+  raw_ptr<AppListMainView, DanglingUntriaged> app_list_main_view_ = nullptr;
 
-  raw_ptr<SearchBoxView, DanglingUntriaged | ExperimentalAsh> search_box_view_ =
+  raw_ptr<SearchBoxView, DanglingUntriaged> search_box_view_ =
       nullptr;  // Owned by views hierarchy.
 
   // The time the AppListView was requested to be shown. Used for metrics.
-  absl::optional<base::Time> time_shown_;
+  std::optional<base::Time> time_shown_;
 
   // Whether the view is being built.
   bool is_building_ = false;

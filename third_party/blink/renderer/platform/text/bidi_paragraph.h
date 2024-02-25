@@ -7,9 +7,10 @@
 
 #include <unicode/ubidi.h>
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -31,7 +32,7 @@ class PLATFORM_EXPORT BidiParagraph {
  public:
   BidiParagraph() = default;
   BidiParagraph(const String& text,
-                absl::optional<TextDirection> base_direction) {
+                std::optional<TextDirection> base_direction) {
     SetParagraph(text, base_direction);
   }
 
@@ -40,8 +41,7 @@ class PLATFORM_EXPORT BidiParagraph {
   //
   // Returns false on failure. Nothing other than the destructor should be
   // called.
-  bool SetParagraph(const String&,
-                    absl::optional<TextDirection> base_direction);
+  bool SetParagraph(const String&, std::optional<TextDirection> base_direction);
 
   // @return the entire text is unidirectional.
   bool IsUnidirectional() const {
@@ -58,7 +58,7 @@ class PLATFORM_EXPORT BidiParagraph {
   // character, or returns `nullopt` if no strong characters are found before
   // the first segment break.
   // http://unicode.org/reports/tr9/#The_Paragraph_Level
-  static absl::optional<TextDirection> BaseDirectionForString(
+  static std::optional<TextDirection> BaseDirectionForString(
       const StringView&,
       bool (*stop_at)(UChar) = nullptr);
 
@@ -116,7 +116,7 @@ class PLATFORM_EXPORT BidiParagraph {
 
  private:
   template <typename TChar>
-  static absl::optional<TextDirection> BaseDirectionForString(
+  static std::optional<TextDirection> BaseDirectionForString(
       base::span<const TChar>,
       bool (*stop_at)(UChar));
 

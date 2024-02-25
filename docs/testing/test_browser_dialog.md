@@ -73,11 +73,17 @@ Notes:
 List the available pieces of UI with
 
     $ ./browser_tests --gtest_filter=BrowserUiTest.Invoke
+    $ ./interactive_ui_tests --gtest_filter=BrowserInteractiveUiTest.Invoke
 
 E.g. `FooUiTest.InvokeUi_default` should be listed. To show the UI
 interactively, run
 
+    # If FooUiTest is a browser test.
     $ ./browser_tests --gtest_filter=BrowserUiTest.Invoke \
+      --test-launcher-interactive --ui=FooUiTest.InvokeUi_default
+
+    # If FooUiTest is an interactive UI test.
+    $ ./interactive_ui_tests --gtest_filter=BrowserInteractiveUiTest.Invoke \
       --test-launcher-interactive --ui=FooUiTest.InvokeUi_default
 
 ### Implementation
@@ -92,6 +98,9 @@ The `FooUiTest.InvokeUi_default` test case **will still be run in the usual
 browser_tests test suite**. Ensure it passes, and isn’t flaky. This will
 give your UI some regression test coverage. `ShowAndVerifyUi()` checks to ensure
 UI is actually created when it invokes `ShowUi("default")`.
+
+`BrowserInteractiveUiTest` is the equivalent of `BrowserUiTest` for
+interactive_ui_tests.
 
 ### BrowserUiTest.Invoke
 

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -11,7 +13,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -19,7 +20,7 @@ namespace {
 
 OsInstallClient* g_instance = nullptr;
 
-absl::optional<OsInstallClient::Status> ParseStatus(const std::string& str) {
+std::optional<OsInstallClient::Status> ParseStatus(const std::string& str) {
   if (str == os_install_service::kStatusInProgress)
     return OsInstallClient::Status::InProgress;
   if (str == os_install_service::kStatusSucceeded)
@@ -30,7 +31,7 @@ absl::optional<OsInstallClient::Status> ParseStatus(const std::string& str) {
     return OsInstallClient::Status::NoDestinationDeviceFound;
 
   LOG(ERROR) << "Invalid status: " << str;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 class OsInstallClientImpl : public OsInstallClient {
@@ -49,7 +50,7 @@ class OsInstallClientImpl : public OsInstallClient {
   void StartOsInstall() override;
 
  private:
-  void NotifyStatusChanged(absl::optional<Status> status,
+  void NotifyStatusChanged(std::optional<Status> status,
                            const std::string& service_log);
   void HandleStartResponse(dbus::Response* response);
   void StatusUpdateReceived(dbus::Signal* signal);
@@ -57,7 +58,7 @@ class OsInstallClientImpl : public OsInstallClient {
                              const std::string& signal_name,
                              bool success);
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
   base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<OsInstallClientImpl> weak_factory_{this};
@@ -101,7 +102,7 @@ void OsInstallClientImpl::StartOsInstall() {
                                     weak_factory_.GetWeakPtr()));
 }
 
-void OsInstallClientImpl::NotifyStatusChanged(absl::optional<Status> status,
+void OsInstallClientImpl::NotifyStatusChanged(std::optional<Status> status,
                                               const std::string& service_log) {
   if (!status) {
     status = Status::Failed;

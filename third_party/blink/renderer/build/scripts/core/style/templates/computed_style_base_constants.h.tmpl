@@ -6,6 +6,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_CONSTANTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_CONSTANTS_H_
 
+#include <stdint.h>
+
+#include <iosfwd>
+
+#include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/core_export.h"
+
 namespace blink {
 
 // TODO(sashab): Move these enums to their own namespace, or add a CSS prefix,
@@ -46,6 +53,15 @@ inline {{enum.type_name}} operator~({{enum.type_name}} x) {
 
 {% endif %}
 {% endfor %}
+
+#if DCHECK_IS_ON()
+{% for enum in enums %}
+{% if not enum.set_type or enum.set_type == 'multi' %}
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const {{enum.type_name}});
+{% endif %}
+{% endfor %}
+#endif
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_BASE_CONSTANTS_H_

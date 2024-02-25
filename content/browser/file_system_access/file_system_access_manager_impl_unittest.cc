@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -83,7 +84,7 @@ class StringDataPipeReader : public mojo::DataPipeDrainer::Client {
   void OnDataComplete() override { std::move(done_callback_).Run(); }
 
  private:
-  raw_ptr<std::string> data_out_;
+  raw_ptr<std::string> data_out_ = nullptr;
   base::OnceClosure done_callback_;
 };
 
@@ -307,7 +308,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   void GetEntryFromDataTransferTokenDirectoryTest(
       const base::FilePath& dir_path,
       FileSystemAccessEntryFactory::PathType path_type,
-      const std::string& expected_child_file_name) {
+      const std::string& expected_child_dir_name) {
     mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
         token_remote;
     manager_->CreateFileSystemAccessDataTransferToken(
@@ -360,14 +361,14 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         std::move(file_system_access_entry->entry_handle->get_directory()));
 
     // Use `dir_remote` to verify that dir_path contains a child called
-    // expected_child_file_name.
+    // expected_child_dir_name.
     base::test::TestFuture<
         blink::mojom::FileSystemAccessErrorPtr,
-        mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
-        get_file_future;
-    dir_remote->GetFile(expected_child_file_name, /*create=*/false,
-                        get_file_future.GetCallback());
-    ASSERT_EQ(get_file_future.Get<0>()->status,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+        get_directory_future;
+    dir_remote->GetDirectory(expected_child_dir_name, /*create=*/false,
+                             get_directory_future.GetCallback());
+    ASSERT_EQ(get_directory_future.Get<0>()->status,
               blink::mojom::FileSystemAccessStatus::kOk);
   }
 
@@ -413,6 +414,17 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         });
   }
 
+  scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLockSync(
+      const FileSystemAccessManagerImpl::BindingContext binding_context,
+      const storage::FileSystemURL& url,
+      FileSystemAccessLockManager::LockType lock_type) {
+    base::test::TestFuture<
+        scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+        future;
+    manager_->TakeLock(binding_context, url, lock_type, future.GetCallback());
+    return future.Take();
+  }
+
  protected:
   const GURL kTestURL = GURL("https://example.com/test");
   const blink::StorageKey kTestStorageKey =
@@ -436,7 +448,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
-  raw_ptr<WebContents> web_contents_;
+  raw_ptr<WebContents> web_contents_ = nullptr;
 
   testing::StrictMock<MockFileSystemAccessPermissionContext>
       permission_context_;
@@ -639,11 +651,11 @@ TEST_F(FileSystemAccessManagerImplTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url));
 
-  auto lock =
-      manager_->TakeLock(test_file_url, manager_->CreateSharedLockType());
+  auto lock = TakeLockSync(kBindingContext, test_file_url,
+                           manager_->GetWFSSiloedLockType());
   ASSERT_TRUE(lock);
-  auto swap_lock =
-      manager_->TakeLock(test_swap_url, manager_->GetExclusiveLockType());
+  auto swap_lock = TakeLockSync(kBindingContext, test_swap_url,
+                                manager_->GetExclusiveLockType());
   ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
@@ -678,13 +690,13 @@ TEST_F(FileSystemAccessManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
-  auto lock =
-      manager_->TakeLock(test_file_url, manager_->CreateSharedLockType());
+  auto lock = TakeLockSync(kBindingContext, test_file_url,
+                           manager_->GetWFSSiloedLockType());
   ASSERT_TRUE(lock);
-  auto swap_lock =
-      manager_->TakeLock(test_swap_url, manager_->GetExclusiveLockType());
+  auto swap_lock = TakeLockSync(kBindingContext, test_swap_url,
+                                manager_->GetExclusiveLockType());
   ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
@@ -730,13 +742,13 @@ TEST_F(FileSystemAccessManagerImplTest,
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
-  auto lock =
-      manager_->TakeLock(test_file_url, manager_->CreateSharedLockType());
+  auto lock = TakeLockSync(kBindingContext, test_file_url,
+                           manager_->GetWFSSiloedLockType());
   ASSERT_TRUE(lock);
-  auto swap_lock =
-      manager_->TakeLock(test_swap_url, manager_->GetExclusiveLockType());
+  auto swap_lock = TakeLockSync(kBindingContext, test_swap_url,
+                                manager_->GetExclusiveLockType());
   ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
@@ -771,13 +783,13 @@ TEST_F(FileSystemAccessManagerImplTest,
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
-  auto lock =
-      manager_->TakeLock(test_file_url, manager_->CreateSharedLockType());
+  auto lock = TakeLockSync(kBindingContext, test_file_url,
+                           manager_->GetWFSSiloedLockType());
   ASSERT_TRUE(lock);
-  auto swap_lock =
-      manager_->TakeLock(test_swap_url, manager_->GetExclusiveLockType());
+  auto swap_lock = TakeLockSync(kBindingContext, test_swap_url,
+                                manager_->GetExclusiveLockType());
   ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
@@ -1020,8 +1032,21 @@ TEST_F(FileSystemAccessManagerImplTest,
 TEST_F(FileSystemAccessManagerImplTest,
        SerializeHandle_Native_FileInsideDirectory) {
   const base::FilePath kDirectoryPath(dir_.GetPath().AppendASCII("foo"));
-  const std::string kTestName = "test file name ☺";
+  const std::string kTestName = "test file name";
   base::CreateDirectory(kDirectoryPath);
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+    EXPECT_CALL(permission_context_,
+                ConfirmSensitiveEntryAccess_(
+                    kTestStorageKey.origin(),
+                    FileSystemAccessPermissionContext::PathType::kLocal,
+                    kDirectoryPath.AppendASCII(kTestName),
+                    FileSystemAccessPermissionContext::HandleType::kFile,
+                    FileSystemAccessPermissionContext::UserAction::kNone,
+                    kFrameId, testing::_))
+        .WillOnce(RunOnceCallback<6>(
+            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
+  }
 
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> directory_handle =
       GetHandleForDirectory(kDirectoryPath);
@@ -1205,12 +1230,11 @@ TEST_F(FileSystemAccessManagerImplTest,
   // representing the new directory.
   const base::FilePath dir_path = dir_.GetPath().AppendASCII("mr_dir");
   ASSERT_TRUE(base::CreateDirectory(dir_path));
-  const std::string child_file_name = "child-file-name.txt";
-  ASSERT_TRUE(base::WriteFile(dir_path.AppendASCII(child_file_name), ""));
+  const std::string child_dir_name = "child_dir";
+  ASSERT_TRUE(base::CreateDirectory(dir_path.AppendASCII(child_dir_name)));
 
   GetEntryFromDataTransferTokenDirectoryTest(
-      dir_path, FileSystemAccessEntryFactory::PathType::kLocal,
-      child_file_name);
+      dir_path, FileSystemAccessEntryFactory::PathType::kLocal, child_dir_name);
 }
 
 // FileSystemAccessManager should successfully resolve a
@@ -1244,8 +1268,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   // representing the new directory.
   const base::FilePath dir_path = dir_.GetPath().AppendASCII("mr_dir");
   ASSERT_TRUE(base::CreateDirectory(dir_path));
-  const std::string child_file_name = "child-file-name.txt";
-  ASSERT_TRUE(base::WriteFile(dir_path.AppendASCII(child_file_name), ""));
+  const std::string child_dir_name = "child_dir";
+  ASSERT_TRUE(base::CreateDirectory(dir_path.AppendASCII(child_dir_name)));
 
   const base::FilePath virtual_dir_path =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint)
@@ -1253,7 +1277,7 @@ TEST_F(FileSystemAccessManagerImplTest,
 
   GetEntryFromDataTransferTokenDirectoryTest(
       virtual_dir_path, FileSystemAccessEntryFactory::PathType::kExternal,
-      child_file_name);
+      child_dir_name);
 }
 
 // FileSystemAccessManager should refuse to resolve a
@@ -1563,6 +1587,14 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
                   FileSystemAccessPermissionContext::HandleType::kFile,
                   FileSystemAccessPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(allow_grant_));
+
+  EXPECT_CALL(
+      permission_context_,
+      OnFileCreatedFromShowSaveFilePicker(
+          /*file_picker_binding_context=*/binding_context.url,
+          file_system_context_->CreateCrackedFileSystemURL(
+              blink::StorageKey(),
+              storage::FileSystemType::kFileSystemTypeLocal, test_file)));
 
   auto save_file_picker_options = blink::mojom::SaveFilePickerOptions::New(
       blink::mojom::AcceptsTypesInfo::New(

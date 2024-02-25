@@ -60,7 +60,7 @@ class WideFrameTargeter : public aura::WindowTargeter {
   }
 
  private:
-  raw_ptr<chromeos::HeaderView, ExperimentalAsh> header_view_;
+  raw_ptr<chromeos::HeaderView> header_view_;
 };
 
 }  // namespace
@@ -141,6 +141,7 @@ WideFrameView::WideFrameView(views::Widget* target)
 }
 
 WideFrameView::~WideFrameView() {
+  header_view_->set_context_menu_controller(nullptr);
   if (widget_)
     widget_->CloseNow();
   if (target_) {
@@ -151,7 +152,7 @@ WideFrameView::~WideFrameView() {
   }
 }
 
-void WideFrameView::Layout() {
+void WideFrameView::Layout(PassKey) {
   int onscreen_height = header_view_->GetPreferredOnScreenHeight();
   if (onscreen_height == 0 || !GetVisible()) {
     header_view_->SetVisible(false);
@@ -228,7 +229,7 @@ void WideFrameView::OnImmersiveFullscreenExited() {
   widget_->GetNativeWindow()->SetTransparent(false);
   if (target_)
     GetTargetHeaderView()->OnImmersiveFullscreenExited();
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void WideFrameView::SetVisibleFraction(double visible_fraction) {

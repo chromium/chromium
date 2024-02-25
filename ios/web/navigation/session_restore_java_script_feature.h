@@ -7,6 +7,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #import "ios/web/js_messaging/scoped_wk_script_message_handler.h"
@@ -41,7 +42,7 @@ class SessionRestoreJavaScriptFeature : public base::SupportsUserData::Data,
   void SessionRestorationMessageReceived(WKScriptMessage* script_message);
 
   // The browser state associated with this instance of the feature.
-  BrowserState* browser_state_;
+  raw_ptr<BrowserState> browser_state_;
 
   // This feature uses ScopedWKScriptMessageHandler directly instead of the
   // message handling built into JavaScriptFeature because the WKWebView is used

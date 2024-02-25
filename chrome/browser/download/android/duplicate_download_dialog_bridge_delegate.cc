@@ -36,8 +36,9 @@ DuplicateDownloadDialogBridgeDelegate::DuplicateDownloadDialogBridgeDelegate() =
 
 DuplicateDownloadDialogBridgeDelegate::
     ~DuplicateDownloadDialogBridgeDelegate() {
-  for (auto* download_item : download_items_)
+  for (download::DownloadItem* download_item : download_items_) {
     download_item->RemoveObserver(this);
+  }
 }
 
 void DuplicateDownloadDialogBridgeDelegate::CreateDialog(
@@ -87,7 +88,7 @@ void DuplicateDownloadDialogBridgeDelegate::OnConfirmed(
                        std::move(callback)));
   } else {
     std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                            base::FilePath());
+                            ui::SelectedFileInfo());
   }
 }
 

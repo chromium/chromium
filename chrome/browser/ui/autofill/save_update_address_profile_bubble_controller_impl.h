@@ -45,7 +45,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   // SaveUpdateAddressProfileBubbleController:
   std::u16string GetWindowTitle() const override;
-  absl::optional<HeaderImages> GetHeaderImages() const override;
+  std::optional<HeaderImages> GetHeaderImages() const override;
   std::u16string GetBodyText() const override;
   std::u16string GetAddressSummary() const override;
   std::u16string GetProfileEmail() const override;
@@ -57,7 +57,8 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   const AutofillProfile& GetProfileToSave() const override;
   const AutofillProfile* GetOriginalProfile() const override;
   void OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision) override;
+      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      base::optional_ref<const AutofillProfile> profile) override;
   void OnEditButtonClicked() override;
   void OnBubbleClosed() override;
 
@@ -80,6 +81,8 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   friend class content::WebContentsUserData<
       SaveUpdateAddressProfileBubbleControllerImpl>;
 
+  base::WeakPtr<SaveUpdateAddressProfileBubbleController> GetWeakPtr();
+
   std::u16string GetEditorFooterMessage() const;
 
   // Callback to run once the user makes a decision with respect to the saving
@@ -89,11 +92,11 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   // Contains the details of the address profile that will be saved if the user
   // accepts.
-  AutofillProfile address_profile_;
+  std::optional<AutofillProfile> address_profile_;
 
   // Contains the details of the address profile that will be updated if the
   // user accepts the prompt.
-  absl::optional<AutofillProfile> original_profile_;
+  std::optional<AutofillProfile> original_profile_;
 
   // Whether the bubble is going to be shown upon user gesture (e.g. click on
   // the page action icon) or automatically (e.g. upon detection of an address
@@ -104,6 +107,9 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   bool is_migration_to_account_ = false;
 
   std::string app_locale_;
+
+  base::WeakPtrFactory<SaveUpdateAddressProfileBubbleController>
+      weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

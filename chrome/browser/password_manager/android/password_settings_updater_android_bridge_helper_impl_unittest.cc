@@ -34,6 +34,18 @@ class MockConsumer
               (PasswordManagerSetting, bool),
               (override));
   MOCK_METHOD(void, OnSettingValueAbsent, (PasswordManagerSetting), (override));
+  MOCK_METHOD(void,
+              OnSettingFetchingError,
+              (PasswordManagerSetting, AndroidBackendAPIErrorCode),
+              (override));
+  MOCK_METHOD(void,
+              OnSuccessfulSettingChange,
+              (PasswordManagerSetting),
+              (override));
+  MOCK_METHOD(void,
+              OnFailedSettingChange,
+              (PasswordManagerSetting, AndroidBackendAPIErrorCode),
+              (override));
 };
 
 class MockPasswordSettingsUpdaterAndroidReceiverBridge
@@ -59,11 +71,11 @@ class MockPasswordSettingsUpdaterAndroidDispatcherBridge
               (override));
   MOCK_METHOD(void,
               GetPasswordSettingValue,
-              (absl::optional<SyncingAccount>, PasswordManagerSetting),
+              (std::optional<SyncingAccount>, PasswordManagerSetting),
               (override));
   MOCK_METHOD(void,
               SetPasswordSettingValue,
-              (absl::optional<SyncingAccount>, PasswordManagerSetting, bool),
+              (std::optional<SyncingAccount>, PasswordManagerSetting, bool),
               (override));
 };
 

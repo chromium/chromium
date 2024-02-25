@@ -17,7 +17,11 @@
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -56,7 +60,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_encrypter.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
@@ -66,7 +69,6 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
-#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_client_promised_info_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_stream_peer.h"
@@ -122,6 +124,8 @@ class QuicChromiumClientSessionTest
         session_key_(kServerHostname,
                      kServerPort,
                      PRIVACY_MODE_DISABLED,
+                     ProxyChain::Direct(),
+                     SessionUsage::kDestination,
                      SocketTag(),
                      NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,
@@ -177,7 +181,8 @@ class QuicChromiumClientSessionTest
         quic::QuicTime::Delta::FromMilliseconds(
             kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
         /*migrate_idle_session=*/false, allow_port_migration_,
-        kDefaultIdleSessionMigrationPeriod, kMaxTimeOnNonDefaultNetwork,
+        kDefaultIdleSessionMigrationPeriod, /*multi_port_probing_interval=*/0,
+        kMaxTimeOnNonDefaultNetwork,
         kMaxMigrationsToNonDefaultNetworkOnWriteError,
         kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
         kQuicYieldAfterPacketsRead,
@@ -186,7 +191,6 @@ class QuicChromiumClientSessionTest
         /*cert_verify_flags=*/0, config_,
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         base::TimeTicks::Now(), base::TimeTicks::Now(),
-        std::make_unique<quic::QuicClientPushPromiseIndex>(),
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
@@ -1092,7 +1096,7 @@ TEST_P(QuicChromiumClientSessionTest, PendingStreamOnRst) {
   CompleteCryptoHandshake();
 
   quic::QuicStreamFrame data(GetNthServerInitiatedUnidirectionalStreamId(0),
-                             false, 1, absl::string_view("SP"));
+                             false, 1, std::string_view("SP"));
   session_->OnStreamFrame(data);
   EXPECT_EQ(0u, session_->GetNumActiveStreams());
   quic::QuicRstStreamFrame rst(quic::kInvalidControlFrameId,
@@ -1119,7 +1123,7 @@ TEST_P(QuicChromiumClientSessionTest, ClosePendingStream) {
   CompleteCryptoHandshake();
 
   quic::QuicStreamId id = GetNthServerInitiatedUnidirectionalStreamId(0);
-  quic::QuicStreamFrame data(id, false, 1, absl::string_view("SP"));
+  quic::QuicStreamFrame data(id, false, 1, std::string_view("SP"));
   session_->OnStreamFrame(data);
   EXPECT_EQ(0u, session_->GetNumActiveStreams());
   session_->ResetStream(id, quic::QUIC_STREAM_NO_ERROR);
@@ -1212,17 +1216,20 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
 
   EXPECT_TRUE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_ENABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
                      /*require_dns_https_alpn=*/false)));
 #if BUILDFLAG(IS_ANDROID)
@@ -1230,28 +1237,48 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
   SocketTag tag2(getuid(), 0x87654321);
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, tag1,
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, tag1,
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, tag2,
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, tag2,
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
 #endif
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED,
+                     ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                                       "bar", 443),
+                     SessionUsage::kDestination, SocketTag(),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false)));
+  EXPECT_FALSE(session_->CanPool(
+      "www.example.org",
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kProxy, SocketTag(),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false)));
+
   EXPECT_TRUE(session_->CanPool(
       "mail.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_TRUE(session_->CanPool(
       "mail.example.com",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "mail.google.com",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
 
@@ -1264,7 +1291,8 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
         features::kPartitionConnectionsByNetworkIsolationKey);
     EXPECT_TRUE(session_->CanPool(
         "mail.example.com",
-        QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+        QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                       SessionUsage::kDestination, SocketTag(),
                        NetworkAnonymizationKey::CreateSameSite(kSiteFoo),
                        SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false)));
@@ -1275,7 +1303,8 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
         features::kPartitionConnectionsByNetworkIsolationKey);
     EXPECT_FALSE(session_->CanPool(
         "mail.example.com",
-        QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+        QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                       SessionUsage::kDestination, SocketTag(),
                        NetworkAnonymizationKey::CreateSameSite(kSiteFoo),
                        SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false)));
@@ -1295,10 +1324,11 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkAnonymizationKey) {
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSiteBar);
 
-  session_key_ =
-      QuicSessionKey(kServerHostname, kServerPort, PRIVACY_MODE_DISABLED,
-                     SocketTag(), kNetworkAnonymizationKey1,
-                     SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
+  session_key_ = QuicSessionKey(
+      kServerHostname, kServerPort, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+      SessionUsage::kDestination, SocketTag(), kNetworkAnonymizationKey1,
+      SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false);
 
   MockQuicData quic_data(version_);
   quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
@@ -1321,12 +1351,14 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkAnonymizationKey) {
 
   EXPECT_TRUE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_ENABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
 #if BUILDFLAG(IS_ANDROID)
@@ -1334,39 +1366,46 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkAnonymizationKey) {
   SocketTag tag2(getuid(), 0x87654321);
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, tag1,
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, tag1,
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "www.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, tag2,
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, tag2,
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
 #endif
   EXPECT_TRUE(session_->CanPool(
       "mail.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_TRUE(session_->CanPool(
       "mail.example.com",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "mail.google.com",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
 
   EXPECT_FALSE(session_->CanPool(
       "mail.example.com",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      kNetworkAnonymizationKey2, SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
   EXPECT_FALSE(session_->CanPool(
       "mail.example.com",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
 }
@@ -1413,7 +1452,8 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionNotPooledWithDifferentPin) {
 
   EXPECT_FALSE(session_->CanPool(
       kPreloadedPKPHost,
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
 }
@@ -1447,7 +1487,8 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionPooledWithMatchingPin) {
 
   EXPECT_TRUE(session_->CanPool(
       "mail.example.org",
-      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
+      QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false)));
 }
@@ -1498,22 +1539,23 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
 
   // Create reader and writer.
   auto new_reader = std::make_unique<QuicChromiumPacketReader>(
-      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      std::move(new_socket), &clock_, session_.get(),
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
-      CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
+      CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
   IPEndPoint local_address;
-  new_socket->GetLocalAddress(&local_address);
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
-  new_socket->GetPeerAddress(&peer_address);
+  new_reader->socket()->GetPeerAddress(&peer_address);
   // Migrate session.
   EXPECT_TRUE(session_->MigrateToSocket(
       ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
-      std::move(new_socket), std::move(new_reader), std::move(new_writer)));
+      std::move(new_reader), std::move(new_writer)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();
 
@@ -1586,22 +1628,23 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
 
     // Create reader and writer.
     auto new_reader = std::make_unique<QuicChromiumPacketReader>(
-        new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+        std::move(new_socket), &clock_, session_.get(),
+        kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
         net_log_with_source_);
     new_reader->StartReading();
     std::unique_ptr<QuicChromiumPacketWriter> new_writer(
-        CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
+        CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
     IPEndPoint local_address;
-    new_socket->GetLocalAddress(&local_address);
+    new_reader->socket()->GetLocalAddress(&local_address);
     IPEndPoint peer_address;
-    new_socket->GetPeerAddress(&peer_address);
+    new_reader->socket()->GetPeerAddress(&peer_address);
     // Migrate session.
     EXPECT_TRUE(session_->MigrateToSocket(
         ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
-        std::move(new_socket), std::move(new_reader), std::move(new_writer)));
+        std::move(new_reader), std::move(new_writer)));
     // Spin message loop to complete migration.
     base::RunLoop().RunUntilIdle();
     alarm_factory_.FireAlarm(
@@ -1626,21 +1669,22 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
 
   // Create reader and writer.
   auto new_reader = std::make_unique<QuicChromiumPacketReader>(
-      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      std::move(new_socket), &clock_, session_.get(),
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
-      CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
+      CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
   IPEndPoint local_address;
-  new_socket->GetLocalAddress(&local_address);
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
-  new_socket->GetPeerAddress(&peer_address);
+  new_reader->socket()->GetPeerAddress(&peer_address);
   EXPECT_FALSE(session_->MigrateToSocket(
       ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
-      std::move(new_socket), std::move(new_reader), std::move(new_writer)));
+      std::move(new_reader), std::move(new_writer)));
   EXPECT_TRUE(quic_data2.AllReadDataConsumed());
   EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
@@ -1692,22 +1736,23 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
 
   // Create reader and writer.
   auto new_reader = std::make_unique<QuicChromiumPacketReader>(
-      new_socket.get(), &clock_, session_.get(), kQuicYieldAfterPacketsRead,
+      std::move(new_socket), &clock_, session_.get(),
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
-      CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
+      CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
   IPEndPoint local_address;
-  new_socket->GetLocalAddress(&local_address);
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
-  new_socket->GetPeerAddress(&peer_address);
+  new_reader->socket()->GetPeerAddress(&peer_address);
   // Store old socket and migrate session.
   EXPECT_TRUE(session_->MigrateToSocket(
       ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
-      std::move(new_socket), std::move(new_reader), std::move(new_writer)));
+      std::move(new_reader), std::move(new_writer)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
@@ -2093,6 +2138,44 @@ TEST_P(QuicChromiumClientSessionTest, WriteErrorAfterHandshakeConfirmed) {
   EXPECT_EQ(
       expected_error_count,
       connectivity_monitor_->GetCountForWriteErrorCode(ERR_CONNECTION_RESET));
+}
+
+// Much like above, but checking that ECN marks are reported.
+TEST_P(QuicChromiumClientSessionTest, ReportsReceivedEcn) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(net::features::kReceiveEcn);
+  FLAGS_quic_reloadable_flag_quic_clone_ecn = true;
+
+  MockQuicData mock_quic_data(version_);
+  int write_packet_num = 1, read_packet_num = 0;
+  quic::QuicEcnCounts ecn(1, 0, 0);  // 1 ECT(0) packet received
+  mock_quic_data.AddWrite(
+      ASYNC, client_maker_.MakeInitialSettingsPacket(write_packet_num++));
+  mock_quic_data.AddRead(
+      ASYNC, server_maker_.MakeInitialSettingsPacket(read_packet_num++));
+  server_maker_.set_ecn_codepoint(quic::ECN_ECT0);
+  mock_quic_data.AddRead(ASYNC,
+                         server_maker_.MakePingPacket(read_packet_num++));
+  mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeAckPacket(
+                                           write_packet_num++, 0, 1, 0, ecn));
+  server_maker_.set_ecn_codepoint(quic::ECN_ECT1);
+  mock_quic_data.AddRead(ASYNC,
+                         server_maker_.MakePingPacket(read_packet_num++));
+  server_maker_.set_ecn_codepoint(quic::ECN_CE);
+  mock_quic_data.AddRead(ASYNC,
+                         server_maker_.MakePingPacket(read_packet_num++));
+  ecn.ect1 = 1;
+  ecn.ce = 1;
+  mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeAckPacket(
+                                           write_packet_num++, 0, 3, 0, ecn));
+  mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
 }
 
 }  // namespace

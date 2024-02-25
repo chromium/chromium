@@ -242,6 +242,12 @@ inline EDisplay CssValueIDToPlatformEnum(CSSValueID v) {
   if (v == CSSValueID::kMath) {
     return EDisplay::kMath;
   }
+  if (v == CSSValueID::kRuby) {
+    return EDisplay::kRuby;
+  }
+  if (v == CSSValueID::kRubyText) {
+    return EDisplay::kRubyText;
+  }
 
   NOTREACHED();
   return EDisplay::kInline;
@@ -328,6 +334,12 @@ inline CSSValueID PlatformEnumToCSSValueID(EDisplay v) {
   }
   if (v == EDisplay::kMath) {
     return CSSValueID::kMath;
+  }
+  if (v == EDisplay::kRuby) {
+    return CSSValueID::kRuby;
+  }
+  if (v == EDisplay::kRubyText) {
+    return CSSValueID::kRubyText;
   }
 
   NOTREACHED();
@@ -435,6 +447,39 @@ inline CSSValueID PlatformEnumToCSSValueID(WhiteSpaceCollapse v) {
       return CSSValueID::kPreserve;
     case WhiteSpaceCollapse::kBreakSpaces:
       return CSSValueID::kBreakSpaces;
+  }
+  NOTREACHED();
+  return CSSValueID::kNone;
+}
+
+template <>
+inline TextSpacingTrim CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kNormal:
+      return TextSpacingTrim::kNormal;
+    case CSSValueID::kTrimStart:
+      return TextSpacingTrim::kTrimStart;
+    case CSSValueID::kSpaceAll:
+      return TextSpacingTrim::kSpaceAll;
+    case CSSValueID::kSpaceFirst:
+      return TextSpacingTrim::kSpaceFirst;
+    default:
+      NOTREACHED();
+      return TextSpacingTrim::kNormal;
+  }
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(TextSpacingTrim v) {
+  switch (v) {
+    case TextSpacingTrim::kNormal:
+      return CSSValueID::kNormal;
+    case TextSpacingTrim::kTrimStart:
+      return CSSValueID::kTrimStart;
+    case TextSpacingTrim::kSpaceAll:
+      return CSSValueID::kSpaceAll;
+    case TextSpacingTrim::kSpaceFirst:
+      return CSSValueID::kSpaceFirst;
   }
   NOTREACHED();
   return CSSValueID::kNone;

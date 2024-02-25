@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_fullscreen_from_normal_window
+  assert (1600, 1200) == (800, 600)
+[FAIL] test_fullscreen_from_maximized_window
+  assert (1600, 1200) == (800, 600)
+[FAIL] test_fullscreen_from_minimized_window
+  assert (1600, 1200) == (800, 600)
+[FAIL] test_fullscreen_twice_is_idempotent
+  assert (1600, 1200) == (800, 600)
+Harness: the test ran to completion.

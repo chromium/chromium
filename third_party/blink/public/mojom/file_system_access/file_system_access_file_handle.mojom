@@ -58,6 +58,11 @@ enum FileSystemAccessAccessHandleLockMode {
   kReadwriteUnsafe,
 };
 
+enum FileSystemAccessWritableFileStreamLockMode {
+  kExclusive,
+  kSiloed,
+};
+
 // This interface represents a handle to a directory in the File System Access
 // API.
 interface FileSystemAccessFileHandle {
@@ -78,7 +83,10 @@ interface FileSystemAccessFileHandle {
   // Returns a FileWriter object. The FileWriter provides write operations on a file.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
-  CreateFileWriter(bool keep_existing_data, bool auto_close) => (
+  CreateFileWriter(
+    bool keep_existing_data,
+    bool auto_close,
+    FileSystemAccessWritableFileStreamLockMode mode) => (
       FileSystemAccessError result, pending_remote<FileSystemAccessFileWriter>? writer);
 
   // Renames the file represented by this handle to `new_entry_name`.

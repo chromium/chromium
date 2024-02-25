@@ -187,7 +187,7 @@
     </div>
 
     <printer-setup-info hidden="[[!shouldShowSetupAssistance(
-        ongoingPrintJobs.length, printJobs.length)]]">
+        printJobsLoaded, ongoingPrintJobs.length, printJobs.length)]]">
     </printer-setup-info>
 
     <template is="dom-if" if="[[printJobs.length]]" restamp>

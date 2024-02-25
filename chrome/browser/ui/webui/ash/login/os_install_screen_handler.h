@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OS_INSTALL_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OS_INSTALL_SCREEN_HANDLER_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;

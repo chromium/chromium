@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -43,6 +44,10 @@ namespace printing {
 
 class PrintQueriesQueue;
 class PrinterQuery;
+
+// TODO(crbug.com/1514866): Remove this emergency off switch after a safe
+// rollout.
+BASE_DECLARE_FEATURE(kCheckPrintRfhIsActive);
 
 // Base class for managing the print commands for a WebContents.
 class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
@@ -203,24 +208,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                                      ScriptedPrintCallback callback);
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Helper method for scanning a page by sending requests and launching the
-  // scanning dialog as required. This helper is shared between system print
-  // scans and print preview scans. This method is virtual for testing purposes.
-  virtual void OnGotSnapshotCallback(
-      base::OnceCallback<void(bool should_proceed)> callback,
-      enterprise_connectors::ContentAnalysisDelegate::Data data,
-      content::GlobalRenderFrameHostId rfh_id,
-      mojom::DidPrintDocumentParamsPtr params);
-
-  // Helper method called after the snapshotted page has been composited into a
-  // scannable PDF document. This method is virtual for testing purposes.
-  virtual void OnCompositedForContentAnalysis(
-      base::OnceCallback<void(bool should_proceed)> callback,
-      enterprise_connectors::ContentAnalysisDelegate::Data data,
-      content::GlobalRenderFrameHostId rfh_id,
-      mojom::PrintCompositor::Status status,
-      base::ReadOnlySharedMemoryRegion page_region);
-
   // Helper method bound to `content_analysis_before_printing_document_` when
   // content analysis should happen right before the document is to be printed.
   // This method is virtual for testing purposes.
@@ -259,13 +246,13 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                             base::ReadOnlySharedMemoryRegion region);
 
   // IPC message handlers for service.
-  void OnComposePdfDone(int document_cookie,
-                        const gfx::Size& page_size,
-                        const gfx::Rect& content_area,
-                        const gfx::Point& physical_offsets,
-                        DidPrintDocumentCallback callback,
-                        mojom::PrintCompositor::Status status,
-                        base::ReadOnlySharedMemoryRegion region);
+  void OnComposeDocumentDone(int document_cookie,
+                             const gfx::Size& page_size,
+                             const gfx::Rect& content_area,
+                             const gfx::Point& physical_offsets,
+                             DidPrintDocumentCallback callback,
+                             mojom::PrintCompositor::Status status,
+                             base::ReadOnlySharedMemoryRegion region);
 
   // Helper for mojom::PrintManagerHost handling.
   void OnDidPrintDocument(PrintManager::DidPrintDocumentCallback callback,
@@ -359,23 +346,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // Release the PrinterQuery associated with our `cookie_`.
   void ReleasePrinterQuery();
 
-  // Prints the document by calling the `PrintRequestedPages()` renderer API and
-  // notifies observers. This should only be called by `PrintNow()` or
-  // `CompletePrintNowAfterContentAnalysis()`.
-  void CompletePrintNow(content::RenderFrameHost* rfh);
-
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Helper for content analysis code that calls `CompletePrintNow()` if
-  // `allowed` is true and printing is still possible.
-  void CompletePrintNowAfterContentAnalysis(bool allowed);
-
-  // Helper for content analysis code that calls `CompleteScriptedPrint()` if
-  // `allowed` is true and printing is still possible.
-  void CompleteScriptedPrintAfterContentAnalysis(
-      mojom::ScriptedPrintParamsPtr params,
-      ScriptedPrintCallback callback,
-      bool allowed);
-
   // Helper method called after a verdict has been obtained from scanning
   // to-be-printed content, right before the actual `print_job_` starts.
   // Printing will proceed only if `allowed` is set to true, otherwise the print
@@ -407,7 +378,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Client ID with the print backend service manager for system print dialog.
-  absl::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
+  std::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)

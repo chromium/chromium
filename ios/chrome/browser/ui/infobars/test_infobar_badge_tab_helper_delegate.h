@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
-#include "ios/chrome/browser/infobars/infobar_badge_tab_helper_delegate.h"
-#include "ios/chrome/browser/infobars/infobar_type.h"
+#include "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#include "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
+#include "ios/chrome/browser/infobars/model/infobar_type.h"
 
 // Test version of InfobarTabHelperDelegate to use in tests.
 @interface TestInfobarTabHelperDelegate

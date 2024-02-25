@@ -66,9 +66,7 @@ struct NgramsAttributes {
         string_separator(m["string_separator"].ToString()) {}
 };
 
-inline bool OutputIsTensor(TfLiteNode* node) {
-  return NumOutputs(node) == 1;
-}
+inline bool OutputIsTensor(TfLiteNode* node) { return NumOutputs(node) == 1; }
 inline int NumRowSplits(TfLiteNode* node) {
   return NumInputs(node) - kRowSplitsStart;
 }
@@ -178,8 +176,7 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
     std::vector<StringRef> tokens;
     for (int j = input_row_splits[i]; j < input_row_splits[i + 1]; ++j) {
       tokens.emplace_back(GetString(input_values, j));
-      if (tokens.size() < attributes.width)
-        continue;
+      if (tokens.size() < attributes.width) continue;
       tokens.erase(tokens.begin(),
                    tokens.begin() + tokens.size() - attributes.width);
       buffer.AddJoinedString(tokens, separator);

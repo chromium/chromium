@@ -20,8 +20,7 @@ const char kTestRulesetSuffix1[] = "foo";
 const char kTestRulesetSuffix2[] = "bar";
 
 std::vector<uint8_t> ReadRulesetContents(const MemoryMappedRuleset* ruleset) {
-  return std::vector<uint8_t>(ruleset->data(),
-                              ruleset->data() + ruleset->length());
+  return std::vector<uint8_t>(ruleset->data().begin(), ruleset->data().end());
 }
 
 }  // namespace

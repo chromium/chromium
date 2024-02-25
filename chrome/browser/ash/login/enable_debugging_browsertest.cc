@@ -217,7 +217,9 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     WaitForOobeUI();
     test::OobeJS().ExpectHidden(kDebuggingScreenId);
     InvokeEnableDebuggingScreen();
-    test::OobeJS().ExpectVisiblePath(kRemoveProtectionDialog);
+    test::OobeJS()
+        .CreateVisibilityWaiter(true, kRemoveProtectionDialog)
+        ->Wait();
     test::OobeJS().ExpectVisiblePath(kRemoveProtectionButton);
     test::OobeJS().ExpectVisiblePath(kHelpLink);
     debug_daemon_client_->WaitUntilCalled();
@@ -230,7 +232,7 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     WaitForOobeUI();
     test::OobeJS().ExpectHidden(kDebuggingScreenId);
     InvokeEnableDebuggingScreen();
-    test::OobeJS().ExpectVisiblePath(kSetupDialog);
+    test::OobeJS().CreateVisibilityWaiter(true, kSetupDialog)->Wait();
     debug_daemon_client_->WaitUntilCalled();
     base::RunLoop().RunUntilIdle();
 
@@ -346,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowOnTestImages) {
   WaitForOobeUI();
   test::OobeJS().ExpectHidden(kDebuggingScreenId);
   InvokeEnableDebuggingScreen();
-  test::OobeJS().ExpectVisiblePath(kRemoveProtectionDialog);
+  test::OobeJS().CreateVisibilityWaiter(true, kRemoveProtectionDialog)->Wait();
   debug_daemon_client_->WaitUntilCalled();
   base::RunLoop().RunUntilIdle();
 

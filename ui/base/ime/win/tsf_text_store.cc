@@ -206,8 +206,8 @@ HRESULT TSFTextStore::GetScreenExt(TsViewCookie view_cookie, RECT* rect) {
 
   // {0, 0, 0, 0} means that the document rect is not currently displayed.
   SetRect(rect, 0, 0, 0, 0);
-  absl::optional<gfx::Rect> result_rect;
-  absl::optional<gfx::Rect> tmp_rect;
+  std::optional<gfx::Rect> result_rect;
+  std::optional<gfx::Rect> tmp_rect;
   // If the EditContext is active, then fetch the layout bounds from
   // the active EditContext, else get it from the focused element's
   // bounding client rect.
@@ -347,7 +347,7 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
   // indicates a last character's one.
   // TODO(IME): add tests for scenario that left position is bigger than right
   // position.
-  absl::optional<gfx::Rect> result_rect;
+  std::optional<gfx::Rect> result_rect;
   const uint32_t start_pos = acp_start - composition_start_;
   const uint32_t end_pos = acp_end - composition_start_;
 
@@ -582,6 +582,11 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   // unsuspecting TSF in the wild that always assumes a text update with a
   // store.
   if (is_empty_text_store_) {
+    return E_FAIL;
+  }
+  // If the text input type has already switched to NONE in the text input
+  // client, then do nothing. See crbug.com/1483978.
+  if (text_input_client_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE) {
     return E_FAIL;
   }
 

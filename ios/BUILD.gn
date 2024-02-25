@@ -15,15 +15,12 @@ import("//ios/features.gni")
 # are not used upstream to ensure they are not broken inadvertently.
 group("all") {
   testonly = true
-  if (is_cronet_build) {
-    deps = [ "//components/cronet/ios:cronet_package_ios" ]
-  } else if (is_webkit_only_build) {
+  if (is_webkit_only_build) {
     deps = [ "//ios/third_party/webkit" ]
   } else if (ios_build_chrome) {
     deps = [
       # List all the targets that need to be built on iOS by default.
       "//ios/chrome/app:chrome",
-      "//ios/showcase",
       "//ios/web/shell:ios_web_shell",
       "//ios/web_view/shell:ios_web_view_shell",
 
@@ -33,12 +30,13 @@ group("all") {
       "//ios/chrome/test/wpt:all_tests",
       "//ios/components:all_tests",
       "//ios/net:all_tests",
-      "//ios/showcase:all_tests",
       "//ios/testing:all_tests",
       "//ios/web:all_tests",
       "//ios/web/shell/test:all_tests",
       "//ios/web_view:all_tests",
     ]
+  } else {
+    deps = []
   }
 
   # Force dependency on symupload needed by official builder.

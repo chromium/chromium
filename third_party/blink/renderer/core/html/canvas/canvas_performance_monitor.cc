@@ -81,7 +81,8 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
     return;
 
   key_.set<IsOffscreenField>(context->Host()->IsOffscreenCanvas());
-  key_.set<IsAcceleratedField>(context->IsAccelerated());
+  key_.set<IsAcceleratedField>(context->Host()->GetRasterMode() ==
+                               blink::RasterMode::kGPU);
   key_.set<RenderingAPIField>(
       static_cast<uint32_t>(context->GetRenderingAPI()));
   // The padding field ensures at least one bit is set in the key in order

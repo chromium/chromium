@@ -47,9 +47,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   struct Params {
     Params();
     ~Params();
-    absl::optional<int> default_button = absl::nullopt;
+    std::optional<int> default_button = std::nullopt;
     bool round_corners = true;
-    absl::optional<int> corner_radius = absl::nullopt;
+    std::optional<int> corner_radius = std::nullopt;
 
     bool draggable = false;
 
@@ -70,7 +70,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
     std::u16string button_labels[ui::DIALOG_BUTTON_LAST + 1];
 
     // Styles of each button on this dialog. If empty a style will be derived.
-    absl::optional<ui::ButtonStyle> button_styles[ui::DIALOG_BUTTON_LAST + 1];
+    std::optional<ui::ButtonStyle> button_styles[ui::DIALOG_BUTTON_LAST + 1];
 
     // A bitmask of buttons (from ui::DialogButton) that are enabled in this
     // dialog. It's legal for a button to be marked enabled that isn't present
@@ -233,7 +233,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void set_corner_radius(int corner_radius) {
     params_.corner_radius = corner_radius;
   }
-  const absl::optional<int> corner_radius() const {
+  const std::optional<int> corner_radius() const {
     return params_.corner_radius;
   }
   void set_draggable(bool draggable) { params_.draggable = draggable; }
@@ -247,7 +247,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void SetButtons(int buttons);
   void SetButtonLabel(ui::DialogButton button, std::u16string label);
   void SetButtonStyle(ui::DialogButton button,
-                      absl::optional<ui::ButtonStyle> style);
+                      std::optional<ui::ButtonStyle> style);
   void SetButtonEnabled(ui::DialogButton button, bool enabled);
 
   // Called when the user presses the dialog's "OK" button or presses the dialog
@@ -260,14 +260,14 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // dialog, false to leave the dialog open.
   void SetAcceptCallbackWithClose(base::RepeatingCallback<bool()> callback);
 
-  // Called when the user presses the dialog's "Cancel" button or presses the
-  // dialog close accelerator (which is always VKEY_ESCAPE). The dialog is
-  // closed after the callback is run.
+  // Called when the user cancels the dialog, which can happen either by:
+  //   * Clicking the Cancel button, if there is one, or
+  //   * Closing the dialog with the Esc key, if the dialog has a close button
+  //     but no close callback
+  // The dialog is closed after the callback is run. The callback variant which
+  // returns a bool decides whether the dialog actually closes or not; returning
+  // false prevents closing, returning true allows closing.
   void SetCancelCallback(base::OnceClosure callback);
-
-  // Called when the user presses the dialog's "Cancel" button or presses the
-  // dialog close accelerator (which is always VKEY_ESCAPE). Callbacks can
-  // return true to close the dialog, false to leave the dialog open.
   void SetCancelCallbackWithClose(base::RepeatingCallback<bool()> callback);
 
   // Called when:
@@ -278,6 +278,10 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // of the dialog's widget happens. The main way that can happen in production
   // use is if the dialog's parent widget is closed.
   void SetCloseCallback(base::OnceClosure callback);
+
+  // By default the NativeWidget owns the Widget. Calling this method will
+  // instead cause the reverse. Must be called before creating the Widget.
+  void SetWidgetOwnsNativeWidget();
 
   // Returns ownership of the extra view for this dialog, if one was provided
   // via SetExtraView(). This is only for use by DialogClientView; don't call
@@ -396,6 +400,8 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // returned true, *or* one of the Accept/Cancel methods have been called and
   // returned true.
   bool already_started_close_ = false;
+
+  bool widget_owns_native_widget_ = false;
 };
 
 // A DialogDelegate implementation that is-a View. Used to override GetWidget()
@@ -409,8 +415,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 // DialogDelegateView has unusual lifetime semantics that you can avoid dealing
 // with, and your class will be smaller.
 class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
+  METADATA_HEADER(DialogDelegateView, View)
+
  public:
-  METADATA_HEADER(DialogDelegateView);
   DialogDelegateView();
   DialogDelegateView(const DialogDelegateView&) = delete;
   DialogDelegateView& operator=(const DialogDelegateView&) = delete;

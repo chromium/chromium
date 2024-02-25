@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/diagnostics_app.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
@@ -242,42 +242,6 @@ suite('appTestSuite', function() {
           return triggerDismissBannerEvent();
         })
         .then(() => assertFalse(isVisible(getCautionBanner())));
-  });
-
-  test('IsJellyEnabledForDiagnosticsApp', async () => {
-    // Setup test for jelly disabled.
-    loadTimeData.overrideValues({
-      isJellyEnabledForDiagnosticsApp: false,
-    });
-    /*@type {HTMLLinkElement}*/
-    const link = document.createElement('link');
-    const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
-    link.href = disabledUrl;
-    document.head.appendChild(link);
-    await initializeDiagnosticsApp(
-        fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-        fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage);
-
-    dx_utils.assertTextContains(link.href, disabledUrl);
-
-    // Reset diagnostics app element
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
-    page.remove();
-    page = null;
-
-    // Setup test for jelly enabled.
-    loadTimeData.overrideValues({
-      isJellyEnabledForDiagnosticsApp: true,
-    });
-    await initializeDiagnosticsApp(
-        fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-        fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage);
-
-    const enabledUrl = 'chrome://theme/colors.css?sets=legacy';
-    dx_utils.assertTextContains(link.href, enabledUrl);
-
-    // Clean up test specific element.
-    document.head.removeChild(link);
   });
 
   test('SaveSessionLogDisabledWhenPendingResult', () => {

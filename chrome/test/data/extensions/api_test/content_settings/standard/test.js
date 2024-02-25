@@ -18,6 +18,7 @@ var default_content_settings = {
   'microphone': 'ask',
   'camera': 'ask',
   'automaticDownloads': 'ask',
+  'clipboard': 'ask',
   'autoVerify': 'allow'
 };
 
@@ -34,6 +35,8 @@ var settings = {
   'unsandboxedPlugins': 'block',  // Should be ignored.
   'microphone': 'block',
   'camera': 'block',
+  // Conditionally enabled. See crbug.com/1501857
+  'clipboard': 'block',
   'automaticDownloads': 'block'
 };
 
@@ -81,6 +84,12 @@ function expectFalse(message) {
 chrome.test.runTests([
   function setDefaultContentSettings() {
     default_content_settings.forEach(function(type, setting) {
+      if (type === 'clipboard' && !cs[type]) {
+        // The "clipboard" API may not be present if the feature is disabled.
+        // TODO(https://crbug.com/1501857): Remove this guard once the feature
+        // is stable and removed.
+        return;
+      }
       cs[type].set({
         'primaryPattern': '<all_urls>',
         'secondaryPattern': '<all_urls>',
@@ -90,6 +99,12 @@ chrome.test.runTests([
   },
   function setContentSettings() {
     settings.forEach(function(type, setting) {
+      if (type === 'clipboard' && !cs[type]) {
+        // The "clipboard" API may not be present if the feature is disabled.
+        // TODO(https://crbug.com/1501857): Remove this guard once the feature
+        // is stable and removed.
+        return;
+      }
       cs[type].set({
         'primaryPattern': 'http://*.google.com/*',
         'secondaryPattern': 'http://*.google.com/*',
@@ -99,6 +114,12 @@ chrome.test.runTests([
   },
   function getContentSettings() {
     settings.forEach(function(type, setting) {
+      if (type === 'clipboard' && !cs[type]) {
+        // The "clipboard" API may not be present if the feature is disabled.
+        // TODO(https://crbug.com/1501857): Remove this guard once the feature
+        // is stable and removed.
+        return;
+      }
       setting = deprecatedSettingsExpectations[type] || setting;
       var message = "Setting for " + type + " should be " + setting;
       cs[type].get({

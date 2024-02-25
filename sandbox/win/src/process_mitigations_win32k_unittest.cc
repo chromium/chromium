@@ -48,9 +48,7 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownSuccess) {
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
             SBOX_ALL_OK);
-  EXPECT_EQ(config->AddRule(sandbox::SubSystem::kWin32kLockdown,
-                            sandbox::Semantics::kFakeGdiInit, nullptr),
-            sandbox::SBOX_ALL_OK);
+  EXPECT_EQ(config->SetFakeGdiInit(), sandbox::SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
 }
 

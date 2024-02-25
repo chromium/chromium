@@ -113,7 +113,7 @@ class SideSearchTabContentsHelper
 
   void SetDelegate(base::WeakPtr<Delegate> delegate);
 
-  const absl::optional<SidePanelRedirectInfo>&
+  const std::optional<SidePanelRedirectInfo>&
   side_panel_initiated_redirect_info() const {
     return side_panel_initiated_redirect_info_;
   }
@@ -132,7 +132,7 @@ class SideSearchTabContentsHelper
     return side_panel_contents_.get();
   }
 
-  const absl::optional<GURL>& last_search_url() { return last_search_url_; }
+  const std::optional<GURL>& last_search_url() { return last_search_url_; }
 
   // Takes the search URL passed from context menu and opens search results in
   // side panel.
@@ -167,7 +167,7 @@ class SideSearchTabContentsHelper
   base::WeakPtr<Delegate> delegate_;
 
   // The last Google search URL encountered by this tab contents.
-  absl::optional<GURL> last_search_url_;
+  std::optional<GURL> last_search_url_;
 
   // Counts the number of times the user has returned to the `last_search_url_`
   // via back navigation. This is used to detect cases where the side search
@@ -184,7 +184,7 @@ class SideSearchTabContentsHelper
   // initial redirected request from the side panel. It is not sufficient to
   // rely on NavigationHandles as redirects may be client initiated and new
   // NavigationHandles are created in these cases.
-  absl::optional<SidePanelRedirectInfo> side_panel_initiated_redirect_info_;
+  std::optional<SidePanelRedirectInfo> side_panel_initiated_redirect_info_;
 
   // The side panel contents associated with this tab contents.
   // TODO(tluk): Update the way we manage the `side_panel_contents_` to avoid
@@ -192,7 +192,7 @@ class SideSearchTabContentsHelper
   std::unique_ptr<content::WebContents> side_panel_contents_;
 
   // Time since the side panel became available for the `last_search_url_`.
-  absl::optional<base::ElapsedTimer> available_timer_;
+  std::optional<base::ElapsedTimer> available_timer_;
 
   // True if the side panel could be shown for the previously committed
   // navigation.

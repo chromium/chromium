@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 class GURL;
@@ -52,6 +52,10 @@ class ContentSettingsPattern {
   // - PREDECESSOR:
   //   Pattern A and B have an intersection. But pattern A has a higher
   //   precedence than pattern B for URLs that are matched by both pattern.
+  //
+  //  See the url below for more details about pattern precedence.
+  //  https://developer.chrome.com/docs/extensions/reference/api/contentSettings#content_setting_patterns
+  //
   enum Relation {
     DISJOINT_ORDER_POST = -2,
     SUCCESSOR = -1,
@@ -166,6 +170,10 @@ class ContentSettingsPattern {
   // Returns a pattern that matches exactly this URL.
   static ContentSettingsPattern FromURLNoWildcard(const GURL& url);
 
+  // Converts a given url to a ContentSettingsPattern that represents a site,
+  // i.e. with domain, path, and port wildcards.
+  static ContentSettingsPattern FromURLToSchemefulSitePattern(const GURL& url);
+
   // Returns a pattern that matches the given pattern specification.
   // Valid patterns specifications are:
   //   - [*.]domain.tld (matches domain.tld and all sub-domains)
@@ -199,6 +207,16 @@ class ContentSettingsPattern {
   // Convert pattern to host only pattern.
   static ContentSettingsPattern ToHostOnlyPattern(
       const ContentSettingsPattern& pattern);
+
+  // Expose a comparator to sort domains by precedence. Highest precedence
+  // first. Returns true if |domain_a| has a higher precedence than |domain_b|.
+  // If there is no difference in precedence, then the domains are compared
+  // alphabetically.
+  struct CompareDomains {
+    using is_transparent = void;
+    bool operator()(const std::string_view& domain_a,
+                    const std::string_view& domain_b) const;
+  };
 
   // Constructs an empty pattern. Empty patterns are invalid patterns. Invalid
   // patterns match nothing.
@@ -249,6 +267,11 @@ class ContentSettingsPattern {
 
   // Returns true if the pattern has a higher priority than the |other| pattern.
   bool operator>(const ContentSettingsPattern& other) const;
+
+  // Formatter method for Google Test
+  friend void PrintTo(const ContentSettingsPattern& pattern, std::ostream* os) {
+    *os << pattern.ToString();
+  }
 
  private:
   friend class content_settings::PatternParser;

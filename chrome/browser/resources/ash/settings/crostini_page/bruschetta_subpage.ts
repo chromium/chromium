@@ -8,13 +8,13 @@
  * (third-party VMs).
  */
 
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './bruschetta_subpage.html.js';
@@ -23,7 +23,7 @@ import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser
 const BruschettaSubpageElementBase =
     RouteOriginMixin(PrefsMixin(PolymerElement));
 
-class BruschettaSubpageElement extends BruschettaSubpageElementBase {
+export class BruschettaSubpageElement extends BruschettaSubpageElementBase {
   static get is() {
     return 'settings-bruschetta-subpage' as const;
   }
@@ -52,7 +52,7 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(

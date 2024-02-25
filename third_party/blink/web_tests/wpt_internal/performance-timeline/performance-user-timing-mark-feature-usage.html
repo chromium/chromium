@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  const kUserFeatureNgOptimizedImage = 4775;
+  function clearUseCounter() {
+    internals.clearUseCounter(document, kUserFeatureNgOptimizedImage);
+  }
+
+  test(t => {
+    t.add_cleanup(clearUseCounter);
+    assert_false(internals.isUseCounted(document, kUserFeatureNgOptimizedImage),
+      "mark_feature_usage corresponding WebFeature usage isn't counted initially");
+
+    performance.mark('mark_feature_usage', {
+      'detail': {
+        'feature': 'NgOptimizedImage',
+      }
+    });
+    assert_true(internals.isUseCounted(document, kUserFeatureNgOptimizedImage),
+      "mark_feature_usage corresponding WebFeature usage was counted");
+  }, 'performance.mark with mark_feature_usage ticks mapped WebFeature UseCounter');
+</script>

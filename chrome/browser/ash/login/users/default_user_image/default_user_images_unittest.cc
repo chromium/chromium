@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/default_user_image.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,9 +42,6 @@ TEST(DefaultUserImagesTest, RandomlyPickedIndexShouldBeCurrent) {
 }
 
 TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligibleWithFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
-
   std::vector<DefaultUserImage> current_default_images =
       default_user_image::GetCurrentImageSet();
 
@@ -67,9 +62,6 @@ TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligibleWithFlag) {
 }
 
 TEST(DefaultUserImagesTest, AllDefaultImagesShouldHaveCorrectInfoWithFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
-
   for (auto index = 0; index < kDefaultImagesCount; index++) {
     EXPECT_TRUE(IsValidIndex(index));
     bool is_current = IsInCurrentImageSet(index);

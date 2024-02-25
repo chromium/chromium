@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 #include "chrome/browser/ash/file_system_provider/mount_request_handler.h"
 #include "chrome/browser/ash/file_system_provider/odfs_metrics.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
@@ -69,8 +70,8 @@ IconSet AppServiceIconSet(const extensions::ExtensionId& extension_id) {
 std::unique_ptr<ProviderInterface> ExtensionProvider::Create(
     extensions::ExtensionRegistry* registry,
     const extensions::ExtensionId& extension_id) {
-  const extensions::Extension* const extension = registry->GetExtensionById(
-      extension_id, extensions::ExtensionRegistry::ENABLED);
+  const extensions::Extension* const extension =
+      registry->enabled_extensions().GetByID(extension_id);
   if (!extension ||
       !extension->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kFileSystemProvider)) {
@@ -89,16 +90,36 @@ std::unique_ptr<ProviderInterface> ExtensionProvider::Create(
                    .multiple_mounts = capabilities->multiple_mounts(),
                    .source = capabilities->source()},
       extension->name(),
-      /*icon_set=*/absl::nullopt);
+      /*icon_set=*/std::nullopt);
 }
 
 std::unique_ptr<ProvidedFileSystemInterface>
 ExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
-    const ProvidedFileSystemInfo& file_system_info) {
+    const ProvidedFileSystemInfo& file_system_info,
+    ContentCache* content_cache) {
   DCHECK(profile);
+  if (!chromeos::features::IsFileSystemProviderCloudFileSystemEnabled()) {
+    return std::make_unique<ThrottledFileSystem>(
+        std::make_unique<ProvidedFileSystem>(profile, file_system_info));
+  }
+  // TODO(b/317137739): Check the file system has a CLOUD source before
+  // creating a CloudFileSystem.
+  // Cache type is only set when the
+  // `FileSystemProviderCloudFileSystemEnabled` and
+  // `FileSystemProviderContentCache` feature flags are enabled and the
+  // provider is ODFS.
+  if (file_system_info.cache_type() != CacheType::NONE) {
+    // CloudFileSystem with cache.
+    return std::make_unique<ThrottledFileSystem>(
+        std::make_unique<CloudFileSystem>(
+            std::make_unique<ProvidedFileSystem>(profile, file_system_info),
+            content_cache));
+  }
+  // CloudFileSystem without cache.
   return std::make_unique<ThrottledFileSystem>(
-      std::make_unique<ProvidedFileSystem>(profile, file_system_info));
+      std::make_unique<CloudFileSystem>(
+          std::make_unique<ProvidedFileSystem>(profile, file_system_info)));
 }
 
 const Capabilities& ExtensionProvider::GetCapabilities() const {
@@ -143,7 +164,7 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
                                      ProviderId id,
                                      Capabilities capabilities,
                                      std::string name,
-                                     absl::optional<IconSet> icon_set)
+                                     std::optional<IconSet> icon_set)
     : provider_id_(std::move(id)),
       capabilities_(std::move(capabilities)),
       name_(std::move(name)),

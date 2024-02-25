@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] e.style['shape-outside'] = "circle(at bottom 10% right 20%)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at calc(80%) calc(90%))" but got "circle(at 80% 90%)"
+[FAIL] e.style['shape-outside'] = "circle(at right 30% top 60px)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at calc(70%) 60px)" but got "circle(at 70% 60px)"
+Harness: the test ran to completion.
+

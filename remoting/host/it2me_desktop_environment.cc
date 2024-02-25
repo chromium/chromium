@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -17,7 +18,6 @@
 #include "remoting/host/host_window.h"
 #include "remoting/host/host_window_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
-#include "remoting/host/session_terminator.h"
 #include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/errors.h"
 
@@ -34,18 +34,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace remoting {
-
-#if BUILDFLAG(IS_CHROMEOS)
-namespace {
-
-bool IsUserLoggedIn() {
-  const auto* user_manager = user_manager::UserManager::Get();
-  DCHECK(user_manager);
-  return user_manager->IsUserLoggedIn();
-}
-
-}  // namespace
-#endif
 
 It2MeDesktopEnvironment::~It2MeDesktopEnvironment() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
@@ -108,21 +96,6 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   }
 }
 
-void It2MeDesktopEnvironment::InitializeCurtainMode(
-    base::WeakPtr<ClientSessionControl> client_session_control) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kEnableCrdAdminRemoteAccess)) {
-    if (desktop_environment_options().enable_curtaining()) {
-      ui_task_runner()->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce(&IsUserLoggedIn),
-          base::BindOnce(
-              &It2MeDesktopEnvironment::InitializeCurtainModeIfNoUserLoggedIn,
-              weak_ptr_factory_.GetWeakPtr(), client_session_control));
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 std::string It2MeDesktopEnvironment::GetCapabilities() const {
   std::string capabilities = BasicDesktopEnvironment::GetCapabilities();
   if (desktop_environment_options().enable_file_transfer()) {
@@ -131,36 +104,6 @@ std::string It2MeDesktopEnvironment::GetCapabilities() const {
   }
 
   return capabilities;
-}
-
-void It2MeDesktopEnvironment::InitializeCurtainModeIfNoUserLoggedIn(
-    base::WeakPtr<ClientSessionControl> client_session_control,
-    bool is_user_logged_in) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Don't allow the remote admin to hijack and curtain off a user's
-  // session.
-  if (is_user_logged_in) {
-    LOG(ERROR) << "Failed to activate curtain mode because a user is "
-                  "currently logged in.";
-    client_session_control->DisconnectSession(
-        protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
-    return;
-  }
-
-  curtain_mode_ = std::make_unique<CurtainModeChromeOs>(ui_task_runner());
-  if (!curtain_mode_->Activate()) {
-    LOG(ERROR) << "Failed to activate the curtain mode.";
-    curtain_mode_ = nullptr;
-    client_session_control->DisconnectSession(
-        protocol::ErrorCode::HOST_CONFIGURATION_ERROR);
-    return;
-  }
-
-  // Log out the current user when a curtained off session is disconnected,
-  // to prevent a local passerby from gaining control of the logged-in
-  // session when they unplug the ethernet cable.
-  session_terminator_ = SessionTerminator::Create(ui_task_runner());
-#endif
 }
 
 It2MeDesktopEnvironmentFactory::It2MeDesktopEnvironmentFactory(
@@ -181,12 +124,9 @@ std::unique_ptr<DesktopEnvironment> It2MeDesktopEnvironmentFactory::Create(
     const DesktopEnvironmentOptions& options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  std::unique_ptr<It2MeDesktopEnvironment> result(new It2MeDesktopEnvironment(
+  return base::WrapUnique(new It2MeDesktopEnvironment(
       caller_task_runner(), video_capture_task_runner(), input_task_runner(),
       ui_task_runner(), client_session_control, options));
-
-  result->InitializeCurtainMode(client_session_control);
-  return result;
 }
 
 }  // namespace remoting

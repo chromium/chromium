@@ -514,7 +514,8 @@ void FuchsiaVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
 
 void FuchsiaVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const std::optional<gfx::Size>& size) {
   // TODO(crbug.com/1373298): Implement RequestEncodingParameterChange.
   NOTIMPLEMENTED();
 }
@@ -546,7 +547,7 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorAllocateInputBuffers(
 
   fuchsia::sysmem::BufferCollectionConstraints constraints =
       VmoBuffer::GetRecommendedConstraints(kInputBufferCount,
-                                           /*min_buffer_size=*/absl::nullopt,
+                                           /*min_buffer_size=*/std::nullopt,
                                            /*writable=*/true);
   input_buffer_collection_->Initialize(constraints, "VideoEncoderInput");
   input_buffer_collection_->AcquireBuffers(
@@ -710,11 +711,10 @@ FuchsiaVideoEncodeAccelerator::CreateFormatDetails(
   if (config.bitrate.target_bps() != 0) {
     h264_settings.set_bit_rate(config.bitrate.target_bps());
   }
-  if (config.initial_framerate.has_value()) {
-    h264_settings.set_frame_rate(config.initial_framerate.value());
-    format_details.set_timebase(base::Time::kNanosecondsPerSecond /
-                                config.initial_framerate.value());
-  }
+  h264_settings.set_frame_rate(config.framerate);
+  format_details.set_timebase(base::Time::kNanosecondsPerSecond /
+                              config.framerate);
+
   if (config.gop_length.has_value()) {
     h264_settings.set_gop_size(config.gop_length.value());
   }

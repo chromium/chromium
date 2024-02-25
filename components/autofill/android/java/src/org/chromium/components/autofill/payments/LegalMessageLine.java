@@ -4,34 +4,26 @@
 
 package org.chromium.components.autofill.payments;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import androidx.annotation.VisibleForTesting;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Legal message line with links to show in the autofill ui.
- */
+/** Legal message line with links to show in the autofill ui. */
 @JNINamespace("autofill")
 public class LegalMessageLine {
-    /**
-     * A link in the legal message line.
-     */
+    /** A link in the legal message line. */
     public static class Link {
-        /**
-         * The starting inclusive index of the link position in the text.
-         */
+        /** The starting inclusive index of the link position in the text. */
         public int start;
 
-        /**
-         * The ending exclusive index of the link position in the text.
-         */
+        /** The ending exclusive index of the link position in the text. */
         public int end;
 
-        /**
-         * The URL of the link.
-         */
+        /** The URL of the link. */
         public String url;
 
         /**
@@ -49,14 +41,10 @@ public class LegalMessageLine {
         }
     }
 
-    /**
-     * The plain text legal message line.
-     */
+    /** The plain text legal message line. */
     public String text;
 
-    /**
-     * A collection of links in the legal message line.
-     */
+    /** A collection of links in the legal message line. */
     public final List<Link> links = new LinkedList<Link>();
 
     /**
@@ -69,6 +57,22 @@ public class LegalMessageLine {
         this.text = text;
     }
 
+    /**
+     * Creates a new instance of the legal message line with text and links.
+     * @param text The plain text legal message.
+     * @param links List of {@link Link} objects representing the links.
+     */
+    @VisibleForTesting
+    public LegalMessageLine(String text, List<Link> links) {
+        this.text = text;
+        links.forEach(this::addLink);
+    }
+
+    /**
+     * Adds a link to this legal message
+     *
+     * @param link The link to be added.
+     */
     @CalledByNative
     /*package*/ void addLink(Link link) {
         links.add(link);

@@ -40,7 +40,7 @@ class ScreenOrientationControllerTestApi {
   bool IsAutoRotationAllowed() const;
 
  private:
-  raw_ptr<ScreenOrientationController, ExperimentalAsh> controller_;
+  raw_ptr<ScreenOrientationController> controller_;
 };
 
 }  // namespace ash

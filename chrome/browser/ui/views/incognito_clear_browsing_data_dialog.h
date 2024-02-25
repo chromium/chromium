@@ -19,9 +19,10 @@ class View;
 class IncognitoClearBrowsingDataDialog
     : public IncognitoClearBrowsingDataDialogInterface,
       public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(IncognitoClearBrowsingDataDialog);
+  METADATA_HEADER(IncognitoClearBrowsingDataDialog,
+                  views::BubbleDialogDelegateView)
 
+ public:
   IncognitoClearBrowsingDataDialog(views::View* anchor_view,
                                    Profile* incognito_profile,
                                    Type type);

@@ -30,143 +30,19 @@
 
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 
-#include <stdio.h>
-#include <algorithm>
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
-bool LayoutRect::Intersects(const LayoutRect& other) const {
-  // Checking emptiness handles negative widths as well as zero.
-  return !IsEmpty() && !other.IsEmpty() && X() < other.MaxX() &&
-         other.X() < MaxX() && Y() < other.MaxY() && other.Y() < MaxY();
-}
-
-bool LayoutRect::Contains(const LayoutRect& other) const {
-  return X() <= other.X() && MaxX() >= other.MaxX() && Y() <= other.Y() &&
-         MaxY() >= other.MaxY();
-}
-
-void LayoutRect::Intersect(const LayoutRect& other) {
-  LayoutPoint new_location(std::max(X(), other.X()), std::max(Y(), other.Y()));
-  LayoutPoint new_max_point(std::min(MaxX(), other.MaxX()),
-                            std::min(MaxY(), other.MaxY()));
-
-  // Return a clean empty rectangle for non-intersecting cases.
-  if (new_location.X() >= new_max_point.X() ||
-      new_location.Y() >= new_max_point.Y()) {
-    new_location = LayoutPoint();
-    new_max_point = LayoutPoint();
-  }
-
-  location_ = new_location;
-  size_ = new_max_point - new_location;
-}
-
-bool LayoutRect::InclusiveIntersect(const LayoutRect& other) {
-  LayoutPoint new_location(std::max(X(), other.X()), std::max(Y(), other.Y()));
-  LayoutPoint new_max_point(std::min(MaxX(), other.MaxX()),
-                            std::min(MaxY(), other.MaxY()));
-
-  if (new_location.X() > new_max_point.X() ||
-      new_location.Y() > new_max_point.Y()) {
-    *this = LayoutRect();
-    return false;
-  }
-
-  location_ = new_location;
-  size_ = new_max_point - new_location;
-  return true;
-}
-
-bool LayoutRect::IntersectsInclusively(const LayoutRect& other) {
-  // TODO(pdr): How should negative widths or heights be handled?
-  return X() <= other.MaxX() && other.X() <= MaxX() && Y() <= other.MaxY() &&
-         other.Y() <= MaxY();
-}
-
-void LayoutRect::Unite(const LayoutRect& other) {
-  // Handle empty special cases first.
-  if (other.IsEmpty())
-    return;
-  if (IsEmpty()) {
-    *this = other;
-    return;
-  }
-
-  UniteEvenIfEmpty(other);
-}
-
-void LayoutRect::UniteIfNonZero(const LayoutRect& other) {
-  // Handle empty special cases first.
-  if (!other.Width() && !other.Height())
-    return;
-  if (!Width() && !Height()) {
-    *this = other;
-    return;
-  }
-
-  UniteEvenIfEmpty(other);
-}
-
-void LayoutRect::UniteEvenIfEmpty(const LayoutRect& other) {
-  LayoutPoint new_location(std::min(X(), other.X()), std::min(Y(), other.Y()));
-  LayoutPoint new_max_point(std::max(MaxX(), other.MaxX()),
-                            std::max(MaxY(), other.MaxY()));
-
-  size_ = new_max_point - new_location;
-  location_ = new_max_point - size_;
-}
-
-void LayoutRect::Scale(float s) {
-  location_.Scale(s, s);
-  size_.Scale(s);
-}
-
-void LayoutRect::Scale(float x_axis_scale, float y_axis_scale) {
-  location_.Scale(x_axis_scale, y_axis_scale);
-  size_.Scale(x_axis_scale, y_axis_scale);
-}
-
-LayoutRect UnionRect(const Vector<LayoutRect>& rects) {
-  LayoutRect result;
-
-  for (const LayoutRect& rect : rects)
-    result.Unite(rect);
-
-  return result;
-}
-
-LayoutRect UnionRectEvenIfEmpty(const Vector<LayoutRect>& rects) {
-  wtf_size_t count = rects.size();
-  if (!count)
-    return LayoutRect();
-
-  LayoutRect result = rects[0];
-  for (wtf_size_t i = 1; i < count; ++i)
-    result.UniteEvenIfEmpty(rects[i]);
-
-  return result;
-}
-
-std::ostream& operator<<(std::ostream& ostream, const LayoutRect& rect) {
+std::ostream& operator<<(std::ostream& ostream,
+                         const DeprecatedLayoutRect& rect) {
   return ostream << rect.ToString();
 }
 
-String LayoutRect::ToString() const {
+String DeprecatedLayoutRect::ToString() const {
   return String::Format("%s %s", Location().ToString().Ascii().c_str(),
-                        Size().ToString().Ascii().c_str());
-}
-
-WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutRect& r) {
-  ts << "at (" << WTF::TextStream::FormatNumberRespectingIntegers(r.X());
-  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(r.Y());
-  ts << ") size " << WTF::TextStream::FormatNumberRespectingIntegers(r.Width());
-  ts << "x" << WTF::TextStream::FormatNumberRespectingIntegers(r.Height());
-  return ts;
+                        size_.ToString().Ascii().c_str());
 }
 
 }  // namespace blink

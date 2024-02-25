@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/element_util.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -22,7 +23,6 @@
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "chrome/test/chromedriver/session.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/selenium-atoms/atoms.h"
 
 namespace {
@@ -125,7 +125,7 @@ Status VerifyElementClickable(const std::string& frame,
       frame, web_view, webdriver::atoms::IS_ELEMENT_CLICKABLE, args, &result);
   if (status.IsError())
     return status;
-  absl::optional<bool> is_clickable = absl::nullopt;
+  std::optional<bool> is_clickable = std::nullopt;
   if (result->is_dict())
     is_clickable = result->GetDict().FindBool("clickable");
   if (!is_clickable.has_value()) {
@@ -923,7 +923,7 @@ Status GetAXNodeByElementId(Session* session,
   if (status.IsError())
     return status;
 
-  absl::optional<base::Value> nodes = result->GetDict().Extract("nodes");
+  std::optional<base::Value> nodes = result->GetDict().Extract("nodes");
   if (!nodes)
     return Status(kUnknownError, "No `nodes` found in CDP response");
 

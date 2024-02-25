@@ -48,18 +48,18 @@ getComputedStyle(el).getPropertyValue('grid-row-start') is 1
 
 
 el.style.setProperty('grid-column', 'auto')
-el.style.getPropertyValue('grid-column') is auto / auto
-getComputedStyle(el).getPropertyValue('grid-column') is auto / auto
+el.style.getPropertyValue('grid-column') is auto
+getComputedStyle(el).getPropertyValue('grid-column') is auto
 
 
 el.style.setProperty('grid-row', '1')
-el.style.getPropertyValue('grid-row') is 1 / auto
-getComputedStyle(el).getPropertyValue('grid-row') is 1 / auto
+el.style.getPropertyValue('grid-row') is 1
+getComputedStyle(el).getPropertyValue('grid-row') is 1
 
 
 el.style.setProperty('grid-area', '2')
-el.style.getPropertyValue('grid-area') is 2 / auto / auto / auto
-getComputedStyle(el).getPropertyValue('grid-area') is 2 / auto / auto / auto
+el.style.getPropertyValue('grid-area') is 2
+getComputedStyle(el).getPropertyValue('grid-area') is 2
 
 
 el.style.setProperty('grid-auto-flow', 'column')
@@ -90,36 +90,6 @@ getComputedStyle(el).getPropertyValue('text-underline-position') is under left
 el.style.setProperty('text-underline-position', 'right under')
 el.style.getPropertyValue('text-underline-position') is under right
 getComputedStyle(el).getPropertyValue('text-underline-position') is under right
-
-
-el.style.setProperty('clear', 'inline-start')
-el.style.getPropertyValue('clear') is inline-start
-getComputedStyle(el).getPropertyValue('clear') is inline-start
-
-
-el.style.setProperty('clear', 'inline-end')
-el.style.getPropertyValue('clear') is inline-end
-getComputedStyle(el).getPropertyValue('clear') is inline-end
-
-
-el.style.setProperty('float', 'inline-start')
-el.style.getPropertyValue('float') is inline-start
-getComputedStyle(el).getPropertyValue('float') is inline-start
-
-
-el.style.setProperty('float', 'inline-end')
-el.style.getPropertyValue('float') is inline-end
-getComputedStyle(el).getPropertyValue('float') is inline-end
-
-
-el.style.setProperty('resize', 'block')
-el.style.getPropertyValue('resize') is block
-getComputedStyle(el).getPropertyValue('resize') is block
-
-
-el.style.setProperty('resize', 'inline')
-el.style.getPropertyValue('resize') is inline
-getComputedStyle(el).getPropertyValue('resize') is inline
 
 
 PASS successfullyParsed is true

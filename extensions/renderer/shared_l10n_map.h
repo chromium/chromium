@@ -11,11 +11,11 @@
 #include "base/synchronization/lock.h"
 #include "extensions/common/extension_id.h"
 
-namespace IPC {
-class Sender;
-}
-
 namespace extensions {
+
+namespace mojom {
+class RendererHost;
+}
 
 // A helper class to retrieve l10n data for extensions. Since renderers are
 // always tied to a specific profile, this class is safe as a singleton (we
@@ -35,6 +35,8 @@ class SharedL10nMap {
   // A map of message name to message.
   using L10nMessagesMap = std::map<std::string, std::string>;
 
+  using IPCTarget = mojom::RendererHost;
+
   SharedL10nMap();
   SharedL10nMap(const SharedL10nMap&) = delete;
   SharedL10nMap& operator=(const SharedL10nMap&) = delete;
@@ -46,13 +48,13 @@ class SharedL10nMap {
   // `message_name`.
   std::string GetMessage(const ExtensionId& extension_id,
                          const std::string& message_name,
-                         IPC::Sender* message_sender);
+                         IPCTarget* ipc_target);
 
   // Replaces all messages in `text` with the messages for the given
   // `extension_id`. Returns false if any messages were unmatched.
   bool ReplaceMessages(const ExtensionId& extension_id,
                        std::string* text,
-                       IPC::Sender* message_sender);
+                       IPCTarget* ipc_target);
 
   // Erases the L10nMessagesMap for the given `id`.
   void EraseMessagesMap(const ExtensionId& extension_id);
@@ -62,7 +64,7 @@ class SharedL10nMap {
 
  private:
   const L10nMessagesMap* GetMapForExtension(const ExtensionId& extension_id,
-                                            IPC::Sender* message_sender);
+                                            IPCTarget* ipc_target);
 
   using ExtensionToL10nMessagesMap = std::map<ExtensionId, L10nMessagesMap>;
   ExtensionToL10nMessagesMap map_;

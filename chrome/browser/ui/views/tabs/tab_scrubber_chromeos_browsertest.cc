@@ -27,10 +27,10 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -83,7 +83,7 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
     immersive_controller_ = nullptr;
   }
 
-  raw_ptr<ImmersiveModeController, ExperimentalAsh> immersive_controller_;
+  raw_ptr<ImmersiveModeController> immersive_controller_;
   base::OnceClosure quit_closure_;
 };
 
@@ -332,7 +332,7 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
         TabScrubberChromeOS::GetInstance()->FinishScrub(true);
     }
 
-    raw_ptr<ui::test::EventGenerator, ExperimentalAsh> event_generator_;
+    raw_ptr<ui::test::EventGenerator> event_generator_;
     base::TimeTicks time_for_next_event_ = ui::EventTimeForNow();
     int last_x_offset_ = 0;
   };

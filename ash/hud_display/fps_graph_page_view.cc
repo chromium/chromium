@@ -32,24 +32,24 @@ constexpr float kVerticalTickFrames = 5;
 ////////////////////////////////////////////////////////////////////////////////
 // FPSGraphPageView, public:
 
-BEGIN_METADATA(FPSGraphPageView, GraphPageViewBase)
+BEGIN_METADATA(FPSGraphPageView)
 END_METADATA
 
 FPSGraphPageView::FPSGraphPageView(const base::TimeDelta refresh_interval)
     : frame_rate_1s_(kHUDGraphWidth,
-                     Graph::Baseline::BASELINE_BOTTOM,
-                     Graph::Fill::NONE,
-                     Graph::Style::SKYLINE,
+                     Graph::Baseline::kBaselineBottom,
+                     Graph::Fill::kNone,
+                     Graph::Style::kSkyline,
                      SkColorSetA(SK_ColorYELLOW, kHUDAlpha)),
       frame_rate_500ms_(kHUDGraphWidth,
-                        Graph::Baseline::BASELINE_BOTTOM,
-                        Graph::Fill::NONE,
-                        Graph::Style::SKYLINE,
+                        Graph::Baseline::kBaselineBottom,
+                        Graph::Fill::kNone,
+                        Graph::Style::kSkyline,
                         SkColorSetA(SK_ColorCYAN, kHUDAlpha)),
       refresh_rate_(kHUDGraphWidth,
-                    Graph::Baseline::BASELINE_BOTTOM,
-                    Graph::Fill::NONE,
-                    Graph::Style::SKYLINE,
+                    Graph::Baseline::kBaselineBottom,
+                    Graph::Fill::kNone,
+                    Graph::Style::kSkyline,
                     kHUDBackground /*not drawn*/) {
   const int data_width = frame_rate_1s_.max_data_points();
   // Verical ticks are drawn every 5 frames (5/60 interval).

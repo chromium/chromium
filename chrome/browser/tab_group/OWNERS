@@ -1,1 +1,4 @@
 file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
+
+# Ramping up, may ask another OWNER for secondary review.
+ckitagawa@chromium.org

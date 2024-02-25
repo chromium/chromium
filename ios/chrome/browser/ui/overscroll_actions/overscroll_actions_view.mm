@@ -6,18 +6,20 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import <numbers>
+
 #import "base/check.h"
 #import "base/ios/block_types.h"
 #import "base/numerics/math_constants.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -521,17 +523,17 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
                    }
                    completion:nil];
 
-  [UIView
-      animateWithDuration:0.1
-               animations:^{
-                 CATransform3D rotation = CATransform3DMakeRotation(
-                     MapValueToRange({kFullThreshold / 2.0, kFullThreshold},
-                                     {-base::kPiFloat / 2, base::kPiFloat / 4},
-                                     self.verticalOffset),
-                     0, 0, 1);
-                 self.reloadActionImageView.layer.transform = rotation;
-               }
-               completion:nil];
+  [UIView animateWithDuration:0.1
+                   animations:^{
+                     CATransform3D rotation = CATransform3DMakeRotation(
+                         MapValueToRange({kFullThreshold / 2.0, kFullThreshold},
+                                         {-std::numbers::pi_v<float> / 2,
+                                          std::numbers::pi_v<float> / 4},
+                                         self.verticalOffset),
+                         0, 0, 1);
+                     self.reloadActionImageView.layer.transform = rotation;
+                   }
+                   completion:nil];
 }
 
 - (void)layoutActionLabels {
@@ -866,7 +868,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   CGFloat deformationDirection = dx > 0 ? 1 : -1;
   for (int i = 0; i < kBezierPathPointCount; i++) {
     CGPoint p;
-    float angle = i * 2 * base::kPiFloat / kBezierPathPointCount;
+    float angle = i * 2 * std::numbers::pi_v<float> / kBezierPathPointCount;
 
     // Circle centered on 0.
     p.x = cos(angle) * radius;
@@ -921,8 +923,11 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 // support iOS 13 dynamic colors, so those must be resolved more often.
 - (void)updateLayerColors {
   [self.traitCollection performAsCurrentTraitCollection:^{
+    BOOL darkModeEnabled =
+        (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
     _selectionCircleLayer.fillColor =
-        [UIColor colorNamed:kTextfieldBackgroundColor].CGColor;
+        darkModeEnabled ? [UIColor colorWithWhite:0.7 alpha:0.2].CGColor
+                        : [UIColor colorWithWhite:0.3 alpha:0.125].CGColor;
   }];
 }
 

@@ -6,7 +6,7 @@
 
 #include "ash/system/accessibility/accessibility_feature_pod_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -14,7 +14,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -32,7 +31,7 @@ namespace ash {
 namespace {
 
 std::u16string GenerateSublabelText(
-    std::vector<AccessibilityControllerImpl::Feature*> enabled_features,
+    std::vector<AccessibilityController::Feature*> enabled_features,
     int max_width,
     gfx::FontList font_list) {
   CHECK(!enabled_features.empty());
@@ -62,7 +61,7 @@ std::u16string GenerateSublabelText(
 }
 
 std::u16string GenerateTooltipText(
-    std::vector<AccessibilityControllerImpl::Feature*> enabled_features) {
+    std::vector<AccessibilityController::Feature*> enabled_features) {
   if (enabled_features.empty()) {
     return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP);
   }
@@ -100,37 +99,12 @@ void AccessibilityFeaturePodController::OnAccessibilityStatusChanged() {
   UpdateTileStateIfExists();
 }
 
-FeaturePodButton* AccessibilityFeaturePodController::CreateButton() {
-  auto* button = new FeaturePodButton(this, /*is_togglable=*/false);
-  button->SetID(VIEW_ID_ACCESSIBILITY_TRAY_ITEM);
-  button->SetLabel(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));
-  button->SetVectorIcon(kUnifiedMenuAccessibilityIcon);
-  button->SetIconAndLabelTooltips(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP));
-  button->ShowDetailedViewArrow();
-  button->DisableLabelButtonFocus();
-
-  AccessibilityDelegate* delegate = Shell::Get()->accessibility_delegate();
-  LoginStatus login_status = Shell::Get()->session_controller()->login_status();
-  const bool visible = login_status == LoginStatus::NOT_LOGGED_IN ||
-                       login_status == LoginStatus::LOCKED ||
-                       delegate->ShouldShowAccessibilityMenu();
-  button->SetVisible(visible);
-  if (visible) {
-    TrackVisibilityUMA();
-  }
-
-  return button;
-}
-
 std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
     bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   auto feature_tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()));
-  feature_tile->SetID(VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
+  feature_tile->SetID(VIEW_ID_FEATURE_TILE_ACCESSIBILITY);
   feature_tile->SetVectorIcon(kUnifiedMenuAccessibilityIcon);
   feature_tile->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));

@@ -350,7 +350,7 @@ TEST_F(FileTransferMessageHandlerTest, ReadsFile) {
 
   test_io.input_file = FakeFileOperations::InputFile(
       base::FilePath::FromASCII(kTestFilename),
-      ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree), absl::nullopt);
+      ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree), std::nullopt);
 
   // This will delete itself when fake_pipe_->ClosePipe() is called.
   new FileTransferMessageHandler(kTestDatachannelName, fake_pipe_->Wrap(),

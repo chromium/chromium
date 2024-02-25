@@ -14,14 +14,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/result_codes.h"
-
-#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-#include "chrome/browser/process_singleton.h"
-#endif
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
 #include "chrome/browser/downgrade/downgrade_manager.h"
@@ -38,6 +35,10 @@ class WebUsbDetector;
 namespace base {
 class CommandLine;
 class RunLoop;
+}  // namespace base
+
+namespace content {
+class SyntheticTrialSyncer;
 }
 
 namespace tracing {
@@ -67,7 +68,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // current browser instance or false if the remote process should handle it
   // (i.e., because the current process is shutting down).
   static bool ProcessSingletonNotificationCallback(
-      const base::CommandLine& command_line,
+      base::CommandLine command_line,
       const base::FilePath& current_directory);
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
@@ -179,6 +180,12 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<tracing::TraceEventSystemStatsMonitor>
       trace_event_system_stats_monitor_;
 
+  std::unique_ptr<content::SyntheticTrialSyncer> synthetic_trial_syncer_;
+
+  // ERP client instance, serving all reporting needs in the browser.
+  reporting::ReportQueueProvider::SmartPtr<reporting::ReportingClient>
+      reporting_client_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
+
   // Members initialized after / released before main_message_loop_ ------------
 
   std::unique_ptr<BrowserProcessImpl> browser_process_;
@@ -187,11 +194,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Browser creation happens on the Java side in Android.
   std::unique_ptr<StartupBrowserCreator> browser_creator_;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  ProcessSingleton::NotifyResult notify_result_ =
-      ProcessSingleton::PROCESS_NONE;
-#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
 #if !BUILDFLAG(IS_ANDROID)
   // Members needed across shutdown methods.

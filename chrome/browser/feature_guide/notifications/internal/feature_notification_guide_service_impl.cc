@@ -107,25 +107,28 @@ void FeatureNotificationGuideServiceImpl::CheckForLowEnagedUser() {
   }
 
   if (!base::FeatureList::IsEnabled(
-          feature_guide::features::kSegmentationModelLowEngagedUsers)) {
+          segmentation_platform::features::
+              kSegmentationPlatformLowEngagementFeature)) {
     is_low_engaged_user_ = false;
     std::move(closure).Run();
     return;
   }
 
   // Check segmentation model result.
-  segmentation_platform_service_->GetSelectedSegment(
+  segmentation_platform::PredictionOptions prediction_options;
+  segmentation_platform_service_->GetClassificationResult(
       segmentation_platform::kChromeLowUserEngagementSegmentationKey,
+      prediction_options, /*input_context=*/nullptr,
       base::BindOnce(
           [](bool* is_low_engaged_user, base::OnceClosure closure,
-             const segmentation_platform::SegmentSelectionResult&
-                 segment_selection_result) {
+             const segmentation_platform::ClassificationResult&
+                 classification_result) {
             *is_low_engaged_user =
-                segment_selection_result.is_ready &&
-                segment_selection_result.segment.has_value() &&
-                segment_selection_result.segment.value() ==
-                    segmentation_platform::proto::SegmentId::
-                        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+                classification_result.status ==
+                    segmentation_platform::PredictionStatus::kSucceeded &&
+                !classification_result.ordered_labels.empty() &&
+                classification_result.ordered_labels[0] ==
+                    segmentation_platform::kChromeLowUserEngagementUmaName;
             std::move(closure).Run();
           },
           &is_low_engaged_user_, std::move(closure)));

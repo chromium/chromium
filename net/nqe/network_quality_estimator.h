@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -36,7 +37,6 @@
 #include "net/nqe/peer_to_peer_connections_count_observer.h"
 #include "net/nqe/rtt_throughput_estimates_observer.h"
 #include "net/nqe/socket_watcher_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -144,18 +144,18 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // time from when the request was sent (this happens after the connection is
   // established) to the time when the response headers were received.
   // Virtualized for testing.
-  virtual absl::optional<base::TimeDelta> GetHttpRTT() const;
+  virtual std::optional<base::TimeDelta> GetHttpRTT() const;
 
   // Returns the current transport RTT estimate. If the estimate is
   // unavailable, the returned optional value is null.  The RTT at the transport
   // layer provides an aggregate estimate of the transport RTT as computed by
   // various underlying TCP and QUIC connections. Virtualized for testing.
-  virtual absl::optional<base::TimeDelta> GetTransportRTT() const;
+  virtual std::optional<base::TimeDelta> GetTransportRTT() const;
 
   // Returns the current downstream throughput estimate (in kilobits per
   // second). If the estimate is unavailable, the returned optional value is
   // null.
-  absl::optional<int32_t> GetDownstreamThroughputKbps() const;
+  std::optional<int32_t> GetDownstreamThroughputKbps() const;
 
   // Adds |observer| to the list of RTT and throughput estimate observers.
   // The observer must register and unregister itself on the same thread.
@@ -341,7 +341,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   void OnUpdatedTransportRTTAvailable(
       SocketPerformanceWatcherFactory::Protocol protocol,
       const base::TimeDelta& rtt,
-      const absl::optional<nqe::internal::IPHash>& host);
+      const std::optional<nqe::internal::IPHash>& host);
 
   // Returns an estimate of network quality at the specified |percentile|.
   // Only the observations later than |start_time| are taken into account.
@@ -393,7 +393,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Returns a non-null value if the value of the effective connection type has
   // been overridden for testing.
-  virtual absl::optional<net::EffectiveConnectionType> GetOverrideECT() const;
+  virtual std::optional<net::EffectiveConnectionType> GetOverrideECT() const;
 
   // Observer list for RTT or throughput estimates. Protected for testing.
   base::ObserverList<RTTAndThroughputEstimatesObserver>::Unchecked
@@ -593,7 +593,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Current estimate of the network quality.
   nqe::internal::NetworkQuality network_quality_;
-  absl::optional<base::TimeDelta> end_to_end_rtt_;
+  std::optional<base::TimeDelta> end_to_end_rtt_;
 
   // Current effective connection type. It is updated on connection change
   // events. It is also updated every time there is network traffic (provided
@@ -619,7 +619,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Time when the last RTT observation from a socket watcher was received.
   base::TimeTicks last_socket_watcher_rtt_notification_;
 
-  absl::optional<base::TimeTicks> last_signal_strength_check_timestamp_;
+  std::optional<base::TimeTicks> last_signal_strength_check_timestamp_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Whether the network id should be obtained on a worker thread.

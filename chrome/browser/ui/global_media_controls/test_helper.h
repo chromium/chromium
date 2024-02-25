@@ -39,7 +39,7 @@ class MockWebContentsPresentationManager
   MOCK_METHOD(std::vector<media_router::MediaRoute>, GetMediaRoutes, ());
 
  private:
-  absl::optional<content::PresentationRequest> default_presentation_request_;
+  std::optional<content::PresentationRequest> default_presentation_request_;
   base::ObserverList<content::PresentationObserver> observers_;
   base::WeakPtrFactory<MockWebContentsPresentationManager> weak_factory_{this};
 };

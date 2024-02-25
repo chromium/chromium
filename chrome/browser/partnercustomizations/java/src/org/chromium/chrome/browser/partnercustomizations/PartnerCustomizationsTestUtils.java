@@ -8,13 +8,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.embedder_support.util.UrlConstants;
 
-/**
- * Junit test utils for partner browser customizations.
- */
+/** Junit test utils for partner browser customizations. */
 final class PartnerCustomizationsTestUtils {
-    /**
-     * Test implementation of {@link HomepageCharacterizationHelper}.
-     */
+    /** Test implementation of {@link HomepageCharacterizationHelper}. */
     static class HomepageCharacterizationHelperStub implements HomepageCharacterizationHelper {
         public static HomepageCharacterizationHelper ntpHelper() {
             return new HomepageCharacterizationHelperStub().setIsPartner(false).setIsNtp(true);
@@ -32,6 +28,7 @@ final class PartnerCustomizationsTestUtils {
         private boolean mIsNtp;
 
         private HomepageCharacterizationHelperStub() {}
+
         @Override
         public boolean isUrlNtp(@Nullable String url) {
             return UrlConstants.NTP_URL.equals(url);

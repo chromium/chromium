@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -12,14 +14,13 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
 }
 
 // Chrome implementation of WebAuthnCredentialsDelegate.
-class ChromeWebAuthnCredentialsDelegate
+class ChromeWebAuthnCredentialsDelegate final
     : public password_manager::WebAuthnCredentialsDelegate {
  public:
   using AndroidHybridAvailable =
@@ -36,10 +37,11 @@ class ChromeWebAuthnCredentialsDelegate
   // password_manager::WebAuthnCredentialsDelegate:
   void LaunchWebAuthnFlow() override;
   void SelectPasskey(const std::string& backend_id) override;
-  const absl::optional<std::vector<password_manager::PasskeyCredential>>&
+  const std::optional<std::vector<password_manager::PasskeyCredential>>&
   GetPasskeys() const override;
   bool OfferPasskeysFromAnotherDeviceOption() const override;
   void RetrievePasskeys(base::OnceClosure callback) override;
+  base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
 
   // Method for providing a list of WebAuthn user entities that can be provided
   // as autofill suggestions. This is called when a WebAuthn Conditional UI
@@ -72,7 +74,7 @@ class ChromeWebAuthnCredentialsDelegate
   // RetrievePasskeys, and returned to the client via GetPasskeys.
   // |passkeys_| is nullopt until populated by a WebAuthn request, and reset
   // to nullopt when the request is cancelled.
-  absl::optional<std::vector<password_manager::PasskeyCredential>> passkeys_;
+  std::optional<std::vector<password_manager::PasskeyCredential>> passkeys_;
   bool offer_passkey_from_another_device_ = true;
 
   base::OnceClosure retrieve_passkeys_callback_;
@@ -81,6 +83,9 @@ class ChromeWebAuthnCredentialsDelegate
   AndroidHybridAvailable android_hybrid_available_ =
       AndroidHybridAvailable(false);
 #endif
+
+  base::WeakPtrFactory<ChromeWebAuthnCredentialsDelegate> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_

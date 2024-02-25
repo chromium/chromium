@@ -5,7 +5,9 @@
 #include "tools/mac/power/power_sampler/resource_coalition_sampler.h"
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -14,7 +16,6 @@
 #include "components/power_metrics/mach_time_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace power_sampler {
 
@@ -91,20 +92,20 @@ class ResourceCoalitionSamplerTest : public testing::Test {
  protected:
   void SetUp() override {
     set_expected_process_id(-1);
-    set_coalition_id(absl::nullopt);
-    set_resource_usage(absl::nullopt);
+    set_coalition_id(std::nullopt);
+    set_resource_usage(std::nullopt);
   }
 
   static void set_expected_process_id(base::ProcessId expected_process_id) {
     expected_process_id_ = expected_process_id;
   }
 
-  static void set_coalition_id(absl::optional<uint64_t> coalition_id) {
+  static void set_coalition_id(std::optional<uint64_t> coalition_id) {
     coalition_id_ = coalition_id;
   }
 
   static void set_resource_usage(
-      absl::optional<coalition_resource_usage> resource_usage) {
+      std::optional<coalition_resource_usage> resource_usage) {
     resource_usage_ = resource_usage;
   }
 
@@ -130,7 +131,7 @@ class ResourceCoalitionSamplerTest : public testing::Test {
       base::ProcessId pid,
       base::TimeTicks now,
       mach_timebase_info_data_t timebase,
-      absl::optional<power_metrics::EnergyImpactCoefficients>
+      std::optional<power_metrics::EnergyImpactCoefficients>
           energy_impact_coefficients = kTestEnergyImpactCoefficients) {
     std::unique_ptr<ResourceCoalitionSampler> sampler =
         ResourceCoalitionSampler::Create(pid, now, &GetStaticProcessCoalitionId,
@@ -142,7 +143,7 @@ class ResourceCoalitionSamplerTest : public testing::Test {
   }
 
  private:
-  static absl::optional<uint64_t> GetStaticProcessCoalitionId(
+  static std::optional<uint64_t> GetStaticProcessCoalitionId(
       base::ProcessId pid) {
     EXPECT_EQ(pid, expected_process_id_);
     return coalition_id_;
@@ -157,14 +158,14 @@ class ResourceCoalitionSamplerTest : public testing::Test {
   }
 
   static base::ProcessId expected_process_id_;
-  static absl::optional<int64_t> coalition_id_;
-  static absl::optional<coalition_resource_usage> resource_usage_;
+  static std::optional<int64_t> coalition_id_;
+  static std::optional<coalition_resource_usage> resource_usage_;
 };
 
 // static
 base::ProcessId ResourceCoalitionSamplerTest::expected_process_id_ = -1;
-absl::optional<int64_t> ResourceCoalitionSamplerTest::coalition_id_;
-absl::optional<coalition_resource_usage>
+std::optional<int64_t> ResourceCoalitionSamplerTest::coalition_id_;
+std::optional<coalition_resource_usage>
     ResourceCoalitionSamplerTest::resource_usage_;
 
 TEST_F(ResourceCoalitionSamplerTest, CreateFailsWhenNoCoalitionId) {
@@ -423,7 +424,7 @@ TEST_F(ResourceCoalitionSamplerTest,
 
   std::unique_ptr<ResourceCoalitionSampler> sampler(
       CreateSampler(kTestPid, base::TimeTicks(), kIntelTimebase,
-                    /* energy_impact_coefficients=*/absl::nullopt));
+                    /* energy_impact_coefficients=*/std::nullopt));
 
   set_resource_usage(GetTestCoalitionResourceUsage(
       /* multiplier=*/2 * base::Time::kSecondsPerMinute));
@@ -441,7 +442,7 @@ TEST_F(ResourceCoalitionSamplerTest, GetSample_NotAvailable) {
       CreateSampler(kTestPid, base::TimeTicks(), kIntelTimebase));
 
   // Previous `coalition_resource_usage` is available but not the current one.
-  set_resource_usage(absl::nullopt);
+  set_resource_usage(std::nullopt);
   Sampler::Sample sample =
       sampler->GetSample(base::TimeTicks() + base::Minutes(1));
   EXPECT_TRUE(sample.empty());

@@ -28,10 +28,6 @@ ShellFederatedPermissionContext::GetApiPermissionStatus(
     return PermissionStatus::BLOCKED_EMBARGO;
   }
 
-  if (third_party_cookies_blocked_) {
-    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
-  }
-
   return PermissionStatus::GRANTED;
 }
 
@@ -48,6 +44,25 @@ void ShellFederatedPermissionContext::RemoveEmbargoAndResetCounts(
 
 bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
   return switches::IsRunWebTestsSwitchPresent();
+}
+
+bool ShellFederatedPermissionContext::HasThirdPartyCookiesAccess(
+    content::RenderFrameHost& host,
+    const GURL& provider_url,
+    const url::Origin& relying_party_embedder) const {
+  return std::find_if(
+             has_third_party_cookies_access_.begin(),
+             has_third_party_cookies_access_.end(), [&](const auto& entry) {
+               return provider_url.spec() == std::get<0>(entry) &&
+                      relying_party_embedder.Serialize() == std::get<1>(entry);
+             }) != has_third_party_cookies_access_.end();
+}
+
+void ShellFederatedPermissionContext::SetHasThirdPartyCookiesAccessForTesting(
+    const std::string& identity_provider,
+    const std::string& relying_party_embedder) {
+  has_third_party_cookies_access_.insert(
+      std::pair(identity_provider, relying_party_embedder));
 }
 
 // FederatedIdentityAutoReauthnPermissionContextDelegate
@@ -96,40 +111,11 @@ void ShellFederatedPermissionContext::RemoveIdpSigninStatusObserver(
   idp_signin_status_observer_list_.RemoveObserver(observer);
 }
 
-// FederatedIdentityActiveSessionPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  return base::Contains(
-      active_sessions_,
-      std::tuple(relying_party_requester.Serialize(),
-                 identity_provider.Serialize(), account_identifier));
-}
-
-void ShellFederatedPermissionContext::GrantActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  active_sessions_.insert(std::tuple(relying_party_requester.Serialize(),
-                                     identity_provider.Serialize(),
-                                     account_identifier));
-}
-
-void ShellFederatedPermissionContext::RevokeActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  active_sessions_.erase(std::tuple(relying_party_requester.Serialize(),
-                                    identity_provider.Serialize(),
-                                    account_identifier));
-}
-
 bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
-    const absl::optional<std::string>& account_id) {
+    const std::optional<std::string>& account_id) {
   bool skip_account_check = !account_id;
   return std::find_if(sharing_permissions_.begin(), sharing_permissions_.end(),
                       [&](const auto& entry) {
@@ -163,13 +149,42 @@ void ShellFederatedPermissionContext::GrantSharingPermission(
       identity_provider.Serialize(), account_id));
 }
 
-absl::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
+void ShellFederatedPermissionContext::RevokeSharingPermission(
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
+  size_t removed = sharing_permissions_.erase(std::tuple(
+      relying_party_requester.Serialize(), relying_party_embedder.Serialize(),
+      identity_provider.Serialize(), account_id));
+  // If we did not remove any sharing permission, to preserve strong privacy
+  // guarantees of the FedCM API, remove all sharing permissions associated with
+  // the (`relying_party_requester`, `relying_party_embedder`,
+  // `identity_provider` triple). This disabled auto re-authentication on that
+  // account and means revocation may not be invoked repeatedly after a single
+  // successful FedCM flow.
+  if (!removed && !sharing_permissions_.empty()) {
+    auto it = sharing_permissions_.begin();
+    while (it != sharing_permissions_.end()) {
+      const auto& [requester, embedder, idp, account] = *it;
+      if (requester == relying_party_requester.Serialize() &&
+          embedder == relying_party_embedder.Serialize() &&
+          idp == identity_provider.Serialize()) {
+        it = sharing_permissions_.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+}
+
+std::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
   auto idp_signin_status = idp_signin_status_.find(idp_origin.Serialize());
   if (idp_signin_status != idp_signin_status_.end()) {
     return idp_signin_status->second;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -178,7 +193,7 @@ void ShellFederatedPermissionContext::SetIdpSigninStatus(
     bool idp_signin_status) {
   idp_signin_status_[idp_origin.Serialize()] = idp_signin_status;
   for (IdpSigninStatusObserver& observer : idp_signin_status_observer_list_) {
-    observer.OnIdpSigninStatusChanged(idp_origin, idp_signin_status);
+    observer.OnIdpSigninStatusReceived(idp_origin, idp_signin_status);
   }
 
   // TODO(crbug.com/1382989): Replace this with AddIdpSigninStatusObserver.

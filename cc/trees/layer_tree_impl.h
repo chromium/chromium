@@ -120,6 +120,7 @@ class CC_EXPORT LayerTreeImpl {
   void OnPurgeMemory();
   void ReleaseTileResources();
   void RecreateTileResources();
+  void SetVisible(bool visible);
 
   // Methods called by the layer tree that pass-through or access LTHI.
   // ---------------------------------------------------------------------------
@@ -597,7 +598,8 @@ class CC_EXPORT LayerTreeImpl {
 
   void RegisterPictureLayerImpl(PictureLayerImpl* layer);
   void UnregisterPictureLayerImpl(PictureLayerImpl* layer);
-  const std::vector<PictureLayerImpl*>& picture_layers() const {
+  const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
+  picture_layers() const {
     return picture_layers_;
   }
 
@@ -612,9 +614,6 @@ class CC_EXPORT LayerTreeImpl {
   void UnregisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer);
   ScrollbarSet ScrollbarsFor(ElementId scroll_element_id) const;
 
-  LayerImpl* FindFirstScrollingLayerOrScrollbarThatIsHitByPoint(
-      const gfx::PointF& screen_space_point);
-
   LayerImpl* FindLayerThatIsHitByPoint(const gfx::PointF& screen_space_point);
 
   LayerImpl* FindLayerThatIsHitByPointInTouchHandlerRegion(
@@ -623,9 +622,6 @@ class CC_EXPORT LayerTreeImpl {
   LayerImpl* FindLayerThatIsHitByPointInWheelEventHandlerRegion(
       const gfx::PointF& screen_space_point);
 
-  // Return all layers with a hit non-fast scrollable region.
-  std::vector<const LayerImpl*> FindLayersHitByPointInNonFastScrollableRegion(
-      const gfx::PointF& screen_space_point);
   // Returns all layers up to the first scroller, scrollbar layer or a layer
   // opaque to hit test, inclusive. The returned vector is sorted in order of
   // top most come first. The back of the vector will be the scrollable layer
@@ -893,7 +889,7 @@ class CC_EXPORT LayerTreeImpl {
   base::flat_map<ElementId, ScrollbarLayerIds>
       element_id_to_scrollbar_layer_ids_;
 
-  std::vector<PictureLayerImpl*> picture_layers_;
+  std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>> picture_layers_;
 
   // After commit (or impl-side invalidation), the LayerTreeHostImpl must walk
   // all PictureLayerImpls that have PaintWorklets to ensure they are painted.

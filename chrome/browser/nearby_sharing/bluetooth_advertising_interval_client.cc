@@ -8,7 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace {
@@ -48,14 +48,14 @@ void BluetoothAdvertisingIntervalClient::RestoreDefaultInterval() {
 
 void BluetoothAdvertisingIntervalClient::OnSetIntervalForAdvertisingError(
     device::BluetoothAdvertisement::ErrorCode code) {
-  NS_LOG(WARNING) << __func__
-                  << ": SetAdvertisingInterval() failed with error code = "
-                  << code;
+  CD_LOG(WARNING, Feature::NS)
+      << __func__
+      << ": SetAdvertisingInterval() failed with error code = " << code;
 }
 
 void BluetoothAdvertisingIntervalClient::OnRestoreDefaultIntervalError(
     device::BluetoothAdvertisement::ErrorCode code) {
-  NS_LOG(WARNING) << __func__
-                  << ": SetAdvertisingInterval() failed with error code = "
-                  << code;
+  CD_LOG(WARNING, Feature::NS)
+      << __func__
+      << ": SetAdvertisingInterval() failed with error code = " << code;
 }

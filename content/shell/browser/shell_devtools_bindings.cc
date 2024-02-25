@@ -123,9 +123,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
 
     bool encoded = !base::IsStringUTF8(chunk);
     if (encoded) {
-      std::string encoded_string;
-      base::Base64Encode(chunk, &encoded_string);
-      chunkValue = base::Value(std::move(encoded_string));
+      chunkValue = base::Value(base::Base64Encode(chunk));
     } else {
       chunkValue = base::Value(chunk);
     }
@@ -299,7 +297,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     // TODO(pfeldman): handle some of the embedder messages in content.
     const std::string* url = params[0].GetIfString();
     const std::string* headers = params[1].GetIfString();
-    absl::optional<const int> stream_id = params[2].GetIfInt();
+    std::optional<const int> stream_id = params[2].GetIfInt();
     if (!url || !headers || !stream_id.has_value()) {
       return;
     }

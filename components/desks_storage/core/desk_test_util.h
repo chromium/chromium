@@ -27,7 +27,8 @@ inline constexpr char kValidPolicyTemplateBrowser[] =
     "usec\": "
     "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
-    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
+    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"app_id\":"
+    "\"mgndgikekgjfcpckkfioiadnlibdjbkf\",\"tabs\":[{"
     "\"url\":\"https://example.com/\"},{\"url\":\"https://"
     "example.com/"
     "2\"}],\"tab_groups\":[{\"first_"
@@ -44,7 +45,8 @@ inline constexpr char kValidPolicyTemplateBrowserMinimized[] =
     "usec\": "
     "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
-    "state\":\"MINIMIZED\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
+    "state\":\"MINIMIZED\",\"z_index\":1,\"app_type\":\"BROWSER\",\"app_id\":"
+    "\"mgndgikekgjfcpckkfioiadnlibdjbkf\",\"tabs\":[{"
     "\"url\":\"https://example.com/\"},{\"url\":\"https://"
     "example.com/"
     "2\"}],\"tab_groups\":[{\"first_"
@@ -150,6 +152,10 @@ void AddAppIdToAppRegistryCache(AccountId account_id,
 // that `cache` has been added to the AppRegistryCacheWrapper already.
 void PopulateAdminTestAppRegistryCache(AccountId account_id,
                                        apps::AppRegistryCache* cache);
+
+// Similar to `PopulateAdminTestAppRegistryCache`, but includes web apps.
+void PopulateFloatingWorkspaceAppRegistryCache(AccountId account_id,
+                                               apps::AppRegistryCache* cache);
 
 }  // namespace desks_storage::desk_test_util
 

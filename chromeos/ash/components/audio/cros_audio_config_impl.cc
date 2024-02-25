@@ -102,6 +102,21 @@ void RecordMuteStateChanged(const char* histogram_name, bool muted) {
       muted ? AudioMuteButtonAction::kMuted : AudioMuteButtonAction::kUnmuted);
 }
 
+// Determines the correct `mojom::AudioEffectState` for an audio device
+mojom::AudioEffectState GetHfpMicSrState(const AudioDevice& device) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+
+  if (!audio_handler->IsHfpMicSrSupportedForDevice(device.id)) {
+    return mojom::AudioEffectState::kNotSupported;
+  }
+
+  // Device supports hfp mic sr, get current device wide preference
+  // state from `CrasAudioHandler`.
+  return audio_handler->GetHfpMicSrState()
+             ? mojom::AudioEffectState::kEnabled
+             : mojom::AudioEffectState::kNotEnabled;
+}
+
 }  // namespace
 
 mojom::AudioDeviceType ComputeDeviceType(const AudioDeviceType& device_type) {
@@ -152,6 +167,7 @@ mojom::AudioDevicePtr GenerateMojoAudioDevice(const AudioDevice& device) {
   mojo_device->noise_cancellation_state = GetNoiseCancellationState(device);
   mojo_device->force_respect_ui_gains_state =
       GetForceRespectUiGainsState(device);
+  mojo_device->hfp_mic_sr_state = GetHfpMicSrState(device);
   return mojo_device;
 }
 
@@ -358,6 +374,20 @@ void CrosAudioConfigImpl::SetForceRespectUiGainsEnabled(bool enabled) {
   audio_handler->SetForceRespectUiGainsState(enabled);
 }
 
+void CrosAudioConfigImpl::SetHfpMicSrEnabled(bool enabled) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+
+  if (!audio_handler->IsHfpMicSrSupportedForDevice(
+          audio_handler->GetPrimaryActiveInputNode())) {
+    LOG(ERROR) << "SetHfpMicSrEnabled: hfp mic sr is not "
+                  "supported by active input node.";
+    return;
+  }
+
+  audio_handler->SetHfpMicSrState(
+      enabled, CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
+}
+
 void CrosAudioConfigImpl::RecordOutputVolume() {
   base::UmaHistogramExactLinear(kOutputVolumeChangeHistogramName,
                                 last_set_output_volume_,
@@ -425,6 +455,10 @@ void CrosAudioConfigImpl::OnNoiseCancellationStateChanged() {
 }
 
 void CrosAudioConfigImpl::OnForceRespectUiGainsStateChanged() {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
+void CrosAudioConfigImpl::OnHfpMicSrStateChanged() {
   NotifyObserversAudioSystemPropertiesChanged();
 }
 

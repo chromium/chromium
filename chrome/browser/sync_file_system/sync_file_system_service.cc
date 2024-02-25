@@ -299,14 +299,15 @@ void SyncFileSystemService::InitializeForApp(
   local_service_->MaybeInitializeFileSystemContext(
       app_origin, file_system_context,
       base::BindOnce(&SyncFileSystemService::DidInitializeFileSystem,
-                     AsWeakPtr(), app_origin, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), app_origin,
+                     std::move(callback)));
 }
 
 void SyncFileSystemService::GetExtensionStatusMap(
     ExtensionStatusMapCallback callback) {
   remote_service_->GetOriginStatusMap(
       base::BindOnce(&SyncFileSystemService::DidGetExtensionStatusMap,
-                     AsWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SyncFileSystemService::DumpFiles(
@@ -320,13 +321,14 @@ void SyncFileSystemService::DumpFiles(
   local_service_->MaybeInitializeFileSystemContext(
       origin, file_system_context,
       base::BindOnce(&SyncFileSystemService::DidInitializeFileSystemForDump,
-                     AsWeakPtr(), origin, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), origin,
+                     std::move(callback)));
 }
 
 void SyncFileSystemService::DumpDatabase(DumpFilesCallback callback) {
   remote_service_->DumpDatabase(
-      base::BindOnce(&SyncFileSystemService::DidDumpDatabase, AsWeakPtr(),
-                     std::move(callback)));
+      base::BindOnce(&SyncFileSystemService::DidDumpDatabase,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SyncFileSystemService::GetFileSyncStatus(const FileSystemURL& url,
@@ -345,7 +347,7 @@ void SyncFileSystemService::GetFileSyncStatus(const FileSystemURL& url,
 
   local_service_->HasPendingLocalChanges(
       url, base::BindOnce(&SyncFileSystemService::DidGetLocalChangeStatus,
-                          AsWeakPtr(), std::move(callback)));
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SyncFileSystemService::AddSyncEventObserver(SyncEventObserver* observer) {
@@ -368,9 +370,9 @@ void SyncFileSystemService::OnSyncIdle() {
   promoting_demoted_changes_ = true;
 
   int* job_count = new int(1);
-  base::RepeatingClosure promote_completion_callback =
-      base::BindRepeating(&SyncFileSystemService::OnPromotionCompleted,
-                          AsWeakPtr(), base::Owned(job_count));
+  base::RepeatingClosure promote_completion_callback = base::BindRepeating(
+      &SyncFileSystemService::OnPromotionCompleted,
+      weak_ptr_factory_.GetWeakPtr(), base::Owned(job_count));
 
   int64_t remote_changes = 0;
   for (size_t i = 0; i < remote_sync_runners_.size(); ++i)
@@ -463,8 +465,8 @@ void SyncFileSystemService::Initialize(
       kRemoteSyncName, this, remote_service_.get());
 
   local_service_->AddChangeObserver(local_syncer.get());
-  local_service_->SetLocalChangeProcessorCallback(
-      base::BindRepeating(&GetLocalChangeProcessorAdapter, AsWeakPtr()));
+  local_service_->SetLocalChangeProcessorCallback(base::BindRepeating(
+      &GetLocalChangeProcessorAdapter, weak_ptr_factory_.GetWeakPtr()));
 
   remote_service_->AddServiceObserver(remote_syncer.get());
   remote_service_->AddFileStatusObserver(this);
@@ -503,7 +505,8 @@ void SyncFileSystemService::DidInitializeFileSystem(const GURL& app_origin,
 
   remote_service_->RegisterOrigin(
       app_origin, base::BindOnce(&SyncFileSystemService::DidRegisterOrigin,
-                                 AsWeakPtr(), app_origin, std::move(callback)));
+                                 weak_ptr_factory_.GetWeakPtr(), app_origin,
+                                 std::move(callback)));
 }
 
 void SyncFileSystemService::DidRegisterOrigin(const GURL& app_origin,
@@ -547,8 +550,9 @@ void SyncFileSystemService::DidInitializeFileSystemForDump(
   }
 
   remote_service_->DumpFiles(
-      origin, base::BindOnce(&SyncFileSystemService::DidDumpFiles, AsWeakPtr(),
-                             origin, std::move(callback)));
+      origin, base::BindOnce(&SyncFileSystemService::DidDumpFiles,
+                             weak_ptr_factory_.GetWeakPtr(), origin,
+                             std::move(callback)));
 }
 
 void SyncFileSystemService::DidDumpFiles(const GURL& origin,

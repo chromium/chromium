@@ -11,6 +11,7 @@
 #include "android_webview/nonembedded/net/network_fetcher_task.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 
 namespace android_webview {
@@ -45,7 +46,7 @@ void NetworkFetcherImpl::PostRequest(
       std::move(post_request_complete_callback));
 }
 
-void NetworkFetcherImpl::DownloadToFile(
+base::OnceClosure NetworkFetcherImpl::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
@@ -57,6 +58,8 @@ void NetworkFetcherImpl::DownloadToFile(
   network_task_ = NetworkFetcherTask::CreateDownloadToFileTask(
       url, file_path, std::move(response_started_callback), progress_callback,
       std::move(download_to_file_complete_callback));
+
+  return base::DoNothing();
 }
 
 }  // namespace android_webview

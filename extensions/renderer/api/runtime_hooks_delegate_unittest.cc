@@ -5,14 +5,17 @@
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 
 #include <memory>
+#include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/api/messaging/send_message_tester.h"
@@ -26,8 +29,8 @@ namespace extensions {
 namespace {
 
 void CallAPIAndExpectError(v8::Local<v8::Context> context,
-                           base::StringPiece method_name,
-                           base::StringPiece args) {
+                           std::string_view method_name,
+                           std::string_view args) {
   SCOPED_TRACE(base::StringPrintf("Args: `%s`", args.data()));
   constexpr char kTemplate[] = "(function() { chrome.runtime.%s(%s); })";
 
@@ -72,8 +75,8 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
 
-    script_context_ = CreateScriptContext(context, extension_.get(),
-                                          Feature::BLESSED_EXTENSION_CONTEXT);
+    script_context_ = CreateScriptContext(
+        context, extension_.get(), mojom::ContextType::kPrivilegedExtension);
     script_context_->set_url(extension_->url());
     bindings_system()->UpdateBindingsForContext(script_context_);
   }
@@ -98,7 +101,7 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  ScriptContext* script_context_ = nullptr;
+  raw_ptr<ScriptContext> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 
@@ -131,7 +134,7 @@ TEST_F(RuntimeHooksDelegateTest, RuntimeId) {
     // an associated connectable extension, so pretend to be example.com.
     v8::Local<v8::Context> web_context = AddContext();
     ScriptContext* script_context =
-        CreateScriptContext(web_context, nullptr, Feature::WEB_PAGE_CONTEXT);
+        CreateScriptContext(web_context, nullptr, mojom::ContextType::kWebPage);
     script_context->set_url(GURL("http://example.com"));
     bindings_system()->UpdateBindingsForContext(script_context);
     v8::Local<v8::Value> id = get_id(web_context);
@@ -291,7 +294,7 @@ TEST_F(RuntimeHooksDelegateTest, SendMessageErrors) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  auto send_message = [context](base::StringPiece args) {
+  auto send_message = [context](std::string_view args) {
     CallAPIAndExpectError(context, "sendMessage", args);
   };
 
@@ -369,13 +372,14 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
         "(function() { return chrome.runtime.connectNative(%s); })";
     PortId expected_port_id(script_context()->context_id(),
                             next_context_port_id++, true,
-                            SerializationFormat::kJson);
+                            mojom::SerializationFormat::kJson);
     MessageTarget expected_target(
         MessageTarget::ForNativeApp(expected_app_name));
-    EXPECT_CALL(*ipc_message_sender(),
-                SendOpenMessageChannel(script_context(), expected_port_id,
-                                       expected_target, ChannelType::kNative,
-                                       kEmptyExpectedChannel));
+    EXPECT_CALL(
+        *ipc_message_sender(),
+        SendOpenMessageChannel(script_context(), expected_port_id,
+                               expected_target, mojom::ChannelType::kNative,
+                               kEmptyExpectedChannel, testing::_, testing::_));
 
     v8::Local<v8::Function> add_port = FunctionFromString(
         context, base::StringPrintf(kAddPortTemplate, args.c_str()));
@@ -388,7 +392,7 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
   run_connect_native("'native_app'", "native_app");
   run_connect_native("'some_other_native_app'", "some_other_native_app");
 
-  auto connect_native_error = [context](base::StringPiece args) {
+  auto connect_native_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "connectNative", args);
   };
   connect_native_error("'native_app', {name: 'name'}");
@@ -407,7 +411,7 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
       "'another_native_app', {alpha: 2}, function() {}", R"({"alpha":2})",
       "another_native_app");
 
-  auto send_native_message_error = [context](base::StringPiece args) {
+  auto send_native_message_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "sendNativeMessage", args);
   };
 
@@ -591,7 +595,7 @@ TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {
     EXPECT_TRUE(result->IsUndefined());
   }
 
-  auto send_native_message_error = [context](base::StringPiece args) {
+  auto send_native_message_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "sendNativeMessage", args);
   };
 

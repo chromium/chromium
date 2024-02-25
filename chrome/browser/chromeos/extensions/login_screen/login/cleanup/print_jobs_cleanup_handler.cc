@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -43,7 +43,7 @@ void PrintJobsCleanupHandler::OnDeleteAllPrintJobsDone(bool success) {
     return;
   }
 
-  std::move(callback_).Run(absl::nullopt);
+  std::move(callback_).Run(std::nullopt);
 }
 
 }  // namespace chromeos

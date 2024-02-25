@@ -75,6 +75,7 @@ function pass_installer() {
 # versions to new-style versions.
 function make_old_dest() {
   DEST="${TEMPDIR}"/Dest.app
+  export KS_TICKET_XC_PATH="${DEST}"
   rm -rf "${DEST}"
   mkdir -p "${DEST}"/Contents
   defaults write "${DEST}/Contents/Info" KSVersion 0
@@ -98,6 +99,7 @@ EOF
 # versions.
 function make_new_dest() {
   DEST="${TEMPDIR}"/Dest.app
+  export KS_TICKET_XC_PATH="${DEST}"
   rm -rf "${DEST}"
   defaults write "${DEST}/Contents/Info" CFBundleShortVersionString 0
   defaults write "${DEST}/Contents/Info" KSVersion 0
@@ -140,6 +142,15 @@ function make_basic_src_and_dest() {
   make_new_dest
 }
 
+function make_old_brand_code() {
+  defaults write "$HOME/Library/Google/Google Chrome Brand" "KSBrandID" \
+                            -string "GCCM"
+}
+
+function remove_old_brand_code() {
+  rm "$HOME/Library/Google/Google Chrome Brand.plist"
+}
+
 fail_installer "No source anything" 2
 
 mkdir "${TEMPDIR}"/"${APPNAME_STABLE}"
@@ -169,6 +180,13 @@ make_basic_src_and_dest
 defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
     KSUpdateURL "http://foobar"
 pass_installer "New-style Stable"
+
+make_old_brand_code
+make_basic_src_and_dest
+defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
+    KSUpdateURL "http://foobar"
+pass_installer "Old brand code Stable"
+remove_old_brand_code
 
 make_src "${APPNAME_CANARY}"
 make_new_dest

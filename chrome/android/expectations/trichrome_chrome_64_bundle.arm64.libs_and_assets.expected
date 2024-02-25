@@ -1,8 +1,7 @@
-apk_path=lib/arm64-v8a/libchromium_android_linker.so, compress=False, alignment=4096
+apk_path=lib/arm64-v8a/libchromium_android_linker.so, compress=False, alignment=16384
 apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4
 apk_path=assets/locales/am.pak, compress=False, alignment=4
-apk_path=assets/locales/ar-XB.pak, compress=False, alignment=4
 apk_path=assets/locales/ar.pak, compress=False, alignment=4
 apk_path=assets/locales/as.pak, compress=False, alignment=4
 apk_path=assets/locales/az.pak, compress=False, alignment=4
@@ -17,7 +16,6 @@ apk_path=assets/locales/de.pak, compress=False, alignment=4
 apk_path=assets/locales/el.pak, compress=False, alignment=4
 apk_path=assets/locales/en-GB.pak, compress=False, alignment=4
 apk_path=assets/locales/en-US.pak, compress=False, alignment=4
-apk_path=assets/locales/en-XA.pak, compress=False, alignment=4
 apk_path=assets/locales/es-419.pak, compress=False, alignment=4
 apk_path=assets/locales/es.pak, compress=False, alignment=4
 apk_path=assets/locales/et.pak, compress=False, alignment=4

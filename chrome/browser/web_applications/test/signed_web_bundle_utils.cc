@@ -7,13 +7,12 @@
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
-#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
 mojo::ScopedDataPipeConsumerHandle ReadResponseBody(
-    uint32_t response_length,
+    uint64_t response_length,
     base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle producer_handle,
                             base::OnceCallback<void(net::Error net_error)>)>
         read_response_body_callback,
@@ -44,7 +43,7 @@ std::string ReadAndFulfillResponseBody(
 }
 
 std::string ReadAndFulfillResponseBody(
-    uint32_t response_length,
+    uint64_t response_length,
     base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle producer_handle,
                             base::OnceCallback<void(net::Error net_error)>)>
         read_response_body_callback) {

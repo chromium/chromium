@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Popup: DOMWindow resize fired before VisualViewport.
+  assert_equals: expected "window-attribute,window-addEventListener,visualViewport-attribute,visualViewport-addEventListener" but got "visualViewport-attribute,visualViewport-addEventListener,window-attribute,window-addEventListener"
+Harness: the test ran to completion.

@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -359,6 +359,30 @@ void OsTelemetryGetStatefulPartitionInfoFunction::OnResult(
 
   Respond(ArgumentList(
       cx_telem::GetStatefulPartitionInfo::Results::Create(result)));
+}
+
+// OsTelemetryGetThermalInfoFunction
+// -----------------------------------------------
+
+void OsTelemetryGetThermalInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetThermalInfoFunction::OnResult, this);
+
+  GetRemoteService()->ProbeTelemetryInfo({crosapi::ProbeCategoryEnum::kThermal},
+                                         std::move(cb));
+}
+
+void OsTelemetryGetThermalInfoFunction::OnResult(
+    crosapi::ProbeTelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->thermal_result || !ptr->thermal_result->is_thermal_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  cx_telem::ThermalInfo result;
+  result = converters::telemetry::ConvertPtr(
+      std::move(ptr->thermal_result->get_thermal_info()));
+
+  Respond(ArgumentList(cx_telem::GetThermalInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetTpmInfoFunction -----------------------------------------------

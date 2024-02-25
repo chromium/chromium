@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "net/dns/record_rdata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -27,7 +27,7 @@ namespace {
 
 using ::testing::ElementsAreArray;
 
-std::tuple<char*, size_t> AsTuple(const IOBufferWithSize* buf) {
+std::tuple<const char*, size_t> AsTuple(const IOBufferWithSize* buf) {
   return std::make_tuple(buf->data(), buf->size());
 }
 
@@ -48,8 +48,7 @@ const char kQNameData[] =
     "example"
     "\x03"
     "com";
-const base::span<const uint8_t> kQName =
-    base::as_bytes(base::make_span(kQNameData));
+const base::span<const uint8_t> kQName = base::as_byte_span(kQNameData);
 
 TEST(DnsQueryTest, Constructor) {
   // This includes \0 at the end.
@@ -153,7 +152,7 @@ TEST(DnsQueryTest, Block128Padding) {
 }
 
 TEST(DnsQueryTest, Block128Padding_LongName) {
-  absl::optional<std::vector<uint8_t>> qname =
+  std::optional<std::vector<uint8_t>> qname =
       dns_names_util::DottedNameToNetwork(
           "really.long.domain.name.that.will.push.us.past.the.128.byte.block."
           "size.because.it.would.be.nice.to.test.something.realy.long.like."

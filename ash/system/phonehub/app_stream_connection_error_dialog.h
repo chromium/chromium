@@ -56,9 +56,9 @@ class ASH_EXPORT AppStreamConnectionErrorDialog : public views::WidgetObserver,
   views::Widget* widget() { return widget_; }
 
  private:
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
-  const raw_ptr<views::View, ExperimentalAsh> host_view_;
+  const raw_ptr<views::View> host_view_;
 
   base::OnceClosure on_close_callback_;
 

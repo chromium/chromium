@@ -94,9 +94,9 @@ SkColor FakeTabSlotController::GetTabForegroundColor(TabActive active) const {
                                       : tab_fg_color_inactive_;
 }
 
-absl::optional<int> FakeTabSlotController::GetCustomBackgroundId(
+std::optional<int> FakeTabSlotController::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string FakeTabSlotController::GetAccessibleTabName(

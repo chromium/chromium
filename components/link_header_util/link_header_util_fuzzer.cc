@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/link_header_util/link_header_util.h"
+
 #include <assert.h>
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <unordered_map>
-
-#include "components/link_header_util/link_header_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace link_header_util {
 
@@ -20,7 +20,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   for (const auto& pair : result) {
     assert(pair.first < pair.second);
     std::string url;
-    std::unordered_map<std::string, absl::optional<std::string>> params;
+    std::unordered_map<std::string, std::optional<std::string>> params;
     std::ignore = ParseLinkHeaderValue(pair.first, pair.second, &url, &params);
   }
 

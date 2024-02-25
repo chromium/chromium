@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -13,15 +15,16 @@
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/browsing_data/browsing_data_features.h"
-#import "ios/chrome/browser/browsing_data/cache_counter.h"
-#import "ios/chrome/browser/browsing_data/fake_browsing_data_remover.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
+#import "ios/chrome/browser/browsing_data/model/cache_counter.h"
+#import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -30,15 +33,13 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -71,9 +72,6 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    builder.AddTestingFactory(
-        SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
@@ -170,10 +168,10 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   TableViewModel* model_;
   std::unique_ptr<BrowsingDataRemover> remover_;
   ClearBrowsingDataManager* manager_;
-  syncer::TestSyncService* test_sync_service_;
+  raw_ptr<syncer::TestSyncService> test_sync_service_;
   IntegerPrefMember time_range_pref_;
-  TemplateURLService* template_url_service_;  // weak
-  ChromeAccountManagerService* account_manager_service_;
+  raw_ptr<TemplateURLService> template_url_service_;  // weak
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
 // Tests model is set up with all appropriate items and sections.
@@ -225,11 +223,24 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
-  ASSERT_EQ("en", GetApplicationContext()->GetApplicationLocale());
   PrefService* prefs = browser_state_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
   CacheCounter counter(browser_state_.get());
+
+  NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
+  formatter.allowedUnits = NSByteCountFormatterUseAll &
+                           (~NSByteCountFormatterUseBytes) &
+                           (~NSByteCountFormatterUseKB);
+  formatter.countStyle = NSByteCountFormatterCountStyleMemory;
+
+  NSString* format_1_mb = [formatter stringFromByteCount:(1 << 20)];
+  NSString* less_than_1_mb =
+      l10n_util::GetNSString(IDS_DEL_CACHE_COUNTER_ALMOST_EMPTY);
+  NSString* format_1_5_mb =
+      [formatter stringFromByteCount:(1 << 20) + (1 << 19)];
+  NSString* format_2_mb = [formatter stringFromByteCount:(1 << 21)];
+  NSString* format_1_gb = [formatter stringFromByteCount:(1 << 30)];
 
   // Test multiple possible types of formatting.
   // clang-format off
@@ -237,12 +248,13 @@ TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
         int cache_size;
         NSString* expected_output;
     } kTestCases[] = {
-        {0, @"Less than 1 MB"},
-        {(1 << 20) - 1, @"Less than 1 MB"},
-        {(1 << 20), @"1 MB"},
-        {(1 << 20) + (1 << 19), @"1.5 MB"},
-        {(1 << 21), @"2 MB"},
-        {(1 << 30), @"1 GB"}
+        {0, less_than_1_mb},
+        {(1 << 20) - 1, less_than_1_mb},
+        {(1 << 20), format_1_mb},
+        {(1 << 20) + (1 << 19), format_1_5_mb},
+        {(1 << 21) - 10, format_2_mb},
+        {(1 << 21), format_2_mb},
+        {(1 << 30), format_1_gb}
     };
   // clang-format on
 
@@ -256,12 +268,36 @@ TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
 
 TEST_F(ClearBrowsingDataManagerTest,
        TestCacheCounterFormattingForLessThanAllTime) {
-  ASSERT_EQ("en", GetApplicationContext()->GetApplicationLocale());
-
   PrefService* prefs = browser_state_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
   CacheCounter counter(browser_state_.get());
+
+  NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
+  formatter.allowedUnits = NSByteCountFormatterUseAll &
+                           (~NSByteCountFormatterUseBytes) &
+                           (~NSByteCountFormatterUseKB);
+  formatter.countStyle = NSByteCountFormatterCountStyleMemory;
+
+  NSString* almost_empty =
+      l10n_util::GetNSString(IDS_DEL_CACHE_COUNTER_ALMOST_EMPTY);
+  NSString* format_1_mb = [formatter stringFromByteCount:(1 << 20)];
+  NSString* less_than_1_mb =
+      l10n_util::GetNSStringF(IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE,
+                              base::SysNSStringToUTF16(format_1_mb));
+  NSString* format_1_5_mb =
+      [formatter stringFromByteCount:(1 << 20) + (1 << 19)];
+  NSString* less_than_1_5_mb =
+      l10n_util::GetNSStringF(IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE,
+                              base::SysNSStringToUTF16(format_1_5_mb));
+  NSString* format_2_mb = [formatter stringFromByteCount:(1 << 21)];
+  NSString* less_than_2_mb =
+      l10n_util::GetNSStringF(IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE,
+                              base::SysNSStringToUTF16(format_2_mb));
+  NSString* format_1_gb = [formatter stringFromByteCount:(1 << 30)];
+  NSString* less_than_1_gb =
+      l10n_util::GetNSStringF(IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE,
+                              base::SysNSStringToUTF16(format_1_gb));
 
   // Test multiple possible types of formatting.
   // clang-format off
@@ -269,12 +305,13 @@ TEST_F(ClearBrowsingDataManagerTest,
         int cache_size;
         NSString* expected_output;
     } kTestCases[] = {
-        {0, @"Less than 1 MB"},
-        {(1 << 20) - 1, @"Less than 1 MB"},
-        {(1 << 20), @"Less than 1 MB"},
-        {(1 << 20) + (1 << 19), @"Less than 1.5 MB"},
-        {(1 << 21), @"Less than 2 MB"},
-        {(1 << 30), @"Less than 1 GB"}
+        {0, almost_empty},
+        {(1 << 20) - 1, almost_empty},
+        {(1 << 20), less_than_1_mb},
+        {(1 << 20) + (1 << 19), less_than_1_5_mb},
+        {(1 << 21) - 10, less_than_2_mb},
+        {(1 << 21), less_than_2_mb},
+        {(1 << 30), less_than_1_gb}
     };
   // clang-format on
 

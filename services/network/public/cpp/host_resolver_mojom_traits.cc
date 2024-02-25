@@ -29,7 +29,7 @@ using network::mojom::OptionalSecureDnsMode;
 
 namespace {
 
-Tristate ToTristate(absl::optional<bool> optional) {
+Tristate ToTristate(std::optional<bool> optional) {
   if (!optional)
     return Tristate::NO_OVERRIDE;
   if (optional.value())
@@ -37,10 +37,10 @@ Tristate ToTristate(absl::optional<bool> optional) {
   return Tristate::TRISTATE_FALSE;
 }
 
-absl::optional<bool> FromTristate(Tristate tristate) {
+std::optional<bool> FromTristate(Tristate tristate) {
   switch (tristate) {
     case Tristate::NO_OVERRIDE:
-      return absl::nullopt;
+      return std::nullopt;
     case Tristate::TRISTATE_TRUE:
       return true;
     case Tristate::TRISTATE_FALSE:
@@ -49,7 +49,7 @@ absl::optional<bool> FromTristate(Tristate tristate) {
 }
 
 OptionalSecureDnsMode ToOptionalSecureDnsMode(
-    absl::optional<net::SecureDnsMode> optional) {
+    std::optional<net::SecureDnsMode> optional) {
   if (!optional)
     return OptionalSecureDnsMode::NO_OVERRIDE;
   switch (optional.value()) {
@@ -62,11 +62,11 @@ OptionalSecureDnsMode ToOptionalSecureDnsMode(
   }
 }
 
-absl::optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
+std::optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
     OptionalSecureDnsMode mode) {
   switch (mode) {
     case OptionalSecureDnsMode::NO_OVERRIDE:
-      return absl::nullopt;
+      return std::nullopt;
     case OptionalSecureDnsMode::OFF:
       return net::SecureDnsMode::kOff;
     case OptionalSecureDnsMode::AUTOMATIC:

@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -41,8 +42,7 @@ namespace {
 
 class FakeDownloadFeedback : public DownloadFeedback {
  public:
-  FakeDownloadFeedback(base::TaskRunner* file_task_runner,
-                       const std::string& ping_request,
+  FakeDownloadFeedback(const std::string& ping_request,
                        const std::string& ping_response,
                        base::OnceClosure deletion_callback)
       : ping_request_(ping_request),
@@ -85,12 +85,12 @@ class FakeDownloadFeedbackFactory : public DownloadFeedbackFactory {
 
   std::unique_ptr<DownloadFeedback> CreateDownloadFeedback(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::TaskRunner* file_task_runner,
       const base::FilePath& file_path,
+      uint64_t file_size,
       const std::string& ping_request,
       const std::string& ping_response) override {
     FakeDownloadFeedback* feedback = new FakeDownloadFeedback(
-        file_task_runner, ping_request, ping_response,
+        ping_request, ping_response,
         base::BindOnce(&FakeDownloadFeedbackFactory::DownloadFeedbackSent,
                        base::Unretained(this), feedbacks_.size()));
     feedbacks_.push_back(feedback);
@@ -104,7 +104,7 @@ class FakeDownloadFeedbackFactory : public DownloadFeedbackFactory {
   size_t num_feedbacks() const { return feedbacks_.size(); }
 
  private:
-  std::vector<FakeDownloadFeedback*> feedbacks_;
+  std::vector<raw_ptr<FakeDownloadFeedback, VectorExperimental>> feedbacks_;
 };
 
 class FakeDownloadProtectionService : public DownloadProtectionService {

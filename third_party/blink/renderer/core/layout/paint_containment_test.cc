@@ -33,7 +33,7 @@ static void CheckIsClippingStackingContextAndContainer(
 
 TEST_F(PaintContainmentTest, BlockPaintContainment) {
   SetBodyInnerHTML("<div id='div' style='contain: paint'></div>");
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   DCHECK(div);
   LayoutObject* obj = div->GetLayoutObject();
   DCHECK(obj);
@@ -47,7 +47,7 @@ TEST_F(PaintContainmentTest, BlockPaintContainment) {
 TEST_F(PaintContainmentTest, InlinePaintContainment) {
   SetBodyInnerHTML(
       "<div><span id='test' style='contain: paint'>Foo</span></div>");
-  Element* span = GetDocument().getElementById(AtomicString("test"));
+  Element* span = GetElementById("test");
   DCHECK(span);
   // Paint containment shouldn't apply to non-atomic inlines.
   LayoutObject* obj = span->GetLayoutObject();

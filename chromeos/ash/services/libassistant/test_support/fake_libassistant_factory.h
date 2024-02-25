@@ -13,7 +13,6 @@
 namespace chromeos {
 namespace assistant {
 class FakeAssistantManager;
-class FakeAssistantManagerInternal;
 }  // namespace assistant
 }  // namespace chromeos
 
@@ -27,21 +26,17 @@ class FakeLibassistantFactory : public LibassistantFactory {
   ~FakeLibassistantFactory() override;
 
   chromeos::assistant::FakeAssistantManager& assistant_manager();
-  chromeos::assistant::FakeAssistantManagerInternal&
-  assistant_manager_internal();
 
   // LibassistantFactory implementation:
   std::unique_ptr<assistant_client::AssistantManager> CreateAssistantManager(
       const std::string& libassistant_config) override;
-  assistant_client::AssistantManagerInternal* UnwrapAssistantManagerInternal(
-      assistant_client::AssistantManager* assistant_manager) override;
 
   std::string libassistant_config() const { return libassistant_config_; }
 
  private:
   std::unique_ptr<chromeos::assistant::FakeAssistantManager>
       pending_assistant_manager_;
-  raw_ptr<chromeos::assistant::FakeAssistantManager, ExperimentalAsh>
+  raw_ptr<chromeos::assistant::FakeAssistantManager>
       current_assistant_manager_ = nullptr;
 
   // Config passed to LibAssistant when it was started.

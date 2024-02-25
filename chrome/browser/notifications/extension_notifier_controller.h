@@ -27,13 +27,16 @@ class ExtensionNotifierController : public NotifierController,
 
  private:
   // Overridden from AppIconLoaderDelegate.
-  void OnAppImageUpdated(const std::string& id,
-                         const gfx::ImageSkia& image) override;
+  void OnAppImageUpdated(
+      const std::string& id,
+      const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
+      const std::optional<gfx::ImageSkia>& badge_image) override;
 
   std::unique_ptr<AppIconLoader> app_icon_loader_;
 
   // Lifetime of parent must be longer than the source.
-  raw_ptr<Observer, ExperimentalAsh> observer_;
+  raw_ptr<Observer> observer_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_EXTENSION_NOTIFIER_CONTROLLER_H_

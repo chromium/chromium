@@ -95,6 +95,17 @@ target(link_target_type, "service_sources") {
   }
 }
 
+if (is_win) {
+  config("service_win_linker_flags") {
+    # This is in a separate config so the flags can be applied to dependents.
+    # ldflags in GN aren't automatically inherited.
+    ldflags = [
+      # Linking with OneCore.lib causes the following dlls to load.
+      "/DELAYLOAD:api-ms-win-core-handle-l1-1-0.dll",
+    ]
+  }
+}
+
 target(link_target_type, "gles2_sources") {
   # External code should depend on this via //gpu/command_buffer/service:gles2
   # above rather than depending on this directly or the component build will
@@ -102,6 +113,7 @@ target(link_target_type, "gles2_sources") {
   visibility = [ "//gpu/*" ]
 
   deps = []
+  defines = []
   sources = [
     "buffer_manager.cc",
     "buffer_manager.h",
@@ -177,6 +189,8 @@ target(link_target_type, "gles2_sources") {
     "graphite_cache_controller.h",
     "graphite_image_provider.cc",
     "graphite_image_provider.h",
+    "graphite_utils.cc",
+    "graphite_utils.h",
     "id_manager.cc",
     "id_manager.h",
     "indexed_buffer_binding_host.cc",
@@ -244,6 +258,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/gl_texture_image_backing.h",
     "shared_image/gl_texture_image_backing_factory.cc",
     "shared_image/gl_texture_image_backing_factory.h",
+    "shared_image/gl_texture_passthrough_fallback_image_representation.cc",
+    "shared_image/gl_texture_passthrough_fallback_image_representation.h",
     "shared_image/raw_draw_image_backing.cc",
     "shared_image/raw_draw_image_backing.h",
     "shared_image/raw_draw_image_backing_factory.cc",
@@ -300,11 +316,8 @@ target(link_target_type, "gles2_sources") {
 
   if (!is_android) {
     sources += [
+      "abstract_texture.cc",
       "abstract_texture.h",
-      "passthrough_abstract_texture_impl.cc",
-      "passthrough_abstract_texture_impl.h",
-      "validating_abstract_texture_impl.cc",
-      "validating_abstract_texture_impl.h",
     ]
   } else {
     sources += [
@@ -335,6 +348,8 @@ target(link_target_type, "gles2_sources") {
       "dawn_service_memory_transfer_service.h",
       "dawn_service_serializer.cc",
       "dawn_service_serializer.h",
+      "shared_image/dawn_fallback_image_representation.cc",
+      "shared_image/dawn_fallback_image_representation.h",
       "webgpu_decoder_impl.cc",
       "webgpu_decoder_impl.h",
     ]
@@ -386,6 +401,7 @@ target(link_target_type, "gles2_sources") {
     "//third_party/re2",
     "//third_party/zlib",
     "//ui/base:features",
+    "//ui/base:ozone_buildflags",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
@@ -408,6 +424,8 @@ target(link_target_type, "gles2_sources") {
       "shared_image/ozone_image_backing.h",
       "shared_image/ozone_image_backing_factory.cc",
       "shared_image/ozone_image_backing_factory.h",
+      "shared_image/ozone_image_gl_textures_holder.cc",
+      "shared_image/ozone_image_gl_textures_holder.h",
     ]
     deps += [
       "//ui/base:features",
@@ -454,6 +472,8 @@ target(link_target_type, "gles2_sources") {
       sources += [
         "shared_image/skia_vk_ozone_image_representation.cc",
         "shared_image/skia_vk_ozone_image_representation.h",
+        "shared_image/vulkan_ozone_image_representation.cc",
+        "shared_image/vulkan_ozone_image_representation.h",
       ]
     }
 
@@ -564,6 +584,9 @@ target(link_target_type, "gles2_sources") {
       "texture_owner.h",
     ]
 
+    # For AImageReader.
+    libs = [ "mediandk" ]
+
     if (use_dawn) {
       sources += [
         "shared_image/dawn_ahardwarebuffer_image_representation.cc",
@@ -571,13 +594,16 @@ target(link_target_type, "gles2_sources") {
       ]
     }
 
-    deps += [ "//base" ]
+    deps += [
+      "//base",
+      "//third_party/jni_zero",
+    ]
 
     # TODO(cblume): http://crbug.com/911313
     # Abstract out the platform specific defines. Right now we need the android
     # platform specific define here to be able to include android specific
     # functions.
-    defines = [ "VK_USE_PLATFORM_ANDROID_KHR" ]
+    defines += [ "VK_USE_PLATFORM_ANDROID_KHR" ]
     deps += [ "//third_party/libsync" ]
     if (enable_vulkan) {
       deps += [ "//gpu/vulkan" ]
@@ -596,8 +622,6 @@ target(link_target_type, "gles2_sources") {
       "shared_image/d3d_image_representation.h",
       "shared_image/d3d_image_utils.cc",
       "shared_image/d3d_image_utils.h",
-      "shared_image/d3d_shared_fence.cc",
-      "shared_image/d3d_shared_fence.h",
       "shared_image/dcomp_image_backing_factory.cc",
       "shared_image/dcomp_image_backing_factory.h",
       "shared_image/dcomp_surface_image_backing.cc",
@@ -609,7 +633,11 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dxgi_swap_chain_image_representation.cc",
       "shared_image/dxgi_swap_chain_image_representation.h",
     ]
-    libs = [ "dxguid.lib" ]
+    libs = [
+      "dxguid.lib",
+      "onecore.lib",
+    ]
+    all_dependent_configs = [ ":service_win_linker_flags" ]
   }
 }
 
@@ -646,6 +674,9 @@ if (is_android) {
       "surface_texture_gl_owner_unittest.cc",
       "surface_texture_transform_unittest.cc",
     ]
+
+    # For AImageReader_getFormat()
+    libs = [ "mediandk" ]
 
     deps = [
       ":android_texture_owner_test_support",

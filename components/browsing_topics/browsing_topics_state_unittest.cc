@@ -206,7 +206,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   task_environment_->RunUntilIdle();
 
   // Successful topics calculation at `kTime1`.
-  absl::optional<EpochTopics> maybe_removed_epoch_1 =
+  std::optional<EpochTopics> maybe_removed_epoch_1 =
       state.AddEpoch(CreateTestEpochTopics(
           kTime1, /*from_manually_triggered_calculation=*/false));
 
@@ -216,7 +216,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_FALSE(maybe_removed_epoch_1.has_value());
 
   // Successful topics calculation at `kTime2`.
-  absl::optional<EpochTopics> maybe_removed_epoch_2 =
+  std::optional<EpochTopics> maybe_removed_epoch_2 =
       state.AddEpoch(CreateTestEpochTopics(
           kTime2, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 2u);
@@ -227,7 +227,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_FALSE(maybe_removed_epoch_2.has_value());
 
   // Failed topics calculation.
-  absl::optional<EpochTopics> maybe_removed_epoch_3 =
+  std::optional<EpochTopics> maybe_removed_epoch_3 =
       state.AddEpoch(EpochTopics(kTime3));
   EXPECT_EQ(state.epochs().size(), 3u);
   EXPECT_FALSE(state.epochs()[0].empty());
@@ -239,7 +239,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   EXPECT_FALSE(maybe_removed_epoch_3.has_value());
 
   // Successful topics calculation at `kTime4`.
-  absl::optional<EpochTopics> maybe_removed_epoch_4 =
+  std::optional<EpochTopics> maybe_removed_epoch_4 =
       state.AddEpoch(CreateTestEpochTopics(
           kTime4, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 4u);
@@ -254,7 +254,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
 
   // Successful topics calculation at `kTime5`. When this epoch is added, the
   // first one should be evicted.
-  absl::optional<EpochTopics> maybe_removed_epoch_5 =
+  std::optional<EpochTopics> maybe_removed_epoch_5 =
       state.AddEpoch(CreateTestEpochTopics(
           kTime5, /*from_manually_triggered_calculation=*/false));
   EXPECT_EQ(state.epochs().size(), 4u);
@@ -556,6 +556,72 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_SameConfigVersion) {
   std::vector<EpochTopics> epochs;
   epochs.emplace_back(CreateTestEpochTopics(
       kTime1, /*from_manually_triggered_calculation=*/false));
+
+  CreateOrOverrideTestFile(std::move(epochs),
+                           /*next_scheduled_calculation_time=*/kTime2,
+                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey2));
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  EXPECT_EQ(state.epochs().size(), 1u);
+  EXPECT_FALSE(state.epochs()[0].empty());
+  EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
+  EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsStateTest,
+       InitFromPreexistingFile_ForwardCompatibleConfigVersion) {
+  base::HistogramTester histograms;
+
+  std::vector<EpochTopics> epochs;
+  // Current version is 1 but it's forward compatible with 2.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters,
+      {{"prioritized_topics_list", ""}});
+  EXPECT_EQ(CurrentConfigVersion(), 1);
+  epochs.emplace_back(CreateTestEpochTopics(
+      kTime1, /*from_manually_triggered_calculation=*/false,
+      /*config_version=*/2));
+
+  CreateOrOverrideTestFile(std::move(epochs),
+                           /*next_scheduled_calculation_time=*/kTime2,
+                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey2));
+
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  EXPECT_EQ(state.epochs().size(), 1u);
+  EXPECT_FALSE(state.epochs()[0].empty());
+  EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
+  EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsStateTest,
+       InitFromPreexistingFile_BackwardCompatibleConfigVersion) {
+  base::HistogramTester histograms;
+
+  std::vector<EpochTopics> epochs;
+  // Current version is 2 but it's backward compatible with 1.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters,
+      {{"prioritized_topics_list", "4,57"}});
+  EXPECT_EQ(CurrentConfigVersion(), 2);
+  epochs.emplace_back(CreateTestEpochTopics(
+      kTime1, /*from_manually_triggered_calculation=*/false,
+      /*config_version=*/1));
 
   CreateOrOverrideTestFile(std::move(epochs),
                            /*next_scheduled_calculation_time=*/kTime2,

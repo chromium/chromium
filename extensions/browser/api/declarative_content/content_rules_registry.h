@@ -32,12 +32,10 @@ class ContentRulesRegistry : public RulesRegistry {
  public:
   ContentRulesRegistry(content::BrowserContext* browser_context,
                        const std::string& event_name,
-                       content::BrowserThread::ID owner_thread,
                        RulesCacheDelegate* cache_delegate,
                        int rules_registry_id)
       : RulesRegistry(browser_context,
                       event_name,
-                      owner_thread,
                       cache_delegate,
                       rules_registry_id) {}
 

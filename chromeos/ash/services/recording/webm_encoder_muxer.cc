@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
@@ -19,6 +20,7 @@
 #include "media/base/video_types.h"
 #include "media/muxers/file_webm_muxer_delegate.h"
 #include "media/muxers/muxer.h"
+#include "media/muxers/webm_muxer.h"
 
 namespace recording {
 
@@ -57,6 +59,8 @@ class WebmEncoderCapabilities : public RecordingEncoder::Capabilities {
   }
 
   bool SupportsVideoFrameSizeChanges() const override { return true; }
+
+  bool SupportsRgbVideoFrame() const override { return false; }
 };
 
 // -----------------------------------------------------------------------------
@@ -148,13 +152,17 @@ WebmEncoderMuxer::WebmEncoderMuxer(
     const base::FilePath& webm_file_path,
     OnFailureCallback on_failure_callback)
     : RecordingEncoder(std::move(on_failure_callback)),
-      webm_muxer_(media::AudioCodec::kOpus,
-                  /*has_video_=*/true,
-                  /*has_audio_=*/!!audio_input_params,
-                  std::make_unique<RecordingMuxerDelegate>(
-                      webm_file_path,
-                      std::move(drive_fs_quota_delegate),
-                      this)) {
+      muxer_adapter_(std::make_unique<media::WebmMuxer>(
+                         media::AudioCodec::kOpus,
+                         /*has_video_=*/true,
+                         /*has_audio_=*/!!audio_input_params,
+                         std::make_unique<RecordingMuxerDelegate>(
+                             webm_file_path,
+                             std::move(drive_fs_quota_delegate),
+                             this),
+                         /*max_data_output_interval=*/std::nullopt),
+                     /*has_video=*/true,
+                     /*has_audio=*/!!audio_input_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (audio_input_params) {
@@ -220,6 +228,10 @@ void WebmEncoderMuxer::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
       NotifyFailure(mojom::RecordingStatus::kVideoEncoderInitializationFailure);
     }
   }
+}
+
+void WebmEncoderMuxer::EncodeRgbVideo(RgbVideoFrame rgb_video_frame) {
+  NOTREACHED();
 }
 
 EncodeAudioCallback WebmEncoderMuxer::GetEncodeAudioCallback() {
@@ -354,7 +366,7 @@ void WebmEncoderMuxer::EncodeVideoImpl(scoped_refptr<media::VideoFrame> frame) {
 
 void WebmEncoderMuxer::OnVideoEncoderOutput(
     media::VideoEncoderOutput output,
-    absl::optional<media::VideoEncoder::CodecDescription> codec_description) {
+    std::optional<media::VideoEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!encoded_video_params_.empty());
@@ -369,14 +381,14 @@ void WebmEncoderMuxer::OnVideoEncoderOutput(
   // with strings, to avoid copying the encoded data.
   std::string data{reinterpret_cast<const char*>(output.data.get()),
                    output.size};
-  webm_muxer_.OnEncodedVideo(muxer_params, std::move(data), std::string(),
-                             std::move(codec_description), timestamp,
-                             output.key_frame);
+  muxer_adapter_.OnEncodedVideo(muxer_params, std::move(data), std::string(),
+                                std::move(codec_description), timestamp,
+                                output.key_frame);
 }
 
 void WebmEncoderMuxer::OnAudioEncoded(
     media::EncodedAudioBuffer encoded_audio,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_description) {
+    std::optional<media::AudioEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(audio_encoder_);
 
@@ -385,9 +397,9 @@ void WebmEncoderMuxer::OnAudioEncoded(
   std::string encoded_data{
       reinterpret_cast<const char*>(encoded_audio.encoded_data.get()),
       encoded_audio.encoded_data_size};
-  webm_muxer_.OnEncodedAudio(encoded_audio.params, std::move(encoded_data),
-                             std::move(codec_description),
-                             encoded_audio.timestamp);
+  muxer_adapter_.OnEncodedAudio(encoded_audio.params, std::move(encoded_data),
+                                std::move(codec_description),
+                                encoded_audio.timestamp);
 }
 
 void WebmEncoderMuxer::OnAudioEncoderFlushed(base::OnceClosure on_done,
@@ -413,7 +425,7 @@ void WebmEncoderMuxer::OnVideoEncoderFlushed(base::OnceClosure on_done,
                << status.message();
   }
 
-  webm_muxer_.Flush();
+  muxer_adapter_.Flush();
   std::move(on_done).Run();
 }
 

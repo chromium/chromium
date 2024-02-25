@@ -122,12 +122,14 @@ def _get_test_health_info(repo_root: pathlib.Path, repo_info: GitRepoInfo,
     test_file = test_path.relative_to(repo_root)
     try:
         test_health_stats = java_test_utils.get_java_test_health(test_path)
-    except java_test_utils.JavaSyntaxError:
+    except java_test_utils.JavaSyntaxError as e:
         # This can occur if the file uses syntax not supported by the underlying
         # javalang python module used by java_test_utils. These files should be
         # investigated manually.
         logging.warning(f'Skipped file "{test_file}" due to'
-                        ' Java syntax error.')
+                        ' Java syntax error:')
+        logging.warning(f'    {e}')
+        logging.warning(f'        {e.lineno}:{e.offset}: {e.text}')
         return None
 
     return TestHealthInfo(test_name=test_file.stem,

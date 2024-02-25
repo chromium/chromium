@@ -18,10 +18,6 @@ source_set("google") {
     "//content/public/browser",
   ]
 
-  if (is_mac) {
-    deps += [ "//chrome/browser/mac:keystone_glue" ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
       "google_brand_chromeos.cc",
@@ -54,7 +50,7 @@ source_set("google") {
         "switches.h",
       ]
 
-      deps += [ "//chrome/updater/app/server/win:updater_legacy_idl_idl" ]
+      deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
     }
 
     deps += [
@@ -65,6 +61,11 @@ source_set("google") {
       "//components/policy/core/browser",
       "//components/policy/core/common",
     ]
+  }
+
+  if (is_mac) {
+    sources += [ "google_brand_mac.mm" ]
+    deps += [ "//chrome/common:channel_info" ]
   }
 
   if (is_posix || is_fuchsia) {
@@ -103,7 +104,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/common:version_header",
       "//chrome/install_static/test:test_support",
-      "//chrome/updater/app/server/win:updater_legacy_idl_idl",
+      "//chrome/updater/app/server/win:updater_legacy_idl",
       "//components/policy/core/common",
     ]
   }

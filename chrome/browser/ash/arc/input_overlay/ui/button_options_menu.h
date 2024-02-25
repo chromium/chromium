@@ -8,20 +8,24 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
-class FeatureTile;
-class RoundedContainer;
+class IconButton;
 }  // namespace ash
+
+namespace views {
+class Label;
+}  // namespace views
 
 namespace arc::input_overlay {
 
 class Action;
+class ActionEditView;
 class ActionTypeButtonGroup;
 class DisplayOverlayController;
-class EditLabels;
-class NameTag;
 
 // ButtonOptionsMenu displays action's type, input binding(s) and name and it
 // can modify these information. It shows up upon clicking an action's touch
@@ -29,40 +33,46 @@ class NameTag;
 //
 // View looks like this:
 // +----------------------------------+
-// ||icon|  |"Button options"|  |icon||
+// ||"Button options"|          |icon||
 // |----------------------------------|
-// ||"Key assignment"|                |
+// ||"Buttons let..."|                |
 // |----------------------------------|
+// |  |"Choose your button type:"   | |
 // |  |feature_tile|  |feature_title| |
 // |  |            |  |             | |
 // |----------------------------------|
 // ||"Selected key"       |key labels||
 // ||"key"                            |
 // |----------------------------------|
-// ||"Button label"                 > |
-// ||"Unassigned"                     |
+// -----------------------------------|
+// ||           Done button          ||
 // +----------------------------------+
 class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
+  METADATA_HEADER(ButtonOptionsMenu, ArrowContainer)
+
  public:
   ButtonOptionsMenu(DisplayOverlayController* controller, Action* action);
   ButtonOptionsMenu(const ButtonOptionsMenu&) = delete;
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;
   ~ButtonOptionsMenu() override;
 
+  void UpdateWidget();
+
   Action* action() const { return action_; }
 
  private:
   friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
+  friend class OverlayViewTestBase;
 
   void Init();
 
   // Add UI components.
   void AddHeader();
   void AddEditTitle();
-  void AddActionEdit();
   void AddActionSelection();
-  void AddActionNameLabel();
+  void AddActionEdit();
+  void AddDoneButton();
 
   // Functions related to buttons.
   void OnTrashButtonPressed();
@@ -73,17 +83,16 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   void OnActionRemoved(const Action& action) override;
   void OnActionTypeChanged(Action* action, Action* new_action) override;
   void OnActionInputBindingUpdated(const Action& action) override;
-  void OnActionNameUpdated(const Action& action) override;
+  void OnActionNewStateRemoved(const Action& action) override;
 
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
 
+  raw_ptr<ash::IconButton> trash_button_ = nullptr;
   raw_ptr<ActionTypeButtonGroup> button_group_ = nullptr;
-  raw_ptr<ash::RoundedContainer> action_edit_container_ = nullptr;
-  raw_ptr<EditLabels, DisableDanglingPtrDetection> labels_view_ = nullptr;
-  raw_ptr<NameTag> key_name_tag_ = nullptr;
-  raw_ptr<ash::FeatureTile> action_name_tile_ = nullptr;
+  raw_ptr<ActionEditView, DisableDanglingPtrDetection> action_edit_ = nullptr;
+  raw_ptr<views::Label> action_name_label_ = nullptr;
 };
 
 }  // namespace arc::input_overlay

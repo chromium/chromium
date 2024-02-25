@@ -174,7 +174,7 @@ TEST_F(QuarantineMacTest, NoWhereFromsKeyIfNoURLs) {
   }
 
   base::apple::ScopedCFTypeRef<CFTypeRef> attr(
-      MDItemCopyAttribute(md_item, kMDItemWhereFroms));
+      MDItemCopyAttribute(md_item.get(), kMDItemWhereFroms));
   EXPECT_FALSE(attr);
 }
 

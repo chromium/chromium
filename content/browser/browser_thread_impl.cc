@@ -195,7 +195,7 @@ bool BrowserThread::CurrentlyOn(ID identifier) {
 }
 
 // static
-std::string BrowserThread::GetDCheckCurrentlyOnErrorMessage(ID expected) {
+std::string BrowserThread::GetCurrentlyOnErrorMessage(ID expected) {
   std::string actual_name = base::PlatformThread::GetName();
   if (actual_name.empty())
     actual_name = "Unknown Thread";

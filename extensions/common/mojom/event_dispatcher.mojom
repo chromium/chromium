@@ -4,6 +4,7 @@
 
 module extensions.mojom;
 
+import "extensions/common/mojom/host_id.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 // EventDispatch is a one-per-renderer-processs interface that is responsible
@@ -12,10 +13,17 @@ import "url/mojom/url.mojom";
 // pages, or a web renderer, for content script listeners).
 // The interface is implemented in //extensions/renderer code, and is
 // called on the browser side by the EventRouter.
+// `event_will_run_in_lazy_background_page_script` indicates that during the
+// event dispatch the event will, at least, run in a lazy background page
+// script. It is should always be false for service workers.
 interface EventDispatcher {
     // Sent to the renderer to dispatch an event to a listener.
     DispatchEvent(DispatchEventParams params,
-                  mojo_base.mojom.ListValue event_args);
+                  mojo_base.mojom.ListValue event_args) => (
+                    // TODO(crbug.com/1470045): Remove this variable once
+                    // crbug.com/1470045  allows us to only ack for lazy
+                    // background page events.
+                    bool event_will_run_in_lazy_background_page_script);
 };
 
 struct EventFilteringInfo {
@@ -39,8 +47,8 @@ struct DispatchEventParams {
   // id. Otherwise, this is 0.
   int32 worker_thread_id;
 
-  // The id of the extension to dispatch the event to.
-  string extension_id;
+  // The |HostID| to route the event to.
+  HostID host_id;
 
   // The name of the event to dispatch.
   string event_name;

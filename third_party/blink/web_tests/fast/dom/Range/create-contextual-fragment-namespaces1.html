@@ -65,8 +65,12 @@ function onIframeLoad() {
         result.textContent += " - Range.createContextualFragment() did not raise an exception when attempting to use an out-of-scope namespace prefix";
         return;
     }
-    if (String.prototype.indexOf.call(exception.message, "invalid XML") < 0) {
-        result.textContent += " - wrong exception thrown";
+    if (exception.message != `Failed to execute 'createContextualFragment' on 'Range': Namespace prefix XL for attribute #gradient3 is not declared.`) {
+        result.textContent += " - wrong exception thrown: " + exception.message;
+        return;
+    }
+    if (exception.code != 14) {
+        result.textContent += " - wrong exception code: " + exception.code;
         return;
     }
 

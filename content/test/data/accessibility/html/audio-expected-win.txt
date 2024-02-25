@@ -4,14 +4,12 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++IA2_ROLE_SECTION
 ++++++++IA2_ROLE_SECTION
 ++++++++++IA2_ROLE_SECTION
-++++++++++++ROLE_SYSTEM_PUSHBUTTON name='play' FOCUSABLE xml-roles:button
-++++++++++++IA2_ROLE_SECTION name='elapsed time: 0:00'
-++++++++++++++ROLE_SYSTEM_STATICTEXT name='0:00'
-++++++++++++IA2_ROLE_SECTION name='remaining time: / 0:00'
-++++++++++++++ROLE_SYSTEM_STATICTEXT name='/ 0:00'
-++++++++++++ROLE_SYSTEM_SLIDER name='audio time scrubber 0:00 / 0:00' value='elapsed time: 0:00' FOCUSABLE IA2_STATE_HORIZONTAL xml-roles:slider
+++++++++++++ROLE_SYSTEM_PUSHBUTTON name='play' FOCUSABLE
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_SLIDER name='audio time scrubber' value='elapsed time: 0:00' FOCUSABLE IA2_STATE_HORIZONTAL description:total time\: 0\:00 description-from:aria-description description='total time: 0:00'
 ++++++++++++IA2_ROLE_SECTION
 ++++++++++++++IA2_ROLE_SECTION
-++++++++++++++ROLE_SYSTEM_SLIDER name='volume' value='1' FOCUSABLE IA2_STATE_HORIZONTAL xml-roles:slider
-++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='mute' FOCUSABLE xml-roles:button
-++++++++++++ROLE_SYSTEM_PUSHBUTTON name='show more media controls' FOCUSABLE xml-roles:button description='more options'
+++++++++++++++ROLE_SYSTEM_SLIDER name='volume' value='100' FOCUSABLE IA2_STATE_HORIZONTAL
+++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='mute' FOCUSABLE
+++++++++++++ROLE_SYSTEM_BUTTONMENU name='show more media controls' FOCUSABLE HASPOPUP description-from:tooltip description='more options'
+++++++++++++++IA2_ROLE_SECTION

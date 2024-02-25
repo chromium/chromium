@@ -41,24 +41,18 @@ class AddressFormEventLogger : public FormEventLoggerBase {
 
   ~AddressFormEventLogger() override;
 
-  void OnDidFillSuggestion(
+  void set_record_type_count(size_t record_type_count) {
+    record_type_count_ = record_type_count;
+  }
+
+  void OnDidFillFormFillingSuggestion(
       const AutofillProfile& profile,
       const FormStructure& form,
       const AutofillField& field,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const AutofillTriggerSource trigger_source);
 
-  void OnDidSeeFillableDynamicForm(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
-
-  void OnDidRefill(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
-
-  void OnSubsequentRefillAttempt(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
+  void OnDidUndoAutofill();
 
  protected:
   void RecordPollSuggestions() override;
@@ -72,10 +66,16 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   void RecordFillingAssistance(LogBuffer& logs) const override;
   void RecordFillingCorrectness(LogBuffer& logs) const override;
 
+  void LogUkmInteractedWithForm(FormSignature form_signature) override;
+
+  bool HasLoggedDataToFillAvailable() const override;
+
  private:
   // All profile categories for which the user has accepted at least one
   // suggestion - used for metrics.
   DenseSet<AutofillProfileSourceCategory> profile_categories_filled_;
+
+  size_t record_type_count_ = 0;
 };
 
 }  // namespace autofill::autofill_metrics

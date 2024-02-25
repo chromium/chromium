@@ -7,7 +7,7 @@
 #include <cstring>
 #include <utility>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -95,7 +95,8 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     DCHECK(!outgoing_stream_->close_promise_resolver_);
 
     outgoing_stream_->close_promise_resolver_ =
-        MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLPromise>>(
+            script_state);
     outgoing_stream_->pending_operation_ =
         outgoing_stream_->close_promise_resolver_;
 
@@ -253,7 +254,8 @@ void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
                                            reason, resolver)));
 
   // 5. Let pendingOperation be stream’s [[PendingOperation]].
-  ScriptPromiseResolver* pending_operation = stream->pending_operation_;
+  ScriptPromiseResolverTyped<IDLPromise>* pending_operation =
+      stream->pending_operation_;
 
   // 6. Set stream’s [[PendingOperation]] to null.
   stream->pending_operation_ = nullptr;
@@ -381,7 +383,8 @@ ScriptPromise OutgoingStream::WriteOrCacheData(ScriptState* script_state,
   DCHECK_EQ(offset_, 0u);
   write_watcher_.ArmOrNotify();
   write_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLPromise>>(
+          script_state);
   pending_operation_ = write_promise_resolver_;
   return write_promise_resolver_->Promise();
 }

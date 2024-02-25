@@ -7,13 +7,13 @@
 
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/1291730): Move this file to a more appropriate directory.
 //
@@ -195,7 +195,7 @@ class
       const GenericEnumTableEntry data[],
       std::size_t size,
       base::StringPiece str);
-  static absl::optional<base::StringPiece>
+  static std::optional<base::StringPiece>
   FindByValue(const GenericEnumTableEntry data[], std::size_t size, int value);
 
   constexpr base::StringPiece str() const {
@@ -308,7 +308,7 @@ class EnumTable {
 
   // Gets the string associated with the given enum value.  When the argument
   // is a constant, prefer the zero-argument form below.
-  inline absl::optional<base::StringPiece> GetString(E value) const {
+  inline std::optional<base::StringPiece> GetString(E value) const {
     if (is_sorted_) {
       const std::size_t index = static_cast<std::size_t>(value);
       if (ANALYZER_ASSUME_TRUE(index < data_.size())) {
@@ -316,7 +316,7 @@ class EnumTable {
         if (ANALYZER_ASSUME_TRUE(entry.has_str()))
           return entry.str();
       }
-      return absl::nullopt;
+      return std::nullopt;
     }
     return GenericEnumTableEntry::FindByValue(
         reinterpret_cast<const GenericEnumTableEntry*>(data_.begin()),
@@ -346,11 +346,11 @@ class EnumTable {
   // GetString(), this method is not defined as a constexpr, because it should
   // never be called with a literal string; it's simpler to just refer to the
   // enum value directly.
-  absl::optional<E> GetEnum(base::StringPiece str) const {
+  std::optional<E> GetEnum(base::StringPiece str) const {
     auto* entry = GenericEnumTableEntry::FindByString(
         reinterpret_cast<const GenericEnumTableEntry*>(data_.begin()),
         data_.size(), str);
-    return entry ? static_cast<E>(entry->value) : absl::optional<E>();
+    return entry ? static_cast<E>(entry->value) : std::optional<E>();
   }
 
   // The default instance of this class.  There should normally only be one
@@ -389,7 +389,7 @@ class EnumTable {
 
 #ifndef NDEBUG
   // Finds and returns the first i for which data[i].value != i;
-  constexpr static absl::optional<std::size_t> FindNonConsecutiveEntry(
+  constexpr static std::optional<std::size_t> FindNonConsecutiveEntry(
       std::initializer_list<Entry> data) {
     int32_t counter = 0;
     for (const auto& entry : data) {
@@ -406,7 +406,7 @@ class EnumTable {
 // Converts an enum value to a string using the default table
 // (EnumTable<E>::instance) for the given enum type.
 template <typename E>
-inline absl::optional<base::StringPiece> EnumToString(E value) {
+inline std::optional<base::StringPiece> EnumToString(E value) {
   return EnumTable<E>::GetInstance().GetString(value);
 }
 
@@ -430,7 +430,7 @@ inline base::StringPiece EnumToString() {
 // Converts a string to an enum value using the default table
 // (EnumTable<E>::instance) for the given enum type.
 template <typename E>
-inline absl::optional<E> StringToEnum(base::StringPiece str) {
+inline std::optional<E> StringToEnum(base::StringPiece str) {
   return EnumTable<E>::GetInstance().GetEnum(str);
 }
 

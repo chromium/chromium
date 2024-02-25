@@ -6,9 +6,7 @@ package org.chromium.mojo.bindings;
 
 import java.io.Closeable;
 
-/**
- * A class which implements this interface can receive {@link Message} objects.
- */
+/** A class which implements this interface can receive {@link Message} objects. */
 public interface MessageReceiver extends Closeable {
 
     /**

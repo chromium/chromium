@@ -50,7 +50,7 @@ class ASH_EXPORT ShelfFocusCycler {
 
  private:
   // Owned by RootWindowController.
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
 };
 
 }  // namespace ash

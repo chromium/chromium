@@ -75,7 +75,7 @@ class ImplicitNudgeHideAnimationObserver
  private:
   std::unique_ptr<SystemNudge> nudge_;
   // Owned by the shell.
-  const raw_ptr<SystemNudgeController, ExperimentalAsh> controller_;
+  const raw_ptr<SystemNudgeController> controller_;
 };
 
 SystemNudgeController::SystemNudgeController() {

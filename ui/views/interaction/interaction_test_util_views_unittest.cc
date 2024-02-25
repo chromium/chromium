@@ -20,6 +20,8 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -64,6 +66,8 @@ constexpr int kMenuID1 = 1;
 constexpr int kMenuID2 = 2;
 
 class DefaultActionTestView : public View {
+  METADATA_HEADER(DefaultActionTestView, View)
+
  public:
   DefaultActionTestView() = default;
   ~DefaultActionTestView() override = default;
@@ -81,7 +85,12 @@ class DefaultActionTestView : public View {
   bool activated_ = false;
 };
 
+BEGIN_METADATA(DefaultActionTestView)
+END_METADATA
+
 class AcceleratorView : public View {
+  METADATA_HEADER(AcceleratorView, View)
+
  public:
   explicit AcceleratorView(ui::Accelerator accelerator)
       : accelerator_(accelerator) {
@@ -103,6 +112,9 @@ class AcceleratorView : public View {
   const ui::Accelerator accelerator_;
   bool pressed_ = false;
 };
+
+BEGIN_METADATA(AcceleratorView)
+END_METADATA
 
 }  // namespace
 
@@ -165,9 +177,9 @@ class InteractionTestUtilViewsTest
   }
 
   void CloseMenu() {
+    menu_item_ = nullptr;
     menu_runner_.reset();
     menu_model_.reset();
-    menu_item_ = nullptr;
   }
 
   void SetUp() override {
@@ -187,8 +199,8 @@ class InteractionTestUtilViewsTest
     test_util_.reset();
     if (menu_runner_)
       CloseMenu();
-    widget_.reset();
     contents_ = nullptr;
+    widget_.reset();
     ViewsTestBase::TearDown();
   }
 
@@ -203,10 +215,10 @@ class InteractionTestUtilViewsTest
  protected:
   std::unique_ptr<ui::test::InteractionTestUtil> test_util_;
   std::unique_ptr<Widget> widget_;
-  raw_ptr<View, DanglingUntriaged> contents_ = nullptr;
+  raw_ptr<View> contents_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
-  raw_ptr<MenuItemView, DanglingUntriaged> menu_item_ = nullptr;
+  raw_ptr<MenuItemView> menu_item_ = nullptr;
 };
 
 TEST_P(InteractionTestUtilViewsTest, PressButton) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DiscountConsentCard} from 'chrome://new-tab-page/lazy_load.js';
+import type {DiscountConsentCard} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 export function clickAcceptButton(discountConsentCard: DiscountConsentCard) {

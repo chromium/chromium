@@ -61,6 +61,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
@@ -97,12 +98,13 @@ std::u16string GetTabCounterLabelText(int num_tabs) {
 // Label to display a number of tabs. Because there is limited space within the
 // tab counter border, the font shrinks when the count is 10 or higher.
 class NumberLabel : public views::Label {
+  METADATA_HEADER(NumberLabel, views::Label)
+
  public:
-  METADATA_HEADER(NumberLabel);
   NumberLabel() : Label(std::u16string(), CONTEXT_TAB_COUNTER) {
     single_digit_font_ = font_list();
-    double_digit_font_ = views::style::GetFont(CONTEXT_TAB_COUNTER,
-                                               views::style::STYLE_SECONDARY);
+    double_digit_font_ = views::TypographyProvider::Get().GetFont(
+        CONTEXT_TAB_COUNTER, views::style::STYLE_SECONDARY);
   }
 
   ~NumberLabel() override = default;
@@ -117,7 +119,7 @@ class NumberLabel : public views::Label {
   gfx::FontList double_digit_font_;
 };
 
-BEGIN_METADATA(NumberLabel, views::Label)
+BEGIN_METADATA(NumberLabel)
 END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,7 +147,7 @@ class InteractionTracker : public ui::EventHandler,
       native_window_->RemovePreTargetHandler(this);
   }
 
-  const absl::optional<gfx::Point>& last_interaction_location() const {
+  const std::optional<gfx::Point>& last_interaction_location() const {
     return last_interaction_location_;
   }
 
@@ -177,7 +179,7 @@ class InteractionTracker : public ui::EventHandler,
     }
   }
 
-  absl::optional<gfx::Point> last_interaction_location_;
+  std::optional<gfx::Point> last_interaction_location_;
   gfx::NativeWindow native_window_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_widget_observation_{this};
@@ -223,8 +225,8 @@ class TabCounterAnimator : public gfx::AnimationDelegate {
   int GetDisappearingLabelTargetPosition() const;
   int GetBorderStartingY() const;
 
-  absl::optional<int> last_num_tabs_;
-  absl::optional<int> pending_num_tabs_ = 0;
+  std::optional<int> last_num_tabs_;
+  std::optional<int> pending_num_tabs_ = 0;
   bool pending_throbber_ = false;
   TabCounterAnimationType current_animation_ = TabCounterAnimationType::kNone;
 
@@ -435,9 +437,9 @@ class WebUITabCounterButton : public views::Button,
                               public TabStripModelObserver,
                               public views::ContextMenuController,
                               public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(WebUITabCounterButton);
+  METADATA_HEADER(WebUITabCounterButton, views::Button)
 
+ public:
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB = 13;
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_NEW_TAB = 14;
 
@@ -457,7 +459,7 @@ class WebUITabCounterButton : public views::Button,
                         views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
   void OnThemeChanged() override;
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -619,7 +621,7 @@ void WebUITabCounterButton::OnThemeChanged() {
   UpdateColors();
 }
 
-void WebUITabCounterButton::Layout() {
+void WebUITabCounterButton::Layout(PassKey) {
   const gfx::Rect view_bounds = GetLocalBounds();
 
   ink_drop_container_->SetBoundsRect(view_bounds);
@@ -692,7 +694,7 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-BEGIN_METADATA(WebUITabCounterButton, views::Button)
+BEGIN_METADATA(WebUITabCounterButton)
 END_METADATA
 
 }  // namespace

@@ -26,7 +26,7 @@ void DlpFilesTestBase::SetUp() {
   user_manager::User* user =
       user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id,
-          /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR, profile_);
+          /*is_affiliated=*/false, user_manager::UserType::kRegular, profile_);
   user_manager->UserLoggedIn(account_id, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
@@ -56,7 +56,8 @@ void DlpFilesTestBase::TearDown() {
 
 std::unique_ptr<KeyedService> DlpFilesTestBase::SetDlpRulesManager(
     content::BrowserContext* context) {
-  auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
+  auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>(
+      Profile::FromBrowserContext(context));
   rules_manager_ = dlp_rules_manager.get();
   return dlp_rules_manager;
 }

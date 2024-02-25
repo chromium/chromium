@@ -76,7 +76,11 @@ BatterySet::BatterySet(const BatterySet&) = default;
 BatterySet::~BatterySet() = default;
 
 const char FlossBatteryManagerClient::kExportedCallbacksPath[] =
-    "/org/chromium/bluetooth/batterymanagerclient";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "/org/chromium/bluetooth/battery_manager/callback/lacros";
+#else
+    "/org/chromium/bluetooth/battery_manager/callback";
+#endif
 
 void FlossBatteryManagerClient::AddObserver(
     FlossBatteryManagerClient::FlossBatteryManagerClientObserver* observer) {
@@ -108,9 +112,9 @@ FlossBatteryManagerClient::~FlossBatteryManagerClient() {
 }
 
 void FlossBatteryManagerClient::GetBatteryInformation(
-    ResponseCallback<absl::optional<BatterySet>> callback,
+    ResponseCallback<std::optional<BatterySet>> callback,
     const FlossDeviceId& device) {
-  CallBatteryManagerMethod<absl::optional<BatterySet>>(
+  CallBatteryManagerMethod<std::optional<BatterySet>>(
       std::move(callback), battery_manager::kGetBatteryInformation,
       device.address);
 }
@@ -118,10 +122,12 @@ void FlossBatteryManagerClient::GetBatteryInformation(
 void FlossBatteryManagerClient::Init(dbus::Bus* bus,
                                      const std::string& service_name,
                                      const int adapter_index,
+                                     base::Version version,
                                      base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
   battery_manager_adapter_path_ = GenerateBatteryManagerPath(adapter_index);
+  version_ = version;
 
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, battery_manager_adapter_path_);
@@ -178,7 +184,7 @@ void FlossBatteryManagerClient::BatteryCallbackRegistered(
 void FlossBatteryManagerClient::BatteryCallbackUnregistered(
     DBusResult<bool> result) {
   if (!result.has_value() || *result == false) {
-    LOG(WARNING) << __func__ << "Failed to unregister callback";
+    LOG(WARNING) << __func__ << ": Failed to unregister callback";
   }
 }
 

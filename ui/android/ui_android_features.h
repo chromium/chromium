@@ -12,6 +12,11 @@ namespace ui {
 
 // Keep sorted!
 
+// Feature controlling whether or not HDR is enabled on Android.
+// TODO(https://crbug.com/1430768): Leave this as a kill switch until Android U
+// ships.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidHDR);
+
 // Enables converting trackpad click gestures to mouse events in
 // order for them to be interpreted similar to a desktop
 // experience (i.e. double-click to select word.)
@@ -23,6 +28,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
 // Reports all of the available pointer types (i.e. coarse, fine) to content
 // rather than just the first one detected.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportAllAvailablePointerTypes);
+
+// Kill switch to turn off validation in TextViewWithLeading that requires a
+// leading value to be configured.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRequireLeadingInTextViewWithLeading);
 
 }  // namespace ui
 

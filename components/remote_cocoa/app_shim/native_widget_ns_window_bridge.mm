@@ -25,6 +25,7 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #import "components/remote_cocoa/app_shim/certificate_viewer.h"
+#import "components/remote_cocoa/app_shim/context_menu_runner.h"
 #import "components/remote_cocoa/app_shim/mouse_capture.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_frameless_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
@@ -226,18 +227,8 @@ NSComparisonResult SubviewSorter(__kindof NSView* lhs,
 // |child_windows| array ignoring the windows added by AppKit.
 NSUInteger CountBridgedWindows(NSArray* child_windows) {
   NSUInteger count = 0;
-
   for (NSWindow* child in child_windows) {
-    NativeWidgetMacNSWindow* parentWindow =
-        base::apple::ObjCCast<NativeWidgetMacNSWindow>([child parentWindow]);
-
-    // The child may be in an intermediary state where it's been removed from
-    // Views but not from the childWindow list (see the description of
-    // -willCloseLater in ViewsNSWindowDelegate). Child windows in this state
-    // essentially do not exist, so we should not count them.
-    if ([parentWindow willRemoveChildWindowOnActivation:child]) {
-      continue;
-    } else if ([[child delegate] isKindOfClass:[ViewsNSWindowDelegate class]]) {
+    if ([[child delegate] isKindOfClass:[ViewsNSWindowDelegate class]]) {
       ++count;
     }
   }
@@ -399,10 +390,6 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
       NativeWidgetNSWindowBridge::GetFromId(new_parent_id);
   DCHECK(new_parent);
 
-  // If the parent is another NativeWidgetNSWindowBridge, just add to the
-  // collection of child windows it owns and manages. Otherwise, create an
-  // adapter to anchor the child widget and observe when the parent NSWindow is
-  // closed.
   parent_ = new_parent;
   parent_->child_windows_.push_back(this);
 
@@ -458,7 +445,7 @@ void NativeWidgetNSWindowBridge::InitWindow(
   pending_restoration_data_ = params->state_restoration_data;
 
   if (params->is_headless_mode_window)
-    headless_mode_window_ = absl::make_optional<HeadlessModeWindow>();
+    headless_mode_window_ = std::make_optional<HeadlessModeWindow>();
 
   [window_ setIsHeadless:params->is_headless_mode_window];
 
@@ -520,18 +507,23 @@ void NativeWidgetNSWindowBridge::SetInitialBounds(
     adjusted_bounds = gfx::Rect(
         gfx::Point(), gfx::Size(NSWidth(frame_rect), NSHeight(frame_rect)));
   }
-  SetBounds(adjusted_bounds, minimum_content_size);
+  SetBounds(adjusted_bounds, minimum_content_size, std::nullopt);
 }
 
 void NativeWidgetNSWindowBridge::SetBounds(
     const gfx::Rect& new_bounds,
-    const gfx::Size& minimum_content_size) {
-  // -[NSWindow contentMinSize] is only checked by Cocoa for user-initiated
-  // resizes. This is not what toolkit-views expects, so clamp. Note there is
-  // no check for maximum size (consistent with aura::Window::SetBounds()).
+    const gfx::Size& minimum_content_size,
+    const std::optional<gfx::Size>& maximum_content_size) {
+  // -[NSWindow contentMinSize] and [NSWindow contentMaxSize] are only checked
+  // by Cocoa for user-initiated resizes. This is not what toolkit-views
+  // expects, so clamp.
   gfx::Size clamped_content_size =
       GetClientSizeForWindowSize(window_, new_bounds.size());
   clamped_content_size.SetToMax(minimum_content_size);
+
+  if (maximum_content_size.has_value()) {
+    clamped_content_size.SetToMin(*maximum_content_size);
+  }
 
   // A contentRect with zero width or height is a banned practice in ChromeMac,
   // due to unpredictable macOS treatment.
@@ -571,7 +563,7 @@ void NativeWidgetNSWindowBridge::SetSize(
   // which -[NSWindow setContentSize:] would do).
   gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
   new_window_bounds.set_size(new_size);
-  SetBounds(new_window_bounds, minimum_content_size);
+  SetBounds(new_window_bounds, minimum_content_size, std::nullopt);
 }
 
 void NativeWidgetNSWindowBridge::SetSizeAndCenter(
@@ -579,7 +571,7 @@ void NativeWidgetNSWindowBridge::SetSizeAndCenter(
     const gfx::Size& minimum_content_size) {
   gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
   new_window_bounds.set_size(GetWindowSizeForClientSize(window_, content_size));
-  SetBounds(new_window_bounds, minimum_content_size);
+  SetBounds(new_window_bounds, minimum_content_size, std::nullopt);
 
   // Note that this is not the precise center of screen, but it is the standard
   // location for windows like dialogs to appear on screen for Mac.
@@ -779,11 +771,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     // DCHECK(![window_ attachedSheet]);
 
     [window_ orderOut:nil];
-
-    NativeWidgetMacNSWindow* parentWindow =
-        base::apple::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
-    DCHECK(!window_visible_ ||
-           [parentWindow willRemoveChildWindowOnActivation:window_]);
+    DCHECK(!window_visible_);
     return;
   } else if (new_state == WindowVisibilityState::kMiniaturizeWindow) {
     [window_ miniaturize:nil];
@@ -976,14 +964,14 @@ void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
   if (tab_widget_bridge) {
     NSWindow* tab_window = tab_widget_bridge->ns_window();
     immersive_mode_controller_ =
-        std::make_unique<ImmersiveModeTabbedController>(
+        std::make_unique<ImmersiveModeTabbedControllerCocoa>(
             ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
             tab_window);
   } else {
-    immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
+    immersive_mode_controller_ = std::make_unique<ImmersiveModeControllerCocoa>(
         ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window());
   }
-  immersive_mode_controller_->Enable();
+  immersive_mode_controller_->Init();
 
   // It is possible for the fullscreen transition to complete before the
   // immersive mode controller is created. Mark the transition as complete as
@@ -1033,26 +1021,27 @@ void NativeWidgetNSWindowBridge::ImmersiveFullscreenRevealUnlock() {
   }
 }
 
-bool NativeWidgetNSWindowBridge::ImmersiveFullscreenIsEnabled() {
-  if (!immersive_mode_controller_) {
-    return false;
-  }
-  return immersive_mode_controller_->is_enabled();
+bool NativeWidgetNSWindowBridge::ShouldUseCustomTitlebarHeightForFullscreen()
+    const {
+  return immersive_mode_controller_ &&
+         immersive_mode_controller_->is_initialized() &&
+         immersive_mode_controller_->IsTabbed() &&
+         !immersive_mode_controller_->IsContentFullscreen();
 }
 
-bool NativeWidgetNSWindowBridge::ImmersiveFullscreenIsTabbed() {
-  if (!immersive_mode_controller_) {
-    return false;
-  }
-  return immersive_mode_controller_->IsTabbed();
+void NativeWidgetNSWindowBridge::OnImmersiveFullscreenToolbarRevealChanged(
+    bool is_revealed) {
+  host_->OnImmersiveFullscreenToolbarRevealChanged(is_revealed);
 }
 
-mojom::ToolbarVisibilityStyle
-NativeWidgetNSWindowBridge::ImmersiveFullscreenLastUsedStyle() {
-  if (!immersive_mode_controller_) {
-    return mojom::ToolbarVisibilityStyle::kAlways;
-  }
-  return immersive_mode_controller_->last_used_style();
+void NativeWidgetNSWindowBridge::OnImmersiveFullscreenMenuBarRevealChanged(
+    float reveal_amount) {
+  host_->OnImmersiveFullscreenMenuBarRevealChanged(reveal_amount);
+}
+
+void NativeWidgetNSWindowBridge::OnAutohidingMenuBarHeightChanged(
+    int menu_bar_height) {
+  host_->OnAutohidingMenuBarHeightChanged(menu_bar_height);
 }
 
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
@@ -1061,6 +1050,15 @@ void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
 
 void NativeWidgetNSWindowBridge::SetCanGoForward(bool can_go_forward) {
   can_go_forward_ = can_go_forward;
+}
+
+void NativeWidgetNSWindowBridge::DisplayContextMenu(
+    mojom::ContextMenuPtr menu,
+    mojo::PendingRemote<mojom::MenuHost> host,
+    mojo::PendingReceiver<mojom::Menu> receiver) {
+  ContextMenuRunner runner(std::move(host), std::move(receiver));
+  NSView* target_view = GetNSViewFromId(menu->target_view_id);
+  runner.ShowMenu(std::move(menu), GetWindow(), target_view);
 }
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
@@ -1117,12 +1115,7 @@ void NativeWidgetNSWindowBridge::OnPositionChanged() {
 }
 
 void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
-  NativeWidgetMacNSWindow* parentWindow =
-      base::apple::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
-  const bool window_visible =
-      [window_ isVisible] &&
-      ![parentWindow willRemoveChildWindowOnActivation:window_];
-
+  const bool window_visible = [window_ isVisible];
   if (window_visible_ == window_visible)
     return;
 
@@ -1423,6 +1416,8 @@ bool NativeWidgetNSWindowBridge::ShouldWaitInPreCommit() {
     return false;
   if (!bridged_view_)
     return false;
+  if (content_dip_size_.IsEmpty())
+    return false;
   // Suppress synchronous CA transactions during AppKit fullscreen transition
   // since there is no need for updates during such transition.
   // Re-layout and re-paint will be done after the transition. See
@@ -1717,17 +1712,10 @@ void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
   const size_t child_count = child_windows_.size();
   if (!window_visible_) {
     for (NativeWidgetNSWindowBridge* child : child_windows_) {
-      NSWindow* childWindow = child->ns_window();
-
       if (child->window_visible_) {
-        [childWindow orderOut:nil];
+        [child->ns_window() orderOut:nil];
       }
-      NativeWidgetMacNSWindow* parentWindow =
-          base::apple::ObjCCast<NativeWidgetMacNSWindow>(
-              [childWindow parentWindow]);
-
-      DCHECK(!child->window_visible_ ||
-             [parentWindow willRemoveChildWindowOnActivation:childWindow]);
+      DCHECK(!child->window_visible_);
       CHECK_EQ(child_count, child_windows_.size());
     }
     // The orderOut calls above should result in a call to OnVisibilityChanged()
@@ -1785,6 +1773,13 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
   NSWindow* parent_window = parent_->ns_window();
   DCHECK(parent_window);
   NSWindow* __weak weak_window = window_;
+
+  // Don't show a sheet twice. If a sheet is shown twice but endSheet: only
+  // once it will leave a dangling blank sheet. This happened when the browser
+  // is restored from minimization.
+  if (parent_window.attachedSheet == window_) {
+    return;
+  }
 
   auto begin_sheet_closure = base::BindOnce(^{
     [parent_window beginSheet:window_

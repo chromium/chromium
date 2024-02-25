@@ -39,7 +39,8 @@
 
 namespace feed {
 namespace {
-StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kFollowing,
+StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kSupervisedUser,
+                             StreamKind::kFollowing,
                              StreamKind::kSingleWebFeed};
 // TODO(crbug.com/1369777) Add kSingleWebFeed streams to metrics reporting below
 using feed::FeedEngagementType;
@@ -78,6 +79,8 @@ constexpr base::TimeDelta kMaxStableContentSliceVisibilityTime =
 
 base::StringPiece HistogramReplacement(const StreamType& stream_type) {
   switch (stream_type.GetKind()) {
+    case StreamKind::kSupervisedUser:
+      return "Feed.SupervisedFeed.";
     case StreamKind::kForYou:
       return "Feed.";
     case StreamKind::kFollowing:
@@ -117,6 +120,11 @@ void ReportContentSuggestionsOpened(const StreamType& stream_type,
     case StreamKind::kSingleWebFeed:
       base::UmaHistogramExactLinear(
           "ContentSuggestions.Feed.SingleWebFeed.Opened", index_in_stream,
+          kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kSupervisedUser:
+      base::UmaHistogramExactLinear(
+          "ContentSuggestions.Feed.SupervisedFeed.Opened", index_in_stream,
           kMaxSuggestionsTotal);
       break;
     case StreamKind::kUnknown:
@@ -235,6 +243,8 @@ base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
       return "QueryNextPage";
     case NetworkRequestType::kQueryWebFeed:
       return "QueryWebFeed";
+    case NetworkRequestType::kSupervisedFeed:
+      return "SupervisedFeed";
   }
 }
 
@@ -298,18 +308,11 @@ void ReportCombinedSubscriptionCountAtEngagementTime(int subscription_count) {
   base::UmaHistogramSparse(
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
       subscription_count);
-  // TODO(b/228342051): The histogram below is being obsoleted because it has a
-  // misleading name. Once the new *.Engaged2 series collects a large enough
-  // sample history, it will be effectively removed/obsoleted.
-  base::UmaHistogramSparse(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged",
-      subscription_count);
 }
 
 bool IsGoodExplicitInteraction(FeedUserActionType action) {
   switch (action) {
     case FeedUserActionType::kAddedToReadLater:
-    case FeedUserActionType::kTappedCrowButton:
     case FeedUserActionType::kTappedFollowButton:
     case FeedUserActionType::kShare:
     case FeedUserActionType::kTappedAddToReadingList:
@@ -406,7 +409,7 @@ void MetricsReporter::TrackTimeSpentInFeed(bool interacted_or_scrolled) {
     persistent_data_.accumulated_time_spent_in_feed +=
         std::min(kTimeSpentInFeedInteractionTimeout,
                  base::TimeTicks::Now() - *time_in_feed_start_);
-    time_in_feed_start_ = absl::nullopt;
+    time_in_feed_start_ = std::nullopt;
   }
 
   if (interacted_or_scrolled) {
@@ -539,6 +542,11 @@ void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
     case StreamKind::kSingleWebFeed:
       base::UmaHistogramExactLinear(
           "ContentSuggestions.Feed.SingleWebFeed.Shown", index_in_stream,
+          kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kSupervisedUser:
+      base::UmaHistogramExactLinear(
+          "ContentSuggestions.Feed.SupervisedFeed.Shown", index_in_stream,
           kMaxSuggestionsTotal);
       break;
     case StreamKind::kUnknown:
@@ -712,7 +720,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
       RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kAddedToReadLater:
-    case FeedUserActionType::kTappedCrowButton:
     case FeedUserActionType::kTappedFollowButton:
     case FeedUserActionType::kEphemeralChange:
     case FeedUserActionType::kEphemeralChangeRejected:
@@ -922,7 +929,7 @@ void MetricsReporter::OnLoadStream(
   bool loaded_new_content_from_network =
       result_summary.loaded_new_content_from_network;
   base::TimeDelta stored_content_age = result_summary.stored_content_age;
-  absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata =
+  std::optional<feedstore::Metadata::StreamMetadata> stream_metadata =
       result_summary.stream_metadata;
   ContentOrder content_order = result_summary.content_order;
   VVLOG << "OnLoadStream load_from_store_status=" << load_from_store_status
@@ -1137,6 +1144,8 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
   switch (stream_type.GetKind()) {
     case StreamKind::kForYou:
       return for_you_stats_;
+    case StreamKind::kSupervisedUser:
+      return supervised_feed_stats_;
     case StreamKind::kFollowing:
     case StreamKind::kSingleWebFeed:
       return web_feed_stats_;

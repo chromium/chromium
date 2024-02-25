@@ -166,7 +166,7 @@ SecurityOrigin::SecurityOrigin(const url::Origin::Nonce& nonce,
     : nonce_if_opaque_(nonce), precursor_origin_(precursor) {}
 
 SecurityOrigin::SecurityOrigin(NewUniqueOpaque, const SecurityOrigin* precursor)
-    : nonce_if_opaque_(absl::in_place), precursor_origin_(precursor) {}
+    : nonce_if_opaque_(std::in_place), precursor_origin_(precursor) {}
 
 SecurityOrigin::SecurityOrigin(const SecurityOrigin* other,
                                ConstructIsolatedCopy)

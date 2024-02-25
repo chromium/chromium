@@ -24,8 +24,7 @@ std::string GetDefaultHintVersionString() {
       optimization_guide::proto::HINT_SOURCE_OPTIMIZATION_HINTS_COMPONENT);
   std::string hint_version_string;
   hint_version.SerializeToString(&hint_version_string);
-  base::Base64Encode(hint_version_string, &hint_version_string);
-  return hint_version_string;
+  return base::Base64Encode(hint_version_string);
 }
 
 }  // namespace

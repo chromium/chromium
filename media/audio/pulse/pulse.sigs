@@ -24,6 +24,7 @@ pa_operation* pa_context_get_source_info_by_index(pa_context* c, uint32_t idx, p
 pa_operation* pa_context_get_source_info_by_name(pa_context* c, const char* name, pa_source_info_cb_t cb, void *userdata);
 pa_operation* pa_context_get_source_info_list(pa_context* c, pa_source_info_cb_t cb, void* userdata);
 pa_operation* pa_context_get_sink_info_list(pa_context* c, pa_sink_info_cb_t cb, void* userdata);
+pa_operation* pa_context_get_sink_info_by_name(pa_context* c, const char* name, pa_sink_info_cb_t cb, void *userdata);
 pa_context_state_t pa_context_get_state(const_pa_context_ptr c);
 pa_context* pa_context_new(pa_mainloop_api* mainloop, const char* name);
 pa_operation* pa_context_set_source_volume_by_index(pa_context* c, uint32_t idx, const pa_cvolume* volume, pa_context_success_cb_t cb, void* userdata);
@@ -59,3 +60,5 @@ void pa_stream_unref(pa_stream* s);
 int pa_context_errno(const_pa_context_ptr c);
 const char* pa_strerror(int error);
 pa_cvolume* pa_cvolume_set(pa_cvolume* a, unsigned  channels, pa_volume_t v);
+void pa_context_set_subscribe_callback(pa_context* c, pa_context_subscribe_cb_t cb, void* userdata);
+pa_operation* pa_context_subscribe(pa_context* c, pa_subscription_mask_t m, pa_context_success_cb_t cb, void* userdata);

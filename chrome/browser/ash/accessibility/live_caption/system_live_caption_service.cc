@@ -50,7 +50,7 @@ void SystemLiveCaptionService::Shutdown() {
 void SystemLiveCaptionService::OnSpeechResult(
     const std::u16string& /*text*/,
     bool /*is_final*/,
-    const absl::optional<media::SpeechRecognitionResult>& result) {
+    const std::optional<media::SpeechRecognitionResult>& result) {
   DCHECK(result.has_value());
   if (!controller_ || !controller_->DispatchTranscription(&context_, *result)) {
     StopRecognizing();

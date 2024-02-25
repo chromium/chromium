@@ -118,7 +118,8 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
           worker_main_script_load_params,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
-      ukm::SourceId ukm_source_id);
+      ukm::SourceId ukm_source_id,
+      bool require_cross_site_request_for_cookies);
 
   void DispatchPendingConnections();
   void ConnectToChannel(int connection_request_id,

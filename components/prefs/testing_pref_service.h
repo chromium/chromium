@@ -93,14 +93,16 @@ class TestingPrefServiceBase : public SuperPrefService {
   scoped_refptr<TestingPrefStore> user_prefs_store() { return user_prefs_; }
 
  protected:
-  TestingPrefServiceBase(TestingPrefStore* managed_prefs,
-                         TestingPrefStore* supervised_user_prefs,
-                         TestingPrefStore* extension_prefs,
-                         TestingPrefStore* standalone_browser_prefs,
-                         TestingPrefStore* user_prefs,
-                         TestingPrefStore* recommended_prefs,
-                         ConstructionPrefRegistry* pref_registry,
-                         PrefNotifierImpl* pref_notifier);
+  TestingPrefServiceBase(
+      scoped_refptr<TestingPrefStore> managed_prefs,
+      scoped_refptr<TestingPrefStore> supervised_user_prefs,
+      scoped_refptr<TestingPrefStore> extension_prefs,
+      scoped_refptr<TestingPrefStore> standalone_browser_prefs,
+      scoped_refptr<TestingPrefStore> user_prefs,
+      scoped_refptr<TestingPrefStore> recommended_prefs,
+      scoped_refptr<ConstructionPrefRegistry> pref_registry,
+      // Takes ownership.
+      PrefNotifierImpl* pref_notifier);
 
  private:
   // Reads the value of the preference indicated by |path| from |pref_store|.
@@ -146,13 +148,13 @@ class TestingPrefServiceSimple
 
 template <>
 TestingPrefServiceBase<PrefService, PrefRegistry>::TestingPrefServiceBase(
-    TestingPrefStore* managed_prefs,
-    TestingPrefStore* supervised_user_prefs,
-    TestingPrefStore* extension_prefs,
-    TestingPrefStore* standalone_browser_prefs,
-    TestingPrefStore* user_prefs,
-    TestingPrefStore* recommended_prefs,
-    PrefRegistry* pref_registry,
+    scoped_refptr<TestingPrefStore> managed_prefs,
+    scoped_refptr<TestingPrefStore> supervised_user_prefs,
+    scoped_refptr<TestingPrefStore> extension_prefs,
+    scoped_refptr<TestingPrefStore> standalone_browser_prefs,
+    scoped_refptr<TestingPrefStore> user_prefs,
+    scoped_refptr<TestingPrefStore> recommended_prefs,
+    scoped_refptr<PrefRegistry> pref_registry,
     PrefNotifierImpl* pref_notifier);
 
 template<class SuperPrefService, class ConstructionPrefRegistry>

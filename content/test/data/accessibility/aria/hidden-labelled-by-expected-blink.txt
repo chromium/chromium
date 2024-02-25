@@ -3,8 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer
 ++++++++genericContainer ignored invisible
+++++++++group name='span-A4'
 ++++++++++genericContainer ignored invisible
-++++++++++group name='span-A4'
-++++++++++++genericContainer ignored invisible
 ++++++++group name='span-A2'
 ++++++++genericContainer name='span-C'

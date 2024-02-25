@@ -11,8 +11,10 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
+#include "device/vr/android/cardboard/cardboard_device_params.h"
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 #include "device/vr/android/cardboard/cardboard_render_loop.h"
+#include "device/vr/android/xr_activity_state_handler.h"
 
 namespace device {
 
@@ -34,7 +36,9 @@ CardboardDevice::CardboardDevice(
     std::unique_ptr<MailboxToSurfaceBridgeFactory>
         mailbox_to_surface_bridge_factory,
     std::unique_ptr<XrJavaCoordinator> xr_java_coordinator,
-    std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider)
+    std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider,
+    std::unique_ptr<XrActivityStateHandlerFactory>
+        activity_state_handler_factory)
     : VRDeviceBase(mojom::XRDeviceId::CARDBOARD_DEVICE_ID),
       main_thread_task_runner_(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -42,7 +46,9 @@ CardboardDevice::CardboardDevice(
       mailbox_to_surface_bridge_factory_(
           std::move(mailbox_to_surface_bridge_factory)),
       xr_java_coordinator_(std::move(xr_java_coordinator)),
-      compositor_delegate_provider_(std::move(compositor_delegate_provider)) {
+      compositor_delegate_provider_(std::move(compositor_delegate_provider)),
+      activity_state_handler_factory_(
+          std::move(activity_state_handler_factory)) {
   SetSupportedFeatures(GetSupportedFeatures());
 }
 
@@ -79,8 +85,35 @@ void CardboardDevice::RequestSession(
 
   cardboard_sdk_->Initialize(application_context.obj());
 
+  // It's an error to close a mojo pipe with an outstanding callback. Since we
+  // are not sure if we will be continued immediately or potentially get
+  // destroyed instead of a Resume event, store the callback now, so that it
+  // can be cleaned up properly during destruction.
   pending_session_request_callback_ = std::move(callback);
 
+  base::OnceClosure continue_callback =
+      base::BindOnce(&CardboardDevice::OnCardboardParametersAcquired,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(options),
+                     render_process_id, render_frame_id);
+
+  auto params = CardboardDeviceParams::GetSavedDeviceParams();
+  if (params.IsValid()) {
+    std::move(continue_callback).Run();
+    return;
+  }
+
+  // This will suspend us and will trigger the XrActivityStateHandler on Resume.
+  std::unique_ptr<XrActivityStateHandler> activity_state_handler =
+      activity_state_handler_factory_->Create(render_process_id,
+                                              render_frame_id);
+  cardboard_sdk_->ScanQrCodeAndSaveDeviceParams(
+      std::move(activity_state_handler), std::move(continue_callback));
+}
+
+void CardboardDevice::OnCardboardParametersAcquired(
+    mojom::XRRuntimeSessionOptionsPtr options,
+    int render_process_id,
+    int render_frame_id) {
   // Set HasExclusiveSession status to true. This lasts until OnSessionEnded.
   OnStartPresenting();
 
@@ -115,7 +148,7 @@ void CardboardDevice::RequestSession(
 }
 
 void CardboardDevice::OnXrSessionButtonTouched() {
-  // The SwitchViewer() method calls the
+  // The ScanQrCodeAndSaveDeviceParams() method calls the
   // CardboardQrCode_scanQrCodeAndSaveDeviceParams() Cardboard API entry which
   // in turn launches a new QR code scanner activity in order to scan a QR code
   // with the parameters of a new Cardboard viewer. The way said activity works
@@ -133,7 +166,7 @@ void CardboardDevice::OnXrSessionButtonTouched() {
   // part the resume process it will have to obtain the newly saved device
   // parameter and recreate the distortion meshes. See
   // https://source.chromium.org/chromium/chromium/src/+/main:device/vr/android/cardboard/cardboard_image_transport.cc;l=64
-  cardboard_sdk_->SwitchViewer();
+  cardboard_sdk_->ScanQrCodeAndSaveDeviceParams();
 }
 
 void CardboardDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
@@ -169,6 +202,12 @@ void CardboardDevice::OnDrawingSurfaceTouch(bool is_primary,
 
   // Cardboard doesn't care about anything but the primary pointer.
   if (!is_primary) {
+    return;
+  }
+
+  // It's possible that we could get some touch events trail in after we've
+  // decided to shutdown the render loop due to scheduling conflicts.
+  if (!render_loop_) {
     return;
   }
 

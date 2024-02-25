@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/gfx_export.h"

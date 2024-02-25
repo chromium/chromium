@@ -1,6 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/infobars",
-  "+ios/chrome/browser/synced_sessions",
-  "+ios/chrome/browser/favicon",
-  "+ios/chrome/browser/metrics",
-]

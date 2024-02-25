@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Window readonly getter in detached iframe: window
+  assert_equals: expected object "[object Window]" but got null
+[FAIL] Window readonly getter in detached iframe: self
+  assert_equals: expected object "[object Window]" but got null
+[FAIL] Window readonly getter in detached iframe: frames
+  assert_equals: expected object "[object Window]" but got null
+Harness: the test ran to completion.
+

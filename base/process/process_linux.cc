@@ -21,6 +21,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -215,6 +217,26 @@ bool Process::SetPriority(Priority priority) {
   DCHECK(IsValid());
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Go through all the threads for a process and set it as [un]backgrounded.
+  // Threads that are created after this call will also be [un]backgrounded by
+  // detecting that the main thread of the process has been [un]backgrounded.
+
+  // Should not be called concurrently with other functions
+  // like SetThreadType().
+  if (PlatformThreadChromeOS::IsThreadsBgFeatureEnabled()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        PlatformThreadChromeOS::GetCrossProcessThreadPrioritySequenceChecker());
+
+    int process_id = process_;
+    bool background = priority == Priority::kBestEffort;
+    internal::ForEachProcessTask(
+        process_,
+        [process_id, background](PlatformThreadId tid, const FilePath& path) {
+          PlatformThreadChromeOS::SetThreadBackgrounded(process_id, tid,
+                                                        background);
+        });
+  }
+
   if (CGroups::Get().enabled) {
     std::string pid = NumberToString(process_);
     const FilePath file =

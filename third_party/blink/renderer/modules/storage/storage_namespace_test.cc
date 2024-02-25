@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/storage/testing/fake_area_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
@@ -40,6 +41,7 @@ TEST(StorageNamespaceTest, BasicStorageAreas) {
   const std::string kPageString3 = "http://dom_storage3/";
   const KURL kPageUrl3 = KURL(kPageString3.c_str());
 
+  test::TaskEnvironment task_environment;
   test::ScopedMockedURLLoad scoped_mocked_url_load_root(
       kRootUrl, test::CoreTestDataPath("foo.html"));
   frame_test_helpers::WebViewHelper web_view_helper_root;

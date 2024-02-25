@@ -5,43 +5,70 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"  // nogncheck
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -60,6 +87,12 @@ using ::chromeos::FakePowerManagerClient;
 constexpr char kTestAppId[] = "aaaabbbbaaaabbbbaaaabbbbaaaabbbb";
 constexpr char kTestWebAppName1[] = "test_web_app_name1";
 constexpr char kTestWebAppName2[] = "test_web_app_name2";
+constexpr char kTestUrl[] = "www.test.com";
+constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kTestWebAppUrl[] = "https://install.url";
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 constexpr char16_t kPepperPluginName1[] = u"pepper_plugin_name1";
@@ -70,6 +103,64 @@ constexpr char kPepperPluginFilePath2[] = "/path/to/pepper_plugin2";
 constexpr char kBrowserPluginFilePath[] = "/path/to/browser_plugin";
 constexpr char kUnregisteredPluginFilePath[] = "/path/to/unregistered_plugin";
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+// This class constructs and owns the `Browser` object. It assumes that the
+// `Browser` uses a `TestBrowserWindow`. The class adds a default tab to the
+// newly constructed browser and handles the closing lifecycle by registering a
+// close callback on the `TestBrowserWindow`.
+class FakeBrowser {
+ public:
+  explicit FakeBrowser(Browser::CreateParams(params))
+      : FakeBrowser(Browser::Create(params)) {}
+
+  explicit FakeBrowser(Browser* browser) : browser_(browser) {
+    if (!browser->is_type_picture_in_picture()) {
+      // Add a tab to the browser to ensure that `CloseAllTabs()` works.
+      // Note that tabs are not supported with PICTURE_IN_PICTURE windows.
+      TabActivitySimulator().AddWebContentsAndNavigate(
+          browser_->tab_strip_model(), GURL(kTestUrl));
+    }
+    static_cast<TestBrowserWindow*>(browser_->window())
+        ->SetCloseCallback(base::BindOnce(&FakeBrowser::OnBrowserWindowClosed,
+                                          weak_ptr_.GetWeakPtr()));
+  }
+
+  ~FakeBrowser() {
+    if (browser_ && !browser_->tab_strip_model()->empty()) {
+      // This is required to prevent a DCHECK crash in the destructor of
+      // `Browser` if tabs remain open.
+      browser_->tab_strip_model()->CloseAllTabs();
+    }
+  }
+
+  [[nodiscard]] bool WaitForBrowserClose() { return closed_future_.Wait(); }
+  bool IsClosed() { return closed_future_.IsReady(); }
+
+  bool IsFullscreen() {
+    return browser_->exclusive_access_manager()
+        ->fullscreen_controller()
+        ->IsFullscreenForBrowser();
+  }
+
+ private:
+  void OnBrowserWindowClosed() {
+    closed_future_.SetValue();
+    // `TestBrowserWindow` does not destroy `Browser` when `Close()` is called,
+    // but real browser window does. Call `RemoveBrowser` here to fake this
+    // behavior.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeBrowser::RemoveBrowser, weak_ptr_.GetWeakPtr()));
+  }
+
+  void RemoveBrowser() {
+    BrowserList::GetInstance()->RemoveBrowser(browser_.get());
+  }
+
+  base::test::TestFuture<void> closed_future_;
+  std::unique_ptr<Browser> browser_;
+  base::WeakPtrFactory<FakeBrowser> weak_ptr_{this};
+};
 
 // A test browser window that can toggle fullscreen state.
 class FullscreenTestBrowserWindow : public TestBrowserWindow,
@@ -120,23 +211,17 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   raw_ptr<TestingProfile> profile_;
 };
 
-bool IsBrowserFullscreen(Browser& browser) {
-  return browser.exclusive_access_manager()
-      ->fullscreen_controller()
-      ->IsFullscreenForBrowser();
-}
-
-std::unique_ptr<Browser> CreateBrowserWithFullscreenTestWindowForParams(
+std::unique_ptr<FakeBrowser> CreateBrowserWithFullscreenTestWindowForParams(
     Browser::CreateParams params,
     TestingProfile* profile,
     bool is_main_browser = false) {
   // The main browser window for the kiosk is always fullscreen in the
-  // prodaction.
+  // production.
   FullscreenTestBrowserWindow* window =
       new FullscreenTestBrowserWindow(profile, /*fullscreen=*/is_main_browser);
   new TestBrowserWindowOwner(window);
   params.window = window;
-  return base::WrapUnique<Browser>(Browser::Create(params));
+  return std::make_unique<FakeBrowser>(params);
 }
 
 void EmulateDeviceReboot() {
@@ -171,6 +256,45 @@ void CheckSessionRestartReasonHistogramDependingOnRebootStatus(
   histogram->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 1);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class SystemWebAppWaiter {
+ public:
+  explicit SystemWebAppWaiter(
+      ash::SystemWebAppManager* system_web_app_manager) {
+    system_web_app_manager->on_apps_synchronized().Post(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          // Wait one execution loop for on_apps_synchronized() to be called on
+          // all listeners.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, run_loop_.QuitClosure());
+        }));
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInstallInfo(
+    const GURL& url) {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
+  info->start_url = url;
+  info->scope = url.GetWithoutFilename();
+  info->title = u"Web App";
+  return info;
+}
+
+web_app::WebAppInstallInfoFactory GetAppWebAppInfoFactory() {
+  static auto factory = base::BindRepeating(
+      &GetWebAppInstallInfo, GURL(content::GetWebUIURL("system-app")));
+  return factory;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 // TODO(b/271336749): split kiosk_browser_session_unittest.cc file into smaller
@@ -179,12 +303,11 @@ template <typename KioskBrowserSessionParamType = KioskSessionRestartTestCase>
 class KioskBrowserSessionBaseTest
     : public ::testing::TestWithParam<KioskBrowserSessionParamType> {
  public:
-  explicit KioskBrowserSessionBaseTest(
-      base::test::TaskEnvironment::TimeSource time_source =
-          base::test::TaskEnvironment::TimeSource::DEFAULT)
-      : task_environment_{time_source},
-        local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())) {}
+  KioskBrowserSessionBaseTest()
+      : local_state_(std::make_unique<ScopedTestingLocalState>(
+            TestingBrowserProcess::GetGlobal())),
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal(),
+                                 local_state_.get()) {}
 
   KioskBrowserSessionBaseTest(const KioskBrowserSessionBaseTest&) = delete;
   KioskBrowserSessionBaseTest& operator=(const KioskBrowserSessionBaseTest&) =
@@ -199,26 +322,28 @@ class KioskBrowserSessionBaseTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash_test_helper_.SetUp(ash::AshTestHelper::InitParams());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    profile_ = testing_profile_manager_.CreateTestingProfile("test@user");
   }
 
   static void TearDownTestSuite() { chromeos::PowerManagerClient::Shutdown(); }
 
   TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_; }
 
   base::HistogramTester* histogram() { return &histogram_; }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
-  std::unique_ptr<Browser> CreateBrowserWithTestWindow() {
+  std::unique_ptr<FakeBrowser> CreateBrowserWithTestWindow() {
     return CreateBrowserWithFullscreenTestWindowForParams(
         Browser::CreateParams(profile(), true), profile());
   }
 
-  std::unique_ptr<Browser> CreateBrowserForWebApp(
+  std::unique_ptr<FakeBrowser> CreateBrowserForWebApp(
       const std::string& web_app_name,
-      absl::optional<Browser::Type> browser_type = absl::nullopt) {
+      std::optional<Browser::Type> browser_type = std::nullopt) {
     Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
         /*app_name=*/web_app_name, /*trusted_source=*/true,
         /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
@@ -259,27 +384,18 @@ class KioskBrowserSessionBaseTest
   // `new_browser_window` and returns whether `new_browser_window` was asked to
   // close. In this case we will also ensure that `new_browser_window` was
   // automatically closed.
-  bool DidSessionCloseNewWindow(BrowserWindow* new_browser_window) {
-    bool already_closed = false;
-    static_cast<TestBrowserWindow*>(new_browser_window)
-        ->SetCloseCallback(base::BindLambdaForTesting(
-            [&already_closed]() { already_closed = true; }));
-
+  bool DidSessionCloseNewWindow(FakeBrowser& new_browser) {
     // Wait until the new window is handled by `kiosk_browser_session_`.
-    base::RunLoop handler_loop;
-    bool result = false;
+    base::test::TestFuture<bool> is_handled;
     kiosk_browser_session_->SetOnHandleBrowserCallbackForTesting(
-        base::BindLambdaForTesting([&handler_loop, &result](bool is_closing) {
-          result = is_closing;
-          handler_loop.Quit();
-        }));
-    handler_loop.Run();
+        is_handled.GetRepeatingCallback());
+    bool is_closed_by_kiosk_session = is_handled.Get();
 
-    if (result) {
-      EXPECT_TRUE(already_closed);
+    if (is_closed_by_kiosk_session) {
+      EXPECT_TRUE(new_browser.WaitForBrowserClose());
     }
 
-    return result;
+    return is_closed_by_kiosk_session;
   }
 
   void CloseMainBrowser() {
@@ -287,8 +403,13 @@ class KioskBrowserSessionBaseTest
     web_kiosk_main_browser_.reset();
   }
 
+  bool IsMainBrowserClosed() {
+    return web_kiosk_main_browser_ == nullptr ||
+           web_kiosk_main_browser_->IsClosed();
+  }
+
   bool IsMainBrowserFullscreen() {
-    return IsBrowserFullscreen(*web_kiosk_main_browser_);
+    return web_kiosk_main_browser_->IsFullscreen();
   }
 
   bool IsSessionShuttingDown() const {
@@ -306,18 +427,22 @@ class KioskBrowserSessionBaseTest
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AshTestHelper ash_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Must outlive `kiosk_browser_session_`.
-  TestingProfile profile_;
+  // `RenderViewHostTestEnabled` is required to make the navigation work that
+  // happens in the tab added to `TestBrowserWindow` in `FakeBrowser`.
+  content::RenderViewHostTestEnabler enabler_;
+  TestingProfileManager testing_profile_manager_;
+  raw_ptr<TestingProfile> profile_;
   // Main browser window created when launching a web kiosk app.
   // Could be nullptr if `StartWebKioskSession` function was not called.
-  std::unique_ptr<Browser> web_kiosk_main_browser_;
+  std::unique_ptr<FakeBrowser> web_kiosk_main_browser_;
   base::HistogramTester histogram_;
   std::unique_ptr<KioskBrowserSession> kiosk_browser_session_;
 };
@@ -337,8 +462,7 @@ TEST_F(KioskBrowserSessionTest, WebKioskTracksBrowserCreation) {
                                  KioskSessionState::kWebStarted, 1);
   histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 
-  EXPECT_TRUE(
-      DidSessionCloseNewWindow(CreateBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(DidSessionCloseNewWindow(*CreateBrowserWithTestWindow()));
 
   // The main browser window still exists, the kiosk session should not
   // shutdown.
@@ -373,8 +497,7 @@ TEST_F(KioskBrowserSessionTest, ChromeAppKioskSessionState) {
 TEST_F(KioskBrowserSessionTest, ChromeAppKioskTracksBrowserCreation) {
   StartChromeAppKioskSession();
 
-  EXPECT_TRUE(
-      DidSessionCloseNewWindow(CreateBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(DidSessionCloseNewWindow(*CreateBrowserWithTestWindow()));
   // Closing the browser should not shutdown the ChromeApp kiosk session.
   EXPECT_FALSE(IsSessionShuttingDown());
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
@@ -397,6 +520,25 @@ TEST_F(KioskBrowserSessionTest, ChromeAppKioskTracksBrowserCreation) {
 
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
+}
+
+TEST_F(KioskBrowserSessionTest, ChromeAppKioskShouldClosePreexistingBrowsers) {
+  std::unique_ptr<FakeBrowser> preexisting_browser =
+      CreateBrowserWithTestWindow();
+
+  StartChromeAppKioskSession();
+
+  ASSERT_TRUE(preexisting_browser->WaitForBrowserClose());
+}
+
+TEST_F(KioskBrowserSessionTest, WebKioskShouldClosePreexistingBrowsers) {
+  std::unique_ptr<FakeBrowser> preexisting_browser =
+      CreateBrowserWithTestWindow();
+
+  StartWebKioskSession();
+
+  ASSERT_TRUE(preexisting_browser->WaitForBrowserClose());
+  EXPECT_FALSE(IsMainBrowserClosed());
 }
 
 // Check that sessions list in local_state contains only sessions within the
@@ -470,16 +612,24 @@ TEST_F(KioskBrowserSessionTest, WebKioskLastDaySessions) {
 TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
   StartWebKioskSession(kTestWebAppName1);
 
-  EXPECT_TRUE(DidSessionCloseNewWindow(
-      CreateBrowserForWebApp(kTestWebAppName1)->window()));
+  EXPECT_TRUE(
+      DidSessionCloseNewWindow(*CreateBrowserForWebApp(kTestWebAppName1)));
+}
+
+TEST_F(KioskBrowserSessionTest, DoNotCrashIfBrowserClosedSuccessfully) {
+  StartWebKioskSession(kTestWebAppName1);
+
+  auto browser = CreateBrowserForWebApp(kTestWebAppName1);
+
+  task_environment()->FastForwardBy(kCloseBrowserTimeout);
 }
 
 TEST_F(KioskBrowserSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession(kTestWebAppName1);
 
-  EXPECT_FALSE(DidSessionCloseNewWindow(
-      CreateBrowserForWebApp(kTestWebAppName1)->window()));
+  EXPECT_FALSE(
+      DidSessionCloseNewWindow(*CreateBrowserForWebApp(kTestWebAppName1)));
 }
 
 TEST_F(KioskBrowserSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
@@ -487,23 +637,24 @@ TEST_F(KioskBrowserSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
   StartWebKioskSession(kTestWebAppName1);
   EXPECT_TRUE(IsMainBrowserFullscreen());
 
-  auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
-  DidSessionCloseNewWindow(second_browser->window());
+  std::unique_ptr<FakeBrowser> second_browser =
+      CreateBrowserForWebApp(kTestWebAppName1);
+  DidSessionCloseNewWindow(*second_browser);
 
-  EXPECT_TRUE(IsBrowserFullscreen(*second_browser));
+  EXPECT_TRUE(second_browser->IsFullscreen());
 }
 
 TEST_F(KioskBrowserSessionTest,
        DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
   const std::vector<Browser::Type> not_app_popup_browser_types = {
-    Browser::Type::TYPE_NORMAL,
-    Browser::Type::TYPE_POPUP,
-    Browser::Type::TYPE_APP,
-    Browser::Type::TYPE_DEVTOOLS,
+      Browser::Type::TYPE_NORMAL,
+      Browser::Type::TYPE_POPUP,
+      Browser::Type::TYPE_APP,
+      Browser::Type::TYPE_DEVTOOLS,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    Browser::Type::TYPE_CUSTOM_TAB,
+      Browser::Type::TYPE_CUSTOM_TAB,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    Browser::Type::TYPE_PICTURE_IN_PICTURE,
+      Browser::Type::TYPE_PICTURE_IN_PICTURE,
   };
 
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
@@ -511,7 +662,7 @@ TEST_F(KioskBrowserSessionTest,
 
   for (auto browser_type : not_app_popup_browser_types) {
     EXPECT_TRUE(DidSessionCloseNewWindow(
-        CreateBrowserForWebApp(kTestWebAppName1, browser_type)->window()));
+        *CreateBrowserForWebApp(kTestWebAppName1, browser_type)));
   }
 }
 
@@ -520,8 +671,7 @@ TEST_F(KioskBrowserSessionTest,
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
-  EXPECT_TRUE(
-      DidSessionCloseNewWindow(CreateBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(DidSessionCloseNewWindow(*CreateBrowserWithTestWindow()));
 }
 
 TEST_F(KioskBrowserSessionTest,
@@ -529,8 +679,8 @@ TEST_F(KioskBrowserSessionTest,
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession(kTestWebAppName1);
 
-  EXPECT_TRUE(DidSessionCloseNewWindow(
-      CreateBrowserForWebApp(kTestWebAppName2)->window()));
+  EXPECT_TRUE(
+      DidSessionCloseNewWindow(*CreateBrowserForWebApp(kTestWebAppName2)));
 }
 
 TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
@@ -539,15 +689,15 @@ TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartChromeAppKioskSession();
 
-  EXPECT_TRUE(DidSessionCloseNewWindow(
-      CreateBrowserForWebApp(kTestWebAppName2)->window()));
+  EXPECT_TRUE(
+      DidSessionCloseNewWindow(*CreateBrowserForWebApp(kTestWebAppName2)));
 }
 
 TEST_F(KioskBrowserSessionTest, NewOpenedRegularBrowserMetrics) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession(kTestWebAppName1);
 
-  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1)->window());
+  DidSessionCloseNewWindow(*CreateBrowserForWebApp(kTestWebAppName1));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kOpenedRegularBrowser,
@@ -559,7 +709,7 @@ TEST_F(KioskBrowserSessionTest, NewClosedRegularBrowserMetrics) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, false);
   StartWebKioskSession(kTestWebAppName1);
 
-  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1)->window());
+  DidSessionCloseNewWindow(*CreateBrowserForWebApp(kTestWebAppName1));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
@@ -573,7 +723,7 @@ TEST_F(KioskBrowserSessionTest,
   StartWebKioskSession();
 
   auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
-  EXPECT_FALSE(DidSessionCloseNewWindow(second_browser->window()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(*second_browser));
 
   CloseMainBrowser();
   EXPECT_FALSE(IsSessionShuttingDown());
@@ -588,7 +738,7 @@ TEST_F(KioskBrowserSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
   StartWebKioskSession();
 
   auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
-  EXPECT_FALSE(DidSessionCloseNewWindow(second_browser->window()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(*second_browser));
 
   second_browser.reset();
   EXPECT_FALSE(IsSessionShuttingDown());
@@ -720,9 +870,9 @@ INSTANTIATE_TEST_SUITE_P(
     KioskBrowserSessionRestartReasonTest,
     testing::ValuesIn<KioskSessionRestartTestCase>({
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      {/*test_name=*/"WithReboot", /*run_with_reboot=*/true},
+        {/*test_name=*/"WithReboot", /*run_with_reboot=*/true},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-          {/*test_name=*/"WithoutReboot", /*run_with_reboot=*/false},
+        {/*test_name=*/"WithoutReboot", /*run_with_reboot=*/false},
     }),
     [](const testing::TestParamInfo<
         KioskBrowserSessionRestartReasonTest::ParamType>& info) {
@@ -761,38 +911,41 @@ class KioskBrowserSessionTroubleshootingTest
     : public KioskBrowserSessionBaseTest<bool> {
  public:
   void SetUpKioskSession() {
-    bool is_web_kiosk = GetParam();
-    if (is_web_kiosk) {
+    if (is_web_kiosk()) {
       StartWebKioskSession();
-      return;
+    } else {
+      StartChromeAppKioskSession();
     }
-    StartChromeAppKioskSession();
   }
 
   void UpdateTroubleshootingToolsPolicy(bool enable) {
     GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, enable);
   }
 
-  std::unique_ptr<Browser> CreateDevToolsBrowserWithTestWindow() {
+  std::unique_ptr<FakeBrowser> CreateDevToolsBrowserWithTestWindow() {
     auto params = Browser::CreateParams::CreateForDevTools(profile());
 
     TestBrowserWindow* test_window_ = new TestBrowserWindow;
     new TestBrowserWindowOwner(test_window_);
     params.window = test_window_;
 
-    return base::WrapUnique<Browser>(Browser::Create(params));
+    return std::make_unique<FakeBrowser>(params);
   }
 
-  std::unique_ptr<Browser> CreateRegularBrowserWithTestWindow() {
+  std::unique_ptr<FakeBrowser> CreateRegularBrowserWithTestWindow() {
     return CreateBrowserWithTestWindowAndType(Browser::TYPE_NORMAL);
   }
 
-  std::unique_ptr<Browser> CreateBrowserWithTestWindowAndType(
+  std::unique_ptr<FakeBrowser> CreateBrowserWithTestWindowAndType(
       Browser::Type type) {
     Browser::CreateParams params(profile(), /*user_gesture=*/true);
     params.type = type;
-    return CreateBrowserWithTestWindowForParams(params);
+    return std::make_unique<FakeBrowser>(
+        CreateBrowserWithTestWindowForParams(params).release());
   }
+
+ private:
+  bool is_web_kiosk() const { return GetParam(); }
 };
 
 TEST_P(KioskBrowserSessionTroubleshootingTest,
@@ -837,8 +990,8 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  EXPECT_FALSE(DidSessionCloseNewWindow(
-      CreateDevToolsBrowserWithTestWindow()->window()));
+  EXPECT_FALSE(
+      DidSessionCloseNewWindow(*CreateDevToolsBrowserWithTestWindow()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kOpenedDevToolsBrowser,
@@ -851,15 +1004,13 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
   SetUpKioskSession();
 
   // Kiosk troubleshooting tools are disabled by default.
-  EXPECT_TRUE(DidSessionCloseNewWindow(
-      CreateDevToolsBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(DidSessionCloseNewWindow(*CreateDevToolsBrowserWithTestWindow()));
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
                                  1);
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 
-  EXPECT_TRUE(
-      DidSessionCloseNewWindow(CreateRegularBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(DidSessionCloseNewWindow(*CreateRegularBrowserWithTestWindow()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
@@ -875,8 +1026,8 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
   // Kiosk session should shoutdown only if policy is changed from enable to
   // disable.
   EXPECT_FALSE(IsSessionShuttingDown());
-  EXPECT_FALSE(DidSessionCloseNewWindow(
-      CreateDevToolsBrowserWithTestWindow()->window()));
+  EXPECT_FALSE(
+      DidSessionCloseNewWindow(*CreateDevToolsBrowserWithTestWindow()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kOpenedDevToolsBrowser,
@@ -892,9 +1043,9 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  std::unique_ptr<Browser> normal_browser =
+  std::unique_ptr<FakeBrowser> normal_browser =
       CreateRegularBrowserWithTestWindow();
-  EXPECT_FALSE(DidSessionCloseNewWindow(normal_browser->window()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(*normal_browser));
 
   histogram()->ExpectBucketCount(
       kKioskNewBrowserWindowHistogram,
@@ -907,8 +1058,7 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
   SetUpKioskSession();
 
-  EXPECT_TRUE(
-      DidSessionCloseNewWindow(CreateRegularBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(DidSessionCloseNewWindow(*CreateRegularBrowserWithTestWindow()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
@@ -919,20 +1069,19 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
 TEST_P(KioskBrowserSessionTroubleshootingTest,
        OnlyAllowRegularBrowserAndDevToolsAsTroubleshootingBrowsers) {
   const std::vector<Browser::Type> should_be_closed_browser_types = {
-    Browser::Type::TYPE_POPUP,
-    Browser::Type::TYPE_APP,
-    Browser::Type::TYPE_APP_POPUP,
+      Browser::Type::TYPE_POPUP,        Browser::Type::TYPE_APP,
+      Browser::Type::TYPE_APP_POPUP,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    Browser::Type::TYPE_CUSTOM_TAB,
+      Browser::Type::TYPE_CUSTOM_TAB,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    Browser::Type::TYPE_PICTURE_IN_PICTURE,
+      Browser::TYPE_PICTURE_IN_PICTURE,
   };
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   for (Browser::Type type : should_be_closed_browser_types) {
-    EXPECT_TRUE(DidSessionCloseNewWindow(
-        CreateBrowserWithTestWindowAndType(type)->window()));
+    EXPECT_TRUE(
+        DidSessionCloseNewWindow(*CreateBrowserWithTestWindowAndType(type)));
   }
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
@@ -1160,6 +1309,90 @@ INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingShortcuts,
                          KioskBrowserSessionTroubleshootingShortcutsTest,
                          ::testing::Bool());
 
+// Kiosk type agnostic test class. Runs all tests for web and chrome app kiosks.
+// Test only the case when system web apps are enabled in the Kiosk session.
+// If system web apps are disabled in the Kiosk session, the system web app
+// browser cannot be created.
+class KioskBrowserSessionSwaTest : public KioskBrowserSessionBaseTest<bool> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kKioskEnableSystemWebApps);
+    KioskBrowserSessionBaseTest<bool>::SetUp();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+  void SetUpKioskSession() {
+    if (is_web_kiosk()) {
+      StartWebKioskSession();
+    } else {
+      StartChromeAppKioskSession();
+    }
+  }
+
+  void StartAndWaitForAppsToSynchronize() {
+    system_web_app_manager()->ResetForTesting();
+    SystemWebAppWaiter waiter(system_web_app_manager());
+    system_web_app_manager()->Start();
+    waiter.Wait();
+  }
+
+  std::unique_ptr<FakeBrowser> CreateSwaTestWindow() {
+    auto app_id = system_web_app_manager()->GetAppIdForSystemApp(
+        ash::SystemWebAppType::SETTINGS);
+    CHECK(app_id.has_value());
+
+    auto params = Browser::CreateParams::CreateForApp(
+        web_app::GenerateApplicationNameFromAppId(app_id.value()),
+        /*trusted_source=*/true,
+        /*window_bounds=*/gfx::Rect(), profile(),
+        /*user_gesture=*/true);
+
+    TestBrowserWindow* test_window = new TestBrowserWindow;
+    new TestBrowserWindowOwner(test_window);
+    params.window = test_window;
+
+    return std::make_unique<FakeBrowser>(params);
+  }
+
+  ash::TestSystemWebAppManager* system_web_app_manager() {
+    return ash::TestSystemWebAppManager::Get(profile());
+    ;
+  }
+
+ private:
+  bool is_web_kiosk() const { return GetParam(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(KioskBrowserSessionSwaTest, OpenSystemWebApp) {
+  SetUpKioskSession();
+
+  ash::SystemWebAppDelegateMap system_apps;
+  system_apps.emplace(
+      ash::SystemWebAppType::SETTINGS,
+      std::make_unique<ash::UnittestingSystemAppDelegate>(
+          ash::SystemWebAppType::SETTINGS, "OSSettings",
+          GURL(content::GetWebUIURL("system-app")), GetAppWebAppInfoFactory()));
+  CHECK(system_web_app_manager());
+  system_web_app_manager()->SetSystemAppsForTesting(std::move(system_apps));
+  StartAndWaitForAppsToSynchronize();
+
+  EXPECT_FALSE(DidSessionCloseNewWindow(*CreateSwaTestWindow()));
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOpenedSystemWebApp,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+}
+
+// Test only the case when system web apps are enabled in the Kiosk session.
+// If system web apps are disabled in the Kiosk session, the system web app
+// browser cannot be created.
+INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionSwa,
+                         KioskBrowserSessionSwaTest,
+                         ::testing::Bool());
+
 #endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -1247,4 +1480,52 @@ TEST_F(KioskBrowserSessionTest, OnPluginHung) {
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+// TODO(b/325648738): add KioskBrowserSessionDeathTest to check kiosk session
+// crash when unexpected browser is not closed.
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class KioskBrowserSessionAshWithLacrosEnabledTest
+    : public KioskBrowserSessionTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        ash::standalone_browser::GetFeatureRefs(), {});
+    KioskBrowserSessionTest::SetUp();
+    LoginKioskUser(CreateKioskAppId());
+  }
+
+  void TearDown() override { CloseMainBrowser(); }
+
+ private:
+  ash::KioskAppId CreateKioskAppId() {
+    std::string email = policy::GenerateDeviceLocalAccountUserId(
+        kTestWebAppUrl, policy::DeviceLocalAccount::Type::TYPE_WEB_KIOSK_APP);
+    AccountId account_id(AccountId::FromUserEmail(email));
+    return ash::KioskAppId::ForWebApp(account_id);
+  }
+
+  void LoginKioskUser(ash::KioskAppId kiosk_app_id) {
+    fake_user_manager_->AddWebKioskAppUser(kiosk_app_id.account_id);
+    fake_user_manager_->LoginUser(kiosk_app_id.account_id);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+};
+
+TEST_F(KioskBrowserSessionAshWithLacrosEnabledTest,
+       AshBrowserShouldGetClosedIfLacrosIsEnabled) {
+  StartWebKioskSession(kTestWebAppName1);
+
+  DidSessionCloseNewWindow(*CreateBrowserForWebApp(kTestWebAppName1));
+
+  histogram()->ExpectBucketCount(
+      kKioskNewBrowserWindowHistogram,
+      KioskBrowserWindowType::kClosedAshBrowserWithLacrosEnabled, 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+}
+
+#endif
 }  // namespace chromeos

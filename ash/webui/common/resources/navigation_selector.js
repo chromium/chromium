@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import './navigation_icons.html.js';
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
@@ -67,6 +67,8 @@ export class NavigationSelectorElement extends PolymerElement {
    * @private
    */
   onSelected_(e) {
+    this.dispatchEvent(new CustomEvent(
+        'navigation-selected', {bubbles: true, composed: true}));
     this.selectedItem = e.model.item;
   }
 
@@ -86,8 +88,10 @@ export class NavigationSelectorElement extends PolymerElement {
     for (const item of items) {
       if (item.textContent.trim() === this.selectedItem.name) {
         item.classList.add('selected');
+        item.setAttribute('aria-current', 'true');
       } else {
         item.classList.remove('selected');
+        item.removeAttribute('aria-current');
       }
     }
   }

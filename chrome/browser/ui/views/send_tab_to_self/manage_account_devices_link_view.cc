@@ -72,9 +72,10 @@ std::unique_ptr<views::View> BuildManageAccountDevicesLinkView(
       gfx::ImageSkiaOperations::CreateMaskedImage(square_avatar, circle_mask);
   auto* avatar_view =
       container->AddChildView(std::make_unique<views::ImageView>());
-  avatar_view->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-      round_avatar, skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(kAccountAvatarSize, kAccountAvatarSize)));
+  avatar_view->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          round_avatar, skia::ImageOperations::RESIZE_BEST,
+          gfx::Size(kAccountAvatarSize, kAccountAvatarSize))));
 
   auto* link_view =
       container->AddChildView(std::make_unique<views::StyledLabel>());

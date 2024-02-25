@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/platform_shared_memory_region.h"
-#include "base/strings/string_piece.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"

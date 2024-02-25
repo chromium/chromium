@@ -50,11 +50,11 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
-#include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config.h"
+#include "third_party/boringssl/src/pki/pem.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -64,7 +64,6 @@ namespace ash::onc {
 namespace {
 
 // Scheme strings for supported |net::ProxyServer::SCHEME_*| enum values.
-constexpr char kDirectScheme[] = "direct";
 constexpr char kQuicScheme[] = "quic";
 constexpr char kSocksScheme[] = "socks";
 constexpr char kSocks4Scheme[] = "socks4";
@@ -141,8 +140,6 @@ net::ProxyBypassRules ConvertOncExcludeDomainsToBypassRules(
 
 std::string SchemeToString(net::ProxyServer::Scheme scheme) {
   switch (scheme) {
-    case net::ProxyServer::SCHEME_DIRECT:
-      return kDirectScheme;
     case net::ProxyServer::SCHEME_HTTP:
       return url::kHttpScheme;
     case net::ProxyServer::SCHEME_SOCKS4:
@@ -173,7 +170,9 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
   }
   if (!proxy_list || proxy_list->IsEmpty())
     return;
-  const net::ProxyServer& server = proxy_list->Get();
+  const net::ProxyChain& chain = proxy_list->First();
+  CHECK(chain.is_single_proxy());
+  const net::ProxyServer& server = chain.First();
   std::string host = server.host_port_pair().host();
 
   // For all proxy types except SOCKS, the default scheme of the proxy host is
@@ -368,7 +367,7 @@ NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type) {
   return NetworkTypePattern::Default();
 }
 
-absl::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
+std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
     const base::Value::Dict& onc_proxy_settings) {
   std::string type = GetString(onc_proxy_settings, ::onc::proxy::kType);
 
@@ -389,7 +388,7 @@ absl::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
         onc_proxy_settings.FindDict(::onc::proxy::kManual);
     if (!manual_dict) {
       NET_LOG(ERROR) << "Manual proxy missing dictionary";
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::string manual_spec;
     AppendProxyServerForScheme(*manual_dict, ::onc::proxy::kFtp, &manual_spec);
@@ -408,10 +407,10 @@ absl::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
                                                      bypass_rules.ToString());
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
+std::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
     const base::Value::Dict& proxy_config_dict) {
   // Create a ProxyConfigDictionary from the dictionary.
   ProxyConfigDictionary proxy_config(proxy_config_dict.Clone());
@@ -420,7 +419,7 @@ absl::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
   base::Value::Dict proxy_settings;
   ProxyPrefs::ProxyMode mode;
   if (!proxy_config.GetMode(&mode)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT: {
@@ -473,7 +472,7 @@ absl::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
     }
     default: {
       LOG(ERROR) << "Unexpected proxy mode in Shill config: " << mode;
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return proxy_settings;

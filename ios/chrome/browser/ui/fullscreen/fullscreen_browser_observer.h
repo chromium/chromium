@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_BROWSER_OBSERVER_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_BROWSER_OBSERVER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -23,7 +24,7 @@ class FullscreenBrowserObserver : public BrowserObserver {
   void BrowserDestroyed(Browser* browser) override;
 
   // The FullscreenWebStateListObserver passed on construction.
-  FullscreenWebStateListObserver* web_state_list_observer_;
+  raw_ptr<FullscreenWebStateListObserver> web_state_list_observer_;
   // Scoped observer that facilitates observing an BrowserObserver.
   base::ScopedObservation<Browser, BrowserObserver> scoped_observation_{this};
 };

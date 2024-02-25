@@ -1,6 +1,6 @@
 Tests that console logging dumps large arrays properly.
 
-console-big-array.js:18 Array(101)
+console-big-array.js:23 Array(101)
     [0 … 19]
         0: 0
         1: 1
@@ -48,7 +48,8 @@ console-big-array.js:18 Array(101)
         41: 41
         100: 100
     length: 101
-console-big-array.js:23 Array(10)
+    [[Prototype]]: Array(0)
+console-big-array.js:28 Array(10)
     0: undefined
     1: undefined
     2: undefined
@@ -61,7 +62,7 @@ console-big-array.js:23 Array(10)
     9: undefined
     length: 10
     [[Prototype]]: Array(0)
-console-big-array.js:29 Array(101)
+console-big-array.js:34 Array(101)
     0: 0
     1: 1
     2: 2
@@ -74,7 +75,8 @@ console-big-array.js:29 Array(101)
     9: 9
     100: 100
     length: 101
-console-big-array.js:34 Array(405)
+    [[Prototype]]: Array(0)
+console-big-array.js:39 Array(405)
     [0 … 399]
         [0 … 19]
         [20 … 39]
@@ -103,7 +105,8 @@ console-big-array.js:34 Array(405)
         403: 403
         404: 404
     length: 405
-console-big-array.js:47 Array(124)
+    [[Prototype]]: Array(0)
+console-big-array.js:52 Array(124)
     0: 0
     1: 1
     2: 2
@@ -123,7 +126,8 @@ console-big-array.js:47 Array(124)
     -123: -123
     NaN: NaN
     length: 124
-console-big-array.js:57 Array(4294967295)
+    [[Prototype]]: Array(0)
+console-big-array.js:62 Array(4294967295)
     [0 … 19]
         0: 0
         1: 1
@@ -179,7 +183,8 @@ console-big-array.js:57 Array(4294967295)
     4294967296: 4294967296
     8589934592: 8589934592
     length: 4294967295
-console-big-array.js:60 Uint8Array(64160003)
+    [[Prototype]]: Array(0)
+console-big-array.js:65 Uint8Array(64160003)
     [0 … 63999999]
         [0 … 3199999]
         [3200000 … 6399999]
@@ -204,4 +209,19 @@ console-big-array.js:60 Uint8Array(64160003)
     [64000000 … 64160002]
         [64000000 … 64159999]
         [64160000 … 64160002]
+    buffer: ArrayBuffer(64160003)
+        byteLength: 64160003
+        detached: false
+        maxByteLength: 64160003
+        resizable: false
+        [[Prototype]]: ArrayBuffer
+        [[Int8Array]]: Int8Array(64160003)
+        [[Uint8Array]]: Uint8Array(64160003)
+        [[ArrayBufferByteLength]]: 64160003
+        [[ArrayBufferData]]: 1
+    byteLength: 64160003
+    byteOffset: 0
+    length: 64160003
+    Symbol(Symbol.toStringTag): "Uint8Array"
+    [[Prototype]]: TypedArray
 

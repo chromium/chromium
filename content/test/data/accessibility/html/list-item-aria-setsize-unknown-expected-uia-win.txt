@@ -2,7 +2,7 @@ Document PositionInSet=0 SizeOfSet=0 Level=0
 ++List PositionInSet=0 SizeOfSet=8 Level=0
 ++++ListItem Name='Level 1, item 5 of set size unknown' PositionInSet=5 SizeOfSet=-1 Level=1
 ++++++Text Name='Level 1, item 5 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
-++++ListItem Name='Level 1, item 6 of set size unknown' PositionInSet=6 SizeOfSet=-1 Level=1
+++++ListItem Name='Level 1, item 6 of set size unknownLevel 2, item 6 of set size unknownLevel 2, item 7 of set size unknown' PositionInSet=6 SizeOfSet=-1 Level=1
 ++++++Text Name='Level 1, item 6 of set size unknown' PositionInSet=0 SizeOfSet=0 Level=0
 ++++++List PositionInSet=0 SizeOfSet=7 Level=0
 ++++++++ListItem Name='Level 2, item 6 of set size unknown' PositionInSet=6 SizeOfSet=-1 Level=2

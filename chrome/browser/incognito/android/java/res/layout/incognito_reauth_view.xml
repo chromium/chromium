@@ -14,7 +14,7 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:background="@color/ntp_bg_incognito">
 
-    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+    <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/incognito_reauth_menu_button"
         android:layout_marginTop="24dp"
         android:background="@null"

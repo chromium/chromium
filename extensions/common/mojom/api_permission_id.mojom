@@ -279,8 +279,12 @@ enum APIPermissionID {
   kAccessibilityServicePrivate = 252,
   kUserScripts = 253,
   kChromeOSBluetoothPeripheralsInfo = 254,
+  kEnterpriseKioskInput = 255,
+  kOdfsConfigPrivate = 256,
+  kChromeOSManagementAudio = 257,
 
   // Add new entries at the end of the enum and be sure to update the
-  // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml
-  // (by running update_extension_permission.py).
+  // "ExtensionPermission3" enum in
+  // tools/metrics/histograms/metadata/extensions/enums.xml (by running
+  // update_extension_permission.py).
 };

@@ -17,7 +17,7 @@ source_set("network_impl") {
     ":update_client",
     "//base",
     "//net",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
@@ -42,8 +42,6 @@ source_set("in_process_patcher") {
   deps = [
     ":update_client",
     "//base",
-    "//courgette:bsdiff",
-    "//courgette:courgette_lib",
     "//third_party/puffin:libpuffpatch",
   ]
   include_dirs = [ "//third_party/puffin/src/include" ]
@@ -92,12 +90,6 @@ static_library("update_client") {
     "command_line_config_policy.h",
     "component.cc",
     "component.h",
-    "component_patcher.cc",
-    "component_patcher.h",
-    "component_patcher_operation.cc",
-    "component_patcher_operation.h",
-    "component_unpacker.cc",
-    "component_unpacker.h",
     "configurator.h",
     "crx_cache.cc",
     "crx_cache.h",
@@ -127,8 +119,6 @@ static_library("update_client") {
     "protocol_serializer.h",
     "protocol_serializer_json.cc",
     "protocol_serializer_json.h",
-    "puffin_component_unpacker.cc",
-    "puffin_component_unpacker.h",
     "puffin_patcher.cc",
     "puffin_patcher.h",
     "request_sender.cc",
@@ -136,11 +126,13 @@ static_library("update_client") {
     "task.h",
     "task_check_for_update.cc",
     "task_check_for_update.h",
-    "task_send_uninstall_ping.cc",
-    "task_send_uninstall_ping.h",
+    "task_send_ping.cc",
+    "task_send_ping.h",
     "task_traits.h",
     "task_update.cc",
     "task_update.h",
+    "unpacker.cc",
+    "unpacker.h",
     "unzipper.h",
     "update_checker.cc",
     "update_checker.h",
@@ -148,6 +140,8 @@ static_library("update_client") {
     "update_client.h",
     "update_client_errors.h",
     "update_client_internal.h",
+    "update_client_metrics.cc",
+    "update_client_metrics.h",
     "update_engine.cc",
     "update_engine.h",
     "update_query_params.cc",
@@ -167,12 +161,19 @@ static_library("update_client") {
     "//components/client_update_protocol",
     "//components/crx_file",
     "//components/prefs",
-    "//components/version_info:version_info",
-    "//courgette:courgette_lib",
+    "//components/version_info",
     "//crypto",
     "//third_party/zlib/google:compression_utils",
     "//url",
   ]
+
+  if (is_mac) {
+    sources += [
+      "background_downloader_mac.h",
+      "background_downloader_mac.mm",
+    ]
+    frameworks = [ "Foundation.framework" ]
+  }
 
   if (is_win) {
     sources += [
@@ -225,8 +226,6 @@ bundle_data("unit_tests_bundle_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
   sources = [
-    "//components/test/data/update_client/binary_bsdiff_patch.bin",
-    "//components/test/data/update_client/binary_courgette_patch.bin",
     "//components/test/data/update_client/binary_input.bin",
     "//components/test/data/update_client/binary_output.bin",
     "//components/test/data/update_client/empty_file",
@@ -262,18 +261,15 @@ bundle_data("recovery_component_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "component_patcher_unittest.cc",
-    "component_patcher_unittest.h",
-    "component_unpacker_unittest.cc",
     "crx_cache_unittest.cc",
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
     "protocol_parser_json_unittest.cc",
     "protocol_serializer_json_unittest.cc",
     "protocol_serializer_unittest.cc",
-    "puffin_component_unpacker_unittest.cc",
     "puffin_patcher_unittest.cc",
     "request_sender_unittest.cc",
+    "unpacker_unittest.cc",
     "update_checker_unittest.cc",
     "update_client_unittest.cc",
     "update_query_params_unittest.cc",
@@ -282,6 +278,14 @@ source_set("unit_tests") {
 
   if (!disable_file_support) {
     sources += [ "crx_downloader_unittest.cc" ]
+
+    if (is_win) {
+      sources += [ "background_downloader_win_unittest.cc" ]
+    }
+
+    if (is_mac) {
+      sources += [ "background_downloader_mac_unittest.cc" ]
+    }
   }
 
   deps = [
@@ -297,11 +301,11 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/services/patch:in_process",
-    "//components/version_info:version_info",
-    "//courgette:courgette_lib",
+    "//components/services/unzip:in_process",
+    "//components/version_info",
     "//net:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/cpp:cpp_base",
     "//testing/gmock",
     "//testing/gtest",
@@ -316,7 +320,7 @@ fuzzer_test("update_client_protocol_serializer_fuzzer") {
   sources = [ "protocol_serializer_fuzzer.cc" ]
   deps = [
     ":update_client",
-    "//base:base",
+    "//base",
   ]
   seed_corpus = "fuzzer_corpuses/protocol_serializer/"
 }
@@ -325,7 +329,7 @@ fuzzer_test("update_client_protocol_parser_fuzzer") {
   sources = [ "protocol_parser_fuzzer.cc" ]
   deps = [
     ":update_client",
-    "//base:base",
+    "//base",
   ]
   seed_corpus = "fuzzer_corpuses/protocol_parser/"
 }

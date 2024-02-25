@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
@@ -29,8 +29,8 @@ if (is_android) {
   import("//v8/gni/v8.gni")
 } else if (is_fuchsia) {
   import("//build/config/fuchsia/generate_runner_scripts.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+  import("//third_party/fuchsia-gn-sdk/src/component.gni")
+  import("//third_party/fuchsia-gn-sdk/src/package.gni")
 } else if (is_ios) {
   import("//build/config/ios/config.gni")
 }
@@ -120,6 +120,8 @@ static_library("content_shell_app") {
     sources += [
       "app/ios/shell_application_ios.h",
       "app/ios/shell_application_ios.mm",
+      "app/ios/web_tests_support_ios.h",
+      "app/ios/web_tests_support_ios.mm",
     ]
   }
   defines = [
@@ -482,13 +484,14 @@ repack("pak") {
 
   sources = [
     "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
-    "$root_gen_dir/content/aggregation_service_internals_resources.pak",
+    "$root_gen_dir/components/ukm_resources.pak",
     "$root_gen_dir/content/attribution_internals_resources.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/gpu_resources.pak",
     "$root_gen_dir/content/histograms_resources.pak",
+    "$root_gen_dir/content/private_aggregation_internals_resources.pak",
     "$root_gen_dir/content/process_resources.pak",
     "$root_gen_dir/content/quota_internals_resources.pak",
     "$root_gen_dir/content/service_worker_resources.pak",
@@ -511,6 +514,7 @@ repack("pak") {
   deps = [
     ":resources",
     "//base/tracing/protos:chrome_track_event_resources",
+    "//components/ukm/debug:resources",
     "//content:content_resources",
     "//content/browser/resources:resources",
     "//content/browser/resources/media:resources",
@@ -531,9 +535,12 @@ repack("pak") {
     sources += [ "$root_gen_dir/content/webxr_internals_resources.pak" ]
   }
 
-  if (!is_android) {
+  if (!is_android && !is_ios) {
     deps += [ "//content/browser/tracing:resources" ]
-    sources += [ "$root_gen_dir/content/browser/tracing/tracing_resources.pak" ]
+    sources += [
+      "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
+      "$root_gen_dir/content/traces_internals_resources.pak",
+    ]
   }
 
   if (is_ios) {
@@ -604,12 +611,7 @@ if (is_android) {
   declare_args() {
     # The bundle identifier. Overriding this will affect the provisioning profile
     # used, and hence will affect the app's capabilities.
-    if (ios_use_shared_bundle_id_for_test_apps) {
-      ios_content_shell_bundle_identifier = shared_bundle_id_for_test_apps
-    } else {
-      ios_content_shell_bundle_identifier =
-          "$ios_app_bundle_id_prefix.ios-content-shell"
-    }
+    ios_content_shell_bundle_identifier = shared_bundle_id_for_test_apps
 
     # Path to an entitlements file used in ios_content_shell. Can be overridden
     # to provide an alternative.
@@ -650,6 +652,7 @@ if (is_android) {
 
     deps = [
       ":content_shell_app",
+      ":content_shell_lib",
       ":pak",
       "//build/win:default_exe_manifest",
       "//content/public/app",

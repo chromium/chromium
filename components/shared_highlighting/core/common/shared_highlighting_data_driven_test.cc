@@ -60,7 +60,7 @@ bool ReadFile(const base::FilePath& file, std::string* content) {
 const base::FilePath GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
         .AppendASCII("test")
         .AppendASCII("data");
@@ -71,7 +71,7 @@ const base::FilePath GetTestDataDir() {
 const base::FilePath GetInputDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("third_party")
         .AppendASCII("text-fragments-polyfill")
         .AppendASCII("src")
@@ -114,14 +114,14 @@ void SharedHighlightingDataDrivenTest::GenerateResults(const std::string& input,
   std::string html_file_name;
   std::string* start_parent_id;
   int start_offset_in_parent;
-  absl::optional<int> start_text_offset;
+  std::optional<int> start_text_offset;
   std::string* end_parent_id;
   int end_offset_in_parent;
-  absl::optional<int> end_text_offset;
+  std::optional<int> end_text_offset;
   std::string selected_text;
   std::string* highlight_text;
 
-  absl::optional<base::Value> parsed_input = base::JSONReader::Read(input);
+  std::optional<base::Value> parsed_input = base::JSONReader::Read(input);
   ASSERT_TRUE(parsed_input.has_value() && parsed_input->is_dict());
 
   base::Value::Dict& input_dict = parsed_input->GetDict();

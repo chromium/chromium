@@ -37,7 +37,7 @@ void SnapshotCallback(base::RunLoop* run_loop,
 
 ViewSkiaGoldPixelDiff::ViewSkiaGoldPixelDiff(
     const std::string& screenshot_prefix,
-    const absl::optional<std::string>& corpus)
+    const std::optional<std::string>& corpus)
     : screenshot_prefix_(screenshot_prefix),
       pixel_diff_(ui::test::SkiaGoldPixelDiff::GetSession(corpus)) {
   CHECK(pixel_diff_);
@@ -110,9 +110,9 @@ bool ViewSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
     gfx::Image* image) const {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 #if defined(USE_AURA)
-  ui::GrabWindowSnapshotAsyncAura(
+  ui::GrabWindowSnapshotAura(
 #else
-  ui::GrabWindowSnapshotAsync(
+  ui::GrabWindowSnapshot(
 #endif
       window, snapshot_bounds,
       base::BindOnce(&SnapshotCallback, &run_loop, image));

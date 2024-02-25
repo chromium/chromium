@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/environment.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -333,13 +334,20 @@ TEST_F(FakeDriverTest, CanGetImageForValidSurfaceID) {
                        /*height=*/720, surfaces, kNumSurfaces,
                        /*surface_attribs=*/nullptr, /*num_attribs=*/0));
 
+  VAImageFormat image_format_nv12{.fourcc = VA_FOURCC_NV12,
+                                  .byte_order = VA_LSB_FIRST,
+                                  .bits_per_pixel = 12};
+
   for (unsigned int i = 0; i < kNumSurfaces; i++) {
-    // TODO(b/258275488): Provide a valid Image ID once that functionality is
-    // implemented.
-    const VAStatus va_res =
+    VAImage img;
+    ASSERT_EQ(VA_STATUS_SUCCESS,
+              vaCreateImage(display_, &image_format_nv12, /*width=*/1280,
+                            /*height=*/720, &img));
+    ASSERT_NE(img.image_id, VA_INVALID_ID);
+    ASSERT_EQ(
+        VA_STATUS_SUCCESS,
         vaGetImage(display_, surfaces[i], /*x=*/0, /*y=*/0,
-                   /*width=*/1280, /*height=*/720, /*image=*/0);
-    EXPECT_EQ(VA_STATUS_SUCCESS, va_res);
+                   /*width=*/1280, /*height=*/720, /*image=*/img.image_id));
   }
 }
 
@@ -684,6 +692,13 @@ TEST_F(FakeDriverTest, DestroyContextCrashesForInvalidContextID) {
 
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
+
+  // We stub out the ContextDelegate so that the driver doesn't fail assertions
+  // in places that we don't care about unit testing: those places require
+  // something closer to integration testing due to the number of moving parts.
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  CHECK(env);
+  env->SetVar("USE_NO_OP_CONTEXT_DELEGATE", "1");
 
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
   StubPathMap paths;

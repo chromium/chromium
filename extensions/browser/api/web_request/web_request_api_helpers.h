@@ -8,11 +8,11 @@
 #define EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_API_HELPERS_H_
 
 #include <list>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -21,7 +21,6 @@
 #include "net/base/auth.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -208,8 +207,8 @@ struct RequestCookie {
 
   RequestCookie Clone() const;
 
-  absl::optional<std::string> name;
-  absl::optional<std::string> value;
+  std::optional<std::string> name;
+  std::optional<std::string> value;
 };
 
 // Data container for ResponseCookies as defined in the declarative WebRequest
@@ -226,14 +225,14 @@ struct ResponseCookie {
 
   ResponseCookie Clone() const;
 
-  absl::optional<std::string> name;
-  absl::optional<std::string> value;
-  absl::optional<std::string> expires;
-  absl::optional<int> max_age;
-  absl::optional<std::string> domain;
-  absl::optional<std::string> path;
-  absl::optional<bool> secure;
-  absl::optional<bool> http_only;
+  std::optional<std::string> name;
+  std::optional<std::string> value;
+  std::optional<std::string> expires;
+  std::optional<int> max_age;
+  std::optional<std::string> domain;
+  std::optional<std::string> path;
+  std::optional<bool> secure;
+  std::optional<bool> http_only;
 };
 
 // Data container for FilterResponseCookies as defined in the declarative
@@ -250,9 +249,9 @@ struct FilterResponseCookie : ResponseCookie {
 
   bool operator==(const FilterResponseCookie& other) const;
 
-  absl::optional<int> age_lower_bound;
-  absl::optional<int> age_upper_bound;
-  absl::optional<bool> session_cookie;
+  std::optional<int> age_lower_bound;
+  std::optional<int> age_upper_bound;
+  std::optional<bool> session_cookie;
 };
 
 enum CookieModificationType {
@@ -276,9 +275,9 @@ struct RequestCookieModification {
 
   CookieModificationType type;
   // Used for EDIT and REMOVE, nullopt otherwise.
-  absl::optional<RequestCookie> filter;
+  std::optional<RequestCookie> filter;
   // Used for ADD and EDIT, nullopt otherwise.
-  absl::optional<RequestCookie> modification;
+  std::optional<RequestCookie> modification;
 };
 
 struct ResponseCookieModification {
@@ -296,9 +295,9 @@ struct ResponseCookieModification {
 
   CookieModificationType type;
   // Used for EDIT and REMOVE, nullopt otherwise.
-  absl::optional<FilterResponseCookie> filter;
+  std::optional<FilterResponseCookie> filter;
   // Used for ADD and EDIT, nullopt otherwise.
-  absl::optional<ResponseCookie> modification;
+  std::optional<ResponseCookie> modification;
 };
 
 using RequestCookieModifications = std::vector<RequestCookieModification>;
@@ -306,7 +305,7 @@ using ResponseCookieModifications = std::vector<ResponseCookieModification>;
 
 // Contains the modification an extension wants to perform on an event.
 struct EventResponseDelta {
-  EventResponseDelta(const std::string& extension_id,
+  EventResponseDelta(const extensions::ExtensionId& extension_id,
                      const base::Time& extension_install_time);
   EventResponseDelta(const EventResponseDelta&) = delete;
   EventResponseDelta(EventResponseDelta&& other);
@@ -315,7 +314,7 @@ struct EventResponseDelta {
   ~EventResponseDelta();
 
   // ID of the extension that sent this response.
-  std::string extension_id;
+  extensions::ExtensionId extension_id;
 
   // The time that the extension was installed. Used for deciding order of
   // precedence in case multiple extensions respond with conflicting
@@ -340,7 +339,7 @@ struct EventResponseDelta {
   ResponseHeaders deleted_response_headers;
 
   // Authentication Credentials to use.
-  absl::optional<net::AuthCredentials> auth_credentials;
+  std::optional<net::AuthCredentials> auth_credentials;
 
   // Modifications to cookies in request headers.
   RequestCookieModifications request_cookie_modifications;
@@ -375,20 +374,20 @@ bool CharListToString(const base::Value::List& list, std::string* out);
 // the signal handler.
 
 EventResponseDelta CalculateOnBeforeRequestDelta(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
     const GURL& new_url);
 EventResponseDelta CalculateOnBeforeSendHeadersDelta(
     content::BrowserContext* browser_context,
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
     net::HttpRequestHeaders* old_headers,
     net::HttpRequestHeaders* new_headers,
     int extra_info_spec);
 EventResponseDelta CalculateOnHeadersReceivedDelta(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
     const GURL& old_url,
@@ -397,10 +396,10 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
     ResponseHeaders* new_response_headers,
     int extra_info_spec);
 EventResponseDelta CalculateOnAuthRequiredDelta(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
-    absl::optional<net::AuthCredentials> auth_credentials);
+    std::optional<net::AuthCredentials> auth_credentials);
 
 // These functions merge the responses (the |deltas|) of request handlers.
 // The |deltas| need to be sorted in decreasing order of precedence of
@@ -408,10 +407,10 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
 // IDs are reported in |conflicting_extensions|.
 
 // Stores in |*canceled_by_extension| whether any extension wanted to cancel the
-// request, absl::nullopt if none did, the extension id otherwise.
+// request, std::nullopt if none did, the extension id otherwise.
 void MergeCancelOfResponses(
     const EventResponseDeltas& deltas,
-    absl::optional<extensions::ExtensionId>* canceled_by_extension);
+    std::optional<extensions::ExtensionId>* canceled_by_extension);
 // Stores in |*new_url| the redirect request of the extension with highest
 // precedence. Extensions that did not command to redirect the request are
 // ignored in this logic.

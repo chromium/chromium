@@ -5,6 +5,7 @@ import errno
 import os
 import platform
 import socket
+import time
 import traceback
 from abc import ABCMeta, abstractmethod
 
@@ -302,8 +303,7 @@ class WebDriverBrowser(Browser):
         self.env = os.environ.copy() if env is None else env
         self.webdriver_args = webdriver_args if webdriver_args is not None else []
 
-        self.url = f"http://{self.host}:{self.port}{self.base_path}"
-
+        self.init_deadline = None
         self._output_handler = None
         self._cmd = None
         self._proc = None
@@ -314,10 +314,12 @@ class WebDriverBrowser(Browser):
         return [self.webdriver_binary] + self.webdriver_args
 
     def start(self, group_metadata, **kwargs):
+        self.init_deadline = time.time() + self.init_timeout
         try:
             self._run_server(group_metadata, **kwargs)
         except KeyboardInterrupt:
             self.stop()
+            raise
 
     def create_output_handler(self, cmd):
         """Return an instance of the class used to handle application output.
@@ -342,7 +344,7 @@ class WebDriverBrowser(Browser):
         except OSError as e:
             if e.errno == errno.ENOENT:
                 raise OSError(
-                    "WebDriver executable not found: %s" % self.webdriver_binary)
+                    "WebDriver executable not found: %s" % self.webdriver_binary) from e
             raise
         self._output_handler.after_process_start(self._proc.pid)
 
@@ -351,7 +353,7 @@ class WebDriverBrowser(Browser):
                 self.logger,
                 self.host,
                 self.port,
-                timeout=self.init_timeout,
+                timeout=self.init_deadline - time.time(),
                 server_process=self._proc,
             )
         except Exception:
@@ -385,6 +387,12 @@ class WebDriverBrowser(Browser):
         return hasattr(self._proc, "proc") and self._proc.poll() is None
 
     @property
+    def url(self):
+        if self.port is not None:
+            return f"http://{self.host}:{self.port}{self.base_path}"
+        raise ValueError("Can't get WebDriver URL before port is assigned")
+
+    @property
     def pid(self):
         if self._proc is not None:
             return self._proc.pid
@@ -404,7 +412,8 @@ class WebDriverBrowser(Browser):
         return ExecutorBrowser, {"webdriver_url": self.url,
                                  "host": self.host,
                                  "port": self.port,
-                                 "pac": self.pac}
+                                 "pac": self.pac,
+                                 "env": self.env}
 
     def settings(self, test):
         self._pac = test.environment.get("pac", None) if self._supports_pac else None

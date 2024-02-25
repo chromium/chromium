@@ -58,8 +58,8 @@ compiled with different flags, or linked against a different C++ standard
 library, but do not with the toolchain and configuration that we use to build
 Chrome. We discuss some of these cases elsewhere in this FAQ.
 
-If we become aware of them, these issues may be triaged as `Type=Bug-Security,
-Security_Impact=None` or as `Type=Bug` because they do not affect the production
+If we become aware of them, these issues may be triaged as `Type=Vulnerability,
+Security_Impact-None` or as `Type=Bug` because they do not affect the production
 version of Chrome. They may or may not be immediately visible to the public in
 the bug tracker, and may or may not be identified as security issues. If fixes
 are landed, they may or may not be merged from HEAD to a release branch. Chrome
@@ -227,6 +227,35 @@ demonstrate how to bypass one of these protections then we’d like to hear abou
 it. You can see if a Safe Browsing check happened by opening
 chrome://safe-browsing before starting the download.
 
+<a name="TOC-what-about-dangerous-file-types-not-listed-in-the-file-type-policy-"></a>
+### What about dangerous file types not listed in the file type policy?
+
+The [file type
+policy](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/resources/download_file_types.asciipb?q=download_file_types.asciipb%20-f:%2Fgen%2F&ss=chromium)
+controls some details of which security checks to enable for a given file
+extension. Most importantly, it controls whether we contact Safe Browsing about
+a download, and whether we show a warning for all downloads of that file type.
+Starting in M74, the default for unknown file types has been to contact Safe
+Browsing. This prevents large-scale abuse from a previously unknown file type.
+Starting in M105, showing a warning for all downloads of an extension became
+reserved for exceptionally dangerous file types that can compromise a user
+without any user interaction with the file (e.g. DLL hijacking). If you discover
+a new file type that meets that condition, we’d like to hear about it.
+
+<a name="TOC-i-found-a-local-file-or-directory-that-may-be-security-sensitive-and-is-not-blocked-by-file-system-access-api-"></a>
+### I found a local file or directory that may be security-sensitive and is not blocked by File System Access API - is this a security bug?
+
+The File System Access API maintains a [blocklist](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/file_system_access/chrome_file_system_access_permission_context.cc;l=266-346)
+of directories and files that may be sensitive such as systems file, and if user
+chooses a file or a directory matching the list on a site using File System
+Access API, the access is blocked.
+
+The blocklist is designed to help mitigate accidental granting by users by
+listing well-known, security-sensitive locations, as a defense in-depth
+strategy. Therefore, the blocklist coverage is not deemed as a security bug,
+especially as it requires user's explicit selection on a file or a directory
+from the file picker.
+
 <a name="TOC-I-can-download-a-file-with-an-unsafe-extension-but-a-different-extension-or-file-type-is-shown-to-the-user-"></a>
 ### I can download a file with an unsafe extension but a different extension or file type is shown to the user - is this a security bug?
 <a name="TOC-Extensions-for-downloaded-files-are-not-shown-in-a-file-dialog-"></a>
@@ -269,6 +298,36 @@ would want to dismiss. [Example](https://crbug.com/854455#c11).
 
 Note that a user navigating to a download will cause a file to be
 [downloaded](https://crbug.com/1114592).
+
+<a name="TOC-security-properties-not-inherited-using-contextual-menu-"></a>
+### Sandbox/CSP/etc... security properties are not inherited when navigating using the middle-click/contextual-menu - is this a security bug?
+
+The security properties of the document providing the URL are not used/inherited
+when the user deliberately opens a link in a popup using one of:
+
+- Ctrl + left-click (Open link in new tab)
+- Shift + left-click (Open link in new window)
+- Middle-click (Open a link in a new tab)
+- Right-click > "Open link in ..."
+
+These methods of following a link have more or less the same implications as the
+user copying the link's URL and pasting it into a newly-opened window. We treat
+them as user-initiated top-level navigations, and as such will not apply or
+inherit policy restrictions into the new context
+
+Example of security related properties:
+
+- Content-Security-Policy
+- Cross-Origin-Embedder-Policy
+- Cross-Origin-Opener-Policy
+- Origin
+- Referrer
+- Sandbox
+- etc...
+
+These browser's actions/shortcuts are specific to Chrome. They are different
+from the behavior specified by the web-platform, such as using executing
+`window.open()` or opening a link with the `target=_blank` attribute.
 
 ## Areas outside Chrome's Threat Model
 
@@ -313,11 +372,11 @@ X-XSS-Protection header.
 No. Denial of Service (DoS) issues are treated as **abuse** or **stability**
 issues rather than security vulnerabilities.
 
-*    If you find a reproducible crash, we encourage you to [report
-     it](https://bugs.chromium.org/p/chromium/issues/entry?template=Crash%20Report).
+*    If you find a reproducible crash (e.g. a way to hit a `CHECK`),
+     we encourage you to [report it](https://issues.chromium.org/new).
 *    If you find a site that is abusing the user experience (e.g. preventing you
      from leaving a site), we encourage you to [report
-     it](https://crbug.com/new).
+     it](https://issues.chromium.org/new).
 
 DoS issues are not considered under the security vulnerability rewards program;
 the [severity guidelines](severity-guidelines.md) outline the types of bugs that
@@ -449,8 +508,31 @@ This topic has been moved to the [Extensions Security FAQ](https://chromium.goog
 
 Null pointer dereferences with consistent, small, fixed offsets are not considered
 security bugs. A read or write to the NULL page results in a non-exploitable crash.
-If the offset is larger than a page, or if there's uncertainty about whether the
+If the offset is larger than 32KB, or if there's uncertainty about whether the
 offset is controllable, it is considered a security bug.
+
+All supported Chrome platforms do not allow mapping memory in at least the first
+32KB of address space:
+
+- Windows: Windows 8 and later disable mapping the first 64k of address space;
+  see page 33 of [Exploit Mitigation Improvements in Windows
+  8][windows-null-page-mapping] [[archived]][windows-null-page-mapping-archived].
+- Mac and iOS: by default, the linker reserves the first 4GB of address space
+  with the `__PAGEZERO` segment for 64-bit binaries.
+- Linux: the default `mmap_min_addr` value for supported distributions is at
+  least 64KB.
+- Android: [CTS][android-mmap_min_addr] enforces that `mmap_min_addr` is set to
+  exactly 32KB.
+- ChromeOS: the [ChromeOS kernels][chromeos-mmap_min_addr] set the default
+  `mmap_min_addr` value to at least 32KB.
+- Fuchsia: the [userspace base address][fuchsia-min-base-address] begins at 2MB;
+  this is configured per-platform but set to the same value on all platforms.
+
+[windows-null-page-mapping]: https://media.blackhat.com/bh-us-12/Briefings/M_Miller/BH_US_12_Miller_Exploit_Mitigation_Slides.pdf
+[windows-null-page-mapping-archived]: https://web.archive.org/web/20230608131033/https://media.blackhat.com/bh-us-12/Briefings/M_Miller/BH_US_12_Miller_Exploit_Mitigation_Slides.pdf
+[android-mmap_min_addr]: https://android.googlesource.com/platform/cts/+/496152a250d10e629d31ac90b2e828ad77b8d70a/tests/tests/security/src/android/security/cts/KernelSettingsTest.java#43
+[chromeos-mmap_min_addr]: https://source.chromium.org/search?q=%22CONFIG_DEFAULT_MMAP_MIN_ADDR%3D%22%20path:chromeos%2F&ss=chromiumos%2Fchromiumos%2Fcodesearch:src%2Fthird_party%2Fkernel%2F
+[fuchsia-min-base-address]: https://cs.opensource.google/fuchsia/fuchsia/+/main:zircon/kernel/arch/arm64/include/arch/kernel_aspace.h;l=20;drc=eeceea01eee2615de74b1339bcf6e6c2c6f72769
 
 <a name="TOC-Indexing-a-container-out-of-bounds-hits-a-libcpp-verbose-abort--is-this-a-security-bug-"></a>
 ### Indexing a container out of bounds hits a __libcpp_verbose_abort, is this a security bug?
@@ -890,6 +972,11 @@ FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/service
 ### What is the security story for Extensions?
 
 See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md).
+
+<a name="TOC-What-is-the-security-model-for-Chrome-Custom-Tabs-"></a>
+### What's the security model for Chrome Custom Tabs?
+
+See our [Chrome Custom Tabs security FAQ](custom-tabs-faq.md).
 
 <a name="TOC-Are-all-Chrome-updates-important--"></a>
 ### Are all Chrome updates important?

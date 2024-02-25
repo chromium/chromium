@@ -40,8 +40,6 @@ WelcomeHandler::~WelcomeHandler() {
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
-  UMA_HISTOGRAM_ENUMERATION("Welcome.SignInPromptResult", result_,
-                            WelcomeResult::WELCOME_RESULT_MAX);
 }
 
 bool WelcomeHandler::isValidRedirectUrl() {
@@ -114,7 +112,7 @@ Browser* WelcomeHandler::GetBrowser() {
   DCHECK(web_ui());
   content::WebContents* contents = web_ui()->GetWebContents();
   DCHECK(contents);
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  Browser* browser = chrome::FindBrowserWithTab(contents);
   DCHECK(browser);
   return browser;
 }

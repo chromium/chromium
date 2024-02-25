@@ -16,14 +16,11 @@ import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Unit test serialization code.
- */
+/** Unit test serialization code. */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class CanonicalCookieTest {
     // Name meant to match CanonicalCookie method.
-    private static byte[] saveListToStream(final List<CanonicalCookie> cookies)
-            throws Exception {
+    private static byte[] saveListToStream(final List<CanonicalCookie> cookies) throws Exception {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(outByteStream);
         try {
@@ -63,7 +60,6 @@ public class CanonicalCookieTest {
         Assert.assertEquals(lhs.isHttpOnly(), rhs.isHttpOnly());
         Assert.assertEquals(lhs.getSameSite(), rhs.getSameSite());
         Assert.assertEquals(lhs.getPriority(), rhs.getPriority());
-        Assert.assertEquals(lhs.isSameParty(), rhs.isSameParty());
         Assert.assertEquals(lhs.sourceScheme(), rhs.sourceScheme());
         Assert.assertEquals(lhs.sourcePort(), rhs.sourcePort());
     }
@@ -87,19 +83,57 @@ public class CanonicalCookieTest {
     @Test
     public void testSaveRestore() throws Exception {
         ArrayList<CanonicalCookie> cookies = new ArrayList<>();
-        cookies.add(new CanonicalCookie("name", "value", "domain", "path", 0 /* creation */,
-                1 /* expiration */, 0 /* lastAccess */, 0 /* lastUpdate */, false /* secure */,
-                true /* httpOnly */, 0 /* sameSite */, 0 /* priority */, false /* same_party */,
-                "" /* partition_key */, 1 /* sourceScheme */, 72 /* sourcePort */));
-        cookies.add(new CanonicalCookie("name2", "value2", ".domain2", "path2", 10 /* creation */,
-                20 /* expiration */, 15 /* lastAccess */, 15 /* lastUpdate */, true /* secure */,
-                false /* httpOnly */, 1 /* sameSite */, 1 /* priority */, true /* same_party */,
-                "" /* partition_key */, 2 /* sourceScheme */, 445 /* sourcePort */));
-        cookies.add(new CanonicalCookie("name3", "value3", "domain3", "path3", 10 /* creation */,
-                20 /* expiration */, 15 /* lastAccess */, 15 /* lastUpdate */, true /* secure */,
-                false /* httpOnly */, 2 /* sameSite */, 2 /* priority */, false /* same_party */,
-                "https://toplevelsite.com" /* partition_key */, 2 /* sourceScheme */,
-                -1 /* sourcePort */));
+        cookies.add(
+                new CanonicalCookie(
+                        "name",
+                        "value",
+                        "domain",
+                        "path",
+                        /* creation= */ 0,
+                        /* expiration= */ 1,
+                        /* lastAccess= */ 0,
+                        /* lastUpdate= */ 0,
+                        /* secure= */ false,
+                        /* httpOnly= */ true,
+                        /* sameSite= */ 0,
+                        /* priority= */ 0,
+                        /* partitionKey= */ "",
+                        /* sourceScheme= */ 1,
+                        /* sourcePort= */ 72));
+        cookies.add(
+                new CanonicalCookie(
+                        "name2",
+                        "value2",
+                        ".domain2",
+                        "path2",
+                        /* creation= */ 10,
+                        /* expiration= */ 20,
+                        /* lastAccess= */ 15,
+                        /* lastUpdate= */ 15,
+                        /* secure= */ true,
+                        /* httpOnly= */ false,
+                        /* sameSite= */ 1,
+                        /* priority= */ 1,
+                        /* partitionKey= */ "",
+                        /* sourceScheme= */ 2,
+                        /* sourcePort= */ 445));
+        cookies.add(
+                new CanonicalCookie(
+                        "name3",
+                        "value3",
+                        "domain3",
+                        "path3",
+                        /* creation= */ 10,
+                        /* expiration= */ 20,
+                        /* lastAccess= */ 15,
+                        /* lastUpdate= */ 15,
+                        /* secure= */ true,
+                        /* httpOnly= */ false,
+                        /* sameSite= */ 2,
+                        /* priority= */ 2,
+                        /* partitionKey= */ "https://toplevelsite.com",
+                        /* sourceScheme= */ 2,
+                        /* sourcePort= */ -1));
 
         doSaveRestoreCookiesListTest(cookies);
     }

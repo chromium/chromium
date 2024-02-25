@@ -10,12 +10,14 @@
 #include "third_party/blink/renderer/core/html/html_view_source_document.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 // This is a regression test for https://crbug.com/664915
 TEST(HTMLViewSourceParserTest, DetachThenFinish_ShouldNotCrash) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   String mime_type("text/html");
   auto* document = MakeGarbageCollected<HTMLViewSourceDocument>(

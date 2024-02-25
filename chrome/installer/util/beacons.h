@@ -9,8 +9,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/installer/util/shell_util.h"
 
@@ -64,7 +64,7 @@ class Beacon {
     PER_INSTALL,
   };
 
-  Beacon(base::WStringPiece name, BeaconType type, BeaconScope scope);
+  Beacon(std::wstring_view name, BeaconType type, BeaconScope scope);
 
   Beacon(const Beacon&) = delete;
   Beacon& operator=(const Beacon&) = delete;
@@ -84,7 +84,7 @@ class Beacon {
 
  private:
   // Initializes the key_path_ and value_name_ fields of the beacon.
-  void Initialize(base::WStringPiece name);
+  void Initialize(std::wstring_view name);
 
   // The type of beacon.
   const BeaconType type_;

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 
 namespace views {
-class FlexLayout;
 class Button;
 }
 
@@ -24,8 +24,9 @@ class TabStripScrollContainer;
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
 class TabStripRegionView final : public views::AccessiblePaneView {
+  METADATA_HEADER(TabStripRegionView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(TabStripRegionView);
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
   TabStripRegionView(const TabStripRegionView&) = delete;
   TabStripRegionView& operator=(const TabStripRegionView&) = delete;
@@ -43,7 +44,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   views::Button* new_tab_button() { return new_tab_button_; }
 
-  TabSearchButton* tab_search_button() { return tab_search_button_; }
+  TabSearchContainer* tab_search_container() { return tab_search_container_; }
 
   views::View* reserved_grab_handle_space_for_testing() {
     return reserved_grab_handle_space_;
@@ -57,7 +58,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   // Calls the parent Layout, but in some cases may also need to manually
   // position the TabSearchButton to layer over the TabStrip.
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // These system drag & drop methods forward the events to TabDragController to
   // support its fallback tab dragging mode in the case where the platform
@@ -77,16 +78,25 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetDefaultFocusableChild() override;
 
-  views::FlexLayout* layout_manager_for_testing() { return layout_manager_; }
+  // Reports to UMA if a HTCAPTION hit test was in the grab handle or other
+  // location. The location of this function is temporary to allow for easy
+  // merging.
+  static void ReportCaptionHitTestInReservedGrabHandleSpace(
+      bool in_reserved_grab_handle_space);
+
   views::View* GetTabStripContainerForTesting() { return tab_strip_container_; }
 
  private:
-  // Updates the border padding for `new_tab_button_` and `tab_search_button_`,
-  // if present.  This should be called whenever any input of the computation of
-  // the border's sizing changes.
+  // Updates the border padding for `new_tab_button_` and
+  // `tab_search_container_`, if present.  This should be called whenever any
+  // input of the computation of the border's sizing changes.
   void UpdateButtonBorders();
 
-  raw_ptr<views::FlexLayout, DanglingUntriaged> layout_manager_ = nullptr;
+  // Updates the left and right margins for the tab strip. This should be
+  // called whenever `tab_search_container_` changes size, if
+  // `render_tab_search_before_tab_strip_` is true.
+  void UpdateTabStripMargin();
+
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
       nullptr;
   raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_ = nullptr;
@@ -94,7 +104,8 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   raw_ptr<TabStripScrollContainer, DanglingUntriaged>
       tab_strip_scroll_container_ = nullptr;
   raw_ptr<views::Button, DanglingUntriaged> new_tab_button_ = nullptr;
-  raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
+  raw_ptr<TabSearchContainer, DanglingUntriaged> tab_search_container_ =
+      nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents

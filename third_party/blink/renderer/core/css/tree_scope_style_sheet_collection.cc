@@ -54,7 +54,8 @@ void TreeScopeStyleSheetCollection::AddStyleSheetCandidateNode(Node& node) {
 void TreeScopeStyleSheetCollection::ApplyActiveStyleSheetChanges(
     StyleSheetCollection& new_collection) {
   GetDocument().GetStyleEngine().ApplyRuleSetChanges(
-      GetTreeScope(), ActiveStyleSheets(), new_collection.ActiveStyleSheets());
+      GetTreeScope(), ActiveStyleSheets(), new_collection.ActiveStyleSheets(),
+      new_collection.RuleSetDiffs());
   new_collection.Swap(*this);
 }
 

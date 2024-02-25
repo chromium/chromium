@@ -14,9 +14,12 @@
 @protocol SnackbarCoordinatorDelegate <NSObject>
 
 // Returns the current offset to use from the bottom of the screen to display
-// the snackbar UI.
+// the snackbar UI. When `forceBrowserToolbar`, uses the browser's toolbar
+// height, ignoring presented view controllers.
 - (CGFloat)snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:
-    (SnackbarCoordinator*)snackbarCoordinator;
+               (SnackbarCoordinator*)snackbarCoordinator
+                                                forceBrowserToolbar:
+                                                    (BOOL)forceBrowserToolbar;
 
 @end
 

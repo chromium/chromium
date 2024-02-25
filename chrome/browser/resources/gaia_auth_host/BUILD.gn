@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
-import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
@@ -57,6 +56,7 @@ preprocess_if_expr("preprocess_src") {
     "password_change_authenticator.js",
     "post_message_channel.js",
     "scroll_helper_injected.js",
+    "safe_xml_utils.js",
     "saml_handler.js",
     "saml_injected.js",
     "saml_password_attributes.js",
@@ -99,6 +99,11 @@ if (is_chromeos_ash) {
     ]
   }
 
+  js_library("safe_xml_utils") {
+    sources = [ "$preprocess_folder/safe_xml_utils.js" ]
+    extra_deps = [ ":preprocess_src" ]
+  }
+
   js_library("channel") {
     sources = [ "$preprocess_folder/channel.js" ]
     extra_deps = [ ":preprocess_src" ]
@@ -117,7 +122,10 @@ if (is_chromeos_ash) {
 
   js_library("saml_password_attributes") {
     sources = [ "$preprocess_folder/saml_password_attributes.js" ]
-    deps = [ ":saml_timestamps" ]
+    deps = [
+      ":safe_xml_utils",
+      ":saml_timestamps",
+    ]
     extra_deps = [ ":preprocess_src" ]
   }
 
@@ -141,6 +149,7 @@ if (is_chromeos_ash) {
     deps = [
       ":channel",
       ":post_message_channel",
+      ":safe_xml_utils",
       ":saml_password_attributes",
       ":saml_username_autofill",
       ":webview_event_manager",

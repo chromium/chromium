@@ -9,6 +9,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/ash/settings/token_encryptor.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -16,15 +19,25 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ash::FakeCryptohomeMiscClient;
 
 namespace policy {
+namespace {
+
+using ::ash::FakeCryptohomeMiscClient;
+using ::base::test::TestFuture;
+
+}  // namespace
 
 class DMTokenStorageTest : public testing::Test {
  public:
   DMTokenStorageTest()
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
   ~DMTokenStorageTest() override {}
+
+  std::string GetStubSaltAsString() {
+    std::vector<uint8_t> bytes = FakeCryptohomeMiscClient::GetStubSystemSalt();
+    return std::string(bytes.begin(), bytes.end());
+  }
 
   void SetSaltPending() {
     // Clear the cached salt.
@@ -65,26 +78,28 @@ class DMTokenStorageTest : public testing::Test {
   }
 
   void StoreDMToken() {
-    base::RunLoop run_loop;
-    dm_token_storage_->StoreDMToken(
-        "test-token",
-        base::BindOnce(&DMTokenStorageTest::OnStoreCallback,
-                       base::Unretained(this), run_loop.QuitClosure(), true));
-    run_loop.Run();
+    TestFuture<bool> store_result_future;
+    dm_token_storage_->StoreDMToken("test-token",
+                                    store_result_future.GetCallback());
+    EXPECT_TRUE(store_result_future.Get());
+    EXPECT_TRUE(scoped_testing_local_state_.Get()
+                    ->GetString(prefs::kDeviceDMTokenV1)
+                    .empty());
+    EXPECT_FALSE(scoped_testing_local_state_.Get()
+                     ->GetString(prefs::kDeviceDMTokenV2)
+                     .empty());
   }
 
-  void OnStoreCallback(base::OnceClosure closure, bool expected, bool success) {
-    EXPECT_EQ(expected, success);
-    if (!closure.is_null())
-      std::move(closure).Run();
+  void StoreV1Token(const std::string& token) {
+    ash::CryptohomeTokenEncryptor encryptor(GetStubSaltAsString());
+    scoped_testing_local_state_.Get()->SetString(
+        prefs::kDeviceDMTokenV1, encryptor.WeakEncryptWithSystemSalt(token));
   }
 
-  void OnRetrieveCallback(base::OnceClosure closure,
-                          const std::string& expected,
-                          const std::string& actual) {
-    EXPECT_EQ(expected, actual);
-    if (!closure.is_null())
-      std::move(closure).Run();
+  void StoreV2Token(const std::string& token) {
+    ash::CryptohomeTokenEncryptor encryptor(GetStubSaltAsString());
+    scoped_testing_local_state_.Get()->SetString(
+        prefs::kDeviceDMTokenV2, encryptor.EncryptWithSystemSalt(token));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -96,30 +111,54 @@ TEST_F(DMTokenStorageTest, SaveEncryptedToken) {
   CreateDMStorage();
   StoreDMToken();
 
-  {
-    base::RunLoop run_loop;
-    dm_token_storage_->RetrieveDMToken(base::BindOnce(
-        &DMTokenStorageTest::OnRetrieveCallback, base::Unretained(this),
-        run_loop.QuitClosure(), "test-token"));
-    run_loop.Run();
-  }
+  TestFuture<std::string> token_future1;
+  dm_token_storage_->RetrieveDMToken(
+      token_future1.GetCallback<const std::string&>());
+  EXPECT_EQ(token_future1.Get(), "test-token");
+
   // Reload shouldn't change the token.
   CreateDMStorage();
-  {
-    base::RunLoop run_loop;
-    dm_token_storage_->RetrieveDMToken(base::BindOnce(
-        &DMTokenStorageTest::OnRetrieveCallback, base::Unretained(this),
-        run_loop.QuitClosure(), "test-token"));
-    run_loop.Run();
-  }
-  {
-    // Subsequent retrieving DM token should succeed.
-    base::RunLoop run_loop;
-    dm_token_storage_->RetrieveDMToken(base::BindOnce(
-        &DMTokenStorageTest::OnRetrieveCallback, base::Unretained(this),
-        run_loop.QuitClosure(), "test-token"));
-    run_loop.Run();
-  }
+  TestFuture<std::string> token_future2;
+  dm_token_storage_->RetrieveDMToken(
+      token_future2.GetCallback<const std::string&>());
+  EXPECT_EQ(token_future2.Get(), "test-token");
+
+  // Subsequent retrieving DM token should succeed.
+  TestFuture<std::string> token_future3;
+  dm_token_storage_->RetrieveDMToken(
+      token_future3.GetCallback<const std::string&>());
+  EXPECT_EQ(token_future3.Get(), "test-token");
+}
+
+TEST_F(DMTokenStorageTest, RetrieveV1Token) {
+  StoreV1Token("test-token");
+  CreateDMStorage();
+
+  TestFuture<std::string> token_future;
+  dm_token_storage_->RetrieveDMToken(
+      token_future.GetCallback<const std::string&>());
+  EXPECT_EQ(token_future.Get(), "test-token");
+}
+
+TEST_F(DMTokenStorageTest, RetrieveV2Token) {
+  StoreV2Token("test-token");
+  CreateDMStorage();
+
+  TestFuture<std::string> token_future;
+  dm_token_storage_->RetrieveDMToken(
+      token_future.GetCallback<const std::string&>());
+  EXPECT_EQ(token_future.Get(), "test-token");
+}
+
+TEST_F(DMTokenStorageTest, RetrievePrefersV2Token) {
+  StoreV1Token("test-token-v1");
+  StoreV2Token("test-token-v2");
+  CreateDMStorage();
+
+  TestFuture<std::string> token_future;
+  dm_token_storage_->RetrieveDMToken(
+      token_future.GetCallback<const std::string&>());
+  EXPECT_EQ(token_future.Get(), "test-token-v2");
 }
 
 TEST_F(DMTokenStorageTest, RetrieveEncryptedTokenWithPendingSalt) {
@@ -129,51 +168,46 @@ TEST_F(DMTokenStorageTest, RetrieveEncryptedTokenWithPendingSalt) {
   SetSaltPending();
   CreateDMStorage();
 
-  {
-    base::RunLoop run_loop;
-    dm_token_storage_->RetrieveDMToken(base::BindOnce(
-        &DMTokenStorageTest::OnRetrieveCallback, base::Unretained(this),
-        run_loop.QuitClosure(), "test-token"));
-    SetSaltAvailable();
-    run_loop.Run();
-  }
+  TestFuture<std::string> token_future;
+  dm_token_storage_->RetrieveDMToken(
+      token_future.GetCallback<const std::string&>());
+  SetSaltAvailable();
+  EXPECT_EQ(token_future.Get(), "test-token");
 }
 
 TEST_F(DMTokenStorageTest, StoreEncryptedTokenWithPendingSalt) {
   SetSaltPending();
   CreateDMStorage();
-  base::RunLoop run_loop;
-  dm_token_storage_->StoreDMToken(
-      "test-token",
-      base::BindOnce(&DMTokenStorageTest::OnStoreCallback,
-                     base::Unretained(this), run_loop.QuitClosure(), true));
+
+  TestFuture<bool> store_result_future;
+  dm_token_storage_->StoreDMToken("test-token",
+                                  store_result_future.GetCallback());
   SetSaltAvailable();
-  run_loop.Run();
+  EXPECT_TRUE(store_result_future.Get());
 }
 
 TEST_F(DMTokenStorageTest, MultipleRetrieveTokenCalls) {
   CreateDMStorage();
   StoreDMToken();
-  {
-    base::RunLoop run_loop;
-    for (int i = 0; i < 3; ++i) {
-      dm_token_storage_->RetrieveDMToken(base::BindOnce(
-          &DMTokenStorageTest::OnRetrieveCallback, base::Unretained(this),
-          run_loop.QuitClosure(), "test-token"));
-    }
-    run_loop.Run();
+
+  std::vector<TestFuture<std::string>> token_futures(3);
+  for (TestFuture<std::string>& token_future : token_futures) {
+    dm_token_storage_->RetrieveDMToken(
+        token_future.GetCallback<const std::string&>());
+  }
+  for (TestFuture<std::string>& token_future : token_futures) {
+    EXPECT_EQ(token_future.Get(), "test-token");
   }
 }
 
 TEST_F(DMTokenStorageTest, StoreWithSaltError) {
   SetSaltError();
   CreateDMStorage();
-  base::RunLoop run_loop;
-  dm_token_storage_->StoreDMToken(
-      "test-token",
-      base::BindOnce(&DMTokenStorageTest::OnStoreCallback,
-                     base::Unretained(this), run_loop.QuitClosure(), false));
-  run_loop.Run();
+
+  TestFuture<bool> store_result_future;
+  dm_token_storage_->StoreDMToken("test-token",
+                                  store_result_future.GetCallback());
+  EXPECT_FALSE(store_result_future.Get());
 }
 
 TEST_F(DMTokenStorageTest, RetrieveWithSaltError) {
@@ -181,52 +215,51 @@ TEST_F(DMTokenStorageTest, RetrieveWithSaltError) {
   StoreDMToken();
   SetSaltPending();
   CreateDMStorage();
-  base::RunLoop run_loop;
+
+  TestFuture<std::string> token_future;
   dm_token_storage_->RetrieveDMToken(
-      base::BindOnce(&DMTokenStorageTest::OnRetrieveCallback,
-                     base::Unretained(this), run_loop.QuitClosure(), ""));
+      token_future.GetCallback<const std::string&>());
   SetSaltError();
-  run_loop.Run();
+  EXPECT_EQ(token_future.Get(), "");
 }
 
 TEST_F(DMTokenStorageTest, RetrieveWithNoToken) {
   CreateDMStorage();
-  base::RunLoop run_loop;
+
+  TestFuture<std::string> token_future;
   dm_token_storage_->RetrieveDMToken(
-      base::BindOnce(&DMTokenStorageTest::OnRetrieveCallback,
-                     base::Unretained(this), run_loop.QuitClosure(), ""));
-  run_loop.Run();
+      token_future.GetCallback<const std::string&>());
+  EXPECT_EQ(token_future.Get(), "");
 }
 
 TEST_F(DMTokenStorageTest, RetrieveFailIfStoreRunning) {
   SetSaltPending();
   CreateDMStorage();
-  base::RunLoop run_loop;
-  dm_token_storage_->StoreDMToken(
-      "test-token",
-      base::BindOnce(&DMTokenStorageTest::OnStoreCallback,
-                     base::Unretained(this), run_loop.QuitClosure(), true));
+
+  TestFuture<bool> store_result_future;
+  dm_token_storage_->StoreDMToken("test-token",
+                                  store_result_future.GetCallback());
+  TestFuture<std::string> token_future;
   dm_token_storage_->RetrieveDMToken(
-      base::BindOnce(&DMTokenStorageTest::OnRetrieveCallback,
-                     base::Unretained(this), base::OnceClosure(), ""));
+      token_future.GetCallback<const std::string&>());
   SetSaltAvailable();
-  run_loop.Run();
+  EXPECT_TRUE(store_result_future.Get());
+  EXPECT_EQ(token_future.Get(), "");
 }
 
 TEST_F(DMTokenStorageTest, StoreFailIfAnotherStoreRunning) {
   SetSaltPending();
   CreateDMStorage();
-  base::RunLoop run_loop;
-  dm_token_storage_->StoreDMToken(
-      "test-token",
-      base::BindOnce(&DMTokenStorageTest::OnStoreCallback,
-                     base::Unretained(this), run_loop.QuitClosure(), true));
-  dm_token_storage_->StoreDMToken(
-      "test-token",
-      base::BindOnce(&DMTokenStorageTest::OnStoreCallback,
-                     base::Unretained(this), base::OnceClosure(), false));
+
+  TestFuture<bool> first_store_result_future;
+  TestFuture<bool> later_store_result_future;
+  dm_token_storage_->StoreDMToken("test-token",
+                                  first_store_result_future.GetCallback());
+  dm_token_storage_->StoreDMToken("test-token",
+                                  later_store_result_future.GetCallback());
   SetSaltAvailable();
-  run_loop.Run();
+  EXPECT_TRUE(first_store_result_future.Get());
+  EXPECT_FALSE(later_store_result_future.Get());
 }
 
 }  // namespace policy

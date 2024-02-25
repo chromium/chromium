@@ -5,10 +5,8 @@
 #include "device/fido/auth_token_requester.h"
 
 #include <list>
+#include <optional>
 #include <string>
-
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -21,7 +19,8 @@
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/pin.h"
 #include "device/fido/virtual_ctap2_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
 namespace {
@@ -59,8 +58,8 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
       : expectations_(std::move(expectations)) {}
 
   void WaitForResult() { wait_for_result_loop_.Run(); }
-  absl::optional<AuthTokenRequester::Result>& result() { return result_; }
-  absl::optional<pin::TokenResponse>& response() { return response_; }
+  std::optional<AuthTokenRequester::Result>& result() { return result_; }
+  std::optional<pin::TokenResponse>& response() { return response_; }
   bool internal_uv_was_retried() { return internal_uv_num_retries_ > 0u; }
   size_t internal_uv_num_retries() { return internal_uv_num_retries_; }
   std::list<TestExpectation> expectations() { return expectations_; }
@@ -100,7 +99,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   void HavePINUVAuthTokenResultForAuthenticator(
       FidoAuthenticator* authenticator,
       AuthTokenRequester::Result result,
-      absl::optional<pin::TokenResponse> response) override {
+      std::optional<pin::TokenResponse> response) override {
     if (!base::Contains(
             std::vector<AuthTokenRequester::Result>{
                 AuthTokenRequester::Result::
@@ -117,8 +116,8 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
 
   std::list<TestExpectation> expectations_;
 
-  absl::optional<AuthTokenRequester::Result> result_;
-  absl::optional<pin::TokenResponse> response_;
+  std::optional<AuthTokenRequester::Result> result_;
+  std::optional<pin::TokenResponse> response_;
 
   bool authenticator_selected_ = false;
   size_t internal_uv_num_retries_ = 0u;

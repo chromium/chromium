@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/ui/simple_message_box.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 

@@ -30,6 +30,7 @@ import java.util.Set;
  */
 final class RemoteObjectRegistry implements RemoteObjectImpl.ObjectIdAllocator {
     private final Set<? super RemoteObjectRegistry> mRetainingSet;
+
     private static class Entry {
         Entry(int id, Object object, Class<? extends Annotation> safeAnnotationClass) {
             this.id = id;

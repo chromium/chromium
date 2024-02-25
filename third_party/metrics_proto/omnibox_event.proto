@@ -266,6 +266,10 @@ message OmniboxEventProto {
     // This is a pseudo-provider for actions produced by OmniboxPedalProvider
     // and attached to suggestions by AutocompleteResult::AttachPedalsToMatches.
     PEDALS = 24;
+    // Featured search that includes the starter pack and search engines created
+    // by the SiteSearchSettings Enterprise policy and marked as "featured" by
+    // an administrator.
+    FEATURED_SEARCH = 25;
   }
 
   // The result set displayed on the completion popup
@@ -597,6 +601,7 @@ message OmniboxEventProto {
     SHORTCUT_BOOST = 8;
     REMOTE_SECONDARY_ZERO_SUGGEST = 9;
     ML_URL_SCORING = 10;
+    COMPANY_ENTITY_ADJUSTMENT = 11;
   }
   // The set of features triggered in the most recent query. Each element is a
   // value of `Features` enum.

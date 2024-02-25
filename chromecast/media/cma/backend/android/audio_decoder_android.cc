@@ -122,10 +122,13 @@ bool AudioDecoderAndroid::Start(int64_t start_pts) {
   current_pts_ = start_pts;
   DCHECK(IsValidConfig(config_));
   DCHECK(IsValidChannelNumber(config_.channel_number));
-  sink_.Reset(this, config_.channel_number, config_.samples_per_second,
-              config_.audio_track_session_id, backend_->Primary(),
-              is_apk_audio_, config_.use_hw_av_sync, backend_->DeviceId(),
-              backend_->ContentType());
+  if (!sink_.Create(this, config_.channel_number, config_.samples_per_second,
+                    config_.audio_track_session_id, backend_->Primary(),
+                    is_apk_audio_, config_.use_hw_av_sync, backend_->DeviceId(),
+                    backend_->ContentType())) {
+    return false;
+  }
+
   sink_->SetStreamVolumeMultiplier(volume_multiplier_);
   // Create decoder_ if necessary. This can happen if Stop() was called, and
   // SetConfig() was not called since then.
@@ -271,7 +274,9 @@ bool AudioDecoderAndroid::SetConfig(const AudioConfig& config) {
   }
 
   if (sink_ && changed_config) {
-    ResetSinkForNewConfig(config);
+    if (!ResetSinkForNewConfig(config)) {
+      return false;
+    }
   }
 
   config_ = config;
@@ -286,13 +291,17 @@ bool AudioDecoderAndroid::SetConfig(const AudioConfig& config) {
   return true;
 }
 
-void AudioDecoderAndroid::ResetSinkForNewConfig(const AudioConfig& config) {
-  sink_.Reset(this, config.channel_number, config.samples_per_second,
-              config.audio_track_session_id, backend_->Primary(), is_apk_audio_,
-              config.use_hw_av_sync, backend_->DeviceId(),
-              backend_->ContentType());
+bool AudioDecoderAndroid::ResetSinkForNewConfig(const AudioConfig& config) {
+  if (!sink_.Create(this, config.channel_number, config.samples_per_second,
+                    config.audio_track_session_id, backend_->Primary(),
+                    is_apk_audio_, config.use_hw_av_sync, backend_->DeviceId(),
+                    backend_->ContentType())) {
+    return false;
+  }
+
   sink_->SetStreamVolumeMultiplier(volume_multiplier_);
   pending_output_frames_ = kNoPendingOutput;
+  return true;
 }
 
 void AudioDecoderAndroid::CreateDecoder() {
@@ -445,7 +454,10 @@ void AudioDecoderAndroid::OnBufferDecoded(
     // assume that this can only happen at start of stream (ie, on the first
     // decoded buffer).
     CreateRateShifter(config_);
-    ResetSinkForNewConfig(config_);
+    if (!ResetSinkForNewConfig(config_)) {
+      OnSinkError(SinkError::kInternalError);
+      return;
+    }
   }
 
   pending_buffer_complete_ = true;

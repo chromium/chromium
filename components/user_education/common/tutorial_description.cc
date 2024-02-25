@@ -4,8 +4,7 @@
 
 #include "components/user_education/common/tutorial_description.h"
 
-#include "components/user_education/common/help_bubble.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/user_education/common/events.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -13,14 +12,18 @@
 
 namespace user_education {
 
+ScopedTutorialState::ScopedTutorialState(ui::ElementContext context)
+    : context_(context) {}
+ScopedTutorialState::~ScopedTutorialState() = default;
+
 TutorialDescription::TutorialDescription() = default;
-TutorialDescription::~TutorialDescription() = default;
-TutorialDescription::TutorialDescription(TutorialDescription&&) = default;
-TutorialDescription& TutorialDescription::operator=(TutorialDescription&&) =
+TutorialDescription::TutorialDescription(TutorialDescription&&) noexcept =
     default;
+TutorialDescription& TutorialDescription::operator=(
+    TutorialDescription&&) noexcept = default;
+TutorialDescription::~TutorialDescription() = default;
 
 TutorialDescription::Step::Step() = default;
-TutorialDescription::Step::~Step() = default;
 
 TutorialDescription::Step::Step(ElementSpecifier element,
                                 ui::InteractionSequence::StepType step_type,
@@ -38,6 +41,7 @@ TutorialDescription::Step::Step(ElementSpecifier element,
 TutorialDescription::Step::Step(const TutorialDescription::Step&) = default;
 TutorialDescription::Step& TutorialDescription::Step::operator=(
     const TutorialDescription::Step&) = default;
+TutorialDescription::Step::~Step() = default;
 
 TutorialDescription::Step& TutorialDescription::Step::NameElement(
     std::string name) {

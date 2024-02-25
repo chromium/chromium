@@ -44,7 +44,7 @@ void BackgroundTracingAgentClientImpl::OnInitialized() {
 
 void BackgroundTracingAgentClientImpl::OnTriggerBackgroundTrace(
     tracing::mojom::BackgroundTracingRulePtr rule) {
-  BackgroundTracingManager::EmitNamedTrigger(rule->rule_id);
+  base::trace_event::EmitNamedTrigger(rule->rule_id);
 }
 
 BackgroundTracingAgentClientImpl::BackgroundTracingAgentClientImpl(

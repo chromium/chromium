@@ -42,7 +42,7 @@ void ManagedCellularPrefHandler::SetDevicePrefs(PrefService* device_prefs) {
 
   const bool hasPref =
       device_prefs_->HasPrefPath(prefs::kManagedCellularESimMetadata);
-  if (!ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+  if (!ash::features::IsSmdsSupportEnabled()) {
     if (hasPref) {
       device_prefs_->ClearPref(prefs::kManagedCellularESimMetadata);
     }
@@ -74,7 +74,7 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
     const std::string& iccid,
     const std::string& smdp_address,
     bool sync_stub_networks) {
-  DCHECK(!ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(!ash::features::IsSmdsSupportEnabled());
 
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet.";
@@ -97,7 +97,7 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
 }
 
 void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
-  DCHECK(!ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(!ash::features::IsSmdsSupportEnabled());
 
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet.";
@@ -118,7 +118,7 @@ void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
 
 const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(
     const std::string& iccid) const {
-  DCHECK(!ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(!ash::features::IsSmdsSupportEnabled());
 
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet.";
@@ -134,7 +134,7 @@ void ManagedCellularPrefHandler::AddESimMetadata(
     const std::string& name,
     const policy_util::SmdxActivationCode& activation_code,
     bool sync_stub_networks) {
-  DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(ash::features::IsSmdsSupportEnabled());
   DCHECK(!name.empty());
   DCHECK(!activation_code.value().empty());
 
@@ -172,7 +172,7 @@ void ManagedCellularPrefHandler::AddESimMetadata(
 
 const base::Value::Dict* ManagedCellularPrefHandler::GetESimMetadata(
     const std::string& iccid) {
-  DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(ash::features::IsSmdsSupportEnabled());
 
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet";
@@ -184,7 +184,7 @@ const base::Value::Dict* ManagedCellularPrefHandler::GetESimMetadata(
 }
 
 void ManagedCellularPrefHandler::RemoveESimMetadata(const std::string& iccid) {
-  DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(ash::features::IsSmdsSupportEnabled());
 
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet";
@@ -239,7 +239,7 @@ bool ManagedCellularPrefHandler::ContainsApnMigratedIccid(
 }
 
 void ManagedCellularPrefHandler::MigrateExistingPrefs() {
-  DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(ash::features::IsSmdsSupportEnabled());
   DCHECK(device_prefs_);
 
   NET_LOG(EVENT) << "Starting migration of existing ICCID and SM-DP+ pairs";

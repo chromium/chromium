@@ -79,4 +79,4 @@ class FaviconFetcher {
   base::WeakPtrFactory<FaviconFetcher> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_CALLER_H_
+#endif  // CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_FETCHER_H_

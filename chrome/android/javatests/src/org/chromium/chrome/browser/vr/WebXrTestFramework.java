@@ -17,24 +17,22 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Extension of XrTestFramework meant for testing XR-related web APIs.
- */
+/** Extension of XrTestFramework meant for testing XR-related web APIs. */
 public abstract class WebXrTestFramework extends XrTestFramework {
     private static final String TAG = "WebXrTestFramework";
 
     /**
-     * Must be constructed after the rule has been applied (e.g. in whatever method is
-     * tagged with @Before).
+     * Must be constructed after the rule has been applied (e.g. in whatever method is tagged
+     * with @Before).
      */
     public WebXrTestFramework(ChromeActivityTestRule rule) {
         super(rule);
     }
 
     /**
-     * WebVrTestFramework derives from this and overrides to allow WebVR tests
-     * to fail early if no VRDisplay's were found.  WebXR has no concept of a
-     * device, and inline support is always available, so return true.
+     * WebVrTestFramework derives from this and overrides to allow WebVR tests to fail early if no
+     * VRDisplay's were found. WebXR has no concept of a device, and inline support is always
+     * available, so return true.
      *
      * @param webContents The WebContents to run the JavaScript through.
      * @return Whether an XRDevice was found.
@@ -76,8 +74,9 @@ public abstract class WebXrTestFramework extends XrTestFramework {
             }
             boolean nodeClicked = false;
             try {
-                nodeClicked = DOMUtils.clickNode(
-                        webContents, "webgl-canvas", false /* goThroughRootAndroidView */);
+                nodeClicked =
+                        DOMUtils.clickNode(
+                                webContents, "webgl-canvas", /* goThroughRootAndroidView= */ false);
                 if (DEBUG_LOGS) {
                     Log.i(TAG, "enterSessionWithUserGesture: nodeClicked => " + nodeClicked);
                 }
@@ -101,9 +100,13 @@ public abstract class WebXrTestFramework extends XrTestFramework {
 
             if (canvasClicked) break;
 
-
-            PropertyModel dialog = TestThreadUtils.runOnUiThreadBlockingNoException(() ->
-                    getRule().getActivity().getModalDialogManager().getCurrentDialogForTest());
+            PropertyModel dialog =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                            () ->
+                                    getRule()
+                                            .getActivity()
+                                            .getModalDialogManager()
+                                            .getCurrentDialogForTest());
 
             // If we get here, "nodeClicked" is true but "canvasClicked" is false. Before
             // retrying, check if there's a dialog visible. Polling Javascript doesn't
@@ -122,9 +125,7 @@ public abstract class WebXrTestFramework extends XrTestFramework {
         }
     }
 
-    /**
-     * Helper function to run enterSessionWithUserGesture using the current tab's WebContents.
-     */
+    /** Helper function to run enterSessionWithUserGesture using the current tab's WebContents. */
     public void enterSessionWithUserGesture() {
         enterSessionWithUserGesture(getCurrentWebContents());
     }
@@ -167,6 +168,7 @@ public abstract class WebXrTestFramework extends XrTestFramework {
 
     /**
      * Helper function to run enterSessionWithUserGestureOrFail with the current tab's WebContents.
+     *
      * @param needsCameraPermission True if the session requires Camera permission.
      */
     public void enterSessionWithUserGestureOrFail(boolean needsCameraPermission) {
@@ -180,9 +182,7 @@ public abstract class WebXrTestFramework extends XrTestFramework {
      */
     public abstract void endSession(WebContents webContents);
 
-    /**
-     * Helper function to run endSession with the current tab's WebContents.
-     */
+    /** Helper function to run endSession with the current tab's WebContents. */
     public void endSession() {
         endSession(getCurrentWebContents());
     }
@@ -199,6 +199,7 @@ public abstract class WebXrTestFramework extends XrTestFramework {
 
     /**
      * Helper function to run shouldExpectPermissionPrompt with the current tab's WebContents.
+     *
      * @return True if the a request for the session type would trigger the permission prompt to be
      *     shown, otherwise false.
      */
@@ -207,19 +208,19 @@ public abstract class WebXrTestFramework extends XrTestFramework {
     }
 
     /**
-     * Checks whether a session request of the given type is expected to trigger the consent
-     * dialog.
+     * Checks whether a session request of the given type is expected to trigger the consent dialog.
      *
      * @param sessionType The session type to pass to JavaScript defined in webxr_boilerplate.js,
      *     e.g. sessionTypes.AR
      * @param webContents The WebContents to check in.
      * @return True if the given session type is expected to trigger the permission prompt,
-     *         otherwise
-     *     false.
+     *     otherwise false.
      */
     protected boolean shouldExpectPermissionPrompt(String sessionType, WebContents webContents) {
-        return runJavaScriptOrFail("sessionTypeWouldTriggerConsent(" + sessionType + ")",
-                POLL_TIMEOUT_SHORT_MS, webContents)
+        return runJavaScriptOrFail(
+                        "sessionTypeWouldTriggerConsent(" + sessionType + ")",
+                        POLL_TIMEOUT_SHORT_MS,
+                        webContents)
                 .equals("true");
     }
 }

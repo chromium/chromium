@@ -11,8 +11,8 @@ void FakeAppLaunchSplashScreenHandler::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-void FakeAppLaunchSplashScreenHandler::Show(KioskAppManagerBase::App app_data) {
-  last_app_data_ = app_data;
+void FakeAppLaunchSplashScreenHandler::Show(Data data) {
+  last_data_ = std::move(data);
 }
 
 void FakeAppLaunchSplashScreenHandler::ShowErrorMessage(

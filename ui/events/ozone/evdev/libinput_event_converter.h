@@ -5,12 +5,12 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_LIBINPUT_EVENT_CONVERTER_H_
 #define UI_EVENTS_OZONE_EVDEV_LIBINPUT_EVENT_CONVERTER_H_
 
-#include "ui/events/ozone/evdev/event_converter_evdev.h"
-
 #include <libinput.h>
+
+#include <optional>
 #include <ostream>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/ozone/evdev/event_converter_evdev.h"
 
 namespace ui {
 
@@ -67,18 +67,18 @@ class LibInputEventConverter : public EventConverterEvdev {
   // that uses libinput struct are implemented here.
   class LibInputContext {
    public:
-    static absl::optional<LibInputContext> Create();
+    static std::optional<LibInputContext> Create();
     LibInputContext(LibInputContext&& other);
     LibInputContext(const LibInputContext& other) = delete;
     LibInputContext& operator=(const LibInputContext& other) = delete;
     ~LibInputContext();
 
-    absl::optional<LibInputEventConverter::LibInputDevice> AddDevice(
+    std::optional<LibInputEventConverter::LibInputDevice> AddDevice(
         int id,
         const base::FilePath& path) const;
     bool Dispatch() const;
     int Fd();
-    absl::optional<LibInputEventConverter::LibInputEvent> NextEvent() const;
+    std::optional<LibInputEventConverter::LibInputEvent> NextEvent() const;
 
    private:
     explicit LibInputContext(libinput* const li);
@@ -143,7 +143,7 @@ class LibInputEventConverter : public EventConverterEvdev {
   const bool has_touchscreen_;
 
   const LibInputContext context_;
-  const absl::optional<LibInputDevice> device_;
+  const std::optional<LibInputDevice> device_;
 };
 
 }  // namespace ui

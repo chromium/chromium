@@ -27,9 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-/**
- * Test reading and writing variations seeds.
- */
+/** Test reading and writing variations seeds. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
@@ -60,14 +58,16 @@ public class VariationsUtilsTest {
                 // Create a seed that's missing some fields.
                 stream = new FileOutputStream(file);
                 SeedInfo info = VariationsTestUtils.createMockSeed();
-                AwVariationsSeed proto = AwVariationsSeed.newBuilder()
-                                                 .setSignature(info.signature)
-                                                 .setCountry(info.country)
-                                                 .setDate(info.date)
-                                                 .build();
+                AwVariationsSeed proto =
+                        AwVariationsSeed.newBuilder()
+                                .setSignature(info.signature)
+                                .setCountry(info.country)
+                                .setDate(info.date)
+                                .build();
                 proto.writeTo(stream);
 
-                Assert.assertNull("Seed with missing fields should've failed to load.",
+                Assert.assertNull(
+                        "Seed with missing fields should've failed to load.",
                         VariationsUtils.readSeedFile(file));
             } finally {
                 if (stream != null) stream.close();
@@ -83,13 +83,14 @@ public class VariationsUtilsTest {
     public void testReadTruncatedSeed() throws IOException {
         // Create a complete, serialized seed.
         SeedInfo info = VariationsTestUtils.createMockSeed();
-        AwVariationsSeed proto = AwVariationsSeed.newBuilder()
-                                         .setSignature(info.signature)
-                                         .setCountry(info.country)
-                                         .setDate(info.date)
-                                         .setIsGzipCompressed(info.isGzipCompressed)
-                                         .setSeedData(ByteString.copyFrom(info.seedData))
-                                         .build();
+        AwVariationsSeed proto =
+                AwVariationsSeed.newBuilder()
+                        .setSignature(info.signature)
+                        .setCountry(info.country)
+                        .setDate(info.date)
+                        .setIsGzipCompressed(info.isGzipCompressed)
+                        .setSeedData(ByteString.copyFrom(info.seedData))
+                        .build();
         byte[] protoBytes = proto.toByteArray();
 
         // Sanity check: protoBytes is at least as long as the seedData field.
@@ -110,7 +111,11 @@ public class VariationsUtilsTest {
                 }
 
                 // Reading each truncated seed should fail.
-                Assert.assertNull("Seed truncated from " + protoBytes.length + " to " + offset
+                Assert.assertNull(
+                        "Seed truncated from "
+                                + protoBytes.length
+                                + " to "
+                                + offset
                                 + " bytes should've failed to load.",
                         VariationsUtils.readSeedFile(file));
             } finally {

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/ssl_status.h"
 #include "net/base/isolation_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/system_entropy.mojom-forward.h"
@@ -105,8 +105,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       scoped_refptr<SiteInstanceImpl> instance,
       const GURL& url,
       const Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
-      const absl::optional<GURL>& initiator_base_url,
+      const std::optional<url::Origin>& initiator_origin,
+      const std::optional<GURL>& initiator_base_url,
       const std::u16string& title,
       ui::PageTransition transition_type,
       bool is_renderer_initiated,
@@ -138,6 +138,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   const GURL& GetVirtualURL() override;
   void SetTitle(const std::u16string& title) override;
   const std::u16string& GetTitle() override;
+  void SetAppTitle(const std::u16string& app_title) override;
+  const std::u16string& GetAppTitle() override;
   void SetPageState(const blink::PageState& state,
                     NavigationEntryRestoreContext* context) override;
   blink::PageState GetPageState() override;
@@ -167,7 +169,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   int GetHttpStatusCode() override;
   void SetRedirectChain(const std::vector<GURL>& redirects) override;
   const std::vector<GURL>& GetRedirectChain() override;
-  const absl::optional<ReplacedNavigationEntryData>& GetReplacedEntryData()
+  const std::optional<ReplacedNavigationEntryData>& GetReplacedEntryData()
       override;
   bool IsRestored() override;
   std::string GetExtraHeaders() override;
@@ -223,7 +225,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       const blink::FramePolicy& frame_policy,
       bool ancestor_or_self_has_cspee,
       blink::mojom::SystemEntropy system_entropy_at_navigation_start,
-      absl::optional<blink::scheduler::TaskAttributionId>
+      std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id);
 
   // Once a navigation entry is committed, we should no longer track several
@@ -257,10 +259,10 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       SiteInstanceImpl* site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
-      const absl::optional<url::Origin>& origin,
+      const std::optional<url::Origin>& origin,
       const Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
-      const absl::optional<GURL>& initiator_base_url,
+      const std::optional<url::Origin>& initiator_origin,
+      const std::optional<GURL>& initiator_base_url,
       const std::vector<GURL>& redirect_chain,
       const blink::PageState& page_state,
       const std::string& method,
@@ -416,7 +418,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     isolation_info_ = isolation_info;
   }
 
-  const absl::optional<net::IsolationInfo>& isolation_info() const {
+  const std::optional<net::IsolationInfo>& isolation_info() const {
     return isolation_info_;
   }
 
@@ -535,6 +537,11 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   GURL virtual_url_;
   bool update_virtual_url_with_url_;
   std::u16string title_;
+  // The app title is optional and may be empty. If set to a non-empty value, a
+  // web app displayed in an app window may use this string instead of the
+  // regular title. See
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
+  std::u16string app_title_;
   FaviconStatus favicon_;
   SSLStatus ssl_;
   ui::PageTransition transition_type_;
@@ -611,14 +618,14 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // determines the IsolationInfo to be used when navigating to this
   // NavigationEntry; otherwise, it is determined based on the navigating frame
   // and top frame origins. For example, this is used for view-source.
-  absl::optional<net::IsolationInfo> isolation_info_;
+  std::optional<net::IsolationInfo> isolation_info_;
 
   // Stores information about the entry prior to being replaced (e.g.
   // history.replaceState()). It is preserved after commit (session sync for
   // offline analysis) but should not be persisted. The concept is valid for
   // subframe navigations but we only need to track it for main frames, that's
   // why the field is listed here.
-  absl::optional<ReplacedNavigationEntryData> replaced_entry_data_;
+  std::optional<ReplacedNavigationEntryData> replaced_entry_data_;
 
   // Set to true if this page does a navigation without ever receiving a user
   // gesture. If true, it will be skipped on subsequent back/forward button

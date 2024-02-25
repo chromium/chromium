@@ -6,7 +6,7 @@ ADDRESS_HOME_CITY | billingAddress.city |  |  | billingAddress.firstName_1
 ADDRESS_HOME_STATE | billingAddress.stateCode |  | XX | billingAddress.firstName_1
 ADDRESS_HOME_ZIP | billingAddress.postalCode |  |  | billingAddress.firstName_1
 ADDRESS_HOME_COUNTRY | billingAddress.country |  | US | billingAddress.firstName_1
-PHONE_HOME_WHOLE_NUMBER | billingAddress.phoneNumber |  |  | billingAddress.firstName_1
+PHONE_HOME_CITY_AND_NUMBER | billingAddress.phoneNumber |  |  | billingAddress.firstName_1
 EMAIL_ADDRESS | customer.emailAddress |  |  | billingAddress.firstName_1
 UNKNOWN_TYPE | customer.optIn | Yes, send me J&R's promotional email newsletter. | on | billingAddress.firstName_1
 UNKNOWN_TYPE | storePickup | Pickup In-Store (Park Row, New York NY) | on | billingAddress.firstName_1
@@ -19,7 +19,7 @@ ADDRESS_HOME_CITY | shippingAddress.city |  |  | shippingAddress.firstName_2
 ADDRESS_HOME_STATE | shippingAddress.stateCode |  | XX | shippingAddress.firstName_2
 ADDRESS_HOME_ZIP | shippingAddress.postalCode |  |  | shippingAddress.firstName_2
 ADDRESS_HOME_COUNTRY | shippingAddress.country |  | US | shippingAddress.firstName_2
-PHONE_HOME_WHOLE_NUMBER | shippingAddress.phoneNumber |  |  | shippingAddress.firstName_2
+PHONE_HOME_CITY_AND_NUMBER | shippingAddress.phoneNumber |  |  | shippingAddress.firstName_2
 UNKNOWN_TYPE | customOrderHeader.internationalBilling | International Billing |  | shippingAddress.firstName_2
 UNKNOWN_TYPE | customOrderHeader.salespersonNumber | Salesperson Number |  | shippingAddress.firstName_2
 UNKNOWN_TYPE | customOrderHeader.giftFromName | Gift From |  | shippingAddress.firstName_2

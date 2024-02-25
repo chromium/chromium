@@ -1,12 +1,15 @@
 # Telemetry Extension API overview
 
 This document gives a function-level documentation of the Telemetry Extension
-API. It is separated in the three namespaces **telemetry**, **diagnostics**
-and **events**.
+API. It is separated in the three namespaces **telemetry**, **diagnostics**, **events** and **management**.
 
 [TOC]
 
 # Diagnostics
+
+The diagnostics namespace got a rework since the M119 release and added a new
+extension-event based interface in M119. The interface is described in
+[V2 Diagnostics API](#v2-diagnostics-api).
 
 ## Types
 
@@ -43,6 +46,7 @@ and **events**.
 | bluetooth_discovery |
 | bluetooth_scanning |
 | bluetooth_pairing |
+| fan |
 
 ### Enum RoutineStatus
 | Property Name |
@@ -125,25 +129,10 @@ and **events**.
 | length_seconds | number | Length of time to run the routine for |
 | file_size_mb | number | test file size, in mega bytes, to test with DiskRead routine. Maximum file size is 10 GB |
 
-### GetRoutineUpdateRequest
-| Property Name | Type | Description |
------------- | ------- | ----------- |
-| id | number | Id of the routine you want to query |
-| command | RoutineCommandType | What kind of updated should be performed |
-
 ### RunPowerButtonRequest
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | timeout_seconds | number | A timeout for the routine |
-
-### GetRoutineUpdateResponse
-| Property Name | Type | Description |
------------- | ------- | ----------- |
-| progress_percent | number | Current progress of the routine |
-| output | string | Optional debug output |
-| status | RoutineStatus | Current routine status |
-| status_message | string | Optional routine status message |
-| user_message | UserMessageType | Returned for routines that require user action (e.g. unplug power cable) |
 
 ### RunNvmeWearLevelRequest
 | Property Name | Type | Description |
@@ -160,41 +149,244 @@ and **events**.
 ------------ | ------- | ----------- |
 | percentage_used_threshold | number | an optional threshold number in percentage, range [0, 255] inclusive, that the routine examines `percentage_used` against. If not specified, the routine will default to the max allowed value (255). |
 
+### RunRoutineResponse
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| id | number | Id of the routine routine created |
+| status | RoutineStatus | Current routine status  |
+
+### GetRoutineUpdateRequest
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| id | number | Id of the routine you want to query |
+| command | RoutineCommandType | What kind of updated should be performed |
+
+### GetRoutineUpdateResponse
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| progress_percent | number | Current progress of the routine |
+| output | string | Optional debug output |
+| status | RoutineStatus | Current routine status |
+| status_message | string | Optional routine status message |
+| user_message | UserMessageType | Returned for routines that require user action (e.g. unplug power cable) |
+
+### GetAvailableRoutinesResponse
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| routines | Array<RoutineType\> | Available routine types |
+
+
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in `dpsl` version |
+| Function Name | Definition | Permission needed to access | Released in Chrome version |
 ------------ | ------------- | ------------- | ------------- |
-| getAvailableRoutines | () => Promise<List<RoutineType\>\> | `os.diagnostics` | M96 |
-| getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise<GetRoutineUpdateResponse>\> | `os.diagnostics` | M96 |
-| runAcPowerRoutine | (params: RunAcPowerRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M105 |
-| runAudioDriverRoutine | () => Promise<Routine\> | `os.diagnostics` | M117 |
-| runBatteryCapacityRoutine | () => Promise<Routine\> | `os.diagnostics` | M96 |
-| runBatteryHealthRoutine | () => Promise<Routine\> | `os.diagnostics` | M96 |
-| runBatteryDischargeRoutine | (params: RunBatteryDischargeRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
-| runBatteryChargeRoutine | (params: RunBatteryChargeRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
-| runBluetoothDiscoveryRoutine | () => Promise<Routine\> | `os.diagnostics` | M118 |
-| runBluetoothPairingRoutine | () => Promise<Routine\> | `os.diagnostics` | M118 |
-| runBluetoothPowerRoutine | () => Promise<Routine\> | `os.diagnostics` | M117 |
-| runBluetoothScanningRoutine | () => Promise<Routine\> | `os.diagnostics` | M118 |
-| runCpuCacheRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
-| runCpuFloatingPointAccuracyRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M99 |
-| runCpuPrimeSearchRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M99 |
-| runCpuStressRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
-| runDiskReadRoutine | (params: RunDiskReadRequest) => Promise<Routine\> | `os.diagnostics` | M102 |
-| runDnsResolutionRoutine | () => Promise<Routine\> | `os.diagnostics` | M108 |
-| runDnsResolverPresentRoutine | () => Promise<Routine\> | `os.diagnostics` | M108 |
-| runEmmcLifetimeRoutine | () => Promise<Routine\> | `os.diagnostics` | M110 |
-| runFingerprintAliveRoutine | () => Promise<Routine\> | `os.diagnostics` | M110 |
-| runGatewayCanBePingedRoutine | () => Promise<Routine\> | `os.diagnostics` | M108 |
-| runLanConnectivityRoutine | () => Promise<Routine\> | `os.diagnostics` | M102 |
-| runMemoryRoutine | () => Promise<Routine\> | `os.diagnostics` | M96 |
-| runNvmeSelfTestRoutine | (params: RunNvmeSelfTestRequest) => Promise<Routine\> | `os.diagnostics` | M110 |
-| runNvmeWearLevelRoutine | (params: RunNvmeWearLevelRequest) => Promise<Routine\> | `os.diagnostics` | M102 |
-| runPowerButtonRoutine | (params: RunPowerButtonRequest) => Promise<Routine\> | `os.diagnostics` | M117 |
-| runSensitiveSensorRoutine | () => Promise<Routine\> | `os.diagnostics` | M110 |
-| runSignalStrengthRoutine | () => Promise<Routine\> | `os.diagnostics` | M108 |
-| runSmartctlCheckRoutine | (params: RunSmartctlCheckRequest?) => Promise<Routine\> | `os.diagnostics` | initial release: M102, new parameter added: M110. The parameter is only available if "smartctl_check_with_percentage_used" is returned from `GetAvailableRoutines` |
-| runUfsLifetimeRoutine | () => Promise<Routine\> | `os.diagnostics` | M117 |
+| getAvailableRoutines | () => Promise<GetAvailableRoutinesResponse\> | `os.diagnostics` | M96 |
+| getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise<GetRoutineUpdateResponse\> | `os.diagnostics` | M96 |
+| runAcPowerRoutine | (params: RunAcPowerRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M105 |
+| runAudioDriverRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
+| runBatteryCapacityRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
+| runBatteryHealthRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
+| runBatteryDischargeRoutine | (params: RunBatteryDischargeRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
+| runBatteryChargeRoutine | (params: RunBatteryChargeRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
+| runBluetoothDiscoveryRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M118 |
+| runBluetoothPairingRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics`, `os.bluetooth_peripherals_info` | M118 |
+| runBluetoothPowerRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
+| runBluetoothScanningRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics`, `os.bluetooth_peripherals_info` | M118 |
+| runCpuCacheRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
+| runCpuFloatingPointAccuracyRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M99 |
+| runCpuPrimeSearchRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M99 |
+| runCpuStressRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
+| runDiskReadRoutine | (params: RunDiskReadRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
+| runDnsResolutionRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
+| runDnsResolverPresentRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
+| runEmmcLifetimeRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
+| runFanRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M121 |
+| runFingerprintAliveRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
+| runGatewayCanBePingedRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
+| runLanConnectivityRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
+| runMemoryRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
+| runNvmeSelfTestRoutine | (params: RunNvmeSelfTestRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
+| runNvmeWearLevelRoutine | (params: RunNvmeWearLevelRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
+| runPowerButtonRoutine | (params: RunPowerButtonRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
+| runSensitiveSensorRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
+| runSignalStrengthRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
+| runSmartctlCheckRoutine | (params: RunSmartctlCheckRequest?) => Promise<RunRoutineResponse\> | `os.diagnostics` | initial release: M102, new parameter added: M110. The parameter is only available if "smartctl_check_with_percentage_used" is returned from `GetAvailableRoutines` |
+| runUfsLifetimeRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
+
+# V2 Diagnostics API
+
+## Types
+
+### Enum RoutineWaitingReason
+| Property Name |
+------------ |
+| waiting_to_be_scheduled |
+| waiting_user_input |
+
+### Enum ExceptionReason
+| Property Name |
+------------ |
+| unknown |
+| unexpected |
+| unsupported |
+| app_ui_closed |
+
+### Enum MemtesterTestItemEnum
+| Property Name |
+------------ |
+| unknown |
+| stuck_address |
+| compare_and |
+| compare_div |
+| compare_mul |
+| compare_or |
+| compare_sub |
+| compare_xor |
+| sequential_increment |
+| bit_flip |
+| bit_spread |
+| block_sequential |
+| checkerboard |
+| random_value |
+| solid_bits |
+| walking_ones |
+| walking_zeroes |
+| eight_bit_writes |
+| sixteen_bit_writes |
+
+### Enum RoutineSupportStatus
+| Property Name |
+------------ |
+| supported |
+| unsupported |
+
+### RoutineInitializedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+
+### RoutineRunningInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| percentage | number | Current percentage of the routine status (0-100) |
+
+### RoutineWaitingInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| percentage | number | Current percentage of the routine status (0-100) |
+| reason | RoutineWaitingReason | Reason why the routine waits |
+| message | string | Additional information, may be used to pass instruction or explanation |
+
+### ExceptionInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| reason | ExceptionReason | Reason why the routine threw an exception |
+| debugMessage | string | A human readable message for debugging. Don't rely on the content because it could change anytime |
+
+### MemtesterResult
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| passed_items | Array<MemtesterTestItemEnum\> | Passed test items |
+| failed_items | Array<MemtesterTestItemEnum\> | Failed test items |
+
+### MemoryRoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| has_passed | boolean | Whether the routine finished successfully |
+| bytesTested | number | Number of bytes tested in the memory routine |
+| result | MemtesterResult | Contains the memtester test results |
+
+### RunMemoryRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| maxTestingMemKib | number | An optional field to indicate how much memory should be tested. If the value is null, memory test will run with as much memory as possible |
+
+### Enum HardwarePresenceStatus
+| Property Name |
+------------ |
+| matched |
+| not_matched |
+| not_configured |
+
+### FanRoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| has_passed | boolean | Whether the routine finished successfully |
+| passed_fan_ids | Array<number\> | The ids of fans that can be controlled |
+| failed_fan_ids | Array<number\> | The ids of fans that cannot be controlled |
+| fan_count_status | HardwarePresenceStatus | Whether the number of fan probed is matched |
+
+### RunFanRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
+### Enum VolumeButtonType
+| Property Name |
+------------ |
+| volume_up |
+| volume_down |
+
+### VolumeButtonRoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| has_passed | boolean | Whether the routine finished successfully |
+
+### RunVolumeButtonRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| button_type | VolumeButtonType | The volume button to be tested |
+| timeout_seconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
+
+### CreateRoutineResponse
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that was just created  |
+
+### RoutineSupportStatusInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| status | RoutineSupportStatus | Whether a routine with the provided arguments is supported or unsupported |
+
+### StartRoutineRequest
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that shall be created |
+
+### CancelRoutineRequest
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that shall be cancelled |
+
+## Functions
+
+| Function Name | Definition | Permission needed to access | Released in Chrome version |
+------------ | ------------- | ------------- | ------------- |
+| startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
+| cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
+| createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
+| createFanRoutine | (args: RunFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
+| createVolumeButtonRoutine | (args: RunVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
+| isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
+| isFanRoutineArgumentSupported | (args: RunFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
+| isVolumeButtonRoutineArgumentSupported | (args: RunVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
+
+## Events
+
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Emitted on |
+------------ | ------------- | ------------- | ------------- | ------------- |
+| onRoutineInitialized | function(RoutineInitializedInfo) | `os.diagnostics` | M119 | Informs the extension that a routine was initialized |
+| onRoutineRunning | function(RoutineRunningInfo) | `os.diagnostics` | M119 | Informs the extension that a routine started running. This can happen in two situations: 1. `startRoutine` was called and the routine successfully started execution. 2. The routine exited the "waiting" state and returned to running |
+| onRoutineWaiting | function(RoutineWaitingInfo) | `os.diagnostics` | M119 | Informs the extension that a routine stopped execution and waits for an event, e.g. user interaction. `RoutineWaitingInfo` contains information about what the routine is waiting for |
+| onRoutineException | function(ExceptionInfo) | `os.diagnostics` | M119 | Informs the extension that an exception occurred. The error passed in `ExceptionInfo` is non-recoverable |
+| onMemoryRoutineFinished | function(MemoryRoutineFinishedInfo) | `os.diagnostics` | M119 | Informs the extension that a memory routine finished |
+| onFanRoutineFinished | function(FanRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a fan routine finished |
+| onVolumeButtonRoutineFinished | function(VolumeButtonRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a volume button routine finished |
 
 # Events
 
@@ -213,6 +405,8 @@ and **events**.
 | touchpad_button |
 | touchpad_touch |
 | touchpad_connected |
+| touchscreen_touch |
+| touchscreen_connected |
 | external_display |
 | stylus_touch |
 | stylus_connected |
@@ -480,7 +674,7 @@ and **events**.
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in `dpsl` version | Description |
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Description |
 ------------ | ------------- | ------------- | ------------- | ------------- |
 | isEventSupported | (category: EventCategory) => Promise<EventSupportStatusInfo\> | `os.events` | M115 | Checks whether an event is supported. The information returned by this method is valid across reboots of the device |
 | startCapturingEvents | (category: EventCategory) => () | `os.events` | M115 | Starts capturing events for `EventCategory`. After calling this method, an extension can expect to be updated about events through invocations of `on<EventCategory>Event`, until either the PWA is closed or `stopCapturingEvents` is called. Note that an extension is only able to subscribe to events if the PWA is currently open |
@@ -488,7 +682,7 @@ and **events**.
 
 ## Events
 
-| Function Name | Definition | Permission needed to access | Released in `dpsl` version | Emitted on |
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Emitted on |
 ------------ | ------------- | ------------- | ------------- | ------------- |
 | onAudioJackEvent | function(AudioJackEventInfo) | `os.events` | M115 | An audio device was plugged in or out |
 | onKeyboardDiagnosticEvent | function(KeyboardDiagnosticEventInfo) | `os.events` | M117 | Informs the extension that a Keyboard diagnostic has been completed in the first party diagnostic tool |
@@ -535,8 +729,8 @@ and **events**.
 | inputMute | boolean | Is the active input device mute or not |
 | underruns | number | Number of underruns |
 | severeUnderruns | number | Number of severe underruns |
-| outputNodes | Array<AudioOutputNodeInfo> | Output nodes |
-| inputNodes | Array<AudioInputNodeInfo> | Input nodes |
+| outputNodes | Array<AudioOutputNodeInfo\> | Output nodes |
+| inputNodes | Array<AudioInputNodeInfo\> | Input nodes |
 
 ### BatteryInfo
 | Property Name | Type | Description |
@@ -556,12 +750,17 @@ and **events**.
 | voltageMinDesign | number | Desired minimum output voltage |
 | voltageNow | number | Battery's voltage (V) |
 
-### BlockDeviceInfo
+### NonRemovableBlockDeviceInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | name | string | The name of the block device. |
 | type | string | The type of the block device, (e.g. "MMC", "NVMe" or "ATA"). |
 | size | number | The device size in bytes. |
+
+### NonRemovableBlockDeviceInfoResponse
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| deviceInfos | Array<NonRemovableBlockDeviceInfo\> | The list of block devices. |
 
 ### Enum CpuArchitectureEnum
 | Property Name |
@@ -574,13 +773,13 @@ and **events**.
 ### PhysicalCpuInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| logicalCpus | Array<LogicalCpuInfo> | Logical CPUs corresponding to this physical CPU |
+| logicalCpus | Array<LogicalCpuInfo\> | Logical CPUs corresponding to this physical CPU |
 | modelName | string | The CPU model name |
 
 ### LogicalCpuInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| cStates | Array<CpuCStateInfo> | Information about the logical CPU's time in various C-states |
+| cStates | Array<CpuCStateInfo\> | Information about the logical CPU's time in various C-states |
 | idleTimeMs | number | Idle time since last boot, in milliseconds |
 | maxClockSpeedKhz | number | The max CPU clock speed in kilohertz |
 | scalingCurrentFrequencyKhz | number | Current frequency the CPU is running at |
@@ -726,6 +925,25 @@ and **events**.
 | availableSpace | number | The currently available space in the user partition (Bytes) |
 | totalSpace | number | The total space of the user partition (Bytes) |
 
+### Enum ThermalSensorSource
+| Property Name |
+------------ |
+| unknown |
+| ec |
+| sysFs |
+
+### ThermalSensorInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| name | string | Name of the thermal sensor  |
+| temperatureCelsius | number | Temperature detected by the thermal sensor in celsius |
+| source | ThermalSensorSource | Where the thermal sensor is detected from  |
+
+### ThermalInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| thermalSensors | Array<ThermalSensorInfo\> | An array containing all the information retrieved for thermal sensors |
+
 ### Enum TpmGSCVersion
 | Property Name |
 ------------ |
@@ -853,9 +1071,34 @@ Source:
 | getBatteryInfo | () => Promise<BatteryInfo\> | `os.telemetry`, `os.telemetry.serial_number` for serial number field | M102 |
 | getStatefulPartitionInfo | () => Promise<StatefulPartitionInfo\> | `os.telemetry` | M105 |
 | getOsVersionInfo | () => Promise<OsVersionInfo\> | `os.telemetry` | M105 |
-| getNonRemovableBlockDevicesInfo | () => Promise<BlockDeviceInfo\> | `os.telemetry` | M108 |
+| getNonRemovableBlockDevicesInfo | () => Promise<NonRemovableBlockDeviceInfoResponse\> | `os.telemetry` | M108 |
 | getInternetConnectivityInfo | () => Promise<InternetConnectivityInfo\> | `os.telemetry`, `os.telemetry.network_info` for MAC address field | M108 - Mac address in M111 |
 | getTpmInfo | () => Promise<TpmInfo\> | `os.telemetry` | M108 |
 | getAudioInfo | () => Promise<AudioInfo\> | `os.telemetry` | M111 |
 | getMarketingInfo | () => Promise<MarketingInfo\> | `os.telemetry` | M111 |
 | getUsbBusInfo | () => Promise<UsbDevicesInfo\> | `os.telemetry`, `os.attached_device_info` | M114 |
+| getThermalInfo | () => Promise<ThermalInfo\> | `os.telemetry` | M122 |
+
+# Management
+
+## Types
+
+### SetAudioGainArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| nodeId | number | Node id of the audio device to be configured |
+| gain | number | Target gain percent in [0, 100]. Sets to 0 or 100 if outside |
+
+### SetAudioVolumeArguments
+| Property Name | Type    | Description                                                    |
+| ------------- | ------- | -------------------------------------------------------------- |
+| nodeId        | number  | Node id of the audio device to be configured                   |
+| volume        | number  | Target volume percent in [0, 100]. Sets to 0 or 100 if outside |
+| isMuted       | boolean | Whether to mute the device                                     |
+
+## Functions
+
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Description |
+------------ | ------------- | ------------- | ------------- | ------------- |
+| setAudioGain | (args: SetAudioGainArguments) => Promise<boolean\> | `os.management.audio` | M122 | Sets the specified input audio device's gain to value. Returns false if `args.nodeId` is invalid |
+| setAudioVolume | (args: SetAudioVolumeArguments) => Promise<boolean\> | `os.management.audio` | M122 | Sets the specified output audio device's volume and mute state to the given value. Returns false if `args.nodeId` is invalid |

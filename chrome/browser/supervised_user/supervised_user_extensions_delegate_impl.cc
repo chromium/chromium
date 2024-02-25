@@ -16,7 +16,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -66,8 +66,9 @@ void SupervisedUserExtensionsDelegateImpl::
 }
 
 bool SupervisedUserExtensionsDelegateImpl::IsChild() const {
-  return SupervisedUserServiceFactory::GetForBrowserContext(context_)
-      ->AreExtensionsPermissionsEnabled();
+  auto* profile = Profile::FromBrowserContext(context_);
+  return profile &&
+         supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs());
 }
 
 bool SupervisedUserExtensionsDelegateImpl::IsExtensionAllowedByParent(
@@ -100,8 +101,8 @@ void SupervisedUserExtensionsDelegateImpl::RequestToEnableExtensionOrShowError(
   auto icon_callback = base::BindOnce(
       &SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval,
       base::Unretained(this), std::cref(extension),
-      web_contents ? absl::make_optional(web_contents->GetWeakPtr())
-                   : absl::nullopt);
+      web_contents ? std::make_optional(web_contents->GetWeakPtr())
+                   : std::nullopt);
   icon_loader_ = std::make_unique<ExtensionIconLoader>();
   icon_loader_->Load(extension, context_, std::move(icon_callback));
 }
@@ -165,7 +166,7 @@ void SupervisedUserExtensionsDelegateImpl::
 
 void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
     const Extension& extension,
-    absl::optional<base::WeakPtr<content::WebContents>> contents,
+    std::optional<base::WeakPtr<content::WebContents>> contents,
     const gfx::ImageSkia& icon) {
   // Treat the request as canceled if web contents that the request originated
   // in was destroyed (the web contents was originally passed, but weak ptr is

@@ -5,8 +5,8 @@
 source_set("chromium_text_zoom") {
   sources = [ "chromium_text_zoom.mm" ]
   deps = [
-    "//ios/chrome/browser/web:feature_flags",
-    "//ios/chrome/browser/web/font_size",
+    "//ios/chrome/browser/web/model:feature_flags",
+    "//ios/chrome/browser/web/model/font_size",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ui/base",
   ]

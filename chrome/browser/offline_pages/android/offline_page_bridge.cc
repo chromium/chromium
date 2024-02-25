@@ -73,8 +73,10 @@ ScopedJavaLocalRef<jobject> JNI_SavePageRequest_ToJavaOfflinePageItem(
       ConvertUTF8ToJavaString(env, offline_page.client_id.id),
       ConvertUTF16ToJavaString(env, offline_page.title),
       ConvertUTF8ToJavaString(env, offline_page.file_path.value()),
-      offline_page.file_size, offline_page.creation_time.ToJavaTime(),
-      offline_page.access_count, offline_page.last_access_time.ToJavaTime(),
+      offline_page.file_size,
+      offline_page.creation_time.InMillisecondsSinceUnixEpoch(),
+      offline_page.access_count,
+      offline_page.last_access_time.InMillisecondsSinceUnixEpoch(),
       ConvertUTF8ToJavaString(env, offline_page.request_origin));
 }
 
@@ -276,8 +278,10 @@ void OfflinePageBridge::AddOfflinePageItemsToJavaList(
         ConvertUTF8ToJavaString(env, offline_page.client_id.id),
         ConvertUTF16ToJavaString(env, offline_page.title),
         ConvertUTF8ToJavaString(env, offline_page.file_path.value()),
-        offline_page.file_size, offline_page.creation_time.ToJavaTime(),
-        offline_page.access_count, offline_page.last_access_time.ToJavaTime(),
+        offline_page.file_size,
+        offline_page.creation_time.InMillisecondsSinceUnixEpoch(),
+        offline_page.access_count,
+        offline_page.last_access_time.InMillisecondsSinceUnixEpoch(),
         ConvertUTF8ToJavaString(env, offline_page.request_origin));
   }
 }
@@ -532,8 +536,7 @@ void OfflinePageBridge::PublishInternalPageByOfflineId(
       j_offline_id,
       base::BindOnce(&OfflinePageBridge::PublishInternalArchive,
                      weak_ptr_factory_.GetWeakPtr(),
-                     ScopedJavaGlobalRef<jobject>(j_published_callback),
-                     PublishSource::kPublishByOfflineId));
+                     ScopedJavaGlobalRef<jobject>(j_published_callback)));
 }
 
 void OfflinePageBridge::PublishInternalPageByGuid(
@@ -551,32 +554,27 @@ void OfflinePageBridge::PublishInternalPageByGuid(
       criteria,
       base::BindOnce(&OfflinePageBridge::PublishInternalArchiveOfFirstItem,
                      weak_ptr_factory_.GetWeakPtr(),
-                     ScopedJavaGlobalRef<jobject>(j_published_callback),
-                     PublishSource::kPublishByGuid));
+                     ScopedJavaGlobalRef<jobject>(j_published_callback)));
 }
 
 void OfflinePageBridge::PublishInternalArchiveOfFirstItem(
     const ScopedJavaGlobalRef<jobject>& j_callback_obj,
-    const PublishSource publish_source,
     const std::vector<OfflinePageItem>& offline_pages) {
   // Should only ever be called with 0 or 1 page.
   DCHECK_GE(1UL, offline_pages.size());
   if (offline_pages.empty()) {
-    PublishInternalArchive(j_callback_obj, publish_source, nullptr);
+    PublishInternalArchive(j_callback_obj, nullptr);
     return;
   }
-  PublishInternalArchive(j_callback_obj, publish_source, &offline_pages[0]);
+  PublishInternalArchive(j_callback_obj, &offline_pages[0]);
 }
 
 void OfflinePageBridge::PublishInternalArchive(
     const ScopedJavaGlobalRef<jobject>& j_callback_obj,
-    const PublishSource publish_source,
     const OfflinePageItem* offline_page) {
   if (!offline_page) {
     PublishPageDone(j_callback_obj, base::FilePath(),
                     SavePageResult::CANCELLED);
-    base::UmaHistogramEnumeration("OfflinePages.PublishArchive.PublishSource",
-                                  publish_source);
     return;
   }
   OfflinePageModel* offline_page_model =

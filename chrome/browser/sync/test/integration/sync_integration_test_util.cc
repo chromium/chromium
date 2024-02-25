@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service_factory.h"

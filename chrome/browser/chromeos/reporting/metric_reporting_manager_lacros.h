@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,18 +15,24 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/reporting/device_reporting_settings_lacros.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
+#include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
+#include "chrome/browser/chromeos/reporting/websites/website_usage_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reporting/metrics/collector_base.h"
+#include "components/reporting/metrics/metric_event_observer.h"
+#include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
+#include "components/reporting/metrics/reporting_settings.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");
 
 namespace reporting::metrics {
 
 // Manages the initialization, collection and reporting of certain user event,
-// info and telemetry metrics in Lacros.
+// info and telemetry metrics in Lacros. Normally instantiated via the
+// `MetricReportingManagerLacrosFactory` unless needed for testing purposes.
 class MetricReportingManagerLacros : public KeyedService,
                                      public DeviceSettingsLacros::Observer {
  public:
@@ -57,10 +63,6 @@ class MetricReportingManagerLacros : public KeyedService,
         MetricReportingManagerLacros* const instance);
   };
 
-  // Retrieves the `MetricReportingManagerLacros` for the given
-  // profile.
-  static MetricReportingManagerLacros* GetForProfile(Profile* profile);
-
   MetricReportingManagerLacros(
       Profile* profile,
       std::unique_ptr<MetricReportingManagerLacros::Delegate> delegate);
@@ -73,16 +75,20 @@ class MetricReportingManagerLacros : public KeyedService,
   // DeviceSettingsLacros::Observer:
   void OnDeviceSettingsUpdated() override;
 
-  static void EnsureFactoryBuilt();
-
  private:
   void Shutdown() override;
+
+  // Init collectors and event observers that need to start on startup. Should
+  // only be scheduled once on construction.
+  void Init();
 
   // Init collectors that need to start on startup after a delay, should
   // only be scheduled once on construction.
   void DelayedInit();
 
   void InitNetworkCollectors();
+
+  void InitWebsiteMetricCollectors();
 
   void InitPeriodicCollector(std::unique_ptr<Sampler> sampler,
                              MetricReportQueue* metric_report_queue,
@@ -91,6 +97,14 @@ class MetricReportingManagerLacros : public KeyedService,
                              const std::string& rate_setting_path,
                              base::TimeDelta default_rate,
                              int rate_unit_to_ms = 1);
+
+  void InitEventObserverManager(
+      std::unique_ptr<MetricEventObserver> event_observer,
+      MetricReportQueue* metric_report_queue,
+      ReportingSettings* reporting_settings,
+      const std::string& enable_setting_path,
+      bool setting_enabled_default_value,
+      base::TimeDelta init_delay);
 
   // Flushes all enqueued telemetry data and uploads them.
   void UploadTelemetry();
@@ -101,12 +115,23 @@ class MetricReportingManagerLacros : public KeyedService,
   const std::unique_ptr<MetricReportingManagerLacros::Delegate> delegate_;
   const std::unique_ptr<DeviceReportingSettingsLacros>
       device_reporting_settings_;
+  const std::unique_ptr<UserReportingSettings> user_reporting_settings_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::vector<std::unique_ptr<Sampler>> samplers_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<std::unique_ptr<CollectorBase>> periodic_collectors_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<std::unique_ptr<MetricEventObserverManager>>
+      event_observer_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<MetricReportQueue> telemetry_report_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<MetricReportQueue> website_event_report_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Website usage observer used to observe and collect website usage reports
+  // from the `WebsiteMetrics` component.
+  std::unique_ptr<WebsiteUsageObserver> website_usage_observer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Cache device deprovisioned state so we minimize crosapi calls. Updated on

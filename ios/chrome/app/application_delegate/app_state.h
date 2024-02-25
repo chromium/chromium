@@ -15,8 +15,6 @@
 @class AppState;
 class ChromeBrowserState;
 @class CommandDispatcher;
-@protocol ConnectionInformation;
-typedef NS_ENUM(NSUInteger, DefaultPromoType);
 @class SceneState;
 @class MemoryWarningHelper;
 @class MetricsMediator;
@@ -56,6 +54,7 @@ enum class PostCrashAction {
 @property(nonatomic, strong) CommandDispatcher* appCommandDispatcher;
 
 // The ChromeBrowserState associated with the main (non-OTR) browsing mode.
+// TODO(crbug.com/324417250) remove this property.
 @property(nonatomic, assign) ChromeBrowserState* mainBrowserState;
 
 // Container for startup information.
@@ -67,14 +66,6 @@ enum class PostCrashAction {
 
 // YES if the sign-in upgrade promo has been presented to the user, once.
 @property(nonatomic) BOOL signinUpgradePromoPresentedOnce;
-
-// YES if the default browser fullscreen promo has met the qualifications to be
-// shown after the last cold start.
-@property(nonatomic) BOOL shouldShowDefaultBrowserPromo;
-
-// The type of default browser fullscreen promo that should be shown to the
-// user.
-@property(nonatomic) DefaultPromoType defaultBrowserPromoTypeToShow;
 
 // YES if the sign-out prompt should be shown to the user when the scene becomes
 // active and enters the foreground. This can happen if the policies have
@@ -88,13 +79,6 @@ enum class PostCrashAction {
 
 // YES if the app is resuming from safe mode.
 @property(nonatomic) BOOL resumingFromSafeMode;
-
-// The last window which received a tap.
-@property(nonatomic, weak) UIWindow* lastTappedWindow;
-
-// The SceneSession ID for the last session, where the Device doesn't support
-// multiple windows.
-@property(nonatomic, strong) NSString* previousSingleWindowSessionID;
 
 // Timestamp of when a scene was last becoming active. Can be null.
 @property(nonatomic, assign) base::TimeTicks lastTimeInForeground;

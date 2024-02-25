@@ -85,7 +85,7 @@ class TermsOfServiceScreen : public BaseScreen {
   // Try to load terms of service from file, show error if there is a failure.
   void LoadFromFileOrShowError();
   // Show terms of service once they are loaded from file.
-  void OnTosLoadedFromFile(absl::optional<std::string> tos);
+  void OnTosLoadedFromFile(std::optional<std::string> tos);
   // Save terms as text to a local file.
   void SaveTos(const std::string& tos);
   // Runs callback for tests.

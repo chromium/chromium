@@ -23,10 +23,13 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
+import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.messages.DismissReason;
@@ -35,7 +38,9 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -55,12 +60,17 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class SyncErrorMessage implements SyncService.SyncStateChangedListener, UnownedUserData {
     @VisibleForTesting
-    @IntDef({MessageType.NOT_SHOWN, MessageType.AUTH_ERROR, MessageType.PASSPHRASE_REQUIRED,
-            MessageType.SYNC_SETUP_INCOMPLETE, MessageType.CLIENT_OUT_OF_DATE,
-            MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
-            MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
-            MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
-            MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS})
+    @IntDef({
+        MessageType.NOT_SHOWN,
+        MessageType.AUTH_ERROR,
+        MessageType.PASSPHRASE_REQUIRED,
+        MessageType.SYNC_SETUP_INCOMPLETE,
+        MessageType.CLIENT_OUT_OF_DATE,
+        MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
+        MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
+        MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
+        MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageType {
         int NOT_SHOWN = -1;
@@ -72,17 +82,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         int TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS = 5;
         int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING = 6;
         int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 7;
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({Action.SHOWN, Action.DISMISSED, Action.BUTTON_CLICKED, Action.NUM_ENTRIES})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface Action {
-        int SHOWN = 0;
-        int DISMISSED = 1;
-        int BUTTON_CLICKED = 2;
-        int NUM_ENTRIES = 3;
     }
 
     private final @MessageType int mType;
@@ -111,13 +110,16 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
      * @param syncService The {@link SyncService}.
      */
     public static void maybeShowMessageUi(
-            WindowAndroid windowAndroid, IdentityManager identityManager, SyncService syncService) {
+            WindowAndroid windowAndroid,
+            IdentityManager identityManager,
+            SyncService syncService,
+            PrefService prefService) {
         try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
-            if (getMessageType(SyncSettingsUtils.getSyncError()) == MessageType.NOT_SHOWN) {
+            if (getMessageType(getError(syncService)) == MessageType.NOT_SHOWN) {
                 return;
             }
 
-            if (!SyncErrorMessageImpressionTracker.canShowNow()) {
+            if (!SyncErrorMessageImpressionTracker.canShowNow(prefService)) {
                 return;
             }
 
@@ -133,56 +135,65 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                 // Show message next time when the previous message has disappeared.
                 return;
             }
-            SYNC_ERROR_MESSAGE_KEY.attachToHost(host,
-                    new SyncErrorMessage(dispatcher, windowAndroid.getActivity().get(),
-                            identityManager, syncService));
+            SYNC_ERROR_MESSAGE_KEY.attachToHost(
+                    host,
+                    new SyncErrorMessage(
+                            dispatcher,
+                            windowAndroid.getActivity().get(),
+                            identityManager,
+                            syncService));
         }
     }
 
-    private SyncErrorMessage(MessageDispatcher dispatcher, Activity activity,
-            IdentityManager identityManager, SyncService syncService) {
-        @SyncError
-        int error = SyncSettingsUtils.getSyncError();
-        String errorMessage = error == SyncError.SYNC_SETUP_INCOMPLETE
-                ? activity.getString(R.string.sync_settings_not_confirmed_title)
-                : SyncSettingsUtils.getSyncErrorHint(activity, error);
-        // Use the same title with sync error card of sync settings.
-        String title = SyncSettingsUtils.getSyncErrorCardTitle(activity, error);
-        String primaryButtonText = getPrimaryButtonText(activity, error);
-        Resources resources = activity.getResources();
-        mModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                 MessageIdentifier.SYNC_ERROR)
-                         .with(MessageBannerProperties.TITLE, title)
-                         .with(MessageBannerProperties.DESCRIPTION, errorMessage)
-                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, primaryButtonText)
-                         .with(MessageBannerProperties.ICON,
-                                 ApiCompatibilityUtils.getDrawable(
-                                         resources, R.drawable.ic_sync_error_legacy_24dp))
-                         .with(MessageBannerProperties.ICON_TINT_COLOR,
-                                 activity.getColor(R.color.default_red))
-                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::onAccepted)
-                         .with(MessageBannerProperties.ON_DISMISSED, this::onDismissed)
-                         .build();
-        mMessageDispatcher =
-                sMessageDispatcherForTesting == null ? dispatcher : sMessageDispatcherForTesting;
-        mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
+    private SyncErrorMessage(
+            MessageDispatcher dispatcher,
+            Activity activity,
+            IdentityManager identityManager,
+            SyncService syncService) {
+        @SyncError int error = getError(syncService);
+
         mType = getMessageType(error);
         mActivity = activity;
         mIdentityManager = identityManager;
         mSyncService = syncService;
         mSyncService.addSyncStateChangedListener(this);
+
+        String errorMessage = getMessage(activity, error);
+        String title = getTitle(activity, error);
+        String primaryButtonText = getPrimaryButtonText(activity, error);
+        Resources resources = activity.getResources();
+        mModel =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.SYNC_ERROR)
+                        .with(MessageBannerProperties.TITLE, title)
+                        .with(MessageBannerProperties.DESCRIPTION, errorMessage)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, primaryButtonText)
+                        .with(
+                                MessageBannerProperties.ICON,
+                                ApiCompatibilityUtils.getDrawable(
+                                        resources, R.drawable.ic_sync_error_legacy_24dp))
+                        .with(
+                                MessageBannerProperties.ICON_TINT_COLOR,
+                                activity.getColor(R.color.default_red))
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::onAccepted)
+                        .with(MessageBannerProperties.ON_DISMISSED, this::onDismissed)
+                        .build();
+        mMessageDispatcher =
+                sMessageDispatcherForTesting == null ? dispatcher : sMessageDispatcherForTesting;
+        mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
         SyncErrorMessageImpressionTracker.updateLastShownTime();
-        recordHistogram(Action.SHOWN);
+        recordHistogram(ErrorUiAction.SHOWN);
     }
 
     @Override
     public void syncStateChanged() {
         // If the error disappeared or changed type in the meantime, dismiss the UI.
-        if (mType != getMessageType(SyncSettingsUtils.getSyncError())) {
+        if (mType != getMessageType(getError(mSyncService))) {
             mMessageDispatcher.dismissMessage(mModel, DismissReason.UNKNOWN);
             assert !SYNC_ERROR_MESSAGE_KEY.isAttachedToAnyHost(this)
-                : "Message UI should have been dismissed";
+                    : "Message UI should have been dismissed";
         }
     }
 
@@ -197,7 +208,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
             case MessageType.PASSPHRASE_REQUIRED:
             case MessageType.SYNC_SETUP_INCOMPLETE:
             case MessageType.CLIENT_OUT_OF_DATE:
-                openSyncSettings();
+                openSettings();
                 break;
             case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
@@ -209,12 +220,13 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                 break;
         }
 
-        recordHistogram(Action.BUTTON_CLICKED);
+        recordHistogram(ErrorUiAction.BUTTON_CLICKED);
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
     private void onDismissed(@DismissReason int reason) {
-        if (reason != DismissReason.TIMER && reason != DismissReason.GESTURE
+        if (reason != DismissReason.TIMER
+                && reason != DismissReason.GESTURE
                 && reason != DismissReason.PRIMARY_ACTION) {
             // If the user didn't explicitly accept/dismiss the message, and the display timeout
             // wasn't reached either, resetLastShownTime() so the message can be shown again. This
@@ -227,121 +239,232 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
 
         // This metric should be recorded only on explicit dismissal.
         if (reason == DismissReason.GESTURE) {
-            recordHistogram(Action.DISMISSED);
+            recordHistogram(ErrorUiAction.DISMISSED);
         }
     }
 
-    private void recordHistogram(@Action int action) {
+    private void recordHistogram(@ErrorUiAction int action) {
         assert mType != MessageType.NOT_SHOWN;
-        String name = "Signin.SyncErrorMessage.";
+        @SyncError int error = SyncError.NO_ERROR;
+        // TODO(crbug.com/1503649): Remove MessageType enum.
         switch (mType) {
             case MessageType.AUTH_ERROR:
-                name += "AuthError";
+                error = SyncError.AUTH_ERROR;
                 break;
             case MessageType.PASSPHRASE_REQUIRED:
-                name += "PassphraseRequired";
+                error = SyncError.PASSPHRASE_REQUIRED;
                 break;
             case MessageType.SYNC_SETUP_INCOMPLETE:
-                name += "SyncSetupIncomplete";
+                error = SyncError.SYNC_SETUP_INCOMPLETE;
                 break;
             case MessageType.CLIENT_OUT_OF_DATE:
-                name += "ClientOutOfDate";
+                error = SyncError.CLIENT_OUT_OF_DATE;
                 break;
             case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-                name += "TrustedVaultKeyRequiredForEverything";
+                error = SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING;
                 break;
             case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                name += "TrustedVaultKeyRequiredForPasswords";
+                error = SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
                 break;
             case MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                name += "TrustedVaultRecoverabilityDegradedForEverything";
+                error = SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING;
                 break;
             case MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                name += "TrustedVaultRecoverabilityDegradedForPasswords";
+                error = SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
                 break;
             default:
                 assert false;
                 break;
         }
-        RecordHistogram.recordEnumeratedHistogram(name, action, Action.NUM_ENTRIES);
+        String name =
+                (mSyncService.hasSyncConsent()
+                                ? "Signin.SyncErrorMessage"
+                                : "Sync.IdentityErrorMessage")
+                        + SyncSettingsUtils.getHistogramSuffixForError(error);
+        RecordHistogram.recordEnumeratedHistogram(name, action, ErrorUiAction.NUM_ENTRIES);
     }
 
-    private static String getPrimaryButtonText(Context context, @SyncError int error) {
+    // TODO(crbug.com/1503649): Use mType instead error.
+    private String getPrimaryButtonText(Context context, @SyncError int error) {
+        // Check if this is for a sync error.
+        if (mSyncService.hasSyncConsent()) {
+            switch (error) {
+                case SyncError.AUTH_ERROR:
+                    return context.getString(R.string.password_error_sign_in_button_title);
+                case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                    return context.getString(R.string.trusted_vault_error_card_button);
+                default:
+                    return context.getString(R.string.open_settings_button);
+            }
+        }
+
+        // Strings for identity error.
         switch (error) {
+            case SyncError.PASSPHRASE_REQUIRED:
+                return context.getString(
+                        R.string.identity_error_message_button_passphrase_required);
+            case SyncError.CLIENT_OUT_OF_DATE:
+                // Reuse the same string as that for the identity error card button.
+                return context.getString(R.string.identity_error_card_button_client_out_of_date);
             case SyncError.AUTH_ERROR:
-                return context.getString(R.string.password_error_sign_in_button_title);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return context.getString(R.string.trusted_vault_error_card_button);
+                return context.getString(R.string.identity_error_message_button_verify);
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.OTHER_ERRORS:
             default:
-                return context.getString(R.string.open_settings_button);
+                assert false;
+                return "";
+        }
+    }
+
+    // TODO(crbug.com/1503649): Use mType instead error.
+    private String getTitle(Context context, @SyncError int error) {
+        // Check if this is for a sync error.
+        if (mSyncService.hasSyncConsent()) {
+            // Use the same title with sync error card of sync settings.
+            return SyncSettingsUtils.getSyncErrorCardTitle(context, error);
+        }
+
+        // Strings for identity error.
+        switch (error) {
+            case SyncError.PASSPHRASE_REQUIRED:
+                return context.getString(R.string.identity_error_message_title_passphrase_required);
+            case SyncError.CLIENT_OUT_OF_DATE:
+                return context.getString(R.string.identity_error_message_title_client_out_of_date);
+            case SyncError.AUTH_ERROR:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                // Reuse the same string as that for the identity error card button.
+                return context.getString(R.string.identity_error_card_button_verify);
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.OTHER_ERRORS:
+            default:
+                assert false;
+                return "";
+        }
+    }
+
+    // TODO(crbug.com/1503649): Use mType instead error.
+    private String getMessage(Context context, @SyncError int error) {
+        // Check if this is for a sync error.
+        if (mSyncService.hasSyncConsent()) {
+            return error == SyncError.SYNC_SETUP_INCOMPLETE
+                    ? context.getString(R.string.sync_settings_not_confirmed_title)
+                    : SyncSettingsUtils.getSyncErrorHint(context, error);
+        }
+
+        // Strings for identity error.
+        switch (error) {
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return context.getString(
+                        R.string.identity_error_message_body_sync_retrieve_keys_for_passwords);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                return context.getString(
+                        R.string
+                                .identity_error_message_body_sync_recoverability_degraded_for_everything);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return context.getString(
+                        R.string
+                                .identity_error_message_body_sync_recoverability_degraded_for_passwords);
+            case SyncError.PASSPHRASE_REQUIRED:
+            case SyncError.CLIENT_OUT_OF_DATE:
+            case SyncError.AUTH_ERROR:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                return context.getString(R.string.identity_error_message_body);
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.OTHER_ERRORS:
+            default:
+                assert false;
+                return "";
         }
     }
 
     private void openTrustedVaultKeyRetrievalActivity() {
-        CoreAccountInfo primaryAccountInfo = getSyncConsentedAccountInfo();
+        CoreAccountInfo primaryAccountInfo =
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (primaryAccountInfo == null) {
             return;
         }
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
-                        (intent)
-                                -> {
-                            IntentUtils.safeStartActivity(getApplicationContext(),
+                        (intent) -> {
+                            IntentUtils.safeStartActivity(
+                                    getApplicationContext(),
                                     SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
                                             intent,
                                             TrustedVaultUserActionTriggerForUMA
                                                     .NEW_TAB_PAGE_INFOBAR));
                         },
-                        (exception)
-                                -> Log.w(TAG, "Error creating trusted vault key retrieval intent: ",
+                        (exception) ->
+                                Log.w(
+                                        TAG,
+                                        "Error creating trusted vault key retrieval intent: ",
                                         exception));
     }
 
     private void openTrustedVaultRecoverabilityDegradedActivity() {
-        CoreAccountInfo primaryAccountInfo = getSyncConsentedAccountInfo();
+        CoreAccountInfo primaryAccountInfo =
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (primaryAccountInfo == null) {
             return;
         }
         TrustedVaultClient.get()
                 .createRecoverabilityDegradedIntent(primaryAccountInfo)
                 .then(
-                        (intent)
-                                -> {
-                            IntentUtils.safeStartActivity(getApplicationContext(),
+                        (intent) -> {
+                            var action = TrustedVaultUserActionTriggerForUMA.NEW_TAB_PAGE_INFOBAR;
+                            var proxyIntent =
                                     SyncTrustedVaultProxyActivity
-                                            .createRecoverabilityDegradedProxyIntent(intent,
-                                                    TrustedVaultUserActionTriggerForUMA
-                                                            .NEW_TAB_PAGE_INFOBAR));
+                                            .createRecoverabilityDegradedProxyIntent(
+                                                    intent, action);
+                            IntentUtils.safeStartActivity(getApplicationContext(), proxyIntent);
                         },
-                        (exception)
-                                -> Log.w(TAG,
+                        (exception) ->
+                                Log.w(
+                                        TAG,
                                         "Error creating trusted vault recoverability intent: ",
                                         exception));
     }
 
-    private static void openSyncSettings() {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(getApplicationContext(), ManageSyncSettings.class,
-                ManageSyncSettings.createArguments(false));
+    private void openSettings() {
+        if (mSyncService.hasSyncConsent()) {
+            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+            settingsLauncher.launchSettingsActivity(
+                    getApplicationContext(),
+                    ManageSyncSettings.class,
+                    ManageSyncSettings.createArguments(false));
+        } else {
+            AccountManagementFragment.openAccountManagementScreen(
+                    getApplicationContext(), GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        }
     }
 
     private void startUpdateCredentialsFlow(Activity activity) {
         final CoreAccountInfo primaryAccountInfo =
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         assert primaryAccountInfo != null;
-        AccountManagerFacadeProvider.getInstance().updateCredentials(
-                CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
+        AccountManagerFacadeProvider.getInstance()
+                .updateCredentials(
+                        CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
     }
 
-    private CoreAccountInfo getSyncConsentedAccountInfo() {
-        if (!mSyncService.hasSyncConsent()) {
-            return null;
+    private static @SyncError int getError(SyncService syncService) {
+        // Check if there is an identity error.
+        if (!syncService.hasSyncConsent()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
+            return SyncSettingsUtils.getIdentityError(syncService);
         }
-        return mSyncService.getAccountInfo();
+        return SyncSettingsUtils.getSyncError(syncService);
     }
 
     @VisibleForTesting

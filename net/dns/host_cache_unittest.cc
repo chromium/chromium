@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1651,10 +1652,10 @@ TEST(HostCacheTest, SerializeForDebugging) {
 
   ASSERT_EQ(1u, serialized_cache.size());
   ASSERT_TRUE(serialized_cache[0].is_dict());
-  const std::string* nik_string =
+  const std::string* nak_string =
       serialized_cache[0].GetDict().FindString("network_anonymization_key");
-  ASSERT_TRUE(nik_string);
-  ASSERT_EQ(kNetworkAnonymizationKey.ToDebugString(), *nik_string);
+  ASSERT_TRUE(nak_string);
+  ASSERT_EQ(kNetworkAnonymizationKey.ToDebugString(), *nak_string);
 }
 
 TEST(HostCacheTest, SerializeAndDeserialize_Text) {
@@ -2609,8 +2610,8 @@ TEST(HostCacheTest, ConvertFromNonCachableInternalErrorResult) {
 
   std::set<std::unique_ptr<HostResolverInternalResult>> results;
   results.insert(std::make_unique<HostResolverInternalErrorResult>(
-      "endpoint.test", DnsQueryType::AAAA, /*expiration=*/absl::nullopt,
-      /*timed_expiration=*/absl::nullopt,
+      "endpoint.test", DnsQueryType::AAAA, /*expiration=*/std::nullopt,
+      /*timed_expiration=*/std::nullopt,
       HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED));
   results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl1,

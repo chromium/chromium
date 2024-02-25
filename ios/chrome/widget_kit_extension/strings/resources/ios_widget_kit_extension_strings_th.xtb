@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1324575488877808473">เปิด Chrome เพื่อดูเว็บไซต์ที่เยี่ยมชมบ่อยที่สุดที่นี่</translation>
 <translation id="2513892053093488070">ค้นหาด้วยเสียง</translation>
 <translation id="2535710892645968259">ไปที่เกมไดโนเสาร์ Chrome จากหน้าจอล็อก</translation>
 <translation id="2542770169955243077">เกมไดโนเสาร์ Chrome</translation>
-<translation id="2803429804752388720">ค้นหารหัสผ่าน</translation>
 <translation id="2922313168575194078">ค้นหารหัสผ่านที่บันทึกไว้ได้อย่างปลอดภัยในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="302608144225178783">ไปที่เกมไดโนเสาร์ Chrome จากหน้าจอหลัก</translation>
 <translation id="3296938369177810197">ค้นหาด้วยเสียง</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">เริ่มการค้นหาใหม่หรือเปิดเว็บไซต์ที่เข้าชมบ่อยที่สุดจากหน้าแรกของ iPad</translation>
 <translation id="6721566127904256183">เว็บไซต์ที่คุณเข้าชมบ่อยที่สุดจะแสดงที่นี่</translation>
 <translation id="6855322554930231468">ค้นหา</translation>
+<translation id="6973491011026415905">ค้นหารหัสผ่านในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="7010831364920321713">ค้นหาในโหมดไม่ระบุตัวตน</translation>
 <translation id="7048549665319929185">ค้นหาหรือพิมพ์ URL</translation>
 <translation id="7317302007099170473">สแกนคิวอาร์โค้ด</translation>

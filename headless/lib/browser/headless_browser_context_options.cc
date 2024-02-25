@@ -12,7 +12,7 @@ namespace headless {
 namespace {
 
 template <class T>
-const T& ReturnOverriddenValue(const absl::optional<T>& value,
+const T& ReturnOverriddenValue(const std::optional<T>& value,
                                const T& default_value) {
   return value ? *value : default_value;
 }
@@ -52,6 +52,11 @@ const gfx::Size& HeadlessBrowserContextOptions::window_size() const {
 
 const base::FilePath& HeadlessBrowserContextOptions::user_data_dir() const {
   return ReturnOverriddenValue(user_data_dir_, browser_options_->user_data_dir);
+}
+
+const base::FilePath& HeadlessBrowserContextOptions::disk_cache_dir() const {
+  return ReturnOverriddenValue(disk_cache_dir_,
+                               browser_options_->disk_cache_dir);
 }
 
 bool HeadlessBrowserContextOptions::incognito_mode() const {

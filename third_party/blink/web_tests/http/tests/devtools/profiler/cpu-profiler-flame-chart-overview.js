@@ -5,13 +5,13 @@
 import {TestRunner} from 'test_runner';
 import {CPUProfilerTestRunner} from 'cpu_profiler_test_runner';
 
+import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(
       `Tests Overview pane calculation in FlameChart for different width = 2^n with n in range 4 - 0.
       Also tests loading of a legacy nodes format, where nodes were represented as a tree.\n`);
-  await TestRunner.loadLegacyModule('profiler');
 
   var profileAndExpectations = {
     profile: {
@@ -857,7 +857,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   profileAndExpectations.debuggerModel = () => null;
   profileAndExpectations.weakTarget = () => new WeakReference(null);
   profileAndExpectations.profileModel = () => new SDK.CPUProfileDataModel.CPUProfileDataModel(profile);
-  var cpuProfileView = new Profiler.CPUProfileView(profileAndExpectations);
+  var cpuProfileView = new ProfilerModule.CPUProfileView.CPUProfileView(profileAndExpectations);
   cpuProfileView.viewSelectComboBox.setSelectedIndex(0);
   cpuProfileView.changeView();
   var overviewPane = cpuProfileView.flameChart.overviewPane;

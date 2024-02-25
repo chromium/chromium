@@ -81,6 +81,11 @@ void AudioDeviceSelectionTestBase::Select(const AudioNode& node) {
   }
 }
 
+void AudioDeviceSelectionTestBase::SystemBootsWith(
+    const AudioNodeList& new_nodes) {
+  fake_cras_audio_client_->SetAudioNodesAndNotifyObserversForTesting(new_nodes);
+}
+
 uint64_t AudioDeviceSelectionTestBase::ActiveInputNodeId() {
   return active_node_observer_->GetActiveInputNodeId();
 }

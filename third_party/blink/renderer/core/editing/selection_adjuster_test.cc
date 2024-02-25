@@ -143,8 +143,8 @@ TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElement) {
       SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
           selection);
 
-  EXPECT_EQ(Position::FirstPositionInNode(*foo), result.Base());
-  EXPECT_EQ(Position::LastPositionInNode(*bar), result.Extent());
+  EXPECT_EQ(Position::FirstPositionInNode(*foo), result.Anchor());
+  EXPECT_EQ(Position::LastPositionInNode(*bar), result.Focus());
 
   // Flat tree selection.
   const SelectionInFlatTree& selection_in_flat_tree =
@@ -157,9 +157,9 @@ TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElement) {
           selection_in_flat_tree);
 
   EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*foo),
-            result_in_flat_tree.Base());
+            result_in_flat_tree.Anchor());
   EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*bar),
-            result_in_flat_tree.Extent());
+            result_in_flat_tree.Focus());
 }
 
 TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElementEditable) {
@@ -183,8 +183,8 @@ TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElementEditable) {
       SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
           selection);
 
-  EXPECT_EQ(Position::FirstPositionInNode(*foo), result.Base());
-  EXPECT_EQ(Position::BeforeNode(*bar), result.Extent());
+  EXPECT_EQ(Position::FirstPositionInNode(*foo), result.Anchor());
+  EXPECT_EQ(Position::BeforeNode(*bar), result.Focus());
 
   // Select from foo to bar in flat tree.
   const SelectionInFlatTree& selection_in_flat_tree =
@@ -197,8 +197,8 @@ TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElementEditable) {
           selection_in_flat_tree);
 
   EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*foo),
-            result_in_flat_tree.Base());
-  EXPECT_EQ(PositionInFlatTree::BeforeNode(*bar), result_in_flat_tree.Extent());
+            result_in_flat_tree.Anchor());
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(*bar), result_in_flat_tree.Focus());
 
   // Select from bar to foo in DOM tree.
   const SelectionInDOMTree& selection2 =
@@ -210,8 +210,8 @@ TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElementEditable) {
       SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
           selection2);
 
-  EXPECT_EQ(Position::LastPositionInNode(*bar), result2.Base());
-  EXPECT_EQ(Position::FirstPositionInNode(*bar), result2.Extent());
+  EXPECT_EQ(Position::LastPositionInNode(*bar), result2.Anchor());
+  EXPECT_EQ(Position::FirstPositionInNode(*bar), result2.Focus());
 
   // Select from bar to foo in flat tree.
   const SelectionInFlatTree& selection_in_flat_tree2 =
@@ -224,9 +224,9 @@ TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElementEditable) {
           selection_in_flat_tree2);
 
   EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*bar),
-            result_in_flat_tree2.Base());
+            result_in_flat_tree2.Anchor());
   EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*bar),
-            result_in_flat_tree2.Extent());
+            result_in_flat_tree2.Focus());
 }
 
 TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithoutEditingBoundary) {
@@ -246,7 +246,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithoutEditingBoundary) {
   SetBodyContent(body_content);
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(shadow_content);
 
   Element* foo = GetDocument().getElementById(AtomicString("foo"));
@@ -312,7 +312,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
   SetBodyContent(body_content);
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(shadow_content);
 
   Element* foo = GetDocument().getElementById(AtomicString("foo"));
@@ -533,8 +533,8 @@ TEST_F(SelectionAdjusterTest, AdjustSelectionTypeWithShadow) {
   const SelectionInDOMTree& adjusted =
       SelectionAdjuster::AdjustSelectionType(selection);
 
-  EXPECT_EQ(base, adjusted.Base());
-  EXPECT_EQ(extent, adjusted.Extent());
+  EXPECT_EQ(base, adjusted.Anchor());
+  EXPECT_EQ(extent, adjusted.Focus());
 }
 
 TEST_F(SelectionAdjusterTest, AdjustShadowWithRootAndHost) {
@@ -552,8 +552,37 @@ TEST_F(SelectionAdjusterTest, AdjustShadowWithRootAndHost) {
       SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
           selection);
 
-  EXPECT_EQ(Position(shadow_root, 0), result.Base());
-  EXPECT_EQ(Position(shadow_root, 0), result.Extent());
+  EXPECT_EQ(Position(shadow_root, 0), result.Anchor());
+  EXPECT_EQ(Position(shadow_root, 0), result.Focus());
+}
+
+// http://crbug.com/1371268
+TEST_F(SelectionAdjusterTest, AdjustSelectionWithNextNonEditableNode) {
+  SetBodyContent(R"HTML(
+    <div contenteditable=true>
+      <div id="one">Paragraph 1</div>
+      <div id="two" contenteditable=false>
+        <div contenteditable=true>Paragraph 2</div>
+      </div>
+    </div>)HTML");
+
+  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* two = GetDocument().getElementById(AtomicString("two"));
+  const SelectionInDOMTree& selection = SelectionInDOMTree::Builder()
+                                            .Collapse(Position(one, 0))
+                                            .Extend(Position(two, 0))
+                                            .Build();
+  const SelectionInDOMTree& editing_selection =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection);
+  EXPECT_EQ(editing_selection.Anchor(), selection.Anchor());
+  EXPECT_EQ(editing_selection.Focus(), Position::BeforeNode(*two));
+
+  const SelectionInDOMTree& adjusted_selection =
+      SelectionAdjuster::AdjustSelectionType(editing_selection);
+  EXPECT_EQ(adjusted_selection.Anchor(),
+            Position::FirstPositionInNode(*one->firstChild()));
+  EXPECT_EQ(adjusted_selection.Focus(), editing_selection.Focus());
 }
 
 }  // namespace blink

@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult(`Verifies viewport stick-to-bottom behavior when prompt has space below editable area.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
@@ -20,7 +21,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   await ConsoleTestRunner.waitForConsoleMessagesPromise(150);
   await ConsoleTestRunner.waitForPendingViewportUpdates();
 
-  const consoleView = Console.ConsoleView.instance();
+  const consoleView = Console.ConsoleView.ConsoleView.instance();
   const viewport = consoleView.viewport;
 
   TestRunner.runTestSuite([

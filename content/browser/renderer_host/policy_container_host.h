@@ -293,7 +293,7 @@ class CONTENT_EXPORT PolicyContainerHost
   mojo::UniqueReceiverSet<blink::mojom::PolicyContainerHostKeepAliveHandle>
       keep_alive_handles_receiver_set_;
 
-  absl::optional<blink::LocalFrameToken> frame_token_ = absl::nullopt;
+  std::optional<blink::LocalFrameToken> frame_token_ = std::nullopt;
   int process_id_ = ChildProcessHost::kInvalidUniqueID;
 };
 

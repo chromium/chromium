@@ -1,0 +1,30 @@
+<style include="cr-shared-style md-select">
+  cr-dialog {
+    --cr-dialog-width: 416px;
+  }
+</style>
+<!-- TODO(b/325487350): Use localized strings. -->
+<cr-dialog id="apnSelectionDialog" show-on-attach>
+  <div slot="title" aria-live="polite">
+    Choose from available APNs
+  </div>
+  <!-- TODO(b/325487350): Add a11y. -->
+  <div slot="body">
+    <div>
+      Invalid APNs could cause your mobile connection to be disabled. Only set APNs provided by your mobile provider or administrator.
+    </div>
+    <!-- TODO(b/325487350): Implement list UI. -->
+  </div>
+  <!-- TODO(b/325487350): Add a11y. -->
+  <div slot="button-container">
+      <cr-button class="cancel-button"
+          on-click="onCancelClicked_">
+        [[i18n('apnDetailDialogCancel')]]
+      </cr-button>
+      <cr-button class="action-button"
+          on-click="onActionButtonClicked_">
+        Use this APN
+      </cr-button>
+    </template>
+  </div>
+</cr-dialog>

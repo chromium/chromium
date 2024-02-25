@@ -244,6 +244,11 @@ TEST(StructTraitsTest, GestureEvent) {
   GestureEventDetails pinch_update_details(ET_GESTURE_PINCH_UPDATE);
   pinch_update_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   pinch_update_details.set_scale(1.23f);
+  GestureEventDetails swipe_top_left_details(ET_GESTURE_SWIPE, -1, -1);
+  swipe_top_left_details.set_device_type(
+      ui::GestureDeviceType::DEVICE_TOUCHPAD);
+  GestureEventDetails swipe_right_details(ET_GESTURE_SWIPE, 1, 0);
+  swipe_right_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
 
   const GestureEvent kTestData[] = {
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
@@ -256,6 +261,10 @@ TEST(StructTraitsTest, GestureEvent) {
        pinch_end_details},
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        pinch_update_details},
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
+       swipe_top_left_details},
+      {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
+       swipe_right_details},
   };
 
   for (size_t i = 0; i < std::size(kTestData); i++) {

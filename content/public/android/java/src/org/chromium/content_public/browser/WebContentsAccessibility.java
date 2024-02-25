@@ -97,14 +97,10 @@ public interface WebContentsAccessibility {
      */
     void onAutofillPopupDisplayed(View autofillPopupView);
 
-    /**
-     * Called when autofill popup is dismissed.
-     */
+    /** Called when autofill popup is dismissed. */
     void onAutofillPopupDismissed();
 
-    /**
-     * Called when the a11y focus gets cleared on the autofill popup.
-     */
+    /** Called when the a11y focus gets cleared on the autofill popup. */
     void onAutofillPopupAccessibilityFocusCleared();
 
     /**
@@ -113,9 +109,7 @@ public interface WebContentsAccessibility {
      */
     boolean onHoverEventNoRenderer(MotionEvent event);
 
-    /**
-     * Called to reset focus state to nothing.
-     */
+    /** Called to reset focus state to nothing. */
     void resetFocus();
 
     /**

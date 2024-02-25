@@ -31,6 +31,7 @@ namespace {
 #define DRM_FORMAT_XBGR8888 FOURCC('X', 'B', '2', '4')
 #define DRM_FORMAT_ABGR2101010 FOURCC('A', 'B', '3', '0')
 #define DRM_FORMAT_ARGB2101010 FOURCC('A', 'R', '3', '0')
+#define DRM_FORMAT_ABGR16161616F FOURCC('A', 'B', '4', 'H')
 #define DRM_FORMAT_YVU420 FOURCC('Y', 'V', '1', '2')
 #define DRM_FORMAT_NV12 FOURCC('N', 'V', '1', '2')
 #define DRM_FORMAT_P010 FOURCC('P', '0', '1', '0')
@@ -65,8 +66,9 @@ EGLint FourCC(gfx::BufferFormat format) {
       return DRM_FORMAT_NV12;
     case gfx::BufferFormat::P010:
       return DRM_FORMAT_P010;
-    case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBA_F16:
+      return DRM_FORMAT_ABGR16161616F;
+    case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::YUVA_420_TRIPLANAR:
       return 0;
   }
@@ -205,31 +207,61 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
   }
 
   if (plane_ == gfx::BufferPlane::DEFAULT) {
-    const EGLint kLinuxDrmModifiers[] = {EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
-                                         EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
-                                         EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT};
+    constexpr EGLint kPlaneFDAttrs[] = {
+        EGL_DMA_BUF_PLANE0_FD_EXT,
+        EGL_DMA_BUF_PLANE1_FD_EXT,
+        EGL_DMA_BUF_PLANE2_FD_EXT,
+        EGL_DMA_BUF_PLANE3_FD_EXT,
+    };
+    constexpr EGLint kPlaneOffsetAttrs[] = {
+        EGL_DMA_BUF_PLANE0_OFFSET_EXT,
+        EGL_DMA_BUF_PLANE1_OFFSET_EXT,
+        EGL_DMA_BUF_PLANE2_OFFSET_EXT,
+        EGL_DMA_BUF_PLANE3_OFFSET_EXT,
+    };
+
+    constexpr EGLint kPlanePitchAttrs[] = {
+        EGL_DMA_BUF_PLANE0_PITCH_EXT,
+        EGL_DMA_BUF_PLANE1_PITCH_EXT,
+        EGL_DMA_BUF_PLANE2_PITCH_EXT,
+        EGL_DMA_BUF_PLANE3_PITCH_EXT,
+    };
+
+    constexpr EGLint kPlaneLoModifierAttrs[] = {
+        EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
+        EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
+        EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT,
+        EGL_DMA_BUF_PLANE3_MODIFIER_LO_EXT,
+    };
+
+    constexpr EGLint kPlaneHiModifierAttrs[] = {
+        EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT,
+        EGL_DMA_BUF_PLANE1_MODIFIER_HI_EXT,
+        EGL_DMA_BUF_PLANE2_MODIFIER_HI_EXT,
+        EGL_DMA_BUF_PLANE3_MODIFIER_HI_EXT,
+    };
+
     bool has_dma_buf_import_modifier =
         gl::GLSurfaceEGL::GetGLDisplayEGL()
             ->ext->b_EGL_EXT_image_dma_buf_import_modifiers;
-
+    CHECK_LE(pixmap->GetNumberOfPlanes(), std::size(kPlaneFDAttrs));
     for (size_t attrs_plane = 0; attrs_plane < pixmap->GetNumberOfPlanes();
          ++attrs_plane) {
-      attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT + attrs_plane * 3);
+      attrs.push_back(kPlaneFDAttrs[attrs_plane]);
+      attrs.push_back(pixmap->GetDmaBufFd(attrs_plane));
+      attrs.push_back(kPlaneOffsetAttrs[attrs_plane]);
+      attrs.push_back(pixmap->GetDmaBufOffset(attrs_plane));
+      attrs.push_back(kPlanePitchAttrs[attrs_plane]);
+      attrs.push_back(pixmap->GetDmaBufPitch(attrs_plane));
 
-      size_t pixmap_plane = attrs_plane;
-
-      attrs.push_back(pixmap->GetDmaBufFd(pixmap_plane));
-      attrs.push_back(EGL_DMA_BUF_PLANE0_OFFSET_EXT + attrs_plane * 3);
-      attrs.push_back(pixmap->GetDmaBufOffset(pixmap_plane));
-      attrs.push_back(EGL_DMA_BUF_PLANE0_PITCH_EXT + attrs_plane * 3);
-      attrs.push_back(pixmap->GetDmaBufPitch(pixmap_plane));
       uint64_t modifier = pixmap->GetBufferFormatModifier();
       if (has_dma_buf_import_modifier &&
           modifier != gfx::NativePixmapHandle::kNoModifier) {
-        DCHECK(attrs_plane < std::size(kLinuxDrmModifiers));
-        attrs.push_back(kLinuxDrmModifiers[attrs_plane]);
+        DCHECK(attrs_plane < std::size(kPlaneLoModifierAttrs));
+        DCHECK(attrs_plane < std::size(kPlaneHiModifierAttrs));
+        attrs.push_back(kPlaneLoModifierAttrs[attrs_plane]);
         attrs.push_back(modifier & 0xffffffff);
-        attrs.push_back(kLinuxDrmModifiers[attrs_plane] + 1);
+        attrs.push_back(kPlaneHiModifierAttrs[attrs_plane]);
         attrs.push_back(static_cast<uint32_t>(modifier >> 32));
       }
     }
@@ -263,8 +295,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
 }
 
 GLuint NativePixmapEGLBinding::GetInternalFormat() {
-  if (format_ == gfx::BufferFormat::RGBA_4444 ||
-      format_ == gfx::BufferFormat::RGBA_F16) {
+  if (format_ == gfx::BufferFormat::RGBA_4444) {
     return GL_RGB_YCBCR_P010_CHROMIUM;
   }
 

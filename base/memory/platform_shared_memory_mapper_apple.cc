@@ -11,7 +11,7 @@
 
 namespace base {
 
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
+std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -29,7 +29,7 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
                             VM_INHERIT_NONE);
   if (kr != KERN_SUCCESS) {
     MACH_DLOG(ERROR, kr) << "vm_map";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return make_span(reinterpret_cast<uint8_t*>(address), size);

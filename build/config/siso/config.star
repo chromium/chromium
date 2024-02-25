@@ -1,5 +1,5 @@
 # -*- bazel-starlark -*-
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Config module for checking siso -config flags."""
@@ -7,7 +7,14 @@
 load("@builtin//struct.star", "module")
 
 __KNOWN_CONFIG_OPTIONS = [
-    "remote_all",
+    # Indicates that the build runs on a builder.
+    "builder",
+
+    # TODO: b/308405411 - Enable this config for all builders.
+    "remote-devtools-frontend-typescript",
+
+    # TODO: b/316267242 - Enable remote links after confirming performance.
+    "remote-library-link",
 ]
 
 def __check(ctx):

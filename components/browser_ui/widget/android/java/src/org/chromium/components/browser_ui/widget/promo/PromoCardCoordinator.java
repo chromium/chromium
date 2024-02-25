@@ -63,12 +63,18 @@ public class PromoCardCoordinator {
      *         SharedPreference.
      * @param layoutStyle {@link LayoutStyle} used for the promo.
      */
-    public PromoCardCoordinator(Context context, PropertyModel model, String featureName,
+    public PromoCardCoordinator(
+            Context context,
+            PropertyModel model,
+            String featureName,
             @LayoutStyle int layoutStyle) {
-        mPromoCardView = (PromoCardView) LayoutInflater.from(context).inflate(
-                getPromoLayout(layoutStyle), null, false);
-        mModelChangeProcessor = PropertyModelChangeProcessor.create(
-                model, mPromoCardView, new PromoCardViewBinder());
+        mPromoCardView =
+                (PromoCardView)
+                        LayoutInflater.from(context)
+                                .inflate(getPromoLayout(layoutStyle), null, false);
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        model, mPromoCardView, new PromoCardViewBinder());
         mFeatureName = featureName;
 
         // Manage impression related properties.
@@ -76,33 +82,30 @@ public class PromoCardCoordinator {
         if (impressionCallback != null) {
             boolean isImpressionOnPrimaryButton =
                     model.get(PromoCardProperties.IS_IMPRESSION_ON_PRIMARY_BUTTON);
-            mImpressionTracker = new ImpressionTracker(
-                    isImpressionOnPrimaryButton ? mPromoCardView.mPrimaryButton : mPromoCardView);
+            mImpressionTracker =
+                    new ImpressionTracker(
+                            isImpressionOnPrimaryButton
+                                    ? mPromoCardView.mPrimaryButton
+                                    : mPromoCardView);
             // TODO(wenyufu): Maybe make the ratio configurable?
             mImpressionTracker.setImpressionThresholdRatio(IMPRESSION_THRESHOLD_RATIO);
             mImpressionTracker.setListener(new OneShotImpressionListener(impressionCallback::run));
         }
     }
 
-    /**
-     * Destroy the PromoCard component and release dependencies.
-     */
+    /** Destroy the PromoCard component and release dependencies. */
     public void destroy() {
         mModelChangeProcessor.destroy();
         if (mImpressionTracker != null) mImpressionTracker.setListener(null);
         mImpressionTracker = null;
     }
 
-    /**
-     * @return {@link PromoCardView} held by this promo component.
-     */
+    /** @return {@link PromoCardView} held by this promo component. */
     public View getView() {
         return mPromoCardView;
     }
 
-    /**
-     * @return Name of the feature this promo is representing.
-     */
+    /** @return Name of the feature this promo is representing. */
     public String getFeatureName() {
         return mFeatureName;
     }

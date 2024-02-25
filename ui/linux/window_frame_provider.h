@@ -36,7 +36,7 @@ class WindowFrameProvider {
                                 const gfx::Rect& rect,
                                 int top_area_height,
                                 bool focused,
-                                ui::WindowTiledEdges tiled_edges) = 0;
+                                const gfx::Insets& input_insets) = 0;
 };
 
 }  // namespace ui

@@ -8,12 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::win {
 
@@ -59,13 +59,13 @@ class BASE_EXPORT AccessControlList {
  public:
   // Create from an existing ACL pointer.
   // |acl| The ACL pointer. Passing nullptr will create a null ACL.
-  static absl::optional<AccessControlList> FromPACL(ACL* acl);
+  static std::optional<AccessControlList> FromPACL(ACL* acl);
 
   // Create an AccessControlList from a mandatory label.
   // |integrity_level| is the integrity level for the label.
   // |inheritance| inheritance flags.
   // |mandatory_policy| is the policy, e.g. SYSTEM_MANDATORY_LABEL_NO_WRITE_UP.
-  static absl::optional<AccessControlList> FromMandatoryLabel(
+  static std::optional<AccessControlList> FromMandatoryLabel(
       DWORD integrity_level,
       DWORD inheritance,
       DWORD mandatory_policy);

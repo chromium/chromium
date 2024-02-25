@@ -28,7 +28,10 @@ class SharedWorkerInstanceTest : public testing::Test {
     return SharedWorkerInstance(
         script_url, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, name, storage_key,
-        blink::mojom::SharedWorkerCreationContextType::kNonsecure);
+        blink::mojom::SharedWorkerCreationContextType::kNonsecure,
+        storage_key.IsFirstPartyContext()
+            ? blink::mojom::SharedWorkerSameSiteCookies::kAll
+            : blink::mojom::SharedWorkerSameSiteCookies::kNone);
   }
 
   bool Matches(const SharedWorkerInstance& instance,
@@ -41,7 +44,8 @@ class SharedWorkerInstanceTest : public testing::Test {
     } else {
       storage_key = blink::StorageKey::CreateFromStringForTesting(url);
     }
-    return instance.Matches(GURL(url), std::string(name), storage_key);
+    return instance.Matches(GURL(url), std::string(name), storage_key,
+                            blink::mojom::SharedWorkerSameSiteCookies::kAll);
   }
 };
 

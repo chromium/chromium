@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/api/management/management_api.h"
+
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/optional_ref.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
@@ -23,7 +27,6 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
-#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/management/management_api_constants.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/disable_reason.h"
@@ -40,8 +43,10 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 
 // TODO(b/265970428): Fix and include extensions tests on LaCrOS.
@@ -97,7 +102,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
 
   // Runs the management.setEnabled() function to enable an extension.
   bool RunSetEnabledFunction(content::WebContents* web_contents,
-                             const std::string& extension_id,
+                             const ExtensionId& extension_id,
                              bool use_user_gesture,
                              bool accept_dialog,
                              std::string* error,
@@ -115,6 +120,10 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
   void TearDown() override;
 
  private:
+  // This test does not create a root window. Because of this,
+  // ScopedDisableRootChecking needs to be used (which disables the root window
+  // check).
+  test::ScopedDisableRootChecking disable_root_checking_;
   // The browser (and accompanying window).
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
@@ -131,7 +140,7 @@ bool ManagementApiUnitTest::RunFunction(
 
 bool ManagementApiUnitTest::RunSetEnabledFunction(
     content::WebContents* web_contents,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool use_user_gesture,
     bool accept_dialog,
     std::string* error,
@@ -139,8 +148,8 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
   ScopedTestDialogAutoConfirm auto_confirm(
       accept_dialog ? ScopedTestDialogAutoConfirm::ACCEPT
                     : ScopedTestDialogAutoConfirm::CANCEL);
-  absl::optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
-      absl::nullopt;
+  std::optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
+      std::nullopt;
   if (use_user_gesture)
     gesture.emplace();
   auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
@@ -184,7 +193,7 @@ TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
   scoped_refptr<const Extension> source_extension =
       ExtensionBuilder("Test").Build();
   service()->AddExtension(source_extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
   function->set_extension(source_extension);
 
@@ -250,7 +259,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
   auto extension_can_disable_extension =
       [this](scoped_refptr<const Extension> source_extension,
              scoped_refptr<const Extension> target_extension) {
-        std::string id = target_extension->id();
+        const ExtensionId& id = target_extension->id();
         base::Value::List args;
         args.Append(id);
         args.Append(false /* disable the extension */);
@@ -305,7 +314,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
   auto extension_can_enable_extension =
       [this, component](scoped_refptr<const Extension> source_extension,
                         scoped_refptr<const Extension> target_extension) {
-        std::string id = target_extension->id();
+        const ExtensionId& id = target_extension->id();
         base::Value::List args;
         args.Append(id);
         args.Append(true /* enable the extension */);
@@ -337,7 +346,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
   // we would get from the extension management page.
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
 
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
@@ -350,7 +359,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
 
     // Uninstall requires a user gesture, so this should fail.
     auto function = base::MakeRefCounted<ManagementUninstallFunction>();
-    function->set_source_context_type(Feature::WEBUI_CONTEXT);
+    function->set_source_context_type(mojom::ContextType::kWebUi);
     EXPECT_FALSE(RunFunction(function, uninstall_args));
     EXPECT_EQ(std::string(constants::kGestureNeededForUninstallError),
               function->GetError());
@@ -358,7 +367,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
     ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
 
     function = base::MakeRefCounted<ManagementUninstallFunction>();
-    function->set_source_context_type(Feature::WEBUI_CONTEXT);
+    function->set_source_context_type(mojom::ContextType::kWebUi);
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
     EXPECT_TRUE(RunFunction(function, uninstall_args)) << function->GetError();
     // The extension should be uninstalled.
@@ -379,7 +388,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
     service()->AddExtension(extension.get());
     scoped_refptr<ExtensionFunction> function =
         base::MakeRefCounted<ManagementUninstallFunction>();
-    function->set_source_context_type(Feature::WEBUI_CONTEXT);
+    function->set_source_context_type(mojom::ContextType::kWebUi);
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
     EXPECT_FALSE(RunFunction(function, uninstall_args));
     // The uninstall should have failed.
@@ -396,7 +405,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
     options.Set("showConfirmDialog", false);
     uninstall_args.Append(std::move(options));
     function = base::MakeRefCounted<ManagementUninstallFunction>();
-    function->set_source_context_type(Feature::WEBUI_CONTEXT);
+    function->set_source_context_type(mojom::ContextType::kWebUi);
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
     EXPECT_FALSE(RunFunction(function, uninstall_args));
     // This should still fail, since extensions can only suppress the dialog for
@@ -432,7 +441,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
       ExtensionBuilder("Test").SetID(extensions::kWebStoreAppId).Build();
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
@@ -493,7 +502,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
 TEST_F(ManagementApiUnitTest, ManagementUninstallNewWebstore) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
@@ -535,7 +544,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
       ExtensionBuilder("Triggering Extension").SetID("123").Build();
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
@@ -574,7 +583,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
 TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string id = extension->id();
+  const ExtensionId& id = extension->id();
 
   service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
@@ -582,7 +591,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
   ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
   auto function = base::MakeRefCounted<ManagementUninstallFunction>();
-  function->set_source_context_type(Feature::WEBUI_CONTEXT);
+  function->set_source_context_type(mojom::ContextType::kWebUi);
   base::Value::List uninstall_args;
   uninstall_args.Append(id);
   EXPECT_TRUE(RunFunction(function, uninstall_args)) << function->GetError();
@@ -593,7 +602,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
 TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string id = extension->id();
+  const ExtensionId& id = extension->id();
 
   service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
@@ -635,12 +644,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     // |may_enable| is only returned for extensions which are not enabled.
@@ -659,12 +667,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -683,12 +690,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -710,12 +716,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_TRUE(info->may_disable);
@@ -733,12 +738,11 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
   {
     auto function = base::MakeRefCounted<ManagementGetFunction>();
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    std::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_FALSE(info->may_disable);
@@ -762,7 +766,7 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 
   // Save the id, as |extension| will be destroyed during updating.
-  std::string extension_id = extension->id();
+  ExtensionId extension_id = extension->id();
 
   std::unique_ptr<const PermissionSet> known_perms =
       prefs->GetGrantedPermissions(extension_id);
@@ -873,13 +877,13 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
     return nullptr;
   }
   void EnableExtension(content::BrowserContext* context,
-                       const std::string& extension_id) const override {
+                       const ExtensionId& extension_id) const override {
     ++enable_count_;
   }
   void DisableExtension(
       content::BrowserContext* context,
       const Extension* source_extension,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       disable_reason::DisableReason disable_reason) const override {}
   std::unique_ptr<UninstallDialogDelegate> UninstallFunctionDelegate(
       ManagementUninstallFunctionBase* function,
@@ -888,7 +892,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
     return nullptr;
   }
   bool UninstallExtension(content::BrowserContext* context,
-                          const std::string& transient_extension_id,
+                          const ExtensionId& transient_extension_id,
                           UninstallReason reason,
                           std::u16string* error) const override {
     return true;
@@ -900,7 +904,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
     return true;
   }
   void SetLaunchType(content::BrowserContext* context,
-                     const std::string& extension_id,
+                     const ExtensionId& extension_id,
                      LaunchType launch_type) const override {}
 
   std::unique_ptr<AppForLinkDelegate> GenerateAppForLinkFunctionDelegate(
@@ -1074,9 +1078,9 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
   }
 
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<ManagementAPI, ExperimentalAsh> management_api_ = nullptr;
-  raw_ptr<TestSupervisedUserExtensionsDelegate, ExperimentalAsh>
-      supervised_user_delegate_ = nullptr;
+  raw_ptr<ManagementAPI> management_api_ = nullptr;
+  raw_ptr<TestSupervisedUserExtensionsDelegate> supervised_user_delegate_ =
+      nullptr;
 };
 
 TEST_F(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
@@ -1095,7 +1099,7 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
   ASSERT_TRUE(extension);
   // The extension should be installed but disabled.
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
-  const std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(prefs->HasDisableReason(
       extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
@@ -1145,7 +1149,7 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_AfterIncreasedPermissions) {
   // The extension should be installed but disabled pending custodian approval.
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   // Save the id, as |extension| will be destroyed during updating.
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   // Simulate parent approval for the extension installation.
   GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension);
@@ -1230,7 +1234,7 @@ TEST_F(ManagementApiSupervisedUserTest,
   // The extension should be installed but disabled pending custodian approval.
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   // Save the id, as |extension| will be destroyed during updating.
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   // Simulate parent approval for the extension installation.
   GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension);
@@ -1312,7 +1316,7 @@ TEST_F(ManagementApiSupervisedUserTest,
   // The extension should be installed but disabled pending custodian approval.
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   // Save the id, as |extension| will be destroyed during updating.
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   std::unique_ptr<const PermissionSet> known_perms =
@@ -1514,7 +1518,7 @@ class ManagementApiSupervisedUserTestWithSetup
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_->id()));
   }
 
-  raw_ptr<TestManagementAPIDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<TestManagementAPIDelegate> delegate_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

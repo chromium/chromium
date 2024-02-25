@@ -9,14 +9,16 @@ import android.os.SystemClock;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.Locale;
@@ -87,12 +89,15 @@ public class TabInteractionRecorder {
         boolean hadFormInteractionInActivePage = hadFormInteractionInActivePage();
         boolean hadNavigationInteraction = hadNavigationInteraction();
 
-        Log.d(TAG,
-                String.format(Locale.US,
-                        "timestamp=%d, TabInteractionRecorder.recordInteractions=%b", timestamp,
+        Log.d(
+                TAG,
+                String.format(
+                        Locale.US,
+                        "timestamp=%d, TabInteractionRecorder.recordInteractions=%b",
+                        timestamp,
                         hadInteraction));
 
-        SharedPreferencesManager pref = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager pref = ChromeSharedPreferences.getInstance();
         pref.writeLong(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP, timestamp);
 
         pref.writeBoolean(
@@ -117,18 +122,18 @@ public class TabInteractionRecorder {
     }
 
     private boolean hadFormInteractionInActivePage() {
-        return TabInteractionRecorderJni.get().hadFormInteractionInActivePage(
-                mNativeTabInteractionRecorder);
+        return TabInteractionRecorderJni.get()
+                .hadFormInteractionInActivePage(mNativeTabInteractionRecorder);
     }
 
     private boolean hadFormInteractionInSession() {
-        return TabInteractionRecorderJni.get().hadFormInteractionInSession(
-                mNativeTabInteractionRecorder);
+        return TabInteractionRecorderJni.get()
+                .hadFormInteractionInSession(mNativeTabInteractionRecorder);
     }
 
     private boolean hadNavigationInteraction() {
-        return TabInteractionRecorderJni.get().hadNavigationInteraction(
-                mNativeTabInteractionRecorder);
+        return TabInteractionRecorderJni.get()
+                .hadNavigationInteraction(mNativeTabInteractionRecorder);
     }
 
     /** Reset the interaction recorded. */
@@ -147,11 +152,9 @@ public class TabInteractionRecorder {
         return TabInteractionRecorderJni.get().didGetUserInteraction(mNativeTabInteractionRecorder);
     }
 
-    /**
-     *  Remove all the shared preferences related to tab interactions.
-     */
+    /** Remove all the shared preferences related to tab interactions. */
     public static void resetTabInteractionRecords() {
-        SharedPreferencesManager pref = SharedPreferencesManager.getInstance();
+        SharedPreferencesManager pref = ChromeSharedPreferences.getInstance();
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP);
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION);
     }
@@ -164,11 +167,17 @@ public class TabInteractionRecorder {
     @NativeMethods
     interface Natives {
         TabInteractionRecorder getFromTab(Tab tab);
+
         TabInteractionRecorder createForTab(Tab tab);
+
         boolean didGetUserInteraction(long nativeTabInteractionRecorderAndroid);
+
         boolean hadFormInteractionInActivePage(long nativeTabInteractionRecorderAndroid);
+
         boolean hadFormInteractionInSession(long nativeTabInteractionRecorderAndroid);
+
         boolean hadNavigationInteraction(long nativeTabInteractionRecorderAndroid);
+
         void reset(long nativeTabInteractionRecorderAndroid);
     }
 }

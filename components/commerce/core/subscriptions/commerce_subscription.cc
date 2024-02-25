@@ -40,7 +40,7 @@ CommerceSubscription::CommerceSubscription(
     std::string id,
     ManagementType management_type,
     int64_t timestamp,
-    absl::optional<UserSeenOffer> user_seen_offer)
+    std::optional<UserSeenOffer> user_seen_offer)
     : type(type),
       id_type(id_type),
       id(id),

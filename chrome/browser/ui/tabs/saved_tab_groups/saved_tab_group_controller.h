@@ -16,7 +16,7 @@ class SavedTabGroupController {
   // state in the SavedTabGroupService.
   virtual void OpenSavedTabGroupInBrowser(
       Browser* browser,
-      const base::Uuid& saved_group_guid) = 0;
+      const base::Uuid saved_group_guid) = 0;
 
   // Saves a group. Finds the TabGroup by groupid from all browsers, constructs
   // the saved tab group, and starts listening to all tabs.

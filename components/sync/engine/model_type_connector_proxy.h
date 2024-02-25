@@ -29,7 +29,6 @@ class ModelTypeConnectorProxy : public ModelTypeConnector {
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
   void DisconnectDataType(ModelType type) override;
-  void SetProxyTabsDatatypeEnabled(bool enabled) override;
 
  private:
   // A SequencedTaskRunner representing the thread where the ModelTypeConnector

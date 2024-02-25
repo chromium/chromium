@@ -8,14 +8,18 @@
 #include "base/memory/raw_ptr.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 class ChromePageInfoUiDelegate;
 class PageInfo;
 
+namespace views {
+class BoxLayoutView;
+}
+
 // The view that is used as a content view of the "Ad personalization" subpage
 // in page info.
-class PageInfoAdPersonalizationContentView : public views::View,
+class PageInfoAdPersonalizationContentView : public views::FlexLayoutView,
                                              public PageInfoUI {
  public:
   explicit PageInfoAdPersonalizationContentView(
@@ -30,7 +34,7 @@ class PageInfoAdPersonalizationContentView : public views::View,
   const raw_ptr<PageInfo, DanglingUntriaged> presenter_;
   const raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
 
-  raw_ptr<views::View> info_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> info_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_AD_PERSONALIZATION_CONTENT_VIEW_H_

@@ -4,6 +4,7 @@
 
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -14,7 +15,6 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept.h"
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 
 // Sets the relevance_threshold to be low enough for single-character queries
@@ -32,12 +32,13 @@ SearchHandler::SearchHandler(
     SearchConceptRegistry* search_concept_registry,
     local_search_service::LocalSearchServiceProxy* local_search_service_proxy)
     : search_concept_registry_(search_concept_registry) {
-  DCHECK(local_search_service_proxy);
+  CHECK(local_search_service_proxy);
   local_search_service_proxy->GetIndex(
       local_search_service::IndexId::kShortcutsApp,
       local_search_service::Backend::kLinearMap,
       index_remote_.BindNewPipeAndPassReceiver());
-  DCHECK(index_remote_.is_bound());
+  CHECK(index_remote_.is_bound());
+  CHECK(search_concept_registry_);
 
   search_concept_registry_->AddObserver(this);
 
@@ -47,7 +48,9 @@ SearchHandler::SearchHandler(
 }
 
 SearchHandler::~SearchHandler() {
-  search_concept_registry_->RemoveObserver(this);
+  if (search_concept_registry_) {
+    search_concept_registry_->RemoveObserver(this);
+  }
 }
 
 void SearchHandler::BindInterface(
@@ -81,7 +84,7 @@ void SearchHandler::Search(const std::u16string& query,
 void SearchHandler::OnFindComplete(
     SearchCallback callback,
     local_search_service::ResponseStatus response_status,
-    const absl::optional<std::vector<local_search_service::Result>>&
+    const std::optional<std::vector<local_search_service::Result>>&
         local_search_service_results) {
   if (response_status != local_search_service::ResponseStatus::kSuccess) {
     LOG(ERROR) << "Cannot search; LocalSearchService returned "

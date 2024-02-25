@@ -33,6 +33,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/debug/task_trace.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -53,6 +54,7 @@
 #include "base/vlog.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if !BUILDFLAG(IS_NACL)
 #include "base/auto_reset.h"
@@ -105,6 +107,7 @@ typedef FILE* FileHandle;
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
+#include "base/android/jni_android.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -121,7 +124,6 @@ namespace {
 
 int g_min_log_level = 0;
 
-#if BUILDFLAG(USE_RUNTIME_VLOG)
 // NOTE: Once |g_vlog_info| has been initialized, it might be in use
 // by another thread. Never delete the old VLogInfo, just create a second
 // one and overwrite. We need to use leak-san annotations on this intentional
@@ -189,25 +191,6 @@ void MaybeInitializeVlogInfo() {
     }
   }
 }
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
-
-#if !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
-
-// Warn developers that vlog command line settings are being ignored.
-void MaybeWarnVmodule() {
-  if (base::CommandLine::InitializedForCurrentProcess()) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kV) ||
-        command_line->HasSwitch(switches::kVModule)) {
-      LOG(WARNING)
-          << "--" << switches::kV << " and --" << switches::kVModule
-          << " are currently ignored. See comments in base/logging.h on "
-             "proper usage of USE_RUNTIME_VLOG.";
-    }
-  }
-}
-
-#endif  // !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
 
 const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
 static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
@@ -478,6 +461,8 @@ void SetLogFatalCrashKey(LogMessage* log_message) {
 
   base::AutoReset<bool> guard(&guarded, true);
 
+  // Note that we intentionally use LOG_FATAL here (old name for LOGGING_FATAL)
+  // as that's understood and used by the crash backend.
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "LOG_FATAL", base::debug::CrashKeySize::Size1024);
   base::debug::SetCrashKeyString(crash_key, log_message->BuildCrashString());
@@ -521,9 +506,9 @@ void TraceLogMessage(const char* file, int line, const std::string& message) {
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 // In DCHECK-enabled Chrome builds, allow the meaning of LOGGING_DCHECK to be
-// determined at run-time. We default it to INFO, to avoid it triggering
+// determined at run-time. We default it to ERROR, to avoid it triggering
 // crashes before the run-time has explicitly chosen the behaviour.
-BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
+BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_ERROR;
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 // This is never instantiated, it's just used for EAT_STREAM_PARAMETERS to have
@@ -542,13 +527,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   g_log_format = settings.log_format;
 #endif
 
-#if BUILDFLAG(USE_RUNTIME_VLOG)
   MaybeInitializeVlogInfo();
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
-
-#if !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
-  MaybeWarnVmodule();
-#endif  // !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
 
   g_logging_destination = settings.logging_dest;
 
@@ -626,22 +605,18 @@ bool ShouldLogToStderr(int severity) {
 }
 
 int GetVlogVerbosity() {
-  return std::max(-1, LOG_INFO - GetMinLogLevel());
+  return std::max(-1, LOGGING_INFO - GetMinLogLevel());
 }
 
 int GetVlogLevelHelper(const char* file, size_t N) {
   DCHECK_GT(N, 0U);
 
-#if BUILDFLAG(USE_RUNTIME_VLOG)
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
   VlogInfo* vlog_info = GetVlogInfo();
   return vlog_info ?
       vlog_info->GetVlogLevel(base::StringPiece(file, N - 1)) :
       GetVlogVerbosity();
-#else
-  return GetVlogVerbosity();
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 }
 
 void SetLogItems(bool enable_process_id, bool enable_thread_id,
@@ -717,14 +692,27 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
 }
 
 LogMessage::~LogMessage() {
+  Flush();
+}
+
+void LogMessage::Flush() {
   size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
     !BUILDFLAG(IS_AIX)
-  if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
-    // Include a stack trace on a fatal, unless a debugger is attached.
+  // Include a stack trace on a fatal, unless running within a death test proc
+  // or a debugger is attached.
+  if (severity_ == LOGGING_FATAL && !::base::internal::InDeathTestChild() &&
+      !base::debug::BeingDebugged()) {
     base::debug::StackTrace stack_trace;
     stream_ << std::endl;  // Newline to separate from log message.
     stack_trace.OutputToStream(&stream_);
+#if BUILDFLAG(IS_ANDROID)
+    std::string java_stack = base::android::GetJavaStackTraceIfPresent();
+    if (!java_stack.empty()) {
+      stream_ << "Java stack (may interleave with native stack):\n";
+      stream_ << java_stack << '\n';
+    }
+#endif
     base::debug::TaskTrace task_trace;
     if (!task_trace.empty())
       task_trace.OutputToStream(&stream_);
@@ -744,6 +732,14 @@ LogMessage::~LogMessage() {
   stream_ << std::endl;
   std::string str_newline(stream_.str());
   TraceLogMessage(file_, line_, str_newline.substr(message_start_));
+
+  // FATAL messages should always run the assert handler and crash, even if a
+  // message handler marks them as otherwise handled.
+  absl::Cleanup handle_fatal_message = [&] {
+    if (severity_ == LOGGING_FATAL) {
+      HandleFatal(stack_start, str_newline);
+    }
+  };
 
   if (severity_ == LOGGING_FATAL)
     SetLogFatalCrashKey(this);
@@ -924,41 +920,6 @@ LogMessage::~LogMessage() {
 #endif
     }
   }
-
-  if (severity_ == LOGGING_FATAL) {
-    char str_stack[1024];
-    base::strlcpy(str_stack, str_newline.data(), std::size(str_stack));
-    base::debug::Alias(&str_stack);
-
-    if (!GetLogAssertHandlerStack().empty()) {
-      LogAssertHandlerFunction log_assert_handler =
-          GetLogAssertHandlerStack().top();
-
-      if (log_assert_handler) {
-        log_assert_handler.Run(
-            file_, line_,
-            base::StringPiece(str_newline.c_str() + message_start_,
-                              stack_start - message_start_),
-            base::StringPiece(str_newline.c_str() + stack_start));
-      }
-    } else {
-      // Don't use the string with the newline, get a fresh version to send to
-      // the debug message process. We also don't display assertions to the
-      // user in release mode. The enduser can't do anything with this
-      // information, and displaying message boxes when the application is
-      // hosed can cause additional problems.
-#ifndef NDEBUG
-      if (!base::debug::BeingDebugged()) {
-        // Displaying a dialog is unnecessary when debugging and can complicate
-        // debugging.
-        DisplayDebugMessageInDialog(stream_.str());
-      }
-#endif
-
-      // Crash the process to generate a dump.
-      base::ImmediateCrash();
-    }
-  }
 }
 
 std::string LogMessage::BuildCrashString() const {
@@ -1036,6 +997,51 @@ void LogMessage::Init(const char* file, int line) {
   message_start_ = stream_.str().length();
 }
 
+void LogMessage::HandleFatal(size_t stack_start,
+                             const std::string& str_newline) const {
+  char str_stack[1024];
+  base::strlcpy(str_stack, str_newline.data(), std::size(str_stack));
+  base::debug::Alias(&str_stack);
+
+  if (!GetLogAssertHandlerStack().empty()) {
+    LogAssertHandlerFunction log_assert_handler =
+        GetLogAssertHandlerStack().top();
+
+    if (log_assert_handler) {
+      log_assert_handler.Run(
+          file_, line_,
+          base::StringPiece(str_newline.c_str() + message_start_,
+                            stack_start - message_start_),
+          base::StringPiece(str_newline.c_str() + stack_start));
+    }
+  } else {
+    // Don't use the string with the newline, get a fresh version to send to
+    // the debug message process. We also don't display assertions to the
+    // user in release mode. The enduser can't do anything with this
+    // information, and displaying message boxes when the application is
+    // hosed can cause additional problems.
+#ifndef NDEBUG
+    if (!base::debug::BeingDebugged()) {
+      // Displaying a dialog is unnecessary when debugging and can complicate
+      // debugging.
+      DisplayDebugMessageInDialog(stream_.str());
+    }
+#endif
+
+    // Crash the process to generate a dump.
+    // TODO(crbug.com/1409729): Move ImmediateCrash() to an absl::Cleanup to
+    // make sure it runs unconditionally. Currently LogAssertHandlers can abort
+    // a FATAL message and tests rely on this. HandleFatal() should be
+    // [[noreturn]].
+    base::ImmediateCrash();
+  }
+}
+
+LogMessageFatal::~LogMessageFatal() {
+  Flush();
+  base::ImmediateCrash();
+}
+
 #if BUILDFLAG(IS_WIN)
 // This has already been defined in the header, but defining it again as DWORD
 // ensures that the type used in the header is equivalent to DWORD. If not,
@@ -1053,14 +1059,17 @@ SystemErrorCode GetLastSystemErrorCode() {
 
 BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
 #if BUILDFLAG(IS_WIN)
-  const int kErrorMessageBufferSize = 256;
-  char msgbuf[kErrorMessageBufferSize];
-  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-  DWORD len = FormatMessageA(flags, nullptr, error_code, 0, msgbuf,
-                             std::size(msgbuf), nullptr);
+  LPWSTR msgbuf = nullptr;
+  DWORD len = ::FormatMessageW(
+      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+          FORMAT_MESSAGE_IGNORE_INSERTS,
+      nullptr, error_code, 0, reinterpret_cast<LPWSTR>(&msgbuf), 0, nullptr);
   if (len) {
+    std::u16string message = base::WideToUTF16(msgbuf);
+    ::LocalFree(msgbuf);
+    msgbuf = nullptr;
     // Messages returned by system end with line breaks.
-    return base::CollapseWhitespaceASCII(msgbuf, true) +
+    return base::UTF16ToUTF8(base::CollapseWhitespace(message, true)) +
            base::StringPrintf(" (0x%lX)", error_code);
   }
   return base::StringPrintf("Error (0x%lX) while retrieving error. (0x%lX)",
@@ -1079,12 +1088,23 @@ Win32ErrorLogMessage::Win32ErrorLogMessage(const char* file,
     : LogMessage(file, line, severity), err_(err) {}
 
 Win32ErrorLogMessage::~Win32ErrorLogMessage() {
+  AppendError();
+}
+
+void Win32ErrorLogMessage::AppendError() {
   stream() << ": " << SystemErrorCodeToString(err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
   DWORD last_error = err_;
   base::debug::Alias(&last_error);
 }
+
+Win32ErrorLogMessageFatal::~Win32ErrorLogMessageFatal() {
+  AppendError();
+  Flush();
+  base::ImmediateCrash();
+}
+
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 ErrnoLogMessage::ErrnoLogMessage(const char* file,
                                  int line,
@@ -1093,12 +1113,23 @@ ErrnoLogMessage::ErrnoLogMessage(const char* file,
     : LogMessage(file, line, severity), err_(err) {}
 
 ErrnoLogMessage::~ErrnoLogMessage() {
+  AppendError();
+}
+
+void ErrnoLogMessage::AppendError() {
   stream() << ": " << SystemErrorCodeToString(err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
   int last_error = err_;
   base::debug::Alias(&last_error);
 }
+
+ErrnoLogMessageFatal::~ErrnoLogMessageFatal() {
+  AppendError();
+  Flush();
+  base::ImmediateCrash();
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void CloseLogFile() {
@@ -1212,15 +1243,9 @@ std::wstring GetLogFileFullPath() {
 }
 #endif
 
-#if !BUILDFLAG(USE_RUNTIME_VLOG)
-int GetDisableAllVLogLevel() {
-  return -1;
-}
-#endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
-
 // Used for testing. Declared in test/scoped_logging_settings.h.
 ScopedVmoduleSwitches::ScopedVmoduleSwitches() = default;
-#if BUILDFLAG(USE_RUNTIME_VLOG)
+
 VlogInfo* ScopedVmoduleSwitches::CreateVlogInfoWithSwitches(
     const std::string& vmodule_switch) {
   // Try get a VlogInfo on which to base this.
@@ -1258,11 +1283,5 @@ ScopedVmoduleSwitches::~ScopedVmoduleSwitches() {
   // looking.
   CHECK_EQ(replaced_vlog_info, scoped_vlog_info_);
 }
-#else
-void ScopedVmoduleSwitches::InitWithSwitches(
-    const std::string& vmodule_switch) {}
-
-ScopedVmoduleSwitches::~ScopedVmoduleSwitches() = default;
-#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 }  // namespace logging

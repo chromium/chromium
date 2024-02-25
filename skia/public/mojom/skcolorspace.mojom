@@ -1,0 +1,41 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module skia.mojom;
+
+// A 3x3 matrix to convert between primaries in linear space.
+struct SkcmsMatrix3x3 {
+  array<float,9> vals;
+};
+
+// A transfer function mapping encoded values to linear values. This can be the
+// standard 7-parameter piecewise function:
+//
+//   F(x) = { c*x + f                           : 0 <= |x| < d
+//          { sign(x) * ((a*abs(x) + b)^g + e)  : d <= |x|
+//
+// A negative value for g can indicate some special transfer functions (HLG, and
+// PQ), or can indicate that the function is invalid (and will always evaluate
+// to zero).
+struct SkcmsTransferFunction {
+  float g;
+  float a;
+  float b;
+  float c;
+  float d;
+  float e;
+  float f;
+};
+
+// A color space specified by the transformation to linear space and then to
+// XYZD50 primaries. Either none or both of `to_linear` and `to_xyzd50` are
+// nullopt.
+struct SkColorSpace {
+  // The transformation from encoded space to linear space.
+  SkcmsTransferFunction? to_linear;
+
+  // The transformation from linear space to XYZD50 primaries.
+  SkcmsMatrix3x3? to_xyzd50;
+};
+

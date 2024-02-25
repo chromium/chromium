@@ -8,8 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/stl_util.h"
 #include "device/gamepad/public/cpp/gamepad.h"
-#include "device/vr/openxr/openxr_defs.h"
-#include "device/vr/openxr/openxr_interaction_profile_type.h"
+#include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -84,20 +83,18 @@ struct OpenXrSystemInputProfiles {
 };
 
 struct OpenXrControllerInteractionProfile {
-  OpenXrInteractionProfileType type;
+  mojom::OpenXrInteractionProfileType type;
   std::string path;
   std::string required_extension;
-  GamepadMapping mapping;
   std::vector<OpenXrButtonPathMap> common_button_maps;
   std::vector<OpenXrButtonPathMap> left_button_maps;
   std::vector<OpenXrButtonPathMap> right_button_maps;
   std::vector<OpenXrAxisPathMap> axis_maps;
 
   OpenXrControllerInteractionProfile(
-      OpenXrInteractionProfileType type,
+      mojom::OpenXrInteractionProfileType type,
       std::string path,
       std::string required_extension,
-      GamepadMapping mapping,
       std::vector<OpenXrButtonPathMap> common_button_maps,
       std::vector<OpenXrButtonPathMap> left_button_maps,
       std::vector<OpenXrButtonPathMap> right_button_maps,
@@ -122,7 +119,7 @@ struct OpenXrControllerInteractionProfile {
 // available.
 const std::vector<OpenXrControllerInteractionProfile>&
 GetOpenXrControllerInteractionProfiles();
-const base::flat_map<OpenXrInteractionProfileType,
+const base::flat_map<device::mojom::OpenXrInteractionProfileType,
                      std::vector<OpenXrSystemInputProfiles>>&
 GetOpenXrInputProfilesMap();
 }  // namespace device

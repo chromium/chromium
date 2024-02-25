@@ -97,19 +97,29 @@ message RlwePlaintextId {
 
 // Different use cases of the RLWE-based PSM protocol.
 //
-// NEXT ID: 21
+// NEXT ID: 25
 enum RlweUseCase {
   RLWE_USE_CASE_UNDEFINED = 0;
   TEST_USE_CASE = 1;
   TEST_USE_CASE2 = 2;
   TEST_USE_CASE3 = 3;
 
-  // The device state of Chrome OS device, used for Zero Touch, License
-  // Packaging.
+  // Use case with empty database.
+  EMPTY_USE_CASE = 22;
+
+  // The device state of ChromeOS device, used for Zero Touch, License
+  // Packaging. This is zero-disclosure database, i.e. client does not reveal
+  // any bits to the server.
   CROS_DEVICE_STATE = 5;
 
-  // The device state of Chrome OS device, used for Forced Re-enrollment.
-  CROS_DEVICE_SECONDARY_STATE = 12;
+  // The device state of ChromeOS device, used for all managed devices and
+  // License Packaging. This is partial-disclosure database, i.e. client will be
+  // asked to reveal some bits of the hash of non-sensitive identifier.
+  CROS_DEVICE_STATE_UNIFIED = 23;
+
+  // The device state of ChromeOS device.
+  CROS_DEVICE_SECONDARY_STATE = 12 [deprecated = true];
+  CROS_DEVICE_STATE_BACKUP = 21 [deprecated = true];
 
   // Use-cases for ChromeOS Device Active Reporting to Fresnel.
   CROS_FRESNEL_DAILY = 13;
@@ -120,8 +130,9 @@ enum RlweUseCase {
   CROS_FRESNEL_CHURN_MONTHLY_COHORT = 19;
   CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION = 20;
 
-  // Use-case for Cellular Carrier Lock (SimLock)
+  // Use-cases for Cellular Carrier Lock (SimLock).
   CROS_SIM_LOCK = 18;
+  CROS_SIM_LOCK_DEVMODE = 24;
 
   reserved 4, 6, 7, 8, 9, 10, 11;
 }
@@ -243,7 +254,42 @@ message PirRequest {
   //
   // The ciphertexts are uploaded in a compressed format as NTT Polynomials
   // using a PRNG seed to expand them into ciphertexts.
+  // If this field is set, none of the sharded_request_type should be set.
   repeated .rlwe.SerializedNttPolynomial request = 1;
+
+  // ExpandedRequest can be useful if the querier would like to manipulate the
+  // PirRequest after it's been created by the client library. To modify it, the
+  // ciphertext must be expanded first; hence the name ExpandedRequest.
+  message ExpandedRequest {
+    // Wrapper around .rlwe.SerializedSymmetricRlweCiphertext so we can
+    // represent "empty" ciphertext without ambiguity. If `ciphertext` is not
+    // set, it is consiered "not requested" and the corresponding index will be
+    // ignored and excluded from the response. When used multiple levels of
+    // recursion, it is the querier's responsibility to leave the correct
+    // positions unset so the final query is valid.
+    message SerializedSymmetricRlweCiphertext {
+      optional .rlwe.SerializedSymmetricRlweCiphertext ciphertext = 1;
+    }
+    repeated SerializedSymmetricRlweCiphertext ciphertexts = 1;
+  }
+
+  // CompactRequest should be the same as the request field above, except it
+  // indicates sharding.
+  message CompactRequest {
+    repeated .rlwe.SerializedNttPolynomial ciphertexts = 1;
+  }
+
+  // If one of the sharded_request_type is set, the above `request` field should
+  // be set.
+  oneof sharded_request_type {
+    // Will be used by hashed bucket sharded request because we don't need to
+    // modify the ciphertext.
+    CompactRequest compact_request = 3;
+
+    // Will be used by encrypted bucket sharded request because we need to
+    // modify the ciphertext.
+    ExpandedRequest expanded_request = 4;
+  }
 
   // The PRNG seed used to expand the compressed RLWE ciphertexts.
   bytes prng_seed = 2;

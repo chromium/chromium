@@ -46,6 +46,9 @@ crosapi::mojom::DownloadDangerType ConvertToMojoDownloadDangerType(
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypeAsyncScanning;
+    case DownloadDangerType::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+      return crosapi::mojom::DownloadDangerType::
+          kDownloadDangerTypeAsyncLocalPasswordScanning;
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypeBlockedPasswordProtected;
@@ -76,6 +79,10 @@ crosapi::mojom::DownloadDangerType ConvertToMojoDownloadDangerType(
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypeDeepScannedFailed;
+    case DownloadDangerType::
+        DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+      return crosapi::mojom::DownloadDangerType::
+          kDownloadDangerTypePromptForLocalPasswordScanning;
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_MAX:
       NOTREACHED();
       return crosapi::mojom::DownloadDangerType::kDownloadDangerTypeInvalid;

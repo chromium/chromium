@@ -11,31 +11,30 @@ import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
 import './dialogs/move_passwords_dialog.js';
 import './user_utils_mixin.js';
-// <if expr="_google_chrome">
 import './promo_cards/promo_card.js';
 import './promo_cards/promo_cards_browser_proxy.js';
 
-// </if>
-
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from './focus_config.js';
+import {MoveToAccountStoreTrigger} from './dialogs/move_passwords_dialog.js';
+import type {FocusConfig} from './focus_config.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
-// <if expr="_google_chrome">
 import {PromoCardId} from './promo_cards/promo_card.js';
-import {PromoCard, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
-// </if>
-import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
+import type {PromoCard} from './promo_cards/promo_cards_browser_proxy.js';
+import {PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
+import type {Route} from './router.js';
+import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordsSectionElement {
@@ -102,7 +101,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       },
 
       passwordsOnDevice_: {
-        type: Number,
+        type: Array,
         computed: 'computePasswordsOnDevice_(groups_)',
       },
 
@@ -117,18 +116,29 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         computed: 'computeShowPasswordsDescription_(groups_, searchTerm_)',
       },
 
-      // <if expr="_google_chrome">
       promoCard_: {
         type: Object,
         value: null,
       },
-      // </if>
 
       passwordManagerDisabled_: {
         type: Boolean,
         computed: 'computePasswordManagerDisabled_(' +
             'prefs.credentials_enable_service.enforcement, ' +
             'prefs.credentials_enable_service.value)',
+      },
+
+      enableButterOnDesktopFollowup_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
+        },
+      },
+
+      shouldShowPromoCard_: {
+        type: Boolean,
+        computed: 'computeShouldShowPromoCard_(' +
+            'promoCard_, isAccountStoreUser, passwordsOnDevice_)',
       },
 
       /**
@@ -154,11 +164,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private showAuthTimedOutDialog_: boolean;
   private showMovePasswordsDialog_: boolean;
   private movePasswordsText_: string;
-  // <if expr="_google_chrome">
   private promoCard_: PromoCard|null;
-  // </if>
   private passwordManagerDisabled_: boolean;
   private activeListItem_: HTMLElement|null;
+  private enableButterOnDesktopFollowup_: boolean;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
@@ -172,22 +181,18 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     };
 
     this.setSavedPasswordsListener_ = _passwordList => {
-      // <if expr="_google_chrome">
       if (_passwordList.length === 0 &&
           this.promoCard_?.id === PromoCardId.CHECKUP) {
         this.promoCard_ = null;
       }
-      // </if>
       updateGroups();
     };
 
     updateGroups();
     PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
         this.setSavedPasswordsListener_);
-    // <if expr="_google_chrome">
     PromoCardsProxyImpl.getInstance().getAvailablePromoCard().then(
         promo => this.promoCard_ = promo);
-    // </if>
 
     this.authTimedOutListener_ = this.onAuthTimedOut_.bind(this);
     window.addEventListener('auth-timed-out', this.authTimedOutListener_);
@@ -211,7 +216,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     }
   }
 
-  public focusFirstResult() {
+  focusFirstResult() {
     if (!this.searchTerm_) {
       // If search term is empty don't do anything.
       return;
@@ -278,7 +283,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private computeShowMovePasswords_(): boolean {
-    // TODO(crbug.com/1420548): Check for conflicts if needed.
+    // Should not show the old entry to move passwords if followup for the
+    // butter on desktop feature is enabled.
+    if (this.enableButterOnDesktopFollowup_) {
+      return false;
+    }
+
     return this.computePasswordsOnDevice_().length > 0 &&
         this.isAccountStoreUser && !this.searchTerm_;
   }
@@ -340,11 +350,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     });
   }
 
-  // <if expr="_google_chrome">
   private onPromoClosed_() {
     this.promoCard_ = null;
   }
-  // </if>
 
   private computePasswordManagerDisabled_(): boolean {
     const pref = this.getPref('credentials_enable_service');
@@ -358,6 +366,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private showNoPasswordsFound_(): boolean {
     return this.hideGroupsList_() && this.groups_.length > 0;
+  }
+
+  private getMovePasswordsDialogTrigger_(): MoveToAccountStoreTrigger {
+    return MoveToAccountStoreTrigger
+        .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS;
   }
 
   private onPasswordDetailsShown_(e: CustomEvent) {
@@ -398,6 +411,22 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       }
       return doesNameMatchA ? -1 : 1;
     };
+  }
+
+  private computeShouldShowPromoCard_(): boolean {
+    if (!this.promoCard_) {
+      return false;
+    }
+    if (this.promoCard_.id !== PromoCardId.MOVE_PASSWORDS) {
+      return true;
+    }
+
+    // Check if there are local passwords and they can be moved to account.
+    if (this.computePasswordsOnDevice_().length === 0 ||
+        !this.isAccountStoreUser) {
+      return false;
+    }
+    return true;
   }
 }
 

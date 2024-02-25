@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
 namespace ios {

@@ -22,4 +22,5 @@ use_small_heuristics = "Max"
 # Third party code is formatted upstream.
 ignore = [
   "third_party/rust/**/crate",
+  "third_party/rust/chromium_crates_io/vendor",
 ]

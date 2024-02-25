@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/coop_related_group.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
@@ -30,8 +31,9 @@ BrowsingInstance::BrowsingInstance(
     const WebExposedIsolationInfo& web_exposed_isolation_info,
     bool is_guest,
     bool is_fenced,
+    bool is_fixed_storage_partition,
     const scoped_refptr<CoopRelatedGroup>& coop_related_group,
-    absl::optional<url::Origin> common_coop_origin)
+    std::optional<url::Origin> common_coop_origin)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
           BrowserOrResourceContext(browser_context),
@@ -43,13 +45,18 @@ BrowsingInstance::BrowsingInstance(
       default_site_instance_(nullptr),
       web_exposed_isolation_info_(web_exposed_isolation_info),
       coop_related_group_(coop_related_group),
-      common_coop_origin_(common_coop_origin) {
+      common_coop_origin_(common_coop_origin),
+      is_fixed_storage_partition_(is_fixed_storage_partition) {
   DCHECK(browser_context);
+  if (is_guest) {
+    CHECK(is_fixed_storage_partition);
+  }
 
   // If we get passed an empty group, build a new one. This is the common case.
   if (!coop_related_group_) {
-    coop_related_group_ = base::WrapRefCounted<CoopRelatedGroup>(
-        new CoopRelatedGroup(browser_context, is_guest, is_fenced));
+    coop_related_group_ =
+        base::WrapRefCounted<CoopRelatedGroup>(new CoopRelatedGroup(
+            browser_context, is_guest, is_fenced, is_fixed_storage_partition_));
   }
   DCHECK(coop_related_group_);
 
@@ -61,7 +68,7 @@ BrowserContext* BrowsingInstance::GetBrowserContext() const {
 }
 
 bool BrowsingInstance::HasSiteInstance(const SiteInfo& site_info) {
-  return site_instance_map_.find(site_info) != site_instance_map_.end();
+  return base::Contains(site_instance_map_, site_info);
 }
 
 scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURL(

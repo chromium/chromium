@@ -37,8 +37,9 @@ using views::BoxLayout;
 namespace {
 
 class SafeBrowsingImageView : public NonAccessibleImageView {
+  METADATA_HEADER(SafeBrowsingImageView, NonAccessibleImageView)
+
  public:
-  METADATA_HEADER(SafeBrowsingImageView);
   SafeBrowsingImageView() {
     SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   }
@@ -47,13 +48,13 @@ class SafeBrowsingImageView : public NonAccessibleImageView {
   // NonAccessibleImageView:
   void OnThemeChanged() override {
     NonAccessibleImageView::OnThemeChanged();
-    SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+    SetImage(ui::ImageModel::FromResourceId(
         GetNativeTheme()->ShouldUseDarkColors() ? IDR_PASSWORD_CHECK_DARK
                                                 : IDR_PASSWORD_CHECK));
   }
 };
 
-BEGIN_METADATA(SafeBrowsingImageView, NonAccessibleImageView)
+BEGIN_METADATA(SafeBrowsingImageView)
 END_METADATA
 
 // Sets up the content containing the title and description for the dialog
@@ -289,7 +290,7 @@ void PasswordReuseModalWarningDialog::WebContentsDestroyed() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(PasswordReuseModalWarningDialog, views::DialogDelegateView)
+BEGIN_METADATA(PasswordReuseModalWarningDialog)
 END_METADATA
 
 }  // namespace safe_browsing

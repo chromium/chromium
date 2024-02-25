@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_website_telemetry_collection_rate_ms": {
+            "default_value": 900000
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ReportWebsiteTelemetryCollectionRateMs": 300000
+        },
+        "prefs": {
+          "reporting.report_website_telemetry_collection_rate_ms": {
+            "value": 300000
+          }
+        }
+      }
+    ]
+  }
+]

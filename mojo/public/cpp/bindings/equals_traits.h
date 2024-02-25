@@ -5,13 +5,13 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_EQUALS_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_EQUALS_TRAITS_H_
 
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -44,15 +44,15 @@ struct EqualsTraits {
 };
 
 template <typename T>
-struct EqualsTraits<absl::optional<T>> {
-  static bool Equals(const absl::optional<T>& a, const absl::optional<T>& b) {
+struct EqualsTraits<std::optional<T>> {
+  static bool Equals(const std::optional<T>& a, const std::optional<T>& b) {
     if (!a && !b)
       return true;
     if (!a || !b)
       return false;
 
     // NOTE: Not just Equals() because that's EqualsTraits<>::Equals() and we
-    // want mojo::Equals() for things like absl::optional<std::vector<T>>.
+    // want mojo::Equals() for things like std::optional<std::vector<T>>.
     return mojo::Equals(*a, *b);
   }
 };

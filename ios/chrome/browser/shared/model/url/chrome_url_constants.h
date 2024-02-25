@@ -11,6 +11,7 @@
 
 // chrome: URLs (including schemes). Should be kept in sync with the
 // URL components below.
+extern const char kChromeDinoGameURL[];
 extern const char kChromeUIChromeURLsURL[];
 extern const char kChromeUICookiesSettingsURL[];
 extern const char kChromeUICreditsURL[];
@@ -90,9 +91,6 @@ extern const char kTermsOfServiceURL[];
 
 // "Terms of service" URL for mobile view.
 extern const char kEmbeddedTermsOfServiceURL[];
-
-// "Learn more" URL for the "Do not track" setting in the privacy section.
-extern const char kDoNotTrackLearnMoreURL[];
 
 // The URL for the "Learn more" page on sync encryption.
 extern const char kSyncEncryptionHelpURL[];

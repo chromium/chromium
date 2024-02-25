@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<!-- WHEN DISABLED, the permission element should behave as HTMLUnknownElement. -->
+
+<div id=test><permission>TEXT</permission></div>
+
+<script>
+test(function(){
+  const test = document.getElementById('test');
+  assert_equals(test.childNodes.length,1,'Permission element should allow children');
+  const permissionEl = test.firstElementChild;
+  assert_true(permissionEl instanceof HTMLUnknownElement,'Permission element should be an HTMLUnknownElement');
+  const permissionChild = permissionEl.firstChild;
+  assert_true(permissionChild instanceof Text,'Permission element should allow children');
+  assert_equals(permissionChild.data,'TEXT','Permission element should allow children');
+}, "When the Permission element feature is disabled, <permission> should be an HTMLUnknownElement");
+</script>
+

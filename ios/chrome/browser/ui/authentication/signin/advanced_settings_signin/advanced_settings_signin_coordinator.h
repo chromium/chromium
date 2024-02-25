@@ -12,7 +12,10 @@
 @interface AdvancedSettingsSigninCoordinator : SigninCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
+    NS_UNAVAILABLE;
 
 // Designated initializer.
 // `signinState` provides the original user sign-in state before starting the
@@ -20,6 +23,8 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                signinState:(IdentitySigninState)signinState
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
@@ -49,9 +50,9 @@ side_panel::mojom::NoteOverviewPtr PowerOverviewToMojo(
 
   // Set title to the first bookmark with the same URL, otherwise fall back to
   // url.
-  std::vector<const bookmarks::BookmarkNode*> nodes;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>> nodes;
   if (bookmark_model) {
-    bookmark_model->GetNodesByURL(power->url(), &nodes);
+    nodes = bookmark_model->GetNodesByURL(power->url());
   }
   if (nodes.size() > 0) {
     result->title = base::UTF16ToUTF8(nodes[0]->GetTitle());
@@ -383,7 +384,7 @@ void UserNotesPageHandler::OpenUrl(const ::GURL& url,
       open_location == WindowOpenDisposition::OFF_THE_RECORD;
   if (opening_in_new_window && handle) {
     content::WebContents* opened_tab = handle->GetWebContents();
-    auto* new_browser = chrome::FindBrowserWithWebContents(opened_tab);
+    auto* new_browser = chrome::FindBrowserWithTab(opened_tab);
     UserNotesController::ShowUserNotesForBrowser(new_browser);
   }
 }

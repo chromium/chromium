@@ -13,9 +13,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-class PasswordsModelDelegateMock
-    : public PasswordsModelDelegate,
-      public base::SupportsWeakPtr<PasswordsModelDelegateMock> {
+class PasswordsModelDelegateMock : public PasswordsModelDelegate {
  public:
   PasswordsModelDelegateMock();
 
@@ -77,6 +75,7 @@ class PasswordsModelDelegateMock
   MOCK_METHOD(void, DiscardUnsyncedCredentials, (), (override));
   MOCK_METHOD(void, MovePasswordToAccountStore, (), (override));
   MOCK_METHOD(void, BlockMovingPasswordToAccountStore, (), (override));
+  MOCK_METHOD(void, PromptSaveBubbleAfterDefaultStoreChanged, (), (override));
   MOCK_METHOD(void,
               ChooseCredential,
               (const password_manager::PasswordForm&,
@@ -87,10 +86,14 @@ class PasswordsModelDelegateMock
               (password_manager::ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(void,
+              NavigateToPasswordManagerSettingsAccountStoreToggle,
+              (password_manager::ManagePasswordsReferrer),
+              (override));
+  MOCK_METHOD(void,
               NavigateToPasswordCheckup,
               (password_manager::PasswordCheckReferrer),
               (override));
-  MOCK_METHOD(void, EnableSync, (const AccountInfo& account), (override));
+  MOCK_METHOD(void, SignIn, (const AccountInfo& account), (override));
   MOCK_METHOD(void, OnDialogHidden, (), (override));
   MOCK_METHOD(void,
               AuthenticateUserWithMessage,
@@ -100,18 +103,30 @@ class PasswordsModelDelegateMock
               AuthenticateUserForAccountStoreOptInAndSavePassword,
               (const std::u16string&, const std::u16string&),
               (override));
-  MOCK_METHOD(void,
-              AuthenticateUserForAccountStoreOptInAndMovePassword,
-              (),
-              (override));
   MOCK_METHOD(
       void,
       AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword,
       (),
       (override));
   MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
+  MOCK_METHOD(void,
+              ShowMovePasswordBubble,
+              (const password_manager::PasswordForm& form),
+              (override));
   MOCK_METHOD(void, OnBiometricAuthBeforeFillingDeclined, (), (override));
+  MOCK_METHOD(void,
+              OnAddUsernameSaveClicked,
+              (const std::u16string&),
+              (override));
   MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
+  MOCK_METHOD(void, RelaunchChrome, (), (override));
+
+  base::WeakPtr<PasswordsModelDelegateMock> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<PasswordsModelDelegateMock> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_MOCK_H_

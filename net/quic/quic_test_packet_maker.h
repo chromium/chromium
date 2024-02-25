@@ -11,6 +11,7 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream_frame_data_producer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
@@ -39,7 +41,8 @@ class QuicTestPacketMaker {
                       const quic::QuicClock* clock,
                       const std::string& host,
                       quic::Perspective perspective,
-                      bool client_priority_uses_incremental = false);
+                      bool client_priority_uses_incremental = false,
+                      bool use_priority_header = false);
 
   QuicTestPacketMaker(const QuicTestPacketMaker&) = delete;
   QuicTestPacketMaker& operator=(const QuicTestPacketMaker&) = delete;
@@ -121,7 +124,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionRstAndDataPacket(
       const std::vector<uint64_t>& original_packet_numbers,
@@ -129,20 +132,20 @@ class QuicTestPacketMaker {
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       uint64_t retransmit_frame_count = 0);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataRstAndAckPacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       uint64_t largest_received,
@@ -180,7 +183,7 @@ class QuicTestPacketMaker {
       uint64_t smallest_received,
       quic::QuicStreamId data_id,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckDataAndRst(
       uint64_t num,
@@ -190,7 +193,7 @@ class QuicTestPacketMaker {
       uint64_t smallest_received,
       quic::QuicStreamId data_id,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckRstAndDataPacket(
       uint64_t num,
@@ -200,7 +203,7 @@ class QuicTestPacketMaker {
       uint64_t smallest_received,
       quic::QuicStreamId data_id,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRstAndConnectionClosePacket(
       uint64_t num,
@@ -212,7 +215,7 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataRstAndConnectionClosePacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
       quic::QuicErrorCode quic_error,
@@ -222,7 +225,7 @@ class QuicTestPacketMaker {
   MakeDataRstAckAndConnectionClosePacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -234,7 +237,7 @@ class QuicTestPacketMaker {
   MakeDataRstAckAndConnectionClosePacket(
       uint64_t num,
       quic::QuicStreamId data_stream_id,
-      absl::string_view data,
+      std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -275,13 +278,14 @@ class QuicTestPacketMaker {
       uint64_t packet_number,
       uint64_t first_received,
       uint64_t largest_received,
-      uint64_t smallest_received);
+      uint64_t smallest_received,
+      std::optional<quic::QuicEcnCounts> ecn = std::nullopt);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataPacket(
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndDataPacket(
       uint64_t packet_number,
@@ -289,7 +293,7 @@ class QuicTestPacketMaker {
       uint64_t largest_received,
       uint64_t smallest_received,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckRetransmissionAndDataPacket(
       uint64_t packet_number,
@@ -298,7 +302,7 @@ class QuicTestPacketMaker {
       uint64_t largest_received,
       uint64_t smallest_received,
       bool fin,
-      absl::string_view data);
+      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRetransmissionPacket(
       uint64_t packet_number,
@@ -421,6 +425,8 @@ class QuicTestPacketMaker {
                                  spdy::Http2HeaderBlock headers,
                                  size_t* encoded_data_length);
 
+  void set_ecn_codepoint(quic::QuicEcnCodepoint ecn) { ecn_codepoint_ = ecn; }
+
  private:
   // Initialize header of next packet to build.
   void InitializeHeader(uint64_t packet_number);
@@ -442,16 +448,17 @@ class QuicTestPacketMaker {
   // Use and increase stream's current offset.
   void AddQuicStreamFrame(quic::QuicStreamId stream_id,
                           bool fin,
-                          absl::string_view data);
+                          std::string_view data);
   // Use |offset| and do not change stream's current offset.
   void AddQuicStreamFrameWithOffset(quic::QuicStreamId stream_id,
                                     bool fin,
                                     quic::QuicStreamOffset offset,
-                                    absl::string_view data);
+                                    std::string_view data);
   void AddQuicAckFrame(uint64_t largest_received, uint64_t smallest_received);
   void AddQuicAckFrame(uint64_t first_received,
                        uint64_t largest_received,
-                       uint64_t smallest_received);
+                       uint64_t smallest_received,
+                       std::optional<quic::QuicEcnCounts> ecn = std::nullopt);
   void AddQuicRstStreamFrame(quic::QuicStreamId stream_id,
                              quic::QuicRstStreamErrorCode error_code);
   void AddQuicConnectionCloseFrame(quic::QuicErrorCode quic_error,
@@ -468,6 +475,8 @@ class QuicTestPacketMaker {
   void AddQuicCryptoFrame(quic::EncryptionLevel level,
                           quic::QuicStreamOffset offset,
                           quic::QuicPacketLength data_length);
+  void AddPriorityHeader(spdy::SpdyPriority spdy_priority,
+                         spdy::Http2HeaderBlock* headers);
 
   // Build packet using |header_|, |frames_|, and |data_producer_|,
   // and clear |frames_| and |data_producer_| afterwards.
@@ -480,16 +489,10 @@ class QuicTestPacketMaker {
 
   bool ShouldIncludeVersion() const;
 
-  quic::QuicPacketNumberLength GetPacketNumberLength() const;
-
   quic::QuicConnectionId DestinationConnectionId() const;
   quic::QuicConnectionId SourceConnectionId() const;
 
-  quic::QuicConnectionIdIncluded HasDestinationConnectionId() const;
-  quic::QuicConnectionIdIncluded HasSourceConnectionId() const;
-
   quic::QuicStreamId GetFirstBidirectionalStreamId() const;
-  quic::QuicStreamId GetHeadersStreamId() const;
 
   std::string GenerateHttp3SettingsData();
   std::string GenerateHttp3PriorityData(spdy::SpdyPriority spdy_priority,
@@ -516,6 +519,9 @@ class QuicTestPacketMaker {
   // The value of incremental flag in generated priority headers.
   bool client_priority_uses_incremental_;
 
+  // Add the priority header to outbound requests
+  bool use_priority_header_;
+
   // Save a copy of stream frame data that QuicStreamFrame objects can refer to.
   std::vector<std::unique_ptr<std::string>> saved_stream_data_;
   // If |save_packet_frames_| is true, save generated packets in
@@ -527,6 +533,10 @@ class QuicTestPacketMaker {
   quic::QuicPacketHeader header_;
   quic::QuicFrames frames_;
   std::unique_ptr<quic::test::SimpleDataProducer> data_producer_;
+
+  // Explicit Congestion Notification (ECN) codepoint to use when making
+  // packets.
+  quic::QuicEcnCodepoint ecn_codepoint_ = quic::ECN_NOT_ECT;
 };
 
 }  // namespace net::test

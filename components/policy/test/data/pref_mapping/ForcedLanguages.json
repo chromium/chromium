@@ -1,0 +1,32 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ForcedLanguages": [
+            "en-US",
+            "fr-FR"
+          ]
+        },
+        "prefs": {
+          "intl.forced_languages": {
+            "location": "user_profile",
+            "value": [
+              "en-US",
+              "fr-FR"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

@@ -30,7 +30,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanSessionFloss
   void OnDeviceLost(device::BluetoothDevice* device);
   void OnRegistered(device::BluetoothUUID uuid);
   uint8_t GetScannerId() { return scanner_id_; }
-  absl::optional<ScanFilter> GetFlossScanFilter();
+  std::optional<ScanFilter> GetFlossScanFilter();
 
   base::WeakPtr<BluetoothLowEnergyScanSessionFloss> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

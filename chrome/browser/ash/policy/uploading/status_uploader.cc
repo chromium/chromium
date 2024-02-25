@@ -8,12 +8,14 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/browser_process.h"
@@ -35,6 +37,24 @@ const int kMinUploadDelayMs = 60 * 1000;  // 60 seconds
 const int kMinUploadScheduleDelayMs = 60 * 1000;  // 60 seconds
 // Minimum interval between the last upload and the next immediate upload
 constexpr base::TimeDelta kMinImmediateUploadInterval = base::Seconds(10);
+
+// Time after the last user activity after which taking a screenshot is allowed.
+constexpr base::TimeDelta kIdlenessCutOffTime = base::Minutes(5);
+
+base::TimeDelta GetDeviceIdleTime() {
+  base::TimeTicks last_activity =
+      CHECK_DEREF(ui::UserActivityDetector::Get()).last_activity_time();
+  if (last_activity.is_null()) {
+    // No activity since booting.
+    return base::TimeDelta::Max();
+  }
+  return base::TimeTicks::Now() - last_activity;
+}
+
+std::string GetLastUserActivityName() {
+  return CHECK_DEREF(ui::UserActivityDetector::Get()).last_activity_name();
+}
+
 }  // namespace
 
 namespace policy {
@@ -133,7 +153,7 @@ void StatusUploader::RefreshUploadFrequency() {
     ScheduleNextStatusUpload();
 }
 
-bool StatusUploader::IsSessionDataUploadAllowed() {
+bool StatusUploader::IsScreenshotAllowed() {
   // Check if we're in an auto-launched kiosk session.
   std::unique_ptr<DeviceLocalAccount> account =
       collector_->GetAutoLaunchedKioskSessionInfo();
@@ -143,16 +163,10 @@ bool StatusUploader::IsSessionDataUploadAllowed() {
   }
 
   // Check if there has been any user input.
-  base::TimeTicks last_activity_time =
-      ui::UserActivityDetector::Get()->last_activity_time();
-  std::string last_activity_name =
-      ui::UserActivityDetector::Get()->last_activity_name();
-  if (!last_activity_time.is_null()) {
-    SYSLOG(WARNING) << "User input " << last_activity_name << " detected "
-                    << (base::TimeTicks::Now() - last_activity_time) << " ago ("
-                    << (base::SysInfo::Uptime() -
-                        (base::TimeTicks::Now() - last_activity_time))
-                    << " after last boot), data upload is not allowed.";
+  if (GetDeviceIdleTime() < kIdlenessCutOffTime) {
+    SYSLOG(WARNING) << "User input " << GetLastUserActivityName()
+                    << " detected " << GetDeviceIdleTime()
+                    << " ago , screenshot upload is not allowed.";
     return false;
   }
 

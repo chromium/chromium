@@ -140,8 +140,8 @@ void FileManagerJsTestBase::RunTestURL(const std::string& file) {
   if (coverage_handler_ && coverage_handler_->CoverageEnabled()) {
     auto* const test_info =
         ::testing::UnitTest::GetInstance()->current_test_info();
-    const std::string& full_test_name = base::StrCat(
-        {test_info->test_suite_name(), test_info->test_case_name()});
+    const std::string& full_test_name =
+        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
     coverage_handler_->CollectCoverage(full_test_name);
   }
 

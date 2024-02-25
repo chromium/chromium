@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SIGNIN_SIGNIN_REAUTH_VIEW_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +19,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 
@@ -202,9 +203,9 @@ class SigninReauthViewController
 
   // The state of the reauth flow.
   bool user_confirmed_reauth_ = false;
-  absl::optional<sync_pb::UserConsentTypes::AccountPasswordsConsent> consent_;
+  std::optional<sync_pb::UserConsentTypes::AccountPasswordsConsent> consent_;
   GaiaReauthPageState gaia_reauth_page_state_ = GaiaReauthPageState::kStarted;
-  absl::optional<signin::ReauthResult> gaia_reauth_page_result_;
+  std::optional<signin::ReauthResult> gaia_reauth_page_result_;
 
   base::ObserverList<Observer, true> observer_list_;
 

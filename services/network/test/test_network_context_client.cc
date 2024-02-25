@@ -4,11 +4,11 @@
 
 #include "services/network/test/test_network_context_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/threading/thread_restrictions.h"
 #include "net/base/net_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 

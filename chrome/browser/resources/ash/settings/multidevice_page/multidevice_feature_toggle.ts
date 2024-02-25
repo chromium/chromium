@@ -11,9 +11,9 @@
  * reflects them in the toggle status.
  */
 
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceFeature, MultiDeviceFeatureState} from './multidevice_constants.js';
@@ -119,7 +119,7 @@ export class SettingsMultideviceFeatureToggleElement extends
    * instead of propagating through the cr-toggle. This handler prevents such a
    * click from unintentionally bubbling up the tree.
    */
-  private onDisabledInnerToggleClick_(event: Event) {
+  private onDisabledInnerToggleClick_(event: Event): void {
     event.stopPropagation();
   }
 

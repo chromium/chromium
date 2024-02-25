@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Preload with {as=json; type=application/json} should load when retrieved resource is a json
+  assert_equals: expected "load" but got "timeout"
+[FAIL] Preload with {as=json; type=text/json} should load when retrieved resource is a json
+  assert_equals: expected "load" but got "timeout"
+[FAIL] Preload with {as=json; type=application/geo+json} should load when retrieved resource is a json
+  assert_equals: expected "load" but got "timeout"
+Harness: the test ran to completion.
+

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_app_launch_throttle_observer.h"
 
+#include "base/check_is_test.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -27,35 +28,49 @@ void ArcAppLaunchThrottleObserver::StartObserving(
   ThrottleObserver::StartObserving(context, callback);
 
   // if ArcWindowWatcher is available, it offers a more accurate cue of
-  // when launched app is displayed - and we use that instead
+  // when launched app window is created - and we use that instead
   // of task creation, which comes too early.
   if (ash::ArcWindowWatcher::instance()) {
     window_display_observation_.Observe(ash::ArcWindowWatcher::instance());
   } else {
+    // Observe `OnTaskCreated`, which means the ARC task is created, but not
+    // related window creation. For some apps running in background,
+    // they don't have window.
     auto* app_list_prefs = ArcAppListPrefs::Get(context);
     if (app_list_prefs) {  // for unit testing
       task_creation_observation_.Observe(app_list_prefs);
     }
   }
-  AddAppLaunchObserver(context, this);
+  // Observe launch request.
+  if (auto* notifier = ArcAppLaunchNotifier::GetForBrowserContext(context)) {
+    launch_request_observation_.Observe(notifier);
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 void ArcAppLaunchThrottleObserver::StopObserving() {
-  RemoveAppLaunchObserver(context(), this);
   window_display_observation_.Reset();
   task_creation_observation_.Reset();
+  launch_request_observation_.Reset();
   ThrottleObserver::StopObserving();
 }
 
-void ArcAppLaunchThrottleObserver::OnAppLaunchRequested(
-    const ArcAppListPrefs::AppInfo& app_info) {
+void ArcAppLaunchThrottleObserver::OnArcAppLaunchRequested(
+    std::string_view identifier) {
   SetActive(true);
-  current_requests_.insert(app_info.package_name);
+  current_requests_.insert(identifier.data());
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
+      // Create new std::string to prevent dangling pointer.
       base::BindOnce(&ArcAppLaunchThrottleObserver::OnLaunchedOrRequestExpired,
-                     weak_ptr_factory_.GetWeakPtr(), app_info.package_name),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::string(identifier.data())),
       kAppLaunchTimeout);
+}
+
+void ArcAppLaunchThrottleObserver::OnArcAppLaunchNotifierDestroy() {
+  launch_request_observation_.Reset();
 }
 
 void ArcAppLaunchThrottleObserver::OnTaskCreated(

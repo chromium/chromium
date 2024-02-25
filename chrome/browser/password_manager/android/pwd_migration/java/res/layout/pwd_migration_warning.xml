@@ -39,7 +39,6 @@ found in the LICENSE file.
             android:layout_marginHorizontal="@dimen/pwd_migration_warning_margin"
             android:clipToPadding="false"
             android:divider="@null"
-            tools:listitem="@layout/touch_to_fill_credential_item"
             android:orientation="vertical">
 
             <ImageView

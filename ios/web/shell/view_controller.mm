@@ -11,6 +11,7 @@
 #import <memory>
 #import <utility>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -20,7 +21,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web/shell/shell_browser_state.h"
 #import "ios/web/shell/shell_web_client.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/page_transition_types.h"
 
 NSString* const kWebShellBackButtonAccessibilityLabel = @"Back";
@@ -33,7 +34,7 @@ using web::NavigationManager;
                              CRWWebStateObserver,
                              UITextFieldDelegate,
                              UIToolbarDelegate> {
-  web::BrowserState* _browserState;
+  raw_ptr<web::BrowserState> _browserState;
   std::unique_ptr<web::WebState> _webState;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegate;

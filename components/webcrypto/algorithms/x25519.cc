@@ -4,6 +4,8 @@
 
 #include "components/webcrypto/algorithms/x25519.h"
 
+#include <string_view>
+
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -64,7 +66,7 @@ Status CreateWebCryptoX25519PublicKey(
 
 // Reads a fixed length base64url-decoded bytes from a JWK.
 Status ReadBytes(const JwkReader& jwk,
-                 base::StringPiece member_name,
+                 std::string_view member_name,
                  size_t expected_length,
                  std::vector<uint8_t>* out) {
   std::vector<uint8_t> bytes;
@@ -173,7 +175,7 @@ Status X25519Implementation::ExportKey(blink::WebCryptoKeyFormat format,
 Status X25519Implementation::DeriveBits(
     const blink::WebCryptoAlgorithm& algorithm,
     const blink::WebCryptoKey& base_key,
-    absl::optional<unsigned int> length_bits,
+    std::optional<unsigned int> length_bits,
     std::vector<uint8_t>* derived_bytes) const {
   DCHECK(derived_bytes);
 
@@ -213,13 +215,12 @@ Status X25519Implementation::DeriveBits(
   // editors are discussing the possibility of performing the checks during the
   // key import operation instead.
 
-  // TODO(crbug.com/1433707): The second condition conflates zero and null, and
-  // does not match the spec.
-  if (!length_bits.has_value() || *length_bits == 0) {
+  if (!length_bits.has_value()) {
     return Status::Success();
   }
 
-  if (8 * derived_len < *length_bits) {
+  size_t derived_len_bits = 8 * derived_len;
+  if (derived_len_bits < *length_bits) {
     return Status::ErrorX25519LengthTooLong();
   }
 
@@ -228,7 +229,8 @@ Status X25519Implementation::DeriveBits(
   // Truncation isn't safe!
   TruncateToBitLength(*length_bits, derived_bytes);
 
-  return Status::Success();
+  return *length_bits < derived_len_bits ? Status::SuccessDeriveBitsTruncation()
+                                         : Status::Success();
 }
 
 Status X25519Implementation::ImportKeyRaw(

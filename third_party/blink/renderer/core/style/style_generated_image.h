@@ -55,6 +55,9 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
 
   bool IsAccessAllowed(String&) const override { return true; }
 
+  IntrinsicSizingInfo GetNaturalSizingInfo(
+      float multiplier,
+      RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,
                        const gfx::SizeF& default_object_size,
                        RespectImageOrientationEnum) const override;
@@ -77,8 +80,6 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
  private:
   bool IsEqual(const StyleImage&) const override;
 
-  // TODO(sashab): Replace this with <const CSSImageGeneratorValue> once
-  // Member<> supports const types.
   Member<CSSImageGeneratorValue> image_generator_value_;
   ContainerSizes container_sizes_;
 };

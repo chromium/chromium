@@ -8,7 +8,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
-#include "third_party/blink/renderer/core/style/grid_length.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 
 namespace blink {
 
@@ -28,13 +28,11 @@ class CORE_EXPORT InterpolableGridLength final : public InterpolableValue {
     kMaxContent,
   };
 
-  InterpolableGridLength(std::unique_ptr<InterpolableValue> value,
+  InterpolableGridLength(InterpolableValue* value,
                          InterpolableGridLengthType type);
-  static std::unique_ptr<InterpolableGridLength> Create(
-      const GridLength& grid_length,
-      float zoom);
+  static InterpolableGridLength* Create(const Length& grid_length, float zoom);
 
-  GridLength CreateGridLength(
+  Length CreateGridLength(
       const CSSToLengthConversionData& conversion_data) const;
 
   // InterpolableValue implementation:
@@ -46,6 +44,11 @@ class CORE_EXPORT InterpolableGridLength final : public InterpolableValue {
   void Scale(double scale) final;
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
+
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(value_);
+  }
 
  private:
   // An |InterpolableGridLength| is content sized when it's 'auto',
@@ -62,7 +65,7 @@ class CORE_EXPORT InterpolableGridLength final : public InterpolableValue {
   // If the type is flex, form is |InterpolableNumber|.
   // If the type is length, form is |InterpolableLength|.
   // Everything else, |value_| is nulllptr.
-  std::unique_ptr<InterpolableValue> value_;
+  Member<InterpolableValue> value_;
   InterpolableGridLengthType type_;
 };
 

@@ -68,11 +68,8 @@ if (cros_sdk_version != "") {
     ]
     if (_cros_is_vm) {
       # VM-related tools.
-      _symlinks += [
-        rebase_path("${_cache_path_prefix}+sys-firmware/seabios"),
-        rebase_path("${_cache_path_prefix}+chromiumos_test_image.tar.xz"),
-        rebase_path("${_cache_path_prefix}+app-emulation/qemu"),
-      ]
+      _symlinks +=
+          [ rebase_path("${_cache_path_prefix}+chromiumos_test_image.tar.xz") ]
     }
     _symlink_map += [ [
           b,
@@ -150,11 +147,7 @@ template("generate_chromeos_sdk_deps") {
       }
       if (_cros_is_vm) {
         # Add vm sdk items.
-        _sdk_data += [
-          _symlink_targets[3],
-          _symlink_targets[4],
-          _symlink_targets[5],
-        ]
+        _sdk_data += [ _symlink_targets[3] ]
       }
     }
   }
@@ -170,6 +163,9 @@ template("generate_chromeos_sdk_deps") {
       # as data here so that changes to it will trigger analyze.
       "//chromeos/CHROMEOS_LKGM",
     ]
+    if (cros_boards_with_qemu_images != "") {
+      data += [ "//build/cros_cache/cipd/" ]
+    }
   }
 }
 
@@ -304,7 +300,8 @@ template("generate_runner_script") {
                          ])
 
   if (!defined(skip_generating_board_args)) {
-    skip_generating_board_args = false
+    # --board should be assigned by the autotest wrapper on skylab builders
+    skip_generating_board_args = is_skylab
   }
 
   if (skip_generating_board_args) {
@@ -370,6 +367,9 @@ template("generate_runner_script") {
       # then do testing.
       # See more at //docs/testing/chromeos_integration.
       if (test_exe == "chromeos_integration_tests") {
+        # Run the test sudo helper.
+        executable_args += [ "--run-test-sudo-helper" ]
+
         if (is_chromeos_ash) {
           # For ash, it need to first stop the existing ash.
           executable_args += [ "--stop-ui" ]
@@ -384,6 +384,10 @@ template("generate_runner_script") {
             "/run/chrome",
           ]
         }
+
+        # Make the tests match the browser's selinux tags so it gets the same
+        # security context as the browser would.
+        executable_args += [ "--set-selinux-label=chromeos_integration_tests=u:object_r:chrome_browser_exec:s0" ]
       }
       if (defined(runtime_deps_file)) {
         executable_args += [
@@ -441,7 +445,7 @@ template("generate_runner_script") {
       executable_args += [ "--strip-chrome" ]
     }
 
-    if (!skip_generating_board_args || is_skylab) {
+    if (!skip_generating_board_args) {
       executable_args += [
         "--board",
         cros_board,
@@ -631,7 +635,10 @@ template("lacros_tast_tests") {
 
   if (is_skylab) {
     generate_skylab_tast_filter(target_name) {
-      data = _lacros_data + [ "//third_party/chromite/" ]
+      data = _lacros_data + [
+               "//.vpython3",
+               "//third_party/chromite/",
+             ]
       data_deps = _lacros_data_deps
 
       # To disable a test on specific milestones, add it to the appropriate

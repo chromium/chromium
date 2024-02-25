@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
+#include <optional>
+
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "base/containers/contains.h"
@@ -38,7 +40,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
@@ -49,7 +50,7 @@ constexpr base::FilePath::CharType kFuseFsRootPath[] =
 
 void OnSeneschalSharePathResponse(
     guest_os::GuestOsSharePath::SharePathCallback callback,
-    absl::optional<vm_tools::seneschal::SharePathResponse> response) {
+    std::optional<vm_tools::seneschal::SharePathResponse> response) {
   if (!response) {
     std::move(callback).Run(base::FilePath(), false, "System error");
     return;
@@ -62,7 +63,7 @@ void OnSeneschalSharePathResponse(
 
 void OnSeneschalUnsharePathResponse(
     guest_os::SuccessCallback callback,
-    absl::optional<vm_tools::seneschal::UnsharePathResponse> response) {
+    std::optional<vm_tools::seneschal::UnsharePathResponse> response) {
   if (!response) {
     std::move(callback).Run(false, "System error");
     return;
@@ -89,8 +90,9 @@ class ErrorCapture {
       : num_callbacks_left_(num_callbacks_left),
         callback_(std::move(callback)) {
     DCHECK_GE(num_callbacks_left, 0);
-    if (num_callbacks_left == 0)
+    if (num_callbacks_left == 0) {
       std::move(callback_).Run(true, "");
+    }
   }
 
   void Run(const base::FilePath& cros_path,
@@ -106,8 +108,9 @@ class ErrorCapture {
       }
     }
 
-    if (!--num_callbacks_left_)
+    if (!--num_callbacks_left_) {
       std::move(callback_).Run(success_, first_failure_reason_);
+    }
   }
 
  private:
@@ -185,11 +188,9 @@ GuestOsSharePath::GuestOsSharePath(Profile* profile)
 
   // We receive notifications from DriveFS about any deleted paths so
   // that we can remove any that are shared paths.
-  if (auto* integration_service =
+  if (drive::DriveIntegrationService* const service =
           drive::DriveIntegrationServiceFactory::FindForProfile(profile_)) {
-    if (integration_service->GetDriveFsHost()) {
-      integration_service->GetDriveFsHost()->AddObserver(this);
-    }
+    Observe(service->GetDriveFsHost());
   }
 }
 
@@ -199,6 +200,10 @@ void GuestOsSharePath::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (auto* client = ash::ConciergeClient::Get()) {
     client->RemoveVmObserver(this);
+  }
+
+  if (auto* vmgr = file_manager::VolumeManager::Get(profile_)) {
+    vmgr->RemoveObserver(this);
   }
 
   for (auto& shared_path : shared_paths_) {

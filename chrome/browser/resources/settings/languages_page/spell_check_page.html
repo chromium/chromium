@@ -117,7 +117,7 @@
                       item.downloadDictionaryFailureCount, 0)]]">
                 $i18n{retry}
               </cr-button>
-              <template is="dom-if" if="[[!item.isManaged]]">
+              <template is="dom-if" if="[[!item.isManaged]]" restamp>
                 <cr-toggle on-change="onSpellCheckLanguageChange_"
                     disabled="[[!item.language.supportsSpellcheck]]"
                     checked="[[item.spellCheckEnabled]]"
@@ -126,7 +126,7 @@
                         item.downloadDictionaryFailureCount, 0)]]">
                 </cr-toggle>
               </template>
-              <template is="dom-if" if="[[item.isManaged]]">
+              <template is="dom-if" if="[[item.isManaged]]" restamp>
                 <cr-policy-pref-indicator
                     pref="[[getIndicatorPrefForManagedSpellcheckLanguage_(
                         item.spellCheckEnabled)]]"

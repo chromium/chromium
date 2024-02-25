@@ -17,10 +17,8 @@
 
 @implementation TFLDetectionResult (Helpers)
 
-+ (TFLDetectionResult*)detectionResultWithCResult:
-    (TfLiteDetectionResult*)cDetectionResult {
-  if (!cDetectionResult)
-    return nil;
++ (TFLDetectionResult *)detectionResultWithCResult:(TfLiteDetectionResult *)cDetectionResult {
+  if (!cDetectionResult) return nil;
 
   NSMutableArray *detections = [[NSMutableArray alloc] init];
   for (int i = 0; i < cDetectionResult->size; i++) {
@@ -32,11 +30,10 @@
       TFLCategory *resultCategory = [TFLCategory categoryWithCCategory:&cCategory];
       [categories addObject:resultCategory];
     }
-    TFLDetection* detection = [[TFLDetection alloc]
-        initWithBoundingBox:CGRectMake(cDetection.bounding_box.origin_x,
-                                       cDetection.bounding_box.origin_y,
-                                       cDetection.bounding_box.width,
-                                       cDetection.bounding_box.height)
+    TFLDetection *detection = [[TFLDetection alloc]
+        initWithBoundingBox:CGRectMake(
+                                cDetection.bounding_box.origin_x, cDetection.bounding_box.origin_y,
+                                cDetection.bounding_box.width, cDetection.bounding_box.height)
                  categories:categories];
     [detections addObject:detection];
   }

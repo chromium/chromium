@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/dispatcher.h"
@@ -58,7 +59,7 @@ class WatcherDispatcher : public Dispatcher {
  private:
   friend class Watch;
 
-  using WatchSet = std::set<const Watch*>;
+  using WatchSet = std::set<raw_ptr<const Watch, SetExperimental>>;
 
   ~WatcherDispatcher() override;
 

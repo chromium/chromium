@@ -17,9 +17,9 @@ class WebContents;
 }
 
 // The base class for the different exclusive access controllers like the
-// FullscreenController, KeyboardLockController, and MouseLockController which
-// controls lifetime for which the resource (screen/mouse/keyboard) is held
-// exclusively.
+// FullscreenController, KeyboardLockController, and PointerLockController which
+// controls lifetime for which the resource (screen/mouse-pointer/keyboard) is
+// held exclusively.
 class ExclusiveAccessControllerBase {
  public:
   explicit ExclusiveAccessControllerBase(ExclusiveAccessManager* manager);

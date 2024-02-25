@@ -6,12 +6,14 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "ios/chrome/browser/find_in_page/util.h"
+#import "ios/chrome/browser/find_in_page/model/util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -111,28 +113,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 
 #pragma mark - Tools Menu
 
-// Tests that rotating the device will automatically dismiss the tools menu.
-- (void)testDismissToolsMenuOnDeviceRotation {
-  // TODO(crbug.com/652465): Enable the test for iPad when rotation bug is
-  // fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to device rotation bug.");
-  }
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Expect that the tools menu has appeared.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
-
-  // Expect that the tools menu has disappeared.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
-      assertWithMatcher:grey_nil()];
-}
-
 // Tests that the menu is opened and closed correctly, whatever the current
 // device type is.
 - (void)testOpenAndCloseToolsMenu {
@@ -205,19 +185,18 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
 }
 
-// Tests that the overflow menu IPH shows up when triggered.
-- (void)testOverflowMenuIPHForHistory {
+// Tests that both the 2 steps of the history on overflow menu IPH is displayed,
+// when the user opens the menu while the 1st step is displayed.
+- (void)testOverflowMenuIPHForHistoryShow2StepsWhenUserOpensMenu {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"The overflow menu IPH only exists when the overflow menu is enabled.")
   }
 
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  // Enable the IPH flag for this test
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(base::StringPrintf(
-      "--enable-features=%s:chosen_feature/"
-      "IPH_iOSHistoryOnOverflowMenuFeature,IPHForSafariSwitcher",
-      feature_engagement::kIPHDemoMode.name));
+  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
@@ -244,6 +223,104 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
     [ChromeEarlGreyUI openToolsMenu];
     [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                         grey_accessibilityID(@"BubbleViewLabelIdentifier")];
+  }  // End of the sync disabler scope.
+}
+
+// Tests that both the 2 steps of the history on overflow menu IPH is displayed,
+// when the user lets the first step times out.
+- (void)testOverflowMenuIPHForHistoryShow2StepsWhen1stStepTimeout {
+  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The overflow menu IPH only exists when the overflow menu is enabled.")
+  }
+
+  // Enable the IPH flag for this test
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+
+  // The IPH appears immediately on startup, so don't open a new tab when the
+  // app starts up.
+  [[self class] testForStartup];
+
+  // Scope for the synchronization disabled.
+  {
+    ScopedSynchronizationDisabler syncDisabler;
+
+    [[AppLaunchManager sharedManager]
+        ensureAppLaunchedWithConfiguration:config];
+
+    // The app relaunch (to enable a feature flag) may take a while, therefore
+    // the timeout is extended to 15 seconds.
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                @"BubbleViewLabelIdentifier")
+                                    timeout:base::Seconds(15)];
+
+    // Wait for the first IPH to time out.
+    const int bufferForTimeout = 5;
+    [ChromeEarlGrey
+        waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                   @"BubbleViewLabelIdentifier")
+                                       timeout:
+                                           base::Seconds(
+                                               (int)kBubbleVisibilityDuration +
+                                               bufferForTimeout)];
+
+    // Open the tools menu and verify the second tooltip is visible.
+    [ChromeEarlGreyUI openToolsMenu];
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        grey_accessibilityID(@"BubbleViewLabelIdentifier")];
+  }  // End of the sync disabler scope.
+}
+
+// Tests that the 2nd step of history on overflow menu IPH is not displayed, if
+// the 1st step IPH is dismissed by the user by tapping outside.
+- (void)testOverflowMenuIPHForHistoryNotShow2ndStep {
+  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The overflow menu IPH only exists when the overflow menu is enabled.")
+  }
+
+  // Enable the IPH flag to ensure the IPH triggers
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+
+  // The IPH appears immediately on startup, so don't open a new tab when the
+  // app starts up.
+  [[self class] testForStartup];
+
+  // Scope for the synchronization disabled.
+  {
+    ScopedSynchronizationDisabler syncDisabler;
+
+    [[AppLaunchManager sharedManager]
+        ensureAppLaunchedWithConfiguration:config];
+
+    // The app relaunch (to enable a feature flag) may take a while, therefore
+    // the timeout is extended to 15 seconds.
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                @"BubbleViewLabelIdentifier")
+                                    timeout:base::Seconds(15)];
+    // Dismiss the IPH by tapping outside.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            @"BubbleViewLabelIdentifier")]
+        performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+
+    // Open the tools menu and verify the 2nd step is not shown.
+    [ChromeEarlGreyUI openToolsMenu];
+    GREYAssert(![ChromeEarlGrey
+                   testUIElementAppearanceWithMatcher:
+                       grey_accessibilityID(@"BubbleViewLabelIdentifier")],
+               @"The 2nd step of the IPH is displayed");
   }  // End of the sync disabler scope.
 }
 

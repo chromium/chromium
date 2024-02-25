@@ -55,11 +55,6 @@ const viz::LocalSurfaceId kArbitraryLocalSurfaceId(
     1,
     base::UnguessableToken::CreateForTesting(2, 3));
 
-blink::mojom::ScrollResultDataPtr MakeDefaultScrollResultData() {
-  return blink::mojom::ScrollResultData::New(
-      absl::optional<::gfx::PointF>(::gfx::PointF(0, 100)));
-}
-
 }  // namespace
 
 class MockFrameConnector : public CrossProcessFrameConnector {
@@ -127,6 +122,8 @@ class RenderWidgetHostViewChildFrameTest
     // OOPIF.
     widget_host_ = RenderWidgetHostImpl::Create(
         /*frame_tree=*/&contents()->GetPrimaryFrameTree(), &delegate_,
+        RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_,
+                                                 routing_id),
         site_instance_group_->GetSafeRef(), routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
@@ -149,19 +146,22 @@ class RenderWidgetHostViewChildFrameTest
     EXPECT_EQ(screen_info, view_->GetScreenInfo());
     EXPECT_EQ(screen_infos, view_->GetScreenInfos());
 
-    test_frame_connector_ = new MockFrameConnector();
+    test_frame_connector_ = std::make_unique<MockFrameConnector>();
     test_frame_connector_->SetView(view_);
-    view_->SetFrameConnector(test_frame_connector_);
+    view_->SetFrameConnector(test_frame_connector_.get());
   }
 
   void TearDown() override {
     sink_ = nullptr;
-    if (view_)
-      view_->Destroy();
+    if (view_) {
+      RenderWidgetHostViewChildFrame* local_view = view_;
+      view_ = nullptr;
+      local_view->Destroy();
+    }
     widget_host_.reset();
     site_instance_group_.reset();
     process_host_->Cleanup();
-    delete test_frame_connector_;
+    test_frame_connector_.reset();
 
     process_host_.reset();
 
@@ -186,8 +186,8 @@ class RenderWidgetHostViewChildFrameTest
   // Tests should set these to NULL if they've already triggered their
   // destruction.
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
-  raw_ptr<RenderWidgetHostViewChildFrame, DanglingUntriaged> view_;
-  raw_ptr<MockFrameConnector, DanglingUntriaged> test_frame_connector_;
+  raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
+  std::unique_ptr<MockFrameConnector> test_frame_connector_;
 };
 
 TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {
@@ -204,7 +204,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {
   ASSERT_FALSE(view_->IsShowing());
 
   // Restore the MockFrameConnector to avoid a crash during destruction.
-  view_->SetFrameConnector(test_frame_connector_);
+  view_->SetFrameConnector(test_frame_connector_.get());
 }
 
 // Tests that the viewport intersection rect is dispatched to the RenderWidget
@@ -330,19 +330,16 @@ TEST_F(RenderWidgetHostViewChildFrameTest, UncomsumedGestureScrollBubbled) {
           blink::WebInputEvent::Type::kGestureScrollEnd,
           blink::WebGestureDevice::kTouchscreen);
 
-  view_->GestureEventAck(scroll_begin,
-                         blink::mojom::InputEventResultState::kNoConsumerExists,
-                         MakeDefaultScrollResultData());
+  view_->GestureEventAck(
+      scroll_begin, blink::mojom::InputEventResultState::kNoConsumerExists);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
             test_frame_connector_->GetAndResetLastBubbledEventType());
-  view_->GestureEventAck(scroll_update,
-                         blink::mojom::InputEventResultState::kNoConsumerExists,
-                         MakeDefaultScrollResultData());
+  view_->GestureEventAck(
+      scroll_update, blink::mojom::InputEventResultState::kNoConsumerExists);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
             test_frame_connector_->GetAndResetLastBubbledEventType());
   view_->GestureEventAck(scroll_end,
-                         blink::mojom::InputEventResultState::kIgnored,
-                         MakeDefaultScrollResultData());
+                         blink::mojom::InputEventResultState::kIgnored);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollEnd,
             test_frame_connector_->GetAndResetLastBubbledEventType());
 }
@@ -362,27 +359,23 @@ TEST_F(RenderWidgetHostViewChildFrameTest, ConsumedGestureScrollNotBubbled) {
           blink::WebGestureDevice::kTouchscreen);
 
   view_->GestureEventAck(scroll_begin,
-                         blink::mojom::InputEventResultState::kConsumed,
-                         MakeDefaultScrollResultData());
+                         blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(blink::WebInputEvent::Type::kUndefined,
             test_frame_connector_->GetAndResetLastBubbledEventType());
   view_->GestureEventAck(scroll_update,
-                         blink::mojom::InputEventResultState::kConsumed,
-                         MakeDefaultScrollResultData());
+                         blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(blink::WebInputEvent::Type::kUndefined,
             test_frame_connector_->GetAndResetLastBubbledEventType());
 
   // Scrolling in a child my reach its extent and no longer be consumed, however
   // scrolling is latched to the child so we do not bubble the update.
-  view_->GestureEventAck(scroll_update,
-                         blink::mojom::InputEventResultState::kNoConsumerExists,
-                         MakeDefaultScrollResultData());
+  view_->GestureEventAck(
+      scroll_update, blink::mojom::InputEventResultState::kNoConsumerExists);
   EXPECT_EQ(blink::WebInputEvent::Type::kUndefined,
             test_frame_connector_->GetAndResetLastBubbledEventType());
 
   view_->GestureEventAck(scroll_end,
-                         blink::mojom::InputEventResultState::kIgnored,
-                         MakeDefaultScrollResultData());
+                         blink::mojom::InputEventResultState::kIgnored);
   EXPECT_EQ(blink::WebInputEvent::Type::kUndefined,
             test_frame_connector_->GetAndResetLastBubbledEventType());
 }
@@ -404,41 +397,35 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
 
   test_frame_connector_->SetCanBubble(false);
 
-  view_->GestureEventAck(scroll_begin,
-                         blink::mojom::InputEventResultState::kNoConsumerExists,
-                         MakeDefaultScrollResultData());
+  view_->GestureEventAck(
+      scroll_begin, blink::mojom::InputEventResultState::kNoConsumerExists);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
             test_frame_connector_->GetAndResetLastBubbledEventType());
 
   // The GSB was rejected, so the child view must not attempt to bubble the
   // remaining events of the scroll sequence.
-  view_->GestureEventAck(scroll_update,
-                         blink::mojom::InputEventResultState::kNoConsumerExists,
-                         MakeDefaultScrollResultData());
+  view_->GestureEventAck(
+      scroll_update, blink::mojom::InputEventResultState::kNoConsumerExists);
   EXPECT_EQ(blink::WebInputEvent::Type::kUndefined,
             test_frame_connector_->GetAndResetLastBubbledEventType());
   view_->GestureEventAck(scroll_end,
-                         blink::mojom::InputEventResultState::kIgnored,
-                         MakeDefaultScrollResultData());
+                         blink::mojom::InputEventResultState::kIgnored);
   EXPECT_EQ(blink::WebInputEvent::Type::kUndefined,
             test_frame_connector_->GetAndResetLastBubbledEventType());
 
   test_frame_connector_->SetCanBubble(true);
 
   // When we have a new scroll gesture, the view may try bubbling again.
-  view_->GestureEventAck(scroll_begin,
-                         blink::mojom::InputEventResultState::kNoConsumerExists,
-                         MakeDefaultScrollResultData());
+  view_->GestureEventAck(
+      scroll_begin, blink::mojom::InputEventResultState::kNoConsumerExists);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
             test_frame_connector_->GetAndResetLastBubbledEventType());
-  view_->GestureEventAck(scroll_update,
-                         blink::mojom::InputEventResultState::kNoConsumerExists,
-                         MakeDefaultScrollResultData());
+  view_->GestureEventAck(
+      scroll_update, blink::mojom::InputEventResultState::kNoConsumerExists);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollUpdate,
             test_frame_connector_->GetAndResetLastBubbledEventType());
   view_->GestureEventAck(scroll_end,
-                         blink::mojom::InputEventResultState::kIgnored,
-                         MakeDefaultScrollResultData());
+                         blink::mojom::InputEventResultState::kIgnored);
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollEnd,
             test_frame_connector_->GetAndResetLastBubbledEventType());
 }

@@ -33,21 +33,18 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   bool CanCreateCanvas2dResourceProvider() const;
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 
-  void SetIsInHiddenPage(bool) override {}
-  void SetIsBeingDisplayed(bool) override {}
+  void PageVisibilityChanged() override {}
   bool isContextLost() const override { return false; }
   // If SetImage receives a null imagebitmap, it will Reset the internal bitmap
   // to a black and transparent bitmap.
   void SetImage(ImageBitmap*);
-  scoped_refptr<StaticBitmapImage> GetImage(
-      CanvasResourceProvider::FlushReason) final;
+  scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
 
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
   bool IsComposited() const final { return true; }
-  bool IsAccelerated() const final;
   bool PushFrame() override;
-
   bool IsOriginTopLeft() const override;
+  void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
 
   cc::Layer* CcLayer() const final;
   // TODO(junov): handle lost contexts when content is GPU-backed

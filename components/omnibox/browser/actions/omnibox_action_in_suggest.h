@@ -17,7 +17,7 @@ class OmniboxActionInSuggest : public OmniboxAction {
  public:
   OmniboxActionInSuggest(
       omnibox::ActionInfo action_info,
-      absl::optional<TemplateURLRef::SearchTermsArgs> search_terms_args);
+      std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args);
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
@@ -36,7 +36,7 @@ class OmniboxActionInSuggest : public OmniboxAction {
   static OmniboxActionInSuggest* FromAction(OmniboxAction* action);
 
   omnibox::ActionInfo action_info{};
-  absl::optional<TemplateURLRef::SearchTermsArgs> search_terms_args{};
+  std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args{};
 
  private:
   ~OmniboxActionInSuggest() override;

@@ -165,6 +165,7 @@ enum class ContainerVersion {
   STRETCH,
   BUSTER,
   BULLSEYE,
+  BOOKWORM,
 };
 
 struct VmInfo {
@@ -283,7 +284,8 @@ enum class ContainerOsVersion {
   kDebianOther = 3,
   kOtherOs = 4,
   kDebianBullseye = 5,
-  kMaxValue = kDebianBullseye,
+  kDebianBookworm = 6,
+  kMaxValue = kDebianBookworm,
 };
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_SIMPLE_TYPES_H_

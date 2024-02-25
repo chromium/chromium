@@ -83,8 +83,8 @@ using BasePropertyIndexedKeyframeOffset =
     V8UnionDoubleOrDoubleOrStringOrTimelineRangeOffsetOrNullSequenceOrStringOrTimelineRangeOffsetOrNull;
 
 // Converts the composite property of a BasePropertyIndexedKeyframe into a
-// vector of absl::optional<EffectModel::CompositeOperation> enums.
-Vector<absl::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
+// vector of std::optional<EffectModel::CompositeOperation> enums.
+Vector<std::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
     const BasePropertyIndexedKeyframe* keyframe) {
   const auto* composite = keyframe->composite();
   switch (composite->GetContentType()) {
@@ -94,7 +94,7 @@ Vector<absl::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
           composite->GetAsCompositeOperationOrAuto().AsString())};
     case V8UnionCompositeOperationOrAutoOrCompositeOperationOrAutoSequence::
         ContentType::kCompositeOperationOrAutoSequence: {
-      Vector<absl::optional<EffectModel::CompositeOperation>> result;
+      Vector<std::optional<EffectModel::CompositeOperation>> result;
       for (const auto& composite_operation :
            composite->GetAsCompositeOperationOrAutoSequence()) {
         result.push_back(EffectModel::StringToCompositeOperation(
@@ -112,7 +112,7 @@ struct ParsedOffset {
   double relative_offset;
 };
 
-absl::optional<ParsedOffset> ParseOffsetFromTimelineRangeOffset(
+std::optional<ParsedOffset> ParseOffsetFromTimelineRangeOffset(
     TimelineRangeOffset* timeline_range_offset,
     ExceptionState& exception_state) {
   ParsedOffset result;
@@ -127,18 +127,18 @@ absl::optional<ParsedOffset> ParseOffsetFromTimelineRangeOffset(
     if (!css_value || !css_value->IsPercentage()) {
       exception_state.ThrowTypeError(
           "CSSNumericValue must be a percentage for a keyframe offset");
-      return absl::nullopt;
+      return std::nullopt;
     }
     result.relative_offset = css_value->GetDoubleValue() / 100;
   } else {
     exception_state.ThrowTypeError(
         "timeline offset must be a range offset pair.  Missing the offset.");
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
 
-absl::optional<ParsedOffset> ParseOffsetFromCssText(
+std::optional<ParsedOffset> ParseOffsetFromCssText(
     Document& document,
     String css_text,
     ExceptionState& exception_state) {
@@ -179,7 +179,7 @@ absl::optional<ParsedOffset> ParseOffsetFromCssText(
     exception_state.ThrowTypeError(
         "timeline offset must be of the form [timeline-range-name] "
         "<percentage>");
-    return absl::nullopt;
+    return std::nullopt;
   }
   TimelineOffset::NamedRange range =
       To<CSSIdentifierValue>(range_name_percent->Item(0))
@@ -191,11 +191,11 @@ absl::optional<ParsedOffset> ParseOffsetFromCssText(
 }
 
 template <typename T>
-absl::optional<ParsedOffset> ParseOffset(Document& document,
-                                         T* keyframe_offset,
-                                         ExceptionState& exception_state) {
+std::optional<ParsedOffset> ParseOffset(Document& document,
+                                        T* keyframe_offset,
+                                        ExceptionState& exception_state) {
   if (!keyframe_offset) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (keyframe_offset->IsDouble()) {
@@ -216,7 +216,7 @@ absl::optional<ParsedOffset> ParseOffset(Document& document,
   // If calling using a PropertyIndexKeyframe, we must already have handled
   // sequences.
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SetKeyframeOffset(Keyframe& keyframe, ParsedOffset& offset) {
@@ -229,11 +229,11 @@ void SetKeyframeOffset(Keyframe& keyframe, ParsedOffset& offset) {
   }
 }
 
-Vector<absl::optional<ParsedOffset>> ExtractPropertyIndexedKeyframeOffsets(
+Vector<std::optional<ParsedOffset>> ExtractPropertyIndexedKeyframeOffsets(
     Document& document,
     BasePropertyIndexedKeyframe& base_property_indexed_keyframe,
     ExceptionState& exception_state) {
-  Vector<absl::optional<ParsedOffset>> offsets;
+  Vector<std::optional<ParsedOffset>> offsets;
 
   if (!base_property_indexed_keyframe.hasOffset()) {
     return offsets;
@@ -252,14 +252,14 @@ Vector<absl::optional<ParsedOffset>> ExtractPropertyIndexedKeyframeOffsets(
         keyframe_offset
             ->GetAsDoubleOrStringOrTimelineRangeOffsetOrNullSequence();
     for (BaseKeyframeOffset* base_keyframe_offset : list) {
-      absl::optional<ParsedOffset> parsed_offset =
+      std::optional<ParsedOffset> parsed_offset =
           ParseOffset(document, base_keyframe_offset, exception_state);
       offsets.push_back(parsed_offset);
     }
     return offsets;
   }
 
-  absl::optional<ParsedOffset> parsed_offset =
+  std::optional<ParsedOffset> parsed_offset =
       ParseOffset(document, keyframe_offset, exception_state);
   offsets.push_back(parsed_offset);
   return offsets;
@@ -313,70 +313,6 @@ void SetKeyframeValue(Element* element,
       AnimationInputHelpers::KeyframeAttributeToSVGAttribute(property, element);
   if (svg_attribute)
     keyframe.SetSVGAttributeValue(*svg_attribute, value);
-}
-
-bool ValidatePartialKeyframes(const StringKeyframeVector& keyframes) {
-  // WebAnimationsAPIEnabled guards both additive animations and allowing
-  // partial (implicit) keyframes.
-  if (RuntimeEnabledFeatures::WebAnimationsAPIEnabled())
-    return true;
-
-  // An implicit keyframe is inserted in the below cases. Note that the 'first'
-  // keyframe is actually all keyframes with offset 0.0, and the 'last' keyframe
-  // is actually all keyframes with offset 1.0.
-  //
-  //   1. A given property is present somewhere in the full set of keyframes,
-  //      but is either not present in the first keyframe (requiring an implicit
-  //      start value for that property) or last keyframe (requiring an implicit
-  //      end value for that property).
-  //
-  //   2. There is no first keyframe (requiring an implicit start keyframe), or
-  //      no last keyframe (requiring an implicit end keyframe).
-  //
-  // We only care about CSS properties here; animating SVG elements is protected
-  // by a different runtime flag.
-
-  Vector<double> computed_offsets =
-      KeyframeEffectModelBase::GetComputedOffsets(keyframes);
-
-  PropertyHandleSet properties_with_offset_0;
-  PropertyHandleSet properties_with_offset_1;
-  for (wtf_size_t i = 0; i < keyframes.size(); i++) {
-    for (const PropertyHandle& property : keyframes[i]->Properties()) {
-      if (!property.IsCSSProperty())
-        continue;
-
-      if (computed_offsets[i] == 0.0) {
-        properties_with_offset_0.insert(property);
-      } else {
-        if (!properties_with_offset_0.Contains(property))
-          return false;
-        if (computed_offsets[i] == 1.0) {
-          properties_with_offset_1.insert(property);
-        }
-      }
-    }
-  }
-
-  // At this point we have compared all keyframes with offset > 0 against the
-  // properties contained in the first keyframe, and found that they match. Now
-  // we just need to make sure that there aren't any properties in the first
-  // keyframe that aren't in the last keyframe.
-  return properties_with_offset_0.size() == properties_with_offset_1.size();
-}
-
-// Ensures that a CompositeOperation is of an allowed value for a given
-// StringKeyframe and the current runtime flags.
-EffectModel::CompositeOperation ResolveCompositeOperationForKeyframe(
-    EffectModel::CompositeOperation composite,
-    StringKeyframe* keyframe) {
-  bool additive_composite = composite == EffectModel::kCompositeAdd ||
-                            composite == EffectModel::kCompositeAccumulate;
-  if (!RuntimeEnabledFeatures::WebAnimationsAPIEnabled() &&
-      keyframe->HasCssProperty() && additive_composite) {
-    return EffectModel::kCompositeReplace;
-  }
-  return composite;
 }
 
 bool IsAnimatableKeyframeAttribute(const String& property,
@@ -507,11 +443,11 @@ StringKeyframeVector ConvertArrayForm(Element* element,
   // 6. If processed keyframes is not loosely sorted by offset, throw a
   //    TypeError and abort these steps.
   double previous_offset = -std::numeric_limits<double>::infinity();
-  Vector<absl::optional<ParsedOffset>> offsets;
+  Vector<std::optional<ParsedOffset>> offsets;
   const wtf_size_t num_processed_keyframes = processed_base_keyframes.size();
   for (wtf_size_t i = 0; i < num_processed_keyframes; ++i) {
     const BaseKeyframe* base_keyframe = processed_base_keyframes[i];
-    absl::optional<ParsedOffset> offset =
+    std::optional<ParsedOffset> offset =
         ParseOffset(document, base_keyframe->offset(), exception_state);
     if (exception_state.HadException()) {
       return {};
@@ -535,7 +471,7 @@ StringKeyframeVector ConvertArrayForm(Element* element,
   //    offset is non-null and less than zero or greater than one, throw a
   //    TypeError and abort these steps.
   for (wtf_size_t i = 0; i < num_processed_keyframes; ++i) {
-    absl::optional<ParsedOffset> offset = offsets[i];
+    std::optional<ParsedOffset> offset = offsets[i];
     if (!offset || offset->range != TimelineOffset::NamedRange::kNone) {
       continue;
     }
@@ -567,11 +503,10 @@ StringKeyframeVector ConvertArrayForm(Element* element,
                        execution_context);
     }
 
-    absl::optional<EffectModel::CompositeOperation> composite =
+    std::optional<EffectModel::CompositeOperation> composite =
         EffectModel::StringToCompositeOperation(base_keyframe->composite());
     if (composite) {
-      keyframe->SetComposite(
-          ResolveCompositeOperationForKeyframe(composite.value(), keyframe));
+      keyframe->SetComposite(composite.value());
     }
 
     // 8.2. Let the timing function of frame be the result of parsing the
@@ -653,7 +588,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
   if (exception_state.HadException())
     return {};
 
-  Vector<absl::optional<ParsedOffset>> offsets =
+  Vector<std::optional<ParsedOffset>> offsets =
       ExtractPropertyIndexedKeyframeOffsets(
           document, *property_indexed_keyframe, exception_state);
   if (exception_state.HadException()) {
@@ -668,7 +603,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
   else
     easings = property_indexed_keyframe->easing()->GetAsStringSequence();
 
-  Vector<absl::optional<EffectModel::CompositeOperation>> composite_operations =
+  Vector<std::optional<EffectModel::CompositeOperation>> composite_operations =
       ParseCompositeProperty(property_indexed_keyframe);
 
   // Next extract all animatable properties from the input argument and iterate
@@ -758,8 +693,8 @@ StringKeyframeVector ConvertObjectForm(Element* element,
     auto* keyframe = keyframes.at(keys[i]);
 
     if (i < offsets.size()) {
-      absl::optional<ParsedOffset> parsed_offset = offsets[i];
-      absl::optional<double> numeric_offset;
+      std::optional<ParsedOffset> parsed_offset = offsets[i];
+      std::optional<double> numeric_offset;
       if (parsed_offset.has_value() &&
           parsed_offset.value().range == TimelineOffset::NamedRange::kNone) {
         numeric_offset = parsed_offset.value().relative_offset;
@@ -819,11 +754,10 @@ StringKeyframeVector ConvertObjectForm(Element* element,
       // property keyframes, repeat the elements in composite modes successively
       // starting from the beginning of the list until composite modes has as
       // many items as property keyframes.
-      absl::optional<EffectModel::CompositeOperation> composite =
+      std::optional<EffectModel::CompositeOperation> composite =
           composite_operations[i % composite_operations.size()];
       if (composite) {
-        keyframe->SetComposite(
-            ResolveCompositeOperationForKeyframe(composite.value(), keyframe));
+        keyframe->SetComposite(composite.value());
       }
     }
 
@@ -851,22 +785,6 @@ StringKeyframeVector ConvertObjectForm(Element* element,
   return results;
 }
 
-bool HasAdditiveCompositeCSSKeyframe(
-    const KeyframeEffectModelBase::KeyframeGroupMap& keyframe_groups) {
-  for (const auto& keyframe_group : keyframe_groups) {
-    PropertyHandle property = keyframe_group.key;
-    if (!property.IsCSSProperty())
-      continue;
-    for (const auto& keyframe : keyframe_group.value->Keyframes()) {
-      if (keyframe->Composite() == EffectModel::kCompositeAdd ||
-          keyframe->Composite() == EffectModel::kCompositeAccumulate) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 }  // namespace
 
 KeyframeEffectModelBase* EffectInput::Convert(
@@ -880,19 +798,8 @@ KeyframeEffectModelBase* EffectInput::Convert(
   if (exception_state.HadException())
     return nullptr;
 
-  composite = ResolveCompositeOperation(composite, parsed_keyframes);
-
-  auto* keyframe_effect_model = MakeGarbageCollected<StringKeyframeEffectModel>(
+  return MakeGarbageCollected<StringKeyframeEffectModel>(
       parsed_keyframes, composite, LinearTimingFunction::Shared());
-
-  if (!RuntimeEnabledFeatures::WebAnimationsAPIEnabled()) {
-    // This should be enforced by the parsing code.
-    DCHECK(!HasAdditiveCompositeCSSKeyframe(
-        keyframe_effect_model->GetPropertySpecificKeyframeGroups()));
-  }
-
-  DCHECK(!exception_state.HadException());
-  return keyframe_effect_model;
 }
 
 StringKeyframeVector EffectInput::ParseKeyframesArgument(
@@ -940,26 +847,7 @@ StringKeyframeVector EffectInput::ParseKeyframesArgument(
     keyframe->SetLogicalPropertyResolutionContext(text_direction, writing_mode);
   }
 
-  if (!ValidatePartialKeyframes(parsed_keyframes)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Partial keyframes are not supported.");
-    return {};
-  }
   return parsed_keyframes;
-}
-
-EffectModel::CompositeOperation EffectInput::ResolveCompositeOperation(
-    EffectModel::CompositeOperation composite,
-    const StringKeyframeVector& keyframes) {
-  EffectModel::CompositeOperation result = composite;
-  for (const Member<StringKeyframe>& keyframe : keyframes) {
-    // Replace is always supported, so we can early-exit if and when we have
-    // that as our composite value.
-    if (result == EffectModel::kCompositeReplace)
-      break;
-    result = ResolveCompositeOperationForKeyframe(result, keyframe);
-  }
-  return result;
 }
 
 }  // namespace blink

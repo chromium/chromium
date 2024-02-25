@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
@@ -27,17 +28,17 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantViewerConfig.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/PageInfoStoreInfoController.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/RatingStarSpan.java",
-    "java/src/org/chromium/chrome/browser/merchant_viewer/WebContentsHelpers.java",
   ]
 
   deps = [
     ":jni_headers",
     "//base:base_java",
-    "//base:jni_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/android:base_module_java",
     "//chrome/android/features/tab_ui:java_resources",
     "//chrome/android/features/tab_ui:java_strings_grd",
+    "//chrome/browser/android/content:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/commerce/android:java",
     "//chrome/browser/feature_engagement:java",
@@ -68,11 +69,11 @@ android_library("java") {
     "//components/ukm/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
-    "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
@@ -97,7 +98,6 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/android:base_module_java",
     "//chrome/android/features/tab_ui:java_resources",
     "//chrome/android/features/tab_ui:java_strings_grd",
@@ -133,6 +133,7 @@ robolectric_library("junit") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -197,6 +198,5 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEvent.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorage.java",
-    "java/src/org/chromium/chrome/browser/merchant_viewer/WebContentsHelpers.java",
   ]
 }

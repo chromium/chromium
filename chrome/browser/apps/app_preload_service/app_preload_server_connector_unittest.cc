@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -24,7 +26,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -98,7 +99,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
       AppPreloadServerConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<absl::optional<std::vector<PreloadAppDefinition>>>
+  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>>
       test_callback;
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, test_callback.GetCallback());
@@ -115,7 +116,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginServerError) {
       AppPreloadServerConnector::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
-  base::test::TestFuture<absl::optional<std::vector<PreloadAppDefinition>>>
+  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>>
       result;
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
@@ -130,7 +131,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginNetworkError) {
       network::mojom::URLResponseHead::New(), /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT));
 
-  base::test::TestFuture<absl::optional<std::vector<PreloadAppDefinition>>>
+  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>>
       result;
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, result.GetCallback());

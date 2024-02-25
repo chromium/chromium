@@ -21,8 +21,9 @@ class Button;
 
 // A view to contain the button row within a result view.
 class OmniboxSuggestionButtonRowView : public views::View {
+  METADATA_HEADER(OmniboxSuggestionButtonRowView, views::View)
+
  public:
-  METADATA_HEADER(OmniboxSuggestionButtonRowView);
   explicit OmniboxSuggestionButtonRowView(OmniboxPopupViewViews* popup_view,
                                           int model_index);
   OmniboxSuggestionButtonRowView(const OmniboxSuggestionButtonRowView&) =
@@ -32,7 +33,7 @@ class OmniboxSuggestionButtonRowView : public views::View {
   ~OmniboxSuggestionButtonRowView() override;
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
 
   // Called when the theme state may have changed.
   void SetThemeState(OmniboxPartState theme_state);

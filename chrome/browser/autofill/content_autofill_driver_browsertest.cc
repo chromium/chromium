@@ -41,26 +41,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace autofill {
-namespace {
-
-class MockAutofillClient : public TestContentAutofillClient {
- public:
-  using TestContentAutofillClient::TestContentAutofillClient;
-
-  MockAutofillClient(const MockAutofillClient&) = delete;
-  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-
-  ~MockAutofillClient() override = default;
-
-  MOCK_METHOD(void,
-              ShowAutofillPopup,
-              (const PopupOpenArgs& open_args,
-               base::WeakPtr<AutofillPopupDelegate> delegate),
-              (override));
-  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
-};
-
-}  // namespace
 
 class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
                                          public content::WebContentsObserver {
@@ -81,12 +61,6 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  void TearDownOnMainThread() override {
-    // Verify the expectations here, because closing the browser may incur
-    // other calls in `autofill_client()` e.g., HideAutofillPopup().
-    testing::Mock::VerifyAndClearExpectations(&autofill_client());
   }
 
   void OnVisibilityChanged(content::Visibility visibility) override {
@@ -122,7 +96,7 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  testing::NiceMock<MockAutofillClient>& autofill_client() {
+  testing::NiceMock<TestContentAutofillClient>& autofill_client() {
     auto* client = autofill_client_injector_[web_contents()];
     CHECK(client);
     return *client;
@@ -139,156 +113,9 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
   base::OnceClosure subframe_navigation_callback_;
 
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  TestAutofillClientInjector<testing::NiceMock<MockAutofillClient>>
+  TestAutofillClientInjector<testing::NiceMock<TestContentAutofillClient>>
       autofill_client_injector_;
   content::test::PrerenderTestHelper prerender_helper_;
 };
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       SwitchTabAndHideAutofillPopup) {
-  EXPECT_CALL(autofill_client(),
-              HideAutofillPopup(PopupHidingReason::kTabGone));
-
-  scoped_refptr<content::MessageLoopRunner> runner =
-      new content::MessageLoopRunner;
-  web_contents_hidden_callback_ = runner->QuitClosure();
-  chrome::AddSelectedTabWithURL(browser(), GURL(url::kAboutBlankURL),
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  runner->Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       SameDocumentNavigationHideAutofillPopup) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
-
-  // The Autofill popup should be hidden for same document navigations. It may
-  // called twice because the zoom changed event may also fire for same-page
-  // navigations.
-  EXPECT_CALL(autofill_client(),
-              HideAutofillPopup(PopupHidingReason::kNavigation))
-      .Times(testing::AtLeast(1));
-
-  scoped_refptr<content::MessageLoopRunner> runner =
-      new content::MessageLoopRunner;
-  same_document_navigation_callback_ = runner->QuitClosure();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html#foo")));
-  // This will block until a same document navigation is observed.
-  runner->Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       PrerenderNavigationDoesntHideAutofillPopup) {
-  GURL initial_url =
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
-  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
-  prerender_helper().NavigatePrimaryPage(initial_url);
-
-  int host_id = content::RenderFrameHost::kNoFrameTreeNodeId;
-
-  {
-    EXPECT_CALL(autofill_client(),
-                HideAutofillPopup(PopupHidingReason::kNavigation))
-        .Times(0);
-    host_id = prerender_helper().AddPrerender(prerender_url);
-  }
-
-  EXPECT_CALL(autofill_client(),
-              HideAutofillPopup(PopupHidingReason::kNavigation))
-      .Times(testing::AtLeast(1));
-
-  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
-  prerender_helper().NavigatePrimaryPage(prerender_url);
-  EXPECT_TRUE(host_observer.was_activated());
-}
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       SubframeNavigationDoesntHideAutofillPopup) {
-  // Main frame is on a.com, iframe is on b.com.
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/cross_origin_iframe.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // The Autofill popup should NOT be hidden for subframe navigations.
-  EXPECT_CALL(autofill_client(), HideAutofillPopup).Times(0);
-
-  scoped_refptr<content::MessageLoopRunner> runner =
-      new content::MessageLoopRunner;
-  subframe_navigation_callback_ = runner->QuitClosure();
-  GURL iframe_url = embedded_test_server()->GetURL(
-      "b.com", "/autofill/autofill_test_form.html");
-  EXPECT_TRUE(content::NavigateIframeToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(), "crossFrame",
-      iframe_url));
-  // This will block until a subframe navigation is observed.
-  runner->Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       TestPageNavigationHidingAutofillPopup) {
-  // HideAutofillPopup is called once for each navigation.
-  EXPECT_CALL(autofill_client(),
-              HideAutofillPopup(PopupHidingReason::kNavigation))
-      .Times(2);
-
-  scoped_refptr<content::MessageLoopRunner> runner =
-      new content::MessageLoopRunner;
-  nav_entry_committed_callback_ = runner->QuitClosure();
-  browser()->OpenURL(content::OpenURLParams(
-      GURL(chrome::kChromeUIBookmarksURL), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
-  browser()->OpenURL(content::OpenURLParams(
-      GURL(chrome::kChromeUIAboutURL), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
-  runner->Run();
-}
-
-class ContentAutofillDriverPrerenderBrowserTest
-    : public ContentAutofillDriverBrowserTest {
- public:
-  ContentAutofillDriverPrerenderBrowserTest() {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillProbableFormSubmissionInBrowser);
-  }
-  ~ContentAutofillDriverPrerenderBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
-                       PrerenderingDoesNotSubmitForm) {
-  GURL initial_url =
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-
-  // Set a dummy form data to simulate to submit a form. And, OnFormSubmitted
-  // method will be called upon navigation.
-  autofill_driver_factory()
-      ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
-      ->renderer_events()
-      .SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
-
-  base::HistogramTester histogram_tester;
-
-  // Load a page in the prerendering.
-  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
-  int host_id = prerender_helper().AddPrerender(prerender_url);
-  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
-  EXPECT_FALSE(host_observer.was_activated());
-  // TODO(crbug.com/1200511): use a mock AutofillManager and
-  // EXPECT_CALL(manager, OnFormSubmitted(_, _, _)).
-  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
-                                    0);
-
-  // Activate the page from the prerendering.
-  prerender_helper().NavigatePrimaryPage(prerender_url);
-  EXPECT_TRUE(host_observer.was_activated());
-  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
-                                    1);
-}
 
 }  // namespace autofill

@@ -9,8 +9,8 @@ import org.chromium.base.test.util.CallbackHelper;
 /**
  * CallbackHelper subclass which implements WebappRegistry.FetchWebappDataStorageCallback for tests.
  */
-public class TestFetchStorageCallback
-        extends CallbackHelper implements WebappRegistry.FetchWebappDataStorageCallback {
+public class TestFetchStorageCallback extends CallbackHelper
+        implements WebappRegistry.FetchWebappDataStorageCallback {
     protected WebappDataStorage mStorage;
 
     @Override

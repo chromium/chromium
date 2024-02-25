@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_IMAGE_STORE_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_IMAGE_STORE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 class PrefRegistrySimple;
@@ -87,7 +87,7 @@ class DeviceImageStore {
 
   // Returns a DeviceImageInfo of device images belonging to |model_id|, if
   // found.
-  absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDeviceModel(
+  std::optional<bluetooth_config::DeviceImageInfo> GetImagesForDeviceModel(
       const std::string& model_id);
 
  private:
@@ -129,7 +129,7 @@ class DeviceImageStore {
       model_id_to_images_;
   // Used to lazily load images from prefs.
   bool loaded_images_from_prefs_ = false;
-  raw_ptr<FastPairImageDecoder, ExperimentalAsh> image_decoder_;
+  raw_ptr<FastPairImageDecoder> image_decoder_;
   base::WeakPtrFactory<DeviceImageStore> weak_ptr_factory_{this};
 };
 

@@ -1,0 +1,35 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef GPU_COMMAND_BUFFER_COMMON_SHARED_IMAGE_CAPABILITIES_H_
+#define GPU_COMMAND_BUFFER_COMMON_SHARED_IMAGE_CAPABILITIES_H_
+
+#include <vector>
+
+#include "gpu/gpu_export.h"
+#include "ui/gfx/buffer_types.h"
+
+namespace gpu {
+
+struct GPU_EXPORT SharedImageCapabilities {
+  SharedImageCapabilities();
+  SharedImageCapabilities(const SharedImageCapabilities& other);
+  ~SharedImageCapabilities();
+
+  bool supports_scanout_shared_images = false;
+  bool supports_luminance_shared_images = false;
+  bool supports_r16_shared_images = false;
+  bool is_r16f_supported = false;
+  bool disable_r8_shared_images = false;
+  bool disable_webgpu_shared_images = false;
+
+  bool shared_image_d3d = false;
+  bool shared_image_swap_chain = false;
+
+  std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list;
+};
+
+}  // namespace gpu
+
+#endif  // GPU_COMMAND_BUFFER_COMMON_SHARED_IMAGE_CAPABILITIES_H_

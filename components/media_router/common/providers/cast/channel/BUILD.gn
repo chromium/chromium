@@ -4,8 +4,13 @@
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
-import("//third_party/openscreen/src/build/config/data_headers_template.gni")
+import("//third_party/openscreen/src/build_overrides/data_headers_template.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+source_set("capability") {
+  public = [ "cast_device_capability.h" ]
+  deps = [ "//base" ]
+}
 
 static_library("channel") {
   sources = [
@@ -39,6 +44,7 @@ static_library("channel") {
     "mojo_data_pump.h",
   ]
   deps = [
+    ":capability",
     "//base",
     "//build:chromeos_buildflags",
     "//components/keyed_service/content",
@@ -56,8 +62,10 @@ static_library("channel") {
   ]
   public_deps = [
     "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

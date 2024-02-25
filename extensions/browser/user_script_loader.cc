@@ -8,6 +8,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
@@ -21,12 +22,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -60,12 +60,13 @@ bool AreScriptsUnique(const UserScriptList& scripts) {
 #endif  // DCHECK_IS_ON()
 
 // Helper function to parse greasesmonkey headers
-bool GetDeclarationValue(const base::StringPiece& line,
-                         const base::StringPiece& prefix,
+bool GetDeclarationValue(std::string_view line,
+                         std::string_view prefix,
                          std::string* value) {
-  base::StringPiece::size_type index = line.find(prefix);
-  if (index == base::StringPiece::npos)
+  std::string_view::size_type index = line.find(prefix);
+  if (index == std::string_view::npos) {
     return false;
+  }
 
   std::string temp(line.data() + index + prefix.length(),
                    line.length() - index - prefix.length());
@@ -82,9 +83,9 @@ bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
   if (host_id.type == mojom::HostID::HostType::kWebUi)
     return true;
 
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context)
-          ->GetExtensionById(host_id.id, ExtensionRegistry::ENABLED);
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(host_id.id);
 
   return extension && PermissionsData::CanExecuteScriptEverywhere(
                           extension->id(), extension->location());
@@ -93,28 +94,28 @@ bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
 }  // namespace
 
 // static
-bool UserScriptLoader::ParseMetadataHeader(const base::StringPiece& script_text,
+bool UserScriptLoader::ParseMetadataHeader(std::string_view script_text,
                                            UserScript* script) {
   // http://wiki.greasespot.net/Metadata_block
-  base::StringPiece line;
+  std::string_view line;
   size_t line_start = 0;
   size_t line_end = line_start;
   bool in_metadata = false;
 
-  static const base::StringPiece kUserScriptBegin("// ==UserScript==");
-  static const base::StringPiece kUserScriptEng("// ==/UserScript==");
-  static const base::StringPiece kNamespaceDeclaration("// @namespace");
-  static const base::StringPiece kNameDeclaration("// @name");
-  static const base::StringPiece kVersionDeclaration("// @version");
-  static const base::StringPiece kDescriptionDeclaration("// @description");
-  static const base::StringPiece kIncludeDeclaration("// @include");
-  static const base::StringPiece kExcludeDeclaration("// @exclude");
-  static const base::StringPiece kMatchDeclaration("// @match");
-  static const base::StringPiece kExcludeMatchDeclaration("// @exclude_match");
-  static const base::StringPiece kRunAtDeclaration("// @run-at");
-  static const base::StringPiece kRunAtDocumentStartValue("document-start");
-  static const base::StringPiece kRunAtDocumentEndValue("document-end");
-  static const base::StringPiece kRunAtDocumentIdleValue("document-idle");
+  static const std::string_view kUserScriptBegin("// ==UserScript==");
+  static const std::string_view kUserScriptEng("// ==/UserScript==");
+  static const std::string_view kNamespaceDeclaration("// @namespace");
+  static const std::string_view kNameDeclaration("// @name");
+  static const std::string_view kVersionDeclaration("// @version");
+  static const std::string_view kDescriptionDeclaration("// @description");
+  static const std::string_view kIncludeDeclaration("// @include");
+  static const std::string_view kExcludeDeclaration("// @exclude");
+  static const std::string_view kMatchDeclaration("// @match");
+  static const std::string_view kExcludeMatchDeclaration("// @exclude_match");
+  static const std::string_view kRunAtDeclaration("// @run-at");
+  static const std::string_view kRunAtDocumentStartValue("document-start");
+  static const std::string_view kRunAtDocumentEndValue("document-end");
+  static const std::string_view kRunAtDocumentIdleValue("document-idle");
 
   while (line_start < script_text.length()) {
     line_end = script_text.find('\n', line_start);
@@ -123,8 +124,8 @@ bool UserScriptLoader::ParseMetadataHeader(const base::StringPiece& script_text,
     if (line_end == std::string::npos)
       line_end = script_text.length() - 1;
 
-    line = base::StringPiece(script_text.data() + line_start,
-                             line_end - line_start);
+    line = std::string_view(script_text.data() + line_start,
+                            line_end - line_start);
 
     if (!in_metadata) {
       if (base::StartsWith(line, kUserScriptBegin))
@@ -190,15 +191,15 @@ bool UserScriptLoader::ParseMetadataHeader(const base::StringPiece& script_text,
 
 UserScriptLoader::UserScriptLoader(BrowserContext* browser_context,
                                    const mojom::HostID& host_id)
-    : loaded_scripts_(new UserScriptList()),
+    : loaded_scripts_(UserScriptList()),
       ready_(false),
       queued_load_(false),
       browser_context_(browser_context),
       host_id_(host_id) {}
 
 UserScriptLoader::~UserScriptLoader() {
-  absl::optional<std::string> error =
-      absl::make_optional(kUserScriptLoaderDestroyedErrorMsg);
+  std::optional<std::string> error =
+      std::make_optional(kUserScriptLoaderDestroyedErrorMsg);
 
   // Clean up state by firing all remaining callbacks with |error| populated to
   // alert consumers that scripts are not loaded.
@@ -213,15 +214,15 @@ UserScriptLoader::~UserScriptLoader() {
     observer.OnUserScriptLoaderDestroyed(this);
 }
 
-void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts,
+void UserScriptLoader::AddScripts(UserScriptList scripts,
                                   ScriptsLoadedCallback callback) {
 #if DCHECK_IS_ON()
   // |scripts| with non-unique IDs will work, but that would indicate we are
   // doing something wrong somewhere, so DCHECK that.
-  DCHECK(AreScriptsUnique(*scripts))
+  DCHECK(AreScriptsUnique(scripts))
       << "AddScripts() expects scripts with unique IDs.";
 #endif  // DCHECK_IS_ON()
-  for (std::unique_ptr<UserScript>& user_script : *scripts) {
+  for (std::unique_ptr<UserScript>& user_script : scripts) {
     const std::string& id = user_script->id();
     removed_script_ids_.erase(id);
     if (added_scripts_map_.count(id) == 0)
@@ -231,7 +232,7 @@ void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts,
   AttemptLoad(std::move(callback));
 }
 
-void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts,
+void UserScriptLoader::AddScripts(UserScriptList scripts,
                                   int render_process_id,
                                   int render_frame_id,
                                   ScriptsLoadedCallback callback) {
@@ -256,8 +257,13 @@ void UserScriptLoader::OnRenderProcessHostCreated(
   if (!ExtensionsBrowserClient::Get()->IsSameContext(
           browser_context_, process_host->GetBrowserContext()))
     return;
-  if (initial_load_complete())
-    SendUpdate(process_host, shared_memory_);
+  if (initial_load_complete()) {
+    SendUpdateResult update_result = SendUpdate(process_host, shared_memory_);
+    if (update_result == SendUpdateResult::kRendererHasBeenNotified) {
+      ScriptInjectionTracker::DidUpdateScriptsInRenderer(
+          base::PassKey<UserScriptLoader>(), host_id_, *process_host);
+    }
+  }
 }
 
 bool UserScriptLoader::ScriptsMayHaveChanged() const {
@@ -274,17 +280,18 @@ void UserScriptLoader::AttemptLoad(ScriptsLoadedCallback callback) {
       queued_load_callbacks_.push_back(std::move(callback));
     } else {
       std::move(callback).Run(this,
-                              absl::make_optional(kNoScriptChangesErrorMsg));
+                              std::make_optional(kNoScriptChangesErrorMsg));
     }
   }
 
   // If the loader isn't ready yet, the load will be kicked off when it becomes
   // ready.
   if (ready_ && scripts_changed) {
-    if (is_loading())
+    if (is_loading()) {
       queued_load_ = true;
-    else
+    } else {
       StartLoad();
+    }
   }
 }
 
@@ -294,10 +301,11 @@ void UserScriptLoader::StartLoad() {
 
   // Reload any loaded scripts, and clear out |loaded_scripts_| to indicate that
   // the scripts aren't currently ready.
-  std::unique_ptr<UserScriptList> scripts_to_load = std::move(loaded_scripts_);
+  UserScriptList scripts_to_load = std::move(*loaded_scripts_);
+  loaded_scripts_.reset();
 
   // Filter out any scripts that are queued for removal.
-  base::EraseIf(*scripts_to_load,
+  base::EraseIf(scripts_to_load,
                 [this](const std::unique_ptr<UserScript>& script) {
                   return removed_script_ids_.count(script->id()) > 0u;
                 });
@@ -305,18 +313,18 @@ void UserScriptLoader::StartLoad() {
   // Since all scripts managed by an instance of this class should have unique
   // IDs, remove any already loaded scripts from `scripts_to_load` that will be
   // updated from `added_scripts_map_`.
-  base::EraseIf(*scripts_to_load,
+  base::EraseIf(scripts_to_load,
                 [this](const std::unique_ptr<UserScript>& script) {
                   return added_scripts_map_.count(script->id()) > 0u;
                 });
 
   std::set<std::string> added_script_ids;
-  scripts_to_load->reserve(scripts_to_load->size() + added_scripts_map_.size());
+  scripts_to_load.reserve(scripts_to_load.size() + added_scripts_map_.size());
   for (auto& id_and_script : added_scripts_map_) {
     std::unique_ptr<UserScript>& script = id_and_script.second;
     added_script_ids.insert(script->id());
     // Move script from |added_scripts_map_| into |scripts_to_load|.
-    scripts_to_load->push_back(std::move(script));
+    scripts_to_load.push_back(std::move(script));
   }
 
   // All queued updates are now being loaded. Similarly, move all
@@ -351,14 +359,14 @@ base::ReadOnlySharedMemoryRegion UserScriptLoader::Serialize(
     script->Pickle(&pickle);
     // Write scripts as 'data' so that we can read it out in the slave without
     // allocating a new string.
-    for (const std::unique_ptr<UserScript::File>& js_file :
+    for (const std::unique_ptr<UserScript::Content>& js_file :
          script->js_scripts()) {
-      base::StringPiece contents = js_file->GetContent();
+      std::string_view contents = js_file->GetContent();
       pickle.WriteData(contents.data(), contents.length());
     }
-    for (const std::unique_ptr<UserScript::File>& css_file :
+    for (const std::unique_ptr<UserScript::Content>& css_file :
          script->css_scripts()) {
-      base::StringPiece contents = css_file->GetContent();
+      std::string_view contents = css_file->GetContent();
       pickle.WriteData(contents.data(), contents.length());
     }
   }
@@ -385,10 +393,11 @@ void UserScriptLoader::RemoveObserver(Observer* observer) {
 void UserScriptLoader::StartLoadForTesting(ScriptsLoadedCallback callback) {
   if (!callback.is_null())
     queued_load_callbacks_.push_back(std::move(callback));
-  if (is_loading())
+  if (is_loading()) {
     queued_load_ = true;
-  else
+  } else {
     StartLoad();
+  }
 }
 
 void UserScriptLoader::SetReady(bool ready) {
@@ -399,7 +408,7 @@ void UserScriptLoader::SetReady(bool ready) {
 }
 
 void UserScriptLoader::OnScriptsLoaded(
-    std::unique_ptr<UserScriptList> user_scripts,
+    UserScriptList user_scripts,
     base::ReadOnlySharedMemoryRegion shared_memory) {
   loaded_scripts_ = std::move(user_scripts);
 
@@ -426,10 +435,15 @@ void UserScriptLoader::OnScriptsLoaded(
   // We've got scripts ready to go.
   shared_memory_ = std::move(shared_memory);
 
+  std::vector<int> ids_of_newly_notified_processes;
   for (content::RenderProcessHost::iterator i(
            content::RenderProcessHost::AllHostsIterator());
        !i.IsAtEnd(); i.Advance()) {
-    SendUpdate(i.GetCurrentValue(), shared_memory_);
+    content::RenderProcessHost* process = i.GetCurrentValue();
+    SendUpdateResult update_result = SendUpdate(process, shared_memory_);
+    if (update_result == SendUpdateResult::kRendererHasBeenNotified) {
+      ids_of_newly_notified_processes.push_back(process->GetID());
+    }
   }
 
   for (auto& observer : observers_)
@@ -440,27 +454,45 @@ void UserScriptLoader::OnScriptsLoaded(
   std::list<ScriptsLoadedCallback> loaded_callbacks;
   loaded_callbacks.splice(loaded_callbacks.end(), loading_callbacks_);
   for (auto& callback : loaded_callbacks)
-    std::move(callback).Run(this, /*error=*/absl::nullopt);
+    std::move(callback).Run(this, /*error=*/std::nullopt);
+
+  // Notify `ScriptInjectionTracker` at the very end - *after* all the observers
+  // and callbacks above have already been run. In particular, this needs to
+  // happen after `ExtensionUserScriptLoader::OnDynamicScriptsAdded` has been
+  // called if needed (see also https://crbug.com/1439642).
+  for (const int& process_id : ids_of_newly_notified_processes) {
+    // It's theoretically possible the process was destroyed by one of the
+    // callbacks or observers above.
+    content::RenderProcessHost* process =
+        content::RenderProcessHost::FromID(process_id);
+    if (process) {
+      ScriptInjectionTracker::DidUpdateScriptsInRenderer(
+          base::PassKey<UserScriptLoader>(), host_id_, *process);
+    }
+  }
 }
 
-void UserScriptLoader::SendUpdate(
+UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
     content::RenderProcessHost* process,
     const base::ReadOnlySharedMemoryRegion& shared_memory) {
   // Make sure we only send user scripts to processes in our browser_context.
   if (!ExtensionsBrowserClient::Get()->IsSameContext(
-          browser_context_, process->GetBrowserContext()))
-    return;
+          browser_context_, process->GetBrowserContext())) {
+    return SendUpdateResult::kNoActionTaken;
+  }
 
   // If the process is being started asynchronously, early return.  We'll end up
   // calling InitUserScripts when it's created which will call this again.
   base::ProcessHandle handle = process->GetProcess().Handle();
-  if (!handle)
-    return;
+  if (!handle) {
+    return SendUpdateResult::kNoActionTaken;
+  }
 
   base::ReadOnlySharedMemoryRegion region_for_process =
       shared_memory.Duplicate();
-  if (!region_for_process.IsValid())
-    return;
+  if (!region_for_process.IsValid()) {
+    return SendUpdateResult::kNoActionTaken;
+  }
 
   // If the process only hosts guest frames, then those guest frames share the
   // same embedder/owner. In this case, only scripts from allowlisted hosts or
@@ -474,20 +506,37 @@ void UserScriptLoader::SendUpdate(
     std::string owner_host;
     bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
         process->GetID(), /*owner_process_id=*/nullptr, &owner_host);
-
     DCHECK(found_owner);
-    if (owner_host != host_id().id)
-      return;
-  }
 
-  ContentScriptTracker::WillUpdateContentScriptsInRenderer(
-      base::PassKey<UserScriptLoader>(), host_id_, *process);
+    // Keep this check in sync with the approach and formatting in:
+    // - UserScriptLoader's HostID, created in |GenerateHostIDFromEmbedder()|
+    // - ScriptContextSet's HostID, created in |ScriptContextSet::Register()|
+    // - GuestView's owner host, set in |GuestViewBase::SetOwnerHost()|
+    switch (host_id().type) {
+      case mojom::HostID::HostType::kExtensions:
+      case mojom::HostID::HostType::kWebUi:
+      case mojom::HostID::HostType::kControlledFrameEmbedder:
+        // For extensions, |owner_host| will be the extension ID.
+        // For WebUI, |owner_host| will be the full owning RFH's URL spec,
+        // including trailing slash.
+        // For Controlled Frame embedders, |owner_host| will be a serialized
+        // form of the embedder's origin, using scheme, host, port [if
+        // applicable] tuple in origin form. No trailing slash.
+        // TODO(crbug.com/1517391): Use an actual Origin object in the
+        // Controlled Frame comparison rather than a serialized Origin.
+        if (owner_host != host_id().id) {
+          return SendUpdateResult::kNoActionTaken;
+        }
+        break;
+    }
+  }
 
   mojom::Renderer* renderer =
       RendererStartupHelperFactory::GetForBrowserContext(browser_context())
           ->GetRenderer(process);
   renderer->UpdateUserScripts(std::move(region_for_process),
                               mojom::HostID::New(host_id().type, host_id().id));
+  return SendUpdateResult::kRendererHasBeenNotified;
 }
 
 }  // namespace extensions

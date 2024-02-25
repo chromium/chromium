@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/debug/alias.h"
@@ -138,13 +139,13 @@ bool UserScriptSet::UpdateUserScripts(
       const char* body = nullptr;
       size_t body_length = 0;
       CHECK(iter.ReadData(&body, &body_length));
-      js_script->set_external_content(base::StringPiece(body, body_length));
+      js_script->set_external_content(std::string_view(body, body_length));
     }
     for (const auto& css_script : script->css_scripts()) {
       const char* body = nullptr;
       size_t body_length = 0;
       CHECK(iter.ReadData(&body, &body_length));
-      css_script->set_external_content(base::StringPiece(body, body_length));
+      css_script->set_external_content(std::string_view(body, body_length));
     }
 
     if (only_inject_incognito && !script->is_incognito_enabled())
@@ -194,13 +195,17 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   std::unique_ptr<const InjectionHost> injection_host;
   blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
 
-  if (host_id_.type == mojom::HostID::HostType::kExtensions) {
-    injection_host = ExtensionInjectionHost::Create(host_id_.id);
-    if (!injection_host)
-      return injection;
-  } else {
-    DCHECK_EQ(host_id_.type, mojom::HostID::HostType::kWebUi);
-    injection_host = std::make_unique<WebUIInjectionHost>(host_id_);
+  switch (host_id_.type) {
+    case mojom::HostID::HostType::kExtensions:
+      injection_host = ExtensionInjectionHost::Create(host_id_.id);
+      if (!injection_host) {
+        return injection;
+      }
+      break;
+    case mojom::HostID::HostType::kControlledFrameEmbedder:
+    case mojom::HostID::HostType::kWebUi:
+      injection_host = std::make_unique<WebUIInjectionHost>(host_id_);
+      break;
   }
 
   GURL effective_document_url =
@@ -238,14 +243,14 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   return injection;
 }
 
-blink::WebString UserScriptSet::GetJsSource(const UserScript::File& file,
+blink::WebString UserScriptSet::GetJsSource(const UserScript::Content& file,
                                             bool emulate_greasemonkey) {
   const GURL& url = file.url();
   auto iter = script_sources_.find(url);
   if (iter != script_sources_.end())
     return iter->second;
 
-  base::StringPiece script_content = file.GetContent();
+  std::string_view script_content = file.GetContent();
   blink::WebString source;
   if (emulate_greasemonkey) {
     // We add this dumb function wrapper for user scripts to emulate what
@@ -255,24 +260,21 @@ blink::WebString UserScriptSet::GetJsSource(const UserScript::File& file,
         base::StrCat({kUserScriptHead, script_content, kUserScriptTail});
     source = blink::WebString::FromUTF8(content);
   } else {
-    source = blink::WebString::FromUTF8(script_content.data(),
-                                        script_content.length());
+    source = blink::WebString::FromUTF8(script_content);
   }
   script_sources_[url] = source;
   return source;
 }
 
-blink::WebString UserScriptSet::GetCssSource(const UserScript::File& file) {
+blink::WebString UserScriptSet::GetCssSource(const UserScript::Content& file) {
   const GURL& url = file.url();
   auto iter = script_sources_.find(url);
   if (iter != script_sources_.end())
     return iter->second;
 
-  base::StringPiece script_content = file.GetContent();
+  std::string_view script_content = file.GetContent();
   return script_sources_
-      .insert(std::make_pair(
-          url, blink::WebString::FromUTF8(script_content.data(),
-                                          script_content.length())))
+      .insert(std::make_pair(url, blink::WebString::FromUTF8(script_content)))
       .first->second;
 }
 

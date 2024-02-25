@@ -96,8 +96,10 @@ void SmsFetcherImpl::Unsubscribe(const OriginList& origin_list,
   auto it = remote_cancel_callbacks_.find(subscriber);
   if (it == remote_cancel_callbacks_.end())
     return;
-  std::move(it->second).Run();
+  auto cancel_callback = std::move(it->second);
   remote_cancel_callbacks_.erase(it);
+
+  std::move(cancel_callback).Run();
 }
 
 bool SmsFetcherImpl::Notify(const OriginList& origin_list,
@@ -114,9 +116,9 @@ bool SmsFetcherImpl::Notify(const OriginList& origin_list,
   return true;
 }
 
-void SmsFetcherImpl::OnRemote(absl::optional<OriginList> origin_list,
-                              absl::optional<std::string> one_time_code,
-                              absl::optional<FailureType> failure_type) {
+void SmsFetcherImpl::OnRemote(std::optional<OriginList> origin_list,
+                              std::optional<std::string> one_time_code,
+                              std::optional<FailureType> failure_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (failure_type) {

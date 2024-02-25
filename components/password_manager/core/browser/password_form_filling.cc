@@ -7,12 +7,13 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -22,16 +23,17 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 
+namespace password_manager {
+
+namespace {
+
+using affiliations::FacetURI;
 using autofill::PasswordAndMetadata;
 using autofill::PasswordFormFillData;
 using url::Origin;
 using Logger = autofill::SavePasswordProgressLogger;
 using password_manager_util::GetMatchType;
 using GetLoginMatchType = password_manager_util::GetLoginMatchType;
-
-namespace password_manager {
-
-namespace {
 
 // Controls whether we should suppress the account storage promos for websites
 // that are blocked by the user.
@@ -68,13 +70,16 @@ bool IsFillOnAccountSelectFeatureEnabled() {
 }
 #endif
 
-void Autofill(PasswordManagerClient* client,
-              PasswordManagerDriver* driver,
-              const PasswordForm& form_for_autofill,
-              const std::vector<const PasswordForm*>& best_matches,
-              const std::vector<const PasswordForm*>& federated_matches,
-              absl::optional<PasswordForm> preferred_match,
-              bool wait_for_username) {
+void Autofill(
+    PasswordManagerClient* client,
+    PasswordManagerDriver* driver,
+    const PasswordForm& form_for_autofill,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        best_matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        federated_matches,
+    std::optional<PasswordForm> preferred_match,
+    bool wait_for_username) {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
@@ -121,8 +126,10 @@ LikelyFormFilling SendFillInformationToRenderer(
     PasswordManagerClient* client,
     PasswordManagerDriver* driver,
     const PasswordForm& observed_form,
-    const std::vector<const PasswordForm*>& best_matches,
-    const std::vector<const PasswordForm*>& federated_matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        best_matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        federated_matches,
     const PasswordForm* preferred_match,
     bool blocked_by_user,
     PasswordFormMetricsRecorder* metrics_recorder,
@@ -175,23 +182,7 @@ LikelyFormFilling SendFillInformationToRenderer(
       !observed_form.HasPasswordElement() && !observed_form.IsSingleUsername();
 
   if (preferred_match && !not_sign_in_form) {
-    using FormMatchType =
-        password_manager::PasswordFormMetricsRecorder::MatchedFormType;
-    switch (GetMatchType(*preferred_match)) {
-      case GetLoginMatchType::kExact:
-        metrics_recorder->RecordMatchedFormType(FormMatchType::kExactMatch);
-        break;
-      case GetLoginMatchType::kAffiliated:
-        metrics_recorder->RecordMatchedFormType(
-            IsValidAndroidFacetURI(preferred_match->signon_realm)
-                ? FormMatchType::kAffiliatedApp
-                : FormMatchType::kAffiliatedWebsites);
-        break;
-      case GetLoginMatchType::kPSL:
-        metrics_recorder->RecordMatchedFormType(
-            FormMatchType::kPublicSuffixMatch);
-        break;
-    }
+    metrics_recorder->RecordMatchedFormType(*preferred_match);
   }
 
 // This metric will always record kReauthRequired on iOS and Android. So we can
@@ -216,7 +207,8 @@ LikelyFormFilling SendFillInformationToRenderer(
 #endif
   } else if (preferred_match &&
              GetMatchType(*preferred_match) == GetLoginMatchType::kAffiliated &&
-             !IsValidAndroidFacetURI(preferred_match->signon_realm)) {
+             !affiliations::IsValidAndroidFacetURI(
+                 preferred_match->signon_realm)) {
     wait_for_username_reason = WaitForUsernameReason::kAffiliatedWebsite;
   } else if (preferred_match &&
              GetMatchType(*preferred_match) == GetLoginMatchType::kPSL) {
@@ -273,7 +265,7 @@ LikelyFormFilling SendFillInformationToRenderer(
   // done.
   Autofill(
       client, driver, observed_form, best_matches, federated_matches,
-      preferred_match ? absl::make_optional(*preferred_match) : absl::nullopt,
+      preferred_match ? std::make_optional(*preferred_match) : std::nullopt,
       wait_for_username);
 
   return wait_for_username ? LikelyFormFilling::kFillOnAccountSelect
@@ -282,13 +274,13 @@ LikelyFormFilling SendFillInformationToRenderer(
 
 PasswordFormFillData CreatePasswordFormFillData(
     const PasswordForm& form_on_page,
-    const std::vector<const PasswordForm*>& matches,
-    absl::optional<PasswordForm> preferred_match,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    std::optional<PasswordForm> preferred_match,
     const Origin& main_frame_origin,
     bool wait_for_username) {
   PasswordFormFillData result;
 
-  result.form_renderer_id = form_on_page.form_data.unique_renderer_id;
+  result.form_renderer_id = form_on_page.form_data.renderer_id;
   result.url = form_on_page.url;
   result.wait_for_username = wait_for_username;
 

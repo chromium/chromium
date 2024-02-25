@@ -60,7 +60,6 @@ class FastPairScannerImpl
   ~FastPairScannerImpl() override;
 
   void StartScanning();
-  void StopScanning();
 
   // device::BluetoothAdapter::Observer
   void DeviceChanged(device::BluetoothAdapter* adapter,
@@ -78,7 +77,7 @@ class FastPairScannerImpl
                     device::BluetoothDevice* device) override;
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override;
   void OnSessionInvalidated(
       device::BluetoothLowEnergyScanSession* scan_session) override;

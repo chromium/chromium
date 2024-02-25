@@ -15,8 +15,7 @@
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Queues arbitrary tasks. At most |max_in_parallel_| tasks will be running at
 // once.
@@ -91,7 +90,6 @@ class Queue {
   base::WeakPtrFactory<Queue> weak_ptr_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_QUEUE_H_

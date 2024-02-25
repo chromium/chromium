@@ -35,6 +35,7 @@ class TypeUtils {
     static final String INT = "I";
     static final String VOID = "V";
     private static final Map<String, Type> PRIMITIVE_DESCRIPTORS;
+
     static {
         PRIMITIVE_DESCRIPTORS = new HashMap<>();
         PRIMITIVE_DESCRIPTORS.put(Type.BOOLEAN_TYPE.toString(), Type.BOOLEAN_TYPE);

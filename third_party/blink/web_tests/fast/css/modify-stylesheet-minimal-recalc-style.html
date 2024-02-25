@@ -65,7 +65,7 @@ if (window.internals) {
     // Test insertRule
     forceRecalc();
     sheet.sheet.insertRule(".foo { color: red; }", 0);
-    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "6");
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "3");
 
     shouldBe("getComputedStyle(document.querySelector('.foo')).color", '"rgb(255, 0, 0)"');
     shouldBe("getComputedStyle(document.querySelector('.baz')).color", '"rgb(255, 0, 0)"');

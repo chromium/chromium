@@ -32,7 +32,6 @@ class PrefService;
 class TemplateURLService;
 
 namespace optimization_guide {
-class EntityMetadataProvider;
 class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
@@ -65,7 +64,6 @@ class HistoryClustersService : public base::SupportsUserData,
   HistoryClustersService(
       const std::string& application_locale,
       history::HistoryService* history_service,
-      optimization_guide::EntityMetadataProvider* entity_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
       TemplateURLService* template_url_service,
@@ -157,7 +155,7 @@ class HistoryClustersService : public base::SupportsUserData,
   // a cache refresh request while immediately returning null data. It's
   // expected that on the next keystroke, the cache may be ready and return the
   // matched keyword data then.
-  absl::optional<history::ClusterKeywordData> DoesQueryMatchAnyCluster(
+  std::optional<history::ClusterKeywordData> DoesQueryMatchAnyCluster(
       const std::string& query);
 
   // Prints the keyword bag state to the log messages. For example, a button on

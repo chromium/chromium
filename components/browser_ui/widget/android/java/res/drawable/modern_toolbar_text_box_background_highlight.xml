@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+      android:top="@dimen/modern_toolbar_background_vertical_offset"
+      android:bottom="@dimen/modern_toolbar_background_vertical_offset">
+
+      <shape android:shape="rectangle"
+          android:top="@dimen/modern_toolbar_background_vertical_offset"
+          android:bottom="@dimen/modern_toolbar_background_vertical_offset">
+
+        <solid android:color="@color/color_primary_with_alpha_5" />
+        <size
+            android:width="@dimen/modern_toolbar_background_size"
+            android:height="@dimen/modern_toolbar_background_size" />
+        <corners android:radius="@dimen/modern_toolbar_background_corner_radius" />
+      </shape>
+  </item>
+</layer-list>

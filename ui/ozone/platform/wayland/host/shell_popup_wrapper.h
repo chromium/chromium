@@ -6,8 +6,8 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_POPUP_WRAPPER_H_
 
 #include <cstdint>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -27,11 +27,9 @@ struct ShellPopupParams {
   ~ShellPopupParams();
 
   gfx::Rect bounds;
-  MenuType menu_type = MenuType::kRootContextMenu;
-
   // This parameter is temporarily optional. Later, when all the clients
-  // start to pass these parameters, absl::optional type will be removed.
-  absl::optional<OwnedWindowAnchor> anchor;
+  // start to pass these parameters, std::optional type will be removed.
+  std::optional<OwnedWindowAnchor> anchor;
 };
 
 // Wrapper interface for shell popups.

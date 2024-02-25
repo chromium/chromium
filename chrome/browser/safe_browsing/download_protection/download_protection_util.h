@@ -18,6 +18,8 @@ namespace safe_browsing {
 
 // Enum to keep track why a particular download verdict was chosen.
 // Used for UMA metrics. Do not reorder.
+//
+// The UMA enum is called SBClientDownloadCheckDownloadStats.
 enum DownloadCheckResultReason {
   REASON_INVALID_URL = 0,
   REASON_SB_DISABLED = 1,
@@ -56,6 +58,8 @@ enum DownloadCheckResultReason {
   REASON_DEEP_SCAN_PROMPT = 34,
   REASON_BLOCKED_UNSUPPORTED_FILE_TYPE = 35,
   REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE = 36,
+  REASON_LOCAL_DECRYPTION_PROMPT = 37,
+  REASON_LOCAL_DECRYPTION_FAILED = 38,
   REASON_MAX  // Always add new values before this one.
 };
 
@@ -91,8 +95,12 @@ enum class DeepScanEvent {
   kPromptAccepted = 2,
   kScanCanceled = 3,
   kScanCompleted = 4,
-  kMaxValue = kScanCompleted,
+  kScanFailed = 5,
+  kScanDeleted = 6,
+  kPromptAcceptedFromWebUI = 7,
+  kMaxValue = kPromptAcceptedFromWebUI,
 };
+void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event);
 
 // Callback type which is invoked once the download request is done.
 typedef base::OnceCallback<void(DownloadCheckResult)> CheckDownloadCallback;

@@ -120,17 +120,18 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
     // Paint containment requires using the overflow clip edge. To do otherwise
     // results in overflow-clip-margin not being painted in certain scenarios.
     intersection_observer_ = IntersectionObserver::Create(
-        {Length::Percent(kViewportMarginPercentage)},
-        {std::numeric_limits<float>::min()}, document_,
+        *document_,
         WTF::BindRepeating(
             &DisplayLockDocumentState::ProcessDisplayLockActivationObservation,
             WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kDisplayLockIntersectionObserver,
-        IntersectionObserver::kDeliverDuringPostLayoutSteps,
-        IntersectionObserver::kFractionOfTarget, 0 /* delay */,
-        false /* track_visibility */, false /* always report_root_bounds */,
-        IntersectionObserver::kApplyMarginToTarget,
-        true /* use_overflow_clip_edge */);
+        IntersectionObserver::Params{
+            .margin = {Length::Percent(kViewportMarginPercentage)},
+            .margin_target = IntersectionObserver::kApplyMarginToTarget,
+            .thresholds = {std::numeric_limits<float>::min()},
+            .behavior = IntersectionObserver::kDeliverDuringPostLayoutSteps,
+            .use_overflow_clip_edge = true,
+        });
   }
   return *intersection_observer_;
 }
@@ -208,8 +209,11 @@ void DisplayLockDocumentState::ElementAddedToTopLayer(Element* element) {
     return;
   }
 
-  if (MarkAncestorContextsHaveTopLayerElement(element))
+  if (MarkAncestorContextsHaveTopLayerElement(element)) {
+    StyleEngine& style_engine = document_->GetStyleEngine();
+    StyleEngine::DetachLayoutTreeScope detach_scope(style_engine);
     element->DetachLayoutTree();
+  }
 }
 
 void DisplayLockDocumentState::ElementRemovedFromTopLayer(Element*) {
@@ -263,7 +267,7 @@ void DisplayLockDocumentState::NotifyViewTransitionPseudoTreeChanged() {
 }
 
 void DisplayLockDocumentState::UpdateViewTransitionElementAncestorLocks() {
-  auto* transition = ViewTransitionUtils::GetActiveTransition(*document_);
+  auto* transition = ViewTransitionUtils::GetTransition(*document_);
   if (!transition)
     return;
 
@@ -392,7 +396,7 @@ DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
       if (context->HasElement()) {
         context->DidForceActivatableDisplayLocks();
       } else {
-        NOTREACHED()
+        DUMP_WILL_BE_NOTREACHED_NORETURN()
             << "The DisplayLockContext's element has been garbage collected or"
             << " otherwise deleted, but the DisplayLockContext is still alive!"
             << " This shouldn't happen and could cause a crash. See"
@@ -445,13 +449,10 @@ void DisplayLockDocumentState::IssueForcedRenderWarning(Element* element) {
         RuntimeEnabledFeatures::WarnOnContentVisibilityRenderAccessEnabled()
             ? mojom::blink::ConsoleMessageLevel::kWarning
             : mojom::blink::ConsoleMessageLevel::kVerbose;
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+    element->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kJavaScript, level,
         forced_render_warnings_ == kMaxConsoleMessages ? kForcedRenderingMax
                                                        : kForcedRendering);
-    console_message->SetNodes(document_->GetFrame(),
-                              {DOMNodeIds::IdForNode(element)});
-    document_->AddConsoleMessage(console_message);
   }
 }
 

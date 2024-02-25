@@ -47,7 +47,8 @@ class WMTestHelper : public aura::client::WindowParentingClient {
 
   // Overridden from client::WindowParentingClient:
   aura::Window* GetDefaultParent(aura::Window* window,
-                                 const gfx::Rect& bounds) override;
+                                 const gfx::Rect& bounds,
+                                 const int64_t display_id) override;
 
  private:
   std::unique_ptr<WMState> wm_state_;

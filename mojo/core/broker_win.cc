@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "mojo/core/broker.h"
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/channel.h"
@@ -150,7 +149,7 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
     BufferResponseData* data;
     if (!GetBrokerMessageData(response.get(), &data))
       return base::WritableSharedMemoryRegion();
-    absl::optional<base::UnguessableToken> guid =
+    std::optional<base::UnguessableToken> guid =
         base::UnguessableToken::Deserialize(data->guid_high, data->guid_low);
     if (!guid.has_value()) {
       return base::WritableSharedMemoryRegion();

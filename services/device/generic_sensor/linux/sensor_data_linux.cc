@@ -11,7 +11,6 @@
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace device {
 

@@ -34,19 +34,20 @@
 //         define any custom policy they desire.
 //
 // PolicyTypes:
-//     LogFatalOnError: LOG(FATAL) when a error occurs.
+//     LogFatalOnError: ABSL_LOG(FATAL) when a error occurs.
 
 #ifndef MEDIAPIPE_DEPS_SAFE_INT_H_
 #define MEDIAPIPE_DEPS_SAFE_INT_H_
 
 #include <limits.h>
 
+#include <cstdint>
 #include <limits>
 #include <type_traits>
 
-#include "mediapipe/framework/deps/strong_int.h"
-#include "mediapipe/framework/port/logging.h"
 #include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
+#include "mediapipe/framework/deps/strong_int.h"
 
 namespace mediapipe {
 namespace intops {
@@ -68,8 +69,8 @@ class SafeIntStrongIntValidator {
     // Check that the underlying integral type provides a range that is
     // compatible with two's complement.
     if (std::numeric_limits<T>::is_signed) {
-      ABSL_CHECK_EQ(-1,
-               std::numeric_limits<T>::min() + std::numeric_limits<T>::max())
+      ABSL_CHECK_EQ(
+          -1, std::numeric_limits<T>::min() + std::numeric_limits<T>::max())
           << "unexpected integral bounds";
     }
 
@@ -228,7 +229,7 @@ class SafeIntStrongIntValidator {
     }
   }
   template <typename T>
-  static void ValidateLeftShift(T lhs, int64 rhs) {
+  static void ValidateLeftShift(T lhs, int64_t rhs) {
     if (std::numeric_limits<T>::is_signed) {
       // Signed types only.
       if (lhs < 0) {
@@ -247,7 +248,7 @@ class SafeIntStrongIntValidator {
     }
   }
   template <typename T>
-  static void ValidateRightShift(T lhs, int64 rhs) {
+  static void ValidateRightShift(T lhs, int64_t rhs) {
     if (std::numeric_limits<T>::is_signed) {
       // Signed types only.
       if (lhs < 0) {
@@ -285,15 +286,15 @@ class SafeIntStrongIntValidator {
   }
 };
 
-// A SafeIntStrongIntValidator policy class to LOG(FATAL) on errors.
+// A SafeIntStrongIntValidator policy class to ABSL_LOG(FATAL) on errors.
 struct LogFatalOnError {
   template <typename Tlhs, typename Trhs>
   static void Error(const char* error, Tlhs lhs, Trhs rhs, const char* op) {
-    LOG(FATAL) << error << ": (" << lhs << " " << op << " " << rhs << ")";
+    ABSL_LOG(FATAL) << error << ": (" << lhs << " " << op << " " << rhs << ")";
   }
   template <typename Tval>
   static void Error(const char* error, Tval val, const char* op) {
-    LOG(FATAL) << error << ": (" << op << val << ")";
+    ABSL_LOG(FATAL) << error << ": (" << op << val << ")";
   }
 };
 

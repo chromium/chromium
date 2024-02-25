@@ -34,6 +34,25 @@ VALUES
     -9223372036854775808,
     'https://owner.example.com',
     'https://publisher.example.com',
+    'groupNullUserBiddingSignals',
+    'https://publisher.example.com/page1.html',
+    'https://owner.example.com/bidder.js',
+    '',
+    'https://owner.example.com/update',
+    'https://owner.example.com/signals',
+    '["groupNullUserBiddingSignals"]',
+    NULL,
+    '[{"metadata":"[\"4\",\"5\",null,\"6\"]","url":"https://ads.example.com/1"}]',
+    '');
+
+INSERT INTO interest_groups
+VALUES
+  (
+    13293932603076872,
+    13291340603081533,
+    -9223372036854775808,
+    'https://owner.example.com',
+    'https://publisher.example.com',
     'group1',
     'https://publisher.example.com/page1.html',
     'https://owner.example.com/bidder.js',

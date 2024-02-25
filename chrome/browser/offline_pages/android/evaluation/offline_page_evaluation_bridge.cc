@@ -71,8 +71,10 @@ void JNI_OfflinePageEvaluationBridge_ToJavaOfflinePageList(
         ConvertUTF8ToJavaString(env, offline_page.client_id.id),
         ConvertUTF16ToJavaString(env, offline_page.title),
         ConvertUTF8ToJavaString(env, offline_page.file_path.value()),
-        offline_page.file_size, offline_page.creation_time.ToJavaTime(),
-        offline_page.access_count, offline_page.last_access_time.ToJavaTime(),
+        offline_page.file_size,
+        offline_page.creation_time.InMillisecondsSinceUnixEpoch(),
+        offline_page.access_count,
+        offline_page.last_access_time.InMillisecondsSinceUnixEpoch(),
         ConvertUTF8ToJavaString(env, offline_page.request_origin));
   }
 }

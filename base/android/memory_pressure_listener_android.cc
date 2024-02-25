@@ -4,6 +4,7 @@
 
 #include "base/android/memory_pressure_listener_android.h"
 
+#include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/base_jni/MemoryPressureListener_jni.h"
 #include "base/memory/memory_pressure_listener.h"
 
@@ -18,12 +19,14 @@ static void JNI_MemoryPressureListener_OnMemoryPressure(
           memory_pressure_level));
 }
 
-namespace base {
-namespace android {
+static void JNI_MemoryPressureListener_OnPreFreeze(JNIEnv* env) {
+  base::android::PreFreezeBackgroundMemoryTrimmer::OnPreFreeze();
+}
+
+namespace base::android {
 
 void MemoryPressureListenerAndroid::Initialize(JNIEnv* env) {
   Java_MemoryPressureListener_addNativeCallback(env);
 }
 
-}  // namespace android
-}  // namespace base
+}  // namespace base::android

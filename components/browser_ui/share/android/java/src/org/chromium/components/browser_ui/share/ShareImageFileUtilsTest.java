@@ -53,9 +53,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests of {@link ShareImageFileUtils}.
- */
+/** Tests of {@link ShareImageFileUtils}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
@@ -94,6 +92,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         }
 
         private final long mTimeStamp;
+
         private TestClipDescriptionWrapper(ClipDescription other) {
             super(other);
             mTimeStamp = SystemClock.elapsedRealtime();
@@ -105,13 +104,10 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         }
     }
 
-    @Mock
-    ClipboardManager mMockClipboardManager;
+    @Mock ClipboardManager mMockClipboardManager;
 
-    @Nullable
-    ClipData mPrimaryClip;
-    @Nullable
-    ClipDescription mPrimaryClipDescription;
+    @Nullable ClipData mPrimaryClip;
+    @Nullable ClipDescription mPrimaryClipDescription;
 
     @Override
     public void setUpTest() throws Exception {
@@ -123,17 +119,25 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         clipboard.setImageFileProvider(new ClipboardImageFileProvider());
 
         // Setup mock clipboard manager for test.
-        doAnswer(invocationOnMock -> {
-            mPrimaryClip = invocationOnMock.getArgument(0);
-            mPrimaryClipDescription = new TestClipDescriptionWrapper(mPrimaryClip.getDescription());
-            return null;
-        })
+        doAnswer(
+                        invocationOnMock -> {
+                            mPrimaryClip = invocationOnMock.getArgument(0);
+                            mPrimaryClipDescription =
+                                    new TestClipDescriptionWrapper(mPrimaryClip.getDescription());
+                            return null;
+                        })
                 .when(mMockClipboardManager)
                 .setPrimaryClip(notNull());
-        doAnswer((invocationOnMock -> { return mPrimaryClip; }))
+        doAnswer(
+                        (invocationOnMock -> {
+                            return mPrimaryClip;
+                        }))
                 .when(mMockClipboardManager)
                 .getPrimaryClip();
-        doAnswer((invocationOnMock -> { return mPrimaryClipDescription; }))
+        doAnswer(
+                        (invocationOnMock -> {
+                            return mPrimaryClipDescription;
+                        }))
                 .when(mMockClipboardManager)
                 .getPrimaryClipDescription();
         clipboard.overrideClipboardManagerForTesting(mMockClipboardManager);
@@ -178,10 +182,12 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
                 TEST_IMAGE_DATA, fileExtension, imageCallback);
         imageCallback.waitForCallback(0, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         Clipboard.getInstance().setImageUri(imageCallback.getImageUri());
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().getImageUri(),
-                    Matchers.is(imageCallback.getImageUri()));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            Clipboard.getInstance().getImageUri(),
+                            Matchers.is(imageCallback.getImageUri()));
+                });
         return imageCallback.getImageUri();
     }
 
@@ -208,12 +214,13 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     }
 
     private void deleteAllTestImages() throws TimeoutException {
-        AsyncTask.SERIAL_EXECUTOR.execute(() -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                deleteMediaStoreFiles();
-            }
-            deleteExternalStorageFiles();
-        });
+        AsyncTask.SERIAL_EXECUTOR.execute(
+                () -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        deleteMediaStoreFiles();
+                    }
+                    deleteExternalStorageFiles();
+                });
         waitForAsync();
     }
 
@@ -230,8 +237,9 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     }
 
     public void deleteExternalStorageFiles() {
-        File externalStorageDir = ContextUtils.getApplicationContext().getExternalFilesDir(
-                Environment.DIRECTORY_DOWNLOADS);
+        File externalStorageDir =
+                ContextUtils.getApplicationContext()
+                        .getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         String[] children = externalStorageDir.list();
         for (int i = 0; i < children.length; i++) {
             new File(externalStorageDir, children[i]).delete();
@@ -281,12 +289,14 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         String fileName = TEST_IMAGE_FILE_NAME + "_next_availble";
         File externalStorageDir =
                 getActivity().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-        File imageFile = ShareImageFileUtils.getNextAvailableFile(
-                externalStorageDir.getPath(), fileName, TEST_JPG_IMAGE_FILE_EXTENSION);
+        File imageFile =
+                ShareImageFileUtils.getNextAvailableFile(
+                        externalStorageDir.getPath(), fileName, TEST_JPG_IMAGE_FILE_EXTENSION);
         Assert.assertTrue(imageFile.exists());
 
-        File imageFile2 = ShareImageFileUtils.getNextAvailableFile(
-                externalStorageDir.getPath(), fileName, TEST_JPG_IMAGE_FILE_EXTENSION);
+        File imageFile2 =
+                ShareImageFileUtils.getNextAvailableFile(
+                        externalStorageDir.getPath(), fileName, TEST_JPG_IMAGE_FILE_EXTENSION);
         Assert.assertTrue(imageFile2.exists());
         Assert.assertNotEquals(imageFile.getPath(), imageFile2.getPath());
     }

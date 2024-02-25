@@ -13,7 +13,7 @@
         icon-aria-label="$i18n{smbSharesTitle}">
     </cr-policy-pref-indicator>
   </template>
-  <cr-button class="action-button" id="addShare"
+  <cr-button id="addShare"
       on-click="onAddShareClick_"
       disabled="[[!prefs.network_file_shares.allowed.value]]">
     $i18n{addSmbShare}

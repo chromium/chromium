@@ -11,9 +11,16 @@
 
 namespace gpu {
 
+const char kExoTextureLabelPrefix[] = "ExoTexture";
+
 bool IsValidClientUsage(uint32_t usage) {
   constexpr int32_t kClientMax = (LAST_CLIENT_USAGE << 1) - 1;
   return 0 < usage && usage <= kClientMax;
+}
+
+bool HasGLES2ReadOrWriteUsage(uint32_t usage) {
+  return (usage & SHARED_IMAGE_USAGE_GLES2_READ) ||
+         (usage & SHARED_IMAGE_USAGE_GLES2_WRITE);
 }
 
 std::string CreateLabelForSharedImageUsage(uint32_t usage) {
@@ -21,14 +28,14 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
     return {};
 
   const std::pair<SharedImageUsage, const char*> kUsages[] = {
-      {SHARED_IMAGE_USAGE_GLES2, "Gles2"},
+      {SHARED_IMAGE_USAGE_GLES2_READ, "Gles2Read"},
       {SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT, "Gles2FramebufferHint"},
-      {SHARED_IMAGE_USAGE_RASTER, "Raster"},
+      {SHARED_IMAGE_USAGE_RASTER_READ, "RasterRead"},
       {SHARED_IMAGE_USAGE_DISPLAY_READ, "DisplayRead"},
       {SHARED_IMAGE_USAGE_DISPLAY_WRITE, "DisplayWrite"},
       {SHARED_IMAGE_USAGE_SCANOUT, "Scanout"},
       {SHARED_IMAGE_USAGE_OOP_RASTERIZATION, "OopRasterization"},
-      {SHARED_IMAGE_USAGE_WEBGPU, "Webgpu"},
+      {SHARED_IMAGE_USAGE_WEBGPU_READ, "WebgpuRead"},
       {SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE, "ConcurrentReadWrite"},
       {SHARED_IMAGE_USAGE_VIDEO_DECODE, "VideoDecode"},
       {SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE, "WebgpuSwapChainTexture"},
@@ -42,6 +49,9 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
       {SHARED_IMAGE_USAGE_CPU_UPLOAD, "CpuUpload"},
       {SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE, "ScanoutDCompSurface"},
       {SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE, "WebgpuStorageTexture"},
+      {SHARED_IMAGE_USAGE_GLES2_WRITE, "Gles2Write"},
+      {SHARED_IMAGE_USAGE_RASTER_WRITE, "RasterWrite"},
+      {SHARED_IMAGE_USAGE_WEBGPU_WRITE, "WebgpuWrite"},
   };
 
   std::string label;

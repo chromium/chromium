@@ -94,19 +94,14 @@ NLClassifierOptions ConvertToProtoOptions(JNIEnv* env,
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_deinitJni(
-    JNIEnv* env,
-    jobject thiz,
-    jlong native_handle) {
+    JNIEnv* env, jobject thiz, jlong native_handle) {
   delete reinterpret_cast<NLClassifier*>(native_handle);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_initJniWithByteBuffer(
-    JNIEnv* env,
-    jclass thiz,
-    jobject nl_classifier_options,
-    jobject model_buffer,
-    jlong base_options_handle) {
+    JNIEnv* env, jclass thiz, jobject nl_classifier_options,
+    jobject model_buffer, jlong base_options_handle) {
   auto model = GetMappedFileBuffer(env, model_buffer);
   tflite::support::StatusOr<std::unique_ptr<NLClassifier>> classifier_or;
 
@@ -130,10 +125,7 @@ Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_initJniWithByteBuff
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_initJniWithFileDescriptor(
-    JNIEnv* env,
-    jclass thiz,
-    jobject nl_classifier_options,
-    jint fd,
+    JNIEnv* env, jclass thiz, jobject nl_classifier_options, jint fd,
     jlong base_options_handle) {
   tflite::support::StatusOr<std::unique_ptr<NLClassifier>> classifier_or;
 
@@ -159,9 +151,6 @@ Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_initJniWithFileDesc
 
 extern "C" JNIEXPORT jobject JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_NLClassifier_classifyNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle,
-    jstring text) {
+    JNIEnv* env, jclass thiz, jlong native_handle, jstring text) {
   return RunClassifier(env, native_handle, text);
 }

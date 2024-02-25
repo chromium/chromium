@@ -11,9 +11,7 @@ import android.view.View;
 
 import org.chromium.base.test.util.CriteriaHelper;
 
-/**
- * Allows for testing of views which are highlightable via ViewHighlighter.
- */
+/** Allows for testing of views which are highlightable via ViewHighlighter. */
 public class ViewHighlighterTestUtils {
     /**
      * Returns true if the provided view is currently being highlighted.
@@ -52,13 +50,15 @@ public class ViewHighlighterTestUtils {
      */
     public static boolean checkHighlightPulse(View view, long timeoutDuration) {
         try {
-            CriteriaHelper.pollUiThread(()
-                                                -> checkHighlightOn(view),
-                    "Expected highlight to pulse on!", timeoutDuration,
+            CriteriaHelper.pollUiThread(
+                    () -> checkHighlightOn(view),
+                    "Expected highlight to pulse on!",
+                    timeoutDuration,
                     CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-            CriteriaHelper.pollUiThread(()
-                                                -> checkHighlightOff(view),
-                    "Expected highlight to turn off!", timeoutDuration,
+            CriteriaHelper.pollUiThread(
+                    () -> checkHighlightOff(view),
+                    "Expected highlight to turn off!",
+                    timeoutDuration,
                     CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         } catch (AssertionError e) {
             e.printStackTrace();
@@ -77,9 +77,7 @@ public class ViewHighlighterTestUtils {
         return checkHighlightPulse(view, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
     }
 
-    /**
-     * Draws the {@link PulseDrawable} attached to the {@link View} with the {@link Canvas}.
-     */
+    /** Draws the {@link PulseDrawable} attached to the {@link View} with the {@link Canvas}. */
     public static void drawPulseDrawable(View view, Canvas canvas) {
         if (!checkHighlightOn(view)) return;
         LayerDrawable layerDrawable = (LayerDrawable) view.getBackground();

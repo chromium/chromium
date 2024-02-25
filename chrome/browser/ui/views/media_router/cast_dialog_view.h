@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/controls/md_text_button_with_down_arrow.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_access_code_cast_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -23,10 +24,6 @@
 #include "ui/views/controls/menu/menu_runner.h"
 
 class Profile;
-
-namespace gfx {
-class Canvas;
-}  // namespace gfx
 
 namespace media_router {
 
@@ -40,9 +37,9 @@ struct UIMediaSink;
 class CastDialogView : public views::BubbleDialogDelegateView,
                        public CastDialogController::Observer,
                        public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(CastDialogView);
+  METADATA_HEADER(CastDialogView, views::BubbleDialogDelegateView)
 
+ public:
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnDialogModelUpdated(CastDialogView* dialog_view) = 0;
@@ -67,9 +64,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // CastDialogController::Observer:
   void OnModelUpdated(const CastDialogModel& model) override;
   void OnControllerDestroying() override;
-
-  // views::BubbleDialogDelegateView:
-  void OnPaint(gfx::Canvas* canvas) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -126,6 +120,8 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Populates the scroll view containing sinks using the data in |model|.
   void PopulateScrollView(const std::vector<UIMediaSink>& sinks);
 
+  void InitializeSourcesButton();
+
   // Shows the sources menu that allows the user to choose a source to cast.
   void ShowSourcesMenu();
 
@@ -134,6 +130,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void SelectSource(SourceType source);
 
   void SinkPressed(size_t index);
+  void IssuePressed(size_t index);
   void StopPressed(size_t index);
   void FreezePressed(size_t index);
 
@@ -141,7 +138,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // Returns the cast mode that is selected in the sources menu and supported by
   // |sink|. Returns nullopt if no such cast mode exists.
-  absl::optional<MediaCastMode> GetCastModeToUse(const UIMediaSink& sink) const;
+  std::optional<MediaCastMode> GetCastModeToUse(const UIMediaSink& sink) const;
 
   // Disables sink buttons for sinks that do not support the currently selected
   // source.
@@ -189,7 +186,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   raw_ptr<CastDialogAccessCodeCastButton> access_code_cast_button_ = nullptr;
 
   // The sources menu allows the user to choose a source to cast.
-  raw_ptr<views::Button> sources_button_ = nullptr;
+  raw_ptr<views::MdTextButtonWithDownArrow> sources_button_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> sources_menu_model_;
   std::unique_ptr<views::MenuRunner> sources_menu_runner_;
 
@@ -198,7 +195,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // The sink that the user has selected to cast to. If the user is using
   // multiple sinks at the same time, the last activated sink is used.
-  absl::optional<size_t> selected_sink_index_;
+  std::optional<size_t> selected_sink_index_;
 
   base::ObserverList<Observer> observers_;
 

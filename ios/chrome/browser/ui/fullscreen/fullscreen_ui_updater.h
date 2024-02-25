@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
@@ -51,12 +52,12 @@ class FullscreenUIUpdater {
         FullscreenController* controller) override;
 
    private:
-    FullscreenUIUpdater* updater_ = nullptr;
+    raw_ptr<FullscreenUIUpdater> updater_ = nullptr;
     __weak id<FullscreenUIElement> ui_element_ = nil;
   };
 
   // The FullscreenController being observed.
-  FullscreenController* controller_ = nullptr;
+  raw_ptr<FullscreenController> controller_ = nullptr;
   // The observer forwarder.
   FullscreenControllerObserverForwarder forwarder_;
   // Scoped observer for `forwarder_`.

@@ -14,9 +14,12 @@ source_set("mac_notifications") {
     "mac_notification_service_utils.mm",
     "notification_category_manager.h",
     "notification_category_manager.mm",
+    "un_user_notifications_spi.h",
     "unnotification_metrics.h",
     "unnotification_metrics.mm",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",

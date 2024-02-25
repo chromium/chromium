@@ -11,6 +11,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -597,7 +598,7 @@ void Program::UpdateBaseInstanceUniformLocation() {
 
 std::string Program::ProcessLogInfo(const std::string& log) {
   std::string output;
-  re2::StringPiece input(log);
+  std::string_view input(log);
   std::string prior_log;
   std::string hashed_name;
   while (RE2::Consume(&input,
@@ -633,130 +634,6 @@ void Program::UpdateLogInfo() {
   std::string log(temp.get(), len);
   log = ProcessLogInfo(log);
   set_log_info(log.empty() ? nullptr : log.c_str());
-}
-
-void Program::ClearUniforms(std::vector<uint8_t>* zero_buffer) {
-  DCHECK(zero_buffer);
-  if (uniforms_cleared_) {
-    return;
-  }
-  uniforms_cleared_ = true;
-  for (const UniformInfo& uniform_info : uniform_infos_) {
-    GLint location = uniform_info.element_locations[0];
-    GLsizei size = uniform_info.size;
-    uint32_t unit_size =
-        GLES2Util::GetElementCountForUniformType(uniform_info.type) *
-        GLES2Util::GetElementSizeForUniformType(uniform_info.type);
-    DCHECK_LT(0u, unit_size);
-    uint32_t size_needed = size * unit_size;
-    if (size_needed > zero_buffer->size()) {
-      zero_buffer->resize(size_needed, 0u);
-    }
-    const void* zero = &(*zero_buffer)[0];
-    switch (uniform_info.type) {
-    case GL_FLOAT:
-      glUniform1fv(location, size, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_VEC2:
-      glUniform2fv(location, size, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_VEC3:
-      glUniform3fv(location, size, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_VEC4:
-      glUniform4fv(location, size, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_INT:
-    case GL_BOOL:
-    case GL_SAMPLER_2D:
-    case GL_SAMPLER_CUBE:
-    case GL_SAMPLER_EXTERNAL_OES:  // extension.
-    case GL_SAMPLER_2D_RECT_ARB:  // extension.
-      glUniform1iv(location, size, reinterpret_cast<const GLint*>(zero));
-      break;
-    case GL_INT_VEC2:
-    case GL_BOOL_VEC2:
-      glUniform2iv(location, size, reinterpret_cast<const GLint*>(zero));
-      break;
-    case GL_INT_VEC3:
-    case GL_BOOL_VEC3:
-      glUniform3iv(location, size, reinterpret_cast<const GLint*>(zero));
-      break;
-    case GL_INT_VEC4:
-    case GL_BOOL_VEC4:
-      glUniform4iv(location, size, reinterpret_cast<const GLint*>(zero));
-      break;
-    case GL_FLOAT_MAT2:
-      glUniformMatrix2fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_MAT3:
-      glUniformMatrix3fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_MAT4:
-      glUniformMatrix4fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-
-    // ES3 types.
-    case GL_UNSIGNED_INT:
-      glUniform1uiv(location, size, reinterpret_cast<const GLuint*>(zero));
-      break;
-    case GL_SAMPLER_3D:
-    case GL_SAMPLER_2D_SHADOW:
-    case GL_SAMPLER_2D_ARRAY:
-    case GL_SAMPLER_2D_ARRAY_SHADOW:
-    case GL_SAMPLER_CUBE_SHADOW:
-    case GL_INT_SAMPLER_2D:
-    case GL_INT_SAMPLER_3D:
-    case GL_INT_SAMPLER_CUBE:
-    case GL_INT_SAMPLER_2D_ARRAY:
-    case GL_UNSIGNED_INT_SAMPLER_2D:
-    case GL_UNSIGNED_INT_SAMPLER_3D:
-    case GL_UNSIGNED_INT_SAMPLER_CUBE:
-    case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
-      glUniform1iv(location, size, reinterpret_cast<const GLint*>(zero));
-      break;
-    case GL_UNSIGNED_INT_VEC2:
-      glUniform2uiv(location, size, reinterpret_cast<const GLuint*>(zero));
-      break;
-    case GL_UNSIGNED_INT_VEC3:
-      glUniform3uiv(location, size, reinterpret_cast<const GLuint*>(zero));
-      break;
-    case GL_UNSIGNED_INT_VEC4:
-      glUniform4uiv(location, size, reinterpret_cast<const GLuint*>(zero));
-      break;
-    case GL_FLOAT_MAT2x3:
-      glUniformMatrix2x3fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_MAT3x2:
-      glUniformMatrix3x2fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_MAT2x4:
-      glUniformMatrix2x4fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_MAT4x2:
-      glUniformMatrix4x2fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_MAT3x4:
-      glUniformMatrix3x4fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-    case GL_FLOAT_MAT4x3:
-      glUniformMatrix4x3fv(
-          location, size, false, reinterpret_cast<const GLfloat*>(zero));
-      break;
-
-    default:
-      NOTREACHED();
-      break;
-    }
-  }
 }
 
 void Program::Update() {
@@ -1064,19 +941,6 @@ void Program::UpdateProgramOutputs() {
         continue;
       program_output_infos_.push_back(
           ProgramOutputInfo(color_name, index, client_name));
-    } else if (feature_info().workarounds().get_frag_data_info_bug) {
-      DCHECK(!feature_info().feature_flags().ext_blend_func_extended);
-      GLint color_name =
-          glGetFragDataLocation(service_id_, service_name.c_str());
-      if (color_name >= 0) {
-        GLint index = 0;
-        for (size_t ii = 0; ii < output_var.getOutermostArraySize(); ++ii) {
-          std::string array_spec(std::string("[") + base::NumberToString(ii) +
-                                 "]");
-          program_output_infos_.push_back(ProgramOutputInfo(
-              color_name + ii, index, client_name + array_spec));
-        }
-      }
     } else {
       for (size_t ii = 0; ii < output_var.getOutermostArraySize(); ++ii) {
         std::string array_spec(std::string("[") + base::NumberToString(ii) +
@@ -1230,7 +1094,6 @@ void Program::ExecuteProgramOutputBindCalls() {
 }
 
 bool Program::Link(ShaderManager* manager,
-                   Program::VaryingsPackingOption varyings_packing_option,
                    DecoderClient* client) {
   ClearLinkStatus();
 
@@ -1321,7 +1184,7 @@ bool Program::Link(ShaderManager* manager,
       set_log_info(ProcessLogInfo(info_log).c_str());
       return false;
     }
-    if (!CheckVaryingsPacking(varyings_packing_option)) {
+    if (!CheckVaryingsPacking()) {
       set_log_info("Varyings over maximum register limit");
       return false;
     }
@@ -1952,8 +1815,7 @@ bool Program::DetectGlobalNameConflicts(std::string* conflicting_name) const {
   return false;
 }
 
-bool Program::CheckVaryingsPacking(
-    Program::VaryingsPackingOption option) const {
+bool Program::CheckVaryingsPacking() const {
   DCHECK(attached_shaders_[0].get() &&
          attached_shaders_[0]->shader_type() == GL_VERTEX_SHADER &&
          attached_shaders_[1].get() &&
@@ -1964,15 +1826,16 @@ bool Program::CheckVaryingsPacking(
   std::map<std::string, const sh::ShaderVariable*> combined_map;
 
   for (const auto& key_value : *fragment_varyings) {
-    if (!key_value.second.staticUse && option == kCountOnlyStaticallyUsed)
+    if (!key_value.second.staticUse) {
       continue;
+    }
     if (!IsBuiltInFragmentVarying(key_value.first)) {
       VaryingMap::const_iterator vertex_iter =
           vertex_varyings->find(key_value.first);
       if (vertex_iter == vertex_varyings->end() ||
-          (!vertex_iter->second.staticUse &&
-           option == kCountOnlyStaticallyUsed))
+          !vertex_iter->second.staticUse) {
         continue;
+      }
     }
 
     combined_map[key_value.first] = &key_value.second;
@@ -2564,11 +2427,6 @@ void ProgramManager::UnuseProgram(
   DCHECK(IsOwned(program));
   program->DecUseCount();
   RemoveProgramInfoIfUnused(shader_manager, program);
-}
-
-void ProgramManager::ClearUniforms(Program* program) {
-  DCHECK(program);
-  program->ClearUniforms(&zero_);
 }
 
 void ProgramManager::UpdateDrawIDUniformLocation(Program* program) {

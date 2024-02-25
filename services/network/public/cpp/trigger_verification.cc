@@ -4,12 +4,12 @@
 
 #include "services/network/public/cpp/trigger_verification.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/uuid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -25,11 +25,11 @@ TriggerVerification& TriggerVerification::operator=(TriggerVerification&&) =
     default;
 
 // static
-absl::optional<TriggerVerification> TriggerVerification::Create(
+std::optional<TriggerVerification> TriggerVerification::Create(
     std::string token,
     base::Uuid aggregatable_report_id) {
   if (!aggregatable_report_id.is_valid() || token.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return TriggerVerification(std::move(token),

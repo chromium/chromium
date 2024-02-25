@@ -4,6 +4,8 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_data_pipe_writer.h"
 
+#include <optional>
+
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -11,7 +13,6 @@
 #include "net/base/net_errors.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -51,7 +52,7 @@ class SharedDictionaryDataPipeWriterTest : public ::testing::Test {
  public:
   SharedDictionaryDataPipeWriterTest()
       : finish_result_(
-            base::MakeRefCounted<base::RefCountedData<absl::optional<bool>>>()),
+            base::MakeRefCounted<base::RefCountedData<std::optional<bool>>>()),
         dummy_writer_(base::MakeRefCounted<DummySharedDictionaryWriter>()) {
     CreateDataPipe(producer_handle_, consumer_handle_);
   }
@@ -83,7 +84,7 @@ class SharedDictionaryDataPipeWriterTest : public ::testing::Test {
     data_pipe_writer_ = SharedDictionaryDataPipeWriter::Create(
         consumer_handle_, dummy_writer_,
         base::BindOnce(
-            [](scoped_refptr<base::RefCountedData<absl::optional<bool>>>
+            [](scoped_refptr<base::RefCountedData<std::optional<bool>>>
                    finish_result,
                bool result) { finish_result->data = result; },
             finish_result_));
@@ -106,7 +107,7 @@ class SharedDictionaryDataPipeWriterTest : public ::testing::Test {
   }
 
   // Set when `data_pipe_writer_`'s finish_callback is called.
-  scoped_refptr<base::RefCountedData<absl::optional<bool>>> finish_result_;
+  scoped_refptr<base::RefCountedData<std::optional<bool>>> finish_result_;
 
   // The data flow looks like:
   //   `producer_handle_` --> `data_pipe_writer_` --> `consumer_handle_`

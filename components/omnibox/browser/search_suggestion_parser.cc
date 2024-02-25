@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -38,7 +39,6 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -311,12 +311,6 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
                         ? base::UTF8ToUTF16(entity_info_.name())
                         : match_contents;
   match_contents_ = base::CollapseWhitespace(match_contents_, false);
-  // TODO(manukh|crbug.com/1421485) Remove this DCHECK 9/14/23. It's already
-  //   checked in `AutocompleteResult::AppendMatches()`, but duplicated here to
-  //   make it easier to debug if it triggers.
-  DCHECK_EQ(AutocompleteMatch::SanitizeString(match_contents_), match_contents_)
-      << "match type: " << type_ << ", from entity info: << "
-      << !entity_info_.name().empty();
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
 }
@@ -367,8 +361,8 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
   }
 
   // Note we discard our existing match_contents_class_ with this call.
-  match_contents_class_ = AutocompleteProvider::ClassifyAllMatchesInString(
-      input_text, match_contents_, true);
+  match_contents_class_ =
+      ClassifyAllMatchesInString(input_text, match_contents_, true);
 }
 
 void SearchSuggestionParser::SuggestResult::SetAnswer(
@@ -565,7 +559,7 @@ std::string SearchSuggestionParser::ExtractJsonData(
 }
 
 // static
-absl::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
+std::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
     base::StringPiece json_data) {
   // The JSON response should be an array.
   for (size_t response_start_index = json_data.find("["), i = 0;
@@ -574,13 +568,13 @@ absl::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
     // Remove any XSSI guards to allow for JSON parsing.
     json_data.remove_prefix(response_start_index);
 
-    absl::optional<base::Value> data =
+    std::optional<base::Value> data =
         base::JSONReader::Read(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
     if (data && data->is_list()) {
       return std::move(data->GetList());
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -591,12 +585,15 @@ bool SearchSuggestionParser::ParseSuggestResults(
     int default_result_relevance,
     bool is_keyword_result,
     Results* results) {
+  const std::u16string input_text = input.IsZeroSuggest() ? u"" : input.text();
+
   // 1st element: query.
   if (root_list.empty() || !root_list[0].is_string())
     return false;
   std::u16string query = base::UTF8ToUTF16(root_list[0].GetString());
-  if (query != input.text())
+  if (query != input_text) {
     return false;
+  }
 
   // 2nd element: suggestions list.
   if (root_list.size() < 2u || !root_list[1].is_list())
@@ -632,14 +629,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
       relevances = nullptr;
     }
 
-    if (absl::optional<int> relevance =
+    if (std::optional<int> relevance =
             extras.FindInt("google:verbatimrelevance")) {
       results->verbatim_relevance = *relevance;
     }
 
     // Check if the active suggest field trial (if any) has triggered either
     // for the default provider or keyword provider.
-    absl::optional<bool> field_trial_triggered =
+    std::optional<bool> field_trial_triggered =
         extras.FindBool("google:fieldtrialtriggered");
     results->field_trial_triggered = field_trial_triggered.value_or(false);
 
@@ -653,7 +650,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         if (!experiment_stats_v2_dict) {
           continue;
         }
-        absl::optional<int> type_int =
+        std::optional<int> type_int =
             experiment_stats_v2_dict->FindInt(kTypeIntFieldNumber);
         const auto* string_value =
             experiment_stats_v2_dict->FindString(kStringValueFieldNumber);
@@ -710,7 +707,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   std::string type;
   int relevance = default_result_relevance;
   const std::u16string& trimmed_input =
-      base::CollapseWhitespace(input.text(), false);
+      base::CollapseWhitespace(input_text, false);
 
   for (size_t index = 0;
        index < results_list.size() && results_list[index].is_string();
@@ -774,7 +771,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         results->navigation_results.push_back(NavigationResult(
             scheme_classifier, url, match_type, suggest_type, subtypes[index],
             title, deletion_url, is_keyword_result, relevance,
-            relevances != nullptr, input.text()));
+            relevances != nullptr, input_text));
       }
     } else {
       std::u16string annotation;
@@ -806,7 +803,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::u16string match_contents_prefix;
       SuggestionAnswer answer;
       bool answer_parsed_successfully = false;
-      absl::optional<int> suggestion_group_id;
+      std::optional<int> suggestion_group_id;
       omnibox::EntityInfo entity_info;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&

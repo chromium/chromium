@@ -8,7 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './database_tab.js';
 import './discards_tab.js';
-import './graph_tab_template.js';
+import './graph_tab.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

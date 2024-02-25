@@ -4,9 +4,12 @@
 
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
+#include "chrome/browser/android/metrics/jni_headers/AppUpdateInfoUtils_jni.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
@@ -14,7 +17,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "system_profile.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace {
@@ -25,7 +27,7 @@ const int kAppNotificationStatusBoundary = 3;
 
 void EmitAppNotificationStatusHistogram() {
   auto status = Java_NotificationSystemStatusUtil_getAppNotificationStatus(
-      base::android::AttachCurrentThread());
+      jni_zero::AttachCurrentThread());
   UMA_HISTOGRAM_ENUMERATION("Android.AppNotificationStatus", status,
                             kAppNotificationStatusBoundary);
 }
@@ -110,6 +112,8 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   UMA_HISTOGRAM_BOOLEAN("Android.MultiWindowMode.Active",
                         chrome::android::GetIsInMultiWindowModeValue());
+  // Determine and emit to histogram if AppUpdate is available.
+  Java_AppUpdateInfoUtils_emitToHistogram(jni_zero::AttachCurrentThread());
 
   metrics::SystemProfileProto::OS* os_proto =
       uma_proto->mutable_system_profile()->mutable_os();

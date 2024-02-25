@@ -6,19 +6,18 @@ package org.chromium.android_webview.safe_browsing;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 
-/**
- * Helper class for getting the configuration settings related to safebrowsing in WebView.
- */
+/** Helper class for getting the configuration settings related to safebrowsing in WebView. */
 @JNINamespace("android_webview")
 public class AwSafeBrowsingConfigHelper {
     private static volatile boolean sSafeBrowsingUserOptIn;
@@ -44,14 +43,16 @@ public class AwSafeBrowsingConfigHelper {
         sEnabledByManifest = enabled;
     }
 
+    @CalledByNative
     public static boolean getSafeBrowsingEnabledByManifest() {
         return sEnabledByManifest;
     }
 
     // Should only be called once during startup. Calling this multiple times will skew UMA metrics.
     public static void maybeEnableSafeBrowsingFromManifest() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped(
+                        "AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest")) {
             Boolean appOptIn = getOptInPreferenceTraced();
             if (appOptIn == null) {
                 recordAppOptIn(AppOptIn.NO_PREFERENCE);
@@ -66,22 +67,23 @@ public class AwSafeBrowsingConfigHelper {
             setSafeBrowsingEnabledByManifest(
                     appOptIn == null ? !isDisabledByCommandLine() : appOptIn);
 
-            Callback<Boolean> cb = verifyAppsValue
-                    -> setSafeBrowsingUserOptIn(Boolean.TRUE.equals(verifyAppsValue));
+            Callback<Boolean> cb =
+                    verifyAppsValue ->
+                            setSafeBrowsingUserOptIn(Boolean.TRUE.equals(verifyAppsValue));
             PlatformServiceBridge.getInstance().querySafeBrowsingUserConsent(cb);
         }
     }
 
     private static Boolean getOptInPreferenceTraced() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "AwSafeBrowsingConfigHelper.getAppOptInPreference")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("AwSafeBrowsingConfigHelper.getAppOptInPreference")) {
             return ManifestMetadataUtil.getSafeBrowsingAppOptInPreference();
         }
     }
 
     private static boolean isDisabledByCommandLine() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "AwSafeBrowsingConfigHelper.isDisabledByCommandLine")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("AwSafeBrowsingConfigHelper.isDisabledByCommandLine")) {
             CommandLine cli = CommandLine.getInstance();
             // Disable flag has higher precedence than the default
             return cli.hasSwitch(AwSwitches.WEBVIEW_DISABLE_SAFEBROWSING_SUPPORT);
@@ -93,6 +95,13 @@ public class AwSafeBrowsingConfigHelper {
     @CalledByNative
     private static boolean getSafeBrowsingUserOptIn() {
         return sSafeBrowsingUserOptIn;
+    }
+
+    // This feature checks if GMS is present, enabled, accessible to WebView and has minimum
+    // version to support safe browsing
+    @CalledByNative
+    private static boolean canUseGms() {
+        return PlatformServiceBridge.getInstance().canUseGms();
     }
 
     public static void setSafeBrowsingUserOptIn(boolean optin) {

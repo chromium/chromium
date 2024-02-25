@@ -5,6 +5,7 @@
 #ifndef SERVICES_MEDIA_SESSION_PUBLIC_CPP_TEST_MOCK_MEDIA_SESSION_H_
 #define SERVICES_MEDIA_SESSION_PUBLIC_CPP_TEST_MOCK_MEDIA_SESSION_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class UnguessableToken;
@@ -39,14 +39,14 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
   // mojom::MediaSessionObserver overrides.
   void MediaSessionInfoChanged(mojom::MediaSessionInfoPtr session) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<MediaMetadata>& metadata) override;
+      const std::optional<MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<mojom::MediaSessionAction>& actions) override;
   void MediaSessionImagesChanged(
       const base::flat_map<mojom::MediaSessionImageType,
                            std::vector<MediaImage>>& images) override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override;
+      const std::optional<media_session::MediaPosition>& position) override;
 
   void WaitForState(mojom::MediaSessionInfo::SessionState wanted_state);
   void WaitForPlaybackState(mojom::MediaPlaybackState wanted_state);
@@ -87,8 +87,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
     return session_info_;
   }
 
-  const absl::optional<absl::optional<MediaMetadata>>& session_metadata()
-      const {
+  const std::optional<std::optional<MediaMetadata>>& session_metadata() const {
     return session_metadata_;
   }
 
@@ -96,38 +95,39 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
     return *session_actions_;
   }
 
-  const absl::optional<absl::optional<MediaPosition>>& session_position() {
+  const std::optional<std::optional<MediaPosition>>& session_position() {
     return session_position_;
   }
 
  private:
   void StartWaiting();
+  void QuitWaitingIfNeeded();
 
   mojom::MediaSessionInfoPtr session_info_;
-  absl::optional<absl::optional<MediaMetadata>> session_metadata_;
-  absl::optional<std::set<mojom::MediaSessionAction>> session_actions_;
-  absl::optional<
+  std::optional<std::optional<MediaMetadata>> session_metadata_;
+  std::optional<std::set<mojom::MediaSessionAction>> session_actions_;
+  std::optional<
       base::flat_map<mojom::MediaSessionImageType, std::vector<MediaImage>>>
       session_images_;
-  absl::optional<absl::optional<MediaPosition>> session_position_;
+  std::optional<std::optional<MediaPosition>> session_position_;
   bool waiting_for_empty_position_ = false;
 
-  absl::optional<MediaMetadata> expected_metadata_;
-  absl::optional<std::set<mojom::MediaSessionAction>> expected_actions_;
-  absl::optional<bool> expected_controllable_;
-  absl::optional<bool> expected_hide_metadata_;
-  absl::optional<
+  std::optional<MediaMetadata> expected_metadata_;
+  std::optional<std::set<mojom::MediaSessionAction>> expected_actions_;
+  std::optional<bool> expected_controllable_;
+  std::optional<bool> expected_hide_metadata_;
+  std::optional<
       std::pair<mojom::MediaSessionImageType, std::vector<MediaImage>>>
       expected_images_of_type_;
-  absl::optional<MediaPosition> expected_position_;
-  absl::optional<MediaPosition> minimum_expected_position_;
+  std::optional<MediaPosition> expected_position_;
+  std::optional<MediaPosition> minimum_expected_position_;
   bool waiting_for_empty_metadata_ = false;
 
-  absl::optional<mojom::MediaSessionInfo::SessionState> wanted_state_;
-  absl::optional<mojom::MediaPlaybackState> wanted_playback_state_;
-  absl::optional<mojom::MicrophoneState> wanted_microphone_state_;
-  absl::optional<mojom::CameraState> wanted_camera_state_;
-  absl::optional<std::vector<mojom::MediaAudioVideoState>>
+  std::optional<mojom::MediaSessionInfo::SessionState> wanted_state_;
+  std::optional<mojom::MediaPlaybackState> wanted_playback_state_;
+  std::optional<mojom::MicrophoneState> wanted_microphone_state_;
+  std::optional<mojom::CameraState> wanted_camera_state_;
+  std::optional<std::vector<mojom::MediaAudioVideoState>>
       wanted_audio_video_states_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   void GetDebugInfo(GetDebugInfoCallback callback) override;
   void PreviousTrack() override;
   void NextTrack() override;
-  void SkipAd() override {}
+  void SkipAd() override;
   void PreviousSlide() override {}
   void NextSlide() override {}
   void Seek(base::TimeDelta seek_time) override;
@@ -171,7 +171,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   void ScrubTo(base::TimeDelta scrub_to) override;
   void EnterPictureInPicture() override;
   void ExitPictureInPicture() override;
-  void SetAudioSinkId(const absl::optional<std::string>& id) override {}
+  void SetAudioSinkId(const std::optional<std::string>& id) override {}
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
@@ -202,8 +202,8 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   }
   void FlushForTesting();
 
-  void SimulateMetadataChanged(const absl::optional<MediaMetadata>& metadata);
-  void SimulatePositionChanged(const absl::optional<MediaPosition>& position);
+  void SimulateMetadataChanged(const std::optional<MediaMetadata>& metadata);
+  void SimulatePositionChanged(const std::optional<MediaPosition>& position);
 
   void ClearAllImages();
   void SetImagesOfType(mojom::MediaSessionImageType type,
@@ -216,6 +216,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   int next_track_count() const { return next_track_count_; }
   int add_observer_count() const { return add_observer_count_; }
   int seek_count() const { return seek_count_; }
+  int skip_ad_count() const { return skip_ad_count_; }
   int seek_to_count() const { return seek_to_count_; }
 
   bool is_scrubbing() const { return is_scrubbing_; }
@@ -245,6 +246,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   int next_track_count_ = 0;
   int add_observer_count_ = 0;
   int seek_count_ = 0;
+  int skip_ad_count_ = 0;
   int seek_to_count_ = 0;
 
   std::set<mojom::MediaSessionAction> actions_;

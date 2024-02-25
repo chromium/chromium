@@ -6,11 +6,12 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_TEST_MOCK_TRACKER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "build/build_config.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -30,6 +31,11 @@ class MockTracker : public Tracker {
 
   // Tracker implememtation.
   MOCK_METHOD1(NotifyEvent, void(const std::string& event));
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD1(NotifyUsedEvent, void(const base::Feature& feature));
+  MOCK_METHOD1(ClearEventData, void(const base::Feature& feature));
+  MOCK_CONST_METHOD1(ListEvents, EventList(const base::Feature& feature));
+#endif
   MOCK_METHOD1(ShouldTriggerHelpUI, bool(const base::Feature& feature));
   MOCK_METHOD1(ShouldTriggerHelpUIWithSnooze,
                TriggerDetails(const base::Feature& feature));
@@ -42,10 +48,10 @@ class MockTracker : public Tracker {
   MOCK_METHOD1(Dismissed, void(const base::Feature& feature));
   MOCK_METHOD2(DismissedWithSnooze,
                void(const base::Feature& feature,
-                    absl::optional<SnoozeAction> snooze_action));
+                    std::optional<SnoozeAction> snooze_action));
   MOCK_METHOD0(AcquireDisplayLock, std::unique_ptr<DisplayLockHandle>());
   MOCK_METHOD1(SetPriorityNotification, void(const base::Feature&));
-  MOCK_METHOD0(GetPendingPriorityNotification, absl::optional<std::string>());
+  MOCK_METHOD0(GetPendingPriorityNotification, std::optional<std::string>());
   MOCK_METHOD2(RegisterPriorityNotificationHandler,
                void(const base::Feature&, base::OnceClosure));
   MOCK_METHOD1(UnregisterPriorityNotificationHandler,
@@ -53,7 +59,7 @@ class MockTracker : public Tracker {
   MOCK_METHOD1(AddOnInitializedCallback, void(OnInitializedCallback callback));
   MOCK_CONST_METHOD0(GetConfigurationForTesting, const Configuration*());
   MOCK_METHOD2(SetClockForTesting,
-               void(const base::Clock& clock, base::Time& initial_now));
+               void(const base::Clock& clock, base::Time initial_now));
 };
 
 }  // namespace test

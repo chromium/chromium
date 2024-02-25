@@ -1,0 +1,75 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.media_app_ui.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Factory interface to create an untrusted page handler (for the
+// chrome-untrusted:// frame) communicating directly with the browser.
+interface UntrustedPageHandlerFactory {
+  // Create a page handler for the untrusted frame exposing APIs between it and
+  // the browser via |receiver| and |page|.
+  CreateOcrUntrustedPageHandler(
+  pending_receiver<OcrUntrustedPageHandler> receiver,
+      pending_remote<OcrUntrustedPage> page);
+};
+
+struct PageMetadata {
+  // Opaque ID uniquely identifying a page.
+  string id;
+  gfx.mojom.RectF rect;
+};
+
+// Interface implemented in the browser process and called by the
+// chrome-untrusted:// Media App page.
+interface OcrUntrustedPageHandler {
+  // Provides metadata about the document. Page metadata is always provided for
+  // all pages. Called in the following cases:
+  //   a) A page is rotated (only the rotated page is dirty, but potentially all
+  //      pages will get updated metadata). This case is slightly special as a
+  //      DocumentUpdated() will also be called with the rotated page's ID. This
+  //      method will always be called before DocumentUpdated() for a rotated
+  //      page.
+  //   b) A page is deleted. The deleted page will be omitted from the provided
+  //      page metadata.
+  //   c) A deleted page is re-added (undo page delete). The deleted page's UUID
+  //      will be added back into the page metadata in the correct array
+  //      location.
+  //   d) Pages are re-ordered. The array will be re-ordered to match.
+  //   page_metadata: An array of the new coordinate bounds for each page in the
+  //                  document, attached to each page's unique identifier.
+  PageMetadataUpdated(array<PageMetadata> page_metadata);
+
+  // Called when a page in the document becomes dirty, i.e. it needs to go
+  // through OCR again. This includes when:
+  //   a) A page is rotated. This is called in conjunction with the
+  //      PageMetadataUpdated() API, because rotates also cause location
+  //      changes.
+  //   b) A page is edited. This could be a new annotation (freehand or text),
+  //      or a form field edited.
+  //   dirty_page_id: A string containing the unique identifier of the dirty
+  //                  page.
+  PageContentsUpdated(string dirty_page_id);
+
+  // Called whenever the viewport changes, e.g. due to scrolling, zooming,
+  // resizing the window, or opening and closing toolbars/panels.
+  //   viewport_box: The new bounding box of the viewport.
+  //   scale_factor: The ratio between CSS pixels (i.e. ignoring browser and
+  //       pinch zoom) and ink units. Larger numbers indicate the document is
+  //       more zoomed in.
+  ViewportUpdated(gfx.mojom.RectF viewport_box, float scale_factor);
+};
+
+// Interface implemented in JavaScript by the chrome-untrusted:// page for Media
+// App and called by browser process code.
+interface OcrUntrustedPage {
+  // TODO(b/301007305): Implement methods for the OCR service.
+
+  // If a document is currently loaded, scrolls and zooms to the given viewport.
+  // This allows certain AXActions to be implemented such as
+  // `kScrollToMakeVisible` or `kSetScrollOffset`.
+  //   viewport_box: The bounding box representing the new camera position.
+  SetViewport(gfx.mojom.RectF viewport_box);
+};

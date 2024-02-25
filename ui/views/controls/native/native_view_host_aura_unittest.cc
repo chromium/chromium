@@ -43,11 +43,24 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
   };
 
   struct EventDetails {
+    static int id;
+
+    EventDetails(EventType event_type,
+                 aura::Window& window,
+                 const gfx::Rect& event_bounds)
+        : type(event_type), bounds(event_bounds) {
+      if (window.GetId() == aura::Window::kInitialId) {
+        window.SetId(++id);
+      }
+      window_id = window.GetId();
+    }
+
     EventType type;
-    raw_ptr<aura::Window, DanglingUntriaged> window;
+    int window_id;
     gfx::Rect bounds;
     bool operator!=(const EventDetails& rhs) {
-      return type != rhs.type || window != rhs.window || bounds != rhs.bounds;
+      return type != rhs.type || window_id != rhs.window_id ||
+             bounds != rhs.bounds;
     }
   };
 
@@ -63,10 +76,8 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
 
   // aura::WindowObserver overrides
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
-    EventDetails event;
-    event.type = visible ? EVENT_SHOWN : EVENT_HIDDEN;
-    event.window = window;
-    event.bounds = window->GetBoundsInRootWindow();
+    EventDetails event(visible ? EVENT_SHOWN : EVENT_HIDDEN, *window,
+                       window->GetBoundsInRootWindow());
 
     // Dedupe events as a single Hide() call can result in several
     // notifications.
@@ -78,15 +89,13 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override {
-    EventDetails event;
-    event.type = EVENT_BOUNDS_CHANGED;
-    event.window = window;
-    event.bounds = window->GetBoundsInRootWindow();
+    EventDetails event(EVENT_BOUNDS_CHANGED, *window,
+                       window->GetBoundsInRootWindow());
     events_.push_back(event);
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
-    EventDetails event = {EVENT_DESTROYED, window, gfx::Rect()};
+    EventDetails event(EVENT_DESTROYED, *window, gfx::Rect());
     events_.push_back(event);
   }
 
@@ -94,6 +103,8 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
   std::vector<EventDetails> events_;
   gfx::Rect bounds_at_visibility_changed_;
 };
+
+int NativeViewHostWindowObserver::EventDetails::id = 1;
 
 class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
  public:
@@ -333,8 +344,8 @@ TEST_F(NativeViewHostAuraTest, InstallClip) {
 // a regression test for http://crbug.com/389261.
 TEST_F(NativeViewHostAuraTest, ParentAfterDetach) {
   CreateHost();
-  // Force a Layout() now so that the visibility is set to false (because the
-  // bounds is empty).
+  // Trigger layout so that the visibility is set to false (because the bounds
+  // is empty).
   test::RunScheduledLayout(host());
 
   aura::Window* child_win = child()->GetNativeView();
@@ -380,7 +391,7 @@ TEST_F(NativeViewHostAuraTest, RemoveClippingWindowOrder) {
   ASSERT_GE(test_observer.events().size(), 1u);
   EXPECT_EQ(NativeViewHostWindowObserver::EVENT_HIDDEN,
             test_observer.events()[0].type);
-  EXPECT_EQ(clipping_window(), test_observer.events()[0].window);
+  EXPECT_EQ(clipping_window()->GetId(), test_observer.events()[0].window_id);
 
   clipping_window()->RemoveObserver(&test_observer);
   child()->GetNativeView()->RemoveObserver(&test_observer);
@@ -405,8 +416,7 @@ TEST_F(NativeViewHostAuraTest, Attach) {
 
   host()->Attach(child()->GetNativeView());
 
-  // Visibiliity is not updated until Layout() happens. This is normally async,
-  // but force a Layout() so this code doesn't have to wait.
+  // Visibiliity is not updated until layout happens.
   test::RunScheduledLayout(host());
 
   auto expected_bounds = client_bounds;
@@ -414,17 +424,19 @@ TEST_F(NativeViewHostAuraTest, Attach) {
   ASSERT_EQ(3u, test_observer.events().size());
   EXPECT_EQ(NativeViewHostWindowObserver::EVENT_BOUNDS_CHANGED,
             test_observer.events()[0].type);
-  EXPECT_EQ(child()->GetNativeView(), test_observer.events()[0].window);
+  EXPECT_EQ(child()->GetNativeView()->GetId(),
+            test_observer.events()[0].window_id);
   EXPECT_EQ(expected_bounds.ToString(),
             test_observer.events()[0].bounds.ToString());
   EXPECT_EQ(NativeViewHostWindowObserver::EVENT_SHOWN,
             test_observer.events()[1].type);
-  EXPECT_EQ(child()->GetNativeView(), test_observer.events()[1].window);
+  EXPECT_EQ(child()->GetNativeView()->GetId(),
+            test_observer.events()[1].window_id);
   EXPECT_EQ(expected_bounds.ToString(),
             test_observer.events()[1].bounds.ToString());
   EXPECT_EQ(NativeViewHostWindowObserver::EVENT_SHOWN,
             test_observer.events()[2].type);
-  EXPECT_EQ(clipping_window(), test_observer.events()[2].window);
+  EXPECT_EQ(clipping_window()->GetId(), test_observer.events()[2].window_id);
   EXPECT_EQ(expected_bounds.ToString(),
             test_observer.events()[2].bounds.ToString());
 
@@ -623,7 +635,7 @@ class WidgetDelegateForShouldDescendIntoChildForEventHandling
   }
 
  private:
-  raw_ptr<aura::Window, DanglingUntriaged> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 };
 
 TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
@@ -656,6 +668,7 @@ TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
   // Because the delegate overrides ShouldDescendIntoChildForEventHandling()
   // the NativeView does not get the event, but NativeViewHost will.
   EXPECT_EQ(1, on_mouse_pressed_called_count());
+  widget_delegate.set_window(nullptr);
   DestroyHost();
   DestroyTopLevel();
 }

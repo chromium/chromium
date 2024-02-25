@@ -1,4 +1,4 @@
-<style include="settings-shared passwords-shared">
+<style include="settings-shared passwords-shared cr-screen-reader-only">
   .second-column {
     align-items: center;
     display: flex;
@@ -20,17 +20,43 @@
     vertical-align: middle;
   }
 </style>
-
 <div class="list-item type-column" role="row">
   <img id="ibanImage" src="chrome://settings/images/iban.svg" alt="">
-  <div class="summary-column" role="cell">
-    <div id="value" class="ellipses">[[iban.metadata.summaryLabel]]</div>
-    <div id="nickname" class="ellipses sub-label">[[iban.nickname]]</div>
+  <div class="summary-column cr-screen-reader-only-host-node" role="cell">
+    <div class="cr-screen-reader-only">
+      [[getA11yIbanDescription_(iban)]], [[iban.nickname]]
+    </div>
+    <div id="value" class="ellipses" aria-hidden="true">
+      [[iban.metadata.summaryLabel]]
+    </div>
+    <div id="nickname" class="ellipses sub-label" aria-hidden="true">
+      [[iban.nickname]]
+    </div>
   </div>
   <div role="cell" class="second-column">
-    <cr-icon-button class="icon-more-vert" id="ibanMenu"
-        title="[[getMoreActionsTitle_(iban)]]"
-        on-click="onDotsMenuClick_">
-    </cr-icon-button>
+    <div id="paymentsIndicator"
+        hidden$="[[!shouldShowGooglePaymentsIndicator_(iban.metadata)]]">
+<if expr="_google_chrome">
+        <picture id="paymentsIcon">
+          <source
+              srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL"
+              media="(prefers-color-scheme: dark)">
+          <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL">
+        </picture>
+</if>
+<if expr="not _google_chrome">
+        <span class="sub-label">$i18n{googlePayments}</span>
+</if>
+    </div>
+    <template is="dom-if" if="[[showDotsMenu_(iban.metadata)]]">
+      <cr-icon-button class="icon-more-vert" id="ibanMenu"
+          title="[[getMoreActionsTitle_(iban)]]" on-click="onDotsMenuClick_">
+      </cr-icon-button>
+    </template>
+    <template is="dom-if" if="[[!showDotsMenu_(iban.metadata)]]">
+      <cr-icon-button class="icon-external" id="remoteIbanLink"
+          title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
+          on-click="onRemoteEditClick_"></cr-icon-button>
+    </template>
   </div>
 </div>

@@ -199,7 +199,7 @@ ChromotingHostContextDesktop::url_loader_factory() {
   if (!url_loader_factory_owner_) {
     url_loader_factory_owner_ =
         std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
-            url_request_context_getter_);
+            url_request_context_getter_, /* is_trusted= */ true);
   }
   return url_loader_factory_owner_->GetURLLoaderFactory();
 }

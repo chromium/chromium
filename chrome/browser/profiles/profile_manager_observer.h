@@ -36,6 +36,12 @@ class ProfileManagerObserver : public base::CheckedObserver {
   // alive origin.
   virtual void OnKeepAliveAdded(const Profile* profile,
                                 ProfileKeepAliveOrigin keep_alive_origin) {}
+
+  // Called when a new profile is being created. This is called at earlier
+  // stage of Profile creation, i.e., we should not assume Profile
+  // initialization is completed.
+  // In most cases, `OnProfileAdded()` is what you want, instead.
+  virtual void OnProfileCreationStarted(Profile* profile) {}
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_MANAGER_OBSERVER_H_

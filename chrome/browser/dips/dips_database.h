@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,10 @@ class DIPSDatabase {
   // storage accesses).
   static const base::TimeDelta kPopupTtl;
 
-  // Passing in an absl::nullopt `db_path` causes the db to be created in
+  // Passing in an std::nullopt `db_path` causes the db to be created in
   // memory. Init() must be called before using the DIPSDatabase to make sure it
   // is initialized.
-  explicit DIPSDatabase(const absl::optional<base::FilePath>& db_path);
+  explicit DIPSDatabase(const std::optional<base::FilePath>& db_path);
 
   // This object must be destroyed on the thread where all accesses are
   // happening to avoid thread-safety problems.
@@ -56,7 +56,15 @@ class DIPSDatabase {
   // extra columns for recording the first and last time a web authn assertion
   // was called.
   bool MigrateToVersion3();
+
+  // Migrates from v2 to v3 of the DIPS database schema. This migration adds a
+  // Popups table for recording popupts with a current or prior user
+  // interaction.
   bool MigrateToVersion4();
+
+  // Migrates from v2 to v3 of the DIPS database schema. This migration adds an
+  // `is_current_interaction` field to the Popups table.
+  bool MigrateToVersion5();
 
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
@@ -69,18 +77,24 @@ class DIPSDatabase {
   bool WritePopup(const std::string& opener_site,
                   const std::string& popup_site,
                   const uint64_t access_id,
-                  const base::Time& popup_time);
+                  const base::Time& popup_time,
+                  bool is_current_interaction);
 
   // This is implicitly `inline`. Don't move its definition to the .cc file.
-  bool HasExpired(absl::optional<base::Time> time) {
+  bool HasExpired(std::optional<base::Time> time) {
     return time.has_value() &&
            (time.value() + features::kDIPSInteractionTtl.Get()) < clock_->Now();
   }
 
-  absl::optional<StateValue> Read(const std::string& site);
+  std::optional<StateValue> Read(const std::string& site);
 
-  absl::optional<PopupsStateValue> ReadPopup(const std::string& opener_site,
-                                             const std::string& popup_site);
+  std::optional<PopupsStateValue> ReadPopup(const std::string& opener_site,
+                                            const std::string& popup_site);
+
+  // Returns all entries from the `popups` table with a current interaction,
+  // where the last popup time was more recent than `lookback` ago.
+  std::vector<PopupWithTime> ReadRecentPopupsWithInteraction(
+      const base::TimeDelta& lookback);
 
   // Note: this doesn't clear expired interactions from the database unlike
   // the other database querying methods.
@@ -273,6 +287,7 @@ class DIPSDatabase {
   size_t purge_entries_ = 300;
   const base::FilePath db_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool db_init_ = false;
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   mutable base::Time last_health_metrics_time_

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_event_list_view.h"
@@ -11,13 +10,11 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
 namespace ash {
@@ -37,22 +34,20 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
 
 }  // namespace
 
-class CalendarViewPixelTest : public AshTestBase {
+class CalendarViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*glanceables_v2_enabled=*/bool> {
  public:
-  CalendarViewPixelTest() = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        {chromeos::features::kJelly, features::kQsRevamp,
-         features::kCalendarJelly},
-        {});
-    AshTestBase::SetUp();
+  CalendarViewPixelTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
+         {features::kGlanceablesV2CalendarView, AreGlanceablesV2Enabled()}});
   }
 
+  bool AreGlanceablesV2Enabled() { return GetParam(); }
+
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -62,10 +57,10 @@ class CalendarViewPixelTest : public AshTestBase {
     GetPrimaryShelf()->GetStatusAreaWidget()->date_tray()->OnButtonPressed(
         ui::KeyEvent(ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN,
                      ui::EF_NONE));
-    calendar_view_ = static_cast<CalendarView*>(GetPrimaryUnifiedSystemTray()
-                                                    ->bubble()
-                                                    ->quick_settings_view()
-                                                    ->GetDetailedViewForTest());
+    calendar_view_ = GetPrimaryUnifiedSystemTray()
+                         ->bubble()
+                         ->quick_settings_view()
+                         ->GetDetailedViewForTest<CalendarView>();
   }
 
   CalendarView* GetCalendarView() { return calendar_view_; }
@@ -90,15 +85,16 @@ class CalendarViewPixelTest : public AshTestBase {
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
 
  private:
-  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
-      nullptr;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
   static base::Time fake_time_;
 };
 
+INSTANTIATE_TEST_SUITE_P(GlanceablesV2, CalendarViewPixelTest, testing::Bool());
+
 base::Time CalendarViewPixelTest::fake_time_;
 
-TEST_F(CalendarViewPixelTest, Basics) {
+TEST_P(CalendarViewPixelTest, Basics) {
   // Sets time override.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("14 Jun 2023 10:00 GMT", &date));
@@ -111,10 +107,31 @@ TEST_F(CalendarViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_view",
-      /*revision_number=*/2, GetCalendarView()));
+      /*revision_number=*/9, GetCalendarView()));
 }
 
-TEST_F(CalendarViewPixelTest, EventList) {
+// Tests that the scroll view scrolls up when there are not at least 2 weeks
+// visible below todays view (without up-next view).
+TEST_P(CalendarViewPixelTest, Basics_ShowMoreFutureDates) {
+  // Sets time override.
+  base::Time date;
+
+  // Sets today's date to be a later day in a month so that it will scroll up to
+  // show at least two more rows of the current month.
+  ASSERT_TRUE(base::Time::FromString("30 Jun 2023 10:00 GMT", &date));
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewPixelTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  OpenCalendarView();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "calendar_view_more_future_dates",
+      /*revision_number=*/0, GetCalendarView()));
+}
+
+TEST_P(CalendarViewPixelTest, EventList) {
   // Sets time override.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("14 Jun 2023 10:00 GMT", &date));
@@ -141,7 +158,7 @@ TEST_F(CalendarViewPixelTest, EventList) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "event_list_view",
-      /*revision_number=*/4, GetEventListView()));
+      /*revision_number=*/10, GetEventListView()));
 }
 
 }  // namespace ash

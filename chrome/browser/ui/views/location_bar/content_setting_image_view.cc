@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 
+#include <cstddef>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +22,6 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/feature_promo_specification.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -40,7 +41,7 @@
 
 namespace {
 
-absl::optional<ViewID> GetViewID(
+std::optional<ViewID> GetViewID(
     ContentSettingImageModel::ImageType image_type) {
   using ImageType = ContentSettingImageModel::ImageType;
   switch (image_type) {
@@ -65,7 +66,7 @@ absl::optional<ViewID> GetViewID(
     case ImageType::SENSORS:
     case ImageType::NOTIFICATIONS_QUIET_PROMPT:
     case ImageType::STORAGE_ACCESS:
-      return absl::nullopt;
+      return std::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:
       break;
@@ -77,6 +78,8 @@ absl::optional<ViewID> GetViewID(
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageView,
                                       kMediaActivityIndicatorElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageView,
+                                      kMidiSysexActivityIndicatorElementId);
 
 ContentSettingImageView::ContentSettingImageView(
     std::unique_ptr<ContentSettingImageModel> image_model,
@@ -89,9 +92,9 @@ ContentSettingImageView::ContentSettingImageView(
       bubble_view_(nullptr) {
   DCHECK(delegate_);
   SetUpForInOutAnimation();
-  image()->SetFlipCanvasOnPaintForRTLUI(true);
+  image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
 
-  absl::optional<ViewID> view_id =
+  std::optional<ViewID> view_id =
       GetViewID(content_setting_image_model_->image_type());
   if (view_id)
     SetID(*view_id);
@@ -113,9 +116,9 @@ ContentSettingImageView::ContentSettingImageView(
           : std::u16string();
 
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt, accessible_name,
-      /*description=*/absl::nullopt,
-      /*role_description*/ absl::nullopt,
+      /*role*/ std::nullopt, accessible_name,
+      /*description=*/std::nullopt,
+      /*role_description*/ std::nullopt,
       accessible_name.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
                               : ax::mojom::NameFrom::kAttribute);
 
@@ -130,12 +133,8 @@ void ContentSettingImageView::Update() {
   content::WebContents* web_contents =
       delegate_->GetContentSettingWebContents();
 
-  // Calling Update() with a nullptr WebContents will hide the image.
-  content_setting_image_model_->Update(
-      delegate_->ShouldHideContentSettingImage(
-          content_setting_image_model_->image_type())
-          ? nullptr
-          : web_contents);
+  bool force_hide = delegate_->ShouldHideContentSettingImage();
+  content_setting_image_model_->Update(force_hide ? nullptr : web_contents);
   SetTooltipText(content_setting_image_model_->get_tooltip());
 
   if (!content_setting_image_model_->is_visible()) {
@@ -196,13 +195,23 @@ void ContentSettingImageView::Update() {
 
   content_setting_image_model_->SetAnimationHasRun(web_contents);
 
-  if (content_setting_image_model_->image_type() ==
-      ContentSettingImageModel::ImageType::MEDIASTREAM) {
-    SetProperty(views::kElementIdentifierKey, kMediaActivityIndicatorElementId);
+  std::optional<ui::ElementIdentifier> element_identifier;
+  switch (content_setting_image_model_->image_type()) {
+    case ContentSettingImageModel::ImageType::MEDIASTREAM:
+      element_identifier = kMediaActivityIndicatorElementId;
+      break;
+    case ContentSettingImageModel::ImageType::MIDI_SYSEX:
+      element_identifier = kMidiSysexActivityIndicatorElementId;
+      break;
+    default:
+      break;
+  }
+  if (element_identifier) {
+    SetProperty(views::kElementIdentifierKey, *element_identifier);
   }
 }
 
-void ContentSettingImageView::SetIconColor(absl::optional<SkColor> color) {
+void ContentSettingImageView::SetIconColor(std::optional<SkColor> color) {
   if (icon_color_ == color)
     return;
   icon_color_ = color;
@@ -211,7 +220,7 @@ void ContentSettingImageView::SetIconColor(absl::optional<SkColor> color) {
   OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
 }
 
-absl::optional<SkColor> ContentSettingImageView::GetIconColor() const {
+std::optional<SkColor> ContentSettingImageView::GetIconColor() const {
   return icon_color_;
 }
 
@@ -270,8 +279,7 @@ bool ContentSettingImageView::IsBubbleShowing() const {
   return bubble_view_ != nullptr;
 }
 
-ContentSettingImageModel::ImageType ContentSettingImageView::GetTypeForTesting()
-    const {
+ContentSettingImageModel::ImageType ContentSettingImageView::GetType() const {
   return content_setting_image_model_->image_type();
 }
 
@@ -330,6 +338,6 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
   }
 }
 
-BEGIN_METADATA(ContentSettingImageView, IconLabelBubbleView)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, IconColor)
+BEGIN_METADATA(ContentSettingImageView)
+ADD_PROPERTY_METADATA(std::optional<SkColor>, IconColor)
 END_METADATA

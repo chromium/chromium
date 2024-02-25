@@ -51,7 +51,7 @@ class JSEventHandlerForContentAttribute final : public JSEventHandler {
   // In case of the content scripts, Blink runs script in the main world instead
   // of the isolated world for the content script by design.
   DOMWrapperWorld& GetWorld() const override {
-    return DOMWrapperWorld::MainWorld();
+    return DOMWrapperWorld::MainWorld(isolate_);
   }
 
  private:

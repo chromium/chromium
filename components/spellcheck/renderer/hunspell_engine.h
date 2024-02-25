@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/renderer/spelling_engine.h"
@@ -29,9 +30,11 @@ class HunspellEngine : public SpellingEngine {
 
   bool InitializeIfNeeded() override;
   bool IsEnabled() override;
-  bool CheckSpelling(const std::u16string& word_to_check, int tag) override;
+  bool CheckSpelling(const std::u16string& word_to_check,
+                     spellcheck::mojom::SpellCheckHost& host) override;
   void FillSuggestionList(
       const std::u16string& wrong_word,
+      spellcheck::mojom::SpellCheckHost& host,
       std::vector<std::u16string>* optional_suggestions) override;
 
  private:
@@ -59,7 +62,7 @@ class HunspellEngine : public SpellingEngine {
   // This flag is true if we have requested dictionary.
   bool dictionary_requested_;
 
-  service_manager::LocalInterfaceProvider* embedder_provider_;
+  raw_ptr<service_manager::LocalInterfaceProvider> embedder_provider_;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_HUNSPELL_ENGINE_H_

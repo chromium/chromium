@@ -10,19 +10,39 @@
 
 namespace ui {
 
+PlatformWindowOcclusionState
+WaylandOcclusionStateToPlatformWindowOcclusionState(uint32_t mode) {
+  switch (mode) {
+    case ZAURA_SURFACE_OCCLUSION_STATE_UNKNOWN:
+      return PlatformWindowOcclusionState::kUnknown;
+    case ZAURA_SURFACE_OCCLUSION_STATE_VISIBLE:
+      return PlatformWindowOcclusionState::kVisible;
+    case ZAURA_SURFACE_OCCLUSION_STATE_OCCLUDED:
+      return PlatformWindowOcclusionState::kOccluded;
+    case ZAURA_SURFACE_OCCLUSION_STATE_HIDDEN:
+      return PlatformWindowOcclusionState::kHidden;
+  }
+  return PlatformWindowOcclusionState::kUnknown;
+}
+
 WaylandZAuraSurface::WaylandZAuraSurface(zaura_shell* zaura_shell,
                                          wl_surface* wl_surface,
                                          WaylandConnection* connection)
     : zaura_surface_(zaura_shell_get_aura_surface(zaura_shell, wl_surface)),
       connection_(connection) {
   CHECK(zaura_surface_);
-  static constexpr zaura_surface_listener zaura_surface_listener = {
-      &OcclusionChanged,      &LockFrame,    &UnlockFrame,
-      &OcclusionStateChanged, &DeskChanged,  &StartThrottle,
-      &EndThrottle,           &TooltipShown, &TooltipHidden,
+  static constexpr zaura_surface_listener kAuraSurfaceListener = {
+      .occlusion_changed = &OnOcclusionChanged,
+      .lock_frame_normal = &OnLockFrameNormal,
+      .unlock_frame_normal = &OnUnlockFrameNormal,
+      .occlusion_state_changed = &OnOcclusionStateChanged,
+      .desk_changed = &OnDeskChanged,
+      .start_throttle = &OnStartThrottle,
+      .end_throttle = &OnEndThrottle,
+      .tooltip_shown = &OnTooltipShown,
+      .tooltip_hidden = &OnTooltipHidden,
   };
-  zaura_surface_add_listener(zaura_surface_.get(), &zaura_surface_listener,
-                             this);
+  zaura_surface_add_listener(zaura_surface_.get(), &kAuraSurfaceListener, this);
 }
 
 WaylandZAuraSurface::~WaylandZAuraSurface() = default;
@@ -210,10 +230,10 @@ bool WaylandZAuraSurface::IsSupported(uint32_t version) const {
 }
 
 // static.
-void WaylandZAuraSurface::OcclusionChanged(void* data,
-                                           zaura_surface* surface,
-                                           wl_fixed_t occlusion_fraction,
-                                           uint32_t occlusion_reason) {
+void WaylandZAuraSurface::OnOcclusionChanged(void* data,
+                                             zaura_surface* surface,
+                                             wl_fixed_t occlusion_fraction,
+                                             uint32_t occlusion_reason) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
     self->delegate_->OcclusionChanged(occlusion_fraction, occlusion_reason);
@@ -221,7 +241,8 @@ void WaylandZAuraSurface::OcclusionChanged(void* data,
 }
 
 // static.
-void WaylandZAuraSurface::LockFrame(void* data, zaura_surface* surface) {
+void WaylandZAuraSurface::OnLockFrameNormal(void* data,
+                                            zaura_surface* surface) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
     self->delegate_->LockFrame();
@@ -229,7 +250,8 @@ void WaylandZAuraSurface::LockFrame(void* data, zaura_surface* surface) {
 }
 
 // static.
-void WaylandZAuraSurface::UnlockFrame(void* data, zaura_surface* surface) {
+void WaylandZAuraSurface::OnUnlockFrameNormal(void* data,
+                                              zaura_surface* surface) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
     self->delegate_->UnlockFrame();
@@ -237,19 +259,20 @@ void WaylandZAuraSurface::UnlockFrame(void* data, zaura_surface* surface) {
 }
 
 // static.
-void WaylandZAuraSurface::OcclusionStateChanged(void* data,
-                                                zaura_surface* surface,
-                                                uint32_t mode) {
+void WaylandZAuraSurface::OnOcclusionStateChanged(void* data,
+                                                  zaura_surface* surface,
+                                                  uint32_t mode) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
-    self->delegate_->OcclusionStateChanged(mode);
+    self->delegate_->OcclusionStateChanged(
+        WaylandOcclusionStateToPlatformWindowOcclusionState(mode));
   }
 }
 
 // static.
-void WaylandZAuraSurface::DeskChanged(void* data,
-                                      zaura_surface* surface,
-                                      int state) {
+void WaylandZAuraSurface::OnDeskChanged(void* data,
+                                        zaura_surface* surface,
+                                        int state) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
     self->delegate_->DeskChanged(state);
@@ -257,7 +280,7 @@ void WaylandZAuraSurface::DeskChanged(void* data,
 }
 
 // static.
-void WaylandZAuraSurface::StartThrottle(void* data, zaura_surface* surface) {
+void WaylandZAuraSurface::OnStartThrottle(void* data, zaura_surface* surface) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
     self->delegate_->StartThrottle();
@@ -265,7 +288,7 @@ void WaylandZAuraSurface::StartThrottle(void* data, zaura_surface* surface) {
 }
 
 // static.
-void WaylandZAuraSurface::EndThrottle(void* data, zaura_surface* surface) {
+void WaylandZAuraSurface::OnEndThrottle(void* data, zaura_surface* surface) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
     self->delegate_->EndThrottle();
@@ -273,13 +296,13 @@ void WaylandZAuraSurface::EndThrottle(void* data, zaura_surface* surface) {
 }
 
 // static.
-void WaylandZAuraSurface::TooltipShown(void* data,
-                                       zaura_surface* surface,
-                                       const char* text,
-                                       int32_t x,
-                                       int32_t y,
-                                       int32_t width,
-                                       int32_t height) {
+void WaylandZAuraSurface::OnTooltipShown(void* data,
+                                         zaura_surface* surface,
+                                         const char* text,
+                                         int32_t x,
+                                         int32_t y,
+                                         int32_t width,
+                                         int32_t height) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
     self->delegate_->TooltipShown(text, x, y, width, height);
@@ -287,7 +310,7 @@ void WaylandZAuraSurface::TooltipShown(void* data,
 }
 
 // static.
-void WaylandZAuraSurface::TooltipHidden(void* data, zaura_surface* surface) {
+void WaylandZAuraSurface::OnTooltipHidden(void* data, zaura_surface* surface) {
   auto* self = static_cast<WaylandZAuraSurface*>(data);
   if (self && self->delegate_) {
     self->delegate_->TooltipHidden();

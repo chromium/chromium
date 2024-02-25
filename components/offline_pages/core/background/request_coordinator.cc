@@ -76,9 +76,9 @@ constexpr bool IsCanceledOrInternalFailure(Offliner::RequestStatus status) {
 }
 
 // Returns the |BackgroundSavePageResult| appropriate for a single attempt
-// status. Returns |absl::nullopt| for indeterminate status values that can be
+// status. Returns |std::nullopt| for indeterminate status values that can be
 // retried.
-absl::optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
+std::optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     Offliner::RequestStatus status) {
   switch (status) {
       // Success status values.
@@ -94,7 +94,7 @@ absl::optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     case Offliner::RequestStatus::LOADING_DEFERRED:
     case Offliner::RequestStatus::BACKGROUND_SCHEDULER_CANCELED:
     case Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED:
-      return absl::nullopt;
+      return std::nullopt;
 
       // Other failure status values.
     case Offliner::RequestStatus::LOADING_FAILED_NO_RETRY:
@@ -111,7 +111,7 @@ absl::optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     case Offliner::RequestStatus::LOADING_FAILED_HTTP_ERROR:
     case Offliner::RequestStatus::LOADING_FAILED_NO_NEXT:
     case Offliner::RequestStatus::REQUEST_COORDINATOR_TIMED_OUT:
-      return absl::nullopt;
+      return std::nullopt;
 
     // Only used by |Offliner| internally.
     case Offliner::RequestStatus::UNKNOWN:
@@ -121,7 +121,7 @@ absl::optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     // Only recorded by |RequestCoordinator| directly.
     case Offliner::RequestStatus::BROWSER_KILLED:
       DCHECK(false) << "Received invalid status: " << static_cast<int>(status);
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -801,7 +801,7 @@ void RequestCoordinator::OfflinerDoneCallback(const SavePageRequest& request,
 void RequestCoordinator::UpdateRequestForAttempt(
     const SavePageRequest& request,
     Offliner::RequestStatus status) {
-  absl::optional<RequestNotifier::BackgroundSavePageResult> attempt_result =
+  std::optional<RequestNotifier::BackgroundSavePageResult> attempt_result =
       SingleAttemptResult(status);
 
   if (IsCanceledOrInternalFailure(status)) {

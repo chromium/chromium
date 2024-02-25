@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -105,9 +106,7 @@ TEST(Convolver, Halve) {
   output.resize(dest_byte_count);
 
   // First fill the array with a bunch of random data.
-  srand(static_cast<unsigned>(time(NULL)));
-  for (int i = 0; i < src_byte_count; i++)
-    input[i] = rand() * 255 / RAND_MAX;
+  base::RandBytes(input.data(), input.size());
 
   // Compute the filters.
   ConvolutionFilter1D filter_x, filter_y;
@@ -115,8 +114,8 @@ TEST(Convolver, Halve) {
   FillBoxFilter(dest_height, &filter_y);
 
   // Do the convolution.
-  BGRAConvolve2D(&input[0], src_width, true, filter_x, filter_y,
-                 filter_x.num_values() * 4, &output[0], false);
+  BGRAConvolve2D(input.data(), src_width, true, filter_x, filter_y,
+                 filter_x.num_values() * 4, output.data(), false);
 
   // Compute the expected results and check, allowing for a small difference
   // to account for rounding errors.

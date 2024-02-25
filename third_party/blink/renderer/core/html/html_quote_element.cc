@@ -64,8 +64,4 @@ bool HTMLQuoteElement::HasLegalLinkAttribute(const QualifiedName& name) const {
          HTMLElement::HasLegalLinkAttribute(name);
 }
 
-const QualifiedName& HTMLQuoteElement::SubResourceAttributeName() const {
-  return html_names::kCiteAttr;
-}
-
 }  // namespace blink

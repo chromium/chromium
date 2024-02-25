@@ -1,0 +1,173 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnFileTransferEnterpriseConnector": [
+            {
+              "block_large_files": false,
+              "block_password_protected": true,
+              "block_until_verdict": 0,
+              "disable": [
+                {
+                  "source_destination_list": [
+                    {
+                      "destinations": [
+                        {
+                          "file_system_type": "ARC"
+                        },
+                        {
+                          "file_system_type": "SMB"
+                        },
+                        {
+                          "file_system_type": "MY_FILES"
+                        }
+                      ],
+                      "sources": [
+                        {
+                          "file_system_type": "*"
+                        }
+                      ]
+                    }
+                  ],
+                  "tags": [
+                    "dlp"
+                  ]
+                }
+              ],
+              "enable": [
+                {
+                  "source_destination_list": [
+                    {
+                      "destinations": [
+                        {
+                          "file_system_type": "MY_FILES"
+                        }
+                      ],
+                      "sources": [
+                        {
+                          "file_system_type": "*"
+                        }
+                      ]
+                    }
+                  ],
+                  "tags": [
+                    "malware"
+                  ]
+                },
+                {
+                  "source_destination_list": [
+                    {
+                      "destinations": [
+                        {
+                          "file_system_type": "*"
+                        }
+                      ],
+                      "sources": [
+                        {
+                          "file_system_type": "MY_FILES"
+                        },
+                        {
+                          "file_system_type": "SMB"
+                        }
+                      ]
+                    }
+                  ],
+                  "tags": [
+                    "dlp"
+                  ]
+                }
+              ],
+              "service_provider": "Google"
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_file_transfer": {
+            "value": [
+              {
+                "block_large_files": false,
+                "block_password_protected": true,
+                "block_until_verdict": 0,
+                "disable": [
+                  {
+                    "source_destination_list": [
+                      {
+                        "destinations": [
+                          {
+                            "file_system_type": "ARC"
+                          },
+                          {
+                            "file_system_type": "SMB"
+                          },
+                          {
+                            "file_system_type": "MY_FILES"
+                          }
+                        ],
+                        "sources": [
+                          {
+                            "file_system_type": "*"
+                          }
+                        ]
+                      }
+                    ],
+                    "tags": [
+                      "dlp"
+                    ]
+                  }
+                ],
+                "enable": [
+                  {
+                    "source_destination_list": [
+                      {
+                        "destinations": [
+                          {
+                            "file_system_type": "MY_FILES"
+                          }
+                        ],
+                        "sources": [
+                          {
+                            "file_system_type": "*"
+                          }
+                        ]
+                      }
+                    ],
+                    "tags": [
+                      "malware"
+                    ]
+                  },
+                  {
+                    "source_destination_list": [
+                      {
+                        "destinations": [
+                          {
+                            "file_system_type": "*"
+                          }
+                        ],
+                        "sources": [
+                          {
+                            "file_system_type": "MY_FILES"
+                          },
+                          {
+                            "file_system_type": "SMB"
+                          }
+                        ]
+                      }
+                    ],
+                    "tags": [
+                      "dlp"
+                    ]
+                  }
+                ],
+                "service_provider": "Google"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

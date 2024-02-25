@@ -26,8 +26,8 @@
 #if BUILDFLAG(ENABLE_PRINTING)
 
 template <typename T>
-absl::optional<T> OptionalFromMaybe(const protocol::Maybe<T>& maybe) {
-  return maybe.has_value() ? absl::optional<T>(maybe.value()) : absl::nullopt;
+std::optional<T> OptionalFromMaybe(const protocol::Maybe<T>& maybe) {
+  return maybe.has_value() ? std::optional<T>(maybe.value()) : std::nullopt;
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -220,6 +220,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
                              protocol::Maybe<bool> prefer_css_page_size,
                              protocol::Maybe<protocol::String> transfer_mode,
                              protocol::Maybe<bool> generate_tagged_pdf,
+                             protocol::Maybe<bool> generate_document_outline,
                              std::unique_ptr<PrintToPDFCallback> callback) {
   DCHECK(callback);
 
@@ -246,7 +247,8 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
           OptionalFromMaybe<std::string>(header_template),
           OptionalFromMaybe<std::string>(footer_template),
           OptionalFromMaybe<bool>(prefer_css_page_size),
-          OptionalFromMaybe<bool>(generate_tagged_pdf));
+          OptionalFromMaybe<bool>(generate_tagged_pdf),
+          OptionalFromMaybe<bool>(generate_document_outline));
   if (absl::holds_alternative<std::string>(print_pages_params)) {
     callback->sendFailure(protocol::Response::InvalidParams(
         absl::get<std::string>(print_pages_params)));

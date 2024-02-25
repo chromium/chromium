@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_CHROMEOS_VDA_VIDEO_FRAME_POOL_H_
 #define MEDIA_GPU_CHROMEOS_VDA_VIDEO_FRAME_POOL_H_
 
+#include <optional>
+
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,7 +15,6 @@
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class WaitableEvent;
@@ -54,6 +55,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
                                size_t max_num_frames,
                                NotifyLayoutChangedCb notify_layout_changed_cb,
                                ImportFrameCb import_frame_cb) = 0;
+    virtual VideoFrame::StorageType GetFrameStorageType() const = 0;
   };
 
   VdaVideoFramePool(base::WeakPtr<VdaDelegate> vda,
@@ -69,10 +71,11 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
                                             bool use_protected,
                                             bool use_linear_buffers) override;
   scoped_refptr<VideoFrame> GetFrame() override;
+  VideoFrame::StorageType GetFrameStorageType() const override;
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
   void ReleaseAllFrames() override;
-  absl::optional<GpuBufferLayout> GetGpuBufferLayout() override;
+  std::optional<GpuBufferLayout> GetGpuBufferLayout() override;
 
  private:
   // Update the layout of the buffers. |vda_| calls this as
@@ -83,11 +86,11 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
 
   // Thunk to post ImportFrame() to |task_runner|.
   // Because this thunk may be called in any thread, We don't want to
-  // dereference WeakPtr. Therefore we wrap the WeakPtr by absl::optional to
+  // dereference WeakPtr. Therefore we wrap the WeakPtr by std::optional to
   // avoid the task runner defererencing the WeakPtr.
   static void ImportFrameThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      absl::optional<base::WeakPtr<VdaVideoFramePool>> weak_this,
+      std::optional<base::WeakPtr<VdaVideoFramePool>> weak_this,
       scoped_refptr<VideoFrame> frame);
   // Import an available frame.
   void ImportFrame(scoped_refptr<VideoFrame> frame);
@@ -103,15 +106,19 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   // should be called on |parent_task_runner_|.
   scoped_refptr<base::SequencedTaskRunner> vda_task_runner_;
 
+  // The storage type of frames imported by |vda_|. This is set at
+  // construction time by calling |vda_->GetFrameStorageType()|.
+  const VideoFrame::StorageType vda_frame_storage_type_;
+
   // The callback which is called when the pool is not exhausted.
   base::OnceClosure frame_available_cb_;
 
   // The layout of the frames in |frame_pool_|.
-  absl::optional<GpuBufferLayout> layout_;
+  std::optional<GpuBufferLayout> layout_;
 
   // Data passed from Initialize().
   size_t max_num_frames_ = 0;
-  absl::optional<Fourcc> fourcc_;
+  std::optional<Fourcc> fourcc_;
   gfx::Size coded_size_;
   gfx::Rect visible_rect_;
   gfx::Size natural_size_;

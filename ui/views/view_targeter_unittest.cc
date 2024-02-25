@@ -9,6 +9,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_targeter.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -22,6 +24,8 @@ namespace views {
 
 // A derived class of View used for testing purposes.
 class TestingView : public View, public ViewTargeterDelegate {
+  METADATA_HEADER(TestingView, View)
+
  public:
   TestingView() = default;
 
@@ -39,8 +43,13 @@ class TestingView : public View, public ViewTargeterDelegate {
   }
 };
 
+BEGIN_METADATA(TestingView)
+END_METADATA
+
 // A derived class of View having a triangular-shaped hit test mask.
 class TestMaskedView : public View, public MaskedTargeterDelegate {
+  METADATA_HEADER(TestMaskedView, View)
+
  public:
   TestMaskedView() = default;
 
@@ -69,6 +78,9 @@ class TestMaskedView : public View, public MaskedTargeterDelegate {
     return true;
   }
 };
+
+BEGIN_METADATA(TestMaskedView)
+END_METADATA
 
 namespace test {
 

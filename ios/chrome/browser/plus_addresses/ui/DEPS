@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/shared/ui/symbols/symbols.h",
+  "+components/resources"
+]

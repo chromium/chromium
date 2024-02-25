@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/296792757)
-import '../store.js';
-
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FileData, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
-import {constants} from '../../foreground/js/constants.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import {ICON_TYPES, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
+import {type AndroidApp, type FileData, NavigationSection, NavigationType, type State, type Volume} from '../../state/state.js';
+import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
-import {convertEntryToFileData} from '../reducers/all_entries.js';
 import {getEmptyState} from '../store.js';
 
-import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
+import {refreshNavigationRoots} from './navigation.js';
 import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from './volumes.js';
 
 export function setUp() {
@@ -26,7 +23,7 @@ export function setUp() {
 /** Create FileData for recent entry. */
 function createRecentFileData(): FileData {
   const recentEntry = new FakeEntryImpl(
-      'Recent', VolumeManagerCommon.RootType.RECENT,
+      'Recent', RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
       chrome.fileManagerPrivate.FileCategory.ALL);
   return convertEntryToFileData(recentEntry);
@@ -46,8 +43,8 @@ function createShortcutEntryFileData(
 /** Create FileData for MyFiles entry. */
 function createMyFilesEntryFileData(): {fileData: FileData, volume: Volume} {
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const myFilesEntry = new VolumeEntry(downloadsVolumeInfo);
   const fileData = convertEntryToFileData(myFilesEntry);
   const volume = convertVolumeInfoAndMetadataToVolume(
@@ -57,8 +54,8 @@ function createMyFilesEntryFileData(): {fileData: FileData, volume: Volume} {
 
 /** Create FileData for drive root entry. */
 function createDriveRootEntryListFileData(): FileData {
-  const driveRootEntryList = new EntryList(
-      'Google Drive', VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+  const driveRootEntryList =
+      new EntryList('Google Drive', RootType.DRIVE_FAKE_ROOT);
   return convertEntryToFileData(driveRootEntryList);
 }
 
@@ -69,29 +66,29 @@ function createTrashEntryFileData(): FileData {
 }
 
 /** Create android apps. */
-function createAndroidApps(): [
-  chrome.fileManagerPrivate.AndroidApp, chrome.fileManagerPrivate.AndroidApp
-] {
+function createAndroidApps(): [AndroidApp, AndroidApp] {
   return [
     {
       name: 'App 1',
       packageName: 'com.test.app1',
       activityName: 'Activity1',
       iconSet: {icon16x16Url: 'url1', icon32x32Url: 'url2'},
+      icon: {icon16x16Url: 'url1', icon32x32Url: 'url2'},
     },
     {
       name: 'App 2',
       packageName: 'com.test.app2',
       activityName: 'Activity2',
-      iconSet: {icon16x16Url: 'url3', icon32x32Url: 'url4'},
+      iconSet: {icon16x16Url: '', icon32x32Url: ''},
+      icon: ICON_TYPES.GENERIC,
     },
   ];
 }
 
 /** Create file data and volume data for volume. */
 function createVolumeFileData(
-    volumeType: VolumeManagerCommon.VolumeType, volumeId: string,
-    label: string = '', devicePath: string = '',
+    volumeType: VolumeType, volumeId: string, label: string = '',
+    devicePath: string = '',
     providerId: string = ''): {fileData: FileData, volume: Volume} {
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
       volumeType, volumeId, label, devicePath, providerId);
@@ -134,17 +131,19 @@ export async function testNavigationRoots(done: () => void) {
   // Put drive entry in the store.
   const driveRootEntryFileData = createDriveRootEntryListFileData();
   initialState.allEntries[driveRootEntryListKey] = driveRootEntryFileData;
+  initialState.uiEntries.push(driveRootEntryListKey);
   // Put trash entry in the store.
   const trashEntryFileData = createTrashEntryFileData();
   initialState.allEntries[trashRootKey] = trashEntryFileData;
+  initialState.uiEntries.push(trashRootKey);
   // Put the android apps in the store.
   const androidAppsData = createAndroidApps();
   initialState.androidApps[androidAppsData[0].packageName] = androidAppsData[0];
   initialState.androidApps[androidAppsData[1].packageName] = androidAppsData[1];
 
   // Create different volumes.
-  const providerVolume1 = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:prov1');
+  const providerVolume1 =
+      createVolumeFileData(VolumeType.PROVIDED, 'provided:prov1');
   initialState.allEntries[providerVolume1.fileData.entry.toURL()] =
       providerVolume1.fileData;
   initialState.volumes[providerVolume1.volume.volumeId] =
@@ -153,55 +152,50 @@ export async function testNavigationRoots(done: () => void) {
   // Set the device paths of the removable volumes to different strings to
   // test the behavior of two physically separate external devices.
   const hogeVolume = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge', 'Hoge',
-      'device/path/1');
+      VolumeType.REMOVABLE, 'removable:hoge', 'Hoge', 'device/path/1');
   initialState.allEntries[hogeVolume.fileData.entry.toURL()] =
       hogeVolume.fileData;
   initialState.volumes[hogeVolume.volume.volumeId] = hogeVolume.volume;
 
   const fugaVolume = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:fuga', 'Fuga',
-      'device/path/2');
+      VolumeType.REMOVABLE, 'removable:fuga', 'Fuga', 'device/path/2');
   initialState.allEntries[fugaVolume.fileData.entry.toURL()] =
       fugaVolume.fileData;
   initialState.volumes[fugaVolume.volume.volumeId] = fugaVolume.volume;
 
-  const archiveVolume = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.ARCHIVE, 'archive:a-rar');
+  const archiveVolume =
+      createVolumeFileData(VolumeType.ARCHIVE, 'archive:a-rar');
   initialState.allEntries[archiveVolume.fileData.entry.toURL()] =
       archiveVolume.fileData;
   initialState.volumes[archiveVolume.volume.volumeId] = archiveVolume.volume;
 
-  const mtpVolume =
-      createVolumeFileData(VolumeManagerCommon.VolumeType.MTP, 'mtp:a-phone');
+  const mtpVolume = createVolumeFileData(VolumeType.MTP, 'mtp:a-phone');
   initialState.allEntries[mtpVolume.fileData.entry.toURL()] =
       mtpVolume.fileData;
   initialState.volumes[mtpVolume.volume.volumeId] = mtpVolume.volume;
 
-  const providerVolume2 = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:prov2');
+  const providerVolume2 =
+      createVolumeFileData(VolumeType.PROVIDED, 'provided:prov2');
   initialState.allEntries[providerVolume2.fileData.entry.toURL()] =
       providerVolume2.fileData;
   initialState.volumes[providerVolume2.volume.volumeId] =
       providerVolume2.volume;
 
-  const androidFilesVolume = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid');
+  const androidFilesVolume =
+      createVolumeFileData(VolumeType.ANDROID_FILES, 'android_files:droid');
   androidFilesVolume.volume.prefixKey = myFilesVolume.fileData.entry.toURL();
   initialState.allEntries[androidFilesVolume.fileData.entry.toURL()] =
       androidFilesVolume.fileData;
   initialState.volumes[androidFilesVolume.volume.volumeId] =
       androidFilesVolume.volume;
 
-  const smbVolume = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.SMB, 'smb:file-share');
+  const smbVolume = createVolumeFileData(VolumeType.SMB, 'smb:file-share');
   initialState.allEntries[smbVolume.fileData.entry.toURL()] =
       smbVolume.fileData;
   initialState.volumes[smbVolume.volume.volumeId] = smbVolume.volume;
 
   const odfsVolume = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:odfs', '', '',
-      constants.ODFS_EXTENSION_ID);
+      VolumeType.PROVIDED, 'provided:odfs', '', '', ODFS_EXTENSION_ID);
   initialState.allEntries[odfsVolume.fileData.entry.toURL()] =
       odfsVolume.fileData;
   initialState.volumes[odfsVolume.volume.volumeId] = odfsVolume.volume;
@@ -209,8 +203,7 @@ export async function testNavigationRoots(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect navigation roots being built in the store:
   //  1.  fake-entry://recent
@@ -378,8 +371,7 @@ export async function testNavigationRootsWithoutRecents(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect 2 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -412,16 +404,14 @@ export async function testNavigationRootsWithFakeMyFiles(done: () => void) {
   const recentEntryFileData = createRecentFileData();
   initialState.allEntries[recentRootKey] = recentEntryFileData;
   // Put MyFiles entry in the store.
-  const myFilesEntryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const myFilesEntryList = new EntryList('My files', RootType.MY_FILES);
   initialState.allEntries[myFilesEntryList.toURL()] =
       convertEntryToFileData(myFilesEntryList);
 
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect 2 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -461,11 +451,11 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   // Put drive entry in the store.
   const driveRootEntryFileData = createDriveRootEntryListFileData();
   initialState.allEntries[driveRootEntryListKey] = driveRootEntryFileData;
+  initialState.uiEntries.push(driveRootEntryListKey);
 
   // Put removable volume 'hoge' in the store.
   const hogeVolume = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge', 'Hoge',
-      'device/path/1');
+      VolumeType.REMOVABLE, 'removable:hoge', 'Hoge', 'device/path/1');
   initialState.allEntries[hogeVolume.fileData.entry.toURL()] =
       hogeVolume.fileData;
   initialState.volumes[hogeVolume.volume.volumeId] = hogeVolume.volume;
@@ -480,8 +470,7 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   // Put removable volume 'fuga' in the store. Not a partition, so set a
   // different device path to 'hoge'.
   const fugaVolume = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:fuga', 'Fuga',
-      'device/path/2');
+      VolumeType.REMOVABLE, 'removable:fuga', 'Fuga', 'device/path/2');
   initialState.allEntries[fugaVolume.fileData.entry.toURL()] =
       fugaVolume.fileData;
   initialState.volumes[fugaVolume.volume.volumeId] = fugaVolume.volume;
@@ -489,8 +478,7 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect 6 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -551,30 +539,27 @@ export async function testMultipleUsbPartitionsGrouping(done: () => void) {
 
   // Add parent entry list to the store.
   const devicePath = 'device/path/1';
-  const parentEntry = new EntryList(
-      'Partition wrap', VolumeManagerCommon.RootType.REMOVABLE, devicePath);
+  const parentEntry =
+      new EntryList('Partition wrap', RootType.REMOVABLE, devicePath);
   initialState.allEntries[parentEntry.toURL()] =
       convertEntryToFileData(parentEntry);
   // Create 3 volumes with the same device path so the partitions are grouped.
   const partitionVolume1 = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition1',
-      'partition1', devicePath);
+      VolumeType.REMOVABLE, 'removable:partition1', 'partition1', devicePath);
   partitionVolume1.volume.prefixKey = parentEntry.toURL();
   initialState.allEntries[partitionVolume1.fileData.entry.toURL()] =
       partitionVolume1.fileData;
   initialState.volumes[partitionVolume1.volume.volumeId] =
       partitionVolume1.volume;
   const partitionVolume2 = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition2',
-      'partition2', devicePath);
+      VolumeType.REMOVABLE, 'removable:partition2', 'partition2', devicePath);
   initialState.allEntries[partitionVolume2.fileData.entry.toURL()] =
       partitionVolume2.fileData;
   initialState.volumes[partitionVolume2.volume.volumeId] =
       partitionVolume2.volume;
   partitionVolume2.volume.prefixKey = parentEntry.toURL();
   const partitionVolume3 = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition3',
-      'partition3', devicePath);
+      VolumeType.REMOVABLE, 'removable:partition3', 'partition3', devicePath);
   initialState.allEntries[partitionVolume3.fileData.entry.toURL()] =
       partitionVolume3.fileData;
   initialState.volumes[partitionVolume3.volume.volumeId] =
@@ -584,8 +569,7 @@ export async function testMultipleUsbPartitionsGrouping(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect only the parent entry and MyFiles being added to the navigation
   // roots.
@@ -617,13 +601,12 @@ export async function testMultipleUsbPartitionsGrouping(done: () => void) {
 export async function testNavigationRootsWithFilteredVolume(done: () => void) {
   const initialState = getEmptyState();
   // Put volume1 in the store.
-  const volume1 = createVolumeFileData(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable1');
+  const volume1 = createVolumeFileData(VolumeType.REMOVABLE, 'removable1');
   initialState.allEntries[volume1.fileData.entry.toURL()] = volume1.fileData;
   initialState.volumes[volume1.volume.volumeId] = volume1.volume;
   // Put volume2 in the store.
   const volumeInfo2 = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable2');
+      VolumeType.REMOVABLE, 'removable2');
   const volumeEntry2 = new VolumeEntry(volumeInfo2);
   initialState.allEntries[volumeEntry2.toURL()] =
       convertEntryToFileData(volumeEntry2);
@@ -637,8 +620,7 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect only volume1 and MyFiles in the navigation roots.
   const want: State['navigation']['roots'] = [
@@ -658,41 +640,6 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
     },
   ];
   await waitDeepEquals(store, want, (state) => state.navigation.roots);
-
-  done();
-}
-
-/** Tests that navigation entry can be updated correctly. */
-export async function testUpdateNavigationEntry(done: () => void) {
-  const initialState = getEmptyState();
-  // Add MyFiles entry to the store.
-  const myFilesVolume = createMyFilesEntryFileData();
-  const myFilesEntryKey = myFilesVolume.fileData.entry.toURL();
-  initialState.allEntries[myFilesEntryKey] = myFilesVolume.fileData;
-
-  const store = setupStore(initialState);
-
-  // Dispatch an action to update navigation entry.
-  store.dispatch(updateNavigationEntry({key: myFilesEntryKey, expanded: true}));
-
-  // Expect MyFiles entry is expanded in the store.
-  await waitDeepEquals(
-      store, true, (state) => state.allEntries[myFilesEntryKey].expanded);
-
-  done();
-}
-
-/** Tests that navigation entry won't be updated without valid file data. */
-export async function testUpdateNavigationEntryWithoutValidFileData(
-    done: () => void) {
-  const initialState = getEmptyState();
-  const store = setupStore(initialState);
-
-  // Dispatch an action to update an non existed navigation entry.
-  store.dispatch(updateNavigationEntry({key: 'not-exist-key', expanded: true}));
-
-  // Check state won't be touched.
-  await waitDeepEquals(store, initialState, (state) => state);
 
   done();
 }

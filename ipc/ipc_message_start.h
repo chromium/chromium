@@ -17,11 +17,8 @@ enum IPCMessageStart {
   WorkerMsgStart,
   NaClMsgStart,
   PpapiMsgStart,
-  ExtensionMsgStart,
   NaClHostMsgStart,
-  EncryptedMediaMsgStart,
   GinJavaBridgeMsgStart,
-  ExtensionWorkerMsgStart,
   LastIPCMsgStart  // Must come last.
 };
 

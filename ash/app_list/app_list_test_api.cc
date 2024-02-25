@@ -17,11 +17,13 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
+#include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
+#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -34,6 +36,9 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_result_list_view.h"
+#include "ash/app_list/views/search_result_page_view.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/functional/callback.h"
@@ -51,6 +56,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_model.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -211,6 +217,18 @@ RecentAppsView* GetRecentAppsView() {
   return GetAppsContainerView()->GetRecentAppsView();
 }
 
+AppListSearchView* GetSearchView() {
+  if (ShouldUseBubbleAppList()) {
+    return GetAppListBubbleView()->search_page()->search_view();
+  }
+
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->search_result_page_view()
+      ->search_view();
+}
+
 // AppListVisibilityChangedWaiter ----------------------------------------------
 
 // Waits until the app list visibility changes.
@@ -263,8 +281,8 @@ class WindowAddedWaiter : public aura::WindowObserver {
     run_loop_.Quit();
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> container_;
-  raw_ptr<aura::Window, ExperimentalAsh> added_window_ = nullptr;
+  const raw_ptr<aura::Window> container_;
+  raw_ptr<aura::Window> added_window_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -290,7 +308,7 @@ class ScopedItemMoveAnimationDisabler {
   }
 
  private:
-  const raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_;
+  const raw_ptr<AppsGridView> apps_grid_;
 };
 
 }  // namespace
@@ -585,7 +603,7 @@ views::View* AppListTestApi::GetVisibleSearchResultView(int index) {
   app_list->GetViewsInGroup(kSearchResultViewGroup, &search_results);
 
   int current_visible_index = -1;
-  for (auto* view : search_results) {
+  for (views::View* view : search_results) {
     if (view->GetVisible())
       ++current_visible_index;
     if (current_visible_index == index)
@@ -631,6 +649,20 @@ void AppListTestApi::SimulateSearch(const std::u16string& query) {
   textfield->InsertText(
       query,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+}
+
+SearchResultListView* AppListTestApi::GetTopVisibleSearchResultListView() {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  // Check that one of the `result_containers` is kApps.
+  for (SearchResultContainerView* container : result_containers) {
+    SearchResultListView* list_view =
+        views::AsViewClass<SearchResultListView>(container);
+    if (list_view && list_view->GetVisible()) {
+      return list_view;
+    }
+  }
+  return nullptr;
 }
 
 void AppListTestApi::ReorderByMouseClickAtContextMenuInAppsGrid(

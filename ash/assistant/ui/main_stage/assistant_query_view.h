@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
 
@@ -19,6 +20,8 @@ class AssistantQuery;
 // AssistantQueryView is the visual representation of an AssistantQuery. It is a
 // child view of UiElementContainerView.
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
+  METADATA_HEADER(AssistantQueryView, views::View)
+
  public:
   AssistantQueryView();
 
@@ -28,7 +31,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
   ~AssistantQueryView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void OnThemeChanged() override;
@@ -40,10 +42,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
   void SetText(const std::string& high_confidence_text,
                const std::string& low_confidence_text = std::string());
 
-  raw_ptr<views::Label, ExperimentalAsh>
-      high_confidence_label_;  // Owned by view hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh>
-      low_confidence_label_;  // Owned by view hierarchy.
+  raw_ptr<views::Label> high_confidence_label_;  // Owned by view hierarchy.
+  raw_ptr<views::Label> low_confidence_label_;   // Owned by view hierarchy.
 };
 
 }  // namespace ash

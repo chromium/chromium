@@ -22,8 +22,7 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     private final PwaInstallBottomSheetView mView;
 
     /** The delegate handling the install. */
-    @VisibleForTesting
-    protected final AddToHomescreenViewDelegate mDelegate;
+    @VisibleForTesting protected final AddToHomescreenViewDelegate mDelegate;
 
     /** This content's priority. */
     private @ContentPriority int mPriority = ContentPriority.LOW;

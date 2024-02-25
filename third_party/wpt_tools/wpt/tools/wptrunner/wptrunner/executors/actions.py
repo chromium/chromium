@@ -116,6 +116,15 @@ class SetWindowRectAction:
         rect = payload["rect"]
         self.protocol.window.set_rect(rect)
 
+class GetWindowRectAction:
+    name = "get_window_rect"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.window.get_rect()
 
 class ActionSequenceAction:
     name = "action_sequence"
@@ -277,6 +286,18 @@ class SetSPCTransactionModeAction:
         self.logger.debug("Setting SPC transaction mode to %s" % mode)
         return self.protocol.spc_transactions.set_spc_transaction_mode(mode)
 
+class SetRPHRegistrationModeAction:
+    name = "set_rph_registration_mode"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        mode = payload["mode"]
+        self.logger.debug("Setting RPH registration mode to %s" % mode)
+        return self.protocol.rph_registrations.set_rph_registration_mode(mode)
+
 class CancelFedCMDialogAction:
     name = "cancel_fedcm_dialog"
 
@@ -287,6 +308,18 @@ class CancelFedCMDialogAction:
     def __call__(self, payload):
         self.logger.debug("Canceling FedCM dialog")
         return self.protocol.fedcm.cancel_fedcm_dialog()
+
+class ClickFedCMDialogButtonAction:
+    name = "click_fedcm_dialog_button"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        dialog_button = payload["dialog_button"]
+        self.logger.debug(f"Clicking FedCM dialog button: {dialog_button}")
+        return self.protocol.fedcm.click_fedcm_dialog_button()
 
 class SelectFedCMAccountAction:
     name = "select_fedcm_account"
@@ -356,6 +389,61 @@ class ResetFedCMCooldownAction:
         self.logger.debug("Resetting FedCM cooldown")
         return self.protocol.fedcm.reset_fedcm_cooldown()
 
+
+class CreateVirtualSensorAction:
+    name = "create_virtual_sensor"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        sensor_type = payload["sensor_type"]
+        sensor_params = payload["sensor_params"]
+        self.logger.debug("Creating %s sensor with %s values" % (sensor_type, sensor_params))
+        return self.protocol.virtual_sensor.create_virtual_sensor(sensor_type, sensor_params)
+
+
+class UpdateVirtualSensorAction:
+    name = "update_virtual_sensor"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        sensor_type = payload["sensor_type"]
+        reading = payload["reading"]
+        self.logger.debug("Updating %s sensor with new readings: %s" % (sensor_type, reading))
+        return self.protocol.virtual_sensor.update_virtual_sensor(sensor_type, reading)
+
+
+class RemoveVirtualSensorAction:
+    name = "remove_virtual_sensor"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        sensor_type = payload["sensor_type"]
+        self.logger.debug("Removing %s sensor" % sensor_type)
+        return self.protocol.virtual_sensor.remove_virtual_sensor(sensor_type)
+
+
+class GetVirtualSensorInformationAction:
+    name = "get_virtual_sensor_information"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        sensor_type = payload["sensor_type"]
+        self.logger.debug("Requesting information from %s sensor" % sensor_type)
+        return self.protocol.virtual_sensor.get_virtual_sensor_information(sensor_type)
+
+
 actions = [ClickAction,
            DeleteAllCookiesAction,
            GetAllCookiesAction,
@@ -365,6 +453,7 @@ actions = [ClickAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,
+           GetWindowRectAction,
            ActionSequenceAction,
            GenerateTestReportAction,
            SetPermissionAction,
@@ -376,10 +465,16 @@ actions = [ClickAction,
            RemoveAllCredentialsAction,
            SetUserVerifiedAction,
            SetSPCTransactionModeAction,
+           SetRPHRegistrationModeAction,
            CancelFedCMDialogAction,
+           ClickFedCMDialogButtonAction,
            SelectFedCMAccountAction,
            GetFedCMAccountListAction,
            GetFedCMDialogTitleAction,
            GetFedCMDialogTypeAction,
            SetFedCMDelayEnabledAction,
-           ResetFedCMCooldownAction]
+           ResetFedCMCooldownAction,
+           CreateVirtualSensorAction,
+           UpdateVirtualSensorAction,
+           RemoveVirtualSensorAction,
+           GetVirtualSensorInformationAction]

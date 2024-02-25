@@ -34,6 +34,7 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -171,14 +172,18 @@ class ChromeEnvironment {
     auto client_state = CreateTestClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID;
 
+    // TODO(crbug.com/1518674): Add test cases for seeds with a layer of LIMITED
+    // entropy mode.
     MockEntropyProviders entropy_providers({
         .low_entropy = kAlwaysUseLastGroup,
         .high_entropy = kAlwaysUseFirstGroup,
     });
+
+    VariationsLayers layers(seed, entropy_providers);
     // This should mimic the call through SetUpFieldTrials from
     // components/variations/service/variations_service.cc
     VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, entropy_providers, feature_list);
+        seed, *client_state, callback, entropy_providers, layers, feature_list);
   }
 };
 
@@ -198,10 +203,12 @@ class WebViewEnvironment {
     MockEntropyProviders entropy_providers({
         .low_entropy = kAlwaysUseLastGroup,
     });
+
+    VariationsLayers layers(seed, entropy_providers);
     // This should mimic the call through SetUpFieldTrials from
     // android_webview/browser/aw_feature_list_creator.cc
     VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, entropy_providers, feature_list);
+        seed, *client_state, callback, entropy_providers, layers, feature_list);
   }
 };
 
@@ -652,7 +659,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
   const char kForcedOffGroup[] = "ForcedOff";
 
   struct {
-    const raw_ref<const base::Feature, ExperimentalAsh> feature;
+    const raw_ref<const base::Feature> feature;
     const char* enable_features_command_line;
     const char* disable_features_command_line;
     OneHundredPercentGroup one_hundred_percent_group;
@@ -664,54 +671,52 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
       // Check what happens without and command-line forcing flags - that the
       // |one_hundred_percent_group| gets correctly selected and does the right
       // thing w.r.t. to affecting the feature / activating the trial.
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "", "", DEFAULT_GROUP,
-       kDefaultGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "", "", ENABLE_GROUP,
-       kEnabledGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "", "", DISABLE_GROUP,
-       kDisabledGroup, false, true},
+      {ToRawRef(kFeatureOffByDefault), "", "", DEFAULT_GROUP, kDefaultGroup,
+       false, true},
+      {ToRawRef(kFeatureOffByDefault), "", "", ENABLE_GROUP, kEnabledGroup,
+       true, true},
+      {ToRawRef(kFeatureOffByDefault), "", "", DISABLE_GROUP, kDisabledGroup,
+       false, true},
 
       // Do the same as above, but for kFeatureOnByDefault feature.
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "", "", DEFAULT_GROUP,
-       kDefaultGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "", "", ENABLE_GROUP,
-       kEnabledGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "", "", DISABLE_GROUP,
-       kDisabledGroup, false, true},
+      {ToRawRef(kFeatureOnByDefault), "", "", DEFAULT_GROUP, kDefaultGroup,
+       true, true},
+      {ToRawRef(kFeatureOnByDefault), "", "", ENABLE_GROUP, kEnabledGroup, true,
+       true},
+      {ToRawRef(kFeatureOnByDefault), "", "", DISABLE_GROUP, kDisabledGroup,
+       false, true},
 
       // Test forcing each feature on and off through the command-line and that
       // the correct associated experiment gets chosen.
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault),
-       kFeatureOffByDefault.name, "", DEFAULT_GROUP, kForcedOnGroup, true,
-       true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "",
-       kFeatureOffByDefault.name, DEFAULT_GROUP, kForcedOffGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), kFeatureOnByDefault.name,
-       "", DEFAULT_GROUP, kForcedOnGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "",
-       kFeatureOnByDefault.name, DEFAULT_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOffByDefault), kFeatureOffByDefault.name, "",
+       DEFAULT_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOffByDefault), "", kFeatureOffByDefault.name,
+       DEFAULT_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOnByDefault), kFeatureOnByDefault.name, "",
+       DEFAULT_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOnByDefault), "", kFeatureOnByDefault.name,
+       DEFAULT_GROUP, kForcedOffGroup, false, true},
 
       // Check that even if a feature should be enabled or disabled based on the
       // the experiment probability weights, the forcing flag association still
       // takes precedence. This is 4 cases as above, but with different values
       // for |one_hundred_percent_group|.
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault),
-       kFeatureOffByDefault.name, "", ENABLE_GROUP, kForcedOnGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "",
-       kFeatureOffByDefault.name, ENABLE_GROUP, kForcedOffGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), kFeatureOnByDefault.name,
-       "", ENABLE_GROUP, kForcedOnGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "",
-       kFeatureOnByDefault.name, ENABLE_GROUP, kForcedOffGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault),
-       kFeatureOffByDefault.name, "", DISABLE_GROUP, kForcedOnGroup, true,
-       true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOffByDefault), "",
-       kFeatureOffByDefault.name, DISABLE_GROUP, kForcedOffGroup, false, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), kFeatureOnByDefault.name,
-       "", DISABLE_GROUP, kForcedOnGroup, true, true},
-      {ToRawRef<ExperimentalAsh>(kFeatureOnByDefault), "",
-       kFeatureOnByDefault.name, DISABLE_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOffByDefault), kFeatureOffByDefault.name, "",
+       ENABLE_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOffByDefault), "", kFeatureOffByDefault.name,
+       ENABLE_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOnByDefault), kFeatureOnByDefault.name, "",
+       ENABLE_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOnByDefault), "", kFeatureOnByDefault.name,
+       ENABLE_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOffByDefault), kFeatureOffByDefault.name, "",
+       DISABLE_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOffByDefault), "", kFeatureOffByDefault.name,
+       DISABLE_GROUP, kForcedOffGroup, false, true},
+      {ToRawRef(kFeatureOnByDefault), kFeatureOnByDefault.name, "",
+       DISABLE_GROUP, kForcedOnGroup, true, true},
+      {ToRawRef(kFeatureOnByDefault), "", kFeatureOnByDefault.name,
+       DISABLE_GROUP, kForcedOffGroup, false, true},
   };
 
   for (size_t i = 0; i < std::size(test_cases); i++) {
@@ -727,9 +732,8 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     base_scoped_feature_list.Init();
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
-        test_case.enable_features_command_line,
-        test_case.disable_features_command_line);
+    feature_list->InitFromCommandLine(test_case.enable_features_command_line,
+                                      test_case.disable_features_command_line);
 
     VariationsSeed seed;
     Study* study = seed.add_study();

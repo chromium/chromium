@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+input {
+  border: none;
+  padding: 0px;
+  field-sizing: content;
+}
+input::-webkit-search-cancel-button {
+  display: none;
+}
+input::-webkit-inner-spin-button {
+  display: none;
+}
+</style>
+<input id="text">
+<input id="search" type="search">
+<input id="number" type="number">
+<script>
+test(() => {
+  assert_equals(document.querySelector('#text').offsetWidth, 1);
+}, 'The width of an empty text input should be same as the caret width');
+
+test(() => {
+  assert_equals(document.querySelector('#search').offsetWidth, 1);
+}, 'The width of an empty search input should be same as the caret width');
+
+test(() => {
+  assert_equals(document.querySelector('#number').offsetWidth, 1);
+}, 'The width of an empty number input should be same as the caret width');
+</script>

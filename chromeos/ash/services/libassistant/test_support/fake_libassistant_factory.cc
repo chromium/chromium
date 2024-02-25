@@ -5,7 +5,6 @@
 #include "chromeos/ash/services/libassistant/test_support/fake_libassistant_factory.h"
 
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 
 namespace ash::libassistant {
 
@@ -35,13 +34,6 @@ FakeLibassistantFactory::CreateAssistantManager(
   return result;
 }
 
-assistant_client::AssistantManagerInternal*
-FakeLibassistantFactory::UnwrapAssistantManagerInternal(
-    assistant_client::AssistantManager* assistant_manager) {
-  DCHECK(current_assistant_manager_);
-  return &current_assistant_manager_->assistant_manager_internal();
-}
-
 chromeos::assistant::FakeAssistantManager&
 FakeLibassistantFactory::assistant_manager() {
   if (current_assistant_manager_)
@@ -52,11 +44,6 @@ FakeLibassistantFactory::assistant_manager() {
   // instead.
   DCHECK(pending_assistant_manager_);
   return *pending_assistant_manager_;
-}
-
-chromeos::assistant::FakeAssistantManagerInternal&
-FakeLibassistantFactory::assistant_manager_internal() {
-  return assistant_manager().assistant_manager_internal();
 }
 
 }  // namespace ash::libassistant

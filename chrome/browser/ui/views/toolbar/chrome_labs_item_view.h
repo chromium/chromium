@@ -27,8 +27,9 @@ class MdTextButton;
 }  // namespace views
 
 class ChromeLabsItemView : public views::View {
+  METADATA_HEADER(ChromeLabsItemView, views::View)
+
  public:
-  METADATA_HEADER(ChromeLabsItemView);
   // TODO(elainechien): Have the mediator extract all LabInfo so that views do
   // not need to have ChromeLabsModel structures in their dependencies.
   ChromeLabsItemView(
@@ -41,7 +42,7 @@ class ChromeLabsItemView : public views::View {
 
   ~ChromeLabsItemView() override;
 
-  absl::optional<size_t> GetSelectedIndex() const;
+  std::optional<size_t> GetSelectedIndex() const;
 
   void ShowNewBadge();
 

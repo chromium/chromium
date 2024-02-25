@@ -4,6 +4,7 @@ include_rules = [
   "-chrome/browser/ui/views",
   "+chrome/updater",
   "+components/browser_ui/client_certificate",
+  "+components/browser_ui/device_lock/android",
   "+components/browser_ui/util/android/url_constants.h",
   "+components/country_codes",
   "+components/endpoint_fetcher",
@@ -13,6 +14,8 @@ include_rules = [
   "+components/omnibox",
   "+components/page_image_service",
   "+components/page_load_metrics/browser",
+  "+components/facilitated_payments/content/browser",
+  "+components/facilitated_payments/core/features",
   "+components/power_bookmarks/core",
   "+components/safety_check",
   "+components/saved_tab_groups",
@@ -26,6 +29,8 @@ include_rules = [
   "+components/user_education/test",
   "+components/user_education/webui",
   "+components/user_notes",
+  "+components/web_package",
+  "+pdf/pdf_features.h",
   "+services/content/public",
   "+services/device/public/mojom",
 ]
@@ -44,6 +49,12 @@ specific_include_rules = {
   ],
   "dark_mode_manager_linux(_unittest)?\.cc": [
     "+dbus",
+  ],
+  "delete_address_profile_dialog_controller_impl_interactive_uitest.cc": [
+    "+chrome/browser/ui/views/autofill"
+  ],
+  "edit_address_profile_dialog_controller_impl_interactive_uitest.cc": [
+    "+chrome/browser/ui/views/autofill"
   ],
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",

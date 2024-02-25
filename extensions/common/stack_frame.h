@@ -38,7 +38,7 @@ struct StackFrame {
   std::u16string function;  // optional
 };
 
-typedef std::vector<StackFrame> StackTrace;
+using StackTrace = std::vector<StackFrame>;
 
 }  // namespace extensions
 

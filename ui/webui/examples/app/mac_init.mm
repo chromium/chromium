@@ -53,6 +53,7 @@ namespace webui_examples {
 void MacPreBrowserMain() {
   CHECK_EQ(NSApp, nil);
   [ExamplesApplication sharedApplication];
+  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 }
 
 }  // namespace webui_examples

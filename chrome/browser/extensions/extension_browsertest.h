@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,15 +32,21 @@
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
+namespace content {
+class BrowserContext;
+class ServiceWorkerContext;
+}  // namespace content
+
 namespace extensions {
+class ChromeExtensionTestNotificationObserver;
 class ExtensionCacheFake;
 class ExtensionService;
 class ExtensionSet;
@@ -54,7 +60,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // Different types of extension's lazy background contexts used in some tests.
   enum class ContextType {
     // TODO(crbug.com:/1241220): Get rid of this value when we can use
-    // absl::optional in the LoadOptions struct.
+    // std::optional in the LoadOptions struct.
     // No specific context type.
     kNone,
     // A non-persistent background page/JS based extension.
@@ -127,7 +133,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
     return ExtensionRegistry::Get(profile());
   }
 
-  const std::string& last_loaded_extension_id() {
+  const extensions::ExtensionId& last_loaded_extension_id() {
     return last_loaded_extension_id_;
   }
 
@@ -210,7 +216,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // 1 means you expect a new install, 0 means you expect an upgrade, -1 means
   // you expect a failed upgrade.
   const Extension* InstallExtension(const base::FilePath& path,
-                                    absl::optional<int> expected_change) {
+                                    std::optional<int> expected_change) {
     return InstallOrUpdateExtension(std::string(), path, INSTALL_UI_TYPE_NONE,
                                     std::move(expected_change));
   }
@@ -218,7 +224,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // Same as above, but an install source other than
   // mojom::ManifestLocation::kInternal can be specified.
   const Extension* InstallExtension(const base::FilePath& path,
-                                    absl::optional<int> expected_change,
+                                    std::optional<int> expected_change,
                                     mojom::ManifestLocation install_source) {
     return InstallOrUpdateExtension(std::string(), path, INSTALL_UI_TYPE_NONE,
                                     std::move(expected_change), install_source);
@@ -229,7 +235,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // the time - otherwise the extension installs in a disabled state.
   const Extension* InstallExtensionWithPermissionsGranted(
       const base::FilePath& file_path,
-      absl::optional<int> expected_change) {
+      std::optional<int> expected_change) {
     return InstallOrUpdateExtension(
         std::string(), file_path, INSTALL_UI_TYPE_NONE,
         std::move(expected_change), mojom::ManifestLocation::kInternal,
@@ -239,26 +245,26 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // Installs extension as if it came from the Chrome Webstore.
   const Extension* InstallExtensionFromWebstore(
       const base::FilePath& path,
-      absl::optional<int> expected_change);
+      std::optional<int> expected_change);
 
   // Same as above but passes an id to CrxInstaller and does not allow a
   // privilege increase.
-  const Extension* UpdateExtension(const std::string& id,
+  const Extension* UpdateExtension(const extensions::ExtensionId& id,
                                    const base::FilePath& path,
-                                   absl::optional<int> expected_change) {
+                                   std::optional<int> expected_change) {
     return InstallOrUpdateExtension(id, path, INSTALL_UI_TYPE_NONE,
                                     std::move(expected_change));
   }
 
   // Same as UpdateExtension but waits for the extension to be idle first.
   const Extension* UpdateExtensionWaitForIdle(
-      const std::string& id,
+      const extensions::ExtensionId& id,
       const base::FilePath& path,
-      absl::optional<int> expected_change);
+      std::optional<int> expected_change);
 
   const Extension* InstallExtensionWithUIAutoConfirm(
       const base::FilePath& path,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       Browser* browser) {
     return InstallOrUpdateExtension(
         std::string(), path, INSTALL_UI_TYPE_AUTO_CONFIRM,
@@ -267,7 +273,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
 
   const Extension* InstallExtensionWithSourceAndFlags(
       const base::FilePath& path,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       mojom::ManifestLocation install_source,
       Extension::InitFromValueFlags creation_flags) {
     return InstallOrUpdateExtension(std::string(), path, INSTALL_UI_TYPE_NONE,
@@ -281,35 +287,27 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
         std::string(), path, INSTALL_UI_TYPE_CANCEL, 0);
   }
 
-  void ReloadExtension(const std::string& extension_id);
+  void ReloadExtension(const extensions::ExtensionId& extension_id);
 
-  void UnloadExtension(const std::string& extension_id);
+  void UnloadExtension(const extensions::ExtensionId& extension_id);
 
-  void UninstallExtension(const std::string& extension_id);
+  void UninstallExtension(const extensions::ExtensionId& extension_id);
 
-  void DisableExtension(const std::string& extension_id);
+  void DisableExtension(const extensions::ExtensionId& extension_id);
 
-  void EnableExtension(const std::string& extension_id);
+  void EnableExtension(const extensions::ExtensionId& extension_id);
 
   // Wait for the number of visible page actions to change to |count|.
-  bool WaitForPageActionVisibilityChangeTo(int count) {
-    return observer_->WaitForPageActionVisibilityChangeTo(count);
-  }
+  bool WaitForPageActionVisibilityChangeTo(int count);
 
   // Wait for all extension views to load.
-  bool WaitForExtensionViewsToLoad() {
-    return observer_->WaitForExtensionViewsToLoad();
-  }
+  bool WaitForExtensionViewsToLoad();
 
   // Wait for the extension to be idle.
-  bool WaitForExtensionIdle(const std::string& extension_id) {
-    return observer_->WaitForExtensionIdle(extension_id);
-  }
+  bool WaitForExtensionIdle(const extensions::ExtensionId& extension_id);
 
   // Wait for the extension to not be idle.
-  bool WaitForExtensionNotIdle(const std::string& extension_id) {
-    return observer_->WaitForExtensionNotIdle(extension_id);
-  }
+  bool WaitForExtensionNotIdle(const extensions::ExtensionId& extension_id);
 
   // Simulates a page calling window.open on an URL and waits for the
   // navigation.
@@ -341,7 +339,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // if executing the script fails. The argument `script_user_activation`
   // determines if the script should be executed after a user activation.
   base::Value ExecuteScriptInBackgroundPage(
-      const std::string& extension_id,
+      const extensions::ExtensionId& extension_id,
       const std::string& script,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate);
@@ -353,13 +351,23 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // fails. The argument |script_user_activation| determines if the script
   // should be executed after a user activation.
   std::string ExecuteScriptInBackgroundPageDeprecated(
-      const std::string& extension_id,
+      const extensions::ExtensionId& extension_id,
       const std::string& script,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate);
 
-  bool ExecuteScriptInBackgroundPageNoWait(const std::string& extension_id,
-                                           const std::string& script);
+  bool ExecuteScriptInBackgroundPageNoWait(
+      const extensions::ExtensionId& extension_id,
+      const std::string& script,
+      browsertest_util::ScriptUserActivation script_user_activation =
+          browsertest_util::ScriptUserActivation::kDontActivate);
+
+  // Get the ServiceWorkerContext for the default browser's profile.
+  content::ServiceWorkerContext* GetServiceWorkerContext();
+
+  // Get the ServiceWorkerContext for the `browser_context`.
+  static content::ServiceWorkerContext* GetServiceWorkerContext(
+      content::BrowserContext* browser_context);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // True if the command line should be tweaked as if ChromeOS user is
@@ -394,29 +402,28 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
     INSTALL_UI_TYPE_AUTO_CONFIRM,
   };
 
+  const Extension* InstallOrUpdateExtension(const extensions::ExtensionId& id,
+                                            const base::FilePath& path,
+                                            InstallUIType ui_type,
+                                            std::optional<int> expected_change);
   const Extension* InstallOrUpdateExtension(
-      const std::string& id,
+      const extensions::ExtensionId& id,
       const base::FilePath& path,
       InstallUIType ui_type,
-      absl::optional<int> expected_change);
-  const Extension* InstallOrUpdateExtension(
-      const std::string& id,
-      const base::FilePath& path,
-      InstallUIType ui_type,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags);
   const Extension* InstallOrUpdateExtension(
-      const std::string& id,
+      const extensions::ExtensionId& id,
       const base::FilePath& path,
       InstallUIType ui_type,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       mojom::ManifestLocation install_source);
   const Extension* InstallOrUpdateExtension(
-      const std::string& id,
+      const extensions::ExtensionId& id,
       const base::FilePath& path,
       InstallUIType ui_type,
-      absl::optional<int> expected_change,
+      std::optional<int> expected_change,
       mojom::ManifestLocation install_source,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags,
@@ -472,7 +479,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
 
-  std::string last_loaded_extension_id_;
+  extensions::ExtensionId last_loaded_extension_id_;
 };
 
 }  // namespace extensions

@@ -4,10 +4,19 @@
 
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
 
+#include <optional>
+
+#include "ash/constants/ash_pref_names.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -30,7 +39,9 @@ const std::string ResolveLocaleForTts(const std::string& input_locale) {
       base::EqualsCaseInsensitiveASCII(input_locale, "en-gb") ||
       base::EqualsCaseInsensitiveASCII(input_locale, "en-us") ||
       base::EqualsCaseInsensitiveASCII(input_locale, "es-es") ||
-      base::EqualsCaseInsensitiveASCII(input_locale, "es-us")) {
+      base::EqualsCaseInsensitiveASCII(input_locale, "es-us") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "pt-br") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "pt-pt")) {
     return base::ToLowerASCII(input_locale);
   }
   return std::string(language::ExtractBaseLanguage(input_locale));
@@ -44,6 +55,9 @@ FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
   }
   if (feature_id == kTtsFeatureId) {
     return FeatureIdsEnum::kTts;
+  }
+  if (feature_id == kFontsFeatureId) {
+    return FeatureIdsEnum::kFonts;
   }
 
   // Default value of unknown.
@@ -64,6 +78,13 @@ FeatureSuccessEnum GetSuccessValueForUma(const std::string& feature_id,
       return FeatureSuccessEnum::kTtsSuccess;
     } else {
       return FeatureSuccessEnum::kTtsFailure;
+    }
+  }
+  if (feature_id == kFontsFeatureId) {
+    if (success) {
+      return FeatureSuccessEnum::kFontsSuccess;
+    } else {
+      return FeatureSuccessEnum::kFontsFailure;
     }
   }
 
@@ -168,6 +189,9 @@ const std::string ResolveLocale(const std::string& feature_id,
     return ResolveLocaleForHandwriting(locale);
   } else if (feature_id == kTtsFeatureId) {
     return ResolveLocaleForTts(locale);
+  } else if (feature_id == kFontsFeatureId) {
+    // Language pack resolution is handled by the client.
+    return locale;
   } else {
     DLOG(ERROR) << "ResolveLocale called with wrong feature_id";
     return "";
@@ -177,6 +201,28 @@ const std::string ResolveLocale(const std::string& feature_id,
 bool IsOobe() {
   return session_manager::SessionManager::Get()->session_state() ==
          session_manager::SessionState::OOBE;
+}
+
+base::flat_set<std::string> MapThenFilterStrings(
+    base::span<const std::string> inputs,
+    base::RepeatingCallback<std::optional<std::string>(const std::string&)>
+        input_mapping) {
+  std::vector<std::string> output;
+  for (const auto& input : inputs) {
+    const std::optional<std::string> result = input_mapping.Run(input);
+    if (result.has_value()) {
+      output.push_back(std::move(*result));
+    }
+  }
+
+  return output;
+}
+
+std::vector<std::string> ExtractInputMethodsFromPrefs(PrefService* prefs) {
+  const std::string& preload_engines_str =
+      prefs->GetString(prefs::kLanguagePreloadEngines);
+  return base::SplitString(preload_engines_str, ",", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_ALL);
 }
 
 }  // namespace ash::language_packs

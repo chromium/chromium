@@ -49,7 +49,7 @@ void CookieControlsServiceBridge::SendCookieControlsUIChanges() {
   bool checked = service_->GetToggleCheckedValue();
   CookieControlsEnforcement enforcement =
       service_->GetCookieControlsEnforcement();
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_CookieControlsServiceBridge_sendCookieControlsUIChanges(
       env, jobject_, checked, static_cast<int>(enforcement));
 }

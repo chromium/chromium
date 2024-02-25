@@ -9,14 +9,17 @@
 extern const char kUMATabSwitcherPageChangeInteractionHistogram[];
 
 // Values of the UMA IOS.TabSwitcher.PageChangeInteraction histogram.
+// LINT.IfChange
 enum class TabSwitcherPageChangeInteraction {
   kNone = 0,
   kScrollDrag = 1,
   kControlTap = 2,
   kControlDrag = 3,
   kItemDrag = 4,
-  kMaxValue = kItemDrag,
+  kAccessibilitySwipe = 5,
+  kMaxValue = kAccessibilitySwipe,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Records the number of Tabs closed after a bulk or a "Close All" operation.
 void RecordTabGridCloseTabsCount(int count);

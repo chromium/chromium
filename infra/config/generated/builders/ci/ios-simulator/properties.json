@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/ios-simulator/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -46,7 +49,7 @@
           "group": "tryserver.chromium.mac"
         },
         {
-          "builder": "ios-simulator-inverse-fieldtrials-fyi",
+          "builder": "ios-simulator-siso",
           "group": "tryserver.chromium.mac"
         }
       ]
@@ -71,5 +74,5 @@
     "chromium",
     "ios"
   ],
-  "xcode_build_version": "15a5229h"
+  "xcode_build_version": "15c500b"
 }

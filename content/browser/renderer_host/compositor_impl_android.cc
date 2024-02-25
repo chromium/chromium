@@ -108,48 +108,19 @@ gpu::SharedMemoryLimits GetCompositorContextSharedMemoryLimits(
 gpu::ContextCreationAttribs GetCompositorContextAttributes(
     const gfx::ColorSpace& display_color_space,
     bool requires_alpha_channel) {
-  // This is used for the browser compositor (offscreen) and for the display
-  // compositor (onscreen), so ask for capabilities needed by either one.
-  // The default framebuffer for an offscreen context is not used, so it does
-  // not need alpha, stencil, depth, antialiasing. The display compositor does
-  // not use these things either, except for alpha when it has a transparent
-  // background.
   gpu::ContextCreationAttribs attributes;
-  attributes.alpha_size = -1;
   attributes.bind_generates_resource = false;
-  attributes.color_space = gpu::COLOR_SPACE_SRGB;
+  attributes.need_alpha = requires_alpha_channel;
 
-  if (requires_alpha_channel) {
-    attributes.alpha_size = 8;
-  } else if (viz::PreferRGB565ResourcesForDisplay()) {
-    // In this case we prefer to use RGB565 format instead of RGBA8888 if
-    // possible.
-    // TODO(danakj): CommandBufferStub constructor checks for alpha == 0
-    // in order to enable 565, but it should avoid using 565 when -1s are
-    // specified
-    // (IOW check that a <= 0 && rgb > 0 && rgb <= 565) then alpha should be
-    // -1.
-    // TODO(liberato): This condition is memorized in ComositorView.java, to
-    // avoid using two surfaces temporarily during alpha <-> no alpha
-    // transitions.  If these mismatch, then we risk a power regression if the
-    // SurfaceView is not marked as eOpaque (FORMAT_OPAQUE), and we have an
-    // EGL surface with an alpha channel.  SurfaceFlinger needs at least one of
-    // those hints to optimize out alpha blending.
-    attributes.alpha_size = 0;
-    attributes.red_size = 5;
-    attributes.green_size = 6;
-    attributes.blue_size = 5;
-  }
-
-  attributes.enable_swap_timestamps_if_supported = true;
   attributes.enable_raster_interface = true;
+  attributes.enable_gles2_interface = false;
+  attributes.enable_grcontext = false;
 
   return attributes;
 }
 
 void CreateContextProviderAfterGpuChannelEstablished(
     gpu::SurfaceHandle handle,
-    gpu::ContextCreationAttribs attributes,
     gpu::SharedMemoryLimits shared_memory_limits,
     Compositor::ContextProviderCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
@@ -158,23 +129,21 @@ void CreateContextProviderAfterGpuChannelEstablished(
     return;
   }
 
-  gpu::GpuChannelEstablishFactory* factory =
-      BrowserGpuChannelHostFactory::instance();
-
   int32_t stream_id = kGpuStreamIdDefault;
   gpu::SchedulingPriority stream_priority = kGpuStreamPriorityUI;
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
-  constexpr bool support_grcontext = false;
+
+  gpu::ContextCreationAttribs attributes;
+  attributes.bind_generates_resource = false;
+  attributes.enable_gles2_interface = true;
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), factory->GetGpuMemoryBufferManager(),
-          stream_id, stream_priority, handle,
+          std::move(gpu_channel_host), stream_id, stream_priority, handle,
           GURL(std::string("chrome://gpu/Compositor::CreateContextProvider")),
-          automatic_flushes, support_locking, support_grcontext,
-          shared_memory_limits, attributes,
+          automatic_flushes, support_locking, shared_memory_limits, attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
   std::move(callback).Run(std::move(context_provider));
 }
@@ -341,13 +310,12 @@ void Compositor::Initialize() {
 // static
 void Compositor::CreateContextProvider(
     gpu::SurfaceHandle handle,
-    gpu::ContextCreationAttribs attributes,
     gpu::SharedMemoryLimits shared_memory_limits,
     ContextProviderCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserGpuChannelHostFactory::instance()->EstablishGpuChannel(
       base::BindOnce(&CreateContextProviderAfterGpuChannelEstablished, handle,
-                     attributes, shared_memory_limits, std::move(callback)));
+                     shared_memory_limits, std::move(callback)));
 }
 
 // static
@@ -467,13 +435,7 @@ void CompositorImpl::SetBackgroundColor(int color) {
 void CompositorImpl::CreateLayerTreeHost() {
   DCHECK(!host_);
 
-  cc::slim::LayerTree::InitParams init_params;
-  init_params.client = this;
-  init_params.cc_task_graph_runner =
-      CompositorDependenciesAndroid::Get().GetTaskGraphRunner();
-  init_params.task_runner =
-      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
-  host_ = cc::slim::LayerTree::Create(std::move(init_params));
+  host_ = cc::slim::LayerTree::Create(this);
   DCHECK(!host_->IsVisible());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),
                                  GenerateLocalSurfaceId());
@@ -529,7 +491,7 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   // sync IPC. This guards against reentrant code using |display_private_|
   // before it can be reset.
   display_private_.reset();
-  GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
+  GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_, this);
   if (display_client_) {
     display_client_->SetPreferredRefreshRate(0);
   }
@@ -586,10 +548,6 @@ void CompositorImpl::SetNeedsComposite() {
 
 void CompositorImpl::MaybeCompositeNow() {
   host_->MaybeCompositeNow();
-}
-
-void CompositorImpl::SetNeedsRedraw() {
-  host_->SetNeedsRedraw();
 }
 
 void CompositorImpl::BeginFrame(const viz::BeginFrameArgs& args) {
@@ -658,26 +616,22 @@ void CompositorImpl::OnGpuChannelEstablished(
   DCHECK(window_);
   DCHECK_NE(surface_handle_, gpu::kNullSurfaceHandle);
 
-  gpu::GpuChannelEstablishFactory* factory =
-      BrowserGpuChannelHostFactory::instance();
-
   int32_t stream_id = kGpuStreamIdDefault;
   gpu::SchedulingPriority stream_priority = kGpuStreamPriorityUI;
 
   constexpr bool support_locking = false;
   constexpr bool automatic_flushes = false;
-  constexpr bool support_grcontext = true;
   display_color_spaces_ = display::Screen::GetScreen()
                               ->GetDisplayNearestWindow(root_window_)
                               .GetColorSpaces();
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), factory->GetGpuMemoryBufferManager(),
-          stream_id, stream_priority, gpu::kNullSurfaceHandle,
+          std::move(gpu_channel_host), stream_id, stream_priority,
+          gpu::kNullSurfaceHandle,
           GURL(std::string("chrome://gpu/CompositorImpl::") +
                std::string("CompositorContextProvider")),
-          automatic_flushes, support_locking, support_grcontext,
+          automatic_flushes, support_locking,
           GetCompositorContextSharedMemoryLimits(root_window_),
           GetCompositorContextAttributes(
               display_color_spaces_.GetRasterColorSpace(),

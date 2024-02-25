@@ -6,16 +6,17 @@
 
 #import "base/command_line.h"
 #import "base/logging.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#import "ios/chrome/browser/policy/test_platform_policy_provider.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -35,11 +36,24 @@ bool DisableContentSuggestions() {
 }
 
 bool DisableDiscoverFeed() {
+  // Performance tests may disable the discover feed by setting the
+  // DISABLE_DISCOVER_FEED environment variable. Possible values
+  // the variable may be set to are described in the apple documentation for
+  // boolValue:
+  // https://developer.apple.com/documentation/foundation/nsstring/1409420-boolvalue
+  if ([[NSProcessInfo.processInfo.environment
+          objectForKey:@"DISABLE_DISCOVER_FEED"] boolValue]) {
+    return true;
+  }
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableDiscoverFeed);
 }
 
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
+  return true;
+}
+
+bool DisableDefaultSearchEngineChoice() {
   return true;
 }
 
@@ -158,6 +172,32 @@ void SetUpTestsIfPresent() {
 
 void RunTestsIfPresent() {
   // No-op for Earl Grey.
+}
+
+void SignalAppLaunched() {
+  // No-op for Earl Grey.
+}
+
+base::TimeDelta PasswordCheckMinimumDuration() {
+  // No delays for eg tests.
+  return base::Seconds(0);
+}
+
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
+  return std::make_unique<drive::TestDriveService>();
+}
+
+std::optional<std::string> FETDemoModeOverride() {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          test_switches::kEnableIPH)) {
+    // The FET Demo Mode tracker uses the returned string here as the feature
+    // name to enable. Using a feature name that doesn't exist will disable all
+    // IPH in tests. This is the desired behavior for EG tests if no specific
+    // feature is enabled.
+    return "disable_all";
+  }
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      test_switches::kEnableIPH);
 }
 
 }  // namespace tests_hook

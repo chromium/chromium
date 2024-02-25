@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_variant_numeric.h"
 #include "third_party/blink/renderer/platform/fonts/font_width_variant.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/text_spacing_trim.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
@@ -247,6 +248,9 @@ class PLATFORM_EXPORT FontDescription {
            Family().FamilyName() == font_family_names::kMonospace;
   }
   Kerning GetKerning() const { return static_cast<Kerning>(fields_.kerning_); }
+  TextSpacingTrim GetTextSpacingTrim() const {
+    return static_cast<TextSpacingTrim>(fields_.text_spacing_trim_);
+  }
   FontVariantEastAsian VariantEastAsian() const {
     return FontVariantEastAsian::InitializeFromUnsigned(
         fields_.variant_east_asian_);
@@ -274,8 +278,8 @@ class PLATFORM_EXPORT FontDescription {
   OpticalSizing FontOpticalSizing() const {
     return static_cast<OpticalSizing>(fields_.font_optical_sizing_);
   }
-  FontPalette* GetFontPalette() const { return font_palette_.get(); }
-  FontVariantAlternates* GetFontVariantAlternates() const {
+  const FontPalette* GetFontPalette() const { return font_palette_.get(); }
+  const FontVariantAlternates* GetFontVariantAlternates() const {
     return font_variant_alternates_.get();
   }
   TextRenderingMode TextRendering() const {
@@ -330,10 +334,10 @@ class PLATFORM_EXPORT FontDescription {
   FontWidthVariant WidthVariant() const {
     return static_cast<FontWidthVariant>(fields_.width_variant_);
   }
-  FontFeatureSettings* FeatureSettings() const {
+  const FontFeatureSettings* FeatureSettings() const {
     return feature_settings_.get();
   }
-  FontVariationSettings* VariationSettings() const {
+  const FontVariationSettings* VariationSettings() const {
     return variation_settings_.get();
   }
   FontVariantPosition VariantPosition() const {
@@ -370,6 +374,9 @@ class PLATFORM_EXPORT FontDescription {
     fields_.kerning_ = kerning;
     UpdateTypesettingFeatures();
   }
+  void SetTextSpacingTrim(TextSpacingTrim text_spacing_trim) {
+    fields_.text_spacing_trim_ = static_cast<unsigned>(text_spacing_trim);
+  }
   void SetKeywordSize(unsigned s) { fields_.keyword_size_ = s; }
   void SetFontSmoothing(FontSmoothingMode smoothing) {
     fields_.font_smoothing_ = smoothing;
@@ -377,11 +384,11 @@ class PLATFORM_EXPORT FontDescription {
   void SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
     fields_.font_optical_sizing_ = font_optical_sizing;
   }
-  void SetFontPalette(scoped_refptr<FontPalette> palette) {
+  void SetFontPalette(scoped_refptr<const FontPalette> palette) {
     font_palette_ = std::move(palette);
   }
   void SetFontVariantAlternates(
-      scoped_refptr<FontVariantAlternates> alternates) {
+      scoped_refptr<const FontVariantAlternates> alternates) {
     font_variant_alternates_ = std::move(alternates);
   }
   void SetTextRendering(TextRenderingMode rendering) {
@@ -411,10 +418,11 @@ class PLATFORM_EXPORT FontDescription {
       FontSynthesisSmallCaps font_synthesis_small_caps) {
     fields_.font_synthesis_small_caps_ = font_synthesis_small_caps;
   }
-  void SetFeatureSettings(scoped_refptr<FontFeatureSettings> settings) {
+  void SetFeatureSettings(scoped_refptr<const FontFeatureSettings> settings) {
     feature_settings_ = std::move(settings);
   }
-  void SetVariationSettings(scoped_refptr<FontVariationSettings> settings) {
+  void SetVariationSettings(
+      scoped_refptr<const FontVariationSettings> settings) {
     variation_settings_ = std::move(settings);
   }
   void SetVariantPosition(FontVariantPosition variant_position) {
@@ -459,9 +467,6 @@ class PLATFORM_EXPORT FontDescription {
     return GetHashCategory() == kHashDeletedValue;
   }
 
-  static void SetDefaultTypesettingFeatures(TypesettingFeatures);
-  static TypesettingFeatures DefaultTypesettingFeatures();
-
   unsigned StyleHashWithoutFamilyList() const;
   unsigned GetHash() const;
 
@@ -484,11 +489,11 @@ class PLATFORM_EXPORT FontDescription {
   void UpdateSyntheticOblique();
 
   FontFamily family_list_;  // The list of font families to be used.
-  scoped_refptr<FontFeatureSettings> feature_settings_;
-  scoped_refptr<FontVariationSettings> variation_settings_;
+  scoped_refptr<const FontFeatureSettings> feature_settings_;
+  scoped_refptr<const FontVariationSettings> variation_settings_;
   scoped_refptr<const LayoutLocale> locale_;
-  scoped_refptr<FontPalette> font_palette_;
-  scoped_refptr<FontVariantAlternates> font_variant_alternates_;
+  scoped_refptr<const FontPalette> font_palette_;
+  scoped_refptr<const FontVariantAlternates> font_variant_alternates_;
 
   void UpdateTypesettingFeatures();
 
@@ -557,6 +562,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned font_optical_sizing_ : 1;
     unsigned has_size_adjust_descriptor_ : 1;
     unsigned variant_position_ : 2;
+    unsigned text_spacing_trim_ : kTextSpacingTrimBitCount;
 
     unsigned hash_category_ : 2;  // HashCategory
   };
@@ -567,8 +573,6 @@ class PLATFORM_EXPORT FontDescription {
     BitFields fields_;
     FieldsAsUnsignedType fields_as_unsigned_;
   };
-
-  static TypesettingFeatures default_typesetting_features_;
 
   static bool use_subpixel_text_positioning_;
 };

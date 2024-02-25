@@ -27,12 +27,12 @@ namespace {
 // counter larger than |kMaxCounter| FidoCableDevice should error out.
 constexpr uint32_t kMaxCounter = (1 << 24) - 1;
 
-absl::optional<std::vector<uint8_t>> ConstructV1Nonce(
+std::optional<std::vector<uint8_t>> ConstructV1Nonce(
     base::span<const uint8_t> nonce,
     bool is_sender_client,
     uint32_t counter) {
   if (counter > kMaxCounter)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto constructed_nonce = fido_parsing_utils::Materialize(nonce);
   constructed_nonce.push_back(is_sender_client ? 0x00 : 0x01);
@@ -124,7 +124,7 @@ FidoDevice::CancelToken FidoCableDevice::DeviceTransact(
     DeviceCallback callback) {
   if (!encryption_data_ || !EncryptOutgoingMessage(&command)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     state_ = State::kDeviceError;
     FIDO_LOG(ERROR) << "Failed to encrypt outgoing caBLE message.";
     return 0;
@@ -136,7 +136,7 @@ FidoDevice::CancelToken FidoCableDevice::DeviceTransact(
 }
 
 void FidoCableDevice::OnResponseFrame(FrameCallback callback,
-                                      absl::optional<FidoBleFrame> frame) {
+                                      std::optional<FidoBleFrame> frame) {
   // The request is done, time to reset |transaction_|.
   ResetTransaction();
   state_ = frame ? State::kReady : State::kDeviceError;
@@ -144,7 +144,7 @@ void FidoCableDevice::OnResponseFrame(FrameCallback callback,
   if (frame && frame->command() != FidoBleDeviceCommand::kControl) {
     if (!encryption_data_ || !DecryptIncomingMessage(&frame.value())) {
       state_ = State::kDeviceError;
-      frame = absl::nullopt;
+      frame = std::nullopt;
     }
   }
 
@@ -185,7 +185,7 @@ void FidoCableDevice::Transition() {
         // Respond to any pending frames.
         FrameCallback cb = std::move(pending_frames_.front().callback);
         pending_frames_.pop_front();
-        std::move(cb).Run(absl::nullopt);
+        std::move(cb).Run(std::nullopt);
       }
       break;
   }
@@ -268,8 +268,7 @@ void FidoCableDevice::OnStatusMessage(std::vector<uint8_t> data) {
     transaction_->OnResponseFragment(std::move(data));
 }
 
-void FidoCableDevice::OnReadControlPointLength(
-    absl::optional<uint16_t> length) {
+void FidoCableDevice::OnReadControlPointLength(std::optional<uint16_t> length) {
   if (state_ == State::kDeviceError) {
     return;
   }
@@ -308,18 +307,17 @@ void FidoCableDevice::OnTimeout() {
   Transition();
 }
 
-void FidoCableDevice::OnBleResponseReceived(
-    DeviceCallback callback,
-    absl::optional<FidoBleFrame> frame) {
+void FidoCableDevice::OnBleResponseReceived(DeviceCallback callback,
+                                            std::optional<FidoBleFrame> frame) {
   if (!frame || !frame->IsValid()) {
     state_ = State::kDeviceError;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   if (frame->command() == FidoBleDeviceCommand::kError) {
     ProcessBleDeviceError(frame->data());
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -328,8 +326,7 @@ void FidoCableDevice::OnBleResponseReceived(
 
 void FidoCableDevice::ProcessBleDeviceError(base::span<const uint8_t> data) {
   if (data.size() != 1) {
-    FIDO_LOG(ERROR) << "Unknown BLE error received: "
-                    << base::HexEncode(data.data(), data.size());
+    FIDO_LOG(ERROR) << "Unknown BLE error received: " << base::HexEncode(data);
     state_ = State::kDeviceError;
     return;
   }
@@ -379,7 +376,7 @@ bool FidoCableDevice::DecryptIncomingMessage(FidoBleFrame* incoming_frame) {
 
   const uint8_t additional_data[1] = {
       base::strict_cast<uint8_t>(incoming_frame->command())};
-  absl::optional<std::vector<uint8_t>> plaintext =
+  std::optional<std::vector<uint8_t>> plaintext =
       aes_key.Open(incoming_frame->data(), *nonce, additional_data);
   if (!plaintext) {
     FIDO_LOG(ERROR) << "Failed to decrypt caBLE message.";

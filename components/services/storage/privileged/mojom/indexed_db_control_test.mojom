@@ -7,12 +7,6 @@ module storage.mojom;
 import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
-enum V2SchemaCorruptionStatus {
-  CORRUPTION_UNKNOWN,
-  CORRUPTION_NO,
-  CORRUPTION_YES,
-};
-
 enum FailClass {
   NOTHING,
   LEVELDB_ITERATOR,
@@ -35,7 +29,7 @@ enum FailMethod {
 interface MockFailureInjector {
   // Causes indexeddb to fail in a given way on a given call.
   FailOperation(FailClass failure_class, FailMethod failure_method,
-                int32 instance_num, int32 call_num) => ();
+                int32 instance_num, int32 call_num);
 };
 
 // A test-only interface extending storage.mojom.IndexedDBControl.
@@ -50,25 +44,9 @@ interface IndexedDBControlTest {
   // Forgets the storage keys and sizes read from disk.
   ResetCachesForTesting() => ();
 
-  // Downgrades databases to V2.
-  ForceSchemaDowngradeForTesting(storage.mojom.BucketLocator bucket_locator) =>
-    (bool downgraded);
-
-  // Returns the corruption status for a given database.
-  HasV2SchemaCorruptionForTesting(storage.mojom.BucketLocator bucket_locator) =>
-      (V2SchemaCorruptionStatus status);
-
   // Does a direct write to a database with a given key/value pair.
   WriteToIndexedDBForTesting(storage.mojom.BucketLocator bucket_locator,
                              string key, string value) => ();
-
-  // Returns the number of blobs for a given `bucket_locator`.
-  GetBlobCountForTesting(storage.mojom.BucketLocator bucket_locator) =>
-    (int64 num_blobs);
-
-  // Returns the next blob id for a given `bucket_locator`.
-  GetNextBlobNumberForTesting(storage.mojom.BucketLocator bucket_locator,
-                              int64 database_id) => (int64 next_blob_number);
 
   // Returns the path for a given key/database/blob.
   GetPathForBlobForTesting(storage.mojom.BucketLocator bucket_locator,
@@ -79,9 +57,12 @@ interface IndexedDBControlTest {
   CompactBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
       ();
 
-  // Overrides IndexedDB with a mock class factory that can inject failures
-  // at specific points.  For now, because this is static, there can only
-  // be one of these bound at a single time.
+  // Gets the total usage in bytes across all buckets.
+  GetUsageForTesting() => (int64 total_usage);
+
+  // Overrides an IndexedDB backing store with a mock that can inject failures
+  // at specific points. The receiver will be attached to the *next* backing
+  // store that's created after this is called.
   //
   // Note: in order for this not to be flaky, this should be called before
   // using the IndexedDB system in any way to ensure that that the default

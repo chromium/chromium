@@ -5,26 +5,17 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 
-#include <string>
+#include <optional>
+#include <string_view>
 #include <vector>
 
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
 class AutofillField;
-
-// Helper method that takes a `ServerFieldType` and returns its corresponding
-// `FieldTypeGroup` value.
-FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type);
-
-// Helper method that takes a `HtmlFieldType` and `HtmlFieldMode`, then returns
-// their corresponding `FieldTypeGroup` value.
-FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
-                                        HtmlFieldMode field_mode);
 
 // The high-level description of Autofill types, used to categorize form fields
 // and for associating form fields with form values in the Web Database.
@@ -48,15 +39,21 @@ class AutofillType {
     ~ServerPrediction();
 
     // The most likely server-side prediction for the field's type.
-    ServerFieldType server_type() const;
+    FieldType server_type() const;
+
+    // Checks whether server-side prediction for the field's type is an
+    // override.
+    bool is_override() const;
 
     // Whether the server-side classification indicates that the field
     // may be pre-filled with a placeholder in the value attribute.
-    bool may_use_prefilled_placeholder = false;
+    // For autofillable types, `nullopt` indicates that there is no server-side
+    // classification. For PWM, `nullopt` and `false` are currently identical.
+    std::optional<bool> may_use_prefilled_placeholder = std::nullopt;
 
     // Requirements the site imposes on passwords (for password generation)
     // obtained from the Autofill server.
-    absl::optional<PasswordRequirementsSpec> password_requirements;
+    std::optional<PasswordRequirementsSpec> password_requirements;
 
     // The server-side predictions for the field's type.
     std::vector<
@@ -64,8 +61,8 @@ class AutofillType {
         server_predictions;
   };
 
-  explicit AutofillType(ServerFieldType field_type = NO_SERVER_DATA);
-  AutofillType(HtmlFieldType field_type, HtmlFieldMode mode);
+  explicit AutofillType(FieldType field_type = NO_SERVER_DATA);
+  explicit AutofillType(HtmlFieldType field_type);
   AutofillType(const AutofillType& autofill_type) = default;
   AutofillType& operator=(const AutofillType& autofill_type) = default;
 
@@ -83,21 +80,16 @@ class AutofillType {
   // parameter).  Note that the returned type might not be exactly equivalent to
   // `this` type.  For example, the HTML types 'country' and 'country-name' both
   // map to ADDRESS_HOME_COUNTRY.
-  ServerFieldType GetStorableType() const;
+  FieldType GetStorableType() const;
 
-  // Serializes `this` type to a string.
-  std::string ToString() const;
-
-  // Translates the ServerFieldType values into the corresponding strings.
-  static std::string ServerFieldTypeToString(ServerFieldType type);
+  std::string_view ToStringView() const;
 
  private:
   // The server-native field type, or UNKNOWN_TYPE if unset.
-  ServerFieldType server_type_ = UNKNOWN_TYPE;
+  FieldType server_type_ = UNKNOWN_TYPE;
 
-  // The HTML autocomplete field type and mode hints, if set.
+  // The HTML autocomplete field type, if set.
   HtmlFieldType html_type_ = HtmlFieldType::kUnspecified;
-  HtmlFieldMode html_mode_ = HtmlFieldMode::kNone;
 };
 
 }  // namespace autofill

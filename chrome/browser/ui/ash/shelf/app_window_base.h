@@ -81,8 +81,8 @@ class AppWindowBase : public ui::BaseWindow {
 
  private:
   ash::ShelfID shelf_id_;
-  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
-  raw_ptr<AppWindowShelfItemController, ExperimentalAsh> controller_ = nullptr;
+  const raw_ptr<views::Widget> widget_;
+  raw_ptr<AppWindowShelfItemController> controller_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_WINDOW_BASE_H_

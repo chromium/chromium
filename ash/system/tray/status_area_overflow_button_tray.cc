@@ -99,12 +99,15 @@ void StatusAreaOverflowButtonTray::IconView::UpdateRotation() {
   SetTransform(transform);
 }
 
+BEGIN_METADATA(StatusAreaOverflowButtonTray, IconView)
+END_METADATA
+
 StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
     : TrayBackgroundView(
           shelf,
           TrayBackgroundViewCatalogName::kStatusAreaOverflowButton),
       icon_(tray_container()->AddChildView(std::make_unique<IconView>())) {
-  SetPressedCallback(base::BindRepeating(
+  SetCallback(base::BindRepeating(
       &StatusAreaOverflowButtonTray::OnButtonPressed, base::Unretained(this)));
 
   set_use_bounce_in_animation(false);
@@ -117,7 +120,8 @@ StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
 
 StatusAreaOverflowButtonTray::~StatusAreaOverflowButtonTray() {}
 
-void StatusAreaOverflowButtonTray::ClickedOutsideBubble() {}
+void StatusAreaOverflowButtonTray::ClickedOutsideBubble(
+    const ui::LocatedEvent& event) {}
 
 std::u16string StatusAreaOverflowButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
@@ -128,6 +132,9 @@ std::u16string StatusAreaOverflowButtonTray::GetAccessibleNameForTray() {
 void StatusAreaOverflowButtonTray::HandleLocaleChange() {}
 
 void StatusAreaOverflowButtonTray::HideBubbleWithView(
+    const TrayBubbleView* bubble_view) {}
+
+void StatusAreaOverflowButtonTray::HideBubble(
     const TrayBubbleView* bubble_view) {}
 
 void StatusAreaOverflowButtonTray::Initialize() {
@@ -160,7 +167,7 @@ void StatusAreaOverflowButtonTray::ResetStateToCollapsed() {
   icon_->ToggleState(state_);
 }
 
-BEGIN_METADATA(StatusAreaOverflowButtonTray, TrayBackgroundView);
+BEGIN_METADATA(StatusAreaOverflowButtonTray);
 END_METADATA
 
 }  // namespace ash

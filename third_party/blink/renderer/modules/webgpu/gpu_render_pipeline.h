@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_PIPELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_PIPELINE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_stage.h"
@@ -27,7 +28,7 @@ struct OwnedVertexState : OwnedProgrammableStage {
 
   // Points to OwnedRenderPipelineDescriptor::dawn_desc::vertex as it's a
   // non-pointer member of WGPURenderPipelineDescriptor
-  WGPUVertexState* dawn_desc = nullptr;
+  raw_ptr<WGPUVertexState> dawn_desc = nullptr;
   std::unique_ptr<WGPUVertexBufferLayout[]> buffers;
   std::unique_ptr<std::unique_ptr<WGPUVertexAttribute[]>[]> attributes;
 };
@@ -61,6 +62,21 @@ struct OwnedPrimitiveState {
   WGPUPrimitiveDepthClipControl depth_clip_control = {};
 };
 
+struct OwnedDepthStencilState {
+  OwnedDepthStencilState() = default;
+
+  //  This struct should be non-copyable non-movable because it contains
+  //  self-referencing pointers that would be invalidated when moved / copied.
+  OwnedDepthStencilState(const OwnedDepthStencilState& desc) = delete;
+  OwnedDepthStencilState(OwnedDepthStencilState&& desc) = delete;
+  OwnedDepthStencilState& operator=(const OwnedDepthStencilState& desc) =
+      delete;
+  OwnedDepthStencilState& operator=(OwnedDepthStencilState&& desc) = delete;
+
+  WGPUDepthStencilState dawn_desc = {};
+  WGPUDepthStencilStateDepthWriteDefinedDawn depth_write_defined = {};
+};
+
 struct OwnedRenderPipelineDescriptor {
   OwnedRenderPipelineDescriptor() = default;
 
@@ -78,7 +94,7 @@ struct OwnedRenderPipelineDescriptor {
   std::string label;
   OwnedVertexState vertex;
   OwnedPrimitiveState primitive;
-  WGPUDepthStencilState depth_stencil;
+  OwnedDepthStencilState depth_stencil;
   OwnedFragmentState fragment;
 };
 

@@ -230,7 +230,7 @@ TEST_F(CookiesGetAllSignalProcessorTest,
        ReportsSignalInfoCorrectlyWithEmptyBooleans) {
   auto signal =
       CookiesGetAllSignal(kExtensionId[0], domains[0], names[0], paths[0],
-                          absl::nullopt, store_ids[0], urls[0], absl::nullopt);
+                          std::nullopt, store_ids[0], urls[0], std::nullopt);
   processor_.ProcessSignal(signal);
 
   // Retrieve signal info.

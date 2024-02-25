@@ -80,7 +80,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
                               bool should_disable_new_ptrs);
 
   // Retrieves the fps range if it is specified by the app.
-  absl::optional<gfx::Range> GetFpsRange();
+  std::optional<gfx::Range> GetFpsRange();
 
   // Retrieves the corresponding capture resolution which is specified by the
   // app.
@@ -142,7 +142,11 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   void RegisterCameraInfoObserver(
       mojo::PendingRemote<cros::mojom::CameraInfoObserver> observer,
       RegisterCameraInfoObserverCallback callback) override;
-  absl::optional<PortraitModeCallbacks> ConsumePortraitModeCallbacks();
+  std::optional<PortraitModeCallbacks> ConsumePortraitModeCallbacks();
+  void SetCropRegion(const gfx::Rect& crop_region,
+                     SetCropRegionCallback callback) override;
+  void ResetCropRegion(ResetCropRegionCallback callback) override;
+  std::optional<std::vector<int32_t>> GetCropRegion();
 
  private:
   void OnMojoConnectionError();
@@ -184,12 +188,12 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   mojo::Remote<cros::mojom::StillCaptureResultObserver>
       portrait_mode_observers_;
   base::Lock portrait_mode_callbacks_lock_;
-  absl::optional<PortraitModeCallbacks> take_portrait_photo_callbacks_
+  std::optional<PortraitModeCallbacks> take_portrait_photo_callbacks_
       GUARDED_BY(portrait_mode_callbacks_lock_);
 
   // It will be inserted and read from different threads.
   base::Lock fps_ranges_lock_;
-  absl::optional<gfx::Range> specified_fps_range_ GUARDED_BY(fps_ranges_lock_);
+  std::optional<gfx::Range> specified_fps_range_ GUARDED_BY(fps_ranges_lock_);
 
   // It will be inserted and read from different threads.
   base::Lock still_capture_resolution_lock_;
@@ -208,7 +212,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   mojo::RemoteSet<cros::mojom::CameraEventObserver> camera_event_observers_;
 
   base::Lock camera_device_context_lock_;
-  raw_ptr<CameraDeviceContext, ExperimentalAsh> camera_device_context_
+  raw_ptr<CameraDeviceContext> camera_device_context_
       GUARDED_BY(camera_device_context_lock_);
 
   base::Lock document_corners_observers_lock_;
@@ -225,6 +229,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   base::Lock multi_stream_lock_;
   bool multi_stream_enabled_ GUARDED_BY(multi_stream_lock_) = false;
+
+  base::Lock crop_region_lock_;
+  std::optional<std::vector<int32_t>> crop_region_
+      GUARDED_BY(crop_region_lock_);
 
   // The weak pointers should be dereferenced and invalidated on camera device
   // ipc thread.

@@ -85,7 +85,7 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
       << "User mismatch in FetchKeys() response";
 
   std::vector<std::vector<uint8_t>> converted_keys;
-  JavaArrayOfByteArrayToBytesVector(env, keys, &converted_keys);
+  base::android::JavaArrayOfByteArrayToBytesVector(env, keys, &converted_keys);
   std::move(ongoing_fetch_keys.callback).Run(converted_keys);
 }
 

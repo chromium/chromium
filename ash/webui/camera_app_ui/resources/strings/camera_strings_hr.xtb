@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Izbriši stranicu <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Način kamere</translation>
 <translation id="1153190633558910465">Isključi rešetku</translation>
-<translation id="1175958423215084756">Veza je prepoznata. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Stranica <ph name="PAGE_NUMBER" /> je izbrisana</translation>
 <translation id="1258009455399840361">Zakreni za 90 stupnjeva u smjeru kazaljke na satu</translation>
 <translation id="1417314334557041815">Uredi stranicu <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Pomicanje udesno</translation>
 <translation id="3081586908890909590">Prijeđi na snimanje videozapisa</translation>
 <translation id="313467653172006084">30 okv/s</translation>
+<translation id="3158534262962737808">Pridruži se mreži <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Veza je kopirana</translation>
 <translation id="3354465018370944241">Postavke fotografija</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Obrada videozapisa...</translation>
 <translation id="3789724198583203151">Zakreni za 90 stupnjeva suprotno od smjera kazaljke na satu</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopiranje teksta</translation>
 <translation id="4060608699153044055">Ne možete snimati zbog male količine prostora za pohranu na uređaju. Da biste počeli snimati, morate osloboditi prostor na uređaju.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pauziraj snimanje</translation>
 <translation id="4121305183798804752">Otkriven je dokument</translation>
 <translation id="414641094616694804">Za ovu se kameru ne može promijeniti razlučivost</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
-<translation id="4269820728363426813">Kopiraj adresu veze</translation>
 <translation id="428234092390943511">Minijatura stranice</translation>
 <translation id="4349714250734879769">Neka Chrome skalira okvire</translation>
 <translation id="4383571725254449280">Ispis zapisnika o izvedbi</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Puna razlučivost</translation>
 <translation id="4864143361253542638">Popis skeniranih stranica</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopiranje adrese veze <ph name="URL" /></translation>
 <translation id="491895758387112773">Emitiraj videosnimku na više kanala</translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4984613436295737187">Quad HD (1440 p)</translation>
 <translation id="5034763830503483128">Omjer fotografije</translation>
 <translation id="5057360777601936059">Vaš fotoaparat trenutačno nije dostupan.
         Provjerite je li fotoaparat pravilno povezan.</translation>
+<translation id="5157591164390831335">Otkriven je URL.</translation>
 <translation id="5163387177077603948">Kreće se udesno</translation>
-<translation id="5219374179772385066">Sada je dostupan način ubrzanog videozapisa!</translation>
 <translation id="5235304959032763950">16 naprema 9</translation>
 <translation id="5266635337630551423">Gornji lijevi kut dokumenta</translation>
 <translation id="5317780077021120954">Spremi</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Zahvaljujemo na povratnim informacijama o aplikaciji Fotoaparat.
 
 Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite primjer fotografije ili videozapisa i opišite što nije u redu. (Na primjer, fotografija je pretamna ili objekt nije fokusiran.)</translation>
+<translation id="6519884562954018934">Pridruži se mreži <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Podijeli</translation>
 <translation id="6617916774429601017">Prikaži sve razlučivosti</translation>
 <translation id="6631515515009660915">Isključite zrcaljenje</translation>
@@ -133,6 +133,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="7450541714075000668">Tekst kopiran</translation>
 <translation id="7488619942230388918">Snimite GIF videozapis</translation>
 <translation id="7557677699350329807">Prijeđi na sljedeći fotoaparat</translation>
+<translation id="7562584071994185503">Kopiranje teksta <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7608223098072244877">4 puta 4</translation>
 <translation id="761421184377987513">Kreće se prema dolje ulijevo</translation>
@@ -155,10 +156,12 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="8346544573713510785">Neka HAL kamere skalira okvire</translation>
 <translation id="8425673304802773841">Nagni dolje</translation>
 <translation id="8428213095426709021">Postavke</translation>
+<translation id="8609951387004618906">Otvori <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Prebacivanje isključivanja zvuka mikrofona. Isključivanje zvuka je uključeno</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Pregled metapodataka</translation>
+<translation id="874854738381978209">Otkrivena je Wi-Fi mreža.</translation>
 <translation id="8815966864175525708">Prijeđi na snimanje portretne fotografije</translation>
 <translation id="8828441885228359828">Nastavljanje snimanja</translation>
 <translation id="8870695351537079478">Pokretanje snimanja nije uspjelo</translation>

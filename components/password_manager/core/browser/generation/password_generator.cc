@@ -14,7 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 
 namespace autofill {
 
@@ -268,21 +268,29 @@ std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {
   // For passwords without letters, add the '0' and '1' to the numeric alphabet.
   ConditionallyAddNumericDigitsToAlphabet(&actual_spec);
 
+  std::u16string password;
+
   // For specs that allow dash symbol and can be longer than 8 chars generate a
   // chunked password when `kChunkPassword` variaton of
   // kPasswordGenerationExperiment is enabled.
   if (actual_spec.symbols().character_set().find('-') != std::string::npos &&
       actual_spec.max_length() >= kMinLengthToChunkPassword &&
       ChunkingPasswordExperimentEnabled()) {
-    return GenerateMaxEntropyChunkedPassword(std::move(actual_spec));
+    password = GenerateMaxEntropyChunkedPassword(std::move(actual_spec));
+    CHECK_LE(4u, password.size());
+    return password;
   }
 
-  std::u16string password = GenerateMaxEntropyPassword(std::move(actual_spec));
+  password = GenerateMaxEntropyPassword(std::move(actual_spec));
 
   // Catch cases where supplied spec is infeasible.
-  if (password.empty())
+  // TODO(b/40065733): we should never generate specs for small generated
+  // passwords
+  if (password.size() < 4) {
     password = GenerateMaxEntropyPassword(BuildDefaultSpec());
+  }
 
+  CHECK_LE(4u, password.size());
   return password;
 }
 

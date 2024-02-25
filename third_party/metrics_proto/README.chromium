@@ -1,8 +1,8 @@
 Name: Metrics Protos
 Short Name: metrics_proto
 URL: This is the canonical public repository
-Version: 553124882
-Date: 2023/08/02 UTC
+Version: 597734888
+Date: 2024-01-12 UTC
 License: BSD
 License File: LICENSE
 Shipped: yes
@@ -15,7 +15,8 @@ running the export script.
 
 blaze run //analysis/uma/proto_export:proto_export -- \
   --from_piper \
-  --output=$CHROMIUM_SRC/third_party/metrics_proto
+  --chromium_src_path=$CHROMIUM_SRC
+
 
 Local Modifications:
 Unchanged from the output of the export script.

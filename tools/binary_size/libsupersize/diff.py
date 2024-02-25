@@ -149,8 +149,8 @@ def _DiffContainerLists(before_containers, after_containers):
     else:
       pairs[c.name] = [c, models.Container.Empty()]
   ret = []
-  for name, (before, after) in pairs.items():
-    ret.append(models.DeltaContainer(name=name, before=before, after=after))
+  for before, after in pairs.values():
+    ret.append(models.DeltaContainer(before=before, after=after))
   # This update newly created diff Containers, not existing ones or EMPTY.
   models.BaseContainer.AssignShortNames(ret)
   return ret

@@ -7,11 +7,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync_sessions/session_sync_bridge.h"
-#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -38,9 +36,6 @@ syncer::GlobalIdMapper* SessionSyncServiceImpl::GetGlobalIdMapper() const {
 }
 
 OpenTabsUIDelegate* SessionSyncServiceImpl::GetOpenTabsUIDelegate() {
-  if (!proxy_tabs_running_) {
-    return nullptr;
-  }
   return bridge_->GetOpenTabsUIDelegate();
 }
 
@@ -53,20 +48,6 @@ SessionSyncServiceImpl::SubscribeToForeignSessionsChanged(
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 SessionSyncServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
-}
-
-void SessionSyncServiceImpl::ProxyTabsStateChanged(
-    syncer::DataTypeController::State state) {
-  const bool was_proxy_tabs_running = proxy_tabs_running_;
-  proxy_tabs_running_ = (state == syncer::DataTypeController::RUNNING);
-  if (proxy_tabs_running_ != was_proxy_tabs_running) {
-    NotifyForeignSessionUpdated();
-  }
-}
-
-OpenTabsUIDelegate*
-SessionSyncServiceImpl::GetUnderlyingOpenTabsUIDelegateForTest() {
-  return bridge_->GetOpenTabsUIDelegate();
 }
 
 void SessionSyncServiceImpl::NotifyForeignSessionUpdated() {

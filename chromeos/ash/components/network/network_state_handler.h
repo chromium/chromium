@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/shill_property_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Location;
@@ -125,15 +125,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void Shutdown();
 
   // Add/remove observers.
-  void AddObserver(NetworkStateHandlerObserver* observer,
-                   const base::Location& from_here);
-  void AddObserver(NetworkStateHandlerObserver* observer);
+  using Observer = NetworkStateHandlerObserver;
 
-  void RemoveObserver(NetworkStateHandlerObserver* observer,
-                      const base::Location& from_here);
-  void RemoveObserver(NetworkStateHandlerObserver* observer);
+  void AddObserver(Observer* observer, const base::Location& from_here);
+  void AddObserver(Observer* observer);
 
-  bool HasObserver(NetworkStateHandlerObserver* observer);
+  void RemoveObserver(Observer* observer, const base::Location& from_here);
+  void RemoveObserver(Observer* observer);
+
+  bool HasObserver(Observer* observer) {
+    return observers_.HasObserver(observer);
+  }
 
   // Returns the state for technology |type|. Only
   // NetworkTypePattern::Primitive, ::Mobile, ::Ethernet, and ::Tether are
@@ -748,7 +750,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
 
   // Observer list
-  base::ObserverList<NetworkStateHandlerObserver, true>::Unchecked observers_;
+  base::ObserverList<Observer, true>::Unchecked observers_;
 
   // List of managed network states
   ManagedStateList network_list_;
@@ -784,10 +786,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
       NetworkState::PortalState::kUnknown;
 
   // Tracks the time spent in a Portal or PortalSuspected state.
-  absl::optional<base::ElapsedTimer> time_in_portal_;
+  std::optional<base::ElapsedTimer> time_in_portal_;
 
   // Tracks the default network proxy config for triggering PortalStateChanged.
-  absl::optional<base::Value::Dict> default_network_proxy_config_;
+  std::optional<base::Value::Dict> default_network_proxy_config_;
 
   // DHCP Hostname.
   std::string hostname_;
@@ -802,12 +804,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
       TechnologyState::TECHNOLOGY_UNAVAILABLE;
 
   // Provides stub cellular networks. Not owned by this instance.
-  raw_ptr<StubCellularNetworksProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<StubCellularNetworksProvider, DanglingUntriaged>
       stub_cellular_networks_provider_ = nullptr;
 
   // Not owned by this instance.
-  raw_ptr<const TetherSortDelegate, ExperimentalAsh> tether_sort_delegate_ =
-      nullptr;
+  raw_ptr<const TetherSortDelegate> tether_sort_delegate_ = nullptr;
 
   // Ensure that Shutdown() gets called exactly once.
   bool did_shutdown_ = false;

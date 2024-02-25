@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
@@ -420,20 +420,21 @@ std::unique_ptr<v8::JobHandle> V8Platform::CreateJobImpl(
   // Ownership of |job_task| is assumed by |worker_task|, while
   // |max_concurrency_callback| uses an unretained pointer.
   auto* job_task_ptr = job_task.get();
-  auto handle =
-      base::CreateJob(ToBaseLocation(location), {ToBaseTaskPriority(priority)},
-                      base::BindRepeating(
-                          [](const std::unique_ptr<v8::JobTask>& job_task,
-                             base::JobDelegate* delegate) {
-                            JobDelegateImpl delegate_impl(delegate);
-                            job_task->Run(&delegate_impl);
-                          },
-                          std::move(job_task)),
-                      base::BindRepeating(
-                          [](v8::JobTask* job_task, size_t worker_count) {
-                            return job_task->GetMaxConcurrency(worker_count);
-                          },
-                          base::Unretained(job_task_ptr)));
+  auto handle = base::CreateJob(
+      ToBaseLocation(location),
+      {ToBaseTaskPriority(priority), base::ThreadPolicy::PREFER_BACKGROUND},
+      base::BindRepeating(
+          [](const std::unique_ptr<v8::JobTask>& job_task,
+             base::JobDelegate* delegate) {
+            JobDelegateImpl delegate_impl(delegate);
+            job_task->Run(&delegate_impl);
+          },
+          std::move(job_task)),
+      base::BindRepeating(
+          [](v8::JobTask* job_task, size_t worker_count) {
+            return job_task->GetMaxConcurrency(worker_count);
+          },
+          base::Unretained(job_task_ptr)));
 
   return std::make_unique<JobHandleImpl>(std::move(handle));
 }

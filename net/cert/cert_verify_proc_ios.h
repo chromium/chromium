@@ -26,8 +26,6 @@ class CertVerifyProcIOS : public CertVerifyProc {
   // indicated that the certificate is not trusted.
   static CertStatus GetCertFailureStatusFromError(CFErrorRef error);
 
-  bool SupportsAdditionalTrustAnchors() const override;
-
  protected:
   ~CertVerifyProcIOS() override;
 
@@ -44,9 +42,9 @@ class CertVerifyProcIOS : public CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
-                     const NetLogWithSource& net_log) override;
+                     const NetLogWithSource& net_log,
+                     std::optional<base::Time> time_now) override;
 };
 
 }  // namespace net

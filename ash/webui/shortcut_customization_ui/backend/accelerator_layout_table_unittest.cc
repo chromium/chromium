@@ -22,9 +22,9 @@ namespace ash {
 namespace {
 
 // The total number of Ash accelerators.
-constexpr int kAshAcceleratorsTotalNum = 147;
+constexpr int kAshAcceleratorsTotalNum = 152;
 // The hash of Ash accelerators.
-constexpr char kAshAcceleratorsHash[] = "6b946ad3ceb8263615f2c47dc7e240a8";
+constexpr char kAshAcceleratorsHash[] = "d86efe92af0f98f458b6c7eedd050123";
 
 std::string ToActionName(ash::AcceleratorAction action) {
   return base::StrCat(
@@ -83,10 +83,13 @@ class AcceleratorLayoutMetadataTest : public testing::Test {
   ~AcceleratorLayoutMetadataTest() override = default;
 
   void SetUp() override {
-    for (const auto& layout : ash::kAcceleratorLayouts) {
-      if (layout.source == mojom::AcceleratorSource::kAsh) {
+    for (const auto& layout_id : ash::kAcceleratorLayouts) {
+      const std::optional<AcceleratorLayoutDetails> layout =
+          GetAcceleratorLayout(layout_id);
+      ASSERT_TRUE(layout.has_value());
+      if (layout->source == mojom::AcceleratorSource::kAsh) {
         ash_accelerator_with_layouts_.insert(
-            static_cast<ash::AcceleratorAction>(layout.action_id));
+            static_cast<ash::AcceleratorAction>(layout->action_id));
       }
     }
 
@@ -138,9 +141,9 @@ TEST_F(AcceleratorLayoutMetadataTest,
 // Test that modifying Ash accelerator should update kAcceleratorLayouts.
 // 1. If you are adding/deleting/modifying shortcuts, please also
 //    add/delete/modify the corresponding item in kAcceleratorLayouts.
-// 2. Please update the number and hash value of Ash accelerators (these
-//    available on Chrome OS) on the top of this file. The new number and hash
-//    value will be provided in the test output.
+// 2. Please update the number and hash value of Ash accelerators on the top of
+//    this file. The new number and hash value will be provided in the test
+//    output.
 TEST_F(AcceleratorLayoutMetadataTest, ModifyAcceleratorShouldUpdateLayout) {
   std::vector<ash::AcceleratorData> ash_accelerators;
   for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {

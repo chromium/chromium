@@ -15,7 +15,7 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace task_manager {
 namespace browsertest_util {

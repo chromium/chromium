@@ -4,7 +4,7 @@
 
 #import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -27,12 +27,9 @@
   std::string priceNotificationsFlag =
       std::string(commerce::kCommercePriceTracking.name) + params;
   std::string shoppingListFlag = std::string("ShoppingList");
-  std::string priceNotificationsSmartSortingFlag =
-      std::string("kSmartSortingPriceTrackingDestination");
 
   config.additional_args.push_back(
-      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag +
-      "," + priceNotificationsSmartSortingFlag);
+      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag);
 
   return config;
 }

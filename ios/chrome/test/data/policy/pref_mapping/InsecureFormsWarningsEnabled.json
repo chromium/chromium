@@ -1,0 +1,27 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ios.insecure_form_warnings_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "InsecureFormsWarningsEnabled": false
+        },
+        "prefs": {
+          "ios.insecure_form_warnings_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

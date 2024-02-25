@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
-import android.accounts.Account;
 import android.content.pm.ActivityInfo;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +65,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -78,23 +79,22 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -110,18 +110,22 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * Tests for {@link NewTabPage}. Other tests can be found in
- * {@link org.chromium.chrome.browser.ntp.NewTabPageTest}.
- * TODO(https://crbug.com/1069183): Combine test suites.
+ * Tests for {@link NewTabPage}. Other tests can be found in {@link
+ * org.chromium.chrome.browser.ntp.NewTabPageTest}. TODO(https://crbug.com/1069183): Combine test
+ * suites.
  */
+@DoNotBatch(reason = "Complex tests, need to start fresh")
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=IPH_FeedHeaderMenu"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "disable-features=IPH_FeedHeaderMenu"
+})
 public class FeedV2NewTabPageTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(true).name("EnableScrollableMVTOnNTP"),
+            Arrays.asList(
+                    new ParameterSet().value(true).name("EnableScrollableMVTOnNTP"),
                     new ParameterSet().value(false).name("DisableScrollableMVTOnNTP"));
 
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
@@ -131,8 +135,9 @@ public class FeedV2NewTabPageTest {
     // Espresso ViewAction that performs a swipe from center to left across the vertical center
     // of the view. Used instead of ViewAction.swipeLeft which swipes from right edge to
     // avoid conflict with gesture navigation UI which consumes the edge swipe.
-    private static final ViewAction SWIPE_LEFT = new GeneralSwipeAction(
-            Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER);
+    private static final ViewAction SWIPE_LEFT =
+            new GeneralSwipeAction(
+                    Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER);
 
     private boolean mIsCachePopulatedInAccountManagerFacade = true;
 
@@ -142,10 +147,10 @@ public class FeedV2NewTabPageTest {
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             new FakeAccountManagerFacade() {
                 @Override
-                public Promise<List<Account>> getAccounts() {
+                public Promise<List<CoreAccountInfo>> getCoreAccountInfos() {
                     // Attention. When cache is not populated, the Promise shouldn't be fulfilled.
                     if (mIsCachePopulatedInAccountManagerFacade) {
-                        return super.getAccounts();
+                        return super.getCoreAccountInfos();
                     }
                     return new Promise<>();
                 }
@@ -170,11 +175,9 @@ public class FeedV2NewTabPageTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mAccountManagerTestRule).around(mActivityTestRule);
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private ExternalAuthUtils mExternalAuthUtils;
+    @Mock private ExternalAuthUtils mExternalAuthUtils;
 
     /** Parameter provider for enabling/disabling the signin promo card. */
     public static class SigninPromoParams implements ParameterProvider {
@@ -212,9 +215,16 @@ public class FeedV2NewTabPageTest {
 
         SignInPromo.setDisablePromoForTesting(mDisableSigninPromoCard);
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-        testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.INTEREST_FEED_V2, true);
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
+        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            testValuesOverride.addFeatureFlagOverride(
+                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
+                    mEnableScrollableMVT);
+        } else {
+            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
+                    mEnableScrollableMVT);
+        }
         FeatureList.setTestValues(testValuesOverride);
 
         mActivityTestRule.startMainActivityWithURL("about:blank");
@@ -223,14 +233,16 @@ public class FeedV2NewTabPageTest {
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            NetworkChangeNotifier.forceConnectivityState(true);
-            FirstRunUtils.setEulaAccepted();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NetworkChangeNotifier.forceConnectivityState(true);
+                    FirstRunUtils.setEulaAccepted();
+                });
 
         mFeedServer = new TestFeedServer();
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
 
         mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
         mMostVisitedSites = new FakeMostVisitedSites();
@@ -263,66 +275,16 @@ public class FeedV2NewTabPageTest {
     public void testLoadFeedContent() {
         openNewTabPage();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(FeedV2TestHelper.getFeedUserActionsHistogramValues(),
-                    Matchers.hasEntry("kOpenedFeedSurface", 1));
-            Criteria.checkThat(FeedV2TestHelper.getLoadStreamStatusInitialValues(),
-                    Matchers.hasEntry("kLoadedFromNetwork", 1));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            FeedV2TestHelper.getFeedUserActionsHistogramValues(),
+                            Matchers.hasEntry("kOpenedFeedSurface", 1));
+                    Criteria.checkThat(
+                            FeedV2TestHelper.getLoadStreamStatusInitialValues(),
+                            Matchers.hasEntry("kLoadedFromNetwork", 1));
+                });
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, getRecyclerView());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"FeedNewTabPage"})
-    @DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
-    @DisabledTest(message = "Flaky -- crbug.com/1136923")
-    public void testSignInPromo() {
-        openNewTabPage();
-        SignInPromo.SigninObserver signinObserver = mNtp.getCoordinatorForTesting()
-                                                            .getMediatorForTesting()
-                                                            .getSignInPromoForTesting()
-                                                            .getSigninObserverForTesting();
-        RecyclerView recyclerView =
-                (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
-
-        // Prioritize RecyclerView's focusability so that the sign-in promo button and the action
-        // button don't get focused initially to avoid flakiness.
-        int descendantFocusability = recyclerView.getDescendantFocusability();
-        TestThreadUtils.runOnUiThreadBlocking((() -> {
-            recyclerView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-            recyclerView.requestFocus();
-        }));
-
-        // Simulate sign in, scroll to the position where sign-in promo could be placed, and verify
-        // that sign-in promo is not shown.
-        TestThreadUtils.runOnUiThreadBlocking(signinObserver::onSignedIn);
-        RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-
-        // Simulate sign out, scroll to the position where sign-in promo could be placed, and verify
-        // that sign-in promo is shown.
-        TestThreadUtils.runOnUiThreadBlocking(signinObserver::onSignedOut);
-        RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
-
-        // Hide articles and verify that the sign-in promo is not shown.
-        toggleHeader(false);
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-
-        // Show articles and verify that the sign-in promo is shown.
-        toggleHeader(true);
-        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
-
-        // Reset states.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mNtp.getCoordinatorForTesting().getMediatorForTesting().destroyForTesting();
-            recyclerView.setDescendantFocusability(descendantFocusability);
-        });
     }
 
     @Test
@@ -331,11 +293,12 @@ public class FeedV2NewTabPageTest {
     @DisabledTest(message = "https://crbug.com/1046822")
     public void testSignInPromo_DismissBySwipe() {
         openNewTabPage();
-        boolean dismissed = SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
+        boolean dismissed =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
         if (dismissed) {
-            SharedPreferencesManager.getInstance().writeBoolean(
-                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
+            ChromeSharedPreferences.getInstance()
+                    .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
         }
 
         // Verify that sign-in promo is displayed initially.
@@ -345,8 +308,9 @@ public class FeedV2NewTabPageTest {
 
         // Swipe away the sign-in promo.
         onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(
-                        SIGNIN_PROMO_POSITION, SWIPE_LEFT));
+                .perform(
+                        RecyclerViewActions.actionOnItemAtPosition(
+                                SIGNIN_PROMO_POSITION, SWIPE_LEFT));
 
         ViewGroup view = (ViewGroup) mNtp.getCoordinatorForTesting().getRecyclerView();
         waitForView(view, withId(R.id.signin_promo_view_container), VIEW_NULL);
@@ -358,8 +322,8 @@ public class FeedV2NewTabPageTest {
         onView(withId(R.id.ntp_content)).check(matches(isDisplayed()));
 
         // Reset state.
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, dismissed);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, dismissed);
     }
 
     @Test
@@ -392,7 +356,10 @@ public class FeedV2NewTabPageTest {
     public void testSignInPromoWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
         final AccountCapabilitiesBuilder capabilitiesBuilder = new AccountCapabilitiesBuilder();
         mAccountManagerTestRule.addAccount(
-                "test@gmail.com", capabilitiesBuilder.setCanOfferExtendedSyncPromos(false).build());
+                "test@gmail.com",
+                capabilitiesBuilder
+                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
+                        .build());
         mIsCachePopulatedInAccountManagerFacade = true;
 
         openNewTabPage();
@@ -418,18 +385,24 @@ public class FeedV2NewTabPageTest {
         TextView headerStatusView = sectionHeaderView.findViewById(R.id.header_title);
 
         // Assert that the feed is expanded and that the header title text is correct.
-        Assert.assertTrue(mNtp.getCoordinatorForTesting().getSectionHeaderModelForTest().get(
-                SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
-        Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_on),
+        Assert.assertTrue(
+                mNtp.getCoordinatorForTesting()
+                        .getSectionHeaderModelForTest()
+                        .get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
+        Assert.assertEquals(
+                sectionHeaderView.getContext().getString(R.string.ntp_discover_on),
                 headerStatusView.getText());
 
         // Toggle header on the current tab.
         toggleHeader(false);
 
         // Assert that the feed is collapsed and that the header title text is correct.
-        Assert.assertFalse(mNtp.getCoordinatorForTesting().getSectionHeaderModelForTest().get(
-                SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
-        Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_off),
+        Assert.assertFalse(
+                mNtp.getCoordinatorForTesting()
+                        .getSectionHeaderModelForTest()
+                        .get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
+        Assert.assertEquals(
+                sectionHeaderView.getContext().getString(R.string.ntp_discover_off),
                 headerStatusView.getText());
     }
 
@@ -440,27 +413,34 @@ public class FeedV2NewTabPageTest {
     public void testLoadFeedContent_Landscape() throws IOException {
         ChromeTabbedActivity chromeActivity = mActivityTestRule.getActivity();
         chromeActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(chromeActivity.getResources().getConfiguration().orientation,
-                    is(ORIENTATION_LANDSCAPE));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            chromeActivity.getResources().getConfiguration().orientation,
+                            is(ORIENTATION_LANDSCAPE));
+                });
 
         openNewTabPage();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(FeedV2TestHelper.getFeedUserActionsHistogramValues(),
-                    Matchers.hasEntry("kOpenedFeedSurface", 1));
-            Criteria.checkThat(FeedV2TestHelper.getLoadStreamStatusInitialValues(),
-                    Matchers.hasEntry("kLoadedFromNetwork", 1));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            FeedV2TestHelper.getFeedUserActionsHistogramValues(),
+                            Matchers.hasEntry("kOpenedFeedSurface", 1));
+                    Criteria.checkThat(
+                            FeedV2TestHelper.getLoadStreamStatusInitialValues(),
+                            Matchers.hasEntry("kLoadedFromNetwork", 1));
+                });
 
         RecyclerView recyclerView = getRecyclerView();
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, recyclerView);
 
-        mRenderTestRule.render(recyclerView,
+        mRenderTestRule.render(
+                recyclerView,
                 "feedContent_landscape"
-                        + (mEnableScrollableMVT ? "_with_scrollable_mvt"
-                                                : "_with_non_scrollable_mvt"));
+                        + (mEnableScrollableMVT
+                                ? "_with_scrollable_mvt_v2"
+                                : "_with_non_scrollable_mvt_v2"));
     }
 
     @Test
@@ -469,29 +449,38 @@ public class FeedV2NewTabPageTest {
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @DisabledTest(message = "crbug.com/1467377")
-    // clang-format off
-    public void testFakeOmniboxPolishOnNtp() throws IOException{
-        // clang-format on
+    public void testFakeOmniboxPolishOnNtp() throws IOException {
         openNewTabPage();
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertEquals(cta.getResources().getDimensionPixelSize(
-                             org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+        assertEquals(
+                cta.getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
                 cta.findViewById(org.chromium.chrome.R.id.search_box).getLayoutParams().height);
 
         // Drag the Feed header title to scroll the toolbar to the top.
-        int toY = -getFakeboxTop(mNtp)
-                + cta.getResources().getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.modern_toolbar_background_size);
-        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
-                cta.findViewById(R.id.header_title), 0, 0, 0, toY, /*stepCount*/ 10);
+        int toY =
+                -getFakeboxTop(mNtp)
+                        + cta.getResources()
+                                .getDimensionPixelSize(
+                                        org.chromium.chrome.R.dimen.modern_toolbar_background_size);
+        TestTouchUtils.dragCompleteView(
+                InstrumentationRegistry.getInstrumentation(),
+                cta.findViewById(R.id.header_title),
+                0,
+                0,
+                0,
+                toY,
+                /* stepCount= */ 10);
 
         if (cta.findViewById(R.id.search_box).getAlpha() == 1) {
             ToolbarPhone toolbar = cta.findViewById(R.id.toolbar);
             // There might be a rounding issue for some devices.
-            assertEquals(toolbar.getLocationBarBackgroundHeightForTesting(),
-                    cta.getResources().getDimension(
-                            org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+            assertEquals(
+                    toolbar.getLocationBarBackgroundHeightForTesting(),
+                    cta.getResources()
+                            .getDimension(org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
                     0.5);
         }
     }
@@ -500,15 +489,16 @@ public class FeedV2NewTabPageTest {
      * @return The position of the top of the fakebox relative to the window.
      */
     private int getFakeboxTop(final NewTabPage ntp) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                final View fakebox = ntp.getView().findViewById(R.id.search_box);
-                int[] location = new int[2];
-                fakebox.getLocationInWindow(location);
-                return location[1];
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                new Callable<Integer>() {
+                    @Override
+                    public Integer call() {
+                        final View fakebox = ntp.getView().findViewById(R.id.search_box);
+                        int[] location = new int[2];
+                        fakebox.getLocationInWindow(location);
+                        return location[1];
+                    }
+                });
     }
 
     /**
@@ -524,8 +514,13 @@ public class FeedV2NewTabPageTest {
                 .perform(click());
 
         // There must be one and only one view with "Discover on/off" text being displayed.
-        onView(allOf(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off),
-                       withEffectiveVisibility(Visibility.VISIBLE)))
+        onView(
+                        allOf(
+                                withText(
+                                        expanded
+                                                ? R.string.ntp_discover_on
+                                                : R.string.ntp_discover_off),
+                                withEffectiveVisibility(Visibility.VISIBLE)))
                 .check(matches(isDisplayed()));
     }
 

@@ -70,8 +70,7 @@ class LockScreenNoteDisplayStateHandler : public ScreenBacklightObserver {
   void NoteLaunchDone(bool success);
 
   // Object used to force the backlights off.
-  const raw_ptr<BacklightsForcedOffSetter, ExperimentalAsh>
-      backlights_forced_off_setter_;
+  const raw_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
 
   // Whether lock screen note launch is delayed until the screen is reported to
   // be off - this is used if lock screen note launch is requested when

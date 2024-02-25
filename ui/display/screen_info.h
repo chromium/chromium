@@ -5,9 +5,9 @@
 #ifndef UI_DISPLAY_SCREEN_INFO_H_
 #define UI_DISPLAY_SCREEN_INFO_H_
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_export.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/types/display_constants.h"
@@ -38,7 +38,7 @@ struct DISPLAY_EXPORT ScreenInfo {
 
   // The display frequency in Hz of the monitor. Set to 0 if it fails in the
   // monitor frequency query.
-  int display_frequency = 0;
+  float display_frequency = 0;
 
   // This is set from the rcMonitor member of MONITORINFOEX, to whit:
   //   "A RECT structure that specifies the display monitor rectangle,

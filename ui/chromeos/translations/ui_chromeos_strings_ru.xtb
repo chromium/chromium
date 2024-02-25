@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1000498691615767391">Выберите папку</translation>
+<translation id="1014208178561091457">Не удалось скопировать файл "<ph name="FILE_NAME" />", так как он зашифрован.</translation>
 <translation id="1047956942837015229">Удаление элементов (<ph name="COUNT" />)…</translation>
 <translation id="1049926623896334335">Документ Word</translation>
 <translation id="1056775291175587022">Нет сетей</translation>
 <translation id="1056898198331236512">Внимание</translation>
 <translation id="1060368002126861100">Чтобы открыть файлы с помощью приложения "<ph name="APP_NAME" />", переместите их в папку "Файлы Windows".</translation>
 <translation id="1062407476771304334">Заменить</translation>
+<translation id="1119383441774809183">Показывать текстовые сообщения</translation>
 <translation id="1119447706177454957">Внутренняя ошибка</translation>
 <translation id="1120073797882051782">Корейская раскладка (Romaja)</translation>
 <translation id="112387589102719461">Английский (США), раскладка Дворака для программистов</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Предоставление Parallels Desktop доступа к папке</translation>
 <translation id="1439919885608649279">Человек с цветами</translation>
 <translation id="1458457385801829801">Извлечь <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Не удалось скопировать несколько файлов (<ph name="NUMBER_OF_FILES" />), так как они зашифрованы.</translation>
 <translation id="1471718551822868769">Словацкий</translation>
 <translation id="1482884275703521657">Финский</translation>
 <translation id="148466539719134488">Швейцарская</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">Португальский, американская международная раскладка</translation>
 <translation id="1629521517399325891">Сертификат пользователя нельзя использовать для аутентификации сети.</translation>
 <translation id="1641780993263690097">Китайский, пиньинь</translation>
-<translation id="1646019627374511909">Скачивание файлов (<ph name="NUMBER_OF_ITEMS" />) для офлайн-доступа…</translation>
 <translation id="164969095109328410">Устройство Chrome</translation>
 <translation id="1661207570040737402">Закончилось место на общем диске Google Workspace.</translation>
 <translation id="1661867754829461514">PIN-код отсутствует</translation>
@@ -95,6 +97,7 @@
 <translation id="174937106936716857">Общее количество файлов</translation>
 <translation id="1755345808328621801">Этот файл предназначен для ПК с ОС Windows и несовместим с Chrome OS на вашем устройстве. Чтобы найти аналогичное приложение, перейдите в интернет-магазин Chrome.</translation>
 <translation id="1757915090001272240">Широкая латиница</translation>
+<translation id="1761091787730831947">Предоставить <ph name="VM_NAME" /> доступ</translation>
 <translation id="1773212559869067373">Сертификат аутентификации отклонен локально</translation>
 <translation id="1775381402323441512">Информация о видео</translation>
 <translation id="180035236176489073">Для доступа к файлам необходимо подключение к Интернету.</translation>
@@ -212,6 +215,7 @@
 <translation id="2718540689505416944">Установка приложения с помощью Linux</translation>
 <translation id="2719020180254996569">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", подробная информация</translation>
 <translation id="2724954091494693138">Турецкий, раскладка Turkish F</translation>
+<translation id="2732288874651063549">Настройки доступа для <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Вьетнамский, раскладка VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop сможет получать доступ к файлам в папке "<ph name="FOLDER_NAME" />".</translation>
 <translation id="2764206540577097904">Закончилось место в хранилище вашего личного аккаунта Google Workplace.</translation>
@@ -273,9 +277,11 @@
 <translation id="3253225298092156258">Недоступно</translation>
 <translation id="3254434849914415189">Выбор приложения по умолчанию для <ph name="FILE_TYPE" />-файлов</translation>
 <translation id="3255159654094949700">Арабский</translation>
+<translation id="326396468955264502">Не удалось переместить несколько файлов (<ph name="NUMBER_OF_FILES" />), так как они зашифрованы.</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3272909651715601089">Не удалось открыть архив "<ph name="PATH" />".</translation>
 <translation id="3280431534455935878">Подготовка файла</translation>
+<translation id="3280719573299097127">Используется сеть с тарификацией. Синхронизация файлов приостановлена.</translation>
 <translation id="3280987981688031357">Виниловая пластинка</translation>
 <translation id="3290356915286466215">Не защищена</translation>
 <translation id="3291218047831493686">Чтобы изменить настройки блокировки SIM-карты, подключитесь к этой сети</translation>
@@ -302,12 +308,13 @@
 <translation id="3475447146579922140">Электронная таблица Google</translation>
 <translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3486821258960016770">Монгольский</translation>
-<translation id="3495304270784461826">Ошибок: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="3511705761158917664">Подготовка к синхронизации файлов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">Португальский</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" /> предоставлен доступ к одной папке.</translation>
 <translation id="3524311639100184459">Внимание! Эти файлы – временные. Они могут быть автоматически удалены, чтобы освободить место на диске.  <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3529424493985988200">За подробной информацией обратитесь к администратору.</translation>
 <translation id="3548125359243647069">PIN-код был введен неверно слишком много раз.</translation>
 <translation id="3549797760399244642">Перейти на drive.google.com…</translation>
 <translation id="3553048479571901246">Чтобы открыть файлы с помощью приложения "<ph name="APP_NAME" />", скопируйте их в папку "Файлы Windows".</translation>
@@ -324,6 +331,7 @@
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3619593063686672873">Нет недавних видео.</translation>
 <translation id="3634507049637220048">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора, подробная информация</translation>
+<translation id="36451918667380448">Вы не можете сменить поставщика мобильной сети. Свяжитесь с ним, если вам нужна помощь.</translation>
 <translation id="3645233063072417428">Перемещено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3658269352872031728">Выбрано файлов: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Синхронизация Google Диска по мобильной сети отключена по умолчанию.</translation>
@@ -495,6 +503,7 @@
 <translation id="4935975195727477204">Гацания</translation>
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4961158930123534723">Parallels Desktop предоставлен доступ к 1 папке.</translation>
+<translation id="4965874878399872778">Проверка файлов на соответствие правилам безопасности вашей организации…</translation>
 <translation id="496656650103537022">Файл <ph name="FILE_NAME" /> восстановлен</translation>
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4972330214479971536">Не удалось завершить настройку синхронизации файлов</translation>
@@ -550,9 +559,7 @@
 <translation id="5275973617553375938">Восстановленные файлы с Google Диска</translation>
 <translation id="5278111733643988471">Чтобы восстановить этот объект, перетащите его из корзины в новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", в которой он находился ранее, была удалена.</translation>
 <translation id="5283101102242354279">Вот как разрешить использовать расширение в режиме инкогнито:</translation>
-<translation id="5286194356314741248">Сканирование...</translation>
 <translation id="5288441970121584418">Бургер</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">Администратор запретил перемещать этот файл.</translation>
 <translation id="5305688511332277257">Не установлено</translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -629,6 +636,7 @@
 <translation id="5838451609423551646">Выбор отменен.</translation>
 <translation id="5838825566232597749">США (Workman, международная)</translation>
 <translation id="5845721951356578987">Медсестра</translation>
+<translation id="5858478190805449225">Режим энергосбережения включен. Повторите попытку, когда этот режим не используется.</translation>
 <translation id="5860491529813859533">Включить</translation>
 <translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Поиск DHCP завершен со сбоем</translation>
@@ -664,6 +672,7 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6177854567773392726">Проверка хранилища… Найдено объектов: <ph name="ITEMS_FOUND" />.</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" /> получит доступ к файлам на Google Диске. Изменения вступят в силу на всех ваших устройствах.</translation>
 <translation id="6187719147498869044">Венгерский</translation>
 <translation id="6198252989419008588">Изменить PIN-код</translation>
 <translation id="6199801702437275229">Получение информации о свободном месте…</translation>
@@ -694,11 +703,13 @@
 <translation id="637062427944097960">Этот файл открыт на другом рабочем столе. Чтобы увидеть его, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Только чтение</translation>
 <translation id="6395575651121294044">Объектов: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Не удалось переместить файл "<ph name="FILE_NAME" />", так как он зашифрован.</translation>
 <translation id="642282551015776456">Недопустимое название для файла или папки</translation>
 <translation id="6423031066725912715">Вьетнамский, раскладка TCVN</translation>
 <translation id="6430271654280079150">Осталась одна попытка.</translation>
 <translation id="643243556292470964">Удаленные файлы теперь перемещаются в корзину</translation>
 <translation id="6438480100790416671">Проверка хранилища…</translation>
+<translation id="6451527188465304418">Проверка файла на соответствие правилам безопасности вашей организации…</translation>
 <translation id="6485131920355264772">Не удалось получить информацию о свободном месте.</translation>
 <translation id="6495925982925244349">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
 <translation id="649877868557234318">Извлечение <ph name="FILE_NAME" /> в папку "<ph name="FOLDER_NAME" />"…</translation>
@@ -706,7 +717,6 @@
 <translation id="6503285896705205014">Администратор запретил копировать файлы (<ph name="COUNT" />).</translation>
 <translation id="6509122719576673235">Норвежский</translation>
 <translation id="6528513914570774834">Предоставить другим пользователям устройства доступ к этой сети</translation>
-<translation id="653019979737152879">Синхронизация файла "<ph name="FILE_NAME" />"…</translation>
 <translation id="6549689063733911810">Недавние</translation>
 <translation id="6558280019477628686">Произошла ошибка. Возможно, не все элементы были удалены.</translation>
 <translation id="656398493051028875">Удаление файла "<ph name="FILENAME" />"…</translation>
@@ -767,6 +777,7 @@
 <translation id="6989942356279143254">Шведский</translation>
 <translation id="6990081529015358884">Недостаточно свободного места</translation>
 <translation id="6993826899923627728">Эти объекты находятся в корзине</translation>
+<translation id="6996593023542748157">Предоставьте <ph name="VM_NAME" /> доступ к папке</translation>
 <translation id="7008426324576352165">Чтобы выполнить загрузку, увеличьте хранилище организации.</translation>
 <translation id="7009985720488544166">Администратор запретил перемещать файлы (<ph name="COUNT" />).</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -839,7 +850,6 @@
 <translation id="7553492409867692754">Приложения Linux смогут получать доступ к файлам папки "<ph name="FOLDER_NAME" />".</translation>
 <translation id="7555339735447658365">Сейчас включен офлайн-режим. Синхронизация файлов возобновится, когда вы подключитесь к интернету.</translation>
 <translation id="7589661784326793847">Подождите…</translation>
-<translation id="7592775719802218421">Скачивание файла "<ph name="FILE_NAME" />" для офлайн-доступа…</translation>
 <translation id="7600126690270271294">Сербский</translation>
 <translation id="7603724359189955920">Сетка</translation>
 <translation id="7627790789328695202">Файл "<ph name="FILE_NAME" />" уже существует. Задайте другое название и повторите попытку.</translation>
@@ -865,7 +875,7 @@
 <translation id="7740287852186792672">Результаты поиска</translation>
 <translation id="7748626145866214022">Больше возможностей доступно на панели действий. Чтобы перейти на нее, нажмите клавиши Alt + A.</translation>
 <translation id="7760449188139285140">Китайский, Wubi</translation>
-<translation id="7765158879357617694">Переместить</translation>
+<translation id="7765158879357617694">Перенести</translation>
 <translation id="7774365994322694683">Птица</translation>
 <translation id="7780322752056734036">Несколько объектов (<ph name="NUMBER_OF_ITEMS" />) восстановлено</translation>
 <translation id="7781829728241885113">Вчера</translation>
@@ -893,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Файлы из раздела "Мой диск" будут автоматически синхронизироваться с Chromebook, чтобы у вас был доступ к ним без подключения к интернету.</translation>
 <translation id="7925247922861151263">Сбой при проверке AAA</translation>
-<translation id="7925686952655276919">Не используйте синхронизацию данных с мобильных устройств</translation>
 <translation id="7928710562641958568">Извлечь устройство</translation>
 <translation id="7933875256234974853">Подготовка к синхронизации файлов Google Диска…</translation>
 <translation id="7943385054491506837">США (Colemak)</translation>
@@ -916,6 +925,7 @@
 <translation id="8087576439476816834">Скачать профиль "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8106045200081704138">Доступные мне</translation>
 <translation id="8116072619078571545">Вода со льдом</translation>
+<translation id="8120392982188717723">Разрешить синхронизацию в сетях с тарификацией</translation>
 <translation id="8124093710070495550">Проблемы с синхронизацией</translation>
 <translation id="8128733386027980860">Английский (США), раскладка Дворака</translation>
 <translation id="8137331602592933310">Вы не можете удалить файл "<ph name="FILENAME" />", так как не являетесь его владельцем.</translation>
@@ -923,6 +933,7 @@
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8147028810663464959">Ширина символов – полная</translation>
 <translation id="8151638057146502721">Настроить</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ошибка.}one{# ошибка.}few{# ошибки.}many{# ошибок.}other{# ошибки.}}</translation>
 <translation id="8154842056504218462">Выбраны все объекты.</translation>
 <translation id="8157684860301034423">Не удалось получить информацию о приложении.</translation>
 <translation id="8175731104491895765">Французский (Бельгия)</translation>
@@ -953,8 +964,10 @@
 <translation id="8335837413233998004">Белорусский</translation>
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Такой файл или каталог уже существуют.</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> получит доступ к файлам в папке "<ph name="FOLDER_NAME" />".</translation>
 <translation id="8372369524088641025">Недопустимый ключ WEP</translation>
 <translation id="8372852072747894550">Греческий</translation>
+<translation id="8377269993083688872">Макеты писем</translation>
 <translation id="8386903983509584791">Поиск завершен</translation>
 <translation id="8387733224523483503">Файл "<ph name="FILE_NAME" />" извлечен.</translation>
 <translation id="8395901698320285466">Размеры</translation>
@@ -962,6 +975,7 @@
 <translation id="8408068190360279472">Сеть <ph name="NETWORK_TYPE" />, подключение</translation>
 <translation id="8425213833346101688">Изменить</translation>
 <translation id="8428213095426709021">Настройки</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" /> предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />).</translation>
 <translation id="8431909052837336408">Изменение PIN-кода SIM-карты</translation>
 <translation id="8437209419043462667">США</translation>
 <translation id="8452135315243592079">SIM-карта не обнаружена</translation>
@@ -992,7 +1006,6 @@
 <translation id="8569764466147087991">Выберите файл</translation>
 <translation id="8577897833047451336">Хорватский</translation>
 <translation id="8578308463707544055">Индонезийский</translation>
-<translation id="8579285237314169903">Синхронизация файлов (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Файлы отображаются в виде значков.</translation>
 <translation id="8601932370724196034">Графический файл Crostini</translation>
 <translation id="8609695766746872526">Исландский</translation>
@@ -1005,6 +1018,7 @@
 <translation id="8698877009525468705">Это конфиденциальный файл, и администратор ограничил его использование</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">Мальтийский</translation>
+<translation id="8714138378966541668">Есть ограничение оператора</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Выбран объект "<ph name="ENTRY_NAME" />".</translation>
 <translation id="872537912056138402">Хорватский</translation>
@@ -1012,6 +1026,7 @@
 <translation id="8787254343425541995">Использовать прокси-серверы для общих сетей</translation>
 <translation id="8790981080411996443">Человек поливает цветы</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 предупреждение.}one{# предупреждение.}few{# предупреждения.}many{# предупреждений.}other{# предупреждения.}}</translation>
 <translation id="8808686172382650546">Кот</translation>
 <translation id="8810671769985673465">Не удалось выполнить архивирование. Объект "<ph name="FILE_NAME" />" уже есть в архиве.</translation>
 <translation id="8813284582615685103">Испанский (Испания)</translation>
@@ -1042,7 +1057,6 @@
 <translation id="9038620279323455325">Файл "<ph name="FILE_NAME" />" уже существует. Выберите другое название.</translation>
 <translation id="9046895021617826162">Сбой подключения</translation>
 <translation id="9065512565307033593">Если не пройти проверку, доступ к сети будет отключен.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 предупреждение}one{<ph name="COUNT" /> предупреждение}few{<ph name="COUNT" /> предупреждения}many{<ph name="COUNT" /> предупреждений}other{<ph name="COUNT" /> предупреждения}}</translation>
 <translation id="908378762078012445">Русский, фонетическая раскладка AATSEEL</translation>
 <translation id="9086302186042011942">Выполняется синхронизация</translation>
 <translation id="9099674669267916096">Количество страниц</translation>

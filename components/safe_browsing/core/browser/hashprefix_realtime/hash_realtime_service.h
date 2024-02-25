@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 
+#include <optional>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -14,11 +16,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -26,16 +27,10 @@ struct NetworkTrafficAnnotationTag;
 class HttpResponseHeaders;
 }
 
-namespace network {
-struct ResourceRequest;
-class SimpleURLLoader;
-class SharedURLLoaderFactory;
-}  // namespace network
-
 namespace safe_browsing {
 
 using HPRTLookupResponseCallback =
-    base::OnceCallback<void(bool, absl::optional<SBThreatType>, SBThreatType)>;
+    base::OnceCallback<void(bool, std::optional<SBThreatType>)>;
 
 class OhttpKeyService;
 class VerdictCacheManager;
@@ -64,7 +59,7 @@ class HashRealTimeService : public KeyedService {
     // Returns a token that can be used in |AddToHPRTLookupResponses| to
     // correlate a ping and response. If the token is not populated, the
     // response should not be logged.
-    virtual absl::optional<int> AddToHPRTLookupPings(
+    virtual std::optional<int> AddToHPRTLookupPings(
         V5::SearchHashesRequest* inner_request,
         std::string relay_url_spec,
         std::string ohttp_key) = 0;
@@ -75,24 +70,16 @@ class HashRealTimeService : public KeyedService {
         V5::SearchHashesResponse* response) = 0;
   };
   HashRealTimeService(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::RepeatingCallback<network::mojom::NetworkContext*()>
           get_network_context,
       VerdictCacheManager* cache_manager,
       OhttpKeyService* ohttp_key_service,
-      base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled,
       WebUIDelegate* webui_delegate);
 
   HashRealTimeService(const HashRealTimeService&) = delete;
   HashRealTimeService& operator=(const HashRealTimeService&) = delete;
 
   ~HashRealTimeService() override;
-
-  // This function is only currently used for the hash-prefix real-time lookup
-  // experiment. Once the experiment is complete, it will be deprecated.
-  // TODO(crbug.com/1410253): Deprecate this (including the factory populating
-  // it).
-  bool IsEnhancedProtectionEnabled();
 
   // Returns whether the |url| is eligible for hash-prefix real-time checks.
   // It's never eligible if the |request_destination| is not mainframe.
@@ -102,14 +89,8 @@ class HashRealTimeService : public KeyedService {
 
   // Start the lookup for |url|, and call |response_callback| on
   // |callback_task_runner| when response is received.
-  // |is_source_lookup_mechanism_experiment| specifies whether the source was
-  // the SafeBrowsingLookupMechanismExperiment (versus it being a navigation).
-  // TODO(crbug.com/1410253): [Also TODO(thefrog)] Delete usages of
-  // |is_source_lookup_mechanism_experiment| in file when deprecating the
-  // experiment.
   virtual void StartLookup(
       const GURL& url,
-      bool is_source_lookup_mechanism_experiment,
       HPRTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
@@ -123,9 +104,15 @@ class HashRealTimeService : public KeyedService {
  private:
   friend class HashRealTimeServiceTest;
   friend class HashRealTimeServiceDirectFetchTest;
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_MissingOhttpKey);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestLookupFailure_NetError);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_RetriableNetError);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_NetErrorNameNotResolved);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_NetErrorConnectionClosed);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_NetErrorHttpCodeFailure);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
@@ -148,18 +135,15 @@ class HashRealTimeService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeRespected_NotCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
-                           TestLogSearchCacheWithNoQueryParamsMetric);
+                           TestLookupFailure_OhttpClientDestructedEarly);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceDirectFetchTest,
                            TestLookupFailure_RetriableNetError);
 
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
-  using PendingHPRTLookupRequests =
-      base::flat_set<std::unique_ptr<network::SimpleURLLoader>,
-                     base::UniquePtrComparator>;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class OperationResult {
+  enum class OperationOutcome {
     // The lookup was successful.
     kSuccess = 0,
     // Parsing the response to a string failed.
@@ -176,22 +160,64 @@ class HashRealTimeService : public KeyedService {
     kHttpError = 6,
     // There is a bug in the code leading to a NOTREACHED branch.
     kNotReached = 7,
-    kMaxValue = kNotReached,
+    // The result was found in the local cache.
+    kResultInLocalCache = 8,
+    // The service is in backoff mode and therefore cannot perform the request.
+    kServiceInBackoffMode = 9,
+    // Fetching the OHTTP key needed for the HPRT network request was
+    // unsuccessful.
+    kOhttpKeyFetchFailed = 10,
+    kMaxValue = kOhttpKeyFetchFailed,
   };
 
-  // Returns the traffic annotation tag that is attached in the simple URL
-  // loader when a direct fetch request is sent.
-  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTagForDirectFetch()
-      const;
+  // The reason why ReportError is called on backoff operator.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class BackoffReportErrorReason {
+    kInvalidKey = 0,
+    kResponseError = 1,
+    kMaxValue = kResponseError,
+  };
+
+  // Used only for the return type of the function |DetermineSBThreatInfo|.
+  struct SBThreatInfo {
+    SBThreatInfo(SBThreatType threat_type, int num_full_hash_matches);
+    SBThreatType threat_type;
+    int num_full_hash_matches;
+  };
+
+  // The purpose of this class is to have a single funnel that all calls back
+  // to the lookup initiator use.
+  class LookupCompleter {
+   public:
+    LookupCompleter(
+        HPRTLookupResponseCallback response_callback,
+        scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner);
+    ~LookupCompleter();
+
+    // Sends |is_lookup_successful| and |sb_threat_type| back to the lookup
+    // initiator.
+    void CompleteLookup(bool is_lookup_successful,
+                        std::optional<SBThreatType> sb_threat_type,
+                        OperationOutcome operation_outcome);
+
+   private:
+    // Used to assert that |CompleteLookup| is only called once.
+    bool is_call_complete_ = false;
+    // The callback provided by the lookup initiator.
+    HPRTLookupResponseCallback response_callback_;
+    // Task runner to be used for |response_callback_|.
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner_;
+  };
+
+  // Helper function for |StartLookup|. Starts the lookup for |url| and calls
+  // the callback within |lookup_completer| when a response is received.
+  void StartLookupInternal(const GURL& url,
+                           std::unique_ptr<LookupCompleter> lookup_completer);
 
   // Returns the traffic annotation tag that is attached in the Oblivious HTTP
   // request when an OHTTP request is sent.
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTagForOhttp() const;
-
-  // Get a resource request with URL, load_flags, credentials mode, and method
-  // set.
-  std::unique_ptr<network::ResourceRequest> GetDirectFetchResourceRequest(
-      V5::SearchHashesRequest* request) const;
 
   // Get the URL that will return a response containing full hashes.
   std::string GetResourceUrl(V5::SearchHashesRequest* request) const;
@@ -199,53 +225,31 @@ class HashRealTimeService : public KeyedService {
   // Callback for getting the OHTTP key. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
   // details. |key| is returned from |ohttp_key_service_|.
-  void OnGetOhttpKey(
-      std::unique_ptr<V5::SearchHashesRequest> request,
-      const GURL& url,
-      bool is_source_lookup_mechanism_experiment,
-      const std::vector<std::string>& hash_prefixes_in_request,
-      std::vector<V5::FullHash> result_full_hashes,
-      base::TimeTicks request_start_time,
-      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      HPRTLookupResponseCallback response_callback,
-      SBThreatType locally_cached_results_threat_type,
-      absl::optional<std::string> key);
+  void OnGetOhttpKey(std::unique_ptr<V5::SearchHashesRequest> request,
+                     const GURL& url,
+                     const std::vector<std::string>& hash_prefixes_in_request,
+                     std::vector<V5::FullHash> result_full_hashes,
+                     base::TimeTicks request_start_time,
+                     std::unique_ptr<LookupCompleter> lookup_completer,
+                     std::optional<std::string> key);
 
   // Callback for requests sent via OHTTP. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
-  // details. |response_body|, |net_error|, |response_code| and |headers| are
-  // returned from the OHTTP client. |ohttp_key| is sent to the key service.
-  void OnOhttpComplete(
-      const GURL& url,
-      const std::vector<std::string>& hash_prefixes_in_request,
-      std::vector<V5::FullHash> result_full_hashes,
-      base::TimeTicks request_start_time,
-      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      HPRTLookupResponseCallback response_callback,
-      SBThreatType locally_cached_results_threat_type,
-      std::string ohttp_key,
-      absl::optional<int> webui_delegate_token,
-      const absl::optional<std::string>& response_body,
-      int net_error,
-      int response_code,
-      scoped_refptr<net::HttpResponseHeaders> headers);
-
-  // Callback for requests sent directly to the Safe Browsing server. Most
-  // parameters are used by |OnURLLoaderComplete|, see the description above
-  // |OnURLLoaderComplete| for details. |url_loader| is the loader that was used
-  // to send the request. |response_body| is returned from the
-  // URL loader.
-  void OnDirectURLLoaderComplete(
-      const GURL& url,
-      const std::vector<std::string>& hash_prefixes_in_request,
-      std::vector<V5::FullHash> result_full_hashes,
-      network::SimpleURLLoader* url_loader,
-      base::TimeTicks request_start_time,
-      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      HPRTLookupResponseCallback response_callback,
-      SBThreatType locally_cached_results_threat_type,
-      absl::optional<int> webui_delegate_token,
-      std::unique_ptr<std::string> response_body);
+  // details. |response_body|, |net_error|, |response_code|, |headers|, and
+  // |ohttp_client_destructed_early| are returned from the OHTTP client.
+  // |ohttp_key| is sent to the key service.
+  void OnOhttpComplete(const GURL& url,
+                       const std::vector<std::string>& hash_prefixes_in_request,
+                       std::vector<V5::FullHash> result_full_hashes,
+                       base::TimeTicks request_start_time,
+                       std::unique_ptr<LookupCompleter> lookup_completer,
+                       std::string ohttp_key,
+                       std::optional<int> webui_delegate_token,
+                       const std::optional<std::string>& response_body,
+                       int net_error,
+                       int response_code,
+                       scoped_refptr<net::HttpResponseHeaders> headers,
+                       bool ohttp_client_destructed_early);
 
   // Called when the response from the Safe Browsing V5 remote endpoint is
   // received. This is responsible for parsing the response, determining if
@@ -261,79 +265,68 @@ class HashRealTimeService : public KeyedService {
   //    the most severe threat type.
   //  - |request_start_time| represents when the request was sent, and is used
   //    for logging.
-  //  - |response_callback_task_runner| is the callback the original caller
-  //    passed through that will be called when the method completes.
-  //  - |response_callback| is the callback the original caller passed through.
-  //  - |locally_cached_results_threat_type| is the threat type based on locally
-  //    cached results only. This is only used for logging purposes.
+  //  - |lookup_completer| will be called when the method completes and will
+  //    respond to the lookup initiator.
   //  - |response_body| is the unparsed response from the server.
   //  - |net_error| is the net error code from the server.
   //  - |response_code| is the HTTP status code from the server.
-  //  - |allow_retriable_errors| specifies whether certain types of errors can
-  //    be considered retriable, meaning they don't increment the backoff
-  //    counter.
   //  - |webui_delegate_token| is used for matching HPRT lookup responses to
   //    pings on chrome://safe-browsing.
+  //  - |ohttp_client_destructed_early| represents whether the OHTTP client
+  //    used for making the request destructed before its normal callback was
+  //    called. This is used only for logging purposes.
   void OnURLLoaderComplete(
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
       std::vector<V5::FullHash> result_full_hashes,
       base::TimeTicks request_start_time,
-      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      HPRTLookupResponseCallback response_callback,
-      SBThreatType locally_cached_results_threat_type,
+      std::unique_ptr<LookupCompleter> lookup_completer,
       std::unique_ptr<std::string> response_body,
       int net_error,
       int response_code,
-      bool allow_retriable_errors,
-      absl::optional<int> webui_delegate_token);
+      std::optional<int> webui_delegate_token,
+      bool ohttp_client_destructed_early);
 
   // Determines the most severe threat type based on |result_full_hashes|, which
   // contains the merged caching and server response results. The |url| is
   // required in order to filter down |result_full_hashes| to ones that match
-  // the |url| full hashes. |log_threat_info_size| determines whether to log
-  // SafeBrowsing.HPRT.ThreatInfoSize during the method call.
-  static SBThreatType DetermineSBThreatType(
+  // the |url| full hashes. It also returns the number of full hash matches for
+  // logging purposes.
+  static SBThreatInfo DetermineSBThreatInfo(
       const GURL& url,
-      const std::vector<V5::FullHash>& result_full_hashes,
-      // TODO(crbug.com/1410253): Deprecate this once the experiment is
-      // complete.
-      bool log_threat_info_size);
+      const std::vector<V5::FullHash>& result_full_hashes);
 
-  // Returns a number representing the severity of the threat type. The lower
-  // the number, the more severe it is. Severity is used to narrow down to a
-  // single threat type to report in cases where there are multiple.
-  static int GetThreatSeverity(const V5::ThreatType& threat_type);
+  // Returns a number representing the severity of the full hash detail. The
+  // lower the number, the more severe it is. Severity is used to narrow down to
+  // a single threat type to report in cases where there are multiple full hash
+  // details.
+  static int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail);
 
-  // Returns true if the |threat_type| is more severe than the
+  // Returns true if the |detail| is more severe than the
   // |baseline_severity|. Returns false if it's less severe or has equal
   // severity.
-  static bool IsThreatTypeMoreSevere(const V5::ThreatType& threat_type,
+  static bool IsHashDetailMoreSevere(const V5::FullHash::FullHashDetail& detail,
                                      int baseline_severity);
 
   // In addition to attempting to parse the |response_body| as described in the
   // |ParseResponse| function comments, this updates the backoff state depending
   // on the lookup success.
-  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationOutcome>
   ParseResponseAndUpdateBackoff(
       int net_error,
       int http_error,
       std::unique_ptr<std::string> response_body,
-      const std::vector<std::string>& requested_hash_prefixes,
-      bool allow_retriable_errors) const;
+      const std::vector<std::string>& requested_hash_prefixes) const;
 
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
-  // returns either the response proto or an |OperationResult| with details on
+  // returns either the response proto or an |OperationOutcome| with details on
   // why the parsing was unsuccessful. |requested_hash_prefixes| is used for a
   // sanitization call into |RemoveUnmatchedFullHashes|.
-  // |allow_retriable_errors| specifies whether certain types of errors can be
-  // considered retriable, meaning they don't increment the backoff counter.
-  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationOutcome>
   ParseResponse(int net_error,
                 int http_error,
                 std::unique_ptr<std::string> response_body,
-                const std::vector<std::string>& requested_hash_prefixes,
-                bool allow_retriable_errors) const;
+                const std::vector<std::string>& requested_hash_prefixes) const;
 
   // Removes any |FullHash| within the |response| whose hash prefix is not found
   // within |requested_hash_prefixes|. This is not expected to occur, but is
@@ -353,29 +346,15 @@ class HashRealTimeService : public KeyedService {
   std::set<std::string> GetHashPrefixesSet(const GURL& url) const;
 
   // Searches the local cache for the input |hash_prefixes|.
-  //  - |skip_logging| specifies whether metric logging should be skipped when
-  //    this function is called.
   //  - |out_missing_hash_prefixes| is an output parameter with a list of which
   //    hash prefixes were not found in the cache and need to be requested.
   //  - |out_cached_full_hashes| is an output parameter with a list of unsafe
   //    full hashes that were found in the cache for any of the |hash_prefixes|.
-  // TODO(crbug.com/1432308): [Also TODO(thefrog)] Remove |skip_logging|
-  // parameter after investigation is complete.
   void SearchCache(std::set<std::string> hash_prefixes,
-                   bool skip_logging,
                    std::vector<std::string>* out_missing_hash_prefixes,
                    std::vector<V5::FullHash>* out_cached_full_hashes) const;
 
-  // Used for logging only. Records whether there would be a cache hit for all
-  // requested prefixes if the URL's query parameters were excluded.
-  // TODO(crbug.com/1432308): [Also TODO(thefrog)] Remove function after
-  // investigation is complete.
-  void LogSearchCacheWithNoQueryParamsMetric(const GURL& url) const;
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // The URLLoaderFactory we use to issue network requests.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Fetches the NetworkContext that we use to send requests over OHTTP.
   base::RepeatingCallback<network::mojom::NetworkContext*()>
@@ -386,10 +365,6 @@ class HashRealTimeService : public KeyedService {
 
   // Unowned object used for getting OHTTP key.
   raw_ptr<OhttpKeyService> ohttp_key_service_;
-
-  // All requests that are sent directly to the server but haven't received a
-  // response yet.
-  PendingHPRTLookupRequests pending_requests_;
 
   // All pending receivers that are sent via OHTTP but haven't received a
   // response yet.
@@ -402,9 +377,6 @@ class HashRealTimeService : public KeyedService {
   // Indicates whether |Shutdown| has been called. If so, |StartLookup| returns
   // early.
   bool is_shutdown_ = false;
-
-  // Pulls whether enhanced protection is currently enabled.
-  base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled_;
 
   // May be null on certain platforms that don't support
   // chrome://safe-browsing and in unit tests. If non-null, guaranteed to

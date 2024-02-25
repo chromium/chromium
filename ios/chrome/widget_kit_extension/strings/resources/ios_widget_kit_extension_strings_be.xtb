@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1324575488877808473">Адкрыйце Chrome, каб пабачыць тут сайты, якія вы наведвалі найчасцей.</translation>
 <translation id="2513892053093488070">Галасавы пошук</translation>
 <translation id="2535710892645968259">Пераход з экрана блакіроўкі ў гульню Chrome Dino.</translation>
 <translation id="2542770169955243077">Гульня з дыназаўрам у Chrome</translation>
-<translation id="2803429804752388720">Пошук пароляў</translation>
 <translation id="2922313168575194078">Бяспечны пошук пароляў, захаваных вамі ў Менеджары пароляў Google</translation>
 <translation id="302608144225178783">Перайсці з галоўнага экрана ў Гульню з дыназаўрам у Chrome.</translation>
 <translation id="3296938369177810197">Галасавы пошук</translation>
@@ -29,6 +29,7 @@
 <translation id="6691821786147477657">Пачніце новы пошук або адкрыйце найбольш наведвальныя сайты з галоўнай старонкі iPad.</translation>
 <translation id="6721566127904256183">Тут будуць сайты, якія вы часта наведваеце.</translation>
 <translation id="6855322554930231468">Пошук</translation>
+<translation id="6973491011026415905">Пошук пароляў у Менеджары пароляў Google</translation>
 <translation id="7010831364920321713">Пошук у рэжыме інкогніта</translation>
 <translation id="7048549665319929185">Выканайце пошук або ўвядзіце URL-адрас</translation>
 <translation id="7317302007099170473">Сканіраваць QR-код</translation>

@@ -97,7 +97,7 @@ class AccountManagerFacadeFactoryLacros {
           std::make_unique<account_manager::AccountManagerFacadeImpl>(
               std::move(remote),
               /*remote_version=*/std::numeric_limits<uint32_t>::max(),
-              /*account_manager_for_tests=*/ash_account_manager_.get());
+              /*account_manager_for_tests=*/ash_account_manager_->GetWeakPtr());
       return;
     }
 

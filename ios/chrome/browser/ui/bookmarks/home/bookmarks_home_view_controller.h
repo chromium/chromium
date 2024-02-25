@@ -10,7 +10,7 @@
 #include <set>
 #include <vector>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 
 @protocol ApplicationCommands;
@@ -41,7 +41,7 @@ class GURL;
 
 // Class to navigate the bookmark hierarchy.
 @interface BookmarksHomeViewController
-    : ChromeTableViewController <KeyCommandActions>
+    : LegacyChromeTableViewController <KeyCommandActions>
 
 // Delegate for presenters. Note that this delegate is currently being set only
 // in case of handset, and not tablet. In the future it will be used by both
@@ -80,6 +80,9 @@ class GURL;
 // Called when the user is swiping down the view, and
 // `BookmarksHomeViewController` is on the top of the navigation view.
 - (void)willDismissBySwipeDown;
+
+// Called to update the promo after account settings is closed.
+- (void)updateReviewSettingsPromo;
 
 @end
 

@@ -4,12 +4,12 @@
 
 #include "ash/frame/snap_controller_impl.h"
 
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/window.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -52,7 +52,7 @@ void SnapControllerImpl::ShowSnapPreview(aura::Window* window,
 
   // Fire a haptic event if necessary.
   if (need_haptic_feedback) {
-    haptics_util::PlayHapticTouchpadEffect(
+    chromeos::haptics_util::PlayHapticTouchpadEffect(
         ui::HapticTouchpadEffect::kSnap,
         ui::HapticTouchpadEffectStrength::kMedium);
   }
@@ -78,7 +78,8 @@ void SnapControllerImpl::CommitSnap(aura::Window* window,
       snap_action_source = WindowSnapActionSource::kSnapByWindowLayoutMenu;
       break;
     case SnapRequestSource::kFromLacrosSnapButtonOrWindowLayoutMenu:
-      // TODO: handle the lacros snap request.
+      snap_action_source =
+          WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu;
       break;
   }
 

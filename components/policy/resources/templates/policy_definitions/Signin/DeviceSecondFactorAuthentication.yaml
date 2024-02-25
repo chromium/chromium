@@ -30,8 +30,6 @@ schema:
   - 2
   - 3
   type: integer
-supported_chrome_os_management:
-- google_cloud
 supported_on:
 - chrome_os:61-
 tags:

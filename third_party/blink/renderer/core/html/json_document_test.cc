@@ -39,7 +39,8 @@ TEST_F(JSONDocumentTest, JSONDoc) {
   EXPECT_EQ(
       GetDocument()
           .documentElement()
-          ->QuerySelector(html_names::kPreTag.LocalName())
+          ->QuerySelector(html_names::kBodyTag.LocalName())
+          ->firstChild()
           ->textContent(),
       "{\"menu\":{\"id\":\"file\",\"value\":\"File\",\"popup\":{\"menuitem\":[{"
       "\"value\":\"New\",\"click\":\"CreateNewDoc\"}]},\"itemCount\":3,"
@@ -49,7 +50,8 @@ TEST_F(JSONDocumentTest, JSONDoc) {
   EXPECT_EQ(
       GetDocument()
           .documentElement()
-          ->QuerySelector(html_names::kPreTag.LocalName())
+          ->QuerySelector(html_names::kBodyTag.LocalName())
+          ->firstChild()
           ->textContent(),
       "{\n  \"menu\": {\n    \"id\": \"file\",\n    \"value\": \"File\",\n    "
       "\"popup\": {\n      \"menuitem\": [\n        {\n          \"value\": "
@@ -65,7 +67,8 @@ TEST_F(JSONDocumentTest, InvalidJSON) {
   EXPECT_EQ(
       GetDocument()
           .documentElement()
-          ->QuerySelector(html_names::kPreTag.LocalName())
+          ->QuerySelector(html_names::kBodyTag.LocalName())
+          ->firstChild()
           ->textContent(),
       "{\"menu:{\"id\":\"file\",\"value\":\"File\",\"popup\":{\"menuitem\":[{"
       "\"value\":\"New\",\"click\":\"CreateNewDoc\"}]},\"itemCount\":3,"
@@ -73,10 +76,40 @@ TEST_F(JSONDocumentTest, InvalidJSON) {
   ClickPrettyPrintCheckbox();
   EXPECT_EQ(GetDocument()
                 .documentElement()
-                ->QuerySelector(html_names::kPreTag.LocalName())
+                ->QuerySelector(html_names::kBodyTag.LocalName())
+                ->firstChild()
                 ->textContent(),
             "{\"menu:{\"id\":\"file\",\"value\":\"File\",\"popup\":{"
             "\"menuitem\":[{\"value\":\"New\",\"click\":\"CreateNewDoc\"}]},"
             "\"itemCount\":3,\"isShown\":true}}");
+}
+
+TEST_F(JSONDocumentTest, Utf8Parsing) {
+  LoadResource(
+      "{\"interests\": [\"音楽\", \"खेल\", \"чтение\"],"
+      "\"languages\": [\"Français\", \"Español\", \"日本語\", "
+      "\"العربية\",\"ગુજરાતી\", \"தமிழ்\", \"తెలుగు\", "
+      "\"ಕನ್ನಡ\"],\"emoji\":[\"✨\",\"🍬\",\"🌍\"] }");
+  EXPECT_EQ(GetDocument()
+                .documentElement()
+                ->QuerySelector(html_names::kBodyTag.LocalName())
+                ->firstChild()
+                ->textContent(),
+            "{\"interests\": [\"音楽\", \"खेल\", \"чтение\"],"
+            "\"languages\": [\"Français\", \"Español\", \"日本語\", "
+            "\"العربية\",\"ગુજરાતી\", \"தமிழ்\", \"తెలుగు\", "
+            "\"ಕನ್ನಡ\"],\"emoji\":[\"✨\",\"🍬\","
+            "\"🌍\"] }");
+  ClickPrettyPrintCheckbox();
+  EXPECT_EQ(GetDocument()
+                .documentElement()
+                ->QuerySelector(html_names::kBodyTag.LocalName())
+                ->firstChild()
+                ->textContent(),
+            "{\n  \"interests\": [\n    \"音楽\",\n    \"खेल\",\n    "
+            "\"чтение\"\n  ],\n  \"languages\": [\n    \"Français\",\n    "
+            "\"Español\",\n    \"日本語\",\n    \"العربية\",\n    "
+            "\"ગુજરાતી\",\n    \"தமிழ்\",\n    \"తెలుగు\",\n    \"ಕನ್ನಡ\"\n  ],\n  "
+            "\"emoji\": [\n    \"✨\",\n    \"🍬\",\n    \"🌍\"\n  ]\n}\n");
 }
 }  // namespace blink

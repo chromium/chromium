@@ -16,31 +16,6 @@ namespace gpu {
 
 namespace {
 
-bool IsSameHandle(HANDLE handle, HANDLE other) {
-  using PFN_COMPARE_OBJECT_HANDLES =
-      BOOL(WINAPI*)(HANDLE hFirstObjectHandle, HANDLE hSecondObjectHandle);
-  static PFN_COMPARE_OBJECT_HANDLES compare_object_handles_fn =
-      []() -> PFN_COMPARE_OBJECT_HANDLES {
-    HMODULE kernelbase_module = ::GetModuleHandle(L"kernelbase.dll");
-    if (!kernelbase_module) {
-      DVLOG(1) << "kernelbase.dll not found";
-      return nullptr;
-    }
-    PFN_COMPARE_OBJECT_HANDLES fn =
-        reinterpret_cast<PFN_COMPARE_OBJECT_HANDLES>(
-            ::GetProcAddress(kernelbase_module, "CompareObjectHandles"));
-    if (!fn)
-      DVLOG(1) << "CompareObjectHandles not found";
-    return fn;
-  }();
-  if (compare_object_handles_fn)
-    return compare_object_handles_fn(handle, other);
-  // CompareObjectHandles isn't available before Windows 10. Return true in that
-  // case since there's no other way to check if the handles refer to the same
-  // D3D11 texture and IsSameHandle is only used as a sanity test.
-  return true;
-}
-
 Microsoft::WRL::ComPtr<ID3D11Texture2D> OpenSharedHandleTexture(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     HANDLE shared_handle) {
@@ -115,7 +90,7 @@ DXGISharedHandleState::~DXGISharedHandleState() {
 }
 
 void DXGISharedHandleState::AddRef() const {
-  base::subtle::RefCountedThreadSafeBase::AddRef();
+  base::subtle::RefCountedThreadSafeBase::AddRefWithCheck();
 }
 
 void DXGISharedHandleState::Release() const {
@@ -177,7 +152,9 @@ bool DXGISharedHandleState::BeginAccessD3D11(
 
   const HRESULT hr = d3d11_state.dxgi_keyed_mutex->AcquireSync(
       kDXGIKeyedMutexAcquireKey, INFINITE);
-  if (FAILED(hr)) {
+  // Can't check for FAILED(hr) because AcquireSync may return e.g.
+  // WAIT_ABANDONED.
+  if (hr != S_OK) {
     LOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
     return false;
   }
@@ -291,7 +268,7 @@ DXGISharedHandleManager::GetOrCreateSharedHandleState(
     DCHECK(state);
     // If there's already a shared handle associated with the token, it should
     // refer to the same D3D11 texture (or kernel object).
-    if (!IsSameHandle(shared_handle.Get(), state->GetSharedHandle())) {
+    if (!CompareObjectHandles(shared_handle.Get(), state->GetSharedHandle())) {
       LOG(ERROR) << "Existing shared handle for token doesn't match";
       return nullptr;
     }

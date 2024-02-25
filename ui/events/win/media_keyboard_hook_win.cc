@@ -54,7 +54,7 @@ MediaKeyboardHookWinImpl::MediaKeyboardHookWinImpl(
     KeyEventCallback callback,
     bool enable_hook_registration)
     : KeyboardHookWinBase(
-          absl::optional<base::flat_set<DomCode>>(
+          std::optional<base::flat_set<DomCode>>(
               {DomCode::MEDIA_PLAY_PAUSE, DomCode::MEDIA_STOP,
                DomCode::MEDIA_TRACK_NEXT, DomCode::MEDIA_TRACK_PREVIOUS}),
           std::move(callback),
@@ -107,7 +107,7 @@ bool MediaKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
   std::unique_ptr<KeyEvent> key_event =
       std::make_unique<KeyEvent>(KeyEventFromMSG(msg));
   if (is_repeat)
-    key_event->set_flags(key_event->flags() | EF_IS_REPEAT);
+    key_event->SetFlags(key_event->flags() | EF_IS_REPEAT);
   ForwardCapturedKeyEvent(key_event.get());
 
   // If the event is handled, don't propagate to the OS.

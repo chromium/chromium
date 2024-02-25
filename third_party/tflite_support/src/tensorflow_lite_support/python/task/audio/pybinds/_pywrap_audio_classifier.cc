@@ -20,6 +20,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/audio/proto/classifications_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/classification_options.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/classifications.pb.h"
+#include "tensorflow_lite_support/cc/task/processor/proto/classifications.pb.h"
 #include "tensorflow_lite_support/python/task/core/pybinds/task_utils.h"
 
 namespace tflite {

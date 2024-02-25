@@ -21,12 +21,12 @@ class CORE_EXPORT CSSURLImageValue final : public CSSStyleImageValue {
   const String& url() const;
 
   // CSSStyleImageValue
-  absl::optional<gfx::Size> IntrinsicSize() const final;
+  std::optional<gfx::Size> IntrinsicSize() const final;
 
   // CanvasImageSource
   ResourceStatus Status() const final;
   scoped_refptr<Image> GetSourceImageForCanvas(
-      CanvasResourceProvider::FlushReason,
+      FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final;

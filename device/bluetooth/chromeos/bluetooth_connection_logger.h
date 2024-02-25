@@ -5,9 +5,10 @@
 #ifndef DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_CONNECTION_LOGGER_H_
 #define DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_CONNECTION_LOGGER_H_
 
+#include <optional>
+
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

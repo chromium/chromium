@@ -62,11 +62,11 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
   // Now, introduce a series of frames with "random snow" in them.  Expect this
   // results in high quantizer estimates.
   for (int i = 0; i < 3; ++i) {
-    int rand_seed = 0xdeadbeef + i;
+    uint32_t rand_seed = 0xdeadbeef + i;
     const auto random_frame_data =
         std::make_unique<uint8_t[]>(frame_size.GetArea());
     for (int j = 0, end = frame_size.GetArea(); j < end; ++j) {
-      rand_seed = (1103515245 * rand_seed + 12345) % (1 << 31);
+      rand_seed = (1103515245u * rand_seed + 12345u) % (1u << 31);
       random_frame_data.get()[j] = static_cast<uint8_t>(rand_seed & 0xff);
     }
     const scoped_refptr<VideoFrame> random_frame =

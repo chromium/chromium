@@ -55,7 +55,7 @@ class CORE_EXPORT DateTimeChooserImpl final : public DateTimeChooser,
 
   // DateTimeChooser functions:
   void EndChooser() override;
-  AXObject* RootAXObject() override;
+  AXObject* RootAXObject(Element* popup_owner) override;
 
   void Trace(Visitor*) const override;
 

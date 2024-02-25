@@ -77,7 +77,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
     return provider_->os_integration_manager().shortcut_manager_for_testing();
   }
 
-  void CreateShortcutForApp(AppId app_id) {
+  void CreateShortcutForApp(webapps::AppId app_id) {
     base::RunLoop loop;
     shortcut_manager().CreateShortcuts(
         app_id, /*add_to_desktop=*/false, SHORTCUT_CREATION_AUTOMATED,
@@ -107,7 +107,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 TEST_F(WebAppShortcutManagerMacTest, InitialVersionIsStored) {
@@ -136,10 +136,10 @@ TEST_F(WebAppShortcutManagerMacTest, RebuildShortcutsOnVersionChange) {
   EXPECT_TRUE(done_update_callback_.is_null());
 
   // Install two apps, but only create shortcuts for one.
-  AppId app_id1 =
+  webapps::AppId app_id1 =
       test::InstallDummyWebApp(profile(), kTestApp1Name, kTestApp1Url);
   CreateShortcutForApp(app_id1);
-  AppId app_id2 =
+  webapps::AppId app_id2 =
       test::InstallDummyWebApp(profile(), kTestApp2Name, kTestApp2Url);
 
   base::FilePath app1_path = GetShortcutPath(kTestApp1Name);
@@ -163,7 +163,13 @@ TEST_F(WebAppShortcutManagerMacTest, RebuildShortcutsOnVersionChange) {
   // Make sure the updated shortcuts version is not persisted to prefs until
   // after we signal completion of updating.
   EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion));
-  std::move(done_update_callback_).Run();
+  {
+    base::RunLoop run_loop;
+    WebAppShortcutManager::OnSetCurrentAppShortcutsVersionCallbackForTesting() =
+        run_loop.QuitClosure();
+    std::move(done_update_callback_).Run();
+    run_loop.Run();
+  }
   EXPECT_NE(0, profile()->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion));
 
   // Verify shortcut was rebuild, and shortcuts weren't created for the second

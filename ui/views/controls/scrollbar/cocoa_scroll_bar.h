@@ -21,10 +21,10 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
                                     public ViewsScrollbarBridgeDelegate,
                                     public ui::ImplicitAnimationObserver,
                                     public gfx::AnimationDelegate {
- public:
-  METADATA_HEADER(CocoaScrollBar);
+  METADATA_HEADER(CocoaScrollBar, ScrollBar)
 
-  explicit CocoaScrollBar(bool horizontal);
+ public:
+  explicit CocoaScrollBar(ScrollBar::Orientation orientation);
 
   CocoaScrollBar(const CocoaScrollBar&) = delete;
   CocoaScrollBar& operator=(const CocoaScrollBar&) = delete;
@@ -75,7 +75,7 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   bool OverlapsContent() const override;
 
   // View:
-  void Layout() override;
+  void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 

@@ -33,9 +33,21 @@
 /* #undef _LIBCPP_HAS_NO_LOCALIZATION */
 /* #undef _LIBCPP_HAS_NO_WIDE_CHARACTERS */
 
+// TODO(thakis): Is this right?
+/* #undef _LIBCPP_HAS_NO_STD_MODULES */
+
+// TODO(thakis): Is this right?
+/* #undef _LIBCPP_HAS_NO_TIME_ZONE_DATABASE */
+
+#define _LIBCPP_INSTRUMENTED_WITH_ASAN
+
 // PSTL backends
 /* #undef _LIBCPP_PSTL_CPU_BACKEND_SERIAL */
+#if defined(__APPLE__)
+#define _LIBCPP_PSTL_CPU_BACKEND_LIBDISPATCH
+#else
 #define _LIBCPP_PSTL_CPU_BACKEND_THREAD
+#endif
 
 // Settings below aren't part of __config_site upstream.
 // We set them here since we want them to take effect everywhere,
@@ -64,5 +76,8 @@
 #if defined(_WIN32)
 #define _LIBCPP_HAS_NO_INT128
 #endif
+
+// TODO(thakis): Remove this after LLVM 19's libc++ is rolled in.
+#define _LIBCPP_CHAR_TRAITS_REMOVE_BASE_SPECIALIZATION
 
 #endif // _LIBCPP_CONFIG_SITE

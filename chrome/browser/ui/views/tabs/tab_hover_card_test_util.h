@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_TEST_UTIL_H_
 
-#include <memory>
-
-#include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
@@ -60,8 +57,7 @@ class TabHoverCardTestUtil {
   };
 
  private:
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
 }  // namespace test

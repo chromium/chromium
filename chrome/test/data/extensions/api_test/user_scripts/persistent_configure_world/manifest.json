@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "User script test extension",
+  "description": "Tests a variety of user scripts API calls for configuring the user script world",
+  "version": "0.1",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "scripting",
+    "userScripts"
+  ],
+  "host_permissions": [
+    "*://requested.com/*"
+  ]
+}

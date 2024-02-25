@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 
 class GURL;
@@ -27,6 +29,8 @@ class EnterpriseBlockPage
   EnterpriseBlockPage(
       content::WebContents* web_contents,
       const GURL& request_url,
+      const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
+          unsafe_resources,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller);
@@ -40,6 +44,8 @@ class EnterpriseBlockPage
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
       override;
 
+  std::string GetCustomMessageForTesting();
+
  protected:
   void CommandReceived(const std::string& command) override;
   void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
@@ -48,6 +54,8 @@ class EnterpriseBlockPage
 
  private:
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
+  const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList
+      unsafe_resources_;
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_ENTERPRISE_BLOCK_PAGE_H_

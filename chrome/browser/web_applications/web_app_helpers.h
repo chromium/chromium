@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_HELPERS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_HELPERS_H_
 
+#include <optional>
 #include <string>
 
-#include "chrome/browser/web_applications/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/functional/callback_helpers.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "url/gurl.h"
 
 class GURL;
 class Profile;
@@ -26,24 +28,51 @@ extern const char kCrxAppPrefix[];
 std::string GenerateApplicationNameFromURL(const GURL& url);
 
 // Compute a deterministic name based on an apps's id.
-std::string GenerateApplicationNameFromAppId(const AppId& app_id);
+std::string GenerateApplicationNameFromAppId(const webapps::AppId& app_id);
 
 // Extracts the application id from the app name.
-AppId GetAppIdFromApplicationName(const std::string& app_name);
+webapps::AppId GetAppIdFromApplicationName(const std::string& app_name);
 
-// Compute the AppId using the given start_url and optional manifest
+// Compute the webapps::AppId using the given start_url and optional manifest
 // id path, which is the path component of the manifest id defined by the spec.
 // This mimics what is given to the spec algorithm as the json manifest_id in
 // https://www.w3.org/TR/appmanifest/#id-member. The `manifest_id_path` can
 // include query arguments and/or fragments, although the fragment will be
-// removed. See the `AppId` type for more information.
+// removed. See the `webapps::AppId` type for more information.
 //
 // This should only be used if a `Manifest` object is not available.
 //
 // TODO(b/281881755): Change the optional parameter to required, and refactor
-// calls with absl::nullopt to `GenerateManifestIdFromStartUrlOnly`.
-AppId GenerateAppId(const absl::optional<std::string>& manifest_id_path,
-                    const GURL& start_url);
+// calls with std::nullopt to `GenerateManifestIdFromStartUrlOnly`.
+webapps::AppId GenerateAppId(const std::optional<std::string>& manifest_id_path,
+                             const GURL& start_url,
+                             const std::optional<webapps::ManifestId>&
+                                 parent_manifest_id = std::nullopt);
+
+// Generates the chrome-specific `webapps::AppId` from the spec-defined
+// manifest. See the `webapps::AppId` type for more information. This will
+// CHECK-fail if the `id` field is not present on the manifest.
+webapps::AppId GenerateAppIdFromManifest(
+
+    const blink::mojom::Manifest& manifest,
+    const std::optional<webapps::ManifestId>& parent_manifest_id =
+        std::nullopt);
+
+// Generates the chrome-specific `webapps::AppId` from the spec-defined manifest
+// id. See the `webapps::AppId` type for more information.
+webapps::AppId GenerateAppIdFromManifestId(
+
+    const webapps::ManifestId& manifest_id,
+    const std::optional<webapps::ManifestId>& parent_manifest_id =
+        std::nullopt);
+
+// Generates a manifest id by only the start_url, which matches the spec
+// algorithm in https://www.w3.org/TR/appmanifest/#id-member where the `id` json
+// member is not present or an empty string. To include an identifier path,
+// please use `GenerateManifestId`.
+//
+// This should only be used if a `Manifest` object is not available.
+webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url);
 
 // Returns a resolved manifest id given the relative `manifest_id_path`,
 // as per the spec algorithm at https://www.w3.org/TR/appmanifest/#id-member.
@@ -52,35 +81,30 @@ AppId GenerateAppId(const absl::optional<std::string>& manifest_id_path,
 // GenerateManifestIdFromStartUrlOnly can be used.
 //
 // This should only be used if a `Manifest` object is not available.
-ManifestId GenerateManifestId(const std::string& manifest_id_path,
-                              const GURL& start_url);
+webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
+                                       const GURL& start_url);
 
-// Generates the chrome-specific `AppId` from the spec-defined manifest id. See
-// the `AppId` type for more information.
-AppId GenerateAppIdFromManifestId(const ManifestId& manifest_id);
-
-// Generates the chrome-specific `AppId` from the spec-defined manifest. See the
-// `AppId` type for more information. This will CHECK-fail if the `id` field is
-// not present on the manifest.
-AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest);
-
-// Generates a manifest id by only the start_url, which matches the spec
-// algorithm in https://www.w3.org/TR/appmanifest/#id-member where the `id` json
-// member is not present or an empty string. To include an identifier path,
-// please use `GenerateManifestId`.
-//
-// This should only be used if a `Manifest` object is not available.
-ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url);
+// Same as above but does not CHECK that the resulting id is valid. Only used
+// for sync parsing to avoid crashes, and ignore bad sync data.
+webapps::ManifestId GenerateManifestIdUnsafe(
+    const std::string& manifest_id_path,
+    const GURL& start_url);
 
 // Returns whether the given |app_url| is a valid web app url.
 bool IsValidWebAppUrl(const GURL& app_url);
 
+// Adds chrome://`host` as an origin that IsValidWebAppUrl will consider valid.
+// The returned ScopedClosureRunner undoes this registration.
+base::ScopedClosureRunner AddValidWebAppChromeUrlHostForTesting(
+    const std::string& host);
+
 // Searches for the first locally installed app id in the registry for which
 // the |url| is in scope. If |window_only| is specified, only apps that
 // open in app windows will be considered.
-absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
-                                                     const GURL& url,
-                                                     bool window_only = false);
+std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
+    Profile* profile,
+    const GURL& url,
+    bool window_only = false);
 
 // Searches for the first app id in the registry which is not locally installed
 // and for which the |url| is in scope.

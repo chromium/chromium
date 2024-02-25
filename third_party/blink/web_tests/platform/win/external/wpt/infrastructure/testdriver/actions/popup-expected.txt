@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Actions go to the popup and not the test window
+  promise_test: Unhandled rejection with value: "Test window received click meant for the popup"
+Harness: the test ran to completion.
+

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/public/browser/content_browser_client.h"
@@ -40,7 +41,8 @@ constexpr base::TimeDelta kHideSmtcDelay = base::Seconds(kHideSmtcDelaySeconds);
 constexpr base::TimeDelta kDebounceDelay = base::Milliseconds(10);
 
 SystemMediaControlsNotifier::SystemMediaControlsNotifier(
-    system_media_controls::SystemMediaControls* system_media_controls)
+    system_media_controls::SystemMediaControls* system_media_controls,
+    base::UnguessableToken request_id)
     : system_media_controls_(system_media_controls) {
   DCHECK(system_media_controls_);
 
@@ -51,21 +53,31 @@ SystemMediaControlsNotifier::SystemMediaControlsNotifier(
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Connect to the MediaControllerManager and create a MediaController that
-  // controls the active session so we can observe it.
-  mojo::Remote<media_session::mojom::MediaControllerManager> controller_manager;
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      controller_manager_remote;
   GetMediaSessionService().BindMediaControllerManager(
-      controller_manager.BindNewPipeAndPassReceiver());
-  controller_manager->CreateActiveMediaController(
-      media_controller_.BindNewPipeAndPassReceiver());
+      controller_manager_remote.BindNewPipeAndPassReceiver());
+
+  if (request_id == base::UnguessableToken::Null()) {
+    // Null ID for all scenarios where kWebAppSystemMediaControlsWin is not
+    // supported. ie. Mac, Linux, Windows with the feature flag off.
+    // Create a media controller that follows the active session for this case.
+    controller_manager_remote->CreateActiveMediaController(
+        media_controller_remote_.BindNewPipeAndPassReceiver());
+  } else {
+    // Create a media controller tied to |request_id| when
+    // kWebAppSystemMediaControlsWin is enabled (on Windows OS).
+    controller_manager_remote->CreateMediaControllerForSession(
+        media_controller_remote_.BindNewPipeAndPassReceiver(), request_id);
+  }
 
   // Observe the active media controller for changes to playback state and
   // supported actions.
-  media_controller_->AddObserver(
+  media_controller_remote_->AddObserver(
       media_controller_observer_receiver_.BindNewPipeAndPassRemote());
 
   // Observe the active media controller for changes to provided artwork.
-  media_controller_->ObserveImages(
+  media_controller_remote_->ObserveImages(
       media_session::mojom::MediaSessionImageType::kArtwork, kMinImageSize,
       kDesiredImageSize,
       media_controller_image_observer_receiver_.BindNewPipeAndPassRemote());
@@ -108,7 +120,7 @@ void SystemMediaControlsNotifier::MediaSessionInfoChanged(
 }
 
 void SystemMediaControlsNotifier::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (metadata.has_value()) {
@@ -139,7 +151,7 @@ void SystemMediaControlsNotifier::MediaSessionActionsChanged(
 }
 
 void SystemMediaControlsNotifier::MediaSessionChanged(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   if (!request_id.has_value()) {
     system_media_controls_->SetID(nullptr);
     return;
@@ -157,7 +169,7 @@ void SystemMediaControlsNotifier::MediaControllerImageChanged(
 }
 
 void SystemMediaControlsNotifier::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (position) {
@@ -221,7 +233,7 @@ void SystemMediaControlsNotifier::DebounceSetIsSeekToEnabled(
       self->system_media_controls_->SetIsSeekToEnabled(
           *self->delayed_is_seek_to_enabled_);
 
-      self->delayed_is_seek_to_enabled_ = absl::nullopt;
+      self->delayed_is_seek_to_enabled_ = std::nullopt;
     };
 
     actions_update_timer_.Start(
@@ -248,23 +260,27 @@ void SystemMediaControlsNotifier::UpdateMetadata() {
 
   if (delayed_position_update_) {
     system_media_controls_->SetPosition(*delayed_position_update_);
-    delayed_position_update_ = absl::nullopt;
+    delayed_position_update_ = std::nullopt;
   }
 
   if (delayed_metadata_update_) {
     // If we need to hide the playing media's metadata we replace it with
     // placeholder metadata.
     if (session_info_ptr_ && session_info_ptr_->hide_metadata) {
-      CHECK(MediaSessionClient::Get());
+      MediaSessionClient* media_session_client = MediaSessionClient::Get();
+      CHECK(media_session_client);
 
       system_media_controls_->SetTitle(
-          MediaSessionClient::Get()->GetTitlePlaceholder());
-
+          media_session_client->GetTitlePlaceholder());
       system_media_controls_->SetArtist(
-          MediaSessionClient::Get()->GetArtistPlaceholder());
-
+          media_session_client->GetArtistPlaceholder());
       system_media_controls_->SetAlbum(
-          MediaSessionClient::Get()->GetAlbumPlaceholder());
+          media_session_client->GetAlbumPlaceholder());
+
+      // Always make sure the metadata replacement is accompanied by the
+      // thumbnail replacement.
+      system_media_controls_->SetThumbnail(
+          media_session_client->GetThumbnailPlaceholder());
     } else {
       // If no title was provided, the title of the tab will be in the title
       // property.
@@ -278,12 +294,12 @@ void SystemMediaControlsNotifier::UpdateMetadata() {
     }
 
     system_media_controls_->UpdateDisplay();
-    delayed_metadata_update_ = absl::nullopt;
+    delayed_metadata_update_ = std::nullopt;
   }
 
   if (delayed_playback_status_) {
     system_media_controls_->SetPlaybackStatus(*delayed_playback_status_);
-    delayed_playback_status_ = absl::nullopt;
+    delayed_playback_status_ = std::nullopt;
   }
 }
 
@@ -294,10 +310,11 @@ void SystemMediaControlsNotifier::UpdateIcon() {
   // If we need to hide the media metadata we replace the playing media's image
   // with a placeholder.
   if (session_info_ptr_ && session_info_ptr_->hide_metadata) {
-    CHECK(MediaSessionClient::Get());
+    MediaSessionClient* media_session_client = MediaSessionClient::Get();
+    CHECK(media_session_client);
 
     system_media_controls_->SetThumbnail(
-        MediaSessionClient::Get()->GetThumbnailPlaceholder());
+        media_session_client->GetThumbnailPlaceholder());
   } else if (!delayed_icon_update_->empty()) {
     // 5.3.4.4.3 If the image format is supported, use the image as the
     // artwork for display in the platform UI. Otherwise the fetch image
@@ -308,7 +325,7 @@ void SystemMediaControlsNotifier::UpdateIcon() {
     // If no images are fetched in the fetch image algorithm, the user agent
     // may have fallback behavior such as displaying a default image as
     // artwork. We display the application icon if no artwork is provided.
-    absl::optional<gfx::ImageSkia> icon =
+    std::optional<gfx::ImageSkia> icon =
         GetContentClient()->browser()->GetProductLogo();
     if (icon.has_value()) {
       system_media_controls_->SetThumbnail(*icon->bitmap());
@@ -317,16 +334,16 @@ void SystemMediaControlsNotifier::UpdateIcon() {
     }
   }
 
-  delayed_icon_update_ = absl::nullopt;
+  delayed_icon_update_ = std::nullopt;
 }
 
 void SystemMediaControlsNotifier::ClearAllMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metadata_update_timer_.Stop();
 
-  delayed_position_update_ = absl::nullopt;
-  delayed_metadata_update_ = absl::nullopt;
-  delayed_playback_status_ = absl::nullopt;
+  delayed_position_update_ = std::nullopt;
+  delayed_metadata_update_ = std::nullopt;
+  delayed_playback_status_ = std::nullopt;
 
   system_media_controls_->ClearMetadata();
 }

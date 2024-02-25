@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/test.gni")
+
+static_library("util") {
+  sources = [
+    "pix_code_validator.cc",
+    "pix_code_validator.h",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/re2",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "pix_code_validator_fuzzer_util_unittest.cc",
+    "pix_code_validator_unittest.cc",
+  ]
+
+  deps = [
+    ":fuzzer_util",
+    ":util",
+    "//testing/gtest",
+    "//third_party/re2",
+  ]
+}
+
+static_library("fuzzer_util") {
+  testonly = true
+  sources = [
+    "pix_code_validator_fuzzer_util.cc",
+    "pix_code_validator_fuzzer_util.h",
+  ]
+}
+
+if (fuzztest_supported) {
+  test("pix_code_validator_fuzzer") {
+    sources = [ "pix_code_validator_fuzzer.cc" ]
+
+    testonly = true
+
+    deps = [
+      ":fuzzer_util",
+      ":util",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
+}

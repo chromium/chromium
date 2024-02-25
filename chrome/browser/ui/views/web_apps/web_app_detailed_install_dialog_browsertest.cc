@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -19,7 +20,6 @@
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/test/dialog_test.h"
@@ -61,11 +61,11 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
           CreateSolidColorIcon(
               webapps::kMaximumScreenshotRatio * kScreenshotSize,
               kScreenshotSize, SK_ColorGREEN),
-          absl::nullopt);
+          std::nullopt);
     } else {
       screenshots.emplace_back(
           CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorGREEN),
-          absl::nullopt);
+          std::nullopt);
     }
 
     content::WebContents* web_contents =
@@ -75,16 +75,16 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
             ->RegisterCurrentInstallForWebContents(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-    chrome::ShowWebAppDetailedInstallDialog(
+    ShowWebAppDetailedInstallDialog(
         browser()->tab_strip_model()->GetWebContentsAt(0),
         std::move(install_info), std::move(install_tracker),
         base::BindLambdaForTesting(
             [&](bool result, std::unique_ptr<WebAppInstallInfo>) {
               dialog_accepted_ = result;
             }),
-        screenshots, chrome::PwaInProductHelpState::kNotShown);
+        std::move(screenshots), PwaInProductHelpState::kNotShown);
   }
-  absl::optional<bool> dialog_accepted() { return dialog_accepted_; }
+  std::optional<bool> dialog_accepted() { return dialog_accepted_; }
 
  private:
   SkBitmap CreateSolidColorIcon(int width, int height, SkColor color) {
@@ -97,7 +97,7 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
   static constexpr int kIconSize = 40;
   static constexpr int kScreenshotSize = 300;
   static constexpr SkColor kIconColor = SK_ColorGREEN;
-  absl::optional<bool> dialog_accepted_ = absl::nullopt;
+  std::optional<bool> dialog_accepted_ = std::nullopt;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,

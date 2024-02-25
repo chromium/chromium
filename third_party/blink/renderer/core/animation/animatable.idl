@@ -31,7 +31,7 @@
 // https://w3.org/TR/web-animations-1/#the-animatable-interface-mixin
 interface mixin Animatable {
     [CallWith=ScriptState, Measure, RaisesException] Animation animate(object? keyframes, optional (unrestricted double or KeyframeAnimationOptions) options);
-    [RuntimeEnabled=WebAnimationsAPI] sequence<Animation> getAnimations(optional GetAnimationsOptions options = {});
+    sequence<Animation> getAnimations(optional GetAnimationsOptions options = {});
 };
 
 // https://drafts.csswg.org/web-animations-1/#extensions-to-the-element-interface

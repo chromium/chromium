@@ -24,7 +24,6 @@
 class LocationBarView;
 class OmniboxController;
 class OmniboxViewViews;
-class RealboxHandler;
 class OmniboxPopupPresenter;
 
 class OmniboxPopupViewWebUI : public OmniboxPopupView {
@@ -53,9 +52,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
   friend class OmniboxPopupViewWebUITest;
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewWebUITest,
                            PopupLoadsAndAcceptsCalls);
-
-  // Convenience accessor that returns the webui_view_'s WebUI handler.
-  RealboxHandler* handler() const;
 
  private:
   // Time when this instance was constructed, or null after use for histogram.

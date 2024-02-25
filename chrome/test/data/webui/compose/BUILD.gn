@@ -1,0 +1,28 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  is_chrome_untrusted = true
+  files = [
+    "compose_animator_test.ts",
+    "compose_app_test.ts",
+    "compose_textarea_test.ts",
+    "result_text_test.ts",
+    "word_streamer_test.ts",
+    "compose_app_focus_test.ts",
+    "test_compose_api_proxy.ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome-untrusted://compose/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/compose/tsc/*",
+                    target_gen_dir) ]
+  ts_deps = [
+    "//chrome/browser/resources/compose:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

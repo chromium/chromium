@@ -12,12 +12,12 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_metrics.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/sync_device_info/device_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/web_contents.h"
@@ -58,7 +58,7 @@ void SmsRemoteFetcherUiController::DoUpdateApps(UpdateAppsCallback callback) {
 }
 
 void SmsRemoteFetcherUiController::OnDeviceChosen(
-    const syncer::DeviceInfo& device) {}
+    const SharingTargetDeviceInfo& device) {}
 
 void SmsRemoteFetcherUiController::OnAppChosen(const SharingApp& app) {}
 
@@ -99,7 +99,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
     SharingSendMessageResult result,
     std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
   if (result != SharingSendMessageResult::kSuccessful) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt,
+    std::move(callback).Run(std::nullopt, std::nullopt,
                             content::SmsFetchFailureType::kCrossDeviceFailure);
     RecordWebOTPCrossDeviceFailure(
         WebOTPCrossDeviceFailure::kSharingMessageFailure);
@@ -109,7 +109,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
   DCHECK(response);
   DCHECK(response->has_sms_fetch_response());
   if (response->sms_fetch_response().has_failure_type()) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt,
+    std::move(callback).Run(std::nullopt, std::nullopt,
                             static_cast<content::SmsFetchFailureType>(
                                 response->sms_fetch_response().failure_type()));
     RecordWebOTPCrossDeviceFailure(
@@ -123,7 +123,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
 
   std::move(callback).Run(std::move(origin_list),
                           response->sms_fetch_response().one_time_code(),
-                          absl::nullopt);
+                          std::nullopt);
   RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kNoFailure);
 }
 
@@ -136,7 +136,7 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
                                 /*value_max=*/20);
 
   if (devices.empty()) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt,
+    std::move(callback).Run(std::nullopt, std::nullopt,
                             content::SmsFetchFailureType::kCrossDeviceFailure);
     RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kNoRemoteDevice);
     return base::NullCallback();
@@ -144,15 +144,15 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
 
   // Sends to the first device that has the capability enabled. User cannot
   // select device because the site sends out the SMS asynchronously.
-  const std::unique_ptr<syncer::DeviceInfo>& device = devices.front();
-  last_device_name_ = device->client_name();
+  const SharingTargetDeviceInfo& device = devices.front();
+  last_device_name_ = device.client_name();
   chrome_browser_sharing::SharingMessage request;
 
   for (const url::Origin& origin : origin_list)
     request.mutable_sms_fetch_request()->add_origins(origin.Serialize());
 
   return SendMessageToDevice(
-      *device.get(), blink::kWebOTPRequestTimeout, std::move(request),
+      device, blink::kWebOTPRequestTimeout, std::move(request),
       base::BindOnce(&SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

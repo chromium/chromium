@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policy set)",
+        "policies": {},
+        "prefs": {
+          "ash.fast_pair.enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Set policy to false force disabled",
+        "policies": {
+          "FastPairEnabled": false
+        },
+        "prefs": {
+          "ash.fast_pair.enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Set policy to true falls back to default",
+        "policies": {
+          "FastPairEnabled": true
+        },
+        "prefs": {
+          "ash.fast_pair.enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  }
+]

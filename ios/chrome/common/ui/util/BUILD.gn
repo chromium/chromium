@@ -18,7 +18,6 @@ source_set("util") {
     "device_util.mm",
     "pointer_interaction_util.h",
     "pointer_interaction_util.mm",
-    "sdk_forward_declares.h",
     "text_view_util.h",
     "text_view_util.mm",
     "ui_util.h",
@@ -26,7 +25,6 @@ source_set("util") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/common:button_config",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/ui/colors",
     "//ui/gfx/ios:uikit_util",

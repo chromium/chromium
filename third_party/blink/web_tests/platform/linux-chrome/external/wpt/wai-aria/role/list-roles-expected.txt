@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] orphan p with listitem role
+  assert_equals: <p role="listitem" data-testname="orphan p with listitem role" data-expectedrole="paragraph" class="ex">x</p> expected "paragraph" but got "listitem"
+Harness: the test ran to completion.

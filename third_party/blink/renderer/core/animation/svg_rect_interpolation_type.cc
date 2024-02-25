@@ -25,10 +25,11 @@ enum RectComponentIndex : unsigned {
 InterpolationValue SVGRectInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  auto result = std::make_unique<InterpolableList>(kRectComponentIndexCount);
+  auto* result =
+      MakeGarbageCollected<InterpolableList>(kRectComponentIndexCount);
   for (wtf_size_t i = 0; i < kRectComponentIndexCount; i++)
-    result->Set(i, std::make_unique<InterpolableNumber>(0));
-  return InterpolationValue(std::move(result));
+    result->Set(i, MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(result);
 }
 
 InterpolationValue SVGRectInterpolationType::MaybeConvertSVGValue(
@@ -37,12 +38,15 @@ InterpolationValue SVGRectInterpolationType::MaybeConvertSVGValue(
     return nullptr;
 
   const auto& rect = To<SVGRect>(svg_value);
-  auto result = std::make_unique<InterpolableList>(kRectComponentIndexCount);
-  result->Set(kRectX, std::make_unique<InterpolableNumber>(rect.X()));
-  result->Set(kRectY, std::make_unique<InterpolableNumber>(rect.Y()));
-  result->Set(kRectWidth, std::make_unique<InterpolableNumber>(rect.Width()));
-  result->Set(kRectHeight, std::make_unique<InterpolableNumber>(rect.Height()));
-  return InterpolationValue(std::move(result));
+  auto* result =
+      MakeGarbageCollected<InterpolableList>(kRectComponentIndexCount);
+  result->Set(kRectX, MakeGarbageCollected<InterpolableNumber>(rect.X()));
+  result->Set(kRectY, MakeGarbageCollected<InterpolableNumber>(rect.Y()));
+  result->Set(kRectWidth,
+              MakeGarbageCollected<InterpolableNumber>(rect.Width()));
+  result->Set(kRectHeight,
+              MakeGarbageCollected<InterpolableNumber>(rect.Height()));
+  return InterpolationValue(result);
 }
 
 SVGPropertyBase* SVGRectInterpolationType::AppliedSVGValue(

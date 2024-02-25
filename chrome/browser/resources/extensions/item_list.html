@@ -51,13 +51,12 @@
   }
 
   .items-container.review-panel-container :first-child {
-    max-width: var(--cr-toolbar-field-width);
+    max-width: calc(var(--extensions-card-width) * 2 + var(--grid-gutter) * 2);
     grid-column: 1 / -1;
-    padding-bottom: 48px;
   }
 
   extensions-review-panel {
-    margin: 0 auto;
+    margin: 15px auto;
     width: 100%;
   }
 

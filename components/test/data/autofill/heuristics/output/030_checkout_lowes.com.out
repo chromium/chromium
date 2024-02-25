@@ -1,5 +1,3 @@
-UNKNOWN_TYPE | zipCode | Enter ZIP Code |  | zipCode_1
-UNKNOWN_TYPE | Ntt | Search keywords |  | Ntt_1
 ADDRESS_HOME_COUNTRY | country | USA | USA | country_1
 ADDRESS_HOME_LINE1 | addressField2 | Address Name: |  | country_1
 NAME_FIRST | firstName | First Name: |  | country_1
@@ -18,3 +16,7 @@ PHONE_HOME_NUMBER_PREFIX | billphone2 | Contact Phone: |  | taxGeoCode_3
 PHONE_HOME_NUMBER_SUFFIX | billphone3 | Contact Phone: |  | taxGeoCode_3
 EMAIL_ADDRESS | selfAddress | Please enter the phone number and e-mail address associated with this billing address.E-mail Address: Contact Phone: | 0 | selfAddress_4
 UNKNOWN_TYPE | save-address | on | on | selfAddress_4
+
+UNKNOWN_TYPE | Ntt | Search keywords |  | Ntt_1
+
+UNKNOWN_TYPE | zipCode | Enter ZIP Code |  | zipCode_1

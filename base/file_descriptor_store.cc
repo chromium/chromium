@@ -39,7 +39,7 @@ base::ScopedFD FileDescriptorStore::TakeFD(
     base::MemoryMappedFile::Region* region) {
   base::ScopedFD fd = MaybeTakeFD(key, region);
   if (!fd.is_valid())
-    DLOG(DCHECK) << "Unknown global descriptor: " << key;
+    DLOG(FATAL) << "Unknown global descriptor: " << key;
   return fd;
 }
 

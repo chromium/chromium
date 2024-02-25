@@ -6,6 +6,7 @@
 #define NET_SOCKET_DATAGRAM_SOCKET_H_
 
 #include "net/base/net_export.h"
+#include "net/socket/diff_serv_code_point.h"
 
 namespace net {
 
@@ -45,12 +46,25 @@ class NET_EXPORT_PRIVATE DatagramSocket {
   // return ERR_IO_PENDING.
   virtual int SetDoNotFragment() = 0;
 
+  // Requests that packets received by this socket have the ECN bit set. Returns
+  // a network error code if there was a problem.
+  virtual int SetRecvTos() = 0;
+
+  // Sets both parts of the TOS byte in the IP header. DSCP_NO_CHANGE or
+  // ECN_NO_CHANGE can allow the socket to preserver part of the existing
+  // setting.
+  virtual int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) = 0;
+
   // If |confirm| is true, then the MSG_CONFIRM flag will be passed to
   // subsequent writes if it's supported by the platform.
   virtual void SetMsgConfirm(bool confirm) = 0;
 
   // Gets the NetLog for this socket.
   virtual const NetLogWithSource& NetLog() const = 0;
+
+  // Returns the TOS byte of the last received datagram, or 0 for sockets which
+  // do not have the capability.
+  virtual DscpAndEcn GetLastTos() const = 0;
 };
 
 }  // namespace net

@@ -113,8 +113,7 @@ testing::AssertionResult SharedModuleServiceUnitTest::InstallExtension(
       extension, syncer::StringOrdinal(), kInstallFlagInstallImmediately);
 
   // Verify that the extension is now installed.
-  if (!registry()->GetExtensionById(extension->id(),
-                                    ExtensionRegistry::ENABLED)) {
+  if (!registry()->enabled_extensions().Contains(extension->id())) {
     return testing::AssertionFailure() << "Could not install extension.";
   }
 
@@ -158,8 +157,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUninstall) {
   // Uninstall the extension that imports our module.
   std::u16string error;
   service()->UninstallExtension(importing_extension->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING,
-                                &error);
+                                UNINSTALL_REASON_FOR_TESTING, &error);
   EXPECT_TRUE(error.empty());
 
   // Since the module was only referenced by that single extension, it should
@@ -290,8 +288,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneMultipleSharedModules) {
   // Uninstall the extension that imports our modules.
   std::u16string error;
   service()->UninstallExtension(importing_extension->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING,
-                                &error);
+                                UNINSTALL_REASON_FOR_TESTING, &error);
   EXPECT_TRUE(error.empty());
 
   // Since the modules were only referenced by that single extension, they

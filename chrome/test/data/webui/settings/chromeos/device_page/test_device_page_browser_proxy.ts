@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DevicePageBrowserProxy, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

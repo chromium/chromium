@@ -48,7 +48,7 @@ std::unique_ptr<dbus::Response> RespondBytes(
     const std::vector<uint8_t>& bytes) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
   dbus::MessageWriter writer(response.get());
-  writer.AppendArrayOfBytes(bytes.data(), bytes.size());
+  writer.AppendArrayOfBytes(bytes);
   return response;
 }
 
@@ -675,9 +675,9 @@ TEST_P(KWalletDBusTest, WriteEntry) {
       .WillOnce(Return(ByMove(RespondInt32(0))));
 
   int ret;
-  EXPECT_EQ(KWalletDBus::Error::SUCCESS,
-            kwallet_dbus_.WriteEntry(123, "folder", "realm", "app",
-                                     bytes.data(), bytes.size(), &ret));
+  EXPECT_EQ(
+      KWalletDBus::Error::SUCCESS,
+      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
   EXPECT_EQ(0, ret);
 }
 
@@ -688,9 +688,9 @@ TEST_P(KWalletDBusTest, WriteEntryErrorRead) {
       .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
 
   int ret;
-  EXPECT_EQ(KWalletDBus::Error::CANNOT_READ,
-            kwallet_dbus_.WriteEntry(123, "folder", "realm", "app",
-                                     bytes.data(), bytes.size(), &ret));
+  EXPECT_EQ(
+      KWalletDBus::Error::CANNOT_READ,
+      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
 }
 
 TEST_P(KWalletDBusTest, WriteEntryErrorContact) {
@@ -700,9 +700,9 @@ TEST_P(KWalletDBusTest, WriteEntryErrorContact) {
       .WillOnce(Return(ByMove(base::unexpected(dbus::Error()))));
 
   int ret;
-  EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
-            kwallet_dbus_.WriteEntry(123, "folder", "realm", "app",
-                                     bytes.data(), bytes.size(), &ret));
+  EXPECT_EQ(
+      KWalletDBus::Error::CANNOT_CONTACT,
+      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
 }
 
 TEST_P(KWalletDBusTest, HasFolder) {
@@ -838,7 +838,7 @@ TEST_P(KWalletDBusTest, ReadPassword) {
           _))
       .WillOnce(Return(ByMove(RespondString("password"))));
 
-  absl::optional<std::string> password;
+  std::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::SUCCESS,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
   EXPECT_TRUE(password.has_value());
@@ -851,7 +851,7 @@ TEST_P(KWalletDBusTest, ReadPasswordErrorRead) {
       CallMethodAndBlock(Calls(kKWalletInterface, "readPassword"), _))
       .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
 
-  absl::optional<std::string> password;
+  std::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::CANNOT_READ,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
   EXPECT_FALSE(password.has_value());
@@ -862,7 +862,7 @@ TEST_P(KWalletDBusTest, ReadPasswordErrorContact) {
               CallMethodAndBlock(Calls(kKWalletInterface, "readPassword"), _))
       .WillOnce(Return(ByMove(base::unexpected(dbus::Error()))));
 
-  absl::optional<std::string> password;
+  std::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
   EXPECT_FALSE(password.has_value());

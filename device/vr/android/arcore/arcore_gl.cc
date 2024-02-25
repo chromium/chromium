@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <limits>
 #include <utility>
+
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/jni_android.h"
 #include "base/containers/contains.h"
@@ -16,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -33,7 +35,6 @@
 #include "device/vr/util/transform_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_bindings.h"
@@ -120,7 +121,7 @@ ArCoreGlCreateSessionResult::ArCoreGlCreateSessionResult(
 
 ArCoreGlInitializeResult::ArCoreGlInitializeResult(
     std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
-    absl::optional<device::mojom::XRDepthConfig> depth_configuration,
+    std::optional<device::mojom::XRDepthConfig> depth_configuration,
     viz::FrameSinkId frame_sink_id)
     : enabled_features(enabled_features),
       depth_configuration(depth_configuration),
@@ -230,7 +231,7 @@ void ArCoreGl::Initialize(
     return;
   }
 
-  absl::optional<ArCore::DepthSensingConfiguration> depth_sensing_config;
+  std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config;
   if (depth_options) {
     depth_sensing_config = ArCore::DepthSensingConfiguration(
         depth_options->usage_preferences,
@@ -249,7 +250,7 @@ void ArCoreGl::Initialize(
   }
 
   arcore_ = arcore_factory->Create();
-  absl::optional<ArCore::InitializeResult> maybe_initialize_result =
+  std::optional<ArCore::InitializeResult> maybe_initialize_result =
       arcore_->Initialize(application_context, required_features,
                           optional_features, tracked_images,
                           std::move(depth_sensing_config));
@@ -468,8 +469,7 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   if (drawing_widget != gfx::kNullAcceleratedWidget) {
     surface = gl::init::CreateViewGLSurface(display, drawing_widget);
   } else {
-    surface = gl::init::CreateOffscreenGLSurfaceWithFormat(
-        display, {0, 0}, gl::GLSurfaceFormat());
+    surface = gl::init::CreateOffscreenGLSurface(display, {0, 0});
   }
   DVLOG(3) << "surface=" << surface.get();
   if (!surface.get()) {
@@ -593,10 +593,10 @@ void ArCoreGl::RecalculateUvsAndProjection() {
 
   // VRFieldOfView wants positive angles.
   mojom::VRFieldOfViewPtr field_of_view = mojom::VRFieldOfView::New();
-  field_of_view->left_degrees = gfx::RadToDeg(atanf(-left / depth_near));
-  field_of_view->right_degrees = gfx::RadToDeg(atanf(right / depth_near));
-  field_of_view->down_degrees = gfx::RadToDeg(atanf(-bottom / depth_near));
-  field_of_view->up_degrees = gfx::RadToDeg(atanf(top / depth_near));
+  field_of_view->left_degrees = base::RadToDeg(atanf(-left / depth_near));
+  field_of_view->right_degrees = base::RadToDeg(atanf(right / depth_near));
+  field_of_view->down_degrees = base::RadToDeg(atanf(-bottom / depth_near));
+  field_of_view->up_degrees = base::RadToDeg(atanf(top / depth_near));
   DVLOG(3) << " fov degrees up=" << field_of_view->up_degrees
            << " down=" << field_of_view->down_degrees
            << " left=" << field_of_view->left_degrees
@@ -1333,8 +1333,7 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(int16_t frame_index,
 
   // The previous sync token has been consumed by the renderer process, if we
   // want to use this buffer again, we need to wait on this token.
-  webxr_->GetAnimatingFrame()->shared_buffer->mailbox_holder.sync_token =
-      sync_token;
+  webxr_->GetAnimatingFrame()->shared_buffer->sync_token = sync_token;
 
   // Start processing the frame now if possible. If there's already a current
   // processing frame, defer it until that frame calls TryDeferredProcessing.
@@ -1444,7 +1443,7 @@ void ArCoreGl::SubscribeToHitTest(
     return;
   }
 
-  absl::optional<uint64_t> maybe_subscription_id = arcore_->SubscribeToHitTest(
+  std::optional<uint64_t> maybe_subscription_id = arcore_->SubscribeToHitTest(
       std::move(native_origin_information), entity_types, std::move(ray));
 
   if (maybe_subscription_id) {
@@ -1467,7 +1466,7 @@ void ArCoreGl::SubscribeToHitTestForTransientInput(
   DVLOG(2) << __func__ << ": ray origin=" << ray->origin.ToString()
            << ", ray direction=" << ray->direction.ToString();
 
-  absl::optional<uint64_t> maybe_subscription_id =
+  std::optional<uint64_t> maybe_subscription_id =
       arcore_->SubscribeToHitTestForTransientInput(profile_name, entity_types,
                                                    std::move(ray));
 

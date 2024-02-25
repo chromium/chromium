@@ -33,7 +33,7 @@ using protocol::Response;
 namespace {
 
 BrowserWindow* GetBrowserWindow(int window_id) {
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b->session_id().id() == window_id)
       return b->window();
   }
@@ -89,7 +89,7 @@ Response BrowserHandler::GetWindowForTarget(
     return Response::ServerError("No web contents in the target");
 
   Browser* browser = nullptr;
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     int tab_index = b->tab_strip_model()->GetIndexOfWebContents(web_contents);
     if (tab_index != TabStripModel::kNoTab)
       browser = b;
@@ -166,14 +166,13 @@ Response BrowserHandler::SetWindowBounds(
     }
     window->Minimize();
   } else if (window_state == "normal") {
-    if (window->IsFullscreen())
+    if (window->IsFullscreen()) {
       window->GetExclusiveAccessContext()->ExitFullscreen();
-    else if (window->IsMinimized())
-      window->Show();
-    else if (window->IsMaximized())
+    } else if (window->IsMinimized() || window->IsMaximized()) {
       window->Restore();
-    else if (set_bounds)
+    } else if (set_bounds) {
       window->SetBounds(bounds);
+    }
   } else {
     NOTREACHED();
   }

@@ -23,6 +23,48 @@
 
 namespace net {
 
+namespace {
+// Helper function for setting the appropriate CertStatus given a net::Error.
+CertStatus MapNetErrorToCertStatus(int error) {
+  switch (error) {
+    case ERR_CERT_COMMON_NAME_INVALID:
+      return CERT_STATUS_COMMON_NAME_INVALID;
+    case ERR_CERT_DATE_INVALID:
+      return CERT_STATUS_DATE_INVALID;
+    case ERR_CERT_AUTHORITY_INVALID:
+      return CERT_STATUS_AUTHORITY_INVALID;
+    case ERR_CERT_NO_REVOCATION_MECHANISM:
+      return CERT_STATUS_NO_REVOCATION_MECHANISM;
+    case ERR_CERT_UNABLE_TO_CHECK_REVOCATION:
+      return CERT_STATUS_UNABLE_TO_CHECK_REVOCATION;
+    case ERR_CERTIFICATE_TRANSPARENCY_REQUIRED:
+      return CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
+    case ERR_CERT_REVOKED:
+      return CERT_STATUS_REVOKED;
+    case ERR_CERT_INVALID:
+      return CERT_STATUS_INVALID;
+    case ERR_CERT_WEAK_SIGNATURE_ALGORITHM:
+      return CERT_STATUS_WEAK_SIGNATURE_ALGORITHM;
+    case ERR_CERT_NON_UNIQUE_NAME:
+      return CERT_STATUS_NON_UNIQUE_NAME;
+    case ERR_CERT_WEAK_KEY:
+      return CERT_STATUS_WEAK_KEY;
+    case ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN:
+      return CERT_STATUS_PINNED_KEY_MISSING;
+    case ERR_CERT_NAME_CONSTRAINT_VIOLATION:
+      return CERT_STATUS_NAME_CONSTRAINT_VIOLATION;
+    case ERR_CERT_VALIDITY_TOO_LONG:
+      return CERT_STATUS_VALIDITY_TOO_LONG;
+    case ERR_CERT_SYMANTEC_LEGACY:
+      return CERT_STATUS_SYMANTEC_LEGACY;
+    case ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
+      return (CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED | CERT_STATUS_REVOKED);
+    default:
+      return 0;
+  }
+}
+}  // namespace
+
 struct MockCertVerifier::Rule {
   Rule(scoped_refptr<X509Certificate> cert_arg,
        const std::string& hostname_arg,
@@ -155,6 +197,19 @@ int MockCertVerifier::VerifyImpl(const RequestParams& params,
   verify_result->verified_cert = params.certificate();
   verify_result->cert_status = MapNetErrorToCertStatus(default_result_);
   return default_result_;
+}
+
+ParamRecordingMockCertVerifier::ParamRecordingMockCertVerifier() = default;
+ParamRecordingMockCertVerifier::~ParamRecordingMockCertVerifier() = default;
+
+int ParamRecordingMockCertVerifier::Verify(const RequestParams& params,
+                                           CertVerifyResult* verify_result,
+                                           CompletionOnceCallback callback,
+                                           std::unique_ptr<Request>* out_req,
+                                           const NetLogWithSource& net_log) {
+  params_.push_back(params);
+  return MockCertVerifier::Verify(params, verify_result, std::move(callback),
+                                  out_req, net_log);
 }
 
 CertVerifierObserverCounter::CertVerifierObserverCounter(

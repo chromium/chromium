@@ -89,6 +89,7 @@ constexpr char kMediaImageableAreaRight[] = "imageable_area_right_microns";
 constexpr char kMediaImageableAreaTop[] = "imageable_area_top_microns";
 constexpr char kMediaMinHeight[] = "min_height_microns";
 constexpr char kMediaMaxHeight[] = "max_height_microns";
+constexpr char kMediaHasBorderlessVariant[] = "has_borderless_variant";
 
 constexpr char kPageRangeInterval[] = "interval";
 constexpr char kPageRangeEnd[] = "end";
@@ -950,7 +951,8 @@ bool Dpi::operator==(const Dpi& other) const {
 Media::Media()
     : size_name(MediaSize::CUSTOM_MEDIA),
       is_continuous_feed(false),
-      max_height_um(0) {}
+      max_height_um(0),
+      has_borderless_variant(false) {}
 
 Media::Media(const Media& other) = default;
 
@@ -1032,6 +1034,11 @@ MediaBuilder& MediaBuilder::WithMaxHeight(int max_height_um) {
   return *this;
 }
 
+MediaBuilder& MediaBuilder::WithBorderlessVariant(bool has_borderless_variant) {
+  has_borderless_variant_ = has_borderless_variant;
+  return *this;
+}
+
 Media MediaBuilder::Build() const {
   Media result;
   result.size_name = size_name_;
@@ -1041,6 +1048,7 @@ Media MediaBuilder::Build() const {
   result.vendor_id = vendor_id_;
   result.printable_area_um = printable_area_um_;
   result.max_height_um = max_height_um_;
+  result.has_borderless_variant = has_borderless_variant_;
   return result;
 }
 
@@ -1282,7 +1290,7 @@ class CopiesTicketItemTraits : public NoValueValidation,
                                public ItemsTraits<kOptionCopies> {
  public:
   static bool Load(const base::Value::Dict& dict, int32_t* option) {
-    absl::optional<int> copies = dict.FindInt(kOptionCopies);
+    std::optional<int> copies = dict.FindInt(kOptionCopies);
     if (!copies)
       return false;
 
@@ -1299,11 +1307,11 @@ class CopiesCapabilityTraits : public NoValueValidation,
                                public ItemsTraits<kOptionCopies> {
  public:
   static bool Load(const base::Value::Dict& dict, Copies* option) {
-    absl::optional<int> default_copies = dict.FindInt(kDefaultValue);
+    std::optional<int> default_copies = dict.FindInt(kDefaultValue);
     if (!default_copies)
       return false;
 
-    absl::optional<int> max_copies = dict.FindInt(kMaxValue);
+    std::optional<int> max_copies = dict.FindInt(kMaxValue);
     if (!max_copies)
       return false;
 
@@ -1325,10 +1333,10 @@ class MarginsTraits : public NoValueValidation,
     const std::string* type = dict.FindString(kKeyType);
     if (!type || !TypeFromString(kMarginsNames, *type, &option->type))
       return false;
-    absl::optional<int> top_um = dict.FindInt(kMarginTop);
-    absl::optional<int> right_um = dict.FindInt(kMarginRight);
-    absl::optional<int> bottom_um = dict.FindInt(kMarginBottom);
-    absl::optional<int> left_um = dict.FindInt(kMarginLeft);
+    std::optional<int> top_um = dict.FindInt(kMarginTop);
+    std::optional<int> right_um = dict.FindInt(kMarginRight);
+    std::optional<int> bottom_um = dict.FindInt(kMarginBottom);
+    std::optional<int> left_um = dict.FindInt(kMarginLeft);
     if (!top_um || !right_um || !bottom_um || !left_um)
       return false;
     option->top_um = top_um.value();
@@ -1352,8 +1360,8 @@ class DpiTraits : public ItemsTraits<kOptionDpi> {
   static bool IsValid(const Dpi& option) { return option.IsValid(); }
 
   static bool Load(const base::Value::Dict& dict, Dpi* option) {
-    absl::optional<int> horizontal = dict.FindInt(kDpiHorizontal);
-    absl::optional<int> vertical = dict.FindInt(kDpiVertical);
+    std::optional<int> horizontal = dict.FindInt(kDpiHorizontal);
+    std::optional<int> vertical = dict.FindInt(kDpiVertical);
     if (!horizontal || !vertical)
       return false;
     option->horizontal = horizontal.value();
@@ -1436,18 +1444,18 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
     const std::string* vendor_id = dict.FindString(kKeyVendorId);
     if (vendor_id)
       option->vendor_id = *vendor_id;
-    absl::optional<int> width_um = dict.FindInt(kMediaWidth);
+    std::optional<int> width_um = dict.FindInt(kMediaWidth);
     if (width_um) {
       option->size_um.set_width(width_um.value());
     }
-    absl::optional<bool> is_continuous_feed = dict.FindBool(kMediaIsContinuous);
+    std::optional<bool> is_continuous_feed = dict.FindBool(kMediaIsContinuous);
     if (is_continuous_feed) {
       option->is_continuous_feed = is_continuous_feed.value();
     }
     if (is_continuous_feed.value_or(false)) {
       // The min/max height is required for continuous feed media.
-      absl::optional<int> min_height_um = dict.FindInt(kMediaMinHeight);
-      absl::optional<int> max_height_um = dict.FindInt(kMediaMaxHeight);
+      std::optional<int> min_height_um = dict.FindInt(kMediaMinHeight);
+      std::optional<int> max_height_um = dict.FindInt(kMediaMaxHeight);
       if (!min_height_um || !max_height_um) {
         return false;
       }
@@ -1462,17 +1470,17 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
       option->printable_area_um = gfx::Rect(option->size_um);
       return true;
     }
-    absl::optional<int> height_um = dict.FindInt(kMediaHeight);
+    std::optional<int> height_um = dict.FindInt(kMediaHeight);
     if (height_um) {
       option->size_um.set_height(height_um.value());
     }
-    absl::optional<int> imageable_area_left =
+    std::optional<int> imageable_area_left =
         dict.FindInt(kMediaImageableAreaLeft);
-    absl::optional<int> imageable_area_bottom =
+    std::optional<int> imageable_area_bottom =
         dict.FindInt(kMediaImageableAreaBottom);
-    absl::optional<int> imageable_area_right =
+    std::optional<int> imageable_area_right =
         dict.FindInt(kMediaImageableAreaRight);
-    absl::optional<int> imageable_area_top =
+    std::optional<int> imageable_area_top =
         dict.FindInt(kMediaImageableAreaTop);
     if (imageable_area_left && imageable_area_bottom && imageable_area_right &&
         imageable_area_top) {
@@ -1482,6 +1490,13 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
           gfx::Rect(imageable_area_left.value(), imageable_area_bottom.value(),
                     width, height);
     }
+
+    std::optional<bool> has_borderless_variant =
+        dict.FindBool(kMediaHasBorderlessVariant);
+    if (has_borderless_variant) {
+      option->has_borderless_variant = has_borderless_variant.value();
+    }
+
     return true;
   }
 
@@ -1514,6 +1529,9 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
                                               option.printable_area_um.width());
       dict->Set(kMediaImageableAreaTop, option.printable_area_um.y() +
                                             option.printable_area_um.height());
+    }
+    if (option.has_borderless_variant) {
+      dict->Set(kMediaHasBorderlessVariant, true);
     }
   }
 };
@@ -1550,7 +1568,7 @@ class CollateTraits : public NoValueValidation,
   static const bool kDefault = true;
 
   static bool Load(const base::Value::Dict& dict, bool* option) {
-    absl::optional<bool> collate = dict.FindBool(kOptionCollate);
+    std::optional<bool> collate = dict.FindBool(kOptionCollate);
     if (!collate)
       return false;
     *option = collate.value();
@@ -1568,7 +1586,7 @@ class ReverseTraits : public NoValueValidation,
   static const bool kDefault = false;
 
   static bool Load(const base::Value::Dict& dict, bool* option) {
-    absl::optional<bool> reverse = dict.FindBool(kOptionReverse);
+    std::optional<bool> reverse = dict.FindBool(kOptionReverse);
     if (!reverse)
       return false;
     *option = reverse.value();
@@ -1608,7 +1626,7 @@ class VendorItemTraits : public ItemsTraits<kOptionVendorItem> {
 class PinTraits : public NoValueValidation, public ItemsTraits<kOptionPin> {
  public:
   static bool Load(const base::Value::Dict& dict, bool* option) {
-    absl::optional<bool> supported = dict.FindBool(kPinSupported);
+    std::optional<bool> supported = dict.FindBool(kPinSupported);
     if (!supported)
       return false;
     *option = supported.value();

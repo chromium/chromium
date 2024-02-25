@@ -11,6 +11,8 @@
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
+struct skcms_Matrix3x3;
+
 namespace ui {
 
 // Helper function that finds the property with the specified name.
@@ -24,23 +26,18 @@ bool AddPropertyIfValid(drmModeAtomicReq* property_set,
                         uint32_t object_id,
                         const DrmWrapper::Property& property);
 
-// Transforms the gamma ramp entries into the drm_color_lut format.
-ScopedDrmColorLutPtr CreateLutBlob(
-    const std::vector<display::GammaRampRGBEntry>& source);
+// Transforms the gamma curve into the drm_color_lut format with `size` entries.
+ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
+                                   size_t size);
 
 // Converts |color_matrix| to a drm_color_ctm in U31.32 format where the most
 // significant bit is the sign.
 // |color_matrix| represents a 3x3 matrix in vector form.
 ScopedDrmColorCtmPtr CreateCTMBlob(const std::vector<float>& color_matrix);
+ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix);
 
 // Creates a FB Damage Clip Blob
 ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect);
-
-// Creates a new look-up table of the desired size to fit the expectations of
-// the DRM driver.
-std::vector<display::GammaRampRGBEntry> ResampleLut(
-    const std::vector<display::GammaRampRGBEntry>& lut_in,
-    size_t desired_size);
 
 // Returns the display infos parsed in
 // |GetDisplayInfosAndInvalidCrtcs| and disables the invalid CRTCs

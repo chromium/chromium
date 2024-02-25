@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.quick_answers.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersEnabled": false
+        },
+        "prefs": {
+          "settings.quick_answers.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersEnabled": true
+        },
+        "prefs": {
+          "settings.quick_answers.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

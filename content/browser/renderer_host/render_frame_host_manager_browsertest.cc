@@ -89,6 +89,7 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using base::ASCIIToUTF16;
@@ -2096,7 +2097,7 @@ class RenderViewHostDestructionObserver : public WebContentsObserver {
     watched_render_view_hosts_.erase(rvh);
   }
 
-  std::set<RenderViewHost*> watched_render_view_hosts_;
+  std::set<raw_ptr<RenderViewHost, SetExperimental>> watched_render_view_hosts_;
 };
 
 // Crashes under ThreadSanitizer, http://crbug.com/356758.
@@ -2128,7 +2129,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   SiteInstance* blank_site_instance =
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), GURL());
-  EXPECT_EQ(blank_site_instance->GetSiteURL(), GURL::EmptyGURL());
+  EXPECT_EQ(blank_site_instance->GetSiteURL(), GURL());
   rvh_observers.EnsureRVHGetsDestructed(blank_rvh);
 
   // Now navigate to the view-source URL and ensure we got a different
@@ -2769,16 +2770,15 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   std::unique_ptr<NavigationEntryImpl> cloned_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              url1, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              url1, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               shell()->web_contents()->GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   prev_entry = shell()->web_contents()->GetController().GetEntryAtIndex(0);
 
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  cloned_entry->SetPageState(prev_entry->GetPageState(), context.get());
+  NavigationEntryRestoreContextImpl context;
+  cloned_entry->SetPageState(prev_entry->GetPageState(), &context);
   const std::vector<base::FilePath>& cloned_files =
       cloned_entry->GetPageState().GetReferencedFiles();
   ASSERT_EQ(1U, cloned_files.size());
@@ -2788,7 +2788,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   entries.push_back(std::move(cloned_entry));
   Shell* new_shell =
       Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
-                             GURL::EmptyGURL(), nullptr, gfx::Size());
+                             GURL(), nullptr, gfx::Size());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
@@ -3238,10 +3238,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                             ->GetPrimaryFrameTree()
                             .root();
 
-  // Give an initial page an unload handler that never completes.
+  // Give an initial page a pagehide handler that never completes.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  EXPECT_TRUE(ExecJs(root, "window.onunload=function(e){ while(1); };\n"));
+  EXPECT_TRUE(ExecJs(root, "window.onpagehide=function(e){ while(1); };\n"));
 
   // With BackForwardCache, swapped out RenderFrameHost won't have a
   // replacement proxy as the document is stored in cache.
@@ -4738,7 +4738,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // in BeginNavigation is compatible with process locks, even when only some of
   // the frames requires isolation.
   IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
-                           {"a.com", "b.com"});
+                           std::vector<std::string>{"a.com", "b.com"});
 
   // Start on a page with a same-site main frame and a subframe.
   GURL page_url(embedded_test_server()->GetURL(
@@ -5488,8 +5488,7 @@ class RenderFrameHostManagerUnloadBrowserTest
   // Since the `visibilitychange` event is fired at the document and it
   // may bubble up to the window, we should test the cases where the event
   // listener is registered on both the document and the window.
-  std::vector<const std::string> EventTargetsForEvent(
-      const std::string& event_name) {
+  std::vector<std::string> EventTargetsForEvent(const std::string& event_name) {
     if (event_name == "unload" || event_name == "beforeunload" ||
         event_name == "pagehide") {
       return {"window"};
@@ -5530,6 +5529,11 @@ class RenderFrameHostManagerUnloadBrowserTest
     rfh->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderFrameHostManagerTest::SetUpCommandLine(command_line);
+    feature_list_.InitAndDisableFeature(blink::features::kDeprecateUnload);
+  }
+
  protected:
   void SetUpOnMainThread() override {
     // Request interceptor needs to be installed before the test server is
@@ -5539,8 +5543,6 @@ class RenderFrameHostManagerUnloadBrowserTest
         base::Unretained(this)));
 
     RenderFrameHostManagerTest::SetUpOnMainThread();
-
-    StartEmbeddedServer();
   }
 
  private:
@@ -5567,6 +5569,7 @@ class RenderFrameHostManagerUnloadBrowserTest
   std::string request_content_ GUARDED_BY(lock_);
   bool saw_request_url_ GUARDED_BY(lock_) = false;
   std::unique_ptr<base::RunLoop> run_loop_ GUARDED_BY(lock_);
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Ensure that after a main frame with a cross-site iframe is itself navigated
@@ -5576,6 +5579,7 @@ class RenderFrameHostManagerUnloadBrowserTest
 // site isolation if the iframe was in its own process.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        SubframeTerminationPing_SendBeacon) {
+  StartEmbeddedServer();
   // See BackForwardCache::DisableForTestingReason for explanation.
   DisableBackForwardCache(BackForwardCacheImpl::TEST_USES_UNLOAD_EVENT);
   const std::string unload_event_names[] = {"unload", "pagehide",
@@ -5612,13 +5616,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 }
 
 // Ensure that after a main frame with a cross-site iframe is itself navigated
-// cross-site, the unload handler in the iframe can use an image load to do a
+// cross-site, the pagehide handler in the iframe can use an image load to do a
 // termination ping. See https://crbug.com/852204, where this was broken with
 // site isolation if the iframe was in its own process.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        SubframeTerminationPing_Image) {
+  StartEmbeddedServer();
   // See BackForwardCache::DisableForTestingReason for explanation.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_USES_UNLOAD_EVENT);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -5628,11 +5633,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                             .root();
   RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
 
-  // Add a subframe unload handler to do a termination ping by loading an
+  // Add a subframe pagehide handler to do a termination ping by loading an
   // image.
   GURL ping_url(embedded_test_server()->GetURL("b.com", "/blank.jpg"));
   AddUnloadEventHandler(
-      child_rfh, "unload", "window",
+      child_rfh, "pagehide", "window",
       base::StringPrintf("var img = document.createElement('img');"
                          "img.src = '%s';"
                          "document.body.appendChild(img);",
@@ -5648,10 +5653,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 }
 
 // Ensure that when closing a window containing a page with a cross-site
-// iframe, the iframe still runs its unload handler and can do a sendBeacon
+// iframe, the iframe still runs its pagehide handler and can do a sendBeacon
 // termination ping.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        SubframeTerminationPingWhenWindowCloses) {
+  StartEmbeddedServer();
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -5671,11 +5677,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   RenderFrameHostImpl* child_rfh =
       popup_root->child_at(0)->current_frame_host();
 
-  // In the popup, add a subframe unload handler to do a termination ping via
+  // In the popup, add a subframe pagehide handler to do a termination ping via
   // sendBeacon.
   GURL ping_url(embedded_test_server()->GetURL("c.com", "/empty.html"));
   AddUnloadEventHandler(
-      child_rfh, "unload", "window",
+      child_rfh, "pagehide", "window",
       base::StringPrintf("navigator.sendBeacon('%s', 'ping');",
                          ping_url.spec().c_str()));
   ExtendSubframeUnloadTimeoutForTerminationPing(child_rfh);
@@ -5689,12 +5695,13 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 }
 
 // Ensure that after a main frame with a cross-site iframe is navigated
-// cross-site, and the iframe had an unload handler which never finishes, the
-// iframe's process eventually exits.
+// cross-site, and the iframe had a pagehide handler which never finishes,
+// the iframe's process eventually exits.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        SubframeProcessGoesAwayAfterUnloadTimeout) {
+  StartEmbeddedServer();
   // See BackForwardCache::DisableForTestingReason for explanation.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_USES_UNLOAD_EVENT);
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -5704,8 +5711,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                             .root();
   RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
 
-  // Add an unload handler which never finishes to b.com subframe.
-  AddUnloadEventHandler(child_rfh, "unload", "window", "while(1);");
+  // Add a pagehide handler which never finishes to b.com subframe.
+  AddUnloadEventHandler(child_rfh, "pagehide", "window", "while(1);");
 
   // Navigate the main frame to c.com and wait for the subframe process to
   // shut down.  This should happen when the subframe unload timeout happens,
@@ -5720,11 +5727,12 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   process_exit_observer.Wait();
 }
 
-// Verify that when an OOPIF with an unload handler navigates cross-process,
-// its unload handler is able to send a postMessage to the parent frame.
+// Verify that when an OOPIF with a pagehide handler navigates cross-process,
+// its pagehide handler is able to send a postMessage to the parent frame.
 // See https://crbug.com/857274.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        PostMessageToParentWhenSubframeNavigates) {
+  StartEmbeddedServer();
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -5743,9 +5751,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
       });
     })"));
 
-  // Add an unload handler in the child frame to send a postMessage to the
+  // Add a pagehide handler in the child frame to send a postMessage to the
   // parent frame.
-  AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
+  AddUnloadEventHandler(child->current_frame_host(), "pagehide", "window",
                         "parent.postMessage('foo', '*')");
   child->current_frame_host()->DisableUnloadTimerForTesting();
 
@@ -5760,7 +5768,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 
   // Now repeat the test with a remote-to-local navigation that brings the
   // subframe back to a.com.
-  AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
+  AddUnloadEventHandler(child->current_frame_host(), "pagehide", "window",
                         "parent.postMessage('bar', '*')");
   child->current_frame_host()->DisableUnloadTimerForTesting();
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
@@ -5777,6 +5785,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 // https://crbug.com/867274.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                        PendingDeleteRFHProcessShutdownDoesNotRemoveSubframes) {
+  StartEmbeddedServer();
   GURL first_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), first_url));
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -5784,10 +5793,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                             .root();
   RenderFrameHostImpl* rfh = root->current_frame_host();
 
-  // Set up an unload handler which never finishes to force |rfh| to stay
+  // Set up a pagehide handler which never finishes to force |rfh| to stay
   // around in pending delete state and never receive the
   // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
-  EXPECT_TRUE(ExecJs(rfh, "window.onunload = function(e) { while(1); };\n"));
+  EXPECT_TRUE(ExecJs(rfh, "window.onpagehide = function(e) { while(1); };\n"));
   rfh->DisableUnloadTimerForTesting();
 
   // Navigate to another page with two subframes.
@@ -5834,6 +5843,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     RenderFrameHostManagerUnloadBrowserTest,
     AddAndRemoveEventListenersAffectingSuddenTerminationDisablerState) {
+  StartEmbeddedServer();
   const std::string sudden_termination_disabler_event_names[] = {
       "unload", "beforeunload", "pagehide", "visibilitychange"};
 
@@ -6051,6 +6061,15 @@ IN_PROC_BROWSER_TEST_P(
   // In this test case, the spare RenderProcessHost will be used, so verify it
   // and ensure it is ready.
   EXPECT_EQ(spare_rph, speculative_rph);
+
+  // If LoadUrl finished before the task to call
+  // RenderProcessHostImpl::OnChannelConnected is run, wait for the task to be
+  // run.
+  if (!spare_rph->IsReady()) {
+    RenderProcessHostWatcher ready_waiter(
+        spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+    ready_waiter.Wait();
+  }
   EXPECT_TRUE(spare_rph->IsReady());
 
   // The creation of the speculative RenderFrameHost should change the
@@ -6500,7 +6519,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerNoSiteIsolationTest,
 // With RenderDocument for subframes, removing a frame while it is executing
 // its own unload handler caused a crash. https://crbug.com/1148793
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
-                       RemoveSubframeInUnload_SameSite) {
+                       RemoveSubframeInPageHide_SameSite) {
   // TODO(https://crbug.com/1148793): Remove this early return. This doesn't
   // work for RenderDocumentLevel::kNonLocalRootSubframe or greater because
   // cancelling the navigation when detaching the subtree tries to restore the
@@ -6511,19 +6530,19 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
           /*is_main_frame=*/false, /*is_local_root=*/false)) {
     return;
   }
-  AssertCanRemoveSubframeInUnload(/*same_site=*/true);
+  AssertCanRemoveSubframeInPageHide(/*same_site=*/true);
 }
 
 // See RemoveSubframeInUnload_SameSite
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
-                       RemoveSubframeInUnload_CrossSite) {
+                       RemoveSubframeInPageHide_CrossSite) {
   // TODO(https://crbug.com/1148793): Remove this early return.
   if (ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
           /*is_main_frame=*/false, /*is_local_root=*/false) &&
       !AreAllSitesIsolatedForTesting()) {
     return;
   }
-  AssertCanRemoveSubframeInUnload(/*same_site=*/false);
+  AssertCanRemoveSubframeInPageHide(/*same_site=*/false);
 }
 
 // This test demonstrates a similar issue to the previous two tests, but
@@ -6538,7 +6557,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // A1(B(A2)) and a navigation from B->A3, committing A3 will unload B. However,
 // unloading B will also detach A2, and A2's unload handler can detach B since
 // it can script A1 and remove the frame owner element synchronously.
-IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, NestedUnload) {
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest, NestedUnload) {
   // These tests require site isolation to trigger the (formerly problematic)
   // delayed detach of the remote frame when swapping in the new local frame.
   if (!AreAllSitesIsolatedForTesting())
@@ -6582,8 +6601,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, NestedUnload) {
   ASSERT_TRUE(ExecJs(shell(), ""));
 }
 
-// See RemoveSubframeInUnload_SameSite
-void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
+// See RemoveSubframeInPageHide_SameSite
+void RenderFrameHostManagerTest::AssertCanRemoveSubframeInPageHide(
     bool same_site) {
   StartEmbeddedServer();
 
@@ -6592,15 +6611,15 @@ void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
   ASSERT_TRUE(NavigateToURL(shell(), frame_url));
 
-  // Set up the subframe's unload handler to remove the subframe.
+  // Set up the subframe's pagehide handler to remove the subframe.
   ASSERT_TRUE(ExecJs(shell(), R"(
     const subframe = document.getElementById("child-0");
-    subframe.contentWindow.onunload = () => {
+    subframe.contentWindow.onpagehide = () => {
       subframe.remove();
     }
   )"));
 
-  // Navigate the subframe, triggering unload.
+  // Navigate the subframe, triggering pagehide.
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
@@ -6659,6 +6678,49 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
   ASSERT_TRUE(NavigateFrameToURL(subframe, url_c));
   ASSERT_TRUE(subframe->current_frame_host()->IsRenderFrameLive());
+}
+
+// From https://crbug.com/1503038.
+// The RuntimeFeatureStateDocumentData should be re-created when the main frame
+// recovers from a crash.
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostManagerTest,
+    RuntimeFeatureStateDocumentDataShouldBeRecreatedAfterCrash) {
+  StartEmbeddedServer();
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/empty.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Crash the frame.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* rfh = web_contents->GetPrimaryMainFrame();
+  RenderProcessHost* process = rfh->GetProcess();
+  {
+    RenderProcessHostWatcher crash_observer(
+        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process->Shutdown(0);
+    crash_observer.Wait();
+  }
+  ASSERT_FALSE(rfh->IsRenderFrameLive());
+
+  auto* root = web_contents->GetPrimaryFrameTree().root();
+  RenderFrameHostManager* manager = root->render_manager();
+
+  manager->InitializeMainRenderFrameForImmediateUse();
+
+  // Add a new iframe. As part of this iframe's creation
+  // RenderFrameHostImpl::SetOriginDependentStateOfNewFrame() will be called
+  // which will attempt to copy the parent frame's
+  // RuntimeFeatureStateDocumentData.
+  std::string script =
+      "var new_iframe = document.createElement('iframe');"
+      "document.documentElement.appendChild(new_iframe);";
+
+  // If the parent's RuntimeFeatureStateDocumentData exists then this will
+  // succeed, otherwise we'll hit a CHECK.
+  EXPECT_TRUE(ExecJs(shell(), script));
 }
 
 // Tests that enable clearing window.name on cross-site

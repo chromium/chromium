@@ -58,10 +58,8 @@ namespace predictors {
 // This class can be accessed as a weak pointer so that it can safely use
 // PostTaskAndReply without fear of crashes if it is destroyed before the reply
 // triggers. This is necessary during initialization.
-class AutocompleteActionPredictor
-    : public KeyedService,
-      public history::HistoryServiceObserver,
-      public base::SupportsWeakPtr<AutocompleteActionPredictor> {
+class AutocompleteActionPredictor : public KeyedService,
+                                    public history::HistoryServiceObserver {
  public:
   // An `Action` is a recommendation on what pre* technology to invoke on a
   // given `AutocompleteMatch`.
@@ -138,12 +136,9 @@ class AutocompleteActionPredictor
   void OnOmniboxOpenedUrl(const OmniboxLog& log);
 
   // Uses local caches to calculate an exact percentage prediction that the user
-  // will take a particular match given what they have typed. |is_in_db| is set
-  // to differentiate trivial zero results resulting from a match not being
-  // found from actual zero results where the calculation returns 0.0.
+  // will take a particular match given what they have typed.
   double CalculateConfidence(const std::u16string& user_text,
-                             const AutocompleteMatch& match,
-                             bool* is_in_db) const;
+                             const AutocompleteMatch& match) const;
 
   bool initialized() { return initialized_; }
 
@@ -276,7 +271,6 @@ class AutocompleteActionPredictor
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
-  base::WeakPtr<content::PrerenderHandle> search_prerender_handle_;
   base::WeakPtr<content::PrerenderHandle> direct_url_input_prerender_handle_;
 
   // Local caches of the data store.  For incognito-owned predictors this is the
@@ -291,6 +285,8 @@ class AutocompleteActionPredictor
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  base::WeakPtrFactory<AutocompleteActionPredictor> weak_ptr_factory_{this};
 };
 
 }  // namespace predictors

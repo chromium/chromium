@@ -83,6 +83,7 @@ source_set("unit_tests") {
 
   sources = [
     "quick_answers_client_unittest.cc",
+    "quick_answers_model_unittest.cc",
     "search_result_loader_unittest.cc",
     "search_result_parsers/definition_result_parser_unittest.cc",
     "search_result_parsers/kp_entity_result_parser_unittest.cc",
@@ -95,6 +96,7 @@ source_set("unit_tests") {
     "test/quick_answers_test_base.h",
     "test/test_helpers.cc",
     "test/test_helpers.h",
+    "test/unit_conversion_unittest_constants.h",
     "translation_response_parser_unittest.cc",
     "translation_result_loader_unittest.cc",
     "understanding/intent_generator_unittest.cc",

@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_HELPER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_HELPER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
 // This class helps to determine the visibility of the "All Passwords Sheet"
 // button by requesting whether there are any passwords stored at all.
@@ -28,7 +29,7 @@ class AllPasswordsBottomSheetHelper
 
   // Returns the number of found credentials only if the helper already finished
   // querying the password store.
-  absl::optional<size_t> available_credentials() const {
+  std::optional<size_t> available_credentials() const {
     return available_credentials_;
   }
 
@@ -48,7 +49,7 @@ class AllPasswordsBottomSheetHelper
   base::OnceClosure update_callback_;
 
   // Stores whether the store returned credentials the sheet can show.
-  absl::optional<size_t> available_credentials_ = absl::nullopt;
+  std::optional<size_t> available_credentials_ = std::nullopt;
 
   // Records the last focused field type to infer whether an update should be
   // triggered if the store returns suggestions.

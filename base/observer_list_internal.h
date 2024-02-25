@@ -42,7 +42,7 @@ class BASE_EXPORT UncheckedObserverAdapter {
   template <class ObserverType>
   static ObserverType* Get(const UncheckedObserverAdapter& adapter) {
     static_assert(
-        !std::is_base_of<CheckedObserver, ObserverType>::value,
+        !std::is_base_of_v<CheckedObserver, ObserverType>,
         "CheckedObserver classes must not use ObserverList<T>::Unchecked.");
     return static_cast<ObserverType*>(adapter.ptr_);
   }
@@ -102,7 +102,7 @@ class BASE_EXPORT CheckedObserverAdapter {
   template <class ObserverType>
   static ObserverType* Get(const CheckedObserverAdapter& adapter) {
     static_assert(
-        std::is_base_of<CheckedObserver, ObserverType>::value,
+        std::is_base_of_v<CheckedObserver, ObserverType>,
         "Observers should inherit from base::CheckedObserver. "
         "Use ObserverList<T>::Unchecked to observe with raw pointers.");
     DCHECK(adapter.weak_ptr_);

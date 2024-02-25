@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/views/controls/menu/menu_runner_impl_interface.h"
@@ -37,14 +38,15 @@ class VIEWS_EXPORT MenuRunnerImplAdapter : public MenuRunnerImplInterface {
   // MenuRunnerImplInterface:
   bool IsRunning() const override;
   void Release() override;
-  void RunMenuAt(
-      Widget* parent,
-      MenuButtonController* button_controller,
-      const gfx::Rect& bounds,
-      MenuAnchorPosition anchor,
-      int32_t types,
-      gfx::NativeView native_view_for_gestures,
-      absl::optional<gfx::RoundedCornersF> corners = absl::nullopt) override;
+  void RunMenuAt(Widget* parent,
+                 MenuButtonController* button_controller,
+                 const gfx::Rect& bounds,
+                 MenuAnchorPosition anchor,
+                 int32_t types,
+                 gfx::NativeView native_view_for_gestures,
+                 std::optional<gfx::RoundedCornersF> corners = std::nullopt,
+                 std::optional<std::string> show_menu_host_duration_histogram =
+                     std::nullopt) override;
   void Cancel() override;
   base::TimeTicks GetClosingEventTime() const override;
 
@@ -52,7 +54,7 @@ class VIEWS_EXPORT MenuRunnerImplAdapter : public MenuRunnerImplInterface {
   ~MenuRunnerImplAdapter() override;
 
   std::unique_ptr<MenuModelAdapter> menu_model_adapter_;
-  raw_ptr<MenuRunnerImpl, DanglingUntriaged> impl_;
+  raw_ptr<MenuRunnerImpl> impl_;
 };
 
 }  // namespace internal

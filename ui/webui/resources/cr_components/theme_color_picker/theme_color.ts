@@ -6,7 +6,7 @@ import './check_mark_wrapper.js';
 
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './theme_color.html.js';
@@ -55,11 +55,11 @@ export class ThemeColorElement extends PolymerElement {
     };
   }
 
-  public backgroundColor: SkColor;
-  public foregroundColor: SkColor;
-  public baseColor: SkColor;
-  public checked: boolean;
-  public backgroundColorHidden: boolean;
+  backgroundColor: SkColor;
+  foregroundColor: SkColor;
+  baseColor: SkColor;
+  checked: boolean;
+  backgroundColorHidden: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

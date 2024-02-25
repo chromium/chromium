@@ -74,6 +74,7 @@ void MediaDocumentParser::CreateDocumentStructure() {
   did_build_document_structure_ = true;
 
   DCHECK(GetDocument());
+  GetDocument()->SetOverrideSiteForCookiesForCSPMedia(true);
   auto* root_element = MakeGarbageCollected<HTMLHtmlElement>(*GetDocument());
   GetDocument()->AppendChild(root_element);
   root_element->InsertedByParser();
@@ -152,7 +153,11 @@ void MediaDocument::DefaultEventHandler(Event& event) {
       // space or media key (play/pause)
       video->TogglePlayState();
       event.SetDefaultHandled();
+      return;
     }
+    // Route the keyboard events directly to the media element
+    video->DispatchEvent(event);
+    return;
   }
 }
 

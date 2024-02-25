@@ -12,25 +12,33 @@ import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.VisibleForTesting;
 
-/**
- * An interface to help switch between AdapterInputConnection and ChromiumInputConnection.
- */
+/** An interface to help switch between AdapterInputConnection and ChromiumInputConnection. */
 public interface ChromiumBaseInputConnection extends InputConnection {
-    /**
-     * A factory class to create or reuse ChromiumBaseInputConnection.
-     */
+    /** A factory class to create or reuse ChromiumBaseInputConnection. */
     public interface Factory {
-        ChromiumBaseInputConnection initializeAndGet(View view, ImeAdapterImpl imeAdapter,
-                int inputType, int inputFlags, int inputMode, int inputAction, int selectionStart,
-                int selectionEnd, String lastText, EditorInfo outAttrs);
+        ChromiumBaseInputConnection initializeAndGet(
+                View view,
+                ImeAdapterImpl imeAdapter,
+                int inputType,
+                int inputFlags,
+                int inputMode,
+                int inputAction,
+                int selectionStart,
+                int selectionEnd,
+                String lastText,
+                EditorInfo outAttrs);
 
         @VisibleForTesting
         Handler getHandler();
 
         void onWindowFocusChanged(boolean gainFocus);
+
         void onViewFocusChanged(boolean gainFocus);
+
         void onViewAttachedToWindow();
+
         void onViewDetachedFromWindow();
+
         void setTriggerDelayedOnCreateInputConnection(boolean trigger);
     }
 
@@ -49,8 +57,14 @@ public interface ChromiumBaseInputConnection extends InputConnection {
      *                       selection.
      * @param replyToRequest True when the update was made in a reply to IME's request.
      */
-    void updateStateOnUiThread(String text, int selectionStart, int selectionEnd,
-            int compositionStart, int compositionEnd, boolean singleLine, boolean replyToRequest);
+    void updateStateOnUiThread(
+            String text,
+            int selectionStart,
+            int selectionEnd,
+            int compositionStart,
+            int compositionEnd,
+            boolean singleLine,
+            boolean replyToRequest);
 
     /**
      * Send key event on UI thread.
@@ -58,9 +72,7 @@ public interface ChromiumBaseInputConnection extends InputConnection {
      */
     boolean sendKeyEventOnUiThread(KeyEvent event);
 
-    /**
-     * Call this when restartInput() is called.
-     */
+    /** Call this when restartInput() is called. */
     void onRestartInputOnUiThread();
 
     /**

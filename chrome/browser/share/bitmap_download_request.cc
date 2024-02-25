@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/share/qr_code_generation_request.h"
-
 #include <jni.h>
 
 #include "base/android/jni_string.h"
@@ -16,6 +14,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/android/java_bitmap.h"
 
+using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;
 
 static void JNI_BitmapDownloadRequest_DownloadBitmap(

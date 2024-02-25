@@ -4,6 +4,8 @@
 
 #include "components/permissions/permission_auditing_service.h"
 
+#include "utility"
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -29,18 +31,17 @@ PermissionAuditingService::PermissionAuditingService(
 
 PermissionAuditingService::~PermissionAuditingService() {
   if (db_) {
-    backend_task_runner_->DeleteSoon(FROM_HERE, db_.get());
-    db_ = nullptr;
+    backend_task_runner_->DeleteSoon(FROM_HERE, std::move(db_));
   }
 }
 
 void PermissionAuditingService::Init(const base::FilePath& database_path) {
-  DCHECK(!db_);
-  db_ = new PermissionAuditingDatabase();
+  CHECK(!db_);
+  db_ = std::make_unique<PermissionAuditingDatabase>();
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&PermissionAuditingDatabase::Init),
-                     base::Unretained(db_), database_path));
+                     base::Unretained(db_.get()), database_path));
 }
 
 void PermissionAuditingService::StartPeriodicCullingOfExpiredSessions() {
@@ -52,12 +53,12 @@ void PermissionAuditingService::StartPeriodicCullingOfExpiredSessions() {
 
 void PermissionAuditingService::StorePermissionUsage(
     const PermissionUsageSession& session) {
-  DCHECK(db_);
+  CHECK(db_);
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&PermissionAuditingDatabase::StorePermissionUsage),
-          base::Unretained(db_), session));
+          base::Unretained(db_.get()), session));
 }
 
 void PermissionAuditingService::GetPermissionUsageHistory(
@@ -65,11 +66,11 @@ void PermissionAuditingService::GetPermissionUsageHistory(
     const url::Origin& origin,
     base::Time start_time,
     PermissionUsageHistoryCallback result_callback) {
-  DCHECK(db_);
+  CHECK(db_);
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PermissionAuditingDatabase::GetPermissionUsageHistory,
-                     base::Unretained(db_), type, origin, start_time),
+                     base::Unretained(db_.get()), type, origin, start_time),
       std::move(result_callback));
 }
 
@@ -77,11 +78,11 @@ void PermissionAuditingService::GetLastPermissionUsageTime(
     ContentSettingsType type,
     const url::Origin& origin,
     LastPermissionUsageTimeCallback result_callback) {
-  DCHECK(db_);
+  CHECK(db_);
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PermissionAuditingDatabase::GetLastPermissionUsageTime,
-                     base::Unretained(db_), type, origin),
+                     base::Unretained(db_.get()), type, origin),
       std::move(result_callback));
 }
 
@@ -89,31 +90,31 @@ void PermissionAuditingService::UpdateEndTime(ContentSettingsType type,
                                               const url::Origin& origin,
                                               base::Time start_time,
                                               base::Time new_end_time) {
-  DCHECK(db_);
+  CHECK(db_);
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&PermissionAuditingDatabase::UpdateEndTime),
-          base::Unretained(db_), type, origin, start_time, new_end_time));
+          base::Unretained(db_.get()), type, origin, start_time, new_end_time));
 }
 
 void PermissionAuditingService::DeleteSessionsBetween(base::Time start,
                                                       base::Time end) {
-  DCHECK(db_);
+  CHECK(db_);
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(
                          &PermissionAuditingDatabase::DeleteSessionsBetween),
-                     base::Unretained(db_), start, end));
+                     base::Unretained(db_.get()), start, end));
 }
 
 void PermissionAuditingService::ExpireOldSessions() {
-  DCHECK(db_);
+  CHECK(db_);
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(
                          &PermissionAuditingDatabase::DeleteSessionsBetween),
-                     base::Unretained(db_), base::Time(),
+                     base::Unretained(db_.get()), base::Time(),
                      base::Time::Now() - kUsageSessionMaxAge));
 }
 

@@ -80,7 +80,7 @@ void ArcDiskSpaceMonitor::CheckDiskSpace() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ArcDiskSpaceMonitor::OnGetFreeDiskSpace(absl::optional<int64_t> reply) {
+void ArcDiskSpaceMonitor::OnGetFreeDiskSpace(std::optional<int64_t> reply) {
   if (!reply.has_value() || reply.value() < 0) {
     LOG(ERROR) << "spaced::GetFreeDiskSpace failed. "
                << "Deactivating ArcDiskSpaceMonitor.";
@@ -158,7 +158,7 @@ void ArcDiskSpaceMonitor::MaybeShowNotification(bool is_pre_stop) {
                                  kDiskSpaceMonitorNotifierId, catalog_name),
       /*optional_fields=*/message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](absl::optional<int> button_index) {})),
+          base::BindRepeating([](std::optional<int> button_index) {})),
       kNotificationStorageFullIcon,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 

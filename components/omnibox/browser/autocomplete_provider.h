@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
@@ -174,6 +175,7 @@ class AutocompleteProvider
     TYPE_OPEN_TAB = 1 << 17,
     TYPE_HISTORY_CLUSTER_PROVIDER = 1 << 18,
     TYPE_CALCULATOR = 1 << 19,
+    TYPE_FEATURED_SEARCH = 1 << 20,
   };
 
   explicit AutocompleteProvider(Type type);
@@ -318,50 +320,6 @@ class AutocompleteProvider
 
   typedef std::multimap<char16_t, std::u16string> WordMap;
 
-  // Finds the matches for |find_text| in |text|, classifies those matches,
-  // merges those classifications with |original_class|, and returns the merged
-  // classifications.
-  // If |text_is_search_query| is false, matches are classified as MATCH, and
-  // non-matches are classified as NONE. Otherwise, if |text_is_search_query| is
-  // true, matches are classified as NONE, and non-matches are classified as
-  // MATCH. This is done to mimic the behavior of SearchProvider which decorates
-  // matches according to the approach used by Google Suggest.
-  // |find_text| and |text| will be lowercased.
-  //
-  //   For example, given
-  //     |find_text| is "sp new",
-  //     |text| is "Sports and News at sports.somesite.com - visit us!",
-  //     |text_is_search_query| is false, and
-  //     |original_class| is {{0, NONE}, {19, URL}, {38, NONE}} (marking
-  //     "sports.somesite.com" as a URL),
-  //   Then this will return
-  //     {{0, MATCH}, {2, NONE}, {11, MATCH}, {14, NONE}, {19, URL|MATCH},
-  //     {21, URL}, {38, NONE}}; i.e.,
-  //     "Sports and News at sports.somesite.com - visit us!"
-  //      ^ ^        ^  ^    ^ ^                ^
-  //      0 2        11 14  19 21               38
-  //      M N        M  N  U|M U                N
-  //
-  //   For example, given
-  //     |find_text| is "canal",
-  //     |text| is "panama canal",
-  //     |text_is_search_query| is true, and
-  //     |original_class| is {{0, NONE}},
-  //   Then this will return
-  //     {{0,MATCH}, {7, NONE}}; i.e.,
-  //     "panama canal"
-  //      ^      ^
-  //      0 M    7 N
-  static ACMatchClassifications ClassifyAllMatchesInString(
-      const std::u16string& find_text,
-      const std::u16string& text,
-      const bool text_is_search_query,
-      const ACMatchClassifications& original_class = ACMatchClassifications());
-
-  // Uses the keyword entry mode in `input` to decide if the user is currently
-  // in keyword mode.
-  static bool InKeywordMode(const AutocompleteInput& input);
-
   // Trims "http:" or "https:" and up to two subsequent slashes from |url|. If
   // |trim_https| is true, trims "https:", otherwise trims "http:". Returns the
   // number of characters that were trimmed.
@@ -402,7 +360,8 @@ class AutocompleteProvider
   // string unconditionally.
   static FixupReturn FixupUserInput(const AutocompleteInput& input);
 
-  std::vector<AutocompleteProviderListener*> listeners_;
+  std::vector<raw_ptr<AutocompleteProviderListener, VectorExperimental>>
+      listeners_;
 
   const size_t provider_max_matches_;
   const size_t provider_max_matches_in_keyword_mode_{7};

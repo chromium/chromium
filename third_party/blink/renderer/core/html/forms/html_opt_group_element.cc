@@ -51,8 +51,7 @@ bool CanAssignToOptGroupSlot(const Node& node) {
 
 HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
     : HTMLElement(html_names::kOptgroupTag, document) {
-  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
-      SlotAssignmentMode::kManual);
+  EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
 }
 
 // An explicit empty destructor should be in html_opt_group_element.cc, because
@@ -78,11 +77,11 @@ void HTMLOptGroupElement::ParseAttribute(
   }
 }
 
-bool HTMLOptGroupElement::SupportsFocus() const {
+bool HTMLOptGroupElement::SupportsFocus(UpdateBehavior update_behavior) const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList())
     return false;
-  return HTMLElement::SupportsFocus();
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
 bool HTMLOptGroupElement::MatchesEnabledPseudoClass() const {
@@ -94,6 +93,10 @@ void HTMLOptGroupElement::ChildrenChanged(const ChildrenChange& change) {
   auto* select = OwnerSelectElement();
   if (!select)
     return;
+  // Code path used for kFinishedBuildingDocumentFragmentTree should not be
+  // hit for optgroups as fast-path parser does not handle optgroups.
+  DCHECK_NE(change.type,
+            ChildrenChangeType::kFinishedBuildingDocumentFragmentTree);
   if (change.type == ChildrenChangeType::kElementInserted) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed))
       select->OptionInserted(*option, option->Selected());

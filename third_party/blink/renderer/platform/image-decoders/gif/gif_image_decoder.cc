@@ -74,7 +74,7 @@ const AtomicString& GIFImageDecoder::MimeType() const {
   return gif_mime_type;
 }
 
-void GIFImageDecoder::OnSetData(SegmentReader* data) {
+void GIFImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   if (!data) {
     if (segment_stream_) {
       segment_stream_->SetReader(nullptr);
@@ -82,15 +82,16 @@ void GIFImageDecoder::OnSetData(SegmentReader* data) {
     return;
   }
 
-  std::unique_ptr<SegmentStream> segment_stream;
-  if (!segment_stream_) {
-    segment_stream = std::make_unique<SegmentStream>();
-    segment_stream_ = segment_stream.get();
-  }
+  if (segment_stream_) {
+    DCHECK(codec_);
+    segment_stream_->SetReader(std::move(data));
+  } else {
+    DCHECK(!codec_);
 
-  segment_stream_->SetReader(data);
+    auto segment_stream = std::make_unique<SegmentStream>();
+    SegmentStream* segment_stream_ptr = segment_stream.get();
+    segment_stream->SetReader(std::move(data));
 
-  if (!codec_) {
     SkCodec::Result codec_creation_result;
     codec_ =
         SkGifDecoder::Decode(std::move(segment_stream), &codec_creation_result);
@@ -100,25 +101,22 @@ void GIFImageDecoder::OnSetData(SegmentReader* data) {
 
     switch (codec_creation_result) {
       case SkCodec::kSuccess: {
-        // SkCodec::MakeFromStream will read enough of the image to get the
-        // image size.
+        segment_stream_ = segment_stream_ptr;
+        // SkGifDecoder::Decode will read enough of the image to get the image
+        // size.
         SkImageInfo image_info = codec_->getInfo();
         SetSize(static_cast<unsigned>(image_info.width()),
                 static_cast<unsigned>(image_info.height()));
+
         return;
       }
+
       case SkCodec::kIncompleteInput:
         if (IsAllDataReceived()) {
           SetFailed();
-          return;
         }
-
-        // |segment_stream_|'s ownership is passed into MakeFromStream.
-        // It is deleted if MakeFromStream fails.
-        // If MakeFromStream fails, we set |segment_stream_| to null so
-        // we aren't pointing to reclaimed memory.
-        segment_stream_ = nullptr;
         return;
+
       default:
         SetFailed();
         return;
@@ -243,7 +241,7 @@ void GIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
 }
 
 void GIFImageDecoder::Decode(wtf_size_t index) {
-  if (!codec_ || segment_stream_->IsCleared()) {
+  if (!codec_ || segment_stream_->IsCleared() || IsFailedFrameIndex(index)) {
     return;
   }
 
@@ -271,7 +269,7 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
       if (previous_frame_index == kNotFound) {
         previous_frame_index = required_previous_frame_index;
         Decode(previous_frame_index);
-        if (Failed()) {
+        if (IsFailedFrameIndex(previous_frame_index)) {
           return;
         }
       }
@@ -284,7 +282,7 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
       if ((!CanReusePreviousFrameBuffer(index) ||
            !frame.TakeBitmapDataIfWritable(&previous_frame)) &&
           !frame.CopyBitmapData(previous_frame)) {
-        SetFailed();
+        SetFailedFrameIndex(index);
         return;
       }
       prior_frame_ = previous_frame_index;
@@ -324,7 +322,7 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
       case SkCodec::kIncompleteInput:
         return;
       default:
-        SetFailed();
+        SetFailedFrameIndex(index);
         return;
     }
     frame.SetStatus(ImageFrame::kFramePartial);
@@ -346,12 +344,12 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
     case SkCodec::kIncompleteInput:
       frame.SetPixelsChanged(true);
       if (FrameIsReceivedAtIndex(index) || IsAllDataReceived()) {
-        SetFailed();
+        SetFailedFrameIndex(index);
       }
       break;
     default:
       frame.SetPixelsChanged(true);
-      SetFailed();
+      SetFailedFrameIndex(index);
       break;
   }
 }
@@ -395,6 +393,17 @@ wtf_size_t GIFImageDecoder::GetViableReferenceFrameIndex(
   }
 
   return kNotFound;
+}
+
+void GIFImageDecoder::SetFailedFrameIndex(wtf_size_t index) {
+  decode_failed_frames_.insert(index);
+  if (decode_failed_frames_.size() == DecodeFrameCount()) {
+    SetFailed();
+  }
+}
+
+bool GIFImageDecoder::IsFailedFrameIndex(wtf_size_t index) const {
+  return decode_failed_frames_.contains(index);
 }
 
 }  // namespace blink

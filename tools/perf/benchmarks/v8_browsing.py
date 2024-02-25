@@ -28,9 +28,8 @@ class _V8BrowsingBenchmark(v8_helper.V8PerfMixin, perf_benchmark.PerfBenchmark):
 class V8DesktopBrowsingBenchmark(_V8BrowsingBenchmark):
   """See _V8BrowsingBenchmark."""
   PLATFORM = 'desktop'
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
   SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
 
@@ -47,9 +46,8 @@ class V8MobileBrowsingBenchmark(
     _V8BrowsingBenchmark):
   """See _V8BrowsingBenchmark."""
   PLATFORM = 'mobile'
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
   SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
 
@@ -65,9 +63,8 @@ class V8MobileBrowsingBenchmark(
 class V8FutureDesktopBrowsingBenchmark(_V8BrowsingBenchmark):
   """See _V8BrowsingBenchmark."""
   PLATFORM = 'desktop'
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
   SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
 
@@ -88,9 +85,8 @@ class V8FutureDesktopBrowsingBenchmark(_V8BrowsingBenchmark):
 class V8FutureMobileBrowsingBenchmark(_V8BrowsingBenchmark):
   """See _V8BrowsingBenchmark."""
   PLATFORM = 'mobile'
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
   SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
 

@@ -1,0 +1,7 @@
+{
+  "name": "Invalid manifest test app",
+  "icons": [
+  "start_url": "manifest_test_page.html",
+  "display": "standalone",
+  "orientation": "landscape"
+}

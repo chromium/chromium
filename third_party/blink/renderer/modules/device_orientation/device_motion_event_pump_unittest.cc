@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/device_orientation/device_motion_event_pump.h"
+
 #include <string.h>
 
 #include <memory>
 
+#include "base/numerics/angle_conversions.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
@@ -18,11 +21,10 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_data.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_acceleration.h"
-#include "third_party/blink/renderer/modules/device_orientation/device_motion_event_pump.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_rotation_rate.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_entry.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "ui/gfx/geometry/angle_conversions.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -135,6 +137,7 @@ class DeviceMotionEventPumpTest : public testing::Test {
   FakeSensorProvider* sensor_provider() { return &sensor_provider_; }
 
  private:
+  test::TaskEnvironment task_environment_;
   Persistent<MockDeviceMotionController> controller_;
   std::unique_ptr<DummyPageHolder> page_holder_;
 
@@ -168,11 +171,11 @@ TEST_F(DeviceMotionEventPumpTest, AllSensorsAreActive) {
   EXPECT_EQ(6, received_data->GetAcceleration()->z().value());
 
   EXPECT_TRUE(received_data->GetRotationRate()->HasRotationData());
-  EXPECT_EQ(gfx::RadToDeg(7.0),
+  EXPECT_EQ(base::RadToDeg(7.0),
             received_data->GetRotationRate()->alpha().value());
-  EXPECT_EQ(gfx::RadToDeg(8.0),
+  EXPECT_EQ(base::RadToDeg(8.0),
             received_data->GetRotationRate()->beta().value());
-  EXPECT_EQ(gfx::RadToDeg(9.0),
+  EXPECT_EQ(base::RadToDeg(9.0),
             received_data->GetRotationRate()->gamma().value());
 
   controller()->UnregisterWithDispatcher();
@@ -210,11 +213,11 @@ TEST_F(DeviceMotionEventPumpTest, TwoSensorsAreActive) {
   EXPECT_FALSE(received_data->GetAcceleration()->z().has_value());
 
   EXPECT_TRUE(received_data->GetRotationRate()->HasRotationData());
-  EXPECT_EQ(gfx::RadToDeg(7.0),
+  EXPECT_EQ(base::RadToDeg(7.0),
             received_data->GetRotationRate()->alpha().value());
-  EXPECT_EQ(gfx::RadToDeg(8.0),
+  EXPECT_EQ(base::RadToDeg(8.0),
             received_data->GetRotationRate()->beta().value());
-  EXPECT_EQ(gfx::RadToDeg(9.0),
+  EXPECT_EQ(base::RadToDeg(9.0),
             received_data->GetRotationRate()->gamma().value());
 
   controller()->UnregisterWithDispatcher();
@@ -250,9 +253,9 @@ TEST_F(DeviceMotionEventPumpTest, SomeSensorDataFieldsNotAvailable) {
   EXPECT_EQ(6, received_data->GetAcceleration()->z().value());
 
   EXPECT_TRUE(received_data->GetAcceleration()->HasAccelerationData());
-  EXPECT_EQ(gfx::RadToDeg(7.0),
+  EXPECT_EQ(base::RadToDeg(7.0),
             received_data->GetRotationRate()->alpha().value());
-  EXPECT_EQ(gfx::RadToDeg(8.0),
+  EXPECT_EQ(base::RadToDeg(8.0),
             received_data->GetRotationRate()->beta().value());
   EXPECT_FALSE(received_data->GetRotationRate()->gamma().has_value());
 

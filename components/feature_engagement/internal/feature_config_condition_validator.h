@@ -6,17 +6,19 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_FEATURE_CONFIG_CONDITION_VALIDATOR_H_
 
 #include <stdint.h>
+
 #include <map>
+#include <optional>
 #include <set>
 
 #include "components/feature_engagement/internal/condition_validator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 class AvailabilityModel;
 struct Comparator;
 struct EventConfig;
 class EventModel;
+class TimeProvider;
 
 // A ConditionValidator that uses the FeatureConfigs as the source of truth.
 class FeatureConfigConditionValidator : public ConditionValidator {
@@ -39,15 +41,16 @@ class FeatureConfigConditionValidator : public ConditionValidator {
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
       const Configuration* configuration,
-      uint32_t current_day) const override;
+      const TimeProvider& current_day) const override;
   void NotifyIsShowing(
       const base::Feature& feature,
       const FeatureConfig& config,
       const std::vector<std::string>& all_feature_names) override;
   void NotifyDismissed(const base::Feature& feature) override;
   void SetPriorityNotification(
-      const absl::optional<std::string>& feature) override;
-  absl::optional<std::string> GetPendingPriorityNotification() override;
+      const std::optional<std::string>& feature) override;
+  std::optional<std::string> GetPendingPriorityNotification() override;
+  void ResetSession() override;
 
  private:
   bool EventConfigMeetsConditions(const EventConfig& event_config,
@@ -76,7 +79,7 @@ class FeatureConfigConditionValidator : public ConditionValidator {
   std::map<std::string, uint32_t> times_shown_for_feature_;
 
   // Pending priority notification to be shown if any.
-  absl::optional<std::string> pending_priority_notification_;
+  std::optional<std::string> pending_priority_notification_;
 };
 
 }  // namespace feature_engagement

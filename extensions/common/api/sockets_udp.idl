@@ -5,7 +5,6 @@
 // Use the <code>chrome.sockets.udp</code> API to send and receive data over the
 // network using UDP connections. This API supersedes the UDP functionality
 // previously found in the "socket" API.
-[modernised_enums]
 namespace sockets.udp {
   // The socket properties specified in the <code>create</code> or
   // <code>update</code> function. Each property is optional. If a property
@@ -200,6 +199,8 @@ namespace sockets.udp {
     // available network interfaces.
     // |port| : The port of the local machine. Use "0" to bind to a free port.
     // |callback| : Called when the <code>bind</code> operation completes.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void bind(long socketId,
                      DOMString address,
                      long port,
@@ -213,6 +214,8 @@ namespace sockets.udp {
     // |port| : The port of the remote machine.
     // |dnsQueryType| : The address resolution preference.
     // |callback| : Called when the <code>send</code> operation completes.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void send(long socketId,
                      ArrayBuffer data,
                      DOMString address,
@@ -244,6 +247,8 @@ namespace sockets.udp {
     // |socketId| : The socket ID.
     // |address| : The group address to join. Domain names are not supported.
     // |callback| : Called when the <code>joinGroup</code> operation completes.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void joinGroup(long socketId,
                           DOMString address,
                           JoinGroupCallback callback);
@@ -260,6 +265,8 @@ namespace sockets.udp {
     // |socketId| : The socket ID.
     // |address| : The group address to leave. Domain names are not supported.
     // |callback| : Called when the <code>leaveGroup</code> operation completes.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void leaveGroup(long socketId,
                            DOMString address,
                            LeaveGroupCallback callback);
@@ -271,6 +278,8 @@ namespace sockets.udp {
     // |socketId| : The socket ID.
     // |ttl| : The time-to-live value.
     // |callback| : Called when the configuration operation completes.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void setMulticastTimeToLive(
         long socketId,
         long ttl,
@@ -293,6 +302,8 @@ namespace sockets.udp {
     // |socketId| : The socket ID.
     // |enabled| : Indicate whether to enable loopback mode.
     // |callback| : Called when the configuration operation completes.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void setMulticastLoopbackMode(
         long socketId,
         boolean enabled,
@@ -309,6 +320,8 @@ namespace sockets.udp {
     // |socketId| : The socket ID.
     // |enabled| : <code>true</code> to enable broadcast packets,
     // <code>false</code> to disable them.
+    [doesNotSupportPromises=
+        "Sets error along with callback arguments crbug.com/1504372"]
     static void setBroadcast(long socketId,
                              boolean enabled,
                              SetBroadcastCallback callback);

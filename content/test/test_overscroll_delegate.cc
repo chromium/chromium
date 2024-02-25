@@ -50,7 +50,7 @@ void TestOverscrollDelegate::OnOverscrollModeChange(
   delta_x_ = delta_y_ = 0.f;
 }
 
-absl::optional<float> TestOverscrollDelegate::GetMaxOverscrollDelta() const {
+std::optional<float> TestOverscrollDelegate::GetMaxOverscrollDelta() const {
   return delta_cap_;
 }
 

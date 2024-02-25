@@ -7,7 +7,7 @@
 
 #import <vector>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 namespace send_tab_to_self {
 struct TargetDeviceInfo;
@@ -17,7 +17,7 @@ struct TargetDeviceInfo;
 
 // SendTabToSelfTableViewController represents the content for the
 // Send Tab To Self Modal dialog.
-@interface SendTabToSelfTableViewController : ChromeTableViewController
+@interface SendTabToSelfTableViewController : LegacyChromeTableViewController
 
 - (instancetype)
     initWithDeviceList:

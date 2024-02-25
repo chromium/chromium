@@ -78,9 +78,9 @@ class WaylandPointerConstraintDelegate : public PointerConstraintDelegate {
     zwp_locked_pointer_v1_send_unlocked(constraint_resource_);
   }
 
-  const raw_ptr<wl_resource, ExperimentalAsh> constraint_resource_;
-  raw_ptr<Pointer, ExperimentalAsh> pointer_;
-  const raw_ptr<Surface, ExperimentalAsh> surface_;
+  const raw_ptr<wl_resource> constraint_resource_;
+  raw_ptr<Pointer> pointer_;
+  const raw_ptr<Surface> surface_;
   bool is_persistent_;
 };
 
@@ -152,9 +152,8 @@ void pointer_constraints_lock_pointer(wl_client* client,
   VLOG(1) << "lock_pointer(" << client << ", " << resource << "; Surface "
           << surface << " @ window '"
           << (surface && surface->window() ? surface->window()->GetTitle()
-                                           : base::EmptyString16())
-          << "', "
-          << "Pointer " << pointer << ")";
+                                           : std::u16string())
+          << "', " << "Pointer " << pointer << ")";
 
   wl_resource* locked_pointer_resource =
       wl_resource_create(client, &zwp_locked_pointer_v1_interface, 1, id);

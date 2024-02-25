@@ -4,6 +4,7 @@
 
 #include "components/update_client/crx_cache.h"
 
+#include <optional>
 #include <string>
 
 #include "base/base_paths.h"
@@ -21,7 +22,6 @@
 #include "components/update_client/test_utils.h"
 #include "components/update_client/update_client_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 namespace {

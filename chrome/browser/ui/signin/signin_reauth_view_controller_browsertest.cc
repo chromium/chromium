@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -13,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -31,6 +33,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -45,7 +48,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -207,7 +209,7 @@ class SigninReauthViewControllerBrowserTest : public InProcessBrowserTest {
     reauth_result_loop_->Quit();
   }
 
-  absl::optional<signin::ReauthResult> WaitForReauthResult() {
+  std::optional<signin::ReauthResult> WaitForReauthResult() {
     reauth_result_loop_->Run();
     return reauth_result_;
   }
@@ -247,7 +249,7 @@ class SigninReauthViewControllerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<SigninViewController::ReauthAbortHandle> abort_handle_;
 
   std::unique_ptr<base::RunLoop> reauth_result_loop_;
-  absl::optional<signin::ReauthResult> reauth_result_;
+  std::optional<signin::ReauthResult> reauth_result_;
 };
 
 // Tests that the abort handle cancels an ongoing reauth flow.
@@ -593,7 +595,32 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
   EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kUnexpectedResponse);
 }
 
-IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
+// TODO(crbug.com/1489482): Remove kNoPasskeySyncing path after metadata syncing
+// is enabled by default.
+enum HasPasskeySyncing {
+  kHasPasskeySyncing,
+  kNoPasskeySyncing,
+};
+
+class SigninReauthViewControllerMessageBrowserTest
+    : public SigninReauthViewControllerBrowserTest,
+      public testing::WithParamInterface<HasPasskeySyncing> {
+ public:
+  SigninReauthViewControllerMessageBrowserTest() {
+    if (GetParam() == kHasPasskeySyncing) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kSyncWebauthnCredentials);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          syncer::kSyncWebauthnCredentials);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SigninReauthViewControllerMessageBrowserTest,
                        MessageIfPasswordWasSavedLocally) {
   // The AccessPoint specifies that the password was already saved locally
   // before the reauth prompt was shown.
@@ -612,12 +639,15 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
           .ExtractString();
   // The dialog message should specify that the password was already saved
   // locally.
-  EXPECT_EQ(dialog_message,
-            l10n_util::GetStringUTF8(
-                IDS_ACCOUNT_PASSWORDS_REAUTH_DESC_ALREADY_SAVED_LOCALLY));
+  EXPECT_EQ(
+      dialog_message,
+      l10n_util::GetStringUTF8(
+          GetParam() == kHasPasskeySyncing
+              ? IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC_ALREADY_SAVED_LOCALLY
+              : IDS_ACCOUNT_PASSWORDS_REAUTH_DESC_ALREADY_SAVED_LOCALLY));
 }
 
-IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SigninReauthViewControllerMessageBrowserTest,
                        MessageIfPasswordWasNotSavedLocally) {
   // The AccessPoint specifies that the password was NOT already saved locally
   // before the reauth prompt was shown.
@@ -635,8 +665,16 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
           .ExtractString();
   // The dialog message should be the regular one.
   EXPECT_EQ(dialog_message,
-            l10n_util::GetStringUTF8(IDS_ACCOUNT_PASSWORDS_REAUTH_DESC));
+            l10n_util::GetStringUTF8(
+                GetParam() == kHasPasskeySyncing
+                    ? IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC
+                    : IDS_ACCOUNT_PASSWORDS_REAUTH_DESC));
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         SigninReauthViewControllerMessageBrowserTest,
+                         testing::Values(kHasPasskeySyncing,
+                                         kNoPasskeySyncing));
 
 class SigninReauthViewControllerDarkModeBrowserTest
     : public SigninReauthViewControllerBrowserTest {

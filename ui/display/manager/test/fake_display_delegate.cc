@@ -122,7 +122,7 @@ void FakeDisplayDelegate::RelinquishDisplayControl(
 }
 
 void FakeDisplayDelegate::GetDisplays(GetDisplaysCallback callback) {
-  std::vector<DisplaySnapshot*> displays;
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> displays;
   for (auto& display : displays_)
     displays.push_back(display.get());
   std::move(callback).Run(displays);
@@ -191,16 +191,26 @@ void FakeDisplayDelegate::SetHDCPState(
   std::move(callback).Run(false);
 }
 
+void FakeDisplayDelegate::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const ColorTemperatureAdjustment& cta) {}
+
+void FakeDisplayDelegate::SetColorCalibration(
+    int64_t display_id,
+    const ColorCalibration& calibration) {}
+
+void FakeDisplayDelegate::SetGammaAdjustment(int64_t display_id,
+                                             const GammaAdjustment& gamma) {}
+
 bool FakeDisplayDelegate::SetColorMatrix(
     int64_t display_id,
     const std::vector<float>& color_matrix) {
   return false;
 }
 
-bool FakeDisplayDelegate::SetGammaCorrection(
-    int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+bool FakeDisplayDelegate::SetGammaCorrection(int64_t display_id,
+                                             const display::GammaCurve& degamma,
+                                             const display::GammaCurve& gamma) {
   return false;
 }
 

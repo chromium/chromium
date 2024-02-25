@@ -5,7 +5,7 @@
 #ifndef BASE_TRACE_EVENT_ADDRESS_SPACE_DUMP_PROVIDER_H_
 #define BASE_TRACE_EVENT_ADDRESS_SPACE_DUMP_PROVIDER_H_
 
-#include "base/allocator/partition_allocator/address_space_stats.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/address_space_stats.h"
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"

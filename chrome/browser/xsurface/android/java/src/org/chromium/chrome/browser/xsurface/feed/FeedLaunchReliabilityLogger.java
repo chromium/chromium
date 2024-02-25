@@ -24,8 +24,13 @@ public interface FeedLaunchReliabilityLogger {
         int NEW_TAB_PAGE = 1;
         int START_SURFACE = 2;
     }
-    @IntDef({StreamType.UNSPECIFIED, StreamType.FOR_YOU, StreamType.WEB_FEED,
-            StreamType.SINGLE_WEB_FEED})
+
+    @IntDef({
+        StreamType.UNSPECIFIED,
+        StreamType.FOR_YOU,
+        StreamType.WEB_FEED,
+        StreamType.SINGLE_WEB_FEED
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface StreamType {
         int UNSPECIFIED = 0;
@@ -43,9 +48,7 @@ public interface FeedLaunchReliabilityLogger {
     default void sendPendingEvents(
             @org.chromium.chrome.browser.xsurface.feed.StreamType int streamType, int streamId) {}
 
-    /**
-     * Clear any pending events and end the flow without logging any events.
-     */
+    /** Clear any pending events and end the flow without logging any events. */
     default void cancelPendingEvents() {}
 
     /**
@@ -60,70 +63,51 @@ public interface FeedLaunchReliabilityLogger {
     /**
      * Log when the feed is launched because its UI surface was created.
      * @param surfaceType Feed surface type (e.g. new tab page or Start Surface).
-     * @param timestamp Time at which the surface began to be created.
      */
-    default void logUiStarting(@SurfaceType int surfaceType, long timestamp) {}
+    default void logUiStarting(@SurfaceType int surfaceType) {}
 
-    /**
-     * Log when a feed refresh is requested manually.
-     * @param timestamp Time at which the surface was shown.
-     */
-    default void logManualRefresh(long timestamp) {}
+    /** Log when a feed refresh is requested manually. */
+    default void logManualRefresh() {}
 
     /**
      * Log when the feed is launched because its surface was shown and cards needed to be
      * re-rendered.
-     * @param timestamp Time at which the surface was shown.
      */
-    default void logFeedReloading(long timestamp) {}
+    default void logFeedReloading() {}
 
     /**
      * Log when the feed is launched in any case not already handled by logUiStarting() or
      * logFeedReloaded().
-     * @param timestamp Time at which the feed stream was bound.
      */
-    default void logFeedLaunchOtherStart(long timestamp) {}
+    default void logFeedLaunchOtherStart() {}
 
     /**
      * Log when the user switches to another feed tab.
      * @param toStreamType New feed type.
-     * @param timestamp Event time.
      */
     default void logSwitchedFeeds(
-            @org.chromium.chrome.browser.xsurface.feed.StreamType int toStreamType,
-            long timestamp) {}
+            @org.chromium.chrome.browser.xsurface.feed.StreamType int toStreamType) {}
 
-    /**
-     * Log when cached feed content is about to be read.
-     * @param timestamp Event time.
-     */
-    default void logCacheReadStart(long timestamp) {}
+    /** Log when cached feed content is about to be read. */
+    default void logCacheReadStart() {}
 
     /**
      * Log after finishing attempting to read cached feed content.
-     * @param timestamp Event time.
      * @param result DiscoverCardReadCacheResult.
      */
-    default void logCacheReadEnd(long timestamp, int result) {}
+    default void logCacheReadEnd(int result) {}
 
-    /**
-     * Log when the loading spinner is shown.
-     * @param timestamp Time at which the spinner was shown.
-     */
-    default void logLoadingIndicatorShown(long timestamp) {}
+    /** Log when the loading spinner is shown. */
+    default void logLoadingIndicatorShown() {}
 
-    /**
-     * Log when rendering of above-the-fold feed content begins.
-     * @param timestamp Event time.
-     */
-    default void logAtfRenderStart(long timestamp) {}
+    /** Log when rendering of above-the-fold feed content begins. */
+    default void logAtfRenderStart() {}
 
     /**
      * Log when rendering of above-the-fold feed content finishes.
-     * @param timestamp Event time.
      * @param result DiscoverAboveTheFoldRenderResult.
      */
-    default void logAtfRenderEnd(long timestamp, int result) {}
+    default void logAtfRenderEnd(int result) {}
 
     /**
      * Get the network request logger for a request by its ID.
@@ -136,12 +120,121 @@ public interface FeedLaunchReliabilityLogger {
     }
 
     /**
+     * Log to mark the end of the feed launch. Logs a "launched finished" event with the result
+     * (or instead with the pending "launch finished" result if there was a call to
+     * pendingFinished()).
+     * @param result DiscoverLaunchResult.
+     */
+    default void logLaunchFinished(int result) {}
+
+    /**
+     * Log to mark the end of the feed launch.
+     * @param result DiscoverLaunchResult.
+     * @param onlyIfLaunchInProgress Pass true if this event should only be logged if there is a
+     *         feed launch in progress.
+     */
+    default void logLaunchFinished(int result, boolean onlyIfLaunchInProgress) {}
+
+    /**
+     * Keep a tentative status for "launch finished" if the user left the feed but might return
+     * before it finishes loading.
+     * If the next call is to logLaunchFinished(), logLaunchFinished() will log the pending
+     * "launch finished" status and clear them. If the next call is to cancelPendingFinished(), the
+     * pending "launch finished" is cleared. If there is already a pending "launch finished",
+     * calling pendingFinished() again has no effect.
+     * @param result DiscoverLaunchResult.
+     */
+    default void pendingFinished(int result) {}
+
+    /** Drop anything kept with pendingFinished(). */
+    default void cancelPendingFinished() {}
+
+    /**
+     * Log when the feed is launched because its UI surface was created.
+     * @param surfaceType Feed surface type (e.g. new tab page or Start Surface).
+     * @param timestamp Time at which the surface began to be created.
+     */
+    @Deprecated
+    default void logUiStarting(@SurfaceType int surfaceType, long timestamp) {}
+
+    /**
+     * Log when a feed refresh is requested manually.
+     * @param timestamp Time at which the surface was shown.
+     */
+    @Deprecated
+    default void logManualRefresh(long timestamp) {}
+
+    /**
+     * Log when the feed is launched because its surface was shown and cards needed to be
+     * re-rendered.
+     * @param timestamp Time at which the surface was shown.
+     */
+    @Deprecated
+    default void logFeedReloading(long timestamp) {}
+
+    /**
+     * Log when the feed is launched in any case not already handled by logUiStarting() or
+     * logFeedReloaded().
+     * @param timestamp Time at which the feed stream was bound.
+     */
+    @Deprecated
+    default void logFeedLaunchOtherStart(long timestamp) {}
+
+    /**
+     * Log when the user switches to another feed tab.
+     * @param toStreamType New feed type.
+     * @param timestamp Event time.
+     */
+    @Deprecated
+    default void logSwitchedFeeds(
+            @org.chromium.chrome.browser.xsurface.feed.StreamType int toStreamType,
+            long timestamp) {}
+
+    /**
+     * Log when cached feed content is about to be read.
+     * @param timestamp Event time.
+     */
+    @Deprecated
+    default void logCacheReadStart(long timestamp) {}
+
+    /**
+     * Log after finishing attempting to read cached feed content.
+     * @param timestamp Event time.
+     * @param result DiscoverCardReadCacheResult.
+     */
+    @Deprecated
+    default void logCacheReadEnd(long timestamp, int result) {}
+
+    /**
+     * Log when the loading spinner is shown.
+     * @param timestamp Time at which the spinner was shown.
+     */
+    @Deprecated
+    default void logLoadingIndicatorShown(long timestamp) {}
+
+    /**
+     * Log when rendering of above-the-fold feed content begins.
+     * @param timestamp Event time.
+     */
+    @Deprecated
+    default void logAtfRenderStart(long timestamp) {}
+
+    /**
+     * Log when rendering of above-the-fold feed content finishes.
+     * @param timestamp Event time.
+     * @param result DiscoverAboveTheFoldRenderResult.
+     */
+    @Deprecated
+    default void logAtfRenderEnd(long timestamp, int result) {}
+
+    /**
      * Log to mark the end of the feed launch. Logs a "launched finished" event with the timestamp
      * and result (or instead with the pending "launch finished" timestamp and result if there was a
      * call to pendingFinished()).
      * @param timestamp Event time, possibly the same as one of the other events.
      * @param result DiscoverLaunchResult.
      */
+    @Deprecated
     default void logLaunchFinished(long timestamp, int result) {}
 
     /**
@@ -151,6 +244,7 @@ public interface FeedLaunchReliabilityLogger {
      * @param onlyIfLaunchInProgress Pass true if this event should only be logged if there is a
      *         feed launch in progress.
      */
+    @Deprecated
     default void logLaunchFinished(long timestamp, int result, boolean onlyIfLaunchInProgress) {}
 
     /**
@@ -163,10 +257,6 @@ public interface FeedLaunchReliabilityLogger {
      * @param timestamp Event time in nanoseconds.
      * @param result DiscoverLaunchResult.
      */
+    @Deprecated
     default void pendingFinished(long timestamp, int result) {}
-
-    /**
-     * If a timestamp and status code were recorded with pendingFinished(), drop them.
-     */
-    default void cancelPendingFinished() {}
 }

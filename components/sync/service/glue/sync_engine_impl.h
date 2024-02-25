@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_IMPL_H_
 #define COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/invalidation/public/invalidator_state.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -45,7 +43,6 @@ class SyncEngineImpl : public SyncEngine,
   using Status = SyncStatus;
 
   // |sync_invalidations_service| must not be null.
-  // TODO(crbug.com/1404927): remove old invalidations.
   SyncEngineImpl(const std::string& name,
                  SyncInvalidationsService* sync_invalidations_service,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
@@ -84,7 +81,6 @@ class SyncEngineImpl : public SyncEngine,
   void ConnectDataType(ModelType type,
                        std::unique_ptr<DataTypeActivationResponse>) override;
   void DisconnectDataType(ModelType type) override;
-  void SetProxyTabsDatatypeEnabled(bool enabled) override;
   const Status& GetDetailedStatus() const override;
   void GetTypesWithUnsyncedData(
       base::OnceCallback<void(ModelTypeSet)> cb) const override;
@@ -98,6 +94,7 @@ class SyncEngineImpl : public SyncEngine,
                           base::OnceClosure callback) override;
   bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
+  void RecordNigoriMemoryUsageAndCountsHistograms() override;
 
   // InvalidationsListener implementation.
   void OnInvalidationReceived(const std::string& payload) override;
@@ -169,7 +166,8 @@ class SyncEngineImpl : public SyncEngine,
   // received during browser startup).
   void UpdateStandaloneInvalidationsState();
 
-  void OnInvalidatorStateChange(invalidation::InvalidatorState state);
+  // Updates invalidator's state.
+  void OnInvalidatorStateChange(bool enabled);
 
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
@@ -194,9 +192,7 @@ class SyncEngineImpl : public SyncEngine,
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().
-  // AcrossTasksDanglingUntriaged because it is assigned a
-  // AcrossTasksDanglingUntriaged pointer.
-  raw_ptr<SyncEngineHost, AcrossTasksDanglingUntriaged> host_ = nullptr;
+  raw_ptr<SyncEngineHost> host_ = nullptr;
 
   raw_ptr<SyncInvalidationsService> sync_invalidations_service_ = nullptr;
 

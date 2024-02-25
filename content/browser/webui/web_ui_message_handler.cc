@@ -4,12 +4,13 @@
 
 #include "content/public/browser/web_ui_message_handler.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

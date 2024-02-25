@@ -16,29 +16,27 @@ limitations under the License.
 package org.tensorflow.lite.task.vision.detector;
 
 import android.graphics.RectF;
-
 import com.google.auto.value.AutoValue;
-
-import org.tensorflow.lite.support.label.Category;
-import org.tensorflow.lite.task.core.annotations.UsedByReflection;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.tensorflow.lite.support.label.Category;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 
 /** Represents one detected object in the results of a {@link ObjectDetector}. */
 @AutoValue
 @UsedByReflection("object_detection_jni.cc")
 public abstract class Detection {
-    @UsedByReflection("object_detection_jni.cc")
-    public static Detection create(RectF boundingBox, List<Category> categories) {
-        return new AutoValue_Detection(new RectF(boundingBox),
-                Collections.unmodifiableList(new ArrayList<Category>(categories)));
-    }
 
-    public abstract RectF getBoundingBox();
+  @UsedByReflection("object_detection_jni.cc")
+  public static Detection create(RectF boundingBox, List<Category> categories) {
+    return new AutoValue_Detection(
+        new RectF(boundingBox), Collections.unmodifiableList(new ArrayList<Category>(categories)));
+  }
 
-    // Same reason for not using ImmutableList as stated in
-    // {@link ObjectDetector#ObjectDetectorOptions#labelAllowList}.
-    public abstract List<Category> getCategories();
+  public abstract RectF getBoundingBox();
+
+  // Same reason for not using ImmutableList as stated in
+  // {@link ObjectDetector#ObjectDetectorOptions#labelAllowList}.
+  public abstract List<Category> getCategories();
 }

@@ -36,7 +36,6 @@
 #include "third_party/blink/public/common/frame/delegated_capability_request_token.h"
 #include "third_party/blink/public/common/frame/history_user_activation_state.h"
 #include "third_party/blink/public/common/metrics/post_message_counter.h"
-#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -98,6 +97,10 @@ class V8FrameRequestCallback;
 class V8VoidFunction;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
+
+namespace scheduler {
+class TaskAttributionInfo;
+}
 
 enum PageTransitionEventPersistence {
   kPageTransitionEventNotPersisted = 0,
@@ -176,7 +179,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   ResourceFetcher* Fetcher() final;
   bool CanExecuteScripts(ReasonForCallingCanExecuteScripts) final;
   void ExceptionThrown(ErrorEvent*) final;
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
   void AddInspectorIssue(AuditsIssue) final;
   EventTarget* ErrorEventTarget() final { return this; }
   String OutgoingReferrer() const final;
@@ -191,6 +193,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void ReportPermissionsPolicyViolation(
       mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
+      const std::optional<String>& reporting_endpoint,
       const String& message = g_empty_string) const final;
   void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,
@@ -328,8 +331,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void moveBy(int x, int y) const;
   void moveTo(int x, int y) const;
 
-  void resizeBy(int x, int y) const;
-  void resizeTo(int width, int height) const;
+  void resizeBy(int x, int y, ExceptionState&) const;
+  void resizeTo(int width, int height, ExceptionState&) const;
 
   MediaQueryList* matchMedia(const String&);
 
@@ -364,11 +367,15 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void releaseEvents() {}
   External* external();
 
-  bool isSecureContext() const;
+  bool isSecureContext() const;  // NOLINT(bugprone-virtual-near-miss)
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(search, kSearch)
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(orientationchange, kOrientationchange)
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pageconceal, kPageconceal)
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pagereveal, kPagereveal)
 
   void RegisterEventListenerObserver(EventListenerObserver*);
 
@@ -421,8 +428,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void EnqueueNonPersistedPageshowEvent();
   void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
   void DispatchPopstateEvent(scoped_refptr<SerializedScriptValue>,
-                             absl::optional<scheduler::TaskAttributionId>
-                                 soft_navigation_heuristics_task_id);
+                             scheduler::TaskAttributionInfo* parent_task);
   void DispatchWindowLoadEvent();
   void DocumentWasClosed();
 
@@ -501,7 +507,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Called when a network request buffered an additional `num_bytes` while this
   // frame is in back-forward cache.
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes);
 
   // Whether the window is credentialless or not.
   bool credentialless() const;
@@ -511,7 +518,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Fence* fence();
 
   CloseWatcher::WatcherStack* closewatcher_stack() {
-    return closewatcher_stack_;
+    return closewatcher_stack_.Get();
   }
 
   void GenerateNewNavigationId();
@@ -532,10 +539,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // given window, it cannot be taken away.
   void SetHasStorageAccess();
 
-  void maximize(ExceptionState&);
-  void minimize(ExceptionState&);
-  void restore(ExceptionState&);
-
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -549,10 +552,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
  private:
   class NetworkStateObserver;
 
-  // Intentionally private to prevent redundant checks when the type is
-  // already LocalDOMWindow.
+  // Intentionally private to prevent redundant checks.
   bool IsLocalDOMWindow() const override { return true; }
-  bool IsRemoteDOMWindow() const override { return false; }
 
   bool HasInsecureContextInAncestors() const override;
 
@@ -565,8 +566,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void DispatchLoadEvent();
 
   void SetIsPictureInPictureWindow();
-
-  bool CanUseWindowingControls(ExceptionState& exception_state);
 
   // Return the viewport size including scrollbars.
   gfx::Size GetViewportSize() const;
@@ -609,7 +608,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Member<Event> current_event_;
 
   // Store TrustedTypesPolicyFactory, per DOMWrapperWorld.
-  mutable HeapHashMap<scoped_refptr<const DOMWrapperWorld>,
+  mutable HeapHashMap<Member<const DOMWrapperWorld>,
                       Member<TrustedTypePolicyFactory>>
       trusted_types_map_;
 

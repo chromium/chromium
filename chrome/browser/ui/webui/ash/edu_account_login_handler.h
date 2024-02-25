@@ -73,8 +73,7 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
                         const gfx::Image& image,
                         const image_fetcher::RequestMetadata& metadata);
 
-    raw_ptr<image_fetcher::ImageFetcher, ExperimentalAsh> image_fetcher_ =
-        nullptr;
+    raw_ptr<image_fetcher::ImageFetcher> image_fetcher_ = nullptr;
     const std::map<std::string, GURL> profile_image_urls_;
     base::OnceCallback<void(std::map<std::string, gfx::Image> profile_images)>
         callback_;
@@ -118,12 +117,13 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
 
   // ListFamilyMembers fetch handlers.
   void OnListFamilyMembersResponse(
-      supervised_user::ProtoFetcherStatus status,
+      const supervised_user::ProtoFetcherStatus& status,
       std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
           response);
   void OnListFamilyMembersSuccess(
       const kids_chrome_management::ListFamilyMembersResponse& response);
-  void OnListFamilyMembersFailure(supervised_user::ProtoFetcherStatus status);
+  void OnListFamilyMembersFailure(
+      const supervised_user::ProtoFetcherStatus& status);
 
   // ProfileImageFetcher callback
   void OnParentProfileImagesFetched(

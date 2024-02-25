@@ -2,35 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './consumer_auto_update_toggle_dialog.html.js';
 
-interface SettingsConsumerAutoUpdateToggleDialogElement {
+export interface SettingsConsumerAutoUpdateToggleDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
+export class SettingsConsumerAutoUpdateToggleDialogElement extends
+    PolymerElement {
   static get is() {
-    return 'settings-consumer-auto-update-toggle-dialog';
+    return 'settings-consumer-auto-update-toggle-dialog' as const;
   }
 
   static get template() {
     return getTemplate();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  private onTurnOffClick_() {
+  private onTurnOffClick_(): void {
     this.dispatchEvent(new CustomEvent('set-consumer-auto-update', {
       bubbles: true,
       composed: true,
@@ -41,7 +42,7 @@ class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private onKeepUpdatesClick_() {
+  private onKeepUpdatesClick_(): void {
     this.dispatchEvent(new CustomEvent('set-consumer-auto-update', {
       bubbles: true,
       composed: true,
@@ -55,7 +56,7 @@ class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-consumer-auto-update-toggle-dialog':
+    [SettingsConsumerAutoUpdateToggleDialogElement.is]:
         SettingsConsumerAutoUpdateToggleDialogElement;
   }
 }

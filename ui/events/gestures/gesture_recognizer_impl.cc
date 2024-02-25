@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -20,6 +21,7 @@
 #include "ui/events/event_switches.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/events/gestures/gesture_provider_aura.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/types/event_type.h"
 
@@ -30,11 +32,17 @@ namespace {
 void TransferConsumer(
     GestureConsumer* current_consumer,
     GestureConsumer* new_consumer,
-    std::map<GestureConsumer*, std::unique_ptr<GestureProviderAura>>* map) {
-  if (!map->empty() && base::Contains(*map, current_consumer)) {
-    (*map)[new_consumer] = std::move((*map)[current_consumer]);
-    (*map)[new_consumer]->set_gesture_consumer(new_consumer);
-    map->erase(current_consumer);
+    std::set<raw_ptr<GestureConsumer, SetExperimental>>& consumers) {
+  consumers.erase(current_consumer);
+  if (!new_consumer) {
+    current_consumer->reset_gesture_provider();
+    return;
+  }
+  new_consumer->set_gesture_provider(current_consumer->TakeProvider());
+  if (new_consumer->provider()) {
+    consumers.insert(new_consumer);
+  } else {
+    consumers.erase(new_consumer);
   }
 }
 
@@ -65,10 +73,13 @@ GestureRecognizerImpl::GestureRecognizerImpl() = default;
 
 GestureRecognizerImpl::~GestureRecognizerImpl() {
   // The gesture recognizer impl observes the gesture providers that are owned
-  // by `consumer_gesture_provider_`. Clear `consumer_gesture_provider_`
+  // by `consumers_`. Clear `consumers`' providers
   // explicitly so that the notifications sent by gesture providers during
   // destruction are handled properly.
-  consumer_gesture_provider_.clear();
+  for (GestureConsumer* consumer : consumers_) {
+    consumer->reset_gesture_provider();
+  }
+  consumers_.clear();
 }
 
 // Checks if this finger is already down, if so, returns the current target.
@@ -89,9 +100,9 @@ GestureConsumer* GestureRecognizerImpl::GetTargetForLocation(
   int closest_touch_id = 0;
   double closest_distance_squared = std::numeric_limits<double>::infinity();
 
-  for (const auto& provider_pair : consumer_gesture_provider_) {
-    const MotionEventAura& pointer_state =
-        provider_pair.second->pointer_state();
+  for (GestureConsumer* consumer : consumers_) {
+    GestureProviderAura* provider = consumer->provider();
+    const MotionEventAura& pointer_state = provider->pointer_state();
     for (size_t j = 0; j < pointer_state.GetPointerCount(); ++j) {
       if (source_device_id != pointer_state.GetSourceDeviceId(j))
         continue;
@@ -120,8 +131,10 @@ void GestureRecognizerImpl::CancelActiveTouchesExcept(
 void GestureRecognizerImpl::CancelActiveTouchesOn(
     const std::vector<GestureConsumer*>& consumers) {
   for (auto* consumer : consumers) {
-    if (base::Contains(consumer_gesture_provider_, consumer))
+    if (std::find(consumers_.begin(), consumers_.end(), consumer) !=
+        consumers_.end()) {
       CancelActiveTouchesImpl(consumer);
+    }
   }
 }
 
@@ -147,6 +160,10 @@ void GestureRecognizerImpl::TransferEventsTo(
   // |new_consumer|, so the event stream it sees is still invalid.
   DCHECK(current_consumer);
   DCHECK(new_consumer);
+  // The new consumer can be deleted while canceling active touches.
+  // See ash_unittests DragDropControllerTest.TabletSplitViewDragTwoBrowserTabs
+  // for an example where this happens.
+  base::WeakPtr<GestureConsumer> new_consumer_ptr = new_consumer->GetWeakPtr();
   GestureEventHelper* helper = FindDispatchHelperForConsumer(current_consumer);
 
   std::vector<int> touchids_targeted_at_current;
@@ -161,7 +178,7 @@ void GestureRecognizerImpl::TransferEventsTo(
   std::vector<std::unique_ptr<TouchEvent>> cancelling_touches =
       GetEventPerPointForConsumer(current_consumer, ET_TOUCH_CANCELLED);
 
-  TransferConsumer(current_consumer, new_consumer, &consumer_gesture_provider_);
+  TransferConsumer(current_consumer, new_consumer_ptr.get(), consumers_);
 
   // We're now in a situation where current_consumer has no gesture recognizer,
   // but has some pointers down which need cancelling. In order to ensure that
@@ -182,11 +199,20 @@ void GestureRecognizerImpl::TransferEventsTo(
   // gesture detection for some reasons but that might not be applied to the new
   // consumer. See also:
   // https://docs.google.com/document/d/1AKeK8IuF-j2TJ-2sPsewORXdjnr6oAzy5nnR1zwrsfc/edit#
-  if (base::Contains(consumer_gesture_provider_, new_consumer))
-    GetGestureProviderForConsumer(new_consumer)->ResetGestureHandlingState();
+  new_consumer = new_consumer_ptr.get();
+  GestureProviderAura* provider =
+      new_consumer ? new_consumer->provider() : nullptr;
+  if (provider) {
+    provider->ResetGestureHandlingState();
+  }
 
-  for (int touch_id : touchids_targeted_at_current)
-    touch_id_target_[touch_id] = new_consumer;
+  for (int touch_id : touchids_targeted_at_current) {
+    if (new_consumer) {
+      touch_id_target_[touch_id] = new_consumer_ptr.get();
+    } else {
+      touch_id_target_.erase(touch_id);
+    }
+  }
 }
 
 std::vector<std::unique_ptr<ui::TouchEvent>>
@@ -207,12 +233,11 @@ void GestureRecognizerImpl::TransferTouches(
 bool GestureRecognizerImpl::GetLastTouchPointForTarget(
     GestureConsumer* consumer,
     gfx::PointF* point) {
-  if (consumer_gesture_provider_.empty())
+  GestureProviderAura* provider = consumer->provider();
+  if (!provider) {
     return false;
-  if (!base::Contains(consumer_gesture_provider_, consumer))
-    return false;
-  const MotionEvent& pointer_state =
-      consumer_gesture_provider_[consumer]->pointer_state();
+  }
+  const MotionEvent& pointer_state = provider->pointer_state();
   if (!pointer_state.GetPointerCount())
     return false;
   *point = gfx::PointF(pointer_state.GetX(), pointer_state.GetY());
@@ -223,13 +248,12 @@ std::vector<std::unique_ptr<TouchEvent>>
 GestureRecognizerImpl::GetEventPerPointForConsumer(GestureConsumer* consumer,
                                                    EventType type) {
   std::vector<std::unique_ptr<TouchEvent>> cancelling_touches;
-  if (consumer_gesture_provider_.empty())
+  GestureProviderAura* provider = consumer->provider();
+  if (!provider) {
     return cancelling_touches;
+  }
 
-  if (!base::Contains(consumer_gesture_provider_, consumer))
-    return cancelling_touches;
-  const MotionEventAura& pointer_state =
-      consumer_gesture_provider_[consumer]->pointer_state();
+  const MotionEventAura& pointer_state = provider->pointer_state();
   if (pointer_state.GetPointerCount() == 0)
     return cancelling_touches;
   cancelling_touches.reserve(pointer_state.GetPointerCount());
@@ -256,11 +280,13 @@ bool GestureRecognizerImpl::CancelActiveTouches(GestureConsumer* consumer) {
 
 GestureProviderAura* GestureRecognizerImpl::GetGestureProviderForConsumer(
     GestureConsumer* consumer) {
-  auto& gesture_provider = consumer_gesture_provider_[consumer];
-  if (!gesture_provider) {
-    gesture_provider = std::make_unique<GestureProviderAura>(consumer, this);
+  GestureProviderAura* provider = consumer->provider();
+  if (!provider) {
+    consumers_.insert(consumer);
+    consumer->set_gesture_provider(
+        std::make_unique<GestureProviderAura>(consumer, this));
   }
-  return gesture_provider.get();
+  return consumer->provider();
 }
 
 bool GestureRecognizerImpl::ProcessTouchEventPreDispatch(
@@ -326,18 +352,15 @@ GestureRecognizer::Gestures GestureRecognizerImpl::AckTouchEvent(
 
 void GestureRecognizerImpl::CancelActiveTouchesExceptImpl(
     GestureConsumer* not_cancelled) {
-  // Do not iterate directly over |consumer_gesture_provider_| because canceling
+  // Do not iterate directly over |consumers_| because canceling
   // active touches may cause the consumer to be removed from
-  // |consumer_gesture_provider_|. See https://crbug.com/651258 for more info.
-  std::vector<GestureConsumer*> consumers;
-  consumers.reserve(consumer_gesture_provider_.size());
-  for (const auto& entry : consumer_gesture_provider_) {
-    if (entry.first != not_cancelled)
-      consumers.push_back(entry.first);
+  // |consumers_|. See https://crbug.com/651258 for more info.
+  std::set<raw_ptr<GestureConsumer, SetExperimental>> consumers(consumers_);
+  for (GestureConsumer* consumer : consumers) {
+    if (consumer != not_cancelled) {
+      CancelActiveTouchesImpl(consumer);
+    }
   }
-
-  for (auto* consumer : consumers)
-    CancelActiveTouchesImpl(consumer);
 }
 
 bool GestureRecognizerImpl::CancelActiveTouchesImpl(GestureConsumer* consumer) {
@@ -360,17 +383,18 @@ bool GestureRecognizerImpl::CleanupStateForConsumer(GestureConsumer* consumer) {
   state_cleaned_up |= RemoveValueFromMap(&touch_id_target_, consumer);
 
   // This is a bandaid fix for crbug/732232 that should be further looked into.
-  if (consumer_gesture_provider_.empty())
+  if (consumers_.empty()) {
     return state_cleaned_up;
+  }
 
-  auto consumer_gesture_provider_it = consumer_gesture_provider_.find(consumer);
-  if (consumer_gesture_provider_it != consumer_gesture_provider_.end()) {
-    // Remove gesture provider associated with the consumer from
-    // |event_to_gesture_provider_| map.
-    RemoveValueFromMap(&event_to_gesture_provider_,
-                       consumer_gesture_provider_it->second.get());
+  if (consumers_.find(consumer) != consumers_.end()) {
+    GestureProviderAura* provider = consumer->provider();
+    if (provider) {
+      RemoveValueFromMap(&event_to_gesture_provider_, provider);
+      consumer->reset_gesture_provider();
+    }
+    consumers_.erase(consumer);
     state_cleaned_up = true;
-    consumer_gesture_provider_.erase(consumer_gesture_provider_it);
   }
   return state_cleaned_up;
 }

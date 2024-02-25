@@ -1,15 +1,17 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}"
-    $i18n{chromeRefresh2023Attribute} class="loading" cros>
+<html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading"
+    cros $i18n{chromeRefresh2023Attribute}>
 <head>
   <meta charset="utf-8">
   <title>$i18n{settings}</title>
   <base href="chrome://os-settings">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+  <link rel="stylesheet" href="chrome://theme/typography.css">
   <link rel="stylesheet" href="/css/base.css">
 </head>
-<body>
+<body class="jelly-enabled">
   <script type="module" src="os_settings.js"></script>
   <os-settings-ui></os-settings-ui>
 </body>

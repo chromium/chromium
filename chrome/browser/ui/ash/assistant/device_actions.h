@@ -49,7 +49,7 @@ class DeviceActions : public ash::AndroidIntentHelper,
       ash::assistant::AppListEventSubscriber* subscriber) override;
 
   // ash::AndroidIntentHelper overrides:
-  absl::optional<std::string> GetAndroidAppLaunchIntent(
+  std::optional<std::string> GetAndroidAppLaunchIntent(
       const ash::assistant::AndroidAppInfo& app_info) override;
 
  private:

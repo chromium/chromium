@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "components/permissions/permission_uma_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -79,7 +79,7 @@ void CrowdDenyComponentInstallerPolicy::ComponentReady(
   DVLOG(1) << "Crowd Deny component ready, version " << version.GetString()
            << " in " << install_dir.value();
 
-  absl::optional<int> format =
+  std::optional<int> format =
       manifest.FindInt(kCrowdDenyManifestPreloadDataFormatKey);
   if (!format || *format != kCrowdDenyManifestPreloadDataCurrentFormat) {
     DVLOG(1) << "Crowd Deny component bailing out.";

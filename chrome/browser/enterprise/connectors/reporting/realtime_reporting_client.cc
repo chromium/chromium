@@ -4,14 +4,15 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -38,7 +38,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -103,17 +106,6 @@ void UploadCallback(base::Value::Dict wrapper,
   }
 }
 
-std::string GetTimestampString(const base::Time& time) {
-  // Format the current time (UTC) in RFC3339 format.
-  base::Time::Exploded exploded_time;
-  time.UTCExplode(&exploded_time);
-  std::string time_str = base::StringPrintf(
-      "%d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded_time.year,
-      exploded_time.month, exploded_time.day_of_month, exploded_time.hour,
-      exploded_time.minute, exploded_time.second, exploded_time.millisecond);
-  return time_str;
-}
-
 void UploadSecurityEventReport(base::Value::Dict event,
                                policy::CloudPolicyClient* client,
                                std::string name,
@@ -125,7 +117,7 @@ void UploadSecurityEventReport(base::Value::Dict event,
       enterprise_connectors::GetUmaEnumFromEventName(name));
 
   base::Value::Dict wrapper;
-  wrapper.Set("time", GetTimestampString(time));
+  wrapper.Set("time", base::TimeFormatAsIso8601(time));
   wrapper.Set(name, std::move(event));
 
   VLOG(1) << "enterprise.connectors: security event: " << wrapper.DebugString();
@@ -153,6 +145,14 @@ void PopulateSignals(base::Value::Dict event,
                             time);
 }
 #endif
+
+bool IsManagedGuestSession() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return chromeos::IsManagedGuestSession();
+#else
+  return false;
+#endif
+}
 
 }  // namespace
 
@@ -187,7 +187,7 @@ std::string RealtimeReportingClient::GetBaseName(const std::string& filename) {
 
 // static
 bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
-  if (profiles::IsManagedGuestSession() &&
+  if (IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     DVLOG(2) << "Safe browsing real-time reporting is not enabled in Managed "
                 "Guest Sessions.";
@@ -299,7 +299,7 @@ RealtimeReportingClient::InitBrowserReportingClient(
   }
   DCHECK(profile);
 
-  if (profiles::IsManagedGuestSession()) {
+  if (IsManagedGuestSession()) {
     client_id = reporting::GetMGSUserClientId().value_or("");
   } else {
     client_id = reporting::GetUserClientId(profile).value_or("");
@@ -324,9 +324,6 @@ RealtimeReportingClient::InitBrowserReportingClient(
       policy::CloudPolicyClient::DeviceDMTokenCallback());
   client = browser_private_client_.get();
 
-  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
-  // the uploaded reports, do the following:
-  //     client->add_connector_url_params(true);
   if (!client->is_registered()) {
     client->SetupRegistration(
         dm_token, client_id,
@@ -352,10 +349,6 @@ RealtimeReportingClient::InitProfileReportingClient(
       g_browser_process->shared_url_loader_factory(),
       policy::CloudPolicyClient::DeviceDMTokenCallback());
   policy::CloudPolicyClient* client = profile_private_client_.get();
-
-  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
-  // the uploaded reports, do the following:
-  //     client->add_connector_url_params(true);
 
   client->SetupRegistration(dm_token,
                             policy_manager->core()->client()->client_id(),
@@ -399,11 +392,11 @@ void RealtimeReportingClient::OnCloudPolicyClientAvailable(
   VLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
-absl::optional<ReportingSettings>
+std::optional<ReportingSettings>
 RealtimeReportingClient::GetReportingSettings() {
   auto* service = ConnectorsServiceFactory::GetForBrowserContext(context_);
   if (!service) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return service->GetReportingSettings(ReportingConnector::SECURITY_EVENT);
@@ -490,9 +483,7 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
   Profile* profile = Profile::FromBrowserContext(context_);
   device_signals::SignalsAggregator* signals_aggregator =
       enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
-  if (signals_aggregator &&
-      base::FeatureList::IsEnabled(
-          policy::features::kCrowdstrikeSignalReporting)) {
+  if (signals_aggregator) {
     device_signals::SignalsAggregationRequest request;
     request.signal_names.emplace(device_signals::SignalName::kAgent);
     signals_aggregator->GetSignals(

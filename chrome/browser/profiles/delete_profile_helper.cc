@@ -141,7 +141,7 @@ void DeleteProfileHelper::ScheduleEphemeralProfileForDeletion(
       &profile_manager_->GetProfileAttributesStorage(), profile_dir));
   DCHECK_EQ(0u, chrome::GetBrowserCount(
                     profile_manager_->GetProfileByPath(profile_dir)));
-  absl::optional<base::FilePath> new_active_profile_dir =
+  std::optional<base::FilePath> new_active_profile_dir =
       profile_manager_->FindLastActiveProfile(base::BindRepeating(
           [](const base::FilePath& profile_dir, ProfileAttributesEntry* entry) {
             return entry->GetPath() != profile_dir;
@@ -210,7 +210,7 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
       local_state->GetList(prefs::kProfilesDeleted);
 
   for (const base::Value& value : deleted_profiles) {
-    absl::optional<base::FilePath> profile_path = base::ValueToFilePath(value);
+    std::optional<base::FilePath> profile_path = base::ValueToFilePath(value);
     // Although it should never happen, make sure this is a valid path in the
     // user_data_dir, so we don't accidentally delete something else.
     if (profile_path && profile_manager_->IsAllowedProfilePath(*profile_path)) {
@@ -234,6 +234,9 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
                  << profile_path->AsUTF8Unsafe();
       SCOPED_CRASH_KEY_STRING256("DeleteProfileHelper", "profile_path",
                                  profile_path->AsUTF8Unsafe());
+      SCOPED_CRASH_KEY_STRING256(
+          "DeleteProfileHelper", "user_data_dir",
+          profile_manager_->user_data_dir().AsUTF8Unsafe());
       SCOPED_CRASH_KEY_BOOL(
           "DeleteProfileHelper", "allowed_path",
           profile_manager_->IsAllowedProfilePath(*profile_path));

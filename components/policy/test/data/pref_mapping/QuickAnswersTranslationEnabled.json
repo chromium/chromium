@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.quick_answers.translation.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersTranslationEnabled": false
+        },
+        "prefs": {
+          "settings.quick_answers.translation.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickAnswersTranslationEnabled": true
+        },
+        "prefs": {
+          "settings.quick_answers.translation.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

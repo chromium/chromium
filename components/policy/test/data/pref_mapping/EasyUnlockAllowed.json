@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EasyUnlockAllowed": false
+        },
+        "prefs": {
+          "easy_unlock.allowed": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

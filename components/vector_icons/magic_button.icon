@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+MOVE_TO, 32, 44.35f,
+LINE_TO, 26.41f, 38.76f,
+LINE_TO, 32, 33.18f,
+LINE_TO, 37.59f, 38.76f,
+CLOSE,
+MOVE_TO, 15.29f, 37.6f,
+LINE_TO, 3.7f, 26,
+LINE_TO, 15.29f, 14.4f,
+LINE_TO, 26.88f, 26,
+CLOSE,
+MOVE_TO, 35, 23.48f,
+CUBIC_TO, 35, 20.56f, 33.98f, 18.09f, 31.95f, 16.05f,
+CUBIC_TO, 29.91f, 14.02f, 27.44f, 13, 24.52f, 13,
+CUBIC_TO, 27.44f, 13, 29.91f, 11.98f, 31.95f, 9.95f,
+CUBIC_TO, 33.98f, 7.91f, 35, 5.43f, 35, 2.51f,
+CUBIC_TO, 35, 5.43f, 36.02f, 7.91f, 38.05f, 9.95f,
+CUBIC_TO, 40.09f, 11.98f, 42.57f, 13, 45.49f, 13,
+CUBIC_TO, 42.57f, 13, 40.09f, 14.02f, 38.05f, 16.05f,
+CUBIC_TO, 36.02f, 18.09f, 35, 20.56f, 35, 23.48f,
+CLOSE,
+MOVE_TO, 35, 23.48f,
+CLOSE

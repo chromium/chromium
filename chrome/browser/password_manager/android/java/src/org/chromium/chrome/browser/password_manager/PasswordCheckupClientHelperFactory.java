@@ -46,7 +46,8 @@ public abstract class PasswordCheckupClientHelperFactory {
      */
     protected PasswordCheckupClientHelper doCreateHelper(Context context)
             throws PasswordCheckBackendException {
-        throw new PasswordCheckBackendException("Downstream implementation is not present.",
+        throw new PasswordCheckBackendException(
+                "Downstream implementation is not present.",
                 CredentialManagerError.BACKEND_NOT_AVAILABLE);
     }
 

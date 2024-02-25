@@ -1,0 +1,159 @@
+Tracing of network activity FLEDGE worklets.
+Recording started
+Auction winner:urn:uuid:(randomized)
+Tracing complete
+https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php:
+ResourceSendRequest {
+    fetchPriorityHint : auto
+    requestId : <string>
+    resourceType : Other
+    url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
+}
+ResourceReceiveResponse {
+    encodedDataLength : 230
+    fromCache : false
+    fromServiceWorker : false
+    headers : [
+        [0] : {
+            name : Date
+            value : <string>
+        }
+        [1] : {
+            name : Server
+            value : <string>
+        }
+        [2] : {
+            name : X-Powered-By
+            value : <string>
+        }
+        [3] : {
+            name : Ad-Auction-Allowed
+            value : <string>
+        }
+        [4] : {
+            name : Content-Length
+            value : <string>
+        }
+        [5] : {
+            name : Keep-Alive
+            value : <string>
+        }
+        [6] : {
+            name : Connection
+            value : <string>
+        }
+        [7] : {
+            name : Content-Type
+            value : <string>
+        }
+    ]
+    mimeType : application/javascript
+    requestId : <string>
+    responseTime : <absolute timestamp>
+    statusCode : 200
+    timing : {
+        connectEnd : <relative timestamp>
+        connectStart : <relative timestamp>
+        dnsEnd : <relative timestamp>
+        dnsStart : <relative timestamp>
+        proxyEnd : -1
+        proxyStart : -1
+        pushEnd : 0
+        pushStart : 0
+        receiveHeadersEnd : <relative timestamp>
+        requestTime : <number>
+        sendEnd : <relative timestamp>
+        sendStart : <relative timestamp>
+        sslEnd : <relative timestamp>
+        sslStart : <relative timestamp>
+        workerReady : -1
+        workerStart : -1
+    }
+}
+ResourceFinish {
+    decodedBodyLength : 598
+    didFail : false
+    encodedDataLength : 230
+    finishTime : <number>
+    requestId : <string>
+}
+
+
+https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php:
+ResourceSendRequest {
+    fetchPriorityHint : auto
+    requestId : <string>
+    resourceType : Other
+    url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+}
+ResourceReceiveResponse {
+    encodedDataLength : 230
+    fromCache : false
+    fromServiceWorker : false
+    headers : [
+        [0] : {
+            name : Date
+            value : <string>
+        }
+        [1] : {
+            name : Server
+            value : <string>
+        }
+        [2] : {
+            name : X-Powered-By
+            value : <string>
+        }
+        [3] : {
+            name : Ad-Auction-Allowed
+            value : <string>
+        }
+        [4] : {
+            name : Content-Length
+            value : <string>
+        }
+        [5] : {
+            name : Keep-Alive
+            value : <string>
+        }
+        [6] : {
+            name : Connection
+            value : <string>
+        }
+        [7] : {
+            name : Content-Type
+            value : <string>
+        }
+    ]
+    mimeType : application/javascript
+    requestId : <string>
+    responseTime : <absolute timestamp>
+    statusCode : 200
+    timing : {
+        connectEnd : <relative timestamp>
+        connectStart : <relative timestamp>
+        dnsEnd : <relative timestamp>
+        dnsStart : <relative timestamp>
+        proxyEnd : -1
+        proxyStart : -1
+        pushEnd : 0
+        pushStart : 0
+        receiveHeadersEnd : <relative timestamp>
+        requestTime : <number>
+        sendEnd : <relative timestamp>
+        sendStart : <relative timestamp>
+        sslEnd : <relative timestamp>
+        sslStart : <relative timestamp>
+        workerReady : -1
+        workerStart : -1
+    }
+}
+ResourceFinish {
+    decodedBodyLength : 522
+    didFail : false
+    encodedDataLength : 230
+    finishTime : <number>
+    requestId : <string>
+}
+
+
+

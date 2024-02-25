@@ -31,11 +31,14 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 
 #include <memory>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
@@ -58,6 +61,7 @@
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -72,8 +76,9 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
         dedicated_worker_host,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host) {
-  std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features =
-      std::move(creation_params->inherited_trial_features);
+  std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+      inherited_trial_features =
+          std::move(creation_params->inherited_trial_features);
   BeginFrameProviderParams begin_frame_provider_params =
       creation_params->begin_frame_provider_params;
 
@@ -88,10 +93,10 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp =
       std::move(creation_params->response_content_security_policies);
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
-      std::move(creation_params), thread, time_origin,
-      std::move(inherited_trial_features), begin_frame_provider_params,
-      parent_cross_origin_isolated_capability, parent_is_isolated_context,
-      std::move(dedicated_worker_host),
+      base::PassKey<DedicatedWorkerGlobalScope>(), std::move(creation_params),
+      thread, time_origin, std::move(inherited_trial_features),
+      begin_frame_provider_params, parent_cross_origin_isolated_capability,
+      parent_is_isolated_context, std::move(dedicated_worker_host),
       std::move(back_forward_cache_controller_host));
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
@@ -119,16 +124,20 @@ DedicatedWorkerGlobalScope::ParseCreationParams(
   // WorkerGlobalScope.
   parsed_creation_params.parent_context_token =
       creation_params->parent_context_token.value();
+  parsed_creation_params.parent_has_storage_access =
+      creation_params->parent_has_storage_access;
 
   parsed_creation_params.creation_params = std::move(creation_params);
   return parsed_creation_params;
 }
 
 DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
+    base::PassKey<DedicatedWorkerGlobalScope>,
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     DedicatedWorkerThread* thread,
     base::TimeTicks time_origin,
-    std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features,
+    std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+        inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
     bool parent_is_isolated_context,
@@ -151,7 +160,8 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     ParsedCreationParams parsed_creation_params,
     DedicatedWorkerThread* thread,
     base::TimeTicks time_origin,
-    std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features,
+    std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
+        inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
     bool parent_is_isolated_context,
@@ -170,7 +180,8 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
       animation_frame_provider_(
           MakeGarbageCollected<WorkerAnimationFrameProvider>(
               this,
-              begin_frame_provider_params)) {
+              begin_frame_provider_params)),
+      has_storage_access_(parsed_creation_params.parent_has_storage_access) {
   // https://html.spec.whatwg.org/C/#run-a-worker
   // Step 14.10 "If shared is false and owner's cross-origin isolated
   // capability is false, then set worker global scope's cross-origin isolated
@@ -490,8 +501,8 @@ void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
     return;
   }
   auto mojom_details = LocalFrame::ConvertFeatureAndLocationToMojomStruct(
-      details.non_sticky_features_and_js_locations,
-      details.sticky_features_and_js_locations);
+      *details.non_sticky_features_and_js_locations,
+      *details.sticky_features_and_js_locations);
   back_forward_cache_controller_host_
       ->DidChangeBackForwardCacheDisablingFeatures(std::move(mojom_details));
 }
@@ -504,7 +515,8 @@ void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
 }
 
 void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
-    mojom::blink::RendererEvictionReason reason) {
+    mojom::blink::RendererEvictionReason reason,
+    std::unique_ptr<SourceLocation> source_location) {
   if (!back_forward_cache_controller_host_.is_bound()) {
     return;
   }
@@ -516,13 +528,21 @@ void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
     return;
   }
   UMA_HISTOGRAM_ENUMERATION("BackForwardCache.Eviction.Renderer", reason);
-  back_forward_cache_controller_host_->EvictFromBackForwardCache(reason);
+  // This implementation shouldn't be called for JavaScript execution. Since we
+  // capture source location only when the eviction reason is JavaScript
+  // execution, `source_location` should always be null here.
+  CHECK(!source_location);
+  back_forward_cache_controller_host_->EvictFromBackForwardCache(
+      /*reason=*/std::move(reason), /*source=*/nullptr);
 }
 
 void DedicatedWorkerGlobalScope::DidBufferLoadWhileInBackForwardCache(
+    bool update_process_wide_count,
     size_t num_bytes) {
   total_bytes_buffered_while_in_back_forward_cache_ += num_bytes;
-  BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+  if (update_process_wide_count) {
+    BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+  }
 }
 
 void DedicatedWorkerGlobalScope::SetIsInBackForwardCache(
@@ -534,6 +554,10 @@ void DedicatedWorkerGlobalScope::SetIsInBackForwardCache(
             total_bytes_buffered_while_in_back_forward_cache_);
     total_bytes_buffered_while_in_back_forward_cache_ = 0;
   }
+}
+
+bool DedicatedWorkerGlobalScope::HasStorageAccess() const {
+  return has_storage_access_;
 }
 
 }  // namespace blink

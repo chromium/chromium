@@ -7,10 +7,11 @@ package org.chromium.base;
 import android.app.Activity;
 import android.content.ComponentCallbacks2;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureCallback;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * This class is Java equivalent of base::MemoryPressureListener: it distributes pressure
@@ -25,7 +26,6 @@ import org.chromium.build.annotations.MainDex;
  * NOTE: this class should only be used on UiThread as defined by ThreadUtils (which is
  *       Android main thread for Chrome, but can be some other thread for WebView).
  */
-@MainDex
 public class MemoryPressureListener {
     /**
      * Sending an intent with this action to Chrome will cause it to issue a call to onLowMemory
@@ -55,9 +55,7 @@ public class MemoryPressureListener {
 
     private static ObserverList<MemoryPressureCallback> sCallbacks;
 
-    /**
-     * Called by the native side to add native callback.
-     */
+    /** Called by the native side to add native callback. */
     @CalledByNative
     private static void addNativeCallback() {
         ThreadUtils.assertOnUiThread();
@@ -101,6 +99,15 @@ public class MemoryPressureListener {
         }
     }
 
+    public static void onPreFreeze() {
+        // We only need the library to be loaded, not the whole browser
+        // to be initialized because the native side would have no tasks
+        // to run in this case (they are registered at various points by
+        // callers elsewhere).
+        if (!LibraryLoader.getInstance().isInitialized()) return;
+        MemoryPressureListenerJni.get().onPreFreeze();
+    }
+
     /**
      * Used by applications to simulate a memory pressure signal. By throwing certain intent
      * actions.
@@ -112,8 +119,8 @@ public class MemoryPressureListener {
         } else if (ACTION_TRIM_MEMORY.equals(action)) {
             simulateTrimMemoryPressureSignal(activity, ComponentCallbacks2.TRIM_MEMORY_COMPLETE);
         } else if (ACTION_TRIM_MEMORY_RUNNING_CRITICAL.equals(action)) {
-            simulateTrimMemoryPressureSignal(activity,
-                    ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL);
+            simulateTrimMemoryPressureSignal(
+                    activity, ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL);
         } else if (ACTION_TRIM_MEMORY_MODERATE.equals(action)) {
             simulateTrimMemoryPressureSignal(activity, ComponentCallbacks2.TRIM_MEMORY_MODERATE);
         } else {
@@ -142,5 +149,7 @@ public class MemoryPressureListener {
     @NativeMethods
     interface Natives {
         void onMemoryPressure(@MemoryPressureLevel int pressure);
+
+        void onPreFreeze();
     }
 }

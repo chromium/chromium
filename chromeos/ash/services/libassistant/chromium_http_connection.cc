@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -270,7 +271,7 @@ void ChromiumHttpConnection::StartReading(
   SendData();
 }
 
-void ChromiumHttpConnection::OnDataReceived(base::StringPiece string_piece,
+void ChromiumHttpConnection::OnDataReceived(std::string_view string_piece,
                                             base::OnceClosure resume) {
   DCHECK(handle_partial_response_);
 

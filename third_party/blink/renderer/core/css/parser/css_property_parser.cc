@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
-#include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
@@ -50,6 +50,11 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
   DCHECK(property.IsProperty());
   switch (rule_type) {
     case StyleRule::kStyle:
+      return true;
+    case StyleRule::kPage:
+      // TODO(sesse): Limit the allowed properties here.
+      // https://www.w3.org/TR/css-page-3/#page-property-list
+      // https://www.w3.org/TR/css-page-3/#margin-property-list
       return true;
     case StyleRule::kKeyframe:
       return property.IsValidForKeyframe();
@@ -194,10 +199,10 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     }
 
     bool is_animation_tainted = false;
-    auto* variable = MakeGarbageCollected<CSSVariableReferenceValue>(
+    auto* variable = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
         CSSVariableData::Create({original_range, text}, is_animation_tainted,
                                 true),
-        *context_);
+        context_);
 
     if (is_shorthand) {
       const cssvalue::CSSPendingSubstitutionValue& pending_value =
@@ -349,14 +354,6 @@ static CSSPropertyID UnresolvedCSSPropertyID(
 }
 
 CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
-                                      const String& string) {
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return UnresolvedCSSPropertyID(execution_context, chars, length,
-                                   kHTMLStandardMode);
-  });
-}
-
-CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
                                       StringView string,
                                       CSSParserMode mode) {
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
@@ -438,8 +435,8 @@ bool CSSPropertyParser::ParseFontFaceDescriptor(
   if (id == AtRuleDescriptorID::Invalid) {
     return false;
   }
-  CSSValue* parsed_value = AtRuleDescriptorParser::ParseFontFaceDescriptor(
-      id, value_.range, *context_);
+  CSSValue* parsed_value =
+      AtRuleDescriptorParser::ParseFontFaceDescriptor(id, value_, *context_);
   if (!parsed_value) {
     return false;
   }

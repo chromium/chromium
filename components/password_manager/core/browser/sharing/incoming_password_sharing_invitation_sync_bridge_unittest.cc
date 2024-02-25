@@ -24,6 +24,7 @@
 using syncer::HasInitialSyncDone;
 using syncer::IsEmptyMetadataBatch;
 using syncer::MetadataBatchContains;
+using testing::_;
 using testing::InSequence;
 using testing::Invoke;
 using testing::IsEmpty;
@@ -43,15 +44,17 @@ constexpr char kPasswordDisplayName[] = "password_display_name";
 constexpr char kPasswordAvatarUrl[] = "http://avatar.url/";
 constexpr char kSenderEmail[] = "sender@gmail.com";
 constexpr char kSenderDisplayName[] = "sender_display_name";
+constexpr char kSenderProfileImageUrl[] = "http://www.sender/profile_iamge";
 
 class MockPasswordReceiverService : public PasswordReceiverService {
  public:
   MOCK_METHOD(void,
               ProcessIncomingSharingInvitation,
-              (IncomingSharingInvitation));
+              (sync_pb::IncomingPasswordSharingInvitationSpecifics));
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
               GetControllerDelegate,
               ());
+  MOCK_METHOD(void, OnSyncServiceInitialized, (syncer::SyncService*));
 };
 
 sync_pb::IncomingPasswordSharingInvitationSpecifics MakeSpecifics() {
@@ -62,6 +65,9 @@ sync_pb::IncomingPasswordSharingInvitationSpecifics MakeSpecifics() {
   specifics.mutable_sender_info()
       ->mutable_user_display_info()
       ->set_display_name(kSenderDisplayName);
+  specifics.mutable_sender_info()
+      ->mutable_user_display_info()
+      ->set_profile_image_url(kSenderProfileImageUrl);
 
   sync_pb::PasswordSharingInvitationData::PasswordData* mutable_password_data =
       specifics.mutable_client_only_unencrypted_data()->mutable_password_data();
@@ -169,7 +175,7 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest, ShouldReturnClientTag) {
 
 TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
        ShouldProcessIncrementalIncomingInvitations) {
-  IncomingSharingInvitation received_invitation;
+  sync_pb::IncomingPasswordSharingInvitationSpecifics received_invitation;
   EXPECT_CALL(*mock_password_receiver_service(),
               ProcessIncomingSharingInvitation)
       .WillOnce(SaveArg<0>(&received_invitation));
@@ -179,33 +185,39 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
       bridge()->CreateMetadataChangeList();
   syncer::EntityChangeList entity_changes;
   entity_changes.push_back(EntityChangeFromSpecifics(MakeSpecifics()));
+
+  EXPECT_CALL(*mock_processor(),
+              Delete(entity_changes.front()->storage_key(), _));
   bridge()->ApplyIncrementalSyncChanges(std::move(metadata_changes),
                                         std::move(entity_changes));
 
-  EXPECT_EQ(base::UTF16ToUTF8(received_invitation.password_value),
-            kPasswordValue);
-  EXPECT_EQ(received_invitation.scheme,
+  const sync_pb::PasswordSharingInvitationData::PasswordData&
+      received_credentials =
+          received_invitation.client_only_unencrypted_data().password_data();
+  EXPECT_EQ(received_credentials.password_value(), kPasswordValue);
+  EXPECT_EQ(static_cast<PasswordForm::Scheme>(received_credentials.scheme()),
             password_manager::PasswordForm::Scheme::kHtml);
-  EXPECT_EQ(received_invitation.signon_realm, kSignonRealm);
-  EXPECT_EQ(received_invitation.url, GURL(kOrigin));
-  EXPECT_EQ(base::UTF16ToUTF8(received_invitation.username_element),
-            kUsernameElement);
-  EXPECT_EQ(base::UTF16ToUTF8(received_invitation.username_value),
-            kUsernameValue);
-  EXPECT_EQ(base::UTF16ToUTF8(received_invitation.password_element),
-            kPasswordElement);
-  EXPECT_EQ(base::UTF16ToUTF8(received_invitation.display_name),
-            kPasswordDisplayName);
-  EXPECT_EQ(received_invitation.icon_url, GURL(kPasswordAvatarUrl));
+  EXPECT_EQ(received_credentials.signon_realm(), kSignonRealm);
+  EXPECT_EQ(received_credentials.origin(), kOrigin);
+  EXPECT_EQ(received_credentials.username_element(), kUsernameElement);
+  EXPECT_EQ(received_credentials.username_value(), kUsernameValue);
+  EXPECT_EQ(received_credentials.password_element(), kPasswordElement);
+  EXPECT_EQ(received_credentials.display_name(), kPasswordDisplayName);
+  EXPECT_EQ(received_credentials.avatar_url(), kPasswordAvatarUrl);
 
-  EXPECT_EQ(base::UTF16ToUTF8(received_invitation.sender_email), kSenderEmail);
-  EXPECT_EQ(base::UTF16ToUTF8(received_invitation.sender_display_name),
-            kSenderDisplayName);
+  EXPECT_EQ(received_invitation.sender_info().user_display_info().email(),
+            kSenderEmail);
+  EXPECT_EQ(
+      received_invitation.sender_info().user_display_info().display_name(),
+      kSenderDisplayName);
+  EXPECT_EQ(
+      received_invitation.sender_info().user_display_info().profile_image_url(),
+      kSenderProfileImageUrl);
 }
 
 TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
        ShouldProcessInvitationsDuringInitialMerge) {
-  IncomingSharingInvitation received_invitation;
+  sync_pb::IncomingPasswordSharingInvitationSpecifics received_invitation;
   EXPECT_CALL(*mock_password_receiver_service(),
               ProcessIncomingSharingInvitation)
       .WillOnce(SaveArg<0>(&received_invitation));
@@ -215,12 +227,17 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
       bridge()->CreateMetadataChangeList();
   syncer::EntityChangeList entity_changes;
   entity_changes.push_back(EntityChangeFromSpecifics(MakeSpecifics()));
+
+  EXPECT_CALL(*mock_processor(),
+              Delete(entity_changes.front()->storage_key(), _));
   bridge()->MergeFullSyncData(std::move(metadata_changes),
                               std::move(entity_changes));
 
   // Check only password value for sanity, the other fields are covered by other
   // tests.
-  EXPECT_EQ(base::UTF16ToUTF8(received_invitation.password_value),
+  EXPECT_EQ(received_invitation.client_only_unencrypted_data()
+                .password_data()
+                .password_value(),
             kPasswordValue);
 }
 

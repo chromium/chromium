@@ -37,7 +37,7 @@ class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
     return audio_focus_result_;
   }
   void AbandonAudioFocus() override { audio_focus_type_.reset(); }
-  absl::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
+  std::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
       const override {
     return audio_focus_type_;
   }
@@ -49,7 +49,7 @@ class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
   void ReleaseRequestId() override {}
 
  private:
-  absl::optional<media_session::mojom::AudioFocusType> audio_focus_type_;
+  std::optional<media_session::mojom::AudioFocusType> audio_focus_type_;
   AudioFocusResult audio_focus_result_ = AudioFocusResult::kSuccess;
 };
 
@@ -214,6 +214,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
+    audio_focus_delegate_ = nullptr;
     // Destruct the controller prior to any other teardown to avoid out of order
     // destruction relative to the MediaSession instance.
     controller_.reset();
@@ -307,8 +308,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
   std::unique_ptr<MediaSessionController> controller_;
   std::unique_ptr<TestMediaPlayer> media_player_;
-  raw_ptr<FakeAudioFocusDelegate, DanglingUntriaged> audio_focus_delegate_ =
-      nullptr;
+  raw_ptr<FakeAudioFocusDelegate> audio_focus_delegate_ = nullptr;
 };
 
 TEST_F(MediaSessionControllerTest, NoAudioNoSession) {
@@ -592,6 +592,23 @@ TEST_F(MediaSessionControllerTest,
   controller_->PictureInPictureStateChanged(false);
 
   EXPECT_FALSE(media_session()->IsActive());
+}
+
+TEST_F(MediaSessionControllerTest,
+       AddPlayerWhenStartingRemotePlaybackWithNoAudio) {
+  controller_->SetMetadata(
+      /* has_audio */ false, /* has_video */ true,
+      media::MediaContentType::kPersistent);
+  ASSERT_TRUE(controller_->OnPlaybackStarted());
+  ASSERT_FALSE(media_session()->IsActive());
+
+  controller_->OnRemotePlaybackMetadataChanged(
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec",
+          /* is_remote_playback_disabled */ false,
+          /* is_remote_rendering */ true, "device_friendly_name",
+          /* is_encrypted_media */ false));
+  EXPECT_TRUE(media_session()->IsActive());
 }
 
 TEST_F(MediaSessionControllerTest, EndOfPlaybackWithInPictureInPicture) {

@@ -148,7 +148,8 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
   DragData data(
       object, gfx::PointF(10, 10), gfx::PointF(10, 10),
       static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
-                                      kDragOperationMove));
+                                      kDragOperationMove),
+      false);
 
   WebView().GetPage()->GetDragController().DragEnteredOrUpdated(
       &data, *GetDocument().GetFrame());
@@ -475,7 +476,7 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
 
   gfx::Size link_image_size = GetChromeClient().last_drag_image_size;
   // The drag link image should be a textual representation of the drag url in a
-  // system font (see: DragImageForLink in DragController.cpp) and should not be
+  // system font (see: DeriveDragLabelFont in drag_image.cc) and should not be
   // an empty image.
   EXPECT_GT(link_image_size.Area64(), 0u);
   // Unlike the drag image in DragImageOffsetWithPageScaleFactor, the link

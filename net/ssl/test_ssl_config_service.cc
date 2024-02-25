@@ -16,7 +16,7 @@ SSLContextConfig TestSSLConfigService::GetSSLContextConfig() {
 }
 
 bool TestSSLConfigService::CanShareConnectionWithClientCerts(
-    const std::string& hostname) const {
+    std::string_view hostname) const {
   return false;
 }
 

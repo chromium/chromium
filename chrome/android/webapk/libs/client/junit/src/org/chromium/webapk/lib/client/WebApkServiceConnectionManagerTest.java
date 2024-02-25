@@ -33,9 +33,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.concurrent.Executor;
 
-/**
- * Unit tests for {@link org.chromium.webapk.lib.client.WebApkServiceConnectionManager}.
- */
+/** Unit tests for {@link org.chromium.webapk.lib.client.WebApkServiceConnectionManager}. */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -80,15 +78,17 @@ public class WebApkServiceConnectionManagerTest {
         mShadowApplication.setComponentNameAndServiceForBindService(
                 new ComponentName(WEBAPK_PACKAGE, ""), Mockito.mock(IBinder.class));
         PostTask.setPrenativeThreadPoolExecutorForTesting(mTestExecutor);
-        mConnectionManager = new WebApkServiceConnectionManager(
-                TaskTraits.BEST_EFFORT_MAY_BLOCK, CATEGORY_WEBAPK_SERVICE_API, null /* action*/);
+        mConnectionManager =
+                new WebApkServiceConnectionManager(
+                        TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                        CATEGORY_WEBAPK_SERVICE_API,
+                        /* action= */ null);
     }
 
     @After
     public void tearDown() {
         mConnectionManager.disconnectAll(RuntimeEnvironment.application);
         mTestExecutor.runPendingTasks();
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     /**
@@ -177,8 +177,8 @@ public class WebApkServiceConnectionManagerTest {
     }
 
     /**
-     * Context which records order of {@link Context#bindService()} and
-     * {@link Context#unbindService()} calls.
+     * Context which records order of {@link Context#bindService()} and {@link
+     * Context#unbindService()} calls.
      */
     private static class BindUnbindRecordingContext extends ContextWrapper {
         private String mRecordPackage;
@@ -222,17 +222,19 @@ public class WebApkServiceConnectionManagerTest {
         }
     }
 
-    /**
-     * Test reconnecting to a WebAPK's service.
-     */
+    /** Test reconnecting to a WebAPK's service. */
     @Test
     public void testConnectDisconnectConnect() {
         final int flagRunBackgroundTasksAfterConnect = 0x1;
         final int flagRunBackgroundTasksAfterDisconnect = 0x2;
 
-        final int[] testCases = new int[] {0, flagRunBackgroundTasksAfterConnect,
-                flagRunBackgroundTasksAfterDisconnect,
-                flagRunBackgroundTasksAfterConnect | flagRunBackgroundTasksAfterDisconnect};
+        final int[] testCases =
+                new int[] {
+                    0,
+                    flagRunBackgroundTasksAfterConnect,
+                    flagRunBackgroundTasksAfterDisconnect,
+                    flagRunBackgroundTasksAfterConnect | flagRunBackgroundTasksAfterDisconnect
+                };
 
         for (int testCase : testCases) {
             BindUnbindRecordingContext recordingContext =
@@ -251,7 +253,8 @@ public class WebApkServiceConnectionManagerTest {
             mConnectionManager.connect(recordingContext, WEBAPK_PACKAGE, callback2);
             mTestExecutor.runPendingTasks();
 
-            Assert.assertArrayEquals(new Boolean[] {true, false, true},
+            Assert.assertArrayEquals(
+                    new Boolean[] {true, false, true},
                     recordingContext.getStartStopServiceSequence().toArray(new Boolean[0]));
             Assert.assertTrue(callback1.mGotResult);
             // |callback1.mService| can be null.
@@ -263,9 +266,7 @@ public class WebApkServiceConnectionManagerTest {
         }
     }
 
-    /**
-     * Returns the package name of the next started service.
-     */
+    /** Returns the package name of the next started service. */
     public String getNextStartedServicePackage() {
         Intent intent = mShadowApplication.getNextStartedService();
         return (intent == null) ? null : intent.getPackage();

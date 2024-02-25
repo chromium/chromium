@@ -3,20 +3,23 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+Testing.h"
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
-#import "ios/chrome/browser/search_engines/search_engines_util.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/photos/model/photos_availability.h"
+#import "ios/chrome/browser/photos/model/photos_metrics.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -27,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
+#import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_copier.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
@@ -39,11 +43,11 @@
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
-#import "ios/chrome/browser/web/web_navigation_util.h"
+#import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
@@ -110,10 +114,33 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   CHECK(!_browser);
 }
 
-// TODO(crbug.com/1318432): rafactor long method.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params {
+  UIContextMenuActionProvider actionProvider =
+      [self contextMenuActionProviderForWebState:webState params:params];
+  if (!actionProvider) {
+    return nil;
+  }
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
+}
+
+#pragma mark - Properties
+
+- (web::WebState*)currentWebState {
+  return self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
+                      : nullptr;
+}
+
+#pragma mark - Private
+
+// TODO(crbug.com/1318432): rafactor long method.
+- (UIContextMenuActionProvider)
+    contextMenuActionProviderForWebState:(web::WebState*)webState
+                                  params:(web::ContextMenuParams)params {
   // Reset the URL.
   _URLToLoad = GURL();
 
@@ -127,6 +154,8 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   const bool isLink = linkURL.is_valid();
   const GURL imageURL = params.src_url;
   const bool isImage = imageURL.is_valid();
+  const bool saveToPhotosAvailable =
+      IsSaveToPhotosAvailable(self.browser->GetBrowserState());
 
   DCHECK(self.browser->GetBrowserState());
   const bool isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
@@ -137,9 +166,9 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   // TODO(crbug.com/1299758) add scenario for not a link and not an image.
   MenuScenarioHistogram menuScenario =
-      isImage && isLink ? MenuScenarioHistogram::kContextMenuImageLink
-      : isImage         ? MenuScenarioHistogram::kContextMenuImage
-                        : MenuScenarioHistogram::kContextMenuLink;
+      isImage && isLink ? kMenuScenarioHistogramContextMenuImageLink
+      : isImage         ? kMenuScenarioHistogramContextMenuImage
+                        : kMenuScenarioHistogramContextMenuLink;
 
   BrowserActionFactory* actionFactory =
       [[BrowserActionFactory alloc] initWithBrowser:self.browser
@@ -212,7 +241,8 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
     }
 
     // Copy Link.
-    UIAction* copyLink = [actionFactory actionToCopyURL:linkURL];
+    UIAction* copyLink =
+        [actionFactory actionToCopyURL:[[CrURL alloc] initWithGURL:linkURL]];
     [menuElements addObject:copyLink];
   }
 
@@ -230,8 +260,31 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
                                  referrer:referrer
                                  webState:weakSelf.currentWebState
                        baseViewController:weakBaseViewController];
+      base::UmaHistogramEnumeration(
+          kSaveToPhotosContextMenuActionsHistogram,
+          saveToPhotosAvailable
+              ? SaveToPhotosContextMenuActions::kAvailableDidSaveImageLocally
+              : SaveToPhotosContextMenuActions::
+                    kUnavailableDidSaveImageLocally);
     }];
     [menuElements addObject:saveImage];
+
+    // Save Image to Photos.
+    if (saveToPhotosAvailable) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileWebContextMenuImageWithSaveToPhotosImpression"));
+      UIAction* saveImageToPhotosAction = [actionFactory
+          actionToSaveToPhotosWithImageURL:imageURL
+                                  referrer:referrer
+                                  webState:webState
+                                     block:^{
+                                       base::UmaHistogramEnumeration(
+                                           kSaveToPhotosContextMenuActionsHistogram,
+                                           SaveToPhotosContextMenuActions::
+                                               kAvailableDidSaveImageToGooglePhotos);
+                                     }];
+      [menuElements addObject:saveImageToPhotosAction];
+    }
 
     // Copy Image.
     UIAction* copyImage = [actionFactory actionCopyImageWithBlock:^{
@@ -303,10 +356,11 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   // inserting at beginning or adding to end.
   ElementsToAddToContextMenu* result =
       ios::provider::GetContextMenuElementsToAdd(
-          self.browser->GetBrowserState(), webState, params,
-          self.baseViewController,
+          webState, params, self.baseViewController,
           HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                             MiniMapCommands));
+                             MiniMapCommands),
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             UnitConversionCommands));
   if (result && result.elements) {
     [menuElements addObjectsFromArray:result.elements];
     menuTitle = result.title;
@@ -340,20 +394,8 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
         return menu;
       };
 
-  return
-      [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
-                                               actionProvider:actionProvider];
+  return actionProvider;
 }
-
-#pragma mark - Properties
-
-- (web::WebState*)currentWebState {
-  return self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
-                      : nullptr;
-}
-
-#pragma mark - Private
 
 // Searches an image with the given `imageURL` and `referrer`, optionally using
 // Lens.

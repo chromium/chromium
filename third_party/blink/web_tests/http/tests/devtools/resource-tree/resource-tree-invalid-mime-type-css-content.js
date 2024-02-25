@@ -10,7 +10,6 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(
       `Tests that content is correctly shown for css loaded with invalid mime type in quirks mode. https://bugs.webkit.org/show_bug.cgi?id=80528\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
   await TestRunner.addStylesheetTag('resources/stylesheet-text-plain.php');
   await TestRunner.waitForUISourceCode('stylesheet-text-plain.php');

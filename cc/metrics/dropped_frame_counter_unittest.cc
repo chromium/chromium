@@ -35,7 +35,6 @@ class TestCustomMetricsRecorder : public CustomMetricRecorder {
   ~TestCustomMetricsRecorder() override = default;
 
   // CustomMetricRecorder:
-  void ReportPercentDroppedFramesInOneSecondWindow(double percent) override {}
   void ReportPercentDroppedFramesInOneSecondWindow2(double percent) override {
     ++report_count_;
     last_percent_dropped_frames_ = percent;

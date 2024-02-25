@@ -1,0 +1,46 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//third_party/protobuf/proto_library.gni")
+
+# coremltools is used to support webnn on macOS.
+
+proto_library("modelformat_proto") {
+  visibility = [ "//services/webnn/*" ]
+  sources = [
+    "mlmodel/format/ArrayFeatureExtractor.proto",
+    "mlmodel/format/AudioFeaturePrint.proto",
+    "mlmodel/format/BayesianProbitRegressor.proto",
+    "mlmodel/format/CategoricalMapping.proto",
+    "mlmodel/format/ClassConfidenceThresholding.proto",
+    "mlmodel/format/CustomModel.proto",
+    "mlmodel/format/DataStructures.proto",
+    "mlmodel/format/DictVectorizer.proto",
+    "mlmodel/format/FeatureTypes.proto",
+    "mlmodel/format/FeatureVectorizer.proto",
+    "mlmodel/format/GLMClassifier.proto",
+    "mlmodel/format/GLMRegressor.proto",
+    "mlmodel/format/Gazetteer.proto",
+    "mlmodel/format/Identity.proto",
+    "mlmodel/format/Imputer.proto",
+    "mlmodel/format/ItemSimilarityRecommender.proto",
+    "mlmodel/format/LinkedModel.proto",
+    "mlmodel/format/MIL.proto",
+    "mlmodel/format/Model.proto",
+    "mlmodel/format/NearestNeighbors.proto",
+    "mlmodel/format/NeuralNetwork.proto",
+    "mlmodel/format/NonMaximumSuppression.proto",
+    "mlmodel/format/Normalizer.proto",
+    "mlmodel/format/OneHotEncoder.proto",
+    "mlmodel/format/Parameters.proto",
+    "mlmodel/format/SVM.proto",
+    "mlmodel/format/Scaler.proto",
+    "mlmodel/format/SoundAnalysisPreprocessing.proto",
+    "mlmodel/format/TextClassifier.proto",
+    "mlmodel/format/TreeEnsemble.proto",
+    "mlmodel/format/VisionFeaturePrint.proto",
+    "mlmodel/format/WordEmbedding.proto",
+    "mlmodel/format/WordTagger.proto",
+  ]
+  cc_generator_options = "lite"
+}

@@ -54,6 +54,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   ~LayoutFlowThread() override = default;
   void Trace(Visitor*) const override;
 
+  bool IsLayoutNGObject() const final;
   bool IsLayoutFlowThread() const final {
     NOT_DESTROYED();
     return true;
@@ -103,13 +104,13 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
     NOT_DESTROYED();
   }
   virtual void FlowThreadDescendantStyleWillChange(
-      LayoutBox*,
+      LayoutBoxModelObject*,
       StyleDifference,
       const ComputedStyle& new_style) {
     NOT_DESTROYED();
   }
   virtual void FlowThreadDescendantStyleDidChange(
-      LayoutBox*,
+      LayoutBoxModelObject*,
       StyleDifference,
       const ComputedStyle& old_style) {
     NOT_DESTROYED();
@@ -122,7 +123,9 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const override;
+                       OutlineType) const override;
+
+  void Paint(const PaintInfo& paint_info) const final;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
@@ -131,8 +134,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   virtual void AddColumnSetToThread(LayoutMultiColumnSet*) = 0;
   virtual void RemoveColumnSetFromThread(LayoutMultiColumnSet*);
-
-  virtual void UpdateLogicalWidth() = 0;
 
   bool HasColumnSets() const {
     NOT_DESTROYED();
@@ -171,6 +172,8 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
       PageBoundaryRule) const = 0;
 
   const char* GetName() const override = 0;
+
+  RecalcScrollableOverflowResult RecalcScrollableOverflow() final;
 
  protected:
   void GenerateColumnSetIntervalTree();

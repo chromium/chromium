@@ -365,16 +365,16 @@ WebGestureEvent::CoalesceScrollAndPinch(
 }
 
 std::unique_ptr<blink::WebGestureEvent>
-WebGestureEvent::GenerateInjectedScrollGesture(
+WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
     WebInputEvent::Type type,
     base::TimeTicks timestamp,
-    WebGestureDevice device,
     gfx::PointF position_in_widget,
     gfx::Vector2dF scroll_delta,
     ui::ScrollGranularity granularity) {
   std::unique_ptr<WebGestureEvent> generated_gesture_event =
       std::make_unique<WebGestureEvent>(type, WebInputEvent::kNoModifiers,
-                                        timestamp, device);
+                                        timestamp,
+                                        WebGestureDevice::kScrollbar);
   DCHECK(generated_gesture_event->IsGestureScroll());
 
   if (type == WebInputEvent::Type::kGestureScrollBegin) {

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/android-cronet-x86-dbg/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -343,6 +346,14 @@
         },
         {
           "builder": "android-cronet-x86-dbg-11-tests",
+          "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-cronet-x86-dbg-lollipop-tests",
+          "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-cronet-x86-dbg-marshmallow-tests",
           "group": "tryserver.chromium.android"
         },
         {

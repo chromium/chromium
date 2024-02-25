@@ -4,12 +4,13 @@
 
 #include "media/mojo/mojom/video_encode_accelerator_mojom_traits.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -129,7 +130,7 @@ bool StructTraits<media::mojom::VideoBitrateAllocationDataView,
                   media::VideoBitrateAllocation>::
     Read(media::mojom::VideoBitrateAllocationDataView data,
          media::VideoBitrateAllocation* out_bitrate_allocation) {
-  absl::optional<uint32_t> peak_bps;
+  std::optional<uint32_t> peak_bps;
   if (!data.ReadVariableBitratePeak(&peak_bps))
     return false;
   if (peak_bps.has_value()) {
@@ -216,6 +217,7 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   if (!data.ReadTimestamp(&metadata->timestamp)) {
     return false;
   }
+  metadata->end_of_picture = data.end_of_picture();
   metadata->qp = data.qp();
   if (!data.ReadEncodedSize(&metadata->encoded_size)) {
     return false;
@@ -264,9 +266,12 @@ bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
       data.referenced_by_upper_spatial_layers();
   out_metadata->reference_lower_spatial_layers =
       data.reference_lower_spatial_layers();
-  out_metadata->end_of_picture = data.end_of_picture();
   out_metadata->temporal_idx = data.temporal_idx();
   out_metadata->spatial_idx = data.spatial_idx();
+  out_metadata->begin_active_spatial_layer_index =
+      data.begin_active_spatial_layer_index();
+  out_metadata->end_active_spatial_layer_index =
+      data.end_active_spatial_layer_index();
   return data.ReadSpatialLayerResolutions(
              &out_metadata->spatial_layer_resolutions) &&
          data.ReadPDiffs(&out_metadata->p_diffs);
@@ -475,31 +480,31 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadBitrate(&bitrate))
     return false;
 
-  absl::optional<uint32_t> initial_framerate;
-  if (input.has_initial_framerate())
-    initial_framerate = input.initial_framerate();
+  uint32_t framerate = input.framerate();
 
-  absl::optional<uint32_t> gop_length;
+  std::optional<uint32_t> gop_length;
   if (input.has_gop_length())
     gop_length = input.gop_length();
 
-  absl::optional<uint8_t> h264_output_level;
+  std::optional<uint8_t> h264_output_level;
   if (input.has_h264_output_level())
     h264_output_level = input.h264_output_level();
 
   bool is_constrained_h264 = input.is_constrained_h264();
 
-  absl::optional<media::VideoEncodeAccelerator::Config::StorageType>
-      storage_type;
-  if (input.has_storage_type()) {
-    if (!input.ReadStorageType(&storage_type))
-      return false;
+  media::VideoEncodeAccelerator::Config::StorageType storage_type;
+  if (!input.ReadStorageType(&storage_type)) {
+    return false;
   }
 
   media::VideoEncodeAccelerator::Config::ContentType content_type;
   if (!input.ReadContentType(&content_type))
     return false;
 
+  uint8_t drop_frame_thresh_percentage = input.drop_frame_thresh_percentage();
+  if (drop_frame_thresh_percentage > 100) {
+    return false;
+  }
   std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
       spatial_layers;
   if (!input.ReadSpatialLayers(&spatial_layers))
@@ -513,11 +518,41 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadRequiredEncoderType(&required_encoder_type))
     return false;
 
-  *output = media::VideoEncodeAccelerator::Config(
-      input_format, input_visible_size, output_profile, bitrate,
-      initial_framerate, gop_length, h264_output_level, is_constrained_h264,
-      storage_type, content_type, spatial_layers, inter_layer_pred);
+  struct CheckVEAConfig {
+    // The variable declaration order must be the same as
+    // VideoEncodeAccelerator::Config.
+    media::VideoPixelFormat input_format;
+    gfx::Size input_visible_size;
+    media::VideoCodecProfile output_profile;
+    media::Bitrate bitrate;
+    uint32_t framerate;
+    media::VideoEncodeAccelerator::Config::StorageType storage_type;
+    media::VideoEncodeAccelerator::Config::ContentType content_type;
+    std::optional<uint32_t> gop_length;
+    std::optional<uint8_t> h264_output_level;
+    bool is_constrained_h264;
+    uint8_t drop_frame_thresh_percentage;
+    std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
+        spatial_layers;
+    media::SVCInterLayerPredMode inter_layer_pred;
+    bool require_low_delay;
+    media::VideoEncodeAccelerator::Config::EncoderType required_encoder_type;
+  };
+  static_assert(
+      sizeof(CheckVEAConfig) == sizeof(media::VideoEncodeAccelerator::Config),
+      "Please apply removed/added values in VideoEncodeAccelerator::Config "
+      "to the following copy and then remove/add the values in CheckVEAConfig");
 
+  *output = media::VideoEncodeAccelerator::Config(
+      input_format, input_visible_size, output_profile, bitrate, framerate,
+      storage_type, content_type);
+
+  output->gop_length = gop_length;
+  output->h264_output_level = h264_output_level;
+  output->is_constrained_h264 = is_constrained_h264;
+  output->drop_frame_thresh_percentage = drop_frame_thresh_percentage;
+  output->spatial_layers = spatial_layers;
+  output->inter_layer_pred = inter_layer_pred;
   output->require_low_delay = input.require_low_delay();
   output->required_encoder_type = required_encoder_type;
 

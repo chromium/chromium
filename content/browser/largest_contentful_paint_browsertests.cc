@@ -9,6 +9,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -41,17 +42,8 @@ class LargestContentfulPaintTestBrowserTest
         switches::kEnableBlinkFeatures, "ExposeRenderTimeNonTaoDelayedImage");
   }
 
-  EvalJsResult GetLCPStartTime() const {
-    std::string script = R"(
-      getLCPStartTime();
-    )";
-    return EvalJs(shell(), script);
-  }
-
-  EvalJsResult GetFCPStartTime() const {
-    std::string script = R"(
-      getFCPStartTime();
-    )";
+  EvalJsResult GetStartTime(std::string type) const {
+    std::string script = content::JsReplace("getStartTime($1);", type);
     return EvalJs(shell(), script);
   }
 
@@ -59,15 +51,22 @@ class LargestContentfulPaintTestBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_NonTAOImageLCPRenderTime DISABLED_NonTAOImageLCPRenderTime
+#else
+#define MAYBE_NonTAOImageLCPRenderTime NonTAOImageLCPRenderTime
+#endif
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTestBrowserTest,
-                       NonTAOImageLCPRenderTime) {
+                       MAYBE_NonTAOImageLCPRenderTime) {
   const GURL url1(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/cross-origin-non-tao-image.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
-  double lcpStartTime = GetLCPStartTime().ExtractDouble();
-  double fcpStartTime = GetFCPStartTime().ExtractDouble();
+  double fcpStartTime = GetStartTime("paint").ExtractDouble();
+
+  double lcpStartTime =
+      GetStartTime("largest-contentful-paint").ExtractDouble();
 
   EXPECT_NEAR(lcpStartTime, fcpStartTime, 0.01);
 }

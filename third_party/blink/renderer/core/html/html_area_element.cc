@@ -113,9 +113,9 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
   if (shape_ == kDefault) {
     Path path;
     // No need to zoom because it is already applied in
-    // containerObject->borderBoxRect().
+    // container_object->PhysicalBorderBoxRect().
     if (const auto* box = DynamicTo<LayoutBox>(container_object))
-      path.AddRect(gfx::RectF(box->BorderBoxRect()));
+      path.AddRect(gfx::RectF(box->PhysicalBorderBoxRect()));
     path_ = nullptr;
     return path;
   }
@@ -184,20 +184,24 @@ HTMLImageElement* HTMLAreaElement::ImageElement() const {
   return nullptr;
 }
 
-bool HTMLAreaElement::IsKeyboardFocusable() const {
-  return IsBaseElementFocusable();
+bool HTMLAreaElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
+  // Explicitly skip over the HTMLAnchorElement's keyboard focus behavior.
+  return Element::IsKeyboardFocusable(update_behavior);
 }
 
-bool HTMLAreaElement::IsMouseFocusable() const {
-  return IsBaseElementFocusable();
+bool HTMLAreaElement::IsFocusable(UpdateBehavior update_behavior) const {
+  // Explicitly skip over the HTMLAnchorElement's mouse focus behavior.
+  return HTMLElement::IsFocusable(update_behavior);
 }
 
-bool HTMLAreaElement::IsFocusableStyle() const {
+bool HTMLAreaElement::IsFocusableStyle(UpdateBehavior update_behavior) const {
   if (HTMLImageElement* image = ImageElement()) {
+    // TODO(crbug.com/1444450): Why is this not just image->IsFocusableStyle()?
     if (LayoutObject* layout_object = image->GetLayoutObject()) {
       const ComputedStyle& style = layout_object->StyleRef();
       return !style.IsInert() && style.Visibility() == EVisibility::kVisible &&
-             SupportsFocus() && Element::tabIndex() >= 0;
+             SupportsFocus(update_behavior) && Element::tabIndex() >= 0;
     }
   }
   return false;
@@ -222,8 +226,8 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
 void HTMLAreaElement::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
-                                                DocumentUpdateReason::kFocus);
+  GetDocument().UpdateStyleAndLayoutTreeForElement(
+      this, DocumentUpdateReason::kFocus);
   if (!IsFocusable())
     return;
 

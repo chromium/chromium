@@ -26,24 +26,22 @@ promise_test(async t => {
   await assertBFCacheEligibility(rc1, /*shouldRestoreFromBFCache=*/ false);
   await assertNotRestoredReasonsEquals(
       rc1,
-      /*blocked=*/ true,
       /*url=*/ rc1_url,
       /*src=*/ null,
       /*id=*/ null,
       /*name=*/ null,
-      /*reasons=*/['websocket'],
-      /*children=*/[]);
+      /*reasons=*/[{'reason': 'websocket'}],
+      /*children=*/ []);
 
   // This time no blocking feature is used, so the page is restored
   // from BFCache. Ensure that the previous reasons stay there.
   await assertBFCacheEligibility(rc1, /*shouldRestoreFromBFCache=*/ true);
   await assertNotRestoredReasonsEquals(
       rc1,
-      /*blocked=*/ true,
       /*url=*/ rc1_url,
       /*src=*/ null,
       /*id=*/ null,
       /*name=*/ null,
-      /*reasons=*/['websocket'],
-      /*children=*/[]);
+      /*reasons=*/[{'reason': 'websocket'}],
+      /*children=*/ []);
 });

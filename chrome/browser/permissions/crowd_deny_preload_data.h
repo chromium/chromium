@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERMISSIONS_CROWD_DENY_PRELOAD_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "chrome/browser/permissions/crowd_deny.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace base {
@@ -77,7 +77,7 @@ class CrowdDenyPreloadData {
   void LoadFromDisk(const base::FilePath& preload_data_path,
                     const base::Version& version);
 
-  inline const absl::optional<base::Version>& version_on_disk() {
+  inline const std::optional<base::Version>& version_on_disk() {
     return version_on_disk_;
   }
 
@@ -105,7 +105,7 @@ class CrowdDenyPreloadData {
   bool is_ready_to_use_ = true;
   DomainToReputationMap domain_to_reputation_map_;
   scoped_refptr<base::SequencedTaskRunner> loading_task_runner_;
-  absl::optional<base::Version> version_on_disk_;
+  std::optional<base::Version> version_on_disk_;
   std::queue<PendingOrigin> origins_pending_verification_;
 
   base::WeakPtrFactory<CrowdDenyPreloadData> weak_factory_{this};

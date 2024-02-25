@@ -21,6 +21,7 @@ struct AnotherType {
   int some_other_int;
 };
 
+// Verify libc++ hardening terminates instead of UB with invalid clamp args.
 TEST(ClampTest, Death) {
   EXPECT_DEATH_IF_SUPPORTED(std::ignore = std::clamp(3, 10, 0), "");
   EXPECT_DEATH_IF_SUPPORTED(std::ignore = std::clamp(3.0, 10.0, 0.0), "");

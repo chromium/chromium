@@ -162,7 +162,9 @@ TEST_F(DisplayInfoTest, TestToStringFormat) {
             "device-scale=1, display-zoom=1, overscan=x:0,0 y:0,0, rotation=0, "
             "touchscreen=unknown, "
             "panel_corners_radii=0.000000,0.000000,0.000000,0.000000, "
-            "panel_orientation=Normal, detected=true");
+            "panel_orientation=Normal, detected=true, "
+            "color_space="
+            "{primaries:BT709, transfer:SRGB, matrix:RGB, range:FULL}");
 
   EXPECT_EQ(info.ToFullString(),
             "ManagedDisplayInfo[10] port_display_id=10, edid_display_id=20, "
@@ -171,6 +173,8 @@ TEST_F(DisplayInfoTest, TestToStringFormat) {
             "touchscreen=unknown, "
             "panel_corners_radii=0.000000,0.000000,0.000000,0.000000, "
             "panel_orientation=Normal, detected=true, "
+            "color_space="
+            "{primaries:BT709, transfer:SRGB, matrix:RGB, range:FULL}, "
             "display_modes==(200x100@60P(N) 1)");
 }
 

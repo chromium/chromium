@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] <button type=selectlist> should open the parent selectlist when clicked.
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+Harness: the test ran to completion.

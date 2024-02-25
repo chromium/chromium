@@ -5,15 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_METRIC_REPORTING_UTILS_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_METRIC_REPORTING_UTILS_H_
 
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
 // Retrieves the app publisher id from the app registry cache using the
 // specified profile if one exists.
-absl::optional<std::string> GetPublisherIdForApp(const std::string& app_id,
-                                                 Profile* profile);
+std::optional<std::string> GetPublisherIdForApp(const std::string& app_id,
+                                                Profile* profile);
 
 }  // namespace reporting
 

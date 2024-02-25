@@ -6,8 +6,8 @@ package org.chromium.media;
 
 import android.media.MediaCodecInfo.CodecProfileLevel;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,12 @@ class CodecProfileLevelList {
     public boolean addCodecProfileLevel(String mime, CodecProfileLevel codecProfileLevel) {
         try {
             int codec = getCodecFromMime(mime);
-            mList.add(new CodecProfileLevelAdapter(codec,
-                    mediaCodecProfileToChromiumMediaProfile(codec, codecProfileLevel.profile),
-                    mediaCodecLevelToChromiumMediaLevel(codec, codecProfileLevel.level)));
+            mList.add(
+                    new CodecProfileLevelAdapter(
+                            codec,
+                            mediaCodecProfileToChromiumMediaProfile(
+                                    codec, codecProfileLevel.profile),
+                            mediaCodecLevelToChromiumMediaLevel(codec, codecProfileLevel.level)));
             return true;
         } catch (UnsupportedCodecProfileException e) {
             return false;
@@ -153,9 +156,7 @@ class CodecProfileLevelList {
                 }
             case VideoCodec.DOLBY_VISION:
                 switch (profile) {
-                        // Profile 0, 1, 2, 3, 6 are not supported for new applications.
-                    case CodecProfileLevel.DolbyVisionProfileDvheDtr:
-                        return VideoCodecProfile.DOLBYVISION_PROFILE4;
+                        // Profile 0, 1, 2, 3, 4, 6 are not supported for new applications.
                     case CodecProfileLevel.DolbyVisionProfileDvheStn:
                         return VideoCodecProfile.DOLBYVISION_PROFILE5;
                     case CodecProfileLevel.DolbyVisionProfileDvheDtb:

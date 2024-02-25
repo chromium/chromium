@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_observer.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_notification_delegate.h"
@@ -20,7 +21,7 @@ class ReadingListObserverBridge;
   __weak id<ReadingListMenuNotificationDelegate> _delegate;
 
   // Keep a reference to detach before deallocing.
-  ReadingListModel* _readingListModel;  // weak
+  raw_ptr<ReadingListModel> _readingListModel;  // weak
 }
 
 // Detach the observer on the reading list.

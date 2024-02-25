@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_SYSTEM_MEDIA_CONTROLS_MAC_NOW_PLAYING_INFO_CENTER_DELEGATE_H_
 #define COMPONENTS_SYSTEM_MEDIA_CONTROLS_MAC_NOW_PLAYING_INFO_CENTER_DELEGATE_H_
 
+#include <optional>
+
 #include "base/timer/timer.h"
 #include "components/system_media_controls/system_media_controls.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NowPlayingInfoCenterDelegateCocoa;
 
@@ -42,10 +43,10 @@ class NowPlayingInfoCenterDelegate {
   void UpdatePlaybackStatusAndPosition();
 
   // Stores the most recently received playback status.
-  absl::optional<SystemMediaControls::PlaybackStatus> playback_status_;
+  std::optional<SystemMediaControls::PlaybackStatus> playback_status_;
 
   // Stores the most recently received position.
-  absl::optional<media_session::MediaPosition> position_;
+  std::optional<media_session::MediaPosition> position_;
 
   // Calls UpdatePlaybackStatusAndPosition() when the timer expires.
   std::unique_ptr<base::OneShotTimer> timer_ =

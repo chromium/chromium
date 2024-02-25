@@ -6,19 +6,19 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
@@ -100,6 +100,12 @@
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+  if (self.authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // Don't show the sign-in screen since the user is already signed in.
+    [_delegate screenWillFinishPresenting];
+    return;
+  }
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
@@ -129,6 +135,7 @@
 
 - (void)stop {
   [self.identityChooserCoordinator stop];
+  self.identityChooserCoordinator = nil;
   self.delegate = nil;
   self.viewController = nil;
   [self.mediator disconnect];
@@ -136,6 +143,18 @@
   self.accountManagerService = nil;
   self.authenticationService = nil;
   [super stop];
+}
+
+#pragma mark - InterruptibleChromeCoordinator
+
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
+                 completion:(ProceduralBlock)completion {
+  if (self.addAccountSigninCoordinator) {
+    [self.addAccountSigninCoordinator interruptWithAction:action
+                                               completion:completion];
+  } else if (completion) {
+    completion();
+  }
 }
 
 #pragma mark - Private
@@ -152,8 +171,7 @@
   self.addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.viewController
                                           browser:self.browser
-                                      accessPoint:signin_metrics::AccessPoint::
-                                                      ACCESS_POINT_START_PAGE];
+                                      accessPoint:_accessPoint];
   __weak __typeof(self) weakSelf = self;
   self.addAccountSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
@@ -184,8 +202,7 @@
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.mediator.selectedIdentity
-                                      accessPoint:signin_metrics::AccessPoint::
-                                                      ACCESS_POINT_START_PAGE
+                                      accessPoint:_accessPoint
                                  postSignInAction:PostSignInAction::kNone
                          presentingViewController:self.viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(

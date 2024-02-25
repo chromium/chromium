@@ -16,31 +16,31 @@ function rectsShouldBeEqual(baseline, other, outputElt)
       outputElt.innerHTML = '<span style="color:green;"><b>PASS</b></span>';
 }
 
-function testGetClientBoundingRect()
+function testGetClientBoundingRect(zoom)
 {
     var baseline = document.getElementById("baseline1");
     var moveme = document.getElementById("moveme1");
 
     var bounds = baseline.getBoundingClientRect();
-    moveme.style.left = bounds.left;
-    moveme.style.top = bounds.top;
-    moveme.style.width = bounds.right - bounds.left;
-    moveme.style.height = bounds.bottom - bounds.top;
+    moveme.style.left = bounds.left / zoom;
+    moveme.style.top = bounds.top / zoom;
+    moveme.style.width = (bounds.right - bounds.left) / zoom;
+    moveme.style.height = (bounds.bottom - bounds.top) / zoom;
 
     var newBounds = moveme.getBoundingClientRect();
     rectsShouldBeEqual(bounds, newBounds, document.getElementById("results1"));
 }
 
-function testGetClientRects()
+function testGetClientRects(zoom)
 {
     var baseline = document.getElementById("baseline2");
     var moveme = document.getElementById("moveme2");
 
     var boundsList = baseline.getClientRects();
-    moveme.style.left = boundsList[0].left;
-    moveme.style.top = boundsList[0].top;
-    moveme.style.width = boundsList[0].right - boundsList[0].left;
-    moveme.style.height = boundsList[0].bottom - boundsList[0].top;
+    moveme.style.left = boundsList[0].left / zoom;
+    moveme.style.top = boundsList[0].top / zoom;
+    moveme.style.width = (boundsList[0].right - boundsList[0].left) / zoom;
+    moveme.style.height = (boundsList[0].bottom - boundsList[0].top) / zoom;
 
     var newBoundList = moveme.getClientRects();
     rectsShouldBeEqual(boundsList[0], newBoundList[0], document.getElementById("results2"));
@@ -49,8 +49,8 @@ function testGetClientRects()
 function runTest()
 {
   document.body.style.zoom = "0.9";
-  testGetClientBoundingRect();
-  testGetClientRects();
+  testGetClientBoundingRect(0.9);
+  testGetClientRects(0.9);
 }
 </script>
 </head>

@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL tcp disabled by permissions-policy assert_throws_dom: constructor should throw function "() => new TCPSocket("address.com", 53)" threw object "ReferenceError: TCPSocket is not defined" that is not a DOMException NotAllowedError: property "code" is equal to undefined, expected 0
-FAIL udp disabled by permissions-policy assert_throws_dom: constructor should throw function "() => new UDPSocket({ remoteAddress: "address.com", remotePort: 53 })" threw object "ReferenceError: UDPSocket is not defined" that is not a DOMException NotAllowedError: property "code" is equal to undefined, expected 0
+[FAIL] tcp disabled by permissions-policy
+  assert_throws_dom: constructor should throw function "() => new TCPSocket("address.com", 53)" threw object "ReferenceError: TCPSocket is not defined" that is not a DOMException NotAllowedError: property "code" is equal to undefined, expected 0
+[FAIL] udp disabled by permissions-policy
+  assert_throws_dom: constructor should throw function "() => new UDPSocket({ remoteAddress: "address.com", remotePort: 53 })" threw object "ReferenceError: UDPSocket is not defined" that is not a DOMException NotAllowedError: property "code" is equal to undefined, expected 0
 Harness: the test ran to completion.
 

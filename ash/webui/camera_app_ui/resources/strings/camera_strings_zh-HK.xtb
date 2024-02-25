@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">刪除頁面 <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">攝錄機模式</translation>
 <translation id="1153190633558910465">閂網格</translation>
-<translation id="1175958423215084756">已偵測到連結。<ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">頁面 <ph name="PAGE_NUMBER" /> 已刪除</translation>
 <translation id="1258009455399840361">順時針旋轉 90 度</translation>
 <translation id="1417314334557041815">編輯第 <ph name="INDEX" /> 頁</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切換至錄影模式</translation>
 <translation id="313467653172006084">每秒畫格數：30</translation>
+<translation id="3158534262962737808">加入「<ph name="WIFINAME" />」</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3240426699337459095">已複製連結</translation>
 <translation id="3354465018370944241">相片設定</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">正在處理影片…</translation>
 <translation id="3789724198583203151">逆時針旋轉 90 度</translation>
 <translation id="3810838688059735925">影片</translation>
-<translation id="3892148308691398805">複製文字</translation>
 <translation id="4060608699153044055">由於裝置儲存空間不足，因此無法錄影。如要開始錄影，請先騰出裝置空間。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> 百萬像素</translation>
 <translation id="4118525110028899586">暫停錄影</translation>
 <translation id="4121305183798804752">偵測到文件</translation>
 <translation id="414641094616694804">此相機無法變更解像度</translation>
 <translation id="4176463684765177261">已停用</translation>
-<translation id="4269820728363426813">複製連結網址</translation>
 <translation id="428234092390943511">頁面縮圖</translation>
 <translation id="4349714250734879769">由 Chrome 縮放畫面</translation>
 <translation id="4383571725254449280">列印效能記錄</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">全解像度</translation>
 <translation id="4864143361253542638">已掃瞄的頁面清單</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">複製連結網址 <ph name="URL" /></translation>
 <translation id="491895758387112773">以多流功能錄製影片</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4984613436295737187">四倍高清 (1440p)</translation>
 <translation id="5034763830503483128">相片長寬比</translation>
 <translation id="5057360777601936059">您的相機目前無法使用。
         請檢查相機是否正確連接。</translation>
+<translation id="5157591164390831335">偵測到網址。</translation>
 <translation id="5163387177077603948">向右移</translation>
-<translation id="5219374179772385066">「延時攝影」模式現已可使用！</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">文件左上角</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">感謝您提供「相機」應用程式的意見。
 
 如果您的意見和圖片或影片品質有關，請附上範例相片或影片並說明問題 (例如相片太暗或無法聚焦)。</translation>
+<translation id="6519884562954018934">加入「<ph name="WIFINAME" />」</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6617916774429601017">顯示所有解像度</translation>
 <translation id="6631515515009660915">閂鏡像</translation>
@@ -133,6 +133,7 @@
 <translation id="7450541714075000668">已複製文字</translation>
 <translation id="7488619942230388918">錄製 GIF 影片</translation>
 <translation id="7557677699350329807">切換至下一部相機</translation>
+<translation id="7562584071994185503">複製文字「<ph name="TEXT" />」</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7608223098072244877">4 乘 4</translation>
 <translation id="761421184377987513">向左下移</translation>
@@ -155,10 +156,12 @@
 <translation id="8346544573713510785">由相機 HAL 縮放畫面</translation>
 <translation id="8425673304802773841">向下傾斜</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8609951387004618906">開啟 <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">將個咪校去靜音。開咗靜音</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8732462232047530626">預覽元數據</translation>
+<translation id="874854738381978209">偵測到 Wi-Fi 網絡。</translation>
 <translation id="8815966864175525708">切換至肖像相片拍攝模式</translation>
 <translation id="8828441885228359828">恢復錄影</translation>
 <translation id="8870695351537079478">無法開始錄影</translation>

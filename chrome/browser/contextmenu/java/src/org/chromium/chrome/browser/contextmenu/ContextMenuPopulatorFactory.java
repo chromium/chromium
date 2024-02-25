@@ -8,9 +8,7 @@ import android.content.Context;
 
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 
-/**
- * Factory interface for creating {@link ContextMenuPopulator}s.
- */
+/** Factory interface for creating {@link ContextMenuPopulator}s. */
 public interface ContextMenuPopulatorFactory {
     /**
      * Creates a {@ContextMenuPopulator}.

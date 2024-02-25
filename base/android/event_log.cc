@@ -9,7 +9,7 @@ namespace base {
 namespace android {
 
 void EventLogWriteInt(int tag, int value) {
-  Java_EventLog_writeEvent(AttachCurrentThread(), tag, value);
+  Java_EventLog_writeEvent(jni_zero::AttachCurrentThread(), tag, value);
 }
 
 }  // namespace android

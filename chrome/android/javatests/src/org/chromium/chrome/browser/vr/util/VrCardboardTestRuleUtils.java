@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 /**
- * Utility class for interacting with Cardboard VR-specific Rules, i.e. ChromeActivityTestRules
- * that implement the VrTestRule interface.
+ * Utility class for interacting with Cardboard VR-specific Rules, i.e. ChromeActivityTestRules that
+ * implement the VrTestRule interface.
  */
 public class VrCardboardTestRuleUtils extends XrTestRuleUtils {
     /**
@@ -31,10 +31,14 @@ public class VrCardboardTestRuleUtils extends XrTestRuleUtils {
      * @param desc The Description passed to the calling ChromeActivityTestRule's apply() method.
      * @param rule The calling VrTestRule.
      * @param launcher A ChromeLaunchMethod whose launch() contains the code snippet to start Chrome
-     *        in the calling ChromeActivityTestRule's activity type.
+     *     in the calling ChromeActivityTestRule's activity type.
      */
-    public static void evaluateVrTestRuleImpl(final Statement base, final Description desc,
-            final VrTestRule rule, final ChromeLaunchMethod launcher) throws Throwable {
+    public static void evaluateVrTestRuleImpl(
+            final Statement base,
+            final Description desc,
+            final VrTestRule rule,
+            final ChromeLaunchMethod launcher)
+            throws Throwable {
         launcher.launch();
 
         base.evaluate();
@@ -45,36 +49,42 @@ public class VrCardboardTestRuleUtils extends XrTestRuleUtils {
      * parameterization.
      *
      * @return An ArrayList of ParameterSets, with each ParameterSet containing a callable to create
-     *         a VrTestRule for a supported ChromeActivity.
+     *     a VrTestRule for a supported ChromeActivity.
      */
     public static ArrayList<ParameterSet> generateDefaultTestRuleParameters() {
         ArrayList<ParameterSet> parameters = new ArrayList<ParameterSet>();
-        parameters.add(new ParameterSet()
-                               .value(new Callable<ChromeTabbedActivityVrCardboardTestRule>() {
-                                   @Override
-                                   public ChromeTabbedActivityVrCardboardTestRule call() {
-                                       return new ChromeTabbedActivityVrCardboardTestRule();
-                                   }
-                               })
-                               .name("ChromeTabbedActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<ChromeTabbedActivityVrCardboardTestRule>() {
+                                    @Override
+                                    public ChromeTabbedActivityVrCardboardTestRule call() {
+                                        return new ChromeTabbedActivityVrCardboardTestRule();
+                                    }
+                                })
+                        .name("ChromeTabbedActivity"));
 
-        parameters.add(new ParameterSet()
-                               .value(new Callable<CustomTabActivityVrCardboardTestRule>() {
-                                   @Override
-                                   public CustomTabActivityVrCardboardTestRule call() {
-                                       return new CustomTabActivityVrCardboardTestRule();
-                                   }
-                               })
-                               .name("CustomTabActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<CustomTabActivityVrCardboardTestRule>() {
+                                    @Override
+                                    public CustomTabActivityVrCardboardTestRule call() {
+                                        return new CustomTabActivityVrCardboardTestRule();
+                                    }
+                                })
+                        .name("CustomTabActivity"));
 
-        parameters.add(new ParameterSet()
-                               .value(new Callable<WebappActivityVrCardboardTestRule>() {
-                                   @Override
-                                   public WebappActivityVrCardboardTestRule call() {
-                                       return new WebappActivityVrCardboardTestRule();
-                                   }
-                               })
-                               .name("WebappActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<WebappActivityVrCardboardTestRule>() {
+                                    @Override
+                                    public WebappActivityVrCardboardTestRule call() {
+                                        return new WebappActivityVrCardboardTestRule();
+                                    }
+                                })
+                        .name("WebappActivity"));
 
         return parameters;
     }

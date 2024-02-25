@@ -5,10 +5,6 @@ found in the LICENSE file.
 -->
 <style include="oobe-dialog-host-styles cr-card-radio-group-styles
     cros-color-overrides">
-  * {
-    transition: color 250ms linear, background-color 250ms linear;
-  }
-
   .card-container {
     padding-inline-start: 16px;
   }
@@ -26,7 +22,8 @@ found in the LICENSE file.
   }
 </style>
 <oobe-adaptive-dialog id="themeSelectionDialog" role="presentation"
-    for-step="overview" aria-live="polite">
+    for-step="overview" aria-live="polite"
+    aria-label$="[[i18nDynamic(locale, 'themeSelectionScreenTitle')]]">
   <iron-icon slot="icon" icon="oobe-32:theme-light"></iron-icon>
   <h1 slot="title" id="theme-selection-title">
     [[i18nDynamic(locale, 'themeSelectionScreenTitle')]]

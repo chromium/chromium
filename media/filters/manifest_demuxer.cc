@@ -4,9 +4,11 @@
 
 #include "media/filters/manifest_demuxer.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,7 +23,6 @@
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -65,7 +66,9 @@ bool ManifestDemuxer::ManifestDemuxerStream::SupportsConfigChanges() {
 
 ManifestDemuxer::~ManifestDemuxer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  impl_->Stop();
   impl_.reset();
+  streams_.clear();
   chunk_demuxer_.reset();
 }
 
@@ -79,7 +82,8 @@ ManifestDemuxer::ManifestDemuxer(
       media_task_runner_(std::move(media_task_runner)),
       impl_(std::move(impl)) {}
 
-std::vector<DemuxerStream*> ManifestDemuxer::GetAllStreams() {
+std::vector<raw_ptr<DemuxerStream, VectorExperimental>>
+ManifestDemuxer::GetAllStreams() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // For each stream that ChunkDemuxer returns, we need to wrap it so that we
@@ -88,7 +92,7 @@ std::vector<DemuxerStream*> ManifestDemuxer::GetAllStreams() {
   // memory.
   // TODO(crbug/1266991): Rearchitect the demuxer stream ownership model to
   // prevent long-lived streams from potentially leaking memory.
-  std::vector<DemuxerStream*> streams;
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams;
   for (DemuxerStream* chunk_demuxer_stream : chunk_demuxer_->GetAllStreams()) {
     auto it = streams_.find(chunk_demuxer_stream);
     if (it != streams_.end()) {
@@ -209,29 +213,11 @@ void ManifestDemuxer::SeekInternal() {
   // Cancel any outstanding events, we don't want them interrupting us.
   cancelable_next_event_.Cancel();
 
-  // Seek the engine first, since it might clear out data from the chunk demuxer
-  // and reset it into a state where it can accept the correct timestamps. If
-  // ManifestDemuxer::Engine::Seek returns true, then it means that a new fetch
-  // event is required to repopulate the chunk demuxer's buffers.
-  seek_waiting_on_engine_ = impl_->Seek(media_time_);
-
-  // Seek the demuxer and signal that we are waiting on it to complete. The seek
-  // won't be finished until the ChunkDemuxer has finished seeking and the
-  // engine is ready.
-  seek_waiting_on_demuxer_ = true;
-  chunk_demuxer_->Seek(media_time_,
-                       base::BindOnce(&ManifestDemuxer::OnChunkDemuxerSeeked,
-                                      weak_factory_.GetWeakPtr()));
-
-  if (seek_waiting_on_engine_) {
-    TriggerEventWithTime(base::BindOnce(&ManifestDemuxer::OnEngineSeekComplete,
-                                        weak_factory_.GetWeakPtr()),
-                         media_time_);
-  }
+  impl_->Seek(media_time_, base::BindOnce(&ManifestDemuxer::OnEngineSeeked,
+                                          weak_factory_.GetWeakPtr()));
 }
 
 bool ManifestDemuxer::IsSeekable() const {
-  DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());
   return impl_->IsSeekable();
 }
 
@@ -240,6 +226,7 @@ void ManifestDemuxer::Stop() {
   cancelable_next_event_.Cancel();
   impl_->Stop();
   chunk_demuxer_->Stop();
+  host_ = nullptr;
 }
 
 base::TimeDelta ManifestDemuxer::GetStartTime() const {
@@ -269,11 +256,11 @@ int64_t ManifestDemuxer::GetMemoryUsage() const {
   return demuxer_usage + impl_usage;
 }
 
-absl::optional<container_names::MediaContainerName>
+std::optional<container_names::MediaContainerName>
 ManifestDemuxer::GetContainerForMetrics() const {
   // TODO(crbug/1266991): Consider how this is used. HLS can involve multiple
   // stream types (mp2t, mp4, etc). Refactor to report something useful.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ManifestDemuxer::OnEnabledAudioTracksChanged(
@@ -311,21 +298,20 @@ void ManifestDemuxer::SetPlaybackRate(double rate) {
 }
 
 bool ManifestDemuxer::AddRole(base::StringPiece role,
-                              std::string container,
-                              std::string codec) {
+                              RelaxedParserSupportedType mime) {
   CHECK(chunk_demuxer_);
   if (ChunkDemuxer::kOk !=
-      chunk_demuxer_->AddId(std::string(role), container, codec)) {
+      chunk_demuxer_->AddAutoDetectedCodecsId(std::string(role), mime)) {
     return false;
   }
   chunk_demuxer_->SetParseWarningCallback(
       std::string(role),
       base::BindRepeating(&ManifestDemuxer::OnChunkDemuxerParseWarning,
-                          weak_factory_.GetWeakPtr(), role));
+                          weak_factory_.GetWeakPtr(), std::string(role)));
   chunk_demuxer_->SetTracksWatcher(
       std::string(role),
       base::BindRepeating(&ManifestDemuxer::OnChunkDemuxerTracksChanged,
-                          weak_factory_.GetWeakPtr(), role));
+                          weak_factory_.GetWeakPtr(), std::string(role)));
   return true;
 }
 
@@ -363,6 +349,7 @@ void ManifestDemuxer::RemoveAndReset(base::StringPiece role,
   CHECK(chunk_demuxer_);
   Remove(role, start, end);
   chunk_demuxer_->ResetParserState(std::string(role), start, end, offset);
+  chunk_demuxer_->AbortPendingReads();
 }
 
 void ManifestDemuxer::SetGroupStartIfParsingAndSequenceMode(
@@ -411,6 +398,7 @@ bool ManifestDemuxer::AppendAndParseData(base::StringPiece role,
 void ManifestDemuxer::OnError(PipelineStatus error) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   cancelable_next_event_.Cancel();
+  weak_factory_.InvalidateWeakPtrs();
 
   if (pending_init_) {
     std::move(pending_init_).Run(std::move(error).AddHere());
@@ -435,6 +423,14 @@ void ManifestDemuxer::SetGroupStartTimestamp(base::StringPiece role,
                                              base::TimeDelta time) {
   chunk_demuxer_->SetGroupStartTimestampIfInSequenceMode(std::string(role),
                                                          time);
+}
+
+void ManifestDemuxer::SetEndOfStream() {
+  chunk_demuxer_->MarkEndOfStream(PIPELINE_OK);
+}
+
+void ManifestDemuxer::UnsetEndOfStream() {
+  chunk_demuxer_->UnmarkEndOfStream();
 }
 
 ChunkDemuxer* ManifestDemuxer::GetChunkDemuxerForTesting() {
@@ -519,66 +515,78 @@ void ManifestDemuxer::OnChunkDemuxerInitialized(PipelineStatus init_status) {
   std::move(pending_init_).Run(std::move(init_status));
 }
 
-void ManifestDemuxer::OnChunkDemuxerSeeked(PipelineStatus seek_status) {
+void ManifestDemuxer::OnEngineSeeked(SeekResponse seek_status) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  seek_waiting_on_demuxer_ = false;
-
-  if (!pending_seek_) {
-    seek_waiting_on_engine_ = false;
+  CHECK(pending_seek_);
+  if (!seek_status.has_value()) {
+    std::move(pending_seek_).Run(std::move(seek_status).error().AddHere());
     return;
   }
 
+  chunk_demuxer_->Seek(media_time_,
+                       base::BindOnce(&ManifestDemuxer::OnChunkDemuxerSeeked,
+                                      weak_factory_.GetWeakPtr()));
+
+  if (std::move(seek_status).value() == SeekState::kNeedsData) {
+    // Buffers need to be refilled, or ChunkDemuxer::Seek will never complete.
+    can_complete_seek_ = false;
+    TriggerEventWithTime(base::BindOnce(&ManifestDemuxer::OnSeekBuffered,
+                                        weak_factory_.GetWeakPtr()),
+                         media_time_);
+  }
+}
+
+void ManifestDemuxer::OnSeekBuffered(base::TimeDelta delay_time) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!pending_seek_) {
+    // ChunkDemuxer::Seek replied with an error, and has already reset the flag.
+    CHECK(can_complete_seek_);
+    return;
+  }
+
+  if (!can_complete_seek_) {
+    // ChunkDemuxer::Seek has not yet replied. Set the flag to true and exit.
+    can_complete_seek_ = true;
+    return;
+  }
+
+  // Finish seeking and schedule a new event ASAP to continue.
+  std::move(pending_seek_).Run(OkStatus());
+  OnEngineEventFinished(base::Seconds(0));
+}
+
+void ManifestDemuxer::OnChunkDemuxerSeeked(PipelineStatus seek_status) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(pending_seek_);
   if (!seek_status.is_ok()) {
-    // If the seek is an error, then don't bother waiting for the
-    // OnEngineSeekComplete call, just unset the flag and exit now.
-    seek_waiting_on_engine_ = false;
+    can_complete_seek_ = true;
     std::move(pending_seek_).Run(std::move(seek_status));
     return;
   }
 
-  // Complete the seek with an ok-status. This function already handles non-ok
-  // status results above.
-  TryCompletePendingSeek();
-}
-
-void ManifestDemuxer::OnEngineSeekComplete(base::TimeDelta delay_time) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  seek_waiting_on_engine_ = false;
-
-  if (!pending_seek_) {
-    seek_waiting_on_demuxer_ = false;
+  if (!can_complete_seek_) {
+    // The engine should reply shortly after finishing the event which
+    // repopulated ChunkDemuxer's buffers. Reset the flag to allow that reply
+    // to finish the seek process.
+    can_complete_seek_ = true;
     return;
   }
 
-  // Complete the seek with an ok-status. If the chunk demuxer had failed to
-  // seek, it would have already posted the `pending_seek_` call with its
-  // failure status.
-  TryCompletePendingSeek();
-}
-
-void ManifestDemuxer::TryCompletePendingSeek() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
-  if (seek_waiting_on_engine_ || seek_waiting_on_demuxer_) {
-    return;
-  }
-
-  CHECK(pending_seek_);
-  std::move(pending_seek_).Run(OkStatus());
-
-  // Schedule a new event ASAP to populate data.
+  // Finish seeking and schedule a new event ASAP to continue.
+  std::move(pending_seek_).Run(std::move(seek_status));
   OnEngineEventFinished(base::Seconds(0));
 }
 
 void ManifestDemuxer::OnChunkDemuxerParseWarning(
-    base::StringPiece role,
+    std::string role,
     SourceBufferParseWarning warning) {
   MEDIA_LOG(WARNING, media_log_)
       << "ParseWarning (" << role << "): " << static_cast<int>(warning);
 }
 
 void ManifestDemuxer::OnChunkDemuxerTracksChanged(
-    base::StringPiece role,
+    std::string role,
     std::unique_ptr<MediaTracks> tracks) {
   MEDIA_LOG(WARNING, media_log_) << "TracksChanged for role: " << role;
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,9 @@ TestWaylandClientThread::TestWaylandClientThread(const std::string& name)
     : Thread(name), controller_(FROM_HERE) {}
 
 TestWaylandClientThread::~TestWaylandClientThread() {
-  // Stop watching the descriptor here to guarantee that no new events will come
-  // during or after the destruction of the display.
-  controller_.StopWatchingFileDescriptor();
+  // Guarantee that no new events will come during or after the destruction of
+  // the display.
+  stopped_ = true;
 
   task_runner()->PostTask(FROM_HERE,
                           base::BindOnce(&TestWaylandClientThread::DoCleanUp,
@@ -68,6 +68,10 @@ void TestWaylandClientThread::RunAndWait(base::OnceClosure closure) {
 }
 
 void TestWaylandClientThread::OnFileCanReadWithoutBlocking(int fd) {
+  if (stopped_) {
+    return;
+  }
+
   if (wl_display_prepare_read(client_->display()) != 0) {
     return;
   }
@@ -109,10 +113,12 @@ void TestWaylandClientThread::DoInit(
 
 void TestWaylandClientThread::DoRun(base::OnceClosure closure) {
   std::move(closure).Run();
+  wl_display_flush(client_->display());
   wl_display_roundtrip(client_->display());
 }
 
 void TestWaylandClientThread::DoCleanUp() {
+  controller_.StopWatchingFileDescriptor();
   client_.reset();
 }
 

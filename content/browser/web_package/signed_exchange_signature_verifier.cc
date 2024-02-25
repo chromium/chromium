@@ -53,7 +53,7 @@ constexpr uint8_t kMessageHeader[] =
 constexpr base::TimeDelta kOneWeek = base::Days(7);
 constexpr base::TimeDelta kFourWeeks = base::Days(4 * 7);
 
-absl::optional<crypto::SignatureVerifier::SignatureAlgorithm>
+std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
 GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
                       SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "GetSignatureAlgorithm");
@@ -63,7 +63,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
           &spki)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(devtools_proxy,
                                                     "Failed to extract SPKI.");
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CBS cbs;
@@ -72,7 +72,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
   if (!pkey || CBS_len(&cbs) != 0) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse public key.");
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int pkey_id = EVP_PKEY_id(pkey.get());
@@ -82,7 +82,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
         base::StringPrintf("Unsupported public key type: %d. Only ECDSA keys "
                            "on the secp256r1 curve are supported.",
                            pkey_id));
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const EC_GROUP* group = EC_KEY_get0_group(EVP_PKEY_get0_EC_KEY(pkey.get()));
@@ -94,7 +94,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
       base::StringPrintf("Unsupported EC group: %d. Only ECDSA keys on the "
                          "secp256r1 curve are supported.",
                          curve_name));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool VerifySignature(base::span<const uint8_t> sig,
@@ -291,16 +291,14 @@ SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
 
   auto message = GenerateSignedMessage(version, envelope);
 
-  absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
+  std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
       GetSignatureAlgorithm(certificate, devtools_proxy);
   if (!algorithm)
     return Result::kErrUnsupportedCertType;
 
   const std::string& sig = envelope.signature().sig;
-  if (!VerifySignature(
-          base::make_span(reinterpret_cast<const uint8_t*>(sig.data()),
-                          sig.size()),
-          message, certificate, *algorithm, devtools_proxy)) {
+  if (!VerifySignature(base::as_byte_span(sig), message, certificate,
+                       *algorithm, devtools_proxy)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to verify signature \"sig\".");
     return Result::kErrSignatureVerificationFailed;

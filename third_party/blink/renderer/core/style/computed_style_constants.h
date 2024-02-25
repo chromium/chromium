@@ -165,9 +165,41 @@ enum class EVerticalAlign : unsigned {
 
 enum class EFillAttachment : unsigned { kScroll, kLocal, kFixed };
 
-enum class EFillBox : unsigned { kBorder, kPadding, kContent, kText };
+// `EFillBox` is used for {-webkit-}background-clip, {-webkit-}mask-clip, and
+// {-webkit-}mask-origin. Not all properties support all of these values.
+//
+// Background-clip (https://drafts.csswg.org/css-backgrounds/#background-clip)
+// supports <visual-box> (border-box, padding-box, content-box), as well as the
+// non-standard `text` value.
+//
+// Mask-clip (https://drafts.fxtf.org/css-masking/#the-mask-clip) supports
+// <coord-box> (border-box, padding-box, content-box, fill-box, stroke-box,
+// view-box), `no-clip`, as well as the non-standard `text` value.
+//
+// Mask-origin (https://drafts.fxtf.org/css-masking/#the-mask-origin) supports
+// <coord-box> (border-box, padding-box, content-box, fill-box, stroke-box,
+// view-box).
+enum class EFillBox : unsigned {
+  kBorder,
+  kPadding,
+  kContent,
+  kText,
+  kFillBox,
+  kStrokeBox,
+  kViewBox,
+  kNoClip
+};
 
 inline EFillBox EnclosingFillBox(EFillBox box_a, EFillBox box_b) {
+  if (box_a == EFillBox::kNoClip || box_b == EFillBox::kNoClip) {
+    return EFillBox::kNoClip;
+  }
+  if (box_a == EFillBox::kViewBox || box_b == EFillBox::kViewBox) {
+    return EFillBox::kViewBox;
+  }
+  if (box_a == EFillBox::kStrokeBox || box_b == EFillBox::kStrokeBox) {
+    return EFillBox::kStrokeBox;
+  }
   // background-clip:text is clipped to the border box.
   if (box_a == EFillBox::kBorder || box_a == EFillBox::kText ||
       box_b == EFillBox::kBorder || box_b == EFillBox::kText) {
@@ -175,6 +207,9 @@ inline EFillBox EnclosingFillBox(EFillBox box_a, EFillBox box_b) {
   }
   if (box_a == EFillBox::kPadding || box_b == EFillBox::kPadding) {
     return EFillBox::kPadding;
+  }
+  if (box_a == EFillBox::kFillBox || box_b == EFillBox::kFillBox) {
+    return EFillBox::kFillBox;
   }
   DCHECK_EQ(box_a, EFillBox::kContent);
   DCHECK_EQ(box_b, EFillBox::kContent);
@@ -187,6 +222,8 @@ enum class EFillRepeat : unsigned {
   kRoundFill,
   kSpaceFill
 };
+
+enum class EFillMaskMode : unsigned { kAlpha, kLuminance, kMatchSource };
 
 enum class EFillLayerType : unsigned { kBackground, kMask };
 
@@ -250,13 +287,12 @@ inline Containment& operator|=(Containment& a, Containment b) {
   return a = a | b;
 }
 
-static const size_t kContainerTypeBits = 4;
+static const size_t kContainerTypeBits = 3;
 enum EContainerType {
   kContainerTypeNormal = 0x0,
   kContainerTypeInlineSize = 0x1,
   kContainerTypeBlockSize = 0x2,
-  kContainerTypeSticky = 0x4,
-  kContainerTypeSnap = 0x8,
+  kContainerTypeScrollState = 0x4,
   kContainerTypeSize = kContainerTypeInlineSize | kContainerTypeBlockSize,
 };
 inline EContainerType operator|(EContainerType a, EContainerType b) {
@@ -290,6 +326,7 @@ enum class ItemPosition : unsigned {
   kStretch,
   kBaseline,
   kLastBaseline,
+  kAnchorCenter,
   kCenter,
   kStart,
   kEnd,
@@ -428,6 +465,29 @@ enum class GeometryBox {
   kFillBox,
   kStrokeBox,
   kViewBox
+};
+
+// https://drafts.fxtf.org/css-masking/#typedef-compositing-operator
+enum class CompositingOperator : unsigned {
+  // <compositing-operator> = add | subtract | intersect | exclude
+  kAdd,
+  kSubtract,
+  kIntersect,
+  kExclude,
+
+  // The following are non-standard values used by -webkit-mask-composite.
+  kClear,
+  kCopy,
+  kSourceOver,
+  kSourceIn,
+  kSourceOut,
+  kSourceAtop,
+  kDestinationOver,
+  kDestinationIn,
+  kDestinationOut,
+  kDestinationAtop,
+  kXOR,
+  kPlusLighter
 };
 
 }  // namespace blink

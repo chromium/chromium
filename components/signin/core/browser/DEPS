@@ -1,5 +1,6 @@
 include_rules = [
   "+components/metrics",
+  "+components/privacy_sandbox/privacy_sandbox_prefs.h",
   "+components/signin/public/base",
   "+components/signin/public/identity_manager",
   "+components/supervised_user/core/common/features.h",

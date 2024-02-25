@@ -9,7 +9,10 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/test_switches.h"
@@ -18,15 +21,52 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 
 namespace internal {
+
+// Focus supplier that watches for browser activation specifically. For some
+// reason, on some platforms, in some circumstances, native widget activation
+// isn't properly communicated, so this serves as a backup.
+class BrowserWidgetFocusSupplier
+    : public views::test::internal::WidgetFocusSupplier,
+      public BrowserListObserver {
+ public:
+  BrowserWidgetFocusSupplier() {
+    observation_.Observe(BrowserList::GetInstance());
+  }
+  ~BrowserWidgetFocusSupplier() override = default;
+
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
+  void OnBrowserSetLastActive(Browser* browser) override {
+    if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
+      if (auto* const widget = view->GetWidget()) {
+        if (gfx::NativeView native_view = widget->GetNativeView()) {
+          OnWidgetFocusChanged(native_view);
+        }
+      }
+    }
+  }
+
+ private:
+  base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(BrowserWidgetFocusSupplier)
 
 InteractiveBrowserTestPrivate::InteractiveBrowserTestPrivate(
     std::unique_ptr<InteractionTestUtilBrowser> test_util)
     : InteractiveViewsTestPrivate(std::move(test_util)) {}
 
 InteractiveBrowserTestPrivate::~InteractiveBrowserTestPrivate() = default;
+
+void InteractiveBrowserTestPrivate::DoTestSetUp() {
+  InteractiveViewsTestPrivate::DoTestSetUp();
+  widget_focus_suppliers().MaybeRegister<BrowserWidgetFocusSupplier>();
+}
 
 void InteractiveBrowserTestPrivate::DoTestTearDown() {
   // Release any remaining instrumented WebContents.

@@ -7,7 +7,7 @@
 
 // Alert states for a tab. Any number of these (or none) may apply at once.
 enum class TabAlertState {
-  MEDIA_RECORDING,        // Audio/Video being recorded, consumed by tab.
+  MEDIA_RECORDING,        // Audio/Video [both] being recorded, consumed by tab.
   TAB_CAPTURING,          // Tab contents being captured.
   AUDIO_PLAYING,          // Audible audio is playing from the tab.
   AUDIO_MUTING,           // Tab audio is being muted.
@@ -19,6 +19,8 @@ enum class TabAlertState {
   PIP_PLAYING,            // Tab contains a video in Picture-in-Picture mode.
   DESKTOP_CAPTURING,      // Desktop contents being recorded, consumed by tab.
   VR_PRESENTING_IN_HEADSET,  // VR content is being presented in a headset.
+  AUDIO_RECORDING,           // Audio [only] being recorded, consumed by tab.
+  VIDEO_RECORDING,           // Video [only] being recorded, consumed by tab.
 };
 
 // State indicating if the user is following the web feed of the site loaded in

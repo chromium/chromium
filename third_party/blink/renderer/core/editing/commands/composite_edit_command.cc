@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -82,6 +83,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -130,7 +133,7 @@ VisibleSelection CompositeEditCommand::EndingVisibleSelection() const {
 
 bool CompositeEditCommand::Apply() {
   DCHECK(!IsCommandGroupWrapper());
-  if (!IsRichlyEditablePosition(EndingVisibleSelection().Base())) {
+  if (!IsRichlyEditablePosition(EndingVisibleSelection().Anchor())) {
     switch (GetInputType()) {
       case InputEvent::InputType::kInsertText:
       case InputEvent::InputType::kInsertLineBreak:
@@ -618,8 +621,10 @@ Position CompositeEditCommand::ReplaceSelectedTextInNode(const String& text) {
 }
 
 Position CompositeEditCommand::PositionOutsideTabSpan(const Position& pos) {
-  if (!IsTabHTMLSpanElementTextNode(pos.AnchorNode()))
+  Node* anchor_node = pos.AnchorNode();
+  if (!IsTabHTMLSpanElementTextNode(anchor_node)) {
     return pos;
+  }
 
   switch (pos.AnchorType()) {
     case PositionAnchorType::kAfterChildren:
@@ -628,9 +633,9 @@ Position CompositeEditCommand::PositionOutsideTabSpan(const Position& pos) {
     case PositionAnchorType::kOffsetInAnchor:
       break;
     case PositionAnchorType::kBeforeAnchor:
-      return Position::InParentBeforeNode(*pos.AnchorNode());
+      return Position::InParentBeforeNode(*anchor_node);
     case PositionAnchorType::kAfterAnchor:
-      return Position::InParentAfterNode(*pos.AnchorNode());
+      return Position::InParentAfterNode(*anchor_node);
   }
 
   HTMLSpanElement* tab_span = TabSpanElement(pos.ComputeContainerNode());
@@ -643,8 +648,14 @@ Position CompositeEditCommand::PositionOutsideTabSpan(const Position& pos) {
   if (pos.OffsetInContainerNode() <= CaretMinOffset(pos.ComputeContainerNode()))
     return Position::InParentBeforeNode(*tab_span);
 
-  if (pos.OffsetInContainerNode() >= CaretMaxOffset(pos.ComputeContainerNode()))
-    return Position::InParentAfterNode(*tab_span);
+  if (pos.OffsetInContainerNode() >=
+      CaretMaxOffset(pos.ComputeContainerNode())) {
+    return anchor_node->HasNextSibling() &&
+                   RuntimeEnabledFeatures::
+                       PositionOutsideTabSpanCheckSiblingNodeEnabled()
+               ? Position::InParentAfterNode(*anchor_node)
+               : Position::InParentAfterNode(*tab_span);
+  }
 
   SplitTextNodeContainingElement(To<Text>(pos.ComputeContainerNode()),
                                  pos.OffsetInContainerNode());
@@ -857,7 +868,7 @@ void CompositeEditCommand::RebalanceWhitespace() {
 static bool IsInsignificantText(const LayoutText& layout_text) {
   if (layout_text.HasInlineFragments())
     return false;
-  // Spaces causing line break don't have `NGFragmentItem` but it has
+  // Spaces causing line break don't have `FragmentItem` but it has
   // non-zero length. See http://crbug.com/1322746
   return !layout_text.ResolvedTextLength();
 }
@@ -972,8 +983,9 @@ HTMLBRElement* CompositeEditCommand::InsertBlockPlaceholder(
 }
 
 static bool IsEmptyListItem(const LayoutBlockFlow& block_flow) {
-  if (block_flow.IsLayoutNGListItem())
+  if (block_flow.IsLayoutListItem()) {
     return !block_flow.FirstChild();
+  }
   return false;
 }
 
@@ -1511,7 +1523,7 @@ void CompositeEditCommand::MoveParagraphs(
             .SetShouldConvertBlocksToInlines(true)
             .SetConstrainingAncestor(constraining_ancestor)
             .Build());
-    fragment = CreateSanitizedFragmentFromMarkupWithContext(
+    fragment = CreateStrictlyProcessedFragmentFromMarkupWithContext(
         GetDocument(), paragraphs_markup, 0, paragraphs_markup.length(), "");
   }
 
@@ -2114,7 +2126,15 @@ void CompositeEditCommand::AppliedEditing() {
     editor.GetUndoStack().RegisterUndoStep(EnsureUndoStep());
   }
 
-  editor.RespondToChangedContents(new_selection.Base());
+  if (Element* element = undo_step.StartingRootEditableElement()) {
+    if (element->GetDocument().IsPageVisible()) {
+      element->GetDocument()
+          .GetPage()
+          ->GetChromeClient()
+          .DidUserChangeContentEditableContent(*element);
+    }
+  }
+  editor.RespondToChangedContents(new_selection.Anchor());
 
   if (auto* rc = GetDocument().GetResourceCoordinator()) {
     rc->SetHadUserEdits();

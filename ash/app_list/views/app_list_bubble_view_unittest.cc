@@ -29,8 +29,6 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/constants/ash_features.h"
-#include "ash/controls/gradient_layer_delegate.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -177,6 +175,13 @@ class AppListBubbleViewTest : public AshTestBase {
         ->GetBubbleView()
         ->GetFocusManager()
         ->GetFocusedView();
+  }
+
+  bool IsNotificationBubbleShown() {
+    return GetPrimaryShelf()
+        ->GetStatusAreaWidget()
+        ->notification_center_tray()
+        ->IsBubbleShown();
   }
 
   const char* GetFocusedViewName() {
@@ -492,7 +497,7 @@ TEST_F(AppListBubbleViewTest, AssistantScreenshotClosesBubbleWithoutAnimation) {
   // Simulate the app list being closed by taking a screenshot with assistant.
   // This makes AppListControllerImpl::ShouldDismissImmediately() return true.
   AssistantUiController::Get()->ToggleUi(
-      absl::nullopt, assistant::AssistantExitPoint::kScreenshot);
+      std::nullopt, assistant::AssistantExitPoint::kScreenshot);
 
   // The bubble dismissed immediately so it is not animating.
   ui::Layer* bubble_layer = GetAppListTestHelper()->GetBubbleView()->layer();
@@ -543,13 +548,15 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButtonVisibleLongQuery) {
   PressAndReleaseKey(ui::VKEY_A);
 
   EXPECT_TRUE(GetSearchPage()->GetVisible());
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   for (int i = 0; i < 100; ++i) {
     PressAndReleaseKey(ui::VKEY_A);
   }
   // Close button should be visible for long queries and within search box
   // view bounds.
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   EXPECT_TRUE(search_box_view->GetBoundsInScreen().Contains(
       search_box_view->close_button()->GetBoundsInScreen()));
 }
@@ -623,13 +630,13 @@ TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
 
   // By default the assistant button is visible.
   SearchBoxView* view = GetSearchBoxView();
-  EXPECT_TRUE(view->assistant_button()->GetVisible());
-  EXPECT_FALSE(view->close_button()->GetVisible());
+  EXPECT_TRUE(view->assistant_button_container()->GetVisible());
+  EXPECT_FALSE(view->filter_and_close_button_container()->GetVisible());
 
   // Typing text shows the close button instead.
   PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_FALSE(view->assistant_button()->GetVisible());
-  EXPECT_TRUE(view->close_button()->GetVisible());
+  EXPECT_FALSE(view->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(view->filter_and_close_button_container()->GetVisible());
 }
 
 TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
@@ -678,7 +685,8 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
   // Close button is visible after typing text.
   SearchBoxView* search_box_view = GetSearchBoxView();
   search_box_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   EXPECT_FALSE(search_box_view->search_box()->GetText().empty());
 
   // Clicking the close button clears the search, but the search box is still
@@ -686,7 +694,8 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
   LeftClickOn(search_box_view->close_button());
   EXPECT_EQ(std::vector<std::u16string>({u""}),
             app_list_client->GetAndResetPastSearchQueries());
-  EXPECT_FALSE(search_box_view->close_button()->GetVisible());
+  EXPECT_FALSE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
   EXPECT_TRUE(search_box_view->is_search_box_active());
@@ -1623,39 +1632,8 @@ TEST_F(AppListBubbleViewTest, HiddenAppListPageNotSetDuringShutdown) {
             GetAppListTestHelper()->GetBubbleView()->current_page_for_test());
 }
 
-class AppListBubbleViewWithQsRevampTest
-    : public AppListBubbleViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kQsRevamp,
-                                              IsQsRevampEnabled());
-
-    AshTestBase::SetUp();
-  }
-
-  bool IsNotificationBubbleShown() {
-    return features::IsQsRevampEnabled()
-               ? GetPrimaryShelf()
-                     ->GetStatusAreaWidget()
-                     ->notification_center_tray()
-                     ->IsBubbleShown()
-               : GetPrimaryUnifiedSystemTray()->IsMessageCenterBubbleShown();
-  }
-
-  bool IsQsRevampEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListBubbleViewWithQsRevampTest,
-                         testing::Bool());
-
 // Regression test for https://crbug.com/1313140
-TEST_P(AppListBubbleViewWithQsRevampTest,
-       CanOpenMessageCenterWithKeyboardShortcut) {
+TEST_F(AppListBubbleViewTest, CanOpenMessageCenterWithKeyboardShortcut) {
   // Add a notification so there's something to focus in the message center.
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, "id", u"Title", u"Message",

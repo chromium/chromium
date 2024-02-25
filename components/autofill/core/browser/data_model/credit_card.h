@@ -7,16 +7,37 @@
 
 #include <iosfwd>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "url/gurl.h"
 
 namespace autofill {
+
+// Unicode characters used in card number obfuscation:
+//  - \u2022 - Bullet.
+//  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
+//  - \u2060 - WORD-JOINER (makes obfuscated string indivisible).
+inline constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
+inline constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
+
+// The string identifiers for credit card icon resources.
+inline constexpr char kAmericanExpressCard[] = "americanExpressCC";
+inline constexpr char kDinersCard[] = "dinersCC";
+inline constexpr char kDiscoverCard[] = "discoverCC";
+inline constexpr char kEloCard[] = "eloCC";
+inline constexpr char kGenericCard[] = "genericCC";
+inline constexpr char kJCBCard[] = "jcbCC";
+inline constexpr char kMasterCard[] = "masterCardCC";
+inline constexpr char kMirCard[] = "mirCC";
+inline constexpr char kTroyCard[] = "troyCC";
+inline constexpr char kUnionPay[] = "unionPayCC";
+inline constexpr char kVisaCard[] = "visaCC";
 
 struct AutofillMetadata;
 
@@ -130,6 +151,9 @@ class CreditCard : public AutofillDataModel {
   CreditCard& operator=(CreditCard&& credit_card);
   ~CreditCard() override;
 
+  std::string guid() const { return guid_; }
+  void set_guid(std::string_view guid) { guid_ = guid; }
+
   std::string origin() const { return origin_; }
   void set_origin(const std::string& origin) { origin_ = origin; }
 
@@ -139,8 +163,11 @@ class CreditCard : public AutofillDataModel {
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
   static std::u16string NetworkForDisplay(const std::string& network);
 
-  // The ResourceBundle ID for the appropriate card issuer network image.
-  static int IconResourceId(const std::string& network);
+  // The ResourceBundle ID for the appropriate card issuer icon.
+  static int IconResourceId(Suggestion::Icon icon);
+
+  // Converts icon_str to Suggestion::Icon and calls the method above.
+  static int IconResourceId(std::string_view icon_str);
 
   // Returns the internal representation of card issuer network corresponding to
   // the given |number|.  The card issuer network is determined purely according
@@ -156,15 +183,17 @@ class CreditCard : public AutofillDataModel {
   // because they are not required.
   static bool IsNicknameValid(const std::u16string& nickname);
 
-  // Returns string of dots for hidden card information.
+  // The first function returns dots that are each padded by whitespace while
+  // the latter returns just a sequence of dots.
   static std::u16string GetMidlineEllipsisDots(size_t num_dots);
+  static std::u16string GetMidlineEllipsisPlainDots(size_t num_dots);
 
   // Returns whether the card is a local card.
   static bool IsLocalCard(const CreditCard* card);
 
   // Network issuer strings are defined at the bottom of this file, e.g.
   // kVisaCard.
-  void SetNetworkForMaskedCard(base::StringPiece network);
+  void SetNetworkForMaskedCard(std::string_view network);
 
   // AutofillDataModel:
   AutofillMetadata GetMetadata() const override;
@@ -177,9 +206,9 @@ class CreditCard : public AutofillDataModel {
   // FormGroup:
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
-                        ServerFieldTypeSet* matching_types) const override;
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+                        FieldTypeSet* matching_types) const override;
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
@@ -217,7 +246,9 @@ class CreditCard : public AutofillDataModel {
   Issuer card_issuer() const { return card_issuer_; }
   void set_card_issuer(Issuer card_issuer) { card_issuer_ = card_issuer; }
   const std::string& issuer_id() const { return issuer_id_; }
-  void set_issuer_id(const std::string& issuer_id) { issuer_id_ = issuer_id; }
+  void set_issuer_id(const std::string_view issuer_id) {
+    issuer_id_ = std::string(issuer_id);
+  }
 
   // If the card numbers for |this| and |imported_card| match, and merging the
   // two wouldn't result in unverified data overwriting verified data,
@@ -258,7 +289,6 @@ class CreditCard : public AutofillDataModel {
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.
   bool operator==(const CreditCard& credit_card) const;
-  bool operator!=(const CreditCard& credit_card) const;
 
   // Returns true if the data in this model was entered directly by the user,
   // rather than automatically aggregated.
@@ -353,9 +383,11 @@ class CreditCard : public AutofillDataModel {
   // several fields.
   std::u16string ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields()
       const;
-  // The string used to represent the icon to be used for the autofill
-  // suggestion. For ex: visaCC, googleIssuedCC, americanExpressCC, etc.
-  std::string CardIconStringForAutofillSuggestion() const;
+
+  // The icon to be used for the autofill suggestion. For example, icon for:
+  // visa, american express, etc.
+  Suggestion::Icon CardIconForAutofillSuggestion() const;
+
   // A label for this card formatted as 'IssuerNetwork ****2345'. By default,
   // the `obfuscation_length` is set to 4 which would add **** to the last four
   // digits of the card.
@@ -431,6 +463,10 @@ class CreditCard : public AutofillDataModel {
     card_art_url_ = card_art_url;
   }
 
+  // Returns true when the card has rich card art, excluding any static card art
+  // image.
+  bool HasRichCardArtImageFromMetadata() const;
+
   const std::u16string& product_description() const {
     return product_description_;
   }
@@ -438,7 +474,13 @@ class CreditCard : public AutofillDataModel {
     product_description_ = product_description;
   }
 
+  const GURL& product_terms_url() const { return product_terms_url_; }
+  void set_product_terms_url(const GURL& product_terms_url) {
+    product_terms_url_ = product_terms_url;
+  }
+
   const std::u16string& cvc() const { return cvc_; }
+  void clear_cvc() { cvc_.clear(); }
   void set_cvc(const std::u16string& cvc) { cvc_ = cvc; }
 
  private:
@@ -448,7 +490,7 @@ class CreditCard : public AutofillDataModel {
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationYearFromString);
 
   // FormGroup:
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
   bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
@@ -469,6 +511,17 @@ class CreditCard : public AutofillDataModel {
 
   // Sets the name_on_card_ value based on the saved name parts.
   void SetNameOnCardFromSeparateParts();
+
+  // A unique identifier for cards of `record_type()` `kLocalCard`. For them,
+  // the `guid_` identifies the card across browser restarts and is used as the
+  // primary key in the database.
+  // For server cards, see `server_id_` and `instrument_id_`. Unfortunately,
+  // some dependencies around `guid_` for server cards exist. See the server_id
+  // constructor of `CreditCard()`. Notably, for server cards the `guid_` is
+  // not persisted and should not be used.
+  // TODO(crbug.com/1121806): Create a variant of the different ids, since
+  // only one of them should be populated based on the `record_type()`.
+  std::string guid_;
 
   // The origin of this data.  This should be
   //   (a) a web URL for the domain of the form from which the data was
@@ -544,12 +597,16 @@ class CreditCard : public AutofillDataModel {
   VirtualCardEnrollmentType virtual_card_enrollment_type_ =
       VirtualCardEnrollmentType::kTypeUnspecified;
 
-  // The url to fetch the rich card art image.
+  // The URL to fetch the rich card art image.
   GURL card_art_url_;
 
   // The product description for the card to be used in the UI when card is
   // presented.
   std::u16string product_description_;
+
+  // The URL for issuer terms of service to be displayed on the settings
+  // page.
+  GURL product_terms_url_;
 
   // The card verification code of the card. May be empty.
   std::u16string cvc_;
@@ -557,19 +614,6 @@ class CreditCard : public AutofillDataModel {
 
 // So we can compare CreditCards with EXPECT_EQ().
 std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card);
-
-// The string identifiers for credit card icon resources.
-extern const char kAmericanExpressCard[];
-extern const char kDinersCard[];
-extern const char kDiscoverCard[];
-extern const char kEloCard[];
-extern const char kGenericCard[];
-extern const char kJCBCard[];
-extern const char kMasterCard[];
-extern const char kMirCard[];
-extern const char kTroyCard[];
-extern const char kUnionPay[];
-extern const char kVisaCard[];
 
 }  // namespace autofill
 

@@ -208,6 +208,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_COOKIE_CONTROLS_IPH_MESSAGE" desc="In-context Product Help - Appears right under the page info icon to highlight the Cookie Controls entrypoint.">
         Site not working? Third-party cookies are blocked
       </message>
+      <message name="IDS_COOKIE_CONTROLS_REMINDER_IPH_MESSAGE" desc="In-context Product Help - Appears right under the page info icon to highlight the Cookie Controls entrypoint. This message is a reminder.">
+        Site not working? Try temporarily allowing third-party cookies
+      </message>
 
       <!-- Main Preferences -->
       <message name="IDS_PREFS_SECTION_BASICS" desc='Title of "Basics" section of preferences. [CHAR_LIMIT=32]'>
@@ -304,6 +307,28 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SIGN_IN_GOOGLE_ACTIVITY_CONTROLS_SUMMARY" desc="Message of Google activity controls preference in signed in accounts settings screen">
         Control how your browsing history is used to personalize Search and more
       </message>
+      <message name="IDS_SIGN_IN_PERSONALIZE_GOOGLE_SERVICES_TITLE" desc="Title of 'Personalize Google services' preference in signed in accounts settings screen">
+        Personalize Google services
+      </message>
+      <message name="IDS_SIGN_IN_PERSONALIZE_GOOGLE_SERVICES_SUMMARY" desc="Message of 'Personalize Google services' preference in signed in accounts settings screen">
+        Control how your synced history can be used to personalize other Google services
+      </message>
+      <!-- Personalized Google services preferences-->
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_SUMMARY" desc="Summary of 'Personalize Google services' settings screen">
+        To get the most personalized experience, include Chrome in Web &amp; App Activity and linked Google services
+      </message>
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_WAA_TITLE" desc="Title of 'Web &amp; App activity' preference in 'Personalize Google services' settings screen">
+        Web &amp; App Activity
+      </message>
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_WAA_SUMMARY" desc="Summary of 'Web &amp; App activity' preference in 'Personalize Google services' settings screen">
+        Include Chrome history if you want to add it to the Web &amp; App Activity in your Google Account
+      </message>
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_LINKED_SERVICES_TITLE" desc="Title of 'Linked Google services' preference in 'Personalize Google services' settings screen">
+        Linked Google services
+      </message>
+      <message name="IDS_PERSONALIZED_GOOGLE_SERVICES_LINKED_SERVICES_SUMMARY" desc="Summary of 'Linked Google services' preference in 'Personalize Google services' settings screen">
+        Link Chrome and other Google services if you want them to share data with each other
+      </message>
       <!-- Unified consent preferences -->
       <message name="IDS_SIGN_OUT_AND_TURN_OFF_SYNC" desc="The text for a preferences row that for signs out the user and turns off sync.">
         Sign out and turn off sync
@@ -346,6 +371,18 @@ CHAR_LIMIT guidelines:
       </message>
       <message name="IDS_PREFS_SECTION_PRELOAD_PAGES_TITLE" desc="Title for the Preload Pages section. This section allows the user to control whether Chrome will preload pages that it thinks the user is likely to load in the future. [CHAR_LIMIT=32]">
         Preload Pages
+      </message>
+      <message name="IDS_PRELOAD_PAGES_PRIVACY_GUIDE_SUMMARY" desc="Title for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
+        Choose whether to preload pages
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRIVACY_GUIDE_BULLET_ONE" desc="First bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
+        Browsing and searching is faster
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRIVACY_GUIDE_BULLET_TWO" desc="Second bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
+        Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRIVACY_GUIDE_BULLET_THREE" desc="Third bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
+        If you allow cookies, Chrome may use them when preloading
       </message>
       <message name="IDS_PRELOAD_PAGES_TITLE" desc="Title for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
         Preload pages
@@ -423,35 +460,6 @@ CHAR_LIMIT guidelines:
         Automatically sends usage statistics and crash reports to Google
       </message>
 
-      <!-- Metrics settings -->
-      <message name="IDS_PREFS_METRICS_SETTINGS" desc="Title for the page that allows the user to control how much usage data Chrome uploads. [CHAR_LIMIT=32]">
-        Usage data
-      </message>
-      <message name="IDS_MANAGE_METRICS_SETTINGS" desc="The text for a preferences row to open metrics settings.">
-        Manage usage data sharing
-      </message>
-      <message name="IDS_METRICS_SETTINGS_DESCRIPTION" desc="The text describing what the metrics settings page controls.">
-        Choose what you’re comfortable to share with Chrome. The metrics you share will be used to help improve Chrome’s features, performance, and stability.
-      </message>
-      <message name="IDS_METRICS_SETTINGS_EXTENDED_TITLE" desc="Title for the extended metrics option.">
-        Extended usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_EXTENDED_SUMMARY" desc="Description text for 'Extended usage data' option in Usage data settings that enables extended metrics collection. Other options are 'Basic usage data' and 'No usage data'.">
-        Basic data plus information about the websites you visit and apps you use
-      </message>
-      <message name="IDS_METRICS_SETTINGS_BASIC_TITLE" desc="Title for the basic metrics option.">
-        Basic usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_BASIC_SUMMARY" desc="Description text for 'Basic usage data' option in Usage data settings that enables basic metrics collection. Other options are 'Extended usage data' and 'No usage data'.">
-        How you interact with Chrome, settings you’ve selected, details of Chrome crashes
-      </message>
-      <message name="IDS_METRICS_SETTINGS_NONE_TITLE" desc="Title for no metrics option.">
-        No usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_NONE_SUMMARY" desc="Description text for 'No usage data' option in Usage data settings that disables metrics collection. Other options are 'Extended usage data' and 'Basic usage data'.">
-        No statistics or crash reports are sent to Google
-      </message>
-
       <!-- Search engine settings -->
       <message name="IDS_SEARCH_ENGINE_SETTINGS" desc="Title for Search Engine settings. [CHAR_LIMIT=32]">
         Search engine
@@ -471,6 +479,17 @@ CHAR_LIMIT guidelines:
         You can choose your search engine
       </message>
 
+      <!-- Search engine choice screen. TODO(b/280753530): replace with final versions -->
+      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_TITLE" desc="" translateable="false">
+        *Title*
+      </message>
+      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_SUBTITLE" desc="" translateable="false">
+        *Subtitle*
+      </message>
+      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_PRIMARY_ACTION" desc="" translateable="false">
+        *Primary Action*
+      </message>
+
       <!-- Autofill and Payments preferences -->
       <message name="IDS_PAYMENT_APPS_TITLE" desc="Title of the preference to list the payment apps on device.">
         Payment apps
@@ -487,9 +506,6 @@ CHAR_LIMIT guidelines:
      <message name="IDS_AUTOFILL_PROFILE_EDITOR_COUNTRY" desc="Label for a spinner input field containing a list of countries or regions [CHAR_LIMIT=32]">
         Country/Region
       </message>
-      <message name="IDS_AUTOFILL_PROFILE_EDITOR_HONORIFIC_PREFIX" desc="Label for text input field containing a title that can be auto-filled by Chrome. A 'Title' field in a web form could be a prefix like Ms., Mx., or Dr. or a position held, like Captain or Rabbi. [CHAR_LIMIT=32]" meaning="Honorific">
-        Title
-      </message>
       <message name="IDS_AUTOFILL_PROFILE_EDITOR_EMAIL_ADDRESS" desc="Label for text input field containing an e-mail address. [CHAR_LIMIT=32]">
         Email
       </message>
@@ -502,8 +518,23 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_NICKNAME" desc="Label for text input field containing the nickname on a credit card. [CHAR_LIMIT=25]">
         Card nickname
       </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_DATE_HINT" desc="Hint for text input field containing the expiration date on a credit card. [CHAR_LIMIT=25]">
+        MM / YY
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_SECURITY_CODE" desc="Label for text input field containing the security code on a credit card. [CHAR_LIMIT=25]">
+        Security code
+      </message>
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_INVALID_NICKNAME" desc="Label for text input field containing the nickname on a credit card. [CHAR_LIMIT=25]">
         Nickname can’t include numbers
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_INVALID_EXPIRATION_DATE" desc="Error label shown to the user in the expiration date field when the expiration date is invalid. [CHAR_LIMIT=25]">
+        Invalid date
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRED_CARD" desc="Error label shown to the user in the expiration date field when the expiration date has already passed. [CHAR_LIMIT=25]">
+        Card expired
+      </message>
+      <message name="IDS_AUTOFILL_OPTIONAL_TAG" desc="The placeholder/label text to show for the autofill security code text field to indicate that the user can optionally enter a card security code.">
+        Optional
       </message>
       <message name="IDS_AUTOFILL_CARD_HOLDER_NAME" desc="Label for text input field containing the name on a credit card. [CHAR_LIMIT=32]">
         Cardholder name
@@ -513,12 +544,6 @@ CHAR_LIMIT guidelines:
       </message>
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_DATE" desc="Label for text input field containing a credit card expiration date. [CHAR_LIMIT=32]">
         Expiration date
-      </message>
-      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_MONTH" desc="Accessibility label for a spinner input field containing a list of expiration months for a credit card. [CHAR_LIMIT=32]">
-        Expiration month
-      </message>
-      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_YEAR" desc="Accessibility label for a spinner input field containing a list of expiration years for a credit card. [CHAR_LIMIT=32]">
-        Expiration year
       </message>
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_BILLING_ADDRESS" desc="Label for a spinner input field containing a list of billing addresses for a credit card. [CHAR_LIMIT=32]">
         Billing address
@@ -560,6 +585,15 @@ CHAR_LIMIT guidelines:
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
         Autofill Options
       </message>
+      <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog where the user confirms their intention to delete their saved CVCs.">
+        Delete saved security codes?
+      </message>
+      <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_MESSAGE" desc="Message for the dialog where the user confirms their intention to delete their saved CVCs.">
+        All security codes saved on your device and in your Google Account will be deleted
+      </message>
+      <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_DELETE_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to delete their saved CVCs.">
+        Delete
+      </message>
 
        <!-- Payment Request section preview strings -->
        <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW" desc="This is a snippet of a payment method a user has saved to Chrome, plus an indication of the number of additional payment methods the user has saved.
@@ -590,6 +624,12 @@ CHAR_LIMIT guidelines:
       </message>
       <message name="IDS_PASSWORD_MANAGER_SETTINGS_TITLE" desc="Title for the settings menu item leading to the Password Manager UI surface. This allows users to e.g. manage their saved passwords, toggle saving and auto-sign-in on/off, etc. [CHAR_LIMIT=32]">
         Password Manager
+      </message>
+      <message name="IDS_PASSWORD_SAVING_ON_BY_ADMINISTRATOR" desc="Subtitle for the settings menu item leading to the Password Manager UI surface, shown when the device administrator set saving passwords to enabled.">
+        Password saving is turned on by your administrator
+      </message>
+      <message name="IDS_PASSWORD_SAVING_OFF_BY_ADMINISTRATOR" desc="Subtitle for the settings menu item leading to the Password Manager UI surface, shown when the device administrator set saving passwords to disabled.">
+        Password saving is turned off by your administrator
       </message>
       <message name="IDS_PASSWORD_SETTINGS_SAVE_PASSWORDS" desc="Title for the checkbox toggling whether passwords are saved or not. [CHAR_LIMIT=32]">
         Save passwords
@@ -780,6 +820,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORD_MIGRATION_WARNING_CANCEL" desc="The text for the cancel button in the password migration warning sheet. It closes the sheet">
         Cancel
       </message>
+      <message name="IDS_POST_PASSWORD_MIGRATION_SHEET_TITLE" desc="The title of the post password migration sheet that informs the user that the migration happened." formatter_data="android_java">
+        We changed how passwords are saved on this device
+      </message>
+      <message name="IDS_POST_PASSWORD_MIGRATION_SHEET_SUBTITLE" desc="The subtitle of the post password migration sheet." formatter_data="android_java">
+        Your lists of saved passwords for Chrome and <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph> were merged. You can still autofill all your saved passwords on both apps.
+      </message>
       <message name="IDS_EXPORTED_PASSWORDS_DELETION_DIALOG_TITLE" desc="The title of the dialog that offers to delete passwords from Google Password Manager." formatter_data="android_java">
         Delete passwords from Google Password Manager?
       </message>
@@ -914,229 +960,25 @@ For example, some websites may respond to this request by showing you ads that a
       </message>
 
       <!-- Privacy Sandbox Settings. Used by //chrome/browser/privacy_sandbox. -->
-      <message name="IDS_PREFS_PRIVACY_SANDBOX" desc="Title for the 'Privacy Sandbox' page. 'Privacy Sandbox' is a noun phrase (title case).">
-        Privacy Sandbox
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_STATUS_ENABLED" desc="Status text, displayed when the Privacy sandbox APIs are enabled.">
-        Trial features are on
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_STATUS_DISABLED" desc="Status text, displayed when the Privacy sandbox APIs are disabled.">
-        Trial features are off
-      </message>
       <message name="IDS_PRIVACY_SANDBOX_SNACKBAR_MESSAGE" desc="The text displayed in the snackbar, which gives the user an option to navigate to the Privacy Sandbox settings page. 'Privacy sandbox' has TC ID 5753235213964358658.">
         Learn about and control new technologies that aim to replace third-party cookies
       </message>
       <message name="IDS_SETTINGS_AD_PRIVACY_RESTRICTED_LINK_ROW_SUB_LABEL" desc="A string that describes 'Ad privacy', the label that appears just above it. This is the version of IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL for restricted users.">
         Manage info used by sites to measure ad performance
       </message>
-
-      <message name="IDS_PRIVACY_SANDBOX_TRIALS_TITLE" desc="The title of the settings page on which the user can find all Privacy Sandbox trials. When launched, this page will appear at chrome://settings/privacySandbox. To get there: 1) go to Chrome settings 2) From the main menu (top left of the page) choose “Security and privacy” 3) At the bottom of the page, choose “Privacy Sandbox” There are 3 cards on this page that are presented as features. Only the first includes controls the user can manage, but we want to convey that Privacy Sandbox includes all of the things on this page.">
-        Trials
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION" desc="The page description that appears beneath the page title. * “can” is important: When trials ara on, any site the user visits may or may not be using one of the trial APIs. The chances that the user is in an active trial on any given page are low. * “less cross-site tracking”:  We can’t promise the complete elimination of cross-site tracking. Privacy Sandbox is about blocking cross-site tracking as much as possible, but sites can still use fingerprinting to try and identify users from one site to the next.">
-        With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your data. That means more privacy for you and less cross-site tracking. We’ll add new trials as they’re ready to test.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_ABOUT_AD_PERSONALIZATION_LINK" desc="Learn more link * Unfolds content within the page * The text that appears describes 2 ways in which a site can target ads: the “Topics API” and the “FLEDGE API”. You can see what those are at www.privacysanbox.com or they’re described for the user’s benefit in other text. * “ad personalization” can mean different things in different contexts. Here, we’re using it as a simple noun. In other words, it’s not the name of a control but a descriptive term used to describe the personalization of ads in the Chrome browser. This “ad personalization” shouldn’t be confused with the setting in the Google Account called “Ad personalization”.">
-       About Browser-based ad personalization
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE" desc="The title of card 1 of 3. * Title of the setting to control “Browser-based ad personalization”.">
-        Ad personalization
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY" desc="The description of card 1 of 3. * “browsing history”: we define this as “a record of sites you’ve visited using Chrome on this device.” By “recent”, we mean the last 3 weeks (also defined later in the UI). * “affects the ads you see”: We think we’re stating the obvious. The ads the user sees are affected by the things they do online, like browsing the web.">
-        Your browsing history affects the ads you see
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DESCRIPTION_TRIALS_ON" desc="A paragraph beneath the card title. Note that this paragraph is written so that it describes both the Topics API and the FLEDGE API. Some things are described slightly differently for this reason. Version 1 of 3 of this paragraph.  1) The first line is written with the assumption that the user a) has Privacy Sandbox trials turned on and b) has been randomly selected by Chrome to be in  an active experiment. As a result of both conditions, this user should have data on this page (a list of interests and a list of sites). 2) NOT THE CASE FOR THIS STRING: A different version of  this first line is written for the case that a user has the Privacy Sandbox trials turned on but they haven’t been randomly selected to be in a trial. 3) NOT THE CASE FOR THIS STRING: A different version of  this first line is written for the case that a user doesn’t have the Privacy Sandbox trials turned on. * “browsing history”:  “a record of sites you’ve visited using Chrome on this device.” * “affects the ads you see and the interests as estimated below”: browsing history leads to Chrome establishing user interests leads to 1) the ads you see are different, and 2) the list of things on this page changes based on what Chrome establishes.* “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “rolling basis each month”: Information associated with Topics and FLEDGE are deleted on a rolling basis at least once per month. It’s simpler to talk about “once per month” rather than 3 weeks for Topics and 4 weeks for FLEDGE. * “Interests can refresh…”: We intend for this line to cover both Topics and FLEDGE. It’s slightly messy, because there is a suggestion that this line is more about Topics than FLEDGE (“interests” is more prominent in the Topics subtitle).">
-        Your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DESCRIPTION_NO_ITEMS" desc="A paragraph beneath the card title. Note that this paragraph is written so that it describes both the Topics API and the FLEDGE API. Some things are described slightly differently for this reason. Version 3 of 3 of this paragraph.  1) NOT THE CASE FOR THIS STRING: A different version of this first line is written for the case that a user has Privacy Sandbox trials turned on AND that they’ve been randomly selected for a trial. 2) NOT THE CASE FOR THIS STRING: A different version of  this first line is written for the case that a user has the Privacy Sandbox trials turned on but they haven’t been randomly selected to be in a trial. 3) The first line is written with the assumption that the user a) doesn’t have Privacy Sandbox trials turned on. b) Because of this, they can’t be randomly selected for a trial. This explains why the user doesn’t have data shown on the page. * “browsing history”:  “a record of sites you’ve visited using Chrome on this device.” * “affects the ads you see and the interests as estimated below”: browsing history leads to Chrome establishing user interests leads to 1) the ads you see are different, and 2) the list of things on this page changes based on what Chrome establishes. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “rolling basis each month”: Information associated with Topics and FLEDGE are deleted on a rolling basis at least once per month. It’s simpler to talk about “once per month” rather than 3 weeks for Topics and 4 weeks for FLEDGE. * “Interests can refresh…”: We intend for this line to cover both Topics and FLEDGE. It’s slightly messy, because there is a suggestion that this line is more about Topics than FLEDGE (“interests” is more prominent in the Topics subtitle).">
-        If Chrome has randomly placed you in an active trial, your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month. Interests refresh unless you remove them.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DESCRIPTION_TRIALS_OFF" desc="A paragraph beneath the card title. Note that this paragraph is written so that it describes both the Topics API and the FLEDGE API. Some things are described slightly differently for this reason. Version 2 of 3 of this paragraph.  1) NOT THE CASE FOR THIS STRING: A different version of this first line is written for the case that a user has Privacy Sandbox trials turned on AND that they’ve been randomly selected for a trial. 2) The first line is written with the assumption that the user 1) has Privacy Sandbox trials turned on but 2) has NOT been randomly selected by Chrome to be in  an active experiment. This explains why the user doesn’t have data shown on the page. 3) NOT THE CASE FOR THIS STRING: A different version of  this first line is written for the case that a user doesn’t have the Privacy Sandbox trials turned on. * “browsing history”:  “a record of sites you’ve visited using Chrome on this device.” * “affects the ads you see and the interests as estimated below”: browsing history leads to Chrome establishing user interests leads to 1) the ads you see are different, and 2) the list of things on this page changes based on what Chrome establishes. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “rolling basis each month”: Information associated with Topics and FLEDGE are deleted on a rolling basis at least once per month. It’s simpler to talk about “once per month” rather than 3 weeks for Topics and 4 weeks for FLEDGE.* “Interests can refresh…”: We intend for this line to cover both Topics and FLEDGE. It’s slightly messy, because there is a suggestion that this line is more about Topics than FLEDGE (“interests” is more prominent in the Topics subtitle).">
-        When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" desc="The title of card 2 of 3. * The title of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads.">
-        Ad measurement
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_DESCRIPTION_TRIALS_ON" desc="A description of the Ad measurement API. * “Ad measurement” is the name of an API in this context. We don’t use “API” with the user, but they need to know that there is something called “A measurement” and what it does. * “sites you visit”: call the API to get information. The actor is the site, not Chrome. * “restricts cross-site tracking”: Today, with 3rd-party cookies, ad measurement technologies can inadvertently (and intentionally) share considerable information from one site to another). This feature restricts that sharing in order to improve the user’s privacy. * “your browsing history”: points to chrome://history/ * “You can control…”: The user can “control” this data by clearing their browser data at chrome://history/">
-        Ad measurement allows sites you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
-
-When you delete your browsing history — all or for a specific site — you also delete associated measurement info. See <ph name="BEGIN_LINK">&lt;link&gt;</ph>your browsing history<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_DESCRIPTION_TRIALS_OFF" desc="A description of the Ad measurement API. * “Ad measurement” is the name of an API in this context. We don’t use “API” with the user, but they need to know that there is something called “A measurement” and what it does. * “sites you visit”: call the API to get information. The actor is the site, not Chrome. * “restricts cross-site tracking”: Today, with 3rd-party cookies, ad measurement technologies can inadvertently (and intentionally) share considerable information from one site to another). This feature restricts that sharing in order to improve the user’s privacy. * “your browsing history”: points to chrome://history/ * “You can control…”: The user can “control” this data by clearing their browser data at chrome://history/">
-        When trials are on, Ad measurement allows sites you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
-
-When you delete your browsing history — all or for a specific site — you also delete associated measurement info. See <ph name="BEGIN_LINK">&lt;link&gt;</ph>your browsing history<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" desc="The description of card 2 of 3 * The description of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads.">
-        Advertisers can understand how ads perform
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_TITLE" desc="The title of card 3 of 3. * “reducation”: don’t use a word that sounds more like “elimination”.  We can’t promise the complete removal of spam.">
-        Spam &amp; fraud reduction
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_SUMMARY" desc="The description of card 3 of 3. * “help”: This API is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players." >
-        Help sites fight fraud and distinguish bots from people
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_DESCRIPTION_TRIALS_ON" desc="The first of 3 paragraphs on the spam &amp; fraud card. This is a behind-the-scenes upgrade to Chrome. There aren’t any user controls or data to interact with, at least not yet. * “private state tokens”: explained in the next paragraph * “help”: This feature is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players. * “interaction”: is broad. It’s not just viewing a site but also how you interact with it, like by signing in * “Later”:  is important to convey the passage of time. We don’t want to convey how much time (it could be tiny). What’s important is that the user understands this is essentially a two-step process. A private state token is issued. Sometime in the future, when hyou visit a different site, that private state token might get used. ">
-        Spam &amp; fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
-
-Based on your interaction with a site, like regularly signing in to an account, that site can issue a private state token to your browser. Later, if other sites you visit check for and find a valid private state token, they’re more likely to treat you like a person and not a bot.
-
-Private state tokens improve privacy on the web and can’t be used to find out who you are.
-      </message>
-            <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_DESCRIPTION_TRIALS_OFF" desc="The first of 3 paragraphs on the spam &amp; fraud card. This is a behind-the-scenes upgrade to Chrome. There aren’t any user controls or data to interact with, at least not yet. * “private state tokens”: explained in the next paragraph * “help”: This feature is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players. * “interaction”: is broad. It’s not just viewing a site but also how you interact with it, like by signing in * “Later”:  is important to convey the passage of time. We don’t want to convey how much time (it could be tiny). What’s important is that the user understands this is essentially a two-step process. A private state token is issued. Sometime in the future, when hyou visit a different site, that private state token might get used. ">
-        When trials are on, Spam &amp; fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
-
-Based on your interaction with a site, like regularly signing in to an account, that site can issue a private state token to your browser. Later, if other sites you visit check for and find a valid private state token, they’re more likely to treat you like a person and not a bot.
-
-Private state tokens improve privacy on the web and can’t be used to find out who you are.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_TOPICS_1" desc="TOPICS API Bullet 1 of 3 that appear beneath the “Your interests as estimated by Chrome” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “What data is used:” is bold and serves as a label to help people skimming the page. * “Your browsing history”: The user’s browsing history is available beneath the “History” menu at Chrome’s top level. The Topics API estimates topics of interest based on sites in the user’s browsing history that are participating in the trials.">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used:<ph name="END_BOLD">&lt;/b&gt;</ph> Your browsing history, a record of sites you’ve visited using Chrome on this device.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_TOPICS_2" desc="TOPICS API Bullet 2 of 3 that appear beneath the “Your interests as estimated by Chrome” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How we use this data:” is bold and serves as a label to help people skimming the page. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”).">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How we use this data:<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome can estimate your interests. Later, a site you visit can ask Chrome to see your interests in order to personalize the ads you see.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_TOPICS_3" desc="TOPICS API Bullet 3 of 3 that appear beneath the “Your interests as estimated by Chrome” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How you can manage your data:” is bold and serves as a label to help people skimming the page. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “older than 4 weeks”: We’re trying to convey a rolling delete. Imagine a user opens a browser for the very first time. As the user browses, Chrome will estimate up to 5 topics of interest in the first week. In the second week, Chrome will estimate up to 5 additional topics of interest. The same for the third week, for a total of 15 potential interests. In week 4, Chrome will automatically delete the 5 interests from week 1 so that there aren’t ever more than 15 topics associated with a user at any given time. * “interests can refresh”: If a user loves horror films and reads about them for months on end, the interest “Horror movies” might get deleted and refreshed in the same week, so that “Horror movies” doesn’t ever disappear from the user’s list of interests. * “Or you can…”: A user might love horror movies but can’t stand the idea of seeing ads about horror movies (because even the visuals will ruin the surprise of opening night). In this case, the user can remove “Horror movies” from the list of interests Chrome will consider. This removal remains in place indefinitely. Note that the user might still see ads about Horror movies from different ad networks or by other means than Chrome’s “Browser-based ad personalization” setting.">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data:<ph name="END_BOLD">&lt;/b&gt;</ph> To protect your privacy, we auto-delete your interests that are older than 4 weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests you don’t want Chrome to consider.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_FLEDGE_1" desc="FLEDGE APIBullet 1 of 3 that appear beneath the “Sites you visit that define your interests” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “What data is used:” is bold and serves as a label to help people skimming the page. * “Your browsing history”: The user’s browsing history is available beneath the “History” menu at Chrome’s top level. This content taken in isolation is somewhat misleading. With FLEDGE, a site can store information in Chrome about the user’s visit to their site. For example, the site might store “running_shoes_red_size_35” to indicate that the user showed interest in a particular shoe. We’re OK with the simplification in this bullet because 1) we explain it in the next bullet and 2) we want the user to understand that at the top level, both Topics &amp; Fledge are based on the same thing and that is the user’s browsing history.">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used:<ph name="END_BOLD">&lt;/b&gt;</ph> Your browsing history, a record of sites you’ve visited using Chrome on this device.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_FLEDGE_2" desc="FLEDGE API Bullet 2 of 3 that appear beneath the “Sites you visit that define your interests” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How we use this data:” is bold and serves as a label to help people skimming the page.">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How we use this data:<ph name="END_BOLD">&lt;/b&gt;</ph> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_FLEDGE_3"  desc="FLEDGE API Bullet 3 of 3 that appear beneath the “Sites you visit that define your interests” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How you can manage your data:” is bold and serves as a label to help people skimming the page. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “older than 4 weeks”: We’re trying to convey a rolling delete. Imagine a user opens a browser for the very first time. As the user browses, sites can store info with Chrome for up to 4 weeks. So in week 1, the user visits site A. When week 5 starts, site A is removed from the list of sites. * “a site you visit…”: If a user visits site A every week for months on end, that site will remain on the user’s list of sites for months on end. * “Or you can…”: Say a user strongly dislikes www.siteB.com. But that user might visit siteB.com as part of their job, or just to see how bad it really is. The user can stop siteB from defining interests for them. This block lasts indefinitely.">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data:<ph name="END_BOLD">&lt;/b&gt;</ph> To protect your privacy, we auto-delete sites from the list that are older than 4 weeks. A site you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_TITLE" desc="Title of the settings page to explain ad personalization in the Privacy Sandbox.">
-        About ad personalization
-      </message>
       <message name="IDS_PRIVACY_SANDBOX_ADD_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that adds an ad interest for the Topics API of the Privacy Sandbox.">
         Add <ph name="INTEREST">%1$s<ex>Acting and Theater</ex></ph>
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_ADD_SITE_BUTTON_DESCRIPTION" desc="Content description for button that adds an ad interest for the FLEDGE API of the Privacy Sandbox.">
-        Add <ph name="SITE">%1$s<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_ADD_INTEREST_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was added to the Topics API of the Privacy Sandbox.">
-        Chrome can consider this interest
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_ADD_SITE_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was added to the FLEDGE API of the Privacy Sandbox.">
-        Site can define interests
       </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest for the Topics API of the Privacy Sandbox.">
         Remove <ph name="INTEREST">%1$s<ex>Acting and Theater</ex></ph>
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITE_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest for the FLEDGE API of the Privacy Sandbox.">
-        Remove <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was removed from the Topics API of the Privacy Sandbox.">
-        Interest removed
-      </message>
-       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_TITLE" desc="Title of the settings page to configure interests that were removed from ad personalization in the Privacy Sandbox.">
-        Interests you removed
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITE_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was removed from the FLEDGE API of the Privacy Sandbox.">
-        Site removed
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_SITES_TITLE" desc="Title of the settings page to configure sites that were removed from ad personalization in the Privacy Sandbox.">
-        Sites you removed
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_DESCRIPTION" desc="A paragraph beneath the card title. The page title explains why things appear on this page. This string explains why the user might want to “un-remove” or “re-allow” an item from the list. If a user does choose “Allow” for an item, there won’t be any immediate change in the interface because the item simply becomes eligible again. So, for example, the user previously blocked the interest “Horror movies.” Today, they “allow” “Horror movies” because they’ve decided that as about horror movies are actually OK to see. It might take another week or longer, based on the user’s browsing history, for “Horror movies” to appear in the list of interests again as an active interest within the last 3 weeks. * “Allow”: This aligns with the button label titled “allow”. It wouldn’t make much sense if the user couldn’t see the Allow button on the card.">
-        Allow an interest or site if you think ads related to the item would be useful to you
-      </message>
-       <message name="IDS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUBTITLE" desc="Subtitle of page where the user controls thier Browser-based ad personalization settings.">
-        Browser-based ad personalization
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TOPIC_INTERESTS_SUBTITLE" desc="TOPICS API A sub title that describes the first of 2 ways a site can get info from Chrome in order to target ads to the user. Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. * “Your”: we need to convey a sense of ownership, even if the user didn’t explicitly choose the interests we’re talking about. Without the “your”, it could sound like Chrome is simply building a generic library of interests. * “estimated”: It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “by Chrome”: This is new behavior for a browser (Chrome) to take an active role in processing user data for the purposes of showing ads. It’s important to convey “chrome”, the actor in this case.">
-        Your interests as estimated by Chrome
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_INTERESTS_SUBTITLE" desc="FLEDGE API. A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-        Sites you visit that define your interests
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TOPIC_EMPTY_STATE" desc="Summary shown when no interests for ad personlization are available for the Topics API of the Privacy Sandbox.">
-        A list of interests will appear here as you browse the web
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVED_TOPICS_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the Topics API of the Privacy Sandbox.">
-        Interests you removed will appear here
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_REMOVED_SITES_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the FLEDGE API of the Privacy Sandbox.">
-        Sites you removed will appear here
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_SUBTITLE" desc="FLEDGE API A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-        Sites you visit that define your interests
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_EMPTY_STATE" desc="Summary shown when no interests for ad personlization are available for the FLEDGE API of the Privacy Sandbox.">
-        A list of sites will appear here as you browse the web
-      </message>
-
-      <!-- Privacy Sandbox dialog. -->
-      <message name="IDS_PRIVACY_SANDBOX_DIALOG_NO_BUTTON" desc="A button that allows the user to decline joining the Privacy Sandbox trials. If the user chooses “No thanks” this consent page disappears and the flow is complete.">
-        No thanks
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_DIALOG_YES_BUTTON" desc="A button that allows the user to accept joining the Privacy Sandbox trials. If the user chooses “Yes, I’m in”: 1)  this consent page disappears and the flow is complete 2) The Privacy Sandbox trials are turned on for this user. These features include everything described above. The page that hosts the settings will appear at chrome://settings/privacySandbox. Saying “Yes, I’m in” is like turning the toggle on. “No thanks” is like keeping the toggle off.">
-        Yes, I’m in
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_DIALOG_ACKNOWLEDGE_BUTTON" desc="The user can acknowledge the changes with “Got it”. This consent page disappears and the flow is complete.">
-        Got it
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_DIALOG_SETTINGS_BUTTON" desc="The user can choose “Settings” to visit chrome://settings/privacySandbox. If they do, they’ll find the toggle on for Sandbox trials, which include everything they’ve read above. They can leave trials on or turn them off on this page. Choosing “Settings”, the user will navigate away from this page and won’t be able to return here.">
-        Settings
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_TITLE" desc="CONTEXT: there are updates to the Chrome browser each month. Just after the user accepts the latest update, this message will appear. The user must make a choice, and this page can’t be dismissed until they do. The title of the page. * The title needs to be framed so that clicking the accept button makes sense * “Help us” is intended to convey a sense of collaboration. Privacy Sandbox is an ongoing multi-year effort. There are sites participating to help us and we also need users to agree to these trials so that we can measure the effectiveness of the features we're building. * “build” is intended to convey that this is a process. The user is agreeing to an effort rather than a stable set of features. Something like “make” doesn't have the same nuance. * “private web” is the promise of privacy sandbox.">
-        Help us build a more private web
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_SUBTITLE" desc="A subtitle on the consent page. Consider this a tagline for the Privacy Sandbox project. * “exploring” conveys that this is a work in progress. * “new features” include settings that the user can turn on/off and also backend features that change the way Chrome works for everyone * “allow sites to deliver”: Privacy Sandbox is proposed by Google as a collaborative effort with the browser industry. We’re building and testing functionality that will live in the Chrome browser. In order to land the full promise of Privacy Sandbox, websites &amp; advertisers need to adopt the new APIs / functionality that we’re developing. So “allow sites…” makes it clear to the user that we’re building something for the ecosystem. Typically a Google product builds something for the user, and that’s true in this case, but it’s bigger than that. * “same browsing experience using less of your info”: Another definition of the promise of Privacy Sandbox. Third-party cookies are going away. In this new world, the user will have essentially the same browsing experience but it’s more private because it doesn’t expose so much of the user’s info.">
-        Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_HEADING_ONE" desc="1 of 2 subtitles on the page. We want to write for users who skim the page. That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
-        Limited sharing between sites
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_ONE" desc="The description beneath the “Limited sharing between sites” subtitle. * “exploring” conveys that this is a work in progress. * “restrict” means to lessen. We don’t want to suggest that we’re “eliminating” cross-site tracking. * “tracking”: An example: a user visits site A and then site B. Based on how third-party cookies work today, when that user later visits site C, site C can be aware that the user visited sites A and B, and can even have some sense for what they did on those sites. * “stop ad spam and fraud”:  This feature isn’t really related to restricting cross-site tracking but we combined these features in the same sentence / section for structural reasons.">
-        We’re exploring ways to restrict tracking while enabling sites to stop ad spam and fraud.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_HEADING_TWO" desc="2 of 2 subtitles on the page. We want to write for users who skim the page. That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
-        More control over the ads you see
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_TWO" desc="A paragraph beneath the “More control over the ads you see” subtitle. * “see and remove topics of interests”: we want to stress the element of control * “estimate topics”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “recent browsing history”: Later in the UI, we define this as “a record of sites you’ve visited using Chrome on this device.” By “recent”, we mean the last 3 weeks (also defined later in the UI).">
-        You can see and remove topics of interest sites use to show you ads. Chrome estimates your interests based on your recent browsing history.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_BUTTON" desc="Learn more link * Unfolds content within the page * The text that appears describes 2 ways in which a site can target ads: the “Topics API” and the “FLEDGE API”. You can see what those are at www.privacysanbox.com or they’re described for the user’s benefit in other text. * “ad personalization” can mean different things in different contexts. Here, we’re using it as a simple noun. In other words, it’s not the name of a control but a descriptive term used to describe the personalization of ads in the Chrome browser. This “ad personalization” shouldn’t be confused with the setting in the Google Account called “Ad personalization”.">
-        Learn more about ad personalization in Chrome
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_TOPICS_HEADING" desc="TOPICS API A sub title that describes the first of 2 ways a site can get info from Chrome in order to target ads to the user. Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. * “Your”: we need to convey a sense of ownership, even if the user didn’t explicitly choose the interests we’re talking about. Without the “your”, it could sound like Chrome is simply building a generic library of interests. * “estimated”: It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “by Chrome”: This is new behavior for a browser (Chrome) to take an active role in processing user data for the purposes of showing ads. It’s important to convey “chrome”, the actor in this case.">
-        Your interests as estimated by Chrome
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DROPDOWN_FLEDGE_HEADING"  desc="FLEDGE API. A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-      Sites you visit that define your interests
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_CONSENT_DESCRIPTION_THREE" desc="A conclusion paragraph for the entire page. It sits beneath the “More control over the ads you see” subtitle but it’s no more associated with that topic than “Limit sharing between sites”. * “You can change your mind”: When writing a consent moment, we have a legal obligation to inform the user how they can “revoke their consent” or “opt out”. A friendlier way to say this is “change your mind”. * “in Chrome settings”: The URL is chrome://settings/privacySandbox. We don’t make it a live link because we need the users to stay in this moment until they make a choice. * “The trials run alongside…”: The trials happen in addition to today’s current system based on third-party cookies. In other words, even by accepting in this consent moment, the user’s core experience doesn’t change much. This is an experiment, and we need the user to understand as much.">
-        You can change your mind at any time in Chrome settings. The trials run alongside the current way ads get served, so you won’t see changes right away.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_NOTICE_DESCRIPTION_THREE" desc="A conclusion paragraph for the entire page. It sits beneath the “More control over the ads you see” subtitle but it’s no more associated with that topic than “Limit sharing between sites”.* “in Chrome settings”: The URL is chrome://settings/privacySandbox. We don’t make it a live link because we need the users to stay in this moment until they make a choice.">
-        You can learn more about these features in Chrome settings.
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_OPENED_HALF" desc="The accessibility string read when the Privacy Sandbox prompt bottom sheet is half opened.">
-        Privacy Sandbox prompt opened at half height
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_OPENED_FULL" desc="The accessibility string read when the Privacy Sandbox prompt bottom sheet is fully opened.">
-        Privacy Sandbox prompt opened at full height
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_CLOSED_DESCRIPTION" desc="The accessibility string read when the Privacy Sandbox prompt bottom sheet is closed.">
-        Privacy Sandbox prompt closed
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_TITLE" desc="CONTEXT: there are updates to the Chrome browser each month. Just after the user accepts the latest update, this message will appear. The title of the page. * “Help us” is intended to convey a sense of collaboration. Privacy Sandbox is an ongoing multi-year effort. There are sites participating to help us and we also need users to agree to these trials so that we can measure the effectiveness of the features we're building. * “build” is intended to convey that this is a process. The user is agreeing to an effort rather than a stable set of features. Something like “make” doesn't have the same nuance. * See www.privacysandbox.com for more context.">
-        Help us build a better web
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_DESCRIPTION" desc="* “Chrome is finding new ways”: “finding” is meant to convey a work in progress, like “build” in the title. The features are live and functional, but still in beta. So we want a verb that’s stronger than “exploring” but weaker than “launching”. * “reduce tracking”: This used to read “reduce cross-site tracking”, but we’ve dropped “cross-site” because it makes the idea unnecessarily complicated. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “Then” is an important keyword. It suggests some amount of time later. The first step is that interests are generated. Later (minutes or weeks), a different site might request interests.">
-        Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="BEGIN_LINK">&lt;link&gt;</ph>estimates your interests<ph name="END_LINK">&lt;/link&gt;</ph> and enables you to manage them. Then, sites you visit can ask Chrome for your interests to show you ads.
-      </message>
 
       <!-- Privacy Sandbox v4 - Consent & Notice Flow -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_BULLET_2" desc="* This is 2 of 2 bullets that site beneath the sentence: 'We’re launching new ways to limit what sites can learn about you when they show you personalized ads, for example:' * 'ad measurement' is the name of a new setting we're launching and that appears on the Ad privacy page of Chrome settings.  * 'limited types of data': This setting helps an advertiser associate a user's actions on one site with their actions on another. For example, a user sees an ad on one site and then later buys that product from the company that sells the product. The ad measurement setting allows Chrome to help a company make the association between the two sites so that the first site can be fairly compensated for showing an ad. Compared with third-party cookies, very little info is shared between sites to support this functionality.  **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** CONTEXT EEA NOTICE **** 1) This screen provides notice to Chrome users in the European Economic Area (EEA). It follows guidelines established by the GDPR.  2) This screen is the second of 2 screens. This second screen describes 2 settings: “Site-suggested ads” and “Ad measurement”. The first screen describes the “Ad topics” setting. ">
-        With ad measurement, limited types of data can be shared among sites and apps to measure the performance of their ads, such as the time of day an ad was shown to you.
+        With ad measurement, limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DESCRIPTION_3" desc="A paragraph on the 'Enhanced ad privacy in Chrome' page that provides notice to Chrome users outside of the EEA. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** CONTEXT ROW NOTICE **** 1) This screen provides notice to Chrome users outside of the European Economic Area (EEA) (we typically refer to this screen as “Rest of World” or “ROW”). It follows guidelines established by the GDPR.  2) We’re using similar but distinct content for EEA / ROW because legal requirements differ. For ROW, we can provide notice for all 3 settings, and so all 3 settings can appear on a single screen. ">
-        To measure the performance of an ad, limited types of data can be shared among sites, such as the time of day an ad was shown to you.
+        To measure the performance of an ad, limited types of data are shared between sites, such as whether you made a purchase after visiting a site.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1_ANDROID" desc="First description in the restricted notice which applies to Android only">
         We’re launching a new ad privacy feature called ad measurement. Chrome shares only very limited information among sites and apps, such as when an ad was shown to you, to help measure the performance of ads.
@@ -1289,7 +1131,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
         Things to consider
       </message>
       <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_1" desc="1 of 3 bullets in the 'When on' section that describes the Ad measurement setting. * 'Limited types of data': The Ad measurement API (for developers) and the Ad measurement control (for users) is offered by Chrome. But Chrome is a 'pass through', helping one site communicate information to another about the performance of an ad. That's where this passive construction comes from. Chrome facilitates, but shouldn't be seen as a major actor here. And we don't want to suggest anything like 'Chrome limits the types of data shared between sites,' because Chrome can't do that. Any 2 sites can have a side agreement to share as much info as they like. ">
-        Limited types of data are shared between sites to measure the performance of their ads, such as the time of day an ad was shown to you
+        Limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site
       </message>
       <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_2" desc="2 of 3 bullets in the 'When on' section that describes the Ad measurement setting.">
         Ad-measurement data is deleted regularly from your device
@@ -1392,6 +1234,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGN_OUT_OF_CHROME_LINK" desc="The text is displayed in a footer in a dialog to clear browsing data. The link ‘sign out of Chrome’ opens a dialog where the user can confirm if they want to sign out of Chrome.">
           To sign out of your Google Account on all websites, <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>sign out of Chrome<ph name="END_LINK1">&lt;/link1&gt;</ph>.
       </message>
+      <message name="IDS_SIGN_OUT_OF_CHROME_LINK_ADVANCED" desc="The text is displayed in a footer in the advanced option of clear browsing data dialog. The link ‘sign out of Chrome’ opens a dialog where the user can confirm if they want to sign out of Chrome.">
+          Clearing your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>sign out of Chrome<ph name="END_LINK1">&lt;/link1&gt;</ph>.
+      </message>
       <message name="IDS_CLEAR_SEARCH_HISTORY_NON_GOOGLE_DSE" desc="Text informing the user about the way to clear their search history when their Default Search Engine is not Google.">
         Your search engine is <ph name="dse">%1$s<ex>Bing</ex></ph>. See their instructions for deleting your search history, if applicable.
       </message>
@@ -1451,6 +1296,9 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_OPEN_CLEAR_BROWSING_DATA_DIALOG_BUTTON" desc="Title of the button that will open the clear browsing data dialog.">
         Clear browsing data…
+      </message>
+      <message name="IDS_OPEN_FULL_CHROME_HISTORY" desc="Title of the button that will open the full history in Chrome browser from CCT history page.">
+              Open full Chrome history
       </message>
       <message name="IDS_CLEAR_BROWSING_DATA_BASIC_TAB_TITLE" desc="The title of the tab showing the basic clear browsing data options.">
         Basic
@@ -1566,10 +1414,10 @@ Your Google account may have other forms of browsing history like searches and a
         Explore more settings below or finish now
       </message>
       <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_HEADING" desc="Title for the Privacy Sandbox item on the final page of the privacy guide">
-        Privacy Sandbox trial
+        Ad privacy
       </message>
       <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_DESCRIPTION" desc="Description for the Privacy Sandbox item on the final page of the privacy guide">
-        Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your data
+        Chrome gives you more control over the ads you see and limits what sites can learn about you when they show you personalized ads.
       </message>
       <message name="IDS_PRIVACY_GUIDE_WEB_APP_ACTIVITY_HEADING" desc="Title for the Web and App Activity item on the final page of the privacy guide">
         Web &amp; App Activity
@@ -1595,8 +1443,14 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_PRIVACY_GUIDE_SB_STANDARD_ITEM_TWO" desc="Second bullet point that describes the details of the Safe Browsing control.">
         Checks URLs with a list of unsafe sites stored in Chrome
       </message>
+      <message name="IDS_PRIVACY_GUIDE_SB_STANDARD_ITEM_TWO_PROXY" desc="Second bullet point that describes the details of the Safe Browsing control with proxy.">
+        Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address
+      </message>
       <message name="IDS_PRIVACY_GUIDE_SB_STANDARD_ITEM_THREE" desc="Third bullet point that describes the details of the Safe Browsing control.">
         If a site tries to steal your password, or when you download a harmful file, Chrome may send URLs including bits of page content to Safe Browsing
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_SB_STANDARD_ITEM_THREE_PROXY" desc="Third bullet point that describes the details of the Safe Browsing control with proxy.">
+        If a site tries to steal your password, or when you download a harmful file, Chrome may send URLs including bits of page content to Google
       </message>
       <message name="IDS_PRIVACY_GUIDE_SB_ENHANCED_ITEM_ONE" desc="First bullet point that describes the details of the Safe Browsing control.">
         Predicts and warns you about dangerous events before they happen
@@ -1623,10 +1477,21 @@ Your Google account may have other forms of browsing history like searches and a
         When you tap or type in the address bar or search box, you'll see suggestions from your default search engine. This is off in Incognito.
       </message>
       <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_TWO" desc="Second bullet point that describes the details of the search suggestions toggle.">
-        What you type in the address bar or search box is sent to your default search engine
+        As you type, Chrome sends the content of the address bar or search box to your default search engine
       </message>
       <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_THREE" desc="Third bullet point that describes the details of the search suggestions toggle.">
-        Depending on your settings, Chrome may also send cookies and your current URL
+        Depending on your settings, Chrome may also send cookies, your current URL, and your location
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_FOUR" desc="Fourth bullet point that describes the details of the search suggestions toggle.">
+        When off, you’ll still see suggestions that Chrome provides locally
+      </message>
+
+      <!-- Tracking protection -->
+      <message name="IDS_TRACKING_PROTECTION_TITLE" desc="Tracking Protection preference item title.">
+        Tracking Protection
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_SUMMARY" desc="Tracking Protection preference item summary.">
+        Manage third-party cookies and tracking protections
       </message>
 
       <!-- Safety check -->
@@ -1642,8 +1507,14 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_CHECK_UPDATES_TITLE" desc="Title for the updates section.">
         Updates
       </message>
-      <message name="IDS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords section.">
+      <message name="IDS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords check for all passwords saved by the user.">
         Passwords
+      </message>
+      <message name="IDS_SAFETY_CHECK_PASSWORDS_LOCAL_TITLE" desc="Title for the passwords check for the local passwords stored on user's device only.">
+        Passwords saved to this device
+      </message>
+      <message name="IDS_SAFETY_CHECK_PASSWORDS_ACCOUNT_TITLE" desc="Title for the passwords check for the synced passwords stored in the user's account store.">
+        Passwords saved to <ph name="USERNAME">%1$s<ex>elisa.becket@gmail.com</ex></ph>.
       </message>
       <message name="IDS_SAFETY_CHECK_BUTTON" desc="Text for the button to start Safety check.">
         Check now
@@ -1813,6 +1684,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_EIGHT_UPDATED" desc="Eighth bullet point that describes the details of the Safe Browsing control.">
         Doesn’t noticeably slow down your browser or device.
       </message>
+      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_LEARN_MORE_LABEL" desc="The text for a link to a help center article that gives more information about Safe Browsing.">
+        Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>how Chrome keeps your data private<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
 
       <!-- Safe Browsing standard protection preferences -->
       <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_SUBTITLE" desc="Subtitle for Safe Browsing standard protection mode.">
@@ -1880,7 +1754,7 @@ Your Google account may have other forms of browsing history like searches and a
         To show content in your preferred languages, the sites you visit can see your preferences
       </message>
       <message name="IDS_LANGUAGES_LIST_DESCRIPTION" desc="Description on the Languages settings screen. Appears above a list of one or more languages that the user selects, to tell Chrome which languages they prefer to use to read website content.">
-        Websites will show text in your preferred language, when possible.
+        Let websites know the languages you speak. They’ll show content in those languages, when possible.
       </message>
       <message name="IDS_LANGUAGES_OFFER_TRANSLATE_SWITCH" desc="Appears next to the 'offer to translate' switch that controls whether or not Chrome will display the Google Translate UI on web pages that are not in the user's preferred language(s).">
         Offer to translate pages in other languages
@@ -1946,6 +1820,12 @@ Your Google account may have other forms of browsing history like searches and a
         Never translate sites
       </message>
 
+      <!-- Translate Messages Snackbar -->
+      <message name="IDS_TRANSLATE_MESSAGE_SNACKBAR_PAGE_TRANSLATED"
+      desc="Message that the page has been translated into a specific target language">
+        Page translated to <ph name="target_language">%1$s<ex>English</ex></ph>
+      </message>
+
        <!-- Dangerous download -->
       <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
         Download anyway
@@ -1960,16 +1840,16 @@ Your Google account may have other forms of browsing history like searches and a
         File might be harmful
       </message>
 
-        <!-- Mixed content download -->
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm an insecure download">
-          File can’t be downloaded securely
-        </message>
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the insecure download dialog for user to confirm the download.">
-          Keep
-        </message>
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_DISCARD_TEXT" desc="Text label for the cancel button on the insecure download dialog for user to confirm the download.">
-          Discard
-        </message>
+      <!-- Mixed content download -->
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm an insecure download">
+        File can’t be downloaded securely
+      </message>
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the insecure download dialog for user to confirm the download.">
+        Keep
+      </message>
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_DISCARD_TEXT" desc="Text label for the cancel button on the insecure download dialog for user to confirm the download.">
+        Discard
+      </message>
 
       <!-- Downloads location -->
       <message name="IDS_DOWNLOADS_LOCATION_SELECTOR_TITLE" desc="Title of the preference that allows the user to select which of the folders they would like to make the default location to save their downloads.">
@@ -2048,8 +1928,8 @@ Your Google account may have other forms of browsing history like searches and a
         New file name
       </message>
 
-       <!-- Duplicate download -->
-       <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
+      <!-- Duplicate download -->
+      <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
         Download again
       </message>
       <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to confirm the download of a duplicate file.">
@@ -2060,6 +1940,35 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_DUPLICATE_PAGE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm downloading a page that has been downloaded before.">
         Download page again?
+      </message>
+
+      <!-- Download open dialog -->
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file.">
+        Open PDF?
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_WITH_APP_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file with another app.">
+        Open PDF with <ph name="APP_NAME">%1$s<ex>Drive PDF Viewer</ex></ph>?
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_OPEN_TEXT" desc="Text label for the button on the open download dialog for user to open the downloaded pdf.">
+        Open
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_CONTINUE_TEXT" desc="Text label for the button on the open download dialog for user to continue to select pdf viewers to open the downloaded pdf.">
+        Continue
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_CANCEL_TEXT" desc="Text label for the button on the open download dialog for user to cancel opening a downloaded pdf.">
+        Cancel
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_AUTO_OPEN_TEXT" desc="Text label for the check box on the open download dialog that allows user to auto-open downloaded PDF files in future.">
+        Always open downloaded PDFs
+      </message>
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_TITLE" desc="Title for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
+        Automatically open PDFs
+      </message>
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_DESCRIPTION" desc="Description for preference that allows other apps to automatically open a pdf after download completion if the download is triggered by an external app.">
+        Downloaded PDFs automatically open with one of the PDF viewers on your device
+      </message>
+      <message name="IDS_AUTO_OPEN_PDF_ENABLED_WITH_APP_DESCRIPTION" desc="Description for preference that allows another app to automatically open a pdf after download completion if the download is triggered by an external app.">
+        Downloaded PDFs automatically open with <ph name="APP_NAME">%1$s<ex>Drive PDF Viewer</ex></ph>
       </message>
 
       <!-- About Chrome preferences -->
@@ -2201,6 +2110,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_TURN_OFF_SYNC_AND_SIGNOUT_MESSAGE" desc="Message to display in 'Sign out and turn off sync?' dialog">
         Your bookmarks, history, passwords, and other Chrome data will no longer be synced to your Google Account
       </message>
+      <message name="IDS_TURN_OFF_SYNC_AND_SIGNOUT_MESSAGE_WITHOUT_PASSWORDS" desc="Message to display in 'Sign out and turn off sync?' dialog, without explicitly mentioning passwords. Similar to IDS_TURN_OFF_SYNC_AND_SIGNOUT_MESSAGE">
+        Your bookmarks, history, and other Chrome data will no longer be synced to your Google Account
+      </message>
       <message name="IDS_REMOVE_LOCAL_DATA" desc="Checkbox to delete all existing data in local device storage">
         Also clear your Chrome data from this device
       </message>
@@ -2223,6 +2135,9 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SIGN_IN_MANAGED_ACCOUNT_DESCRIPTION" desc="Description for signing in to managed accounts">
         You are signing in with an account managed by <ph name="MANAGED_DOMAIN">%1$s<ex>Google</ex></ph> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.
+      </message>
+      <message name="IDS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE" desc="The subtitle of the Sign in with a managed account dialog when user policies are enabled.">
+        Your organization, <ph name="MANAGED_DOMAIN">%1$s<ex>Google</ex></ph>, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.
       </message>
       <message name="IDS_SYNC_YOUR_BOOKMARKS" desc="Title for the prompt to signin and enable sync to sync their bookmarks">
         Sync your bookmarks
@@ -2291,23 +2206,20 @@ Your Google account may have other forms of browsing history like searches and a
         Encryption
       </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_KEYSTORE" desc="Option to encrypt only passwords, using your Google credentials.">
-        Encrypt synced passwords with your Google Account
+        Use Google’s default encryption for the passwords in your Google Account
       </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_CUSTOM" desc="Option to encrypt sync data with a custom passphrase.">
-        Encrypt synced data with your own sync passphrase
+        Use your own passphrase to encrypt all the Chrome data in your Google Account
       </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_CUSTOM_DIALOG_TITLE" desc="Dialog title for custom passphrase creation.">
         Create passphrase
       </message>
-      <message name="IDS_SIGN_IN_GOOGLE_ACCOUNT" desc="Title of sign in account selection dialog. [CHAR_LIMIT=32]">
-        Google Account
+      <message name="IDS_SYNC_ENTER_PASSPHRASE_TITLE" desc="Title of dialog to ask user to enter their passphrase. [CHAR_LIMIT=32]">
+        Enter passphrase
       </message>
-      <message name="IDS_SYNC_CUSTOM_PASSPHRASE" desc="Prompt user to create a custom sync password.">
-        Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting you'll need to reset sync. <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>Learn more<ph name="END_LINK">&lt;/learnmore&gt;</ph>
-      </message>
-      <message name="IDS_NEW_SYNC_CUSTOM_PASSPHRASE" desc="Prompt user to create a custom sync password.">
+      <message name="IDS_SYNC_ENCRYPTION_CREATE_PASSPHRASE" desc="Prompt user to create a custom sync password.">
         Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
-Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you’ll need to reset sync. <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>Learn more<ph name="END_LINK">&lt;/learnmore&gt;</ph>
+Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_SYNC_ENTER_CUSTOM_PASSPHRASE_HINT" desc="Hint for the passphrase field when user is to type in a passphrase. [CHAR_LIMIT=30]">
         Passphrase
@@ -2315,8 +2227,8 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_SYNC_ENTER_CUSTOM_PASSPHRASE_HINT_CONFIRM" desc="Hint for the passphrase confirmation field when user is to type in a passphrase. [CHAR_LIMIT=30]">
         Confirm passphrase
       </message>
-      <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user enters their Sync passphrase.">
-        Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/learnmore&gt;</ph> on <ph name="TIME">%1$s<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
+      <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL" desc="Instructions for the dialog where the user enters their Sync passphrase.">
+        Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.
       </message>
       <message name="IDS_SYNC_ACCOUNT_INFO"  desc="The message that appears in the options dialog indicating that the user is signed in with the given email address.">
         Signed in as <ph name="USER_EMAIL_ADDRESS">%1$s<ex>foo@gmail.com</ex></ph>.
@@ -2324,8 +2236,8 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_SYNC_PASSPHRASE_CANNOT_BE_BLANK" desc="Inform user that they cannot use a blank password [CHAR_LIMIT=40]">
         This field cannot be blank
       </message>
-      <message name="IDS_SYNC_PASSPHRASE_RESET_INSTRUCTIONS" desc="Inform the user how they can reset their passphrase if they have forgotten it." meaning="Android">
-        If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<ph name="END_LINK">&lt;/resetlink&gt;</ph>
+      <message name="IDS_SYNC_PASSPHRASE_RECOVER" desc="Inform the user how they can reset their passphrase if they have forgotten it." meaning="Android">
+        If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_SYNC_PASSPHRASES_DO_NOT_MATCH" desc="Inform user that their sync password does not match.">
         Passphrases do not match
@@ -2333,7 +2245,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_SYNC_PASSPHRASE_ENCRYPTION_RESET_INSTRUCTIONS" desc="Inform user how to change their encryption setting.">
         Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
 
-To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<ph name="END_LINK">&lt;/resetlink&gt;</ph>
+To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_SYNC_PASSPHRASE_INCORRECT" desc="Inform the user that the passphrase they entered for sync is incorrect. [CHAR_LIMIT=40]">
         Incorrect passphrase
@@ -2346,6 +2258,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SYNC_IMPORT_DATA_PROMPT" desc="Prompt for the user to choose how they want to handle their existing sync data">
          You have bookmarks, history, passwords, and other settings from <ph name ="FROM_ACCOUNT">%1$s<ex>johndoe@old.com</ex></ph>.
+      </message>
+      <message name="IDS_SYNC_IMPORT_DATA_PROMPT_WITHOUT_PASSWORDS" desc="Prompt for the user to choose how they want to handle their existing sync data. Similar to IDS_SYNC_IMPORT_DATA_PROMPT but without mentioning passwords.">
+         You have bookmarks, history, and other settings from <ph name ="FROM_ACCOUNT">%1$s<ex>johndoe@old.com</ex></ph>.
       </message>
       <message name="IDS_SYNC_IMPORT_EXISTING_DATA" desc="Option to import existing data to the newly selected sync account">
         Combine my data
@@ -2441,6 +2356,66 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Please wait…
       </message>
 
+      <!-- Identity error card message strings -->
+      <message name="IDS_IDENTITY_ERROR_CARD_PASSPHRASE_REQUIRED" desc="Error message to resolve passphrase required error.">
+        To use and save Chrome data in your Google Account, enter your passphrase
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_CLIENT_OUT_OF_DATE" desc="Error message to resolve sync protocol error for out-of-date client.">
+        To use and save Chrome data in your Google Account, update Chrome
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_AUTH_ERROR" desc="Error message to resolve auth error.">
+        To use and save Chrome data in your Google Account, verify it’s you
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_SYNC_RETRIEVE_KEYS_FOR_EVERYTHING" desc="Error message to resolve sync encryption error, required to resume sync.">
+        To use and save Chrome data in your Google Account, verify it’s you
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_SYNC_RETRIEVE_KEYS_FOR_PASSWORDS" desc="Error message to resolve sync encryption error, required to resume syncing passwords.">
+        To use and save passwords in your Google Account, verify it’s you
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING" desc="Error message to resolve sync degraded recoverability, for users that have not chosen to encrypt all sync data.">
+        To use and save Chrome data in your Google Account, verify it’s you
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS" desc="Error message to resolve sync degraded recoverability, for users that have chosen to encrypt all sync data.">
+        To make sure you can always use the passwords in your Google Account, verify it’s you
+      </message>
+
+      <!-- Identity error card button strings -->
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_PASSPHRASE_REQUIRED" desc="Button label for passphrase required error.">
+        Enter passphrase
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_CLIENT_OUT_OF_DATE" desc="Button label for client out-of-date error. Also used for error message button.">
+        Update
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_VERIFY" desc="Button label for all errors requiring re-auth (auth error, degreaded recoverability, encryption error). Also used for error message and notification title.">
+        Verify it’s you
+      </message>
+
+      <!-- Identity error message and notification strings -->
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY" desc="Error message/notification to resolve passphrase required error, sync encryption error, auth error, outdated client error.">
+        Keep using the Chrome data in your Google Account
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY_SYNC_RETRIEVE_KEYS_FOR_PASSWORDS" desc="Error message/notification to resolve sync encryption error, required to resume syncing passwords.">
+        Keep using the passwords in your Google Account
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING" desc="Error message/notification to resolve sync degraded recoverability, for users that have chosen to encrypt all sync data.">
+        Make sure you can always use the Chrome data in your Google Account
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS" desc="Error message/notification to resolve sync degraded recoverability, for users that have chosen to encrypt only passwords.">
+        Make sure you can always use the passwords in your Google Account
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_TITLE_PASSPHRASE_REQUIRED" desc="Error message/notification title for passphrase required error.">
+        Enter your passphrase
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_TITLE_CLIENT_OUT_OF_DATE" desc="Error message/notification title for client out-of-date error.">
+        Update Chrome
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BUTTON_PASSPHRASE_REQUIRED" desc="Error message button label for passphrase required error.">
+        Enter
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BUTTON_VERIFY" desc="Error message button label for all errors requiring re-auth (auth error, degraded recoverability, encryption error)">
+        Verify
+      </message>
+
       <!-- Tab switcher -->
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_STANDARD_STACK" desc="Content description for the standard stack selection 'button'.">
         Standard tabs
@@ -2454,9 +2429,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_INCOGNITO_STACK_SELECTED" desc="Announcement when the Incognito tab stack is selected.">
         Switched to Incognito tabs
       </message>
-      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_UNDO_TAB_CLOSED" desc="Content description for the undo tab closed 'button.">
-        Reopen closed tab
-      </message>
       <message name="IDS_ACCESSIBILITY_UNDO_CLOSED_TAB_ANNOUNCEMENT_MESSAGE" desc="Message spoken out loud for accessibility when a user decides to undo a closed tab.">
         Restored <ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph>, tab
       </message>
@@ -2465,9 +2437,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab
-      </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_SELECTED" desc="Content description for the tab title of the currently selected tab.">
-        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab, selected
       </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_CLOSE_TAB" desc="Content description for the close tab button.">
         Close <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> tab
@@ -2644,12 +2613,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CONTEXTMENU_SEARCH_IMAGE_WITH_GOOGLE_LENS" desc="Context sensitive menu item for deep linking into google lens. [CHAR_LIMIT=30]">
         Search image with Google Lens <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>
-      <message name="IDS_CONTEXTMENU_SEARCH_IMAGE_WITH_GOOGLE_LENS_ALT_TEXT_1" desc="ALT TXT 1: Context sensitive menu item for deep linking into google lens. [CHAR_LIMIT=44]">
-        Search image with Google <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
-      </message>
-      <message name="IDS_CONTEXTMENU_SEARCH_IMAGE_WITH_GOOGLE_LENS_ALT_TEXT_2" desc="ALT TXT 2: Context sensitive menu item for deep linking into google lens. [CHAR_LIMIT=30]">
-        Search inside image with Google <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
-      </message>
       <message name="IDS_CONTEXTMENU_TRANSLATE_IMAGE_WITH_GOOGLE_LENS" desc="Context sensitive chip for deep linking into google lens for translate results. [CHAR_LIMIT=30]">
           Translate image with Google Lens <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>
@@ -2746,9 +2709,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_OPEN" desc="The label of the button which upon click would open the site user was trying to install as PWA. ">
         Go back to site
       </message>
-      <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_RETRY" desc="The label of the button which upon click would retry installing the PWA">
-        Try again
-      </message>
       <message name="IDS_IPH_PWA_INSTALL_AVAILABLE_TEXT" desc="The in-product-help message for PWAs that can be installed to the device.">
         Install this app
       </message>
@@ -2802,6 +2762,21 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_NOTIFICATION_SITE_SETTINGS_BUTTON" desc="Text of a button shown on notifications, that opens the Site Settings of the website that showed the notification. (If it isn't possible to fit within the char limit, the string will be ellipsized if 3 buttons are shown side by side, so try to ensure that the user can guess the meaning from the first 8 characters). [CHAR_LIMIT=9]">
         Settings
+      </message>
+      <message name="IDS_NOTIFICATION_UNSUBSCRIBE_BUTTON" desc="Text of a button shown by the system on all notifications, allowing the user to unsubscribe from notifications from a web site in a single click (with an option to undo later). Note: there is very little horizontal space for this button. If it isn't possible to fit within the char limit, the string will be ellipsized if 3 buttons are shown side by side, so try to ensure that the user can guess the meaning from the first 8 characters. [CHAR_LIMIT=11]">
+        Unsubscribe
+      </message>
+      <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_TITLE" desc="Title of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
+        Unsubscribed from notifications
+      </message>
+      <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_BODY" desc="Body text of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
+        You'll no longer receive notifications from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>.
+      </message>
+      <message name="IDS_NOTIFICATION_UNDO_UNSUBSCRIBE_BUTTON" desc="Label for an action button on a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site. Clicking the button allows the user to undo unsubscribing, and continue receiving notifications instead.">
+        Undo
+      </message>
+      <message name="IDS_NOTIFICATION_COMMIT_UNSUBSCRIBE_BUTTON" desc="Label for an action button on a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site. Clicking the button allows the user to acknowledge unsubscribing and dismiss this notification.">
+        Okay
       </message>
       <message name="IDS_NOTIFICATION_MANAGE_BUTTON" desc="Text of a button shown on notifications, that opens the Chrome notifications settings page. This allows users to edit notification settings when a site asks them to allow notifications. [CHAR_LIMIT=9]">
         Manage
@@ -2954,26 +2929,26 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_DOWNLOAD_MANAGER_UI_OTHER" desc="Indicates that clicking on this button shows any downloads that don't fit in the other categories.">
         Other
       </message>
-      <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_GENERIC" desc="Content description for the All chip, clicking on which will show all of your downloads.">
-        {FILE_COUNT, plural, =1 {# File} other {# Files}}
+      <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_ALL" desc="Content description for the All chip, clicking on which will show all of your downloads.">
+        {FILE_COUNT, plural, =1 {All files, 1 file in list} other {All files, # files in list}}
+      </message>
+      <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_OTHER" desc="Content description for the Other chip, clicking on which will show all the downloaded files that aren't images, videos, audios or offline pages.">
+        {FILE_COUNT, plural, =1 {Other 1 file in list} other {Other # files in list}}
       </message>
       <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_IMAGES" desc="Content description for the Images chip, clicking on which will show all the downloaded images.">
-        {FILE_COUNT, plural, =1 {# Image} other {# Images}}
+        {FILE_COUNT, plural, =1 {Images, 1 image in list} other {Images, # images in list}}
       </message>
       <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_VIDEO" desc="Content description for the Video chip, clicking on which will show all the downloaded videos.">
-        {FILE_COUNT, plural, =1 {# Video} other {# Videos}}
+        {FILE_COUNT, plural, =1 {Videos, 1 video in list} other {Videos, # videos in list}}
       </message>
       <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_AUDIO" desc="Content description for the Audio chip, clicking on which will show all the downloaded audio files.">
-        {FILE_COUNT, plural, =1 {# Audio file} other {# Audio files}}
+        {FILE_COUNT, plural, =1 {Audio files, 1 audio file in list} other {Audio files, # audio files in list}}
       </message>
       <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_PAGES" desc="Content description for the Pages chip, clicking on which will show all the downloaded offline pages.">
-        {FILE_COUNT, plural, =1 {# Page} other {# Pages}}
+        {FILE_COUNT, plural, =1 {Pages, 1 page in list} other {Pages, # pages in list}}
       </message>
       <message name="IDS_DOWNLOAD_PAGE" desc="Download this page.">
         Download this page
-      </message>
-      <message name="IDS_DOWNLOAD_MANAGER_NO_DOWNLOADS" desc="Text appearing on an empty tab that indicates that downloaded files appear on this tab.">
-        Files that you download appear here
       </message>
       <message name="IDS_DOWNLOAD_MANAGER_NO_DOWNLOADS_EMPTY_STATE" desc="Text appearing on an empty tab that indicates that downloaded files appear on this tab.">
         You’ll find your downloads here
@@ -3031,9 +3006,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Browsing History UI -->
-      <message name="IDS_HISTORY_MANAGER_EMPTY" desc="Indicates that there are no browsing history items.">
-        Pages that you visit appear here
-      </message>
       <message name="IDS_HISTORY_MANAGER_EMPTY_STATE" desc="Indicates that there are no browsing history items.">
         You’ll find your history here
       </message>
@@ -3148,20 +3120,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY" desc="Text with info about the data that users share with Google if they turn on the metric sharing option.">
         Info is sent to Google about your Chrome usage, but it isn\u2019t tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs you visit
       </message>
-      <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_1" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to use additional features that are only available to signed-in users. Try to limit translations to 50 characters. Do not exceed 75 characters.">
-        Sign in to get the most out of Chrome
-      </message>
-      <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_2" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to use additional features that are only available to signed-in users. Try to limit translations to 50 characters. Do not exceed 75 characters.">
-        Sign in for additional features
-      </message>
-      <message name="IDS_SIGNIN_FRE_SUBTITLE_VARIATION_3" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to get more useful features when they're signed in across multiple devices (like phones and computers). Try to limit translations to 50 characters. Do not exceed 75 characters.">
+      <message name="IDS_SIGNIN_FRE_SUBTITLE" desc="Subtitle shown below a welcoming title on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to get more useful features when they're signed in across multiple devices (like phones and computers). Try to limit translations to 50 characters. Do not exceed 75 characters.">
         Sign in to browse easier across devices
-      </message>
-      <message name="IDS_SIGNIN_FRE_TITLE_VARIATION_1" desc="Title shown on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account to use additional features that are only available to signed-in users. Try to limit translations to 40 characters. Do not exceed 50 characters.">
-        Sign in to get the most out of Chrome
-      </message>
-      <message name="IDS_SIGNIN_FRE_TITLE_VARIATION_2" desc="Title shown on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account, so they can personalize and customize Chrome and remember their settings in their Google Account. Try to limit translations to 40 characters. Do not exceed 50 characters.">
-        Sign in to make Chrome your own
       </message>
       <message name="IDS_FRE_SIGNING_IN" desc="Text to show below a progress spinner in the signin FRE to notify the user that signing in is in progress.">
         Signing in\u2026
@@ -3177,57 +3137,53 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <!-- Strings for the Device Lock. -->
       <message name="IDS_DEVICE_LOCK_TITLE" desc="Title shown on the profile lock page prompting the user to set a profile lock.">
-        Create a profile lock for your car
+        Create a car profile lock
       </message>
       <message name="IDS_DEVICE_LOCK_EXISTING_LOCK_TITLE" desc="Title shown on the profile lock page if there is a pre-existing profile lock.">
         Your info is secured with a profile lock
       </message>
       <message name="IDS_DEVICE_LOCK_DESCRIPTION" desc="Text description explaining that a profile lock is required for automotive devices to protect data privacy. 'Sync' is short for synchronization.">
-        To sync your Chrome info and keep your data secure in the car, you must create a profile lock. You’ll use a code or password every time you enter the car.
-      </message>
-      <message name="IDS_DEVICE_LOCK_THROUGH_SETTINGS_DESCRIPTION" desc="Text description explaining that a profile lock is required for automotive devices to protect data privacy, and that such a lock can be created in the device's security settings. 'Sync' is short for synchronization.">
-        To sync your Chrome info and keep your data secure in the car, you must create a profile lock in your security settings. You’ll use a code or password every time you enter the car.
+        To protect your sensitive content in the car, you must create a car profile lock.  You can do this with a pin, code, or password.
       </message>
       <message name="IDS_DEVICE_LOCK_EXISTING_LOCK_DESCRIPTION" desc="Text description explaining to users who have already set an existing lock that a profile lock is required for automotive devices to protect data privacy. 'Sync' is short for synchronization.">
         Your profile lock keeps your info secure in the car, including synced passwords, payments and more.
       </message>
+      <message name="IDS_DEVICE_LOCK_CREATION_NOTICE" desc="Text description alerting users that if they continue and set a profile lock on the car, it will be required to unlock the profile every time they use the car.">
+        You’ll unlock your screen every time you use the car
+      </message>
       <message name="IDS_DEVICE_LOCK_NOTICE" desc="Notice appearing on the profile lock page informing users that data saved on Chrome will be erased if they remove the profile lock from the device.">
-        Your saved data will be erased if the profile lock is removed later.
+        Turning off your profile lock will remove your saved info
       </message>
       <message name="IDS_DEVICE_LOCK_CREATE_LOCK_BUTTON" desc="Text for the button that navigates the user to create a profile lock on the device.">
-        Create a profile lock
+        Create a car profile lock
+      </message>
+      <message name="IDS_DIALOG_NOT_NOW" desc="Label for the negative ('not now') button of a dialog that prompts user action. Clicking on this button dismisses the dialog without further actions.">
+        Not now
+      </message>
+
+      <!-- Strings for a missing device lock. -->
+      <message name="IDS_MISSING_DEVICE_LOCK_TITLE" desc="Title shown on the missing profile lock page if a user has removed a profile lock that used to be present on the device.">
+        Continue without a car profile lock?
+      </message>
+      <message name="IDS_MISSING_DEVICE_LOCK_DESCRIPTION" desc="Text description explaining that a profile lock is required on automotive devices, and that sensitive personal data will be deleted from the profile if the user continues to Chrome without re-creating a profile lock.">
+        Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.
+      </message>
+      <message name="IDS_MISSING_DEVICE_LOCK_REMOVE_LOCAL_DATA" desc="Option given to the user to delete all Chrome profile data, particularly mentioning bookmarks and history.">
+        Also clear bookmarks, history, and more from this car
+      </message>
+      <message name="IDS_DELETE_AND_CONTINUE" desc="Text for the button that will delete any sensitive data and then navigate the user back to Chrome.">
+        Delete &amp; continue
       </message>
 
       <!-- Strings for Streamlined Signin and Unified Consent. -->
       <message name="IDS_SIGNIN_TITLE" desc="Title for the screen that asks users to sign-in and turn on Sync. [CHAR_LIMIT=27]">
         Turn on sync?
       </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_A" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. The value proposition of sync here is to allow a user to proceed their web navigation on a different device. The tone should be informative and inviting. [CHAR_LIMIT=35]">
-        Pick up where you left off
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_B" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Devices include phones, tables and computers. The tone should be informative and inviting. [CHAR_LIMIT=35]">
-        Browse across devices
-      </message>
       <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_C" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Typing refers to typing urls in the address bar. The tone should be informative and inviting. [CHAR_LIMIT=35]">
         Save time and type less
       </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_D" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. Suggestions refers to suggested entries in the address bar. The tone should be informative and inviting. [CHAR_LIMIT=35]">
-        Get better suggestions
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_TITLE_E" desc="This string appears as a heading on a full-page screen that asks users if they want to turn on history sync. The tone should be informative and inviting. [CHAR_LIMIT=35]">
-        Sync your tabs and history
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_A" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. Devices include phones, tablets and computers. The tone should be informative and inviting. [CHAR_LIMIT=100]">
-        To continue browsing on another device, sync your tabs and history
-      </message>
       <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_C" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. The tone should be informative and inviting. [CHAR_LIMIT=100]">
         To quickly get back to sites you’ve visited, sync your tabs and history
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_D" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. The tone should be informative and inviting. [CHAR_LIMIT=100]">
-        To see better suggestions in your address bar, sync your tabs and history
-      </message>
-      <message name="IDS_HISTORY_SYNC_CONSENT_SUBTITLE_E" desc="This string appears as a subheading on a full-page screen that asks users if they want to turn on browsing history sync. Sync is short for synchronization. Devices include phones, tablets and computers. The tone should be informative and inviting. [CHAR_LIMIT=100]">
-        To get back to the sites you’ve visited on other devices, sync your tabs and history
       </message>
       <message name="IDS_SIGNIN_SYNC_TITLE" desc="Title of Sync feature for the screen that asks users to sign-in and turn on Sync.">
         Sync your passwords, history &amp; more on all devices
@@ -3243,6 +3199,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SIGNIN_ACCEPT_BUTTON" desc="Text for the confirmation button in the sign-in screen. By clicking this button users signs in and turns on Sync. [CHAR_LIMIT=20]">
         Yes, I'm in
+      </message>
+      <message name="IDS_SIGNIN_SYNC_DECLINE_BUTTON" desc="Text for the decline button in the sign-in and sync screen. By clicking this button the user refuses to sign in and turn on Sync. [CHAR_LIMIT=20]" meaning= "This text means that the user refuses to sign in and turn on sync by clicking on this button.">
+        No thanks
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_DIALOG_TITLE" desc="The title for the dialog that shows the list of accounts on the device and asks the user to select one of these accounts. [CHAR_LIMIT=27]">
         Choose an account
@@ -3510,6 +3469,19 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NTP_DISCOVER_OFF_BRANDED" desc="Title in the feed header when the feed is turned off and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
         Discover by Google - off
       </message>
+      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_ON" desc="Title in the feed header when the feed is turned on for a supervised user. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
+        Content for young minds
+      </message>
+      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_ON_BRANDED" desc="Title in the feed header when the feed is turned on for a supervised user and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
+        Content by Google for young minds
+      </message>
+      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_OFF" desc="Title in the feed header when the feed is turned off for a supervised user. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
+        Content for young minds - off
+      </message>
+      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_OFF_BRANDED" desc="Title in the feed header when the feed is turned off for a supervised user and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
+        Content by Google for young minds - off
+      </message>
+
       <message name="IDS_NTP_FOLLOWING"
         meaning="Title for content - e.g. Followed sites"
         desc="Title in the feed header for user-customized following feed. This feed is composed of articles and content from sites that the user has followed">Following</message>
@@ -3548,9 +3520,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       accessibility text that prompts the user to use pull-down gesture to refresh the feed
       content.">
         To refresh the feed content, pull down the page
-      </message>
-      <message name="IDS_FEED_BACK_TO_TOP_PROMPT" desc="A prompt for the user to click in order to go back to the top of the feed.">
-        Back to top
       </message>
       <message name="IDS_RECENT_TABS_BULK_CLOSURE" desc="Text for a Recent Tabs Page > Recently closed row item that represents multiple tabs closed together. Can be used for the following cases: 1) at least two tabs closed at the same time, 2) at least one tab group and at least one tab closed at the same time, 3) at least two tab groups closed at the same time. TAB_COUNT is the total number of tabs closed in the action including grouped tabs.">
         <ph name="TAB_COUNT">%1$s<ex>6</ex></ph> tabs
@@ -3633,6 +3602,15 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_CUSTOM_TAB_SIDE_SHEET_MINIMIZE" desc="The accesibility text for minimize button in side-sheet custom tab.">
         Collapse to side view
+      </message>
+      <message name="IDS_CUSTOM_TAB_MINIMIZE" desc="The accessibility text for minimize button for custom tabs.">
+        Minimize tab
+      </message>
+      <message name="IDS_CUSTOM_TAB_MINIMIZE_BUTTON_IPH_BUBBLE_TEXT" desc="The message on the text bubble shown to educate the user about the minimize button on the custom tab toolbar.">
+        Minimize tab to return to it later
+      </message>
+      <message name="IDS_MINIMIZE_FAILURE_TOAST" desc="Toast shown when minimizing the tab using the minimize button fails.">
+        Couldn’t minimize tab. Try again later.
       </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_NEW_TAB" desc="Title name for the new tab option in the preference.">
         New tab
@@ -3763,7 +3741,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Find in page
       </message>
       <message name="IDS_MENU_PAGE_INSIGHTS" desc="Menu item showing Page Insights hub. [CHAR_LIMIT=27]">
-        View page insights
+        View Page Insights
       </message>
       <message name="IDS_MENU_FOLLOW" desc="Menu item allowing users to follow the current website. [CHAR_LIMIT=27]">
         Follow
@@ -3778,12 +3756,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_ACCESSIBILITY_FOLLOW_ACCELERATOR_IPH" desc="In-product help that points at the menu icon for the news feed on Chrome's new tab page. This string informs the user about the  following feature.">
         Adds the current web site to the list of web sites that you are following.
-      </message>
-      <message name="IDS_MENU_ITEM_REQUEST_DESKTOP_SITE" desc="Menu item allowing users to change the website from the mobile site to desktop site. [CHAR_LIMIT=27]">
-        Request desktop site
-      </message>
-      <message name="IDS_MENU_ITEM_REQUEST_MOBILE_SITE" desc="Menu item allowing users to change the website from the desktop site to mobile site. [CHAR_LIMIT=27]">
-        Request mobile site
       </message>
       <message name="IDS_MENU_PAINT_PREVIEW_SHOW" desc="Menu item allowing users to capture and show a paint preview of a page. [CHAR_LIMIT=27]" translateable="false">
         Show Paint Preview
@@ -3825,9 +3797,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS" desc="Title of the bookmarks page, which shows a list of the user's bookmarks. [CHAR_LIMIT=18]">
         Bookmarks
-      </message>
-      <message name="IDS_BOOKMARKS_FOLDER_EMPTY" desc="Text explaining that the currently selected bookmarks folder is empty.">
-        Pages that you bookmark appear here
       </message>
       <message name="IDS_NO_BOOKMARKS" desc="Text describing that there is no bookmarks in a bookmark folder.">
         No bookmarks
@@ -3896,6 +3865,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_BOOKMARK_TOOLBAR_SEARCH" desc="Button text for bookmark search action on the bookmark action bar [CHAR_LIMIT=32]">
         Search your bookmarks
+      </message>
+      <message name="IDS_BOOKMARK_TOOLBAR_SEARCH_TITLE" desc="Toolbar search title [CHAR_LIMIT=32]">
+        Search
       </message>
       <message name="IDS_BOOKMARK_NO_RESULT" desc="Text explaining that no bookmarks are found to match a search query">
         Can’t find that bookmark. Check your spelling or add a new bookmark.
@@ -3998,26 +3970,50 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SORT_BY_MANUAL"  desc="Option in the bookmarks manager to sort manually. [CHAR_LIMIT=24]">
         Sort by manual order
       </message>
+      <message name="IDS_SORT_BY_MANUAL_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when sorting manually.">
+        Sorting by manual order
+      </message>
       <message name="IDS_SORT_BY_NEWEST"  desc="Option in the bookmarks manager to sort by newest. [CHAR_LIMIT=24]">
         Sort by newest
+      </message>
+      <message name="IDS_SORT_BY_NEWEST_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when sorting by newest.">
+        Sorting by newest
       </message>
       <message name="IDS_SORT_BY_OLDEST"  desc="Option in the bookmarks manager to sort by newest. [CHAR_LIMIT=24]">
         Sort by oldest
       </message>
+      <message name="IDS_SORT_BY_OLDEST_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when sorting by newest.">
+        Sorting by oldest
+      </message>
       <message name="IDS_SORT_BY_LAST_OPENED"  desc="Option in the bookmarks manager to sort by last opened. [CHAR_LIMIT=24]">
         Sort by last opened
+      </message>
+      <message name="IDS_SORT_BY_LAST_OPENED_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when sorting by last opened.">
+        Sorting by last opened
       </message>
       <message name="IDS_SORT_BY_ALPHA"  desc="Option in the bookmarks manager to sort alphabetically. A and Z should be substituted with the first/last letter in the localized language. [CHAR_LIMIT=24]">
         Sort by A to Z
       </message>
-      <message name="IDS_SORT_BY_REVERSE_ALPHA"  desc="Option in the bookmarks manager to sort alphabetically. A and Z should be substituted with the first/last letter in the localized language. [CHAR_LIMIT=24]">
+      <message name="IDS_SORT_BY_ALPHA_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when sorting alphabetically. A and Z should be substituted with the first/last letter in the localized language.">
+        Sorting from A to Z
+      </message>
+      <message name="IDS_SORT_BY_REVERSE_ALPHA"  desc="Option in the bookmarks manager to sort reverse alphabetically. A and Z should be substituted with the first/last letter in the localized language. [CHAR_LIMIT=24]">
         Sort by Z to A
+      </message>
+      <message name="IDS_SORT_BY_REVERSE_ALPHA_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when sorting reverse alphabetically. A and Z should be substituted with the first/last letter in the localized language.">
+        Sorting from Z to A
       </message>
       <message name="IDS_VISUAL_VIEW"  desc="Option in the bookmarks manager to show the visual view with expanded rows and images. [CHAR_LIMIT=24]">
         Visual view
       </message>
+      <message name="IDS_VISUAL_VIEW_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when the visual view with expanded rows and images is selected.">
+        Showing visual view
+      </message>
       <message name="IDS_COMPACT_VIEW"  desc="Option in the bookmarks manager to show the compact view with smaller rows and favicons. [CHAR_LIMIT=24]">
         Compact view
+      </message>
+      <message name="IDS_COMPACT_VIEW_ANNOUNCEMENT"  desc="Accessibility announcement in the bookmarks manager when the compact view with smaller rows and favicons is selected.">
+        Showing compact view
       </message>
       <message name="IDS_CREATE_NEW_FOLDER"  desc="Option in the bookmarks manager to show the create a new folder in the current context. [CHAR_LIMIT=24]">
         Create new folder
@@ -4030,6 +4026,33 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_FOLDER_PICKER_CANCEL"  desc="Button the user clicks to cancel the move action.">
         Cancel
+      </message>
+
+      <!-- Account bookmarks strings -->
+      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER" desc="The section header of local top-level bookmark folders.">
+        Only on this device
+      </message>
+      <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER" desc="The section header of account top-level bookmark folders.">
+        In your Google Account
+      </message>
+      <message name="IDS_LOCAL_BOOKMARK_MOVE_SNACKBAR_MESSAGE" desc="The snackbar message shown when a bookmark is moved to a local folder.">
+        {BOOKMARK_COUNT, plural,
+          =1 {Bookmark saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>". It is only saved to this device.}
+          other {Bookmarks saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>". It is only saved to this device.}}
+      </message>
+      <message name="IDS_ACCOUNT_BOOKMARK_MOVE_SNACKBAR_MESSAGE" desc="The snackbar message shown when a bookmark is moved to an account folder.">
+        {BOOKMARK_COUNT, plural,
+          =1 {Bookmark saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>" in your account, <ph name="ACCOUNT_EMAIL">%2$s<ex>example@gmail.com</ex></ph>.}
+          other {Bookmarks saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>" in your account, <ph name="ACCOUNT_EMAIL">%2$s<ex>example@gmail.com</ex></ph>.}}
+      </message>
+
+
+      <!-- Power bookmarks strings-->
+      <message name="IDS_ACCOUNT_BOOKMARK_SAVE_FLOW_TITLE" desc="The title of the save flow when a user chooses save a bookmarks.">
+        Saved in <ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>
+      </message>
+      <message name="IDS_ACCOUNT_BOOKMARK_SAVE_FLOW_SUBTITLE_LOCAL" desc="The subtitle of the save flow when a user saves a bokmark locally.">
+        On this device
       </message>
 
       <!-- Read later strings -->
@@ -4061,9 +4084,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_READING_LIST_FIND_IN_BOOKMARKS" desc="The text to inform the user to find the reading list in bookmarks UI.">
         Find your reading list in Bookmarks
-      </message>
-      <message name="IDS_READING_LIST_EMPTY_LIST_TITLE" desc="The text on reading list page when there are no reading list items informing user that reading list is supposed to appear on this surface.">
-        You’ll find your reading list here
       </message>
 
       <!-- Offline pages -->
@@ -4120,13 +4140,13 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Tab opened in background.
       </message>
       <message name="IDS_MENU_OPEN_IN_CHROME" desc="Context sensitive menu item for opening a link in Chrome. [CHAR_LIMIT=30]">
-        Open in Chrome
+        Open in Chrome browser
       </message>
       <message name="IDS_MENU_OPEN_IN_INCOGNITO_CHROME" desc="Context sensitive menu item for opening a link in Chrome in an Incognito tab. [CHAR_LIMIT=30]" translateable="false">
         Open in Incognito Chrome
       </message>
-      <message name="IDS_MENU_OPEN_IN_PRODUCT" desc="App menu item for opening link in the browser. [CHAR_LIMIT=30]">
-        Open in <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph>
+      <message name="IDS_MENU_OPEN_IN_PRODUCT" desc="App menu item for opening link in the browser. [CHAR_LIMIT=40]">
+        Open in <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> browser
       </message>
       <message name="IDS_MENU_OPEN_IN_PRODUCT_DEFAULT" desc="Default title for menu item for opening link in browser. [CHAR_LIMIT=30]">
         Open in browser
@@ -4162,8 +4182,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_RDS_GLOBAL_DEFAULT_ON_MESSAGE_BUTTON" desc="Text on the button reflecting an opt-out of the default setting update.">
         Update settings
       </message>
-      <message name="IDS_RDS_GLOBAL_OPT_IN_MESSAGE_TITLE" desc="Title of the message shown for the user to opt in to the desktop site global setting based on device conditions.">
-        Request desktop sites by default?
+      <message name="IDS_RDS_WINDOW_SETTING_MESSAGE_TITLE" desc="Title of the message shown after window setting changes the page layout from desktop to mobile.">
+        Chrome will request the mobile site when the screen is narrow
+      </message>
+      <message name="IDS_RDS_WINDOW_SETTING_MESSAGE_BUTTON" desc="Text on the button allowing users to manage the setting.">
+        Go to Settings
       </message>
       <message name="IDS_RDS_APP_MENU_USER_EDUCATION_DIALOG_TITLE" desc="Title of the dialog shown to educate the user about the desktop site app menu site-level setting.">
         Chrome will remember your choice
@@ -4289,6 +4312,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_OMNIBOX_MOST_VISITED_TILE_NAVIGATE" desc="Announces that interacting with a Tile takes the user to specific website.">
         Navigate: <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph>: <ph name="WEBSITE_URL">%2$s<ex>https://www.nps.gov/crla</ex></ph>
       </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_MOST_VISITED_LIST" desc="Category name of the most visited sites. Announced as: 'amazon.com, 1 of 10 in list Most Visited Sites, 10 items.'">
+        Most visited sites
+      </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_QUERY_TILES_LIST" desc="Category name of the most visited sites. Announced as: 'News, 1 of 10 in list Query Tiles, 10 items.'">
+        Query tiles
+      </message>
 
       <message name="IDS_ACCESSIBILITY_SHARE_SELECTED_ITEMS" desc="Content description for the button to share selected items. [ICU Syntax]">
         {NUM_SELECTED, plural,
@@ -4400,6 +4429,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_MAX_NUMBER_OF_WINDOWS" desc="Toast message for when the user has tried to start more than 5 instances of Chrome window.">
         You can have up to 5 windows.
       </message>
+      <message name="IDS_TAB_DROPPED_DIFFERENT_MODEL" desc="Toast that appears when a tab is dropped into tab strip with a different profile (regular v.s. incognito).">
+        You can find all open tabs in the tab switcher
+      </message>
 
       <message name="IDS_CLOSE_TAB" desc="Context menu option that allows the user to close the selected tab.">
         Close tab
@@ -4467,10 +4499,25 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Page insights bottom sheet is closed
       </message>
       <message name="IDS_PAGE_INSIGHTS_HUB_TITLE_TEXT" desc="The title of Page Insights Sheet.">
-        Related Insights
+        Page Insights
       </message>
       <message name="IDS_PAGE_INSIGHTS_BACK_BUTTON_DESCRIPTION" desc="The content description of back button in page insights sheet.">
         Page insights back button
+      </message>
+      <message name="IDS_PAGE_INSIGHTS_LOADING_INDICATOR_DESCRIPTION" desc="The loading indicator for Page Insights Hub while the related content is being fetched from server.">
+        Page insights Loading Indicator
+      </message>
+      <message name="IDS_PAGE_INSIGHTS_HUB_PRIVACY_NOTICE" desc="Text that displays privacy notice for page insights hub">
+        Your activity in Page Insights is saved in your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Account<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_PAGE_INSIGHTS_HUB_ALT_PRIVACY_NOTICE" desc="Text that displays privacy notice for page insights hub">
+        Your activity in Page Insights is saved in your Google Account. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn how to manage this<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_PAGE_INSIGHTS_HUB_MY_ACTIVITY_LOGO" desc="Logo of privacy notice for page insights hub">
+	Logo of privacy notice for page insights hub which redirects to my activity page.
+      </message>
+      <message name="IDS_PAGE_INSIGHTS_HUB_PRIVACY_NOTICE_CLOSE" desc="Close button for closing privacy notice of page insights hub">
+	Close button to close privacy notice of page insights hub.
       </message>
 
       <!-- WebFeed -->
@@ -4510,8 +4557,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_READY_DESCRIPTION" desc="The body text of the dialog presented a few times after a successful Web Feed follow request, when content from that Web Feed is immediately available. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
         You'll now see stories from <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph> when you open a new tab. Sites you follow are saved in your Google account. You can manage them in Discover settings.
       </message>
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_READY_DESCRIPTION_WITH_UI_UPDATE" desc="The body text of the dialog presented a few times after a successful Web Feed follow request, when content from that Web Feed is immediately available.">
+        You'll now see content from and about <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph> in Following. The sites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.
+      </message>
       <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_NOT_READY_DESCRIPTION" desc="The body text of the dialog presented a few times after a successful Web Feed follow request, when content from that Web Feed is not readily available. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
         Soon, you’ll see stories from <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph> when you open a new tab. Sites you follow are saved in your Google account. You can manage them in Discover settings.
+      </message>
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_NOT_READY_DESCRIPTION_WITH_UI_UPDATE" desc="The body text of the dialog presented a few times after a successful Web Feed follow request, when content from that Web Feed is not readily available.">
+        Soon, you'll see content from and about <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph> in Following. The sites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.
       </message>
       <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_GO_TO_FOLLOWING" desc="The main action of the dialog presented a few times after a successful Web Feed follow request, when content from from that Web Feed is immediately available. It will take the user to the Following feed.">
         Go to Following
@@ -4621,9 +4674,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_WEBAPP_TAP_TO_COPY_URL" desc="Message on the notification that indicates that taping it will copy a Web App's URL into the clipboard.">
         Tap to copy the URL for this app
       </message>
-      <message name="IDS_WEBAPK_OFFLINE_DIALOG" desc="The message on the dialog shown when launching a WebAPK needs network connection.">
-        To use <ph name="APP_NAME">%1$s<ex>PWA List</ex></ph> for the first time, please connect to the internet.
-      </message>
       <message name="IDS_WEBAPK_NOTIFICATION_CHANNEL_NAME" desc="The visible name of the notification channel of WebAPKs on Android O+.">
         General
       </message>
@@ -4635,6 +4685,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Keyboard shortcuts in Android N-->
+      <message name="IDS_KEYBOARD_SHORTCUT_OPEN_NEW_WINDOW" desc="A text label that appears next to the keyboard shortcut to open a new window in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Open a new window
+      </message>
       <message name="IDS_KEYBOARD_SHORTCUT_OPEN_NEW_TAB" desc="A text label that appears next to the keyboard shortcut to open a new tab in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open a new tab
       </message>
@@ -4700,17 +4753,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_KEYBOARD_SHORTCUT_WEBPAGE_GROUP_HEADER" desc="A text label that appears above a list of shortcuts that are related to manipulation of the current tab window. This group is part of several groups of keyboard shortcuts all shown in a dialog.">
         Webpage shortcuts
-      </message>
-
-      <!-- VR module -->
-      <message name="IDS_VR_MODULE_TITLE" desc="Text shown when the VR module is referenced in install start, success, failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing Virtual Reality for Chrome…').">
-        Virtual Reality
-      </message>
-      <message name="IDS_VR_PREPARING_VR_NOTIFICATION_TITLE" desc="Title of a notifaction shown in VR if VR browser not ready yet. [CHAR_LIMIT=23]">
-        Something went wrong.
-      </message>
-      <message name="IDS_VR_PREPARING_VR_NOTIFICATION_BODY" desc="Body of a notifaction shown in VR if VR browser not ready yet.">
-        Reopen Chrome.
       </message>
 
       <if expr="enable_arcore">
@@ -4832,18 +4874,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_IPH_IDENTITY_DISC_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text prompting the user that tapping identity disc will navigate to 'Sync and Google services' settings page.">
         To manage your Google account, tap the "Manage account" button
       </message>
-      <message name="IDS_IPH_NTP_WITHOUT_FEED_TEXT" desc="The in-product-help message to open the new tab page with personalized top sites.">
-        See your top sites
-      </message>
-      <message name="IDS_IPH_NTP_WITHOUT_FEED_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page with personalized top sites. The 'Home' button name should match TC ID 2821179408673282599.">
-        To see your top sites, tap the Home button
-      </message>
-      <message name="IDS_IPH_NTP_WITH_FEED_TEXT" desc="The in-product-help message to open the new tab page with personalized top sites and stories.">
-        See top sites and stories for you
-      </message>
-      <message name="IDS_IPH_NTP_WITH_FEED_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page with personalized top sites and stories. The 'Home' button name should match TC ID 2821179408673282599.">
-        To see top sites and stories for you, tap the Home button
-      </message>
       <message name="IDS_IPH_TAB_SWITCHER_TEXT" desc="The in-product-help message to open the tab switcher.">
         Open tabs to visit different pages at the same time
       </message>
@@ -4955,9 +4985,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK" desc="Text with a link to a page where the user can manage the devices they can share a tab to.">
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Your devices<ph name="END_LINK">&lt;/link&gt;</ph> · <ph name="EMAIL">%1$s<ex>foo@gmail.com</ex></ph>
-      </message>
-      <message name="IDS_SEND_TAB_TO_SELF_WHEN_SIGNED_IN_UNAVAILABLE" desc="Instructions for the user to enable the feature when it's currently unavailable.">
-        You can send tabs between devices that are signed in with the same Google Account
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_ANDROID_NO_TARGET_DEVICE_LABEL" desc="Text shown when a user with no available target devices attempts to use send-tab-to-self.">
         To send this tab to another device, sign in to Chrome there
@@ -5315,10 +5342,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Share
       </message>
 
-      <message name="IDS_QR_CODE_SCAN_TAB_LABEL" desc="Scan tab label for QR Code sharing activity.">
-        Scan
-      </message>
-
       <message name="IDS_QR_CODE_SHARE_DESCRIPTION" desc="Text on QR Code sharing tab describing how to use the QR Code.">
         To share with people nearby, let them scan this QR Code
       </message>
@@ -5362,16 +5385,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Copy image with link
       </message>
 
-      <message name="IDS_SHARING_COPY_GIF" desc="Label for the Copy GIF button in the sharing hub.">
-        Copy GIF
-      </message>
-
       <message name="IDS_SHARING_COPY_HIGHLIGHT_WITHOUT_LINK" desc="Label for the Copy highlighted text without link button in the sharing hub. This is used when sharing highlighted text with a generated link.">
         Copy without link
-      </message>
-
-      <message name="IDS_SHARING_SCREENSHOT" desc="Label for Screenshot button in the sharing hub.">
-        Screenshot
       </message>
 
       <message name="IDS_SHARING_LONG_SCREENSHOT" desc="Label for Long Screenshot button in the sharing hub.">
@@ -5402,18 +5417,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Something went wrong. Try again.
       </message>
 
-      <message name="IDS_SHARING_WEBNOTES_CREATE_CARD" desc="Label for the button in sharing hub for creating card for the highlight text.">
-        Create card
-      </message>
-
-      <message name="IDS_SHARING_WEBNOTES_ACCESSIBILITY_DESCRIPTION" desc="Accessibility description for the button in sharing hub for creating card for the highlight text.">
-        Create stylized card with highlight
-      </message>
-
-      <message name="IDS_SHARING_SAVE_IMAGE" desc="Label for the button in sharing hub for saving an image to device.">
-        Save to device
-      </message>
-
       <message name="IDS_SHARING_SEND_TAB_TO_SELF" desc="Label for the button in sharing hub for sending the current tab to other devices if user signed in (Send Tab to Self feature).">
         Send to devices
       </message>
@@ -5422,48 +5425,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Including link: <ph name="ORIGIN">%1$s<ex>https://www.example.com</ex></ph>
       </message>
 
-      <message name="IDS_GIF_COPIED" desc="Text shown in the toast notification when Copy GIF is selected in the sharing hub.">
-        GIF Copied
-      </message>
-
-      <message name="IDS_QR_CODE_CAMERA_FRAMING_RECT_DESCRIPTION" desc="Text under the framing rectangle in QR Code camera preview.">
-        Position QR Code/barcode in this frame.
-      </message>
-
-      <message name="IDS_QR_CODE_PERMISSION_DESCRIPTION" desc="Text on QR Code sharing tab indicating that permissions need to be given.">
-        To scan a QR Code, let Chrome use your camera
-      </message>
-
-      <message name="IDS_QR_CODE_OPEN_SETTINGS_DESCRIPTION" desc="Text on QR Code sharing tab indicating that user needs to open settings to give camera permission.">
-        To scan a QR Code, change your settings so that Chrome can use your camera
-      </message>
-
-      <message name="IDS_QR_CODE_PERMISSION_CONTINUE_LABEL" desc="Text on button on QR Code sharing tab triggering camera permission dialog.">
-        Continue
-      </message>
-
-      <message name="IDS_QR_CODE_NO_CAMERA_ERROR" desc="Error text shown when no camera is found.">
-        To scan a QR Code, use a device with a camera.
-      </message>
-
-      <message name="IDS_QR_CODE_DISABLED_CAMERA_ERROR" desc="Error text shown when the camera is disabled by the device policy manager.">
-        The organization that manages your device has turned off your camera.
-      </message>
-
-      <message name="IDS_QR_CODE_IN_USE_CAMERA_ERROR" desc="Error text shown when the camera is in use by other apps.">
-        Can't open your camera. Restart your device and try again.
-      </message>
-
-      <message name="IDS_QR_CODE_HARDWARE_CAMERA_ERROR" desc="Error text shown when the camera cannot start due to a hardware error.">
-        Can't open your camera. Something went wrong.
-      </message>
-
       <message name="IDS_QR_CODE_OPEN_SETTINGS_LABEL" desc="Text on button on QR Code sharing tab triggering Android settings.">
         Open Settings
-      </message>
-
-      <message name="IDS_QR_CODE_NOT_A_URL_LABEL" desc="Text on toast on QR Code scanning tab indicating that the QR Code does not correspond to a URL and can not be opened.">
-        This QR Code is not a URL: <ph name="QrCodeValue">%1$s<ex>QR Code Text</ex></ph>
       </message>
 
       <message name="IDS_QR_CODE_FILENAME_PREFIX" desc="File name prefix for downloaded qrcode that is followed by timestamp.">
@@ -5494,10 +5457,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Include link
       </message>
 
-      <message name="IDS_LINK_TOGGLE_SHARE_WEBNOTE_ONLY" desc="Toast displayed when the toggle is clicked for a Webnote share and a link is excluded.">
-        Share card only
-      </message>
-
       <message name="IDS_LINK_TOGGLE_SHARE_SCREENSHOT_ONLY" desc="Toast displayed when the toggle is clicked for a screenshot share and a link is excluded.">
         Share screenshot only
       </message>
@@ -5510,19 +5469,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Share GIF only
       </message>
 
-      <message name="IDS_LINK_TOGGLE_SHARE_REACTION_ONLY" desc="Toast displayed when the toggle is clicked for a lightweight reaction share and a link is excluded.">
-        Share reaction only
-      </message>
-
       <message name="IDS_LINK_TOGGLE_SHARE_CONTENT_ONLY" desc="Fallback toast displayed when the toggle is clicked for a generic share and a link is excluded.">
         Share content only
       </message>
 
       <!-- Share Screenshot strings -->
-      <message name="IDS_SCREENSHOT_EDIT_TITLE" desc="The text shown on the share option for screenshots.">
-        Edit
-      </message>
-
       <message name="IDS_SCREENSHOT_DELETE_TITLE" desc="The text shown on the delete option for screenshots.">
         Delete
       </message>
@@ -5541,10 +5492,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <message name="IDS_SCREENSHOT_FILENAME_PREFIX" desc="File name prefix for downloaded screenshot that is followed by timestamp.">
         chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
-      </message>
-
-      <message name="IDS_SAVE_IMAGE_FILENAME_PREFIX" desc="File name prefix for downloaded image that is followed by timestamp.">
-        chrome_image_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>
 
       <!-- Chime DFM module strings -->
@@ -5676,6 +5623,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- WebID Account Selection strings -->
+      <message name="IDS_ACCOUNT_SELECTION_ADD_ACCOUNT" desc="Title of the button that lets the user sign in to an additional account" translateable="false">
+        Add Account
+      </message>
       <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_SIGNIN" desc="Header for sign in sheet. Sheet is shown to prompt user to sign in to a website using an account from an identity provider.">
         Sign in to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%2$s<ex>idp.com</ex></ph>
       </message>
@@ -5719,11 +5669,65 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCOUNT_SELECTION_SHEET_CLOSED" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is closed." is_accessibility_with_no_ui="true">
         Sign in bottom sheet is closed.
       </message>
-      <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY" desc="Body for mismatch dialog which is shown to prompt the user to sign in to a website using an account from an identity provider." translateable="false">
+      <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY" desc="Body for mismatch dialog which is shown to prompt the user to sign in to a website using an account from an identity provider.">
         You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph>.
       </message>
-      <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE" desc="Title of the button that allows the user to continue with signing in to an account from an identity provider." translateable="false">
+      <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE" desc="Title of the button that allows the user to continue with signing in to an account from an identity provider.">
         Continue
+      </message>
+      <message name="IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON" desc="The button text on the error dialog for the user to acknowledge that an error has occurred in their attempt to sign in with an account from an identity provider.">
+        Got it
+      </message>
+      <message name="IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY" desc="Summary of generic error upon user failing to sign in with an account from an identity provider.">
+        Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.example</ex></ph>
+      </message>
+      <message name="IDS_SIGNIN_GENERIC_ERROR_DIALOG_DESCRIPTION" desc="Description of generic error upon user failing to sign in with an account from an identity provider.">
+        Something went wrong
+      </message>
+      <message name="IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY" desc="Summary of unauthorized client error upon user failing to sign in with an account from an identity provider.">
+        <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph> can't continue using <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%2$s<ex>idp.example</ex></ph>
+      </message>
+      <message name="IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_DESCRIPTION" desc="Description of unauthorized client error upon user failing to sign in with an account from an identity provider.">
+        This option is unavailable right now.
+      </message>
+      <message name="IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY" desc="Summary of invalid request error upon user failing to sign in with an account from an identity provider.">
+        <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph> can't continue using <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%2$s<ex>idp.example</ex></ph>
+      </message>
+      <message name="IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_DESCRIPTION" desc="Description of invalid request error upon user failing to sign in with an account from an identity provider.">
+        This option is unavailable right now.
+      </message>
+      <message name="IDS_SIGNIN_ACCESS_DENIED_ERROR_DIALOG_SUMMARY" desc="Summary of access denied error upon user failing to sign in with an account from an identity provider.">
+        Check that you chose the right account
+      </message>
+      <message name="IDS_SIGNIN_ACCESS_DENIED_ERROR_DIALOG_DESCRIPTION" desc="Description of access denied error upon user failing to sign in with an account from an identity provider.">
+        Check if the selected account is supported.
+      </message>
+      <message name="IDS_SIGNIN_SERVER_ERROR_DIALOG_SUMMARY" desc="Summary of server error upon user failing to sign in with an account from an identity provider.">
+        Check your internet connection
+      </message>
+      <message name="IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION" desc="Description of server error upon user failing to sign in with an account from an identity provider.">
+        If you're online but this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph>.
+      </message>
+      <message name="IDS_SIGNIN_TEMPORARILY_UNAVAILABLE_ERROR_DIALOG_SUMMARY" desc="Summary of temporarily unavailable error upon user failing to sign in with an account from an identity provider.">
+        Try again later
+      </message>
+      <message name="IDS_SIGNIN_TEMPORARILY_UNAVAILABLE_ERROR_DIALOG_DESCRIPTION" desc="Description of temporarily unavailable error upon user failing to sign in with an account from an identity provider.">
+        <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.example</ex></ph> isn't available right now.
+      </message>
+      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_PROMPT" desc="Prompt user to get more details about an error that has occurred in their attempt to sign in with an account from an identity provider.">
+        <ph name="BEGIN_LINK">&lt;link_more_details&gt;</ph>Get more information<ph name="END_LINK">&lt;/link_more_details&gt;</ph> from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.example</ex></ph>.
+      </message>
+      <message name="IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_PROMPT" desc="Prompt user to try other ways of signing in after an error has occurred in their attempt to sign in with an account from an identity provider.">
+        You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph>.
+      </message>
+      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_RETRY_PROMPT" desc="Prompt user to get more details about an error if it continues to occur after their first attempt to sign in with an account from an identity provider.">
+        If this issue keeps happening, <ph name="BEGIN_LINK">&lt;link_more_details&gt;</ph>get more information<ph name="END_LINK">&lt;/link_more_details&gt;</ph> from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.example</ex></ph>.
+      </message>
+      <message name="IDS_SIGNIN_GENERIC_ERROR_DIALOG_MORE_DETAILS_PROMPT" desc="Prompt user to get more details about a generic error that has occurred in their attempt to sign in with an account from an identity provider.">
+        <ph name="BEGIN_LINK">&lt;link_more_details&gt;</ph>More details<ph name="END_LINK">&lt;/link_more_details&gt;</ph>
+      </message>
+      <message name="IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_RETRY_PROMPT" desc="Prompt user to try other ways of signing in after an error if it continues to occur after their first attempt to sign in with an account from an identity provider.">
+        If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph>.
       </message>
       <message name="IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN" desc="Header for verify sheet for auto re-authentication.">
         Signing you in…
@@ -5732,38 +5736,15 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Verifying…
       </message>
 
-      <!-- Content Creation strings -->
-      <message name="IDS_CONTENT_CREATION_NOTE_TITLE_FOR_SHARE" desc="The title of the share sheet when sharing a stylized note. The date will be formatted according to the current locale.">
-        Stylized highlight <ph name="CURRENT_DATE">%1$s<ex>2020-09-16</ex></ph>
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_FILENAME_PREFIX" desc="Prefix used to name files when saving a Note's image representation. Underscores need to be used in place of whitespaces to avoid breaking the file path. Random numbers will be appended to this suffix to guarantee uniqueness.">
-        chrome_stylized_highlight_
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_SELECTED" desc="Announcment string for accessibility when selected template changes.">
-        <ph name="TEMPLATE_TITLE">%1$s<ex>Classic</ex></ph> template selected
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_DIALOG_DESCRIPTION" desc="Accessibility information for note template picking dialog.">
-        Select a template for your highlight.
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_SHORTENED_MESSAGE" desc="Toast message displayed when highlighted text is too long and is cropped to fit in the note.">
-        Highlight was shortened
-      </message>
-      <message name="IDS_QUOTATION_MARK_PREFIX" desc="String to put in front of other text to represent it as a quote start.">
-        “
-      </message>
-      <message name="IDS_QUOTATION_MARK_SUFFIX" desc="String to put after other text to represent it as a quote end.">
-        ”
-      </message>
-
       <!-- HTTPS-First Mode settings strings -->
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Text for the HTTPS-First Mode toggle in settings.">
         Always use secure connections
       </message>
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUMMARY" desc="Secondary, continued explanation of HTTPS-First Mode in settings.">
-        Upgrade navigations to HTTPS and warn you before loading sites that don’t support it
+        Use HTTPS whenever possible and get warned before loading sites that don’t support it
       </message>
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_WITH_ADVANCED_PROTECTION_SUMMARY" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
-        Upgrade navigations to HTTPS and warn you before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
+        Use HTTPS whenever possible and get warned before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
       </message>
 
       <!-- Auto-darken web content -->
@@ -5889,6 +5870,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_QUICK_DELETE_DIALOG_MORE_OPTIONS_BUTTON_TEXT" desc="Text inside the more options button which redirects users to the advanced page of 'Clear Browsing Data' where the users can customize more deletion options.">
         More options
       </message>
+      <message name="IDS_QUICK_DELETE_DIALOG_MORE_OPTIONS_BUTTON_TEXT_A11Y" desc="A11y text for Talkback, in order to give more context to the button that redirects users to the advanced page of 'Clear Browsing Data'.">
+        More options to clear browsing data
+      </message>
       <message name="IDS_QUICK_DELETE_DIALOG_DATA_PENDING" desc="Text that is shown when data in the dialog is being fetched.">
         Calculating...
       </message>
@@ -5933,6 +5917,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_USE_PASSWORD_BUTTON" desc="Appears on the button, which reflects the user agreement to user the generated strong password.">
         Use password
       </message>
+      <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_USE_PASSWORD_BUTTON_CONTENT" desc="The string is announced by the TalkBack service, when the field containing the generated password is focused.">
+        Use password <ph name="PASSWORD">%1$s</ph>
+      </message>
       <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_BUTTON" desc="Appears on the button, which reflects that the user has rejected the proposed generated password and decided to continue with creating their own password.">
         Create my own
       </message>
@@ -5940,39 +5927,71 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Please wait…
       </message>
 
-      <!-- Read Aloud ("Listen to this page") player strings -->
-      <message name="IDS_READALOUD_CLOSE_PLAYER_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string for the button that closes the 'Listen to this page' player.">
-        Tap to close “Listen to this page”.
+      <!-- Add username dialog -->
+      <message name="IDS_ADD_USERNAME_DIALOG_TITLE" desc="Title of the dialog, which proposes the user to add a username when the password is being automatically saved and the username could not be captured.">
+        Add your username
       </message>
-      <message name="IDS_READALOUD_PLAYER_NAME" desc="Name of the Read Aloud player for accessiblity.">
-        “Listen to this page” player.
+      <message name="IDS_ADD_USERNAME_DIALOG_ADD_USERNAME" desc="The positive button caption for the user to save the username entered in the dialog. The dialog is displayed when the password is being automatically saved and the username could not be captured.">
+        Add username
       </message>
-      <message name="IDS_READALOUD_PLAYER_OPENED_AT_FULL_HEIGHT" desc="Accessibility string spoken when the 'Listen to this page' player bottom sheet expands to its full height.">
-        “Listen to this page” player opened at full height.
+      <message name="IDS_ADD_USERNAME_DIALOG_CANCEL" desc="The negative button caption in the dialog. The dialog is displayed when the password is being automatically saved and the username could not be captured.">
+        Cancel
       </message>
-      <message name="IDS_READALOUD_PLAYER_MINIMIZED" desc="Accessibility string spoken when the 'Listen to this page' player bottom sheet shrinks to its minimized height.">
-        “Listen to this page” player minimized.
+      <message name="IDS_ADD_USERNAME_DIALOG_TEXT" desc="The content of the dialog explaining the user the purpose of the dialog.">
+        To help Google Password Manager save your sign-in info, add your username for this site
       </message>
-      <message name="IDS_READALOUD_CHROME_NOW_PLAYING" desc="Text in 'Listen to this page' player appearing before the title of the currently playing page.">
-        Chrome now playing
+
+      <!-- Touch To Fill No Passkeys Sheet -->
+      <message name="IDS_NO_PASSKEYS_SHEET_CONTENT_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string read when the no passkeys sheet is opened. It describes the bottom sheet informing users that no passkeys are available.">
+        No passkeys sheet
       </message>
-      <message name="IDS_READALOUD_REPLAY" desc="Accessibility string for the button that rewinds 'Listen to this page' playback by the specified number of seconds.">
-        Back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds
+      <message name="IDS_NO_PASSKEYS_SHEET_FULL_HEIGHT" is_accessibility_with_no_ui="true" desc="Accessibility string read upon opening the bottom sheet that informs users that no passkeys are available. Even at full height, the sheet will occupy the bottom half of the screen.">
+        No passkeys sheet opened at full height
       </message>
-      <message name="IDS_READALOUD_FORWARD" desc="Accessibility string for the button that seeks 'Listen to this page' playback forward by the specified number of seconds.">
-        Forward <ph name="NUMBER_OF_SECONDS">%1$s<ex>30</ex></ph> seconds
+      <message name="IDS_NO_PASSKEYS_SHEET_CLOSED" is_accessibility_with_no_ui="true" desc="Accessibility string read upon closing the bottom sheet that informs users that no passkeys are available.">
+        No passkeys sheet was closed
       </message>
-      <message name="IDS_READALOUD_PLAY" desc="Accessibility string for the 'Listen to this page' play button.">
-        Play
+      <message name="IDS_NO_PASSKEYS_SHEET_TITLE" desc="Title of the bottom sheet informing users that no passkeys are available.">
+        No passkeys available
       </message>
-      <message name="IDS_READALOUD_PAUSE" desc="Accessibility string for the 'Listen to this page' pause button.">
-        Pause
+      <message name="IDS_NO_PASSKEYS_SHEET_SUBTITLE" desc="Explanation text of the bottom sheet informing users that no passkeys are available for this site.">
+        There aren't any passkeys for <ph name="ORIGIN">%1$s<ex>example.com</ex></ph> on this device
       </message>
-      <message name="IDS_READALOUD_SPEED_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' playback speed menu button.">
-        Playback speed: <ph name="PLAYBACK_SPEED">%1$s<ex>1.0</ex></ph>. Click to change.
+      <message name="IDS_NO_PASSKEYS_SHEET_OK" desc="Label for the button that allows users to dismiss the bottom sheet informing them that no passkeys are available.">
+        OK
       </message>
-      <message name="IDS_READALOUD_OPTIONS_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' options menu button.">
-        More options
+      <message name="IDS_NO_PASSKEYS_SHEET_USE_ANOTHER_DEVICE" desc="Label for the button that allows users to starts a flow allowing them to use a passkey from another device to sign into ths site.">
+        Use another device
+      </message>
+
+      <!-- Plus Address accessibility strings: TODO(crbug.com/1467623): Replace with final versions  -->
+      <message name="IDS_PLUS_ADDRESS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the plus address bottom sheet is opened." is_accessibility_with_no_ui="true">
+        Lorem Ipsum
+      </message>
+
+      <message name="IDS_READALOUD_VOICE_PREVIEW_MESSAGE" desc="String to be read aloud when a voice's preview button is clicked as a demonstration of how that voice sounds. It also explains how to select the voice by clicking the menu item.">
+        Here are the voices you can pick for reading out your web pages. If you like this voice and want me to keep using it just tap the voice name.
+      </message>
+
+      <!-- WebAuthn -->
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_TITLE" desc="The title of a bottomsheet that appears before the user saves passkey in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'.)" formatter_data="android_java">
+        Save passkey outside Incognito?
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_BODY" desc="The body of a bottomsheet that appears before the user saves passkey in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'.)" formatter_data="android_java">
+        This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_CONTINUE" desc="The text of a button that the user will click to continue creating a passkey in Incognito mode" formatter_data="android_java">
+        Continue
+      </message>
+
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_DESCRIPTION" desc="Accessibility string that describes a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_OPENED" desc="Accessibility string that describes opening a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet opened
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet closed
       </message>
     </messages>
   </release>

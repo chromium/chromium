@@ -130,7 +130,7 @@ class CfmHotlineClientTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<CfmHotlineClient, ExperimentalAsh> client_;
+  raw_ptr<CfmHotlineClient> client_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
   std::deque<std::unique_ptr<dbus::Response>> responses_;

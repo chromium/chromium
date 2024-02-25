@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_ASH_PROJECTOR_SCREENCAST_MANAGER_H_
 #define CHROME_BROWSER_UI_ASH_PROJECTOR_SCREENCAST_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -34,7 +34,7 @@ class ScreencastManager {
   // gain access to link-shared files. Since the `resource_key` is currently
   // only used by Googlers, the `resource_key` might be empty.
   void GetVideo(const std::string& video_file_id,
-                const absl::optional<std::string>& resource_key,
+                const std::optional<std::string>& resource_key,
                 ProjectorAppClient::OnGetVideoCallback callback) const;
 
   // Resets `suppress_drive_notifications_for_path_`. Called when the app UI is
@@ -47,7 +47,7 @@ class ScreencastManager {
   void OnVideoFilePathLocated(
       const std::string& video_id,
       ProjectorAppClient::OnGetVideoCallback callback,
-      absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
+      std::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
 
   // The task runner to get video metadata.
   scoped_refptr<base::SequencedTaskRunner> video_metadata_task_runner_;

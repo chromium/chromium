@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_list.h"
@@ -44,8 +45,8 @@ class NET_EXPORT ProxyInfo {
   // It is OK to have LWS between entries.
   void UseNamedProxy(const std::string& proxy_uri_list);
 
-  // Sets the proxy list to a single entry, |proxy_server|.
-  void UseProxyServer(const ProxyServer& proxy_server);
+  // Sets the proxy list to a single entry, |proxy_chain|.
+  void UseProxyChain(const ProxyChain& proxy_chain);
 
   // Parses from the given PAC result.
   void UsePacString(const std::string& pac_string);
@@ -57,65 +58,39 @@ class NET_EXPORT ProxyInfo {
   // proxy configuration.
   void OverrideProxyList(const ProxyList& proxy_list);
 
-  // Indicates that this is a proxy for IP Protection.
-  void set_is_for_ip_protection(bool is_for_ip_protection) {
-    is_for_ip_protection_ = is_for_ip_protection;
-  }
+  // Indicates that the request that uses this proxy config caused a match with
+  // the masked domain list.
+  // This is a temporary workaround to gather initial metrics for IP Protection.
+  // TODO(1507085): Remove once the experiment is concluded.
+  void set_is_mdl_match(bool is_mdl_match) { is_mdl_match_ = is_mdl_match; }
 
   // Returns true if this proxy info specifies a direct connection.
   bool is_direct() const {
     // We don't implicitly fallback to DIRECT unless it was added to the list.
-    if (is_empty())
+    if (is_empty()) {
       return false;
-    return proxy_list_.Get().is_direct();
+    }
+    return proxy_chain().is_direct();
   }
 
   bool is_direct_only() const {
     return is_direct() && proxy_list_.size() == 1 && proxy_retry_info_.empty();
   }
 
-  // Returns true if the first valid proxy server is an https proxy.
-  bool is_https() const {
-    if (is_empty())
+  // Return true if there is at least one proxy chain, and at least one proxy
+  // server in that chain matches the given predicate.
+  template <class Predicate>
+  bool AnyProxyInChain(Predicate p) const {
+    if (is_empty()) {
       return false;
-    return proxy_server().is_https();
+    }
+    const std::vector<ProxyServer>& proxy_servers =
+        proxy_chain().proxy_servers();
+    return std::any_of(proxy_servers.begin(), proxy_servers.end(), p);
   }
 
-  // Returns true if the first proxy server is an HTTP compatible proxy.
-  bool is_http_like() const {
-    if (is_empty())
-      return false;
-    return proxy_server().is_http_like();
-  }
-
-  // Returns true if the first proxy server is an HTTP compatible proxy over a
-  // secure connection.
-  bool is_secure_http_like() const {
-    if (is_empty())
-      return false;
-    return proxy_server().is_secure_http_like();
-  }
-
-  // Returns true if the first valid proxy server is an http proxy.
-  bool is_http() const {
-    if (is_empty())
-      return false;
-    return proxy_server().is_http();
-  }
-
-  // Returns true if the first valid proxy server is a quic proxy.
-  bool is_quic() const {
-    if (is_empty())
-      return false;
-    return proxy_server().is_quic();
-  }
-
-  // Returns true if the first valid proxy server is a socks server.
-  bool is_socks() const {
-    if (is_empty())
-      return false;
-    return proxy_server().is_socks();
-  }
+  // Returns true if any of the contained ProxyChains are multi-proxy.
+  bool ContainsMultiProxyChain() const;
 
   // Returns true if this proxy info has no proxies left to try.
   bool is_empty() const {
@@ -128,18 +103,28 @@ class NET_EXPORT ProxyInfo {
     return did_bypass_proxy_;
   }
 
-  // Returns true if this proxy info is for IP Protection.
-  bool is_for_ip_protection() const { return is_for_ip_protection_; }
+  // Returns true if the first proxy chain corresponds to one used for IP
+  // Protection. For more info, see `ProxyChain::is_for_ip_protection()`.
+  bool is_for_ip_protection() const;
 
-  // Returns the first valid proxy server. is_empty() must be false to be able
+  // Returns true if the request that uses this proxy config caused a match with
+  // the masked domain list.
+  // This is a temporary workaround to gather initial metrics for IP Protection.
+  // TODO(1507085): Remove once the experiment is concluded.
+  bool is_mdl_match() const { return is_mdl_match_; }
+
+  // Returns the first valid proxy chain. is_empty() must be false to be able
   // to call this function.
-  const ProxyServer& proxy_server() const { return proxy_list_.Get(); }
+  const ProxyChain& proxy_chain() const { return proxy_list_.First(); }
 
   // Returns the full list of proxies to use.
   const ProxyList& proxy_list() const { return proxy_list_; }
 
   // See description in ProxyList::ToPacString().
   std::string ToPacString() const;
+
+  // See description in ProxyList::ToDebugString().
+  std::string ToDebugString() const;
 
   // Marks the current proxy as bad. |net_error| should contain the network
   // error encountered when this proxy was tried, if any. If this fallback
@@ -150,7 +135,7 @@ class NET_EXPORT ProxyInfo {
 
   // De-prioritizes the proxies that we have cached as not working, by moving
   // them to the end of the proxy list.
-  void DeprioritizeBadProxies(const ProxyRetryInfoMap& proxy_retry_info);
+  void DeprioritizeBadProxyChains(const ProxyRetryInfoMap& proxy_retry_info);
 
   // Deletes any entry which doesn't have one of the specified proxy schemes.
   void RemoveProxiesWithoutScheme(int scheme_bit_field);
@@ -190,6 +175,11 @@ class NET_EXPORT ProxyInfo {
   // Reset proxy and config settings.
   void Reset();
 
+  // Verify that all proxies in the first chain have `SCHEME_HTTPS`. This is
+  // currently enforced by `ProxyChain::IsValid`, and assumed by various `is_..`
+  // methods in this class.
+  bool AllChainProxiesAreHttps() const;
+
   // The ordered list of proxy servers (including DIRECT attempts) remaining to
   // try. If proxy_list_ is empty, then there is nothing left to fall back to.
   ProxyList proxy_list_;
@@ -203,8 +193,11 @@ class NET_EXPORT ProxyInfo {
   // Whether the proxy result represent a proxy bypass.
   bool did_bypass_proxy_ = false;
 
-  // Whether this proxy is for IP Protection.
-  bool is_for_ip_protection_ = false;
+  // Whether the request that uses this proxy config caused a match with the
+  // masked domain list.
+  // This is a temporary workaround to gather initial metrics for IP Protection.
+  // TODO(1507085): Remove once the experiment is concluded.
+  bool is_mdl_match_ = false;
 
   // How long it took to resolve the proxy.  Times are both null if proxy was
   // determined synchronously without running a PAC.

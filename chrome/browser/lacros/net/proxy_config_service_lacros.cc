@@ -24,7 +24,7 @@
 namespace {
 
 net::ProxyConfigWithAnnotation GetConfigOrDirect(
-    const absl::optional<net::ProxyConfigWithAnnotation>& optional_config,
+    const std::optional<net::ProxyConfigWithAnnotation>& optional_config,
     Profile* profile,
     bool proxy_controlled_by_extension) {
   DCHECK(profile);
@@ -94,6 +94,9 @@ void ProxyConfigServiceLacros::OnProxyChanged(
   cached_config_ = CrosapiProxyToNetProxy(std::move(proxy_config));
   NotifyObservers();
 }
+
+void ProxyConfigServiceLacros::
+    OnAlwaysOnVpnPreConnectUrlAllowlistEnforcedChanged(bool enforced) {}
 
 void ProxyConfigServiceLacros::OnUseAshProxyPrefChanged() {
   NotifyObservers();

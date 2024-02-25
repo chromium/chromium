@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Default "local-fonts" permissions policy ["self"] allows same-origin iframes.
+  assert_true: local-fonts expected true got false
+Harness: the test ran to completion.

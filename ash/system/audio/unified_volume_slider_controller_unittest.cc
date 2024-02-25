@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/audio/unified_volume_view.h"
 #include "ash/test/ash_test_base.h"
@@ -115,18 +114,6 @@ TEST_F(UnifiedVolumeSliderControllerTest, RecordOutputVolumeChangedSource) {
   histogram_tester_.ExpectBucketCount(
       CrasAudioHandler::kOutputVolumeChangedSourceHistogramName,
       CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 2);
-}
-
-// Verify pressing the mute button is recorded to metrics.
-TEST_F(UnifiedVolumeSliderControllerTest, RecordOuptputVolumeMuteSource) {
-  // There's no separate mute button for QsRevamp volume slider.
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
-  PressSliderButton();
-  histogram_tester_.ExpectBucketCount(
-      CrasAudioHandler::kOutputVolumeMuteSourceHistogramName,
-      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 1);
 }
 
 }  // namespace ash

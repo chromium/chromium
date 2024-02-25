@@ -20,7 +20,7 @@ CopyingTexture2DWrapper::CopyingTexture2DWrapper(
     std::unique_ptr<Texture2DWrapper> output_wrapper,
     scoped_refptr<VideoProcessorProxy> processor,
     ComD3D11Texture2D output_texture,
-    absl::optional<gfx::ColorSpace> output_color_space)
+    std::optional<gfx::ColorSpace> output_color_space)
     : size_(size),
       video_processor_(std::move(processor)),
       output_texture_wrapper_(std::move(output_wrapper)),

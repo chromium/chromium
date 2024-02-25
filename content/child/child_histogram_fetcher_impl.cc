@@ -34,23 +34,31 @@ void ChildHistogramFetcherFactoryImpl::Create(
 }
 
 void ChildHistogramFetcherFactoryImpl::CreateFetcher(
-    base::WritableSharedMemoryRegion shared_memory,
+    base::UnsafeSharedMemoryRegion shared_memory,
     mojo::PendingReceiver<content::mojom::ChildHistogramFetcher> receiver) {
-  if (shared_memory.IsValid()) {
-    // This message must be received only once. Multiple calls to create a
-    // global allocator will cause a CHECK() failure.
+  // This message must be received only once.
+  static bool already_called = false;
+  CHECK(!already_called);
+  already_called = true;
+
+  // If the shared memory region was passed via the command line, then the
+  // global histogram allocator should already by setup. Otherwise, the region
+  // is being passed via this IPC. We need to initialize the global histogram
+  // allocator and the tracking histograms here.
+  if (shared_memory.IsValid() && !base::GlobalHistogramAllocator::Get()) {
     base::GlobalHistogramAllocator::CreateWithSharedMemoryRegion(shared_memory);
+    // Emit a local histogram, which should not be reported to servers. This is
+    // monitored from the serverside.
+    LOCAL_HISTOGRAM_BOOLEAN("UMA.LocalHistogram", true);
+
+    base::PersistentHistogramAllocator* global_allocator =
+        base::GlobalHistogramAllocator::Get();
+    if (global_allocator) {
+      global_allocator->CreateTrackingHistograms(global_allocator->Name());
+    }
   }
 
-  // Emit a local histogram, which should not be reported to servers. This is
-  // monitored from the serverside.
-  LOCAL_HISTOGRAM_BOOLEAN("UMA.LocalHistogram", true);
-
-  base::PersistentHistogramAllocator* global_allocator =
-      base::GlobalHistogramAllocator::Get();
-  if (global_allocator)
-    global_allocator->CreateTrackingHistograms(global_allocator->Name());
-
+  // Setup the Mojo receiver.
   mojo::MakeSelfOwnedReceiver(std::make_unique<ChildHistogramFetcherImpl>(),
                               std::move(receiver));
 }

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -17,8 +18,7 @@
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_cycle_event.h"
-#include "components/sync/protocol/sync_protocol_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/sync/engine/sync_protocol_error.h"
 
 namespace syncer {
 
@@ -79,9 +79,9 @@ class SyncCycle {
     // data types that can receive commits via extension APIs. Empty optional
     // means using the client-side defaults.
     virtual void OnReceivedQuotaParamsForExtensionTypes(
-        absl::optional<int> max_tokens,
-        absl::optional<base::TimeDelta> refill_interval,
-        absl::optional<base::TimeDelta> depleted_quota_nudge_delay) = 0;
+        std::optional<int> max_tokens,
+        std::optional<base::TimeDelta> refill_interval,
+        std::optional<base::TimeDelta> depleted_quota_nudge_delay) = 0;
 
    protected:
     virtual ~Delegate() = default;

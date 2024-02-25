@@ -155,17 +155,17 @@ KioskSessionRestartReason ConvertSessionEndReasonToSessionRestartReason(
 }
 
 // If the session termination reason was not saved, returns an empty optional.
-absl::optional<KioskSessionEndReason> GetSessionEndReason(
+std::optional<KioskSessionEndReason> GetSessionEndReason(
     const PrefService* prefs) {
   const base::Value::Dict& metrics_dict = prefs->GetDict(prefs::kKioskMetrics);
   const auto* kiosk_session_stop_reason_value =
       metrics_dict.Find(kKioskSessionEndReason);
   if (!kiosk_session_stop_reason_value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto kiosk_session_stop_reason = kiosk_session_stop_reason_value->GetIfInt();
   if (!kiosk_session_stop_reason.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return static_cast<KioskSessionEndReason>(kiosk_session_stop_reason.value());
@@ -257,6 +257,7 @@ void KioskMetricsService::RestartRequested(
     case power_manager::REQUEST_RESTART_FOR_USER:
     case power_manager::REQUEST_RESTART_FOR_UPDATE:
     case power_manager::REQUEST_RESTART_OTHER:
+    case power_manager::REQUEST_RESTART_HEARTD:
       return;
     case power_manager::REQUEST_RESTART_SCHEDULED_REBOOT_POLICY:
       SaveSessionEndReason(KioskSessionEndReason::kRebootPolicy);
@@ -332,7 +333,7 @@ void KioskMetricsService::RecordKioskSessionDuration(
 }
 
 void KioskMetricsService::RecordPreviousKioskSessionEndState() {
-  absl::optional<KioskSessionEndReason> previous_session_end_reason =
+  std::optional<KioskSessionEndReason> previous_session_end_reason =
       GetSessionEndReason(prefs_);
   // Avoid reading the old saved reason in the future.
   ClearMetricFromPrefs(kKioskSessionEndReason, prefs_);

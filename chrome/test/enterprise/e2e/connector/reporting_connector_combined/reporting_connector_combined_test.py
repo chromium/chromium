@@ -99,22 +99,3 @@ class ReportingConnectorCombinedTest(ChromeReportingConnectorTestCase):
       if result:
         count += 1
     self.assertGreaterEqual(count, threshold)
-
-  @test
-  def test_browser_enrolled_prod_client_only(self):
-    token = self.GetCELabDefaultToken()
-    self.EnrollBrowserToDomain(token)
-    self.EnableSafeBrowsing()
-    self.UpdatePoliciesOnClient()
-
-    # trigger malware event & get device id from browser
-    _, histogram = self.TriggerUnsafeBrowsingEvent()
-    logging.info('Histogram: %s', histogram)
-    self.assertIn('Enterprise.ReportingEventUploadSuccess', histogram)
-    self.assertIn('count', histogram['Enterprise.ReportingEventUploadSuccess'])
-    self.assertIsNotNone(
-        histogram['Enterprise.ReportingEventUploadSuccess']['count'])
-    self.assertIn('sum_value',
-                  histogram['Enterprise.ReportingEventUploadSuccess'])
-    self.assertIsNotNone(
-        histogram['Enterprise.ReportingEventUploadSuccess']['sum_value'])

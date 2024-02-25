@@ -255,7 +255,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamString) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
-  EXPECT_EQ("default", a.Get());  // empty
+  EXPECT_EQ("", a.Get());  // empty
   EXPECT_EQ("non-default", b.Get());
   EXPECT_EQ("non-default", c.Get());
   EXPECT_EQ("", d.Get());         // empty

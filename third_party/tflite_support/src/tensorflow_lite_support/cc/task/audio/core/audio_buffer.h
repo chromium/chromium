@@ -17,8 +17,8 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/memory/memory.h"       // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -41,8 +41,7 @@ class AudioBuffer {
   // Factory method for creating an AudioBuffer object. The internal buffer does
   // not take the ownership of the input backing buffer.
   static tflite::support::StatusOr<std::unique_ptr<AudioBuffer>> Create(
-      const float* audio_buffer,
-      int buffer_size,
+      const float* audio_buffer, int buffer_size,
       const AudioFormat& audio_format) {
     return absl::make_unique<AudioBuffer>(audio_buffer, buffer_size,
                                           audio_format);
@@ -51,8 +50,7 @@ class AudioBuffer {
   // AudioBuffer for internal use only. Uses the factory method to construct
   // AudioBuffer instance. The internal buffer does not take the ownership of
   // the input backing buffer.
-  AudioBuffer(const float* audio_buffer,
-              int buffer_size,
+  AudioBuffer(const float* audio_buffer, int buffer_size,
               const AudioFormat& audio_format)
       : audio_buffer_(audio_buffer),
         buffer_size_(buffer_size),

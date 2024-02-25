@@ -6,15 +6,16 @@
 #define MEDIA_GPU_WINDOWS_D3D_VIDEO_DECODER_WRAPPER_H_
 
 #include <Windows.h>
+
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/scoped_d3d_buffers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -33,6 +34,10 @@ class D3DVideoDecoderWrapper {
   explicit D3DVideoDecoderWrapper(MediaLog* media_log);
   virtual ~D3DVideoDecoderWrapper();
 
+  // Get whether single video decoder texture is recommended by the driver.
+  // Returns whether this operation succeeds.
+  virtual std::optional<bool> UseSingleTexture() const = 0;
+
   // Clear all internal states.
   virtual void Reset() = 0;
 
@@ -43,7 +48,7 @@ class D3DVideoDecoderWrapper {
   // If so, re-copying same data could be avoided.
   virtual bool HasPendingBuffer(BufferType type) = 0;
 
-  // Submit a slice and clear the buffers.
+  // Submit a slice.
   virtual bool SubmitSlice() = 0;
 
   // Submit a frame to start decoding.
@@ -86,9 +91,8 @@ class D3DVideoDecoderWrapper {
 
   // Information that's accumulated during slices and submitted at the end
   std::vector<uint8_t> slice_info_bytes_;
-  absl::optional<ScopedSequenceD3DInputBuffer> bitstream_buffer_;
+  std::optional<ScopedSequenceD3DInputBuffer> bitstream_buffer_;
 
- private:
   raw_ptr<MediaLog> media_log_ = nullptr;
 };
 

@@ -44,7 +44,7 @@ bool Base64UrlEncode(const std::set<std::string>& input,
 ResourceCache::ResourceCache(
     const base::FilePath& cache_dir,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<int64_t> max_cache_size)
+    std::optional<int64_t> max_cache_size)
     : cache_dir_(cache_dir),
       task_runner_(task_runner),
       max_cache_size_(max_cache_size) {

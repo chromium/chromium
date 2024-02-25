@@ -1,0 +1,33 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Implemented in Accessibility Service Javascript and called
+// by the OS browser process, this informs JS that it needs to
+// find the bounds for the given point in screen coordinates.
+interface Autoclick {
+  // Called when the OS browser process needs the bounds for
+  // the closest scrollable ancestor of the node at the
+  // given screen point.
+  RequestScrollableBoundsForPoint(gfx.mojom.Point point);
+};
+
+// Implemented by the OS browser process, this is called by
+// Accessibility Service javascript when scrollable bounds have
+// been found.
+interface AutoclickClient {
+  // Called by the Accessibility Service when
+  // Autoclick::onScrollableBoundsForPointRequested has found a
+  // scrolling container. `bounds` will be the bounds of the nearest
+  // scrollable ancestor of the node at the point requested using
+  // onScrollableBoundsForPointRequested.
+  HandleScrollableBoundsForPointFound(gfx.mojom.Rect bounds);
+
+  // Send a pending receiver from the OS browser process to
+  // the accessibility service for binding.
+  BindAutoclick() => (pending_receiver<Autoclick> autoclick_receiver);
+};

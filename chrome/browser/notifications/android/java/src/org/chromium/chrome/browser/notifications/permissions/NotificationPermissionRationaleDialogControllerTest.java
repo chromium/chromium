@@ -36,9 +36,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests for {@link NotificationPermissionRationaleDialogController}.
- */
+/** Tests for {@link NotificationPermissionRationaleDialogController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NotificationPermissionRationaleDialogControllerTest {
     private ModalDialogManager mModalDialogManager;
@@ -58,7 +56,10 @@ public class NotificationPermissionRationaleDialogControllerTest {
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
         // Show the dialog, we don't dismiss it so the callback shouldn't be called.
-        dialog.showRationaleUi(result -> { assert false; });
+        dialog.showRationaleUi(
+                result -> {
+                    assert false;
+                });
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
 
@@ -68,7 +69,8 @@ public class NotificationPermissionRationaleDialogControllerTest {
         assertNull(dialogModel.get(ModalDialogProperties.TITLE));
         assertNull(dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
 
-        assertEquals(ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
+        assertEquals(
+                ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
                 dialogModel.get(ModalDialogProperties.BUTTON_STYLES));
 
         assertTrue(dialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
@@ -98,7 +100,8 @@ public class NotificationPermissionRationaleDialogControllerTest {
         mModalDialogManager.dismissDialog(
                 dialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         verify(mockCallback).onResult(RationaleUiResult.REJECTED);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Permission.RationaleResult",
                         NotificationRationaleResult.NEGATIVE_BUTTON_CLICKED));
@@ -117,7 +120,8 @@ public class NotificationPermissionRationaleDialogControllerTest {
         mModalDialogManager.dismissDialog(
                 dialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         verify(mockCallback).onResult(RationaleUiResult.REJECTED);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Permission.RationaleResult",
                         NotificationRationaleResult.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
@@ -136,7 +140,8 @@ public class NotificationPermissionRationaleDialogControllerTest {
         mModalDialogManager.dismissDialog(
                 dialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         verify(mockCallback).onResult(RationaleUiResult.ACCEPTED);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Permission.RationaleResult",
                         NotificationRationaleResult.POSITIVE_BUTTON_CLICKED));
@@ -154,7 +159,8 @@ public class NotificationPermissionRationaleDialogControllerTest {
 
         mModalDialogManager.dismissDialog(dialogModel, DialogDismissalCause.ACTIVITY_DESTROYED);
         verify(mockCallback).onResult(RationaleUiResult.REJECTED);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Permission.RationaleResult",
                         NotificationRationaleResult.ACTIVITY_DESTROYED));
@@ -172,7 +178,8 @@ public class NotificationPermissionRationaleDialogControllerTest {
 
         mModalDialogManager.dismissDialog(dialogModel, DialogDismissalCause.NOT_ATTACHED_TO_WINDOW);
         verify(mockCallback).onResult(RationaleUiResult.REJECTED);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Permission.RationaleResult",
                         NotificationRationaleResult.NOT_ATTACHED_TO_WINDOW));

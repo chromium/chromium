@@ -23,9 +23,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 namespace extensions {
@@ -62,14 +63,14 @@ base::Value::Dict MakePackagedAppManifest() {
 // Extra environment state required for ChromeOS.
 class TestExtensionEnvironment::ChromeOSEnv {
  public:
-  ChromeOSEnv() {}
-
+  ChromeOSEnv() = default;
   ChromeOSEnv(const ChromeOSEnv&) = delete;
   ChromeOSEnv& operator=(const ChromeOSEnv&) = delete;
 
  private:
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager test_user_manager_;
+  user_manager::ScopedUserManager test_user_manager_{
+      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -82,24 +83,38 @@ ExtensionService* TestExtensionEnvironment::CreateExtensionServiceForProfile(
       base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
 }
 
-TestExtensionEnvironment::TestExtensionEnvironment(Type type)
+TestExtensionEnvironment::TestExtensionEnvironment(
+    Type type,
+    ProfileCreationType profile_creation_mode
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ,
+    OSSetupType os_setup_mode
+#endif
+    )
     : task_environment_(
           type == Type::kWithTaskEnvironment
               ? std::make_unique<content::BrowserTaskEnvironment>()
               : nullptr),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      chromeos_env_(ash::DeviceSettingsService::IsInitialized()
+      chromeos_env_(ash::DeviceSettingsService::IsInitialized() &&
+                            os_setup_mode != OSSetupType::kSetUp
                         ? nullptr
                         : std::make_unique<ChromeOSEnv>()),
 #endif
-      profile_(std::make_unique<TestingProfile>()) {
+      profile_(profile_creation_mode != ProfileCreationType::kCreate
+                   ? nullptr
+                   : std::make_unique<TestingProfile>()),
+      profile_ptr_(profile_.get()) {
 }
 
-TestExtensionEnvironment::~TestExtensionEnvironment() {
+TestExtensionEnvironment::~TestExtensionEnvironment() = default;
+
+void TestExtensionEnvironment::SetProfile(TestingProfile* profile) {
+  profile_ptr_ = profile;
 }
 
 TestingProfile* TestExtensionEnvironment::profile() const {
-  return profile_.get();
+  return profile_ptr_.get();
 }
 
 TestExtensionSystem* TestExtensionEnvironment::GetExtensionSystem() {
@@ -113,7 +128,7 @@ ExtensionService* TestExtensionEnvironment::GetExtensionService() {
 }
 
 ExtensionPrefs* TestExtensionEnvironment::GetExtensionPrefs() {
-  return ExtensionPrefs::Get(profile_.get());
+  return ExtensionPrefs::Get(profile());
 }
 
 const Extension* TestExtensionEnvironment::MakeExtension(
@@ -159,6 +174,7 @@ std::unique_ptr<content::WebContents> TestExtensionEnvironment::MakeTab()
 }
 
 void TestExtensionEnvironment::DeleteProfile() {
+  profile_ptr_ = nullptr;
   profile_.reset();
   extension_service_ = nullptr;
 }

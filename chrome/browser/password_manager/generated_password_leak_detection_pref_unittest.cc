@@ -203,25 +203,24 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, ManagementState) {
   // Check that the management state of the underlying preference is applied
   // to the generated preference.
   GeneratedPasswordLeakDetectionPref pref(profile());
-  EXPECT_EQ(pref.GetPrefObject().enforcement,
-            settings_api::Enforcement::ENFORCEMENT_NONE);
+  EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
   EXPECT_EQ(pref.GetPrefObject().controlled_by,
-            settings_api::ControlledBy::CONTROLLED_BY_NONE);
+            settings_api::ControlledBy::kNone);
 
   prefs()->SetRecommendedPref(
       password_manager::prefs::kPasswordLeakDetectionEnabled,
       std::make_unique<base::Value>(true));
   EXPECT_EQ(pref.GetPrefObject().enforcement,
-            settings_api::Enforcement::ENFORCEMENT_RECOMMENDED);
+            settings_api::Enforcement::kRecommended);
   EXPECT_EQ(pref.GetPrefObject().recommended_value->GetBool(), true);
 
   prefs()->SetManagedPref(
       password_manager::prefs::kPasswordLeakDetectionEnabled,
       std::make_unique<base::Value>(true));
   EXPECT_EQ(pref.GetPrefObject().enforcement,
-            settings_api::Enforcement::ENFORCEMENT_ENFORCED);
+            settings_api::Enforcement::kEnforced);
   EXPECT_EQ(pref.GetPrefObject().controlled_by,
-            settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY);
+            settings_api::ControlledBy::kDevicePolicy);
 
   // Check that the preference cannot be changed when the backing preference is
   // managed, but the preference could otherwise be changed.

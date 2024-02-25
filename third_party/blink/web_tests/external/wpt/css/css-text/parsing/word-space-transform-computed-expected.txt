@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Property word-space-transform value 'none'
+  assert_true: word-space-transform doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property word-space-transform value 'space'
+  assert_true: word-space-transform doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property word-space-transform value 'ideographic-space'
+  assert_true: word-space-transform doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property word-space-transform value 'space auto-phrase'
+  assert_true: word-space-transform doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property word-space-transform value 'ideographic-space auto-phrase'
+  assert_true: word-space-transform doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

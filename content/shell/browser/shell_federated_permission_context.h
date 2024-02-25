@@ -40,6 +40,10 @@ class ShellFederatedPermissionContext
   void RemoveEmbargoAndResetCounts(
       const url::Origin& relying_party_embedder) override;
   bool ShouldCompleteRequestImmediately() const override;
+  bool HasThirdPartyCookiesAccess(
+      content::RenderFrameHost& host,
+      const GURL& provider_url,
+      const url::Origin& relying_party_embedder) const override;
 
   // FederatedIdentityAutoReauthnPermissionContextDelegate
   bool IsAutoReauthnSettingEnabled() override;
@@ -59,27 +63,22 @@ class ShellFederatedPermissionContext
   void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
   void RemoveIdpSigninStatusObserver(
       IdpSigninStatusObserver* observer) override;
-  bool HasActiveSession(const url::Origin& relying_party_requester,
-                        const url::Origin& identity_provider,
-                        const std::string& account_identifier) override;
-  void GrantActiveSession(const url::Origin& relying_party_requester,
-                          const url::Origin& identity_provider,
-                          const std::string& account_identifier) override;
-  void RevokeActiveSession(const url::Origin& relying_party_requester,
-                           const url::Origin& identity_provider,
-                           const std::string& account_identifier) override;
   bool HasSharingPermission(
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
-      const absl::optional<std::string>& account_id) override;
+      const std::optional<std::string>& account_id) override;
   bool HasSharingPermission(
       const url::Origin& relying_party_requester) override;
   void GrantSharingPermission(const url::Origin& relying_party_requester,
                               const url::Origin& relying_party_embedder,
                               const url::Origin& identity_provider,
                               const std::string& account_id) override;
-  absl::optional<bool> GetIdpSigninStatus(
+  void RevokeSharingPermission(const url::Origin& relying_party_requester,
+                               const url::Origin& relying_party_embedder,
+                               const url::Origin& identity_provider,
+                               const std::string& account_id) override;
+  std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
   void SetIdpSigninStatus(const url::Origin& idp_origin,
                           bool idp_signin_status) override;
@@ -88,13 +87,13 @@ class ShellFederatedPermissionContext
   void UnregisterIdP(const ::GURL&) override;
   std::vector<GURL> GetRegisteredIdPs() override;
 
-  void SetThirdPartyCookiesBlocked(bool blocked) {
-    third_party_cookies_blocked_ = blocked;
-  }
-
   void SetIdpStatusClosureForTesting(base::RepeatingClosure closure) {
     idp_signin_status_closure_ = std::move(closure);
   }
+
+  void SetHasThirdPartyCookiesAccessForTesting(
+      const std::string& identity_provider,
+      const std::string& relying_party_embedder);
 
  private:
   // Pairs of <RP embedder, IDP>
@@ -102,10 +101,10 @@ class ShellFederatedPermissionContext
   // Tuples of <RP requester, RP embedder, IDP, Account>
   std::set<std::tuple<std::string, std::string, std::string, std::string>>
       sharing_permissions_;
-  // Tuples of <RP requester, IDP, Account>
-  std::set<std::tuple<std::string, std::string, std::string>> active_sessions_;
   // Map of <IDP, IDPSigninStatus>
-  std::map<std::string, absl::optional<bool>> idp_signin_status_;
+  std::map<std::string, std::optional<bool>> idp_signin_status_;
+  // Pairs of <IDP, RP embedder>
+  std::set<std::pair<std::string, std::string>> has_third_party_cookies_access_;
 
   base::ObserverList<IdpSigninStatusObserver> idp_signin_status_observer_list_;
   base::RepeatingClosure idp_signin_status_closure_;
@@ -121,8 +120,6 @@ class ShellFederatedPermissionContext
 
   // A set of urls that require user mediation.
   std::set<GURL> require_user_mediation_sites_;
-
-  bool third_party_cookies_blocked_{false};
 };
 
 }  // namespace content

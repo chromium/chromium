@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/plus_address_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dialog_padding_sides"
+        android:paddingVertical="12dp">
+
+  <ImageView
+      android:id="@+id/plus_address_logo"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:importantForAccessibility="no"
+      android:adjustViewBounds="true"
+      android:maxWidth="75dp" />
+
+  <TextView
+      android:id="@+id/plus_address_notice_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      style="@style/TextAppearance.Headline.Primary" />
+
+  <org.chromium.ui.widget.TextViewWithClickableSpans
+      android:id="@+id/plus_address_modal_explanation"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      android:breakStrategy="simple"
+      android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+  <TextView
+      android:id="@+id/proposed_plus_address"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      android:background="@drawable/rounded_rectangle_surface_1"
+      android:paddingVertical="10dp" />
+
+  <org.chromium.ui.widget.TextViewWithClickableSpans
+      android:id="@+id/plus_address_modal_error_report"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      android:breakStrategy="simple"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+    />
+
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/plus_address_confirm_button"
+      style="@style/FilledButton.Flat"
+      android:enabled="false"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+      android:minHeight="@dimen/min_touch_target_size"
+      android:minWidth="@dimen/min_touch_target_size" />
+
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/plus_address_cancel_button"
+      style="@style/TextButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
+      android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+      android:minHeight="@dimen/min_touch_target_size"
+      android:minWidth="@dimen/min_touch_target_size" />
+
+</LinearLayout>

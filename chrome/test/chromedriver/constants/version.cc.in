@@ -22,4 +22,5 @@ const char kChromeDriverOptionsKeyPrefixed[] = "@COMPANY_PREFIX@:@BROWSER_OPTION
 const char kBrowserShortName[] = "@BROWSER_SHORTNAME@";
 const char kBrowserCapabilityName[] = "@BROWSER_CAPABILITYNAME@";
 const char kUserAgentProductName[] = "@USER_AGENT_PRODUCT_NAME@";
+const char kHeadlessShellCapabilityName[] = "@HEADLESS_CAPABILITYNAME@";
 const char kHeadlessUserAgentProductName[] = "@HEADLESS_USER_AGENT_PRODUCT_NAME@";

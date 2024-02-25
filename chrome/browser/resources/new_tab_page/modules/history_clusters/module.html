@@ -39,8 +39,8 @@
   .layout {
     display: grid;
     grid-gap: var(--gap-size) var(--gap-size);
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
     padding: 0 16px 16px;
   }
 
@@ -103,7 +103,7 @@
     on-dismiss-button-click="onDismissButtonClick_"
     on-info-button-click="onInfoButtonClick_"
     icon-src="chrome://resources/images/icon_journeys.svg">
-  [[i18n('modulesJourneysResumeJourney', cluster.label)]]
+  [[i18n('modulesHistoryResumeBrowsingForTitle', cluster.label)]]
   <button id="showAllButton" type="button" on-click="onShowAllClick_"
       slot="title-actions"
       aria-label$="[[i18n('modulesJourneysShowAllAcc', cluster.label)]]">
@@ -209,7 +209,7 @@
 </div>
 <cr-lazy-render id="infoDialogRender">
   <template>
-    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesJourneysInfo')]]">
+    <ntp-info-dialog inner-h-t-m-l="[[getInfo_(discounts)]]">
     </ntp-info-dialog>
   </template>
 </cr-lazy-render>

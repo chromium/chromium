@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_header.h"
 
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -76,6 +77,7 @@
 #pragma mark - UIView
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
   [self updateContentInsets];
 }
 
@@ -109,9 +111,15 @@
 #pragma mark - Private
 
 // The collection view header always stretch across the whole collection view
-// width. to work around that, this method adds a padding to the container view
+// width. To work around that, this method adds a padding to the container view
 // based on the current layout and the size classes.
+// TODO(crbug.com/1504112): Remove this method when the compositional layout is
+// fully landed.
 - (void)updateContentInsets {
+  if (IsTabGridCompositionalLayoutEnabled()) {
+    return;
+  }
+
   UIEdgeInsets contentInsets;
   CGFloat width = CGRectGetWidth(self.bounds);
   UIUserInterfaceSizeClass horizontalSizeClass =

@@ -4,7 +4,9 @@
 
 #include "ash/frame_sink/test/test_layer_tree_frame_sink.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
+#include "gpu/ipc/client/client_shared_image_interface.h"
 
 namespace ash {
 
@@ -46,7 +48,7 @@ void TestLayerTreeFrameSink::GetFrameResourcesToReturn(
   }
 }
 
-absl::optional<cc::FrameSkippedReason>
+std::optional<cc::FrameSkippedReason>
 TestLayerTreeFrameSink::GetLatestFrameSkippedReason() const {
   return latest_frame_skipped_reason_;
 }

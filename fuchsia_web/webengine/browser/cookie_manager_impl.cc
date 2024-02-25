@@ -173,7 +173,7 @@ void OnCookiesAndExcludedReceived(
 }  // namespace
 
 CookieManagerImpl::CookieManagerImpl(
-    GetNetworkContextCallback get_network_context)
+    network::NetworkContextGetter get_network_context)
     : get_network_context_(std::move(get_network_context)) {}
 
 CookieManagerImpl::~CookieManagerImpl() = default;
@@ -189,7 +189,7 @@ void CookieManagerImpl::ObserveCookieChanges(
                           std::move(changes));
 
   if (url) {
-    absl::optional<std::string> maybe_name;
+    std::optional<std::string> maybe_name;
     if (name)
       maybe_name = *name;
     cookie_manager_->AddCookieChangeListener(GURL(*url), maybe_name,

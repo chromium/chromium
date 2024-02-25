@@ -69,8 +69,7 @@ void NowPlayingInfoCenterDelegate::SetAlbum(const std::u16string& album) {
 }
 
 void NowPlayingInfoCenterDelegate::SetThumbnail(const SkBitmap& bitmap) {
-  NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
-      bitmap, base::mac::GetSystemColorSpace());
+  NSImage* image = skia::SkBitmapToNSImage(bitmap);
   [now_playing_info_center_delegate_cocoa_ setThumbnail:image];
   [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
 }

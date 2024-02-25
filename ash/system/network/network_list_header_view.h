@@ -9,6 +9,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -19,6 +20,8 @@ class HoverHighlightView;
 // responsible for initializing the core views for a header.
 class ASH_EXPORT NetworkListHeaderView : public views::View,
                                          public ViewClickListener {
+  METADATA_HEADER(NetworkListHeaderView, views::View)
+
  public:
   NetworkListHeaderView(const NetworkListHeaderView&) = delete;
   NetworkListHeaderView& operator=(const NetworkListHeaderView&) = delete;
@@ -28,7 +31,7 @@ class ASH_EXPORT NetworkListHeaderView : public views::View,
   void OnViewClicked(views::View* sender) final;
 
  protected:
-  explicit NetworkListHeaderView(int label_id);
+  explicit NetworkListHeaderView();
 
   // The callback called when the toggle button is pressed. Here it's used on
   // the entry row, so pressing on this entry will also turn on/off the toggle.
@@ -37,22 +40,16 @@ class ASH_EXPORT NetworkListHeaderView : public views::View,
   // opposite of the toggle's current state will be the new state.
   virtual void UpdateToggleState(bool has_new_state) = 0;
 
-  TriView* container() const { return container_; }
   HoverHighlightView* entry_row() const { return entry_row_; }
-
-  // Used for testing. This is 1 because view IDs should not be 0.
-  static constexpr int kTitleLabelViewId = 1;
 
  private:
   friend class NetworkListNetworkHeaderViewTest;
   friend class NetworkListMobileHeaderViewTest;
   friend class NetworkListWifiHeaderViewTest;
-
-  void AddTitleView(int label_id);
+  friend class NetworkListTetherHostsHeaderViewTest;
 
   // Owned by the views hierarchy.
-  raw_ptr<TriView, ExperimentalAsh> container_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> entry_row_ = nullptr;
+  raw_ptr<HoverHighlightView> entry_row_ = nullptr;
 };
 
 }  // namespace ash

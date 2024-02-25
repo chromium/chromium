@@ -29,19 +29,23 @@ public class NotificationSystemStatusUtilUnitTest {
     @Test
     public void testAppNotificationStatusEnabled() {
         getShadowNotificationManager().setNotificationsEnabled(true);
-        assertThat(NotificationSystemStatusUtil.getAppNotificationStatus(),
+        assertThat(
+                NotificationSystemStatusUtil.getAppNotificationStatus(),
                 is(NotificationSystemStatusUtil.APP_NOTIFICATIONS_STATUS_ENABLED));
     }
 
     @Test
     public void testAppNotificationStatusDisabled() {
         getShadowNotificationManager().setNotificationsEnabled(false);
-        assertThat(NotificationSystemStatusUtil.getAppNotificationStatus(),
+        assertThat(
+                NotificationSystemStatusUtil.getAppNotificationStatus(),
                 is(NotificationSystemStatusUtil.APP_NOTIFICATIONS_STATUS_DISABLED));
     }
 
     private ShadowNotificationManager getShadowNotificationManager() {
-        return shadowOf((NotificationManager) RuntimeEnvironment.application.getSystemService(
-                Context.NOTIFICATION_SERVICE));
+        return shadowOf(
+                (NotificationManager)
+                        RuntimeEnvironment.application.getSystemService(
+                                Context.NOTIFICATION_SERVICE));
     }
 }

@@ -37,7 +37,7 @@ int HashUUID(const std::string& canonical_uuid) {
   return static_cast<int>(data & 0x7fffffff);
 }
 
-int HashUUID(const absl::optional<BluetoothUUID>& uuid) {
+int HashUUID(const std::optional<BluetoothUUID>& uuid) {
   return uuid ? HashUUID(uuid->canonical_value()) : 0;
 }
 
@@ -93,7 +93,7 @@ void RecordConnectGATTOutcome(CacheQueryOutcome outcome) {
 
 void RecordGetPrimaryServicesServices(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const absl::optional<BluetoothUUID>& service) {
+    const std::optional<BluetoothUUID>& service) {
   // TODO(ortuno): Use a macro to histogram strings.
   // http://crbug.com/520284
   switch (quantity) {
@@ -110,7 +110,7 @@ void RecordGetPrimaryServicesServices(
 
 void RecordGetCharacteristicsCharacteristic(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const absl::optional<BluetoothUUID>& characteristic) {
+    const std::optional<BluetoothUUID>& characteristic) {
   switch (quantity) {
     case blink::mojom::WebBluetoothGATTQueryQuantity::SINGLE:
       base::UmaHistogramSparse("Bluetooth.Web.GetCharacteristic.Characteristic",

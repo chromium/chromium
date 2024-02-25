@@ -152,8 +152,8 @@ constexpr char ModellerImpl::kPersonalCurveFileName[];
 constexpr char ModellerImpl::kModelIterationCountFileName[];
 
 Model::Model() = default;
-Model::Model(const absl::optional<MonotoneCubicSpline>& global_curve,
-             const absl::optional<MonotoneCubicSpline>& personal_curve,
+Model::Model(const std::optional<MonotoneCubicSpline>& global_curve,
+             const std::optional<MonotoneCubicSpline>& personal_curve,
              int iteration_count)
     : global_curve(global_curve),
       personal_curve(personal_curve),
@@ -262,7 +262,7 @@ void ModellerImpl::OnUserBrightnessChanged(double old_brightness_percent,
   DCHECK(log_als_values_);
   const base::TimeTicks now = tick_clock_->NowTicks();
   // We don't add any training data if there is no ambient light sample.
-  const absl::optional<AlsAvgStdDev> log_als_avg_stddev =
+  const std::optional<AlsAvgStdDev> log_als_avg_stddev =
       log_als_values_->AverageAmbientWithStdDev(now);
   if (!log_als_avg_stddev)
     return;
@@ -276,7 +276,7 @@ void ModellerImpl::OnUserBrightnessChanged(double old_brightness_percent,
 void ModellerImpl::OnUserBrightnessChangeRequested() {}
 
 void ModellerImpl::OnModelConfigLoaded(
-    absl::optional<ModelConfig> model_config) {
+    std::optional<ModelConfig> model_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!model_config_exists_.has_value());
 
@@ -310,14 +310,14 @@ std::unique_ptr<ModellerImpl> ModellerImpl::CreateForTesting(
       tick_clock, true /* is_testing */));
 }
 
-absl::optional<double> ModellerImpl::AverageAmbientForTesting(
+std::optional<double> ModellerImpl::AverageAmbientForTesting(
     base::TimeTicks now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(log_als_values_);
-  const absl::optional<AlsAvgStdDev> log_als_avg_stddev =
+  const std::optional<AlsAvgStdDev> log_als_avg_stddev =
       log_als_values_->AverageAmbientWithStdDev(now);
   if (!log_als_avg_stddev)
-    return absl::nullopt;
+    return std::nullopt;
 
   return log_als_avg_stddev->avg;
 }
@@ -668,7 +668,7 @@ void ModellerImpl::OnTrainingFinished(const TrainingResult& result) {
 }
 
 void ModellerImpl::ErasePersonalCurve() {
-  model_.personal_curve = absl::nullopt;
+  model_.personal_curve = std::nullopt;
   model_.iteration_count = 0;
 }
 

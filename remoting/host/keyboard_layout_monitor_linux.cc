@@ -6,6 +6,7 @@
 
 #include <gdk/gdk.h>
 
+#include <optional>
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -19,10 +20,10 @@
 #include "remoting/host/linux/keyboard_layout_monitor_wayland.h"
 #include "remoting/host/linux/wayland_utils.h"
 #include "remoting/proto/control.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/glib/glib_signal.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xkb.h"
@@ -63,10 +64,7 @@ class GdkLayoutMonitorOnGtkThread : public x11::EventObserver {
   void OnEvent(const x11::Event& event) override;
 
   void QueryLayout();
-  CHROMEG_CALLBACK_0(GdkLayoutMonitorOnGtkThread,
-                     void,
-                     OnKeysChanged,
-                     GdkKeymap*);
+  void OnKeysChanged(GdkKeymap* keymap);
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtr<KeyboardLayoutMonitorLinux> weak_ptr_;
   raw_ptr<x11::Connection> connection_;
@@ -74,7 +72,7 @@ class GdkLayoutMonitorOnGtkThread : public x11::EventObserver {
   raw_ptr<GdkDisplay> display_ = nullptr;
   raw_ptr<GdkKeymap> keymap_ = nullptr;
   int current_group_ = 0;
-  gulong handler_id_ = 0;
+  ScopedGSignal signal_;
 };
 
 class KeyboardLayoutMonitorLinux : public KeyboardLayoutMonitor {
@@ -121,8 +119,7 @@ GdkLayoutMonitorOnGtkThread::GdkLayoutMonitorOnGtkThread(
 
 GdkLayoutMonitorOnGtkThread::~GdkLayoutMonitorOnGtkThread() {
   DCHECK(g_main_context_is_owner(g_main_context_default()));
-  if (handler_id_) {
-    g_signal_handler_disconnect(keymap_, handler_id_);
+  if (display_) {
     connection_->RemoveEventObserver(this);
   }
 }
@@ -148,8 +145,7 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   // which is a pain.
   connection_ = x11::Connection::Get();
   auto& xkb = connection_->xkb();
-  if (xkb.UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
-          .Sync()) {
+  if (xkb.present()) {
     constexpr auto kXkbAllStateComponentsMask =
         static_cast<x11::Xkb::StatePart>(0x3fff);
     xkb.SelectEvents({
@@ -164,8 +160,10 @@ void GdkLayoutMonitorOnGtkThread::Start() {
   connection_->AddEventObserver(this);
 
   keymap_ = gdk_keymap_get_for_display(display_);
-  handler_id_ = g_signal_connect(keymap_, "keys-changed",
-                                 G_CALLBACK(OnKeysChangedThunk), this);
+  signal_ = ScopedGSignal(
+      keymap_, "keys-changed",
+      base::BindRepeating(&GdkLayoutMonitorOnGtkThread::OnKeysChanged,
+                          base::Unretained(this)));
   QueryLayout();
 }
 

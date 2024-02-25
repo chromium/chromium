@@ -39,7 +39,6 @@ class PrefChangeRegistrar;
 namespace ash {
 
 class Authenticator;
-class ExtendedAuthenticator;
 class ViewsScreenLocker;
 
 // ScreenLocker displays the lock UI and takes care of authenticating the user
@@ -63,17 +62,6 @@ class ScreenLocker
   // Returns true if the lock UI has been confirmed as displayed.
   bool locked() const { return locked_; }
 
-  // Initialize and show the screen locker.
-  void Init();
-
-  // AuthStatusConsumer:
-  void OnAuthFailure(const AuthFailure& error) override;
-  void OnAuthSuccess(const UserContext& user_context) override;
-
-  // Called when an account password (not PIN/quick unlock) has been used to
-  // unlock the device.
-  void OnPasswordAuthSuccess(std::unique_ptr<UserContext> user_context);
-
   // Disables authentication for the user with `account_id`. Notifies lock
   // screen UI. `auth_disabled_data` is used to display information in the UI.
   void TemporarilyDisableAuthForUser(
@@ -92,25 +80,6 @@ class ScreenLocker
   // authentication against a security token.
   void AuthenticateWithChallengeResponse(const AccountId& account_id,
                                          AuthenticateCallback callback);
-
-  // Close message bubble to clear error messages.
-  void ClearErrors();
-
-  // Exit the chrome, which will sign out the current session.
-  void Signout();
-
-  // (Re)enable input field.
-  void EnableInput();
-
-  // Disables all UI needed and shows error bubble with `message`.
-  // If `sign_out_only` is true then all other input except "Sign Out"
-  // button is blocked.
-  void ShowErrorMessage(int error_msg_id,
-                        HelpAppLauncher::HelpTopic help_topic_id,
-                        bool sign_out_only);
-
-  // Returns the users to authenticate.
-  const user_manager::UserList& users() const { return users_; }
 
   // Returns the users to show on the lock screen UI. Will be a subset of
   // `users()`.
@@ -135,54 +104,16 @@ class ScreenLocker
   // Hide the screen locker.
   static void Hide();
 
-  // If the unlock animation was aborted (for instance, as a result of
-  // pressing the power button during the unlock animatoin), we  reset
-  // the state of UI elements (such as LoginAuthUserView::FingerprintView)
-  // which might have been altered as a result of a successful authentication
-  // attempt.
-  void ResetToLockedState();
-
-  // If the unlock animation was not aborted, changes session state to
-  // active and schedules `ScreenLocker` deletion.
-  static void OnUnlockAnimationFinished(bool aborted);
-
-  // we should probably not call it anymore
-  void RefreshPinAndFingerprintTimeout();
-
-  // Saves sync password hash and salt to user profile prefs based on
-  // `user_context`.
-  void SaveSyncPasswordHash(std::unique_ptr<UserContext> user_context);
-
   // Returns true if authentication is enabled on the lock screen for the given
   // user.
   bool IsAuthTemporarilyDisabledForUser(const AccountId& account_id);
 
-  // Change the authenticators; should only be used by tests.
-  void SetAuthenticatorsForTesting(
-      scoped_refptr<Authenticator> authenticator,
-      scoped_refptr<ExtendedAuthenticator> extended_authenticator);
-
   static void SetClocksForTesting(const base::Clock* clock,
                                   const base::TickClock* tick_clock);
 
-  // device::mojom::FingerprintObserver:
-  void OnRestarted() override;
-  void OnStatusChanged(device::mojom::BiometricsManagerStatus status) override;
-  void OnEnrollScanDone(device::mojom::ScanResult scan_result,
-                        bool is_complete,
-                        int32_t percent_complete) override;
-  void OnAuthScanDone(
-      const device::mojom::FingerprintMessagePtr msg,
-      const base::flat_map<std::string, std::vector<std::string>>& matches)
-      override;
-  void OnSessionFailed() override;
-
-  // user_manager::UserManager::UserSessionStateObserver:
-  void ActiveUserChanged(user_manager::User* active_user) override;
-
  private:
   friend class base::DeleteHelper<ScreenLocker>;
-  friend class ViewsScreenLocker;
+  friend class ScreenLockerTester;
 
   // Track the type of the authentication that the user used to unlock the lock
   // screen.
@@ -208,6 +139,45 @@ class ScreenLocker
   };
 
   ~ScreenLocker() override;
+
+  // Initialize and show the screen locker.
+  void Init();
+
+  // AuthStatusConsumer:
+  void OnAuthFailure(const AuthFailure& error) override;
+  void OnAuthSuccess(const UserContext& user_context) override;
+
+  // device::mojom::FingerprintObserver:
+  void OnRestarted() override;
+  void OnStatusChanged(device::mojom::BiometricsManagerStatus status) override;
+  void OnEnrollScanDone(device::mojom::ScanResult scan_result,
+                        bool is_complete,
+                        int32_t percent_complete) override;
+  void OnAuthScanDone(
+      const device::mojom::FingerprintMessagePtr msg,
+      const base::flat_map<std::string, std::vector<std::string>>& matches)
+      override;
+  void OnSessionFailed() override;
+
+  // user_manager::UserManager::UserSessionStateObserver:
+  void ActiveUserChanged(user_manager::User* active_user) override;
+
+  // If the unlock animation was aborted (for instance, as a result of
+  // pressing the power button during the unlock animatoin), we  reset
+  // the state of UI elements (such as LoginAuthUserView::FingerprintView)
+  // which might have been altered as a result of a successful authentication
+  // attempt.
+  void ResetToLockedState();
+
+  // If the unlock animation was not aborted, changes session state to
+  // active and schedules `ScreenLocker` deletion.
+  static void OnUnlockAnimationFinished(bool aborted);
+
+  // TODO(b/271261286): we should probably not call it anymore
+  void RefreshPinAndFingerprintTimeout();
+
+  // Change the authenticators; should only be used by tests.
+  void SetAuthenticatorsForTesting(scoped_refptr<Authenticator> authenticator);
 
   void OnFingerprintAuthFailure(const user_manager::User& user);
 
@@ -238,7 +208,7 @@ class ScreenLocker
       std::vector<ChallengeResponseKey> challenge_response_keys);
 
   void OnPinAttemptDone(std::unique_ptr<UserContext>,
-                        absl::optional<AuthenticationError>);
+                        std::optional<AuthenticationError>);
 
   // Called to select the appropriate Authenticator and perform unlock
   // operation.
@@ -258,6 +228,8 @@ class ScreenLocker
 
   void UpdateFingerprintStateForUser(const user_manager::User* user);
 
+  void OnEndFingerprintAuthSession(bool success);
+
   // Helper to transform internal enum UnlockType to
   // session_manager::UnlockType, used by the reporting team to report
   // lock/unlock events.
@@ -273,9 +245,6 @@ class ScreenLocker
 
   // Used to authenticate the user to unlock.
   scoped_refptr<Authenticator> authenticator_;
-
-  // Used to authenticate the user to unlock supervised users.
-  scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
 
   // True if the screen is locked, or false otherwise.  This changes
   // from false to true, but will never change from true to
@@ -298,7 +267,7 @@ class ScreenLocker
 
   // Delegate to forward all login status events to.
   // Tests can use this to receive login status events.
-  raw_ptr<AuthStatusConsumer, ExperimentalAsh> auth_status_consumer_ = nullptr;
+  raw_ptr<AuthStatusConsumer> auth_status_consumer_ = nullptr;
 
   // Number of bad login attempts in a row.
   int incorrect_passwords_count_ = 0;

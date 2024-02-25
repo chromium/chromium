@@ -6,11 +6,11 @@
 #define CHROMEOS_ASH_COMPONENTS_SYSTEM_FAKE_STATISTICS_PROVIDER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 
 namespace ash::system {
@@ -29,18 +29,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
   // StatisticsProvider implementation:
   void ScheduleOnMachineStatisticsLoaded(base::OnceClosure callback) override;
   void StartLoadingMachineStatistics(bool load_oem_manifest) override;
-  absl::optional<base::StringPiece> GetMachineStatistic(
-      base::StringPiece name) override;
-  FlagValue GetMachineFlag(base::StringPiece name) override;
+  std::optional<std::string_view> GetMachineStatistic(
+      std::string_view name) override;
+  FlagValue GetMachineFlag(std::string_view name) override;
   void Shutdown() override;
   bool IsRunningOnVm() override;
   bool IsCrosDebugMode() override;
   VpdStatus GetVpdStatus() const override;
 
   void SetMachineStatistic(const std::string& key, const std::string& value);
-  void ClearMachineStatistic(base::StringPiece key);
+  void ClearMachineStatistic(std::string_view key);
   void SetMachineFlag(const std::string& key, bool value);
-  void ClearMachineFlag(base::StringPiece key);
+  void ClearMachineFlag(std::string_view key);
   void SetVpdStatus(VpdStatus new_status);
 
  private:

@@ -110,7 +110,7 @@ class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
   const base::WeakPtr<ServiceWorkerVersion> service_worker_version_;
 
   // The request uuid for keeping service worker alive.
-  absl::optional<base::Uuid> service_worker_activity_request_uuid_;
+  std::optional<base::Uuid> service_worker_activity_request_uuid_;
 
   const url::Origin origin_;
 

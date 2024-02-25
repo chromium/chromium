@@ -52,11 +52,11 @@ base::Value CreateItemValue(int val) {
 TEST(JsonSchemaCompilerArrayTest, BasicArrayType) {
   {
     base::Value::Dict value(CreateBasicArrayTypeDictionary());
-    arrays::BasicArrayType basic_array_type;
-    ASSERT_TRUE(arrays::BasicArrayType::Populate(value, basic_array_type));
-    EXPECT_EQ(value, basic_array_type.ToValue());
+    auto basic_array_type = arrays::BasicArrayType::FromValue(value);
+    ASSERT_TRUE(basic_array_type);
+    EXPECT_EQ(value, basic_array_type->ToValue());
 
-    EXPECT_EQ(basic_array_type.Clone().ToValue(), basic_array_type.ToValue());
+    EXPECT_EQ(basic_array_type->Clone().ToValue(), basic_array_type->ToValue());
   }
 }
 
@@ -69,25 +69,23 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
   base::Value::Dict value;
   value.Set("types", std::move(types));
 
-  arrays::EnumArrayReference enum_array_reference;
-
   // Test Populate.
-  ASSERT_TRUE(
-      arrays::EnumArrayReference::Populate(value, enum_array_reference));
+  auto enum_array_reference = arrays::EnumArrayReference::FromValue(value);
+  ASSERT_TRUE(enum_array_reference);
 
-  arrays::Enumeration expected_types[] = {arrays::ENUMERATION_ONE,
-                                          arrays::ENUMERATION_TWO,
-                                          arrays::ENUMERATION_THREE};
+  arrays::Enumeration expected_types[] = {arrays::Enumeration::kOne,
+                                          arrays::Enumeration::kTwo,
+                                          arrays::Enumeration::kThree};
   EXPECT_EQ(std::vector<arrays::Enumeration>(
                 expected_types, expected_types + std::size(expected_types)),
-            enum_array_reference.types);
+            enum_array_reference->types);
 
   // Test ToValue.
-  base::Value::Dict as_value(enum_array_reference.ToValue());
+  base::Value::Dict as_value(enum_array_reference->ToValue());
   EXPECT_EQ(value, as_value);
 
-  EXPECT_EQ(enum_array_reference.Clone().ToValue(),
-            enum_array_reference.ToValue());
+  EXPECT_EQ(enum_array_reference->Clone().ToValue(),
+            enum_array_reference->ToValue());
 }
 
 TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
@@ -106,18 +104,17 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
   value.Set("infile_enums", std::move(infile_enums));
   value.Set("external_enums", std::move(external_enums));
 
-  arrays::EnumArrayMixed enum_array_mixed;
-
   // Test Populate.
-  ASSERT_TRUE(arrays::EnumArrayMixed::Populate(value, enum_array_mixed));
+  auto enum_array_mixed = arrays::EnumArrayMixed::FromValue(value);
+  ASSERT_TRUE(enum_array_mixed);
 
-  arrays::Enumeration expected_infile_types[] = {arrays::ENUMERATION_ONE,
-                                                 arrays::ENUMERATION_TWO,
-                                                 arrays::ENUMERATION_THREE};
+  arrays::Enumeration expected_infile_types[] = {arrays::Enumeration::kOne,
+                                                 arrays::Enumeration::kTwo,
+                                                 arrays::Enumeration::kThree};
   EXPECT_EQ(std::vector<arrays::Enumeration>(
                 expected_infile_types,
                 expected_infile_types + std::size(expected_infile_types)),
-            enum_array_mixed.infile_enums);
+            enum_array_mixed->infile_enums);
 
   test::api::enums::Enumeration expected_external_types[] = {
       test::api::enums::Enumeration::kOne, test::api::enums::Enumeration::kTwo,
@@ -125,21 +122,21 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
   EXPECT_EQ(std::vector<test::api::enums::Enumeration>(
                 expected_external_types,
                 expected_external_types + std::size(expected_external_types)),
-            enum_array_mixed.external_enums);
+            enum_array_mixed->external_enums);
 
   // Test ToValue.
-  base::Value::Dict as_value(enum_array_mixed.ToValue());
+  base::Value::Dict as_value(enum_array_mixed->ToValue());
   EXPECT_EQ(value, as_value);
 
-  EXPECT_EQ(enum_array_mixed.Clone().ToValue(), enum_array_mixed.ToValue());
+  EXPECT_EQ(enum_array_mixed->Clone().ToValue(), enum_array_mixed->ToValue());
 }
 
 TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
   {
     std::vector<arrays::Enumeration> enums;
-    enums.push_back(arrays::ENUMERATION_ONE);
-    enums.push_back(arrays::ENUMERATION_TWO);
-    enums.push_back(arrays::ENUMERATION_THREE);
+    enums.push_back(arrays::Enumeration::kOne);
+    enums.push_back(arrays::Enumeration::kTwo);
+    enums.push_back(arrays::Enumeration::kThree);
 
     base::Value::List types;
     for (auto& enum_entry : enums)
@@ -148,12 +145,11 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
     base::Value::Dict value;
     value.Set("types", std::move(types));
 
-    arrays::OptionalEnumArrayType enum_array_type;
-    ASSERT_TRUE(
-        arrays::OptionalEnumArrayType::Populate(value, enum_array_type));
-    EXPECT_EQ(enums, *enum_array_type.types);
+    auto enum_array_type = arrays::OptionalEnumArrayType::FromValue(value);
+    ASSERT_TRUE(enum_array_type);
+    EXPECT_EQ(enums, *enum_array_type->types);
 
-    EXPECT_EQ(enum_array_type.Clone().ToValue(), enum_array_type.ToValue());
+    EXPECT_EQ(enum_array_type->Clone().ToValue(), enum_array_type->ToValue());
   }
   {
     base::Value::Dict value;
@@ -161,10 +157,8 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
     enum_array.Append("invalid");
 
     value.Set("types", std::move(enum_array));
-    arrays::OptionalEnumArrayType enum_array_type;
-    ASSERT_FALSE(
-        arrays::OptionalEnumArrayType::Populate(value, enum_array_type));
-    EXPECT_TRUE(enum_array_type.types->empty());
+    auto enum_array_type = arrays::OptionalEnumArrayType::FromValue(value);
+    ASSERT_FALSE(enum_array_type);
   }
 }
 
@@ -176,14 +170,14 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
     ref_array.Append(CreateItemValue(2));
     ref_array.Append(CreateItemValue(3));
     value.Set("refs", std::move(ref_array));
-    arrays::RefArrayType ref_array_type;
-    EXPECT_TRUE(arrays::RefArrayType::Populate(value, ref_array_type));
-    ASSERT_EQ(3u, ref_array_type.refs.size());
-    EXPECT_EQ(1, ref_array_type.refs[0].val);
-    EXPECT_EQ(2, ref_array_type.refs[1].val);
-    EXPECT_EQ(3, ref_array_type.refs[2].val);
+    auto ref_array_type = arrays::RefArrayType::FromValue(value);
+    EXPECT_TRUE(ref_array_type);
+    ASSERT_EQ(3u, ref_array_type->refs.size());
+    EXPECT_EQ(1, ref_array_type->refs[0].val);
+    EXPECT_EQ(2, ref_array_type->refs[1].val);
+    EXPECT_EQ(3, ref_array_type->refs[2].val);
 
-    EXPECT_EQ(ref_array_type.Clone().ToValue(), ref_array_type.ToValue());
+    EXPECT_EQ(ref_array_type->Clone().ToValue(), ref_array_type->ToValue());
   }
   {
     base::Value::Dict value;
@@ -191,8 +185,8 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
     not_ref_array.Append(CreateItemValue(1));
     not_ref_array.Append(3);
     value.Set("refs", std::move(not_ref_array));
-    arrays::RefArrayType ref_array_type;
-    EXPECT_FALSE(arrays::RefArrayType::Populate(value, ref_array_type));
+    auto ref_array_type = arrays::RefArrayType::FromValue(value);
+    EXPECT_FALSE(ref_array_type);
   }
 }
 
@@ -203,7 +197,7 @@ TEST(JsonSchemaCompilerArrayTest, IntegerArrayParamsCreate) {
   integer_array.Append(4);
   integer_array.Append(8);
   params_value.Append(std::move(integer_array));
-  absl::optional<arrays::IntegerArray::Params> params(
+  std::optional<arrays::IntegerArray::Params> params(
       arrays::IntegerArray::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   ASSERT_EQ(3u, params->nums.size());
@@ -219,7 +213,7 @@ TEST(JsonSchemaCompilerArrayTest, AnyArrayParamsCreate) {
   any_array.Append("test");
   any_array.Append(CreateItemValue(2));
   params_value.Append(std::move(any_array));
-  absl::optional<arrays::AnyArray::Params> params(
+  std::optional<arrays::AnyArray::Params> params(
       arrays::AnyArray::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   ASSERT_EQ(3u, params->anys.size());
@@ -233,7 +227,7 @@ TEST(JsonSchemaCompilerArrayTest, ObjectArrayParamsCreate) {
   item_array.Append(CreateItemValue(1));
   item_array.Append(CreateItemValue(2));
   params_value.Append(std::move(item_array));
-  absl::optional<arrays::ObjectArray::Params> params(
+  std::optional<arrays::ObjectArray::Params> params(
       arrays::ObjectArray::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   ASSERT_EQ(2u, params->objects.size());
@@ -247,7 +241,7 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayParamsCreate) {
   item_array.Append(CreateItemValue(1));
   item_array.Append(CreateItemValue(2));
   params_value.Append(std::move(item_array));
-  absl::optional<arrays::RefArray::Params> params(
+  std::optional<arrays::RefArray::Params> params(
       arrays::RefArray::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   ASSERT_EQ(2u, params->refs.size());

@@ -23,7 +23,9 @@ class ChromeThinWebViewInitializer;
 
 namespace chrome {
 class BrowserTabStripModelDelegate;
-}
+}  // namespace chrome
+
+class PreviewTab;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -65,9 +67,13 @@ class TabHelpers {
   // helpers.
   friend class BrowserNavigatorWebContentsAdoption;
 
-  // NoStatePrefetch loads pages that have arbitrary external content; it needs
-  // the full set of tab helpers to deal with it.
+  // NoStatePrefetch and Prerendering load pages that have arbitrary external
+  // content; they need the full set of tab helpers to deal with it.
   friend class prerender::ChromeNoStatePrefetchContentsDelegate;
+  friend class PrerenderWebContentsDelegateImpl;
+
+  // Link Preview shows a preview of a page, then promote it as a new tab.
+  friend class PreviewTab;
 
   // FYI: Do NOT add any more friends here. The functions above are the ONLY
   // ones that need to call AttachTabHelpers; if you think you do, re-read the

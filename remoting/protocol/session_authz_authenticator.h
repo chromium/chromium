@@ -1,0 +1,129 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef REMOTING_PROTOCOL_SESSION_AUTHZ_AUTHENTICATOR_H_
+#define REMOTING_PROTOCOL_SESSION_AUTHZ_AUTHENTICATOR_H_
+
+#include <memory>
+#include <string>
+
+#include "base/functional/callback.h"
+#include "base/time/time.h"
+#include "remoting/base/constants.h"
+#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/session_authz_service_client.h"
+#include "remoting/proto/session_authz_service.h"
+#include "remoting/protocol/authenticator.h"
+#include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/session_authz_reauthorizer.h"
+#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
+
+namespace remoting::protocol {
+
+// Class that implements the host leg of the SessionAuthz mechanism. Note that
+// this class only handles the initial authorization process. Inter-session
+// reauthorization will be handled by a different class.
+// See go/crd-sessionauthz-integration for internal details.
+class SessionAuthzAuthenticator : public Authenticator {
+ public:
+  static constexpr jingle_xmpp::StaticQName kHostTokenTag = {
+      remoting::kChromotingXmlNamespace, "host-token"};
+  static constexpr jingle_xmpp::StaticQName kSessionTokenTag = {
+      remoting::kChromotingXmlNamespace, "session-token"};
+
+  SessionAuthzAuthenticator(
+      std::unique_ptr<SessionAuthzServiceClient> service_client,
+      const CreateBaseAuthenticatorCallback&
+          create_base_authenticator_callback);
+  ~SessionAuthzAuthenticator() override;
+
+  SessionAuthzAuthenticator(const SessionAuthzAuthenticator&) = delete;
+  SessionAuthzAuthenticator& operator=(const SessionAuthzAuthenticator&) =
+      delete;
+
+  // Start the authenticator. The authenticator won't be in the `MESSAGE_READY`
+  // state until |resume_callback| is called.
+  void Start(base::OnceClosure resume_callback);
+
+  // Authenticator implementation.
+  State state() const override;
+  bool started() const override;
+  RejectionReason rejection_reason() const override;
+  void ProcessMessage(const jingle_xmpp::XmlElement* message,
+                      base::OnceClosure resume_callback) override;
+  std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
+  const std::string& GetAuthKey() const override;
+  std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
+      const override;
+
+ private:
+  enum class SessionAuthzState {
+    NOT_STARTED,
+
+    // A request was made to call GenerateHostToken on SessionAuthz, and the
+    // response is pending.
+    GENERATING_HOST_TOKEN,
+
+    // The response for GenerateHostToken has been received, and is ready to be
+    // sent to the client.
+    READY_TO_SEND_HOST_TOKEN,
+
+    // Waiting for the client to send the session token.
+    WAITING_FOR_SESSION_TOKEN,
+
+    // A request was made to call VerifySessionToken on SessionAuthz, with the
+    // session token sent by the client, and the response is pending.
+    VERIFYING_SESSION_TOKEN,
+
+    // The shared secret has been returned by the VerifySessionToken call. The
+    // rest of the authentication process is now handed over to the underlying
+    // authenticator.
+    SHARED_SECRET_FETCHED,
+
+    // An error has occurred when trying to fetch the shared secret. Note that
+    // an error might occur in the underlying authenticator, in which case the
+    // SessionAuthz state will be `SHARED_SECRET_FETCHED` and
+    // `underlying_->state()` will be `REJECTED`.
+    FAILED,
+  };
+
+  void GenerateHostToken(base::OnceClosure resume_callback);
+  void OnHostTokenGenerated(
+      base::OnceClosure resume_callback,
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<internal::GenerateHostTokenResponseStruct> response);
+  void AddHostTokenElement(jingle_xmpp::XmlElement* message);
+  void VerifySessionToken(const jingle_xmpp::XmlElement& message,
+                          base::OnceClosure resume_callback);
+  void OnVerifiedSessionToken(
+      const jingle_xmpp::XmlElement& message,
+      base::OnceClosure resume_callback,
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<internal::VerifySessionTokenResponseStruct> response);
+  void HandleSessionAuthzError(const std::string_view& action_name,
+                               const ProtobufHttpStatus& status);
+  void StartReauthorizerIfNecessary();
+  void OnReauthorizationFailed();
+
+  std::unique_ptr<SessionAuthzServiceClient> service_client_;
+  CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
+  std::unique_ptr<Authenticator> underlying_;
+  std::unique_ptr<internal::VerifySessionTokenResponseStruct>
+      verify_token_response_;
+  std::unique_ptr<SessionAuthzReauthorizer> reauthorizer_;
+
+  SessionAuthzState session_authz_state_ = SessionAuthzState::NOT_STARTED;
+
+  // The rejection reason specific to fetching the shared secret from
+  // SessionAuthz. If |session_authz_state_| is NOT `ERROR`, the actual
+  // rejection reason is delegated to `underlying_->rejection_reason()`.
+  RejectionReason session_authz_rejection_reason_;
+
+  std::string session_id_;
+  std::string host_token_;
+};
+
+}  // namespace remoting::protocol
+
+#endif  // REMOTING_PROTOCOL_SESSION_AUTHZ_AUTHENTICATOR_H_

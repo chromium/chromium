@@ -4,6 +4,8 @@
 
 #include "base/memory/aligned_memory.h"
 
+#include <bit>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -16,7 +18,7 @@ namespace base {
 
 void* AlignedAlloc(size_t size, size_t alignment) {
   DCHECK_GT(size, 0U);
-  DCHECK(bits::IsPowerOfTwo(alignment));
+  DCHECK(std::has_single_bit(alignment));
   DCHECK_EQ(alignment % sizeof(void*), 0U);
   void* ptr = nullptr;
 #if defined(COMPILER_MSVC)

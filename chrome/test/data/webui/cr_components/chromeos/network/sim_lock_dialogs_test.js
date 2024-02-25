@@ -10,7 +10,7 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 
 suite('NetworkSimLockDialogsTest', function() {
   let simLockDialog;
@@ -77,6 +77,21 @@ suite('NetworkSimLockDialogsTest', function() {
     await flushAsync();
     assertTrue(!!simLockDialog.$$(`#adminSubtitle`));
   });
+
+  test('Unlock dialog not displayed when carrier locked', async function() {
+    loadTimeData.overrideValues({'isCellularCarrierLockEnabled': true});
+    const deviceState = {
+      simLockStatus:
+          {lockEnabled: true, lockType: 'network-pin', retriesLeft: 3},
+    };
+    const dialog = simLockDialog.$$(`#unlockPinDialog`);
+    assertTrue(!!dialog);
+    assertFalse(dialog.open);
+    simLockDialog.deviceState = deviceState;
+    await flushAsync();
+    assertFalse(dialog.open);
+  });
+
 
   test('Show Unlock PUK dialog', async function() {
     const deviceState = {

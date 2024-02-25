@@ -59,7 +59,7 @@ class CLStatus(NamedTuple):
     try_job_results: BuildStatuses
 
 
-class GitCL(object):
+class GitCL:
     def __init__(self,
                  host,
                  auth_refresh_token_json=None,
@@ -91,6 +91,9 @@ class GitCL(object):
         # running on Swarming bots with local git cache.
         return self._host.executive.run_command(
             command, cwd=self._cwd, return_stderr=False, ignore_stderr=True)
+
+    def close(self):
+        self.run(['set-close'])
 
     def trigger_try_jobs(self, builders, bucket=None):
         """Triggers try jobs on the given builders.
@@ -132,7 +135,7 @@ class GitCL(object):
             return output[output.index('number:') + 1]
         return 'None'
 
-    def _get_cl_status(self):
+    def get_cl_status(self) -> str:
         return self.run(['status', '--field=status']).strip()
 
     def _get_latest_patchset(self):
@@ -152,7 +155,7 @@ class GitCL(object):
         """
 
         def finished_try_job_results_or_none():
-            cl_status = self._get_cl_status()
+            cl_status = self.get_cl_status()
             _log.debug('Fetched CL status: %s', cl_status)
             issue_number = self.get_issue_number()
             try_job_results = self.latest_try_jobs(
@@ -175,7 +178,7 @@ class GitCL(object):
         """Waits until git cl reports that the current CL is closed."""
 
         def closed_status_or_none():
-            status = self._get_cl_status()
+            status = self.get_cl_status()
             _log.debug('CL status is: %s', status)
             if status == 'closed':
                 self._host.print_('CL is closed.')
@@ -260,11 +263,15 @@ class GitCL(object):
         return {b: s for b, s in try_results.items() if b in latest_builds}
 
     @staticmethod
-    def filter_infra_failed(build_statuses: BuildStatuses) -> Set[Build]:
+    def filter_incomplete(build_statuses: BuildStatuses) -> Set[Build]:
+        incomplete_statuses = {
+            TryJobStatus.from_bb_status('INFRA_FAILURE'),
+            TryJobStatus.from_bb_status('CANCELED'),
+        }
         return {
             build
             for build, status in build_statuses.items()
-            if status == TryJobStatus.from_bb_status('INFRA_FAILURE')
+            if status in incomplete_statuses
         }
 
     def try_job_results(self,

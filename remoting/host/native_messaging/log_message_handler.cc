@@ -109,11 +109,11 @@ void LogMessageHandler::SendLogMessageToClient(logging::LogSeverity severity,
 
   std::string severity_string = "log";
   switch (severity) {
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       severity_string = "warn";
       break;
-    case logging::LOG_FATAL:
-    case logging::LOG_ERROR:
+    case logging::LOGGING_ERROR:
+    case logging::LOGGING_FATAL:
       severity_string = "error";
       break;
   }

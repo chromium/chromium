@@ -14,11 +14,16 @@ BASE_FEATURE(kSegmentationPlatformFeature,
 
 BASE_FEATURE(kSegmentationPlatformUkmEngine,
              "SegmentationPlatformUkmEngine",
+
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kSegmentationPlatformUserVisibleTaskRunner,
              "SegmentationPlatformUserVisibleTaskRunner",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSegmentationPlatformAdaptiveToolbarV2Feature,
              "SegmentationPlatformAdaptiveToolbarV2Feature",
@@ -70,7 +75,7 @@ BASE_FEATURE(kContextualPageActionPriceTracking,
 
 BASE_FEATURE(kContextualPageActionReaderMode,
              "ContextualPageActionReaderMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualPageActionShareModel,
              "ContextualPageActionShareModel",
@@ -116,7 +121,29 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRanker,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kSegmentationPlatformAndroidHomeModuleRanker,
+             "SegmentationPlatformAndroidHomeModuleRanker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSegmentationPlatformTimeDelaySampling,
              "SegmentationPlatformTimeDelaySampling",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformCollectTabRankData,
+             "SegmentationPlatformCollectTabRankData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformModelInitializationDelay,
+             "SegmentationPlatformModelInitializationDelay",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enabled only on iOS to improve startup performance of the module ranker.
+BASE_FEATURE(kSegmentationPlatformSignalDbCache,
+             "SegmentationPlatformSignalDbCache",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace segmentation_platform::features

@@ -29,9 +29,9 @@ js_library("add_smb_share_dialog") {
     "//third_party/material_web_components:library",
   ]
   externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
 }
 

@@ -44,12 +44,12 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
     search_receiver_.Bind(std::move(receiver));
   }
 
-  MOCK_METHOD1(OnGetNextPage,
-               drive::FileError(
-                   absl::optional<std::vector<mojom::QueryItemPtr>>* items));
+  MOCK_METHOD1(
+      OnGetNextPage,
+      drive::FileError(std::optional<std::vector<mojom::QueryItemPtr>>* items));
 
   void GetNextPage(GetNextPageCallback callback) override {
-    absl::optional<std::vector<mojom::QueryItemPtr>> items;
+    std::optional<std::vector<mojom::QueryItemPtr>> items;
     auto error = OnGetNextPage(&items);
     std::move(callback).Run(error, std::move(items));
   }
@@ -125,7 +125,7 @@ TEST_F(DriveFsSearchTest, Search) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+                    std::optional<std::vector<mojom::QueryItemPtr>> items) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_OK, err);
             EXPECT_EQ(3u, items->size());
@@ -151,7 +151,7 @@ TEST_F(DriveFsSearchTest, Search_Fail) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+                    std::optional<std::vector<mojom::QueryItemPtr>> items) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_ACCESS_DENIED, err);
           }));
@@ -180,7 +180,7 @@ TEST_F(DriveFsSearchTest, Search_OnlineToOffline) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+                    std::optional<std::vector<mojom::QueryItemPtr>> items) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_OK, err);
             EXPECT_EQ(3u, items->size());
@@ -217,7 +217,7 @@ TEST_F(DriveFsSearchTest, Search_OnlineToOfflineFallback) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+                    std::optional<std::vector<mojom::QueryItemPtr>> items) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_OK, err);
             EXPECT_EQ(3u, items->size());
@@ -259,7 +259,7 @@ TEST_F(DriveFsSearchTest, Search_SharedWithMeCaching) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+                    std::optional<std::vector<mojom::QueryItemPtr>> items) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_OK, err);
             EXPECT_EQ(3u, items->size());
@@ -277,7 +277,7 @@ TEST_F(DriveFsSearchTest, Search_SharedWithMeCaching) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+                    std::optional<std::vector<mojom::QueryItemPtr>> items) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_OK, err);
             EXPECT_EQ(3u, items->size());
@@ -298,7 +298,7 @@ TEST_F(DriveFsSearchTest, Search_SharedWithMeCaching) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+                    std::optional<std::vector<mojom::QueryItemPtr>> items) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_OK, err);
             EXPECT_EQ(3u, items->size());
@@ -339,7 +339,7 @@ TEST_F(DriveFsSearchTest, Search_NoErrorCaching) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>>) {
+                    std::optional<std::vector<mojom::QueryItemPtr>>) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_FAILED, err);
           }));
@@ -357,7 +357,7 @@ TEST_F(DriveFsSearchTest, Search_NoErrorCaching) {
       std::move(params),
       base::BindLambdaForTesting(
           [&called](drive::FileError err,
-                    absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+                    std::optional<std::vector<mojom::QueryItemPtr>> items) {
             called = true;
             EXPECT_EQ(drive::FileError::FILE_ERROR_OK, err);
             EXPECT_EQ(3u, items->size());

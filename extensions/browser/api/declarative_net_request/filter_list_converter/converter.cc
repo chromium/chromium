@@ -8,6 +8,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_file_value_serializer.h"
@@ -23,8 +24,7 @@
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "url/gurl.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 namespace {
 
@@ -75,16 +75,16 @@ class ProtoToJSONRuleConverter {
     }
 
     // Sanity check that we can parse this rule.
-    std::u16string err;
-    dnr_api::Rule rule;
     base::Value json_rule(std::move(json_rule_));
-    CHECK(dnr_api::Rule::Populate(json_rule, rule, err) && err.empty())
-        << "Converted rule can't be parsed " << json_rule;
+    auto rule = dnr_api::Rule::FromValue(json_rule);
+    CHECK(rule.has_value())
+        << "Converted rule can't be parsed. Error: " << rule.error()
+        << json_rule;
 
     IndexedRule indexed_rule;
-    ParseResult result =
-        IndexedRule::CreateIndexedRule(std::move(rule), GURL() /* base_url */,
-                                       kMinValidStaticRulesetID, &indexed_rule);
+    ParseResult result = IndexedRule::CreateIndexedRule(
+        std::move(rule).value(), GURL() /* base_url */,
+        kMinValidStaticRulesetID, &indexed_rule);
 
     auto get_non_ascii_error = [this](const std::string& context) {
       return base::StringPrintf(
@@ -242,7 +242,7 @@ class ProtoToJSONRuleConverter {
     return PopulateDomainsInternal(kExcludedDomainsKey, true /*exclude_value*/);
   }
 
-  bool PopulateDomainsInternal(base::StringPiece sub_key, bool exclude_value) {
+  bool PopulateDomainsInternal(std::string_view sub_key, bool exclude_value) {
     base::Value::List domains;
 
     // Note: This isn't always correct. Filters consider the $domain option to
@@ -552,5 +552,4 @@ bool ConvertRuleset(const std::vector<base::FilePath>& filter_list_inputs,
 }
 
 }  // namespace filter_list_converter
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

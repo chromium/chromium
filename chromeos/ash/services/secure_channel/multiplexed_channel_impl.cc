@@ -107,6 +107,14 @@ void MultiplexedChannelImpl::OnMessageReceived(const std::string& feature,
     proxy_entry.second->HandleReceivedMessage(feature, payload);
 }
 
+void MultiplexedChannelImpl::OnNearbyConnectionStateChanged(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  for (auto& proxy_entry : id_to_proxy_map_) {
+    proxy_entry.second->HandleNearbyConnectionStateChanged(step, result);
+  }
+}
+
 void MultiplexedChannelImpl::OnSendMessageRequested(
     const std::string& message_feaure,
     const std::string& message_payload,

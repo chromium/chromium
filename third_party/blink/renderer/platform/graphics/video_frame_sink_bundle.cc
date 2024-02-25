@@ -151,11 +151,16 @@ void VideoFrameSinkBundle::SetNeedsBeginFrame(uint32_t sink_id,
   bundle_->SetNeedsBeginFrame(sink_id, needs_begin_frame);
 }
 
+void VideoFrameSinkBundle::SetWantsBeginFrameAcks(uint32_t sink_id) {
+  // These messages are not sent often, so we don't bother batching them.
+  bundle_->SetWantsBeginFrameAcks(sink_id);
+}
+
 void VideoFrameSinkBundle::SubmitCompositorFrame(
     uint32_t sink_id,
     const viz::LocalSurfaceId& local_surface_id,
     viz::CompositorFrame frame,
-    absl::optional<viz::HitTestRegionList> hit_test_region_list,
+    std::optional<viz::HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
   auto bundled_frame = viz::mojom::blink::BundledCompositorFrame::New();
   bundled_frame->local_surface_id = local_surface_id;

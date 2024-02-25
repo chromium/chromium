@@ -40,8 +40,20 @@ tags of the format `Gact2.0Omaha{tag}ahamO0.2tcaG`, but Chromium-branded and
 Google-branded builds assume the first case.
 
 ##### Brand code
-The brand code is a string of up to 4 characters long. The brand code is
-persisted during the install, over-installs, and updates.
+The brand code is a string of arbitrary length. The brand code is persisted
+during the first install of the app. Over-installs and updates do not modify
+the brand code.
+
+Note: the limit used to be 4 characters in the previous implementation of the
+updater.
+
+On macOS, the brand code (as well as AP parameter and the app version) can be
+specified using a path to a plist file and a key within that plist file. When
+so specified, the updater will read the associated value from the plist and use
+it rather than the updater's built-in `pv` value. This allows the updater to
+detect and properly represent any overinstallations of an application, which are
+done by users or third-party software on macOS (and don't otherwise interact
+with the updater).
 
 #### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
@@ -144,7 +156,7 @@ directory at `out\ChromeBrandedDebug`:
 New-SelfSignedCertificate -DnsName id@domain.tld -Type CodeSigning
  -CertStoreLocation cert:\CurrentUser\My
 ```
-* Note: all the steps below are run from a medium cmd prompt.
+* Note: **all the steps below are run from a medium cmd prompt.**
 * One-time step: `python3 -m pip install pypiwin32`
 * One-time step:
 ```
@@ -161,17 +173,16 @@ python3 chrome/updater/win/signing/sign.py                                     ^
   --manifest_path out/ChromeBrandedDebug/UpdaterSigning/OfflineManifest.gup    ^
   --lzma_7z "C:/Program Files/7-Zip/7z.exe"                                    ^
   --signtool ../../fig/google3/third_party/windows_sdk/windows_sdk_10/files/bin/10.0.22000.0/x86/signtool.exe ^
-  --certificate_tag out/ChromeBrandedDebug/UpdaterSigning/certificate_tag.exe  ^
+  --tagging_exe out/ChromeBrandedDebug/UpdaterSigning/tag.exe  ^
   --manifest_dict_replacements "{'${INSTALLER_VERSION}':'110.0.5478.0', '${ARCH_REQUIREMENT}':'x86'}"
 ```
 * tag the offline installer and save the result as
 `Signed_ChromeBetaOfflineSetup.exe`:
 ```
-python3 chrome/updater/tools/tag.py                                            ^
-  --certificate_tag=out/ChromeBrandedDebug/UpdaterSigning/certificate_tag.exe  ^
-  --in_file=out/ChromeBrandedDebug/UpdaterSigning/ChromeBetaOfflineSetup.exe   ^
-  --out_file=out/ChromeBrandedDebug/UpdaterSigning/Signed_ChromeBetaOfflineSetup.exe ^
-  --tag="appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%20Chrome%20Beta&needsadmin=Prefers"
+out/ChromeBrandedDebug/UpdaterSigning/tag.exe                                                                   ^
+  --set-tag="appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%20Chrome%20Beta&needsadmin=Prefers"  ^
+  --out=out/ChromeBrandedDebug/UpdaterSigning/Signed_ChromeBetaOfflineSetup.exe                                 ^
+  out/ChromeBrandedDebug/UpdaterSigning/ChromeBetaOfflineSetup.exe
 ```
 * Now you can run the final signed offline installer:
 `Signed_ChromeBetaOfflineSetup.exe`!
@@ -224,6 +235,8 @@ Depending on the scope, the updater is installed at:
 * (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
 * (macOS, User): `~/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
 * (macOS, System): `/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+* (Linux, User): `~/.local/{COMPANY}/{UPDATERNAME}/{VERSION}/updater`
+* (Linux, System): `/opt/{COMPANY}/{UPDATERNAME}/{VERSION}/updater`
 
 ### Command Line
 
@@ -339,7 +352,9 @@ installs small versions of those programs that implement a subset of their APIs.
 
 The updater also imports the properties and state of the apps that have been
 registered with Omaha and Keystone, so they show up as registered with the
-updater.
+updater. This import is repeated periodically, so long as the updater is
+installed, but these properties do not override any existing properties the
+updater already tracks for each app.
 
 #### Keystone Shims
 The updater installs a Keystone-like application that contains these shims:
@@ -411,10 +426,11 @@ Some of these actions accept parameters:
 
 #### Omaha Shims
 On Windows, the updater replaces Omaha's files with a copy of the updater, and
-keeps the Omaha registry entry
-(`CLIENTS/{430FD4D0-B729-4F61-AA34-91526481799D}`) up-to-date with the latest
-`pv` value. Additionally, the updater replaces the Omaha uninstall command line
-with its own.
+keeps the Omaha registry entries
+(`CLIENTS/{430FD4D0-B729-4F61-AA34-91526481799D}` and
+`CLIENTSTATE/{430FD4D0-B729-4F61-AA34-91526481799D}`) up-to-date with the
+latest `pv` value. Additionally, the updater replaces the Omaha uninstall
+command line with its own.
 
 The updater takes over the COM registration for the following classes:
 * GoogleUpdate3WebUserClass
@@ -436,6 +452,17 @@ The updater removes the following Omaha registrations:
   registry at `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`.
 * Removes the Omaha Core and UA tasks.
 
+#### Runtime mode (Windows)
+Similar to Omaha, the updater supports command lines of the form:
+`UpdaterSetup.exe /install "runtime=true"`
+`UpdaterSetup.exe /install "runtime=true&needsadmin=false"`
+`UpdaterSetup.exe /install "runtime=true&needsadmin=true"`
+
+The "runtime" argument in the tag tells the updater to install itself and stay
+on the system without any associated application. The updater will stay on for
+at least `kMaxServerStartsBeforeFirstReg` wakes. This feature is used to expose
+the COM API to a process that will install applications via that API.
+
 ### Installer User Interface
 During installation, the user is presented with a UI that displays the progress
 of the download and installation. The user may close the dialog, which cancels
@@ -444,7 +471,12 @@ the server indicating an installation failure.
 
 The user interface is localized in the same languages as the Chromium project.
 
-TODO(crbug.com/1286580): Implement and document silent mode.
+No UI will be shown if the `--silent` switch is specified on the command line.
+
+The launch command provided by the application installer via the
+[installer result API](#installer-result-api)
+will be run unconditionally, even for silent modes, if the `--alwayslaunchcmd`
+switch is specified on the command line.
 
 #### Help Button
 If the installation fails, the updater shows an error message with a "Help"
@@ -461,7 +493,7 @@ The updater communicates with update servers using the
 [Omaha Protocol](protocol_3_1.md).
 
 The updater uses platform-native network stacks (WinHTTP on Windows and
-NSURLSession on macOS).
+NSURLSession on macOS) with user-agent `"{PRODUCT_FULLNAME} {UpdaterVersion}"`.
 
 #### Security
 It is not possible to MITM the updater even if the network (including TLS) is
@@ -513,7 +545,7 @@ subsequent update checks.
 All application installs and user-initiated application updates are processed
 as foreground operations and with an `installsource` set to "ondemand".
 
-### Installer APIs
+### Installer Result API
 As part of installing or updating an application, the updater executes the
 application's installer. The API for the application installer is platform-
 specific.
@@ -536,10 +568,35 @@ installing so that the updater can provide feedback to the user on the progress.
 * `InstallerResult` : Specifies the result type and how to determine success or
 failure:
   *   0 - SUCCESS
-  *   1 - FAILED\_CUSTOM\_ERROR
-  *   2 - FAILED\_MSI\_ERROR
-  *   3 - FAILED\_SYSTEM\_ERROR
-  *   4 - FAILED\_EXIT\_CODE (default)
+      The installer succeeded, unconditionally.
+      - if a launch command was provided via the installer API, the command will
+        be launched and the updater UI will exit silently. Otherwise, the
+        updater will show an install success dialog.
+
+  *   All the error installer results below are treated the same.
+      - if an installer error was not provided via the installer API or the exit
+        code, generic error `kErrorApplicationInstallerFailed` will be reported.
+      - the installer extra code is used if reported via the installer API.
+      - the text description of the error is used if reported via the installer
+        API.
+      *   1 - FAILED\_CUSTOM\_ERROR
+      *   2 - FAILED\_MSI\_ERROR
+      *   3 - FAILED\_SYSTEM\_ERROR
+      *   4 - FAILED\_EXIT\_CODE (default)
+
+  *   If an installer result is not explicitly reported by the installer, the
+      installer API values are internally set based on whether the exit code
+      from the installer process is a success or an error:
+      - If the exit code is a success, the installer result is set to success.
+        If a launch command was provided via the installer API, the command will
+        be launched and the updater UI will exit silently. Otherwise, the
+        updater will show an install success dialog.
+      - If the exit code is a failure, the installer result is set to
+        `kExitCode`, the installer error is set to
+        `kErrorApplicationInstallerFailed`, and the installer extra code is set
+        to the exit code.
+      - If a text description is reported via the installer API, it will be
+        used.
 * `InstallerResultUIString` : A string to be displayed to the user, if
 `InstallerResult` is FAILED*.
 * `InstallerSuccessLaunchCmdLine` : On success, the installer writes a command
@@ -557,6 +614,23 @@ display the string.
 
 TODO(crbug.com/1339454): Implement running installers at
 BELOW_NORMAL_PRIORITY_CLASS if the update flow is a background flow.
+
+#### Updater UI behavior
+
+The updater UI does the following:
+*   on successful installs that do not specify an installer API launch command:
+    *   Displays a "Thank you for installing" message that the user must click
+        to close.
+*   on successful installs that specify a launch command:
+    *   Shows all UI until installation is completed then launches the launch
+        command and then exits without displaying the thank you message or
+        requiring the user to click on the UI.
+*   on error:
+    *   The UI is always shown with the error message. If a specific text
+        description of the error is provided via the installer API, that is
+        shown. Otherwise, a generic message with the error code is shown, either
+        the code provided via the installer API, or the exit code, or a generic
+        error `kErrorApplicationInstallerFailed`.
 
 ### Installer Setup
 
@@ -764,6 +838,8 @@ The `EnrollmentMandatory` REG_DWORD value is also read from
 
 #### macOS
 The enrollment token is searched in the order:
+* Managed Preference value with key `CloudManagementEnrollmentToken` in domain
+ `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
 * Managed Preference value with key `EnrollmentToken` in domain
  `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
 * File
@@ -772,6 +848,13 @@ The enrollment token is searched in the order:
 CBCM enterprise enrollment and policy fetches are done every time an install or
 or update happens, as well as when the updater periodic background task
 `--wake` runs.
+
+#### Linux
+The enrollment token is stored in:
+`/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/CloudManagementEnrollmentToken`
+
+The device management token is stored in:
+`/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/CloudManagement`
 
 ### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
@@ -1052,6 +1135,9 @@ millisecond of each second).
 
 Background updates can be disabled entirely through policy.
 
+Users can trigger an immediate run of the periodic tasks by calling the
+RunPeriodicTasks RPC, even for a system updater.
+
 #### Windows Scheduling of Updates
 The update wake task is scheduled using the OS task scheduler.
 
@@ -1121,6 +1207,11 @@ System-scope updaters will update any application registered with them. On
 POSIX platforms, they will additionally lchown the existence checker path
 registered by the application to be owned by the root user. User-scope updaters
 use this as a signal that the application is managed by a system-scope updater.
+
+For backwards compatibility with third party software, on Windows, after a
+successful registration and on each update, the updater will set
+[HKCU or HKLM]\SOFTWARE\{Company}\Update\ClientState\{AppID} → pv to the
+version of the application.
 
 ### App Activity Reporting
 Applications can report whether they are actively used or not through the
@@ -1346,6 +1437,10 @@ the threat of a non-admin attacker. An Admin attacker would already be able to
 bypass any signature checking by binplanting a DLL, or just by performing
 whatever changes they like on the system, so is outside the threat model.
 
+#### Telemetry
+A ping with the value `kEventAppCommandBegin` = `40` is sent if usagestats are
+enabled when an app command is launched.
+
 ### Policy Status API
 The feature allows Chrome and other applications to query the policies that are
 currently in effect.
@@ -1371,8 +1466,8 @@ checker and no file at that path exists, the updater considers the application
 uninstalled, sends the ping, and stops trying to keep it up to date. User-scope
 updaters will also do this if the file is owned by the root user.
 
-On Windows, if the ClientState entry for for the application is deleted, the
-app is considered uninstalled.
+On Windows, if the Clients entry for for the application is deleted, the app is
+considered uninstalled.
 
 On Windows, the updater registers a "UninstallCmdLine" under the `Software\
 {Company}\Updater` key. This command line can be invoked by application
@@ -1384,8 +1479,9 @@ itself immediately. The updater also uninstalls itself if it has started
 24 times but never had a product (besides itself) registered for updates.
 
 The updater uninstaller removes all updater files, registry keys, RPC hooks,
-scheduled tasks, and so forth from the file system, except that it leaves a
-small log file in its data directory.
+scheduled tasks, and so forth from the system, except that:
+*   it leaves a small log file in its data directory.
+*   it leaves the Clients registry key in Windows registry.
 
 ## Associated Tools
 
@@ -1417,8 +1513,8 @@ Overrides are specified in an overrides.json file placed in the updater data
 directory.
 
 ### Tagging Tools
-The project contains a helper tool for tagging called `certificate_tag.exe`.
+The project contains a helper tool for tagging called `tag.exe`.
 This tool can be
-[used](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/tools/main.cc#59)
+[used](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag_main.cc)
 to inject a superfluous certificate into a signed binary to support the
 creation of tagged binaries.

@@ -7,10 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "File Manager is ash-chrome only")
 
 static_library("constants") {
-  sources = [
-    "url_constants.cc",
-    "url_constants.h",
-  ]
+  sources = [ "url_constants.h" ]
 }
 
 static_library("file_manager_untrusted_ui") {

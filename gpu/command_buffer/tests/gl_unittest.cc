@@ -106,19 +106,19 @@ TEST_F(GLTest, FeatureFlagsMatchCapabilities) {
       new gles2::FeatureInfo(gl_.workarounds(), GpuFeatureInfo());
   features->InitializeForTesting();
   const auto& caps = gl_.GetCapabilities();
+  const auto& gl_caps = gl_.GetGLCapabilities();
   const auto& flags = features->feature_flags();
   EXPECT_EQ(caps.egl_image_external, flags.oes_egl_image_external);
   EXPECT_EQ(caps.texture_format_bgra8888, flags.ext_texture_format_bgra8888);
   EXPECT_EQ(caps.sync_query, flags.chromium_sync_query);
   EXPECT_EQ(caps.texture_rg, flags.ext_texture_rg);
-  EXPECT_EQ(caps.image_ycbcr_422, flags.chromium_image_ycbcr_422);
   EXPECT_EQ(caps.image_ycbcr_420v, flags.chromium_image_ycbcr_420v);
   EXPECT_EQ(caps.image_ar30, flags.chromium_image_ar30);
   EXPECT_EQ(caps.image_ab30, flags.chromium_image_ab30);
   EXPECT_EQ(caps.image_ycbcr_p010, flags.chromium_image_ycbcr_p010);
   EXPECT_EQ(caps.render_buffer_format_bgra8888,
             flags.ext_render_buffer_format_bgra8888);
-  EXPECT_EQ(caps.occlusion_query_boolean, flags.occlusion_query_boolean);
+  EXPECT_EQ(gl_caps.occlusion_query_boolean, flags.occlusion_query_boolean);
 }
 
 TEST_F(GLTest, GetString) {

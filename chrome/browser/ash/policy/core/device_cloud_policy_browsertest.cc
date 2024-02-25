@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -56,7 +57,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -100,6 +100,17 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
     DevicePolicyCrosBrowserTest::TearDownOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // The verification key was replaced from the original to the
+    // testing key by the super class. However this class uses the
+    // policy data provided by signature_provider.cc which still
+    // gives data validated by the original verification key. Thus
+    // the flag needs to be removed so that these tests use the
+    // original verification key.
+    DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kPolicyVerificationKey);
+  }
+
   void UpdateBuiltTestPolicyValue(int test_policy_value) {
     device_policy()
         ->payload()
@@ -116,7 +127,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
     g_browser_process->platform_part()
         ->browser_policy_connector_ash()
         ->GetDeviceCloudPolicyManager()
-        ->RefreshPolicies();
+        ->RefreshPolicies(PolicyFetchReason::kTest);
   }
 
   std::string GetOwnerPublicKey() const {

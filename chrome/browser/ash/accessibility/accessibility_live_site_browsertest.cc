@@ -16,6 +16,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -79,12 +81,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLiveSiteTest,
       "1qpu3koSIHpBzQbxeEE-dofSKXCIgdc4yJLI-o1LpCPs/view";
   const char* kTextFoundInGoogleDoc = "Long-string-to-test-select-to-speak";
 
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleDocsUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::EnableAccessibilityForWebContents(web_contents);
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
+      web_contents, ui::kAXModeComplete);
 
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_contents, "Long-string-to-test-select-to-speak");

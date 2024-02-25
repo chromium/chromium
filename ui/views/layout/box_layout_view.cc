@@ -133,7 +133,7 @@ void BoxLayoutView::ClearFlexForView(const View* view) {
   InvalidateLayout();
 }
 
-BEGIN_METADATA(BoxLayoutView, View)
+BEGIN_METADATA(BoxLayoutView)
 ADD_PROPERTY_METADATA(BoxLayout::Orientation, Orientation)
 ADD_PROPERTY_METADATA(BoxLayout::MainAxisAlignment, MainAxisAlignment)
 ADD_PROPERTY_METADATA(BoxLayout::CrossAxisAlignment, CrossAxisAlignment)
@@ -145,21 +145,3 @@ ADD_PROPERTY_METADATA(int, DefaultFlex)
 END_METADATA
 
 }  // namespace views
-
-DEFINE_ENUM_CONVERTERS(views::BoxLayout::Orientation,
-                       {views::BoxLayout::Orientation::kHorizontal,
-                        u"kHorizontal"},
-                       {views::BoxLayout::Orientation::kVertical, u"kVertical"})
-
-DEFINE_ENUM_CONVERTERS(views::BoxLayout::MainAxisAlignment,
-                       {views::BoxLayout::MainAxisAlignment::kStart, u"kStart"},
-                       {views::BoxLayout::MainAxisAlignment::kCenter,
-                        u"kCenter"},
-                       {views::BoxLayout::MainAxisAlignment::kEnd, u"kEnd"})
-
-DEFINE_ENUM_CONVERTERS(
-    views::BoxLayout::CrossAxisAlignment,
-    {views::BoxLayout::CrossAxisAlignment::kStretch, u"kStretch"},
-    {views::BoxLayout::CrossAxisAlignment::kStart, u"kStart"},
-    {views::BoxLayout::CrossAxisAlignment::kCenter, u"kCenter"},
-    {views::BoxLayout::CrossAxisAlignment::kEnd, u"kEnd"})

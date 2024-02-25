@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -12,7 +14,7 @@
 
 namespace guest_os {
 
-GuestOsUrlHandler::GuestOsUrlHandler(const base::StringPiece name,
+GuestOsUrlHandler::GuestOsUrlHandler(const std::string_view name,
                                      const HandlerCallback handler)
     : name_(name), handler_(handler) {}
 
@@ -24,15 +26,14 @@ void GuestOsUrlHandler::Handle(Profile* profile, const GURL& url) {
   handler_.Run(profile, url);
 }
 
-absl::optional<GuestOsUrlHandler> GuestOsUrlHandler::GetForUrl(
-    Profile* profile,
-    const GURL& url) {
+std::optional<GuestOsUrlHandler> GuestOsUrlHandler::GetForUrl(Profile* profile,
+                                                              const GURL& url) {
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   if (!registry_service) {
     // GuestOsRegistryService does not exist for incognito or guest profiles, so
     // don't try and use it.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return registry_service->GetHandler(url);

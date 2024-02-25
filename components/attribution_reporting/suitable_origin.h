@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_SUITABLE_ORIGIN_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_SUITABLE_ORIGIN_H_
 
+#include <compare>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -44,16 +45,16 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
  public:
   static bool IsSuitable(const url::Origin&);
 
-  static absl::optional<SuitableOrigin> Create(url::Origin);
+  static std::optional<SuitableOrigin> Create(url::Origin);
 
-  static absl::optional<SuitableOrigin> Create(const GURL&);
+  static std::optional<SuitableOrigin> Create(const GURL&);
 
   // Creates a `SuitableOrigin` from the given string, which is first converted
   // to a `GURL`, then to a `url::Origin`, and then subject to this class's
   // invariants.
   //
   // All parts of the URL other than the origin are ignored.
-  static absl::optional<SuitableOrigin> Deserialize(base::StringPiece);
+  static std::optional<SuitableOrigin> Deserialize(std::string_view);
 
   // Creates an invalid instance for use with Mojo deserialization, which
   // requires types to be default-constructible.
@@ -91,7 +92,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   }
 
   // Allows this type to be used as a key in a set or map.
-  bool operator<(const SuitableOrigin&) const;
+  friend std::weak_ordering operator<=>(const SuitableOrigin&,
+                                        const SuitableOrigin&) = default;
 
   std::string Serialize() const;
 

@@ -5,6 +5,7 @@
 #include "base/threading/scoped_blocking_call.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::ElementsAre;
 
@@ -171,7 +171,7 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
   explicit ScopedBlockingCallIOJankMonitoringTest(
       test::TaskEnvironment::TimeSource time_source =
           test::TaskEnvironment::TimeSource::MOCK_TIME)
-      : task_environment_(absl::in_place, time_source) {}
+      : task_environment_(std::in_place, time_source) {}
 
   void SetUp() override {
     // Note 1: While EnableIOJankMonitoringForProcess() is documented as being
@@ -231,7 +231,7 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
   // TaskEnvironment+MOCK_TIME advances the test in lock steps.
   std::vector<std::pair<int, int>> reports_;
 
-  absl::optional<test::TaskEnvironment> task_environment_;
+  std::optional<test::TaskEnvironment> task_environment_;
 
   // The main thread needs to register a BlockingObserver per
   // OnlyObservedThreadsForTest(true) but doesn't otherwise care about

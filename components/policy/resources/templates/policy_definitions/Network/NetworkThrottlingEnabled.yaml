@@ -29,8 +29,6 @@ schema:
   - upload_rate_kbits
   - download_rate_kbits
   type: object
-supported_chrome_os_management:
-- google_cloud
 supported_on:
 - chrome_os:56-
 tags: []

@@ -4,22 +4,82 @@
 
 import("//build/config/android/rules.gni")
 
-java_prebuilt("google_truth_java") {
+java_library("google_truth_java") {
   testonly = true
 
-  # Uses the autovalue package, which doesn't exist in third_party.
-  enable_bytecode_checks = false
   supports_android = true
 
-  # requires_android because of dependency on guava_android.
+  # requires_android because of dependencies on various Android deps.
   requires_android = true
 
-  jar_path = "lib/truth-0.45.jar"
-  deps = [
-    "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
-    "//third_party/android_deps:guava_android_java",
-    "//third_party/junit:junit",
+  sources = [
+    "src/core/src/main/java/com/google/common/truth/AbstractArraySubject.java",
+
+    # ActualValueInference is intentionally omitted because its dependencies are
+    # not compatible with Android. Truth supports being built without this
+    # class; see the implementation of
+    # com.google.common.truth.Platform#inferDescription.
+    # "src/core/src/main/java/com/google/common/truth/ActualValueInference.java",
+
+    "src/core/src/main/java/com/google/common/truth/AssertionErrorWithFacts.java",
+    "src/core/src/main/java/com/google/common/truth/BigDecimalSubject.java",
+    "src/core/src/main/java/com/google/common/truth/BooleanSubject.java",
+    "src/core/src/main/java/com/google/common/truth/ClassSubject.java",
+    "src/core/src/main/java/com/google/common/truth/ComparableSubject.java",
+    "src/core/src/main/java/com/google/common/truth/ComparisonFailureWithFacts.java",
+    "src/core/src/main/java/com/google/common/truth/ComparisonFailures.java",
+    "src/core/src/main/java/com/google/common/truth/Correspondence.java",
+    "src/core/src/main/java/com/google/common/truth/CustomSubjectBuilder.java",
+    "src/core/src/main/java/com/google/common/truth/DiffUtils.java",
+    "src/core/src/main/java/com/google/common/truth/DoubleSubject.java",
+    "src/core/src/main/java/com/google/common/truth/ErrorWithFacts.java",
+    "src/core/src/main/java/com/google/common/truth/Expect.java",
+    "src/core/src/main/java/com/google/common/truth/ExpectFailure.java",
+    "src/core/src/main/java/com/google/common/truth/Fact.java",
+    "src/core/src/main/java/com/google/common/truth/FailureMetadata.java",
+    "src/core/src/main/java/com/google/common/truth/FailureStrategy.java",
+    "src/core/src/main/java/com/google/common/truth/FloatSubject.java",
+    "src/core/src/main/java/com/google/common/truth/GraphMatching.java",
+    "src/core/src/main/java/com/google/common/truth/GuavaOptionalSubject.java",
+    "src/core/src/main/java/com/google/common/truth/IntegerSubject.java",
+    "src/core/src/main/java/com/google/common/truth/IterableSubject.java",
+    "src/core/src/main/java/com/google/common/truth/J2ktIncompatible.java",
+    "src/core/src/main/java/com/google/common/truth/LazyMessage.java",
+    "src/core/src/main/java/com/google/common/truth/LongSubject.java",
+    "src/core/src/main/java/com/google/common/truth/MapSubject.java",
+    "src/core/src/main/java/com/google/common/truth/MathUtil.java",
+    "src/core/src/main/java/com/google/common/truth/MultimapSubject.java",
+    "src/core/src/main/java/com/google/common/truth/MultisetSubject.java",
+    "src/core/src/main/java/com/google/common/truth/ObjectArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/Ordered.java",
+    "src/core/src/main/java/com/google/common/truth/Platform.java",
+    "src/core/src/main/java/com/google/common/truth/PrimitiveBooleanArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/PrimitiveByteArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/PrimitiveCharArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/PrimitiveDoubleArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/PrimitiveFloatArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/PrimitiveIntArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/PrimitiveLongArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/PrimitiveShortArraySubject.java",
+    "src/core/src/main/java/com/google/common/truth/SimpleSubjectBuilder.java",
+    "src/core/src/main/java/com/google/common/truth/StackTraceCleaner.java",
+    "src/core/src/main/java/com/google/common/truth/StandardSubjectBuilder.java",
+    "src/core/src/main/java/com/google/common/truth/StringSubject.java",
+    "src/core/src/main/java/com/google/common/truth/Subject.java",
+    "src/core/src/main/java/com/google/common/truth/SubjectUtils.java",
+    "src/core/src/main/java/com/google/common/truth/TableSubject.java",
+    "src/core/src/main/java/com/google/common/truth/ThrowableSubject.java",
+    "src/core/src/main/java/com/google/common/truth/Truth.java",
+    "src/core/src/main/java/com/google/common/truth/TruthFailureSubject.java",
+    "src/core/src/main/java/com/google/common/truth/TruthJUnit.java",
+    "src/core/src/main/java/com/google/common/truth/UsedByReflection.java",
+    "src/core/src/main/java/com/google/common/truth/package-info.java",
   ]
 
-  proguard_configs = [ "proguard.flags" ]
+  deps = [
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:org_checkerframework_checker_qual_java",
+    "//third_party/junit:junit",
+  ]
 }

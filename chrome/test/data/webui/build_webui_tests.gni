@@ -73,9 +73,15 @@ template("build_webui_tests") {
     if (defined(invoker.ts_path_mappings)) {
       path_mappings += invoker.ts_path_mappings
     }
-    path_mappings += [ "chrome://webui-test/*|" +
-                       rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                                   target_gen_dir) ]
+    if (defined(invoker.is_chrome_untrusted) && invoker.is_chrome_untrusted) {
+      path_mappings += [ "chrome-untrusted://webui-test/*|" + rebase_path(
+                             "$root_gen_dir/chrome/test/data/webui/tsc/*",
+                             target_gen_dir) ]
+    } else {
+      path_mappings += [ "chrome://webui-test/*|" + rebase_path(
+                             "$root_gen_dir/chrome/test/data/webui/tsc/*",
+                             target_gen_dir) ]
+    }
     in_files = files
 
     if (defined(invoker.ts_definitions)) {
@@ -103,7 +109,11 @@ template("build_webui_tests") {
   # chrome/test/data/webui:build_grd which will place this grdp file into a grd
   # file.
   generate_grd("build_grdp") {
-    grd_prefix = "webui_${invoker.resource_path_prefix}"
+    resource_path_prefix = rebase_path(".", "//chrome/test/data/webui")
+    if (defined(invoker.resource_path_prefix)) {
+      resource_path_prefix = invoker.resource_path_prefix
+    }
+    grd_prefix = "webui_" + string_replace(resource_path_prefix, "/", "_")
     out_grd = "$target_gen_dir/resources.grdp"
     deps = [ ":build_ts" ]
     manifest_files =
@@ -113,6 +123,5 @@ template("build_webui_tests") {
       manifest_files +=
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
     }
-    resource_path_prefix = rebase_path(".", "//chrome/test/data/webui")
   }
 }

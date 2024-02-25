@@ -6,7 +6,9 @@
 #define SERVICES_NETWORK_NETWORK_SERVICE_MEMORY_CACHE_H_
 
 #include <inttypes.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -23,7 +25,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpVaryData;
@@ -82,7 +83,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   // `factory_client_security_state` should come from
   // mojom::URLLoaderFactoryParams. The returned cache key is valid only for the
   // current call stack. It must be used synchronously.
-  absl::optional<std::string> CanServe(
+  std::optional<std::string> CanServe(
       uint32_t load_options,
       const ResourceRequest& resource_request,
       const net::NetworkIsolationKey& network_isolation_key,
@@ -99,7 +100,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
       const std::string& cache_key,
       const ResourceRequest& resource_request,
       const net::NetLogWithSource net_log,
-      const absl::optional<net::CookiePartitionKey> cookie_partition_key,
+      const std::optional<net::CookiePartitionKey> cookie_partition_key,
       mojo::PendingRemote<mojom::URLLoaderClient> client);
 
   // Returns a suitable capacity for a data pipe that is used to serve a
@@ -158,7 +159,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
 
   base::Time current_time_for_testing_;
 
-  absl::optional<uint32_t> data_pipe_capacity_for_testing_;
+  std::optional<uint32_t> data_pipe_capacity_for_testing_;
 
   base::WeakPtrFactory<NetworkServiceMemoryCache> weak_ptr_factory_{this};
 };

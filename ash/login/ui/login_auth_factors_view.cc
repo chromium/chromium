@@ -11,7 +11,7 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -20,7 +20,9 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -139,7 +141,7 @@ AuthFactorModel* GetHighestPriorityAuthFactor(
 
 std::unique_ptr<lottie::Animation> GetCheckmarkAnimation(
     ui::ColorProvider* color_provider) {
-  absl::optional<std::vector<uint8_t>> lottie_data =
+  std::optional<std::vector<uint8_t>> lottie_data =
       ui::ResourceBundle::GetSharedInstance().GetLottieData(
           IDR_LOGIN_ARROW_CHECKMARK_ANIMATION);
   CHECK(lottie_data.has_value());
@@ -246,11 +248,6 @@ LoginAuthFactorsView::LoginAuthFactorsView(
 
   arrow_nudge_animation_ =
       arrow_icon_container_->AddChildView(std::make_unique<AuthIconView>());
-  arrow_nudge_animation_->SetCircleImage(
-      kArrowButtonSizeDp / 2,
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHairlineBorderColor));
-
   arrow_nudge_animation_->set_on_tap_or_click_callback(base::BindRepeating(
       &LoginAuthFactorsView::RelayArrowButtonPressed, base::Unretained(this)));
 
@@ -515,6 +512,10 @@ void LoginAuthFactorsView::OnThemeChanged() {
   for (const auto& factor : auth_factors_) {
     factor->OnThemeChanged();
   }
+
+  arrow_nudge_animation_->SetCircleImage(
+      kArrowButtonSizeDp / 2,
+      GetColorProvider()->GetColor(kColorAshHairlineBorderColor));
 }
 
 void LoginAuthFactorsView::FireAlert() {
@@ -600,5 +601,8 @@ void LoginAuthFactorsView::UpdateShouldHidePasswordField(
   on_auth_factor_is_hiding_password_changed_callback_.Run(
       should_hide_password_field);
 }
+
+BEGIN_METADATA(LoginAuthFactorsView)
+END_METADATA
 
 }  // namespace ash

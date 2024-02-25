@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Eyða síðu <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Myndavélarstilling</translation>
 <translation id="1153190633558910465">Slökkt á línum</translation>
-<translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Síðu <ph name="PAGE_NUMBER" /> var eytt</translation>
 <translation id="1258009455399840361">Snúa um 90 gráður réttsælis</translation>
 <translation id="1417314334557041815">Breyta síðu <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Hliðra til hægri</translation>
 <translation id="3081586908890909590">Skipta yfir í upptöku myndskeiðs</translation>
 <translation id="313467653172006084">30 rammar á sekúndu</translation>
+<translation id="3158534262962737808">Tengjast „<ph name="WIFINAME" />“</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
 <translation id="3240426699337459095">Tengill afritaður</translation>
 <translation id="3354465018370944241">Myndastillingar</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Vinnur úr myndskeiði...</translation>
 <translation id="3789724198583203151">Snúa um 90 gráður rangsælis</translation>
 <translation id="3810838688059735925">Myndskeið</translation>
-<translation id="3892148308691398805">Afrita texta</translation>
 <translation id="4060608699153044055">Þú getur ekki tekið upp sökum of lítils geymslurýmis í tækinu. Til að hefja upptöku þarftu fyrst að losa um pláss í tækinu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Gera hlé á upptöku</translation>
 <translation id="4121305183798804752">Skjal greindist</translation>
 <translation id="414641094616694804">Myndavélin getur ekki breytt upplausn</translation>
 <translation id="4176463684765177261">Óvirkt</translation>
-<translation id="4269820728363426813">Afrita slóð tengils</translation>
 <translation id="428234092390943511">Smámynd síðu</translation>
 <translation id="4349714250734879769">Aðlaga ramma frá Chrome</translation>
 <translation id="4383571725254449280">Prenta afkastaannála</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Full upplausn</translation>
 <translation id="4864143361253542638">Listi yfir skannaðar síður</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Afrita slóð tengils <ph name="URL" /></translation>
 <translation id="491895758387112773">Myndupptaka af mörgum straumum í einu</translation>
 <translation id="495170559598752135">Aðgerðir</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Myndhlutfall myndar</translation>
 <translation id="5057360777601936059">Ekki er hægt að nota myndavélina eins og er.
         Athugaðu hvort myndavélin er rétt tengd.</translation>
+<translation id="5157591164390831335">Vefslóð greindist.</translation>
 <translation id="5163387177077603948">Færist til hægri</translation>
-<translation id="5219374179772385066">Hraðmyndastilling er nú í boði!</translation>
 <translation id="5235304959032763950">16 á móti 9</translation>
 <translation id="5266635337630551423">Efra, vinstra horn skjals</translation>
 <translation id="5317780077021120954">Vista</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Takk fyrir að senda ábendingu um myndavélaforritið.
 
 Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við sýnishorn af mynd eða myndskeiði og lýsa því sem er að. (Til dæmis: myndin er of dökk eða myndefnið er ekki í fókus.)</translation>
+<translation id="6519884562954018934">Tengjast <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Deila</translation>
 <translation id="6617916774429601017">Sýna allar upplausnir</translation>
 <translation id="6631515515009660915">Slökkt á speglun</translation>
@@ -124,7 +124,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="6888362557094394345">Færist niður á við</translation>
 <translation id="695140971690006676">Endurstilla allt</translation>
 <translation id="6965382102122355670">Í lagi</translation>
-<translation id="6965830616442491568">Andlitsmynd</translation>
+<translation id="6965830616442491568">Andlitsmyndastilling</translation>
 <translation id="698156982839284926">3 sekúndur</translation>
 <translation id="7134221860976209830">10 sekúndna teljari</translation>
 <translation id="7191890674911603392">Gerð upptöku</translation>
@@ -133,6 +133,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7450541714075000668">Texti afritaður</translation>
 <translation id="7488619942230388918">Taka upp GIF-vídeó</translation>
 <translation id="7557677699350329807">Skipta yfir í næstu myndavél</translation>
+<translation id="7562584071994185503">Afrita texta <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Hlé</translation>
 <translation id="7608223098072244877">4 sinnum 4</translation>
 <translation id="761421184377987513">Færist niður og til vinstri</translation>
@@ -155,10 +156,12 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="8346544573713510785">Aðlaga ramma frá HAL myndavélar</translation>
 <translation id="8425673304802773841">Halla niður</translation>
 <translation id="8428213095426709021">Stillingar</translation>
+<translation id="8609951387004618906">Opna <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Kveikja/slökkva á hljóðnema. Kveikt er á þöggun</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8732462232047530626">Forskoða lýsigögn</translation>
+<translation id="874854738381978209">WiFi-net greindist.</translation>
 <translation id="8815966864175525708">Skipta yfir í töku andlitsmynda</translation>
 <translation id="8828441885228359828">Halda upptöku áfram</translation>
 <translation id="8870695351537079478">Ekki tókst að hefja upptöku</translation>

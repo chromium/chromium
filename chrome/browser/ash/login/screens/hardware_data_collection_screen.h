@@ -14,6 +14,7 @@
 namespace ash {
 
 class HWDataCollectionView;
+class ScopedSessionRefresher;
 
 // Representation independent class that controls OOBE screen showing HW data
 // collection notice to users.
@@ -44,6 +45,9 @@ class HWDataCollectionScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
+
+  // Keeps cryptohome authsession alive.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   base::WeakPtr<HWDataCollectionView> view_;
 

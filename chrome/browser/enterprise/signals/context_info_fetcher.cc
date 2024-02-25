@@ -55,12 +55,12 @@ namespace enterprise_signals {
 
 namespace {
 
-absl::optional<std::string> GetEnterpriseProfileId(Profile* profile) {
+std::optional<std::string> GetEnterpriseProfileId(Profile* profile) {
   auto* profile_id_service =
       enterprise::ProfileIdServiceFactory::GetForProfile(profile);
   if (profile_id_service)
     return profile_id_service->GetProfileId();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #if BUILDFLAG(IS_LINUX)
@@ -135,6 +135,12 @@ SettingValue GetMacOSFirewall() {
   // status of the firewall (System Preferences> Security & Privacy> Firewall).
   // Reading globalstate from com.apple.alf is the closest way to get such an
   // API in Chrome without delegating to potentially unstable commands.
+  // Values of "globalstate":
+  //   0 = de-activated
+  //   1 = on for specific services
+  //   2 = on for essential services
+  // You can get 2 by, e.g., enabling the "Block all incoming connections"
+  // firewall functionality.
 
   Boolean key_exists_with_valid_format = false;
   CFIndex globalstate = CFPreferencesGetAppIntegerValue(
@@ -148,6 +154,7 @@ SettingValue GetMacOSFirewall() {
     case 0:
       return SettingValue::DISABLED;
     case 1:
+    case 2:
       return SettingValue::ENABLED;
     default:
       return SettingValue::UNKNOWN;
@@ -187,8 +194,6 @@ ContextInfoFetcher::~ContextInfoFetcher() = default;
 std::unique_ptr<ContextInfoFetcher> ContextInfoFetcher::CreateInstance(
     content::BrowserContext* browser_context,
     enterprise_connectors::ConnectorsService* connectors_service) {
-  // TODO(domfc): Add platform overrides of the class once they are needed for
-  // an attribute.
   return std::make_unique<ContextInfoFetcher>(browser_context,
                                               connectors_service);
 }
@@ -313,7 +318,7 @@ std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
 #if BUILDFLAG(IS_POSIX)
   std::unique_ptr<net::ScopedResState> res = net::ResolvReader().GetResState();
   if (res) {
-    absl::optional<std::vector<net::IPEndPoint>> nameservers =
+    std::optional<std::vector<net::IPEndPoint>> nameservers =
         net::GetNameservers(res->state());
     if (nameservers) {
       // If any name server is 0.0.0.0, assume the configuration is invalid.
@@ -326,8 +331,8 @@ std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
     }
   }
 #elif BUILDFLAG(IS_WIN)
-  absl::optional<std::vector<net::IPEndPoint>> nameservers;
-  absl::optional<net::WinDnsSystemSettings> settings =
+  std::optional<std::vector<net::IPEndPoint>> nameservers;
+  std::optional<net::WinDnsSystemSettings> settings =
       net::ReadWinSystemDnsSettings();
   if (settings.has_value()) {
     nameservers = settings->GetAllNameservers();

@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_FAKE_BLUETOOTH_HID_DETECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_FAKE_BLUETOOTH_HID_DETECTOR_H_
 
-#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
 
 namespace ash::hid_detection {
 
@@ -22,7 +22,7 @@ class FakeBluetoothHidDetector : public BluetoothHidDetector {
 
   void SimulatePairingStarted(
       BluetoothHidDetector::BluetoothHidMetadata pairing_device);
-  void SetPairingState(absl::optional<BluetoothHidPairingState> pairing_state);
+  void SetPairingState(std::optional<BluetoothHidPairingState> pairing_state);
   void SimulatePairingSessionEnded();
 
   const InputDevicesStatus& input_devices_status() {
@@ -48,8 +48,8 @@ class FakeBluetoothHidDetector : public BluetoothHidDetector {
   InputDevicesStatus input_devices_status_;
   size_t num_set_input_devices_status_calls_ = 0;
 
-  absl::optional<BluetoothHidMetadata> current_pairing_device_;
-  absl::optional<BluetoothHidPairingState> current_pairing_state_;
+  std::optional<BluetoothHidMetadata> current_pairing_device_;
+  std::optional<BluetoothHidPairingState> current_pairing_state_;
   bool is_bluetooth_hid_detection_active_ = false;
   bool is_using_bluetooth_ = false;
 };

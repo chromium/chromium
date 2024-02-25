@@ -48,12 +48,25 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
 
   // TODO(crbug.com/1472861): implement support for multiplanar formats.
   texture_descriptor.format = ToDawnFormat(format());
+
+  // Add internal TextureBinding usage for copyTextureForBrowser().
+  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
+  internalDesc.internalUsage =
+      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
+
+  texture_descriptor.nextInChain = &internalDesc;
+
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = wgpu::TextureDimension::e2D;
   texture_descriptor.size = {static_cast<uint32_t>(size().width()),
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
+
+  // TODO(crbug.com/1424119): once the forceReadback path is removed, determine
+  // the correct set of internal usages to apply and add
+  // DawnTextureInternalUsageDescriptor to the descriptor chain.
+
   dawn::native::opengl::ExternalImageDescriptorGLTexture externalImageDesc;
   externalImageDesc.cTextureDescriptor =
       reinterpret_cast<WGPUTextureDescriptor*>(&texture_descriptor);

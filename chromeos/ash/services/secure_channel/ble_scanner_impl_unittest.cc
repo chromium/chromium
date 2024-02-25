@@ -188,9 +188,9 @@ class SecureChannelBleScannerImplTest : public testing::Test {
       const std::string& service_data,
       multidevice::RemoteDeviceRef expected_remote_device,
       bool is_background_advertisement,
-      const absl::optional<
+      const std::optional<
           std::vector<std::pair<ConnectionMedium, ConnectionRole>>>&
-          expected_scan_results = absl::nullopt) {
+          expected_scan_results = std::nullopt) {
     std::vector<std::pair<ConnectionMedium, ConnectionRole>>
         new_expected_results =
             expected_scan_results.has_value()
@@ -261,7 +261,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
 
     if (success) {
       le_scan_delegate_->OnSessionStarted(scan_session_ptr_,
-                                          /*error_code=*/absl::nullopt);
+                                          /*error_code=*/std::nullopt);
     } else {
       le_scan_delegate_->OnSessionStarted(
           scan_session_ptr_,
@@ -348,11 +348,10 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
-  raw_ptr<FakeServiceDataProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeServiceDataProvider, DanglingUntriaged>
       fake_service_data_provider_ = nullptr;
   base::WeakPtr<device::BluetoothDiscoverySession> discovery_session_weak_ptr_;
-  raw_ptr<device::BluetoothLowEnergyScanSession, ExperimentalAsh>
-      scan_session_ptr_ = nullptr;
+  raw_ptr<device::BluetoothLowEnergyScanSession> scan_session_ptr_ = nullptr;
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate>
       le_scan_delegate_;
 

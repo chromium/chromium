@@ -14,7 +14,7 @@ FullscreenUIUpdater::FullscreenUIUpdater(FullscreenController* controller,
       forwarder_(this, ui_element),
       observation_(&forwarder_) {
   DCHECK(controller_);
-  observation_.Observe(controller_);
+  observation_.Observe(controller_.get());
 }
 
 FullscreenUIUpdater::~FullscreenUIUpdater() = default;
@@ -22,7 +22,7 @@ FullscreenUIUpdater::~FullscreenUIUpdater() = default;
 void FullscreenUIUpdater::Disconnect() {
   if (!controller_)
     return;
-  DCHECK(observation_.IsObservingSource(controller_));
+  DCHECK(observation_.IsObservingSource(controller_.get()));
   observation_.Reset();
   controller_ = nullptr;
 }

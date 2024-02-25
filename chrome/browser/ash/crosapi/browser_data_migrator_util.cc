@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
@@ -38,7 +38,7 @@ struct PathNamePair {
 struct PathNameComparator {
   constexpr bool operator()(const PathNamePair& p1,
                             const PathNamePair& p2) const {
-    return base::StringPiece(p1.key) < base::StringPiece(p2.key);
+    return std::string_view(p1.key) < std::string_view(p2.key);
   }
 };
 
@@ -140,7 +140,7 @@ static_assert(base::ranges::is_sorted(kPathNamePairs, PathNameComparator()),
               "kPathNamePairs needs to be sorted by the keys of its elements "
               "so that binary_search can be used on it.");
 
-absl::optional<uint64_t> g_extra_bytes_required_to_be_freed_for_testing;
+std::optional<uint64_t> g_extra_bytes_required_to_be_freed_for_testing;
 
 // Key prefixes in LocalStorage's LevelDB.
 constexpr char kMetaPrefix[] = "META:chrome-extension://";
@@ -150,7 +150,7 @@ constexpr char kKeyPrefix[] = "_chrome-extension://";
 constexpr char kIndexedDBBlobExtension[] = ".indexeddb.blob";
 constexpr char kIndexedDBLevelDBExtension[] = ".indexeddb.leveldb";
 
-bool ShouldRemoveExtensionByType(const base::StringPiece extension_id,
+bool ShouldRemoveExtensionByType(const std::string_view extension_id,
                                  ChromeType chrome_type) {
   switch (chrome_type) {
     case ChromeType::kAsh:
@@ -170,7 +170,7 @@ void UpdatePreferencesDictByType(base::Value::Dict& dict,
 
   // Collect keys that don't belong in `chrome_type`.
   for (const auto entry : dict) {
-    const base::StringPiece extension_id = entry.first;
+    const std::string_view extension_id = entry.first;
     if (ShouldRemoveExtensionByType(extension_id, chrome_type))
       keys_to_remove.emplace_back(extension_id);
   }
@@ -188,7 +188,7 @@ void UpdatePreferencesListByType(base::Value::List& list,
     if (!item.is_string())
       return false;
 
-    const base::StringPiece extension_id = item.GetString();
+    const std::string_view extension_id = item.GetString();
     return ShouldRemoveExtensionByType(extension_id, chrome_type);
   });
 }
@@ -457,8 +457,10 @@ std::string GetUMAItemName(const base::FilePath& path) {
       std::begin(kPathNamePairs), std::end(kPathNamePairs),
       PathNamePair{path_name.c_str(), nullptr}, PathNameComparator());
 
-  if (it != std::end(kPathNamePairs) && base::StringPiece(it->key) == path_name)
+  if (it != std::end(kPathNamePairs) &&
+      std::string_view(it->key) == path_name) {
     return it->value;
+  }
 
   // If `path_name` was not found in kPathNamePairs, return "Unknown" as name.
   return kUnknownUMAName;
@@ -577,10 +579,13 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
       (*result)[extension_id].push_back(key);
   }
 
+  PLOG_IF(ERROR, !it->status().ok())
+      << "GetExtensionKeys() failed with status: " << it->status().ToString();
+
   return it->status();
 }
 
-bool IsAshOnlySyncDataType(base::StringPiece key) {
+bool IsAshOnlySyncDataType(std::string_view key) {
   for (auto type : kAshOnlySyncDataTypes) {
     if ((base::StartsWith(
              key, FormatDataPrefix(type, syncer::StorageType::kUnspecified)) ||
@@ -618,7 +623,8 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   leveldb::Status status =
       leveldb_env::OpenDB(options, original_path.value(), &original_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path;
+    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -627,7 +633,7 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   status = GetExtensionKeys(original_db.get(), leveldb_type, &original_keys);
   if (!status.ok()) {
     PLOG(ERROR) << "Failure while reading keys from original leveldb: "
-                << original_path;
+                << original_path << ": " << status.ToString();
     return false;
   }
 
@@ -637,7 +643,8 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   options.error_if_exists = true;
   status = leveldb_env::OpenDB(options, target_path.value(), &target_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening new leveldb: " << target_path;
+    PLOG(ERROR) << "Failure while opening new leveldb: " << target_path << ": "
+                << status.ToString();
     return false;
   }
 
@@ -661,7 +668,7 @@ bool MigrateLevelDB(const base::FilePath& original_path,
         status = original_db->Get(leveldb::ReadOptions(), key, &value);
         if (!status.ok()) {
           PLOG(ERROR) << "Failure while reading from original leveldb: "
-                      << original_path;
+                      << original_path << ": " << status.ToString();
           return false;
         }
         write_batch.Put(key, value);
@@ -674,7 +681,8 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   write_options.sync = true;
   status = target_db->Write(write_options, &write_batch);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while writing into new leveldb: " << target_path;
+    PLOG(ERROR) << "Failure while writing into new leveldb: " << target_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -691,7 +699,8 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   leveldb::Status status =
       leveldb_env::OpenDB(options, original_path.value(), &original_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path;
+    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -702,7 +711,8 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   status =
       leveldb_env::OpenDB(options, ash_target_path.value(), &ash_target_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening new leveldb: " << ash_target_path;
+    PLOG(ERROR) << "Failure while opening new leveldb: " << ash_target_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -711,7 +721,8 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   status = leveldb_env::OpenDB(options, lacros_target_path.value(),
                                &lacros_target_db);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while opening new leveldb: " << lacros_target_path;
+    PLOG(ERROR) << "Failure while opening new leveldb: " << lacros_target_path
+                << ": " << status.ToString();
     return false;
   }
 
@@ -731,7 +742,7 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   }
   if (!it->status().ok()) {
     PLOG(ERROR) << "Failure while reading from original leveldb: "
-                << original_path;
+                << original_path << ": " << status.ToString();
     return false;
   }
 
@@ -740,14 +751,14 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
   write_options.sync = true;
   status = ash_target_db->Write(write_options, &ash_write_batch);
   if (!status.ok()) {
-    PLOG(ERROR) << "Failure while writing into new leveldb: "
-                << ash_target_path;
+    PLOG(ERROR) << "Failure while writing into new leveldb: " << ash_target_path
+                << ": " << status.ToString();
     return false;
   }
   status = lacros_target_db->Write(write_options, &lacros_write_batch);
   if (!status.ok()) {
     PLOG(ERROR) << "Failure while writing into new leveldb: "
-                << lacros_target_path;
+                << lacros_target_path << ": " << status.ToString();
     return false;
   }
 
@@ -755,7 +766,7 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
 }
 
 void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
-                                const base::StringPiece key,
+                                const std::string_view key,
                                 ChromeType chrome_type) {
   base::Value* value = root_dict->FindByDottedPath(key);
   if (!value)
@@ -768,19 +779,19 @@ void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
   }
 }
 
-absl::optional<PreferencesContents> MigratePreferencesContents(
-    const base::StringPiece original_contents) {
+std::optional<PreferencesContents> MigratePreferencesContents(
+    const std::string_view original_contents) {
   // Parse the original JSON file from Ash.
-  absl::optional<base::Value> ash_root =
+  std::optional<base::Value> ash_root =
       base::JSONReader::Read(original_contents);
   if (!ash_root) {
     PLOG(ERROR) << "Failure while parsing Ash's Preferences";
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
   if (!ash_root_dict) {
     PLOG(ERROR) << "Failure while parsing Ash's Preferences root node";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Create a copy for Lacros migration.
@@ -788,7 +799,7 @@ absl::optional<PreferencesContents> MigratePreferencesContents(
   base::Value::Dict* lacros_root_dict = lacros_root.GetIfDict();
   if (!lacros_root_dict) {
     PLOG(ERROR) << "Failure while parsing Lacros's Preferences root node";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Some preferences are to be moved to Lacros, and deleted in Ash.
@@ -811,15 +822,21 @@ absl::optional<PreferencesContents> MigratePreferencesContents(
     UpdatePreferencesKeyByType(lacros_root_dict, key, ChromeType::kLacros);
   }
 
+  // Sync feature setup should not be triggered after migration and should be
+  // assumed completed. In Lacros it is controlled by the preference below, but
+  // this preference doesn't exist in Ash, so need to set it explicitly here.
+  lacros_root_dict->SetByDottedPath(
+      kSyncInitialSyncFeatureSetupCompletePrefName, base::Value(true));
+
   // Generate the resulting JSON.
   PreferencesContents contents;
   if (!base::JSONWriter::Write(*ash_root, &contents.ash)) {
     PLOG(ERROR) << "Failure while generating Ash's Preferences";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!base::JSONWriter::Write(lacros_root, &contents.lacros)) {
     PLOG(ERROR) << "Failure while generating Lacros's Preferences";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return contents;

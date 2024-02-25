@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/json/values_util.h"
@@ -14,6 +15,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -802,7 +804,7 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   // Check that the handler replied correctly.
   const base::Value::Dict& theme_info = GetThemeInfoReply().GetDict();
   EXPECT_EQ(-1, *theme_info.FindInt("colorId"));  // -1: default color
-  EXPECT_EQ(absl::nullopt, theme_info.FindInt("color"));
+  EXPECT_EQ(std::nullopt, theme_info.FindInt("color"));
 }
 
 TEST_F(ProfilePickerHandlerInUserProfileTest,
@@ -899,3 +901,51 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
 }
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
+
+TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
+  auto entries_to_names =
+      [](const std::vector<ProfileAttributesEntry*> entries) {
+        std::vector<std::string> names;
+        for (auto* entry : entries) {
+          names.emplace_back(base::UTF16ToUTF8(entry->GetLocalProfileName()));
+        }
+        return names;
+      };
+
+  std::vector<std::string> profile_names = {"A", "B", "C", "D"};
+  for (auto name : profile_names) {
+    CreateTestingProfile(name);
+  }
+
+  ProfileAttributesStorage* storage =
+      profile_manager()->profile_attributes_storage();
+  std::vector<ProfileAttributesEntry*> display_entries =
+      storage->GetAllProfilesAttributesSortedForDisplay();
+  ASSERT_EQ(entries_to_names(display_entries), profile_names);
+
+  // Perform first changes.
+  {
+    base::Value::List args;
+    args.Append(0);  // `from_index`
+    args.Append(2);  // `to_index`
+    web_ui()->HandleReceivedMessage("updateProfileOrder", args);
+
+    std::vector<std::string> expected_profile_order_names{"B", "C", "A", "D"};
+    EXPECT_EQ(
+        entries_to_names(storage->GetAllProfilesAttributesSortedForDisplay()),
+        expected_profile_order_names);
+  }
+
+  // Perform second changes.
+  {
+    base::Value::List args;
+    args.Append(1);  // `from_index`
+    args.Append(3);  // `to_index`
+    web_ui()->HandleReceivedMessage("updateProfileOrder", args);
+
+    std::vector<std::string> expected_profile_order_names{"B", "A", "D", "C"};
+    EXPECT_EQ(
+        entries_to_names(storage->GetAllProfilesAttributesSortedForDisplay()),
+        expected_profile_order_names);
+  }
+}

@@ -16,7 +16,8 @@ bool DisplayFeature::operator!=(const DisplayFeature& other) const {
 }
 
 std::vector<gfx::Rect> DisplayFeature::ComputeWindowSegments(
-    const gfx::Size& visible_viewport_size) const {
+    const gfx::Size& visible_viewport_size,
+    int root_view_offset_from_origin) const {
   std::vector<gfx::Rect> window_segments;
 
   int display_feature_end = offset + mask_length;
@@ -34,7 +35,14 @@ std::vector<gfx::Rect> DisplayFeature::ComputeWindowSegments(
   } else {
     // If the display feature is offset in the y direction, it splits or masks
     // the widget into two stacked segments.
-    window_segments.emplace_back(0, 0, visible_viewport_size.width(), offset);
+    // We need to offset the display feature by the browser controls top height.
+    display_feature_end = display_feature_end - root_view_offset_from_origin;
+    int final_offset = offset - root_view_offset_from_origin;
+    if (final_offset < 0 || display_feature_end < 0) {
+      return window_segments;
+    }
+    window_segments.emplace_back(0, 0, visible_viewport_size.width(),
+                                 final_offset);
     window_segments.emplace_back(
         0, display_feature_end, visible_viewport_size.width(),
         visible_viewport_size.height() - display_feature_end);
@@ -44,31 +52,31 @@ std::vector<gfx::Rect> DisplayFeature::ComputeWindowSegments(
 }
 
 // static
-absl::optional<DisplayFeature> DisplayFeature::Create(Orientation orientation,
-                                                      int offset,
-                                                      int mask_length,
-                                                      int width,
-                                                      int height,
-                                                      ParamErrorEnum* error) {
+std::optional<DisplayFeature> DisplayFeature::Create(Orientation orientation,
+                                                     int offset,
+                                                     int mask_length,
+                                                     int width,
+                                                     int height,
+                                                     ParamErrorEnum* error) {
   if (!width && !height) {
     *error = ParamErrorEnum::kDisplayFeatureWithZeroScreenSize;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (offset < 0 || mask_length < 0) {
     *error = ParamErrorEnum::kNegativeDisplayFeatureParams;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (orientation == Orientation::kVertical && offset + mask_length > width) {
     *error = ParamErrorEnum::kOutsideScreenWidth;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (orientation == Orientation::kHorizontal &&
       offset + mask_length > height) {
     *error = ParamErrorEnum::kOutsideScreenHeight;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return DisplayFeature{orientation, offset, mask_length};

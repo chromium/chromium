@@ -33,7 +33,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
       universal_access_agent_ =
           MakeGarbageCollected<WindowAgent>(*agent_group_scheduler_);
     }
-    return universal_access_agent_;
+    return universal_access_agent_.Get();
   }
 
   // For `file:` scheme origins.
@@ -46,7 +46,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
       file_url_agent_ =
           MakeGarbageCollected<WindowAgent>(*agent_group_scheduler_);
     }
-    return file_url_agent_;
+    return file_url_agent_.Get();
   }
 
   // For opaque origins.
@@ -56,7 +56,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
       inserted.stored_value->value =
           MakeGarbageCollected<WindowAgent>(*agent_group_scheduler_);
     }
-    return inserted.stored_value->value;
+    return inserted.stored_value->value.Get();
   }
 
   // For origin-keyed agent cluster origins.
@@ -69,7 +69,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
           *agent_group_scheduler_, is_origin_agent_cluster,
           origin_agent_cluster_left_as_default);
     }
-    return inserted.stored_value->value;
+    return inserted.stored_value->value.Get();
   }
 
   // For tuple origins.
@@ -94,7 +94,7 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
         *agent_group_scheduler_, is_origin_agent_cluster,
         origin_agent_cluster_left_as_default);
   }
-  return inserted.stored_value->value;
+  return inserted.stored_value->value.Get();
 }
 
 void WindowAgentFactory::Trace(Visitor* visitor) const {

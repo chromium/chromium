@@ -23,6 +23,14 @@ std::vector<std::unique_ptr<ChromeSearchResult>> MakeResults(
     const std::vector<int>& best_match_ranks,
     const std::vector<double>& scores);
 
+std::vector<std::unique_ptr<ChromeSearchResult>> MakeFileResults(
+    const std::vector<std::string>& ids,
+    const std::vector<std::string>& fileNames,
+    const std::vector<std::string>& dirs,
+    const std::vector<ash::SearchResultDisplayType>& display_types,
+    const std::vector<int>& best_match_ranks,
+    const std::vector<double>& scores);
+
 std::vector<std::unique_ptr<ChromeSearchResult>> MakeListResults(
     const std::vector<std::string>& ids,
     const std::vector<ash::AppListSearchResultCategory>& categories,

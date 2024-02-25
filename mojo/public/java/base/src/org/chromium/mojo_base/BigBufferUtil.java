@@ -12,9 +12,7 @@ import org.chromium.mojo_base.mojom.BigBufferSharedMemoryRegion;
 
 import java.nio.ByteBuffer;
 
-/**
- * Static helper methods for working with the mojom BigBuffer type.
- */
+/** Static helper methods for working with the mojom BigBuffer type. */
 public final class BigBufferUtil {
     public static final int MAX_INLINE_ARRAY_SIZE = 64 * 1024;
 

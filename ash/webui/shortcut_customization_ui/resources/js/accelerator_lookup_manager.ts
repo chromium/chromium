@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
 import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorSource, AcceleratorSubcategory, LayoutInfo, LayoutStyle, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
@@ -99,6 +99,11 @@ export class AcceleratorLookupManager {
   // is used to display the 'meta' key with correct icon.
   private hasLauncherButton: boolean = false;
 
+  // Determine if a search result row is currently focused. This ensures the
+  // focused row stays highlighted as the search result, despite mouse hover
+  // actions.
+  private searchResultRowFocused: boolean = false;
+
   /**
    * Used to generate the keys for the ReverseAcceleratorLookupMap.
    */
@@ -147,9 +152,9 @@ export class AcceleratorLookupManager {
     return this.layoutInfoProvider.getAcceleratorName(source, action);
   }
 
-  getAcceleratorCategory(source: number|string, action: number|string):
-      AcceleratorCategory {
-    return this.layoutInfoProvider.getAcceleratorCategory(source, action);
+  getAcceleratorSubcategory(source: number|string, action: number|string):
+      AcceleratorSubcategory {
+    return this.layoutInfoProvider.getAcceleratorSubcategory(source, action);
   }
 
   initializeLookupIdForStandardAccelerator(source: string, actionId: string):
@@ -213,9 +218,17 @@ export class AcceleratorLookupManager {
     return this.hasLauncherButton;
   }
 
-  isCategoryLocked(category: AcceleratorCategory): boolean {
+  setSearchResultRowFocused(searchResultRowFocused: boolean): void {
+    this.searchResultRowFocused = searchResultRowFocused;
+  }
+
+  getSearchResultRowFocused(): boolean {
+    return this.searchResultRowFocused;
+  }
+
+  isSubcategoryLocked(subcategory: AcceleratorSubcategory): boolean {
     const acceleratorIds =
-        this.layoutInfoProvider.getAcceleratorIdsByCategory(category);
+        this.layoutInfoProvider.getAcceleratorIdsBySubcategory(subcategory);
 
     for (const acceleratorId of acceleratorIds) {
       // Skip TextAccelerators as they are always locked.
@@ -266,9 +279,10 @@ function createSanitizedLayoutInfo(entry: MojoLayoutInfo): LayoutInfo {
 type AcceleratorLayoutLookupMap =
     Map<AcceleratorCategory, Map<AcceleratorSubcategory, LayoutInfo[]>>;
 type AcceleratorNameLookupMap = Map<AcceleratorId, AcceleratorName>;
-type AcceleratorCategoryLookupMap = Map<AcceleratorId, AcceleratorCategory>;
-type AcceleratorIdsByCategoryLookupMap =
-    Map<AcceleratorCategory, AcceleratorId[]>;
+type AcceleratorSubcategoryLookupMap =
+    Map<AcceleratorId, AcceleratorSubcategory>;
+type AcceleratorIdsBySubcategoryLookupMap =
+    Map<AcceleratorSubcategory, AcceleratorId[]>;
 
 interface LayoutProviderInterface {
   getAcceleratorLayout(
@@ -278,9 +292,10 @@ interface LayoutProviderInterface {
       Map<AcceleratorSubcategory, LayoutInfo[]>|undefined;
   getAcceleratorName(source: number|string, action: number|string):
       AcceleratorName;
-  getAcceleratorCategory(source: number|string, action: number|string):
-      AcceleratorCategory;
-  getAcceleratorIdsByCategory(category: AcceleratorCategory): AcceleratorId[];
+  getAcceleratorSubcategory(source: number|string, action: number|string):
+      AcceleratorSubcategory;
+  getAcceleratorIdsBySubcategory(subcategory: AcceleratorSubcategory):
+      AcceleratorId[];
   initializeLayoutInfo(layoutInfoList: MojoLayoutInfo[]): void;
   resetLookupMaps(): void;
 }
@@ -305,15 +320,16 @@ class LayoutInfoProvider implements LayoutProviderInterface {
   private acceleratorNameLookup: AcceleratorNameLookupMap = new Map();
   /**
    * A map with the string key formatted as `${source_id}-${action_id}` and
-   * the value corresponding to the accelerator's category.
+   * the value corresponding to the accelerator's subcategory.
    */
-  private acceleratorCategoryLookup: AcceleratorCategoryLookupMap = new Map();
-  /**
-   * A map with the key "category" and the value corresponding to the
-   * accelerators under the category.
-   */
-  private acceleratorIdsByCategoryLookup: AcceleratorIdsByCategoryLookupMap =
+  private acceleratorSubcategoryLookup: AcceleratorSubcategoryLookupMap =
       new Map();
+  /**
+   * A map with the key "subcategory" and the value corresponding to the
+   * accelerators under the subcategory.
+   */
+  private acceleratorIdsBySubcategoryLookup:
+      AcceleratorIdsBySubcategoryLookupMap = new Map();
 
   getAcceleratorLayout(
       category: AcceleratorCategory,
@@ -338,18 +354,20 @@ class LayoutInfoProvider implements LayoutProviderInterface {
     return acceleratorName;
   }
 
-  getAcceleratorCategory(source: number|string, action: number|string):
-      AcceleratorCategory {
+  getAcceleratorSubcategory(source: number|string, action: number|string):
+      AcceleratorSubcategory {
     const uuid: AcceleratorId = getAcceleratorId(source, action);
-    const acceleratorCategory = this.acceleratorCategoryLookup.get(uuid);
+    const acceleratorSubcategory = this.acceleratorSubcategoryLookup.get(uuid);
     // The value of 'acceleratorCategory' could possibly be '0' (representing
-    // 'kGeneral'). So we should only assert that it's not 'undefined'.
-    assert(acceleratorCategory !== undefined);
-    return acceleratorCategory;
+    // 'kGeneralControls'). So we should only assert that it's not 'undefined'.
+    assert(acceleratorSubcategory !== undefined);
+    return acceleratorSubcategory;
   }
 
-  getAcceleratorIdsByCategory(category: AcceleratorCategory): AcceleratorId[] {
-    const acceleratorIds = this.acceleratorIdsByCategoryLookup.get(category);
+  getAcceleratorIdsBySubcategory(subcategory: AcceleratorSubcategory):
+      AcceleratorId[] {
+    const acceleratorIds =
+        this.acceleratorIdsBySubcategoryLookup.get(subcategory);
     assert(acceleratorIds);
     return acceleratorIds;
   }
@@ -371,9 +389,10 @@ class LayoutInfoProvider implements LayoutProviderInterface {
       const acceleratorId = getAcceleratorId(entry.source, entry.action);
       this.addEntryToAcceleratorNameLookup(
           acceleratorId, layoutInfo.description);
-      this.addEntryToAcceleratorCategoryLookup(acceleratorId, entry.category);
-      this.addEntryToAcceleratorsByCategoryLookup(
-          acceleratorId, entry.category);
+      this.addEntryToAcceleratorSubcategoryLookup(
+          acceleratorId, entry.subCategory);
+      this.addEntryToAcceleratorsBySubcategoryLookup(
+          acceleratorId, entry.subCategory);
     }
   }
 
@@ -395,23 +414,23 @@ class LayoutInfoProvider implements LayoutProviderInterface {
     this.acceleratorNameLookup.set(uuid, description);
   }
 
-  private addEntryToAcceleratorCategoryLookup(
-      uuid: string, category: AcceleratorCategory): void {
-    this.acceleratorCategoryLookup.set(uuid, category);
+  private addEntryToAcceleratorSubcategoryLookup(
+      uuid: string, subcategory: AcceleratorSubcategory): void {
+    this.acceleratorSubcategoryLookup.set(uuid, subcategory);
   }
 
-  private addEntryToAcceleratorsByCategoryLookup(
-      uuid: string, category: AcceleratorCategory): void {
+  private addEntryToAcceleratorsBySubcategoryLookup(
+      uuid: string, subcategory: AcceleratorSubcategory): void {
     const acceleratorIds =
-        this.acceleratorIdsByCategoryLookup.get(category) || [];
+        this.acceleratorIdsBySubcategoryLookup.get(subcategory) || [];
     acceleratorIds.push(uuid);
-    this.acceleratorIdsByCategoryLookup.set(category, acceleratorIds);
+    this.acceleratorIdsBySubcategoryLookup.set(subcategory, acceleratorIds);
   }
 
   resetLookupMaps(): void {
     this.acceleratorLayoutLookup.clear();
     this.acceleratorNameLookup.clear();
-    this.acceleratorCategoryLookup.clear();
-    this.acceleratorIdsByCategoryLookup.clear();
+    this.acceleratorSubcategoryLookup.clear();
+    this.acceleratorIdsBySubcategoryLookup.clear();
   }
 }

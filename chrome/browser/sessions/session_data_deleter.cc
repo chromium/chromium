@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -24,6 +25,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -45,6 +47,11 @@ bool OriginMatcher(const blink::StorageKey& storage_key,
                    storage::SpecialStoragePolicy* policy) {
   return policy->IsStorageSessionOnly(storage_key.origin().GetURL()) &&
          !policy->IsStorageProtected(storage_key.origin().GetURL());
+}
+
+bool StorageKeyMatcher(scoped_refptr<storage::SpecialStoragePolicy> policy,
+                       const blink::StorageKey& storage_key) {
+  return OriginMatcher(storage_key, policy.get());
 }
 
 class SessionDataDeleterInternal
@@ -71,6 +78,7 @@ class SessionDataDeleterInternal
   void OnCookieDeletionDone(uint32_t count) {}
   void OnTrustTokenDeletionDone(bool any_data_deleted) {}
   void OnStorageDeletionDone() {}
+  void OnMediaDeviceSaltDeletionDone() {}
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
@@ -110,6 +118,18 @@ void SessionDataDeleterInternal::Run(
         /*perform_storage_cleanup=*/false, base::Time(), base::Time::Max(),
         base::BindOnce(&SessionDataDeleterInternal::OnStorageDeletionDone,
                        this));
+    // The const_cast here is safe, as the profile received in the constructor
+    // is not const. It is just that ScopedProfileKeepAlive wraps it as const.
+    if (auto* media_device_salt_service =
+            MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+                const_cast<Profile*>(profile_keep_alive_->profile()))) {
+      media_device_salt_service->DeleteSalts(
+          base::Time(), base::Time::Max(),
+          base::BindRepeating(&StorageKeyMatcher, storage_policy_),
+          base::BindOnce(
+              &SessionDataDeleterInternal::OnMediaDeviceSaltDeletionDone,
+              this));
+    }
   }
 
   storage_partition->GetNetworkContext()->GetCookieManager(

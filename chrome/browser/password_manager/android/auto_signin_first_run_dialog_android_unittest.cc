@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/auto_signin_first_run_dialog_android.h"
 
+#include "base/android/jni_android.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -19,7 +20,7 @@
 class AutoSigninFirstRunDialogAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  AutoSigninFirstRunDialogAndroidTest() {}
+  AutoSigninFirstRunDialogAndroidTest() = default;
 
   AutoSigninFirstRunDialogAndroidTest(
       const AutoSigninFirstRunDialogAndroidTest&) = delete;

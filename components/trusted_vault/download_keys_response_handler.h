@@ -6,19 +6,20 @@
 #define COMPONENTS_TRUSTED_VAULT_DOWNLOAD_KEYS_RESPONSE_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace trusted_vault {
 
+enum class SecurityDomainId;
 class SecureBoxKeyPair;
 
-// Helper class to extract and validate trusted vault keys from
-// GetSecurityDomainMember response.
+// Helper class to extract and validate trusted vault keys for a specific
+// security domain from a GetSecurityDomainMember response.
 class DownloadKeysResponseHandler {
  public:
   struct ProcessedResponse {
@@ -32,24 +33,21 @@ class DownloadKeysResponseHandler {
 
     TrustedVaultDownloadKeysStatus status;
 
-    // Contains new keys (e.g. keys are stored by the server, excluding last
-    // known key and keys that predate it).  Excludes first key if it's a
-    // constant key.
-    // TODO(crbug.com/1267391): return all keys obtained from the server and
-    // update StandaloneTrustedVaultBackend to store them.
-    std::vector<std::vector<uint8_t>> new_keys;
+    // Contains all keys returned by the server.
+    std::vector<std::vector<uint8_t>> downloaded_keys;
     int last_key_version;
   };
 
   // Returns error cases that can be directly determined from the HTTP status,
   // or nullopt if successful. Exposed publicly for membership-verification
   // purposes.
-  static absl::optional<TrustedVaultDownloadKeysStatus> GetErrorFromHttpStatus(
+  static std::optional<TrustedVaultDownloadKeysStatus> GetErrorFromHttpStatus(
       TrustedVaultRequest::HttpStatus http_status);
 
   // |device_key_pair| must not be null. It will be verified that the new keys
   // are result of rotating |last_trusted_vault_key_and_version|.
   DownloadKeysResponseHandler(
+      SecurityDomainId security_domain,
       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair);
   DownloadKeysResponseHandler(const DownloadKeysResponseHandler& other) =
@@ -62,6 +60,7 @@ class DownloadKeysResponseHandler {
                                     const std::string& response_body) const;
 
  private:
+  const SecurityDomainId security_domain_;
   const TrustedVaultKeyAndVersion last_trusted_vault_key_and_version_;
   const std::unique_ptr<SecureBoxKeyPair> device_key_pair_;
 };

@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
@@ -44,8 +43,10 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
 
     /* package */ void recordSessionMetrics() {
         if (mNumSessionViewsBound > 0) {
-            OmniboxMetrics.recordSuggestionViewReuseStats(mNumSessionViewsCreated,
-                    100 * (mNumSessionViewsBound - mNumSessionViewsCreated)
+            OmniboxMetrics.recordSuggestionViewReuseStats(
+                    mNumSessionViewsCreated,
+                    100
+                            * (mNumSessionViewsBound - mNumSessionViewsCreated)
                             / mNumSessionViewsBound);
         }
         mNumSessionViewsCreated = 0;
@@ -59,61 +60,6 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
         holder.itemView.setSelected(false);
     }
 
-    /**
-     * @return Index of the currently highlighted view.
-     */
-    int getSelectedViewIndex() {
-        return mSelectedItem;
-    }
-
-    /** @return Currently selected view. */
-    @Nullable
-    View getSelectedView() {
-        if (mLayoutManager == null) return null;
-        if (mSelectedItem < 0 || mSelectedItem >= getItemCount()) return null;
-
-        View currentSelectedView = mLayoutManager.findViewByPosition(mSelectedItem);
-        if (currentSelectedView != null) {
-            return currentSelectedView;
-        }
-
-        mSelectedItem = RecyclerView.NO_POSITION;
-        return null;
-    }
-
-    /** Ensures selection is reset to beginning of the list. */
-    void resetSelection() {
-        setSelectedViewIndex(RecyclerView.NO_POSITION);
-    }
-
-    /**
-     * Move focus to another view.
-     *
-     * @param index end index.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public boolean setSelectedViewIndex(int index) {
-        if (mLayoutManager == null) return false;
-        if (index != RecyclerView.NO_POSITION && (index < 0 || index >= getItemCount())) {
-            return false;
-        }
-
-        View previousSelectedView = mLayoutManager.findViewByPosition(mSelectedItem);
-        if (previousSelectedView != null) {
-            previousSelectedView.setSelected(false);
-        }
-
-        mSelectedItem = index;
-        mLayoutManager.scrollToPosition(index);
-
-        View currentSelectedView = mLayoutManager.findViewByPosition(index);
-        if (currentSelectedView != null) {
-            currentSelectedView.setSelected(true);
-        }
-
-        return true;
-    }
-
     @Override
     // extend this
     protected View createView(ViewGroup parent, int viewType) {
@@ -121,7 +67,8 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
         // the creation of a view holder.
         try (TraceEvent tracing =
                         TraceEvent.scoped("OmniboxSuggestionsList.CreateView", "type:" + viewType);
-                TimingMetric metric = OmniboxMetrics.recordSuggestionViewCreateTime()) {
+                TimingMetric metric = OmniboxMetrics.recordSuggestionViewCreateTime();
+                TimingMetric metric2 = OmniboxMetrics.recordSuggestionViewCreateWallTime()) {
             return super.createView(parent, viewType);
         }
     }

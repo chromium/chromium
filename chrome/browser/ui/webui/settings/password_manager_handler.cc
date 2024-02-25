@@ -38,7 +38,7 @@ void PasswordManagerHandler::HandleShowPasswordManager(
   int page = args[0].GetInt();
 
   Browser* current_broswer =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+      chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   CHECK(current_broswer);
 
   switch (PasswordManagerPage(page)) {

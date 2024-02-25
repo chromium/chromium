@@ -12,6 +12,7 @@
 #include "build/buildflag.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -83,7 +84,7 @@ class TestResponseAdapter : public signin::ResponseAdapter,
     return is_outermost_main_frame_;
   }
   GURL GetUrl() const override { return GURL("https://accounts.google.com"); }
-  absl::optional<url::Origin> GetRequestInitiator() const override {
+  std::optional<url::Origin> GetRequestInitiator() const override {
     // Pretend the request came from the same origin.
     return url::Origin::Create(GetUrl());
   }
@@ -170,13 +171,16 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   content_settings::CookieSettings::RegisterProfilePrefs(prefs.registry());
   HostContentSettingsMap::RegisterProfilePrefs(prefs.registry());
+  privacy_sandbox::RegisterProfilePrefs(prefs.registry());
   scoped_refptr<HostContentSettingsMap> settings_map =
       new HostContentSettingsMap(&prefs, /*is_off_the_record=*/false,
                                  /*store_last_modified=*/false,
                                  /*restore_session=*/false,
                                  /*should_record_metrics=*/false);
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      new content_settings::CookieSettings(settings_map.get(), &prefs, false);
+      new content_settings::CookieSettings(
+          settings_map.get(), &prefs,
+          /*tracking_protection_settings=*/nullptr, false);
 
   {
     // Non-elligible request, no header.

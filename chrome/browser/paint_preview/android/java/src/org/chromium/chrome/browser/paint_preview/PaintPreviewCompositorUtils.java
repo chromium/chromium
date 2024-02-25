@@ -6,17 +6,13 @@ package org.chromium.chrome.browser.paint_preview;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Utilities for warming up a compositor process for paint previews.
- */
+/** Utilities for warming up a compositor process for paint previews. */
 @JNINamespace("paint_preview")
 public class PaintPreviewCompositorUtils {
-    /**
-     * Warms up the compositor process.
-     */
+    /** Warms up the compositor process. */
     public static void warmupCompositor() {
         PaintPreviewCompositorUtilsJni.get().warmupCompositor();
     }
@@ -33,10 +29,9 @@ public class PaintPreviewCompositorUtils {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         void warmupCompositor();
+
         boolean stopWarmCompositor();
     }
 
     private PaintPreviewCompositorUtils() {}
 }
-
-

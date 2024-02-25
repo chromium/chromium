@@ -59,7 +59,7 @@ class ImpressionHistoryTracker : public UserActionHandler {
       const std::string& guid,
       const Impression::ImpressionResultMap& impression_map,
       const Impression::CustomData& custom_data,
-      absl::optional<base::TimeDelta> ignore_timeout_duration) = 0;
+      std::optional<base::TimeDelta> ignore_timeout_duration) = 0;
 
   // Analyzes the impression history for all notification clients, and adjusts
   // the |current_max_daily_show|.
@@ -107,7 +107,7 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
       const std::string& guid,
       const Impression::ImpressionResultMap& impression_mapping,
       const Impression::CustomData& custom_data,
-      absl::optional<base::TimeDelta> ignore_timeout_duration) override;
+      std::optional<base::TimeDelta> ignore_timeout_duration) override;
   void AnalyzeImpressionHistory() override;
   void GetClientStates(std::map<SchedulerClientType, const ClientState*>*
                            client_states) const override;

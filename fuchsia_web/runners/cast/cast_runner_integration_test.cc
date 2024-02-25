@@ -6,12 +6,12 @@
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
+#include <fuchsia/ui/views/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
-#include <lib/ui/scenic/cpp/view_token_pair.h>
+#include <lib/zx/eventpair.h>
 
 #include <utility>
 #include <vector>
@@ -96,8 +96,9 @@ class FakeUrlRequestRewriteRulesProvider final
   void GetUrlRequestRewriteRules(
       GetUrlRequestRewriteRulesCallback callback) override {
     // Only send the rules once. They do not expire
-    if (rules_sent_)
+    if (rules_sent_) {
       return;
+    }
     rules_sent_ = true;
 
     std::vector<fuchsia::web::UrlRequestRewrite> rewrites;
@@ -137,7 +138,7 @@ class FakeApplicationContext final : public chromium::cast::ApplicationContext {
     loop.Run();
   }
 
-  absl::optional<int64_t> WaitForApplicationTerminated() {
+  std::optional<int64_t> WaitForApplicationTerminated() {
     if (application_exit_code_.has_value()) {
       return application_exit_code_;
     }
@@ -170,7 +171,7 @@ class FakeApplicationContext final : public chromium::cast::ApplicationContext {
   chromium::cast::ApplicationControllerPtr application_controller_;
   base::OnceClosure on_set_application_controller_;
 
-  absl::optional<int64_t> application_exit_code_;
+  std::optional<int64_t> application_exit_code_;
   base::OnceClosure on_application_terminated_;
 };
 
@@ -264,7 +265,7 @@ class TestCastComponent {
     test_port_->ReceiveMessage(CallbackToFitFunction(response.GetCallback()));
     EXPECT_TRUE(response.Wait());
 
-    absl::optional<std::string> response_string =
+    std::optional<std::string> response_string =
         base::StringFromMemBuffer(response.Get().data());
     EXPECT_TRUE(response_string.has_value());
 
@@ -399,9 +400,9 @@ class TestCastComponent {
   bool offer_services_ = true;
 
   // Holds the service directory and fake services offered to `component_`.
-  absl::optional<FakeComponentServices> services_;
+  std::optional<FakeComponentServices> services_;
 
-  absl::optional<fuchsia_component_support::DynamicComponentHost> component_;
+  std::optional<fuchsia_component_support::DynamicComponentHost> component_;
 
   fuchsia::web::MessagePortPtr test_port_;
 
@@ -787,20 +788,34 @@ TEST_F(HeadlessCastRunnerIntegrationTest, Headless) {
   app_config_manager().AddApp(kTestAppId, animation_url);
 
   component.StartCastComponentWithQueryApi();
-  auto tokens = scenic::ViewTokenPair::New();
-  auto view_ref_pair = scenic::ViewRefPair::New();
+
+  fuchsia::ui::views::ViewToken view_token;
+  fuchsia::ui::views::ViewHolderToken view_holder_token;
+  auto status =
+      zx::eventpair::create(0u, &view_token.value, &view_holder_token.value);
+  CHECK_EQ(ZX_OK, status);
+
+  fuchsia::ui::views::ViewRefControl view_ref_control;
+  fuchsia::ui::views::ViewRef view_ref;
+  status = zx::eventpair::create(
+      /*options*/ 0u, &view_ref_control.reference, &view_ref.reference);
+  CHECK_EQ(ZX_OK, status);
+  view_ref_control.reference.replace(
+      ZX_DEFAULT_EVENTPAIR_RIGHTS & (~ZX_RIGHT_DUPLICATE),
+      &view_ref_control.reference);
+  view_ref.reference.replace(ZX_RIGHTS_BASIC, &view_ref.reference);
 
   // Create a view.
   auto view_provider = component.exposed_by_component()
                            .Connect<fuchsia::ui::app::ViewProvider>();
-  view_provider->CreateViewWithViewRef(
-      std::move(tokens.view_holder_token.value),
-      std::move(view_ref_pair.control_ref), std::move(view_ref_pair.view_ref));
+  view_provider->CreateViewWithViewRef(std::move(view_holder_token.value),
+                                       std::move(view_ref_control),
+                                       std::move(view_ref));
 
   component.api_bindings().RunAndReturnConnectedPort("animation_finished");
 
   // Verify that dropped "view" EventPair is handled properly.
-  tokens.view_token.value.reset();
+  view_token.value.reset();
   component.api_bindings().RunAndReturnConnectedPort("view_hidden");
 }
 
@@ -859,7 +874,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_WindowClose) {
 
   // Have the web content close itself, and wait for OnApplicationTerminated().
   EXPECT_EQ(component.ExecuteJavaScript("window.close()"), "undefined");
-  absl::optional<zx_status_t> exit_code =
+  std::optional<zx_status_t> exit_code =
       component.application_context().WaitForApplicationTerminated();
   ASSERT_TRUE(exit_code);
   EXPECT_EQ(exit_code.value(), ZX_OK);
@@ -881,7 +896,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_ComponentStop) {
   // Request that the component be destroyed, and wait for
   // OnApplicationTerminated().
   component.ShutdownComponent();
-  absl::optional<zx_status_t> exit_code =
+  std::optional<zx_status_t> exit_code =
       component.application_context().WaitForApplicationTerminated();
   ASSERT_TRUE(exit_code);
   EXPECT_EQ(exit_code.value(), ZX_OK);

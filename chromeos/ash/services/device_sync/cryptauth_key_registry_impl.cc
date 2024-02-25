@@ -50,7 +50,7 @@ CryptAuthKeyRegistryImpl::CryptAuthKeyRegistryImpl(PrefService* pref_service)
     if (!bundle_dict)
       continue;
 
-    absl::optional<CryptAuthKeyBundle> bundle =
+    std::optional<CryptAuthKeyBundle> bundle =
         CryptAuthKeyBundle::FromDictionary(*bundle_dict);
     if (!bundle) {
       PA_LOG(ERROR) << "Error retrieving key bundle " << name_string

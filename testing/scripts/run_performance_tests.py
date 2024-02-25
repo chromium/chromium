@@ -297,7 +297,7 @@ def upload_simple_test_results(return_code, benchmark_name):
 
 
 def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
-                            is_unittest=False):
+                            is_unittest=False, results_label=None):
   start = time.time()
 
   env = os.environ.copy()
@@ -355,7 +355,8 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
         # pylint: disable=no-name-in-module,import-outside-toplevel
         from tracing.value import gtest_json_converter
         # pylint: enable=no-name-in-module,import-outside-toplevel
-      gtest_json_converter.ConvertGtestJsonFile(output_paths.perf_results)
+      gtest_json_converter.ConvertGtestJsonFile(output_paths.perf_results,
+                                                label=results_label)
   else:
     print('ERROR: gtest perf test %s did not generate perf output' %
           output_paths.name)
@@ -405,7 +406,8 @@ class TelemetryCommandGenerator(object):
             self._get_passthrough_args() +
             self._generate_syslog_args() +
             self._generate_repeat_args() +
-            self._generate_reference_build_args()
+            self._generate_reference_build_args() +
+            self._generate_results_label_args()
            )
 
   def _get_passthrough_args(self):
@@ -501,6 +503,10 @@ class TelemetryCommandGenerator(object):
               '--max-failures=5']
     return []
 
+  def _generate_results_label_args(self):
+    if self._options.results_label:
+      return ['--results-label=' + self._options.results_label]
+    return []
 
 def execute_telemetry_benchmark(
     command_generator, output_paths, use_xvfb=False,
@@ -644,6 +650,12 @@ def parse_arguments(args):
                       action='store_true',
                       required=False
                       )
+  parser.add_argument('--results-label',
+                      help='If set for a non-telemetry test, adds label to'
+                            + ' the result histograms.',
+                      type=str,
+                      required=False
+                      )
   options, leftover_args = parser.parse_known_args(args)
   options.passthrough_args.extend(leftover_args)
   return options
@@ -688,7 +700,8 @@ def main(sys_args):
     output_paths = OutputFilePaths(isolated_out_dir, benchmark_name).SetUp()
     print('\n### {folder} ###'.format(folder=benchmark_name))
     overall_return_code = execute_gtest_perf_test(
-        command_generator, output_paths, options.xvfb)
+        command_generator, output_paths, options.xvfb,
+        results_label=options.results_label)
     test_results_files.append(output_paths.test_results)
   else:
     if options.use_dynamic_shards:

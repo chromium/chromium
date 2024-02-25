@@ -133,6 +133,16 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
                      const base::Location& from_here,
                      const std::string& reason);
 
+#if BUILDFLAG(IS_LINUX)
+  // Systems which describe a "color space" usually map that to one or more of
+  // {primary, matrix, transfer, range}. BuildColorSpaceFromv4l2() will use the
+  // matched value as first priority. Otherwise, if there is no best matching
+  // value, it will be a value with a different name but no essential
+  // difference and add a corresponding comments like: "SRGB and BT709 use the
+  // same transform".
+  gfx::ColorSpace BuildColorSpaceFromv4l2();
+#endif
+
   const raw_ptr<V4L2CaptureDevice> v4l2_;
   const scoped_refptr<base::SingleThreadTaskRunner> v4l2_task_runner_;
   const VideoCaptureDeviceDescriptor device_descriptor_;

@@ -14,6 +14,8 @@ component("base") {
     "shared_memory_utils.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_MOJO_BASE_IMPL" ]
 
   public_deps = [
@@ -63,6 +65,8 @@ component("typemap_traits") {
       "wstring_mojom_traits.h",
     ]
   }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_MOJO_BASE_TRAITS_IMPL" ]
 
@@ -119,6 +123,8 @@ component("shared_typemap_traits") {
     "version_mojom_traits.cc",
     "version_mojom_traits.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_MOJO_BASE_SHARED_TRAITS_IMPL" ]
 

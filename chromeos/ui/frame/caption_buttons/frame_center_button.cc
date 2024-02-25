@@ -5,11 +5,13 @@
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
@@ -48,7 +50,9 @@ constexpr float kDefaultHighlightOpacityForDark = 0.20f;
 }  // namespace
 
 FrameCenterButton::FrameCenterButton(PressedCallback callback)
-    : FrameCaptionButton(callback, views::CAPTION_BUTTON_ICON_CENTER, HTMENU) {
+    : FrameCaptionButton(std::move(callback),
+                         views::CAPTION_BUTTON_ICON_CENTER,
+                         HTMENU) {
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CENTER));
   background_color_changed_subscription_ = AddBackgroundColorChangedCallback(
       base::BindRepeating(&FrameCenterButton::OnBackgroundColorChanged,
@@ -83,7 +87,7 @@ void FrameCenterButton::SetSubImage(const gfx::VectorIcon& icon_definition) {
     parent()->InvalidateLayout();
 }
 
-void FrameCenterButton::SetText(absl::optional<std::u16string> text) {
+void FrameCenterButton::SetText(std::optional<std::u16string> text) {
   if (text_ && text_->text() == text)
     return;
 
@@ -106,7 +110,7 @@ void FrameCenterButton::SetText(absl::optional<std::u16string> text) {
     render_text->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
     text_ = std::move(render_text);
   }
-  text_->SetText(*text);
+  text_->SetText(*std::move(text));
 
   if (parent())
     parent()->InvalidateLayout();
@@ -163,8 +167,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
                                          int x,
                                          int y,
                                          cc::PaintFlags flags) {
-  absl::optional<gfx::ImageSkia> left_icon = icon_image();
-  absl::optional<gfx::ImageSkia> right_icon = sub_icon_image_;
+  std::optional<gfx::ImageSkia> left_icon = icon_image();
+  std::optional<gfx::ImageSkia> right_icon = sub_icon_image_;
   const bool is_rtl = base::i18n::IsRTL();
   if (is_rtl) {
     std::swap(left_icon, right_icon);
@@ -200,8 +204,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
                     std::min(text_->GetStringSize().width(), max_text_width),
                     text_->GetStringSize().height());
       text_->SetDisplayRect(text_bounds);
-      text_->SetColor(
-          SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlpha()));
+      text_->SetColor(SkColorSetA(GetButtonColor(GetBackgroundColor()),
+                                  flags.getAlphaf() * SK_AlphaOPAQUE));
       text_->Draw(canvas);
       offset += text_bounds.width();
     }
@@ -246,8 +250,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
         std::min(text_->GetStringSize().width(), available_text_width),
         text_->GetStringSize().height());
     text_->SetDisplayRect(text_bounds);
-    text_->SetColor(
-        SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlpha()));
+    text_->SetColor(SkColorSetA(GetButtonColor(GetBackgroundColor()),
+                                flags.getAlphaf() * SK_AlphaOPAQUE));
     text_->Draw(canvas);
     current_offset += text_bounds.width() + kMarginBetweenContents;
   }
@@ -284,7 +288,7 @@ void FrameCenterButton::OnBackgroundColorChanged() {
     text_->SetColor(GetButtonColor(GetBackgroundColor()));
 }
 
-BEGIN_METADATA(FrameCenterButton, views::FrameCaptionButton)
+BEGIN_METADATA(FrameCenterButton)
 END_METADATA
 
 }  // namespace chromeos

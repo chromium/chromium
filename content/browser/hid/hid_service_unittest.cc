@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/functional/invoke.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +19,7 @@
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
@@ -906,7 +906,8 @@ TEST_P(HidServiceTest, Forget) {
 
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
   EXPECT_CALL(hid_delegate(), RevokeDevicePermission)
-      .WillOnce([this](content::BrowserContext* browser_context,
+      .WillOnce([this](BrowserContext* browser_context,
+                       RenderFrameHost* render_frame_host,
                        const url::Origin& origin,
                        const device::mojom::HidDeviceInfo& device) {
         hid_delegate().OnPermissionRevoked(origin);
@@ -997,6 +998,13 @@ TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
         .WillOnce(Return(device.get()));
   }
 
+  base::RunLoop disconnect_loop;
+  auto disconnect_closure =
+      base::BarrierClosure(num_devices, disconnect_loop.QuitClosure());
+  for (auto& connection : connections) {
+    connection.set_disconnect_handler(disconnect_closure);
+  }
+
   base::RunLoop run_loop;
   auto barrier = base::BarrierClosure(num_devices, run_loop.QuitClosure());
   url::Origin origin = url::Origin::Create(GURL(kTestUrl));
@@ -1007,7 +1015,12 @@ TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
       .WillRepeatedly(RunClosure(barrier));
   hid_delegate().OnPermissionRevoked(origin);
 
+  run_loop.Run();
+  disconnect_loop.Run();
   CheckHidServiceConnectedState(service_creation_type, false);
+  for (auto& connection : connections) {
+    EXPECT_FALSE(connection.is_connected());
+  }
 }
 
 TEST_P(HidServiceTest, OpenDevicesThenHidServiceReset) {
@@ -1181,7 +1194,7 @@ TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
   base::RunLoop read_loop;
   connection->Read(base::BindLambdaForTesting(
       [&](bool success, uint8_t report_id,
-          const absl::optional<std::vector<uint8_t>>& buffer) {
+          const std::optional<std::vector<uint8_t>>& buffer) {
         EXPECT_EQ(success, is_fido_allowed);
         read_loop.Quit();
       }));

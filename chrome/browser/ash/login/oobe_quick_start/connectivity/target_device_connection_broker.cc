@@ -6,6 +6,7 @@
 
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/components/quick_start/logging.h"
 
 namespace ash::quick_start {
 
@@ -41,6 +42,7 @@ void TargetDeviceConnectionBroker::OnConnectionAuthenticated(
 void TargetDeviceConnectionBroker::OnConnectionClosed(
     ConnectionClosedReason reason) {
   CHECK(connection_lifecycle_listener_);
+  QS_LOG(INFO) << "Connection closed: " << reason;
   connection_lifecycle_listener_->OnConnectionClosed(reason);
 }
 
@@ -57,6 +59,46 @@ std::string TargetDeviceConnectionBroker::DerivePin(
              std::abs((hash_ints[4] << 8 | hash_ints[5]) % 10)) +
          base::NumberToString(
              std::abs((hash_ints[6] << 8 | hash_ints[7]) % 10));
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const TargetDeviceConnectionBroker::ConnectionClosedReason&
+        connection_closed_reason) {
+  switch (connection_closed_reason) {
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete:
+      stream << "[complete]";
+      break;
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted:
+      stream << "[user aborted]";
+      break;
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::
+        kAuthenticationFailed:
+      stream << "[authentication failed]";
+      break;
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost:
+      stream << "[connection lost]";
+      break;
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::kRequestTimedOut:
+      stream << "[request timeout]";
+      break;
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::
+        kTargetDeviceUpdate:
+      stream << "[target device update]";
+      break;
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::kResponseTimeout:
+      stream << "[response timeout]";
+      break;
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::kUnknownError:
+      stream << "[unknown error]";
+      break;
+    case TargetDeviceConnectionBroker::ConnectionClosedReason::
+        kConnectionLifecycleListenerDestroyed:
+      stream << "[ConnectionLifecycleListener destroyed]";
+      break;
+  }
+
+  return stream;
 }
 
 }  // namespace ash::quick_start

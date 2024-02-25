@@ -16,7 +16,7 @@ tests are organized by overall functionality instead). Put new tests into an
 existing test class or create a new one if a suitable one isn't available.
 
 #### How to write intrumentation tests?
-See the [instrumentation test doc](/testing/android/docs/instrumentation.md).
+See the [instrumentation test doc](/docs/testing/android_instrumentation_tests.md).
 
 #### How do tests interact with WebView?
 Tests are written as JUnit4 tests. [AwActivityTestRule] is used to create and
@@ -49,7 +49,7 @@ Java code.
 The tests are located in the [junit directory](/android_webview/junit/src/org/chromium/android_webview/robolectric/).
 
 #### How to write junit tests?
-See the [JUnit doc](/testing/android/docs/junit.md#junit-tests-with-robolectric).
+See the [JUnit doc](/docs/testing/android_robolectric_tests.md).
 
 ## Native unittests
 These are on-device gtests that only exercise android\_webview native code.
@@ -59,7 +59,7 @@ The tests are located alongside respective source code files under
 [android\_webview directory](/android_webview/).
 
 #### How to write gtests?
-See the [GTest doc](/testing/android/docs/gtest_implementation.md).
+See the [GTest doc](/docs/testing/android_gtests.md).
 
 ## How to run tests?
 Running tests is covered in [WebView Test Instructions](/android_webview/docs/test-instructions.md).

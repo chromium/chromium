@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -34,7 +35,6 @@
 #include "storage/browser/test/fake_blob_data_handle.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 namespace {
@@ -140,7 +140,7 @@ class BlobStorageContextTest : public testing::Test {
 
   std::vector<FileCreationInfo> files_;
   base::ScopedTempDir temp_dir_;
-  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
+  std::optional<base::ScopedDisallowBlocking> disallow_blocking_;
   scoped_refptr<TestSimpleTaskRunner> file_runner_ = new TestSimpleTaskRunner();
   scoped_refptr<FileSystemContext> file_system_context_;
 

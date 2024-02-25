@@ -10,6 +10,7 @@
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ref.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -27,6 +28,8 @@
 namespace views::examples {
 
 class ThemeTrackingCheckbox : public views::Checkbox {
+  METADATA_HEADER(ThemeTrackingCheckbox, views::Checkbox)
+
  public:
   explicit ThemeTrackingCheckbox(const std::u16string& label)
       : Checkbox(label,
@@ -48,12 +51,17 @@ class ThemeTrackingCheckbox : public views::Checkbox {
   }
 };
 
+BEGIN_METADATA(ThemeTrackingCheckbox)
+END_METADATA
+
 class TextVectorImageButton : public views::MdTextButton {
+  METADATA_HEADER(TextVectorImageButton, views::MdTextButton)
+
  public:
   TextVectorImageButton(PressedCallback callback,
                         const std::u16string& text,
                         const gfx::VectorIcon& icon)
-      : MdTextButton(callback, text), icon_(icon) {}
+      : MdTextButton(std::move(callback), text), icon_(icon) {}
   TextVectorImageButton(const TextVectorImageButton&) = delete;
   TextVectorImageButton& operator=(const TextVectorImageButton&) = delete;
   ~TextVectorImageButton() override = default;
@@ -70,6 +78,9 @@ class TextVectorImageButton : public views::MdTextButton {
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
 };
+
+BEGIN_METADATA(TextVectorImageButton)
+END_METADATA
 
 ColoredDialog::ColoredDialog(AcceptCallback accept_callback) {
   SetAcceptCallback(base::BindOnce(
@@ -108,6 +119,9 @@ void ColoredDialog::ContentsChanged(Textfield* sender,
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, !textfield_->GetText().empty());
   DialogModelChanged();
 }
+
+BEGIN_METADATA(ColoredDialog)
+END_METADATA
 
 ColoredDialogChooser::ColoredDialogChooser() {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
@@ -156,6 +170,9 @@ void ColoredDialogChooser::OnFeedbackSubmit(std::u16string text) {
       base::BindOnce([](views::View* view) { view->SetVisible(false); },
                      confirmation_label_));
 }
+
+BEGIN_METADATA(ColoredDialogChooser)
+END_METADATA
 
 ColoredDialogExample::ColoredDialogExample() : ExampleBase("Colored Dialog") {}
 

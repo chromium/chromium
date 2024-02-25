@@ -81,8 +81,7 @@ class LoadShillProfileWaiter {
     run_loop_.Quit();
   }
 
-  const raw_ptr<FakeSessionManagerClient, ExperimentalAsh>
-      fake_session_manager_client_;
+  const raw_ptr<FakeSessionManagerClient> fake_session_manager_client_;
   base::RunLoop run_loop_;
   std::vector<cryptohome::AccountIdentifier> invocations_;
 };

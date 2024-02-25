@@ -115,7 +115,7 @@ unsigned int CrashReportExceptionHandler::ExceptionHandlerServerException(
     for (const auto& attachment : (*attachments_)) {
       FileReader file_reader;
       if (!file_reader.Open(attachment)) {
-        LOG(ERROR) << "attachment " << attachment.value().c_str()
+        LOG(ERROR) << "attachment " << attachment
                    << " couldn't be opened, skipping";
         continue;
       }
@@ -124,7 +124,7 @@ unsigned int CrashReportExceptionHandler::ExceptionHandlerServerException(
       FileWriter* file_writer =
           new_report->AddAttachment(base::WideToUTF8(filename.value()));
       if (file_writer == nullptr) {
-        LOG(ERROR) << "attachment " << filename.value().c_str()
+        LOG(ERROR) << "attachment " << filename
                    << " couldn't be created, skipping";
         continue;
       }

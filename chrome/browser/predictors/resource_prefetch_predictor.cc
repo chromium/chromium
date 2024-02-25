@@ -10,12 +10,14 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
@@ -25,6 +27,7 @@
 #include "components/history/core/browser/url_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/origin.h"
 
@@ -65,15 +68,6 @@ GURL CreateRedirectURL(const std::string& scheme,
                        const std::string& host,
                        std::uint16_t port) {
   return GURL(scheme + "://" + host + ":" + base::NumberToString(port));
-}
-
-double SumOfFrequency(const std::map<std::string, double>& histogram,
-                      double other_bucket_frequency) {
-  double sum = other_bucket_frequency;
-  for (const auto& it : histogram) {
-    sum += it.second;
-  }
-  return sum;
 }
 
 }  // namespace
@@ -401,44 +395,25 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
   return has_any_prediction;
 }
 
-std::vector<std::string> ResourcePrefetchPredictor::PredictLcpElementLocators(
+std::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The `initialization_state_` can be not `INITIALIZED` in the very first
   // navigation on browser startup. Because this object is initialized on the
   // first navigation.
   if (initialization_state_ != INITIALIZED) {
-    return {};
+    return std::nullopt;
   }
 
-  if (!url.is_valid() || url.host().empty()) {
-    return {};
+  if (!url.is_valid() || url.host().empty() || net::IsLocalhost(url) ||
+      !url.SchemeIsHTTPOrHTTPS()) {
+    return std::nullopt;
   }
-
   LcppData data;
   if (!lcpp_data_->TryGetData(url.host(), &data)) {
-    return {};
+    return std::nullopt;
   }
-
-  const auto& buckets =
-      data.lcpp_stat().lcp_element_locator_stat().lcp_element_locator_buckets();
-  std::vector<std::pair<double, std::string>>
-      lcp_element_locators_with_frequency;
-  lcp_element_locators_with_frequency.reserve(buckets.size());
-  for (const auto& bucket : buckets) {
-    lcp_element_locators_with_frequency.emplace_back(
-        bucket.frequency(), bucket.lcp_element_locator());
-  }
-
-  std::sort(lcp_element_locators_with_frequency.rbegin(),
-            lcp_element_locators_with_frequency.rend());
-
-  std::vector<std::string> lcp_element_locators;
-  lcp_element_locators.reserve(lcp_element_locators_with_frequency.size());
-  for (auto& bucket : lcp_element_locators_with_frequency) {
-    lcp_element_locators.push_back(std::move(bucket.second));
-  }
-  return lcp_element_locators;
+  return data;
 }
 
 void ResourcePrefetchPredictor::CreateCaches(
@@ -668,17 +643,13 @@ void ResourcePrefetchPredictor::LearnOrigins(
     origin_data_->UpdateData(host, data);
 }
 
-void ResourcePrefetchPredictor::LearnLcpp(
-    const std::string& host,
-    const std::string& lcp_element_locator) {
+void ResourcePrefetchPredictor::LearnLcpp(const std::string& host,
+                                          const LcppDataInputs& inputs) {
   if (!TryEnsureRecordingPrecondition()) {
     return;
   }
 
-  if (host.size() > ResourcePrefetchPredictorTables::kMaxStringLength ||
-      lcp_element_locator.size() >
-          ResourcePrefetchPredictorTables::kMaxStringLength ||
-      lcp_element_locator.empty()) {
+  if (host.size() > ResourcePrefetchPredictorTables::kMaxStringLength) {
     return;
   }
 
@@ -686,173 +657,23 @@ void ResourcePrefetchPredictor::LearnLcpp(
   bool exists = lcpp_data_->TryGetData(host, &data);
   data.set_last_visit_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
   if (!exists) {
     data.set_host(host);
-    auto* bucket_to_add = data.mutable_lcpp_stat()
-                              ->mutable_lcp_element_locator_stat()
-                              ->add_lcp_element_locator_buckets();
-    bucket_to_add->set_lcp_element_locator(lcp_element_locator);
-    bucket_to_add->set_frequency(1);
-  } else {
-    LcpElementLocatorStat& lcp_element_locator_stat =
-        *data.mutable_lcpp_stat()->mutable_lcp_element_locator_stat();
-
-    const size_t kSlidingWindowSize =
-        config_.lcpp_histogram_sliding_window_size;
-    const size_t kMaxHistogramBuckets = config_.max_lcpp_histogram_buckets;
-
-    // This algorithm uses the following configuration.
-    //
-    // - kSlidingWindowSize
-    // - kMaxHistogramBuckets
-    //
-    // `kSlidingWindowSize` is a virtual
-    // sliding window size that builds histogram.
-    // `kMaxHistogramBuckets` is a bucket count
-    // that actually can be saved in the database. If the histogram has more
-    // buckets than kMaxHistogramBuckets, this
-    // algorithm sums up the less frequent buckets, and stores them in a single
-    // "other_bucket" called `other_bucket_frequency`.
-    //
-    // <Conceptual model of sliding window and histogram>
-    //
-    // <------ sliding window ------->
-    // +-----------------------------+                 <- data feed
-    // | /#a   /#a   /#a   /#b   /#b | /#b   /#c   /#d   /#c   /#d
-    // +-----------------------------+
-    //  => histogram: {/#a: 3, /#b: 2}
-    //
-    //       <------ sliding window ------->
-    //       +-----------------------------+
-    //   /#a | /#a   /#a   /#b   /#b   /#b | /#c   /#d   /#c   /#d
-    //       +-----------------------------+
-    //        => histogram: {/#a: 2, /#b: 3}
-    //
-    //             <------ sliding window ------->
-    //             +-----------------------------+
-    //   /#a   /#a | /#a   /#b   /#b   /#b   /#c | /#d   /#c   /#d
-    //             +-----------------------------+
-    //              => histogram: {/#a: 1, /#b: 3, /#c: 1}
-    //
-    // The above sliding window model has the following two problems for us.
-    //
-    // - [Problem_1] We need to keep the entire data inside the sliding
-    //               window to know which item is the first item inside
-    //               the sliding window. But we don't want to keep such
-    //               large data.
-    // - [Problem_2] The histogram can be large if the items don't have
-    //               overlap. We don't want to keep a large histogram.
-    //
-    // To address [Problem_1], we decided not to use the first item
-    // inside the sliding window. Instead, We decided to reduce the
-    // weight of the item.
-    //
-    // histogram: {/#a: 3, /#b: 2}
-    // => histogram: {/#a: {1, 1, 1}, /#b: {1, 1}}
-    //
-    // To add new item "/#c", Reduce the item weight, and add "/#c".
-    //
-    // histogram: {/#a: {4/5, 4/5, 4/5}, /#b: {4/5, 4/5}, /#c: {1}}
-    //
-    // To address [Problem_2], we decided to introduce an "others"
-    // bucket.
-    //
-    // histogram: {/#a: 5, /#b: 3, /#c: 2, /#d: 2}
-    //
-    // To reduce the bucket count under 3 buckets, we merge /#c and /#d
-    // buckets into an <other> bucket.
-    //
-    // histogram: {/#a: 5, /#b: 3, <other>: 4}
-    //
-    // See:
-    // https://docs.google.com/document/d/1T80d4xW8xIEqfo792g1nC1deFqzMraunFJW_5ft4ziQ/edit
-
-    // Prepare working variables (histogram and other_bucket_frequency) from
-    // proto. If the data is corrupted, the previous data will be cleared.
-    bool corrupted = false;
-    double other_bucket_frequency =
-        lcp_element_locator_stat.other_bucket_frequency();
-    if (other_bucket_frequency < 0 ||
-        lcp_element_locator_stat.lcp_element_locator_buckets_size() >
-            int(kMaxHistogramBuckets)) {
-      corrupted = true;
-    }
-    std::map<std::string, double> histogram;
-    for (const auto& it :
-         lcp_element_locator_stat.lcp_element_locator_buckets()) {
-      if (corrupted || !it.has_lcp_element_locator() || !it.has_frequency() ||
-          it.frequency() < 0.0) {
-        corrupted = true;
-        break;
-      }
-      histogram.insert_or_assign(it.lcp_element_locator(), it.frequency());
-    }
-    if (corrupted) {
-      other_bucket_frequency = 0;
-      histogram.clear();
-    }
-
-    // If there is no room to add a new `lcp_element_locator` (the capacity is
-    // the same as the sliding window size), create a room by discounting the
-    // existing histogram frequency.
-    if (1 + SumOfFrequency(histogram, other_bucket_frequency) >
-        kSlidingWindowSize) {
-      double discount = 1.0 / kSlidingWindowSize;
-      for (auto it = histogram.begin(); it != histogram.end();) {
-        it->second -= it->second * discount;
-        // Remove item that has too small frequency.
-        if (it->second < 1e-7) {
-          it = histogram.erase(it);
-        } else {
-          ++it;
-        }
-      }
-      other_bucket_frequency -= other_bucket_frequency * discount;
-    }
-
-    // Now we have one free space to store a new lcp_element_locator.
-    // (`SumOfFrequency()` takes time. Hence `DCHECK_LE` is used.)
-    // Adds `1e-5` to avoid floating point errors.
-    DCHECK_LE(1 + SumOfFrequency(histogram, other_bucket_frequency),
-              kSlidingWindowSize + 1e-5);
-
-    // Store new lcp_element_locator.
-    {
-      auto it = histogram.emplace(lcp_element_locator, 1);
-      if (!it.second) {
-        ++it.first->second;
-      }
-    }
-
-    // Before saving histogram, we need to reduce the count of buckets less
-    // than `kMaxHistogramBuckets`. If the bucket count is more than
-    // `kMaxHistogramBuckets`, we can merge the least frequent bucket into
-    // other_bucket.
-    if (histogram.size() > kMaxHistogramBuckets) {
-      const auto& least_frequent_bucket =
-          std::min_element(histogram.begin(), histogram.end(),
-                           [](const auto& lhs, const auto& rhs) {
-                             return lhs.second < rhs.second;
-                           });
-      other_bucket_frequency += least_frequent_bucket->second;
-      histogram.erase(least_frequent_bucket);
-    }
-
-    // Copy the results (histogram and other_bucket_frequency) into proto.
-    lcp_element_locator_stat.set_other_bucket_frequency(other_bucket_frequency);
-    lcp_element_locator_stat.clear_lcp_element_locator_buckets();
-    for (const auto& bucket : histogram) {
-      auto* bucket_to_add =
-          lcp_element_locator_stat.add_lcp_element_locator_buckets();
-      bucket_to_add->set_lcp_element_locator(bucket.first);
-      bucket_to_add->set_frequency(bucket.second);
-    }
   }
 
-  // Update the database.
-  lcpp_data_->UpdateData(host, data);
-  if (observer_) {
-    observer_->OnLcppLearned();
+  if (!IsValidLcppStat(data.lcpp_stat())) {
+    data.clear_lcpp_stat();
+    base::UmaHistogramBoolean("LoadingPredictor.LcppStatCorruptedAtLearnTime",
+                              true);
+  }
+  bool data_updated = UpdateLcppDataWithLcppDataInputs(config_, inputs, data);
+  DCHECK(IsValidLcppStat(data.lcpp_stat()));
+  if (data_updated) {
+    lcpp_data_->UpdateData(host, data);
+    if (observer_) {
+      observer_->OnLcppLearned();
+    }
   }
 }
 

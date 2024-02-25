@@ -42,6 +42,16 @@ def _find_fuchsia_images_root() -> str:
 
 IMAGES_ROOT = os.path.abspath(_find_fuchsia_images_root())
 
+
+def _find_fuchsia_internal_images_root() -> str:
+    """Define the root of the fuchsia images."""
+    if os.environ.get('FUCHSIA_INTERNAL_IMAGES_ROOT'):
+        return os.environ['FUCHSIA_INTERNAL_IMAGES_ROOT']
+    return IMAGES_ROOT + '-internal'
+
+
+INTERNAL_IMAGES_ROOT = os.path.abspath(_find_fuchsia_internal_images_root())
+
 REPO_ALIAS = 'fuchsia.com'
 
 
@@ -346,6 +356,9 @@ def register_log_args(parser: ArgumentParser) -> None:
 
 def get_component_uri(package: str) -> str:
     """Retrieve the uri for a package."""
+    # If the input is a full package already, do nothing
+    if package.startswith('fuchsia-pkg://'):
+        return package
     return f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
 
 

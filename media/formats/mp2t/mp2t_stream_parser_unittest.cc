@@ -31,7 +31,6 @@
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/test_data_util.h"
-#include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -173,9 +172,7 @@ class Mp2tStreamParserTest : public testing::Test {
         current_audio_config_(),
         current_video_config_(),
         capture_buffers(false) {
-    bool has_sbr = false;
-    const std::string codecs[] = {"avc1.64001e", "mp3", "aac"};
-    parser_ = std::make_unique<Mp2tStreamParser>(codecs, has_sbr);
+    CreateStrictParser();
   }
 
  protected:
@@ -199,6 +196,17 @@ class Mp2tStreamParserTest : public testing::Test {
   std::vector<scoped_refptr<StreamParserBuffer>> audio_buffer_capture_;
   std::vector<scoped_refptr<StreamParserBuffer>> video_buffer_capture_;
   bool capture_buffers;
+
+  void CreateNonStrictParser() {
+    bool has_sbr = false;
+    parser_ = std::make_unique<Mp2tStreamParser>(std::nullopt, has_sbr);
+  }
+
+  void CreateStrictParser() {
+    bool has_sbr = false;
+    const std::string codecs[] = {"avc1.64001e", "mp3", "aac"};
+    parser_ = std::make_unique<Mp2tStreamParser>(codecs, has_sbr);
+  }
 
   void ResetStats() {
     segment_count_ = 0;
@@ -251,8 +259,7 @@ class Mp2tStreamParserTest : public testing::Test {
     DVLOG(1) << "OnInit: dur=" << params.duration.InMilliseconds();
   }
 
-  bool OnNewConfig(std::unique_ptr<MediaTracks> tracks,
-                   const StreamParser::TextTrackConfigMap& tc) {
+  bool OnNewConfig(std::unique_ptr<MediaTracks> tracks) {
     DVLOG(1) << "OnNewConfig: got " << tracks->tracks().size() << " tracks";
     size_t audio_track_count = 0;
     size_t video_track_count = 0;
@@ -376,7 +383,6 @@ class Mp2tStreamParserTest : public testing::Test {
                             base::Unretained(this)),
         base::BindRepeating(&Mp2tStreamParserTest::OnNewBuffers,
                             base::Unretained(this)),
-        true,
         base::BindRepeating(&Mp2tStreamParserTest::OnKeyNeeded,
                             base::Unretained(this)),
         base::BindRepeating(&Mp2tStreamParserTest::OnNewSegment,
@@ -406,6 +412,20 @@ class Mp2tStreamParserTest : public testing::Test {
     return true;
   }
 };
+
+TEST_F(Mp2tStreamParserTest, NonStrictCodecChecking) {
+  CreateNonStrictParser();
+  InitializeParser();
+  ParseMpeg2TsFile("bear-1280x720.ts", 17);
+  parser_->Flush();
+  EXPECT_EQ(audio_frame_count_, 119);
+  EXPECT_EQ(video_frame_count_, 82);
+
+  // This stream has no mid-stream configuration change.
+  EXPECT_EQ(config_count_, 1);
+  EXPECT_EQ(segment_count_, 1);
+  CreateStrictParser();
+}
 
 TEST_F(Mp2tStreamParserTest, UnalignedAppend17) {
   // Test small, non-segment-aligned appends.

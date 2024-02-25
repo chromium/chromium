@@ -36,7 +36,8 @@ class LayerTreeHostFiltersPixelTest
         return "skia_gl";
       case viz::RendererType::kSkiaVk:
         return "skia_vk";
-      case viz::RendererType::kSkiaGraphite:
+      case viz::RendererType::kSkiaGraphiteDawn:
+      case viz::RendererType::kSkiaGraphiteMetal:
         return "skia_graphite";
       case viz::RendererType::kSoftware:
         return "sw";
@@ -91,6 +92,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(LayerTreeHostFiltersPixelTestGPU);
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/1324336): Uninitialized data error";
+  }
+#endif
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
       gfx::Rect(200, 200), SK_ColorWHITE);
 
@@ -195,6 +201,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterBlurRadius) {
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRounded) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/1324336): Uninitialized data error";
+  }
+#endif
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
 
@@ -735,6 +746,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
     average_error_allowed_in_bad_pixels = 16.f;
     error_allowed = 17;
   }
+  if (use_skia_graphite()) {
+    // Skia-Graphite has some minor differences in the AA'd pixels on the
+    // different trybots. See crbug.com/1482558.
+    percentage_pixels_error = 0.02f;
+    average_error_allowed_in_bad_pixels = 2.f;
+    error_allowed = 2;
+  }
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       FuzzyPixelComparator()
           .DiscardAlpha()
@@ -1070,9 +1088,12 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithAlphaThresholdFilter) {
   // Force the allocation a larger textures.
   set_enlarge_texture_amount(gfx::Size(50, 50));
 
-  RunPixelTest(
-      background,
-      base::FilePath(FILE_PATH_LITERAL("enlarged_texture_on_threshold.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("enlarged_texture_on_threshold.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  RunPixelTest(background, expected_result);
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithCropOffsetFilter) {
@@ -1108,9 +1129,12 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithCropOffsetFilter) {
   // Force the allocation a larger textures.
   set_enlarge_texture_amount(gfx::Size(50, 50));
 
-  RunPixelTest(
-      background,
-      base::FilePath(FILE_PATH_LITERAL("enlarged_texture_on_crop_offset.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("enlarged_texture_on_crop_offset.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  RunPixelTest(background, expected_result);
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BlurFilterWithClip) {
@@ -1173,7 +1197,7 @@ TEST_P(LayerTreeHostFiltersPixelTestGPU, FilterWithGiantCropRectNoClip) {
 
 class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
  protected:
-  void RunPixelTestType(int device_scale_factor) {
+  void RunPixelTestType(float device_scale_factor) {
     scoped_refptr<Layer> root =
         CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
     scoped_refptr<SolidColorLayer> background =
@@ -1245,7 +1269,7 @@ TEST_P(BackdropFilterOffsetTest, HiDpi) {
 
 class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
  protected:
-  void RunPixelTestType(int device_scale_factor) {
+  void RunPixelTestType(float device_scale_factor) {
     scoped_refptr<Layer> root =
         CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorGREEN);
     scoped_refptr<SolidColorLayer> filtered =
@@ -1264,6 +1288,9 @@ class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
         base::NumberToString(device_scale_factor) + "x");
     if (use_software_renderer()) {
       expected_result = expected_result.InsertBeforeExtensionASCII("_sw");
+    }
+    if (use_skia_graphite()) {
+      expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
     }
     RunPixelTest(std::move(root), expected_result);
   }
@@ -1297,6 +1324,98 @@ TEST_P(BackdropFilterInvertTest, StandardDpi) {
 #define MAYBE_HiDpi HiDpi
 #endif  // BUILDFLAG(IS_IOS)
 TEST_P(BackdropFilterInvertTest, MAYBE_HiDpi) {
+  RunPixelTestType(2.f);
+}
+
+// Combines backdrop and forward filters on a single layer.
+class MixedFilterZoomAndOffsetTest : public LayerTreeHostFiltersPixelTest {
+ protected:
+  void RunPixelTestType(float device_scale_factor) {
+    scoped_refptr<Layer> root =
+        CreateSolidColorLayer(gfx::Rect(110, 200), SK_ColorGREEN);
+
+    const gfx::Rect zoom_rect{20, 110, 70, 70};
+
+    gfx::Rect backdrop_content_rect = zoom_rect;
+    root->AddChild(CreateSolidColorLayer(backdrop_content_rect, SK_ColorBLACK));
+    backdrop_content_rect.Inset(10);
+    root->AddChild(CreateSolidColorLayer(backdrop_content_rect, SK_ColorGRAY));
+    backdrop_content_rect.Inset(10);
+    root->AddChild(CreateSolidColorLayer(backdrop_content_rect, SK_ColorWHITE));
+
+    // Placed above 'background_content' to filter using the ZOOM backdrop
+    // effect, but then its regular OFFSET filter operation moves it to the
+    // upper half of the root layer.
+    scoped_refptr<SolidColorLayer> filtered =
+        CreateSolidColorLayer(zoom_rect, SK_ColorTRANSPARENT);
+
+    FilterOperations backdrop_filters;
+    backdrop_filters.Append(FilterOperation::CreateZoomFilter(2.5f, 5.f));
+    filtered->SetBackdropFilters(backdrop_filters);
+    FilterOperations filters;
+    filters.Append(FilterOperation::CreateOffsetFilter({0, -90}));
+    filtered->SetFilters(filters);
+
+    // This should be applied to the ZOOM output *before* the OFFSET moves
+    // everything above the white layer.
+    gfx::RRectF backdrop_filter_bounds(
+        gfx::RectF(gfx::SizeF(filtered->bounds())), 10);
+    filtered->SetBackdropFilterBounds(backdrop_filter_bounds);
+    root->AddChild(filtered);
+
+    device_scale_factor_ = device_scale_factor;
+
+    base::FilePath expected_result =
+        base::FilePath(FILE_PATH_LITERAL("mixed_filters_zoom_offset_.png"));
+    expected_result = expected_result.InsertBeforeExtensionASCII(
+        base::NumberToString(device_scale_factor) + "x");
+
+    // Different OSes and GL vs. Vulkan produce slightly different outputs.
+    float error_percent = 0.02f;
+    float avg_error = 1.f;
+    float max_error = 1.f;
+    if (use_skia_graphite()) {
+      // Graphite's round rect clipping differs in AA from Ganesh, so increase
+      // the allowed differences (vs. a ganesh-rendered image).
+      error_percent = 0.28f;
+      avg_error = 26.1f;
+      max_error = 61.f;
+    }
+
+    pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
+        FuzzyPixelComparator()
+            .SetErrorPixelsPercentageLimit(error_percent)
+            .SetAvgAbsErrorLimit(avg_error)
+            .SetAbsErrorLimit(max_error));
+    RunPixelTest(std::move(root), expected_result);
+  }
+
+ private:
+  // LayerTreePixelTest overrides
+  void SetupTree() override {
+    SetInitialDeviceScaleFactor(device_scale_factor_);
+    LayerTreeHostFiltersPixelTest::SetupTree();
+  }
+
+  float device_scale_factor_ = 1;
+};
+
+// TODO(989329): SW renderer does not handle simultaneous filters, so
+// the zoomed offset layer does not show up in its expected image.
+// For now only run on SkiaRenderer-based compositors.
+INSTANTIATE_TEST_SUITE_P(,
+                         MixedFilterZoomAndOffsetTest,
+                         ::testing::ValuesIn(viz::GetGpuRendererTypes()),
+                         ::testing::PrintToStringParamName());
+
+// viz::GetGpuRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MixedFilterZoomAndOffsetTest);
+
+TEST_P(MixedFilterZoomAndOffsetTest, StandardDpi) {
+  RunPixelTestType(1.f);
+}
+
+TEST_P(MixedFilterZoomAndOffsetTest, HiDpi) {
   RunPixelTestType(2.f);
 }
 

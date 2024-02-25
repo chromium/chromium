@@ -11,14 +11,14 @@ namespace base {
 
 // CountUnicodeCharacters ------------------------------------------------------
 
-absl::optional<size_t> CountUnicodeCharacters(const char16_t* src,
-                                              size_t src_len,
-                                              size_t limit) {
+std::optional<size_t> CountUnicodeCharacters(std::string_view text,
+                                             size_t limit) {
   base_icu::UChar32 unused = 0;
   size_t count = 0;
-  for (size_t index = 0; count < limit && index < src_len; ++count, ++index) {
-    if (!ReadUnicodeCharacter(src, src_len, &index, &unused)) {
-      return absl::nullopt;
+  for (size_t index = 0; count < limit && index < text.size();
+       ++count, ++index) {
+    if (!ReadUnicodeCharacter(text.data(), text.size(), &index, &unused)) {
+      return std::nullopt;
     }
   }
   return count;
@@ -66,7 +66,7 @@ bool ReadUnicodeCharacter(const char16_t* src,
   return IsValidCodepoint(*code_point);
 }
 
-#if defined(WCHAR_T_IS_UTF32)
+#if defined(WCHAR_T_IS_32_BIT)
 bool ReadUnicodeCharacter(const wchar_t* src,
                           size_t src_len,
                           size_t* char_index,
@@ -77,7 +77,7 @@ bool ReadUnicodeCharacter(const wchar_t* src,
   // Validate the value.
   return IsValidCodepoint(*code_point);
 }
-#endif  // defined(WCHAR_T_IS_UTF32)
+#endif  // defined(WCHAR_T_IS_32_BIT)
 
 // WriteUnicodeCharacter -------------------------------------------------------
 

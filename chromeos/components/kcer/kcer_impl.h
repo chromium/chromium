@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <string>
 #include <vector>
 
@@ -23,19 +24,24 @@
 
 namespace kcer::internal {
 
-// Implementation of the Kcer interface.
-class KcerImpl : public Kcer {
+// Implementation of the Kcer interface, exported for KcerFactory.
+class COMPONENT_EXPORT(KCER) KcerImpl : public Kcer {
  public:
-  KcerImpl(scoped_refptr<base::TaskRunner> token_task_runner,
-           base::WeakPtr<KcerToken> user_token,
-           base::WeakPtr<KcerToken> device_token);
+  KcerImpl();
   ~KcerImpl() override;
+
+  // Completes the initialization. The object is usable right after creation,
+  // but it will queue requests in the internal queue until it's initialized.
+  void Initialize(scoped_refptr<base::TaskRunner> token_task_runner,
+                  base::WeakPtr<KcerToken> user_token,
+                  base::WeakPtr<KcerToken> device_token);
+  base::WeakPtr<KcerImpl> GetWeakPtr();
 
   // Implements Kcer.
   base::CallbackListSubscription AddObserver(
       base::RepeatingClosure callback) override;
   void GenerateRsaKey(Token token,
-                      uint32_t modulus_length_bits,
+                      RsaModulusLength modulus_length_bits,
                       bool hardware_backed,
                       GenerateKeyCallback callback) override;
   void GenerateEcKey(Token token,
@@ -55,6 +61,7 @@ class KcerImpl : public Kcer {
                         Pkcs12Blob pkcs12_blob,
                         std::string password,
                         bool hardware_backed,
+                        bool mark_as_migrated,
                         StatusCallback callback) override;
   void ExportPkcs12Cert(scoped_refptr<const Cert> cert,
                         ExportPkcs12Callback callback) override;
@@ -75,9 +82,14 @@ class KcerImpl : public Kcer {
   void SignRsaPkcs1Raw(PrivateKeyHandle key,
                        DigestWithPrefix digest_with_prefix,
                        SignCallback callback) override;
-  base::flat_set<Token> GetAvailableTokens() override;
+  void GetAvailableTokens(GetAvailableTokensCallback callback) override;
   void GetTokenInfo(Token token, GetTokenInfoCallback callback) override;
   void GetKeyInfo(PrivateKeyHandle key, GetKeyInfoCallback callback) override;
+  void GetKeyPermissions(PrivateKeyHandle key,
+                         GetKeyPermissionsCallback callback) override;
+  void GetCertProvisioningProfileId(
+      PrivateKeyHandle key,
+      GetCertProvisioningProfileIdCallback callback) override;
   void SetKeyNickname(PrivateKeyHandle key,
                       std::string nickname,
                       StatusCallback callback) override;
@@ -100,7 +112,7 @@ class KcerImpl : public Kcer {
   void FindKeyToken(
       bool allow_guessing,
       PrivateKeyHandle key,
-      base::OnceCallback<void(base::expected<absl::optional<Token>, Error>)>
+      base::OnceCallback<void(base::expected<std::optional<Token>, Error>)>
           callback);
 
   // Attempts to find the token for the `key` (guessing is allowed). Returns a
@@ -113,7 +125,7 @@ class KcerImpl : public Kcer {
       PrivateKeyHandle key,
       base::OnceCallback<void(base::expected<PrivateKeyHandle, Error>)>
           callback,
-      base::expected<absl::optional<Token>, Error> find_key_result);
+      base::expected<std::optional<Token>, Error> find_key_result);
 
   void RemoveKeyAndCertsWithToken(
       StatusCallback callback,
@@ -121,7 +133,7 @@ class KcerImpl : public Kcer {
 
   void DoesPrivateKeyExistWithToken(
       DoesKeyExistCallback callback,
-      base::expected<absl::optional<Token>, Error> find_key_result);
+      base::expected<std::optional<Token>, Error> find_key_result);
 
   void SignWithToken(SigningScheme signing_scheme,
                      DataToSign data,
@@ -133,8 +145,18 @@ class KcerImpl : public Kcer {
       SignCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
 
+  base::flat_set<Token> GetCurrentTokens() const;
+
   void GetKeyInfoWithToken(
       GetKeyInfoCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
+  void GetKeyPermissionsWithToken(
+      GetKeyPermissionsCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
+  void GetCertProvisioningProfileIdWithToken(
+      GetCertProvisioningProfileIdCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
 
   void SetKeyNicknameWithToken(
@@ -163,6 +185,9 @@ class KcerImpl : public Kcer {
   base::WeakPtr<KcerToken> user_token_;
   base::WeakPtr<KcerToken> device_token_;
   KcerNotifierNet notifier_;
+
+  // A task queue for the initialization period until the tokens are assigned.
+  std::unique_ptr<std::deque<base::OnceClosure>> init_queue_;
 
   base::WeakPtrFactory<KcerImpl> weak_factory_{this};
 };

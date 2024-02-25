@@ -644,10 +644,7 @@ void VisitAnnotationsDatabase::AddClusters(
       cluster_keywords_statement.BindString16(1, keyword);
       cluster_keywords_statement.BindInt(2, keyword_data.type);
       cluster_keywords_statement.BindDouble(3, keyword_data.score);
-      cluster_keywords_statement.BindString(
-          4, keyword_data.entity_collections.empty()
-                 ? ""
-                 : keyword_data.entity_collections[0]);
+      cluster_keywords_statement.BindString(4, "");
       if (!cluster_keywords_statement.Run()) {
         DVLOG(0) << "Failed to execute 'cluster_keywords' insert statement:  "
                  << "cluster_id = " << cluster_id << ", keyword = " << keyword;
@@ -775,10 +772,7 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
       cluster_keywords_statement.BindString16(1, keyword);
       cluster_keywords_statement.BindInt(2, keyword_data.type);
       cluster_keywords_statement.BindDouble(3, keyword_data.score);
-      cluster_keywords_statement.BindString(
-          4, keyword_data.entity_collections.empty()
-                 ? ""
-                 : keyword_data.entity_collections[0]);
+      cluster_keywords_statement.BindString(4, "");
       if (!cluster_keywords_statement.Run()) {
         DVLOG(0) << "Failed to execute 'cluster_keywords' insert statement in "
                     "`UpdateClusterTriggerability()`:  "
@@ -875,10 +869,10 @@ Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
   //  clustering UI code.
   cluster.label = statement.ColumnString16(2);
   if (cluster.label->empty())
-    cluster.label = absl::nullopt;
+    cluster.label = std::nullopt;
   cluster.raw_label = statement.ColumnString16(3);
   if (cluster.raw_label->empty())
-    cluster.raw_label = absl::nullopt;
+    cluster.raw_label = std::nullopt;
   cluster.triggerability_calculated = statement.ColumnBool(4);
   cluster.originator_cache_guid = statement.ColumnString(5);
   cluster.originator_cluster_id = statement.ColumnInt64(6);
@@ -1021,8 +1015,7 @@ VisitAnnotationsDatabase::GetClusterKeywords(int64_t cluster_id) {
     keyword_data[statement.ColumnString16(0)] = {
         static_cast<ClusterKeywordData::ClusterKeywordType>(
             statement.ColumnInt(1)),
-        static_cast<float>(statement.ColumnDouble(2)),
-        DeserializeFromStringColumn(statement.ColumnString(3))};
+        static_cast<float>(statement.ColumnDouble(2))};
   }
   return keyword_data;
 }

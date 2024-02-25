@@ -32,13 +32,17 @@
 
 namespace blink {
 
-IDBCursorWithValue::IDBCursorWithValue(std::unique_ptr<WebIDBCursor> backend,
-                                       mojom::IDBCursorDirection direction,
-                                       IDBRequest* request,
-                                       const Source* source,
-                                       IDBTransaction* transaction)
-    : IDBCursor(std::move(backend), direction, request, source, transaction) {
-}
+IDBCursorWithValue::IDBCursorWithValue(
+    mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> pending_cursor,
+    mojom::IDBCursorDirection direction,
+    IDBRequest* request,
+    const Source* source,
+    IDBTransaction* transaction)
+    : IDBCursor(std::move(pending_cursor),
+                direction,
+                request,
+                source,
+                transaction) {}
 
 IDBCursorWithValue::~IDBCursorWithValue() = default;
 

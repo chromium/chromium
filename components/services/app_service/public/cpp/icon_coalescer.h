@@ -53,10 +53,9 @@ class IconCoalescer : public IconLoader {
   ~IconCoalescer() override;
 
   // IconLoader overrides.
-  absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+  std::optional<IconKey> GetIconKey(const std::string& id) override;
   std::unique_ptr<Releaser> LoadIconFromIconKey(
-      AppType app_type,
-      const std::string& app_id,
+      const std::string& id,
       const IconKey& icon_key,
       IconType icon_type,
       int32_t size_hint_in_dip,

@@ -77,7 +77,7 @@ aura::Window* GetTopmostWindowAtPointWithinWindow(
     return nullptr;
   }
 
-  for (auto* child : base::Reversed(window->children())) {
+  for (aura::Window* child : base::Reversed(window->children())) {
     aura::WindowTargeter* child_targeter =
         child->targeter() ? child->targeter() : targeter;
     aura::Window* result = GetTopmostWindowAtPointWithinWindow(

@@ -53,7 +53,7 @@ smbprovider::ErrorType GetErrorAndProto(
   return smbprovider::ERROR_OK;
 }
 
-class SmbProviderClientImpl : public SmbProviderClient {
+class SmbProviderClientImpl final : public SmbProviderClient {
  public:
   SmbProviderClientImpl() = default;
 
@@ -88,11 +88,15 @@ class SmbProviderClientImpl : public SmbProviderClient {
     dbus::MethodCall method_call(smbprovider::kSmbProviderInterface,
                                  smbprovider::kParseNetBiosPacketMethod);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfBytes(packet.data(), packet.size());
+    writer.AppendArrayOfBytes(packet);
     writer.AppendUint16(transaction_id);
     CallMethod(&method_call,
                &SmbProviderClientImpl::HandleParseNetBiosPacketCallback,
                &callback);
+  }
+
+  base::WeakPtr<SmbProviderClient> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   // chromeos::DBusClient override.
@@ -125,9 +129,9 @@ class SmbProviderClientImpl : public SmbProviderClient {
   void CallMethod(dbus::MethodCall* method_call,
                   CallbackHandler handler,
                   Callback callback) {
-    proxy_->CallMethod(
-        method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(handler, GetWeakPtr(), std::move(*callback)));
+    proxy_->CallMethod(method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                       base::BindOnce(handler, weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(*callback)));
   }
 
   // Calls the D-Bus method |name|, passing the |protobuf| as an argument.
@@ -149,7 +153,7 @@ class SmbProviderClientImpl : public SmbProviderClient {
     proxy_->CallMethod(
         method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&SmbProviderClientImpl::HandleDefaultCallback,
-                       GetWeakPtr(), method_call->GetMember(),
+                       weak_ptr_factory_.GetWeakPtr(), method_call->GetMember(),
                        std::move(*callback)));
   }
 
@@ -219,11 +223,9 @@ class SmbProviderClientImpl : public SmbProviderClient {
     std::move(callback).Run(error, proto);
   }
 
-  base::WeakPtr<SmbProviderClientImpl> GetWeakPtr() {
-    return base::AsWeakPtr(this);
-  }
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  base::WeakPtrFactory<SmbProviderClientImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace

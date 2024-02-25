@@ -3,3 +3,4 @@ Drive:
   policies:
   - DriveDisabled
   - DriveDisabledOverCellular
+  - DriveFileSyncAvailable

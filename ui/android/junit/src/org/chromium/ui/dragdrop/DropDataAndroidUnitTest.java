@@ -22,17 +22,17 @@ public class DropDataAndroidUnitTest {
         final String text = "text";
         final DropDataAndroid data = DropDataAndroid.create(text, null, null, null, null);
 
-        assertDragData(data, /*isPlainText=*/true, /*hasLink=*/false, /*hasImage=*/false);
+        assertDragData(data, /* isPlainText= */ true, /* hasLink= */ false, /* hasImage= */ false);
         Assert.assertEquals("Text does not match.", text, data.text);
     }
 
     @Test
     public void testLink() {
         final String text = "text";
-        final GURL gurl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        final GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
         final DropDataAndroid data = DropDataAndroid.create(text, gurl, null, null, null);
 
-        assertDragData(data, /*isPlainText=*/false, /*hasLink=*/true, /*hasImage=*/false);
+        assertDragData(data, /* isPlainText= */ false, /* hasLink= */ true, /* hasImage= */ false);
         Assert.assertEquals("Link does not match.", gurl, data.gurl);
     }
 
@@ -43,7 +43,7 @@ public class DropDataAndroidUnitTest {
         final DropDataAndroid data =
                 DropDataAndroid.create("", null, img, imageExtension, IMAGE_FILENAME);
 
-        assertDragData(data, /*isPlainText=*/false, /*hasLink=*/false, /*hasImage=*/true);
+        assertDragData(data, /* isPlainText= */ false, /* hasLink= */ false, /* hasImage= */ true);
         Assert.assertEquals("Image content does not match.", img, data.imageContent);
         Assert.assertEquals(
                 "Image extension does not match.", imageExtension, data.imageContentExtension);
@@ -52,13 +52,13 @@ public class DropDataAndroidUnitTest {
 
     @Test
     public void testImageLink() {
-        final GURL gurl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        final GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
         final byte[] img = new byte[] {1, 2};
         final String imageExtension = "webp";
         final DropDataAndroid data =
                 DropDataAndroid.create("", gurl, img, imageExtension, IMAGE_FILENAME);
 
-        assertDragData(data, /*isPlainText=*/false, /*hasLink=*/true, /*hasImage=*/true);
+        assertDragData(data, /* isPlainText= */ false, /* hasLink= */ true, /* hasImage= */ true);
         Assert.assertEquals("Link does not match.", gurl, data.gurl);
         Assert.assertEquals("Image content does not match.", img, data.imageContent);
         Assert.assertEquals(

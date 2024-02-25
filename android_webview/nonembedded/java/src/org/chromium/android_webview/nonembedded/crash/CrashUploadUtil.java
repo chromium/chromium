@@ -23,15 +23,11 @@ import org.chromium.components.minidump_uploader.util.NetworkPermissionUtil;
 
 import java.io.File;
 
-/**
- * A util class for request uploading crash reports.
- */
+/** A util class for request uploading crash reports. */
 public final class CrashUploadUtil {
     private static final String TAG = "CrashUploadUtil";
 
-    /**
-     * Delegate interface to mock network status check and scheduling upload jobs for testing.
-     */
+    /** Delegate interface to mock network status check and scheduling upload jobs for testing. */
     @VisibleForTesting
     public static interface CrashUploadDelegate {
         /**
@@ -43,34 +39,38 @@ public final class CrashUploadUtil {
          */
         void scheduleNewJob(@NonNull Context context, boolean requiresUnmeteredNetwork);
 
-        /**
-         * Check if network is unmetered or not.
-         */
+        /** Check if network is unmetered or not. */
         boolean isNetworkUnmetered(@NonNull Context context);
     }
 
-    private static CrashUploadDelegate sDelegate = new CrashUploadDelegate() {
-        @Override
-        public void scheduleNewJob(@NonNull Context context, boolean requiresUnmeteredNetwork) {
-            int networkType = requiresUnmeteredNetwork ? JobInfo.NETWORK_TYPE_UNMETERED
-                                                       : JobInfo.NETWORK_TYPE_ANY;
-            JobInfo.Builder builder =
-                    new JobInfo
-                            .Builder(TaskIds.WEBVIEW_MINIDUMP_UPLOADING_JOB_ID,
-                                    new ComponentName(
-                                            context, ServiceNames.AW_MINIDUMP_UPLOAD_JOB_SERVICE))
-                            .setRequiredNetworkType(networkType);
-            MinidumpUploadJobService.scheduleUpload(builder);
-        }
+    private static CrashUploadDelegate sDelegate =
+            new CrashUploadDelegate() {
+                @Override
+                public void scheduleNewJob(
+                        @NonNull Context context, boolean requiresUnmeteredNetwork) {
+                    int networkType =
+                            requiresUnmeteredNetwork
+                                    ? JobInfo.NETWORK_TYPE_UNMETERED
+                                    : JobInfo.NETWORK_TYPE_ANY;
+                    JobInfo.Builder builder =
+                            new JobInfo.Builder(
+                                            TaskIds.WEBVIEW_MINIDUMP_UPLOADING_JOB_ID,
+                                            new ComponentName(
+                                                    context,
+                                                    ServiceNames.AW_MINIDUMP_UPLOAD_JOB_SERVICE))
+                                    .setRequiredNetworkType(networkType);
+                    MinidumpUploadJobService.scheduleUpload(builder);
+                }
 
-        @Override
-        public boolean isNetworkUnmetered(@NonNull Context context) {
-            ConnectivityManager connectivityManager =
-                    (ConnectivityManager) context.getApplicationContext().getSystemService(
-                            Context.CONNECTIVITY_SERVICE);
-            return NetworkPermissionUtil.isNetworkUnmetered(connectivityManager);
-        }
-    };
+                @Override
+                public boolean isNetworkUnmetered(@NonNull Context context) {
+                    ConnectivityManager connectivityManager =
+                            (ConnectivityManager)
+                                    context.getApplicationContext()
+                                            .getSystemService(Context.CONNECTIVITY_SERVICE);
+                    return NetworkPermissionUtil.isNetworkUnmetered(connectivityManager);
+                }
+            };
 
     /**
      * Schedule a MinidumpUploadJobService to attempt uploading all ready crash minidumps.

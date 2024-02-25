@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DomIf} from 'chrome://new-tab-page/new_tab_page.js';
-import {BackgroundImage, NtpBackgroundImageSource, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import type {DomIf} from 'chrome://new-tab-page/new_tab_page.js';
+import type {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -71,10 +72,10 @@ export function createTheme(isDark: boolean = false): Theme {
     backgroundImageAttribution2: '',
     dailyRefreshEnabled: false,
     backgroundImageCollectionId: '',
+    isBaseline: true,
     isDark,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},
-    themeRealboxIcons: false,
     isCustomBackground: true,
   };
 }

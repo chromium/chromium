@@ -84,7 +84,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     /** The token used to enable browser controls persistence. */
     private int mPersistentControlsToken;
 
-    public BottomSheetManager(ManagedBottomSheetController controller,
+    public BottomSheetManager(
+            ManagedBottomSheetController controller,
             ActivityTabProvider tabProvider,
             BrowserControlsVisibilityManager controlsVisibilityManager,
             ExpandedSheetHelper expandedSheetHelper,
@@ -109,53 +110,63 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
         // TODO(1092686): We should wait to instantiate all of these observers until the bottom
         //                sheet is actually used.
-        mTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onPageLoadStarted(Tab tab, GURL url) {
-                controller.clearRequestsAndHide();
-            }
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onPageLoadStarted(Tab tab, GURL url) {
+                        controller.clearRequestsAndHide();
+                    }
 
-            @Override
-            public void onCrash(Tab tab) {
-                controller.clearRequestsAndHide();
-            }
+                    @Override
+                    public void onCrash(Tab tab) {
+                        controller.clearRequestsAndHide();
+                    }
 
-            @Override
-            public void onDestroyed(Tab tab) {
-                if (mLastActivityTab != tab) return;
-                mLastActivityTab = null;
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        if (mLastActivityTab != tab) return;
+                        mLastActivityTab = null;
 
-                // Remove the suppressed sheet if its lifecycle is tied to the tab being destroyed.
-                controller.clearRequestsAndHide();
-            }
-        };
+                        // Remove the suppressed sheet if its lifecycle is tied to the tab being
+                        // destroyed.
+                        controller.clearRequestsAndHide();
+                    }
+                };
 
         mTabProvider.addObserver(this::setActivityTab);
         setActivityTab(mTabProvider.get());
 
-        mBrowserControlsObserver = new BrowserControlsVisibilityManager.Observer() {
-            @Override
-            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                controller.setBrowserControlsHiddenRatio(
-                        mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio());
-            }
-        };
+        mBrowserControlsObserver =
+                new BrowserControlsVisibilityManager.Observer() {
+                    @Override
+                    public void onControlsOffsetChanged(
+                            int topOffset,
+                            int topControlsMinHeightOffset,
+                            int bottomOffset,
+                            int bottomControlsMinHeightOffset,
+                            boolean needsAnimate) {
+                        controller.setBrowserControlsHiddenRatio(
+                                mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio());
+                    }
+                };
         mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
 
-        mOmniboxFocusObserver = new Callback<Boolean>() {
-            /** A token held while this object is suppressing the bottom sheet. */
-            private int mToken;
+        mOmniboxFocusObserver =
+                new Callback<Boolean>() {
+                    /** A token held while this object is suppressing the bottom sheet. */
+                    private int mToken;
 
-            @Override
-            public void onResult(Boolean focused) {
-                if (focused) {
-                    mToken = controller.suppressSheet(BottomSheetController.StateChangeReason.NONE);
-                } else {
-                    controller.unsuppressSheet(mToken);
-                }
-            }
-        };
+                    @Override
+                    public void onResult(Boolean focused) {
+                        if (focused) {
+                            mToken =
+                                    controller.suppressSheet(
+                                            BottomSheetController.StateChangeReason.NONE);
+                        } else {
+                            controller.unsuppressSheet(mToken);
+                        }
+                    }
+                };
         mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
     }
 
@@ -172,17 +183,18 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     }
 
     private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
-        mLayoutStateObserver = new LayoutStateObserver() {
-            // On switching to a new layout act as though this is a tab switch by clearing all
-            // state. Use onStartedHiding to avoid the bottom sheet being visible during the
-            // transition if there is one.
-            @Override
-            public void onStartedHiding(int layoutType) {
-                if (layoutType != LayoutType.SIMPLE_ANIMATION) {
-                    mSheetController.clearRequestsAndHide();
-                }
-            }
-        };
+        mLayoutStateObserver =
+                new LayoutStateObserver() {
+                    // On switching to a new layout act as though this is a tab switch by clearing
+                    // all state. Use onStartedHiding to avoid the bottom sheet being visible
+                    // during the transition if there is one.
+                    @Override
+                    public void onStartedHiding(int layoutType) {
+                        if (layoutType != LayoutType.SIMPLE_ANIMATION) {
+                            mSheetController.clearRequestsAndHide();
+                        }
+                    }
+                };
 
         layoutStateProvider.addObserver(mLayoutStateObserver);
     }
@@ -192,7 +204,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         if (mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate() != null) {
             // Browser controls should stay visible until the sheet is closed.
             mPersistentControlsToken =
-                    mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate()
+                    mBrowserControlsVisibilityManager
+                            .getBrowserVisibilityDelegate()
                             .showControlsPersistent();
         }
 
@@ -206,8 +219,10 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
         if (mOverlayPanelManager.hasValue()
                 && mOverlayPanelManager.get().getActivePanel() != null) {
-            mOverlayPanelManager.get().getActivePanel().closePanel(
-                    OverlayPanel.StateChangeReason.UNKNOWN, true);
+            mOverlayPanelManager
+                    .get()
+                    .getActivePanel()
+                    .closePanel(OverlayPanel.StateChangeReason.UNKNOWN, true);
         }
 
         BottomSheetContent content = mSheetController.getCurrentSheetContent();
@@ -226,7 +241,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         if (mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate() != null) {
             // Update the browser controls since they are permanently shown while the sheet is
             // open.
-            mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate()
+            mBrowserControlsVisibilityManager
+                    .getBrowserVisibilityDelegate()
                     .releasePersistentShowingToken(mPersistentControlsToken);
         }
 

@@ -72,8 +72,8 @@ class TestConciergeClient : public ash::FakeConciergeClient {
   }
 
   void SetAggressiveBalloonLatencyAndResponse(
-      absl::optional<base::TimeDelta> latency,
-      absl::optional<vm_tools::concierge::AggressiveBalloonResponse> response) {
+      std::optional<base::TimeDelta> latency,
+      std::optional<vm_tools::concierge::AggressiveBalloonResponse> response) {
     aggressive_balloon_latency_ = latency;
     aggressive_balloon_response_ = response;
   }
@@ -105,8 +105,8 @@ class TestConciergeClient : public ash::FakeConciergeClient {
   explicit TestConciergeClient(ash::FakeCiceroneClient* fake_cicerone_client)
       : ash::FakeConciergeClient(fake_cicerone_client) {}
 
-  absl::optional<base::TimeDelta> aggressive_balloon_latency_;
-  absl::optional<vm_tools::concierge::AggressiveBalloonResponse>
+  std::optional<base::TimeDelta> aggressive_balloon_latency_;
+  std::optional<vm_tools::concierge::AggressiveBalloonResponse>
       aggressive_balloon_response_;
 
   int enable_count_ = 0;
@@ -166,13 +166,13 @@ class ArcVmmManagerTest : public testing::Test {
       client()->SetAggressiveBalloonLatencyAndResponse(base::Seconds(5),
                                                        response);
     } else {
-      client()->SetAggressiveBalloonLatencyAndResponse(absl::nullopt, response);
+      client()->SetAggressiveBalloonLatencyAndResponse(std::nullopt, response);
     }
   }
 
   void InitEmptyAggressiveBallonResponse() {
-    client()->SetAggressiveBalloonLatencyAndResponse(absl::nullopt,
-                                                     absl::nullopt);
+    client()->SetAggressiveBalloonLatencyAndResponse(std::nullopt,
+                                                     std::nullopt);
   }
 
   void SetTrimCall(bool trim_result) {
@@ -220,10 +220,8 @@ class ArcVmmManagerTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      testing_profile_ = nullptr;
-  raw_ptr<ArcVmmManager, DanglingUntriaged | ExperimentalAsh> manager_ =
-      nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> testing_profile_ = nullptr;
+  raw_ptr<ArcVmmManager, DanglingUntriaged> manager_ = nullptr;
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
 };

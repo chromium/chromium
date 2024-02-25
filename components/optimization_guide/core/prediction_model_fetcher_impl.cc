@@ -57,7 +57,7 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
 
   // If there are no models to request, do not make a GetModelsRequest.
   if (models_request_info.empty()) {
-    std::move(models_fetched_callback).Run(absl::nullopt);
+    std::move(models_fetched_callback).Run(std::nullopt);
     return false;
   }
 
@@ -173,7 +173,7 @@ void PredictionModelFetcherImpl::HandleResponse(
       get_models_response->ParseFromString(get_models_response_data)) {
     std::move(models_fetched_callback_).Run(std::move(get_models_response));
   } else {
-    std::move(models_fetched_callback_).Run(absl::nullopt);
+    std::move(models_fetched_callback_).Run(std::nullopt);
   }
 }
 

@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xproto.h"
@@ -107,6 +108,8 @@ class XServerClipboard {
   // Assert ownership of the specified |selection|.
   void AssertSelectionOwnership(x11::Atom selection);
   bool IsSelectionOwner(x11::Atom selection);
+
+  x11::Connection* connection() { return connection_; }
 
   // Stores the connection supplied to Init().
   raw_ptr<x11::Connection> connection_ = nullptr;

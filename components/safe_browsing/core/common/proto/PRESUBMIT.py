@@ -11,7 +11,7 @@ def CheckChangeOnUpload(input_api, output_api):
   realtime_proto_path = 'components/safe_browsing/core/common/proto/realtimeapi.proto'
   web_ui_path = 'components/safe_browsing/content/browser/web_ui/safe_browsing_ui.cc'
   idl_path = 'chrome/common/extensions/api/safe_browsing_private.idl'
-  safebrowsingv5_proto_path = 'components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.proto'
+  safebrowsingv5_proto_path = 'components/safe_browsing/core/common/proto/safebrowsingv5.proto'
 
   if proto_path in input_api.change.LocalPaths():
     if web_ui_path not in input_api.change.LocalPaths():

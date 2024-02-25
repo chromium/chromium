@@ -39,7 +39,7 @@ void CollapseButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
 }
 
-BEGIN_METADATA(CollapseButton, IconButton)
+BEGIN_METADATA(CollapseButton)
 END_METADATA
 
 }  // namespace ash

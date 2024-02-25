@@ -71,7 +71,7 @@ class ASH_EXPORT HotseatTransitionAnimator
                                              HotseatState new_state);
 
   // The widget which owns the HotseatWidget. Owned by Shelf.
-  const raw_ptr<ShelfWidget, ExperimentalAsh> shelf_widget_;
+  const raw_ptr<ShelfWidget> shelf_widget_;
 
   // Whether hotseat animations should be animated for the current session
   // state.
@@ -83,7 +83,7 @@ class ASH_EXPORT HotseatTransitionAnimator
   base::ObserverList<Observer> observers_;
 
   // A test observer used to wait for the hotseat transition animation.
-  raw_ptr<TestObserver, ExperimentalAsh> test_observer_ = nullptr;
+  raw_ptr<TestObserver> test_observer_ = nullptr;
 
   base::WeakPtrFactory<HotseatTransitionAnimator> weak_ptr_factory_{this};
 };

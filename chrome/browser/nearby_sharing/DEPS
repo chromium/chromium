@@ -1,3 +1,7 @@
+include_rules = [
+    "+components/cross_device/logging",
+    "+third_party/nearby",
+]
 specific_include_rules = {
   "nearby_sharing_service_impl_unittest.cc": [
     "+chrome/services/sharing/nearby/decoder/advertisement_decoder.h",

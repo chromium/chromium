@@ -4,13 +4,16 @@
 
 #include "autocomplete_controller_emitter.h"
 
-#include "base/observer_list.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/browser/browser_context.h"
 #endif  // !BUILDFLAG(IS_IOS)
 
 namespace {
@@ -87,6 +90,13 @@ void AutocompleteControllerEmitter::OnResultChanged(
   for (auto& observer : observers_) {
     observer.OnResultChanged(controller, default_match_changed);
   }
+}
+
+void AutocompleteControllerEmitter::OnMlScored(
+    AutocompleteController* controller,
+    const AutocompleteResult& result) {
+  for (auto& observer : observers_)
+    observer.OnMlScored(controller, result);
 }
 
 #if !BUILDFLAG(IS_IOS)

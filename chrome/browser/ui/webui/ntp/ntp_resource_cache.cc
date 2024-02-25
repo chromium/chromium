@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -33,8 +34,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
@@ -42,6 +43,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
@@ -60,10 +62,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/chromeos/devicetype_utils.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif
 
 using content::BrowserThread;
@@ -142,7 +140,6 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
 
   // Watch for pref changes that cause us to need to invalidate the HTML cache.
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
-  profile_pref_change_registrar_.Add(prefs::kNtpShownPage, callback);
   profile_pref_change_registrar_.Add(prefs::kCookieControlsMode, callback);
 
   // TODO(crbug/1056916): Remove the global accessor to NativeTheme.
@@ -271,6 +268,11 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   replacements["incognitoTabDescription"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST);
 
+  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(incognito_profile);
+  bool is_tracking_protection_3pcd_enabled =
+      tracking_protection_settings->IsTrackingProtection3pcdEnabled();
+
   bool use_revamped_ui =
       base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp);
   if (use_revamped_ui) {
@@ -309,10 +311,26 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
+
+  if (is_tracking_protection_3pcd_enabled) {
+    replacements["hideBlockCookiesToggle"] = "hidden";
+    replacements["hideTooltipIcon"] = "hidden";
+
+    // Overwrite the cookies control title and description if 3pcd enabled.
+    replacements["cookieControlsTitle"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE);
+    replacements["cookieControlsDescription"] = l10n_util::GetStringFUTF8(
+        IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
+        chrome::kUserBypassHelpCenterURL);
+
+  } else {
+    replacements["hideBlockCookiesToggle"] = "";
+    replacements["hideTooltipIcon"] =
+        cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
+  }
+
   replacements["cookieControlsToggleChecked"] =
       cookie_controls_service->GetToggleCheckedValue() ? "checked" : "";
-  replacements["hideTooltipIcon"] =
-      cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
   replacements["cookieControlsToolTipIcon"] =
       CookieControlsHandler::GetEnforcementIcon(
           cookie_controls_service->GetCookieControlsEnforcement());

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -24,7 +25,6 @@
 #include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 using jingle_xmpp::QName;
@@ -88,7 +88,7 @@ class XmppRegisterSupportHostRequestTest : public testing::Test {
 TEST_F(XmppRegisterSupportHostRequestTest, Timeout) {
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
   request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
-                        absl::nullopt, callback_.Get());
+                        std::nullopt, callback_.Get());
   EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));
   EXPECT_CALL(signal_strategy_, SendStanzaPtr(NotNull()))
       .WillOnce(DoAll(DeleteArg<0>(), Return(true)));
@@ -104,11 +104,12 @@ TEST_F(XmppRegisterSupportHostRequestTest, Timeout) {
 
 TEST_F(XmppRegisterSupportHostRequestTest, Send) {
   // |iq_request| is freed by XmppRegisterSupportHostRequest.
-  int64_t start_time = static_cast<int64_t>(base::Time::Now().ToDoubleT());
+  int64_t start_time =
+      static_cast<int64_t>(base::Time::Now().InSecondsFSinceUnixEpoch());
 
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
   request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
-                        absl::nullopt, callback_.Get());
+                        std::nullopt, callback_.Get());
 
   XmlElement* sent_iq = nullptr;
   EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));
@@ -138,7 +139,8 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
       signature->Attr(QName(kChromotingXmlNamespace, "time"));
   int64_t time;
   EXPECT_TRUE(base::StringToInt64(time_str, &time));
-  int64_t now = static_cast<int64_t>(base::Time::Now().ToDoubleT());
+  int64_t now =
+      static_cast<int64_t>(base::Time::Now().InSecondsFSinceUnixEpoch());
   EXPECT_LE(start_time, time);
   EXPECT_GE(now, time);
 
@@ -203,7 +205,7 @@ TEST_F(XmppRegisterSupportHostRequestTest, AuthorizedHelper) {
 
   auto request = std::make_unique<XmppRegisterSupportHostRequest>(kTestBotJid);
   request->StartRequest(&signal_strategy_, key_pair_, authorized_helper_,
-                        absl::nullopt, callback_.Get());
+                        std::nullopt, callback_.Get());
 
   XmlElement* sent_iq = nullptr;
   EXPECT_CALL(signal_strategy_, GetNextId()).WillOnce(Return(kStanzaId));

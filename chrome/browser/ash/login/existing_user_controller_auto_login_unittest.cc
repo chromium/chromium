@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -45,7 +46,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
  protected:
   ExistingUserControllerAutoLoginTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
-        scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {
+        fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
   }
 
@@ -57,9 +58,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
     ON_CALL(*mock_login_display_host_, GetExistingUserController())
         .WillByDefault(Return(existing_user_controller_.get()));
 
-    auto* user_manager =
-        static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-    user_manager->AddPublicAccountUser(auto_login_account_id_);
+    fake_user_manager_->AddPublicAccountUser(auto_login_account_id_);
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
@@ -143,7 +142,8 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   // Required by ExistingUserController:
   FakeSessionManagerClient fake_session_manager_client_;
   ScopedCrosSettingsTestHelper settings_helper_;
-  user_manager::ScopedUserManager scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
 
   session_manager::SessionManager session_manager_;

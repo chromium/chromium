@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- android_readaloud_strings.grd contains UI strings for Read Aloud in Chrome Android. -->
+
+<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+  <outputs>
+    <output filename="values-af/android_readaloud_strings.xml" lang="af" type="android" />
+    <output filename="values-am/android_readaloud_strings.xml" lang="am" type="android" />
+    <output filename="values-ar/android_readaloud_strings.xml" lang="ar" type="android" />
+    <output filename="values-as/android_readaloud_strings.xml" lang="as" type="android" />
+    <output filename="values-az/android_readaloud_strings.xml" lang="az" type="android" />
+    <output filename="values-be/android_readaloud_strings.xml" lang="be" type="android" />
+    <output filename="values-bg/android_readaloud_strings.xml" lang="bg" type="android" />
+    <output filename="values-bn/android_readaloud_strings.xml" lang="bn" type="android" />
+    <output filename="values-bs/android_readaloud_strings.xml" lang="bs" type="android" />
+    <output filename="values-ca/android_readaloud_strings.xml" lang="ca" type="android" />
+    <output filename="values-cs/android_readaloud_strings.xml" lang="cs" type="android" />
+    <output filename="values-da/android_readaloud_strings.xml" lang="da" type="android" />
+    <output filename="values-de/android_readaloud_strings.xml" lang="de" type="android" />
+    <output filename="values-el/android_readaloud_strings.xml" lang="el" type="android" />
+    <output filename="values/android_readaloud_strings.xml" lang="en" type="android" />
+    <output filename="values-en-rGB/android_readaloud_strings.xml" lang="en-GB" type="android" />
+    <output filename="values-es/android_readaloud_strings.xml" lang="es" type="android" />
+    <output filename="values-es-rUS/android_readaloud_strings.xml" lang="es-419" type="android" />
+    <output filename="values-et/android_readaloud_strings.xml" lang="et" type="android" />
+    <output filename="values-eu/android_readaloud_strings.xml" lang="eu" type="android" />
+    <output filename="values-fa/android_readaloud_strings.xml" lang="fa" type="android" />
+    <output filename="values-fi/android_readaloud_strings.xml" lang="fi" type="android" />
+    <output filename="values-tl/android_readaloud_strings.xml" lang="fil" type="android" />
+    <output filename="values-fr/android_readaloud_strings.xml" lang="fr" type="android" />
+    <output filename="values-fr-rCA/android_readaloud_strings.xml" lang="fr-CA" type="android" />
+    <output filename="values-gl/android_readaloud_strings.xml" lang="gl" type="android" />
+    <output filename="values-gu/android_readaloud_strings.xml" lang="gu" type="android" />
+    <output filename="values-hi/android_readaloud_strings.xml" lang="hi" type="android" />
+    <output filename="values-hr/android_readaloud_strings.xml" lang="hr" type="android" />
+    <output filename="values-hu/android_readaloud_strings.xml" lang="hu" type="android" />
+    <output filename="values-hy/android_readaloud_strings.xml" lang="hy" type="android" />
+    <output filename="values-in/android_readaloud_strings.xml" lang="id" type="android" />
+    <output filename="values-is/android_readaloud_strings.xml" lang="is" type="android" />
+    <output filename="values-it/android_readaloud_strings.xml" lang="it" type="android" />
+    <output filename="values-iw/android_readaloud_strings.xml" lang="iw" type="android" />
+    <output filename="values-ja/android_readaloud_strings.xml" lang="ja" type="android" />
+    <output filename="values-ka/android_readaloud_strings.xml" lang="ka" type="android" />
+    <output filename="values-kk/android_readaloud_strings.xml" lang="kk" type="android" />
+    <output filename="values-km/android_readaloud_strings.xml" lang="km" type="android" />
+    <output filename="values-kn/android_readaloud_strings.xml" lang="kn" type="android" />
+    <output filename="values-ko/android_readaloud_strings.xml" lang="ko" type="android" />
+    <output filename="values-ky/android_readaloud_strings.xml" lang="ky" type="android" />
+    <output filename="values-lo/android_readaloud_strings.xml" lang="lo" type="android" />
+    <output filename="values-lt/android_readaloud_strings.xml" lang="lt" type="android" />
+    <output filename="values-lv/android_readaloud_strings.xml" lang="lv" type="android" />
+    <output filename="values-mk/android_readaloud_strings.xml" lang="mk" type="android" />
+    <output filename="values-ml/android_readaloud_strings.xml" lang="ml" type="android" />
+    <output filename="values-mn/android_readaloud_strings.xml" lang="mn" type="android" />
+    <output filename="values-mr/android_readaloud_strings.xml" lang="mr" type="android" />
+    <output filename="values-ms/android_readaloud_strings.xml" lang="ms" type="android" />
+    <output filename="values-my/android_readaloud_strings.xml" lang="my" type="android" />
+    <output filename="values-ne/android_readaloud_strings.xml" lang="ne" type="android" />
+    <output filename="values-nl/android_readaloud_strings.xml" lang="nl" type="android" />
+    <output filename="values-nb/android_readaloud_strings.xml" lang="no" type="android" />
+    <output filename="values-or/android_readaloud_strings.xml" lang="or" type="android" />
+    <output filename="values-pa/android_readaloud_strings.xml" lang="pa" type="android" />
+    <output filename="values-pl/android_readaloud_strings.xml" lang="pl" type="android" />
+    <output filename="values-pt-rBR/android_readaloud_strings.xml" lang="pt-BR" type="android" />
+    <output filename="values-pt-rPT/android_readaloud_strings.xml" lang="pt-PT" type="android" />
+    <output filename="values-ro/android_readaloud_strings.xml" lang="ro" type="android" />
+    <output filename="values-ru/android_readaloud_strings.xml" lang="ru" type="android" />
+    <output filename="values-si/android_readaloud_strings.xml" lang="si" type="android" />
+    <output filename="values-sk/android_readaloud_strings.xml" lang="sk" type="android" />
+    <output filename="values-sl/android_readaloud_strings.xml" lang="sl" type="android" />
+    <output filename="values-sq/android_readaloud_strings.xml" lang="sq" type="android" />
+    <output filename="values-sr/android_readaloud_strings.xml" lang="sr" type="android" />
+    <output filename="values-b+sr+Latn/android_readaloud_strings.xml" lang="sr-Latn" type="android" />
+    <output filename="values-sv/android_readaloud_strings.xml" lang="sv" type="android" />
+    <output filename="values-sw/android_readaloud_strings.xml" lang="sw" type="android" />
+    <output filename="values-ta/android_readaloud_strings.xml" lang="ta" type="android" />
+    <output filename="values-te/android_readaloud_strings.xml" lang="te" type="android" />
+    <output filename="values-th/android_readaloud_strings.xml" lang="th" type="android" />
+    <output filename="values-tr/android_readaloud_strings.xml" lang="tr" type="android" />
+    <output filename="values-uk/android_readaloud_strings.xml" lang="uk" type="android" />
+    <output filename="values-ur/android_readaloud_strings.xml" lang="ur" type="android" />
+    <output filename="values-uz/android_readaloud_strings.xml" lang="uz" type="android" />
+    <output filename="values-vi/android_readaloud_strings.xml" lang="vi" type="android" />
+    <output filename="values-zh-rCN/android_readaloud_strings.xml" lang="zh-CN" type="android" />
+    <output filename="values-zh-rHK/android_readaloud_strings.xml" lang="zh-HK" type="android" />
+    <output filename="values-zh-rTW/android_readaloud_strings.xml" lang="zh-TW" type="android" />
+    <output filename="values-zu/android_readaloud_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_readaloud_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_readaloud_strings.xml" lang="en-XA" type="android" />
+  </outputs>
+  <translations>
+    <file path="translations/android_readaloud_strings_af.xtb" lang="af" />
+    <file path="translations/android_readaloud_strings_am.xtb" lang="am" />
+    <file path="translations/android_readaloud_strings_ar.xtb" lang="ar" />
+    <file path="translations/android_readaloud_strings_as.xtb" lang="as" />
+    <file path="translations/android_readaloud_strings_az.xtb" lang="az" />
+    <file path="translations/android_readaloud_strings_be.xtb" lang="be" />
+    <file path="translations/android_readaloud_strings_bg.xtb" lang="bg" />
+    <file path="translations/android_readaloud_strings_bn.xtb" lang="bn" />
+    <file path="translations/android_readaloud_strings_bs.xtb" lang="bs" />
+    <file path="translations/android_readaloud_strings_ca.xtb" lang="ca" />
+    <file path="translations/android_readaloud_strings_cs.xtb" lang="cs" />
+    <file path="translations/android_readaloud_strings_cy.xtb" lang="cy" />
+    <file path="translations/android_readaloud_strings_da.xtb" lang="da" />
+    <file path="translations/android_readaloud_strings_de.xtb" lang="de" />
+    <file path="translations/android_readaloud_strings_el.xtb" lang="el" />
+    <file path="translations/android_readaloud_strings_en-GB.xtb" lang="en-GB" />
+    <file path="translations/android_readaloud_strings_es.xtb" lang="es" />
+    <file path="translations/android_readaloud_strings_es-419.xtb" lang="es-419" />
+    <file path="translations/android_readaloud_strings_et.xtb" lang="et" />
+    <file path="translations/android_readaloud_strings_eu.xtb" lang="eu" />
+    <file path="translations/android_readaloud_strings_fa.xtb" lang="fa" />
+    <file path="translations/android_readaloud_strings_fi.xtb" lang="fi" />
+    <file path="translations/android_readaloud_strings_fil.xtb" lang="fil" />
+    <file path="translations/android_readaloud_strings_fr.xtb" lang="fr" />
+    <file path="translations/android_readaloud_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="translations/android_readaloud_strings_gl.xtb" lang="gl" />
+    <file path="translations/android_readaloud_strings_gu.xtb" lang="gu" />
+    <file path="translations/android_readaloud_strings_hi.xtb" lang="hi" />
+    <file path="translations/android_readaloud_strings_hr.xtb" lang="hr" />
+    <file path="translations/android_readaloud_strings_hu.xtb" lang="hu" />
+    <file path="translations/android_readaloud_strings_hy.xtb" lang="hy" />
+    <file path="translations/android_readaloud_strings_id.xtb" lang="id" />
+    <file path="translations/android_readaloud_strings_is.xtb" lang="is" />
+    <file path="translations/android_readaloud_strings_it.xtb" lang="it" />
+    <file path="translations/android_readaloud_strings_iw.xtb" lang="iw" />
+    <file path="translations/android_readaloud_strings_ja.xtb" lang="ja" />
+    <file path="translations/android_readaloud_strings_ka.xtb" lang="ka" />
+    <file path="translations/android_readaloud_strings_kk.xtb" lang="kk" />
+    <file path="translations/android_readaloud_strings_km.xtb" lang="km" />
+    <file path="translations/android_readaloud_strings_kn.xtb" lang="kn" />
+    <file path="translations/android_readaloud_strings_ko.xtb" lang="ko" />
+    <file path="translations/android_readaloud_strings_ky.xtb" lang="ky" />
+    <file path="translations/android_readaloud_strings_lo.xtb" lang="lo" />
+    <file path="translations/android_readaloud_strings_lt.xtb" lang="lt" />
+    <file path="translations/android_readaloud_strings_lv.xtb" lang="lv" />
+    <file path="translations/android_readaloud_strings_mk.xtb" lang="mk" />
+    <file path="translations/android_readaloud_strings_ml.xtb" lang="ml" />
+    <file path="translations/android_readaloud_strings_mn.xtb" lang="mn" />
+    <file path="translations/android_readaloud_strings_mr.xtb" lang="mr" />
+    <file path="translations/android_readaloud_strings_ms.xtb" lang="ms" />
+    <file path="translations/android_readaloud_strings_my.xtb" lang="my" />
+    <file path="translations/android_readaloud_strings_ne.xtb" lang="ne" />
+    <file path="translations/android_readaloud_strings_nl.xtb" lang="nl" />
+    <file path="translations/android_readaloud_strings_no.xtb" lang="no" />
+    <file path="translations/android_readaloud_strings_or.xtb" lang="or" />
+    <file path="translations/android_readaloud_strings_pa.xtb" lang="pa" />
+    <file path="translations/android_readaloud_strings_pl.xtb" lang="pl" />
+    <file path="translations/android_readaloud_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="translations/android_readaloud_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="translations/android_readaloud_strings_ro.xtb" lang="ro" />
+    <file path="translations/android_readaloud_strings_ru.xtb" lang="ru" />
+    <file path="translations/android_readaloud_strings_si.xtb" lang="si" />
+    <file path="translations/android_readaloud_strings_sk.xtb" lang="sk" />
+    <file path="translations/android_readaloud_strings_sl.xtb" lang="sl" />
+    <file path="translations/android_readaloud_strings_sq.xtb" lang="sq" />
+    <file path="translations/android_readaloud_strings_sr.xtb" lang="sr" />
+    <file path="translations/android_readaloud_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="translations/android_readaloud_strings_sv.xtb" lang="sv" />
+    <file path="translations/android_readaloud_strings_sw.xtb" lang="sw" />
+    <file path="translations/android_readaloud_strings_ta.xtb" lang="ta" />
+    <file path="translations/android_readaloud_strings_te.xtb" lang="te" />
+    <file path="translations/android_readaloud_strings_th.xtb" lang="th" />
+    <file path="translations/android_readaloud_strings_tr.xtb" lang="tr" />
+    <file path="translations/android_readaloud_strings_uk.xtb" lang="uk" />
+    <file path="translations/android_readaloud_strings_ur.xtb" lang="ur" />
+    <file path="translations/android_readaloud_strings_uz.xtb" lang="uz" />
+    <file path="translations/android_readaloud_strings_vi.xtb" lang="vi" />
+    <file path="translations/android_readaloud_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="translations/android_readaloud_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="translations/android_readaloud_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="translations/android_readaloud_strings_zu.xtb" lang="zu" />
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <message name="IDS_READALOUD_CLOSE_PLAYER_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string for the button that closes the 'Listen to this page' player.">
+        Close player.
+      </message>
+      <message name="IDS_READALOUD_PLAYER_NAME" desc="Name of the Read Aloud player for accessiblity.">
+        “Listen to this page” player
+      </message>
+      <message name="IDS_READALOUD_PLAYER_OPENED_AT_FULL_HEIGHT" desc="Accessibility string spoken when the 'Listen to this page' player bottom sheet expands to its full height.">
+        “Listen to this page” player opened at full height.
+      </message>
+      <message name="IDS_READALOUD_PLAYER_MINIMIZED" desc="Accessibility string spoken when the 'Listen to this page' player bottom sheet shrinks to its minimized height.">
+        “Listen to this page” player minimized.
+      </message>
+      <message name="IDS_READALOUD_CHROME_NOW_PLAYING" desc="Text in 'Listen to this page' player appearing before the title of the currently playing page.">
+        Chrome now playing
+      </message>
+      <message name="IDS_READALOUD_REPLAY" desc="Accessibility string for the button that rewinds 'Listen to this page' playback by the specified number of seconds.">
+        Go back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds
+      </message>
+      <message name="IDS_READALOUD_FORWARD" desc="Accessibility string for the button that seeks 'Listen to this page' playback forward by the specified number of seconds.">
+        Fast forward <ph name="NUMBER_OF_SECONDS">%1$s<ex>30</ex></ph> seconds
+      </message>
+      <message name="IDS_READALOUD_PLAY" desc="Accessibility string for the 'Listen to this page' play button.">
+        Play
+      </message>
+      <message name="IDS_READALOUD_PAUSE" desc="Accessibility string for the 'Listen to this page' pause button.">
+        Pause
+      </message>
+      <message name="IDS_READALOUD_SPEED" desc="Strings for the playback speed options menu so the user can select playback speed.">
+       <ph name="PLAYBACK_SPEED">%1$s<ex>1.5</ex>x</ph>
+      </message>
+      <message name="IDS_READALOUD_SPEED_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' playback speed menu button.">
+        <ph name="PLAYBACK_SPEED">%1$s<ex>1.0</ex></ph>x increase/decrease speed.
+      </message>
+      <message name="IDS_READALOUD_OPTIONS_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' options menu button.">
+        More options
+      </message>
+      <message name="IDS_READALOUD_MENU_BACK" desc="Accessibility string for the 'navigate back' button on the bottom sheet menus.">
+        Back
+      </message>
+      <message name="IDS_READALOUD_PLAYBACK_ERROR" desc="Message displayed when an error occured during 'Listen to this page' playback.">
+        Playback is unavailable for this page.
+      </message>
+      <message name="IDS_READALOUD_EXPANDED_PLAYBACK_ERROR" desc="Message displayed in the expanded player when an error occured during 'Listen to this page' playback.">
+        Playback unavailable
+      </message>
+      <message name="IDS_READALOUD_EXPANDED_PLAYBACK_ERROR_DESCRIPTION" desc="Description message displayed in the expanded player when an error occured during 'Listen to this page' playback.">
+        Unfortunately, playback is unavailable for this page at this time. Please try again later.
+      </message>
+      <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
+        Loading…
+      </message>
+       <message name="IDS_READALOUD_VOICE_MENU_TITLE" desc="Voice menu title in options menu.">
+        Voice
+      </message>
+      <message name="IDS_READALOUD_TRANSLATE_MENU_TITLE" desc="Translate menu title in options menu.">
+        Translate
+      </message>
+       <message name="IDS_READALOUD_HIGHLIGHT_TOGGLE_NAME" desc="Highlight toggle name in options menu.">
+        Highlight text &amp; auto scroll
+      </message>
+      <message name="IDS_READALOUD_OPTIONS_MENU_TITLE" desc="Options menu title.">
+        Options
+      </message>
+      <message name="IDS_READALOUD_SPEED_MENU_TITLE" desc="Playback speed menu title.">
+        Playback Speed
+      </message>
+      <message name="IDS_READALOUD_SEEK_BAR" desc="Accessibility string for the 'seekbar'.">
+        Scrub Playback
+      </message>
+      <message name="IDS_READALOUD_OPTIONS_MENU_DESCRIPTION" desc="Accessibility string announced when the player options menu is opened.">
+        Options menu
+      </message>
+      <message name="IDS_READALOUD_VOICE_MENU_DESCRIPTION" desc="Accessibility string announced when the player options menu is opened.">
+        Voice menu
+      </message>
+      <message name="IDS_READALOUD_SPEED_MENU_DESCRIPTION" desc="Accessibility string announced when the playback speed menu is opened.">
+        Playback speed menu
+      </message>
+      <message name="IDS_READALOUD_PITCH_LOW" desc="Words to show that a voice is low-pitched, as would be typically recognized as male, included in the voice description.">
+        Low-pitch
+      </message>
+      <message name="IDS_READALOUD_PITCH_MID" desc="Words to show that a voice is medium-pitched, as would be typically recognized as female, included in the voice description.">
+        Mid-pitch
+      </message>
+      <message name="IDS_READALOUD_TONE_BOLD" desc="Word to show that a voice has a bold tone, included in the voice description.">
+        Bold
+      </message>
+      <message name="IDS_READALOUD_TONE_CALM" desc="Word to show that a voice has a calm tone, included in the voice description.">
+        Calm
+      </message>
+      <message name="IDS_READALOUD_TONE_STEADY" desc="Word to show that a voice has a steady tone, included in the voice description.">
+        Steady
+      </message>
+      <message name="IDS_READALOUD_TONE_SMOOTH" desc="Word to show that a voice has a smooth tone, included in the voice description.">
+        Smooth
+      </message>
+      <message name="IDS_READALOUD_TONE_RELAXED" desc="Word to show that a voice has a relaxed tone, included in the voice description.">
+        Relaxed
+      </message>
+      <message name="IDS_READALOUD_TONE_WARM" desc="Word to show that a voice has a warm tone, included in the voice description.">
+        Warm
+      </message>
+      <message name="IDS_READALOUD_TONE_SERENE" desc="Word to show that a voice has a serene tone, included in the voice description.">
+        Serene
+      </message>
+      <message name="IDS_READALOUD_TONE_GENTLE" desc="Word to show that a voice has a gentle tone, included in the voice description.">
+        Gentle
+      </message>
+      <message name="IDS_READALOUD_TONE_BRIGHT" desc="Word to show that a voice has a bright tone, included in the voice description.">
+        Bright
+      </message>
+      <message name="IDS_READALOUD_TONE_BREEZY" desc="Word to show that a voice has a breezy tone, included in the voice description.">
+        Breezy
+      </message>
+      <message name="IDS_READALOUD_TONE_SOOTHING" desc="Word to show that a voice has a soothing tone, included in the voice description.">
+        Soothing
+      </message>
+      <message name="IDS_READALOUD_TONE_PEACEFUL" desc="Word to show that a voice has a peaceful tone, included in the voice description.">
+        Peaceful
+      </message>
+      <message name="IDS_READALOUD_VOICE_DESCRIPTION" desc="List of descriptive words shown with a voice in the 'Listen to this page' voice selection menu.">
+        <ph name="PITCH">%1$s<ex>Mid-pitch</ex></ph>, <ph name="TONE">%2$s<ex>Calm</ex></ph>
+      </message>
+    </messages>
+  </release>
+</grit>

@@ -5,19 +5,21 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
-#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
+#import "ios/chrome/browser/prerender/model/prerender_service.h"
+#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -40,7 +42,7 @@
 @interface ToolbarCoordinator () <PrimaryToolbarViewControllerDelegate,
                                   ToolbarCommands,
                                   ToolbarMediatorDelegate> {
-  PrerenderService* _prerenderService;
+  raw_ptr<PrerenderService> _prerenderService;
 }
 
 /// Whether this coordinator has been started.
@@ -74,6 +76,14 @@
   ToolbarType _steadyStateOmniboxPosition;
   /// Whether the omnibox focusing should happen with animation.
   BOOL _enableAnimationsForOmniboxFocus;
+  /// Indicates whether the fakebox was pinned on last signal to focus from
+  /// the fakebox.
+  BOOL _fakeboxPinned;
+  /// Whether to show the share button IPH next time the location bar gets
+  /// unfocused.
+  BOOL _showShareButtonIPHOnNextLocationBarUnfocus;
+  /// Command handler for showing the IPH.
+  id<HelpCommands> _helpHandler;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -90,6 +100,9 @@
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self
                      forProtocol:@protocol(ToolbarCommands)];
+
+    _helpHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), HelpCommands);
   }
   return self;
 }
@@ -107,9 +120,8 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
 
-  PrefService* prefs =
-      ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
-          ->GetPrefs();
+  PrefService* originalPrefs =
+      browser->GetBrowserState()->GetOriginalChromeBrowserState()->GetPrefs();
   segmentation_platform::DeviceSwitcherResultDispatcher* deviceSwitcherResult =
       nullptr;
   if (!browser->GetBrowserState()->IsOffTheRecord()) {
@@ -122,11 +134,12 @@
                isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
   self.toolbarMediator.delegate = self;
   self.toolbarMediator.deviceSwitcherResultDispatcher = deviceSwitcherResult;
-  self.toolbarMediator.prefService = prefs;
+  self.toolbarMediator.originalPrefService = originalPrefs;
 
   self.locationBarCoordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:browser];
   self.locationBarCoordinator.delegate = self.omniboxFocusDelegate;
+  self.locationBarCoordinator.bubblePresenter = self.bubblePresenter;
   self.locationBarCoordinator.popupPresenterDelegate =
       self.popupPresenterDelegate;
   [self.locationBarCoordinator start];
@@ -135,6 +148,8 @@
 
   self.primaryToolbarCoordinator.viewControllerDelegate = self;
   [self.primaryToolbarCoordinator start];
+  self.secondaryToolbarCoordinator.toolbarHeightDelegate =
+      self.toolbarHeightDelegate;
   [self.secondaryToolbarCoordinator start];
 
   self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
@@ -185,7 +200,7 @@
   [self.toolbarMediator disconnect];
   self.toolbarMediator.omniboxConsumer = nil;
   self.toolbarMediator.delegate = nil;
-  self.toolbarMediator.prefService = nullptr;
+  self.toolbarMediator.originalPrefService = nullptr;
   self.toolbarMediator.deviceSwitcherResultDispatcher = nullptr;
   self.toolbarMediator = nil;
 
@@ -262,7 +277,8 @@
 
 #pragma mark Omnibox and LocationBar
 
-- (void)transitionToLocationBarFocusedState:(BOOL)focused {
+- (void)transitionToLocationBarFocusedState:(BOOL)focused
+                                 completion:(ProceduralBlock)completion {
   // Disable infobarBanner overlays when focusing the omnibox as they overlap
   // with primary toolbar.
   OverlayPresentationContext* infobarBannerContext =
@@ -284,11 +300,19 @@
   BOOL animateTransition = _enableAnimationsForOmniboxFocus &&
                            _steadyStateOmniboxPosition == ToolbarType::kPrimary;
 
+  __weak __typeof(self) weakSelf = self;
+  BOOL toolbarExpanded =
+      focused && !IsRegularXRegularSizeClass(self.traitEnvironment);
   [self.orchestrator
       transitionToStateOmniboxFocused:focused
-                      toolbarExpanded:focused && !IsRegularXRegularSizeClass(
-                                                     self.traitEnvironment)
-                             animated:animateTransition];
+                      toolbarExpanded:toolbarExpanded
+                              trigger:[self omniboxFocusTrigger]
+                             animated:animateTransition
+                           completion:^{
+                             [weakSelf focusTransitionDidComplete:focused
+                                                       completion:completion];
+                           }];
+
   self.locationBarFocused = focused;
 }
 
@@ -305,7 +329,9 @@
 - (CGFloat)collapsedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
     CHECK(IsBottomOmniboxSteadyStateEnabled());
-    return 0.0;
+    // TODO(crbug.com/1473629): Find out why primary toolbar height cannot be
+    // zero. This is a temporary fix for the pdf bug.
+    return 1.0;
   }
 
   return ToolbarCollapsedHeight(
@@ -315,7 +341,9 @@
 - (CGFloat)expandedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
     CHECK(IsBottomOmniboxSteadyStateEnabled());
-    return 0.0;
+    // TODO(crbug.com/1473629): Find out why primary toolbar height cannot be
+    // zero. This is a temporary fix for the pdf bug.
+    return 1.0;
   }
 
   CGFloat height =
@@ -354,7 +382,7 @@
 
 - (void)focusOmniboxNoAnimation {
   _enableAnimationsForOmniboxFocus = NO;
-  [self fakeboxFocused];
+  [self.locationBarCoordinator focusOmniboxFromFakebox];
   _enableAnimationsForOmniboxFocus = YES;
   // If the pasteboard is containing a URL, the omnibox popup suggestions are
   // displayed as soon as the omnibox is focused.
@@ -365,7 +393,8 @@
   }
 }
 
-- (void)fakeboxFocused {
+- (void)focusOmniboxFromFakeboxPinned:(BOOL)pinned {
+  _fakeboxPinned = pinned;
   [self.locationBarCoordinator focusOmniboxFromFakebox];
 }
 
@@ -516,6 +545,10 @@
   }
 }
 
+- (void)showShareButtonIPHAfterLocationBarUnfocus {
+  _showShareButtonIPHOnNextLocationBarUnfocus = YES;
+}
+
 #pragma mark - ToolbarMediatorDelegate
 
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
@@ -566,7 +599,49 @@
                       toolbarExpanded:omniboxFocused &&
                                       !IsRegularXRegularSizeClass(
                                           self.traitEnvironment)
-                             animated:NO];
+                              trigger:[self omniboxFocusTrigger]
+                             animated:NO
+                           completion:nil];
+}
+
+/// Returns the appropriate `OmniboxFocusTrigger` depending on whether this is
+/// an incognito browser, the NTP is displayed, and whether the fakebox was
+/// pinned if it was selected.
+- (OmniboxFocusTrigger)omniboxFocusTrigger {
+  if (self.browser->GetBrowserState()->IsOffTheRecord() ||
+      !IsSplitToolbarMode(self.traitEnvironment)) {
+    return OmniboxFocusTrigger::kOther;
+  }
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    return OmniboxFocusTrigger::kOther;
+  }
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  if (!NTPHelper || !NTPHelper->IsActive()) {
+    return OmniboxFocusTrigger::kOther;
+  }
+  if (IsIOSLargeFakeboxEnabled()) {
+    return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedLargeFakebox
+                          : OmniboxFocusTrigger::kUnpinnedLargeFakebox;
+  }
+  return OmniboxFocusTrigger::kPinnedFakebox;
+}
+
+- (void)focusTransitionDidComplete:(BOOL)focused
+                        completion:(ProceduralBlock)completion {
+  if (!focused && _showShareButtonIPHOnNextLocationBarUnfocus) {
+    // Must call this display method after the animation is done, because the
+    // display depends on the location of the share button to anchor the IPH,
+    // doing it in the middle of the animtion will lead to the anchoring point
+    // being off.
+    [_helpHandler presentShareButtonHelpBubbleIfEligible];
+    _showShareButtonIPHOnNextLocationBarUnfocus = NO;
+  }
+  if (completion) {
+    completion();
+    completion = nil;
+  }
 }
 
 @end

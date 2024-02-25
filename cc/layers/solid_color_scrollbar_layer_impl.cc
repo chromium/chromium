@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "cc/trees/layer_tree_impl.h"
-#include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/occlusion.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 
@@ -49,22 +47,23 @@ SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
                              is_left_side_vertical_scrollbar,
                              /*is_overlay*/ true),
       thumb_thickness_(thumb_thickness),
-      track_start_(track_start),
-      color_(tree_impl->settings().solid_color_scrollbar_color) {}
+      track_start_(track_start) {}
 
 void SolidColorScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   ScrollbarLayerImplBase::PushPropertiesTo(layer);
   CHECK(!layer->HitTestable());
+  static_cast<SolidColorScrollbarLayerImpl*>(layer)->set_color(color_);
 }
 
 int SolidColorScrollbarLayerImpl::ThumbThickness() const {
   if (thumb_thickness_ != -1)
     return thumb_thickness_;
 
-  if (orientation() == ScrollbarOrientation::HORIZONTAL)
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
     return bounds().height();
-  else
+  } else {
     return bounds().width();
+  }
 }
 
 int SolidColorScrollbarLayerImpl::ThumbLength() const {
@@ -76,10 +75,11 @@ int SolidColorScrollbarLayerImpl::ThumbLength() const {
 }
 
 float SolidColorScrollbarLayerImpl::TrackLength() const {
-  if (orientation() == ScrollbarOrientation::HORIZONTAL)
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
     return bounds().width() - TrackStart() * 2;
-  else
+  } else {
     return bounds().height() + vertical_adjust() - TrackStart() * 2;
+  }
 }
 
 int SolidColorScrollbarLayerImpl::TrackStart() const { return track_start_; }

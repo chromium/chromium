@@ -22,8 +22,7 @@ TEST(GaiaIdHashTest, ShouldBeDeterministic) {
 TEST(GaiaIdHashTest, ShouldHash) {
   const std::string gaia_id = "user_gaia_id";
   const std::string gaia_id_hash = crypto::SHA256HashString(gaia_id);
-  std::string gaia_id_base64_hash;
-  base::Base64Encode(gaia_id_hash, &gaia_id_base64_hash);
+  std::string gaia_id_base64_hash = base::Base64Encode(gaia_id_hash);
 
   GaiaIdHash hash = GaiaIdHash::FromGaiaId(gaia_id);
   EXPECT_EQ(gaia_id_hash, hash.ToBinary());

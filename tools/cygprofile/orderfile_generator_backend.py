@@ -53,9 +53,10 @@ constants.SetBuildType('Release')
 # Architecture specific GN args. Trying to build an orderfile for an
 # architecture not listed here will eventually throw.
 _ARCH_GN_ARGS = {
-    'arm': ['target_cpu = "arm"'],
-    'arm64': ['target_cpu = "arm64"', 'android_64bit_browser = true'],
-    'x86': ['target_cpu = "x86"'],
+    'arm': ['target_cpu="arm"'],
+    'arm64': ['target_cpu="arm64"'],
+    'x86': ['target_cpu="x86"'],
+    'x64': ['target_cpu="x64"'],
 }
 
 class CommandError(Exception):
@@ -238,8 +239,8 @@ class ClankCompiler:
   """Handles compilation of clank."""
 
   def __init__(self, out_dir, step_recorder, arch, use_goma, goma_dir,
-               use_remoteexec, ninja_command, system_health_profiling,
-               monochrome, public, orderfile_location):
+               use_remoteexec, ninja_command, system_health_profiling, public,
+               orderfile_location):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
     self._arch = arch
@@ -251,16 +252,15 @@ class ClankCompiler:
     self._system_health_profiling = system_health_profiling
     self._public = public
     self._orderfile_location = orderfile_location
-    if monochrome:
-      self._apk = 'Monochrome.apk'
-      self._apk_target = 'monochrome_apk'
+    self._apk = 'Monochrome.apk'
+    self._apk_target = 'monochrome_apk'
+    if '64' in self._arch:
+      # Monochrome has a _64 suffix for arm64 and x64 builds.
+      self._libname = 'libmonochrome_64'
+      self._libchrome_target = 'libmonochrome_64'
+    else:
       self._libname = 'libmonochrome'
       self._libchrome_target = 'libmonochrome'
-    else:
-      self._apk = 'Chrome.apk'
-      self._apk_target = 'chrome_apk'
-      self._libname = 'libchrome'
-      self._libchrome_target = 'libchrome'
     if public:
       self._apk = self._apk.replace('.apk', 'Public.apk')
       self._apk_target = self._apk_target.replace('_apk', '_public_apk')
@@ -317,7 +317,7 @@ class ClankCompiler:
         self._ninja_command + [os.path.join(self._out_dir, 'Release'), target])
 
   def ForceRelink(self):
-    """Forces libchrome.so or libmonochrome.so to be re-linked.
+    """Forces libmonochrome.so to be re-linked.
 
     With partitioned libraries enabled, deleting these library files does not
     guarantee they'll be recreated by the linker (they may simply be
@@ -342,12 +342,12 @@ class ClankCompiler:
     self.Build(instrumented, use_call_graph, self._apk_target)
 
   def CompileLibchrome(self, instrumented, use_call_graph, force_relink=False):
-    """Builds a libchrome.so either with or without order_profiling on.
+    """Builds a libmonochrome.so either with or without order_profiling on.
 
     Args:
       instrumented: (bool) Whether to build an instrumented apk.
       use_call_graph: (bool) Whether to use the call graph instrumentation.
-      force_relink: (bool) Whether libchrome.so should be re-created.
+      force_relink: (bool) Whether libmonochrome.so should be re-created.
     """
     if force_relink:
       self.ForceRelink()
@@ -488,6 +488,12 @@ class OrderfileGenerator:
 
   def _GetPathToOrderfile(self):
     """Gets the path to the architecture-specific orderfile."""
+    # TODO(https://crbug.com/1517659): We are testing if arm64 can improve perf
+    #     while not regressing arm32 memory or perf by too much. For now we are
+    #     keeping the fake arch as 'arm' to avoid needing to change the path. In
+    #     the future we should consider either generating multiple orderfiles,
+    #     one per architecture, or remove the fake arch as it would no longer be
+    #     accurate.
     # Build GN files use the ".arm" orderfile irrespective of the actual
     # architecture. Fake it, otherwise the orderfile we generate here is not
     # going to be picked up by builds.
@@ -503,41 +509,18 @@ class OrderfileGenerator:
 
     Returns:
       (Device with given serial ID) : if the --device flag is set.
-      (Device running Android[K,L]) : if --use-legacy-chrome-apk flag is set or
-                                      no device running Android N+ was found.
-      (Device running Android N+) : Otherwise.
+      (Some connected device) : Otherwise.
 
     Raises Error:
       If no device meeting the requirements has been found.
     """
-    devices = None
     if self._options.device:
-      devices = [device_utils.DeviceUtils(self._options.device)]
-    else:
-      devices = device_utils.DeviceUtils.HealthyDevices()
+      return device_utils.DeviceUtils(self._options.device)
 
+    devices = device_utils.DeviceUtils.HealthyDevices()
     assert devices, 'Expected at least one connected device'
 
-    if self._options.use_legacy_chrome_apk:
-      self._monochrome = False
-      for device in devices:
-        device_version = device.build_version_sdk
-        if (version_codes.KITKAT <= device_version <=
-            version_codes.LOLLIPOP_MR1):
-          return device
-
-    assert not self._options.use_legacy_chrome_apk, \
-      'No device found running suitable android version for Chrome.apk.'
-
-    preferred_device = None
-    for device in devices:
-      if device.build_version_sdk >= version_codes.NOUGAT:
-        preferred_device = device
-        break
-
-    self._monochrome = preferred_device is not None
-
-    return preferred_device if preferred_device else devices[0]
+    return devices[0]
 
 
   def __init__(self, options, orderfile_updater_class):
@@ -571,8 +554,14 @@ class OrderfileGenerator:
       simulate_user = options.simulate_user
       device = self._SetDevice()
       self._profiler = profile_android_startup.AndroidProfileTool(
-          output_directory, host_profile_dir, use_wpr, urls, simulate_user,
-          device, debug=self._options.streamline_for_debugging)
+          output_directory,
+          host_profile_dir,
+          use_wpr,
+          urls,
+          simulate_user,
+          device,
+          debug=self._options.streamline_for_debugging,
+          verbosity=self._options.verbosity)
       if options.pregenerated_profiles:
         self._profiler.SetPregeneratedProfiles(
             glob.glob(options.pregenerated_profiles))
@@ -581,7 +570,6 @@ class OrderfileGenerator:
           '--pregenerated-profiles cannot be used with --skip-profile')
       assert not options.profile_save_dir, (
           '--profile-save-dir cannot be used with --skip-profile')
-      self._monochrome = not self._options.use_legacy_chrome_apk
 
     # Outlined function handling enabled by default for all architectures.
     self._order_outlined_functions = not options.noorder_outlined_functions
@@ -808,15 +796,13 @@ class OrderfileGenerator:
     self._step_recorder.BeginStep("Running orderfile.memory_mobile")
     try:
       out_dir = tempfile.mkdtemp()
-      self._profiler._RunCommand(['tools/perf/run_benchmark',
-                                  '--device={}'.format(
-                                      self._profiler._device.serial),
-                                  '--browser=exact',
-                                  '--output-format=csv',
-                                  '--output-dir={}'.format(out_dir),
-                                  '--reset-results',
-                                  '--browser-executable={}'.format(apk),
-                                  'orderfile.memory_mobile'])
+      cmd = [
+          'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
+          '--browser=exact', '--output-format=csv', '--output-dir', out_dir,
+          '--reset-results', '--browser-executable', apk,
+          'orderfile.memory_mobile'
+      ] + ['-v'] * self._options.verbosity
+      self._profiler._RunCommand(cmd)
 
       out_file_path = os.path.join(out_dir, 'results.csv')
       if not os.path.exists(out_file_path):
@@ -859,15 +845,13 @@ class OrderfileGenerator:
     self._step_recorder.BeginStep("Running Speedometer2.0.")
     try:
       out_dir = tempfile.mkdtemp()
-      self._profiler._RunCommand(['tools/perf/run_benchmark',
-                                  '--device={}'.format(
-                                      self._profiler._device.serial),
-                                  '--browser=exact',
-                                  '--output-format=histograms',
-                                  '--output-dir={}'.format(out_dir),
-                                  '--reset-results',
-                                  '--browser-executable={}'.format(apk),
-                                  'speedometer2'])
+      cmd = [
+          'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
+          '--browser=exact', '--output-format=histograms', '--output-dir',
+          out_dir, '--reset-results', '--browser-executable', apk,
+          'speedometer2'
+      ] + ['-v'] * self._options.verbosity
+      self._profiler._RunCommand(cmd)
 
       out_file_path = os.path.join(out_dir, 'histograms.json')
       if not os.path.exists(out_file_path):
@@ -910,14 +894,12 @@ class OrderfileGenerator:
     benchmark_results = {}
     try:
       _UnstashOutputDirectory(out_directory)
-      self._compiler = ClankCompiler(out_directory, self._step_recorder,
-                                     self._options.arch, self._options.use_goma,
-                                     self._options.goma_dir,
-                                     self._options.use_remoteexec,
-                                     self._ninja_command,
-                                     self._options.system_health_orderfile,
-                                     self._monochrome, self._options.public,
-                                     self._GetPathToOrderfile())
+      self._compiler = ClankCompiler(
+          out_directory, self._step_recorder, self._options.arch,
+          self._options.use_goma, self._options.goma_dir,
+          self._options.use_remoteexec, self._ninja_command,
+          self._options.system_health_orderfile, self._options.public,
+          self._GetPathToOrderfile())
 
       if no_orderfile:
         orderfile_path = self._GetPathToOrderfile()
@@ -963,8 +945,8 @@ class OrderfileGenerator:
             self._instrumented_out_dir, self._step_recorder, self._options.arch,
             self._options.use_goma, self._options.goma_dir,
             self._options.use_remoteexec, self._ninja_command,
-            self._options.system_health_orderfile, self._monochrome,
-            self._options.public, self._GetPathToOrderfile())
+            self._options.system_health_orderfile, self._options.public,
+            self._GetPathToOrderfile())
         if not self._options.pregenerated_profiles:
           # If there are pregenerated profiles, the instrumented build should
           # not be changed to avoid invalidating the pregenerated profile
@@ -1002,8 +984,8 @@ class OrderfileGenerator:
             self._uninstrumented_out_dir, self._step_recorder,
             self._options.arch, self._options.use_goma, self._options.goma_dir,
             self._options.use_remoteexec, self._ninja_command,
-            self._options.system_health_orderfile, self._monochrome,
-            self._options.public, self._GetPathToOrderfile())
+            self._options.system_health_orderfile, self._options.public,
+            self._GetPathToOrderfile())
 
         self._compiler.CompileLibchrome(instrumented=False,
                                         use_call_graph=False)
@@ -1109,9 +1091,6 @@ def CreateArgumentParser():
                       help=('Create an orderfile based on an about:blank '
                             'startup benchmark instead of system health '
                             'benchmarks.'))
-  parser.add_argument(
-      '--use-legacy-chrome-apk', action='store_true', default=False,
-      help=('Compile and instrument chrome for [L, K] devices.'))
   parser.add_argument('--manual-symbol-offsets', default=None, type=str,
                       help=('File of list of ordered symbol offsets generated '
                             'by manual profiling. Must set other --manual* '
@@ -1148,6 +1127,13 @@ def CreateArgumentParser():
                             'checkout; performs no other action'))
   parser.add_argument('--use-call-graph', action='store_true', default=False,
                       help='Use call graph instrumentation.')
+  parser.add_argument('-v',
+                      '--verbose',
+                      dest='verbosity',
+                      action='count',
+                      default=0,
+                      help='>=1 to print debug logging, this will also be '
+                      'passed to run_benchmark calls.')
   profile_android_startup.AddProfileCollectionArguments(parser)
   return parser
 
@@ -1162,16 +1148,12 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   Returns:
     True iff success.
   """
-  logging.basicConfig(level=logging.INFO)
+  if options.verbosity >= 1:
+    level = logging.DEBUG
+  else:
+    level = logging.INFO
+  logging.basicConfig(level=level)
   devil_chromium.Initialize(adb_path=options.adb_path)
-
-  # Since we generate a ".arm" orderfile irrespective of the architecture (see
-  # comment in _GetPathToOrderfile()), make sure that we don't commit it.
-  if options.arch != 'arm':
-    assert not options.buildbot, (
-        'ARM is the only supported architecture on bots')
-    assert not options.upload_ready_orderfiles, (
-        'ARM is the only supported architecture on bots')
 
   generator = OrderfileGenerator(options, orderfile_updater_class)
   try:

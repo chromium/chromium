@@ -1,0 +1,7 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++Image textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="img"}]
+++++Image text:"composite-part-1" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {src="composite-part-1.jpg"}]
+++++Image text:"composite-part-2" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {src="composite-part-2.jpg"}]
+++Image textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="image"}]
+++++Image text:"composite-part-1" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {src="composite-part-1.jpg"}]
+++++Image text:"composite-part-2" textSize:16.0 style:0 htmlInfo:[{htmlTag="img"}, {display="inline"}, {src="composite-part-2.jpg"}]

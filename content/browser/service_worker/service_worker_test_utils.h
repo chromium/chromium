@@ -36,18 +36,21 @@ class StorageKey;
 namespace content {
 
 class EmbeddedWorkerTestHelper;
+class ServiceWorkerContext;
 class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerRegistry;
-class ServiceWorkerStorage;
 class ServiceWorkerVersion;
 
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>
-ReceiveServiceWorkerStatus(absl::optional<blink::ServiceWorkerStatusCode>* out,
+ReceiveServiceWorkerStatus(std::optional<blink::ServiceWorkerStatusCode>* out,
                            base::OnceClosure quit_closure);
 
 blink::ServiceWorkerStatusCode WarmUpServiceWorker(
     ServiceWorkerVersion* version);
+
+bool WarmUpServiceWorker(ServiceWorkerContext& service_worker_context,
+                         const GURL& url);
 
 blink::ServiceWorkerStatusCode StartServiceWorker(
     ServiceWorkerVersion* version);

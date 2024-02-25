@@ -15,7 +15,7 @@
 
 namespace autofill {
 
-// The detector's cache is a map from a |unique_renderer_id| to the list of
+// The detector's cache is a map from a |renderer_id| to the list of
 // predictions for the given form (in the order of decreasing reliability).
 using UsernameDetectorCache =
     std::map<FormRendererId, std::vector<FieldRendererId>>;

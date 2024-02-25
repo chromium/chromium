@@ -13,8 +13,8 @@ BadgeManagerDelegateMac::BadgeManagerDelegateMac(Profile* profile,
                                                  BadgeManager* badge_manager)
     : BadgeManagerDelegate(profile, badge_manager) {}
 
-void BadgeManagerDelegateMac::OnAppBadgeUpdated(const web_app::AppId& app_id) {
-  const absl::optional<BadgeManager::BadgeValue>& badge =
+void BadgeManagerDelegateMac::OnAppBadgeUpdated(const webapps::AppId& app_id) {
+  const std::optional<BadgeManager::BadgeValue>& badge =
       badge_manager()->GetBadgeValue(app_id);
 
   auto* shim_manager = apps::AppShimManager::Get();

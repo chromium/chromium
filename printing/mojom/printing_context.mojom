@@ -54,6 +54,7 @@ struct PrintSettings {
   mojo_base.mojom.String16 device_name;
   RequestedMedia requested_media;
   PageSetup page_setup_device_units;
+  bool borderless;
   string media_type;
   gfx.mojom.Size dpi;
   double scale_factor;
@@ -76,4 +77,7 @@ struct PrintSettings {
   string username;
   [EnableIf=is_chromeos]
   string pin_value;
+
+  [EnableIf=enable_oop_printing_no_oop_basic_print_dialog]
+  mojo_base.mojom.DictionaryValue system_print_dialog_data;
 };

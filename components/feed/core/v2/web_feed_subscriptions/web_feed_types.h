@@ -6,12 +6,12 @@
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_TYPES_H_
 
 #include <iosfwd>
+#include <optional>
 
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/operation_token.h"
 #include "components/feed/core/v2/public/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Defines some types needed by WebFeedSubscriptionCoordinator and its models.
 
@@ -54,10 +54,10 @@ struct WebFeedInFlightChange {
   bool subscribing = false;
   WebFeedInFlightChangeStrategy strategy;
   // Set only when subscribing from a web page.
-  absl::optional<WebFeedPageInformation> page_information;
+  std::optional<WebFeedPageInformation> page_information;
   // We may or may not know about this web feed when subscribing; always known
   // when unsubscribing.
-  absl::optional<feedstore::WebFeedInfo> web_feed_info;
+  std::optional<feedstore::WebFeedInfo> web_feed_info;
   feedwire::webfeed::WebFeedChangeReason change_reason = feedwire::webfeed::
       WebFeedChangeReason::WEB_FEED_CHANGE_REASON_UNSPECIFIED;
 };

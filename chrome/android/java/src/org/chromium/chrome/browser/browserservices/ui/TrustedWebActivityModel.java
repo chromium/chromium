@@ -9,9 +9,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import javax.inject.Inject;
 
-/**
- * Model describing the state of a Trusted Web Activity.
- */
+/** Model describing the state of a Trusted Web Activity. */
 @ActivityScope
 public class TrustedWebActivityModel extends PropertyModel {
     /** The state of Trusted Web Activity disclosure. Can be one of the constants below. */
@@ -41,9 +39,7 @@ public class TrustedWebActivityModel extends PropertyModel {
     public static final WritableObjectPropertyKey<String> PACKAGE_NAME =
             new WritableObjectPropertyKey<>();
 
-    /**
-     * A callback for when the disclosure is accepted.
-     */
+    /** A callback for when the disclosure is accepted. */
     public interface DisclosureEventsCallback {
         /** Called when user accepted the disclosure. */
         void onDisclosureAccepted();
@@ -54,7 +50,11 @@ public class TrustedWebActivityModel extends PropertyModel {
 
     @Inject
     public TrustedWebActivityModel() {
-        super(DISCLOSURE_STATE, DISCLOSURE_FIRST_TIME, DISCLOSURE_SCOPE, DISCLOSURE_EVENTS_CALLBACK,
+        super(
+                DISCLOSURE_STATE,
+                DISCLOSURE_FIRST_TIME,
+                DISCLOSURE_SCOPE,
+                DISCLOSURE_EVENTS_CALLBACK,
                 PACKAGE_NAME);
     }
 }

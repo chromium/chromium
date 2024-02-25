@@ -4,10 +4,13 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,11 +24,14 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
 namespace {
+
+using ::testing::ElementsAre;
 
 // Normalize schema strings to compare them reliabily. Notably, applies the
 // following transformations:
@@ -65,10 +71,8 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
   }
 
   static base::FilePath GetVersionFilePath(int version_id) {
-    // Should be safe cross platform because StringPrintf has overloads for wide
-    // strings.
-    return base::FilePath(
-        base::StringPrintf(FILE_PATH_LITERAL("version_%d.sql"), version_id));
+    return base::FilePath::FromASCII(
+        base::StrCat({"version_", base::NumberToString(version_id), ".sql"}));
   }
 
   std::string GetCurrentSchema() {
@@ -89,7 +93,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
   // successfully, false otherwise.
   bool GetDatabaseData(const base::FilePath& file, std::string* contents) {
     base::FilePath source_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path);
     source_path = source_path.AppendASCII(
         "content/test/data/attribution_reporting/databases");
     source_path = source_path.Append(file);
@@ -359,9 +363,72 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion55ToCurrent) {
         db.GetUniqueStatement("SELECT read_only_source_data FROM sources"));
     ASSERT_TRUE(s.Step());
     proto::AttributionReadOnlySourceData msg;
-    ASSERT_TRUE(msg.ParseFromString(s.ColumnString(0)));
-    ASSERT_EQ(3, msg.max_event_level_reports());
+    {
+      base::span<const uint8_t> blob = s.ColumnBlob(0);
+      ASSERT_TRUE(msg.ParseFromArray(blob.data(), blob.size()));
+    }
+    EXPECT_EQ(3, msg.max_event_level_reports());
+    EXPECT_FALSE(msg.has_randomized_response_rate());
+    EXPECT_EQ(0, msg.event_level_report_window_start_time());
+    EXPECT_THAT(msg.event_level_report_window_end_times(),
+                ElementsAre(base::Hours(1).InMicroseconds()));
     ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion56ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(56), DbPath());
+
+  {
+    // Verify pre-conditions.
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+  }
+  {
+    AttributionStorageSql storage(
+        temp_directory_.GetPath(),
+        std::make_unique<ConfigurableStorageDelegate>());
+
+    // Store a valid report to verify corruption deletion.
+    static_cast<AttributionStorage*>(&storage)->StoreSource(
+        SourceBuilder().Build());
+    static_cast<AttributionStorage*>(&storage)->MaybeCreateAndStoreReport(
+        DefaultTrigger());
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    // Testing deletion of corrupted reports.
+    size_t rows;
+    static constexpr const char* kTablesExpectOne[] = {"sources", "reports",
+                                                       "source_destinations"};
+    for (const char* table : kTablesExpectOne) {
+      sql::test::CountTableRows(&db, table, &rows);
+      EXPECT_EQ(1u, rows) << table;
+    }
+
+    sql::test::CountTableRows(&db, "dedup_keys", &rows);
+    EXPECT_EQ(0u, rows) << "dedup_keys";
+
+    histograms.ExpectUniqueSample(
+        "Conversions.CorruptSourcesDeletedOnMigration", 1, 1);
+    histograms.ExpectUniqueSample(
+        "Conversions.CorruptReportsDeletedOnMigration", 2, 1);
   }
 
   // DB creation histograms should be recorded.

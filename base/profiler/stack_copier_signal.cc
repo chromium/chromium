@@ -13,8 +13,10 @@
 
 #include <atomic>
 #include <cstring>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
@@ -22,7 +24,6 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -99,33 +100,39 @@ class ScopedEventSignaller {
   ~ScopedEventSignaller() { event_->Signal(); }
 
  private:
-  raw_ptr<AsyncSafeWaitableEvent> event_;
+  // RAW_PTR_EXCLUSION: raw_ptr<> is not safe within a signal handler.
+  RAW_PTR_EXCLUSION AsyncSafeWaitableEvent* event_;
 };
 
 // Struct to store the arguments to the signal handler.
 struct HandlerParams {
   uintptr_t stack_base_address;
 
+  // RAW_PTR_EXCLUSION: raw_ptr<> is not safe within a signal handler,
+  // as the target thread could be in the middle of an allocation and
+  // PartitionAlloc's external invariants might be violated. So all
+  // the pointers below are C pointers.
+
   // The event is signalled when signal handler is done executing.
-  raw_ptr<AsyncSafeWaitableEvent> event;
+  RAW_PTR_EXCLUSION AsyncSafeWaitableEvent* event;
 
   // Return values:
 
   // Successfully copied the stack segment.
-  raw_ptr<bool> success;
+  RAW_PTR_EXCLUSION bool* success;
 
   // The thread context of the leaf function.
-  raw_ptr<mcontext_t> context;
+  RAW_PTR_EXCLUSION mcontext_t* context;
 
   // Buffer to copy the stack segment.
-  raw_ptr<StackBuffer> stack_buffer;
-  raw_ptr<const uint8_t*> stack_copy_bottom;
+  RAW_PTR_EXCLUSION StackBuffer* stack_buffer;
+  RAW_PTR_EXCLUSION const uint8_t** stack_copy_bottom;
 
   // The timestamp when the stack was copied.
-  raw_ptr<absl::optional<TimeTicks>> maybe_timestamp;
+  RAW_PTR_EXCLUSION std::optional<TimeTicks>* maybe_timestamp;
 
   // The delegate provided to the StackCopier.
-  raw_ptr<StackCopier::Delegate> stack_copier_delegate;
+  RAW_PTR_EXCLUSION StackCopier::Delegate* stack_copier_delegate;
 };
 
 // Pointer to the parameters to be "passed" to the CopyStackSignalHandler() from
@@ -141,7 +148,7 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
 
   // MaybeTimeTicksNowIgnoringOverride() is implemented in terms of
   // clock_gettime on Linux, which is signal safe per the signal-safety(7) man
-  // page, but is not garanteed to succeed, in which case absl::nullopt is
+  // page, but is not garanteed to succeed, in which case std::nullopt is
   // returned. TimeTicks::Now() can't be used because it expects clock_gettime
   // to always succeed and is thus not signal-safe.
   *params->maybe_timestamp = subtle::MaybeTimeTicksNowIgnoringOverride();
@@ -227,7 +234,7 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
   bool copied = false;
   const uint8_t* stack_copy_bottom = nullptr;
   const uintptr_t stack_base_address = thread_delegate_->GetStackBaseAddress();
-  absl::optional<TimeTicks> maybe_timestamp;
+  std::optional<TimeTicks> maybe_timestamp;
   HandlerParams params = {stack_base_address, &wait_event,  &copied,
                           thread_context,     stack_buffer, &stack_copy_bottom,
                           &maybe_timestamp,   delegate};

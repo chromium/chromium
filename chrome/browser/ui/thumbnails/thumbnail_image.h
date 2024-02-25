@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -83,7 +83,7 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
     // image passed to OnThumbnailImageAvailable fits the needs of the observer
     // for display purposes, without the observer having to further crop the
     // image. The default is unspecified.
-    void SetSizeHint(const absl::optional<gfx::Size>& size_hint) {
+    void SetSizeHint(const std::optional<gfx::Size>& size_hint) {
       size_hint_ = size_hint;
     }
 
@@ -93,7 +93,7 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
     explicit Subscription(scoped_refptr<ThumbnailImage> thumbnail);
 
     scoped_refptr<ThumbnailImage> thumbnail_;
-    absl::optional<gfx::Size> size_hint_;
+    std::optional<gfx::Size> size_hint_;
 
     UncompressedImageCallback uncompressed_image_callback_;
     CompressedImageCallback compressed_image_callback_;
@@ -135,13 +135,13 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
   //
   // Even if a callback is not set, the subscription influences
   // thumbnail capture. It should be destroyed when updates are not
-  // needed. It is designed to be stored in absl::optional, created and
+  // needed. It is designed to be stored in std::optional, created and
   // destroyed as needed.
   std::unique_ptr<Subscription> Subscribe();
 
   // Sets the SkBitmap data and notifies observers with the resulting image.
   void AssignSkBitmap(SkBitmap bitmap,
-                      absl::optional<uint64_t> frame_id = absl::nullopt);
+                      std::optional<uint64_t> frame_id = std::nullopt);
 
   // Clears the currently set |data_|, for when the current thumbnail is no
   // longer valid to display.
@@ -179,7 +179,7 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
 
   void AssignJPEGData(base::Token thumbnail_id,
                       base::TimeTicks assign_sk_bitmap_time,
-                      absl::optional<uint64_t> frame_id_for_trace,
+                      std::optional<uint64_t> frame_id_for_trace,
                       std::vector<uint8_t> data);
   bool ConvertJPEGDataToImageSkiaAndNotifyObservers();
   void NotifyUncompressedDataObservers(base::Token thumbnail_id,
@@ -187,7 +187,7 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
   void NotifyCompressedDataObservers(CompressedThumbnailData data);
 
   static std::vector<uint8_t> CompressBitmap(SkBitmap bitmap,
-                                             absl::optional<uint64_t> frame_id);
+                                             std::optional<uint64_t> frame_id);
   static gfx::ImageSkia UncompressImage(CompressedThumbnailData compressed);
 
   // Crops and returns a preview from a thumbnail of an entire web page. Uses
@@ -214,7 +214,7 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
   // notification doesn't matter, so don't maintain any ordering. Since
   // the number of subscribers for a given thumbnail is expected to be
   // small, doing a linear search to remove a subscriber is fine.
-  std::vector<Subscription*> subscribers_;
+  std::vector<raw_ptr<Subscription, VectorExperimental>> subscribers_;
 
   // Called when an asynchronous operation (such as encoding image data upon
   // assignment or decoding image data for observers) finishes or fails.

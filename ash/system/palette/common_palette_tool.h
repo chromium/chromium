@@ -10,6 +10,7 @@
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -32,6 +33,7 @@ class CommonPaletteTool : public PaletteTool, public ViewClickListener {
   // PaletteTool:
   void OnViewDestroyed() override;
   void OnEnable() override;
+  void OnDisable() override;
 
   // ViewClickListener:
   void OnViewClicked(views::View* sender) override;
@@ -46,8 +48,12 @@ class CommonPaletteTool : public PaletteTool, public ViewClickListener {
   // Creates a default view implementation to be returned by CreateView.
   views::View* CreateDefaultView(const std::u16string& name);
 
-  raw_ptr<HoverHighlightView, DanglingUntriaged | ExperimentalAsh>
-      highlight_view_ = nullptr;
+  raw_ptr<HoverHighlightView, DanglingUntriaged> highlight_view_ = nullptr;
+
+ private:
+  // `start_time_` is initialized when the tool becomes active.
+  // Used for recording UMA metrics.
+  base::TimeTicks start_time_;
 };
 
 }  // namespace ash

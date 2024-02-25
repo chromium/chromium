@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAST_PAIR_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAST_PAIR_DELEGATE_H_
 
+#include <optional>
+
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::bluetooth_config {
 
@@ -33,7 +34,7 @@ class FastPairDelegate {
             fast_pairable_devices) = 0;
   };
 
-  virtual absl::optional<DeviceImageInfo> GetDeviceImageInfo(
+  virtual std::optional<DeviceImageInfo> GetDeviceImageInfo(
       const std::string& mac_address) = 0;
   virtual void ForgetDevice(const std::string& mac_address) = 0;
   virtual void UpdateDeviceNickname(const std::string& mac_address,

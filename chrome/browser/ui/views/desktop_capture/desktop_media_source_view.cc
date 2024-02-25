@@ -72,11 +72,11 @@ void DesktopMediaSourceView::SetName(const std::u16string& name) {
 }
 
 void DesktopMediaSourceView::SetThumbnail(const gfx::ImageSkia& thumbnail) {
-  image_view_->SetImage(thumbnail);
+  image_view_->SetImage(ui::ImageModel::FromImageSkia(thumbnail));
 }
 
 void DesktopMediaSourceView::SetIcon(const gfx::ImageSkia& icon) {
-  icon_view_->SetImage(icon);
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
 }
 
 void DesktopMediaSourceView::SetSelected(bool selected) {
@@ -190,6 +190,6 @@ void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
           : label_->GetText());
 }
 
-BEGIN_METADATA(DesktopMediaSourceView, views::View)
+BEGIN_METADATA(DesktopMediaSourceView)
 ADD_PROPERTY_METADATA(bool, Selected)
 END_METADATA

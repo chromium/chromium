@@ -1,6 +1,6 @@
 {
   "name": "@lit-labs/ssr-dom-shim",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "publishConfig": {
     "access": "public"
   },

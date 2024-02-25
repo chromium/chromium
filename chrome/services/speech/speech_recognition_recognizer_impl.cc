@@ -51,6 +51,9 @@ const char
     SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName[] =
         "Accessibility.LiveCaption.Duration.CaptionBubbleHidden3";
 
+constexpr char kLiveCaptionLanguageCountHistogramName[] =
+    "Accessibility.LiveCaption.LanguageCount";
+
 namespace {
 
 // Callback executed by the SODA library on a speech recognition event. The
@@ -360,7 +363,7 @@ void SpeechRecognitionRecognizerImpl::
 
 void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
     const std::string& language) {
-  absl::optional<speech::SodaLanguagePackComponentConfig>
+  std::optional<speech::SodaLanguagePackComponentConfig>
       language_component_config = GetLanguageComponentConfig(language);
   if (!language_component_config.has_value())
     return;
@@ -383,18 +386,18 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
 
-  base::FilePath config_file_path =
-      GetLatestSodaLanguagePackDirectory(language);
-
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](base::FilePath config_path) {
-            return base::PathExists(config_path);
+          [](const std::string& language) {
+            base::FilePath config_file_path =
+                GetLatestSodaLanguagePackDirectory(language);
+            return std::make_pair(config_file_path,
+                                  base::PathExists(config_file_path));
           },
-          config_file_path),
+          language),
       base::BindOnce(&SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage,
-                     weak_factory_.GetWeakPtr(), config_file_path,
+                     weak_factory_.GetWeakPtr(),
                      language_component_config.value().language_name));
 }
 
@@ -405,11 +408,10 @@ void SpeechRecognitionRecognizerImpl::OnMaskOffensiveWordsChanged(
 }
 
 void SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage(
-    base::FilePath config_path,
     std::string language_name,
-    bool config_exists) {
-  if (config_exists) {
-    config_paths_[language_name] = config_path;
+    std::pair<base::FilePath, bool> config_and_exists) {
+  if (config_and_exists.second) {
+    config_paths_[language_name] = config_and_exists.first;
     primary_language_name_ = language_name;
     ResetSoda();
   }
@@ -469,6 +471,9 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
       multilang_language_pack_directory[base::ToLowerASCII(config.first)] =
           config.second.AsUTF8Unsafe();
     }
+
+    base::UmaHistogramCounts100(kLiveCaptionLanguageCountHistogramName,
+                                config_paths_.size());
   }
 
   auto serialized = config_msg.SerializeAsString();

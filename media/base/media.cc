@@ -5,13 +5,16 @@
 #include "media/base/media.h"
 
 #include <stdint.h>
+
 #include <limits>
 
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/libaom_thread_wrapper.h"
+#include "media/base/libvpx_thread_wrapper.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -48,6 +51,17 @@ class MediaInitializer {
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+    if (base::FeatureList::IsEnabled(kLibvpxUseChromeThreads)) {
+      InitLibVpxThreadWrapper();
+    }
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
+#if BUILDFLAG(ENABLE_LIBAOM)
+    if (base::FeatureList::IsEnabled(kLibaomUseChromeThreads)) {
+      InitLibAomThreadWrapper();
+    }
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
   }
 
   MediaInitializer(const MediaInitializer&) = delete;

@@ -50,6 +50,8 @@ class ProxyConfigServiceLacros
  private:
   // crosapi::mojom::NetworkSettingsObserver impl
   void OnProxyChanged(crosapi::mojom::ProxyConfigPtr proxy_config) override;
+  void OnAlwaysOnVpnPreConnectUrlAllowlistEnforcedChanged(
+      bool enforced) override;
 
   void OnUseAshProxyPrefChanged();
 
@@ -66,7 +68,7 @@ class ProxyConfigServiceLacros
   // The latest proxy configuration sent by Ash-Chrome via mojo. This proxy is
   // enforced in the browser only if the pref kUseAshProxy=true and the
   // kProxy pref, which has precedence, is unset or set to mode=system.
-  absl::optional<net::ProxyConfigWithAnnotation> cached_config_;
+  std::optional<net::ProxyConfigWithAnnotation> cached_config_;
   // Indicates if the proxy config comes from an extension active in the main
   // Lacros profile.
   bool proxy_controlled_by_extension_ = false;

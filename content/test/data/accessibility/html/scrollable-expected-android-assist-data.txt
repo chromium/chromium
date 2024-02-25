@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {class="not"}]
+++++TextView text:"not scrollable" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {style="width:100px; overflow:auto"}, {class="x"}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {style="height:100px; overflow:auto"}, {class="y"}]

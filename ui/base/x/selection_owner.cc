@@ -11,10 +11,9 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_window_event_manager.h"
+#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -49,18 +48,22 @@ size_t GetMaxIncrementalTransferSize() {
 // Gets the value of an atom pair array property. On success, true is returned
 // and the value is stored in |value|.
 bool GetAtomPairArrayProperty(
+    x11::Connection& connection,
     x11::Window window,
     x11::Atom property,
     std::vector<std::pair<x11::Atom, x11::Atom>>* value) {
   std::vector<x11::Atom> atoms;
   // Since this is an array of atom pairs, ensure ensure |atoms|
   // has an element count that's a multiple of 2.
-  if (!GetArrayProperty(window, property, &atoms) || atoms.size() % 2 != 0)
+  if (!connection.GetArrayProperty(window, property, &atoms) ||
+      atoms.size() % 2 != 0) {
     return false;
+  }
 
   value->clear();
-  for (size_t i = 0; i < atoms.size(); i += 2)
+  for (size_t i = 0; i < atoms.size(); i += 2) {
     value->push_back(std::make_pair(atoms[i], atoms[i + 1]));
+  }
   return true;
 }
 
@@ -77,22 +80,26 @@ void SetSelectionOwner(x11::Window window,
 
 }  // namespace
 
-SelectionOwner::SelectionOwner(x11::Connection* connection,
+SelectionOwner::SelectionOwner(x11::Connection& connection,
                                x11::Window x_window,
                                x11::Atom selection_name)
-    : x_window_(x_window), selection_name_(selection_name) {}
+    : connection_(connection),
+      x_window_(x_window),
+      selection_name_(selection_name) {}
 
 SelectionOwner::~SelectionOwner() {
   // If we are the selection owner, we need to release the selection so we
   // don't receive further events. However, we don't call ClearSelectionOwner()
   // because we don't want to do this indiscriminately.
-  if (GetSelectionOwner(selection_name_) == x_window_)
+  if (GetSelectionOwner(selection_name_) == x_window_) {
     SetSelectionOwner(x11::Window::None, selection_name_);
+  }
 }
 
 void SelectionOwner::RetrieveTargets(std::vector<x11::Atom>* targets) {
-  for (const auto& format_target : format_map_)
+  for (const auto& format_target : format_map_) {
     targets->push_back(format_target.first);
+  }
 }
 
 void SelectionOwner::TakeOwnershipOfSelection(const SelectionFormatMap& data) {
@@ -130,7 +137,8 @@ void SelectionOwner::OnSelectionRequest(
     // The contents of |requested_property| should be a list of
     // <target,property> pairs.
     std::vector<std::pair<x11::Atom, x11::Atom>> conversions;
-    if (GetAtomPairArrayProperty(requestor, requested_property, &conversions)) {
+    if (GetAtomPairArrayProperty(connection_.get(), requestor,
+                                 requested_property, &conversions)) {
       std::vector<x11::Atom> conversion_results;
       for (const std::pair<x11::Atom, x11::Atom>& conversion : conversions) {
         bool conversion_successful =
@@ -142,18 +150,20 @@ void SelectionOwner::OnSelectionRequest(
 
       // Set the property to indicate which conversions succeeded. This matches
       // what GTK does.
-      SetArrayProperty(requestor, requested_property, x11::GetAtom(kAtomPair),
-                       conversion_results);
+      connection_->SetArrayProperty(requestor, requested_property,
+                                    x11::GetAtom(kAtomPair),
+                                    conversion_results);
 
       reply.property = requested_property;
     }
   } else {
-    if (ProcessTarget(requested_target, requestor, requested_property))
+    if (ProcessTarget(requested_target, requestor, requested_property)) {
       reply.property = requested_property;
+    }
   }
 
   // Send off the reply.
-  x11::SendEvent(reply, requestor, x11::EventMask::NoEvent);
+  connection_->SendEvent(reply, requestor, x11::EventMask::NoEvent);
 }
 
 void SelectionOwner::OnSelectionClear(const x11::SelectionClearEvent& event) {
@@ -171,12 +181,14 @@ bool SelectionOwner::CanDispatchPropertyEvent(
 
 void SelectionOwner::OnPropertyEvent(const x11::PropertyNotifyEvent& event) {
   auto it = FindIncrementalTransferForEvent(event);
-  if (it == incremental_transfers_.end())
+  if (it == incremental_transfers_.end()) {
     return;
+  }
 
   ProcessIncrementalTransfer(&(*it));
-  if (!it->data.get())
+  if (!it->data.get()) {
     CompleteIncrementalTransfer(it);
+  }
 }
 
 bool SelectionOwner::ProcessTarget(x11::Atom target,
@@ -187,12 +199,13 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
   x11::Atom targets_atom = x11::GetAtom(kTargets);
   x11::Atom timestamp_atom = x11::GetAtom(kTimestamp);
 
-  if (target == multiple_atom || target == save_targets_atom)
+  if (target == multiple_atom || target == save_targets_atom) {
     return false;
+  }
 
   if (target == timestamp_atom) {
-    SetProperty(requestor, property, x11::Atom::INTEGER,
-                acquired_selection_timestamp_);
+    connection_->SetProperty(requestor, property, x11::Atom::INTEGER,
+                             acquired_selection_timestamp_);
     return true;
   }
 
@@ -203,7 +216,8 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
                                       save_targets_atom, multiple_atom};
     RetrieveTargets(&targets);
 
-    SetArrayProperty(requestor, property, x11::Atom::ATOM, targets);
+    connection_->SetArrayProperty(requestor, property, x11::Atom::ATOM,
+                                  targets);
     return true;
   }
 
@@ -215,7 +229,8 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // the size of X requests. Notify the selection requestor that the data
       // will be sent incrementally by returning data of type "INCR".
       uint32_t length = it->second->size();
-      SetProperty(requestor, property, x11::GetAtom(kIncr), length);
+      connection_->SetProperty(requestor, property, x11::GetAtom(kIncr),
+                               length);
 
       // Wait for the selection requestor to indicate that it has processed
       // the selection result before sending the first chunk of data. The
@@ -225,8 +240,8 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
           base::Milliseconds(kIncrementalTransferTimeoutMs);
       incremental_transfers_.emplace_back(
           requestor, target, property,
-          std::make_unique<x11::XScopedEventSelector>(
-              requestor, x11::EventMask::PropertyChange),
+          connection_->ScopedSelectEvent(requestor,
+                                         x11::EventMask::PropertyChange),
           it->second, 0, timeout);
 
       // Start a timer to abort the data transfer in case that the selection
@@ -240,7 +255,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
     } else {
       auto& mem = it->second;
       std::vector<uint8_t> data(mem->data(), mem->data() + mem->size());
-      SetArrayProperty(requestor, property, target, data);
+      connection_->SetArrayProperty(requestor, property, target, data);
     }
     return true;
   }
@@ -255,7 +270,8 @@ void SelectionOwner::ProcessIncrementalTransfer(IncrementalTransfer* transfer) {
   size_t chunk_length = std::min(remaining, GetMaxIncrementalTransferSize());
   const uint8_t* data = transfer->data->front() + transfer->offset;
   std::vector<uint8_t> buf(data, data + chunk_length);
-  SetArrayProperty(transfer->window, transfer->property, transfer->target, buf);
+  connection_->SetArrayProperty(transfer->window, transfer->property,
+                                transfer->target, buf);
   transfer->offset += chunk_length;
   transfer->timeout = base::TimeTicks::Now() +
                       base::Milliseconds(kIncrementalTransferTimeoutMs);
@@ -264,16 +280,18 @@ void SelectionOwner::ProcessIncrementalTransfer(IncrementalTransfer* transfer) {
   // to notify the selection requestor that the transfer is complete. Clear
   // transfer->data once the zero-sized chunk is sent to indicate that state
   // related to this data transfer can be cleared.
-  if (chunk_length == 0)
+  if (chunk_length == 0) {
     transfer->data = nullptr;
+  }
 }
 
 void SelectionOwner::AbortStaleIncrementalTransfers() {
   base::TimeTicks now = base::TimeTicks::Now();
   for (int i = static_cast<int>(incremental_transfers_.size()) - 1; i >= 0;
        --i) {
-    if (incremental_transfers_[i].timeout <= now)
+    if (incremental_transfers_[i].timeout <= now) {
       CompleteIncrementalTransfer(incremental_transfers_.begin() + i);
+    }
   }
 }
 
@@ -281,8 +299,9 @@ void SelectionOwner::CompleteIncrementalTransfer(
     std::vector<IncrementalTransfer>::iterator it) {
   incremental_transfers_.erase(it);
 
-  if (incremental_transfers_.empty())
+  if (incremental_transfers_.empty()) {
     incremental_transfer_abort_timer_.Stop();
+  }
 }
 
 std::vector<SelectionOwner::IncrementalTransfer>::iterator
@@ -290,8 +309,9 @@ SelectionOwner::FindIncrementalTransferForEvent(
     const x11::PropertyNotifyEvent& prop) {
   for (auto it = incremental_transfers_.begin();
        it != incremental_transfers_.end(); ++it) {
-    if (it->window == prop.window && it->property == prop.atom)
+    if (it->window == prop.window && it->property == prop.atom) {
       return it;
+    }
   }
   return incremental_transfers_.end();
 }
@@ -300,7 +320,7 @@ SelectionOwner::IncrementalTransfer::IncrementalTransfer(
     x11::Window window,
     x11::Atom target,
     x11::Atom property,
-    std::unique_ptr<x11::XScopedEventSelector> event_selector,
+    x11::ScopedEventSelector event_selector,
     const scoped_refptr<base::RefCountedMemory>& data,
     int offset,
     base::TimeTicks timeout)

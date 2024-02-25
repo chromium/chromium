@@ -1,0 +1,4 @@
+file://services/on_device_model/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

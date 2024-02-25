@@ -5,12 +5,12 @@
 #include "services/network/ignore_errors_cert_verifier.h"
 
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "crypto/sha2.h"
 #include "net/base/hash_value.h"
@@ -60,7 +60,7 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
                                      std::unique_ptr<Request>* out_req,
                                      const net::NetLogWithSource& net_log) {
   SPKIHashSet spki_fingerprints;
-  base::StringPiece cert_spki;
+  std::string_view cert_spki;
   SHA256HashValue hash;
   if (net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(
@@ -105,9 +105,9 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
         [](const SHA256HashValue& v) { return HashValue(v); });
     if (!params.ocsp_response().empty()) {
       verify_result->ocsp_result.response_status =
-          net::OCSPVerifyResult::PROVIDED;
+          bssl::OCSPVerifyResult::PROVIDED;
       verify_result->ocsp_result.revocation_status =
-          net::OCSPRevocationStatus::GOOD;
+          bssl::OCSPRevocationStatus::GOOD;
     }
     return net::OK;
   }

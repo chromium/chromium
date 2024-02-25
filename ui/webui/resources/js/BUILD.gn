@@ -12,7 +12,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "action_link.ts",
-    "assert_ts.ts",
+    "assert.ts",
     "color_utils.ts",
     "cr.ts",
     "custom_element.ts",
@@ -35,10 +35,10 @@ build_webui("build") {
     "promise_resolver.ts",
     "search_highlight_utils.ts",
     "static_types.ts",
-    "store_ts.ts",
+    "store.ts",
     "test_loader.ts",
     "test_loader_util.ts",
-    "util_ts.ts",
+    "util.ts",
   ]
 
   if (is_chromeos) {

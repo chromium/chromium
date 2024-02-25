@@ -17,10 +17,11 @@ window.onload = function() {
     console.log("chrome.setSyncEncryptionKeys() not defined");
     document.title = "UNDEFINED";
   } else {
+    const params = new URLSearchParams(location.search);
     chrome.setSyncEncryptionKeys(() => { window.close(); },
-                                 location.search.substring(1),
-                                 [base64DecodeToArrayBuffer(location.hash.substring(1))],
-                                 /*last_key_version=*/7);
+                                 params.get("gaia"),
+                                 [base64DecodeToArrayBuffer(params.get("key"))],
+                                 parseInt(params.get("key_version")));
   }
 }
 </script>

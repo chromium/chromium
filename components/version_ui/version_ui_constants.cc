@@ -76,6 +76,7 @@ const char kOsVersionHeaderText2[] = "os-version-text2";
 const char kOsVersionHeaderLink[] = "os-version-link";
 #endif
 const char kCopyLabel[] = "copy_label";
+const char kCopyNotice[] = "copy_notice";
 const char kRevision[] = "revision";
 const char kSanitizer[] = "sanitizer";
 const char kTitle[] = "title";

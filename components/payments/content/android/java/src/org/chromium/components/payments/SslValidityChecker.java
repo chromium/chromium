@@ -4,8 +4,9 @@
 
 package org.chromium.components.payments;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 
 /** SSL validity checker. */
@@ -42,6 +43,7 @@ public class SslValidityChecker {
     @NativeMethods
     interface Natives {
         String getInvalidSslCertificateErrorMessage(WebContents webContents);
+
         boolean isValidPageInPaymentHandlerWindow(WebContents webContents);
     }
 }

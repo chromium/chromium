@@ -23,14 +23,10 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_ui_controls_v1" version="2">
+  <interface name="zcr_ui_controls_v1" version="3">
     <description summary="requests for input emulation">
       This global provides requests for different type of input emulation that
       mirror the semantics of Chrome's ui_controls functions.
-
-      Additionally, there is a set_toplevel_bounds request to help with the
-      implementation of automated UI testing in compositors that don't support
-      aura_shell (i.e. Weston).
     </description>
 
     <enum name="key_state" bitfield="true">
@@ -168,25 +164,64 @@
            summary="will be echoed back in the matching sent event"/>
     </request>
 
-    <request name="set_toplevel_bounds">
-      <description summary="resize and/or move a toplevel surface">
-        Requests the compositor to apply the specified bounds to the given
-        toplevel surface. This request may be ignored by the compositor for any
-        reason.
-      </description>
-      <arg name="toplevel" type="object" interface="xdg_toplevel"
-           summary="toplevel surface to move/resize"/>
-      <arg name="x" type="int" summary="screen x-coordinate in DIP"/>
-      <arg name="y" type="int" summary="screen y-coordinate in DIP"/>
-      <arg name="width" type="uint" summary="width in DIP"/>
-      <arg name="height" type="uint" summary="height in DIP"/>
-    </request>
-
     <event name="request_processed">
       <description summary="request has been processed">
         The request with ID `id` has been fully processed.
       </description>
       <arg name="id" type="uint" summary="ID of the processed request"/>
     </event>
+
+  <!-- Version 3 additions -->
+    <request name="set_display_info_id" since="3">
+      <description summary="set display ID for pending display">
+        Set the display id to be added. This is double buffered
+        and the display will be created upon `display_info_done`
+        request.
+      </description>
+      <arg name="display_id_hi" type="uint"/>
+      <arg name="display_id_low" type="uint"/>
+    </request>
+
+    <request name="set_display_info_size" since="3">
+      <description summary="set display size for pending display">
+        Set the display size to be added. The display will be
+        created upon `display_info_done` request.
+      </description>
+      <arg name="width" type="uint" summary="display width"/>
+      <arg name="height" type="uint" summary="display height"/>
+    </request>
+
+    <request name="set_display_info_device_scale_factor" since="3">
+      <description summary="set scale factor for pending display">
+        Set the display device scale factor to be added. The display
+        will be created upon `display_info_done` request.
+
+        The client has a 32-bit float scale factor that is associated with each
+        display. This scale factor must be propagated exactly to exo. To do so
+        we reinterpret_cast into a 32-bit uint and later cast back into a
+        float. This is because wayland does not support native transport of
+        floats. As different CPU architectures may use different endian
+        representations for IEEE 754 floats, this protocol implicitly assumes
+        that the caller and receiver are the same machine.
+      </description>
+      <arg name="device_scale_factor_as_uint" type="uint"
+        summary="device scale factor, in float format"/>
+    </request>
+
+    <request name="display_info_done" since="3">
+      <description summary="signal display info are done">
+        Add pending display to pending display list. The value
+        of display properties will use default value if they're
+        not set by request.
+      </description>
+    </request>
+
+    <request name="display_info_list_done" since="3">
+      <description summary="Signal the end of display info">
+        Flush the display information to ash and update the displays.
+      </description>
+        <arg name="id" type="uint"
+          summary="will be echoed back in the matching sent event"/>
+    </request>
   </interface>
 </protocol>

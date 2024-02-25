@@ -4,16 +4,17 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
+#include <optional>
+
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/hash.h"
+#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/account_transfer_client_data.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
@@ -21,31 +22,23 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
+#include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "url/origin.h"
 
 namespace ash::quick_start {
 
-namespace {
-
-// Passing "--quick-start-test-forced-update" on the command line will simulate
-// the "Forced Update" flow after the wifi credentials transfer is complete.
-// This is for testing only and will not install an actual update. If this
-// switch is present, the Chromebook reboots and attempts to automatically
-// resume the Quick Start connection after reboot.
-// TODO(b/280308144): Delete this switch. The OOBE update screen should call
-// PrepareForUpdate() and trigger the update/reboot.
-constexpr char kQuickStartTestForcedUpdateSwitch[] =
-    "quick-start-test-forced-update";
-
-}  // namespace
+TargetDeviceBootstrapController::GaiaCredentials::GaiaCredentials() = default;
+TargetDeviceBootstrapController::GaiaCredentials::GaiaCredentials(
+    const TargetDeviceBootstrapController::GaiaCredentials& other) = default;
+TargetDeviceBootstrapController::GaiaCredentials::~GaiaCredentials() = default;
 
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
     std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
@@ -54,13 +47,18 @@ TargetDeviceBootstrapController::TargetDeviceBootstrapController(
         accessibility_manager_wrapper,
     QuickStartConnectivityService* quick_start_connectivity_service)
     : auth_broker_(std::move(auth_broker)),
-      accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)) {
-  session_context_ = SessionContext();
+      accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)),
+      quick_start_connectivity_service_(quick_start_connectivity_service) {
   connection_broker_ = TargetDeviceConnectionBrokerFactory::Create(
-      session_context_, quick_start_connectivity_service);
+      &session_context_, quick_start_connectivity_service_);
 }
 
-TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
+TargetDeviceBootstrapController::~TargetDeviceBootstrapController() {
+  StopAdvertising();
+  CloseOpenConnections(
+      ConnectionClosedReason::kConnectionLifecycleListenerDestroyed);
+  quick_start_connectivity_service_->Cleanup();
+}
 
 TargetDeviceBootstrapController::Status::Status() = default;
 TargetDeviceBootstrapController::Status::~Status() = default;
@@ -94,17 +92,14 @@ void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
         TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
   CHECK_EQ(status_.step, Step::NONE);
 
-  // No pending requests.
-  CHECK(!weak_ptr_factory_.HasWeakPtrs());
-
   bool use_pin_authentication =
-      accessibility_manager_wrapper_->IsSpokenFeedbackEnabled();
+      !accessibility_manager_wrapper_->AllowQRCodeUX();
 
   if (use_pin_authentication || session_context_.is_resume_after_update()) {
     status_.step = Step::ADVERTISING_WITHOUT_QR_CODE;
   } else {
-    auto qr_code = std::make_unique<QRCode>(
-        session_context_.random_session_id(), session_context_.shared_secret());
+    auto qr_code = std::make_unique<QRCode>(session_context_.advertising_id(),
+                                            session_context_.shared_secret());
     status_.step = Step::ADVERTISING_WITH_QR_CODE;
     status_.payload.emplace<QRCode::PixelData>(qr_code->pixel_data());
   }
@@ -123,24 +118,28 @@ void TargetDeviceBootstrapController::StopAdvertising() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TargetDeviceBootstrapController::MaybeCloseOpenConnections() {
+void TargetDeviceBootstrapController::CloseOpenConnections(
+    ConnectionClosedReason reason) {
   // Close any existing open connection.
   if (authenticated_connection_.MaybeValid()) {
-    authenticated_connection_->Close(
-        TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
+    authenticated_connection_->Close(reason);
+    authenticated_connection_.reset();
   }
+
+  CleanupIfNeeded();
 }
 
 void TargetDeviceBootstrapController::PrepareForUpdate() {
-  if (status_.step != Step::CONNECTED_TO_WIFI || !authenticated_connection_) {
+  constexpr Step kPossibleSteps[] = {Step::EMPTY_WIFI_CREDENTIALS_RECEIVED,
+                                     Step::WIFI_CREDENTIALS_RECEIVED};
+  if (!base::Contains(kPossibleSteps, status_.step) ||
+      !authenticated_connection_) {
     return;
   }
 
-  authenticated_connection_->NotifySourceOfUpdate(
-      session_id_,
-      base::BindOnce(
-          &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
-          weak_ptr_factory_.GetWeakPtr()));
+  authenticated_connection_->NotifySourceOfUpdate(base::BindOnce(
+      &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnPinVerificationRequested(
@@ -149,59 +148,76 @@ void TargetDeviceBootstrapController::OnPinVerificationRequested(
                                      Step::ADVERTISING_WITH_QR_CODE};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
-  pin_ = pin;
-  status_.step = Step::PIN_VERIFICATION;
-  status_.pin = pin_;
-  status_.payload.emplace<absl::monostate>();
-  NotifyObservers();
+  UpdateStatus(/*step=*/Step::PIN_VERIFICATION, /*payload=*/PinString(pin));
 }
 
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
         authenticated_connection) {
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
+                                     Step::ADVERTISING_WITHOUT_QR_CODE,
                                      Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
-
   authenticated_connection_ = authenticated_connection;
 
-  // Create session ID by generating UUID and then hashing.
-  const base::Uuid random_uuid = base::Uuid::GenerateRandomV4();
-  session_id_ = static_cast<int32_t>(
-      base::PersistentHash(random_uuid.AsLowercaseString()));
+  if (session_context_.is_resume_after_update()) {
+    UpdateStatus(/*step=*/Step::CONNECTED, /*payload=*/absl::monostate());
+    return;
+  }
 
-  status_.step = Step::CONNECTED;
-  status_.payload.emplace<absl::monostate>();
-  NotifyObservers();
-  AttemptWifiCredentialTransfer();
+  WaitForUserVerification();
 }
 
 void TargetDeviceBootstrapController::OnConnectionRejected() {
-  status_.step = Step::ERROR;
-  status_.payload = ErrorCode::CONNECTION_REJECTED;
-  NotifyObservers();
+  UpdateStatus(/*step=*/Step::ERROR,
+               /*payload=*/ErrorCode::CONNECTION_REJECTED);
+  CleanupIfNeeded();
 }
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
-    TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
-  if (status_.step == Step::CONNECTING_TO_WIFI) {
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    ConnectionClosedReason reason) {
+  if (status_.step == Step::REQUESTING_WIFI_CREDENTIALS) {
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
   }
-  status_.step = Step::ERROR;
-  status_.payload = ErrorCode::CONNECTION_CLOSED;
+
+  if (reason == ConnectionClosedReason::kUserAborted) {
+    UpdateStatus(/*step=*/Step::FLOW_ABORTED,
+                 /*payload=*/absl::monostate());
+  } else if (status_.step != Step::SETUP_COMPLETE) {
+    // UI observer will automatically exit the QuickStartScreen if there's an
+    // error. We want the user to manually exit the Quick Start screen when the
+    // setup is complete, so don't update the status to Step::Error in this
+    // case.
+    UpdateStatus(/*step=*/Step::ERROR,
+                 /*payload=*/ErrorCode::CONNECTION_CLOSED);
+  }
+
   authenticated_connection_.reset();
-  NotifyObservers();
+  CleanupIfNeeded();
 }
 
 std::string TargetDeviceBootstrapController::GetDiscoverableName() {
   std::string device_type = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
-  std::string code = connection_broker_->GetSessionIdDisplayCode();
+  std::string code = connection_broker_->GetAdvertisingIdDisplayCode();
   return device_type + " (" + code + ")";
 }
 
+void TargetDeviceBootstrapController::UpdateStatus(Step step, Payload payload) {
+  if (status_.step == step) {
+    return;
+  }
+
+  status_.step = step;
+  status_.payload = payload;
+  NotifyObservers();
+}
+
 void TargetDeviceBootstrapController::NotifyObservers() {
+  QS_LOG(INFO)
+      << "Notifying observers that the status has changed. New status step: "
+      << status_.step;
   for (auto& obs : observers_) {
     obs.OnStatusChanged(status_);
   }
@@ -214,23 +230,29 @@ void TargetDeviceBootstrapController::OnStartAdvertisingResult(bool success) {
   if (success) {
     return;
   }
-  status_.step = Step::ERROR;
-  status_.payload = ErrorCode::START_ADVERTISING_FAILED;
-  NotifyObservers();
+  UpdateStatus(/*step=*/Step::ERROR,
+               /*payload=*/ErrorCode::START_ADVERTISING_FAILED);
+  CleanupIfNeeded();
 }
 
 void TargetDeviceBootstrapController::OnStopAdvertising() {
-  status_.step = Step::NONE;
-  status_.payload.emplace<absl::monostate>();
-  NotifyObservers();
+  // If we are just in the advertising stage, set status back to NONE to
+  // indicate we are no longer performing any work. By contrast, if we are
+  // connected or we got here due to an error, we don't want to update the
+  // status.
+  if (status_.step == Step::ADVERTISING_WITH_QR_CODE ||
+      status_.step == Step::ADVERTISING_WITHOUT_QR_CODE) {
+    UpdateStatus(/*step=*/Step::NONE, /*payload=*/absl::monostate());
+  }
+
+  CleanupIfNeeded();
 }
 
 void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
     bool ack_successful) {
   CHECK(authenticated_connection_);
 
-  if (ack_successful || base::CommandLine::ForCurrentProcess()->HasSwitch(
-                            kQuickStartTestForcedUpdateSwitch)) {
+  if (ack_successful) {
     QS_LOG(INFO) << "Update ack sucessfully received. Preparing to resume "
                     "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
@@ -238,91 +260,80 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
     base::Value::Dict info =
         authenticated_connection_->GetPrepareForUpdateInfo();
     prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
+    prefs->CommitPendingWrite();
   }
 
-  authenticated_connection_->Close(
-      TargetDeviceConnectionBroker::ConnectionClosedReason::
-          kTargetDeviceUpdate);
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kQuickStartTestForcedUpdateSwitch)) {
-    chromeos::PowerManagerClient::Get()->RequestRestart(
-        power_manager::REQUEST_RESTART_FOR_UPDATE,
-        "Testing OOBE Quick Start Forced Update flow");
-  }
+  authenticated_connection_->Close(ConnectionClosedReason::kTargetDeviceUpdate);
 }
 
-void TargetDeviceBootstrapController::WaitForUserVerification(
-    base::OnceClosure on_verification) {
-  authenticated_connection_->WaitForUserVerification(base::BindOnce(
-      &TargetDeviceBootstrapController::OnUserVerificationResult,
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_verification)));
+void TargetDeviceBootstrapController::WaitForUserVerification() {
+  authenticated_connection_->WaitForUserVerification(
+      base::BindOnce(&TargetDeviceBootstrapController::OnUserVerificationResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnUserVerificationResult(
-    base::OnceClosure on_verification,
-    absl::optional<mojom::UserVerificationResponse>
-        user_verification_response) {
+    std::optional<mojom::UserVerificationResponse> user_verification_response) {
   if (!user_verification_response.has_value() ||
       user_verification_response->result ==
           mojom::UserVerificationResult::kUserNotVerified) {
-    status_.step = Step::ERROR;
-    status_.payload = ErrorCode::USER_VERIFICATION_FAILED;
-    NotifyObservers();
+    UpdateStatus(/*step=*/Step::ERROR,
+                 /*payload=*/ErrorCode::USER_VERIFICATION_FAILED);
     return;
   }
 
-  std::move(on_verification).Run();
+  UpdateStatus(/*step=*/Step::CONNECTED, /*payload=*/absl::monostate());
 }
 
 void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
-  status_.step = Step::CONNECTING_TO_WIFI;
-  status_.payload.emplace<absl::monostate>();
+  UpdateStatus(/*step=*/Step::REQUESTING_WIFI_CREDENTIALS,
+               /*payload=*/absl::monostate());
 
-  WaitForUserVerification(base::BindOnce(
-      &TargetDeviceConnectionBroker::AuthenticatedConnection::
-          RequestWifiCredentials,
-      authenticated_connection_, session_id_,
-      base::BindOnce(
-          &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
-          weak_ptr_factory_.GetWeakPtr())));
-
-  NotifyObservers();
+  authenticated_connection_->RequestWifiCredentials(base::BindOnce(
+      &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
-    absl::optional<mojom::WifiCredentials> credentials) {
-  CHECK_EQ(status_.step, Step::CONNECTING_TO_WIFI);
-  if (!credentials.has_value()) {
-    status_.step = Step::ERROR;
-    status_.payload = ErrorCode::WIFI_CREDENTIALS_NOT_RECEIVED;
-    NotifyObservers();
-    return;
-  }
+    std::optional<mojom::WifiCredentials> credentials) {
+  CHECK_EQ(status_.step, Step::REQUESTING_WIFI_CREDENTIALS);
 
-  status_.step = Step::CONNECTED_TO_WIFI;
-  status_.payload.emplace<absl::monostate>();
-  status_.ssid = credentials->ssid;
-  status_.password = credentials->password;
-  NotifyObservers();
+  if (credentials.has_value()) {
+    UpdateStatus(/*step=*/Step::WIFI_CREDENTIALS_RECEIVED,
+                 /*payload=*/credentials.value());
+  } else {
+    UpdateStatus(/*step=*/Step::EMPTY_WIFI_CREDENTIALS_RECEIVED,
+                 /*payload=*/absl::monostate());
+  }
 
   // Record successful wifi credentials transfer. Failures will be
   // logged from the QuickStartDecoder class.
-  quick_start_metrics::RecordWifiTransferResult(
-      /*succeeded=*/true, /*failure_reason=*/absl::nullopt);
+  QuickStartMetrics::RecordWifiTransferResult(
+      /*succeeded=*/true, /*failure_reason=*/std::nullopt);
+}
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kQuickStartTestForcedUpdateSwitch)) {
-    PrepareForUpdate();
-  }
+void TargetDeviceBootstrapController::RequestGoogleAccountInfo() {
+  CHECK(authenticated_connection_);
+
+  UpdateStatus(/*step=*/Step::REQUESTING_GOOGLE_ACCOUNT_INFO,
+               /*payload=*/absl::monostate());
+
+  authenticated_connection_->RequestAccountInfo(base::BindOnce(
+      &TargetDeviceBootstrapController::OnGoogleAccountInfoReceived,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::OnGoogleAccountInfoReceived(
+    std::string account_email) {
+  UpdateStatus(/*step=*/Step::GOOGLE_ACCOUNT_INFO_RECEIVED,
+               /*payload=*/EmailString(account_email));
 }
 
 void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
   CHECK(authenticated_connection_);
 
-  status_.step = Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS;
-  status_.payload.emplace<absl::monostate>();
-  NotifyObservers();
+  UpdateStatus(/*step=*/Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS,
+               /*payload=*/absl::monostate());
 
   // Request the challenge bytes from Gaia to be sent to the phone.
   CHECK(auth_broker_);
@@ -331,15 +342,26 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void TargetDeviceBootstrapController::Cleanup() {
+  status_ = Status();
+  session_context_.ResetSession();
+  CleanupIfNeeded();
+}
+
+void TargetDeviceBootstrapController::OnSetupComplete() {
+  CHECK(authenticated_connection_);
+  UpdateStatus(/*step=*/Step::SETUP_COMPLETE, /*payload=*/absl::monostate());
+  authenticated_connection_->NotifyPhoneSetupComplete();
+}
+
 void TargetDeviceBootstrapController::OnChallengeBytesReceived(
     SecondDeviceAuthBroker::ChallengeBytesOrError challenge) {
   if (!challenge.has_value()) {
     quick_start::QS_LOG(ERROR) << "Error fetching challenge bytes from Gaia. "
                                << "Reason: " << challenge.error().ToString();
-    status_.step = Step::ERROR;
-    status_.payload = ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED;
-    quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/false);
-    NotifyObservers();
+    UpdateStatus(/*step=*/Step::ERROR,
+                 /*payload=*/ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED);
+    QuickStartMetrics::RecordGaiaTransferAttempted(/*attempted=*/false);
     return;
     // TODO(b:286853512) - Implement retry mechanism.
   }
@@ -354,7 +376,7 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
       << "Received challenge bytes from Gaia. Requesting FIDO assertion.";
   challenge_bytes_ = challenge.value();
 
-  quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/true);
+  QuickStartMetrics::RecordGaiaTransferAttempted(/*attempted=*/true);
   authenticated_connection_->RequestAccountTransferAssertion(
       challenge_bytes_,
       base::BindOnce(&TargetDeviceBootstrapController::OnFidoAssertionReceived,
@@ -362,17 +384,187 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
 }
 
 void TargetDeviceBootstrapController::OnFidoAssertionReceived(
-    absl::optional<FidoAssertionInfo> assertion) {
+    std::optional<FidoAssertionInfo> assertion) {
   if (!assertion.has_value()) {
-    status_.step = Step::ERROR;
-    status_.payload = ErrorCode::GAIA_ASSERTION_NOT_RECEIVED;
-    NotifyObservers();
+    UpdateStatus(/*step=*/Step::ERROR,
+                 /*payload=*/ErrorCode::GAIA_ASSERTION_NOT_RECEIVED);
     return;
   }
 
-  status_.step = Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS;
-  status_.payload.emplace<FidoAssertionInfo>(assertion.value());
-  NotifyObservers();
+  quick_start::QS_LOG(INFO) << "Received FIDO assertion.";
+  fido_assertion_ = assertion.value();
+
+  auth_broker_->FetchAttestationCertificate(
+      fido_assertion_.credential_id,
+      base::BindOnce(
+          &TargetDeviceBootstrapController::OnAttestationCertificateReceived,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::CleanupIfNeeded() {
+  constexpr Step kPossibleSteps[] = {Step::NONE, Step::ERROR};
+  if (base::Contains(kPossibleSteps, status_.step)) {
+    quick_start_connectivity_service_->Cleanup();
+  }
+}
+
+void TargetDeviceBootstrapController::OnAttestationCertificateReceived(
+    quick_start::SecondDeviceAuthBroker::AttestationCertificateOrError
+        attestation_certificate) {
+  if (!attestation_certificate.has_value()) {
+    // TODO(b/287006890) - Implement retry logic.
+    quick_start::QS_LOG(ERROR) << "Error fetching attestation certificate. "
+                               << "Reason: " << attestation_certificate.error();
+    UpdateStatus(
+        /*step=*/Step::ERROR,
+        /*payload=*/ErrorCode::FETCHING_ATTESTATION_CERTIFICATE_FAILED);
+    return;
+  }
+
+  quick_start::QS_LOG(INFO) << "Successfully retrieved attestation certificate";
+  auth_broker_->FetchAuthCode(
+      fido_assertion_, *attestation_certificate,
+      base::BindOnce(&TargetDeviceBootstrapController::OnAuthCodeReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::OnAuthCodeReceived(
+    const quick_start::SecondDeviceAuthBroker::AuthCodeResponse& response) {
+  bool is_error = true;
+
+  absl::visit(
+      base::Overloaded{
+          [&](SecondDeviceAuthBroker::AuthCodeSuccessResponse res) {
+            GaiaCredentials gaia_creds;
+            gaia_creds.auth_code = res.auth_code;
+            gaia_creds.email = fido_assertion_.email;
+            gaia_creds.gaia_id = res.gaia_id;
+            UpdateStatus(/*step=*/Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
+                         /*payload=*/gaia_creds);
+            is_error = false;
+          },
+          [](SecondDeviceAuthBroker::
+                 AuthCodeAdditionalChallengesOnTargetResponse res) {
+            // TODO(b/310937296) - Implement fallback logic.
+            quick_start::QS_LOG(ERROR)
+                << "Failed to fetch refresh token! "
+                   "Additional challenges needed on target device.";
+          },
+          [](SecondDeviceAuthBroker::
+                 AuthCodeAdditionalChallengesOnSourceResponse res) {
+            quick_start::QS_LOG(ERROR)
+                << "Failed to fetch refresh token! "
+                   "Additional challenges needed on source device.";
+          },
+          [](SecondDeviceAuthBroker::AuthCodeRejectionResponse res) {
+            quick_start::QS_LOG(ERROR)
+                << "Failed to fetch refresh token! Rejected: " << res.reason;
+          },
+          [](SecondDeviceAuthBroker::AuthCodeParsingErrorResponse res) {
+            quick_start::QS_LOG(ERROR)
+                << "Failed to fetch refresh token! Parsing error";
+          },
+          [](SecondDeviceAuthBroker::AuthCodeUnknownErrorResponse res) {
+            quick_start::QS_LOG(ERROR)
+                << "Failed to fetch refresh token! Unknown error";
+          }},
+      response);
+  if (is_error) {
+    UpdateStatus(/*step=*/Step::ERROR,
+                 /*payload=*/ErrorCode::FETCHING_REFRESH_TOKEN_FAILED);
+  }
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const TargetDeviceBootstrapController::Step& step) {
+  switch (step) {
+    case TargetDeviceBootstrapController::Step::NONE:
+      stream << "[none]";
+      break;
+    case TargetDeviceBootstrapController::Step::ERROR:
+      stream << "[error]";
+      break;
+    case TargetDeviceBootstrapController::Step::ADVERTISING_WITH_QR_CODE:
+      stream << "[advertising with QR code]";
+      break;
+    case TargetDeviceBootstrapController::Step::ADVERTISING_WITHOUT_QR_CODE:
+      stream << "[advertising without QR code]";
+      break;
+    case TargetDeviceBootstrapController::Step::PIN_VERIFICATION:
+      stream << "[pin verification]";
+      break;
+    case TargetDeviceBootstrapController::Step::CONNECTED:
+      stream << "[connected]";
+      break;
+    case TargetDeviceBootstrapController::Step::REQUESTING_WIFI_CREDENTIALS:
+      stream << "[requesting wifi credentials]";
+      break;
+    case TargetDeviceBootstrapController::Step::WIFI_CREDENTIALS_RECEIVED:
+      stream << "[wifi credentials received]";
+      break;
+    case TargetDeviceBootstrapController::Step::EMPTY_WIFI_CREDENTIALS_RECEIVED:
+      stream << "[empty wifi credentials received]";
+      break;
+    case TargetDeviceBootstrapController::Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
+      stream << "[requesting google account info]";
+      break;
+    case TargetDeviceBootstrapController::Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
+      stream << "[google account info received]";
+      break;
+    case TargetDeviceBootstrapController::Step::
+        TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
+      stream << "[transferring Google account details]";
+      break;
+    case TargetDeviceBootstrapController::Step::
+        TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
+      stream << "[transferred Google account details]";
+      break;
+    case TargetDeviceBootstrapController::Step::SETUP_COMPLETE:
+      stream << "[setup complete]";
+      break;
+    case TargetDeviceBootstrapController::Step::FLOW_ABORTED:
+      stream << "[flow aborted]";
+      break;
+  }
+
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const TargetDeviceBootstrapController::ErrorCode& error_code) {
+  switch (error_code) {
+    case TargetDeviceBootstrapController::ErrorCode::START_ADVERTISING_FAILED:
+      stream << "[start advertising failed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::CONNECTION_REJECTED:
+      stream << "[connection rejected]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::CONNECTION_CLOSED:
+      stream << "[connection closed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::USER_VERIFICATION_FAILED:
+      stream << "[user verification failed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::
+        GAIA_ASSERTION_NOT_RECEIVED:
+      stream << "[Gaia assertion not received]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::
+        FETCHING_CHALLENGE_BYTES_FAILED:
+      stream << "[fetching Challenge Bytes failed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::
+        FETCHING_ATTESTATION_CERTIFICATE_FAILED:
+      stream << "[fetching attestation certificate failed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::
+        FETCHING_REFRESH_TOKEN_FAILED:
+      stream << "[fetching refresh token failed]";
+      break;
+  }
+
+  return stream;
 }
 
 }  // namespace ash::quick_start

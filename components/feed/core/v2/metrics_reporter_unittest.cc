@@ -96,6 +96,10 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
       case StreamKind::kSingleWebFeed:
         histogram_name = "ContentSuggestions.Feed.SingleWebFeed.EngagementType";
         break;
+      case StreamKind::kSupervisedUser:
+        histogram_name =
+            "ContentSuggestions.Feed.SupervisedFeed.EngagementType";
+        break;
     }
     for (const auto& bucket : histogram_.GetAllSamples(histogram_name)) {
       result[static_cast<FeedEngagementType>(bucket.min)] += bucket.count;
@@ -173,8 +177,6 @@ TEST_F(MetricsReporterTest, ScrollingSmall) {
   histogram_.ExpectTotalCount(
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2", 0);
   histogram_.ExpectTotalCount(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", 0);
-  histogram_.ExpectTotalCount(
       "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged", 0);
 }
 
@@ -195,9 +197,6 @@ TEST_F(MetricsReporterTest, ScrollingCanTriggerEngaged) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
       kSubscriptionCount, 1);
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
-      1);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
       test_content_order_, 0);
@@ -222,9 +221,6 @@ TEST_F(MetricsReporterTest, WebFeedEngagementRecordsSortType) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
       kSubscriptionCount, 1);
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
-      1);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
       test_content_order_, 1);
@@ -352,9 +348,6 @@ TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
       kSubscriptionCount, 1);
   histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
-      1);
-  histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
       test_content_order_, 1);
 
@@ -388,9 +381,6 @@ TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
       kSubscriptionCount, 2);
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
-      2);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
       test_content_order_, 1);
@@ -668,9 +658,6 @@ TEST_F(MetricsReporterTest, OpenAction) {
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
       kSubscriptionCount, 1);
   histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
-      1);
-  histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
       test_content_order_, 0);
 }
@@ -699,9 +686,6 @@ TEST_F(MetricsReporterTest, OpenActionWebFeed) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
       kSubscriptionCount, 1);
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
-      1);
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
       test_content_order_, 1);
@@ -1491,14 +1475,6 @@ TEST_F(MetricsReporterTest,
 TEST_F(MetricsReporterTest, GoodVisit_GoodExplicitInteraction_AddToReadLater) {
   reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
                              FeedUserActionType::kAddedToReadLater);
-  histogram_.ExpectBucketCount(
-      "ContentSuggestions.Feed.AllFeeds.EngagementType",
-      FeedEngagementType::kGoodVisit, 1);
-}
-
-TEST_F(MetricsReporterTest, GoodVisit_GoodExplicitInteraction_Crow) {
-  reporter_->OtherUserAction(StreamType(StreamKind::kForYou),
-                             FeedUserActionType::kTappedCrowButton);
   histogram_.ExpectBucketCount(
       "ContentSuggestions.Feed.AllFeeds.EngagementType",
       FeedEngagementType::kGoodVisit, 1);

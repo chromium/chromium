@@ -27,11 +27,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 
+#include <optional>
+
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -80,9 +81,8 @@ class PLATFORM_EXPORT ImageFrame final {
   typedef uint32_t PixelData;
   typedef uint64_t PixelDataF16;
 
-  typedef WebVector<char> ICCProfile;
-
   ImageFrame();
+  ~ImageFrame();
 
   // The assignment operator reads has_alpha_ (inside SetStatus()) before it
   // sets it (in SetHasAlpha()).  This doesn't cause any problems, since the
@@ -136,7 +136,7 @@ class PLATFORM_EXPORT ImageFrame final {
   PixelFormat GetPixelFormat() const { return pixel_format_; }
   const gfx::Rect& OriginalFrameRect() const { return original_frame_rect_; }
   Status GetStatus() const { return status_; }
-  absl::optional<base::TimeDelta> Timestamp() const { return timestamp_; }
+  std::optional<base::TimeDelta> Timestamp() const { return timestamp_; }
   base::TimeDelta Duration() const { return duration_; }
   DisposalMethod GetDisposalMethod() const { return disposal_method_; }
   AlphaBlendSource GetAlphaBlendSource() const { return alpha_blend_source_; }
@@ -316,14 +316,14 @@ class PLATFORM_EXPORT ImageFrame final {
   SkAlphaType ComputeAlphaType() const;
 
   SkBitmap bitmap_;
-  SkBitmap::Allocator* allocator_ = nullptr;
+  raw_ptr<SkBitmap::Allocator> allocator_ = nullptr;
   bool has_alpha_ = true;
   PixelFormat pixel_format_ = kN32;
   // This will always just be the entire buffer except for GIF or WebP
   // frames whose original rect was smaller than the overall image size.
   gfx::Rect original_frame_rect_;
   Status status_ = kFrameEmpty;
-  absl::optional<base::TimeDelta> timestamp_;
+  std::optional<base::TimeDelta> timestamp_;
   base::TimeDelta duration_;
   DisposalMethod disposal_method_ = kDisposeNotSpecified;
   AlphaBlendSource alpha_blend_source_ = kBlendAtopPreviousFrame;

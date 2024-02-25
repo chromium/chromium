@@ -55,6 +55,9 @@ class ASH_EXPORT ProgressIndicatorAnimation : public gfx::AnimationDelegate {
  protected:
   ProgressIndicatorAnimation(base::TimeDelta duration, bool is_cyclic);
 
+  // Performs initialization of animatable properties.
+  void Init();
+
   // Implementing classes should update any desired animatable properties as
   // appropriate for the specified animation `fraction`.
   virtual void UpdateAnimatableProperties(double fraction) = 0;

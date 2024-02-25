@@ -4,6 +4,8 @@
 
 #include "content/browser/android/battery_metrics.h"
 
+#include <optional>
+
 #include "base/android/application_status_listener.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -23,7 +25,6 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
 namespace content {

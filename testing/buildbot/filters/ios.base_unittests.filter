@@ -1,0 +1,3 @@
+# TODO(crbug.com/1520736): iOS Blink port doesn't support to get a task for a
+# child process.
+-SystemMetricsTest.MeasureChildCpuUsage

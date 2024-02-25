@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
@@ -191,32 +192,33 @@ const std::string& SyncedSessionTracker::GetLocalSessionTag() const {
   return local_session_tag_;
 }
 
-std::vector<const SyncedSession*> SyncedSessionTracker::LookupAllSessions(
-    SessionLookup lookup) const {
+std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+SyncedSessionTracker::LookupAllSessions(SessionLookup lookup) const {
   return LookupSessions(lookup, /*exclude_local_session=*/false);
 }
 
-std::vector<const SyncedSession*>
+std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
 SyncedSessionTracker::LookupAllForeignSessions(SessionLookup lookup) const {
   return LookupSessions(lookup, /*exclude_local_session=*/true);
 }
 
-bool SyncedSessionTracker::LookupSessionWindows(
-    const std::string& session_tag,
-    std::vector<const sessions::SessionWindow*>* windows) const {
-  DCHECK(windows);
-  windows->clear();
+std::vector<const sessions::SessionWindow*>
+SyncedSessionTracker::LookupSessionWindows(
+    const std::string& session_tag) const {
+  std::vector<const sessions::SessionWindow*> windows;
 
   const TrackedSession* session = LookupTrackedSession(session_tag);
   if (!session) {
-    return false;  // We have no record of this session.
+    return windows;  // We have no record of this session.
   }
 
   for (const auto& [window_id, window] : session->synced_session.windows) {
-    windows->push_back(&window->wrapped_window);
+    if (!window->wrapped_window.tabs.empty()) {
+      windows.push_back(&window->wrapped_window);
+    }
   }
 
-  return true;
+  return windows;
 }
 
 const sessions::SessionTab* SyncedSessionTracker::LookupSessionTab(
@@ -239,17 +241,17 @@ const sessions::SessionTab* SyncedSessionTracker::LookupSessionTab(
   return tab_iter->second;
 }
 
-absl::optional<sync_pb::SyncEnums::BrowserType>
+std::optional<sync_pb::SyncEnums::BrowserType>
 SyncedSessionTracker::LookupWindowType(const std::string& session_tag,
                                        SessionID window_id) const {
   const TrackedSession* session = LookupTrackedSession(session_tag);
   if (!session) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto window_iter = session->synced_window_map.find(window_id);
   if (window_iter == session->synced_window_map.end()) {
-    return absl::nullopt;  // We have no record of this window.
+    return std::nullopt;  // We have no record of this window.
   }
 
   return window_iter->second->window_type;
@@ -345,10 +347,10 @@ SyncedSessionTracker::TrackedSession* SyncedSessionTracker::GetTrackedSession(
   return session;
 }
 
-std::vector<const SyncedSession*> SyncedSessionTracker::LookupSessions(
-    SessionLookup lookup,
-    bool exclude_local_session) const {
-  std::vector<const SyncedSession*> sessions;
+std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+SyncedSessionTracker::LookupSessions(SessionLookup lookup,
+                                     bool exclude_local_session) const {
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
   for (const auto& [session_tag, tracked_session] : session_map_) {
     const SyncedSession& session = tracked_session.synced_session;
     if (lookup == PRESENTABLE && !IsPresentable(sessions_client_, session)) {

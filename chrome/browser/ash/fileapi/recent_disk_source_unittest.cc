@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/files/file.h"
@@ -33,6 +31,63 @@
 
 namespace ash {
 
+namespace {
+
+// Allows one to specify just the parameters that are relevant to a given test.
+struct TestParams {
+  TestParams& Query(const std::string query) {
+    query_ = query;
+    return *this;
+  }
+
+  TestParams& CutoffTime(const base::Time& cutoff_time) {
+    cutoff_time_ = cutoff_time;
+    return *this;
+  }
+
+  TestParams& FileType(const RecentSource::FileType type) {
+    file_type_ = type;
+    return *this;
+  }
+
+  TestParams& IgnoreDotFiles(bool ignore_dot_files) {
+    ignore_dot_files_ = ignore_dot_files;
+    return *this;
+  }
+
+  TestParams& MaxDepth(int max_depth) {
+    max_depth_ = max_depth;
+    return *this;
+  }
+
+  TestParams& MaxFiles(int max_files) {
+    max_files_ = max_files;
+    return *this;
+  }
+
+  RecentSource::Params MakeParams(storage::FileSystemContext* context,
+                                  const int32_t call_id,
+                                  const GURL& origin) {
+    return RecentSource::Params(context, call_id, origin, query_, cutoff_time_,
+                                base::TimeTicks::Max(), file_type_);
+  }
+
+  std::unique_ptr<RecentDiskSource> MakeSource(
+      const std::string& mount_point_name,
+      const std::string& uma_histogram_name) {
+    return std::make_unique<RecentDiskSource>(mount_point_name,
+                                              ignore_dot_files_, max_depth_,
+                                              max_files_, uma_histogram_name);
+  }
+
+  std::string query_ = "";
+  base::Time cutoff_time_ = base::Time::Min();
+  RecentSource::FileType file_type_ = RecentSource::FileType::kAll;
+  bool ignore_dot_files_ = false;
+  int max_depth_ = 0;
+  size_t max_files_ = 100;
+};
+
 class RecentDiskSourceTest : public testing::Test {
  public:
   RecentDiskSourceTest() : origin_("https://example.com/") {}
@@ -52,10 +107,6 @@ class RecentDiskSourceTest : public testing::Test {
         storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
             mount_point_name_, storage::kFileSystemTypeTest,
             storage::FileSystemMountOption(), base::FilePath()));
-
-    source_ = std::make_unique<RecentDiskSource>(
-        mount_point_name_, false /* ignore_dotfiles */, 0 /* max_depth */,
-        uma_histogram_name_);
   }
 
   void TearDown() override {
@@ -67,29 +118,27 @@ class RecentDiskSourceTest : public testing::Test {
   bool CreateEmptyFile(const std::string& filename, const base::Time& time) {
     base::File file(temp_dir_.GetPath().Append(filename),
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    if (!file.IsValid())
+    if (!file.IsValid()) {
       return false;
+    }
 
     return file.SetTimes(time, time);
   }
 
-  std::vector<RecentFile> GetRecentFiles(
-      size_t max_files,
-      const base::Time& cutoff_time,
-      RecentSource::FileType file_type = RecentSource::FileType::kAll) {
+  std::vector<RecentFile> GetRecentFiles(TestParams params) {
     std::vector<RecentFile> files;
-
     base::RunLoop run_loop;
 
-    source_->GetRecentFiles(RecentSource::Params(
-        file_system_context_.get(), origin_, max_files, cutoff_time, file_type,
+    auto source = params.MakeSource(mount_point_name_, uma_histogram_name_);
+    source->GetRecentFiles(
+        params.MakeParams(file_system_context_.get(), 0, origin_),
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
                std::vector<RecentFile> files) {
               run_loop->Quit();
               *out_files = std::move(files);
             },
-            &run_loop, &files)));
+            &run_loop, &files));
 
     run_loop.Run();
 
@@ -103,49 +152,61 @@ class RecentDiskSourceTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   std::string mount_point_name_;
   const std::string uma_histogram_name_ = "uma_histogram_name";
-  std::unique_ptr<RecentDiskSource> source_;
   base::Time base_time_;
 };
 
 TEST_F(RecentDiskSourceTest, GetRecentFiles) {
   // Oldest
-  ASSERT_TRUE(CreateEmptyFile("1.jpg", base::Time::FromJavaTime(1000)));
-  ASSERT_TRUE(CreateEmptyFile("2.jpg", base::Time::FromJavaTime(2000)));
-  ASSERT_TRUE(CreateEmptyFile("3.jpg", base::Time::FromJavaTime(3000)));
-  ASSERT_TRUE(CreateEmptyFile("4.jpg", base::Time::FromJavaTime(4000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("1.jpg", base::Time::FromSecondsSinceUnixEpoch(1)));
+  ASSERT_TRUE(
+      CreateEmptyFile("2.jpg", base::Time::FromSecondsSinceUnixEpoch(2)));
+  ASSERT_TRUE(
+      CreateEmptyFile("3.jpg", base::Time::FromSecondsSinceUnixEpoch(3)));
+  ASSERT_TRUE(
+      CreateEmptyFile("4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files = GetRecentFiles(3, base::Time());
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  std::vector<RecentFile> files = GetRecentFiles(TestParams().MaxFiles(3));
 
   ASSERT_EQ(3u, files.size());
   EXPECT_EQ("4.jpg", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[0].last_modified());
   EXPECT_EQ("3.jpg", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(3000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[1].last_modified());
   EXPECT_EQ("2.jpg", files[2].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(2000), files[2].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[2].last_modified());
+
+  files = GetRecentFiles(TestParams().Query("4").MaxFiles(3));
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ("4.jpg", files[0].url().path().BaseName().value());
+
+  files = GetRecentFiles(TestParams().Query("foo").MaxFiles(3));
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(RecentDiskSourceTest, GetRecentFiles_CutoffTime) {
   // Oldest
-  ASSERT_TRUE(CreateEmptyFile("1.jpg", base::Time::FromJavaTime(1000)));
-  ASSERT_TRUE(CreateEmptyFile("2.jpg", base::Time::FromJavaTime(2000)));
-  ASSERT_TRUE(CreateEmptyFile("3.jpg", base::Time::FromJavaTime(3000)));
-  ASSERT_TRUE(CreateEmptyFile("4.jpg", base::Time::FromJavaTime(4000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("1.jpg", base::Time::FromSecondsSinceUnixEpoch(1)));
+  ASSERT_TRUE(
+      CreateEmptyFile("2.jpg", base::Time::FromSecondsSinceUnixEpoch(2)));
+  ASSERT_TRUE(
+      CreateEmptyFile("3.jpg", base::Time::FromSecondsSinceUnixEpoch(3)));
+  ASSERT_TRUE(
+      CreateEmptyFile("4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files =
-      GetRecentFiles(3, base::Time::FromJavaTime(2500));
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  std::vector<RecentFile> files = GetRecentFiles(
+      TestParams()
+          .CutoffTime(base::Time::FromMillisecondsSinceUnixEpoch(2500))
+          .MaxFiles(3));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("4.jpg", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[0].last_modified());
   EXPECT_EQ("3.jpg", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(3000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[1].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, IgnoreDotFiles) {
@@ -153,40 +214,35 @@ TEST_F(RecentDiskSourceTest, IgnoreDotFiles) {
   ASSERT_TRUE(base::CreateDirectory(temp_dir_.GetPath().Append("noignore")));
 
   // Oldest
+  ASSERT_TRUE(CreateEmptyFile("noignore/1.jpg",
+                              base::Time::FromSecondsSinceUnixEpoch(1)));
+  ASSERT_TRUE(CreateEmptyFile(".ignore/2.jpg",
+                              base::Time::FromSecondsSinceUnixEpoch(2)));
   ASSERT_TRUE(
-      CreateEmptyFile("noignore/1.jpg", base::Time::FromJavaTime(1000)));
-  ASSERT_TRUE(CreateEmptyFile(".ignore/2.jpg", base::Time::FromJavaTime(2000)));
-  ASSERT_TRUE(CreateEmptyFile("3.jpg", base::Time::FromJavaTime(3000)));
-  ASSERT_TRUE(CreateEmptyFile(".4.jpg", base::Time::FromJavaTime(4000)));
+      CreateEmptyFile("3.jpg", base::Time::FromSecondsSinceUnixEpoch(3)));
+  ASSERT_TRUE(
+      CreateEmptyFile(".4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files = GetRecentFiles(4, base::Time());
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  std::vector<RecentFile> files = GetRecentFiles(TestParams().MaxFiles(4));
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ(".4.jpg", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[0].last_modified());
   EXPECT_EQ("3.jpg", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(3000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[1].last_modified());
   EXPECT_EQ("2.jpg", files[2].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(2000), files[2].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[2].last_modified());
   EXPECT_EQ("1.jpg", files[3].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(1000), files[3].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[3].last_modified());
 
-  source_ = std::make_unique<RecentDiskSource>(
-      mount_point_name_, true /* ignore_dotfiles */, 0 /* max_depth */,
-      uma_histogram_name_);
-
-  files = GetRecentFiles(4, base::Time());
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  files = GetRecentFiles(TestParams().IgnoreDotFiles(true).MaxFiles(4));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("3.jpg", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(3000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[0].last_modified());
   EXPECT_EQ("1.jpg", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(1000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[1].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, MaxDepth) {
@@ -195,145 +251,179 @@ TEST_F(RecentDiskSourceTest, MaxDepth) {
   ASSERT_TRUE(base::CreateDirectory(temp_dir_.GetPath().Append("a/b/c")));
 
   // Oldest
-  ASSERT_TRUE(CreateEmptyFile("1.jpg", base::Time::FromJavaTime(1000)));
-  ASSERT_TRUE(CreateEmptyFile("a/2.jpg", base::Time::FromJavaTime(2000)));
-  ASSERT_TRUE(CreateEmptyFile("a/b/3.jpg", base::Time::FromJavaTime(3000)));
-  ASSERT_TRUE(CreateEmptyFile("a/b/c/4.jpg", base::Time::FromJavaTime(4000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("1.jpg", base::Time::FromSecondsSinceUnixEpoch(1)));
+  ASSERT_TRUE(
+      CreateEmptyFile("a/2.jpg", base::Time::FromSecondsSinceUnixEpoch(2)));
+  ASSERT_TRUE(
+      CreateEmptyFile("a/b/3.jpg", base::Time::FromSecondsSinceUnixEpoch(3)));
+  ASSERT_TRUE(
+      CreateEmptyFile("a/b/c/4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files = GetRecentFiles(4, base::Time());
+  std::vector<RecentFile> files = GetRecentFiles(TestParams().MaxFiles(4));
   ASSERT_EQ(4u, files.size());
 
-  source_ = std::make_unique<RecentDiskSource>(mount_point_name_, false, 2,
-                                               uma_histogram_name_);
-
-  files = GetRecentFiles(4, base::Time());
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  files = GetRecentFiles(TestParams().MaxFiles(4).MaxDepth(2));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("2.jpg", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(2000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[0].last_modified());
   EXPECT_EQ("1.jpg", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(1000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[1].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, GetAudioFiles) {
   // Oldest
-  ASSERT_TRUE(CreateEmptyFile("1.jpg", base::Time::FromJavaTime(1000)));
-  ASSERT_TRUE(CreateEmptyFile("2.mp4", base::Time::FromJavaTime(2000)));
-  ASSERT_TRUE(CreateEmptyFile("3.png", base::Time::FromJavaTime(3000)));
-  ASSERT_TRUE(CreateEmptyFile("4.mp3", base::Time::FromJavaTime(4000)));
-  ASSERT_TRUE(CreateEmptyFile("5.gif", base::Time::FromJavaTime(5000)));
-  ASSERT_TRUE(CreateEmptyFile("6.webm", base::Time::FromJavaTime(6000)));
-  ASSERT_TRUE(CreateEmptyFile("7.amr", base::Time::FromJavaTime(7000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("1.jpg", base::Time::FromSecondsSinceUnixEpoch(1)));
+  ASSERT_TRUE(
+      CreateEmptyFile("2.mp4", base::Time::FromSecondsSinceUnixEpoch(2)));
+  ASSERT_TRUE(
+      CreateEmptyFile("3.png", base::Time::FromSecondsSinceUnixEpoch(3)));
+  ASSERT_TRUE(
+      CreateEmptyFile("4.mp3", base::Time::FromSecondsSinceUnixEpoch(4)));
+  ASSERT_TRUE(
+      CreateEmptyFile("5.gif", base::Time::FromSecondsSinceUnixEpoch(5)));
+  ASSERT_TRUE(
+      CreateEmptyFile("6.webm", base::Time::FromSecondsSinceUnixEpoch(6)));
+  ASSERT_TRUE(
+      CreateEmptyFile("7.amr", base::Time::FromSecondsSinceUnixEpoch(7)));
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(7, base::Time(), RecentSource::FileType::kAudio);
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+      GetRecentFiles(TestParams().FileType(RecentSource::FileType::kAudio));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("7.amr", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(7000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(7), files[0].last_modified());
   EXPECT_EQ("4.mp3", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(4000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[1].last_modified());
+
+  files = GetRecentFiles(
+      TestParams().Query("7").FileType(RecentSource::FileType::kAudio));
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ("7.amr", files[0].url().path().BaseName().value());
+
+  files = GetRecentFiles(
+      TestParams().Query("6").FileType(RecentSource::FileType::kAudio));
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(RecentDiskSourceTest, GetImageFiles) {
   // Oldest
-  ASSERT_TRUE(CreateEmptyFile("1.jpg", base::Time::FromJavaTime(1000)));
-  ASSERT_TRUE(CreateEmptyFile("2.mp4", base::Time::FromJavaTime(2000)));
-  ASSERT_TRUE(CreateEmptyFile("3.png", base::Time::FromJavaTime(3000)));
-  ASSERT_TRUE(CreateEmptyFile("4.mp3", base::Time::FromJavaTime(4000)));
-  ASSERT_TRUE(CreateEmptyFile("5.gif", base::Time::FromJavaTime(5000)));
-  ASSERT_TRUE(CreateEmptyFile("6.webm", base::Time::FromJavaTime(6000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("1.jpg", base::Time::FromSecondsSinceUnixEpoch(1)));
+  ASSERT_TRUE(
+      CreateEmptyFile("2.mp4", base::Time::FromSecondsSinceUnixEpoch(2)));
+  ASSERT_TRUE(
+      CreateEmptyFile("3.png", base::Time::FromSecondsSinceUnixEpoch(3)));
+  ASSERT_TRUE(
+      CreateEmptyFile("4.mp3", base::Time::FromSecondsSinceUnixEpoch(4)));
+  ASSERT_TRUE(
+      CreateEmptyFile("5.gif", base::Time::FromSecondsSinceUnixEpoch(5)));
+  ASSERT_TRUE(
+      CreateEmptyFile("6.webm", base::Time::FromSecondsSinceUnixEpoch(6)));
   // RAW images are supported
-  ASSERT_TRUE(CreateEmptyFile("7.dng", base::Time::FromJavaTime(7000)));
-  ASSERT_TRUE(CreateEmptyFile("8.nef", base::Time::FromJavaTime(8000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("7.dng", base::Time::FromSecondsSinceUnixEpoch(7)));
+  ASSERT_TRUE(
+      CreateEmptyFile("8.nef", base::Time::FromSecondsSinceUnixEpoch(8)));
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(8, base::Time(), RecentSource::FileType::kImage);
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+      GetRecentFiles(TestParams().FileType(RecentSource::FileType::kImage));
 
   ASSERT_EQ(5u, files.size());
   EXPECT_EQ("8.nef", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(8000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(8), files[0].last_modified());
   EXPECT_EQ("7.dng", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(7000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(7), files[1].last_modified());
   EXPECT_EQ("5.gif", files[2].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(5000), files[2].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(5), files[2].last_modified());
   EXPECT_EQ("3.png", files[3].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(3000), files[3].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[3].last_modified());
   EXPECT_EQ("1.jpg", files[4].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(1000), files[4].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[4].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, GetVideoFiles) {
   // Oldest
-  ASSERT_TRUE(CreateEmptyFile("1.jpg", base::Time::FromJavaTime(1000)));
-  ASSERT_TRUE(CreateEmptyFile("2.mp4", base::Time::FromJavaTime(2000)));
-  ASSERT_TRUE(CreateEmptyFile("3.png", base::Time::FromJavaTime(3000)));
-  ASSERT_TRUE(CreateEmptyFile("4.mp3", base::Time::FromJavaTime(4000)));
-  ASSERT_TRUE(CreateEmptyFile("5.gif", base::Time::FromJavaTime(5000)));
-  ASSERT_TRUE(CreateEmptyFile("6.webm", base::Time::FromJavaTime(6000)));
-  ASSERT_TRUE(CreateEmptyFile("7.avi", base::Time::FromJavaTime(7000)));
-  ASSERT_TRUE(CreateEmptyFile("8.mov", base::Time::FromJavaTime(8000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("1.jpg", base::Time::FromSecondsSinceUnixEpoch(1)));
+  ASSERT_TRUE(
+      CreateEmptyFile("2.mp4", base::Time::FromSecondsSinceUnixEpoch(2)));
+  ASSERT_TRUE(
+      CreateEmptyFile("3.png", base::Time::FromSecondsSinceUnixEpoch(3)));
+  ASSERT_TRUE(
+      CreateEmptyFile("4.mp3", base::Time::FromSecondsSinceUnixEpoch(4)));
+  ASSERT_TRUE(
+      CreateEmptyFile("5.gif", base::Time::FromSecondsSinceUnixEpoch(5)));
+  ASSERT_TRUE(
+      CreateEmptyFile("6.webm", base::Time::FromSecondsSinceUnixEpoch(6)));
+  ASSERT_TRUE(
+      CreateEmptyFile("7.avi", base::Time::FromSecondsSinceUnixEpoch(7)));
+  ASSERT_TRUE(
+      CreateEmptyFile("8.mov", base::Time::FromSecondsSinceUnixEpoch(8)));
   // *.wmv is not supported yet.
-  ASSERT_TRUE(CreateEmptyFile("9.wmv", base::Time::FromJavaTime(9000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("9.wmv", base::Time::FromSecondsSinceUnixEpoch(9)));
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(9, base::Time(), RecentSource::FileType::kVideo);
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+      GetRecentFiles(TestParams().FileType(RecentSource::FileType::kVideo));
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ("8.mov", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(8000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(8), files[0].last_modified());
   EXPECT_EQ("7.avi", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(7000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(7), files[1].last_modified());
   EXPECT_EQ("6.webm", files[2].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(6000), files[2].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(6), files[2].last_modified());
   EXPECT_EQ("2.mp4", files[3].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(2000), files[3].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[3].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, GetDocumentFiles) {
   // Oldest
-  ASSERT_TRUE(CreateEmptyFile("1.jpg", base::Time::FromJavaTime(1000)));
-  ASSERT_TRUE(CreateEmptyFile("2.mp4", base::Time::FromJavaTime(2000)));
-  ASSERT_TRUE(CreateEmptyFile("3.png", base::Time::FromJavaTime(3000)));
-  ASSERT_TRUE(CreateEmptyFile("4.doc", base::Time::FromJavaTime(4000)));
-  ASSERT_TRUE(CreateEmptyFile("5.gif", base::Time::FromJavaTime(5000)));
-  ASSERT_TRUE(CreateEmptyFile("6.txt", base::Time::FromJavaTime(6000)));
-  ASSERT_TRUE(CreateEmptyFile("7.avi", base::Time::FromJavaTime(7000)));
-  ASSERT_TRUE(CreateEmptyFile("8.gdoc", base::Time::FromJavaTime(8000)));
+  ASSERT_TRUE(
+      CreateEmptyFile("1.jpg", base::Time::FromSecondsSinceUnixEpoch(1)));
+  ASSERT_TRUE(
+      CreateEmptyFile("2.mp4", base::Time::FromSecondsSinceUnixEpoch(2)));
+  ASSERT_TRUE(
+      CreateEmptyFile("3.png", base::Time::FromSecondsSinceUnixEpoch(3)));
+  ASSERT_TRUE(
+      CreateEmptyFile("4.doc", base::Time::FromSecondsSinceUnixEpoch(4)));
+  ASSERT_TRUE(
+      CreateEmptyFile("5.gif", base::Time::FromSecondsSinceUnixEpoch(5)));
+  ASSERT_TRUE(
+      CreateEmptyFile("6.txt", base::Time::FromSecondsSinceUnixEpoch(6)));
+  ASSERT_TRUE(
+      CreateEmptyFile("7.avi", base::Time::FromSecondsSinceUnixEpoch(7)));
+  ASSERT_TRUE(
+      CreateEmptyFile("8.gdoc", base::Time::FromSecondsSinceUnixEpoch(8)));
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(8, base::Time(), RecentSource::FileType::kDocument);
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+      GetRecentFiles(TestParams().FileType(RecentSource::FileType::kDocument));
 
   ASSERT_EQ(3u, files.size());
   EXPECT_EQ("8.gdoc", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(8000), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(8), files[0].last_modified());
   EXPECT_EQ("6.txt", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(6000), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(6), files[1].last_modified());
   EXPECT_EQ("4.doc", files[2].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(4000), files[2].last_modified());
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[2].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, GetRecentFiles_UmaStats) {
   base::HistogramTester histogram_tester;
 
-  GetRecentFiles(3, base::Time());
+  GetRecentFiles(TestParams());
 
   histogram_tester.ExpectTotalCount(uma_histogram_name_, 1);
 }
+
+}  // namespace
 
 }  // namespace ash

@@ -62,8 +62,10 @@ group("generated") {
     "//third_party/blink/renderer/core/*",
   ]
 
-  public_deps =
-      [ "//third_party/blink/renderer/bindings:generate_bindings_all" ]
+  public_deps = [
+    "//components/miracle_parameter/common",
+    "//third_party/blink/renderer/bindings:generate_bindings_all",
+  ]
 }
 
 fuzzer_test("v8_serialized_script_value_fuzzer") {

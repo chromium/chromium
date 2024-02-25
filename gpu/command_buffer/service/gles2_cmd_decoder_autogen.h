@@ -2233,14 +2233,6 @@ error::Error GLES2DecoderImpl::HandleHint(uint32_t immediate_data_size,
         }
       }
       break;
-    case GL_TEXTURE_FILTERING_HINT_CHROMIUM:
-      if (state_.hint_texture_filtering != mode) {
-        state_.hint_texture_filtering = mode;
-        if (feature_info_->feature_flags().chromium_texture_filtering_hint) {
-          api()->glHintFn(target, mode);
-        }
-      }
-      break;
     default:
       NOTREACHED();
   }
@@ -5331,6 +5323,10 @@ error::Error GLES2DecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   const volatile gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate& c =
       *static_cast<const volatile gles2::cmds::
                        ConvertYUVAMailboxesToRGBINTERNALImmediate*>(cmd_data);
+  GLint src_x = static_cast<GLint>(c.src_x);
+  GLint src_y = static_cast<GLint>(c.src_y);
+  GLsizei width = static_cast<GLsizei>(c.width);
+  GLsizei height = static_cast<GLsizei>(c.height);
   GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
   GLenum plane_config = static_cast<GLenum>(c.plane_config);
   GLenum subsampling = static_cast<GLenum>(c.subsampling);
@@ -5343,11 +5339,70 @@ error::Error GLES2DecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   }
   volatile const GLbyte* mailboxes = GetImmediateDataAs<volatile const GLbyte*>(
       c, mailboxes_size, immediate_data_size);
+  if (width < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
+                       "width < 0");
+    return error::kNoError;
+  }
+  if (height < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
+                       "height < 0");
+    return error::kNoError;
+  }
   if (mailboxes == nullptr) {
     return error::kOutOfBounds;
   }
-  DoConvertYUVAMailboxesToRGBINTERNAL(planes_yuv_color_space, plane_config,
+  DoConvertYUVAMailboxesToRGBINTERNAL(src_x, src_y, width, height,
+                                      planes_yuv_color_space, plane_config,
                                       subsampling, mailboxes);
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderImpl::HandleConvertYUVAMailboxesToTextureINTERNALImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate&
+      c = *static_cast<const volatile gles2::cmds::
+                           ConvertYUVAMailboxesToTextureINTERNALImmediate*>(
+          cmd_data);
+  GLuint texture = static_cast<GLuint>(c.texture);
+  GLenum target = static_cast<GLenum>(c.target);
+  GLuint internal_format = static_cast<GLuint>(c.internal_format);
+  GLenum type = static_cast<GLenum>(c.type);
+  GLint src_x = static_cast<GLint>(c.src_x);
+  GLint src_y = static_cast<GLint>(c.src_y);
+  GLsizei width = static_cast<GLsizei>(c.width);
+  GLsizei height = static_cast<GLsizei>(c.height);
+  GLboolean flip_y = static_cast<GLboolean>(c.flip_y);
+  GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
+  GLenum plane_config = static_cast<GLenum>(c.plane_config);
+  GLenum subsampling = static_cast<GLenum>(c.subsampling);
+  uint32_t mailboxes_size;
+  if (!GLES2Util::ComputeDataSize<GLbyte, 64>(1, &mailboxes_size)) {
+    return error::kOutOfBounds;
+  }
+  if (mailboxes_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLbyte* mailboxes = GetImmediateDataAs<volatile const GLbyte*>(
+      c, mailboxes_size, immediate_data_size);
+  if (width < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
+                       "glConvertYUVAMailboxesToTextureINTERNAL", "width < 0");
+    return error::kNoError;
+  }
+  if (height < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
+                       "glConvertYUVAMailboxesToTextureINTERNAL", "height < 0");
+    return error::kNoError;
+  }
+  if (mailboxes == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoConvertYUVAMailboxesToTextureINTERNAL(
+      texture, target, internal_format, type, src_x, src_y, width, height,
+      flip_y, planes_yuv_color_space, plane_config, subsampling, mailboxes);
   return error::kNoError;
 }
 
@@ -5916,6 +5971,53 @@ GLES2DecoderImpl::HandleGetFramebufferPixelLocalStorageParameterivANGLE(
   if (error == GL_NO_ERROR) {
     result->SetNumResults(num_values);
   }
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleClipControlEXT(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::ClipControlEXT& c =
+      *static_cast<const volatile gles2::cmds::ClipControlEXT*>(cmd_data);
+  if (!features().ext_clip_control) {
+    return error::kUnknownCommand;
+  }
+
+  GLenum origin = static_cast<GLenum>(c.origin);
+  GLenum depth = static_cast<GLenum>(c.depth);
+  api()->glClipControlEXTFn(origin, depth);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandlePolygonModeANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::PolygonModeANGLE& c =
+      *static_cast<const volatile gles2::cmds::PolygonModeANGLE*>(cmd_data);
+  if (!features().angle_polygon_mode) {
+    return error::kUnknownCommand;
+  }
+
+  GLenum face = static_cast<GLenum>(c.face);
+  GLenum mode = static_cast<GLenum>(c.mode);
+  api()->glPolygonModeANGLEFn(face, mode);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandlePolygonOffsetClampEXT(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::PolygonOffsetClampEXT& c =
+      *static_cast<const volatile gles2::cmds::PolygonOffsetClampEXT*>(
+          cmd_data);
+  if (!features().ext_polygon_offset_clamp) {
+    return error::kUnknownCommand;
+  }
+
+  GLfloat factor = static_cast<GLfloat>(c.factor);
+  GLfloat units = static_cast<GLfloat>(c.units);
+  GLfloat clamp = static_cast<GLfloat>(c.clamp);
+  api()->glPolygonOffsetClampEXTFn(factor, units, clamp);
   return error::kNoError;
 }
 

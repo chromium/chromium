@@ -1,0 +1,40 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module privacy_sandbox_internals.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "components/content_settings/core/common/content_settings_types.mojom";
+import "components/content_settings/core/common/content_settings.mojom";
+
+// Mojo interface for DevUI access to data for Privacy Sandbox state.
+
+// Renderer -> Browser
+interface PageHandler {
+  // Reads a named pref and returns its value.  If the pref name is not
+  // registered will return a null Value.
+  ReadPref(string pref_name) => (mojo_base.mojom.Value s);
+
+  // Return a list of ContentSettings for the current profile and given type.
+  // Reads directly from the HostContentSettingsMap.
+  ReadContentSettings(content_settings.mojom.ContentSettingsType type) => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
+  // Return a list of TPCD_METADATA_GRANTS ContentSettings for the current
+  // profile.
+  GetTpcdMetadataGrants() => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
+  // Return a string representation of a ContentSettingsPattern.
+  ContentSettingsPatternToString(
+    content_settings.mojom.ContentSettingsPattern pattern) => (string s);
+
+  // Return a ContentSettingsPattern representing a string.
+  StringToContentSettingsPattern(string s) => (
+    content_settings.mojom.ContentSettingsPattern pattern);
+};
+
+
+// Browser -> Renderer
+interface Page {
+};

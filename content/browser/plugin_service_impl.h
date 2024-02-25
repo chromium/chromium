@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/plugin_service.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -83,14 +83,14 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
       int render_process_id,
       const base::FilePath& plugin_path,
       const base::FilePath& profile_data_directory,
-      const absl::optional<url::Origin>& origin_lock);
+      const std::optional<url::Origin>& origin_lock);
 
   // Opens a channel to a plugin process for the given mime type, starting
   // a new plugin process if necessary.
   void OpenChannelToPpapiPlugin(int render_process_id,
                                 const base::FilePath& plugin_path,
                                 const base::FilePath& profile_data_directory,
-                                const absl::optional<url::Origin>& origin_lock,
+                                const std::optional<url::Origin>& origin_lock,
                                 PpapiPluginProcessHost::PluginClient* client);
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
@@ -120,7 +120,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   PpapiPluginProcessHost* FindPpapiPluginProcess(
       const base::FilePath& plugin_path,
       const base::FilePath& profile_data_directory,
-      const absl::optional<url::Origin>& origin_lock);
+      const std::optional<url::Origin>& origin_lock);
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
   void RegisterPlugins();

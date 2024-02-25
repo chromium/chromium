@@ -30,7 +30,7 @@ void GPUUncapturedErrorEvent::Trace(Visitor* visitor) const {
 }
 
 GPUError* GPUUncapturedErrorEvent::error() {
-  return error_;
+  return error_.Get();
 }
 
 }  // namespace blink

@@ -58,8 +58,8 @@ wheel: <
   version: "version:1.5.2"
 >
 wheel: <
-  name: "infra/python/wheels/packaging-py2_py3"
-  version: "version:16.8"
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:23.0"
 >
 wheel: <
   name: "infra/python/wheels/pyasn1-py2_py3"

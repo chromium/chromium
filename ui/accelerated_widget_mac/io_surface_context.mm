@@ -91,8 +91,8 @@ IOSurfaceContext::Get(Type type) {
   CGLContextObj share_context = nullptr;
   if (!type_map->empty())
     share_context = type_map->begin()->second->cgl_context();
-  error = CGLCreateContext(
-      pixel_format, share_context, cgl_context.InitializeInto());
+  error = CGLCreateContext(pixel_format.get(), share_context,
+                           cgl_context.InitializeInto());
   if (error != kCGLNoError) {
     LOG(ERROR) << "Failed to create context object.";
     return nullptr;

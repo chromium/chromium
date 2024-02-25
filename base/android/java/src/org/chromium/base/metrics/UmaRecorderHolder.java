@@ -34,7 +34,7 @@ public class UmaRecorderHolder {
     public static void setNonNativeDelegate(UmaRecorder recorder) {
         UmaRecorder previous = sRecorder.setDelegate(recorder);
         assert !(previous instanceof NativeUmaRecorder)
-            : "A NativeUmaRecorder has already been set";
+                : "A NativeUmaRecorder has already been set";
     }
 
     /**
@@ -46,9 +46,7 @@ public class UmaRecorderHolder {
         sSetUpNativeUmaRecorder = setUpNativeUmaRecorder;
     }
 
-    /**
-     * Starts forwarding metrics to the native code. Returns after the cache has been flushed.
-     */
+    /** Starts forwarding metrics to the native code. Returns after the cache has been flushed. */
     public static void onLibraryLoaded() {
         if (!sSetUpNativeUmaRecorder) return;
 
@@ -57,9 +55,7 @@ public class UmaRecorderHolder {
         sRecorder.setDelegate(new NativeUmaRecorder());
     }
 
-    /**
-     * Reset globals for tests.
-     */
+    /** Reset globals for tests. */
     public static void resetForTesting() {
         // Prevent hitting cache size limits from tests running without ever switching to the native
         // recorder. Also guards against tests that use setNonNativeDelegate() to inject a mock from

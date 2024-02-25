@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_TEST_NIGORI_TEST_UTILS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,8 +15,6 @@
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/cross_user_sharing_keys.h"
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 
@@ -109,7 +108,7 @@ sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
 // presented, |encryption_keybag| will also contain keys derived from it.
 sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
     const KeyParamsForTesting& passphrase_key_params,
-    const absl::optional<KeyParamsForTesting>& old_key_params = absl::nullopt);
+    const std::optional<KeyParamsForTesting>& old_key_params = std::nullopt);
 
 // Initializes KeyDerivationParams as described in a given |nigori|. This
 // function will fail the test (using ADD_FAILURE/EXPECT) if the |nigori| is

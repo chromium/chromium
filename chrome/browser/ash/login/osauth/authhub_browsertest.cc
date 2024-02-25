@@ -30,8 +30,6 @@ using testing::Invoke;
 class AuthHubTest : public LoginManagerTest {
  public:
   AuthHubTest() {
-    login_manager_.AppendRegularUsers(2);
-    test_account_id_ = login_manager_.users()[0].account_id;
   }
   ~AuthHubTest() override = default;
 
@@ -61,16 +59,24 @@ class AuthHubTest : public LoginManagerTest {
 
  protected:
   MockAuthAttemptConsumer attempt_consumer_;
-  raw_ptr<AuthHubConnector, DanglingUntriaged | ExperimentalAsh> connector_;
+  raw_ptr<AuthHubConnector, DanglingUntriaged> connector_;
   MockAuthFactorStatusConsumer status_consumer_;
-  absl::optional<AuthProofToken> auth_token_;
+  std::optional<AuthProofToken> auth_token_;
+
+  LoginManagerMixin::TestUserInfo gaia_password_user_{
+      LoginManagerMixin::CreateConsumerAccountId(1),
+      {ash::AshAuthFactor::kGaiaPassword}};
+  LoginManagerMixin::TestUserInfo gaia_password_and_pin_user_{
+      LoginManagerMixin::CreateConsumerAccountId(2),
+      {ash::AshAuthFactor::kGaiaPassword, ash::AshAuthFactor::kCryptohomePin}};
 
   AccountId test_account_id_;
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
-  LoginManagerMixin login_manager_{&mixin_host_,
-                                   {},
-                                   nullptr,
-                                   &cryptohome_mixin_};
+  LoginManagerMixin login_manager_{
+      &mixin_host_,
+      {gaia_password_user_, gaia_password_and_pin_user_},
+      nullptr,
+      &cryptohome_mixin_};
 };
 
 IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenWithPasswordOnly) {
@@ -80,13 +86,10 @@ IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenWithPasswordOnly) {
   ash::AuthHub::Get()->EnsureInitialized(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  // User has a password as a factor.
-  cryptohome_mixin_.AddGaiaPassword(test_account_id_, "password");
-
   // User pod is selected.
   ExpectAuthenticationStarted();
   ash::AuthHub::Get()->StartAuthentication(
-      test_account_id_, AuthPurpose::kLogin, &attempt_consumer_);
+      gaia_password_user_.account_id, AuthPurpose::kLogin, &attempt_consumer_);
   base::RunLoop().RunUntilIdle();
 
   // Password is entered.
@@ -99,11 +102,11 @@ IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenWithPasswordOnly) {
   EXPECT_TRUE(auth_token_.has_value());
   EXPECT_TRUE(AuthSessionStorage::Get()->IsValid(*auth_token_));
   std::unique_ptr<UserContext> context =
-      AuthSessionStorage::Get()->Borrow(FROM_HERE, *auth_token_);
+      AuthSessionStorage::Get()->BorrowForTests(FROM_HERE, *auth_token_);
   ASSERT_NE(context.get(), nullptr);
   EXPECT_EQ(context->GetAuthorizedIntents(),
             AuthSessionIntents{AuthSessionIntent::kDecrypt});
-  EXPECT_EQ(context->GetAccountId(), test_account_id_);
+  EXPECT_EQ(context->GetAccountId(), gaia_password_user_.account_id);
 
   // Check that authhub can correctly switch to in-session after that.
   ash::AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
@@ -117,18 +120,14 @@ IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenAuthenticateWithPin) {
   ash::AuthHub::Get()->EnsureInitialized(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  // User has a password as a factor.
-  cryptohome_mixin_.AddGaiaPassword(test_account_id_, "password");
-
-  // User has a PIN as a factor.
-  cryptohome_mixin_.AddCryptohomePin(test_account_id_, "123123");
-
-  ASSERT_TRUE(cryptohome_mixin_.HasPinFactor(test_account_id_));
+  ASSERT_TRUE(
+      cryptohome_mixin_.HasPinFactor(gaia_password_and_pin_user_.account_id));
 
   // User pod is selected.
   ExpectAuthenticationStarted();
   ash::AuthHub::Get()->StartAuthentication(
-      test_account_id_, AuthPurpose::kLogin, &attempt_consumer_);
+      gaia_password_and_pin_user_.account_id, AuthPurpose::kLogin,
+      &attempt_consumer_);
   base::RunLoop().RunUntilIdle();
 
   // Pin is entered.
@@ -141,11 +140,11 @@ IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenAuthenticateWithPin) {
   EXPECT_TRUE(auth_token_.has_value());
   EXPECT_TRUE(AuthSessionStorage::Get()->IsValid(*auth_token_));
   std::unique_ptr<UserContext> context =
-      AuthSessionStorage::Get()->Borrow(FROM_HERE, *auth_token_);
+      AuthSessionStorage::Get()->BorrowForTests(FROM_HERE, *auth_token_);
   ASSERT_NE(context.get(), nullptr);
   EXPECT_EQ(context->GetAuthorizedIntents(),
             AuthSessionIntents{AuthSessionIntent::kDecrypt});
-  EXPECT_EQ(context->GetAccountId(), test_account_id_);
+  EXPECT_EQ(context->GetAccountId(), gaia_password_and_pin_user_.account_id);
 
   // Check that authhub can correctly switch to in-session after that.
   ash::AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);

@@ -1,30 +1,30 @@
 (function() {
 
-function checkColumnRowValues(gridItem, columnValue, rowValue)
+function checkColumnRowValues(gridItem, columnValue, rowValue, columnStartValue, columnEndValue, rowStartValue, rowEndValue)
 {
     this.gridItem = gridItem;
     var gridItemId = gridItem.id ? gridItem.id : "gridItem";
 
-    var gridColumnStartEndValues = columnValue.split("/")
-    var gridColumnStartValue = gridColumnStartEndValues[0].trim();
-    var gridColumnEndValue = gridColumnStartEndValues[1].trim();
-
-    var gridRowStartEndValues = rowValue.split("/")
-    var gridRowStartValue = gridRowStartEndValues[0].trim();
-    var gridRowEndValue = gridRowStartEndValues[1].trim();
-
     shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-column')", columnValue);
-    shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-column-start')", gridColumnStartValue);
-    shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-column-end')", gridColumnEndValue);
     shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-row')", rowValue);
-    shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-row-start')", gridRowStartValue);
-    shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-row-end')", gridRowEndValue);
+    if (columnStartValue) {
+        shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-column-start')", columnStartValue);
+    }
+    if (columnEndValue) {
+        shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-column-end')", columnEndValue);
+    }
+    if (rowStartValue) {
+        shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-row-start')", rowStartValue);
+    }
+    if (rowEndValue) {
+        shouldBeEqualToString("getComputedStyle(" + gridItemId + ", '').getPropertyValue('grid-row-end')", rowEndValue);
+    }
 }
 
-window.testColumnRowCSSParsing = function(id, columnValue, rowValue)
+window.testColumnRowCSSParsing = function(id, columnValue, rowValue, columnStartValue, columnEndValue, rowStartValue, rowEndValue)
 {
     var gridItem = document.getElementById(id);
-    checkColumnRowValues(gridItem, columnValue, rowValue);
+    checkColumnRowValues(gridItem, columnValue, rowValue, columnStartValue, columnEndValue, rowStartValue, rowEndValue);
 }
 
 window.testColumnRowJSParsing = function(columnValue, rowValue, expectedColumnValue, expectedRowValue)
@@ -35,7 +35,7 @@ window.testColumnRowJSParsing = function(columnValue, rowValue, expectedColumnVa
     gridItem.style.gridColumn = columnValue;
     gridItem.style.gridRow = rowValue;
 
-    checkColumnRowValues(gridItem, expectedColumnValue ? expectedColumnValue : columnValue, expectedRowValue ? expectedRowValue : rowValue);
+    checkColumnRowValues(gridItem, expectedColumnValue, expectedRowValue);
 
     gridElement.removeChild(gridItem);
 }
@@ -53,7 +53,7 @@ window.testColumnStartRowStartJSParsing = function(columnStartValue, rowStartVal
     if (expectedRowStartValue === undefined)
         expectedRowStartValue = rowStartValue;
 
-    checkColumnRowValues(gridItem, expectedColumnStartValue + " / auto", expectedRowStartValue + " / auto");
+    checkColumnRowValues(gridItem, expectedColumnStartValue, expectedRowStartValue);
 
     gridElement.removeChild(gridItem);
 }
@@ -71,7 +71,10 @@ window.testColumnEndRowEndJSParsing = function(columnEndValue, rowEndValue, expe
     if (expectedRowEndValue === undefined)
         expectedRowEndValue = rowEndValue;
 
-    checkColumnRowValues(gridItem, "auto / " + expectedColumnEndValue, "auto / " + expectedRowEndValue);
+    var expectedColumnValue = expectedColumnEndValue == "auto" ? expectedColumnEndValue : "auto / " + expectedColumnEndValue;
+    var expectedRowValue = expectedRowEndValue == "auto" ? expectedRowEndValue : "auto / " + expectedRowEndValue;
+
+    checkColumnRowValues(gridItem, expectedColumnValue, expectedRowValue);
 
     gridElement.removeChild(gridItem);
 }
@@ -83,7 +86,7 @@ window.testColumnRowInvalidJSParsing = function(columnValue, rowValue)
     gridItem.style.gridColumn = columnValue;
     gridItem.style.gridRow = rowValue;
 
-    checkColumnRowValues(gridItem, "auto / auto", "auto / auto");
+    checkColumnRowValues(gridItem, "auto", "auto");
 
     document.body.removeChild(gridItem);
 }
@@ -145,8 +148,8 @@ window.testColumnStartRowStartInheritJSParsing = function(columnStartValue, rowS
     gridItem.style.gridRowStart = rowStartValue;
 
     // Initial value is 'auto' but we shouldn't touch the opposite grid line.
-    var columnValueForInherit = (columnStartValue !== "inherit" ? columnStartValue : placeholderParentColumnStartValueForInherit) + " / auto";
-    var rowValueForInherit = (rowStartValue !== "inherit" ? rowStartValue : placeholderParentRowStartValueForInherit) + " / auto";
+    var columnValueForInherit = (columnStartValue !== "inherit" ? columnStartValue : placeholderParentColumnStartValueForInherit);
+    var rowValueForInherit = (rowStartValue !== "inherit" ? rowStartValue : placeholderParentRowStartValueForInherit);
     checkColumnRowValues(parentElement.firstChild, columnValueForInherit, rowValueForInherit);
 
     document.body.removeChild(parentElement);
@@ -172,10 +175,10 @@ window.testColumnRowInitialJSParsing = function()
     var gridItem = setupInitialTest();
 
     gridItem.style.gridColumn = "initial";
-    checkColumnRowValues(gridItem, "auto / auto", placeholderRowValueForInitial);
+    checkColumnRowValues(gridItem, "auto", placeholderRowValueForInitial);
 
     gridItem.style.gridRow = "initial";
-    checkColumnRowValues(gridItem, "auto / auto", "auto / auto");
+    checkColumnRowValues(gridItem, "auto", "auto");
 
     document.body.removeChild(gridItem);
 }
@@ -198,10 +201,10 @@ window.testEndAfterInitialJSParsing = function()
     var gridItem = setupInitialTest();
 
     gridItem.style.gridColumnEnd = "initial";
-    checkColumnRowValues(gridItem, placeholderColumnStartValueForInitial + " / auto", placeholderRowValueForInitial);
+    checkColumnRowValues(gridItem, placeholderColumnStartValueForInitial, placeholderRowValueForInitial);
 
     gridItem.style.gridRowEnd = "initial";
-    checkColumnRowValues(gridItem, placeholderColumnStartValueForInitial + " / auto", placeholderRowStartValueForInitial + " / auto");
+    checkColumnRowValues(gridItem, placeholderColumnStartValueForInitial, placeholderRowStartValueForInitial);
 
     document.body.removeChild(gridItem);
 }

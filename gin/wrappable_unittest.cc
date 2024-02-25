@@ -393,4 +393,31 @@ TEST_F(WrappableTest, LazyPropertyGetterCanBindSpecialArguments) {
   EXPECT_TRUE(v8_object == value);
 }
 
+TEST_F(WrappableTest, CannotConstruct) {
+  v8::Isolate* isolate = instance_->isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = context_.Get(isolate);
+
+  Handle<MyObject> obj = MyObject::Create(isolate);
+  v8::Local<v8::Value> wrapper =
+      ConvertToV8(isolate, obj.get()).ToLocalChecked();
+  ASSERT_FALSE(wrapper.IsEmpty());
+
+  v8::Local<v8::String> source =
+      StringToV8(isolate, "(obj => new obj.constructor())");
+  v8::Local<v8::Script> script =
+      v8::Script::Compile(context, source).ToLocalChecked();
+  v8::Local<v8::Function> function =
+      script->Run(context).ToLocalChecked().As<v8::Function>();
+
+  {
+    TryCatch try_catch(isolate);
+    EXPECT_TRUE(function
+                    ->Call(context, v8::Undefined(isolate), 1,
+                           (v8::Local<v8::Value>[]){wrapper})
+                    .IsEmpty());
+    EXPECT_TRUE(try_catch.HasCaught());
+  }
+}
+
 }  // namespace gin

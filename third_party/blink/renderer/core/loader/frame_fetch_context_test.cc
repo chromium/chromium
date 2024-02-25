@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -38,7 +39,6 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
@@ -204,6 +205,7 @@ class FrameFetchContextTest : public testing::Test {
     return GetFetchContext()->GetTopFrameOrigin();
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder;
   // We don't use the DocumentLoader directly in any tests, but need to keep it
   // around as long as the ResourceFetcher and Document live due to indirect
@@ -231,33 +233,33 @@ class FrameFetchContextSubresourceFilterTest : public FrameFetchContextTest {
         is_associated_with_ad_subframe));
   }
 
-  absl::optional<ResourceRequestBlockedReason> CanRequest() {
+  std::optional<ResourceRequestBlockedReason> CanRequest() {
     return CanRequestInternal(ReportingDisposition::kReport);
   }
 
-  absl::optional<ResourceRequestBlockedReason> CanRequestKeepAlive() {
+  std::optional<ResourceRequestBlockedReason> CanRequestKeepAlive() {
     return CanRequestInternal(ReportingDisposition::kReport,
                               true /* keepalive */);
   }
 
-  absl::optional<ResourceRequestBlockedReason> CanRequestPreload() {
+  std::optional<ResourceRequestBlockedReason> CanRequestPreload() {
     return CanRequestInternal(ReportingDisposition::kSuppressReporting);
   }
 
-  absl::optional<ResourceRequestBlockedReason> CanRequestAndVerifyIsAd(
+  std::optional<ResourceRequestBlockedReason> CanRequestAndVerifyIsAd(
       bool expect_is_ad) {
-    absl::optional<ResourceRequestBlockedReason> reason =
+    std::optional<ResourceRequestBlockedReason> reason =
         CanRequestInternal(ReportingDisposition::kReport);
     ResourceRequest request(KURL("http://example.com/"));
     FetchInitiatorInfo initiator_info;
     EXPECT_EQ(expect_is_ad, GetFetchContext()->CalculateIfAdSubresource(
-                                request, absl::nullopt /* alias_url */,
+                                request, std::nullopt /* alias_url */,
                                 ResourceType::kMock, initiator_info));
     return reason;
   }
 
  private:
-  absl::optional<ResourceRequestBlockedReason> CanRequestInternal(
+  std::optional<ResourceRequestBlockedReason> CanRequestInternal(
       ReportingDisposition reporting_disposition,
       bool keepalive = false) {
     const KURL input_url("http://example.com/");
@@ -271,7 +273,7 @@ class FrameFetchContextSubresourceFilterTest : public FrameFetchContextTest {
     // DJKim
     return GetFetchContext()->CanRequest(ResourceType::kImage, resource_request,
                                          input_url, options,
-                                         reporting_disposition, absl::nullopt);
+                                         reporting_disposition, std::nullopt);
   }
 
   int filtered_load_callback_counter_;
@@ -580,7 +582,6 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
  public:
   FrameFetchContextHintsTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        blink::features::kUserAgentClientHint,
         blink::features::kClientHintsPrefersReducedTransparency,
     };
     std::vector<base::test::FeatureRef> disabled_features = {};
@@ -609,7 +610,7 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
                     float width = 0) {
     SCOPED_TRACE(testing::Message() << header_name);
 
-    absl::optional<float> resource_width;
+    std::optional<float> resource_width;
     if (width > 0) {
       resource_width = width;
     }
@@ -641,7 +642,7 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
     const KURL input_url(input);
     ResourceRequest resource_request(input_url);
     GetFetchContext()->AddClientHintsIfNecessary(
-        absl::nullopt /* resource_width */, resource_request);
+        std::nullopt /* resource_width */, resource_request);
     return resource_request.HttpHeaderField(AtomicString(header_name));
   }
 
@@ -955,7 +956,7 @@ TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
                  false, "");
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", true,
-                 EmptyString());
+                 "");
 
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
@@ -1118,7 +1119,7 @@ TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", true,
                EmptyString());
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", true,
-               EmptyString());
+               "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
                true, "light");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
@@ -1433,10 +1434,10 @@ TEST_F(FrameFetchContextSubresourceFilterTest, Filter) {
 TEST_F(FrameFetchContextSubresourceFilterTest, Allow) {
   SetFilterPolicy(WebDocumentSubresourceFilter::kAllow);
 
-  EXPECT_EQ(absl::nullopt, CanRequestAndVerifyIsAd(false));
+  EXPECT_EQ(std::nullopt, CanRequestAndVerifyIsAd(false));
   EXPECT_EQ(0, GetFilteredLoadCallCount());
 
-  EXPECT_EQ(absl::nullopt, CanRequestPreload());
+  EXPECT_EQ(std::nullopt, CanRequestPreload());
   EXPECT_EQ(0, GetFilteredLoadCallCount());
 }
 
@@ -1444,19 +1445,19 @@ TEST_F(FrameFetchContextSubresourceFilterTest, DuringOnFreeze) {
   document->SetFreezingInProgress(true);
   // Only keepalive requests should succeed during onfreeze.
   EXPECT_EQ(ResourceRequestBlockedReason::kOther, CanRequest());
-  EXPECT_EQ(absl::nullopt, CanRequestKeepAlive());
+  EXPECT_EQ(std::nullopt, CanRequestKeepAlive());
   document->SetFreezingInProgress(false);
-  EXPECT_EQ(absl::nullopt, CanRequest());
-  EXPECT_EQ(absl::nullopt, CanRequestKeepAlive());
+  EXPECT_EQ(std::nullopt, CanRequest());
+  EXPECT_EQ(std::nullopt, CanRequestKeepAlive());
 }
 
 TEST_F(FrameFetchContextSubresourceFilterTest, WouldDisallow) {
   SetFilterPolicy(WebDocumentSubresourceFilter::kWouldDisallow);
 
-  EXPECT_EQ(absl::nullopt, CanRequestAndVerifyIsAd(true));
+  EXPECT_EQ(std::nullopt, CanRequestAndVerifyIsAd(true));
   EXPECT_EQ(0, GetFilteredLoadCallCount());
 
-  EXPECT_EQ(absl::nullopt, CanRequestPreload());
+  EXPECT_EQ(std::nullopt, CanRequestPreload());
   EXPECT_EQ(0, GetFilteredLoadCallCount());
 }
 
@@ -1533,8 +1534,7 @@ TEST_F(FrameFetchContextTest, AllowImageWhenDetached) {
 
   dummy_page_holder = nullptr;
 
-  EXPECT_TRUE(GetFetchContext()->AllowImage(true, url));
-  EXPECT_TRUE(GetFetchContext()->AllowImage(false, url));
+  EXPECT_TRUE(GetFetchContext()->AllowImage());
 }
 
 TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
@@ -1563,7 +1563,7 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
   dummy_page_holder = nullptr;
 
   GetFetchContext()->PopulateResourceRequest(
-      ResourceType::kRaw, absl::nullopt /* resource_width */, request, options);
+      ResourceType::kRaw, std::nullopt /* resource_width */, request, options);
   // Should not crash.
 }
 
@@ -1612,12 +1612,12 @@ TEST_F(FrameFetchContextSubresourceFilterTest,
        CanRequestBasedOnSubresourceFilterOnly) {
   const struct {
     WebDocumentSubresourceFilter::LoadPolicy policy;
-    absl::optional<ResourceRequestBlockedReason> expected_block_reason;
+    std::optional<ResourceRequestBlockedReason> expected_block_reason;
   } kTestCases[] = {
       {WebDocumentSubresourceFilter::kDisallow,
        ResourceRequestBlockedReason::kSubresourceFilter},
-      {WebDocumentSubresourceFilter::kWouldDisallow, absl::nullopt},
-      {WebDocumentSubresourceFilter::kAllow, absl::nullopt}};
+      {WebDocumentSubresourceFilter::kWouldDisallow, std::nullopt},
+      {WebDocumentSubresourceFilter::kAllow, std::nullopt}};
 
   for (const auto& test : kTestCases) {
     SetFilterPolicy(test.policy);
@@ -1633,7 +1633,7 @@ TEST_F(FrameFetchContextSubresourceFilterTest,
     EXPECT_EQ(test.expected_block_reason,
               GetFetchContext()->CanRequestBasedOnSubresourceFilterOnly(
                   ResourceType::kScript, resource_request, url, options,
-                  ReportingDisposition::kReport, absl::nullopt));
+                  ReportingDisposition::kReport, std::nullopt));
   }
 }
 
@@ -1687,7 +1687,7 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
       dummy_page_holder = nullptr;
 
     GetFetchContext()->PopulateResourceRequest(
-        ResourceType::kRaw, absl::nullopt /* resource_width */, request,
+        ResourceType::kRaw, std::nullopt /* resource_width */, request,
         options);
   }
 

@@ -43,7 +43,6 @@ CHECK_PROFILE_ENUM(HEVCPROFILE_MAIN10);
 CHECK_PROFILE_ENUM(HEVCPROFILE_MAIN_STILL_PICTURE);
 CHECK_PROFILE_ENUM(HEVCPROFILE_MAX);
 CHECK_PROFILE_ENUM(DOLBYVISION_PROFILE0);
-CHECK_PROFILE_ENUM(DOLBYVISION_PROFILE4);
 CHECK_PROFILE_ENUM(DOLBYVISION_PROFILE5);
 CHECK_PROFILE_ENUM(DOLBYVISION_PROFILE7);
 CHECK_PROFILE_ENUM(DOLBYVISION_PROFILE8);
@@ -129,7 +128,6 @@ bool EnumTraits<arc::mojom::VideoCodecProfile, media::VideoCodecProfile>::
     case arc::mojom::VideoCodecProfile::
         HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED:
     case arc::mojom::VideoCodecProfile::DOLBYVISION_PROFILE0:
-    case arc::mojom::VideoCodecProfile::DOLBYVISION_PROFILE4:
     case arc::mojom::VideoCodecProfile::DOLBYVISION_PROFILE5:
     case arc::mojom::VideoCodecProfile::DOLBYVISION_PROFILE7:
     case arc::mojom::VideoCodecProfile::DOLBYVISION_PROFILE8:
@@ -267,7 +265,7 @@ bool StructTraits<arc::mojom::VideoFrameLayoutDataView,
     return false;
   }
 
-  absl::optional<media::VideoFrameLayout> layout =
+  std::optional<media::VideoFrameLayout> layout =
       media::VideoFrameLayout::CreateWithPlanes(
           format, coded_size, std::move(planes), data.buffer_addr_align(),
           data.modifier());

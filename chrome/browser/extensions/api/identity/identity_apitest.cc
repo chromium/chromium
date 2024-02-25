@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -37,6 +38,7 @@
 #include "chrome/browser/extensions/api/identity/identity_get_profile_user_info_function.h"
 #include "chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h"
 #include "chrome/browser/extensions/api/identity/identity_remove_cached_auth_token_function.h"
+#include "chrome/browser/extensions/api/identity/launch_web_auth_flow_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -56,6 +58,7 @@
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -78,6 +81,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/api/oauth2.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -91,9 +95,9 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -339,6 +343,14 @@ void SimulateUrlRedirect(const std::string& url_prefix,
                                      "apply_consent(\"" + url_prefix + "\");"));
 }
 
+// Similar to SimulateUrlRedirect, but uses provided url instead of the pattern
+void SimulateCustomUrlRedirect(const std::string& redirect_url,
+                               content::WebContents* auth_web_contents) {
+  ASSERT_EQ(nullptr,
+            content::EvalJs(auth_web_contents, "window.location.replace(\"" +
+                                                   redirect_url + "\");"));
+}
+
 }  // namespace
 
 class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
@@ -407,10 +419,10 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
 
   void StartTokenKeyAccountAccessTokenRequest() override {
     if (auto_login_access_token_) {
-      absl::optional<std::string> access_token("access_token");
+      std::optional<std::string> access_token("access_token");
       GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
       if (!login_access_token_result_) {
-        access_token = absl::nullopt;
+        access_token = std::nullopt;
         error = GoogleServiceAuthError(
             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
       }
@@ -650,9 +662,9 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
 
     std::set<std::string> result_ids;
     for (const base::Value& item : results) {
-      std::unique_ptr<api::identity::AccountInfo> info =
-          api::identity::AccountInfo::FromValueDeprecated(item);
-      if (info.get()) {
+      std::optional<api::identity::AccountInfo> info =
+          api::identity::AccountInfo::FromValue(item);
+      if (info) {
         result_ids.insert(info->id);
       } else {
         return GenerateFailureResult(gaia_ids, &results);
@@ -679,12 +691,13 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
       msg << "NULL";
     } else {
       for (const auto& result : *results) {
-        std::unique_ptr<api::identity::AccountInfo> info =
-            api::identity::AccountInfo::FromValueDeprecated(result);
-        if (info.get())
+        std::optional<api::identity::AccountInfo> info =
+            api::identity::AccountInfo::FromValue(result);
+        if (info) {
           msg << info->id << " ";
-        else
+        } else {
           msg << result << "<-" << result.type() << " ";
+        }
       }
     }
 
@@ -731,24 +744,24 @@ IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, TwoAccountsSignedIn) {
 
 class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
  protected:
-  std::unique_ptr<api::identity::ProfileUserInfo> RunGetProfileUserInfo() {
+  std::optional<api::identity::ProfileUserInfo> RunGetProfileUserInfo() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
     func->set_extension(
         ExtensionBuilder("Test").SetID(kExtensionId).Build().get());
-    absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), "[]", browser()->profile());
-    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
+    return api::identity::ProfileUserInfo::FromValue(*value);
   }
 
-  std::unique_ptr<api::identity::ProfileUserInfo>
+  std::optional<api::identity::ProfileUserInfo>
   RunGetProfileUserInfoWithEmail() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
     func->set_extension(CreateExtensionWithEmailPermission());
-    absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), "[]", browser()->profile());
-    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
+    return api::identity::ProfileUserInfo::FromValue(*value);
   }
 
   scoped_refptr<const Extension> CreateExtensionWithEmailPermission() {
@@ -757,7 +770,7 @@ class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
 };
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -765,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, SignedIn) {
   SignIn("president@example.com");
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_EQ("president@example.com", info->email);
   EXPECT_EQ("gaia_id_for_president_example.com", info->id);
@@ -775,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        SignedInUnconsented) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -783,8 +796,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        NotSignedInNoEmail) {
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
-      RunGetProfileUserInfo();
+  std::optional<api::identity::ProfileUserInfo> info = RunGetProfileUserInfo();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
 }
@@ -792,8 +804,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        SignedInNoEmail) {
   SignIn("president@example.com");
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
-      RunGetProfileUserInfo();
+  std::optional<api::identity::ProfileUserInfo> info = RunGetProfileUserInfo();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
 }
@@ -802,16 +813,16 @@ class IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam
     : public IdentityGetProfileUserInfoFunctionTest,
       public ::testing::WithParamInterface<std::string> {
  protected:
-  std::unique_ptr<api::identity::ProfileUserInfo>
+  std::optional<api::identity::ProfileUserInfo>
   RunGetProfileUserInfoWithAccountStatus() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
     func->set_extension(CreateExtensionWithEmailPermission());
     std::string args = base::StringPrintf(R"([{"accountStatus": "%s"}])",
                                           account_status().c_str());
-    absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), args, browser()->profile());
-    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
+    return api::identity::ProfileUserInfo::FromValue(*value);
   }
 
   std::string account_status() { return GetParam(); }
@@ -825,7 +836,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     NotSignedIn) {
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -835,7 +846,7 @@ IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     SignedIn) {
   SignIn("test@example.com");
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   EXPECT_EQ("test@example.com", info->email);
   EXPECT_EQ("gaia_id_for_test_example.com", info->id);
@@ -846,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(
     SignedInUnconsented) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
-  std::unique_ptr<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   // The unconsented (Sync off) primary account is returned conditionally,
   // depending on the accountStatus parameter.
@@ -969,7 +980,7 @@ class GetAuthTokenFunctionTest
     return GetCachedToken(account_info, oauth_scopes_);
   }
 
-  absl::optional<std::string> GetCachedGaiaId() {
+  std::optional<std::string> GetCachedGaiaId() {
     return id_api()->GetGaiaIdForExtension(extension_id_);
   }
 
@@ -996,12 +1007,12 @@ class GetAuthTokenFunctionTest
                                Browser* browser,
                                std::string* access_token,
                                std::set<std::string>* granted_scopes) {
-    absl::optional<base::Value> result_value =
+    std::optional<base::Value> result_value =
         utils::RunFunctionAndReturnSingleResult(function, args,
                                                 browser->profile());
     ASSERT_TRUE(result_value);
-    std::unique_ptr<api::identity::GetAuthTokenResult> result =
-        api::identity::GetAuthTokenResult::FromValueDeprecated(*result_value);
+    std::optional<api::identity::GetAuthTokenResult> result =
+        api::identity::GetAuthTokenResult::FromValue(*result_value);
     ASSERT_TRUE(result);
 
     EXPECT_TRUE(result->token);
@@ -1023,8 +1034,8 @@ class GetAuthTokenFunctionTest
     } else {
       function_runner->WaitForOneResult(function, &result_value);
     }
-    std::unique_ptr<api::identity::GetAuthTokenResult> result =
-        api::identity::GetAuthTokenResult::FromValueDeprecated(result_value);
+    std::optional<api::identity::GetAuthTokenResult> result =
+        api::identity::GetAuthTokenResult::FromValue(result_value);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(result->token);
@@ -3210,7 +3221,7 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
   void RunNewFunctionAndExpectSelectedUserId(
       const scoped_refptr<const extensions::Extension>& extension,
       const std::string& expected_selected_user_id,
-      const absl::optional<std::string> requested_account = absl::nullopt) {
+      const std::optional<std::string> requested_account = std::nullopt) {
     auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
     func->set_extension(extension);
     RunFunctionAndExpectSelectedUserId(func, expected_selected_user_id,
@@ -3220,7 +3231,7 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
   void RunFunctionAndExpectSelectedUserId(
       const scoped_refptr<FakeGetAuthTokenFunction>& func,
       const std::string& expected_selected_user_id,
-      const absl::optional<std::string> requested_account = absl::nullopt) {
+      const std::optional<std::string> requested_account = std::nullopt) {
     // Stops the function right before selected_user_id would be used.
     MockQueuedMintRequest queued_request;
     IdentityMintRequestQueue::MintType type =
@@ -3534,8 +3545,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, NonInteractiveSuccess) {
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
 
-  function->InitFinalRedirectURLPrefixForTest("abcdefghij");
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  function->InitFinalRedirectURLDomainsForTest("abcdefghij");
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(),
       "[{\"interactive\": false,"
       "\"url\": \"https://abcdefghij.chromiumapp.org/callback#test\"}]",
@@ -3559,7 +3570,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
 
-  function->InitFinalRedirectURLPrefixForTest("abcdefghij");
+  function->InitFinalRedirectURLDomainsForTest("abcdefghij");
   std::string args = base::StringPrintf(
       R"([{
         "interactive": false,
@@ -3568,7 +3579,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
         "timeoutMsForNonInteractive": 20000
       }])",
       auth_url.spec().c_str());
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(), args, browser()->profile());
 
   EXPECT_TRUE(value->is_string());
@@ -3581,8 +3592,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
 
-  function->InitFinalRedirectURLPrefixForTest("abcdefghij");
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  function->InitFinalRedirectURLDomainsForTest("abcdefghij");
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(),
       "[{\"interactive\": true,"
       "\"url\": \"https://abcdefghij.chromiumapp.org/callback#test\"}]",
@@ -3604,10 +3615,10 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
       CreateLaunchWebAuthFlowFunction();
 
-  function->InitFinalRedirectURLPrefixForTest("abcdefghij");
+  function->InitFinalRedirectURLDomainsForTest("abcdefghij");
   std::string args =
       "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(), args, browser()->profile());
 
   EXPECT_TRUE(value->is_string());
@@ -3634,7 +3645,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
 
   url_obvserver.Wait();
 
-  Browser* popup_browser = chrome::FindBrowserWithWebContents(
+  Browser* popup_browser = chrome::FindBrowserWithTab(
       function->GetWebAuthFlowForTesting()->web_contents());
   TabStripModel* tabs = popup_browser->tab_strip_model();
   EXPECT_NE(browser(), popup_browser);
@@ -3688,7 +3699,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
       CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id("abcdefghij");
-  function->InitFinalRedirectURLPrefixForTest(extension_id);
+  function->InitFinalRedirectURLDomainsForTest(extension_id);
 
   const GURL auth_url(https_server->GetURL("/consent_page.html"));
   const GURL final_url("https://" + extension_id + ".chromiumapp.org/");
@@ -3703,7 +3714,79 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
   base::Value output;
   WaitForOneResult(function.get(), &output);
   EXPECT_FALSE(function->GetWebAuthFlowForTesting());
-  EXPECT_TRUE(output.GetString().find(final_url.spec()) != std::string::npos);
+  EXPECT_EQ(GURL(output.GetString()).Resolve("/"), final_url);
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
+}
+
+class TestDelegate : public LaunchWebAuthFlowDelegate {
+ public:
+  // LaunchWebAuthFlowDelegate:
+  void GetOptionalWindowBounds(
+      Profile* profile,
+      const std::string& extension_id,
+      base::OnceCallback<void(std::optional<gfx::Rect>)> callback) override {
+    std::move(callback).Run(kTestBounds);
+  }
+
+  static constexpr gfx::Rect kTestBounds = gfx::Rect(23, 27, 400, 400);
+};
+
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
+                       PopupBoundsComeFromDelegate) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
+  GURL auth_url(https_server->GetURL("/interaction_required.html"));
+
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
+      CreateLaunchWebAuthFlowFunction();
+  function->SetLaunchWebAuthFlowDelegateForTesting(
+      std::make_unique<TestDelegate>());
+
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+  std::string args =
+      "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
+  RunFunctionAsync(function.get(), args);
+
+  Browser* popup_browser = browser_opened.Wait();
+
+  gfx::Rect bounds = popup_browser->window()->GetBounds();
+  EXPECT_EQ(bounds.x(), TestDelegate::kTestBounds.x());
+  EXPECT_EQ(bounds.y(), TestDelegate::kTestBounds.y());
+  // The final width and height can contain platform-specific offsets for the
+  // window title bar, which we don't want to assert exactly here.
+  EXPECT_GE(bounds.width(), TestDelegate::kTestBounds.width());
+  EXPECT_GE(bounds.height(), TestDelegate::kTestBounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
+                       PageNavigateFromInitURLToCustomFinalURL) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
+      CreateLaunchWebAuthFlowFunction();
+
+  const GURL auth_url(https_server->GetURL("/consent_page.html"));
+  const GURL final_url("example://example.com/");
+
+  const std::string args =
+      "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
+
+  browser()->profile()->GetPrefs()->SetDict(
+      extensions::pref_names::kOAuthRedirectUrls,
+      base::Value::Dict().Set(function->extension()->id(),
+                              base::Value::List().Append(final_url.spec())));
+  RunFunctionAndWaitForNavigation(function.get(), auth_url, args);
+
+  SimulateCustomUrlRedirect(
+      final_url.spec() + "#some_information",
+      function->GetWebAuthFlowForTesting()->web_contents());
+
+  base::Value output;
+  WaitForOneResult(function.get(), &output);
+  EXPECT_FALSE(function->GetWebAuthFlowForTesting());
+  EXPECT_EQ(GURL(output.GetString()).Resolve("/"), final_url);
   histogram_tester()->ExpectUniqueSample(
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
@@ -3720,8 +3803,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
       CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id("final_url");
-  function1->InitFinalRedirectURLPrefixForTest(extension_id);
-  function2->InitFinalRedirectURLPrefixForTest(extension_id);
+  function1->InitFinalRedirectURLDomainsForTest(extension_id);
+  function2->InitFinalRedirectURLDomainsForTest(extension_id);
 
   const GURL auth_url(https_server->GetURL("/consent_page.html"));
   const GURL final_url("https://" + extension_id + ".chromiumapp.org/");
@@ -3769,9 +3852,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
       CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id1("extension1");
-  function1->InitFinalRedirectURLPrefixForTest(extension_id1);
+  function1->InitFinalRedirectURLDomainsForTest(extension_id1);
   const std::string extension_id2("extension2");
-  function2->InitFinalRedirectURLPrefixForTest(extension_id2);
+  function2->InitFinalRedirectURLDomainsForTest(extension_id2);
 
   const GURL auth_url(https_server->GetURL("/consent_page.html"));
   // Different final_urls.
@@ -3828,7 +3911,7 @@ IN_PROC_BROWSER_TEST_F(
       CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id("extension");
-  function1->InitFinalRedirectURLPrefixForTest(extension_id);
+  function1->InitFinalRedirectURLDomainsForTest(extension_id);
 
   const GURL auth_url1(https_server->GetURL("/consent_page.html"));
   const GURL auth_url2(https_server->GetURL("/interaction_required.html"));

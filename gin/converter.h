@@ -7,9 +7,11 @@
 
 #include <stdint.h>
 
+#include <concepts>
 #include <ostream>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -36,13 +38,19 @@ bool SetProperty(v8::Isolate* isolate,
   return !maybe.IsNothing() && maybe.FromJust();
 }
 
-template <typename T, typename Enable = void>
-struct ToV8ReturnsMaybe {
-  static const bool value = false;
-};
-
 template<typename T, typename Enable = void>
 struct Converter {};
+
+namespace internal {
+
+template <typename T>
+concept ToV8ReturnsMaybe = requires(v8::Isolate* isolate, T value) {
+  {
+    Converter<T>::ToV8(isolate, value)
+  } -> std::same_as<v8::MaybeLocal<v8::Value>>;
+};
+
+}  // namespace internal
 
 template<>
 struct GIN_EXPORT Converter<bool> {
@@ -200,7 +208,7 @@ struct GIN_EXPORT Converter<v8::Local<v8::Value> > {
 
 template<typename T>
 struct Converter<std::vector<T> > {
-  static std::conditional_t<ToV8ReturnsMaybe<T>::value,
+  static std::conditional_t<internal::ToV8ReturnsMaybe<T>,
                             v8::MaybeLocal<v8::Value>,
                             v8::Local<v8::Value>>
   ToV8(v8::Isolate* isolate, const std::vector<T>& val) {
@@ -238,6 +246,59 @@ struct Converter<std::vector<T> > {
       T item;
       if (!Converter<T>::FromV8(isolate, v8_item, &item))
         return false;
+      result.push_back(std::move(item));
+    }
+
+    out->swap(result);
+    return true;
+  }
+};
+
+template <typename T>
+struct Converter<v8::LocalVector<T>> {
+  static std::conditional_t<internal::ToV8ReturnsMaybe<v8::Local<T>>,
+                            v8::MaybeLocal<v8::Value>,
+                            v8::Local<v8::Value>>
+  ToV8(v8::Isolate* isolate, const v8::LocalVector<T>& val) {
+    v8::Local<v8::Context> context = isolate->GetCurrentContext();
+    v8::Local<v8::Array> result(
+        v8::Array::New(isolate, static_cast<int>(val.size())));
+    for (uint32_t i = 0; i < val.size(); ++i) {
+      v8::MaybeLocal<v8::Value> maybe =
+          Converter<v8::Local<T>>::ToV8(isolate, val[i]);
+      v8::Local<v8::Value> element;
+      if (!maybe.ToLocal(&element)) {
+        return {};
+      }
+      bool property_created;
+      if (!result->CreateDataProperty(context, i, element)
+               .To(&property_created) ||
+          !property_created) {
+        NOTREACHED() << "CreateDataProperty should always succeed here.";
+      }
+    }
+    return result;
+  }
+
+  static bool FromV8(v8::Isolate* isolate,
+                     v8::Local<v8::Value> val,
+                     v8::LocalVector<T>* out) {
+    if (!val->IsArray()) {
+      return false;
+    }
+
+    v8::LocalVector<T> result(isolate);
+    v8::Local<v8::Array> array(v8::Local<v8::Array>::Cast(val));
+    uint32_t length = array->Length();
+    for (uint32_t i = 0; i < length; ++i) {
+      v8::Local<v8::Value> v8_item;
+      if (!array->Get(isolate->GetCurrentContext(), i).ToLocal(&v8_item)) {
+        return false;
+      }
+      v8::Local<T> item;
+      if (!Converter<v8::Local<T>>::FromV8(isolate, v8_item, &item)) {
+        return false;
+      }
       result.push_back(item);
     }
 
@@ -246,14 +307,9 @@ struct Converter<std::vector<T> > {
   }
 };
 
-template<typename T>
-struct ToV8ReturnsMaybe<std::vector<T>> {
-  static const bool value = ToV8ReturnsMaybe<T>::value;
-};
-
 // Convenience functions that deduce T.
 template <typename T>
-std::conditional_t<ToV8ReturnsMaybe<T>::value,
+std::conditional_t<internal::ToV8ReturnsMaybe<T>,
                    v8::MaybeLocal<v8::Value>,
                    v8::Local<v8::Value>>
 ConvertToV8(v8::Isolate* isolate, const T& input) {
@@ -261,20 +317,15 @@ ConvertToV8(v8::Isolate* isolate, const T& input) {
 }
 
 template <typename T>
-std::enable_if_t<ToV8ReturnsMaybe<T>::value, bool> TryConvertToV8(
-    v8::Isolate* isolate,
-    const T& input,
-    v8::Local<v8::Value>* output) {
-  return ConvertToV8(isolate, input).ToLocal(output);
-}
-
-template <typename T>
-std::enable_if_t<!ToV8ReturnsMaybe<T>::value, bool> TryConvertToV8(
-    v8::Isolate* isolate,
-    const T& input,
-    v8::Local<v8::Value>* output) {
-  *output = ConvertToV8(isolate, input);
-  return true;
+bool TryConvertToV8(v8::Isolate* isolate,
+                    const T& input,
+                    v8::Local<v8::Value>* output) {
+  if constexpr (internal::ToV8ReturnsMaybe<T>) {
+    return ConvertToV8(isolate, input).ToLocal(output);
+  } else {
+    *output = ConvertToV8(isolate, input);
+    return true;
+  }
 }
 
 // This crashes when input.size() > v8::String::kMaxLength.

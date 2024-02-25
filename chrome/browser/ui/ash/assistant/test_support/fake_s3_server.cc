@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/service.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +47,7 @@ base::FilePath GetExecutableDir() {
 
 base::FilePath GetSourceDir() {
   base::FilePath result;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &result);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &result);
   return result;
 }
 
@@ -211,20 +210,13 @@ void FakeS3Server::StartS3ServerProcess(FakeS3Mode mode) {
   }
 
   base::FilePath fake_s3_server_main;
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    fake_s3_server_main =
-        GetExecutableDir().Append(FILE_PATH_LITERAL(kFakeS3ServerBinaryV2));
-  } else {
-    fake_s3_server_main =
-        GetExecutableDir().Append(FILE_PATH_LITERAL(kFakeS3ServerBinary));
-  }
+  fake_s3_server_main =
+      GetExecutableDir().Append(FILE_PATH_LITERAL(kFakeS3ServerBinaryV2));
 
   base::CommandLine command_line(fake_s3_server_main);
   AppendArgument(&command_line, "--port", base::NumberToString(port()));
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    AppendArgument(&command_line, "--http_port",
-                   base::NumberToString(port() + 1));
-  }
+  AppendArgument(&command_line, "--http_port",
+                 base::NumberToString(port() + 1));
   AppendArgument(&command_line, "--mode", FakeS3ModeToString(mode));
   AppendArgument(&command_line, "--auth_token", GetAccessToken());
   AppendArgument(&command_line, "--test_data_file", GetTestDataFileName());

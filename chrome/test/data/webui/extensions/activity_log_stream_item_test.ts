@@ -4,7 +4,8 @@
 
 /** @fileoverview Suite of tests for activity-log-stream-item. */
 
-import {ActivityLogStreamItemElement, ARG_URL_PLACEHOLDER, StreamItem} from 'chrome://extensions/extensions.js';
+import type {ActivityLogStreamItemElement, StreamItem} from 'chrome://extensions/extensions.js';
+import {ARG_URL_PLACEHOLDER} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 

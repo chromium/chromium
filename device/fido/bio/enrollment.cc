@@ -126,8 +126,8 @@ BioEnrollmentRequest::BioEnrollmentRequest(Version v) : version(v) {}
 BioEnrollmentRequest::~BioEnrollmentRequest() = default;
 
 // static
-absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
-    const absl::optional<cbor::Value>& cbor_response) {
+std::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
+    const std::optional<cbor::Value>& cbor_response) {
   BioEnrollmentResponse response;
 
   if (!cbor_response || !cbor_response->is_map()) {
@@ -141,12 +141,12 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
       cbor::Value(static_cast<int>(BioEnrollmentResponseKey::kModality)));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     response.modality =
         ToBioEnrollmentEnum<BioEnrollmentModality>(it->second.GetUnsigned());
     if (!response.modality) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -155,13 +155,13 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
       static_cast<int>(BioEnrollmentResponseKey::kFingerprintKind)));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     response.fingerprint_kind =
         ToBioEnrollmentEnum<BioEnrollmentFingerprintKind>(
             it->second.GetUnsigned());
     if (!response.fingerprint_kind) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -171,7 +171,7 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
   if (it != response_map.end()) {
     if (!it->second.is_unsigned() ||
         it->second.GetUnsigned() > std::numeric_limits<uint8_t>::max()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     response.max_samples_for_enroll = it->second.GetUnsigned();
   }
@@ -181,7 +181,7 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
       cbor::Value(static_cast<int>(BioEnrollmentResponseKey::kTemplateId)));
   if (it != response_map.end()) {
     if (!it->second.is_bytestring()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     response.template_id = it->second.GetBytestring();
   }
@@ -191,12 +191,12 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
       static_cast<int>(BioEnrollmentResponseKey::kLastEnrollSampleStatus)));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     response.last_status = ToBioEnrollmentEnum<BioEnrollmentSampleStatus>(
         it->second.GetUnsigned());
     if (!response.last_status) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -206,7 +206,7 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
   if (it != response_map.end()) {
     if (!it->second.is_unsigned() ||
         it->second.GetUnsigned() > std::numeric_limits<uint8_t>::max()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     response.remaining_samples = it->second.GetUnsigned();
   }
@@ -216,13 +216,13 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
       cbor::Value(static_cast<int>(BioEnrollmentResponseKey::kTemplateInfos)));
   if (it != response_map.end()) {
     if (!it->second.is_array()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     std::map<std::vector<uint8_t>, std::string> template_infos;
     for (const auto& bio_template : it->second.GetArray()) {
       if (!bio_template.is_map()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       const cbor::Value::MapValue& template_map = bio_template.GetMap();
 
@@ -231,12 +231,12 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
           static_cast<int>(BioEnrollmentTemplateInfoParam::kTemplateId)));
       if (template_it == template_map.end() ||
           !template_it->second.is_bytestring()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       std::vector<uint8_t> id = template_it->second.GetBytestring();
       if (template_infos.find(id) != template_infos.end()) {
         // Found an existing ID, invalid response.
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // name (optional)
@@ -245,7 +245,7 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
           BioEnrollmentTemplateInfoParam::kTemplateFriendlyName)));
       if (template_it != template_map.end()) {
         if (!template_it->second.is_string()) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         name = template_it->second.GetString();
       }
@@ -259,7 +259,7 @@ absl::optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
   if (it != response_map.end()) {
     if (!it->second.is_unsigned() ||
         it->second.GetUnsigned() > std::numeric_limits<uint32_t>::max()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     response.max_template_friendly_name = it->second.GetUnsigned();
   }
@@ -279,7 +279,7 @@ bool BioEnrollmentResponse::operator==(const BioEnrollmentResponse& r) const {
          template_infos == r.template_infos;
 }
 
-std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
+std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const BioEnrollmentRequest& request) {
   cbor::Value::MapValue map;
 

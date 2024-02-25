@@ -53,6 +53,10 @@ enum class AllAccountsNames {
 // suffix.
 enum class StateSuffix {
   kAll,                 // Recorded for all clients and all their profiles.
+  kAllManagedDevice,    // Recorded for all clients on a managed device and all
+                        // their profiles.
+  kAllUnmanagedDevice,  // Recorded for all clients on an unmanaged device and
+                        // all their profiles.
   kActiveMultiProfile,  // Recorded for multi-profile users with >=2 active
                         // profiles, for all their profiles.
   kLatentMultiProfile,  // Recorded for multi-profile users with one active
@@ -64,7 +68,7 @@ enum class StateSuffix {
                               // profiles.
   kSingleProfile,  // Recorded for single-profile users for their single
                    // profile.
-  kUponDeletion    // Recorded whenever a profile gets deleted.
+  kUponDeletion,   // Recorded whenever a profile gets deleted.
 };
 
 // Records the state of profile's avatar.

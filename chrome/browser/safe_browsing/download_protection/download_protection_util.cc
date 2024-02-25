@@ -5,9 +5,11 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 
 #include "base/hash/sha1.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
@@ -145,9 +147,8 @@ void GetCertificateAllowlistStrings(
     paths_to_check.insert(ou_tokens[i]);
   }
 
-  std::string hashed = base::SHA1HashString(std::string(
-      net::x509_util::CryptoBufferAsStringPiece(issuer.cert_buffer())));
-  std::string issuer_fp = base::HexEncode(hashed.data(), hashed.size());
+  std::string issuer_fp = base::HexEncode(base::SHA1HashSpan(
+      net::x509_util::CryptoBufferAsSpan(issuer.cert_buffer())));
   for (auto it = paths_to_check.begin(); it != paths_to_check.end(); ++it) {
     allowlist_strings->push_back("cert/" + issuer_fp + *it);
   }
@@ -230,6 +231,14 @@ SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
   }
 
   return selected;
+}
+
+void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event) {
+  base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent3", event);
+  if (DownloadItemWarningData::IsEncryptedArchive(item)) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.PasswordProtectedDeepScanEvent3", event);
+  }
 }
 
 }  // namespace safe_browsing

@@ -56,8 +56,8 @@ class CORE_EXPORT SpellCheckRequest final
   ~SpellCheckRequest();
   void Dispose();
 
-  Range* CheckingRange() const { return checking_range_; }
-  Element* RootEditableElement() const { return root_editable_element_; }
+  Range* CheckingRange() const { return checking_range_.Get(); }
+  Element* RootEditableElement() const { return root_editable_element_.Get(); }
 
   void SetCheckerAndSequence(SpellCheckRequester*, int sequence);
   int Sequence() const { return sequence_; }

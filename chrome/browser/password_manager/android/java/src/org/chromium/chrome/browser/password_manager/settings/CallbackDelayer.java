@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
-/**
- * This is an interface for delaying running of callbacks.
- */
+/** This is an interface for delaying running of callbacks. */
 public interface CallbackDelayer {
     /**
      * Run a callback after a delay specific to a particular implementation. The callback is always

@@ -50,6 +50,10 @@ constexpr ProtobufHttpStatus::Code NetErrorToClientCode(net::Error net_error) {
   DCHECK_GT(0, net_error);
   DCHECK_NE(net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE, net_error)
       << "Use the HttpStatusCode overload";
+  // See: net/base/net_error_list.h
+  if (net_error <= -100 && net_error >= -199) {
+    return ProtobufHttpStatus::Code::NETWORK_ERROR;
+  }
   switch (net_error) {
     case net::Error::OK:
       return ProtobufHttpStatus::Code::OK;
@@ -93,6 +97,12 @@ ProtobufHttpStatus::ProtobufHttpStatus(const protobufhttpclient::Status& status)
 ProtobufHttpStatus::ProtobufHttpStatus(Code code,
                                        const std::string& error_message)
     : error_code_(code), error_message_(error_message) {}
+
+ProtobufHttpStatus::ProtobufHttpStatus(const protobufhttpclient::Status& status,
+                                       const std::string& response_body)
+    : error_code_(static_cast<ProtobufHttpStatus::Code>(status.code())),
+      error_message_(status.message()),
+      response_body_(response_body) {}
 
 ProtobufHttpStatus::~ProtobufHttpStatus() = default;
 

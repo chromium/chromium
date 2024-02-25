@@ -1,0 +1,11 @@
+<html>
+  <body>
+    <a href="1.html">Link to 1</a>
+    <script>
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://b.test:' + window.location.port +
+                       '/page_with_anchor_and_cross_origin_iframe_a.html';
+      document.body.appendChild(iframe);
+    </script>
+  </body>
+</html>

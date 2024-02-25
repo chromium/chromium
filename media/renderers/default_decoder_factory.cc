@@ -13,6 +13,7 @@
 #include "build/buildflag.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/decoder_factory.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -120,7 +121,7 @@ void DefaultDecoderFactory::CreateVideoDecoders(
 
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
   video_decoders->push_back(
-      std::make_unique<OffloadingDav1dVideoDecoder>(media_log));
+      std::make_unique<OffloadingDav1dVideoDecoder>(media_log->Clone()));
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)

@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/prediction_model_download_manager.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -25,7 +27,6 @@
 #include "components/optimization_guide/core/prediction_model_download_observer.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -53,12 +54,12 @@ class TestPredictionModelDownloadObserver
   void OnModelDownloadFailed(
       proto::OptimizationTarget optimization_target) override {}
 
-  absl::optional<proto::PredictionModel> last_ready_model() const {
+  std::optional<proto::PredictionModel> last_ready_model() const {
     return last_ready_model_;
   }
 
  private:
-  absl::optional<proto::PredictionModel> last_ready_model_;
+  std::optional<proto::PredictionModel> last_ready_model_;
 };
 
 enum class PredictionModelDownloadFileStatus {
@@ -149,7 +150,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
   base::FilePath GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus file_status) {
     base::FilePath path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
     switch (file_status) {
       case PredictionModelDownloadFileStatus::kUnverifiedFile:
         return temp_download_dir_.GetPath().AppendASCII("unverified.crx3");
@@ -196,7 +197,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
  private:
   void WriteFileForStatus(PredictionModelDownloadFileStatus status) {
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     if (status == PredictionModelDownloadFileStatus::
                       kVerifiedCrxWithInvalidPublisher ||
         status == PredictionModelDownloadFileStatus::kUnverifiedFile) {

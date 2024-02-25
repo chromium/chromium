@@ -7,20 +7,24 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "content/common/content_export.h"
+#include "url/origin.h"
 
 class GURL;
-
-namespace url {
-class Origin;
-}
 
 namespace content {
 
 class BrowserContext;
 class WebUIControllerFactory;
 class WebUIConfig;
+
+// Returned by GetWebUIConfigList()
+struct CONTENT_EXPORT WebUIConfigInfo {
+  url::Origin origin;
+  bool enabled;
+};
 
 // Class that holds all WebUIConfigs for the browser.
 //
@@ -58,8 +62,11 @@ class CONTENT_EXPORT WebUIConfigMap {
   // there is no WebUIConfig with |url|.
   std::unique_ptr<WebUIConfig> RemoveConfig(const GURL& url);
 
-  // Returns the size of the map, i.e. how many WebUIConfigs are registered.
-  size_t GetSizeForTesting() { return configs_map_.size(); }
+  // Gets a list of the origin (host + scheme) and enabled/disabled status of
+  // all currently registered WebUIConfigs. If |browser_context| is null,
+  // returns false for the enabled status for all UIs.
+  std::vector<WebUIConfigInfo> GetWebUIConfigList(
+      BrowserContext* browser_context);
 
  private:
   void AddWebUIConfigImpl(std::unique_ptr<WebUIConfig> config);

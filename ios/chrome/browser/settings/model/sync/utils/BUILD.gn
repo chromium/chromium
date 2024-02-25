@@ -1,0 +1,103 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/public/provider/chrome/browser/build_config.gni")
+
+source_set("utils") {
+  sources = [
+    "sync_error_infobar_delegate.h",
+    "sync_error_infobar_delegate.mm",
+    "sync_presenter.h",
+    "sync_util.h",
+    "sync_util.mm",
+  ]
+  deps = [
+    ":identity_error_util",
+    "//base",
+    "//components/infobars/core",
+    "//components/strings",
+    "//components/sync/service",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("identity_error_util") {
+  sources = [
+    "account_error_ui_info.h",
+    "account_error_ui_info.mm",
+    "identity_error_util.h",
+    "identity_error_util.mm",
+    "sync_state.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sync_error_infobar_delegate_unittest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//components/sync/service",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "sync_fake_server_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/browser_sync:switches",
+    "//components/sync/base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/reading_list:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+}

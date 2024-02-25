@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "QuickUnlockTimeout": 0
+        },
+        "prefs": {
+          "quick_unlock_timeout": {
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]

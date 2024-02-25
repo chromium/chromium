@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.SpannableStringBuilder;
 import android.widget.EditText;
 
 import androidx.test.filters.SmallTest;
@@ -22,18 +23,18 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
-/**
- * Tests the AutofillUiUtils's java code.
- */
+/** Tests the AutofillUiUtils's java code. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AutofillUiUtilsTest {
@@ -43,8 +44,7 @@ public class AutofillUiUtilsTest {
     private int mThisMonth;
     private int mTwoDigitThisYear;
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -104,14 +104,17 @@ public class AutofillUiUtilsTest {
     @SmallTest
     @SuppressLint("SetTextI18n")
     public void
-    testExpirationDateErrorWithEditingMonthAndNotFocusedYearReturnsNotEnoughInfoErrorType() {
+            testExpirationDateErrorWithEditingMonthAndNotFocusedYearReturnsNotEnoughInfoErrorType() {
         mMonthInput.setText("1");
         mYearInput.setText(String.valueOf(""));
         mMonthInput.requestFocus(); // currently being edited
 
-        int errorType = AutofillUiUtils.getExpirationDateErrorType(mMonthInput,
-                mYearInput, /*didFocusOnMonth=*/
-                true, /*didFocusOnYear=*/false);
+        int errorType =
+                AutofillUiUtils.getExpirationDateErrorType(
+                        mMonthInput,
+                        mYearInput,
+                        /* didFocusOnMonth= */ true,
+                        /* didFocusOnYear= */ false);
 
         Assert.assertEquals(ErrorType.NOT_ENOUGH_INFO, errorType);
     }
@@ -120,14 +123,17 @@ public class AutofillUiUtilsTest {
     @SmallTest
     @SuppressLint("SetTextI18n")
     public void
-    testExpirationDateErrorWithEditingMonthAndFocusedInvalidYearReturnsExpirationYearErrorType() {
+            testExpirationDateErrorWithEditingMonthAndFocusedInvalidYearReturnsExpirationYearErrorType() {
         mMonthInput.setText("1");
         mYearInput.setText(String.valueOf(""));
         mMonthInput.requestFocus(); // currently being edited
 
-        int errorType = AutofillUiUtils.getExpirationDateErrorType(mMonthInput,
-                mYearInput, /*didFocusOnMonth=*/
-                true, /*didFocusOnYear=*/true);
+        int errorType =
+                AutofillUiUtils.getExpirationDateErrorType(
+                        mMonthInput,
+                        mYearInput,
+                        /* didFocusOnMonth= */ true,
+                        /* didFocusOnYear= */ true);
 
         Assert.assertEquals(ErrorType.EXPIRATION_YEAR, errorType);
     }
@@ -136,7 +142,7 @@ public class AutofillUiUtilsTest {
     @SmallTest
     @SuppressLint("SetTextI18n")
     public void
-    testExpirationDateErrorWithValidMonthAndIncompleteYearReturnsNotEnoughInfoErrorType() {
+            testExpirationDateErrorWithValidMonthAndIncompleteYearReturnsNotEnoughInfoErrorType() {
         mMonthInput.setText(String.valueOf(mThisMonth));
         mYearInput.setText("1");
         mYearInput.requestFocus(); // currently being edited
@@ -296,14 +302,29 @@ public class AutofillUiUtilsTest {
 
     @Test
     @SmallTest
+    public void testSpannableStringForLegalMessageLinesAddsNewLineSeparator() {
+        SpannableStringBuilder spannableString =
+                AutofillUiUtils.getSpannableStringForLegalMessageLines(
+                        /* context= */ null,
+                        Arrays.asList(new LegalMessageLine("line1"), new LegalMessageLine("line2")),
+                        /* underlineLinks= */ false,
+                        /* onClickCallback= */ null);
+
+        Assert.assertEquals("line1\nline2", spannableString.toString());
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
     public void testResizeAndAddRoundedCornersAndGreyBorder() {
         Bitmap testImage = Bitmap.createBitmap(400, 300, Bitmap.Config.ARGB_8888);
-        AutofillUiUtils.CardIconSpecs testSpecs = AutofillUiUtils.CardIconSpecs.create(
-                ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
+        AutofillUiUtils.CardIconSpecs testSpecs =
+                AutofillUiUtils.CardIconSpecs.create(
+                        ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
 
-        Bitmap resizedTestImage = AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                testImage, testSpecs, /* addRoundedCornersAndGreyBorder= */ true);
+        Bitmap resizedTestImage =
+                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
+                        testImage, testSpecs, /* addRoundedCornersAndGreyBorder= */ true);
 
         // Verify that the image gets resized to required dimensions. We can't verify other
         // enhancements like border and corner-radius because they are not properties of the bitmap
@@ -316,33 +337,37 @@ public class AutofillUiUtilsTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)
     public void testVirtualCardShowsCapitalOneVirtualCardIconWhenMetadataNotEnabled() {
-        Assert.assertTrue(AutofillUiUtils.shouldShowCustomIcon(
-                new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL), /* isVirtualCard= */ true));
+        Assert.assertTrue(
+                AutofillUiUtils.shouldShowCustomIcon(
+                        new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL), /* isVirtualCard= */ true));
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)
     public void testNonVirtualCardDoesNotShowCapitalOneVirtualCardIconWhenMetadataEnabled() {
-        Assert.assertFalse(AutofillUiUtils.shouldShowCustomIcon(
-                new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL), /* isVirtualCard= */ false));
+        Assert.assertFalse(
+                AutofillUiUtils.shouldShowCustomIcon(
+                        new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL),
+                        /* isVirtualCard= */ false));
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)
     public void testBothVirtualAndNonVirtualCardsShowRichCardArtWhenMetadataEnabled() {
-        Assert.assertTrue(AutofillUiUtils.shouldShowCustomIcon(
-                new GURL("https://www.richcardart.com/richcardart.png"),
-                /* isVirtualCard= */ false));
-        Assert.assertTrue(AutofillUiUtils.shouldShowCustomIcon(
-                new GURL("https://www.richcardart.com/richcardart.png"),
-                /* isVirtualCard= */ true));
+        Assert.assertTrue(
+                AutofillUiUtils.shouldShowCustomIcon(
+                        new GURL("https://www.richcardart.com/richcardart.png"),
+                        /* isVirtualCard= */ false));
+        Assert.assertTrue(
+                AutofillUiUtils.shouldShowCustomIcon(
+                        new GURL("https://www.richcardart.com/richcardart.png"),
+                        /* isVirtualCard= */ true));
     }
 
     private @ErrorType int getExpirationDateErrorForUserEnteredMonthAndYear() {
-        return AutofillUiUtils.getExpirationDateErrorType(mMonthInput,
-                mYearInput, /*didFocusOnMonth=*/
-                true, /*didFocusOnYear=*/true);
+        return AutofillUiUtils.getExpirationDateErrorType(
+                mMonthInput, mYearInput, /* didFocusOnMonth= */ true, /* didFocusOnYear= */ true);
     }
 }

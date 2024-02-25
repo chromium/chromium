@@ -5,11 +5,11 @@
 #ifndef ASH_GLANCEABLES_CLASSROOM_GLANCEABLES_CLASSROOM_TYPES_H_
 #define ASH_GLANCEABLES_CLASSROOM_GLANCEABLES_CLASSROOM_TYPES_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -68,9 +68,9 @@ struct ASH_EXPORT GlanceablesClassroomAssignment {
       const std::string& course_title,
       const std::string& course_work_title,
       const GURL& link,
-      const absl::optional<base::Time>& due,
+      const std::optional<base::Time>& due,
       const base::Time& last_update,
-      absl::optional<GlanceablesClassroomAggregatedSubmissionsState>
+      std::optional<GlanceablesClassroomAggregatedSubmissionsState>
           submissions_state);
   GlanceablesClassroomAssignment(const GlanceablesClassroomAssignment&) =
       delete;
@@ -91,13 +91,13 @@ struct ASH_EXPORT GlanceablesClassroomAssignment {
   const GURL link;
 
   // Due date and time in UTC of this course work item.
-  const absl::optional<base::Time> due;
+  const std::optional<base::Time> due;
 
   // The timestamp of the last course work item update.
   const base::Time last_update;
 
   // Stats about overall student submissions state of the assignment.
-  const absl::optional<GlanceablesClassroomAggregatedSubmissionsState>
+  const std::optional<GlanceablesClassroomAggregatedSubmissionsState>
       submissions_state;
 };
 

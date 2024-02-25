@@ -69,6 +69,8 @@ android_library("cardboard_java") {
 
 static_library("cardboard") {
   sources = [
+    "config/opengl_es2_custom_bindings.h",
+    "src/sdk/cardboard.cc",
     "src/sdk/device_params/android/device_params.cc",
     "src/sdk/device_params/android/device_params.h",
     "src/sdk/distortion_mesh.cc",
@@ -91,6 +93,7 @@ static_library("cardboard") {
     "src/sdk/qrcode/ios/qr_scan_view_controller.h",
     "src/sdk/rendering/android/shaders/distortion_frag.spv.h",
     "src/sdk/rendering/android/shaders/distortion_vert.spv.h",
+    "src/sdk/rendering/opengl_es2_distortion_renderer.cc",
     "src/sdk/screen_params.h",
     "src/sdk/screen_params/android/screen_params.cc",
     "src/sdk/sensors/accelerometer_data.h",
@@ -130,19 +133,21 @@ static_library("cardboard") {
     "src/sdk/util/vector.h",
     "src/sdk/util/vectorutils.cc",
     "src/sdk/util/vectorutils.h",
-    "src_overrides/sdk/cardboard.cc",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
-    "src_overrides/sdk/rendering/opengl_es2_distortion_renderer.cc",
   ]
 
   deps = [
     "//base",
+    "//third_party/jni_zero",
     "//ui/gl",
   ]
 
   defines = [ "CARDBOARD_USE_CUSTOM_GL_BINDINGS" ]
 
-  include_dirs = [ "src/sdk" ]
+  include_dirs = [
+    "config",
+    "src/sdk",
+  ]
 
   libs = [
     "android",

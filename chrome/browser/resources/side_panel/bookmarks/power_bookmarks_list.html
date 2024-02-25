@@ -278,17 +278,12 @@
       disabled="[[editing_]]" hidden="[[!sectionVisibility_.search]]"
       on-blur="onSearchBlurred_">
   </cr-toolbar-search-field>
-  <div class="label-row" hidden="[[!sectionVisibility_.filterChips]]"
-      header-hidden$="[[!sectionVisibility_.heading]]" id="filterChips">
-    <template is="dom-repeat" items="[[labels_]]">
-      <sp-filter-chip
-          selected="[[item.active]]"
-          disabled="[[editing_]]"
-          on-click="onLabelClicked_">
-        <iron-icon icon="[[getLabelIcon_(item, item.active)]]"></iron-icon>
-        [[item.label]]
-      </sp-filter-chip>
-    </template>
+  <div class="label-row" hidden="[[!sectionVisibility_.labels]]"
+      header-hidden$="[[!sectionVisibility_.heading]]" id="labelsContainer">
+    <power-bookmarks-labels id="labels" disabled="[[editing_]]"
+        tracked-product-infos="[[trackedProductInfos_]]"
+        on-labels-changed="onLabelsChanged_">
+    </power-bookmarks-labels>
   </div>
 
   <div class="sp-card card-top" hidden$="[[!sectionVisibility_.heading]]">
@@ -407,7 +402,10 @@
                   row-aria-description="[[getBookmarkA11yDescription_(item)]]"
                   tabindex$="[[tabIndex]]"
                   image-urls="[[getBookmarkImageUrls_(
-                                item, item.*, imageUrls_.*)]]"
+                                item, item.*, imageUrls_.*,
+                                shoppingCollectionFolderId_)]]"
+                  is-shopping-collection="[[isShoppingCollection_(item,
+                                shoppingCollectionFolderId_)]]"
                   force-hover="[[getBookmarkForceHover_(
                                 item, contextMenuBookmark_)]]"
                   draggable="[[canDrag_]]">
@@ -449,7 +447,8 @@
     <cr-button class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
-        disabled="[[!canAddCurrentUrl_(activeFolderPath_.*, currentUrl_)]]">
+        disabled="[[!canAddCurrentUrl_(
+                    activeFolderPath_.*, currentUrl_, hasLoadedData_)]]">
       <iron-icon slot="prefix-icon" icon="bookmarks:add-tab"></iron-icon>
       $i18n{addCurrentTab}
     </cr-button>

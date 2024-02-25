@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "media/gpu/android/video_frame_factory_impl.h"
 
 #include "media/gpu/android/codec_image.h"
@@ -60,7 +61,7 @@ class MaybeRenderEarlyTest : public testing::Test {
   }
 
   std::vector<std::unique_ptr<NiceMock<MockImage>>> owned_images_;
-  std::vector<MockImage*> images_;
+  std::vector<raw_ptr<MockImage, VectorExperimental>> images_;
 };
 
 TEST_F(MaybeRenderEarlyTest, EmptyVector) {

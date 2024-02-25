@@ -72,7 +72,7 @@ class FencedFrameTestHelper {
   // If this reaches the server first, we know that the event was not sent.
   void SendBasicRequest(WebContents* web_contents,
                         GURL url,
-                        absl::optional<std::string> content = absl::nullopt);
+                        std::optional<std::string> content = std::nullopt);
 
   // Returns the last created fenced frame. This can be used by embedders who
   // must create fenced frames from script but need to get the fence frame's

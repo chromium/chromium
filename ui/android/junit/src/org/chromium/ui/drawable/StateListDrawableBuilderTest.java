@@ -21,7 +21,8 @@ import org.chromium.ui.shadows.ShadowAnimatedStateListDrawable;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
+@Config(
+        manifest = Config.NONE,
         shadows = {ShadowAppCompatResources.class, ShadowAnimatedStateListDrawable.class})
 public class StateListDrawableBuilderTest {
     private static final int[] CHECKED_STATE = new int[] {android.R.attr.state_checked};
@@ -37,9 +38,11 @@ public class StateListDrawableBuilderTest {
         StateListDrawable result = b.build();
         assertEquals(result.getClass(), AnimatedStateListDrawable.class);
         ShadowAnimatedStateListDrawable drawable = Shadow.extract(result);
-        assertEquals(CHECKED_DRAWABLE,
+        assertEquals(
+                CHECKED_DRAWABLE,
                 shadowOf(drawable.getDrawableForState(CHECKED_STATE)).getCreatedFromResId());
-        assertEquals(DEFAULT_DRAWABLE,
+        assertEquals(
+                DEFAULT_DRAWABLE,
                 shadowOf(drawable.getDrawableForState(WILDCARD_STATE)).getCreatedFromResId());
     }
 }

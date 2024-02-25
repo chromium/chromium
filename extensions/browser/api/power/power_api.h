@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/power.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
@@ -90,11 +91,11 @@ class PowerAPI : public BrowserContextKeyedAPI,
 
   // Adds an extension lock at |level| for |extension_id|, replacing the
   // extension's existing lock, if any.
-  void AddRequest(const std::string& extension_id, api::power::Level level);
+  void AddRequest(const ExtensionId& extension_id, api::power::Level level);
 
   // Removes an extension lock for an extension. Calling this for an
   // extension id without a lock will do nothing.
-  void RemoveRequest(const std::string& extension_id);
+  void RemoveRequest(const ExtensionId& extension_id);
 
   // Replaces the functions that will be called to activate and cancel the wake
   // lock. Passing empty callbacks will revert to the default.

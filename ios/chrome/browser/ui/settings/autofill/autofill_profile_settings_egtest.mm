@@ -10,7 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
@@ -145,10 +145,6 @@ id<GREYMatcher> MigrateToAccountButton() {
 
   if ([self isRunningTest:@selector(testMigrateToAccount)] ||
       [self isRunningTest:@selector(testIncompleteProfileMigrateToAccount)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAccountProfileStorage);
-    config.features_enabled.push_back(
-        autofill::features::kAutofillRequireNameForProfileImport);
     config.features_enabled.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }
@@ -460,7 +456,7 @@ id<GREYMatcher> MigrateToAccountButton() {
 // city is added to the required fields. When it is emptied, the save button in
 // displayed. The profile is an account profile.
 - (void)testRequiredFields {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -542,7 +538,7 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that when the state data is removed, the "Done" button is enabled for
 // "Germany" but not for "India". Similarly, the "Done" is disabled for "US".
 - (void)testDoneButtonByRequirementsOfCountries {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -615,7 +611,7 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that the footer text is correctly displayed when there are multiple
 // required empty fields.
 - (void)testFooterWithMultipleErrors {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -643,10 +639,14 @@ id<GREYMatcher> MigrateToAccountButton() {
 
 // Tests that the local profile is migrated to account.
 - (void)testMigrateToAccount {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
-  [self openEditProfile:kProfileLabel];
+  [self
+      openEditProfile:
+          [NSString
+              stringWithFormat:@"%@, %@", kProfileLabel,
+                               l10n_util::GetNSString(
+                                   IDS_IOS_LOCAL_ADDRESS_ACCESSIBILITY_LABEL)]];
 
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Scroll to the bottom for ipad.
@@ -706,11 +706,15 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that a local incomplete profile can be migrated to account after
 // editing the profile.
 - (void)testIncompleteProfileMigrateToAccount {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
 
-  [self openEditProfile:kProfileLabel];
+  [self
+      openEditProfile:
+          [NSString
+              stringWithFormat:@"%@, %@", kProfileLabel,
+                               l10n_util::GetNSString(
+                                   IDS_IOS_LOCAL_ADDRESS_ACCESSIBILITY_LABEL)]];
   // Switch on edit mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];

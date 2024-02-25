@@ -14,12 +14,8 @@ static_library("autofill") {
     "address_normalizer_factory.h",
     "autocomplete_history_manager_factory.cc",
     "autocomplete_history_manager_factory.h",
-    "autofill_gstatic_reader.cc",
-    "autofill_gstatic_reader.h",
     "autofill_image_fetcher_factory.cc",
     "autofill_image_fetcher_factory.h",
-    "autofill_image_fetcher_impl.cc",
-    "autofill_image_fetcher_impl.h",
     "autofill_offer_manager_factory.cc",
     "autofill_offer_manager_factory.h",
     "autofill_optimization_guide_factory.cc",
@@ -30,18 +26,17 @@ static_library("autofill") {
     "merchant_promo_code_manager_factory.h",
     "personal_data_manager_factory.cc",
     "personal_data_manager_factory.h",
+    "shopping_service_delegate_impl.cc",
+    "shopping_service_delegate_impl.h",
     "strike_database_factory.cc",
     "strike_database_factory.h",
+    "subkey_requester_factory.cc",
+    "subkey_requester_factory.h",
+    "ui/ui_util.cc",
+    "ui/ui_util.h",
     "validation_rules_storage_factory.cc",
     "validation_rules_storage_factory.h",
   ]
-
-  if (build_with_tflite_lib) {
-    sources += [
-      "autofill_ml_prediction_model_service_factory.cc",
-      "autofill_ml_prediction_model_service_factory.h",
-    ]
-  }
 
   public_deps = [
     "//base",
@@ -50,6 +45,7 @@ static_library("autofill") {
     "//components/autofill/core/common",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/signin/public/identity_manager:identity_manager",
     "//content/public/browser",
     "//services/network/public/cpp",
     "//ui/gfx",
@@ -61,19 +57,19 @@ static_library("autofill") {
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//components/autofill/content/browser",
+    "//components/commerce/core:shopping_service",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/strings:components_strings_grit",
     "//components/variations/service",
     "//third_party/libphonenumber",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [
-      "accessory_controller.h",
-      "address_accessory_controller.h",
-      "address_accessory_controller_impl.cc",
-      "address_accessory_controller_impl.h",
+      "android/autofill_image_fetcher_impl.cc",
+      "android/autofill_image_fetcher_impl.h",
       "android/personal_data_manager_android.cc",
       "android/personal_data_manager_android.h",
       "android/phone_number_util_android.cc",
@@ -82,14 +78,6 @@ static_library("autofill") {
       "android/save_update_address_profile_prompt_controller.cc",
       "android/save_update_address_profile_prompt_controller.h",
       "android/save_update_address_profile_prompt_view.h",
-      "credit_card_accessory_controller.h",
-      "credit_card_accessory_controller_impl.cc",
-      "credit_card_accessory_controller_impl.h",
-      "manual_filling_controller.h",
-      "manual_filling_controller_impl.cc",
-      "manual_filling_controller_impl.h",
-      "manual_filling_utils.cc",
-      "manual_filling_utils.h",
       "manual_filling_view_interface.h",
     ]
     public_deps += [ "//components/messages/android" ]
@@ -97,16 +85,30 @@ static_library("autofill") {
       "//chrome/android:jni_headers",
       "//chrome/app:generated_resources",
       "//chrome/browser/autofill/android:jni_headers",
+      "//chrome/browser/keyboard_accessory/android:public",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/autofill/core/common/mojom:mojo_types",
       "//components/messages/android:feature_flags",
       "//components/password_manager/core/browser",
       "//third_party/libaddressinput",
-      "//url:gurl_android",
     ]
   } else {
     # !is_android
-    deps += [ "//components/sync/base" ]
+    sources += [
+      "ui/autofill_image_fetcher_impl.cc",
+      "ui/autofill_image_fetcher_impl.h",
+    ]
+    deps += [
+      "//chrome/browser/image_fetcher",
+      "//components/sync/base",
+    ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "autofill_ml_prediction_model_service_factory.cc",
+      "autofill_ml_prediction_model_service_factory.h",
+    ]
   }
 }
 
@@ -116,16 +118,17 @@ static_library("test_support") {
   sources = [
     "autofill_uitest_util.cc",
     "autofill_uitest_util.h",
+    "mock_autofill_agent.cc",
+    "mock_autofill_agent.h",
     "mock_autofill_popup_controller.cc",
     "mock_autofill_popup_controller.h",
-    "mock_manual_filling_controller.cc",
-    "mock_manual_filling_controller.h",
   ]
 
   deps = [
     "//chrome/browser/autofill:autofill",
     "//chrome/browser/profiles:profile",
     "//components/autofill/content/browser:browser",
+    "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser:test_support",
     "//content/test:test_support",
     "//testing/gmock",
@@ -141,19 +144,14 @@ static_library("test_support") {
 
   if (is_android) {
     sources += [
-      "mock_address_accessory_controller.cc",
-      "mock_address_accessory_controller.h",
-      "mock_credit_card_accessory_controller.cc",
-      "mock_credit_card_accessory_controller.h",
       "mock_manual_filling_view.cc",
       "mock_manual_filling_view.h",
-      "mock_password_accessory_controller.cc",
-      "mock_password_accessory_controller.h",
     ]
     deps += [
       "//chrome/android:test_support_jni_headers",
       "//chrome/browser",
       "//chrome/browser/autofill",
+      "//chrome/browser/keyboard_accessory/test_utils/android",
     ]
     public_deps += [ "test:test_support" ]
   }
@@ -164,8 +162,8 @@ if (!is_android) {
     testonly = true
 
     sources = [
+      "autocomplete_browsertest.cc",
       "autofill_across_iframes_browsertest.cc",
-      "autofill_autocomplete_browsertest.cc",
       "autofill_browsertest.cc",
       "autofill_metrics_browsertest.cc",
       "autofill_server_browsertest.cc",

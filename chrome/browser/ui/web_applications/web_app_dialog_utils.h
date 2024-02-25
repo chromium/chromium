@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_DIALOG_UTILS_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Browser;
 class Profile;
@@ -34,7 +34,7 @@ bool CanCreateWebApp(const Browser* browser);
 bool CanPopOutWebApp(Profile* profile);
 
 using WebAppInstalledCallback =
-    base::OnceCallback<void(const AppId& app_id,
+    base::OnceCallback<void(const webapps::AppId& app_id,
                             webapps::InstallResultCode code)>;
 
 // Initiates user install of a WebApp for the current page.
@@ -45,12 +45,11 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 // a promotional banner or omnibox install icon.
 // Returns false if WebApps are disabled for the profile behind |web_contents|.
 // |iph_state| indicates whether or not in-product-help prompted this call.
-bool CreateWebAppFromManifest(content::WebContents* web_contents,
-                              bool bypass_service_worker_check,
-                              webapps::WebappInstallSource install_source,
-                              WebAppInstalledCallback installed_callback,
-                              chrome::PwaInProductHelpState iph_state =
-                                  chrome::PwaInProductHelpState::kNotShown);
+bool CreateWebAppFromManifest(
+    content::WebContents* web_contents,
+    webapps::WebappInstallSource install_source,
+    WebAppInstalledCallback installed_callback,
+    PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
 void SetInstalledCallbackForTesting(WebAppInstalledCallback callback);
 

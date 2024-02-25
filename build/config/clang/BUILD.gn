@@ -30,6 +30,29 @@ config("find_bad_constructs") {
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "check-stack-allocated",
+
+      # TODO(danakj): Delete this after the next clang roll.
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "check-allow-auto-typedefs-better-nested",
+
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "check-raw-ptr-to-stack-allocated",
+
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "disable-check-raw-ptr-to-stack-allocated-error",
+
+      # TODO(https://crbug.com/1504043): Remove when raw_ptr check has been
+      # enabled for the dawn repo.
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "raw-ptr-exclude-path=/third_party/dawn/",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
@@ -47,12 +70,6 @@ config("find_bad_constructs") {
         "-plugin-arg-find-bad-constructs",
         "-Xclang",
         "check-raw-ptr-fields",
-
-        # TODO(mikt): Remove this once crbug.com/1449812 is resolved.
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=um/winnt.h",
       ]
     }
 

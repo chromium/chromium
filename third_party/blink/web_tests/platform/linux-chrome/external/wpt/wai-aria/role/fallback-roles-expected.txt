@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] fallback role w/ region with no label
+  assert_equals: <nav role="region group" data-testname="fallback role w/ region with no label" data-expectedrole="group" class="ex">x</nav> expected "group" but got "navigation"
+Harness: the test ran to completion.

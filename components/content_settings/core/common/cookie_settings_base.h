@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_COOKIE_SETTINGS_BASE_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_COOKIE_SETTINGS_BASE_H_
 
+#include <optional>
 #include <string>
 
+#include "base/containers/fixed_flat_set.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 class SiteForCookies;
@@ -74,47 +76,123 @@ class CookieSettingsBase {
 
   virtual ~CookieSettingsBase() = default;
 
-  // An enum that represents the scope of cookies to which the user's
-  // third-party-cookie-blocking setting applies, in a given context.
-  enum class ThirdPartyBlockingScope {
-    // Access to all cookies (partitioned or unpartitioned) is blocked in this
-    // context.
-    kUnpartitionedAndPartitioned,
-    // Access to unpartitioned cookies is blocked in this context, but access to
-    // partitioned cookies is allowed.
-    kUnpartitionedOnly,
+  // Enum for measuring the mechanism for re-enabling third-party cookies when
+  // applying 3PCD experiment. These values are persisted to logs. Entries
+  // should not be renumbered and numeric values should never be reused.
+  //
+  // Keep in sync with ThirdPartyCookieAllowMechanism at
+  // //src/tools/metrics/histograms/metadata/page/enums.xml
+  enum class ThirdPartyCookieAllowMechanism {
+    kNone = 0,
+    // Allow by explicit cookie content setting (e.g. UserBypass).
+    kAllowByExplicitSetting = 1,
+    // Allow by global 3p cookie setting setting (e.g. Enterprise Policy:
+    // BlockThirdPartyCookies, UX).
+    kAllowByGlobalSetting = 2,
+    // (DEPRECATED) Allow by 3PCD metadata grants content settings.
+    // kAllowBy3PCDMetadata = 3,
+    // Allow by third-party deprecation trial.
+    kAllowBy3PCD = 4,
+    kAllowBy3PCDHeuristics = 5,
+    kAllowByStorageAccess = 6,
+    kAllowByTopLevelStorageAccess = 7,
+    kAllowByCORSException = 8,
+    // Allow by 1P (AKA First Party, Top-level) DT (Deprecation Trial) token
+    // being deployed.
+    kAllowByTopLevel3PCD = 9,
+    // Allow by Enterprise Policy: CookiesAllowedForUrls.
+    kAllowByEnterprisePolicyCookieAllowedForUrls = 10,
+    // Same as kAllowBy3PCDMetadata but for
+    // mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED rules.
+    kAllowBy3PCDMetadataSourceUnspecified = 11,
+    // Same as kAllowBy3PCDMetadata but for
+    // mojom::TpcdMetadataRuleSource::SOURCE_TEST rules.
+    kAllowBy3PCDMetadataSourceTest = 12,
+    // Same as kAllowBy3PCDMetadata but for
+    // mojom::TpcdMetadataRuleSource::SOURCE_1P_DT rules.
+    kAllowBy3PCDMetadataSource1pDt = 13,
+    // Same as kAllowBy3PCDMetadata but for
+    // mojom::TpcdMetadataRuleSource::SOURCE_3P_DT rules.
+    kAllowBy3PCDMetadataSource3pDt = 14,
+    // Same as kAllowBy3PCDMetadata but for
+    // mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD rules.
+    kAllowBy3PCDMetadataSourceDogFood = 15,
+    // Same as kAllowBy3PCDMetadata but for
+    // mojom::TpcdMetadataRuleSource::SOURCE_CRITICAL_SECTOR rules.
+    kAllowBy3PCDMetadataSourceCriticalSector = 16,
+    // Same as kAllowBy3PCDMetadata but for
+    // mojom::TpcdMetadataRuleSource::SOURCE_CUJ rules.
+    kAllowBy3PCDMetadataSourceCuj = 17,
+    // Same as kAllowBy3PCDMetadata but for
+    // mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD rules.
+    kAllowBy3PCDMetadataSourceGovEduTld = 18,
+
+    kMaxValue = kAllowBy3PCDMetadataSourceGovEduTld,
   };
+
+  // Returns true if the allow mechanism represents one of the multiple allow
+  // mechanisms derived from the TPCD Mitigations Metadata.
+  static bool IsAnyTpcdMetadataAllowMechanism(
+      const ThirdPartyCookieAllowMechanism& mechanism);
+
+  // Returns true if the allow mechanism corresponds to the 1P (AKA First Party,
+  // Top-level) DT (Deprecation Trial).
+  static bool Is1PDtRelatedAllowMechanism(
+      const ThirdPartyCookieAllowMechanism& mechanism);
+
+  static ThirdPartyCookieAllowMechanism TpcdMetadataSourceToAllowMechanism(
+      const mojom::TpcdMetadataRuleSource& source);
 
   class CookieSettingWithMetadata {
    public:
+    CookieSettingWithMetadata() = default;
+
     CookieSettingWithMetadata(
         ContentSetting cookie_setting,
-        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
-        bool is_explicit_setting);
+        bool allow_partitioned_cookies,
+        bool is_explicit_setting,
+        ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism);
 
     // Returns true iff the setting is "block" due to the user's
     // third-party-cookie-blocking setting.
     bool BlockedByThirdPartyCookieBlocking() const;
 
-    bool IsPartitionedStateAllowed() const;
-
     ContentSetting cookie_setting() const { return cookie_setting_; }
+
+    bool allow_partitioned_cookies() const {
+      return allow_partitioned_cookies_;
+    }
 
     bool is_explicit_setting() const { return is_explicit_setting_; }
 
+    ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism() const {
+      return third_party_cookie_allow_mechanism_;
+    }
+
    private:
     // The setting itself.
-    ContentSetting cookie_setting_;
+    ContentSetting cookie_setting_ = ContentSetting::CONTENT_SETTING_ALLOW;
 
-    // The scope of cookies blocked by third-party-cookie-blocking.  The scope
-    // must only be nullopt if `cookie_setting_` is not "allow", and if the
-    // reason for blocking cookies is the third-party cookie blocking setting
-    // (rather than a site-specific setting).
-    absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope_;
+    // When true, partitioned cookies will be allowed, even when the cookie
+    // setting is "not allowed".
+    bool allow_partitioned_cookies_ = true;
 
     // Whether the setting is for a specific pattern.
     bool is_explicit_setting_ = false;
+
+    // The mechanism to enable third-party cookie access.
+    ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism_;
   };
+
+  // Set of types relevant for CookieSettings.
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 7>;
+
+  // ContentSettings listed in this set will be automatically synced to the
+  // CookieSettings instance in the network service.
+  // If some types should only be synced when a certain flag is enabled, please
+  // add your flag to IsContentSettingsTypeEnabled() in
+  // profile_network_context_service.cc.
+  static const CookieSettingsTypeSet& GetContentSettingsTypes();
 
   // Returns true if the cookie associated with |domain| should be deleted
   // on exit.
@@ -128,7 +206,7 @@ class CookieSettingsBase {
   bool ShouldDeleteCookieOnExit(
       const ContentSettingsForOneType& cookie_settings,
       const std::string& domain,
-      bool is_https) const;
+      net::CookieSourceScheme scheme) const;
 
   // Returns true if the page identified by (`url`, `site_for_cookies`,
   // `top_frame_origin`) is allowed to access (i.e., read or write) cookies.
@@ -141,8 +219,9 @@ class CookieSettingsBase {
   bool IsFullCookieAccessAllowed(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      net::CookieSettingOverrides overrides) const;
+      const std::optional<url::Origin>& top_frame_origin,
+      net::CookieSettingOverrides overrides,
+      CookieSettingWithMetadata* cookie_settings = nullptr) const;
 
   // Returns true if the cookie set by a page identified by |url| should be
   // session only. Querying this only makes sense if |IsFullCookieAccessAllowed|
@@ -156,6 +235,13 @@ class CookieSettingsBase {
                                   const GURL& first_party_url,
                                   net::CookieSettingOverrides overrides,
                                   SettingInfo* info = nullptr) const;
+
+  // A helper to get third party cookie allow mechanism.
+  ThirdPartyCookieAllowMechanism GetThirdPartyCookieAllowMechanism(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides,
+      content_settings::SettingInfo* info = nullptr) const;
 
   // Returns the cookie access semantics (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The |cookie_domain| can be provided as the
@@ -212,29 +298,11 @@ class CookieSettingsBase {
   // access.
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
-  bool ShouldConsider3pcdSupportSettings(
-      net::CookieSettingOverrides overrides) const;
-
-  bool ShouldConsider3pcdMetadataGrantsSettings(
-      net::CookieSettingOverrides overrides) const;
-
   // Returns a set of overrides that includes Storage Access API and Top-Level
   // Storage Access API overrides iff the config booleans indicate that Storage
   // Access API and Top-Level Storage Access API should unlock access to DOM
   // storage.
   net::CookieSettingOverrides SettingOverridesForStorage() const;
-
-  // Returns true iff the query should consider Storage Access API permission
-  // grants.
-  bool ShouldConsiderStorageAccessGrants(
-      net::CookieSettingOverrides overrides) const;
-
-  // Returns true iff the query should consider top-level Storage Access API
-  // permission grants. Note that this is handled similarly to storage access
-  // grants, but applies to subresources more broadly (at the top-level rather
-  // than only for a single frame).
-  bool ShouldConsiderTopLevelStorageAccessGrants(
-      net::CookieSettingOverrides overrides) const;
 
   // Controls whether Storage Access API grants allow access to unpartitioned
   // *storage*, in addition to unpartitioned cookies. This is static so that all
@@ -260,19 +328,69 @@ class CookieSettingsBase {
       net::CookieSettingOverrides overrides,
       SettingInfo* info) const;
 
+  // Returns true iff the query for third-party cookie access should consider
+  // grants awarded by the global allowlist.
+  bool ShouldConsider3pcdMetadataGrantsSettings(
+      net::CookieSettingOverrides overrides) const;
+
  private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
-  // ContentSettingsTypes. Currently only COOKIES, TPCD_SUPPORT, STORAGE_ACCESS,
-  // TPCD_METADATA_GRANTS, and TOP_LEVEL_STORAGE_ACCESS are required.
-  virtual ContentSetting GetContentSetting(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      SettingInfo* info = nullptr) const = 0;
+  // ContentSettingsTypes. Currently only COOKIES, TPCD_TRIAL, STORAGE_ACCESS,
+  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, TOP_LEVEL_TPCD_TRIAL, and
+  // TOP_LEVEL_STORAGE_ACCESS are required.
+  virtual ContentSetting GetContentSetting(const GURL& primary_url,
+                                           const GURL& secondary_url,
+                                           ContentSettingsType content_type,
+                                           SettingInfo* info) const = 0;
 
-  bool IsAllowedByStorageAccessGrant(const GURL& url,
-                                     const GURL& first_party_url) const;
+  bool IsAllowedByStorageAccessGrant(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const;
+
+  bool IsAllowedByTopLevelStorageAccessGrant(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const;
+
+  bool IsAllowedBy3pcdTrialSettings(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const;
+
+  bool IsAllowedByTopLevel3pcdTrialSettings(
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const;
+
+  bool IsAllowedBy3pcdHeuristicsGrantsSettings(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const;
+
+  bool IsAllowedBy3pcdMetadataGrantsSettings(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides,
+      SettingInfo* out_info) const;
+
+  struct AllowAllCookies {
+    ThirdPartyCookieAllowMechanism mechanism =
+        ThirdPartyCookieAllowMechanism::kNone;
+  };
+  struct AllowPartitionedCookies {};
+  struct BlockAllCookies {};
+
+  // Returns a decision on whether to allow or block the cookie request. This
+  // accounts for user settings, global settings, and special cases.
+  absl::variant<AllowAllCookies, AllowPartitionedCookies, BlockAllCookies>
+  DecideAccess(const GURL& url,
+               const GURL& first_party_url,
+               bool is_third_party_request,
+               net::CookieSettingOverrides overrides,
+               const ContentSetting& setting,
+               const SettingSource& setting_source,
+               bool is_explicit_setting) const;
 
   // Returns whether requests for |url| and |first_party_url| should always
   // be allowed. Called before checking other cookie settings.
@@ -281,6 +399,10 @@ class CookieSettingsBase {
 
   // Returns whether the global 3p cookie blocking setting is enabled.
   virtual bool ShouldBlockThirdPartyCookies() const = 0;
+
+  // Returns whether Third Party Cookie Deprecation mitigations should take
+  // effect.
+  virtual bool MitigationsEnabledFor3pcd() const = 0;
 
   // Returns whether |scheme| is always allowed to access 3p cookies.
   virtual bool IsThirdPartyCookiesAllowedScheme(
@@ -291,7 +413,6 @@ class CookieSettingsBase {
 
   static bool storage_access_api_grants_unpartitioned_storage_;
   const bool is_storage_partitioned_;
-  const bool is_privacy_sandbox_v4_enabled_;
 };
 
 }  // namespace content_settings

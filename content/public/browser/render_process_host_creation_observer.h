@@ -24,6 +24,12 @@ class CONTENT_EXPORT RenderProcessHostCreationObserver {
 
   // This method is invoked when the process was successfully launched. Note
   // that the channel may or may not have been connected when this is invoked.
+  // A RenderProcessHost can be reused for a different renderer process (for
+  // instance in the case of a renderer process crash). In this case,
+  // `OnRenderProcessHostCreated` will be called again for the same
+  // `RenderProcessHost` when the new process is launched, without having been
+  // destroyed (i.e. `RenderProcessHostObserver::RenderProcessHostDestroyed` is
+  // not called).
   virtual void OnRenderProcessHostCreated(RenderProcessHost* process_host) = 0;
 
  protected:

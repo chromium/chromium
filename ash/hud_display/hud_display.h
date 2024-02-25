@@ -20,9 +20,9 @@ class HUDSettingsView;
 
 // HUDDisplayView class can be used to display a system monitoring overview.
 class HUDDisplayView : public views::View {
- public:
-  METADATA_HEADER(HUDDisplayView);
+  METADATA_HEADER(HUDDisplayView, views::View)
 
+ public:
   HUDDisplayView();
   HUDDisplayView(const HUDDisplayView&) = delete;
   HUDDisplayView& operator=(const HUDDisplayView&) = delete;
@@ -59,11 +59,9 @@ class HUDDisplayView : public views::View {
   ASH_EXPORT void ToggleSettingsForTesting();
 
  private:
-  raw_ptr<HUDHeaderView, ExperimentalAsh> header_view_ = nullptr;  // not owned
-  raw_ptr<GraphsContainerView, ExperimentalAsh> graphs_container_ =
-      nullptr;  // not owned
-  raw_ptr<HUDSettingsView, ExperimentalAsh> settings_view_ =
-      nullptr;  // not owned
+  raw_ptr<HUDHeaderView> header_view_ = nullptr;             // not owned
+  raw_ptr<GraphsContainerView> graphs_container_ = nullptr;  // not owned
+  raw_ptr<HUDSettingsView> settings_view_ = nullptr;         // not owned
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
 };

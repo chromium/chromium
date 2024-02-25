@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_REPORTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -21,7 +22,6 @@
 #include "services/network/public/mojom/network_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -59,9 +59,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   // when building an SCTAuditingReporter.
   struct COMPONENT_EXPORT(NETWORK_SERVICE) SCTHashdanceMetadata {
     // Construct an SCTHashdanceMetadata from the given |value|. Returns
-    // absl::nullopt if |value| cannot be parsed into a valid
+    // std::nullopt if |value| cannot be parsed into a valid
     // SCTHashdanceMetadata.
-    static absl::optional<SCTHashdanceMetadata> FromValue(
+    static std::optional<SCTHashdanceMetadata> FromValue(
         const base::Value& value);
 
     SCTHashdanceMetadata();
@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
       net::HashValue reporter_key,
       std::unique_ptr<sct_auditing::SCTClientReport> report,
       bool is_hashdance,
-      absl::optional<SCTHashdanceMetadata> hashdance_metadata,
+      std::optional<SCTHashdanceMetadata> hashdance_metadata,
       mojom::SCTAuditingConfigurationPtr configuration,
       mojom::URLLoaderFactory* url_loader_factory,
       ReporterUpdatedCallback update_callback,
@@ -157,12 +157,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   net::HashValue key() { return reporter_key_; }
   sct_auditing::SCTClientReport* report() { return report_.get(); }
   net::BackoffEntry* backoff_entry() { return backoff_entry_.get(); }
-  const absl::optional<SCTHashdanceMetadata>& sct_hashdance_metadata() {
+  const std::optional<SCTHashdanceMetadata>& sct_hashdance_metadata() {
     return sct_hashdance_metadata_;
   }
   bool counted_towards_report_limit() { return counted_towards_report_limit_; }
 
-  static void SetRetryDelayForTesting(absl::optional<base::TimeDelta> delay);
+  static void SetRetryDelayForTesting(std::optional<base::TimeDelta> delay);
 
  private:
   void OnCheckReportAllowedStatusComplete(bool allowed);
@@ -185,7 +185,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   bool is_hashdance_;
   // If |is_hashdance_| is true, |sct_hashdance_metadata_| will contain metadata
   // for a randomly selected SCT from the report.
-  absl::optional<SCTHashdanceMetadata> sct_hashdance_metadata_;
+  std::optional<SCTHashdanceMetadata> sct_hashdance_metadata_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
   std::unique_ptr<SimpleURLLoader> url_loader_;
   mojom::SCTAuditingConfigurationPtr configuration_;

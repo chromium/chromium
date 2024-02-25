@@ -41,8 +41,7 @@ absl::node_hash_map<std::string, int> LoadVocabAndIndexFromFile(
 // Read a vocab buffer with one vocabulary and its corresponding index on each
 // line separated by space, create a map of <vocab, index>.
 absl::node_hash_map<std::string, int> LoadVocabAndIndexFromBuffer(
-    const char* vocab_buffer_data,
-    const size_t vocab_buffer_size);
+    const char* vocab_buffer_data, const size_t vocab_buffer_size);
 }  // namespace utils
 }  // namespace support
 }  // namespace tflite

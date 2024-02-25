@@ -4,9 +4,7 @@
 
 package org.chromium.components.sync;
 
-/**
- * This class provides some utility functions to deal with sync passphrases.
- */
+/** This class provides some utility functions to deal with sync passphrases. */
 public class Passphrase {
     /**
      * Returns whether a passphrase type represents an "explicit" passphrase, which usually means

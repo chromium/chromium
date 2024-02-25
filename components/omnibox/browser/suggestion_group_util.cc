@@ -4,28 +4,63 @@
 
 #include "components/omnibox/browser/suggestion_group_util.h"
 
-#include "third_party/omnibox_proto/groups.pb.h"
+#include <optional>
 
-namespace {
-omnibox::GroupConfig CreateGroup(omnibox::GroupSection section) {
-  omnibox::GroupConfig group;
-  group.set_section(section);
-  return group;
-}
-}  // namespace
+#include "base/feature_list.h"
+#include "base/lazy_instance.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/strings/grit/components_strings.h"
+#include "third_party/omnibox_proto/groups.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace omnibox {
+namespace {
+GroupConfig CreateGroup(GroupSection section,
+                        GroupConfig::RenderType render_type =
+                            GroupConfig_RenderType_DEFAULT_VERTICAL,
+                        std::optional<int32_t> header_text = {}) {
+  GroupConfig group;
+  group.set_section(section);
+  group.set_render_type(render_type);
+  if (header_text) {
+    group.set_header_text(l10n_util::GetStringUTF8(*header_text));
+  }
+  return group;
+}
 
-const omnibox::GroupConfigMap& BuildDefaultGroups() {
-  static omnibox::GroupConfigMap groups = {
-      // clang-format off
-      {omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX, CreateGroup(omnibox::SECTION_MOBILE_VERBATIM)},
-      {omnibox::GROUP_MOBILE_MOST_VISITED,         CreateGroup(omnibox::SECTION_MOBILE_MOST_VISITED)},
-      {omnibox::GROUP_MOBILE_CLIPBOARD,            CreateGroup(omnibox::SECTION_MOBILE_CLIPBOARD)},
-      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,   CreateGroup(omnibox::SECTION_PERSONALIZED_ZERO_SUGGEST)},
-      // clang-format on
-  };
-  return groups;
+base::LazyInstance<GroupConfigMap>::DestructorAtExit g_default_groups =
+    LAZY_INSTANCE_INITIALIZER;
+}  // namespace
+
+const GroupConfigMap& BuildDefaultGroups() {
+  if (g_default_groups.Get().empty()) {
+    g_default_groups.Get() = {
+        // clang-format off
+        {GROUP_MOBILE_SEARCH_READY_OMNIBOX, CreateGroup(SECTION_MOBILE_VERBATIM)},
+        {GROUP_MOBILE_CLIPBOARD,            CreateGroup(SECTION_MOBILE_CLIPBOARD)},
+        {GROUP_PERSONALIZED_ZERO_SUGGEST,   CreateGroup(SECTION_PERSONALIZED_ZERO_SUGGEST)},
+        {GROUP_MOBILE_MOST_VISITED,
+         CreateGroup(SECTION_MOBILE_MOST_VISITED,
+                     base::FeatureList::IsEnabled(
+                         kMostVisitedTilesHorizontalRenderGroup)
+                         ? GroupConfig_RenderType_HORIZONTAL
+                         : GroupConfig_RenderType_DEFAULT_VERTICAL)},
+
+        {GROUP_MOBILE_QUERY_TILES,
+          CreateGroup(SECTION_MOBILE_QUERY_TILES,
+              OmniboxFieldTrial::kQueryTilesShowAsCarousel.Get()
+              ? GroupConfig_RenderType_HORIZONTAL
+              : GroupConfig_RenderType_DEFAULT_VERTICAL,
+              IDS_OMNIBOX_HEADER_POPULAR_TOPICS)},
+        // clang-format on
+    };
+  }
+  return g_default_groups.Get();
+}
+
+void ResetDefaultGroupsForTest() {
+  g_default_groups.Get().clear();
 }
 
 GroupId GroupIdForNumber(int value) {

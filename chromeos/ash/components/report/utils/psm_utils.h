@@ -5,7 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_REPORT_UTILS_PSM_UTILS_H_
 #define CHROMEOS_ASH_COMPONENTS_REPORT_UTILS_PSM_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+#include <string>
 
 namespace private_membership::rlwe {
 class RlwePlaintextId;
@@ -14,7 +15,7 @@ class RlwePlaintextId;
 namespace ash::report::utils {
 
 // Generate the PSM id for a use case and window id, with the high entropy seed.
-absl::optional<private_membership::rlwe::RlwePlaintextId> GeneratePsmIdentifier(
+std::optional<private_membership::rlwe::RlwePlaintextId> GeneratePsmIdentifier(
     const std::string& high_entropy_seed,
     const std::string& psm_use_case_str,
     const std::string& window_id);

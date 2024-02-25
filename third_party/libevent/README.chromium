@@ -5,6 +5,7 @@ License: BSD
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:/a:libevent_project:libevent
 
 Local Modifications:
 Rather than use libevent's own build system, we just build a Chrome
@@ -13,7 +14,7 @@ static library using GYP.
 1) Run configure and "make event-config.h" on Linux, FreeBSD, Solaris,
    and Mac and copy config.h and event-config.h to linux/, freebsd/,
    solaris/, and mac/ respectively.
-2) Add libevent.gyp.
+2) Add BUILD.gn
 3) chromium.patch is applied to make the following changes:
    - Allow libevent to be used without being installed by changing <...>
      #includes to "...".
@@ -32,7 +33,18 @@ static library using GYP.
    android one with the exception of HAVE_FD_MASK and HAVE_STRLCPY.
 6) Remove an unnecessary workaround for OS X 10.4 from kqueue.c. It was causing
    problems on macOS Sierra.
-7) Change buffer.c to not redefine _GNU_SOURCE.
-8) Change _event_strlcpy in strlcpy.c to not use K&R syntax.
-9) Change a bitfield in evhttp.h from int to unsigned int.
-10) Ported commit 96f64a022014a208105ead6c8a7066018449d86d to fix name_parse().
+7) Change _event_strlcpy in strlcpy.c to not use K&R syntax.
+8) Deleted the following unused sources:
+     buffer.c
+     evbuffer.c
+     evdns.c
+     evdns.h
+     event_tagging.c
+     evhttp.h
+     evrpc-internal.h
+     evrpc.c
+     evrpc.h
+     http-internal.h
+     http.c
+9) Deleted all references to evbuffer and evtag symbols in event.h
+

@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 import("//chrome/common/features.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
 _factory_sources = [ "java/src/org/chromium/chrome/browser/password_check/PasswordCheckFactory.java" ]
@@ -75,7 +76,6 @@ android_library("internal_java") {
     ":java_resources",
     ":public_factory_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/device_reauth/android:java",
@@ -107,6 +107,7 @@ android_library("internal_java") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
     _public_target,

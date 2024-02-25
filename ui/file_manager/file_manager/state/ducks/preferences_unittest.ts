@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/296792757)
-import '../store.js';
-
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {setupStore} from '../for_tests.js';
 
-import {Preferences, updatePreferences} from './preferences.js';
+import {type Preferences, updatePreferences} from './preferences.js';
 
 /**
  * Defines an initial state for user preferences that is used in all the tests.
  */
 const INITIAL_PREFERENCES: Preferences = {
   driveEnabled: false,
-  cellularDisabled: false,
+  driveSyncEnabledOnMeteredNetwork: false,
   searchSuggestEnabled: false,
   use24hourClock: false,
   timezone: 'GMT+10',
@@ -26,7 +23,9 @@ const INITIAL_PREFERENCES: Preferences = {
   trashEnabled: false,
   officeFileMovedOneDrive: 0,
   officeFileMovedGoogleDrive: 0,
+  driveFsBulkPinningAvailable: false,
   driveFsBulkPinningEnabled: false,
+  localUserFilesAllowed: true,
 };
 
 /**
@@ -43,7 +42,7 @@ export async function testUpdatePreferences(done: () => void) {
   const want = INITIAL_PREFERENCES;
   assertDeepEquals(
       want, firstState,
-      `${JSON.stringify(want)} != ${JSON.stringify(firstState)}`);
+      `${JSON.stringify(want)} !== ${JSON.stringify(firstState)}`);
 
   done();
 }
@@ -72,7 +71,8 @@ export async function testPreferencesWithNoKeysUpdates(done: () => void) {
         // Expect the preferences in the store to be updated.
         const state = store.getState().preferences;
         assertDeepEquals(
-            want, state, `${JSON.stringify(want)} != ${JSON.stringify(state)}`);
+            want, state,
+            `${JSON.stringify(want)} !== ${JSON.stringify(state)}`);
 
         return want;
       };
@@ -81,7 +81,7 @@ export async function testPreferencesWithNoKeysUpdates(done: () => void) {
   // all initially `false` and this updates them all to `true` one by one.
   let preferences = INITIAL_PREFERENCES;
   const booleanPreferences = [
-    'cellularDisabled',
+    'driveSyncEnabledOnMeteredNetwork',
     'arcEnabled',
     'arcRemovableMediaAccessEnabled',
     'driveFsBulkPinningEnabled',

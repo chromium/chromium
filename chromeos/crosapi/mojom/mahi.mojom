@@ -1,0 +1,97 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/url.mojom";
+
+
+[Stable]
+struct MahiPageInfo {
+  // Id for the delegate to distinguish between different clients.
+  mojo_base.mojom.UnguessableToken client_id@0;
+
+  // The id represents a unique identifier for the page. It's
+  // used by `MahiBrowserDelegate` to request the page contents.
+  mojo_base.mojom.UnguessableToken page_id@1;
+
+  // Url of the web page.
+  url.mojom.Url url@2;
+
+  // The title of the page. It is UTF-16 encoded.
+  mojo_base.mojom.String16 title@3;
+
+  // The favicon of the page. Null if there is no valid favicon.
+  gfx.mojom.ImageSkia? favicon_image@4;
+
+  // Repersents if the web page is distillalbe.
+  // Null if the distillablity has not been checked yet.
+  bool? IsDistillable@5;
+};
+
+[Stable, Extensible]
+enum MahiContextMenuActionType {
+  [Default] kNone,
+  kSummary,
+  kOutline,
+  kSettings,
+  kQA,
+};
+
+// The struct of the mahi context menu request from the browser.
+[Stable]
+struct MahiContextMenuRequest {
+  // Unique identifier associated with the display.
+  // -1 means invalid display.
+  int64 display_id@0;
+
+  // The triggered action in the context menu.
+  MahiContextMenuActionType action_type@1;
+
+  // The input question from the user.
+  // Only present if the context menu action is `kQA`.
+  mojo_base.mojom.String16? question@2;
+};
+
+// Interface between the Ash system and browser (lacros, ash) for Mahi.
+// Implemented in Ash.
+[Stable, Uuid="40c4bc35-7592-4cfd-9620-212621daeda2"]
+interface MahiBrowserDelegate {
+  // Registers a mojo client.
+  RegisterMojoClient@0(pending_remote<MahiBrowserClient> client,
+                        mojo_base.mojom.UnguessableToken client_id)
+        => (bool success);
+
+  // Informs the delegate of any changes to the current focused page.
+  OnFocusedPageChanged@1(MahiPageInfo page_info) => (bool success);
+
+  // Informs the delegate of a context menu click action has been triggered.
+  OnContextMenuClicked@2(MahiContextMenuRequest context_menu_request)
+        => (bool success);
+};
+
+// Struct containing the id and the content for the requested page.
+[Stable]
+struct MahiPageContent {
+  // Id for the delegate to distinguish between different clients.
+  mojo_base.mojom.UnguessableToken client_id@0;
+
+  // Unique id corresponding to a page.
+  mojo_base.mojom.UnguessableToken page_id@1;
+
+  // The extracted content of the page.
+  mojo_base.mojom.String16 page_content@2;
+};
+
+// Client interface implemented by browser (ash or lacros).
+// Empty if the page is not found from this id.
+[Stable, Uuid="12ef21cc-18ad-4571-899a-d691c7419ef2"]
+interface MahiBrowserClient {
+  // Requests the contents of this web page.
+  GetContent@0(mojo_base.mojom.UnguessableToken id)
+        => (MahiPageContent? page_content);
+};

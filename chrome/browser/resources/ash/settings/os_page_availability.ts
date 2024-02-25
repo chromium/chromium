@@ -38,23 +38,23 @@ export function createPageAvailability(): OsPageAvailability {
     [Section.kAccessibility]: !!routes.OS_ACCESSIBILITY,
     [Section.kApps]: !!routes.APPS,
     [Section.kBluetooth]: !!routes.BLUETOOTH,
-    [Section.kCrostini]: !!routes.CROSTINI,
     [Section.kDevice]: !!routes.DEVICE,
-    [Section.kFiles]: !!routes.FILES,
     [Section.kKerberos]: !!routes.KERBEROS,
-    [Section.kLanguagesAndInput]: !!routes.OS_LANGUAGES,
     [Section.kMultiDevice]: !!routes.MULTIDEVICE,
     [Section.kNetwork]: !!routes.INTERNET,
     [Section.kPeople]: !!routes.OS_PEOPLE,
     [Section.kPersonalization]: !!routes.PERSONALIZATION,
-    [Section.kPrinting]: !!routes.OS_PRINTING,
     [Section.kPrivacyAndSecurity]: !!routes.OS_PRIVACY,
 
     // Only available when OsSettingsRevampWayfinding feature is enabled.
     [Section.kSystemPreferences]: !!routes.SYSTEM_PREFERENCES,
 
     // Only available when OsSettingsRevampWayfinding feature is disabled.
+    [Section.kCrostini]: !!routes.CROSTINI,
     [Section.kDateAndTime]: !!routes.DATETIME,
+    [Section.kFiles]: !!routes.FILES,
+    [Section.kLanguagesAndInput]: !!routes.OS_LANGUAGES,
+    [Section.kPrinting]: !!routes.OS_PRINTING,
     [Section.kReset]: !!routes.OS_RESET,
     [Section.kSearchAndAssistant]: !!routes.OS_SEARCH,
   };

@@ -1,0 +1,100 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/notifications/frontend/data/notifications_multi_login_update.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/548441269.
+
+syntax = "proto2";
+
+package push_notification.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "target.proto";
+import "user_id.proto";
+import "registration_reason.proto";
+import "status.proto";
+import "data.proto";
+
+message NotificationsMultiLoginUpdateRequest {
+  extend MutateDataRequest {
+    optional NotificationsMultiLoginUpdateRequest
+        notifications_multi_login_update_request = 250255258;
+  }
+
+  // Required. The client who owns this target data.
+  optional string client_id = 1;
+
+  // Required. The target to register or unregister.
+  // Neither chime_target_token nor representative_target_id should be populated
+  // in the target. Instead, populate the representative_target_id per user
+  // registration.
+  optional Target target = 2;
+
+  message UserRegistration {
+    // Required. The credentials of the user being registered.
+    optional UserId user_id = 6;
+
+    // Optional. Selection tokens to store against the target.
+    repeated string selection_token = 2;
+
+    // Optional. The number of seconds the target should be stored in Chime.
+    optional int32 time_to_live_secs = 4;
+
+    // Optional. The user-level target ID associated with this target/user pair.
+    // Once initially obtained, must be provided in every registration request.
+    optional string representative_target_id = 5;
+  }
+
+  // Reason why this request was initiated.
+  optional RegistrationReason registration_reason = 5;
+
+  // NOTICE: All other Gaia users not specified in this field will be implicitly
+  // unregistered for this target.
+  repeated UserRegistration registrations = 3;
+
+  // Optional. The target ID for the target. Has to be the same across
+  // all users registered to that target.
+  optional string internal_target_id = 7;
+}
+
+message NotificationsMultiLoginUpdateResponse {
+  extend MutateDataResponse {
+    optional NotificationsMultiLoginUpdateResponse
+        notifications_multi_login_update_response = 250255258;
+  }
+
+  message RegistrationResult {
+    // Required. Status of the outcome of this operation.
+    optional StatusProto status = 1;
+
+    // The modified target after Chime subscribes the client with the various
+    // endpoints. This field is set if the operation succeeded.
+    optional Target target = 2;
+
+    // Optional. Obfuscated Gaia ID for the registering account. Provided only
+    // for registrations of Gaia users, and not set for non-Gaia users.
+    optional string obfuscated_gaia_id = 4;
+
+    // Optional. Obfuscated ID for the Gaia user that owns (authorized to) the
+    // registering account (e.g. owner of the Madison account). Available only
+    // in case of auth delegation (e.g. Madison).
+    optional string obfuscated_actual_user_gaia_id = 5;
+
+    reserved 3;
+  }
+
+  // Optional. The list of registration results for each user.
+  // The order of the results is the same as the `registration` field in the
+  // request.
+  repeated RegistrationResult registration_results = 1;
+
+  // Optional. The target ID for the target. Has to be the same across
+  // all users registered to that target.
+  optional string internal_target_id = 2;
+
+  // Optional. Server-side timestamp at the moment of the registration.
+  optional int64 timestamp_usec = 7;
+}

@@ -43,6 +43,14 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                       help='Automatically modify or split semi-stale '
                       'expectations so they only apply to configurations that '
                       'actually need them.')
+  parser.add_argument('--no-auto-close-bugs',
+                      dest='auto_close_bugs',
+                      action='store_false',
+                      default=True,
+                      help='Disables automatic closing of bugs that no longer '
+                      'have active expectations once the generated CL lands. '
+                      'If set, a comment will be posted to the bug when all '
+                      'active expectations are gone instead.')
   parser.add_argument('-v',
                       '--verbose',
                       action='count',
@@ -83,6 +91,14 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                       type=int,
                       help=('How many parallel jobs to run. By default, runs '
                             'all work in parallel.'))
+  parser.add_argument('--disable-batching',
+                      dest='use_batching',
+                      action='store_false',
+                      default=True,
+                      help=('Disables the use of batching when running '
+                            'queries. Batching allows for more queries to be '
+                            'run in parallel, but increases query overhead by '
+                            'a variable amount.'))
   internal_group = parser.add_mutually_exclusive_group()
   internal_group.add_argument('--include-internal-builders',
                               action='store_true',

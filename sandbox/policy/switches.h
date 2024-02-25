@@ -28,6 +28,7 @@ SANDBOX_POLICY_EXPORT extern const char kServiceSandboxType[];
 SANDBOX_POLICY_EXPORT extern const char kNoneSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kNoneSandboxAndElevatedPrivileges[];
 SANDBOX_POLICY_EXPORT extern const char kNetworkSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kOnDeviceModelExecutionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPpapiSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kUtilitySandbox[];
 SANDBOX_POLICY_EXPORT extern const char kCdmSandbox[];
@@ -96,7 +97,6 @@ SANDBOX_POLICY_EXPORT extern const char kDisableMetalShaderCache[];
 // Flags spied upon from other layers.
 SANDBOX_POLICY_EXPORT extern const char kProcessType[];
 SANDBOX_POLICY_EXPORT extern const char kGpuProcess[];
-SANDBOX_POLICY_EXPORT extern const char kNaClBrokerProcess[];
 SANDBOX_POLICY_EXPORT extern const char kNaClLoaderProcess[];
 SANDBOX_POLICY_EXPORT extern const char kPpapiPluginProcess[];
 SANDBOX_POLICY_EXPORT extern const char kRendererProcess[];

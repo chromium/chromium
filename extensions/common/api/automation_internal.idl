@@ -130,7 +130,7 @@ namespace automationInternal {
     static void enableTree(DOMString tree_id);
 
     // Enables desktop automation.
-    [supportsPromises] static void enableDesktop(
+    static void enableDesktop(
         EnableDesktopCallback callback);
 
     // Disables desktop automation.

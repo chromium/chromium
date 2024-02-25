@@ -6,10 +6,10 @@
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_FAKE_LOCAL_NETWORK_COLLECTOR_H_
 
 #include <map>
+#include <optional>
 
 #include "chromeos/ash/components/sync_wifi/local_network_collector.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::sync_wifi {
 
@@ -31,7 +31,7 @@ class FakeLocalNetworkCollector : public LocalNetworkCollector {
                           ProtoCallback callback) override;
   void RecordZeroNetworksEligibleForSync() override {}
   // For test purposes, |guid| == serialized NetworkIdentifier.
-  absl::optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
+  std::optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
       const std::string& guid) override;
 
   void AddNetwork(sync_pb::WifiConfigurationSpecifics proto);

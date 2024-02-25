@@ -227,7 +227,7 @@ class ChromeMemEnv : public leveldb::EnvWrapper {
                         size());
 
     if (dump_args.level_of_detail !=
-        base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
+        base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
       env_dump->AddString("name", "", name());
     }
 

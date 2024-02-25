@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
@@ -20,7 +21,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/embedder_support/android:util_java",
     "//components/messages/android:java",
@@ -32,9 +32,9 @@ android_library("java") {
     "//services/network/public/mojom:url_loader_base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
-    "//url:origin_java",
   ]
   resources_package = "org.chromium.components.external_intents"
 }
@@ -94,7 +94,6 @@ android_library("unit_device_javatests") {
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
-    "//url:origin_java",
   ]
 }
 
@@ -107,10 +106,10 @@ android_library("test_support_java") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

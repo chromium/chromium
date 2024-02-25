@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/aggregation_keys.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,11 +13,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace attribution_reporting {
 
@@ -25,7 +27,7 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 bool IsValid(const AggregationKeys::Keys& keys) {
-  return keys.size() <= kMaxAggregationKeysPerSourceOrTrigger &&
+  return keys.size() <= kMaxAggregationKeysPerSource &&
          base::ranges::all_of(keys, [](const auto& key) {
            return AggregationKeyIdHasValidLength(key.first);
          });
@@ -35,7 +37,7 @@ void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
   const int kExclusiveMaxHistogramValue = 101;
 
   static_assert(
-      kMaxAggregationKeysPerSourceOrTrigger < kExclusiveMaxHistogramValue,
+      kMaxAggregationKeysPerSource < kExclusiveMaxHistogramValue,
       "Bump the version for histogram Conversions.AggregatableKeysPerSource");
 
   base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource", count);
@@ -44,9 +46,9 @@ void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
 }  // namespace
 
 // static
-absl::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
+std::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
   if (!IsValid(keys))
-    return absl::nullopt;
+    return std::nullopt;
 
   return AggregationKeys(std::move(keys));
 }
@@ -63,7 +65,7 @@ AggregationKeys::FromJSON(const base::Value* value) {
 
   const size_t num_keys = dict->size();
 
-  if (num_keys > kMaxAggregationKeysPerSourceOrTrigger) {
+  if (num_keys > kMaxAggregationKeysPerSource) {
     return base::unexpected(
         SourceRegistrationError::kAggregationKeysTooManyKeys);
   }
@@ -79,19 +81,18 @@ AggregationKeys::FromJSON(const base::Value* value) {
           SourceRegistrationError::kAggregationKeysKeyTooLong);
     }
 
-    const std::string* s = maybe_string_value.GetIfString();
-    if (!s) {
-      return base::unexpected(
-          SourceRegistrationError::kAggregationKeysValueWrongType);
-    }
+    ASSIGN_OR_RETURN(
+        absl::uint128 key, ParseAggregationKeyPiece(maybe_string_value),
+        [](AggregationKeyPieceError error) {
+          switch (error) {
+            case AggregationKeyPieceError::kWrongType:
+              return SourceRegistrationError::kAggregationKeysValueWrongType;
+            case AggregationKeyPieceError::kWrongFormat:
+              return SourceRegistrationError::kAggregationKeysValueWrongFormat;
+          }
+        });
 
-    absl::optional<absl::uint128> key = StringToAggregationKeyPiece(*s);
-    if (!key) {
-      return base::unexpected(
-          SourceRegistrationError::kAggregationKeysValueWrongFormat);
-    }
-
-    keys.emplace_back(key_id, *key);
+    keys.emplace_back(key_id, key);
   }
 
   return AggregationKeys(Keys(base::sorted_unique, std::move(keys)));
@@ -115,7 +116,7 @@ AggregationKeys& AggregationKeys::operator=(AggregationKeys&&) = default;
 
 base::Value::Dict AggregationKeys::ToJson() const {
   base::Value::Dict dict;
-  for (auto [key, value] : keys_) {
+  for (const auto& [key, value] : keys_) {
     dict.Set(key, HexEncodeAggregationKey(value));
   }
   return dict;

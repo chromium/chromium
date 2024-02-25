@@ -4,13 +4,12 @@
 
 package org.chromium.ui.base;
 
-import org.chromium.base.FeatureMap;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-/**
- * Java accessor for ui/android/ui_android_feature_map.cc state
- */
+import org.chromium.base.FeatureMap;
+
+/** Java accessor for ui/android/ui_android_feature_map.cc state */
 @JNINamespace("ui")
 public class UiAndroidFeatureMap extends FeatureMap {
     private static final UiAndroidFeatureMap sInstance = new UiAndroidFeatureMap();
@@ -25,9 +24,7 @@ public class UiAndroidFeatureMap extends FeatureMap {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

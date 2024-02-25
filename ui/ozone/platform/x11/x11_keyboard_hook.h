@@ -5,12 +5,12 @@
 #ifndef UI_OZONE_PLATFORM_X11_X11_KEYBOARD_HOOK_H_
 #define UI_OZONE_PLATFORM_X11_X11_KEYBOARD_HOOK_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/ozone/common/base_keyboard_hook.h"
@@ -19,7 +19,7 @@ namespace ui {
 
 class X11KeyboardHook final : public BaseKeyboardHook {
  public:
-  X11KeyboardHook(absl::optional<base::flat_set<DomCode>> dom_codes,
+  X11KeyboardHook(std::optional<base::flat_set<DomCode>> dom_codes,
                   BaseKeyboardHook::KeyEventCallback callback,
                   gfx::AcceleratedWidget accelerated_widget);
   X11KeyboardHook(const X11KeyboardHook&) = delete;
@@ -28,10 +28,10 @@ class X11KeyboardHook final : public BaseKeyboardHook {
 
  private:
   // Helper methods for setting up key event capture.
-  void RegisterHook(const absl::optional<base::flat_set<DomCode>>& dom_codes);
+  void RegisterHook(const std::optional<base::flat_set<DomCode>>& dom_codes);
   void CaptureAllKeys();
   void CaptureSpecificKeys(
-      const absl::optional<base::flat_set<DomCode>>& dom_codes);
+      const std::optional<base::flat_set<DomCode>>& dom_codes);
   void CaptureKeyForDomCode(DomCode dom_code);
 
   THREAD_CHECKER(thread_checker_);

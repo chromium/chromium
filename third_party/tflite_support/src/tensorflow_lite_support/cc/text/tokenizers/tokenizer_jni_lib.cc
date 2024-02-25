@@ -54,8 +54,7 @@ jobjectArray nativeTokenize(JNIEnv* env, jlong handle, jstring jtext) {
   return result;
 }
 
-jintArray nativeConvertTokensToIds(JNIEnv* env,
-                                   jlong handle,
+jintArray nativeConvertTokensToIds(JNIEnv* env, jlong handle,
                                    jobjectArray jtokens) {
   if (handle == 0) {
     env->ThrowNew(env->FindClass(kIllegalStateException),

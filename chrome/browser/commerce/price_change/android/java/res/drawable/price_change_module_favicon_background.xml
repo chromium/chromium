@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:shape="rectangle"
+    app:surfaceElevation="@dimen/home_surface_ui_background_color_elevation">
+  <corners android:radius="@dimen/price_change_module_favicon_background_radius"/>
+</org.chromium.components.browser_ui.widget.SurfaceColorDrawable>

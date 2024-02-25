@@ -26,7 +26,7 @@ class NetworkError {
     ERROR_STATE_PORTAL,
     ERROR_STATE_OFFLINE,
     ERROR_STATE_PROXY,
-    ERROR_STATE_AUTH_EXT_TIMEOUT,
+    ERROR_STATE_LOADING_TIMEOUT,
     ERROR_STATE_NONE,
     // States above are being logged to histograms.
     // Please keep ERROR_STATE_NONE as the last one of the histogram values.

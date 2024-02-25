@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.JSUtils;
@@ -23,27 +25,32 @@ import org.chromium.net.test.EmbeddedTestServer;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-/**
- * Tests for Accept Language implementation.
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AcceptLanguageTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+/** Tests for Accept Language implementation. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AcceptLanguageTest extends AwParameterizedTest {
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
 
     private EmbeddedTestServer mTestServer;
 
+    public AcceptLanguageTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
     @Before
     public void setUp() {
         mContentsClient = new TestAwContentsClient();
-        mAwContents = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
-                              .getAwContents();
+        mAwContents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
 
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
     }
 
     private static final Pattern COMMA_AND_OPTIONAL_Q_VALUE =
@@ -86,9 +93,7 @@ public class AcceptLanguageTest {
         }
     }
 
-    /**
-     * Verify that the Accept Language string is correct.
-     */
+    /** Verify that the Accept Language string is correct. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -105,17 +110,21 @@ public class AcceptLanguageTest {
         // Note that we extend the base language from language-region pair.
         String rawAcceptLanguages =
                 mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient);
-        Assert.assertTrue("Accept-Language header should contain at least 1 q-value",
+        Assert.assertTrue(
+                "Accept-Language header should contain at least 1 q-value",
                 rawAcceptLanguages.contains(";q="));
         String[] acceptLanguages = getAcceptLanguages(rawAcceptLanguages);
         Assert.assertArrayEquals(new String[] {"en-US", "en"}, acceptLanguages);
 
         // Our accept language list in user agent is different from navigator.languages, which is
         // fine.
-        String[] acceptLanguagesJs = getAcceptLanguages(JSUtils.executeJavaScriptAndWaitForResult(
-                InstrumentationRegistry.getInstrumentation(), mAwContents,
-                mContentsClient.getOnEvaluateJavaScriptResultHelper(),
-                "navigator.languages.join(',')"));
+        String[] acceptLanguagesJs =
+                getAcceptLanguages(
+                        JSUtils.executeJavaScriptAndWaitForResult(
+                                InstrumentationRegistry.getInstrumentation(),
+                                mAwContents,
+                                mContentsClient.getOnEvaluateJavaScriptResultHelper(),
+                                "navigator.languages.join(',')"));
         Assert.assertArrayEquals(new String[] {"en-US"}, acceptLanguagesJs);
 
         // Test locale change at run time
@@ -123,8 +132,10 @@ public class AcceptLanguageTest {
 
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        acceptLanguages = getAcceptLanguages(
-                mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient));
+        acceptLanguages =
+                getAcceptLanguages(
+                        mActivityTestRule.getJavaScriptResultBodyTextContent(
+                                mAwContents, mContentsClient));
         // Note that we extend the base language from language-region pair, and we put en-US and en
         // at the end.
         Assert.assertArrayEquals(new String[] {"de-DE", "de", "en-US", "en"}, acceptLanguages);
@@ -150,16 +161,21 @@ public class AcceptLanguageTest {
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
         // Note that we extend accept languages.
-        Assert.assertArrayEquals(new String[] {"ko-KR", "ko", "en-US", "en"},
-                getAcceptLanguages(mActivityTestRule.getJavaScriptResultBodyTextContent(
-                        mAwContents, mContentsClient)));
+        Assert.assertArrayEquals(
+                new String[] {"ko-KR", "ko", "en-US", "en"},
+                getAcceptLanguages(
+                        mActivityTestRule.getJavaScriptResultBodyTextContent(
+                                mAwContents, mContentsClient)));
 
         // Our accept language list in user agent is different from navigator.languages, which is
         // fine.
-        String[] acceptLanguagesJs = getAcceptLanguages(JSUtils.executeJavaScriptAndWaitForResult(
-                InstrumentationRegistry.getInstrumentation(), mAwContents,
-                mContentsClient.getOnEvaluateJavaScriptResultHelper(),
-                "navigator.languages.join(',')"));
+        String[] acceptLanguagesJs =
+                getAcceptLanguages(
+                        JSUtils.executeJavaScriptAndWaitForResult(
+                                InstrumentationRegistry.getInstrumentation(),
+                                mAwContents,
+                                mContentsClient.getOnEvaluateJavaScriptResultHelper(),
+                                "navigator.languages.join(',')"));
         Assert.assertArrayEquals(new String[] {"ko-KR", "en-US"}, acceptLanguagesJs);
 
         // Test locales that contain "en-US" change at run time
@@ -170,9 +186,11 @@ public class AcceptLanguageTest {
 
         // Note that we extend the base language from language-region pair.
         // Also, we put en-US at the lowest priority.
-        Assert.assertArrayEquals(new String[] {"de-DE", "de", "en-US", "en"},
-                getAcceptLanguages(mActivityTestRule.getJavaScriptResultBodyTextContent(
-                        mAwContents, mContentsClient)));
+        Assert.assertArrayEquals(
+                new String[] {"de-DE", "de", "en-US", "en"},
+                getAcceptLanguages(
+                        mActivityTestRule.getJavaScriptResultBodyTextContent(
+                                mAwContents, mContentsClient)));
 
         // Test locales that contain "en-us" change at run time
         LocaleList.setDefault(new LocaleList(new Locale("de", "DE"), new Locale("en", "us")));
@@ -180,9 +198,11 @@ public class AcceptLanguageTest {
 
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        Assert.assertArrayEquals(new String[] {"de-DE", "de", "en-US", "en"},
-                getAcceptLanguages(mActivityTestRule.getJavaScriptResultBodyTextContent(
-                        mAwContents, mContentsClient)));
+        Assert.assertArrayEquals(
+                new String[] {"de-DE", "de", "en-US", "en"},
+                getAcceptLanguages(
+                        mActivityTestRule.getJavaScriptResultBodyTextContent(
+                                mAwContents, mContentsClient)));
 
         // Test locales that do not contain "en-us" or "en-US" change at run time
         LocaleList.setDefault(new LocaleList(new Locale("de", "DE"), new Locale("ja", "JP")));
@@ -190,8 +210,10 @@ public class AcceptLanguageTest {
 
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        Assert.assertArrayEquals(new String[] {"de-DE", "de", "ja-JP", "ja", "en-US", "en"},
-                getAcceptLanguages(mActivityTestRule.getJavaScriptResultBodyTextContent(
-                        mAwContents, mContentsClient)));
+        Assert.assertArrayEquals(
+                new String[] {"de-DE", "de", "ja-JP", "ja", "en-US", "en"},
+                getAcceptLanguages(
+                        mActivityTestRule.getJavaScriptResultBodyTextContent(
+                                mAwContents, mContentsClient)));
     }
 }

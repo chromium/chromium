@@ -34,16 +34,10 @@ const size_t kMaxMessageLength = static_cast<size_t>(INT_MAX);
 
 // Writes |length| of |buffer| into |handle|.  Returns the number of bytes
 // written or zero on error.  |length| must be greater than 0.
-size_t SendHelper(SyncSocket::Handle handle,
-                  const void* buffer,
-                  size_t length) {
-  DCHECK_GT(length, 0u);
-  DCHECK_LE(length, kMaxMessageLength);
+size_t SendHelper(SyncSocket::Handle handle, span<const uint8_t> data) {
+  CHECK_LE(data.size(), kMaxMessageLength);
   DCHECK_NE(handle, SyncSocket::kInvalidHandle);
-  return WriteFileDescriptor(
-             handle, make_span(static_cast<const uint8_t*>(buffer), length))
-             ? length
-             : 0;
+  return WriteFileDescriptor(handle, data) ? data.size() : 0;
 }
 
 }  // namespace
@@ -91,28 +85,39 @@ void SyncSocket::Close() {
   handle_.reset();
 }
 
-size_t SyncSocket::Send(const void* buffer, size_t length) {
+size_t SyncSocket::Send(span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  return SendHelper(handle(), buffer, length);
+  return SendHelper(handle(), data);
 }
 
-size_t SyncSocket::Receive(void* buffer, size_t length) {
+size_t SyncSocket::Send(const void* buffer, size_t length) {
+  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
+}
+
+size_t SyncSocket::Receive(span<uint8_t> buffer) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  DCHECK_GT(length, 0u);
-  DCHECK_LE(length, kMaxMessageLength);
+  CHECK_LE(buffer.size(), kMaxMessageLength);
   DCHECK(IsValid());
-  char* charbuffer = static_cast<char*>(buffer);
-  if (ReadFromFD(handle(), charbuffer, length))
-    return length;
+  if (ReadFromFD(handle(), as_writable_chars(buffer))) {
+    return buffer.size();
+  }
   return 0;
 }
 
 size_t SyncSocket::ReceiveWithTimeout(void* buffer,
                                       size_t length,
                                       TimeDelta timeout) {
+  return ReceiveWithTimeout(make_span(static_cast<uint8_t*>(buffer), length),
+                            std::move(timeout));
+}
+
+size_t SyncSocket::Receive(void* buffer, size_t length) {
+  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
+}
+
+size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  DCHECK_GT(length, 0u);
-  DCHECK_LE(length, kMaxMessageLength);
+  CHECK_LE(buffer.size(), kMaxMessageLength);
   DCHECK(IsValid());
 
   // Only timeouts greater than zero and less than one second are allowed.
@@ -129,7 +134,7 @@ size_t SyncSocket::ReceiveWithTimeout(void* buffer,
   pollfd.revents = 0;
 
   size_t bytes_read_total = 0;
-  while (bytes_read_total < length) {
+  while (!buffer.empty()) {
     const TimeDelta this_timeout = finish_time - TimeTicks::Now();
     const int timeout_ms =
         static_cast<int>(this_timeout.InMillisecondsRoundedUp());
@@ -150,15 +155,15 @@ size_t SyncSocket::ReceiveWithTimeout(void* buffer,
     // No special handling is needed for error (POLLERR); we can let any of the
     // following operations fail and handle it there.
     DCHECK(pollfd.revents & (POLLIN | POLLHUP | POLLERR)) << pollfd.revents;
-    const size_t bytes_to_read = std::min(Peek(), length - bytes_read_total);
+    const size_t bytes_to_read = std::min(Peek(), buffer.size());
 
     // There may be zero bytes to read if the socket at the other end closed.
     if (!bytes_to_read)
       return bytes_read_total;
 
-    const size_t bytes_received =
-        Receive(static_cast<char*>(buffer) + bytes_read_total, bytes_to_read);
+    const size_t bytes_received = Receive(buffer.subspan(0u, bytes_to_read));
     bytes_read_total += bytes_received;
+    buffer = buffer.subspan(bytes_received);
     if (bytes_received != bytes_to_read)
       return bytes_read_total;
   }
@@ -193,9 +198,8 @@ bool CancelableSyncSocket::Shutdown() {
   return HANDLE_EINTR(shutdown(handle(), SHUT_RDWR)) >= 0;
 }
 
-size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
-  DCHECK_GT(length, 0u);
-  DCHECK_LE(length, kMaxMessageLength);
+size_t CancelableSyncSocket::Send(span<const uint8_t> data) {
+  CHECK_LE(data.size(), kMaxMessageLength);
   DCHECK(IsValid());
 
   const int flags = fcntl(handle(), F_GETFL);
@@ -205,7 +209,7 @@ size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
     fcntl(handle(), F_SETFL, flags | O_NONBLOCK);
   }
 
-  const size_t len = SendHelper(handle(), buffer, length);
+  const size_t len = SendHelper(handle(), data);
 
   if (flags != -1 && (flags & O_NONBLOCK) == 0) {
     // Restore the original flags.
@@ -213,6 +217,10 @@ size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
   }
 
   return len;
+}
+
+size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
+  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
 }
 
 // static

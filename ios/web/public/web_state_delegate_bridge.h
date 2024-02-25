@@ -51,8 +51,7 @@
 // permissions or show the default prompt that asks for permissions.
 - (void)webState:(web::WebState*)webState
     handlePermissions:(NSArray<NSNumber*>*)permissions
-      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler
-    API_AVAILABLE(ios(15.0));
+      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler;
 
 // Called when a request receives an authentication challenge specified by
 // `protectionSpace`, and is unable to respond using cached credentials.
@@ -107,14 +106,14 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
                                 const WebState::OpenURLParams&) override;
   void ShowRepostFormWarningDialog(
       WebState* source,
+      FormWarningType warning_type,
       base::OnceCallback<void(bool)> callback) override;
   JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source) override;
   void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
-      WebStatePermissionDecisionHandler handler)
-      API_AVAILABLE(ios(15.0)) override;
+      WebStatePermissionDecisionHandler handler) override;
   void OnAuthRequired(WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,

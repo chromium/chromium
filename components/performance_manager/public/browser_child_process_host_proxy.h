@@ -33,9 +33,12 @@ class BrowserChildProcessHostProxy {
   // BrowserChildProcessHost no longer exists.
   content::BrowserChildProcessHost* Get() const;
 
+  // Returns true iff the proxy has a valid BrowserChildProcessHostId (not 0 or
+  // ChildProcessHost::kInvalidUniqueId).
+  bool is_valid() const { return !browser_child_process_host_id_.is_null(); }
+
   // Returns the routing id of the BrowserChildProcessHost (from
-  // BrowserChildProcessHost::GetID). Can be ChildProcessHost::kInvalidUniqueID
-  // in unit tests.
+  // BrowserChildProcessHost::GetID).
   BrowserChildProcessHostId browser_child_process_host_id() const {
     return browser_child_process_host_id_;
   }

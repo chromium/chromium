@@ -12,10 +12,6 @@
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/public/swap_completion_callback.h"
 
-namespace gfx {
-class ColorSpace;
-}  // namespace gfx
-
 namespace ui {
 
 class DrmThread;
@@ -38,12 +34,10 @@ class DrmWindowProxy {
 
   bool SupportsGpuFences() const;
 
-  void SetColorSpace(const gfx::ColorSpace& color_space) const;
-
  private:
   const gfx::AcceleratedWidget widget_;
 
-  const raw_ptr<DrmThread, ExperimentalAsh> drm_thread_;
+  const raw_ptr<DrmThread> drm_thread_;
 };
 
 }  // namespace ui

@@ -5,11 +5,13 @@
 /**
  * @fileoverview Provides output services for ChromeVox.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
-import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
-import {CursorRange} from '../../../common/cursors/range.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {Cursor, CURSOR_NODE_INDEX} from '/common/cursors/cursor.js';
+import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {EventSourceType} from '../../common/event_source_type.js';
@@ -151,21 +153,12 @@ export class Output {
     }
   }
 
-  /**
-   * @return {boolean} True if there's any speech that will be output.
-   */
+  /** @return {boolean} True if there's any speech that will be output. */
   get hasSpeech() {
-    for (let i = 0; i < this.speechBuffer_.length; i++) {
-      if (this.speechBuffer_[i].length) {
-        return true;
-      }
-    }
-    return false;
+    return this.speechBuffer_.some(speech => speech.length);
   }
 
-  /**
-   * @return {boolean} True if there is only whitespace in this output.
-   */
+  /** @return {boolean} True if there is only whitespace in this output. */
   get isOnlyWhitespace() {
     return this.speechBuffer_.every(buff => !/\S+/.test(buff.toString()));
   }
@@ -445,10 +438,6 @@ export class Output {
     // Speech.
     let queueMode = this.determineQueueMode_();
 
-    if (this.speechBuffer_.length > 0) {
-      Output.forceModeForNextSpeechUtterance_ = undefined;
-    }
-
     let encounteredNonWhitespace = false;
     for (let i = 0; i < this.speechBuffer_.length; i++) {
       const buff = this.speechBuffer_[i];
@@ -465,38 +454,12 @@ export class Output {
         continue;
       }
 
-      let speechProps;
-      const speechPropsInstance =
-          /** @type {outputTypes.OutputSpeechProperties} */ (
-              buff.getSpanInstanceOf(outputTypes.OutputSpeechProperties));
-
-      if (!speechPropsInstance) {
-        speechProps = this.initialSpeechProps_;
-      } else {
-        for (const [key, value] of Object.entries(this.initialSpeechProps_)) {
-          if (speechPropsInstance.properties[key] === undefined) {
-            speechPropsInstance.properties[key] = value;
-          }
-        }
-        speechProps = new TtsSpeechProperties(speechPropsInstance.properties);
-      }
-
-      speechProps.category = this.speechCategory_;
-
-      (function() {
-        const scopedBuff = buff;
-        speechProps.startCallback = function() {
-          const actions =
-              scopedBuff.getSpansInstanceOf(outputTypes.OutputAction);
-          if (actions) {
-            actions.forEach(action => action.run());
-          }
-        };
-      }());
+      const speechProps = this.getSpeechPropsForBuff_(buff);
 
       if (i === this.speechBuffer_.length - 1) {
         speechProps.endCallback = this.speechEndCallback_;
       }
+
       let finalSpeech = buff.toString();
       for (const text in this.replacements_) {
         finalSpeech = finalSpeech.replace(text, this.replacements_[text]);
@@ -545,12 +508,48 @@ export class Output {
   /** @return {QueueMode} */
   determineQueueMode_() {
     if (Output.forceModeForNextSpeechUtterance_ !== undefined) {
-      return Output.forceModeForNextSpeechUtterance_;
+      const result = Output.forceModeForNextSpeechUtterance_;
+      if (this.speechBuffer_.length > 0) {
+        Output.forceModeForNextSpeechUtterance_ = undefined;
+      }
+      return result;
     }
     if (this.queueMode_ !== undefined) {
       return this.queueMode_;
     }
     return QueueMode.QUEUE;
+  }
+
+  /**
+   * @param {!Spannable} buff
+   * @return {!TtsSpeechProperties}
+   */
+  getSpeechPropsForBuff_(buff) {
+    let speechProps;
+    const speechPropsInstance =
+        /** @type {outputTypes.OutputSpeechProperties} */ (
+            buff.getSpanInstanceOf(outputTypes.OutputSpeechProperties));
+
+    if (!speechPropsInstance) {
+      speechProps = this.initialSpeechProps_;
+    } else {
+      for (const [key, value] of Object.entries(this.initialSpeechProps_)) {
+        if (speechPropsInstance.properties[key] === undefined) {
+          speechPropsInstance.properties[key] = value;
+        }
+      }
+      speechProps = new TtsSpeechProperties(speechPropsInstance.properties);
+    }
+
+    speechProps.category = this.speechCategory_;
+    speechProps.startCallback = () => {
+      const actions = buff.getSpansInstanceOf(outputTypes.OutputAction);
+      if (actions) {
+        actions.forEach(action => action.run());
+      }
+    };
+
+    return speechProps;
   }
 
   /**
@@ -788,7 +787,7 @@ export class Output {
       formatLog,
       type,
       ancestors: info.leaveAncestors,
-      formatName: 'leave',
+      navigationType: outputTypes.OutputNavigationType.LEAVE,
       exclude: [...info.enterAncestors, node],
     });
     this.ancestryHelper_({
@@ -798,7 +797,7 @@ export class Output {
       formatLog,
       type,
       ancestors: info.enterAncestors,
-      formatName: 'enter',
+      navigationType: outputTypes.OutputNavigationType.ENTER,
       excludePreviousAncestors: true,
     });
 
@@ -815,7 +814,7 @@ export class Output {
         formatLog,
         type,
         ancestors: info.startAncestors,
-        formatName: 'startOf',
+        navigationType: outputTypes.OutputNavigationType.START_OF,
         excludePreviousAncestors: true,
       });
     }
@@ -828,7 +827,7 @@ export class Output {
         formatLog,
         type,
         ancestors: info.endAncestors,
-        formatName: 'endOf',
+        navigationType: outputTypes.OutputNavigationType.END_OF,
         exclude: [...info.startAncestors].concat(node),
       });
     }
@@ -842,14 +841,15 @@ export class Output {
    * buff: !Array<Spannable>,
    * formatLog: !OutputFormatLogger,
    * ancestors: !Array<!AutomationNode>,
-   * formatName: string,
+   * navigationType: !outputTypes.OutputNavigationType,
    * exclude: (!Array<!AutomationNode>|undefined),
    * excludePreviousAncestors: (boolean|undefined)
    * }} args
    * @private
    */
   ancestryHelper_(args) {
-    let {node, prevNode, buff, formatLog, type, ancestors, formatName} = args;
+    let {node, prevNode, buff, formatLog, type, ancestors, navigationType} =
+        args;
 
     const excludeRoles =
         args.exclude ? new Set(args.exclude.map(node => node.role)) : new Set();
@@ -866,9 +866,8 @@ export class Output {
         continue;
       }
 
-      const parentRole = roleInfo.inherits || CustomRole.NO_ROLE;
       const rule = new AncestryOutputRule(
-          type, formatNode.role, parentRole, formatName, this.formatAsBraille);
+          type, formatNode.role, navigationType, this.formatAsBraille);
       if (!rule.defined) {
         continue;
       }
@@ -915,22 +914,18 @@ export class Output {
     }
 
     const rule = new OutputRule(type);
-    const eventBlock = OutputRule.RULES[rule.event];
-    const parentRole =
-        (OutputRoleInfo[node.role] || {}).inherits || CustomRole.NO_ROLE;
     rule.output = outputTypes.OutputFormatType.SPEAK;
-    rule.populateRole(node.role, parentRole, rule.output);
+    rule.populateRole(node.role, rule.output);
     if (this.formatOptions_.braille) {
       // Overwrite rule by braille rule if exists.
-      if (rule.populateRole(
-              node.role, parentRole, outputTypes.OutputFormatType.BRAILLE)) {
+      if (rule.populateRole(node.role, outputTypes.OutputFormatType.BRAILLE)) {
         rule.output = outputTypes.OutputFormatType.BRAILLE;
       }
     }
     formatLog.writeRule(rule.specifier);
     OutputFormatter.format(this, {
       node,
-      outputFormat: eventBlock[rule.role][rule.output],
+      outputFormat: rule.formatString,
       outputBuffer: buff,
       outputFormatLogger: formatLog,
       opt_prevNode: prevNode,
@@ -1517,3 +1512,5 @@ Output.SPACE = ' ';
  * @private
  */
 Output.forceModeForNextSpeechUtterance_;
+
+TestImportManager.exportForTesting(Output);

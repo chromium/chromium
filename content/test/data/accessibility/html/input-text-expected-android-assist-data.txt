@@ -1,0 +1,4 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++EditText text:"Name" textSize:13.3 style:0 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {autofocus=""}, {placeholder="Name"}, {type="text"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="flow-root"}]

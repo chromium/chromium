@@ -13,8 +13,7 @@ namespace ash {
 
 // Interface for dependency injection between MultiDeviceSetupScreen and its
 // WebUI representation.
-class MultiDeviceSetupScreenView
-    : public base::SupportsWeakPtr<MultiDeviceSetupScreenView> {
+class MultiDeviceSetupScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "multidevice-setup-screen", "MultiDeviceSetupScreen"};
@@ -22,11 +21,12 @@ class MultiDeviceSetupScreenView
   virtual ~MultiDeviceSetupScreenView() = default;
 
   virtual void Show() = 0;
+  virtual base::WeakPtr<MultiDeviceSetupScreenView> AsWeakPtr() = 0;
 };
 
 // Concrete MultiDeviceSetupScreenView WebUI-based implementation.
-class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
-                                      public MultiDeviceSetupScreenView {
+class MultiDeviceSetupScreenHandler final : public BaseScreenHandler,
+                                            public MultiDeviceSetupScreenView {
  public:
   using TView = MultiDeviceSetupScreenView;
 
@@ -45,6 +45,10 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
 
   // MultiDeviceSetupScreenView:
   void Show() override;
+  base::WeakPtr<MultiDeviceSetupScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<MultiDeviceSetupScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

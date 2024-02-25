@@ -18,8 +18,8 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next version: 8
-// Next ID: 31
+// Next version: 9
+// Next ID: 32
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -484,12 +484,23 @@ interface DiagnosticsService {
   //                routine.
   [MinVersion=7] RunBluetoothPairingRoutine@30(string peripheral_id)
       => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the Fan routine is created and started on the
+  // platform. This routine checks whether the fan is controllable.
+  // The availability of this routine can be determined by checking that
+  // kFan is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=8] RunFanRoutine@31()
+      => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next version: 7
-// Next ID: 31
+// Next version: 8
+// Next ID: 32
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -523,6 +534,7 @@ enum DiagnosticsRoutineEnum {
   [MinVersion=5] kBluetoothDiscovery = 28,
   [MinVersion=6] kBluetoothScanning = 29,
   [MinVersion=6] kBluetoothPairing = 30,
+  [MinVersion=7] kFan = 31,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

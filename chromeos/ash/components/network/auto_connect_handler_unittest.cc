@@ -81,7 +81,7 @@ class TestCertResolveObserver : public ClientCertResolver::Observer {
 
  private:
   bool changed_network_properties_;
-  raw_ptr<ClientCertResolver, ExperimentalAsh> cert_resolver_;
+  raw_ptr<ClientCertResolver> cert_resolver_;
 };
 
 class TestNetworkConnectionHandler : public NetworkConnectionHandler {
@@ -277,7 +277,7 @@ class AutoConnectHandlerTest : public testing::Test {
                                        bool expected_auto_connect) {
     const base::Value::Dict* properties =
         helper().service_test()->GetServiceProperties(service_path);
-    absl::optional<bool> auto_connect =
+    std::optional<bool> auto_connect =
         properties->FindBool(shill::kAutoConnectProperty);
     EXPECT_TRUE(auto_connect);
     EXPECT_EQ(*auto_connect, expected_auto_connect);

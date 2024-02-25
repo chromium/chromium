@@ -34,11 +34,11 @@ struct WaylandXdgShell {
   WaylandXdgShell& operator=(const WaylandXdgShell&) = delete;
 
   // Owned by WaylandServerController, which always outlives xdg_shell.
-  const raw_ptr<Display, ExperimentalAsh> display;
+  const raw_ptr<Display> display;
 
   // Owned by Server, which always outlives xdg_shell.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
-  const raw_ptr<SerialTracker, ExperimentalAsh> rotation_serial_tracker;
+  const raw_ptr<SerialTracker> serial_tracker;
+  const raw_ptr<SerialTracker> rotation_serial_tracker;
 };
 
 struct WaylandXdgSurface {
@@ -54,8 +54,8 @@ struct WaylandXdgSurface {
   std::unique_ptr<XdgShellSurface> shell_surface;
 
   // Owned by Server, which always outlives this surface.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
-  const raw_ptr<SerialTracker, ExperimentalAsh> rotation_serial_tracker;
+  const raw_ptr<SerialTracker> serial_tracker;
+  const raw_ptr<SerialTracker> rotation_serial_tracker;
 };
 
 void bind_xdg_shell(wl_client* client,
@@ -76,13 +76,13 @@ struct ShellSurfaceData {
   ShellSurfaceData(const ShellSurfaceData&) = delete;
   ShellSurfaceData& operator=(const ShellSurfaceData&) = delete;
 
-  const raw_ptr<ShellSurface, ExperimentalAsh> shell_surface;
+  const raw_ptr<ShellSurface> shell_surface;
 
   // Owned by Server, which always outlives xdg_shell.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
-  const raw_ptr<SerialTracker, ExperimentalAsh> rotation_serial_tracker;
+  const raw_ptr<SerialTracker> serial_tracker;
+  const raw_ptr<SerialTracker> rotation_serial_tracker;
 
-  const raw_ptr<wl_resource, ExperimentalAsh> surface_resource;
+  const raw_ptr<wl_resource> surface_resource;
 };
 
 ShellSurfaceData GetShellSurfaceFromToplevelResource(

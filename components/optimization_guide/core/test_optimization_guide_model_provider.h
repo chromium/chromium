@@ -25,7 +25,7 @@ class TestOptimizationGuideModelProvider
   // OptimizationGuideModelProvider implementation:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata,
+      const std::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override;
   void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,

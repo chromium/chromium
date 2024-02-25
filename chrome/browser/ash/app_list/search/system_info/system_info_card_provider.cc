@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
-#include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
+#include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
@@ -54,7 +54,9 @@ using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 using ::chromeos::settings::mojom::kStorageSubpagePath;
 using AnswerCardInfo = ::ash::SystemInfoAnswerCardData;
 
+constexpr double kMinimumRelevance = 0.0;
 constexpr double kRelevanceThreshold = 0.79;
+constexpr double kMinimumQueryLength = 3;
 
 double ConvertKBtoBytes(uint32_t amount) {
   return static_cast<double>(amount) * 1024;
@@ -63,7 +65,8 @@ double ConvertKBtoBytes(uint32_t amount) {
 }  // namespace
 
 SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
-    : total_disk_space_calculator_(profile),
+    : SearchProvider(SearchCategory::kSystemInfoCard),
+      total_disk_space_calculator_(profile),
       free_disk_space_calculator_(profile),
       my_files_size_calculator_(profile),
       drive_offline_size_calculator_(profile),
@@ -96,6 +99,10 @@ SystemInfoCardProvider::~SystemInfoCardProvider() {
 }
 
 void SystemInfoCardProvider::Start(const std::u16string& query) {
+  if (query.length() < kMinimumQueryLength) {
+    return;
+  }
+
   double max_relevance = 0;
   SystemInfoKeywordInput* most_relevant_keyword_input;
   for (SystemInfoKeywordInput& keyword_input : keywords_) {
@@ -143,19 +150,14 @@ void SystemInfoCardProvider::StopQuery() {
 double SystemInfoCardProvider::CalculateRelevance(const std::u16string& query,
                                                   const std::u16string& title) {
   const TokenizedString tokenized_title(title, TokenizedString::Mode::kWords);
-  const TokenizedString tokenized_query(query,
-                                        TokenizedString::Mode::kCamelCase);
+  const TokenizedString tokenized_query(query, TokenizedString::Mode::kWords);
 
   if (tokenized_query.text().empty() || tokenized_title.text().empty()) {
-    static constexpr double kDefaultRelevance = 0.0;
-    return kDefaultRelevance;
+    return kMinimumRelevance;
   }
 
-  FuzzyTokenizedStringMatch match;
-  return match.Relevance(tokenized_query, tokenized_title,
-                         /*use_weighted_ratio=*/false,
-                         /*strip_diacritics=*/true,
-                         /*use_acronym_matcher=*/true);
+  return FuzzyTokenizedStringMatch::TokenSortRatio(
+      tokenized_query, tokenized_title, /*partial=*/false);
 }
 
 void SystemInfoCardProvider::BindCrosHealthdProbeServiceIfNecessary() {
@@ -215,10 +217,9 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
     SearchProvider::Results new_results;
     DCHECK(memory_timer_);
     new_results.emplace_back(std::make_unique<MemoryAnswerResult>(
-        profile_, last_query_, /*url_path=*/base::EmptyString(),
-        diagnostics_icon_, relevance_,
-        /*title=*/base::EmptyString16(), description,
-        accessibility_label_details,
+        profile_, last_query_, /*url_path=*/std::string(), diagnostics_icon_,
+        relevance_,
+        /*title=*/std::u16string(), description, accessibility_label_details,
         SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
         SystemInfoAnswerResult::SystemInfoCardType::kMemory, answer_card_info,
         base::BindRepeating(&SystemInfoCardProvider::UpdateMemoryUsage,
@@ -306,9 +307,8 @@ void SystemInfoCardProvider::OnCpuUsageUpdated(bool create_result,
     SearchProvider::Results new_results;
     DCHECK(cpu_usage_timer_);
     new_results.emplace_back(std::make_unique<CpuAnswerResult>(
-        profile_, last_query_, /*url_path=*/base::EmptyString(),
-        diagnostics_icon_, relevance_, title, description,
-        accessibility_label_details,
+        profile_, last_query_, /*url_path=*/std::string(), diagnostics_icon_,
+        relevance_, title, description, accessibility_label_details,
         SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
         SystemInfoAnswerResult::SystemInfoCardType::kCPU, answer_card_info,
         base::BindRepeating(&SystemInfoCardProvider::UpdateCpuUsage,
@@ -360,7 +360,7 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
 
   PopulateBatteryHealth(*battery_info_ptr, *new_battery_health.get());
 
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto) {
     EmitBatteryDataError(BatteryDataError::kNoData);
@@ -391,9 +391,9 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
   answer_card_info.SetExtraDetails(battery_health_info);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<BatteryAnswerResult>(
-      profile_, last_query_, /*url_path=*/base::EmptyString(),
-      diagnostics_icon_, relevance_,
-      /*title=*/base::EmptyString16(), new_battery_health->GetPowerTime(),
+      profile_, last_query_, /*url_path=*/std::string(), diagnostics_icon_,
+      relevance_,
+      /*title=*/std::u16string(), new_battery_health->GetPowerTime(),
       accessibility_label_details,
       SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
       SystemInfoAnswerResult::SystemInfoCardType::kBattery, answer_card_info));
@@ -528,7 +528,7 @@ void SystemInfoCardProvider::CreateStorageAnswerCard() {
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
       profile_, last_query_, kStorageSubpagePath, os_settings_icon_, relevance_,
-      /*title=*/base::EmptyString16(), description, accessibility_label_details,
+      /*title=*/std::u16string(), description, accessibility_label_details,
       SystemInfoAnswerResult::SystemInfoCategory::kSettings,
       SystemInfoAnswerResult::SystemInfoCardType::kStorage, answer_card_info));
   SwapResults(&new_results);

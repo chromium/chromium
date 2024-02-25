@@ -5,6 +5,7 @@
 #include "media/formats/mp2t/mp2t_stream_parser.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,8 +15,8 @@
 #include "media/base/media_tracks.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/video_codec_string_parsers.h"
 #include "media/formats/mp2t/descriptors.h"
 #include "media/formats/mp2t/es_parser.h"
 #include "media/formats/mp2t/es_parser_adts.h"
@@ -30,20 +31,11 @@
 #include "media/formats/mp2t/ts_section_pat.h"
 #include "media/formats/mp2t/ts_section_pes.h"
 #include "media/formats/mp2t/ts_section_pmt.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace mp2t {
 
 namespace {
-
-constexpr int64_t kSampleAESPrivateDataIndicatorAVC = 0x7a617663;
-constexpr int64_t kSampleAESPrivateDataIndicatorAAC = 0x61616364;
-// TODO(dougsteed). Consider adding support for the following:
-// const int64_t kSampleAESPrivateDataIndicatorAC3 = 0x61633364;
-// const int64_t kSampleAESPrivateDataIndicatorEAC3 = 0x65633364;
-
-}  // namespace
 
 enum StreamType {
   // ISO-13818.1 / ITU H.222 Table 2.34 "Stream type assignments"
@@ -58,6 +50,57 @@ enum StreamType {
   //  kStreamTypeAC3WithSampleAES = 0xc1,
   //  kStreamTypeEAC3WithSampleAES = 0xc2,
 };
+
+constexpr int64_t kSampleAESPrivateDataIndicatorAVC = 0x7a617663;
+constexpr int64_t kSampleAESPrivateDataIndicatorAAC = 0x61616364;
+// TODO(dougsteed). Consider adding support for the following:
+// const int64_t kSampleAESPrivateDataIndicatorAC3 = 0x61633364;
+// const int64_t kSampleAESPrivateDataIndicatorEAC3 = 0x65633364;
+
+std::optional<base::flat_set<int>> MapAllowedStreamTypes(
+    std::optional<base::span<const std::string>> allowed_codecs) {
+  if (!allowed_codecs.has_value()) {
+    return std::nullopt;
+  }
+  base::flat_set<int> allowed_stream_types;
+  for (const std::string& codec_name : *allowed_codecs) {
+    switch (StringToVideoCodec(codec_name)) {
+      case VideoCodec::kH264:
+        allowed_stream_types.insert(kStreamTypeAVC);
+        allowed_stream_types.insert(kStreamTypeAVCWithSampleAES);
+        continue;
+      case VideoCodec::kUnknown:
+        // Probably audio.
+        break;
+      default:
+        DLOG(WARNING) << "Unsupported video codec " << codec_name;
+        continue;
+    }
+
+    switch (StringToAudioCodec(codec_name)) {
+      case AudioCodec::kAAC:
+        allowed_stream_types.insert(kStreamTypeAAC);
+        allowed_stream_types.insert(kStreamTypeAACWithSampleAES);
+        continue;
+      case AudioCodec::kMP3:
+        allowed_stream_types.insert(kStreamTypeMpeg1Audio);
+        allowed_stream_types.insert(kStreamTypeMpeg2Audio);
+        continue;
+      case AudioCodec::kUnknown:
+        // Neither audio, nor video.
+        break;
+      default:
+        DLOG(WARNING) << "Unsupported audio codec " << codec_name;
+        continue;
+    }
+
+    // Failed to parse as an audio or a video codec.
+    DLOG(WARNING) << "Unknown codec " << codec_name;
+  }
+  return allowed_stream_types;
+}
+
+}  // namespace
 
 class PidState {
  public:
@@ -186,48 +229,15 @@ Mp2tStreamParser::BufferQueueWithConfig::BufferQueueWithConfig(
 Mp2tStreamParser::BufferQueueWithConfig::~BufferQueueWithConfig() {
 }
 
-Mp2tStreamParser::Mp2tStreamParser(base::span<const std::string> allowed_codecs,
-                                   bool sbr_in_mimetype)
-    : sbr_in_mimetype_(sbr_in_mimetype),
+Mp2tStreamParser::Mp2tStreamParser(
+    std::optional<base::span<const std::string>> allowed_codecs,
+    bool sbr_in_mimetype)
+    : allowed_stream_types_(MapAllowedStreamTypes(allowed_codecs)),
+      sbr_in_mimetype_(sbr_in_mimetype),
       selected_audio_pid_(-1),
       selected_video_pid_(-1),
       is_initialized_(false),
-      segment_started_(false) {
-  for (const std::string& codec_name : allowed_codecs) {
-    switch (StringToVideoCodec(codec_name)) {
-      case VideoCodec::kH264:
-        allowed_stream_types_.insert(kStreamTypeAVC);
-        allowed_stream_types_.insert(kStreamTypeAVCWithSampleAES);
-        continue;
-      case VideoCodec::kUnknown:
-        // Probably audio.
-        break;
-      default:
-        DLOG(WARNING) << "Unsupported video codec " << codec_name;
-        continue;
-    }
-
-    switch (StringToAudioCodec(codec_name)) {
-      case AudioCodec::kAAC:
-        allowed_stream_types_.insert(kStreamTypeAAC);
-        allowed_stream_types_.insert(kStreamTypeAACWithSampleAES);
-        continue;
-      case AudioCodec::kMP3:
-        allowed_stream_types_.insert(kStreamTypeMpeg1Audio);
-        allowed_stream_types_.insert(kStreamTypeMpeg2Audio);
-        continue;
-      case AudioCodec::kUnknown:
-        // Neither audio, nor video.
-        break;
-      default:
-        DLOG(WARNING) << "Unsupported audio codec " << codec_name;
-        continue;
-    }
-
-    // Failed to parse as an audio or a video codec.
-    DLOG(WARNING) << "Unknown codec " << codec_name;
-  }
-}
+      segment_started_(false) {}
 
 Mp2tStreamParser::~Mp2tStreamParser() = default;
 
@@ -235,7 +245,6 @@ void Mp2tStreamParser::Init(
     InitCB init_cb,
     NewConfigCB config_cb,
     NewBuffersCB new_buffers_cb,
-    bool /* ignore_text_tracks */,
     EncryptedMediaInitDataCB encrypted_media_init_data_cb,
     NewMediaSegmentCB new_segment_cb,
     EndMediaSegmentCB end_of_segment_cb,
@@ -569,7 +578,8 @@ void Mp2tStreamParser::RegisterPes(int pes_pid,
   // See https://crbug.com/1169393.
   // TODO(https://crbug.com/535738): Remove this hack when MSE stream/mime type
   // checks have been relaxed.
-  if (allowed_stream_types_.find(stream_type) == allowed_stream_types_.end()) {
+  if (allowed_stream_types_.has_value() &&
+      !allowed_stream_types_->contains(stream_type)) {
     DVLOG(1) << "Stream type not allowed for this parser: " << stream_type;
     return;
   }
@@ -794,15 +804,14 @@ bool Mp2tStreamParser::FinishInitializationIfNeeded() {
   // Pass the config before invoking the initialization callback.
   std::unique_ptr<MediaTracks> media_tracks = GenerateMediaTrackInfo(
       queue_with_config.audio_config, queue_with_config.video_config);
-  RCHECK(config_cb_.Run(std::move(media_tracks), TextTrackConfigMap()));
+  RCHECK(config_cb_.Run(std::move(media_tracks)));
   queue_with_config.is_config_sent = true;
 
   // For Mpeg2 TS, the duration is not known.
   DVLOG(1) << "Mpeg2TS stream parser initialization done";
 
   // TODO(wolenetz): If possible, detect and report track counts by type more
-  // accurately here. Currently, capped at max 1 each for audio and video, with
-  // assumption of 0 text tracks.
+  // accurately here. Currently, capped at max 1 each for audio and video.
   InitParameters params(kInfiniteDuration);
   params.detected_audio_track_count =
       queue_with_config.audio_config.IsValidConfig() ? 1 : 0;
@@ -902,8 +911,9 @@ bool Mp2tStreamParser::EmitRemainingBuffers() {
     if (!queue_with_config.is_config_sent) {
       std::unique_ptr<MediaTracks> media_tracks = GenerateMediaTrackInfo(
           queue_with_config.audio_config, queue_with_config.video_config);
-      if (!config_cb_.Run(std::move(media_tracks), TextTrackConfigMap()))
+      if (!config_cb_.Run(std::move(media_tracks))) {
         return false;
+      }
       queue_with_config.is_config_sent = true;
     }
 
@@ -1006,7 +1016,7 @@ void Mp2tStreamParser::RegisterNewKeyIdAndIv(const std::string& key_id,
         break;
       case EncryptionScheme::kCbcs:
         decrypt_config_ =
-            DecryptConfig::CreateCbcsConfig(key_id, iv, {}, absl::nullopt);
+            DecryptConfig::CreateCbcsConfig(key_id, iv, {}, std::nullopt);
         break;
     }
   }

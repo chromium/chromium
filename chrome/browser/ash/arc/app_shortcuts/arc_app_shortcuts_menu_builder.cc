@@ -57,10 +57,10 @@ void ArcAppShortcutsMenuBuilder::BuildMenu(
   // |arc_app_shortcuts_request_|. When |this| is deleted,
   // |arc_app_shortcuts_request_| is also deleted, and once that happens,
   // |arc_app_shortcuts_request_| will never run the callback.
-  arc_app_shortcuts_request_ = std::make_unique<ArcAppShortcutsRequest>(
-      base::BindOnce(&ArcAppShortcutsMenuBuilder::OnGetAppShortcutItems,
-                     base::Unretained(this), base::TimeTicks::Now(),
-                     std::move(menu_model), std::move(callback)));
+  arc_app_shortcuts_request_ =
+      std::make_unique<ArcAppShortcutsRequest>(base::BindOnce(
+          &ArcAppShortcutsMenuBuilder::OnGetAppShortcutItems,
+          base::Unretained(this), std::move(menu_model), std::move(callback)));
   arc_app_shortcuts_request_->StartForPackage(package_name);
 }
 
@@ -87,7 +87,6 @@ void ArcAppShortcutsMenuBuilder::ExecuteCommand(int command_id) {
 }
 
 void ArcAppShortcutsMenuBuilder::OnGetAppShortcutItems(
-    const base::TimeTicks& start_time,
     std::unique_ptr<ui::SimpleMenuModel> menu_model,
     GetMenuModelCallback callback,
     std::unique_ptr<apps::AppShortcutItems> app_shortcut_items) {
@@ -116,10 +115,6 @@ void ArcAppShortcutsMenuBuilder::OnGetAppShortcutItems(
   }
   std::move(callback).Run(std::move(menu_model));
   arc_app_shortcuts_request_.reset();
-
-  // Record user metrics.
-  UMA_HISTOGRAM_TIMES("Arc.AppShortcuts.BuildMenuTime",
-                      base::TimeTicks::Now() - start_time);
 }
 
 }  // namespace arc

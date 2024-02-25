@@ -108,9 +108,9 @@ std::string GetFileNameFromIcon(const gfx::VectorIcon* icon) {
 
 struct HelpBubbleHandlerBase::ElementData {
   ElementData() = default;
+  ElementData(ElementData&& other) noexcept = default;
+  ElementData& operator=(ElementData&& other) noexcept = default;
   ~ElementData() = default;
-  ElementData(ElementData&& other) = default;
-  ElementData& operator=(ElementData&& other) = default;
 
   bool has_webui_help_bubble() const { return static_cast<bool>(params); }
 
@@ -132,7 +132,7 @@ struct HelpBubbleHandlerBase::ElementData {
 };
 
 void HelpBubbleHandlerBase::VisibilityProvider::SetLastKnownVisibility(
-    absl::optional<bool> visible) {
+    std::optional<bool> visible) {
   handler_->OnWebContentsVisibilityChanged(visible);
 }
 
@@ -166,6 +166,12 @@ content::WebContents* HelpBubbleHandlerBase::GetWebContents() {
   return GetController()->web_ui()->GetWebContents();
 }
 
+bool HelpBubbleHandlerBase::IsHelpBubbleShowingForTesting(
+    ui::ElementIdentifier id) const {
+  const auto it = element_data_.find(id);
+  return it != element_data_.end() && it->second.has_webui_help_bubble();
+}
+
 help_bubble::mojom::HelpBubbleClient* HelpBubbleHandlerBase::GetClient() {
   return client_provider_->GetClient();
 }
@@ -185,16 +191,18 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
 
   auto& data = it->second;
   if (data.has_webui_help_bubble()) {
-    NOTREACHED() << "A help bubble is already being shown for " << identifier;
+    LOG(WARNING) << "A help bubble is already being shown for " << identifier;
     auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
     if (data.help_bubble) {
       data.help_bubble->Close();
-      if (!weak_ptr)
+      if (!weak_ptr) {
         return nullptr;
+      }
     }
   }
   data.params = std::make_unique<HelpBubbleParams>(std::move(params));
   auto result = base::WrapUnique(new HelpBubbleWebUI(this, identifier));
+  data.help_bubble = result.get();
 
   auto mojom_params = help_bubble::mojom::HelpBubbleParams::New();
   mojom_params->native_identifier = identifier.GetName();
@@ -210,6 +218,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
     mojom_params->body_icon_name = GetFileNameFromIcon(data.params->body_icon);
   mojom_params->body_icon_alt_text =
       base::UTF16ToUTF8(data.params->body_icon_alt_text);
+  mojom_params->focus_on_show_hint = data.params->focus_on_show_hint;
   mojom_params->position = HelpBubbleArrowToPosition(data.params->arrow);
   if (data.params->progress) {
     mojom_params->progress = help_bubble::mojom::Progress::New();
@@ -226,7 +235,6 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   }
 
   GetClient()->ShowHelpBubble(std::move(mojom_params));
-  it->second.help_bubble = result.get();
   return result;
 }
 
@@ -249,7 +257,7 @@ void HelpBubbleHandlerBase::OnHelpBubbleClosing(
 }
 
 void HelpBubbleHandlerBase::OnWebContentsVisibilityChanged(
-    absl::optional<bool> visibility) {
+    std::optional<bool> visibility) {
   const bool old_visibility = is_web_contents_visible();
   web_contents_visibility_ = visibility;
   const bool new_visibility = is_web_contents_visible();
@@ -543,10 +551,10 @@ class HelpBubbleHandler::VisibilityProvider
   VisibilityProvider() = default;
   ~VisibilityProvider() override = default;
 
-  absl::optional<bool> CheckIsVisible() override {
+  std::optional<bool> CheckIsVisible() override {
     auto* const contents = handler()->GetWebContents();
     if (!contents) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     CHECK(!web_contents());
     Observe(contents);
@@ -558,9 +566,7 @@ class HelpBubbleHandler::VisibilityProvider
   void OnVisibilityChanged(content::Visibility new_visibility) override {
     SetLastKnownVisibility(new_visibility == content::Visibility::VISIBLE);
   }
-  void WebContentsDestroyed() override {
-    SetLastKnownVisibility(absl::nullopt);
-  }
+  void WebContentsDestroyed() override { SetLastKnownVisibility(std::nullopt); }
 };
 
 HelpBubbleHandler::HelpBubbleHandler(

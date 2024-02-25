@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <numbers>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -222,7 +222,7 @@ class SinusoidalLinearChirpSource {
 
         // Sinusoidal linear chirp.
         destination[i] =
-            sin(2 * base::kPiDouble * (kMinFrequency * t + (k_ / 2) * t * t));
+            sin(2 * std::numbers::pi * (kMinFrequency * t + (k_ / 2) * t * t));
       }
     }
   }
@@ -290,7 +290,7 @@ TEST_P(SincResamplerTest, Resample) {
   std::unique_ptr<float[]> kernel(new float[kernel_storage_size]);
   memcpy(kernel.get(), resampler.get_kernel_for_testing(),
          kernel_storage_size_in_bytes);
-  resampler.SetRatio(base::kPiDouble);
+  resampler.SetRatio(std::numbers::pi);
   ASSERT_NE(0, memcmp(kernel.get(), resampler.get_kernel_for_testing(),
                       kernel_storage_size_in_bytes));
   resampler.SetRatio(io_ratio);
@@ -385,7 +385,7 @@ TEST_P(SincResamplerTest, Resample_SmallKernel) {
   std::unique_ptr<float[]> kernel(new float[kernel_storage_size]);
   memcpy(kernel.get(), resampler.get_kernel_for_testing(),
          kernel_storage_size_in_bytes);
-  resampler.SetRatio(base::kPiDouble);
+  resampler.SetRatio(std::numbers::pi);
   ASSERT_NE(0, memcmp(kernel.get(), resampler.get_kernel_for_testing(),
                       kernel_storage_size_in_bytes));
   resampler.SetRatio(io_ratio);

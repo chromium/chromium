@@ -1,0 +1,53 @@
+<!-- Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<style>
+  :host {
+    display: flex;
+    flex: 1 0 100%;
+    padding: 10px;
+    width: 100%;
+    align-items: center;
+  }
+
+  #appContainer {
+    display: flex;
+    flex: 1 0 100%;
+    background-color: lightgrey;
+  }
+
+  cr-input {
+    padding: 5px;
+  }
+
+  cr-button {
+    padding: 25px;
+    background-color: royalblue;
+    color: white;
+  }
+
+  .padded-text {
+    margin-inline: 5px;
+  }
+</style>
+
+<div id="appContainer">
+  <cr-input label="App Name" aria-label="app-name" value="{{name}}">
+  </cr-input>
+
+  <cr-toggle aria-label="use-camera" checked="{{useCamera}}"></cr-toggle>
+  <span aria-hidden="true" class="padded-text">
+    Use camera
+  </span>
+
+  <cr-toggle aria-label="use-microphone" checked="{{useMicrophone}}">
+  </cr-toggle>
+  <span aria-hidden="true" class="padded-text">
+    Use microphone
+  </span>
+
+  <cr-button on-click="onTriggerPrivacyIndicators">
+    <span class="emphasize">Add/Update App</span>
+  </cr-button>
+</div>

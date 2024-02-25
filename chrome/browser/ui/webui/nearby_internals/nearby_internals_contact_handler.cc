@@ -10,10 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/logging/proto_to_dictionary_conversion.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace {
 
@@ -25,7 +25,8 @@ std::string FormatListAsJSON(const base::Value::List& list) {
 }
 
 base::Value GetJavascriptTimestamp() {
-  return base::Value(base::Time::Now().ToJsTimeIgnoringNull());
+  return base::Value(
+      base::Time::Now().InMillisecondsFSinceUnixEpochIgnoringNull());
 }
 
 // Keys in the JSON representation of a contact message
@@ -42,11 +43,11 @@ const char kContactMessageNumUnreachableContactsKey[] =
 // dictionaries corresponding to each contact-manager observer functions. This
 // will require changes at the javascript layer as well.
 base::Value::Dict ContactMessageToDictionary(
-    absl::optional<bool> did_contacts_change_since_last_upload,
-    const absl::optional<std::set<std::string>>& allowed_contact_ids,
-    const absl::optional<std::vector<nearbyshare::proto::ContactRecord>>&
+    std::optional<bool> did_contacts_change_since_last_upload,
+    const std::optional<std::set<std::string>>& allowed_contact_ids,
+    const std::optional<std::vector<nearby::sharing::proto::ContactRecord>>&
         contacts,
-    absl::optional<uint32_t> num_unreachable_contacts_filtered_out) {
+    std::optional<uint32_t> num_unreachable_contacts_filtered_out) {
   base::Value::Dict dictionary;
 
   dictionary.Set(kContactMessageTimeKey, GetJavascriptTimestamp());
@@ -105,7 +106,7 @@ void NearbyInternalsContactHandler::OnJavascriptAllowed() {
   if (service_) {
     observation_.Observe(service_->GetContactManager());
   } else {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
   }
 }
 
@@ -125,17 +126,17 @@ void NearbyInternalsContactHandler::HandleDownloadContacts(
   if (service_) {
     service_->GetContactManager()->DownloadContacts();
   } else {
-    NS_LOG(ERROR) << "No NearbyShareService instance to call.";
+    CD_LOG(ERROR, Feature::NS) << "No NearbyShareService instance to call.";
   }
 }
 
 void NearbyInternalsContactHandler::OnContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
-    const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+    const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
     uint32_t num_unreachable_contacts_filtered_out) {
   FireWebUIListener("contacts-updated",
                     ContactMessageToDictionary(
-                        /*did_contacts_change_since_last_upload=*/absl::nullopt,
+                        /*did_contacts_change_since_last_upload=*/std::nullopt,
                         allowed_contact_ids, contacts,
                         num_unreachable_contacts_filtered_out));
 }
@@ -146,7 +147,7 @@ void NearbyInternalsContactHandler::OnContactsUploaded(
       "contacts-updated",
       ContactMessageToDictionary(
           did_contacts_change_since_last_upload,
-          /*allowed_contact_ids=*/absl::nullopt,
-          /*contacts=*/absl::nullopt,
-          /*num_unreachable_contacts_filtered_out=*/absl::nullopt));
+          /*allowed_contact_ids=*/std::nullopt,
+          /*contacts=*/std::nullopt,
+          /*num_unreachable_contacts_filtered_out=*/std::nullopt));
 }

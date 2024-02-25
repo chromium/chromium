@@ -3,11 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
   sources = [
     "password_edit_dialog_bridge.cc",
     "password_edit_dialog_bridge.h",
+    "password_edit_dialog_bridge_delegate.h",
   ]
 
   deps = [
@@ -29,14 +31,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogProperties.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogView.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewBinder.java",
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsView.java",
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationView.java",
   ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_manager/android:java",
@@ -44,6 +43,7 @@ android_library("java") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 
@@ -59,7 +59,6 @@ android_resources("java_resources") {
     "java/res/drawable/dropdown_arrow_down.xml",
     "java/res/layout/password_edit_dialog.xml",
     "java/res/layout/password_edit_dialog_dropdown_item.xml",
-    "java/res/layout/password_edit_dialog_with_details.xml",
     "java/res/values/dimens.xml",
   ]
 
@@ -96,9 +95,8 @@ android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsRenderTest.java",
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsViewTest.java",
-    "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationViewTest.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogRenderTest.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewTest.java",
   ]
 
   deps = [

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,19 +16,20 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsService.Relation;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.VerificationResult;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
 import org.chromium.components.content_relationship_verification.Relationship;
 import org.chromium.components.embedder_support.util.Origin;
@@ -58,8 +59,7 @@ import java.util.List;
 public class ChromeOriginVerifier extends OriginVerifier {
     private static final String TAG = "ChromeOriginVerifier";
 
-    @Nullable
-    private ExternalAuthUtils mExternalAuthUtils;
+    @Nullable private ExternalAuthUtils mExternalAuthUtils;
 
     static String relationToRelationship(@Relation int relation) {
         switch (relation) {
@@ -84,10 +84,17 @@ public class ChromeOriginVerifier extends OriginVerifier {
      * @param verificationResultStore The {@link ChromeVerificationResultStore} for persisting
      *         results.
      */
-    public ChromeOriginVerifier(String packageName, @Relation int relation,
-            @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils,
+    public ChromeOriginVerifier(
+            String packageName,
+            @Relation int relation,
+            @Nullable WebContents webContents,
+            @Nullable ExternalAuthUtils externalAuthUtils,
             ChromeVerificationResultStore verificationResultStore) {
-        super(packageName, relationToRelationship(relation), webContents, null,
+        super(
+                packageName,
+                relationToRelationship(relation),
+                webContents,
+                null,
                 verificationResultStore);
         mExternalAuthUtils = externalAuthUtils;
     }
@@ -103,7 +110,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
     public void start(@NonNull OriginVerificationListener listener, @NonNull Origin origin) {
         ThreadUtils.assertOnUiThread();
         if (!isNativeOriginVerifierInitialized()) {
-            initNativeOriginVerifier(Profile.getLastUsedRegularProfile());
+            initNativeOriginVerifier(ProfileManager.getLastUsedRegularProfile());
         }
         if (mListeners.containsKey(origin)) {
             // We already have an ongoing verification for that origin, just add the listener.
@@ -116,8 +123,9 @@ public class ChromeOriginVerifier extends OriginVerifier {
 
         // Website to app Digital Asset Link verification can be skipped for a specific URL by
         // passing a command line flag to ease development.
-        String disableDalUrl = CommandLine.getInstance().getSwitchValue(
-                ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION);
+        String disableDalUrl =
+                CommandLine.getInstance()
+                        .getSwitchValue(ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION);
         if (!TextUtils.isEmpty(disableDalUrl) && origin.equals(Origin.create(disableDalUrl))) {
             Log.i(TAG, "Verification skipped for %s due to command line flag.", origin);
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, true, null));
@@ -183,8 +191,12 @@ public class ChromeOriginVerifier extends OriginVerifier {
             String packageName, String signatureFingerprint, Origin origin, String relation) {
         ChromeVerificationResultStore resultStore = ChromeVerificationResultStore.getInstance();
         return resultStore.shouldOverride(packageName, origin, relation)
-                || resultStore.isRelationshipSaved(new Relationship(
-                        packageName, Arrays.asList(signatureFingerprint), origin, relation));
+                || resultStore.isRelationshipSaved(
+                        new Relationship(
+                                packageName,
+                                Arrays.asList(signatureFingerprint),
+                                origin,
+                                relation));
     }
 
     /**
@@ -198,8 +210,11 @@ public class ChromeOriginVerifier extends OriginVerifier {
      * @param origin The origin to verify.
      * @param relation The Digital Asset Links relation to verify for.
      */
-    private static boolean wasPreviouslyVerified(String packageName,
-            List<String> signatureFingerprints, Origin origin, String relation) {
+    private static boolean wasPreviouslyVerified(
+            String packageName,
+            List<String> signatureFingerprints,
+            Origin origin,
+            String relation) {
         ChromeVerificationResultStore resultStore = ChromeVerificationResultStore.getInstance();
         return resultStore.shouldOverride(packageName, origin, relation)
                 || resultStore.isRelationshipSaved(
@@ -232,14 +247,15 @@ public class ChromeOriginVerifier extends OriginVerifier {
 
     public static void addVerificationOverride(
             String packageName, Origin origin, @Relation int relation) {
-        ChromeVerificationResultStore.getInstance().addOverride(
-                packageName, origin, relationToRelationship(relation));
+        ChromeVerificationResultStore.getInstance()
+                .addOverride(packageName, origin, relationToRelationship(relation));
     }
 
     @Override
     public void initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
-        setNativeOriginVerifier(ChromeOriginVerifierJni.get().init(
-                ChromeOriginVerifier.this, browserContextHandle));
+        setNativeOriginVerifier(
+                ChromeOriginVerifierJni.get()
+                        .init(ChromeOriginVerifier.this, browserContextHandle));
     }
 
     @Override
@@ -252,9 +268,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
         ChromeVerificationResultStore.getInstance().clearStoredRelationships();
     }
 
-    /**
-     * Removes any data about sites visited from static variables and Android Preferences.
-     */
+    /** Removes any data about sites visited from static variables and Android Preferences. */
     @CalledByNative
     public static void clearBrowsingData() {
         ChromeVerificationResultStore.getInstance().clearStoredRelationships();

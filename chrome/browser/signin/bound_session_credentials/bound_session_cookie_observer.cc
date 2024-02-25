@@ -8,7 +8,7 @@
 #include "net/cookies/canonical_cookie.h"
 
 namespace {
-absl::optional<const net::CanonicalCookie> GetCookie(
+std::optional<const net::CanonicalCookie> GetCookie(
     const net::CookieAccessResultList& cookie_list,
     const std::string& cookie_name) {
   auto it = base::ranges::find_if(
@@ -21,7 +21,7 @@ absl::optional<const net::CanonicalCookie> GetCookie(
   if (it != cookie_list.end()) {
     return it->cookie;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
@@ -57,7 +57,7 @@ void BoundSessionCookieObserver::StartGetCookieList() {
 void BoundSessionCookieObserver::OnGetCookieList(
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
-  absl::optional<const net::CanonicalCookie> cookie =
+  std::optional<const net::CanonicalCookie> cookie =
       GetCookie(cookie_list, cookie_name_);
   DCHECK(!GetCookie(excluded_cookies, cookie_name_).has_value())
       << "BSC cookie should not be excluded!";

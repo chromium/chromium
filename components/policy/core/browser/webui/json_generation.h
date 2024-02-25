@@ -6,11 +6,11 @@
 #define COMPONENTS_POLICY_CORE_BROWSER_WEBUI_JSON_GENERATION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -68,9 +68,9 @@ struct POLICY_EXPORT JsonGenerationParams {
   std::string application_name;
   std::string channel_name;
   std::string processor_variation;
-  absl::optional<std::string> cohort_name;
-  absl::optional<std::string> os_name;
-  absl::optional<std::string> platform_name;
+  std::optional<std::string> cohort_name;
+  std::optional<std::string> os_name;
+  std::optional<std::string> platform_name;
 };
 
 // Generates a string of JSON containing |policy_values| along

@@ -72,7 +72,7 @@ CaptionBubbleContextRemote::~CaptionBubbleContextRemote() {
 void CaptionBubbleContextRemote::GetBounds(GetBoundsCallback callback) const {
   // Forwards the rect to our callback only if it is non-nullopt.
   auto maybe_run_cb = [](GetBoundsCallback cb,
-                         const absl::optional<gfx::Rect>& bounds) {
+                         const std::optional<gfx::Rect>& bounds) {
     if (bounds.has_value()) {
       std::move(cb).Run(*bounds);
     }

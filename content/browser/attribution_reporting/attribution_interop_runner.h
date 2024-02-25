@@ -13,19 +13,13 @@
 namespace content {
 
 struct AttributionConfig;
-
-constexpr char kEventLevelResultsKey[] = "event_level_results";
-constexpr char kDebugEventLevelResultsKey[] = "debug_event_level_results";
-constexpr char kAggregatableResultsKey[] = "aggregatable_results";
-constexpr char kDebugAggregatableResultsKey[] = "debug_aggregatable_results";
-constexpr char kVerboseDebugReportsKey[] = "verbose_debug_reports";
-constexpr char kUnparsableRegistrationsKey[] = "unparsable_registrations";
+struct AttributionInteropOutput;
 
 // Simulates the Attribution Reporting API for a single user on sources and
 // triggers specified in `input`. Returns the generated reports.
-base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
-    base::Value::Dict input,
-    const AttributionConfig&);
+base::expected<AttributionInteropOutput, std::string>
+RunAttributionInteropSimulation(base::Value::Dict input,
+                                const AttributionConfig&);
 
 }  // namespace content
 

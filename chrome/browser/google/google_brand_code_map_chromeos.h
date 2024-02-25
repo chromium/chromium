@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_GOOGLE_GOOGLE_BRAND_CODE_MAP_CHROMEOS_H_
 #define CHROME_BROWSER_GOOGLE_GOOGLE_BRAND_CODE_MAP_CHROMEOS_H_
 
+#include <optional>
 #include <string>
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_brand {
 namespace chromeos {
@@ -18,7 +18,7 @@ namespace chromeos {
 // indicates the device is not enrolled).
 std::string GetRlzBrandCode(
     const std::string& static_brand_code,
-    absl::optional<policy::MarketSegment> market_segment);
+    std::optional<policy::MarketSegment> market_segment);
 
 }  // namespace chromeos
 }  // namespace google_brand

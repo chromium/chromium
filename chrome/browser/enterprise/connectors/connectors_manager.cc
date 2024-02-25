@@ -87,16 +87,7 @@ bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
     CacheAnalysisConnectorPolicy(connector);
   }
 
-  if (analysis_connector_settings_.count(connector) != 1) {
-    return false;
-  }
-
-  // If the connector is for local content analysis, make sure it is also
-  // enabled by flags.  For now, only one connector is supported at a time.
-  const auto& settings = analysis_connector_settings_.at(connector)[0];
-
-  return settings.is_cloud_analysis() ||
-         base::FeatureList::IsEnabled(kLocalContentAnalysisEnabled);
+  return analysis_connector_settings_.count(connector);
 }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -117,10 +108,10 @@ bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
   return pref && prefs()->HasPrefPath(pref);
 }
 
-absl::optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
+std::optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
     ReportingConnector connector) {
   if (!IsConnectorEnabled(connector))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (reporting_connector_settings_.count(connector) == 0)
     CacheReportingConnectorPolicy(connector);
@@ -128,18 +119,18 @@ absl::optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (reporting_connector_settings_.count(connector) == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
   return reporting_connector_settings_[connector][0].GetReportingSettings();
 }
 
-absl::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
+std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
   if (!IsConnectorEnabled(connector))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (analysis_connector_settings_.count(connector) == 0)
     CacheAnalysisConnectorPolicy(connector);
@@ -147,7 +138,7 @@ absl::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (analysis_connector_settings_.count(connector) == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
@@ -155,13 +146,13 @@ absl::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
+std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
     content::BrowserContext* context,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     AnalysisConnector connector) {
   if (!IsConnectorEnabled(connector))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (analysis_connector_settings_.count(connector) == 0)
     CacheAnalysisConnectorPolicy(connector);
@@ -169,7 +160,7 @@ absl::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (analysis_connector_settings_.count(connector) == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
@@ -210,7 +201,7 @@ void ConnectorsManager::OnTabStripModelChanged(
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-absl::optional<AnalysisSettings>
+std::optional<AnalysisSettings>
 ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
     const GURL& url,
     AnalysisConnector connector) {
@@ -220,7 +211,7 @@ ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (analysis_connector_settings_.count(connector) == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
@@ -291,7 +282,7 @@ bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
   return false;
 }
 
-absl::optional<std::u16string> ConnectorsManager::GetCustomMessage(
+std::optional<std::u16string> ConnectorsManager::GetCustomMessage(
     AnalysisConnector connector,
     const std::string& tag) {
   if (IsConnectorEnabled(connector)) {
@@ -304,10 +295,10 @@ absl::optional<std::u16string> ConnectorsManager::GetCustomMessage(
           tag);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
+std::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
     AnalysisConnector connector,
     const std::string& tag) {
   if (IsConnectorEnabled(connector)) {
@@ -320,7 +311,7 @@ absl::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
           tag);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ConnectorsManager::GetBypassJustificationRequired(

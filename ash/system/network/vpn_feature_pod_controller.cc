@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -14,7 +13,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/network/vpn_list.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -34,8 +32,9 @@ bool IsVPNVisibleInSystemTray() {
 
   // Show the VPN entry in the ash tray bubble if at least one third-party VPN
   // provider is installed.
-  if (model->vpn_list()->HaveExtensionOrArcVpnProviders())
+  if (model->vpn_list()->HaveExtensionOrArcVpnProviders()) {
     return true;
+  }
 
   // Note: At this point, only built-in VPNs are considered.
   return !model->IsBuiltinVpnProhibited() && model->has_vpn();
@@ -54,24 +53,7 @@ VPNFeaturePodController::~VPNFeaturePodController() {
       this);
 }
 
-FeaturePodButton* VPNFeaturePodController::CreateButton() {
-  DCHECK(!button_);
-  button_ = new FeaturePodButton(this);
-  button_->SetVectorIcon(kUnifiedMenuVpnIcon);
-  button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_SHORT));
-  button_->SetIconAndLabelTooltips(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_TOOLTIP));
-  button_->ShowDetailedViewArrow();
-  button_->DisableLabelButtonFocus();
-  // Init the button with invisible state. The `Update` method will update the
-  // visibility based on the current condition.
-  button_->SetVisible(false);
-  Update();
-  return button_;
-}
-
 std::unique_ptr<FeatureTile> VPNFeaturePodController::CreateTile(bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   DCHECK(!tile_);
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
@@ -104,20 +86,16 @@ void VPNFeaturePodController::ActiveNetworkStateChanged() {
 void VPNFeaturePodController::Update() {
   const bool is_vpn_visible = IsVPNVisibleInSystemTray();
 
-  // Log UMA metrics if the tile/button changes from invisible to visible.
-  if (features::IsQsRevampEnabled()) {
-    if (!tile_->GetVisible() && is_vpn_visible)
-      TrackVisibilityUMA();
-    tile_->SetVisible(is_vpn_visible);
-  } else {
-    if (!button_->GetVisible() && is_vpn_visible)
-      TrackVisibilityUMA();
-    button_->SetVisible(is_vpn_visible);
+  // Log UMA metrics if the tile changes from invisible to visible.
+  if (!tile_->GetVisible() && is_vpn_visible) {
+    TrackVisibilityUMA();
   }
+  tile_->SetVisible(is_vpn_visible);
 
   // No need to update label/toggle state if the button/tile isn't visible.
-  if (!is_vpn_visible)
+  if (!is_vpn_visible) {
     return;
+  }
 
   const NetworkStateProperties* vpn =
       Shell::Get()->system_tray_model()->network_state_model()->active_vpn();
@@ -126,13 +104,8 @@ void VPNFeaturePodController::Update() {
   const std::u16string sub_label = l10n_util::GetStringUTF16(
       is_active ? IDS_ASH_STATUS_TRAY_VPN_CONNECTED_SHORT
                 : IDS_ASH_STATUS_TRAY_VPN_DISCONNECTED_SHORT);
-  if (features::IsQsRevampEnabled()) {
-    tile_->SetSubLabel(sub_label);
-    tile_->SetToggled(is_active);
-  } else {
-    button_->SetSubLabel(sub_label);
-    button_->SetToggled(is_active);
-  }
+  tile_->SetSubLabel(sub_label);
+  tile_->SetToggled(is_active);
 }
 
 }  // namespace ash

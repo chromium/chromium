@@ -40,7 +40,7 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
 
   void Trace(Visitor* visitor) const override;
 
-  ScreenDetails* screen_details() { return screen_details_; }
+  ScreenDetails* screen_details() { return screen_details_.Get(); }
 
  private:
   // Returns the supplement, creating one as needed.

@@ -6,6 +6,7 @@ create {
       version: "1.14.4"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:d-bus_project:d-bus"
   }
 
   build {}

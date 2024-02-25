@@ -4,10 +4,10 @@
 
 import 'chrome://resources/js/action_link.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
 // Note: keep these values in sync with the values in
 // ui/accessibility/ax_mode.h
@@ -19,7 +19,7 @@ enum AxMode {
   HTML = 1 << 4,
   HTML_METADATA = 1 << 5,
   LABEL_IMAGES = 1 << 6,
-  PDF = 1 << 7,
+  PDF_PRINTING = 1 << 7,
   PDF_OCR = 1 << 8,
 }
 
@@ -46,7 +46,8 @@ type PageData = Data&{
   // chrome/browser/accessibility/accessibility_ui.cc.
   metadata: boolean,
   native: boolean,
-  pdf: boolean,
+  pdfPrinting: boolean,
+  screenreader: boolean,
   web: boolean,
 
   tree?: string,
@@ -70,7 +71,7 @@ interface InitData {
   html: EnabledStatus;
   internal: EnabledStatus;
   native: EnabledStatus;
-  pdf: EnabledStatus;
+  pdfPrinting: EnabledStatus;
   screenreader: EnabledStatus;
   text: EnabledStatus;
   web: EnabledStatus;
@@ -78,7 +79,7 @@ interface InitData {
 
 type RequestType = 'showOrRefreshTree';
 
-type GlobalStateName = 'native'|'web'|'metadata'|'pdf';
+type GlobalStateName = 'native'|'web'|'metadata'|'pdfPrinting'|'screenreader';
 
 class BrowserProxy {
   toggleAccessibility(
@@ -363,7 +364,11 @@ function formatRow(
     row.appendChild(createModeElement(AxMode.HTML, pageData, 'web'));
     row.appendChild(
         createModeElement(AxMode.HTML_METADATA, pageData, 'metadata'));
-    row.appendChild(createModeElement(AxMode.PDF, pageData, 'pdf'));
+    row.appendChild(
+        createModeElement(AxMode.PDF_PRINTING, pageData, 'pdfPrinting'));
+    row.appendChild(createModeElement(
+        AxMode.LABEL_IMAGES, pageData, 'screenreader',
+        /*readonly=*/ true));
   } else {
     const siteInfo = document.createElement('span');
     siteInfo.appendChild(formatValue(data, 'name'));
@@ -463,8 +468,8 @@ function getNameForAccessibilityMode(mode: AxMode): string {
       return 'HTML Metadata';
     case AxMode.LABEL_IMAGES:
       return 'Label images';
-    case AxMode.PDF:
-      return 'PDF';
+    case AxMode.PDF_PRINTING:
+      return 'PDF printing';
     case AxMode.PDF_OCR:
       return 'PDF OCR';
     default:
@@ -473,28 +478,36 @@ function getNameForAccessibilityMode(mode: AxMode): string {
 }
 
 function createModeElement(
-    mode: AxMode, data: PageData, globalStateName: GlobalStateName) {
+    mode: AxMode, data: PageData, globalStateName: GlobalStateName,
+    readOnly = false) {
   const currentMode = data.a11yMode;
-  const link = document.createElement('a', {is: 'action-link'});
-  link.setAttribute('is', 'action-link');
-  link.setAttribute('role', 'button');
+  const element = readOnly ? document.createElement('span') :
+                             document.createElement('a', {is: 'action-link'});
+  if (readOnly) {
+    element.classList.add('readOnlyMode');
+  } else {
+    element.setAttribute('is', 'action-link');
+    element.setAttribute('role', 'button');
+  }
 
   const stateText = ((currentMode & mode) !== 0) ? 'true' : 'false';
   const isEnabled =
       (data as unknown as {[k: string]: boolean})[globalStateName];
   const accessibilityModeName = getNameForAccessibilityMode(mode);
   if (isEnabled) {
-    link.textContent = accessibilityModeName + ': ' + stateText;
+    element.textContent = accessibilityModeName + ': ' + stateText;
   } else {
-    link.textContent = accessibilityModeName + ': disabled';
-    link.classList.add('disabled');
+    element.textContent = accessibilityModeName + ': disabled';
+    element.classList.add('disabled');
   }
-  link.setAttribute(
+  element.setAttribute(
       'aria-label', `${accessibilityModeName} for ${data.name}: ${stateText}`);
-  link.setAttribute('aria-pressed', stateText);
-  link.addEventListener(
-      'click', toggleAccessibility.bind(null, data, mode, globalStateName));
-  return link;
+  if (!readOnly) {
+    element.setAttribute('aria-pressed', stateText);
+    element.addEventListener(
+        'click', toggleAccessibility.bind(null, data, mode, globalStateName));
+  }
+  return element;
 }
 
 function createShowAccessibilityTreeElement(

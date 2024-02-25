@@ -39,7 +39,8 @@ video_capture::mojom::VideoCaptureService* g_service_override = nullptr;
 void BindInProcessInstance(
     mojo::PendingReceiver<video_capture::mojom::VideoCaptureService> receiver) {
   static base::NoDestructor<video_capture::VideoCaptureServiceImpl> service(
-      std::move(receiver), GetUIThreadTaskRunner({}));
+      std::move(receiver), GetUIThreadTaskRunner({}),
+      /*create_system_monitor=*/false);
 }
 
 mojo::Remote<video_capture::mojom::VideoCaptureService>& GetUIThreadRemote() {

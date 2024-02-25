@@ -6,13 +6,12 @@
 
 // static
 ScreenshotArea ScreenshotArea::CreateForAllRootWindows() {
-  return ScreenshotArea(ScreenshotType::kAllRootWindows, nullptr,
-                        absl::nullopt);
+  return ScreenshotArea(ScreenshotType::kAllRootWindows, nullptr, std::nullopt);
 }
 
 // static
 ScreenshotArea ScreenshotArea::CreateForWindow(const aura::Window* window) {
-  return ScreenshotArea(ScreenshotType::kWindow, window, absl::nullopt);
+  return ScreenshotArea(ScreenshotType::kWindow, window, std::nullopt);
 }
 
 // static
@@ -26,5 +25,5 @@ ScreenshotArea::ScreenshotArea(const ScreenshotArea& area) = default;
 
 ScreenshotArea::ScreenshotArea(ScreenshotType type,
                                const aura::Window* window,
-                               absl::optional<const gfx::Rect> rect)
+                               std::optional<const gfx::Rect> rect)
     : type(type), window(window), rect(rect) {}

@@ -4,9 +4,9 @@
 
 #include "chrome/services/sharing/nearby/nearby_presence.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/services/sharing/nearby/nearby_presence_conversions.h"
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
+#include "components/cross_device/logging/logging.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
@@ -107,8 +107,9 @@ void NearbyPresence::StartScan(mojom::ScanRequestPtr scan_request,
     session_id = *session_id_or_status;
   } else {
     // TODO(b/277819923): Change logging to presence specific logs.
-    NS_LOG(ERROR) << __func__ << ": Error starting scan, status was: "
-                  << session_id_or_status.status();
+    CD_LOG(ERROR, Feature::NP)
+        << __func__ << ": Error starting scan, status was: "
+        << session_id_or_status.status();
     std::move(callback).Run(
         std::move(mojo::NullRemote()),
         CovertStatusToMojomStatus(session_id_or_status.status()));
@@ -199,7 +200,7 @@ void NearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
 }
 
 void NearbyPresence::OnScanSessionDisconnect(uint64_t scan_session_id) {
-  NS_LOG(VERBOSE) << __func__;
+  CD_LOG(VERBOSE, Feature::NP) << __func__;
   presence_client_->StopScan(scan_session_id);
   session_id_to_scan_session_map_.erase(scan_session_id);
   session_id_to_results_callback_map_.erase(scan_session_id);

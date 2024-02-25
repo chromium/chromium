@@ -94,7 +94,7 @@ TEST_F(FrameCaretTest, ShouldNotBlinkWhenSelectionLooseFocus) {
   outer->Focus();
   UpdateAllLifecyclePhasesForTest();
   const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
-  EXPECT_EQ(selection.Base(), Position::FirstPositionInNode(*input));
+  EXPECT_EQ(selection.Anchor(), Position::FirstPositionInNode(*input));
   EXPECT_FALSE(ShouldShowCaret(caret));
 }
 

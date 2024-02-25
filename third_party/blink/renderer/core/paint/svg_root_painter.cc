@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
+#include <optional>
+
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
@@ -78,7 +79,7 @@ void SVGRootPainter::PaintReplaced(const PaintInfo& paint_info,
   PaintInfo child_info(paint_info);
   for (LayoutObject* child = layout_svg_root_.FirstChild(); child;
        child = child->NextSibling()) {
-    if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(child)) {
+    if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
       SVGForeignObjectPainter(*foreign_object).PaintLayer(paint_info);
     } else {
       child->Paint(child_info);

@@ -86,20 +86,20 @@ bool HostDeviceTimestampManagerImpl::WasHostSetFromThisChromebook() {
   return pref_service_->GetBoolean(kWasHostSetFromThisChromebookPrefName);
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 HostDeviceTimestampManagerImpl::GetLatestSetupFlowCompletionTimestamp() {
   if (pref_service_->GetInt64(kSetupFlowCompletedPrefName) == kTimestampNotSet)
-    return absl::nullopt;
-  return base::Time::FromJavaTime(
+    return std::nullopt;
+  return base::Time::FromMillisecondsSinceUnixEpoch(
       pref_service_->GetInt64(kSetupFlowCompletedPrefName));
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 HostDeviceTimestampManagerImpl::GetLatestVerificationTimestamp() {
   if (pref_service_->GetInt64(kHostVerifiedUpdateReceivedPrefName) ==
       kTimestampNotSet)
-    return absl::nullopt;
-  return base::Time::FromJavaTime(
+    return std::nullopt;
+  return base::Time::FromMillisecondsSinceUnixEpoch(
       pref_service_->GetInt64(kHostVerifiedUpdateReceivedPrefName));
 }
 
@@ -114,7 +114,7 @@ void HostDeviceTimestampManagerImpl::OnHostStatusChange(
   if (host_status_with_device.host_status() ==
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation) {
     pref_service_->SetInt64(kSetupFlowCompletedPrefName,
-                            clock_->Now().ToJavaTime());
+                            clock_->Now().InMillisecondsSinceUnixEpoch());
     pref_service_->SetBoolean(kWasHostSetFromThisChromebookPrefName, true);
     PA_LOG(VERBOSE) << "HostDeviceTimestampManagerImpl::OnHostStatusChange(): "
                     << "Setup flow successfully completed. Recording timestamp "
@@ -126,7 +126,7 @@ void HostDeviceTimestampManagerImpl::OnHostStatusChange(
   if (host_status_with_device.host_status() ==
       mojom::HostStatus::kHostVerified) {
     pref_service_->SetInt64(kHostVerifiedUpdateReceivedPrefName,
-                            clock_->Now().ToJavaTime());
+                            clock_->Now().InMillisecondsSinceUnixEpoch());
     PA_LOG(VERBOSE) << "HostDeviceTimestampManagerImpl::OnHostStatusChange(): "
                     << "New host verified. Recording timestamp "
                     << pref_service_->GetInt64(

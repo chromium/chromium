@@ -7,7 +7,15 @@
 namespace ash {
 
 const char kChromeUIMakoHost[] = "mako";
-const char kChromeUIOrcaURL[] = "chrome-untrusted://mako/orca.html";
 const char kChromeUIMakoURL[] = "chrome-untrusted://mako/";
+const char kChromeUIMakoOrcaURL[] = "chrome-untrusted://mako/orca.html";
+const char kChromeUIMakoPrivacyURL[] = "chrome-untrusted://mako/privacy.html";
+
+const char kOrcaModeParamKey[] = "mode";
+const char kOrcaWriteMode[] = "write";
+const char kOrcaRewriteMode[] = "rewrite";
+
+const char kOrcaPresetParamKey[] = "preset";
+const char kOrcaFreeformParamKey[] = "freeform";
 
 }  // namespace ash

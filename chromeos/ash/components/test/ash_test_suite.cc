@@ -10,6 +10,7 @@
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/provide_ax_platform_for_tests.h"
 #include "ui/aura/env.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -27,6 +28,9 @@ AshTestSuite::~AshTestSuite() = default;
 
 void AshTestSuite::Initialize() {
   base::TestSuite::Initialize();
+
+  testing::UnitTest::GetInstance()->listeners().Append(
+      new ui::ProvideAXPlatformForTests());
 
   // Force software-gl. This is necessary for tests that trigger launching ash
   // in its own process

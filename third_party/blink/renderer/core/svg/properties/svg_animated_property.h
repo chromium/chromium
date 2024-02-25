@@ -64,7 +64,7 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
     return static_cast<AnimatedPropertyType>(type_);
   }
 
-  SVGElement* ContextElement() const { return context_element_; }
+  SVGElement* ContextElement() const { return context_element_.Get(); }
 
   const QualifiedName& AttributeName() const { return attribute_name_; }
 
@@ -241,7 +241,7 @@ class SVGAnimatedProperty<Property, TearOffType, void>
       base_val_tear_off_ = MakeGarbageCollected<TearOffType>(
           this->BaseValue(), this, kPropertyIsNotAnimVal);
     }
-    return base_val_tear_off_;
+    return base_val_tear_off_.Get();
   }
 
   TearOffType* animVal() {
@@ -249,7 +249,7 @@ class SVGAnimatedProperty<Property, TearOffType, void>
       anim_val_tear_off_ = MakeGarbageCollected<TearOffType>(
           this->CurrentValue(), this, kPropertyIsAnimVal);
     }
-    return anim_val_tear_off_;
+    return anim_val_tear_off_.Get();
   }
 
   void Trace(Visitor* visitor) const override {

@@ -5,6 +5,7 @@
 #include "net/dns/address_info.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -82,12 +83,12 @@ AddressInfo::AddressInfoAndResult AddressInfo::Get(
       err = ERR_NAME_RESOLUTION_FAILED;
 #endif
 
-    return AddressInfoAndResult(absl::optional<AddressInfo>(), err, os_error);
+    return AddressInfoAndResult(std::optional<AddressInfo>(), err, os_error);
   }
 
-  return AddressInfoAndResult(absl::optional<AddressInfo>(AddressInfo(
-                                  std::move(ai), std::move(getter))),
-                              OK, 0);
+  return AddressInfoAndResult(
+      std::optional<AddressInfo>(AddressInfo(std::move(ai), std::move(getter))),
+      OK, 0);
 }
 
 AddressInfo::AddressInfo(AddressInfo&& other) = default;
@@ -106,10 +107,10 @@ AddressInfo::const_iterator AddressInfo::end() const {
   return const_iterator(nullptr);
 }
 
-absl::optional<std::string> AddressInfo::GetCanonicalName() const {
+std::optional<std::string> AddressInfo::GetCanonicalName() const {
   return (ai_->ai_canonname != nullptr)
-             ? absl::optional<std::string>(std::string(ai_->ai_canonname))
-             : absl::optional<std::string>();
+             ? std::optional<std::string>(std::string(ai_->ai_canonname))
+             : std::optional<std::string>();
 }
 
 bool AddressInfo::IsAllLocalhostOfOneFamily() const {
@@ -138,7 +139,6 @@ bool AddressInfo::IsAllLocalhostOfOneFamily() const {
         break;
       }
       default:
-        NOTREACHED();
         return false;
     }
   }

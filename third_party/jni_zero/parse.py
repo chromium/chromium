@@ -23,7 +23,10 @@ _MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
 
 
 class ParseError(Exception):
-  pass
+  suffix = ''
+
+  def __str__(self):
+    return super().__str__() + self.suffix
 
 
 @dataclasses.dataclass(order=True)
@@ -93,8 +96,10 @@ def _remove_comments(contents):
   return _COMMENT_REMOVER_REGEX.sub(replacer, contents)
 
 
+# Remove everything between and including <> except at the end of a string, e.g.
+# @JniType("std::vector<int>")
 # This will also break lines with comparison operators, but we don't care.
-_GENERICS_REGEX = re.compile(r'<[^<>\n]*>')
+_GENERICS_REGEX = re.compile(r'<[^<>\n]*>(?!>*")')
 
 
 def _remove_generics(value):
@@ -112,7 +117,7 @@ _PACKAGE_REGEX = re.compile('^package\s+(\S+?);', flags=re.MULTILINE)
 def _parse_package(contents):
   match = _PACKAGE_REGEX.search(contents)
   if not match:
-    raise ParserError('Unable to find "package" line')
+    raise ParseError('Unable to find "package" line')
   return match.group(1)
 
 
@@ -139,20 +144,26 @@ def _parse_java_classes(contents):
       nested_classes.append(outer_class.make_nested(class_name))
 
   if outer_class is None:
-    raise ParserError('No classes found.')
+    raise ParseError('No classes found.')
 
   return outer_class, nested_classes
 
 
-# Supports only @Foo and @Foo("value").
-_ANNOTATION_REGEX = re.compile(r'@([\w.]+)(?:\(\s*"(.*?)\"\s*\))?\s*')
-
+_ANNOTATION_REGEX = re.compile(
+    r'@(?P<annotation_name>[\w.]+)(?P<annotation_args>\(\s*(?:[^)]+)\s*\))?\s*')
+# Only supports ("foo")
+_ANNOTATION_ARGS_REGEX = re.compile(
+    r'\(\s*"(?P<annotation_value>[^"]*?)"\s*\)\s*')
 
 def _parse_annotations(value):
   annotations = {}
   last_idx = 0
   for m in _ANNOTATION_REGEX.finditer(value):
-    annotations[m.group(1)] = m.group(2)
+    string_value = ''
+    if match_args := m.group('annotation_args'):
+      if match_arg_value := _ANNOTATION_ARGS_REGEX.match(match_args):
+        string_value = match_arg_value.group('annotation_value')
+    annotations[m.group('annotation_name')] = string_value
     last_idx = m.end()
 
   return annotations, value[last_idx:]
@@ -217,7 +228,7 @@ def _parse_proxy_natives(type_resolver, contents):
   if not matches:
     return None
   if len(matches) > 1:
-    raise ParserError(
+    raise ParseError(
         'Multiple @NativeMethod interfaces in one class is not supported.')
 
   match = matches[0]
@@ -230,9 +241,9 @@ def _parse_proxy_natives(type_resolver, contents):
   for m in _PROXY_NATIVE_REGEX.finditer(interface_body):
     preamble, name, params_part = m.groups()
     preamble = _PUBLIC_REGEX.sub('', preamble)
-    annotations, return_type_part = _parse_annotations(preamble)
+    annotations, _ = _parse_annotations(preamble)
     params = _parse_param_list(type_resolver, params_part)
-    return_type = _parse_type(type_resolver, return_type_part)
+    return_type = _parse_type(type_resolver, preamble)
     signature = java_types.JavaSignature.from_params(return_type, params)
     ret.methods.append(
         ParsedNative(
@@ -240,7 +251,7 @@ def _parse_proxy_natives(type_resolver, contents):
             signature=signature,
             native_class_name=annotations.get('NativeClassQualifiedName')))
   if not ret.methods:
-    raise ParserError('Found no methods within @NativeMethod interface.')
+    raise ParseError('Found no methods within @NativeMethod interface.')
   ret.methods.sort()
   return ret
 
@@ -274,21 +285,28 @@ def _parse_non_proxy_natives(type_resolver, contents):
 # Regex to match a string like "@CalledByNative public void foo(int bar)".
 _CALLED_BY_NATIVE_REGEX = re.compile(
     r'@CalledByNative((?P<Unchecked>(?:Unchecked)?|ForTesting))'
-    r'(?:\("(?P<annotation>.*)"\))?'
-    r'(?:\s+@\w+(?:\(.*\))?)*'  # Ignore any other annotations.
+    r'(?:\("(?P<annotation_value>.*)"\))?'
+    r'(?P<method_annotations>(?:\s*@\w+(?:\(.*?\))?)+)?'
     r'\s+(?P<modifiers>' + _MODIFIER_KEYWORDS + r')' +
-    r'(?:\s*@\w+)?'  # Ignore annotations in return types.
+    r'(?P<return_type_annotations>(?:\s*@\w+(?:\(.*?\))?)+)?'
     r'\s*(?P<return_type>\S*?)'
     r'\s*(?P<name>\w+)'
-    r'\s*\((?P<params>[^\)]*)\)')
+    r'\s*\(\s*(?P<params>[^{;]*)\)'
+    r'\s*(?:throws\s+[^{;]+)?'
+    r'[{;]')
 
 
 def _parse_called_by_natives(type_resolver, contents):
   ret = []
   for match in _CALLED_BY_NATIVE_REGEX.finditer(contents):
-    return_type_str = match.group('return_type')
+    return_type_grp = match.group('return_type')
     name = match.group('name')
-    if return_type_str:
+    if return_type_grp:
+      pre_annotations = match.group('method_annotations') or ''
+      post_annotations = match.group('return_type_annotations') or ''
+      # Combine all the annotations before parsing the return type.
+      return_type_str = str.strip(f'{pre_annotations} {post_annotations}'
+                                  f' {return_type_grp}')
       return_type = _parse_type(type_resolver, return_type_str)
     else:
       return_type = java_types.VOID
@@ -296,7 +314,7 @@ def _parse_called_by_natives(type_resolver, contents):
 
     params = _parse_param_list(type_resolver, match.group('params'))
     signature = java_types.JavaSignature.from_params(return_type, params)
-    inner_class_name = match.group('annotation')
+    inner_class_name = match.group('annotation_value')
     java_class = type_resolver.java_class
     if inner_class_name:
       java_class = java_class.make_nested(inner_class_name)
@@ -313,8 +331,8 @@ def _parse_called_by_natives(type_resolver, contents):
   for i, line in enumerate(unmatched_lines):
     if '@CalledByNative' in line:
       context = '\n'.join(unmatched_lines[i:i + 5])
-      raise ParserError('Could not parse @CalledByNative method signature:\n' +
-                        context)
+      raise ParseError('Could not parse @CalledByNative method signature:\n' +
+                       context)
 
   ret.sort()
   return ret
@@ -343,7 +361,7 @@ def _parse_jni_namespace(contents):
   if not m:
     return ''
   if len(m) > 1:
-    raise ParserError('Found multiple @JNINamespace attributes.')
+    raise ParseError('Found multiple @JNINamespace annotations.')
   return m[0]
 
 
@@ -359,7 +377,7 @@ def _do_parse(filename, *, package_prefix):
 
   expected_name = os.path.splitext(os.path.basename(filename))[0]
   if outer_class.name != expected_name:
-    raise ParserError(
+    raise ParseError(
         f'Found class "{outer_class.name}" but expected "{expected_name}".')
 
   if package_prefix:
@@ -399,8 +417,8 @@ def _do_parse(filename, *, package_prefix):
 def parse_java_file(filename, *, package_prefix=None):
   try:
     return _do_parse(filename, package_prefix=package_prefix)
-  except ParserError as e:
-    e.msg = (e.msg or '') + f' (when parsing {filename})'
+  except ParseError as e:
+    e.suffix = f' (when parsing {filename})'
     raise
 
 
@@ -416,7 +434,7 @@ def parse_javap(filename, contents):
   contents = _remove_generics(contents)
   match = _JAVAP_CLASS_REGEX.search(contents)
   if not match:
-    raise ParserError('Could not find java class in javap output')
+    raise ParseError('Could not find java class in javap output')
   java_class = java_types.JavaClass(match.group(1).replace('.', '/'))
   type_resolver = java_types.TypeResolver(java_class)
 

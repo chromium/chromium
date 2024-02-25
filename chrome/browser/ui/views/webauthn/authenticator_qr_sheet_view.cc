@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
-#include "components/vector_icons/vector_icons.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/qr_code_generator/bitmap_generator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -31,12 +34,14 @@ namespace {
 
 constexpr int kQrCodeMargin = 40;
 constexpr int kQrCodeImageSize = 240;
+constexpr int kSecurityKeyIconSize = 30;
 
 }  // namespace
 
 class AuthenticatorQRViewCentered : public views::View {
+  METADATA_HEADER(AuthenticatorQRViewCentered, views::View)
+
  public:
-  METADATA_HEADER(AuthenticatorQRViewCentered);
   explicit AuthenticatorQRViewCentered(const std::string& qr_string) {
     views::BoxLayout* layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -52,23 +57,21 @@ class AuthenticatorQRViewCentered : public views::View {
     qr_code_image_->SetImageSize(qrCodeImageSize());
     qr_code_image_->SetPreferredSize(qrCodeImageSize() +
                                      gfx::Size(kQrCodeMargin, kQrCodeMargin));
+    qr_code_image_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_QR_CODE_ALT_TEXT));
 
-    qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
-        qrcode_generator::mojom::GenerateQRCodeRequest::New();
-    request->data = qr_string;
-    request->center_image = qrcode_generator::mojom::CenterImage::PASSKEY_ICON;
+    auto qr_code = qr_code_generator::GenerateBitmap(
+        base::as_byte_span(qr_string), qr_code_generator::ModuleStyle::kCircles,
+        qr_code_generator::LocatorStyle::kRounded,
+        qr_code_generator::CenterImage::kPasskey);
 
-    request->render_module_style =
-        qrcode_generator::mojom::ModuleStyle::CIRCLES;
-    request->render_locator_style =
-        qrcode_generator::mojom::LocatorStyle::ROUNDED;
+    // Success is guaranteed, because `qr_string`'s size is bounded and smaller
+    // that QR code limits.
+    CHECK(qr_code.has_value(), base::NotFatalUntil::M124);
 
-    // Deleting the view will close the channel so base::Unretained is safe
-    // here.
-    auto callback =
-        base::BindOnce(&AuthenticatorQRViewCentered::OnQrCodeGenerated,
-                       base::Unretained(this));
-    qr_code_service().GenerateQRCode(std::move(request), std::move(callback));
+    qr_code_image_->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkia::CreateFrom1xBitmap(qr_code.value())));
+    qr_code_image_->SetVisible(true);
   }
 
   ~AuthenticatorQRViewCentered() override = default;
@@ -89,36 +92,15 @@ class AuthenticatorQRViewCentered : public views::View {
   }
 
  private:
-  qrcode_generator::QRImageGenerator& qr_code_service() {
-    if (!qr_code_service_) {
-      qr_code_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
-    }
-    return *qr_code_service_;
-  }
-
   gfx::Size qrCodeImageSize() const {
     return gfx::Size(kQrCodeImageSize, kQrCodeImageSize);
   }
 
-  void OnQrCodeGenerated(
-      const qrcode_generator::mojom::GenerateQRCodeResponsePtr response) {
-    DCHECK(response->error_code ==
-           qrcode_generator::mojom::QRCodeGeneratorError::NONE);
-    qr_code_image_->SetImage(
-        gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap));
-    qr_code_image_->SetVisible(true);
-  }
-
   std::string qr_string_;
   raw_ptr<views::ImageView> qr_code_image_;
-
-  // TODO(https://crbug.com/1431991): Remove this field once there is no
-  // internal state (e.g. no `mojo::Remote`) that needs to be maintained by the
-  // `QRImageGenerator` class.
-  std::unique_ptr<qrcode_generator::QRImageGenerator> qr_code_service_;
 };
 
-BEGIN_METADATA(AuthenticatorQRViewCentered, views::View)
+BEGIN_METADATA(AuthenticatorQRViewCentered)
 END_METADATA
 
 AuthenticatorQRSheetView::AuthenticatorQRSheetView(
@@ -160,7 +142,7 @@ AuthenticatorQRSheetView::BuildStepSpecificContent() {
     label_container->AddRows(1, views::TableLayout::kFixedSize);
     label_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kUsbIcon, ui::kColorIcon, 20)));
+            kUsbSecurityKeyIcon, ui::kColorIcon, kSecurityKeyIconSize)));
     auto* label = label_container->AddChildView(
         std::make_unique<views::Label>(sheet_model->GetSecurityKeyLabel(),
                                        views::style::CONTEXT_DIALOG_BODY_TEXT));
@@ -168,5 +150,5 @@ AuthenticatorQRSheetView::BuildStepSpecificContent() {
     label->SetAllowCharacterBreak(true);
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   }
-  return std::make_pair(std::move(container), AutoFocus::kYes);
+  return std::make_pair(std::move(container), AutoFocus::kNo);
 }

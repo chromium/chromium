@@ -95,7 +95,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSignInEvent2) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::RecordSignInEvent(
-        UserContext(user_manager::USER_TYPE_REGULAR, GetAccountId()),
+        UserContext(user_manager::UserType::kRegular, GetAccountId()),
         false /* is_auto_login */);
     histogram_tester.ExpectUniqueSample(
         "Enterprise.UserSession.Logins",
@@ -107,7 +107,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSignInEvent2) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::RecordSignInEvent(
-        UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT, GetAccountId()),
+        UserContext(user_manager::UserType::kPublicAccount, GetAccountId()),
         false /* is_auto_login */);
     histogram_tester.ExpectUniqueSample(
         "Enterprise.UserSession.Logins",
@@ -119,7 +119,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSignInEvent2) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::RecordSignInEvent(
-        UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT, GetAccountId()),
+        UserContext(user_manager::UserType::kPublicAccount, GetAccountId()),
         true /* is_auto_login */);
     histogram_tester.ExpectUniqueSample(
         "Enterprise.UserSession.Logins",
@@ -135,7 +135,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT, base::Minutes(25));
+        user_manager::UserType::kPublicAccount, base::Minutes(25));
     enterprise_user_session_metrics::RecordStoredSessionLength();
 
     // Time is rounded down to the nearest 10.
@@ -152,7 +152,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     // Test with a regular user session.
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_REGULAR, base::Minutes(149));
+        user_manager::UserType::kRegular, base::Minutes(149));
     enterprise_user_session_metrics::RecordStoredSessionLength();
     histogram_tester.ExpectUniqueSample(
         "Enterprise.RegularUserSession.SessionLength", 140, 1);
@@ -166,7 +166,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_REGULAR, base::Days(10));
+        user_manager::UserType::kRegular, base::Days(10));
     enterprise_user_session_metrics::RecordStoredSessionLength();
 
     // Reported length is capped at 24 hours.
@@ -201,8 +201,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT,
-        base::Seconds(25 * 60 + 59));
+        user_manager::UserType::kPublicAccount, base::Seconds(25 * 60 + 59));
     enterprise_user_session_metrics::RecordStoredSessionLength();
 
     // Time is rounded down to the nearest 10 minutes.
@@ -217,7 +216,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT, base::Days(10));
+        user_manager::UserType::kPublicAccount, base::Days(10));
     enterprise_user_session_metrics::RecordStoredSessionLength();
 
     // Reported length is capped at 24 hours.

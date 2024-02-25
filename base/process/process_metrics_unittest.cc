@@ -10,22 +10,30 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
+#include "base/process/process_handle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/gtest_util.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,18 +43,28 @@
 #include <sys/mman.h>
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#include "base/process/internal_linux.h"
-#endif
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#include <mach/mach.h>
 
-namespace base {
-namespace debug {
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
+#include "base/mac/mach_port_rendezvous.h"
+#include "base/process/port_provider_mac.h"
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||      \
     BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
+#define ENABLE_CPU_TESTS 1
+#else
+#define ENABLE_CPU_TESTS 0
+#endif
+
+namespace base::debug {
 
 namespace {
+
+#if ENABLE_CPU_TESTS
 
 void BusyWork(std::vector<std::string>* vec) {
   int64_t test_value = 0;
@@ -56,11 +74,223 @@ void BusyWork(std::vector<std::string>* vec) {
   }
 }
 
-}  // namespace
+TimeDelta TestCumulativeCPU(ProcessMetrics* metrics, TimeDelta prev_cpu_usage) {
+  const TimeDelta current_cpu_usage = metrics->GetCumulativeCPUUsage();
+  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
+  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  return current_cpu_usage;
+}
 
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+TimeDelta TestPreciseCumulativeCPU(ProcessMetrics* metrics,
+                                   TimeDelta prev_cpu_usage) {
+#if BUILDFLAG(IS_WIN)
+  const TimeDelta current_cpu_usage = metrics->GetPreciseCumulativeCPUUsage();
+  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
+  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
+  return current_cpu_usage;
+#else
+  // Do nothing. Not supported on this platform.
+  return base::TimeDelta();
+#endif
+}
+
+#endif  // ENABLE_CPU_TESTS
+
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
+
+// Helper to deal with Mac process launching complexity. On other platforms this
+// is just a thin wrapper around SpawnMultiProcessTestChild.
+class TestChildLauncher {
+ public:
+  TestChildLauncher() = default;
+  ~TestChildLauncher() = default;
+
+  TestChildLauncher(const TestChildLauncher&) = delete;
+  TestChildLauncher& operator=(const TestChildLauncher&) = delete;
+
+  // Returns a reference to the command line for the child process. This can be
+  // used to add extra parameters before calling SpawnChildProcess().
+  CommandLine& command_line() { return command_line_; }
+
+  // Returns a reference to the child process object, which will be invalid
+  // until SpawnChildProcess() is called.
+  Process& child_process() { return child_process_; }
+
+  // Spawns a multiprocess test child to execute the function `procname`.
+  AssertionResult SpawnChildProcess(const std::string& procname);
+
+  // Returns a ProcessMetrics object for the child process created by
+  // SpawnChildProcess().
+  std::unique_ptr<ProcessMetrics> CreateChildProcessMetrics();
+
+  // Terminates the child process created by SpawnChildProcess(). Returns true
+  // if the process successfully terminates within the allowed time.
+  bool TerminateChildProcess();
+
+  // Called from the child process to send data back to the parent if needed.
+  static void NotifyParent();
+
+ private:
+  CommandLine command_line_ = GetMultiProcessTestChildBaseCommandLine();
+  Process child_process_;
+
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+  class TestChildPortProvider;
+  std::unique_ptr<TestChildPortProvider> port_provider_;
+#endif
+};
+
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+
+// Adapted from base/mac/mach_port_rendezvous_unittest.cc and
+// https://mw.foldr.org/posts/computers/macosx/task-info-fun-with-mach/
+
+constexpr MachPortsForRendezvous::key_type kTestChildRendezvousKey = 'test';
+
+// A PortProvider that tracks child processes spawned by TestChildLauncher.
+class TestChildLauncher::TestChildPortProvider final : public PortProvider {
+ public:
+  TestChildPortProvider(ProcessHandle handle, apple::ScopedMachSendRight port)
+      : handle_(handle), port_(std::move(port)) {}
+
+  ~TestChildPortProvider() final = default;
+
+  TestChildPortProvider(const TestChildPortProvider&) = delete;
+  TestChildPortProvider& operator=(const TestChildPortProvider&) = delete;
+
+  mach_port_t TaskForHandle(ProcessHandle process_handle) const final {
+    return process_handle == handle_ ? port_.get() : MACH_PORT_NULL;
+  }
+
+ private:
+  ProcessHandle handle_;
+  apple::ScopedMachSendRight port_;
+};
+
+AssertionResult TestChildLauncher::SpawnChildProcess(
+    const std::string& procname) {
+  // Allocate a port for the parent to receive details from the child process.
+  apple::ScopedMachReceiveRight receive_port;
+  if (!apple::CreateMachPort(&receive_port, nullptr)) {
+    return AssertionFailure() << "Failed to allocate receive port";
+  }
+
+  // Pass the sending end of the port to the child.
+  LaunchOptions options = LaunchOptionsForTest();
+  options.mach_ports_for_rendezvous.emplace(
+      kTestChildRendezvousKey,
+      MachRendezvousPort(receive_port.get(), MACH_MSG_TYPE_MAKE_SEND));
+  child_process_ =
+      SpawnMultiProcessTestChild(procname, command_line_, std::move(options));
+  if (!child_process_.IsValid()) {
+    return AssertionFailure() << "Failed to launch child process.";
+  }
+
+  // Wait for the child to send back its mach_task_self().
+  struct : mach_msg_base_t {
+    mach_msg_port_descriptor_t task_port;
+    mach_msg_trailer_t trailer;
+  } msg{};
+  kern_return_t kr =
+      mach_msg(&msg.header, MACH_RCV_MSG | MACH_RCV_TIMEOUT, 0, sizeof(msg),
+               receive_port.get(),
+               TestTimeouts::action_timeout().InMilliseconds(), MACH_PORT_NULL);
+  if (kr != KERN_SUCCESS) {
+    return AssertionFailure()
+           << "Failed to read mach_task_self from child process: "
+           << mach_error_string(kr);
+  }
+  port_provider_ = std::make_unique<TestChildPortProvider>(
+      child_process_.Handle(), apple::ScopedMachSendRight(msg.task_port.name));
+  return AssertionSuccess();
+}
+
+std::unique_ptr<ProcessMetrics> TestChildLauncher::CreateChildProcessMetrics() {
+#if BUILDFLAG(IS_MAC)
+  return ProcessMetrics::CreateProcessMetrics(child_process_.Handle(),
+                                              port_provider_.get());
+#else
+  return ProcessMetrics::CreateProcessMetrics(child_process_.Handle());
+#endif
+}
+
+bool TestChildLauncher::TerminateChildProcess() {
+  return TerminateMultiProcessTestChild(child_process_, /*exit_code=*/0,
+                                        /*wait=*/true);
+}
+
+// static
+void TestChildLauncher::NotifyParent() {
+  auto* client = MachPortRendezvousClient::GetInstance();
+  ASSERT_TRUE(client);
+  apple::ScopedMachSendRight send_port =
+      client->TakeSendRight(kTestChildRendezvousKey);
+  ASSERT_TRUE(send_port.is_valid());
+
+  // Send mach_task_self to the parent process so that it can use the port to
+  // create ProcessMetrics.
+  struct : mach_msg_base_t {
+    mach_msg_port_descriptor_t task_port;
+  } msg{};
+  msg.header.msgh_bits =
+      MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND) | MACH_MSGH_BITS_COMPLEX;
+  msg.header.msgh_remote_port = send_port.get();
+  msg.header.msgh_size = sizeof(msg);
+  msg.body.msgh_descriptor_count = 1;
+  msg.task_port.name = mach_task_self();
+  msg.task_port.disposition = MACH_MSG_TYPE_COPY_SEND;
+  msg.task_port.type = MACH_MSG_PORT_DESCRIPTOR;
+  kern_return_t kr =
+      mach_msg(&msg.header, MACH_SEND_MSG, msg.header.msgh_size, 0,
+               MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+  MACH_CHECK(kr == KERN_SUCCESS, kr);
+}
+
+#else
+
+AssertionResult TestChildLauncher::SpawnChildProcess(
+    const std::string& procname) {
+  child_process_ = SpawnMultiProcessTestChild(procname, command_line_,
+                                              LaunchOptionsForTest());
+  return child_process_.IsValid()
+             ? AssertionSuccess()
+             : AssertionFailure() << "Failed to launch child process.";
+}
+
+std::unique_ptr<ProcessMetrics> TestChildLauncher::CreateChildProcessMetrics() {
+  return ProcessMetrics::CreateProcessMetrics(child_process_.Handle());
+}
+
+bool TestChildLauncher::TerminateChildProcess() {
+  [[maybe_unused]] const ProcessHandle child_handle = child_process_.Handle();
+  if (!TerminateMultiProcessTestChild(child_process_, /*exit_code=*/0,
+                                      /*wait=*/true)) {
+    return false;
+  }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  // After the process exits, ProcessMetrics races to read /proc/<pid>/stat
+  // before it's deleted. Wait until it's definitely gone.
+  const auto stat_path = FilePath(FILE_PATH_LITERAL("/proc"))
+                             .AppendASCII(NumberToString(child_handle))
+                             .Append(FILE_PATH_LITERAL("stat"));
+
+  while (PathExists(stat_path)) {
+    PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  }
+#endif
+  return true;
+}
+
+// static
+void TestChildLauncher::NotifyParent() {
+  // Do nothing.
+}
+
+#endif  // BUILDFLAG(IS_MAC)
+
+}  // namespace
 
 // Tests for SystemMetrics.
 // Exists as a class so it can be a friend of SystemMetrics.
@@ -225,6 +455,60 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.dirty, 4);
   EXPECT_EQ(69936u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
+
+  // output from a system with a large page cache, to catch arithmetic errors
+  // that incorrectly assume free + buffers + cached <= total. (Copied from
+  // ash/components/arc/test/data/mem_profile/16G.)
+  const char large_cache_input[] =
+      "MemTotal:       18025572 kB\n"
+      "MemFree:        13150176 kB\n"
+      "MemAvailable:   15447672 kB\n"
+      "Buffers:         1524852 kB\n"
+      "Cached:         12645260 kB\n"
+      "SwapCached:            0 kB\n"
+      "Active:          2572904 kB\n"
+      "Inactive:        1064976 kB\n"
+      "Active(anon):    1047836 kB\n"
+      "Inactive(anon):    11736 kB\n"
+      "Active(file):    1525068 kB\n"
+      "Inactive(file):  1053240 kB\n"
+      "Unevictable:      611904 kB\n"
+      "Mlocked:           32884 kB\n"
+      "SwapTotal:      11756208 kB\n"
+      "SwapFree:       11756208 kB\n"
+      "Dirty:              4152 kB\n"
+      "Writeback:             0 kB\n"
+      "AnonPages:       1079660 kB\n"
+      "Mapped:           782152 kB\n"
+      "Shmem:            591820 kB\n"
+      "Slab:             366104 kB\n"
+      "SReclaimable:     254356 kB\n"
+      "SUnreclaim:       111748 kB\n"
+      "KernelStack:       22652 kB\n"
+      "PageTables:        41540 kB\n"
+      "NFS_Unstable:          0 kB\n"
+      "Bounce:                0 kB\n"
+      "WritebackTmp:          0 kB\n"
+      "CommitLimit:    15768992 kB\n"
+      "Committed_AS:   36120244 kB\n"
+      "VmallocTotal:   34359738367 kB\n"
+      "VmallocUsed:           0 kB\n"
+      "VmallocChunk:          0 kB\n"
+      "Percpu:             3328 kB\n"
+      "AnonHugePages:     32768 kB\n"
+      "ShmemHugePages:        0 kB\n"
+      "ShmemPmdMapped:        0 kB\n"
+      "DirectMap4k:      293036 kB\n"
+      "DirectMap2M:     6918144 kB\n"
+      "DirectMap1G:     2097152 kB\n";
+
+  meminfo = {};
+  EXPECT_TRUE(ParseProcMeminfo(large_cache_input, &meminfo));
+  EXPECT_EQ(meminfo.total, 18025572);
+  EXPECT_EQ(meminfo.free, 13150176);
+  EXPECT_EQ(meminfo.buffers, 1524852);
+  EXPECT_EQ(meminfo.cached, 12645260);
+  EXPECT_EQ(GetSystemCommitChargeFromMeminfo(meminfo), 0u);
 }
 
 TEST_F(SystemMetricsTest, ParseVmstat) {
@@ -345,19 +629,19 @@ TEST_F(SystemMetricsTest, ParseVmstat) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||      \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-
+#if ENABLE_CPU_TESTS
 // Test that ProcessMetrics::GetPlatformIndependentCPUUsage() doesn't return
 // negative values when the number of threads running on the process decreases
 // between two successive calls to it.
 TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
-  ProcessHandle handle = GetCurrentProcessHandle();
-  std::unique_ptr<ProcessMetrics> metrics(
-      ProcessMetrics::CreateProcessMetrics(handle));
+  std::unique_ptr<ProcessMetrics> metrics =
+      ProcessMetrics::CreateCurrentProcessMetrics();
 
   EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
+#endif
+
   Thread thread1("thread1");
   Thread thread2("thread2");
   Thread thread3("thread3");
@@ -378,31 +662,114 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   thread2.task_runner()->PostTask(FROM_HERE, BindOnce(&BusyWork, &vec2));
   thread3.task_runner()->PostTask(FROM_HERE, BindOnce(&BusyWork, &vec3));
 
-  TimeDelta prev_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(prev_cpu_usage, TimeDelta());
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  TimeDelta prev_cpu_usage = TestCumulativeCPU(metrics.get(), TimeDelta());
+  TimeDelta prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), TimeDelta());
 
   thread1.Stop();
-  TimeDelta current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  prev_cpu_usage = current_cpu_usage;
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread2.Stop();
-  current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  prev_cpu_usage = current_cpu_usage;
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread3.Stop();
-  current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 }
 
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) || BUILDFLAG(USE_BLINK)
+
+// Subprocess to test the child CPU usage.
+MULTIPROCESS_TEST_MAIN(CPUUsageChildMain) {
+  TestChildLauncher::NotifyParent();
+  // Busy wait until terminated.
+  while (true) {
+    std::vector<std::string> vec;
+    BusyWork(&vec);
+  }
+}
+
+TEST_F(SystemMetricsTest, MeasureChildCpuUsage) {
+  TestChildLauncher child_launcher;
+  ASSERT_TRUE(child_launcher.SpawnChildProcess("CPUUsageChildMain"));
+  std::unique_ptr<ProcessMetrics> metrics =
+      child_launcher.CreateChildProcessMetrics();
+
+  const TimeDelta cpu_usage1 = TestCumulativeCPU(metrics.get(), TimeDelta());
+  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+
+  const TimeDelta cpu_usage2 = TestCumulativeCPU(metrics.get(), cpu_usage1);
+  EXPECT_TRUE(cpu_usage2.is_positive());
+
+  ASSERT_TRUE(child_launcher.TerminateChildProcess());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+  // Windows and Fuchsia return final measurements of a process after it exits.
+  TestCumulativeCPU(metrics.get(), cpu_usage2);
+#elif BUILDFLAG(IS_APPLE)
+  // Mac and iOS return 0 on error. GetPlatformIndependentCPUUsage subtracts
+  // from this to get a negative.
+  EXPECT_EQ(metrics->GetCumulativeCPUUsage(), TimeDelta());
+  EXPECT_LT(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+#else
+  // All other platforms return a negative time value to indicate an error.
+  EXPECT_LT(metrics->GetCumulativeCPUUsage(), TimeDelta());
+  EXPECT_LT(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+#endif
+}
+
+#endif  // !BUILDFLAG(IS_APPLE) || BUILDFLAG(USE_BLINK)
+
+#if BUILDFLAG(IS_FUCHSIA)
+
+// Fuchsia CHECK's when measuring an invalid procses.
+using SystemMetricsDeathTest = SystemMetricsTest;
+TEST_F(SystemMetricsDeathTest, InvalidProcessCpuUsage) {
+  std::unique_ptr<ProcessMetrics> metrics =
+      ProcessMetrics::CreateProcessMetrics(kNullProcessHandle);
+  EXPECT_CHECK_DEATH(
+      { [[maybe_unused]] TimeDelta usage = metrics->GetCumulativeCPUUsage(); });
+  EXPECT_CHECK_DEATH({
+    [[maybe_unused]] double usage = metrics->GetPlatformIndependentCPUUsage();
+  });
+}
+
+#else  // !BUILDFLAG(IS_FUCHSIA)
+
+// Windows, Mac and iOS also return 0 on error. All other platforms return a
+// negative value to indicate an error.
+TEST_F(SystemMetricsTest, InvalidProcessCpuUsage) {
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<ProcessMetrics> metrics =
+      ProcessMetrics::CreateProcessMetrics(kNullProcessHandle, nullptr);
+#else
+  std::unique_ptr<ProcessMetrics> metrics =
+      ProcessMetrics::CreateProcessMetrics(kNullProcessHandle);
+#endif
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(metrics->GetCumulativeCPUUsage(), TimeDelta());
+  EXPECT_EQ(metrics->GetPreciseCumulativeCPUUsage(), TimeDelta());
+#elif BUILDFLAG(IS_APPLE)
+  EXPECT_EQ(metrics->GetCumulativeCPUUsage(), TimeDelta());
+#else
+  EXPECT_LT(metrics->GetCumulativeCPUUsage(), TimeDelta());
+#endif
+
+  // The first call always caches the result of GetCumulativeCPUUsage() and
+  // returns 0, even if it's an error value. The second call returns the delta
+  // with the cached result, which is 0 when the second GetCumulativeCPUUsage()
+  // call returns the same error value.
+  EXPECT_EQ(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  EXPECT_EQ(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+#endif  // ENABLE_CPU_TESTS
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SystemMetricsTest, ParseZramMmStat) {
@@ -493,7 +860,8 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 TEST(ProcessMetricsTest, ParseProcStatCPU) {
   // /proc/self/stat for a process running "top".
-  const char kTopStat[] = "960 (top) S 16230 960 16230 34818 960 "
+  const char kTopStat[] =
+      "960 (top) S 16230 960 16230 34818 960 "
       "4202496 471 0 0 0 "
       "12 16 0 0 "  // <- These are the goods.
       "20 0 1 0 121946157 15077376 314 18446744073709551615 4194304 "
@@ -502,7 +870,8 @@ TEST(ProcessMetricsTest, ParseProcStatCPU) {
   EXPECT_EQ(12 + 16, ParseProcStatCPU(kTopStat));
 
   // cat /proc/self/stat on a random other machine I have.
-  const char kSelfStat[] = "5364 (cat) R 5354 5364 5354 34819 5364 "
+  const char kSelfStat[] =
+      "5364 (cat) R 5354 5364 5354 34819 5364 "
       "0 142 0 0 0 "
       "0 0 0 0 "  // <- No CPU, apparently.
       "16 0 1 0 1676099790 2957312 114 4294967295 134512640 134528148 "
@@ -512,7 +881,8 @@ TEST(ProcessMetricsTest, ParseProcStatCPU) {
 
   // Some weird long-running process with a weird name that I created for the
   // purposes of this test.
-  const char kWeirdNameStat[] = "26115 (Hello) You ()))  ) R 24614 26115 24614"
+  const char kWeirdNameStat[] =
+      "26115 (Hello) You ()))  ) R 24614 26115 24614"
       " 34839 26115 4218880 227 0 0 0 "
       "5186 11 0 0 "
       "20 0 1 0 36933953 4296704 90 18446744073709551615 4194304 4196116 "
@@ -581,12 +951,15 @@ bool CheckEvent(const FilePath& signal_dir, const char* signal_file) {
 
 // Busy-wait for an event to be signaled.
 void WaitForEvent(const FilePath& signal_dir, const char* signal_file) {
-  while (!CheckEvent(signal_dir, signal_file))
+  while (!CheckEvent(signal_dir, signal_file)) {
     PlatformThread::Sleep(Milliseconds(10));
+  }
 }
 
 // Subprocess to test the number of open file descriptors.
 MULTIPROCESS_TEST_MAIN(ChildMain) {
+  TestChildLauncher::NotifyParent();
+
   CommandLine* command_line = CommandLine::ForCurrentProcess();
   const FilePath temp_path = command_line->GetSwitchValuePath(kTempDirFlag);
   CHECK(DirectoryExists(temp_path));
@@ -608,8 +981,9 @@ MULTIPROCESS_TEST_MAIN(ChildMain) {
   CHECK(SignalEvent(temp_path, kSignalClosed));
 
   // Wait to be terminated.
-  while (true)
+  while (true) {
     PlatformThread::Sleep(Seconds(1));
+  }
 }
 
 }  // namespace
@@ -618,20 +992,15 @@ TEST(ProcessMetricsTest, GetChildOpenFdCount) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const FilePath temp_path = temp_dir.GetPath();
-  CommandLine child_command_line(GetMultiProcessTestChildBaseCommandLine());
-  child_command_line.AppendSwitchPath(kTempDirFlag, temp_path);
-  Process child = SpawnMultiProcessTestChild(
-      ChildMainString, child_command_line, LaunchOptions());
-  ASSERT_TRUE(child.IsValid());
+
+  TestChildLauncher child_launcher;
+  child_launcher.command_line().AppendSwitchPath(kTempDirFlag, temp_path);
+  ASSERT_TRUE(child_launcher.SpawnChildProcess(ChildMainString));
 
   WaitForEvent(temp_path, kSignalReady);
 
   std::unique_ptr<ProcessMetrics> metrics =
-#if BUILDFLAG(IS_MAC)
-      ProcessMetrics::CreateProcessMetrics(child.Handle(), nullptr);
-#else
-      ProcessMetrics::CreateProcessMetrics(child.Handle());
-#endif  // BUILDFLAG(IS_MAC)
+      child_launcher.CreateChildProcessMetrics();
 
   const int fd_count = metrics->GetOpenFdCount();
   EXPECT_GE(fd_count, 0);
@@ -646,17 +1015,12 @@ TEST(ProcessMetricsTest, GetChildOpenFdCount) {
 
   EXPECT_EQ(fd_count, metrics->GetOpenFdCount());
 
-  ASSERT_TRUE(child.Terminate(0, true));
+  ASSERT_TRUE(child_launcher.TerminateChildProcess());
 }
 
 TEST(ProcessMetricsTest, GetOpenFdCount) {
-  base::ProcessHandle process = base::GetCurrentProcessHandle();
-  std::unique_ptr<base::ProcessMetrics> metrics =
-#if BUILDFLAG(IS_MAC)
-      ProcessMetrics::CreateProcessMetrics(process, nullptr);
-#else
-      ProcessMetrics::CreateProcessMetrics(process);
-#endif  // BUILDFLAG(IS_MAC)
+  std::unique_ptr<ProcessMetrics> metrics =
+      ProcessMetrics::CreateCurrentProcessMetrics();
 
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -669,15 +1033,13 @@ TEST(ProcessMetricsTest, GetOpenFdCount) {
   EXPECT_GT(new_fd_count, 0);
   EXPECT_EQ(new_fd_count, fd_count + 1);
 }
-
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 TEST(ProcessMetricsTestLinux, GetPageFaultCounts) {
-  std::unique_ptr<base::ProcessMetrics> process_metrics(
-      base::ProcessMetrics::CreateProcessMetrics(
-          base::GetCurrentProcessHandle()));
+  std::unique_ptr<ProcessMetrics> process_metrics =
+      ProcessMetrics::CreateCurrentProcessMetrics();
 
   PageFaultCounts counts;
   ASSERT_TRUE(process_metrics->GetPageFaultCounts(&counts));
@@ -706,9 +1068,8 @@ TEST(ProcessMetricsTestLinux, GetPageFaultCounts) {
 }
 
 TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
-  ProcessHandle handle = GetCurrentProcessHandle();
-  std::unique_ptr<ProcessMetrics> metrics(
-      ProcessMetrics::CreateProcessMetrics(handle));
+  std::unique_ptr<ProcessMetrics> metrics =
+      ProcessMetrics::CreateCurrentProcessMetrics();
 
   Thread thread1("thread1");
   thread1.StartAndWaitForTesting();
@@ -759,12 +1120,12 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
           return entry.first == prev_entry.first;
         });
 
-    if (prev_it != prev_thread_times.end())
+    if (prev_it != prev_thread_times.end()) {
       EXPECT_GE(entry.second, prev_it->second);
+    }
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

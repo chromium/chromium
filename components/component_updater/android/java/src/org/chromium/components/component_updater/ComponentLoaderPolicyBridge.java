@@ -6,17 +6,16 @@ package org.chromium.components.component_updater;
 
 import android.os.ParcelFileDescriptor;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.util.Map;
 
-/**
- * Provides JNI bridge to the native ComponentLoaderPolicy.
- */
+/** Provides JNI bridge to the native ComponentLoaderPolicy. */
 @JNINamespace("component_updater")
 public class ComponentLoaderPolicyBridge {
     private static final long NATIVE_NULL = 0;
@@ -54,8 +53,8 @@ public class ComponentLoaderPolicyBridge {
             fds[i] = file.getValue().detachFd();
             ++i;
         }
-        ComponentLoaderPolicyBridgeJni.get().componentLoaded(
-                mNativeAndroidComponentLoaderPolicy, fileNames, fds);
+        ComponentLoaderPolicyBridgeJni.get()
+                .componentLoaded(mNativeAndroidComponentLoaderPolicy, fileNames, fds);
         // Setting it to null, because it is deleted after componentLoaded is called.
         mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
 
@@ -76,8 +75,8 @@ public class ComponentLoaderPolicyBridge {
         ThreadUtils.assertOnUiThread();
         assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
 
-        ComponentLoaderPolicyBridgeJni.get().componentLoadFailed(
-                mNativeAndroidComponentLoaderPolicy, errorCode);
+        ComponentLoaderPolicyBridgeJni.get()
+                .componentLoadFailed(mNativeAndroidComponentLoaderPolicy, errorCode);
         // Setting it to null, because it is deleted after componentLoadFailed is called.
         mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
 
@@ -94,8 +93,8 @@ public class ComponentLoaderPolicyBridge {
         ThreadUtils.assertOnUiThread();
         assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
 
-        return ComponentLoaderPolicyBridgeJni.get().getComponentId(
-                mNativeAndroidComponentLoaderPolicy);
+        return ComponentLoaderPolicyBridgeJni.get()
+                .getComponentId(mNativeAndroidComponentLoaderPolicy);
     }
 
     @CalledByNative
@@ -113,7 +112,9 @@ public class ComponentLoaderPolicyBridge {
     interface Natives {
         void componentLoaded(
                 long nativeAndroidComponentLoaderPolicy, String[] fileNames, int[] fds);
+
         void componentLoadFailed(long nativeAndroidComponentLoaderPolicy, int errorCode);
+
         String getComponentId(long nativeAndroidComponentLoaderPolicy);
     }
 }

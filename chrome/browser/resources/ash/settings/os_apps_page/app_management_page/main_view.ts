@@ -4,22 +4,22 @@
 
 import './app_item.js';
 import './app_management_cros_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/util.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin} from '../../route_observer_mixin.js';
+import {AppManagementStore, AppMap} from '../../common/app_management/store.js';
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
+import {RouteObserverMixin} from '../../common/route_observer_mixin.js';
 import {Route, routes} from '../../router.js';
 
 import {getTemplate} from './main_view.html.js';
-import {AppManagementStore, AppMap} from './store.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 
 const AppManagementMainViewElementBase =
     AppManagementStoreMixin(RouteObserverMixin(PolymerElement));

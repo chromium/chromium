@@ -19,13 +19,12 @@ namespace ash {
 class QuickSettingsFooterPixelTest : public AshTestBase {
  public:
   QuickSettingsFooterPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly},
-        {features::kAdaptiveCharging});
+    feature_list_.InitWithFeatures({chromeos::features::kJelly},
+                                   {features::kAdaptiveCharging});
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -63,24 +62,23 @@ class QuickSettingsFooterPixelTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
 
   // Owned by view hierarchy.
-  raw_ptr<QuickSettingsFooter, DanglingUntriaged | ExperimentalAsh> footer_ =
-      nullptr;
+  raw_ptr<QuickSettingsFooter, DanglingUntriaged> footer_ = nullptr;
 };
 
 TEST_F(QuickSettingsFooterPixelTest, FooterShouldBeRenderedCorrectly) {
   InitPowerStatusAndOpenBubble();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "with_no_extra_button",
-      /*revision_number=*/2, GetFooter()));
+      /*revision_number=*/6, GetFooter()));
   CloseBubble();
 
   // Regression test for b/293484037: The settings button is missing when
   // there's no enough space for the battery label.
-  SimulateUserLogin("test@gmail.com", user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  SimulateUserLogin("test@gmail.com", user_manager::UserType::kPublicAccount);
   InitPowerStatusAndOpenBubble();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "with_exit_button",
-      /*revision_number=*/2, GetFooter()));
+      /*revision_number=*/6, GetFooter()));
   CloseBubble();
 }
 

@@ -57,7 +57,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
                   RendererClient* client,
                   PipelineStatusCallback init_cb) final;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) final;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) final;
   void SetPreservesPitch(bool preserves_pitch) final;
   void SetWasPlayedWithUserActivation(
       bool was_played_with_user_activation) final;
@@ -204,7 +204,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   void OnAudioConfigChange(const AudioDecoderConfig& config);
   void OnVideoConfigChange(const VideoDecoderConfig& config);
   void OnVideoOpacityChange(bool opaque);
-  void OnVideoFrameRateChange(absl::optional<int> fps);
+  void OnVideoFrameRateChange(std::optional<int> fps);
 
   void OnStreamRestartCompleted();
 

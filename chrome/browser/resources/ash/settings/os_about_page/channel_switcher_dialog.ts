@@ -9,16 +9,16 @@
  * release channel to notify parents of this dialog.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -28,13 +28,6 @@ import {castExists} from '../assert_extras.js';
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, BrowserChannel, isTargetChannelMoreStable} from './about_page_browser_proxy.js';
 import {getTemplate} from './channel_switcher_dialog.html.js';
 
-interface SettingsChannelSwitcherDialogElement {
-  $: {
-    dialog: CrDialogElement,
-    warningSelector: IronSelectorElement,
-  };
-}
-
 const WarningMessage = {
   NONE: -1,
   ENTERPRISE_MANAGED: 0,
@@ -42,7 +35,16 @@ const WarningMessage = {
   UNSTABLE: 2,
 };
 
-class SettingsChannelSwitcherDialogElement extends PolymerElement {
+export interface SettingsChannelSwitcherDialogElement {
+  $: {
+    changeChannel: HTMLElement,
+    changeChannelAndPowerwash: HTMLElement,
+    dialog: CrDialogElement,
+    warningSelector: IronSelectorElement,
+  };
+}
+
+export class SettingsChannelSwitcherDialogElement extends PolymerElement {
   static get is() {
     return 'settings-channel-switcher-dialog';
   }
@@ -88,7 +90,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     this.browserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.browserProxy_.getChannelInfo().then(info => {
@@ -101,7 +103,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     });
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();
@@ -111,25 +113,25 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     return castExists(this.shadowRoot!.querySelector('cr-radio-group'));
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private onChangeChannelClick_() {
+  private onChangeChannelClick_(): void {
     const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, false);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
   }
 
-  private onChangeChannelAndPowerwashClick_() {
+  private onChangeChannelAndPowerwashClick_(): void {
     const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, true);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
   }
 
-  private fireTargetChannelChangedEvent_(detail = {}) {
+  private fireTargetChannelChangedEvent_(detail = {}): void {
     const event = new CustomEvent(
         'target-channel-changed', {bubbles: true, composed: true, detail});
     this.dispatchEvent(event);
@@ -141,7 +143,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
    *    button should be visible.
    */
   private updateButtons_(
-      changeChannel: boolean, changeChannelAndPowerwash: boolean) {
+      changeChannel: boolean, changeChannelAndPowerwash: boolean): void {
     if (changeChannel || changeChannelAndPowerwash) {
       // Ensure that at most one button is visible at any given time.
       assert(changeChannel !== changeChannelAndPowerwash);
@@ -153,7 +155,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     };
   }
 
-  private onChannelSelectionChanged_() {
+  private onChannelSelectionChanged_(): void {
     const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
 
     // Selected channel is the same as the target channel so only show 'cancel'.

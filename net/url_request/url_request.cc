@@ -131,7 +131,7 @@ void ConvertRealLoadTimesToBlockingTimes(LoadTimingInfo* load_timing_info) {
 
 NetLogWithSource CreateNetLogWithSource(
     NetLog* net_log,
-    absl::optional<net::NetLogSource> net_log_source) {
+    std::optional<net::NetLogSource> net_log_source) {
   if (net_log_source) {
     return NetLogWithSource::Make(net_log, net_log_source.value());
   }
@@ -181,12 +181,6 @@ void URLRequest::Delegate::OnResponseStarted(URLRequest* request,
 
 URLRequest::~URLRequest() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Log the redirect count during destruction, to ensure that it is only
-  // recorded at the end of following all redirect chains.
-  UMA_HISTOGRAM_EXACT_LINEAR("Net.RedirectChainLength",
-                             kMaxRedirects - redirect_limit_,
-                             kMaxRedirects + 1);
 
   Cancel();
 
@@ -384,7 +378,7 @@ HttpResponseHeaders* URLRequest::response_headers() const {
   return response_info_.headers.get();
 }
 
-const absl::optional<AuthChallengeInfo>& URLRequest::auth_challenge_info()
+const std::optional<AuthChallengeInfo>& URLRequest::auth_challenge_info()
     const {
   return response_info_.auth_challenge;
 }
@@ -490,7 +484,7 @@ void URLRequest::set_first_party_url_policy(
   first_party_url_policy_ = first_party_url_policy;
 }
 
-void URLRequest::set_initiator(const absl::optional<url::Origin>& initiator) {
+void URLRequest::set_initiator(const std::optional<url::Origin>& initiator) {
   DCHECK(!is_pending_);
   DCHECK(!initiator.has_value() || initiator.value().opaque() ||
          initiator.value().GetURL().is_valid());
@@ -583,7 +577,7 @@ URLRequest::URLRequest(base::PassKey<URLRequestContext> pass_key,
                        const URLRequestContext* context,
                        NetworkTrafficAnnotationTag traffic_annotation,
                        bool is_for_websockets,
-                       absl::optional<net::NetLogSource> net_log_source)
+                       std::optional<net::NetLogSource> net_log_source)
     : context_(context),
       net_log_(CreateNetLogWithSource(context->net_log(), net_log_source)),
       url_chain_(1, url),
@@ -867,8 +861,8 @@ void URLRequest::NotifyResponseStarted(int net_error) {
 }
 
 void URLRequest::FollowDeferredRedirect(
-    const absl::optional<std::vector<std::string>>& removed_headers,
-    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
+    const std::optional<std::vector<std::string>>& removed_headers,
+    const std::optional<net::HttpRequestHeaders>& modified_headers) {
   DCHECK(job_.get());
   DCHECK_EQ(OK, status_);
 
@@ -947,13 +941,13 @@ void URLRequest::PrepareToRestart() {
 
   status_ = OK;
   is_pending_ = false;
-  proxy_server_ = ProxyServer();
+  proxy_chain_ = ProxyChain();
 }
 
 void URLRequest::Redirect(
     const RedirectInfo& redirect_info,
-    const absl::optional<std::vector<std::string>>& removed_headers,
-    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
+    const std::optional<std::vector<std::string>>& removed_headers,
+    const std::optional<net::HttpRequestHeaders>& modified_headers) {
   // This method always succeeds. Whether |job_| is allowed to redirect to
   // |redirect_info| is checked in URLRequestJob::CanFollowRedirect, before
   // NotifyReceivedRedirect. This means the delegate can assume that, if it
@@ -984,8 +978,8 @@ void URLRequest::Redirect(
   referrer_ = redirect_info.new_referrer;
   referrer_policy_ = redirect_info.new_referrer_policy;
   site_for_cookies_ = redirect_info.new_site_for_cookies;
-  isolation_info_ = isolation_info_.CreateForRedirect(
-      url::Origin::Create(redirect_info.new_url));
+  set_isolation_info(isolation_info_.CreateForRedirect(
+      url::Origin::Create(redirect_info.new_url)));
 
   if ((load_flags_ & LOAD_CAN_USE_SHARED_DICTIONARY) &&
       (load_flags_ &
@@ -1073,14 +1067,16 @@ void URLRequest::NotifySSLCertificateError(int net_error,
   delegate_->OnSSLCertificateError(this, net_error, ssl_info, fatal);
 }
 
-bool URLRequest::CanSetCookie(const net::CanonicalCookie& cookie,
-                              CookieOptions* options,
-                              CookieInclusionStatus* inclusion_status) const {
+bool URLRequest::CanSetCookie(
+    const net::CanonicalCookie& cookie,
+    CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
+    CookieInclusionStatus* inclusion_status) const {
   DCHECK(!(load_flags_ & LOAD_DO_NOT_SAVE_COOKIES));
   bool can_set_cookies = g_default_can_use_cookies;
   if (network_delegate()) {
-    can_set_cookies = network_delegate()->CanSetCookie(*this, cookie, options,
-                                                       inclusion_status);
+    can_set_cookies = network_delegate()->CanSetCookie(
+        *this, cookie, options, first_party_set_metadata, inclusion_status);
   }
   if (!can_set_cookies)
     net_log_.AddEvent(NetLogEventType::COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE);
@@ -1201,7 +1197,7 @@ IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
   url::Origin top_frame_origin =
       network_anonymization_key.GetTopFrameSite()->site_as_origin_;
 
-  absl::optional<url::Origin> frame_origin;
+  std::optional<url::Origin> frame_origin;
   if (network_anonymization_key.IsCrossSite()) {
     // If we know that the origin is cross site to the top level site, create an
     // empty origin to use as the frame origin for the isolation info. This
@@ -1216,7 +1212,7 @@ IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
   auto isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kOther, top_frame_origin,
       frame_origin.value(), SiteForCookies(),
-      /*party_context=*/absl::nullopt, network_anonymization_key.GetNonce());
+      network_anonymization_key.GetNonce());
   // TODO(crbug/1343856): DCHECK isolation info is fully populated.
   return isolation_info;
 }

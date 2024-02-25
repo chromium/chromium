@@ -7,12 +7,15 @@
 
 #include <vector>
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 // View for the Switch Access menu.
 class SwitchAccessMenuView : public views::View {
+  METADATA_HEADER(SwitchAccessMenuView, views::View)
+
  public:
   SwitchAccessMenuView();
   ~SwitchAccessMenuView() override;
@@ -25,7 +28,6 @@ class SwitchAccessMenuView : public views::View {
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
 
  private:
   friend class SwitchAccessMenuBubbleControllerTest;

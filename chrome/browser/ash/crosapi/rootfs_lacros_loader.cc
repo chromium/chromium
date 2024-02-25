@@ -50,7 +50,7 @@ RootfsLacrosLoader::RootfsLacrosLoader(ash::UpstartClient* upstart_client,
 
 RootfsLacrosLoader::~RootfsLacrosLoader() = default;
 
-void RootfsLacrosLoader::Load(LoadCompletionCallback callback) {
+void RootfsLacrosLoader::Load(LoadCompletionCallback callback, bool forced) {
   LOG(WARNING) << "Loading rootfs lacros.";
 
   // Make sure to calculate `version_` before start loading.
@@ -68,7 +68,7 @@ void RootfsLacrosLoader::Unload() {
 void RootfsLacrosLoader::Reset() {
   // TODO(crbug.com/1432069): Reset call while loading breaks the behavior. Need
   // to handle such edge cases.
-  version_ = absl::nullopt;
+  version_ = std::nullopt;
 }
 
 void RootfsLacrosLoader::GetVersion(

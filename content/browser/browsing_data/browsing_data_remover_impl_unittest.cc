@@ -9,6 +9,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -61,7 +62,6 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -138,8 +138,7 @@ net::CanonicalCookie CreateCookieWithHost(const url::Origin& origin) {
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "1", origin.host(), "/", base::Time::Now(), base::Time::Now(),
           base::Time(), base::Time(), false, false,
-          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
-          false);
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM);
   EXPECT_TRUE(cookie);
   return *cookie;
 }
@@ -381,10 +380,13 @@ class BrowsingDataRemoverImplTest : public testing::Test {
   BrowsingDataRemoverImplTest& operator=(const BrowsingDataRemoverImplTest&) =
       delete;
 
-  ~BrowsingDataRemoverImplTest() override = default;
+  ~BrowsingDataRemoverImplTest() override {
+    remover_ = nullptr;
+  }
 
   void TearDown() override {
     mock_policy_ = nullptr;
+    remover_ = nullptr;
 
     // BrowserContext contains a DOMStorageContext. BrowserContext's
     // destructor posts a message to the WEBKIT thread to delete some of its
@@ -438,7 +440,10 @@ class BrowsingDataRemoverImplTest : public testing::Test {
 
   BrowserContext* GetBrowserContext() { return browser_context_.get(); }
 
-  void DestroyBrowserContext() { browser_context_.reset(); }
+  void DestroyBrowserContext() {
+    remover_ = nullptr;
+    browser_context_.reset();
+  }
 
   const base::Time& GetBeginTime() {
     return remover_->GetLastUsedBeginTimeForTesting();
@@ -493,7 +498,7 @@ class BrowsingDataRemoverImplTest : public testing::Test {
       storage_partition_;
 
   // Cached pointer to BrowsingDataRemoverImpl for access to testing methods.
-  raw_ptr<BrowsingDataRemoverImpl, DanglingUntriaged> remover_;
+  raw_ptr<BrowsingDataRemoverImpl> remover_;
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BrowserContext> browser_context_;
@@ -1451,7 +1456,8 @@ class MultipleTasksObserver {
 
   void ClearLastCalledTarget() { last_called_targets_.clear(); }
 
-  const std::vector<BrowsingDataRemover::Observer*> GetLastCalledTargets() {
+  const std::vector<raw_ptr<BrowsingDataRemover::Observer, VectorExperimental>>
+  GetLastCalledTargets() {
     return last_called_targets_;
   }
 
@@ -1461,7 +1467,8 @@ class MultipleTasksObserver {
  private:
   Target target_a_;
   Target target_b_;
-  std::vector<BrowsingDataRemover::Observer*> last_called_targets_;
+  std::vector<raw_ptr<BrowsingDataRemover::Observer, VectorExperimental>>
+      last_called_targets_;
 };
 
 TEST_F(BrowsingDataRemoverImplTest, MultipleTasks) {
@@ -1857,7 +1864,7 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveStorageBucketsAndReply) {
           StoragePartitionConfig::CreateDefault(&browser_context),
           &storage_partition);
       remover.RemoveStorageBucketsAndReply(
-          absl::nullopt, storage_key, buckets,
+          std::nullopt, storage_key, buckets,
           base::BindOnce(&TestObserver::OnBrowsingDataRemoverDone,
                          base::Unretained(this), 0));
     }

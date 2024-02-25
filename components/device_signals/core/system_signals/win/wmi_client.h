@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/win/wmi.h"
 #include "components/device_signals/core/common/win/win_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // WMI interfaces are available on Windows Vista and above, and are officially
 // undocumented.
@@ -37,7 +37,7 @@ struct WmiHotfixesResponse {
   ~WmiHotfixesResponse();
 
   std::vector<InstalledHotfix> hotfixes;
-  absl::optional<base::win::WmiError> query_error;
+  std::optional<base::win::WmiError> query_error;
   std::vector<WmiParsingError> parsing_errors;
 };
 

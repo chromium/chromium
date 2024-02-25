@@ -61,11 +61,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
                      chromeos::DBusMethodCallback<uint64_t> callback) override;
   void StopPerf(uint64_t session_id,
                 chromeos::VoidDBusMethodCallback callback) override;
-  void GetFeedbackLogsV2(
-      const cryptohome::AccountIdentifier& id,
-      const std::vector<debugd::FeedbackLogType>& requested_logs,
-      GetLogsCallback callback) override;
-  void GetFeedbackLogsV3(
+  void GetFeedbackLogs(
       const cryptohome::AccountIdentifier& id,
       const std::vector<debugd::FeedbackLogType>& requested_logs,
       GetLogsCallback callback) override;
@@ -91,10 +87,12 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void CupsAddManuallyConfiguredPrinter(
       const std::string& name,
       const std::string& uri,
+      const std::string& language,
       const std::string& ppd_contents,
       CupsAddPrinterCallback callback) override;
   void CupsAddAutoConfiguredPrinter(const std::string& name,
                                     const std::string& uri,
+                                    const std::string& language,
                                     CupsAddPrinterCallback callback) override;
   void CupsRemovePrinter(const std::string& name,
                          CupsRemovePrinterCallback callback,

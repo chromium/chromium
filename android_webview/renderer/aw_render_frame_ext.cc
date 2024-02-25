@@ -5,6 +5,7 @@
 #include "android_webview/renderer/aw_render_frame_ext.h"
 
 #include <memory>
+#include <utility>
 
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/frame.mojom.h"
@@ -12,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
+#include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/content_capture/renderer/content_capture_sender.h"
 #include "content/public/renderer/render_frame.h"
@@ -34,9 +36,19 @@ namespace android_webview {
 
 namespace {
 
-const char kAddressPrefix[] = "geo:0,0?q=";
-const char kEmailPrefix[] = "mailto:";
-const char kPhoneNumberPrefix[] = "tel:";
+using autofill::AutofillAgent;
+using ExtractAllDatalists = autofill::AutofillAgent::ExtractAllDatalists;
+using FocusRequiresScroll = autofill::AutofillAgent::FocusRequiresScroll;
+using QueryPasswordSuggestions =
+    autofill::AutofillAgent::QueryPasswordSuggestions;
+using SecureContextRequired = autofill::AutofillAgent::SecureContextRequired;
+using UserGestureRequired = autofill::AutofillAgent::UserGestureRequired;
+using UsesKeyboardAccessoryForSuggestions =
+    autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions;
+
+constexpr char kAddressPrefix[] = "geo:0,0?q=";
+constexpr char kEmailPrefix[] = "mailto:";
+constexpr char kPhoneNumberPrefix[] = "tel:";
 
 GURL GetAbsoluteUrl(const blink::WebNode& node,
                     const std::u16string& url_fragment) {
@@ -79,11 +91,10 @@ bool RemovePrefixAndAssignIfMatches(const base::StringPiece& prefix,
 
   if (base::StartsWith(spec, prefix)) {
     url::RawCanonOutputW<1024> output;
-    url::DecodeURLEscapeSequences(
-        spec.data() + prefix.length(), spec.length() - prefix.length(),
-        url::DecodeURLMode::kUTF8OrIsomorphic, &output);
-    *dest =
-        base::UTF16ToUTF8(base::StringPiece16(output.data(), output.length()));
+    url::DecodeURLEscapeSequences(spec.substr(prefix.length()),
+                                  url::DecodeURLMode::kUTF8OrIsomorphic,
+                                  &output);
+    *dest = base::UTF16ToUTF8(output.view());
     return true;
   }
   return false;
@@ -144,12 +155,15 @@ void PopulateHitTestData(const GURL& absolute_link_url,
 
 AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
-  // TODO(sgurun) do not create a password autofill agent (change
-  // autofill agent to store a weakptr).
-  autofill::PasswordAutofillAgent* password_autofill_agent =
-      new autofill::PasswordAutofillAgent(render_frame, &registry_);
-  new autofill::AutofillAgent(render_frame, password_autofill_agent, nullptr,
-                              &registry_);
+  auto password_autofill_agent =
+      std::make_unique<autofill::PasswordAutofillAgent>(render_frame,
+                                                        &registry_);
+  new AutofillAgent(
+      render_frame,
+      {ExtractAllDatalists(true), FocusRequiresScroll(false),
+       QueryPasswordSuggestions(true), SecureContextRequired(true),
+       UserGestureRequired(false), UsesKeyboardAccessoryForSuggestions(false)},
+      std::move(password_autofill_agent), nullptr, &registry_);
   if (content_capture::features::IsContentCaptureEnabled())
     new content_capture::ContentCaptureSender(render_frame, &registry_);
 

@@ -33,8 +33,7 @@ class MTPWatcherManager : public storage::WatcherManager {
                      StatusCallback callback) override;
 
  private:
-  const raw_ptr<DeviceMediaAsyncFileUtil, ExperimentalAsh>
-      device_media_async_file_util_;
+  const raw_ptr<DeviceMediaAsyncFileUtil> device_media_async_file_util_;
 };
 
 }  // namespace ash

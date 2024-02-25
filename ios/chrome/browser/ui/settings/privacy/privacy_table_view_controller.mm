@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -17,18 +18,22 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/browsing_data/browsing_data_features.h"
-#import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
@@ -37,21 +42,22 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/supervised_user_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
-#import "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -68,6 +74,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierIncognitoAuth,
   SectionIdentifierIncognitoInterstitial,
   SectionIdentifierLockdownMode,
+  SectionIdentifierPrivacyGuide,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -82,6 +89,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeIncognitoInterstitial,
   ItemTypeIncognitoInterstitialDisabled,
   ItemTypeLockdownMode,
+  ItemTypePrivacyGuide,
 };
 
 // Used to open the Sync and Google Services settings.
@@ -93,13 +101,16 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 @interface PrivacyTableViewController () <BooleanObserver,
                                           PrefObserverDelegate,
-                                          PopoverLabelViewControllerDelegate> {
-  ChromeBrowserState* _browserState;  // weak
+                                          PopoverLabelViewControllerDelegate,
+                                          SyncObserverModelBridge> {
+  raw_ptr<ChromeBrowserState> _browserState;  // weak
 
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+  // Sync Observer.
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
 
   // Updatable Items.
   TableViewDetailIconItem* _handoffDetailItem;
@@ -163,6 +174,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
         prefs::kSafeBrowsingEnhanced, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kBrowserLockdownModeEnabled, &_prefChangeRegistrar);
+    _syncObserver.reset(new SyncObserverBridge(
+        self, SyncServiceFactory::GetForBrowserState(_browserState)));
 
     _incognitoReauthPref = [[PrefBackedBoolean alloc]
         initWithPrefService:GetApplicationContext()->GetLocalState()
@@ -198,7 +211,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   }
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];
@@ -207,6 +220,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierPrivacyContent];
+  if (IsPrivacyGuideIosEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierPrivacyGuide];
+  }
   [model addSectionWithIdentifier:SectionIdentifierSafeBrowsing];
 
   if (base::FeatureList::IsEnabled(
@@ -219,14 +235,17 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-
-  if (web::IsBrowserLockdownModeEnabled()) {
-    [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
 
   // Clear Browsing item.
   [model addItem:[self clearBrowsingDetailItem]
       toSectionWithIdentifier:SectionIdentifierPrivacyContent];
+
+  // Privacy Guide item.
+  if (IsPrivacyGuideIosEnabled()) {
+    [model addItem:[self privacyGuideDetailItem]
+        toSectionWithIdentifier:SectionIdentifierPrivacyGuide];
+  }
 
   // Privacy Safe Browsing item.
   [model addItem:[self safeBrowsingDetailItem]
@@ -260,15 +279,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       toSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Lockdown Mode item.
-  if (web::IsBrowserLockdownModeEnabled()) {
-    [model addItem:[self lockdownModeDetailItem]
-        toSectionWithIdentifier:SectionIdentifierLockdownMode];
-    [model setFooter:[self showPrivacyFooterItem]
-        forSectionWithIdentifier:SectionIdentifierLockdownMode];
-  } else {
-    [model setFooter:[self showPrivacyFooterItem]
-        forSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-  }
+  [model addItem:[self lockdownModeDetailItem]
+      toSectionWithIdentifier:SectionIdentifierLockdownMode];
+  [model setFooter:[self showPrivacyFooterItem]
+      forSectionWithIdentifier:SectionIdentifierLockdownMode];
 }
 
 #pragma mark - Model Objects
@@ -342,14 +356,28 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       SyncServiceFactory::GetInstance()->GetForBrowserState(_browserState);
 
   NSMutableArray* urls = [[NSMutableArray alloc] init];
-  // TODO(crbug.com/1462552): Remove IsSyncFeatureEnabled() usage after kSync
+  // TODO(crbug.com/40066949): Remove IsSyncFeatureEnabled() usage after kSync
   // users are migrated to kSignin in phase 3. See ConsentLevel::kSync for more
   // details.
   if (syncService->IsSyncFeatureEnabled()) {
     privacyFooterText =
         l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
     [urls addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
+  } else if (base::FeatureList::IsEnabled(
+                 kLinkAccountSettingsToPrivacyFooter)) {
+    if (!syncService->GetAccountInfo().IsEmpty()) {
+      // Footer for signed in users.
+      privacyFooterText = l10n_util::GetNSString(
+          IDS_IOS_PRIVACY_ACCOUNT_SETTINGS_AND_GOOGLE_SERVICES_FOOTER);
+      [urls addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
+    } else {
+      // Footer for signed out users.
+      privacyFooterText =
+          l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER);
+    }
   } else {
+    // Footer for signed in or signed out users. Should be deprecated once
+    // kLinkAccountSettingsToPrivacyFooter is enabled by default.
     privacyFooterText =
         l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER);
   }
@@ -359,6 +387,19 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   showPrivacyFooterItem.text = privacyFooterText;
   showPrivacyFooterItem.urls = urls;
   return showPrivacyFooterItem;
+}
+
+- (void)updatePrivacyFooterItem {
+  // The user might sign out from account settings, and thus the footer should
+  // change.
+  DCHECK([self.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierLockdownMode]);
+  [self.tableViewModel setFooter:[self showPrivacyFooterItem]
+        forSectionWithIdentifier:SectionIdentifierLockdownMode];
+  NSUInteger sectionIndex = [self.tableViewModel
+      sectionForSectionIdentifier:SectionIdentifierLockdownMode];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (TableViewItem*)clearBrowsingDetailItem {
@@ -389,6 +430,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
                        detailText:detailText
           accessibilityIdentifier:kPrivacyLockdownModeCellId];
   return _lockdownModeDetailItem;
+}
+
+- (TableViewItem*)privacyGuideDetailItem {
+  return [self detailItemWithType:ItemTypePrivacyGuide
+                          titleId:IDS_IOS_PRIVACY_GUIDE_TITLE
+                       detailText:nil
+          accessibilityIdentifier:kSettingsPrivacyGuideCellId];
 }
 
 - (TableViewSwitchItem*)incognitoReauthItem {
@@ -461,6 +509,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   // Remove observer bridges.
   _prefObserverBridge.reset();
 
+  // Remove sync observer.
+  _syncObserver.reset();
+
   // Clear C++ ivars.
   _browserState = nullptr;
 
@@ -499,6 +550,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       break;
     case ItemTypeLockdownMode:
       [self.handler showLockdownMode];
+      break;
+    case ItemTypePrivacyGuide:
+      [self.handler showPrivacyGuide];
       break;
     default:
       break;
@@ -606,9 +660,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   if (URL.gurl == GURL(kGoogleServicesSettingsURL)) {
     // kGoogleServicesSettingsURL is not a realy link. It should be handled
     // with a special case.
-    [self.dispatcher showGoogleServicesSettingsFromViewController:self];
+    [self.settingsHandler showGoogleServicesSettingsFromViewController:self];
   } else if (URL.gurl == GURL(kSyncSettingsURL)) {
-    [self.dispatcher showSyncSettingsFromViewController:self];
+    [self.settingsHandler showSyncSettingsFromViewController:self];
   } else {
     [super view:view didTapLinkURL:URL];
   }
@@ -620,13 +674,20 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [super view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  [self updatePrivacyFooterItem];
+}
+
 #pragma mark - Private
 
 // Called when the user taps on the information button of the disabled Incognito
 // reauth setting's UI cell.
 - (void)didTapIncognitoReauthDisabledInfoButton:(UIButton*)buttonView {
   InfoPopoverViewController* popover;
-  if (supervised_user::IsSubjectToParentalControls(_browserState->GetPrefs())) {
+  if (supervised_user::IsSubjectToParentalControls(
+                           *_browserState->GetPrefs())) {
     popover = [[SupervisedUserInfoPopoverViewController alloc]
         initWithMessage:
             l10n_util::GetNSString(
@@ -649,7 +710,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // interstitial setting's UI cell.
 - (void)didTapIncognitoInterstitialDisabledInfoButton:(UIButton*)buttonView {
   InfoPopoverViewController* popover;
-  if (supervised_user::IsSubjectToParentalControls(_browserState->GetPrefs())) {
+  if (supervised_user::IsSubjectToParentalControls(
+                           *_browserState->GetPrefs())) {
     popover = [[SupervisedUserInfoPopoverViewController alloc]
         initWithMessage:
             l10n_util::GetNSString(

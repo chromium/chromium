@@ -188,7 +188,7 @@ TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesFromFile) {
 
 TEST(PrinterCapabilitiesMacTest, SortMacCustomPaperSizes) {
   base::FilePath unsorted_plist;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &unsorted_plist);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &unsorted_plist);
   unsorted_plist = unsorted_plist.AppendASCII("components")
                        .AppendASCII("test")
                        .AppendASCII("data")

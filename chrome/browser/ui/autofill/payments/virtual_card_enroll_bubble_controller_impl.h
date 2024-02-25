@@ -27,6 +27,12 @@ class VirtualCardEnrollBubbleControllerImpl
       public content::WebContentsUserData<
           VirtualCardEnrollBubbleControllerImpl> {
  public:
+  // Virtual card enrollment status
+  enum class EnrollmentStatus {
+    kNone,
+    kPaymentsServerRequestInFlight,
+    kCompleted,
+  };
   VirtualCardEnrollBubbleControllerImpl(
       const VirtualCardEnrollBubbleControllerImpl&) = delete;
   VirtualCardEnrollBubbleControllerImpl& operator=(
@@ -45,39 +51,27 @@ class VirtualCardEnrollBubbleControllerImpl
   void ReshowBubble();
 
   // VirtualCardEnrollBubbleController:
-  std::u16string GetWindowTitle() const override;
-  std::u16string GetExplanatoryMessage() const override;
-  std::u16string GetAcceptButtonText() const override;
-  std::u16string GetDeclineButtonText() const override;
-  std::u16string GetLearnMoreLinkText() const override;
-  const VirtualCardEnrollmentFields GetVirtualCardEnrollmentFields()
+  const VirtualCardEnrollUiModel& GetUiModel() const override;
+  VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource()
       const override;
   AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const override;
 
 #if !BUILDFLAG(IS_ANDROID)
   void HideIconAndBubble() override;
+  bool IsEnrollmentInProgress() const override;
+  virtual void ShowConfirmationBubbleView(bool is_vcn_enrolled);
 #endif
 
-  void OnAcceptButton() override;
+  void OnAcceptButton(bool did_switch_to_loading_state = false) override;
   void OnDeclineButton() override;
   void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                      const GURL& url) override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
-
+  base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  GetOnBubbleClosedCallback() override;
+  const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+  GetConfirmationUiParams() const override;
   bool IsIconVisible() const override;
-
-#if defined(UNIT_TEST)
-  void SetBubbleShownClosureForTesting(
-      base::RepeatingClosure bubble_shown_closure_for_testing) {
-    bubble_shown_closure_for_testing_ = bubble_shown_closure_for_testing;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  bool DidShowBottomSheetForTesting() const {
-    return !!autofill_vcn_enroll_bottom_sheet_bridge_;
-  }
-#endif  // IS_ANDROID
-#endif  // UNIT_TEST
 
  protected:
   explicit VirtualCardEnrollBubbleControllerImpl(
@@ -89,14 +83,13 @@ class VirtualCardEnrollBubbleControllerImpl
   void DoShowBubble() override;
 
  private:
-  // Gets the correct virtual card enrollment source metric to log.
-  VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource();
+  friend class VirtualCardEnrollBubbleControllerImplTestApi;
 
   friend class content::WebContentsUserData<
       VirtualCardEnrollBubbleControllerImpl>;
 
-  // Contains more details regarding the sort of bubble to show the users.
-  VirtualCardEnrollmentFields virtual_card_enrollment_fields_;
+  // Contains the UI assets shown in the virtual card enrollment view.
+  VirtualCardEnrollUiModel ui_model_;
 
   // Whether we should re-show the dialog when users return to the tab.
   bool reprompt_required_ = false;
@@ -109,6 +102,9 @@ class VirtualCardEnrollBubbleControllerImpl
 #else
   // Returns whether the web content associated with this controller is active.
   virtual bool IsWebContentsActive();
+
+  // Represents the current status of virtual card enrollment.
+  EnrollmentStatus enrollment_status_ = EnrollmentStatus::kNone;
 
   // Represents the current state of icon and bubble.
   BubbleState bubble_state_ = BubbleState::kHidden;
@@ -127,6 +123,14 @@ class VirtualCardEnrollBubbleControllerImpl
   // Closure used for testing purposes that notifies that the enrollment bubble
   // has been shown.
   base::RepeatingClosure bubble_shown_closure_for_testing_;
+
+  // UI parameters needed to display the virtual card enrollment confirmation
+  // view.
+  std::optional<SaveCardAndVirtualCardEnrollConfirmationUiParams>
+      confirmation_ui_params_;
+
+  base::WeakPtrFactory<VirtualCardEnrollBubbleControllerImpl> weak_ptr_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

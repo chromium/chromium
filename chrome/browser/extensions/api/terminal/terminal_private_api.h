@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_TERMINAL_TERMINAL_PRIVATE_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 
@@ -44,7 +44,7 @@ class TerminalPrivateAPI : public BrowserContextKeyedAPI {
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "TerminalPrivateAPI"; }
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 
@@ -63,7 +63,7 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
   // Open the specified |process_name| with supplied |args|.
   ExtensionFunction::ResponseAction OpenProcess(
       const std::string& process_name,
-      absl::optional<std::vector<std::string>> args);
+      std::optional<std::vector<std::string>> args);
 
  private:
   void OnGuestRunning(const std::string& user_id_hash,
@@ -78,7 +78,7 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
       const std::string& user_id_hash,
       base::CommandLine cmdline,
       const std::string& terminal_id,
-      absl::optional<vm_tools::cicerone::GetVshSessionResponse>);
+      std::optional<vm_tools::cicerone::GetVshSessionResponse>);
 
   void OpenProcess(const std::string& user_id_hash,
                    base::CommandLine cmdline);

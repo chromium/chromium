@@ -377,6 +377,5 @@ TEST_F(CastMediaNotificationItemTest, StopCasting) {
 
   EXPECT_CALL(*mock_router, TerminateRoute(item_->route_id()));
   EXPECT_CALL(item_manager_, FocusDialog());
-  item_->StopCasting(
-      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
+  item_->StopCasting();
 }

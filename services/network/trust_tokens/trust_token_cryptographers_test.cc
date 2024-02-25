@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/boringssl_trust_token_issuance_cryptographer.h"
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
 #include "services/network/trust_tokens/boringssl_trust_token_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
 #include "url/gurl.h"
@@ -33,12 +33,12 @@ const mojom::TrustTokenProtocolVersion kProtocolVersion =
 // led to the test running for 2.5 sec on a debug build.
 constexpr size_t kNumTokensToRequest = 3;
 
-base::StringPiece as_string(base::span<const uint8_t> bytes) {
-  return base::StringPiece(reinterpret_cast<const char*>(bytes.data()),
-                           bytes.size());
+std::string_view as_string(base::span<const uint8_t> bytes) {
+  return std::string_view(reinterpret_cast<const char*>(bytes.data()),
+                          bytes.size());
 }
 
-base::StringPiece as_string(const std::vector<uint8_t>& bytes) {
+std::string_view as_string(const std::vector<uint8_t>& bytes) {
   return as_string(base::make_span(bytes));
 }
 
@@ -63,7 +63,7 @@ void RequestManyTokensAndRetainOneArbitrarily(
         reinterpret_cast<const char*>(key.value.data()), key.value.size())));
   }
 
-  absl::optional<std::string> maybe_base64_encoded_issuance_request =
+  std::optional<std::string> maybe_base64_encoded_issuance_request =
       issuance_cryptographer.BeginIssuance(kNumTokensToRequest);
   ASSERT_TRUE(maybe_base64_encoded_issuance_request);
 
@@ -99,7 +99,7 @@ void RedeemSingleToken(const TestTrustTokenIssuer& issuer,
   ASSERT_TRUE(redemption_cryptographer.Initialize(kProtocolVersion,
                                                   kNumTokensToRequest));
 
-  absl::optional<std::string> maybe_base64_encoded_redemption_request =
+  std::optional<std::string> maybe_base64_encoded_redemption_request =
       redemption_cryptographer.BeginRedemption(token_to_redeem,
                                                kRedeemingOrigin);
 

@@ -50,7 +50,7 @@ std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
   }
 
   // look at the command line.
-  absl::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
+  std::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kOzoneNNPalmSwitchName));
   if (ozone_switch_value.has_value() && ozone_switch_value->is_dict()) {
@@ -91,7 +91,7 @@ std::string FetchNeuralPalmModelVersion(const EventDeviceInfo& devinfo,
   }
 
   // look at the command line.
-  absl::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
+  std::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kOzoneNNPalmSwitchName));
   if (ozone_switch_value.has_value() && ozone_switch_value->is_dict()) {

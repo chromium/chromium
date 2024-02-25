@@ -6,10 +6,11 @@
 #define ASH_SYSTEM_TRAY_TRAY_ITEM_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/label.h"
@@ -31,6 +32,8 @@ class Shelf;
 // rendered as a label, but reading such text literally will not always be
 // understandable.
 class IconizedLabel : public views::Label {
+  METADATA_HEADER(IconizedLabel, views::Label)
+
  public:
   void SetCustomAccessibleName(const std::u16string& name) {
     custom_accessible_name_ = name;
@@ -63,6 +66,8 @@ class IconizedLabel : public views::Label {
 // animated (for instance, when the `NotificationCenterTray` is hidden).
 class ASH_EXPORT TrayItemView : public views::View,
                                 public views::AnimationDelegateViews {
+  METADATA_HEADER(TrayItemView, views::View)
+
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -137,7 +142,6 @@ class ASH_EXPORT TrayItemView : public views::View,
   void SetVisible(bool visible) override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
-  const char* GetClassName() const override;
 
   void set_use_scale_in_animation(bool use_scale_in_animation) {
     use_scale_in_animation_ = use_scale_in_animation;
@@ -185,7 +189,7 @@ class ASH_EXPORT TrayItemView : public views::View,
   double GetItemScaleProgressFromAnimationProgress(
       double animation_value) const;
 
-  const raw_ptr<Shelf, DanglingUntriaged | ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf, DanglingUntriaged> shelf_;
 
   // When showing the item in tray, the animation is executed with 2 stages:
   // 1. Resize: The size reserved for tray item view gradually increases.
@@ -209,15 +213,14 @@ class ASH_EXPORT TrayItemView : public views::View,
   bool is_active_ = false;
 
   // Only one of |label_| and |image_view_| should be non-null.
-  raw_ptr<IconizedLabel, DanglingUntriaged | ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::ImageView, DanglingUntriaged | ExperimentalAsh> image_view_ =
-      nullptr;
+  raw_ptr<IconizedLabel, DanglingUntriaged> label_ = nullptr;
+  raw_ptr<views::ImageView, DanglingUntriaged> image_view_ = nullptr;
 
   // Measures animation smoothness metrics for "show" animation.
-  absl::optional<ui::ThroughputTracker> show_throughput_tracker_;
+  std::optional<ui::ThroughputTracker> show_throughput_tracker_;
 
   // Measures animation smoothness metrics for "hide" animation.
-  absl::optional<ui::ThroughputTracker> hide_throughput_tracker_;
+  std::optional<ui::ThroughputTracker> hide_throughput_tracker_;
 
   // Number of active requests to disable animation.
   size_t disable_animation_count_ = 0u;

@@ -31,6 +31,9 @@
 #include "base/timer/timer.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/events/ozone/evdev/heatmap_palm_detector.h"
+#endif
 #include "ui/events/ozone/evdev/touch_evdev_debug_buffer.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/types/event_type.h"
@@ -299,7 +302,7 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   bool palm_on_tool_type_palm_;
 
   // The start time of a touch session.
-  absl::optional<base::TimeTicks> session_start_time_ = absl::nullopt;
+  std::optional<base::TimeTicks> session_start_time_ = std::nullopt;
 
   // Whether the last touch was detected as palm.
   bool last_touch_is_palm_ = false;
@@ -315,6 +318,17 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   // Not owned!
   const raw_ptr<SharedPalmDetectionFilterState> shared_palm_state_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The corresponding model id if the device supports hidraw spi, otherwise
+  // it will be `kNotSupported`.
+  HeatmapPalmDetector::ModelId hidraw_model_id_ =
+      HeatmapPalmDetector::ModelId::kNotSupported;
+
+  // The hidraw device path if the device supports hidraw spi, otherwise it will
+  // be empty string.
+  std::string hidraw_device_path_;
+#endif
 
   base::WeakPtrFactory<TouchEventConverterEvdev> weak_factory_{this};
 };

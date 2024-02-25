@@ -1,6 +1,6 @@
 Tests that calling getter on prototype will call it on the object.
 
-console-call-getter-on-proto.js:30 B {value: 239}
+console-call-getter-on-proto.js:29 B {value: 239}
     value: 239
     foo: 239
     [[Prototype]]: A

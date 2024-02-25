@@ -41,7 +41,7 @@ class AssistantUiElementViewAnimator : public ElementAnimator {
   AnimationSmoothnessCallback GetAnimationSmoothnessCallback() const;
 
  private:
-  const raw_ptr<AssistantUiElementView, ExperimentalAsh> view_;
+  const raw_ptr<AssistantUiElementView> view_;
   std::string const animation_smoothness_histogram_;
 };
 

@@ -78,7 +78,7 @@ using web::SecurityStyle;
   // Try updating SSLStatus for current NavigationItem asynchronously.
   scoped_refptr<net::X509Certificate> cert;
   if (item->GetURL().SchemeIsCryptographic()) {
-    cert = web::CreateCertFromTrust(trust);
+    cert = web::CreateCertFromTrust(trust.get());
     if (cert) {
       scoped_refptr<net::X509Certificate> oldCert = item->GetSSL().certificate;
       std::string oldHost = item->GetSSL().cert_status_host;
@@ -130,7 +130,8 @@ using web::SecurityStyle;
 
   // NavigationItem's UniqueID is preserved even after redirects, so
   // checking that cert and URL match is necessary.
-  scoped_refptr<net::X509Certificate> cert(web::CreateCertFromTrust(trust));
+  scoped_refptr<net::X509Certificate> cert(
+      web::CreateCertFromTrust(trust.get()));
   std::string GURLHost = base::SysNSStringToUTF8(host);
   web::SSLStatus& SSLStatus = item->GetSSL();
   if (item->GetURL().SchemeIsCryptographic() && !!SSLStatus.certificate &&

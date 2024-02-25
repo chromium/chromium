@@ -7,12 +7,14 @@
 
 #include <aaudio/AAudio.h>
 
+#include "base/android/requires_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/audio_io.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
@@ -20,8 +22,9 @@ namespace media {
 class AudioManagerAndroid;
 
 // Class which uses the AAudio library to record input.
-class AAudioInputStream : public AudioInputStream,
-                          public AAudioStreamWrapper::DataCallback {
+class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
+    : public AudioInputStream,
+      public AAudioStreamWrapper::DataCallback {
  public:
   AAudioInputStream(AudioManagerAndroid* manager,
                     const AudioParameters& params);
@@ -57,6 +60,8 @@ class AAudioInputStream : public AudioInputStream,
 
   const raw_ptr<AudioManagerAndroid> audio_manager_;
   const AudioParameters params_;
+
+  AmplitudePeakDetector peak_detector_;
 
   std::unique_ptr<AAudioStreamWrapper> stream_wrapper_;
 

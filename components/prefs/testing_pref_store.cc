@@ -34,7 +34,7 @@ class ChangedValueWaiter : public PrefStore::Observer {
 
  private:
   void QuitRunLoopIfNewValueIsPresent() {
-    absl::optional<base::Value> new_value;
+    std::optional<base::Value> new_value;
     {
       const base::Value* value = nullptr;
       if (store_->GetValue(key_, &value)) {
@@ -59,7 +59,7 @@ class ChangedValueWaiter : public PrefStore::Observer {
 
   scoped_refptr<PrefStore> store_;
   std::string key_;
-  absl::optional<base::Value> old_value_;
+  std::optional<base::Value> old_value_;
   base::RunLoop run_loop_;
 };
 

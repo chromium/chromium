@@ -91,6 +91,7 @@ void IDBFactory::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(remote_);
   visitor->Trace(feature_observer_);
+  visitor->Trace(weak_factory_);
 }
 
 void IDBFactory::SetRemote(
@@ -129,10 +130,12 @@ scoped_refptr<base::SingleThreadTaskRunner> IDBFactory::GetTaskRunner() {
   return GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess);
 }
 
-ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
-                                          ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<IDBDatabaseInfo>> IDBFactory::GetDatabaseInfo(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   ExecutionContext* context = GetValidContext(script_state);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<IDBDatabaseInfo>>>(
       script_state, exception_state.GetContext());
   if (!context) {
     resolver->Reject();
@@ -152,12 +155,13 @@ ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
   }
 
   AllowIndexedDB(WTF::BindOnce(&IDBFactory::GetDatabaseInfoImpl,
-                               weak_factory_.GetWeakPtr(),
+                               WrapPersistent(weak_factory_.GetWeakCell()),
                                WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
-void IDBFactory::GetDatabaseInfoImpl(ScriptPromiseResolver* resolver) {
+void IDBFactory::GetDatabaseInfoImpl(
+    ScriptPromiseResolverTyped<IDLSequence<IDBDatabaseInfo>>* resolver) {
   if (!allowed_.value()) {
     ScriptState* script_state = resolver->GetScriptState();
     ScriptState::Scope scope(script_state);
@@ -167,13 +171,13 @@ void IDBFactory::GetDatabaseInfoImpl(ScriptPromiseResolver* resolver) {
     return;
   }
 
-  GetRemote()->GetDatabaseInfo(WTF::BindOnce(&IDBFactory::DidGetDatabaseInfo,
-                                             weak_factory_.GetWeakPtr(),
-                                             WrapPersistent(resolver)));
+  GetRemote()->GetDatabaseInfo(WTF::BindOnce(
+      &IDBFactory::DidGetDatabaseInfo,
+      WrapPersistent(weak_factory_.GetWeakCell()), WrapPersistent(resolver)));
 }
 
 void IDBFactory::DidGetDatabaseInfo(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<IDBDatabaseInfo>>* resolver,
     Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions,
     mojom::blink::IDBErrorPtr error) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -181,7 +185,7 @@ void IDBFactory::DidGetDatabaseInfo(
     return;
   }
 
-  if (error) {
+  if (error->error_code != mojom::blink::IDBException::kNoError) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         static_cast<DOMExceptionCode>(error->error_code),
         error->error_message));
@@ -218,16 +222,12 @@ void IDBFactory::GetDatabaseInfoForDevTools(
   DCHECK(context->IsContextThread());
 
   AllowIndexedDB(WTF::BindOnce(&IDBFactory::GetDatabaseInfoForDevToolsHelper,
-                               weak_factory_.GetWeakPtr(),
+                               WrapPersistent(weak_factory_.GetWeakCell()),
                                std::move(callback)));
 }
 
 void IDBFactory::ContextDestroyed() {
-  weak_factory_.InvalidateWeakPtrs();
-}
-
-void IDBFactory::Dispose() {
-  weak_factory_.InvalidateWeakPtrs();
+  weak_factory_.Invalidate();
 }
 
 void IDBFactory::GetDatabaseInfoForDevToolsHelper(
@@ -293,9 +293,10 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
       std::move(metrics), CreatePendingRemoteFeatureObserver());
 
   auto do_open = WTF::BindOnce(
-      &IDBFactory::OpenInternalImpl, weak_factory_.GetWeakPtr(),
-      WrapPersistent(request), std::move(callbacks_remote),
-      std::move(transaction_receiver), name, version, transaction_id);
+      &IDBFactory::OpenInternalImpl,
+      WrapPersistent(weak_factory_.GetWeakCell()), WrapPersistent(request),
+      std::move(callbacks_remote), std::move(transaction_receiver), name,
+      version, transaction_id);
   if (allowed_.has_value() && !*allowed_) {
     // When the permission state is cached, `AllowIndexedDB` will invoke its
     // callback synchronously, and thus we'd dispatch the error event
@@ -384,7 +385,7 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
       CreatePendingRemoteFeatureObserver());
 
   auto do_delete = WTF::BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
-                                 weak_factory_.GetWeakPtr(),
+                                 WrapPersistent(weak_factory_.GetWeakCell()),
                                  WrapPersistent(request), name, force_close);
   if (allowed_.has_value() && !*allowed_) {
     // When the permission state is cached, `AllowIndexedDB` will invoke its
@@ -479,7 +480,7 @@ void IDBFactory::AllowIndexedDB(base::OnceCallback<void()> callback) {
   settings_client->AllowStorageAccess(
       WebContentSettingsClient::StorageType::kIndexedDB,
       WTF::BindOnce(&IDBFactory::DidAllowIndexedDB,
-                    weak_factory_.GetWeakPtr()));
+                    WrapPersistent(weak_factory_.GetWeakCell())));
 }
 
 void IDBFactory::DidAllowIndexedDB(bool allow_access) {

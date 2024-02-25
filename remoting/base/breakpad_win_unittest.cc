@@ -22,11 +22,6 @@ namespace {
 // to the crashing child process.
 const char kPipeVariableName[] = "REMOTING_BREAKPAD_WIN_DEATH_TEST_PIPE_NAME";
 
-// The prefix string used to generate a unique crash server pipe name.
-// The name has to be unique as multiple test instances can be running
-// simultaneously.
-const wchar_t kPipeNamePrefix[] = L"\\\\.\\pipe\\";
-
 class MockCrashServerCallbacks {
  public:
   MockCrashServerCallbacks();
@@ -96,11 +91,11 @@ void BreakpadWinDeathTest::SetUp() {
     RPC_STATUS status = UuidCreate(&guid);
     EXPECT_TRUE(status == RPC_S_OK || status == RPC_S_UUID_LOCAL_ONLY);
 
-    pipe_name_ = base::StringPrintf(
-        L"%ls%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", kPipeNamePrefix,
+    pipe_name_ = base::ASCIIToWide(base::StringPrintf(
+        "\\\\.\\pipe\\%08lx-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
         guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1],
         guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5],
-        guid.Data4[6], guid.Data4[7]);
+        guid.Data4[6], guid.Data4[7]));
     EXPECT_TRUE(
         environment->SetVar(kPipeVariableName, base::WideToUTF8(pipe_name_)));
 

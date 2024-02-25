@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -178,7 +178,7 @@ std::string SerializeAttributionReportingEligibleHeader(
 
   ApplyGrease(eligibilities, options, grease1, grease2);
 
-  absl::optional<std::string> eligible_header =
+  std::optional<std::string> eligible_header =
       net::structured_headers::SerializeDictionary(
           net::structured_headers::Dictionary(std::move(eligibilities)));
   DCHECK(eligible_header.has_value());
@@ -218,7 +218,7 @@ std::string GetAttributionSupportHeader(
 
   ApplyGrease(registrars, options, grease1, grease2);
 
-  absl::optional<std::string> support_header =
+  std::optional<std::string> support_header =
       net::structured_headers::SerializeDictionary(
           net::structured_headers::Dictionary(std::move(registrars)));
   DCHECK(support_header.has_value());

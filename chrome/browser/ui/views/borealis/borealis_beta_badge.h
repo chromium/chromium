@@ -8,14 +8,12 @@
 #include <string>
 
 #include "ui/views/view.h"
-#include "ui/views/views_export.h"
-
-namespace views {
 
 // Badge used to signify borealis' beta-ness on various UI surfaces.
-class VIEWS_EXPORT BorealisBetaBadge : public View {
+class BorealisBetaBadge : public views::View {
+  METADATA_HEADER(BorealisBetaBadge, views::View)
+
  public:
-  METADATA_HEADER(BorealisBetaBadge);
 
   BorealisBetaBadge();
   ~BorealisBetaBadge() override;
@@ -30,7 +28,5 @@ class VIEWS_EXPORT BorealisBetaBadge : public View {
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 };
-
-}  // namespace views
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_BETA_BADGE_H_

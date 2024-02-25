@@ -27,8 +27,11 @@
 #include <windows.h>
 // Evntprov.h must come after windows.h.
 #include <evntprov.h>
+#include <cstdint>
 // TODO(joel@microsoft.com) Update headers and use defined constants instead
 // of magic numbers after crbug.com/1089996 is resolved.
+
+#include "base/functional/callback.h"
 
 /*
  * An instance of TlmProvider represents a logger through which data can be
@@ -107,23 +110,32 @@
  *     my_provider.Unregister();
  */
 
+#include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
-class TlmProvider {
+class BASE_EXPORT TlmProvider {
  public:
+  enum class EventControlCode {
+    kDisableProvider = 0,
+    kEnableProvider = 1,
+    kCaptureState = 2,
+    kHighest = kCaptureState
+  };
+
   // Initialize a provider in the unregistered state.
   // Note that WriteEvent and Unregister operations on an unregistered
   // provider are safe no-ops.
-  constexpr TlmProvider() noexcept = default;
+  TlmProvider() noexcept;
 
   // Initializes a provider and attempts to register it.
   // If there is an error, provider will be left unregistered.
   // Note that WriteEvent and Unregister operations on an unregistered
   // provider are safe no-ops.
-  TlmProvider(const char* provider_name,
-              const GUID& provider_guid,
-              PENABLECALLBACK enable_callback = nullptr,
-              void* enable_callback_context = nullptr) noexcept;
+  TlmProvider(
+      const char* provider_name,
+      const GUID& provider_guid,
+      base::RepeatingCallback<void(EventControlCode)> on_updated) noexcept;
 
   // If provider is registered, unregisters provider.
   ~TlmProvider();
@@ -145,10 +157,10 @@ class TlmProvider {
   // Calling Register on an already-registered provider is a fatal error.
   // Not thread safe - caller must ensure serialization between calls to
   // Register() and calls to Unregister().
-  ULONG Register(const char* provider_name,
-                 const GUID& provider_guid,
-                 PENABLECALLBACK enable_callback = nullptr,
-                 void* enable_callback_context = nullptr) noexcept;
+  ULONG Register(
+      const char* provider_name,
+      const GUID& provider_guid,
+      base::RepeatingCallback<void(EventControlCode)> on_updated) noexcept;
 
   // Returns true if any active trace listeners are interested in any events
   // from this provider.
@@ -169,11 +181,13 @@ class TlmProvider {
   // Equivalent to IsEnabled(event_descriptor.level, event_descriptor.keyword).
   bool IsEnabled(const EVENT_DESCRIPTOR& event_descriptor) const noexcept;
 
+  uint64_t keyword_any() const { return keyword_any_; }
+
   // If any active trace listeners are interested in events from this provider
   // with the specified level and keyword, packs the data into an event and
   // sends it to ETW. Returns Win32 error code or 0 for success.
   template <class... FieldTys>
-  ULONG WriteEvent(const char* event_name,
+  ULONG WriteEvent(std::string_view event_name,
                    const EVENT_DESCRIPTOR& event_descriptor,
                    const FieldTys&... event_fields) const noexcept {
     if (!IsEnabled(event_descriptor)) {
@@ -255,7 +269,8 @@ class TlmProvider {
       PVOID callback_context);
 
   // Returns initial value of metadata_index.
-  uint16_t EventBegin(char* metadata, const char* event_name) const noexcept;
+  uint16_t EventBegin(char* metadata,
+                      std::string_view event_name) const noexcept;
 
   char EventAddField(char* metadata,
                      uint16_t* metadata_index,
@@ -275,15 +290,14 @@ class TlmProvider {
   uint16_t AppendNameToMetadata(char* metadata,
                                 uint16_t metadata_size,
                                 uint16_t metadata_index,
-                                const char* name) const noexcept;
+                                std::string_view name) const noexcept;
 
   uint32_t level_plus1_ = 0;
   uint16_t provider_metadata_size_ = 0;
   uint64_t keyword_any_ = 0;
   uint64_t keyword_all_ = 0;
   uint64_t reg_handle_ = 0;
-  PENABLECALLBACK enable_callback_ = nullptr;
-  raw_ptr<void> enable_callback_context_ = nullptr;
+  base::RepeatingCallback<void(EventControlCode)> on_updated_callback_;
   char provider_metadata_[kMaxProviderMetadataSize] = {};
 };
 
@@ -341,6 +355,35 @@ class TlmUtf8StringField
 
  private:
   const char* value_;
+};
+
+// Class that represents an event field containing a 64 bit signed integer.
+class TlmInt64Field
+    : public TlmFieldBase<1, 9>  // 1 data descriptor, Type = _TlgInINT64
+{
+ public:
+  // name is a utf-8 nul-terminated string.
+  // value is 64 bit signed integer
+  TlmInt64Field(const char* name, const int64_t value) noexcept;
+  int64_t Value() const noexcept;
+  void FillEventDescriptor(EVENT_DATA_DESCRIPTOR* descriptors) const noexcept;
+
+ private:
+  const int64_t value_;
+};
+
+class TlmUInt64Field
+    : public TlmFieldBase<1, 10>  // 1 data descriptor, Type = _TlgInUINT64
+{
+ public:
+  // name is a utf-8 nul-terminated string.
+  // value is 64 bit signed integer
+  TlmUInt64Field(const char* name, const uint64_t value) noexcept;
+  uint64_t Value() const noexcept;
+  void FillEventDescriptor(EVENT_DATA_DESCRIPTOR* descriptors) const noexcept;
+
+ private:
+  const uint64_t value_;
 };
 
 // Helper for creating event descriptors for use with WriteEvent.

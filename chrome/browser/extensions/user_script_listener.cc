@@ -25,9 +25,7 @@ using content::NavigationThrottle;
 
 namespace extensions {
 
-class UserScriptListener::Throttle
-    : public NavigationThrottle,
-      public base::SupportsWeakPtr<UserScriptListener::Throttle> {
+class UserScriptListener::Throttle : public NavigationThrottle {
  public:
   explicit Throttle(content::NavigationHandle* navigation_handle)
       : NavigationThrottle(navigation_handle) {}
@@ -58,9 +56,12 @@ class UserScriptListener::Throttle
     return "UserScriptListener::Throttle";
   }
 
+  base::WeakPtr<Throttle> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
  private:
   bool should_defer_ = true;
   bool did_defer_ = false;
+  base::WeakPtrFactory<Throttle> weak_ptr_factory_{this};
 };
 
 struct UserScriptListener::ProfileData {
@@ -78,7 +79,7 @@ UserScriptListener::UserScriptListener() {
     for (auto* profile :
          g_browser_process->profile_manager()->GetLoadedProfiles()) {
       // Some profiles cannot have extensions, such as the System Profile.
-      if (extensions::ChromeContentBrowserClientExtensionsPart::
+      if (ChromeContentBrowserClientExtensionsPart::
               AreExtensionsDisabledForProfile(profile)) {
         continue;
       }
@@ -214,8 +215,8 @@ void UserScriptListener::CollectURLPatterns(content::BrowserContext* context,
 }
 
 void UserScriptListener::OnProfileAdded(Profile* profile) {
-  if (extensions::ChromeContentBrowserClientExtensionsPart::
-          AreExtensionsDisabledForProfile(profile)) {
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          profile)) {
     return;
   }
 

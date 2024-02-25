@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSIONS_BROWSER_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
+#include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -27,7 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -207,7 +209,7 @@ class ExtensionsBrowserClient {
 
   // Returns true if |extension_id| can run in an incognito window.
   virtual bool IsExtensionIncognitoEnabled(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::BrowserContext* context) const = 0;
 
   // Returns true if |extension| can see events and data from another
@@ -260,6 +262,11 @@ class ExtensionsBrowserClient {
   // Returns the ProcessManagerDelegate shared across all BrowserContexts. May
   // return NULL in tests or for simple embedders.
   virtual ProcessManagerDelegate* GetProcessManagerDelegate() const = 0;
+
+  virtual mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  GetControlledFrameEmbedderURLLoader(
+      int frame_tree_node_id,
+      content::BrowserContext* browser_context) = 0;
 
   // Creates a new ExtensionHostDelegate instance.
   virtual std::unique_ptr<ExtensionHostDelegate>
@@ -395,7 +402,7 @@ class ExtensionsBrowserClient {
   // Unloaded extensions will return true if they are not blocked, disabled,
   // blocklisted or uninstalled (for external extensions). The default return
   // value of this function is false.
-  virtual bool IsExtensionEnabled(const std::string& extension_id,
+  virtual bool IsExtensionEnabled(const ExtensionId& extension_id,
                                   content::BrowserContext* context) const;
 
   // http://crbug.com/829412
@@ -429,7 +436,7 @@ class ExtensionsBrowserClient {
 
   // Returns true if the |extension_id| requires its own isolated storage
   // partition.
-  virtual bool HasIsolatedStorage(const std::string& extension_id,
+  virtual bool HasIsolatedStorage(const ExtensionId& extension_id,
                                   content::BrowserContext* context);
 
   // Returns whether screenshot of |web_contents| is restricted due to Data Leak
@@ -525,7 +532,7 @@ class ExtensionsBrowserClient {
       content::SiteInstance* owner_site_instance,
       const std::string& partition_name,
       bool in_memory,
-      base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+      base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
           callback);
 
   // Creates password reuse detection manager when new extension web contents

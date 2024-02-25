@@ -12,7 +12,7 @@
 namespace aura {
 
 ScopedSimpleKeyboardHook::ScopedSimpleKeyboardHook(
-    absl::optional<base::flat_set<ui::DomCode>> dom_codes)
+    std::optional<base::flat_set<ui::DomCode>> dom_codes)
     : dom_codes_(std::move(dom_codes)) {}
 
 ScopedSimpleKeyboardHook::~ScopedSimpleKeyboardHook() = default;

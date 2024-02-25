@@ -12,8 +12,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.url.JUnitTestGURLs.URL_1;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,12 +24,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadCommittedDetails;
@@ -39,13 +35,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit tests for {@link EngagementSignalsInitialScrollObserver}.
- */
+/** Unit tests for {@link EngagementSignalsInitialScrollObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
-        ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
 public class EngagementSignalsInitialScrollObserverUnitTest {
     private static final int SCROLL_EXTENT = 100;
 
@@ -53,14 +45,11 @@ public class EngagementSignalsInitialScrollObserverUnitTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    @Rule
-    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private GestureListenerManagerImpl mGestureListenerManagerImpl;
+    @Mock private GestureListenerManagerImpl mGestureListenerManagerImpl;
 
     private EngagementSignalsInitialScrollObserver mInitialScrollObserver;
 
@@ -103,8 +92,14 @@ public class EngagementSignalsInitialScrollObserverUnitTest {
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
         assertTrue(mInitialScrollObserver.hasCurrentPageHadScrollDown());
 
-        var details = new LoadCommittedDetails(0, JUnitTestGURLs.getGURL(URL_1), false,
-                /*isSameDocument=*/false, /*isMainFrame=*/true, 200);
+        var details =
+                new LoadCommittedDetails(
+                        0,
+                        JUnitTestGURLs.URL_1,
+                        false,
+                        /* isSameDocument= */ false,
+                        /* isMainFrame= */ true,
+                        200);
         webContentsObserver.navigationEntryCommitted(details);
         assertFalse(mInitialScrollObserver.hasCurrentPageHadScrollDown());
     }
@@ -124,12 +119,13 @@ public class EngagementSignalsInitialScrollObserverUnitTest {
 
     private void initializeTabForTest() {
         Tab initialTab = env.prepareTab();
-        doAnswer(invocation -> {
-            CustomTabTabObserver observer = invocation.getArgument(0);
-            initialTab.addObserver(observer);
-            observer.onAttachedToInitialTab(initialTab);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            CustomTabTabObserver observer = invocation.getArgument(0);
+                            initialTab.addObserver(observer);
+                            observer.onAttachedToInitialTab(initialTab);
+                            return null;
+                        })
                 .when(env.tabObserverRegistrar)
                 .registerActivityTabObserver(any());
 
@@ -144,7 +140,8 @@ public class EngagementSignalsInitialScrollObserverUnitTest {
         ArgumentCaptor<GestureStateListener> gestureStateListenerArgumentCaptor =
                 ArgumentCaptor.forClass(GestureStateListener.class);
         verify(mGestureListenerManagerImpl, atLeastOnce())
-                .addListener(gestureStateListenerArgumentCaptor.capture(),
+                .addListener(
+                        gestureStateListenerArgumentCaptor.capture(),
                         eq(org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE));
         return gestureStateListenerArgumentCaptor.getValue();
     }

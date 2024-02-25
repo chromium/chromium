@@ -63,15 +63,17 @@ std::vector<multidevice::BeaconSeed> CreateFakeBeaconSeeds(int id) {
 
   multidevice::BeaconSeed seed1(
       fake_beacon_seed1_data + id_str /* data */,
-      base::Time::FromJavaTime(fake_beacon_seed1_start_ms *
-                               id) /* start_time */,
-      base::Time::FromJavaTime(fake_beacon_seed1_end_ms * id) /* end_time */);
+      base::Time::FromMillisecondsSinceUnixEpoch(fake_beacon_seed1_start_ms *
+                                                 id) /* start_time */,
+      base::Time::FromMillisecondsSinceUnixEpoch(fake_beacon_seed1_end_ms *
+                                                 id) /* end_time */);
 
   multidevice::BeaconSeed seed2(
       fake_beacon_seed2_data + id_str /* data */,
-      base::Time::FromJavaTime(fake_beacon_seed2_start_ms *
-                               id) /* start_time */,
-      base::Time::FromJavaTime(fake_beacon_seed2_end_ms * id) /* end_time */);
+      base::Time::FromMillisecondsSinceUnixEpoch(fake_beacon_seed2_start_ms *
+                                                 id) /* start_time */,
+      base::Time::FromMillisecondsSinceUnixEpoch(fake_beacon_seed2_end_ms *
+                                                 id) /* end_time */);
 
   std::vector<multidevice::BeaconSeed> seeds = {seed1, seed2};
   return seeds;
@@ -158,9 +160,9 @@ class SecureChannelBluetoothHelperImplTest : public testing::Test {
 
   std::unique_ptr<FakeBleAdvertisementGenerator>
       fake_ble_advertisement_generator_;
-  raw_ptr<MockForegroundEidGenerator, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockForegroundEidGenerator, DanglingUntriaged>
       mock_foreground_eid_generator_;
-  raw_ptr<FakeBackgroundEidGenerator, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeBackgroundEidGenerator, DanglingUntriaged>
       fake_background_eid_generator_;
 
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;

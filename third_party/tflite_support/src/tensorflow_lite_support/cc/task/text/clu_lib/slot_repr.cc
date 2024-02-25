@@ -20,15 +20,15 @@ limitations under the License.
 #include <memory>
 #include <vector>
 
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/status/statusor.h"      // from @com_google_absl
-#include "absl/strings/match.h"        // from @com_google_absl
-#include "absl/strings/str_cat.h"      // from @com_google_absl
-#include "absl/strings/str_split.h"    // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
+#include "absl/strings/match.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/strings/strip.h"        // from @com_google_absl
-#include "absl/strings/substitute.h"   // from @com_google_absl
-#include "absl/types/span.h"           // from @com_google_absl
+#include "absl/strings/strip.h"  // from @com_google_absl
+#include "absl/strings/substitute.h"  // from @com_google_absl
+#include "absl/types/span.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/text/clu_lib/constants.h"
 
@@ -39,8 +39,7 @@ using ::absl::StatusOr;
 // SlotRepr
 
 std::string SlotRepr::FullName() const {
-  if (domain_.empty())
-    return name_;
+  if (domain_.empty()) return name_;
   return absl::StrCat(domain_, kNamespaceDelim, name_);
 }
 
@@ -53,16 +52,14 @@ SlotRepr::SplitDomainAndName(const absl::string_view full_name) {
   }
   absl::string_view domain = "";
   absl::string_view name;
-  if (splits.size() == 2)
-    domain = splits[0];
+  if (splits.size() == 2) domain = splits[0];
   name = splits[splits.size() - 1];
   return std::tuple<absl::string_view, absl::string_view>{domain, name};
 }
 
 StatusOr<SlotRepr> SlotRepr::CreateFromIob(const absl::string_view repr) {
   SlotRepr ret;
-  if (IsO(repr))
-    return ret;
+  if (IsO(repr)) return ret;
   absl::string_view full_name;
   if (absl::StartsWith(repr, kSlotBTagPrefix)) {
     full_name = absl::StripPrefix(repr, kSlotBTagPrefix);
@@ -73,14 +70,13 @@ StatusOr<SlotRepr> SlotRepr::CreateFromIob(const absl::string_view repr) {
                                             kSlotBTagPrefix, " or ",
                                             kSlotITagPrefix, ": ", repr));
   }
-  ASSIGN_OR_RETURN(const auto domain_name_pair, SplitDomainAndName(full_name));
+  TFLITE_ASSIGN_OR_RETURN(const auto domain_name_pair, SplitDomainAndName(full_name));
   ret.domain_ = std::string(std::get<0>(domain_name_pair));
   ret.name_ = std::string(std::get<1>(domain_name_pair));
   return ret;
 }
 
-SlotRepr SlotRepr::Create(absl::string_view name,
-                          absl::string_view domain,
+SlotRepr SlotRepr::Create(absl::string_view name, absl::string_view domain,
                           const bool share_across_domains) {
   SlotRepr ret;
   ret.name_ = std::string(name);
@@ -98,9 +94,7 @@ bool SlotRepr::IsB(const absl::string_view repr) {
   return absl::StartsWith(repr, kSlotBTagPrefix);
 }
 
-bool SlotRepr::IsO(const absl::string_view repr) {
-  return repr == kSlotOTag;
-}
+bool SlotRepr::IsO(const absl::string_view repr) { return repr == kSlotOTag; }
 
 bool SlotRepr::operator==(const SlotRepr& other) const {
   return domain_ == other.domain_ && name_ == other.name_;
@@ -123,12 +117,12 @@ absl::Status ResolveInconsistentIobTagSeq(std::vector<std::string>* tag_names) {
   for (size_t i = 0; i < tag_names->size(); ++i) {
     const auto& tag = tag_names->at(i);
     if (SlotRepr::IsI(tag)) {
-      ASSIGN_OR_RETURN(const SlotRepr repr, SlotRepr::CreateFromIob(tag));
+      TFLITE_ASSIGN_OR_RETURN(const SlotRepr repr, SlotRepr::CreateFromIob(tag));
       if (SlotRepr::IsO(prev_tag)) {
         // inconsistent case. eg.   O I-time
         (*tag_names)[i] = repr.BTag();
       } else {
-        ASSIGN_OR_RETURN(const SlotRepr prev_repr,
+        TFLITE_ASSIGN_OR_RETURN(const SlotRepr prev_repr,
                          SlotRepr::CreateFromIob(prev_tag));
         if (prev_repr.FullName() != repr.FullName()) {
           // inconsistent case. eg.   B-time I-per    I-time I-per
@@ -157,7 +151,7 @@ absl::StatusOr<std::vector<SlotMentionStruct>> DecodeSlotChunks(
   // Make a copy since the input is constant while still modifications are
   // needed.
   std::vector<std::string> tag_names_fixed(tag_names.begin(), tag_names.end());
-  RETURN_IF_ERROR(ResolveInconsistentIobTagSeq(&tag_names_fixed));
+  TFLITE_RETURN_IF_ERROR(ResolveInconsistentIobTagSeq(&tag_names_fixed));
 
   std::vector<SlotMentionStruct> result;
   // Compute slot tag spans
@@ -171,7 +165,7 @@ absl::StatusOr<std::vector<SlotMentionStruct>> DecodeSlotChunks(
     // I tag
     if (SlotRepr::IsI(tag_str_i)) {
       SlotRepr slot_tag_i;
-      ASSIGN_OR_RETURN(slot_tag_i, SlotRepr::CreateFromIob(tag_str_i));
+      TFLITE_ASSIGN_OR_RETURN(slot_tag_i, SlotRepr::CreateFromIob(tag_str_i));
       if (cur_slot == slot_tag_i) {
         cur_slot_exclusive_end = token_i + 1;
         // Compute the phrase level confidence by taking min(tag confidences).
@@ -200,7 +194,7 @@ absl::StatusOr<std::vector<SlotMentionStruct>> DecodeSlotChunks(
       cur_slot_start = token_i;
       cur_slot_exclusive_end = token_i + 1;
       cur_slot_confidence = tag_probs[token_i];
-      ASSIGN_OR_RETURN(cur_slot, SlotRepr::CreateFromIob(tag_str_i));
+      TFLITE_ASSIGN_OR_RETURN(cur_slot, SlotRepr::CreateFromIob(tag_str_i));
     } else {
       // O tag
       if (!SlotRepr::IsO(tag_str_i)) {

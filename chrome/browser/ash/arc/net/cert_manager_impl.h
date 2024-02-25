@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NET_CERT_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_NET_CERT_MANAGER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/net/cert_manager.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "net/cert/nss_cert_database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -72,7 +72,7 @@ class CertManagerImpl : public CertManager {
                                      const std::string& cert_pem,
                                      ImportPrivateKeyAndCertCallback callback,
                                      net::NSSCertDatabase* database);
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   base::WeakPtrFactory<CertManagerImpl> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(CertManagerImplTest, ImportKeyAndCertTest);

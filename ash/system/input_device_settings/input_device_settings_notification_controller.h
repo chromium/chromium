@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -60,17 +61,32 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id);
 
+  // Used to display a notification when a customizable mouse is connected to
+  // the chromebook for the first time.
+  void NotifyMouseIsCustomizable(const mojom::Mouse& mouse);
+
+  // Used to display a notification when a customizable graphics tablet is
+  // connected to the chromebook for the first time.
+  void NotifyGraphicsTabletIsCustomizable(
+      const mojom::GraphicsTablet& graphics_tablet);
+
+  // Use to display a notification when a mouse is first connected.
+  void NotifyMouseFirstTimeConnected(const mojom::Mouse& mouse);
+
+  // Use to display a notification when a graphics table is first connected.
+  void NotifyGraphicsTabletFirstTimeConnected(
+      const mojom::GraphicsTablet* graphics_tablet);
+
  private:
   void HandleRightClickNotificationClicked(const std::string& notification_id,
-                                           absl::optional<int> button_index);
+                                           std::optional<int> button_index);
 
   void HandleSixPackNotificationClicked(int device_id,
                                         const char* pref_name,
                                         const std::string& notification_id,
-                                        absl::optional<int> button_index);
+                                        std::optional<int> button_index);
   // MessageCenter for adding notifications.
-  const raw_ptr<message_center::MessageCenter,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<message_center::MessageCenter, DanglingUntriaged>
       message_center_;
 
   base::WeakPtrFactory<InputDeviceSettingsNotificationController>

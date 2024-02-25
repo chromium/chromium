@@ -28,9 +28,7 @@ import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Keep-alive foreground service for downloads.
- */
+/** Keep-alive foreground service for downloads. */
 public class DownloadForegroundServiceImpl extends DownloadForegroundService.Impl {
     private static final String TAG = "DownloadFg";
     private final IBinder mBinder = new LocalBinder();
@@ -49,8 +47,9 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
         super.onCreate();
 
         mNotificationManager =
-                (NotificationManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.NOTIFICATION_SERVICE);
+                (NotificationManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     /**
@@ -59,8 +58,8 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
      */
     public static void startDownloadForegroundService(Context context) {
         // TODO(crbug.com/770389): Grab a WakeLock here until the service has started.
-        ForegroundServiceUtils.getInstance().startForegroundService(
-                new Intent(context, DownloadForegroundService.class));
+        ForegroundServiceUtils.getInstance()
+                .startForegroundService(new Intent(context, DownloadForegroundService.class));
     }
 
     /**
@@ -76,28 +75,31 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
      *                            detached).
      * @param killOldNotification Whether or not to detach or kill the old notification.
      */
-    public void startOrUpdateForegroundService(int newNotificationId, Notification newNotification,
-            int oldNotificationId, Notification oldNotification, boolean killOldNotification) {
-        Log.w(TAG,
-                "startOrUpdateForegroundService new: " + newNotificationId
-                        + ", old: " + oldNotificationId + ", kill old: " + killOldNotification);
+    public void startOrUpdateForegroundService(
+            int newNotificationId,
+            Notification newNotification,
+            int oldNotificationId,
+            Notification oldNotification,
+            boolean killOldNotification) {
+        Log.w(
+                TAG,
+                "startOrUpdateForegroundService new: "
+                        + newNotificationId
+                        + ", old: "
+                        + oldNotificationId
+                        + ", kill old: "
+                        + killOldNotification);
         // Handle notifications and start foreground.
         if (oldNotificationId == INVALID_NOTIFICATION_ID && oldNotification == null) {
             // If there is no old notification or old notification id, just start foreground.
             startForegroundInternal(newNotificationId, newNotification);
         } else {
-            if (getCurrentSdk() >= 24) {
-                // If possible, detach notification so it doesn't get cancelled by accident.
-                stopForegroundInternal(killOldNotification ? ServiceCompat.STOP_FOREGROUND_REMOVE
-                                                           : ServiceCompat.STOP_FOREGROUND_DETACH);
-                startForegroundInternal(newNotificationId, newNotification);
-            } else {
-                // Otherwise start the foreground and relaunch the originally pinned notification.
-                startForegroundInternal(newNotificationId, newNotification);
-                if (!killOldNotification) {
-                    relaunchOldNotification(oldNotificationId, oldNotification);
-                }
-            }
+            // If possible, detach notification so it doesn't get cancelled by accident.
+            stopForegroundInternal(
+                    killOldNotification
+                            ? ServiceCompat.STOP_FOREGROUND_REMOVE
+                            : ServiceCompat.STOP_FOREGROUND_DETACH);
+            startForegroundInternal(newNotificationId, newNotification);
         }
 
         // Record when starting foreground and when updating pinned notification.
@@ -124,11 +126,15 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
      *                                      and would need adjustment.
      */
     public void stopDownloadForegroundService(
-            @StopForegroundNotification int stopForegroundNotification, int pinnedNotificationId,
+            @StopForegroundNotification int stopForegroundNotification,
+            int pinnedNotificationId,
             Notification pinnedNotification) {
-        Log.w(TAG,
-                "stopDownloadForegroundService status: " + stopForegroundNotification
-                        + ", id: " + pinnedNotificationId);
+        Log.w(
+                TAG,
+                "stopDownloadForegroundService status: "
+                        + stopForegroundNotification
+                        + ", id: "
+                        + pinnedNotificationId);
         // Record when stopping foreground.
         DownloadNotificationUmaHelper.recordForegroundServiceLifecycleHistogram(
                 DownloadNotificationUmaHelper.ForegroundLifecycle.STOP);
@@ -140,33 +146,11 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
             // Regardless of the SDK level, stop foreground and kill if so indicated.
             stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_REMOVE);
         } else {
-            if (getCurrentSdk() >= 24) {
-                // Android N+ has the option to detach notifications from the service, so detach or
-                // kill the notification as needed when stopping service.
-                stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_DETACH);
-            } else if (getCurrentSdk() >= 23) {
-                // Android M+ can't detach the notification but doesn't have other caveats. Kill the
-                // notification and relaunch if detach was desired.
-                stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_REMOVE);
-                relaunchOldNotification(pinnedNotificationId, pinnedNotification);
-            } else {
-                // In phones that are Lollipop and older (API < 23), the service gets killed with
-                // the task, which might result in the notification being unable to be relaunched
-                // where it needs to be. kill and relaunch the old notification before stopping the
-                // service.
-                relaunchOldNotification(
-                        getNewNotificationIdFor(pinnedNotificationId), pinnedNotification);
-                stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_REMOVE);
-            }
+            // Android N+ has the option to detach notifications from the service, so detach or
+            // kill the notification as needed when stopping service.
+            stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_DETACH);
         }
         getService().stopSelf();
-    }
-
-    @VisibleForTesting
-    void relaunchOldNotification(int notificationId, Notification notification) {
-        if (notificationId != INVALID_NOTIFICATION_ID && notification != null) {
-            mNotificationManager.notify(notificationId, notification);
-        }
     }
 
     @Override
@@ -213,9 +197,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
         return mBinder;
     }
 
-    /**
-     * Class for clients to access.
-     */
+    /** Class for clients to access. */
     class LocalBinder extends Binder {
         DownloadForegroundServiceImpl getService() {
             return DownloadForegroundServiceImpl.this;
@@ -223,7 +205,6 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     }
 
     /** Methods for testing. */
-
     @VisibleForTesting
     int getNewNotificationIdFor(int oldNotificationId) {
         return DownloadNotificationService.getNewNotificationIdFor(oldNotificationId);
@@ -232,8 +213,12 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     @VisibleForTesting
     void startForegroundInternal(int notificationId, Notification notification) {
         Log.w(TAG, "startForegroundInternal id: " + notificationId);
-        ForegroundServiceUtils.getInstance().startForeground(getService(), notificationId,
-                notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+        ForegroundServiceUtils.getInstance()
+                .startForeground(
+                        getService(),
+                        notificationId,
+                        notification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
     }
 
     @VisibleForTesting

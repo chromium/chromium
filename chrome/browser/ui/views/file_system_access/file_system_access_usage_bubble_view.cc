@@ -127,9 +127,9 @@ int ComputeHeadingMessageFromUsage(
 // first few items, with a toggle button to expand a table below to contain the
 // full list of items.
 class CollapsibleListView : public views::View {
- public:
-  METADATA_HEADER(CollapsibleListView);
+  METADATA_HEADER(CollapsibleListView, views::View)
 
+ public:
   // How many rows to show in the expanded table without having to scroll.
   static constexpr int kExpandedTableRowCount = 3;
 
@@ -184,7 +184,7 @@ class CollapsibleListView : public views::View {
 
     std::vector<ui::TableColumn> table_columns{ui::TableColumn()};
     auto table_view = std::make_unique<views::TableView>(
-        model, std::move(table_columns), views::ICON_AND_TEXT,
+        model, std::move(table_columns), views::TableType::kIconAndText,
         /*single_selection=*/true);
     table_view->SetEnabled(false);
     int row_height = table_view->GetRowHeight();
@@ -231,7 +231,7 @@ class CollapsibleListView : public views::View {
   raw_ptr<views::ToggleImageButton> expand_collapse_button_;
 };
 
-BEGIN_METADATA(CollapsibleListView, views::View)
+BEGIN_METADATA(CollapsibleListView)
 END_METADATA
 
 }  // namespace
@@ -297,7 +297,7 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
   base::RecordAction(
       base::UserMetricsAction("NativeFileSystemAPI.OpenedBubble"));
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
     return;
 
@@ -368,7 +368,7 @@ FileSystemAccessUsageBubbleView::~FileSystemAccessUsageBubbleView() = default;
 
 std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     const {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Don't crash if the web_contents is destroyed/unloaded.
   if (!browser)
     return {};
@@ -480,3 +480,6 @@ void FileSystemAccessUsageBubbleView::ChildPreferredSizeChanged(
   LocationBarBubbleDelegateView::ChildPreferredSizeChanged(child);
   SizeToContents();
 }
+
+BEGIN_METADATA(FileSystemAccessUsageBubbleView)
+END_METADATA

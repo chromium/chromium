@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 
-#include "base/test/bind.h"
+#include "base/auto_reset.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
-#include "chrome/browser/lacros/browser_service_lacros.h"
+#include "chrome/browser/lacros/app_mode/web_kiosk_installer_lacros.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -22,116 +28,152 @@ using crosapi::mojom::CreationResult;
 using crosapi::mojom::KioskSessionService;
 using crosapi::mojom::SessionType;
 
-const char kNavigationUrl[] = "https://www.google.com/";
+namespace {
 
-class FakeKioskSessionServiceLacros : public KioskSessionServiceLacros {
+const char kWebAppUrl[] = "https://www.google.com/";
+
+// Runs the provided callback when the web kiosk is initialized.
+class KioskWebSessionInitializedWaiter
+    : public KioskSessionServiceLacros::Observer {
  public:
-  FakeKioskSessionServiceLacros() = default;
-  ~FakeKioskSessionServiceLacros() override = default;
-
-  // KioskSessionServiceLacros:
-  void AttemptUserExit() override {
-    if (after_attempt_user_exit_) {
-      std::move(after_attempt_user_exit_).Run();
-    }
+  explicit KioskWebSessionInitializedWaiter(
+      base::OnceClosure on_kiosk_web_session_initialized)
+      : on_kiosk_web_session_initialized_(
+            std::move(on_kiosk_web_session_initialized)) {
+    kiosk_session_observation_.Observe(KioskSessionServiceLacros::Get());
   }
 
-  void set_after_attempt_user_exit(base::OnceClosure closure) {
-    after_attempt_user_exit_ = std::move(closure);
+  ~KioskWebSessionInitializedWaiter() override = default;
+
+  // KioskSessionServiceLacros::Observer:
+  void KioskWebSessionInitialized() override {
+    std::move(on_kiosk_web_session_initialized_).Run();
   }
 
  private:
-  base::OnceClosure after_attempt_user_exit_;
+  base::OnceCallback<void()> on_kiosk_web_session_initialized_;
+  base::ScopedObservation<KioskSessionServiceLacros,
+                          KioskSessionServiceLacros::Observer>
+      kiosk_session_observation_{this};
 };
 
-class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
+Profile& GetProfile() {
+  return CHECK_DEREF(ProfileManager::GetPrimaryUserProfile());
+}
+
+void SetBrowserInitParamsForWebKiosk() {
+  BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->session_type = SessionType::kWebKioskSession;
+  init_params->device_settings = crosapi::mojom::DeviceSettings::New();
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+}
+
+void CreateKioskAppWindowAndWaitInitialized() {
+  base::test::TestFuture<void> kiosk_initialized;
+  KioskWebSessionInitializedWaiter waiter(kiosk_initialized.GetCallback());
+  web_app::CreateWebApplicationWindow(&GetProfile(), kWebAppUrl,
+                                      WindowOpenDisposition::NEW_POPUP,
+                                      /*restore_id=*/0);
+  EXPECT_TRUE(kiosk_initialized.Wait());
+}
+
+}  // namespace
+
+class WebKioskSessionServiceBrowserTest : public InProcessBrowserTest {
  protected:
-  KioskSessionServiceBrowserTest() = default;
-  ~KioskSessionServiceBrowserTest() override = default;
+  WebKioskSessionServiceBrowserTest() = default;
+  ~WebKioskSessionServiceBrowserTest() override = default;
+
+  void SetUp() override {
+    // `SetBrowserInitParamsForWebKiosk` must be called before
+    // `InProcessBrowserTest::SetUp` to configure `KioskSessionServiceLacros`
+    // correctly.
+    SetBrowserInitParamsForWebKiosk();
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpOnMainThread() override {
-    // Initialize lacros browser service.
-    browser_service_ = std::make_unique<BrowserServiceLacros>();
-
-    // Set up the main thread.
     InProcessBrowserTest::SetUpOnMainThread();
 
-    // Initialize a fake kiosk session service for testing.
-    kiosk_session_service_lacros_ =
-        std::make_unique<FakeKioskSessionServiceLacros>();
+    kiosk_session_service_lacros_ = KioskSessionServiceLacros::Get();
+    attempt_user_exit_reset_ =
+        kiosk_session_service_lacros_->SetAttemptUserExitCallbackForTesting(
+            base::DoNothing());
+
+    installer_ = std::make_unique<WebKioskInstallerLacros>(GetProfile());
+    InstallWebKiosk(kWebAppUrl);
   }
 
   void TearDownOnMainThread() override {
-    kiosk_session_service_lacros_.reset();
+    attempt_user_exit_reset_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
-    browser_service_.reset();
   }
 
-  bool IsServiceAvailable() const {
-    auto* lacros_chrome_service = chromeos::LacrosService::Get();
-    return lacros_chrome_service &&
-           lacros_chrome_service
-               ->IsAvailable<crosapi::mojom::KioskSessionService>();
+  std::optional<webapps::AppId> InstallWebKiosk(const std::string& url) {
+    base::test::TestFuture<crosapi::mojom::WebKioskInstallState,
+                           const std::optional<webapps::AppId>&>
+        install_state;
+    installer_->GetWebKioskInstallState(GURL(url), install_state.GetCallback());
+    if (install_state.Get<0>() ==
+        crosapi::mojom::WebKioskInstallState::kInstalled) {
+      return install_state.Get<1>();
+    }
+
+    base::test::TestFuture<const std::optional<webapps::AppId>&> install_result;
+    installer_->InstallWebKiosk(GURL(url), install_result.GetCallback());
+    return install_result.Get();
   }
 
-  void SetSessionType(SessionType type) {
-    BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->session_type = type;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-  }
-
-  void CreateKioskMainWindow() {
-    bool use_callback = false;
-    browser_service()->NewFullscreenWindow(
-        GURL(kNavigationUrl),
-        display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
-        base::BindLambdaForTesting([&](CreationResult result) {
-          use_callback = true;
-          EXPECT_EQ(result, CreationResult::kSuccess);
-        }));
-    EXPECT_TRUE(use_callback);
-  }
-
-  BrowserServiceLacros* browser_service() const {
-    return browser_service_.get();
-  }
-
-  FakeKioskSessionServiceLacros* kiosk_session_service_lacros() const {
-    return kiosk_session_service_lacros_.get();
+  KioskSessionServiceLacros* kiosk_session_service_lacros() const {
+    return kiosk_session_service_lacros_;
   }
 
  private:
-  std::unique_ptr<BrowserServiceLacros> browser_service_;
-  std::unique_ptr<FakeKioskSessionServiceLacros> kiosk_session_service_lacros_;
+  std::unique_ptr<WebKioskInstallerLacros> installer_;
+  raw_ptr<KioskSessionServiceLacros> kiosk_session_service_lacros_;
+  std::unique_ptr<base::AutoReset<base::OnceClosure>> attempt_user_exit_reset_;
 };
 
-IN_PROC_BROWSER_TEST_F(KioskSessionServiceBrowserTest, AttemptUserExit) {
-  SetSessionType(SessionType::kWebKioskSession);
-  CreateKioskMainWindow();
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
+                       BrowserKioskSessionIsCreated) {
+  EXPECT_EQ(kiosk_session_service_lacros()->GetKioskBrowserSessionForTesting(),
+            nullptr);
 
-  // Verify the install URL stored in the service.
-  EXPECT_EQ(kiosk_session_service_lacros()->GetInstallURL(),
-            GURL(kNavigationUrl));
+  CreateKioskAppWindowAndWaitInitialized();
 
-  // Close all browser windows, which should trigger `AttemptUserExit` API call.
-  base::RunLoop run_loop;
-  kiosk_session_service_lacros()->set_after_attempt_user_exit(
-      run_loop.QuitClosure());
+  EXPECT_NE(kiosk_session_service_lacros()->GetKioskBrowserSessionForTesting(),
+            nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest, VerifyInstallUrl) {
+  CreateKioskAppWindowAndWaitInitialized();
+
+  EXPECT_EQ(kiosk_session_service_lacros()->GetInstallURL(), GURL(kWebAppUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
+                       ClosingAllWindowsTriggersAttemptUserExitCall) {
+  // Closing all browser windows should trigger `AttemptUserExit`.
+  base::test::TestFuture<void> did_attempt_user_exit;
+  auto auto_reset =
+      kiosk_session_service_lacros()->SetAttemptUserExitCallbackForTesting(
+          did_attempt_user_exit.GetCallback());
+
+  CreateKioskAppWindowAndWaitInitialized();
   CloseAllBrowsers();
-  run_loop.Run();
 
+  EXPECT_TRUE(did_attempt_user_exit.Wait());
   // Verify that all windows have been closed.
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskSessionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
                        KioskOriginShouldGetUnlimitedStorage) {
-  SetSessionType(SessionType::kWebKioskSession);
-  CreateKioskMainWindow();
+  CreateKioskAppWindowAndWaitInitialized();
 
   // Verify the origin of the install URL has been granted unlimited storage
-  EXPECT_TRUE(ProfileManager::GetPrimaryUserProfile()
-                  ->GetExtensionSpecialStoragePolicy()
-                  ->IsStorageUnlimited(GURL(kNavigationUrl)));
+  EXPECT_TRUE(
+      GetProfile().GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
+          GURL(kWebAppUrl)));
 }

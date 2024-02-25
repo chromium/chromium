@@ -16,8 +16,8 @@
 
 @implementation TFLEmbeddingOptions
 
-- (id)copyWithZone:(NSZone*)zone {
-  TFLEmbeddingOptions* embeddingOptions = [[TFLEmbeddingOptions alloc] init];
+- (id)copyWithZone:(NSZone *)zone {
+  TFLEmbeddingOptions *embeddingOptions = [[TFLEmbeddingOptions alloc] init];
 
   embeddingOptions.l2Normalize = self.l2Normalize;
   embeddingOptions.quantize = self.quantize;

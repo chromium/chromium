@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "v8/include/cppgc/visitor.h"
 
 namespace blink {
@@ -16,14 +17,19 @@ void BackForwardCacheLoaderHelperImpl::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason) {
   if (!delegate_)
     return;
-  delegate_->EvictFromBackForwardCache(reason);
+  // Pass nullptr as a source location since this method shouldn't be called
+  // for JavaScript execution. We want to capture the source location only
+  // when the eviction reason is JavaScript execution.
+  delegate_->EvictFromBackForwardCache(reason, /*source_location=*/nullptr);
 }
 
 void BackForwardCacheLoaderHelperImpl::DidBufferLoadWhileInBackForwardCache(
+    bool update_process_wide_count,
     size_t num_bytes) {
   if (!delegate_)
     return;
-  delegate_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+  delegate_->DidBufferLoadWhileInBackForwardCache(update_process_wide_count,
+                                                  num_bytes);
 }
 
 void BackForwardCacheLoaderHelperImpl::Detach() {

@@ -76,6 +76,10 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   // Verifies a reveal has happened and the expected tab is active.
   void VerifyTabIndexAfterReveal(int expected_index);
 
+  // Waits for the immersive fullscreen to start (or returns immediately if
+  // immersive fullscreen already started).
+  void WaitForFullscreenToEnter();
+
   // Waits for the immersive fullscreen to end (or returns immediately if
   // immersive fullscreen already ended).
   void WaitForFullscreenToExit();
@@ -84,6 +88,7 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
   void OnImmersiveModeControllerDestroyed() override;
+  void OnImmersiveFullscreenEntered() override;
   void OnImmersiveFullscreenExited() override;
 
  private:
@@ -94,7 +99,8 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   bool reveal_started_ = false;
   bool reveal_ended_ = false;
   std::unique_ptr<base::RunLoop> reveal_loop_;
-  std::unique_ptr<base::RunLoop> fullscreen_loop_;
+  std::unique_ptr<base::RunLoop> fullscreen_entering_loop_;
+  std::unique_ptr<base::RunLoop> fullscreen_exiting_loop_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_TESTER_H_

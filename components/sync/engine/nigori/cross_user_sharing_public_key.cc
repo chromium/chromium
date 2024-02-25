@@ -28,7 +28,7 @@ CrossUserSharingPublicKey::CrossUserSharingPublicKey(
 }
 
 // static
-absl::optional<CrossUserSharingPublicKey>
+std::optional<CrossUserSharingPublicKey>
 CrossUserSharingPublicKey::CreateByImport(
     base::span<const uint8_t> public_key) {
   if (public_key.size() != X25519_PUBLIC_VALUE_LEN) {

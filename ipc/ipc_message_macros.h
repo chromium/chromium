@@ -525,6 +525,8 @@
   IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), (d, e, f))
 #define IPC_SYNC_MESSAGE_ROUTED3_4(msg, a, b, c, d, e, f, g) \
   IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), (d, e, f, g))
+#define IPC_SYNC_MESSAGE_ROUTED3_5(msg, a, b, c, d, e, f, g, h) \
+  IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c), (d, e, f, g, h))
 #define IPC_SYNC_MESSAGE_ROUTED4_0(msg, a, b, c, d) \
   IPC_SYNC_MESSAGE_ROUTED(msg, (a, b, c, d), ())
 #define IPC_SYNC_MESSAGE_ROUTED4_1(msg, a, b, c, d, e) \

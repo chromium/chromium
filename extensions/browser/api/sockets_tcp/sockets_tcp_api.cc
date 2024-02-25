@@ -122,7 +122,7 @@ SocketsTcpCreateFunction::SocketsTcpCreateFunction() = default;
 SocketsTcpCreateFunction::~SocketsTcpCreateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpCreateFunction::Work() {
-  absl::optional<sockets_tcp::Create::Params> params =
+  std::optional<sockets_tcp::Create::Params> params =
       sockets_tcp::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -146,7 +146,7 @@ SocketsTcpUpdateFunction::SocketsTcpUpdateFunction() = default;
 SocketsTcpUpdateFunction::~SocketsTcpUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpUpdateFunction::Work() {
-  absl::optional<sockets_tcp::Update::Params> params =
+  std::optional<sockets_tcp::Update::Params> params =
       sockets_tcp::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -164,7 +164,7 @@ SocketsTcpSetPausedFunction::SocketsTcpSetPausedFunction() = default;
 SocketsTcpSetPausedFunction::~SocketsTcpSetPausedFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpSetPausedFunction::Work() {
-  absl::optional<sockets_tcp::SetPaused::Params> params =
+  std::optional<sockets_tcp::SetPaused::Params> params =
       api::sockets_tcp::SetPaused::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -196,7 +196,7 @@ SocketsTcpSetKeepAliveFunction::SocketsTcpSetKeepAliveFunction() = default;
 SocketsTcpSetKeepAliveFunction::~SocketsTcpSetKeepAliveFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpSetKeepAliveFunction::Work() {
-  absl::optional<sockets_tcp::SetKeepAlive::Params> params =
+  std::optional<sockets_tcp::SetKeepAlive::Params> params =
       api::sockets_tcp::SetKeepAlive::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -227,7 +227,7 @@ SocketsTcpSetNoDelayFunction::SocketsTcpSetNoDelayFunction() = default;
 SocketsTcpSetNoDelayFunction::~SocketsTcpSetNoDelayFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpSetNoDelayFunction::Work() {
-  absl::optional<sockets_tcp::SetNoDelay::Params> params =
+  std::optional<sockets_tcp::SetNoDelay::Params> params =
       api::sockets_tcp::SetNoDelay::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -336,7 +336,7 @@ SocketsTcpDisconnectFunction::SocketsTcpDisconnectFunction() = default;
 SocketsTcpDisconnectFunction::~SocketsTcpDisconnectFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpDisconnectFunction::Work() {
-  absl::optional<sockets_tcp::Disconnect::Params> params =
+  std::optional<sockets_tcp::Disconnect::Params> params =
       sockets_tcp::Disconnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -354,13 +354,13 @@ SocketsTcpSendFunction::SocketsTcpSendFunction() = default;
 SocketsTcpSendFunction::~SocketsTcpSendFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpSendFunction::Work() {
-  absl::optional<sockets_tcp::Send::Params> params =
+  std::optional<sockets_tcp::Send::Params> params =
       sockets_tcp::Send::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   size_t io_buffer_size = params->data.size();
 
-  scoped_refptr<net::IOBuffer> io_buffer =
-      base::MakeRefCounted<net::IOBuffer>(params->data.size());
+  auto io_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(params->data.size());
   base::ranges::copy(params->data, io_buffer->data());
 
   ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
@@ -404,7 +404,7 @@ SocketsTcpCloseFunction::SocketsTcpCloseFunction() = default;
 SocketsTcpCloseFunction::~SocketsTcpCloseFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpCloseFunction::Work() {
-  absl::optional<sockets_tcp::Close::Params> params =
+  std::optional<sockets_tcp::Close::Params> params =
       sockets_tcp::Close::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -422,7 +422,7 @@ SocketsTcpGetInfoFunction::SocketsTcpGetInfoFunction() = default;
 SocketsTcpGetInfoFunction::~SocketsTcpGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpGetInfoFunction::Work() {
-  absl::optional<sockets_tcp::GetInfo::Params> params =
+  std::optional<sockets_tcp::GetInfo::Params> params =
       sockets_tcp::GetInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

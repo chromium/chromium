@@ -86,9 +86,9 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   // |device_id_to_device_map_|. A null |current_pairing_device| means no
   // Bluetooth device is pairing.
   InputMetadata GetInputMetadata(
-      const absl::optional<std::string>& connected_device_id,
+      const std::optional<std::string>& connected_device_id,
       BluetoothHidDetector::BluetoothHidType input_type,
-      const absl::optional<BluetoothHidDetector::BluetoothHidMetadata>&
+      const std::optional<BluetoothHidDetector::BluetoothHidMetadata>&
           current_pairing_device) const;
 
   // Informs |bluetooth_hid_detector_| what devices are missing.
@@ -100,12 +100,11 @@ class HidDetectionManagerImpl : public HidDetectionManager,
 
   std::map<std::string, device::mojom::InputDeviceInfoPtr>
       device_id_to_device_map_;
-  absl::optional<std::string> connected_touchscreen_id_;
-  absl::optional<std::string> connected_pointer_id_;
-  absl::optional<std::string> connected_keyboard_id_;
+  std::optional<std::string> connected_touchscreen_id_;
+  std::optional<std::string> connected_pointer_id_;
+  std::optional<std::string> connected_keyboard_id_;
 
-  raw_ptr<device::mojom::DeviceService, ExperimentalAsh> device_service_ =
-      nullptr;
+  raw_ptr<device::mojom::DeviceService> device_service_ = nullptr;
   std::unique_ptr<BluetoothHidDetector> bluetooth_hid_detector_;
   mojo::Remote<device::mojom::InputDeviceManager> input_device_manager_;
   mojo::AssociatedReceiver<device::mojom::InputDeviceManagerClient>

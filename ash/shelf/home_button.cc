@@ -14,9 +14,11 @@
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_control_button.h"
 #include "ash/shelf/shelf_focus_cycler.h"
@@ -28,10 +30,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
@@ -39,6 +41,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -118,6 +121,8 @@ constexpr base::TimeDelta kQuickAppFadeOutDuration = base::Milliseconds(100);
 }  // namespace
 
 class HomeButton::ButtonImageView : public views::View {
+  METADATA_HEADER(ButtonImageView, views::View)
+
  public:
   explicit ButtonImageView(HomeButtonController* button_controller)
       : button_controller_(button_controller) {
@@ -125,6 +130,7 @@ class HomeButton::ButtonImageView : public views::View {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     UpdateBackground();
+    UpdateIconImageModel();
   }
 
   ButtonImageView(const ButtonImageView&) = delete;
@@ -135,6 +141,12 @@ class HomeButton::ButtonImageView : public views::View {
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);
+
+    if (!image_.isNull()) {
+      canvas->DrawImageInt(image_, (width() - image_.width()) / 2,
+                           (height() - image_.height()) / 2, cc::PaintFlags());
+      return;
+    }
 
     gfx::PointF circle_center(gfx::Rect(size()).CenterPoint());
 
@@ -183,6 +195,9 @@ class HomeButton::ButtonImageView : public views::View {
     if (!chromeos::features::IsJellyEnabled()) {
       UpdateBackground();
     }
+    if (image_model_) {
+      image_ = image_model_->Rasterize(GetColorProvider());
+    }
     SchedulePaint();
   }
 
@@ -190,7 +205,9 @@ class HomeButton::ButtonImageView : public views::View {
   void UpdateForShelfConfigChange() {
     layer()->SetBackgroundBlur(
         ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     UpdateBackground();
+    UpdateIconImageModel();
   }
 
   void SetToggled(bool toggled) {
@@ -200,6 +217,7 @@ class HomeButton::ButtonImageView : public views::View {
 
     toggled_ = toggled;
     UpdateBackground();
+    UpdateIconImageModel();
     SchedulePaint();
   }
 
@@ -256,13 +274,47 @@ class HomeButton::ButtonImageView : public views::View {
                     : cros_tokens::kCrosSysSystemOnBase;
   }
 
-  const raw_ptr<HomeButtonController, ExperimentalAsh> button_controller_;
+  void UpdateIconImageModel() {
+    const std::string campbell_config = base::GetFieldTrialParamValueByFeature(
+        features::kCampbellGlyph, "icon");
+
+    if (campbell_config.empty() || !switches::IsCampbellSecretKeyMatched()) {
+      image_model_ = std::nullopt;
+      image_ = gfx::ImageSkia();
+      return;
+    }
+
+    if (campbell_config == "hero") {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbellHeroIcon, GetIconColorId());
+    } else if (campbell_config == "action") {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbellActionIcon, GetIconColorId());
+    } else if (campbell_config == "text") {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbellTextIcon, GetIconColorId());
+    } else if (campbell_config == "9dot") {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbell9dotIcon, GetIconColorId());
+    }
+
+    if (image_model_ && GetColorProvider()) {
+      image_ = image_model_->Rasterize(GetColorProvider());
+    } else {
+      image_ = gfx::ImageSkia();
+    }
+  }
+
+  const raw_ptr<HomeButtonController> button_controller_;
+
+  gfx::ImageSkia image_;
+  std::optional<ui::ImageModel> image_model_;
 
   bool toggled_ = false;
 };
 
-// static
-const char HomeButton::kViewClassName[] = "ash/HomeButton";
+BEGIN_METADATA(HomeButton, ButtonImageView)
+END_METADATA
 
 // HomeButton::ScopedNoClipRect ------------------------------------------------
 
@@ -356,8 +408,8 @@ gfx::Size HomeButton::CalculatePreferredSize() const {
   return control_button_size;
 }
 
-void HomeButton::Layout() {
-  ShelfControlButton::Layout();
+void HomeButton::Layout(PassKey) {
+  LayoutSuperclass<ShelfControlButton>(this);
 
   button_image_view_->SetBoundsRect(
       gfx::Rect(ShelfControlButton::CalculatePreferredSize()));
@@ -402,10 +454,6 @@ std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
   return IsShowingAppList() ? std::u16string() : GetAccessibleName();
 }
 
-const char* HomeButton::GetClassName() const {
-  return kViewClassName;
-}
-
 void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
     ShelfButton* button,
     bool reverse) {
@@ -432,7 +480,7 @@ void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
 void HomeButton::ButtonPressed(views::Button* sender,
                                const ui::Event& event,
                                views::InkDrop* ink_drop) {
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("AppList_HomeButtonPressedTablet"));
   } else {
@@ -680,7 +728,7 @@ void HomeButton::CreateNudgeLabel() {
                                           *nudge_label_);
   }
   expandable_container_->SetVisible(false);
-  Layout();
+  DeprecatedLayoutImmediately();
 }
 
 void HomeButton::CreateQuickAppButton() {
@@ -710,10 +758,11 @@ void HomeButton::CreateQuickAppButton() {
 
   quick_app_button_->SetPaintToLayer();
   quick_app_button_->layer()->SetFillsBoundsOpaquely(false);
-  quick_app_button_->SetImage(
+  quick_app_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
-          preferred_size));
+      ui::ImageModel::FromImageSkia(
+          AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
+              preferred_size)));
   views::HighlightPathGenerator::Install(
       quick_app_button_,
       std::make_unique<views::RoundRectHighlightPathGenerator>(
@@ -939,15 +988,13 @@ void HomeButton::OnLabelFadeOutAnimationEnded() {
 }
 
 void HomeButton::RemoveNudgeLabel() {
-  RemoveChildViewT(expandable_container_.get());
-  expandable_container_ = nullptr;
   nudge_label_ = nullptr;
+  RemoveChildViewT(expandable_container_.ExtractAsDangling());
 }
 
 void HomeButton::RemoveQuickAppButton() {
-  RemoveChildViewT(expandable_container_.get());
-  expandable_container_ = nullptr;
   quick_app_button_ = nullptr;
+  RemoveChildViewT(expandable_container_.ExtractAsDangling());
 }
 
 bool HomeButton::DoesIntersectRect(const views::View* target,
@@ -1004,10 +1051,11 @@ void HomeButton::OnQuickAppIconChanged() {
   }
 
   const int control_size = ShelfControlButton::CalculatePreferredSize().width();
-  quick_app_button_->SetImage(
+  quick_app_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
-          gfx::Size(control_size, control_size)));
+      ui::ImageModel::FromImageSkia(
+          AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
+              gfx::Size(control_size, control_size))));
 }
 
 void HomeButton::AnimateQuickAppButtonIn() {
@@ -1108,5 +1156,8 @@ gfx::Rect HomeButton::GetExpandableContainerClipRectToHomeButton() {
 
   return clip_rect;
 }
+
+BEGIN_METADATA(HomeButton)
+END_METADATA
 
 }  // namespace ash

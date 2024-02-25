@@ -267,7 +267,10 @@ int32_t PepperVideoEncoderHost::OnHostMsgInitialize(
   initialize_reply_context_ = context->MakeReplyMessageContext();
   const media::VideoEncodeAccelerator::Config config(
       media_input_format_, input_size, media_profile,
-      media::Bitrate::ConstantBitrate(initial_bitrate));
+      media::Bitrate::ConstantBitrate(initial_bitrate),
+      media::VideoEncodeAccelerator::kDefaultFramerate,
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem,
+      media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
   if (encoder_->Initialize(config, this))
     return PP_OK_COMPLETIONPENDING;
 
@@ -328,7 +331,7 @@ int32_t PepperVideoEncoderHost::OnHostMsgRequestEncodingParametersChange(
     return encoder_last_error_;
 
   encoder_->RequestEncodingParametersChange(
-      media::Bitrate::ConstantBitrate(bitrate), framerate);
+      media::Bitrate::ConstantBitrate(bitrate), framerate, std::nullopt);
 
   return PP_OK;
 }

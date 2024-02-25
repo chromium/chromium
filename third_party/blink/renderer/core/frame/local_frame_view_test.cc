@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -716,6 +718,17 @@ TEST_F(LocalFrameViewTest, DarkModeDocumentBackground) {
   EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color(18, 18, 18));
 }
 
+TEST_F(LocalFrameViewTest,
+       AdjustMediaTypeForPrintingRestoresMediaTypeCorrectly) {
+  auto* frame_view = GetDocument().View();
+  frame_view->SetMediaType(media_type_names::kScreen);
+  GetDocument().GetSettings()->SetMediaTypeOverride("print");
+  frame_view->AdjustMediaTypeForPrinting(true);
+  frame_view->AdjustMediaTypeForPrinting(false);
+  GetDocument().GetSettings()->SetMediaTypeOverride(g_null_atom);
+  EXPECT_EQ(frame_view->MediaType(), "screen");
+}
+
 class FencedFrameLocalFrameViewTest : private ScopedFencedFramesForTest,
                                       public SimTest {
  public:
@@ -762,6 +775,7 @@ class ResizableLocalFrameViewTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 

@@ -48,6 +48,9 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
     // Controls whether the resize shadow shall respond to hit testing or not.
     bool hit_test_enabled = true;
     int hide_duration_ms = 100;
+    // True if the resize shadow is configured for a window with rounded
+    // corners.
+    bool is_for_rounded_window = false;
   };
 
   ResizeShadow(aura::Window* window,
@@ -58,6 +61,8 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
   ~ResizeShadow() override;
 
   bool visible() const { return visible_; }
+  bool is_for_rounded_window() const { return params_.is_for_rounded_window; }
+
   int GetLastHitTestForTest() const { return last_hit_test_; }
   const ui::Layer* GetLayerForTest() const { return layer_.get(); }
   ResizeShadowType GetResizeShadowTypeForTest() const { return type_; }
@@ -92,7 +97,7 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
 
   // The window associated with this shadow. Guaranteed to be alive for the
   // lifetime of `this`.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // The layer to which the shadow is drawn. The layer is stacked beneath the
   // layer of |window_|.

@@ -89,9 +89,9 @@ DeviceReportingSettingsLacros::AddSettingsObserver(
     const std::string& policy_name,
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!policy_name.empty());
-  DCHECK(callback);
-  DCHECK(IsSupportedPolicy(policy_name))
+  CHECK(!policy_name.empty());
+  CHECK(callback);
+  CHECK(IsSupportedPolicy(policy_name))
       << "Unsupported device reporting setting in Lacros";
 
   // Get the callback registry associated with the policy.
@@ -162,7 +162,7 @@ bool DeviceReportingSettingsLacros::GetInteger(const std::string& policy_name,
 bool DeviceReportingSettingsLacros::GetList(
     const std::string& policy_name,
     const base::Value::List** out_value) const {
-  DCHECK(out_value);
+  CHECK(out_value);
 
   // No use cases for this yet.
   NOTIMPLEMENTED();

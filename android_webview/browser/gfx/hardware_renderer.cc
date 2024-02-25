@@ -61,6 +61,9 @@ namespace {
 BASE_FEATURE(kWebViewUseOutputSurfaceClipRect,
              "WebViewUseOutputSurfaceClipRect",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDrawAndSwapInjectLatency,
+             "DrawAndSwapInjectLatency",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class ScopedAcquireExternalContext {
  public:
@@ -181,7 +184,7 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
                         ChildFrame* child_frame);
   void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details);
   void RemoveOverlaysOnViz();
-  void MarkExpectContextLossOnViz();
+  void MarkAllowContextLossOnViz();
 
   OverlayProcessorWebView* overlay_processor() {
     return overlay_processor_webview_;
@@ -338,7 +341,7 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
       render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
   surface_quad->SetNew(quad_state, gfx::Rect(quad_state->quad_layer_rect),
                        gfx::Rect(quad_state->quad_layer_rect),
-                       viz::SurfaceRange(absl::nullopt, child_id),
+                       viz::SurfaceRange(std::nullopt, child_id),
                        SkColors::kWhite,
                        /*stretch_content_to_fill_bounds=*/false);
 
@@ -464,7 +467,7 @@ void HardwareRenderer::OnViz::RemoveOverlaysOnViz() {
   }
 }
 
-void HardwareRenderer::OnViz::MarkExpectContextLossOnViz() {
+void HardwareRenderer::OnViz::MarkAllowContextLossOnViz() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   expect_context_loss_ = true;
 }
@@ -596,6 +599,9 @@ void HardwareRenderer::InitializeOnViz(
 
 HardwareRenderer::~HardwareRenderer() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+  // Do not crash for context loss during destruction. It's possible functor is
+  // being destroyed due to an already-detected lost context.
+  MarkAllowContextLoss();
   output_surface_provider_.shared_context_state()->MakeCurrent(nullptr);
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::DoNothingWithBoundArgs(std::move(on_viz_)));
@@ -628,13 +634,11 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
   TRACE_EVENT1("android_webview", "HardwareRenderer::Draw", "vulkan",
                IsUsingVulkan());
 
-  if (!IsUsingVulkan()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Android.WebView.Gfx.GLDrawWasToFBO",
-        output_surface_provider_.gl_surface()->IsDrawingToFBO());
-  }
-
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+
+  if (base::FeatureList::IsEnabled(kDrawAndSwapInjectLatency)) {
+    usleep(1000);
+  }
 
   // Ensure that the context is synced from external and synced back before
   // returning. This is only necessary when using ANGLE to keep its internals
@@ -700,7 +704,7 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
         ->PessimisticallyResetGrContext();
   }
 
-  absl::optional<OverlayProcessorWebView::ScopedSurfaceControlAvailable>
+  std::optional<OverlayProcessorWebView::ScopedSurfaceControlAvailable>
       allow_surface_control;
 
   auto* overlay_processor = on_viz_->overlay_processor();
@@ -778,13 +782,19 @@ void HardwareRenderer::MergeTransactionIfNeeded(
 }
 
 void HardwareRenderer::AbandonContext() {
-  VizCompositorThreadRunnerWebView::GetInstance()->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HardwareRenderer::OnViz::MarkExpectContextLossOnViz,
-                     base::Unretained(on_viz_.get())));
-  output_surface_provider_.MarkExpectContextLoss();
+  MarkAllowContextLoss();
   output_surface_provider_.shared_context_state()->MarkContextLost(
       gpu::error::ContextLostReason::kUnknown);
+}
+
+void HardwareRenderer::MarkAllowContextLoss() {
+  if (on_viz_) {
+    VizCompositorThreadRunnerWebView::GetInstance()->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HardwareRenderer::OnViz::MarkAllowContextLossOnViz,
+                       base::Unretained(on_viz_.get())));
+  }
+  output_surface_provider_.MarkAllowContextLoss();
 }
 
 void HardwareRenderer::CommitFrame() {
@@ -883,10 +893,6 @@ void HardwareRenderer::ReturnResourcesToCompositor(
     std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
-  if (!base::FeatureList::IsEnabled(features::kWebViewCheckReturnResources) &&
-      layer_tree_frame_sink_id != last_committed_layer_tree_frame_sink_id_) {
-    return;
-  }
   render_thread_manager_->InsertReturnedResourcesOnRT(
       std::move(resources), frame_sink_id, layer_tree_frame_sink_id);
 }

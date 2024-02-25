@@ -5,16 +5,18 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 
 #import "base/time/time.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -149,10 +151,12 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 
   [_itemsStack layoutIfNeeded];
   _itemsStack.accessibilityElements = @[ allSetView ];
+  _expandButton = nil;
+  NSArray<UIView*>* itemsStackSubviews = _itemsStack.arrangedSubviews;
   __weak __typeof(_itemsStack) weakItemsStack = _itemsStack;
   [UIView animateWithDuration:kAllSetAnimationDuration.InSecondsF()
       animations:^{
-        for (UIView* view in weakItemsStack.arrangedSubviews) {
+        for (UIView* view in itemsStackSubviews) {
           view.alpha = 0;
           view.hidden = YES;
           // Constrain the old item view's position so that it doesn't move
@@ -176,7 +180,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
         }
       }
       completion:^(BOOL finished) {
-        for (UIView* view in weakItemsStack.arrangedSubviews) {
+        for (UIView* view in itemsStackSubviews) {
           if (view != allSetView) {
             [view removeFromSuperview];
           }
@@ -239,9 +243,8 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   containerStack.axis = UILayoutConstraintAxisVertical;
   containerStack.spacing = kPadding;
   [self addSubview:containerStack];
-  AddSameConstraintsWithInsets(
-      containerStack, self,
-      NSDirectionalEdgeInsetsMake(0, kMargin, kMargin, kMargin));
+  AddSameConstraintsWithInsets(containerStack, self,
+                               NSDirectionalEdgeInsetsMake(0, 0, kMargin, 0));
 
   if (_expandButton) {
     self.accessibilityElements =
@@ -294,7 +297,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   stack.layoutMargins =
       UIEdgeInsetsMake(kPadding, kPadding, kPadding, kPadding);
 
-  stack.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
+  stack.accessibilityLabel = content_suggestions::SetUpListTitleString();
   stack.accessibilityContainerType = UIAccessibilityContainerTypeList;
   stack.accessibilityElements = [self initialItems];
   return stack;
@@ -303,7 +306,7 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 // Creates the title label at the top of the Set Up List.
 - (UILabel*)createListTitle {
   UILabel* label = [[UILabel alloc] init];
-  label.text = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
+  label.text = content_suggestions::SetUpListTitleString();
   label.font = [self listTitleFont];
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   label.accessibilityTraits = UIAccessibilityTraitHeader;
@@ -437,7 +440,9 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   _expandButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_COLLAPSE);
 
-  int index = 2;
+  // Insert new items just before the expand button.
+  NSUInteger index = [_itemsStack.arrangedSubviews indexOfObject:_expandButton];
+  CHECK(index != NSNotFound);
   for (SetUpListItemView* item in items) {
     item.alpha = 0;
     item.hidden = YES;

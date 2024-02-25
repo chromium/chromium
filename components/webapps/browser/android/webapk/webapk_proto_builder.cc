@@ -69,6 +69,10 @@ webapk::WebApk_UpdateReason ConvertUpdateReasonToProtoEnum(
       return webapk::WebApk::DARK_BACKGROUND_COLOR_DIFFERS;
     case WebApkUpdateReason::DARK_THEME_COLOR_DIFFERS:
       return webapk::WebApk::DARK_THEME_COLOR_DIFFERS;
+    case WebApkUpdateReason::PRIMARY_ICON_CHANGE_BELOW_THRESHOLD:
+      return webapk::WebApk::PRIMARY_ICON_CHANGE_BELOW_THRESHOLD;
+    case WebApkUpdateReason::PRIMARY_ICON_CHANGE_SHELL_UPDATE:
+      return webapk::WebApk::PRIMARY_ICON_CHANGE_SHELL_UPDATE;
   }
 }
 
@@ -155,8 +159,16 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     webapk->add_update_reasons(ConvertUpdateReasonToProtoEnum(update_reason));
 
   webapk::WebAppManifest* web_app_manifest = webapk->mutable_manifest();
-  web_app_manifest->set_name(base::UTF16ToUTF8(shortcut_info.name));
-  web_app_manifest->set_short_name(base::UTF16ToUTF8(shortcut_info.short_name));
+  web_app_manifest->set_has_custom_name(shortcut_info.has_custom_title);
+  if (shortcut_info.has_custom_title) {
+    web_app_manifest->set_name(base::UTF16ToUTF8(shortcut_info.user_title));
+    web_app_manifest->set_short_name(
+        base::UTF16ToUTF8(shortcut_info.user_title));
+  } else {
+    web_app_manifest->set_name(base::UTF16ToUTF8(shortcut_info.name));
+    web_app_manifest->set_short_name(
+        base::UTF16ToUTF8(shortcut_info.short_name));
+  }
   web_app_manifest->set_start_url(shortcut_info.url.spec());
   web_app_manifest->set_orientation(
       blink::WebScreenOrientationLockTypeToString(shortcut_info.orientation));

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -72,11 +72,12 @@ class MockOriginTrialsDelegate
 
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
                                    const url::Origin& top_level_origin,
-                                   blink::OriginTrialFeature feature,
+                                   blink::mojom::OriginTrialFeature feature,
                                    const base::Time current_time) override {
     std::string trial_name = "";
     switch (feature) {
-      case blink::OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature:
+      case blink::mojom::OriginTrialFeature::
+          kOriginTrialsSampleAPIPersistentFeature:
         trial_name = kPersistentTrialName;
         break;
       default:
@@ -110,28 +111,12 @@ class MockOriginTrialsDelegate
   }
 };
 
-class MockRestartDelegate : public blink::URLLoaderThrottle::Delegate {
- public:
-  ~MockRestartDelegate() override = default;
-  void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {}
-
-  void Resume() override {}
-
-  void RestartWithURLResetAndFlags(int additional_load_flags) override {
-    restart_with_url_reset_and_flags_count_++;
-  }
-
-  mutable int restart_with_url_reset_and_flags_count_ = 0;
-};
-
 class CriticalOriginTrialsThrottleTest : public ::testing::Test {
  public:
   CriticalOriginTrialsThrottleTest()
       : origin_trials_delegate_(),
         throttle_(origin_trials_delegate_,
                   url::Origin::Create(GURL(kExampleURL))) {
-    throttle_.set_delegate(&throttle_delegate_);
   }
 
   ~CriticalOriginTrialsThrottleTest() override = default;
@@ -153,7 +138,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
     throttle_.WillStartRequest(&request, &defer);
   }
 
-  void BeforeWillProcess(
+  blink::URLLoaderThrottle::RestartWithURLReset BeforeWillProcess(
       const base::StringPiece url,
       const base::span<std::string> origin_trial_tokens = {},
       const base::span<std::string> critical_origin_trials = {}) {
@@ -163,18 +148,15 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
          CreateHeaderLines(kOriginTrialHeader, origin_trial_tokens),
          CreateHeaderLines(kCriticalOriginTrialHeader, critical_origin_trials),
          kHttpHeaderTerminator}));
-    bool defer = false;
-    throttle_.BeforeWillProcessResponse(GURL(url), response_head, &defer);
-  }
-
-  bool DidRestart() {
-    return throttle_delegate_.restart_with_url_reset_and_flags_count_ > 0;
+    blink::URLLoaderThrottle::RestartWithURLReset restart_with_url_reset(false);
+    throttle_.BeforeWillProcessResponse(GURL(url), response_head,
+                                        &restart_with_url_reset);
+    return restart_with_url_reset;
   }
 
  protected:
   blink::ScopedTestOriginTrialPolicy trial_policy_;
   MockOriginTrialsDelegate origin_trials_delegate_;
-  MockRestartDelegate throttle_delegate_;
   CriticalOriginTrialsThrottle throttle_;
 };
 
@@ -189,8 +171,7 @@ TEST_F(CriticalOriginTrialsThrottleTest,
   StartRequest(kExampleURL, ResourceType::kMainFrame);
   std::vector<std::string> tokens = {kPersistentTrialToken};
   std::vector<std::string> critical_trials = {kPersistentTrialName};
-  BeforeWillProcess(kExampleURL, tokens, critical_trials);
-  EXPECT_TRUE(DidRestart());
+  EXPECT_TRUE(BeforeWillProcess(kExampleURL, tokens, critical_trials));
 }
 
 TEST_F(CriticalOriginTrialsThrottleTest,
@@ -198,8 +179,7 @@ TEST_F(CriticalOriginTrialsThrottleTest,
   StartRequest(kExampleURL, ResourceType::kSubFrame);
   std::vector<std::string> tokens = {kPersistentTrialToken};
   std::vector<std::string> critical_trials = {kPersistentTrialName};
-  BeforeWillProcess(kExampleURL, tokens, critical_trials);
-  EXPECT_TRUE(DidRestart());
+  EXPECT_TRUE(BeforeWillProcess(kExampleURL, tokens, critical_trials));
 }
 
 TEST_F(CriticalOriginTrialsThrottleTest,
@@ -207,22 +187,19 @@ TEST_F(CriticalOriginTrialsThrottleTest,
   StartRequest(kExampleURL, ResourceType::kImage);
   std::vector<std::string> tokens = {kPersistentTrialToken};
   std::vector<std::string> critical_trials = {kPersistentTrialName};
-  BeforeWillProcess(kExampleURL, tokens, critical_trials);
-  EXPECT_FALSE(DidRestart());
+  EXPECT_FALSE(BeforeWillProcess(kExampleURL, tokens, critical_trials));
 }
 
 TEST_F(CriticalOriginTrialsThrottleTest, NoHeadersShouldNotRestartRequest) {
   StartRequest(kExampleURL, ResourceType::kMainFrame);
-  BeforeWillProcess(kExampleURL);
-  EXPECT_FALSE(DidRestart());
+  EXPECT_FALSE(BeforeWillProcess(kExampleURL));
 }
 
 TEST_F(CriticalOriginTrialsThrottleTest,
        NoCriticalHeadersShouldNotRestartRequest) {
   StartRequest(kExampleURL, ResourceType::kMainFrame);
   std::vector<std::string> tokens = {kPersistentTrialToken};
-  BeforeWillProcess(kExampleURL, tokens);
-  EXPECT_FALSE(DidRestart());
+  EXPECT_FALSE(BeforeWillProcess(kExampleURL, tokens));
 }
 
 TEST_F(CriticalOriginTrialsThrottleTest,
@@ -230,8 +207,7 @@ TEST_F(CriticalOriginTrialsThrottleTest,
   StartRequest(kExampleURL, ResourceType::kMainFrame);
   std::vector<std::string> tokens = {kPersistentTrialToken};
   std::vector<std::string> critical_trials = {kFakePersistentTrialName};
-  BeforeWillProcess(kExampleURL, tokens, critical_trials);
-  EXPECT_FALSE(DidRestart());
+  EXPECT_FALSE(BeforeWillProcess(kExampleURL, tokens, critical_trials));
 }
 
 TEST_F(CriticalOriginTrialsThrottleTest,
@@ -241,8 +217,7 @@ TEST_F(CriticalOriginTrialsThrottleTest,
   StartRequest(kExampleURL, ResourceType::kMainFrame);
   std::vector<std::string> tokens = {kPersistentTrialToken};
   std::vector<std::string> critical_trials = {kPersistentTrialName};
-  BeforeWillProcess(kExampleURL, tokens, critical_trials);
-  EXPECT_FALSE(DidRestart());
+  EXPECT_FALSE(BeforeWillProcess(kExampleURL, tokens, critical_trials));
 }
 
 }  // namespace

@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="1000498691615767391">ଖୋଲିବା ପାଇଁ ଏକ ଫୋଲ୍ଡର୍ ବାଛନ୍ତୁ</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" />କୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ଏହାକୁ କପି କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />ଟି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ କରାଯାଉଛି...</translation>
 <translation id="1049926623896334335">Word ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1056898198331236512">ଚେତାବନୀ</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରକୁ ମୁଭ୍ କରନ୍ତୁ।</translation>
 <translation id="1062407476771304334">ପ୍ରତିସ୍ଥାପନ କରନ୍ତୁ</translation>
+<translation id="1119383441774809183">ଟେକ୍ସଟ ମେସେଜଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="1119447706177454957">ଇଣ୍ଟର୍ନଲ୍‌ ତ୍ରୁଟି</translation>
 <translation id="1120073797882051782">ହଂଗୁଲ୍ ରୋମାଜା</translation>
 <translation id="112387589102719461">ପ୍ରୋଗାମର୍ ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop ସହ ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="1439919885608649279">ଫୁଲଗୁଡ଼ିକ ସହ ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />କୁ ବାହାର କରିଦିଅନ୍ତୁ</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ଫାଇଲକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକୁ କପି କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1471718551822868769">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1482884275703521657">ଫିନିଶ୍</translation>
 <translation id="148466539719134488">ସ୍ଵିସ୍</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">US ଆନ୍ତର୍ଜାତୀୟ କୀବୋର୍ଡ ସହ ପର୍ତ୍ତୁଗୀଜ୍</translation>
 <translation id="1629521517399325891">ନେଟୱାର୍କ ପ୍ରମାଣୀକରଣ ପାଇଁ ୟୁଜର ସାର୍ଟିଫିକେଟ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="1641780993263690097">ଚାଇନିଜ୍ ପିନୟିନ୍</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" />ଟି ଫାଇଲକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଉଛି</translation>
 <translation id="164969095109328410">Chrome ଡିଭାଇସ୍</translation>
 <translation id="1661207570040737402">ଆପଣଙ୍କ ସମସ୍ତ ସେୟାର କରାଯାଇଥିବା ଡ୍ରାଇଭ Google Workspace ଷ୍ଟୋରେଜକୁ ଆପଣ ବ୍ୟବହାର କରିସାରିଛନ୍ତି।</translation>
 <translation id="1661867754829461514">PIN ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -95,6 +97,7 @@
 <translation id="174937106936716857">ସମୁଦାୟ ଫାଇଲ୍ ସଂଖ୍ୟା</translation>
 <translation id="1755345808328621801">Windows ସଫ୍ଟୱେର ବ୍ୟବହାର କରୁଥିବା ଏକ PC ପାଇଁ ଏହି ଫାଇଲକୁ ଡିଜାଇନ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସରେ ଏହା କମ୍ପାଟିବଲ ନୁହେଁ। ଦୟାକରି ଗୋଟିଏ ଉପଯୁକ୍ତ ରିପ୍ଲେସମେଣ୍ଟ ଆପ ପାଇଁ Chrome ୱେବ ଷ୍ଟୋରରେ ସନ୍ଧାନ କରନ୍ତୁ।</translation>
 <translation id="1757915090001272240">ଚଉଡ଼ା ଲାଟିନ</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> ସହ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="1773212559869067373">ପ୍ରମାଣିକିକରଣ ସର୍ଟିଫିକେଟ୍‌ ସ୍ଥାନୀୟ ସ୍ତରରେ ଖାରଜ କରାଯାଇଛି</translation>
 <translation id="1775381402323441512">ଭିଡିଓର ସୂଚନା</translation>
 <translation id="180035236176489073">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ନିଶ୍ଚିତ ରୂପେ ଅନ୍‍ଲାଇନ୍ ରହିବାକୁ ହେବ।</translation>
@@ -212,6 +215,7 @@
 <translation id="2718540689505416944">Linux ମାଧ୍ୟମରେ ଆପକୁ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ବିବରଣୀ</translation>
 <translation id="2724954091494693138">ତୁର୍କିଶ୍ F-କୀବୋର୍ଡ</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> ସେୟାର କରିବା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2732839045120506979">ଭିଏତନାମିଜ୍ VNI</translation>
 <translation id="2735623501230989521">Parallels Desktopକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="2764206540577097904">ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ବ୍ୟକ୍ତିଗତ Google Workspace ଷ୍ଟୋରେଜକୁ ବ୍ୟବହାର କରିସାରିଛନ୍ତି।</translation>
@@ -273,9 +277,11 @@
 <translation id="3253225298092156258">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍ଗୁଡ଼ିକ ପାଇଁ ଡିଫଲ୍ଟ ଆପ୍‍ ବାଛନ୍ତୁ:</translation>
 <translation id="3255159654094949700">ଆରବିକ୍</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ଫାଇଲକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକୁ ମୁଭ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="3264582393905923483">ପ୍ରସଙ୍ଗ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ଖୋଲାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3280431534455935878">ପ୍ରସ୍ତୁତ ହେଉଛି</translation>
+<translation id="3280719573299097127">ଆପଣ ଏକ ମିଟର ହୋଇଥିବା ନେଟୱାର୍କରେ ଅଛନ୍ତି। ଫାଇଲ ସିଙ୍କକୁ ବିରତ କରାଯାଇଛି।</translation>
 <translation id="3280987981688031357">Vinyl ରେକର୍ଡ</translation>
 <translation id="3290356915286466215">ଅସୁରକ୍ଷିତ</translation>
 <translation id="3291218047831493686">SIM ଲକ୍ ସେଟିଂସ୍ ବଦଳାଇବା ପାଇଁ ଏହି ନେଟୱାର୍କରେ ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -302,12 +308,13 @@
 <translation id="3475447146579922140">Google ସ୍ପ୍ରେଡ୍‌ସିଟ୍</translation>
 <translation id="3479552764303398839">ଏବେ ନୁହେଁ</translation>
 <translation id="3486821258960016770">ମଙ୍ଗୋଲିଆନ୍</translation>
-<translation id="3495304270784461826"><ph name="COUNT" />ଟି ତ୍ରୁଟି।</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ ସିଙ୍କ କରିବାକୁ ପ୍ରସ୍ତୁତ ହେଉଛି…</translation>
 <translation id="3522708245912499433">ପର୍ତ୍ତୁଗୀଜ୍</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" /> ସହ 1 ଫୋଲ୍ଡର ସେୟାର କରାଯାଇଛି</translation>
 <translation id="3524311639100184459">ସାବଧାନ: ଏହି ଫାଇଲଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ଏଗୁଡ଼ିକ ସ୍ୱଚାଳିତ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ଫୋଲ୍ଡର୍</translation>
+<translation id="3529424493985988200">ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="3548125359243647069">ଏକ ଭୁଲ PIN ବହୁତ ଥର ଲେଖାଯାଇଛି।</translation>
 <translation id="3549797760399244642">drive.google.comକୁ ଯାଆନ୍ତୁ …</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରନ୍ତୁ।</translation>
@@ -324,6 +331,7 @@
 <translation id="3619115746895587757">କ୍ୟାପାଚିନୋ</translation>
 <translation id="3619593063686672873">ବର୍ତ୍ତମାନର କୌଣସି ଭିଡିଓ ନାହିଁ</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‌ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
+<translation id="36451918667380448">ମୋବାଇଲ ନେଟୱାର୍କ ପ୍ରଦାନକାରୀଙ୍କୁ ଲକ କରାଯାଇଛି। ସହାୟତା ପାଇଁ ଆପଣଙ୍କ ପ୍ରଦାନକାରୀଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" />ଟି ଫାଇଲ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="3685122418104378273">ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରିବା ସମୟରେ Google ଡ୍ରାଇଭ୍ ସିଙ୍କ ଡିଫଲ୍ଟ ରୂପେ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
@@ -495,6 +503,7 @@
 <translation id="4935975195727477204">ଗାଜାନିଆ ଫୁଲ</translation>
 <translation id="4943368462779413526">ଫୁଟ୍‍ବଲ୍‌</translation>
 <translation id="4961158930123534723">Parallels Desktop ସହ 1ଟି ଫୋଲ୍ଡର ସେୟାର୍ କରାଯାଇଛି</translation>
+<translation id="4965874878399872778">ଆପଣଙ୍କ ସଂସ୍ଥାର ସୁରକ୍ଷା ନୀତି ବିରୁଦ୍ଧରେ ଫାଇଲଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" />କୁ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="4969785127455456148">ଆଲ୍‌ବମ୍</translation>
 <translation id="4972330214479971536">ଫାଇଲ ସିଙ୍କ ସେଟ ଅପ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରାଯାଇପାରିଲା ନାହିଁ</translation>
@@ -545,7 +554,6 @@
 <translation id="5275973617553375938">Google Driveରୁ ଫାଇଲ୍ ପୁନରୁଦ୍ଧାର ହୋଇଛି</translation>
 <translation id="5278111733643988471">ଏହି ଆଇଟମକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ଏହାକୁ ଟ୍ରାସର ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମର ମୂଳ ଫୋଲ୍ଡର "<ph name="PARENT_FOLDER_NAME" />"କୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
 <translation id="5283101102242354279">ଇନକଗ୍ନିଟୋରେ ଏକ ଏକ୍ସଟେନସନକୁ ଚାଲୁ କରନ୍ତୁ:</translation>
-<translation id="5286194356314741248">ସ୍କାନ୍ ହେଉଛି</translation>
 <translation id="5288441970121584418">ବର୍ଗର୍</translation>
 <translation id="5293615890992542006">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲ ମୁଭ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="5305688511332277257">କିଛି ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
@@ -623,6 +631,7 @@
 <translation id="5838451609423551646">ସମସ୍ତ ବଛାଯାଇଥିବା ଫାଇଲ୍‌ଗୁଡ଼ିକ କଢ଼ାଯାଇଛି।</translation>
 <translation id="5838825566232597749">US ୱର୍କମ୍ୟାନ୍ ଆନ୍ତର୍ଜାତୀୟ</translation>
 <translation id="5845721951356578987">ନର୍ସ</translation>
+<translation id="5858478190805449225">ବେଟେରୀ ସେଭର ମୋଡ ଚାଲୁ ଅଛି। ବେଟେରୀ ସେଭର ମୋଡ ବନ୍ଦ ଥିବା ସମୟରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5860491529813859533">ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5861477046012235702">ଗେମର</translation>
 <translation id="5864471791310927901">DHCP ଲୁକଅପ୍ ବିଫଳ ହେଲା।</translation>
@@ -644,7 +653,7 @@
 <translation id="6073060579181816027">ଏକାଧିକ ଫାଇଲ ଲୋକେସନ</translation>
 <translation id="6074825444536523002">Google ଫର୍ମ</translation>
 <translation id="6079871810119356840">Qwerty କୀବୋର୍ଡ ସହ ହଙ୍ଗେରୀୟ</translation>
-<translation id="6096979789310008754">ସନ୍ଧାନ ଟେକ୍ସଟ୍ ଖାଲି ହୋଇଛି, ସମସ୍ତ ଫାଇଲ୍ ଏବଂ ଫୋଲ୍ଡର୍ ଦେଖାଉଛି।</translation>
+<translation id="6096979789310008754">ସର୍ଚ୍ଚ ଟେକ୍ସଟ ଖାଲି ହୋଇଛି, ସମସ୍ତ ଫାଇଲ ଏବଂ ଫୋଲ୍ଡର ଦେଖାଯାଉଛି।</translation>
 <translation id="610101264611565198"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଉଛି</translation>
 <translation id="61118516107968648">CSV ଟେକ୍ସଟ</translation>
 <translation id="6129953537138746214">ସ୍ପେସ୍</translation>
@@ -658,6 +667,7 @@
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6170470584681422115">ସାଣ୍ଡୱିଚ୍</translation>
 <translation id="6177854567773392726">ଷ୍ଟୋରେଜ ସ୍ପେସକୁ ଯାଞ୍ଚ କରାଯାଉଛି… <ph name="ITEMS_FOUND" /> ଆଇଟମ ମିଳିଲା</translation>
+<translation id="6181912134988520389">ଆପଣଙ୍କ Google Driveରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ କରିବା ପାଇଁ <ph name="VM_NAME" />କୁ ଅନୁମତି ଦିଅନ୍ତୁ। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସିଙ୍କ ହୋଇଯିବ।</translation>
 <translation id="6187719147498869044">ହଙ୍ଗେରୀୟ</translation>
 <translation id="6198252989419008588">PIN ବଦଳାନ୍ତୁ</translation>
 <translation id="6199801702437275229">ସ୍ଥାନ ସୂଚନା ପାଇଁ ଅପେକ୍ଷାରତ...</translation>
@@ -688,11 +698,13 @@
 <translation id="637062427944097960">ଏହି ଫାଇଲ୍‌ଟି ଏକ ଭିନ୍ନ ଡେସ୍କଟପ୍‌ରେ ଖୋଲିଲା। (<ph name="MAIL_ADDRESS" />)କୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" />କୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="6394388407447716302">କେବଳ-ପଢ଼ିବା ପାଇଁ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />ଟି ଆଇଟମ୍</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" />କୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ଏହାକୁ ମୁଭ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="642282551015776456">ଏହି ନାମ କୌଣସି ଫାଇଲ୍‍ କିମ୍ବା ଫୋଲ୍ଡର୍‌ର ନାମ ଭାବେ ବ୍ୟବହାର କରାଯାଇନପାରେ</translation>
 <translation id="6423031066725912715">TCVN କୀବୋର୍ଡ ସହ ଭିଏତନାମିଜ୍</translation>
 <translation id="6430271654280079150">ଆପଣଙ୍କ ପାଖରେ 1ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
 <translation id="643243556292470964">ଡିଲିଟ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନ ଟ୍ରାସକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="6438480100790416671">ଷ୍ଟୋରେଜ ସ୍ପେସ ଯାଞ୍ଚ କରାଯାଉଛି…</translation>
+<translation id="6451527188465304418">ଆପଣଙ୍କ ସଂସ୍ଥାର ସୁରକ୍ଷା ନୀତି ବିରୁଦ୍ଧରେ ଫାଇଲ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="6485131920355264772">ଯାଗା ସମ୍ବନ୍ଧିତ ତଥ୍ୟ ପୁନରୁଦ୍ଧାର କରିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି</translation>
@@ -700,7 +712,6 @@
 <translation id="6503285896705205014">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ <ph name="COUNT" />ଟି ଫାଇଲ କପି କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="6509122719576673235">ନରୱେଜିଆନ୍</translation>
 <translation id="6528513914570774834">ଏହି ଡିଭାଇସ୍‌ର ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ଏହି ନେଟ୍‌ୱର୍କ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> ସିଙ୍କ୍ ହେଉଛି...</translation>
 <translation id="6549689063733911810">ବର୍ତ୍ତମାନ</translation>
 <translation id="6558280019477628686">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା। କିଛି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ ହୋଇନପାରେ।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ଡିଲିଟ୍‌ ହେଉଛି...</translation>
@@ -761,6 +772,7 @@
 <translation id="6989942356279143254">ସ୍ୱେଡିସ</translation>
 <translation id="6990081529015358884">ଆପଣଙ୍କ ପାଖରେ ଥିବା ଜାଗା ସରିଯାଇଛି</translation>
 <translation id="6993826899923627728">ଏହି ଆଇଟମଗୁଡ଼ିକ ଆପଣଙ୍କ ଟ୍ରାସରେ ଅଛି</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> ସହ ଫୋଲ୍ଡର ସେୟାର କରନ୍ତୁ</translation>
 <translation id="7008426324576352165">ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସଂସ୍ଥା ଅଧିକ ଷ୍ଟୋରେଜ ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="7009985720488544166">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ <ph name="COUNT" />ଟି ଫାଇଲ ମୁଭ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -833,7 +845,6 @@
 <translation id="7553492409867692754">Linux ଆପ୍ସକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="7555339735447658365">ବର୍ତ୍ତମାନ ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି। ଆପଣ ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ ହେଲେ ଫାଇଲ ସିଙ୍କ ପୁଣି ଆରମ୍ଭ ହେବ</translation>
 <translation id="7589661784326793847">ଗୋଟିଏ ସେକେଣ୍ଡ ଅପେକ୍ଷା କରନ୍ତୁ</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" />କୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଉଛି</translation>
 <translation id="7600126690270271294">ସର୍ବିଆନ୍</translation>
 <translation id="7603724359189955920">ଗ୍ରିଡ୍ସ</translation>
 <translation id="7627790789328695202">ଓହୋଃ, <ph name="FILE_NAME" /> ପୂର୍ବରୁ ଅଛି। ଏହାକୁ ରିନେମ୍ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -856,7 +867,7 @@
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7732111077498238432">ନେଟ୍‍ୱର୍କ ନୀତି ନିୟନ୍ତ୍ରିତ ଅଟେ</translation>
 <translation id="7736003208887389532">ଏହି ଫାଇଲଗୁଡ଼ିକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ କରିବେ?</translation>
-<translation id="7740287852186792672">ସନ୍ଧାନ ଫଳାଫଳଗୁଡିକ</translation>
+<translation id="7740287852186792672">ସର୍ଚ୍ଚ ଫଳାଫଳଗୁଡ଼ିକ</translation>
 <translation id="7748626145866214022">ଆକ୍ସନ୍‌ ବାର୍‌ରେ ଅଧିକ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି ଆକ୍ସନ ବାର୍‌କୁ ଫୋକସ୍‌ କରିବାକୁ Alt + A ଦବାନ୍ତୁ।</translation>
 <translation id="7760449188139285140">ଚାଇନିଜ୍ ୟୁବି</translation>
 <translation id="7765158879357617694">ନିଅନ୍ତୁ</translation>
@@ -887,7 +898,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">My Driveରେ ଥିବା ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକ ଆପଣଙ୍କର Chromebookରେ ସ୍ୱତଃ ସିଙ୍କ ହେବ ଯାହା ଫଳରେ ଆପଣ ଏକ ଇଣ୍ଟରନେଟ କନେକ୍ସନ ବିନା ସେଗୁଡ଼ିକୁ ଆକ୍ସେସ କରିପାରିବେ।</translation>
 <translation id="7925247922861151263">AAAର ଯାଞ୍ଚ ଫେଲ୍‌ ହୋ‍ଇଗଲା</translation>
-<translation id="7925686952655276919">ସିଙ୍କ୍‍ କରିବା ପାଇଁ ମୋବାଇଲ୍‌ ଡାଟା ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="7928710562641958568">ଡିଭାଇସ୍‌କୁ ବାହାର କରନ୍ତୁ</translation>
 <translation id="7933875256234974853">Drive ଫାଇଲଗୁଡ଼ିକୁ ସିଙ୍କ କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ ହେଉଛି...</translation>
 <translation id="7943385054491506837">US କୋଲ୍‌ମାର୍କ</translation>
@@ -910,6 +920,7 @@
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />କୁ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="8106045200081704138">ମୋ ସହିତ ସେୟାର୍‌ କରାଯାଇଛି</translation>
 <translation id="8116072619078571545">ଥଣ୍ଡା ପାଣି</translation>
+<translation id="8120392982188717723">ମିଟରଯୁକ୍ତ ନେଟୱାର୍କରେ ସିଙ୍କ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8124093710070495550">ସିଙ୍କ ସମସ୍ୟା</translation>
 <translation id="8128733386027980860">ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (UK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ଆପଣଙ୍କ ସହ ସେୟାର୍ ହୋଇଛି। ଆପଣଙ୍କ ପାଖରେ ଏହା ନଥିବାରୁ ଆପଣ ଏହାକୁ ଡିଲିଟ୍ କରିପାରିବେ ନାହିଁ।</translation>
@@ -917,6 +928,7 @@
 <translation id="813913629614996137">ଆରମ୍ଭ କରୁଛି…</translation>
 <translation id="8147028810663464959">କେରେକ୍ଟରର ଚଉଡ଼ା ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="8151638057146502721">କନ୍‍ଫିଗର୍ କରନ୍ତୁ</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ତ୍ରୁଟି।}other{# ତ୍ରୁଟି।}}</translation>
 <translation id="8154842056504218462">ସବୁ ବଛାଯାଇଛି।</translation>
 <translation id="8157684860301034423">ଆପ୍ ସୂଚନାଗୁଡ଼ିକୁ ପୁନରୁଦ୍ଧାର କରିହେଲାନାହିଁ।</translation>
 <translation id="8175731104491895765">ଫରାସୀ (ବେଲଜିୟମ୍)</translation>
@@ -947,8 +959,10 @@
 <translation id="8335837413233998004">ବେଲାରୁସିଆନ୍</translation>
 <translation id="8336153091935557858">ଗତକାଲି <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ସମାନ ନାମ ଥିବା ଗୋଟିଏ ଫାଇଲ୍ କିମ୍ବା ଡିରେକ୍ଟୋରୀ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି।</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" />କୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8372369524088641025">ଖରାପ WEP କୀ</translation>
 <translation id="8372852072747894550">ଗ୍ରୀକ୍</translation>
+<translation id="8377269993083688872">ଇମେଲ ଲେଆଉଟ</translation>
 <translation id="8386903983509584791">ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହେଲା</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" />କୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="8395901698320285466">ପରିମେୟ ପରିସର</translation>
@@ -956,6 +970,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ସଂଯୁକ୍ତ ହେଉଛି</translation>
 <translation id="8425213833346101688">ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" /> ସହ <ph name="NUMBER_OF_ITEMS" /> ଫୋଲ୍ଡର ସେୟାର କରାଯାଇଛି</translation>
 <translation id="8431909052837336408">ସିମ୍‌ ପିନ୍‌ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">ଅନୁପଲବ୍ଧ ଥିବା SIM କାର୍ଡ</translation>
@@ -986,7 +1001,6 @@
 <translation id="8569764466147087991">ଖୋଲିବାକୁ ଏକ ଫାଇଲ୍‌ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8577897833047451336">କ୍ରୋଏସୀୟ</translation>
 <translation id="8578308463707544055">ଇନ୍ଦୋନେସୀୟ</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />ଟି ଆଇଟମ୍‌ ସିଙ୍କ୍‌ ହେଉଛି...</translation>
 <translation id="8600173386174225982">ଫାଇଲ୍‌ ତାଲିକାକୁ ଥମ୍ବନେଲ୍ ଭ୍ୟୁରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।</translation>
 <translation id="8601932370724196034">Crostini ଛବି ଫାଇଲ୍</translation>
 <translation id="8609695766746872526">ଆଇସଲାଣ୍ଡିକ୍</translation>
@@ -999,6 +1013,7 @@
 <translation id="8698877009525468705">ଏହି ଫାଇଲଟି ଗୋପନୀୟ ଅଟେ ଏବଂ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ନୀତି ଅନୁସାରେ ପ୍ରତିବନ୍ଧକଗୁଡ଼ିକର ଅଧୀନ ଅଟେ।</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8713112442029511308">ମାଲଟିଜ୍</translation>
+<translation id="8714138378966541668">ପ୍ରଦାନକାରୀ ଦ୍ୱାରା ଲକ କରାଯାଇଛି</translation>
 <translation id="8714406895390098252">ସାଇକେଲ୍</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ବଛାଯାଇଛି।</translation>
 <translation id="872537912056138402">କ୍ରୋଏସିଆନ୍</translation>
@@ -1006,6 +1021,7 @@
 <translation id="8787254343425541995">ସେୟାର୍ ହୋଇଥିବା ନେଟ୍‌ୱାର୍କ ପାଇଁ ପ୍ରୋକ୍ସିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8790981080411996443">ଗଛରେ ପାଣି ଦେଉଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 ଚେତାବନୀ।}other{# ଚେତାବନୀ।}}</translation>
 <translation id="8808686172382650546">କ୍ୟାଟ୍‌</translation>
 <translation id="8810671769985673465">ଜିପ୍ ହେବା ବିଫଳ ହେଲା, ଆଇଟମ୍ ବିଦ୍ୟମାନ ଅଛି: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ସ୍ପେନୀୟ (ସ୍ପେନ୍)</translation>
@@ -1036,7 +1052,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ଫାଇଲ୍ ନାମ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଏକ ଭିନ୍ନ ନାମ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9046895021617826162">ସଂଯୋଗ ବିଫଳ ହେଲା</translation>
 <translation id="9065512565307033593">ଯଦି ଆପଣ ଯାଞ୍ଚ କରିବାକୁ ବିଫଳ ହୁଅନ୍ତି, ତେବେ ଆପଣଙ୍କ ନେଟୱାର୍କ ଆକ୍ସେସକୁ ଅକ୍ଷମ କରିଦିଆଯିବ।</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 ଚେତାବନୀ।}other{<ph name="COUNT" /> ଚେତାବନୀ।}}</translation>
 <translation id="908378762078012445">ଫୋନେଟିକ୍ AATSEEL କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
 <translation id="9086302186042011942">ସିଙ୍କ୍ ହେଉଛି</translation>
 <translation id="9099674669267916096">ପୃଷ୍ଠା ସଂଖ୍ୟା</translation>

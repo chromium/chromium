@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -123,7 +124,7 @@ class MojoFacade {
   mojo::ScopedMessagePipeHandle TakePipeFromId(int id);
 
   // Runs JavaScript on WebUI page.
-  WebState* web_state_ = nullptr;
+  raw_ptr<WebState> web_state_ = nullptr;
 
   // The next available integer ID to assign a Mojo pipe for use in JS.
   int next_pipe_id_ = 1;

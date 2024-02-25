@@ -30,7 +30,7 @@ static_library("web_ui") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/strings:components_strings_grit",
     "//components/sync/protocol:protocol",
     "//components/user_prefs:user_prefs",
@@ -48,7 +48,7 @@ source_set("unit_tests") {
 
   deps = [
     ":web_ui",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//content/test:test_support",
     "//testing/gtest",
   ]

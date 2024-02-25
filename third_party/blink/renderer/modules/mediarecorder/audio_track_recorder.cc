@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 #if BUILDFLAG(IS_WIN) || \
@@ -54,7 +55,16 @@ namespace blink {
 // Max size of buffers passed on to encoders.
 const int kMaxChunkedBufferDurationMs = 60;
 
-AudioTrackRecorder::CodecId AudioTrackRecorder::GetPreferredCodecId() {
+AudioTrackRecorder::CodecId AudioTrackRecorder::GetPreferredCodecId(
+    MediaTrackContainerType type) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // TODO(crbug.com/1480630): Not all platforms support `aac` codecs so make
+  // `opus` as a default after supporting it in the mp4.
+  if (type == MediaTrackContainerType::kVideoMp4 ||
+      type == MediaTrackContainerType::kAudioMp4) {
+    return CodecId::kAac;
+  }
+#endif
   return CodecId::kOpus;
 }
 

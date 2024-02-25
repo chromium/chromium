@@ -5,20 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_IMPORT_PROCESS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_IMPORT_PROCESS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/types/id_type.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace autofill {
-
-// The id of an ongoing profile import process.
-using AutofillProfileImportId =
-    ::base::IdTypeU64<class AutofillProfileImportIdMarker>;
 
 // Specifies the type of a profile form import.
 enum class AutofillProfileImportType {
@@ -80,6 +75,8 @@ enum class PhoneImportStatus {
 // the user's decision to (not) import, based on how we construct the candidate
 // profile in FormDataImporter.
 struct ProfileImportMetadata {
+  // Tracks if the form section contains an invalid country.
+  bool observed_invalid_country = false;
   // Whether the profile's country was complemented automatically.
   bool did_complement_country = false;
   // Whether the form originally contained a phone number and if that phone
@@ -90,10 +87,6 @@ struct ProfileImportMetadata {
   bool did_import_from_unrecognized_autocomplete_field = false;
   // The origin that the form was submitted on.
   url::Origin origin;
-  // The number of fields with unrecognized autocomplete attribute that used to
-  // construct the observed profile.
-  // TODO(crbug.com/1301721): Remove.
-  int num_autocomplete_unrecognized_fields = 0;
 };
 
 // This class holds the state associated with the import of an AutofillProfile
@@ -107,8 +100,8 @@ struct ProfileImportMetadata {
 //   supplied by either calling `AcceptWithoutPrompt()`, `AcceptWithoutEdits()`,
 //   `AcceptWithEdits()`, `Declined()` or `Ignore()`.
 //
-// * Finally, `GetResultingProfiles()` should be used to get the complete set of
-//   resulting AutofillProfiles.
+// * Finally, `ImportAffectedProfiles()` should be used to update the
+//   profiles in the `PersonalDataManager`.
 //
 // The instance of this class should contain all information needed to record
 // metrics once an import process is finished.
@@ -117,7 +110,7 @@ class ProfileImportProcess {
   ProfileImportProcess(const AutofillProfile& observed_profile,
                        const std::string& app_locale,
                        const GURL& form_source_url,
-                       const PersonalDataManager* personal_data_manager,
+                       PersonalDataManager* personal_data_manager,
                        bool allow_only_silent_updates,
                        ProfileImportMetadata import_metadata = {});
 
@@ -129,23 +122,21 @@ class ProfileImportProcess {
   // Returns true if showing the prompt was initiated for this import process.
   bool prompt_shown() const;
 
-  const absl::optional<AutofillProfile>& import_candidate() const {
+  const std::optional<AutofillProfile>& import_candidate() const {
     return import_candidate_;
   }
 
-  const absl::optional<AutofillProfile>& confirmed_import_candidate() const {
+  const std::optional<AutofillProfile>& confirmed_import_candidate() const {
     return confirmed_import_candidate_;
   }
 
-  const absl::optional<AutofillProfile>& merge_candidate() const {
+  const std::optional<AutofillProfile>& merge_candidate() const {
     return merge_candidate_;
   }
 
-  const std::vector<AutofillProfile>& updated_profiles() const {
-    return updated_profiles_;
+  const std::vector<AutofillProfile>& silently_updated_profiles() const {
+    return silently_updated_profiles_;
   }
-
-  const AutofillProfileImportId& import_id() const { return import_id_; }
 
   const AutofillProfile& observed_profile() const { return observed_profile_; }
 
@@ -183,9 +174,11 @@ class ProfileImportProcess {
 
   const GURL& form_source_url() const { return form_source_url_; }
 
-  // Returns a vector containing all unchanged, updated, merged and new
-  // profiles.
-  std::vector<AutofillProfile> GetResultingProfiles();
+  // Adds and updates all profiles affected by the import process in the
+  // `personal_data_manager_`. The affected profiles correspond to the
+  // `silently_updated_profiles_` and depending on the import type, the
+  // `confirmed_import_candidate_`.
+  void ApplyImport();
 
   // Returns false if the import does not result in any change to the stored
   // profiles. This function can only be evaluated after a decision was
@@ -216,7 +209,7 @@ class ProfileImportProcess {
   // |edited_profile| reflect user edits to the import candidate.
   void SetUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      absl::optional<AutofillProfile> edited_profile = absl::nullopt);
+      base::optional_ref<const AutofillProfile> edited_profile = std::nullopt);
 
   // Records UMA and UKM metrics. Should only be called after a user decision
   // was supplied or a silent update happens.
@@ -244,7 +237,7 @@ class ProfileImportProcess {
   // - The `profile`'s country isn't set to an unsupported country.
   // - Not only silent updates are allowed.
   void MaybeSetMigrationCandidate(
-      absl::optional<AutofillProfile>& migration_candidate,
+      std::optional<AutofillProfile>& migration_candidate,
       const AutofillProfile& profile) const;
 
   // Computes the settings-visible profile difference between the
@@ -255,9 +248,6 @@ class ProfileImportProcess {
   // If the user didn't edit any fields (or wasn't prompted), this is a no-op.
   int CollectedEditedTypeHistograms() const;
 
-  // An id to identify an import request.
-  AutofillProfileImportId import_id_;
-
   // Indicates if the user is already prompted.
   bool prompt_shown_{false};
 
@@ -265,15 +255,15 @@ class ProfileImportProcess {
   AutofillProfile observed_profile_;
 
   // Profiles that are silently updatable with the observed profile.
-  std::vector<AutofillProfile> updated_profiles_;
+  std::vector<AutofillProfile> silently_updated_profiles_;
 
   // A profile in its original state that can be merged with the observed
   // profile.
-  absl::optional<AutofillProfile> merge_candidate_;
+  std::optional<AutofillProfile> merge_candidate_;
 
   // The import candidate that is presented to the user. In case of a migration,
   // this is an existing profile.
-  absl::optional<AutofillProfile> import_candidate_;
+  std::optional<AutofillProfile> import_candidate_;
 
   // The type of the import indicates if the profile is just a duplicate of an
   // existing profile, if an existing profile can be silently updated, or if
@@ -284,7 +274,7 @@ class ProfileImportProcess {
 
   // The profile as it was confirmed by the user or as it should be imported if
   // user interactions are disabled.
-  absl::optional<AutofillProfile> confirmed_import_candidate_;
+  std::optional<AutofillProfile> confirmed_import_candidate_;
 
   // The decision the user made when prompted.
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision_{
@@ -301,8 +291,8 @@ class ProfileImportProcess {
   bool new_profiles_suppressed_for_domain_;
 
   // A pointer to the persona data manager that is used to retrieve additional
-  // information about existing profiles.
-  raw_ptr<const PersonalDataManager> personal_data_manager_;
+  // information about existing profiles and save/update imported profiles.
+  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // Counts the number of blocked profile updates.
   int number_of_blocked_profile_updates_{0};

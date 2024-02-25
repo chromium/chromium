@@ -72,7 +72,7 @@ class CORE_EXPORT FontResource final : public Resource {
 
   String OtsParsingMessage() const { return ots_parsing_message_; }
 
-  scoped_refptr<FontCustomPlatformData> GetCustomFontData();
+  const FontCustomPlatformData* GetCustomFontData();
 
   // Returns true if the loading priority of the remote font resource can be
   // lowered. The loading priority of the font can be lowered only if the
@@ -112,7 +112,7 @@ class CORE_EXPORT FontResource final : public Resource {
     kMaxValue = kLongLimitExceeded,
   };
 
-  scoped_refptr<FontCustomPlatformData> font_data_;
+  Member<FontCustomPlatformData> font_data_;
   String ots_parsing_message_;
   LoadLimitState load_limit_state_;
   bool cors_failed_;

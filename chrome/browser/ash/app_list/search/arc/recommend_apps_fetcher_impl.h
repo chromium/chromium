@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -56,8 +57,8 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   // Called when SimpleURLLoader completes.
   void OnDownloaded(std::unique_ptr<std::string> response_body);
 
-  // If the response is not a valid JSON, return absl::nullopt.
-  // If the response contains no app, return absl::nullopt;
+  // If the response is not a valid JSON, return std::nullopt.
+  // If the response contains no app, return std::nullopt;
   // The value, if exists, is a list containing:
   // 1. name: the title of the app.
   // 2. package_name: name of the package, for example: com.package.name
@@ -83,12 +84,11 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   //    }
   // ]
 
-  absl::optional<base::Value> ParseResponse(base::StringPiece response);
+  std::optional<base::Value> ParseResponse(std::string_view response);
 
-  raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<RecommendAppsFetcherDelegate> delegate_;
 
-  raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>
-      url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> app_list_loader_;
 
   int64_t android_id_ = 0;

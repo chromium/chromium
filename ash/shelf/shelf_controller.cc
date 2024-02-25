@@ -18,7 +18,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -30,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash {
 
@@ -77,7 +77,7 @@ void SetShelfAlignmentFromPrefs() {
 
   // Tablet mode uses bottom aligned shelf, don't override it if the shelf
   // prefs change.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -109,7 +109,7 @@ void SetShelfBehaviorsFromPrefs() {
 
   // The shelf should always be bottom-aligned in tablet mode; alignment is
   // assigned from prefs when tablet mode is exited.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -122,7 +122,6 @@ ShelfController::ShelfController() {
   ShelfModel::SetInstance(&model_);
 
   Shell::Get()->session_controller()->AddObserver(this);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   model_.AddObserver(this);
 }
@@ -138,7 +137,6 @@ void ShelfController::Init() {
 void ShelfController::Shutdown() {
   model_.RemoveObserver(this);
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
@@ -224,30 +222,34 @@ void ShelfController::OnActiveUserPrefServiceChanged(
   UpdateAppNotificationBadging();
 }
 
-void ShelfController::OnTabletModeStarted() {
+void ShelfController::OnDisplayTabletStateChanged(display::TabletState state) {
   // Do nothing when running in app mode.
   if (Shell::Get()->session_controller()->IsRunningInAppMode())
     return;
 
-  if (base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
-    SetShelfAutoHideFromPrefs();
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      // Do nothing when the tablet state is in the process of transition.
+      break;
+    case display::TabletState::kInTabletMode:
+      if (base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
+        SetShelfAutoHideFromPrefs();
+      }
+
+      // Force the shelf to be bottom aligned in tablet mode; the prefs are
+      // restored on exit.
+      for (const auto& display :
+           display::Screen::GetScreen()->GetAllDisplays()) {
+        if (Shelf* shelf = GetShelfForDisplay(display.id())) {
+          shelf->SetAlignment(ShelfAlignment::kBottom);
+        }
+      }
+      break;
+    case display::TabletState::kInClamshellMode:
+      SetShelfBehaviorsFromPrefs();
+      break;
   }
-
-  // Force the shelf to be bottom aligned in tablet mode; the prefs are restored
-  // on exit.
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-    if (Shelf* shelf = GetShelfForDisplay(display.id())) {
-      shelf->SetAlignment(ShelfAlignment::kBottom);
-    }
-  }
-}
-
-void ShelfController::OnTabletModeEnded() {
-  // Do nothing when running in app mode.
-  if (Shell::Get()->session_controller()->IsRunningInAppMode())
-    return;
-
-  SetShelfBehaviorsFromPrefs();
 }
 
 void ShelfController::OnDisplayConfigurationChanged() {

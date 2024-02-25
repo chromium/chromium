@@ -3,6 +3,9 @@ include_rules = [
   "+third_party/apple_apsl",
   "+third_party/boringssl/src/include",
   "+third_party/ced",
+  # We are moving the old jni_generator to jni_zero, some references will remain
+  # in //base.
+  "+third_party/jni_zero",
   "+third_party/libevent",
   "+third_party/libunwindstack/src/libunwindstack/include",
   "+third_party/lss",

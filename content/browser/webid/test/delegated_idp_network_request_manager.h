@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
 
@@ -27,6 +28,7 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void FetchWellKnown(const GURL& provider,
                       FetchWellKnownCallback callback) override;
   void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override;
@@ -36,11 +38,13 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void SendAccountsRequest(const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override;
-  void SendTokenRequest(const GURL& token_url,
-                        const std::string& account,
-                        const std::string& url_encoded_post_data,
-                        TokenRequestCallback callback,
-                        ContinueOnCallback continue_on_callback) override;
+  void SendTokenRequest(
+      const GURL& token_url,
+      const std::string& account,
+      const std::string& url_encoded_post_data,
+      TokenRequestCallback callback,
+      ContinueOnCallback continue_on_callback,
+      RecordErrorMetricsCallback record_error_metrics_callback) override;
   void SendSuccessfulTokenRequestMetrics(
       const GURL& metrics_endpoint_url,
       base::TimeDelta api_call_to_show_dialog_time,
@@ -51,6 +55,10 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       const GURL& metrics_endpoint_url,
       MetricsEndpointErrorCode error_code) override;
   void SendLogout(const GURL& logout_url, LogoutCallback callback) override;
+  void SendDisconnectRequest(const GURL& disconnect_url,
+                             const std::string& account_hint,
+                             const std::string& client_id,
+                             DisconnectCallback callback) override;
 
  private:
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> delegate_;

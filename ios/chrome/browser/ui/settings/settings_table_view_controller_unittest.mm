@@ -5,23 +5,23 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/plus_addresses/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/features.h"
 #import "components/sync/test/mock_sync_service.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -35,17 +35,19 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -61,10 +63,11 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using web::WebTaskEnvironment;
 
-class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
+class SettingsTableViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  public:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
@@ -76,7 +79,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
@@ -95,9 +98,6 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
-
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -110,7 +110,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
 
     password_store_mock_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromePasswordStoreFactory::GetForBrowserState(
+            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
                 chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
@@ -139,40 +139,34 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
 
     [static_cast<SettingsTableViewController*>(controller())
         settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
-  ChromeTableViewController* InstantiateController() override {
-    id mockSnackbarCommandHandler =
-        OCMProtocolMock(@protocol(SnackbarCommands));
-
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
-    // as well.
-    id mockApplicationCommandHandler =
+  LegacyChromeTableViewController* InstantiateController() override {
+    // Create mock command handlers. These are just for initializing the view
+    // controller; because the handlers are local to this methdd, they will not
+    // exist during tests, so if the tests call any commands they will fail.
+    id mock_application_handler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+    id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
-                             forProtocol:@protocol(SnackbarCommands)];
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+    [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_settings_handler
+                             forProtocol:@protocol(SettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_snackbar_handler
+                             forProtocol:@protocol(SnackbarCommands)];
 
     SettingsTableViewController* controller =
-        [[SettingsTableViewController alloc]
-            initWithBrowser:browser_.get()
-                 dispatcher:static_cast<id<ApplicationCommands, BrowserCommands,
-                                           BrowsingDataCommands>>(
-                                browser_->GetCommandDispatcher())];
-    controller.applicationCommandsHandler = HandlerForProtocol(
-        browser_->GetCommandDispatcher(), ApplicationCommands);
-    controller.snackbarCommandsHandler =
-        HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
+        [[SettingsTableViewController alloc] initWithBrowser:browser_.get()];
+    controller.applicationHandler =
+        HandlerForProtocol(dispatcher, ApplicationCommands);
+    controller.settingsHandler =
+        HandlerForProtocol(dispatcher, SettingsCommands);
+    controller.snackbarHandler =
+        HandlerForProtocol(dispatcher, SnackbarCommands);
     return controller;
   }
 
@@ -204,18 +198,17 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  PrefService* test_manager_pref_service_;
+  raw_ptr<PrefService> test_manager_pref_service_;
 
   FakeSystemIdentity* fake_identity_ = nullptr;
-  AuthenticationService* auth_service_ = nullptr;
-  syncer::MockSyncService* sync_service_mock_ = nullptr;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
+  raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   scoped_refptr<password_manager::TestPasswordStore> password_store_mock_;
 
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  SceneState* scene_state_;
 
   SettingsTableViewController* controller_ = nullptr;
 };
@@ -536,4 +529,41 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
       base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem != nil);
   EXPECT_FALSE(identityAccountItem.shouldDisplayError);
+}
+
+// Verifies that if the Save to Photos flag is enabled and Save to Photos is
+// supported, then there is a Downloads Settings item in the expected section.
+TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kIOSSaveToPhotos);
+
+  CreateController();
+  CheckController();
+
+  // The section to check for depends on some other features.
+  SettingsSectionIdentifier section =
+      IsInactiveTabsAvailable() || IsTabPickupEnabled()
+          ? SettingsSectionIdentifierInfo
+          : SettingsSectionIdentifierAdvanced;
+
+  EXPECT_TRUE([controller().tableViewModel
+      hasItemForItemType:SettingsItemTypeDownloadsSettings
+       sectionIdentifier:section]);
+}
+
+// Verifies that the plus address option isn't shown when disabled.
+TEST_F(SettingsTableViewControllerTest, NoPlusAddressesByDefault) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(plus_addresses::features::kFeature);
+
+  CreateController();
+  CheckController();
+
+  NSArray<TableViewItem*>* advanced_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAdvanced];
+
+  for (TableViewItem* advanced_item in advanced_items) {
+    EXPECT_NE(advanced_item.accessibilityIdentifier, kSettingsPlusAddressesId);
+  }
 }

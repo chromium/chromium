@@ -11,7 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_transition_delegate.h"
@@ -75,8 +75,6 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   self.transitionController.origin = self.origin;
   self.identityChooserViewController.transitioningDelegate =
       self.transitionController;
-  self.identityChooserViewController.modalPresentationStyle =
-      UIModalPresentationCustom;
 
   // Creates the mediator.
   self.identityChooserMediator = [[IdentityChooserMediator alloc]

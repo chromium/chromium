@@ -65,13 +65,11 @@ class FakeAsynchronousShutdownObjectContainer
   base::OnceClosure deletion_callback_;
   base::OnceClosure shutdown_complete_callback_;
 
-  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_ = nullptr;
-  raw_ptr<DisconnectTetheringRequestSender, ExperimentalAsh>
+  raw_ptr<TetherHostFetcher> tether_host_fetcher_ = nullptr;
+  raw_ptr<DisconnectTetheringRequestSender>
       disconnect_tethering_request_sender_ = nullptr;
-  raw_ptr<NetworkConfigurationRemover, ExperimentalAsh>
-      network_configuration_remover_ = nullptr;
-  raw_ptr<WifiHotspotDisconnector, ExperimentalAsh> wifi_hotspot_disconnector_ =
-      nullptr;
+  raw_ptr<NetworkConfigurationRemover> network_configuration_remover_ = nullptr;
+  raw_ptr<WifiHotspotDisconnector> wifi_hotspot_disconnector_ = nullptr;
 };
 
 }  // namespace tether

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/ios/ios_util.h"
+#import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -41,21 +42,58 @@
   [ChromeEarlGreyUI openShareMenu];
 
   // Verify that the share menu is up and contains a Copy action.
-
   [ChromeEarlGrey verifyActivitySheetVisible];
   // Start the Copy action and verify that the share menu gets dismissed.
   [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
   [ChromeEarlGrey verifyActivitySheetNotVisible];
 }
 
+// Tests that the open extension opens a new tab.
+- (void)testOpenActivityServiceControllerAndOpenExtension {
+  // EG does not support tapping on action extension before iOS17.
+  if (@available(iOS 17.0, *)) {
+    // Set up mock http server.
+    std::map<GURL, std::string> responses;
+    GURL url = web::test::HttpServer::MakeUrl("http://potato");
+    responses[url] = "tomato";
+    web::test::SetUpSimpleHttpServer(responses);
+
+    // Open page and open the share menu.
+    [ChromeEarlGrey loadURL:url];
+    [ChromeEarlGreyUI openShareMenu];
+
+    [ChromeEarlGrey verifyActivitySheetVisible];
+    [ChromeEarlGrey tapButtonInActivitySheetWithID:@"EGOpenExtension"];
+
+    GREYCondition* tabCountCheck =
+        [GREYCondition conditionWithName:@"Tab count"
+                                   block:^{
+                                     return [ChromeEarlGrey mainTabCount] == 2;
+                                   }];
+    if (![tabCountCheck
+            waitWithTimeout:base::test::ios::kWaitForUIElementTimeout
+                                .InSecondsF()]) {
+      // If the tab is not opened, it is very likely due to a system popup.
+      // Try to find it and open on the "Open" button.
+      XCUIApplication* springboardApplication = [[XCUIApplication alloc]
+          initWithBundleIdentifier:@"com.apple.springboard"];
+      auto button = springboardApplication.buttons[@"Open"];
+      if ([button waitForExistenceWithTimeout:
+                      base::test::ios::kWaitForUIElementTimeout.InSecondsF()]) {
+        [button tap];
+      }
+      [ChromeEarlGrey waitForMainTabCount:2];
+    }
+    [ChromeEarlGrey verifyActivitySheetNotVisible];
+  }
+}
+
 // Verifies that Tools Menu > Share Chrome brings up the "share sheet".
 - (void)testShareChromeApp {
-  if (@available(iOS 15.0, *)) {
-    [ChromeEarlGreyUI openToolsMenu];
-    [ChromeEarlGreyUI
-        tapToolsMenuAction:grey_accessibilityID(kToolsMenuShareChromeId)];
-    [ChromeEarlGrey verifyActivitySheetVisible];
-  }
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuShareChromeId)];
+  [ChromeEarlGrey verifyActivitySheetVisible];
 }
 
 @end

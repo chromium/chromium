@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
 
 #include <cstdint>
+#include <optional>
 
 #include "base/check.h"
 #include "base/time/time.h"
@@ -14,7 +15,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace video_conference {
 
@@ -107,7 +107,7 @@ void VideoConferenceUkmHelper::UpdateCameraCaptureDuration() {
   auto duration =
       (base::Time::Now() - *prev_camera_capture_time_).InMilliseconds();
   camera_capture_duration_ += duration;
-  prev_camera_capture_time_ = absl::nullopt;
+  prev_camera_capture_time_ = std::nullopt;
 }
 
 void VideoConferenceUkmHelper::UpdateMicrophoneCaptureDuration() {
@@ -117,7 +117,7 @@ void VideoConferenceUkmHelper::UpdateMicrophoneCaptureDuration() {
   auto duration =
       (base::Time::Now() - *prev_microphone_capture_time_).InMilliseconds();
   microphone_capture_duration_ += duration;
-  prev_microphone_capture_time_ = absl::nullopt;
+  prev_microphone_capture_time_ = std::nullopt;
 }
 
 void VideoConferenceUkmHelper::UpdateScreenCaptureDuration() {
@@ -127,7 +127,7 @@ void VideoConferenceUkmHelper::UpdateScreenCaptureDuration() {
   auto duration =
       (base::Time::Now() - *prev_screen_capture_time_).InMilliseconds();
   screen_capture_duration_ += duration;
-  prev_screen_capture_time_ = absl::nullopt;
+  prev_screen_capture_time_ = std::nullopt;
 }
 
 }  // namespace video_conference

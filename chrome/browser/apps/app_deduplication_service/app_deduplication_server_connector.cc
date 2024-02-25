@@ -102,7 +102,7 @@ void AppDeduplicationServerConnector::OnGetDeduplicateAppsResponse(
       loader->NetError(), loader->ResponseInfo(), response_body.get());
   if (!error.ok()) {
     LOG(ERROR) << error.message();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -110,25 +110,25 @@ void AppDeduplicationServerConnector::OnGetDeduplicateAppsResponse(
 
   if (!response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Parsing failed.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   // Server should return all duplicate app data and cannot be empty.
   if (response.app_group_size() == 0) {
     LOG(ERROR) << "Response is empty.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   deduplication::AppDeduplicationMapper mapper =
       deduplication::AppDeduplicationMapper();
-  absl::optional<proto::DeduplicateData> deduplicate_data =
+  std::optional<proto::DeduplicateData> deduplicate_data =
       mapper.ToDeduplicateData(response);
 
   if (!deduplicate_data.has_value()) {
     LOG(ERROR) << "Mapping to deduplicate data proto failed.";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

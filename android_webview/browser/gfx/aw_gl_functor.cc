@@ -10,10 +10,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserThread;
+using jni_zero::AttachCurrentThread;
 
 extern "C" {
 static AwDrawGLFunction DrawGLFunction;

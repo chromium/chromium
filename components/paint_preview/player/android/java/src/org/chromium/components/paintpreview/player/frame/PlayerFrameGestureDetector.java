@@ -22,11 +22,13 @@ class PlayerFrameGestureDetector
     private boolean mCanDetectZoom;
     private PlayerFrameGestureDetectorDelegate mDelegate;
     private PlayerFrameGestureDetector mParentGestureDetector;
+
     /**
      * Last horizontal scroll distance that was detected by this {@link PlayerFrameGestureDetector}
      * and consumed by {@link #mParentGestureDetector}.
      */
     private float mLastParentScrollX;
+
     /**
      * Last vertical scroll distance that was detected by this {@link PlayerFrameGestureDetector}
      * and consumed by {@link #mParentGestureDetector}.

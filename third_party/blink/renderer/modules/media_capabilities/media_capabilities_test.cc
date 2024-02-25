@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,7 @@
 #include "media/learning/common/media_learning_tasks.h"
 #include "media/learning/common/target_histogram.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/media_types.mojom-blink.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -128,14 +131,14 @@ class MockLearningTaskControllerService
   MOCK_METHOD3(BeginObservation,
                void(const base::UnguessableToken& id,
                     const WTF::Vector<FeatureValue>& features,
-                    const absl::optional<TargetValue>& default_target));
+                    const std::optional<TargetValue>& default_target));
   MOCK_METHOD2(CompleteObservation,
                void(const base::UnguessableToken& id,
                     const ObservationCompletion& completion));
   MOCK_METHOD1(CancelObservation, void(const base::UnguessableToken& id));
   MOCK_METHOD2(UpdateDefaultTarget,
                void(const base::UnguessableToken& id,
-                    const absl::optional<TargetValue>& default_target));
+                    const std::optional<TargetValue>& default_target));
   MOCK_METHOD2(PredictDistribution,
                void(const WTF::Vector<FeatureValue>& features,
                     PredictDistributionCallback callback));
@@ -202,6 +205,7 @@ class FakeMediaMetricsProvider
   void Initialize(bool is_mse,
                   media::mojom::MediaURLScheme url_scheme,
                   media::mojom::MediaStreamType media_stream_type) override {}
+  void OnStarted(media::mojom::blink::PipelineStatusPtr status) override {}
   void OnError(media::mojom::blink::PipelineStatusPtr status) override {}
   void OnFallback(::media::mojom::blink::PipelineStatusPtr status) override {}
   void SetIsEME() override {}
@@ -213,6 +217,7 @@ class FakeMediaMetricsProvider
   void SetRendererType(
       media::mojom::blink::RendererType renderer_type) override {}
   void SetKeySystem(const String& key_system) override {}
+  void SetHasWaitingForKey() override {}
   void SetIsHardwareSecure() override {}
   void SetHasPlayed() override {}
   void SetHaveEnough() override {}
@@ -225,8 +230,9 @@ class FakeMediaMetricsProvider
 
  private:
   mojo::Receiver<media::mojom::blink::MediaMetricsProvider> receiver_{this};
-  MockLearningTaskControllerService* bad_window_service_;
-  MockLearningTaskControllerService* nnr_service_;
+  raw_ptr<MockLearningTaskControllerService, DanglingUntriaged>
+      bad_window_service_;
+  raw_ptr<MockLearningTaskControllerService, DanglingUntriaged> nnr_service_;
 };
 
 // Simple helper for saving back-end callbacks for pending decodingInfo() calls.
@@ -634,6 +640,7 @@ MediaCapabilitiesInfo* EncodingInfo(
 }  // namespace
 
 TEST(MediaCapabilitiesTests, BasicAudio) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   const MediaDecodingConfiguration* kDecodingConfig =
       CreateAudioDecodingConfig();
@@ -645,6 +652,7 @@ TEST(MediaCapabilitiesTests, BasicAudio) {
 
 // Other tests will assume these match. Test to be sure they stay in sync.
 TEST(MediaCapabilitiesTests, ConfigMatchesFeatures) {
+  test::TaskEnvironment task_environment;
   const MediaDecodingConfiguration* kDecodingConfig = CreateDecodingConfig();
   const media::mojom::blink::PredictionFeatures kFeatures = CreateFeatures();
 
@@ -663,6 +671,7 @@ TEST(MediaCapabilitiesTests, ConfigMatchesFeatures) {
 // Test that non-integer framerate isn't truncated by IPC.
 // https://crbug.com/1024399
 TEST(MediaCapabilitiesTests, NonIntegerFramerate) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -701,6 +710,7 @@ TEST(MediaCapabilitiesTests, NonIntegerFramerate) {
 
 // Test smoothness predictions from DB (PerfHistoryService).
 TEST(MediaCapabilitiesTests, PredictWithJustDB) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       // Enabled features.
@@ -740,6 +750,7 @@ TEST(MediaCapabilitiesTests, PredictWithJustDB) {
 }
 
 TEST(MediaCapabilitiesTests, PredictPowerEfficientWithGpuFactories) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       // Enable GpuFactories for power predictions.
@@ -816,6 +827,7 @@ TEST(MediaCapabilitiesTests, PredictPowerEfficientWithGpuFactories) {
 
 // Test with smoothness predictions coming solely from "bad window" ML service.
 TEST(MediaCapabilitiesTests, PredictWithBadWindowMLService) {
+  test::TaskEnvironment task_environment;
   // Enable ML predictions with thresholds. -1 disables the NNR predictor.
   const double kBadWindowThreshold = 2;
   const double kNnrThreshold = -1;
@@ -877,6 +889,7 @@ TEST(MediaCapabilitiesTests, PredictWithBadWindowMLService) {
 
 // Test with smoothness predictions coming solely from "NNR" ML service.
 TEST(MediaCapabilitiesTests, PredictWithNnrMLService) {
+  test::TaskEnvironment task_environment;
   // Enable ML predictions with thresholds. -1 disables the bad window
   // predictor.
   const double kBadWindowThreshold = -1;
@@ -942,6 +955,7 @@ TEST(MediaCapabilitiesTests, PredictWithNnrMLService) {
 
 // Test with combined smoothness predictions from both ML services.
 TEST(MediaCapabilitiesTests, PredictWithBothMLServices) {
+  test::TaskEnvironment task_environment;
   // Enable ML predictions with thresholds.
   const double kBadWindowThreshold = 2;
   const double kNnrThreshold = 1;
@@ -1137,6 +1151,7 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
 // Test that decodingInfo() behaves correctly for all orderings/timings of the
 // underlying prediction services.
 TEST(MediaCapabilitiesTests, PredictionCallbackPermutations) {
+  test::TaskEnvironment task_environment;
   std::vector<PredictionType> callback_order(
       {PredictionType::kDB, PredictionType::kBadWindow, PredictionType::kNnr,
        PredictionType::kGpuFactories});
@@ -1147,6 +1162,7 @@ TEST(MediaCapabilitiesTests, PredictionCallbackPermutations) {
 
 // WebRTC decodingInfo tests.
 TEST(MediaCapabilitiesTests, WebrtcDecodingBasicAudio) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1160,6 +1176,7 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingBasicAudio) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedAudio) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1174,6 +1191,7 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedAudio) {
 
 // Other tests will assume these match. Test to be sure they stay in sync.
 TEST(MediaCapabilitiesTests, WebrtcConfigMatchesFeatures) {
+  test::TaskEnvironment task_environment;
   const MediaDecodingConfiguration* kDecodingConfig =
       CreateWebrtcDecodingConfig();
   const MediaEncodingConfiguration* kEncodingConfig =
@@ -1204,6 +1222,7 @@ TEST(MediaCapabilitiesTests, WebrtcConfigMatchesFeatures) {
 
 // Test smoothness predictions from DB (WebrtcPerfHistoryService).
 TEST(MediaCapabilitiesTests, WebrtcDecodingBasicVideo) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1234,6 +1253,7 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingBasicVideo) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedVideo) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1248,6 +1268,7 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedVideo) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcDecodingSpatialScalability) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1283,6 +1304,7 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingSpatialScalability) {
 
 // WebRTC encodingInfo tests.
 TEST(MediaCapabilitiesTests, WebrtcEncodingBasicAudio) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1296,6 +1318,7 @@ TEST(MediaCapabilitiesTests, WebrtcEncodingBasicAudio) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedAudio) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1309,6 +1332,7 @@ TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedAudio) {
 
 // Test smoothness predictions from DB (WebrtcPerfHistoryService).
 TEST(MediaCapabilitiesTests, WebrtcEncodingBasicVideo) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1339,6 +1363,7 @@ TEST(MediaCapabilitiesTests, WebrtcEncodingBasicVideo) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedVideo) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1353,6 +1378,7 @@ TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedVideo) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcEncodingScalabilityMode) {
+  test::TaskEnvironment task_environment;
   MediaCapabilitiesTestContext context;
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
       .Times(testing::AtMost(1));
@@ -1384,6 +1410,7 @@ TEST(MediaCapabilitiesTests, WebrtcEncodingScalabilityMode) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcDecodePowerEfficientIsSmooth) {
+  test::TaskEnvironment task_environment;
   // Set up a custom decoding info handler with a GPU factory that returns
   // supported and powerEfficient.
   MediaCapabilitiesTestContext context;
@@ -1415,6 +1442,7 @@ TEST(MediaCapabilitiesTests, WebrtcDecodePowerEfficientIsSmooth) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcDecodeOverridePowerEfficientIsSmooth) {
+  test::TaskEnvironment task_environment;
   // Override the default behavior using a field trial. Query smooth from perf
   // history regardless the value of powerEfficient.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1461,13 +1489,14 @@ TEST(MediaCapabilitiesTests, WebrtcDecodeOverridePowerEfficientIsSmooth) {
 }
 
 TEST(MediaCapabilitiesTests, WebrtcEncodePowerEfficientIsSmooth) {
+  test::TaskEnvironment task_environment;
   // Set up a custom decoding info handler with a GPU factory that returns
   // supported and powerEfficient.
   MediaCapabilitiesTestContext context;
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
 
   auto video_encoder_factory =
-      std::make_unique<RTCVideoEncoderFactory>(&mock_gpu_factories);
+      std::make_unique<RTCVideoEncoderFactory>(&mock_gpu_factories, nullptr);
   // Ensure all the profiles in our mock GPU factory are allowed.
   video_encoder_factory->clear_disabled_profiles_for_testing();
 
@@ -1490,9 +1519,15 @@ TEST(MediaCapabilitiesTests, WebrtcEncodePowerEfficientIsSmooth) {
   EXPECT_TRUE(info->supported());
   EXPECT_TRUE(info->smooth());
   EXPECT_TRUE(info->powerEfficient());
+
+  // RTCVideoEncoderFactory destroys MojoVideoEncoderMetricsProvider on the
+  // task runner of GpuVideoAcceleratorFactories.
+  EXPECT_CALL(mock_gpu_factories, GetTaskRunner())
+      .WillOnce(Return(base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 TEST(MediaCapabilitiesTests, WebrtcEncodeOverridePowerEfficientIsSmooth) {
+  test::TaskEnvironment task_environment;
   // Override the default behavior using a field trial. Query smooth from perf
   // history regardless the value of powerEfficient.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1510,7 +1545,7 @@ TEST(MediaCapabilitiesTests, WebrtcEncodeOverridePowerEfficientIsSmooth) {
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
 
   auto video_encoder_factory =
-      std::make_unique<RTCVideoEncoderFactory>(&mock_gpu_factories);
+      std::make_unique<RTCVideoEncoderFactory>(&mock_gpu_factories, nullptr);
   // Ensure all the profiles in our mock GPU factory are allowed.
   video_encoder_factory->clear_disabled_profiles_for_testing();
 
@@ -1540,6 +1575,11 @@ TEST(MediaCapabilitiesTests, WebrtcEncodeOverridePowerEfficientIsSmooth) {
   EXPECT_TRUE(info->supported());
   EXPECT_FALSE(info->smooth());
   EXPECT_TRUE(info->powerEfficient());
+
+  // RTCVideoEncoderFactory destroys MojoVideoEncoderMetricsProvider on the
+  // task runner of GpuVideoAcceleratorFactories.
+  EXPECT_CALL(mock_gpu_factories, GetTaskRunner())
+      .WillOnce(Return(base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 }  // namespace blink

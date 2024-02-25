@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that receiving a set-cookie header with a disallowed character sends a Network.ResponseReceivedExtraInfo event with the blocked cookie.\n`);
   await dp.Network.enable();

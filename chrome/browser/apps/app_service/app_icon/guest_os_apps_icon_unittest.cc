@@ -30,6 +30,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace apps {
 
@@ -70,7 +71,7 @@ class AppServiceGuestOSIconTest : public testing::Test {
                               int size_dp,
                               IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
-    proxy().LoadIcon(AppType::kCrostini, app_id, icon_type, size_dp,
+    proxy().LoadIcon(app_id, icon_type, size_dp,
                      /*allow_placeholder_icon=*/false, result.GetCallback());
     return result.Take();
   }
@@ -92,7 +93,7 @@ class AppServiceGuestOSIconTest : public testing::Test {
 
   // Manually generates an icon made up of a `solid_color` with applied
   // `effects`, without going through any publisher icon loading code.
-  IconValuePtr GenerateIcon(absl::optional<std::string> app_id,
+  IconValuePtr GenerateIcon(std::optional<std::string> app_id,
                             SkColor solid_color,
                             int size_dp,
                             IconEffects effects) {
@@ -135,7 +136,7 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniIconFromVM) {
 
   // The VM can return an image of any size, it will be resized by App Service.
   constexpr int kVmIconSizePx = 150;
-  SkBitmap red_bitmap = CreateSquareIconBitmap(kVmIconSizePx, SK_ColorRED);
+  SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorRED);
   std::vector<uint8_t> png_bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
 
@@ -162,7 +163,7 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniMultiContainerIconFromVM) {
   std::string app_id = AddApp(kDesktopFileId);
 
   constexpr int kVmIconSizePx = 150;
-  SkBitmap red_bitmap = CreateSquareIconBitmap(kVmIconSizePx, SK_ColorRED);
+  SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorRED);
   std::vector<uint8_t> png_bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
 
@@ -190,7 +191,7 @@ TEST_F(AppServiceGuestOSIconTest, GetStandardCrostiniIconFromDisk) {
   std::string app_id = AddApp(kDesktopFileId);
 
   constexpr int kVmIconSizePx = 256;
-  SkBitmap red_bitmap = CreateSquareIconBitmap(kVmIconSizePx, SK_ColorGREEN);
+  SkBitmap red_bitmap = gfx::test::CreateBitmap(kVmIconSizePx, SK_ColorGREEN);
   std::vector<uint8_t> png_bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(red_bitmap, false, &png_bytes);
 

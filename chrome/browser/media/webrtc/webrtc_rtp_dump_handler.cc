@@ -106,7 +106,8 @@ bool WebRtcRtpDumpHandler::StartDump(RtpDumpType type,
     static const char kSendDumpFilePrefix[] = "rtpdump_send_";
     static const size_t kMaxDumpSize = 5 * 1024 * 1024;  // 5MB
 
-    std::string dump_id = base::NumberToString(base::Time::Now().ToDoubleT());
+    std::string dump_id =
+        base::NumberToString(base::Time::Now().InSecondsFSinceUnixEpoch());
     incoming_dump_path_ =
         dump_dir_.AppendASCII(std::string(kRecvDumpFilePrefix) + dump_id)
             .AddExtension(FILE_PATH_LITERAL(".gz"));

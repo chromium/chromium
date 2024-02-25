@@ -4,8 +4,6 @@
 
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"

@@ -136,7 +136,7 @@ TEST_F(CrostiniTerminalTest, GetTerminalSettingBackgroundColor) {
   EXPECT_EQ(
       GetTerminalSettingBackgroundColor(
           &profile, GURL("chrome-untrusted://terminal/html/terminal.html"),
-          absl::nullopt),
+          std::nullopt),
       "#101010");
 
   // Use default color.
@@ -145,7 +145,7 @@ TEST_F(CrostiniTerminalTest, GetTerminalSettingBackgroundColor) {
   EXPECT_EQ(
       GetTerminalSettingBackgroundColor(
           &profile, GURL("chrome-untrusted://terminal/html/terminal.html"),
-          absl::nullopt),
+          std::nullopt),
       "#202124");
 }
 

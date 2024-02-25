@@ -56,6 +56,7 @@ DEFAULT_DELETER(wp_presentation, wp_presentation_destroy)
 DEFAULT_DELETER(struct wp_presentation_feedback,
                 wp_presentation_feedback_destroy)
 DEFAULT_DELETER(zaura_output_manager, zaura_output_manager_destroy)
+DEFAULT_DELETER(zaura_output_manager_v2, zaura_output_manager_v2_destroy)
 DEFAULT_DELETER(zaura_shell, zaura_shell_destroy)
 DEFAULT_DELETER(zaura_surface, zaura_surface_destroy)
 DEFAULT_DELETER(zaura_toplevel, zaura_toplevel_destroy)
@@ -82,8 +83,13 @@ DEFAULT_DELETER(zwp_linux_surface_synchronization_v1,
 DEFAULT_DELETER(zcr_vsync_feedback_v1, zcr_vsync_feedback_v1_destroy)
 DEFAULT_DELETER(zcr_vsync_timing_v1, zcr_vsync_timing_v1_destroy)
 DEFAULT_DELETER(wl_data_device_manager, wl_data_device_manager_destroy)
+DEFAULT_DELETER(wl_data_device, wl_data_device_destroy)
+DEFAULT_DELETER(wl_data_offer, wl_data_offer_destroy)
+DEFAULT_DELETER(wl_data_source, wl_data_source_destroy)
 DEFAULT_DELETER(wp_content_type_manager_v1, wp_content_type_manager_v1_destroy)
 DEFAULT_DELETER(wp_content_type_v1, wp_content_type_v1_destroy)
+DEFAULT_DELETER(wp_fractional_scale_manager_v1,
+                wp_fractional_scale_manager_v1_destroy)
 DEFAULT_DELETER(wp_single_pixel_buffer_manager_v1,
                 wp_single_pixel_buffer_manager_v1_destroy)
 DEFAULT_DELETER(wp_viewporter, wp_viewporter_destroy)

@@ -9,11 +9,11 @@
 
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/policy/cr_policy_indicator.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './network_icon.js';
 
 import {assert} from '//resources/ash/common/assert.js';
@@ -23,6 +23,7 @@ import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ActivationStateType, CrosNetworkConfigInterface, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
@@ -253,6 +254,14 @@ Polymer({
             loadTimeData.getBoolean('isUserLoggedIn');
       },
     },
+
+    isCellularCarrierLockEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+      },
+    },
   },
 
   /** @private {?CrosNetworkConfigInterface} */
@@ -336,9 +345,7 @@ Polymer({
 
     // Service provider from mojo API is a string16 value represented as an
     // array of characters. Convert to string for display.
-    this.subtitle_ = properties.serviceProvider.data
-                         .map((charCode) => String.fromCharCode(charCode))
-                         .join('');
+    this.subtitle_ = mojoString16ToString(properties.serviceProvider);
   },
 
   /** @private */
@@ -678,11 +685,19 @@ Polymer({
     }
 
     if (this.networkState.type === NetworkType.kCellular) {
+      // For carrier lock, display string is different from regular
+      // pin lock
+      if (this.networkState.typeState.cellular.simLocked) {
+        if (this.isCellularCarrierLockEnabled_ &&
+            this.networkState.typeState.cellular.simLockType ===
+                'network-pin') {
+          return this.i18n(
+              'networkListItemUpdatedCellularSimCardCarrierLocked');
+        }
+        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
+      }
       if (this.isPsimPendingActivationWhileLoggedOut_()) {
         return this.i18n('networkListItemActivateAfterDeviceSetup');
-      }
-      if (this.networkState.typeState.cellular.simLocked) {
-        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
       if (this.isPSimUnavailableNetwork_ || this.isESimUnactivatedProfile_) {
         return this.i18n('networkListItemUnavailableSimNetwork');
@@ -1148,6 +1163,11 @@ Polymer({
       return false;
     }
     if (!this.networkState || !this.networkState.typeState.cellular) {
+      return false;
+    }
+    if (this.isCellularCarrierLockEnabled_ &&
+        this.networkState.typeState.cellular.simLocked &&
+        this.networkState.typeState.cellular.simLockType === 'network-pin') {
       return false;
     }
     return this.networkState.typeState.cellular.simLocked;

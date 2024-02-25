@@ -227,7 +227,7 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
   }
   set_bubble_view(view_android_.get());
 #else
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->window()->GetAutofillBubbleHandler();
   set_bubble_view(autofill_bubble_handler->ShowMandatoryReauthBubble(

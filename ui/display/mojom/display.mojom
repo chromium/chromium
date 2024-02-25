@@ -45,6 +45,6 @@ struct Display {
   int32 color_depth;
   int32 depth_per_component;
   bool is_monochrome;
-  int32 display_frequency;
+  float display_frequency;
   string label;
 };

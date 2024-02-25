@@ -6,15 +6,12 @@
 #define CHROME_BROWSER_WIN_CONFLICTS_MODULE_INFO_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
-
-// A format string for generating paths to COM class in-proc server keys under
-// HKEY_CLASSES_ROOT.
-extern const wchar_t kClassIdRegistryKeyFormat[];
 
 // Information about the certificate of a file.
 struct CertificateInfo {
@@ -41,6 +38,10 @@ struct CertificateInfo {
   // "Google LLC" or "Microsoft Corporation").
   std::u16string subject;
 };
+
+// Converts a given `guid` to a path to a COM class in-proc server key under
+// HKEY_CLASSES_ROOT.
+std::wstring GuidToClsid(std::wstring_view guid);
 
 // Extracts information about the certificate of the given |file|, populating
 // |certificate_info|. It is expected that |certificate_info| be freshly

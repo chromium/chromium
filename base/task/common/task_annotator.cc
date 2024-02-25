@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -118,7 +119,7 @@ TaskAnnotator::TaskAnnotator() = default;
 TaskAnnotator::~TaskAnnotator() = default;
 
 void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
-                                  PendingTask* pending_task) {
+                                  TaskMetadata* pending_task) {
   DCHECK(pending_task);
   TRACE_EVENT_INSTANT(
       "toplevel.flow", trace_event_name,
@@ -231,7 +232,7 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   debug::Alias(&task_backtrace);
 }
 
-uint64_t TaskAnnotator::GetTaskTraceID(const PendingTask& task) const {
+uint64_t TaskAnnotator::GetTaskTraceID(const TaskMetadata& task) const {
   return (static_cast<uint64_t>(task.sequence_num) << 32) |
          ((static_cast<uint64_t>(reinterpret_cast<intptr_t>(this)) << 32) >>
           32);
@@ -266,7 +267,7 @@ void TaskAnnotator::MaybeEmitIncomingTaskFlow(perfetto::EventContext& ctx,
   if (!*flow_enabled)
     return;
 
-  perfetto::TerminatingFlow::ProcessScoped(GetTaskTraceID(task))(ctx);
+  perfetto::Flow::ProcessScoped(GetTaskTraceID(task))(ctx);
 }
 
 // static
@@ -314,7 +315,7 @@ TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
 uint32_t TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
     base::StringPiece name) {
   base::MD5Digest digest;
-  base::MD5Sum(name.data(), name.size(), &digest);
+  base::MD5Sum(base::as_byte_span(name), &digest);
   uint32_t value;
   DCHECK_GE(sizeof(digest.a), sizeof(value));
   memcpy(&value, digest.a, sizeof(value));
@@ -389,7 +390,7 @@ void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
   // base::ModuleCache::CreateModuleForAddress is not implemented for it.
   // Thus the below code must be included on a conditional basis.
   const auto ipc_method_address = reinterpret_cast<uintptr_t>(ipc_method_info_);
-  const absl::optional<size_t> location_iid =
+  const std::optional<size_t> location_iid =
       base::trace_event::InternedUnsymbolizedSourceLocation::Get(
           &ctx, ipc_method_address);
   if (location_iid) {

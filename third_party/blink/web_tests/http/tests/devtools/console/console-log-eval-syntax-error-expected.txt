@@ -1,13 +1,13 @@
 Tests that syntax errors in eval are logged into console, contains correct link and doesn't cause browser crash.
 
 VM:1 Uncaught SyntaxError: Unexpected token '}'
-    at foo (<anonymous>:16:11)
-foo @ VM:16
+    at foo (<anonymous>:15:11)
+foo @ VM:15
 setTimeout (async)
-(anonymous) @ console-log-eval-syntax-error.js:24
+(anonymous) @ console-log-eval-syntax-error.js:23
 boo.js:2 Uncaught SyntaxError: Unexpected token '}' (at boo.js:2:1)
-    at boo (<anonymous>:20:11)
-boo @ VM:20
+    at boo (<anonymous>:19:11)
+boo @ VM:19
 setTimeout (async)
-(anonymous) @ console-log-eval-syntax-error.js:27
+(anonymous) @ console-log-eval-syntax-error.js:26
 

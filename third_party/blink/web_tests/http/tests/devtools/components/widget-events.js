@@ -4,11 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
 (async function() {
   TestRunner.addResult(`This tests that events are properly propagated through Widget hierarchy.\n`);
 
 
-  var TestWidget = class extends UI.Widget {
+  var TestWidget = class extends UI.Widget.Widget {
     constructor(widgetName) {
       super();
       this.widgetName = widgetName;
@@ -70,7 +72,7 @@ import {TestRunner} from 'test_runner';
   TestRunner.runTestSuite([
     function testShowWidget(next) {
       var widget = new TestWidget('Widget');
-      widget.show(UI.inspectorView.element);
+      widget.show(UI.InspectorView.InspectorView.instance().element);
       widget.detach();
       next();
     },
@@ -151,13 +153,13 @@ import {TestRunner} from 'test_runner';
       var parentWidget = new TestWidget('Parent');
       var childWidget = new TestWidget('Child');
       childWidget.setHideOnDetach();
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
 
       parentWidget.doResize();
       childWidget.show(parentWidget.element);
       parentWidget.doResize();
       parentWidget.detach();
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
       childWidget.detach();
       parentWidget.detach();
       next();
@@ -165,7 +167,7 @@ import {TestRunner} from 'test_runner';
 
     function testWidgetCounter(next) {
       var parentWidget = new TestWidget('Parent');
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
 
       var childWidget = new TestWidget('Child');
       childWidget.show(parentWidget.element);
@@ -186,7 +188,7 @@ import {TestRunner} from 'test_runner';
 
     function testRemoveChild(next) {
       var parentWidget = new TestWidget('Parent');
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
 
       var childWidget = new TestWidget('Child');
       childWidget.show(parentWidget.element);
@@ -246,7 +248,7 @@ import {TestRunner} from 'test_runner';
     function testShowOnWasShown(next) {
       var parentWidget = new TestWidget('Parent');
       parentWidget.showOnWasShown = new TestWidget('Child');
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
       parentWidget.detach();
       next();
     },
@@ -258,7 +260,7 @@ import {TestRunner} from 'test_runner';
       middleWidget.show(topWidget.element);
       topWidget.showOnWasShown = bottomWidget;
       topWidget.showRoot = middleWidget.element;
-      topWidget.show(UI.inspectorView.element);
+      topWidget.show(UI.InspectorView.InspectorView.instance().element);
       topWidget.detach();
       next();
     },
@@ -268,7 +270,7 @@ import {TestRunner} from 'test_runner';
       var childWidget = new TestWidget('Child');
       childWidget.show(parentWidget.element);
       parentWidget.detachOnWasShown = childWidget;
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
       parentWidget.detach();
       next();
     },
@@ -276,7 +278,7 @@ import {TestRunner} from 'test_runner';
     function testShowOnWillHide(next) {
       var parentWidget = new TestWidget('Parent');
       var childWidget = new TestWidget('Child');
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
       childWidget.show(parentWidget.element);
       parentWidget.showOnWillHide = childWidget;
       parentWidget.detach();
@@ -286,7 +288,7 @@ import {TestRunner} from 'test_runner';
     function testDetachOnWillHide(next) {
       var parentWidget = new TestWidget('Parent');
       var childWidget = new TestWidget('Child');
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
       childWidget.show(parentWidget.element);
       parentWidget.detachOnWillHide = childWidget;
       parentWidget.detach();
@@ -297,8 +299,8 @@ import {TestRunner} from 'test_runner';
       var parentWidget1 = new TestWidget('Parent1');
       var parentWidget2 = new TestWidget('Parent2');
       var childWidget = new TestWidget('Child');
-      parentWidget1.show(UI.inspectorView.element);
-      parentWidget2.show(UI.inspectorView.element);
+      parentWidget1.show(UI.InspectorView.InspectorView.instance().element);
+      parentWidget2.show(UI.InspectorView.InspectorView.instance().element);
       childWidget.show(parentWidget1.element);
       childWidget.show(parentWidget2.element);
       next();
@@ -309,14 +311,14 @@ import {TestRunner} from 'test_runner';
       var childWidget = new TestWidget('Child');
       childWidget.show(parentWidget.element);
       parentWidget.resizeOnWasShown = childWidget;
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
       parentWidget.detach();
       next();
     },
 
     function testReparentWithinWidget(next) {
       var parentWidget = new TestWidget('Parent');
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
       var childWidget = new TestWidget('Child');
       var container1 = parentWidget.element.createChild('div');
       var container2 = parentWidget.element.createChild('div');
@@ -329,7 +331,7 @@ import {TestRunner} from 'test_runner';
       var parentWidget = new TestWidget('Parent');
       var visibleChild = new TestWidget('visibleChild');
       var hiddenChild = new TestWidget('hiddenChild');
-      parentWidget.show(UI.inspectorView.element);
+      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
       visibleChild.show(parentWidget.element);
       hiddenChild.show(parentWidget.element);
       hiddenChild.hideWidget();

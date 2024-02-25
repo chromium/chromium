@@ -12,7 +12,8 @@ chrome.test.runTests([
         matches: ['*://*/*'],
         excludeMatches: ['*://abc.com/*'],
         allFrames: true,
-        js: [{file: 'empty.js'}]
+        js: [{file: 'empty.js'}],
+        world: chrome.userScripts.ExecutionWorld.MAIN
       },
       {
         id: 'script2',
@@ -34,16 +35,17 @@ chrome.test.runTests([
         excludeMatches: ['*://abc.com/*'],
         allFrames: true,
         js: [{file: 'empty.js'}],
-        runAt: 'document_idle'
+        runAt: 'document_idle',
+        world: chrome.userScripts.ExecutionWorld.MAIN
       },
       {
         id: 'script2',
         matches: ['*://requested.com/*'],
         js: [{file: 'empty2.js'}],
         allFrames: false,
-        runAt: 'document_end'
+        runAt: 'document_end',
+        world: chrome.userScripts.ExecutionWorld.USER_SCRIPT
       }
-
     ];
 
     await chrome.userScripts.register(userScriptsToRegister);
@@ -57,11 +59,35 @@ chrome.test.runTests([
     scripts = await chrome.userScripts.getScripts({});
     chrome.test.assertEq(expectedUserScripts, scripts);
 
+    chrome.test.succeed();
+  },
+
+  // Tests that calling getScripts with empty filter ids returns zero scripts.
+  async function getScripts_EmptyFilterIds() {
+    await chrome.userScripts.unregister();
+
+    const userScriptsToRegister = [
+      {
+        id: 'script1',
+        matches: ['*://*/*'],
+        excludeMatches: ['*://abc.com/*'],
+        allFrames: true,
+        js: [{file: 'empty.js'}]
+      },
+      {
+        id: 'script2',
+        matches: ['*://requested.com/*'],
+        js: [{file: 'empty2.js'}],
+        runAt: 'document_end'
+      }
+    ];
+
+
+    await chrome.userScripts.register(userScriptsToRegister);
+
     // Calling getScripts with empty ids in filter returns no scripts.
-    // TODO(crbug.com/385165): Move to its separate test after implementing
-    // userScripts.unregister(), so we can unregister scripts in between tests.
-    scripts = await chrome.userScripts.getScripts({ids: []});
-    chrome.test.assertEq([], scripts);
+    const scripts = await chrome.userScripts.getScripts({ ids: [] });
+    chrome.test.assertEq(0, scripts.length);
 
     chrome.test.succeed();
   },
@@ -69,6 +95,8 @@ chrome.test.runTests([
   // Tests that calling getScripts with a given filter returns only scripts
   // matching the filter.
   async function getScripts_Filter() {
+    await chrome.userScripts.unregister();
+
     const scriptsToRegister = [
       {id: 'script3', matches: ['*://*/*'], js: [{file: 'empty.js'}]},
       {id: 'script4', matches: ['*://*/*'], js: [{file: 'empty2.js'}]}
@@ -79,7 +107,8 @@ chrome.test.runTests([
       matches: ['*://*/*'],
       allFrames: false,
       js: [{file: 'empty.js'}],
-      runAt: 'document_idle'
+      runAt: 'document_idle',
+      world: chrome.userScripts.ExecutionWorld.USER_SCRIPT
     }];
 
     await chrome.userScripts.register(scriptsToRegister);

@@ -74,10 +74,10 @@ class AdminTemplateService : public KeyedService,
 
   // Pref service used to monitor preference updates when new policies are
   // uploaded to the user.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // apps_cache pointer used to verify readiness before model updates.
-  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> apps_cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache> apps_cache_ = nullptr;
 
   // Preference Change Registrar updates the storage backend when a new policy
   // has been downloaded.

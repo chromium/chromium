@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/platform/p2p/host_address_request.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "components/webrtc/net_address_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -26,7 +26,7 @@ P2PAsyncAddressResolver::~P2PAsyncAddressResolver() {
 }
 
 void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
-                                    absl::optional<int> address_family,
+                                    std::optional<int> address_family,
                                     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(kStateCreated, state_);

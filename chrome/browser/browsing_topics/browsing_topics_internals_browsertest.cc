@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -22,6 +23,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_topics_test_util.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -336,8 +338,6 @@ class BrowsingTopicsDisabledInternalsBrowserTest
             blink::features::kBrowsingTopics,
             blink::features::kBrowsingTopicsParameters,
             features::kPrivacySandboxAdsAPIsOverride,
-            privacy_sandbox::kPrivacySandboxSettings3,
-            privacy_sandbox::kPrivacySandboxSettings4,
         });
   }
 
@@ -352,12 +352,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsDisabledInternalsBrowserTest,
 
   EXPECT_EQ(GetFeaturesAndParametersTabContent(), R"(BrowsingTopics: disabled
 PrivacySandboxAdsAPIsOverride: disabled
-PrivacySandboxSettings3: disabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
-BrowsingTopicsXHR: disabled
 BrowsingTopicsDocumentAPI: enabled
-Configuration version: 1
+Configuration version: 2
 BrowsingTopicsParameters: disabled
 BrowsingTopicsParameters:number_of_epochs_to_expose: 3
 BrowsingTopicsParameters:time_period_per_epoch: 7d-0h-0m-0s
@@ -368,7 +366,7 @@ BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filteri
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
 BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
-BrowsingTopicsParameters:taxonomy_version: 1
+BrowsingTopicsParameters:taxonomy_version: 2
 BrowsingTopicsParameters:disabled_topics_list: 
 )");
 }
@@ -417,7 +415,6 @@ class BrowsingTopicsInternalsBrowserTest
            {"time_period_per_epoch", "15s"}}},
          {blink::features::kBrowsingTopics, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
-         {privacy_sandbox::kPrivacySandboxSettings3, {}},
          {privacy_sandbox::kPrivacySandboxSettings4,
           {{"consent-required", "true"}}}},
         /*disabled_features=*/{});
@@ -468,12 +465,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest, FeaturesEnabled) {
 
   EXPECT_EQ(GetFeaturesAndParametersTabContent(), R"(BrowsingTopics: enabled
 PrivacySandboxAdsAPIsOverride: enabled
-PrivacySandboxSettings3: enabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
-BrowsingTopicsXHR: disabled
 BrowsingTopicsDocumentAPI: enabled
-Configuration version: 1
+Configuration version: 2
 BrowsingTopicsParameters: enabled
 BrowsingTopicsParameters:number_of_epochs_to_expose: 3
 BrowsingTopicsParameters:time_period_per_epoch: 0d-0h-0m-15s
@@ -484,7 +479,7 @@ BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filteri
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
 BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
 BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
-BrowsingTopicsParameters:taxonomy_version: 1
+BrowsingTopicsParameters:taxonomy_version: 2
 BrowsingTopicsParameters:disabled_topics_list: 
 )");
 }
@@ -726,8 +721,8 @@ Model file path: /test_path/test_model.tflite
                      /*world_id=*/1));
 
   EXPECT_EQ(GetHostsClassificationResultTableContent(),
-            R"(foo1.com|1. Arts & entertainment;2. Acting & theater;|
-foo2.com|3. Comics;4. Concerts & music festivals;5. Dance;|
+            R"(foo1.com|1. Arts & Entertainment;2. Acting & Theater;|
+foo2.com|3. Comics;4. Concerts & Music Festivals;5. Dance;|
 )");
 
   EXPECT_TRUE(GetHostsClassificationInputValidationError().empty());

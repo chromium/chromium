@@ -10,13 +10,13 @@
 #include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/i18n/time_formatting.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -53,7 +53,7 @@ bool UpdateTrashInfoContents(const base::FilePath& original_path,
   entry.trash_info_contents = base::StrCat(
       {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
        relative_restore_path,
-       "\nDeletionDate=", base::TimeToISO8601(entry.deletion_time)});
+       "\nDeletionDate=", base::TimeFormatAsIso8601(entry.deletion_time)});
   return true;
 }
 
@@ -130,7 +130,7 @@ TrashIOTask::TrashIOTask(
   progress_.total_bytes = 0;
 
   for (const auto& url : file_urls) {
-    progress_.sources.emplace_back(url, absl::nullopt);
+    progress_.sources.emplace_back(url, std::nullopt);
     trash_entries_.emplace_back();
   }
 }
@@ -257,8 +257,9 @@ void TrashIOTask::GetFileSize(size_t source_idx) {
       base::BindOnce(
           &GetFileMetadataOnIOThread, file_system_context_,
           progress_.sources[source_idx].url,
-          storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-              storage::FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE,
+          storage::FileSystemOperation::GetMetadataFieldSet(
+              {storage::FileSystemOperation::GetMetadataField::kSize,
+               storage::FileSystemOperation::GetMetadataField::kRecursiveSize}),
           google_apis::CreateRelayCallback(
               base::BindOnce(&TrashIOTask::GotFileSize,
                              weak_ptr_factory_.GetWeakPtr(), source_idx))));
@@ -478,7 +479,7 @@ void TrashIOTask::WriteMetadata(
     const storage::FileSystemURL& files_folder_location,
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
   if (!destination_result.has_value()) {
-    progress_.outputs.emplace_back(files_folder_location, absl::nullopt);
+    progress_.outputs.emplace_back(files_folder_location, std::nullopt);
     TrashComplete(source_idx, output_idx, destination_result.error());
     return;
   }
@@ -492,7 +493,7 @@ void TrashIOTask::WriteMetadata(
       absolute_trash_path, trash::kInfoFolderName, file_name);
   progress_.outputs.emplace_back(
       CreateFileSystemURL(progress_.sources[source_idx].url, destination_path),
-      absl::nullopt);
+      std::nullopt);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -524,7 +525,7 @@ void TrashIOTask::TrashFile(size_t source_idx,
                             const storage::FileSystemURL& destination_url) {
   DCHECK(source_idx < progress_.sources.size());
   DCHECK(output_idx < progress_.outputs.size());
-  progress_.outputs.emplace_back(destination_url, absl::nullopt);
+  progress_.outputs.emplace_back(destination_url, std::nullopt);
 
   last_progress_size_ = 0;
 

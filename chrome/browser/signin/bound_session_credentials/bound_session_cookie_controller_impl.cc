@@ -8,89 +8,108 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_switches.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
-#include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
+#include "chrome/common/renderer_configuration.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
+
+void RecordNumberOfSuccessiveTimeoutIfAny(size_t successive_timeout) {
+  if (successive_timeout == 0) {
+    return;
+  }
+
+  base::UmaHistogramCounts100(
+      "Signin.BoundSessionCredentials.ThrottledRequestsSuccessiveTimeout",
+      successive_timeout);
 }
+}  // namespace
 
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     content::StoragePartition* storage_partition,
     network::NetworkConnectionTracker* network_connection_tracker,
-    const bound_session_credentials::RegistrationParams& registration_params,
-    const base::flat_set<std::string>& cookie_names,
-    Delegate* delegate)
-    : BoundSessionCookieController(registration_params, cookie_names, delegate),
+    const bound_session_credentials::BoundSessionParams& bound_session_params,
+    Delegate* delegate,
+    bool is_off_the_record_profile)
+    : BoundSessionCookieController(bound_session_params, delegate),
       key_service_(key_service),
       storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker),
-      wait_for_network_callback_helper_(
-          std::make_unique<WaitForNetworkCallbackHelperChrome>()) {
-  CHECK(!registration_params.wrapped_key().empty());
+      is_off_the_record_profile_(is_off_the_record_profile) {
+  CHECK(!bound_session_params.wrapped_key().empty());
   base::span<const uint8_t> wrapped_key =
-      base::as_bytes(base::make_span(registration_params.wrapped_key()));
+      base::as_bytes(base::make_span(bound_session_params.wrapped_key()));
   session_binding_helper_ = std::make_unique<SessionBindingHelper>(
-      key_service_.get(), wrapped_key, /*session_id=*/"");
+      key_service_.get(), wrapped_key, session_id_);
   // Preemptively load the binding key to speed up the generation of binding
   // key assertion.
   session_binding_helper_->MaybeLoadBindingKey();
+
+  std::optional<base::TimeDelta> cookie_rotation_delay =
+      bound_session_credentials::GetCookieRotationDelayIfSetByCommandLine();
+
+  if (cookie_rotation_delay) {
+    // `base::Unretained(this)` is safe because `this` owns
+    // `artifical_cookie_rotation_delay_`.
+    artifical_cookie_rotation_delay_ =
+        std::make_unique<base::RetainingOneShotTimer>(
+            FROM_HERE, *cookie_rotation_delay,
+            base::BindRepeating(
+                &BoundSessionCookieControllerImpl::StartCookieRefresh,
+                base::Unretained(this)));
+  }
+
+  artificial_cookie_rotation_result_ =
+      bound_session_credentials::GetCookieRotationResultIfSetByCommandLine();
 }
 
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
   // On shutdown or session termination, resume blocked requests if any.
-  ResumeBlockedRequests();
+  ResumeBlockedRequests(chrome::mojom::ResumeBlockedRequestsTrigger::
+                            kShutdownOrSessionTermination);
+  RecordNumberOfSuccessiveTimeoutIfAny(successive_timeout_);
 }
 
 void BoundSessionCookieControllerImpl::Initialize() {
   network_connection_observer_.Observe(network_connection_tracker_);
+  is_offline_ = network_connection_tracker_->IsOffline();
   CreateBoundCookiesObservers();
   MaybeRefreshCookie();
 }
 
 void BoundSessionCookieControllerImpl::OnConnectionChanged(
     network::mojom::ConnectionType type) {
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
-    // Let network requests fail now while there is no internet connection,
-    // instead of holding them up until the network is back or timeout occurs.
-    // The network could come back shortly before the timeout which would result
-    // in requests being released without a valid cookie.
-    ResumeBlockedRequests();
+  if (is_offline_ && type != network::mojom::ConnectionType::CONNECTION_NONE) {
+    // We are back online. Schedule a new cookie rotation if needed.
+    MaybeScheduleCookieRotation();
   }
+
+  is_offline_ = type == network::mojom::ConnectionType::CONNECTION_NONE;
 }
 
-bool BoundSessionCookieControllerImpl::IsConnectionTypeAvailableAndOffline() {
-  network::mojom::ConnectionType type;
-  return network_connection_tracker_->GetConnectionType(
-             &type, base::BindOnce(
-                        &BoundSessionCookieControllerImpl::OnConnectionChanged,
-                        weak_ptr_factory_.GetWeakPtr())) &&
-         type == network::mojom::ConnectionType::CONNECTION_NONE;
-}
-
-void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
-    base::OnceClosure resume_blocked_request) {
+void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
+    chrome::mojom::BoundSessionRequestThrottledHandler::
+        HandleRequestBlockedOnCookieCallback resume_blocked_request) {
   if (AreAllCookiesFresh()) {
     // Cookie is fresh.
-    std::move(resume_blocked_request).Run();
+    std::move(resume_blocked_request)
+        .Run(chrome::mojom::ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
     return;
   }
 
   resume_blocked_requests_.push_back(std::move(resume_blocked_request));
   MaybeRefreshCookie();
-
-  if (IsConnectionTypeAvailableAndOffline()) {
-    // See the comment in `OnConnectionChanged()` for explanation.
-    ResumeBlockedRequests();
-    return;
-  }
 
   if (!resume_blocked_requests_timer_.IsRunning() &&
       !resume_blocked_requests_.empty()) {
@@ -123,7 +142,10 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
   base::Time old_min_expiration_time = min_cookie_expiration_time();
   it->second = expiration_time;
   if (AreAllCookiesFresh()) {
-    ResumeBlockedRequests();
+    ResumeBlockedRequests(
+        chrome::mojom::ResumeBlockedRequestsTrigger::kObservedFreshCookies);
+    RecordNumberOfSuccessiveTimeoutIfAny(successive_timeout_);
+    successive_timeout_ = 0;
   }
 
   if (min_cookie_expiration_time() != old_min_expiration_time) {
@@ -156,8 +178,8 @@ BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
-                   *wait_for_network_callback_helper_, *session_binding_helper_,
-                   url_, std::move(cookie_names))
+                   *session_binding_helper_, url_, std::move(cookie_names),
+                   is_off_the_record_profile_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    storage_partition_->GetCookieManagerForBrowserProcess(),
                    url_, std::move(cookie_names));
@@ -172,28 +194,50 @@ void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
   if (refresh_cookie_fetcher_) {
     return;
   }
-  refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
-  DCHECK(refresh_cookie_fetcher_);
-  // `base::Unretained(this)` is safe because `this` owns
-  // `refresh_cookie_fetcher_`.
-  refresh_cookie_fetcher_->Start(
-      base::BindOnce(&BoundSessionCookieControllerImpl::OnCookieRefreshFetched,
-                     base::Unretained(this)));
+
+  if (!artifical_cookie_rotation_delay_) {
+    StartCookieRefresh();
+  } else if (!artifical_cookie_rotation_delay_->IsRunning()) {
+    // Runs `StartCookieRefresh()` after a certain delay.
+    artifical_cookie_rotation_delay_->Reset();
+  }
+}
+
+void BoundSessionCookieControllerImpl::StartCookieRefresh() {
+  CHECK(!refresh_cookie_fetcher_);
+
+  if (artificial_cookie_rotation_result_) {
+    OnCookieRefreshFetched(*artificial_cookie_rotation_result_);
+  } else {
+    refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
+    // `base::Unretained(this)` is safe because `this` owns
+    // `refresh_cookie_fetcher_`.
+    refresh_cookie_fetcher_->Start(base::BindOnce(
+        &BoundSessionCookieControllerImpl::OnCookieRefreshFetched,
+        base::Unretained(this)));
+  }
 }
 
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
     BoundSessionRefreshCookieFetcher::Result result) {
-  // TODO(b/263263352): Record histogram with the result of the fetch.
   refresh_cookie_fetcher_.reset();
 
+  chrome::mojom::ResumeBlockedRequestsTrigger trigger =
+      result == BoundSessionRefreshCookieFetcher::Result::kSuccess
+          ? chrome::mojom::ResumeBlockedRequestsTrigger::
+                kCookieRefreshFetchSuccess
+          : chrome::mojom::ResumeBlockedRequestsTrigger::
+                kCookieRefreshFetchFailure;
   // Resume blocked requests regardless of the result.
-  ResumeBlockedRequests();
+  // `SetCookieExpirationTimeAndNotify()` should be called around the same time
+  // as `OnCookieRefreshFetched()` if the fetch was successful.
+  ResumeBlockedRequests(trigger);
 
   // Persistent errors result in session termination.
   // Transient errors have no impact on future requests.
 
   if (BoundSessionRefreshCookieFetcher::IsPersistentError(result)) {
-    delegate_->TerminateSession();
+    delegate_->OnPersistentErrorEncountered();
     // `this` should be deleted.
   }
 }
@@ -216,19 +260,27 @@ void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
                           base::Unretained(this)));
 }
 
-void BoundSessionCookieControllerImpl::ResumeBlockedRequests() {
+void BoundSessionCookieControllerImpl::ResumeBlockedRequests(
+    chrome::mojom::ResumeBlockedRequestsTrigger trigger) {
   resume_blocked_requests_timer_.Stop();
-  std::vector<base::OnceClosure> callbacks;
+  if (resume_blocked_requests_.empty()) {
+    return;
+  }
+  std::vector<chrome::mojom::BoundSessionRequestThrottledHandler::
+                  HandleRequestBlockedOnCookieCallback>
+      callbacks;
   std::swap(callbacks, resume_blocked_requests_);
   for (auto& callback : callbacks) {
-    std::move(callback).Run();
+    std::move(callback).Run(trigger);
   }
+  base::UmaHistogramEnumeration(
+      "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger", trigger);
 }
 
 void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
-  // TODO(b/292511796): Add a histogram.
   // Reset the fetcher, it has been taking at least
   // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.
   refresh_cookie_fetcher_.reset();
-  ResumeBlockedRequests();
+  ResumeBlockedRequests(chrome::mojom::ResumeBlockedRequestsTrigger::kTimeout);
+  successive_timeout_++;
 }

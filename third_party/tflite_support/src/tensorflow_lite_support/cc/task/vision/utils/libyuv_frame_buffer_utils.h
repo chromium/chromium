@@ -41,11 +41,7 @@ class LibyuvFrameBufferUtils : public FrameBufferUtilsInterface {
   //
   // Crop region dimensions must be equal or smaller than input `buffer`
   // dimensions.
-  absl::Status Crop(const FrameBuffer& buffer,
-                    int x0,
-                    int y0,
-                    int x1,
-                    int y1,
+  absl::Status Crop(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
                     FrameBuffer* output_buffer) override;
 
   // Resizes `buffer` to the size of the given `output_buffer` using bilinear
@@ -61,8 +57,7 @@ class LibyuvFrameBufferUtils : public FrameBufferUtilsInterface {
   // Rotates `buffer` counter-clockwise by the given `angle_deg` (in degrees).
   //
   // The given angle must be a multiple of 90 degrees.
-  absl::Status Rotate(const FrameBuffer& buffer,
-                      int angle_deg,
+  absl::Status Rotate(const FrameBuffer& buffer, int angle_deg,
                       FrameBuffer* output_buffer) override;
 
   // Flips `buffer` horizontally.

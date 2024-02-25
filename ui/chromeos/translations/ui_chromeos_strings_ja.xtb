@@ -2,12 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1000498691615767391">フォルダを選択して開く</translation>
+<translation id="1014208178561091457">暗号化されているため、<ph name="FILE_NAME" /> をコピーできませんでした。</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> 件の項目を削除しています...</translation>
 <translation id="1049926623896334335">Word ドキュメント</translation>
 <translation id="1056775291175587022">なし</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルを移動してください。</translation>
 <translation id="1062407476771304334">置換</translation>
+<translation id="1119383441774809183">テキスト メッセージを表示</translation>
 <translation id="1119447706177454957">内部エラー</translation>
 <translation id="1120073797882051782">ハングル（ローマ字式）</translation>
 <translation id="112387589102719461">英語（アメリカ）（Programmer Dvorak）キーボード</translation>
@@ -54,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
 <translation id="1439919885608649279">花を持っている人</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> を取り外す</translation>
+<translation id="146691674290220697">暗号化されているため、<ph name="NUMBER_OF_FILES" /> 個のファイルをコピーできませんでした。</translation>
 <translation id="1471718551822868769">スロバキア語</translation>
 <translation id="1482884275703521657">フィンランド語</translation>
 <translation id="148466539719134488">スイス語</translation>
@@ -73,7 +76,6 @@
 <translation id="162175252992296058">ポルトガル語（US インターナショナル）キーボード</translation>
 <translation id="1629521517399325891">ユーザー証明書はネットワーク認証に使用できません。</translation>
 <translation id="1641780993263690097">中国語（ピンイン）</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> 個のファイルをオフラインで使用できるようにしています</translation>
 <translation id="164969095109328410">Chrome デバイス</translation>
 <translation id="1661207570040737402">共有ドライブの Google Workspace ストレージの空き容量がなくなりました。</translation>
 <translation id="1661867754829461514">PIN がありません</translation>
@@ -95,6 +97,7 @@
 <translation id="174937106936716857">合計ファイル数</translation>
 <translation id="1755345808328621801">このファイルは Windows ソフトウェアを使用する PC 用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome ウェブストアで適切なアプリをお探しください。</translation>
 <translation id="1757915090001272240">全角ラテン文字</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> と共有</translation>
 <translation id="1773212559869067373">認証証明書がローカルで拒否されました</translation>
 <translation id="1775381402323441512">動画情報</translation>
 <translation id="180035236176489073">このファイルにアクセスするには、オンライン接続が必要です。</translation>
@@ -170,6 +173,7 @@
 <translation id="23721837607121582">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">リスト表示に切り替え</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Linux と共有されています</translation>
+<translation id="2379576081295865700">空き容量を確認しています… 1 個のアイテムが見つかりました</translation>
 <translation id="2383454254762599978">ゴミ箱に移動</translation>
 <translation id="2387458720915042159">プロキシ接続タイプ</translation>
 <translation id="2389832672041313158">ビルマ語 / ミャンマー語</translation>
@@ -211,6 +215,7 @@
 <translation id="2718540689505416944">Linux でアプリをインストール</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、詳細</translation>
 <translation id="2724954091494693138">トルコ語（F）キーボード</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> との共有を管理</translation>
 <translation id="2732839045120506979">ベトナム語（VNI）</translation>
 <translation id="2735623501230989521">Parallels Desktop に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="2764206540577097904">個人用の Google Workspace ストレージの空き容量がなくなりました。</translation>
@@ -272,9 +277,11 @@
 <translation id="3253225298092156258">利用できません</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ファイルのデフォルト アプリを選択:</translation>
 <translation id="3255159654094949700">アラビア語</translation>
+<translation id="326396468955264502">暗号化されているため、<ph name="NUMBER_OF_FILES" /> 個のファイルを移動できませんでした。</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
 <translation id="3272909651715601089">「<ph name="PATH" />」を開けませんでした</translation>
 <translation id="3280431534455935878">準備中</translation>
+<translation id="3280719573299097127">従量制ネットワークに接続しています。ファイルの同期を一時停止しました。</translation>
 <translation id="3280987981688031357">レコード</translation>
 <translation id="3290356915286466215">保護なし</translation>
 <translation id="3291218047831493686">SIM ロックの設定を変更するには、このネットワークに接続してください</translation>
@@ -301,12 +308,13 @@
 <translation id="3475447146579922140">Google スプレッドシート</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3486821258960016770">モンゴル語</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムの同期を準備しています...</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
+<translation id="3523225005467146490">1 個のフォルダを <ph name="VM_NAME" /> と共有しました</translation>
 <translation id="3524311639100184459">注: これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">フォルダ</translation>
+<translation id="3529424493985988200">詳細については、管理者にお問い合わせください。</translation>
 <translation id="3548125359243647069">間違った PIN が繰り返し入力されました。</translation>
 <translation id="3549797760399244642">drive.google.com にアクセスします...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
@@ -323,6 +331,7 @@
 <translation id="3619115746895587757">カプチーノ</translation>
 <translation id="3619593063686672873">最近視聴した動画はありません</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、管理者によって管理、詳細</translation>
+<translation id="36451918667380448">モバイル ネットワーク プロバイダがロックされています。サポートについてはプロバイダにお問い合わせください。</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを移動しました。</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> 個のファイルが選択されています</translation>
 <translation id="3685122418104378273">Google ドライブの同期は既定で無効になっています（モバイルデータを使用する場合）。</translation>
@@ -494,6 +503,7 @@
 <translation id="4935975195727477204">花</translation>
 <translation id="4943368462779413526">フットボール</translation>
 <translation id="4961158930123534723">1 個のフォルダが Parallels Desktop と共有されています</translation>
+<translation id="4965874878399872778">組織のセキュリティ ポリシーに沿ってファイルをチェックしています...</translation>
 <translation id="496656650103537022">「<ph name="FILE_NAME" />」を復元しました</translation>
 <translation id="4969785127455456148">アルバム</translation>
 <translation id="4972330214479971536">ファイルの同期の設定を完了できませんでした</translation>
@@ -549,9 +559,7 @@
 <translation id="5275973617553375938">Google ドライブから復元されたファイル</translation>
 <translation id="5278111733643988471">このアイテムを復元するには、ゴミ箱から新しいフォルダにドラッグしてください。このアイテムの元のフォルダ「<ph name="PARENT_FOLDER_NAME" />」は削除されています。</translation>
 <translation id="5283101102242354279">シークレット モードで拡張機能をオンにするには:</translation>
-<translation id="5286194356314741248">スキャン中</translation>
 <translation id="5288441970121584418">ハンバーガー</translation>
-<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">このファイルの移動は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="5305688511332277257">インストールされていません</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -628,6 +636,7 @@
 <translation id="5838451609423551646">すべての項目を選択範囲から削除しました。</translation>
 <translation id="5838825566232597749">US Workman インターナショナル</translation>
 <translation id="5845721951356578987">看護師</translation>
+<translation id="5858478190805449225">バッテリー セーバー モードがオンです。バッテリー セーバー モードをオフにしてから、もう一度お試しください。</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5861477046012235702">ゲーマー</translation>
 <translation id="5864471791310927901">DHCP を検索できませんでした</translation>
@@ -662,6 +671,8 @@
 <translation id="6164412158936057769">蝶</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
+<translation id="6177854567773392726">空き容量を確認しています… <ph name="ITEMS_FOUND" /> 個のアイテムが見つかりました</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" /> に Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="6187719147498869044">ハンガリー語</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6199801702437275229">空き容量情報を待機中...</translation>
@@ -692,11 +703,13 @@
 <translation id="637062427944097960">このファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="6394388407447716302">読み取り専用</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個のアイテム</translation>
+<translation id="6407769893376380348">暗号化されているため、<ph name="FILE_NAME" /> を移動できませんでした。</translation>
 <translation id="642282551015776456">この名前はフォルダのファイル名として使用できません</translation>
 <translation id="6423031066725912715">ベトナム語（TCVN）キーボード</translation>
 <translation id="6430271654280079150">入力できるのはあと 1 回です。</translation>
 <translation id="643243556292470964">削除したファイルはゴミ箱に移されました</translation>
 <translation id="6438480100790416671">保存容量を確認しています…</translation>
+<translation id="6451527188465304418">組織のセキュリティ ポリシーに沿ってファイルをチェックしています...</translation>
 <translation id="6485131920355264772">空き容量情報を取得できませんでした</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> に展開しています</translation>
@@ -704,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> 個のファイルのコピーは管理者が設定したポリシーによってブロックされています</translation>
 <translation id="6509122719576673235">ノルウェー語</translation>
 <translation id="6528513914570774834">このデバイスの他のユーザーにこのネットワークの使用を許可する</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> を同期しています...</translation>
 <translation id="6549689063733911810">最近使用したアイテム</translation>
 <translation id="6558280019477628686">エラーが発生しました。一部の項目が削除されていない可能性があります。</translation>
 <translation id="656398493051028875">「<ph name="FILENAME" />」を削除しています...</translation>
@@ -765,6 +777,7 @@
 <translation id="6989942356279143254">スウェーデン語</translation>
 <translation id="6990081529015358884">空き容量が不足しています</translation>
 <translation id="6993826899923627728">これらのアイテムはゴミ箱に入っています</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> とフォルダを共有</translation>
 <translation id="7008426324576352165">アップロードを完了するには、組織で追加のストレージが必要です。</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> 個のファイルの移動は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />（<ph name="ROOT_SUMMARY" />）</translation>
@@ -837,7 +850,6 @@
 <translation id="7553492409867692754">Linux アプリに対して、<ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="7555339735447658365">現在オフラインです。インターネットに接続すると、ファイルの同期が再開されます</translation>
 <translation id="7589661784326793847">少々お待ちください</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> をオフラインで使用できるようにしています</translation>
 <translation id="7600126690270271294">セルビア語</translation>
 <translation id="7603724359189955920">グリッド</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> は既に存在しています。名前を変更してもう一度お試しください。</translation>
@@ -891,7 +903,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。</translation>
 <translation id="7925247922861151263">AAA を確認できませんでした</translation>
-<translation id="7925686952655276919">モバイル データを使用して同期しない</translation>
 <translation id="7928710562641958568">デバイスの取り出し</translation>
 <translation id="7933875256234974853">ドライブ ファイルの同期を準備しています...</translation>
 <translation id="7943385054491506837">US Colemak 配列</translation>
@@ -914,6 +925,7 @@
 <translation id="8087576439476816834">ダウンロード、<ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">共有アイテム</translation>
 <translation id="8116072619078571545">氷水</translation>
+<translation id="8120392982188717723">従量制ネットワークを使用した同期を許可する</translation>
 <translation id="8124093710070495550">同期の問題</translation>
 <translation id="8128733386027980860">英語（イギリス）（Dvorak）キーボード</translation>
 <translation id="8137331602592933310">「<ph name="FILENAME" />」を共有しました。ファイルの所有者ではないため、このファイルを削除することはできません。</translation>
@@ -921,6 +933,7 @@
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8147028810663464959">文字幅は全角です</translation>
 <translation id="8151638057146502721">設定</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 件のエラーがあります。}other{# 件のエラーがあります。}}</translation>
 <translation id="8154842056504218462">すべての項目を選択しました。</translation>
 <translation id="8157684860301034423">アプリ情報を取得できませんでした。</translation>
 <translation id="8175731104491895765">フランス語（ベルギー）</translation>
@@ -951,8 +964,10 @@
 <translation id="8335837413233998004">ベラルーシ語</translation>
 <translation id="8336153091935557858">昨日 <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">同じ名前のファイルまたはディレクトリが既に存在しています。</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8372852072747894550">ギリシャ語</translation>
+<translation id="8377269993083688872">メール レイアウト</translation>
 <translation id="8386903983509584791">スキャンが完了しました</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> を抽出しました。</translation>
 <translation id="8395901698320285466">サイズ</translation>
@@ -960,6 +975,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ネットワーク、接続中</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダを <ph name="VM_NAME" /> と共有しました</translation>
 <translation id="8431909052837336408">SIM PIN を変更</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM カードがありません</translation>
@@ -990,9 +1006,8 @@
 <translation id="8569764466147087991">ファイルを選択して開く</translation>
 <translation id="8577897833047451336">クロアチア語</translation>
 <translation id="8578308463707544055">インドネシア語</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> 個のアイテムを同期しています...</translation>
 <translation id="8600173386174225982">ファイルの一覧がサムネイル表示に切り替わりました。</translation>
-<translation id="8601932370724196034">Crostini 画像ファイル</translation>
+<translation id="8601932370724196034">Crostini イメージ ファイル</translation>
 <translation id="8609695766746872526">アイスランド語</translation>
 <translation id="863903787380594467">PIN が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ポート</translation>
@@ -1001,8 +1016,9 @@
 <translation id="8688591111840995413">不正なパスワード</translation>
 <translation id="8698464937041809063">Google 図形描画</translation>
 <translation id="8698877009525468705">このファイルは機密情報であり、管理者ポリシーによる制限が適用されます。</translation>
-<translation id="8712637175834984815">理解した</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">マルタ語</translation>
+<translation id="8714138378966541668">プロバイダによってロックされています</translation>
 <translation id="8714406895390098252">自転車</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> を選択しました。</translation>
 <translation id="872537912056138402">クロアチア語</translation>
@@ -1010,6 +1026,7 @@
 <translation id="8787254343425541995">共有ネットワークのプロキシを許可する</translation>
 <translation id="8790981080411996443">植物に水をやっている人</translation>
 <translation id="8798099450830957504">既定</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 件の警告があります。}other{# 件の警告があります。}}</translation>
 <translation id="8808686172382650546">ネコ</translation>
 <translation id="8810671769985673465">圧縮できませんでした。アイテム「<ph name="FILE_NAME" />」が存在します。</translation>
 <translation id="8813284582615685103">スペイン語（スペイン）</translation>
@@ -1040,7 +1057,6 @@
 <translation id="9038620279323455325">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。別の名前を選択してください。</translation>
 <translation id="9046895021617826162">接続に失敗しました</translation>
 <translation id="9065512565307033593">確認に失敗した場合、ネットワーク アクセスは無効になります。</translation>
-<translation id="9083722265619106011">{0,plural, =1{警告 1 件。}other{警告 <ph name="COUNT" /> 件。}}</translation>
 <translation id="908378762078012445">ロシア語（表音 AATSEEL）キーボード</translation>
 <translation id="9086302186042011942">同期しています</translation>
 <translation id="9099674669267916096">ページ数</translation>

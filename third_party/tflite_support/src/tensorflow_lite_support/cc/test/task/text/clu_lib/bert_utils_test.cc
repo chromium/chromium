@@ -128,10 +128,10 @@ TEST_F(BertUtilsTestClass, ZeroHistoryNotTrucated) {
   std::vector<int> subword_indicators;
   std::vector<int> segment_id_list;
   std::vector<int> turn_id_list;
-  SUPPORT_ASSERT_OK(BertPreprocessing(
-      tokenizer_.get(), conversations_in_reverse_order, max_seq_length,
-      max_history_turns, &token_ids, &token_alignments, &subword_indicators,
-      &segment_id_list, &turn_id_list));
+  SUPPORT_ASSERT_OK(BertPreprocessing(tokenizer_.get(), conversations_in_reverse_order,
+                              max_seq_length, max_history_turns, &token_ids,
+                              &token_alignments, &subword_indicators,
+                              &segment_id_list, &turn_id_list));
   EXPECT_THAT(token_ids, expected_token_ids);
   EXPECT_THAT(token_alignments, expected_token_alignments);
   EXPECT_THAT(subword_indicators, expected_first_subword_indicators);
@@ -193,10 +193,10 @@ TEST_F(BertUtilsTestClass, ZeroHistoryTrucated) {
   std::vector<int> subword_indicators;
   std::vector<int> segment_id_list;
   std::vector<int> turn_id_list;
-  SUPPORT_ASSERT_OK(BertPreprocessing(
-      tokenizer_.get(), conversations_in_reverse_order, max_seq_length,
-      max_history_turns, &token_ids, &token_alignments, &subword_indicators,
-      &segment_id_list, &turn_id_list));
+  SUPPORT_ASSERT_OK(BertPreprocessing(tokenizer_.get(), conversations_in_reverse_order,
+                              max_seq_length, max_history_turns, &token_ids,
+                              &token_alignments, &subword_indicators,
+                              &segment_id_list, &turn_id_list));
   EXPECT_THAT(token_ids, expected_token_ids);
   EXPECT_THAT(token_alignments, expected_token_alignments);
   EXPECT_THAT(subword_indicators, expected_first_subword_indicators);
@@ -342,10 +342,10 @@ TEST_F(BertUtilsTestClass, WithHistoryNotTrucated) {
   std::vector<int> subword_indicators;
   std::vector<int> segment_id_list;
   std::vector<int> turn_id_list;
-  SUPPORT_ASSERT_OK(BertPreprocessing(
-      tokenizer_.get(), conversations_in_reverse_order, max_seq_length,
-      max_history_turns, &token_ids, &token_alignments, &subword_indicators,
-      &segment_id_list, &turn_id_list));
+  SUPPORT_ASSERT_OK(BertPreprocessing(tokenizer_.get(), conversations_in_reverse_order,
+                              max_seq_length, max_history_turns, &token_ids,
+                              &token_alignments, &subword_indicators,
+                              &segment_id_list, &turn_id_list));
   EXPECT_THAT(token_ids, expected_token_ids);
   EXPECT_THAT(token_alignments, expected_token_alignments);
   EXPECT_THAT(subword_indicators, expected_first_subword_indicators);
@@ -458,10 +458,10 @@ TEST_F(BertUtilsTestClass, WithHistoryTrucated) {
   std::vector<int> subword_indicators;
   std::vector<int> segment_id_list;
   std::vector<int> turn_id_list;
-  SUPPORT_ASSERT_OK(BertPreprocessing(
-      tokenizer_.get(), conversations_in_reverse_order, max_seq_length,
-      max_history_turns, &token_ids, &token_alignments, &subword_indicators,
-      &segment_id_list, &turn_id_list));
+  SUPPORT_ASSERT_OK(BertPreprocessing(tokenizer_.get(), conversations_in_reverse_order,
+                              max_seq_length, max_history_turns, &token_ids,
+                              &token_alignments, &subword_indicators,
+                              &segment_id_list, &turn_id_list));
   EXPECT_THAT(token_ids, expected_token_ids);
   EXPECT_THAT(token_alignments, expected_token_alignments);
   EXPECT_THAT(subword_indicators, expected_first_subword_indicators);

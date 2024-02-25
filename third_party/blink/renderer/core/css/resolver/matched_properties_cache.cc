@@ -41,14 +41,8 @@ namespace blink {
 
 static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
   const MatchedPropertiesVector& properties = result.GetMatchedProperties();
-  unsigned hash = StringHasher::HashMemory(
+  return StringHasher::HashMemory(
       properties.data(), sizeof(MatchedProperties) * properties.size());
-  auto& tree_scopes = result.GetTreeScopes();
-  WTF::AddIntToHash(hash,
-                    StringHasher::HashMemory(
-                        tree_scopes.data(),
-                        sizeof(Member<const TreeScope>) * tree_scopes.size()));
-  return hash;
 }
 
 CachedMatchedProperties::CachedMatchedProperties(
@@ -114,9 +108,16 @@ bool CachedMatchedProperties::DependenciesEqual(
     return false;
   }
   if (computed_style->HasVariableReferenceFromNonInheritedProperty()) {
-    if (parent_computed_style->InheritedVariables() !=
-        state.ParentStyle()->InheritedVariables()) {
-      return false;
+    if (RuntimeEnabledFeatures::CSSMPCImprovementsEnabled()) {
+      if (!base::ValuesEquivalent(parent_computed_style->InheritedVariables(),
+                                  state.ParentStyle()->InheritedVariables())) {
+        return false;
+      }
+    } else {
+      if (parent_computed_style->InheritedVariables() !=
+          state.ParentStyle()->InheritedVariables()) {
+        return false;
+      }
     }
   }
 
@@ -154,8 +155,14 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   if (*cache_item != key.result_.GetMatchedProperties()) {
     return nullptr;
   }
-  if (cache_item->computed_style->InsideLink() !=
-      style_resolver_state.InsideLink()) {
+  if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
+      cache_item->parent_computed_style->UserModify() !=
+          ComputedStyleInitialValues::InitialUserModify()) {
+    // An element at a shadow boundary will reset UserModify() back to its
+    // initial value for inheritance. If the cached item was computed for an
+    // element not at a shadow boundary, the cached computed style will not
+    // have that reset, and we cannot use it as a cache hit unless the parent
+    // UserModify() is the initial value.
     return nullptr;
   }
   if (!cache_item->DependenciesEqual(style_resolver_state)) {
@@ -191,6 +198,17 @@ bool CachedMatchedProperties::operator==(
     }
     if (properties[i].types_.is_inline_style !=
         matched_properties_types[i].is_inline_style) {
+      return false;
+    }
+    if (properties[i].types_.is_fallback_style !=
+        matched_properties_types[i].is_fallback_style) {
+      return false;
+    }
+    if (properties[i].types_.signal != matched_properties_types[i].signal) {
+      return false;
+    }
+    if (properties[i].types_.is_invisible !=
+        matched_properties_types[i].is_invisible) {
       return false;
     }
   }
@@ -278,7 +296,21 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // The cache assumes static knowledge about which properties are inherited.
   // Without a flat tree parent, StyleBuilder::ApplyProperty will not
   // SetChildHasExplicitInheritance on the parent style.
-  if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance()) {
+  if (!state.ParentElement() || parent_style.ChildHasExplicitInheritance()) {
+    return false;
+  }
+
+  // Matched properties can be equal for style resolves from elements in
+  // different TreeScopes if StyleSheetContents is shared between stylesheets in
+  // different trees. In those cases ScopedCSSNames need to be constructed with
+  // the correct TreeScope and cannot be cached.
+  //
+  // We used to include TreeScope pointer hashes in the MPC key, but that
+  // didn't allow for MPC cache hits across instances of the same web component.
+  // That also caused an ever-growing cache because the TreeScopes were not
+  // handled in RemoveCachedMatchedPropertiesWithDeadEntries().
+  // See: https://crbug,com/1473836
+  if (state.HasTreeScopedReference()) {
     return false;
   }
 

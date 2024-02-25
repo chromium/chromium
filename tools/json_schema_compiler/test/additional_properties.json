@@ -34,22 +34,20 @@
         "type": "function",
         "description": "Returns an object with additionalProperties.",
         "nodoc": "true",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "resultObject",
-                "type": "object",
-                "properties": {
-                  "integer": {"type": "integer"}
-                },
-                "additionalProperties": {"type": "string"}
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "resultObject",
+              "type": "object",
+              "properties": {
+                "integer": {"type": "integer"}
+              },
+              "additionalProperties": {"type": "string"}
+            }
+          ]
+        }
       }
     ]
   }

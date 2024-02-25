@@ -123,18 +123,18 @@ class ScopedTestingProfile {
   TestingProfile* profile() { return profile_; }
 
  private:
-  const raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
-  const raw_ptr<TestingProfileManager, ExperimentalAsh> profile_manager_;
+  const raw_ptr<TestingProfile, DanglingUntriaged> profile_;
+  const raw_ptr<TestingProfileManager> profile_manager_;
 };
 
 ash::UserContext GetPublicUserContext(const std::string& email) {
-  return ash::UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+  return ash::UserContext(user_manager::UserType::kPublicAccount,
                           AccountId::FromUserEmail(email));
 }
 
 ash::UserContext GetRegularUserContext(const std::string& email,
                                        const std::string& gaia_id) {
-  return ash::UserContext(user_manager::USER_TYPE_REGULAR,
+  return ash::UserContext(user_manager::UserType::kRegular,
                           AccountId::FromUserEmailGaiaId(email, gaia_id));
 }
 
@@ -197,7 +197,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
   }
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
       fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ash::MockLoginDisplayHost> mock_login_display_host_;
@@ -322,7 +322,7 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
   local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
                          data_for_next_login_attempt);
 
-  absl::optional<base::Value> value = RunFunctionAndReturnValue(
+  std::optional<base::Value> value = RunFunctionAndReturnValue(
       base::MakeRefCounted<LoginFetchDataForNextLoginAttemptFunction>(), "[]");
   ASSERT_EQ(data_for_next_login_attempt, value->GetString());
 
@@ -335,7 +335,7 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
 TEST_F(LoginApiUnittest, SetDataForNextLoginAttempt) {
   const std::string data_for_next_login_attempt = "hello world";
 
-  absl::optional<base::Value> value = RunFunctionAndReturnValue(
+  std::optional<base::Value> value = RunFunctionAndReturnValue(
       base::MakeRefCounted<LoginSetDataForNextLoginAttemptFunction>(),
       "[\"" + data_for_next_login_attempt + "\"]");
 
@@ -796,8 +796,8 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
   }
 
   void SetUpCleanupHandlerMocks(
-      absl::optional<std::string> error1 = absl::nullopt,
-      absl::optional<std::string> error2 = absl::nullopt) {
+      std::optional<std::string> error1 = std::nullopt,
+      std::optional<std::string> error2 = std::nullopt) {
     std::unique_ptr<chromeos::MockCleanupHandler> mock_cleanup_handler1 =
         std::make_unique<StrictMock<chromeos::MockCleanupHandler>>();
     EXPECT_CALL(*mock_cleanup_handler1, Cleanup(_))

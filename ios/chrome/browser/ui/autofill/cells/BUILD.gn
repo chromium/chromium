@@ -6,11 +6,11 @@ source_set("cells") {
   sources = [
     "autofill_edit_item.h",
     "autofill_edit_item.mm",
+    "card_unmask_header_item.h",
+    "card_unmask_header_item.mm",
     "country_item.h",
     "country_item.mm",
-    "cvc_header_item.h",
-    "cvc_header_item.mm",
-    "expiration_date_edit_item+private.h",
+    "expiration_date_edit_item+Testing.h",
     "expiration_date_edit_item.h",
     "expiration_date_edit_item.mm",
     "expiration_date_edit_item_delegate.h",
@@ -21,6 +21,7 @@ source_set("cells") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//components/autofill/core/common:common",
     "//components/resources:components_scaled_resources_grit",
     "//components/strings",
     "//ios/chrome/browser/shared/ui/table_view:styler",
@@ -37,7 +38,7 @@ source_set("cells") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "cvc_header_item_unittest.mm",
+    "card_unmask_header_item_unittest.mm",
     "expiration_date_edit_item_unittest.mm",
     "target_account_item_unittest.mm",
   ]
@@ -45,6 +46,8 @@ source_set("unit_tests") {
   deps = [
     ":cells",
     "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/common:common",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//testing/gtest",

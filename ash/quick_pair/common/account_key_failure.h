@@ -13,7 +13,8 @@ namespace quick_pair {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync with
-// the FastPairAccountKeyFailure enum in src/tools/metrics/histograms/enums.xml.
+// the FastPairAccountKeyFailure enum in
+// //tools/metrics/histograms/metadata/bluetooth/enums.xml.
 enum class AccountKeyFailure {
   // Failed to find the Account Key GATT characteristic.
   kAccountKeyCharacteristicDiscovery = 0,

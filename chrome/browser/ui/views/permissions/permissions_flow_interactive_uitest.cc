@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -20,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -89,6 +92,10 @@ class PermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kFileSystemAccessPersistentPermissions};
 };
 
 // Tests that by default PageInfo has no visible permission.
@@ -117,11 +124,35 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       // Set id to the first children of `kPermissionsElementId` -
       // permissions view in PageInfo.
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       // Verify the row label is Camera
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
+                       FileSystemPermissionsTest) {
+  // Set File System permission to Allow so that it becomes visible in PageInfo.
+  SetPermission(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+                CONTENT_SETTING_ALLOW);
+
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // A view with permissions in PageInfo.
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0),
+      // Verify the row label is File System.
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowTitleForTesting,
+                        l10n_util::GetStringUTF16(
+                            IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE)));
 }
 
 // The test requests Notifications permission, clicks Allow on a permission
@@ -132,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestNotification()"),
+      ExecuteJs(kWebContentsElementId, "requestNotification"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a
@@ -146,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       PressButton(kLocationIconElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS)));
@@ -158,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestCamera()"),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a
@@ -172,19 +203,20 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       PressButton(kLocationIconElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));
 }
 
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
 IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
-                       CameraActivityIndicatorTest) {
+                       DISABLED_CameraActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestCamera()"),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a
@@ -200,13 +232,14 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
           &vector_icons::kVideocamIcon));
 }
 
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
 IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
-                       MicrophoneActivityIndicatorTest) {
+                       DISABLED_MicrophoneActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestMicrophone()"),
+      ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a
@@ -222,13 +255,14 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
           &vector_icons::kMicIcon));
 }
 
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
 IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
-                       CameraAndMicrophoneActivityIndicatorTest) {
+                       DISABLED_CameraAndMicrophoneActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone()"),
+      ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a

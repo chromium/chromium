@@ -41,14 +41,6 @@ void RespondWithCallback::FinishServiceWorkerRequest() {
   service_worker_version_->FinishRequest(request_id_, /*was_handled=*/false);
 }
 
-void RespondWithCallback::MaybeRecordTimeoutMetric(
-    blink::ServiceWorkerStatusCode status) {
-  if (status == blink::ServiceWorkerStatusCode::kErrorTimeout) {
-    UMA_HISTOGRAM_BOOLEAN("PaymentRequest.ServiceWorkerStatusCodeTimeout",
-                          true);
-  }
-}
-
 void RespondWithCallback::ClearRespondWithCallbackAndCloseWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!event_dispatcher_)
@@ -85,7 +77,6 @@ void CanMakePaymentRespondWithCallback::OnServiceWorkerError(
     blink::ServiceWorkerStatusCode service_worker_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk);
-  MaybeRecordTimeoutMetric(service_worker_status);
 
   CanMakePaymentEventResponseType response_type =
       CanMakePaymentEventResponseType::BROWSER_ERROR;
@@ -134,7 +125,6 @@ void InvokeRespondWithCallback::OnServiceWorkerError(
     blink::ServiceWorkerStatusCode service_worker_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk);
-  MaybeRecordTimeoutMetric(service_worker_status);
 
   PaymentEventResponseType response_type =
       PaymentEventResponseType::PAYMENT_EVENT_BROWSER_ERROR;
@@ -185,7 +175,6 @@ void AbortRespondWithCallback::OnServiceWorkerError(
     blink::ServiceWorkerStatusCode service_worker_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(service_worker_status, blink::ServiceWorkerStatusCode::kOk);
-  MaybeRecordTimeoutMetric(service_worker_status);
   std::move(callback_).Run(/*payment_aborted=*/false);
   // Do not call ClearRespondWithCallbackAndCloseWindow() here, because payment
   // has not been aborted. The service worker either rejected, timed out, or

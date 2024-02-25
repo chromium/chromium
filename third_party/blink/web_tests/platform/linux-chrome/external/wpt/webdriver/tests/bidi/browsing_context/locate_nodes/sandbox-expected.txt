@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_locate_nodes_in_sandbox
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_locate_same_node_in_different_sandboxes_returns_same_id
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_locate_same_node_in_default_sandbox_returns_same_id_as_sandbox
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_locate_same_node_in_different_sandboxes_with_root_ownership_returns_different_handles
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+Harness: the test ran to completion.

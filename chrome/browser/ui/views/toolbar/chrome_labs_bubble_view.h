@@ -24,8 +24,9 @@ class FlexLayoutView;
 
 // TODO(elainechien): Use composition instead of inheritance.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ChromeLabsBubbleView);
   explicit ChromeLabsBubbleView(ChromeLabsButton* anchor_view);
   ~ChromeLabsBubbleView() override;
 
@@ -48,6 +49,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   static ChromeLabsBubbleView* GetChromeLabsBubbleViewForTesting();
   views::View* GetMenuItemContainerForTesting();
   bool IsRestartPromptVisibleForTesting();
+  views::ScrollView* GetScrollViewForTesting();
 
  private:
   void NotifyRestartCallback();
@@ -56,6 +58,8 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<views::FlexLayoutView> menu_item_container_;
 
   raw_ptr<views::View> restart_prompt_;
+
+  raw_ptr<views::ScrollView> scroll_view_;
 
   base::RepeatingClosureList restart_callback_list_;
 };

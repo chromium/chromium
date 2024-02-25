@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
+#include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -16,12 +17,15 @@ class Throbber;
 
 namespace autofill {
 
-// The native views for AutofillProgressDialogView.
+class AutofillProgressDialogController;
+
+// The Desktop native views for AutofillProgressDialogView. This is owned by the
+// view hierarchy.
 class AutofillProgressDialogViews : public AutofillProgressDialogView,
                                     public views::DialogDelegateView {
  public:
   explicit AutofillProgressDialogViews(
-      AutofillProgressDialogController* controller);
+      base::WeakPtr<AutofillProgressDialogController> controller);
   AutofillProgressDialogViews(const AutofillProgressDialogViews&) = delete;
   AutofillProgressDialogViews& operator=(const AutofillProgressDialogViews&) =
       delete;
@@ -31,6 +35,7 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
   void Dismiss(bool show_confirmation_before_closing,
                bool is_canceled_by_user) override;
   void InvalidateControllerForCallbacks() override;
+  base::WeakPtr<AutofillProgressDialogView> GetWeakPtr() override;
 
   // DialogDelegate:
   void AddedToWidget() override;
@@ -47,7 +52,7 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
   // dialog. This will be set when `Dismiss()` is called.
   bool is_canceled_by_user_ = false;
 
-  raw_ptr<AutofillProgressDialogController> controller_ = nullptr;
+  base::WeakPtr<AutofillProgressDialogController> controller_;
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::Throbber> progress_throbber_ = nullptr;
 

@@ -139,15 +139,23 @@ TEST_F(PrefUtilsTest, CreatePreservedFileContents) {
   base::Time ts_1da;
   base::Time ts_28da;
   base::Time ts_churn_cohort;
+  base::Time ts_churn_observation;
   EXPECT_TRUE(base::Time::FromUTCString("2023-05-01", &ts_1da));
   EXPECT_TRUE(base::Time::FromUTCString("2023-04-01", &ts_28da));
+
+  // Normally churn and cohort should have the same last ping dates.
+  // Below we will test this method in the odd case it stores different dates.
   EXPECT_TRUE(base::Time::FromUTCString("2023-03-01", &ts_churn_cohort));
+  EXPECT_TRUE(base::Time::FromUTCString("2023-03-01", &ts_churn_observation));
+
   local_state->SetTime(prefs::kDeviceActiveLastKnown1DayActivePingTimestamp,
                        ts_1da);
   local_state->SetTime(prefs::kDeviceActiveLastKnown28DayActivePingTimestamp,
                        ts_28da);
   local_state->SetTime(prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp,
                        ts_churn_cohort);
+  local_state->SetTime(prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp,
+                       ts_churn_observation);
 
   local_state->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus, 1);
   local_state->SetBoolean(
@@ -191,6 +199,45 @@ TEST_F(PrefUtilsTest, CreatePreservedFileContents) {
   EXPECT_TRUE(save_request.active_status(3)
                   .period_status()
                   .is_active_current_period_minus_2());
+}
+
+TEST_F(PrefUtilsTest,
+       CreatePreservedFileContentsForUnsynedCohortAndObservation) {
+  PrefService* local_state = GetLocalState();
+
+  // Prepare a sample PrefService instance with stored values.
+  base::Time ts_churn_cohort;
+  base::Time ts_churn_observation;
+
+  // Test odd case cohort and observation store different last ping dates.
+  EXPECT_TRUE(base::Time::FromUTCString("2023-03-01", &ts_churn_cohort));
+  EXPECT_TRUE(base::Time::FromUTCString("2023-02-01", &ts_churn_observation));
+
+  local_state->SetTime(prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp,
+                       ts_churn_cohort);
+  local_state->SetTime(prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp,
+                       ts_churn_observation);
+
+  local_state->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus, 1);
+  local_state->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, true);
+  local_state->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, true);
+  local_state->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, true);
+
+  // Create the preserved file contents.
+  SaveStatusRequest save_request = CreatePreservedFileContents(local_state);
+
+  // Active status stored for: Churn Cohort.
+  // No preserved file data stored for Churn Observation because it's
+  // out of sync with the cohort last ping.
+  EXPECT_EQ(1, save_request.active_status_size());
+  EXPECT_EQ(PrivateComputingUseCase::CROS_FRESNEL_CHURN_MONTHLY_COHORT,
+            save_request.active_status(0).use_case());
+  EXPECT_EQ("2023-03-01 00:00:00.000 GMT",
+            save_request.active_status(0).last_ping_date());
+  EXPECT_EQ(1, save_request.active_status(0).churn_active_status());
 }
 
 }  // namespace ash::report::utils

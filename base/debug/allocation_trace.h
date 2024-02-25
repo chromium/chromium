@@ -8,15 +8,15 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <bit>
 #include <cstdint>
 
-#include "base/allocator/dispatcher/subsystem.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr_exclusion.h"
+#include "base/allocator/dispatcher/notification_data.h"
 #include "base/base_export.h"
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/stack_trace.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 namespace base::debug::tracer {
@@ -50,7 +50,13 @@ using StackTraceContainer = std::array<const void*, kStackTraceSize>;
 // any of the Initialize*-functions while another thread A is currently
 // initializing, B's invocations shall immediately return |false| without
 // interfering with thread A.
-struct BASE_EXPORT OperationRecord {
+class BASE_EXPORT OperationRecord {
+ public:
+  constexpr OperationRecord() = default;
+
+  OperationRecord(const OperationRecord&) = delete;
+  OperationRecord& operator=(const OperationRecord&) = delete;
+
   // Is the record currently being taken?
   bool IsRecording() const;
 
@@ -198,21 +204,24 @@ struct BASE_EXPORT AllocationTraceRecorderStatistics {
 //
 // TODO(https://crbug.com/1419908): Evaluate the impact of the shared cache
 // lines between entries.
-struct BASE_EXPORT AllocationTraceRecorder {
+class BASE_EXPORT AllocationTraceRecorder {
+ public:
+  constexpr AllocationTraceRecorder() = default;
+
+  AllocationTraceRecorder(const AllocationTraceRecorder&) = delete;
+  AllocationTraceRecorder& operator=(const AllocationTraceRecorder&) = delete;
+
   // The allocation event observer interface. See the dispatcher for further
   // details. The functions are marked NO_INLINE. All other functions called but
   // the one taking the call stack are marked ALWAYS_INLINE. This way we ensure
   // the number of frames recorded from these functions is fixed.
-
-  // Handle all allocation events.
-  NOINLINE void OnAllocation(
-      const void* allocated_address,
-      size_t allocated_size,
-      base::allocator::dispatcher::AllocationSubsystem subsystem,
-      const char* type);
+  inline void OnAllocation(
+      const base::allocator::dispatcher::AllocationNotificationData&
+          allocation_data);
 
   // Handle all free events.
-  NOINLINE void OnFree(const void* freed_address);
+  inline void OnFree(
+      const base::allocator::dispatcher::FreeNotificationData& free_data);
 
   // Access functions to retrieve the current content of the recorder.
   // Note: Since the recorder is usually updated upon each allocation or free,
@@ -237,6 +246,13 @@ struct BASE_EXPORT AllocationTraceRecorder {
   AllocationTraceRecorderStatistics GetRecorderStatistics() const;
 
  private:
+  // Handle all allocation events.
+  NOINLINE void OnAllocation(const void* allocated_address,
+                             size_t allocated_size);
+
+  // Handle all free events.
+  NOINLINE void OnFree(const void* freed_address);
+
   ALWAYS_INLINE size_t GetNextIndex();
 
   ALWAYS_INLINE static constexpr size_t WrapIdxIfNeeded(size_t idx);
@@ -253,6 +269,18 @@ struct BASE_EXPORT AllocationTraceRecorder {
 #endif
 };
 
+inline void AllocationTraceRecorder::OnAllocation(
+    const base::allocator::dispatcher::AllocationNotificationData&
+        allocation_data) {
+  OnAllocation(allocation_data.address(), allocation_data.size());
+}
+
+// Handle all free events.
+inline void AllocationTraceRecorder::OnFree(
+    const base::allocator::dispatcher::FreeNotificationData& free_data) {
+  OnFree(free_data.address());
+}
+
 ALWAYS_INLINE constexpr size_t AllocationTraceRecorder::WrapIdxIfNeeded(
     size_t idx) {
   // Wrapping around counter, e.g. for BUFFER_SIZE = 256, the counter will
@@ -260,7 +288,7 @@ ALWAYS_INLINE constexpr size_t AllocationTraceRecorder::WrapIdxIfNeeded(
   // optimized code we assert |kMaximumNumberOfMemoryOperationTraces| is a power
   // of two .
   static_assert(
-      base::bits::IsPowerOfTwo(kMaximumNumberOfMemoryOperationTraces),
+      std::has_single_bit(kMaximumNumberOfMemoryOperationTraces),
       "kMaximumNumberOfMemoryOperationTraces should be a power of 2 to "
       "allow for fast modulo operation.");
 

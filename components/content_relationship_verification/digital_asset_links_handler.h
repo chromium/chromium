@@ -6,13 +6,13 @@
 #define COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_DIGITAL_ASSET_LINKS_HANDLER_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -98,20 +98,20 @@ class DigitalAssetLinksHandler {
   bool CheckDigitalAssetLinkRelationship(
       const url::Origin& web_domain,
       const std::string& relationship,
-      absl::optional<std::vector<std::string>> fingerprints,
+      std::optional<std::vector<std::string>> fingerprints,
       const std::map<std::string, std::set<std::string>>& target_values,
       RelationshipCheckResultCallback callback);
 
   void OnURLLoadComplete(
       std::string relationship,
-      absl::optional<std::vector<std::string>> fingerprints,
+      std::optional<std::vector<std::string>> fingerprints,
       std::map<std::string, std::set<std::string>> target_values,
       std::unique_ptr<std::string> response_body);
 
   // Callback for the DataDecoder.
   void OnJSONParseResult(
       std::string relationship,
-      absl::optional<std::vector<std::string>> fingerprints,
+      std::optional<std::vector<std::string>> fingerprints,
       std::map<std::string, std::set<std::string>> target_values,
       data_decoder::DataDecoder::ValueOrError result);
 

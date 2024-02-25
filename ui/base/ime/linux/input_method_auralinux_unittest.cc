@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/init/input_method_initializer.h"
@@ -166,8 +166,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
       const std::u16string& text,
       const gfx::Range& text_range,
       const gfx::Range& selection_range,
-      const absl::optional<GrammarFragment>& fragment,
-      const absl::optional<AutocorrectInfo>& autocorrect) override {
+      const std::optional<GrammarFragment>& fragment,
+      const std::optional<AutocorrectInfo>& autocorrect) override {
     TestResult::GetInstance()->RecordAction(u"surroundingtext:" + text);
     TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(
         base::StringPrintf("textrangestart:%zu", text_range.start())));
@@ -231,7 +231,7 @@ class TextInputClientForTesting : public DummyTextInputClient {
   gfx::Range selection_range;
   std::u16string surrounding_text;
 
-  absl::optional<gfx::Rect> caret_not_in_rect;
+  std::optional<gfx::Rect> caret_not_in_rect;
 
   bool can_compose_inline = false;
 

@@ -6,10 +6,9 @@
  * @fileoverview Root element of the OOBE UI Debugger.
  */
 
-import {addSingletonGetter} from '//resources/ash/common/cr_deprecated.js';
 import {MessageType, ProblemType} from '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
-import { QuickStartUIState } from '../screens/oobe/quick_start.js';
 import {$} from '//resources/ash/common/util.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {AssistantNativeIconType} from '../../assistant_optin/utils.js';
 import {Oobe} from '../cr_ui.js';
@@ -60,7 +59,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
   if (isNativeIcons) {
     if (type === 'WAA') {
       zippy['nativeIconType'] = AssistantNativeIconType.WAA;
-    } else if (type == 'DA') {
+    } else if (type === 'DA') {
       zippy['nativeIconType'] = AssistantNativeIconType.DA;
     } else {
       console.error('### Uknown zippy type ' + type);
@@ -410,40 +409,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.NORMAL,
     },
     {
-      id: 'offline-ad-login',
-      kind: ScreenKind.NORMAL,
-      // Remove this step from preview here, because it can only occur during
-      // enterprise enrollment step and it is already available there in debug
-      // overlay.
-      handledSteps: 'unlock,creds',
-      suffix: 'E',
-      states: [
-        {
-          id: 'unlock',
-          trigger: (screen) => {
-            screen.setUIStep('unlock');
-          },
-          data: {},
-        },
-        {
-          id: 'creds',
-          trigger: (screen) => {
-            screen.setUIStep('creds');
-            screen.isDomainJoin = false;
-          },
-          data: {},
-        },
-        {
-          id: 'creds(isDomainJoin)',
-          trigger: (screen) => {
-            screen.setUIStep('creds');
-            screen.isDomainJoin = true;
-          },
-          data: {},
-        },
-      ],
-    },
-    {
       id: 'enterprise-enrollment',
       kind: ScreenKind.NORMAL,
       handledSteps: 'error',
@@ -479,7 +444,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           // Show offline error during signin
           id: 'signin-offline-error',
           trigger: (screen) => {
-            screen.setUIState(2);     // signin
+            screen.setUiState(2);     // signin
             screen.setErrorState(2);  // offline
             screen.allowGuestSignin(true);
             screen.allowOfflineLogin(true);
@@ -555,6 +520,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     },
     {
       id: 'tpm-error-message',
+      kind: ScreenKind.ERROR,
+    },
+    {
+      id: 'install-attributes-error-message',
       kind: ScreenKind.ERROR,
     },
     {
@@ -665,12 +634,12 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'gaia-signin',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'online-gaia,allowlist-error',
+      handledSteps: 'online-gaia,enrollment-nudge',
       states: [
         {
           id: 'online-gaia',
           trigger: (screen) => {
-            screen.loadAuthExtension({
+            screen.loadAuthenticator({
               chromeType: 'chromedevice',
               enterpriseManagedDevice: false,
               forceReload: true,
@@ -681,11 +650,9 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           },
         },
         {
-          id: 'allowlist-error',
+          id: 'enrollment-nudge',
           trigger: (screen) => {
-            screen.showAllowlistCheckFailedError({
-              enterpriseManaged: false,
-            });
+            screen.showEnrollmentNudge('example.com');
           },
         },
       ],
@@ -854,6 +821,104 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             screen.setSpaceInfoInString(
                 '1 GB' /* availableSpaceSize */,
                 '2 GB' /* necessarySpaceSize */);
+          },
+        },
+      ],
+    },
+    {
+      id: 'apply-online-password',
+      kind: ScreenKind.NORMAL,
+    },
+    {
+      id: 'local-data-loss-warning',
+      kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'non-owner',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              isOwner: false,
+              email: 'someone@example.com',
+            });
+          },
+        },
+        {
+          id: 'owner',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              isOwner: true,
+              email: 'someone@example.com',
+            });
+          },
+        },
+      ],
+    },
+    {
+      id: 'enter-old-password',
+      kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'no-error',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              passwordInvalid: false,
+            });
+          },
+        },
+        {
+          id: 'wrong-password',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              passwordInvalid: true,
+            });
+          },
+        },
+      ],
+    },
+    {
+      id: 'local-password-setup',
+      kind: ScreenKind.NORMAL,
+      states: [
+        {
+          // Forced password setup
+          id: 'forced',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              showBackButton: false,
+            });
+          },
+        },
+        {
+          // Forced password setup
+          id: 'optional',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              showBackButton: true,
+            });
+          },
+        },
+      ],
+    },
+    {
+      id: 'osauth-error',
+      kind: ScreenKind.ERROR,
+    },
+    {
+      id: 'factor-setup-success',
+      kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'local-set',
+          data: {
+            modifiedFactors: 'local',
+            changeMode: 'set',
+          },
+        },
+        {
+          id: 'local-update',
+          data: {
+            modifiedFactors: 'local',
+            changeMode: 'update',
           },
         },
       ],
@@ -1058,7 +1123,8 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'consolidated-consent',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'loaded,loading,error,google-eula,cros-eula,arc,privacy',
+      handledSteps:
+          'loaded,loading,play-load-error,google-eula,cros-eula,arc,privacy',
       // TODO(crbug.com/1247174): Use localized URLs for eulaUrl and
       // additionalTosUrl.
       states: [
@@ -1074,7 +1140,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
@@ -1092,7 +1158,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
@@ -1110,7 +1176,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: true,
             recoveryOptionDefault: true,
@@ -1128,7 +1194,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
@@ -1146,7 +1212,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
@@ -1161,7 +1227,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
@@ -1179,7 +1245,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
@@ -1197,7 +1263,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
@@ -1217,17 +1283,16 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: true,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
           },
         },
         {
-          id: 'error',
+          id: 'play-load-error',
           trigger: (screen) => {
-            screen.setUIStep('error');
-            screen.setUsageOptinHidden(false);
+            screen.setUIStep('play-load-error');
           },
           data: {
             isArcEnabled: true,
@@ -1236,7 +1301,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             isTosHidden: false,
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
-            arcTosUrl: 'https://play.google.com/about/play-terms/embedded/',
+            arcTosUrl: 'https://play.google/play-terms/embedded/',
             privacyPolicyUrl: 'https://policies.google.com/privacy/embedded',
             showRecoveryOption: false,
             recoveryOptionDefault: false,
@@ -1252,14 +1317,14 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'guest-tos',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'loading,loaded,google-eula,cros-eula',
+      handledSteps: 'loading,overview,google-eula,cros-eula',
       // TODO(crbug.com/1247174): Use localized URLs for googleEulaURL and
       // crosEulaURL.
       states: [
         {
-          id: 'loaded',
+          id: 'overview',
           trigger: (screen) => {
-            screen.setUIStep('loaded');
+            screen.setUIStep('overview');
           },
           data: {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
@@ -1384,12 +1449,12 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       // will append apps instead of replacing.
       states: [
         {
-          id: '2-apps',
+          id: '3-apps',
           trigger: (screen) => {
             screen.reset();
             screen.loadAppList([
               {
-                title: 'gApp',
+                title: 'gApp1',
                 icon_url: 'https://www.google.com/favicon.ico',
                 category: 'Games',
                 in_app_purchases: true,
@@ -1397,12 +1462,86 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
                 content_rating: '',
               },
               {
-                title: 'anotherGapp',
+                title: 'anotherGapp2',
                 icon_url: 'https://www.google.com/favicon.ico',
                 category: 'Games',
                 in_app_purchases: true,
                 was_installed: false,
                 content_rating: '',
+                description: 'Short description',
+              },
+              {
+                title: 'anotherGapp3',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                // Current limitation is 80 characters.
+                description:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit,' +
+                    ' sed do eiusmod tempor',
+              },
+            ]);
+          },
+        },
+        {
+          id: '5-apps',
+          trigger: (screen) => {
+            screen.reset();
+            screen.loadAppList([
+              {
+                title: 'gApp1',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+              },
+              {
+                title: 'anotherGapp2',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                description: 'Short description',
+              },
+              {
+                title: 'anotherGapp3',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                // Current limitation is 80 characters.
+                description:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit,' +
+                    ' sed do eiusmod tempor',
+              },
+              {
+                title: 'anotherGapp4',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                // Current limitation is 80 characters.
+                description:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit,' +
+                    ' sed do eiusmod tempor',
+              },
+              {
+                title: 'anotherGapp5',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                // Current limitation is 80 characters.
+                description:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit,' +
+                    ' sed do eiusmod tempor',
               },
             ]);
           },
@@ -1594,52 +1733,40 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             screens: [
               {
                 screenID: 'screenID1',
-                icon: 'oobe-40:theme-choobe',
-                title: 'choobeThemeSelectionTitle',
-                subtitle: 'choobeThemeSelectionTitle',
-                synced: false,
+                icon: 'oobe-40:scroll-choobe',
+                title: 'choobeTouchpadScrollTitle',
+                subtitle: 'choobeTouchpadScrollSubtitleEnabled',
+                is_synced: true,
                 is_revisitable: true,
                 selected: false,
                 is_completed: false,
               },
               {
                 screenID: 'screenID2',
-                icon: 'oobe-40:scroll-choobe',
-                title: 'choobeThemeSelectionTitle',
-                subtitle: 'choobeThemeSelectionTitle',
-                synced: true,
+                icon: 'oobe-40:drive-pinning-choobe',
+                title: 'choobeDrivePinningTitle',
+                is_synced: false,
                 is_revisitable: false,
                 selected: false,
                 is_completed: false,
               },
               {
                 screenID: 'screenID3',
-                icon: 'oobe-40:scroll-choobe',
-                title: 'choobeThemeSelectionTitle',
-                synced: false,
+                icon: 'oobe-40:display-size-choobe',
+                title: 'choobeDisplaySizeTitle',
+                is_synced: false,
                 is_revisitable: false,
-                selected: false,
-                is_completed: true,
-              },
-              {
-                screenID: 'screenID4',
-                icon: 'oobe-40:scroll-choobe',
-                title: 'choobeThemeSelectionTitle',
-                subtitle: 'choobeThemeSelectionTitle',
-                synced: true,
-                is_revisitable: true,
                 selected: false,
                 is_completed: false,
               },
               {
-                screenID: 'screenID5',
-                icon: 'oobe-40:display-size-choobe',
+                screenID: 'screenID4',
+                icon: 'oobe-40:theme-choobe',
                 title: 'choobeThemeSelectionTitle',
-                subtitle: 'choobeThemeSelectionTitle',
-                synced: false,
-                is_revisitable: true,
+                is_synced: false,
+                is_revisitable: false,
                 selected: false,
-                is_completed: true,
+                is_completed: false,
               },
             ],
           },
@@ -1738,14 +1865,17 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'remote-activity-notification',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'cryptohome-recovery',
       kind: ScreenKind.NORMAL,
     },
     {
       id: 'quick-start',
       kind: ScreenKind.NORMAL,
-      handledSteps:
-          'verification,connecting_to_wifi,connected_to_wifi,gaia_credentials,fido_assertion_received',
+      handledSteps: 'verification,connecting_to_wifi,signing_in,setup_complete',
       states: [
         {
           id: 'PinVerification',
@@ -1767,24 +1897,37 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           },
         },
         {
-          id: 'ConnectedToWifi',
+          id: 'SigninInEmailOnly',
           trigger: (screen) => {
-            screen.showConnectedToWifi('TestNetwork', 'TestPassword');
+            screen.showSigningInStep();
+            screen.setUserEmail('test_email@gmail.com');
           },
         },
         {
-          id: 'TransferringGaiaCreds',
+          id: 'SigninInFullAvatar',
           trigger: (screen) => {
-            screen.showTransferringGaiaCredentials();
+            screen.showSigningInStep();
+            screen.setUserEmail('test_email@gmail.com');
+            screen.setUserFullName('Test User');
+            screen.setUserAvatarUrl('https://lh3.googleusercontent.com/a/ACg8ocISjvU-p0Gz_kIBamP3jit_Y8PrQVU4AbIvQrUEZ04d=s96-c');
           },
         },
         {
-          id: 'TransferredGaiaCreds',
+          id: 'SetupComplete',
           trigger: (screen) => {
-            screen.showFidoAssertionReceived('testUser@gmail.com');
+            screen.setUserEmail('test_email@gmail.com');
+            screen.showSetupCompleteStep();
           },
         },
       ],
+    },
+    {
+      id: 'user-allowlist-check-screen',
+      kind: ScreenKind.NORMAL,
+    },
+    {
+      id: 'online-authentication-screen',
+      kind: ScreenKind.NORMAL,
     },
   ];
 
@@ -1827,6 +1970,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       const panel = /** @type {!HTMLElement} */ (document.createElement('div'));
       panel.className = 'debug-tool-panel';
       panel.id = id;
+      panel.setAttribute('aria-hidden', true);
 
       parent.appendChild(this.titleDiv);
       parent.appendChild(panel);
@@ -1899,7 +2043,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     }
 
     getScreenshotId() {
-      var result = 'unknown';
+      let result = 'unknown';
       if (this.currentScreenId_) {
         result = this.currentScreenId_;
       }
@@ -2064,7 +2208,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
 
     toggleGameMode() {
       KNOWN_SCREENS.forEach((screen, index) => {
-        if (screen.id == 'marketing-opt-in') {
+        if (screen.id === 'marketing-opt-in') {
           for (const state of screen.states) {
             if (state.data) {
               state.data.cloudGamingDevice = !state.data.cloudGamingDevice;
@@ -2109,7 +2253,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       new DebugButton(panel.content, 'Toggle color mode', function() {
         chrome.send('debug.toggleColorMode');
       });
-      var button = new DebugButton(
+      const button = new DebugButton(
           panel.content, 'Toggle gaming mode', this.toggleGameMode.bind(this));
 
       button.element.classList.add('gametoggle-button');
@@ -2158,15 +2302,15 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       // Disable userActed from triggering chrome.send() and crashing.
       document.getElementById(screenId).userActed = function(){};
       const state = screen.stateMap_[stateId];
-      var data = {};
+      let data = {};
       if (state.data) {
         data = state.data;
       }
       this.currentScreenId_ = screenId;
       this.lastScreenState_ = stateId;
       /** @suppress {visibility} */
-      const displayManager = Oobe.instance_;
-      Oobe.instance_.showScreen({id: screen.id, data: data});
+      const displayManager = Oobe.getInstance();
+      displayManager.showScreen({id: screen.id, data: data});
       if (state.trigger) {
         state.trigger(displayManager.currentScreen);
       }
@@ -2180,7 +2324,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       this.knownScreens = [];
       this.screenButtons = {};
       /** @suppress {visibility} */
-      for (var id of Oobe.instance_.screens_) {
+      for (const id of Oobe.getInstance().screens) {
         if (id in this.screenMap) {
           const screenDef = this.screenMap[id];
           const screenElement = $(id);
@@ -2235,11 +2379,11 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       this.knownScreens = this.knownScreens.sort((a, b) => a.index - b.index);
       const content = this.screensPanel.content;
       this.knownScreens.forEach((screen) => {
-        var name = screen.id;
+        let name = screen.id;
         if (screen.suffix) {
           name = name + ' (' + screen.suffix + ')';
         }
-        var button = new DebugButton(
+        const button = new DebugButton(
             content, name, this.switchToScreen.bind(this, screen));
         button.element.classList.add('debug-button-' + screen.kind);
         this.screenButtons[screen.id] = button;
@@ -2251,7 +2395,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
         this.createScreensList();
       }
       /** @suppress {visibility} */
-      const displayManager = Oobe.instance_;
+      const displayManager = Oobe.getInstance();
       if (this.stateCachedFor_) {
         this.screenButtons[this.stateCachedFor_].element.classList.remove(
             'debug-button-selected');
@@ -2275,12 +2419,12 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             this.statesPanel.content, state.id,
             this.triggerScreenState.bind(
                 this, this.currentScreenId_, state.id));
-        if (state.id == this.lastScreenState_) {
+        if (state.id === this.lastScreenState_) {
           button.element.classList.add('debug-button-selected');
         }
       }
 
-      if (this.currentScreenId_ == 'marketing-opt-in') {
+      if (this.currentScreenId_ === 'marketing-opt-in') {
         document.getElementsByClassName('gametoggle-button')[0].removeAttribute(
             'hidden');
       } else {
@@ -2292,9 +2436,9 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     }
 
     createCssStyle(name, styleSpec) {
-      var style = document.createElement('style');
+      const style = document.createElement('style');
       style.type = 'text/css';
-      style.innerHTML = '.' + name + ' {' + styleSpec + '}';
+      style.innerHTML = sanitizeInnerHtml('.' + name + ' {' + styleSpec + '}');
       document.getElementsByTagName('head')[0].appendChild(style);
     }
 
@@ -2332,6 +2476,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             /** @type {!HTMLElement} */ (document.createElement('div'));
         overlay.id = 'debuggerOverlay';
         overlay.className = 'debugger-overlay';
+        overlay.setAttribute('aria-label', 'OOBE debug overlay');
         overlay.setAttribute('hidden', true);
         this.debuggerOverlay_ = overlay;
       }
@@ -2344,6 +2489,12 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       element.appendChild(this.debuggerButton_);
       element.appendChild(this.debuggerOverlay_);
     }
+
+    /** @return {!DebuggerUI} */
+    static getInstance() {
+      return instance || (instance = new DebuggerUI());
+    }
   }
 
-  addSingletonGetter(DebuggerUI);
+  /** @type {?DebuggerUI} */
+  let instance = null;

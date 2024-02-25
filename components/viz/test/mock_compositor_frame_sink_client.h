@@ -48,6 +48,7 @@ class MockCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
   MOCK_METHOD1(OnBeginFramePausedChanged, void(bool paused));
   MOCK_METHOD1(OnCompositorFrameTransitionDirectiveProcessed,
                void(uint32_t sequence_id));
+  MOCK_METHOD1(OnSurfaceEvicted, void(const LocalSurfaceId&));
 
  private:
   mojo::Receiver<mojom::CompositorFrameSinkClient> receiver_{this};

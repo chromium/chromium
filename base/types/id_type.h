@@ -60,7 +60,7 @@ class IdType : public StrongAlias<TypeMarker, WrappedType> {
   static constexpr WrappedType kAllInvalidValues[] = {kInvalidValue,
                                                       kExtraInvalidValues...};
 
-  static_assert(std::is_unsigned<WrappedType>::value ||
+  static_assert(std::is_unsigned_v<WrappedType> ||
                     base::ranges::all_of(kAllInvalidValues,
                                          [](WrappedType v) { return v <= 0; }),
                 "If signed, invalid values should be negative or equal to zero "
@@ -72,7 +72,7 @@ class IdType : public StrongAlias<TypeMarker, WrappedType> {
                                      }),
                 "The first generated ID cannot be invalid.");
 
-  static_assert(std::is_unsigned<WrappedType>::value ||
+  static_assert(std::is_unsigned_v<WrappedType> ||
                     base::ranges::all_of(kAllInvalidValues,
                                          [](WrappedType v) {
                                            return kFirstGeneratedId > v;

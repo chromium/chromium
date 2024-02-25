@@ -92,7 +92,8 @@ class BluetoothGattFlossTest : public testing::Test {
           observer->AdapterEnabledChanged(kUseThisAdapter,
                                           /*enabled=*/true);
         }));
-    GetFakeAdapterClient()->SetAddress1Connected(true);
+    GetFakeAdapterClient()->SetConnected(
+        FakeFlossAdapterClient::kBondedAddress1, true);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -169,14 +170,14 @@ TEST_F(BluetoothGattFlossTest, ConnectAndResolveServices) {
       base::BindLambdaForTesting(
           [&paired_device, &loop](
               std::unique_ptr<device::BluetoothGattConnection> conn,
-              absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+              std::optional<device::BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             EXPECT_TRUE(conn->IsConnected());
             EXPECT_EQ(paired_device->GetAddress(), conn->GetDeviceAddress());
 
             loop.Quit();
           }),
-      /*service_uuid=*/absl::nullopt);
+      /*service_uuid=*/std::nullopt);
 
   // Fake a connection completion. First you should get the ACL connection
   // completed and then the GattConnectionState.
@@ -203,10 +204,8 @@ TEST_F(BluetoothGattFlossTest, UpgradeToFullDiscovery) {
       adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
   ASSERT_TRUE(paired_device != nullptr);
 
-  base::RunLoop loop;
-
   device::BluetoothUUID fake_uuid(kFakeUuidShort);
-  absl::optional<device::BluetoothUUID> fake_uuid_optional = fake_uuid;
+  std::optional<device::BluetoothUUID> fake_uuid_optional = fake_uuid;
   GattService fake_service = CreateFakeServiceFor(fake_uuid);
 
   // Create a gatt connection with partial service discovery.
@@ -231,7 +230,7 @@ TEST_F(BluetoothGattFlossTest, UpgradeToFullDiscovery) {
 
   // Now try to upgrade to full discovery by connecting with no services.
   paired_device->CreateGattConnection(base::DoNothing(),
-                                      /*service_uuid=*/absl::nullopt);
+                                      /*service_uuid=*/std::nullopt);
   EXPECT_FALSE(paired_device->IsGattServicesDiscoveryComplete());
 
   // Wait for discovery to complete again.
@@ -242,7 +241,7 @@ TEST_F(BluetoothGattFlossTest, UpgradeToFullDiscovery) {
   EXPECT_TRUE(paired_device->IsGattServicesDiscoveryComplete());
 
   // Wait for callbacks to run.
-  loop.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(BluetoothGattFlossTest, TranslateReadWriteAuthentication) {

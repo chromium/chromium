@@ -18,7 +18,9 @@ namespace blink {
 AbortSignalCompositionManager::AbortSignalCompositionManager(
     AbortSignal& signal,
     AbortSignalCompositionType type)
-    : signal_(signal), composition_type_(type) {}
+    : signal_(signal), composition_type_(type) {
+  CHECK(signal_);
+}
 
 AbortSignalCompositionManager::~AbortSignalCompositionManager() = default;
 
@@ -130,6 +132,7 @@ void SourceSignalCompositionManager::AddDependentSignal(
   DCHECK(GetCompositionType() != AbortSignalCompositionType::kAbort ||
          !GetSignal().aborted());
 
+  CHECK(&dependent_manager.GetSignal());
   dependent_signals_.insert(&dependent_manager.GetSignal());
 }
 

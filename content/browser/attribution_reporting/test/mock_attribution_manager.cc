@@ -7,18 +7,19 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -54,7 +55,7 @@ void MockAttributionManager::NotifyReportsChanged() {
 void MockAttributionManager::NotifySourceHandled(
     const StorableSource& source,
     StorableSource::Result result,
-    absl::optional<uint64_t> cleared_debug_key) {
+    std::optional<uint64_t> cleared_debug_key) {
   base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
     observer.OnSourceHandled(source, now, cleared_debug_key, result);
@@ -72,7 +73,7 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
 void MockAttributionManager::NotifyTriggerHandled(
     const AttributionTrigger& trigger,
     const CreateReportResult& result,
-    absl::optional<uint64_t> cleared_debug_key) {
+    std::optional<uint64_t> cleared_debug_key) {
   for (auto& observer : observers_) {
     observer.OnTriggerHandled(trigger, cleared_debug_key, result);
   }
@@ -92,8 +93,13 @@ void MockAttributionManager::NotifyOsRegistration(
     bool is_debug_key_allowed,
     attribution_reporting::mojom::OsRegistrationResult result) {
   base::Time now = base::Time::Now();
-  for (auto& observer : observers_) {
-    observer.OnOsRegistration(now, registration, is_debug_key_allowed, result);
+  for (const attribution_reporting::OsRegistrationItem& item :
+       registration.registration_items) {
+    for (auto& observer : observers_) {
+      observer.OnOsRegistration(now, item, registration.top_level_origin,
+                                registration.GetType(), is_debug_key_allowed,
+                                result);
+    }
   }
 }
 

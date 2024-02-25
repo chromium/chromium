@@ -31,22 +31,15 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Unit tests for the RestoreTabsPromoSheetContent class.
- */
+/** Unit tests for the RestoreTabsPromoSheetContent class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class RestoreTabsPromoSheetContentUnitTest {
-    @Mock
-    private View mContentView;
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private RecyclerView mRecyclerView;
-    @Mock
-    private View mChildView;
-    @Mock
-    private ScrollView mScrollView;
+    @Mock private View mContentView;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private RecyclerView mRecyclerView;
+    @Mock private View mChildView;
+    @Mock private ScrollView mScrollView;
 
     private RestoreTabsPromoSheetContent mSheetContent;
     private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
@@ -110,7 +103,10 @@ public class RestoreTabsPromoSheetContentUnitTest {
 
     @Test
     public void testSheetContent_getFullHeightRatio() {
-        Assert.assertEquals(BottomSheetContent.HeightMode.WRAP_CONTENT, mSheetContent.getFullHeightRatio(), 0.05);
+        Assert.assertEquals(
+                BottomSheetContent.HeightMode.WRAP_CONTENT,
+                mSheetContent.getFullHeightRatio(),
+                0.05);
     }
 
     @Test
@@ -176,21 +172,29 @@ public class RestoreTabsPromoSheetContentUnitTest {
 
     @Test
     public void testSheetContent_getSheetContentDescriptionStringId() {
-        Assert.assertEquals(R.string.restore_tabs_content_description, mSheetContent.getSheetContentDescriptionStringId());
+        Assert.assertEquals(
+                R.string.restore_tabs_content_description,
+                mSheetContent.getSheetContentDescriptionStringId());
     }
 
     @Test
     public void testSheetContent_getSheetClosedAccessibilityStringId() {
-        Assert.assertEquals(R.string.restore_tabs_sheet_closed, mSheetContent.getSheetClosedAccessibilityStringId());
+        Assert.assertEquals(
+                R.string.restore_tabs_sheet_closed,
+                mSheetContent.getSheetClosedAccessibilityStringId());
     }
 
     @Test
     public void testSheetContent_getSheetHalfHeightAccessibilityStringId() {
-        Assert.assertEquals(R.string.restore_tabs_content_description, mSheetContent.getSheetHalfHeightAccessibilityStringId());
+        Assert.assertEquals(
+                R.string.restore_tabs_content_description,
+                mSheetContent.getSheetHalfHeightAccessibilityStringId());
     }
 
     @Test
     public void testSheetContent_getSheetFullHeightAccessibilityStringId() {
-        Assert.assertEquals(R.string.restore_tabs_content_description, mSheetContent.getSheetFullHeightAccessibilityStringId());
+        Assert.assertEquals(
+                R.string.restore_tabs_content_description,
+                mSheetContent.getSheetFullHeightAccessibilityStringId());
     }
 }

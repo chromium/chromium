@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
+#include "device/vr/public/mojom/xr_device.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -27,7 +28,8 @@ class IsolatedVRDeviceProvider
   ~IsolatedVRDeviceProvider() override;
 
   // If the VR API requires initialization that should happen here.
-  void Initialize(device::VRDeviceProviderClient* client) override;
+  void Initialize(device::VRDeviceProviderClient* client,
+                  content::WebContents* initializing_web_contents) override;
 
   // Returns true if initialization is complete.
   bool Initialized() override;

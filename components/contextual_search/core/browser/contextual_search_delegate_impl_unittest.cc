@@ -89,7 +89,8 @@ class ContextualSearchDelegateImplTest : public testing::Test {
     data.contextual_search_url =
         "https://foobar.com/_/contextualsearch?"
         "{google:contextualSearchVersion}{google:contextualSearchContextData}";
-    TemplateURLService* template_url_service = new TemplateURLService(NULL, 0);
+    TemplateURLService* template_url_service = new TemplateURLService(
+        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
     TemplateURL* template_url =
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);

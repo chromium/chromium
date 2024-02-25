@@ -20,8 +20,7 @@ TEST_F(LayoutReplacedTest, InvalidateAfterAddingBorderRadius) {
     </style>
     <img id=target style="width: 100px; height: 100px"/>
   )HTML");
-  Element* target_element =
-      GetDocument().getElementById(AtomicString("target"));
+  Element* target_element = GetElementById("target");
   LayoutObject* layout_object = target_element->GetLayoutObject();
   ASSERT_FALSE(layout_object->StyleRef().HasBorderRadius());
 

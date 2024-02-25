@@ -4,7 +4,8 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {DeletePasskeyDialogElement, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
+import type {DeletePasskeyDialogElement} from 'chrome://password-manager/password_manager.js';
+import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

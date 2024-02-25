@@ -36,6 +36,7 @@ constexpr int kSavedEmptyChipSize = 22;
 constexpr int kChromeRefreshHeaderChipVerticalInset = 2;
 constexpr int kChromeRefreshEmptyChipSize = 20;
 constexpr int kChromeRefreshSyncIconWidth = 16;
+constexpr int kChromeRefreshSyncIconLeftMargin = 2;
 constexpr int kChromeRefreshCornerRadius = 6;
 constexpr int kTabGroupOverlapAdjustment = 2;
 
@@ -78,18 +79,18 @@ SkPath TabGroupStyle::GetUnderlinePath(const gfx::Rect local_bounds) const {
 
 gfx::Rect TabGroupStyle::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  return gfx::Rect(GetTitleChipOffset(absl::nullopt).x(),
-                   GetTitleChipOffset(absl::nullopt).y(), GetEmptyChipSize(),
+  return gfx::Rect(GetTitleChipOffset(std::nullopt).x(),
+                   GetTitleChipOffset(std::nullopt).y(), GetEmptyChipSize(),
                    GetEmptyChipSize());
 }
 
 gfx::Point TabGroupStyle::GetTitleChipOffset(
-    absl::optional<int> text_height) const {
+    std::optional<int> text_height) const {
   if (text_height.has_value()) {
     return gfx::Point(
         TabGroupUnderline::GetStrokeInset(),
         ((GetLayoutConstant(TAB_HEIGHT) - text_height.value()) / 2 -
-         GetInsetsForHeaderChip().top()));
+         GetInsetsForHeaderChip(false).top()));
   } else {
     return gfx::Point(TabGroupUnderline::GetStrokeInset(),
                       (GetLayoutConstant(TAB_HEIGHT) - GetEmptyChipSize()) / 2);
@@ -101,7 +102,8 @@ std::unique_ptr<views::Background> TabGroupStyle::GetEmptyTitleChipBackground(
   return views::CreateRoundedRectBackground(color, GetEmptyChipSize() / 2);
 }
 
-gfx::Insets TabGroupStyle::GetInsetsForHeaderChip() const {
+gfx::Insets TabGroupStyle::GetInsetsForHeaderChip(
+    bool should_show_sync_icon) const {
   return gfx::Insets::TLBR(kHeaderChipVerticalInset,
                            GetChipCornerRadius() + kHeaderChipVerticalInset,
                            kHeaderChipVerticalInset,
@@ -180,22 +182,25 @@ SkPath ChromeRefresh2023TabGroupStyle::GetUnderlinePath(
 
 gfx::Rect ChromeRefresh2023TabGroupStyle::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  return gfx::Rect(GetTitleChipOffset(absl::nullopt).x(),
-                   GetTitleChipOffset(absl::nullopt).y(), GetEmptyChipSize(),
+  return gfx::Rect(GetTitleChipOffset(std::nullopt).x(),
+                   GetTitleChipOffset(std::nullopt).y(), GetEmptyChipSize(),
                    GetEmptyChipSize());
 }
 
 gfx::Point ChromeRefresh2023TabGroupStyle::GetTitleChipOffset(
-    absl::optional<int> text_height) const {
+    std::optional<int> text_height) const {
   const int total_space = GetLayoutConstant(TAB_STRIP_HEIGHT) -
                           GetEmptyChipSize() -
                           GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
   return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2, total_space / 2);
 }
 
-gfx::Insets ChromeRefresh2023TabGroupStyle::GetInsetsForHeaderChip() const {
+gfx::Insets ChromeRefresh2023TabGroupStyle::GetInsetsForHeaderChip(
+    bool should_show_sync_icon) const {
   return gfx::Insets::TLBR(
-      kChromeRefreshHeaderChipVerticalInset, GetChipCornerRadius(),
+      kChromeRefreshHeaderChipVerticalInset,
+      should_show_sync_icon ? kChromeRefreshSyncIconLeftMargin
+                            : GetChipCornerRadius(),
       kChromeRefreshHeaderChipVerticalInset, GetChipCornerRadius());
 }
 

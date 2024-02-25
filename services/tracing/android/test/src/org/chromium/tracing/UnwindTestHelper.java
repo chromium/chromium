@@ -6,12 +6,10 @@ package org.chromium.tracing;
 
 import android.os.ConditionVariable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
-/**
- * Helper to run code through JNI layer to test JNI unwinding.
- */
+/** Helper to run code through JNI layer to test JNI unwinding. */
 @JNINamespace("tracing")
 public final class UnwindTestHelper {
     private static final ConditionVariable sBlock = new ConditionVariable();

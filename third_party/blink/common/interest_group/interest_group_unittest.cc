@@ -16,15 +16,15 @@ TEST(InterestGroupTest, KAnonKeyForAdNameReporting) {
   ig.name = "ig_one";
   ig.bidding_url = GURL("https://example.org/bid.js");
   ig.ads = {{{/*render_url=*/GURL("https://ad1.com"),
-              /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
-              /*buyer_reporting_id=*/absl::nullopt,
-              /*buyer_and_seller_reporting_id=*/absl::nullopt},
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/std::nullopt,
+              /*buyer_and_seller_reporting_id=*/std::nullopt},
              {/*render_url=*/GURL("https://ad2.com"),
-              /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
               /*buyer_reporting_id=*/"bid",
-              /*buyer_and_seller_reporting_id=*/absl::nullopt},
+              /*buyer_and_seller_reporting_id=*/std::nullopt},
              {/*render_url=*/GURL("https://ad3.com"),
-              /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
               /*buyer_reporting_id=*/"bid",
               /*buyer_and_seller_reporting_id=*/"bsid"}}};
   EXPECT_EQ(
@@ -39,6 +39,35 @@ TEST(InterestGroupTest, KAnonKeyForAdNameReporting) {
       "BuyerAndSellerReportId\nhttps://example.org/\n"
       "https://example.org/bid.js\nhttps://ad3.com/\nbsid",
       KAnonKeyForAdNameReporting(ig, ig.ads->at(2)));
+}
+
+// Test ParseTrustedBiddingSignalsSlotSizeMode() and
+// TrustedBiddingSignalsSlotSizeModeToString().
+TEST(InterestGroupTest, TrustedBiddingSignalsSlotSizeMode) {
+  EXPECT_EQ(InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone,
+            InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode("none"));
+  EXPECT_EQ("none",
+            InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+                InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone));
+
+  EXPECT_EQ(InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize,
+            InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode("slot-size"));
+  EXPECT_EQ("slot-size",
+            InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+                InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize));
+
+  EXPECT_EQ(
+      InterestGroup::TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes,
+      InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode(
+          "all-slots-requested-sizes"));
+  EXPECT_EQ("all-slots-requested-sizes",
+            InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+                InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+                    kAllSlotsRequestedSizes));
+
+  EXPECT_EQ(InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone,
+            InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode(
+                "not-a-valid-mode"));
 }
 
 }  // namespace blink

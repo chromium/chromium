@@ -5,10 +5,12 @@
 #include "components/variations/service/variations_field_trial_creator.h"
 
 #include <stddef.h>
+
 #include <cstring>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/build_time.h"
@@ -21,6 +23,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
@@ -39,14 +42,20 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
+#include "components/variations/limited_entropy_mode_gate.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/service/buildflags.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
+#include "components/variations/service/variations_field_trial_creator_base.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/synthetic_trial_registry.h"
+#include "components/variations/synthetic_trials.h"
+#include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
@@ -70,6 +79,7 @@ using ::testing::Return;
 
 // Constants used to create the test seeds.
 const char kTestSeedStudyName[] = "test";
+const char kTestLimitedLayerStudyName[] = "test_study_in_limited_layer";
 const char kTestSeedExperimentName[] = "abc";
 const char kTestSafeSeedExperimentName[] = "abc.safe";
 const int kTestSeedExperimentProbability = 100;
@@ -86,6 +96,12 @@ struct FetchAndLaunchTimeTestParams {
   const base::TimeDelta launch_time;
 };
 
+std::unique_ptr<VariationsSeedStore> CreateSeedStore(PrefService* local_state) {
+  return std::make_unique<VariationsSeedStore>(
+      local_state,
+      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state));
+}
+
 // Returns a seed with simple test data. The seed has a single study,
 // "UMA-Uniformity-Trial-10-Percent", which has a single experiment, "abc", with
 // probability weight 100.
@@ -98,6 +114,74 @@ VariationsSeed CreateTestSeed() {
   experiment->set_name(kTestSeedExperimentName);
   experiment->set_probability_weight(kTestSeedExperimentProbability);
   seed.set_serial_number(kTestSeedSerialNumber);
+  return seed;
+}
+
+// Returns a test seed that contains a single study,
+// "UMA-Uniformity-Trial-10-Percent", which has a single experiment, "abc", with
+// probability weight 100. The study references the 100% slot of a LIMITED
+// entropy layer. The LIMITED layer created will use 0 bit of entropy.
+VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
+  VariationsSeed seed;
+  seed.set_serial_number(kTestSeedSerialNumber);
+
+  auto* layer = seed.add_layers();
+  layer->set_id(1);
+  layer->set_num_slots(100);
+  layer->set_entropy_mode(Layer::LIMITED);
+
+  auto* layer_member = layer->add_members();
+  layer_member->set_id(1);
+  auto* slot = layer_member->add_slots();
+  slot->set_start(0);
+  slot->set_end(99);
+
+  auto* study = seed.add_study();
+  study->set_name(kTestLimitedLayerStudyName);
+
+  auto* experiment = study->add_experiment();
+  experiment->set_name(kTestSeedExperimentName);
+  experiment->set_probability_weight(kTestSeedExperimentProbability);
+
+  auto* layer_member_reference = study->mutable_layer();
+  layer_member_reference->set_layer_id(1);
+  layer_member_reference->set_layer_member_id(1);
+
+  return seed;
+}
+
+VariationsSeed CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy() {
+  VariationsSeed seed;
+  seed.set_serial_number(kTestSeedSerialNumber);
+
+  auto* layer = seed.add_layers();
+  layer->set_id(1);
+  layer->set_num_slots(100);
+  layer->set_entropy_mode(Layer::LIMITED);
+
+  auto* layer_member = layer->add_members();
+  layer_member->set_id(1);
+  auto* slot = layer_member->add_slots();
+  slot->set_start(0);
+  slot->set_end(99);
+
+  Study* study = seed.add_study();
+  study->set_name(kTestLimitedLayerStudyName);
+
+  auto* experiment_1 = study->add_experiment();
+  experiment_1->set_name("experiment_very_small");
+  experiment_1->set_probability_weight(1);
+  experiment_1->set_google_web_experiment_id(100001);
+
+  auto* experiment_2 = study->add_experiment();
+  experiment_2->set_name("experiment");
+  experiment_2->set_probability_weight(999999);
+  experiment_1->set_google_web_experiment_id(100002);
+
+  auto* layer_member_reference = study->mutable_layer();
+  layer_member_reference->set_layer_id(1);
+  layer_member_reference->set_layer_member_id(1);
+
   return seed;
 }
 
@@ -174,6 +258,36 @@ class MockSafeSeedManager : public SafeSeedManager {
   }
 };
 
+class FakeSyntheticTrialObserver : public SyntheticTrialObserver {
+ public:
+  FakeSyntheticTrialObserver() = default;
+  ~FakeSyntheticTrialObserver() override = default;
+
+  void OnSyntheticTrialsChanged(
+      const std::vector<SyntheticTrialGroup>& trials_updated,
+      const std::vector<SyntheticTrialGroup>& trials_removed,
+      const std::vector<SyntheticTrialGroup>& groups) override {
+    trials_updated_ = trials_updated;
+    trials_removed_ = trials_removed;
+    groups_ = groups;
+  }
+
+  const std::vector<SyntheticTrialGroup>& trials_updated() {
+    return trials_updated_;
+  }
+
+  const std::vector<SyntheticTrialGroup>& trials_removed() {
+    return trials_removed_;
+  }
+
+  const std::vector<SyntheticTrialGroup>& groups() { return groups_; }
+
+ private:
+  std::vector<SyntheticTrialGroup> trials_updated_;
+  std::vector<SyntheticTrialGroup> trials_removed_;
+  std::vector<SyntheticTrialGroup> groups_;
+};
+
 // TODO(crbug/1167566): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
@@ -203,6 +317,9 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   bool IsEnterprise() override { return false; }
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override {}
+  std::string_view GetLimitedEntropySyntheticTrialGroupName() {
+    return limited_entropy_synthetic_trial_group_;
+  }
 
  private:
   // VariationsServiceClient:
@@ -211,6 +328,20 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   }
 
   std::string restrict_parameter_;
+  std::string limited_entropy_synthetic_trial_group_;
+};
+
+class TestLimitedEntropySyntheticTrial : public LimitedEntropySyntheticTrial {
+ public:
+  TestLimitedEntropySyntheticTrial(std::string_view group_name)
+      : LimitedEntropySyntheticTrial(group_name) {}
+
+  TestLimitedEntropySyntheticTrial(const TestLimitedEntropySyntheticTrial&) =
+      delete;
+  TestLimitedEntropySyntheticTrial& operator=(
+      const TestLimitedEntropySyntheticTrial&) = delete;
+
+  ~TestLimitedEntropySyntheticTrial() = default;
 };
 
 class MockVariationsServiceClient : public TestVariationsServiceClient {
@@ -225,7 +356,9 @@ class MockVariationsServiceClient : public TestVariationsServiceClient {
 class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(PrefService* local_state)
-      : VariationsSeedStore(local_state) {}
+      : VariationsSeedStore(
+            local_state,
+            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {}
 
   TestVariationsSeedStore(const TestVariationsSeedStore&) = delete;
   TestVariationsSeedStore& operator=(const TestVariationsSeedStore&) = delete;
@@ -271,9 +404,12 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
           metrics::StartupVisibility::kUnknown)
       : VariationsFieldTrialCreator(
             client,
-            std::make_unique<VariationsSeedStore>(local_state),
-            UIStringOverrider()),
+            // Pass a VariationsSeedStore to base class.
+            CreateSeedStore(local_state),
+            UIStringOverrider(),
+            /*limited_entropy_synthetic_trial=*/nullptr),
         enabled_state_provider_(/*consent=*/true, /*enabled=*/true),
+        // Instead, use a TestVariationsSeedStore as the member variable.
         seed_store_(local_state),
         safe_seed_manager_(safe_seed_manager) {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
@@ -293,13 +429,14 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   // for uninteresting params.
   bool SetUpFieldTrials() {
     PlatformFieldTrials platform_field_trials;
+    SyntheticTrialRegistry synthetic_trial_registry;
     return VariationsFieldTrialCreator::SetUpFieldTrials(
         /*variation_ids=*/std::vector<std::string>(),
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kForceVariationIds),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
-        &platform_field_trials, safe_seed_manager_,
+        &synthetic_trial_registry, &platform_field_trials, safe_seed_manager_,
         /*add_entropy_source_to_variations_ids=*/true);
   }
 
@@ -788,9 +925,10 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   // Use a real VariationsFieldTrialCreator and VariationsSeedStore to exercise
   // the VariationsSeedStore::LoadSeed() logic.
   TestVariationsServiceClient variations_service_client;
-  auto seed_store = std::make_unique<VariationsSeedStore>(local_state());
+  auto seed_store = CreateSeedStore(local_state());
   VariationsFieldTrialCreator field_trial_creator(
-      &variations_service_client, std::move(seed_store), UIStringOverrider());
+      &variations_service_client, std::move(seed_store), UIStringOverrider(),
+      /*limited_entropy_synthetic_trial=*/nullptr);
   metrics::TestEnabledStateProvider enabled_state_provider(
       /*consent=*/true,
       /*enabled=*/true);
@@ -800,6 +938,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
 
   PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  SyntheticTrialRegistry synthetic_trial_registry;
 
   ASSERT_FALSE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
 
@@ -808,7 +947,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
       /*command_line_variation_ids=*/std::string(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/true));
 
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
@@ -837,15 +976,18 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   // the interaction between these two classes is what's being tested.
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state(), std::move(initial_seed),
-      /*signature_verification_enabled=*/false);
+      /*signature_verification_enabled=*/false,
+      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state()));
   VariationsFieldTrialCreator field_trial_creator(
-      &variations_service_client, std::move(seed_store), UIStringOverrider());
+      &variations_service_client, std::move(seed_store), UIStringOverrider(),
+      /*limited_entropy_synthetic_trial=*/nullptr);
 
   metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/true,
                                                            /*enabled=*/true);
   auto metrics_state_manager = metrics::MetricsStateManager::Create(
       local_state(), &enabled_state_provider, std::wstring(), base::FilePath());
   metrics_state_manager->InstantiateFieldTrialList();
+  SyntheticTrialRegistry synthetic_trial_registry;
 
   // Check that field trials are created from the seed. The test seed contains a
   // single study with an experiment targeting 100% of users in India. Since
@@ -857,7 +999,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
           switches::kForceVariationIds),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/true));
 
   EXPECT_EQ(kTestSeedExperimentName,
@@ -1160,13 +1302,6 @@ TEST_P(FieldTrialCreatorTestWithFeatures,
   static BASE_FEATURE(kFeature1, "UnitTestEnabled",
                       base::FEATURE_DISABLED_BY_DEFAULT);
 
-  // Since |kFeature1| is static, the same instance will be reused across the
-  // parameterized tests. We need to make sure that the cached value for the
-  // feature's enabled state is not reused, so we invalidate the cache.
-  static uint16_t caching_context = 1;
-  base::FeatureList::GetInstance()->SetCachingContextForTesting(
-      caching_context++);
-
   EXPECT_EQ(GetParam() == ::switches::kEnableFeatures,
             base::FeatureList::IsEnabled(kFeature1));
 
@@ -1370,6 +1505,307 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsClearsDeletedProfiles) {
 
 namespace {
 
+TestLimitedEntropySyntheticTrial kEnabledTrial(
+    kLimitedEntropySyntheticTrialEnabled);
+TestLimitedEntropySyntheticTrial kControlTrial(
+    kLimitedEntropySyntheticTrialControl);
+TestLimitedEntropySyntheticTrial kDefaultTrial(
+    kLimitedEntropySyntheticTrialDefault);
+const raw_ptr<LimitedEntropySyntheticTrial> kNoLimitedLayerSupport = nullptr;
+
+// LERS: Limited Entropy Randomization Source.
+struct GenerateLERSTestCase {
+  std::string test_name;
+  // Whether the client is behind a channel gate. If so, the client should not
+  // be generating a limited entropy randomization source.
+  bool is_channel_gated;
+  raw_ptr<LimitedEntropySyntheticTrial> trial;
+
+  // Whether a limited entropy randomization source is expected to be generated.
+  bool expected;
+};
+
+class IsLimitedEntropyRandomizationSourceEnabledTest
+    : public FieldTrialCreatorTest,
+      public ::testing::WithParamInterface<GenerateLERSTestCase> {};
+
+const GenerateLERSTestCase kGenerateLERSTestCases[] = {
+    {"GenerateForNonGatedEnabledClient",
+     /*is_channel_gated=*/false, &kEnabledTrial, true},
+    {"DoNotGenerateForGatedEnabledClient",
+     /*is_channel_gated=*/true, &kEnabledTrial, false},
+    {"DoNotGenerateForNonGatedControlClient",
+     /*is_channel_gated=*/false, &kControlTrial, false},
+    {"DoNotGenerateForNonGatedIneligibleClient",
+     /*is_channel_gated=*/false, kNoLimitedLayerSupport, false},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FieldTrialCreatorTest,
+    IsLimitedEntropyRandomizationSourceEnabledTest,
+    ::testing::ValuesIn(kGenerateLERSTestCases),
+    [](const ::testing::TestParamInfo<GenerateLERSTestCase>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(IsLimitedEntropyRandomizationSourceEnabledTest, ) {
+  const GenerateLERSTestCase test_case = GetParam();
+  TestVariationsServiceClient client;
+  if (test_case.is_channel_gated) {
+    DisableLimitedEntropyModeForTesting();
+  } else {
+    EnableLimitedEntropyModeForTesting();
+  }
+
+  const bool actual = VariationsFieldTrialCreatorBase::
+      IsLimitedEntropyRandomizationSourceEnabled(
+          client.GetChannelForVariations(), test_case.trial);
+  EXPECT_EQ(test_case.expected, actual);
+}
+
+enum class LimitedModeGate {
+  ENABLED,
+  DISABLED,
+};
+
+struct LimitedEntropyProcessingTestCase {
+  std::string test_name;
+
+  LimitedModeGate limited_mode_gate;
+  VariationsSeed seed;
+  raw_ptr<LimitedEntropySyntheticTrial> trial;
+
+  bool is_group_registration_expected;
+  bool is_seed_rejection_expected;
+  bool is_limited_study_active;
+};
+
+std::vector<LimitedEntropyProcessingTestCase> CreateTestCasesForTrials(
+    std::string_view test_name,
+    LimitedModeGate limited_mode_gate,
+    const VariationsSeed& seed,
+    const std::vector<raw_ptr<LimitedEntropySyntheticTrial>>& trials,
+    bool is_group_registration_expected,
+    bool is_seed_rejection_expected,
+    bool is_limited_study_active) {
+  std::vector<LimitedEntropyProcessingTestCase> test_cases;
+  for (raw_ptr<LimitedEntropySyntheticTrial> trial : trials) {
+    std::string test_name_with_trial;
+    if (trial) {
+      test_name_with_trial =
+          base::StrCat({test_name, "_", trial->GetGroupName()});
+    } else {
+      test_name_with_trial = base::StrCat({test_name, "_IneligibleToTrial"});
+    }
+    test_cases.push_back({test_name_with_trial, limited_mode_gate, seed, trial,
+                          is_group_registration_expected,
+                          is_seed_rejection_expected, is_limited_study_active});
+  }
+  return test_cases;
+}
+
+std::vector<LimitedEntropyProcessingTestCase> FlattenTests(
+    const std::vector<std::vector<LimitedEntropyProcessingTestCase>>&
+        test_cases) {
+  CHECK(test_cases.size() > 0 && test_cases[0].size() > 0);
+  std::vector<LimitedEntropyProcessingTestCase> flattened;
+  for (const std::vector<LimitedEntropyProcessingTestCase>& scenarios :
+       test_cases) {
+    for (const LimitedEntropyProcessingTestCase& scenario : scenarios) {
+      flattened.push_back(scenario);
+    }
+  }
+  return flattened;
+}
+
+const std::vector<LimitedEntropyProcessingTestCase> kTestCases = FlattenTests({
+    {{"EnabledTrialClient_ShouldProcessLimitedLayer", LimitedModeGate::ENABLED,
+      CreateTestSeedWithLimitedEntropyLayer(), &kEnabledTrial,
+      /*is_group_registration_expected=*/true,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/true}},
+
+    {{"EnabledTrialClient_ShouldRejectSeedWithExcessiveEntropyUse",
+      LimitedModeGate::ENABLED,
+      CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
+      &kEnabledTrial,
+      /*is_group_registration_expected=*/true,
+      /*is_seed_rejection_expected=*/true,
+      /*is_limited_study_active=*/false}},
+
+    {{"EnabledTrialClient_ShouldNotProcessSeedWithoutLimitedLayer",
+      LimitedModeGate::ENABLED, CreateTestSeed(), &kEnabledTrial,
+      /*is_group_registration_expected=*/false,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/false}},
+
+    CreateTestCasesForTrials("ControlOrDefaultTrialClient_"
+                             "ShouldRegisterGroupButNotProcessLimitedLayer",
+                             LimitedModeGate::ENABLED,
+                             CreateTestSeedWithLimitedEntropyLayer(),
+                             {&kControlTrial, &kDefaultTrial},
+                             /*is_group_registration_expected=*/true,
+                             /*is_seed_rejection_expected=*/false,
+                             /*is_limited_study_active=*/false),
+
+    CreateTestCasesForTrials(
+        "ControlOrDefaultTrialClient_"
+        "ShouldRegisterGroupButNotProcessLimitedLayerRegardlessOfEntropyUsage",
+        LimitedModeGate::ENABLED,
+        CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
+        {&kControlTrial, &kDefaultTrial},
+        /*is_group_registration_expected=*/true,
+        /*is_seed_rejection_expected=*/false,
+        /*is_limited_study_active=*/false),
+
+    CreateTestCasesForTrials("ControlOrDefaultTrialClient_"
+                             "ShouldNotRegisterGroupWithoutLimitedLayer",
+                             LimitedModeGate::ENABLED,
+                             CreateTestSeed(),
+                             {&kControlTrial, &kDefaultTrial},
+                             /*is_group_registration_expected=*/false,
+                             /*is_seed_rejection_expected=*/false,
+                             /*is_limited_study_active=*/false),
+
+    {{"IneligibleClient_ReceivingLimitedLayer", LimitedModeGate::ENABLED,
+      CreateTestSeedWithLimitedEntropyLayer(), kNoLimitedLayerSupport,
+      /*is_group_registration_expected=*/false,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/false}},
+
+    {{"IneligibleClient_ReceivingLayerUsingExcessiveEntropy",
+      LimitedModeGate::ENABLED,
+      CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
+      kNoLimitedLayerSupport,
+      /*is_group_registration_expected=*/false,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/false}},
+
+    {{"IneligibleClient_NotReceivingLimitedLayer", LimitedModeGate::ENABLED,
+      CreateTestSeed(), kNoLimitedLayerSupport,
+      /*is_group_registration_expected=*/false,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/false}},
+
+    CreateTestCasesForTrials("ChannelGatedClient_ReceivingLimitedLayer",
+                             LimitedModeGate::DISABLED,
+                             CreateTestSeedWithLimitedEntropyLayer(),
+                             {&kEnabledTrial, &kControlTrial, &kDefaultTrial,
+                              kNoLimitedLayerSupport},
+                             /*is_group_registration_expected=*/false,
+                             /*is_seed_rejection_expected=*/false,
+                             /*is_limited_study_active=*/false),
+
+    CreateTestCasesForTrials(
+        "ChannelGatedClient_ReceivingLimitedLayerWithExcessiveEntropy",
+        LimitedModeGate::DISABLED,
+        CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
+        {&kEnabledTrial, &kControlTrial, &kDefaultTrial,
+         kNoLimitedLayerSupport},
+        /*is_group_registration_expected=*/false,
+        /*is_seed_rejection_expected=*/false,
+        /*is_limited_study_active=*/false),
+
+    CreateTestCasesForTrials("ChannelGatedClient_NotReceivingLimitedLayer",
+                             LimitedModeGate::DISABLED,
+                             CreateTestSeed(),
+                             {&kEnabledTrial, &kControlTrial, &kDefaultTrial,
+                              kNoLimitedLayerSupport},
+                             /*is_group_registration_expected=*/false,
+                             /*is_seed_rejection_expected=*/false,
+                             /*is_limited_study_active=*/false),
+});
+
+class LimitedEntropyProcessingTest
+    : public FieldTrialCreatorTest,
+      public ::testing::WithParamInterface<LimitedEntropyProcessingTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    FieldTrialCreatorTest,
+    LimitedEntropyProcessingTest,
+    ::testing::ValuesIn(kTestCases),
+    [](const ::testing::TestParamInfo<LimitedEntropyProcessingTestCase>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(LimitedEntropyProcessingTest,
+       RandomizeLimitedEntropyStudyOrRejectTheSeed) {
+  const LimitedEntropyProcessingTestCase test_case = GetParam();
+
+  // Simulate the limited entropy channel gate setting.
+  if (test_case.limited_mode_gate == LimitedModeGate::ENABLED) {
+    EnableLimitedEntropyModeForTesting();
+  } else {
+    ASSERT_EQ(LimitedModeGate::DISABLED, test_case.limited_mode_gate);
+    DisableLimitedEntropyModeForTesting();
+  }
+
+  auto encoded_and_compressed = GZipAndB64EncodeToHexString(test_case.seed);
+  local_state()->SetString(prefs::kVariationsCompressedSeed,
+                           encoded_and_compressed);
+
+  // Allows and writes an empty signature for the test seed.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kAcceptEmptySeedSignatureForTesting);
+  local_state()->SetString(prefs::kVariationsSeedSignature, "");
+
+  // Sets up dependencies and mocks.
+  TestVariationsServiceClient variations_service_client;
+  auto seed_store = CreateSeedStore(local_state());
+  VariationsFieldTrialCreator field_trial_creator(
+      &variations_service_client, std::move(seed_store), UIStringOverrider(),
+      test_case.trial);
+  metrics::TestEnabledStateProvider enabled_state_provider(
+      /*consent=*/true,
+      /*enabled=*/true);
+  auto metrics_state_manager = metrics::MetricsStateManager::Create(
+      local_state(), &enabled_state_provider, std::wstring(), base::FilePath());
+  metrics_state_manager->InstantiateFieldTrialList();
+  PlatformFieldTrials platform_field_trials;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+
+  SyntheticTrialRegistry synthetic_trial_registry;
+  FakeSyntheticTrialObserver observer;
+  synthetic_trial_registry.AddObserver(&observer);
+
+  EXPECT_NE(
+      test_case.is_seed_rejection_expected,
+      field_trial_creator.SetUpFieldTrials(
+          /*variation_ids=*/{},
+          /*command_line_variation_ids=*/std::string(),
+          std::vector<base::FeatureList::FeatureOverrideInfo>(),
+          std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
+          &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
+          /*add_entropy_source_to_variations_ids=*/true));
+
+  // Verifies that the limited entropy test study is randomized.
+  EXPECT_EQ(test_case.is_limited_study_active,
+            base::FieldTrialList::TrialExists(kTestLimitedLayerStudyName));
+
+  // Verifies that the limited entropy synthetic trial is randomized.
+  if (test_case.is_group_registration_expected) {
+    EXPECT_EQ(1u, observer.trials_updated().size());
+    EXPECT_EQ(kLimitedEntropySyntheticTrialName,
+              observer.trials_updated()[0].trial_name());
+    EXPECT_EQ(test_case.trial->GetGroupName(),
+              observer.trials_updated()[0].group_name());
+
+    EXPECT_EQ(0u, observer.trials_removed().size());
+
+    EXPECT_EQ(1u, observer.groups().size());
+    EXPECT_EQ(kLimitedEntropySyntheticTrialName,
+              observer.groups()[0].trial_name());
+    EXPECT_EQ(test_case.trial->GetGroupName(),
+              observer.groups()[0].group_name());
+  } else {
+    EXPECT_EQ(0u, observer.trials_updated().size());
+    EXPECT_EQ(0u, observer.trials_removed().size());
+    EXPECT_EQ(0u, observer.groups().size());
+  }
+
+  synthetic_trial_registry.RemoveObserver(&observer);
+}
+
 // Test feature names prefixed with __ to avoid collision with real features.
 BASE_FEATURE(kDesktopFeature, "__Desktop", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPhoneFeature, "__Phone", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1437,26 +1873,19 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
 
   PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  SyntheticTrialRegistry synthetic_trial_registry;
 
   // Set up the field trials.
   VariationsFieldTrialCreator field_trial_creator{
-      &variations_service_client,
-      std::make_unique<VariationsSeedStore>(local_state()),
-      UIStringOverrider()};
+      &variations_service_client, CreateSeedStore(local_state()),
+      UIStringOverrider(), /*limited_entropy_synthetic_trial=*/nullptr};
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
       /*command_line_variation_ids=*/std::string(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/true));
-
-  // Since the test features are static, the same instance will be reused across
-  // the parameterized tests. We need to make sure that the cached value for the
-  // feature's enabled state is not reused, so we invalidate the feature cache.
-  static uint16_t caching_context = 1;
-  base::FeatureList::GetInstance()->SetCachingContextForTesting(
-      caching_context++);
 
   // Each form factor specific feature should be enabled iff the current form
   // factor matches the feature's targetted form factor.

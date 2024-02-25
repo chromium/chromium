@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "esnext"
+    ],
+    "allowJs": true,
+    "outDir": "ignored-for-vscode",
+    "paths": {
+      "test_runner": ["./resources/inspector-protocol-test.js"]
+    },
+    "moduleResolution": "NodeNext"
+  },
+  "include": [
+    "./"
+  ]
+}

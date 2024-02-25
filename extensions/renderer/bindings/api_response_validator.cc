@@ -55,7 +55,7 @@ APIResponseValidator::~APIResponseValidator() = default;
 void APIResponseValidator::ValidateResponse(
     v8::Local<v8::Context> context,
     const std::string& method_name,
-    const std::vector<v8::Local<v8::Value>> response_arguments,
+    const v8::LocalVector<v8::Value>& response_arguments,
     const std::string& api_error,
     CallbackType callback_type) {
   DCHECK(binding::IsResponseValidationEnabled());
@@ -99,7 +99,7 @@ void APIResponseValidator::ValidateResponse(
 void APIResponseValidator::ValidateEvent(
     v8::Local<v8::Context> context,
     const std::string& event_name,
-    const std::vector<v8::Local<v8::Value>>& event_args) {
+    const v8::LocalVector<v8::Value>& event_args) {
   DCHECK(binding::IsResponseValidationEnabled());
 
   const APISignature* signature = type_refs_->GetEventSignature(event_name);

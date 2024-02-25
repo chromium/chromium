@@ -5,11 +5,10 @@
 #ifndef COMPONENTS_LINK_HEADER_UTIL_LINK_HEADER_UTIL_H_
 #define COMPONENTS_LINK_HEADER_UTIL_LINK_HEADER_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace link_header_util {
 
@@ -34,7 +33,7 @@ bool ParseLinkHeaderValue(
     std::string::const_iterator begin,
     std::string::const_iterator end,
     std::string* url,
-    std::unordered_map<std::string, absl::optional<std::string>>* params);
+    std::unordered_map<std::string, std::optional<std::string>>* params);
 
 }  // namespace link_header_util
 

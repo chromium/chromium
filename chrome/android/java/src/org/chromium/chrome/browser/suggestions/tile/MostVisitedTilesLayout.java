@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-/**
- * The interface of most visited tiles layout.
- */
+/** The interface of most visited tiles layout. */
 public interface MostVisitedTilesLayout {
     /**
-     * @param isNtpAsHomeSurfaceEnabled {@code true} if showing an NTP as the home
-     *                                  surface in the given context.
+     * @param isNtpAsHomeSurfaceOnTablet {@code true} if showing an NTP as the home surface in the
+     *     given context on Tablets.
      */
-    void setIsNtpAsHomeSurfaceEnabled(boolean isNtpAsHomeSurfaceEnabled);
+    void setIsNtpAsHomeSurfaceOnTablet(boolean isNtpAsHomeSurfaceOnTablet);
 }

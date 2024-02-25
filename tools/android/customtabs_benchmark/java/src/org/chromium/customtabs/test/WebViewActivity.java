@@ -25,12 +25,13 @@ public class WebViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
 
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                go();
-            }
-        });
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        go();
+                    }
+                });
     }
 
     private void go() {
@@ -44,38 +45,42 @@ public class WebViewActivity extends Activity {
 
         webView.setVisibility(View.VISIBLE);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient() {
-            private long mPageStartedOffsetMs = -1;
+        webView.setWebViewClient(
+                new WebViewClient() {
+                    private long mPageStartedOffsetMs = -1;
 
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        return false;
+                    }
 
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                long offsetMs = MainActivity.now() - intentSentMs;
-                Log.w(MainActivity.TAG, "navigationStarted = " + offsetMs + " url = " + url);
-                // Can be called several times (redirects).
-                if (mPageStartedOffsetMs == -1) mPageStartedOffsetMs = offsetMs;
-            }
+                    @Override
+                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                        long offsetMs = MainActivity.now() - intentSentMs;
+                        Log.w(
+                                MainActivity.TAG,
+                                "navigationStarted = " + offsetMs + " url = " + url);
+                        // Can be called several times (redirects).
+                        if (mPageStartedOffsetMs == -1) mPageStartedOffsetMs = offsetMs;
+                    }
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                long offsetMs = MainActivity.now() - intentSentMs;
-                Log.w(MainActivity.TAG, "navigationFinished = " + offsetMs);
-                Log.w(MainActivity.TAG, "WEBVIEW," + mPageStartedOffsetMs + "," + offsetMs);
-            }
-        });
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                if (progressBar.getVisibility() == View.GONE) {
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-                progressBar.setProgress(newProgress);
-            }
-        });
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        long offsetMs = MainActivity.now() - intentSentMs;
+                        Log.w(MainActivity.TAG, "navigationFinished = " + offsetMs);
+                        Log.w(MainActivity.TAG, "WEBVIEW," + mPageStartedOffsetMs + "," + offsetMs);
+                    }
+                });
+        webView.setWebChromeClient(
+                new WebChromeClient() {
+                    @Override
+                    public void onProgressChanged(WebView view, int newProgress) {
+                        if (progressBar.getVisibility() == View.GONE) {
+                            progressBar.setVisibility(View.VISIBLE);
+                        }
+                        progressBar.setProgress(newProgress);
+                    }
+                });
 
         webView.loadUrl(url);
     }

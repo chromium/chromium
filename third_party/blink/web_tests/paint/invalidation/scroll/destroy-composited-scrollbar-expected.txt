@@ -11,9 +11,6 @@
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "invalidations": [
-        [0, 0, 200, 200]
-      ],
       "transform": 1
     }
   ],

@@ -36,9 +36,7 @@ public interface BackgroundTaskScheduler {
     @MainThread
     void cancel(Context context, int taskId);
 
-    /**
-     * Flushes cached UMA data. Must not be invoked until native has been loaded.
-     */
+    /** Flushes cached UMA data. Must not be invoked until native has been loaded. */
     @MainThread
     void doMaintenance();
 }

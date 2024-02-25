@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/ui/promos_manager/utils.h"
 
 @interface PromosManagerSceneAgent () <AppStateObserver>
 
@@ -22,6 +23,7 @@
 @implementation PromosManagerSceneAgent
 
 - (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
+  DCHECK(ShouldDisplayPromos());
   self = [super init];
   if (self) {
     _dispatcher = dispatcher;

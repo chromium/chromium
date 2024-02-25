@@ -55,6 +55,7 @@
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
+#include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
@@ -285,7 +286,7 @@ void StoreString(std::string* result,
 }
 
 int GetInt(const base::Value::Dict& dict, base::StringPiece key) {
-  absl::optional<int> out = dict.FindInt(key);
+  std::optional<int> out = dict.FindInt(key);
   EXPECT_TRUE(out.has_value());
   return out.value_or(0);
 }
@@ -297,7 +298,7 @@ std::string GetString(const base::Value::Dict& dict, base::StringPiece key) {
 }
 
 bool GetBoolean(const base::Value::Dict& dict, base::StringPiece key) {
-  absl::optional<bool> out = dict.FindBool(key);
+  std::optional<bool> out = dict.FindBool(key);
   EXPECT_TRUE(out.has_value());
   return out.value_or(false);
 }
@@ -1041,13 +1042,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   {
     base::RunLoop loop;
     version->StopWorker(loop.QuitClosure());
     loop.Run();
-    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   }
 
   bool is_prepare_callback_called = false;
@@ -1062,7 +1063,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   request->is_main_resource_load = true;
   auto dispatcher = std::make_unique<ServiceWorkerFetchDispatcher>(
       std::move(request), network::mojom::RequestDestination::kDocument,
-      /*client_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(), version,
+      /*client_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      /*resulting_client_id=*/
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), version,
       base::BindLambdaForTesting([&]() { is_prepare_callback_called = true; }),
       base::BindLambdaForTesting(
           [&](blink::ServiceWorkerStatusCode status,
@@ -1109,13 +1112,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   {
     base::RunLoop loop;
     version->StopWorker(loop.QuitClosure());
     loop.Run();
-    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   }
 
   // Set a non-existent resource to the version.
@@ -1136,7 +1139,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   request->is_main_resource_load = true;
   auto dispatcher = std::make_unique<ServiceWorkerFetchDispatcher>(
       std::move(request), network::mojom::RequestDestination::kDocument,
-      /*client_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(), version,
+      /*client_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(),
+      /*resulting_client_id==*/
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), version,
       base::BindLambdaForTesting([&]() { is_prepare_callback_called = true; }),
       base::BindLambdaForTesting(
           [&](blink::ServiceWorkerStatusCode status,
@@ -1221,8 +1226,8 @@ IN_PROC_BROWSER_TEST_F(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
              "\n"});
 
         URLLoaderInterceptor::WriteResponse(
-            path, params->client.get(), &headers,
-            absl::optional<net::SSLInfo>(), params->url_request.url);
+            path, params->client.get(), &headers, std::optional<net::SSLInfo>(),
+            params->url_request.url);
 
         if (--it->second == 0)
           expected_request_urls.erase(it);
@@ -1399,7 +1404,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
 
   void RegisterCustomResponse(const std::string& relative_url,
                               const net::HttpStatusCode code,
-                              const absl::optional<std::string>& reason,
+                              const std::optional<std::string>& reason,
                               const base::StringPairs& headers,
                               const std::string& content) {
     embedded_test_server()->RegisterRequestHandler(
@@ -1438,7 +1443,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
   class CustomResponse : public net::test_server::HttpResponse {
    public:
     explicit CustomResponse(const net::HttpStatusCode code,
-                            const absl::optional<std::string>& reason,
+                            const std::optional<std::string>& reason,
                             const base::StringPairs& headers,
                             const std::string& content)
         : code_(code), reason_(reason), headers_(headers), content_(content) {}
@@ -1457,7 +1462,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
 
    private:
     net::HttpStatusCode code_;
-    absl::optional<std::string> reason_;
+    std::optional<std::string> reason_;
     base::StringPairs headers_;
     std::string content_;
   };
@@ -1481,7 +1486,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> CustomRequestHandler(
       const std::string& relative_url,
       const net::HttpStatusCode code,
-      const absl::optional<std::string>& reason,
+      const std::optional<std::string>& reason,
       const base::StringPairs& headers,
       const std::string& content,
       const net::test_server::HttpRequest& request) const {
@@ -1917,7 +1922,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
 
-  absl::optional<base::Value> result = base::JSONReader::Read(
+  std::optional<base::Value> result = base::JSONReader::Read(
       LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
 
   // The page request must be sent only once, since the worker responded with
@@ -1971,7 +1976,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
 
-  absl::optional<base::Value> result = base::JSONReader::Read(
+  std::optional<base::Value> result = base::JSONReader::Read(
       LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
 
   // The page request must be sent only once, since the worker responded with
@@ -2442,7 +2447,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSha256ScriptChecksumBrowserTest,
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
   EXPECT_EQ(version->script_url(), main_script.script_url);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Validate checksums for each script, and ServiceWorkerVersion's one.
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
@@ -2476,7 +2481,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSha256ScriptChecksumBrowserTest,
   scoped_refptr<ServiceWorkerVersion> updated_version =
       wrapper()->GetLiveVersion(observer2.version_id());
   EXPECT_EQ(updated_version->script_url(), main_script.script_url);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, updated_version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+            updated_version->running_status());
 
   // Validate updated checksums for each script, and ServiceWorkerVersion's one.
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>
@@ -2599,7 +2605,7 @@ class CacheStorageSideDataSizeChecker
     blob_handle->get()->ReadSideData(base::BindOnce(
         [](scoped_refptr<storage::BlobHandle> blob_handle, int* result,
            base::OnceClosure continuation,
-           const absl::optional<mojo_base::BigBuffer> data) {
+           const std::optional<mojo_base::BigBuffer> data) {
           *result = data ? data->size() : 0;
           std::move(continuation).Run();
         },
@@ -2607,7 +2613,7 @@ class CacheStorageSideDataSizeChecker
   }
 
   mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
-  absl::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
+  std::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
       cache_storage_cache_;
   const std::string cache_name_;
   const GURL url_;
@@ -2757,14 +2763,6 @@ class CacheStorageControlForBadOrigin
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {
     // The CodeCacheHostImpl should not try to add a receiver if the StorageKey
     // is bad.
-    NOTREACHED();
-  }
-  void DeleteForStorageKey(const blink::StorageKey& storage_key) override {
-    NOTREACHED();
-  }
-  void GetAllStorageKeysInfo(
-      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-          callback) override {
     NOTREACHED();
   }
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
@@ -2987,7 +2985,8 @@ class ThrottlingContentBrowserClient
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     auto throttle = std::make_unique<HeaderInjectingThrottle>();
     throttles.push_back(std::move(throttle));
@@ -3046,7 +3045,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                "document.body.textContent");
   ASSERT_TRUE(result.error.empty());
-  absl::optional<base::Value> parsed_result =
+  std::optional<base::Value> parsed_result =
       base::JSONReader::Read(result.ExtractString());
   ASSERT_TRUE(parsed_result);
   base::Value::Dict* dict = parsed_result->GetIfDict();
@@ -3437,7 +3436,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
       public_context()->GetRunningServiceWorkerInfos();
@@ -3492,14 +3491,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Restart the service worker. The goal is to simulate the launch of an
   // already installed ServiceWorker.
   StopServiceWorker(version.get());
   EXPECT_EQ(StartServiceWorker(version.get()),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Wait until the running status is updated.
   base::RunLoop().RunUntilIdle();
@@ -3550,7 +3549,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, FreshInstall) {
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
       public_context()->GetRunningServiceWorkerInfos();
@@ -3585,14 +3584,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, MAYBE_PostInstallRun) {
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Restart the service worker. The goal is to simulate the launch of an
   // already installed ServiceWorker.
   StopServiceWorker(version.get());
   EXPECT_EQ(StartServiceWorker(version.get()),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Wait until the running status is updated.
   base::RunLoop().RunUntilIdle();
@@ -3819,8 +3818,8 @@ IN_PROC_BROWSER_TEST_F(
   // 3) Open a new tab and navigate it to |url_2|, which is in-scope of the
   // service worker.
   Shell* new_shell = Shell::CreateNewWindow(
-      web_contents()->GetController().GetBrowserContext(), GURL::EmptyGURL(),
-      nullptr, gfx::Size());
+      web_contents()->GetController().GetBrowserContext(), GURL(), nullptr,
+      gfx::Size());
   EXPECT_TRUE(NavigateToURL(new_shell, url_2));
   RenderFrameHostImpl* rfh_2 = static_cast<RenderFrameHostImpl*>(
       new_shell->web_contents()->GetPrimaryMainFrame());
@@ -4013,7 +4012,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFencedFrameBrowserTest,
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Call backgroundFetch.fetch from the registered service worker again.
   // This ensures if restored data in the service worker keeps the info if it
@@ -4239,7 +4238,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     ServiceWorkerBrowserTestWithStoragePartitioning);
 
 // http://crbug.com/1385779
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_StorageKeyWithHostPermissionsWithDedicatedWorkers \
   DISABLED_StorageKeyWithHostPermissionsWithDedicatedWorkers
 #else
@@ -4280,7 +4279,8 @@ class ServiceWorkerSpeculativeStartupBrowserTest
       public testing::WithParamInterface<SpeculativeStartupNavigationType> {
  public:
   ServiceWorkerSpeculativeStartupBrowserTest() {
-    feature_list_.InitAndEnableFeature(kSpeculativeServiceWorkerStartup);
+    feature_list_.InitAndEnableFeature(
+        features::kSpeculativeServiceWorkerStartup);
   }
   ~ServiceWorkerSpeculativeStartupBrowserTest() override = default;
 
@@ -4326,15 +4326,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Cancel the next navigation with beforeunload.
   EXPECT_TRUE(
@@ -4361,7 +4361,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
   EXPECT_TRUE(dialog_waiter.WasDialogRequestedCallbackCalled());
   observer2.WaitUntilRunning();
   EXPECT_EQ(
-      EmbeddedWorkerStatus::RUNNING,
+      blink::EmbeddedWorkerStatus::kRunning,
       wrapper()->GetLiveVersion(observer2.version_id())->running_status());
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
@@ -4375,7 +4375,8 @@ class ServiceWorkerSpeculativeStartupWithoutParamBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
   ServiceWorkerSpeculativeStartupWithoutParamBrowserTest() {
-    feature_list_.InitAndEnableFeature(kSpeculativeServiceWorkerStartup);
+    feature_list_.InitAndEnableFeature(
+        features::kSpeculativeServiceWorkerStartup);
   }
 
  private:
@@ -4411,16 +4412,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
   EXPECT_EQ(1, version->embedded_worker()->restart_count());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   EXPECT_FALSE(version->timeout_timer_.IsRunning());
   EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
 
@@ -4430,7 +4431,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
   EXPECT_TRUE(version->IsWarmedUp());
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
   EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
@@ -4445,7 +4446,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
   EXPECT_TRUE(version->IsWarmedUp());
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
   EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
@@ -4465,7 +4466,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   EXPECT_EQ(restart_count_on_warm_up,
             version->embedded_worker()->restart_count());
   EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
   histogram_tester.ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
       static_cast<int>(ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME), 1);
@@ -4492,16 +4493,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
   EXPECT_EQ(1, version->embedded_worker()->restart_count());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   EXPECT_FALSE(version->timeout_timer_.IsRunning());
 
   // Warm-up ServiceWorker. The script should be loaded without evaluating the
@@ -4510,7 +4511,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
   EXPECT_TRUE(version->IsWarmedUp());
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
   EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
@@ -4523,10 +4524,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
       blink::features::kSpeculativeServiceWorkerWarmUpDuration.Get() -
       base::Minutes(1);
   version->timeout_timer_.user_task().Run();
-  while (version->running_status() != EmbeddedWorkerStatus::STOPPED) {
+  while (version->running_status() != blink::EmbeddedWorkerStatus::kStopped) {
     base::RunLoop().RunUntilIdle();
   }
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
   EXPECT_EQ(2, version->embedded_worker()->restart_count());
 
@@ -4537,13 +4538,61 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
 
   EXPECT_EQ(3, version->embedded_worker()->restart_count());
   EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
   histogram_tester.ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
       static_cast<int>(ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME), 1);
   histogram_tester.ExpectBucketCount(
       "ServiceWorker.StartWorker.StatusByPurpose_FETCH_MAIN_FRAME",
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerTwice) {
+  StartServerAndNavigateToSetup();
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('fetch_event_respond_with_fetch.js');"));
+  observer1.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+  EXPECT_EQ(1, version->embedded_worker()->restart_count());
+
+  // Stop ServiceWorker
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+  EXPECT_FALSE(version->timeout_timer_.IsRunning());
+
+  // Warm-up ServiceWorker.
+  EXPECT_FALSE(version->IsWarmedUp());
+  EXPECT_TRUE(WarmUpServiceWorker(*public_context(), in_scope_url));
+  EXPECT_TRUE(version->IsWarmedUp());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
+
+  // Stop ServiceWorker
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+  EXPECT_FALSE(version->timeout_timer_.IsRunning());
+
+  // Warm-up ServiceWorker again.
+  EXPECT_FALSE(version->IsWarmedUp());
+  EXPECT_TRUE(WarmUpServiceWorker(*public_context(), in_scope_url));
+  EXPECT_TRUE(version->IsWarmedUp());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
+
+  // Stop ServiceWorker
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+  EXPECT_FALSE(version->timeout_timer_.IsRunning());
 }
 
 // This is a test class to verify an optimization to speculatively
@@ -4581,11 +4630,11 @@ class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
 
     scoped_refptr<ServiceWorkerVersion> version =
         wrapper()->GetLiveVersion(observer1.version_id());
-    EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
     // Stop the current running service worker.
     StopServiceWorker(version.get());
-    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
     return version;
   }
 
@@ -4622,7 +4671,7 @@ class ServiceWorkerWarmUpByVisibilityBrowserTest
                    .name,
                "false"},
           }}},
-        {kSpeculativeServiceWorkerStartup});
+        {features::kSpeculativeServiceWorkerStartup});
   }
   ~ServiceWorkerWarmUpByVisibilityBrowserTest() override = default;
 
@@ -4653,8 +4702,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version1->running_status());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version2->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version1->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version2->running_status());
 
   // When an anchor is added to a document, the IntersectionObserver
   // begins monitoring whether the anchor is visible in the viewport. If
@@ -4678,6 +4727,87 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
   } else {
     NOTREACHED();
   }
+}
+
+class ServiceWorkerWarmUpOnIdleTimeoutBrowserTest
+    : public ServiceWorkerWarmUpBrowserTestBase {
+ public:
+  ServiceWorkerWarmUpOnIdleTimeoutBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kSpeculativeServiceWorkerWarmUp,
+          {{blink::features::kSpeculativeServiceWorkerWarmUpOnIdleTimeout.name,
+            "true"}}}},
+        {features::kSpeculativeServiceWorkerStartup});
+  }
+  ~ServiceWorkerWarmUpOnIdleTimeoutBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWarmUpOnIdleTimeoutBrowserTest,
+                       DoNotWarmUpOnStopWithoutIdleTimeout) {
+  base::HistogramTester histogram_tester;
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('fetch_event_respond_with_fetch.js');"));
+  observer1.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+  EXPECT_EQ(1, version->embedded_worker()->restart_count());
+
+  // Stop the current running service worker.
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+
+  // Check if the service worker doesn't warm-up automatically.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWarmUpOnIdleTimeoutBrowserTest,
+                       WarmUpOnIdleTimeout) {
+  base::HistogramTester histogram_tester;
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('fetch_event_respond_with_fetch.js');"));
+  observer1.WaitUntilRunning();
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+
+  // Ask the service worker to trigger idle timeout.
+  version->TriggerIdleTerminationAsap();
+
+  // Automatically warm-up service worker after idle timeout.
+  base::RunLoop run_loop;
+  while (!version->IsWarmedUp()) {
+    run_loop.RunUntilIdle();
+  }
+
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
+  EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
+            version->embedded_worker()->starting_phase());
+  EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
 }
 
 // Pointer triggered ServiceWorkerWarmUp is not currently available on Android.
@@ -4710,7 +4840,7 @@ class ServiceWorkerWarmUpByPointerBrowserTest
                    .name,
                GetParam().enable_warm_up_by_pointerdown ? "true" : "false"},
           }}},
-        {kSpeculativeServiceWorkerStartup});
+        {features::kSpeculativeServiceWorkerStartup});
   }
   ~ServiceWorkerWarmUpByPointerBrowserTest() override = default;
 
@@ -4774,7 +4904,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByPointerBrowserTest,
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   AddAnchor("in_scope_url", in_scope_url);
 
@@ -4883,15 +5013,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
   observer1.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // This script asks the service worker what fetch events it saw.
   const std::string script = R"(
@@ -4942,7 +5072,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
       // Wait until running.
       observer2.WaitUntilRunning();
       version = wrapper()->GetLiveVersion(observer2.version_id());
-      EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+                version->running_status());
 
       // The handler is not used for subsequent requests even if the
       // worker has already started.
@@ -5057,7 +5188,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBypassFetchHandlerOriginTrialTest,
 
         URLLoaderInterceptor::WriteResponse(
             "content/test/data/service_worker" + params->url_request.url.path(),
-            params->client.get(), &headers, absl::optional<net::SSLInfo>(),
+            params->client.get(), &headers, std::optional<net::SSLInfo>(),
             params->url_request.url);
 
         if (--it->second == 0) {
@@ -5077,16 +5208,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBypassFetchHandlerOriginTrialTest,
   observer.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate to the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), main_page_url));
@@ -5126,19 +5257,30 @@ class ServiceWorkerSkipEmptyFetchHandlerBrowserTest
       case SkipEmptyFetchHandlerEnum::kEnabled:
         scoped_feature_list_.InitWithFeaturesAndParameters(
             {{features::kServiceWorkerSkipIgnorableFetchHandler,
-              {{"SkipEmptyFetchHandler", "true"}}}},
+              {
+                  {"SkipEmptyFetchHandler", "true"},
+                  {"StartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
+                   "0"},
+              }}},
             {});
         break;
       case SkipEmptyFetchHandlerEnum::kEnabledAndStartWorker:
         scoped_feature_list_.InitWithFeaturesAndParameters(
             {{features::kServiceWorkerSkipIgnorableFetchHandler,
-              {{"SkipEmptyFetchHandler", "true"},
-               {"StartServiceWorkerForEmptyFetchHandler", "true"}}}},
+              {
+                  {"SkipEmptyFetchHandler", "true"},
+                  {"StartServiceWorkerForEmptyFetchHandler", "true"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
+                   "0"},
+              }}},
             {});
         break;
       case SkipEmptyFetchHandlerEnum::kDisabled:
-        scoped_feature_list_.InitWithFeaturesAndParameters(
-            {}, {{features::kServiceWorkerSkipIgnorableFetchHandler}});
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kServiceWorkerSkipIgnorableFetchHandler);
         break;
     }
   }
@@ -5187,19 +5329,19 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
   observer.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Conduct a main resource load.
   EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   tester.ExpectUniqueSample("ServiceWorker.FetchHandler.SkipReason",
                             ServiceWorkerControlleeRequestHandler::
@@ -5229,15 +5371,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
   observer1.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Conduct a main resource load.
   WorkerRunningStatusObserver observer2(public_context());
@@ -5246,7 +5388,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
     case SkipEmptyFetchHandlerEnum::kEnabled:
       // In this case, navigation request doesn't start the service
       // worker if the fetch handler is skipped.
-      EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+      EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped,
+                version->running_status());
       tester.ExpectUniqueSample(
           "ServiceWorker.FetchHandler.SkipReason",
           ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
@@ -5257,7 +5400,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       // In this case, the service worker is started while the fetch handler is
       // skipped.
       observer2.WaitUntilRunning();
-      EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+                version->running_status());
       tester.ExpectUniqueSample(
           "ServiceWorker.FetchHandler.SkipReason",
           ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
@@ -5266,7 +5410,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       break;
     case SkipEmptyFetchHandlerEnum::kDisabled:
       observer2.WaitUntilRunning();
-      EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+                version->running_status());
       tester.ExpectUniqueSample("ServiceWorker.FetchHandler.SkipReason",
                                 ServiceWorkerControlleeRequestHandler::
                                     FetchHandlerSkipReason::kNotSkipped,
@@ -5283,13 +5428,16 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
 class ServiceWorkerRaceNetworkRequestBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
-  ServiceWorkerRaceNetworkRequestBrowserTest() {
+  ServiceWorkerRaceNetworkRequestBrowserTest()
+      : https_server_(std::make_unique<net::EmbeddedTestServer>(
+            net::EmbeddedTestServer::TYPE_HTTPS)) {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kServiceWorkerBypassFetchHandler,
           {{"strategy", "optin"},
-           {"bypass_for", "all_with_race_network_request"},
-           {"data_pipe_capacity_num_bytes", "1024"}}}},
+           {"bypass_for", "all_with_race_network_request"}}}},
         {});
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
   ~ServiceWorkerRaceNetworkRequestBrowserTest() override = default;
 
@@ -5300,29 +5448,13 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   }
 
   scoped_refptr<ServiceWorkerVersion> SetupAndRegisterServiceWorker() {
-    RegisterRequestMonitorForRequestCount();
-    RegisterRequestHandlerForSlowResponsePage();
     StartServerAndNavigateToSetup();
+    return RegisterRaceNetowrkRequestServiceWorker(embedded_test_server());
+  }
 
-    const GURL create_service_worker_url(embedded_test_server()->GetURL(
-        "/service_worker/create_service_worker.html"));
-
-    // Register a service worker.
-    WorkerRunningStatusObserver observer1(public_context());
-    EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-    EXPECT_EQ("DONE",
-              EvalJs(GetPrimaryMainFrame(),
-                     "register('/service_worker/race_network_request.js')"));
-    observer1.WaitUntilRunning();
-    scoped_refptr<ServiceWorkerVersion> version =
-        wrapper()->GetLiveVersion(observer1.version_id());
-    EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
-
-    // Stop the current running service worker.
-    StopServiceWorker(version.get());
-    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
-
-    return version;
+  scoped_refptr<ServiceWorkerVersion>
+  SetupAndRegisterServiceWorkerWithHTTPSServer() {
+    return RegisterRaceNetowrkRequestServiceWorker(https_server());
   }
 
   EvalJsResult GetInnerText() {
@@ -5338,9 +5470,22 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
     return it->second.size();
   }
 
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
+ protected:
+  void SetUpOnMainThread() override {
+    ServiceWorkerBrowserTest::SetUpOnMainThread();
+    https_server()->ServeFilesFromSourceDirectory("content/test/data");
+    RegisterRequestMonitorForRequestCount(embedded_test_server());
+    RegisterRequestMonitorForRequestCount(https_server());
+    RegisterRequestHandlerForSlowResponsePage(embedded_test_server());
+    RegisterRequestHandlerForSlowResponsePage(https_server());
+  }
+
  private:
-  void RegisterRequestHandlerForSlowResponsePage() {
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+  void RegisterRequestHandlerForSlowResponsePage(
+      net::EmbeddedTestServer* test_server) {
+    test_server->RegisterRequestHandler(base::BindRepeating(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
           if (!base::Contains(request.GetURL().path(),
@@ -5375,7 +5520,10 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
             return http_response;
           }
 
-          http_response->set_content_type("text/plain");
+          if (!base::Contains(request.GetURL().query(),
+                              "server_unknown_mime_type")) {
+            http_response->set_content_type("text/plain");
+          }
 
           if (base::Contains(request.GetURL().query(), "server_large_data")) {
             // The data pipe buffer size created for the RaceNetworkRequest test
@@ -5403,17 +5551,43 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
           return http_response;
         }));
   }
-  void RegisterRequestMonitorForRequestCount() {
-    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+  void RegisterRequestMonitorForRequestCount(
+      net::EmbeddedTestServer* test_server) {
+    test_server->RegisterRequestMonitor(base::BindRepeating(
         &ServiceWorkerRaceNetworkRequestBrowserTest::MonitorRequestHandler,
         base::Unretained(this)));
   }
   void MonitorRequestHandler(const net::test_server::HttpRequest& request) {
     request_log_[request.relative_url].push_back(request);
   }
+
+  scoped_refptr<ServiceWorkerVersion> RegisterRaceNetowrkRequestServiceWorker(
+      net::EmbeddedTestServer* test_server) {
+    const GURL create_service_worker_url(
+        test_server->GetURL("/service_worker/create_service_worker.html"));
+
+    // Register a service worker.
+    WorkerRunningStatusObserver observer1(public_context());
+    EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+    EXPECT_EQ("DONE",
+              EvalJs(GetPrimaryMainFrame(),
+                     "register('/service_worker/race_network_request.js')"));
+    observer1.WaitUntilRunning();
+    scoped_refptr<ServiceWorkerVersion> version =
+        wrapper()->GetLiveVersion(observer1.version_id());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+
+    // Stop the current running service worker.
+    StopServiceWorker(version.get());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+
+    return version;
+  }
+
   std::map<std::string, std::vector<net::test_server::HttpRequest>>
       request_log_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5440,6 +5614,63 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_MarkedAsSecure) {
+  // Register the ServiceWorker and navigate to the in scope URL.
+  StartServerAndNavigateToSetup();
+  ASSERT_TRUE(https_server()->Start());
+  SetupAndRegisterServiceWorkerWithHTTPSServer();
+
+  // Capture the response head.
+  const GURL test_url = https_server()->GetURL(
+      "/service_worker/mock_response?sw_slow&sw_respond");
+
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+
+  // ServiceWorker will respond after the delay, so we expect the response from
+  // the network request initiated by the RaceNetworkRequest mode comes first.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            GetInnerText());
+
+  // The page should be marked as secure.
+  CheckPageIsMarkedSecure(shell(), https_server()->GetCertificate());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_MimeTypeSniffed) {
+  // Register the ServiceWorker and navigate to the in scope URL.
+  StartServerAndNavigateToSetup();
+
+  {
+    const GURL test_url = embedded_test_server()->GetURL(
+        "/service_worker/mock_response?sw_slow&sw_respond");
+    NavigationHandleObserver observer1(web_contents(), test_url);
+    NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+    EXPECT_TRUE(observer1.has_committed());
+    // Check MIME type as axpected.
+    EXPECT_EQ(shell()->web_contents()->GetContentsMimeType(), "text/plain");
+  }
+  {
+    // server_unknown_mime_type doesn't content-type from server.
+    const GURL test_url = embedded_test_server()->GetURL(
+        "/service_worker/"
+        "mock_response?sw_slow&sw_respond&server_unknown_mime_type");
+    NavigationHandleObserver observer2(web_contents(), test_url);
+    NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+    EXPECT_TRUE(observer2.has_committed());
+    // RaceNetworkRequset enables kURLLoadOptionSniffMimeType in URLLoader
+    // options, so the mime type is sniffed from the response body.
+    EXPECT_EQ(shell()->web_contents()->GetContentsMimeType(), "text/plain");
+  }
+
+  // ServiceWorker will respond after the delay, so we expect the response from
+  // the network request initiated by the RaceNetworkRequest mode comes first.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        NetworkRequest_Wins_Fetch_No_Respond) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -5453,6 +5684,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             GetInnerText());
 }
+// TODO(crbug.com/1491332) Add tests for
+// kURLLoadOptionSendSSLInfoForCertificateError
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        NetworkRequest_Wins_NotFound_FetchHandler_Respond) {
@@ -5898,6 +6131,29 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
             EvalJs(GetPrimaryMainFrame(), script));
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_Redirect_Multiple) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string path1 =
+      "/service_worker/"
+      "mock_response?server_redirect&server_redirect&sw_pass_through";
+  const std::string path2 =
+      "/service_worker/mock_response?&server_redirect&sw_pass_through";
+  const std::string path3 = "/service_worker/mock_response?&&sw_pass_through";
+
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + path1 + "').then(response => response.text())"));
+  // The first request (redirect) is deduped.
+  EXPECT_EQ(1, GetRequestCount(path1));
+  // The second request (redirect) is also deduped.
+  EXPECT_EQ(1, GetRequestCount(path2));
+  // The final request is also deduped.
+  EXPECT_EQ(1, GetRequestCount(path3));
+}
+
 // TODO(crbug.com/1431421): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Subresource_NetworkRequest_Wins_Redirect \
@@ -6038,7 +6294,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 // TODO(crbug.com/1431421): Flaky on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1517557): Flaky on Android.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Subresource_FetchHandler_Wins_Redirect \
   DISABLED_Subresource_FetchHandler_Wins_Redirect
 #else
@@ -6124,19 +6381,29 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 class ServiceWorkerAutoPreloadBrowserTest
-    : public ServiceWorkerRaceNetworkRequestBrowserTest {
+    : public ServiceWorkerRaceNetworkRequestBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   ServiceWorkerAutoPreloadBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {kServiceWorkerAutoPreload},
-        {features::kServiceWorkerBypassFetchHandler});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kServiceWorkerAutoPreload,
+          {{"use_two_phase_write", GetParam() ? "true" : "false"}}}},
+        {{features::kServiceWorkerBypassFetchHandler}});
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
   }
+
+  ~ServiceWorkerAutoPreloadBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+INSTANTIATE_TEST_SUITE_P(ALL,
+                         ServiceWorkerAutoPreloadBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        NetworkRequestRepliedFirstButFetchHandlerResultIsUsed) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6169,7 +6436,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
             observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
   // Capture the response head.
@@ -6193,7 +6460,32 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
+                       PassThrough_LargeData) {
+  SetupAndRegisterServiceWorker();
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_pass_through&server_large_data";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+
+  WorkerRunningStatusObserver service_worker_running_status_observer(
+      public_context());
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  service_worker_running_status_observer.WaitUntilRunning();
+
+  // Request count should be 1. RaceNetworkRequest + pass through request from
+  // fetch handler but the fetch handler request will reuse the response from
+  // RaceNetworkRequest.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+  EXPECT_EQ("race-network-request-with-large-data",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        NetworkRequest_Wins_FetchHandler_Fallback) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6210,9 +6502,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             GetInnerText());
   EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
                        FetchHandler_Wins_Fallback) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
@@ -6228,6 +6523,299 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Slow response from the network",
             GetInnerText());
   EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ(2, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerAutoPreloadBrowserTest,
+    Subresource_NetworkRequestRepliedFirstButFetchHandlerResultIsUsed) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  // Fetch something from the service worker.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+
+  // ServiceWorker will respond after the delay, so we expect the network
+  // request initiated by the RaceNetworkRequest is requested to the server
+  // although it's not actually used.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
+                       Subresource_PassThrough) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_pass_through";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+
+  // Request count should be 1. RaceNetworkRequest + pass through request from
+  // fetch handler but the fetch handler request will reuse the response from
+  // RaceNetworkRequest.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
+                       Subresource_PassThrough_LargeData) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_pass_through&server_large_data";
+  EXPECT_EQ(200, EvalJs(GetPrimaryMainFrame(),
+                        "fetch('" + relative_url +
+                            "').then(response => response.status)"));
+
+  // Request count should be 1. RaceNetworkRequest + pass through request from
+  // fetch handler but the fetch handler request will reuse the response from
+  // RaceNetworkRequest.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
+                       Subresource_NetworkRequest_Wins_FetchHandler_Fallback) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_fallback";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
+                       Subresource_FetchHandler_Wins_Fallback) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url =
+      "/service_worker/mock_response?server_slow&sw_fallback";
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Slow response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+class ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
+ public:
+  ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kServiceWorkerAutoPreload,
+             {{"blocked_hosts", blocked_host()},
+              {"use_two_phase_write", GetParam() ? "true" : "false"}}},
+        },
+        {});
+  }
+
+  void RegisterServiceWorkerWithBlockedHost() {
+    const GURL create_service_worker_url(embedded_test_server()->GetURL(
+        blocked_host(), "/service_worker/create_service_worker.html"));
+    WorkerRunningStatusObserver observer1(public_context());
+    EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+    EXPECT_EQ("DONE",
+              EvalJs(GetPrimaryMainFrame(),
+                     "register('/service_worker/race_network_request.js')"));
+    observer1.WaitUntilRunning();
+  }
+
+  std::string blocked_host() { return "localhost"; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ALL,
+                         ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
+                       BlockedHosts) {
+  // Register the ServiceWorker and navigate to the in scope URL.
+  SetupAndRegisterServiceWorker();
+  RegisterServiceWorkerWithBlockedHost();
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url =
+      embedded_test_server()->GetURL(blocked_host(), relative_url);
+
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+
+  // Request count should be 0. AutoPreload is not triggered when the navigation
+  // request is for the host in the blocked host params.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+class ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
+ public:
+  ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kServiceWorkerAutoPreload,
+          {{"enable_subresource_preload", "false"},
+           {"use_two_phase_write", GetParam() ? "true" : "false"}}}},
+        {});
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ALL,
+    ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest,
+    Disabled) {
+  SetupAndRegisterServiceWorker();
+  // Check the main resource request, ensuring the preload request is
+  // dispatched.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+  NavigationHandleObserver observer(web_contents(), test_url);
+  WorkerRunningStatusObserver service_worker_running_status_observer(
+      public_context());
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  service_worker_running_status_observer.WaitUntilRunning();
+
+  // ServiceWorker will respond after the delay, so we expect the network
+  // request initiated by the RaceNetworkRequest is requested to the server
+  // although it's not actually used.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+  EXPECT_EQ("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
+
+  // Check the subresource request, ensuring the preload request is not
+  // dispatched. The request recorded count is not changed, because the
+  // subresource preload request is not dispatched.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+class ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
+ public:
+  ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kServiceWorkerAutoPreload,
+          {{"enable_only_when_service_worker_not_running", "true"},
+           {"use_two_phase_write", GetParam() ? "true" : "false"}}}},
+        {});
+    RaceNetworkRequestWriteBufferManager::SetDataPipeCapacityBytesForTesting(
+        1024);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ALL,
+    ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
+    NotRunning) {
+  // Ensure the ServiceWorker is stopped.
+  scoped_refptr<ServiceWorkerVersion> version = SetupAndRegisterServiceWorker();
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+
+  // Check the main resource request, ensuring the preload request is
+  // dispatched.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  // ServiceWorker will respond after the delay, so we expect the network
+  // request initiated by the RaceNetworkRequest is requested to the server
+  // although it's not actually used.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+  EXPECT_EQ("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
+    Running) {
+  // Ensure the ServiceWorker is running.
+  scoped_refptr<ServiceWorkerVersion> version = SetupAndRegisterServiceWorker();
+  EXPECT_EQ(StartServiceWorker(version.get()),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+
+  // Check the main resource request, ensuring the preload request is not
+  // dispatched.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+  EXPECT_EQ("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
 class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest
@@ -6306,7 +6894,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest,
 
         URLLoaderInterceptor::WriteResponse(
             "content/test/data/service_worker" + params->url_request.url.path(),
-            params->client.get(), &headers, absl::optional<net::SSLInfo>(),
+            params->client.get(), &headers, std::optional<net::SSLInfo>(),
             params->url_request.url);
 
         if (--it->second == 0) {
@@ -6326,16 +6914,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest,
   observer.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate to the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), main_page_url_with_params));
@@ -6412,6 +7000,103 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOptOutBrowserTest,
   EXPECT_EQ(0, GetRequestCount(relative_url));
 }
 
+class CacheStorageDataChecker
+    : public base::RefCounted<CacheStorageDataChecker> {
+ public:
+  enum class Status {
+    kUnknown,
+    kExist,
+    kNotExist,
+  };
+  static Status Exist(
+      storage::mojom::CacheStorageControl* cache_storage_control,
+      const GURL& origin,
+      const std::string& cache_name,
+      const GURL& url) {
+    mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage_remote;
+    network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+    cache_storage_control->AddReceiver(
+        cross_origin_embedder_policy, mojo::NullRemote(),
+        storage::BucketLocator::ForDefaultBucket(
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(origin))),
+        storage::mojom::CacheStorageOwner::kCacheAPI,
+        cache_storage_remote.InitWithNewPipeAndPassReceiver());
+
+    auto checker = base::MakeRefCounted<CacheStorageDataChecker>(
+        std::move(cache_storage_remote), cache_name, url);
+    return checker->ExistImpl();
+  }
+
+  CacheStorageDataChecker(
+      mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage,
+      const std::string& cache_name,
+      const GURL& url)
+      : cache_storage_(std::move(cache_storage)),
+        cache_name_(cache_name),
+        url_(url) {}
+
+  CacheStorageDataChecker(const CacheStorageDataChecker&) = delete;
+  CacheStorageDataChecker& operator=(const CacheStorageDataChecker&) = delete;
+
+ private:
+  friend class base::RefCounted<CacheStorageDataChecker>;
+
+  virtual ~CacheStorageDataChecker() = default;
+
+  Status ExistImpl() {
+    Status result = Status::kUnknown;
+    base::RunLoop loop;
+    cache_storage_->Open(
+        base::UTF8ToUTF16(cache_name_), /*trace_id=*/0,
+        base::BindOnce(&CacheStorageDataChecker::OnCacheStorageOpenCallback,
+                       this, &result, loop.QuitClosure()));
+    loop.Run();
+    return result;
+  }
+
+  void OnCacheStorageOpenCallback(Status* result,
+                                  base::OnceClosure continuation,
+                                  blink::mojom::OpenResultPtr open_result) {
+    ASSERT_TRUE(open_result->is_cache());
+
+    auto scoped_request = blink::mojom::FetchAPIRequest::New();
+    scoped_request->url = url_;
+
+    // Preserve lifetime of this remote across the Match call.
+    cache_storage_cache_.emplace(std::move(open_result->get_cache()));
+
+    (*cache_storage_cache_)
+        ->Match(std::move(scoped_request),
+                blink::mojom::CacheQueryOptions::New(),
+                /*in_related_fetch_event=*/false,
+                /*in_range_fetch_event=*/false, /*trace_id=*/0,
+                base::BindOnce(
+                    &CacheStorageDataChecker::OnCacheStorageCacheMatchCallback,
+                    this, result, std::move(continuation)));
+  }
+
+  void OnCacheStorageCacheMatchCallback(
+      Status* result,
+      base::OnceClosure continuation,
+      blink::mojom::MatchResultPtr match_result) {
+    if (match_result->is_status()) {
+      ASSERT_EQ(match_result->get_status(), CacheStorageError::kErrorNotFound);
+      *result = Status::kNotExist;
+      std::move(continuation).Run();
+      return;
+    }
+    ASSERT_TRUE(match_result->is_response());
+    *result = Status::kExist;
+    std::move(continuation).Run();
+  }
+
+  mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
+  std::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
+      cache_storage_cache_;
+  const std::string cache_name_;
+  const GURL url_;
+};
+
 // Test class for static routing API (crbug.com/1420517) browsertest.
 class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
  public:
@@ -6452,11 +7137,13 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
     }
     observer1.WaitUntilRunning();
     active_version_ = wrapper()->GetLiveVersion(observer1.version_id());
-    ASSERT_EQ(EmbeddedWorkerStatus::RUNNING, active_version_->running_status());
+    ASSERT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+              active_version_->running_status());
 
     // Stop the current running service worker.
     StopServiceWorker(active_version_.get());
-    ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, active_version_->running_status());
+    ASSERT_EQ(blink::EmbeddedWorkerStatus::kStopped,
+              active_version_->running_status());
   }
 
   int GetRequestCount(const std::string& relative_url) const {
@@ -6475,6 +7162,41 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  void WaitUntilRelativeUrlStoredInCache(const std::string& relative_url) {
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    int retries = 10;
+    while (retries-- > 0) {
+      if (CacheStorageDataChecker::Exist(
+              partition->GetCacheStorageControl(),
+              embedded_test_server()->base_url(), std::string("test"),
+              embedded_test_server()->GetURL(relative_url)) ==
+          CacheStorageDataChecker::Status::kExist) {
+        return;
+      }
+      EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(),
+                         R"(
+          caches.open("test").then((c) => {
+              const headers = new Headers();
+              headers.append('Content-Type', 'text/html');
+              headers.append('X-Response-From', 'cache');
+              const options = {
+                  status: 200,
+                  statusText: 'Custom response from cache',
+                  headers
+              };
+              const response = new Response(
+                  '[ServiceWorkerStaticRouter] Response from the cache',
+                  options);
+              c.put("/service_worker/cache_hit", response.clone());
+              c.put("/service_worker/cache_with_name", response.clone());
+              c.put("/service_worker/cache_with_wrong_name", response.clone());
+          });)"));
+    }
+  }
+
  private:
   void RegisterRequestHandlerForTest() {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
@@ -6483,7 +7205,11 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
           if (base::Contains(request.GetURL().path(),
                              "/service_worker/direct") ||
               base::Contains(request.GetURL().path(),
-                             "/service_worker/direct_if_not_running")) {
+                             "/service_worker/direct_if_not_running") ||
+              base::Contains(request.GetURL().path(),
+                             "/service_worker/cache_with_wrong_name") ||
+              base::Contains(request.GetURL().path(),
+                             "/service_worker/cache_miss")) {
             auto http_response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
             http_response->set_code(net::HTTP_OK);
@@ -6516,6 +7242,7 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
   void MonitorRequestHandler(const net::test_server::HttpRequest& request) {
     request_log_[request.relative_url].push_back(request);
   }
+
   std::map<std::string, std::vector<net::test_server::HttpRequest>>
       request_log_;
   base::test::ScopedFeatureList feature_list_;
@@ -6553,7 +7280,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // Ensure the ServiceWorker will start even if the navigation results in the
   // fallback via Static Routing.
   observer.WaitUntilRunning();
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version()->running_status());
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
       static_cast<int>(ServiceWorkerMetrics::EventType::STATIC_ROUTER), 1);
@@ -6572,7 +7299,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // expected.
   EXPECT_EQ(0, GetRequestCount("/service_worker/fetch_handler"));
   // Fetch handler source starts the ServiceWorker.
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version()->running_status());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -6587,7 +7314,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // The result should be got from the network.
   EXPECT_EQ(1, GetRequestCount("/service_worker/direct"));
   // Network fallback doesn't start the ServiceWorker.
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -6642,7 +7369,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   const std::string relative_url = "/service_worker/direct_if_not_running";
 
   // Initial state is stopped, and should go to network.
-  ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
   EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
@@ -6653,7 +7380,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // Since the ServiceWorker will start after using static routing,
   // wait for that.
   observer.WaitUntilRunning();
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version()->running_status());
 
   // Ensure that the fetch handler is used this time.
   ASSERT_TRUE(
@@ -6669,9 +7396,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        SubresourceRunningStatus) {
   const std::string relative_url = "/service_worker/direct_if_not_running";
   SetupAndRegisterServiceWorker(TestType::kNetwork);
-  // Initial state is stopped, and should go to network.
-  ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
   EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
             EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
                                               "').then(response => "
@@ -6683,7 +7410,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // the fetch handler.
   EXPECT_EQ(StartServiceWorker(version().get()),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version()->running_status());
   // We know there is a delay to make the renderer know the running
   // status. Or, test will timeout.
   for (;;) {
@@ -6697,6 +7424,148 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
     }
   }
 }
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageHit) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/cache_hit";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the cache",
+            GetInnerText());
+  // The result should be got from the cache.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageMissThenNetworkFallback) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/cache_miss";
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            GetInnerText());
+  // The result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageHitWithName) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/cache_with_name";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the cache",
+            GetInnerText());
+  // The result should be got from the cache.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageMissDueToNameMismatch) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url = "/service_worker/cache_with_wrong_name";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            GetInnerText());
+  // Due to the cache miss, the result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageHit) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_hit";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the cache",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
+  // The result should be got from the cache, and no network access is
+  // expected.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageMiss) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_miss";
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
+  // Due to the cache miss, the result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageHitWithName) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_with_name";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the cache",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
+  // The result should be got from the cache, and no network access is
+  // expected.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageMissDueToNameMissmatch) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_with_wrong_name";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
+  // Due to the cache miss, the result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       FetchEventShouldBeUsedWithFetchHandler) {
+  StartServerAndNavigateToSetup();
+
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+
+  WorkerRunningStatusObserver observer1(public_context());
+  ASSERT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  ASSERT_EQ("DONE",
+            EvalJs(GetPrimaryMainFrame(),
+                   "register('/service_worker/static_router_no_handler.js')"));
+  observer1.WaitUntilRunning();
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  // Expected to raise during addRoutes.
+  // No route should be added.
+  EXPECT_FALSE(version->router_evaluator());
+}
+
 // Test class for static routing API, if disables starting the ServiceWorker
 // automatically when the request matches the registered route.
 class ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest
@@ -6705,7 +7574,7 @@ class ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest
   ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kServiceWorkerStaticRouter},
-        {kServiceWorkerStaticRouterStartServiceWorker});
+        {features::kServiceWorkerStaticRouterStartServiceWorker});
   }
   ~ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest() override =
       default;
@@ -6731,7 +7600,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Ensure the ServiceWorker won't start if the navigation results in the
   // fallback via Static Routing.
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
       static_cast<int>(ServiceWorkerMetrics::EventType::STATIC_ROUTER), 0);
@@ -6822,12 +7691,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterOriginTrialBrowserTest,
               "[ServiceWorkerStaticRouter] Response from the network";
           URLLoaderInterceptor::WriteResponse(
               headers, body, params->client.get(),
-              absl::optional<net::SSLInfo>(), params->url_request.url);
+              std::optional<net::SSLInfo>(), params->url_request.url);
         } else {
           URLLoaderInterceptor::WriteResponse(
               "content/test/data/service_worker" +
                   params->url_request.url.path(),
-              params->client.get(), &headers, absl::optional<net::SSLInfo>(),
+              params->client.get(), &headers, std::optional<net::SSLInfo>(),
               params->url_request.url);
         }
 
@@ -6848,7 +7717,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterOriginTrialBrowserTest,
   observer.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // The result should be got from the network, both for main resource and
   // subresource.

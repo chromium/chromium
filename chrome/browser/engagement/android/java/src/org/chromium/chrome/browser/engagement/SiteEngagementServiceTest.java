@@ -17,72 +17,79 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Test for the Site Engagement Service Java binding.
- */
+/** Test for the Site Engagement Service Java binding. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SiteEngagementServiceTest {
     private static final String URL = "https://www.example.com";
 
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
-    /**
-     * Verify that setting the engagement score for a URL and reading it back it works.
-     */
+    /** Verify that setting the engagement score for a URL and reading it back it works. */
     @Test
     @SmallTest
     @Feature({"Engagement"})
     public void testSettingAndRetrievingScore() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowserContextHandle handle = Profile.getLastUsedRegularProfile();
-            SiteEngagementService service = SiteEngagementService.getForBrowserContext(handle);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowserContextHandle handle = ProfileManager.getLastUsedRegularProfile();
+                    SiteEngagementService service =
+                            SiteEngagementService.getForBrowserContext(handle);
 
-            Assert.assertEquals(0.0, service.getScore(URL), 0);
-            service.resetBaseScoreForUrl(URL, 5.0);
-            Assert.assertEquals(5.0, service.getScore(URL), 0);
+                    Assert.assertEquals(0.0, service.getScore(URL), 0);
+                    service.resetBaseScoreForUrl(URL, 5.0);
+                    Assert.assertEquals(5.0, service.getScore(URL), 0);
 
-            service.resetBaseScoreForUrl(URL, 2.0);
-            Assert.assertEquals(2.0, service.getScore(URL), 0);
-        });
+                    service.resetBaseScoreForUrl(URL, 2.0);
+                    Assert.assertEquals(2.0, service.getScore(URL), 0);
+                });
     }
 
-    /**
-     * Verify that repeatedly fetching and throwing away the SiteEngagementService works.
-     */
+    /** Verify that repeatedly fetching and throwing away the SiteEngagementService works. */
     @Test
     @SmallTest
     @Feature({"Engagement"})
     public void testRepeatedlyGettingService() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
 
-            Assert.assertEquals(
-                    0.0, SiteEngagementService.getForBrowserContext(profile).getScore(URL), 0);
-            SiteEngagementService.getForBrowserContext(profile).resetBaseScoreForUrl(URL, 5.0);
-            Assert.assertEquals(
-                    5.0, SiteEngagementService.getForBrowserContext(profile).getScore(URL), 0);
+                    Assert.assertEquals(
+                            0.0,
+                            SiteEngagementService.getForBrowserContext(profile).getScore(URL),
+                            0);
+                    SiteEngagementService.getForBrowserContext(profile)
+                            .resetBaseScoreForUrl(URL, 5.0);
+                    Assert.assertEquals(
+                            5.0,
+                            SiteEngagementService.getForBrowserContext(profile).getScore(URL),
+                            0);
 
-            SiteEngagementService.getForBrowserContext(profile).resetBaseScoreForUrl(URL, 2.0);
-            Assert.assertEquals(
-                    2.0, SiteEngagementService.getForBrowserContext(profile).getScore(URL), 0);
-        });
+                    SiteEngagementService.getForBrowserContext(profile)
+                            .resetBaseScoreForUrl(URL, 2.0);
+                    Assert.assertEquals(
+                            2.0,
+                            SiteEngagementService.getForBrowserContext(profile).getScore(URL),
+                            0);
+                });
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowserContextHandle handle = Profile.getLastUsedRegularProfile();
-            SiteEngagementService service = SiteEngagementService.getForBrowserContext(handle);
-            service.resetBaseScoreForUrl(URL, 0.0);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowserContextHandle handle = ProfileManager.getLastUsedRegularProfile();
+                    SiteEngagementService service =
+                            SiteEngagementService.getForBrowserContext(handle);
+                    service.resetBaseScoreForUrl(URL, 0.0);
+                });
     }
 }

@@ -4,25 +4,25 @@
 
 #include "chrome/browser/ash/printing/oauth2/log_entry.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/uri.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::printing::oauth2 {
 
 // Builds a single log entry for device-log.
-std::string LogEntry(base::StringPiece message,
-                     base::StringPiece method,
+std::string LogEntry(std::string_view message,
+                     std::string_view method,
                      const GURL& auth_server,
-                     absl::optional<StatusCode> status,
+                     std::optional<StatusCode> status,
                      const chromeos::Uri& ipp_endpoint) {
-  std::vector<base::StringPiece> strv;
+  std::vector<std::string_view> strv;
   strv.reserve(10);
   strv.emplace_back("oauth ");
   strv.emplace_back(method);

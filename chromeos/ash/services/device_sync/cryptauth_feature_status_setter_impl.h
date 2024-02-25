@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_FEATURE_STATUS_SETTER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 
@@ -19,7 +20,6 @@
 #include "chromeos/ash/services/device_sync/feature_status_change.h"
 #include "chromeos/ash/services/device_sync/network_request_error.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -70,7 +70,7 @@ class CryptAuthFeatureStatusSetterImpl : public CryptAuthFeatureStatusSetter {
 
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
-  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
+  static std::optional<base::TimeDelta> GetTimeoutForState(State state);
 
   struct Request {
     Request(const std::string& device_id,
@@ -110,7 +110,7 @@ class CryptAuthFeatureStatusSetterImpl : public CryptAuthFeatureStatusSetter {
   void OnBatchSetFeatureStatusesSuccess(
       const cryptauthv2::BatchSetFeatureStatusesResponse& response);
   void OnBatchSetFeatureStatusesFailure(NetworkRequestError error);
-  void FinishAttempt(absl::optional<NetworkRequestError> error);
+  void FinishAttempt(std::optional<NetworkRequestError> error);
 
   State state_ = State::kIdle;
   base::TimeTicks last_state_change_timestamp_;
@@ -118,7 +118,7 @@ class CryptAuthFeatureStatusSetterImpl : public CryptAuthFeatureStatusSetter {
 
   std::string instance_id_;
   std::string instance_id_token_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory> client_factory_ = nullptr;
   std::unique_ptr<CryptAuthClient> cryptauth_client_;
   std::unique_ptr<base::OneShotTimer> timer_;
   base::WeakPtrFactory<CryptAuthFeatureStatusSetterImpl> weak_ptr_factory_{

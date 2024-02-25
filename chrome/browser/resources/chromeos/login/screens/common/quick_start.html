@@ -1,0 +1,312 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles">
+  svg {
+    margin: 28px 14px;
+  }
+
+  #figures {
+    margin: auto;
+  }
+
+  div[clr=blue] {
+    color: var(--google-blue-500);
+  }
+
+  div[clr=red] {
+    color: var(--google-red-500);
+  }
+
+  div[clr=green] {
+    color: var(--google-green-500);
+  }
+
+  div[clr=yellow] {
+    color: var(--google-yellow-500);
+  }
+
+  span {
+    font-size: 22px;
+  }
+
+  #spinnerWifi,
+  #spinnerGaia {
+    max-height: 286px;
+    max-width: 286px;
+  }
+
+  .footer-content-text {
+    padding-inline-start: 16px;
+  }
+
+  .footer-content {
+    padding: 16px;
+  }
+
+  .content-icon {
+    --iron-icon-fill-color: var(--oobe-adaptive-dialog-icon-fill-color);
+    width: 20px;
+    height: auto;
+  }
+
+  quick-start-pin {
+    padding-top: 15%;
+    padding-bottom: 24px;
+  }
+
+  #userInfo {
+    border: solid 1px var(--cros-sys-separator);
+    border-radius: 12px;
+    height: 32px;
+    margin-top: 16px;
+    padding: 16px 20px;
+  }
+
+  #avatarWebview {
+    user-select: none;
+  }
+
+  #accountIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  #userPictureHolder {
+    height: 32px;
+    width: 32px;
+    margin: auto;
+    user-select: none;
+  }
+
+  #userNameHolder {
+    padding-inline-start: 16px;
+  }
+
+  #userFullName {
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  #userEmail {
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #userEmailOnlyDiv {
+    line-height: 18px;
+    font-weight: 400;
+  }
+
+  #spinner {
+    height: 95%;
+  }
+
+  #qrCodeWrapper {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  #qrDeco {
+    width: 100%;
+    height: auto;
+  }
+
+  #qrHolder {
+    position: absolute;
+    top: 29.5%;
+    left: 45%;
+    width: 33%;
+    height: auto;
+    /* border: dashed; */
+  }
+
+  #qrCodeCanvas {
+    position: absolute;
+    width: 100%;
+    height: auto;
+  }
+</style>
+<!-- INITIAL UI STEP - EMPTY -->
+<oobe-adaptive-dialog for-step="default">
+</oobe-adaptive-dialog>
+<!-- WAITING FOR INITIAL CONNECTION | ADVERTISING -->
+<oobe-loading-dialog id="loadingDialog" for-step="connecting_to_phone"
+    title-key="quickStartStartAfterResumeTitle"
+    subtitle-key="quickStartStartAfterResumeSubtitle"
+    on-cancel-loading="onCancelClicked" can-cancel>
+  <iron-icon slot="icon" icon="oobe-20:quick-start-android-device"></iron-icon>
+</oobe-loading-dialog>
+<!-- QR & PIN VERIFICATION | UNAUTHENTICATED CONNECTION -->
+<oobe-adaptive-dialog for-step="verification" id="verificationDialog">
+  <iron-icon slot="icon" icon="oobe-20:quick-start-android-device">
+  </iron-icon>
+  <h1 slot="title">
+    <div hidden="[[usePinInsteadOfQrForVerification]]">
+      [[i18nDynamic(locale, 'quickStartSetupQrTitle')]]
+    </div>
+    <div hidden="[[!usePinInsteadOfQrForVerification]]">
+      [[i18nDynamic(locale, 'quickStartSetupPinTitle')]]
+    </div>
+  </h1>
+  <div slot="subtitle">
+    <div inner-h-t-m-l="[[getVerificationSubtitle(locale, discoverableName, usePinInsteadOfQrForVerification)]]">
+    </div>
+  </div>
+  <div id="code" class="flex layout vertical start-justified center"
+      slot="content">
+    <div id="qrCodeWrapper" hidden="[[usePinInsteadOfQrForVerification]]">
+      <iron-icon id="qrDeco" icon="oobe-illos:quickstart-qr">
+      </iron-icon>
+      <div id="qrHolder">
+        <canvas id="qrCodeCanvas">
+        </canvas>
+      </div>
+      </div>
+      <quick-start-pin id="pinWrapper" pin="[[pin]]"
+          hidden="[[!usePinInsteadOfQrForVerification]]">
+      </quick-start-pin>
+      <!-- Content footer for both QR and PIN verification methods. -->
+      <div class="self-start" style="padding-inline-start: 5%;">
+        <div class="flex layout horizontal center self-stretch footer-content">
+          <iron-icon icon="oobe-20:quick-start-bluetooth-icon"
+              class="content-icon">
+          </iron-icon>
+          <div class="footer-content-text">
+            [[i18nDynamic(locale, 'quickStartSetupContentFooterTurnOnWifi')]]
+          </div>
+        </div>
+        <div class="flex layout horizontal center self-stretch footer-content">
+          <iron-icon icon="oobe-20:quick-start-camera-icon"
+              class="content-icon">
+          </iron-icon>
+          <div class="footer-content-text">
+            [[i18nDynamic(locale, 'quickStartSetupContentFooterFollowInstructions')]]
+          </div>
+        </div>
+      </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelClicked"
+        text-key="cancelButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+<!-- CONNECTING TO WIFI -->
+<oobe-loading-dialog for-step="connecting_to_wifi"
+    title-key="quickStartWifiTransferTitle"
+    subtitle-key="quickStartWifiTransferSubtitle"
+    on-cancel-loading="onCancelClicked" can-cancel>
+  <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
+  </iron-icon>
+</oobe-loading-dialog>
+<!-- CONFIRM GOOGLE ACCOUNT -->
+<oobe-adaptive-dialog id="confirmAccountDialog"
+    for-step="confirm_google_account">
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'quickStartConfirmAccountTitle')]]
+  </h1>
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'quickStartConfirmAccountSubtitle')]]
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon class="illustration-jelly"
+        icon="oobe-illos:quick-start-confirm-account">
+    </iron-icon>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelClicked"
+        text-key="cancelButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+<!-- SIGNING IN STEP -->
+<oobe-adaptive-dialog for-step="signing_in" id="gaiaTransferDialog">
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'quickStartAccountTransferTitle')]]
+  </h1>
+  <div slot="subtitle">
+    <!-- Email only -->
+    <div id="userEmailOnlyDiv" hidden="[[userAvatarUrl]]">[[userEmail]]</div>
+    <!-- Full Avatar -->
+    <div id="userInfo" class="flex layout horizontal"
+        hidden="[[!userAvatarUrl]]">
+      <div id="userPictureHolder">
+        <webview role="img" class="avatar-icon" allowtransparency
+          id="avatarWebview"
+          src="[[getWrappedAvatar(userAvatarUrl)]]"
+          aria-hidden="true" tabindex="-1">
+        </webview>
+      </div>
+      <div class="flex layout vertical center-justified" id="userNameHolder">
+        <div id="userFullName">[[userFullName]]</div>
+        <div id="userEmail">[[userEmail]]</div>
+      </div>
+    </div>
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <oobe-cr-lottie id="spinner" hide-play-pause-icon
+        animation-url="../../animations/spinner.json">
+    </oobe-cr-lottie>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelClicked"
+        text-key="cancelButton" hidden="[[!canCancelSignin]]">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+<!-- SETUP COMPLETE STEP -->
+<oobe-adaptive-dialog for-step="setup_complete">
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+  <h1 slot="title">
+    <div inner-h-t-m-l="[[getSetupCompleteTitle(locale)]]">
+    </div>
+  </h1>
+  <div slot="subtitle">
+    <div inner-h-t-m-l="[[getSetupCompleteSubtitle(locale, userEmail)]]">
+    </div>
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon icon="oobe-illos:quickstart-complete" class="illustration-jelly">
+    </iron-icon>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton" on-click="onNextClicked">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<!-- Enable Bluetooth Modal Dialog -->
+<oobe-modal-dialog id="quickStartBluetoothDialog">
+  <div id="quickStartBluetoothTitle"
+    slot="title">
+    <p>[[i18nDynamic(locale, 'quickStartBluetoothTitle')]]</p>
+  </div>
+  <div id="quickStartBluetoothContent"
+    slot="content">[[i18nDynamic(locale, 'quickStartBluetoothContent')]]
+  </div>
+  <div slot="buttons">
+    <oobe-text-button
+      id="quickStartBluetoothCancelButton"
+      class="focus-on-show"
+      on-click="cancelBluetoothDialog"
+      text-key="quickStartBluetoothCancelButton"
+    >
+    </oobe-text-button>
+    <oobe-text-button
+      id="quickStartBluetoothEnableButton"
+      on-click="turnOnBluetooth"
+      text-key="quickStartBluetoothEnableButton"
+    >
+    </oobe-text-button>
+  </div>
+</oobe-modal-dialog>

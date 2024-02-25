@@ -1,8 +1,10 @@
-monorail {
-  component: "Blink>Transforms"
+monorail: {
+  component: "Blink>Compositing>Transform3D"
 }
 team_email: "paint-dev@chromium.org"
-wpt {
+wpt: {
   notify: YES
 }
-
+buganizer_public: {
+  component_id: 1456666
+}

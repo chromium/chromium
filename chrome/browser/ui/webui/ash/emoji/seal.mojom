@@ -1,0 +1,33 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module seal.mojom;
+
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+enum Status {
+  kOk,              // OK.
+  kNetError,        // Network error (such as no internet connection).
+  kNotEnabledError, // Not enabled error (such as guest session).
+  kUnknownError,    // Unknown error (such as server side error).
+};
+
+// Used for passing image info from seal service.
+struct Image {
+  url.mojom.Url url;
+
+  // Width and height of image.
+  gfx.mojom.Size dimensions;
+};
+
+// Interface for accessing data (images only for now) from seal service. It's
+// currently used by the WebUI page (chrome://emoji-picker) to query relevant
+// images for a given query string.
+interface SealService {
+  // Returns a list of most relevant images for a given query string from seal
+  // service.
+  GetImages(string query) => (Status status,
+                              array<Image> images);
+};

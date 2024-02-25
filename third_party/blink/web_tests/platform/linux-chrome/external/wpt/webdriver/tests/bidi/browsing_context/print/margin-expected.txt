@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_margin_default[top]
+  assert False == True
+[FAIL] test_margin_default[left]
+  assert False == True
+[FAIL] test_margin_default[right]
+  assert False == True
+[FAIL] test_margin_default[bottom]
+  assert False == True
+Harness: the test ran to completion.

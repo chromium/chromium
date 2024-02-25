@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/url_identity.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -36,19 +38,19 @@ constexpr int DISTANCE_BUTTON_VERTICAL = 8;
 // | ------------------------------------------ |
 // |                        [ Block ] [ Allow ] |
 // ----------------------------------------------
-class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
+class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
+  METADATA_HEADER(PermissionPromptBubbleBaseView, PermissionPromptBaseView)
+
  public:
-  METADATA_HEADER(PermissionPromptBubbleBaseView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowOnceButtonElementId);
   PermissionPromptBubbleBaseView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
       base::TimeTicks permission_requested_time,
-      PermissionPromptStyle prompt_style,
-      std::u16string window_title,
-      std::u16string accessible_window_title_,
-      absl::optional<std::u16string> extra_text);
+      PermissionPromptStyle prompt_style);
   PermissionPromptBubbleBaseView(const PermissionPromptBubbleBaseView&) =
       delete;
   PermissionPromptBubbleBaseView& operator=(
@@ -71,32 +73,23 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
 
   void ShowWidget();
 
-  void SetPromptStyle(PermissionPromptStyle prompt_style);
-
-  // views::BubbleDialogDelegateView:
-  void AddedToWidget() override;
-  bool ShouldShowCloseButton() const override;
-  std::u16string GetAccessibleWindowTitle() const override;
-  std::u16string GetWindowTitle() const override;
-
-  // views::DialogDelegate:
-  bool ShouldIgnoreButtonPressedEventHandling(
-      View* button,
-      const ui::Event& event) const override;
-
   void ClosingPermission();
 
-  // Performs clickjacking checks and executes the button callback if the click
-  // is valid.
-  void FilterUnintenedEventsAndRunCallbacks(PermissionDialogButton type,
-                                            const ui::Event& event);
-  void RunButtonCallbacks(PermissionDialogButton type);
+  // views::BubbleDialogDelegateView:
+  bool ShouldShowCloseButton() const override;
+
+  // PermissionPromptBaseView:
+  void RunButtonCallback(int button_id) override;
+
+  std::u16string GetPermissionFragmentForTesting() const;
 
  protected:
+  void CreatePermissionButtons(const std::u16string& allow_always_text);
+  void CreateExtraTextLabel(const std::u16string& extra_text);
+
   void CreateWidget();
 
-  UrlIdentity GetUrlIdentityObject() { return url_identity_; }
-  base::WeakPtr<permissions::PermissionPrompt::Delegate> GetDelegate() {
+  base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate() const {
     return delegate_;
   }
 
@@ -106,22 +99,25 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
   static bool IsOneTimePermission(
       permissions::PermissionPrompt::Delegate& delegate);
 
-  static UrlIdentity GetUrlIdentity(
-      Browser* browser,
-      permissions::PermissionPrompt::Delegate& delegate);
+  static std::u16string GetAllowAlwaysText(
+      const std::vector<raw_ptr<permissions::PermissionRequest,
+                                VectorExperimental>>& visible_requests);
 
- private:
-  // Record UMA Permissions.*.TimeToDecision.|action| metric. Can be
-  // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,
-  // depending on which UI is used.
-  void RecordDecision(permissions::PermissionAction action);
-
-  // Convenience method to convert enum class values to an int used as ViewId
-  int GetViewId(PermissionDialogButton button) const {
-    return static_cast<int>(button);
+  PermissionDialogButton GetPermissionDialogButton(int button_id) {
+    return static_cast<PermissionDialogButton>(button_id);
   }
 
   const raw_ptr<Browser> browser_;
+
+ private:
+  void SetPromptStyle(PermissionPromptStyle prompt_style);
+
+  // Convenience methods to convert enum class values to an int used as ViewId
+  // and vice-versa.
+  static int GetViewId(PermissionDialogButton button) {
+    return static_cast<int>(button);
+  }
+
   base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate_;
 
   base::TimeTicks permission_requested_time_;
@@ -129,9 +125,6 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
   PermissionPromptStyle prompt_style_;
 
   const bool is_one_time_permission_;
-  const UrlIdentity url_identity_;
-  const std::u16string accessible_window_title_;
-  const std::u16string window_title_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_BASE_VIEW_H_

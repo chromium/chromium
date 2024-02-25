@@ -7,14 +7,10 @@ package org.chromium.base;
 import android.text.TextUtils;
 import android.util.Patterns;
 
-import org.chromium.base.annotations.CalledByNative;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Provides public methods for detecting and eliding sensitive PII.
- */
+/** Provides public methods for detecting and eliding sensitive PII. */
 public class PiiElider {
     private static final String EMAIL_ELISION = "XXX@EMAIL.ELIDED";
 
@@ -24,9 +20,9 @@ public class PiiElider {
 
     private static final String IP_ADDRESS =
             "((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
-            + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
-            + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
-            + "|[1-9][0-9]|[0-9]))";
+                    + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
+                    + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
+                    + "|[1-9][0-9]|[0-9]))";
 
     private static final String IRI =
             "[" + GOOD_IRI_CHAR + "]([" + GOOD_IRI_CHAR + "-]{0,61}[" + GOOD_IRI_CHAR + "]){0,1}";
@@ -43,8 +39,13 @@ public class PiiElider {
             // Either a single valid path component character or a URI-encoded character.
             "(([" + GOOD_IRI_CHAR + ";/?:@&=#~.+!*'(),_-])|" + URI_ENCODED_CHAR + ")";
 
-    private static final String URI_SCHEME = "((http|https|Http|Https|rtsp|Rtsp)://"
-            + "(" + URI_CHAR + "{1,64}(:" + URI_CHAR + "{1,25})?@)?)";
+    private static final String URI_SCHEME =
+            "((http|https|Http|Https|rtsp|Rtsp)://"
+                    + "("
+                    + URI_CHAR
+                    + "{1,64}(:"
+                    + URI_CHAR
+                    + "{1,25})?@)?)";
 
     private static final String DOMAIN_NAME = "(" + HOST_NAME + "|" + IP_ADDRESS + ")";
 
@@ -64,25 +65,25 @@ public class PiiElider {
             "(" + URL_WITH_OPTIONAL_SCHEME_AND_PORT + "|" + INTENT + ")";
 
     private static final Pattern WEB_URL =
-            Pattern.compile("(\\b|^)" // Always start on a word boundary or start of string.
-                    + "(" + URL_OR_INTENT + ")" // Main URL or Intent scheme/domain/root path.
-                    + "(/" + PATH_CHAR + "*)?" // Rest of the URI path.
-                    + "(\\b|$)"); // Always end on a word boundary or end of string.
+            Pattern.compile(
+                    "(\\b|^)" // Always start on a word boundary or start of string.
+                            + "("
+                            + URL_OR_INTENT
+                            + ")" // Main URL or Intent scheme/domain/root path.
+                            + "(/"
+                            + PATH_CHAR
+                            + "*)?" // Rest of the URI path.
+                            + "(\\b|$)"); // Always end on a word boundary or end of string.
 
-    // Example variant info chromium-TrichromeChromeGoogle6432.aab
-    private static final String CHROME_VARIANT_INFO = "chromium-[^\\.]+\\.aab";
-    private static final Pattern LIKELY_EXCEPTION_LOG = Pattern.compile("\\sat\\s"
-            // These are all package prefixes of classes that are likely to
-            // exist on a stacktrace and are very unlikely to be a PII url.
-            + "(org\\.chromium|com\\.google|java|android|com\\.android)\\.[^ ]+.|"
-            // if a line has what looks like line number info, it's probably an
-            // exception log.
-            + "\\(" + CHROME_VARIANT_INFO
-            + "[^:]+:\\d+\\)|"
-            // When a class is not found it can fail to satisfy our isClass
-            // check but is still worth noting what it was.
-            + "Caused by: java\\.lang\\."
-            + "(ClassNotFoundException|NoClassDefFoundError):");
+    private static final Pattern NOT_URLS_PATTERN =
+            Pattern.compile(
+                    ""
+                            // When a class is not found it can fail to satisfy our isClass
+                            // check but is still worth noting what it was.
+                            + "^(?:Caused by: )?java\\.lang\\."
+                            + "(?:ClassNotFoundException|NoClassDefFoundError):|"
+                            // Ensure common local paths are not interpreted as URLs.
+                            + "(?:[\"' ]/(?:apex|data|mnt|proc|sdcard|storage|system))/");
 
     private static final String IP_ELISION = "1.2.3.4";
     private static final String MAC_ELISION = "01:23:45:67:89:AB";
@@ -97,8 +98,19 @@ public class PiiElider {
             new String[] {"org.chromium.", "com.google.", "com.chrome."};
 
     private static final String[] SYSTEM_NAMESPACE =
-            new String[] {"android.", "com.android.", "dalvik.", "java.", "javax.", "org.apache.",
-                    "org.json.", "org.w3c.dom.", "org.xml.", "org.xmlpull.", "System."};
+            new String[] {
+                "android.",
+                "com.android.",
+                "dalvik.",
+                "java.",
+                "javax.",
+                "org.apache.",
+                "org.json.",
+                "org.w3c.dom.",
+                "org.xml.",
+                "org.xmlpull.",
+                "System."
+            };
 
     /**
      * Elides any emails in the specified {@link String} with
@@ -120,7 +132,7 @@ public class PiiElider {
      */
     public static String elideUrl(String original) {
         // Url-matching is fussy. If something looks like an exception message, just return.
-        if (LIKELY_EXCEPTION_LOG.matcher(original).find()) return original;
+        if (NOT_URLS_PATTERN.matcher(original).find()) return original;
         StringBuilder buffer = new StringBuilder(original);
         Matcher matcher = WEB_URL.matcher(buffer);
         int start = 0;
@@ -128,7 +140,8 @@ public class PiiElider {
             start = matcher.start();
             int end = matcher.end();
             String url = buffer.substring(start, end);
-            if (!likelyToBeAppNamespace(url) && !likelyToBeSystemNamespace(url)
+            if (!likelyToBeAppNamespace(url)
+                    && !likelyToBeSystemNamespace(url)
                     && !likelyToBeClassOrMethodName(url)) {
                 buffer.replace(start, end, URL_ELISION);
                 end = start + URL_ELISION.length();
@@ -221,24 +234,19 @@ public class PiiElider {
         if (TextUtils.isEmpty(stacktrace)) {
             return "";
         }
-        String[] frames = stacktrace.split("\\n");
-        // Sanitize first stacktrace line which contains the exception message.
-        frames[0] = elideUrl(frames[0]);
-        for (int i = 1; i < frames.length; i++) {
-            // Nested exceptions should also have their message sanitized.
-            if (frames[i].startsWith("Caused by:")) {
-                frames[i] = elideUrl(frames[i]);
+        String[] lines = stacktrace.split("\\n");
+        boolean foundAtLine = false;
+        for (int i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith("\tat ")) {
+                foundAtLine = true;
+            } else {
+                lines[i] = elideUrl(lines[i]);
             }
         }
-        return TextUtils.join("\n", frames);
-    }
-
-    /**
-     * Returns a sanitized stacktrace (per {@link #sanitizeStacktrace(String)}) for the given
-     * throwable.
-     */
-    @CalledByNative
-    public static String getSanitizedStacktrace(Throwable throwable) {
-        return sanitizeStacktrace(Log.getStackTraceString(throwable));
+        // Guard against non-properly formatted stacktraces to ensure checking for "\tat :" is
+        // sufficient (e.g.: no logging-related line prefixes).
+        // There can be no frames when a native thread creates an exception using JNI.
+        assert foundAtLine || lines.length == 1 : "Was not a stack trace: " + stacktrace;
+        return TextUtils.join("\n", lines);
     }
 }

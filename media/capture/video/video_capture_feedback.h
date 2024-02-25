@@ -6,11 +6,11 @@
 #define MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_FEEDBACK_H_
 
 #include <limits>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "media/capture/capture_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -96,7 +96,7 @@ struct CAPTURE_EXPORT VideoCaptureFeedback {
 
   // The frame id that this particular feedback is associated with, not all
   // callers may set or require this.
-  absl::optional<int> frame_id = absl::nullopt;
+  std::optional<int> frame_id = std::nullopt;
 };
 
 }  // namespace media

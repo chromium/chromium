@@ -1,0 +1,68 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebAppInstallForceList": [
+            {
+              "default_launch_container": "tab",
+              "url": "https://foo.example"
+            },
+            {
+              "default_launch_container": "window",
+              "url": "https://bar.example"
+            },
+            {
+              "install_as_shortcut": true,
+              "url": "https://foobar.example"
+            },
+            {
+              "create_desktop_shortcut": true,
+              "url": "https://xyz.example"
+            },
+            {
+              "default_launch_container": "window",
+              "fallback_app_name": "Foo Example App",
+              "url": "https://foo.example"
+            }
+          ]
+        },
+        "prefs": {
+          "profile.web_app.install.forcelist": {
+            "value": [
+              {
+                "default_launch_container": "tab",
+                "url": "https://foo.example"
+              },
+              {
+                "default_launch_container": "window",
+                "url": "https://bar.example"
+              },
+              {
+                "install_as_shortcut": true,
+                "url": "https://foobar.example"
+              },
+              {
+                "create_desktop_shortcut": true,
+                "url": "https://xyz.example"
+              },
+              {
+                "default_launch_container": "window",
+                "fallback_app_name": "Foo Example App",
+                "url": "https://foo.example"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

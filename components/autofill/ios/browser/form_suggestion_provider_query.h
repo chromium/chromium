@@ -10,7 +10,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace {
-NSString* const kPasswordFieldType = @"password";
+// The "password" field type does not explicitly mean that the field contains a
+// password, it means that the field obfuscates its information instead of
+// showing it plainly.
+NSString* const kObfuscatedFieldType = @"password";
 }  // namespace
 
 // A class containing the data necessary for FormSuggestionProvider to
@@ -55,9 +58,6 @@ NSString* const kPasswordFieldType = @"password";
                          frameID:(NSString*)frameID NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Returns true if a query comes from a password field.
-- (BOOL)isOnPasswordField;
 
 // Returns true if a query comes from a focus on a field.
 - (BOOL)hasFocusType;

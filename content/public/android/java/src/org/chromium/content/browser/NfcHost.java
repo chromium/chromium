@@ -7,8 +7,9 @@ package org.chromium.content.browser;
 import android.app.Activity;
 import android.util.SparseArray;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -28,9 +29,7 @@ class NfcHost implements WindowEventObserver {
     // changes.
     private Callback<Activity> mCallback;
 
-    /**
-     * Provides access to NfcHost via context ID.
-     */
+    /** Provides access to NfcHost via context ID. */
     public static NfcHost fromContextId(int contextId) {
         return sContextHostsMap.get(contextId);
     }
@@ -52,7 +51,6 @@ class NfcHost implements WindowEventObserver {
      * track changes to the Activity associated with its context ID (i.e., the activity associated
      * with |mWebContents|).
      */
-
     public void trackActivityChanges(Callback<Activity> callback) {
         // Only the main frame is allowed to access NFC
         // (https://w3c.github.io/web-nfc/#security-policies). The renderer enforces this by
@@ -86,9 +84,7 @@ class NfcHost implements WindowEventObserver {
         sContextHostsMap.remove(mContextId);
     }
 
-    /**
-     * Updates the Activity associated with this instance.
-     */
+    /** Updates the Activity associated with this instance. */
     @Override
     public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
         Activity activity = null;

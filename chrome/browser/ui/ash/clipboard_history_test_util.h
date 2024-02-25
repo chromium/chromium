@@ -30,8 +30,7 @@ class ClipboardImageModelRequestWaiter {
   void OnRequestStop(bool use_auto_resize_mode);
 
  private:
-  const raw_ptr<ClipboardImageModelRequest::TestParams, ExperimentalAsh>
-      test_params_;
+  const raw_ptr<ClipboardImageModelRequest::TestParams> test_params_;
   const bool expect_auto_resize_;
 
   base::RunLoop run_loop_;

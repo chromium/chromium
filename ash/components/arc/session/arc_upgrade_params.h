@@ -71,6 +71,10 @@ struct UpgradeParams {
   // The constructor automatically populates this from command-line.
   bool skip_tts_cache;
 
+  // Option to disable DexOpt cache.
+  // The constructor automatically populates this from command-line.
+  bool skip_dexopt_cache;
+
   // The supervision transition state for this account. Indicates whether
   // child account should become regular, regular account should become child
   // or neither.

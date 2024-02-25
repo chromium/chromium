@@ -10,12 +10,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -53,6 +55,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_worker_client_added.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
@@ -301,7 +304,8 @@ void SharedWorkerHost::Start(
   blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
       instance_.url(), std::move(options),
       mojo::Clone(content_security_policies_),
-      std::move(outside_fetch_client_settings_object)));
+      std::move(outside_fetch_client_settings_object),
+      instance_.same_site_cookies()));
 
   auto renderer_preferences = blink::RendererPreferences();
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
@@ -350,7 +354,7 @@ void SharedWorkerHost::Start(
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
-      std::move(info), token_, instance_.storage_key().origin(),
+      std::move(info), token_, instance_.storage_key(),
       creator_policy_container_host_ &&
           creator_policy_container_host_->policies().is_web_secure_context,
       GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
@@ -363,7 +367,8 @@ void SharedWorkerHost::Start(
       std::move(subresource_loader_factories), std::move(controller),
       policy_container_host->CreatePolicyContainerForBlink(),
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
-      std::move(browser_interface_broker), ukm_source_id_);
+      std::move(browser_interface_broker), ukm_source_id_,
+      instance_.DoesRequireCrossSiteRequestForCookies());
 
   // |service_worker_remote_object| is an associated interface ptr, so calls
   // can't be made on it until its request endpoint is sent. Now that the
@@ -389,31 +394,23 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(bypass_redirect_checks);
 
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-      default_factory_receiver =
-          pending_default_factory.InitWithNewPipeAndPassReceiver();
-
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       CreateNetworkFactoryParamsForSubresources();
   url::Origin origin = url::Origin::Create(instance_.url());
-  GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      GetProcessHost()->GetBrowserContext(),
-      /*frame=*/nullptr, GetProcessHost()->GetID(),
-      ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource, origin,
-      /*navigation_id=*/absl::nullopt,
-      ukm::SourceIdObj::FromInt64(ukm_source_id_), &default_factory_receiver,
-      &factory_params->header_client, bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, &factory_params->factory_override,
-      /*navigation_response_task_runner=*/nullptr);
 
-  devtools_instrumentation::WillCreateURLLoaderFactoryForSharedWorker(
-      this, &factory_params->factory_override);
-
-  GetProcessHost()->CreateURLLoaderFactory(std::move(default_factory_receiver),
-                                           std::move(factory_params));
-
-  return pending_default_factory;
+  return url_loader_factory::CreatePendingRemote(
+      ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
+      url_loader_factory::TerminalParams::ForNetworkContext(
+          GetProcessHost()->GetStoragePartition()->GetNetworkContext(),
+          std::move(factory_params),
+          url_loader_factory::HeaderClientOption::kAllow,
+          url_loader_factory::FactoryOverrideOption::kAllow),
+      url_loader_factory::ContentClientParams(
+          GetProcessHost()->GetBrowserContext(),
+          /*frame=*/nullptr, GetProcessHost()->GetID(), origin,
+          ukm::SourceIdObj::FromInt64(ukm_source_id_), bypass_redirect_checks),
+      devtools_instrumentation::WillCreateURLLoaderFactoryParams::
+          ForSharedWorker(this));
 }
 
 network::mojom::URLLoaderFactoryParamsPtr
@@ -426,20 +423,14 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   }
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
-          GetProcessHost(), origin,
-          net::IsolationInfo::Create(
-              net::IsolationInfo::RequestType::kOther,
-              // TODO(https://crbug.com/1147281): We
-              // should pass the top_level_site from
-              // `GetStorageKey()` instead.
-              origin, origin, net::SiteForCookies::FromOrigin(origin),
-              /*party_context=*/absl::nullopt, GetStorageKey().nonce()),
+          GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
           std::move(coep_reporter),
           /*url_loader_network_observer=*/mojo::NullRemote(),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_),
           /*debug_tag=*/
-          "SharedWorkerHost::CreateNetworkFactoryForSubresource");
+          "SharedWorkerHost::CreateNetworkFactoryForSubresource",
+          instance_.DoesRequireCrossSiteRequestForCookies());
   return factory_params;
 }
 
@@ -570,6 +561,56 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
 void SharedWorkerHost::CreateBucketManagerHost(
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
   GetProcessHost()->BindBucketManagerHost(AsWeakPtr(), std::move(receiver));
+}
+
+void SharedWorkerHost::BindPressureService(
+    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!network::IsOriginPotentiallyTrustworthy(GetStorageKey().origin())) {
+    return;
+  }
+
+  // https://www.w3.org/TR/compute-pressure/#policy-control
+  if (base::ranges::any_of(GetRenderFrameIDsForWorker(), [](const auto& id) {
+        auto* render_frame_host = RenderFrameHostImpl::FromID(id);
+        return render_frame_host &&
+               !render_frame_host->IsFeatureEnabled(
+                   blink::mojom::PermissionsPolicyFeature::kComputePressure);
+      })) {
+    for (const auto& id : GetRenderFrameIDsForWorker()) {
+      auto* rfh = RenderFrameHostImpl::FromID(id);
+      if (!rfh) {
+        continue;
+      }
+
+      if (rfh->IsFeatureEnabled(
+              blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+        rfh->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            "This frame is connected to a Shared Worker that has requested "
+            "access to the Compute Pressure API. This worker can't access the "
+            "API because another frame connected that is not allowed to access "
+            "this feature due to Permissions Policy.");
+      } else {
+        rfh->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            "This frame is connected to a Shared Worker that has requested "
+            "access to the Compute Pressure API. This worker can't access the "
+            "API because this frame is not allowed to access this feature due "
+            "to Permissions Policy.");
+      }
+    }
+
+    return;
+  }
+
+  if (!pressure_service_) {
+    pressure_service_ =
+        std::make_unique<PressureServiceForWorker<SharedWorkerHost>>(this);
+  }
+
+  pressure_service_->BindReceiver(std::move(receiver));
 }
 
 void SharedWorkerHost::CreateCodeCacheHost(
@@ -717,6 +758,38 @@ void SharedWorkerHost::AddClient(
   // Pass the actual creation context type, so the client can understand if
   // there is a mismatch between security levels.
   remote_client->OnCreated(instance_.creation_context_type());
+
+  // Stop delivering Compute Pressure data if the added client is not allowed
+  // to use the policy-controlled feature.
+  // see https://www.w3.org/TR/compute-pressure/#policy-control
+  auto* render_frame_host =
+      RenderFrameHostImpl::FromID(client_render_frame_host_id);
+  if (pressure_service_ && render_frame_host &&
+      !render_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+    render_frame_host->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "This frame is now connected to a Shared Worker using the Compute "
+        "Pressure API. This worker will no longer receive Compute Pressure "
+        "events because this frame is not allowed to access this feature due "
+        "to Permissions Policy.");
+
+    for (const auto& id : GetRenderFrameIDsForWorker()) {
+      auto* rfh = RenderFrameHostImpl::FromID(id);
+      if (!rfh) {
+        continue;
+      }
+
+      rfh->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          "This frame is connected to a Shared Worker using the Compute "
+          "Pressure API. This worker will no longer receive Compute Pressure "
+          "events because another frame connected that is not allowed to "
+          "access this feature due to Permissions Policy.");
+    }
+
+    pressure_service_.reset();
+  }
 
   clients_.emplace_back(std::move(remote_client), next_connection_request_id_++,
                         client_render_frame_host_id);

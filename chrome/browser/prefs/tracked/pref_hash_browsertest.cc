@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -27,6 +28,7 @@
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -41,7 +43,6 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -147,7 +148,7 @@ int GetTrackedPrefHistogramCount(const char* histogram_name,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<base::Value::Dict> ReadPrefsDictionary(
+std::optional<base::Value::Dict> ReadPrefsDictionary(
     const base::FilePath& pref_file) {
   JSONFileValueDeserializer deserializer(pref_file);
   int error_code = JSONFileValueDeserializer::JSON_NO_ERROR;
@@ -156,11 +157,11 @@ absl::optional<base::Value::Dict> ReadPrefsDictionary(
       deserializer.Deserialize(&error_code, &error_str);
   if (!prefs || error_code != JSONFileValueDeserializer::JSON_NO_ERROR) {
     ADD_FAILURE() << "Error #" << error_code << ": " << error_str;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!prefs->is_dict()) {
     ADD_FAILURE();
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*prefs).TakeDict();
 }
@@ -249,12 +250,12 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
     EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM,
               base::PathExists(protected_pref_file));
 
-    absl::optional<base::Value::Dict> unprotected_preferences(
+    std::optional<base::Value::Dict> unprotected_preferences(
         ReadPrefsDictionary(unprotected_pref_file));
     if (!unprotected_preferences)
       return false;
 
-    absl::optional<base::Value::Dict> protected_preferences;
+    std::optional<base::Value::Dict> protected_preferences;
     if (protection_level_ > PROTECTION_DISABLED_ON_PLATFORM) {
       protected_preferences = ReadPrefsDictionary(protected_pref_file);
       if (!protected_preferences)
@@ -607,7 +608,15 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
     // Explicitly set the DSE (it's otherwise NULL by default, preventing
     // thorough testing of the PROTECTION_ENABLED_DSE level).
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback());
+        profile()->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile()),
+        DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+            ,
+        profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
     DefaultSearchManager::Source dse_source =
         static_cast<DefaultSearchManager::Source>(-1);
 
@@ -687,7 +696,15 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
     // Explicitly verify the result of reported resets.
 
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback());
+        profile()->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile()),
+        DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+            ,
+        profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
     DefaultSearchManager::Source dse_source =
         static_cast<DefaultSearchManager::Source>(-1);
     default_search_manager.GetDefaultSearchEngine(&dse_source);
@@ -853,7 +870,7 @@ class PrefHashBrowserTestChangedSplitPref : public PrefHashBrowserTestBase {
     // Tamper with any installed setting for good.crx
     base::Value::Dict* good_crx_dict = extensions_dict->FindDict(kGoodCrxId);
     ASSERT_TRUE(good_crx_dict);
-    absl::optional<int> good_crx_state = good_crx_dict->FindInt("state");
+    std::optional<int> good_crx_state = good_crx_dict->FindInt("state");
     ASSERT_TRUE(good_crx_state);
     EXPECT_EQ(extensions::Extension::ENABLED, *good_crx_state);
     good_crx_dict->Set("state", extensions::Extension::DISABLED);
@@ -1153,7 +1170,15 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
   void SetupPreferences() override {
     // Set user selected default search engine.
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback());
+        profile()->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile()),
+        DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+            ,
+        profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
     DefaultSearchManager::Source dse_source =
         static_cast<DefaultSearchManager::Source>(-1);
 
@@ -1218,7 +1243,15 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
 
   void VerifyReactionToPrefAttack() override {
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback());
+        profile()->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile()),
+        DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+            ,
+        profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
     DefaultSearchManager::Source dse_source =
         static_cast<DefaultSearchManager::Source>(-1);
 
@@ -1247,3 +1280,51 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
 };
 
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestDefaultSearch, SearchProtected);
+
+// Verifies that we handle a protected Dict preference being changed to an
+// unexpected type (int). See https://crbug.com/1512724.
+class PrefHashBrowserTestExtensionDictTypeChanged
+    : public PrefHashBrowserTestBase {
+ public:
+  void SetupPreferences() override {
+    InstallExtensionWithUIAutoConfirm(test_data_dir_.AppendASCII("good.crx"), 1,
+                                      browser());
+  }
+
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    base::Value::Dict* const selected_prefs =
+        protection_level_ >= PROTECTION_ENABLED_EXTENSIONS
+            ? protected_preferences
+            : unprotected_preferences;
+    // |selected_prefs| should never be NULL under the protection level picking
+    // it.
+    ASSERT_TRUE(selected_prefs);
+    EXPECT_TRUE(selected_prefs->FindDictByDottedPath(
+        extensions::pref_names::kExtensions));
+    // Overwrite with an int (wrong type).
+    selected_prefs->SetByDottedPath(extensions::pref_names::kExtensions, 13);
+    EXPECT_EQ(13, selected_prefs
+                      ->FindIntByDottedPath(extensions::pref_names::kExtensions)
+                      .value());
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    // Setting the extensions dict to an invalid type gets noticed regardless
+    // of protection level. This implementation just happened to be easier and
+    // it doesn't seem important to not protect the kExtensions from being the
+    // wrong type at any protection level. PrefService will correct the type
+    // either way.
+    EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM ? 1 : 0,
+              GetTrackedPrefHistogramCount(
+                  user_prefs::tracked::kTrackedPrefHistogramCleared,
+                  BEGIN_ALLOW_SINGLE_BUCKET + 5));
+
+    // Expect a dictionary for extensions. This shouldn't somehow explode.
+    profile()->GetPrefs()->GetDict(extensions::pref_names::kExtensions);
+  }
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestExtensionDictTypeChanged,
+                       ExtensionDictTypeChanged);

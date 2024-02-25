@@ -57,7 +57,7 @@ class ConsentDialogUiTest : public InProcessBrowserTest {
   }
 
   std::u16string GetExpectedBodyText(
-      absl::optional<std::string> manager = absl::nullopt) {
+      std::optional<std::string> manager = std::nullopt) {
     return (!manager) ? l10n_util::GetStringUTF16(
                             IDS_DEVICE_SIGNALS_CONSENT_DIALOG_DEFAULT_BODY_TEXT)
                       : l10n_util::GetStringFUTF16(

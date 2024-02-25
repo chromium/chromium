@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-      absl::nullopt /* action_index */, absl::nullopt /* reply */);
+      std::nullopt /* action_index */, std::nullopt /* reply */);
 
   // We expect +1 engagement for the notification interaction.
   EXPECT_DOUBLE_EQ(1.5, GetEngagementScore(GetLastCommittedURL()));
@@ -275,8 +275,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // Verify that the notification's default timestamp is set in the last 30
   // seconds. (30 has no significance, just needs to be significantly high to
   // avoid test flakiness.)
-  EXPECT_NEAR(default_notification.timestamp().ToJsTime(),
-              base::Time::Now().ToJsTime(), 30 * 1000);
+  EXPECT_NEAR(default_notification.timestamp().InSecondsFSinceUnixEpoch(),
+              base::Time::Now().InSecondsFSinceUnixEpoch(), 30);
 
   // Now, test the non-default values.
 
@@ -313,7 +313,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   EXPECT_TRUE(notification.renotify());
   EXPECT_TRUE(notification.never_timeout());
-  EXPECT_DOUBLE_EQ(621046800000., notification.timestamp().ToJsTime());
+  EXPECT_DOUBLE_EQ(621046800000.,
+                   notification.timestamp().InMillisecondsFSinceUnixEpoch());
 
 #if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(notification.image().IsEmpty());
@@ -388,8 +389,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // Verifies that the notification's default timestamp is set in the last 30
   // seconds. This number has no significance, but it needs to be significantly
   // high to avoid flakiness in the test.
-  EXPECT_NEAR(default_notification.timestamp().ToJsTime(),
-              base::Time::Now().ToJsTime(), 30 * 1000);
+  EXPECT_NEAR(default_notification.timestamp().InSecondsFSinceUnixEpoch(),
+              base::Time::Now().InSecondsFSinceUnixEpoch(), 30);
 
   // Now, test the non-default values.
 
@@ -419,8 +420,9 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_TRUE(all_options_notification.renotify());
   EXPECT_TRUE(all_options_notification.silent());
   EXPECT_TRUE(all_options_notification.never_timeout());
-  EXPECT_DOUBLE_EQ(kNotificationTimestamp,
-                   all_options_notification.timestamp().ToJsTime());
+  EXPECT_DOUBLE_EQ(
+      kNotificationTimestamp,
+      all_options_notification.timestamp().InMillisecondsFSinceUnixEpoch());
   EXPECT_EQ(1u, all_options_notification.buttons().size());
   EXPECT_EQ("actionTitle",
             base::UTF16ToUTF8(all_options_notification.buttons()[0].title));
@@ -510,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-        absl::nullopt /* action_index */, absl::nullopt /* reply */);
+        std::nullopt /* action_index */, std::nullopt /* reply */);
 
     // We have interacted with the button, so expect a notification bump.
     EXPECT_DOUBLE_EQ(1.5, GetEngagementScore(GetLastCommittedURL()));
@@ -595,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-        absl::nullopt /* action_index */, absl::nullopt /* reply */);
+        std::nullopt /* action_index */, std::nullopt /* reply */);
 
     EXPECT_EQ("action_close", RunScript("GetMessageFromWorker()"));
   }
@@ -710,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
-      0 /* action_index */, absl::nullopt /* reply */);
+      0 /* action_index */, std::nullopt /* reply */);
 
   EXPECT_EQ("action_button_click actionId1",
             RunScript("GetMessageFromWorker()"));
@@ -724,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
-      1 /* action_index */, absl::nullopt /* reply */);
+      1 /* action_index */, std::nullopt /* reply */);
 
   EXPECT_EQ("action_button_click actionId2",
             RunScript("GetMessageFromWorker()"));
@@ -852,8 +854,8 @@ IN_PROC_BROWSER_TEST_F(
   {
     base::RunLoop run_loop;
     handler->OnClick(profile, GURL(kTestNotificationOrigin),
-                     kTestNotificationId, absl::nullopt /* action_index */,
-                     absl::nullopt /* reply */, run_loop.QuitClosure());
+                     kTestNotificationId, std::nullopt /* action_index */,
+                     std::nullopt /* reply */, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -884,17 +886,12 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   GrantNotificationPermissionForTest();
 
   // Set the page fullscreen
-  browser()->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-
-  {
-    FullscreenStateWaiter fs_state(browser(), true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       browser()->window()->GetNativeWindow()));
 
+  ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   ASSERT_TRUE(browser()->window()->IsActive())
       << "Browser is active after going fullscreen";
 
@@ -918,25 +915,16 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_EQ("ok", RunScript("DisplayPersistentNotification('display_normal')"));
 
   // Set the notifcation page fullscreen
-  browser()->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-  {
-    FullscreenStateWaiter fs_state(browser(), true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   // Set the other browser fullscreen
-  other_browser->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-  {
-    FullscreenStateWaiter fs_state(other_browser, true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(other_browser);
 
   ASSERT_TRUE(browser()->exclusive_access_manager()->context()->IsFullscreen());
   ASSERT_TRUE(
       other_browser->exclusive_access_manager()->context()->IsFullscreen());
 
+  ui_test_utils::BrowserActivationWaiter(other_browser).WaitForActivation();
   ASSERT_FALSE(browser()->window()->IsActive());
   ASSERT_TRUE(other_browser->window()->IsActive());
 
@@ -972,8 +960,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   base::RunLoop run_loop;
   handler->OnClick(browser()->profile(), notifications[0].origin_url(),
-                   notifications[0].id(), absl::nullopt /* action_index */,
-                   absl::nullopt /* reply */, run_loop.QuitClosure());
+                   notifications[0].id(), std::nullopt /* action_index */,
+                   std::nullopt /* reply */, run_loop.QuitClosure());
 
   // The asynchronous part of the click event will still be in progress, but
   // the keep alive registration should have been created.
@@ -1117,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
 
   // Install the web app.
   const GURL web_app_url = TestPageUrl();
-  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "Web App Title", web_app_url);
 
   EXPECT_EQ("ok",
@@ -1195,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
 
   // Install the web app.
   const GURL web_app_url = TestPageUrl();
-  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "Web App Title", web_app_url);
 
   EXPECT_EQ("ok", RunScript("DisplayIncomingCallNotification()"));

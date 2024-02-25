@@ -62,9 +62,10 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
   bool ShouldConsumeEvent(const ui::Event* event) const;
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
   // wm::TransientWindowObserver:
   void OnTransientChildAdded(aura::Window* window,
@@ -75,7 +76,7 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
  private:
   friend class CaptureModeTestApi;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Dims everything behind the dialog (including the capture bar, the settings
   // menu, and any capture-related UIs). The dimming window is the transient
@@ -87,7 +88,7 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
 
   // This is the window of the dialog that gets created by
   // |select_folder_dialog_| as a transient child of the dimming window.
-  raw_ptr<aura::Window, ExperimentalAsh> dialog_window_ = nullptr;
+  raw_ptr<aura::Window> dialog_window_ = nullptr;
 
   // It will be set to true when user selects a folder from the dialog.
   bool did_user_select_a_folder_ = false;

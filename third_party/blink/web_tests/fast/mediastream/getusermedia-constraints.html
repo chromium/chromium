@@ -105,6 +105,13 @@ check_constraints_pass(
   {'noiseSuppression': true});
 
 check_constraints_pass(
+  'voiceIsolation constraint with boolean value should be parsed',
+  {'voiceIsolation': {exact: true}});
+check_constraints_pass(
+  'voiceIsolation constraint with boolean naked value should be parsed',
+  {'voiceIsolation': true});
+
+check_constraints_pass(
   'Constraint with string value should work on exact with array',
   {'facingMode': {ideal: ['user']}});
 

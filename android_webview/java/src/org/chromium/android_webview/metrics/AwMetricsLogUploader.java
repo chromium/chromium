@@ -64,7 +64,8 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
         private final boolean mUseDefaultUploadQos;
         private final LinkedBlockingQueue<IMetricsUploadService> mConnectionsQueue;
 
-        public MetricsLogUploaderServiceConnection(boolean useDefaultUploadQos,
+        public MetricsLogUploaderServiceConnection(
+                boolean useDefaultUploadQos,
                 LinkedBlockingQueue<IMetricsUploadService> connectionsQueue) {
             mUseDefaultUploadQos = useDefaultUploadQos;
             mConnectionsQueue = connectionsQueue;
@@ -111,7 +112,10 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
             // need to fire and forget. In this case all we can do is report back OK.
             if (!isAsync) {
                 PostTask.postTask(
-                        TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> { uploadToService(data); });
+                        TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                        () -> {
+                            uploadToService(data);
+                        });
 
                 return HttpURLConnection.HTTP_OK;
             }
@@ -121,8 +125,9 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
 
         private int uploadToService(@NonNull byte[] data) {
             try {
-                IMetricsUploadService uploadService = mConnectionsQueue.poll(
-                        SERVICE_CONNECTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                IMetricsUploadService uploadService =
+                        mConnectionsQueue.poll(
+                                SERVICE_CONNECTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
                 // Null returned from poll means we timed out
                 if (uploadService == null) {
@@ -155,7 +160,8 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     }
 
     @VisibleForTesting
-    public int log(@NonNull byte[] data,
+    public int log(
+            @NonNull byte[] data,
             @NonNull LinkedBlockingQueue<IMetricsUploadService> connectionsQueue) {
         MetricsLogUploaderServiceConnection connection = mInitialConnection.getAndSet(null);
 
@@ -182,8 +188,9 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
      * are going to attempt to upload pretty soon after starting up WebView the first time.
      */
     public void initialize() {
-        MetricsLogUploaderServiceConnection connection = new MetricsLogUploaderServiceConnection(
-                mUseDefaultUploadQos, new LinkedBlockingQueue(1));
+        MetricsLogUploaderServiceConnection connection =
+                new MetricsLogUploaderServiceConnection(
+                        mUseDefaultUploadQos, new LinkedBlockingQueue(1));
         if (connection.bind()) {
             mInitialConnection.set(connection);
         } else {

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Test AvcConfig supports 'avc' and 'annexb'
-PASS Test H.264 only supports even sizes
-FAIL Resolutions exceeding H.264 level are rejected promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'isConfigSupported' on 'VideoEncoder': Invalid width; expected range from 1 to 8192, received 8194."
-Harness: the test ran to completion.
-

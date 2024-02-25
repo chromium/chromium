@@ -63,22 +63,7 @@ const int OpaqueBrowserFrameViewLayout::kCaptionSpacing = 5;
 // the top of the content shadow.
 const int OpaqueBrowserFrameViewLayout::kCaptionButtonBottomPadding = 3;
 
-OpaqueBrowserFrameViewLayout::OpaqueBrowserFrameViewLayout()
-    : available_space_leading_x_(0),
-      available_space_trailing_x_(0),
-      minimum_size_for_buttons_(0),
-      placed_leading_button_(false),
-      placed_trailing_button_(false),
-      forced_window_caption_spacing_(-1),
-      minimize_button_(nullptr),
-      maximize_button_(nullptr),
-      restore_button_(nullptr),
-      close_button_(nullptr),
-      window_icon_(nullptr),
-      window_title_(nullptr),
-      trailing_buttons_{views::FrameButton::kMinimize,
-                        views::FrameButton::kMaximize,
-                        views::FrameButton::kClose} {}
+OpaqueBrowserFrameViewLayout::OpaqueBrowserFrameViewLayout() = default;
 
 OpaqueBrowserFrameViewLayout::~OpaqueBrowserFrameViewLayout() = default;
 
@@ -373,7 +358,7 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
   bool should_show_icon = delegate_->ShouldShowWindowIcon() && window_icon_;
   bool should_show_title = delegate_->ShouldShowWindowTitle() && window_title_;
   bool should_show_toolbar = delegate_->WebAppButtonHeight() > 0;
-  absl::optional<int> icon_spacing;
+  std::optional<int> icon_spacing;
 
   if (should_show_icon || should_show_title || should_show_toolbar) {
     use_hidden_icon_location = false;

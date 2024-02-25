@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,7 +32,7 @@
 #include "content/renderer/media/inspector_media_event_handler.h"
 #include "content/renderer/media/media_interface_factory.h"
 #include "content/renderer/media/render_media_event_handler.h"
-#include "content/renderer/media/renderer_webmediaplayer_delegate.h"
+#include "content/renderer/media/renderer_web_media_player_delegate.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/base/cdm_factory.h"
@@ -64,7 +65,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
-#include "third_party/blink/public/web/modules/mediastream/webmediaplayer_ms.h"
+#include "third_party/blink/public/web/modules/mediastream/web_media_player_ms.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
 
@@ -176,7 +177,7 @@ class FrameFetchContext : public blink::ResourceFetchContext {
   }
 
  private:
-  blink::WebLocalFrame* frame_;
+  raw_ptr<blink::WebLocalFrame> frame_;
 };
 
 // Obtains the media ContextProvider and calls the given callback on the same
@@ -501,8 +502,9 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
       std::move(compositor_worker_task_runner),
       render_thread->compositor_task_runner(),
       std::move(video_frame_compositor_task_runner),
-      base::BindRepeating(&v8::Isolate::AdjustAmountOfExternalAllocatedMemory,
-                          base::Unretained(blink::MainThreadIsolate())),
+      base::BindRepeating(
+          &v8::Isolate::AdjustAmountOfExternalAllocatedMemory,
+          base::Unretained(web_frame->GetAgentGroupScheduler()->Isolate())),
       initial_cdm, request_routing_token_cb_, media_observer,
       enable_instant_source_buffer_gc, embedded_media_experience_enabled,
       std::move(metrics_provider),

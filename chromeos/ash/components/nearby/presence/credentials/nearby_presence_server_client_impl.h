@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_NEARBY_PRESENCE_SERVER_CLIENT_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace signin {
@@ -113,8 +113,8 @@ class NearbyPresenceServerClientImpl : public NearbyPresenceServerClient {
   void MakeApiCall(
       const GURL& request_url,
       RequestType request_type,
-      const absl::optional<std::string>& serialized_request,
-      const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
+      const std::optional<std::string>& serialized_request,
+      const std::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)> response_callback,
       ErrorCallback error_callback,
@@ -125,8 +125,8 @@ class NearbyPresenceServerClientImpl : public NearbyPresenceServerClient {
   template <class ResponseProto>
   void OnAccessTokenFetched(
       RequestType request_type,
-      const absl::optional<std::string>& serialized_request,
-      const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
+      const std::optional<std::string>& serialized_request,
+      const std::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)> response_callback,
       GoogleServiceAuthError error,

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -78,8 +78,7 @@ void ProbeServiceAsh::GetOemData(GetOemDataCallback callback) {
   debugd_client->GetLog(
       kOemDataLogName,
       base::BindOnce(
-          [](GetOemDataCallback callback,
-             absl::optional<std::string> oem_data) {
+          [](GetOemDataCallback callback, std::optional<std::string> oem_data) {
             std::move(callback).Run(
                 crosapi::mojom::ProbeOemData::New(std::move(oem_data)));
           },

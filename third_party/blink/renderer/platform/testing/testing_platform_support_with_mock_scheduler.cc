@@ -64,6 +64,19 @@ void TestingPlatformSupportWithMockScheduler::RunUntilIdle() {
   }
 }
 
+const base::Clock* TestingPlatformSupportWithMockScheduler::GetClock() const {
+  return test_task_runner_->GetMockClock();
+}
+
+const base::TickClock* TestingPlatformSupportWithMockScheduler::GetTickClock()
+    const {
+  return test_task_runner_->GetMockTickClock();
+}
+
+base::TimeTicks TestingPlatformSupportWithMockScheduler::NowTicks() const {
+  return test_task_runner_->NowTicks();
+}
+
 void TestingPlatformSupportWithMockScheduler::RunForPeriodSeconds(
     double seconds) {
   RunForPeriod(base::Seconds(seconds));
@@ -87,10 +100,6 @@ void TestingPlatformSupportWithMockScheduler::AdvanceClock(
 void TestingPlatformSupportWithMockScheduler::SetAutoAdvanceNowToPendingTasks(
     bool auto_advance) {
   auto_advance_ = auto_advance;
-}
-
-base::TimeTicks TestingPlatformSupportWithMockScheduler::NowTicks() const {
-  return test_task_runner_->NowTicks();
 }
 
 scheduler::MainThreadSchedulerImpl*

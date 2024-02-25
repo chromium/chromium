@@ -5,10 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
 
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
@@ -73,14 +75,14 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::TimeDelta inert_interval_ = base::TimeDelta();
   base::TimeDelta minimum_interval_ = base::TimeDelta();
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   bool is_loading_ = false;
-  absl::optional<base::TimeTicks> last_loaded_;
+  std::optional<base::TimeTicks> last_loaded_;
   bool has_pending_request_ = false;
   base::TimeTicks last_requested_;
-  absl::optional<base::TimeTicks> last_generated_;
-  MainThreadScheduler* main_thread_scheduler_ = nullptr;
+  std::optional<base::TimeTicks> last_generated_;
+  raw_ptr<MainThreadScheduler> main_thread_scheduler_ = nullptr;
 };
 
 }  // namespace blink

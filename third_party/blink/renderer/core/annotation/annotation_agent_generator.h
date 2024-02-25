@@ -54,7 +54,7 @@ class CORE_EXPORT AnnotationAgentGenerator final
   SelectorGenerationCallback callback_;
   mojom::blink::AnnotationType type_;
   shared_highlighting::LinkGenerationError selector_error_;
-  absl::optional<TextFragmentSelector> generation_result_;
+  std::optional<TextFragmentSelector> generation_result_;
   Member<TextFragmentSelectorGenerator> generator_;
   Member<LocalFrame> frame_;
 };

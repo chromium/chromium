@@ -19,7 +19,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 class PasswordCheckViewHolder extends RecyclerView.ViewHolder {
     private final ViewBinder<PropertyModel, View, PropertyKey> mViewBinder;
 
-    PasswordCheckViewHolder(ViewGroup parent, @LayoutRes int layout,
+    PasswordCheckViewHolder(
+            ViewGroup parent,
+            @LayoutRes int layout,
             ViewBinder<PropertyModel, View, PropertyKey> viewBinder) {
         super(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
         mViewBinder = viewBinder;

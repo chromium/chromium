@@ -62,8 +62,9 @@ void ApplyBlockElementCommand::DoApply(EditingState* editing_state) {
   // execution, which updates layout before entering doApply().
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
 
-  if (!RootEditableElementOf(EndingSelection().Base()))
+  if (!RootEditableElementOf(EndingSelection().Anchor())) {
     return;
+  }
 
   VisiblePosition visible_end = EndingVisibleSelection().VisibleEnd();
   VisiblePosition visible_start = EndingVisibleSelection().VisibleStart();

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "extensions/common/api/runtime.h"
+#include "extensions/common/extension_id.h"
 
 class GURL;
 
@@ -45,12 +46,12 @@ class RuntimeAPIDelegate {
   virtual void RemoveUpdateObserver(UpdateObserver* observer) = 0;
 
   // Reloads an extension.
-  virtual void ReloadExtension(const std::string& extension_id) = 0;
+  virtual void ReloadExtension(const ExtensionId& extension_id) = 0;
 
   // Requests an extensions update update check. Returns |false| if updates
   // are disabled. Otherwise |callback| is called with the result of the
   // update check.
-  virtual bool CheckForUpdates(const std::string& extension_id,
+  virtual bool CheckForUpdates(const ExtensionId& extension_id,
                                UpdateCheckCallback callback) = 0;
 
   // Navigates the browser to a URL on behalf of the runtime API.

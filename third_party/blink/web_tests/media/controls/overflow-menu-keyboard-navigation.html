@@ -52,6 +52,8 @@ async_test(t => {
   const video = document.createElement('video');
   video.controls = true;
   video.src = '../content/test.ogv';
+
+  // Pretend we have a cast device.
   internals.mediaPlayerRemoteRouteAvailabilityChanged(video, true);
 
   [ '../track/captions-webvtt/captions-fast.vtt',

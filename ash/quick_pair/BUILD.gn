@@ -18,6 +18,7 @@ source_set("quick_pair") {
     "//ash/quick_pair/repository",
     "//ash/quick_pair/scanning",
     "//ash/quick_pair/ui",
+    "//components/cross_device/logging:logging",
   ]
 }
 

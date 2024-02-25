@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/power.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace extensions {
@@ -21,13 +22,13 @@ const char kWakeLockDescription[] = "extension";
 
 device::mojom::WakeLockType LevelToWakeLockType(api::power::Level level) {
   switch (level) {
-    case api::power::LEVEL_SYSTEM:
+    case api::power::Level::kSystem:
       return device::mojom::WakeLockType::kPreventAppSuspension;
-    case api::power::LEVEL_DISPLAY:  // fallthrough
-    case api::power::LEVEL_NONE:
+    case api::power::Level::kDisplay:  // fallthrough
+    case api::power::Level::kNone:
       return device::mojom::WakeLockType::kPreventDisplaySleep;
   }
-  NOTREACHED() << "Unhandled power level: " << level;
+  NOTREACHED() << "Unhandled power level: " << api::power::ToString(level);
   return device::mojom::WakeLockType::kPreventDisplaySleep;
 }
 
@@ -37,7 +38,7 @@ base::LazyInstance<BrowserContextKeyedAPIFactory<PowerAPI>>::DestructorAtExit
 }  // namespace
 
 ExtensionFunction::ResponseAction PowerRequestKeepAwakeFunction::Run() {
-  absl::optional<api::power::RequestKeepAwake::Params> params =
+  std::optional<api::power::RequestKeepAwake::Params> params =
       api::power::RequestKeepAwake::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PowerAPI::Get(browser_context())->AddRequest(extension_id(), params->level);
@@ -51,7 +52,7 @@ ExtensionFunction::ResponseAction PowerReleaseKeepAwakeFunction::Run() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 ExtensionFunction::ResponseAction PowerReportActivityFunction::Run() {
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       extensions::ActivityReporterDelegate::GetDelegate()->ReportActivity();
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
@@ -70,13 +71,13 @@ BrowserContextKeyedAPIFactory<PowerAPI>* PowerAPI::GetFactoryInstance() {
   return g_factory.Pointer();
 }
 
-void PowerAPI::AddRequest(const std::string& extension_id,
+void PowerAPI::AddRequest(const ExtensionId& extension_id,
                           api::power::Level level) {
   extension_levels_[extension_id] = level;
   UpdateWakeLock();
 }
 
-void PowerAPI::RemoveRequest(const std::string& extension_id) {
+void PowerAPI::RemoveRequest(const ExtensionId& extension_id) {
   extension_levels_.erase(extension_id);
   UpdateWakeLock();
 }
@@ -111,7 +112,7 @@ PowerAPI::PowerAPI(content::BrowserContext* context)
       cancel_wake_lock_function_(base::BindRepeating(&PowerAPI::CancelWakeLock,
                                                      base::Unretained(this))),
       is_wake_lock_active_(false),
-      current_level_(api::power::LEVEL_SYSTEM) {
+      current_level_(api::power::Level::kSystem) {
   ExtensionRegistry::Get(browser_context_)->AddObserver(this);
 }
 
@@ -123,11 +124,12 @@ void PowerAPI::UpdateWakeLock() {
     return;
   }
 
-  api::power::Level new_level = api::power::LEVEL_SYSTEM;
+  api::power::Level new_level = api::power::Level::kSystem;
   for (ExtensionLevelMap::const_iterator it = extension_levels_.begin();
        it != extension_levels_.end(); ++it) {
-    if (it->second == api::power::LEVEL_DISPLAY)
+    if (it->second == api::power::Level::kDisplay) {
       new_level = it->second;
+    }
   }
 
   if (!is_wake_lock_active_ || new_level != current_level_) {

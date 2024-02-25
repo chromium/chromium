@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that when we load two different images from the same url (e.g. counters), their content is different in network panel as well.\n`);
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function loadImages()

@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/search_provider.h"
 
 class AutocompleteProviderListener;
 class PrefRegistrySimple;
@@ -52,8 +51,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Returns the type of results that should be generated for the given context;
   // however, it does not check whether or not a suggest request can be made.
   // Those checks must be done using
-  // BaseSearchProvider::CanSendZeroSuggestRequest() for the kRemoteNoURL
-  // variant and BaseSearchProvider::CanSendSuggestRequestWithURL() for the
+  // BaseSearchProvider::CanSendSuggestRequestWithoutPageURL() for the
+  // kRemoteNoURL variant and
+  // BaseSearchProvider::CanSendSuggestRequestWithPageURL() for the
   // kRemoteSendURL variant.
   // This method is static to avoid depending on the provider state.
   static ResultType ResultTypeToRun(const AutocompleteInput& input);
@@ -148,8 +148,11 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Loader used to retrieve results for non-prefetch requests.
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
-  // Loader used to retrieve results for prefetch requests.
-  std::unique_ptr<network::SimpleURLLoader> prefetch_loader_;
+  // Loader used to retrieve results for ZPS prefetch requests on NTP.
+  std::unique_ptr<network::SimpleURLLoader> ntp_prefetch_loader_;
+
+  // Loader used to retrieve results for ZPS prefetch requests on SRP/Web.
+  std::unique_ptr<network::SimpleURLLoader> srp_web_prefetch_loader_;
 
   // The list of experiment stats corresponding to |matches_|.
   SearchSuggestionParser::ExperimentStatsV2s experiment_stats_v2s_;

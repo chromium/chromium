@@ -6,11 +6,11 @@
 #define UI_COLOR_WIN_ACCENT_COLOR_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/win/registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ui {
@@ -30,13 +30,17 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   // Registers `callback` to be called whenever the accent color changes.
   base::CallbackListSubscription Subscribe(base::RepeatingClosure callback);
 
-  absl::optional<SkColor> accent_color() const { return accent_color_; }
-  absl::optional<SkColor> accent_color_inactive() const {
+  std::optional<SkColor> accent_color() const { return accent_color_; }
+  std::optional<SkColor> accent_color_inactive() const {
     return accent_color_inactive_;
   }
-  absl::optional<SkColor> accent_border_color() const {
+  std::optional<SkColor> accent_border_color() const {
     return accent_border_color_;
   }
+  bool use_dwm_frame_color() const { return use_dwm_frame_color_; }
+
+  void SetAccentColorForTesting(std::optional<SkColor> accent_color);
+  void SetUseDwmFrameColorForTesting(bool use_dwm_frame_color);
 
  private:
   void OnDwmKeyUpdated();
@@ -45,9 +49,10 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   std::unique_ptr<base::win::RegKey> dwm_key_;
 
   base::RepeatingClosureList callbacks_;
-  absl::optional<SkColor> accent_color_;
-  absl::optional<SkColor> accent_color_inactive_;
-  absl::optional<SkColor> accent_border_color_;
+  std::optional<SkColor> accent_color_;
+  std::optional<SkColor> accent_color_inactive_;
+  std::optional<SkColor> accent_border_color_;
+  bool use_dwm_frame_color_ = false;
 };
 
 }  // namespace ui

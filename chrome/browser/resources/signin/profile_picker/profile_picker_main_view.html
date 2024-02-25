@@ -127,6 +127,10 @@
     padding-inline-start: 5px;
   }
 
+  #button-sign-in {
+    margin-left: 10px;
+  }
+
   @media (prefers-color-scheme: dark) {
     .profile-item,
     #addProfile.profile-item {
@@ -181,3 +185,22 @@
     $i18n{askOnStartupCheckboxText}
   </cr-checkbox>
 </div>
+
+<cr-dialog id="forceSigninErrorDialog">
+  <div slot="title" class="key-text">
+    [[forceSigninErrorDialogTitle_]]
+  </div>
+  <div slot="body" class="warning-message">
+    [[forceSigninErrorDialogBody_]]
+  </div>
+  <div slot="button-container" class="button-container">
+    <cr-button id="cancel-button"
+        on-click="onForceSigninErrorDialogOkButtonClicked_">
+      $i18n{ok}
+    </cr-button>
+    <cr-button id="button-sign-in" class="action-button"
+        on-click="onReauthClicked_" hidden="[[!shouldShownSigninButton_]]">
+      $i18n{needsSigninPrompt}
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -11,28 +11,59 @@ source_set("companion_app") {
   output_name = "quick_pair_companion_app"
 
   sources = [
+    "companion_app_broker.h",
+    "companion_app_broker_impl.cc",
+    "companion_app_broker_impl.h",
+    "companion_app_installer.h",
     "companion_app_parser.cc",
     "companion_app_parser.h",
   ]
 
   deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
     "//ash/quick_pair/common",
     "//ash/quick_pair/repository",
     "//base",
+    "//components/cross_device/logging:logging",
+    "//url",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_companion_app_broker.cc",
+    "mock_companion_app_broker.h",
+  ]
+
+  deps = [
+    ":companion_app",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "companion_app_parser_unittest.cc" ]
+  sources = [
+    "companion_app_broker_impl_unittest.cc",
+    "companion_app_parser_unittest.cc",
+  ]
 
   deps = [
     ":companion_app",
+    "//ash:test_support",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/keyed_service:test_support",
     "//ash/quick_pair/repository:test_support",
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
 }

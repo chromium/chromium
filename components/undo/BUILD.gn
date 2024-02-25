@@ -33,8 +33,10 @@ source_set("unit_tests") {
   deps = [
     ":undo",
     "//base",
+    "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
+    "//components/sync/base:features",
     "//testing/gtest",
   ]
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ ExtensionWebViewHelper::~ExtensionWebViewHelper() {
   GetWebViewHelperSet()->erase(this);
 }
 
-const absl::optional<url::Origin>& ExtensionWebViewHelper::GetOutermostOrigin()
+const std::optional<url::Origin>& ExtensionWebViewHelper::GetOutermostOrigin()
     const {
   return outermost_origin_;
 }

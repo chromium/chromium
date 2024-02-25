@@ -57,7 +57,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // concurrently.
     kUpdateInProgress = 1,
 
-    // Not used. TODO(crbug.com/1290331).
     kUpdateCanceled = 2,
 
     // The function failed because of a throttling policy such as load shedding.
@@ -85,6 +84,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
 
     // Failed to run app installer.
     kInstallFailed = 10,
+
+    // The service has been stopped, because the system is shutting down, or
+    // any other reason.
+    kServiceStopped = 11,
 
     // Update EnumTraits<UpdateService::Result> when adding new values.
   };
@@ -195,7 +198,11 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
 
     std::string app_id;
     base::Version version;
+    base::FilePath version_path;
+    std::string version_key;
     std::string ap;
+    base::FilePath ap_path;
+    std::string ap_key;
     std::string brand_code;
     base::FilePath brand_path;
     base::FilePath ecp;
@@ -303,8 +310,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   virtual void CancelInstalls(const std::string& app_id) = 0;
 
   // Install an app by running its installer.
-  // TODO(crbug.com/1286574): perform necessary actions after install, such as
-  // sending install ping and/or run post-install command.
   //
   // Args:
   //   `app_id`: ID of app to install.
@@ -337,7 +342,7 @@ template <>
 struct EnumTraits<UpdateService::Result> {
   using Result = UpdateService::Result;
   static constexpr Result first_elem = Result::kSuccess;
-  static constexpr Result last_elem = Result::kInstallFailed;
+  static constexpr Result last_elem = Result::kServiceStopped;
 };
 
 template <>

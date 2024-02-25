@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -16,7 +17,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/kerberos/dbus-constants.h"
 
 namespace ash {
@@ -230,7 +230,7 @@ class KerberosClientImpl : public KerberosClient {
   }
 
   // D-Bus proxy for the Kerberos daemon, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Signal callback lists.
   KerberosFilesChangedCallbackList kerberos_files_changed_callback_list_;

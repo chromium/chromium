@@ -6,8 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_QUICK_PAIR_PUBLIC_CPP_BATTERY_NOTIFICATION_H_
 
 #include <cstdint>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+#include <vector>
 
 namespace ash {
 namespace quick_pair {
@@ -30,7 +30,7 @@ struct BatteryInfo {
   uint8_t ToByte() const;
 
   bool is_charging = false;
-  absl::optional<int8_t> percentage;
+  std::optional<int8_t> percentage;
 };
 
 // Fast Pair battery notification. See
@@ -47,7 +47,7 @@ struct BatteryNotification {
   BatteryNotification& operator=(BatteryNotification&&);
   ~BatteryNotification();
 
-  static absl::optional<BatteryNotification> FromBytes(
+  static std::optional<BatteryNotification> FromBytes(
       const std::vector<uint8_t>& bytes,
       bool show_ui);
 

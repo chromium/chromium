@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -56,14 +58,26 @@ class DNRManifestTest : public testing::Test {
   }
 
   // Loads the extension and verifies that the manifest info is correctly set
-  // up.
+  // up without any warnings or errors.
   void LoadAndExpectSuccess(const std::vector<TestRulesetInfo>& info) {
+    std::vector<InstallWarning> warnings;
+    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
+    warnings.emplace_back(errors::kManifestV2IsDeprecatedWarning);
+    LoadAndExpectWarning(info, warnings);
+  }
+
+  // Loads the extension and verifies that the manifest info is correctly set
+  // up, has no errors, but has provided warning.
+  void LoadAndExpectWarning(
+      const std::vector<TestRulesetInfo>& info,
+      const std::vector<InstallWarning>& expected_warnings) {
     std::string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
         temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked,
         Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension) << error;
     EXPECT_TRUE(error.empty());
+    EXPECT_EQ(expected_warnings, extension.get()->install_warnings());
 
     const std::vector<DNRManifestData::RulesetInfo>& rulesets =
         DNRManifestData::GetRulesets(*extension);
@@ -100,7 +114,7 @@ class DNRManifestTest : public testing::Test {
       EXPECT_TRUE(base::CreateDirectory(rules_path.DirName()));
 
       // Persist an empty ruleset file.
-      EXPECT_TRUE(base::WriteFile(rules_path, base::StringPiece()));
+      EXPECT_TRUE(base::WriteFile(rules_path, std::string_view()));
     }
 
     // Persist manifest file.
@@ -156,6 +170,24 @@ TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
   LoadAndExpectError(
       "Error at key 'declarative_net_request.rule_resources'. Parsing array "
       "failed at index 0: expected dictionary, got string");
+}
+
+TEST_F(DNRManifestTest, InvalidRulesetPath) {
+  TestRulesetInfo ruleset("rules", "sub/../rules.json", base::Value::List());
+  WriteManifestAndRuleset(CreateManifest({ruleset}), {});
+  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+      errors::kRulesFileIsInvalid,
+      dnr_api::ManifestKeys::kDeclarativeNetRequest,
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
+}
+
+TEST_F(DNRManifestTest, InvalidRulesetPath2) {
+  TestRulesetInfo ruleset("rules", "rules.json?param=1", base::Value::List());
+  WriteManifestAndRuleset(CreateManifest({ruleset}), {});
+  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+      errors::kRulesFileIsInvalid,
+      dnr_api::ManifestKeys::kDeclarativeNetRequest,
+      dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
 }
 
 TEST_F(DNRManifestTest, ZeroRulesets) {
@@ -327,6 +359,18 @@ TEST_F(DNRManifestTest, EmptyRulesetPath2) {
       errors::kRulesFileIsInvalid,
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
       dnr_api::DNRInfo::kRuleResources, ruleset.relative_file_path));
+}
+
+TEST_F(DNRManifestTest, DuplicateRulesetPath) {
+  TestRulesetInfo ruleset_1("foo", "rules.json", base::Value::List());
+  TestRulesetInfo ruleset_2("bar", "rules.json", base::Value::List());
+  std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2});
+  WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
+  std::vector<InstallWarning> warnings;
+  warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
+  warnings.emplace_back(errors::kManifestV2IsDeprecatedWarning);
+  warnings.emplace_back(errors::kDeclarativeNetRequestPathDuplicates);
+  LoadAndExpectWarning(rulesets, warnings);
 }
 
 }  // namespace

@@ -54,15 +54,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for the Tracing settings menu.
- */
+/** Tests for the Tracing settings menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TracingSettingsTest {
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
     @Rule
     public final SettingsActivityTestRule<TracingSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(TracingSettings.class);
@@ -99,10 +98,14 @@ public class TracingSettingsTest {
      * called into Android to notify or cancel a notification.
      */
     private void waitForNotificationManagerMutation() {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mMockNotificationManager.getMutationCountAndDecrement(),
-                    Matchers.greaterThan(0));
-        }, 15000L /* maxTimeoutMs */, 50 /* checkIntervalMs */);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mMockNotificationManager.getMutationCountAndDecrement(),
+                            Matchers.greaterThan(0));
+                },
+                /* maxTimeoutMs= */ 15000L,
+                /* checkIntervalMs= */ 50);
     }
 
     private void waitForTracingControllerInitialization(PreferenceFragmentCompat fragment)
@@ -116,28 +119,33 @@ public class TracingSettingsTest {
                 fragment.findPreference(TracingSettings.UI_PREF_START_RECORDING);
 
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (TracingController.getInstance().getState()
-                    == TracingController.State.INITIALIZING) {
-                // Controls should be disabled while initializing.
-                Assert.assertFalse(defaultCategoriesPref.isEnabled());
-                Assert.assertFalse(nonDefaultCategoriesPref.isEnabled());
-                Assert.assertFalse(modePref.isEnabled());
-                Assert.assertFalse(startTracingButton.isEnabled());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (TracingController.getInstance().getState()
+                            == TracingController.State.INITIALIZING) {
+                        // Controls should be disabled while initializing.
+                        Assert.assertFalse(defaultCategoriesPref.isEnabled());
+                        Assert.assertFalse(nonDefaultCategoriesPref.isEnabled());
+                        Assert.assertFalse(modePref.isEnabled());
+                        Assert.assertFalse(startTracingButton.isEnabled());
 
-                TracingController.getInstance().addObserver(new TracingController.Observer() {
-                    @Override
-                    public void onTracingStateChanged(@TracingController.State int state) {
-                        callbackHelper.notifyCalled();
-                        TracingController.getInstance().removeObserver(this);
+                        TracingController.getInstance()
+                                .addObserver(
+                                        new TracingController.Observer() {
+                                            @Override
+                                            public void onTracingStateChanged(
+                                                    @TracingController.State int state) {
+                                                callbackHelper.notifyCalled();
+                                                TracingController.getInstance()
+                                                        .removeObserver(this);
+                                            }
+                                        });
+                        return;
                     }
+                    // Already initialized.
+                    callbackHelper.notifyCalled();
                 });
-                return;
-            }
-            // Already initialized.
-            callbackHelper.notifyCalled();
-        });
-        callbackHelper.waitForCallback(0 /* currentCallCount */);
+        callbackHelper.waitForCallback(/* currentCallCount= */ 0);
     }
 
     @Test
@@ -159,48 +167,57 @@ public class TracingSettingsTest {
         Assert.assertEquals(0, mMockNotificationManager.getNotifications().size());
 
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(
-                    TracingController.State.IDLE, TracingController.getInstance().getState());
-            Assert.assertTrue(startTracingButton.isEnabled());
-            Assert.assertEquals(TracingSettings.MSG_START, startTracingButton.getTitle());
-            Assert.assertFalse(shareTraceButton.isEnabled());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            TracingController.State.IDLE,
+                            TracingController.getInstance().getState());
+                    Assert.assertTrue(startTracingButton.isEnabled());
+                    Assert.assertEquals(TracingSettings.MSG_START, startTracingButton.getTitle());
+                    Assert.assertFalse(shareTraceButton.isEnabled());
 
-            // Tap the button to start recording a trace.
-            startTracingButton.getOnPreferenceClickListener().onPreferenceClick(startTracingButton);
+                    // Tap the button to start recording a trace.
+                    startTracingButton
+                            .getOnPreferenceClickListener()
+                            .onPreferenceClick(startTracingButton);
 
-            Assert.assertEquals(
-                    TracingController.State.STARTING, TracingController.getInstance().getState());
-            Assert.assertFalse(startTracingButton.isEnabled());
-            Assert.assertEquals(TracingSettings.MSG_ACTIVE, startTracingButton.getTitle());
+                    Assert.assertEquals(
+                            TracingController.State.STARTING,
+                            TracingController.getInstance().getState());
+                    Assert.assertFalse(startTracingButton.isEnabled());
+                    Assert.assertEquals(TracingSettings.MSG_ACTIVE, startTracingButton.getTitle());
 
-            // Observe state changes to RECORDING, STOPPING, STOPPED, and IDLE.
-            TracingController.getInstance().addObserver(new TracingController.Observer() {
-                @TracingController.State
-                int mExpectedState = TracingController.State.RECORDING;
+                    // Observe state changes to RECORDING, STOPPING, STOPPED, and IDLE.
+                    TracingController.getInstance()
+                            .addObserver(
+                                    new TracingController.Observer() {
+                                        @TracingController.State
+                                        int mExpectedState = TracingController.State.RECORDING;
 
-                @Override
-                public void onTracingStateChanged(@TracingController.State int state) {
-                    // onTracingStateChanged() should be called four times in total, with the right
-                    // order of state changes:
-                    Assert.assertEquals(mExpectedState, state);
-                    if (state == TracingController.State.RECORDING) {
-                        mExpectedState = TracingController.State.STOPPING;
-                    } else if (state == TracingController.State.STOPPING) {
-                        mExpectedState = TracingController.State.STOPPED;
-                    } else if (state == TracingController.State.STOPPED) {
-                        mExpectedState = TracingController.State.IDLE;
-                    } else {
-                        TracingController.getInstance().removeObserver(this);
-                    }
+                                        @Override
+                                        public void onTracingStateChanged(
+                                                @TracingController.State int state) {
+                                            // onTracingStateChanged() should be called four times
+                                            // in total, with the right order of state changes:
+                                            Assert.assertEquals(mExpectedState, state);
+                                            if (state == TracingController.State.RECORDING) {
+                                                mExpectedState = TracingController.State.STOPPING;
+                                            } else if (state == TracingController.State.STOPPING) {
+                                                mExpectedState = TracingController.State.STOPPED;
+                                            } else if (state == TracingController.State.STOPPED) {
+                                                mExpectedState = TracingController.State.IDLE;
+                                            } else {
+                                                TracingController.getInstance()
+                                                        .removeObserver(this);
+                                            }
 
-                    callbackHelper.notifyCalled();
-                }
-            });
-        });
+                                            callbackHelper.notifyCalled();
+                                        }
+                                    });
+                });
 
         // Wait for state change to RECORDING.
-        callbackHelper.waitForCallback(0 /* currentCallCount */);
+        callbackHelper.waitForCallback(/* currentCallCount= */ 0);
 
         // Recording started, a notification with a stop button should be displayed.
         Notification notification = waitForNotification().notification;
@@ -211,8 +228,11 @@ public class TracingSettingsTest {
 
         // Initiate stopping the recording and wait for state changes to STOPPING and STOPPED.
         stopIntent.send();
-        callbackHelper.waitForCallback(1 /* currentCallCount */, 2 /* numberOfCallsToWaitFor */,
-                15000L /* timeout */, TimeUnit.MILLISECONDS);
+        callbackHelper.waitForCallback(
+                /* currentCallCount= */ 1,
+                /* numberOfCallsToWaitFor= */ 2,
+                /* timeout= */ 15000L,
+                TimeUnit.MILLISECONDS);
 
         // Notification should be replaced twice, once with an "is stopping" notification and then
         // with a notification to share the trace. Because the former is temporary, we can't
@@ -232,7 +252,7 @@ public class TracingSettingsTest {
 
         // Discard the trace and wait for state change back to IDLE.
         deleteIntent.send();
-        callbackHelper.waitForCallback(3 /* currentCallCount */);
+        callbackHelper.waitForCallback(/* currentCallCount= */ 3);
 
         // The temporary file should be deleted asynchronously.
         CriteriaHelper.pollInstrumentationThread(() -> !tempFile.exists());
@@ -256,8 +276,8 @@ public class TracingSettingsTest {
         final ButtonPreference startTracingButton =
                 (ButtonPreference) fragment.findPreference(TracingSettings.UI_PREF_START_RECORDING);
         final TextMessagePreference statusPreference =
-                (TextMessagePreference) fragment.findPreference(
-                        TracingSettings.UI_PREF_TRACING_STATUS);
+                (TextMessagePreference)
+                        fragment.findPreference(TracingSettings.UI_PREF_TRACING_STATUS);
 
         waitForTracingControllerInitialization(fragment);
 
@@ -283,14 +303,16 @@ public class TracingSettingsTest {
 
         waitForTracingControllerInitialization(fragment);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(defaultCategoriesPref.isEnabled());
-            Assert.assertTrue(nonDefaultCategoriesPref.isEnabled());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(defaultCategoriesPref.isEnabled());
+                    Assert.assertTrue(nonDefaultCategoriesPref.isEnabled());
+                });
 
         // Lists preferences for categories of a specific type and an example category name each.
         List<Pair<Preference, String>> categoriesPrefs =
-                Arrays.asList(new Pair<>(defaultCategoriesPref, "toplevel"),
+                Arrays.asList(
+                        new Pair<>(defaultCategoriesPref, "toplevel"),
                         new Pair<>(nonDefaultCategoriesPref, "disabled-by-default-cc.debug"));
         for (Pair<Preference, String> categoriesPrefAndSampleCategory : categoriesPrefs) {
             Preference categoriesPref = categoriesPrefAndSampleCategory.first;
@@ -302,11 +324,14 @@ public class TracingSettingsTest {
             Assert.assertNotNull(categoriesPref.getExtras());
             Assert.assertFalse(categoriesPref.getExtras().isEmpty());
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            Intent intent = settingsLauncher.createSettingsActivityIntent(
-                    context, TracingCategoriesSettings.class.getName(), categoriesPref.getExtras());
+            Intent intent =
+                    settingsLauncher.createSettingsActivityIntent(
+                            context,
+                            TracingCategoriesSettings.class.getName(),
+                            categoriesPref.getExtras());
             SettingsActivity categoriesActivity =
-                    (SettingsActivity) InstrumentationRegistry.getInstrumentation()
-                            .startActivitySync(intent);
+                    (SettingsActivity)
+                            InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
 
             PreferenceFragmentCompat categoriesFragment =
                     (PreferenceFragmentCompat) categoriesActivity.getMainFragment();
@@ -340,19 +365,22 @@ public class TracingSettingsTest {
 
         waitForTracingControllerInitialization(fragment);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(modePref.isEnabled());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(modePref.isEnabled());
 
-            // By default, the "record-until-full" mode is selected.
-            Assert.assertEquals("record-until-full", TracingSettings.getSelectedTracingMode());
+                    // By default, the "record-until-full" mode is selected.
+                    Assert.assertEquals(
+                            "record-until-full", TracingSettings.getSelectedTracingMode());
 
-            // Dialog should contain 3 entries.
-            Assert.assertEquals(3, modePref.getEntries().length);
+                    // Dialog should contain 3 entries.
+                    Assert.assertEquals(3, modePref.getEntries().length);
 
-            // Simulate changing the mode.
-            modePref.getOnPreferenceChangeListener().onPreferenceChange(
-                    modePref, "record-continuously");
-            Assert.assertEquals("record-continuously", TracingSettings.getSelectedTracingMode());
-        });
+                    // Simulate changing the mode.
+                    modePref.getOnPreferenceChangeListener()
+                            .onPreferenceChange(modePref, "record-continuously");
+                    Assert.assertEquals(
+                            "record-continuously", TracingSettings.getSelectedTracingMode());
+                });
     }
 }

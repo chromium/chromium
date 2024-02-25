@@ -6,12 +6,12 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_UI_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
   std::string GetONCSourceAsString() const;
 
   ::onc::ONCSource onc_source_;
-  absl::optional<base::Value::Dict> user_settings_;
+  std::optional<base::Value::Dict> user_settings_;
 };
 
 }  // namespace ash

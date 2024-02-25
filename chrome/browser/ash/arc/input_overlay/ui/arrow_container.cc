@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
 
+#include <cmath>
+
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -13,14 +17,16 @@
 namespace arc::input_overlay {
 namespace {
 
-// Whole menu width with arrow.
-constexpr int kMenuWidth = 316;
+constexpr SkScalar kTriangleLength = 20.0f;
+constexpr SkScalar kTriangleHeight = 14.0f;
+// The straight distance from triangle rounded corner start to end.
+constexpr SkScalar kTriangleRoundDistance = 4.0f;
+constexpr SkScalar kCornerRadius = 16.0f;
+constexpr SkScalar kBorderThickness = 2.0f;
 
-constexpr int kTriangleLength = 20;
-constexpr int kTriangleHeight = 14;
-constexpr int kCornerRadius = 16;
-constexpr int kBorderThickness = 2;
-constexpr int kBorderInset = 16;
+// Whole menu width with arrow.
+constexpr int kMenuWidth = kButtonOptionsMenuWidth + kTriangleHeight;
+
 // Draws the dialog shape path with round corner. It starts after the corner
 // radius on line #0 and draws clockwise.
 //
@@ -39,15 +45,27 @@ constexpr int kBorderInset = 16;
 // |             |
 // |_____________|
 //
-SkPath BackgroundPath(int height,
-                      bool draw_triangle_on_left,
-                      int action_offset) {
+SkPath BackgroundPath(SkScalar height,
+                      SkScalar action_offset,
+                      bool draw_triangle_on_left) {
   SkPath path;
-  const int short_length = kMenuWidth - kTriangleHeight - 2 * kCornerRadius;
-  const int short_height = height - 2 * kCornerRadius;
+  const SkScalar short_length =
+      SkIntToScalar(kMenuWidth) - kTriangleHeight - 2 * kCornerRadius;
+  const SkScalar short_height = height - 2 * kCornerRadius;
+
+  // Calculate values for drawing triangle rounded corner. Check b/324940844 for
+  // calculation details.
+  const SkScalar triangle_radius =
+      kTriangleRoundDistance / 4 *
+      std::sqrt(4 +
+                std::pow(kTriangleLength, 2) / std::pow(kTriangleHeight, 2));
+  const SkScalar dx =
+      kTriangleHeight * kTriangleRoundDistance / kTriangleLength;
+  const SkScalar dy = kTriangleRoundDistance / 2;
+
   // If the offset is greater than the limit or less than the negative
   // limit, set it respectively.
-  const int limit = short_height / 2 - kTriangleLength / 2;
+  const SkScalar limit = short_height / 2 - kTriangleLength / 2;
   if (action_offset > limit) {
     action_offset = limit;
   } else if (action_offset < -limit) {
@@ -69,8 +87,11 @@ SkPath BackgroundPath(int height,
     // Top right after corner radius to midway point.
     path.rLineTo(0, limit + action_offset);
     // Triangle shape.
-    path.rLineTo(kTriangleHeight, kTriangleLength / 2);
-    path.rLineTo(-kTriangleHeight, kTriangleLength / 2);
+    path.rLineTo(kTriangleHeight - dx, kTriangleLength / 2 - dy);
+    // Draw triangle rounded corner.
+    path.rArcTo(triangle_radius, triangle_radius, 0, SkPath::kSmall_ArcSize,
+                SkPathDirection::kCW, 0, kTriangleRoundDistance);
+    path.rLineTo(-kTriangleHeight + dx, kTriangleLength / 2 - dy);
     // After midway point to bottom right corner radius.
     path.rLineTo(0, limit - action_offset);
   }
@@ -84,8 +105,11 @@ SkPath BackgroundPath(int height,
     // bottom left after corner radius to midway point.
     path.rLineTo(0, -limit + action_offset);
     // Triangle shape.
-    path.rLineTo(-kTriangleHeight, -kTriangleLength / 2);
-    path.rLineTo(kTriangleHeight, -kTriangleLength / 2);
+    path.rLineTo(-kTriangleHeight + dx, -kTriangleLength / 2 + dy);
+    // Draw triangle rounded corner.
+    path.rArcTo(triangle_radius, triangle_radius, 0, SkPath::kSmall_ArcSize,
+                SkPathDirection::kCW, 0, -kTriangleRoundDistance);
+    path.rLineTo(kTriangleHeight - dx, -kTriangleLength / 2 + dy);
     // After midway point to bottom right corner radius.
     path.rLineTo(0, -limit - action_offset);
   } else {
@@ -124,11 +148,16 @@ void ArrowContainer::SetArrowOnLeft(bool arrow_on_left) {
 
 void ArrowContainer::UpdateBorder() {
   SetBorder(views::CreateEmptyBorder(
-      arrow_on_left_
-          ? gfx::Insets::TLBR(kBorderInset, kBorderInset + kTriangleHeight,
-                              kBorderInset, kBorderInset)
-          : gfx::Insets::TLBR(kBorderInset, kBorderInset, kBorderInset,
-                              kBorderInset + kTriangleHeight)));
+      arrow_on_left_ ? gfx::Insets::TLBR(kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset +
+                                             kTriangleHeight,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset)
+                     : gfx::Insets::TLBR(kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset +
+                                             kTriangleHeight)));
 }
 
 void ArrowContainer::OnPaintBackground(gfx::Canvas* canvas) {
@@ -138,22 +167,29 @@ void ArrowContainer::OnPaintBackground(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   ui::ColorProvider* color_provider = GetColorProvider();
   flags.setColor(
-      color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
+      color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque));
 
   int height = GetHeightForWidth(kMenuWidth);
   canvas->DrawPath(
-      BackgroundPath(height, arrow_on_left_, arrow_vertical_offset_), flags);
+      BackgroundPath(SkIntToScalar(height),
+                     SkIntToScalar(arrow_vertical_offset_), arrow_on_left_),
+      flags);
   // Draw the border.
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   // TODO(b/270969760): Change to "sys.BorderHighlight1" when added.
   flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysSystemBorder1));
   flags.setStrokeWidth(kBorderThickness);
   canvas->DrawPath(
-      BackgroundPath(height, arrow_on_left_, arrow_vertical_offset_), flags);
+      BackgroundPath(SkIntToScalar(height),
+                     SkIntToScalar(arrow_vertical_offset_), arrow_on_left_),
+      flags);
 }
 
 gfx::Size ArrowContainer::CalculatePreferredSize() const {
   return gfx::Size(kMenuWidth, GetHeightForWidth(kMenuWidth));
 }
+
+BEGIN_METADATA(ArrowContainer)
+END_METADATA
 
 }  // namespace arc::input_overlay

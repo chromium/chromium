@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/metrics/structured/enums.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Builder classes for sending events are generated in
 // //components/metrics/structured/structured_events.h based on XML
@@ -26,6 +26,8 @@ namespace metrics::structured {
 class Event {
  public:
   // There should be a 1-1 mapping between MetricType and the mojom enums.
+  //
+  // kInt is used to represent enums.
   //
   // TODO(jongahn): Move this into common enum file.
   enum class MetricType {
@@ -84,10 +86,6 @@ class Event {
 
   Event Clone() const;
 
-  // Records |this|. Once this method is called, |this| will be unsafe to
-  // access.
-  void Record();
-
   // Returns true if the value was added successfully. |type| and type of
   // |value| must be consistent and will be enforced. If the data in |value| and
   // |type| do match, then |value| will be moved into |this| when called.
@@ -103,11 +101,15 @@ class Event {
   // Explicitly set the system uptime.
   void SetRecordedTimeSinceBoot(base::TimeDelta recorded_time_since_boot);
 
-  const std::string& project_name() const;
-  const std::string& event_name() const;
-  bool is_event_sequence() const;
-  const std::map<std::string, MetricValue>& metric_values() const;
-
+  const std::string& project_name() const { return project_name_; }
+  const std::string& event_name() const { return event_name_; }
+  bool is_event_sequence() const { return is_event_sequence_; }
+  const std::map<std::string, MetricValue>& metric_values() const {
+    return metric_values_;
+  }
+  bool has_system_uptime() const {
+    return recorded_time_since_boot_.has_value();
+  }
   const base::TimeDelta recorded_time_since_boot() const;
   const EventSequenceMetadata& event_sequence_metadata() const;
 
@@ -117,9 +119,9 @@ class Event {
   std::map<std::string, MetricValue> metric_values_;
 
   // System uptime for which the event was recorded.
-  absl::optional<base::TimeDelta> recorded_time_since_boot_;
+  std::optional<base::TimeDelta> recorded_time_since_boot_;
 
-  absl::optional<EventSequenceMetadata> event_sequence_metadata_;
+  std::optional<EventSequenceMetadata> event_sequence_metadata_;
 
   // Returns true if part of a sequence.
   bool is_event_sequence_ = false;

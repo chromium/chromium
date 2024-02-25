@@ -22,7 +22,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +29,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -39,6 +39,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
 
@@ -48,6 +49,8 @@ namespace {
 
 // A button that will transition to multi profile login UI.
 class AddUserButton : public views::Button {
+  METADATA_HEADER(AddUserButton, views::Button)
+
  public:
   explicit AddUserButton(UserChooserDetailedViewController* controller);
 
@@ -91,29 +94,39 @@ AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)
   label->SetSubpixelRenderingEnabled(false);
 }
 
+BEGIN_METADATA(AddUserButton)
+END_METADATA
+
 class Separator : public views::View {
+  METADATA_HEADER(Separator, views::View)
+
  public:
   explicit Separator(bool between_user) {
-    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetUseDefaultFillLayout(true);
     SetBorder(views::CreateEmptyBorder(
         between_user
             ? gfx::Insets::VH(0, kUnifiedUserChooserSeparatorSideMargin)
             : gfx::Insets::VH(kUnifiedUserChooserLargeSeparatorVerticalSpacing,
                               0)));
-    views::View* child = new views::View();
-    // make sure that the view is displayed by setting non-zero size
-    child->SetPreferredSize(gfx::Size(1, 1));
-    AddChildView(child);
-    child->SetBorder(views::CreateThemedSolidSidedBorder(
-        gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness, 0),
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator)
-            : kColorAshSeparatorColor));
+    AddChildView(
+        views::Builder<views::View>()
+            // make sure that the view is displayed by setting non-zero size
+            .SetPreferredSize(gfx::Size(1, 1))
+            .SetBorder(views::CreateThemedSolidSidedBorder(
+                gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness,
+                                  0),
+                chromeos::features::IsJellyEnabled()
+                    ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator)
+                    : kColorAshSeparatorColor))
+            .Build());
   }
 
   Separator(const Separator&) = delete;
   Separator& operator=(const Separator&) = delete;
 };
+
+BEGIN_METADATA(Separator)
+END_METADATA
 
 views::View* CreateAddUserErrorView(const std::u16string& message) {
   auto* label = new views::Label(message);
@@ -137,7 +150,7 @@ views::View* CreateUserAvatarView(int user_index) {
       Shell::Get()->session_controller()->GetUserSession(user_index);
   DCHECK(user_session);
 
-  if (user_session->user_info.type == user_manager::USER_TYPE_GUEST) {
+  if (user_session->user_info.type == user_manager::UserType::kGuest) {
     // In guest mode, the user avatar is just a disabled button pod.
     auto* image_view = new IconButton(
         views::Button::PressedCallback(), IconButton::Type::kMedium,
@@ -159,10 +172,11 @@ std::u16string GetUserItemAccessibleString(int user_index) {
       Shell::Get()->session_controller()->GetUserSession(user_index);
   DCHECK(user_session);
 
-  if (user_session->user_info.type == user_manager::USER_TYPE_GUEST)
+  if (user_session->user_info.type == user_manager::UserType::kGuest) {
     return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_GUEST_LABEL);
+  }
 
-  if (user_session->user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+  if (user_session->user_info.type == user_manager::UserType::kPublicAccount) {
     std::string domain_manager = Shell::Get()
                                      ->system_tray_model()
                                      ->enterprise_domain()
@@ -275,7 +289,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
 
 void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
   capture_icon_->SetVisible(capture_state != MediaCaptureState::kNone);
-  Layout();
+  DeprecatedLayoutImmediately();
 
   int res_id = 0;
   switch (capture_state) {
@@ -291,8 +305,9 @@ void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
     case MediaCaptureState::kNone:
       break;
   }
-  if (res_id)
+  if (res_id) {
     capture_icon_->SetTooltipText(l10n_util::GetStringUTF16(res_id));
+  }
 }
 
 std::u16string UserItemButton::GetTooltipText(const gfx::Point& p) const {
@@ -310,6 +325,9 @@ void UserItemButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       user_index_ == 0 ? ax::mojom::Role::kLabelText : ax::mojom::Role::kButton;
   node_data->SetName(GetUserItemAccessibleString(user_index_));
 }
+
+BEGIN_METADATA(UserItemButton)
+END_METADATA
 
 UserChooserView::UserChooserView(
     UserChooserDetailedViewController* controller) {
@@ -372,8 +390,9 @@ UserChooserView::~UserChooserView() {
 
 void UserChooserView::OnMediaCaptureChanged(
     const base::flat_map<AccountId, MediaCaptureState>& capture_states) {
-  if (user_item_buttons_.size() != capture_states.size())
+  if (user_item_buttons_.size() != capture_states.size()) {
     return;
+  }
 
   for (size_t i = 0; i < user_item_buttons_.size(); ++i) {
     const UserSession* const user_session =
@@ -385,8 +404,7 @@ void UserChooserView::OnMediaCaptureChanged(
   }
 }
 
-const char* UserChooserView::GetClassName() const {
-  return "UserChooserView";
-}
+BEGIN_METADATA(UserChooserView)
+END_METADATA
 
 }  // namespace ash

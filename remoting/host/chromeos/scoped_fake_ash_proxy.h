@@ -66,6 +66,9 @@ class ScopedFakeAshProxy : public AshProxy {
       mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver);
 
   void RequestSignOut() override;
+
+  bool IsScreenReaderEnabled() const override;
+
   int request_sign_out_count() const;
 
  private:

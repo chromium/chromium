@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -72,6 +73,29 @@ constexpr std::array<const char*, 2> kExcludeList = {
 // is ~7M and that majority of log files are under 1M, we set a per-file limit
 // of 1MiB.
 const int64_t kMaxLogSize = 1024 * 1024;
+
+std::vector<debugd::FeedbackLogType> GetLogTypesForUser(
+    const user_manager::User* user) {
+  // The default list of log types that we request from debugd.
+  std::vector<debugd::FeedbackLogType> included_log_types = {
+      debugd::FeedbackLogType::ARC_BUG_REPORT,
+      debugd::FeedbackLogType::CONNECTIVITY_REPORT,
+      debugd::FeedbackLogType::VERBOSE_COMMAND_LOGS,
+      debugd::FeedbackLogType::COMMAND_LOGS,
+      debugd::FeedbackLogType::FEEDBACK_LOGS,
+      debugd::FeedbackLogType::BLUETOOTH_BQR,
+      debugd::FeedbackLogType::LSB_RELEASE_INFO,
+      debugd::FeedbackLogType::PERF_DATA,
+      debugd::FeedbackLogType::OS_RELEASE_INFO,
+      debugd::FeedbackLogType::VAR_LOG_FILES};
+  if (user && ash::ChromeOsFeedbackDelegate::IsWifiDebugLogsAllowed(
+                  user->GetProfilePrefs())) {
+    // Include WIFI_FIRMWARE_DUMPS since it is allowed for the user.
+    included_log_types.push_back(debugd::FeedbackLogType::WIFI_FIRMWARE_DUMPS);
+  }
+
+  return included_log_types;
+}
 
 }  // namespace
 
@@ -165,23 +189,12 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
     const auto account_identifier =
         cryptohome::CreateAccountIdentifierFromAccountId(
             user ? user->GetAccountId() : EmptyAccountId());
-    // Empty type to request all logs.
-    constexpr std::vector<debugd::FeedbackLogType> all_logs;
 
-    if (base::FeatureList::IsEnabled(
-            ash::features::kEnableGetDebugdLogsInParallel)) {
-      // GetFeedbackLogsV3 collects logs in parallel.
-      client->GetFeedbackLogsV3(
-          account_identifier, all_logs,
-          base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                         weak_ptr_factory_.GetWeakPtr(), start_time));
-    } else {
-      // GetFeedbackLogsV2 collects logs in sequence.
-      client->GetFeedbackLogsV2(
-          account_identifier, all_logs,
-          base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                         weak_ptr_factory_.GetWeakPtr(), start_time));
-    }
+    client->GetFeedbackLogs(
+        account_identifier, GetLogTypesForUser(user),
+        base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
+                       weak_ptr_factory_.GetWeakPtr(), start_time));
+
   } else {
     client->GetAllLogs(base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
                                       weak_ptr_factory_.GetWeakPtr(),
@@ -192,7 +205,7 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
 
 void DebugDaemonLogSource::OnGetRoutes(
     bool is_ipv6,
-    absl::optional<std::vector<std::string>> routes) {
+    std::optional<std::vector<std::string>> routes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string key = is_ipv6 ? kRoutesv6KeyName : kRoutesKeyName;
   (*response_)[key] = routes.has_value()
@@ -202,7 +215,7 @@ void DebugDaemonLogSource::OnGetRoutes(
 }
 
 void DebugDaemonLogSource::OnGetOneLog(std::string key,
-                                       absl::optional<std::string> status) {
+                                       std::optional<std::string> status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   (*response_)[std::move(key)] = std::move(status).value_or(kNotAvailable);
@@ -265,7 +278,7 @@ void DebugDaemonLogSource::GetLoggedInUsersLogFiles() {
   std::vector<base::FilePath> profile_dirs;
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetLoggedInUsers();
-  for (const auto* user : users) {
+  for (const user_manager::User* user : users) {
     if (user->username_hash().empty()) {
       continue;
     }

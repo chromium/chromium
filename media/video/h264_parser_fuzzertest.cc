@@ -4,9 +4,10 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/numerics/safe_conversions.h"
 #include "media/video/h264_parser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -46,9 +47,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           break;
         // Also test the SPS helper methods. We make sure that the results are
         // used so that the calls are not optimized away.
-        absl::optional<gfx::Size> coded_size = sps->GetCodedSize();
+        std::optional<gfx::Size> coded_size = sps->GetCodedSize();
         volatile_sink = coded_size.value_or(gfx::Size()).ToString().length();
-        absl::optional<gfx::Rect> visible_rect = sps->GetVisibleRect();
+        std::optional<gfx::Rect> visible_rect = sps->GetVisibleRect();
         volatile_sink = visible_rect.value_or(gfx::Rect()).ToString().length();
         break;
       }

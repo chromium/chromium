@@ -6,13 +6,13 @@
 #define COMPONENTS_SYNC_NIGORI_NIGORI_LOCAL_CHANGE_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -31,7 +31,7 @@ struct NigoriMetadataBatch {
   ~NigoriMetadataBatch();
 
   sync_pb::ModelTypeState model_type_state;
-  absl::optional<sync_pb::EntityMetadata> entity_metadata;
+  std::optional<sync_pb::EntityMetadata> entity_metadata;
 };
 
 // Interface analogous to ModelTypeChangeProcessor for Nigori, used to propagate

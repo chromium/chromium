@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
@@ -295,7 +295,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
 
   // Returns the grammar fragment which contains the current cursor. If
   // non-existent, returns nullopt.
-  virtual absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() const;
+  virtual std::optional<GrammarFragment> GetGrammarFragmentAtCursor() const;
 
   // Clears all the grammar fragments in |range|, returns whether the operation
   // is successful. Should return true if the there is no fragment in the range.
@@ -323,8 +323,8 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
   // input control to TSF on Windows and to the Virtual Keyboard extension on
   // ChromeOS.
   virtual void GetActiveTextInputControlLayoutBounds(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) = 0;
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) = 0;
 #endif
 
 #if BUILDFLAG(IS_WIN)

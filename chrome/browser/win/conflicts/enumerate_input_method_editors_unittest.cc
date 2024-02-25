@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
@@ -49,9 +48,8 @@ class EnumerateInputMethodEditorsTest : public testing::Test {
 // Adds a fake IME entry to the registry that should be found by the
 // enumeration. The call must be wrapped inside an ASSERT_NO_FATAL_FAILURE.
 void RegisterFakeIme(const wchar_t* guid, const wchar_t* path) {
-  base::win::RegKey class_id(
-      HKEY_CLASSES_ROOT,
-      base::StringPrintf(kClassIdRegistryKeyFormat, guid).c_str(), KEY_WRITE);
+  base::win::RegKey class_id(HKEY_CLASSES_ROOT, GuidToClsid(guid).c_str(),
+                             KEY_WRITE);
   ASSERT_TRUE(class_id.Valid());
 
   ASSERT_EQ(ERROR_SUCCESS, class_id.WriteValue(nullptr, path));

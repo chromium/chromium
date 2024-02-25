@@ -18,7 +18,7 @@ TEST(NativeMetricsUtilTest, ConvertsTimes) {
   constexpr auto start_delta = base::Milliseconds(20);
   constexpr auto event_delta = base::Milliseconds(30);
 
-  absl::optional<Cronet_DateTime> converted;
+  std::optional<Cronet_DateTime> converted;
   ConvertTime(base::TimeTicks::UnixEpoch() + event_delta,
               base::TimeTicks::UnixEpoch() + start_delta,
               base::Time::UnixEpoch() + start_delta, &converted);
@@ -30,7 +30,7 @@ TEST(NativeMetricsUtilTest, OverwritesOldOutParam) {
   constexpr auto start_delta = base::Milliseconds(20);
   constexpr auto event_delta = base::Milliseconds(30);
 
-  absl::optional<Cronet_DateTime> converted;
+  std::optional<Cronet_DateTime> converted;
   converted.emplace();
   converted->value = 60;
   ConvertTime(base::TimeTicks::UnixEpoch() + event_delta,
@@ -43,7 +43,7 @@ TEST(NativeMetricsUtilTest, OverwritesOldOutParam) {
 TEST(NativeMetricsUtilTest, NullTicks) {
   constexpr auto start_delta = base::Milliseconds(20);
 
-  absl::optional<Cronet_DateTime> converted;
+  std::optional<Cronet_DateTime> converted;
   ConvertTime(base::TimeTicks(), base::TimeTicks::UnixEpoch() + start_delta,
               base::Time::UnixEpoch() + start_delta, &converted);
   ASSERT_FALSE(converted.has_value());
@@ -53,7 +53,7 @@ TEST(NativeMetricsUtilTest, NullStartTicks) {
   constexpr auto start_delta = base::Milliseconds(20);
   constexpr auto event_delta = base::Milliseconds(30);
 
-  absl::optional<Cronet_DateTime> converted;
+  std::optional<Cronet_DateTime> converted;
   ConvertTime(base::TimeTicks::UnixEpoch() + event_delta, base::TimeTicks(),
               base::Time::UnixEpoch() + start_delta, &converted);
   ASSERT_FALSE(converted.has_value());
@@ -63,7 +63,7 @@ TEST(NativeMetricsUtilTest, NullStartTime) {
   constexpr auto start_delta = base::Milliseconds(20);
   constexpr auto event_delta = base::Milliseconds(30);
 
-  absl::optional<Cronet_DateTime> converted;
+  std::optional<Cronet_DateTime> converted;
   EXPECT_DCHECK_DEATH(ConvertTime(base::TimeTicks::UnixEpoch() + event_delta,
                                   base::TimeTicks::UnixEpoch() + start_delta,
                                   base::Time(), &converted));

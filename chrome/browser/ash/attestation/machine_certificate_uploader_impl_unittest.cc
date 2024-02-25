@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -23,7 +24,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -96,7 +96,7 @@ class MockableFakeAttestationFlow : public MockAttestationFlow {
       bool force_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+      const std::optional<AttestationFlow::CertProfileSpecificData>&
           profile_specific_data,
       CertificateCallback callback) {
     std::string certificate;

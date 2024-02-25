@@ -32,7 +32,7 @@ template("absl_source_set") {
 
     if (is_component_build) {
       defines = [ "ABSL_BUILD_DLL" ]
-      if (!is_win) {
+      if (!is_win && (current_os != "aix")) {
         configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
         configs += [ "//build/config/gcc:symbol_visibility_default" ]
       }
@@ -76,6 +76,9 @@ template("absl_source_set") {
           # Not used by Chromium directly.
           "//chromecast/internal/*",
           "//libassistant/*",
+
+          # Not built into Chrome.
+          "//components/optimization_guide/internal/*",
         ]
       } else {
         visibility = [ "*" ]

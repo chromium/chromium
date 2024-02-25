@@ -6,6 +6,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
+#include "base/check_deref.h"
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/locale/jni_headers/LocaleTemplateUrlLoader_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -21,9 +23,6 @@ using base::android::ScopedJavaLocalRef;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 
-class PrefService;
-class TemplateURL;
-
 static jlong JNI_LocaleTemplateUrlLoader_Init(
     JNIEnv* env,
     const JavaParamRef<jstring>& jlocale) {
@@ -31,25 +30,44 @@ static jlong JNI_LocaleTemplateUrlLoader_Init(
       ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
   return reinterpret_cast<intptr_t>(new LocaleTemplateUrlLoader(
       ConvertJavaStringToUTF8(env, jlocale),
-      TemplateURLServiceFactory::GetForProfile(profile)));
+      TemplateURLServiceFactory::GetForProfile(profile), profile));
 }
 
 LocaleTemplateUrlLoader::LocaleTemplateUrlLoader(const std::string& locale,
-                                                 TemplateURLService* service)
-    : locale_(locale), template_url_service_(service) {}
+                                                 TemplateURLService* service,
+                                                 Profile* profile)
+    : locale_(locale), template_url_service_(service) {
+  profile_observation_.Observe(profile);
+}
 
 void LocaleTemplateUrlLoader::Destroy(JNIEnv* env) {
   delete this;
 }
 
+void LocaleTemplateUrlLoader::OnProfileWillBeDestroyed(Profile* profile) {
+  // There is a risk that java keeps a reference to this loader and attempts to
+  // use it even if we started destroying the profile on the native side. To
+  // protect against this we remove access to the `template_url_service_` and
+  // stub out subsequent the calls.
+  profile_observation_.Reset();
+  template_url_service_ = nullptr;
+}
+
 jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
   DCHECK(locale_.length() == 2);
+
+  if (!template_url_service_) {
+    // TODO(b/318339172): Test profile state from Java, switch to CHECK here.
+    base::debug::DumpWithoutCrashing();  // Investigating b/317335096.
+    return false;
+  }
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_list =
       GetLocalPrepopulatedEngines();
 
-  if (prepopulated_list.empty())
+  if (prepopulated_list.empty()) {
     return false;
+  }
 
   for (const auto& data_url : prepopulated_list) {
     // Attempt to see if the URL already exists in the list of template URLs.
@@ -68,7 +86,7 @@ jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
         data_url->prepopulate_id == TemplateURLPrepopulateData::google.id) {
       auto existing_urls = template_url_service_->GetTemplateURLs();
 
-      for (auto* existing_url : existing_urls) {
+      for (TemplateURL* existing_url : existing_urls) {
         if (existing_url->prepopulate_id() ==
             TemplateURLPrepopulateData::google.id) {
           matching_url = existing_url;
@@ -78,8 +96,9 @@ jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
       }
     }
 
-    if (exists)
+    if (exists) {
       continue;
+    }
 
     data_url.get()->safe_for_autoreplace = true;
     std::unique_ptr<TemplateURL> turl(
@@ -93,6 +112,12 @@ jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
 }
 
 void LocaleTemplateUrlLoader::RemoveTemplateUrls(JNIEnv* env) {
+  if (!template_url_service_) {
+    // TODO(b/318339172): Test profile state from Java, switch to CHECK here.
+    base::debug::DumpWithoutCrashing();  // Investigating b/317335096.
+    return;
+  }
+
   while (!prepopulate_ids_.empty()) {
     TemplateURL* turl = FindURLByPrepopulateID(
         template_url_service_->GetTemplateURLs(), prepopulate_ids_.back());
@@ -104,6 +129,12 @@ void LocaleTemplateUrlLoader::RemoveTemplateUrls(JNIEnv* env) {
 }
 
 void LocaleTemplateUrlLoader::OverrideDefaultSearchProvider(JNIEnv* env) {
+  if (!template_url_service_) {
+    // TODO(b/318339172): Test profile state from Java, switch to CHECK here.
+    base::debug::DumpWithoutCrashing();  // Investigating b/317335096.
+    return;
+  }
+
   // If the user has changed their default search provider, no-op.
   const TemplateURL* current_dsp =
       template_url_service_->GetDefaultSearchProvider();
@@ -121,6 +152,12 @@ void LocaleTemplateUrlLoader::OverrideDefaultSearchProvider(JNIEnv* env) {
 }
 
 void LocaleTemplateUrlLoader::SetGoogleAsDefaultSearch(JNIEnv* env) {
+  if (!template_url_service_) {
+    // TODO(b/318339172): Test profile state from Java, switch to CHECK here.
+    base::debug::DumpWithoutCrashing();  // Investigating b/317335096.
+    return;
+  }
+
   // If the user has changed their default search provider, no-op.
   const TemplateURL* current_dsp =
       template_url_service_->GetDefaultSearchProvider();
@@ -139,7 +176,13 @@ void LocaleTemplateUrlLoader::SetGoogleAsDefaultSearch(JNIEnv* env) {
 
 std::vector<std::unique_ptr<TemplateURLData>>
 LocaleTemplateUrlLoader::GetLocalPrepopulatedEngines() {
-  return TemplateURLPrepopulateData::GetLocalPrepopulatedEngines(locale_);
+  if (!template_url_service_) {
+    // TODO(b/318339172): Test profile state from Java, switch to CHECK here.
+    base::debug::DumpWithoutCrashing();  // Investigating b/317335096.
+    return std::vector<std::unique_ptr<TemplateURLData>>();
+  }
+
+  return template_url_service_->GetTemplateURLsForCountry(locale_);
 }
 
 int LocaleTemplateUrlLoader::GetDesignatedSearchEngineForChina() {

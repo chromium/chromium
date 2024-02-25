@@ -20,8 +20,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.ContextualSearchPromoHost;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchPreferenceFragment;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -77,15 +76,24 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     private boolean mHasHandledChoice;
 
     /**
-     * @param panel             The panel.
-     * @param context           The Android Context used to inflate the View.
-     * @param container         The container View used to inflate the View.
-     * @param resourceLoader    The resource loader that will handle the snapshot capturing.
+     * @param panel The panel.
+     * @param context The Android Context used to inflate the View.
+     * @param container The container View used to inflate the View.
+     * @param resourceLoader The resource loader that will handle the snapshot capturing.
      */
-    ContextualSearchPromoControl(OverlayPanel panel, ContextualSearchPromoHost host,
-            Context context, ViewGroup container, DynamicResourceLoader resourceLoader) {
-        super(panel, R.layout.contextual_search_promo_view, R.id.contextual_search_promo, context,
-                container, resourceLoader);
+    ContextualSearchPromoControl(
+            OverlayPanel panel,
+            ContextualSearchPromoHost host,
+            Context context,
+            ViewGroup container,
+            DynamicResourceLoader resourceLoader) {
+        super(
+                panel,
+                R.layout.contextual_search_promo_view,
+                R.id.contextual_search_promo,
+                context,
+                container,
+                resourceLoader);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
         mBackgroundColor =
@@ -98,9 +106,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     // Public API
     // ============================================================================================
 
-    /**
-     * Shows the Promo. This includes inflating the View and setting its initial state.
-     */
+    /** Shows the Promo. This includes inflating the View and setting its initial state. */
     void show() {
         if (mIsVisible) return;
 
@@ -114,9 +120,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         mHeightPx = mContentHeightPx;
     }
 
-    /**
-     * Hides the Promo
-     */
+    /** Hides the Promo */
     void hide() {
         if (!mIsVisible) return;
 
@@ -130,16 +134,11 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
 
     /**
      * Handles change in the Contextual Search preference state.
+     *
      * @param isEnabled Whether the feature was enable.
      */
     void onContextualSearchPrefChanged(boolean isEnabled) {
         if (!mIsVisible || !mOverlayPanel.isShowing()) return;
-
-        if (isEnabled) {
-            mHost.onPromoOptIn();
-        } else {
-            mHost.onPromoOptOut();
-        }
 
         collapse();
     }
@@ -234,7 +233,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         hidePromoView();
     }
 
-    /**  Notifies that movement of this panel section hast started or stopped. */
+    /** Notifies that movement of this panel section hast started or stopped. */
     void onUpdateForMovement(boolean isMovementStarting) {
         if (isMovementStarting) hidePromoView();
         updateAppearance(isMovementStarting ? INTERMEDIATE_PERCENTAGE : STATIONARY_PERCENTAGE);
@@ -244,9 +243,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     // Promo Acceptance Animation
     // ============================================================================================
 
-    /**
-     * Collapses the Promo in an animated fashion.
-     */
+    /** Collapses the Promo in an animated fashion. */
     public void collapse() {
         hidePromoView();
 
@@ -255,18 +252,23 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         mHost.onPanelSectionSizeChange(true);
 
         CompositorAnimator collapse =
-                CompositorAnimator.ofFloat(mOverlayPanel.getAnimationHandler(), 1.f, 0.f,
-                        OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
+                CompositorAnimator.ofFloat(
+                        mOverlayPanel.getAnimationHandler(),
+                        1.f,
+                        0.f,
+                        OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
+                        null);
 
         collapse.addUpdateListener(animator -> updateAppearance(animator.getAnimatedValue()));
 
-        collapse.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                hide();
-                mHost.onPanelSectionSizeChange(false);
-            }
-        });
+        collapse.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        hide();
+                        mHost.onPanelSectionSizeChange(false);
+                    }
+                });
 
         collapse.start();
     }
@@ -275,12 +277,13 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
      * Updates the appearance of the Promo.
      *
      * @param percentage The completion percentage. 0.f means the Promo is fully collapsed and
-     *                   transparent. 1.f means the Promo is fully expanded and opaque.
+     *     transparent. 1.f means the Promo is fully expanded and opaque.
      */
     private void updateAppearance(float percentage) {
         if (mIsVisible) {
-            mHeightPx = Math.round(
-                    MathUtils.clamp(percentage * mContentHeightPx, 0.f, mContentHeightPx));
+            mHeightPx =
+                    Math.round(
+                            MathUtils.clamp(percentage * mContentHeightPx, 0.f, mContentHeightPx));
             mOpacity = percentage;
         } else {
             mHeightPx = 0.f;
@@ -326,12 +329,16 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         // Fill in text with link to Settings.
         TextView promoText = (TextView) view.findViewById(R.id.contextual_search_promo_text);
 
-        NoUnderlineClickableSpan settingsLink = new NoUnderlineClickableSpan(view.getContext(),
-                (View ignored) -> ContextualSearchPromoControl.this.handleClickSettingsLink());
+        NoUnderlineClickableSpan settingsLink =
+                new NoUnderlineClickableSpan(
+                        view.getContext(),
+                        (View ignored) ->
+                                ContextualSearchPromoControl.this.handleClickSettingsLink());
 
-        promoText.setText(SpanApplier.applySpans(
-                view.getResources().getString(R.string.contextual_search_promo_description),
-                new SpanApplier.SpanInfo("<link>", "</link>", settingsLink)));
+        promoText.setText(
+                SpanApplier.applySpans(
+                        view.getResources().getString(R.string.contextual_search_promo_description),
+                        new SpanApplier.SpanInfo("<link>", "</link>", settingsLink)));
         promoText.setMovementMethod(LinkMovementMethod.getInstance());
 
         onPromoViewSizeChange();
@@ -348,28 +355,29 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
 
     /**
      * Handles the choice made by the user in the Promo.
+     *
      * @param hasEnabled Whether the user has chosen to enable the feature.
      */
     private void handlePromoChoice(boolean hasEnabled) {
         if (!mHasHandledChoice) {
             mHasHandledChoice = true;
-            ContextualSearchManager.setContextualSearchPromoCardSelection(hasEnabled);
+            mHost.setContextualSearchPromoCardSelection(hasEnabled);
             ContextualSearchUma.logPromoCardChoice(hasEnabled);
         }
     }
 
-    /**
-     * Handles a click in the settings link located in the Promo.
-     */
+    /** Handles a click in the settings link located in the Promo. */
     private void handleClickSettingsLink() {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(
-                        getContext(), ContextualSearchPreferenceFragment.class);
-            }
-        });
+        new Handler()
+                .post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                                settingsLauncher.launchSettingsActivity(
+                                        getContext(), ContextualSearchSettingsFragment.class);
+                            }
+                        });
     }
 
     // ============================================================================================
@@ -377,10 +385,10 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     // ============================================================================================
 
     /**
-     * Shows the Promo Android View. By making the Android View visible, we are allowing the
-     * Promo to be interactive. Since snapshots are not interactive (they are just a bitmap),
-     * we need to temporarily show the Android View on top of the snapshot, so the user will
-     * be able to click in the Promo buttons and/or link.
+     * Shows the Promo Android View. By making the Android View visible, we are allowing the Promo
+     * to be interactive. Since snapshots are not interactive (they are just a bitmap), we need to
+     * temporarily show the Android View on top of the snapshot, so the user will be able to click
+     * in the Promo buttons and/or link.
      */
     private void showPromoView() {
         float y = mHost.getYPositionPx();
@@ -388,7 +396,9 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         if (view == null
                 || !mIsVisible
                 || (mIsShowingView && mPromoViewY == y)
-                || mHeightPx == 0.f) return;
+                || mHeightPx == 0.f) {
+            return;
+        }
 
         float offsetX = mOverlayPanel.getOffsetX() * mDpToPx;
         if (LocalizationUtils.isLayoutRtl()) {
@@ -409,19 +419,15 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         // The Promo can only be interacted when the View is being displayed.
         mWasInteractive = true;
 
-        ContextualSearchManager.onPromoShown();
+        mHost.onPromoShown();
 
         updatePromoHeight();
     }
 
-    /**
-     * Hides the Promo Android View. See {@link #showPromoView()}.
-     */
+    /** Hides the Promo Android View. See {@link #showPromoView()}. */
     private void hidePromoView() {
         View view = getView();
-        if (view == null
-                || !mIsVisible
-                || !mIsShowingView) {
+        if (view == null || !mIsVisible || !mIsShowingView) {
             return;
         }
 

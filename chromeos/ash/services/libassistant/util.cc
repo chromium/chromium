@@ -15,10 +15,10 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/cpp/switches.h"
 #include "chromeos/ash/services/libassistant/constants.h"
+#include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "chromeos/ash/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
-#include "chromeos/assistant/internal/libassistant_util.h"
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/version/version_loader.h"
 
@@ -166,13 +166,13 @@ base::FilePath GetBaseAssistantDir() {
 }
 
 std::string CreateLibAssistantConfig(
-    absl::optional<std::string> s3_server_uri_override,
-    absl::optional<std::string> device_id_override) {
+    std::optional<std::string> s3_server_uri_override,
+    std::optional<std::string> device_id_override) {
   using Value = base::Value;
 
   Value::Dict config;
 
-  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+  std::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
   config.Set("device",
              Value::Dict()
@@ -183,20 +183,15 @@ std::string CreateLibAssistantConfig(
                  .Set("model_revision", 1));
 
   // Enables Libassistant gRPC server for V2.
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
-    const std::string server_addresses =
-        chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device) +
-        "," +
-        chromeos::assistant::GetHttpConnectionServiceAddress(
-            is_chromeos_device);
+  const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
+  const std::string server_addresses =
+      GetLibassistantServiceAddress(is_chromeos_device) + "," +
+      GetHttpConnectionServiceAddress(is_chromeos_device);
 
-    config.Set("libas_server",
-               Value::Dict()
-                   .Set("libas_server_address", server_addresses)
-                   .Set("enable_display_service", true)
-                   .Set("enable_http_connection_service", true));
-  }
+  config.Set("libas_server", Value::Dict()
+                                 .Set("libas_server_address", server_addresses)
+                                 .Set("enable_display_service", true)
+                                 .Set("enable_http_connection_service", true));
 
   config.Set("discovery", Value::Dict().Set("enable_mdns", false));
 

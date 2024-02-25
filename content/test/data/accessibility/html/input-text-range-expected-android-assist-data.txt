@@ -1,0 +1,6 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++SeekBar text:"medium" textSize:13.3 style:0 fgColor:-6449522 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {aria-valuetext="medium"}, {max="2"}, {min="0"}, {type="range"}, {value="1"}]
+++++View textSize:16.0 style:0 htmlInfo:[{htmlTag="label"}, {display="inline"}, {for="in2"}]
+++++++TextView text:"This is a test label " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++++SeekBar text:"small" textSize:13.3 style:0 fgColor:-6449522 htmlInfo:[{htmlTag="input"}, {display="inline-block"}, {aria-valuetext="small"}, {max="2"}, {min="0"}, {type="range"}, {value="0"}]

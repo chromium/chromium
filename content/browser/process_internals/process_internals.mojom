@@ -27,6 +27,9 @@ struct SiteInstanceInfo {
   // ID of the SiteInstanceGroup this SiteInstance belongs to.
   int32 site_instance_group_id;
 
+  // ID of the BrowsingInstance this SiteInstance belongs to.
+  int32 browsing_instance_id;
+
   // Boolean indicating whether the SiteInstance's process is locked to a
   // specific URL.
   bool locked;

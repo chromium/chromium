@@ -13,6 +13,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/search/ntp_features.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
+#include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
@@ -36,15 +37,15 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android_v2.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/segmentation_platform/embedder/default_model/android_home_module_ranker.h"
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
 #include "components/segmentation_platform/embedder/default_model/device_tier_segment.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
+#include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
-#include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 #include "components/segmentation_platform/embedder/default_model/tablet_productivity_user_model.h"
 #endif
 
@@ -156,16 +157,15 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     configs.emplace_back(GetConfigForContextualPageActions(context));
   }
 
-  configs.emplace_back(ChromeStartModel::GetConfig());
-  configs.emplace_back(QueryTilesModel::GetConfig());
   configs.emplace_back(ChromeStartModelV2::GetConfig());
   configs.emplace_back(IntentionalUserModel::GetConfig());
   configs.emplace_back(PowerUserSegment::GetConfig());
   configs.emplace_back(FrequentFeatureUserModel::GetConfig());
   configs.emplace_back(DeviceTierSegment::GetConfig());
   configs.emplace_back(TabletProductivityUserModel::GetConfig());
+  configs.emplace_back(MostVisitedTilesUser::GetConfig());
+  configs.emplace_back(AndroidHomeModuleRanker::GetConfig());
 #endif
-
   configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(SearchUserModel::GetConfig());
   configs.emplace_back(FeedUserSegment::GetConfig());
@@ -175,6 +175,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(DeviceSwitcherModel::GetConfig());
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
+  configs.emplace_back(DatabaseApiClients::GetConfig());
 
   // Model used for testing.
   configs.emplace_back(OptimizationTargetSegmentationDummy::GetConfig());
@@ -247,22 +248,10 @@ void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
     base::StringPiece trial_name,
     SegmentId segment_id,
     int subsegment_rank) {
-  absl::optional<std::string> group_name;
+  std::optional<std::string> group_name;
   // TODO(ssid): Make GetSubsegmentName as a ModelProvider API so that clients
   // can simply implement it instead of adding conditions here, once the
   // subsegment process is more stable.
-  if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
-    group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
-  }
-#if BUILDFLAG(IS_ANDROID)
-  if (segment_id == SegmentId::POWER_USER_SEGMENT) {
-    group_name = PowerUserSegment::GetSubsegmentName(subsegment_rank);
-  }
-#endif
-  if (segment_id == SegmentId::CROSS_DEVICE_USER_SEGMENT) {
-    group_name = CrossDeviceUserSegment::GetSubsegmentName(subsegment_rank);
-  }
-
   if (!group_name) {
     return;
   }

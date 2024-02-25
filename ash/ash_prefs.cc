@@ -6,7 +6,7 @@
 
 #include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
@@ -16,6 +16,7 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_education_controller.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -23,7 +24,8 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
@@ -31,6 +33,7 @@
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/quick_pair/feature_status_tracker/scanning_enabled_provider.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/session/fullscreen_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -41,8 +44,8 @@
 #include "ash/system/camera/autozoom_nudge_controller.h"
 #include "ash/system/camera/camera_app_prefs.h"
 #include "ash/system/camera/camera_effects_controller.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
-#include "ash/system/gesture_education/gesture_education_notification_controller.h"
 #include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
@@ -51,10 +54,10 @@
 #include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/media/media_tray.h"
-#include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/network/cellular_setup_notifier.h"
 #include "ash/system/network/vpn_detailed_view.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
@@ -66,18 +69,19 @@
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/unified/quick_settings_footer.h"
-#include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
+#include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/tablet_mode_tuck_education.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_util.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
@@ -96,7 +100,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
                           std::string_view country,
                           bool for_test) {
   AcceleratorPrefs::RegisterProfilePrefs(registry);
-  AccessibilityControllerImpl::RegisterProfilePrefs(registry);
+  AccessibilityController::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AppListNudgeController::RegisterProfilePrefs(registry);
   AshAcceleratorConfiguration::RegisterProfilePrefs(registry);
@@ -108,6 +112,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   camera_app_prefs::RegisterProfilePrefs(registry);
   CameraEffectsController::RegisterProfilePrefs(registry);
   CaptureModeController::RegisterProfilePrefs(registry);
+  CaptureModeEducationController::RegisterProfilePrefs(registry);
   CellularSetupNotifier::RegisterProfilePrefs(registry);
   chromeos::MultitaskMenuNudgeController::RegisterProfilePrefs(registry);
   contextual_tooltip::RegisterProfilePrefs(registry);
@@ -116,13 +121,14 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   DarkLightModeControllerImpl::RegisterProfilePrefs(registry);
   desks_restore_util::RegisterProfilePrefs(registry);
   saved_desk_util::RegisterProfilePrefs(registry);
+  window_util::RegisterProfilePrefs(registry);
   DockedMagnifierController::RegisterProfilePrefs(registry);
   FeatureDiscoveryDurationReporterImpl::RegisterProfilePrefs(registry);
+  FocusModeController::RegisterProfilePrefs(registry);
   FullscreenController::RegisterProfilePrefs(registry);
+  GameDashboardController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);
-  GestureEducationNotificationController::RegisterProfilePrefs(registry,
-                                                               for_test);
-  GlanceablesV2Controller::RegisterUserProfilePrefs(registry);
+  GlanceablesController::RegisterUserProfilePrefs(registry);
   holding_space_prefs::RegisterProfilePrefs(registry);
   HotspotInfoCache::RegisterProfilePrefs(registry);
   InputDeviceSettingsControllerImpl::RegisterProfilePrefs(registry);
@@ -151,12 +157,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   SnoopingProtectionController::RegisterProfilePrefs(registry);
   TabletModeTuckEducation::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
-  UnifiedSystemTrayController::RegisterProfilePrefs(registry);
   UserEducationController::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
   UsbPeripheralNotificationController::RegisterProfilePrefs(registry);
   VpnDetailedView::RegisterProfilePrefs(registry);
   WallpaperDailyRefreshScheduler::RegisterProfilePrefs(registry);
+  WallpaperTimeOfDayScheduler::RegisterProfilePrefs(registry);
   WallpaperPrefManager::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
 
@@ -199,14 +205,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   LoginExpandedPublicAccountView::RegisterLocalStatePrefs(registry);
   LockStateController::RegisterPrefs(registry);
   quick_pair::Mediator::RegisterLocalStatePrefs(registry);
-  if (ash::features::IsQsRevampEnabled()) {
-    QuickSettingsFooter::RegisterLocalStatePrefs(registry);
-  } else {
-    TopShortcutsView::RegisterLocalStatePrefs(registry);
-  }
+  QuickSettingsFooter::RegisterLocalStatePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
   BatterySaverController::RegisterLocalStatePrefs(registry);
   PowerSoundsController::RegisterLocalStatePrefs(registry);
+  quick_pair::ScanningEnabledProvider::RegisterLocalStatePrefs(registry);
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);

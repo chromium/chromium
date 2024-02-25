@@ -20,7 +20,6 @@ mojom("mojom") {
   ]
 
   webui_module_path = "/"
-  use_typescript_sources = true
 
   # Blink requires legacy JS bindings.
   generate_legacy_js_bindings = true
@@ -36,6 +35,10 @@ mojom("mojom") {
   cpp_typemaps = [
     {
       types = [
+        {
+          mojom = "media_session.mojom.ChapterInformation"
+          cpp = "::media_session::ChapterInformation"
+        },
         {
           mojom = "media_session.mojom.MediaImage"
           cpp = "::media_session::MediaImage"

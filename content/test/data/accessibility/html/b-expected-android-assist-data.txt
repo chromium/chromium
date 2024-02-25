@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
+++++TextView text:"Some " textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:"bold" textSize:16.0 style:1 htmlInfo:[{htmlTag=""}, {display=""}]
+++++TextView text:" text" textSize:16.0 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

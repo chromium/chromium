@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_TAB_HELPER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -14,7 +15,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BackgroundThumbnailCapturer;
 class ThumbnailScheduler;
@@ -62,7 +62,7 @@ class ThumbnailTabHelper
                                           uint64_t frame_id);
   void StoreThumbnail(CaptureType type,
                       const SkBitmap& bitmap,
-                      absl::optional<uint64_t> frame_id);
+                      std::optional<uint64_t> frame_id);
 
   // Clears the data associated to the currently set thumbnail. For when the
   // thumbnail is no longer valid.

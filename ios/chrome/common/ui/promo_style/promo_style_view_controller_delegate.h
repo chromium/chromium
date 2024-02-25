@@ -30,6 +30,9 @@
 // Invoked when a link in the disclaimer is tapped.
 - (void)didTapURLInDisclaimer:(NSURL*)URL;
 
+// Invoked when the view controller has been dismissed.
+- (void)didDismissViewController;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_DELEGATE_H_

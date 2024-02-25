@@ -66,6 +66,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
     // Create a cert verifier service.
     cert_verifier_service_impl_.GetNewCertVerifierForTesting(
         cv_service_remote.InitWithNewPipeAndPassReceiver(),
+        /*updater_receiver=*/mojo::NullReceiver(),
         cv_service_client.InitWithNewPipeAndPassRemote(),
         mojom::CertVerifierCreationParams::New(),
         &cert_net_fetcher_url_loader_);
@@ -106,7 +107,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
     params->process_id = process_id;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     network_context_->CreateURLLoaderFactory(
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 

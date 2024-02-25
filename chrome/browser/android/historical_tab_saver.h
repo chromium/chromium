@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/tab/web_contents_state.h"
 
 class TabAndroid;
 namespace content {
@@ -15,28 +16,6 @@ class WebContents;
 }  // namespace content
 
 namespace historical_tab_saver {
-
-// A struct to store the WebContentsState passed down from the JNI to be
-// potentially used in restoring a frozen tab, as a byte buffer.
-struct WebContentsStateByteBuffer {
-  WebContentsStateByteBuffer();
-  ~WebContentsStateByteBuffer();
-
-  // `data` WebContentsState data stored as a byte buffer.
-  // `size` Byte buffer size.
-  // `saved_state_version` Saved state version of the WebContentsState.
-  WebContentsStateByteBuffer(void* data, int size, int saved_state_version);
-
-  // This struct and its parameters are only meant for use in storing web
-  // contents parsed from the JNI createHistoricalTab family of function calls,
-  // and transferring the data to the RestoreContentsFromByteBuffer function as
-  // needed. Outside of this scope, this struct is not meant to be used for any
-  // other purposes. Please do not attempt to use this struct anywhere else
-  // except for in the provided callstack/use case.
-  raw_ptr<void> byte_buffer_data;
-  int byte_buffer_size;
-  int state_version;
-};
 
 // A wrapper to manage a web contents of a possibly frozen tab.
 class ScopedWebContents {

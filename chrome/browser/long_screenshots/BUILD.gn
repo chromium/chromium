@@ -19,7 +19,7 @@ source_set("services") {
     "//components/paint_preview/common",
     "//content/public/browser",
     "//third_party/re2",
-    "//url:gurl_android",
+    "//url",
   ]
 }
 

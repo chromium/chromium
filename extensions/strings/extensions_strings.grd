@@ -236,10 +236,10 @@
         Could not load background page '<ph name="BACKGROUND_PAGE">$1<ex>page.html</ex></ph>'.
       </message>
       <message name="IDS_EXTENSION_LOAD_CSS_FAILED" desc="">
-        Could not load css '<ph name="RELATIVE_PATH">$1<ex>file.css</ex></ph>' for content script.
+        Could not load css '<ph name="RELATIVE_PATH">$1<ex>file.css</ex></ph>' for script.
       </message>
       <message name="IDS_EXTENSION_LOAD_JAVASCRIPT_FAILED" desc="">
-        Could not load javascript '<ph name="RELATIVE_PATH">$1<ex>javas.js</ex></ph>' for content script.
+        Could not load javascript '<ph name="RELATIVE_PATH">$1<ex>javas.js</ex></ph>' for script.
       </message>
       <message name="IDS_EXTENSION_LOAD_OPTIONS_PAGE_FAILED" desc="">
         Could not load options page '<ph name="OPTIONS_PAGE">$1<ex>page.html</ex></ph>'.
@@ -427,11 +427,6 @@
       <message name="IDS_EXTENSION_WEBGL_NOT_SUPPORTED" desc="Error message when an extension has a requirement for WebGL that the system does not support.">
         WebGL is not supported.
       </message>
-      <if expr="not use_aura">
-        <message name="IDS_EXTENSION_WINDOW_SHAPE_NOT_SUPPORTED" desc="Error message when an extension has a requirement for shaped windows that the system does not support.">
-          Shaped windows are not supported.
-        </message>
-      </if>
     </messages>
   </release>
 </grit>

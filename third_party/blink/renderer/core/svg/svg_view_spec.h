@@ -38,11 +38,11 @@ class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
 
   SVGViewSpec();
 
-  const SVGRect* ViewBox() const { return view_box_; }
+  const SVGRect* ViewBox() const { return view_box_.Get(); }
   const SVGPreserveAspectRatio* PreserveAspectRatio() const {
-    return preserve_aspect_ratio_;
+    return preserve_aspect_ratio_.Get();
   }
-  const SVGTransformList* Transform() const { return transform_; }
+  const SVGTransformList* Transform() const { return transform_.Get(); }
   SVGZoomAndPanType ZoomAndPan() const { return zoom_and_pan_; }
 
   void Trace(Visitor*) const;

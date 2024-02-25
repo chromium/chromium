@@ -108,8 +108,7 @@ void SilentSyncEnabler::TryEnableSyncSilentlyWithToken() {
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(
       &profile_.get(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kSigninPrimaryAccount, account_id,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, account_id,
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
       std::make_unique<SilentTurnSyncOnHelperDelegate>(), std::move(callback_));
 }

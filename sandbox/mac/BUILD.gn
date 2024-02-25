@@ -23,6 +23,8 @@ component("seatbelt") {
   sources = [
     "sandbox_compiler.cc",
     "sandbox_compiler.h",
+    "sandbox_crash_message.cc",
+    "sandbox_crash_message.h",
     "sandbox_logging.cc",
     "sandbox_logging.h",
     "seatbelt.cc",

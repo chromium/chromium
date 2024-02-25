@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DARK_MODE_FILTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "cc/paint/paint_flags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -50,7 +50,7 @@ class PLATFORM_EXPORT DarkModeFilter {
                                 ElementRole role,
                                 const SkColor4f& contrast_background);
 
-  absl::optional<cc::PaintFlags> ApplyToFlagsIfNeeded(
+  std::optional<cc::PaintFlags> ApplyToFlagsIfNeeded(
       const cc::PaintFlags& flags,
       ElementRole role,
       SkColor4f contrast_background);

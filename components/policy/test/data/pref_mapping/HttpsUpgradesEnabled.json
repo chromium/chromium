@@ -1,0 +1,45 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HttpsUpgradesEnabled": true
+        },
+        "prefs": {
+          "https_upgrades.policy.upgrades_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpsUpgradesEnabled": false
+        },
+        "prefs": {
+          "https_upgrades.policy.upgrades_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpsUpgradesEnabled": {}
+        },
+        "prefs": {
+          "https_upgrades.policy.upgrades_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

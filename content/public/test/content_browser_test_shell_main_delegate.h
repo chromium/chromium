@@ -6,10 +6,10 @@
 #define CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_SHELL_MAIN_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "build/chromeos_buildflags.h"
 #include "content/shell/app/shell_main_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(erikchen): Move #include to .cc file and forward declare
@@ -27,7 +27,7 @@ class ContentBrowserTestShellMainDelegate : public ShellMainDelegate {
 
   // ContentMainDelegate implementation:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
+  std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 #endif
   // ShellMainDelegate overrides.
   content::ContentBrowserClient* CreateContentBrowserClient() override;

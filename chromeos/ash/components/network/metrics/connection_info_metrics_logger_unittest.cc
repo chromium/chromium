@@ -137,8 +137,7 @@ class ConnectionInfoMetricsLoggerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  raw_ptr<ShillServiceClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ShillServiceClient::TestInterface, DanglingUntriaged>
       shill_service_client_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;

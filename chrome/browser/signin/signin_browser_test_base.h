@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_BROWSER_TEST_BASE_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_BROWSER_TEST_BASE_H_
 
+#include <concepts>
+#include <memory>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -15,6 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 // Template for adding account management utilities to any test fixture which is
@@ -25,9 +30,8 @@
 //
 // If you don't need to derive from some existing test class, prefer to use
 // `SigninBrowserTestBase`.
-template <typename T,
-          typename =
-              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
+template <typename T>
+  requires(std::derived_from<T, InProcessBrowserTest>)
 class SigninBrowserTestBaseT : public T {
  public:
   // `use_main_profile` controls whether the main profile is used (the default
@@ -38,11 +42,13 @@ class SigninBrowserTestBaseT : public T {
 
   ~SigninBrowserTestBaseT() override = default;
 
-  // Sets accounts in the environment to new ones based on the given `emails`,
-  // and makes the first one primary.
+  // Sets accounts in the environment to new ones based on the given `emails`.
+  // The primary account is automatically set by Chrome when
+  // `switches::kUnoDesktop` is disabled, and remains unset when it is enabled.
   // Returns `AccountInfo`s for each added account, in the same order as
   // `emails`.
-  std::vector<AccountInfo> SetAccounts(const std::vector<std::string>& emails) {
+  std::vector<AccountInfo> SetAccountsCookiesAndTokens(
+      const std::vector<std::string>& emails) {
     auto account_availability_options =
         identity_test_env()
             ->CreateAccountAvailabilityOptionsBuilder()
@@ -89,6 +95,10 @@ class SigninBrowserTestBaseT : public T {
     DCHECK_EQ(GetProfile()->IsMainProfile(), use_main_profile_);
 #endif
 
+    if (GetProfile()->IsOffTheRecord()) {
+      return;
+    }
+
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
     identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
@@ -113,18 +123,8 @@ class SigninBrowserTestBaseT : public T {
 
   virtual void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) {
-    signin::AccountConsistencyMethod account_consistency_method =
-#if BUILDFLAG(ENABLE_MIRROR)
-        signin::AccountConsistencyMethod::kMirror;
-#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-        signin::AccountConsistencyMethod::kDice;
-#else
-        signin::AccountConsistencyMethod::kDisabled;
-#endif
-
     IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(
-            context, account_consistency_method);
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
     ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                      &test_url_loader_factory_));

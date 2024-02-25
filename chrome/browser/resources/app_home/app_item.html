@@ -7,9 +7,8 @@
   cursor: pointer;
   display: block;
   height: 120px;
-  margin: auto;
+  margin: auto 0;
   text-align: center;
-  width: 96px;
 }
 
 #iconContainer {
@@ -37,12 +36,13 @@
 #textContainer {
   font-size: 13px;
   height: 20px;
-  margin-inline: auto;
+  /* Scale the total text margin with the size of "extra space" available in
+  the grid column, but limit max margin at 32px to give text some space. */
+  margin-inline: min(32px, calc(8px + (100% - 96px) / 2));
   margin-top: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 80px;
 }
 
 #iconImage {

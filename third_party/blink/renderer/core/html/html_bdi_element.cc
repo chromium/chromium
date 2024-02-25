@@ -11,7 +11,11 @@ HTMLBDIElement::HTMLBDIElement(Document& document)
   // <bdi> defaults to dir="auto"
   // https://html.spec.whatwg.org/C/#the-bdi-element
   SetSelfOrAncestorHasDirAutoAttribute();
-  GetDocument().SetDirAttributeDirty();
+  GetDocument().SetHasDirAttribute();
+  if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled() &&
+      !RuntimeEnabledFeatures::DirAutoNoInheritanceEnabled()) {
+    SetDirAutoInheritsFromParent();
+  }
 }
 
 }  // namespace blink

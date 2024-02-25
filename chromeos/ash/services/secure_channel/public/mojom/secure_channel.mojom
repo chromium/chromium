@@ -108,6 +108,47 @@ enum ConnectionMedium {
   kNearbyConnections
 };
 
+enum DiscoveryResult {
+  // Failed to discovered device. A DiscoveryErrorCode will be appended\
+  // when logging.
+  kFailure,
+
+  // Successfully discovered device.
+  kSuccess
+};
+
+// Possible error code happened during BLE discovery process. Should be
+// associated with DiscoveryResult.
+enum DiscoveryErrorCode {
+  kBluetoothTurnedOff,
+  kFilterCreationFailed,
+  kErrorStartingDiscovery,
+  kBleSessionInvalidated,
+  kDeviceNotInScanRequest,
+  kTimeout
+};
+
+// Different state during Secure Channel authentication process.
+enum SecureChannelState {
+  kGeneratingSessionKeys,
+  kSendingHello,
+  kSentHello,
+  kReceivedResponderAuth,
+  kValidatedResponderAuth,
+  kSentInitiatorAuth,
+  kAuthenticationSuccess,
+  kFailureNotConnectedToRemoteDevice,
+  kFailedToGenerateSessionKeys,
+  kFailedToGenerateHelloMessage,
+  kFailedToSendHelloMessage,
+  kFailedToWaitForResponderAuth,
+  kReceivedUnexpectedMessage,
+  kFailedToValidateReponderAuth,
+  kFailedToGenerateInitiatorAuth,
+  kFailedToSendInitiatorAuth,
+  kFailureDisconnectDuringAuthentication
+};
+
 struct BluetoothConnectionMetadata {
   // RSSI at the exact time that this metadata was requested. Note that RSSI
   // may change drastically in a short period; this is only a snapshot.
@@ -185,8 +226,29 @@ interface ConnectionDelegate {
   // |channel| to be notified when it has been invalidated due to a dropped
   // connection. Note that clients are expected to hold the reference to
   // |channel| until they are done using the connection.
+  // |nearby_connection_state_listener_receiver| will only be invoked if the
+  // channel is over Nearby Connection.
   OnConnection(pending_remote<Channel> channel,
-               pending_receiver<MessageReceiver> message_receiver_receiver);
+               pending_receiver<MessageReceiver> message_receiver_receiver,
+               pending_receiver<NearbyConnectionStateListener>
+               nearby_connection_state_listener_receiver);
+};
+
+// The interface used to log state of each step during Secure Channel connection
+// establishment.
+interface SecureChannelStructuredMetricsLogger {
+  // Invoked when BLE discovery step of Secure Channel connection attempt has an
+  // result. And if the result is a failure result, an error code will also be
+  // passed in.
+  LogDiscoveryAttempt(DiscoveryResult result, DiscoveryErrorCode? error_code);
+
+  // Invoked when there is a state change during Nearby Connection process.
+  LogNearbyConnectionState(NearbyConnectionStep step,
+                           NearbyConnectionStepResult status);
+
+  // Invoked when there is a state change during Secure Channel authentication
+  // process.
+  LogSecureChannelState(SecureChannelState state);
 };
 
 // Brokers connections between the current Chromebook and remote devices,
@@ -244,7 +306,9 @@ interface SecureChannel {
       string feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      pending_remote<ConnectionDelegate> delegate);
+      pending_remote<ConnectionDelegate> delegate,
+      pending_remote<SecureChannelStructuredMetricsLogger>?
+      secure_channel_structured_metrics_logger);
 
   // Sets a NearbyConnector to be used by future connection requests. Must be
   // called before requesting a connection with

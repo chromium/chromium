@@ -57,6 +57,48 @@ enum UpdateState {
   kRestarting,
   kFailed,
   kSuccess,
+  kWaitingForUser,
+};
+
+// This enum corresponds to the Request ID values found in
+// https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-request.h
+// Note: Any changes to this enum must be reflected to the
+// FirmwareUpdateDeviceRequestID enum in
+// tools/metrics/histograms/metadata/chromeos/enums.xml and the variants type
+// called "FirmwareUpdateUiDeviceRequestId" in
+// tools/metrics/histograms/metadata/chromeos/histograms.xml.
+enum DeviceRequestId {
+  // Do not unplug the machine from the AC power
+  kDoNotPowerOff,
+  // Replug the device and then install the firmware
+  kReplugInstall,
+  // Insert the cable to complete the update
+  kInsertUSBCable,
+  // Unplug the device to complete the update
+  kRemoveUSBCable,
+  // Press unlock on the device to continue
+  kPressUnlock,
+  // Remove and reinsert the device to complete the update
+  kRemoveReplug,
+  // Unplug and reinsert the device power cable.
+  kReplugPower,
+};
+
+// This enum corresponds to the FwupdRequestKind values found in
+// https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-request.h
+enum DeviceRequestKind {
+  // Unknown request kind. Requests of this kind will be ignored.
+  kUnknown,
+  // User action is required after the update is complete. The Firmware Updates
+  // app doesn't handle this kind of request, so they will be ignored.
+  kPost,
+  // Immediate user action is required. Most common type of request.
+  kImmediate,
+};
+
+struct DeviceRequest {
+  DeviceRequestId id;
+  DeviceRequestKind kind;
 };
 
 // Send update descriptions.
@@ -65,6 +107,13 @@ interface UpdateObserver {
   // (if any). Will fire once with an empty array if there are no updates
   // available at the time the observer is attached.
   OnUpdateListChanged(array<FirmwareUpdate> firmware_updates);
+};
+
+// Listen for DeviceRequest signals from fwupd. These signals indicate that the
+// user needs to complete some action for the update to continue.
+interface DeviceRequestObserver {
+  // Fired when we receive a DeviceRequest signal from fwupd.
+  OnDeviceRequest(DeviceRequest request);
 };
 
 // Observer interface used to send remote updates about an in-progress
@@ -100,7 +149,10 @@ interface InstallController {
   // Responsible for calling |FirmwareUpdateManager::StartInstall| to start
   // the update.
   BeginUpdate(string device_id, mojo_base.mojom.FilePath filepath);
+  // Registers an observer that will be notified of incoming DeviceRequest
+  // signals.
+  AddDeviceRequestObserver(pending_remote<DeviceRequestObserver> observer);
   // Registers an observer that will be notified of changes to
   // the inflight update's progress.
-  AddObserver(pending_remote<UpdateProgressObserver> observer);
+  AddUpdateProgressObserver(pending_remote<UpdateProgressObserver> observer);
 };

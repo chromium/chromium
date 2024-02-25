@@ -15,7 +15,6 @@
 
 namespace headless {
 class HeadlessBrowserImpl;
-class UberDispatcher;
 
 namespace protocol {
 

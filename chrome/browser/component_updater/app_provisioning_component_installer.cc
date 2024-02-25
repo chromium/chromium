@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -46,10 +46,10 @@ constexpr uint8_t kAppProvisioningPublicKeySHA256[32] = {
 
 constexpr char kAppProvisioningManifestName[] = "App Provisioning";
 
-absl::optional<apps::ComponentFileContents> LoadAppMetadataFromDisk(
+std::optional<apps::ComponentFileContents> LoadAppMetadataFromDisk(
     const base::FilePath& app_with_locale_pb_path) {
   if (app_with_locale_pb_path.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   VLOG(1) << "Reading Download App Metadata from file: "
@@ -58,7 +58,7 @@ absl::optional<apps::ComponentFileContents> LoadAppMetadataFromDisk(
   if (!base::ReadFileToString(app_with_locale_pb_path,
                               &app_with_locale_binary_pb)) {
     VLOG(1) << "Failed reading from " << app_with_locale_pb_path.value();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return apps::ComponentFileContents{app_with_locale_binary_pb};
@@ -66,7 +66,7 @@ absl::optional<apps::ComponentFileContents> LoadAppMetadataFromDisk(
 
 void UpdateAppMetadataOnUI(
     const base::FilePath& install_dir,
-    const absl::optional<apps::ComponentFileContents>& component_files) {
+    const std::optional<apps::ComponentFileContents>& component_files) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (component_files.has_value()) {
     apps::AppProvisioningDataManager::Get()->PopulateFromDynamicUpdate(
@@ -145,7 +145,8 @@ AppProvisioningComponentInstallerPolicy::GetAppWithLocaleInstalledPath(
   return base.Append(kAppWithLocaleBinaryPbFileName);
 }
 
-void RegisterAppProvisioningComponent(component_updater::ComponentUpdateService* cus) {
+void RegisterAppProvisioningComponent(
+    component_updater::ComponentUpdateService* cus) {
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
     VLOG(1) << "Registering App Provisioning component.";
     auto installer = base::MakeRefCounted<ComponentInstaller>(

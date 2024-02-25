@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 #define CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -64,17 +65,17 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
  private:
   // Original global static when this instance is created. It is captured when
   // FakeCrostiniFeatures is created and replaced at destruction.
-  raw_ptr<CrostiniFeatures, ExperimentalAsh> original_features_;
+  raw_ptr<CrostiniFeatures> original_features_;
 
-  absl::optional<bool> could_be_allowed_;
-  absl::optional<bool> allowed_now_;
-  absl::optional<bool> enabled_;
-  absl::optional<bool> export_import_ui_allowed_;
-  absl::optional<bool> root_access_allowed_;
-  absl::optional<bool> container_upgrade_ui_allowed_;
-  absl::optional<bool> can_change_adb_sideloading_;
-  absl::optional<bool> port_forwarding_allowed_;
-  absl::optional<bool> multi_container_allowed_;
+  std::optional<bool> could_be_allowed_;
+  std::optional<bool> allowed_now_;
+  std::optional<bool> enabled_;
+  std::optional<bool> export_import_ui_allowed_;
+  std::optional<bool> root_access_allowed_;
+  std::optional<bool> container_upgrade_ui_allowed_;
+  std::optional<bool> can_change_adb_sideloading_;
+  std::optional<bool> port_forwarding_allowed_;
+  std::optional<bool> multi_container_allowed_;
 };
 
 }  // namespace crostini

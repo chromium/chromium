@@ -28,8 +28,10 @@
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_cache.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/url_request/url_request_context.h"
 
 namespace net {
@@ -116,6 +118,29 @@ static std::unique_ptr<base::SampleVector> GetRttHistogram(
   return histogram;
 }
 
+#if defined(ENABLE_BUILT_IN_DNS)
+constexpr size_t kDefaultCacheSize = 1000;
+#else
+constexpr size_t kDefaultCacheSize = 100;
+#endif
+
+std::unique_ptr<HostCache> CreateHostCache(bool enable_caching) {
+  if (enable_caching) {
+    return std::make_unique<HostCache>(kDefaultCacheSize);
+  } else {
+    return nullptr;
+  }
+}
+
+std::unique_ptr<HostResolverCache> CreateHostResolverCache(
+    bool enable_caching) {
+  if (enable_caching) {
+    return std::make_unique<HostResolverCache>(kDefaultCacheSize);
+  } else {
+    return nullptr;
+  }
+}
+
 }  // namespace
 
 ResolveContext::ServerStats::ServerStats(
@@ -129,7 +154,8 @@ ResolveContext::ServerStats::~ServerStats() = default;
 ResolveContext::ResolveContext(URLRequestContext* url_request_context,
                                bool enable_caching)
     : url_request_context_(url_request_context),
-      host_cache_(enable_caching ? HostCache::CreateDefaultCache() : nullptr),
+      host_cache_(CreateHostCache(enable_caching)),
+      host_resolver_cache_(CreateHostResolverCache(enable_caching)),
       isolation_info_(IsolationInfo::CreateTransient()) {
   max_fallback_period_ = GetMaxFallbackPeriod();
 }
@@ -194,8 +220,9 @@ void ResolveContext::RecordServerFailure(size_t server_index,
         GetDohProviderIdForUma(server_index, true /* is_doh_server */, session);
 
     base::UmaHistogramSparse(
-        base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.FailureError",
-                           query_type.c_str(), provider_id.c_str()),
+        base::JoinString(
+            {"Net.DNS.DnsTransaction", query_type, provider_id, "FailureError"},
+            "."),
         std::abs(rv));
   }
 
@@ -204,6 +231,7 @@ void ResolveContext::RecordServerFailure(size_t server_index,
   ServerStats* stats = GetServerStats(server_index, is_doh_server);
   ++(stats->last_failure_count);
   stats->last_failure = base::TimeTicks::Now();
+  stats->has_failed_previously = true;
 
   size_t num_available_doh_servers_now = NumAvailableDohServers(session);
   if (num_available_doh_servers_now < num_available_doh_servers_before) {
@@ -346,6 +374,7 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
     return;
 
   current_session_.reset();
+  doh_autoupgrade_success_metric_timer_.Stop();
   classic_server_stats_.clear();
   doh_server_stats_.clear();
   initial_fallback_period_ = base::TimeDelta();
@@ -379,6 +408,23 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
 
   if (!doh_server_stats_.empty())
     NotifyDohStatusObserversOfUnavailable(network_change);
+}
+
+void ResolveContext::StartDohAutoupgradeSuccessTimer(
+    const DnsSession* session) {
+  if (!IsCurrentSession(session)) {
+    return;
+  }
+  if (doh_autoupgrade_success_metric_timer_.IsRunning()) {
+    return;
+  }
+  // We won't pass `session` to `EmitDohAutoupgradeSuccessMetrics()` but will
+  // instead reset the timer in `InvalidateCachesAndPerSessionData()` so that
+  // the former never gets called after the session changes.
+  doh_autoupgrade_success_metric_timer_.Start(
+      FROM_HERE, ResolveContext::kDohAutoupgradeSuccessMetricTimeout,
+      base::BindOnce(&ResolveContext::EmitDohAutoupgradeSuccessMetrics,
+                     base::Unretained(this)));
 }
 
 handles::NetworkHandle ResolveContext::GetTargetNetwork() const {
@@ -509,13 +555,15 @@ void ResolveContext::RecordRttForUma(size_t server_index,
 
   if (rv == OK || rv == ERR_NAME_NOT_RESOLVED) {
     base::UmaHistogramMediumTimes(
-        base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.SuccessTime",
-                           query_type.c_str(), provider_id.c_str()),
+        base::JoinString(
+            {"Net.DNS.DnsTransaction", query_type, provider_id, "SuccessTime"},
+            "."),
         rtt);
   } else {
     base::UmaHistogramMediumTimes(
-        base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.FailureTime",
-                           query_type.c_str(), provider_id.c_str()),
+        base::JoinString(
+            {"Net.DNS.DnsTransaction", query_type, provider_id, "FailureTime"},
+            "."),
         rtt);
   }
 }
@@ -581,6 +629,58 @@ void ResolveContext::NotifyDohStatusObserversOfUnavailable(
     bool network_change) {
   for (auto& observer : doh_status_observers_)
     observer.OnDohServerUnavailable(network_change);
+}
+
+void ResolveContext::EmitDohAutoupgradeSuccessMetrics() {
+  // This method should not be called if `current_session_` is not populated.
+  CHECK(current_session_);
+
+  // If DoH auto-upgrade is not enabled, then don't emit histograms.
+  if (current_session_->config().secure_dns_mode != SecureDnsMode::kAutomatic) {
+    return;
+  }
+
+  DohServerAutoupgradeStatus status;
+  for (size_t i = 0; i < doh_server_stats_.size(); i++) {
+    auto& entry = doh_server_stats_[i];
+
+    if (ServerStatsToDohAvailability(entry)) {
+      if (!entry.has_failed_previously) {
+        // Auto-upgrade successful and no prior failures.
+        status = DohServerAutoupgradeStatus::kSuccessWithNoPriorFailures;
+      } else {
+        // Auto-upgrade successful but some prior failures.
+        status = DohServerAutoupgradeStatus::kSuccessWithSomePriorFailures;
+      }
+    } else {
+      if (entry.last_success.is_null()) {
+        if (entry.last_failure.is_null()) {
+          // Skip entries that we've never attempted to use.
+          continue;
+        }
+
+        // Auto-upgrade failed and DoH requests have never worked. It's possible
+        // that an invalid DoH resolver config was provided by the user via
+        // enterprise policy (in which case this state will always be associated
+        // with the 'Other' provider_id), but it's also possible that there's an
+        // issue with the user's network configuration or the provider's
+        // infrastructure.
+        status = DohServerAutoupgradeStatus::kFailureWithNoPriorSuccesses;
+      } else {
+        // Auto-upgrade is failing currently but has worked in the past.
+        status = DohServerAutoupgradeStatus::kFailureWithSomePriorSuccesses;
+      }
+    }
+
+    std::string provider_id = GetDohProviderIdForUma(i, /*is_doh_server=*/true,
+                                                     current_session_.get());
+
+    base::UmaHistogramEnumeration(
+        base::JoinString(
+            {"Net.DNS.ResolveContext.DohAutoupgrade", provider_id, "Status"},
+            "."),
+        status);
+  }
 }
 
 // static

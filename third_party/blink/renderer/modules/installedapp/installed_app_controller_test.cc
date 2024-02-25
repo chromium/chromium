@@ -9,6 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_manager.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -63,6 +65,7 @@ class InstalledAppControllerTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> holder_;
   v8::HandleScope handle_scope_;
   v8::Local<v8::Context> context_;
@@ -71,12 +74,13 @@ class InstalledAppControllerTest : public testing::Test {
 
 TEST_F(InstalledAppControllerTest, DestroyContextBeforeCallback) {
   auto* controller = InstalledAppController::From(*GetFrame().DomWindow());
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(GetScriptState());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<RelatedApplication>>>(
+      GetScriptState());
+  auto promise = resolver->Promise();
   controller->GetInstalledRelatedApps(
       std::make_unique<
-          CallbackPromiseAdapter<HeapVector<Member<RelatedApplication>>, void>>(
+          CallbackPromiseAdapter<IDLSequence<RelatedApplication>, void>>(
           resolver));
 
   ExecutionContext::From(GetScriptState())->NotifyContextDestroyed();

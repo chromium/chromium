@@ -27,13 +27,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_BASE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
-#include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -57,6 +57,8 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -310,7 +312,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   WebGLActiveInfo* getActiveAttrib(WebGLProgram*, GLuint index);
   WebGLActiveInfo* getActiveUniform(WebGLProgram*, GLuint index);
   bool getAttachedShaders(WebGLProgram*, HeapVector<Member<WebGLShader>>&);
-  absl::optional<HeapVector<Member<WebGLShader>>> getAttachedShaders(
+  std::optional<HeapVector<Member<WebGLShader>>> getAttachedShaders(
       WebGLProgram*);
   GLint getAttribLocation(WebGLProgram*, const String& name);
   ScriptValue getBufferParameter(ScriptState*, GLenum target, GLenum pname);
@@ -332,7 +334,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   WebGLShaderPrecisionFormat* getShaderPrecisionFormat(GLenum shader_type,
                                                        GLenum precision_type);
   String getShaderSource(WebGLShader*);
-  absl::optional<Vector<String>> getSupportedExtensions();
+  std::optional<Vector<String>> getSupportedExtensions();
   virtual ScriptValue getTexParameter(ScriptState*,
                                       GLenum target,
                                       GLenum pname);
@@ -606,6 +608,14 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       return nullptr;
     return d->ContextGL();
   }
+  const gpu::Capabilities& ContextGLCapabilities() const {
+    // This should only be called in contexts where ContextGL() is guaranteed
+    // to exist.
+    CHECK(ContextGL());
+    // Note: DrawingBuffer::ContextGL() comes from
+    // DrawingBuffer::ContextProvider::ContextGL().
+    return GetDrawingBuffer()->ContextProvider()->GetCapabilities();
+  }
   gpu::SharedImageInterface* SharedImageInterface() const {
     DrawingBuffer* d = GetDrawingBuffer();
     if (!d)
@@ -652,8 +662,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // TODO(https://crbug.com/1208480): This function applies only to 2D rendering
   // contexts, and should be removed.
   SkColorInfo CanvasRenderingContextSkColorInfo() const override;
-  scoped_refptr<StaticBitmapImage> GetImage(
-      CanvasResourceProvider::FlushReason) override;
+  scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
   void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
 
@@ -722,8 +731,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   friend class WebGLMultiDraw;
   friend class WebGLMultiDrawCommon;
   friend class WebGLMultiDrawInstancedBaseVertexBaseInstance;
+  friend class WebGLPolygonMode;
   friend class WebGLShaderPixelLocalStorage;
-  friend class WebGLVideoTexture;
 
   WebGLRenderingContextBase(CanvasRenderingContextHost*,
                             std::unique_ptr<WebGraphicsContext3DProvider>,
@@ -737,11 +746,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
-  bool IsAccelerated() const override { return true; }
   bool UsingSwapChain() const override;
   bool IsOriginTopLeft() const override;
-  void SetIsInHiddenPage(bool) override;
-  void SetIsBeingDisplayed(bool) override {}
+  void PageVisibilityChanged() override;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) override;
@@ -753,7 +760,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   cc::Layer* CcLayer() const override;
   void Stop() override;
-  void FinalizeFrame(CanvasResourceProvider::FlushReason) override;
+  void FinalizeFrame(FlushReason) override;
   bool PushFrame() override;
 
   // DrawingBuffer::Client implementation.
@@ -790,7 +797,14 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                                      drawing_buffer_.get());
     OnBeforeDrawCall(draw_type);
     draw_func();
-    RecordUKMCanvasDrawnToAtFirstDrawCall();
+    if (!has_been_drawn_to_) {
+      // At first draw call, record
+      // Canvas/OffscreenCanvas.RenderingContextDrawnTo and what the ANGLE
+      // implementation is.
+      has_been_drawn_to_ = true;
+      RecordUKMCanvasDrawnToRenderingAPI();
+      RecordANGLEImplementation();
+    }
   }
 
   virtual void DestroyContext();
@@ -1038,7 +1052,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
         extension_field_ = extension_;
       }
 
-      return extension_;
+      return extension_.Get();
     }
 
     bool Supported(WebGLRenderingContextBase* context) const override {
@@ -1056,7 +1070,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
     WebGLExtension* GetExtensionObjectIfAlreadyEnabled() override {
-      return extension_;
+      return extension_.Get();
     }
 
     void Trace(Visitor* visitor) const override {
@@ -1065,7 +1079,11 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
    private:
-    Member<T>& extension_field_;
+    // RAW_PTR_EXCLUSION: `Member<T>` denotes a type managed by Oilpan, and is
+    // contained in a type managed by Oilpan, i.e. not managed by
+    // PartitionAlloc.
+    // TODO(crbug/325359457): Make it non-reference.
+    RAW_PTR_EXCLUSION Member<T>& extension_field_;
     // ExtensionTracker holds it's own reference to the extension to ensure
     // that it is not deleted before this object's destructor is called
     Member<T> extension_;
@@ -1227,9 +1245,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     // is sometimes specified by TexImage calls. For TexImage calls where this
     // is not specified, it must be populated with the native size of the source
     // of the texture upload.
-    absl::optional<GLsizei> width;
-    absl::optional<GLsizei> height;
-    absl::optional<GLsizei> depth;
+    std::optional<GLsizei> width;
+    std::optional<GLsizei> height;
+    std::optional<GLsizei> depth;
 
     // The border parameter, only applies to TexImage calls.
     GLint border = 0;
@@ -1498,8 +1516,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // validation.
   bool ValidateTexFunc(TexImageParams params,
                        TexFuncValidationSourceType,
-                       absl::optional<GLsizei> source_width,
-                       absl::optional<GLsizei> source_height);
+                       std::optional<GLsizei> source_width,
+                       std::optional<GLsizei> source_height);
 
   // Helper function to check input width and height for functions {copy,
   // compressed}Tex{Sub}Image.  Generates GL error and returns false if width,
@@ -1585,6 +1603,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool ValidateBlendFuncFactors(const char* function_name,
                                 GLenum src,
                                 GLenum dst);
+
+  // Helper function to validate WEBGL_blend_func_extended
+  // factors. Needed only to make negative tests pass on the
+  // validating command decoder.
+  bool ValidateBlendFuncExtendedFactors(const char* function_name,
+                                        GLenum src,
+                                        GLenum dst);
 
   // Helper function to validate a GL capability.
   virtual bool ValidateCapability(const char* function_name, GLenum);
@@ -1936,9 +1961,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                         DOMArrayBufferView* pixels,
                         int64_t offset);
 
-  // Record Canvas/OffscreenCanvas.RenderingContextDrawnTo at the first draw
-  // call.
-  void RecordUKMCanvasDrawnToAtFirstDrawCall();
+  void RecordANGLEImplementation();
 
  private:
   WebGLRenderingContextBase(CanvasRenderingContextHost*,
@@ -2000,7 +2023,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool checkProgramCompletionQueryAvailable(WebGLProgram* program,
                                             bool* completed);
   static constexpr unsigned int kMaxProgramCompletionQueries = 128u;
-  base::LRUCache<WebGLProgram*, GLuint> program_completion_queries_;
+
+  // Support for KHR_parallel_shader_compile.
+  //
+  // TODO(crbug.com/1474141): once a HeapLinkedHashMap is available,
+  // convert these two fields to use that instead.
+  HeapVector<Member<WebGLProgram>> program_completion_query_list_;
+  HeapHashMap<Member<WebGLProgram>, GLuint> program_completion_query_map_;
 
   int number_of_user_allocated_multisampled_renderbuffers_;
 

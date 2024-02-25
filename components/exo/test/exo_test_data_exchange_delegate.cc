@@ -14,6 +14,7 @@
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "components/exo/test/test_data_source_delegate.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -89,37 +90,6 @@ std::vector<ui::FileInfo> TestDataExchangeDelegate::ParseFileSystemSources(
     const base::Pickle& pickle) const {
   std::vector<ui::FileInfo> file_info;
   return file_info;
-}
-
-TestDataSourceDelegate::TestDataSourceDelegate() = default;
-TestDataSourceDelegate::~TestDataSourceDelegate() = default;
-
-void TestDataSourceDelegate::OnSend(const std::string& mime_type,
-                                    base::ScopedFD fd) {
-  constexpr char kText[] = "test";
-  if (data_map_.empty()) {
-    base::WriteFileDescriptor(fd.get(), kText);
-  } else {
-    base::WriteFileDescriptor(fd.get(), data_map_[mime_type]);
-  }
-}
-
-void TestDataSourceDelegate::OnCancelled() {
-  cancelled_ = true;
-}
-
-void TestDataSourceDelegate::OnDndFinished() {
-  finished_ = true;
-}
-
-bool TestDataSourceDelegate::CanAcceptDataEventsForSurface(
-    Surface* surface) const {
-  return true;
-}
-
-void TestDataSourceDelegate::SetData(const std::string& mime_type,
-                                     std::vector<uint8_t> data) {
-  data_map_[mime_type] = std::move(data);
 }
 
 }  // namespace exo

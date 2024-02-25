@@ -29,57 +29,53 @@ enum class BubbleType;
 
 // Implementation of per-tab class to control the local/server save credit card
 // bubble, the local/server save CVC bubble, and Omnibox icon.
+// TODO(crbug.com/1487232): Refactor SaveCardBubbleControllerImpl to split the
+// states into different classes.
 class SaveCardBubbleControllerImpl
     : public AutofillBubbleControllerBase,
       public SaveCardBubbleController,
       public SavePaymentIconController,
       public content::WebContentsUserData<SaveCardBubbleControllerImpl> {
  public:
-  // An observer class used by browsertests that gets notified whenever
-  // particular actions occur.
-  class ObserverForTest {
-   public:
-    virtual void OnBubbleShown() = 0;
-    virtual void OnIconShown() = 0;
-  };
-
   SaveCardBubbleControllerImpl(const SaveCardBubbleControllerImpl&) = delete;
   SaveCardBubbleControllerImpl& operator=(const SaveCardBubbleControllerImpl&) =
       delete;
   ~SaveCardBubbleControllerImpl() override;
 
   // Sets up the controller and is responsible for offering both local card save
-  // and local CVC save. The local CVC save bubble saves CVC for an existing
+  // and local CVC save. The offer-to-save CVC bubble saves CVC for an existing
   // local card.
   // |save_card_prompt_callback| will be invoked once the user makes a decision
   // with respect to the offer-to-save prompt.
   // If |options.show_bubble| is true, pops up the offer-to-save bubble;
   // otherwise, only the omnibox icon is displayed.
-  // If |options.cvc_save_only| is true, the local CVC save bubble is shown,
-  // else the local card save bubble is shown.
-  // If |options.has_non_focusable_field| is true, the save is triggered by a
-  // form that has non_focusable fields.
-  // If |options.from_dynamic_change_form| is true, the save is triggered by a
-  // dynamic change form.
+  // If |options.card_save_type| has value `CardSaveType::kCardSaveOnly`, the
+  // offer-to-save card bubble is shown. If the value is
+  // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,
+  // and the users are informed that the CVC will also be stored. If the type is
+  // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
   void OfferLocalSave(
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,
       AutofillClient::LocalSaveCardPromptCallback save_card_prompt_callback);
 
-  // Sets up the controller and offers to upload the |card| to Google Payments.
+  // Sets up the controller and is responsible for offering both card save and
+  // CVC save to Google Payments. The offer-to-save CVC bubble uploads CVC for
+  // an existing server card.
   // |save_card_prompt_callback| will be invoked once the user makes a decision
-  // with respect to the offer-to-save prompt. The contents of
-  // |legal_message_lines| will be displayed in the bubble. A textfield
-  // confirming the cardholder name will appear in the bubble if
-  // |options.should_request_name_from_user| is true. A pair of
-  // dropdowns for entering the expiration date will appear in the bubble if
-  // |options.should_request_expiration_date_from_user| is
-  // true. If |options.show_prompt| is true, pops up the
-  // offer-to-save bubble; otherwise, only the omnibox icon is displayed.
-  // If |options.has_non_focusable_field| is true, the save is triggered by a
-  // form that has non-focusable fields.
-  // If |options.from_dynamic_change_form| is true, the save is triggered by a
-  // dynamic change form.
+  // with respect to the offer-to-save prompt.
+  // The contents of |legal_message_lines| will be displayed in the bubble.
+  // If |options.should_request_name_from_user| is true, a textfield confirming
+  // the cardholder name will appear in the bubble.
+  // If |options.should_request_expiration_date_from_user| is true, a pair of
+  // dropdowns for entering the expiration date will appear in the bubble.
+  // If |options.show_prompt| is true, pops up the offer-to-save bubble;
+  // Otherwise, only the omnibox icon is displayed.
+  // If |options.card_save_type| has value `CardSaveType::kCardSaveOnly`, the
+  // offer-to-save card bubble is shown. If the value is
+  // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,
+  // and the users are informed that the CVC will also be stored. If the type is
+  // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
   void OfferUploadSave(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
@@ -91,42 +87,24 @@ class SaveCardBubbleControllerImpl
   // just saved and links the user to manage their other cards.
   void ShowBubbleForManageCardsForTesting(const CreditCard& card);
 
-  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
-  // to be added again. In the new proposal, we may not show feedback via icons
-  // so the functions updating the icon may need to be renamed or removed.
-  // Update the icon when card is successfully saved. This
-  // will dismiss the icon and trigger a highlight animation of the avatar
-  // button.
-  void UpdateIconForSaveCardSuccess();
-
-  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
-  // to be added again. In the new proposal, we may not show feedback via icons
-  // so the functions updating the icon may need to be renamed or removed.
-  // Updates the save card icon when credit card upload failed. This will only
-  // update the icon image and stop icon from animating. The actual bubble will
-  // be shown when users click on the icon.
-  void UpdateIconForSaveCardFailure();
-
-  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
-  // to be added again. In the new proposal, we may not show feedback via a
-  // failure bubble so the functions showing the bubble may need to be renamed
-  // or removed.
-  // For testing. Sets up the controller for showing the save card failure
-  // bubble.
-  void ShowBubbleForSaveCardFailureForTesting();
-
-  void ReshowBubble();
+  void ReshowBubble(bool is_user_gesture);
+  virtual void ShowConfirmationBubbleView(bool card_saved);
 
   // SaveCardBubbleController:
   std::u16string GetWindowTitle() const override;
   std::u16string GetExplanatoryMessage() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
-  const AccountInfo& GetAccountInfo() override;
+  AccountInfo GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
+  base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  GetOnBubbleClosedCallback() override;
+  const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+  GetConfirmationUiParams() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
+  ui::ImageModel GetCreditCardImage() const override;
 
   void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
                         user_provided_card_details) override;
@@ -142,7 +120,6 @@ class SaveCardBubbleControllerImpl
   std::u16string GetSavePaymentIconTooltipText() const override;
   bool ShouldShowSavingPaymentAnimation() const override;
   bool ShouldShowPaymentSavedLabelAnimation() const override;
-  bool ShouldShowSaveFailureBadge() const override;
   void OnAnimationEnded() override;
   bool IsIconVisible() const override;
   AutofillBubbleBase* GetPaymentBubbleView() const override;
@@ -156,6 +133,7 @@ class SaveCardBubbleControllerImpl
   virtual void ShowPaymentsSettingsPage();
 
   // AutofillBubbleControllerBase::
+  void OnVisibilityChanged(content::Visibility visibility) override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 
@@ -164,9 +142,8 @@ class SaveCardBubbleControllerImpl
 
  private:
   friend class content::WebContentsUserData<SaveCardBubbleControllerImpl>;
+  friend class SaveCardBubbleControllerImplTest;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
-
-  void FetchAccountInfo();
 
   // Displays both the offer-to-save bubble and is associated omnibox icon.
   void ShowBubble();
@@ -177,11 +154,6 @@ class SaveCardBubbleControllerImpl
   void UpdateSaveCardIcon();
 
   void OpenUrl(const GURL& url);
-
-  // For testing.
-  void SetEventObserverForTesting(ObserverForTest* observer) {
-    observer_for_testing_ = observer;
-  }
 
   // Should outlive this object.
   raw_ptr<PersonalDataManager> personal_data_manager_;
@@ -197,11 +169,12 @@ class SaveCardBubbleControllerImpl
   BubbleType current_bubble_type_ = BubbleType::INACTIVE;
 
   // Callback to run once the user makes a decision with respect to the credit
-  // card upload offer-to-save prompt. Will return the cardholder name
-  // provided/confirmed by the user if it was requested. Will also return the
-  // expiration month and year provided by the user if the expiration date was
-  // requested. If both callbacks are null then no bubble is available to show
-  // and the icon is not visible.
+  // card upload offer-to-save prompt or the CVC upload offer-to-save prompt
+  // for existing server cards.
+  // For credit card upload offer-to-save prompt, will return the cardholder
+  // name provided/confirmed by the user if it was requested. Will also return
+  // the expiration month and year provided by the user if the expiration date
+  // was requested.
   AutofillClient::UploadSaveCardPromptCallback
       upload_save_card_prompt_callback_;
 
@@ -212,8 +185,17 @@ class SaveCardBubbleControllerImpl
   // Governs whether the upload or local save version of the UI should be shown.
   bool is_upload_save_ = false;
 
-  // Whether ReshowBubble() has been called since ShowBubbleFor*() was called.
+  // Whether the bubble view show is prompted by a user gesture. This is used
+  // when showing the bubble view to set the display reason for
+  // LocationBarBubbleDelegateView::ShowForReason() which will determine whether
+  // the bubble view is initially active or inactive when created.
+  bool is_triggered_by_user_gesture_ = false;
+
+  // Whether the bubble view show is a re-show of the view.
   bool is_reshow_ = false;
+
+  // Whether a url was opened from the bubble view.
+  bool was_url_opened_ = false;
 
   // `options_.should_request_name_from_user`, whether the upload save version
   // of the UI should surface a textfield requesting the cardholder name.
@@ -231,9 +213,6 @@ class SaveCardBubbleControllerImpl
   // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
   AutofillClient::SaveCreditCardOptions options_;
 
-  // The account info of the signed-in user.
-  AccountInfo account_info_;
-
   // Contains the details of the card that will be saved if the user accepts.
   CreditCard card_;
 
@@ -243,8 +222,12 @@ class SaveCardBubbleControllerImpl
   // The security level for the current context.
   security_state::SecurityLevel security_level_;
 
-  // Observer for when a bubble is created. Initialized only during tests.
-  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
+  // UI parameters needed to display the save card confirmation view.
+  std::optional<SaveCardAndVirtualCardEnrollConfirmationUiParams>
+      confirmation_ui_params_;
+
+  // Weak pointer factory for this save card bubble controller.
+  base::WeakPtrFactory<SaveCardBubbleControllerImpl> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

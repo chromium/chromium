@@ -69,8 +69,7 @@ class TestSyncSchedulerImpl : public SyncSchedulerImpl {
   }
 
   // A timer instance for testing. Owned by the parent scheduler.
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
 };
 
 }  // namespace

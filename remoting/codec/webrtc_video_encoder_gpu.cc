@@ -275,7 +275,7 @@ void WebrtcVideoEncoderGpu::Core::Encode(
     uint32_t bitrate_bps =
         checked_bitrate.ValueOrDefault(std::numeric_limits<uint32_t>::max());
     video_encode_accelerator_->RequestEncodingParametersChange(
-        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps);
+        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps, std::nullopt);
   }
   video_encode_accelerator_->Encode(video_frame, params.key_frame);
 }
@@ -368,7 +368,10 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
       static_cast<uint32_t>(kTargetFrameRate * 1024 * 1024 * 8));
 
   const media::VideoEncodeAccelerator::Config config(
-      input_format, input_visible_size_, codec_profile_, initial_bitrate);
+      input_format, input_visible_size_, codec_profile_, initial_bitrate,
+      kTargetFrameRate,
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem,
+      media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
   video_encode_accelerator_ =
       media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
           config, this, gpu::GpuPreferences(), CreateGpuWorkarounds(),

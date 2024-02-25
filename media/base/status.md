@@ -260,7 +260,7 @@ struct MyExampleStatusTraits {
   static constexpr StatusGroupType Group() { return "MyExampleStatus"; }
   static constexpr Codes OkEnumValue() { return Codes::kDefaultValue; }
   static uint32_t PackExtraData(const StatusData& info) {
-    absl::optional<int> hresult = info.data.GetIntValue("HRESULT");
+    std::optional<int> hresult = info.data.GetIntValue("HRESULT");
     return static_cast<uint32_t>(hresult.has_value() ? *hresult : 0);
   }
 }

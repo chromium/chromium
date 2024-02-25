@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_LOADER_OBJECT_NAVIGATION_FALLBACK_BODY_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 
@@ -89,7 +89,7 @@ class ObjectNavigationFallbackBodyLoader
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo&,
                          network::mojom::URLResponseHeadPtr) override;
   void OnUploadProgress(int64_t current_position,

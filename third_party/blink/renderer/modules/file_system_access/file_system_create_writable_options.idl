@@ -3,7 +3,15 @@
 // found in the LICENSE file.
 
 // https://fs.spec.whatwg.org/#dictdef-filesystemcreatewritableoptions
+enum FileSystemWritableFileStreamMode {
+  "exclusive",
+  "siloed",
+};
+
 dictionary FileSystemCreateWritableOptions {
   boolean keepExistingData = false;
   [RuntimeEnabled=FileSystemAccessAPIExperimental] boolean autoClose = false;
+  [
+    RuntimeEnabled=FileSystemAccessLockingScheme
+  ] FileSystemWritableFileStreamMode mode = "siloed";
 };

@@ -5,12 +5,12 @@
 #ifndef UI_ACCESSIBILITY_AX_BIT_MAP_H_
 #define UI_ACCESSIBILITY_AX_BIT_MAP_H_
 
-#include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
+
+#include "base/check.h"
 
 namespace ui {
 
@@ -30,7 +30,7 @@ class AXBitMap {
   ~AXBitMap() = default;
 
   // Returns whether enum T at |value| is set to true, false or unset.
-  absl::optional<bool> Has(const T enum_value) {
+  std::optional<bool> Has(const T enum_value) {
     auto [value_position, true_map, false_map] = GetPositionAndMaps(enum_value);
     const bool is_in_true_map = (*true_map) >> value_position & 1ull;
     const bool is_in_false_map = (*false_map) >> value_position & 1ull;
@@ -46,7 +46,7 @@ class AXBitMap {
       return false;
     }
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Sets the enum T at |enum_value| to true or false.

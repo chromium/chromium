@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
@@ -31,7 +34,6 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -44,6 +46,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/opus/src/include/opus.h"
@@ -312,7 +315,7 @@ class MockAudioTrackRecorderCallbackInterface
       OnEncodedAudio,
       (const media::AudioParameters& params,
        std::string encoded_data,
-       absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+       std::optional<media::AudioEncoder::CodecDescription> codec_description,
        base::TimeTicks capture_time),
       (override));
   MOCK_METHOD(void, OnSourceReadyStateChanged, (), (override));
@@ -370,7 +373,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         .WillRepeatedly(
             Invoke([this](const media::AudioParameters& params,
                           std::string encoded_data,
-                          absl::optional<media::AudioEncoder::CodecDescription>
+                          std::optional<media::AudioEncoder::CodecDescription>
                               codec_description,
                           base::TimeTicks capture_time) {
               OnEncodedAudio(params, encoded_data, std::move(codec_description),
@@ -397,7 +400,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     // hold onto a reference to the task runner. This allows us to post tasks to
     // the sequence and apply the necessary overrides, without friending the
     // class.
-    encoder_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+    encoder_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner({});
     audio_track_recorder_ = std::make_unique<AudioTrackRecorder>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), codec_,
         media_stream_component_, mock_callback_interface_,
@@ -655,7 +658,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   void OnEncodedAudio(
       const media::AudioParameters& params,
       std::string encoded_data,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) {
     EXPECT_TRUE(!encoded_data.empty());
     switch (codec_) {
@@ -701,6 +704,8 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
           << "(Sample " << first_source_cache_pos_ << ")";
     }
   }
+
+  test::TaskEnvironment task_environment_;
 
 #if HAS_AAC_DECODER
   void ValidateAacData(std::string& encoded_data) {
@@ -806,7 +811,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   int excess_input_ = 0;
 
   // Decoder for verifying data was properly encoded.
-  OpusDecoder* opus_decoder_ = nullptr;
+  raw_ptr<OpusDecoder, DanglingUntriaged> opus_decoder_ = nullptr;
   std::unique_ptr<float[]> opus_buffer_;
   int opus_buffer_size_;
 

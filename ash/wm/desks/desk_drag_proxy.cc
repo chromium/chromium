@@ -91,11 +91,6 @@ void DeskDragProxy::InitAndScaleAndMoveToX(float location_screen_x) {
                   0.5f * proxy_bounds_in_screen.height()),
       scale_transform));
 
-  // When being dragged, the shadow elevation will be increased.
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    drag_preview_->shadow()->SetType(DeskPreviewView::kDraggedShadowType);
-  }
-
   // Perform Moving.
   DragToX(location_screen_x);
 
@@ -129,11 +124,6 @@ void DeskDragProxy::SnapBackToDragView() {
   settings.SetTweenType(gfx::Tween::ACCEL_LIN_DECEL_60);
   settings.AddObserver(this);
   layer->SetTransform(gfx::Transform());
-
-  // Reset the shadow elevation when drag ends.
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    drag_preview_->shadow()->SetType(DeskPreviewView::kDefaultShadowType);
-  }
 
   state_ = State::kSnappingBack;
 }

@@ -1,4 +1,4 @@
-# Copyright 2023 The Chromium Authors. All rights reserved.
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Definitions of builders in the infra bucket."""
@@ -53,8 +53,8 @@ builders.builder(
     name = "autosharder",
     bucket = "infra",
     executable = "recipe:chromium/autosharder",
-    # Run once daily at 12 AM Pacific/7 AM UTC.
-    schedule = "0 7 * * *",
+    # Run once daily at 2 AM Pacific/9 AM UTC (with DST)
+    schedule = "0 9 * * *",
     triggered_by = [],
     pool = "luci.chromium.ci",
     builderless = True,

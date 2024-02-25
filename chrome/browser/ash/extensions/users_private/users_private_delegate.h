@@ -34,7 +34,7 @@ class UsersPrivateDelegate : public KeyedService {
   virtual PrefsUtil* GetPrefsUtil();
 
  protected:
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // weak; not owned by us
+  raw_ptr<Profile, LeakedDanglingUntriaged> profile_;  // weak; not owned by us
   std::unique_ptr<PrefsUtil> prefs_util_;
 };
 

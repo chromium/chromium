@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -123,13 +124,13 @@ void HTMLOptionElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-bool HTMLOptionElement::SupportsFocus() const {
+bool HTMLOptionElement::SupportsFocus(UpdateBehavior update_behavior) const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList())
     return false;
   if (is_descendant_of_select_list_)
     return !IsDisabledFormControl();
-  return HTMLElement::SupportsFocus();
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
 bool HTMLOptionElement::MatchesDefaultPseudoClass() const {
@@ -222,8 +223,7 @@ void HTMLOptionElement::ParseAttribute(
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
     } else if (UNLIKELY(is_descendant_of_select_list_)) {
-      if (HTMLSelectListElement* select_list =
-              HTMLSelectListElement::OwnerSelectList(this)) {
+      if (HTMLSelectListElement* select_list = OwnerSelectList()) {
         select_list->OptionElementValueChanged(*this);
       }
     }
@@ -271,8 +271,7 @@ void HTMLOptionElement::SetSelected(bool selected) {
 
   if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionSelectionStateChanged(this, selected);
-  } else if (HTMLSelectListElement* select_list =
-                 HTMLSelectListElement::OwnerSelectList(this)) {
+  } else if (HTMLSelectListElement* select_list = OwnerSelectList()) {
     select_list->OptionSelectionStateChanged(this, selected);
   }
 }
@@ -353,8 +352,7 @@ void HTMLOptionElement::DidChangeTextContent() {
     data_list->OptionElementChildrenChanged();
   } else if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionElementChildrenChanged(*this);
-  } else if (HTMLSelectListElement* select_list =
-                 HTMLSelectListElement::OwnerSelectList(this)) {
+  } else if (HTMLSelectListElement* select_list = OwnerSelectList()) {
     select_list->OptionElementChildrenChanged(*this);
   }
   UpdateLabel();
@@ -371,6 +369,15 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
     return select;
   if (IsA<HTMLOptGroupElement>(*parentNode()))
     return DynamicTo<HTMLSelectElement>(parentNode()->parentNode());
+  return nullptr;
+}
+
+HTMLSelectListElement* HTMLOptionElement::OwnerSelectList() const {
+  for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
+    if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
+      return selectlist;
+    }
+  }
   return nullptr;
 }
 
@@ -490,6 +497,18 @@ bool HTMLOptionElement::SpatialNavigationFocused() const {
 bool HTMLOptionElement::IsDisplayNone() const {
   const ComputedStyle* style = GetComputedStyle();
   return !style || style->Display() == EDisplay::kNone;
+}
+
+void HTMLOptionElement::DefaultEventHandler(Event& event) {
+  if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+      keyboard_event && keyboard_event->key() == "Tab" &&
+      event.type() == event_type_names::kKeydown) {
+    if (auto* selectlist = OwnerSelectList()) {
+      selectlist->CloseListbox();
+      event.SetDefaultHandled();
+    }
+  }
+  HTMLElement::DefaultEventHandler(event);
 }
 
 }  // namespace blink

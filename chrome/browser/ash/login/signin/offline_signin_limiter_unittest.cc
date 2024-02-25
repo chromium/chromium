@@ -75,8 +75,8 @@ class OfflineSigninLimiterTest : public testing::Test {
   extensions::QuotaService::ScopedDisablePurgeForTesting
       disable_purge_for_testing_;
 
-  user_manager::ScopedUserManager scoped_user_manager_{
-      std::make_unique<FakeChromeUserManager>()};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 
   std::unique_ptr<TestingProfile> profile_;
 
@@ -117,6 +117,7 @@ void OfflineSigninLimiterTest::CreateLimiter() {
 }
 
 void OfflineSigninLimiterTest::SetUp() {
+  fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   profile_ = std::make_unique<TestingProfile>();
   known_user_ = std::make_unique<user_manager::KnownUser>(local_state_.Get());
 }
@@ -127,24 +128,24 @@ void OfflineSigninLimiterTest::TearDown() {
 }
 
 FakeChromeUserManager* OfflineSigninLimiterTest::GetFakeChromeUserManager() {
-  return static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+  return fake_user_manager_.Get();
 }
 
 user_manager::User* OfflineSigninLimiterTest::AddGaiaUser() {
-  auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUser(test_gaia_account_id_);
+  auto* user = fake_user_manager_->AddUser(test_gaia_account_id_);
   profile_->set_profile_name(kTestGaiaUser);
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+  fake_user_manager_->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                                   /*browser_restart=*/false,
+                                   /*is_child=*/false);
   return user;
 }
 
 user_manager::User* OfflineSigninLimiterTest::AddSAMLUser() {
-  auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddSamlUser(test_saml_account_id_);
+  auto* user = fake_user_manager_->AddSamlUser(test_saml_account_id_);
   profile_->set_profile_name(kTestSAMLUser);
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+  fake_user_manager_->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                                   /*browser_restart=*/false,
+                                   /*is_child=*/false);
   return user;
 }
 

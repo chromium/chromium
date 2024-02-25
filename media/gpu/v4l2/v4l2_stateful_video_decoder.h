@@ -7,6 +7,7 @@
 
 #include <linux/videodev2.h>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -23,8 +24,9 @@ class SequencedTaskRunner;
 
 namespace media {
 
+class H264FrameReassembler;
 class H264Parser;
-
+class V4L2FrameRateControl;
 class V4L2Queue;
 
 // V4L2StatefulVideoDecoder is an implementation of VideoDecoderMixin
@@ -47,14 +49,12 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
-  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
-
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb,
+                  const PipelineOutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
@@ -121,16 +121,12 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   bool TryAndEnqueueOUTPUTQueueBuffers();
 
   // Prints a VLOG with the state of |OUTPUT_queue| and |CAPTURE_queue_| for
-  // debugging, preceded with |from_here|s function name.
-  void PrintOutQueueStatesForVLOG(const base::Location& from_here);
+  // debugging, preceded with |from_here|s function name. Also TRACEs the
+  // queues' state.
+  void PrintAndTraceQueueStates(const base::Location& from_here);
 
   // Returns true if this class has successfully Initialize()d.
   bool IsInitialized() const;
-  // Read the buffer data and parse the NALUs. Return true if the buffer
-  // contains whole NALUs, IOW the total size of the NALUs and NALU headers adds
-  // up to the size of the buffer; false otherwise.
-  bool VerifyDecoderBufferHasOnlyWholeNALUs(
-      scoped_refptr<DecoderBuffer> buffer);
 
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   // This |wake_event_| is used to interrupt a blocking poll() call, such as the
@@ -141,8 +137,17 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   VideoCodecProfile profile_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);
-  OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PipelineOutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   DecodeCB flush_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Set to true when the driver identifies itself as a Mediatek 8173.
+  bool is_mtk8173_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // Used only on V4L2_MEMORY_MMAP queues (e.g. Hana MT8173) to grab the visible
+  // rectangle upon |CAPTURE_queue_| configuration in InitializeCAPTUREQueue().
+  gfx::Rect visible_rect_;
+
+  // Map of enqueuing timecodes to system timestamp, for histogramming purposes.
+  base::flat_map<int64_t, base::TimeTicks> encoding_timestamps_;
 
   // Holds pairs of encoded chunk (DecoderBuffer) and associated DecodeCB for
   // decoding via TryAndEnqueueOUTPUTQueueBuffers().
@@ -155,6 +160,10 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   scoped_refptr<V4L2Queue> OUTPUT_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<V4L2Queue> CAPTURE_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Some drivers, e.g. QC SC7180, require the client to inform the driver of
+  // the framerate (to tweak internal resources).
+  std::unique_ptr<V4L2FrameRateControl> framerate_control_;
+
   // A sequenced TaskRunner to wait for events coming from |CAPTURE_queue_| or
   // |wake_event_|.
   scoped_refptr<base::SequencedTaskRunner> event_task_runner_;
@@ -163,20 +172,18 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   base::CancelableTaskTracker cancelable_task_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Optional helper class to reassemble full H.264 frames out of NALUs.
+  std::unique_ptr<H264FrameReassembler> h264_frame_reassembler_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Pegged to the construction and main work thread. Notably, |task_runner| is
   // not used.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // For H264 decode, hardware requires that we send it whole NALUs. The current
-  // implementation of the decoder requires that Decode() is called on a
-  // DecoderBuffer with whole NALUs. So we'll need to parse the stream to ensure
-  // that with a DCHECK().
-  std::unique_ptr<H264Parser> h264_parser_;
-
   // Weak factories associated with the main thread (|sequence_checker|).
   base::WeakPtrFactory<V4L2StatefulVideoDecoder> weak_ptr_factory_for_events_;
   base::WeakPtrFactory<V4L2StatefulVideoDecoder>
-      weak_ptr_factory_for_frame_pool_;
+      weak_ptr_factory_for_CAPTURE_availability_;
 };
 
 }  // namespace media

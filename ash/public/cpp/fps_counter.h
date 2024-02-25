@@ -43,7 +43,7 @@ class ASH_PUBLIC_EXPORT FpsCounter : public ui::CompositorObserver {
   static void SetForceReportZeroAnimationForTest(bool value);
 
  private:
-  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
   int start_frame_number_ = 0;
   base::TimeTicks start_time_;
 };

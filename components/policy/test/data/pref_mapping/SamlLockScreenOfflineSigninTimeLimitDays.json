@@ -1,0 +1,84 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value",
+        "policies": {},
+        "prefs": {
+          "saml.lock_screen_offline_signin_time_limit": {
+            "default_value": -1
+          }
+        }
+      },
+      {
+        "note": "Value indicating user must reauthenticate every time",
+        "policies": {
+          "SamlLockScreenOfflineSigninTimeLimitDays": 0
+        },
+        "prefs": {
+          "saml.lock_screen_offline_signin_time_limit": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "Minimum value",
+        "policies": {
+          "SamlLockScreenOfflineSigninTimeLimitDays": -2
+        },
+        "prefs": {
+          "saml.lock_screen_offline_signin_time_limit": {
+            "value": -2
+          }
+        }
+      },
+      {
+        "note": "Maximum value",
+        "policies": {
+          "SamlLockScreenOfflineSigninTimeLimitDays": 365
+        },
+        "prefs": {
+          "saml.lock_screen_offline_signin_time_limit": {
+            "value": 365
+          }
+        }
+      },
+      {
+        "note": "Value below minimum should be mapped to minimum",
+        "policies": {
+          "SamlLockScreenOfflineSigninTimeLimitDays": -3
+        },
+        "prefs": {
+          "saml.lock_screen_offline_signin_time_limit": {
+            "value": -2
+          }
+        }
+      },
+      {
+        "note": "Value above maximum should be mapped to maximum",
+        "policies": {
+          "SamlLockScreenOfflineSigninTimeLimitDays": 366
+        },
+        "prefs": {
+          "saml.lock_screen_offline_signin_time_limit": {
+            "value": 365
+          }
+        }
+      },
+      {
+        "note": "Value within but not including range limits",
+        "policies": {
+          "SamlLockScreenOfflineSigninTimeLimitDays": 10
+        },
+        "prefs": {
+          "saml.lock_screen_offline_signin_time_limit": {
+            "value": 10
+          }
+        }
+      }
+    ]
+  }
+]

@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "metrics_internals"
-
   files = [
     "no_logs_test.ts",
     "with_log_test.ts",

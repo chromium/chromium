@@ -1,2 +1,5 @@
 hbos@chromium.org
 phancke@microsoft.com
+
+# For trivial or mechanical horizontal JS/CSS/HTML changes.
+file://ui/webui/PLATFORM_OWNERS

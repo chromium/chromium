@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -16,12 +17,12 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -54,7 +55,8 @@ class ProfileOAuth2TokenServiceDelegate {
   CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) = 0;
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge) = 0;
 
   // Returns |true| if a refresh token is available for |account_id|, and
   // |false| otherwise.
@@ -152,7 +154,7 @@ class ProfileOAuth2TokenServiceDelegate {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.
   virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      const absl::optional<CoreAccountId>& primary_account_id) {}
+      const std::optional<CoreAccountId>& primary_account_id) {}
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -162,6 +164,11 @@ class ProfileOAuth2TokenServiceDelegate {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+  // Triggers platform specific implementation to reload accounts from system.
+  virtual void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      const std::vector<CoreAccountInfo>& core_account_infos,
+      const std::optional<CoreAccountId>& primary_account_id) {}
+
   // Returns a reference to the corresponding Java object.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 #endif
@@ -175,7 +182,7 @@ class ProfileOAuth2TokenServiceDelegate {
     load_credentials_state_ = state;
   }
 
-  virtual void ClearAuthError(const absl::optional<CoreAccountId>& account_id);
+  virtual void ClearAuthError(const std::optional<CoreAccountId>& account_id);
   virtual GoogleServiceAuthError BackOffError() const;
   // Can be called only if `use_backoff` was true in the constructor.
   virtual void ResetBackOffEntry();

@@ -14,6 +14,18 @@ found in the LICENSE file.
          needed when building test cases. -->
     <application>
         <uses-library android:name="android.test.runner" />
+
+        <!--
+          Run the real telemetry code in test/sample code to improve
+          coverage
+        -->
+        <service
+          android:name="android.net.http.MetaDataHolder"
+          android:enabled="false" android:exported="false">
+            <meta-data
+              android:name="android.net.http.EnableTelemetry"
+              android:value="true" />
+        </service>
     </application>
     <instrumentation android:name="androidx.test.runner.AndroidJUnitRunner"
         android:targetPackage="org.chromium.cronet_sample_apk"

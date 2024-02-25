@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class Button;
@@ -35,6 +36,8 @@ bool CanNetworkConnect(
 class ASH_EXPORT NetworkStateListDetailedView
     : public TrayDetailedView,
       public TrayNetworkStateObserver {
+  METADATA_HEADER(NetworkStateListDetailedView, TrayDetailedView)
+
  public:
   NetworkStateListDetailedView(const NetworkStateListDetailedView&) = delete;
   NetworkStateListDetailedView& operator=(const NetworkStateListDetailedView&) =
@@ -45,9 +48,6 @@ class ASH_EXPORT NetworkStateListDetailedView
   void Init();
 
   void ToggleInfoBubbleForTesting();
-
-  // views::View:
-  const char* GetClassName() const override;
 
  protected:
   NetworkStateListDetailedView(DetailedViewDelegate* delegate,
@@ -111,13 +111,13 @@ class ASH_EXPORT NetworkStateListDetailedView
   // Track login state.
   LoginStatus login_;
 
-  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  raw_ptr<TrayNetworkStateModel> model_;
 
-  raw_ptr<views::Button, ExperimentalAsh> info_button_;
-  raw_ptr<views::Button, ExperimentalAsh> settings_button_;
+  raw_ptr<views::Button> info_button_;
+  raw_ptr<views::Button> settings_button_;
 
   // A small bubble for displaying network info.
-  raw_ptr<InfoBubble, ExperimentalAsh> info_bubble_;
+  raw_ptr<InfoBubble> info_bubble_;
 
   // Timer for starting and stopping network scans.
   base::RepeatingTimer network_scan_repeating_timer_;

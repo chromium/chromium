@@ -24,7 +24,7 @@ public interface InflationObserver extends LifecycleObserver {
      * Overriding onPostInflationStartup() is preferred.
      * TODO(https://crbug.com/1092421): Removes this state.
      */
-    default void onInflationComplete(){};
+    default void onInflationComplete() {}
 
     /**
      * Called immediately after the view hierarchy is inflated.

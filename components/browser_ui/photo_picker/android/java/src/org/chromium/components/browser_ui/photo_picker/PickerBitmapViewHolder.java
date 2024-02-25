@@ -17,11 +17,9 @@ import org.chromium.base.task.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Holds on to a {@link PickerBitmapView} that displays information about a picker bitmap.
- */
-public class PickerBitmapViewHolder
-        extends ViewHolder implements DecoderServiceHost.ImagesDecodedCallback {
+/** Holds on to a {@link PickerBitmapView} that displays information about a picker bitmap. */
+public class PickerBitmapViewHolder extends ViewHolder
+        implements DecoderServiceHost.ImagesDecodedCallback {
     // Our parent category.
     private PickerCategoryView mCategoryView;
 
@@ -33,6 +31,7 @@ public class PickerBitmapViewHolder
 
     /**
      * The PickerBitmapViewHolder.
+     *
      * @param itemView The {@link PickerBitmapView} view for showing the image.
      */
     public PickerBitmapViewHolder(PickerBitmapView itemView) {
@@ -43,8 +42,13 @@ public class PickerBitmapViewHolder
     // DecoderServiceHost.ImageDecodedCallback
 
     @Override
-    public void imagesDecodedCallback(String filePath, boolean isVideo, boolean fullWidth,
-            List<Bitmap> bitmaps, String videoDuration, float ratio) {
+    public void imagesDecodedCallback(
+            String filePath,
+            boolean isVideo,
+            boolean fullWidth,
+            List<Bitmap> bitmaps,
+            String videoDuration,
+            float ratio) {
         if (bitmaps == null || bitmaps.size() == 0) return;
 
         if (!isVideo) {
@@ -52,27 +56,40 @@ public class PickerBitmapViewHolder
             if (bitmap == null || bitmap.getWidth() == 0 || bitmap.getHeight() == 0) return;
         }
 
-        PickerCategoryView.Thumbnail cachedThumbnail = fullWidth
-                ? mCategoryView.getFullScreenBitmaps().get(filePath)
-                : mCategoryView.getHighResThumbnails().get(filePath);
+        PickerCategoryView.Thumbnail cachedThumbnail =
+                fullWidth
+                        ? mCategoryView.getFullScreenBitmaps().get(filePath)
+                        : mCategoryView.getHighResThumbnails().get(filePath);
         if (cachedThumbnail == null
                 || (cachedThumbnail.bitmaps != null
                         && cachedThumbnail.bitmaps.size() < bitmaps.size())) {
             if (fullWidth) {
-                mCategoryView.getFullScreenBitmaps().put(filePath,
-                        new PickerCategoryView.Thumbnail(bitmaps, videoDuration, fullWidth, ratio));
+                mCategoryView
+                        .getFullScreenBitmaps()
+                        .put(
+                                filePath,
+                                new PickerCategoryView.Thumbnail(
+                                        bitmaps, videoDuration, fullWidth, ratio));
             } else {
-                mCategoryView.getHighResThumbnails().put(filePath,
-                        new PickerCategoryView.Thumbnail(bitmaps, videoDuration, fullWidth, ratio));
+                mCategoryView
+                        .getHighResThumbnails()
+                        .put(
+                                filePath,
+                                new PickerCategoryView.Thumbnail(
+                                        bitmaps, videoDuration, fullWidth, ratio));
             }
         }
 
         if (mCategoryView.getLowResThumbnails().get(filePath) == null) {
             Resources resources = mItemView.getContext().getResources();
-            new BitmapScalerTask(mCategoryView.getLowResThumbnails(), bitmaps.get(0), filePath,
-                    videoDuration,
-                    resources.getDimensionPixelSize(R.dimen.photo_picker_grainy_thumbnail_size),
-                    ratio)
+            new BitmapScalerTask(
+                            mCategoryView.getLowResThumbnails(),
+                            bitmaps.get(0),
+                            filePath,
+                            videoDuration,
+                            resources.getDimensionPixelSize(
+                                    R.dimen.photo_picker_grainy_thumbnail_size),
+                            ratio)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -87,6 +104,7 @@ public class PickerBitmapViewHolder
 
     /**
      * Display a single item from |position| in the PickerCategoryView.
+     *
      * @param categoryView The PickerCategoryView to use to fetch the image.
      * @param position The position of the item to fetch.
      * @return The decoding action required to display the item.
@@ -105,11 +123,16 @@ public class PickerBitmapViewHolder
         }
 
         String filePath = mBitmapDetails.getUri().getPath();
-        PickerCategoryView.Thumbnail original = mCategoryView.isInMagnifyingMode()
-                ? mCategoryView.getFullScreenBitmaps().get(filePath)
-                : mCategoryView.getHighResThumbnails().get(filePath);
+        PickerCategoryView.Thumbnail original =
+                mCategoryView.isInMagnifyingMode()
+                        ? mCategoryView.getFullScreenBitmaps().get(filePath)
+                        : mCategoryView.getHighResThumbnails().get(filePath);
         if (original != null) {
-            mItemView.initialize(mBitmapDetails, original.bitmaps, original.videoDuration, false,
+            mItemView.initialize(
+                    mBitmapDetails,
+                    original.bitmaps,
+                    original.videoDuration,
+                    false,
                     original.ratioOriginal);
             return PickerAdapter.DecodeActions.FROM_CACHE;
         }
@@ -140,8 +163,14 @@ public class PickerBitmapViewHolder
             mItemView.initialize(mBitmapDetails, null, null, true, -1);
         }
 
-        mCategoryView.getDecoderServiceHost().decodeImage(mBitmapDetails.getUri(),
-                mBitmapDetails.type(), width, mCategoryView.isInMagnifyingMode(), this);
+        mCategoryView
+                .getDecoderServiceHost()
+                .decodeImage(
+                        mBitmapDetails.getUri(),
+                        mBitmapDetails.type(),
+                        width,
+                        mCategoryView.isInMagnifyingMode(),
+                        this);
         return PickerAdapter.DecodeActions.DECODE;
     }
 

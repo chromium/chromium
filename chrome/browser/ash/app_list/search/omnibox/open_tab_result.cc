@@ -90,7 +90,7 @@ void OpenTabResult::Open(int event_flags) {
                                     WindowOpenDisposition::SWITCH_TO_TAB));
 }
 
-absl::optional<std::string> OpenTabResult::DriveId() const {
+std::optional<std::string> OpenTabResult::DriveId() const {
   return drive_id_;
 }
 

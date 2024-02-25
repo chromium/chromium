@@ -101,4 +101,9 @@ void EncryptionMigrationScreenHandler::SetMigrationProgress(double progress) {
   CallExternalAPI("setMigrationProgress", progress);
 }
 
+base::WeakPtr<EncryptionMigrationScreenView>
+EncryptionMigrationScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

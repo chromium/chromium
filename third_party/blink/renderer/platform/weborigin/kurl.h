@@ -29,6 +29,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -130,14 +131,15 @@ class PLATFORM_EXPORT KURL {
   bool CanSetPathname() const { return IsHierarchical(); }
   bool IsHierarchical() const;
 
-  // The returned `String` is guaranteed to consist of only ASCII characters,
-  // but may be 8-bit or 16-bit.
-  const String& GetString() const { return string_; }
+  // The returned `AtomicString` is guaranteed to consist of only ASCII
+  // characters, but may be 8-bit or 16-bit.
+  const AtomicString& GetString() const { return string_; }
 
   String ElidedString() const;
 
   String Protocol() const;
   String Host() const;
+  StringView HostView() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Returns 0 when there is no port or the default port was specified, or the
   // URL is invalid.
@@ -176,7 +178,6 @@ class PLATFORM_EXPORT KURL {
   void RemovePort();
   void SetPort(uint16_t);
   void SetPort(const String&);
-  void SetPort(const String&, bool* value_overflow_out);
 
   // Input is like "foo.com" or "foo.com:8000".
   void SetHostAndPort(const String&);
@@ -311,6 +312,13 @@ PLATFORM_EXPORT String DecodeURLEscapeSequences(const String&,
                                                 DecodeURLMode mode);
 
 PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const String&);
+
+// Checks an arbitrary string for invalid escape sequences.
+//
+// A valid percent-encoding is '%' followed by exactly two hex-digits. This
+// function returns true if an occurrence of '%' is found and followed by
+// anything other than two hex-digits.
+PLATFORM_EXPORT bool HasInvalidURLEscapeSequences(const String&);
 
 }  // namespace blink
 

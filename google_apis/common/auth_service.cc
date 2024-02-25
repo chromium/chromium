@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,19 +24,6 @@
 namespace google_apis {
 
 namespace {
-
-// Used for success ratio histograms. 0 for failure, 1 for success,
-// 2 for no connection (likely offline).
-const int kSuccessRatioHistogramFailure = 0;
-const int kSuccessRatioHistogramSuccess = 1;
-const int kSuccessRatioHistogramNoConnection = 2;
-const int kSuccessRatioHistogramTemporaryFailure = 3;
-const int kSuccessRatioHistogramMaxValue = 4;  // The max value is exclusive.
-
-void RecordAuthResultHistogram(int value) {
-  UMA_HISTOGRAM_ENUMERATION("GData.AuthSuccess", value,
-                            kSuccessRatioHistogramMaxValue);
-}
 
 // OAuth2 authorization token retrieval request.
 class AuthRequest {
@@ -86,7 +72,6 @@ void AuthRequest::OnAccessTokenFetchComplete(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (error.state() == GoogleServiceAuthError::NONE) {
-    RecordAuthResultHistogram(kSuccessRatioHistogramSuccess);
     std::move(callback_).Run(HTTP_SUCCESS, token_info.token);
   } else {
     LOG(WARNING) << "AuthRequest: token request using refresh token failed: "
@@ -96,14 +81,11 @@ void AuthRequest::OnAccessTokenFetchComplete(
     // it's likely that the device is off-line. We treat the error differently
     // so that the file manager works while off-line.
     if (error.state() == GoogleServiceAuthError::CONNECTION_FAILED) {
-      RecordAuthResultHistogram(kSuccessRatioHistogramNoConnection);
       std::move(callback_).Run(NO_CONNECTION, std::string());
     } else if (error.state() == GoogleServiceAuthError::SERVICE_UNAVAILABLE) {
-      RecordAuthResultHistogram(kSuccessRatioHistogramTemporaryFailure);
       std::move(callback_).Run(HTTP_FORBIDDEN, std::string());
     } else {
       // Permanent auth error.
-      RecordAuthResultHistogram(kSuccessRatioHistogramFailure);
       std::move(callback_).Run(HTTP_UNAUTHORIZED, std::string());
     }
   }

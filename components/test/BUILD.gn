@@ -71,6 +71,10 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/dom_distiller/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("feed_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/feed/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("fenced_frames_test_bundle_data") {
     testonly = true
     filelist_name = "data/fenced_frames/unit_tests_bundle_data.filelist"
@@ -83,6 +87,14 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/language/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("offline_pages_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/offline_pages/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("paint_preview_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/paint_preview/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("password_manager_test_bundle_data") {
     testonly = true
     filelist_name = "data/password_manager/unit_tests_bundle_data.filelist"
@@ -90,6 +102,10 @@ if (is_ios) {
   bundle_data_from_filelist("performance_manager_test_bundle_data") {
     testonly = true
     filelist_name = "data/performance_manager/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("safe_browsing_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/safe_browsing/unit_tests_bundle_data.filelist"
   }
   bundle_data_from_filelist("service_worker_test_bundle_data") {
     testonly = true
@@ -110,6 +126,10 @@ if (is_ios) {
   bundle_data_from_filelist("viz_test_bundle_data") {
     testonly = true
     filelist_name = "data/viz/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("webapps_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/webapps/unit_tests_bundle_data.filelist"
   }
   bundle_data_from_filelist("web_database_test_bundle_data") {
     testonly = true

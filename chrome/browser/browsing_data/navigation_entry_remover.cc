@@ -38,7 +38,7 @@ namespace {
 
 bool ShouldDeleteUrl(base::Time begin,
                      base::Time end,
-                     const absl::optional<std::set<GURL>>& restrict_urls,
+                     const std::optional<std::set<GURL>>& restrict_urls,
                      const GURL& url,
                      base::Time time_stamp) {
   return begin <= time_stamp && (time_stamp < end || end.is_null()) &&
@@ -49,7 +49,7 @@ bool ShouldDeleteUrl(base::Time begin,
 bool ShouldDeleteNavigationEntry(
     base::Time begin,
     base::Time end,
-    const absl::optional<std::set<GURL>>& restrict_urls,
+    const std::optional<std::set<GURL>>& restrict_urls,
     content::NavigationEntry* entry) {
   return ShouldDeleteUrl(begin, end, restrict_urls, entry->GetURL(),
                          entry->GetTimestamp());
@@ -58,7 +58,7 @@ bool ShouldDeleteNavigationEntry(
 bool ShouldDeleteSerializedNavigationEntry(
     base::Time begin,
     base::Time end,
-    const absl::optional<std::set<GURL>>& restrict_urls,
+    const std::optional<std::set<GURL>>& restrict_urls,
     const sessions::SerializedNavigationEntry& entry) {
   return ShouldDeleteUrl(begin, end, restrict_urls, entry.virtual_url(),
                          entry.timestamp());
@@ -93,7 +93,7 @@ void DeleteNavigationEntries(
 void DeleteTabNavigationEntries(
     Profile* profile,
     const history::DeletionTimeRange& time_range,
-    const absl::optional<std::set<GURL>>& restrict_urls,
+    const std::optional<std::set<GURL>>& restrict_urls,
     const base::flat_set<GURL>& url_set) {
   auto predicate = time_range.IsValid()
                        ? base::BindRepeating(
@@ -174,11 +174,10 @@ class TabRestoreDeletionHelper : public sessions::TabRestoreServiceObserver {
   sessions::TabRestoreService::DeletionPredicate deletion_predicate_;
 };
 
-void DeleteTabRestoreEntries(
-    Profile* profile,
-    const history::DeletionTimeRange& time_range,
-    const absl::optional<std::set<GURL>>& restrict_urls,
-    const base::flat_set<GURL>& url_set) {
+void DeleteTabRestoreEntries(Profile* profile,
+                             const history::DeletionTimeRange& time_range,
+                             const std::optional<std::set<GURL>>& restrict_urls,
+                             const base::flat_set<GURL>& url_set) {
   sessions::TabRestoreService* tab_service =
       TabRestoreServiceFactory::GetForProfile(profile);
   if (!tab_service)

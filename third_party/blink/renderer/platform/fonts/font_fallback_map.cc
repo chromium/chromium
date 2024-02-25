@@ -10,32 +10,20 @@ namespace blink {
 
 void FontFallbackMap::Trace(Visitor* visitor) const {
   visitor->Trace(font_selector_);
+  visitor->Trace(fallback_list_for_description_);
   FontCacheClient::Trace(visitor);
   FontSelectorClient::Trace(visitor);
 }
 
-FontFallbackMap::~FontFallbackMap() {
-  InvalidateAll();
-}
-
-scoped_refptr<FontFallbackList> FontFallbackMap::Get(
+FontFallbackList* FontFallbackMap::Get(
     const FontDescription& font_description) {
-  auto iter = fallback_list_for_description_.find(font_description);
-  if (iter != fallback_list_for_description_.end()) {
-    DCHECK(iter->value->IsValid());
-    return iter->value;
+  auto add_result =
+      fallback_list_for_description_.insert(font_description, nullptr);
+  if (add_result.is_new_entry) {
+    add_result.stored_value->value =
+        MakeGarbageCollected<FontFallbackList>(font_selector_);
   }
-  auto add_result = fallback_list_for_description_.insert(
-      font_description, FontFallbackList::Create(*this));
   return add_result.stored_value->value;
-}
-
-void FontFallbackMap::Remove(const FontDescription& font_description) {
-  auto iter = fallback_list_for_description_.find(font_description);
-  DCHECK_NE(iter, fallback_list_for_description_.end());
-  DCHECK(iter->value->IsValid());
-  DCHECK(iter->value->HasOneRef());
-  fallback_list_for_description_.erase(iter);
 }
 
 void FontFallbackMap::InvalidateAll() {

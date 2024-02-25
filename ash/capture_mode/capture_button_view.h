@@ -27,9 +27,9 @@ class CaptureModeBehavior;
 // if multiple recording formats are supported, it will display a drop down
 // button which when pressed will open the recording type selection menu.
 class CaptureButtonView : public views::View {
- public:
-  METADATA_HEADER(CaptureButtonView);
+  METADATA_HEADER(CaptureButtonView, views::View)
 
+ public:
   CaptureButtonView(views::Button::PressedCallback on_capture_button_pressed,
                     views::Button::PressedCallback on_drop_down_pressed,
                     CaptureModeBehavior* active_behavior);
@@ -71,13 +71,13 @@ class CaptureButtonView : public views::View {
       bool use_zero_insets);
 
   // The button which when pressed, screen capture will be performed.
-  const raw_ptr<views::LabelButton, ExperimentalAsh> capture_button_;
+  const raw_ptr<views::LabelButton> capture_button_;
 
   // Optional views that are created only, when multiple (i.e. more than one)
   // recording formats (e.g. webm, gif, .. etc.) are supported. They're visible
   // only if the current capture type is video recording.
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<views::ImageButton, ExperimentalAsh> drop_down_button_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
+  raw_ptr<views::ImageButton> drop_down_button_ = nullptr;
 };
 
 }  // namespace ash

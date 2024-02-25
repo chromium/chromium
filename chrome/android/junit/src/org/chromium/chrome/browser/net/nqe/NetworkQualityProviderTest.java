@@ -14,9 +14,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.net.EffectiveConnectionType;
 
-/**
- * JUnit tests for NetworkQualityProvider which run against Robolectric.
- */
+/** JUnit tests for NetworkQualityProvider which run against Robolectric. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NetworkQualityProviderTest {

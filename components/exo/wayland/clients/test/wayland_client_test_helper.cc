@@ -21,6 +21,7 @@
 #include "components/exo/display.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "components/exo/notification_surface_manager.h"
+#include "components/exo/test/test_security_delegate.h"
 #include "components/exo/toast_surface_manager.h"
 #include "components/exo/wayland/server.h"
 #include "components/exo/wm_helper.h"
@@ -90,7 +91,9 @@ void WaylandClientTestHelper::SetUpOnUIThread(base::WaitableEvent* event) {
 
   wm_helper_ = std::make_unique<WMHelper>();
   display_ = std::make_unique<Display>(nullptr, nullptr, nullptr, nullptr);
-  wayland_server_ = exo::wayland::Server::Create(display_.get());
+
+  wayland_server_ = exo::wayland::Server::Create(
+      display_.get(), std::make_unique<test::TestSecurityDelegate>());
   DCHECK(wayland_server_);
   wayland_server_->StartWithDefaultPath(base::BindOnce(
       [](base::WaitableEvent* event, bool success) {

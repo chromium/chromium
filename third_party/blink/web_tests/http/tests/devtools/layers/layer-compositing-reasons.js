@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {LayersTestRunner} from 'layers_test_runner';
 
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
+
 (async function() {
   TestRunner.addResult(`Tests layer compositing reasons in Layers Panel`);
   await TestRunner.navigatePromise(TestRunner.url('resources/compositing-reasons.html'));
@@ -12,7 +14,7 @@ import {LayersTestRunner} from 'layers_test_runner';
   async function dumpCompositingReasons(layer) {
     const node = layer.nodeForSelfOrAncestor();
     if (node) {
-      const label = Elements.DOMPath.fullQualifiedSelector(node, false);
+      const label = ElementsModule.DOMPath.fullQualifiedSelector(node, false);
       const reasonIds = await layer.requestCompositingReasonIds();
       TestRunner.addResult(`Compositing reason ids for ${label}: ` + reasonIds.sort().join(','));
     }

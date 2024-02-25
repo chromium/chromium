@@ -1,0 +1,133 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_API_TASKS_FAKE_TASKS_CLIENT_H_
+#define ASH_API_TASKS_FAKE_TASKS_CLIENT_H_
+
+#include <list>
+#include <string>
+#include <vector>
+
+#include "ash/api/tasks/tasks_client.h"
+#include "ash/ash_export.h"
+#include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
+#include "ui/base/models/list_model.h"
+
+namespace ash::api {
+
+struct Task;
+struct TaskList;
+
+class ASH_EXPORT FakeTasksClient : public TasksClient {
+ public:
+  FakeTasksClient();
+  FakeTasksClient(const FakeTasksClient&) = delete;
+  FakeTasksClient& operator=(const FakeTasksClient&) = delete;
+  ~FakeTasksClient() override;
+
+  std::vector<std::string> pending_completed_tasks() const {
+    return pending_completed_tasks_;
+  }
+
+  int completed_task_count() { return completed_tasks_; }
+
+  // TasksClient:
+  void GetTaskLists(bool force_fetch, GetTaskListsCallback callback) override;
+  void GetTasks(const std::string& task_list_id,
+                bool force_fetch,
+                GetTasksCallback callback) override;
+  void MarkAsCompleted(const std::string& task_list_id,
+                       const std::string& task_id,
+                       bool checked) override;
+  void AddTask(const std::string& task_list_id,
+               const std::string& title,
+               TasksClient::OnTaskSavedCallback callback) override;
+  void UpdateTask(const std::string& task_list_id,
+                  const std::string& task_id,
+                  const std::string& title,
+                  bool completed,
+                  TasksClient::OnTaskSavedCallback callback) override;
+  void InvalidateCache() override {}
+  std::optional<base::Time> GetTasksLastUpdateTime(
+      const std::string& task_list_id) const override;
+  void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
+                                     callback = base::DoNothing()) override;
+
+  // Helper function for loading in pre-built `TaskList` objects.
+  void AddTaskList(std::unique_ptr<TaskList> task_list_data);
+
+  // Helper function for loading in pre-built `Task` objects.
+  void AddTask(const std::string& task_list_id,
+               std::unique_ptr<Task> task_data);
+
+  void SetTasksLastUpdateTime(base::Time time);
+
+  // Returns `bubble_closed_count_`, while also resetting the counter.
+  int GetAndResetBubbleClosedCount();
+
+  // Runs `pending_get_tasks_callbacks_` and returns their number.
+  size_t RunPendingGetTasksCallbacks();
+
+  // Runs `pending_get_task_lists_callbacks_` and returns their number.
+  size_t RunPendingGetTaskListsCallbacks();
+
+  // Runs `pending_add_task_callbacks_` and returns their number.
+  size_t RunPendingAddTaskCallbacks();
+
+  // Runs `pending_update_task_callbacks_` and returns their number.
+  size_t RunPendingUpdateTaskCallbacks();
+
+  void set_paused(bool paused) { paused_ = paused; }
+  void set_run_with_errors(bool run_with_errors) {
+    run_with_errors_ = run_with_errors;
+  }
+
+  ui::ListModel<TaskList>* task_lists() { return task_lists_.get(); }
+
+ private:
+  void AddTaskImpl(const std::string& task_list_id,
+                   const std::string& title,
+                   TasksClient::OnTaskSavedCallback callback);
+  void UpdateTaskImpl(const std::string& task_list_id,
+                      const std::string& task_id,
+                      const std::string& title,
+                      bool completed,
+                      TasksClient::OnTaskSavedCallback callback);
+
+  // All available task lists.
+  std::unique_ptr<ui::ListModel<TaskList>> task_lists_;
+
+  // Tracks completed tasks and the task list they belong to.
+  std::vector<std::string> pending_completed_tasks_;
+
+  // All available tasks grouped by task list id.
+  base::flat_map<std::string, std::unique_ptr<ui::ListModel<Task>>>
+      tasks_in_task_lists_;
+
+  // Number of times `OnGlanceablesBubbleClosed()` has been called.
+  int bubble_closed_count_ = 0;
+  int completed_tasks_ = 0;
+
+  // If `false` - callbacks are executed normally; if `true` - executed with
+  // simulated error (currently works for `AddTask` and `UpdateTask` only).
+  bool run_with_errors_ = false;
+
+  // The last time when the tasks were updated. This is manually set by
+  // `SetTasksLastUpdateTime`.
+  base::Time last_updated_time_;
+
+  // If `false` - callbacks are executed immediately; if `true` - callbacks get
+  // saved to the corresponding list and executed once
+  // `RunPending**Callbacks()` is called.
+  bool paused_ = false;
+  std::list<base::OnceClosure> pending_get_tasks_callbacks_;
+  std::list<base::OnceClosure> pending_get_task_lists_callbacks_;
+  std::list<base::OnceClosure> pending_add_task_callbacks_;
+  std::list<base::OnceClosure> pending_update_task_callbacks_;
+};
+
+}  // namespace ash::api
+
+#endif  // ASH_API_TASKS_FAKE_TASKS_CLIENT_H_

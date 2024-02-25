@@ -42,6 +42,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesManagerClient {
 
     // Called when a new Euicc objects are added or removed.
     virtual void OnAvailableEuiccListChanged() {}
+
+    // Called when the Hermes clients are being shut down.
+    virtual void OnShutdown() {}
   };
 
   // Adds an observer for carrier profile lists changes on Hermes manager.

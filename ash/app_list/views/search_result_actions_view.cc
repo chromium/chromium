@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
@@ -19,7 +21,6 @@
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -46,9 +47,9 @@ constexpr int kActionButtonBetweenSpacing = 8;
 
 // SearchResultActionButton renders the button defined by SearchResult::Action.
 class SearchResultActionButton : public IconButton {
- public:
-  METADATA_HEADER(SearchResultActionButton);
+  METADATA_HEADER(SearchResultActionButton, IconButton)
 
+ public:
   SearchResultActionButton(SearchResultActionsView* parent,
                            const SearchResult::Action& action,
                            PressedCallback callback,
@@ -71,7 +72,7 @@ class SearchResultActionButton : public IconButton {
  private:
   int GetButtonRadius() const;
 
-  raw_ptr<SearchResultActionsView, ExperimentalAsh> parent_;
+  raw_ptr<SearchResultActionsView> parent_;
   bool to_be_activate_by_long_press_ = false;
 };
 
@@ -82,7 +83,7 @@ SearchResultActionButton::SearchResultActionButton(
     Type type,
     const gfx::VectorIcon* icon,
     const std::u16string& accessible_name)
-    : IconButton(callback,
+    : IconButton(std::move(callback),
                  type,
                  icon,
                  action.tooltip_text,
@@ -133,7 +134,7 @@ int SearchResultActionButton::GetButtonRadius() const {
   return width() / 2;
 }
 
-BEGIN_METADATA(SearchResultActionButton, IconButton)
+BEGIN_METADATA(SearchResultActionButton)
 END_METADATA
 
 SearchResultActionsView::SearchResultActionsView(
@@ -271,7 +272,7 @@ void SearchResultActionsView::ChildVisibilityChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-BEGIN_METADATA(SearchResultActionsView, views::View)
+BEGIN_METADATA(SearchResultActionsView)
 END_METADATA
 
 }  // namespace ash

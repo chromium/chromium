@@ -29,18 +29,18 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/capabilities_types.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_interaction_manager.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/capabilities_types.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_interaction_manager.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 @implementation SigninEarlGreyAppInterface
@@ -101,12 +101,23 @@
                                   /*force_clear_browsing_data=*/false, nil);
 }
 
++ (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [self addFakeIdentity:identity];
+  ChromeBrowserState* browserState =
+      chrome_test_util::GetOriginalBrowserState();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  authenticationService->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+}
+
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
   FakeSystemIdentityInteractionManager.identity = identity;
   std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
   PrefService* prefService =
       chrome_test_util::GetOriginalBrowserState()->GetPrefs();
-  prefService->SetString(prefs::kGoogleServicesLastUsername, emailAddress);
+  prefService->SetString(prefs::kGoogleServicesLastSyncingUsername,
+                         emailAddress);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninAndSyncReauth
             accessPoint:signin_metrics::AccessPoint::
@@ -126,12 +137,6 @@
       chrome_test_util::GetForegroundActiveSceneController();
   [sceneController showWebSigninPromoFromViewController:baseViewController
                                                     URL:gURL];
-}
-
-+ (void)clearLastSignedInAccounts {
-  PrefService* prefService =
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
-  prefService->ClearPref(prefs::kSigninLastAccounts);
 }
 
 + (void)presentSignInAccountsViewControllerIfNecessary {
@@ -172,14 +177,17 @@
   mutator->set_can_have_email_address_displayed(value);
 }
 
-+ (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
-                                forIdentity:(FakeSystemIdentity*)fakeIdentity {
++ (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
+                                                    forIdentity:
+                                                        (FakeSystemIdentity*)
+                                                            fakeIdentity {
   FakeSystemIdentityManager* systemIdentityManager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   AccountCapabilitiesTestMutator* mutator =
       systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
-  mutator->set_can_offer_extended_chrome_sync_promos(value);
+  mutator->set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      value);
 }
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {

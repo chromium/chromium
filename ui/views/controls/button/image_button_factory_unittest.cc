@@ -58,19 +58,18 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  ImageButton* AddImageButton(std::unique_ptr<ImageButton> button) {
-    button_ = widget_->SetContentsView(std::move(button));
-    return button_;
+  void AddImageButton(std::unique_ptr<ImageButton> button) {
+    widget_->SetContentsView(std::move(button));
   }
 
  protected:
   Widget* widget() { return widget_.get(); }
-  ImageButton* button() { return button_; }
+  ImageButton* button() {
+    return static_cast<ImageButton*>(widget_->GetContentsView());
+  }
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<ImageButton, DanglingUntriaged> button_ =
-      nullptr;  // owned by |widget_|.
 };
 
 TEST_F(ImageButtonFactoryWidgetTest, SetImageFromVectorIconWithColor) {

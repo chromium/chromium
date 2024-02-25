@@ -1,0 +1,44 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+source_set("export") {
+  sources = [
+    "csv_writer.cc",
+    "csv_writer.h",
+    "export_progress_status.h",
+    "password_csv_writer.cc",
+    "password_csv_writer.h",
+    "password_manager_exporter.cc",
+    "password_manager_exporter.h",
+  ]
+  deps = [
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser/ui",
+    "//components/sync/base:features",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "csv_writer_unittest.cc",
+    "password_csv_writer_unittest.cc",
+    "password_manager_exporter_unittest.cc",
+  ]
+  deps = [
+    ":export",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/import:csv",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

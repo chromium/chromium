@@ -455,15 +455,15 @@ void P2PSocketTcp::DoSend(const net::IPEndPoint& to,
   SendBuffer send_buffer(
       options.packet_id,
       base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size));
+          base::MakeRefCounted<net::IOBufferWithSize>(buffer_size),
+          buffer_size));
   *reinterpret_cast<uint16_t*>(send_buffer.buffer->data()) =
       base::HostToNet16(data.size());
   memcpy(send_buffer.buffer->data() + kPacketHeaderSize, data.data(),
          data.size());
 
   cricket::ApplyPacketOptions(
-      reinterpret_cast<uint8_t*>(send_buffer.buffer->data()) +
-          kPacketHeaderSize,
+      send_buffer.buffer->bytes() + kPacketHeaderSize,
       send_buffer.buffer->BytesRemaining() - kPacketHeaderSize,
       options.packet_time_params, rtc::TimeMicros());
 
@@ -505,7 +505,7 @@ bool P2PSocketStunTcp::ProcessInput(base::span<const uint8_t> input,
 
   // We have a complete packet. Read through it.
   *bytes_consumed = packet_size + pad_bytes;
-  return OnPacket(input.subspan(0, packet_size));
+  return OnPacket(input.first(packet_size));
 }
 
 void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
@@ -535,12 +535,12 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
   SendBuffer send_buffer(
       options.packet_id,
       base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size));
+          base::MakeRefCounted<net::IOBufferWithSize>(buffer_size),
+          buffer_size));
   memcpy(send_buffer.buffer->data(), data.data(), data.size());
 
-  cricket::ApplyPacketOptions(
-      reinterpret_cast<uint8_t*>(send_buffer.buffer->data()), data.size(),
-      options.packet_time_params, rtc::TimeMicros());
+  cricket::ApplyPacketOptions(send_buffer.buffer->bytes(), data.size(),
+                              options.packet_time_params, rtc::TimeMicros());
 
   if (pad_bytes) {
     char padding[4] = {0};

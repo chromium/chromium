@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_LIGHT_SAMPLES_OBSERVER_H_
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_LIGHT_SAMPLES_OBSERVER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -12,7 +14,6 @@
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace power {
@@ -52,7 +53,7 @@ class LightSamplesObserver
   void SetChannelsEnabled();
   void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices);
 
-  raw_ptr<AlsReader, DanglingUntriaged | ExperimentalAsh> als_reader_;
+  raw_ptr<AlsReader, DanglingUntriaged> als_reader_;
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> sensor_device_remote_;
 
@@ -60,7 +61,7 @@ class LightSamplesObserver
       receiver_{this};
 
   // Channel index of the target channel: "illuminance".
-  absl::optional<int32_t> channel_index_;
+  std::optional<int32_t> channel_index_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 
 #pragma mark - StartSurfaceBrowserAgent
@@ -28,6 +29,7 @@ void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   if (most_recent_tab_ != active_web_state) {
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kTabResumption);
     most_recent_tab_ = active_web_state;
     DCHECK(favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
     if (favicon_driver_observer_.IsObserving()) {
@@ -38,7 +40,7 @@ void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
     if (web_state_observation_.IsObserving()) {
       web_state_observation_.Reset();
     }
-    web_state_observation_.Observe(most_recent_tab_);
+    web_state_observation_.Observe(most_recent_tab_.get());
   }
 }
 
@@ -79,7 +81,7 @@ void StartSurfaceRecentTabBrowserAgent::WebStateListDidChange(
 
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
-      if (most_recent_tab_ == detach_change.detached_web_state()) {
+      if (most_recent_tab_.get() == detach_change.detached_web_state()) {
         for (auto& observer : observers_) {
           observer.MostRecentTabRemoved(most_recent_tab_);
         }
@@ -121,7 +123,8 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
     gfx::Image favicon = driver->GetFavicon();
     if (!favicon.IsEmpty()) {
       for (auto& observer : observers_) {
-        observer.MostRecentTabFaviconUpdated(favicon.ToUIImage());
+        observer.MostRecentTabFaviconUpdated(most_recent_tab_,
+                                             favicon.ToUIImage());
       }
     }
   }
@@ -129,6 +132,6 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
 
 void StartSurfaceRecentTabBrowserAgent::TitleWasSet(web::WebState* web_state) {
   for (auto& observer : observers_) {
-    observer.MostRecentTabTitleUpdated(web_state->GetTitle());
+    observer.MostRecentTabTitleUpdated(web_state, web_state->GetTitle());
   }
 }

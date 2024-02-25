@@ -9,11 +9,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,13 +21,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #endif
-
-void EnterFullscreen(Browser* browser) {
-  browser->exclusive_access_manager()
-      ->fullscreen_controller()
-      ->ToggleBrowserFullscreenMode();
-  FullscreenNotificationObserver(browser).Wait();
-}
 
 class TabSearchBubbleHostBrowserTest : public InProcessBrowserTest {
  public:
@@ -74,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
                        BubbleShowCorrectlyInFullscreen) {
-  EnterFullscreen(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   gfx::Rect rect(20, 4, 0, 0);
   bubble_manager()->ShowBubble(rect);
@@ -124,7 +117,7 @@ class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
       const FullscreenTabSearchBubbleDialogTest&) = delete;
 
   void ShowUi(const std::string& name) override {
-    EnterFullscreen(browser());
+    ui_test_utils::ToggleFullscreenModeAndWait(browser());
     BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser());
     view->CreateTabSearchBubble();
   }

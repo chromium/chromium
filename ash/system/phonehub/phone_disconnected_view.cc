@@ -17,8 +17,8 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -45,9 +45,6 @@ PhoneDisconnectedView::PhoneDisconnectedView(
       IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_DESCRIPTION));
 
   // Add "Learn more" and "Refresh" buttons.
-  // TODO(b/281844561): Migrate the "Learn More" button to use
-  // |PillButton::Type::kSecondaryWithoutIcon| when the PillButton colors
-  // are updated with better contrast-ratios.
   auto learn_more = std::make_unique<PillButton>(
       base::BindRepeating(
           &PhoneDisconnectedView::ButtonPressed, base::Unretained(this),
@@ -60,7 +57,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
               NewWindowDelegate::Disposition::kNewForegroundTab)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON),
-      PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr);
+      PillButton::Type::kSecondaryWithoutIcon, /*icon=*/nullptr);
   learn_more->SetID(PhoneHubViewID::kDisconnectedLearnMoreButton);
   content_view_->AddButton(std::move(learn_more));
 
@@ -70,12 +67,11 @@ PhoneDisconnectedView::PhoneDisconnectedView(
           InterstitialScreenEvent::kConfirm,
           base::BindRepeating(
               &phonehub::ConnectionScheduler::ScheduleConnectionNow,
-              base::Unretained(connection_scheduler_))),
+              base::Unretained(connection_scheduler_),
+              phonehub::DiscoveryEntryPoint::kManualConnectionRetry)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON),
-      chromeos::features::IsJellyrollEnabled()
-          ? PillButton::Type::kPrimaryWithoutIcon
-          : PillButton::Type::kDefaultWithoutIcon,
+      PillButton::Type::kPrimaryWithoutIcon,
       /*icon=*/nullptr);
   refresh->SetID(PhoneHubViewID::kDisconnectedRefreshButton);
   content_view_->AddButton(std::move(refresh));
@@ -95,7 +91,7 @@ void PhoneDisconnectedView::ButtonPressed(InterstitialScreenEvent event,
   std::move(callback).Run();
 }
 
-BEGIN_METADATA(PhoneDisconnectedView, views::View)
+BEGIN_METADATA(PhoneDisconnectedView)
 END_METADATA
 
 }  // namespace ash

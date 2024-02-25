@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_SURFACE_DELEGATE_H_
 
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -15,7 +16,14 @@ class SecurityDelegate;
 class Surface;
 
 // Frame types that can be used to decorate a surface.
-enum class SurfaceFrameType { NONE, NORMAL, SHADOW, AUTOHIDE, OVERLAY };
+enum class SurfaceFrameType {
+  NONE,
+  NORMAL,
+  SHADOW,
+  AUTOHIDE,
+  OVERLAY,
+  OVERLAP
+};
 
 // Handles events on surfaces in context-specific ways.
 class SurfaceDelegate {
@@ -81,8 +89,10 @@ class SurfaceDelegate {
   virtual void SetPip() = 0;
   virtual void UnsetPip() = 0;
 
-  // Called when surface was requested to enter float.
-  virtual void SetFloat() = 0;
+  // Floats the shell surface. The bounds of the surface are determined by
+  // `float_start_location`.
+  virtual void SetFloatToLocation(
+      chromeos::FloatStartLocation float_start_location) = 0;
 
   // Called when surface was requested to maintain an aspect ratio.
   virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio) = 0;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/test/download_test_observer.h"
+#include "base/memory/raw_ptr.h"
 
 #include <vector>
 
@@ -39,7 +40,7 @@ bool DownloadUpdatedObserver::WaitForEvent() {
     return true;
 
   waiting_ = true;
-  RunMessageLoop();
+  loop_.Run();
   waiting_ = false;
   return event_seen_;
 }
@@ -48,8 +49,9 @@ void DownloadUpdatedObserver::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_EQ(item_, item);
   if (filter_.Run(item_.get()))
     event_seen_ = true;
-  if (waiting_ && event_seen_)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_ && event_seen_) {
+    loop_.QuitWhenIdle();
+  }
 }
 
 void DownloadUpdatedObserver::OnDownloadDestroyed(
@@ -57,8 +59,9 @@ void DownloadUpdatedObserver::OnDownloadDestroyed(
   DCHECK_EQ(item_, item);
   item_->RemoveObserver(this);
   item_ = nullptr;
-  if (waiting_)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_) {
+    loop_.QuitWhenIdle();
+  }
 }
 
 DownloadTestObserver::DownloadTestObserver(
@@ -82,9 +85,11 @@ DownloadTestObserver::~DownloadTestObserver() {
 
 void DownloadTestObserver::Init() {
   download_manager_->AddObserver(this);
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
   download_manager_->GetAllDownloads(&downloads);
-  for (std::vector<download::DownloadItem*>::iterator it = downloads.begin();
+  for (std::vector<
+           raw_ptr<download::DownloadItem, VectorExperimental>>::iterator it =
+           downloads.begin();
        it != downloads.end(); ++it) {
     OnDownloadCreated(download_manager_, *it);
   }
@@ -101,7 +106,7 @@ void DownloadTestObserver::ManagerGoingDown(DownloadManager* manager) {
 void DownloadTestObserver::WaitForFinished() {
   if (!IsFinished()) {
     waiting_ = true;
-    RunMessageLoop();
+    loop_.Run();
     waiting_ = false;
   }
 }
@@ -212,8 +217,9 @@ void DownloadTestObserver::DownloadInFinalState(
 }
 
 void DownloadTestObserver::SignalIfFinished() {
-  if (waiting_ && IsFinished())
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_ && IsFinished()) {
+    loop_.QuitWhenIdle();
+  }
 }
 
 void DownloadTestObserver::AcceptDangerousDownload(uint32_t download_id) {
@@ -381,9 +387,11 @@ void DownloadTestFlushObserver::CheckDownloadsInProgress(
   if (waiting_for_zero_inprogress_) {
     int count = 0;
 
-    std::vector<download::DownloadItem*> downloads;
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
     download_manager_->GetAllDownloads(&downloads);
-    for (std::vector<download::DownloadItem*>::iterator it = downloads.begin();
+    for (std::vector<
+             raw_ptr<download::DownloadItem, VectorExperimental>>::iterator it =
+             downloads.begin();
          it != downloads.end(); ++it) {
       if ((*it)->GetState() == download::DownloadItem::IN_PROGRESS)
         count++;
@@ -431,7 +439,7 @@ void DownloadTestItemCreationObserver::WaitForDownloadItemCreation() {
 
   if (called_back_count_ == 0) {
     waiting_ = true;
-    RunMessageLoop();
+    loop_.Run();
     waiting_ = false;
   }
 }
@@ -447,8 +455,9 @@ void DownloadTestItemCreationObserver::DownloadItemCreationCallback(
   ++called_back_count_;
   DCHECK_EQ(1u, called_back_count_);
 
-  if (waiting_)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_) {
+    loop_.QuitWhenIdle();
+  }
 }
 
 download::DownloadUrlParameters::OnStartedCallback

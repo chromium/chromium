@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -31,8 +32,8 @@ class MockDlpDataTransferNotifier : public DlpDataTransferNotifier {
 
   // DlpDataTransferNotifier:
   void NotifyBlockedAction(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override {}
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) override {}
 
   MOCK_METHOD(void, OnWidgetDestroying, (views::Widget*), (override));
 

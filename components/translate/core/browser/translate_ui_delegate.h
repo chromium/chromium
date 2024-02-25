@@ -154,7 +154,8 @@ class TranslateUIDelegate {
   // associated with the current page.
   std::string GetPageHost() const;
 
-  raw_ptr<TranslateDriver, AcrossTasksDanglingUntriaged> translate_driver_;
+  const TranslateDriver* GetTranslateDriver() const;
+
   base::WeakPtr<TranslateManager> translate_manager_;
 
   // Manages the Translate UI language list related APIs.

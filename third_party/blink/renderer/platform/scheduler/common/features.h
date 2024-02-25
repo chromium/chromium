@@ -76,9 +76,10 @@ BASE_FEATURE(kMbiCompositorTaskRunnerPerAgentSchedulingGroup,
 // compositing tasks if we haven't done a main frame in this many milliseconds."
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPrioritizeCompositingAfterDelayTrials);
 
-// Interval between Javascript timer wake ups when the "ThrottleForegroundTimers"
-// feature is enabled.
-PLATFORM_EXPORT base::TimeDelta GetForegroundTimersThrottledWakeUpInterval();
+// Buffer time that we want to extend the loading state after the FMP is
+// received.
+PLATFORM_EXPORT base::TimeDelta
+GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
 
 // Finch flag for preventing rendering starvation during threaded scrolling.
 // With this feature enabled, the existing delay-based rendering anti-starvation
@@ -108,14 +109,6 @@ PLATFORM_EXPORT extern const base::FeatureParam<
 PLATFORM_EXPORT extern const base::FeatureParam<
     CompositorTQPolicyDuringThreadedScroll>
     kCompositorTQPolicyDuringThreadedScroll;
-
-BASE_FEATURE(kMicrotaskQueuePerWorkerAgent,
-             "BlinkSchedulerMicroTaskQueuePerWorkerAgent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMicrotaskQueueRejectPromisesOnEachCompletion,
-             "BlinkSchedulerMicroTaskRejectPromisesOnEachCompletion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace scheduler
 }  // namespace blink

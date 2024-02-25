@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/hash/hash.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -40,6 +43,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/segmentation_platform/client_util/tab_data_collection_util.h"
+#endif
+
 namespace segmentation_platform {
 namespace {
 const char kSegmentationPlatformProfileObserverKey[] =
@@ -69,6 +76,27 @@ std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
   // Input delegates that are shared by multiple models.are added here.
 
   return input_delegate_holder;
+}
+
+void InitTabDataCollection(
+    SegmentationPlatformService* service,
+    sync_sessions::SessionSyncService* session_sync_service,
+    std::unique_ptr<TabFetcher> tab_fetcher) {
+  auto rank_dispatcher = std::make_unique<TabRankDispatcher>(
+      service, session_sync_service, std::move(tab_fetcher));
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformCollectTabRankData)) {
+    const char kSegmentationTabDataCollectionUtilUserDataKey[] =
+        "segmentation_tab_tab_data_collection_util";
+    auto tab_collection_util =
+        std::make_unique<TabDataCollectionUtil>(service, rank_dispatcher.get());
+    service->SetUserData(kSegmentationTabDataCollectionUtilUserDataKey,
+                         std::move(tab_collection_util));
+  }
+#endif
+  service->SetUserData(kSegmentationTabRankDispatcherUserDataKey,
+                       std::move(rank_dispatcher));
 }
 
 }  // namespace
@@ -123,11 +151,17 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
       session_sync_service, profile);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
-
+  auto profile_path = profile->GetPath().value();
+  params->profile_id = base::NumberToString(
+      base::PersistentHash(base::as_byte_span(profile_path)));
   params->history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
+  base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
+  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
+    priority = base::TaskPriority::USER_VISIBLE;
+  }
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      {base::MayBlock(), priority});
   params->storage_dir =
       profile->GetPath().Append(chrome::kSegmentationPlatformStorageDirName);
   params->db_provider =
@@ -135,7 +169,7 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->clock = base::DefaultClock::GetInstance();
 
   params->ukm_data_manager =
-      UkmDatabaseClient::GetInstance().GetUkmDataManager();
+      UkmDatabaseClientHolder::GetClientInstance(profile).GetUkmDataManager();
   params->profile_prefs = profile->GetPrefs();
   params->configs = GetSegmentationPlatformConfig(context);
   params->input_delegate_holder = SetUpInputDelegates(
@@ -160,13 +194,12 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   }
   service->SetUserData(kSegmentationDeviceSwitcherUserDataKey,
                        std::make_unique<DeviceSwitcherResultDispatcher>(
-                           service, SyncServiceFactory::GetForProfile(profile),
+                           service,
+                           DeviceInfoSyncServiceFactory::GetForProfile(profile)
+                               ->GetDeviceInfoTracker(),
                            profile->GetPrefs(), field_trial_register));
 
-  auto rank_dispatcher = std::make_unique<TabRankDispatcher>(
-      service, session_sync_service, std::move(tab_fetcher));
-  service->SetUserData(kSegmentationTabRankDispatcherUserDataKey,
-                       std::move(rank_dispatcher));
+  InitTabDataCollection(service, session_sync_service, std::move(tab_fetcher));
 
   return service;
 }

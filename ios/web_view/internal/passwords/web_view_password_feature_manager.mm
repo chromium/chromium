@@ -5,7 +5,7 @@
 #import "ios/web_view/internal/passwords/web_view_password_feature_manager.h"
 
 #import "base/notreached.h"
-#import "components/password_manager/core/browser/password_manager_features_util.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 
@@ -50,11 +50,11 @@ bool WebViewPasswordFeatureManager::IsDefaultPasswordStoreSet() const {
   return false;
 }
 
-password_manager::metrics_util::PasswordAccountStorageUsageLevel
+password_manager::features_util::PasswordAccountStorageUsageLevel
 WebViewPasswordFeatureManager::ComputePasswordAccountStorageUsageLevel() const {
   // ios/web_view doesn't support either the profile password store or sync, so
   // the account-scoped storage is the only option.
-  return password_manager::metrics_util::PasswordAccountStorageUsageLevel::
+  return password_manager::features_util::PasswordAccountStorageUsageLevel::
       kUsingAccountStorage;
 }
 

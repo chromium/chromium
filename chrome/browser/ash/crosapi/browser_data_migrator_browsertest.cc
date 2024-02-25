@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/move_migrator.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -28,10 +28,14 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 
@@ -163,7 +167,8 @@ class BrowserDataMigratorMoveMigrateOnSignInByFeature
   ~BrowserDataMigratorMoveMigrateOnSignInByFeature() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({ash::features::kLacrosOnly}, {});
+    feature_list_.InitWithFeatures(
+        {ash::standalone_browser::features::kLacrosOnly}, {});
     BrowserDataMigratorOnSignIn::SetUp();
   }
 
@@ -206,11 +211,13 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
   const std::string user_id_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(
           regular_user_.account_id);
-  EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      g_browser_process->local_state(), user_id_hash));
-  EXPECT_EQ(crosapi::browser_util::GetCompletedMigrationMode(
-                g_browser_process->local_state(), user_id_hash),
-            crosapi::browser_util::MigrationMode::kSkipForNewUser);
+  EXPECT_TRUE(ash::standalone_browser::migrator_util::
+                  IsProfileMigrationCompletedForUser(
+                      g_browser_process->local_state(), user_id_hash));
+  EXPECT_EQ(
+      ash::standalone_browser::migrator_util::GetCompletedMigrationMode(
+          g_browser_process->local_state(), user_id_hash),
+      ash::standalone_browser::migrator_util::MigrationMode::kSkipForNewUser);
 }
 
 class BrowserDataMigratorResumeOnSignIn : public BrowserDataMigratorOnSignIn,
@@ -285,8 +292,8 @@ class BrowserDataMigratorRestartInSession
     // `BrowserDataMigrator::RestartToMigrate()`.
     base::Value::List users;
     users.Append(base::Value(std::string(kUserIdHash) + "@gmail.com"));
-    g_browser_process->local_state()->SetList(user_manager::kRegularUsersPref,
-                                              std::move(users));
+    g_browser_process->local_state()->SetList(
+        user_manager::prefs::kRegularUsersPref, std::move(users));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -322,7 +329,8 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByFeature
       default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({ash::features::kLacrosOnly}, {});
+    feature_list_.InitWithFeatures(
+        {ash::standalone_browser::features::kLacrosOnly}, {});
     BrowserDataMigratorRestartInSession::SetUp();
   }
 };
@@ -354,8 +362,8 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
-        crosapi::browser_util::kLacrosAvailabilityPolicySwitch,
-        crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly);
+        ash::standalone_browser::kLacrosAvailabilityPolicySwitch,
+        ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
     BrowserDataMigratorRestartInSession::SetUpCommandLine(command_line);
   }
 };
@@ -415,7 +423,8 @@ class BrowserDataMigratorForKiosk : public KioskBaseTest {
   ~BrowserDataMigratorForKiosk() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({ash::features::kLacrosOnly}, {});
+    feature_list_.InitWithFeatures(
+        {ash::standalone_browser::features::kLacrosOnly}, {});
     KioskBaseTest::SetUp();
   }
 
@@ -427,13 +436,9 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
   SetLacrosAvailability(
       ash::standalone_browser::LacrosAvailability::kUserChoice);
 
-  // Call this so that the test app is registered with `KioskAppManager` and
-  // thus the `AccountId` can be retrieved.
+  // Register app in `KioskController` so its `AccountId` can be retrieved.
   PrepareAppLaunch();
-  KioskAppManager::App app;
-  CHECK(KioskAppManager::Get());
-  CHECK(KioskAppManager::Get()->GetApp(test_app_id(), &app));
-  CreatePreferenceFileForProfile(app.account_id);
+  CreatePreferenceFileForProfile(test_kiosk_app().id().account_id);
 
   base::RunLoop run_loop;
   ScopedRestartAttemptForTesting scoped_restart_attempt(

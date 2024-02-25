@@ -8,13 +8,14 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
@@ -23,7 +24,7 @@ class Point;
 }
 
 namespace x11 {
-class XScopedEventSelector;
+class ScopedEventSelector;
 }
 
 namespace ui {
@@ -73,13 +74,19 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   // current event does not have a timestamp.
   x11::Time GetTimestamp();
 
-  // Returns the root pointer location only if there is an event being
-  // dispatched that contains that information.
-  absl::optional<gfx::Point> GetRootCursorLocationFromCurrentEvent() const;
-
   // Explicitly asks the X11 server for the current timestamp, and updates
   // |last_seen_server_time_| with this value.
   x11::Time GetCurrentServerTime();
+
+  // The cursor location of the most recently processed input event, or nullopt
+  // if no input events have been processed yet.
+  const std::optional<gfx::Point>& last_cursor_location() const {
+    return last_cursor_location_;
+  }
+
+  void set_last_cursor_location(const gfx::Point& last_cursor_location) {
+    last_cursor_location_ = last_cursor_location;
+  }
 
  private:
   // x11::EventObserver:
@@ -93,11 +100,13 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   // The connection to the X11 server used to receive the events.
   raw_ptr<x11::Connection> connection_;
 
+  std::optional<gfx::Point> last_cursor_location_;
+
   // State necessary for UpdateLastSeenServerTime
   bool dummy_initialized_;
   x11::Window dummy_window_;
   x11::Atom dummy_atom_;
-  std::unique_ptr<x11::XScopedEventSelector> dummy_window_events_;
+  x11::ScopedEventSelector dummy_window_events_;
 
   std::unique_ptr<X11HotplugEventHandler> hotplug_event_handler_;
 };

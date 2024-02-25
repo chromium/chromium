@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -251,6 +252,25 @@ static inline bool IsColorPropertyID(CSSPropertyID property_id) {
       CSSPropertyID::kWebkitTextFillColor,
       CSSPropertyID::kWebkitTextStrokeColor,
       CSSPropertyID::kTextDecorationColor,
+
+      // -internal-visited for all of the above that have them.
+      CSSPropertyID::kInternalVisitedCaretColor,
+      CSSPropertyID::kInternalVisitedColor,
+      CSSPropertyID::kInternalVisitedBackgroundColor,
+      CSSPropertyID::kInternalVisitedBorderBottomColor,
+      CSSPropertyID::kInternalVisitedBorderLeftColor,
+      CSSPropertyID::kInternalVisitedBorderRightColor,
+      CSSPropertyID::kInternalVisitedBorderTopColor,
+      CSSPropertyID::kInternalVisitedFill,
+      CSSPropertyID::kInternalVisitedOutlineColor,
+      CSSPropertyID::kInternalVisitedStroke,
+      CSSPropertyID::kInternalVisitedBorderBlockEndColor,
+      CSSPropertyID::kInternalVisitedBorderBlockStartColor,
+      CSSPropertyID::kInternalVisitedBorderInlineEndColor,
+      CSSPropertyID::kInternalVisitedBorderInlineStartColor,
+      CSSPropertyID::kInternalVisitedColumnRuleColor,
+      CSSPropertyID::kInternalVisitedTextEmphasisColor,
+      CSSPropertyID::kInternalVisitedTextDecorationColor,
   }};
   return properties.Has(property_id);
 }
@@ -1088,6 +1108,11 @@ static ParseColorResult ParseColor(CSSPropertyID property_id,
   DCHECK(!string.empty());
   DCHECK(IsColorPropertyID(property_id));
   CSSValueID value_id = CssValueKeywordID(string);
+  if ((value_id == CSSValueID::kAccentcolor ||
+       value_id == CSSValueID::kAccentcolortext) &&
+      !RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+    return ParseColorResult::kFailure;
+  }
   if (StyleColor::IsColorKeyword(value_id)) {
     if (!isValueAllowedInMode(value_id, parser_mode)) {
       return ParseColorResult::kFailure;
@@ -1119,6 +1144,25 @@ ParseColorResult CSSParserFastPaths::ParseColor(const String& string,
                            color_id);
 }
 
+bool CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
+    CSSValueID value_id) {
+  return value_id == CSSValueID::kInnerSpinButton ||
+         value_id == CSSValueID::kPushButton ||
+         value_id == CSSValueID::kSquareButton ||
+         value_id == CSSValueID::kSliderHorizontal ||
+         value_id == CSSValueID::kSearchfieldCancelButton;
+}
+
+bool CSSParserFastPaths::IsNonStandardAppearanceValuesLowUsage(
+    CSSValueID value_id) {
+  return value_id == CSSValueID::kMediaSlider ||
+         value_id == CSSValueID::kMediaSliderthumb ||
+         value_id == CSSValueID::kMediaVolumeSlider ||
+         value_id == CSSValueID::kMediaVolumeSliderthumb ||
+         value_id == CSSValueID::kSliderthumbHorizontal ||
+         value_id == CSSValueID::kSliderthumbVertical;
+}
+
 bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     CSSPropertyID property_id,
     CSSValueID value_id,
@@ -1140,12 +1184,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id <= CSSValueID::kMathematical);
     case CSSPropertyID::kAll:
       return false;  // Only accepts css-wide keywords
-    case CSSPropertyID::kBackgroundRepeatX:
-    case CSSPropertyID::kBackgroundRepeatY:
-      return value_id == CSSValueID::kRepeat ||
-             value_id == CSSValueID::kNoRepeat;
     case CSSPropertyID::kBaselineSource:
-      DCHECK(RuntimeEnabledFeatures::CSSBaselineSourceEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFirst ||
              value_id == CSSValueID::kLast;
     case CSSPropertyID::kBorderCollapse:
@@ -1173,9 +1212,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kClear:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kLeft ||
              value_id == CSSValueID::kRight || value_id == CSSValueID::kBoth ||
-             (RuntimeEnabledFeatures::CSSLogicalEnabled() &&
-              (value_id == CSSValueID::kInlineStart ||
-               value_id == CSSValueID::kInlineEnd));
+             value_id == CSSValueID::kInlineStart ||
+             value_id == CSSValueID::kInlineEnd;
     case CSSPropertyID::kClipRule:
     case CSSPropertyID::kFillRule:
       return value_id == CSSValueID::kNonzero ||
@@ -1203,9 +1241,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kShow || value_id == CSSValueID::kHide;
     case CSSPropertyID::kFloat:
       return value_id == CSSValueID::kLeft || value_id == CSSValueID::kRight ||
-             (RuntimeEnabledFeatures::CSSLogicalEnabled() &&
-              (value_id == CSSValueID::kInlineStart ||
-               value_id == CSSValueID::kInlineEnd)) ||
+             value_id == CSSValueID::kInlineStart ||
+             value_id == CSSValueID::kInlineEnd ||
              value_id == CSSValueID::kNone;
     case CSSPropertyID::kForcedColorAdjust:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
@@ -1285,14 +1322,21 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kRelative ||
              value_id == CSSValueID::kAbsolute ||
              value_id == CSSValueID::kFixed || value_id == CSSValueID::kSticky;
+    case CSSPropertyID::kPositionTryOrder:
+      return value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kMostWidth ||
+             value_id == CSSValueID::kMostHeight ||
+             value_id == CSSValueID::kMostBlockSize ||
+             value_id == CSSValueID::kMostInlineSize;
     case CSSPropertyID::kResize:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kBoth ||
              value_id == CSSValueID::kHorizontal ||
              value_id == CSSValueID::kVertical ||
-             (RuntimeEnabledFeatures::CSSLogicalEnabled() &&
-              (value_id == CSSValueID::kBlock ||
-               value_id == CSSValueID::kInline)) ||
-             value_id == CSSValueID::kAuto;
+             value_id == CSSValueID::kBlock ||
+             value_id == CSSValueID::kInline ||
+             value_id == CSSValueID::kInternalTextareaAuto ||
+             (RuntimeEnabledFeatures::CSSResizeAutoEnabled() &&
+              value_id == CSSValueID::kAuto);
     case CSSPropertyID::kScrollBehavior:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kSmooth;
     case CSSPropertyID::kShapeRendering:
@@ -1380,11 +1424,24 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id <= CSSValueID::kNoDrag) ||
              value_id == CSSValueID::kNone;
     case CSSPropertyID::kAppearance:
-      return (value_id >= CSSValueID::kCheckbox &&
-              value_id <= CSSValueID::kTextarea) ||
-             (RuntimeEnabledFeatures::NonStandardAppearanceValuesEnabled() &&
-              value_id >= CSSValueID::kInnerSpinButton &&
-              value_id <= CSSValueID::kSearchfieldCancelButton) ||
+      return (value_id == CSSValueID::kCheckbox ||
+              value_id == CSSValueID::kRadio ||
+              value_id == CSSValueID::kButton ||
+              value_id == CSSValueID::kListbox ||
+              value_id == CSSValueID::kInternalMediaControl ||
+              value_id == CSSValueID::kMenulist ||
+              value_id == CSSValueID::kMenulistButton ||
+              value_id == CSSValueID::kMeter ||
+              value_id == CSSValueID::kProgressBar ||
+              value_id == CSSValueID::kSearchfield ||
+              value_id == CSSValueID::kTextfield ||
+              value_id == CSSValueID::kTextarea) ||
+             (RuntimeEnabledFeatures::
+                  NonStandardAppearanceValuesHighUsageEnabled() &&
+              IsNonStandardAppearanceValuesHighUsage(value_id)) ||
+             (RuntimeEnabledFeatures::
+                  NonStandardAppearanceValuesLowUsageEnabled() &&
+              IsNonStandardAppearanceValuesLowUsage(value_id)) ||
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValueSliderVerticalEnabled() &&
               value_id == CSSValueID::kSliderVertical) ||
@@ -1409,8 +1466,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kSaturation ||
              value_id == CSSValueID::kColor ||
              value_id == CSSValueID::kLuminosity ||
-             (RuntimeEnabledFeatures::CSSMixBlendModePlusLighterEnabled() &&
-              value_id == CSSValueID::kPlusLighter);
+             value_id == CSSValueID::kPlusLighter;
     case CSSPropertyID::kWebkitBoxAlign:
       return value_id == CSSValueID::kStretch ||
              value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
@@ -1467,6 +1523,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kFlexWrap:
       return value_id == CSSValueID::kNowrap || value_id == CSSValueID::kWrap ||
              value_id == CSSValueID::kWrapReverse;
+    case CSSPropertyID::kFieldSizing:
+      return value_id == CSSValueID::kFixed || value_id == CSSValueID::kContent;
     case CSSPropertyID::kHyphens:
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
@@ -1499,7 +1557,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kAntialiased ||
              value_id == CSSValueID::kSubpixelAntialiased;
     case CSSPropertyID::kFontVariantPosition:
-      DCHECK(RuntimeEnabledFeatures::FontVariantPositionEnabled());
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kSub ||
              value_id == CSSValueID::kSuper;
     case CSSPropertyID::kLineBreak:
@@ -1525,6 +1582,12 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       DCHECK(RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled());
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kNoAutospace;
+    case CSSPropertyID::kTextSpacingTrim:
+      DCHECK(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled());
+      return value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kTrimStart ||
+             value_id == CSSValueID::kSpaceAll ||
+             value_id == CSSValueID::kSpaceFirst;
     case CSSPropertyID::kWebkitTextCombine:
       return value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kHorizontal;
@@ -1541,14 +1604,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kBalance ||
              value_id == CSSValueID::kPretty;
     case CSSPropertyID::kTransformBox:
-      if (RuntimeEnabledFeatures::CSSTransformBoxAdditionalKeywordsEnabled()) {
-        return value_id == CSSValueID::kContentBox ||
-               value_id == CSSValueID::kBorderBox ||
-               value_id == CSSValueID::kStrokeBox ||
-               value_id == CSSValueID::kFillBox ||
-               value_id == CSSValueID::kViewBox;
-      }
-      return value_id == CSSValueID::kFillBox ||
+      return value_id == CSSValueID::kContentBox ||
+             value_id == CSSValueID::kBorderBox ||
+             value_id == CSSValueID::kStrokeBox ||
+             value_id == CSSValueID::kFillBox ||
              value_id == CSSValueID::kViewBox;
     case CSSPropertyID::kTransformStyle:
       return value_id == CSSValueID::kFlat ||
@@ -1626,8 +1685,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kAppearance,
     CSSPropertyID::kMixBlendMode,
     CSSPropertyID::kIsolation,
-    CSSPropertyID::kBackgroundRepeatX,
-    CSSPropertyID::kBackgroundRepeatY,
     CSSPropertyID::kBaselineSource,
     CSSPropertyID::kBorderBottomStyle,
     CSSPropertyID::kBorderCollapse,
@@ -1647,6 +1704,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kEmptyCells,
     CSSPropertyID::kFillRule,
     CSSPropertyID::kFloat,
+    CSSPropertyID::kFieldSizing,
     CSSPropertyID::kForcedColorAdjust,
     CSSPropertyID::kHyphens,
     CSSPropertyID::kImageRendering,
@@ -1670,6 +1728,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kPageOrientation,
     CSSPropertyID::kPointerEvents,
     CSSPropertyID::kPosition,
+    CSSPropertyID::kPositionTryOrder,
     CSSPropertyID::kResize,
     CSSPropertyID::kScrollBehavior,
     CSSPropertyID::kOverscrollBehaviorInline,
@@ -1693,6 +1752,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitTextOrientation,
     CSSPropertyID::kTextOverflow,
     CSSPropertyID::kTextRendering,
+    CSSPropertyID::kTextSpacingTrim,
     CSSPropertyID::kTextTransform,
     CSSPropertyID::kUnicodeBidi,
     CSSPropertyID::kVectorEffect,
@@ -1775,7 +1835,7 @@ static inline CSSValue* ParseCSSWideKeywordValue(const LChar* ptr,
 
 static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
                                    StringView string,
-                                   CSSParserMode parser_mode) {
+                                   const CSSParserContext* context) {
   DCHECK(!string.empty());
 
   CSSValue* css_wide_keyword =
@@ -1822,9 +1882,13 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
   DCHECK_NE(value_id, CSSValueID::kRevertLayer);
 
   if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(property_id, value_id,
-                                                         parser_mode)) {
+                                                         context->Mode())) {
+    css_parsing_utils::CountKeywordOnlyPropertyUsage(property_id, *context,
+                                                     value_id);
     return CSSIdentifierValue::Create(value_id);
   }
+  css_parsing_utils::WarnInvalidKeywordPropertyUsage(property_id, *context,
+                                                     value_id);
   return nullptr;
 }
 
@@ -2089,7 +2153,7 @@ static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
 
 CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
                                               StringView string,
-                                              CSSParserMode parser_mode) {
+                                              const CSSParserContext* context) {
   if (!string.Is8Bit()) {
     // If we have non-ASCII characters, we can never match any of the
     // fast paths that we support, so we can just as well return early.
@@ -2098,14 +2162,14 @@ CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
     return nullptr;
   }
   if (CSSValue* length =
-          ParseSimpleLengthValue(property_id, string, parser_mode)) {
+          ParseSimpleLengthValue(property_id, string, context->Mode())) {
     return length;
   }
   if (IsColorPropertyID(property_id)) {
     Color color;
     CSSValueID color_id;
-    switch (
-        blink::ParseColor(property_id, string, parser_mode, color, color_id)) {
+    switch (blink::ParseColor(property_id, string, context->Mode(), color,
+                              color_id)) {
       case ParseColorResult::kFailure:
         break;
       case ParseColorResult::kKeyword:
@@ -2114,7 +2178,7 @@ CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
         return cssvalue::CSSColor::Create(color);
     }
   }
-  if (CSSValue* keyword = ParseKeywordValue(property_id, string, parser_mode)) {
+  if (CSSValue* keyword = ParseKeywordValue(property_id, string, context)) {
     return keyword;
   }
   if (CSSValue* transform = ParseSimpleTransform(property_id, string)) {

@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
-#include "components/signin/public/base/signin_buildflags.h"
 
 class Profile;
 class ProfileManagementStepController;
@@ -45,6 +44,8 @@ class ProfileManagementFlowController {
     // Moves the rest of the flow to a browser tab so that the user can complete
     // the SAML sign in they started at the previous step.
     kFinishSamlSignin,
+    // Renders the reauth page.
+    kReauth,
 #endif
     // Renders all post-sign in screens: enterprise management consent, profile
     // switch, sync opt-in, etc.
@@ -55,6 +56,11 @@ class ProfileManagementFlowController {
 
     // Renders a default browser promo.
     kDefaultBrowser,
+
+    // Renders the search engine choice screen.
+    kSearchEngineChoice,
+
+    kFinishFlow,
   };
 
   // Creates a flow controller that will start showing UI when `Init()`-ed.
@@ -97,6 +103,11 @@ class ProfileManagementFlowController {
   // the content it's rendering. As a final fallback, if this value is empty
   // (which is the default), the host will choose itself some generic title.
   virtual std::u16string GetFallbackAccessibleWindowTitle() const;
+
+  // A helper method to create a pop callback that will switch to the given
+  // step (can be used with `current_step()` to facilitate switching back to the
+  // current active step).
+  base::OnceClosure CreateSwitchToStepPopCallback(Step step);
 
  protected:
   void RegisterStep(Step step,

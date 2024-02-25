@@ -37,14 +37,15 @@ class QuickStartConnectivityServiceImpl : public QuickStartConnectivityService {
 
   mojo::SharedRemote<mojom::QuickStartDecoder> GetQuickStartDecoder() override;
 
+  void Cleanup() override;
+
  private:
   void OnNearbyProcessStopped(
       nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
 
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  raw_ptr<nearby::NearbyProcessManager, ExperimentalAsh>
-      nearby_process_manager_;
+  raw_ptr<nearby::NearbyProcessManager> nearby_process_manager_;
 
   std::unique_ptr<nearby::NearbyProcessManager::NearbyProcessReference>
       nearby_process_reference_;

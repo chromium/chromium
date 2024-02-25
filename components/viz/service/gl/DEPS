@@ -4,6 +4,8 @@ include_rules = [
   "+ash/components/arc/video_accelerator",
   "+components/chromeos_camera",
   "+components/crash/core/common/crash_key.h",
+  "+components/ml/webnn",
+  "+components/version_info/version_info.h",
   "+components/viz/service/service_jni_headers",
   "+components/viz/common",
   "+gpu/command_buffer",
@@ -22,5 +24,6 @@ include_rules = [
   "+mojo/public/cpp",
   "+skia/buildflags.h",
   "+services/viz/privileged/mojom",
+  "+services/webnn",
   "+ui/gl",
 ]

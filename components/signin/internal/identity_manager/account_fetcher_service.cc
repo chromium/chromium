@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
@@ -142,6 +143,11 @@ void AccountFetcherService::EnableAccountRemovalForTest() {
   enable_account_removal_for_test_ = true;
 }
 
+AccountCapabilitiesFetcherFactory*
+AccountFetcherService::GetAccountCapabilitiesFetcherFactoryForTest() {
+  return account_capabilities_fetcher_factory_.get();
+}
+
 void AccountFetcherService::EnableAccountCapabilitiesFetcherForTest(
     bool enabled) {
   enable_account_capabilities_fetcher_for_test_ = enabled;
@@ -248,6 +254,11 @@ void AccountFetcherService::SetIsChildAccount(const CoreAccountId& account_id,
 }
 #endif
 
+void AccountFetcherService::DestroyFetchers(const CoreAccountId& account_id) {
+  user_info_requests_.erase(account_id);
+  account_capabilities_requests_.erase(account_id);
+}
+
 bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
   if (enable_account_capabilities_fetcher_for_test_)
     return true;
@@ -256,17 +267,28 @@ bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
       switches::kEnableFetchingAccountCapabilities);
 }
 
+void AccountFetcherService::PrepareForFetchingAccountCapabilities() {
+  account_capabilities_fetcher_factory_
+      ->PrepareForFetchingAccountCapabilities();
+}
+
 void AccountFetcherService::StartFetchingAccountCapabilities(
-    const CoreAccountInfo& account_info) {
+    const CoreAccountInfo& core_account_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network_fetches_enabled_);
 
   std::unique_ptr<AccountCapabilitiesFetcher>& request =
-      account_capabilities_requests_[account_info.account_id];
+      account_capabilities_requests_[core_account_info.account_id];
   if (!request) {
+    AccountInfo account_info =
+        account_tracker_service_->GetAccountInfo(core_account_info.account_id);
+
     request =
         account_capabilities_fetcher_factory_->CreateAccountCapabilitiesFetcher(
-            account_info,
+            core_account_info,
+            account_info.capabilities.AreAnyCapabilitiesKnown()
+                ? AccountCapabilitiesFetcher::FetchPriority::kBackground
+                : AccountCapabilitiesFetcher::FetchPriority::kForeground,
             base::BindOnce(
                 &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
                 base::Unretained(this)));
@@ -278,7 +300,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
                                                bool only_fetch_if_invalid) {
   DCHECK(network_fetches_enabled_);
 
-  // TODO(msarda): It seems quite suspect account tracker needs to start
+  // TODO(crbug.com/1488399): It seems quite suspect account tracker needs to start
   // tracking the account when refreshing the account info. Understand why this
   // is needed and ideally remove this call (it may have been added just for
   // tests).
@@ -401,7 +423,7 @@ void AccountFetcherService::OnUserInfoFetchFailure(
 
 void AccountFetcherService::OnAccountCapabilitiesFetchComplete(
     const CoreAccountId& account_id,
-    const absl::optional<AccountCapabilities>& account_capabilities) {
+    const std::optional<AccountCapabilities>& account_capabilities) {
   if (account_capabilities.has_value()) {
     account_tracker_service_->SetAccountCapabilities(account_id,
                                                      *account_capabilities);
@@ -445,8 +467,7 @@ void AccountFetcherService::OnRefreshTokenRevoked(
     return;
   }
 
-  user_info_requests_.erase(account_id);
-  account_capabilities_requests_.erase(account_id);
+  DestroyFetchers(account_id);
 #if BUILDFLAG(IS_ANDROID)
   UpdateChildInfo();
 #endif

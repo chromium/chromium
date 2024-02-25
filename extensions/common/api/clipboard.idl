@@ -6,7 +6,7 @@
 // access data of the clipboard. This is a temporary solution for
 // chromeos platform apps until open-web alternative is available. It will be
 // deprecated once open-web solution is available, which could be in 2017 Q4.
-[modernised_enums, platforms=("chromeos", "lacros"),
+[platforms=("chromeos", "lacros"),
  implemented_in="extensions/browser/api/clipboard/clipboard_api.h"]
 namespace clipboard {
   // Supported image types.
@@ -46,7 +46,7 @@ namespace clipboard {
     // The callback is called with <code>chrome.runtime.lastError</code>
     // set to error code if there is an error.
     // Requires clipboard and clipboardWrite permissions.
-    [supportsPromises] static void setImageData(
+    static void setImageData(
         ArrayBuffer imageData,
         ImageType type,
         optional AdditionalDataItem[] additionalItems,

@@ -13,18 +13,19 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import '../settings_shared.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './add_site_dialog.html.js';
-import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {ContentSetting, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
+import type {SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 
 export interface AddSiteDialogElement {
   $: {
@@ -32,7 +33,6 @@ export interface AddSiteDialogElement {
     dialog: CrDialogElement,
     incognito: CrCheckboxElement,
     site: CrInputElement,
-    thirdParties: CrCheckboxElement,
   };
 }
 
@@ -133,8 +133,7 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     let primaryPattern = this.site_;
     let secondaryPattern = SITE_EXCEPTION_WILDCARD;
 
-    if (this.$.thirdParties.checked ||
-        this.cookiesExceptionType === CookiesExceptionType.THIRD_PARTY) {
+    if (this.cookiesExceptionType === CookiesExceptionType.THIRD_PARTY) {
       primaryPattern = SITE_EXCEPTION_WILDCARD;
       secondaryPattern = this.site_;
     }
@@ -155,16 +154,6 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     if (!this.hasIncognito) {
       this.$.incognito.checked = false;
     }
-  }
-
-  private shouldHideThirdPartyCookieCheckbox_(): boolean {
-    // TODO(crbug.com/1378703): Remove checkbox support after feature is
-    // launched.
-    if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
-      return true;
-    }
-    return this.cookiesExceptionType !== CookiesExceptionType.COMBINED ||
-        this.category !== ContentSettingsTypes.COOKIES;
   }
 }
 

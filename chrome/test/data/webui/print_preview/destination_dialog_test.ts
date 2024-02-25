@@ -2,16 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationStore, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl,
-        // <if expr="is_chromeos">
-        PrintPreviewDestinationDialogCrosElement,
-        // </if>
-        // <if expr="not is_chromeos">
-        PrintPreviewDestinationDialogElement,
-        // </if>
-        PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import type {Destination, DestinationStore, LocalDestinationInfo,
+             // <if expr="is_chromeos">
+             PrintPreviewDestinationDialogCrosElement,
+             // </if>
+             // <if expr="not is_chromeos">
+             PrintPreviewDestinationDialogElement,
+             // </if>
+             PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import {
+  // <if expr="is_chromeos">
+  DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS,
+  // </if>
+  GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+// <if expr="is_chromeos">
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+
+// </if>
 
 // <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
@@ -20,17 +29,7 @@ import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, getExtensionDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
 
-const destination_dialog_test = {
-  suiteName: 'DestinationDialogTest',
-  TestNames: {
-    PrinterList: 'PrinterList',
-    PrinterListPreloaded: 'PrinterListPreloaded',
-  },
-};
-
-Object.assign(window, {destination_dialog_test: destination_dialog_test});
-
-suite(destination_dialog_test.suiteName, function() {
+suite('DestinationDialogTest', function() {
   // <if expr="is_chromeos">
   let dialog: PrintPreviewDestinationDialogCrosElement;
   // </if>
@@ -48,6 +47,10 @@ suite(destination_dialog_test.suiteName, function() {
 
   const localDestinations: LocalDestinationInfo[] = [];
 
+  // <if expr="is_chromeos">
+  let mockTimer: MockTimer;
+  // </if>
+
   suiteSetup(function() {
     setupTestListenerElement();
   });
@@ -57,6 +60,8 @@ suite(destination_dialog_test.suiteName, function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="is_chromeos">
+    mockTimer = new MockTimer();
+    mockTimer.install();
     setNativeLayerCrosInstance();
     // </if>
     destinationStore = createDestinationStore();
@@ -79,6 +84,9 @@ suite(destination_dialog_test.suiteName, function() {
     document.body.appendChild(dialog);
     destinationStore.startLoadAllDestinations();
     dialog.show();
+    // <if expr="is_chromeos">
+    mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
+    // </if>
   }
 
   function validatePrinterList() {
@@ -105,7 +113,7 @@ suite(destination_dialog_test.suiteName, function() {
   }
 
   // Test that destinations are correctly displayed in the lists.
-  test(destination_dialog_test.TestNames.PrinterList, async () => {
+  test('PrinterList', async () => {
     // Native printers are fetched at startup, since the recent printer is set
     // as native.
     let whenPrinterListReady = nativeLayer.waitForGetPrinters(1);
@@ -127,7 +135,7 @@ suite(destination_dialog_test.suiteName, function() {
   // printers have been preloaded before the dialog is opened. Regression test
   // for https://crbug.com/1330678.
   test(
-      destination_dialog_test.TestNames.PrinterListPreloaded, async () => {
+      'PrinterListPreloaded', async () => {
         // All printers are fetched at startup since both native and extension
         // printers are recent.
         const whenAllPreloaded = nativeLayer.waitForGetPrinters(2);

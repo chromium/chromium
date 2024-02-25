@@ -68,7 +68,7 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
       float new_position) const override;
   void UpdateEnabledState(const Scrollbar&) override;
   int ScrollbarThickness(float scale_from_dip,
-                         EScrollbarWidth scrollbar_width) override;
+                         EScrollbarWidth scrollbar_width) const override;
   bool UsesOverlayScrollbars() const override;
   void UpdateScrollbarOverlayColorTheme(const Scrollbar&) override;
 
@@ -91,8 +91,8 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
 
   // See WebScrollbarTheme for parameters description.
   static void UpdateScrollbarsWithNSDefaults(
-      absl::optional<float> initial_button_delay,
-      absl::optional<float> autoscroll_button_delay,
+      std::optional<float> initial_button_delay,
+      std::optional<float> autoscroll_button_delay,
       bool prefer_overlay_scroller_style,
       bool redraw,
       bool jump_on_track_click);
@@ -121,7 +121,8 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
                          const Scrollbar* vertical_scrollbar,
                          const DisplayItemClient&,
                          const gfx::Rect& corner_rect,
-                         mojom::blink::ColorScheme color_scheme) override;
+                         mojom::blink::ColorScheme color_scheme,
+                         const ui::ColorProvider* color_provider) override;
   void PaintThumbInternal(GraphicsContext&,
                           const Scrollbar&,
                           const gfx::Rect&,

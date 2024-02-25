@@ -1,6 +1,7 @@
 include_rules = [
   "+base",
   "+components/feature_engagement/public",
+  "+components/feature_engagement/test",
   "+components/strings",
   "+components/vector_icons",
   "+ui/accessibility",

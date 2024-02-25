@@ -17,6 +17,9 @@ struct LacrosPaths {
   base::FilePath ash_resource_dir;
 };
 
+// Keep track of whether the user data directory was initialized.
+bool g_initialized_user_data_dir = false;
+
 LacrosPaths& GetLacrosPaths() {
   static base::NoDestructor<LacrosPaths> lacros_paths;
   return *lacros_paths;
@@ -27,7 +30,17 @@ bool PathProvider(int key, base::FilePath* result) {
     case chromeos::lacros_paths::ASH_RESOURCES_DIR:
       *result = GetLacrosPaths().ash_resource_dir;
       return !result->empty();
+    case chromeos::lacros_paths::LACROS_SHARED_DIR:
+      if (base::SysInfo::IsRunningOnChromeOS()) {
+        *result = base::FilePath(crosapi::kLacrosSharedDataPath);
+      } else {
+        *result = base::GetHomeDir().Append(".config").Append("lacros");
+      }
+      return true;
     case chromeos::lacros_paths::USER_DATA_DIR:
+      // Check that the user data directory is not accessed before
+      // initialization.
+      CHECK(chromeos::lacros_paths::IsInitializedUserDataDir());
       // The value for USER_DATA_DIR should be consistent with ash-side
       // UserDataDir defined in browser_util::GetUserDataDir().
       if (base::SysInfo::IsRunningOnChromeOS()) {
@@ -35,6 +48,12 @@ bool PathProvider(int key, base::FilePath* result) {
       } else {
         *result = base::GetHomeDir().Append(".config").Append("lacros");
       }
+      return true;
+    case chromeos::lacros_paths::ASH_DATA_DIR:
+      if (!base::SysInfo::IsRunningOnChromeOS()) {
+        return false;
+      }
+      *result = base::FilePath(crosapi::kAshDataDir);
       return true;
     default:
       return false;
@@ -45,6 +64,15 @@ bool PathProvider(int key, base::FilePath* result) {
 
 namespace chromeos {
 namespace lacros_paths {
+
+bool IsInitializedUserDataDir() {
+  return g_initialized_user_data_dir;
+}
+
+void SetInitializedUserDataDir() {
+  CHECK(!g_initialized_user_data_dir);
+  g_initialized_user_data_dir = true;
+}
 
 void RegisterPathProvider() {
   base::PathService::RegisterProvider(PathProvider, PATH_START, PATH_END);

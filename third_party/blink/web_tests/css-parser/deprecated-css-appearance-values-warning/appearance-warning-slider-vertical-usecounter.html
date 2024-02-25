@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:dizhangg@chromium.org">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<button id="button">foo</button>
+
+<script>
+const button = document.getElementById('button');
+const CSSValueAppearanceSliderVertical = 4556;
+function clearUseCounter() {
+  button.style = '';
+  internals.clearUseCounter(document, CSSValueAppearanceSliderVertical);
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}
+
+test((t) => {
+  t.add_cleanup(clearUseCounter);
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical),
+    'Having an element with no appearance should not activate the use counter.');
+
+  button.style = `appearance: auto`;
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with appearance value "auto" should not activate the use counter.');
+
+test((t) => {
+  t.add_cleanup(clearUseCounter);
+  button.style = `appearance: slider-vertical`;
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with deprecated appearance value "slider-vertical" should not activate the use counter.');
+
+test((t) => {
+  t.add_cleanup(clearUseCounter);
+  button.style = `-webkit-appearance: auto`;
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with -webkit-appearance value "auto" should not activate the use counter.');
+
+test((t) => {
+  t.add_cleanup(clearUseCounter);
+  button.style = `-webkit-appearance: slider-vertical`;
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with deprecated -webkit-appearance value "slider-vertical" should not activate the use counter.');
+
+test((t) => {
+  t.add_cleanup(clearUseCounter);
+  button.style.setProperty('appearance', 'auto');
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with appearance value "auto" should not activate the use counter (set using SetProperty).');
+
+test((t) => {
+  t.add_cleanup(clearUseCounter);
+  button.style.setProperty('appearance', 'slider-vertical');
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with deprecated appearance value "slider-vertical" should not activate the use counter (set using SetProperty).');
+
+test((t) => {
+  t.add_cleanup(clearUseCounter);
+  button.style.setProperty('-webkit-appearance', 'auto');
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with -webkit-appearance value "auto" should not activate the use counter (set using SetProperty).');
+
+test((t) => {
+  t.add_cleanup(clearUseCounter);
+  button.style.setProperty('-webkit-appearance', 'slider-vertical');
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with deprecated -webkit-appearance value "slider-vertical" should not activate the use counter (set using SetProperty).');
+</script>

@@ -41,20 +41,21 @@
 
 namespace blink {
 
-static ui::TextInputType ToTextInputType(const AtomicString& source) {
-  if (source == input_type_names::kDate)
-    return ui::TextInputType::TEXT_INPUT_TYPE_DATE;
-  if (source == input_type_names::kDatetime)
-    return ui::TextInputType::TEXT_INPUT_TYPE_TIME;
-  if (source == input_type_names::kDatetimeLocal)
-    return ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_LOCAL;
-  if (source == input_type_names::kMonth)
-    return ui::TextInputType::TEXT_INPUT_TYPE_MONTH;
-  if (source == input_type_names::kTime)
-    return ui::TextInputType::TEXT_INPUT_TYPE_TIME;
-  if (source == input_type_names::kWeek)
-    return ui::TextInputType::TEXT_INPUT_TYPE_WEEK;
-  return ui::TextInputType::TEXT_INPUT_TYPE_NONE;
+static ui::TextInputType ToTextInputType(InputType::Type source) {
+  switch (source) {
+    case InputType::Type::kDate:
+      return ui::TextInputType::TEXT_INPUT_TYPE_DATE;
+    case InputType::Type::kDateTimeLocal:
+      return ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_LOCAL;
+    case InputType::Type::kMonth:
+      return ui::TextInputType::TEXT_INPUT_TYPE_MONTH;
+    case InputType::Type::kTime:
+      return ui::TextInputType::TEXT_INPUT_TYPE_TIME;
+    case InputType::Type::kWeek:
+      return ui::TextInputType::TEXT_INPUT_TYPE_WEEK;
+    default:
+      return ui::TextInputType::TEXT_INPUT_TYPE_NONE;
+  }
 }
 
 ExternalDateTimeChooser::~ExternalDateTimeChooser() = default;
@@ -101,7 +102,7 @@ void ExternalDateTimeChooser::ResponseHandler(bool success,
 }
 
 bool ExternalDateTimeChooser::IsShowingDateTimeChooserUI() const {
-  return client_;
+  return client_ != nullptr;
 }
 
 mojom::blink::DateTimeChooser& ExternalDateTimeChooser::GetDateTimeChooser(
@@ -155,7 +156,7 @@ void ExternalDateTimeChooser::EndChooser() {
   client->DidEndChooser();
 }
 
-AXObject* ExternalDateTimeChooser::RootAXObject() {
+AXObject* ExternalDateTimeChooser::RootAXObject(Element* popup_owner) {
   return nullptr;
 }
 

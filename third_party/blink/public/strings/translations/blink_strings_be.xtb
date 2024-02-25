@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1012241361789814178">Адладчык прыпынены на іншай укладцы. Націсніце, каб пераключыцца на яе.</translation>
 <translation id="1088086359088493902">Секунды</translation>
 <translation id="1142001580032786438">Паказаць сродак выбару тыдня</translation>
 <translation id="1171774979989969504">Увядзіце адрас электроннай пошты.</translation>
@@ -16,6 +17,7 @@
 <translation id="1729654308190250600">Увядзіце адрас электроннай пошты.</translation>
 <translation id="1758486001363313524">Іншая...</translation>
 <translation id="1787192514241997742">агульны час: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Даць доступ да камеры</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">прайграць на аддаленай прыладзе</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -24,10 +26,12 @@
 <translation id="1993104285338243655">Пераключана на адлюстраванне</translation>
 <translation id="2031987842108996681">Чырвоны канал</translation>
 <translation id="2060505056492490888">Сімвал "<ph name="DOT" />" у адрасе "<ph name="INVALIDDOMAIN" />" размешчаны няправільна.</translation>
+<translation id="2068711044993563745">Мінімальнае значэнне (<ph name="MINIMUM" />) павінна быць меншым за максімальнае (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="2226276347425096477">Паменшыце колькасць сімвалаў у гэтым тэксце значэння, не большага за <ph name="MAX_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Тыдзень <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трэк <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Камера і мікрафон дазволены</translation>
 <translation id="2393030564806080191">Шаснаццатковае значэнне колеру</translation>
 <translation id="2398813069815436052">дыялогавае акно адкрыта.</translation>
 <translation id="245932805758469625">колькі секунд відэа засталося</translation>
@@ -44,11 +48,13 @@
 <translation id="2761667185364618470">Каб працягнуць, пастаўце птушку ў гэтым полі.</translation>
 <translation id="2908441821576996758">Увядзіце раздзелены коскамі спіс адрасоў электроннай пошты.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
+<translation id="3053226512517284904">меню паказу аўдыяапісанняў</translation>
 <translation id="3075154866155599887">Увядзіце дапушчальнае значэнне. Поле не запоўнена, або ўказана няправільная дата.</translation>
 <translation id="310520048233152454">Увядзіце URL-адрас.</translation>
 <translation id="3220661731597678625">бягучы крок</translation>
 <translation id="3321030238473337787">Хуткасць прайгравання</translation>
 <translation id="3329013043687509092">Насычанасць</translation>
+<translation id="3377518164566272702">Даць доступ да мікрафона і камеры</translation>
 <translation id="3450233048674729344">Значэнне павінна быць меншым або роўным <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
 <translation id="3754210790023674521">Выйсці з рэжыму "Відарыс у відарысе"</translation>
@@ -56,14 +62,17 @@
 <translation id="3822383571486410024">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас – <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">У частцы перад "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Выключыць поўнаэкранны рэжым</translation>
+<translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4103419683916926126">Мілісекунды</translation>
 <translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
 <translation id="4360991593054037559">Увядзіце дапушчальнае значэнне. Два найбліжэйшыя дапушчальныя значэнні: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
+<translation id="4663373278480897665">Камера дазволена</translation>
 <translation id="4664250907885839816">У частцы пасля "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Прайграецца ў рэжыме "Відарыс у відарысе"</translation>
 <translation id="4748357248530471599">уключэнне і выключэнне поўнаэкраннага рэжыму для выраза экрана</translation>
 <translation id="4763480195061959176">відэа</translation>
+<translation id="4792862212177489858">Абагуліць геаданыя</translation>
 <translation id="4812940957355064477">Увядзіце лік.</translation>
 <translation id="4912200001568447310">бягучы элемент</translation>
 <translation id="4915360478455618802">Паказаць сродак выбару часу</translation>
@@ -73,6 +82,7 @@
 <translation id="4975562563186953947">Выбрана: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Уключыць гук</translation>
 <translation id="49969490063480558">Увядзіце частку пасля сімвала "<ph name="ATSIGN" />". Адрас "<ph name="INVALIDADDRESS" />" – няпоўны.</translation>
+<translation id="5037575921016181960">Надзейны пароль</translation>
 <translation id="5090250355906949916">паўзунок часу відэафайла</translation>
 <translation id="509897012892853729">Сіні канал</translation>
 <translation id="5117590920725113268">Паказаць наступны месяц</translation>
@@ -131,6 +141,7 @@
 <translation id="6941933287844615239">спампаваць мультымедыя</translation>
 <translation id="698788488269350478">– разгорнута.</translation>
 <translation id="6989848892321993519">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас 1 сімвал).</translation>
+<translation id="7080893216867146095">Абагульванне геаданых дазволена</translation>
 <translation id="709897737746224366">Прытрымлівайцеся ўказанага фармату.</translation>
 <translation id="7102274145889307184">бягучае месцазнаходжанне</translation>
 <translation id="7263440858009898357">Выберыце пункт са спіса</translation>
@@ -177,6 +188,7 @@
 <translation id="9132465097189459683">Іншае...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, пачынаецца з <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Відарыс у відарысе</translation>
+<translation id="918430632320614861">Даць доступ да мікрафона</translation>
 <translation id="945780513535800434">Выбраны толькі некаторыя варыянты</translation>
 <translation id="954003015749068518">уключыць рэжым "Відарыс у відарысе"</translation>
 </translationbundle>

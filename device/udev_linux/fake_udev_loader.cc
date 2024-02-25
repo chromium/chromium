@@ -30,8 +30,8 @@ struct udev_device {
   udev_device(std::string name,
               std::string syspath,
               std::string subsystem,
-              absl::optional<std::string> devnode,
-              absl::optional<std::string> devtype,
+              std::optional<std::string> devnode,
+              std::optional<std::string> devtype,
               std::map<std::string, std::string> sysattrs,
               std::map<std::string, std::string> prop_map)
       : name(std::move(name)),
@@ -54,8 +54,8 @@ struct udev_device {
   const std::string name;
   const std::string syspath;
   const std::string subsystem;
-  const absl::optional<std::string> devnode;
-  const absl::optional<std::string> devtype;
+  const std::optional<std::string> devnode;
+  const std::optional<std::string> devtype;
   std::map<std::string, std::string> sysattrs;
   std::map<std::string, std::string> properties;
   std::vector<std::unique_ptr<udev_list_entry>> udev_prop_list;
@@ -110,8 +110,8 @@ udev_device* FakeUdevLoader::AddFakeDevice(
     std::string name,
     std::string syspath,
     std::string subsystem,
-    absl::optional<std::string> devnode,
-    absl::optional<std::string> devtype,
+    std::optional<std::string> devnode,
+    std::optional<std::string> devtype,
     std::map<std::string, std::string> sysattrs,
     std::map<std::string, std::string> properties) {
   devices_.emplace_back(

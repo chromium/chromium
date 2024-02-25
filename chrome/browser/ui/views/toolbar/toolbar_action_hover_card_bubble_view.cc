@@ -18,11 +18,8 @@
 #include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace {
@@ -38,6 +35,9 @@ constexpr int kHoverCardWidth = 240;
 // TODO(crbug.com/1351778): Move to a base hover card class.
 constexpr int kHorizontalMargin = 18;
 constexpr int kVerticalMargin = 10;
+
+// Maximum number of lines that a label occupies.
+constexpr int kHoverCardLavelMaxLines = 2;
 
 std::u16string GetSiteAccessTitle(
     ToolbarActionViewController::HoverCardState::SiteAccess state) {
@@ -102,124 +102,7 @@ std::u16string GetPolicyText(HoverCardState::AdminPolicy state) {
   return l10n_util::GetStringUTF16(text_id);
 }
 
-// Label that renders its background in a solid color. Placed in front of a
-// normal label either by being later in the draw order or on a layer, it can
-// be used to animate a fade-out.
-class SolidLabel : public views::Label {
- public:
-  METADATA_HEADER(SolidLabel);
-  using Label::Label;
-  SolidLabel() = default;
-  ~SolidLabel() override = default;
-
- protected:
-  // views::Label:
-  void OnPaintBackground(gfx::Canvas* canvas) override {
-    canvas->DrawColor(GetBackgroundColor());
-  }
-};
-
-BEGIN_METADATA(SolidLabel, views::Label)
-END_METADATA
-
 }  // namespace
-
-// ToolbarActionHoverCardBubbleView::FadeLabel:
-// ----------------------------------------------------------
-
-// This view overlays and fades out an old version of the text of a label,
-// while displaying the new text underneath. It is used to fade out the old
-// value of the title and domain labels on the hover card when the tab switches
-// or the tab title changes.
-// TODO(crbug.com/1354321): ToolbarActionHoverCarBubbleView has the same
-// FadeLabel. Move it to its own shared file.
-class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
- public:
-  explicit FadeLabel(int context) {
-    primary_label_ = AddChildView(std::make_unique<views::Label>(
-        std::u16string(), context, views::style::STYLE_PRIMARY));
-    primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    primary_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
-    primary_label_->SetMultiLine(true);
-
-    label_fading_out_ = AddChildView(std::make_unique<SolidLabel>(
-        std::u16string(), context, views::style::STYLE_PRIMARY));
-    label_fading_out_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label_fading_out_->SetVerticalAlignment(gfx::ALIGN_TOP);
-    label_fading_out_->SetMultiLine(true);
-    label_fading_out_->GetViewAccessibility().OverrideIsIgnored(true);
-
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-  }
-
-  ~FadeLabel() override = default;
-
-  void SetText(std::u16string text) {
-    label_fading_out_->SetText(primary_label_->GetText());
-    primary_label_->SetText(text);
-  }
-
-  // Sets the fade-out of the label as `percent` in the range [0, 1]. Since
-  // FadeLabel is designed to mask new text with the old and then fade away, the
-  // higher the percentage the less opaque the label.
-  void SetFade(double percent) {
-    percent_ = std::min(1.0, percent);
-    if (percent_ == 1.0)
-      label_fading_out_->SetText(std::u16string());
-    const SkAlpha alpha = base::saturated_cast<SkAlpha>(
-        std::numeric_limits<SkAlpha>::max() * (1.0 - percent_));
-    label_fading_out_->SetBackgroundColor(
-        SkColorSetA(label_fading_out_->GetBackgroundColor(), alpha));
-    label_fading_out_->SetEnabledColor(
-        SkColorSetA(label_fading_out_->GetEnabledColor(), alpha));
-  }
-
-  void SetBackgroundColorId(ui::ColorId background_color_id) {
-    background_color_id_ = background_color_id;
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-
-    if (background_color_id_.has_value()) {
-      label_fading_out_->SetBackgroundColor(
-          GetColorProvider()->GetColor(background_color_id_.value()));
-      SetFade(percent_);
-    }
-  }
-
-  std::u16string GetText() const { return primary_label_->GetText(); }
-
- protected:
-  // views::View:
-  gfx::Size GetMaximumSize() const override {
-    return gfx::Tween::SizeValueBetween(percent_,
-                                        label_fading_out_->GetPreferredSize(),
-                                        primary_label_->GetPreferredSize());
-  }
-
-  gfx::Size CalculatePreferredSize() const override {
-    return primary_label_->GetPreferredSize();
-  }
-
-  gfx::Size GetMinimumSize() const override {
-    return primary_label_->GetMinimumSize();
-  }
-
-  int GetHeightForWidth(int width) const override {
-    return primary_label_->GetHeightForWidth(width);
-  }
-
- private:
-  raw_ptr<views::Label> primary_label_;
-  raw_ptr<SolidLabel> label_fading_out_;
-
-  double percent_ = 1.0;
-  absl::optional<ui::ColorId> background_color_id_;
-};
-
-// ToolbarActionHoverCardBubbleView:
-// ----------------------------------------------------------
 
 ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
     ToolbarActionView* action_view)
@@ -266,12 +149,10 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   layout->SetCollapseMargins(true);
 
-  corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh);
-
   // Set up content.
   auto create_label = [](int context, gfx::Insets insets) {
-    auto label = std::make_unique<FadeLabel>(context);
+    auto label =
+        std::make_unique<FadeLabelView>(kHoverCardLavelMaxLines, context);
     label->SetProperty(views::kMarginsKey, insets);
     label->SetProperty(
         views::kFlexBehaviorKey,
@@ -313,9 +194,9 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);
-
-  if (using_rounded_corners())
-    GetBubbleFrameView()->SetCornerRadius(corner_radius_.value());
+  GetBubbleFrameView()->SetCornerRadius(
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kHigh));
 
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible.
@@ -325,7 +206,8 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
 void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     const ToolbarActionViewController* action_controller,
     content::WebContents* web_contents) {
-  title_label_->SetText(action_controller->GetActionName());
+  title_label_->SetData(
+      {action_controller->GetActionName(), /*is_filename=*/false});
 
   HoverCardState state = action_controller->GetHoverCardState(web_contents);
   bool show_site_access_labels =
@@ -337,15 +219,18 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
   site_access_title_label_->SetVisible(show_site_access_labels);
   site_access_description_label_->SetVisible(show_site_access_labels);
   if (show_site_access_labels) {
-    site_access_title_label_->SetText(GetSiteAccessTitle(state.site_access));
-    site_access_description_label_->SetText(GetSiteAccessDescription(
-        state.site_access, GetCurrentHost(web_contents)));
+    site_access_title_label_->SetData(
+        {GetSiteAccessTitle(state.site_access), /*is_filename=*/false});
+    site_access_description_label_->SetData(
+        {GetSiteAccessDescription(state.site_access,
+                                  GetCurrentHost(web_contents)),
+         /*is_filename=*/false});
   }
 
   policy_separator_->SetVisible(show_policy_label);
   policy_label_->SetVisible(show_policy_label);
   if (show_policy_label)
-    policy_label_->SetText(GetPolicyText(state.policy));
+    policy_label_->SetData({GetPolicyText(state.policy), false});
 }
 
 void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {
@@ -380,19 +265,7 @@ bool ToolbarActionHoverCardBubbleView::IsPolicyLabelVisible() const {
   return policy_label_->GetVisible();
 }
 
-void ToolbarActionHoverCardBubbleView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-
-  // Bubble closes if the theme changes to the point where the border has to be
-  // regenerated. See crbug.com/1140256
-  if (!using_rounded_corners()) {
-    GetWidget()->Close();
-    return;
-  }
-}
-
 ToolbarActionHoverCardBubbleView::~ToolbarActionHoverCardBubbleView() = default;
 
-BEGIN_METADATA(ToolbarActionHoverCardBubbleView,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(ToolbarActionHoverCardBubbleView)
 END_METADATA

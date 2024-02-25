@@ -1,19 +1,11 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/user_education/common/feature_promo_controller.h"
 
-#include <memory>
-
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_param_associator.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/time/time.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_education {
@@ -108,7 +100,7 @@ TEST(FeaturePromoControllerTest, IsPromoShowing_Queued) {
                                        FeaturePromoStatus::kQueuedForStartup));
 }
 
-TEST(FeaturePromoControllerTest, IsPromoShowing_QuuedWithDifferentVariations) {
+TEST(FeaturePromoControllerTest, IsPromoShowing_QueuedWithDifferentVariations) {
   StrictMock<test::MockFeaturePromoController> controller;
   EXPECT_CALL(controller, GetPromoStatus(Ref(kTestIPHFeature)))
       .WillRepeatedly(Return(FeaturePromoStatus::kQueuedForStartup));

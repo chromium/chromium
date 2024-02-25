@@ -9,22 +9,66 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 
+enum ViewTransitionPropertyId {
+  kBackdropFilter,
+  kColorScheme,
+  kMixBlendMode,
+  kTextOrientation,
+  kWritingMode
+};
+
+// This represents the necessary information for a shared element to
+// participate in a view transition. See comment above ViewTransitionState for
+// more information.
 struct ViewTransitionElement {
+  // The view-transition-name associated with the shared element.
   string tag_name;
+
+  // Geometry information for this shared element.
   gfx.mojom.SizeF border_box_size_in_css_space;
   gfx.mojom.Transform viewport_matrix;
   gfx.mojom.RectF overflow_rect_in_layout_space;
-  viz.mojom.ViewTransitionElementResourceId snapshot_id;
-  int32 paint_order;
   gfx.mojom.RectF? captured_rect_in_layout_space;
-  uint8 container_writing_mode;
-  uint8 mix_blend_mode;
-  uint8 text_orientation;
+
+  // The viz snapshot id for this shared element.
+  viz.mojom.ViewTransitionElementResourceId snapshot_id;
+
+  // The relative paint order of this shared element.
+  int32 paint_order;
+
+  // Select CSS property values needed for the visual representation of this
+  // shared element. The map is from (a subset of) CSSPropertyIDs to the css
+  // computed value (as string).
+  map<ViewTransitionPropertyId, string> captured_css_properties;
+
+  // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
+  // The class-list needs to be serialized between documents, because exit transitions
+  // would use the class list from the old document.
+  array<string> class_list;
 };
 
+// This represents a document state necessary to initiate a view transition for
+// a cross-document same-origin navigation. See
+// https://drafts.csswg.org/css-view-transitions-2/ for details. Note that the
+// process for capturing this state is initiated from a
+// ViewTransitionCommitDeferringCondition. See that class for how the view
+// transition capture is initiated.
+//
+// A high level concept is that before we commit the new navigation, we request
+// a capture state from the old document. This causes the old document to
+// produce a frame that captures the pixels of relevant elements and populates
+// this struct. This is then passed to the new document when it is committed or
+// activated. This struct is then used in the new document to start a view
+// transition.
 struct ViewTransitionState {
+  // The shared element state for elements participating in the transition.
   array<ViewTransitionElement> elements;
+
+  // The navigation id. It is used to identify this transition when retrieving
+  // captured pixel state in viz.
   mojo_base.mojom.UnguessableToken navigation_id;
+
+  // Geometry information for the root capture.
   gfx.mojom.Size snapshot_root_size_at_capture;
   float device_pixel_ratio;
   // TODO(khushalsagar): Add opaque blob from old Document.

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DESKS_STORAGE_CORE_SAVED_DESK_BUILDER_H_
 #define COMPONENTS_DESKS_STORAGE_CORE_SAVED_DESK_BUILDER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
@@ -88,6 +88,7 @@ class SavedDeskGenericAppBuilder {
       WindowOpenDisposition disposition);
   SavedDeskGenericAppBuilder& SetName(std::string name);
   SavedDeskGenericAppBuilder& SetSnapPercentage(int percentage);
+  SavedDeskGenericAppBuilder& SetEventFlag(int32_t event_flag);
 
   // Apps are keyed by their ID, this returns the ID associated with this app
   // assuming it has been set.  There are some special app cases in which this
@@ -97,17 +98,18 @@ class SavedDeskGenericAppBuilder {
   const std::string& GetAppId();
 
  private:
-  absl::optional<std::string> app_id_;
-  absl::optional<gfx::Rect> window_bounds_;
-  absl::optional<chromeos::WindowStateType> window_show_state_;
-  absl::optional<ui::WindowShowState> pre_minimized_window_show_state_;
-  absl::optional<int> z_index_;
-  absl::optional<int> window_id_;
-  absl::optional<int64_t> display_id_;
-  absl::optional<apps::LaunchContainer> launch_conatiner_;
-  absl::optional<WindowOpenDisposition> disposition_;
-  absl::optional<std::string> name_;
-  absl::optional<int> snap_percentage_;
+  std::optional<std::string> app_id_;
+  std::optional<gfx::Rect> window_bounds_;
+  std::optional<chromeos::WindowStateType> window_show_state_;
+  std::optional<ui::WindowShowState> pre_minimized_window_show_state_;
+  std::optional<int> z_index_;
+  std::optional<int> window_id_;
+  std::optional<int64_t> display_id_;
+  std::optional<apps::LaunchContainer> launch_conatiner_;
+  std::optional<WindowOpenDisposition> disposition_;
+  std::optional<std::string> name_;
+  std::optional<int> snap_percentage_;
+  std::optional<int32_t> event_flag_;
 };
 
 // Builder for TabGroups.  Each instance represents a single tab group.
@@ -148,10 +150,10 @@ class SavedDeskTabGroupBuilder {
   TabGroupWithStatus Build();
 
  private:
-  absl::optional<gfx::Range> range_;
-  absl::optional<std::string> title_;
-  absl::optional<tab_groups::TabGroupColorId> color_;
-  absl::optional<bool> is_collapsed_;
+  std::optional<gfx::Range> range_;
+  std::optional<std::string> title_;
+  std::optional<tab_groups::TabGroupColorId> color_;
+  std::optional<bool> is_collapsed_;
 };
 
 // Builder that constructs Browser representations, this can also be used to
@@ -176,6 +178,7 @@ class SavedDeskBrowserBuilder {
   SavedDeskBrowserBuilder& SetActiveTabIndex(int index);
   SavedDeskBrowserBuilder& SetUrls(std::vector<GURL> urls);
   SavedDeskBrowserBuilder& SetIsLacros(bool is_lacros);
+  SavedDeskBrowserBuilder& SetLacrosProfileId(uint64_t lacros_profile_id);
   SavedDeskBrowserBuilder& AddTabGroupBuilder(
       SavedDeskTabGroupBuilder tab_group);
 
@@ -188,10 +191,11 @@ class SavedDeskBrowserBuilder {
   SavedDeskGenericAppBuilder generic_builder_;
 
   bool is_lacros_ = false;
-  absl::optional<bool> is_app_;
+  std::optional<bool> is_app_;
   std::vector<SavedDeskTabGroupBuilder> tab_group_builders_;
-  absl::optional<int> active_tab_index_;
-  absl::optional<int> first_non_pinned_tab_index_;
+  std::optional<int> active_tab_index_;
+  std::optional<int> first_non_pinned_tab_index_;
+  std::optional<uint64_t> lacros_profile_id_;
   std::vector<GURL> urls_;
 };
 
@@ -219,10 +223,10 @@ class SavedDeskArcAppBuilder {
  private:
   SavedDeskGenericAppBuilder generic_builder_;
 
-  absl::optional<std::string> app_id_;
-  absl::optional<gfx::Size> minimum_size_;
-  absl::optional<gfx::Size> maximum_size_;
-  absl::optional<gfx::Rect> bounds_in_root_;
+  std::optional<std::string> app_id_;
+  std::optional<gfx::Size> minimum_size_;
+  std::optional<gfx::Size> maximum_size_;
+  std::optional<gfx::Rect> bounds_in_root_;
 };
 
 // Helper class for building a saved desk for test.
@@ -252,17 +256,42 @@ class SavedDeskBuilder {
 
   // Sets saved desk creation timestamp. If not set, the built desk will have
   // its creation timestamp set at the creation time of the SavedDeskBuilder.
-  SavedDeskBuilder& SetCreatedTime(base::Time& created_time);
+  SavedDeskBuilder& SetCreatedTime(const base::Time& created_time);
+
+  // Sets the saved desk updated timestamp.  If not set the built desk will
+  // have its updated timestamp set to the same time as its created timestamp.
+  SavedDeskBuilder& SetUpdatedTime(const base::Time& updated_time);
+
+  // Sets the policy value if needed to define a policy template.
+  SavedDeskBuilder& SetPolicyValue(const base::Value& value);
+
+  // Sets whether or not the template should be launched on startup.
+  SavedDeskBuilder& SetPolicyShouldLaunchOnStartup(
+      bool should_launch_on_startup);
+
+  // Sets the optional lacros profile association.
+  SavedDeskBuilder& SetLacrosProfileId(uint64_t lacros_profile_id);
 
   // Adds an app window.
   SavedDeskBuilder& AddAppWindow(BuiltApp built_app);
 
  private:
+  // additional state for whether or not to set updated time.  This prevents
+  // some older tests from breaking.  Because we are not supposed to use a
+  // null time in base::Time we will track whether or not we have set this
+  // field via this variable.
+  bool has_updated_time_ = false;
+
+  // state for instantiating template
   base::Uuid desk_uuid_;
   std::string desk_name_;
   ash::DeskTemplateSource desk_source_;
   ash::DeskTemplateType desk_type_;
   base::Time created_time_;
+  base::Time updated_time_;
+  base::Value policy_value_;
+  bool policy_should_launch_on_startup_ = false;
+  std::optional<uint64_t> lacros_profile_id_;
   std::vector<BuiltApp> built_apps_;
 };
 

@@ -24,6 +24,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class AutocompleteController;
+class AutocompleteResult;
+class AutocompleteScoringModelService;
 class Profile;
 
 // Implementation of mojo::OmniboxPageHandler.  StartOmniboxQuery() calls to a
@@ -47,6 +49,8 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
                const AutocompleteInput& input) override;
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
+  void OnMlScored(AutocompleteController* controller,
+                  const AutocompleteResult& result) override;
 
   // mojom::OmniboxPageHandler overrides:
   void SetClientPage(mojo::PendingRemote<mojom::OmniboxPage> page) override;
@@ -60,22 +64,36 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
                          bool prefer_keyword,
                          const std::string& current_url,
                          int32_t page_classification) override;
+  void GetMlModelVersion(GetMlModelVersionCallback callback) override;
+  void StartMl(mojom::SignalsPtr signals, StartMlCallback callback) override;
 
  private:
-  void OnBitmapFetched(const std::string& image_url, const SkBitmap& bitmap);
+  void OnBitmapFetched(mojom::AutocompleteControllerType type,
+                       const std::string& image_url,
+                       const SkBitmap& bitmap);
 
   // Looks up whether the hostname is a typed host (i.e., has received
   // typed visits).  Return true if the lookup succeeded; if so, the
   // value of |is_typed_host| is set appropriately.
   bool LookupIsTypedHost(const std::u16string& host, bool* is_typed_host) const;
 
-  // Re-initializes the AutocompleteController in preparation for the
-  // next query.
-  void ResetController();
+  // Creates an `AutocompleteController` for `controller_` or
+  // `ml_disabled_controller_`.
+  std::unique_ptr<AutocompleteController> CreateController(bool ml_disabled);
 
-  // The omnibox AutocompleteController that collects/sorts/dup-
-  // eliminates the results as they come in.
+  // Compares `controller` with `controller_` & `ml_disabled_controller_`.
+  mojom::AutocompleteControllerType GetAutocompleteControllerType(
+      AutocompleteController* controller);
+
+  // Helper to get the ML service for this profile.
+  AutocompleteScoringModelService* GetMlService();
+
+  // A controller to allow chrome://omnibox can try inputs without messing with
+  // location bar omnibox.
   std::unique_ptr<AutocompleteController> controller_;
+  // A controller with ML disabled to allow chrome://omnibox/ml to show a
+  // before-after comparison.
+  std::unique_ptr<AutocompleteController> ml_disabled_controller_;
 
   // Time the user's input was sent to the omnibox to start searching.
   // Needed because we also pass timing information in the object we

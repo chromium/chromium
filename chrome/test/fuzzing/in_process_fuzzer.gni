@@ -28,16 +28,66 @@ template("in_process_fuzzer") {
 
       # As these are full browser tests, we have crashpad running,
       # and we can't intercept signals that crashpad needs.
-      asan_options = [
+      sanitizer_options = [
         "allow_user_segv_handler=1",
         "handle_sigtrap=1",
+        "handle_abort=1",
+        "handle_segv=1",
+        "handle_sigbus=1",
+        "handle_sigfpe=1",
+        "handle_sigill=1",
+        "handle_sigtrap=1",
+      ]
 
+      asan_options = [
         # Browser tests store arbitrary data in globals; leak
         # detection will come up with lots of false positives.
         "detect_leaks=0",
       ]
+
+      asan_options += sanitizer_options
+
+      ubsan_options = sanitizer_options
+
+      msan_options = sanitizer_options
+
+      # Again, these are full browser tests, so it needs a fairly high memory
+      # limit so that it runs correctly.
+      libfuzzer_options = [
+        "rss_limit_mb=8192",
+
+        # This is for test-only. Remove once crbug.com/1471427 is fixed.
+        "fork=0",
+      ]
+
+      centipede_options = [
+        # Provide plenty of capacity for test cases to flow between centipede
+        # and the fuzz target.
+        "shmem_size_mb=4096",
+
+        # Browser tests are big
+        "address_space_limit_mb=0",
+
+        # For testing. Those fuzzers are extremely slow on ClusterFuzz, and
+        # using this option doesn't help.
+        "fork_server=0",
+
+        "rss_limit_mb=8192",
+
+        # This value is the one used by CF for Centipede fuzzers.
+        # Default computed timeout per batch is ridiculously low (1127, which
+        # means ~1.1 sec per input average) for those fuzzers.
+        "timeout_per_batch=8400",
+      ]
+
       if (defined(invoker.asan_options)) {
         asan_options += invoker.asan_options
+      }
+      if (defined(invoker.libfuzzer_options)) {
+        libfuzzer_options += invoker.libfuzzer_options
+      }
+      if (defined(invoker.centipede_options)) {
+        centipede_options += invoker.centipede_options
       }
       exclude_main = true
     }
@@ -137,11 +187,11 @@ template("in_process_proto_fuzzer") {
       }
     }
 
-    fuzzer_test(target_name) {
+    in_process_fuzzer(target_name) {
       sources = invoker.sources
       deps = [
         ":${proto_target_name}",
-        "//chrome/test/fuzzing:in_process_fuzzer_runner",
+        "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
         "//third_party/libprotobuf-mutator",
       ]
 
@@ -153,7 +203,6 @@ template("in_process_proto_fuzzer") {
         seed_corpus = seed_corpus_path
         seed_corpus_deps = [ ":${protoc_convert_target_name}" ]
       }
-      exclude_main = true
     }
   } else {
     # noop if the fuzzer harness always provides its own main

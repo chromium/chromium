@@ -9,7 +9,7 @@
   function getAllPropertyNames(obj) {
     let props = Object.getOwnPropertyNames(obj);
     let proto = Object.getPrototypeOf(obj);
-    if (proto === Object.prototype) {
+    if (proto === Object.prototype || proto === null) {
       return props;
     }
     return [...props, ...getAllPropertyNames(proto)];

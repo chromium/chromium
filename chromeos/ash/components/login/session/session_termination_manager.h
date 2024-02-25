@@ -5,12 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
 namespace ash {
@@ -58,9 +59,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_SESSION)
  private:
   void DidWaitForServiceToBeAvailable(bool service_is_available);
   void ProcessCryptohomeLoginStatusReply(
-      const absl::optional<user_data_auth::GetLoginStatusReply>& reply);
+      const std::optional<user_data_auth::GetLoginStatusReply>& reply);
   void RebootIfNecessaryProcessReply(
-      absl::optional<user_data_auth::GetLoginStatusReply> reply);
+      std::optional<user_data_auth::GetLoginStatusReply> reply);
 
   base::ObserverList<Observer> observers_;
   bool is_locked_to_single_user_ = false;

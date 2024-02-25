@@ -20,9 +20,9 @@ namespace blink {
 namespace {
 // The callback to get the recognition result.
 void OnRecognitionResult(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<HandwritingPrediction>>* resolver,
     ScriptState* script_state,
-    absl::optional<Vector<handwriting::mojom::blink::HandwritingPredictionPtr>>
+    std::optional<Vector<handwriting::mojom::blink::HandwritingPredictionPtr>>
         predictions) {
   // If `predictions` does not have value, it means the some error happened in
   // recognition. Otherwise, if it has value but the vector is empty, it means
@@ -71,9 +71,12 @@ const HeapVector<Member<HandwritingStroke>>& HandwritingDrawing::getStrokes() {
   return strokes_;
 }
 
-ScriptPromise HandwritingDrawing::getPrediction(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLSequence<HandwritingPrediction>>
+HandwritingDrawing::getPrediction(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<HandwritingPrediction>>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   if (!IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

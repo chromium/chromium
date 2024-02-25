@@ -25,4 +25,4 @@ gfx::RectF ScaleAndroidPxToChromePx(const gfx::Rect& android_bounds,
 int GetChromeWindowHeightOffsetInDip(aura::Window* window);
 }  // namespace arc
 
-#endif
+#endif  // CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_GEOMETRY_UTIL_H_

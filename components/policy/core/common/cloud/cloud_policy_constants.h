@@ -25,6 +25,7 @@ extern const char kParamOAuthToken[];
 extern const char kParamPlatform[];
 extern const char kParamRequest[];
 extern const char kParamRetry[];
+extern const char kParamProfileID[];
 
 // Policy constants used in authorization header.
 extern const char kAuthHeader[];
@@ -32,6 +33,9 @@ extern const char kServiceTokenAuthHeaderPrefix[];
 extern const char kDMTokenAuthHeaderPrefix[];
 extern const char kEnrollmentTokenAuthHeaderPrefix[];
 extern const char kOAuthTokenHeaderPrefix[];
+extern const char kOidcAuthHeaderPrefix[];
+extern const char kOidcAuthTokenHeaderPrefix[];
+extern const char kOidcIdTokenHeaderPrefix[];
 
 // String extern constants for the device and app type we report to the server.
 extern const char kValueAppType[];
@@ -42,6 +46,7 @@ extern const char kValueRequestPsmHasDeviceState[];
 extern const char kValueCheckUserAccount[];
 extern const char kValueRequestPolicy[];
 extern const char kValueRequestRegister[];
+extern const char kValueRequestRegisterProfile[];
 extern const char kValueRequestApiAuthorization[];
 extern const char kValueRequestUnregister[];
 extern const char kValueRequestUploadCertificate[];
@@ -77,6 +82,16 @@ extern const char kChromeMachineLevelUserCloudPolicyAndroidType[];
 extern const char kChromeMachineLevelUserCloudPolicyIOSType[];
 extern const char kChromeMachineLevelExtensionCloudPolicyType[];
 extern const char kChromeRemoteCommandPolicyType[];
+
+// Remote command type for `type` field in DeviceRemoteCommandRequest.
+// Command for Chrome OS Ash user.
+extern const char kChromeAshUserRemoteCommandType[];
+// Command for Chrome OS device.
+extern const char kChromeDeviceRemoteCommandType[];
+// Command for CBCM device on non-CrOS
+extern const char kChromeBrowserRemoteCommandType[];
+// Command for browser profile.
+extern const char kChromeUserRemoteCommandType[];
 
 extern const char kChromeMachineLevelUserCloudPolicyTypeBase64[];
 
@@ -174,6 +189,18 @@ enum DeviceMode {
                          // either enrolled online or setup
                          // offline into demo mode domain -
                          // see kDemoModeDomain.
+};
+
+// List of modes of OIDC management.
+enum ThirdPartyIdentityType {
+  NO_THIRD_PARTY_MANAGEMENT =
+      0,  // The device mode is not managed by a third party identity.
+  OIDC_MANAGEMENT_DASHER_BASED =
+      1,  // The device mode is managed by a third party identity that is
+          // sync-ed to Google.
+  OIDC_MANAGEMENT_DASHERLESS =
+      2,  // The device mode is managed by a third party identity that is
+          // notsync-ed to Google.
 };
 
 // Domain that demo mode devices are enrolled into: cros-demo-mode.com

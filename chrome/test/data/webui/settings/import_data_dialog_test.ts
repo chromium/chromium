@@ -5,7 +5,8 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {dashToCamelCase, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus, SettingsCheckboxElement, SettingsImportDataDialogElement} from 'chrome://settings/lazy_load.js';
+import type {BrowserProfile, ImportDataBrowserProxy, SettingsCheckboxElement, SettingsImportDataDialogElement} from 'chrome://settings/lazy_load.js';
+import {ImportDataBrowserProxyImpl, ImportDataStatus} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -109,7 +110,7 @@ suite('ImportDataDialog', function() {
     flush();
   });
 
-  function ensureSettingsCheckboxCheckedStatus(
+  async function ensureSettingsCheckboxCheckedStatus(
       prefName: string, checked: boolean) {
     const id = dashToCamelCase(prefName.replace(/_/g, '-'));
     const settingsCheckbox =
@@ -118,6 +119,7 @@ suite('ImportDataDialog', function() {
     if (settingsCheckbox.checked !== checked) {
       // Use click operation to produce a 'change' event.
       settingsCheckbox.$.checkbox.click();
+      await settingsCheckbox.$.checkbox.updateComplete;
     }
   }
 
@@ -147,13 +149,13 @@ suite('ImportDataDialog', function() {
     });
   });
 
-  test('ImportButton', function() {
+  test('ImportButton', async function() {
     assertFalse(dialog.$.import.disabled);
 
     // Flip all prefs to false.
-    Object.keys(prefs).forEach(function(prefName) {
-      ensureSettingsCheckboxCheckedStatus(prefName, false);
-    });
+    for (const key of Object.keys(prefs)) {
+      await ensureSettingsCheckboxCheckedStatus(key, false);
+    }
     assertTrue(dialog.$.import.disabled);
 
     // Change browser selection to "Import from Bookmarks HTML file".
@@ -161,10 +163,10 @@ suite('ImportDataDialog', function() {
     assertTrue(dialog.$.import.disabled);
 
     // Ensure everything except |import_dialog_bookmarks| is ignored.
-    ensureSettingsCheckboxCheckedStatus('import_dialog_history', true);
+    await ensureSettingsCheckboxCheckedStatus('import_dialog_history', true);
     assertTrue(dialog.$.import.disabled);
 
-    ensureSettingsCheckboxCheckedStatus('import_dialog_bookmarks', true);
+    await ensureSettingsCheckboxCheckedStatus('import_dialog_bookmarks', true);
     assertFalse(dialog.$.import.disabled);
   });
 
@@ -209,8 +211,9 @@ suite('ImportDataDialog', function() {
   });
 
   test('ImportFromBrowserProfile', async function() {
-    ensureSettingsCheckboxCheckedStatus('import_dialog_bookmarks', false);
-    ensureSettingsCheckboxCheckedStatus('import_dialog_search_engine', true);
+    await ensureSettingsCheckboxCheckedStatus('import_dialog_bookmarks', false);
+    await ensureSettingsCheckboxCheckedStatus(
+        'import_dialog_search_engine', true);
 
     const expectedIndex = 0;
     simulateBrowserProfileChange(expectedIndex);
@@ -236,9 +239,9 @@ suite('ImportDataDialog', function() {
 
   test('ImportFromBrowserProfileWithUnsupportedOption', async function() {
     // Flip all prefs to true.
-    Object.keys(prefs).forEach(function(prefName) {
-      ensureSettingsCheckboxCheckedStatus(prefName, true);
-    });
+    for (const key of Object.keys(prefs)) {
+      await ensureSettingsCheckboxCheckedStatus(key, true);
+    }
 
     const expectedIndex = 1;
     simulateBrowserProfileChange(expectedIndex);

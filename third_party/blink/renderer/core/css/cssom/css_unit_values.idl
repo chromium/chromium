@@ -12,36 +12,44 @@
 
   // <length>
   [NewObject] CSSUnitValue em(double value);
-  [NewObject] CSSUnitValue ex(double value);
-  [NewObject] CSSUnitValue ch(double value);
   [NewObject] CSSUnitValue rem(double value);
+  [NewObject] CSSUnitValue ex(double value);
+  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue rex(double value);
+  [NewObject] CSSUnitValue ch(double value);
+  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue rch(double value);
+  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue ic(double value);
+  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue ric(double value);
+  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue lh(double value);
+  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue rlh(double value);
+  [NewObject, RuntimeEnabled=CSSCapFontUnits] CSSUnitValue cap(double value);
+  [NewObject, RuntimeEnabled=CSSCapFontUnits] CSSUnitValue rcap(double value);
   [NewObject] CSSUnitValue vw(double value);
   [NewObject] CSSUnitValue vh(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue vi(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue vb(double value);
+  [NewObject] CSSUnitValue vi(double value);
+  [NewObject] CSSUnitValue vb(double value);
   [NewObject] CSSUnitValue vmin(double value);
   [NewObject] CSSUnitValue vmax(double value);
 
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svw(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svh(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svi(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svb(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svmin(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svmax(double value);
+  [NewObject] CSSUnitValue svw(double value);
+  [NewObject] CSSUnitValue svh(double value);
+  [NewObject] CSSUnitValue svi(double value);
+  [NewObject] CSSUnitValue svb(double value);
+  [NewObject] CSSUnitValue svmin(double value);
+  [NewObject] CSSUnitValue svmax(double value);
 
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvw(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvh(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvi(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvb(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvmin(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvmax(double value);
+  [NewObject] CSSUnitValue lvw(double value);
+  [NewObject] CSSUnitValue lvh(double value);
+  [NewObject] CSSUnitValue lvi(double value);
+  [NewObject] CSSUnitValue lvb(double value);
+  [NewObject] CSSUnitValue lvmin(double value);
+  [NewObject] CSSUnitValue lvmax(double value);
 
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvw(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvh(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvi(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvb(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvmin(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvmax(double value);
+  [NewObject] CSSUnitValue dvw(double value);
+  [NewObject] CSSUnitValue dvh(double value);
+  [NewObject] CSSUnitValue dvi(double value);
+  [NewObject] CSSUnitValue dvb(double value);
+  [NewObject] CSSUnitValue dvmin(double value);
+  [NewObject] CSSUnitValue dvmax(double value);
 
   [NewObject] CSSUnitValue cqw(double value);
   [NewObject] CSSUnitValue cqh(double value);
@@ -57,10 +65,6 @@
   [NewObject] CSSUnitValue pc(double value);
   [NewObject] CSSUnitValue px(double value);
   [NewObject] CSSUnitValue Q(double value);
-  // TODO: Currently unsupported length units that are specified
-  // [NewObject] CSSUnitValue ic(double value);
-  // [NewObject] CSSUnitValue lh(double value);
-  // [NewObject] CSSUnitValue rlh(double value);
 
   // <angle>
   [NewObject] CSSUnitValue deg(double value);
@@ -80,6 +84,7 @@
   [NewObject] CSSUnitValue dpi(double value);
   [NewObject] CSSUnitValue dpcm(double value);
   [NewObject] CSSUnitValue dppx(double value);
+  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue x(double value);
 
   // <flex>
   [NewObject] CSSUnitValue fr(double value);

@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "UI>Browser>Language>Spellcheck"
 }
-
 team_email: "language@chromium.org"
+buganizer_public: {
+  component_id: 1457550
+}

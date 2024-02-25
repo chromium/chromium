@@ -105,10 +105,8 @@ TEST_F(PassthroughProgramCacheTest, LoadProgram) {
     std::string binary_blob = MakeBlob(kBlobLength, key_start + 10);
 
     // Encode the strings to pretend like they came from disk.
-    std::string key_string_64;
-    std::string value_string_64;
-    base::Base64Encode(binary_key, &key_string_64);
-    base::Base64Encode(binary_blob, &value_string_64);
+    std::string key_string_64 = base::Base64Encode(binary_key);
+    std::string value_string_64 = base::Base64Encode(binary_blob);
 
     cache_->LoadProgram(key_string_64, value_string_64);
 

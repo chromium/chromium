@@ -15,7 +15,10 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toggle_button_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
@@ -27,14 +30,19 @@
 // ReadAnythingToolbarView
 //
 //  The toolbar for Read Anything.
-//  This class is created by the ReadAnythingCoordinator and owned by the
-//  ReadAnythingContainerView. It has the same lifetime as the Side Panel view.
+//  This class is either created by the ReadAnythingCoordinator (when the side
+//  panel entry is global) or the ReadAnythingSidePanelController (when the side
+//  panel entry is local) and owned by the ReadAnythingContainerView. It has the
+//  same lifetime as the Side Panel view.
 //
-class ReadAnythingToolbarView : public views::View,
-                                public ReadAnythingModel::Observer,
-                                public ReadAnythingCoordinator::Observer {
+class ReadAnythingToolbarView
+    : public views::View,
+      public ReadAnythingModel::Observer,
+      public ReadAnythingCoordinator::Observer,
+      public ReadAnythingSidePanelController::Observer {
+  METADATA_HEADER(ReadAnythingToolbarView, views::View)
+
  public:
-  METADATA_HEADER(ReadAnythingToolbarView);
   class Delegate {
    public:
     virtual void OnFontSizeChanged(bool increase) = 0;
@@ -45,10 +53,16 @@ class ReadAnythingToolbarView : public views::View,
     virtual void OnLetterSpacingChanged(int new_index) = 0;
     virtual ReadAnythingMenuModel* GetLetterSpacingModel() = 0;
     virtual void OnSystemThemeChanged() = 0;
+    virtual void OnLinksEnabledChanged(bool is_enabled) = 0;
+    virtual bool GetLinksEnabled() = 0;
   };
 
   ReadAnythingToolbarView(
       ReadAnythingCoordinator* coordinator,
+      ReadAnythingToolbarView::Delegate* toolbar_delegate,
+      ReadAnythingFontCombobox::Delegate* font_combobox_delegate);
+  ReadAnythingToolbarView(
+      ReadAnythingSidePanelController* controller,
       ReadAnythingToolbarView::Delegate* toolbar_delegate,
       ReadAnythingFontCombobox::Delegate* font_combobox_delegate);
   ReadAnythingToolbarView(const ReadAnythingToolbarView&) = delete;
@@ -59,6 +73,7 @@ class ReadAnythingToolbarView : public views::View,
   void OnReadAnythingThemeChanged(
       const std::string& font_name,
       double font_scale,
+      bool links_enabled,
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,
       ui::ColorId separator_color_id,
@@ -70,15 +85,21 @@ class ReadAnythingToolbarView : public views::View,
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;
+  // ReadAnythingSidePanelController::Observer:
+  void OnSidePanelControllerDestroyed() override;
 
  private:
   friend class ReadAnythingToolbarViewTest;
 
+  void Init(ReadAnythingToolbarView::Delegate* toolbar_delegate,
+            ReadAnythingFontCombobox::Delegate* font_combobox_delegate);
   void DecreaseFontSizeCallback();
   void IncreaseFontSizeCallback();
   void ChangeColorsCallback();
   void ChangeLineSpacingCallback();
   void ChangeLetterSpacingCallback();
+  void LinksToggledCallback();
+  void CleanUp();
 
   // views::View:
   void AddedToWidget() override;
@@ -91,6 +112,7 @@ class ReadAnythingToolbarView : public views::View,
   raw_ptr<ReadAnythingFontCombobox> font_combobox_;
   raw_ptr<ReadAnythingButtonView> decrease_text_size_button_;
   raw_ptr<ReadAnythingButtonView> increase_text_size_button_;
+  raw_ptr<ReadAnythingToggleButtonView> toggle_links_button_;
   raw_ptr<ReadAnythingMenuButton> colors_button_;
   raw_ptr<ReadAnythingMenuButton> line_spacing_button_;
   raw_ptr<ReadAnythingMenuButton> letter_spacing_button_;
@@ -98,6 +120,7 @@ class ReadAnythingToolbarView : public views::View,
 
   raw_ptr<ReadAnythingToolbarView::Delegate> delegate_;
   raw_ptr<ReadAnythingCoordinator> coordinator_;
+  raw_ptr<ReadAnythingSidePanelController> controller_;
 
   base::WeakPtrFactory<ReadAnythingToolbarView> weak_pointer_factory_{this};
 };

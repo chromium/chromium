@@ -1,2 +1,0 @@
-Executed an empty statement. If you didn't see a crash or assertion, the test passed.
-

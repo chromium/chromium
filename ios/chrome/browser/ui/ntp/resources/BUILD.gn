@@ -12,6 +12,10 @@ colorset("fake_omnibox_background_color") {
   sources = [ "fake_omnibox_background_color.colorset/Contents.json" ]
 }
 
+colorset("fake_omnibox_solid_background_color") {
+  sources = [ "fake_omnibox_solid_background_color.colorset/Contents.json" ]
+}
+
 colorset("fake_omnibox_top_gradient_color") {
   sources = [ "fake_omnibox_top_gradient_color.colorset/Contents.json" ]
 }

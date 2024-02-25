@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset="utf8">
+<title>IndexedDB: use of cursor with disconnected context</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/support-promises.js"></script>
+<body></body>
+<script>
+'use strict';
+
+// Regression test for crbug.com/1519989
+promise_test(t => {
+  let frame = document.createElement('iframe');
+  frame.src = location;
+  document.body.append(frame);
+  setIndexedDBForTest(frame.contentWindow.indexedDB);
+
+  return createDatabase(t, database => {
+    createBooksStore(t, database);
+  }).then(database => {
+    let transaction = database.transaction(['books'], 'readonly');
+    let objectStore = transaction.objectStore('books');
+
+    return new Promise((resolve, reject) => {
+      let request = objectStore.openCursor();
+      request.onerror = reject;
+      request.onsuccess = (event) => {
+        const cursor = event.target.result;
+        frame.remove();
+        try {
+          cursor.continue();
+          reject('expected exception');
+        } catch (ex) {
+          if (ex.code != DOMException.INVALID_STATE_ERR) {
+            reject('Unexpected error: ' + ex.message);
+          }
+        }
+        resolve();
+      };
+    });
+  });
+}, 'operations on a disconnected cursor throws an exception rather than crashing');
+
+</script>

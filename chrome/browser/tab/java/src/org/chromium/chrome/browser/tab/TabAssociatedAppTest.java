@@ -21,22 +21,19 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
-/**
- * Tests for {@link TabAttributes}.
- */
+/** Tests for {@link TabAttributes}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabAssociatedAppTest {
     private static final String APP_ID = "magicApp";
 
-    @Mock
-    private Tab mTab;
+    @Mock private Tab mTab;
 
-    @Captor
-    ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     // Hosts the TabAssociatedApp
     private final UserDataHost mUserDataHost = new UserDataHost();
@@ -67,9 +64,12 @@ public class TabAssociatedAppTest {
         mTabObserverCaptor.getValue().onInitialized(mTab, APP_ID);
         Assert.assertEquals(APP_ID, tabAssociatedApp.getAppId());
 
-        mTabObserverCaptor.getValue().onLoadUrl(mTab,
-                new LoadUrlParams("foobar.com", PageTransition.FROM_ADDRESS_BAR),
-                Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
+        mTabObserverCaptor
+                .getValue()
+                .onLoadUrl(
+                        mTab,
+                        new LoadUrlParams("foobar.com", PageTransition.FROM_ADDRESS_BAR),
+                        new LoadUrlResult(Tab.TabLoadStatus.DEFAULT_PAGE_LOAD, null));
 
         Assert.assertNull(tabAssociatedApp.getAppId());
     }
@@ -81,9 +81,12 @@ public class TabAssociatedAppTest {
         mTabObserverCaptor.getValue().onInitialized(mTab, APP_ID);
         Assert.assertEquals(APP_ID, tabAssociatedApp.getAppId());
 
-        mTabObserverCaptor.getValue().onLoadUrl(mTab,
-                new LoadUrlParams("foobar.com", PageTransition.LINK),
-                Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
+        mTabObserverCaptor
+                .getValue()
+                .onLoadUrl(
+                        mTab,
+                        new LoadUrlParams("foobar.com", PageTransition.LINK),
+                        new LoadUrlResult(Tab.TabLoadStatus.DEFAULT_PAGE_LOAD, null));
 
         Assert.assertEquals(APP_ID, tabAssociatedApp.getAppId());
     }

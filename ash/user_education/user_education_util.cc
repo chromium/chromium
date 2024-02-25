@@ -5,6 +5,7 @@
 #include "ash/user_education/user_education_util.h"
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "ash/display/window_tree_host_manager.h"
@@ -19,8 +20,8 @@
 #include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -120,11 +121,7 @@ const AccountId& GetAccountId(const UserSession* user_session) {
   return user_session ? user_session->user_info.account_id : EmptyAccountId();
 }
 
-ui::CustomElementEventType GetHelpBubbleAnchorBoundsChangedEventType() {
-  return user_education::kHelpBubbleAnchorBoundsChangedEvent;
-}
-
-absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+std::optional<std::reference_wrapper<const gfx::VectorIcon>>
 GetHelpBubbleBodyIcon(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties) {
@@ -135,7 +132,7 @@ GetHelpBubbleBodyIcon(
     CHECK(it != registry.end());
     return *it->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 HelpBubbleId GetHelpBubbleId(
@@ -148,21 +145,21 @@ HelpBubbleId GetHelpBubbleId(
 ui::ModalType GetHelpBubbleModalType(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties) {
-  if (const absl::optional<int> model_type =
+  if (const std::optional<int> model_type =
           extended_properties.values().FindInt(kHelpBubbleModalTypeKey)) {
     return static_cast<ui::ModalType>(model_type.value());
   }
   return ui::MODAL_TYPE_NONE;
 }
 
-absl::optional<HelpBubbleStyle> GetHelpBubbleStyle(
+std::optional<HelpBubbleStyle> GetHelpBubbleStyle(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties) {
-  if (absl::optional<int> help_bubble_style =
+  if (std::optional<int> help_bubble_style =
           extended_properties.values().FindInt(kHelpBubbleStyleKey)) {
     return static_cast<HelpBubbleStyle>(help_bubble_style.value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 views::View* GetMatchingViewInRootWindow(int64_t display_id,
@@ -185,14 +182,30 @@ views::View* GetMatchingViewInRootWindow(int64_t display_id,
   return nullptr;
 }
 
-absl::optional<user_manager::UserType> GetUserType(
-    const AccountId& account_id) {
+TimeBucket GetTimeBucket(base::TimeDelta delta) {
+  if (delta <= base::Minutes(1)) {
+    return TimeBucket::kOneMinute;
+  } else if (delta <= base::Minutes(10)) {
+    return TimeBucket::kTenMinutes;
+  } else if (delta <= base::Hours(1)) {
+    return TimeBucket::kOneHour;
+  } else if (delta <= base::Days(1)) {
+    return TimeBucket::kOneDay;
+  } else if (delta <= base::Days(7)) {
+    return TimeBucket::kOneWeek;
+  } else if (delta <= base::Days(14)) {
+    return TimeBucket::kTwoWeeks;
+  }
+  return TimeBucket::kOverTwoWeeks;
+}
+
+std::optional<user_manager::UserType> GetUserType(const AccountId& account_id) {
   if (const auto* ctrlr = Shell::Get()->session_controller()) {
     if (const auto* session = ctrlr->GetUserSessionByAccountId(account_id)) {
       return session->user_info.type;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool IsPrimaryAccountActive() {
@@ -208,18 +221,12 @@ bool IsPrimaryAccountId(const AccountId& account_id) {
 
 std::string ToString(TutorialId tutorial_id) {
   switch (tutorial_id) {
-    case TutorialId::kCaptureModeTourPrototype1:
-      return "AshCaptureModeTourPrototype1";
-    case TutorialId::kCaptureModeTourPrototype2:
-      return "AshCaptureModeTourPrototype2";
-    case TutorialId::kHoldingSpaceTourPrototype1:
-      return "AshHoldingSpaceTourPrototype1";
-    case TutorialId::kHoldingSpaceTourPrototype2:
-      return "AshHoldingSpaceTourPrototype2";
-    case TutorialId::kTest:
-      return "AshTest";
-    case TutorialId::kWelcomeTourPrototype1:
-      return "AshWelcomeTourPrototype1";
+    case TutorialId::kTest1:
+      return "AshTest1";
+    case TutorialId::kTest2:
+      return "AshTest2";
+    case TutorialId::kWelcomeTour:
+      return "AshWelcomeTour";
   }
 }
 

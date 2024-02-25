@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
+
 #include <math.h>
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -22,10 +24,12 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/widget/widget.h"
 
@@ -90,21 +94,9 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
 
     // Keep trying until we get a successful capture.
     while (true) {
-      // First try sync. If that fails, try async.
-      gfx::Image result_image;
-      if (!ui::GrabViewSnapshot(native_view, bounds, &result_image)) {
-        const auto on_got_snapshot = [](base::RunLoop* run_loop,
-                                        gfx::Image* image,
-                                        gfx::Image got_image) {
-          *image = got_image;
-          run_loop->Quit();
-        };
-        base::RunLoop run_loop;
-        ui::GrabViewSnapshotAsync(
-            native_view, bounds,
-            base::BindOnce(on_got_snapshot, &run_loop, &result_image));
-        run_loop.Run();
-      }
+      base::test::TestFuture<gfx::Image> future;
+      ui::GrabViewSnapshot(native_view, bounds, future.GetCallback());
+      gfx::Image result_image = future.Take();
 
       if (result_image.Size().IsEmpty()) {
         LOG(INFO) << "Bitmap not correct size, trying to capture again";

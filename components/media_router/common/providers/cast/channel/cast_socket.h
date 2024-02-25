@@ -15,11 +15,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/media_router/common/providers/cast/channel/cast_auth_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_transport.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -27,6 +29,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/log/net_log_source.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
@@ -44,17 +47,6 @@ class Logger;
 class MojoDataPump;
 struct LastError;
 
-// Cast device capabilities.
-enum CastDeviceCapability : int {
-  NONE = 0,
-  VIDEO_OUT = 1 << 0,
-  VIDEO_IN = 1 << 1,
-  AUDIO_OUT = 1 << 2,
-  AUDIO_IN = 1 << 3,
-  DEV_MODE = 1 << 4,
-  MULTIZONE_GROUP = 1 << 5
-};
-
 // Public interface of the CastSocket class.
 class CastSocket {
  public:
@@ -63,9 +55,9 @@ class CastSocket {
   // valid in callback function. Do not pass |socket| around.
   using OnOpenCallback = base::OnceCallback<void(CastSocket* socket)>;
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
+    ~Observer() override;
 
     // Invoked when an error occurs on |socket|.
     virtual void OnError(const CastSocket& socket,
@@ -75,7 +67,7 @@ class CastSocket {
     virtual void OnMessage(const CastSocket& socket,
                            const CastMessage& message) = 0;
 
-    virtual void OnReadyStateChanged(const CastSocket& socket);
+    virtual void OnReadyStateChanged(const CastSocket& socket) = 0;
   };
 
   virtual ~CastSocket() {}
@@ -167,10 +159,8 @@ struct CastSocketOpenParams {
   // for |liveness_timeout|.
   base::TimeDelta ping_interval;
 
-  // A bit vector representing the capabilities of the sink. The values are
-  // defined in
-  // components/media_router/common/providers/cast/channel/cast_socket.h.
-  uint64_t device_capabilities;
+  // An EnumSet representing the capabilities of the sink.
+  CastDeviceCapabilitySet device_capabilities;
 
   CastSocketOpenParams(const net::IPEndPoint& ip_endpoint,
                        base::TimeDelta connect_timeout);
@@ -178,7 +168,7 @@ struct CastSocketOpenParams {
                        base::TimeDelta connect_timeout,
                        base::TimeDelta liveness_timeout,
                        base::TimeDelta ping_interval,
-                       uint64_t device_capabilities);
+                       CastDeviceCapabilitySet device_capabilities);
 };
 
 // This class implements a channel between Chrome and a Cast device using a TCP
@@ -189,13 +179,11 @@ struct CastSocketOpenParams {
 // code.
 class CastSocketImpl : public CastSocket {
  public:
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
-  CastSocketImpl(NetworkContextGetter network_context_getter,
+  CastSocketImpl(network::NetworkContextGetter network_context_getter,
                  const CastSocketOpenParams& open_params,
                  const scoped_refptr<Logger>& logger);
 
-  CastSocketImpl(NetworkContextGetter network_context_getter,
+  CastSocketImpl(network::NetworkContextGetter network_context_getter,
                  const CastSocketOpenParams& open_params,
                  const scoped_refptr<Logger>& logger,
                  const AuthContext& auth_context);
@@ -326,14 +314,14 @@ class CastSocketImpl : public CastSocket {
 
   // Callback from network::mojom::NetworkContext::CreateTCPConnectedSocket.
   void OnConnect(int result,
-                 const absl::optional<net::IPEndPoint>& local_addr,
-                 const absl::optional<net::IPEndPoint>& peer_addr,
+                 const std::optional<net::IPEndPoint>& local_addr,
+                 const std::optional<net::IPEndPoint>& peer_addr,
                  mojo::ScopedDataPipeConsumerHandle receive_stream,
                  mojo::ScopedDataPipeProducerHandle send_stream);
   void OnUpgradeToTLS(int result,
                       mojo::ScopedDataPipeConsumerHandle receive_stream,
                       mojo::ScopedDataPipeProducerHandle send_stream,
-                      const absl::optional<net::SSLInfo>& ssl_info);
+                      const std::optional<net::SSLInfo>& ssl_info);
   /////////////////////////////////////////////////////////////////////////////
 
   // Resets the cancellable callback used for async invocations of
@@ -363,7 +351,7 @@ class CastSocketImpl : public CastSocket {
   // Shared logging object, used to log CastSocket events for diagnostics.
   scoped_refptr<Logger> logger_;
 
-  NetworkContextGetter network_context_getter_;
+  network::NetworkContextGetter network_context_getter_;
 
   // Owned remote to the underlying TCP socket.
   mojo::Remote<network::mojom::TCPConnectedSocket> tcp_socket_;
@@ -440,7 +428,7 @@ class CastSocketImpl : public CastSocket {
   raw_ptr<AuthTransportDelegate, AcrossTasksDanglingUntriaged> auth_delegate_;
 
   // List of socket observers.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<CastSocketImpl> weak_factory_{this};
 };

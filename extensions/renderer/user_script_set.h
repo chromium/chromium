@@ -82,9 +82,9 @@ class UserScriptSet {
 
   // Returns the contents of a script file.
   // Note that copying is cheap as this uses WebString.
-  blink::WebString GetJsSource(const UserScript::File& file,
+  blink::WebString GetJsSource(const UserScript::Content& file,
                                bool emulate_greasemonkey);
-  blink::WebString GetCssSource(const UserScript::File& file);
+  blink::WebString GetCssSource(const UserScript::Content& file);
 
  private:
   // Returns a new ScriptInjection for the given |script| to execute in the

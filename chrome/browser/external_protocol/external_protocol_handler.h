@@ -5,15 +5,14 @@
 #ifndef CHROME_BROWSER_EXTERNAL_PROTOCOL_EXTERNAL_PROTOCOL_HANDLER_H_
 #define CHROME_BROWSER_EXTERNAL_PROTOCOL_EXTERNAL_PROTOCOL_HANDLER_H_
 
+#include <optional>
 #include <string>
 
-#include "base/features.h"
 #include "build/build_config.h"
 #include "chrome/browser/shell_integration.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -27,8 +26,6 @@ class Origin;
 class GURL;
 class PrefRegistrySimple;
 class Profile;
-
-BASE_DECLARE_FEATURE(kPromptForExternalNewsSchemes);
 
 class ExternalProtocolHandler {
  public:
@@ -46,8 +43,8 @@ class ExternalProtocolHandler {
   enum class BlockStateMetric {
     kDeniedDefault,
     kAllowedDefaultMail,
-    kAllowedDefaultNews,
-    kNewsNotDefault,
+    kAllowedDefaultNews_Deprecated,  // No longer emitted.
+    kNewsNotDefault_Deprecated,      // No longer emitted.
     kAllowedByEnterprisePolicy,
     kAllowedByPreference,
     kPrompt,
@@ -79,7 +76,7 @@ class ExternalProtocolHandler {
         content::WebContents* web_contents,
         ui::PageTransition page_transition,
         bool has_user_gesture,
-        const absl::optional<url::Origin>& initiating_origin,
+        const std::optional<url::Origin>& initiating_origin,
         const std::u16string& program_name) = 0;
     virtual void LaunchUrlWithoutSecurityCheck(
         const GURL& url,
@@ -139,7 +136,7 @@ class ExternalProtocolHandler {
       ui::PageTransition page_transition,
       bool has_user_gesture,
       bool is_in_fenced_frame_tree,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       content::WeakDocumentPtr initiator_document
 #if BUILDFLAG(IS_ANDROID)
       ,
@@ -200,7 +197,7 @@ class ExternalProtocolHandler {
       ui::PageTransition page_transition,
       bool has_user_gesture,
       bool is_in_fenced_frame_tree,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       content::WeakDocumentPtr initiator_document,
       const std::u16string& program_name);
 #endif

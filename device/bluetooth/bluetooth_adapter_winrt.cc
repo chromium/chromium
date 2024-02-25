@@ -151,7 +151,7 @@ bool ToStdVector(VectorView* view, std::vector<T>* vector) {
   return true;
 }
 
-absl::optional<std::vector<uint8_t>> ExtractVector(IBuffer* buffer) {
+std::optional<std::vector<uint8_t>> ExtractVector(IBuffer* buffer) {
   ComPtr<IDataReaderStatics> data_reader_statics;
   HRESULT hr = base::win::GetActivationFactory<
       IDataReaderStatics, RuntimeClass_Windows_Storage_Streams_DataReader>(
@@ -160,7 +160,7 @@ absl::optional<std::vector<uint8_t>> ExtractVector(IBuffer* buffer) {
     BLUETOOTH_LOG(ERROR)
         << "Getting DataReaderStatics Activation Factory failed: "
         << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ComPtr<IDataReader> data_reader;
@@ -168,7 +168,7 @@ absl::optional<std::vector<uint8_t>> ExtractVector(IBuffer* buffer) {
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "FromBuffer() failed: "
                          << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint32_t buffer_length;
@@ -176,7 +176,7 @@ absl::optional<std::vector<uint8_t>> ExtractVector(IBuffer* buffer) {
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "get_Length() failed: "
                          << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint8_t> bytes(buffer_length);
@@ -184,27 +184,27 @@ absl::optional<std::vector<uint8_t>> ExtractVector(IBuffer* buffer) {
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "ReadBytes() failed: "
                          << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return bytes;
 }
 
-absl::optional<uint8_t> ExtractFlags(IBluetoothLEAdvertisement* advertisement) {
+std::optional<uint8_t> ExtractFlags(IBluetoothLEAdvertisement* advertisement) {
   if (!advertisement)
-    return absl::nullopt;
+    return std::nullopt;
 
   ComPtr<IReference<BluetoothLEAdvertisementFlags>> flags_ref;
   HRESULT hr = advertisement->get_Flags(&flags_ref);
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "get_Flags() failed: "
                          << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!flags_ref) {
     BLUETOOTH_LOG(DEBUG) << "No advertisement flags found.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   BluetoothLEAdvertisementFlags flags;
@@ -212,7 +212,7 @@ absl::optional<uint8_t> ExtractFlags(IBluetoothLEAdvertisement* advertisement) {
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "get_Value() failed: "
                          << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return flags;
@@ -280,7 +280,7 @@ void PopulateServiceData(
 
     // HexEncode the bytes and add dashes as required.
     std::string uuid_str;
-    for (char c : base::HexEncode(uuid_bytes.data(), uuid_bytes.size())) {
+    for (char c : base::HexEncode(uuid_bytes)) {
       const size_t size = uuid_str.size();
       if (size == 8 || size == 13 || size == 18 || size == 23)
         uuid_str.push_back('-');
@@ -379,10 +379,9 @@ BluetoothDevice::ManufacturerDataMap ExtractManufacturerData(
 // Similarly to extracting the service data Windows does not provide a specific
 // API to extract the tx power. Thus we also parse the raw data sections here.
 // If present, we expect a single entry for tx power with a blob of size 1 byte.
-absl::optional<int8_t> ExtractTxPower(
-    IBluetoothLEAdvertisement* advertisement) {
+std::optional<int8_t> ExtractTxPower(IBluetoothLEAdvertisement* advertisement) {
   if (!advertisement)
-    return absl::nullopt;
+    return std::nullopt;
 
   ComPtr<IVectorView<BluetoothLEAdvertisementDataSection*>> data_sections;
   HRESULT hr = advertisement->GetSectionsByType(
@@ -390,17 +389,17 @@ absl::optional<int8_t> ExtractTxPower(
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "GetSectionsByType() failed: "
                          << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<ComPtr<IBluetoothLEAdvertisementDataSection>> vector;
   if (!ToStdVector(data_sections.Get(), &vector) || vector.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (vector.size() != 1u) {
     BLUETOOTH_LOG(ERROR) << "Unexpected number of data sections: "
                          << vector.size();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ComPtr<IBuffer> buffer;
@@ -408,16 +407,16 @@ absl::optional<int8_t> ExtractTxPower(
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "get_Data() failed: "
                          << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto bytes = ExtractVector(buffer.Get());
   if (!bytes)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (bytes->size() != 1) {
     BLUETOOTH_LOG(ERROR) << "Unexpected number of bytes: " << bytes->size();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return bytes->front();
@@ -435,22 +434,22 @@ ComPtr<IBluetoothLEAdvertisement> GetAdvertisement(
   return advertisement;
 }
 
-absl::optional<std::string> ExtractDeviceName(
+std::optional<std::string> ExtractDeviceName(
     IBluetoothLEAdvertisement* advertisement) {
   if (!advertisement)
-    return absl::nullopt;
+    return std::nullopt;
 
   HSTRING local_name;
   HRESULT hr = advertisement->get_LocalName(&local_name);
   if (FAILED(hr)) {
     BLUETOOTH_LOG(ERROR) << "Getting Local Name failed: "
                          << logging::SystemErrorCodeToString(hr);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Return early otherwise ScopedHString will create an empty string.
   if (!local_name)
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::win::ScopedHString(local_name).GetAsUTF8();
 }
@@ -1323,9 +1322,9 @@ void BluetoothAdapterWinrt::OnAdvertisementReceived(
 
   // Extract the remaining advertisement data.
   ComPtr<IBluetoothLEAdvertisement> advertisement = GetAdvertisement(received);
-  absl::optional<std::string> device_name =
+  std::optional<std::string> device_name =
       ExtractDeviceName(advertisement.Get());
-  absl::optional<int8_t> tx_power = ExtractTxPower(advertisement.Get());
+  std::optional<int8_t> tx_power = ExtractTxPower(advertisement.Get());
   BluetoothDevice::UUIDList advertised_uuids =
       ExtractAdvertisedUUIDs(advertisement.Get());
   BluetoothDevice::ServiceDataMap service_data_map =

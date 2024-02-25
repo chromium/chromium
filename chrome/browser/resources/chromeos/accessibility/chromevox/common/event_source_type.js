@@ -5,6 +5,7 @@
 /**
  * @fileoverview Types available for tracking the current event source.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 /** @enum {string} */
 export const EventSourceType = {
@@ -13,3 +14,5 @@ export const EventSourceType = {
   STANDARD_KEYBOARD: 'standardKeyboard',
   TOUCH_GESTURE: 'touchGesture',
 };
+
+TestImportManager.exportForTesting(['EventSourceType', EventSourceType]);

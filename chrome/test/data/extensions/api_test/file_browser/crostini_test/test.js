@@ -51,7 +51,7 @@ chrome.test.runTests([
     let observeFirstForSession = false;
     chrome.fileManagerPrivate.getCrostiniSharedPaths(
         observeFirstForSession, 'termina',
-        chrome.test.callbackPass((entries, firstForSession) => {
+        chrome.test.callbackPass(({entries, firstForSession}) => {
           // 2 entries inserted in setup, and 1 successful entry added above.
           chrome.test.assertEq(urlPrefix + '/share_dir', entries[0].toURL());
           chrome.test.assertTrue(entries[0].isDirectory);
@@ -70,14 +70,14 @@ chrome.test.runTests([
     observeFirstForSession = true;
     chrome.fileManagerPrivate.getCrostiniSharedPaths(
         observeFirstForSession, 'termina',
-        chrome.test.callbackPass((entries, firstForSession) => {
+        chrome.test.callbackPass(({entries, firstForSession}) => {
           chrome.test.assertEq(3, entries.length);
           chrome.test.assertTrue(firstForSession);
         }));
     // Subsequent times, firstForSession is false.
     chrome.fileManagerPrivate.getCrostiniSharedPaths(
         observeFirstForSession, 'termina',
-        chrome.test.callbackPass((entries, firstForSession) => {
+        chrome.test.callbackPass(({entries, firstForSession}) => {
           chrome.test.assertEq(3, entries.length);
           chrome.test.assertFalse(firstForSession);
         }));

@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -66,11 +65,11 @@ class MODULES_EXPORT IDBDatabase final
  public:
   IDBDatabase(
       ExecutionContext*,
-      std::unique_ptr<WebIDBDatabase>,
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
           callbacks_receiver,
-      mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime);
-  ~IDBDatabase() override;
+      mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime,
+      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>
+          pending_database);
 
   void Trace(Visitor*) const override;
 
@@ -146,9 +145,6 @@ class MODULES_EXPORT IDBDatabase final
   void RevertObjectStoreMetadata(
       scoped_refptr<IDBObjectStoreMetadata> old_metadata);
 
-  // Will return nullptr if this database is stopped.
-  WebIDBDatabase* Backend() const { return backend_.get(); }
-
   static int64_t NextTransactionId();
 
   static const char kIndexDeletedErrorMessage[];
@@ -169,6 +165,92 @@ class MODULES_EXPORT IDBDatabase final
   static const char kTransactionReadOnlyErrorMessage[];
   static const char kDatabaseClosedErrorMessage[];
 
+  static const int64_t kMinimumIndexId = 30;
+
+  void RenameObjectStore(int64_t transaction_id,
+                         int64_t object_store_id,
+                         const String& new_name) {
+    database_remote_->RenameObjectStore(transaction_id, object_store_id,
+                                        new_name);
+  }
+  void CreateTransaction(mojo::PendingAssociatedReceiver<
+                             mojom::blink::IDBTransaction> transaction_receiver,
+                         int64_t transaction_id,
+                         const Vector<int64_t>& object_store_ids,
+                         mojom::blink::IDBTransactionMode mode,
+                         mojom::blink::IDBTransactionDurability durability) {
+    database_remote_->CreateTransaction(std::move(transaction_receiver),
+                                        transaction_id, object_store_ids, mode,
+                                        durability);
+  }
+  void VersionChangeIgnored() { database_remote_->VersionChangeIgnored(); }
+  void Get(
+      int64_t transaction_id,
+      int64_t object_store_id,
+      int64_t index_id,
+      const IDBKeyRange*,
+      bool key_only,
+      base::OnceCallback<void(mojom::blink::IDBDatabaseGetResultPtr)> result);
+  void GetAll(int64_t transaction_id,
+              int64_t object_store_id,
+              int64_t index_id,
+              const IDBKeyRange*,
+              int64_t max_count,
+              bool key_only,
+              IDBRequest*);
+  void SetIndexKeys(int64_t transaction_id,
+                    int64_t object_store_id,
+                    std::unique_ptr<IDBKey> primary_key,
+                    Vector<IDBIndexKeys>);
+  void SetIndexesReady(int64_t transaction_id,
+                       int64_t object_store_id,
+                       const Vector<int64_t>& index_ids);
+  void OpenCursor(int64_t object_store_id,
+                  int64_t index_id,
+                  const IDBKeyRange*,
+                  mojom::blink::IDBCursorDirection direction,
+                  bool key_only,
+                  mojom::blink::IDBTaskType,
+                  IDBRequest*);
+  void Count(int64_t transaction_id,
+             int64_t object_store_id,
+             int64_t index_id,
+             const IDBKeyRange*,
+             mojom::blink::IDBDatabase::CountCallback callback);
+  void Delete(int64_t transaction_id,
+              int64_t object_store_id,
+              const IDBKey* primary_key,
+              mojom::blink::IDBDatabase::DeleteRangeCallback callback);
+  void DeleteRange(int64_t transaction_id,
+                   int64_t object_store_id,
+                   const IDBKeyRange*,
+                   mojom::blink::IDBDatabase::DeleteRangeCallback callback);
+  void GetKeyGeneratorCurrentNumber(
+      int64_t transaction_id,
+      int64_t object_store_id,
+      mojom::blink::IDBDatabase::GetKeyGeneratorCurrentNumberCallback callback);
+  void Clear(int64_t transaction_id,
+             int64_t object_store_id,
+             mojom::blink::IDBDatabase::ClearCallback callback);
+  void CreateIndex(int64_t transaction_id,
+                   int64_t object_store_id,
+                   int64_t index_id,
+                   const String& name,
+                   const IDBKeyPath&,
+                   bool unique,
+                   bool multi_entry);
+  void DeleteIndex(int64_t transaction_id,
+                   int64_t object_store_id,
+                   int64_t index_id);
+  void RenameIndex(int64_t transaction_id,
+                   int64_t object_store_id,
+                   int64_t index_id,
+                   const String& new_name);
+  void Abort(int64_t transaction_id);
+  void DidBecomeInactive() { database_remote_->DidBecomeInactive(); }
+
+  bool IsConnectionOpen() const;
+
  protected:
   // EventTarget
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -181,7 +263,7 @@ class MODULES_EXPORT IDBDatabase final
   void CloseConnection();
 
   IDBDatabaseMetadata metadata_;
-  std::unique_ptr<WebIDBDatabase> backend_;
+  HeapMojoAssociatedRemote<mojom::blink::IDBDatabase> database_remote_;
   Member<IDBTransaction> version_change_transaction_;
   HeapHashMap<int64_t, Member<IDBTransaction>> transactions_;
   // No interface here, so no need to bind it.  This is only for

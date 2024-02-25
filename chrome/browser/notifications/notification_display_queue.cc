@@ -8,6 +8,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -59,8 +60,22 @@ void NotificationDisplayQueue::RemoveQueuedNotification(
 std::set<std::string> NotificationDisplayQueue::GetQueuedNotificationIds()
     const {
   std::set<std::string> notification_ids;
-  for (const QueuedNotification& queued : queued_notifications_)
+  for (const QueuedNotification& queued : queued_notifications_) {
     notification_ids.insert(queued.notification.id());
+  }
+
+  return notification_ids;
+}
+
+std::set<std::string>
+NotificationDisplayQueue::GetQueuedNotificationIdsForOrigin(
+    const GURL& origin) const {
+  std::set<std::string> notification_ids;
+  for (const QueuedNotification& queued : queued_notifications_) {
+    if (url::IsSameOriginWith(queued.notification.origin_url(), origin)) {
+      notification_ids.insert(queued.notification.id());
+    }
+  }
 
   return notification_ids;
 }

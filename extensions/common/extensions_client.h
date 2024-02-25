@@ -8,9 +8,9 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-forward.h"
@@ -66,7 +66,7 @@ class ExtensionsClient {
   bool IsAPISchemaGenerated(const std::string& name) const;
 
   // Gets the generated API schema named |name|.
-  base::StringPiece GetAPISchema(const std::string& name) const;
+  std::string_view GetAPISchema(const std::string& name) const;
 
   // Adds a new API provider.
   void AddAPIProvider(std::unique_ptr<ExtensionsAPIProvider> provider);
@@ -154,9 +154,9 @@ class ExtensionsClient {
       std::vector<network::mojom::CorsOriginPatternPtr>* origin_patterns) const;
 
   // Returns the extended error code used by the embedder when an extension
-  // blocks a request. Returns absl::nullopt if the embedder doesn't define such
+  // blocks a request. Returns std::nullopt if the embedder doesn't define such
   // an error code.
-  virtual absl::optional<int> GetExtensionExtendedErrorCode() const;
+  virtual std::optional<int> GetExtensionExtendedErrorCode() const;
 
  private:
   // Performs common initialization and calls Initialize() to allow subclasses

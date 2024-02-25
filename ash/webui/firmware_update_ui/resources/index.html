@@ -9,7 +9,8 @@ found in the LICENSE file. -->
   <title></title>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
-  <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+  <link rel="stylesheet" href="chrome://theme/typography.css">
   <style>
     body {
       background-color: var(--cros-bg-color);
@@ -27,7 +28,7 @@ found in the LICENSE file. -->
     }
   </style>
 </head>
-<body>
+<body class="jelly-enabled">
     <firmware-update-app></firmware-update-app>
 
     <script type="module" src="firmware_update_app.js"></script>

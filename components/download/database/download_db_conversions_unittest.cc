@@ -4,13 +4,14 @@
 
 #include "components/download/database/download_db_conversions.h"
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 

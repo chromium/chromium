@@ -4,8 +4,12 @@
 
 #include "content/browser/interest_group/storage_interest_group.h"
 
+#include <optional>
+
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
 namespace content {
@@ -19,6 +23,29 @@ std::ostream& operator<<(std::ostream& out,
   return out << "KAnonymityData[key=`" << kanon.key
              << "`, is_k_anonymous=" << kanon.is_k_anonymous
              << ", last_updated=`" << kanon.last_updated << "`]";
+}
+
+DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns() = default;
+DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
+    std::optional<base::Time> last_report_sent_time,
+    std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map)
+    : last_report_sent_time(last_report_sent_time),
+      debug_report_cooldown_map(std::move(debug_report_cooldown_map)) {}
+DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
+    DebugReportLockoutAndCooldowns&) = default;
+DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
+    DebugReportLockoutAndCooldowns&&) = default;
+DebugReportLockoutAndCooldowns::~DebugReportLockoutAndCooldowns() = default;
+
+std::optional<base::TimeDelta> ConvertDebugReportCooldownTypeToDuration(
+    DebugReportCooldownType type) {
+  switch (type) {
+    case DebugReportCooldownType::kShortCooldown:
+      return blink::features::kFledgeDebugReportShortCooldown.Get();
+    case DebugReportCooldownType::kRestrictedCooldown:
+      return blink::features::kFledgeDebugReportRestrictedCooldown.Get();
+  }
+  return std::nullopt;
 }
 
 }  // namespace content

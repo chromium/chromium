@@ -13,20 +13,20 @@
 @interface CWVAutofillProfile ()
 
 // Sets |value| for |type| in |_internalProfile|.
-- (void)setValue:(NSString*)value forType:(autofill::ServerFieldType)type;
+- (void)setValue:(NSString*)value forType:(autofill::FieldType)type;
 // Gets |value| for |type| from |_internalProfile|.
-- (NSString*)valueForType:(autofill::ServerFieldType)type;
+- (NSString*)valueForType:(autofill::FieldType)type;
 
 @end
 
 @implementation CWVAutofillProfile {
-  autofill::AutofillProfile _internalProfile;
+  std::unique_ptr<autofill::AutofillProfile> _internalProfile;
 }
 
 - (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile {
   self = [super init];
   if (self) {
-    _internalProfile = profile;
+    _internalProfile = std::make_unique<autofill::AutofillProfile>(profile);
   }
   return self;
 }
@@ -124,21 +124,21 @@
 #pragma mark - Internal Methods
 
 - (autofill::AutofillProfile*)internalProfile {
-  return &_internalProfile;
+  return _internalProfile.get();
 }
 
 #pragma mark - Private Methods
 
-- (void)setValue:(NSString*)value forType:(autofill::ServerFieldType)type {
+- (void)setValue:(NSString*)value forType:(autofill::FieldType)type {
   const std::string& locale =
       ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
-  _internalProfile.SetInfo(type, base::SysNSStringToUTF16(value), locale);
+  _internalProfile->SetInfo(type, base::SysNSStringToUTF16(value), locale);
 }
 
-- (NSString*)valueForType:(autofill::ServerFieldType)type {
+- (NSString*)valueForType:(autofill::FieldType)type {
   const std::string& locale =
       ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
-  return base::SysUTF16ToNSString(_internalProfile.GetInfo(type, locale));
+  return base::SysUTF16ToNSString(_internalProfile->GetInfo(type, locale));
 }
 
 @end

@@ -24,11 +24,6 @@ RENDERING_BENCHMARK_UMA = [
     'Graphics.Smoothness.Checkerboarding3.AllAnimations',
     'Graphics.Smoothness.Checkerboarding3.AllInteractions',
     'Graphics.Smoothness.Checkerboarding3.AllSequences',
-    'Graphics.Smoothness.Checkerboarding3.TouchScroll',
-    'Graphics.Smoothness.Checkerboarding3.WheelScroll',
-    'Graphics.Smoothness.Jank.AllAnimations',
-    'Graphics.Smoothness.Jank.AllInteractions',
-    'Graphics.Smoothness.Jank.AllSequences',
     'Graphics.Smoothness.Jank3.AllAnimations',
     'Graphics.Smoothness.Jank3.AllInteractions',
     'Graphics.Smoothness.Jank3.AllSequences',
@@ -38,7 +33,11 @@ RENDERING_BENCHMARK_UMA = [
     'Memory.GPU.PeakMemoryUsage2.Scroll',
     'Memory.GPU.PeakMemoryUsage2.PageLoad',
     'Event.ScrollJank.DelayedFramesPercentage.FixedWindow',
+    'Event.ScrollJank.DelayedFramesPercentage.PerScroll',
     'Event.ScrollJank.MissedVsyncsSum.FixedWindow',
+    'Event.ScrollJank.MissedVsyncsSum.PerScroll',
+    'Event.ScrollJank.MissedVsyncsPercentage.FixedWindow',
+    'Event.ScrollJank.MissedVsyncsPercentage.PerScroll',
 ]
 
 
@@ -110,9 +109,8 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     documentation_url='https://bit.ly/rendering-benchmarks',
     component='Internals>GPU>Metrics')
 class RenderingDesktop(_RenderingBenchmark):
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [story_module.expectations.ALL_DESKTOP]
   SUPPORTED_PLATFORM_TAGS = [core_platforms.DESKTOP]
   PLATFORM_NAME = platforms.DESKTOP
@@ -148,8 +146,13 @@ class RenderingDesktopNoTracing(RenderingDesktop):
     return 'rendering.desktop.notracing'
 
   def CreateStorySet(self, options):
+    os_name = None
+    # Archive Validation does not perform OS validation
+    if hasattr(options, 'os_name'):
+      os_name = options.os_name
     return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME,
-                                       disable_tracing=True)
+                                       disable_tracing=True,
+                                       os_name=os_name)
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     options = timeline_based_measurement.Options()
@@ -163,9 +166,8 @@ class RenderingDesktopNoTracing(RenderingDesktop):
     documentation_url='https://bit.ly/rendering-benchmarks',
     component='Internals>GPU>Metrics')
 class RenderingMobile(_RenderingBenchmark):
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [
       story_module.expectations.ALL_MOBILE,
       story_module.expectations.FUCHSIA_ASTRO,

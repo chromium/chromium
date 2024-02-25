@@ -103,6 +103,7 @@ bool OfflineItem::operator==(const OfflineItem& offline_item) const {
          is_off_the_record == offline_item.is_off_the_record &&
          otr_profile_id == offline_item.otr_profile_id &&
          attribution == offline_item.attribution &&
+         referrer_url == offline_item.referrer_url &&
          state == offline_item.state && fail_state == offline_item.fail_state &&
          pending_state == offline_item.pending_state &&
          is_resumable == offline_item.is_resumable &&

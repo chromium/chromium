@@ -17,6 +17,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 
@@ -45,6 +46,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
       public chromeos::ImmersiveFullscreenControllerDelegate,
       public aura::WindowObserver,
       public display::DisplayObserver {
+  METADATA_HEADER(HeaderView, views::View)
+
  public:
   // |target_widget| is the widget that the caption buttons act on.
   // |target_widget| is not necessarily the same as the widget the header is
@@ -58,8 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   HeaderView& operator=(const HeaderView&) = delete;
 
   ~HeaderView() override;
-
-  METADATA_HEADER(HeaderView);
 
   // Initialize the parts with side effects.
   void Init();
@@ -95,7 +96,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   void SetHeaderCornerRadius(int radius);
 
   // views::View:
-  void Layout() override;
+  void Layout(PassKey) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   bool IsDrawn() const override;
 
@@ -146,7 +147,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   void UpdateCaptionButtonsVisibility();
 
   // The widget that the caption buttons act on.
-  raw_ptr<views::Widget, ExperimentalAsh> target_widget_;
+  raw_ptr<views::Widget> target_widget_;
 
   // A callback to run when |in_immersive_mode_| changes.
   base::RepeatingClosure immersive_mode_changed_callback_;
@@ -154,15 +155,14 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   // Helper for painting the header.
   std::unique_ptr<chromeos::DefaultFrameHeader> frame_header_;
 
-  raw_ptr<views::ImageView, DanglingUntriaged | ExperimentalAsh> avatar_icon_ =
-      nullptr;
+  raw_ptr<views::ImageView, DanglingUntriaged> avatar_icon_ = nullptr;
 
   // View which draws the content of the frame.
-  raw_ptr<HeaderContentView, ExperimentalAsh> header_content_view_ = nullptr;
+  raw_ptr<HeaderContentView> header_content_view_ = nullptr;
 
   // View which contains the window caption buttons.
-  raw_ptr<chromeos::FrameCaptionButtonContainerView, ExperimentalAsh>
-      caption_button_container_ = nullptr;
+  raw_ptr<chromeos::FrameCaptionButtonContainerView> caption_button_container_ =
+      nullptr;
 
   // The fraction of the header's height which is visible while in fullscreen.
   // This value is meaningless when not in fullscreen.

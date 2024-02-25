@@ -1,0 +1,16 @@
+Document PositionInSet=0 SizeOfSet=0
+++Group LocalizedControlType='details' PositionInSet=0 SizeOfSet=0
+++++Button Name='the summary' PositionInSet=0 SizeOfSet=0 ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++Text Name='the summary' PositionInSet=0 SizeOfSet=0
+++Group PositionInSet=0 SizeOfSet=0
+++++Group LocalizedControlType='details' PositionInSet=0 SizeOfSet=0
+++++++Button Name='materials' PositionInSet=1 SizeOfSet=3 ExpandCollapse.ExpandCollapseState='Expanded'
+++++++++Text Name='materials' PositionInSet=0 SizeOfSet=0
+++++++Group IsControlElement=false PositionInSet=0 SizeOfSet=0
+++++++++Text Name='Info about what it's made of.' PositionInSet=0 SizeOfSet=0
+++++Group LocalizedControlType='details' PositionInSet=0 SizeOfSet=0
+++++++Button Name='dimensions' PositionInSet=2 SizeOfSet=3 ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++++Text Name='dimensions' PositionInSet=0 SizeOfSet=0
+++++Group LocalizedControlType='details' PositionInSet=0 SizeOfSet=0
+++++++Button Name='origin' PositionInSet=3 SizeOfSet=3 ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++++Text Name='origin' PositionInSet=0 SizeOfSet=0

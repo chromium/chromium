@@ -4,8 +4,11 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
 
+#include <array>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -13,6 +16,14 @@
 #include "url/url_util.h"
 
 namespace {
+
+const size_t kCategoryBlockListCount = 18;
+constexpr std::array<std::string_view, kCategoryBlockListCount>
+    kCategoryBlockList{"/g/11b76fyj2r", "/m/09lkz",  "/m/012mj",  "/m/01rbb",
+                       "/m/02px0wr",    "/m/028hh",  "/m/034qg",  "/m/034dj",
+                       "/m/0jxxt",      "/m/015fwp", "/m/04shl0", "/m/01h6rj",
+                       "/m/05qt0",      "/m/06gqm",  "/m/09l0j_", "/m/01pxgq",
+                       "/m/0chbx",      "/m/02c66t"};
 
 int GetMinVisitsToShow(int min_required_visits) {
   static int min_visits = base::GetFieldTrialParamByFeatureAsInt(
@@ -30,6 +41,8 @@ history::ClusterVisit GenerateSampleVisit(
     const std::string& page_title,
     const GURL& url,
     bool has_url_keyed_image,
+    const std::vector<history::VisitContentModelAnnotations::Category>&
+        categories = {},
     const base::Time visit_time = base::Time::Now()) {
   history::URLRow url_row = history::URLRow(url);
   url_row.set_title(base::UTF8ToUTF16(page_title));
@@ -39,6 +52,11 @@ history::ClusterVisit GenerateSampleVisit(
   visit_row.is_known_to_sync = true;
   auto content_annotations = history::VisitContentAnnotations();
   content_annotations.has_url_keyed_image = has_url_keyed_image;
+  if (!categories.empty()) {
+    auto model_annotations = history::VisitContentModelAnnotations();
+    model_annotations.categories = categories;
+    content_annotations.model_annotations = std::move(model_annotations);
+  }
   history::AnnotatedVisit annotated_visit;
   annotated_visit.url_row = std::move(url_row);
   annotated_visit.visit_row = std::move(visit_row);
@@ -48,7 +66,6 @@ history::ClusterVisit GenerateSampleVisit(
   sample_visit.url_for_display =
       history_clusters::ComputeURLForDisplay(url, false);
   sample_visit.annotated_visit = std::move(annotated_visit);
-
   return sample_visit;
 }
 
@@ -100,9 +117,10 @@ history_clusters::QueryClustersFilterParams CreateFilterParamsFromFeatureFlags(
   filter_params.min_visits = GetMinVisitsToShow(min_required_visits);
   filter_params.min_visits_with_images = GetMinImagesToShow();
   filter_params.categories_allowlist = GetCategories(
-      ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam);
+      ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam, {});
   filter_params.categories_blocklist = GetCategories(
-      ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam);
+      ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam,
+      {kCategoryBlockList.begin(), kCategoryBlockListCount});
   filter_params.is_search_initiated = true;
   filter_params.has_related_searches = min_required_related_searches > 0;
   filter_params.is_shown_on_prominent_ui_surfaces = true;
@@ -116,11 +134,14 @@ history_clusters::QueryClustersFilterParams CreateFilterParamsFromFeatureFlags(
   return filter_params;
 }
 
-base::flat_set<std::string> GetCategories(const char* feature_param) {
+base::flat_set<std::string> GetCategories(
+    const char* feature_param,
+    base::span<const std::string_view> default_categories) {
   std::string categories_string = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpHistoryClustersModuleCategories, feature_param);
   if (categories_string.empty()) {
-    return {};
+    return base::flat_set<std::string>(default_categories.begin(),
+                                       default_categories.end());
   }
 
   auto categories = base::SplitString(categories_string, ",",
@@ -168,26 +189,26 @@ history::Cluster GenerateSampleCluster(int64_t cluster_id,
            GURL("https://store.google.com/product/nest_doorbell?hl=en-US"),
            current_time - base::Hours(8)}};
 
+  const std::vector<history::VisitContentModelAnnotations::Category>
+      visit_categories = {{"Technology", 98}};
   std::vector<history::ClusterVisit> sample_visits;
   for (int i = 0; i < num_visits; i++) {
     const std::tuple<std::string, GURL, base::Time> kSampleData =
         kSampleUrlVisitData.at(i % kSampleUrlVisitData.size());
     sample_visits.push_back(GenerateSampleVisit(
         i, std::get<0>(kSampleData), std::get<1>(kSampleData), (i < num_images),
-        std::get<2>(kSampleData)));
+        visit_categories, std::get<2>(kSampleData)));
   }
 
   std::string kSampleSearchQuery = "google store products";
   url::RawCanonOutputT<char> encoded_query;
-  url::EncodeURIComponent(kSampleSearchQuery.c_str(),
-                          kSampleSearchQuery.length(), &encoded_query);
+  url::EncodeURIComponent(kSampleSearchQuery, &encoded_query);
   sample_visits.insert(
       sample_visits.begin(),
-      GenerateSampleVisit(
-          0, kSampleSearchQuery + " - Google Search",
-          GURL("https://www.google.com/search?q=" +
-               std::string(encoded_query.data(), encoded_query.length())),
-          false));
+      GenerateSampleVisit(0, kSampleSearchQuery + " - Google Search",
+                          GURL("https://www.google.com/search?q=" +
+                               std::string(encoded_query.view())),
+                          false, visit_categories));
 
   return history::Cluster(
       cluster_id, sample_visits, {},

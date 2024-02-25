@@ -16,9 +16,9 @@ using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 // The bubble view that shows for VC panel when all running media apps are Linux
 // apps. In this case we just display a smaller bubble that contains no effects.
 class LinuxAppsBubbleView : public TrayBubbleView {
- public:
-  METADATA_HEADER(LinuxAppsBubbleView);
+  METADATA_HEADER(LinuxAppsBubbleView, TrayBubbleView)
 
+ public:
   LinuxAppsBubbleView(const InitParams& init_params, const MediaApps& apps);
 
   LinuxAppsBubbleView(const LinuxAppsBubbleView&) = delete;

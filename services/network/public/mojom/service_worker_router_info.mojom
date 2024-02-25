@@ -1,0 +1,29 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Type of sources.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ServiceWorkerRouterSourceType {
+  // Network is used as a source.
+  kNetwork = 0,
+  // Race network and fetch handler.
+  kRace = 1,
+  // Fetch Event is used as a source.
+  kFetchEvent = 2,
+  // Cache is used as a source.
+  kCache = 3,
+};
+
+// Represents information about ServiceWorker Static Routing API, especially,
+// details of the matched static router rule.
+struct ServiceWorkerRouterInfo {
+  // ID of the rule matchhed. Zero (invalid) by default.
+  uint32 rule_id_matched = 0;
+
+  // The router source of the matched rule.
+  ServiceWorkerRouterSourceType matched_source_type;
+};

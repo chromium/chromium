@@ -15,8 +15,9 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/native_library.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/win_util.h"
@@ -115,8 +116,8 @@ void SetAppDetailsForWindow(const std::wstring& app_id,
     // index notation when file path has commas.
     base::win::SetStringValueForPropertyStore(
         pps.Get(), PKEY_AppUserModel_RelaunchIconResource,
-        base::StringPrintf(L"%ls,%d", app_icon_path.value().c_str(),
-                           app_icon_index)
+        base::StrCat({app_icon_path.value(), L",",
+                      base::NumberToWString(app_icon_index)})
             .c_str());
   }
   if (!relaunch_command.empty()) {

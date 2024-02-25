@@ -9,16 +9,15 @@
 #include "ash/system/tray/tray_bubble_base.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget_observer.h"
-#include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
 
 class TrayBackgroundView;
 class TrayBubbleView;
+class TrayEventFilter;
 
-// Creates and manages the Widget and EventFilter components of a bubble.
-class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
-                                     public ::wm::ActivationChangeObserver {
+// Creates and manages the Widget components of a bubble.
+class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase {
  public:
   // `event_handling` When set to false disables the tray's event filtering
   // and also ignores the activation events. Eche window is an example of a use
@@ -43,21 +42,18 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
   // views::WidgetObserver overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // ::wm::ActivationChangeObserver overrides:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
-
   TrayBackgroundView* tray() { return tray_; }
   TrayBubbleView* bubble_view() { return bubble_view_; }
   views::Widget* bubble_widget() { return bubble_widget_; }
 
  private:
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_;
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  raw_ptr<TrayBackgroundView> tray_;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
   // Owned by `bubble_widget_`
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<TrayBubbleView> bubble_view_ = nullptr;
+
+  std::unique_ptr<TrayEventFilter> tray_event_filter_;
 
   // When set to false disables the tray's event filtering
   // and also ignores the activation events. Eche window is an example of a use

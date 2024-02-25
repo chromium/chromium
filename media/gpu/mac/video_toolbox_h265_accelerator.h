@@ -13,10 +13,12 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/h265_decoder.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -28,6 +30,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
  public:
   using DecodeCB = base::RepeatingCallback<void(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
+      VideoToolboxDecompressionSessionMetadata,
       scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
@@ -69,8 +72,25 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   bool OutputPicture(scoped_refptr<H265Picture> pic) override;
   void Reset() override;
   bool IsChromaSamplingSupported(VideoChromaSampling format) override;
+  bool IsAlphaLayerSupported() override;
 
  private:
+  bool ExtractParameterSetData(
+      const char* parameter_set_name,
+      const base::flat_set<int>& parameter_set_ids,
+      const base::flat_map<int, std::vector<uint8_t>>& seen_parameter_set_data,
+      base::flat_map<int, std::vector<uint8_t>>* active_parameter_set_data_out,
+      std::vector<const uint8_t*>* parameter_set_data_out,
+      std::vector<size_t>* parameter_set_size_out);
+  bool CreateFormat(scoped_refptr<H265Picture> pic);
+  bool ExtractChangedParameterSetData(
+      const char* parameter_set_name,
+      const base::flat_set<int>& parameter_set_ids,
+      const base::flat_map<int, std::vector<uint8_t>>& seen_parameter_set_data,
+      base::flat_map<int, std::vector<uint8_t>>* active_parameter_set_data_out,
+      std::vector<base::span<const uint8_t>>* parameter_set_data_out);
+  void ResetFrameData();
+
   std::unique_ptr<MediaLog> media_log_;
 
   // Callbacks are called synchronously, which is always re-entrant.
@@ -82,16 +102,27 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   base::flat_map<int, std::vector<uint8_t>> seen_sps_data_;  // IDs can be 0-15
   base::flat_map<int, std::vector<uint8_t>> seen_pps_data_;  // IDs can be 0-63
 
-  // Raw parameter set bytes used to produce |active_format_|, so that they
-  // can be checked for changes.
-  std::vector<uint8_t> active_vps_data_;
-  std::vector<uint8_t> active_sps_data_;
-  std::vector<uint8_t> active_pps_data_;
+  // Cached parameter values.
+  base::flat_set<int> alpha_vps_ids_;
+
+  // Raw parameter set bytes that have been sent to the decoder, to compare for
+  // changes.
+  base::flat_map<int, std::vector<uint8_t>> active_vps_data_;
+  base::flat_map<int, std::vector<uint8_t>> active_sps_data_;
+  base::flat_map<int, std::vector<uint8_t>> active_pps_data_;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
+  VideoToolboxDecompressionSessionMetadata active_session_metadata_;
 
-  // Accumulated slice data for the current frame.
-  std::vector<base::span<const uint8_t>> slice_nalu_data_;
+  // Accumulated data for the current frame.
+  base::flat_set<int> frame_vps_ids_;  // Note: there should be exactly one VPS.
+  base::flat_set<int> frame_sps_ids_;
+  base::flat_set<int> frame_pps_ids_;
+  std::vector<base::span<const uint8_t>> frame_slice_data_;
+  bool frame_is_keyframe_ = false;
+  bool frame_is_hbd_ = false;
+  bool frame_has_alpha_ = false;
+  bool drop_frame_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

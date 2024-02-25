@@ -44,7 +44,7 @@ class BrowserListRouterHelper : public BrowserListObserver,
 
   const raw_ptr<Profile> profile_;
 
-  std::set<Browser*> attached_browsers_;
+  std::set<raw_ptr<Browser, SetExperimental>> attached_browsers_;
 };
 
 }  // namespace sync_sessions

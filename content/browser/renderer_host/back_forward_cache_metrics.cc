@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sparse_histogram.h"
+#include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -66,7 +67,9 @@ void BackForwardCacheMetrics::OverrideTimeForTesting(base::TickClock* clock) {
 // static
 bool BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
     NavigationRequest* navigation) {
-  return navigation->IsInPrimaryMainFrame() && !navigation->IsSameDocument() &&
+  return navigation->IsInPrimaryMainFrame() &&
+         !navigation->frame_tree_node()->GetParentOrOuterDocumentOrEmbedder() &&
+         !navigation->IsSameDocument() &&
          navigation->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK;
 }
 
@@ -226,10 +229,10 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   page_store_result_ =
       std::make_unique<BackForwardCacheCanStoreDocumentResult>();
   page_store_tree_result_ = nullptr;
-  navigated_away_from_main_document_timestamp_ = absl::nullopt;
-  started_navigation_timestamp_ = absl::nullopt;
-  renderer_killed_timestamp_ = absl::nullopt;
-  browsing_instance_swap_result_ = absl::nullopt;
+  navigated_away_from_main_document_timestamp_ = std::nullopt;
+  started_navigation_timestamp_ = std::nullopt;
+  renderer_killed_timestamp_ = std::nullopt;
+  browsing_instance_swap_result_ = std::nullopt;
 }
 
 namespace {
@@ -319,6 +322,9 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
 
   builder.Record(ukm::UkmRecorder::Get());
 
+  bool is_disabled_for_extension_messaging = false;
+  std::string blocking_extension_id;
+
   for (const auto& [reason, associated_source_ids] :
        page_store_result_->disabled_reasons()) {
     uint64_t reason_value = MetricValue(reason);
@@ -326,12 +332,37 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
     // the navigation.
     RecordDisabledForRenderFrameHostReasonUKM(source_id, reason_value);
 
+    if (!is_disabled_for_extension_messaging &&
+        reason.id == static_cast<BackForwardCache::DisabledReasonType>(
+                         back_forward_cache::DisabledReasonId::
+                             kExtensionSentMessageToCachedFrame)) {
+      // Only the first extension (ideally, there should be only one)
+      // that triggers `kExtensionSentMessageToCachedFrame` will be recorded in
+      // the message.
+      is_disabled_for_extension_messaging = true;
+      blocking_extension_id = reason.context;
+    }
+
     for (const auto& associated_source_id : associated_source_ids) {
       if (associated_source_id.has_value()) {
         RecordDisabledForRenderFrameHostReasonUKM(associated_source_id.value(),
                                                   reason_value);
       }
     }
+  }
+
+  if (is_disabled_for_extension_messaging) {
+    navigation->GetRenderFrameHost()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf(
+            "This page was not restored from back/forward cache because a "
+            "content script from the extension with ID %s received a message "
+            "while the page was cached. This behavior will change shortly "
+            "which may break the extension. If you are the developer of the "
+            "extension, see "
+            "https://developer.chrome.com/blog/"
+            "bfcache-extension-messaging-changes.",
+            blocking_extension_id.c_str()));
   }
 
   for (const uint64_t reason :
@@ -595,7 +626,7 @@ uint64_t BackForwardCacheMetrics::MetricValue(
 }
 
 void BackForwardCacheMetrics::SetBrowsingInstanceSwapResult(
-    absl::optional<ShouldSwapBrowsingInstance> reason,
+    std::optional<ShouldSwapBrowsingInstance> reason,
     RenderFrameHostImpl* navigated_away_rfh) {
   browsing_instance_swap_result_ = reason;
   if (navigated_away_rfh) {

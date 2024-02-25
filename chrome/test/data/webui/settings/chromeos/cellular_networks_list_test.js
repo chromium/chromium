@@ -120,49 +120,87 @@ suite('CellularNetworksList', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  test('Tether, cellular and eSIM profiles', async () => {
-    eSimManagerRemote.addEuiccForTest(2);
-    init();
-    browserProxy.setInstantTetheringStateForTest(
-        MultiDeviceFeatureState.ENABLED_BY_USER);
+  [{
+    'shouldEnableSmdsSupport': false,
+    'isInstantHotspotRebrandEnabled': false,
+  },
+   {
+     'shouldEnableSmdsSupport': true,
+     'isInstantHotspotRebrandEnabled': false,
+   },
+   {
+     'shouldEnableSmdsSupport': false,
+     'isInstantHotspotRebrandEnabled': true,
+   },
+   {
+     'shouldEnableSmdsSupport': true,
+     'isInstantHotspotRebrandEnabled': true,
+   },
+  ].forEach(({shouldEnableSmdsSupport, isInstantHotspotRebrandEnabled}) => {
+    test(
+        `Tether, cellular and eSIM profiles with smds support enabled: ${
+            shouldEnableSmdsSupport}, instant hotspot rebrand enabled: ${
+            isInstantHotspotRebrandEnabled}`,
+        async () => {
+          eSimManagerRemote.addEuiccForTest(2);
+          loadTimeData.overrideValues({isInstantHotspotRebrandEnabled});
 
-    const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, 'cellular_esim1');
-    eSimNetwork1.typeProperties.cellular.eid =
-        '11111111111111111111111111111111';
-    const eSimNetwork2 = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, 'cellular_esim2');
-    eSimNetwork2.typeProperties.cellular.eid =
-        '22222222222222222222222222222222';
-    setManagedPropertiesForTest(NetworkType.kCellular, [
-      OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1'),
-      OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular2'),
-      eSimNetwork1,
-      eSimNetwork2,
-      OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
-      OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether2'),
-    ]);
-    addPSimSlot();
-    addESimSlot();
+          await init();
+          browserProxy.setInstantTetheringStateForTest(
+              MultiDeviceFeatureState.ENABLED_BY_USER);
+          setIsSmdsSupportEnabled(shouldEnableSmdsSupport);
 
-    await flushAsync();
+          const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
+              NetworkType.kCellular, 'cellular_esim1');
+          eSimNetwork1.typeProperties.cellular.eid =
+              '11111111111111111111111111111111';
+          const eSimNetwork2 = OncMojo.getDefaultManagedProperties(
+              NetworkType.kCellular, 'cellular_esim2');
+          eSimNetwork2.typeProperties.cellular.eid =
+              '22222222222222222222222222222222';
+          setManagedPropertiesForTest(NetworkType.kCellular, [
+            OncMojo.getDefaultManagedProperties(
+                NetworkType.kCellular, 'cellular1'),
+            OncMojo.getDefaultManagedProperties(
+                NetworkType.kCellular, 'cellular2'),
+            eSimNetwork1,
+            eSimNetwork2,
+            OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
+            OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether2'),
+          ]);
+          addPSimSlot();
+          addESimSlot();
 
-    const eSimNetworkList =
-        cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
-    assertTrue(!!eSimNetworkList);
+          await flushAsync();
 
-    const pSimNetworkList =
-        cellularNetworkList.shadowRoot.querySelector('#psimNetworkList');
-    assertTrue(!!pSimNetworkList);
+          const eSimNetworkList =
+              cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
+          assertTrue(!!eSimNetworkList);
 
-    const tetherNetworkList =
-        cellularNetworkList.shadowRoot.querySelector('#tetherNetworkList');
-    assertTrue(!!tetherNetworkList);
+          const pSimNetworkList =
+              cellularNetworkList.shadowRoot.querySelector('#psimNetworkList');
+          assertTrue(!!pSimNetworkList);
 
-    assertEquals(2, eSimNetworkList.networks.length);
-    assertEquals(2, pSimNetworkList.networks.length);
-    assertEquals(2, tetherNetworkList.networks.length);
-    assertEquals(2, eSimNetworkList.customItems.length);
+          const tetherNetworkList =
+              cellularNetworkList.shadowRoot.querySelector(
+                  '#tetherNetworkList');
+
+          assertEquals(2, eSimNetworkList.networks.length);
+          assertEquals(2, pSimNetworkList.networks.length);
+
+          if (shouldEnableSmdsSupport) {
+            assertEquals(0, eSimNetworkList.customItems.length);
+          } else {
+            assertEquals(2, eSimNetworkList.customItems.length);
+          }
+
+          if (!isInstantHotspotRebrandEnabled) {
+            assertTrue(!!tetherNetworkList);
+            assertEquals(2, tetherNetworkList.networks.length);
+          } else {
+            assertFalse(!!tetherNetworkList);
+          }
+        });
   });
 
   test(
@@ -172,15 +210,15 @@ suite('CellularNetworksList', function() {
         init();
         addESimSlot();
         await flushAsync();
-        const esimNoNetworkAnchor =
-            cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
-                .querySelector('localized-link')
+        const noEsimNetworksMessageWithLinkAnchor =
+            cellularNetworkList.shadowRoot
+                .querySelector('#noEsimNetworksMessageWithLink')
                 .shadowRoot.querySelector('a');
-        assertTrue(!!esimNoNetworkAnchor);
+        assertTrue(!!noEsimNetworksMessageWithLinkAnchor);
 
         const showEsimCellularSetupPromise =
             eventToPromise('show-cellular-setup', cellularNetworkList);
-        esimNoNetworkAnchor.click();
+        noEsimNetworksMessageWithLinkAnchor.click();
         const eSimCellularEvent = await showEsimCellularSetupPromise;
         assertEquals(
             eSimCellularEvent.detail.pageName,
@@ -219,45 +257,58 @@ suite('CellularNetworksList', function() {
       eSimNetworkList =
           cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
       assertNull(eSimNetworkList);
-      const esimNoNetworkAnchor =
-          cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
-              .querySelector('localized-link')
+      const noEsimNetworksMessageWithLinkAnchor =
+          cellularNetworkList.shadowRoot
+              .querySelector('#noEsimNetworksMessageWithLink')
               .shadowRoot.querySelector('a');
-      assertTrue(!!esimNoNetworkAnchor);
+      assertTrue(!!noEsimNetworksMessageWithLinkAnchor);
     });
   });
 
-  test(
-      'Hide esim section when no EUICC is found or no eSIM slots', async () => {
-        init();
-        setManagedPropertiesForTest(NetworkType.kCellular, [
-          OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
-        ]);
-        flush();
-        await flushAsync();
-        // The list should be hidden with no EUICC or eSIM slots.
-        assertFalse(
-            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
+  [true, false].forEach(shouldEnableSmdsSupport => {
+    test(
+        'Hide eSIM section when no EUICC is found or no eSIM slots',
+        async () => {
+          init();
+          setIsSmdsSupportEnabled(shouldEnableSmdsSupport);
 
-        // Add an eSIM slot.
-        await addESimSlot();
-        // The list should still be hidden.
-        assertFalse(
-            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
+          const eSimNetwork = OncMojo.getDefaultManagedProperties(
+              NetworkType.kCellular, 'cellular_esim');
+          eSimNetwork.typeProperties.cellular.eid =
+              '11111111111111111111111111111111';
+          eSimNetwork.typeProperties.cellular.iccid =
+              '11111111111111111111111111111111';
+          setManagedPropertiesForTest(NetworkType.kCellular, [
+            eSimNetwork,
+            OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
+          ]);
+          flush();
+          await flushAsync();
 
-        // Add an EUICC.
-        eSimManagerRemote.addEuiccForTest(1);
-        await flushAsync();
-        // The list should now be showing
-        assertTrue(
-            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
+          // The list should be hidden with no EUICC or eSIM slots.
+          assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+              '#esimNetworkList'));
 
-        // Remove the eSIM slot
-        clearSimSlots();
-        // The list should be hidden again.
-        assertFalse(
-            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
-      });
+          // Add an eSIM slot.
+          await addESimSlot();
+          // The list should still be hidden.
+          assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+              '#esimNetworkList'));
+
+          // Add an EUICC.
+          eSimManagerRemote.addEuiccForTest(1);
+          await flushAsync();
+          // The list should now be showing
+          assertTrue(!!cellularNetworkList.shadowRoot.querySelector(
+              '#esimNetworkList'));
+
+          // Remove the eSIM slot
+          clearSimSlots();
+          // The list should be hidden again.
+          assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+              '#esimNetworkList'));
+        });
+  });
 
   test('Hide pSIM section when no pSIM slots', async () => {
     init();
@@ -300,6 +351,11 @@ suite('CellularNetworksList', function() {
       });
 
   test('Hide instant tethering section when not enabled', async () => {
+    // Tether networks should not be shown in the cellular network list when the
+    // instant hotspot rebrand feature flag is enabled.
+    loadTimeData.overrideValues({
+      isInstantHotspotRebrandEnabled: false,
+    });
     init();
     assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
         '#tetherNetworksNotSetup'));
@@ -322,6 +378,9 @@ suite('CellularNetworksList', function() {
       async () => {
         eSimManagerRemote.addEuiccForTest(1);
         init();
+        // Pending profiles are never shown in the UI when SM-DS Support is
+        // enabled.
+        setIsSmdsSupportEnabled(false);
         addESimSlot();
         cellularNetworkList.globalPolicy = {
           allowOnlyPolicyCellularNetworks: false,
@@ -357,6 +416,9 @@ suite('CellularNetworksList', function() {
       async () => {
         eSimManagerRemote.addEuiccForTest(1);
         init();
+        // Pending profiles are never shown in the UI when SM-DS Support is
+        // enabled.
+        setIsSmdsSupportEnabled(false);
         addESimSlot();
         cellularNetworkList.isConnectedToNonCellularNetwork = false;
         await flushAsync();
@@ -385,8 +447,7 @@ suite('CellularNetworksList', function() {
       });
 
   test(
-      'Hide download eSIM link when installing / refreshing / restricted by policy',
-      async () => {
+      'No network eSIM', async () => {
         eSimManagerRemote.addEuiccForTest(0);
         init();
         cellularNetworkList.deviceState = {
@@ -399,36 +460,73 @@ suite('CellularNetworksList', function() {
         };
         addESimSlot();
         await flushAsync();
-        const esimLocalizedLink =
-            cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
-                .querySelector('localized-link');
-        const noESimFoundMessage =
-            cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
-                .querySelector('div');
-        assertTrue(!!esimLocalizedLink);
-        assertTrue(!!noESimFoundMessage);
-        assertTrue(esimLocalizedLink.hidden);
-        assertFalse(noESimFoundMessage.hidden);
+
+        const getAddEsimLink = () => {
+          return cellularNetworkList.shadowRoot.querySelector(
+              '#noEsimNetworksMessageWithLink');
+        };
+        const getNoEsimFoundMessage = () => {
+          return cellularNetworkList.shadowRoot.querySelector(
+              '#noEsimNetworksMessage');
+        };
+
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: true,
+        };
+        await flushAsync();
+
+        assertTrue(!!getAddEsimLink());
+        assertTrue(!!getNoEsimFoundMessage());
+        assertTrue(getAddEsimLink().hidden);
+        assertFalse(getNoEsimFoundMessage().hidden);
+
+        assertEquals(
+            getNoEsimFoundMessage().textContent.trim(),
+            cellularNetworkList.i18n('eSimNetworkNotSetup'));
 
         cellularNetworkList.globalPolicy = {
           allowOnlyPolicyCellularNetworks: false,
         };
         await flushAsync();
-        assertFalse(esimLocalizedLink.hidden);
-        assertTrue(noESimFoundMessage.hidden);
+
+        assertTrue(!!getAddEsimLink());
+        assertTrue(!!getNoEsimFoundMessage());
+        assertFalse(getAddEsimLink().hidden);
+        assertTrue(getNoEsimFoundMessage().hidden);
 
         for (const inhibitReason
-                 of [InhibitReason.kInstallingProfile,
-                     InhibitReason.kRefreshingProfileList]) {
-          cellularNetworkList.cellularDeviceState = {
-            type: NetworkType.kCellular,
-            deviceState: DeviceStateType.kEnabled,
-            inhibitReason: inhibitReason,
-          };
-          addESimSlot();
+                 of [InhibitReason.kNotInhibited,
+                     InhibitReason.kInstallingProfile,
+                     InhibitReason.kRenamingProfile,
+                     InhibitReason.kRemovingProfile,
+                     InhibitReason.kConnectingToProfile,
+                     InhibitReason.kRefreshingProfileList,
+                     InhibitReason.kResettingEuiccMemory,
+                     InhibitReason.kDisablingProfile,
+                     InhibitReason.kRequestingAvailableProfiles]) {
+          cellularNetworkList.set(
+              'cellularDeviceState.inhibitReason', inhibitReason);
           await flushAsync();
-          assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
-              '#eSimNoNetworkFound'));
+
+          const noEsimNetworksMessageWithLink = getAddEsimLink();
+          const noEsimFoundMessage = getNoEsimFoundMessage();
+
+          assertTrue(!!noEsimNetworksMessageWithLink);
+          assertTrue(!!noEsimFoundMessage);
+
+          if (inhibitReason === InhibitReason.kNotInhibited) {
+            assertFalse(noEsimNetworksMessageWithLink.hidden);
+            assertTrue(noEsimFoundMessage.hidden);
+          } else if (
+              inhibitReason === InhibitReason.kInstallingProfile ||
+              inhibitReason === InhibitReason.kRefreshingProfileList ||
+              inhibitReason === InhibitReason.kRequestingAvailableProfiles) {
+            assertTrue(noEsimNetworksMessageWithLink.hidden);
+            assertTrue(noEsimFoundMessage.hidden);
+          } else {
+            assertTrue(noEsimNetworksMessageWithLink.hidden);
+            assertFalse(noEsimFoundMessage.hidden);
+          }
         }
       });
 
@@ -438,6 +536,8 @@ suite('CellularNetworksList', function() {
     const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_esim1');
     eSimNetwork1.typeProperties.cellular.eid =
+        '11111111111111111111111111111111';
+    eSimNetwork1.typeProperties.cellular.iccid =
         '11111111111111111111111111111111';
     setManagedPropertiesForTest(NetworkType.kCellular, [
       OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1'),
@@ -520,10 +620,10 @@ suite('CellularNetworksList', function() {
 
     await flushAsync();
 
-    const esimLocalizedLink =
-        cellularNetworkList.shadowRoot.querySelector('#eSimNoNetworkFound')
-            .querySelector('localized-link');
-    assertFalse(esimLocalizedLink.linkDisabled);
+    const noEsimNetworksMessageWithLink =
+        cellularNetworkList.shadowRoot.querySelector(
+            '#noEsimNetworksMessageWithLink');
+    assertFalse(noEsimNetworksMessageWithLink.linkDisabled);
 
     cellularNetworkList.cellularDeviceState = {
       type: NetworkType.kCellular,
@@ -532,7 +632,7 @@ suite('CellularNetworksList', function() {
     };
     addESimSlot();
     await flushAsync();
-    assertTrue(esimLocalizedLink.linkDisabled);
+    assertTrue(noEsimNetworksMessageWithLink.linkDisabled);
   });
 
   test('Show inhibited subtext and spinner when inhibited', async () => {

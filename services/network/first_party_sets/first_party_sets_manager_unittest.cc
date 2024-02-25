@@ -5,6 +5,7 @@
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 
 #include <initializer_list>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -24,7 +25,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using ::testing::IsEmpty;
@@ -71,7 +71,7 @@ class FirstPartySetsManagerTest : public ::testing::Test,
   FirstPartySetsManager::EntriesResult FindEntriesAndWait(
       const base::flat_set<net::SchemefulSite>& site) {
     base::test::TestFuture<FirstPartySetsManager::EntriesResult> future;
-    absl::optional<FirstPartySetsManager::EntriesResult> result =
+    std::optional<FirstPartySetsManager::EntriesResult> result =
         manager_.FindEntries(site, net::FirstPartySetsContextConfig(),
                              future.GetCallback());
     return result.has_value() ? result.value() : future.Get();
@@ -101,7 +101,7 @@ TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
                               example_test, net::SiteType::kAssociated, 0)},
                    {example_test,
                     net::FirstPartySetEntry(
-                        example_test, net::SiteType::kPrimary, absl::nullopt)}},
+                        example_test, net::SiteType::kPrimary, std::nullopt)}},
                   {{example_cctld, example_test}});
 
   EXPECT_THAT(manager().FindEntries(
@@ -139,7 +139,7 @@ TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets) {
                               example_test, net::SiteType::kAssociated, 0)},
                    {example_test,
                     net::FirstPartySetEntry(
-                        example_test, net::SiteType::kPrimary, absl::nullopt)}},
+                        example_test, net::SiteType::kPrimary, std::nullopt)}},
                   {{example_cctld, example_test}});
 
   EXPECT_THAT(
@@ -151,10 +151,10 @@ TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets) {
       UnorderedElementsAre(
           Pair(example_test,
                net::FirstPartySetEntry(example_test, net::SiteType::kPrimary,
-                                       absl::nullopt)),
+                                       std::nullopt)),
           Pair(example_cctld,
                net::FirstPartySetEntry(example_test, net::SiteType::kPrimary,
-                                       absl::nullopt)),
+                                       std::nullopt)),
           Pair(aaaa, net::FirstPartySetEntry(example_test,
                                              net::SiteType::kAssociated, 0))));
   histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
@@ -172,7 +172,7 @@ TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets_Idempotent) {
   SetCompleteSets(
       {{aaaa, net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
        {example, net::FirstPartySetEntry(example, net::SiteType::kPrimary,
-                                         absl::nullopt)}},
+                                         std::nullopt)}},
       {});
   EXPECT_THAT(FindEntriesAndWait({
                   aaaa,
@@ -219,11 +219,11 @@ class AsyncPopulatedFirstPartySetsManagerTest
                                      0)},
             {example_test,
              net::FirstPartySetEntry(example_test, net::SiteType::kPrimary,
-                                     absl::nullopt)},
+                                     std::nullopt)},
             {net::SchemefulSite(GURL("https://associatedSite2.test")),
              net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)},
             {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                          absl::nullopt)},
+                                          std::nullopt)},
         },
         {{example_cctld, example_test}});
 
@@ -284,7 +284,7 @@ TEST_F(AsyncWaitingFirstPartySetsManagerTest, QueryBeforeReady_FindEntries) {
                net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)),
           Pair(example_cctld,
                net::FirstPartySetEntry(example, net::SiteType::kPrimary,
-                                       absl::nullopt)),
+                                       std::nullopt)),
           Pair(associatedSite2,
                net::FirstPartySetEntry(
                    net::SchemefulSite(GURL("https://foo.test")),
@@ -347,7 +347,7 @@ TEST_F(AsyncNonwaitingFirstPartySetsManagerTest, QueryBeforeReady_FindEntries) {
                net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)),
           Pair(example_cctld,
                net::FirstPartySetEntry(example, net::SiteType::kPrimary,
-                                       absl::nullopt)),
+                                       std::nullopt)),
           Pair(associatedSite2,
                net::FirstPartySetEntry(
                    net::SchemefulSite(GURL("https://foo.test")),

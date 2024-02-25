@@ -22,7 +22,7 @@ In the header it is declared thusly:
 ```
 class ASH_EXPORT MyViewClass : public views::View {
  public:
-  METADATA_HEADER(MyViewClass);
+  METADATA_HEADER(MyViewClass, views::View);
 
   // ... Public API goes here ...
 
@@ -39,7 +39,7 @@ Then in the .cc file:
 ```
 class MyViewClass::MyNestedView : public views::View {
  public:
-  METADATA_HEADER(MyNestedView);
+  METADATA_HEADER(MyNestedView, views::View);
 
  // ... Public API goes here …
 
@@ -53,7 +53,7 @@ parameter to define the outer class or scope:
 
 
 ```
-BEGIN_METADATA(MyViewClass, MyNestedView, views::View)
+BEGIN_METADATA(MyViewClass, MyNestedView)
 END_METADATA
 ```
 

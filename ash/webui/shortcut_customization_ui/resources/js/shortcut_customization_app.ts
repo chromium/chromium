@@ -4,7 +4,6 @@
 
 import './accelerator_edit_dialog.js';
 import './bottom_nav_content.js';
-import './shortcut_input.js';
 import './shortcuts_page.js';
 import '../strings.m.js';
 import './search/search_box.js';
@@ -13,15 +12,21 @@ import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {FindShortcutMixin} from 'chrome://resources/ash/common/cr_elements/find_shortcut_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorsUpdatedObserverInterface, AcceleratorsUpdatedObserverReceiver} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorsUpdatedObserverInterface, AcceleratorsUpdatedObserverReceiver, PolicyUpdatedObserverInterface, PolicyUpdatedObserverReceiver, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
 import {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
 import {RequestUpdateAcceleratorEvent} from './accelerator_edit_view.js';
@@ -29,9 +34,10 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
+import {SearchBoxElement} from './search/search_box.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
-import {getCategoryNameStringId, isCustomizationDisabled, isSearchEnabled} from './shortcut_utils.js';
+import {getAcceleratorId, getCategoryNameStringId, isCustomizationAllowed} from './shortcut_utils.js';
 
 const oldKeyboardSettingsLink = 'chrome://os-settings/keyboard-overlay';
 const newKeyboardSettingsLink = 'chrome://os-settings/per-device-keyboard';
@@ -47,6 +53,13 @@ declare global {
     'edit-dialog-closed': CustomEvent<void>;
     'request-update-accelerator': RequestUpdateAcceleratorEvent;
     'show-edit-dialog': ShowEditDialogEvent;
+    // Modifying the accelerator can trigger two dialog updates, one is by
+    // onAcceleratorsUpdated() the other is by onRequestUpdateAccelerators().
+    // This is used to prevent the onAcceleratorsUpdated() to update the
+    // dialog when accelerator update is in progress.
+    // TODO(longbowei): Revisit this and consider refactoring on how we manage
+    // updates within the app.
+    'accelerator-update-in-progress': CustomEvent<void>;
   }
 }
 
@@ -56,11 +69,13 @@ declare global {
  * customization app.
  */
 
-const ShortcutCustomizationAppElementBase = I18nMixin(PolymerElement);
+const ShortcutCustomizationAppElementBase =
+    I18nMixin(FindShortcutMixin(PolymerElement));
 
 export class ShortcutCustomizationAppElement extends
     ShortcutCustomizationAppElementBase implements
-        AcceleratorsUpdatedObserverInterface, RouteObserver {
+        AcceleratorsUpdatedObserverInterface, PolicyUpdatedObserverInterface,
+        RouteObserver {
   static get is(): string {
     return 'shortcut-customization-app';
   }
@@ -96,6 +111,11 @@ export class ShortcutCustomizationAppElement extends
         type: Boolean,
         value: false,
       },
+
+      isCustomizationAllowedByPolicy: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -106,10 +126,13 @@ export class ShortcutCustomizationAppElement extends
   protected dialogSource: AcceleratorSource;
   protected showEditDialog: boolean;
   protected keyboardSettingsLink: string;
+  protected isCustomizationAllowedByPolicy: boolean;
+  protected acceleratorUpdateInProgress: boolean = false;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private acceleratorlookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
   private acceleratorsUpdatedReceiver: AcceleratorsUpdatedObserverReceiver;
+  private policyUpdatedReceiver: PolicyUpdatedObserverReceiver;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -128,11 +151,22 @@ export class ShortcutCustomizationAppElement extends
       ColorChangeUpdater.forDocument().start();
     }
 
+    this.policyUpdatedReceiver = new PolicyUpdatedObserverReceiver(this);
+    this.shortcutProvider.addPolicyObserver(
+        this.policyUpdatedReceiver.$.bindNewPipeAndPassRemote());
+    this.shortcutProvider.isCustomizationAllowedByPolicy().then(
+        ({isCustomizationAllowedByPolicy}) => {
+          this.isCustomizationAllowedByPolicy = isCustomizationAllowedByPolicy;
+        });
+
     this.fetchAccelerators();
     this.addEventListener('show-edit-dialog', this.showDialog);
     this.addEventListener('edit-dialog-closed', this.onDialogClosed);
     this.addEventListener(
+        'accelerator-update-in-progress', this.acceleratorUpdating);
+    this.addEventListener(
         'request-update-accelerator', this.onRequestUpdateAccelerators);
+    this.addEventListener('scroll-to-top', this.onScollToTop);
 
     this.keyboardSettingsLink =
         loadTimeData.getBoolean('isInputDeviceSettingsSplitEnabled') ?
@@ -144,11 +178,13 @@ export class ShortcutCustomizationAppElement extends
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.policyUpdatedReceiver.$.close();
     this.acceleratorsUpdatedReceiver.$.close();
     this.removeEventListener('show-edit-dialog', this.showDialog);
     this.removeEventListener('edit-dialog-closed', this.onDialogClosed);
     this.removeEventListener(
         'request-update-accelerator', this.onRequestUpdateAccelerators);
+    this.removeEventListener('scroll-to-top', this.onScollToTop);
 
     Router.getInstance().removeObserver(this);
   }
@@ -182,17 +218,38 @@ export class ShortcutCustomizationAppElement extends
         new AcceleratorsUpdatedObserverReceiver(this);
     this.shortcutProvider.addObserver(
         this.acceleratorsUpdatedReceiver.$.bindNewPipeAndPassRemote());
+    // Navigate to the selected shortcuts if one was set from the launcher
+    // search. If the url does not contain action or category info, the
+    // onRouteChanged does not do anything.
+    this.onRouteChanged(new URL(window.location.href));
   }
 
   // AcceleratorsUpdatedObserverInterface:
   onAcceleratorsUpdated(config: MojoAcceleratorConfig): void {
     this.acceleratorlookupManager.setAcceleratorLookup(config);
+    // Update subsections.
     this.$.navigationPanel.notifyEvent('updateSubsections');
+
+    // Check if an accelerator update is currently in progress and update
+    // dialog. This ensures the dialog isn't updated before receiving the
+    // AcceleratorConfigResult. Note: The dialog will get updated in
+    // onRequestUpdateAccelerators() when the accelerator is modified. The
+    // onAcceleratorsUpdated() handles dialog update for other types of changes
+    // like input, keyboard, and pref change.
+    if (!this.acceleratorUpdateInProgress && this.showEditDialog) {
+      this.updateDialogAccelerators(this.dialogSource, this.dialogAction);
+    }
 
     // Update the hasLauncherButton value every time accelerators are updated.
     this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
       this.acceleratorlookupManager.setHasLauncherButton(hasLauncherButton);
     });
+  }
+
+  // PolicyUpdatedObserverInterface:
+  onCustomizationPolicyUpdated(): void {
+    // Reload the page to apply the changes.
+    window.location.reload();
   }
 
   private addNavigationSelectors(layoutInfos: MojoLayoutInfo[]): void {
@@ -223,6 +280,15 @@ export class ShortcutCustomizationAppElement extends
     this.dialogAccelerators = [];
   }
 
+  private onScollToTop(): void {
+    strictQuery('#topNavigationBody', this.shadowRoot, HTMLDivElement)
+        .scrollIntoView();
+  }
+
+  private acceleratorUpdating(): void {
+    this.acceleratorUpdateInProgress = true;
+  }
+
   onRouteChanged(url: URL): void {
     const action = url.searchParams.get('action');
     const category = url.searchParams.get('category');
@@ -239,13 +305,14 @@ export class ShortcutCustomizationAppElement extends
   }
 
   private onRequestUpdateAccelerators(e: RequestUpdateAcceleratorEvent): void {
+    // Update subsections.
     this.$.navigationPanel.notifyEvent('updateSubsections');
-    const updatedAccels =
-        this.acceleratorlookupManager.getStandardAcceleratorInfos(
-            e.detail.source, e.detail.action);
-
-    this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
-        .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
+    // Update dialog accelerators.
+    if (this.showEditDialog) {
+      this.updateDialogAccelerators(e.detail.source, e.detail.action);
+    }
+    // Set acceleratorUpdateInProgress back to false.
+    this.acceleratorUpdateInProgress = false;
   }
 
   protected onRestoreAllDefaultClicked(): void {
@@ -253,14 +320,15 @@ export class ShortcutCustomizationAppElement extends
   }
 
   protected onCancelRestoreButtonClicked(): void {
-    this.closeRestoreAllDialog();
+    strictQuery('#restoreDialog', this.shadowRoot, CrDialogElement).close();
   }
 
   protected onConfirmRestoreButtonClicked(): void {
     this.shortcutProvider.restoreAllDefaults().then(({result}) => {
       // TODO(jimmyxgong): Explore error state with restore all.
       if (result.result === AcceleratorConfigResult.kSuccess) {
-        this.closeRestoreAllDialog();
+        this.shortcutProvider.recordUserAction(UserAction.kResetAll);
+        strictQuery('#restoreDialog', this.shadowRoot, CrDialogElement).close();
       }
     });
   }
@@ -270,12 +338,45 @@ export class ShortcutCustomizationAppElement extends
   }
 
   protected shouldHideRestoreAllButton(): boolean {
-    return isCustomizationDisabled();
+    return !isCustomizationAllowed();
   }
 
-  protected shouldHideSearchBox(): boolean {
-    // Hide the search box when flag is disabled.
-    return !isSearchEnabled();
+  protected updateDialogAccelerators(
+      source: number|string, action: number|string): void {
+    assert(this.acceleratorlookupManager.isStandardAcceleratorById(
+        getAcceleratorId(source, action)));
+    const updatedAccels =
+        this.acceleratorlookupManager.getStandardAcceleratorInfos(
+            source, action);
+    this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
+        .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
+  }
+
+  // Override FindShortcutMixin methods.
+  override handleFindShortcut(modalContextOpen: boolean): boolean {
+    if (modalContextOpen) {
+      return false;
+    }
+    this.getSearchFieldElement().getSearchInput().focus();
+    return true;
+  }
+
+  // Override FindShortcutMixin methods.
+  override searchInputHasFocus(): boolean {
+    return this.getSearchFieldElement().isSearchFocused();
+  }
+
+  private getSearchFieldElement(): CrToolbarSearchFieldElement {
+    const searchBox =
+        strictQuery('search-box', this.shadowRoot, SearchBoxElement);
+    const searchField = strictQuery(
+        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
+    return searchField;
+  }
+
+  setAcceleratorUpdateInProgressForTesting(acceleratorUpdateInProgress:
+                                               boolean): void {
+    this.acceleratorUpdateInProgress = acceleratorUpdateInProgress;
   }
 
   static get template(): HTMLTemplateElement {

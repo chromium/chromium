@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ShelfAlignment": "Left"
+        },
+        "prefs": {
+          "shelf_alignment_local": {
+            "value": "Left"
+          }
+        }
+      }
+    ]
+  }
+]

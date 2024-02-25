@@ -4,26 +4,42 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 
+#include <optional>
 #include <string>
 
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog_utils.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/textarea/textarea.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "url/gurl.h"
 
 namespace policy {
 namespace {
+// Maximum number of characters a user can write in the justification text area.
+constexpr int kMaxBypassJustificationLength = 280;
 
 // Returns the domain of the |destination|'s |url| if it can be
 // obtained, or the full value otherwise, converted to u16string. Fails if
@@ -73,34 +89,82 @@ const std::u16string GetDestination(DlpFileDestination destination) {
              ? GetDestinationComponent(destination)
              : GetDestinationURL(destination);
 }
+
+const std::u16string GetJustificationLabelText(dlp::FileAction action) {
+  switch (action) {
+    case dlp::FileAction::kDownload:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_DOWNLOAD_JUSTIFICATION_LABEL);
+    case dlp::FileAction::kUpload:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_JUSTIFICATION_LABEL);
+    case dlp::FileAction::kCopy:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_COPY_JUSTIFICATION_LABEL);
+    case dlp::FileAction::kMove:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_MOVE_JUSTIFICATION_LABEL);
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_OPEN_JUSTIFICATION_LABEL);
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_TRANSFER_JUSTIFICATION_LABEL);
+  }
+}
+
 }  // namespace
 
 FilesPolicyWarnDialog::FilesPolicyWarnDialog(
-    OnDlpRestrictionCheckedCallback callback,
-    const std::vector<DlpConfidentialFile>& files,
+    WarningWithJustificationCallback callback,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
-    absl::optional<DlpFileDestination> destination)
-    : FilesPolicyDialog(files.size(), action, modal_parent),
-      files_(files),
-      destination_(destination) {
-  SetOnDlpRestrictionCheckedCallback(std::move(callback));
+    std::optional<DlpFileDestination> destination,
+    Info dialog_info)
+    : FilesPolicyDialog(dialog_info.GetFiles().size(), action, modal_parent),
+      destination_(destination),
+      dialog_info_(dialog_info) {
+  auto split = base::SplitOnceCallback(std::move(callback));
+  SetAcceptCallback(base::BindOnce(&FilesPolicyWarnDialog::ProceedWarning,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(split.first)));
+  SetCancelCallback(base::BindOnce(&FilesPolicyWarnDialog::CancelWarning,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(split.second)));
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
 
   AddGeneralInformation();
+  if (dialog_info_.GetLearnMoreURL().has_value()) {
+    files_dialog_utils::AddLearnMoreLink(
+        l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+        dialog_info.GetAccessibleLearnMoreLinkName(),
+        dialog_info_.GetLearnMoreURL().value(), upper_panel_);
+  }
   MaybeAddConfidentialRows();
+  MaybeAddJustificationPanel();
+
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFileActionWarnReviewedUMA, action);
 }
 
 FilesPolicyWarnDialog::~FilesPolicyWarnDialog() = default;
 
+size_t FilesPolicyWarnDialog::GetMaxBypassJustificationLengthForTesting()
+    const {
+  return kMaxBypassJustificationLength;
+}
+
 void FilesPolicyWarnDialog::MaybeAddConfidentialRows() {
-  if (action_ == dlp::FileAction::kDownload || files_.empty()) {
+  if (action_ == dlp::FileAction::kDownload ||
+      dialog_info_.GetFiles().empty()) {
     return;
   }
 
   SetupScrollView();
-  for (const auto& file : files_) {
+  for (const auto& file : dialog_info_.GetFiles()) {
     AddConfidentialRow(file.icon, file.title);
   }
 }
@@ -169,11 +233,7 @@ std::u16string FilesPolicyWarnDialog::GetTitle() {
 
 std::u16string FilesPolicyWarnDialog::GetMessage() {
   if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
-    return base::ReplaceStringPlaceholders(
-        l10n_util::GetPluralStringFUTF16(IDS_POLICY_DLP_FILES_WARN_MESSAGE,
-                                         files_.size()),
-        base::NumberToString16(files_.size()),
-        /*offset=*/nullptr);
+    return dialog_info_.GetMessage();
   }
   CHECK(destination_.has_value());
   DlpFileDestination destination_val = destination_.value();
@@ -218,7 +278,115 @@ std::u16string FilesPolicyWarnDialog::GetMessage() {
       /*offset=*/nullptr);
 }
 
-BEGIN_METADATA(FilesPolicyWarnDialog, FilesPolicyDialog)
+void FilesPolicyWarnDialog::ProceedWarning(
+    WarningWithJustificationCallback callback) {
+  std::optional<std::u16string> user_justification;
+  if (justification_field_) {
+    user_justification = justification_field_->GetText();
+  }
+  std::move(callback).Run(user_justification,
+                          /*should_proceed=*/true);
+}
+
+void FilesPolicyWarnDialog::CancelWarning(
+    WarningWithJustificationCallback callback) {
+  std::move(callback).Run(/*user_justification=*/std::nullopt,
+                          /*should_proceed=*/false);
+}
+
+void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
+  if (!dialog_info_.DoesBypassRequireJustification()) {
+    return;
+  }
+
+  // Disable the proceed button until some text is entered.
+  DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+
+  views::View* justification_panel =
+      AddChildView(std::make_unique<views::View>());
+  justification_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets::TLBR(8, 24, 8, 24),
+      /*between_child_spacing=*/8));
+
+  const std::u16string justification_label_text =
+      GetJustificationLabelText(action_);
+
+  views::Label* justification_field_label = justification_panel->AddChildView(
+      std::make_unique<views::Label>(justification_label_text));
+  justification_field_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  justification_field_label->SetAllowCharacterBreak(true);
+  justification_field_label->SetFontList(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(
+          ash::TypographyToken::kCrosLabel1));
+  justification_field_label->SetEnabledColor(
+      ash::ColorProvider::Get()->GetContentLayerColor(
+          ash::ColorProvider::ContentLayerType::kTextColorPrimary));
+
+  // Setting a themed rounded background does not work for text areas. As a
+  // workaround we set it for an external container and set the text area
+  // background to transparent.
+  views::View* justification_field_container =
+      justification_panel->AddChildView(std::make_unique<views::View>());
+  justification_field_container->SetLayoutManager(
+      std::make_unique<views::FillLayout>());
+  justification_field_container->SetBackground(
+      views::CreateThemedRoundedRectBackground(
+          ash::kColorAshControlBackgroundColorInactive, 8, 0));
+
+  justification_field_ = justification_field_container->AddChildView(
+      std::make_unique<views::Textarea>());
+  justification_field_->SetID(
+      PolicyDialogBase::kEnterpriseConnectorsJustificationTextareaId);
+  justification_field_->SetAccessibleName(justification_label_text);
+  justification_field_->SetAccessibleDescription(l10n_util::GetStringFUTF16(
+      IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION,
+      base::NumberToString16(0),
+      base::NumberToString16(kMaxBypassJustificationLength)));
+  justification_field_->SetController(this);
+  justification_field_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  justification_field_->SetPreferredSize(
+      gfx::Size(justification_field_->GetPreferredSize().width(), 140));
+  justification_field_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(8, 16, 8, 16)));
+  justification_field_->SetFontList(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(
+          ash::TypographyToken::kCrosBody2));
+
+  justification_field_length_label_ =
+      justification_panel->AddChildView(std::make_unique<views::Label>());
+  justification_field_length_label_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  justification_field_length_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
+      base::NumberToString16(0),
+      base::NumberToString16(kMaxBypassJustificationLength)));
+  justification_field_length_label_->SetFontList(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(
+          ash::TypographyToken::kCrosLabel2));
+}
+
+void FilesPolicyWarnDialog::ContentsChanged(
+    views::Textfield* sender,
+    const std::u16string& new_contents) {
+  if (justification_field_length_label_) {
+    justification_field_length_label_->SetText(l10n_util::GetStringFUTF16(
+        IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
+        base::NumberToString16(new_contents.size()),
+        base::NumberToString16(kMaxBypassJustificationLength)));
+    justification_field_->SetAccessibleDescription(l10n_util::GetStringFUTF16(
+        IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION,
+        base::NumberToString16(new_contents.size()),
+        base::NumberToString16(kMaxBypassJustificationLength)));
+  }
+
+  if (new_contents.size() == 0 ||
+      new_contents.size() > kMaxBypassJustificationLength) {
+    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  } else {
+    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
+  }
+}
+
+BEGIN_METADATA(FilesPolicyWarnDialog)
 END_METADATA
 
 }  // namespace policy

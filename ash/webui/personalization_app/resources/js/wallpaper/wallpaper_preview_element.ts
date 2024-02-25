@@ -7,25 +7,24 @@
  * wallpaper.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../common/icons.html.js';
-import '../../css/common.css.js';
-import '../../css/wallpaper.css.js';
-import '../../css/cros_button_style.css.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {CurrentAttribution, CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
-import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
+import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getWallpaperAriaLabel, getWallpaperSrc} from './utils.js';
-import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_preview_element.html.js';
 
-export class WallpaperPreview extends WithPersonalizationStore {
+export class WallpaperPreviewElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-preview';
   }
@@ -71,7 +70,6 @@ export class WallpaperPreview extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    WallpaperObserver.initWallpaperObserverIfNeeded();
     this.watch('attribution_', state => state.wallpaper.attribution);
     this.watch('image_', state => state.wallpaper.currentSelected);
     this.watch(
@@ -88,7 +86,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
    */
   private onClickWallpaper_() {
     assert(!!this.image_ && this.image_.type !== WallpaperType.kPolicy);
-    PersonalizationRouter.instance().goToRoute(Paths.COLLECTIONS);
+    PersonalizationRouterElement.instance().goToRoute(Paths.COLLECTIONS);
   }
 
   private getWallpaperSrc_(image: CurrentWallpaper|null): string|null {
@@ -111,4 +109,4 @@ export class WallpaperPreview extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperPreview.is, WallpaperPreview);
+customElements.define(WallpaperPreviewElement.is, WallpaperPreviewElement);

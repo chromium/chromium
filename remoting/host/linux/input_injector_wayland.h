@@ -13,6 +13,7 @@
 #include <set>
 #include <utility>
 
+#include <optional>
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -32,7 +33,6 @@
 #include "remoting/host/linux/remote_desktop_portal_injector.h"
 #include "remoting/host/linux/wayland_manager.h"
 #include "remoting/proto/internal.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "remoting/host/chromeos/point_transformer.h"
@@ -121,7 +121,7 @@ class InputInjectorWayland : public InputInjector {
 
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
     std::set<int> pressed_keys_;
-    absl::optional<webrtc::DesktopVector> latest_mouse_position_;
+    std::optional<webrtc::DesktopVector> latest_mouse_position_;
     float wheel_ticks_x_ = 0;
     float wheel_ticks_y_ = 0;
     base::TimeTicks latest_tick_y_event_;
@@ -141,7 +141,7 @@ class InputInjectorWayland : public InputInjector {
     // but separated so that the remote desktop isn't blocked waiting for the
     // clipboard.
     bool clipboard_initialized_ = false;
-    absl::optional<protocol::ClipboardEvent> pending_clipboard_event_;
+    std::optional<protocol::ClipboardEvent> pending_clipboard_event_;
 
     // Keeps track of whether or not the associated seat has keyboard
     // capability.

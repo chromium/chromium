@@ -23,6 +23,10 @@ class BrowserContext;
 namespace extensions {
 namespace service_worker_test_utils {
 
+// Get the ServiceWorkerContext for the `browser_context`.
+content::ServiceWorkerContext* GetServiceWorkerContext(
+    content::BrowserContext* browser_context);
+
 // An observer for service worker registration events.
 // Note: This class only works well when there is a *single* service worker
 // being registered. We could extend this to track multiple workers.
@@ -73,7 +77,7 @@ class TestRegistrationObserver : public content::ServiceWorkerContextObserver {
   base::RunLoop stored_run_loop_;
   base::RunLoop started_run_loop_;
   base::RunLoop activated_run_loop_;
-  absl::optional<int64_t> running_version_id_;
+  std::optional<int64_t> running_version_id_;
   raw_ptr<content::ServiceWorkerContext> context_ = nullptr;
 };
 

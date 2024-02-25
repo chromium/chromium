@@ -28,21 +28,22 @@ public class WebViewSandboxedSdkProvider extends SandboxedSdkProvider {
 
     @Override
     public SandboxedSdk onLoadSdk(Bundle params) {
-        IWebViewSdkApi.Stub webviewProxy = new IWebViewSdkApi.Stub() {
-            @Override
-            public void loadUrl(String url) {
-                if (mWebView != null) {
-                    sHandler.post(() -> mWebView.loadUrl(url));
-                }
-            }
+        IWebViewSdkApi.Stub webviewProxy =
+                new IWebViewSdkApi.Stub() {
+                    @Override
+                    public void loadUrl(String url) {
+                        if (mWebView != null) {
+                            sHandler.post(() -> mWebView.loadUrl(url));
+                        }
+                    }
 
-            @Override
-            public void destroy() {
-                if (mWebView != null) {
-                    sHandler.post(() -> mWebView.destroy());
-                }
-            }
-        };
+                    @Override
+                    public void destroy() {
+                        if (mWebView != null) {
+                            sHandler.post(() -> mWebView.destroy());
+                        }
+                    }
+                };
         return new SandboxedSdk(webviewProxy);
     }
 

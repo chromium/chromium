@@ -128,10 +128,9 @@ std::unique_ptr<std::vector<DeltaFileEntryWithData>> DataProvider::Query(
           FROM_HERE, base::BindOnce(&QueryUrlsHistoryInUiThread,
                                     base::Unretained(&context),
                                     base::Unretained(entries.get())));
-      std::vector<UrlAndTitle> bookmarks;
       bookmark_model_loader_->BlockTillLoaded();
-      bookmark_model_loader_->history_bookmark_model()->GetBookmarks(
-          &bookmarks);
+      std::vector<UrlAndTitle> bookmarks =
+          bookmark_model_loader_->history_bookmark_model()->GetUniqueUrls();
       BookmarkMap bookmark_map;
       for (size_t i = 0; i < bookmarks.size(); ++i) {
         bookmark_map.insert(
@@ -189,9 +188,9 @@ void DataProvider::RecreateLog() {
     finished.Wait();
   }
 
-  std::vector<UrlAndTitle> bookmarks;
   bookmark_model_loader_->BlockTillLoaded();
-  bookmark_model_loader_->history_bookmark_model()->GetBookmarks(&bookmarks);
+  std::vector<UrlAndTitle> bookmarks =
+      bookmark_model_loader_->history_bookmark_model()->GetUniqueUrls();
   urls.reserve(urls.size() + bookmarks.size());
   for (size_t i = 0; i < bookmarks.size(); i++)
     urls.push_back(bookmarks[i].url.spec());

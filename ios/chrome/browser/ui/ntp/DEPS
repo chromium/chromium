@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/ui/bubble/bubble_presenter.h",
   "+ios/chrome/browser/ui/first_run/ios_first_run_field_trials.h",
   "+ios/chrome/browser/ui/authentication",
+  "+ios/chrome/browser/ui/first_run/first_run_util.h",
   "+ios/chrome/browser/ui/follow",
   "+ios/chrome/browser/ui/overscroll_actions",
   "+ios/chrome/browser/ui/context_menu/link_preview",
@@ -11,8 +12,9 @@ include_rules = [
   "+ios/chrome/browser/ui/toolbar/buttons",
   "+ios/chrome/browser/ui/start_surface",
   "+ios/chrome/browser/ui/lens",
-  "+ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h",
   "+ios/chrome/browser/ui/toolbar/public",
+  "+ios/chrome/browser/ui/sharing",
+  "+ios/chrome/browser/ui/push_notification",
 ]
 
 specific_include_rules = {

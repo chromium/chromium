@@ -97,6 +97,7 @@ void BeginRasterCHROMIUMImmediate(GLfloat r,
                                   gpu::raster::MsaaMode msaa_mode,
                                   GLboolean can_use_lcd_text,
                                   GLboolean visible,
+                                  GLfloat hdr_headroom,
                                   const GLbyte* mailbox) {
   const uint32_t size =
       raster::cmds::BeginRasterCHROMIUMImmediate::ComputeSize();
@@ -105,7 +106,7 @@ void BeginRasterCHROMIUMImmediate(GLfloat r,
           size);
   if (c) {
     c->Init(r, g, b, a, needs_clear, msaa_sample_count, msaa_mode,
-            can_use_lcd_text, visible, mailbox);
+            can_use_lcd_text, visible, hdr_headroom, mailbox);
   }
 }
 
@@ -307,7 +308,11 @@ void ReadbackYUVImagePixelsINTERNALImmediate(GLuint dst_width,
   }
 }
 
-void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
+void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLint src_x,
+                                                GLint src_y,
+                                                GLsizei width,
+                                                GLsizei height,
+                                                GLenum planes_yuv_color_space,
                                                 GLenum plane_config,
                                                 GLenum subsampling,
                                                 const GLbyte* mailboxes) {
@@ -317,7 +322,8 @@ void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
       GetImmediateCmdSpaceTotalSize<
           raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>(size);
   if (c) {
-    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
+    c->Init(src_x, src_y, width, height, planes_yuv_color_space, plane_config,
+            subsampling, mailboxes);
   }
 }
 

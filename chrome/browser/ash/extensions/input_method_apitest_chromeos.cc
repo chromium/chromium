@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -20,7 +21,6 @@
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -46,7 +46,7 @@ const InputMethodDescriptor CreateInputMethodDescriptor(
   return InputMethodDescriptor(GetInputMethodIDByEngineID(engineId), "",
                                indicator, {layout}, language_codes, true,
                                GURL(), GURL(),
-                               /*handwriting_language=*/absl::nullopt);
+                               /*handwriting_language=*/std::nullopt);
 }
 
 class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {

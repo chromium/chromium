@@ -123,18 +123,7 @@ struct FakeDeviceState {
                   double exposure_time,
                   double focus_distance,
                   float frame_rate,
-                  VideoPixelFormat pixel_format)
-      : pan(pan),
-        tilt(tilt),
-        zoom(zoom),
-        exposure_time(exposure_time),
-        focus_distance(focus_distance),
-        format(gfx::Size(), frame_rate, pixel_format) {
-    exposure_mode = (exposure_time >= 0.0f) ? mojom::MeteringMode::MANUAL
-                                            : mojom::MeteringMode::CONTINUOUS;
-    focus_mode = (focus_distance >= 0.0f) ? mojom::MeteringMode::MANUAL
-                                          : mojom::MeteringMode::CONTINUOUS;
-  }
+                  VideoPixelFormat pixel_format);
 
   double pan;
   double tilt;
@@ -145,6 +134,7 @@ struct FakeDeviceState {
   mojom::MeteringMode focus_mode;
   VideoCaptureFormat format;
   bool background_blur = false;
+  bool eye_gaze_correction = false;
 };
 
 // A dependency needed by FakeVideoCaptureDevice.

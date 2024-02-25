@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class NetworkConnectionTracker;
@@ -48,12 +48,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch {
       drivefs::mojom::QueryParametersPtr query,
       mojom::SearchQuery::GetNextPageCallback callback,
       drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
-  const raw_ptr<mojom::DriveFs, DanglingUntriaged | ExperimentalAsh> drivefs_;
-  const raw_ptr<network::NetworkConnectionTracker, ExperimentalAsh>
-      network_connection_tracker_;
-  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_;
+  const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  const raw_ptr<const base::Clock> clock_;
   base::Time last_shared_with_me_response_;
 
   base::WeakPtrFactory<DriveFsSearch> weak_ptr_factory_{this};

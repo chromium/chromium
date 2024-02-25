@@ -15,7 +15,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/core/label_map_item.h"
 
 #include "absl/strings/str_format.h"  // from @com_google_absl
-#include "absl/strings/str_split.h"   // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 
 namespace tflite {
@@ -28,8 +28,7 @@ using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
 
 StatusOr<std::vector<LabelMapItem>> BuildLabelMapFromFiles(
-    absl::string_view labels_file,
-    absl::string_view display_names_file) {
+    absl::string_view labels_file, absl::string_view display_names_file) {
   if (labels_file.empty()) {
     return CreateStatusWithPayload(StatusCode::kInvalidArgument,
                                    "Expected non-empty labels file.",

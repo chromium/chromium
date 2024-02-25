@@ -55,23 +55,14 @@ struct CordRepExternal;
 struct CordRepFlat;
 struct CordRepSubstring;
 struct CordRepCrc;
-class CordRepRing;
 class CordRepBtree;
 
 class CordzInfo;
 
 // Default feature enable states for cord ring buffers
-enum CordFeatureDefaults {
-  kCordEnableRingBufferDefault = false,
-  kCordShallowSubcordsDefault = false
-};
+enum CordFeatureDefaults { kCordShallowSubcordsDefault = false };
 
-extern std::atomic<bool> cord_ring_buffer_enabled;
 extern std::atomic<bool> shallow_subcords_enabled;
-
-inline void enable_cord_ring_buffer(bool enable) {
-  cord_ring_buffer_enabled.store(enable, std::memory_order_relaxed);
-}
 
 inline void enable_shallow_subcords(bool enable) {
   shallow_subcords_enabled.store(enable, std::memory_order_relaxed);
@@ -110,8 +101,16 @@ inline void SmallMemmove(char* dst, const char* src, size_t n) {
     if (nullify_tail) {
       memset(dst + 7, 0, 8);
     }
+    // GCC 12 has a false-positive -Wstringop-overflow warning here.
+#if ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(12, 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
     memcpy(dst, &buf1, 8);
     memcpy(dst + n - 8, &buf2, 8);
+#if ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(12, 0)
+#pragma GCC diagnostic pop
+#endif
   } else if (n >= 4) {
     uint32_t buf1;
     uint32_t buf2;
@@ -158,18 +157,18 @@ class RefcountAndFlags {
   // false.  Always returns false when the immortal bit is set.
   inline bool Decrement() {
     int32_t refcount = count_.load(std::memory_order_acquire);
-    assert((refcount & kRefcountMask) > 0 || refcount & kImmortalFlag);
+    assert(refcount > 0 || refcount & kImmortalFlag);
     return refcount != kRefIncrement &&
-           (count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel) &
-            kHighRefcountMask) != 0;
+           count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel) !=
+               kRefIncrement;
   }
 
   // Same as Decrement but expect that refcount is greater than 1.
   inline bool DecrementExpectHighRefcount() {
     int32_t refcount =
         count_.fetch_sub(kRefIncrement, std::memory_order_acq_rel);
-    assert((refcount & kRefcountMask) > 0 || refcount & kImmortalFlag);
-    return (refcount & kHighRefcountMask) != 0;
+    assert(refcount > 0 || refcount & kImmortalFlag);
+    return refcount != kRefIncrement;
   }
 
   // Returns the current reference count using acquire semantics.
@@ -185,10 +184,9 @@ class RefcountAndFlags {
   // This call performs the test for a reference count of one, and
   // performs the memory barrier needed for the owning thread
   // to act on the object, knowing that it has exclusive access to the
-  // object.  Always returns false when the immortal bit is set.
+  // object. Always returns false when the immortal bit is set.
   inline bool IsOne() {
-    return (count_.load(std::memory_order_acquire) & kRefcountMask) ==
-           kRefIncrement;
+    return count_.load(std::memory_order_acquire) == kRefIncrement;
   }
 
   bool IsImmortal() const {
@@ -196,32 +194,15 @@ class RefcountAndFlags {
   }
 
  private:
-  // We reserve the bottom bits for flags.
+  // We reserve the bottom bit for flag.
   // kImmortalBit indicates that this entity should never be collected; it is
   // used for the StringConstant constructor to avoid collecting immutable
   // constant cords.
-  // kReservedFlag is reserved for future use.
   enum Flags {
-    kNumFlags = 2,
+    kNumFlags = 1,
 
     kImmortalFlag = 0x1,
-    kReservedFlag = 0x2,
     kRefIncrement = (1 << kNumFlags),
-
-    // Bitmask to use when checking refcount by equality.  This masks out
-    // all flags except kImmortalFlag, which is part of the refcount for
-    // purposes of equality.  (A refcount of 0 or 1 does not count as 0 or 1
-    // if the immortal bit is set.)
-    kRefcountMask = ~kReservedFlag,
-
-    // Bitmask to use when checking if refcount is equal to 1 and not
-    // immortal when decrementing the refcount. This masks out kRefIncrement and
-    // all flags except kImmortalFlag. If the masked RefcountAndFlags is 0, we
-    // assume the refcount is equal to 1, since we know it's not immortal and
-    // not greater than 1. If the masked RefcountAndFlags is not 0, we can
-    // assume the refcount is not equal to 1 since either a higher bit in the
-    // refcount is set, or kImmortal is set.
-    kHighRefcountMask = kRefcountMask & ~kRefIncrement,
   };
 
   std::atomic<int32_t> count_;
@@ -233,7 +214,7 @@ enum CordRepKind {
   SUBSTRING = 1,
   CRC = 2,
   BTREE = 3,
-  RING = 4,
+  UNUSED_4 = 4,
   EXTERNAL = 5,
 
   // We have different tags for different sized flat arrays,
@@ -252,12 +233,8 @@ enum CordRepKind {
 // There are various locations where we want to check if some rep is a 'plain'
 // data edge, i.e. an external or flat rep. By having FLAT == EXTERNAL + 1, we
 // can perform this check in a single branch as 'tag >= EXTERNAL'
-// Likewise, we have some locations where we check for 'ring or external/flat',
-// so likewise align RING to EXTERNAL.
 // Note that we can leave this optimization to the compiler. The compiler will
 // DTRT when it sees a condition like `tag == EXTERNAL || tag >= FLAT`.
-static_assert(RING == BTREE + 1, "BTREE and RING not consecutive");
-static_assert(EXTERNAL == RING + 1, "BTREE and EXTERNAL not consecutive");
 static_assert(FLAT == EXTERNAL + 1, "EXTERNAL and FLAT not consecutive");
 
 struct CordRep {
@@ -301,15 +278,12 @@ struct CordRep {
   // # LINT.ThenChange(cord_rep_btree.h:copy_raw)
 
   // Returns true if this instance's tag matches the requested type.
-  constexpr bool IsRing() const { return tag == RING; }
   constexpr bool IsSubstring() const { return tag == SUBSTRING; }
   constexpr bool IsCrc() const { return tag == CRC; }
   constexpr bool IsExternal() const { return tag == EXTERNAL; }
   constexpr bool IsFlat() const { return tag >= FLAT; }
   constexpr bool IsBtree() const { return tag == BTREE; }
 
-  inline CordRepRing* ring();
-  inline const CordRepRing* ring() const;
   inline CordRepSubstring* substring();
   inline const CordRepSubstring* substring() const;
   inline CordRepCrc* crc();
@@ -378,18 +352,19 @@ struct CordRepExternal : public CordRep {
   static void Delete(CordRep* rep);
 };
 
-struct Rank1 {};
-struct Rank0 : Rank1 {};
+// Use go/ranked-overloads for dispatching.
+struct Rank0 {};
+struct Rank1 : Rank0 {};
 
 template <typename Releaser, typename = ::absl::base_internal::invoke_result_t<
                                  Releaser, absl::string_view>>
-void InvokeReleaser(Rank0, Releaser&& releaser, absl::string_view data) {
+void InvokeReleaser(Rank1, Releaser&& releaser, absl::string_view data) {
   ::absl::base_internal::invoke(std::forward<Releaser>(releaser), data);
 }
 
 template <typename Releaser,
           typename = ::absl::base_internal::invoke_result_t<Releaser>>
-void InvokeReleaser(Rank1, Releaser&& releaser, absl::string_view) {
+void InvokeReleaser(Rank0, Releaser&& releaser, absl::string_view) {
   ::absl::base_internal::invoke(std::forward<Releaser>(releaser));
 }
 
@@ -407,7 +382,7 @@ struct CordRepExternalImpl
   }
 
   ~CordRepExternalImpl() {
-    InvokeReleaser(Rank0{}, std::move(this->template get<0>()),
+    InvokeReleaser(Rank1{}, std::move(this->template get<0>()),
                    absl::string_view(base, length));
   }
 
@@ -546,6 +521,7 @@ class InlineData {
 
   constexpr InlineData(const InlineData& rhs) noexcept;
   InlineData& operator=(const InlineData& rhs) noexcept;
+  friend void swap(InlineData& lhs, InlineData& rhs) noexcept;
 
   friend bool operator==(const InlineData& lhs, const InlineData& rhs) {
 #ifdef ABSL_INTERNAL_CORD_HAVE_SANITIZER
@@ -796,6 +772,12 @@ class InlineData {
       char data[kMaxInline + 1];
       AsTree as_tree;
     };
+
+    // TODO(b/145829486): see swap(InlineData, InlineData) for more info.
+    inline void SwapValue(Rep rhs, Rep& refrhs) {
+      memcpy(&refrhs, this, sizeof(*this));
+      memcpy(this, &rhs, sizeof(*this));
+    }
   };
 
   // Private implementation of `Compare()`
@@ -908,6 +890,19 @@ inline void CordRep::Unref(CordRep* rep) {
   if (ABSL_PREDICT_FALSE(!rep->refcount.DecrementExpectHighRefcount())) {
     Destroy(rep);
   }
+}
+
+inline void swap(InlineData& lhs, InlineData& rhs) noexcept {
+  lhs.unpoison();
+  rhs.unpoison();
+  // TODO(b/145829486): `std::swap(lhs.rep_, rhs.rep_)` results in bad codegen
+  // on clang, spilling the temporary swap value on the stack. Since `Rep` is
+  // trivial, we can make clang DTRT by calling a hand-rolled `SwapValue` where
+  // we pass `rhs` both by value (register allocated) and by reference. The IR
+  // then folds and inlines correctly into an optimized swap without spill.
+  lhs.rep_.SwapValue(rhs.rep_, rhs.rep_);
+  rhs.poison();
+  lhs.poison();
 }
 
 }  // namespace cord_internal

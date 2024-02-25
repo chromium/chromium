@@ -19,6 +19,7 @@
 #include <strmif.h>
 #include <wrl/client.h>
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/capability_list_win.h"
 #include "media/capture/video/win/metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 interface IMFSourceReader;
 
@@ -123,14 +123,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
     dxgi_device_manager_ = std::move(dxgi_device_manager);
   }
 
-  absl::optional<int> camera_rotation() const { return camera_rotation_; }
+  std::optional<int> camera_rotation() const { return camera_rotation_; }
 
  private:
   class MFVideoCallback;
   class MFActivitiesReportCallback;
 
   bool CreateMFCameraControlMonitor();
-  bool CreateMFSensorActivityMonitor();
   void DeinitVideoCallbacksControlsAndMonitors();
   HRESULT ExecuteHresultCallbackWithRetries(
       base::RepeatingCallback<HRESULT()> callback,
@@ -219,7 +218,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   base::WaitableEvent capture_started_;
   HRESULT last_error_hr_ = S_OK;
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
-  absl::optional<int> camera_rotation_;
+  std::optional<int> camera_rotation_;
   VideoCaptureParams params_;
   int num_restarts_ = 0;
 
@@ -254,6 +253,14 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
 
   base::WeakPtrFactory<VideoCaptureDeviceMFWin> weak_factory_{this};
 };
+
+// Creates a new sensor activity monitor and returns it on `monitor`.
+// The monitor will execute `report_callback` every time a new activity report
+// becomes available.
+// This function return `true` on success and `false` on failure.
+bool CreateMFSensorActivityMonitor(
+    IMFSensorActivitiesReportCallback* report_callback,
+    IMFSensorActivityMonitor** monitor);
 
 }  // namespace media
 

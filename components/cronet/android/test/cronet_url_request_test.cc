@@ -5,8 +5,6 @@
 #include "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestTest_jni.h"
 #include "net/base/load_flags.h"
 
-using base::android::JavaParamRef;
-
 static jint JNI_CronetUrlRequestTest_GetConnectionMigrationDisableLoadFlag(
     JNIEnv* env) {
   return net::LOAD_DISABLE_CONNECTION_MIGRATION_TO_CELLULAR;

@@ -33,16 +33,13 @@ public class JsonLogger {
             mBaseJsonObject.put("global_tags", new JSONArray());
             mBaseJsonObject.put("all_tests", new JSONArray());
             mBaseJsonObject.put("disabled_tests", new JSONArray());
-            mBaseJsonObject.put("per_iteration_data",
-                                new JSONArray().put(mBaseTestInfoJsonObject));
+            mBaseJsonObject.put("per_iteration_data", new JSONArray().put(mBaseTestInfoJsonObject));
         } catch (JSONException e) {
             System.err.println("Unable to create json output.");
         }
     }
 
-    /**
-     *  Add the results of a test run to the json output.
-     */
+    /** Add the results of a test run to the json output. */
     public void addTestResultInfo(Description test, boolean passed, long elapsedTimeMillis) {
         JSONObject testInfoJsonObject = new JSONObject();
 
@@ -63,9 +60,7 @@ public class JsonLogger {
         }
     }
 
-    /**
-     *  Writes the json output to a file.
-     */
+    /** Writes the json output to a file. */
     public void writeJsonToFile() throws FileNotFoundException {
         try (PrintStream stream = new PrintStream(new FileOutputStream(mOutputFile))) {
             stream.print(mBaseJsonObject);

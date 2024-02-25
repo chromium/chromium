@@ -1,16 +1,19 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {configureJellyColors} from './jelly_colors.js';
-import {createLogsMapTable} from './logs_map_page.js';
 
-const dialogArgs: string = chrome.getVariableValue('dialogArguments');
+// <if expr="chromeos_ash">
+import './jelly_colors.js';
+
+// </if>
+import {FeedbackBrowserProxyImpl} from './feedback_browser_proxy.js';
+import {createLogsMapTable} from './logs_map_page.js';
 
 /**
  * Builds the autofill metadata table. Constructs the map entries for the logs
  * page by parsing the input json to readable string.
  */
-function createAutofillMetadataTable() {
+function createAutofillMetadataTable(dialogArgs: string) {
   const autofillMetadata = JSON.parse(dialogArgs);
 
   const items: chrome.feedbackPrivate.LogsMapEntry[] = [];
@@ -50,10 +53,12 @@ function createAutofillMetadataTable() {
  * Initializes the page when the window is loaded.
  */
 window.onload = function() {
+  const dialogArgs =
+      FeedbackBrowserProxyImpl.getInstance().getDialogArguments();
+
   if (!dialogArgs) {
     return;
   }
 
-  createAutofillMetadataTable();
-  configureJellyColors();
+  createAutofillMetadataTable(dialogArgs);
 };

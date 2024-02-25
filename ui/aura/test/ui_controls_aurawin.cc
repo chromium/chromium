@@ -41,14 +41,17 @@ class UIControlsWin : public UIControlsAura {
     DCHECK(!(accelerator_state & ui_controls::kCommand));
 
     HWND window = native_window->GetHost()->GetAcceleratedWidget();
-    return ui_controls::internal::SendKeyPressImpl(
-        window, key, accelerator_state, base::OnceClosure());
+    return ui_controls::internal::SendKeyPressReleaseImpl(
+        window, key, accelerator_state, ui_controls::KeyEventType::kKeyRelease,
+        base::OnceClosure());
   }
-  bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow native_window,
-                                   ui::KeyboardCode key,
-                                   int key_event_types,
-                                   base::OnceClosure task,
-                                   int accelerator_state) override {
+  bool SendKeyEventsNotifyWhenDone(
+      gfx::NativeWindow native_window,
+      ui::KeyboardCode key,
+      int key_event_types,
+      base::OnceClosure task,
+      int accelerator_state,
+      ui_controls::KeyEventType wait_for) override {
     // UIControlsWin only supports key events with both press and release.
     // TODO(crbug.com/1414800): Support any `key_event_types` on win.
     DCHECK_EQ(key_event_types,
@@ -58,8 +61,8 @@ class UIControlsWin : public UIControlsAura {
     DCHECK(!(accelerator_state & ui_controls::kCommand));
 
     HWND window = native_window->GetHost()->GetAcceleratedWidget();
-    return ui_controls::internal::SendKeyPressImpl(
-        window, key, accelerator_state, std::move(task));
+    return ui_controls::internal::SendKeyPressReleaseImpl(
+        window, key, accelerator_state, wait_for, std::move(task));
   }
 
   bool SendMouseMove(int screen_x, int screen_y) override {

@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
@@ -32,6 +33,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2470,6 +2472,10 @@ TEST_F(DrawPropertiesTest, ClipExpanderWithUninvertibleTransform) {
 
 // Needs layer tree mode: mask layer.
 TEST_F(DrawPropertiesTestWithLayerTree, OcclusionBySiblingOfTarget) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAllowUndamagedNonrootRenderPassToSkip);
+
   auto root = Layer::Create();
   auto child = Layer::Create();
   FakeContentLayerClient client;
@@ -2527,6 +2533,72 @@ TEST_F(DrawPropertiesTestWithLayerTree, OcclusionBySiblingOfTarget) {
       gfx::Transform(), SimpleEnclosedRegion(gfx::Rect(-20, -20, 200, 200)),
       SimpleEnclosedRegion());
   EXPECT_TRUE(expected_occlusion.IsEqual(actual_occlusion));
+}
+
+// Occlusion immune with kAllowUndamagedNonrootRenderPassToSkip enabled.
+TEST_F(DrawPropertiesTestWithLayerTree, OcclusionImmuneForSiblingOfTarget) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAllowUndamagedNonrootRenderPassToSkip);
+
+  auto root = Layer::Create();
+  auto child = Layer::Create();
+  FakeContentLayerClient client;
+  auto surface = PictureLayer::Create(&client);
+  auto surface_child = PictureLayer::Create(&client);
+  auto surface_sibling = PictureLayer::Create(&client);
+  auto surface_child_mask = PictureLayer::Create(&client);
+
+  surface->SetIsDrawable(true);
+  surface_child->SetIsDrawable(true);
+  surface_sibling->SetIsDrawable(true);
+  surface_child_mask->SetIsDrawable(true);
+  surface->SetContentsOpaque(true);
+  surface_child->SetContentsOpaque(true);
+  surface_sibling->SetContentsOpaque(true);
+  surface_child_mask->SetContentsOpaque(true);
+
+  gfx::Transform translate;
+  translate.Translate(20.f, 20.f);
+
+  root->SetBounds(gfx::Size(1000, 1000));
+  child->SetBounds(gfx::Size(300, 300));
+  surface->SetTransform(translate);
+  surface->SetBounds(gfx::Size(300, 300));
+  surface->SetForceRenderSurfaceForTesting(true);
+  surface_child->SetBounds(gfx::Size(300, 300));
+  surface_child->SetForceRenderSurfaceForTesting(true);
+  surface_sibling->SetBounds(gfx::Size(200, 200));
+  surface_child_mask->SetBounds(gfx::Size(300, 300));
+
+  surface_child->SetMaskLayer(surface_child_mask);
+  surface->AddChild(surface_child);
+  child->AddChild(surface);
+  child->AddChild(surface_sibling);
+  root->AddChild(child);
+  host()->SetRootLayer(root);
+
+  CommitAndActivate();
+
+  EXPECT_TRANSFORM_EQ(GetRenderSurfaceImpl(surface)->draw_transform(),
+                      translate);
+  // surface_sibling draws into the root render surface
+  Occlusion actual_occlusion =
+      GetRenderSurfaceImpl(surface_child)->occlusion_in_content_space();
+  Occlusion expected_occlusion(translate, SimpleEnclosedRegion(),
+                               SimpleEnclosedRegion(gfx::Rect(200, 200)));
+  // With occlusion immune, it will not occlude surface_child's contents.
+  EXPECT_FALSE(expected_occlusion.IsEqual(actual_occlusion));
+
+  // Mask layer's occlusion is different because we create transform and render
+  // surface for it in layer tree mode.
+  actual_occlusion =
+      ImplOf(surface_child_mask)->draw_properties().occlusion_in_content_space;
+  expected_occlusion = Occlusion(
+      gfx::Transform(), SimpleEnclosedRegion(gfx::Rect(-20, -20, 200, 200)),
+      SimpleEnclosedRegion());
+  // With occlusion immune, it will not occlude surface_child's contents.
+  EXPECT_FALSE(expected_occlusion.IsEqual(actual_occlusion));
 }
 
 TEST_F(DrawPropertiesTest, OcclusionForLayerWithUninvertibleDrawTransform) {
@@ -2781,9 +2853,9 @@ TEST_F(DrawPropertiesTest, ClipRectOfSurfaceWhoseParentIsAClipChild) {
   LayerImpl* root = root_layer();
   LayerImpl* clip_parent = AddLayer<LayerImpl>();
   LayerImpl* clip_layer = AddLayer<LayerImpl>();
-  LayerImpl* render_surface1 = AddLayer<LayerImpl>();
+  LayerImpl* render_surface_layer1 = AddLayer<LayerImpl>();
   LayerImpl* clip_child = AddLayer<LayerImpl>();
-  LayerImpl* render_surface2 = AddLayer<LayerImpl>();
+  LayerImpl* render_surface_layer2 = AddLayer<LayerImpl>();
 
   root->SetBounds(gfx::Size(100, 100));
 
@@ -2797,35 +2869,129 @@ TEST_F(DrawPropertiesTest, ClipRectOfSurfaceWhoseParentIsAClipChild) {
   CopyProperties(clip_parent, clip_layer);
   CreateClipNode(clip_layer);
 
-  render_surface1->SetBounds(gfx::Size(20, 20));
-  render_surface1->SetDrawsContent(true);
-  CopyProperties(clip_layer, render_surface1);
-  CreateTransformNode(render_surface1).post_translation = gfx::Vector2dF(2, 2);
-  CreateEffectNode(render_surface1).render_surface_reason =
+  render_surface_layer1->SetBounds(gfx::Size(20, 20));
+  render_surface_layer1->SetDrawsContent(true);
+  CopyProperties(clip_layer, render_surface_layer1);
+  CreateTransformNode(render_surface_layer1).post_translation =
+      gfx::Vector2dF(2, 2);
+  CreateEffectNode(render_surface_layer1).render_surface_reason =
       RenderSurfaceReason::kTest;
-  CreateClipNode(render_surface1);
+  CreateClipNode(render_surface_layer1);
 
   clip_child->SetBounds(gfx::Size(60, 60));
   clip_child->SetDrawsContent(true);
-  CopyProperties(render_surface1, clip_child);
+  CopyProperties(render_surface_layer1, clip_child);
   clip_child->SetClipTreeIndex(clip_parent->clip_tree_index());
 
-  render_surface2->SetBounds(gfx::Size(60, 60));
-  render_surface2->SetDrawsContent(true);
-  CopyProperties(clip_child, render_surface2);
-  CreateTransformNode(render_surface2);
-  CreateEffectNode(render_surface2).render_surface_reason =
+  render_surface_layer2->SetBounds(gfx::Size(60, 60));
+  render_surface_layer2->SetDrawsContent(true);
+  CopyProperties(clip_child, render_surface_layer2);
+  CreateTransformNode(render_surface_layer2);
+  CreateEffectNode(render_surface_layer2).render_surface_reason =
       RenderSurfaceReason::kTest;
 
   float device_scale_factor = 1.f;
   UpdateActiveTreeDrawProperties(device_scale_factor);
-  EXPECT_EQ(gfx::Rect(50, 50), GetRenderSurface(render_surface2)->clip_rect());
+  auto* render_surface1 = GetRenderSurface(render_surface_layer1);
+  EXPECT_TRUE(render_surface1->has_contributing_layer_that_escapes_clip());
+  EXPECT_EQ(clip_layer->clip_tree_index(), render_surface1->ClipTreeIndex());
+  if (base::FeatureList::IsEnabled(
+          features::kRenderSurfaceCommonAncestorClip)) {
+    EXPECT_EQ(clip_parent->clip_tree_index(),
+              render_surface1->common_ancestor_clip_id());
+    EXPECT_TRUE(render_surface1->is_clipped());
+    EXPECT_EQ(gfx::Rect(2, 2, 50, 50), render_surface1->clip_rect());
+  } else {
+    EXPECT_EQ(clip_layer->clip_tree_index(),
+              render_surface1->common_ancestor_clip_id());
+    EXPECT_FALSE(render_surface1->is_clipped());
+  }
+  auto* render_surface2 = GetRenderSurface(render_surface_layer2);
+  EXPECT_FALSE(render_surface2->has_contributing_layer_that_escapes_clip());
+  EXPECT_EQ(clip_parent->clip_tree_index(), render_surface2->ClipTreeIndex());
+  EXPECT_EQ(clip_parent->clip_tree_index(),
+            render_surface2->common_ancestor_clip_id());
+  if (base::FeatureList::IsEnabled(
+          features::kRenderSurfaceCommonAncestorClip)) {
+    // render_surface2 has the same clip as render_surface1, so it doesn't need
+    // to clip.
+    EXPECT_FALSE(render_surface2->is_clipped());
+  } else {
+    EXPECT_TRUE(render_surface2->is_clipped());
+    EXPECT_EQ(gfx::Rect(50, 50), render_surface2->clip_rect());
+  }
 
   device_scale_factor = 2.f;
   UpdateActiveTreeDrawProperties(device_scale_factor);
+  if (base::FeatureList::IsEnabled(
+          features::kRenderSurfaceCommonAncestorClip)) {
+    EXPECT_TRUE(render_surface1->is_clipped());
+    EXPECT_EQ(gfx::Rect(4, 4, 100, 100), render_surface1->clip_rect());
+    EXPECT_FALSE(render_surface2->is_clipped());
+  } else {
+    EXPECT_FALSE(render_surface1->is_clipped());
+    EXPECT_TRUE(render_surface2->is_clipped());
+    EXPECT_EQ(gfx::Rect(100, 100), render_surface2->clip_rect());
+  }
+}
 
-  EXPECT_EQ(gfx::Rect(100, 100),
-            GetRenderSurface(render_surface2)->clip_rect());
+TEST_F(DrawPropertiesTest,
+       RenderSurfaceCommonAncestorClipOnChangeOfChildLayerClip) {
+  if (!base::FeatureList::IsEnabled(
+          features::kRenderSurfaceCommonAncestorClip)) {
+    return;
+  }
+
+  LayerImpl* root = root_layer();
+  LayerImpl* clip_parent = AddLayer<LayerImpl>();
+  LayerImpl* clip_layer = AddLayer<LayerImpl>();
+  LayerImpl* render_surface_layer = AddLayer<LayerImpl>();
+  LayerImpl* clip_child = AddLayer<LayerImpl>();
+
+  root->SetBounds(gfx::Size(100, 100));
+
+  clip_parent->SetBounds(gfx::Size(50, 50));
+  clip_parent->SetOffsetToTransformParent(gfx::Vector2dF(2, 2));
+  CopyProperties(root, clip_parent);
+  CreateClipNode(clip_parent);
+
+  clip_layer->SetBounds(gfx::Size(50, 50));
+  clip_layer->SetOffsetToTransformParent(gfx::Vector2dF(3, 3));
+  CopyProperties(clip_parent, clip_layer);
+  CreateClipNode(clip_layer);
+
+  render_surface_layer->SetBounds(gfx::Size(20, 20));
+  render_surface_layer->SetDrawsContent(true);
+  CopyProperties(clip_layer, render_surface_layer);
+  CreateTransformNode(render_surface_layer).post_translation =
+      gfx::Vector2dF(5, 5);
+  CreateEffectNode(render_surface_layer).render_surface_reason =
+      RenderSurfaceReason::kTest;
+
+  clip_child->SetBounds(gfx::Size(60, 60));
+  clip_child->SetDrawsContent(true);
+  CopyProperties(render_surface_layer, clip_child);
+  clip_child->SetClipTreeIndex(clip_parent->clip_tree_index());
+
+  UpdateActiveTreeDrawProperties();
+  auto* render_surface = GetRenderSurface(render_surface_layer);
+  EXPECT_TRUE(render_surface->has_contributing_layer_that_escapes_clip());
+  EXPECT_EQ(clip_layer->clip_tree_index(), render_surface->ClipTreeIndex());
+  EXPECT_EQ(clip_parent->clip_tree_index(),
+            render_surface->common_ancestor_clip_id());
+  EXPECT_TRUE(render_surface->is_clipped());
+  EXPECT_EQ(gfx::Rect(2, 2, 50, 50), render_surface->clip_rect());
+
+  // Now clip_child no longer escapes the clip of render surface.
+  clip_child->SetClipTreeIndex(clip_layer->clip_tree_index());
+  host_impl()->active_tree()->set_needs_update_draw_properties();
+  UpdateActiveTreeDrawProperties();
+  EXPECT_FALSE(render_surface->has_contributing_layer_that_escapes_clip());
+  EXPECT_EQ(clip_layer->clip_tree_index(), render_surface->ClipTreeIndex());
+  EXPECT_EQ(clip_layer->clip_tree_index(),
+            render_surface->common_ancestor_clip_id());
+  EXPECT_TRUE(render_surface->is_clipped());
+  EXPECT_EQ(gfx::Rect(3, 3, 49, 49), render_surface->clip_rect());
 }
 
 // Test that only drawn layers contribute to render surface content rect.
@@ -3648,15 +3814,12 @@ TEST_F(BackfaceVisibilityInteropTest, BackfaceInvisibleTransform) {
 
   UpdateActiveTreeDrawProperties();
 
-  EXPECT_TRUE(draw_property_utils::IsLayerBackFaceVisible(
-      back_facing, back_facing->transform_tree_index(),
-      host_impl()->active_tree()->property_trees()));
-  EXPECT_TRUE(draw_property_utils::IsLayerBackFaceVisible(
-      back_facing, back_facing_double_sided->transform_tree_index(),
-      host_impl()->active_tree()->property_trees()));
-  EXPECT_FALSE(draw_property_utils::IsLayerBackFaceVisible(
-      front_facing, front_facing->transform_tree_index(),
-      host_impl()->active_tree()->property_trees()));
+  EXPECT_TRUE(draw_property_utils::IsLayerBackFaceVisibleForTesting(
+      back_facing, host_impl()->active_tree()->property_trees()));
+  EXPECT_TRUE(draw_property_utils::IsLayerBackFaceVisibleForTesting(
+      back_facing_double_sided, host_impl()->active_tree()->property_trees()));
+  EXPECT_FALSE(draw_property_utils::IsLayerBackFaceVisibleForTesting(
+      front_facing, host_impl()->active_tree()->property_trees()));
 
   EXPECT_TRUE(back_facing->raster_even_if_not_drawn());
   EXPECT_TRUE(
@@ -4342,18 +4505,18 @@ TEST_F(DrawPropertiesTest,
   LayerImpl* root = root_layer();
   LayerImpl* clip_parent = AddLayer<LayerImpl>();
   LayerImpl* clip_layer = AddLayer<LayerImpl>();
-  LayerImpl* render_surface1 = AddLayer<LayerImpl>();
+  LayerImpl* render_surface_layer1 = AddLayer<LayerImpl>();
   LayerImpl* clip_child = AddLayer<LayerImpl>();
-  LayerImpl* render_surface2 = AddLayer<LayerImpl>();
+  LayerImpl* render_surface_layer2 = AddLayer<LayerImpl>();
   LayerImpl* non_clip_child = AddLayer<LayerImpl>();
 
   root->SetBounds(gfx::Size(15, 15));
   clip_parent->SetBounds(gfx::Size(10, 10));
   clip_layer->SetBounds(gfx::Size(10, 10));
-  render_surface1->SetDrawsContent(true);
-  render_surface1->SetBounds(gfx::Size(5, 5));
-  render_surface2->SetDrawsContent(true);
-  render_surface2->SetBounds(gfx::Size(5, 5));
+  render_surface_layer1->SetDrawsContent(true);
+  render_surface_layer1->SetBounds(gfx::Size(5, 5));
+  render_surface_layer2->SetDrawsContent(true);
+  render_surface_layer2->SetBounds(gfx::Size(5, 5));
   clip_child->SetDrawsContent(true);
   clip_child->SetOffsetToTransformParent(gfx::Vector2dF(-1, 1));
   clip_child->SetBounds(gfx::Size(10, 10));
@@ -4364,47 +4527,63 @@ TEST_F(DrawPropertiesTest,
   CreateClipNode(clip_parent);
   CopyProperties(clip_parent, clip_layer);
   CreateClipNode(clip_layer);
-  CopyProperties(clip_layer, render_surface1);
-  CreateTransformNode(render_surface1).post_translation = gfx::Vector2dF(5, 5);
-  CreateEffectNode(render_surface1).render_surface_reason =
+  CopyProperties(clip_layer, render_surface_layer1);
+  CreateTransformNode(render_surface_layer1).post_translation =
+      gfx::Vector2dF(5, 5);
+  CreateEffectNode(render_surface_layer1).render_surface_reason =
       RenderSurfaceReason::kTest;
-  CopyProperties(clip_layer, render_surface2);
-  CreateTransformNode(render_surface2).post_translation = gfx::Vector2dF(5, 5);
-  CreateEffectNode(render_surface2).render_surface_reason =
+  CopyProperties(clip_layer, render_surface_layer2);
+  CreateTransformNode(render_surface_layer2).post_translation =
+      gfx::Vector2dF(5, 5);
+  CreateEffectNode(render_surface_layer2).render_surface_reason =
       RenderSurfaceReason::kTest;
-  CopyProperties(render_surface1, clip_child);
+  CopyProperties(render_surface_layer1, clip_child);
   clip_child->SetClipTreeIndex(clip_parent->clip_tree_index());
-  CopyProperties(render_surface2, non_clip_child);
+  CopyProperties(render_surface_layer2, non_clip_child);
 
   UpdateActiveTreeDrawProperties();
 
   EXPECT_TRUE(GetRenderSurface(root));
-  EXPECT_TRUE(GetRenderSurface(render_surface1));
-  EXPECT_TRUE(GetRenderSurface(render_surface2));
+  auto* render_surface1 = GetRenderSurface(render_surface_layer1);
+  ASSERT_TRUE(render_surface1);
+  auto* render_surface2 = GetRenderSurface(render_surface_layer2);
+  ASSERT_TRUE(render_surface2);
 
-  EXPECT_EQ(gfx::Rect(-5, -5, 10, 10), render_surface1->clip_rect());
-  EXPECT_TRUE(render_surface1->is_clipped());
+  EXPECT_EQ(gfx::Rect(-5, -5, 10, 10), render_surface_layer1->clip_rect());
+  EXPECT_TRUE(render_surface_layer1->is_clipped());
 
-  // The render surface should not clip (it has unclipped descendants), instead
-  // it should rely on layer clipping.
-  EXPECT_EQ(gfx::Rect(0, 0, 0, 0),
-            GetRenderSurface(render_surface1)->clip_rect());
-  EXPECT_FALSE(GetRenderSurface(render_surface1)->is_clipped());
+  // The render should clip to clip_layer (it has unclipped descendants),
+  // instead it should rely on layer clipping.
+  EXPECT_TRUE(render_surface1->has_contributing_layer_that_escapes_clip());
+  EXPECT_EQ(clip_layer->clip_tree_index(), render_surface1->ClipTreeIndex());
+  if (base::FeatureList::IsEnabled(
+          features::kRenderSurfaceCommonAncestorClip)) {
+    EXPECT_EQ(clip_parent->clip_tree_index(),
+              render_surface1->common_ancestor_clip_id());
+    EXPECT_TRUE(render_surface1->is_clipped());
+    EXPECT_EQ(gfx::Rect(0, 0, 10, 10), render_surface1->clip_rect());
+  } else {
+    EXPECT_EQ(clip_layer->clip_tree_index(),
+              render_surface1->common_ancestor_clip_id());
+    EXPECT_FALSE(render_surface1->is_clipped());
+    EXPECT_EQ(gfx::Rect(0, 0, 0, 0), render_surface1->clip_rect());
+  }
 
-  // That said, it should have grown to accomodate the unclipped descendant and
-  // its own size.
-  EXPECT_EQ(gfx::Rect(-1, 0, 6, 5),
-            GetRenderSurface(render_surface1)->content_rect());
+  // That said, it should have grown to accommodate the unclipped descendant
+  // and its own size.
+  EXPECT_EQ(gfx::Rect(-1, 0, 6, 5), render_surface1->content_rect());
 
   // This render surface should clip. It has no unclipped descendants.
-  EXPECT_EQ(gfx::Rect(0, 0, 10, 10),
-            GetRenderSurface(render_surface2)->clip_rect());
-  EXPECT_TRUE(GetRenderSurface(render_surface2)->is_clipped());
-  EXPECT_FALSE(render_surface2->is_clipped());
+  EXPECT_FALSE(render_surface2->has_contributing_layer_that_escapes_clip());
+  EXPECT_EQ(clip_layer->clip_tree_index(), render_surface2->ClipTreeIndex());
+  EXPECT_EQ(clip_layer->clip_tree_index(),
+            render_surface2->common_ancestor_clip_id());
+  EXPECT_TRUE(render_surface2->is_clipped());
+  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), render_surface2->clip_rect());
+  EXPECT_FALSE(render_surface_layer2->is_clipped());
 
-  // It also shouldn't have grown to accomodate the clip child.
-  EXPECT_EQ(gfx::Rect(0, 0, 5, 5),
-            GetRenderSurface(render_surface2)->content_rect());
+  // It also shouldn't have grown to accommodate the clip child.
+  EXPECT_EQ(gfx::Rect(0, 0, 5, 5), render_surface2->content_rect());
 }
 
 TEST_F(DrawPropertiesTest, TransformAnimationUpdatesBackfaceVisibility) {
@@ -5493,16 +5672,21 @@ class DrawPropertiesAnchorPositionScrollTest : public DrawPropertiesTest {
     return std::make_pair(std::move(container), std::move(scroller));
   }
 
-  scoped_refptr<Layer> CreateAnchored(Layer* parent,
-                                      Layer* inner_most_scroller,
-                                      Layer* outer_most_scroller) {
+  scoped_refptr<Layer> CreateAnchored(
+      Layer* parent,
+      std::vector<ElementId> adjustment_container_ids) {
     scoped_refptr<Layer> anchored = Layer::Create();
+    anchored->SetElementId(LayerIdToElementIdForTesting(anchored->id()));
     anchored->SetBounds(gfx::Size(10, 10));
     CopyProperties(parent, anchored.get());
     CreateTransformNode(anchored.get());
-    SetAnchorPositionScrollers(anchored.get(),
-                               inner_most_scroller->scroll_tree_index(),
-                               outer_most_scroller->scroll_tree_index());
+    auto& data =
+        GetPropertyTrees(anchored.get())
+            ->transform_tree_mutable()
+            .EnsureAnchorPositionScrollData(anchored->transform_tree_index());
+    data.needs_scroll_adjustment_in_x = true;
+    data.needs_scroll_adjustment_in_y = true;
+    data.adjustment_container_ids = std::move(adjustment_container_ids);
     root_->AddChild(anchored);
     return anchored;
   }
@@ -5517,26 +5701,6 @@ class DrawPropertiesAnchorPositionScrollTest : public DrawPropertiesTest {
   LayerImpl* GetImpl(Layer* layer) {
     LayerTreeImpl* layer_tree_impl = host_impl()->active_tree();
     return layer_tree_impl->LayerById(layer->id());
-  }
-
-  void SetAnchorPositionScrollers(Layer* anchored,
-                                  int inner_most_scroll_container_id,
-                                  int outer_most_scroll_container_id) {
-    auto& data = GetPropertyTrees(anchored)
-                     ->transform_tree_mutable()
-                     .EnsureAnchorPositionScrollersData(
-                         anchored->transform_tree_index());
-    for (int scroller_id = inner_most_scroll_container_id;
-         scroller_id != kInvalidPropertyNodeId;) {
-      const ScrollNode* scroll_node =
-          GetPropertyTrees(anchored)->scroll_tree().Node(scroller_id);
-      data.scroll_container_ids.push_back(scroll_node->element_id);
-
-      if (scroller_id == outer_most_scroll_container_id) {
-        break;
-      }
-      scroller_id = scroll_node->parent_id;
-    }
   }
 
   scoped_refptr<Layer> root_;
@@ -5555,7 +5719,7 @@ TEST_F(DrawPropertiesAnchorPositionScrollTest, Basics) {
   std::tie(container, scroller) = CreateScroller(root_.get());
 
   scoped_refptr<Layer> anchored =
-      CreateAnchored(root_.get(), scroller.get(), scroller.get());
+      CreateAnchored(root_.get(), {scroller->element_id()});
 
   SetPostTranslation(anchored.get(), gfx::Vector2dF(10, 20));
   Commit();
@@ -5605,8 +5769,8 @@ TEST_F(DrawPropertiesAnchorPositionScrollTest, NestedScrollers) {
   scoped_refptr<Layer> scroller3;
   std::tie(container3, scroller3) = CreateScroller(scroller2.get());
 
-  scoped_refptr<Layer> anchored =
-      CreateAnchored(scroller1.get(), scroller3.get(), scroller2.get());
+  scoped_refptr<Layer> anchored = CreateAnchored(
+      scroller1.get(), {scroller3->element_id(), scroller2->element_id()});
 
   SetPostTranslation(anchored.get(), gfx::Vector2dF(10, 20));
   Commit();
@@ -5909,12 +6073,15 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
 static void GatherDrawnLayers(LayerTreeImpl* tree_impl,
                               std::set<LayerImpl*>* drawn_layers) {
   for (EffectTreeLayerListIterator it(tree_impl);
-       it.state() != EffectTreeLayerListIterator::State::END; ++it) {
-    if (it.state() == EffectTreeLayerListIterator::State::LAYER)
+       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
+    if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
       drawn_layers->insert(it.current_layer());
+    }
 
-    if (it.state() != EffectTreeLayerListIterator::State::CONTRIBUTING_SURFACE)
+    if (it.state() !=
+        EffectTreeLayerListIterator::State::kContributingSurface) {
       continue;
+    }
   }
 }
 
@@ -7077,13 +7244,13 @@ TEST_F(DrawPropertiesTest, RenderSurfaceWithUnclippedDescendantsClipsSubtree) {
   LayerImpl* root = root_layer();
   LayerImpl* clip_parent = AddLayer<LayerImpl>();
   LayerImpl* between_clip_parent_and_child = AddLayer<LayerImpl>();
-  LayerImpl* render_surface = AddLayer<LayerImpl>();
+  LayerImpl* render_surface_layer = AddLayer<LayerImpl>();
   LayerImpl* test_layer = AddLayer<LayerImpl>();
 
   root->SetBounds(gfx::Size(30, 30));
   clip_parent->SetBounds(gfx::Size(30, 30));
   between_clip_parent_and_child->SetBounds(gfx::Size(30, 30));
-  render_surface->SetBounds(gfx::Size(30, 30));
+  render_surface_layer->SetBounds(gfx::Size(30, 30));
   test_layer->SetBounds(gfx::Size(30, 30));
   test_layer->SetDrawsContent(true);
 
@@ -7094,19 +7261,35 @@ TEST_F(DrawPropertiesTest, RenderSurfaceWithUnclippedDescendantsClipsSubtree) {
   CreateClipNode(between_clip_parent_and_child);
   CreateTransformNode(between_clip_parent_and_child).local.Translate(2, 2);
   CreateClipNode(between_clip_parent_and_child);
-  CopyProperties(between_clip_parent_and_child, render_surface);
-  CreateEffectNode(render_surface).render_surface_reason =
+  CopyProperties(between_clip_parent_and_child, render_surface_layer);
+  CreateEffectNode(render_surface_layer).render_surface_reason =
       RenderSurfaceReason::kTest;
-  CopyProperties(render_surface, test_layer);
+  CopyProperties(render_surface_layer, test_layer);
   test_layer->SetClipTreeIndex(clip_parent->clip_tree_index());
 
   UpdateActiveTreeDrawProperties();
 
   EXPECT_TRUE(test_layer->is_clipped());
-  EXPECT_FALSE(test_layer->render_target()->is_clipped());
   EXPECT_EQ(gfx::Rect(-2, -2, 30, 30), test_layer->clip_rect());
   EXPECT_EQ(gfx::Rect(26, 26), test_layer->visible_layer_rect());
   EXPECT_EQ(gfx::Rect(26, 26), test_layer->visible_drawable_content_rect());
+
+  auto* render_surface = test_layer->render_target();
+  EXPECT_TRUE(render_surface->has_contributing_layer_that_escapes_clip());
+  EXPECT_EQ(between_clip_parent_and_child->clip_tree_index(),
+            render_surface->ClipTreeIndex());
+  if (base::FeatureList::IsEnabled(
+          features::kRenderSurfaceCommonAncestorClip)) {
+    EXPECT_EQ(clip_parent->clip_tree_index(),
+              render_surface->common_ancestor_clip_id());
+    EXPECT_TRUE(render_surface->is_clipped());
+    EXPECT_EQ(gfx::Rect(2, 2, 30, 30), render_surface->clip_rect());
+  } else {
+    EXPECT_EQ(between_clip_parent_and_child->clip_tree_index(),
+              render_surface->common_ancestor_clip_id());
+    EXPECT_FALSE(render_surface->is_clipped());
+  }
+  EXPECT_EQ(gfx::Rect(26, 26), render_surface->content_rect());
 }
 
 TEST_F(DrawPropertiesTest,

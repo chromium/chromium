@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace WTF {
 
@@ -54,6 +55,11 @@ template <typename K, typename V>
 struct IsWeak<KeyValuePair<K, V>>
     : std::integral_constant<bool, IsWeak<K>::value || IsWeak<V>::value> {};
 
+template <typename K, typename V>
+struct IsTraceable<KeyValuePair<K, V>>
+    : std::integral_constant<bool,
+                             IsTraceable<K>::value || IsTraceable<V>::value> {};
+
 template <typename KeyTraitsArg,
           typename ValueTraitsArg,
           typename P = KeyValuePair<typename KeyTraitsArg::TraitType,
@@ -76,6 +82,18 @@ struct KeyValuePairHashTraits
 template <typename Key, typename Value>
 struct HashTraits<KeyValuePair<Key, Value>>
     : public KeyValuePairHashTraits<HashTraits<Key>, HashTraits<Value>> {};
+
+namespace internal {
+
+template <typename T, bool NeedsStackCheck = IsTraceable<T>::value>
+class IteratorAdapterBase {};
+
+template <typename T>
+struct IteratorAdapterBase<T, true> {
+  STACK_ALLOCATED();
+};
+
+}  // namespace internal
 
 template <typename HashTableType,
           typename KeyType,
@@ -100,65 +118,8 @@ struct HashTableValuesIterator;
 
 template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableConstIteratorAdapter<HashTableType,
-                                     KeyValuePair<KeyType, MappedType>> {
-  static_assert(!IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-
-  typedef KeyValuePair<KeyType, MappedType> ValueType;
-  typedef HashTableConstKeysIterator<HashTableType, KeyType, MappedType>
-      KeysIterator;
-  typedef HashTableConstValuesIterator<HashTableType, KeyType, MappedType>
-      ValuesIterator;
-
-  using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = ValueType;
-  using difference_type = ptrdiff_t;
-  using pointer = const ValueType*;
-  using reference = const ValueType&;
-
-  HashTableConstIteratorAdapter() = default;
-  HashTableConstIteratorAdapter(
-      const typename HashTableType::const_iterator& impl)
-      : impl_(impl) {}
-
-  const ValueType* Get() const { return (const ValueType*)impl_.Get(); }
-  const ValueType& operator*() const { return *Get(); }
-  const ValueType* operator->() const { return Get(); }
-
-  HashTableConstIteratorAdapter& operator++() {
-    ++impl_;
-    return *this;
-  }
-  HashTableConstIteratorAdapter operator++(int) {
-    HashTableConstIteratorAdapter copy(*this);
-    ++*this;
-    return copy;
-  }
-
-  HashTableConstIteratorAdapter& operator--() {
-    --impl_;
-    return *this;
-  }
-  HashTableConstIteratorAdapter operator--(int) {
-    HashTableConstIteratorAdapter copy(*this);
-    --*this;
-    return copy;
-  }
-
-  KeysIterator Keys() { return KeysIterator(*this); }
-  ValuesIterator Values() { return ValuesIterator(*this); }
-
-  typename HashTableType::const_iterator impl_;
-};
-
-template <typename HashTableType, typename KeyType, typename MappedType>
-struct HashTableConstIteratorAdapter<
-    HashTableType,
-    KeyValuePair<KeyType, MappedType>,
-    std::enable_if_t<IsTraceable<KeyValuePair<KeyType, MappedType>>::value>> {
-  static_assert(IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-  STACK_ALLOCATED();
-
- public:
+                                     KeyValuePair<KeyType, MappedType>>
+    : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
   typedef KeyValuePair<KeyType, MappedType> ValueType;
   typedef HashTableConstKeysIterator<HashTableType, KeyType, MappedType>
       KeysIterator;
@@ -208,9 +169,8 @@ struct HashTableConstIteratorAdapter<
 
 template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableIteratorAdapter<HashTableType,
-                                KeyValuePair<KeyType, MappedType>> {
-  static_assert(!IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-
+                                KeyValuePair<KeyType, MappedType>>
+    : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
   typedef KeyValuePair<KeyType, MappedType> ValueType;
   typedef HashTableKeysIterator<HashTableType, KeyType, MappedType>
       KeysIterator;
@@ -263,72 +223,8 @@ struct HashTableIteratorAdapter<HashTableType,
 };
 
 template <typename HashTableType, typename KeyType, typename MappedType>
-struct HashTableIteratorAdapter<
-    HashTableType,
-    KeyValuePair<KeyType, MappedType>,
-    std::enable_if_t<IsTraceable<KeyValuePair<KeyType, MappedType>>::value>> {
-  static_assert(IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-  STACK_ALLOCATED();
-
- public:
-  typedef KeyValuePair<KeyType, MappedType> ValueType;
-  typedef HashTableKeysIterator<HashTableType, KeyType, MappedType>
-      KeysIterator;
-  typedef HashTableValuesIterator<HashTableType, KeyType, MappedType>
-      ValuesIterator;
-
-  using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = ValueType;
-  using difference_type = ptrdiff_t;
-  using pointer = ValueType*;
-  using reference = ValueType&;
-
-  HashTableIteratorAdapter() = default;
-  HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
-      : impl_(impl) {}
-
-  ValueType* Get() const { return (ValueType*)impl_.Get(); }
-  ValueType& operator*() const { return *Get(); }
-  ValueType* operator->() const { return Get(); }
-
-  HashTableIteratorAdapter& operator++() {
-    ++impl_;
-    return *this;
-  }
-  HashTableIteratorAdapter operator++(int) {
-    HashTableIteratorAdapter copy(*this);
-    ++*this;
-    return copy;
-  }
-
-  HashTableIteratorAdapter& operator--() {
-    --impl_;
-    return *this;
-  }
-  HashTableIteratorAdapter operator--(int) {
-    HashTableIteratorAdapter copy(*this);
-    --*this;
-    return copy;
-  }
-
-  operator HashTableConstIteratorAdapter<HashTableType, ValueType>() {
-    typename HashTableType::const_iterator i = impl_;
-    return i;
-  }
-
-  KeysIterator Keys() { return KeysIterator(*this); }
-  ValuesIterator Values() { return ValuesIterator(*this); }
-
-  typename HashTableType::iterator impl_;
-};
-
-template <typename HashTableType,
-          typename KeyType,
-          typename MappedType,
-          typename Enable>
-struct HashTableConstKeysIterator {
-  static_assert(!IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-
+struct HashTableConstKeysIterator<HashTableType, KeyType, MappedType>
+    : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  private:
   typedef HashTableConstIteratorAdapter<HashTableType,
                                         KeyValuePair<KeyType, MappedType>>
@@ -371,62 +267,8 @@ struct HashTableConstKeysIterator {
 };
 
 template <typename HashTableType, typename KeyType, typename MappedType>
-struct HashTableConstKeysIterator<
-    HashTableType,
-    KeyType,
-    MappedType,
-    std::enable_if_t<IsTraceable<KeyValuePair<KeyType, MappedType>>::value>> {
-  static_assert(IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-  STACK_ALLOCATED();
-
- private:
-  typedef HashTableConstIteratorAdapter<HashTableType,
-                                        KeyValuePair<KeyType, MappedType>>
-      ConstIterator;
-
- public:
-  using iterator_category = typename ConstIterator::iterator_category;
-  using value_type = KeyType;
-  using difference_type = typename ConstIterator::difference_type;
-  using pointer = const KeyType*;
-  using reference = const KeyType&;
-
-  HashTableConstKeysIterator(const ConstIterator& impl) : impl_(impl) {}
-
-  const KeyType* Get() const { return &(impl_.Get()->key); }
-  const KeyType& operator*() const { return *Get(); }
-  const KeyType* operator->() const { return Get(); }
-
-  HashTableConstKeysIterator& operator++() {
-    ++impl_;
-    return *this;
-  }
-  HashTableConstKeysIterator operator++(int) {
-    HashTableConstKeysIterator copy(*this);
-    ++*this;
-    return copy;
-  }
-
-  HashTableConstKeysIterator& operator--() {
-    --impl_;
-    return *this;
-  }
-  HashTableConstKeysIterator operator--(int) {
-    HashTableConstKeysIterator copy(*this);
-    --*this;
-    return copy;
-  }
-
-  ConstIterator impl_;
-};
-
-template <typename HashTableType,
-          typename KeyType,
-          typename MappedType,
-          typename Enable>
-struct HashTableConstValuesIterator {
-  static_assert(!IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-
+struct HashTableConstValuesIterator<HashTableType, KeyType, MappedType>
+    : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  private:
   typedef HashTableConstIteratorAdapter<HashTableType,
                                         KeyValuePair<KeyType, MappedType>>
@@ -469,62 +311,8 @@ struct HashTableConstValuesIterator {
 };
 
 template <typename HashTableType, typename KeyType, typename MappedType>
-struct HashTableConstValuesIterator<
-    HashTableType,
-    KeyType,
-    MappedType,
-    std::enable_if_t<IsTraceable<KeyValuePair<KeyType, MappedType>>::value>> {
-  static_assert(IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-  STACK_ALLOCATED();
-
- private:
-  typedef HashTableConstIteratorAdapter<HashTableType,
-                                        KeyValuePair<KeyType, MappedType>>
-      ConstIterator;
-
- public:
-  using iterator_category = typename ConstIterator::iterator_category;
-  using value_type = MappedType;
-  using difference_type = typename ConstIterator::difference_type;
-  using pointer = const MappedType*;
-  using reference = const MappedType&;
-
-  HashTableConstValuesIterator(const ConstIterator& impl) : impl_(impl) {}
-
-  const MappedType* Get() const { return &(impl_.Get()->value); }
-  const MappedType& operator*() const { return *Get(); }
-  const MappedType* operator->() const { return Get(); }
-
-  HashTableConstValuesIterator& operator++() {
-    ++impl_;
-    return *this;
-  }
-  HashTableConstValuesIterator operator++(int) {
-    HashTableConstValuesIterator copy(*this);
-    ++*this;
-    return copy;
-  }
-
-  HashTableConstValuesIterator& operator--() {
-    --impl_;
-    return *this;
-  }
-  HashTableConstValuesIterator operator--(int) {
-    HashTableConstValuesIterator copy(*this);
-    --*this;
-    return copy;
-  }
-
-  ConstIterator impl_;
-};
-
-template <typename HashTableType,
-          typename KeyType,
-          typename MappedType,
-          typename Enable>
-struct HashTableKeysIterator {
-  static_assert(!IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-
+struct HashTableKeysIterator<HashTableType, KeyType, MappedType>
+    : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  private:
   typedef HashTableIteratorAdapter<HashTableType,
                                    KeyValuePair<KeyType, MappedType>>
@@ -575,128 +363,8 @@ struct HashTableKeysIterator {
 };
 
 template <typename HashTableType, typename KeyType, typename MappedType>
-struct HashTableKeysIterator<
-    HashTableType,
-    KeyType,
-    MappedType,
-    std::enable_if_t<IsTraceable<KeyValuePair<KeyType, MappedType>>::value>> {
-  static_assert(IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-  STACK_ALLOCATED();
-
- private:
-  typedef HashTableIteratorAdapter<HashTableType,
-                                   KeyValuePair<KeyType, MappedType>>
-      Iterator;
-  typedef HashTableConstIteratorAdapter<HashTableType,
-                                        KeyValuePair<KeyType, MappedType>>
-      ConstIterator;
-
- public:
-  using iterator_category = typename Iterator::iterator_category;
-  using value_type = KeyType;
-  using difference_type = typename Iterator::difference_type;
-  using pointer = KeyType*;
-  using reference = KeyType&;
-
-  HashTableKeysIterator(const Iterator& impl) : impl_(impl) {}
-
-  KeyType* Get() const { return &(impl_.Get()->key); }
-  KeyType& operator*() const { return *Get(); }
-  KeyType* operator->() const { return Get(); }
-
-  HashTableKeysIterator& operator++() {
-    ++impl_;
-    return *this;
-  }
-  HashTableKeysIterator operator++(int) {
-    HashTableKeysIterator copy(*this);
-    ++*this;
-    return copy;
-  }
-
-  HashTableKeysIterator& operator--() {
-    --impl_;
-    return *this;
-  }
-  HashTableKeysIterator operator--(int) {
-    HashTableKeysIterator copy(*this);
-    --*this;
-    return copy;
-  }
-
-  operator HashTableConstKeysIterator<HashTableType, KeyType, MappedType>() {
-    ConstIterator i = impl_;
-    return i;
-  }
-
-  Iterator impl_;
-};
-
-template <typename HashTableType,
-          typename KeyType,
-          typename MappedType,
-          typename Enable>
-struct HashTableValuesIterator {
-  static_assert(!IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-
- private:
-  typedef HashTableIteratorAdapter<HashTableType,
-                                   KeyValuePair<KeyType, MappedType>>
-      Iterator;
-  typedef HashTableConstIteratorAdapter<HashTableType,
-                                        KeyValuePair<KeyType, MappedType>>
-      ConstIterator;
-
- public:
-  using iterator_category = typename Iterator::iterator_category;
-  using value_type = MappedType;
-  using difference_type = typename Iterator::difference_type;
-  using pointer = MappedType*;
-  using reference = MappedType&;
-
-  HashTableValuesIterator(const Iterator& impl) : impl_(impl) {}
-
-  MappedType* Get() const { return &(impl_.Get()->value); }
-  MappedType& operator*() const { return *Get(); }
-  MappedType* operator->() const { return Get(); }
-
-  HashTableValuesIterator& operator++() {
-    ++impl_;
-    return *this;
-  }
-  HashTableValuesIterator operator++(int) {
-    HashTableValuesIterator copy(*this);
-    ++*this;
-    return copy;
-  }
-
-  HashTableValuesIterator& operator--() {
-    --impl_;
-    return *this;
-  }
-  HashTableValuesIterator operator--(int) {
-    HashTableValuesIterator copy(*this);
-    --*this;
-    return copy;
-  }
-
-  operator HashTableConstValuesIterator<HashTableType, KeyType, MappedType>() {
-    ConstIterator i = impl_;
-    return i;
-  }
-
-  Iterator impl_;
-};
-
-template <typename HashTableType, typename KeyType, typename MappedType>
-struct HashTableValuesIterator<
-    HashTableType,
-    KeyType,
-    MappedType,
-    std::enable_if_t<IsTraceable<KeyValuePair<KeyType, MappedType>>::value>> {
-  static_assert(IsTraceable<KeyValuePair<KeyType, MappedType>>::value);
-  STACK_ALLOCATED();
-
+struct HashTableValuesIterator<HashTableType, KeyType, MappedType>
+    : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  private:
   typedef HashTableIteratorAdapter<HashTableType,
                                    KeyValuePair<KeyType, MappedType>>

@@ -5,6 +5,7 @@
 #include "components/metrics/clean_exit_beacon.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -26,7 +27,6 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 namespace {
@@ -78,9 +78,9 @@ class BadBeaconFileTest
 struct BeaconConsistencyTestParams {
   // Inputs:
   const std::string test_name;
-  absl::optional<bool> beacon_file_beacon_value;
-  absl::optional<bool> platform_specific_beacon_value;
-  absl::optional<bool> local_state_beacon_value;
+  std::optional<bool> beacon_file_beacon_value;
+  std::optional<bool> platform_specific_beacon_value;
+  std::optional<bool> local_state_beacon_value;
   // Result:
   CleanExitBeaconConsistency expected_consistency;
 };

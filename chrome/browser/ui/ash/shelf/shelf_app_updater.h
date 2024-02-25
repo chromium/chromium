@@ -8,10 +8,12 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
 namespace apps {
 class PackageId;
 class PromiseAppUpdate;
+class ShortcutUpdate;
 }
 
 namespace content {
@@ -40,6 +42,8 @@ class ShelfAppUpdater {
                                   const std::string& app_id) {}
     virtual void OnPromiseAppUpdate(const apps::PromiseAppUpdate& update) {}
     virtual void OnPromiseAppRemoved(const apps::PackageId& package_id) {}
+    virtual void OnShortcutUpdated(const apps::ShortcutUpdate& update) {}
+    virtual void OnShortcutRemoved(const apps::ShortcutId& id) {}
 
    protected:
     virtual ~Delegate() {}
@@ -59,8 +63,8 @@ class ShelfAppUpdater {
 
  private:
   // Unowned pointers
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_APP_UPDATER_H_

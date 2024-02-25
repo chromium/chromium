@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/locks/with_shared_web_contents_resources.h"
 
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/web_contents.h"
 
 namespace web_app {
 
@@ -12,12 +13,13 @@ WithSharedWebContentsResources::WithSharedWebContentsResources(
     base::WeakPtr<WebAppLockManager> lock_manager,
     content::WebContents& shared_web_contents)
     : lock_manager_(std::move(lock_manager)),
-      shared_web_contents_(shared_web_contents) {}
+      shared_web_contents_(shared_web_contents.GetWeakPtr()) {}
 WithSharedWebContentsResources::~WithSharedWebContentsResources() = default;
 
 content::WebContents& WithSharedWebContentsResources::shared_web_contents()
     const {
   CHECK(lock_manager_);
+  CHECK(shared_web_contents_);
   return *shared_web_contents_;
 }
 

@@ -1,0 +1,196 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AddFingerprint">
+  <int value="0" label="NewVisit"/>
+  <int value="1" label="AlreadyVisited"/>
+  <int value="2" label="TableError"/>
+</enum>
+
+<enum name="BooleanQueried">
+  <int value="0" label="Not Queried"/>
+  <int value="1" label="Queried"/>
+</enum>
+
+<enum name="BrowsingDataRemoverTasks">
+  <int value="1" label="kSynchronous"/>
+  <int value="2" label="kEmbedderData"/>
+  <int value="3" label="kStoragePartition"/>
+  <int value="4" label="kHttpCache"/>
+  <int value="5" label="kHttpAndMediaCaches"/>
+  <int value="6" label="kReportingCache"/>
+  <int value="7" label="kChannelIds"/>
+  <int value="8" label="kNetworkHistory"/>
+  <int value="9" label="kAuthCache"/>
+  <int value="10" label="kCodeCaches"/>
+  <int value="11" label="kNetworkErrorLogging"/>
+  <int value="12" label="kTrustTokens"/>
+  <int value="13" label="kConversions"/>
+  <int value="14" label="kDeferredCookies"/>
+  <int value="15" label="kSharedStorage"/>
+  <int value="16" label="kPreflightCache"/>
+  <int value="17" label="kSharedDictionary"/>
+</enum>
+
+<enum name="ChromeBrowsingDataRemoverTasks">
+  <int value="1" label="kSynchronous"/>
+  <int value="2" label="kHistory"/>
+  <int value="3" label="(Obsolete) kHostNameResolution"/>
+  <int value="4" label="kNaclCache"/>
+  <int value="5" label="kPnaclCache"/>
+  <int value="6" label="kAutofillData"/>
+  <int value="7" label="kAutofillOrigins"/>
+  <int value="8" label="(Obsolete) kPluginData"/>
+  <int value="9" label="kFlashLsoHelper"/>
+  <int value="10" label="kDomainReliability"/>
+  <int value="11" label="(Obsolete) kNetworkPredictor"/>
+  <int value="12" label="kWebrtcLogs"/>
+  <int value="13" label="kVideoDecodeHistory"/>
+  <int value="14" label="kCookies"/>
+  <int value="15" label="kPasswords"/>
+  <int value="16" label="kHttpAuthCache"/>
+  <int value="17" label="kDisableAutoSigninForProfilePasswords"/>
+  <int value="18" label="kPasswordsStatistics"/>
+  <int value="19" label="(Obsolete) kKeywordsModel"/>
+  <int value="20" label="kReportingCache"/>
+  <int value="21" label="kNetworkErrorLogging"/>
+  <int value="22" label="(Obsolete) kFlashDeauthorization"/>
+  <int value="23" label="kOfflinePages"/>
+  <int value="24" label="kPrecache"/>
+  <int value="25" label="(Obsolete) kExploreSites"/>
+  <int value="26" label="(Obsolete) kLegacyStrikes"/>
+  <int value="27" label="kWebrtcEventLogs"/>
+  <int value="28" label="kCdmLicenses"/>
+  <int value="29" label="kHostCache"/>
+  <int value="30" label="kTpmAttestationKeys"/>
+  <int value="31" label="(Obsolete) kStrikes"/>
+  <int value="32"
+      label="(Obsolete) kLeakedCredentials. Use kCompromisedCredentials
+             instead. This expired 2019-11."/>
+  <int value="33" label="(Obsolete) kFieldInfo. Deprecated in M117"/>
+  <int value="34" label="(Obsolete) kCompromisedCredentials"/>
+  <int value="35" label="kUserDataSnapshot"/>
+  <int value="36" label="(Obsolete) kMediaFeeds"/>
+  <int value="37" label="kAccountPasswords"/>
+  <int value="38" label="kAccountPasswordsSynced"/>
+  <int value="39" label="(Obsolete) kAccountCompromisedCredentials"/>
+  <int value="40" label="kFaviconCacheExpiration"/>
+  <int value="41" label="kSecurePaymentConfirmationInstruments"/>
+  <int value="42" label="kWebAppHistory"/>
+  <int value="43" label="kWebAuthnCredentials"/>
+  <int value="44" label="kWebrtcVideoPerfHistory"/>
+  <int value="45" label="kMediaDeviceSalts"/>
+  <int value="46" label="kDisableAutoSigninForAccountPasswords"/>
+</enum>
+
+<enum name="ClearBrowsingDataTab">
+  <int value="0" label="Basic"/>
+  <int value="1" label="Advanced"/>
+</enum>
+
+<enum name="ClusterFilterReason">
+  <int value="0" label="Not filtered"/>
+  <int value="1" label="Not enough visits with images"/>
+  <int value="2" label="Not a match for the allowed categories"/>
+  <int value="3" label="Not search initiated"/>
+  <int value="4" label="No related searches"/>
+  <int value="5" label="Too many noisy/mundane visits"/>
+  <int value="6" label="Only contained a single visit"/>
+  <int value="7" label="Contains content that should not be visible"/>
+  <int value="8" label="Contains blocked category"/>
+  <int value="9" label="Not enough non-hidden visits"/>
+</enum>
+
+<enum name="CookieOrCacheDeletion">
+  <int value="0" label="Neither"/>
+  <int value="1" label="Only cookies"/>
+  <int value="2" label="Only cache"/>
+  <int value="3" label="Both"/>
+</enum>
+
+<enum name="HistoryInitStep">
+  <int value="0" label="Open"/>
+  <int value="1" label="Transaction begin"/>
+  <int value="2" label="Meta table init"/>
+  <int value="3" label="Create tables"/>
+  <int value="4"
+      label="Version check and migration (check
+             History.MigrateFailureFromVersion)"/>
+  <int value="5" label="Commit"/>
+</enum>
+
+<enum name="HistoryPageView">
+  <int value="0" label="History"/>
+  <int value="1" label="Grouped Week (Obsolete Feb. 2017)"/>
+  <int value="2" label="Grouped Month (Obsolete Feb. 2017)"/>
+  <int value="3" label="Synced Tabs"/>
+  <int value="4" label="Signin Promo"/>
+  <int value="5" label="Journeys"/>
+</enum>
+
+<enum name="OtherSessionsActions">
+  <int value="0" label="Menu initialized"/>
+  <int value="1" label="Menu shown (deprecated)"/>
+  <int value="2" label="Link clicked"/>
+  <int value="3" label="Link context menu shown"/>
+  <int value="4" label="Device context menu shown (deprecated)"/>
+  <int value="5" label="Unused/previous device context menu shown"/>
+  <int value="6" label="Collapse Session"/>
+  <int value="7" label="Expand Session"/>
+  <int value="8" label="Open All"/>
+  <int value="9" label="Has foreign data"/>
+  <int value="10" label="Hide for now"/>
+  <int value="11" label="Opened link via context menu"/>
+</enum>
+
+<enum name="PageTransitionForVisitedLinks">
+  <int value="0" label="Other"/>
+  <int value="1" label="Link"/>
+  <int value="2" label="Typed"/>
+  <int value="3" label="ManualSubframe"/>
+</enum>
+
+<enum name="StoragePartitionRemoverTasks">
+  <int value="1" label="kSynchronous"/>
+  <int value="2" label="kCookies"/>
+  <int value="3" label="kQuota"/>
+  <int value="4" label="kLocalStorage"/>
+  <int value="5" label="kSessionStorage"/>
+  <int value="6" label="kShaderCache"/>
+  <int value="7" label="kPluginPrivate"/>
+  <int value="8" label="kConversions"/>
+  <int value="9" label="kAggregationService"/>
+  <int value="10" label="kSharedStorage"/>
+  <int value="11" label="kGpuCache"/>
+  <int value="12" label="kPrivateAggregation"/>
+  <int value="13" label="kInterestGroups"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

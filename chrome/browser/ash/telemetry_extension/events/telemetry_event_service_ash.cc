@@ -4,28 +4,33 @@
 
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/telemetry_extension/common/telemetry_extension_converters.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_forwarder.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_event_service.mojom-shared.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
-#include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
+
+namespace {
+
+using EventObserverProxy =
+    SelfOwnedMojoProxy<crosapi::mojom::TelemetryEventObserver,
+                       cros_healthd::mojom::EventObserver,
+                       CrosHealthdEventForwarder>;
+
+}  // namespace
 
 // static
 TelemetryEventServiceAsh::Factory*
@@ -65,8 +70,15 @@ void TelemetryEventServiceAsh::AddEventObserver(
     mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver> observer) {
   auto cb = base::BindOnce(&TelemetryEventServiceAsh::OnConnectionClosed,
                            weak_factory_.GetWeakPtr());
-  observers_.push_back(std::make_unique<CrosHealthdEventForwarder>(
-      category, std::move(cb), std::move(observer)));
+  mojo::PendingReceiver<cros_healthd::mojom::EventObserver> pending_receiver;
+  cros_healthd::ServiceConnection::GetInstance()
+      ->GetEventService()
+      ->AddEventObserver(converters::events::Convert(category),
+                         pending_receiver.InitWithNewPipeAndPassRemote());
+
+  observers_.push_back(EventObserverProxy::Create(std::move(pending_receiver),
+                                                  std::move(observer),
+                                                  std::move(cb), category));
 }
 
 void TelemetryEventServiceAsh::IsEventSupported(
@@ -86,15 +98,12 @@ void TelemetryEventServiceAsh::IsEventSupported(
 }
 
 void TelemetryEventServiceAsh::OnConnectionClosed(
-    CrosHealthdEventForwarder* closed_connection) {
-  observers_.erase(
-      std::remove_if(
-          observers_.begin(), observers_.end(),
-          [closed_connection](
-              const std::unique_ptr<CrosHealthdEventForwarder>& ptr) {
-            return ptr.get() == closed_connection;
-          }),
-      observers_.end());
+    SelfOwnedMojoProxyInterface* closed_connection) {
+  base::EraseIf(
+      observers_,
+      [closed_connection](const raw_ptr<SelfOwnedMojoProxyInterface>& ptr) {
+        return ptr.get() == closed_connection;
+      });
 }
 
 }  // namespace ash

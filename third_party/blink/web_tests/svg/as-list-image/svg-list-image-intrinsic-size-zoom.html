@@ -23,7 +23,7 @@
   [ 2, 3, 4, 5, 0.5, 0.2, 1].forEach(function(zoom) {
       test(function() {
           document.body.style.zoom = zoom;
-          assert_approx_equals(ul.getBoundingClientRect().height, 500, 0.5);
+          assert_approx_equals(ul.getBoundingClientRect().height / zoom, 500, 0.5);
       }, 'Zoom to ' + zoom + " and list height should be equal to line-height");
   });
 </script>

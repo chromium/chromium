@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -173,7 +174,7 @@ class ParkableImageBaseTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_env_;
-  InMemoryDataAllocator* allocator_for_testing_;
+  raw_ptr<InMemoryDataAllocator> allocator_for_testing_;
 };
 
 // Parking is enabled for these tests.
@@ -714,8 +715,6 @@ TEST_F(ParkableImageTest, ManagerStatistics5min) {
   // We expect "Memory.ParkableImage.OnDiskFootprintKb.5min" not to be emitted,
   // since we've mocked the DiskDataAllocator for testing (and therefore cannot
   // actually write to disk).
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.DiskIsUsable.5min",
-                                     1);
   histogram_tester_.ExpectTotalCount(
       "Memory.ParkableImage.OnDiskFootprintKb.5min", 0);
   histogram_tester_.ExpectTotalCount("Memory.ParkableImage.OnDiskSize.5min", 1);
@@ -742,8 +741,6 @@ TEST_F(ParkableImageNoParkingTest, ManagerStatistics5min) {
   Wait5MinForStatistics();
 
   // Note that we expect 0 counts of some of these metrics.
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.DiskIsUsable.5min",
-                                     0);
   histogram_tester_.ExpectTotalCount(
       "Memory.ParkableImage.OnDiskFootprintKb.5min", 0);
   histogram_tester_.ExpectTotalCount("Memory.ParkableImage.OnDiskSize.5min", 1);

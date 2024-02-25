@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
@@ -81,8 +82,8 @@ TEST_F(ArcDataRemoverTest, NotScheduled) {
 
   base::RunLoop loop;
   data_remover.Run(base::BindOnce(
-      [](base::RunLoop* loop, absl::optional<bool> result) {
-        EXPECT_EQ(result, absl::nullopt);
+      [](base::RunLoop* loop, std::optional<bool> result) {
+        EXPECT_EQ(result, std::nullopt);
         loop->Quit();
       },
       &loop));
@@ -90,6 +91,8 @@ TEST_F(ArcDataRemoverTest, NotScheduled) {
 }
 
 TEST_F(ArcDataRemoverTest, Success) {
+  base::HistogramTester histogram_tester;
+
   upstart_client()->set_arc_available(true);
 
   ArcDataRemover data_remover(prefs(), cryptohome_id());
@@ -97,26 +100,32 @@ TEST_F(ArcDataRemoverTest, Success) {
 
   base::RunLoop loop;
   data_remover.Run(base::BindOnce(
-      [](base::RunLoop* loop, absl::optional<bool> result) {
-        EXPECT_EQ(result, absl::make_optional(true));
+      [](base::RunLoop* loop, std::optional<bool> result) {
+        EXPECT_EQ(result, std::make_optional(true));
         loop->Quit();
       },
       &loop));
   loop.Run();
+
+  histogram_tester.ExpectUniqueSample("Arc.DataRemoved.Success", true, 1);
 }
 
 TEST_F(ArcDataRemoverTest, Fail) {
+  base::HistogramTester histogram_tester;
+
   ArcDataRemover data_remover(prefs(), cryptohome_id());
   data_remover.Schedule();
 
   base::RunLoop loop;
   data_remover.Run(base::BindOnce(
-      [](base::RunLoop* loop, absl::optional<bool> result) {
-        EXPECT_EQ(result, absl::make_optional(false));
+      [](base::RunLoop* loop, std::optional<bool> result) {
+        EXPECT_EQ(result, std::make_optional(false));
         loop->Quit();
       },
       &loop));
   loop.Run();
+
+  histogram_tester.ExpectUniqueSample("Arc.DataRemoved.Success", false, 1);
 }
 
 TEST_F(ArcDataRemoverTest, PrefPersistsAcrossInstances) {

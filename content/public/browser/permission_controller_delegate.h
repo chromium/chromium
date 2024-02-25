@@ -5,10 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 
+#include <optional>
+
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -26,6 +27,7 @@ namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
 class WebContents;
+struct PermissionRequestDescription;
 
 class CONTENT_EXPORT PermissionControllerDelegate {
  public:
@@ -34,28 +36,17 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   virtual ~PermissionControllerDelegate() = default;
 
-  // Requests a permission on behalf of a frame identified by
-  // render_frame_host.
-  // When the permission request is handled, whether it failed, timed out or
-  // succeeded, the |callback| will be run.
-  virtual void RequestPermission(
-      blink::PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<void(PermissionStatus)> callback) = 0;
-
   // Requests multiple permissions on behalf of a frame identified by
-  // render_frame_host.
-  // When the permission request is handled, whether it failed, timed out or
-  // succeeded, the |callback| will be run. The order of statuses in the
-  // returned vector will correspond to the order of requested permission
-  // types.
+  // |render_frame_host|. When the permission request is handled, whether it
+  // failed, timed out or succeeded, the |callback| will be run. The order of
+  // statuses in the returned vector will correspond to the order of requested
+  // permission types.
+  // TODO(crbug.com/1462930): `RequestPermissions` and
+  // `RequestPermissionsFromCurrentDocument` do exactly the same things. Merge
+  // them together.
   virtual void RequestPermissions(
-      const std::vector<blink::PermissionType>& permission,
       RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)>
           callback) = 0;
 
@@ -65,9 +56,8 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // whether it's in back-forward cache or being prerendered) in addition to its
   // origin.
   virtual void RequestPermissionsFromCurrentDocument(
-      const std::vector<blink::PermissionType>& permissions,
       RenderFrameHost* render_frame_host,
-      bool user_gesture,
+      const PermissionRequestDescription& request_description,
       base::OnceCallback<void(const std::vector<PermissionStatus>&)>
           callback) = 0;
 
@@ -132,7 +122,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // unsubscribe, which can be `is_null()` if the subscribe was not successful.
   // Exactly one of |render_process_host| and |render_frame_host| should be
   // set, RenderProcessHost will be inferred from |render_frame_host|.
-  virtual SubscriptionId SubscribePermissionStatusChange(
+  virtual SubscriptionId SubscribeToPermissionStatusChange(
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
@@ -141,9 +131,9 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   // Unregisters from permission status change notifications. The
   // |subscription_id| must match the value returned by the
-  // SubscribePermissionStatusChange call. Unsubscribing an already
+  // SubscribeToPermissionStatusChange call. Unsubscribing an already
   // unsubscribed |subscription_id| or an `is_null()` ID is a no-op.
-  virtual void UnsubscribePermissionStatusChange(
+  virtual void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) = 0;
 
   // If there's currently a permission UI presenting for the given WebContents,
@@ -151,13 +141,13 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // to avoid situations where users may make bad decisions based on incorrect
   // contextual information (due to content or widgets overlaying the exclusion
   // area)
-  virtual absl::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
+  virtual std::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
       WebContents* web_contents) const;
 
   // Returns whether permission can be overridden.
   virtual bool IsPermissionOverridable(
       blink::PermissionType permission,
-      const absl::optional<url::Origin>& origin);
+      const std::optional<url::Origin>& origin);
 };
 
 }  // namespace content

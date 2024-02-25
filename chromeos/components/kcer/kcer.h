@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/types/strong_alias.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace kcer {
@@ -41,6 +41,8 @@ using Pkcs12Blob =
     base::StrongAlias<class TypeTagPkcs12Blob, std::vector<uint8_t>>;
 using DataToSign =
     base::StrongAlias<class TypeTagDataToSign, std::vector<uint8_t>>;
+// Digest of the DataToSign. If the signing algorithm expects a prefix (such as
+// DigestInfo for RSA), it is already prepended for this type.
 using DigestWithPrefix =
     base::StrongAlias<class TypeTagDigestWithPrefix, std::vector<uint8_t>>;
 
@@ -76,6 +78,24 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToListKeys = 27,
   kFailedToRemovePrivateKey = 28,
   kFailedToRemovePublicKey = 29,
+  kFailedToRemoveObjects = 30,
+  kFailedToCreateSpki = 31,
+  kFailedToGetPkcs11Id = 32,
+  kFailedToSearchForObjects = 33,
+  kPkcs11SessionFailure = 34,
+  kBadKeyParams = 35,
+  kUnexpectedFindResult = 36,
+  kFailedToDecodeKeyAttributes = 37,
+  kFailedToRetrieveMechanismList = 38,
+  kFailedToParseKey = 39,
+  kFailedToGetIssuerName = 40,
+  kFailedToGetSubjectName = 41,
+  kFailedToGetSerialNumber = 42,
+  kFailedToParsePkcs12 = 43,
+  kInvalidPkcs12 = 44,
+  kPkcs12WrongPassword = 45,
+  kPkcs12InvalidMac = 46,
+
 };
 
 // Handles for tokens on ChromeOS.
@@ -102,6 +122,14 @@ struct COMPONENT_EXPORT(KCER) TokenInfo {
 enum class COMPONENT_EXPORT(KCER) KeyType {
   kRsa,
   kEcc,
+};
+
+// Supported sizes for RSA keys. It's allowed to static_cast the values to
+// uint32_t.
+enum class COMPONENT_EXPORT(KCER) RsaModulusLength {
+  k1024 = 1024,
+  k2048 = 2048,
+  k4096 = 4096
 };
 
 enum class COMPONENT_EXPORT(KCER) EllipticCurve {
@@ -159,10 +187,7 @@ struct COMPONENT_EXPORT(KCER) KeyInfo {
   bool is_hardware_backed;
   KeyType key_type;
   std::vector<SigningScheme> supported_signing_schemes;
-  absl::optional<std::string> nickname;
-  // Custom ChromeOS attributes.
-  absl::optional<chaps::KeyPermissions> key_permissions;
-  absl::optional<std::string> cert_provisioning_profile_id;
+  std::optional<std::string> nickname;
 };
 
 class COMPONENT_EXPORT(KCER) Cert : public base::RefCountedThreadSafe<Cert> {
@@ -215,9 +240,12 @@ class COMPONENT_EXPORT(KCER) PrivateKeyHandle {
   PrivateKeyHandle& operator=(PrivateKeyHandle&&);
 
   // Public for implementations of Kcer only.
-  const absl::optional<Token>& GetTokenInternal() const { return token_; }
+  const std::optional<Token>& GetTokenInternal() const { return token_; }
   const Pkcs11Id& GetPkcs11IdInternal() const { return pkcs11_id_; }
   const PublicKeySpki& GetSpkiInternal() const { return pub_key_spki_; }
+  void SetPkcs11IdInternal(Pkcs11Id pkcs11_id) {
+    pkcs11_id_ = std::move(pkcs11_id);
+  }
 
  private:
   // Depending on how PrivateKeyHandle is constructed, some member variables
@@ -226,7 +254,7 @@ class COMPONENT_EXPORT(KCER) PrivateKeyHandle {
   // * Only `token_` and `pub_key_spki_` are populated.
   // * Only `pub_key_spki_` is populated.
   // * All member variables are populated.
-  absl::optional<Token> token_;
+  std::optional<Token> token_;
   Pkcs11Id pkcs11_id_;
   PublicKeySpki pub_key_spki_;
 };
@@ -240,8 +268,8 @@ class COMPONENT_EXPORT(KCER) PrivateKeyHandle {
 class COMPONENT_EXPORT(KCER) Kcer {
  public:
   // base::expected<void, Error> could also be expressed as
-  // absl::optional<Error>, but then result.has_value() would mean opposite
-  // things for methods with base::expected vs absl::optional.
+  // std::optional<Error>, but then result.has_value() would mean opposite
+  // things for methods with base::expected vs std::optional.
   using StatusCallback = base::OnceCallback<void(base::expected<void, Error>)>;
   using GenerateKeyCallback =
       base::OnceCallback<void(base::expected<PublicKey, Error>)>;
@@ -259,10 +287,16 @@ class COMPONENT_EXPORT(KCER) Kcer {
       base::OnceCallback<void(base::expected<bool, Error>)>;
   using SignCallback =
       base::OnceCallback<void(base::expected<Signature, Error>)>;
+  using GetAvailableTokensCallback =
+      base::OnceCallback<void(base::flat_set<Token>)>;
   using GetTokenInfoCallback =
       base::OnceCallback<void(base::expected<TokenInfo, Error>)>;
   using GetKeyInfoCallback =
       base::OnceCallback<void(base::expected<KeyInfo, Error>)>;
+  using GetKeyPermissionsCallback = base::OnceCallback<void(
+      base::expected<std::optional<chaps::KeyPermissions>, Error>)>;
+  using GetCertProvisioningProfileIdCallback = base::OnceCallback<void(
+      base::expected<std::optional<std::string>, Error>)>;
 
   Kcer() = default;
   virtual ~Kcer() = default;
@@ -280,7 +314,7 @@ class COMPONENT_EXPORT(KCER) Kcer {
   // they are only used there. When Kcer-without-NSS is implemented, they should
   // work everywhere.
   virtual void GenerateRsaKey(Token token,
-                              uint32_t modulus_length_bits,
+                              RsaModulusLength modulus_length_bits,
                               bool hardware_backed,
                               GenerateKeyCallback callback) = 0;
   // Generates a new EC key pair in the `token`. If `hardware_backed` is false,
@@ -293,12 +327,13 @@ class COMPONENT_EXPORT(KCER) Kcer {
                              GenerateKeyCallback callback) = 0;
 
   // Imports a key pair from bytes `key_pair` in the PKCS#8 format (DER encoded)
-  // into the `token`. It is caller's responsibility to make sure that the same
-  // key doesn't end up on several different tokens at the same time (otherwise
-  // Kcer is allowed to perform any future operations, such as RemoveKey, with
-  // only one of the keys). Returns a public key on success, an error otherwise.
-  // WARNING: With the current implementation the key can be used with most
-  // other methods, but it won't appear in the ListKeys() results.
+  // into the `token` (as software-backed). It is caller's responsibility to
+  // make sure that the same key doesn't end up on several different tokens at
+  // the same time (otherwise Kcer is allowed to perform any future operations,
+  // such as RemoveKey, with only one of the keys). Returns a public key on
+  // success, an error otherwise. WARNING: With the current implementation the
+  // key can be used with most other methods, but it won't appear in the
+  // ListKeys() results.
   // TODO(miersh): Make ListKeys() return imported keys.
   virtual void ImportKey(Token token,
                          Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
@@ -318,11 +353,13 @@ class COMPONENT_EXPORT(KCER) Kcer {
   // Imports a client certificate and its private key from `pkcs12_blob` encoded
   // in the PKCS#12 format into the `token`. If `hardware_backed` is false, the
   // key will not be hardware protected (by the TPM). Returns an error on
-  // failure.
+  // failure. If `mark_as_migrated` is true, all created objects will be marked
+  // with a special attribute to allow a rollback for b/264387231.
   virtual void ImportPkcs12Cert(Token token,
                                 Pkcs12Blob pkcs12_blob,
                                 std::string password,
                                 bool hardware_backed,
+                                bool mark_as_migrated,
                                 StatusCallback callback) = 0;
 
   // Exports an existing certificate in the PKCS#12 format. Returns a non-empty
@@ -389,7 +426,7 @@ class COMPONENT_EXPORT(KCER) Kcer {
                                SignCallback callback) = 0;
 
   // Returns tokens that are available to the current instance of Kcer.
-  virtual base::flat_set<Token> GetAvailableTokens() = 0;
+  virtual void GetAvailableTokens(GetAvailableTokensCallback callback) = 0;
 
   // Retrieves additional info for the loaded `token`. Returns a `TokenInfo`
   // struct on success, kTokenNotAvailable if the `token` will never be loaded,
@@ -400,6 +437,15 @@ class COMPONENT_EXPORT(KCER) Kcer {
   // success, an error otherwise.
   virtual void GetKeyInfo(PrivateKeyHandle key,
                           GetKeyInfoCallback callback) = 0;
+  // Retrieves key permissions for the `key` (see key_permissions.proto).
+  virtual void GetKeyPermissions(PrivateKeyHandle key,
+                                 GetKeyPermissionsCallback callback) = 0;
+  // Retrieves "certificate provisioning profile id" for the `key` (i.e.
+  // "cert_profile_id" from RequiredClientCertificateForUser.yaml and
+  // RequiredClientCertificateForDevice.yaml).
+  virtual void GetCertProvisioningProfileId(
+      PrivateKeyHandle key,
+      GetCertProvisioningProfileIdCallback callback) = 0;
 
   // Sets the `nickname` on the `key`. (Not to be confused with the nickname of
   // the certificate.) Returns an error on failure.
@@ -421,20 +467,6 @@ class COMPONENT_EXPORT(KCER) Kcer {
                                             std::string profile_id,
                                             StatusCallback callback) = 0;
 };
-
-namespace internal {
-class KcerToken;
-// Creates an instance of Kcer interface, should only be used by a dedicated
-// factory. Tokens are expected to be owned by the factory and live on a non-UI
-// thread. All the requests for the tokens should be posted on the
-// `token_task_runner`. Kcer doesn't take ownership of the tokens and accesses
-// them via weak pointers.
-COMPONENT_EXPORT(KCER)
-std::unique_ptr<Kcer> CreateKcer(
-    scoped_refptr<base::TaskRunner> token_task_runner,
-    base::WeakPtr<internal::KcerToken> user_token,
-    base::WeakPtr<internal::KcerToken> device_token);
-}  // namespace internal
 
 }  // namespace kcer
 

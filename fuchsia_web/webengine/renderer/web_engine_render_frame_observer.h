@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "components/url_rewrite/renderer/url_request_rules_receiver.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 class RenderFrame;
@@ -15,14 +16,15 @@ class RenderFrame;
 
 // This class owns WebEngine-specific objects whose lifespan is tied to a
 // RenderFrame. Owned by WebEngineContentRendererClient, this object will be
-// destroyed on RenderFrame destruction, triggering the destruction of all of
-// the objects it exposes.
+// destroyed on `blink::WebLocalFrame` destruction, triggering the destruction
+// of all of the objects it exposes.
 class WebEngineRenderFrameObserver final : public content::RenderFrameObserver {
  public:
   // |on_render_frame_deleted_callback| must delete |this|.
   WebEngineRenderFrameObserver(
       content::RenderFrame* render_frame,
-      base::OnceCallback<void(int)> on_render_frame_deleted_callback);
+      base::OnceCallback<void(const blink::LocalFrameToken&)>
+          on_render_frame_deleted_callback);
   ~WebEngineRenderFrameObserver() override;
 
   WebEngineRenderFrameObserver(const WebEngineRenderFrameObserver&) = delete;
@@ -36,10 +38,12 @@ class WebEngineRenderFrameObserver final : public content::RenderFrameObserver {
  private:
   // content::RenderFrameObserver implementation.
   void OnDestruct() override;
+  void WillDetach(blink::DetachReason detach_reason) override;
 
   url_rewrite::UrlRequestRulesReceiver url_request_rules_receiver_;
 
-  base::OnceCallback<void(int)> on_render_frame_deleted_callback_;
+  base::OnceCallback<void(const blink::LocalFrameToken&)>
+      on_render_frame_deleted_callback_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_RENDER_FRAME_OBSERVER_H_

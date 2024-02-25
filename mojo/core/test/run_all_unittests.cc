@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
   // tests a little more slowly (< 10 ms per death test on a Z620).
   // On android, we need to run in the default mode, as the threadsafe mode
   // relies on execve which is not available.
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 #endif
 #if BUILDFLAG(IS_ANDROID)
   // On android, the test framework has a signal handler that will print a

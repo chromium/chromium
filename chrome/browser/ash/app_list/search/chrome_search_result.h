@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_CHROME_SEARCH_RESULT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/scoring.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ui {
@@ -105,10 +105,12 @@ class ChromeSearchResult {
   const IconInfo& icon() const { return metadata_->icon; }
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
-  const absl::optional<ash::SystemInfoAnswerCardData>
+  const std::optional<ash::SystemInfoAnswerCardData>
   system_info_answer_card_data() const {
     return metadata_->system_info_answer_card_data;
   }
+  // Only file results have set the filepath.
+  const base::FilePath& filePath() const { return metadata_->file_path; }
   ash::FileMetadataLoader* file_metadata_loader() {
     return &metadata_->file_metadata_loader;
   }
@@ -138,7 +140,6 @@ class ChromeSearchResult {
   void SetMetricsType(MetricsType metrics_type);
   void SetDisplayScore(double display_score);
   void SetActions(const Actions& actions);
-  void SetIsOmniboxSearch(bool is_omnibox_search);
   void SetIsRecommendation(bool is_recommendation);
   void SetSkipUpdateAnimation(bool skip_update_animation);
   void SetIcon(const IconInfo& icon);
@@ -192,7 +193,7 @@ class ChromeSearchResult {
   }
 
   // Maybe returns a Drive file ID for this result, if applicable.
-  virtual absl::optional<std::string> DriveId() const;
+  virtual std::optional<std::string> DriveId() const;
 
   // Invokes a custom action on the result. It does nothing by default.
   virtual void InvokeAction(ash::SearchResultActionType action);
@@ -249,7 +250,7 @@ class ChromeSearchResult {
 
   std::unique_ptr<ash::SearchResultMetadata> metadata_;
 
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
+  raw_ptr<AppListModelUpdater> model_updater_ = nullptr;
 
   base::WeakPtrFactory<ChromeSearchResult> weak_ptr_factory_{this};
 };

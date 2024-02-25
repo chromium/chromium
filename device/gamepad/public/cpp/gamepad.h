@@ -15,8 +15,6 @@
 
 namespace device {
 
-#pragma pack(push, 4)
-
 class GamepadButton {
  public:
   // Matches XInput's trigger deadzone.
@@ -187,8 +185,6 @@ class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
 
   bool is_xr = false;
 };
-
-#pragma pack(pop)
 
 }  // namespace device
 

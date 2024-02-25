@@ -10,39 +10,44 @@
 namespace net {
 
 // Wrapper for an HTTP (major,minor) version pair.
-class HttpVersion {
+// This type is final as the type is copy-constructable and assignable and so
+// there is a risk of slicing if it was subclassed.
+class HttpVersion final {
  public:
   // Default constructor (major=0, minor=0).
-  HttpVersion() : value_(0) { }
+  constexpr HttpVersion() : value_(0) {}
 
   // Build from unsigned major/minor pair.
-  HttpVersion(uint16_t major, uint16_t minor)
+  constexpr HttpVersion(uint16_t major, uint16_t minor)
       : value_(static_cast<uint32_t>(major << 16) | minor) {}
 
+  constexpr HttpVersion(const HttpVersion& rhs) = default;
+  constexpr HttpVersion& operator=(const HttpVersion& rhs) = default;
+
   // Major version number.
-  uint16_t major_value() const { return value_ >> 16; }
+  constexpr uint16_t major_value() const { return value_ >> 16; }
 
   // Minor version number.
-  uint16_t minor_value() const { return value_ & 0xffff; }
+  constexpr uint16_t minor_value() const { return value_ & 0xffff; }
 
   // Overloaded operators:
 
-  bool operator==(const HttpVersion& v) const {
+  constexpr bool operator==(const HttpVersion& v) const {
     return value_ == v.value_;
   }
-  bool operator!=(const HttpVersion& v) const {
+  constexpr bool operator!=(const HttpVersion& v) const {
     return value_ != v.value_;
   }
-  bool operator>(const HttpVersion& v) const {
+  constexpr bool operator>(const HttpVersion& v) const {
     return value_ > v.value_;
   }
-  bool operator>=(const HttpVersion& v) const {
+  constexpr bool operator>=(const HttpVersion& v) const {
     return value_ >= v.value_;
   }
-  bool operator<(const HttpVersion& v) const {
+  constexpr bool operator<(const HttpVersion& v) const {
     return value_ < v.value_;
   }
-  bool operator<=(const HttpVersion& v) const {
+  constexpr bool operator<=(const HttpVersion& v) const {
     return value_ <= v.value_;
   }
 

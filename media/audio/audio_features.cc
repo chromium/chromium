@@ -6,6 +6,11 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "media/media_buildflags.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace features {
 
@@ -35,3 +40,20 @@ BASE_FEATURE(kAllowIAudioClient3,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 }  // namespace features
+
+namespace media {
+
+bool IsSystemLoopbackCaptureSupported() {
+#if BUILDFLAG(IS_WIN) || defined(USE_CRAS)
+  return true;
+#elif BUILDFLAG(IS_MAC)
+  // Only supported on macOS 13.0+.
+  return base::mac::MacOSVersion() >= 13'00'00;
+#elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || defined(USE_CRAS)
+}
+
+}  // namespace media

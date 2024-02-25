@@ -30,7 +30,7 @@ enum class StatusCode {
   AUTH_FAILURE = 1,
   // The operation failed.
   FAILED = 2,
-  // Something is terribly wrong and we shohuldn't retry the requests until
+  // Something is terribly wrong and we shouldn't retry the requests until
   // next startup.
   FAILED_NON_RETRIABLE = 3,
 };
@@ -40,6 +40,9 @@ enum class StatusCode {
 struct Status {
   Status(StatusCode status_code, const std::string& message);
   ~Status();
+
+  friend bool operator==(const Status& lhs, const Status& rhs) = default;
+  friend auto operator<=>(const Status& lhs, const Status& rhs) = default;
 
   // Errors always need a message but a success does not.
   static Status Success();

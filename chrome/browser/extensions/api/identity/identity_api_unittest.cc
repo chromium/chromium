@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
@@ -14,7 +15,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -71,7 +71,7 @@ TEST_F(IdentityAPITest, GetGaiaIdForExtension) {
 
   std::string another_extension_id =
       prefs()->AddExtensionAndReturnId("another_extension");
-  EXPECT_EQ(api()->GetGaiaIdForExtension(another_extension_id), absl::nullopt);
+  EXPECT_EQ(api()->GetGaiaIdForExtension(another_extension_id), std::nullopt);
 }
 
 TEST_F(IdentityAPITest, GetGaiaIdForExtension_SurvivesShutdown) {
@@ -94,7 +94,7 @@ TEST_F(IdentityAPITest, EraseGaiaIdForExtension) {
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), account.gaia);
 
   api()->EraseGaiaIdForExtension(extension_id);
-  EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), absl::nullopt);
+  EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), std::nullopt);
 }
 
 TEST_F(IdentityAPITest, GaiaIdErasedAfterSignOut) {
@@ -105,7 +105,7 @@ TEST_F(IdentityAPITest, GaiaIdErasedAfterSignOut) {
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), account.gaia);
 
   identity_env()->RemoveRefreshTokenForAccount(account.account_id);
-  EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), absl::nullopt);
+  EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), std::nullopt);
 }
 
 TEST_F(IdentityAPITest, GaiaIdErasedAfterSignOut_TwoAccounts) {
@@ -122,7 +122,7 @@ TEST_F(IdentityAPITest, GaiaIdErasedAfterSignOut_TwoAccounts) {
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension2_id), account2.gaia);
 
   identity_env()->RemoveRefreshTokenForAccount(account1.account_id);
-  EXPECT_EQ(api()->GetGaiaIdForExtension(extension1_id), absl::nullopt);
+  EXPECT_EQ(api()->GetGaiaIdForExtension(extension1_id), std::nullopt);
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension2_id), account2.gaia);
 }
 
@@ -138,7 +138,7 @@ TEST_F(IdentityAPITest, GaiaIdErasedAfterSignOut_AfterShutdown) {
 
   identity_env()->RemoveRefreshTokenForAccount(account.account_id);
   ResetIdentityAPI(CreateIdentityAPI());
-  EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), absl::nullopt);
+  EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), std::nullopt);
 }
 
 }  // namespace extensions

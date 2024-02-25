@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 function $(id) {
   // Disable getElementById restriction here, because this UI uses non valid
@@ -168,6 +168,7 @@ function populateLocalTargets(data) {
   removeChildren('apps-list');
   removeChildren('workers-list');
   removeChildren('service-workers-list');
+  removeChildren('shared-storage-worklets-list');
   removeChildren('others-list');
 
   data.sort((a, b) => a.name.localeCompare(b.name));
@@ -183,6 +184,8 @@ function populateLocalTargets(data) {
       addToWorkersList(data[i]);
     } else if (data[i].type === 'service_worker') {
       addToServiceWorkersList(data[i]);
+    } else if (data[i].type === 'shared_storage_worklet') {
+      addToSharedStorageWorkletsList(data[i]);
     } else {
       addToOthersList(data[i]);
     }
@@ -521,6 +524,12 @@ function addToServiceWorkersList(data) {
       data, $('service-workers-list'), ['name', 'description', 'url']);
   addActionLink(
       row, 'terminate', sendTargetCommand.bind(null, 'close', data), false);
+}
+
+function addToSharedStorageWorkletsList(data) {
+  const row = addTargetToList(
+      data, $('shared-storage-worklets-list'), ['name', 'description', 'url']);
+  // TODO(yaoxia): add the "terminate" link when the backend supports it
 }
 
 function addToOthersList(data) {

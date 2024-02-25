@@ -6,23 +6,26 @@
 
 #include <algorithm>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/api/tasks/tasks_client_impl.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.h"
-#include "chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -34,6 +37,46 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash {
+
+namespace {
+
+constexpr net::NetworkTrafficAnnotationTag kTasksTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("glanceables_tasks_integration",
+                                        R"(
+        semantics {
+          sender: "Glanceables keyed service"
+          description: "Provide ChromeOS users quick access to their "
+                       "task lists without opening the app or website"
+          trigger: "User presses the calendar pill in shelf, which triggers "
+                   "opening the calendar, classroom (if available) and tasks "
+                   "widgets. This specific client implementation "
+                   "is responsible for fetching user's tasks data from "
+                   "Google Tasks API."
+          internal {
+            contacts {
+              email: "chromeos-launcher@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          data: "The request is authenticated with an OAuth2 access token "
+                "identifying the Google account"
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2023-08-21"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This feature cannot be disabled in settings"
+          chrome_policy {
+            GlanceablesEnabled {
+              GlanceablesEnabled: false
+            }
+          }
+        }
+    )");
+
+}  // namespace
 
 GlanceablesKeyedService::GlanceablesKeyedService(Profile* profile)
     : profile_(profile),
@@ -61,18 +104,33 @@ void GlanceablesKeyedService::Shutdown() {
   ClearClients();
 }
 
-bool GlanceablesKeyedService::AreGlanceablesEnabled() const {
+GlanceablesKeyedService::GlanceablesStatus
+GlanceablesKeyedService::AreGlanceablesEnabled() const {
+  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
+    // TODO(b/319251265): Finalize policies to control the feature.
+    return GlanceablesStatus::kEnabledForFullLaunch;
+  }
+
   PrefService* const prefs = profile_->GetPrefs();
   if (features::AreGlanceablesV2Enabled()) {
-    return prefs->GetBoolean(prefs::kGlanceablesEnabled);
+    if (prefs->GetBoolean(prefs::kGlanceablesEnabled)) {
+      return GlanceablesStatus::kEnabledByV2Flag;
+    }
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ash::switches::kAshBypassGlanceablesPref)) {
+      return GlanceablesStatus::kEnabledByPrefBypass;
+    }
+    return GlanceablesStatus::kDisabled;
   }
 
   if (features::AreGlanceablesV2EnabledForTrustedTesters()) {
-    return prefs->IsManagedPreference(prefs::kGlanceablesEnabled) &&
-           prefs->GetBoolean(prefs::kGlanceablesEnabled);
+    if (prefs->IsManagedPreference(prefs::kGlanceablesEnabled) &&
+        prefs->GetBoolean(prefs::kGlanceablesEnabled)) {
+      return GlanceablesStatus::kEnabledForTrustedTesters;
+    }
   }
 
-  return false;
+  return GlanceablesStatus::kDisabled;
 }
 
 std::unique_ptr<google_apis::RequestSender>
@@ -101,13 +159,12 @@ void GlanceablesKeyedService::RegisterClients() {
       &GlanceablesKeyedService::CreateRequestSenderForClient,
       base::Unretained(this));
   classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
-      profile_, base::DefaultClock::GetInstance(),
-      create_request_sender_callback);
-  tasks_client_ = std::make_unique<GlanceablesTasksClientImpl>(
-      create_request_sender_callback);
+      base::DefaultClock::GetInstance(), create_request_sender_callback);
+  tasks_client_ = std::make_unique<api::TasksClientImpl>(
+      create_request_sender_callback, kTasksTrafficAnnotation);
 
-  Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-      account_id_, GlanceablesV2Controller::ClientsRegistration{
+  Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+      account_id_, GlanceablesController::ClientsRegistration{
                        .classroom_client = classroom_client_.get(),
                        .tasks_client = tasks_client_.get()});
 }
@@ -116,8 +173,8 @@ void GlanceablesKeyedService::ClearClients() {
   classroom_client_.reset();
   tasks_client_.reset();
   if (Shell::HasInstance()) {
-    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-        account_id_, GlanceablesV2Controller::ClientsRegistration{
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{
                          .classroom_client = nullptr, .tasks_client = nullptr});
   }
 }
@@ -127,13 +184,18 @@ void GlanceablesKeyedService::UpdateRegistration() {
     return;
   }
 
-  DCHECK(Shell::Get()->glanceables_v2_controller());
+  DCHECK(Shell::Get()->glanceables_controller());
 
   PrefService* prefs = profile_->GetPrefs();
 
   CHECK(prefs);
 
-  if (!AreGlanceablesEnabled()) {
+  GlanceablesStatus status = AreGlanceablesEnabled();
+  base::UmaHistogramEnumeration("Ash.Glanceables.TimeManagement.FeatureStatus",
+                                status);
+
+  if (status == GlanceablesStatus::kDisabled) {
+    Shell::Get()->glanceables_controller()->ClearUserStatePrefs(prefs);
     ClearClients();
     return;
   }

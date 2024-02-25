@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {AboutPageBrowserProxy, UpdateStatus} from 'chrome://settings/settings.js';
+import type {AboutPageBrowserProxy} from 'chrome://settings/settings.js';
+import {UpdateStatus} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAboutPageBrowserProxy extends TestBrowserProxy implements

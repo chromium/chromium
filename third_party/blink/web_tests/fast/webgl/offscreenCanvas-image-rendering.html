@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="output1" width="3" height="3" style="width: 90px; height: 90px;"></canvas>
+<canvas id="output2" width="3" height="3" style="width: 90px; height: 90px;"></canvas>
+<canvas id="blank" width="3" height="3" style="width: 90px; height: 90px;"></canvas>
+<script>
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+}
+
+var canvas1 = document.getElementById('output1');
+canvas1.style.imageRendering = 'auto';
+var offscreenCanvas1 = canvas1.transferControlToOffscreen();
+draw(offscreenCanvas1);
+
+var canvas2 = document.getElementById('output2');
+canvas2.style.imageRendering = 'pixelated';
+var offscreenCanvas2 = canvas2.transferControlToOffscreen();
+draw(offscreenCanvas2);
+
+var blankCanvas = document.getElementById('blank');
+var blankDataURL = blankCanvas.toDataURL();
+
+function draw(canvas) {
+    const gl = canvas.getContext('webgl');
+    gl.clearColor(1, 1, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    for (let i = 0; i < 3; ++i) {
+        gl.clearColor(0, 0, 1, 1);
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(i, 2 - i, 1, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+}
+
+function isDrawn(canvas) {
+    let dataURL = canvas.toDataURL();
+    return dataURL != blankDataURL;
+}
+
+function waitForCanvasToDraw() {
+    if (isDrawn(canvas1) && isDrawn(canvas2)) {
+        requestAnimationFrame(function () {
+            testRunner.notifyDone();
+        });
+    } else {
+        requestAnimationFrame(waitForCanvasToDraw);
+    }
+}
+
+if (window.testRunner) {
+    requestAnimationFrame(waitForCanvasToDraw);
+}
+</script>
+</body>
+</html>

@@ -24,6 +24,8 @@
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -51,20 +53,23 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
                                 public OnboardingView::Delegate,
                                 public PhoneStatusView::Delegate,
                                 public PhoneHubUiController::Observer,
+                                public ui::SimpleMenuModel::Delegate,
                                 public SessionObserver,
                                 public WindowTreeHostManager::Observer,
                                 public phonehub::AppStreamManager::Observer {
+  METADATA_HEADER(PhoneHubTray, TrayBackgroundView)
+
  public:
   explicit PhoneHubTray(Shelf* shelf);
   PhoneHubTray(const PhoneHubTray&) = delete;
-  ~PhoneHubTray() override;
   PhoneHubTray& operator=(const PhoneHubTray&) = delete;
+  ~PhoneHubTray() override;
 
   // Sets the PhoneHubManager that provides the data to drive the UI.
   void SetPhoneHubManager(phonehub::PhoneHubManager* phone_hub_manager);
 
   // TrayBackgroundView:
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
@@ -73,9 +78,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void Initialize() override;
   void CloseBubble() override;
   void ShowBubble() override;
+  std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
-  const char* GetClassName() const override;
 
   // PhoneStatusView::Delegate:
   bool CanOpenConnectedDeviceSettings() override;
@@ -108,8 +113,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   }
 
   // Sets a callback that will be called when eche icon is activated.
-  void SetEcheIconActivationCallback(
-      base::RepeatingCallback<bool(const ui::Event&)> callback);
+  void SetEcheIconActivationCallback(base::RepeatingCallback<void()> callback);
 
   views::View* content_view_for_testing() { return content_view_; }
 
@@ -125,7 +129,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
                                      bool aborted) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, EcheIconActivatesCallback);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, TrayPressedMetrics);
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
@@ -138,6 +144,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  // Ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
 
   // Updates the visibility of the tray in the shelf based on the feature is
   // enabled.
@@ -168,18 +177,16 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   bool is_icon_clicked_when_nudge_visible_ = false;
 
   // Icon of the tray. Unowned.
-  raw_ptr<views::ImageButton, ExperimentalAsh> icon_;
+  raw_ptr<views::ImageButton> icon_;
 
   // Icon for Eche. Unowned.
-  raw_ptr<views::ImageButton, ExperimentalAsh> eche_icon_ = nullptr;
+  raw_ptr<views::ImageButton> eche_icon_ = nullptr;
 
   // The loading indicator, showing a throbber animation on top of the icon.
-  raw_ptr<EcheIconLoadingIndicatorView, ExperimentalAsh>
-      eche_loading_indicator_ = nullptr;
+  raw_ptr<EcheIconLoadingIndicatorView> eche_loading_indicator_ = nullptr;
 
   // This callback is called when the Eche icon is activated.
-  base::RepeatingCallback<bool(const ui::Event&)> eche_icon_callback_ =
-      base::BindRepeating([](const ui::Event&) { return true; });
+  base::RepeatingCallback<void()> eche_icon_callback_ = base::DoNothing();
 
   // Controls the main content view displayed in the bubble based on the current
   // PhoneHub state.
@@ -193,15 +200,13 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // The header status view on top of the bubble.
   // IMPORTANT: This is not owned, always access through GetPhoneStatusView
-  raw_ptr<views::View, ExperimentalAsh> phone_status_view_dont_use_ = nullptr;
+  raw_ptr<views::View> phone_status_view_dont_use_ = nullptr;
 
   // The main content view of the bubble, which changes depending on the state.
   // Unowned.
-  raw_ptr<PhoneHubContentView, DanglingUntriaged | ExperimentalAsh>
-      content_view_ = nullptr;
+  raw_ptr<PhoneHubContentView, DanglingUntriaged> content_view_ = nullptr;
 
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
-      nullptr;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_ = nullptr;
 
   base::Time last_unlocked_timestamp_;
 

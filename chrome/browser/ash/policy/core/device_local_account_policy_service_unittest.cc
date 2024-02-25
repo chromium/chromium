@@ -41,6 +41,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
@@ -562,7 +563,8 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, RefreshPolicy) {
   EXPECT_CALL(service_observer_, OnPolicyUpdated(account_1_user_id_)).Times(2);
   broker->core()->service()->RefreshPolicy(
       base::BindOnce(&DeviceLocalAccountPolicyServiceTest::OnRefreshDone,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      PolicyFetchReason::kTest);
   FlushDeviceSettings();
   Mock::VerifyAndClearExpectations(&service_observer_);
   Mock::VerifyAndClearExpectations(this);
@@ -618,8 +620,7 @@ void DeviceLocalAccountPolicyExtensionCacheTest::SetUp() {
 base::FilePath
 DeviceLocalAccountPolicyExtensionCacheTest::GetCacheDirectoryForAccountID(
     const std::string& account_id) {
-  return cache_root_dir_.GetPath().Append(
-      base::HexEncode(account_id.c_str(), account_id.size()));
+  return cache_root_dir_.GetPath().Append(base::HexEncode(account_id));
 }
 
 // Verifies that during startup, orphaned cache directories are deleted,
@@ -1098,7 +1099,7 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, RefreshPolicies) {
   EXPECT_FALSE(service_->GetBrokerForUser(account_1_user_id_));
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
-  provider_->RefreshPolicies();
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
   Mock::VerifyAndClearExpectations(&provider_observer_);
 
   // Make device settings appear.
@@ -1115,7 +1116,7 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, RefreshPolicies) {
   EXPECT_FALSE(broker->core()->client());
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
-  provider_->RefreshPolicies();
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
   Mock::VerifyAndClearExpectations(&provider_observer_);
 
   // Bring up the cloud connection. The refresh scheduler may fire refreshes
@@ -1131,7 +1132,7 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, RefreshPolicies) {
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(_)).Times(0);
   DeviceManagementService::JobForTesting job;
   EXPECT_CALL(job_creation_handler_, OnJobCreation).WillOnce(SaveArg<0>(&job));
-  provider_->RefreshPolicies();
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
   ReloadDeviceSettings();
   Mock::VerifyAndClearExpectations(&provider_observer_);
   Mock::VerifyAndClearExpectations(&fake_device_management_service_);

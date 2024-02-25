@@ -112,7 +112,7 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
   descriptor.waitFDs = {};
 
   for (auto& fence : fences) {
-    descriptor.waitFDs.push_back(fence.owned_fd.release());
+    descriptor.waitFDs.push_back(fence.Release().release());
   }
 
   texture_ = wgpu::Texture::Acquire(
@@ -145,7 +145,7 @@ void DawnOzoneImageRepresentation::EndAccess() {
     // TODO(hob): Handle waiting on multiple semaphores from dawn.
     DCHECK(export_info.semaphoreHandles.size() == 1);
     gfx::GpuFenceHandle fence;
-    fence.owned_fd = base::ScopedFD(export_info.semaphoreHandles[0]);
+    fence.Adopt(base::ScopedFD(export_info.semaphoreHandles[0]));
     ozone_backing()->EndAccess(/*readonly=*/false,
                                OzoneImageBacking::AccessStream::kWebGPU,
                                std::move(fence));

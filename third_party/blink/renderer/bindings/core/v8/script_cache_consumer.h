@@ -51,7 +51,8 @@ class CORE_EXPORT ScriptCacheConsumer final
   //
   // The CachedMetadata should contain a V8 code cache. An off-thread cache
   // consumption task is posted immediately when this object is constructed.
-  ScriptCacheConsumer(scoped_refptr<CachedMetadata> cached_metadata,
+  ScriptCacheConsumer(v8::Isolate* isolate,
+                      scoped_refptr<CachedMetadata> cached_metadata,
                       const String& script_url_string,
                       uint64_t script_resource_identifier);
 
@@ -142,6 +143,11 @@ class CORE_EXPORT ScriptCacheConsumer final
   void RunMergeTaskOffThread();
   void PostFinishCallbackTask();
   void CallFinishCallback();
+
+  // This class is only created for the main thread. The main thread isolate
+  // will be always outlive this object so it should be valid to use on any
+  // thread.
+  v8::Isolate* isolate_;
 
   // The cached metadata storing the code cache. This is held by the consumer
   // to keep the cached data alive even if it is cleared on the script resource.

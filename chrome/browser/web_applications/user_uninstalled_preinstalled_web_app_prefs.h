@@ -9,11 +9,11 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -36,7 +36,7 @@ namespace web_app {
 // thereby maintaining its synchronization.
 //
 // The prefs are stored in prefs::kUserUninstalledPreinstalledWebAppPref and
-// they are stored as map<AppId, Set<Install URLs>>, e.g.
+// they are stored as map<webapps::AppId, Set<Install URLs>>, e.g.
 // {"app_id": {"https://install_url1.com", "https://install_url2.com"}}
 //
 // They can be seen on chrome://web-app-internals under the
@@ -51,16 +51,18 @@ class UserUninstalledPreinstalledWebAppPrefs {
       const UserUninstalledPreinstalledWebAppPrefs&) = delete;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-  void Add(const AppId& app_id, base::flat_set<GURL> install_urls);
-  absl::optional<AppId> LookUpAppIdByInstallUrl(const GURL& install_url);
-  bool DoesAppIdExist(const AppId& app_id);
-  void AppendExistingInstallUrlsPerAppId(const AppId& app_id,
+  void Add(const webapps::AppId& app_id, base::flat_set<GURL> install_urls);
+  std::optional<webapps::AppId> LookUpAppIdByInstallUrl(
+      const GURL& install_url);
+  bool DoesAppIdExist(const webapps::AppId& app_id);
+  void AppendExistingInstallUrlsPerAppId(const webapps::AppId& app_id,
                                          base::flat_set<GURL>& urls);
   int Size();
-  bool RemoveByInstallUrl(const AppId& app_id, const GURL& install_url);
-  bool RemoveByAppId(const AppId& app_id);
+  bool RemoveByInstallUrl(const webapps::AppId& app_id,
+                          const GURL& install_url);
+  bool RemoveByAppId(const webapps::AppId& app_id);
   bool AppIdContainsAllUrls(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const base::flat_map<WebAppManagement::Type,
                            WebApp::ExternalManagementConfig>& url_map,
       const bool only_default);

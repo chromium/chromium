@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chromeos/crosapi/mojom/sharesheet_mojom_traits.h"
@@ -42,6 +43,7 @@ void SharesheetAsh::MaybeSetProfile(Profile* profile) {
   }
 
   profile_ = profile;
+  profile_observation_.Observe(profile_);
 }
 
 void SharesheetAsh::BindReceiver(
@@ -60,8 +62,7 @@ void SharesheetAsh::ShowBubble(const std::string& window_id,
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   sharesheet_service->ShowBubble(
-      apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_),
-      /*contains_hosted_document=*/false, source,
+      apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_), source,
       base::BindOnce(&GetNativeWindowFromId, window_id), std::move(callback));
 }
 
@@ -77,9 +78,8 @@ void SharesheetAsh::ShowBubbleWithOnClosed(
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   sharesheet_service->ShowBubble(
-      apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_),
-      /*contains_hosted_document=*/false, source,
-      base::BindOnce(&GetNativeWindowFromId, window_id), base::NullCallback(),
+      apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_), source,
+      base::BindOnce(&GetNativeWindowFromId, window_id), base::DoNothing(),
       base::BindOnce(&OnClosedCallbackWrapper, std::move(callback)));
 }
 
@@ -96,6 +96,12 @@ void SharesheetAsh::CloseBubble(const std::string& window_id) {
     return;
 
   sharesheet_controller->CloseBubble(sharesheet::SharesheetResult::kCancel);
+}
+
+void SharesheetAsh::OnProfileWillBeDestroyed(Profile* profile) {
+  CHECK_EQ(profile_, profile);
+  profile_ = nullptr;
+  profile_observation_.Reset();
 }
 
 }  // namespace crosapi

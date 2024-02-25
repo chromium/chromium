@@ -1,0 +1,64 @@
+From 843d9366447f03115fe80d73679c0ba73f2d58ee Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 30 Nov 2022 10:24:10 -0800
+Subject: [PATCH 03/10] do not use absl any
+
+---
+ .../cc/task/vision/core/frame_buffer.h        | 27 -------------------
+ 1 file changed, 27 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
+index 344879341479f..77a41e081b72b 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/frame_buffer.h
+@@ -27,7 +27,6 @@ limitations under the License.
+ #include "absl/strings/str_cat.h"  // from @com_google_absl
+ #include "absl/time/clock.h"  // from @com_google_absl
+ #include "absl/time/time.h"  // from @com_google_absl
+-#include "absl/types/any.h"  // from @com_google_absl
+ #include "absl/types/optional.h"  // from @com_google_absl
+ #include "tensorflow_lite_support/cc/port/integral_types.h"
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+@@ -277,31 +276,6 @@ class FrameBuffer {
+     return {};
+   }
+ 
+-  // Returns the tag associated to the tag_key.
+-  absl::any GetTag(const std::string& tag_key) const {
+-    auto iter = tags_.find(tag_key);
+-    if (iter != tags_.end()) {
+-      return iter->second;
+-    }
+-    return absl::any();
+-  }
+-
+-  // Inserts or updates the tags map with key value pair (tag_key, tag_value).
+-  void InsertOrUpdateTag(const std::string& tag_key, absl::any tag_value) {
+-    tags_[tag_key] = std::move(tag_value);
+-  }
+-
+-  // Inserts the key value pair (tag_key, tag_value) into tags map. If the
+-  // tag_key already exists, an internal error will return.
+-  absl::Status InsertTag(const std::string& tag_key, absl::any tag_value) {
+-    auto iter = tags_.emplace(tag_key, tag_value);
+-    if (iter.second) {
+-      return absl::OkStatus();
+-    }
+-    return absl::InternalError(absl::StrCat(
+-        "tag_key already exists in tags.tag_key was not inserted: ", tag_key));
+-  }
+-
+   // Returns FrameBuffer dimension.
+   const Dimension dimension() const { return dimension_; }
+ 
+@@ -316,7 +290,6 @@ class FrameBuffer {
+ 
+  private:
+   std::vector<Plane> planes_;
+-  std::map<std::string, absl::any> tags_;
+   Dimension dimension_;
+   Format format_;
+   Orientation orientation_;
+-- 
+2.42.0.515.g380fc7ccd1-goog
+

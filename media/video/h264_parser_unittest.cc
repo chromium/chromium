@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "media/base/subsample_entry.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -62,7 +62,7 @@ TEST_F(H264SPSTest, GetCodedSize) {
 
   // Overflow.
   sps->pic_width_in_mbs_minus1 = std::numeric_limits<int>::max();
-  EXPECT_EQ(absl::nullopt, sps->GetCodedSize());
+  EXPECT_EQ(std::nullopt, sps->GetCodedSize());
 }
 
 TEST_F(H264SPSTest, GetVisibleRect) {
@@ -89,14 +89,14 @@ TEST_F(H264SPSTest, GetVisibleRect) {
   sps->frame_crop_right_offset = 1;
   sps->frame_crop_top_offset = 0;
   sps->frame_crop_bottom_offset = 0;
-  EXPECT_EQ(absl::nullopt, sps->GetVisibleRect());
+  EXPECT_EQ(std::nullopt, sps->GetVisibleRect());
 
   // Overflow.
   sps->frame_crop_left_offset = std::numeric_limits<int>::max() / 2 + 1;
   sps->frame_crop_right_offset = 0;
   sps->frame_crop_top_offset = 0;
   sps->frame_crop_bottom_offset = 0;
-  EXPECT_EQ(absl::nullopt, sps->GetVisibleRect());
+  EXPECT_EQ(std::nullopt, sps->GetVisibleRect());
 }
 
 TEST(H264ParserTest, StreamFileParsing) {

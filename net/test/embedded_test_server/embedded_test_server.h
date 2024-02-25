@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,16 +24,16 @@
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
-#include "net/cert/ocsp_revocation_status.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/ssl_server_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/ssl/ssl_server_config.h"
+#include "net/test/cert_builder.h"
 #include "net/test/embedded_test_server/http_connection.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -183,6 +184,9 @@ class EmbeddedTestServer {
     // included in the TLS handshake, but is available through the leaf's
     // AIA caIssuers URL.
     kByAIA,
+    // Generated cert is issued by a generated intermediate, which is NOT
+    // included in the TLS handshake and not served by an AIA server.
+    kMissing,
   };
 
   struct OCSPConfig {
@@ -198,9 +202,10 @@ class EmbeddedTestServer {
       kTryLater,
       kSigRequired,
       kUnauthorized,
-      // The response will not be valid OCSPResponse DER.
+      // The response will not be valid bssl::OCSPResponse DER.
       kInvalidResponse,
-      // OCSPResponse will be valid DER but the contained ResponseData will not.
+      // bssl::OCSPResponse will be valid DER but the contained ResponseData
+      // will not.
       kInvalidResponseData,
     };
 
@@ -243,7 +248,7 @@ class EmbeddedTestServer {
         kMismatch,
       };
 
-      OCSPRevocationStatus cert_status = OCSPRevocationStatus::GOOD;
+      bssl::OCSPRevocationStatus cert_status = bssl::OCSPRevocationStatus::GOOD;
       Date ocsp_date = Date::kValid;
       Serial serial = Serial::kMatch;
     };
@@ -310,7 +315,10 @@ class EmbeddedTestServer {
     std::vector<net::IPAddress> ip_addresses;
 
     // A list of key usages to include in the leaf keyUsage extension.
-    std::vector<KeyUsageBit> key_usages;
+    std::vector<bssl::KeyUsageBit> key_usages;
+
+    // Generate embedded SCTList in the certificate for the specified logs.
+    std::vector<CertBuilder::SctConfig> embedded_scts;
   };
 
   typedef base::RepeatingCallback<std::unique_ptr<HttpResponse>(
@@ -368,11 +376,14 @@ class EmbeddedTestServer {
 
   // Equivalent of StartAndReturnHandle(), but requires manual Shutdown() by
   // the caller.
-  [[nodiscard]] bool Start(int port = 0);
+  [[nodiscard]] bool Start(int port = 0,
+                           base::StringPiece address = "127.0.0.1");
 
   // Starts listening for incoming connections but will not yet accept them.
-  // Returns whether a listening socket has been succesfully created.
-  [[nodiscard]] bool InitializeAndListen(int port = 0);
+  // Returns whether a listening socket has been successfully created.
+  [[nodiscard]] bool InitializeAndListen(
+      int port = 0,
+      base::StringPiece address = "127.0.0.1");
 
   // Starts the Accept IO Thread and begins accepting connections.
   [[nodiscard]] EmbeddedTestServerHandle
@@ -415,7 +426,7 @@ class EmbeddedTestServer {
   // Will use the GetURL() variant that takes a hostname as the base URL, if
   // `hostname` is non-null.
   url::Origin GetOrigin(
-      const absl::optional<std::string>& hostname = absl::nullopt) const;
+      const std::optional<std::string>& hostname = std::nullopt) const;
 
   // Returns the address list needed to connect to the server.
   [[nodiscard]] bool GetAddressList(AddressList* address_list) const;
@@ -439,10 +450,24 @@ class EmbeddedTestServer {
   bool ResetSSLConfig(ServerCertificate cert,
                       const SSLServerConfig& ssl_config);
 
+  // Configures the test server to generate a certificate that covers the
+  // specified hostnames. This implicitly also includes 127.0.0.1 in the
+  // certificate. It is invalid to call after the server is started. If called
+  // multiple times, the last call will have effect.
+  // Convenience method for configuring an HTTPS test server when a test needs
+  // to support a set of hostnames over HTTPS, rather than explicitly setting
+  /// up a full config using SetSSLConfig().
+  void SetCertHostnames(std::vector<std::string> hostnames);
+
   // Returns the certificate that the server is using.
   // If using a generated ServerCertificate type, this must not be called before
   // InitializeAndListen() has been called.
   scoped_refptr<X509Certificate> GetCertificate();
+
+  // Returns any generated intermediates that the server may be using. May
+  // return null if no intermediate is generated. Must not be called before
+  // InitializeAndListen().
+  scoped_refptr<X509Certificate> GetGeneratedIntermediate();
 
   // Registers request handler which serves files from |directory|.
   // For instance, a request to "/foo.html" is served by "foo.html" under
@@ -452,12 +477,12 @@ class EmbeddedTestServer {
   // ServeFilesFromSourceDirectory.
   void ServeFilesFromDirectory(const base::FilePath& directory);
 
-  // Serves files relative to DIR_SOURCE_ROOT.
+  // Serves files relative to DIR_SRC_TEST_DATA_ROOT.
   void ServeFilesFromSourceDirectory(base::StringPiece relative);
   void ServeFilesFromSourceDirectory(const base::FilePath& relative);
 
   // Registers the default handlers and serve additional files from the
-  // |directory| directory, relative to DIR_SOURCE_ROOT.
+  // |directory| directory, relative to DIR_SRC_TEST_DATA_ROOT.
   void AddDefaultHandlers(const base::FilePath& directory);
 
   // Returns the directory that files will be served from if |relative| is
@@ -596,6 +621,8 @@ class EmbeddedTestServer {
   ServerCertificate cert_ = CERT_OK;
   ServerCertificateConfig cert_config_;
   scoped_refptr<X509Certificate> x509_cert_;
+  // May be null if no intermediate is generated.
+  scoped_refptr<X509Certificate> intermediate_;
   bssl::UniquePtr<EVP_PKEY> private_key_;
   base::flat_map<std::string, std::string> alps_accept_ch_;
   std::unique_ptr<SSLServerContext> context_;

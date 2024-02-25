@@ -13,8 +13,8 @@ import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
 
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
-import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_button.html.js';
 
@@ -25,10 +25,7 @@ export interface CrButtonElement {
   };
 }
 
-const CrButtonElementBase =
-    mixinBehaviors([PaperRippleBehavior], PolymerElement) as {
-      new (): PolymerElement & PaperRippleBehavior,
-    };
+const CrButtonElementBase = PaperRippleMixin(PolymerElement);
 
 export class CrButtonElement extends CrButtonElementBase {
   static get is() {
@@ -228,7 +225,7 @@ export class CrButtonElement extends CrButtonElementBase {
 
   /**
    * Customize the element's ripple. Overriding the '_createRipple' function
-   * from PaperRippleBehavior.
+   * from PaperRippleMixin.
    */
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _createRipple() {

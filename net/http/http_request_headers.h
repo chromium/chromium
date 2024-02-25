@@ -11,6 +11,7 @@
 #define NET_HTTP_HTTP_REQUEST_HEADERS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "net/base/net_export.h"
 #include "net/filter/source_stream.h"
 #include "net/log/net_log_capture_mode.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -95,6 +95,7 @@ class NET_EXPORT HttpRequestHeaders {
   static const char kIfUnmodifiedSince[];
   static const char kOrigin[];
   static const char kPragma[];
+  static const char kPriority[];
   static const char kProxyAuthorization[];
   static const char kProxyConnection[];
   static const char kRange[];
@@ -177,9 +178,6 @@ class NET_EXPORT HttpRequestHeaders {
   // Calls SetHeader() on each header from |other|, maintaining order.
   void MergeFrom(const HttpRequestHeaders& other);
 
-  // Copies from |other| to |this|.
-  void CopyFrom(const HttpRequestHeaders& other) { *this = other; }
-
   void Swap(HttpRequestHeaders* other) { headers_.swap(other->headers_); }
 
   // Serializes HttpRequestHeaders to a string representation.  Joins all the
@@ -198,7 +196,7 @@ class NET_EXPORT HttpRequestHeaders {
   // it does not exist. "br" is appended only when `enable_brotli` is true.
   void SetAcceptEncodingIfMissing(
       const GURL& url,
-      const absl::optional<base::flat_set<SourceStream::SourceType>>&
+      const std::optional<base::flat_set<SourceStream::SourceType>>&
           accepted_stream_types,
       bool enable_brotli,
       bool enable_zstd);
@@ -210,12 +208,6 @@ class NET_EXPORT HttpRequestHeaders {
   void SetHeaderInternal(base::StringPiece key, std::string&& value);
 
   HeaderVector headers_;
-
-  // Allow the copy construction and operator= to facilitate copying in
-  // HttpRequestHeaders.
-  // TODO(willchan): Investigate to see if we can remove the need to copy
-  // HttpRequestHeaders.
-  // DISALLOW_COPY_AND_ASSIGN(HttpRequestHeaders);
 };
 
 }  // namespace net

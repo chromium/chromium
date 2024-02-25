@@ -11,17 +11,16 @@ for more details about the presubmit API.
 
 def _CheckForStringViewFromNullableIppApi(input_api, output_api):
   """
-  Looks for all affected lines in CL where one constructs either
-  base::StringPiece or std::string_view from any ipp*() CUPS API call.
+  Looks for all affected lines in CL where one constructs
+  std::string_view from any ipp*() CUPS API call.
   Assumes over-broadly that all ipp*() calls can return NULL.
   Returns affected lines as a list of presubmit errors.
   """
   # Attempts to detect source lines like:
-  # *   base::StringPiece foo = ippDoBar();
-  # *   base::StringPiece foo(ippDoBar());
-  # and the same for std::string_view.
+  # *   std::string_view foo = ippDoBar();
+  # *   std::string_view foo(ippDoBar());
   string_view_re = input_api.re.compile(
-      r"^.+(base::StringPiece|std::string_view)\s+\w+( = |\()ipp[A-Z].+$")
+      r"^.+(std::string_view)\s+\w+( = |\()ipp[A-Z].+$")
   violations = input_api.canned_checks._FindNewViolationsOfRule(
       lambda extension, line:
         not (extension in ("cc", "h") and string_view_re.search(line)),
@@ -30,7 +29,7 @@ def _CheckForStringViewFromNullableIppApi(input_api, output_api):
 
   if bulleted_violations:
     return [output_api.PresubmitError(
-        ("Possible construction of base::StringPiece or std::string_view "
+        ("Possible construction of std::string_view "
          "from CUPS IPP API (that can probably return NULL):\n{}").format(
              "\n".join(bulleted_violations))),]
   return []

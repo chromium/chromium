@@ -26,7 +26,7 @@ namespace {
 TEST(MemWritableFileTest, AppendsContent) {
   std::string buffer;
   SUPPORT_ASSERT_OK_AND_ASSIGN(auto mem_writable_file,
-                               MemWritableFile::Create(&buffer));
+                       MemWritableFile::Create(&buffer));
 
   ASSERT_TRUE(mem_writable_file->Append("aaa").ok());
   EXPECT_EQ(buffer, "aaa");

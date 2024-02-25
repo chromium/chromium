@@ -3,7 +3,6 @@
 <translationbundle lang="mn">
 <translation id="1016765312371154165">Chrome-ыг буруу унтраасан байна.</translation>
 <translation id="130631256467250065">Та төхөөрөмжөө дахин эхлүүлснээр таны хийсэн өөрчлөлт идэвхжинэ.</translation>
-<translation id="1555506416658437797">төлбөрийн хэрэгслийг засна уу.</translation>
 <translation id="1635457557763038537">Таныг дараагийн удаа Chrome-г дахин ачаалахад өөрчлөлт тань хэрэгжинэ.</translation>
 <translation id="2399868464369312507">Google Chrome төлбөрийн хэрэгслийг засахаар оролдож байна.</translation>
 <translation id="2447485272386224171">Chrome-г <ph name="BEGIN_LINK_CHROMIUM" />Chromium-н<ph name="END_LINK_CHROMIUM" /> нээлттэй эх кодын төсөл болон бусад <ph name="BEGIN_LINK_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_OSS" /> боломжтой болгосон.</translation>
@@ -12,7 +11,6 @@
 <translation id="3875312571075912821">Chrome-г галт хана эсвэл вирусны эсрэг программын тохиргоонд  хандахыг 
        зөвшөөрөх.</translation>
 <translation id="5005121315113832363">Энэ хуудсыг Chrome блоклосон байна</translation>
-<translation id="585620188971323280">төлбөрийн хэрэгсэл бөглөх тохиргоог өөрчлөх</translation>
 <translation id="6011049234605203654">Прокси серверийг цуцлахын тулд
           Chrome цэс &gt;
           <ph name="SETTINGS_TITLE" />

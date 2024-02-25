@@ -14,10 +14,11 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/base/synced_property.h"
@@ -28,11 +29,11 @@
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/mutator_host.h"
+#include "cc/trees/property_ids.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/sticky_position_constraint.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -60,16 +61,6 @@ using SyncedScrollOffset =
     SyncedProperty<AdditionGroup<gfx::PointF, gfx::Vector2dF>>;
 
 class PropertyTrees;
-
-// Property tree node starts from index 0. See equivalent constants in
-// property_tree_manager.cc for comments.
-enum {
-  kInvalidPropertyNodeId = -1,
-  kRootPropertyNodeId = 0,
-  kSecondaryRootPropertyNodeId = 1,
-  kContentsRootPropertyNodeId = kSecondaryRootPropertyNodeId,
-  kViewportPropertyNodeId = kSecondaryRootPropertyNodeId
-};
 
 template <typename T>
 class CC_EXPORT PropertyTree {
@@ -148,7 +139,9 @@ class CC_EXPORT PropertyTree {
   }
 
   bool needs_update_;
-  raw_ptr<PropertyTrees> property_trees_;
+  // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+  // stacks.
+  RAW_PTR_EXCLUSION PropertyTrees* property_trees_;
   // This map allow mapping directly from a compositor element id to the
   // respective property node. This will eventually allow simplifying logic in
   // various places that today has to map from element id to layer id, and then
@@ -158,7 +151,7 @@ class CC_EXPORT PropertyTree {
   base::flat_map<ElementId, int> element_id_to_node_index_;
 };
 
-struct AnchorPositionScrollersData;
+struct AnchorPositionScrollData;
 struct StickyPositionNodeData;
 
 class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
@@ -184,10 +177,30 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   bool OnTransformAnimated(ElementId element_id,
                            const gfx::Transform& transform);
   void ResetChangeTracking();
-  // Updates the parent, target, and screen space transforms and snapping.
+
+  // Updates the parent, target, and screen space transforms and snapping for
+  // all nodes.
+  void UpdateAllTransforms(const ViewportPropertyIds& viewport_property_ids);
+  // UpdateAllTransforms() may update the transform tree in multiple passes.
+  // This struct stores data collected and used across the passes.
+  struct UpdateTransformsData {
+    UpdateTransformsData();
+    ~UpdateTransformsData();
+    // A transform node may depend on a later transform node (e.g. an anchor
+    // position offset node references later adjustment container nodes). When
+    // the former is updated, the latter id will be stored in this set assuming
+    // the depended data is stale. When the latter node is updated, its id will
+    // be removed from this set if it hasn't changed anything affecting the
+    // depending node. If this set is not empty after a pass,
+    // UpdateAllTransforms() will run another pass.
+    base::flat_set<int> stale_forward_dependencies;
+  };
+
+  // Updates transforms for a node.
   void UpdateTransforms(
       int id,
-      const ViewportPropertyIds* viewport_property_ids = nullptr);
+      const ViewportPropertyIds* viewport_property_ids = nullptr,
+      UpdateTransformsData* update_data = nullptr);
   void UpdateTransformChanged(TransformNode* node, TransformNode* parent_node);
   void UpdateNodeAndAncestorsAreAnimatedOrInvertible(
       TransformNode* node,
@@ -251,9 +264,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   }
   StickyPositionNodeData& EnsureStickyPositionData(int node_id);
 
-  const AnchorPositionScrollersData* GetAnchorPositionScrollersData(
+  const AnchorPositionScrollData* GetAnchorPositionScrollData(
       int node_id) const;
-  AnchorPositionScrollersData& EnsureAnchorPositionScrollersData(int node_id);
+  AnchorPositionScrollData& EnsureAnchorPositionScrollData(int node_id);
 
   // Computes the combined transform between |source_id| and |dest_id|. These
   // two nodes must be on the same ancestor chain.
@@ -275,9 +288,12 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 
   StickyPositionNodeData* MutableStickyPositionData(int node_id);
   gfx::Vector2dF StickyPositionOffset(TransformNode* node);
-  gfx::Vector2dF AnchorPositionScrollOffset(TransformNode* node);
+  gfx::Vector2dF AnchorPositionOffset(TransformNode* node,
+                                      int max_updated_node_id,
+                                      UpdateTransformsData* update_data);
   void UpdateLocalTransform(TransformNode* node,
-                            const ViewportPropertyIds* viewport_property_ids);
+                            const ViewportPropertyIds* viewport_property_ids,
+                            UpdateTransformsData* update_data);
   void UpdateScreenSpaceTransform(TransformNode* node,
                                   TransformNode* parent_node);
   void UpdateAnimationProperties(TransformNode* node,
@@ -297,19 +313,22 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;
   std::vector<TransformCachedNodeData> cached_data_;
   std::vector<StickyPositionNodeData> sticky_position_data_;
-  std::vector<AnchorPositionScrollersData> anchor_position_scrollers_data_;
+  std::vector<AnchorPositionScrollData> anchor_position_scroll_data_;
 };
 
-struct CC_EXPORT AnchorPositionScrollersData {
-  AnchorPositionScrollersData();
-  ~AnchorPositionScrollersData();
-  AnchorPositionScrollersData(const AnchorPositionScrollersData&);
+struct CC_EXPORT AnchorPositionScrollData {
+  AnchorPositionScrollData();
+  ~AnchorPositionScrollData();
+  AnchorPositionScrollData(const AnchorPositionScrollData&);
 
-  bool operator==(const AnchorPositionScrollersData&) const;
-  bool operator!=(const AnchorPositionScrollersData&) const;
+  bool operator==(const AnchorPositionScrollData&) const;
 
-  std::vector<ElementId> scroll_container_ids;
+  // See blink::AnchorPositionScrollData for the definition of adjustment
+  // containers.
+  std::vector<ElementId> adjustment_container_ids;
   gfx::Vector2d accumulated_scroll_origin;
+  bool needs_scroll_adjustment_in_x = false;
+  bool needs_scroll_adjustment_in_y = false;
 };
 
 struct StickyPositionNodeData {
@@ -465,7 +484,7 @@ class ScrollCallbacks {
   virtual void DidCompositorScroll(
       ElementId scroll_element_id,
       const gfx::PointF&,
-      const absl::optional<TargetSnapAreaElementIds>&) = 0;
+      const std::optional<TargetSnapAreaElementIds>&) = 0;
   // Called after the hidden status of composited scrollbars changed. Note that
   // |scroll_element_id| is the element id of the scroll not of the scrollbars.
   virtual void DidChangeScrollbarsHidden(ElementId scroll_element_id,
@@ -586,7 +605,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   void NotifyDidCompositorScroll(
       ElementId scroll_element_id,
       const gfx::PointF& scroll_offset,
-      const absl::optional<TargetSnapAreaElementIds>& snap_target_ids);
+      const std::optional<TargetSnapAreaElementIds>& snap_target_ids);
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
                                        bool hidden) const;
 

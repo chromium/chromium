@@ -2,7 +2,7 @@
 interface NavigationTransition {
   readonly attribute NavigationType navigationType;
   readonly attribute NavigationHistoryEntry from;
-  [CallWith=ScriptState] readonly attribute Promise<void> finished;
+  [CallWith=ScriptState] readonly attribute Promise<undefined> finished;
 
   // NavigationResult rollback(optional NavigationOptions options = {});
 };

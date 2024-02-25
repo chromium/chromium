@@ -48,7 +48,7 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
   BuildState build_state_;
 
  private:
-  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged>
       fake_update_engine_client_;  // Not owned.
 };
 
@@ -77,7 +77,7 @@ TEST_F(InstalledVersionUpdaterTest, Update) {
                               Eq(BuildState::UpdateType::kNormalUpdate)),
                      Property(&BuildState::installed_version, IsTrue()),
                      Property(&BuildState::installed_version,
-                              Eq(absl::optional<base::Version>(
+                              Eq(std::optional<base::Version>(
                                   base::Version(new_version)))),
                      Property(&BuildState::critical_version, IsFalse()))));
   NotifyStatusChanged(std::move(status));
@@ -112,7 +112,7 @@ TEST_F(InstalledVersionUpdaterTest, Rollback) {
                               Eq(BuildState::UpdateType::kEnterpriseRollback)),
                      Property(&BuildState::installed_version, IsTrue()),
                      Property(&BuildState::installed_version,
-                              Eq(absl::optional<base::Version>(
+                              Eq(std::optional<base::Version>(
                                   base::Version(new_version)))),
                      Property(&BuildState::critical_version, IsFalse()))));
   NotifyStatusChanged(std::move(status));
@@ -137,7 +137,7 @@ TEST_F(InstalledVersionUpdaterTest, ChannelChange) {
           Property(&BuildState::installed_version, IsTrue()),
           Property(
               &BuildState::installed_version,
-              Eq(absl::optional<base::Version>(base::Version(new_version)))),
+              Eq(std::optional<base::Version>(base::Version(new_version)))),
           Property(&BuildState::critical_version, IsFalse()))));
   NotifyStatusChanged(std::move(status));
   task_environment_.RunUntilIdle();

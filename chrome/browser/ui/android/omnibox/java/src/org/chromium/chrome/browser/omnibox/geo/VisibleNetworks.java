@@ -13,21 +13,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.Set;
 
-/**
- * Visible networks. Stores the data of connected and visible networks.
- */
+/** Visible networks. Stores the data of connected and visible networks. */
 class VisibleNetworks {
-    @Nullable
-    private final VisibleWifi mConnectedWifi;
-    @Nullable
-    private final VisibleCell mConnectedCell;
-    @Nullable
-    private final Set<VisibleWifi> mAllVisibleWifis;
-    @Nullable
-    private final Set<VisibleCell> mAllVisibleCells;
+    @Nullable private final VisibleWifi mConnectedWifi;
+    @Nullable private final VisibleCell mConnectedCell;
+    @Nullable private final Set<VisibleWifi> mAllVisibleWifis;
+    @Nullable private final Set<VisibleCell> mAllVisibleCells;
 
-    private VisibleNetworks(@Nullable VisibleWifi connectedWifi,
-            @Nullable VisibleCell connectedCell, @Nullable Set<VisibleWifi> allVisibleWifis,
+    private VisibleNetworks(
+            @Nullable VisibleWifi connectedWifi,
+            @Nullable VisibleCell connectedCell,
+            @Nullable Set<VisibleWifi> allVisibleWifis,
             @Nullable Set<VisibleCell> allVisibleCells) {
         mConnectedWifi = connectedWifi;
         mConnectedCell = connectedCell;
@@ -35,23 +31,21 @@ class VisibleNetworks {
         mAllVisibleCells = allVisibleCells;
     }
 
-    static VisibleNetworks create(@Nullable VisibleWifi connectedWifi,
-            @Nullable VisibleCell connectedCell, @Nullable Set<VisibleWifi> allVisibleWifis,
+    static VisibleNetworks create(
+            @Nullable VisibleWifi connectedWifi,
+            @Nullable VisibleCell connectedCell,
+            @Nullable Set<VisibleWifi> allVisibleWifis,
             @Nullable Set<VisibleCell> allVisibleCells) {
         return new VisibleNetworks(connectedWifi, connectedCell, allVisibleWifis, allVisibleCells);
     }
 
-    /**
-     * Returns the connected {@link VisibleWifi} or null if the connected wifi is unknown.
-     */
+    /** Returns the connected {@link VisibleWifi} or null if the connected wifi is unknown. */
     @Nullable
     VisibleWifi connectedWifi() {
         return mConnectedWifi;
     }
 
-    /**
-     * Returns the connected {@link VisibleCell} or null if the connected cell is unknown.
-     */
+    /** Returns the connected {@link VisibleCell} or null if the connected cell is unknown. */
     @Nullable
     VisibleCell connectedCell() {
         return mConnectedCell;
@@ -75,21 +69,19 @@ class VisibleNetworks {
         return mAllVisibleCells;
     }
 
-    /**
-     * Returns whether this object is empty, meaning there is no visible networks at all.
-     */
+    /** Returns whether this object is empty, meaning there is no visible networks at all. */
     final boolean isEmpty() {
         Set<VisibleWifi> allVisibleWifis = allVisibleWifis();
         Set<VisibleCell> allVisibleCells = allVisibleCells();
-        return connectedWifi() == null && connectedCell() == null
+        return connectedWifi() == null
+                && connectedCell() == null
                 && (allVisibleWifis == null || allVisibleWifis.size() == 0)
                 && (allVisibleCells == null || allVisibleCells.size() == 0);
     }
 
     /**
-     * Compares the specified object with this VisibleNetworks for equality.  Returns
-     * {@code true} if the given object is a VisibleNetworks and has identical values for
-     * all of its fields.
+     * Compares the specified object with this VisibleNetworks for equality. Returns {@code true} if
+     * the given object is a VisibleNetworks and has identical values for all of its fields.
      */
     @Override
     public boolean equals(Object object) {
@@ -113,26 +105,26 @@ class VisibleNetworks {
 
     @Override
     public int hashCode() {
-        return objectsHash(mConnectedWifi, mConnectedCell, objectsHashCode(mAllVisibleWifis),
+        return objectsHash(
+                mConnectedWifi,
+                mConnectedCell,
+                objectsHashCode(mAllVisibleWifis),
                 objectsHashCode(mAllVisibleCells));
     }
 
-    /**
-     * Specification of a visible wifi.
-     */
+    /** Specification of a visible wifi. */
     static class VisibleWifi {
         static final VisibleWifi NO_WIFI_INFO = VisibleWifi.create(null, null, null, null);
 
-        @Nullable
-        private final String mSsid;
-        @Nullable
-        private final String mBssid;
-        @Nullable
-        private final Integer mLevel;
-        @Nullable
-        private final Long mTimestampMs;
+        @Nullable private final String mSsid;
+        @Nullable private final String mBssid;
+        @Nullable private final Integer mLevel;
+        @Nullable private final Long mTimestampMs;
 
-        private VisibleWifi(@Nullable String ssid, @Nullable String bssid, @Nullable Integer level,
+        private VisibleWifi(
+                @Nullable String ssid,
+                @Nullable String bssid,
+                @Nullable Integer level,
                 @Nullable Long timestampMs) {
             mSsid = ssid;
             mBssid = bssid;
@@ -140,47 +132,42 @@ class VisibleNetworks {
             mTimestampMs = timestampMs;
         }
 
-        static VisibleWifi create(@Nullable String ssid, @Nullable String bssid,
-                @Nullable Integer level, @Nullable Long timestampMs) {
+        static VisibleWifi create(
+                @Nullable String ssid,
+                @Nullable String bssid,
+                @Nullable Integer level,
+                @Nullable Long timestampMs) {
             return new VisibleWifi(ssid, bssid, level, timestampMs);
         }
 
-        /**
-         * Returns the SSID of the visible Wifi, or null if unknown.
-         */
+        /** Returns the SSID of the visible Wifi, or null if unknown. */
         @Nullable
         String ssid() {
             return mSsid;
         }
 
-        /**
-         * Returns the BSSID of the visible Wifi, or null if unknown.
-         */
+        /** Returns the BSSID of the visible Wifi, or null if unknown. */
         @Nullable
         String bssid() {
             return mBssid;
         }
 
-        /**
-         * Returns the signal level in dBm (RSSI), {@code null} if unknown.
-         */
+        /** Returns the signal level in dBm (RSSI), {@code null} if unknown. */
         @Nullable
         Integer level() {
             return mLevel;
         }
 
-        /**
-         * Returns the timestamp in Ms, {@code null} if unknown.
-         */
+        /** Returns the timestamp in Ms, {@code null} if unknown. */
         @Nullable
         Long timestampMs() {
             return mTimestampMs;
         }
 
         /**
-         * Compares the specified object with this VisibleWifi for equality.  Returns
-         * {@code true} if the given object is a VisibleWifi and has identical values for
-         * all of its fields except level and timestampMs.
+         * Compares the specified object with this VisibleWifi for equality. Returns {@code true} if
+         * the given object is a VisibleWifi and has identical values for all of its fields except
+         * level and timestampMs.
          */
         @Override
         public boolean equals(Object object) {
@@ -220,9 +207,7 @@ class VisibleNetworks {
         }
     }
 
-    /**
-     * Specification of a visible cell.
-     */
+    /** Specification of a visible cell. */
     static class VisibleCell {
         static final VisibleCell UNKNOWN_VISIBLE_CELL =
                 VisibleCell.builder(VisibleCell.RadioType.UNKNOWN).build();
@@ -230,11 +215,15 @@ class VisibleNetworks {
                 VisibleCell.builder(VisibleCell.RadioType.UNKNOWN_MISSING_LOCATION_PERMISSION)
                         .build();
 
-        /**
-         * Represents all possible values of radio type that we track.
-         */
-        @IntDef({RadioType.UNKNOWN, RadioType.UNKNOWN_MISSING_LOCATION_PERMISSION, RadioType.CDMA,
-                RadioType.GSM, RadioType.LTE, RadioType.WCDMA})
+        /** Represents all possible values of radio type that we track. */
+        @IntDef({
+            RadioType.UNKNOWN,
+            RadioType.UNKNOWN_MISSING_LOCATION_PERMISSION,
+            RadioType.CDMA,
+            RadioType.GSM,
+            RadioType.LTE,
+            RadioType.WCDMA
+        })
         @Retention(RetentionPolicy.SOURCE)
         @interface RadioType {
             int UNKNOWN = 0;
@@ -250,24 +239,15 @@ class VisibleNetworks {
             return new VisibleCell.Builder().setRadioType(radioType);
         }
 
-        @RadioType
-        private final int mRadioType;
-        @Nullable
-        private final Integer mCellId;
-        @Nullable
-        private final Integer mLocationAreaCode;
-        @Nullable
-        private final Integer mMobileCountryCode;
-        @Nullable
-        private final Integer mMobileNetworkCode;
-        @Nullable
-        private final Integer mPrimaryScramblingCode;
-        @Nullable
-        private final Integer mPhysicalCellId;
-        @Nullable
-        private final Integer mTrackingAreaCode;
-        @Nullable
-        private Long mTimestampMs;
+        @RadioType private final int mRadioType;
+        @Nullable private final Integer mCellId;
+        @Nullable private final Integer mLocationAreaCode;
+        @Nullable private final Integer mMobileCountryCode;
+        @Nullable private final Integer mMobileNetworkCode;
+        @Nullable private final Integer mPrimaryScramblingCode;
+        @Nullable private final Integer mPhysicalCellId;
+        @Nullable private final Integer mTrackingAreaCode;
+        @Nullable private Long mTimestampMs;
 
         private VisibleCell(Builder builder) {
             mRadioType = builder.mRadioType;
@@ -281,41 +261,31 @@ class VisibleNetworks {
             mTimestampMs = builder.mTimestampMs;
         }
 
-        /**
-         * Returns the radio type of the visible cell.
-         */
+        /** Returns the radio type of the visible cell. */
         @RadioType
         int radioType() {
             return mRadioType;
         }
 
-        /**
-         * Returns the gsm cell id, {@code null} if unknown.
-         */
+        /** Returns the gsm cell id, {@code null} if unknown. */
         @Nullable
         Integer cellId() {
             return mCellId;
         }
 
-        /**
-         * Returns the gsm location area code, {@code null} if unknown.
-         */
+        /** Returns the gsm location area code, {@code null} if unknown. */
         @Nullable
         Integer locationAreaCode() {
             return mLocationAreaCode;
         }
 
-        /**
-         * Returns the mobile country code, {@code null} if unknown or GSM.
-         */
+        /** Returns the mobile country code, {@code null} if unknown or GSM. */
         @Nullable
         Integer mobileCountryCode() {
             return mMobileCountryCode;
         }
 
-        /**
-         * Returns the mobile network code, {@code null} if unknown or GSM.
-         */
+        /** Returns the mobile network code, {@code null} if unknown or GSM. */
         @Nullable
         Integer mobileNetworkCode() {
             return mMobileNetworkCode;
@@ -330,34 +300,28 @@ class VisibleNetworks {
             return mPrimaryScramblingCode;
         }
 
-        /**
-         * Returns the physical cell id, {@code null} if unknown or not LTE.
-         */
+        /** Returns the physical cell id, {@code null} if unknown or not LTE. */
         @Nullable
         Integer physicalCellId() {
             return mPhysicalCellId;
         }
 
-        /**
-         * Returns the tracking area code, {@code null} if unknown or not LTE.
-         */
+        /** Returns the tracking area code, {@code null} if unknown or not LTE. */
         @Nullable
         Integer trackingAreaCode() {
             return mTrackingAreaCode;
         }
 
-        /**
-         * Returns the timestamp in Ms, {@code null} if unknown.
-         */
+        /** Returns the timestamp in Ms, {@code null} if unknown. */
         @Nullable
         Long timestampMs() {
             return mTimestampMs;
         }
 
         /**
-         * Compares the specified object with this VisibleCell for equality.  Returns
-         * {@code true} if the given object is a VisibleWifi and has identical values for
-         * all of its fields except timestampMs.
+         * Compares the specified object with this VisibleCell for equality. Returns {@code true} if
+         * the given object is a VisibleWifi and has identical values for all of its fields except
+         * timestampMs.
          */
         @Override
         public boolean equals(Object object) {
@@ -377,8 +341,14 @@ class VisibleNetworks {
 
         @Override
         public int hashCode() {
-            return VisibleNetworks.objectsHash(mRadioType, mCellId, mLocationAreaCode,
-                    mMobileCountryCode, mMobileNetworkCode, mPrimaryScramblingCode, mPhysicalCellId,
+            return VisibleNetworks.objectsHash(
+                    mRadioType,
+                    mCellId,
+                    mLocationAreaCode,
+                    mMobileCountryCode,
+                    mMobileNetworkCode,
+                    mPrimaryScramblingCode,
+                    mPhysicalCellId,
                     mTrackingAreaCode);
         }
 
@@ -429,28 +399,17 @@ class VisibleNetworks {
             return visibleNetworkBuilder.build();
         }
 
-        /**
-         * A {@link VisibleCell} builder.
-         */
+        /** A {@link VisibleCell} builder. */
         static class Builder {
-            @RadioType
-            private int mRadioType;
-            @Nullable
-            private Integer mCellId;
-            @Nullable
-            private Integer mLocationAreaCode;
-            @Nullable
-            private Integer mMobileCountryCode;
-            @Nullable
-            private Integer mMobileNetworkCode;
-            @Nullable
-            private Integer mPrimaryScramblingCode;
-            @Nullable
-            private Integer mPhysicalCellId;
-            @Nullable
-            private Integer mTrackingAreaCode;
-            @Nullable
-            private Long mTimestampMs;
+            @RadioType private int mRadioType;
+            @Nullable private Integer mCellId;
+            @Nullable private Integer mLocationAreaCode;
+            @Nullable private Integer mMobileCountryCode;
+            @Nullable private Integer mMobileNetworkCode;
+            @Nullable private Integer mPrimaryScramblingCode;
+            @Nullable private Integer mPhysicalCellId;
+            @Nullable private Integer mTrackingAreaCode;
+            @Nullable private Long mTimestampMs;
 
             Builder setRadioType(@RadioType int radioType) {
                 mRadioType = radioType;

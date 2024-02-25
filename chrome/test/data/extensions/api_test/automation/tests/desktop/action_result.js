@@ -11,4 +11,4 @@ let allTests = [function testActionResult() {
   });
 }];
 
-setUpAndRunTests(allTests)
+setUpAndRunDesktopTests(allTests)

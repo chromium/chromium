@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace ash {
@@ -16,6 +17,7 @@ namespace ash {
 // access, accidentally disabling the feature could cause users to be unable to
 // use their devices.
 class AccessibilityFeatureDisableDialog : public views::DialogDelegateView {
+  METADATA_HEADER(AccessibilityFeatureDisableDialog, views::DialogDelegateView)
  public:
   AccessibilityFeatureDisableDialog(int window_title_text_id,
                                     base::OnceClosure on_accept_callback,
@@ -29,9 +31,6 @@ class AccessibilityFeatureDisableDialog : public views::DialogDelegateView {
   ~AccessibilityFeatureDisableDialog() override;
 
   base::WeakPtr<AccessibilityFeatureDisableDialog> GetWeakPtr();
-
-  // views::View:
-  const char* GetClassName() const override;
 
  private:
   base::OnceClosure on_cancel_callback_;

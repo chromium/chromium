@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
@@ -54,9 +55,6 @@ void CloneBookmarkNodeImpl(BookmarkModel* model,
                            bool reset_node_times) {
   // Make sure to not copy non clonable keys.
   BookmarkNode::MetaInfoMap meta_info_map = element.meta_info_map;
-  for (const std::string& key : model->non_cloned_keys())
-    meta_info_map.erase(key);
-
   if (element.is_url) {
     Time date_added = reset_node_times ? Time::Now() : element.date_added;
     DCHECK(!date_added.is_null());
@@ -103,9 +101,11 @@ bool PruneInvisibleFolders(const BookmarkNode* node) {
 
 // This traces parents up to root, determines if node is contained in a
 // selected folder.
-bool HasSelectedAncestor(BookmarkModel* model,
-                         const std::vector<const BookmarkNode*>& selected_nodes,
-                         const BookmarkNode* node) {
+bool HasSelectedAncestor(
+    BookmarkModel* model,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selected_nodes,
+    const BookmarkNode* node) {
   if (!node || model->is_permanent_node(node))
     return false;
 
@@ -220,7 +220,8 @@ bool HasUserCreatedBookmarks(BookmarkModel* model) {
 QueryFields::QueryFields() {}
 QueryFields::~QueryFields() {}
 
-VectorIterator::VectorIterator(std::vector<const BookmarkNode*>* nodes)
+VectorIterator::VectorIterator(
+    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes)
     : nodes_(nodes), current_(nodes->begin()) {}
 
 VectorIterator::~VectorIterator() = default;
@@ -252,16 +253,17 @@ void CloneBookmarkNode(BookmarkModel* model,
   metrics::RecordCloneBookmarkNode(elements.size());
 }
 
-void CopyToClipboard(BookmarkModel* model,
-                     const std::vector<const BookmarkNode*>& nodes,
-                     bool remove_nodes,
-                     metrics::BookmarkEditSource source) {
+void CopyToClipboard(
+    BookmarkModel* model,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
+    bool remove_nodes,
+    metrics::BookmarkEditSource source) {
   if (nodes.empty())
     return;
 
   // Create array of selected nodes with descendants filtered out.
-  std::vector<const BookmarkNode*> filtered_nodes;
-  for (const auto* node : nodes) {
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> filtered_nodes;
+  for (const bookmarks::BookmarkNode* node : nodes) {
     if (!HasSelectedAncestor(model, nodes, node->parent()))
       filtered_nodes.push_back(node);
   }
@@ -270,8 +272,9 @@ void CopyToClipboard(BookmarkModel* model,
 
   if (remove_nodes) {
     ScopedGroupBookmarkActions group_cut(model);
-    for (const auto* node : filtered_nodes)
+    for (const bookmarks::BookmarkNode* node : filtered_nodes) {
       model->Remove(node, source);
+    }
   }
 }
 
@@ -337,8 +340,9 @@ void PasteFromClipboard(BookmarkModel* model,
 }
 
 bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node) {
-  if (!node || !model->client()->CanBeEditedByUser(node))
+  if (!node || model->client()->IsNodeManaged(node)) {
     return false;
+  }
   return (BookmarkNodeData::ClipboardContainsBookmarks() ||
           GetUrlFromClipboard(/*notify_if_restricted=*/false).is_valid());
 }
@@ -352,8 +356,9 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
 
   while (iterator.has_next()) {
     const BookmarkNode* parent = iterator.Next();
-    if (!model->client()->CanBeEditedByUser(parent))
+    if (model->client()->IsNodeManaged(parent)) {
       continue;
+    }
     if (parent->is_folder() && parent->date_folder_modified() > Time()) {
       if (max_count == 0) {
         nodes.push_back(parent);
@@ -376,7 +381,7 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
     const BookmarkNode* root_node = model->root_node();
 
     for (const auto& node : root_node->children()) {
-      if (node->IsVisible() && model->client()->CanBeEditedByUser(node.get()) &&
+      if (node->IsVisible() && !model->client()->IsNodeManaged(node.get()) &&
           !base::Contains(nodes, node.get())) {
         nodes.push_back(node.get());
 
@@ -439,9 +444,11 @@ void GetBookmarksMatchingProperties(BookmarkModel* model,
   if (query.url) {
     // Shortcut into the BookmarkModel if searching for URL.
     GURL url(*query.url);
-    std::vector<const BookmarkNode*> url_matched_nodes;
-    if (url.is_valid())
-      model->GetNodesByURL(url, &url_matched_nodes);
+    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+        url_matched_nodes;
+    if (url.is_valid()) {
+      url_matched_nodes = model->GetNodesByURL(url);
+    }
     VectorIterator iterator(&url_matched_nodes);
     GetBookmarksMatchingPropertiesImpl<VectorIterator>(
         iterator, model, query, query_words, max_count, nodes);
@@ -502,7 +509,8 @@ void RegisterManagedBookmarksPrefs(PrefRegistrySimple* registry) {
 
 const BookmarkNode* GetParentForNewNodes(
     const BookmarkNode* parent,
-    const std::vector<const BookmarkNode*>& selection,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection,
     size_t* index) {
   const BookmarkNode* real_parent = parent;
 
@@ -511,7 +519,7 @@ const BookmarkNode* GetParentForNewNodes(
 
   if (index) {
     if (selection.size() == 1 && selection[0]->is_url()) {
-      absl::optional<size_t> selection_index =
+      std::optional<size_t> selection_index =
           real_parent->GetIndexOf(selection[0]);
       DCHECK(selection_index.has_value());
       *index = selection_index.value() + 1;
@@ -552,20 +560,19 @@ const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
 }
 
 void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {
-  std::vector<const BookmarkNode*> bookmarks;
-  model->GetNodesByURL(url, &bookmarks);
-
   // Remove all the user bookmarks.
-  for (size_t i = 0; i < bookmarks.size(); ++i) {
-    const BookmarkNode* node = bookmarks[i];
-    if (model->client()->CanBeEditedByUser(node))
+  for (const BookmarkNode* node : model->GetNodesByURL(url)) {
+    if (!model->client()->IsNodeManaged(node)) {
       model->Remove(node, metrics::BookmarkEditSource::kUser);
+    }
   }
 }
 
 std::u16string CleanUpUrlForMatching(
     const GURL& gurl,
     base::OffsetAdjuster::Adjustments* adjustments) {
+  DCHECK(gurl.is_valid());
+
   base::OffsetAdjuster::Adjustments tmp_adjustments;
   return base::i18n::ToLower(url_formatter::FormatUrlWithAdjustments(
       GURL(TruncateUrl(gurl.spec())),
@@ -579,21 +586,22 @@ std::u16string CleanUpTitleForMatching(const std::u16string& title) {
   return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
 }
 
-bool CanAllBeEditedByUser(BookmarkClient* client,
-                          const std::vector<const BookmarkNode*>& nodes) {
+bool CanAllBeEditedByUser(
+    BookmarkClient* client,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
   for (size_t i = 0; i < nodes.size(); ++i) {
-    if (!client->CanBeEditedByUser(nodes[i]))
+    if (client->IsNodeManaged(nodes[i])) {
       return false;
+    }
   }
   return true;
 }
 
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {
-  std::vector<const BookmarkNode*> nodes;
-  model->GetNodesByURL(url, &nodes);
-  for (size_t i = 0; i < nodes.size(); ++i) {
-    if (model->client()->CanBeEditedByUser(nodes[i]))
+  for (const BookmarkNode* node : model->GetNodesByURL(url)) {
+    if (!model->client()->IsNodeManaged(node)) {
       return true;
+    }
   }
   return false;
 }
@@ -604,19 +612,13 @@ const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model,
                   [id](const BookmarkNode* node) { return node->id() == id; });
 }
 
-const BookmarkNode* GetBookmarkNodeByUuid(const BookmarkModel* model,
-                                          const base::Uuid& uuid) {
-  return FindNode(model->root_node(), [&uuid](const BookmarkNode* node) {
-    return node->uuid() == uuid;
-  });
-}
-
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root) {
   return node && node->HasAncestor(root);
 }
 
-bool HasDescendantsOf(const std::vector<const BookmarkNode*>& list,
-                      const BookmarkNode* root) {
+bool HasDescendantsOf(
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& list,
+    const BookmarkNode* root) {
   for (const BookmarkNode* node : list) {
     if (IsDescendantOf(node, root))
       return true;

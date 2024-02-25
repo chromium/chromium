@@ -2,8 +2,10 @@ noparent = True
 
 include_rules = [
   "+ash/public/cpp",
+  "+ash/constants",
   "+chromeos/ash/components/cryptohome",
   "+base",
+  "+chromeos/dbus/power",
   "+chromeos/ash/components/dbus",
   "+chromeos/ash/components/login/auth",
   "+components/prefs",

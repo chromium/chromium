@@ -31,13 +31,14 @@
 
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
 
+#include <optional>
+
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_workeroptions.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_shared_worker_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sharedworkeroptions_string.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
@@ -77,8 +78,34 @@ SharedWorker::SharedWorker(ExecutionContext* context)
 SharedWorker* SharedWorker::Create(
     ExecutionContext* context,
     const String& url,
-    const V8UnionStringOrWorkerOptions* name_or_options,
+    const V8UnionSharedWorkerOptionsOrString* name_or_options,
     ExceptionState& exception_state) {
+  return CreateImpl(context, url, name_or_options, exception_state,
+                    &To<LocalDOMWindow>(context)->GetPublicURLManager(),
+                    /*connector_override=*/nullptr);
+}
+
+SharedWorker* SharedWorker::Create(
+    base::PassKey<StorageAccessHandle>,
+    ExecutionContext* context,
+    const String& url,
+    const V8UnionSharedWorkerOptionsOrString* name_or_options,
+    ExceptionState& exception_state,
+    PublicURLManager* public_url_manager,
+    const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
+        connector_override) {
+  return CreateImpl(context, url, name_or_options, exception_state,
+                    public_url_manager, connector_override);
+}
+
+SharedWorker* SharedWorker::CreateImpl(
+    ExecutionContext* context,
+    const String& url,
+    const V8UnionSharedWorkerOptionsOrString* name_or_options,
+    ExceptionState& exception_state,
+    PublicURLManager* public_url_manager,
+    const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
+        connector_override) {
   DCHECK(IsMainThread());
 
   if (context->IsContextDestroyed()) {
@@ -115,26 +142,62 @@ SharedWorker* SharedWorker::Create(
 
   mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
   if (script_url.ProtocolIs("blob")) {
-    window->GetPublicURLManager().Resolve(
+    public_url_manager->Resolve(
         script_url, blob_url_token.InitWithNewPipeAndPassReceiver());
   }
 
   auto options = mojom::blink::WorkerOptions::New();
+  // The same_site_cookies setting defaults to kAll for first-party contexts
+  // (allowing access to SameSite Lax and String cookies) and kNone in
+  // third-party contexts (allowing access to just SameSite None cookies).
+  mojom::blink::SharedWorkerSameSiteCookies same_site_cookies =
+      window->GetStorageKey().IsFirstPartyContext()
+          ? mojom::blink::SharedWorkerSameSiteCookies::kAll
+          : mojom::blink::SharedWorkerSameSiteCookies::kNone;
   switch (name_or_options->GetContentType()) {
-    case V8UnionStringOrWorkerOptions::ContentType::kString:
+    case V8UnionSharedWorkerOptionsOrString::ContentType::kString:
       options->name = name_or_options->GetAsString();
       break;
-    case V8UnionStringOrWorkerOptions::ContentType::kWorkerOptions: {
-      WorkerOptions* worker_options = name_or_options->GetAsWorkerOptions();
+    case V8UnionSharedWorkerOptionsOrString::ContentType::
+        kSharedWorkerOptions: {
+      SharedWorkerOptions* worker_options =
+          name_or_options->GetAsSharedWorkerOptions();
       options->name = worker_options->name();
-      absl::optional<mojom::blink::ScriptType> type_result =
+      std::optional<mojom::blink::ScriptType> type_result =
           Script::ParseScriptType(worker_options->type());
       DCHECK(type_result);
       options->type = type_result.value();
-      absl::optional<network::mojom::CredentialsMode> credentials_result =
+      std::optional<network::mojom::CredentialsMode> credentials_result =
           Request::ParseCredentialsMode(worker_options->credentials());
       DCHECK(credentials_result);
       options->credentials = credentials_result.value();
+      if (worker_options->hasSameSiteCookies()) {
+        switch (worker_options->sameSiteCookies().AsEnum()) {
+          case V8SharedWorkerSameSiteCookies::Enum::kAll:
+            same_site_cookies = mojom::blink::SharedWorkerSameSiteCookies::kAll;
+            if (window->GetStorageKey().IsThirdPartyContext()) {
+              // Third-party contexts cannot request SameSite Strict or Lax
+              // cookies so no worker can be returned.
+              exception_state.ThrowSecurityError(
+                  "SharedWorkers in third-party contexts cannot request "
+                  "SameSite Strict or Lax cookies via the `sameSiteCookies: "
+                  "\"all\"` option.");
+              return nullptr;
+            }
+            break;
+          case V8SharedWorkerSameSiteCookies::Enum::kNone:
+            same_site_cookies =
+                mojom::blink::SharedWorkerSameSiteCookies::kNone;
+            if (window->GetStorageKey().IsFirstPartyContext()) {
+              // We want to note when `none` is specifically requested in a
+              // first-party context to gauge usage of this feature.
+              UseCounter::Count(
+                  window,
+                  WebFeature::kFirstPartySharedWorkerSameSiteCookiesNone);
+            }
+            break;
+        }
+      }
       break;
     }
   }
@@ -146,7 +209,8 @@ SharedWorker* SharedWorker::Create(
 
   SharedWorkerClientHolder::From(*window)->Connect(
       worker, std::move(remote_port), script_url, std::move(blob_url_token),
-      std::move(options), context->UkmSourceID());
+      std::move(options), same_site_cookies, context->UkmSourceID(),
+      connector_override);
 
   return worker;
 }

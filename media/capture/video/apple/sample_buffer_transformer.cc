@@ -47,9 +47,9 @@ std::pair<uint8_t*, size_t> GetSampleBufferBaseAddressAndSize(
 struct I420Planes {
   size_t width;
   size_t height;
-  raw_ptr<uint8_t> y_plane_data;
-  raw_ptr<uint8_t> u_plane_data;
-  raw_ptr<uint8_t> v_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> y_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> u_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> v_plane_data;
   size_t y_plane_stride;
   size_t u_plane_stride;
   size_t v_plane_stride;
@@ -123,8 +123,8 @@ I420Planes GetI420PlanesFromPixelBuffer(CVPixelBufferRef pixel_buffer) {
 struct NV12Planes {
   size_t width;
   size_t height;
-  raw_ptr<uint8_t> y_plane_data;
-  raw_ptr<uint8_t> uv_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> y_plane_data;
+  raw_ptr<uint8_t, AllowPtrArithmetic> uv_plane_data;
   size_t y_plane_stride;
   size_t uv_plane_stride;
 };
@@ -480,7 +480,7 @@ void SampleBufferTransformer::Reconfigure(
     OSType destination_pixel_format,
     const gfx::Size& destination_size,
     int rotation_angle,
-    absl::optional<size_t> buffer_pool_size) {
+    std::optional<size_t> buffer_pool_size) {
   DCHECK(transformer != Transformer::kLibyuv ||
          destination_pixel_format == kPixelFormatI420 ||
          destination_pixel_format == kPixelFormatNv12)
@@ -555,7 +555,7 @@ SampleBufferTransformer::Transform(CVPixelBufferRef pixel_buffer) {
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Do pixel transfer or libyuv conversion + rescale.
-  TransformPixelBuffer(pixel_buffer, destination_pixel_buffer);
+  TransformPixelBuffer(pixel_buffer, destination_pixel_buffer.get());
   return destination_pixel_buffer;
 }
 
@@ -577,7 +577,7 @@ SampleBufferTransformer::Transform(CMSampleBufferRef sample_buffer) {
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Sample buffer path - it's MJPEG. Do libyuv conversion + rescale.
-  if (!TransformSampleBuffer(sample_buffer, destination_pixel_buffer)) {
+  if (!TransformSampleBuffer(sample_buffer, destination_pixel_buffer.get())) {
     LOG(ERROR) << "Failed to transform sample buffer.";
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
@@ -601,8 +601,8 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Rotate(
 
   // The rotated_pixel_buffer might not be the same size as source_pixel_buffer
   // since source_pixel_buffer gets rotated by rotation_angle_.
-  if (pixel_buffer_rotator_->Rotate(source_pixel_buffer, rotated_pixel_buffer,
-                                    rotation_angle_)) {
+  if (pixel_buffer_rotator_->Rotate(
+          source_pixel_buffer, rotated_pixel_buffer.get(), rotation_angle_)) {
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>(rotated_pixel_buffer);
   } else {
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();

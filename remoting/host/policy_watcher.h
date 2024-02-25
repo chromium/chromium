@@ -37,11 +37,14 @@ namespace remoting {
 class PolicyWatcher : public policy::PolicyService::Observer {
  public:
   // Called first with all policies, and subsequently with any changed policies.
-  typedef base::RepeatingCallback<void(base::Value::Dict)>
-      PolicyUpdatedCallback;
+  // Policies that are unchanged will be absent in the returned dictionary.
+  // If a policy has no default value but is unset, it will be an empty Value,
+  // i.e., of type NONE.
+  using PolicyUpdatedCallback =
+      base::RepeatingCallback<void(base::Value::Dict)>;
 
   // Called after detecting malformed policies.
-  typedef base::RepeatingCallback<void()> PolicyErrorCallback;
+  using PolicyErrorCallback = base::RepeatingCallback<void()>;
 
   PolicyWatcher(const PolicyWatcher&) = delete;
   PolicyWatcher& operator=(const PolicyWatcher&) = delete;
@@ -55,7 +58,7 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   //
   // |policy_error_callback| will be called when malformed policies are detected
   // (i.e. wrong type of policy value, or unparseable files under
-  // /etc/opt/chrome/policies/managed).
+  // $POLICY_PATH/managed).
   // When called, the |policy_error_callback| is responsible for mitigating the
   // security risk of running with incorrectly formulated policies (by either
   // shutting down or locking down the host).

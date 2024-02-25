@@ -864,10 +864,28 @@ virtual void ConvertRGBAToYUVAMailboxesINTERNAL(GLenum planes_yuv_color_space,
                                                 GLenum plane_config,
                                                 GLenum subsampling,
                                                 const GLbyte* mailboxes) = 0;
-virtual void ConvertYUVAMailboxesToRGBINTERNAL(GLenum planes_yuv_color_space,
+virtual void ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
+                                               GLint src_y,
+                                               GLsizei width,
+                                               GLsizei height,
+                                               GLenum planes_yuv_color_space,
                                                GLenum plane_config,
                                                GLenum subsampling,
                                                const GLbyte* mailboxes) = 0;
+virtual void ConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    GLenum planes_yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const GLbyte* mailboxes) = 0;
 virtual void CopySharedImageINTERNAL(GLint xoffset,
                                      GLint yoffset,
                                      GLint x,
@@ -963,4 +981,9 @@ virtual void GetFramebufferPixelLocalStorageParameterfvANGLE(
 virtual void GetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                              GLenum pname,
                                                              GLint* params) = 0;
+virtual void ClipControlEXT(GLenum origin, GLenum depth) = 0;
+virtual void PolygonModeANGLE(GLenum face, GLenum mode) = 0;
+virtual void PolygonOffsetClampEXT(GLfloat factor,
+                                   GLfloat units,
+                                   GLfloat clamp) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

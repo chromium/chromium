@@ -36,7 +36,7 @@ RealtimeAudioDestinationHandler::Create(
     AudioNode& node,
     const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
-    absl::optional<float> sample_rate) {
+    std::optional<float> sample_rate) {
   return base::AdoptRef(
       new RealtimeAudioDestinationHandler(node, sink_descriptor, latency_hint,
                                           sample_rate));
@@ -46,7 +46,7 @@ RealtimeAudioDestinationHandler::RealtimeAudioDestinationHandler(
     AudioNode& node,
     const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
-    absl::optional<float> sample_rate)
+    std::optional<float> sample_rate)
     : AudioDestinationHandler(node),
       sink_descriptor_(sink_descriptor),
       latency_hint_(latency_hint),
@@ -118,12 +118,21 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
   uint32_t old_channel_count = ChannelCount();
   AudioHandler::SetChannelCount(channel_count, exception_state);
 
-  // Stop, re-create and start the destination to apply the new channel count.
-  if (ChannelCount() != old_channel_count && !exception_state.HadException()) {
-    StopPlatformDestination();
-    CreatePlatformDestination();
-    StartPlatformDestination();
+  // After the context is closed, changing channel count will be ignored
+  // because it will trigger the recreation of the platform destination. This
+  // in turn can activate the audio rendering thread.
+  AudioContext* context = static_cast<AudioContext*>(Context());
+  CHECK(context);
+  if (context->ContextState() == AudioContext::kClosed ||
+      ChannelCount() == old_channel_count ||
+      exception_state.HadException()) {
+    return;
   }
+
+  // Stop, re-create and start the destination to apply the new channel count.
+  StopPlatformDestination();
+  CreatePlatformDestination();
+  StartPlatformDestination();
 }
 
 void RealtimeAudioDestinationHandler::StartRendering() {
@@ -395,6 +404,17 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
                   sample_rate_.has_value() ? sample_rate_.value() : -1,
                   GetCallbackBufferSize()));
   DCHECK(IsMainThread());
+
+  // After the context is closed, `SetSinkDescriptor` request will be ignored
+  // because it will trigger the recreation of the platform destination. This in
+  // turn can activate the audio rendering thread.
+  AudioContext* context = static_cast<AudioContext*>(Context());
+  CHECK(context);
+  if (context->ContextState() == AudioContext::kClosed) {
+    std::move(callback).Run(
+        media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+    return;
+  }
 
   // Create a pending AudioDestination to replace the current one.
   scoped_refptr<AudioDestination> pending_platform_destination =

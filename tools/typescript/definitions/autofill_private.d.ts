@@ -15,13 +15,15 @@ declare global {
         email: string;
         isSyncEnabledForAutofillProfiles: boolean;
         isEligibleForAddressAccountStorage: boolean;
+        isAutofillSyncToggleEnabled: boolean;
+        isAutofillSyncToggleAvailable: boolean;
       }
 
       /**
        * This enum must be kept in sync with:
        * components/autofill/core/browser/field_types.h.
        */
-      export enum ServerFieldType {
+      export enum FieldType {
         NO_SERVER_DATA,
         UNKNOWN_TYPE,
         EMPTY_TYPE,
@@ -88,16 +90,9 @@ declare global {
         NAME_LAST_CONJUNCTION,
         NAME_LAST_SECOND,
         NAME_HONORIFIC_PREFIX,
-        ADDRESS_HOME_PREMISE_NAME,
-        ADDRESS_HOME_DEPENDENT_STREET_NAME,
-        ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
         ADDRESS_HOME_ADDRESS,
         ADDRESS_HOME_ADDRESS_WITH_NAME,
         ADDRESS_HOME_FLOOR,
-        NAME_FULL_WITH_HONORIFIC_PREFIX,
-        BIRTHDATE_DAY,
-        BIRTHDATE_MONTH,
-        BIRTHDATE_4_DIGIT_YEAR,
         PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
         PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
         PHONE_HOME_NUMBER_PREFIX,
@@ -117,6 +112,9 @@ declare global {
         ADDRESS_HOME_BETWEEN_STREETS_1,
         ADDRESS_HOME_BETWEEN_STREETS_2,
         SINGLE_USERNAME_FORGOT_PASSWORD,
+        ADDRESS_HOME_APT,
+        ADDRESS_HOME_APT_TYPE,
+        SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
       }
 
       export enum AddressSource {
@@ -136,7 +134,7 @@ declare global {
       }
 
       export interface AddressField {
-        type: ServerFieldType;
+        type: FieldType;
         value: string|undefined;
       }
 
@@ -155,7 +153,7 @@ declare global {
       }
 
       export interface AddressComponent {
-        field: ServerFieldType;
+        field: FieldType;
         fieldName: string;
         isLongField: boolean;
         isRequired: boolean;
@@ -173,6 +171,7 @@ declare global {
 
       export interface CreditCardEntry {
         guid?: string;
+        instrumentId?: string;
         name?: string;
         cardNumber?: string;
         expirationMonth?: string;
@@ -180,6 +179,8 @@ declare global {
         nickname?: string;
         network?: string;
         imageSrc?: string;
+        cvc?: string;
+        productTermsUrl?: string;
         metadata?: AutofillMetadata;
       }
 
@@ -213,13 +214,15 @@ declare global {
       export function maskCreditCard(guid: string): void;
       export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
+      export function logServerIbanLinkClicked(): void;
       export function setCreditCardFIDOAuthEnabledState(enabled: boolean): void;
-      export function getUpiIdList(): Promise<string[]>;
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
-      export function authenticateUserToEditLocalCard(): Promise<boolean>;
+      export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
+      export function bulkDeleteAllCvcs(): void;
+      export function setAutofillSyncToggleEnabled(enabled: boolean): void;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],

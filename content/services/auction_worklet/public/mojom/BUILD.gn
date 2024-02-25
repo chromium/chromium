@@ -15,6 +15,7 @@ mojom("mojom") {
   enable_js_fuzzing = false
 
   sources = [
+    "auction_network_events_handler.mojom",
     "auction_shared_storage_host.mojom",
     "auction_worklet_service.mojom",
     "bidder_worklet.mojom",

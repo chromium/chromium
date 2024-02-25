@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -83,7 +84,7 @@ class MEDIA_EXPORT AudioOutputDispatcherImpl
   const std::string device_id_;
 
   size_t idle_proxies_;
-  std::vector<AudioOutputStream*> idle_streams_;
+  std::vector<raw_ptr<AudioOutputStream, VectorExperimental>> idle_streams_;
 
   // When streams are stopped they're added to |idle_streams_|, if no stream is
   // reused before |close_delay_| elapses |close_timer_| will run

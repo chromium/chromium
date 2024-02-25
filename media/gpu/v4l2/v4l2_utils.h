@@ -5,15 +5,19 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_UTILS_H_
 #define MEDIA_GPU_V4L2_V4L2_UTILS_H_
 
-#include <string>
-
 #include <linux/videodev2.h>
 #include <sys/mman.h>
 
+#include <optional>
+#include <string>
+
+#include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 #ifndef V4L2_PIX_FMT_QC08C
 #define V4L2_PIX_FMT_QC08C \
@@ -39,6 +43,16 @@ using IoctlAsCallback = base::RepeatingCallback<int(int, void*)>;
 using MmapAsCallback =
     base::RepeatingCallback<void*(void*, unsigned int, int, int, unsigned int)>;
 
+// This is the callback invoked after successfully allocating a secure buffer.
+// Invocation of this is guaranteed to pass a valid FD w/ the corresponding
+// secure handle.
+using SecureBufferAllocatedCB =
+    base::OnceCallback<void(base::ScopedFD fd, uint64_t secure_handle)>;
+
+using AllocateSecureBufferAsCallback =
+    base::RepeatingCallback<void(uint32_t size,
+                                 SecureBufferAllocatedCB callback)>;
+
 // Numerical value of ioctl() OK return value;
 constexpr int kIoctlOk = 0;
 
@@ -53,9 +67,31 @@ enum class MediaIoctlRequests {
   kMaxValue = kMediaRequestIocReinit,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "VidiocIoctlRequests" in src/tools/metrics/histograms/enums.xml.
+enum class VidiocIoctlRequests {
+  kVidiocGFmt = 0,
+  kVidiocSFmt = 1,
+  kVidiocGSelection = 2,
+  kVidiocExpbuf = 3,
+  kVidiocReqbufs = 4,
+  kVidiocQuerybuf = 5,
+  kVidiocQbuf = 6,
+  kVidiocDqbuf = 7,
+  kVidiocStreamon = 8,
+  kVidiocStreamoff = 9,
+  kVidiocSExtCtrls = 10,
+  kMaxValue = kVidiocSExtCtrls,
+};
+
 // Records Media.V4L2VideoDecoder.MediaIoctlError UMA when errors happen with
 // media controller API ioctl requests.
 void RecordMediaIoctlUMA(MediaIoctlRequests function);
+
+// Records Vidioc.V4L2VideoDecoder.VidiocIoctlError UMA when errors happen with
+// V4L2 API ioctl requests.
+void RecordVidiocIoctlErrorUMA(VidiocIoctlRequests function);
 
 // Returns a human readable description of |memory|.
 const char* V4L2MemoryToString(v4l2_memory memory);
@@ -77,8 +113,8 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
 size_t GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt);
 
 // Composes VideoFrameLayout based on v4l2_format.
-// If error occurs, it returns absl::nullopt.
-absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
+// If error occurs, it returns std::nullopt.
+std::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
     const struct v4l2_format& format);
 
 // Enumerates the supported VideoCodecProfiles for a given device (accessed via
@@ -117,6 +153,13 @@ base::TimeDelta TimeValToTimeDelta(const struct timeval& timeval);
 
 // Translates a Chrome |time_delta| to a POSIX struct timeval.
 struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta);
+
+// Return a set of all the codecs supported by the hardware as well as
+// their capabilities
+std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs();
+
+// Queries the driver to see if it supports stateful decoding.
+bool IsV4L2DecoderStateful();
 
 }  // namespace media
 

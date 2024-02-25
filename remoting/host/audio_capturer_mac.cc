@@ -146,7 +146,7 @@ AudioCapturerMac::GetAudioDevices() {
                  << "failed. Error: " << result;
       continue;
     }
-    audio_device.device_name = base::SysCFStringRefToUTF8(device_name);
+    audio_device.device_name = base::SysCFStringRefToUTF8(device_name.get());
 
     // Now find out its UID.
     property_address.mSelector = kAudioDevicePropertyDeviceUID;
@@ -161,7 +161,7 @@ AudioCapturerMac::GetAudioDevices() {
                  << "failed. Error: " << result;
       continue;
     }
-    audio_device.device_uid = base::SysCFStringRefToUTF8(device_uid);
+    audio_device.device_uid = base::SysCFStringRefToUTF8(device_uid.get());
     audio_devices.push_back(audio_device);
   }
   return audio_devices;

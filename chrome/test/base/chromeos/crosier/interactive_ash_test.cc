@@ -9,60 +9,24 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/json/string_escape.h"
+#include "base/test/test_switches.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
-#include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
 #include "url/gurl.h"
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-class FakeSessionManagerClientBrowserHelper
-    : public ash::DBusHelperObserverForTest {
- public:
-  FakeSessionManagerClientBrowserHelper() {
-    ash::DBusHelperObserverForTest::Set(this);
-  }
-  FakeSessionManagerClientBrowserHelper(
-      const FakeSessionManagerClientBrowserHelper&) = delete;
-  FakeSessionManagerClientBrowserHelper& operator=(
-      const FakeSessionManagerClientBrowserHelper&) = delete;
-  ~FakeSessionManagerClientBrowserHelper() override {
-    ash::DBusHelperObserverForTest::Set(nullptr);
-  }
-
-  // ash::DBusHelperObserverForTest:
-  void PostInitializeDBus() override {
-    // Create FakeSessionManageClient after real SessionManagerClient is created
-    // and before it is referenced.
-    scoped_fake_session_manager_client_.emplace();
-    ash::FakeSessionManagerClient::Get()->set_stop_session_callback(
-        base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
-  }
-
-  void PreShutdownDBus() override {
-    // Release FakeSessionManagerClient shutting down dbus clients.
-    scoped_fake_session_manager_client_.reset();
-  }
-
- private:
-  // Optionally, use FakeSessionManagerClient if a test only needs the stub
-  // user session.
-  absl::optional<ash::ScopedFakeSessionManagerClient>
-      scoped_fake_session_manager_client_;
-};
-#endif
-
-}  // namespace
-
 using InteractiveMixinBasedBrowserTest =
     InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
+
+}  // namespace
 
 InteractiveAshTest::InteractiveAshTest() {
   // See header file class comment.
@@ -77,13 +41,6 @@ InteractiveAshTest::InteractiveAshTest() {
       base::BindRepeating([](views::Widget* widget) {
         return ui::ElementContext(ash::Shell::GetPrimaryRootWindow());
       }));
-
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-  if (!use_real_session_manager_) {
-    fake_session_manager_client_helper_ =
-        std::make_unique<FakeSessionManagerClientBrowserHelper>();
-  }
-#endif
 }
 
 InteractiveAshTest::~InteractiveAshTest() {
@@ -116,4 +73,73 @@ InteractiveAshTest::CreateBrowserWindow(const GURL& url) {
   params.disposition = WindowOpenDisposition::NEW_WINDOW;
   params.window_action = NavigateParams::SHOW_WINDOW;
   return Navigate(&params);
+}
+
+void InteractiveAshTest::TearDownOnMainThread() {
+  // Passing --test-launcher-interactive leaves the browser running after the
+  // end of the test.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestLauncherInteractive)) {
+    base::RunLoop loop;
+    loop.Run();
+  }
+  InteractiveBrowserTestT<
+      MixinBasedInProcessBrowserTest>::TearDownOnMainThread();
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForWindowWithTitle(aura::Env* env,
+                                           std::u16string title) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(AuraWindowTitleObserver, kTitleObserver);
+  return Steps(
+      ObserveState(kTitleObserver,
+                   std::make_unique<AuraWindowTitleObserver>(env, title)),
+      WaitForState(kTitleObserver, true));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementExists(
+    const ui::ElementIdentifier& element_id,
+    const DeepQuery& query) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
+  StateChange element_exists;
+  element_exists.event = kElementExists;
+  element_exists.where = query;
+  return WaitForStateChange(element_id, element_exists);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementDoesNotExist(
+    const ui::ElementIdentifier& element_id,
+    const DeepQuery& query) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExist);
+  StateChange does_not_exist;
+  does_not_exist.type = StateChange::Type::kDoesNotExist;
+  does_not_exist.event = kElementDoesNotExist;
+  does_not_exist.where = query;
+  return WaitForStateChange(element_id, does_not_exist);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementTextContains(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query,
+    const std::string& expected) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTextFound);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
+      kExistsAndConditionTrue;
+  state_change.where = query;
+  state_change.test_function = "function(el) { return el.innerText.indexOf(" +
+                               base::GetQuotedJSONString(expected) +
+                               ") >= 0; }";
+  state_change.event = kTextFound;
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::ClickElement(const ui::ElementIdentifier& element_id,
+                                 const DeepQuery& query) {
+  return Steps(MoveMouseTo(element_id, query), ClickMouse());
 }

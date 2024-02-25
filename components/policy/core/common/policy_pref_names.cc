@@ -22,10 +22,11 @@ const char kEnterpriseMDMManagementWindows[] =
 // Integer pref that stores the Mac enterprise MDM management authority.
 const char kEnterpriseMDMManagementMac[] =
     "management.platform.enterprise_mdm_mac";
-// Boolean pref that indicates whether integration with macOS Screen Time should
-// be enabled.
-const char kScreenTimeEnabled[] = "policy.screen_time";
 #endif
+
+// Enterprise policy controlled value representing whether the user may be shown
+// HaTS surveys.
+const char kFeedbackSurveysEnabled[] = "policy.feedback_surveys_enabled";
 
 // 64-bit serialization of the time last policy usage statistics were collected
 // by UMA_HISTOGRAM_ENUMERATION.
@@ -110,16 +111,6 @@ const char kUserPolicyNotificationWasShown[] =
     "policy.user_policy_notification_was_shown";
 #endif
 
-// A boolean indicating whether the newly specified behavior for
-// Element.offsetParent is in effect.
-const char kOffsetParentNewSpecBehaviorEnabled[] =
-    "policy.offset_parent_new_spec_behavior_enabled";
-
-// A boolean indicating whether the new behavior for event dispatching on
-// disabled form controls is in effect.
-const char kSendMouseEventsDisabledFormControlsEnabled[] =
-    "policy.send_mouse_events_disabled_form_controls_enabled";
-
 // Boolean controlling whether SafeSearch is mandatory for Google Web Searches.
 const char kForceGoogleSafeSearch[] = "settings.force_google_safesearch";
 
@@ -157,11 +148,25 @@ const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
 const char kLocalTestPoliciesForNextStartup[] =
     "local_test_policies_for_next_startup";
 
+// A boolean pref indicating whether to fire deprecated/removed mutation events.
+// If false, mutation events might not be fired.
+const char kMutationEventsEnabled[] =
+    "policy.deprecated_mutation_events_enabled";
+
 // A boolean pref indicating whether to allow deprecation of the "unload"
 // event.
 // If false, the deprecation rollout will be ignored.
 const char kForcePermissionPolicyUnloadDefaultEnabled[] =
     "policy.force_permission_policy_unload_default_enabled";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Allows user browser navigation access to the listed host patterns. Only
+// applied when a AlwaysOn VPN is active but not connected.
+const char kAlwaysOnVpnPreConnectUrlAllowlist[] =
+    "policy.alwayson_vpn_pre_connect_url_allowlist";
+
+// Boolean value for the FloatingWorkspaceEnabled policy
+const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
+#endif
 }  // namespace policy_prefs
 }  // namespace policy

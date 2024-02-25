@@ -4,11 +4,13 @@
 
 #include "components/attribution_reporting/trigger_registration.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -17,6 +19,7 @@
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -28,14 +31,21 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace attribution_reporting {
 namespace {
 
+using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
+using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Property;
 
 TriggerRegistration TriggerRegistrationWith(
     base::FunctionRef<void(TriggerRegistration&)> f) {
@@ -48,91 +58,103 @@ TEST(TriggerRegistrationTest, Parse) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<TriggerRegistration, TriggerRegistrationError> expected;
+    ::testing::Matcher<
+        base::expected<TriggerRegistration, TriggerRegistrationError>>
+        matches;
   } kTestCases[] = {
       {
           "invalid_json",
           "!",
-          base::unexpected(TriggerRegistrationError::kInvalidJson),
+          ErrorIs(TriggerRegistrationError::kInvalidJson),
       },
       {
           "root_wrong_type",
           "3",
-          base::unexpected(TriggerRegistrationError::kRootWrongType),
+          ErrorIs(TriggerRegistrationError::kRootWrongType),
       },
       {
           "empty",
           R"json({})json",
-          TriggerRegistration(),
+          ValueIs(AllOf(
+              Field(&TriggerRegistration::filters, FilterPair()),
+              Field(&TriggerRegistration::debug_key, std::nullopt),
+              Field(&TriggerRegistration::aggregatable_dedup_keys, IsEmpty()),
+              Field(&TriggerRegistration::event_triggers, IsEmpty()),
+              Field(&TriggerRegistration::aggregatable_trigger_data, IsEmpty()),
+              Field(&TriggerRegistration::aggregatable_values, IsEmpty()),
+              Field(&TriggerRegistration::debug_reporting, false),
+              Field(&TriggerRegistration::aggregation_coordinator_origin,
+                    std::nullopt),
+              Field(&TriggerRegistration::aggregatable_trigger_config,
+                    AggregatableTriggerConfig()))),
       },
       {
           "filters_valid",
           R"json({"filters":{"a":["b"], "_lookback_window": 2 }})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.positive = {*FilterConfig::Create(
-                {{{"a", {"b"}}}}, /*lookback_window=*/base::Seconds(2))};
-          }),
+          ValueIs(Field(&TriggerRegistration::filters,
+                        FilterPair(
+                            /*positive=*/{*FilterConfig::Create(
+                                {{{"a", {"b"}}}},
+                                /*lookback_window=*/base::Seconds(2))},
+                            /*negative=*/FiltersDisjunction()))),
       },
       {
           "filters_wrong_type",
           R"json({"filters": 5})json",
-          base::unexpected(TriggerRegistrationError::kFiltersWrongType),
+          ErrorIs(TriggerRegistrationError::kFiltersWrongType),
       },
       {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.negative = {*FilterConfig::Create({{{"a", {"b"}}}})};
-          }),
+          ValueIs(Field(
+              &TriggerRegistration::filters,
+              FilterPair(
+                  /*positive=*/FiltersDisjunction(),
+                  /*negative=*/{*FilterConfig::Create({{{"a", {"b"}}}})}))),
       },
       {
           "not_filters_wrong_type",
           R"json({"not_filters": 5})json",
-          base::unexpected(TriggerRegistrationError::kFiltersWrongType),
+          ErrorIs(TriggerRegistrationError::kFiltersWrongType),
       },
       {
           "debug_key_valid",
           R"json({"debug_key":"5"})json",
-          TriggerRegistrationWith(
-              [](TriggerRegistration& r) { r.debug_key = 5; }),
+          ValueIs(Field(&TriggerRegistration::debug_key, 5)),
       },
       {
           "debug_key_invalid",
           R"json({"debug_key":"-5"})json",
-          TriggerRegistration(),
+          ValueIs(Field(&TriggerRegistration::debug_key, std::nullopt)),
       },
       {
           "debug_key_wrong_type",
           R"json({"debug_key":5})json",
-          TriggerRegistration(),
+          ValueIs(Field(&TriggerRegistration::debug_key, std::nullopt)),
       },
       {
           "event_triggers_valid",
           R"json({"event_trigger_data":[{}, {"trigger_data":"5"}]})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.event_triggers = {
-                EventTriggerData(),
-                EventTriggerData(/*data=*/5, /*priority=*/0,
-                                 /*dedup_key=*/absl::nullopt, FilterPair())};
-          }),
+          ValueIs(Field(&TriggerRegistration::event_triggers,
+                        ElementsAre(EventTriggerData(),
+                                    EventTriggerData(/*data=*/5, /*priority=*/0,
+                                                     /*dedup_key=*/std::nullopt,
+                                                     FilterPair())))),
       },
       {
           "event_triggers_wrong_type",
           R"json({"event_trigger_data":{}})json",
-          base::unexpected(
-              TriggerRegistrationError::kEventTriggerDataListWrongType),
+          ErrorIs(TriggerRegistrationError::kEventTriggerDataListWrongType),
       },
       {
           "event_trigger_data_wrong_type",
           R"json({"event_trigger_data":["abc"]})json",
-          base::unexpected(
-              TriggerRegistrationError::kEventTriggerDataWrongType),
+          ErrorIs(TriggerRegistrationError::kEventTriggerDataWrongType),
       },
       {
           "event_triggers_data_invalid",
           R"json({"event_trigger_data":[{"trigger_data":5}]})json",
-          base::unexpected(
-              TriggerRegistrationError::kEventTriggerDataValueInvalid),
+          ErrorIs(TriggerRegistrationError::kEventTriggerDataValueInvalid),
       },
       {
           "event_triggers_priority_invalid",
@@ -141,8 +163,7 @@ TEST(TriggerRegistrationTest, Parse) {
                   "priority":0
                 }
               ]})json",
-          base::unexpected(
-              TriggerRegistrationError::kEventPriorityValueInvalid),
+          ErrorIs(TriggerRegistrationError::kEventPriorityValueInvalid),
       },
       {
           "event_triggers_dedup_keys_invalid",
@@ -151,8 +172,7 @@ TEST(TriggerRegistrationTest, Parse) {
                   "deduplication_key": 1
                 }
               ]})json",
-          base::unexpected(
-              TriggerRegistrationError::kEventDedupKeyValueInvalid),
+          ErrorIs(TriggerRegistrationError::kEventDedupKeyValueInvalid),
       },
       {
           "aggregatable_trigger_data_valid",
@@ -168,51 +188,46 @@ TEST(TriggerRegistrationTest, Parse) {
             }
           ]
         })json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregatable_trigger_data = {
-                *AggregatableTriggerData::Create(
-                    /*key_piece=*/1,
-                    /*source_keys=*/{"a"}, FilterPair()),
-                *AggregatableTriggerData::Create(
-                    /*key_piece=*/2,
-                    /*source_keys=*/{"b"}, FilterPair())};
-          }),
+          ValueIs(Field(&TriggerRegistration::aggregatable_trigger_data,
+                        ElementsAre(*AggregatableTriggerData::Create(
+                                        /*key_piece=*/1,
+                                        /*source_keys=*/{"a"}, FilterPair()),
+                                    *AggregatableTriggerData::Create(
+                                        /*key_piece=*/2,
+                                        /*source_keys=*/{"b"}, FilterPair())))),
       },
       {
           "aggregatable_trigger_data_list_wrong_type",
           R"json({"aggregatable_trigger_data": {}})json",
-          base::unexpected(
+          ErrorIs(
               TriggerRegistrationError::kAggregatableTriggerDataListWrongType),
       },
       {
           "aggregatable_trigger_data_wrong_type",
           R"json({"aggregatable_trigger_data":["abc"]})json",
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableTriggerDataWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableTriggerDataWrongType),
       },
       {
           "aggregatable_values_valid",
           R"json({"aggregatable_values":{"a":1}})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregatable_values = *AggregatableValues::Create({{"a", 1}});
-          }),
+          ValueIs(Field(&TriggerRegistration::aggregatable_values,
+                        ElementsAre(*AggregatableValues::Create(
+                            {{"a", 1}}, FilterPair())))),
       },
       {
           "aggregatable_values_wrong_type",
           R"json({"aggregatable_values":123})json",
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesWrongType),
       },
       {
           "debug_reporting_valid",
           R"json({"debug_reporting": true})json",
-          TriggerRegistrationWith(
-              [](TriggerRegistration& r) { r.debug_reporting = true; }),
+          ValueIs(Field(&TriggerRegistration::debug_reporting, true)),
       },
       {
           "debug_reporting_wrong_type",
           R"json({"debug_reporting":"true"})json",
-          TriggerRegistration(),
+          ValueIs(Field(&TriggerRegistration::debug_reporting, false)),
       },
       {
           "aggregatable_dedup_keys_valid",
@@ -222,23 +237,20 @@ TEST(TriggerRegistrationTest, Parse) {
               {"deduplication_key":"5"}
             ]
           })json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregatable_dedup_keys = {
-                AggregatableDedupKey(),
-                AggregatableDedupKey(/*dedup_key=*/5, FilterPair())};
-          }),
+          ValueIs(Field(&TriggerRegistration::aggregatable_dedup_keys,
+                        ElementsAre(AggregatableDedupKey(),
+                                    AggregatableDedupKey(/*dedup_key=*/5,
+                                                         FilterPair())))),
       },
       {
           "aggregatable_dedup_keys_wrong_type",
           R"json({"aggregatable_deduplication_keys":{}})json",
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableDedupKeyListWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableDedupKeyListWrongType),
       },
       {
           "aggregatable_dedup_key_wrong_type",
           R"json({"aggregatable_deduplication_keys":["abc"]})json",
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableDedupKeyWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableDedupKeyWrongType),
       },
       {
           "aggregatable_dedup_key_invalid",
@@ -246,47 +258,38 @@ TEST(TriggerRegistrationTest, Parse) {
               {},
               {"deduplication_key":5}
             ]})json",
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableDedupKeyValueInvalid),
+          ErrorIs(TriggerRegistrationError::kAggregatableDedupKeyValueInvalid),
       },
       {
-          "aggregatable_source_registration_time_include",
+          // Tested more thoroughly in
+          // `aggregatable_trigger_config_unittest.cc`.
+          "aggregatable_source_registration_time_valid",
           R"json({"aggregatable_source_registration_time":"include"})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.source_registration_time_config =
-                mojom::SourceRegistrationTimeConfig::kInclude;
-          }),
+          ValueIs(Field(
+              &TriggerRegistration::aggregatable_trigger_config,
+              Property(
+                  &AggregatableTriggerConfig::source_registration_time_config,
+                  SourceRegistrationTimeConfig::kInclude))),
       },
       {
-          "aggregatable_source_registration_time_exclude",
-          R"json({"aggregatable_source_registration_time":"exclude"})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.source_registration_time_config =
-                mojom::SourceRegistrationTimeConfig::kExclude;
-          }),
-      },
-      {
-          "aggregatable_source_registration_time_wrong_type",
+          // Tested more thoroughly in
+          // `aggregatable_trigger_config_unittest.cc`.
+          "aggregatable_source_registration_time_invalid",
           R"json({"aggregatable_source_registration_time":123})json",
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableSourceRegistrationTimeWrongType),
-      },
-      {
-          "aggregatable_source_registration_time_invalid_value",
-          R"json({"aggregatable_source_registration_time":"unknown"})json",
-          base::unexpected(TriggerRegistrationError::
-                               kAggregatableSourceRegistrationTimeUnknownValue),
+          ErrorIs(TriggerRegistrationError::
+                      kAggregatableSourceRegistrationTimeWrongType),
       },
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError6";
+      "Conversions.TriggerRegistrationError9";
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
     base::HistogramTester histograms;
 
     auto trigger = TriggerRegistration::Parse(test_case.json);
-    EXPECT_EQ(trigger, test_case.expected) << test_case.description;
+    EXPECT_THAT(trigger, test_case.matches);
 
     if (trigger.has_value()) {
       histograms.ExpectTotalCount(kTriggerRegistrationErrorMetric, 0);
@@ -314,26 +317,30 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.aggregatable_dedup_keys = {
                 AggregatableDedupKey(/*dedup_key=*/1, FilterPair())};
             r.aggregatable_trigger_data = {AggregatableTriggerData()};
-            r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
+            r.aggregatable_values = {
+                *AggregatableValues::Create({{"a", 2}}, FilterPair()),
+                *AggregatableValues::Create({{"b", 3}}, FilterPair())};
             r.debug_key = 3;
             r.debug_reporting = true;
             r.event_triggers = {EventTriggerData()};
             r.filters.positive = {*FilterConfig::Create({{{"b", {}}}})};
             r.filters.negative = {*FilterConfig::Create(
                 {{{"c", {}}}}, /*lookback_window=*/base::Seconds(2))};
-            r.source_registration_time_config =
-                mojom::SourceRegistrationTimeConfig::kInclude;
+            r.aggregatable_trigger_config = *AggregatableTriggerConfig::Create(
+                SourceRegistrationTimeConfig::kExclude,
+                /*trigger_context_id=*/"123");
           }),
           R"json({
-            "aggregatable_source_registration_time": "include",
+            "aggregatable_source_registration_time": "exclude",
             "aggregatable_deduplication_keys": [{"deduplication_key":"1"}],
             "aggregatable_trigger_data": [{"key_piece":"0x0"}],
-            "aggregatable_values": {"a": 2},
+            "aggregatable_values": [{"values":{"a":2}},{"values":{"b":3}}],
             "debug_key": "3",
             "debug_reporting": true,
             "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
             "filters": [{"b": []}],
-            "not_filters": [{"c": [], "_lookback_window": 2}]
+            "not_filters": [{"c": [], "_lookback_window": 2}],
+            "trigger_context_id": "123"
           })json",
       },
   };
@@ -348,32 +355,32 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<TriggerRegistration, TriggerRegistrationError> expected;
+    ::testing::Matcher<
+        base::expected<TriggerRegistration, TriggerRegistrationError>>
+        matches;
   } kTestCases[] = {
       {
           "aggregation_coordinator_origin_valid",
           R"json({"aggregation_coordinator_origin":"https://aws.example.test"})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregation_coordinator_origin =
-                SuitableOrigin::Create(GURL("https://aws.example.test"));
-          }),
+          ValueIs(
+              Field(&TriggerRegistration::aggregation_coordinator_origin,
+                    *SuitableOrigin::Create(GURL("https://aws.example.test")))),
       },
       {
           "aggregation_coordinator_origin_wrong_type",
           R"json({"aggregation_coordinator_origin":123})json",
-          base::unexpected(
-              TriggerRegistrationError::kAggregationCoordinatorWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregationCoordinatorWrongType),
       },
       {
           "aggregation_coordinator_origin_invalid_value",
           R"json({"aggregation_coordinator_origin":"https://unknown.example.test"})json",
-          base::unexpected(
+          ErrorIs(
               TriggerRegistrationError::kAggregationCoordinatorUnknownValue),
       },
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError6";
+      "Conversions.TriggerRegistrationError9";
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -381,10 +388,11 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
       {{"aws_cloud", "https://aws.example.test"}});
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
     base::HistogramTester histograms;
 
     auto trigger = TriggerRegistration::Parse(test_case.json);
-    EXPECT_EQ(trigger, test_case.expected) << test_case.description;
+    EXPECT_THAT(trigger, test_case.matches);
 
     if (trigger.has_value()) {
       histograms.ExpectTotalCount(kTriggerRegistrationErrorMetric, 0);

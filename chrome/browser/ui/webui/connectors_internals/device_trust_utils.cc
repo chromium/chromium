@@ -19,6 +19,11 @@
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/common/channel_info.h"
+#include "components/version_info/channel.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace enterprise_connectors {
 namespace utils {
 
@@ -51,7 +56,7 @@ connectors_internals::mojom::KeyType AlgorithmToType(
 }
 
 connectors_internals::mojom::KeyManagerPermanentFailure ConvertPermanentFailure(
-    absl::optional<DeviceTrustKeyManager::PermanentFailure> permanent_failure) {
+    std::optional<DeviceTrustKeyManager::PermanentFailure> permanent_failure) {
   if (!permanent_failure) {
     return connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED;
   }
@@ -81,7 +86,7 @@ std::string HashAndEncodeString(const std::string& spki_bytes) {
 }
 
 connectors_internals::mojom::Int32ValuePtr ToMojomValue(
-    absl::optional<int> integer_value) {
+    std::optional<int> integer_value) {
   return integer_value ? connectors_internals::mojom::Int32Value::New(
                              integer_value.value())
                        : nullptr;
@@ -126,6 +131,17 @@ connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED,
       nullptr,
       connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED);
+}
+
+bool CanDeleteDeviceTrustKey() {
+#if BUILDFLAG(IS_MAC)
+  version_info::Channel channel = chrome::GetChannel();
+  return channel != version_info::Channel::STABLE &&
+         channel != version_info::Channel::BETA;
+#else
+  // Unsupported on non-Mac platforms.
+  return false;
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 }  // namespace utils

@@ -29,6 +29,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "device_os_type": "userdebug",
@@ -109,6 +110,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "device_os_type": "userdebug",
@@ -195,6 +197,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "browser_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -232,6 +235,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -290,6 +294,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -307,6 +312,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -343,6 +349,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "browser_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -380,6 +387,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -438,6 +446,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -455,6 +464,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -491,6 +501,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "browser_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -528,6 +539,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -586,6 +598,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -603,6 +616,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "remoting_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -627,10 +641,9 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a5229h",
+          "15c500b",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -644,16 +657,16 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-13.4"
+            "os": "Mac-13"
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a5229h",
+              "name": "xcode_ios_15c500b",
               "path": "Xcode.app"
             },
             {
@@ -663,6 +676,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -671,18 +685,17 @@
           "--platform",
           "iPad Air (5th generation)",
           "--version",
-          "17.0",
+          "17.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a5229h",
+          "15c500b",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPad Air (5th generation) 17.0",
+        "name": "ios_remoting_unittests iPad Air (5th generation) 17.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -692,27 +705,28 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-13.4"
+            "os": "Mac-13"
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a5229h",
+              "name": "xcode_ios_15c500b",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
+              "name": "runtime_ios_17_2",
+              "path": "Runtime-ios-17.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.0"
+        "variant_id": "iPad Air (5th generation) 17.2"
       },
       {
         "args": [
@@ -723,10 +737,9 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a5229h",
+          "15c500b",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -740,16 +753,16 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-13.4"
+            "os": "Mac-13"
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a5229h",
+              "name": "xcode_ios_15c500b",
               "path": "Xcode.app"
             },
             {
@@ -759,6 +772,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -767,18 +781,17 @@
           "--platform",
           "iPhone 14",
           "--version",
-          "17.0",
+          "17.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15a5229h",
+          "15c500b",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPhone 14 17.0",
+        "name": "ios_remoting_unittests iPhone 14 17.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -788,27 +801,28 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-13.4"
+            "os": "Mac-13"
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15a5229h",
+              "name": "xcode_ios_15c500b",
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_17_0",
-              "path": "Runtime-ios-17.0"
+              "name": "runtime_ios_17_2",
+              "path": "Runtime-ios-17.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPhone 14 17.0"
+        "variant_id": "iPhone 14 17.2"
       }
     ]
   }

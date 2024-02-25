@@ -100,7 +100,7 @@ void SafeBrowsingServiceImpl::Initialize(
   auto url_loader_factory_params =
       network::mojom::URLLoaderFactoryParams::New();
   url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-  url_loader_factory_params->is_corb_enabled = false;
+  url_loader_factory_params->is_orb_enabled = false;
   network_context_client_->CreateURLLoaderFactory(
       std::move(url_loader_factory_pending_reciever_),
       std::move(url_loader_factory_params));
@@ -148,8 +148,6 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
-  bool can_url_realtime_check_subresource_url =
-      url_lookup_service && url_lookup_service->CanCheckSubresourceURL();
   scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
       base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
                                                    client->AsWeakPtr());
@@ -160,15 +158,30 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       hash_real_time_selection =
           safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
               web_state->GetBrowserState()->IsOffTheRecord(),
-              pref_change_registrar_->prefs(), /*log_usage_histograms=*/true);
+              pref_change_registrar_->prefs(),
+              safe_browsing::hash_realtime_utils::GetCountryCode(
+                  client->GetVariationsService()),
+              /*log_usage_histograms=*/true);
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
-      request_destination, url_checker_delegate, web_state->GetWeakPtr(),
-      can_perform_full_url_lookup, can_url_realtime_check_subresource_url,
+      /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
+      request_destination, /*has_user_gesture=*/false, url_checker_delegate,
+      /*web_contents_getter=*/
+      base::RepeatingCallback<content::WebContents*()>(),
+      web_state->GetWeakPtr(),
+      /*render_process_id=*/
+      security_interstitials::UnsafeResource::kNoRenderProcessId,
+      /*render_frame_token=*/std::nullopt,
+      /*frame_tree_node_id=*/
+      security_interstitials::UnsafeResource::kNoFrameTreeNodeId,
+      /*navigation_id=*/std::nullopt, can_perform_full_url_lookup,
+      /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
+      /*url_lookup_service_metric_suffix=*/"",
       web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
-      hash_real_time_selection);
+      hash_real_time_selection,
+      /*is_async_check=*/false);
 }
 
 bool SafeBrowsingServiceImpl::CanCheckUrl(const GURL& url) const {
@@ -308,8 +321,7 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(
           cookie_util::CookieStoreConfig(
               cookie_file_path,
               cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
-              cookie_util::CookieStoreConfig::COOKIE_MONSTER,
-              /*crypto_delegate=*/nullptr),
+              cookie_util::CookieStoreConfig::COOKIE_MONSTER),
           /*system_cookie_store=*/nullptr, net::NetLog::Get());
 
   builder.SetCookieStore(std::move(cookie_store));

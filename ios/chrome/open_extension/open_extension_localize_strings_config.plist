@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>headers</key>
+	<array>
+		<string>ios/open_extension/grit/ios_open_extension_branded_strings.h</string>
+	</array>
+	<key>outputs</key>
+	<array>
+		<dict>
+			<key>name</key>
+			<string>InfoPlist.strings</string>
+			<key>strings</key>
+			<array>
+				<dict>
+					<key>output</key>
+					<string>CFBundleDisplayName</string>
+					<key>input</key>
+					<string>IDS_IOS_OPEN_IN_CHROME_OPEN_EXTENSION</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Localizable.strings</string>
+			<key>strings</key>
+			<array>
+				<string>IDS_IOS_ERROR_MESSAGE_OPEN_IN_EXTENSION</string>
+				<string>IDS_IOS_OK_BUTTON_OPEN_IN_EXTENSION</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

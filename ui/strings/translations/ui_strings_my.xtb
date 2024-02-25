@@ -211,7 +211,7 @@
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ဖိုင် (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
-<translation id="8725488761726303204">နောက်ထပ် +<ph name="NUMBER" /></translation>
+<translation id="8725488761726303204">+နောက်ထပ် <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{၁ နာရီ}other{# နာရီ}}</translation>
 <translation id="8798099450830957504">ပုံသေ</translation>

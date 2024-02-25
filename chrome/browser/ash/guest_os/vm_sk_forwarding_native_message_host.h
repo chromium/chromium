@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
 
+// This file has been duplicated for lacros in
+// //chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.h and
+// should eventually be removed.
+
 #include <memory>
 #include <string>
 
@@ -92,8 +96,7 @@ class VmSKForwardingNativeMessageHost : public extensions::NativeMessageHost {
   const std::string json_message_to_send_;
 
   // Unowned. |client_| must outlive this instance.
-  raw_ptr<extensions::NativeMessageHost::Client, ExperimentalAsh> client_ =
-      nullptr;
+  raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;
 };
 
 }  // namespace guest_os

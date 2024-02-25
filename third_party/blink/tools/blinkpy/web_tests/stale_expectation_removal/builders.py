@@ -19,7 +19,7 @@ class WebTestBuilders(builders.Builders):
     def _BuilderRunsTestOfInterest(self, test_map: Dict[str, Any]) -> bool:
         tests = test_map.get('isolated_scripts', [])
         for t in tests:
-            if t.get('isolate_name') in self.GetIsolateNames():
+            if t.get('test') in self.GetIsolateNames():
                 return True
         return False
 

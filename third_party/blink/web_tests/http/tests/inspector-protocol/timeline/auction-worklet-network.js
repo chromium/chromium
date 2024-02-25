@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const base = 'https://a.test:8443/inspector-protocol/resources/'
   const bp = testRunner.browserP();
   const {page, session, dp} = await testRunner.startBlank(
@@ -38,7 +38,7 @@
 
   const auctionJs = `
     navigator.runAdAuction({
-      decisionLogicUrl: "${base}fledge_decision_logic.js.php",
+      decisionLogicURL: "${base}fledge_decision_logic.js.php",
       seller: "https://a.test:8443",
       interestGroupBuyers: ["https://a.test:8443"]})`;
 
@@ -97,10 +97,11 @@
         validateRelativeMs(data.timing, 'sslEnd');
         validateRelativeMs(data.timing, 'sslStart');
       }
+
       // requestTime and finishTime are in TimeTicks, so their absolute values
       // can't be interpreted.
       testRunner.log(
-          data, ev.name + ' ', ['requestId', 'requestTime', 'finishTime']);
+          data, ev.name + ' ', ['requestId', 'requestTime', 'finishTime', 'value']);
     }
     testRunner.log('\n');
   }

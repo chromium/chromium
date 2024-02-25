@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 
+#include "base/functional/function_ref.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
@@ -54,6 +55,8 @@ class WebPluginContainer;
 // reason, subclasses must not add any additional data members.
 class BLINK_EXPORT WebNode {
  public:
+  static WebNode FromDomNodeId(int dom_node_id);
+
   virtual ~WebNode();
 
   WebNode();
@@ -70,7 +73,10 @@ class BLINK_EXPORT WebNode {
 
   bool IsNull() const;
 
+  bool IsConnected() const;
+
   WebNode ParentNode() const;
+  WebNode ParentOrShadowHostNode() const;
   WebString NodeValue() const;
   WebDocument GetDocument() const;
   WebNode FirstChild() const;
@@ -100,16 +106,22 @@ class BLINK_EXPORT WebNode {
 
   WebVector<WebElement> QuerySelectorAll(const WebString& selector) const;
 
+  // Returns the contents of the first descendant element, if any, that contains
+  // only text, a part of which is the given substring, if the given validity
+  // checker returns true for it. The substring search is case-sensitive.
+  WebString FindTextInElementWith(
+      const WebString& substring,
+      base::FunctionRef<bool(const WebString&)> validity_checker) const;
+
   bool Focused() const;
 
   WebPluginContainer* PluginContainer() const;
 
   bool IsInsideFocusableElementOrARIAWidget() const;
 
-  v8::Local<v8::Value> ToV8Value(v8::Local<v8::Object> creation_context,
-                                 v8::Isolate*);
+  v8::Local<v8::Value> ToV8Value(v8::Isolate*);
 
-  int GetDevToolsNodeId() const;
+  int GetDomNodeId() const;
 
   // Helper to downcast to `T`. Will fail with a CHECK() if converting to `T` is
   // not legal. The returned `T` will always be non-null if `this` is non-null.

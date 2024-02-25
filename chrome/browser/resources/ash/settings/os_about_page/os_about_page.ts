@@ -7,12 +7,12 @@
  * information.
  */
 
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../icons.html.js';
@@ -24,21 +24,23 @@ import '../os_settings_icons.html.js';
 import '../os_reset_page/os_powerwash_dialog.js';
 import './eol_offer_section.js';
 import './update_warning_dialog.js';
+import '../crostini_page/crostini_settings_card.js';
 
 import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isCrostiniSupported, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
@@ -50,17 +52,21 @@ declare global {
   }
 }
 
-interface OsAboutPageElement {
+export interface OsAboutPageElement {
   $: {
+    buttonContainer: HTMLElement,
+    checkForUpdatesButton: CrButtonElement,
+    productLogo: HTMLImageElement,
+    regulatoryInfo: HTMLElement,
+    relaunchButton: CrButtonElement,
     updateStatusMessageInner: HTMLDivElement,
-    'product-logo': HTMLImageElement,
   };
 }
 
 const OsAboutPageBase = DeepLinkingMixin(
     RouteOriginMixin(I18nMixin(WebUiListenerMixin(PolymerElement))));
 
-class OsAboutPageElement extends OsAboutPageBase {
+export class OsAboutPageElement extends OsAboutPageBase {
   static get is() {
     return 'os-about-page' as const;
   }
@@ -238,6 +244,33 @@ class OsAboutPageElement extends OsAboutPageBase {
         },
         readOnly: true,
       },
+
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              powerWash: 'os-settings:startup',
+              releaseNotes: 'os-settings:about-release-notes',
+              help: 'os-settings:about-help',
+              feedback: 'os-settings:about-feedback',
+              diagnostics: 'os-settings:about-diagnostics',
+              firmwareUpdates: 'os-settings:about-firmware-updates',
+              additionalDetails: 'os-settings:about-additional-details',
+            };
+          }
+
+          return {
+            powerWash: '',
+            releaseNotes: '',
+            help: '',
+            feedback: '',
+            diagnostics: '',
+            firmwareUpdates: '',
+            additionalDetails: '',
+          };
+        },
+      },
     };
   }
 
@@ -266,6 +299,7 @@ class OsAboutPageElement extends OsAboutPageBase {
   private eolMessageWithMonthAndYear_: string;
   private hasInternetConnection_: boolean;
   private firmwareUpdateCount_: number;
+  private rowIcons_: Record<string, string>;
   private showCrostiniLicense_: boolean;
   private showUpdateStatus_: boolean;
   private showButtonContainer_: boolean;
@@ -290,7 +324,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.aboutBrowserProxy_.pageReady();
@@ -332,7 +366,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     }
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(
@@ -357,7 +391,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     });
   }
 
-  private startListening_() {
+  private startListening_(): void {
     this.addWebUiListener(
         'update-status-changed', this.onUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshUpdateStatus();
@@ -367,7 +401,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     this.aboutBrowserProxy_.refreshTpmFirmwareUpdateStatus();
   }
 
-  private onUpdateStatusChanged_(event: UpdateStatusChangedEvent) {
+  private onUpdateStatusChanged_(event: UpdateStatusChangedEvent): void {
     if (event.status === UpdateStatus.CHECKING) {
       this.hasCheckedForUpdates_ = true;
     } else if (event.status === UpdateStatus.NEED_PERMISSION_TO_UPDATE) {
@@ -378,13 +412,14 @@ class OsAboutPageElement extends OsAboutPageBase {
     this.currentUpdateStatusEvent_ = event;
   }
 
-  private onLearnMoreClick_(event: Event) {
+  private onLearnMoreClick_(event: Event): void {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
   }
 
-  private onProductLicenseOtherClicked_(event: CustomEvent<{event: Event}>) {
+  private onProductLicenseOtherClicked_(event: CustomEvent<{event: Event}>):
+      void {
     // Prevent the default link click behavior
     event.detail.event.preventDefault();
 
@@ -392,30 +427,29 @@ class OsAboutPageElement extends OsAboutPageBase {
     this.aboutBrowserProxy_.openProductLicenseOther();
   }
 
-  private onReleaseNotesClick_() {
+  private onReleaseNotesClick_(): void {
     this.aboutBrowserProxy_.launchReleaseNotes();
   }
 
-  private onHelpClick_() {
+  private onHelpClick_(): void {
     this.aboutBrowserProxy_.openOsHelpPage();
   }
 
-  private onDiagnosticsClick_() {
+  private onDiagnosticsClick_(): void {
     this.aboutBrowserProxy_.openDiagnostics();
     recordSettingChange(Setting.kDiagnostics);
   }
 
-  private onFirmwareUpdatesClick_() {
+  private onFirmwareUpdatesClick_(): void {
     this.aboutBrowserProxy_.openFirmwareUpdatesPage();
     recordSettingChange(Setting.kFirmwareUpdates);
   }
 
-  private onRelaunchClick_() {
-    recordSettingChange();
+  private onRelaunchClick_(): void {
     LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
-  private updateShowUpdateStatus_() {
+  private updateShowUpdateStatus_(): void {
     // Do not show the "updated" status or error states from a previous update
     // attempt if we haven't checked yet or the update warning dialog is shown
     // to user.
@@ -444,7 +478,7 @@ class OsAboutPageElement extends OsAboutPageBase {
    * Hide the button container if all buttons are hidden, otherwise the
    * container displays an unwanted border (see separator class).
    */
-  private updateShowButtonContainer_() {
+  private updateShowButtonContainer_(): void {
     this.showButtonContainer_ = this.showRelaunch_ || this.showCheckUpdates_;
 
     // Check if we have yet to focus the check for update button.
@@ -459,7 +493,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     });
   }
 
-  private computeShowRelaunch_() {
+  private computeShowRelaunch_(): boolean {
     return this.checkStatus_(UpdateStatus.NEARLY_UPDATED);
   }
 
@@ -555,14 +589,20 @@ class OsAboutPageElement extends OsAboutPageBase {
       case UpdateStatus.FAILED_DOWNLOAD:
       case UpdateStatus.FAILED_HTTP:
       case UpdateStatus.FAILED:
-        return 'cr:error-outline';
+        return this.isRevampWayfindingEnabled_ ?
+            'os-settings:about-update-error' :
+            'cr:error-outline';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
         // TODO(crbug.com/986596): Don't use browser icons here. Fork them.
-        return 'settings:check-circle';
+        return this.isRevampWayfindingEnabled_ ?
+            'os-settings:about-update-complete' :
+            'settings:check-circle';
       case UpdateStatus.DEFERRED:
       case UpdateStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED:
-        return 'cr:warning';
+        return this.isRevampWayfindingEnabled_ ?
+            'os-settings:about-update-warning' :
+            'cr:warning';
       default:
         return null;
     }
@@ -600,7 +640,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     return this.currentUpdateStatusEvent_.status === status;
   }
 
-  private onManagementPageClick_() {
+  private onManagementPageClick_(): void {
     window.open('chrome://management');
   }
 
@@ -608,7 +648,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     return !!this.currentUpdateStatusEvent_.powerwash;
   }
 
-  private onDetailedBuildInfoClick_() {
+  private onDetailedBuildInfoClick_(): void {
     Router.getInstance().navigateTo(routes.ABOUT_DETAILED_BUILD_INFO);
   }
 
@@ -620,18 +660,18 @@ class OsAboutPageElement extends OsAboutPageBase {
     return '';
   }
 
-  private onCheckUpdatesClick_() {
+  private onCheckUpdatesClick_(): void {
     this.onUpdateStatusChanged_({status: UpdateStatus.CHECKING});
     this.aboutBrowserProxy_.requestUpdate();
     this.$.updateStatusMessageInner.focus();
   }
 
-  private onApplyDeferredUpdateClick_() {
+  private onApplyDeferredUpdateClick_(): void {
     this.aboutBrowserProxy_.applyDeferredUpdate();
     this.$.updateStatusMessageInner.focus();
   }
 
-  private onApplyAndSetAutoUpdateClick_() {
+  private onApplyAndSetAutoUpdateClick_(): void {
     this.aboutBrowserProxy_.setConsumerAutoUpdate(true);
     this.onApplyDeferredUpdateClick_();
   }
@@ -666,7 +706,7 @@ class OsAboutPageElement extends OsAboutPageBase {
   /**
    * @param enabled True if Crostini is enabled.
    */
-  private handleCrostiniEnabledChanged_(enabled: boolean) {
+  private handleCrostiniEnabledChanged_(enabled: boolean): void {
     this.showCrostiniLicense_ = enabled && isCrostiniSupported();
   }
 
@@ -682,7 +722,7 @@ class OsAboutPageElement extends OsAboutPageBase {
     return this.shouldShowSafetyInfo_() || this.shouldShowRegulatoryInfo_();
   }
 
-  private onUpdateWarningDialogClose_() {
+  private onUpdateWarningDialogClose_(): void {
     this.showUpdateWarningDialog_ = false;
     // Shows 'check for updates' button in case that the user cancels the
     // dialog and then intends to check for update again.
@@ -690,20 +730,20 @@ class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private onTpmFirmwareUpdateStatusChanged_(
-      event: TpmFirmwareUpdateStatusChangedEvent) {
+      event: TpmFirmwareUpdateStatusChangedEvent): void {
     this.showTPMFirmwareUpdateLineItem_ = event.updateAvailable;
   }
 
-  private onTpmFirmwareUpdateClick_() {
+  private onTpmFirmwareUpdateClick_(): void {
     this.showTPMFirmwareUpdateDialog_ = true;
   }
 
-  private onPowerwashDialogClose_() {
+  private onPowerwashDialogClose_(): void {
     this.showTPMFirmwareUpdateDialog_ = false;
   }
 
-  private onProductLogoClick_() {
-    this.$['product-logo'].animate(
+  private onProductLogoClick_(): void {
+    this.$.productLogo.animate(
         {
           transform: ['none', 'rotate(-10turn)'],
         },
@@ -714,14 +754,12 @@ class OsAboutPageElement extends OsAboutPageBase {
   }
 
   // <if expr="_google_chrome">
-  private onReportIssueClick_() {
+  private onReportIssueClick_(): void {
     this.aboutBrowserProxy_.openFeedbackDialog();
   }
 
   private getReportIssueLabel_(): string {
-    return loadTimeData.getBoolean('isOsFeedbackEnabled') ?
-        this.i18n('aboutSendFeedback') :
-        this.i18n('aboutReportAnIssue');
+    return this.i18n('aboutSendFeedback');
   }
   // </if>
 

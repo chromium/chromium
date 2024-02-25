@@ -98,6 +98,7 @@ class ServiceDiscardableManagerTest : public GpuServiceTest {
     // Texture manager will destroy the 6 black/default textures.
     EXPECT_CALL(*gl_, DeleteTextures(TextureManager::kNumDefaultTextures, _));
 
+    texture_manager_ = nullptr;
     context_group_->Destroy(decoder_.get(), true);
     context_group_ = nullptr;
     EXPECT_EQ(0u, discardable_manager_.NumCacheEntriesForTesting());
@@ -131,7 +132,8 @@ class ServiceDiscardableManagerTest : public GpuServiceTest {
   GpuPreferences gpu_preferences_;
   scoped_refptr<FeatureInfo> feature_info_;
   MockDestructionObserver destruction_observer_;
-  raw_ptr<TextureManager, DanglingUntriaged> texture_manager_;
+  // This is owned by |context_group_|.
+  raw_ptr<TextureManager> texture_manager_;
   FakeCommandBufferServiceBase command_buffer_service_;
   FakeDecoderClient client_;
   std::unique_ptr<MockGLES2Decoder> decoder_;

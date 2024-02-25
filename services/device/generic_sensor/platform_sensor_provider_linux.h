@@ -14,6 +14,7 @@
 namespace device {
 
 struct SensorInfoLinux;
+struct SensorReadingSharedBuffer;
 
 class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
                                     public SensorDeviceManager::Delegate {

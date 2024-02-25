@@ -39,10 +39,6 @@ class SavePaymentIconController {
   // Once the animation ends, it shows a new bubble if needed.
   virtual void OnAnimationEnded() = 0;
 
-  // Returns true iff upload save failed and the failure badge on the icon
-  // should be shown.
-  virtual bool ShouldShowSaveFailureBadge() const = 0;
-
   // Returns true iff the payment saved animation should be shown.
   virtual bool ShouldShowPaymentSavedLabelAnimation() const = 0;
 

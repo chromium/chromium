@@ -4,7 +4,7 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -83,7 +83,8 @@ id<GREYMatcher> SecondaryActionMatcher() {
 #pragma mark - Tests
 
 // Verifies that the secondary action button opens dismisses the promo.
-- (void)testDismiss {
+// TODO(crbug.com/1477791): re-enable once test is no longer flaky.
+- (void)DISABLED_testDismiss {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TitleMatcher()
                                               timeout:kPromoAppearanceTimeout];
   [self checkThatCommonElementsAreVisible];

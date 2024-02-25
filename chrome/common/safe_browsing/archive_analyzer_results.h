@@ -37,7 +37,8 @@ enum class ArchiveAnalysisResult {
   kFailedToOpenTempFile = 6,
   kDmgNoPartitions = 7,
   kFailedDuringIteration = 8,
-  kMaxValue = kFailedDuringIteration,
+  kDiskError = 9,
+  kMaxValue = kDiskError,
 };
 
 struct EncryptionInfo {

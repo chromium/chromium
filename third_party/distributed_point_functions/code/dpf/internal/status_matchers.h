@@ -116,12 +116,16 @@
 #ifndef DISTRIBUTED_POINT_FUNCTIONS_DPF_UTIL_STATUS_MATCHERS_H_
 #define DISTRIBUTED_POINT_FUNCTIONS_DPF_UTIL_STATUS_MATCHERS_H_
 
+#include <ostream>
 #include <string>
+#include <type_traits>
+#include <utility>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "dpf/status_macros.h"
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 namespace distributed_point_functions {
 namespace dpf_internal {
@@ -296,7 +300,7 @@ class MonoIsOkMatcherImpl : public ::testing::MatcherInterface<T> {
   bool MatchAndExplain(
       T actual_value,
       ::testing::MatchResultListener* result_listener) const override {
-    if (!GetStatus(actual_value).ok()) {
+    if (!actual_value.ok()) {
       *result_listener << "whose status is "
                        << GetStatus(actual_value).message();
       return false;

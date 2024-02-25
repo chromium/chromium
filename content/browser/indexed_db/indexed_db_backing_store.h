@@ -22,15 +22,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
+#include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
-#include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
@@ -45,6 +42,7 @@
 
 namespace base {
 class SequencedTaskRunner;
+class WaitableEvent;
 }  // namespace base
 
 namespace blink {
@@ -54,7 +52,8 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content {
 class AutoDidCommitTransaction;
-class IndexedDBBucketState;
+class IndexedDBBackingStoreTest;
+class IndexedDBBucketContext;
 class IndexedDBActiveBlobRegistry;
 class LevelDBWriteBatch;
 class TransactionalLevelDBDatabase;
@@ -64,15 +63,8 @@ class TransactionalLevelDBTransaction;
 struct IndexedDBValue;
 
 namespace indexed_db_backing_store_unittest {
-class IndexedDBBackingStoreTest;
 FORWARD_DECLARE_TEST(IndexedDBBackingStoreTest, ReadCorruptionInfo);
 }  // namespace indexed_db_backing_store_unittest
-
-enum class V2SchemaCorruptionStatus {
-  kUnknown = 0,  // Due to other unknown/critical errors.
-  kNo = 1,
-  kYes = 2,
-};
 
 // This class is not thread-safe.
 // All accessses to one instance must occur on the same sequence. Currently,
@@ -176,6 +168,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
     base::WeakPtr<Transaction> AsWeakPtr();
 
+    blink::mojom::IDBTransactionDurability durability() const {
+      return durability_;
+    }
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
     IndexedDBBackingStore* backing_store() {
@@ -212,15 +207,13 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     base::WeakPtr<IndexedDBBackingStore> backing_store_
         GUARDED_BY_CONTEXT(sequence_checker_);
 
-    const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
-
     scoped_refptr<TransactionalLevelDBTransaction> transaction_
         GUARDED_BY_CONTEXT(sequence_checker_);
 
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
         external_object_change_map_ GUARDED_BY_CONTEXT(sequence_checker_);
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-        incognito_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+        in_memory_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
     int64_t database_id_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
 
     // List of blob files being newly written as part of this transaction.
@@ -237,7 +230,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     // opposed to being ephemeral and owned by the WriteBlobToFile callbacks)
     // because the transaction needs to be able to cancel this operation in
     // Rollback().
-    absl::optional<BlobWriteState> write_state_
+    std::optional<BlobWriteState> write_state_
         GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Set to true between CommitPhaseOne and CommitPhaseTwo/Rollback, to
@@ -386,13 +379,10 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
   IndexedDBBackingStore(
       Mode backing_store_mode,
-      TransactionalLevelDBFactory* transactional_leveldb_factory,
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
+      TransactionalLevelDBFactory& transactional_leveldb_factory,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::FileSystemAccessContext* file_system_access_context,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
@@ -406,6 +396,8 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // operations or method calls on this object.
   leveldb::Status Initialize(bool clean_active_blob_journal);
 
+  virtual void TearDown(base::WaitableEvent* signal_on_destruction);
+
   const storage::BucketLocator& bucket_locator() const {
     return bucket_locator_;
   }
@@ -415,6 +407,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   IndexedDBActiveBlobRegistry* active_blob_registry() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return active_blob_registry_.get();
+  }
+  TransactionalLevelDBFactory& transactional_leveldb_factory() const {
+    return *transactional_leveldb_factory_;
   }
 
   // Virtual for testing.
@@ -613,7 +608,8 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Returns true if a blob cleanup job is pending on journal_cleaning_timer_.
   bool IsBlobCleanupPending();
 
-  int64_t GetInMemoryBlobSize() const;
+  // Gets the total size of blobs and the database for in-memory backing stores.
+  int64_t GetInMemorySize() const;
 
 #if DCHECK_IS_ON()
   int NumBlobFilesDeletedForTesting() {
@@ -633,16 +629,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Stops the journal_cleaning_timer_ and runs its pending task.
   void ForceRunBlobCleanup();
 
-  // HasV2SchemaCorruption() returns whether the backing store is v2 and
-  // has blob references.
-  V2SchemaCorruptionStatus HasV2SchemaCorruption();
-
-  // RevertSchemaToV2() updates a backing store state on disk to override its
-  // metadata version to 2.  This allows triggering https://crbug.com/829141 on
-  // an otherwise healthy backing store.
-  leveldb::Status RevertSchemaToV2();
-
-  bool is_incognito() const { return backing_store_mode_ == Mode::kInMemory; }
+  bool in_memory() const { return backing_store_mode_ == Mode::kInMemory; }
 
   virtual std::unique_ptr<Transaction> CreateTransaction(
       blink::mojom::IDBTransactionDurability durability,
@@ -657,7 +644,11 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::mojom::IDBTransactionDurability durability);
 
  protected:
-  friend class IndexedDBBucketState;
+  friend class IndexedDBBucketContext;
+
+  void set_bucket_context(IndexedDBBucketContext* bucket_context) {
+    bucket_context_ = bucket_context;
+  }
 
   leveldb::Status AnyDatabaseContainsBlobs(bool* blobs_exist);
 
@@ -692,11 +683,11 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   void CleanRecoveryJournalIgnoreReturn();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBBackingStoreTestWithExternalObjects,
+                           ActiveBlobJournal);
+
   friend class AutoDidCommitTransaction;
 
-  leveldb::Status MigrateToV1(LevelDBWriteBatch* write_batch);
-  leveldb::Status MigrateToV2(LevelDBWriteBatch* write_batch);
-  leveldb::Status MigrateToV3(LevelDBWriteBatch* write_batch);
   leveldb::Status MigrateToV4(LevelDBWriteBatch* write_batch);
   leveldb::Status MigrateToV5(LevelDBWriteBatch* write_batch);
 
@@ -727,22 +718,12 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Can run a journal cleaning job if one is pending.
   void DidCommitTransaction();
 
+  // Owns `this`. Should be initialized shortly after construction.
+  raw_ptr<IndexedDBBucketContext> bucket_context_ = nullptr;
+
   const Mode backing_store_mode_;
-  const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   const storage::BucketLocator bucket_locator_;
   const base::FilePath blob_path_;
-
-  // IndexedDB can store blobs and File System Access handles. These mojo
-  // interfaces are used to make this possible by communicating with the
-  // relevant subsystems.
-  // Raw pointers are safe because the bindings are owned by
-  // IndexedDBContextImpl.
-  const raw_ptr<storage::mojom::BlobStorageContext> blob_storage_context_;
-  const raw_ptr<storage::mojom::FileSystemAccessContext>
-      file_system_access_context_;
-
-  // Filesystem proxy to use for file operations.  nullptr if in memory.
-  const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;
 
   // The origin identifier is a key prefix, unique to the storage key's origin,
   // used in the leveldb backing store to partition data by origin. It is a
@@ -753,7 +734,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-      incognito_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+      in_memory_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool execute_journal_cleaning_on_no_txns_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -768,6 +749,10 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   mutable int num_blob_files_deleted_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 #endif
 
+  // This factory is used to modify LevelDB behavior for tests. It's owned by
+  // the bucket context even though ideally it would be owned by `this`, which
+  // is due to poor encapsulation of LevelDB operations within `this`.
+  raw_ref<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   const std::unique_ptr<TransactionalLevelDBDatabase> db_;
 
   const BlobFilesCleanedCallback blob_files_cleaned_;

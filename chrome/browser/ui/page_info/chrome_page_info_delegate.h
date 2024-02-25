@@ -51,9 +51,9 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   content::PermissionResult GetPermissionResult(
       blink::PermissionType permission,
       const url::Origin& origin,
-      const absl::optional<url::Origin>& requesting_origin) override;
+      const std::optional<url::Origin>& requesting_origin) override;
 #if !BUILDFLAG(IS_ANDROID)
-  absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) override;
+  std::optional<std::u16string> GetFpsOwner(const GURL& site_url) override;
   bool IsFpsManaged() override;
   bool CreateInfoBarDelegate() override;
   std::unique_ptr<content_settings::CookieControlsController>
@@ -71,7 +71,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OpenSafetyTipHelpCenterPage() override;
   void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) override;
-  void OnPageInfoActionOccurred(PageInfo::PageInfoAction action) override;
+  void OnPageInfoActionOccurred(page_info::PageInfoAction action) override;
   void OnUIClosing() override;
 #endif
 

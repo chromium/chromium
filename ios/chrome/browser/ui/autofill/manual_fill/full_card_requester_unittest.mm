@@ -20,7 +20,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
@@ -95,8 +95,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state());
     autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
-        browser_state(), web_state(), infobar_manager, autofill_agent_,
-        /*password_generation_manager=*/nullptr));
+        browser_state(), web_state(), infobar_manager, autofill_agent_));
 
     std::string locale("en");
     autofill::AutofillDriverIOSFactory::CreateForWebState(
@@ -160,12 +159,12 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissNewPrompt) {
       autofill::AutofillJavaScriptFeature::GetInstance();
   web::WebFrame* main_frame =
       feature->GetWebFramesManager(web_state())->GetMainWebFrame();
-  autofill::BrowserAutofillManager* autofill_manager =
+  autofill::BrowserAutofillManager& autofill_manager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state(),
                                                            main_frame)
-          ->autofill_manager();
+          ->GetAutofillManager();
   FakeResultDelegate* fake_result_delegate = new FakeResultDelegate;
-  full_card_requester.GetFullCard(*credit_cards()[0], autofill_manager,
+  full_card_requester.GetFullCard(*credit_cards()[0], &autofill_manager,
                                   fake_result_delegate->GetWeakPtr());
 
   // Spin the run loop to trigger the animation.

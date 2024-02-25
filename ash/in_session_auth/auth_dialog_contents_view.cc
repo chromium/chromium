@@ -26,6 +26,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
@@ -92,22 +94,26 @@ void AuthDialogContentsView::TestApi::FingerprintAuthComplete(
   view_->OnFingerprintAuthComplete(success, fingerprint_state);
 }
 
-raw_ptr<LoginPasswordView, ExperimentalAsh>
-AuthDialogContentsView::TestApi::GetPasswordView() const {
+raw_ptr<LoginPasswordView> AuthDialogContentsView::TestApi::GetPasswordView()
+    const {
   return view_->password_view_;
 }
 
-raw_ptr<LoginPasswordView, ExperimentalAsh>
+raw_ptr<LoginPasswordView>
 AuthDialogContentsView::TestApi::GetPinTextInputView() const {
   return view_->pin_text_input_view_;
 }
 
 // Consists of fingerprint icon view and a label.
 class AuthDialogContentsView::FingerprintView : public views::View {
+  METADATA_HEADER(FingerprintView, views::View)
+
  public:
   // Use a subclass that inherit views::Label so that GetAccessibleNodeData
   // override is respected.
   class FingerprintLabel : public views::Label {
+    METADATA_HEADER(FingerprintLabel, views::Label)
+
    public:
     // views::View
     void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
@@ -285,14 +291,22 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     }
   }
 
-  raw_ptr<FingerprintLabel, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<FingerprintLabel> label_ = nullptr;
+  raw_ptr<AnimatedRoundedImageView> icon_ = nullptr;
   FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
   bool can_use_pin_ = false;
   base::OneShotTimer reset_state_;
 };
 
+BEGIN_METADATA(AuthDialogContentsView, FingerprintView)
+END_METADATA
+
+BEGIN_METADATA(AuthDialogContentsView::FingerprintView, FingerprintLabel)
+END_METADATA
+
 class AuthDialogContentsView::TitleLabel : public views::Label {
+  METADATA_HEADER(TitleLabel, views::Label)
+
  public:
   TitleLabel() {
     SetSubpixelRenderingEnabled(false);
@@ -341,6 +355,9 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
  private:
   bool is_showing_error_ = false;
 };
+
+BEGIN_METADATA(AuthDialogContentsView, TitleLabel)
+END_METADATA
 
 AuthDialogContentsView::AuthDialogContentsView(
     uint32_t auth_methods,
@@ -710,5 +727,8 @@ void AuthDialogContentsView::OnCancelButtonPressed(const ui::Event& event) {
 void AuthDialogContentsView::OnNeedHelpButtonPressed(const ui::Event& event) {
   WebAuthNDialogController::Get()->OpenInSessionAuthHelpPage();
 }
+
+BEGIN_METADATA(AuthDialogContentsView)
+END_METADATA
 
 }  // namespace ash

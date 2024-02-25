@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Second fetch returns same response
+  assert_equals: expected "vfuoexberllddzyszzdg" but got "axeuxcjvyvryyxnddemj"
+Harness: the test ran to completion.
+

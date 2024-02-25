@@ -349,8 +349,7 @@ TEST_F(
       {11, {visit_1, visit_2}, {}, false, u"label", u"raw_label", {}, {}, .6});
 
   // Empty or `nullopt` labels should both be retrieved as `nullopt`.
-  clusters.push_back(
-      {11, {visit_2}, {}, false, u"", absl::nullopt, {}, {}, .6});
+  clusters.push_back({11, {visit_2}, {}, false, u"", std::nullopt, {}, {}, .6});
   AddClusters(clusters);
 
   // Test `GetCluster()`.
@@ -369,8 +368,8 @@ TEST_F(
 
   const auto cluster_2 = GetCluster(2);
   EXPECT_EQ(cluster_2.cluster_id, 2);
-  EXPECT_EQ(cluster_2.label, absl::nullopt);
-  EXPECT_EQ(cluster_2.raw_label, absl::nullopt);
+  EXPECT_EQ(cluster_2.label, std::nullopt);
+  EXPECT_EQ(cluster_2.raw_label, std::nullopt);
   EXPECT_THAT(GetVisitIdsInCluster(2), UnorderedElementsAre(21));
 
   // There should be no other cluster.

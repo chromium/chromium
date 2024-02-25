@@ -23,10 +23,6 @@ namespace safe_browsing {
 // static
 ExtensionTelemetryService* ExtensionTelemetryServiceFactory::GetForProfile(
     Profile* profile) {
-  // The feature enable check happens in BuildServiceInstanceFor too but
-  // added this check here for expediency when the feature is disabled.
-  if (!base::FeatureList::IsEnabled(kExtensionTelemetry))
-    return nullptr;
   return static_cast<ExtensionTelemetryService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /* create= */ true));
 }
@@ -51,8 +47,6 @@ ExtensionTelemetryServiceFactory::ExtensionTelemetryServiceFactory()
 std::unique_ptr<KeyedService>
 ExtensionTelemetryServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(kExtensionTelemetry))
-    return nullptr;
   NetworkContextService* network_service =
       NetworkContextServiceFactory::GetForBrowserContext(context);
   if (!network_service) {

@@ -79,6 +79,7 @@ void OnIsInstallable(mojom::Arc::IsInstallableCallback callback,
 }  // namespace
 
 ArcAsh::ArcAsh() = default;
+
 ArcAsh::~ArcAsh() = default;
 
 void ArcAsh::MaybeSetProfile(Profile* profile) {
@@ -93,6 +94,7 @@ void ArcAsh::MaybeSetProfile(Profile* profile) {
   if (bridge) {
     bridge->AddObserver(this);
   }
+  profile_observation_.Observe(profile_);
 }
 
 void ArcAsh::BindReceiver(mojo::PendingReceiver<mojom::Arc> receiver) {
@@ -106,10 +108,8 @@ void ArcAsh::AddObserver(mojo::PendingRemote<mojom::ArcObserver> observer) {
   observers_.Add(std::move(remote));
 }
 
-void ArcAsh::OnArcIntentHelperBridgeShutdown() {
-  // This method should not be called if profie_ is not set.
-  DCHECK(profile_);
-
+void ArcAsh::OnArcIntentHelperBridgeShutdown(
+    arc::ArcIntentHelperBridge* bridge) {
   // Remove observers here instead of ~ArcAsh() since ArcIntentHelperBridge
   // is shut down before ~ArcAsh() is called.
   // Both of them are destroyed in
@@ -117,9 +117,9 @@ void ArcAsh::OnArcIntentHelperBridgeShutdown() {
   // ArcIntentHelperBridge is shut down and destroyed in
   // ChromeBrowserMainPartsLinux::PostMainMessageLoopRun() while ArcAsh is
   // destroyed in crosapi_manager_.reset() which runs later.
-  auto* bridge = arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
-  if (bridge)
+  if (bridge) {
     bridge->RemoveObserver(this);
+  }
 }
 
 void ArcAsh::RequestActivityIcons(
@@ -389,6 +389,12 @@ void ArcAsh::IsInstallable(const std::string& package_name,
 void ArcAsh::OnIconInvalidated(const std::string& package_name) {
   for (auto& observer : observers_)
     observer->OnIconInvalidated(package_name);
+}
+
+void ArcAsh::OnProfileWillBeDestroyed(Profile* profile) {
+  CHECK_EQ(profile_, profile);
+  profile_ = nullptr;
+  profile_observation_.Reset();
 }
 
 }  // namespace crosapi

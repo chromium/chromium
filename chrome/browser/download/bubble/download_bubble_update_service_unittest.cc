@@ -6,17 +6,15 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/bubble/download_bubble_display_info.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
-#include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_web_app_data.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -25,7 +23,7 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
-#include "components/safe_browsing/core/common/features.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
@@ -43,8 +41,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
 using ::testing::WithArg;
-using AllDownloadUIModelsInfo =
-    DownloadDisplayController::AllDownloadUIModelsInfo;
 using DownloadState = download::DownloadItem::DownloadState;
 using DownloadUIModelPtrVector =
     std::vector<DownloadUIModel::DownloadUIModelPtr>;
@@ -73,10 +69,7 @@ void RemoveDownloadItemsObserver(
 class DownloadBubbleUpdateServiceTest : public testing::Test {
  public:
   DownloadBubbleUpdateServiceTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
-  }
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   DownloadBubbleUpdateServiceTest(const DownloadBubbleUpdateServiceTest&) =
       delete;
   DownloadBubbleUpdateServiceTest& operator=(
@@ -165,7 +158,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
                         const std::string& guid,
                         bool is_paused,
                         base::Time start_time = base::Time::Now(),
-                        const web_app::AppId* web_app_id = nullptr,
+                        const webapps::AppId* web_app_id = nullptr,
                         bool is_crx = false,
                         bool observe = true) {
     InitDownloadItem(*download_manager_, *update_service_, download_items_,
@@ -182,7 +175,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
       const std::string& guid,
       bool is_paused,
       base::Time start_time = base::Time::Now(),
-      const web_app::AppId* web_app_id = nullptr,
+      const webapps::AppId* web_app_id = nullptr,
       bool is_crx = false,
       bool observe = true) {
     size_t index = download_items.size();
@@ -194,7 +187,12 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
     EXPECT_CALL(item, GetGuid()).WillRepeatedly(ReturnRefOfCopy(guid));
     EXPECT_CALL(item, GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item, GetStartTime()).WillRepeatedly(Return(start_time));
-    EXPECT_CALL(item, GetEndTime()).WillRepeatedly(Return(start_time));
+    if (state == DownloadState::COMPLETE) {
+      EXPECT_CALL(item, GetEndTime())
+          .WillRepeatedly(Return(start_time + base::Minutes(1)));
+    } else {
+      EXPECT_CALL(item, GetEndTime()).WillRepeatedly(Return(base::Time()));
+    }
     EXPECT_CALL(item, GetTargetFilePath())
         .WillRepeatedly(
             ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo"))));
@@ -297,7 +295,6 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
                                                    delta);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<NiceMock<content::MockDownloadManager>, DanglingUntriaged>
@@ -706,8 +703,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, CachesExtraItems) {
 TEST_F(DownloadBubbleUpdateServiceTest, GetAllModelsToDisplayForWebApp) {
   base::Time now = base::Time::Now();
   base::Time before = now - base::Hours(1);
-  web_app::AppId app_a_id = "app_a";
-  web_app::AppId app_b_id = "app_b";
+  webapps::AppId app_a_id = "app_a";
+  webapps::AppId app_b_id = "app_b";
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_a_download",
                    /*is_paused=*/false, now, &app_a_id);
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_b_download",
@@ -742,7 +739,7 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfo) {
   InitDownloadItem(DownloadState::COMPLETE, "completed",
                    /*is_paused=*/false);
 
-  DownloadDisplayController::ProgressInfo progress_info =
+  DownloadDisplay::ProgressInfo progress_info =
       update_service_->GetProgressInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(progress_info.download_count, 2);
   EXPECT_TRUE(progress_info.progress_certain);
@@ -759,8 +756,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfo) {
 
 TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfoForWebApp) {
   base::Time now = base::Time::Now();
-  web_app::AppId app_a_id = "app_a";
-  web_app::AppId app_b_id = "app_b";
+  webapps::AppId app_a_id = "app_a";
+  webapps::AppId app_b_id = "app_b";
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_a_download1",
                    /*is_paused=*/false, now, &app_a_id);
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_a_download2",
@@ -774,26 +771,49 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfoForWebApp) {
   InitDownloadItem(DownloadState::IN_PROGRESS, "non_app_download",
                    /*is_paused=*/false, now);
 
-  DownloadDisplayController::ProgressInfo non_app_progress_info =
+  DownloadDisplay::ProgressInfo non_app_progress_info =
       update_service_->GetProgressInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(non_app_progress_info.download_count, 1);
   EXPECT_TRUE(non_app_progress_info.progress_certain);
   EXPECT_EQ(non_app_progress_info.progress_percentage, 50);
 
-  DownloadDisplayController::ProgressInfo app_a_progress_info =
+  DownloadDisplay::ProgressInfo app_a_progress_info =
       update_service_->GetProgressInfo(&app_a_id);
   EXPECT_EQ(app_a_progress_info.download_count, 2);
   EXPECT_TRUE(app_a_progress_info.progress_certain);
   EXPECT_EQ(app_a_progress_info.progress_percentage, 50);
 
-  DownloadDisplayController::ProgressInfo app_b_progress_info =
+  DownloadDisplay::ProgressInfo app_b_progress_info =
       update_service_->GetProgressInfo(&app_b_id);
   EXPECT_EQ(app_b_progress_info.download_count, 3);
   EXPECT_TRUE(app_b_progress_info.progress_certain);
   EXPECT_EQ(app_b_progress_info.progress_percentage, 50);
 }
 
-TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfo) {
+TEST_F(DownloadBubbleUpdateServiceTest, GetDisplayInfo_InProgress) {
+  base::Time now = base::Time::Now();
+  base::Time two_hours_ago = now - base::Hours(2);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
+                   /*is_paused=*/false, now);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "two_hours_ago_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
+                   {"now_offline_item", "two_hours_ago_offline_item"},
+                   {now, two_hours_ago});
+
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 4u);
+  // The last_completed_time is null, because no downloads have finished.
+  EXPECT_EQ(info.last_completed_time, base::Time());
+  EXPECT_EQ(info.in_progress_count, 4);
+  EXPECT_EQ(info.paused_count, 2);
+  EXPECT_TRUE(info.has_unactioned);
+  EXPECT_FALSE(info.has_deep_scanning);
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest,
+       GetDisplayInfo_UpdateForCompleteDownload) {
   base::Time now = base::Time::Now();
   base::Time two_hours_ago = now - base::Hours(2);
   InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
@@ -806,11 +826,68 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfo) {
                    {"now_offline_item", "two_hours_ago_offline_item"},
                    {now, two_hours_ago});
 
-  AllDownloadUIModelsInfo info =
-      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  // Make the download completed to update the last_completed_time.
+  UpdateDownloadItem(0, DownloadState::COMPLETE);
+
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 5u);
   EXPECT_EQ(info.last_completed_time, now);
+  EXPECT_EQ(info.in_progress_count, 3);
+  EXPECT_EQ(info.paused_count, 2);
+  EXPECT_TRUE(info.has_unactioned);
+  EXPECT_FALSE(info.has_deep_scanning);
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest,
+       GetDisplayInfo_ExistingCompleteDownload) {
+  base::Time now = base::Time::Now();
+  base::Time two_hours_ago = now - base::Hours(2);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
+                   /*is_paused=*/false, now);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "two_hours_ago_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitDownloadItem(DownloadState::COMPLETE, "completed_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
+                   {"now_offline_item", "two_hours_ago_offline_item"},
+                   {now, two_hours_ago});
+
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 5u);
+  // The last_completed_time should be set to the end time of the completed
+  // download, which is 1 minute past its start time (set in InitDownloadItem).
+  EXPECT_EQ(info.last_completed_time, two_hours_ago + base::Minutes(1));
   EXPECT_EQ(info.in_progress_count, 4);
+  EXPECT_EQ(info.paused_count, 2);
+  EXPECT_TRUE(info.has_unactioned);
+  EXPECT_FALSE(info.has_deep_scanning);
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest, GetDisplayInfo_UpdateForDangerous) {
+  base::Time now = base::Time::Now();
+  base::Time two_hours_ago = now - base::Hours(2);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "now_download",
+                   /*is_paused=*/false, now);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "two_hours_ago_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitDownloadItem(DownloadState::COMPLETE, "completed_download",
+                   /*is_paused=*/false, two_hours_ago);
+  InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
+                   {"now_offline_item", "two_hours_ago_offline_item"},
+                   {now, two_hours_ago});
+
+  // Make the download dangerous to update the last_completed_time.
+  UpdateDownloadItem(
+      0, DownloadState::IN_PROGRESS, /*is_paused=*/false,
+      DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT);
+
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 5u);
+  EXPECT_EQ(info.last_completed_time, now);
+  EXPECT_EQ(info.in_progress_count, 3);
   EXPECT_EQ(info.paused_count, 2);
   EXPECT_TRUE(info.has_unactioned);
   EXPECT_FALSE(info.has_deep_scanning);
@@ -819,8 +896,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfo) {
 TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfoForWebApp) {
   base::Time now = base::Time::Now();
   base::Time two_hours_ago = now - base::Hours(2);
-  web_app::AppId app_a_id = "app_a";
-  web_app::AppId app_b_id = "app_b";
+  webapps::AppId app_a_id = "app_a";
+  webapps::AppId app_b_id = "app_b";
   InitDownloadItem(DownloadState::IN_PROGRESS, "non_app_download",
                    /*is_paused=*/false, now);
   InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
@@ -833,22 +910,22 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfoForWebApp) {
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_b_download",
                    /*is_paused=*/false, now, &app_b_id);
 
-  AllDownloadUIModelsInfo non_app_info =
-      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo non_app_info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(non_app_info.all_models_size, 3u);
   EXPECT_EQ(non_app_info.paused_count, 2);
-  AllDownloadUIModelsInfo app_a_info =
-      update_service_->GetAllModelsInfo(&app_a_id);
+  DownloadBubbleDisplayInfo app_a_info =
+      update_service_->GetDisplayInfo(&app_a_id);
   EXPECT_EQ(app_a_info.all_models_size, 2u);
-  AllDownloadUIModelsInfo app_b_info =
-      update_service_->GetAllModelsInfo(&app_b_id);
+  DownloadBubbleDisplayInfo app_b_info =
+      update_service_->GetDisplayInfo(&app_b_id);
   EXPECT_EQ(app_b_info.all_models_size, 1u);
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest,
        DownloadUpdatedWithWebAppDataAfterCreation) {
   base::Time now = base::Time::Now();
-  web_app::AppId app_id = "app";
+  webapps::AppId app_id = "app";
   // This simulates the restoration of a web app download from the history
   // database, during which the item is created first without the
   // DownloadItemWebAppData, and then subsequently tagged with the data.
@@ -866,18 +943,18 @@ TEST_F(DownloadBubbleUpdateServiceTest,
   ASSERT_EQ(models.size(), 1u);
   EXPECT_EQ(models[0]->GetContentId().id, "app_download");
 
-  DownloadDisplayController::ProgressInfo non_app_progress_info =
+  DownloadDisplay::ProgressInfo non_app_progress_info =
       update_service_->GetProgressInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(non_app_progress_info.download_count, 0);
 
-  DownloadDisplayController::ProgressInfo app_progress_info =
+  DownloadDisplay::ProgressInfo app_progress_info =
       update_service_->GetProgressInfo(&app_id);
   EXPECT_EQ(app_progress_info.download_count, 1);
 
-  AllDownloadUIModelsInfo non_app_info =
-      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo non_app_info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(non_app_info.all_models_size, 0u);
-  AllDownloadUIModelsInfo app_info = update_service_->GetAllModelsInfo(&app_id);
+  DownloadBubbleDisplayInfo app_info = update_service_->GetDisplayInfo(&app_id);
   EXPECT_EQ(app_info.all_models_size, 1u);
 }
 
@@ -970,7 +1047,7 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest, InitIncognito) {
 // Ephemeral warnings are only enabled when the download bubble is enabled,
 // which it is not on ChromeOS Ash.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests that the AllDownloadUIModelsInfo is updated when a download with an
+// Tests that the DownloadBubbleDisplayInfo is updated when a download with an
 // ephemeral warning expires.
 TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
   base::Time now = base::Time::Now();
@@ -983,8 +1060,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
   EXPECT_TRUE(
       update_service_->GetAllModelsToDisplay(models, /*web_app_id=*/nullptr));
   EXPECT_EQ(models.size(), 2u);
-  AllDownloadUIModelsInfo info =
-      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 2u);
 
   // Mark the download with an ephemeral warning.
@@ -999,8 +1076,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
   update_service_->OnEphemeralWarningExpired(GetDownloadItem(1).GetGuid());
 
   // The ephemeral warning download should no longer be observable.
-  // Check GetAllModelsInfo first, because GetAllModelsToDisplay will prune it.
-  info = update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  // Check GetDisplayInfo first, because GetAllModelsToDisplay will prune it.
+  info = update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 1u);
   EXPECT_TRUE(
       update_service_->GetAllModelsToDisplay(models, /*web_app_id=*/nullptr));
@@ -1035,8 +1112,8 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest,
   EXPECT_TRUE(incognito_update_service_->GetAllModelsToDisplay(
       models, /*web_app_id=*/nullptr));
   EXPECT_EQ(models.size(), 3u);
-  AllDownloadUIModelsInfo info =
-      incognito_update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo info =
+      incognito_update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 3u);
 
   // Mark the regular profile ephemeral download with an ephemeral warning.
@@ -1060,9 +1137,9 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest,
       incognito_download_items_[0]->GetGuid());
 
   // The ephemeral warning downloads should no longer be observable.
-  // Check GetAllModelsInfo first, because GetAllModelsToDisplay will prune
+  // Check GetDisplayInfo first, because GetAllModelsToDisplay will prune
   // them.
-  info = incognito_update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  info = incognito_update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 1u);
   EXPECT_TRUE(incognito_update_service_->GetAllModelsToDisplay(
       models, /*web_app_id=*/nullptr));

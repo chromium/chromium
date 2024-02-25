@@ -31,13 +31,16 @@ std::unique_ptr<Config> ParseConfigFromString(const std::string& config_str) {
             << ". with error: " << value_with_error.error().message;
     return nullptr;
   }
+  if (!value_with_error.value().is_dict()) {
+    return nullptr;
+  }
   const base::Value::Dict& config_dict = value_with_error.value().GetDict();
   const std::string* key = config_dict.FindString(kSegmentationKey);
   const std::string* uma_name = config_dict.FindString(kSegmentationUmaName);
   const base::Value::Dict* segments = config_dict.FindDict(kSegmentIds);
-  const absl::optional<int> selection_ttl_days =
+  const std::optional<int> selection_ttl_days =
       config_dict.FindInt(kSegmentSelectionTTL);
-  const absl::optional<int> unknown_selection_ttl_days =
+  const std::optional<int> unknown_selection_ttl_days =
       config_dict.FindInt(kUnknownSegmentSelectionTTL);
 
   if (!key || !uma_name || !segments || !selection_ttl_days) {

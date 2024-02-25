@@ -14,6 +14,9 @@ TestMediaControllerImageObserver::TestMediaControllerImageObserver(
   controller->ObserveImages(mojom::MediaSessionImageType::kArtwork,
                             minimum_size_px, desired_size_px,
                             receiver_.BindNewPipeAndPassRemote());
+  controller->ObserveImages(
+      mojom::MediaSessionImageType::kChapter, minimum_size_px, desired_size_px,
+      chapter_image_observer_receiver_.BindNewPipeAndPassRemote());
   controller.FlushForTesting();
 }
 
@@ -32,6 +35,21 @@ void TestMediaControllerImageObserver::MediaControllerImageChanged(
   expected_.reset();
 }
 
+void TestMediaControllerImageObserver::MediaControllerChapterImageChanged(
+    int chapter_index,
+    const SkBitmap& bitmap) {
+  current_chapter_images_[chapter_index] = bitmap.isNull();
+
+  if (!base::Contains(expected_chapter_images_, chapter_index) ||
+      expected_chapter_images_[chapter_index] !=
+          current_chapter_images_[chapter_index]) {
+    return;
+  }
+
+  DCHECK(run_loop_);
+  run_loop_->Quit();
+}
+
 void TestMediaControllerImageObserver::WaitForExpectedImageOfType(
     mojom::MediaSessionImageType type,
     bool expect_null_image) {
@@ -41,6 +59,20 @@ void TestMediaControllerImageObserver::WaitForExpectedImageOfType(
     return;
 
   expected_ = pair;
+
+  DCHECK(!run_loop_);
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  run_loop_.reset();
+}
+
+void TestMediaControllerImageObserver::WaitForExpectedChapterImage(
+    int chapter_index,
+    bool expect_null_image) {
+  if (current_chapter_images_[chapter_index] == expect_null_image) {
+    return;
+  }
+  expected_chapter_images_[chapter_index] = expect_null_image;
 
   DCHECK(!run_loop_);
   run_loop_ = std::make_unique<base::RunLoop>();
@@ -71,7 +103,7 @@ void TestMediaControllerObserver::MediaSessionInfoChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionMetadataChanged(
-    const absl::optional<MediaMetadata>& metadata) {
+    const std::optional<MediaMetadata>& metadata) {
   session_metadata_ = metadata;
 
   if (expected_metadata_.has_value() && expected_metadata_ == metadata) {
@@ -96,7 +128,7 @@ void TestMediaControllerObserver::MediaSessionActionsChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionChanged(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   session_request_id_ = request_id;
 
   if (expected_request_id_.has_value() &&
@@ -107,7 +139,7 @@ void TestMediaControllerObserver::MediaSessionChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   session_position_ = position;
 
   if (waiting_for_empty_position_ && !position.has_value()) {
@@ -176,7 +208,7 @@ void TestMediaControllerObserver::WaitForExpectedActions(
 }
 
 void TestMediaControllerObserver::WaitForEmptyPosition() {
-  // |session_position_| is doubly wrapped in absl::optional so we must check
+  // |session_position_| is doubly wrapped in std::optional so we must check
   // both values.
   if (session_position_.has_value() && !session_position_->has_value())
     return;
@@ -194,7 +226,7 @@ void TestMediaControllerObserver::WaitForNonEmptyPosition() {
 }
 
 void TestMediaControllerObserver::WaitForSession(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   if (session_request_id_.has_value() && session_request_id_ == request_id)
     return;
 
@@ -219,6 +251,11 @@ TestMediaController::CreateMediaControllerRemote() {
   mojo::Remote<mojom::MediaController> remote;
   receiver_.Bind(remote.BindNewPipeAndPassReceiver());
   return remote;
+}
+
+void TestMediaController::BindMediaControllerReceiver(
+    mojo::PendingReceiver<mojom::MediaController> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void TestMediaController::Suspend() {
@@ -266,12 +303,20 @@ void TestMediaController::SeekTo(base::TimeDelta seek_time) {
   ++seek_to_count_;
 }
 
+void TestMediaController::SkipAd() {
+  ++skip_ad_count_;
+}
+
 void TestMediaController::EnterPictureInPicture() {
-  // TODO(crbug.com/1040263): Implement EnterPictureInPicture.
+  ++enter_picture_in_picture_count_;
 }
 
 void TestMediaController::ExitPictureInPicture() {
-  // TODO(crbug.com/1040263): Implement ExitPictureInPicture.
+  ++exit_picture_in_picture_count_;
+}
+
+void TestMediaController::Raise() {
+  ++raise_count_;
 }
 
 void TestMediaController::RequestMediaRemoting() {
@@ -304,6 +349,16 @@ void TestMediaController::SimulateMediaSessionMetadataChanged(
 
 void TestMediaController::Flush() {
   observers_.FlushForTesting();
+}
+
+int TestMediaController::GetActiveObserverCount() {
+  int count = 0;
+  for (auto& observer : observers_) {
+    if (observer.is_connected()) {
+      count++;
+    }
+  }
+  return count;
 }
 
 }  // namespace test

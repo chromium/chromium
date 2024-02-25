@@ -416,7 +416,7 @@ TEST(NetLogTest, NetLogTwoObservers) {
 
   // Add event and make sure both observers receive it at their respective log
   // levels.
-  absl::optional<int> param;
+  std::optional<int> param;
   AddEvent(NetLog::Get());
   ASSERT_EQ(1U, observer[0].GetNumValues());
   param = observer[0].GetDict(0)->FindDict("params")->FindInt("capture_mode");

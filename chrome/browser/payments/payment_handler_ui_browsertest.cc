@@ -80,8 +80,9 @@ class PaymentRequestActivationlessShowTest
   base::HistogramTester histogram_tester_;
 };
 
+// TODO(https://crbug.com/1519140): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(PaymentRequestActivationlessShowTest,
-                       ActivationlessShow) {
+                       DISABLED_ActivationlessShow) {
   std::string payment_method =
       https_server()->GetURL("a.com", "/orenpay.test/pay").spec();
   NavigateTo("b.com", "/payment_handler_status.html");

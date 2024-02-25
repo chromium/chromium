@@ -6,8 +6,10 @@
 
 AccountCapabilitiesFetcher::AccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
+    FetchPriority fetch_priority,
     OnCompleteCallback on_complete_callback)
     : account_info_(account_info),
+      fetch_priority_(fetch_priority),
       on_complete_callback_(std::move(on_complete_callback)) {
   DCHECK(on_complete_callback_);
 }
@@ -21,7 +23,7 @@ void AccountCapabilitiesFetcher::Start() {
 }
 
 void AccountCapabilitiesFetcher::CompleteFetchAndMaybeDestroySelf(
-    const absl::optional<AccountCapabilities>& capabilities) {
+    const std::optional<AccountCapabilities>& capabilities) {
   DCHECK(on_complete_callback_);
   std::move(on_complete_callback_).Run(account_info_.account_id, capabilities);
 }

@@ -5,12 +5,14 @@
 #include <stdbool.h>
 #include <va/va.h>
 #include <va/va_backend.h>
+#include <va/va_drmcommon.h>
 
 #include <set>
 
 #include "base/check.h"
 #include "base/numerics/checked_math.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_driver.h"
+#include "third_party/libyuv/include/libyuv.h"
 
 VAStatus FakeTerminate(VADriverContextP ctx) {
   delete static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
@@ -19,6 +21,10 @@ VAStatus FakeTerminate(VADriverContextP ctx) {
 
 // Needed to be able to instantiate kCapabilities statically.
 #define MAX_CAPABILITY_ATTRIBUTES 5
+
+const VAImageFormat kSupportedImageFormats[] = {{.fourcc = VA_FOURCC_NV12,
+                                                 .byte_order = VA_LSB_FIRST,
+                                                 .bits_per_pixel = 12}};
 
 struct Capability {
   VAProfile profile;
@@ -454,8 +460,9 @@ VAStatus FakeBeginPicture(VADriverContextP ctx,
       static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
 
   CHECK(fdrv->SurfaceExists(render_target));
-
   CHECK(fdrv->ContextExists(context));
+
+  fdrv->GetContext(context).BeginPicture(fdrv->GetSurface(render_target));
 
   return VA_STATUS_SUCCESS;
 }
@@ -469,6 +476,14 @@ VAStatus FakeRenderPicture(VADriverContextP ctx,
 
   CHECK(fdrv->ContextExists(context));
 
+  std::vector<raw_ptr<const media::internal::FakeBuffer>> buffer_list;
+  for (int i = 0; i < num_buffers; i++) {
+    CHECK(fdrv->BufferExists(buffers[i]));
+    buffer_list.push_back(&(fdrv->GetBuffer(buffers[i])));
+  }
+
+  fdrv->GetContext(context).RenderPicture(buffer_list);
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -477,6 +492,8 @@ VAStatus FakeEndPicture(VADriverContextP ctx, VAContextID context) {
       static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
 
   CHECK(fdrv->ContextExists(context));
+
+  fdrv->GetContext(context).EndPicture();
 
   return VA_STATUS_SUCCESS;
 }
@@ -523,7 +540,14 @@ VAStatus FakePutSurface(VADriverContextP ctx,
 VAStatus FakeQueryImageFormats(VADriverContextP ctx,
                                VAImageFormat* format_list,
                                int* num_formats) {
-  *num_formats = 0;
+  int i = 0;
+  for (auto format : kSupportedImageFormats) {
+    format_list[i] = format;
+    i++;
+  }
+
+  *num_formats = i;
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -532,10 +556,18 @@ VAStatus FakeCreateImage(VADriverContextP ctx,
                          int width,
                          int height,
                          VAImage* image) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  fdrv->CreateImage(*format, width, height, image);
   return VA_STATUS_SUCCESS;
 }
 
 VAStatus FakeDestroyImage(VADriverContextP ctx, VAImageID image) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  fdrv->DestroyImage(image);
   return VA_STATUS_SUCCESS;
 }
 
@@ -556,6 +588,66 @@ VAStatus FakeGetImage(VADriverContextP ctx,
       static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
 
   CHECK(fdrv->SurfaceExists(surface));
+
+  const media::internal::FakeSurface& fake_surface = fdrv->GetSurface(surface);
+
+  CHECK(fdrv->ImageExists(image));
+
+  // TODO(b/316609501): Look into replacing this and making this function
+  // operate the same for both testing and non-testing environments.
+  if (!fake_surface.GetMappedBO().IsValid()) {
+    return VA_STATUS_SUCCESS;
+  }
+
+  // Chrome should only request images starting at (0, 0).
+  CHECK_EQ(x, 0);
+  CHECK_EQ(y, 0);
+  CHECK_LE(width, fake_surface.GetWidth());
+  CHECK_LE(height, fake_surface.GetHeight());
+
+  // Chrome should only ask the fake driver for images sourced from NV12
+  // surfaces.
+  CHECK_EQ(fake_surface.GetVAFourCC(), static_cast<uint32_t>(VA_FOURCC_NV12));
+
+  const media::internal::ScopedBOMapping::ScopedAccess mapped_bo =
+      fake_surface.GetMappedBO().BeginAccess();
+
+  const media::internal::FakeImage& fake_image = fdrv->GetImage(image);
+
+  // Chrome should only ask the fake driver to download NV12 surfaces onto NV12
+  // images.
+  CHECK_EQ(fake_image.GetFormat().fourcc,
+           static_cast<uint32_t>(VA_FOURCC_NV12));
+
+  // The image dimensions must be large enough to contain the surface.
+  CHECK_GE(base::checked_cast<unsigned int>(fake_image.GetWidth()), width);
+  CHECK_GE(base::checked_cast<unsigned int>(fake_image.GetHeight()), height);
+
+  uint8_t* const dst_y_addr =
+      static_cast<uint8_t*>(fake_image.GetBuffer().GetData()) +
+      fake_image.GetPlaneOffset(0);
+  const int dst_y_stride =
+      base::checked_cast<int>(fake_image.GetPlaneStride(0));
+
+  uint8_t* const dst_uv_addr =
+      static_cast<uint8_t*>(fake_image.GetBuffer().GetData()) +
+      fake_image.GetPlaneOffset(1);
+  const int dst_uv_stride =
+      base::checked_cast<int>(fake_image.GetPlaneStride(1));
+
+  const int copy_result = libyuv::NV12Copy(
+      /*src_y=*/mapped_bo.GetData(0),
+      /*src_stride_y=*/base::checked_cast<int>(mapped_bo.GetStride(0)),
+      /*src_uv=*/mapped_bo.GetData(1),
+      /*src_stride_uv=*/base::checked_cast<int>(mapped_bo.GetStride(1)),
+      /*dst_y=*/dst_y_addr,
+      /*dst_stride_y=*/dst_y_stride,
+      /*dst_uv=*/dst_uv_addr,
+      /*dst_stride_uv=*/dst_uv_stride,
+      /*width=*/width,
+      /*height=*/height);
+
+  CHECK_EQ(copy_result, 0);
 
   return VA_STATUS_SUCCESS;
 }
@@ -777,8 +869,11 @@ extern "C" VAStatus DLL_EXPORT __vaDriverInit_1_0(VADriverContextP ctx) {
 
   ctx->version_major = VA_MAJOR_VERSION;
   ctx->version_minor = VA_MINOR_VERSION;
-  ctx->str_vendor = "libfake";
-  ctx->pDriverData = new media::internal::FakeDriver();
+  ctx->str_vendor = "Chromium fake libva driver";
+  CHECK(ctx->drm_state);
+
+  ctx->pDriverData = new media::internal::FakeDriver(
+      (static_cast<drm_state*>(ctx->drm_state))->fd);
 
   ctx->max_profiles = MAX_PROFILES;
   ctx->max_entrypoints = MAX_ENTRYPOINTS;

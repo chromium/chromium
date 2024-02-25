@@ -21,16 +21,13 @@ namespace tflite {
 namespace task {
 
 std::string JoinPath(absl::string_view path1, absl::string_view path2) {
-  if (path1.empty())
-    return std::string(path2);
-  if (path2.empty())
-    return std::string(path1);
+  if (path1.empty()) return std::string(path2);
+  if (path2.empty()) return std::string(path1);
   if (path1.back() == '/') {
     if (path2.front() == '/')
       return absl::StrCat(path1, absl::ClippedSubstr(path2, 1));
   } else {
-    if (path2.front() != '/')
-      return absl::StrCat(path1, "/", path2);
+    if (path2.front() != '/') return absl::StrCat(path1, "/", path2);
   }
   return absl::StrCat(path1, path2);
 }
@@ -47,16 +44,14 @@ std::string JoinPathImpl(bool honor_abs,
     // This size calculation is worst-case: it assumes one extra "/" for every
     // path other than the first.
     size_t total_size = paths.size() - 1;
-    for (const absl::string_view path : paths)
-      total_size += path.size();
+    for (const absl::string_view path : paths) total_size += path.size();
     result.resize(total_size);
 
     auto begin = result.begin();
     auto out = begin;
     bool trailing_slash = false;
     for (absl::string_view path : paths) {
-      if (path.empty())
-        continue;
+      if (path.empty()) continue;
       if (path.front() == '/') {
         if (honor_abs) {
           out = begin;  // wipe out whatever we've built up so far.
@@ -64,8 +59,7 @@ std::string JoinPathImpl(bool honor_abs,
           path.remove_prefix(1);
         }
       } else {
-        if (!trailing_slash && out != begin)
-          *out++ = '/';
+        if (!trailing_slash && out != begin) *out++ = '/';
       }
       const size_t this_size = path.size();
       memcpy(&*out, path.data(), this_size);

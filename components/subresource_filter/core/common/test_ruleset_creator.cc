@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -53,7 +53,7 @@ std::vector<uint8_t> SerializeIndexedRulesetWithMultipleRules(
   for (const auto& rule : rules)
     EXPECT_TRUE(indexer.AddUrlRule(rule));
   indexer.Finish();
-  return std::vector<uint8_t>(indexer.data(), indexer.data() + indexer.size());
+  return std::vector<uint8_t>(indexer.data().begin(), indexer.data().end());
 }
 
 }  // namespace
@@ -117,7 +117,7 @@ TestRulesetCreator::~TestRulesetCreator() {
 }
 
 void TestRulesetCreator::CreateRulesetToDisallowURLsWithPathSuffix(
-    base::StringPiece suffix,
+    std::string_view suffix,
     TestRulesetPair* test_ruleset_pair) {
   DCHECK(test_ruleset_pair);
   proto::UrlRule suffix_rule = CreateSuffixRule(suffix);
@@ -125,7 +125,7 @@ void TestRulesetCreator::CreateRulesetToDisallowURLsWithPathSuffix(
 }
 
 void TestRulesetCreator::CreateUnindexedRulesetToDisallowURLsWithPathSuffix(
-    base::StringPiece suffix,
+    std::string_view suffix,
     TestRuleset* test_unindexed_ruleset) {
   DCHECK(test_unindexed_ruleset);
   proto::UrlRule suffix_rule = CreateSuffixRule(suffix);
@@ -134,7 +134,7 @@ void TestRulesetCreator::CreateUnindexedRulesetToDisallowURLsWithPathSuffix(
 }
 
 void TestRulesetCreator::CreateRulesetToDisallowURLWithSubstrings(
-    std::vector<base::StringPiece> substrings,
+    std::vector<std::string_view> substrings,
     TestRulesetPair* test_ruleset_pair) {
   DCHECK(test_ruleset_pair);
   std::vector<proto::UrlRule> url_rules;
@@ -144,7 +144,7 @@ void TestRulesetCreator::CreateRulesetToDisallowURLWithSubstrings(
 }
 
 void TestRulesetCreator::CreateRulesetToDisallowURLsWithManySuffixes(
-    base::StringPiece suffix,
+    std::string_view suffix,
     int num_of_suffixes,
     TestRulesetPair* test_ruleset_pair) {
   DCHECK(test_ruleset_pair);

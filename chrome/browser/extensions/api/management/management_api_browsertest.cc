@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -73,7 +72,7 @@ class ExtensionManagementApiBrowserTest : public ExtensionBrowserTest {
       const ExtensionManagementApiBrowserTest&) = delete;
 
  protected:
-  bool CrashEnabledExtension(const std::string& extension_id) {
+  bool CrashEnabledExtension(const ExtensionId& extension_id) {
     ExtensionHost* background_host =
         ProcessManager::Get(browser()->profile())
             ->GetBackgroundHostForExtension(extension_id);
@@ -264,15 +263,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// TODO(crbug.com/1446968): The service worker version is flaky.
-using ExtensionManagementApiBackgroundPageTest =
-    ExtensionManagementApiTestWithBackgroundType;
-
-INSTANTIATE_TEST_SUITE_P(BackgroundPage,
-                         ExtensionManagementApiBackgroundPageTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiBackgroundPageTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        SelfUninstall) {
   // Wait for the helper script to finish before loading the primary
   // extension. This ensures that the onUninstall event listener is
@@ -287,8 +278,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiBackgroundPageTest,
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
-// TODO(crbug.com/1446968): The service worker version is flaky.
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiBackgroundPageTest,
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        SelfUninstallNoPermissions) {
   // Wait for the helper script to finish before loading the primary
   // extension. This ensures that the onUninstall event listener is
@@ -325,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
       test_data_dir_.AppendASCII("api_test/management/packaged_app"), 1);
   ASSERT_TRUE(app);
 
-  const std::string app_id = app->id();
+  const extensions::ExtensionId app_id = app->id();
 
   scoped_refptr<ManagementCreateAppShortcutFunction> create_shortcut_function(
       new ManagementCreateAppShortcutFunction());
@@ -358,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   // The management API should list this extension.
   scoped_refptr<ManagementGetAllFunction> function =
       base::MakeRefCounted<ManagementGetAllFunction>();
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                    browser()->profile());
   ASSERT_TRUE(result->is_list());

@@ -26,7 +26,7 @@ base::Value::List VectorToList(const std::vector<base::TimeDelta>& values) {
 bool ListToVector(const base::Value::List& value,
                   std::vector<base::TimeDelta>* result) {
   for (const base::Value& entry : value) {
-    absl::optional<base::TimeDelta> delta = base::ValueToTimeDelta(entry);
+    std::optional<base::TimeDelta> delta = base::ValueToTimeDelta(entry);
     if (!delta)
       return false;
     result->push_back(*delta);
@@ -73,7 +73,7 @@ base::Value::Dict RequestScheduleToDict(const RequestSchedule& schedule) {
 
 RequestSchedule RequestScheduleFromDict(const base::Value::Dict& value) {
   RequestSchedule result;
-  absl::optional<base::Time> anchor = base::ValueToTime(value.Find("anchor"));
+  std::optional<base::Time> anchor = base::ValueToTime(value.Find("anchor"));
   const base::Value::List* offsets = value.FindList("offsets");
   result.type = GetScheduleType(value.Find("type"));
 

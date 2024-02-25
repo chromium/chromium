@@ -100,8 +100,21 @@ public interface ListProperties {
     WritableObjectPropertyKey<Callback<Pair<Date, String>>> CALLBACK_GROUP_PAGINATION_CLICK =
             new WritableObjectPropertyKey<>();
 
-    PropertyKey[] ALL_KEYS = new PropertyKey[] {ENABLE_ITEM_ANIMATIONS, CALLBACK_OPEN,
-            CALLBACK_PAUSE, CALLBACK_RESUME, CALLBACK_CANCEL, CALLBACK_SHARE, CALLBACK_REMOVE,
-            CALLBACK_RENAME, PROVIDER_VISUALS, PROVIDER_FAVICON, CALLBACK_SELECTION,
-            SELECTION_MODE_ACTIVE, CALLBACK_PAGINATION_CLICK, CALLBACK_GROUP_PAGINATION_CLICK};
+    PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                ENABLE_ITEM_ANIMATIONS,
+                CALLBACK_OPEN,
+                CALLBACK_PAUSE,
+                CALLBACK_RESUME,
+                CALLBACK_CANCEL,
+                CALLBACK_SHARE,
+                CALLBACK_REMOVE,
+                CALLBACK_RENAME,
+                PROVIDER_VISUALS,
+                PROVIDER_FAVICON,
+                CALLBACK_SELECTION,
+                SELECTION_MODE_ACTIVE,
+                CALLBACK_PAGINATION_CLICK,
+                CALLBACK_GROUP_PAGINATION_CLICK
+            };
 }

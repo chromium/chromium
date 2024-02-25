@@ -9,6 +9,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/user_script.h"
@@ -22,6 +23,7 @@ constexpr char kEmptyScriptIdError[] = "Script's ID must not be empty";
 constexpr char kFilesExceededSizeLimitError[] =
     "Scripts could not be loaded because '*' exceeds the maximum script size "
     "or the extension's maximum total script size.";
+constexpr char kNonExistentScriptIdError[] = "Nonexistent script ID '*'";
 constexpr char kReservedScriptIdPrefixError[] =
     "Script's ID '*' must not start with '*'";
 
@@ -61,6 +63,63 @@ bool IsScriptIdValid(const std::string& script_id, std::string* error) {
   return true;
 }
 
+bool ScriptsShouldBeAllowedInIncognito(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context) {
+  // Note: We explicitly use `util::IsIncognitoEnabled()` (and not
+  // `ExtensionFunction::include_incognito_information()`) since the latter
+  // excludes the on-the-record context of a split-mode extension. Since user
+  // scripts are shared across profiles, we should use the overall setting for
+  // the extension.
+  return util::IsIncognitoEnabled(extension_id, browser_context);
+}
+
+bool RemoveScripts(
+    const std::optional<std::vector<std::string>>& ids,
+    UserScript::Source source,
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    ExtensionUserScriptLoader::DynamicScriptsModifiedCallback remove_callback,
+    std::string* error) {
+  ExtensionUserScriptLoader* loader =
+      ExtensionSystem::Get(browser_context)
+          ->user_script_manager()
+          ->GetUserScriptLoaderForExtension(extension_id);
+
+  // Remove all scripts if ids are not provided. This doesn't include when ids
+  // has a value, but it's empty.
+  if (!ids.has_value()) {
+    loader->ClearDynamicScripts(source, std::move(remove_callback));
+    return true;
+  }
+
+  std::set<std::string> ids_to_remove;
+  std::set<std::string> existing_script_ids =
+      loader->GetDynamicScriptIDs(source);
+
+  for (const auto& id : *ids) {
+    if (!scripting::IsScriptIdValid(id, error)) {
+      return false;
+    }
+
+    // Add the dynamic script prefix to `provided_id` before checking against
+    // `existing_script_ids`.
+    std::string id_with_prefix =
+        scripting::AddPrefixToDynamicScriptId(id, source);
+    if (!base::Contains(existing_script_ids, id_with_prefix)) {
+      *error =
+          ErrorUtils::FormatErrorMessage(kNonExistentScriptIdError, id.c_str());
+      return false;
+    }
+
+    ids_to_remove.insert(id_with_prefix);
+  }
+
+  loader->RemoveDynamicScripts(std::move(ids_to_remove),
+                               std::move(remove_callback));
+  return true;
+}
+
 URLPatternSet GetPersistentScriptURLPatterns(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id) {
@@ -85,12 +144,12 @@ void ClearPersistentScriptURLPatterns(content::BrowserContext* browser_context,
                                       const ExtensionId& extension_id) {
   ExtensionPrefs::Get(browser_context)
       ->UpdateExtensionPref(extension_id, kPrefPersistentScriptURLPatterns,
-                            absl::nullopt);
+                            std::nullopt);
 }
 
 ValidateScriptsResult ValidateParsedScriptsOnFileThread(
     ExtensionResource::SymlinkPolicy symlink_policy,
-    std::unique_ptr<UserScriptList> scripts) {
+    UserScriptList scripts) {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
   // Validate that claimed script resources actually exist, and are UTF-8
@@ -98,7 +157,7 @@ ValidateScriptsResult ValidateParsedScriptsOnFileThread(
   std::string error;
   std::vector<InstallWarning> warnings;
   bool are_script_files_valid = script_parsing::ValidateFileSources(
-      *scripts, symlink_policy, &error, &warnings);
+      scripts, symlink_policy, &error, &warnings);
 
   // Script files over the per script/extension size limit are recorded as
   // warnings. However, for this case we should treat "install warnings" as
@@ -110,8 +169,8 @@ ValidateScriptsResult ValidateParsedScriptsOnFileThread(
   }
 
   return std::make_pair(std::move(scripts), are_script_files_valid
-                                                ? absl::nullopt
-                                                : absl::make_optional(error));
+                                                ? std::nullopt
+                                                : std::make_optional(error));
 }
 
 }  // namespace extensions::scripting

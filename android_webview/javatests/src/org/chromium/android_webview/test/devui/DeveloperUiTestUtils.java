@@ -20,9 +20,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Util methods for developer UI tests.
- */
+/** Util methods for developer UI tests. */
 public class DeveloperUiTestUtils {
     /**
      * Matches that a {@link ListView} has a specific number of items.
@@ -48,31 +46,31 @@ public class DeveloperUiTestUtils {
         };
     }
 
-    /**
-     * Matches that a {@link ListView} has a specific number of items
-     */
+    /** Matches that a {@link ListView} has a specific number of items */
     public static Matcher<View> withCount(final int itemCount) {
         return withCount(is(itemCount));
     }
 
     public static String getClipBoardTextOnUiThread(Context context) throws ExecutionException {
         // ClipManager service has to be called on the UI main thread.
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            return clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ClipboardManager clipboardManager =
+                            (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    return clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
+                });
     }
 
     public static void setClipBoardTextOnUiThread(Context context, String key, String value)
             throws ExecutionException {
         // ClipManager service has to be called on the UI main thread.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText(key, value);
-            clipboardManager.setPrimaryClip(clip);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ClipboardManager clipboardManager =
+                            (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText(key, value);
+                    clipboardManager.setPrimaryClip(clip);
+                });
     }
 
     // Don't instantiate this class.

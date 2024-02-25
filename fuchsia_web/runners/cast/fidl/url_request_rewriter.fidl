@@ -8,11 +8,11 @@ using fuchsia.web;
 
 /// Provides URL request rewriting rules from the Agent.
 @discoverable
-protocol UrlRequestRewriteRulesProvider {
+closed protocol UrlRequestRewriteRulesProvider {
     /// Returns a set of URL request rewriting rules. The first call must always
     /// return immediately with a potentially empty set of rules. On subsequent
     /// calls, the callback will only be invoked when the rules have changed.
-    GetUrlRequestRewriteRules() -> (struct {
+    strict GetUrlRequestRewriteRules() -> (struct {
         rules vector<fuchsia.web.UrlRequestRewriteRule>;
     });
 };

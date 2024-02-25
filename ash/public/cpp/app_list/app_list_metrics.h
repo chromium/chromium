@@ -7,6 +7,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+#include <string>
+
 namespace ash {
 enum class AppListLaunchedFrom;
 enum class AppListOrderUpdateEvent;
@@ -147,8 +149,8 @@ enum SearchResultType {
   REMOTE_APP,
   // A Borealis App Result.
   BOREALIS_APP,
-  // A Help App (aka Explore) Result. For default or help results. There are
-  // different search result types for Updates and Discover.
+  // A Help App (aka Explore) Result. For default or help results. There is a
+  // different search result type for Updates.
   HELP_APP_DEFAULT,
   // A result from omnibox for query suggestion.
   OMNIBOX_SEARCH_SUGGEST_ENTITY,
@@ -164,8 +166,8 @@ enum SearchResultType {
   DRIVE_SEARCH,
   // A Help App result about the "What's new" (Updates) page.
   HELP_APP_UPDATES,
-  // A Help App result about the "Discover" page.
-  HELP_APP_DISCOVER,
+  // A Help App result about the "Discover" page. (Deprecated).
+  HELP_APP_DISCOVER_DEPRECATED,
   // A keyboard shortcut result from the Keyboard Shortcut provider.
   KEYBOARD_SHORTCUT,
   // A keyboard shortcut result from the Keyboard Shortcut provider.
@@ -185,9 +187,14 @@ enum SearchResultType {
   IMAGE_SEARCH,
   // A zero-state result representing a admin template.
   DESKS_ADMIN_TEMPLATE,
+  // New app shortcuts.
+  APP_SHORTCUTS_V2,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
+
+ASH_PUBLIC_EXPORT std::string SearchSessionConclusionToString(
+    SearchSessionConclusion conclusion);
 
 // Returns true if the `show_source` is one that a user directly triggers.
 ASH_PUBLIC_EXPORT bool IsAppListShowSourceUserTriggered(

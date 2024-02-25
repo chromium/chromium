@@ -14,6 +14,7 @@
 #include "base/base_paths.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
+#include "base/i18n/string_search.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -55,6 +56,11 @@ namespace {
 // generic matcher.
 MATCHER_P(HasSubstr, str, "") {
   return arg.find(str) != arg.npos;
+}
+
+MATCHER_P(HasSubstrCaseInsensitive, str, "") {
+  return base::i18n::StringSearchIgnoringCaseAndAccents(str, arg, nullptr,
+                                                        nullptr);
 }
 
 class MockUpdateCheckDelegate : public UpdateCheckDelegate {
@@ -1083,8 +1089,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultWithErrorCode) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ONDEMAND_CLASS_NOT_FOUND,
-                      AllOfArray({HasSubstr(u"error code 3:"),
-                                  HasSubstr(u"0x80072EF2")}),
+                      AllOfArray({HasSubstrCaseInsensitive(u"error code 3:"),
+                                  HasSubstrCaseInsensitive(u"0x80072EF2")}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1105,8 +1111,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultOnly) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ERROR_UPDATING,
-                      AllOfArray({HasSubstr(u"error code 7:"),
-                                  HasSubstr(u"0x80072EF2")}),
+                      AllOfArray({HasSubstrCaseInsensitive(u"error code 7:"),
+                                  HasSubstrCaseInsensitive(u"0x80072EF2")}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1125,8 +1131,8 @@ TEST_P(GoogleUpdateWinTest, SimulateHresultDefault) {
   // Expect the appropriate error when the on-demand class cannot be created.
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ERROR_UPDATING,
-                      AllOfArray({HasSubstr(u"error code 7:"),
-                                  HasSubstr(u"0x80004005")}),
+                      AllOfArray({HasSubstrCaseInsensitive(u"error code 7:"),
+                                  HasSubstrCaseInsensitive(u"0x80004005")}),
                       _));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());

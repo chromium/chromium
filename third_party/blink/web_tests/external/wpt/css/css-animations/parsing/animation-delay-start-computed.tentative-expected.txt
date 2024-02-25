@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-FAIL Property animation-delay-start value 'initial' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
-FAIL Property animation-delay-start value '-500ms' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
-FAIL Property animation-delay-start value 'calc(2 * 3s)' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
-FAIL Property animation-delay-start value '20s, 10s' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property animation-delay-start value 'initial'
+  assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property animation-delay-start value '-500ms'
+  assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property animation-delay-start value 'calc(2 * 3s)'
+  assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property animation-delay-start value '20s, 10s'
+  assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
 Harness: the test ran to completion.
 

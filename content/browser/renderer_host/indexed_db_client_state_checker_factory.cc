@@ -11,8 +11,8 @@
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
-#include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {
@@ -24,12 +24,18 @@ using IndexedDBDisallowActivationReason =
 DisallowActivationReasonId ConvertToDisallowActivationReasonId(
     IndexedDBDisallowActivationReason reason) {
   switch (reason) {
-    case IndexedDBDisallowActivationReason::kClientEventIsTriggered:
+    case IndexedDBDisallowActivationReason::kVersionChangeEvent:
       return DisallowActivationReasonId::kIndexedDBEvent;
     case IndexedDBDisallowActivationReason::kTransactionIsAcquiringLocks:
       return DisallowActivationReasonId::kIndexedDBTransactionIsAcquiringLocks;
-    case IndexedDBDisallowActivationReason::kTransactionIsBlockingOthers:
-      return DisallowActivationReasonId::kIndexedDBTransactionIsBlockingOthers;
+    case IndexedDBDisallowActivationReason::
+        kTransactionIsStartingWhileBlockingOthers:
+      return DisallowActivationReasonId::
+          kIndexedDBTransactionIsStartingWhileBlockingOthers;
+    case IndexedDBDisallowActivationReason::
+        kTransactionIsOngoingAndBlockingOthers:
+      return DisallowActivationReasonId::
+          kIndexedDBTransactionIsOngoingAndBlockingOthers;
   }
 }
 
@@ -57,6 +63,14 @@ class NoDocumentIndexedDBClientStateChecker
       DisallowInactiveClientCallback callback) override {
     std::move(callback).Run(/*was_active=*/true);
   }
+  void MakeClone(
+      mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
+          receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+ private:
+  mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker> receivers_;
 };
 
 // This class should be used when the client has a RenderFrameHost associated so
@@ -71,8 +85,8 @@ class DocumentIndexedDBClientStateChecker final
  public:
   ~DocumentIndexedDBClientStateChecker() final = default;
 
-  void Bind(mojo::PendingAssociatedReceiver<
-            storage::mojom::IndexedDBClientStateChecker> receiver) {
+  void Bind(mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
+                receiver) {
     receivers_.Add(this, std::move(receiver));
   }
 
@@ -107,8 +121,9 @@ class DocumentIndexedDBClientStateChecker final
     if (was_active && keep_active.is_valid()) {
       // This is the only reason that we need to prevent the client from
       // inactive state.
-      CHECK_EQ(reason, storage::mojom::DisallowInactiveClientReason::
-                           kClientEventIsTriggered);
+      CHECK_EQ(
+          reason,
+          storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent);
       // If the document is active, we need to register a non sticky feature to
       // prevent putting it into BFCache until the IndexedDB connection is
       // successfully closed and the context is automatically destroyed.
@@ -126,6 +141,14 @@ class DocumentIndexedDBClientStateChecker final
 
     std::move(callback).Run(was_active);
   }
+
+  void MakeClone(
+      mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
+          receiver) override {
+    Bind(std::move(receiver));
+  }
+
+  const base::UnguessableToken token() { return token_; }
 
  private:
   // Keep the association between the receiver and the feature handle it
@@ -146,13 +169,17 @@ class DocumentIndexedDBClientStateChecker final
   };
 
   explicit DocumentIndexedDBClientStateChecker(RenderFrameHost* rfh)
-      : DocumentUserData(rfh) {}
+      : DocumentUserData(rfh), token_(base::UnguessableToken::Create()) {}
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  mojo::AssociatedReceiverSet<storage::mojom::IndexedDBClientStateChecker>
-      receivers_;
+  // This token uniquely identifies `this`/the "client" to the other side of the
+  // Mojo connection. It's used to prevent IDB code from over-zealously
+  // disallowing BFCache for a render frame based on its own activity.
+  base::UnguessableToken token_;
+
+  mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker> receivers_;
   mojo::ReceiverSet<storage::mojom::IndexedDBClientKeepActive,
                     KeepActiveReceiverContext>
       keep_active_receivers_;
@@ -163,26 +190,28 @@ class DocumentIndexedDBClientStateChecker final
 DOCUMENT_USER_DATA_KEY_IMPL(DocumentIndexedDBClientStateChecker);
 
 // static
-mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
-IndexedDBClientStateCheckerFactory::InitializePendingAssociatedRemote(
+std::tuple<mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>,
+           base::UnguessableToken>
+IndexedDBClientStateCheckerFactory::InitializePendingRemote(
     const GlobalRenderFrameHostId& rfh_id) {
-  mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_remote;
   if (RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id)) {
-    DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh)
-        ->Bind(
-            client_state_checker_remote.InitWithNewEndpointAndPassReceiver());
-  } else {
-    // If the `rfh` is null, it means there is actually no valid
-    // `RenderFrameHost` associated with the client. We should use a default
-    // checker instance for it.
-    // See comments from `NoDocumentIndexedDBClientStateChecker`.
-    mojo::MakeSelfOwnedAssociatedReceiver(
-        std::make_unique<NoDocumentIndexedDBClientStateChecker>(),
-        client_state_checker_remote.InitWithNewEndpointAndPassReceiver());
+    auto* checker =
+        DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh);
+    checker->Bind(client_state_checker_remote.InitWithNewPipeAndPassReceiver());
+    return {std::move(client_state_checker_remote), checker->token()};
   }
 
-  return client_state_checker_remote;
+  // If the `rfh` is null, it means there is actually no valid
+  // `RenderFrameHost` associated with the client. We should use a default
+  // checker instance for it.
+  // See comments from `NoDocumentIndexedDBClientStateChecker`.
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<NoDocumentIndexedDBClientStateChecker>(),
+      client_state_checker_remote.InitWithNewPipeAndPassReceiver());
+  return {std::move(client_state_checker_remote),
+          base::UnguessableToken::Create()};
 }
 
 // static

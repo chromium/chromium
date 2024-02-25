@@ -86,8 +86,8 @@ class ThreadPoolDelayedTaskManagerTest : public testing::Test {
 // Verify that a delayed task isn't forwarded before Start().
 TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskDoesNotRunBeforeStart) {
   // Send |task| to the DelayedTaskManager.
-  delayed_task_manager_.AddDelayedTask(std::move(task_), BindOnce(&PostTaskNow),
-                                       nullptr);
+  delayed_task_manager_.AddDelayedTask(std::move(task_),
+                                       BindOnce(&PostTaskNow));
 
   // Fast-forward time until the task is ripe for execution. Since Start() has
   // not been called, the task should not be forwarded to PostTaskNow()
@@ -101,8 +101,8 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskDoesNotRunBeforeStart) {
 TEST_F(ThreadPoolDelayedTaskManagerTest,
        DelayedTaskPostedBeforeStartExpiresAfterStartRunsOnExpire) {
   // Send |task| to the DelayedTaskManager.
-  delayed_task_manager_.AddDelayedTask(std::move(task_), BindOnce(&PostTaskNow),
-                                       nullptr);
+  delayed_task_manager_.AddDelayedTask(std::move(task_),
+                                       BindOnce(&PostTaskNow));
 
   delayed_task_manager_.Start(service_thread_task_runner_);
 
@@ -121,8 +121,8 @@ TEST_F(ThreadPoolDelayedTaskManagerTest,
 TEST_F(ThreadPoolDelayedTaskManagerTest,
        DelayedTaskPostedBeforeStartExpiresBeforeStartRunsOnStart) {
   // Send |task| to the DelayedTaskManager.
-  delayed_task_manager_.AddDelayedTask(std::move(task_), BindOnce(&PostTaskNow),
-                                       nullptr);
+  delayed_task_manager_.AddDelayedTask(std::move(task_),
+                                       BindOnce(&PostTaskNow));
 
   // Run tasks on the service thread. Don't expect any forwarding to
   // |task_target_| since the task isn't ripe for execution.
@@ -145,8 +145,8 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskDoesNotRunTooEarly) {
   delayed_task_manager_.Start(service_thread_task_runner_);
 
   // Send |task| to the DelayedTaskManager.
-  delayed_task_manager_.AddDelayedTask(std::move(task_), BindOnce(&PostTaskNow),
-                                       nullptr);
+  delayed_task_manager_.AddDelayedTask(std::move(task_),
+                                       BindOnce(&PostTaskNow));
 
   // Run tasks that are ripe for execution. Don't expect any forwarding to
   // PostTaskNow().
@@ -159,8 +159,8 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskRunsAfterDelay) {
   delayed_task_manager_.Start(service_thread_task_runner_);
 
   // Send |task| to the DelayedTaskManager.
-  delayed_task_manager_.AddDelayedTask(std::move(task_), BindOnce(&PostTaskNow),
-                                       nullptr);
+  delayed_task_manager_.AddDelayedTask(std::move(task_),
+                                       BindOnce(&PostTaskNow));
 
   // Fast-forward time. Expect the task to be forwarded to PostTaskNow().
   EXPECT_CALL(mock_callback_, Run());
@@ -182,8 +182,7 @@ TEST_F(ThreadPoolDelayedTaskManagerTest,
                           base::subtle::DelayPolicy::kFlexiblePreferEarly);
 
   // Send |task| to the DelayedTaskManager.
-  delayed_task_manager_.AddDelayedTask(std::move(task), BindOnce(&PostTaskNow),
-                                       nullptr);
+  delayed_task_manager_.AddDelayedTask(std::move(task), BindOnce(&PostTaskNow));
 
   // The task isn't forwarded before the earliest run time is reached.
   service_thread_task_runner_->FastForwardBy(kUnalignedLongDelay - kLeeway -
@@ -210,11 +209,11 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskRunsAfterCancelled) {
   auto post_cancelable_task_now = BindLambdaForTesting(
       [&](Task task) { post_cancelable_task_now_invoked = true; });
   delayed_task_manager_.AddDelayedTask(std::move(cancelable_task),
-                                       post_cancelable_task_now, nullptr);
+                                       post_cancelable_task_now);
 
   // Add |task_| to the DelayedTaskManager with a long delay.
-  delayed_task_manager_.AddDelayedTask(std::move(task_), BindOnce(&PostTaskNow),
-                                       nullptr);
+  delayed_task_manager_.AddDelayedTask(std::move(task_),
+                                       BindOnce(&PostTaskNow));
 
   // Cancel the cancelable task.
   cancelable_closure.Cancel();
@@ -247,11 +246,11 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTasksRunAfterDelay) {
 
   // Send tasks to the DelayedTaskManager.
   delayed_task_manager_.AddDelayedTask(std::move(task_a),
-                                       BindOnce(&PostTaskNow), nullptr);
+                                       BindOnce(&PostTaskNow));
   delayed_task_manager_.AddDelayedTask(std::move(task_b),
-                                       BindOnce(&PostTaskNow), nullptr);
+                                       BindOnce(&PostTaskNow));
   delayed_task_manager_.AddDelayedTask(std::move(task_c),
-                                       BindOnce(&PostTaskNow), nullptr);
+                                       BindOnce(&PostTaskNow));
 
   // Run tasks that are ripe for execution on the service thread. Don't expect
   // any call to PostTaskNow().
@@ -290,11 +289,11 @@ TEST_F(ThreadPoolDelayedTaskManagerTest,
 
   // Send tasks to the DelayedTaskManager.
   delayed_task_manager_.AddDelayedTask(std::move(task_a),
-                                       BindOnce(&PostTaskNow), nullptr);
+                                       BindOnce(&PostTaskNow));
   EXPECT_EQ(base::subtle::DelayPolicy::kFlexibleNoSooner,
             delayed_task_manager_.TopTaskDelayPolicyForTesting());
   delayed_task_manager_.AddDelayedTask(std::move(task_b),
-                                       BindOnce(&PostTaskNow), nullptr);
+                                       BindOnce(&PostTaskNow));
   EXPECT_EQ(base::subtle::DelayPolicy::kPrecise,
             delayed_task_manager_.TopTaskDelayPolicyForTesting());
 
@@ -321,8 +320,7 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, PostTaskDuringStart) {
   other_thread.task_runner()->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
                                          delayed_task_manager_.AddDelayedTask(
                                              std::move(task_),
-                                             BindOnce(&PostTaskNow),
-                                             other_thread.task_runner());
+                                             BindOnce(&PostTaskNow));
                                          task_posted.Signal();
                                        }));
 

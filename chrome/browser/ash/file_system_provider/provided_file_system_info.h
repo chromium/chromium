@@ -12,8 +12,7 @@
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "extensions/common/extension_id.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Options for creating the provided file system info.
 struct MountOptions {
@@ -60,6 +59,12 @@ class ProviderId {
   ProviderType type_;
 };
 
+// The type of content cache that is used for the individual provider.
+// TODO(b/317137739): Move this value to
+// file_system_provider_capabilities_handler.h` once the
+// chrome.fileSystemProvider manifest exposes this value.
+enum class CacheType { LRU, NONE };
+
 // Contains information about the provided file system instance.
 class ProvidedFileSystemInfo {
  public:
@@ -71,7 +76,8 @@ class ProvidedFileSystemInfo {
                          bool configurable,
                          bool watchable,
                          extensions::FileSystemProviderSource source,
-                         const IconSet& icon_set);
+                         const IconSet& icon_set,
+                         CacheType cache_type = CacheType::NONE);
 
   // TODO(mtomasz): Remove this constructor. Callers should be using
   // provider id, not extension id.
@@ -81,7 +87,8 @@ class ProvidedFileSystemInfo {
                          bool configurable,
                          bool watchable,
                          extensions::FileSystemProviderSource source,
-                         const IconSet& icon_set);
+                         const IconSet& icon_set,
+                         CacheType cache_type = CacheType::NONE);
 
   ProvidedFileSystemInfo(const ProvidedFileSystemInfo& other);
 
@@ -98,6 +105,7 @@ class ProvidedFileSystemInfo {
   bool watchable() const { return watchable_; }
   extensions::FileSystemProviderSource source() const { return source_; }
   const IconSet& icon_set() const { return icon_set_; }
+  CacheType cache_type() const { return cache_type_; }
 
  private:
   // ID of the provider supplying this file system.
@@ -137,9 +145,11 @@ class ProvidedFileSystemInfo {
 
   // Icon set for the file system.
   IconSet icon_set_;
+
+  // The type of content cache that this file system leverages for eviction.
+  CacheType cache_type_;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDED_FILE_SYSTEM_INFO_H_

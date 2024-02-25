@@ -8,11 +8,11 @@ namespace sharesheet {
 
 TargetInfo::TargetInfo(
     TargetType type,
-    const absl::optional<gfx::ImageSkia> icon,
+    const std::optional<gfx::ImageSkia> icon,
     const std::u16string& launch_name,
     const std::u16string& display_name,
-    const absl::optional<std::u16string>& secondary_display_name,
-    const absl::optional<std::string>& activity_name,
+    const std::optional<std::u16string>& secondary_display_name,
+    const std::optional<std::string>& activity_name,
     bool is_dlp_blocked)
     : type(type),
       icon(icon),

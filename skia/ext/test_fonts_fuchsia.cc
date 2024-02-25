@@ -6,7 +6,7 @@
 
 #include <fuchsia/fonts/cpp/fidl.h>
 
-#include "skia/ext/fontmgr_default.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/ports/SkFontMgr_fuchsia.h"
 

@@ -21,6 +21,8 @@ static_library("signaling") {
     "ftl_services_context.h",
     "ftl_signal_strategy.cc",
     "ftl_signal_strategy.h",
+    "ftl_support_host_device_id_provider.cc",
+    "ftl_support_host_device_id_provider.h",
     "iq_sender.cc",
     "iq_sender.h",
     "message_reception_channel.h",

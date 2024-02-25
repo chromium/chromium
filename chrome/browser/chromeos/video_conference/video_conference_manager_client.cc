@@ -41,7 +41,7 @@ namespace {
 // Returns whether the `contents` is a WebApp.
 bool IsWebApp(content::WebContents* contents) {
   return web_app::AppBrowserController::IsWebApp(
-      chrome::FindBrowserWithWebContents(contents));
+      chrome::FindBrowserWithTab(contents));
 }
 
 // Returns the AppType of the `contents`.

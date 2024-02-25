@@ -454,6 +454,8 @@ interface MyIfacePromise {
  *      ExtAttributes()
  *        ExtAttribute(Clamp)
  *        ExtAttribute(XAttr)
+ *    ExtAttributes()
+ *      ExtAttribute(Exposed) = "Window"
  *  Iterable()
  *    Type()
  *      PrimitiveType(long)
@@ -469,7 +471,7 @@ interface MyIfaceIterable {
   iterable<double, DOMString>;
   iterable<[Clamp] long>;
   iterable<[TreatNullAs=EmptyString] DOMString>;
-  iterable<[Clamp, XAttr] long>;
+  [Exposed=Window] iterable<[Clamp, XAttr] long>;
   iterable<[Clamp] long, [EnforceRange] long long>;
 };
 
@@ -489,6 +491,8 @@ interface MyIfaceIterable {
  *      ExtAttributes()
  *        ExtAttribute(Clamp)
  *    Arguments()
+ *    ExtAttributes()
+ *      ExtAttribute(Exposed) = "Window"
  *  AsyncIterable()
  *    Type()
  *      PrimitiveType(double)
@@ -507,7 +511,7 @@ interface MyIfaceIterable {
 interface MyIfaceAsyncIterable {
   async iterable<long>;
   async iterable<double, DOMString>;
-  async iterable<[Clamp] long>();
+  [Exposed=Window] async iterable<[Clamp] long>();
   async iterable<double, DOMString>(optional long arg1, optional DOMString arg2);
 };
 

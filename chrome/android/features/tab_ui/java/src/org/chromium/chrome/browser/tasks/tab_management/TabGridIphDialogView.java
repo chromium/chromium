@@ -21,9 +21,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.chrome.tab_ui.R;
 
-/**
- * The view for TabGridIph related UIs.
- */
+/** The view for TabGridIph related UIs. */
 public class TabGridIphDialogView extends LinearLayout {
     private final int mDialogHeight;
     private final int mDialogTopMargin;
@@ -46,12 +44,19 @@ public class TabGridIphDialogView extends LinearLayout {
                 (int) mContext.getResources().getDimension(R.dimen.tab_grid_iph_dialog_height);
         mDialogTopMargin =
                 (int) mContext.getResources().getDimension(R.dimen.tab_grid_iph_dialog_top_margin);
-        mDialogTextSideMargin = (int) mContext.getResources().getDimension(
-                R.dimen.tab_grid_iph_dialog_text_side_margin);
-        mDialogTextTopMarginPortrait = (int) mContext.getResources().getDimension(
-                R.dimen.tab_grid_iph_dialog_text_top_margin_portrait);
-        mDialogTextTopMarginLandscape = (int) mContext.getResources().getDimension(
-                R.dimen.tab_grid_iph_dialog_text_top_margin_landscape);
+        mDialogTextSideMargin =
+                (int)
+                        mContext.getResources()
+                                .getDimension(R.dimen.tab_grid_iph_dialog_text_side_margin);
+        mDialogTextTopMarginPortrait =
+                (int)
+                        mContext.getResources()
+                                .getDimension(R.dimen.tab_grid_iph_dialog_text_top_margin_portrait);
+        mDialogTextTopMarginLandscape =
+                (int)
+                        mContext.getResources()
+                                .getDimension(
+                                        R.dimen.tab_grid_iph_dialog_text_top_margin_landscape);
     }
 
     @Override
@@ -61,13 +66,14 @@ public class TabGridIphDialogView extends LinearLayout {
         mIphAnimation = (Animatable) mIphDrawable;
         TextView iphDialogTitleText = findViewById(R.id.title);
         TextView iphDialogDescriptionText = findViewById(R.id.description);
-        mAnimationCallback = new Animatable2Compat.AnimationCallback() {
-            @Override
-            public void onAnimationEnd(Drawable drawable) {
-                Handler handler = new Handler();
-                handler.postDelayed(mIphAnimation::start, 1500);
-            }
-        };
+        mAnimationCallback =
+                new Animatable2Compat.AnimationCallback() {
+                    @Override
+                    public void onAnimationEnd(Drawable drawable) {
+                        Handler handler = new Handler();
+                        handler.postDelayed(mIphAnimation::start, 1500);
+                    }
+                };
         mTitleTextMarginParams =
                 (ViewGroup.MarginLayoutParams) iphDialogTitleText.getLayoutParams();
         mDescriptionTextMarginParams =
@@ -82,9 +88,7 @@ public class TabGridIphDialogView extends LinearLayout {
         mRootView = rootView;
     }
 
-    /**
-     * Stops the IPH animation. This is called when the IPH dialog hides.
-     */
+    /** Stops the IPH animation. This is called when the IPH dialog hides. */
     void stopIPHAnimation() {
         AnimatedVectorDrawableCompat.unregisterAnimationCallback(mIphDrawable, mAnimationCallback);
         mIphAnimation.stop();
@@ -100,9 +104,7 @@ public class TabGridIphDialogView extends LinearLayout {
         mIphAnimation.start();
     }
 
-    /**
-     * Update the IPH view layout based on the current size of the root view.
-     */
+    /** Update the IPH view layout based on the current size of the root view. */
     void updateLayout() {
         if (mParentViewHeight == mRootView.getHeight()) return;
         mParentViewHeight = mRootView.getHeight();

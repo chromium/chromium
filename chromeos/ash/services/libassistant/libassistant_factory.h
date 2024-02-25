@@ -6,13 +6,11 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_LIBASSISTANT_FACTORY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace assistant_client {
 class AssistantManager;
-class AssistantManagerInternal;
 }  // namespace assistant_client
 
 namespace ash::libassistant {
@@ -25,10 +23,6 @@ class LibassistantFactory {
 
   virtual std::unique_ptr<assistant_client::AssistantManager>
   CreateAssistantManager(const std::string& lib_assistant_config) = 0;
-
-  virtual assistant_client::AssistantManagerInternal*
-  UnwrapAssistantManagerInternal(
-      assistant_client::AssistantManager* assistant_manager) = 0;
 };
 
 }  // namespace ash::libassistant

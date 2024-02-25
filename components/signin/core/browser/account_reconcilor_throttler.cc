@@ -41,7 +41,7 @@ AccountReconcilorThrottler::~AccountReconcilorThrottler() {
 void AccountReconcilorThrottler::Reset() {
   // Needed for the case when the reconcilor is a no op and calls reset.
   RecordAndResetNumberOfRejectedRequests();
-  last_request_params_ = absl::nullopt;
+  last_request_params_ = std::nullopt;
   available_requests_bucket_ = kMaxAllowedRequestsPerBucket;
   last_refill_time_stamp_ = base::TimeTicks::Now();
 }

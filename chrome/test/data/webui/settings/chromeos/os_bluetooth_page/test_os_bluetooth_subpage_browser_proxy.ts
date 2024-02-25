@@ -8,9 +8,6 @@ import {FastPairSavedDevice, FastPairSavedDevicesOptInStatus, OsBluetoothDevices
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/**
- * @implements {OsBluetoothDevicesSubpageBrowserProxy}
- */
 export class TestOsBluetoothDevicesSubpageBrowserProxy extends TestBrowserProxy
     implements OsBluetoothDevicesSubpageBrowserProxy {
   savedDevices: FastPairSavedDevice[] = [];
@@ -22,6 +19,21 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends TestBrowserProxy
       'deleteFastPairSavedDevice',
       'requestFastPairDeviceSupport',
     ]);
+  }
+
+  override reset() {
+    super.reset();
+    // reset instance variables
+    this.savedDevices = [];
+    this.optInStatus = FastPairSavedDevicesOptInStatus.STATUS_OPTED_IN;
+  }
+
+  setSavedDevices(savedDevices: FastPairSavedDevice[]): void {
+    this.savedDevices = savedDevices;
+  }
+
+  setOptInStatus(status: FastPairSavedDevicesOptInStatus): void {
+    this.optInStatus = status;
   }
 
   requestFastPairDeviceSupport(): void {}

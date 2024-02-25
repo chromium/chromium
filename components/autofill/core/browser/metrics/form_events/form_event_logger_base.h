@@ -16,8 +16,16 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill::autofill_metrics {
+
+enum class FilledFieldTypeMetric {
+  kClassifiedWithRecognizedAutocomplete = 0,
+  kClassifiedWithUnrecognizedAutocomplete = 1,
+  kUnclassified = 2,
+  kMaxValue = kUnclassified
+};
 
 // Utility to log autofill form events in the relevant histograms depending on
 // the presence of server and/or local data.
@@ -29,14 +37,6 @@ class FormEventLoggerBase {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       AutofillClient* client);
 
-  inline void set_server_record_type_count(size_t server_record_type_count) {
-    server_record_type_count_ = server_record_type_count;
-  }
-
-  inline void set_local_record_type_count(size_t local_record_type_count) {
-    local_record_type_count_ = local_record_type_count;
-  }
-
   void OnDidInteractWithAutofillableForm(
       const FormStructure& form,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
@@ -47,8 +47,6 @@ class FormEventLoggerBase {
 
   void OnDidParseForm(const FormStructure& form);
 
-  void OnPopupSuppressed(const FormStructure& form, const AutofillField& field);
-
   void OnUserHideSuggestions(const FormStructure& form,
                              const AutofillField& field);
 
@@ -58,6 +56,16 @@ class FormEventLoggerBase {
       const base::TimeTicks& form_parsed_timestamp,
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       bool off_the_record);
+
+  // This is different from OnDidFillSuggestion because it does not require to
+  // provide data models or other parameters. It is needed to be used in field
+  // by field filling.
+  void RecordFillingOperation(FormGlobalId form_id,
+                              base::span<const AutofillField*> filled_fields);
+
+  void OnDidRefill(
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+      const FormStructure& form);
 
   void OnWillSubmitForm(
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
@@ -86,7 +94,7 @@ class FormEventLoggerBase {
   void OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
       const FormStructure& form);
 
-  void Log(FormEvent event, const FormStructure& form);
+  virtual void Log(FormEvent event, const FormStructure& form);
 
   void OnTextFieldDidChange(const FieldGlobalId& field_global_id);
 
@@ -102,7 +110,7 @@ class FormEventLoggerBase {
     return flow_id_;
   }
 
-  const absl::optional<int64_t> fast_checkout_run_id_for_test() const {
+  const std::optional<int64_t> fast_checkout_run_id_for_test() const {
     return fast_checkout_run_id_;
   }
 
@@ -116,19 +124,10 @@ class FormEventLoggerBase {
   virtual void LogWillSubmitForm(const FormStructure& form);
   virtual void LogFormSubmitted(const FormStructure& form);
 
-  // This is a temporary analysis for crbug.com/1352826. We apply local
-  // heuristics to forms if >= 3 fields are discovered by local heuristics. The
-  // working hypothesis is that we should change this to ">= 3 distinct field
-  // types are discovered by local heuristics". To test this hypothesis we want
-  // to calculate the FillingAcceptance for forms for which the stricter
-  // rule would make a difference.
-  // TODO(crbug.com/1352826): Remove this after investigating the impact.
-  void LogImpactOfHeuristicsThreshold(const FormStructure& form);
-
   // Only used for UKM backward compatibility since it depends on IsCreditCard.
   // TODO (crbug.com/925913): Remove IsCreditCard from UKM logs amd replace with
   // |form_type_name_|.
-  virtual void LogUkmInteractedWithForm(FormSignature form_signature);
+  virtual void LogUkmInteractedWithForm(FormSignature form_signature) = 0;
 
   virtual void OnSuggestionsShownOnce(const FormStructure& form) {}
   virtual void OnSuggestionsShownSubmittedOnce(const FormStructure& form) {}
@@ -152,7 +151,7 @@ class FormEventLoggerBase {
   void RecordFillAfterSuggestion(LogBuffer& logs) const;
   void RecordSubmissionAfterFill(LogBuffer& logs) const;
 
-  // Records UMA metrics on keym etrics and writes logs to autofill-internals.
+  // Records UMA metrics on key metrics and writes logs to autofill-internals.
   // Similar to the funnel metrics, a separate function for each key metric is
   // defined below.
   void RecordKeyMetrics() const;
@@ -180,21 +179,27 @@ class FormEventLoggerBase {
   // called in the destructor.
   void RecordAblationMetrics() const;
 
+  // Records UMA metrics related to the Undo Autofill feature.
+  void RecordUndoMetrics() const;
+
   void UpdateFlowId();
+
+  // Returns whether the logger was notified that any data to fill is available.
+  // This is used to emit the readiness key metric.
+  virtual bool HasLoggedDataToFillAvailable() const = 0;
 
   // Constructor parameters.
   std::string form_type_name_;
   bool is_in_any_main_frame_;
 
   // State variables.
-  size_t server_record_type_count_ = 0;
-  size_t local_record_type_count_ = 0;
   bool has_parsed_form_ = false;
   bool has_logged_interacted_ = false;
-  bool has_logged_popup_suppressed_ = false;
   bool has_logged_user_hide_suggestions_ = false;
   bool has_logged_suggestions_shown_ = false;
-  bool has_logged_suggestion_filled_ = false;
+  bool has_logged_form_filling_suggestion_filled_ = false;
+  bool has_logged_undo_after_fill_ = false;
+  bool has_logged_fill_after_undo_ = false;
   bool has_logged_autocomplete_off_ = false;
   bool has_logged_will_submit_ = false;
   bool has_logged_submitted_ = false;
@@ -204,9 +209,17 @@ class FormEventLoggerBase {
   bool has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ =
       false;
   bool has_called_on_destoryed_ = false;
+  bool is_heuristic_only_email_form_ = false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
-  absl::optional<base::TimeDelta> time_from_interaction_to_submission_;
+  std::optional<base::TimeDelta> time_from_interaction_to_submission_;
+
+  // Logs the total number of filling operations performed by the user
+  // (Excluding Undo operations). This is not related to
+  // `has_logged_form_filling_suggestion_filled_` since the latter doesn't
+  // include field by field filling operations.
+  size_t filling_operation_count_ = 0;
+  std::map<FieldGlobalId, FilledFieldTypeMetric> filled_fields_types_;
 
   // The last field that was polled for suggestions.
   FormFieldData last_polled_field_;
@@ -220,7 +233,7 @@ class FormEventLoggerBase {
   // during the flow.
   FormInteractionsFlowId flow_id_;
   // Unique ID of a Fast Checkout run. Used for metrics.
-  absl::optional<int64_t> fast_checkout_run_id_;
+  std::optional<int64_t> fast_checkout_run_id_;
 
   // Form types of the submitted form.
   DenseSet<FormType> submitted_form_types_;

@@ -52,7 +52,7 @@ static const CGFloat kDontShowAgainViewHeightAdjustment = 10.f;
     _linkUrl = [NSURL URLWithString:base::SysUTF8ToNSString(message.link_url)];
     _allowSilence = allowSilence;
 
-    _transitionController = [MDCDialogTransitionController new];
+    _transitionController = [[MDCDialogTransitionController alloc] init];
     self.modalPresentationStyle = UIModalPresentationCustom;
     self.transitioningDelegate = _transitionController;
   }
@@ -64,7 +64,7 @@ static const CGFloat kDontShowAgainViewHeightAdjustment = 10.f;
 
   self.view.backgroundColor = RemotingTheme.dialogBackgroundColor;
 
-  _messageLabel = [UILabel new];
+  _messageLabel = [[UILabel alloc] init];
   _messageLabel.textColor = RemotingTheme.dialogTextColor;
   _messageLabel.lineBreakMode = NSLineBreakByWordWrapping;
   _messageLabel.numberOfLines = 0;
@@ -72,18 +72,18 @@ static const CGFloat kDontShowAgainViewHeightAdjustment = 10.f;
   _messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_messageLabel];
 
-  UIView* dontShowAgainView = [UIView new];
+  UIView* dontShowAgainView = [[UIView alloc] init];
   dontShowAgainView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:dontShowAgainView];
 
-  _linkButton = [MDCFlatButton new];
+  _linkButton = [[MDCFlatButton alloc] init];
   [_linkButton setTitle:_linkText forState:UIControlStateNormal];
   [_linkButton addTarget:self
                   action:@selector(didTapLinkButton:)
         forControlEvents:UIControlEventTouchUpInside];
   [self addButton:_linkButton isPrimary:YES];
 
-  _dismissButton = [MDCFlatButton new];
+  _dismissButton = [[MDCFlatButton alloc] init];
   [_dismissButton setTitle:l10n_util::GetNSString(IDS_DISMISS)
                   forState:UIControlStateNormal];
   [_dismissButton addTarget:self
@@ -139,13 +139,13 @@ static const CGFloat kDontShowAgainViewHeightAdjustment = 10.f;
 
     NSString* dontShowAgainText = l10n_util::GetNSString(IDS_DONT_SHOW_AGAIN);
 
-    _dontShowAgainSwitch = [UISwitch new];
+    _dontShowAgainSwitch = [[UISwitch alloc] init];
     _dontShowAgainSwitch.translatesAutoresizingMaskIntoConstraints = NO;
     _dontShowAgainSwitch.transform = CGAffineTransformMakeScale(0.5, 0.5);
     _dontShowAgainSwitch.accessibilityLabel = dontShowAgainText;
     [dontShowAgainView addSubview:_dontShowAgainSwitch];
 
-    _dontShowAgainLabel = [UILabel new];
+    _dontShowAgainLabel = [[UILabel alloc] init];
     _dontShowAgainLabel.textColor = RemotingTheme.dialogTextColor;
     _dontShowAgainLabel.font = [UIFont systemFontOfSize:kDontShowAgainFontSize];
     _dontShowAgainLabel.text = dontShowAgainText;

@@ -49,19 +49,19 @@ void DefaultModelTestBase::OnFinishedExpectExecutionWithInput(
     base::RepeatingClosure closure,
     bool expected_error,
     ModelProvider::Response expected_result,
-    const absl::optional<ModelProvider::Response>& result) {
+    const std::optional<ModelProvider::Response>& result) {
   if (expected_error) {
     EXPECT_FALSE(result.has_value());
   } else {
-    EXPECT_TRUE(result.has_value());
+    ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result.value(), expected_result);
   }
   std::move(closure).Run();
 }
 
-absl::optional<ModelProvider::Response> DefaultModelTestBase::ExecuteWithInput(
+std::optional<ModelProvider::Response> DefaultModelTestBase::ExecuteWithInput(
     const ModelProvider::Request& inputs) {
-  absl::optional<ModelProvider::Response> result;
+  std::optional<ModelProvider::Response> result;
   base::RunLoop loop;
   model_->ExecuteModelWithInput(
       inputs,
@@ -74,9 +74,12 @@ absl::optional<ModelProvider::Response> DefaultModelTestBase::ExecuteWithInput(
 void DefaultModelTestBase::ExpectClassifierResults(
     const ModelProvider::Request& input,
     const std::vector<std::string>& expected_ordered_labels) {
+  ASSERT_TRUE(fetched_metadata_)
+      << "Please call ExpectInitAndFetchModel() in each test";
   auto result = ExecuteWithInput(input);
   EXPECT_TRUE(result.has_value());
 
+  EXPECT_TRUE(fetched_metadata_);
   EXPECT_TRUE(fetched_metadata_->has_output_config());
   auto prediction_result = metadata_utils::CreatePredictionResult(
       result.value(), fetched_metadata_->output_config(), base::Time::Now(),
@@ -88,8 +91,8 @@ void DefaultModelTestBase::ExpectClassifierResults(
 
 void DefaultModelTestBase::OnFinishedExecuteWithInput(
     base::RepeatingClosure closure,
-    absl::optional<ModelProvider::Response>* output,
-    const absl::optional<ModelProvider::Response>& result) {
+    std::optional<ModelProvider::Response>* output,
+    const std::optional<ModelProvider::Response>& result) {
   *output = result;
   std::move(closure).Run();
 }

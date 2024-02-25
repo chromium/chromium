@@ -21,20 +21,4 @@
          sourceApplication:context.options.sourceApplication];
 }
 
-- (instancetype)initWithLaunchOptions:(NSDictionary*)options {
-  return [self initWithURL:options[UIApplicationLaunchOptionsURLKey]
-         sourceApplication:
-             options[UIApplicationLaunchOptionsSourceApplicationKey]];
-}
-
-- (NSDictionary*)toLaunchOptions {
-  NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-  dict[UIApplicationLaunchOptionsURLKey] = self.URL;
-  if (self.sourceApplication) {
-    dict[UIApplicationLaunchOptionsSourceApplicationKey] =
-        self.sourceApplication;
-  }
-  return dict;
-}
-
 @end

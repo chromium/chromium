@@ -116,7 +116,7 @@ void AppWebMessagePort::PostMessage(
   // set the agent cluster ID to the embedder's, and nullify its parent task ID.
   transferable_message.sender_agent_cluster_id =
       blink::WebMessagePort::GetEmbedderAgentClusterID();
-  transferable_message.parent_task_id = absl::nullopt;
+  transferable_message.parent_task_id = std::nullopt;
 
   mojo::Message mojo_message =
       blink::mojom::TransferableMessage::SerializeAsMessage(

@@ -39,8 +39,10 @@ const char kUrl3[] = "https://www.google.com/3";
 const char kUrl4[] = "https://www.google.com/4";
 const char kUrl5[] = "https://www.google.com/5";
 
-const base::Time kInitialTimeStamp = base::Time::FromDoubleT(1000);
-const base::Time kUpdatedTimeStamp = base::Time::FromDoubleT(2000);
+const base::Time kInitialTimeStamp =
+    base::Time::FromSecondsSinceUnixEpoch(1000);
+const base::Time kUpdatedTimeStamp =
+    base::Time::FromSecondsSinceUnixEpoch(2000);
 
 // An enum describing the different types of update that can happen to a note
 // during a test case. This determines what kind of updated metadata will be

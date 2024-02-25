@@ -5,6 +5,7 @@
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -81,7 +82,7 @@ class AudioStreamHandlerTest : public ::testing::TestWithParam<TestParams> {
       audio_stream_handler_ = std::make_unique<AudioStreamHandler>(
           base::DoNothing(), bitstream_, codec_);
     } else {
-      base::StringPiece data(source_, data_size_);
+      std::string_view data(source_, data_size_);
       audio_stream_handler_ =
           std::make_unique<AudioStreamHandler>(base::DoNothing(), data, codec_);
     }

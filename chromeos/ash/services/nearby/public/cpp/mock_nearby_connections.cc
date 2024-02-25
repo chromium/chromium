@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 MockNearbyConnections::MockNearbyConnections() {
   mojo::PendingRemote<NearbyConnectionsMojom> pending_remote;
@@ -20,5 +19,4 @@ void MockNearbyConnections::BindInterface(
   receiver_set_.Add(this, std::move(pending_receiver));
 }
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

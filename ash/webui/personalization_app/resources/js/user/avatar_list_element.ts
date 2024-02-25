@@ -7,24 +7,28 @@
  * that the user can select from.
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
+
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui.js';
 import {isUserAvatarCustomizationSelectorsEnabled} from '../load_time_booleans.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {decodeString16, getCheckmarkIcon, isNonEmptyArray, isSelectionEvent} from '../utils.js';
+import {getCheckmarkIcon, isSelectionEvent} from '../utils.js';
 
-import {AvatarCamera, AvatarCameraMode} from './avatar_camera_element.js';
+import {AvatarCameraElement, AvatarCameraMode} from './avatar_camera_element.js';
 import {getTemplate} from './avatar_list_element.html.js';
 import {fetchDefaultUserImages} from './user_controller.js';
 import {getUserProvider} from './user_interface_provider.js';
 import {selectLastExternalUserImageUrl} from './user_selectors.js';
 import {getAvatarUrl} from './utils.js';
 
-export interface AvatarList {
-  $: {avatarCamera: AvatarCamera};
+export interface AvatarListElement {
+  $: {avatarCamera: AvatarCameraElement};
 }
 
 enum OptionId {
@@ -63,7 +67,7 @@ function camelToKebab(className: string): string {
   return className.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
 }
 
-export class AvatarList extends WithPersonalizationStore {
+export class AvatarListElement extends WithPersonalizationStore {
   static get is() {
     return 'avatar-list';
   }
@@ -133,14 +137,15 @@ export class AvatarList extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<AvatarList['defaultUserImages_']>(
+    this.watch<AvatarListElement['defaultUserImages_']>(
         'defaultUserImages_', state => state.user.defaultUserImages);
-    this.watch<AvatarList['profileImage_']>(
+    this.watch<AvatarListElement['profileImage_']>(
         'profileImage_', state => state.user.profileImage);
-    this.watch<AvatarList['isCameraPresent_']>(
+    this.watch<AvatarListElement['isCameraPresent_']>(
         'isCameraPresent_', state => state.user.isCameraPresent);
-    this.watch<AvatarList['image_']>('image_', state => state.user.image);
-    this.watch<AvatarList['lastExternalUserImageUrl_']>(
+    this.watch<AvatarListElement['image_']>(
+        'image_', state => state.user.image);
+    this.watch<AvatarListElement['lastExternalUserImageUrl_']>(
         'lastExternalUserImageUrl_', selectLastExternalUserImageUrl);
     this.updateFromStore();
     fetchDefaultUserImages(getUserProvider(), this.getStore());
@@ -154,10 +159,10 @@ export class AvatarList extends WithPersonalizationStore {
 
   /** Invoked to update |options_|. */
   private updateOptions_(
-      isCameraPresent: AvatarList['isCameraPresent_'],
-      profileImage: AvatarList['profileImage_'],
-      lastExternalUserImageUrl: AvatarList['lastExternalUserImageUrl_'],
-      defaultUserImages: AvatarList['defaultUserImages_']) {
+      isCameraPresent: AvatarListElement['isCameraPresent_'],
+      profileImage: AvatarListElement['profileImage_'],
+      lastExternalUserImageUrl: AvatarListElement['lastExternalUserImageUrl_'],
+      defaultUserImages: AvatarListElement['defaultUserImages_']) {
     const options: Option[] = [];
     if (this.isCustomizationSelectorsEnabled_) {
       if (isCameraPresent) {
@@ -209,7 +214,7 @@ export class AvatarList extends WithPersonalizationStore {
           class: 'image-container',
           imgSrc: defaultImage.url.url,
           icon: getCheckmarkIcon(),
-          title: decodeString16(defaultImage.title),
+          title: mojoString16ToString(defaultImage.title),
           defaultImageIndex: defaultImage.index,
         });
       });
@@ -434,4 +439,4 @@ export class AvatarList extends WithPersonalizationStore {
   }
 }
 
-customElements.define(AvatarList.is, AvatarList);
+customElements.define(AvatarListElement.is, AvatarListElement);

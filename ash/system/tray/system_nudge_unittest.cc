@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/system_nudge.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -301,6 +302,11 @@ TEST_F(SystemNudgeTest, CloseNudgeImmediately) {
 }
 
 TEST_F(SystemNudgeTest, ShowNudgeWithScopedNudgePause) {
+  // Skip test if the new nudges are being used as the old nudge pause
+  // won't be activated since it's being deprecated.
+  if (features::IsSystemNudgeMigrationEnabled()) {
+    GTEST_SKIP();
+  }
   auto nudge_controller = std::make_unique<TestSystemNudgeController>();
   auto scoped_nudge_pause = SystemNudgePauseManager::Get()->CreateScopedPause();
   ASSERT_FALSE(nudge_controller->GetSystemNudgeForTesting());
@@ -315,6 +321,11 @@ TEST_F(SystemNudgeTest, ShowNudgeWithScopedNudgePause) {
 }
 
 TEST_F(SystemNudgeTest, CancelNudgeWithScopedNudgePause) {
+  // Skip test if the new nudges are being used as the old nudge pause
+  // won't be activated since it's being deprecated.
+  if (features::IsSystemNudgeMigrationEnabled()) {
+    GTEST_SKIP();
+  }
   auto nudge_controller = std::make_unique<TestSystemNudgeController>();
   ASSERT_FALSE(nudge_controller->GetSystemNudgeForTesting());
 

@@ -4,7 +4,7 @@
 package org.chromium.ui.modelutil;
 
 /**
- * Place holder interface to allow key definitions.  Should not be used directly and only exposed
- * to allow use as generic placeholders.
+ * Place holder interface to allow key definitions. Should not be used directly and only exposed to
+ * allow use as generic placeholders.
  */
 public interface PropertyKey {}

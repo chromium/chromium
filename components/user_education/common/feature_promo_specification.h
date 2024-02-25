@@ -5,15 +5,19 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SPECIFICATION_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SPECIFICATION_H_
 
+#include <functional>
+#include <initializer_list>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_identifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/user_education/common/user_education_metadata.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -30,6 +34,70 @@ class FeaturePromoHandle;
 // Specifies the parameters for a feature promo and its associated bubble.
 class FeaturePromoSpecification {
  public:
+  // Represents additional conditions that can affect when a promo can show.
+  class AdditionalConditions {
+   public:
+    AdditionalConditions();
+    AdditionalConditions(AdditionalConditions&&) noexcept;
+    AdditionalConditions& operator=(AdditionalConditions&&) noexcept;
+    ~AdditionalConditions();
+
+    // Provides constraints on when the promo can show based on some other
+    // Feautre Engagement event.
+    enum class Constraint { kAtMost, kAtLeast, kExactly };
+
+    // Represents an additional condition for the promo to show.
+    struct AdditionalCondition {
+      // The associated event name.
+      std::string event_name;
+      // How `count` should be interpreted.
+      Constraint constraint = Constraint::kAtMost;
+      // The required count for `event_name`, interpreted by `constraint`.
+      uint32_t count = 0;
+      // The window in which to evaluate `count` using `constraint`.
+      std::optional<uint32_t> in_days;
+    };
+
+    // Sets the number of days in which "used" and other events should be
+    // collected before deciding whether to show a promo.
+    //
+    // Default is zero unless there are additional conditions, in which case it
+    // is a week.
+    void set_initial_delay_days(uint32_t initial_delay_days) {
+      this->initial_delay_days_ = initial_delay_days;
+    }
+    std::optional<uint32_t> initial_delay_days() const {
+      return initial_delay_days_;
+    }
+
+    // Sets the number of times a promoted feature can be used before the
+    // associated promo stops showing. Default is zero - i.e. if the feature is
+    // used at all, the promo won't show.
+    void set_used_limit(uint32_t used_limit) { this->used_limit_ = used_limit; }
+    std::optional<uint32_t> used_limit() const { return used_limit_; }
+
+    // Adds an additional constraint on when the promo can show. `event_name` is
+    // arbitrary and can be shared between promos.
+    //
+    // Will only allow the promo to show if `event_name` has been seen
+    // `constraint` `count` times in `in_days` days. If `in_days` isn't
+    // specified, the period is effectively unlimited.
+    void AddAdditionalCondition(const char* event_name,
+                                Constraint constraint,
+                                uint32_t count,
+                                std::optional<uint32_t> in_days = std::nullopt);
+    void AddAdditionalCondition(
+        const AdditionalCondition& additional_condition);
+    const std::vector<AdditionalCondition>& additional_conditions() const {
+      return additional_conditions_;
+    }
+
+   private:
+    std::optional<uint32_t> initial_delay_days_;
+    std::optional<uint32_t> used_limit_;
+    std::vector<AdditionalCondition> additional_conditions_;
+  };
+
   // Provide different ways to specify parameters for title or body text.
   struct NoSubstitution {};
   using StringSubstitutions = std::vector<std::u16string>;
@@ -64,22 +132,47 @@ class FeaturePromoSpecification {
       base::RepeatingCallback<void(ui::ElementContext context,
                                    FeaturePromoHandle promo_handle)>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
   // Describes the type of promo. Used to configure defaults for the promo's
   // bubble.
   enum class PromoType {
     // Uninitialized/invalid specification.
-    kUnspecified,
+    kUnspecified = 0,
     // A toast-style promo.
-    kToast,
+    kToast = 1,
     // A snooze-style promo.
-    kSnooze,
+    kSnooze = 2,
     // A tutorial promo.
-    kTutorial,
+    kTutorial = 3,
     // A promo where one button is replaced by a custom action.
-    kCustomAction,
+    kCustomAction = 4,
     // A simple promo that acts like a toast but without the required
     // accessibility data.
-    kLegacy,
+    kLegacy = 5,
+    kMaxValue = kLegacy
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // Specifies the subtype of promo. Almost all promos will be `kNormal`; using
+  // some of the other special types requires being on an allowlist.
+  enum class PromoSubtype {
+    // A normal promo. Follows the default rules for when it can show.
+    kNormal = 0,
+    // A promo designed to be shown in multiple apps (or webapps). Can show once
+    // per app.
+    kPerApp = 1,
+    // A promo that must be able to be shown until explicitly acknowledged and
+    // dismissed by the user. This type requires being on an allowlist.
+    kLegalNotice = 2,
+    // A promo that must be able to be shown at most times, alerting the user
+    // that something important has happened, and offering them an opportunity
+    // to address it. This type requires being on an allowlist.
+    kActionableAlert = 3,
+    kMaxValue = kActionableAlert
   };
 
   // Represents a command or command accelerator. Can be valueless (falsy) if
@@ -92,11 +185,10 @@ class FeaturePromoSpecification {
 
     AcceleratorInfo();
     AcceleratorInfo(const AcceleratorInfo& other);
-    ~AcceleratorInfo();
-
     explicit AcceleratorInfo(ValueType value);
     AcceleratorInfo& operator=(ValueType value);
     AcceleratorInfo& operator=(const AcceleratorInfo& other);
+    ~AcceleratorInfo();
 
     explicit operator bool() const;
     bool operator!() const { return !static_cast<bool>(*this); }
@@ -108,25 +200,11 @@ class FeaturePromoSpecification {
     ValueType value_;
   };
 
-  struct DemoPageInfo {
-    std::string display_title;
-    std::string display_description;
-    base::RepeatingClosure setup_for_feature_promo_callback;
-
-    explicit DemoPageInfo(
-        std::string display_title_ = std::string(),
-        std::string display_description_ = std::string(),
-        base::RepeatingClosure setup_for_feature_promo_callback_ =
-            base::DoNothing());
-    ~DemoPageInfo();
-    DemoPageInfo(const DemoPageInfo& other);
-    DemoPageInfo& operator=(const DemoPageInfo& other);
-  };
-
   FeaturePromoSpecification();
-  FeaturePromoSpecification(FeaturePromoSpecification&& other);
+  FeaturePromoSpecification(FeaturePromoSpecification&& other) noexcept;
+  FeaturePromoSpecification& operator=(
+      FeaturePromoSpecification&& other) noexcept;
   ~FeaturePromoSpecification();
-  FeaturePromoSpecification& operator=(FeaturePromoSpecification&& other);
 
   // Format a localized string with ID `string_id` based on the given
   // `format_params`.
@@ -209,6 +287,21 @@ class FeaturePromoSpecification {
   // Set the bubble arrow. Default is top-left.
   FeaturePromoSpecification& SetBubbleArrow(HelpBubbleArrow bubble_arrow);
 
+  // Overrides the default focus-on-show behavior for the bubble. By default
+  // bubbles with action buttons are focused to aid with accessibility. In
+  // unusual circumstances this allows the value to be overridden. However, it
+  // is almost always better to e.g. improve the promo trigger logic so it
+  // doesn't interrupt user workflow than it is to disable bubble auto-focus.
+  //
+  // You should document calls to this method with a reason and ideally a bug
+  // describing why the default a11y behavior needs to be overridden and what
+  // can be done to fix it.
+  FeaturePromoSpecification& OverrideFocusOnShow(bool focus_on_show);
+
+  // Set the promo subtype. Setting the subtype to LegalNotice requires being on
+  // an allowlist.
+  FeaturePromoSpecification& SetPromoSubtype(PromoSubtype promo_subtype);
+
   // Set the anchor element filter.
   FeaturePromoSpecification& SetAnchorElementFilter(
       AnchorElementFilter anchor_element_filter);
@@ -227,6 +320,7 @@ class FeaturePromoSpecification {
 
   const base::Feature* feature() const { return feature_; }
   PromoType promo_type() const { return promo_type_; }
+  PromoSubtype promo_subtype() const { return promo_subtype_; }
   ui::ElementIdentifier anchor_element_id() const { return anchor_element_id_; }
   const AnchorElementFilter& anchor_element_filter() const {
     return anchor_element_filter_;
@@ -236,12 +330,13 @@ class FeaturePromoSpecification {
   int bubble_title_string_id() const { return bubble_title_string_id_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
   HelpBubbleArrow bubble_arrow() const { return bubble_arrow_; }
+  const std::optional<bool>& focus_on_show_override() const {
+    return focus_on_show_override_;
+  }
   int screen_reader_string_id() const { return screen_reader_string_id_; }
   const AcceleratorInfo& screen_reader_accelerator() const {
     return screen_reader_accelerator_;
   }
-  const DemoPageInfo& demo_page_info() const { return demo_page_info_; }
-  FeaturePromoSpecification& SetDemoPageInfo(DemoPageInfo demo_page_info);
   const TutorialIdentifier& tutorial_id() const { return tutorial_id_; }
   const std::u16string custom_action_caption() const {
     return custom_action_caption_;
@@ -264,6 +359,39 @@ class FeaturePromoSpecification {
     return custom_action_dismiss_string_id_;
   }
 
+  // Set menu item element identifiers that should be highlighted while
+  // this FeaturePromo is active.
+  FeaturePromoSpecification& SetHighlightedMenuItem(
+      const ui::ElementIdentifier highlighted_menu_identifier);
+  const ui::ElementIdentifier highlighted_menu_identifier() const {
+    return highlighted_menu_identifier_;
+  }
+
+  // Sets the additional conditions for the promo to show.
+  FeaturePromoSpecification& SetAdditionalConditions(
+      AdditionalConditions additional_conditions);
+  const AdditionalConditions& additional_conditions() const {
+    return additional_conditions_;
+  }
+
+  // Sets the metadata for this promotion.
+  FeaturePromoSpecification& SetMetadata(Metadata metadata);
+  const Metadata& metadata() const { return metadata_; }
+
+  // Argument-forwarding convenience version of SetMetadata() for constructing
+  // a Metadata object in-place.
+  template <typename... Args>
+  FeaturePromoSpecification& SetMetadata(Args&&... args) {
+    return SetMetadata(Metadata(std::forward<Args>(args)...));
+  }
+
+  // Force the subtype to a particular value, bypassing permission checks.
+  FeaturePromoSpecification& set_promo_subtype_for_testing(
+      PromoSubtype promo_subtype) {
+    promo_subtype_ = promo_subtype;
+    return *this;
+  }
+
  private:
   static constexpr HelpBubbleArrow kDefaultBubbleArrow =
       HelpBubbleArrow::kTopRight;
@@ -277,6 +405,9 @@ class FeaturePromoSpecification {
 
   // The type of promo. A promo with type kUnspecified is not valid.
   PromoType promo_type_ = PromoType::kUnspecified;
+
+  // The subtype of the promo.
+  PromoSubtype promo_subtype_ = PromoSubtype::kNormal;
 
   // The element identifier of the element to attach the promo to.
   ui::ElementIdentifier anchor_element_id_;
@@ -304,6 +435,11 @@ class FeaturePromoSpecification {
   // Optional arrow pointing to the promo'd element. Defaults to top left.
   HelpBubbleArrow bubble_arrow_ = kDefaultBubbleArrow;
 
+  // Overrides the default focus-on-show behavior for a bubble, which is to
+  // focus bubbles with action buttons, but not bubbles that only have a close
+  // button.
+  std::optional<bool> focus_on_show_override_;
+
   // Optional screen reader announcement that replaces bubble text when the
   // bubble is first announced.
   int screen_reader_string_id_ = 0;
@@ -311,9 +447,6 @@ class FeaturePromoSpecification {
   // Accelerator that is used to fill in a parametric field in
   // screen_reader_string_id_.
   AcceleratorInfo screen_reader_accelerator_;
-
-  // Information to be displayed on the demo page
-  DemoPageInfo demo_page_info_;
 
   // Tutorial identifier if the user decides to view a tutorial.
   TutorialIdentifier tutorial_id_;
@@ -329,7 +462,22 @@ class FeaturePromoSpecification {
 
   // Dismiss string ID for the custom action promo.
   int custom_action_dismiss_string_id_;
+
+  // Identifier of the menu item that should be highlighted while
+  // FeaturePromo is active.
+  ui::ElementIdentifier highlighted_menu_identifier_;
+
+  // Additional conditions describing when the promo can show.
+  AdditionalConditions additional_conditions_;
+
+  // Metadata for this promo.
+  Metadata metadata_;
 };
+
+std::ostream& operator<<(std::ostream& oss,
+                         FeaturePromoSpecification::PromoType promo_type);
+std::ostream& operator<<(std::ostream& oss,
+                         FeaturePromoSpecification::PromoSubtype promo_subtype);
 
 }  // namespace user_education
 

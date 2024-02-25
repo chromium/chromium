@@ -6,12 +6,12 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_ANDROID_WRAPPING_TEST_TRACKER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -40,9 +40,9 @@ class WrappingTestTracker : public Tracker {
   TriggerState GetTriggerState(const base::Feature& feature) const override;
   void Dismissed(const base::Feature& feature) override;
   void DismissedWithSnooze(const base::Feature& feature,
-                           absl::optional<SnoozeAction> snooze_action) override;
+                           std::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
-  absl::optional<std::string> GetPendingPriorityNotification() override;
+  std::optional<std::string> GetPendingPriorityNotification() override;
   void SetPriorityNotification(const base::Feature& feature) override;
   void RegisterPriorityNotificationHandler(const base::Feature& feature,
                                            base::OnceClosure callback) override;
@@ -52,7 +52,7 @@ class WrappingTestTracker : public Tracker {
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
   const Configuration* GetConfigurationForTesting() const override;
   void SetClockForTesting(const base::Clock& clock,
-                          base::Time& initial_time) override;
+                          base::Time initial_time) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_tracker_;

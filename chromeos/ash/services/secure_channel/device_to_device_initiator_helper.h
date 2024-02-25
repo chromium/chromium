@@ -142,8 +142,7 @@ class DeviceToDeviceInitiatorHelper {
     std::string persistent_symmetric_key;
     std::string session_private_key;
     std::string hello_message;
-    raw_ptr<multidevice::SecureMessageDelegate, ExperimentalAsh>
-        secure_message_delegate;
+    raw_ptr<multidevice::SecureMessageDelegate> secure_message_delegate;
     std::string responder_session_public_key;
     std::string session_symmetric_key;
   };

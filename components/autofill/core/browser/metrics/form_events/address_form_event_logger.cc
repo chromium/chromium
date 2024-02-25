@@ -32,31 +32,25 @@ AddressFormEventLogger::AddressFormEventLogger(
 
 AddressFormEventLogger::~AddressFormEventLogger() = default;
 
-void AddressFormEventLogger::OnDidFillSuggestion(
+void AddressFormEventLogger::OnDidFillFormFillingSuggestion(
     const AutofillProfile& profile,
     const FormStructure& form,
     const AutofillField& field,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const AutofillTriggerSource trigger_source) {
-  AutofillProfile::RecordType record_type = profile.record_type();
   signin_state_for_metrics_ = signin_state_for_metrics;
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(record_type, form, field);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(form, field);
 
-  if (record_type == AutofillProfile::SERVER_PROFILE) {
-    Log(FORM_EVENT_SERVER_SUGGESTION_FILLED, form);
-  } else {
-    Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
+  Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
+
+  if (!has_logged_form_filling_suggestion_filled_) {
+    has_logged_form_filling_suggestion_filled_ = true;
+    Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
   }
 
-  if (!has_logged_suggestion_filled_) {
-    has_logged_suggestion_filled_ = true;
-    logged_suggestion_filled_was_server_data_ =
-        record_type == AutofillProfile::SERVER_PROFILE;
-    Log(record_type == AutofillProfile::SERVER_PROFILE
-            ? FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE
-            : FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
-        form);
+  if (has_logged_undo_after_fill_) {
+    has_logged_fill_after_undo_ = true;
   }
 
   base::RecordAction(
@@ -70,25 +64,9 @@ void AddressFormEventLogger::OnDidFillSuggestion(
   profile_categories_filled_.insert(GetCategoryOfProfile(profile));
 }
 
-void AddressFormEventLogger::OnDidSeeFillableDynamicForm(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
-  Log(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, form);
-}
-
-void AddressFormEventLogger::OnDidRefill(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
-  Log(FORM_EVENT_DID_DYNAMIC_REFILL, form);
-}
-
-void AddressFormEventLogger::OnSubsequentRefillAttempt(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
-  Log(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, form);
+void AddressFormEventLogger::OnDidUndoAutofill() {
+  has_logged_undo_after_fill_ = true;
+  base::RecordAction(base::UserMetricsAction("Autofill_UndoAddressAutofill"));
 }
 
 void AddressFormEventLogger::OnLog(const std::string& name,
@@ -154,6 +132,18 @@ void AddressFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {
           : "Mixed";
   base::UmaHistogramBoolean("Autofill.Leipzig.FillingCorrectness." + kBucket,
                             !has_logged_edited_autofilled_field_);
+}
+
+void AddressFormEventLogger::LogUkmInteractedWithForm(
+    FormSignature form_signature) {
+  // Address Autofill has deprecated the concept of server addresses.
+  form_interactions_ukm_logger_->LogInteractedWithForm(
+      /*is_for_credit_card=*/false, record_type_count_,
+      /*server_record_type_count=*/0, form_signature);
+}
+
+bool AddressFormEventLogger::HasLoggedDataToFillAvailable() const {
+  return record_type_count_ > 0;
 }
 
 }  // namespace autofill::autofill_metrics

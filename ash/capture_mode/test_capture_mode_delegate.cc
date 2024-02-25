@@ -93,6 +93,9 @@ base::FilePath TestCaptureModeDelegate::GetUserDefaultDownloadsFolder() const {
 void TestCaptureModeDelegate::ShowScreenCaptureItemInFolder(
     const base::FilePath& file_path) {}
 
+void TestCaptureModeDelegate::OpenScreenCaptureItem(
+    const base::FilePath& file_path) {}
+
 void TestCaptureModeDelegate::OpenScreenshotInImageEditor(
     const base::FilePath& file_path) {}
 
@@ -147,6 +150,8 @@ void TestCaptureModeDelegate::BindAudioStreamFactory(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {}
 
 void TestCaptureModeDelegate::OnSessionStateChanged(bool started) {
+  is_session_active_ = started;
+
   if (on_session_state_changed_callback_)
     std::move(on_session_state_changed_callback_).Run();
 }

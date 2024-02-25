@@ -11,6 +11,7 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
@@ -19,14 +20,12 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -50,8 +49,7 @@ constexpr int kVerticalPosition = 8;
 
 class TabletModeMultitaskMenuTest : public AshTestBase {
  public:
-  TabletModeMultitaskMenuTest()
-      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
+  TabletModeMultitaskMenuTest() = default;
   TabletModeMultitaskMenuTest(const TabletModeMultitaskMenuTest&) = delete;
   TabletModeMultitaskMenuTest& operator=(const TabletModeMultitaskMenuTest&) =
       delete;
@@ -99,8 +97,7 @@ class TabletModeMultitaskMenuTest : public AshTestBase {
                                            : half_bounds.right_center());
     auto* split_view_controller = SplitViewController::Get(window);
     DCHECK_EQ(split_view_controller->GetPositionOfSnappedWindow(window),
-              left ? SplitViewController::SnapPosition::kPrimary
-                   : SplitViewController::SnapPosition::kSecondary);
+              left ? SnapPosition::kPrimary : SnapPosition::kSecondary);
   }
 
   void PressPartialPrimary(const aura::Window& window) {
@@ -142,9 +139,6 @@ class TabletModeMultitaskMenuTest : public AshTestBase {
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that a scroll down gesture from the top center activates the
@@ -406,10 +400,8 @@ TEST_F(TabletModeMultitaskMenuTest, CloseOnDoubleTapDivider) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   // Open the menu on one of the windows.
   ShowMultitaskMenu(*window1);
@@ -537,8 +529,7 @@ TEST_F(TabletModeMultitaskMenuTest, AdjustedMenuBounds) {
             GetMultitaskMenu()->widget()->GetWindowBoundsInScreen().right());
 
   // Swap windows so the 1/3 window is on the left. Test that the menu fits.
-  split_view_controller->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller->SwapWindows();
   ShowMultitaskMenu(*window2);
   EXPECT_EQ(work_area.x(),
             GetMultitaskMenu()->widget()->GetWindowBoundsInScreen().x());
@@ -595,6 +586,29 @@ TEST_F(TabletModeMultitaskMenuTest, WindowMinimumSizes) {
   EXPECT_FALSE(
       chromeos::MultitaskMenuViewTestApi(multitask_menu_view).GetHalfButton());
   EXPECT_FALSE(multitask_menu_view->partial_button());
+  GetMultitaskMenu()->Reset();
+
+  // Snap `window` to 1/3 to set its snap ratio to 1/3.
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY,
+                                    chromeos::kOneThirdSnapRatio);
+  WindowState::Get(window.get())->OnWMEvent(&snap_left);
+  const WMEvent restore(WM_EVENT_RESTORE);
+  WindowState::Get(window.get())->OnWMEvent(&restore);
+
+  // Set minimum size to make `window` snappable in 1/2 ratio but not in 1/3
+  // ratio.
+  delegate.set_minimum_size(gfx::Size(work_area_bounds.width() * 0.4, 0));
+
+  // Half button should be visible according to snappability with the default
+  // snap ratio instead of the window's current snap ratio.
+  ShowMultitaskMenu(*window);
+  multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
+  EXPECT_TRUE(
+      chromeos::MultitaskMenuViewTestApi(multitask_menu_view).GetHalfButton());
+  EXPECT_TRUE(multitask_menu_view->partial_button()->GetEnabled());
+  ASSERT_FALSE(multitask_menu_view->partial_button()
+                   ->GetRightBottomButton()
+                   ->GetEnabled());
 }
 
 // Tests that if a window cannot be snapped or floated, the buttons will not
@@ -706,12 +720,11 @@ TEST_F(TabletModeMultitaskMenuTest, ShowBottomMenuPortraitPrimary) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   std::unique_ptr<aura::Window> top_window(CreateAppWindow());
   std::unique_ptr<aura::Window> bottom_window(CreateAppWindow());
-  split_view_controller->SnapWindow(
-      top_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      bottom_window.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_FALSE(split_view_controller->IsPhysicalLeftOrTop(
-      SplitViewController::SnapPosition::kSecondary, bottom_window.get()));
+  split_view_controller->SnapWindow(top_window.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(bottom_window.get(),
+                                    SnapPosition::kSecondary);
+  EXPECT_FALSE(
+      IsPhysicalLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but
@@ -746,12 +759,11 @@ TEST_F(TabletModeMultitaskMenuTest, DISABLED_ShowBottomMenuPortraitSecondary) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   std::unique_ptr<aura::Window> bottom_window(CreateAppWindow());
   std::unique_ptr<aura::Window> top_window(CreateAppWindow());
-  split_view_controller->SnapWindow(
-      bottom_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      top_window.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_FALSE(split_view_controller->IsPhysicalLeftOrTop(
-      SplitViewController::SnapPosition::kPrimary, bottom_window.get()));
+  split_view_controller->SnapWindow(bottom_window.get(),
+                                    SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(top_window.get(), SnapPosition::kSecondary);
+  EXPECT_FALSE(
+      IsPhysicalLeftOrTop(SnapPosition::kPrimary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but
@@ -780,6 +792,47 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
   auto window = CreateAppWindow();
   ShowMultitaskMenu(*window);
   TabletModeControllerTestApi().LeaveTabletMode();
+}
+
+// Tests that update drag does not cause a crash. Test for http://b/290102602.
+TEST_F(TabletModeMultitaskMenuTest, NoCrashDuringUpdateDrag) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  auto window = CreateAppWindow();
+
+  // Partially drag down to start an animation. `end_y` must be less than half
+  // the menu height to animate toward close.
+  GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
+                 /*end_y=*/50);
+  auto* multitask_menu = GetMultitaskMenu();
+  auto* menu_layer = multitask_menu->widget()->GetContentsView()->layer();
+  ASSERT_TRUE(multitask_menu && menu_layer);
+  ui::LayerAnimator* animator = menu_layer->GetAnimator();
+  EXPECT_TRUE(animator->is_animating());
+  // When animating to hide, the menu will be translated up by `translation_y`,
+  // equal to the y translation in `initial_transform` in the constructor.
+  const int translation_y =
+      multitask_menu->widget()->GetContentsView()->height() + kVerticalPosition;
+  auto transform = gfx::Transform::MakeTranslation(0, -translation_y);
+  EXPECT_EQ(transform, menu_layer->GetTargetTransform());
+
+  // Start another drag to abort the current animation.
+  const int current_y = 10;
+  multitask_menu->UpdateDrag(current_y, /*down=*/false);
+  ASSERT_TRUE(multitask_menu && menu_layer);
+  EXPECT_FALSE(animator->is_animating());
+  const int initial_y =
+      multitask_menu->widget()->GetContentsView()->bounds().bottom();
+  transform = gfx::Transform::MakeTranslation(0, current_y - initial_y);
+  EXPECT_EQ(transform, menu_layer->transform());
+
+  // If we start a drag in a different direction, ensure we continue to set
+  // transform.
+  multitask_menu->UpdateDrag(current_y, /*down=*/true);
+  ASSERT_TRUE(multitask_menu && menu_layer);
+  EXPECT_FALSE(animator->is_animating());
+  // transform = gfx::Transform::MakeTranslation(0, y - initial_y);
+  EXPECT_EQ(transform, menu_layer->transform());
 }
 
 // Test that the window is created on the target window. This can crash if
@@ -833,8 +886,7 @@ TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
 TEST_F(TabletModeMultitaskMenuTest, NotShownInKioskMode) {
   // Enter kiosk mode and try swiping down. The multitask menu and cue should
   // not show.
-  LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
-                                      LoginState::LOGGED_IN_USER_KIOSK);
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
   auto window = CreateAppWindow(gfx::Rect(800, 600));
   EXPECT_FALSE(
       GetMultitaskMenuController()->multitask_cue_controller()->cue_layer());

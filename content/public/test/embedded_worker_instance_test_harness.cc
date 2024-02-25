@@ -79,14 +79,14 @@ void EmbeddedWorkerInstanceTestHarness::CreateAndStartWorker(
 
   StartServiceWorker(worker_version_.get());
   ASSERT_EQ(worker_version_->embedded_worker()->status(),
-            content::EmbeddedWorkerStatus::RUNNING);
+            blink::EmbeddedWorkerStatus::kRunning);
 }
 
 void EmbeddedWorkerInstanceTestHarness::StopAndResetWorker() {
   EXPECT_NE(worker_version_, nullptr);
   StopServiceWorker(worker_version_.get());
   ASSERT_EQ(worker_version_->embedded_worker()->status(),
-            EmbeddedWorkerStatus::STOPPED);
+            blink::EmbeddedWorkerStatus::kStopped);
   worker_version_.reset();
 }
 

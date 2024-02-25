@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/device_sync/cryptauth_api_call_flow.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -55,7 +55,7 @@ GetTestRequestProtoAsQueryParameters() {
 // |request_as_query_parameters| is only non-null for GET requests.
 GURL UrlWithQueryParameters(
     const std::string& url,
-    const absl::optional<std::vector<std::pair<std::string, std::string>>>&
+    const std::optional<std::vector<std::pair<std::string, std::string>>>&
         request_as_query_parameters) {
   GURL url_with_qp(url);
 
@@ -143,7 +143,7 @@ class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
     const network::ResourceRequest& request = pending[0].request;
 
     EXPECT_EQ(UrlWithQueryParameters(
-                  kRequestUrl, absl::nullopt /* request_as_query_parameters */),
+                  kRequestUrl, std::nullopt /* request_as_query_parameters */),
               request.url);
 
     EXPECT_EQ(serialized_request, network::GetUploadData(request));
@@ -175,8 +175,8 @@ class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
   // then the |response_code| and |response_string| are null.
   void CompleteCurrentPostRequest(
       net::Error error,
-      absl::optional<int> response_code = absl::nullopt,
-      const absl::optional<std::string>& response_string = absl::nullopt) {
+      std::optional<int> response_code = std::nullopt,
+      const std::optional<std::string>& response_string = std::nullopt) {
     network::URLLoaderCompletionStatus completion_status(error);
     auto response_head = network::mojom::URLResponseHead::New();
     std::string content;
@@ -199,8 +199,8 @@ class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
   // then the |response_code| and |response_string| are null.
   void CompleteCurrentGetRequest(
       net::Error error,
-      absl::optional<int> response_code = absl::nullopt,
-      const absl::optional<std::string>& response_string = absl::nullopt) {
+      std::optional<int> response_code = std::nullopt,
+      const std::optional<std::string>& response_string = std::nullopt) {
     network::URLLoaderCompletionStatus completion_status(error);
     auto response_head = network::mojom::URLResponseHead::New();
     std::string content;

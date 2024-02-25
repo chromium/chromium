@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -47,7 +48,7 @@ class AccessibilityEventHandlerManager {
 
   // List of the current event handlers, indexed by
   // AccessibilityEventHandlerType.
-  std::vector<ui::EventHandler*> event_handlers_;
+  std::vector<raw_ptr<ui::EventHandler, VectorExperimental>> event_handlers_;
 };
 
 }  // namespace ash

@@ -57,6 +57,7 @@ source_set("internal") {
     "//base",
     "//components/background_task_scheduler:public",
     "//components/leveldb_proto",
+    "//components/omnibox/common:common",
     "//components/prefs",
     "//components/query_tiles:public",
     "//components/query_tiles/proto",

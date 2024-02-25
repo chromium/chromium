@@ -35,19 +35,14 @@ def _GetHostArch():
   raise Exception('Unsupported host architecture: %s' % host_arch)
 
 
-def GetSDKOverrideGCSPath(path: Optional[str] = None) -> Optional[str]:
+def GetSDKOverrideGCSPath() -> Optional[str]:
   """Fetches the sdk override path from a file.
-
-  Args:
-    path: the full file path to read the data from.
-      defaults to sdk_override.txt in the directory of this file.
 
   Returns:
     The contents of the file, stripped of white space.
       Example: gs://fuchsia-artifacts/development/some-id/sdk
   """
-  if not path:
-    path = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
+  path = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
 
   if not os.path.isfile(path):
     return None
@@ -61,6 +56,13 @@ def _GetTarballPath(gcs_tarball_prefix: str) -> str:
   platform = get_host_os()
   arch = _GetHostArch()
   return f'{gcs_tarball_prefix}/{platform}-{arch}/core.tar.gz'
+
+
+def _GetCurrentVersionFromManifest() -> Optional[str]:
+  if not os.path.exists(_VERSION_FILE):
+    return None
+  with open(_VERSION_FILE) as f:
+    return json.load(f)['id']
 
 
 def main():
@@ -82,15 +84,19 @@ def main():
     logging.warning('Fuchsia SDK is not supported on this platform.')
     return 0
 
-  gcs_tarball_prefix = GetSDKOverrideGCSPath()
-  new_version = gcs_tarball_prefix if gcs_tarball_prefix else args.version
-  curr_version = None
-  if os.path.exists(_VERSION_FILE):
-    with open(_VERSION_FILE) as f:
-      curr_version = json.load(f)['id']
+  # TODO(crbug.com/326004432): Remove this once DEPS have been fixed not to
+  # include the "version:" prefix.
+  if args.version.startswith('version:'):
+    args.version = args.version[len('version:'):]
 
-  if new_version == curr_version:
-    return
+  gcs_tarball_prefix = GetSDKOverrideGCSPath()
+  if not gcs_tarball_prefix:
+    # sdk_override contains the full path but not only the version id. But since
+    # the scenario is limited to dry-run, it's not worth complexity to extract
+    # the version id.
+    if args.version == _GetCurrentVersionFromManifest():
+      return 0
+
   make_clean_directory(SDK_ROOT)
 
   # Download from CIPD if there is no override file.
@@ -100,13 +106,21 @@ def main():
     if not args.version:
       parser.exit(2, '--version must be specified.')
     logging.info('Downloading SDK from CIPD...')
-    ensure_file = '%s%s-%s %s' % (args.cipd_prefix, host_plat, _GetHostArch(),
-                                  args.version)
+    ensure_file = '%s%s-%s version:%s' % (args.cipd_prefix, host_plat,
+                                          _GetHostArch(), args.version)
     subprocess.run(('cipd', 'ensure', '-ensure-file', '-', '-root', SDK_ROOT,
                     '-log-level', 'warning'),
                    check=True,
                    text=True,
                    input=ensure_file)
+
+    # Verify that the downloaded version matches the expected one.
+    downloaded_version = _GetCurrentVersionFromManifest()
+    if downloaded_version != args.version:
+      logging.error(
+          'SDK version after download does not match expected (downloaded:%s '
+          'vs expected:%s)', downloaded_version, args.version)
+      return 3
   else:
     logging.info('Downloading SDK from GCS...')
     DownloadAndUnpackFromCloudStorage(_GetTarballPath(gcs_tarball_prefix),

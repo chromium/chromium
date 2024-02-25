@@ -107,7 +107,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
     return;
   }
 
-  String details = ToCoreString(details_value);
+  String details = ToCoreString(script_state->GetIsolate(), details_value);
   DCHECK(!details.empty());
 
   String payer_name = response->hasPayerName() ? response->payerName() : "";
@@ -139,7 +139,8 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
                                  : nullptr;
   if (should_have_shipping_info_) {
     if (!PaymentsValidators::IsValidShippingAddress(
-            shipping_address_ptr, nullptr /* = optional_error_message */)) {
+            script_state->GetIsolate(), shipping_address_ptr,
+            nullptr /* = optional_error_message */)) {
       BlankResponseWithError(
           PaymentEventResponseType::SHIPPING_ADDRESS_INVALID);
       return;

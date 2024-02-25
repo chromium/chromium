@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++GridView text:"Browser and Engine" CollectionInfo:[rows=3, cols=2] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="table", roleDescription="table"]
 ++++View text:"Browser and Engine" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="caption"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]

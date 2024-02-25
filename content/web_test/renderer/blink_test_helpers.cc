@@ -33,7 +33,8 @@ base::FilePath GetWebTestsFilePath() {
   static base::FilePath path;
   if (path.empty()) {
     base::FilePath root_path;
-    bool success = base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+    bool success =
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
     CHECK(success);
     path = root_path.Append(FILE_PATH_LITERAL("third_party/blink/web_tests/"));
   }
@@ -44,7 +45,8 @@ base::FilePath GetExternalWPTFilePath() {
   static base::FilePath path;
   if (path.empty()) {
     base::FilePath root_path;
-    bool success = base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+    bool success =
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
     CHECK(success);
     path = root_path.Append(
         FILE_PATH_LITERAL("third_party/blink/web_tests/external/wpt"));

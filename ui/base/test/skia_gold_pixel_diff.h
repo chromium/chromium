@@ -5,6 +5,7 @@
 #ifndef UI_BASE_TEST_SKIA_GOLD_PIXEL_DIFF_H_
 #define UI_BASE_TEST_SKIA_GOLD_PIXEL_DIFF_H_
 
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -12,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -94,7 +94,7 @@ class SkiaGoldPixelDiff final {
   //   that can affect the output of pixels should be filled in. Eg: operating
   //   system, graphics card, processor architecture, screen resolution, etc.
   static SkiaGoldPixelDiff* GetSession(
-      const absl::optional<std::string>& corpus = {},
+      const std::optional<std::string>& corpus = {},
       TestEnvironmentMap test_environment = TestEnvironmentMap());
 
   // Allows passing in a mocked |LaunchProcessCallback|, which is reset when the
@@ -116,11 +116,11 @@ class SkiaGoldPixelDiff final {
   static std::string GetGoldenImageName(
       const std::string& test_suite_name,
       const std::string& test_name,
-      const absl::optional<std::string>& suffix = {});
+      const std::optional<std::string>& suffix = {});
 
   static std::string GetGoldenImageName(
       const ::testing::TestInfo* test_info,
-      const absl::optional<std::string>& suffix = {});
+      const std::optional<std::string>& suffix = {});
 
   // golden_image_name
   //   For every screenshot you take, it should have a unique name across

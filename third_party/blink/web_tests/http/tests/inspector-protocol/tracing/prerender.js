@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const pageUrl =
       'http://127.0.0.1:8000/inspector-protocol/prerender/resources/inspector-protocol-page.html';
   const {tabTargetSession} = await testRunner.startBlankWithTabTarget(
@@ -30,7 +30,7 @@
   primarySession.evaluate(`document.getElementById('link').click()`);
 
   await Promise.all([
-    pp.Preload.oncePrerenderAttemptCompleted(),
+    pp.Preload.oncePrerenderStatusUpdated(e => e.params.status === 'Success'),
     pp.Page.setLifecycleEventsEnabled({ enabled: true }),
     pp.Page.onceLifecycleEvent(event => event.params.name === 'load'),
   ]);
@@ -43,12 +43,5 @@
               e => e.args.data.url ===
                   'http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html');
   testRunner.log('Got prerender frame: ' + !!prerenderFrameCommitted);
-  const prerenderFrameId = prerenderFrameCommitted.args.data.frame;
-
-  const parsePrerenderHTML =
-      tracingHelper.findEvents('ParseHTML', TracingHelper.Phase.COMPLETE)
-          .find(e => e.args.beginData.frame === prerenderFrameId);
-
-  testRunner.log('Got parse prerender HTML: ' + !!parsePrerenderHTML);
   testRunner.completeTest();
 });

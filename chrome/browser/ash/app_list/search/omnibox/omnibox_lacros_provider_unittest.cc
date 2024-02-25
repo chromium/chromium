@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
@@ -23,6 +25,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -180,13 +183,14 @@ class OmniboxLacrosProviderTest : public testing::Test {
     search_controller_ = std::make_unique<TestSearchController>();
 
     // Create the object to actually test.
-    omnibox_provider_ = std::make_unique<OmniboxLacrosProvider>(
+    auto omnibox_provider = std::make_unique<OmniboxLacrosProvider>(
         profile_, &list_controller_, crosapi_manager_.get());
-    omnibox_provider_->set_controller(search_controller_.get());
+    omnibox_provider_ = omnibox_provider.get();
+    search_controller_->AddProvider(std::move(omnibox_provider));
   }
 
   void TearDown() override {
-    omnibox_provider_.reset();
+    omnibox_provider_ = nullptr;
     search_controller_.reset();
     search_producer_.reset();
     crosapi_manager_.reset();
@@ -205,8 +209,16 @@ class OmniboxLacrosProviderTest : public testing::Test {
   // Starts a search and waits for the query to be sent to "lacros" over a Mojo
   // pipe.
   void StartSearch(const std::u16string& query) {
-    omnibox_provider_->Start(query);
+    search_controller_->StartSearch(query);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void DisableWebSearch() {
+    ScopedDictPrefUpdate pref_update(
+        profile_->GetPrefs(), ash::prefs::kLauncherSearchCategoryControlStatus);
+
+    pref_update->Set(ash::GetAppListControlCategoryName(ControlCategory::kWeb),
+                     false);
   }
 
  protected:
@@ -218,11 +230,11 @@ class OmniboxLacrosProviderTest : public testing::Test {
   TestAppListControllerDelegate list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
 
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 
-  std::unique_ptr<OmniboxLacrosProvider> omnibox_provider_;
+  raw_ptr<OmniboxLacrosProvider> omnibox_provider_;
 };
 
 // Test that results sent from lacros each instantiate a Chrome search result.
@@ -336,6 +348,30 @@ TEST_F(OmniboxLacrosProviderTest, UnhandledUrls) {
             search_controller_->last_results()[1]->id());
 }
 
+// Test that all non-answer results are filtered if web search is disabled in
+// search control.
+TEST_F(OmniboxLacrosProviderTest, WebSearchControl) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kLauncherSearchControl);
+  DisableWebSearch();
+
+  StartSearch(u"query");
+  EXPECT_EQ(u"query", search_producer_->last_query());
+
+  std::vector<cam::SearchResultPtr> to_produce;
+  to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
+  to_produce.emplace_back(NewAnswerResult(
+      "https://example.com/answer", cam::SearchResult::AnswerType::kWeather));
+  to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
+  ProduceResults(std::move(to_produce));
+
+  // Results always appear after answer and open tab entries.
+  ASSERT_EQ(1u, search_controller_->last_results().size());
+  EXPECT_EQ("omnibox_answer://https://example.com/answer",
+            search_controller_->last_results()[0]->id());
+}
+
 // A secondary test fixture which does not have any search producer connected to
 // the crosapi manager.
 class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
@@ -373,13 +409,14 @@ class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
     search_controller_ = std::make_unique<TestSearchController>();
 
     // Create the object to actually test.
-    omnibox_provider_ = std::make_unique<OmniboxLacrosProvider>(
+    auto omnibox_provider = std::make_unique<OmniboxLacrosProvider>(
         profile_, &list_controller_, crosapi_manager_.get());
-    omnibox_provider_->set_controller(search_controller_.get());
+    omnibox_provider_ = omnibox_provider.get();
+    search_controller_->AddProvider(std::move(omnibox_provider));
   }
 
   void TearDown() override {
-    omnibox_provider_.reset();
+    omnibox_provider_ = nullptr;
     search_controller_.reset();
     crosapi_manager_.reset();
     ash::LoginState::Shutdown();
@@ -390,7 +427,7 @@ class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
   // Starts a search and waits for the query to be sent to "lacros" over a Mojo
   // pipe.
   void StartSearch(const std::u16string& query) {
-    omnibox_provider_->Start(query);
+    search_controller_->StartSearch(query);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -402,8 +439,8 @@ class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
   TestAppListControllerDelegate list_controller_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  std::unique_ptr<OmniboxLacrosProvider> omnibox_provider_;
+  raw_ptr<TestingProfile> profile_;
+  raw_ptr<OmniboxLacrosProvider> omnibox_provider_;
 };
 
 TEST_F(OmniboxLacrosProviderNoCrosAPITest, SystemURLsWorkWithNoSearchProvider) {

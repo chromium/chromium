@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,8 @@ class PerformanceHandler : public SettingsPageUIHandler,
    */
   void HandleGetDeviceHasBattery(const base::Value::List& args);
   void HandleOpenBatterySaverFeedbackDialog(const base::Value::List& args);
-  void HandleOpenHighEfficiencyFeedbackDialog(const base::Value::List& args);
+  void HandleOpenMemorySaverFeedbackDialog(const base::Value::List& args);
+  void HandleOpenSpeedFeedbackDialog(const base::Value::List& args);
   void HandleOpenFeedbackDialog(const std::string category_tag);
   void HandleValidateTabDiscardExceptionRule(const base::Value::List& args);
 };

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/nocompile.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -38,7 +39,10 @@ static_library("status") {
 }
 
 source_set("status_macros") {
-  sources = [ "status_macros.h" ]
+  sources = [
+    "status_macros.cc",
+    "status_macros.h",
+  ]
   public_deps = [ "//base" ]
   deps = [ ":status" ]
 }
@@ -56,7 +60,6 @@ source_set("test_callbacks_support") {
     "mock_clock.h",
     "test_support_callbacks.cc",
     "test_support_callbacks.h",
-    "test_util.h",
   ]
 
   deps = [
@@ -141,6 +144,23 @@ source_set("rate_limiter_slide_window") {
   ]
 }
 
+if (enable_nocompile_tests) {
+  nocompile_source_set("reporting_nocompile_tests") {
+    sources = [
+      "status_macros_assert_ok_nocompile.nc",
+      "status_macros_check_ok_nocompile.nc",
+      "status_macros_dcheck_ok_nocompile.nc",
+      "status_macros_expect_ok_nocompile.nc",
+      "status_macros_return_if_error_status_nocompile.nc",
+    ]
+    deps = [
+      ":status_macros",
+      "//base",
+      "//testing/gtest",
+    ]
+  }
+}
+
 # All unit tests are built as part of the //components:components_unittests
 # target.
 source_set("unit_tests") {
@@ -177,4 +197,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (enable_nocompile_tests) {
+    deps += [ ":reporting_nocompile_tests" ]
+  }
 }

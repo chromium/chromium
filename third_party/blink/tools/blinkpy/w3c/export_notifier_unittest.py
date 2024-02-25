@@ -304,8 +304,10 @@ class ExportNotifierTest(LoggingTestCase):
             PullRequest(
                 title='title1',
                 number=1234,
-                body='description\nWPT-Export-Revision: hash\nChange-Id: decafbad',
+                body=
+                'description\nWPT-Export-Revision: hash\nChange-Id: decafbad',
                 state='open',
+                node_id='PR_1',
                 labels=[''])
         ]
         self.notifier.wpt_github.check_runs = [
@@ -387,7 +389,7 @@ class ExportNotifierTest(LoggingTestCase):
                 'a look at the output and see if it can be fixed. '
                 'Unresolved failures will be looked at by the Ecosystem-Infra '
                 'sheriff after this CL has been landed in Chromium; if you '
-                'need earlier help please contact ecosystem-infra@chromium.org.\n\n'
+                'need earlier help please contact blink-dev@chromium.org.\n\n'
                 'Any suggestions to improve this service are welcome; '
                 'crbug.com/1027618.\n\n'
                 'Gerrit CL SHA: {}\n'
@@ -403,7 +405,7 @@ class ExportNotifierTest(LoggingTestCase):
                 'a look at the output and see if it can be fixed. '
                 'Unresolved failures will be looked at by the Ecosystem-Infra '
                 'sheriff after this CL has been landed in Chromium; if you '
-                'need earlier help please contact ecosystem-infra@chromium.org.\n\n'
+                'need earlier help please contact blink-dev@chromium.org.\n\n'
                 'Any suggestions to improve this service are welcome; '
                 'crbug.com/1027618.\n\n'
                 'Gerrit CL SHA: {}').format(pr_number, checks_results_comment,

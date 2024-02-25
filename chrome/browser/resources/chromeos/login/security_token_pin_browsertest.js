@@ -7,12 +7,14 @@
  */
 
 GEN_INCLUDE([
-  '//chrome/test/data/webui/polymer_browser_test_base.js',
+  '//chrome/test/data/webui/chromeos/polymer_browser_test_base.js',
 ]);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
+// TODO(https://crbug.com/1033337): js2gtest fixtures require var here.
+// eslint-disable-next-line no-var
 var PolymerSecurityTokenPinTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -30,7 +32,7 @@ var PolymerSecurityTokenPinTest = class extends PolymerTest {
 
   get extraLibraries() {
     return [
-      '//third_party/mocha/mocha.js',
+      '//third_party/node/node_modules/mocha/mocha.js',
       '//chrome/test/data/webui/mocha_adapter.js',
       'components/oobe_types.js',
     ];

@@ -85,7 +85,7 @@ bool SVGFEDiffuseLightingElement::SetFilterEffectAttribute(
         diffuse_constant_->CurrentValue()->Value());
 
   if (const auto* light_element = SVGFELightElement::FindLightElement(*this)) {
-    absl::optional<bool> light_source_update =
+    std::optional<bool> light_source_update =
         light_element->SetLightSourceAttribute(diffuse_lighting, attr_name);
     if (light_source_update)
       return *light_source_update;

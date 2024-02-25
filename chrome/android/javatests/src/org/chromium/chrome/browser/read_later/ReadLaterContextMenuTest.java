@@ -68,16 +68,12 @@ import org.chromium.ui.test.util.ViewUtils;
 public class ReadLaterContextMenuTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    RequestCoordinatorBridge.Natives mRequestCoordinatorBridgeJniMock;
+
+    @Rule public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock private Tracker mTracker;
+    @Mock RequestCoordinatorBridge.Natives mRequestCoordinatorBridgeJniMock;
 
     private static final String CONTEXT_MENU_TEST_URL =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
@@ -89,10 +85,11 @@ public class ReadLaterContextMenuTest {
     public void setUp() {
         // Pretend the feature engagement feature is already initialized. Otherwise
         // UserEducationHelper#requestShowIPH() calls get dropped during test.
-        doAnswer(invocation -> {
-            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
+                            return null;
+                        })
                 .when(mTracker)
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mTracker);
@@ -107,18 +104,22 @@ public class ReadLaterContextMenuTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testShowIPHOnContextMenuLinkCopied() throws Throwable {
         when(mTracker.shouldTriggerHelpUI(
-                     FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
+                        FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(true);
         when(mTracker.shouldTriggerHelpUIWithSnooze(
-                     FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
+                        FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));
 
         mActivityTestRule.loadUrlInNewTab(mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL));
 
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_copy_link_address);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                activity,
+                tab,
+                CONTEXT_MENU_LINK_DOM_ID,
+                R.id.contextmenu_copy_link_address);
 
         onView(withId(R.id.menu_button_wrapper)).check(matches(withHighlight(true)));
         waitForHelpBubble(withText(R.string.reading_list_save_pages_for_later));
@@ -132,8 +133,12 @@ public class ReadLaterContextMenuTest {
         mActivityTestRule.loadUrlInNewTab(url);
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_read_later);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                activity,
+                tab,
+                CONTEXT_MENU_LINK_DOM_ID,
+                R.id.contextmenu_read_later);
         String linkUrl = mTestServer.getServer().getURL(CONTEXT_MENU_LINK_URL);
         verify(mRequestCoordinatorBridgeJniMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .savePageLater(any(), any(), eq(linkUrl), any(), any(), any(), anyBoolean());

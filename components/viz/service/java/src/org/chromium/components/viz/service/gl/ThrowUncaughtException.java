@@ -4,17 +4,19 @@
 
 package org.chromium.components.viz.service.gl;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 abstract class ThrowUncaughtException {
     @CalledByNative
     private static void post() {
-        ThreadUtils.postOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                throw new RuntimeException("Intentional exception not caught by JNI");
-            }
-        });
+        ThreadUtils.postOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        throw new RuntimeException("Intentional exception not caught by JNI");
+                    }
+                });
     }
 }

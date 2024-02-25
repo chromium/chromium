@@ -29,7 +29,6 @@ class SecureChannelClient;
 namespace ash::tether {
 
 class MessageWrapper;
-class TetherHostResponseRecorder;
 
 // Operation used to request that a tether host share its Internet connection.
 // Attempts a connection to the RemoteDevice passed to its constructor and
@@ -37,8 +36,7 @@ class TetherHostResponseRecorder;
 class ConnectTetheringOperation : public MessageTransferOperation {
  public:
   // Includes all error codes of ConnectTetheringResponse_ResponseCode, but
-  // includes extra values: |COULD_NOT_CONNECT_TO_PHONE|,
-  // |INVALID_HOTSPOT_CREDENTIALS|, |SUCCESSFUL_REQUEST_BUT_NO_RESPONSE|, and
+  // includes extra values: |INVALID_HOTSPOT_CREDENTIALS|,
   // |UNRECOGNIZED_RESPONSE_ERROR|.
   enum HostResponseErrorCode {
     PROVISIONING_FAILED = 0,
@@ -50,7 +48,10 @@ class ConnectTetheringOperation : public MessageTransferOperation {
     UNKNOWN_ERROR = 6,
     NO_RESPONSE = 7,
     INVALID_HOTSPOT_CREDENTIALS = 8,
-    UNRECOGNIZED_RESPONSE_ERROR = 9
+    UNRECOGNIZED_RESPONSE_ERROR = 9,
+    INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG = 10,
+    INVALID_NEW_SOFT_AP_CONFIG = 11,
+    INVALID_WIFI_AP_CONFIG = 12,
   };
 
   class Factory {
@@ -59,7 +60,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
         multidevice::RemoteDeviceRef device_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
-        TetherHostResponseRecorder* tether_host_response_recorder,
         bool setup_required);
 
     static void SetFactoryForTesting(Factory* factory);
@@ -70,7 +70,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
         multidevice::RemoteDeviceRef devices_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
-        TetherHostResponseRecorder* tether_host_response_recorder,
         bool setup_required) = 0;
 
    private:
@@ -104,7 +103,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
       multidevice::RemoteDeviceRef device_to_connect,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
-      TetherHostResponseRecorder* tether_host_response_recorder,
       bool setup_required);
 
   // MessageTransferOperation:
@@ -131,6 +129,11 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   FRIEND_TEST_ALL_PREFIXES(ConnectTetheringOperationTest, UnknownError);
   FRIEND_TEST_ALL_PREFIXES(ConnectTetheringOperationTest, ProvisioningFailed);
   FRIEND_TEST_ALL_PREFIXES(ConnectTetheringOperationTest,
+                           InvalidActiveExistingSoftApConfig);
+  FRIEND_TEST_ALL_PREFIXES(ConnectTetheringOperationTest,
+                           InvalidNewSoftApConfig);
+  FRIEND_TEST_ALL_PREFIXES(ConnectTetheringOperationTest, InvalidWifiApConfig);
+  FRIEND_TEST_ALL_PREFIXES(ConnectTetheringOperationTest,
                            NotifyConnectTetheringRequest);
   FRIEND_TEST_ALL_PREFIXES(ConnectTetheringOperationTest,
                            GetMessageTimeoutSeconds);
@@ -148,9 +151,7 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   static const uint32_t kSetupRequiredResponseTimeoutSeconds;
 
   multidevice::RemoteDeviceRef remote_device_;
-  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
-      tether_host_response_recorder_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
   int connect_message_sequence_number_ = -1;
   bool setup_required_;
 

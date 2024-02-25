@@ -13,6 +13,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_view.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
@@ -53,8 +54,7 @@ void TimeTrayItemView::UpdateLabelOrImageViewColor(bool active) {
   time_view_->SetDateViewColorId(color_id);
 }
 
-const char* TimeTrayItemView::GetClassName() const {
-  return "TimeTrayItemView";
-}
+BEGIN_METADATA(TimeTrayItemView)
+END_METADATA
 
 }  // namespace ash

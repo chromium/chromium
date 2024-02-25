@@ -16,12 +16,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -30,6 +33,7 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -39,7 +43,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/structured/event_logging_features.h"
-#include "components/metrics/structured/structured_events.h"
+// TODO(crbug.com/1125897): Enable gn check once it handles conditional includes
+#include "components/metrics/structured/structured_events.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_client.h"  // nogncheck
 #endif
 
 namespace {
@@ -105,35 +111,57 @@ void PwaInstallView::UpdateImpl() {
     return;
   }
 
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser) {
+    return;
+  }
+
   SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents)));
 
   auto* manager = webapps::AppBannerManager::FromWebContents(web_contents);
+  auto* web_app_install_dialog_coordinator =
+      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser);
+
   // May not be present e.g. in incognito mode.
   if (!manager) {
     return;
   }
 
+  // This currently relies on this method being called synchronously from
+  // BrowserView::OnInstallableWebAppStatusUpdated, which is called
+  // synchronously from the AppBannerManager when installability changes.
+  // Ideally this data is passed through the observer, but because views code
+  // has to be isolated here, it's difficult to pass an argument along. The
+  // right way to 'clean this up' is unclear, but for now it is safe.
   bool is_probably_promotable = manager->IsProbablyPromotableWebApp();
   if (is_probably_promotable && manager->MaybeConsumeInstallAnimation()) {
-    AnimateIn(absl::nullopt);
+    AnimateIn(std::nullopt);
   } else {
     ResetSlideAnimation(false);
   }
 
-  SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
+  SetVisible(is_probably_promotable ||
+             web_app_install_dialog_coordinator->IsShowing());
+
+  // See above about safety of this call.
+  std::optional<webapps::WebAppBannerData> data =
+      manager->GetCurrentWebAppBannerData();
 
   // Only try to show IPH when |PwaInstallView.IsDrawn|. This catches the case
   // that view is set to visible but not drawn in fullscreen mode.
-  if (is_probably_promotable && ShouldShowIph(web_contents, manager) &&
+  if (data && is_probably_promotable && ShouldShowIph(web_contents, *data) &&
       IsDrawn()) {
-    const bool iph_shown = browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHDesktopPwaInstallFeature,
-        base::BindOnce(&PwaInstallView::OnIphClosed,
-                       weak_ptr_factory_.GetWeakPtr()),
-        webapps::AppBannerManager::GetInstallableWebAppName(web_contents));
-    if (iph_shown) {
+    user_education::FeaturePromoParams params(
+        feature_engagement::kIPHDesktopPwaInstallFeature);
+    params.close_callback = base::BindOnce(
+        &PwaInstallView::OnIphClosed, weak_ptr_factory_.GetWeakPtr(), *data);
+    params.body_params =
+        webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
+    const user_education::FeaturePromoResult iph_result =
+        browser_->window()->MaybeShowFeaturePromo(std::move(params));
+    if (iph_result) {
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;
       SetHighlighted(true);
@@ -141,7 +169,7 @@ void PwaInstallView::UpdateImpl() {
   }
 }
 
-void PwaInstallView::OnIphClosed() {
+void PwaInstallView::OnIphClosed(const webapps::WebAppBannerData& data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // IPH is also closed when the install button is clicked. This does not
   // count as an 'ignore'. The button should remain highlighted and will
@@ -154,16 +182,13 @@ void PwaInstallView::OnIphClosed() {
   if (!web_contents) {
     return;
   }
-  auto* manager = webapps::AppBannerManager::FromWebContents(web_contents);
-  if (!manager) {
-    return;
-  }
+
   PrefService* prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
 
-  web_app::RecordInstallIphIgnored(
-      prefs, web_app::GenerateAppIdFromManifest(manager->manifest()),
+  web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(prefs).RecordIgnore(
+      web_app::GenerateAppIdFromManifestId(data.manifest_id),
       base::Time::Now());
 }
 
@@ -171,35 +196,51 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   base::RecordAction(base::UserMetricsAction("PWAInstallIcon"));
 
   // Close PWA install IPH if it is showing.
-  chrome::PwaInProductHelpState iph_state =
-      chrome::PwaInProductHelpState::kNotShown;
+  web_app::PwaInProductHelpState iph_state =
+      web_app::PwaInProductHelpState::kNotShown;
   install_icon_clicked_after_iph_shown_ = browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPHDesktopPwaInstallFeature);
   if (install_icon_clicked_after_iph_shown_) {
-    iph_state = chrome::PwaInProductHelpState::kShown;
+    iph_state = web_app::PwaInProductHelpState::kShown;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    cros_events::AppDiscovery_Browser_OmniboxInstallIconClicked()
-        .SetIPHShown(install_icon_clicked_after_iph_shown_)
-        .Record();
+    metrics::structured::StructuredMetricsClient::Record(
+        std::move(cros_events::AppDiscovery_Browser_OmniboxInstallIconClicked()
+                      .SetIPHShown(install_icon_clicked_after_iph_shown_)));
   }
 #endif
 
   web_app::CreateWebAppFromManifest(
       GetWebContents(),
-      /*bypass_service_worker_check=*/false,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, base::DoNothing(),
       iph_state);
 }
 
 views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
-  views::BubbleDialogDelegate* bubble = PWAConfirmationBubbleView::GetBubble();
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser) {
+    return nullptr;
+  }
+
+  auto* dialog_coordinator =
+      web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(browser);
+  if (!dialog_coordinator) {
+    return nullptr;
+  }
+
+  auto* bubble = dialog_coordinator->GetBubbleView();
   // Only return the active bubble if it's anchored to `this`. (This check takes
   // the more generic approach of verifying that it's the same widget as to
   // avoid depending too heavily on the exact details of how anchoring works.)
-  if (bubble && (bubble->GetAnchorView()->GetWidget() == GetWidget())) {
+  if (bubble && bubble->GetAnchorView() &&
+      (bubble->GetAnchorView()->GetWidget() == GetWidget())) {
     return bubble;
   }
 
@@ -213,21 +254,23 @@ const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
 }
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
-                                   webapps::AppBannerManager* manager) {
-  if (blink::IsEmptyManifest(manager->manifest()) ||
-      !manager->manifest().id.is_valid()) {
+                                   const webapps::WebAppBannerData& data) {
+  if (blink::IsEmptyManifest(data.manifest()) || !data.manifest_id.is_valid()) {
     return false;
   }
-  web_app::AppId app_id =
-      web_app::GenerateAppIdFromManifest(manager->manifest());
+  webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(data.manifest_id);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto score = site_engagement::SiteEngagementService::Get(profile)->GetScore(
       web_contents->GetVisibleURL());
+
   return score > kIphSiteEngagementThresholdParam.Get() &&
-         web_app::ShouldShowIph(profile->GetPrefs(), app_id);
+         !web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(
+              profile->GetPrefs())
+              .IsBlockedByGuardrails(app_id);
 }
 
-BEGIN_METADATA(PwaInstallView, PageActionIconView)
+BEGIN_METADATA(PwaInstallView)
 END_METADATA

@@ -26,29 +26,6 @@ group("jni_headers") {
   ]
 }
 
-android_library("unit_device_javatests") {
-  testonly = true
-  resources_package = "org.chromium.chrome.browser.keyboard_accessory"
-
-  sources = [ "javatests/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutViewTest.java" ]
-  deps = [
-    ":test_resources",
-    "internal:internal_java",
-    "public:public_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//components/autofill/android:main_autofill_java",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/android_deps:material_design_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/junit:junit",
-    "//ui/android:ui_java_test_support",
-    "//ui/android:ui_no_recycler_view_java",
-  ]
-}
-
 android_library("test_java") {
   testonly = true
 
@@ -61,7 +38,6 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/PasswordGenerationIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewTest.java",
-    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryModernViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryTestHelper.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetRenderTest.java",
@@ -72,9 +48,7 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessoryIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessorySheetViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessoryIntegrationTest.java",
-    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetModernViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetViewTest.java",
-    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabTestHelper.java",
   ]
 
   deps = [
@@ -95,6 +69,7 @@ android_library("test_java") {
     "//chrome/browser/password_manager/android:test_support_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/touch_to_fill/password_manager/password_generation/android:test_support_java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/layouts/test:java",
     "//chrome/browser/ui/messages/android:java",
@@ -103,6 +78,7 @@ android_library("test_java") {
     "//components/autofill/core/common/mojom:mojo_types_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
@@ -148,11 +124,11 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryControllerTest.java",
+    "junit/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AddressAccessorySheetControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessorySheetControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetControllerTest.java",
-    "junit/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutControllerTest.java",
   ]
 
   deps = [
@@ -160,7 +136,6 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_util_java",
     "//chrome/android/features/keyboard_accessory/public:public_java",
@@ -170,6 +145,7 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/autofill/android:autofill_java",
@@ -183,8 +159,10 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",

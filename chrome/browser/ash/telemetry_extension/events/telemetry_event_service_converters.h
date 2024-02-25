@@ -25,7 +25,7 @@ namespace unchecked {
 crosapi::mojom::UInt32ValuePtr LegacyUncheckedConvertPtr(
     cros_healthd::mojom::NullableUint32Ptr input);
 
-absl::optional<uint32_t> UncheckedConvertPtr(
+std::optional<uint32_t> UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint32Ptr input);
 
 crosapi::mojom::TelemetryAudioJackEventInfoPtr UncheckedConvertPtr(

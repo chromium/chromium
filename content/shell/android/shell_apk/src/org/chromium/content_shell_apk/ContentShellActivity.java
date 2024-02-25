@@ -24,9 +24,7 @@ import org.chromium.content_shell.ShellManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 
-/**
- * Activity for managing the Content Shell.
- */
+/** Activity for managing the Content Shell. */
 public class ContentShellActivity extends Activity {
 
     private static final String TAG = "ContentShellActivity";
@@ -79,22 +77,25 @@ public class ContentShellActivity extends Activity {
         }
 
         if (CommandLine.getInstance().hasSwitch(RUN_WEB_TESTS_SWITCH)) {
-            BrowserStartupController.getInstance().startBrowserProcessesSync(
-                    LibraryProcessType.PROCESS_BROWSER, false, false);
+            BrowserStartupController.getInstance()
+                    .startBrowserProcessesSync(LibraryProcessType.PROCESS_BROWSER, false, false);
         } else {
-            BrowserStartupController.getInstance().startBrowserProcessesAsync(
-                    LibraryProcessType.PROCESS_BROWSER, true, false,
-                    new BrowserStartupController.StartupCallback() {
-                        @Override
-                        public void onSuccess() {
-                            finishInitialization(savedInstanceState);
-                        }
+            BrowserStartupController.getInstance()
+                    .startBrowserProcessesAsync(
+                            LibraryProcessType.PROCESS_BROWSER,
+                            true,
+                            false,
+                            new BrowserStartupController.StartupCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    finishInitialization(savedInstanceState);
+                                }
 
-                        @Override
-                        public void onFailure() {
-                            initializationFailed();
-                        }
-                    });
+                                @Override
+                                public void onFailure() {
+                                    initializationFailed();
+                                }
+                            });
         }
     }
 
@@ -106,8 +107,7 @@ public class ContentShellActivity extends Activity {
             shellUrl = ShellManager.DEFAULT_SHELL_URL;
         }
 
-        if (savedInstanceState != null
-                && savedInstanceState.containsKey(ACTIVE_SHELL_URL_KEY)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(ACTIVE_SHELL_URL_KEY)) {
             shellUrl = savedInstanceState.getString(ACTIVE_SHELL_URL_KEY);
         }
         mShellManager.launchShell(shellUrl);
@@ -115,9 +115,11 @@ public class ContentShellActivity extends Activity {
 
     private void initializationFailed() {
         Log.e(TAG, "ContentView initialization failed.");
-        Toast.makeText(ContentShellActivity.this,
-                R.string.browser_process_initialization_failed,
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+                        ContentShellActivity.this,
+                        R.string.browser_process_initialization_failed,
+                        Toast.LENGTH_SHORT)
+                .show();
         finish();
     }
 
@@ -225,5 +227,4 @@ public class ContentShellActivity extends Activity {
         Shell shell = getActiveShell();
         return shell != null ? shell.getWebContents() : null;
     }
-
 }

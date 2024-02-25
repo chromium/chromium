@@ -16,6 +16,8 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import kotlin.Unit;
+
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -29,8 +31,6 @@ import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
-import kotlin.Unit;
-
 /**
  * This test creates a baseline profile for chrome. See
  * https://developer.android.com/topic/performance/baselineprofiles/overview
@@ -43,20 +43,21 @@ public class BaselineProfileTest {
     private static final String TEST_PAGE =
             "/chrome/test/android/javatests/src/org/chromium/chrome/browser/perf/test.html";
     private static final String CCT_SESSION_EXTRA = "android.support.customtabs.extra.SESSION";
-    private static final String PACKAGE_NAME_ARG = "org.chromium.chrome.test.pagecontroller.rules."
-            + "ChromeUiApplicationTestRule.PackageUnderTest";
+    private static final String PACKAGE_NAME_ARG =
+            "org.chromium.chrome.test.pagecontroller.rules."
+                    + "ChromeUiApplicationTestRule.PackageUnderTest";
 
     @ClassRule
     public static EmbeddedTestServerRule sEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
-    @Rule
-    public BaselineProfileRule mBaselineProfileRule = new BaselineProfileRule();
+    @Rule public BaselineProfileRule mBaselineProfileRule = new BaselineProfileRule();
     private String mPackageName;
 
     @Before
     public void setUp() {
-        mPackageName = InstrumentationRegistry.getArguments().getString(
-                PACKAGE_NAME_ARG, "org.chromium.chrome");
+        mPackageName =
+                InstrumentationRegistry.getArguments()
+                        .getString(PACKAGE_NAME_ARG, "org.chromium.chrome");
     }
 
     @Test
@@ -70,8 +71,7 @@ public class BaselineProfileTest {
                 /* stableIterations= */ 3,
                 /* outputFilePrefix= */ null,
                 /* includeInStartupProfile= */ true,
-                /* profileBlock= */
-                scope -> {
+                /* profileBlock= */ scope -> {
                     final Intent cct_intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     cct_intent.addFlags(
                             Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_TRACING_GRAPHICS_MODEL_H_
 
 #include <map>
-#include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -18,6 +16,7 @@
 namespace arc {
 
 class ArcTracingModel;
+class PresentFramesTracer;
 
 // Graphic buffers events model. It is build from the generic |ArcTracingModel|
 // and contains only events that describe life-cycle of graphics buffers across
@@ -26,7 +25,6 @@ class ArcTracingModel;
 // view, which is defined by Activity name and Android task id.
 // View events are kept separately per individual view and each view may own
 // multiple graphics buffers. Following is the structure of events:
-// |android_top_level_| - top level rendering events from Android
 // |chrome_top_level_| - top level rendering events from Chrome.
 // |view_buffers_| - map views to buffer events.
 // -- view1
@@ -40,7 +38,12 @@ class ArcTracingModel;
 // frame, junk or another problem with rendering.
 class ArcTracingGraphicsModel {
  public:
-  enum class BufferEventType {
+  // 'Obsolete' indicates a constant is only here to document legacy traces,
+  // especially those in test data. Such items are not included in new traces.
+  // When adding or editing lines, prefer an actual "= ###" rather than rely
+  // on implicit incrementing, and do not change constant values once added.
+  // clang-format off
+  enum class EventType {
     kNone,  // 0
 
     // Surface flinger events.
@@ -53,54 +56,58 @@ class ArcTracingGraphicsModel {
     kBufferFillJank,                 // 106,
 
     // Wayland exo events
-    kExoSurfaceAttach = 200,  // 200
-    kExoProduceResource,      // 201
-    kExoBound,                // 202
-    kExoPendingQuery,         // 203
-    kExoReleased,             // 204
-    kExoJank,                 // 205
-    kExoSurfaceCommit,        // 206
+    kExoSurfaceAttach     = 200,  // Obsolete
+    kExoProduceResource   = 201,  // Obsolete
+    kExoBound             = 202,  // Obsolete
+    kExoPendingQuery      = 203,  // Obsolete
+    kExoReleased          = 204,  // Obsolete
+    kExoJank              = 205,
+    kExoSurfaceCommit     = 206,
+    kExoSurfaceCommitJank = 207,
+    kExoLastEvent         = kExoSurfaceCommitJank,
 
     // Chrome events
-    kChromeBarrierOrder = 300,  // 300
-    kChromeBarrierFlush,        // 301
+    kChromeBarrierOrder = 300,  // Obsolete
+    kChromeBarrierFlush = 301,  // Obsolete
 
     // Android Surface Flinger top level events.
-    kSurfaceFlingerVsyncHandler = 400,  // 400
-    kSurfaceFlingerInvalidationStart,   // 401
-    kSurfaceFlingerInvalidationDone,    // 402
-    kSurfaceFlingerCompositionStart,    // 403
-    kSurfaceFlingerCompositionDone,     // 404
-    kSurfaceFlingerCompositionJank,     // 405,
-    kVsyncTimestamp,                    // 406,
+    kSurfaceFlingerVsyncHandler      = 400,  // Obsolete
+    kSurfaceFlingerInvalidationStart = 401,
+    kSurfaceFlingerInvalidationDone  = 402,
+    kSurfaceFlingerCompositionStart  = 403,
+    kSurfaceFlingerCompositionDone   = 404,
+    kSurfaceFlingerCompositionJank   = 405,  // Obsolete
+    kVsyncTimestamp                  = 406,  // Obsolete
 
     // Chrome OS top level events.
-    kChromeOSDraw = 500,        // 500
-    kChromeOSSwap,              // 501
-    kChromeOSWaitForAck,        // 502
-    kChromeOSPresentationDone,  // 503
-    kChromeOSSwapDone,          // 504
-    kChromeOSJank,              // 505,
+    kChromeOSDraw             = 500,  // Obsolete
+    kChromeOSSwap             = 501,  // Obsolete
+    kChromeOSWaitForAck       = 502,  // Obsolete
+    kChromeOSPresentationDone = 503,
+    kChromeOSSwapDone         = 504,
+    kChromeOSJank             = 505,  // Obsolete
+    kChromeOSPerceivedJank    = 506,
+    kChromeOSSwapJank         = 507,
+    kChromeOSLastEvent        = kChromeOSSwapJank,
 
     // Custom event.
-    kCustomEvent = 600,
+    kCustomEvent = 600,  // Obsolete
 
     // Input events
-    kInputEventCreated = 700,      // 700
-    kInputEventWaylandDispatched,  // 701
-    kInputEventDeliverStart,       // 702
-    kInputEventDeliverEnd,         // 703
+    kInputEventCreated           = 700,  // Obsolete
+    kInputEventWaylandDispatched = 701,  // Obsolete
+    kInputEventDeliverStart      = 702,  // Obsolete
+    kInputEventDeliverEnd        = 703,  // Obsolete
   };
+  // clang-format on
 
   struct BufferEvent {
-    BufferEvent(BufferEventType type, int64_t timestamp);
-    BufferEvent(BufferEventType type,
-                int64_t timestamp,
-                const std::string& content);
+    BufferEvent(EventType type, int64_t timestamp);
+    BufferEvent(EventType type, int64_t timestamp, const std::string& content);
 
     bool operator==(const BufferEvent& other) const;
 
-    BufferEventType type;
+    EventType type;
     uint64_t timestamp;
     std::string content;
   };
@@ -153,17 +160,9 @@ class ArcTracingGraphicsModel {
 
   ~ArcTracingGraphicsModel();
 
-  // Trims container events by |trim_timestamp|. All global events are discarded
-  // prior to |trim_timestamp|. Buffer events are discarded prior to
-  // |trim_timestamp| and on and after until event from |start_types| is
-  // detected.
-  static void TrimEventsContainer(
-      ArcTracingGraphicsModel::EventsContainer* container,
-      int64_t trim_timestamp,
-      const std::set<ArcTracingGraphicsModel::BufferEventType>& start_types);
-
   // Builds the model from the common tracing model |common_model|.
-  bool Build(const ArcTracingModel& common_model);
+  bool Build(const ArcTracingModel& common_model,
+             const PresentFramesTracer& present_frames);
 
   // Serializes the model to |base::Value::Dict|, this can be passed to
   // javascript for rendering.
@@ -185,13 +184,7 @@ class ArcTracingGraphicsModel {
 
   const ViewMap& view_buffers() const { return view_buffers_; }
 
-  const EventsContainer& android_top_level() const {
-    return android_top_level_;
-  }
-
   const EventsContainer& chrome_top_level() const { return chrome_top_level_; }
-
-  const EventsContainer& input() const { return input_; }
 
   ArcSystemModel& system_model() { return system_model_; }
   const ArcSystemModel& system_model() const { return system_model_; }
@@ -213,20 +206,9 @@ class ArcTracingGraphicsModel {
   // Resets whole model.
   void Reset();
 
-  // Trims events before first VSYNC event. ARC tracing starts delayed in
-  // comparison with Chrome, memory and CPU events. That makes empty area for
-  // graphics buffer confusing.
-  void VsyncTrim();
-
-  // Extracts task id from the Chrome buffer name. Returns -1 if task id cannot
-  // be extracted.
-  int GetTaskIdFromBufferName(const std::string& chrome_buffer_name) const;
-
   ViewMap view_buffers_;
   // To avoid overlapping events are stored interlaced.
   EventsContainer chrome_top_level_;
-  EventsContainer android_top_level_;
-  EventsContainer input_;
   // Total duration of this model.
   uint32_t duration_ = 0;
   // Title of the traced app.
@@ -238,16 +220,13 @@ class ArcTracingGraphicsModel {
   // Timestamp of tracing.
   base::Time timestamp_;
 
-  // Map Chrome buffer id to task id.
-  std::map<std::string, int> chrome_buffer_id_to_task_id_;
   // CPU event model.
   ArcSystemModel system_model_;
   // Allows to have model incomplete, used in overview and in tests.
   bool skip_structure_validation_ = false;
 };
 
-std::ostream& operator<<(std::ostream& os,
-                         ArcTracingGraphicsModel::BufferEventType);
+std::ostream& operator<<(std::ostream& os, ArcTracingGraphicsModel::EventType);
 
 }  // namespace arc
 

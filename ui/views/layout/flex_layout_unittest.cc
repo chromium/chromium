@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -35,17 +35,17 @@ namespace views {
 
 namespace {
 
-using absl::optional;
 using gfx::Insets;
 using gfx::Point;
 using gfx::Rect;
 using gfx::Size;
+using std::optional;
 
 class MockView : public View {
+  METADATA_HEADER(MockView, View)
+
  public:
   enum class SizeMode { kUsePreferredSize, kFixedArea };
-
-  METADATA_HEADER(MockView);
 
   void SetMinimumSize(const Size& minimum_size) {
     minimum_size_ = minimum_size;
@@ -89,7 +89,7 @@ class MockView : public View {
   SizeMode size_mode_ = SizeMode::kUsePreferredSize;
 };
 
-BEGIN_METADATA(MockView, View)
+BEGIN_METADATA(MockView)
 ADD_PROPERTY_METADATA(gfx::Size, MaximumSize)
 END_METADATA
 
@@ -366,9 +366,9 @@ TEST_F(FlexLayoutTest, Layout_VisibilitySetBeforeInstall) {
   // away, we need to create our own for this test.
   std::unique_ptr<views::View> host = std::make_unique<views::View>();
   View* child1 =
-      AddChild(host.get(), Size(10, 10), absl::optional<Size>(), false);
+      AddChild(host.get(), Size(10, 10), std::optional<Size>(), false);
   View* child2 =
-      AddChild(host.get(), Size(10, 10), absl::optional<Size>(), true);
+      AddChild(host.get(), Size(10, 10), std::optional<Size>(), true);
   host->SetLayoutManager(std::make_unique<FlexLayout>());
 
   test::RunScheduledLayout(host.get());
@@ -386,8 +386,8 @@ TEST_F(FlexLayoutTest, Layout_VisibilitySetBeforeInstall) {
 TEST_F(FlexLayoutTest, Layout_VisibilitySetAfterInstall) {
   // Unlike the last test, we'll use the built-in host and layout manager since
   // they're already set up.
-  View* child1 = AddChild(Size(10, 10), absl::optional<Size>(), false);
-  View* child2 = AddChild(Size(10, 10), absl::optional<Size>(), true);
+  View* child1 = AddChild(Size(10, 10), std::optional<Size>(), false);
+  View* child2 = AddChild(Size(10, 10), std::optional<Size>(), true);
 
   test::RunScheduledLayout(host_.get());
   EXPECT_FALSE(child1->GetVisible());
@@ -496,7 +496,7 @@ TEST_F(FlexLayoutTest, Layout_Exlcude) {
   View* child2 = AddChild(kChild2Size);
   const View* child3 = AddChild(kChild3Size);
 
-  layout_->SetChildViewIgnoredByLayout(child2, true);
+  child2->SetProperty(kViewIgnoredByLayoutKey, true);
   child2->SetBounds(3, 3, 3, 3);
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(Rect(3, 3, 3, 3), child2->bounds());
@@ -504,7 +504,7 @@ TEST_F(FlexLayoutTest, Layout_Exlcude) {
   EXPECT_EQ(Rect(18, 5, 17, 13), child3->bounds());
   EXPECT_EQ(Size(44, 25), host_->GetPreferredSize());
 
-  layout_->SetChildViewIgnoredByLayout(child2, false);
+  child2->SetProperty(kViewIgnoredByLayoutKey, false);
   test::RunScheduledLayout(host_.get());
   std::vector<Rect> expected = {Rect(6, 5, 12, 10), Rect(18, 5, 13, 11),
                                 Rect(31, 5, 17, 13)};
@@ -3278,6 +3278,121 @@ TEST_F(FlexLayoutTest, IndividualCrossAxisAlignmentInVerticalLayoutTest) {
   EXPECT_EQ(10, v5->width());
 }
 
+TEST_F(FlexLayoutTest, PreferredSizeMutationTest) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetIgnoreDefaultMainAxisMargins(true);
+
+  // We want to specialize the maximum size and have different sizes within the
+  // constraints of the scene
+  const FlexSpecification custom_spec(
+      base::BindRepeating([](const View* view, const SizeBounds& maximum_size) {
+        // This custom rule looks strange, but it is constrained by the current
+        // multi-line label using GetPreferredSize(const SizeBounds&
+        // available_size). eg: HelpBubbleView. This is indeed the case. Here is
+        // a simple simulation.
+        return gfx::Size(maximum_size.width() >= 300
+                             ? 300
+                             : maximum_size.width().min_of(250),
+                         24);
+      }));
+
+  View* const v1 = AddChild(gfx::Size(10, 24));
+  v1->SetProperty(kFlexBehaviorKey, custom_spec.WithOrder(2));
+  View* const v2 = AddChild(gfx::Size(24, 24));
+  v2->SetProperty(kFlexBehaviorKey,
+                  kUnbounded.WithAlignment(views::LayoutAlignment::kEnd));
+
+  EXPECT_EQ(gfx::Size(324, 24), host_->GetPreferredSize({}));
+
+  host_->SizeToPreferredSize();
+  std::vector<Rect> expected = {{0, 0, 300, 24}, {300, 0, 24, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+
+  host_->SetSize({300, 24});
+  expected = {{0, 0, 250, 24}, {276, 0, 24, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+}
+
+TEST_F(FlexLayoutTest, PreferredSizeMutationTest2) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetIgnoreDefaultMainAxisMargins(true);
+
+  // We want to specialize the maximum size and have different sizes within the
+  // constraints of the scene
+  const FlexSpecification custom_spec(
+      base::BindRepeating([](const View* view, const SizeBounds& maximum_size) {
+        // This custom rule looks strange, but it is constrained by the current
+        // multi-line label using GetPreferredSize(const SizeBounds&
+        // available_size). eg: HelpBubbleView. This is indeed the case. Here is
+        // a simple simulation.
+        return gfx::Size(maximum_size.width() >= 300
+                             ? 300
+                             : maximum_size.width().min_of(250),
+                         24);
+      }));
+
+  View* const v1 = AddChild(gfx::Size(10, 24));
+  v1->SetProperty(kFlexBehaviorKey, custom_spec.WithOrder(2));
+  View* const v2 = AddChild(gfx::Size(24, 24));
+  v2->SetProperty(kFlexBehaviorKey,
+                  kUnbounded.WithAlignment(views::LayoutAlignment::kCenter));
+  View* const v3 = AddChild(gfx::Size(10, 24));
+  v3->SetProperty(kFlexBehaviorKey, custom_spec.WithOrder(2));
+
+  EXPECT_EQ(gfx::Size(624, 24), host_->GetPreferredSize({}));
+
+  host_->SizeToPreferredSize();
+  std::vector<Rect> expected = {
+      {0, 0, 300, 24}, {300, 0, 24, 24}, {324, 0, 300, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+
+  // Test using critical value 300
+  host_->SetSize({300, 24});
+  expected = {{0, 0, 138, 24}, {138, 0, 24, 24}, {162, 0, 138, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+
+  // Test using critical value 524, It comes from the critical value 250+250+24
+  // Values in [524, 622.5) should behave the same.
+  //
+  // Why is it 622.5? Because when the space less than 1.5 (300+300+24-1.5) is
+  // evenly distributed, the available space of v1 will become 300 due to
+  // rounding.
+  host_->SetSize({524, 24});
+  expected = {{0, 0, 250, 24}, {250, 0, 24, 24}, {274, 0, 250, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+
+  // Test using critical value 623
+  host_->SetSize({623, 24});
+  expected = {{0, 0, 300, 24}, {324, 0, 24, 24}, {373, 0, 250, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+}
+
+TEST_F(FlexLayoutTest, ZeroPreferedSizeView) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 5))
+      .SetIgnoreDefaultMainAxisMargins(true);
+
+  View* const v1 = AddChild(gfx::Size(10, 24));
+  View* const v2 = AddChild(gfx::Size(0, 24));
+  v2->SetProperty(
+      kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
+  View* const v3 = AddChild(gfx::Size(24, 24));
+
+  EXPECT_EQ(gfx::Size(44, 24), host_->GetPreferredSize({}));
+
+  host_->SizeToPreferredSize();
+  std::vector<Rect> expected = {{0, 0, 10, 24}, {0, 0, 0, 0}, {20, 0, 24, 24}};
+  EXPECT_EQ(expected, GetChildBounds());
+  EXPECT_TRUE(v1->GetVisible());
+  EXPECT_FALSE(v2->GetVisible());
+  EXPECT_TRUE(v3->GetVisible());
+}
+
 // Cross-axis Fit Tests --------------------------------------------------------
 
 // Tests for cross-axis alignment that checks three different conditions:
@@ -3314,7 +3429,7 @@ class FlexLayoutCrossAxisFitTest : public FlexLayoutTest {
       gfx::Insets::TLBR(6, 0, 2, 0), gfx::Insets::TLBR(10, 0, 5, 0),
       gfx::Insets::TLBR(6, 0, 2, 0)};
 
-  std::vector<View*> child_views_;
+  std::vector<raw_ptr<View, VectorExperimental>> child_views_;
 };
 
 // static
@@ -3402,10 +3517,9 @@ class NestedFlexLayoutTest : public FlexLayoutTest {
     }
   }
 
-  View* AddGrandchild(
-      size_t child_index,
-      const gfx::Size& preferred,
-      const absl::optional<gfx::Size>& minimum = absl::nullopt) {
+  View* AddGrandchild(size_t child_index,
+                      const gfx::Size& preferred,
+                      const std::optional<gfx::Size>& minimum = std::nullopt) {
     return AddChild(children_[child_index - 1], preferred, minimum);
   }
 
@@ -3420,7 +3534,7 @@ class NestedFlexLayoutTest : public FlexLayoutTest {
   }
 
  private:
-  std::vector<FlexLayout*> layouts_;
+  std::vector<raw_ptr<FlexLayout, VectorExperimental>> layouts_;
   View::Views children_;
 };
 

@@ -22,6 +22,8 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
@@ -79,6 +81,8 @@ class UniqueWidgetPtrT : public views::UniqueWidgetPtr {
 // A View that closes the Widget and exits the current message-loop when it
 // receives a mouse-release event.
 class ExitLoopOnRelease : public View {
+  METADATA_HEADER(ExitLoopOnRelease, View)
+
  public:
   explicit ExitLoopOnRelease(base::OnceClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {
@@ -100,8 +104,13 @@ class ExitLoopOnRelease : public View {
   base::OnceClosure quit_closure_;
 };
 
+BEGIN_METADATA(ExitLoopOnRelease)
+END_METADATA
+
 // A view that does a capture on ui::ET_GESTURE_TAP_DOWN events.
 class GestureCaptureView : public View {
+  METADATA_HEADER(GestureCaptureView, View)
+
  public:
   GestureCaptureView() = default;
 
@@ -120,8 +129,13 @@ class GestureCaptureView : public View {
   }
 };
 
+BEGIN_METADATA(GestureCaptureView)
+END_METADATA
+
 // A view that always processes all mouse events.
 class MouseView : public View {
+  METADATA_HEADER(MouseView, View)
+
  public:
   MouseView() = default;
 
@@ -162,9 +176,14 @@ class MouseView : public View {
   int pressed_ = 0;
 };
 
+BEGIN_METADATA(MouseView)
+END_METADATA
+
 // A View that shows a different widget, sets capture on that widget, and
 // initiates a nested message-loop when it receives a mouse-press event.
 class NestedLoopCaptureView : public View {
+  METADATA_HEADER(NestedLoopCaptureView, View)
+
  public:
   explicit NestedLoopCaptureView(Widget* widget)
       : run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
@@ -193,6 +212,9 @@ class NestedLoopCaptureView : public View {
 
   raw_ptr<Widget> widget_;
 };
+
+BEGIN_METADATA(NestedLoopCaptureView)
+END_METADATA
 
 ui::WindowShowState GetWidgetShowState(const Widget* widget) {
   // Use IsMaximized/IsMinimized/IsFullScreen instead of GetWindowPlacement
@@ -1420,7 +1442,7 @@ class CaptureLostTrackingWidget : public Widget {
 
  private:
   // Weak. Stores whether OnMouseCaptureLost has been invoked for this widget.
-  raw_ptr<CaptureLostState, AcrossTasksDanglingUntriaged> capture_lost_state_;
+  raw_ptr<CaptureLostState> capture_lost_state_;
 };
 
 }  // namespace
@@ -1485,12 +1507,6 @@ class WidgetCaptureTest : public DesktopWidgetTestInteractive {
     DesktopWidgetTestInteractive::SetUp();
     capture_state1_ = std::make_unique<CaptureLostState>();
     capture_state2_ = std::make_unique<CaptureLostState>();
-  }
-
-  void TearDown() override {
-    capture_state1_.reset();
-    capture_state2_.reset();
-    DesktopWidgetTestInteractive::TearDown();
   }
 
  private:
@@ -2031,12 +2047,12 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 
   void TearDown() override {
     if (deactivate_widget_)
-      deactivate_widget_->CloseNow();
+      deactivate_widget_.ExtractAsDangling()->CloseNow();
     DesktopWidgetTestInteractive::TearDown();
   }
 
  private:
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> deactivate_widget_ = nullptr;
+  raw_ptr<Widget> deactivate_widget_ = nullptr;
 };
 
 #if BUILDFLAG(IS_MAC)

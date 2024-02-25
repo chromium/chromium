@@ -5,6 +5,7 @@
 #ifndef NET_REPORTING_REPORTING_ENDPOINT_H_
 #define NET_REPORTING_REPORTING_ENDPOINT_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -29,13 +29,13 @@ struct NET_EXPORT ReportingEndpointGroupKey {
 
   ReportingEndpointGroupKey(
       const NetworkAnonymizationKey& network_anonymization_key,
-      absl::optional<base::UnguessableToken> reporting_source,
+      std::optional<base::UnguessableToken> reporting_source,
       const url::Origin& origin,
       const std::string& group_name);
 
   ReportingEndpointGroupKey(
       const ReportingEndpointGroupKey& other,
-      const absl::optional<base::UnguessableToken>& reporting_source);
+      const std::optional<base::UnguessableToken>& reporting_source);
 
   ReportingEndpointGroupKey(const ReportingEndpointGroupKey& other);
   ReportingEndpointGroupKey(ReportingEndpointGroupKey&& other);
@@ -58,7 +58,7 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // Source token for the document or worker which configured this endpoint, if
   // this was configured with the Reporting-Endpoints header. For endpoint
   // groups configured with the Report-To header, this will be nullopt.
-  absl::optional<base::UnguessableToken> reporting_source;
+  std::optional<base::UnguessableToken> reporting_source;
 
   // Origin that configured this endpoint group.
   url::Origin origin;

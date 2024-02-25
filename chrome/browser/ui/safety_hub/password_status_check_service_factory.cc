@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/affiliation_service_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/common/chrome_features.h"
@@ -40,7 +40,7 @@ PasswordStatusCheckServiceFactory::PasswordStatusCheckServiceFactory()
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(BulkLeakCheckServiceFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
 }
 
 PasswordStatusCheckServiceFactory::~PasswordStatusCheckServiceFactory() =
@@ -54,4 +54,9 @@ PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
   }
   return std::make_unique<PasswordStatusCheckService>(
       Profile::FromBrowserContext(context));
+}
+
+bool PasswordStatusCheckServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return base::FeatureList::IsEnabled(features::kSafetyHub);
 }

@@ -5,53 +5,60 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubSubpage} from 'chrome://os-settings/lazy_load.js';
-import {MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {CrLinkRowElement, CrToggleElement, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, PrivacyHubSensorSubpageUserAction, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMediaDevices} from '../fake_media_devices.js';
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
+import {clearBody} from '../utils.js';
 
+import {createFakeMetricsPrivate} from './privacy_hub_app_permission_test_util.js';
 import {DEVICE_METRICS_CONSENT_PREF_NAME, TestMetricsConsentBrowserProxy} from './test_metrics_consent_browser_proxy.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
 const USER_METRICS_CONSENT_PREF_NAME = 'metrics.user_consent';
 
-const PrivacyHubVersion = {
-  Future: 'Privacy Hub with future (after MVP) features.',
-  MVP: 'Privacy Hub with MVP features.',
-  Dogfood: 'Privacy Hub with dogfooded features (camera and microphone only).',
+const PRIVACY_HUB_PREFS = {
+  'ash': {
+    'user': {
+      'camera_allowed': {
+        value: true,
+      },
+      'microphone_allowed': {
+        value: true,
+      },
+    },
+  },
 };
 
-function overridedValues(privacyHubVersion: string) {
+const PrivacyHubVersion = {
+  V0: 'Only contains camera and microphone access control.',
+  V0AndLocation:
+      'Privacy Hub location access control along with the V0 features.',
+};
+
+function overriddenValues(privacyHubVersion: string) {
   switch (privacyHubVersion) {
-    case PrivacyHubVersion.Future: {
+    case PrivacyHubVersion.V0: {
       return {
         showPrivacyHubPage: true,
-        showPrivacyHubMVPPage: true,
-        showPrivacyHubFuturePage: true,
+        showPrivacyHubLocationControl: false,
         showSpeakOnMuteDetectionPage: true,
+        showAppPermissionsInsidePrivacyHub: false,
       };
     }
-    case PrivacyHubVersion.Dogfood: {
+    case PrivacyHubVersion.V0AndLocation: {
       return {
         showPrivacyHubPage: true,
-        showPrivacyHubMVPPage: false,
-        showPrivacyHubFuturePage: false,
+        showPrivacyHubLocationControl: true,
         showSpeakOnMuteDetectionPage: true,
-      };
-    }
-    case PrivacyHubVersion.MVP: {
-      return {
-        showPrivacyHubPage: true,
-        showPrivacyHubMVPPage: true,
-        showPrivacyHubFuturePage: false,
-        showSpeakOnMuteDetectionPage: true,
+        showAppPermissionsInsidePrivacyHub: false,
       };
     }
     default: {
@@ -67,7 +74,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(
   let mediaDevices: FakeMediaDevices;
 
   setup(async () => {
-    loadTimeData.overrideValues(overridedValues(privacyHubVersion));
+    loadTimeData.overrideValues(overriddenValues(privacyHubVersion));
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     if (enforceCameraLedFallback) {
@@ -78,16 +85,20 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     mediaDevices = new FakeMediaDevices();
     MediaDevicesProxy.setMediaDevicesForTesting(mediaDevices);
 
-    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
-    document.body.appendChild(privacyHubSubpage);
-    await waitAfterNextRender(privacyHubSubpage);
-    flush();
+    await createSubpage();
   });
 
   teardown(() => {
-    privacyHubSubpage.remove();
     Router.getInstance().resetRouteForTesting();
   });
+
+  async function createSubpage(): Promise<void> {
+    clearBody();
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
+    privacyHubSubpage.prefs = {...PRIVACY_HUB_PREFS};
+    document.body.appendChild(privacyHubSubpage);
+    flush();
+  }
 
   test('Deep link to camera toggle on privacy hub', async () => {
     const params = new URLSearchParams();
@@ -173,59 +184,55 @@ async function parametrizedPrivacyHubSubpageTestsuite(
   });
 
   test('Suggested content, pref disabled', () => {
-    privacyHubSubpage.remove();
-    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
-    document.body.appendChild(privacyHubSubpage);
-    flush();
-
     // The default state of the pref is disabled.
-    const suggestedContent =
-        privacyHubSubpage.shadowRoot!
-            .querySelector<SettingsToggleButtonElement>('#suggested-content');
+    const suggestedContent = privacyHubSubpage.shadowRoot!
+                                 .querySelector<SettingsToggleButtonElement>(
+                                     '#contentRecommendationsToggle');
     assert(suggestedContent);
     assertFalse(suggestedContent.checked);
   });
 
   test('Suggested content, pref enabled', () => {
-    // Update the backing pref to enabled.
     privacyHubSubpage.prefs = {
       'settings': {
         'suggested_content_enabled': {
           value: true,
         },
       },
+      ...PRIVACY_HUB_PREFS,
     };
 
     flush();
 
     // The checkbox reflects the updated pref state.
-    const suggestedContent =
-        privacyHubSubpage.shadowRoot!
-            .querySelector<SettingsToggleButtonElement>('#suggested-content');
+    const suggestedContent = privacyHubSubpage.shadowRoot!
+                                 .querySelector<SettingsToggleButtonElement>(
+                                     '#contentRecommendationsToggle');
     assert(suggestedContent);
     assertTrue(suggestedContent.checked);
   });
 
-  test('Deep link to Geolocation toggle on privacy hub', async () => {
+  test('Deep link to Geolocation area on privacy hub', async () => {
     const params = new URLSearchParams();
-    params.append('settingId', '1118');
+    const settingId = settingMojom.Setting.kGeolocationOnOff;
+    params.append('settingId', settingId.toString());
     Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
 
     flush();
 
-    const toggleElement =
-        privacyHubSubpage.shadowRoot!.querySelector('#geolocationToggle');
-    if (privacyHubVersion === PrivacyHubVersion.Dogfood) {
-      assertEquals(null, toggleElement);
-    } else {
-      assert(toggleElement);
+    const linkRowElement =
+        privacyHubSubpage.shadowRoot!.querySelector('#geolocationAreaLinkRow');
+    if (privacyHubVersion === PrivacyHubVersion.V0) {
+      assertEquals(null, linkRowElement);
+    } else if (privacyHubVersion === PrivacyHubVersion.V0AndLocation) {
+      assert(linkRowElement);
       const deepLinkElement =
-          toggleElement.shadowRoot!.querySelector('cr-toggle');
+          linkRowElement.shadowRoot!.querySelector('cr-icon-button');
       assert(deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          'Geolocation toggle should be focused for settingId=1118.');
+          `Geolocation link row should be focused for settingId=${settingId}`);
     }
   });
 
@@ -433,21 +440,8 @@ async function parametrizedPrivacyHubSubpageTestsuite(
   });
 
   test('Toggle camera button', async () => {
-    privacyHubSubpage.remove();
-    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
-    privacyHubSubpage.prefs = {
-      'ash': {
-        'user': {
-          'camera_allowed': {
-            value: true,
-          },
-        },
-      },
-    };
-    document.body.appendChild(privacyHubSubpage);
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate =
-        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+    chrome.metricsPrivate = fakeMetricsPrivate;
     flush();
 
     mediaDevices.addDevice('videoinput', 'Fake Camera');
@@ -500,22 +494,8 @@ async function parametrizedPrivacyHubSubpageTestsuite(
   });
 
   test('Toggle microphone button', async () => {
-    privacyHubSubpage.remove();
-    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
-    privacyHubSubpage.prefs = {
-      'ash': {
-        'user': {
-          'microphone_allowed': {
-            value: true,
-          },
-        },
-      },
-    };
-
-    document.body.appendChild(privacyHubSubpage);
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate =
-        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+    chrome.metricsPrivate = fakeMetricsPrivate;
     flush();
 
     mediaDevices.addDevice('audioinput', 'Fake Mic');
@@ -568,16 +548,11 @@ async function parametrizedPrivacyHubSubpageTestsuite(
   });
 
   test('Send HaTS messages', async () => {
-    privacyHubSubpage.remove();
-
     loadTimeData.overrideValues({
       isPrivacyHubHatsEnabled: true,
     });
-    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
 
-    document.body.appendChild(privacyHubSubpage);
-    await waitAfterNextRender(privacyHubSubpage);
-    flush();
+    await createSubpage();
 
     // Reset the callcounts here as the appendChild etc trigger one left page
     // call which makes the numbers on the asserts not very intuitive.
@@ -610,22 +585,403 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     assertEquals(
         1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
   });
+
+  test('Camera toggle initially force disabled', async () => {
+    const getCameraCrToggle = () =>
+        privacyHubSubpage.shadowRoot!.querySelector('#cameraToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
+
+    privacyHubBrowserProxy.cameraSwitchIsForceDisabled = true;
+
+    await createSubpage();
+
+    // There is no MediaDevice connected initially. Camera toggle should be
+    // disabled as no camera is connected.
+    assertTrue(getCameraCrToggle()!.disabled);
+
+    // Add a camera.
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await waitAfterNextRender(privacyHubSubpage);
+
+    // Camera toggle should remain disabled.
+    assertTrue(getCameraCrToggle()!.disabled);
+
+    mediaDevices.popDevice();
+  });
+
+  test('Change force-disable-camera-switch', async () => {
+    const getCameraCrToggle = () =>
+        privacyHubSubpage.shadowRoot!.querySelector('#cameraToggle')!
+            .shadowRoot!.querySelector('cr-toggle');
+
+    // Add a camera so the camera toggle is enabled.
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await waitAfterNextRender(privacyHubSubpage);
+    assertFalse(getCameraCrToggle()!.disabled);
+
+    // Force disable camera toggle.
+    webUIListenerCallback('force-disable-camera-switch', true);
+    await waitAfterNextRender(privacyHubSubpage);
+    assertTrue(getCameraCrToggle()!.disabled);
+
+    // Stop Force disabling camera toggle.
+    webUIListenerCallback('force-disable-camera-switch', false);
+    await waitAfterNextRender(privacyHubSubpage);
+    assertFalse(getCameraCrToggle()!.disabled);
+
+    // Remove the last camera should again disable the camera toggle.
+    mediaDevices.popDevice();
+    await waitAfterNextRender(privacyHubSubpage);
+    assertTrue(getCameraCrToggle()!.disabled);
+  });
 }
 
-suite(
-    '<settings-privacy-hub-subpage> Dogfood',
-    () => parametrizedPrivacyHubSubpageTestsuite(
-        PrivacyHubVersion.Dogfood, false));
-suite(
-    '<settings-privacy-hub-subpage> MVP',
-    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP, false));
-suite(
-    '<settings-privacy-hub-subpage> Future',
-    () => parametrizedPrivacyHubSubpageTestsuite(
-        PrivacyHubVersion.Future, false));
-suite(
-    '<settings-privacy-hub-subpage> MVP with LED Fallback',
-    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP, true));
+suite('<settings-privacy-hub-subpage> AllBuilds', () => {
+  suite(
+      'Privacy Hub V0',
+      () =>
+          parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.V0, false));
+  suite(
+      'V0 using camera LED Fallback Mechanism',
+      () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.V0, true));
+  suite(
+      'Location access control with V0 features.',
+      () => parametrizedPrivacyHubSubpageTestsuite(
+          PrivacyHubVersion.V0AndLocation, false));
+});
+
+suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
+  let metrics: FakeMetricsPrivate;
+  let privacyHubSubpage: SettingsPrivacyHubSubpage;
+  let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
+  let mediaDevices: FakeMediaDevices;
+
+  setup(async () => {
+    loadTimeData.overrideValues({
+      showPrivacyHubPage: true,
+      showAppPermissionsInsidePrivacyHub: true,
+    });
+
+    metrics = createFakeMetricsPrivate();
+
+    privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
+    PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
+
+    mediaDevices = new FakeMediaDevices();
+    MediaDevicesProxy.setMediaDevicesForTesting(mediaDevices);
+
+    await createSubpage();
+  });
+
+  teardown(() => {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  async function createSubpage(): Promise<void> {
+    clearBody();
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
+    privacyHubSubpage.prefs = {...PRIVACY_HUB_PREFS};
+    document.body.appendChild(privacyHubSubpage);
+    await flushTasks();
+  }
+
+  function getCameraCrToggle(): CrToggleElement {
+    const crToggle =
+        privacyHubSubpage.shadowRoot!.querySelector<CrToggleElement>(
+            '#cameraToggle');
+    assertTrue(!!crToggle);
+    return crToggle;
+  }
+
+  test('Navigate to the camera subpage', () => {
+    assertEquals(
+        0,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.CameraSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED));
+
+    const cameraSubpageLink =
+        privacyHubSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#cameraSubpageLink');
+    assertTrue(!!cameraSubpageLink);
+    cameraSubpageLink.click();
+
+    assertEquals(
+        1,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.CameraSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED));
+    assertEquals(routes.PRIVACY_HUB_CAMERA, Router.getInstance().currentRoute);
+  });
+
+  test('Toggle camera access', async () => {
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await waitAfterNextRender(privacyHubSubpage);
+
+    const cameraToggle = getCameraCrToggle();
+    const cameraPref = privacyHubSubpage.prefs.ash.user.camera_allowed;
+
+    // Pref and toggle should be in sync and not disabled.
+    assertTrue(cameraToggle.checked);
+    assertTrue(cameraPref.value);
+
+    cameraToggle.click();
+    assertFalse(cameraToggle.checked);
+    assertFalse(cameraPref.value);
+
+    cameraToggle.click();
+    assertTrue(cameraToggle.checked);
+    assertTrue(cameraPref.value);
+  });
+
+  function getMicrophoneCrToggle(): CrToggleElement {
+    const crToggle =
+        privacyHubSubpage.shadowRoot!.querySelector<CrToggleElement>(
+            '#microphoneToggle');
+    assertTrue(!!crToggle);
+    return crToggle;
+  }
+
+  function getMicrophoneTooltip(): PaperTooltipElement {
+    const tooltip =
+        privacyHubSubpage.shadowRoot!.querySelector<PaperTooltipElement>(
+            '#microphoneToggleTooltip');
+    assertTrue(!!tooltip);
+    return tooltip;
+  }
+
+  test('Microphone toggle disabled scenarios', async () => {
+    privacyHubBrowserProxy.microphoneToggleIsEnabled = false;
+    await privacyHubBrowserProxy.whenCalled(
+        'getInitialMicrophoneHardwareToggleState');
+    await waitAfterNextRender(privacyHubSubpage);
+
+    // There is no MediaDevice connected initially. Microphone toggle should be
+    // disabled as no microphone is connected.
+    assertTrue(getMicrophoneCrToggle().disabled);
+    assertFalse(getMicrophoneTooltip().hidden);
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubNoMicrophoneConnectedTooltipText'),
+        getMicrophoneTooltip().textContent!.trim());
+
+    // Add a microphone.
+    mediaDevices.addDevice('audioinput', 'Fake Microphone');
+    await waitAfterNextRender(privacyHubSubpage);
+
+    // Microphone toggle should be enabled to click now as there is a microphone
+    // connected and the hw toggle is inactive.
+    assertFalse(getMicrophoneCrToggle().disabled);
+    assertTrue(getMicrophoneTooltip().hidden);
+
+    // Activate the hw toggle.
+    webUIListenerCallback('microphone-hardware-toggle-changed', true);
+    await waitAfterNextRender(privacyHubSubpage);
+
+    // Microphone toggle should be disabled again due to the hw switch being
+    // active.
+    assertTrue(getMicrophoneCrToggle().disabled);
+    // With the HW switch being active the tooltip should be visible.
+    assertFalse(getMicrophoneTooltip().hidden);
+    // Ensure that the tooltip has the intended content.
+    assertEquals(
+        privacyHubSubpage.i18n('microphoneHwToggleTooltip'),
+        getMicrophoneTooltip().textContent!.trim());
+
+    mediaDevices.popDevice();
+  });
+
+  function getCameraTooltip(): PaperTooltipElement {
+    const tooltip =
+        privacyHubSubpage.shadowRoot!.querySelector<PaperTooltipElement>(
+            '#cameraToggleTooltip');
+    assertTrue(!!tooltip);
+    return tooltip;
+  }
+
+  test('Camera toggle tooltip displayed when no camera connected', async () => {
+    assertTrue(getCameraCrToggle().disabled);
+    assertFalse(getCameraTooltip().hidden);
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubNoCameraConnectedTooltipText'),
+        getCameraTooltip().textContent!.trim());
+
+    // Add a camera.
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await flushTasks();
+
+    assertFalse(getCameraCrToggle().disabled);
+    assertTrue(getCameraTooltip().hidden);
+
+    mediaDevices.popDevice();
+  });
+
+  test('Toggle microphone access', async () => {
+    mediaDevices.addDevice('audioinput', 'Fake Mic');
+    await waitAfterNextRender(privacyHubSubpage);
+
+    const microphoneToggle = getMicrophoneCrToggle();
+    const microphonePref = privacyHubSubpage.prefs.ash.user.microphone_allowed;
+
+    // Pref and toggle should be in sync and not disabled.
+    assertTrue(microphoneToggle.checked);
+    assertTrue(microphonePref.value);
+
+    microphoneToggle.click();
+    assertFalse(microphoneToggle.checked);
+    assertFalse(microphonePref.value);
+
+
+    microphoneToggle.click();
+    assertTrue(microphoneToggle.checked);
+    assertTrue(microphonePref.value);
+  });
+
+  test('Navigate to the microphone subpage', () => {
+    assertEquals(
+        0,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED));
+
+    const microphoneSubpageLink =
+        privacyHubSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#microphoneSubpageLink');
+    assertTrue(!!microphoneSubpageLink);
+    microphoneSubpageLink.click();
+
+    assertEquals(
+        1,
+        metrics.countMetricValue(
+            'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
+            PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED));
+    assertEquals(
+        routes.PRIVACY_HUB_MICROPHONE, Router.getInstance().currentRoute);
+  });
+
+  function getMicrophoneRowSubtext(): string {
+    return privacyHubSubpage.shadowRoot!
+        .querySelector<CrLinkRowElement>('#microphoneSubpageLink')!.shadowRoot!
+        .querySelector<HTMLElement>('#subLabel')!.innerText.trim();
+  }
+
+  function getCameraRowSubtext(): string {
+    return privacyHubSubpage.shadowRoot!
+        .querySelector<CrLinkRowElement>('#cameraSubpageLink')!.shadowRoot!
+        .querySelector<HTMLElement>('#subLabel')!.innerText.trim();
+  }
+
+  test('Microphone row subtext', async () => {
+    mediaDevices.addDevice('audioinput', 'Fake Mic');
+    await flushTasks();
+
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubPageMicrophoneRowSubtext'),
+        getMicrophoneRowSubtext());
+
+    getMicrophoneCrToggle().click();
+    flush();
+
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubMicrophoneAccessBlockedText'),
+        getMicrophoneRowSubtext());
+
+    getMicrophoneCrToggle().click();
+    flush();
+
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubPageMicrophoneRowSubtext'),
+        getMicrophoneRowSubtext());
+  });
+
+  function getMicrophoneToggleAriaLabel(): string {
+    return getMicrophoneCrToggle().getAttribute('aria-label')!.trim();
+  }
+
+  function getMicrophoneToggleAriaDescription(): string {
+    return getMicrophoneCrToggle().getAttribute('aria-description')!.trim();
+  }
+
+  test('Microphone toggle aria label and description', async () => {
+    mediaDevices.addDevice('audioinput', 'Fake Mic');
+    await flushTasks();
+
+    assertEquals(
+        privacyHubSubpage.i18n('microphoneToggleTitle'),
+        getMicrophoneToggleAriaLabel());
+    assertEquals(
+        getMicrophoneRowSubtext(), getMicrophoneToggleAriaDescription());
+
+    getMicrophoneCrToggle().click();
+    flush();
+
+    assertEquals(
+        privacyHubSubpage.i18n('microphoneToggleTitle'),
+        getMicrophoneToggleAriaLabel());
+    assertEquals(
+        getMicrophoneRowSubtext(), getMicrophoneToggleAriaDescription());
+  });
+
+  test('Camera row subtext', async () => {
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await flushTasks();
+
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubPageCameraRowSubtext'),
+        getCameraRowSubtext());
+
+    getCameraCrToggle().click();
+    flush();
+
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubCameraAccessBlockedText'),
+        getCameraRowSubtext());
+
+    getCameraCrToggle().click();
+    flush();
+
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubPageCameraRowSubtext'),
+        getCameraRowSubtext());
+  });
+
+  test('Camera row fallback subtext', async () => {
+    privacyHubBrowserProxy.cameraLEDFallbackState = true;
+    PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
+
+    await createSubpage();
+
+    assertEquals(
+        privacyHubSubpage.i18n('privacyHubPageCameraRowFallbackSubtext'),
+        getCameraRowSubtext());
+  });
+
+  function getCameraToggleAriaLabel(): string {
+    return getCameraCrToggle().getAttribute('aria-label')!.trim();
+  }
+
+  function getCameraToggleAriaDescription(): string {
+    return getCameraCrToggle().getAttribute('aria-description')!.trim();
+  }
+
+  test('Camera toggle aria label and description', async () => {
+    mediaDevices.addDevice('videoinput', 'Fake Camera');
+    await flushTasks();
+
+    assertEquals(
+        privacyHubSubpage.i18n('cameraToggleTitle'),
+        getCameraToggleAriaLabel());
+    assertEquals(getCameraRowSubtext(), getCameraToggleAriaDescription());
+
+    getCameraCrToggle().click();
+    flush();
+
+    assertEquals(
+        privacyHubSubpage.i18n('cameraToggleTitle'),
+        getCameraToggleAriaLabel());
+    assertEquals(getCameraRowSubtext(), getCameraToggleAriaDescription());
+  });
+});
+
 
 async function parametrizedTestsuiteForMetricsConsentToggle(
     isPrivacyHubVisible: boolean) {
@@ -655,6 +1011,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
     },
     'dns_over_https':
         {'mode': {value: SecureDnsMode.AUTOMATIC}, 'templates': {value: ''}},
+    ...PRIVACY_HUB_PREFS,
   };
 
   let metricsConsentBrowserProxy: TestMetricsConsentBrowserProxy;
@@ -668,7 +1025,6 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
         metricsConsentBrowserProxy);
 
     settingsPage = document.createElement(pageId);
-
   });
 
   async function setUpPage(prefName: string, isConfigurable: boolean) {
@@ -710,6 +1066,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
       async () => {
         if (isPrivacyHubVisible) {
           settingsPage = document.createElement('settings-privacy-hub-subpage');
+          settingsPage.prefs = {...PRIVACY_HUB_PREFS};
           document.body.appendChild(settingsPage);
           flush();
 

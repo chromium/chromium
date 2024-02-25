@@ -6,9 +6,9 @@
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_TRANSACTION_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
@@ -20,7 +20,7 @@ class PrefHashStoreTransaction {
 
   // Returns the suffix to be appended to UMA histograms for the store contained
   // in this transaction.
-  virtual base::StringPiece GetStoreUMASuffix() const = 0;
+  virtual std::string_view GetStoreUMASuffix() const = 0;
 
   // Checks |initial_value| against the existing stored value hash.
   virtual prefs::mojom::TrackedPreferenceValidationDelegate::ValueState

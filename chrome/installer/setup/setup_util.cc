@@ -41,7 +41,6 @@
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
@@ -322,12 +321,15 @@ bool DeleteFileFromTempProcess(const base::FilePath& path,
   return ok != FALSE;
 }
 
-bool AdjustProcessPriority() {
-  DWORD priority_class = ::GetPriorityClass(::GetCurrentProcess());
+bool AdjustThreadPriority() {
+  const DWORD priority_class = ::GetPriorityClass(::GetCurrentProcess());
   if (priority_class == BELOW_NORMAL_PRIORITY_CLASS ||
       priority_class == IDLE_PRIORITY_CLASS) {
-    BOOL result = ::SetPriorityClass(::GetCurrentProcess(),
-                                     PROCESS_MODE_BACKGROUND_BEGIN);
+    // Don't use SetPriorityClass with PROCESS_MODE_BACKGROUND_BEGIN because it
+    // will cap the process working set to 32 MiB. See
+    // https://crbug.com/1475179.
+    const BOOL result =
+        ::SetThreadPriority(::GetCurrentThread(), THREAD_MODE_BACKGROUND_BEGIN);
     PLOG_IF(WARNING, !result) << "Failed to enter background mode.";
     return !!result;
   }
@@ -664,11 +666,11 @@ base::Time GetConsoleSessionStartTime() {
   return base::Time::FromFileTime(filetime);
 }
 
-absl::optional<std::string> DecodeDMTokenSwitchValue(
+std::optional<std::string> DecodeDMTokenSwitchValue(
     const std::wstring& encoded_token) {
   if (encoded_token.empty()) {
     LOG(ERROR) << "Empty DMToken specified on the command line";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The token passed on the command line is base64-encoded, but since this is
@@ -677,13 +679,13 @@ absl::optional<std::string> DecodeDMTokenSwitchValue(
   if (!base::IsStringASCII(encoded_token) ||
       !base::Base64Decode(base::WideToASCII(encoded_token), &token)) {
     LOG(ERROR) << "DMToken passed on the command line is not correctly encoded";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return token;
 }
 
-absl::optional<std::string> DecodeNonceSwitchValue(
+std::optional<std::string> DecodeNonceSwitchValue(
     const std::string& encoded_nonce) {
   if (encoded_nonce.empty()) {
     // The nonce command line argument is optional.  If none is specified use
@@ -695,7 +697,7 @@ absl::optional<std::string> DecodeNonceSwitchValue(
   std::string nonce;
   if (!base::Base64Decode(encoded_nonce, &nonce)) {
     LOG(ERROR) << "Nonce passed on the command line is not correctly encoded";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return nonce;

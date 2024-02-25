@@ -41,8 +41,10 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   </issue>
   <issue id="ImpliedQuantity">
     <ignore regexp="chrome/android/features/tab_ui/java_strings_grd"/>
+    <ignore regexp="chrome/browser/touch_to_fill/password_manager/android/internal/java_strings_grd"/>
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd"/>
     <ignore regexp="components/browser_ui/strings/android/browser_ui_strings_grd"/>
+    <ignore regexp="components/strings/components_strings_grd"/>
   </issue>
   <issue id="InsecureBaseConfiguration">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
@@ -198,7 +200,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.download_manager_offline_home` appears to be unused"/>
     <ignore regexp="The resource `R.string.ntp_learn_more_about_suggested_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_switcher_button_label` appears to be unused"/>
-    <ignore regexp="The resource `R.string.storage_clear_dialog_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.website_settings_category_notifications_block` appears to be unused"/>
     <ignore regexp="The resource `R.string.autofill_cc_google_issued` appears to be unused"/>
     <ignore regexp="The resource `R.string.notification_manage_button` appears to be unused"/>
@@ -258,6 +259,14 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- TODO(https://crbug.com/1324357): Remove the following 2 lines after the bug is resolved. -->
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_accessibility_text` appears to be unused"/>
+
+    <!--TODO(crbug.com/1515325): Remove suppressions once implementation is ready. -->
+    <ignore regexp="The resource `R.string.tab_resumption_module_other_devices_name` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_resumption_module_other_devices_context_menu_hide` appears to be unused"/>
+
+    <!-- TODO(https://crbug.com/1515325): Remove the following 2 lines after the tab resumption module is implemented. -->
+    <ignore regexp="The resource `R.string.home_modules_tab_resumption_one_tab_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.home_modules_tab_resumption_multiple_tabs_title` appears to be unused"/>
 
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>

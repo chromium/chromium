@@ -232,6 +232,10 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
 }
 
 void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
+  if (manifest.has_custom_id) {
+    UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestIdField);
+  }
+
   if (manifest.capture_links != mojom::blink::CaptureLinks::kUndefined) {
     UseCounter::Count(GetSupplementable(),
                       WebFeature::kWebAppManifestCaptureLinks);
@@ -250,6 +254,11 @@ void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
   if (!manifest.protocol_handlers.empty()) {
     UseCounter::Count(GetSupplementable(),
                       WebFeature::kWebAppManifestProtocolHandlers);
+  }
+
+  if (!manifest.scope_extensions.empty()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestScopeExtensions);
   }
 
   for (const mojom::blink::DisplayMode& display_override :

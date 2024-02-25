@@ -87,6 +87,7 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   std::unique_ptr<syncer::SyncEngine> CreateSyncEngine(
       const std::string& name,
       syncer::SyncInvalidationsService* sync_invalidation_service) override;
+  bool HasTransportDataIncludingFirstSync() override;
   void ClearAllTransportData() override;
 
  private:

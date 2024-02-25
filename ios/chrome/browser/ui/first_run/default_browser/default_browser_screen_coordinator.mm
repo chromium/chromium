@@ -6,9 +6,9 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
@@ -44,7 +44,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  base::UmaHistogramEnumeration("FirstRun.Stage",
+  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
   [self recordDefaultBrowserPromoShown];
 
@@ -67,7 +67,8 @@
 
 - (void)didTapPrimaryActionButton {
   base::UmaHistogramEnumeration(
-      "FirstRun.Stage", first_run::kDefaultBrowserScreenCompletionWithSettings);
+      first_run::kFirstRunStageHistogram,
+      first_run::kDefaultBrowserScreenCompletionWithSettings);
   LogUserInteractionWithFirstRunPromo(YES);
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
@@ -78,7 +79,7 @@
 
 - (void)didTapSecondaryActionButton {
   base::UmaHistogramEnumeration(
-      "FirstRun.Stage",
+      first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithoutSettings);
   LogUserInteractionWithFirstRunPromo(NO);
   [self.delegate screenWillFinishPresenting];

@@ -4,23 +4,33 @@
 
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "components/sessions/core/live_tab.h"
 
-FakeTabRestoreService::FakeTabRestoreService() {}
-FakeTabRestoreService::~FakeTabRestoreService() {}
+FakeTabRestoreService::FakeTabRestoreService() = default;
+
+FakeTabRestoreService::~FakeTabRestoreService() = default;
+
+// static
+FakeTabRestoreService::TestingFactory
+FakeTabRestoreService::GetTestingFactory() {
+  return base::BindRepeating(
+      [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+        return std::make_unique<FakeTabRestoreService>();
+      });
+}
 
 void FakeTabRestoreService::AddObserver(
     sessions::TabRestoreServiceObserver* observer) {
-  NOTREACHED();
 }
 
 void FakeTabRestoreService::RemoveObserver(
     sessions::TabRestoreServiceObserver* observer) {
-  NOTREACHED();
 }
 
-absl::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
+std::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
     sessions::LiveTab* live_tab,
     int index) {
   auto tab = std::make_unique<Tab>();
@@ -32,7 +42,7 @@ absl::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
     tab->navigations[i] = entry;
   }
   entries_.push_front(std::move(tab));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FakeTabRestoreService::BrowserClosing(sessions::LiveTabContext* context) {
@@ -59,7 +69,6 @@ void FakeTabRestoreService::GroupCloseStopped(
 }
 
 void FakeTabRestoreService::ClearEntries() {
-  NOTREACHED();
 }
 
 void FakeTabRestoreService::DeleteNavigationEntries(
@@ -104,7 +113,6 @@ bool FakeTabRestoreService::IsLoaded() const {
 }
 
 void FakeTabRestoreService::DeleteLastSession() {
-  NOTREACHED();
 }
 
 bool FakeTabRestoreService::IsRestoring() const {

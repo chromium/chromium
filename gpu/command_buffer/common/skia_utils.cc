@@ -26,7 +26,7 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
   // This should never outlive the provided ProcessMemoryDump, as it should
   // always be scoped to a single OnMemoryDump funciton call.
   SkiaGpuTraceMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                         absl::optional<uint64_t> share_group_tracing_guid)
+                         std::optional<uint64_t> share_group_tracing_guid)
       : pmd_(pmd),
         share_group_tracing_guid_(share_group_tracing_guid),
         tracing_process_id_(base::trace_event::MemoryDumpManager::GetInstance()
@@ -131,7 +131,7 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
   }
 
   raw_ptr<base::trace_event::ProcessMemoryDump> pmd_;
-  absl::optional<uint64_t> share_group_tracing_guid_;
+  std::optional<uint64_t> share_group_tracing_guid_;
   uint64_t tracing_process_id_;
 };
 
@@ -139,7 +139,7 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
 
 void DumpGrMemoryStatistics(const GrDirectContext* context,
                             base::trace_event::ProcessMemoryDump* pmd,
-                            absl::optional<uint64_t> tracing_guid) {
+                            std::optional<uint64_t> tracing_guid) {
   SkiaGpuTraceMemoryDump trace_memory_dump(pmd, tracing_guid);
   context->dumpMemoryStatistics(&trace_memory_dump);
 }

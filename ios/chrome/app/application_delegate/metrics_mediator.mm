@@ -27,10 +27,11 @@
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
-#import "ios/chrome/browser/crash_report/crash_helper.h"
-#import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/metrics/first_user_action_recorder.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/crash_report/model/crash_helper.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -41,9 +42,9 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/metrics.h"
-#import "ios/chrome/browser/widget_kit/features.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/metrics.h"
+#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
 #import "ios/chrome/common/credential_provider/constants.h"
@@ -54,7 +55,7 @@
 #import "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
-#import "ios/chrome/browser/widget_kit/widget_metrics_util.h"  // nogncheck
+#import "ios/chrome/browser/widget_kit/model/widget_metrics_util.h"  // nogncheck
 #endif
 
 @class AppState;
@@ -280,8 +281,7 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
                                    kCredentialExtensionPasswordUseCount] ||
           [key isEqualToString:app_group::
                                    kCredentialExtensionQuickPasswordUseCount]) {
-        LogLikelyInterestedDefaultBrowserUserActivity(
-            DefaultPromoTypeMadeForIOS);
+        default_browser::NotifyCredentialExtensionUsed();
       }
     }
   }
@@ -458,7 +458,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     const int inactiveWebStateListCount = inactiveWebStateList->count();
 
     tabCount += webStateListCount + inactiveWebStateListCount;
-    pinnedTabCount += webStateList->GetIndexOfFirstNonPinnedWebState();
+    pinnedTabCount += webStateList->pinned_tabs_count();
     activeTabCount += webStateListCount;
     inactiveTabCount += inactiveWebStateListCount;
     // All inactive tabs are inactive since minimum 7 days or more.
@@ -587,7 +587,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   }
 
   // Log browser cold start for default browser promo experiment stats.
-  if (scenes.count != 0 && scenes[0].appState.mainBrowserState) {
+  if (scenes.count != 0) {
     LogBrowserLaunched(startupInformation.isColdStart);
   }
 
@@ -757,7 +757,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 }
 
 + (void)recordStartupAbsoluteInactiveTabCount:(int)tabCount {
-  base::UmaHistogramCounts100("Tabs.OldCountAtStartup", tabCount);
+  base::UmaHistogramCounts1M("Tabs.OldCountAtStartup2", tabCount);
 }
 
 + (void)recordStartupPinnedTabCount:(int)tabCount {
@@ -765,11 +765,15 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 }
 
 + (void)recordStartupTabCount:(int)tabCount {
+  // TODO(crbug.com/1519707): Evaluate and remove old histogram.
   base::UmaHistogramCounts100("Tabs.CountAtStartup", tabCount);
+  base::UmaHistogramCounts1M("Tabs.CountAtStartup2", tabCount);
 }
 
 + (void)recordResumeTabCount:(int)tabCount {
+  // TODO(crbug.com/1519707): Evaluate and remove old histogram.
   base::UmaHistogramCounts100("Tabs.CountAtResume", tabCount);
+  base::UmaHistogramCounts1M("Tabs.CountAtResume2", tabCount);
 }
 
 + (void)recordStartupNTPTabCount:(int)tabCount {
@@ -785,7 +789,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 }
 
 + (void)recordStartupOldTabCount:(int)tabCount {
-  base::UmaHistogramCounts100("Tabs.UnusedCountAtStartup", tabCount);
+  base::UmaHistogramCounts1M("Tabs.UnusedCountAtStartup2", tabCount);
 }
 
 + (void)recordStartupDuplicatedTabCount:(int)tabCount {

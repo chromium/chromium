@@ -4,9 +4,10 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as InlineEditor from 'devtools/ui/legacy/components/inline_editor/inline_editor.js';
+
 (async function() {
   TestRunner.addResult(`Tests CSSLength.parse, CSSShadowModel.parseTextShadow, and CSSShadowModel.parseBoxShadow.\n`);
-  await TestRunner.loadLegacyModule("inline_editor");
 
   TestRunner.addResult('-----CSSLengths-----');
   dumpCSSLength('10px');
@@ -90,7 +91,7 @@ import {TestRunner} from 'test_runner';
   TestRunner.completeTest();
 
   function dumpCSSLength(lengthText) {
-    var length = InlineEditor.CSSLength.parse(lengthText);
+    var length = InlineEditor.CSSShadowModel.CSSLength.parse(lengthText);
     var statusText = length !== null ? 'Succeeded: ' + length.asCSSText() : 'Failed';
     TestRunner.addResult('"' + lengthText + '", Parsing ' + statusText);
   }
@@ -104,8 +105,8 @@ import {TestRunner} from 'test_runner';
   }
 
   function dumpShadow(shadowText, isBoxShadow) {
-    var shadows = isBoxShadow ? InlineEditor.CSSShadowModel.parseBoxShadow(shadowText) :
-                                InlineEditor.CSSShadowModel.parseTextShadow(shadowText);
+    var shadows = isBoxShadow ? InlineEditor.CSSShadowModel.CSSShadowModel.parseBoxShadow(shadowText) :
+                                InlineEditor.CSSShadowModel.CSSShadowModel.parseTextShadow(shadowText);
     var output = [];
     for (var i = 0; i < shadows.length; i++)
       output.push(shadows[i].asCSSText());

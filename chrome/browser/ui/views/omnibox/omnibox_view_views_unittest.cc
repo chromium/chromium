@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/input_method.h"
@@ -61,6 +62,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/render_text_test_api.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
 using gfx::Range;
@@ -91,19 +93,18 @@ class TestingOmniboxView : public OmniboxViewViews {
   bool base_text_emphasis() const { return base_text_emphasis_; }
 
   // Returns the latest color applied to |range| via ApplyColor(), or
-  // absl::nullopt if no color has been applied to |range|.
-  absl::optional<SkColor> GetLatestColorForRange(const gfx::Range& range);
+  // std::nullopt if no color has been applied to |range|.
+  std::optional<SkColor> GetLatestColorForRange(const gfx::Range& range);
 
   // Returns the latest style applied to |range| via ApplyStyle(), or
-  // absl::nullopt if no color has been applied to |range|.
-  absl::optional<std::pair<gfx::TextStyle, bool>> GetLatestStyleForRange(
+  // std::nullopt if no color has been applied to |range|.
+  std::optional<std::pair<gfx::TextStyle, bool>> GetLatestStyleForRange(
       const gfx::Range& range) const;
 
   // Resets the captured styles.
   void ResetStyles();
 
   // OmniboxViewViews:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {}
   void OnThemeChanged() override;
 
   using OmniboxView::OnInlineAutocompleteTextMaybeChanged;
@@ -171,17 +172,17 @@ void TestingOmniboxView::CheckUpdatePopupNotCalled() {
   EXPECT_EQ(update_popup_call_count_, 0U);
 }
 
-absl::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
+std::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
     const gfx::Range& range) {
   // Iterate backwards to get the most recently applied color for |range|.
   for (const auto& [color, other_range] : base::Reversed(range_colors_)) {
     if (range == other_range)
       return color;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::pair<gfx::TextStyle, bool>>
+std::optional<std::pair<gfx::TextStyle, bool>>
 TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
   // Iterate backwards to get the most recently applied style for |range|.
   for (const auto& [style, value, other_range] :
@@ -189,7 +190,7 @@ TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
     if (range == other_range)
       return std::make_pair(style, value);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TestingOmniboxView::ResetStyles() {
@@ -279,7 +280,7 @@ class TestLocationBar : public LocationBar {
   }
 
   raw_ptr<LocationBarModel> location_bar_model_;
-  raw_ptr<OmniboxViewViews, DanglingUntriaged> omnibox_view_ = nullptr;
+  raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
 };
 
 // OmniboxViewViewsTest -------------------------------------------------------
@@ -323,15 +324,17 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   views::Textfield* omnibox_textfield() const { return omnibox_view(); }
   views::View* omnibox_textfield_view() const { return omnibox_view(); }
 
-  views::TextfieldTestApi* textfield_test_api() { return test_api_.get(); }
+  views::TextfieldTestApi GetTextfieldTestApi() {
+    return views::TextfieldTestApi(omnibox_view());
+  }
 
   // Sets |new_text| as the omnibox text, and emphasizes it appropriately.  If
   // |accept_input| is true, pretends that the user has accepted this input
   // (i.e. it's been navigated to).
   void SetAndEmphasizeText(const std::string& new_text, bool accept_input);
 
-  bool IsCursorEnabled() const {
-    return test_api_->GetRenderText()->cursor_enabled();
+  bool IsCursorEnabled() {
+    return GetTextfieldTestApi().GetRenderText()->cursor_enabled();
   }
 
   ui::MouseEvent CreateMouseEvent(ui::EventType type,
@@ -377,9 +380,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by |widget_|.
-  raw_ptr<TestingOmniboxView, DanglingUntriaged> omnibox_view_;
-
-  std::unique_ptr<views::TextfieldTestApi> test_api_;
+  raw_ptr<TestingOmniboxView> omnibox_view_ = nullptr;
 };
 
 OmniboxViewViewsTest::OmniboxViewViewsTest(
@@ -433,7 +434,6 @@ void OmniboxViewViewsTest::SetUp() {
   auto omnibox_view = std::make_unique<TestingOmniboxView>(
       std::make_unique<ChromeOmniboxClient>(&location_bar_, browser(),
                                             profile()));
-  test_api_ = std::make_unique<views::TextfieldTestApi>(omnibox_view.get());
   omnibox_view->Init();
 
   omnibox_view_ = widget_->SetContentsView(std::move(omnibox_view));
@@ -444,6 +444,8 @@ void OmniboxViewViewsTest::TearDown() {
   if (omnibox_view_->GetInputMethod())
     omnibox_view_->GetInputMethod()->DetachTextInputClient(omnibox_view_);
 
+  location_bar()->set_omnibox_view(nullptr);
+  omnibox_view_ = nullptr;
   browser_->tab_strip_model()->CloseAllTabs();
   browser_ = nullptr;
   browser_window_ = nullptr;
@@ -495,12 +497,12 @@ TEST_F(OmniboxViewViewsTest, ScheduledTextEditCommand) {
   omnibox_textfield()->SetTextEditCommandForNextKeyEvent(
       ui::TextEditCommand::MOVE_UP);
   EXPECT_EQ(ui::TextEditCommand::MOVE_UP,
-            textfield_test_api()->scheduled_text_edit_command());
+            GetTextfieldTestApi().scheduled_text_edit_command());
 
   ui::KeyEvent up_pressed(ui::ET_KEY_PRESSED, ui::VKEY_UP, 0);
   omnibox_textfield()->OnKeyEvent(&up_pressed);
   EXPECT_EQ(ui::TextEditCommand::INVALID_COMMAND,
-            textfield_test_api()->scheduled_text_edit_command());
+            GetTextfieldTestApi().scheduled_text_edit_command());
 }
 
 // Test that Shift+Up and Shift+Down are not captured and let selection mode
@@ -959,6 +961,46 @@ TEST_F(OmniboxViewViewsTest, SchemeStrikethrough) {
   EXPECT_FALSE(style.has_value());
 }
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+TEST_F(OmniboxViewViewsTest,
+       AccessibleTextOffsetsUpdatesAfterElideBehaviorChange) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+
+  // Make the Omnibox very narrow (so it couldn't fit the whole string).
+  int kOmniboxWidth = 60;
+  gfx::RenderText* render_text = omnibox_view()->GetRenderText();
+  render_text->SetDisplayRect(gfx::Rect(0, 0, kOmniboxWidth, 10));
+  render_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  const std::u16string text = u"http://www.example.com/?query=1";
+  omnibox_view()->SetWindowTextAndCaretPos(text, 23U, false, false);
+
+  EXPECT_EQ(gfx::ELIDE_TAIL, render_text->elide_behavior());
+  ui::AXNodeData node_data;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_offsets = {
+      0,  6,  10, 14, 21, 24, 29, 33, 42, 52, 52, 52, 52, 52, 52, 52,
+      52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52};
+  EXPECT_EQ(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+
+  omnibox_textfield()->OnFocus();
+
+  EXPECT_EQ(gfx::NO_ELIDE, render_text->elide_behavior());
+  ui::AXNodeData node_data_2;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data_2);
+  std::vector<int32_t> expected_offsets_2 = {
+      0,   6,   10,  14,  21,  24,  29,  33,  42,  51,  59,
+      62,  68,  74,  80,  90,  97,  100, 107, 109, 115, 122,
+      132, 137, 142, 149, 156, 162, 166, 172, 180, 188};
+  EXPECT_EQ(node_data_2.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets_2);
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
 class OmniboxViewViewsClipboardTest
     : public OmniboxViewViewsTest,
       public ::testing::WithParamInterface<ui::TextEditCommand> {
@@ -981,7 +1023,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
 
   clipboard->Clear(clipboard_buffer);
   ui::TextEditCommand clipboard_command = GetParam();
-  textfield_test_api()->ExecuteTextEditCommand(clipboard_command);
+  GetTextfieldTestApi().ExecuteTextEditCommand(clipboard_command);
 
   std::u16string expected_text;
   if (clipboard_command == ui::TextEditCommand::COPY)
@@ -1021,7 +1063,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutUserText) {
 
   clipboard->Clear(clipboard_buffer);
   ui::TextEditCommand clipboard_command = GetParam();
-  textfield_test_api()->ExecuteTextEditCommand(clipboard_command);
+  GetTextfieldTestApi().ExecuteTextEditCommand(clipboard_command);
 
   if (clipboard_command == ui::TextEditCommand::CUT)
     EXPECT_EQ(std::u16string(), omnibox_view()->GetText());

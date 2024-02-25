@@ -4,6 +4,8 @@
 
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -27,7 +29,6 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/aura/window.h"
@@ -57,8 +58,8 @@ class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
 
   void VerifyAppCapabilityAccess(const std::string& app_id,
                                  size_t count,
-                                 absl::optional<bool> accessing_camera,
-                                 absl::optional<bool> accessing_microphone) {
+                                 std::optional<bool> accessing_camera,
+                                 std::optional<bool> accessing_microphone) {
     ASSERT_EQ(count, accesses_history().size());
     Accesses& accesses = accesses_history().back();
     ASSERT_EQ(1u, accesses.size());
@@ -396,24 +397,22 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest,
   // Request accessing the camera for `web_contents`.
   base::OnceClosure video_closure = StartMediaCapture(
       web_contents, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  publisher->VerifyAppCapabilityAccess(extension->id(), 1u, true,
-                                       absl::nullopt);
+  publisher->VerifyAppCapabilityAccess(extension->id(), 1u, true, std::nullopt);
 
   // Request accessing the microphone for `web_contents`.
   base::OnceClosure audio_closure = StartMediaCapture(
       web_contents, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
-  publisher->VerifyAppCapabilityAccess(extension->id(), 2u, absl::nullopt,
-                                       true);
+  publisher->VerifyAppCapabilityAccess(extension->id(), 2u, std::nullopt, true);
 
   // Stop accessing the microphone for `web_contents`.
   std::move(audio_closure).Run();
-  publisher->VerifyAppCapabilityAccess(extension->id(), 3u, absl::nullopt,
+  publisher->VerifyAppCapabilityAccess(extension->id(), 3u, std::nullopt,
                                        false);
 
   // Stop accessing the camera for `web_contents`.
   std::move(video_closure).Run();
   publisher->VerifyAppCapabilityAccess(extension->id(), 4u, false,
-                                       absl::nullopt);
+                                       std::nullopt);
 }
 
 // Verify AppCapabilityAccess for web apps is not handled by
@@ -433,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, NoAccessingForWebApp) {
 
   // Launch `app_id` for the web app.
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  web_app::NavigateToURLAndWait(browser(), url);
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), url);
   content::WebContents* web_content =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_content);

@@ -50,7 +50,7 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   void Flush(base::OnceClosure callback) override;
   void StartPlaying() override;
   void SetVolume(float volume) override;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
   void SetWasPlayedWithUserActivation(
       bool was_played_with_user_activation) override;

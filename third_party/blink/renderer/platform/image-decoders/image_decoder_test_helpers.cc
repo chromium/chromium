@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 
 #include <memory>
+
+#include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -552,6 +555,32 @@ void TestAlphaBlending(DecoderCreatorWithAlpha create_decoder,
     VerifyFramesMatch(file, decoder_a->DecodeFrameBufferAtIndex(i),
                       decoder_b->DecodeFrameBufferAtIndex(i));
   }
+}
+
+void TestBppHistogram(DecoderCreator create_decoder,
+                      const char* image_type,
+                      const char* image_name,
+                      const char* histogram_name,
+                      base::HistogramBase::Sample sample) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = create_decoder();
+  decoder->SetData(ReadFile(image_name), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  if (histogram_name) {
+    histogram_tester.ExpectTotalCount(histogram_name, 0);
+  }
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  base::HistogramTester::CountsMap expected_counts;
+  if (histogram_name) {
+    histogram_tester.ExpectUniqueSample(histogram_name, sample, 1);
+    expected_counts[histogram_name] = 1;
+  }
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(base::StrCat(
+                  {"Blink.DecodedImage.", image_type, "Density.Count."})),
+              testing::ContainerEq(expected_counts));
 }
 
 }  // namespace blink

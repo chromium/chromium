@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/css/rule_set_diff.h"
 
 namespace blink {
 
@@ -62,9 +63,14 @@ void StyleSheetCollection::AppendSheetForList(StyleSheet* sheet) {
   style_sheets_for_style_sheet_list_.push_back(sheet);
 }
 
+void StyleSheetCollection::AppendRuleSetDiff(Member<RuleSetDiff> diff) {
+  rule_set_diffs_.push_back(diff);
+}
+
 void StyleSheetCollection::Trace(Visitor* visitor) const {
   visitor->Trace(active_style_sheets_);
   visitor->Trace(style_sheets_for_style_sheet_list_);
+  visitor->Trace(rule_set_diffs_);
 }
 
 }  // namespace blink

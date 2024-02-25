@@ -22,10 +22,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DTOA_H_
 
 #include "base/numerics/safe_conversions.h"
-#include "base/third_party/double_conversion/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+
+namespace double_conversion {
+class StringToDoubleConverter;
+}  // namespace double_conversion
 
 namespace WTF {
 
@@ -56,17 +59,6 @@ double ParseDoubleFromLongString(const UChar* string,
                                  size_t& parsed_length);
 const double_conversion::StringToDoubleConverter& GetDoubleConverter();
 }  // namespace internal
-
-inline double ParseDouble(const LChar* string,
-                          size_t length,
-                          size_t& parsed_length) {
-  int int_parsed_length = 0;
-  double d = internal::GetDoubleConverter().StringToDouble(
-      reinterpret_cast<const char*>(string), base::saturated_cast<int>(length),
-      &int_parsed_length);
-  parsed_length = int_parsed_length;
-  return d;
-}
 
 inline double ParseDouble(const UChar* string,
                           size_t length,

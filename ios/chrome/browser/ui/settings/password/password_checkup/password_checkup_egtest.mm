@@ -3,33 +3,52 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::SettingsCollectionView;
 using password_manager_test_utils::DeleteCredential;
 using password_manager_test_utils::GetInteractionForPasswordIssueEntry;
+using password_manager_test_utils::kDefaultPassword;
+using password_manager_test_utils::kDefaultSite;
+using password_manager_test_utils::kDefaultUsername;
 using password_manager_test_utils::PasswordCheckupCellForState;
 using password_manager_test_utils::PasswordIssuesTableView;
-using password_manager_test_utils::SaveCompromisedPasswordForm;
-using password_manager_test_utils::SaveMutedCompromisedPasswordForm;
-using password_manager_test_utils::SavePasswordForm;
+using password_manager_test_utils::ReauthenticationController;
+using password_manager_test_utils::SaveCompromisedPasswordFormToProfileStore;
+using password_manager_test_utils::
+    SaveMutedCompromisedPasswordFormToProfileStore;
+using password_manager_test_utils::SavePasswordFormToProfileStore;
 
 namespace {
+
+constexpr NSString* kDefaultDomain = @"example.com";
+constexpr NSString* kDomain1 = @"example1.com";
+
+constexpr NSString* kSite1 = @"https://example1.com/";
+constexpr NSString* kSite2 = @"https://example2.com/";
+constexpr NSString* kSite3 = @"https://example3.com/";
+
+constexpr NSString* kReusedPassword = @"reused password";
+constexpr NSString* kSafePassword = @"s@fe pa55word!";
+constexpr NSString* kWeakPassword = @"1";
 
 #pragma mark - Password Manager matchers
 
@@ -41,6 +60,11 @@ id<GREYMatcher> PasswordManagerEmptyView() {
 }
 
 #pragma mark - Password Checkup Homepage matchers
+
+// Matcher for the TableView in the Password Checkup Homepage.
+id<GREYMatcher> PasswordCheckupTableView() {
+  return grey_accessibilityID(password_manager::kPasswordCheckupTableViewId);
+}
 
 // Matcher for the header image view shown in the Password Checkup Homepage.
 id<GREYMatcher> PasswordCheckupHompageHeaderImageView() {
@@ -100,7 +124,7 @@ id<GREYMatcher> CompromisedPasswordIssuesPageTitle(int issue_count) {
 // Matcher for dismissed warnings table view item shown in the compromised
 // issues page.
 id<GREYMatcher> CompromisedPasswordIssuesDismissedWarnings() {
-  return grey_accessibilityID(kDismissedWarningsCellId);
+  return grey_accessibilityID(kDismissedWarningsCellID);
 }
 
 // Matcher for the navigation title of the dismissed warnings page.
@@ -128,7 +152,7 @@ id<GREYMatcher> WeakPasswordIssuesPageTitle(int issue_count) {
 // Matcher for the compromised warning found in a compromised password's details
 // page.
 id<GREYMatcher> CompromisedWarning() {
-  return grey_accessibilityID(kCompromisedWarningId);
+  return grey_accessibilityID(kCompromisedWarningID);
 }
 
 // Matcher for the "Dismiss Warning" button found in a compromised password's
@@ -155,44 +179,32 @@ id<GREYMatcher> RestoreWarningButton() {
 #pragma mark - Helpers
 
 // Saves two reused passwords.
-void SaveReusedPasswordForms() {
-  SavePasswordForm(/*password=*/@"reused password",
-                   /*username=*/@"concrete username",
-                   /*origin=*/@"https://example1.com");
-  SavePasswordForm(/*password=*/@"reused password",
-                   /*username=*/@"concrete username",
-                   /*origin=*/@"https://example2.com");
+void SaveReusedPasswordFormsToProfileStore() {
+  SavePasswordFormToProfileStore(kReusedPassword, kDefaultUsername, kSite1);
+  SavePasswordFormToProfileStore(kReusedPassword, kDefaultUsername, kSite2);
 }
 
 // Saves a weak password.
-void SaveWeakPasswordForm() {
-  SavePasswordForm(/*password=*/@"1", /*username=*/@"concrete username",
-                   /*origin=*/@"https://example3.com");
-}
-
-// Waits for Password Checkup to finish loading.
-void WaitForPasswordCheckupToFinishLoading(int number_of_affiliated_groups) {
-  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
-                      PasswordCheckupCellForState(PasswordCheckStateRunning,
-                                                  number_of_affiliated_groups)];
+void SaveWeakPasswordFormToProfileStore() {
+  SavePasswordFormToProfileStore(kWeakPassword, kDefaultUsername, kSite3);
 }
 
 // Opens the Password Checkup Homepage.
-void OpenPasswordCheckupHomepage(int number_of_affiliated_groups,
-                                 PasswordCheckUIState result_state,
+void OpenPasswordCheckupHomepage(PasswordCheckUIState result_state,
                                  int result_password_count) {
   password_manager_test_utils::OpenPasswordManager();
 
-  WaitForPasswordCheckupToFinishLoading(number_of_affiliated_groups);
+  id<GREYMatcher> password_checkup_result_cell =
+      PasswordCheckupCellForState(result_state, result_password_count);
 
-  [[EarlGrey selectElementWithMatcher:PasswordCheckupCellForState(
-                                          result_state, result_password_count)]
+  // Wait for Password Checkup result.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      password_checkup_result_cell];
+
+  // Open the Password Checkup Homepage and make sure that it is visible.
+  [[EarlGrey selectElementWithMatcher:password_checkup_result_cell]
       performAction:grey_tap()];
-
-  // Verify that the Password Checkup Homepage is visible.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
+  [[EarlGrey selectElementWithMatcher:PasswordCheckupTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -270,10 +282,10 @@ NSString* LeakedPasswordDescription() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.relaunch_policy = NoForceRelaunchAndResetState;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordCheckup);
+      password_manager::features::kIOSPasswordAuthOnEntryV2);
 
   return config;
 }
@@ -287,7 +299,7 @@ NSString* LeakedPasswordDescription() {
           password_manager::BulkLeakCheckServiceInterface::State::kIdle];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Mock successful reauth for opening the Password Manager.
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
@@ -304,12 +316,10 @@ NSString* LeakedPasswordDescription() {
 
 // Tests the safe state of the Password Checkup Homepage.
 - (void)testPasswordCheckupHomepageSafeState {
-  SavePasswordForm();
+  SavePasswordFormToProfileStore();
 
-  OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1,
-      /*result_state=*/PasswordCheckStateSafe,
-      /*result_password_count=*/0);
+  OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
+                              /*result_password_count=*/0);
 
   // Verify that tapping the items of the insecure types section doesn't open
   // another page.
@@ -324,14 +334,47 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Validates that the Password Manager UI is dismissed when local authentication
+// fails while in the Password Checkup UI.
+- (void)testPasswordCheckupHomepageWithFailedAuth {
+  SavePasswordFormToProfileStore();
+
+  OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
+                              /*result_password_count=*/0);
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Password Checkup should be covered by reauthentication UI until successful
+  // local authentication.
+  [[EarlGrey selectElementWithMatcher:PasswordCheckupTableView()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Password Manager UI should be dismissed leaving the Settings UI Visible.
+  [[EarlGrey selectElementWithMatcher:PasswordCheckupTableView()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests the warning state of the Password Checkup Homepage.
 - (void)testPasswordCheckupHomepageWarningState {
-  SaveMutedCompromisedPasswordForm();
-  SaveReusedPasswordForms();
-  SaveWeakPasswordForm();
+  SaveMutedCompromisedPasswordFormToProfileStore();
+  SaveReusedPasswordFormsToProfileStore();
+  SaveWeakPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/4,
       /*result_state=*/PasswordCheckStateReusedPasswords,
       /*result_password_count=*/2);
 
@@ -363,11 +406,10 @@ NSString* LeakedPasswordDescription() {
 
 // Tests the severe warning state of the Password Checkup Homepage.
 - (void)testPasswordCheckupHomepageCompromisedState {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Verify that tapping the reused and weak passwords items doesn't open
@@ -388,15 +430,18 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests the loading state of the Password Checkup Homepage.
-- (void)testPasswordCheckupHomepageLoadingState {
-  SaveCompromisedPasswordForm();
+// TODO(crbug.com/1462095): Fix and re enable the test.
+- (void)DISABLED_testPasswordCheckupHomepageLoadingState {
+  // TODO(crbug.com/1512150): Test fails on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+  SaveCompromisedPasswordFormToProfileStore();
 
   NSInteger numberOfAffiliatedGroups = 1;
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/
-      numberOfAffiliatedGroups, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Trigger a new check by tapping the "Check Again" button.
@@ -419,7 +464,10 @@ NSString* LeakedPasswordDescription() {
   [[EarlGrey selectElementWithMatcher:CheckAgainButton()]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
 
-  WaitForPasswordCheckupToFinishLoading(numberOfAffiliatedGroups);
+  // Wait for Password Checkup to finish loading.
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      PasswordCheckupCellForState(PasswordCheckStateRunning,
+                                                  numberOfAffiliatedGroups)];
 
   // Verify that the "Check Again" button is enabled again.
   [[EarlGrey selectElementWithMatcher:CheckAgainButton()]
@@ -428,11 +476,10 @@ NSString* LeakedPasswordDescription() {
 
 // Tests the error state of the Password Checkup Homepage.
 - (void)testPasswordCheckupHomepageErrorState {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Set the FakeBulkLeakCheckService to return the offline error state.
@@ -469,17 +516,15 @@ NSString* LeakedPasswordDescription() {
                            @"the Password Checkup Homepage.");
   }
 
-  SavePasswordForm();
+  SavePasswordFormToProfileStore();
 
   // Rotate device to left landscape orientation before opening the Password
   // Checkup Homepage.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                 error:nil];
 
-  OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1,
-      /*result_state=*/PasswordCheckStateSafe,
-      /*result_password_count=*/0);
+  OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
+                              /*result_password_count=*/0);
 
   // The header image view should not be visible after being rotated to left
   // landscape orientation.
@@ -502,11 +547,10 @@ NSString* LeakedPasswordDescription() {
 
 // Tests dismissing a compromised password warning.
 - (void)testPasswordCheckupDismissCompromisedPasswordWarning {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Open the compromised issues page.
@@ -518,7 +562,7 @@ NSString* LeakedPasswordDescription() {
 
   // Validate that the compromised password is present in the list and that the
   // "Dismissed Warning" cell is not present.
-  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username",
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       assertWithMatcher:grey_sufficientlyVisible()];
   [password_manager_test_utils::GetInteractionForIssuesListItem(
@@ -526,7 +570,7 @@ NSString* LeakedPasswordDescription() {
       assertWithMatcher:grey_notVisible()];
 
   // Open the password's details.
-  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username",
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:CompromisedWarning()]
@@ -552,7 +596,7 @@ NSString* LeakedPasswordDescription() {
 
   // Verify that the password is not in the list anymore and that the "Dismissed
   // Warning" cell is now present.
-  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username",
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       assertWithMatcher:grey_notVisible()];
   [password_manager_test_utils::GetInteractionForIssuesListItem(
@@ -562,11 +606,10 @@ NSString* LeakedPasswordDescription() {
 
 // Tests restoring a muted compromised password warning.
 - (void)testPasswordCheckupRestoreCompromisedPasswordWarning {
-  SaveMutedCompromisedPasswordForm();
+  SaveMutedCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1, /*result_state=*/
-      PasswordCheckStateDismissedWarnings,
+      /*result_state=*/PasswordCheckStateDismissedWarnings,
       /*result_password_count=*/1);
 
   // Open the compromised issues page.
@@ -589,12 +632,12 @@ NSString* LeakedPasswordDescription() {
   // Verify that the dismissed warnings is displayed and that the muted password
   // is in the list.
   VerifyDismissedWarningsPageIsVisible();
-  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username",
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open the password's details.
-  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username",
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:CompromisedWarning()]
@@ -612,7 +655,7 @@ NSString* LeakedPasswordDescription() {
 
   // Verify that the compromised password is present in the list and that the
   // "Dismissed Warning" cell is not present anymore.
-  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username",
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       assertWithMatcher:grey_sufficientlyVisible()];
   [password_manager_test_utils::GetInteractionForIssuesListItem(
@@ -621,13 +664,11 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests deleting the last saved password through Password Checkup.
-// TODO(crbug.com/1462095): Fix and re enable the test.
-- (void)DISABLED_testDeleteLastPassword {
-  SaveCompromisedPasswordForm();
+- (void)testDeleteLastPassword {
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Open the compromised issues page.
@@ -636,14 +677,13 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()];
 
   // Open the password's details.
-  NSString* username = @"concrete username";
-  [GetInteractionForPasswordIssueEntry(@"example.com", username,
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       performAction:grey_tap()];
 
   // Enter edit mode and delete the password.
   password_manager_test_utils::TapNavigationBarEditButton();
-  DeleteCredential(username, @"https://example.com/");
+  DeleteCredential(kDefaultUsername, kDefaultSite);
 
   // Wait until the details view is dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -655,13 +695,11 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last reused passwords issue by editing a password through
 // Password Checkup.
-// TODO(crbug.com/1462095): Fix and re enable the test.
-- (void)DISABLED_testResolveLastIssueByEditingPassword {
-  SaveReusedPasswordForms();
+- (void)testResolveLastIssueByEditingPassword {
+  SaveReusedPasswordFormsToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/2, /*result_state=*/
-      PasswordCheckStateReusedPasswords,
+      /*result_state=*/PasswordCheckStateReusedPasswords,
       /*result_password_count=*/2);
 
   // Open the reused issues page.
@@ -670,13 +708,12 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()];
 
   // Open one of the password's details.
-  NSString* username = @"concrete username";
-  [GetInteractionForPasswordIssueEntry(@"example1.com", username)
+  [GetInteractionForPasswordIssueEntry(kDomain1, kDefaultUsername)
       performAction:grey_tap()];
 
   // Enter edit mode and change the password to something that's not weak.
   password_manager_test_utils::TapNavigationBarEditButton();
-  EditPassword(@"new password!");
+  EditPassword(kSafePassword);
 
   GoBackToPreviousPage();
 
@@ -694,16 +731,12 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last compromised passwords issue by deleting a password
 // through Password Checkup.
-// TODO(crbug.com/1462095): Fix and re enable the test.
-- (void)DISABLED_testResolveLastIssueByDeletingPassword {
-  SavePasswordForm(/*password=*/@"safe password",
-                   /*username=*/@"concrete username",
-                   /*origin=*/@"https://example1.com");
-  SaveCompromisedPasswordForm();
+- (void)testResolveLastIssueByDeletingPassword {
+  SavePasswordFormToProfileStore(kSafePassword, kDefaultUsername, kSite1);
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/2, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Open the compromised issues page.
@@ -712,14 +745,14 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()];
 
   // Open the password's details.
-  NSString* username = @"concrete username";
-  [GetInteractionForPasswordIssueEntry(@"example.com", username,
+
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       performAction:grey_tap()];
 
   // Enter edit mode and change the password to something that's not weak.
   password_manager_test_utils::TapNavigationBarEditButton();
-  DeleteCredential(username, @"https://example1.com/");
+  DeleteCredential(kDefaultUsername, kDefaultSite);
 
   // Wait until the details view is dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -735,13 +768,11 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last compromised passwords issue by deleting a password
 // through Password Checkup.
-// TODO(crbug.com/1462095): Fix and re enable the test.
-- (void)DISABLED_testChangeCompromisedPasswordToSafePassword {
-  SaveCompromisedPasswordForm();
+- (void)testChangeCompromisedPasswordToSafePassword {
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Open the compromised issues page.
@@ -750,8 +781,7 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()];
 
   // Open the password's details.
-  NSString* username = @"concrete username";
-  [GetInteractionForPasswordIssueEntry(@"example.com", username,
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:CompromisedWarning()]
@@ -762,7 +792,7 @@ NSString* LeakedPasswordDescription() {
   // Enter edit mode and change the password to something that's not
   // compromised.
   password_manager_test_utils::TapNavigationBarEditButton();
-  EditPassword(@"new password!");
+  EditPassword(kSafePassword);
 
   // Verify that the compromised warning and the "Dismiss Warning" button are
   // now gone.
@@ -774,13 +804,11 @@ NSString* LeakedPasswordDescription() {
 
 // Tests changing the password of a muted compromised password to a weak
 // password.
-// TODO(crbug.com/1462095): Fix and re enable the test.
-- (void)DISABLED_testChangeMutedPasswordToWeakPassword {
-  SaveMutedCompromisedPasswordForm();
+- (void)testChangeMutedPasswordToWeakPassword {
+  SaveMutedCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1, /*result_state=*/
-      PasswordCheckStateDismissedWarnings,
+      /*result_state=*/PasswordCheckStateDismissedWarnings,
       /*result_password_count=*/1);
 
   // Open the compromised issues page.
@@ -794,8 +822,7 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()];
 
   // Open the password's details.
-  NSString* username = @"concrete username";
-  [GetInteractionForPasswordIssueEntry(@"example.com", username,
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername,
                                        LeakedPasswordDescription())
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:CompromisedWarning()]
@@ -806,7 +833,7 @@ NSString* LeakedPasswordDescription() {
   // Enter edit mode and change the password to something that's not
   // compromised.
   password_manager_test_utils::TapNavigationBarEditButton();
-  EditPassword(@"1");
+  EditPassword(kWeakPassword);
 
   // Verify that the compromised warning and the "Restore Warning" button are
   // now gone.
@@ -837,13 +864,12 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests the details page of a credential that is both weak and compromised when
-// openend from the weak issues page.
+// opened from the weak issues page.
 - (void)testCompromisedAndWeakPasswordOpenedInWeakContext {
-  SaveCompromisedPasswordForm(/*password=*/@"1");
+  SaveCompromisedPasswordFormToProfileStore(kWeakPassword);
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/1, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Open the weak issues page.
@@ -852,8 +878,7 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()];
 
   // Open the password's details.
-  NSString* username = @"concrete username";
-  [GetInteractionForPasswordIssueEntry(@"example.com", username)
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername)
       performAction:grey_tap()];
 
   // Verify that the compromised warning and the "Dismiss Warning" button are
@@ -865,14 +890,13 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests the details page of a credential that is both reused and compromised
-// when openend from the reused issues page.
+// when opened from the reused issues page.
 - (void)testCompromisedAndReusedPasswordOpenedInReusedContext {
-  SaveCompromisedPasswordForm(/*password=*/@"reused password");
-  SaveReusedPasswordForms();
+  SaveCompromisedPasswordFormToProfileStore(kReusedPassword);
+  SaveReusedPasswordFormsToProfileStore();
 
   OpenPasswordCheckupHomepage(
-      /*number_of_affiliated_groups=*/3, /*result_state=*/
-      PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
       /*result_password_count=*/1);
 
   // Open the reused issues page.
@@ -881,8 +905,7 @@ NSString* LeakedPasswordDescription() {
       performAction:grey_tap()];
 
   // Open the password's details.
-  NSString* username = @"concrete username";
-  [GetInteractionForPasswordIssueEntry(@"example.com", username)
+  [GetInteractionForPasswordIssueEntry(kDefaultDomain, kDefaultUsername)
       performAction:grey_tap()];
 
   // Verify that the compromised warning and the "Dismiss Warning" button are
@@ -891,6 +914,67 @@ NSString* LeakedPasswordDescription() {
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey selectElementWithMatcher:DismissWarningButton()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that Password Checkup Homepage is dismissed when there are no saved
+// passwords.
+- (void)testPasswordCheckupDismissedAfterAllPasswordsGone {
+  SavePasswordFormToProfileStore();
+
+  OpenPasswordCheckupHomepage(
+      /*result_state=*/PasswordCheckStateSafe,
+      /*result_password_count=*/0);
+
+  [PasswordSettingsAppInterface clearProfilePasswordStore];
+
+  // Verify that the Password Checkup Homepage is dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Validates that the Password Manager UI is dismissed when local authentication
+// fails while in the Password Issues UI.
+- (void)testPasswordIssuesWithFailedAuth {
+  SaveWeakPasswordFormToProfileStore();
+
+  OpenPasswordCheckupHomepage(
+      /*result_state=*/PasswordCheckStateWeakPasswords,
+      /*result_password_count=*/1);
+
+  // Verify that tapping the reused passwords item opens the reused password
+  // issues page.
+  [[EarlGrey
+      selectElementWithMatcher:PasswordCheckupHomepageWeakPasswordsItem()]
+      performAction:grey_tap()];
+  VerifyWeakPasswordIssuesPageIsVisible(/*issue_count=*/1);
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Reauthentication UI should be covering Password Issues.
+  [[EarlGrey
+      selectElementWithMatcher:WeakPasswordIssuesPageTitle(/*issue_count=*/1)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Password Manager UI should have been dismissed leaving Settings visible.
+  [[EarlGrey
+      selectElementWithMatcher:WeakPasswordIssuesPageTitle(/*issue_count=*/1)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

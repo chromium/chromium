@@ -51,10 +51,10 @@ class VIEWS_EXPORT AnimationAbortHandle : public ui::LayerObserver {
   AnimationState animation_state_ = AnimationState::kNotStarted;
 
   // Stores the layers tracked by the animation abort handle.
-  std::set<ui::Layer*> tracked_layers_;
+  std::set<raw_ptr<ui::Layer, SetExperimental>> tracked_layers_;
 
   // Stores the layers that are deleted during tracking.
-  std::set<ui::Layer*> deleted_layers_;
+  std::set<raw_ptr<ui::Layer, SetExperimental>> deleted_layers_;
 };
 
 }  // namespace views

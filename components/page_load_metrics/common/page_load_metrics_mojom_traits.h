@@ -23,7 +23,7 @@ class StructTraits<page_load_metrics::mojom::SubresourceLoadMetricsDataView,
       const blink::SubresourceLoadMetrics& d) {
     return d.number_of_subresource_loads_handled_by_service_worker;
   }
-  static absl::optional<blink::ServiceWorkerSubresourceLoadMetrics>
+  static std::optional<blink::ServiceWorkerSubresourceLoadMetrics>
   service_worker_subresource_load_metrics(
       const blink::SubresourceLoadMetrics& d) {
     return d.service_worker_subresource_load_metrics;

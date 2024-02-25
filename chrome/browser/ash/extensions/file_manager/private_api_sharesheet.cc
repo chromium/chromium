@@ -31,12 +31,12 @@ using extensions::api::file_manager_private::SharesheetLaunchSource;
 
 sharesheet::LaunchSource GetLaunchSource(SharesheetLaunchSource launch_source) {
   switch (launch_source) {
-    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_SHARESHEET_BUTTON):
+    case (SharesheetLaunchSource::kSharesheetButton):
       return sharesheet::LaunchSource::kFilesAppShareButton;
-    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_CONTEXT_MENU):
+    case (SharesheetLaunchSource::kContextMenu):
       return sharesheet::LaunchSource::kFilesAppContextMenu;
-    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_UNKNOWN):
-    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_NONE):
+    case (SharesheetLaunchSource::kUnknown):
+    case (SharesheetLaunchSource::kNone):
       return sharesheet::LaunchSource::kUnknown;
   }
 }
@@ -55,7 +55,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
   using extensions::api::file_manager_private_internal::SharesheetHasTargets::
       Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty()) {
@@ -74,9 +74,6 @@ FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
     const GURL url(url_as_string);
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
-    if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
-      contains_hosted_document_ = true;
-    }
     if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
       continue;
     }
@@ -110,11 +107,12 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
 
   if (file_system_urls_.size() == 1 &&
       file_system_urls_[0].type() == storage::kFileSystemTypeDriveFs) {
-    auto connection_status = drive::util::GetDriveConnectionStatus(
+    using drive::util::ConnectionStatus;
+    const ConnectionStatus status = drive::util::GetDriveConnectionStatus(
         Profile::FromBrowserContext(browser_context()));
 
-    if (connection_status == drive::util::DRIVE_CONNECTED_METERED ||
-        connection_status == drive::util::DRIVE_CONNECTED) {
+    using enum ConnectionStatus;
+    if (status == kMetered || status == kConnected) {
       file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
           file_system_urls_[0], profile_,
           base::BindOnce(
@@ -125,8 +123,7 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
     }
   }
   result = sharesheet_service->HasShareTargets(
-      apps_util::MakeShareIntent(urls_, *mime_types),
-      contains_hosted_document_);
+      apps_util::MakeShareIntent(urls_, *mime_types));
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
 }
@@ -168,10 +165,8 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
       (properties->can_share && *properties->can_share && properties->share_url)
           ? GURL(*properties->share_url)
           : GURL();
-  bool result = sharesheet_service->HasShareTargets(
-      apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
-                                 is_directory),
-      contains_hosted_document_);
+  bool result = sharesheet_service->HasShareTargets(apps_util::MakeShareIntent(
+      urls_[0], (*mime_types)[0], share_url, is_directory));
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
 }
@@ -186,7 +181,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
   using extensions::api::file_manager_private_internal::InvokeSharesheet::
       Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty()) {
@@ -209,9 +204,6 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
     const GURL url(url_string);
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
-    if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
-      contains_hosted_document_ = true;
-    }
     if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
       continue;
     }
@@ -245,11 +237,12 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
 
   if (file_system_urls_.size() == 1 &&
       file_system_urls_[0].type() == storage::kFileSystemTypeDriveFs) {
-    auto connection_status = drive::util::GetDriveConnectionStatus(
+    using drive::util::ConnectionStatus;
+    const ConnectionStatus status = drive::util::GetDriveConnectionStatus(
         Profile::FromBrowserContext(browser_context()));
 
-    if (connection_status == drive::util::DRIVE_CONNECTED_METERED ||
-        connection_status == drive::util::DRIVE_CONNECTED) {
+    using enum ConnectionStatus;
+    if (status == kMetered || status == kConnected) {
       file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
           file_system_urls_[0], profile_,
           base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
@@ -262,7 +255,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   sharesheet_service->ShowBubble(
       GetSenderWebContents(),
       apps_util::MakeShareIntent(urls_, *mime_types, dlp_source_urls_),
-      contains_hosted_document_, launch_source, base::NullCallback());
+      launch_source, base::DoNothing());
   Respond(NoArguments());
 }
 
@@ -312,7 +305,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
       GetSenderWebContents(),
       apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
                                  is_directory),
-      contains_hosted_document_, launch_source, base::NullCallback());
+      launch_source, base::DoNothing());
   Respond(NoArguments());
 }
 

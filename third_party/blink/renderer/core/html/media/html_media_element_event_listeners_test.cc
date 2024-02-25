@@ -84,7 +84,7 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
       ScheduleTimeIncrement();
   }
 
-  void SetAutoIncrementTimeDelta(absl::optional<base::TimeDelta> delta) {
+  void SetAutoIncrementTimeDelta(std::optional<base::TimeDelta> delta) {
     auto_time_increment_delta_ = delta;
     ScheduleTimeIncrement();
   }
@@ -132,7 +132,7 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
   WeakPersistent<ExecutionContext> context_;
   mutable double current_time_ = 0;
   bool playing_ = false;
-  absl::optional<base::TimeDelta> auto_time_increment_delta_ =
+  std::optional<base::TimeDelta> auto_time_increment_delta_ =
       base::Milliseconds(33);
   bool scheduled_time_increment_ = false;
   double last_seek_time_ = -1;
@@ -165,6 +165,10 @@ using testing::Return;
 
 class HTMLMediaElementEventListenersTest : public PageTestBase {
  protected:
+  HTMLMediaElementEventListenersTest() = default;
+  HTMLMediaElementEventListenersTest(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : PageTestBase(time_source) {}
   void SetUp() override {
     SetupPageWithClients(nullptr,
                          MakeGarbageCollected<MediaStubLocalFrameClient>());
@@ -200,7 +204,7 @@ class HTMLMediaElementEventListenersTest : public PageTestBase {
   }
 
   MediaCustomControlsFullscreenDetector* FullscreenDetector() {
-    return Video()->custom_controls_fullscreen_detector_;
+    return Video()->custom_controls_fullscreen_detector_.Get();
   }
 };
 
@@ -320,20 +324,30 @@ static const base::TickClock* s_platform_clock_;
 class HTMLMediaElementWithMockSchedulerTest
     : public HTMLMediaElementEventListenersTest {
  protected:
+  // We want total control over when to advance the clock. This also allows
+  // us to call platform()->RunUntilIdle() to run all pending tasks without
+  // fear of looping forever.
+  HTMLMediaElementWithMockSchedulerTest()
+      : HTMLMediaElementEventListenersTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     EnablePlatform();
-    // We want total control over when to advance the clock. This also allows
-    // us to call platform()->RunUntilIdle() to run all pending tasks without
-    // fear of looping forever.
-    platform()->SetAutoAdvanceNowToPendingTasks(false);
-
-    // DocumentParserTiming has DCHECKS to make sure time > 0.0.
-    platform()->AdvanceClockSeconds(1);
 
     s_platform_clock_ = GetTickClock();
 
-    time_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-        nullptr, &HTMLMediaElementWithMockSchedulerTest::Now, nullptr);
+    if (!task_environment()) {
+      time_overrides_ =
+          std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+              nullptr, &HTMLMediaElementWithMockSchedulerTest::Now, nullptr);
+    }
+
+    // DocumentParserTiming has DCHECKS to make sure time > 0.0.
+    AdvanceClock(base::Seconds(1));
+    // Tests rely on start time being a multiple of 250ms.
+    auto start = base::TimeTicks::Now().SnappedToNextTick(base::TimeTicks(),
+                                                          base::Seconds(1));
+    AdvanceClock(start - base::TimeTicks::Now());
 
     HTMLMediaElementEventListenersTest::SetUp();
   }
@@ -356,6 +370,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
 
   auto* timeupdate_handler = MakeGarbageCollected<MockEventListener>();
   Video()->addEventListener(event_type_names::kTimeupdate, timeupdate_handler);
+  testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Simulate conditions where playback is possible.
   SimulateNetworkState(HTMLMediaElement::kNetworkIdle);
@@ -368,14 +383,14 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
   // While playing, timeupdate should fire every 250 ms -> 4x per second as long
   // as media player's CurrentTime continues to advance.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(4);
-  platform()->RunForPeriodSeconds(1);
+  FastForwardBy(base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // If media playback time is fixed, periodic timeupdate's should not continue
   // to fire.
-  WebMediaPlayer()->SetAutoIncrementTimeDelta(absl::nullopt);
+  WebMediaPlayer()->SetAutoIncrementTimeDelta(std::nullopt);
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
-  platform()->RunForPeriodSeconds(1);
+  FastForwardBy(base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Per spec, pausing should fire `timeupdate`
@@ -425,7 +440,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   // Advance a full periodic timeupdate interval (250 ms) and expect a single
   // timeupdate.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
-  platform()->RunForPeriodSeconds(.250);
+  FastForwardBy(base::Seconds(.250));
   // The event is scheduled, but needs one more scheduler cycle to fire.
   platform()->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
@@ -433,7 +448,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   // Now advance 125 ms to reach the middle of the periodic timeupdate interval.
   // no additional timeupdate should trigger.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
-  platform()->RunForPeriodSeconds(.125);
+  FastForwardBy(base::Seconds(.125));
   platform()->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
@@ -450,14 +465,14 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   // exactly every 250ms from the last timeupdate, and the seek's timeupdate
   // should reset that 250ms ms countdown.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
-  platform()->RunForPeriodSeconds(.125);
+  FastForwardBy(base::Seconds(.125));
   platform()->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
   // Advancing another 125ms, we should expect a new timeupdate because we are
   // now 250ms from the seek's timeupdate.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
-  platform()->RunForPeriodSeconds(.125);
+  FastForwardBy(base::Seconds(.125));
   platform()->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 
@@ -465,7 +480,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   // this represents a full periodic timeupdate interval with no interruptions
   // (e.g. no-seeks).
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
-  platform()->RunForPeriodSeconds(.250);
+  FastForwardBy(base::Seconds(.250));
   platform()->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(timeupdate_handler);
 }
@@ -496,7 +511,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, ShowPosterFlag_FalseAfterLoop) {
   auto* seeking_handler = MakeGarbageCollected<MockEventListener>();
   EXPECT_CALL(*seeking_handler, Invoke(_, _)).Times(1);
   Video()->addEventListener(event_type_names::kSeeking, seeking_handler);
-  platform()->RunForPeriodSeconds(15);
+  FastForwardBy(base::Seconds(15));
   testing::Mock::VerifyAndClearExpectations(seeking_handler);
 
   auto* seeked_handler = MakeGarbageCollected<MockEventListener>();
@@ -535,7 +550,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, ShowPosterFlag_FalseAfterEnded) {
   Video()->addEventListener(event_type_names::kEnded, ended_handler);
 
   EXPECT_CALL(*ended_handler, Invoke(_, _)).Times(1);
-  platform()->RunForPeriodSeconds(15);
+  FastForwardBy(base::Seconds(15));
   testing::Mock::VerifyAndClearExpectations(ended_handler);
 
   // ShowPosterFlag should be false even after ending
@@ -604,12 +619,12 @@ class CueEventListener final : public NativeEventListener {
     // The difference between when the cue was scheduled to begin and when the
     // |kEnter| event was fired. The optional will be empty if the |kEnter|
     // event was never fired.
-    absl::optional<base::TimeDelta> enter_time_delta;
+    std::optional<base::TimeDelta> enter_time_delta;
 
     // The difference between when the cue was scheduled to end and when the
     // |kExit| event fired. The optional will be empty if the |kExit| event
     // was never fired.
-    absl::optional<base::TimeDelta> exit_time_delta;
+    std::optional<base::TimeDelta> exit_time_delta;
   };
 
   void OnCueEnter(HTMLMediaElement* media_element, VTTCue* cue) {
@@ -669,7 +684,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, CueEnterExitEventLatency) {
   WebMediaPlayer()->SetAutoIncrementTimeDelta(base::Milliseconds(8));
   Video()->Play();
 
-  platform()->RunForPeriod(kTestCueDataLength);
+  FastForwardBy(kTestCueDataLength);
   platform()->RunUntilIdle();
 
   // Ensure all cue events fired when expected with a 20ms tolerance

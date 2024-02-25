@@ -4,6 +4,8 @@
 
 #include "chrome/browser/component_updater/updater_state.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/time/time.h"
@@ -13,7 +15,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -35,13 +36,13 @@ TEST_F(UpdaterStateTest, SerializeChromium) {
 namespace {
 
 // Returns the path to the global prefs.json file of the Chromium updater.
-absl::optional<base::FilePath> GetUpdaterGlobalPrefsPath(bool is_machine) {
-  const absl::optional<base::FilePath> global_prefs_dir =
+std::optional<base::FilePath> GetUpdaterGlobalPrefsPath(bool is_machine) {
+  const std::optional<base::FilePath> global_prefs_dir =
       updater::GetInstallDirectory(is_machine ? updater::UpdaterScope::kSystem
                                               : updater::UpdaterScope::kUser);
   return global_prefs_dir
-             ? absl::make_optional(global_prefs_dir->AppendASCII("prefs.json"))
-             : absl::nullopt;
+             ? std::make_optional(global_prefs_dir->AppendASCII("prefs.json"))
+             : std::nullopt;
 }
 
 }  // namespace
@@ -130,7 +131,7 @@ TEST_F(UpdaterStateTest, SerializeChromePerUser) {
 }
 
 TEST_F(UpdaterStateTest, UpdaterNamePerUser) {
-  absl::optional<base::FilePath> prefs_path = GetUpdaterGlobalPrefsPath(false);
+  std::optional<base::FilePath> prefs_path = GetUpdaterGlobalPrefsPath(false);
   base::DeleteFile(*prefs_path);
 
 #if BUILDFLAG(IS_WIN)

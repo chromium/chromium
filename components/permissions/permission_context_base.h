@@ -18,6 +18,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
@@ -37,6 +38,10 @@ namespace permissions {
 
 class Observer : public base::CheckedObserver {
  public:
+  // Called whenever there is a potential permission status change for the
+  // specified patterns. This function being called does not necessarily mean
+  // that the result of |GetPermissionStatus| has changed for any particular
+  // origin.
   virtual void OnPermissionChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
@@ -63,6 +68,10 @@ using BrowserPermissionCallback = base::OnceCallback<void(ContentSetting)>;
 //   - Create a class that inherits from PermissionContextBase and passes the
 //     new permission.
 //   - Edit the PermissionRequest methods to add the new text.
+//   - Make sure to update
+//     third_party/blink/public/devtools_protocol/browser_protocol.pdl
+//     even if you don't intend to do anything DevTools-specific; you will
+//     run into problems with generated code otherwise.
 //   - Hit several asserts for the missing plumbing and fix them :)
 // After this you can override several other methods to customize behavior,
 // in particular it is advised to override UpdateTabContext in order to manage
@@ -90,9 +99,7 @@ class PermissionContextBase : public content_settings::Observer {
 
   // |callback| is called upon resolution of the request, but not if a prompt
   // is shown and ignored.
-  virtual void RequestPermission(const PermissionRequestID& id,
-                                 const GURL& requesting_frame,
-                                 bool user_gesture,
+  virtual void RequestPermission(PermissionRequestData request_data,
                                  BrowserPermissionCallback callback);
 
   // Returns whether the permission has been granted, denied etc.
@@ -110,6 +117,8 @@ class PermissionContextBase : public content_settings::Observer {
   // Update |result| with any modifications based on the device state. For
   // example, if |result| is ALLOW but Chrome does not have the relevant
   // permission at the device level, but will prompt the user, return ASK.
+  // This function updates the cached device permission status which can result
+  // in the permission status changing and observers being notified.
   virtual content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
       content::PermissionResult result,
       const GURL& requesting_origin,
@@ -127,6 +136,10 @@ class PermissionContextBase : public content_settings::Observer {
   void AddObserver(permissions::Observer* permission_observer);
   void RemoveObserver(permissions::Observer* permission_observer);
 
+  ContentSettingsType content_settings_type() const {
+    return content_settings_type_;
+  }
+
  protected:
   virtual ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
@@ -135,10 +148,7 @@ class PermissionContextBase : public content_settings::Observer {
 
   // Called if generic checks (existing content setting, embargo, etc.) fail to
   // resolve a permission request. The default implementation prompts the user.
-  virtual void DecidePermission(const PermissionRequestID& id,
-                                const GURL& requesting_origin,
-                                const GURL& embedding_origin,
-                                bool user_gesture,
+  virtual void DecidePermission(PermissionRequestData request_data,
                                 BrowserPermissionCallback callback);
 
   // Updates stored content setting if persist is set, updates tab indicators
@@ -189,16 +199,13 @@ class PermissionContextBase : public content_settings::Observer {
   // Implementors can override this method to use a different PermissionRequest
   // implementation.
   virtual std::unique_ptr<PermissionRequest> CreatePermissionRequest(
-      const GURL& request_origin,
-      ContentSettingsType content_settings_type,
-      bool has_gesture,
       content::WebContents* web_contents,
+      PermissionRequestData request_data,
       PermissionRequest::PermissionDecidedCallback permission_decided_callback,
       base::OnceClosure delete_callback) const;
 
-  ContentSettingsType content_settings_type() const {
-    return content_settings_type_;
-  }
+  // Implementors can override this method to avoid using automatic embargo.
+  virtual bool UsesAutomaticEmbargo() const;
 
   base::ObserverList<permissions::Observer> permission_observers_;
 
@@ -224,6 +231,10 @@ class PermissionContextBase : public content_settings::Observer {
                          bool is_one_time,
                          bool is_final_decision);
 
+  void NotifyObservers(const ContentSettingsPattern& primary_pattern,
+                       const ContentSettingsPattern& secondary_pattern,
+                       ContentSettingsTypeSet content_type_set) const;
+
   raw_ptr<content::BrowserContext> browser_context_;
   const ContentSettingsType content_settings_type_;
   const blink::mojom::PermissionsPolicyFeature permissions_policy_feature_;
@@ -231,6 +242,8 @@ class PermissionContextBase : public content_settings::Observer {
       std::string,
       std::pair<std::unique_ptr<PermissionRequest>, BrowserPermissionCallback>>
       pending_requests_;
+
+  mutable std::optional<bool> last_has_device_permission_result_ = std::nullopt;
 
   // Must be the last member, to ensure that it will be
   // destroyed first, which will invalidate weak pointers

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
@@ -21,7 +22,6 @@
 #include "pdf/test/test_helpers.h"
 #include "pdf/ui/thumbnail.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -44,6 +44,21 @@ TEST(PDFiumPageHelperTest, ToPDFiumRotation) {
   EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise90), 1);
   EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise180), 2);
   EXPECT_EQ(ToPDFiumRotation(PageOrientation::kClockwise270), 3);
+}
+
+TEST(PDFiumPageHelperTest, ScopedUnloadPreventer) {
+  // Should not DCHECK in its dtor due to ScopedUnloadPreventer usage.
+  PDFiumPage page1(/*engine=*/nullptr, 1);
+  PDFiumPage page2(/*engine=*/nullptr, 2);
+  PDFiumPage::ScopedUnloadPreventer prevent_unload1(&page1);
+  PDFiumPage::ScopedUnloadPreventer prevent_unload2(&page2);
+  PDFiumPage::ScopedUnloadPreventer prevent_unload3(prevent_unload2);
+  PDFiumPage::ScopedUnloadPreventer prevent_unload4(&page2);
+  prevent_unload2 = prevent_unload1;
+  prevent_unload1 = prevent_unload2;
+  prevent_unload1 = prevent_unload4;
+  prevent_unload4 = prevent_unload1;
+  prevent_unload3 = prevent_unload4;
 }
 
 void CompareTextRuns(const AccessibilityTextRunInfo& expected_text_run,
@@ -616,7 +631,7 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   constexpr int kFirstRunStartIndex = 0;
   constexpr int kFirstRunEndIndex = 20;
   constexpr int kPageIndex = 0;
-  absl::optional<AccessibilityTextRunInfo> text_run_info_1 =
+  std::optional<AccessibilityTextRunInfo> text_run_info_1 =
       engine->GetTextRunInfo(kPageIndex, kFirstRunStartIndex);
   ASSERT_TRUE(text_run_info_1.has_value());
 
@@ -652,7 +667,7 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   // Test the properties of second text run.
   // Note: The leading spaces in second text run are accounted for in the end
   // of first text run. Hence we won't see a space leading the second text run.
-  absl::optional<AccessibilityTextRunInfo> text_run_info_2 =
+  std::optional<AccessibilityTextRunInfo> text_run_info_2 =
       engine->GetTextRunInfo(kPageIndex, kSecondRunStartIndex);
   ASSERT_TRUE(text_run_info_2.has_value());
 
@@ -733,7 +748,7 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfo) {
   }
 
   // Test negative char index returns nullopt
-  absl::optional<AccessibilityTextRunInfo> text_run_info_result =
+  std::optional<AccessibilityTextRunInfo> text_run_info_result =
       engine->GetTextRunInfo(0, -1);
   ASSERT_FALSE(text_run_info_result.has_value());
 
@@ -787,7 +802,7 @@ TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {
 
   int current_char_index = 0;
   for (const auto& expected_text_run : expected_text_runs) {
-    absl::optional<AccessibilityTextRunInfo> text_run_info_result =
+    std::optional<AccessibilityTextRunInfo> text_run_info_result =
         engine->GetTextRunInfo(0, current_char_index);
     ASSERT_TRUE(text_run_info_result.has_value());
     const auto& actual_text_run = text_run_info_result.value();

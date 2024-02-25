@@ -5,12 +5,12 @@
 #include "services/tracing/perfetto/consumer_host.h"
 
 #include <cstring>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -203,7 +203,7 @@ ConsumerHost::TracingSession::TracingSession(
   }
 
   pending_enable_tracing_ack_pids_ = host_->service()->active_service_pids();
-  base::EraseIf(*pending_enable_tracing_ack_pids_,
+  std::erase_if(*pending_enable_tracing_ack_pids_,
                 [this](base::ProcessId pid) { return !IsExpectedPid(pid); });
 
   perfetto::TraceConfig effective_config(trace_config);

@@ -189,8 +189,8 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   slot->draw_data = data;
 }
 
-absl::optional<SurfaceSavedFrame::FrameResult> SurfaceSavedFrame::TakeResult() {
-  return std::exchange(frame_result_, absl::nullopt);
+std::optional<SurfaceSavedFrame::FrameResult> SurfaceSavedFrame::TakeResult() {
+  return std::exchange(frame_result_, std::nullopt);
 }
 
 void SurfaceSavedFrame::CompleteSavedFrameForTesting() {

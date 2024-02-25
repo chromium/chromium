@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_NET_ASH_PROXY_MONITOR_H_
 #define CHROME_BROWSER_ASH_NET_ASH_PROXY_MONITOR_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -78,7 +79,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AshProxyMonitor
   // If the `kProxy` pref is controlled by an extension running in the Lacros
   // browser associated with the primary profile, these method returns metadata
   // about the extension, otherwise it returns a null object.
-  absl::optional<ExtensionMetadata> GetLacrosExtensionControllingTheProxy()
+  std::optional<ExtensionMetadata> GetLacrosExtensionControllingTheProxy()
       const;
 
   void ClearLacrosExtensionControllingProxyInfo();
@@ -103,11 +104,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AshProxyMonitor
 
   // Only sends an update to observers if the effective proxy config has
   // changed.
-  void OnProxyChanged(absl::optional<GURL> wpad_url);
+  void OnProxyChanged(std::optional<GURL> wpad_url);
 
   // The PAC URL associated with `default_network_name_`, received via the DHCP
   // discovery method.
-  absl::optional<GURL> cached_wpad_url_ = absl::nullopt;
+  std::optional<GURL> cached_wpad_url_ = std::nullopt;
   std::unique_ptr<ProxyConfigDictionary> cached_proxy_config_ = nullptr;
 
   std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;

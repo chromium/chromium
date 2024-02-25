@@ -24,10 +24,6 @@ struct Hasher : std::hash<T> {};
 template <typename T>
 struct Hasher<T*> : Hasher<const T*> {};
 
-// Specialisation of Hasher for StringPiece.
-template <>
-struct Hasher<base::StringPiece> : base::StringPieceHash {};
-
 // Specialisation of Hasher for SHA256HashValue.
 template <>
 struct Hasher<net::SHA256HashValue> {

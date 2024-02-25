@@ -64,7 +64,7 @@ TEST(FirstRunDialogControllerTest, LayoutWithLongStrings) {
   // Ensure that the mangled strings actually do change the height!
   EXPECT_NE(defaultView.frame.size.height, longView.frame.size.height);
 
-  absl::optional<ui::ViewTreeProblemDetails> details =
+  std::optional<ui::ViewTreeProblemDetails> details =
       ui::ValidateViewTree(longView);
 
   EXPECT_FALSE(details.has_value()) << details->ToString();

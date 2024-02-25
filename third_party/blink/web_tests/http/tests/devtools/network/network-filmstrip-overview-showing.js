@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Network from 'devtools/panels/network/network.js';
 
 (async function() {
   TestRunner.addResult(
@@ -13,9 +14,9 @@ import * as Common from 'devtools/core/common/common.js';
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();
-  var networkPanel = UI.panels.network;
-  var showOverviewSetting = Common.Settings.Settings.instance().createSetting('networkLogShowOverview', true);
-  var showFilmstripSetting = Common.Settings.Settings.instance().createSetting('networkRecordFilmStripSetting', false);
+  var networkPanel = Network.NetworkPanel.NetworkPanel.instance();
+  var showOverviewSetting = Common.Settings.Settings.instance().createSetting('network-log-show-overview', true);
+  var showFilmstripSetting = Common.Settings.Settings.instance().createSetting('network-record-film-strip-setting', false);
 
   TestRunner.addResult('Overview should not be showing');
   TestRunner.addResult('Filmstrip should not be showing');

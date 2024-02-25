@@ -4,15 +4,19 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, CrRadioButtonElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {AppManagementStore, AppManagementSupportedLinksItemElement, CrRadioButtonElement, CrRadioGroupElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {App, AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
-import {replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
+import {createApp, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
+type AppConfig = Partial<App>;
 suite('<app-management-supported-links-item>', () => {
   let supportedLinksItem: AppManagementSupportedLinksItemElement;
   let fakeHandler: FakePageHandler;
@@ -318,5 +322,122 @@ suite('<app-management-supported-links-item>', () => {
 
     assertTrue(
         !!supportedLinksItem.shadowRoot!.querySelector('#overlapWarning'));
+  });
+});
+
+suite('AppManagementSupportedLinksItemElement', function() {
+  let supportedLinksItem: AppManagementSupportedLinksItemElement;
+  let apps: AppMap;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    apps = {};
+    setupFakeHandler();
+
+    loadTimeData.resetForTesting({
+      cancel: 'Cancel',
+      close: 'Close',
+      appManagementIntentSettingsDialogTitle: 'Supported Links',
+      appManagementIntentSettingsTitle: '<a href="#">Supported Links</a>',
+      appManagementIntentOverlapDialogTitle: 'Change as preferred app',
+      appManagementIntentOverlapChangeButton: 'Change',
+      appManagementIntentSharingOpenBrowserLabel: 'Open in Chrome browser',
+      appManagementIntentSharingOpenAppLabel: 'Open in App',
+      appManagementIntentSharingTabExplanation:
+          'App is set to open in a new browser tab, supported links will also open in the browser.',
+    });
+  });
+
+  async function setUpSupportedLinksComponent(
+      id: string, optConfig?: AppConfig): Promise<App> {
+    const app = createApp(id, optConfig);
+    apps[app.id] = app;
+    supportedLinksItem =
+        document.createElement('app-management-supported-links-item');
+    supportedLinksItem.app = app;
+    supportedLinksItem.apps = apps;
+    document.body.appendChild(supportedLinksItem);
+    await waitAfterNextRender(supportedLinksItem);
+    return app;
+  }
+
+  test('No supported links', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      isPreferredApp: true,
+      supportedLinks: [],  // Explicitly empty.
+    };
+    await setUpSupportedLinksComponent('app1', appOptions);
+    assertFalse(isVisible(supportedLinksItem));
+  });
+
+  test('Window/Tab mode', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      isPreferredApp: true,
+      windowMode: WindowMode.kBrowser,
+      supportedLinks: ['google.com'],
+    };
+
+    await setUpSupportedLinksComponent('app1', appOptions);
+    assertTrue(!!supportedLinksItem.shadowRoot!.querySelector(
+        '#disabledExplanationText'));
+
+    const radioGroup =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioGroupElement>(
+            '#radioGroup');
+    assertTrue(!!radioGroup);
+    assertTrue(!!radioGroup.disabled);
+  });
+
+  test('can open and close supported links list dialog', async () => {
+    const supportedLink = 'google.com';
+    const appOptions = {
+      type: AppType.kWeb,
+      isPreferredApp: true,
+      supportedLinks: [supportedLink],
+    };
+
+    await setUpSupportedLinksComponent('app1', appOptions);
+    let supportedLinksDialog =
+        supportedLinksItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
+    assertNull(supportedLinksDialog);
+
+    // Open dialog.
+    const heading = supportedLinksItem.shadowRoot!.querySelector('#heading');
+    assertTrue(!!heading);
+    const link = heading.shadowRoot!.querySelector('a');
+    assertTrue(!!link);
+    link.click();
+    await flushTasks();
+
+    supportedLinksDialog =
+        supportedLinksItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
+    assertTrue(!!supportedLinksDialog);
+    const innerDialog =
+        supportedLinksDialog.shadowRoot!.querySelector<HTMLDialogElement>(
+            '#dialog');
+    assertTrue(!!innerDialog);
+    assertTrue(innerDialog.open);
+
+    // Confirm google.com shows up.
+    const list = supportedLinksDialog.shadowRoot!.querySelector('#list');
+    assertTrue(!!list);
+    const item = list.getElementsByClassName('list-item')[0] as HTMLElement;
+    assertTrue(!!item);
+    assertEquals(supportedLink, item.innerText);
+
+    // Close dialog.
+    const closeButton =
+        innerDialog.shadowRoot!.querySelector<HTMLButtonElement>('#close');
+    assertTrue(!!closeButton);
+    closeButton.click();
+    await flushTasks();
+
+    // Wait for the stamped dialog to be destroyed.
+    await waitAfterNextRender(supportedLinksDialog);
+    supportedLinksDialog =
+        supportedLinksItem.shadowRoot!.querySelector('#dialog');
+    assertNull(supportedLinksDialog);
   });
 });

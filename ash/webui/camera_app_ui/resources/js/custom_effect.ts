@@ -6,7 +6,7 @@ import * as animation from './animation.js';
 import {assertEnumVariant, assertExists, assertNotReached} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
-import {SvgWrapper} from './lit/svg_wrapper.js';
+import {SvgWrapper} from './lit/components/svg-wrapper.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import {PerfEvent} from './type.js';
@@ -65,7 +65,7 @@ class RippleEffect {
     this.parent.appendChild(template);
     // We don't care about waiting for the single ripple animation to end
     // before returning.
-    void animation.play(ripple).then(() => {
+    void animation.play(ripple).result.then(() => {
       ripple.remove();
     });
   }
@@ -396,13 +396,4 @@ export function focus(): void {
     return;
   }
   globalEffectPayload.toast.focus();
-}
-
-/**
- * Show the new feature toast for time-lapse video recording.
- */
-export function showTimeLapseIntroToast(parent: HTMLElement): void {
-  const videoModeButton = dom.get(
-      '.mode-item[i18n-new-feature=new_time_lapse_toast]', HTMLDivElement);
-  showNewFeature(videoModeButton, parent);
 }

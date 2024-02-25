@@ -4,11 +4,12 @@
 
 #include "chrome/browser/upgrade_detector/build_state.h"
 
+#include <optional>
+
 #include "base/version.h"
 #include "chrome/browser/upgrade_detector/mock_build_state_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::AllOf;
 using ::testing::Eq;
@@ -33,7 +34,7 @@ class BuildStateTest : public ::testing::Test {
 TEST_F(BuildStateTest, SetUpdateNoUpdate) {
   EXPECT_EQ(build_state().update_type(), BuildState::UpdateType::kNone);
   build_state().SetUpdate(BuildState::UpdateType::kNone, base::Version(),
-                          absl::nullopt);
+                          std::nullopt);
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer());
   EXPECT_EQ(build_state().update_type(), BuildState::UpdateType::kNone);
   EXPECT_FALSE(build_state().installed_version().has_value());
@@ -50,7 +51,7 @@ TEST_F(BuildStateTest, SetUpdateWithNoVersion) {
                      Property(&BuildState::installed_version, IsFalse()),
                      Property(&BuildState::critical_version, IsFalse()))));
   build_state().SetUpdate(BuildState::UpdateType::kNormalUpdate,
-                          base::Version(), absl::nullopt);
+                          base::Version(), std::nullopt);
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer());
 }
 
@@ -64,10 +65,10 @@ TEST_F(BuildStateTest, SetUpdateWithVersion) {
                            Eq(BuildState::UpdateType::kNormalUpdate)),
                   Property(&BuildState::installed_version, IsTrue()),
                   Property(&BuildState::installed_version,
-                           Eq(absl::optional<base::Version>(expected_version))),
+                           Eq(std::optional<base::Version>(expected_version))),
                   Property(&BuildState::critical_version, IsFalse()))));
   build_state().SetUpdate(BuildState::UpdateType::kNormalUpdate,
-                          expected_version, absl::nullopt);
+                          expected_version, std::nullopt);
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer());
 }
 
@@ -84,10 +85,10 @@ TEST_F(BuildStateTest, SetUpdateWithCritical) {
                    Eq(BuildState::UpdateType::kNormalUpdate)),
           Property(&BuildState::installed_version, IsTrue()),
           Property(&BuildState::installed_version,
-                   Eq(absl::optional<base::Version>(expected_version))),
+                   Eq(std::optional<base::Version>(expected_version))),
           Property(&BuildState::critical_version, IsTrue()),
           Property(&BuildState::critical_version,
-                   Eq(absl::optional<base::Version>(expected_critical))))));
+                   Eq(std::optional<base::Version>(expected_critical))))));
   build_state().SetUpdate(BuildState::UpdateType::kNormalUpdate,
                           expected_version, expected_critical);
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer());
@@ -98,8 +99,8 @@ TEST_F(BuildStateTest, TwoUpdatesOnceNotification) {
   const base::Version expected_version("1.2.3.4");
   EXPECT_CALL(mock_observer(), OnUpdate(&build_state()));
   build_state().SetUpdate(BuildState::UpdateType::kNormalUpdate,
-                          expected_version, absl::nullopt);
+                          expected_version, std::nullopt);
   build_state().SetUpdate(BuildState::UpdateType::kNormalUpdate,
-                          expected_version, absl::nullopt);
+                          expected_version, std::nullopt);
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer());
 }

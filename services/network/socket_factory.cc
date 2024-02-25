@@ -5,6 +5,7 @@
 #include "services/network/socket_factory.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,12 +13,12 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
+#include "net/socket/tcp_server_socket.h"
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/url_request/url_request_context.h"
@@ -25,7 +26,6 @@
 #include "services/network/restricted_udp_socket.h"
 #include "services/network/tls_client_socket.h"
 #include "services/network/udp_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -93,14 +93,68 @@ void SocketFactory::CreateTCPServerSocket(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
     mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
+#if BUILDFLAG(IS_WIN)
+  if (socket_broker_) {
+    socket_broker_->CreateTcpSocket(
+        local_addr.GetFamily(),
+        base::BindOnce(&SocketFactory::DidCompleteCreate,
+                       weak_ptr_factory_.GetWeakPtr(), local_addr,
+                       std::move(options), traffic_annotation,
+                       std::move(receiver), std::move(callback)));
+    return;
+  }
+#endif
   auto socket =
       std::make_unique<TCPServerSocket>(this, net_log_, traffic_annotation);
+  CreateTCPServerSocketHelper(std::move(socket), local_addr, std::move(options),
+                              traffic_annotation, std::move(receiver),
+                              std::move(callback));
+}
+
+#if BUILDFLAG(IS_WIN)
+void SocketFactory::DidCompleteCreate(
+    const net::IPEndPoint& local_addr,
+    mojom::TCPServerSocketOptionsPtr options,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
+    mojom::NetworkContext::CreateTCPServerSocketCallback callback,
+    network::TransferableSocket socket,
+    int result) {
+  if (result != net::OK) {
+    std::move(callback).Run(result, std::nullopt);
+    return;
+  }
+  auto tcp_socket =
+      std::make_unique<net::TCPServerSocket>(net_log_, net::NetLogSource());
+  tcp_socket->AdoptSocket(socket.TakeSocket());
+
+  auto tcp_server_socket = std::make_unique<TCPServerSocket>(
+      std::move(tcp_socket), 0, this, traffic_annotation);
+
+  CreateTCPServerSocketHelper(std::move(tcp_server_socket), local_addr,
+                              std::move(options), traffic_annotation,
+                              std::move(receiver), std::move(callback));
+}
+
+void SocketFactory::BindSocketBroker(
+    mojo::PendingRemote<mojom::SocketBroker> pending_remote) {
+  socket_broker_.Bind(std::move(pending_remote));
+}
+#endif
+
+void SocketFactory::CreateTCPServerSocketHelper(
+    std::unique_ptr<TCPServerSocket> socket,
+    const net::IPEndPoint& local_addr,
+    mojom::TCPServerSocketOptionsPtr options,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
+    mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (options->connection_tracker) {
     socket->AttachConnectionTracker(std::move(options->connection_tracker));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  absl::optional<bool> ipv6_only;
+  std::optional<bool> ipv6_only;
   switch (options->ipv6_only) {
     case mojom::OptionalBool::kTrue:
       ipv6_only = true;
@@ -114,7 +168,7 @@ void SocketFactory::CreateTCPServerSocket(
   base::expected<net::IPEndPoint, int32_t> result =
       socket->Listen(local_addr, options->backlog, ipv6_only);
   if (!result.has_value()) {
-    std::move(callback).Run(result.error(), absl::nullopt);
+    std::move(callback).Run(result.error(), std::nullopt);
     return;
   }
   tcp_server_socket_receivers_.Add(std::move(socket), std::move(receiver));
@@ -122,7 +176,7 @@ void SocketFactory::CreateTCPServerSocket(
 }
 
 void SocketFactory::CreateTCPConnectedSocket(
-    const absl::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -149,7 +203,7 @@ void SocketFactory::CreateTCPBoundSocket(
   net::IPEndPoint local_addr_out;
   int result = socket->Bind(local_addr, &local_addr_out);
   if (result != net::OK) {
-    std::move(callback).Run(result, absl::nullopt);
+    std::move(callback).Run(result, std::nullopt);
     return;
   }
   TCPBoundSocket* socket_ptr = socket.get();

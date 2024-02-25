@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h"
@@ -57,7 +56,7 @@ void SchedulePostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
   GenericTaskData(dict, execution_context, task_id);
   dict.Add("priority", priority);
   dict.Add("delay", delay);
-  SetCallStack(dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 void RunPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
@@ -76,7 +75,7 @@ void AbortPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
                                          uint64_t task_id) {
   auto dict = std::move(trace_context).WriteDictionary();
   GenericTaskData(dict, execution_context, task_id);
-  SetCallStack(dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 }  // namespace
@@ -113,7 +112,7 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
   if (script_state->World().IsMainWorld()) {
     if (auto* tracker =
             ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-      parent_task_id_ = tracker->RunningTaskAttributionId(script_state);
+      parent_task_ = tracker->RunningTask(script_state->GetIsolate());
     }
   }
 
@@ -133,6 +132,7 @@ void DOMTask::Trace(Visitor* visitor) const {
   visitor->Trace(priority_source_);
   visitor->Trace(abort_handle_);
   visitor->Trace(task_queue_);
+  visitor->Trace(parent_task_);
 }
 
 void DOMTask::Invoke() {
@@ -192,7 +192,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   // is no tracker.
   if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
     task_attribution_scope = tracker->CreateTaskScope(
-        script_state, parent_task_id_,
+        script_state, parent_task_,
         scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask,
         abort_source_, priority_source_);
   } else if (RuntimeEnabledFeatures::SchedulerYieldEnabled(
@@ -200,7 +200,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
     ScriptWrappableTaskState::SetCurrent(
         script_state,
         MakeGarbageCollected<ScriptWrappableTaskState>(
-            scheduler::TaskAttributionId(), abort_source_, priority_source_));
+            /*TaskAttributionInfo=*/nullptr, abort_source_, priority_source_));
   }
 
   ScriptValue result;
@@ -240,10 +240,8 @@ void DOMTask::OnAbort() {
                                 task_id_for_tracing_);
 
   // TODO(crbug.com/1293949): Add an error message.
-  resolver_->Reject(
-      ToV8Traits<IDLAny>::ToV8(resolver_script_state,
-                               abort_source_->reason(resolver_script_state))
-          .ToLocalChecked());
+  resolver_->Reject(abort_source_->reason(resolver_script_state)
+                        .V8ValueFor(resolver_script_state));
 }
 
 void DOMTask::RemoveAbortAlgorithm() {

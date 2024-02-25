@@ -68,10 +68,10 @@ multidevice::RemoteDeviceList RefListToRawList(
   return raw_list;
 }
 
-absl::optional<multidevice::RemoteDevice> RefToRaw(
-    const absl::optional<multidevice::RemoteDeviceRef>& ref) {
+std::optional<multidevice::RemoteDevice> RefToRaw(
+    const std::optional<multidevice::RemoteDeviceRef>& ref) {
   if (!ref)
-    return absl::nullopt;
+    return std::nullopt;
 
   return *GetMutableRemoteDevice(*ref);
 }
@@ -104,11 +104,10 @@ class FakeEligibleHostDevicesProviderFactory
     return instance;
   }
 
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
 
-  raw_ptr<FakeEligibleHostDevicesProvider, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeEligibleHostDevicesProvider, DanglingUntriaged> instance_ =
+      nullptr;
 };
 
 class FakeHostBackendDelegateFactory : public HostBackendDelegateImpl::Factory {
@@ -151,15 +150,13 @@ class FakeHostBackendDelegateFactory : public HostBackendDelegateImpl::Factory {
     return instance;
   }
 
-  raw_ptr<FakeEligibleHostDevicesProviderFactory, ExperimentalAsh>
+  raw_ptr<FakeEligibleHostDevicesProviderFactory>
       fake_eligible_host_devices_provider_factory_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
 
-  raw_ptr<FakeHostBackendDelegate, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeHostBackendDelegate, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeHostVerifierFactory : public HostVerifierImpl::Factory {
@@ -200,15 +197,12 @@ class FakeHostVerifierFactory : public HostVerifierImpl::Factory {
     return instance;
   }
 
-  raw_ptr<FakeHostBackendDelegateFactory, ExperimentalAsh>
-      fake_host_backend_delegate_factory_;
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<FakeHostBackendDelegateFactory> fake_host_backend_delegate_factory_;
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
 
-  raw_ptr<FakeHostVerifier, DanglingUntriaged | ExperimentalAsh> instance_ =
-      nullptr;
+  raw_ptr<FakeHostVerifier, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeHostStatusProviderFactory : public HostStatusProviderImpl::Factory {
@@ -253,16 +247,13 @@ class FakeHostStatusProviderFactory : public HostStatusProviderImpl::Factory {
     return instance;
   }
 
-  raw_ptr<FakeEligibleHostDevicesProviderFactory, ExperimentalAsh>
+  raw_ptr<FakeEligibleHostDevicesProviderFactory>
       fake_eligible_host_devices_provider_factory_;
-  raw_ptr<FakeHostBackendDelegateFactory, ExperimentalAsh>
-      fake_host_backend_delegate_factory_;
-  raw_ptr<FakeHostVerifierFactory, ExperimentalAsh> fake_host_verifier_factory_;
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
+  raw_ptr<FakeHostBackendDelegateFactory> fake_host_backend_delegate_factory_;
+  raw_ptr<FakeHostVerifierFactory> fake_host_verifier_factory_;
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
 
-  raw_ptr<FakeHostStatusProvider, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeHostStatusProvider, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeGlobalStateFeatureManagerFactory
@@ -299,12 +290,10 @@ class FakeGlobalStateFeatureManagerFactory
     return std::make_unique<FakeGlobalStateFeatureManager>();
   }
 
-  raw_ptr<FakeHostStatusProviderFactory, ExperimentalAsh>
-      fake_host_status_provider_factory_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<FakeHostStatusProviderFactory> fake_host_status_provider_factory_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
 };
 
 class FakeWifiSyncNotificationControllerFactory
@@ -342,12 +331,10 @@ class FakeWifiSyncNotificationControllerFactory
     return nullptr;
   }
 
-  raw_ptr<FakeHostStatusProviderFactory, ExperimentalAsh>
-      fake_host_status_provider_factory_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<FakeHostStatusProviderFactory> fake_host_status_provider_factory_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
 };
 
 class FakeGrandfatheredEasyUnlockHostDisablerFactory
@@ -385,11 +372,9 @@ class FakeGrandfatheredEasyUnlockHostDisablerFactory
     return nullptr;
   }
 
-  raw_ptr<FakeHostBackendDelegateFactory, ExperimentalAsh>
-      fake_host_backend_delegate_factory_;
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<FakeHostBackendDelegateFactory> fake_host_backend_delegate_factory_;
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
 };
 
@@ -443,19 +428,15 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
     return instance;
   }
 
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
-  raw_ptr<FakeHostStatusProviderFactory, ExperimentalAsh>
-      fake_host_status_provider_factory_;
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
-  raw_ptr<FakeAndroidSmsPairingStateTracker,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeHostStatusProviderFactory> fake_host_status_provider_factory_;
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
+  raw_ptr<FakeAndroidSmsPairingStateTracker, DanglingUntriaged>
       expected_android_sms_pairing_state_tracker_;
   bool expected_is_secondary_user_;
 
-  raw_ptr<FakeFeatureStateManager, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeFeatureStateManager, DanglingUntriaged> instance_ = nullptr;
 };
 
 class FakeHostDeviceTimestampManagerFactory
@@ -493,13 +474,12 @@ class FakeHostDeviceTimestampManagerFactory
     return instance;
   }
 
-  raw_ptr<FakeHostStatusProviderFactory, ExperimentalAsh>
-      fake_host_status_provider_factory_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<FakeHostStatusProviderFactory> fake_host_status_provider_factory_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
 
-  raw_ptr<FakeHostDeviceTimestampManager, DanglingUntriaged | ExperimentalAsh>
-      instance_ = nullptr;
+  raw_ptr<FakeHostDeviceTimestampManager, DanglingUntriaged> instance_ =
+      nullptr;
 };
 
 class FakeAccountStatusChangeDelegateNotifierFactory
@@ -548,17 +528,14 @@ class FakeAccountStatusChangeDelegateNotifierFactory
     return instance;
   }
 
-  raw_ptr<FakeHostStatusProviderFactory, ExperimentalAsh>
-      fake_host_status_provider_factory_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<FakeHostStatusProviderFactory> fake_host_status_provider_factory_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
-  raw_ptr<FakeHostDeviceTimestampManagerFactory, ExperimentalAsh>
+  raw_ptr<FakeHostDeviceTimestampManagerFactory>
       fake_host_device_timestamp_manager_factory_;
-  raw_ptr<OobeCompletionTracker, ExperimentalAsh>
-      expected_oobe_completion_tracker_;
+  raw_ptr<OobeCompletionTracker> expected_oobe_completion_tracker_;
 
-  raw_ptr<FakeAccountStatusChangeDelegateNotifier,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeAccountStatusChangeDelegateNotifier, DanglingUntriaged>
       instance_ = nullptr;
 };
 
@@ -598,11 +575,9 @@ class FakeAndroidSmsAppInstallingStatusObserverFactory
     return nullptr;
   }
 
-  raw_ptr<FakeHostStatusProviderFactory, ExperimentalAsh>
-      fake_host_status_provider_factory_;
-  raw_ptr<FakeFeatureStateManagerFactory, ExperimentalAsh>
-      fake_feature_state_manager_factory_;
-  raw_ptr<AndroidSmsAppHelperDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeHostStatusProviderFactory> fake_host_status_provider_factory_;
+  raw_ptr<FakeFeatureStateManagerFactory> fake_feature_state_manager_factory_;
+  raw_ptr<AndroidSmsAppHelperDelegate, DanglingUntriaged>
       expected_android_sms_app_helper_delegate_;
 };
 
@@ -818,7 +793,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     return success;
   }
 
-  std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>
+  std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDevice>>
   CallGetHostStatus() {
     base::RunLoop run_loop;
     multidevice_setup_->GetHostStatus(
@@ -826,7 +801,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
-    std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>
+    std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDevice>>
         host_status_update = *last_host_status_;
     last_host_status_.reset();
 
@@ -836,7 +811,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   bool CallSetFeatureEnabledState(
       mojom::Feature feature,
       bool enabled,
-      const absl::optional<std::string>& auth_token) {
+      const std::optional<std::string>& auth_token) {
     base::RunLoop run_loop;
     multidevice_setup_->SetFeatureEnabledState(
         feature, enabled, auth_token,
@@ -894,14 +869,14 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     return success;
   }
 
-  absl::optional<std::string> CallGetQuickStartPhoneInstanceID() {
+  std::optional<std::string> CallGetQuickStartPhoneInstanceID() {
     base::RunLoop run_loop;
     multidevice_setup_->GetQuickStartPhoneInstanceID(base::BindOnce(
         &MultiDeviceSetupImplTest::OnGetQuickStartPhoneInstanceID,
         base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
-    absl::optional<std::string> qs_phone_instance_id =
+    std::optional<std::string> qs_phone_instance_id =
         last_qs_phone_instance_id_;
     last_qs_phone_instance_id_.reset();
     return qs_phone_instance_id;
@@ -909,10 +884,10 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
 
   void VerifyCurrentHostStatus(
       mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device,
+      const std::optional<multidevice::RemoteDeviceRef>& host_device,
       FakeHostStatusObserver* observer = nullptr,
       size_t expected_observer_index = 0u) {
-    std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>
+    std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDevice>>
         host_status_and_device = CallGetHostStatus();
     EXPECT_EQ(host_status, host_status_and_device.first);
     EXPECT_EQ(RefToRaw(host_device), host_status_and_device.second);
@@ -1021,7 +996,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   void OnHostStatusReceived(
       base::OnceClosure quit_closure,
       mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDevice>& host_device) {
+      const std::optional<multidevice::RemoteDevice>& host_device) {
     EXPECT_FALSE(last_host_status_);
     last_host_status_ = std::make_pair(host_status, host_device);
     std::move(quit_closure).Run();
@@ -1056,8 +1031,8 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
 
   void OnGetQuickStartPhoneInstanceID(
       base::OnceClosure quit_closure,
-      const absl::optional<std::string>& qs_phone_instance_id) {
-    EXPECT_EQ(absl::nullopt, last_qs_phone_instance_id_);
+      const std::optional<std::string>& qs_phone_instance_id) {
+    EXPECT_EQ(std::nullopt, last_qs_phone_instance_id_);
     last_qs_phone_instance_id_ = qs_phone_instance_id;
     std::move(quit_closure).Run();
   }
@@ -1106,20 +1081,20 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  absl::optional<bool> last_debug_event_success_;
-  absl::optional<multidevice::RemoteDeviceList> last_eligible_devices_list_;
-  absl::optional<std::vector<mojom::HostDevicePtr>>
+  std::optional<bool> last_debug_event_success_;
+  std::optional<multidevice::RemoteDeviceList> last_eligible_devices_list_;
+  std::optional<std::vector<mojom::HostDevicePtr>>
       last_eligible_active_devices_list_;
-  absl::optional<bool> last_set_host_success_;
-  absl::optional<bool> last_set_host_without_auth_success_;
-  absl::optional<
-      std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>>
+  std::optional<bool> last_set_host_success_;
+  std::optional<bool> last_set_host_without_auth_success_;
+  std::optional<
+      std::pair<mojom::HostStatus, std::optional<multidevice::RemoteDevice>>>
       last_host_status_;
-  absl::optional<bool> last_set_feature_enabled_state_success_;
-  absl::optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
+  std::optional<bool> last_set_feature_enabled_state_success_;
+  std::optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
       last_get_feature_states_result_;
-  absl::optional<bool> last_retry_success_;
-  absl::optional<std::string> last_qs_phone_instance_id_;
+  std::optional<bool> last_retry_success_;
+  std::optional<std::string> last_qs_phone_instance_id_;
 
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_;
 };
@@ -1179,7 +1154,7 @@ TEST_P(MultiDeviceSetupImplTest, FeatureStateChanges_NoAuthTokenRequired) {
 
   EXPECT_TRUE(CallSetFeatureEnabledState(mojom::Feature::kInstantTethering,
                                          false /* enabled */,
-                                         absl::nullopt /* auth_token */));
+                                         std::nullopt /* auth_token */));
   SendPendingObserverMessages();
   EXPECT_EQ(mojom::FeatureState::kDisabledByUser,
             CallGetFeatureStates()[mojom::Feature::kInstantTethering]);
@@ -1205,7 +1180,7 @@ TEST_P(MultiDeviceSetupImplTest,
   // No authentication is required to disable the feature.
   EXPECT_TRUE(CallSetFeatureEnabledState(mojom::Feature::kSmartLock,
                                          false /* enabled */,
-                                         absl::nullopt /* auth_token */));
+                                         std::nullopt /* auth_token */));
   SendPendingObserverMessages();
   EXPECT_EQ(mojom::FeatureState::kDisabledByUser,
             CallGetFeatureStates()[mojom::Feature::kSmartLock]);
@@ -1249,7 +1224,7 @@ TEST_P(MultiDeviceSetupImplTest,
   // No authentication is required to disable the feature.
   EXPECT_TRUE(CallSetFeatureEnabledState(mojom::Feature::kBetterTogetherSuite,
                                          false /* enabled */,
-                                         absl::nullopt /* auth_token */));
+                                         std::nullopt /* auth_token */));
   SendPendingObserverMessages();
   EXPECT_EQ(mojom::FeatureState::kDisabledByUser,
             CallGetFeatureStates()[mojom::Feature::kBetterTogetherSuite]);
@@ -1279,7 +1254,7 @@ TEST_P(MultiDeviceSetupImplTest,
   // Disable one more time.
   EXPECT_TRUE(CallSetFeatureEnabledState(mojom::Feature::kBetterTogetherSuite,
                                          false /* enabled */,
-                                         absl::nullopt /* auth_token */));
+                                         std::nullopt /* auth_token */));
   SendPendingObserverMessages();
   EXPECT_EQ(mojom::FeatureState::kDisabledByUser,
             CallGetFeatureStates()[mojom::Feature::kBetterTogetherSuite]);
@@ -1311,7 +1286,7 @@ TEST_P(MultiDeviceSetupImplTest, ComprehensiveHostTest) {
   // Start with no eligible devices.
   EXPECT_TRUE(CallGetEligibleHostDevices().empty());
   VerifyCurrentHostStatus(mojom::HostStatus::kNoEligibleHosts,
-                          absl::nullopt /* host_device */);
+                          std::nullopt /* host_device */);
 
   // Cannot retry without a host.
   EXPECT_FALSE(CallRetrySetHostNow());
@@ -1326,10 +1301,10 @@ TEST_P(MultiDeviceSetupImplTest, ComprehensiveHostTest) {
   EXPECT_EQ(RefListToRawList(test_devices()), CallGetEligibleHostDevices());
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SendPendingObserverMessages();
   VerifyCurrentHostStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                          absl::nullopt /* host_device */, observer.get(),
+                          std::nullopt /* host_device */, observer.get(),
                           0u /* expected_observer_index */);
 
   // There are eligible hosts, but none is set; thus, cannot retry.
@@ -1383,14 +1358,14 @@ TEST_P(MultiDeviceSetupImplTest, ComprehensiveHostTest) {
   fake_host_verifier()->set_is_host_verified(false);
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SendPendingObserverMessages();
   VerifyCurrentHostStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                          absl::nullopt /* host_device */, observer.get(),
+                          std::nullopt /* host_device */, observer.get(),
                           4u /* expected_observer_index */);
 
   // Simulate the host being removed on the back-end.
-  fake_host_backend_delegate()->NotifyHostChangedOnBackend(absl::nullopt);
+  fake_host_backend_delegate()->NotifyHostChangedOnBackend(std::nullopt);
 }
 
 TEST_P(MultiDeviceSetupImplTest, TestGetEligibleActiveHosts) {
@@ -1423,7 +1398,7 @@ TEST_P(MultiDeviceSetupImplTest, TestSetHostDevice_InvalidAuthToken) {
   EXPECT_EQ(RefListToRawList(test_devices()), CallGetEligibleHostDevices());
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
 
   // Set a valid host as the host device, but pass an invalid token.
   std::string host_id = IsV1DeviceSyncEnabled()
@@ -1444,10 +1419,10 @@ TEST_P(MultiDeviceSetupImplTest, TestSetHostDeviceWithoutAuthToken) {
   EXPECT_EQ(RefListToRawList(test_devices()), CallGetEligibleHostDevices());
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SendPendingObserverMessages();
   VerifyCurrentHostStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                          absl::nullopt /* host_device */, observer.get(),
+                          std::nullopt /* host_device */, observer.get(),
                           0u /* expected_observer_index */);
 
   // Set a valid host as the host device without an auth token.
@@ -1484,10 +1459,10 @@ TEST_P(MultiDeviceSetupImplTest,
   EXPECT_EQ(RefListToRawList(test_devices()), CallGetEligibleHostDevices());
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SendPendingObserverMessages();
   VerifyCurrentHostStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                          absl::nullopt /* host_device */, observer.get(),
+                          std::nullopt /* host_device */, observer.get(),
                           0u /* expected_observer_index */);
 
   // Set the host device using its legacy device ID.
@@ -1520,7 +1495,7 @@ TEST_P(MultiDeviceSetupImplTest,
 }
 
 TEST_P(MultiDeviceSetupImplTest, SetAndGetQuickStartPhoneInstanceID) {
-  EXPECT_EQ(absl::nullopt, CallGetQuickStartPhoneInstanceID());
+  EXPECT_EQ(std::nullopt, CallGetQuickStartPhoneInstanceID());
   const std::string& expected_qs_phone_instance_id = "qsPhoneInstanceID1";
   multidevice_setup()->SetQuickStartPhoneInstanceID(
       expected_qs_phone_instance_id);

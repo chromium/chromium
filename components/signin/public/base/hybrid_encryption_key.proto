@@ -1,0 +1,48 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This is a mirror of proto definitions from Tink Cryptographic library
+// https://github.com/google/tink/blob/master/proto/hpke.proto
+syntax = "proto2";
+
+package tink;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+enum HpkeKem {
+  KEM_UNKNOWN = 0;
+  DHKEM_X25519_HKDF_SHA256 = 1;
+  DHKEM_P256_HKDF_SHA256 = 2;
+  DHKEM_P384_HKDF_SHA384 = 3;
+  DHKEM_P521_HKDF_SHA512 = 4;
+}
+
+enum HpkeKdf {
+  KDF_UNKNOWN = 0;
+  HKDF_SHA256 = 1;
+  HKDF_SHA384 = 2;
+  HKDF_SHA512 = 3;
+}
+
+enum HpkeAead {
+  AEAD_UNKNOWN = 0;
+  AES_128_GCM = 1;
+  AES_256_GCM = 2;
+  CHACHA20_POLY1305 = 3;
+}
+
+message HpkeParams {
+  required HpkeKem kem = 1;
+  required HpkeKdf kdf = 2;
+  required HpkeAead aead = 3;
+}
+
+message HpkePublicKey {
+  required uint32 version = 1;
+  required HpkeParams params = 2;
+  // KEM-encoding of public key (i.e., SerializePublicKey() ) as described in
+  // https://www.rfc-editor.org/rfc/rfc9180.html#name-cryptographic-dependencies.
+  required bytes public_key = 3;
+}

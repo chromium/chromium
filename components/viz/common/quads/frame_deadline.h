@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_FRAME_DEADLINE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_FRAME_DEADLINE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/viz_common_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -45,20 +45,9 @@ class VIZ_COMMON_EXPORT FrameDeadline {
   // Converts this FrameDeadline object into a wall time given a system default
   // deadline in frames.
   base::TimeTicks ToWallTime(
-      absl::optional<uint32_t> default_deadline_in_frames =
-          absl::nullopt) const;
+      std::optional<uint32_t> default_deadline_in_frames = std::nullopt) const;
 
-  bool operator==(const FrameDeadline& other) const {
-    return other.frame_start_time_ == frame_start_time_ &&
-           other.deadline_in_frames_ == deadline_in_frames_ &&
-           other.frame_interval_ == frame_interval_ &&
-           other.use_default_lower_bound_deadline_ ==
-               use_default_lower_bound_deadline_;
-  }
-
-  bool operator!=(const FrameDeadline& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const FrameDeadline&, const FrameDeadline&) = default;
 
   base::TimeTicks frame_start_time() const { return frame_start_time_; }
 

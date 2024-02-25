@@ -119,7 +119,7 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
       const CompositorDelegateProvider& compositor_delegate_provider,
       SurfaceReadyCallback ready_callback,
       SurfaceTouchCallback touch_callback,
-      SurfaceDestroyedCallback destroyed_callback) override {
+      JavaShutdownCallback destroyed_callback) override {
     // Return arbitrary screen geometry as stand-in for the expected
     // drawing surface. It's not actually a surface, hence the nullptr
     // instead of a WindowAndroid.
@@ -134,7 +134,7 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
       const CompositorDelegateProvider& compositor_delegate_provider,
       SurfaceReadyCallback ready_callback,
       SurfaceTouchCallback touch_callback,
-      SurfaceDestroyedCallback destroyed_callback,
+      JavaShutdownCallback destroyed_callback,
       XrSessionButtonTouchedCallback button_touched_callback) override {
     NOTREACHED();
   }
@@ -219,16 +219,17 @@ class StubCompositorFrameSink
   void SetStandaloneBeginFrameObserver(
       mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {}
   void SetMaxVrrInterval(
-      absl::optional<base::TimeDelta> max_vrr_interval) override {}
+      std::optional<base::TimeDelta> max_vrr_interval) override {}
 
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}
   void SetWantsAnimateOnlyBeginFrames() override {}
   void SetWantsBeginFrameAcks() override {}
+  void SetAutoNeedsBeginFrame() override {}
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {}
   void DidNotProduceFrame(const viz::BeginFrameAck& begin_frame_ack) override {}
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
@@ -237,7 +238,7 @@ class StubCompositorFrameSink
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      absl::optional<viz::HitTestRegionList> hit_test_region_list,
+      std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {}
   void InitializeCompositorFrameSinkType(
@@ -291,8 +292,8 @@ class StubXrFrameSinkClient : public XrFrameSinkClient {
     std::move(on_initialized).Run();
   }
   void SurfaceDestroyed() override {}
-  absl::optional<viz::SurfaceId> GetDOMSurface() override {
-    return absl::nullopt;
+  std::optional<viz::SurfaceId> GetDOMSurface() override {
+    return std::nullopt;
   }
   viz::FrameSinkId FrameSinkId() override { return {}; }
 

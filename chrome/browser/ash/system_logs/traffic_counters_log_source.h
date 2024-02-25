@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_LOGS_TRAFFIC_COUNTERS_LOG_SOURCE_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -14,7 +15,6 @@
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_logs {
 

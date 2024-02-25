@@ -1,5 +1,0 @@
-Test openDatabase() with name outside the ASCII set.
-Database creation succeeded
-Update transaction succeeded
-Read transaction succeeded
-

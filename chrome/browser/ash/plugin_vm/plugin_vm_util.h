@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -95,7 +95,7 @@ std::string GetFakeLicenseKey();
 void RemoveDriveDownloadDirectoryIfExists();
 
 // Returns nullopt if not a drive URL.
-absl::optional<std::string> GetIdFromDriveUrl(const GURL& url);
+std::optional<std::string> GetIdFromDriveUrl(const GURL& url);
 
 // Returns true if window is PluginVM.
 bool IsPluginvmWindowId(const std::string& window_id);
@@ -120,7 +120,7 @@ class PluginVmAvailabilitySubscription {
   void OnPolicyChanged();
   void OnImageExistsChanged();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // Whether Plugin VM was previously allowed for the profile.
   bool is_allowed_;

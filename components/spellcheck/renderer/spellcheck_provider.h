@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -54,10 +55,8 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   };
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-  SpellCheckProvider(
-      content::RenderFrame* render_frame,
-      SpellCheck* spellcheck,
-      service_manager::LocalInterfaceProvider* embedder_provider);
+  SpellCheckProvider(content::RenderFrame* render_frame,
+                     SpellCheck* spellcheck);
 
   SpellCheckProvider(const SpellCheckProvider&) = delete;
   SpellCheckProvider& operator=(const SpellCheckProvider&) = delete;
@@ -83,6 +82,9 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // content::RenderFrameObserver:
   void FocusedElementChanged(const blink::WebElement& element) override;
 
+  // Returns the SpellCheckHost.
+  spellcheck::mojom::SpellCheckHost& GetSpellCheckHost();
+
  private:
   friend class TestingSpellCheckProvider;
   class DictionaryUpdateObserverImpl;
@@ -95,9 +97,6 @@ class SpellCheckProvider : public content::RenderFrameObserver,
 
   // Reset dictionary_update_observer_ in TestingSpellCheckProvider dtor.
   void ResetDictionaryUpdateObserverForTesting();
-
-  // Returns the SpellCheckHost.
-  spellcheck::mojom::SpellCheckHost& GetSpellCheckHost();
 
   // Tries to satisfy a spellcheck request from the cache in |last_request_|.
   // Returns true (and cancels/finishes the completion) if it can, false
@@ -163,10 +162,10 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   int last_identifier_;
 
   // Weak pointer to shared (per renderer) spellcheck data.
-  SpellCheck* spellcheck_;
+  raw_ptr<SpellCheck, DanglingUntriaged> spellcheck_;
 
   // Not owned. |embedder_provider_| should outlive SpellCheckProvider.
-  service_manager::LocalInterfaceProvider* embedder_provider_;
+  raw_ptr<service_manager::LocalInterfaceProvider> embedder_provider_;
 
   // Interface to the SpellCheckHost.
   mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;

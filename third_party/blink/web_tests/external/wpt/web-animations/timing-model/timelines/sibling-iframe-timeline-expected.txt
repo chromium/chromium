@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL animation tied to another frame's timeline runs properly assert_equals: expected "PASS" but got "FAIL: Animation is still pending"
-Harness: the test ran to completion.
-

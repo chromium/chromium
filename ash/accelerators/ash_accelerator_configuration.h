@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -69,9 +70,6 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // AcceleratorConfiguration::
-  const std::vector<ui::Accelerator>& GetAcceleratorsForAction(
-      AcceleratorActionId action_id) override;
   // Whether the source is mutable and shortcuts can be changed. If this returns
   // false then any of the Add/Remove/Replace class will DCHECK. The two Restore
   // methods will be no-ops.
@@ -105,6 +103,7 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+  bool HasObserver(Observer* observer);
 
   const AcceleratorAction* FindAcceleratorAction(
       const ui::Accelerator& accelerator) const;
@@ -113,9 +112,7 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
     return accelerators_;
   }
 
-  void SetUsePositionalLookup(bool use_positional_lookup) {
-    accelerator_to_id_.set_use_positional_lookup(use_positional_lookup);
-  }
+  void SetUsePositionalLookup(bool use_positional_lookup);
 
   // Returns a nullptr if `action` is not a deprecated action, otherwise
   // returns the deprecated data.
@@ -123,8 +120,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
       AcceleratorActionId action);
 
   // Returns the ID of the action if `accelerator` is a default accelerator.
-  // If there is no ID found, returns absl::nullopt.
-  absl::optional<AcceleratorAction> GetIdForDefaultAccelerator(
+  // If there is no ID found, returns std::nullopt.
+  std::optional<AcceleratorAction> GetIdForDefaultAccelerator(
       ui::Accelerator accelerator);
 
   // Returns the default accelerators of a given accelerator ID.
@@ -135,8 +132,14 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
   bool IsValid(uint32_t id) const;
 
  private:
+  friend class AshAcceleratorConfigurationTest;
+
   // A map for looking up actions from accelerators.
   using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;
+
+  // AcceleratorConfiguration::
+  base::optional_ref<const std::vector<ui::Accelerator>>
+  GetAcceleratorsForAction(AcceleratorActionId action_id) override;
 
   void InitializeDeprecatedAccelerators();
 
@@ -176,6 +179,9 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
 
   // Resets all accelerator mappings to the the system default.
   void ResetAllAccelerators();
+
+  // Returns the total number of customizations for all accelerators.
+  int GetTotalNumberOfModifications();
 
   // A local copy of the pref overrides, allows modifying the overrides before
   // updating the override pref.

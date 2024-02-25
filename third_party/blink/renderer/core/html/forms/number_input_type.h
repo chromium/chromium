@@ -45,7 +45,6 @@ class NumberInputType final : public TextFieldInputType {
 
  private:
   void CountUsage() override;
-  const AtomicString& FormControlType() const override;
   void SetValue(const String&,
                 bool value_changed,
                 TextFieldEventBehavior,
@@ -75,6 +74,8 @@ class NumberInputType final : public TextFieldInputType {
   String ValueNotEqualText(const Decimal& value) const override;
   String RangeOverflowText(const Decimal& maxmum) const override;
   String RangeUnderflowText(const Decimal& minimum) const override;
+  String RangeInvalidText(const Decimal& minimum,
+                          const Decimal& maximum) const override;
   bool SupportsPlaceholder() const override;
   void MinOrMaxAttributeChanged() override;
   void StepAttributeChanged() override;

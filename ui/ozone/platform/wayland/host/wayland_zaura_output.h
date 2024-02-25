@@ -6,9 +6,9 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_OUTPUT_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
@@ -41,31 +41,31 @@ class WaylandZAuraOutput {
   // For unit test use only.
   WaylandZAuraOutput();
 
-  // zaura_output_listeners
+  // zaura_output_listener callbacks:
   static void OnScale(void* data,
-                      struct zaura_output* zaura_output,
+                      zaura_output* output,
                       uint32_t flags,
                       uint32_t scale);
   static void OnConnection(void* data,
-                           struct zaura_output* zaura_output,
+                           zaura_output* output,
                            uint32_t connection);
   static void OnDeviceScaleFactor(void* data,
-                                  struct zaura_output* zaura_output,
+                                  zaura_output* output,
                                   uint32_t scale);
   static void OnInsets(void* data,
-                       struct zaura_output* zaura_output,
+                       zaura_output* output,
                        int32_t top,
                        int32_t left,
                        int32_t bottom,
                        int32_t right);
   static void OnLogicalTransform(void* data,
-                                 struct zaura_output* zaura_output,
+                                 zaura_output* output,
                                  int32_t transform);
   static void OnDisplayId(void* data,
-                          struct zaura_output* zaura_output,
+                          zaura_output* output,
                           uint32_t display_id_hi,
                           uint32_t display_id_lo);
-  static void OnActivated(void* data, struct zaura_output* zaura_output);
+  static void OnActivated(void* data, zaura_output* output);
 
   // Tracks whether this zaura_output is considered "ready". I.e. it has
   // received all of its relevant Display state from the server followed by a
@@ -74,8 +74,8 @@ class WaylandZAuraOutput {
 
   wl::Object<zaura_output> obj_;
   gfx::Insets insets_;
-  absl::optional<int32_t> logical_transform_ = absl::nullopt;
-  absl::optional<int64_t> display_id_ = absl::nullopt;
+  std::optional<int32_t> logical_transform_ = std::nullopt;
+  std::optional<int64_t> display_id_ = std::nullopt;
 };
 
 }  // namespace ui

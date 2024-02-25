@@ -425,14 +425,14 @@ void AccountProfileMapper::AddAccountInternal(
           absl::get_if<account_manager::AccountKey>(&source_or_accountkey)) {
     if (account_key->account_type() != account_manager::AccountType::kGaia) {
       if (callback)
-        std::move(callback).Run(absl::nullopt);
+        std::move(callback).Run(std::nullopt);
       return;
     }
     const account_manager::Account* account =
         account_cache_.FindAccountByGaiaId(account_key->id());
     if (!account) {
       if (callback)
-        std::move(callback).Run(absl::nullopt);
+        std::move(callback).Run(std::nullopt);
       return;
     } else {
       source_or_account = *account;
@@ -459,7 +459,7 @@ void AccountProfileMapper::AddAccountInternal(
 void AccountProfileMapper::OnAddAccountCompleted(
     AddAccountHelper* helper,
     AddAccountCallback callback,
-    const absl::optional<AddAccountResult>& result) {
+    const std::optional<AddAccountResult>& result) {
   // Note: the new account may or may not be in `account_cache_`. There is a
   // small possibility that an account was already removed from the OS. As a
   // result, this function does not use `account_cache_` at all.

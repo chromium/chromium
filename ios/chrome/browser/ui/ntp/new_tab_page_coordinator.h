@@ -7,8 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_configuring.h"
 
 namespace web {
@@ -20,9 +19,7 @@ class WebState;
 @protocol NewTabPageControllerDelegate;
 
 // Coordinator handling the NTP.
-@interface NewTabPageCoordinator
-    : ChromeCoordinator <LogoAnimationControllerOwnerOwner,
-                         NewTabPageConfiguring>
+@interface NewTabPageCoordinator : ChromeCoordinator <NewTabPageConfiguring>
 
 // Initializes this coordinator with its `browser`, a nil base view
 // controller, and the given `componentFactory`.
@@ -74,6 +71,9 @@ class WebState;
 // Called when the user navigates away from the NTP.
 - (void)didNavigateAwayFromNTP;
 
+// The location bar will lose focus.
+- (void)locationBarWillResignFirstResponder;
+
 // The location bar has lost focus.
 - (void)locationBarDidResignFirstResponder;
 
@@ -96,6 +96,9 @@ class WebState;
 
 // Checks if NTP is active for the current webState.
 - (BOOL)isNTPActiveForCurrentWebState;
+
+// Returns YES if the fakebox is pinned or scrolled to the top.
+- (BOOL)isFakeboxPinned;
 
 @end
 

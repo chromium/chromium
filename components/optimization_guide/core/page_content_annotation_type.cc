@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/page_content_annotation_type.h"
 
+#include "base/notreached.h"
+
 namespace optimization_guide {
 
 // Each of these string values is used in UMA histograms so please update the
@@ -15,10 +17,10 @@ std::string AnnotationTypeToString(AnnotationType type) {
       return "Unknown";
     case AnnotationType::kContentVisibility:
       return "ContentVisibility";
-    case AnnotationType::kPageEntities:
-      return "PageEntities";
-    case AnnotationType::kTextEmbedding:
-      return "TextEmbedding";
+    case AnnotationType::kDeprecatedPageEntities:
+    case AnnotationType::kDeprecatedTextEmbedding:
+      NOTREACHED();
+      return "";
   }
 }
 

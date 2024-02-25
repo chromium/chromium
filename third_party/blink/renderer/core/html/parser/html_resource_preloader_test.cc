@@ -58,8 +58,8 @@ class HTMLResourcePreloaderTest : public PageTestBase {
     auto preload_request = PreloadRequest::CreateIfNeeded(
         String(), test_case.url, KURL(test_case.base_url), ResourceType::kImage,
         network::mojom::ReferrerPolicy(), ResourceFetcher::kImageNotImageSet,
-        nullptr /* exclusion_info */, absl::nullopt /* resource_width */,
-        absl::nullopt /* resource_height */,
+        nullptr /* exclusion_info */, std::nullopt /* resource_width */,
+        std::nullopt /* resource_height */,
         PreloadRequest::kRequestTypePreconnect);
     DCHECK(preload_request);
     if (test_case.is_cors)

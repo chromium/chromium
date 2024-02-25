@@ -8,10 +8,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,7 +31,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/bluetooth_low_energy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 
@@ -155,11 +155,11 @@ class BluetoothLowEnergyEventRouter
 
   // Returns the list of api::bluetooth_low_energy::Service objects
   // associated with the Bluetooth device with address |device_address| if
-  // successful. Otherwise returns absl::nullopt, if no device with the given
+  // successful. Otherwise returns std::nullopt, if no device with the given
   // address is known. If the device is found but it has no GATT services, then
   // returns an empty list.
   typedef std::vector<api::bluetooth_low_energy::Service> ServiceList;
-  absl::optional<ServiceList> GetServices(
+  std::optional<ServiceList> GetServices(
       const std::string& device_address) const;
 
   // Returns a service based on GATT service with instance ID |instance_id| if
@@ -403,7 +403,7 @@ class BluetoothLowEnergyEventRouter
       const std::string& characteristic_id,
       base::Value::List args);
 
-  void DispatchEventToExtension(const std::string& extension_id,
+  void DispatchEventToExtension(const ExtensionId& extension_id,
                                 events::HistogramValue histogram_value,
                                 const std::string& event_name,
                                 base::Value::List args);
@@ -431,33 +431,33 @@ class BluetoothLowEnergyEventRouter
       const std::string& characteristic_instance_id,
       base::OnceClosure callback,
       ErrorCallback error_callback,
-      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Runs |callback|.
   void OnReadRemoteDescriptor(
       base::OnceClosure callback,
       ErrorCallback error_callback,
-      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Called by BluetoothDevice in response to a call to CreateGattConnection.
   void OnCreateGattConnection(
       bool persistent,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::string& device_address,
       ErrorCallback callback,
       std::unique_ptr<device::BluetoothGattConnection> connection,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // Called by BluetoothGattService in response to Register().
   void OnRegisterGattServiceSuccess(const std::string& service_id,
-                                    const std::string& extension_id,
+                                    const ExtensionId& extension_id,
                                     base::OnceClosure callback);
 
   // Called by BluetoothGattService in response to Unregister().
   void OnUnregisterGattServiceSuccess(const std::string& service_id,
-                                      const std::string& extension_id,
+                                      const ExtensionId& extension_id,
                                       base::OnceClosure callback);
 
   // Called by BluetoothRemoteGattCharacteristic and
@@ -470,7 +470,7 @@ class BluetoothLowEnergyEventRouter
   // StartNotifySession.
   void OnStartNotifySession(
       bool persistent,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::string& characteristic_id,
       base::OnceClosure callback,
       std::unique_ptr<device::BluetoothGattNotifySession> session);
@@ -478,13 +478,13 @@ class BluetoothLowEnergyEventRouter
   // Called by BluetoothRemoteGattCharacteristic in response to a call to
   // StartNotifySession.
   void OnStartNotifySessionError(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::string& characteristic_id,
       ErrorCallback error_callback,
       device::BluetoothGattService::GattErrorCode error_code);
 
   // Called by BluetoothGattNotifySession in response to a call to Stop.
-  void OnStopNotifySession(const std::string& extension_id,
+  void OnStopNotifySession(const ExtensionId& extension_id,
                            const std::string& characteristic_id,
                            base::OnceClosure callback);
 
@@ -492,34 +492,34 @@ class BluetoothLowEnergyEventRouter
   // |device_address| from the managed API resources for extension with ID
   // |extension_id|.
   BluetoothLowEnergyConnection* FindConnection(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::string& device_address);
 
   // Removes the connection to device with address |device_address| from the
   // managed API resources for extension with ID |extension_id|. Returns false,
   // if the connection could not be found.
-  bool RemoveConnection(const std::string& extension_id,
+  bool RemoveConnection(const ExtensionId& extension_id,
                         const std::string& device_address);
 
   // Finds and returns a BluetoothLowEnergyNotifySession associated with
   // characteristic with instance ID |characteristic_id| from the managed API
   // API resources for extension with ID |extension_id|.
   BluetoothLowEnergyNotifySession* FindNotifySession(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::string& characteristic_id);
 
   // Removes the notify session associated with characteristic with
   // instance ID |characteristic_id| from the managed API resources for
   // extension with ID |extension_id|. Returns false, if the session could
   // not be found.
-  bool RemoveNotifySession(const std::string& extension_id,
+  bool RemoveNotifySession(const ExtensionId& extension_id,
                            const std::string& characteristic_id);
 
   // Stores a request associated with an app and returns the ID of the request.
   // When an app sends a request to an app for getting/setting an attribute
   // value, we store that request so when the response comes in, we know where
   // to forward the results of the request.
-  size_t StoreSentRequest(const std::string& extension_id,
+  size_t StoreSentRequest(const ExtensionId& extension_id,
                           std::unique_ptr<AttributeValueRequest> request);
 
   // Mapping from instance ids to identifiers of owning instances. The keys are

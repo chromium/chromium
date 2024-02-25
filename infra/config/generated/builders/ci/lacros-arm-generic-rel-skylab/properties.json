@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/lacros-arm-generic-rel-skylab/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -23,7 +26,7 @@
                 "target_arch": "arm",
                 "target_bits": 32,
                 "target_cros_boards": [
-                  "jacuzzi:arm-generic"
+                  "arm-generic"
                 ],
                 "target_platform": "chromeos"
               },
@@ -46,6 +49,12 @@
           "bucket": "ci",
           "builder": "lacros-arm-generic-rel-skylab",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "lacros-arm-generic-rel-skylab",
+          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }

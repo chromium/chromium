@@ -7,7 +7,7 @@ import './viewer-bookmark.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Bookmark} from '../bookmark_type.js';
+import type {Bookmark} from '../bookmark_type.js';
 
 import {getTemplate} from './viewer-document-outline.html.js';
 

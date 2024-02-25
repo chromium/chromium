@@ -4,8 +4,10 @@
 
 #include "ash/app_list/views/assistant/assistant_dialog_plate.h"
 
+#include <string_view>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
@@ -24,6 +26,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -39,6 +42,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -63,12 +67,14 @@ using keyboard::KeyboardUIController;
 
 // Textfield used for inputting text based Assistant queries.
 class AssistantTextfield : public views::Textfield {
+  METADATA_HEADER(AssistantTextfield, views::Textfield)
+
  public:
   AssistantTextfield() { SetID(AssistantViewID::kTextQueryField); }
-
-  // views::Textfield overrides:
-  const char* GetClassName() const override { return "AssistantTextfield"; }
 };
+
+BEGIN_METADATA(AssistantTextfield)
+END_METADATA
 
 void ShowKeyboardIfEnabled() {
   auto* keyboard_controller = KeyboardUIController::Get();
@@ -102,6 +108,7 @@ AssistantDialogPlate::AssistantDialogPlate(AssistantViewDelegate* delegate)
                                   ->query_history()
                                   .GetIterator()) {
   SetID(AssistantViewID::kDialogPlate);
+  SetProperty(views::kElementIdentifierKey, kAssistantDialogPlateElementId);
   InitLayout();
 
   assistant_controller_observation_.Observe(AssistantController::Get());
@@ -138,7 +145,7 @@ bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
       if (delegate_->IsTabletMode())
         HideKeyboardIfEnabled();
 
-      const base::StringPiece16& trimmed_text = base::TrimWhitespace(
+      std::u16string_view trimmed_text = base::TrimWhitespace(
           textfield_->GetText(), base::TrimPositions::TRIM_ALL);
 
       // Only non-empty trimmed text is consider a valid contents commit.
@@ -269,8 +276,8 @@ void AssistantDialogPlate::OnCommittedQueryChanged(
 void AssistantDialogPlate::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   switch (new_visibility) {
     case AssistantVisibility::kVisible:
       UpdateModalityVisibility();
@@ -512,7 +519,7 @@ InputModality AssistantDialogPlate::input_modality() const {
   return AssistantInteractionController::Get()->GetModel()->input_modality();
 }
 
-BEGIN_METADATA(AssistantDialogPlate, views::View)
+BEGIN_METADATA(AssistantDialogPlate)
 END_METADATA
 
 }  // namespace ash

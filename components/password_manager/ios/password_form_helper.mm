@@ -6,9 +6,13 @@
 
 #include <stddef.h>
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#import "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -36,22 +40,9 @@ using autofill::PasswordFormFillData;
 using base::SysNSStringToUTF16;
 using base::UTF16ToUTF8;
 using password_manager::FillData;
-using password_manager::GetPageURLAndCheckTrustLevel;
 using password_manager::JsonStringToFormData;
 
 namespace password_manager {
-bool GetPageURLAndCheckTrustLevel(web::WebState* web_state,
-                                  GURL* __nullable page_url) {
-  absl::optional<GURL> last_committed_url =
-      web_state->GetLastCommittedURLIfTrusted();
-  if (last_committed_url) {
-    if (page_url) {
-      *page_url = std::move(*last_committed_url);
-    }
-    return true;
-  }
-  return false;
-}
 
 // The frame id associated with the frame which sent to form message.
 const char kFrameIdKey[] = "frame_id";
@@ -75,7 +66,7 @@ const char kFrameIdKey[] = "frame_id";
 @implementation PasswordFormHelper {
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
-  web::WebState* _webState;
+  raw_ptr<web::WebState> _webState;
 
   // Bridge to observe WebState from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
@@ -201,8 +192,8 @@ const char kFrameIdKey[] = "frame_id";
     return;
   }
 
-  GURL pageURL;
-  if (!GetPageURLAndCheckTrustLevel(_webState, &pageURL)) {
+  std::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
+  if (!pageURL) {
     return;
   }
 
@@ -213,17 +204,17 @@ const char kFrameIdKey[] = "frame_id";
             std::vector<FormData> forms;
             [weakSelf getPasswordForms:&forms
                               fromJSON:JSONString
-                               pageURL:pageURL
+                               pageURL:*pageURL
                            frameOrigin:frame->GetSecurityOrigin()];
             // Find the maximum extracted value.
             uint32_t maxID = 0;
             for (const auto& form : forms) {
-              if (form.unique_renderer_id) {
-                maxID = std::max(maxID, form.unique_renderer_id.value());
+              if (form.renderer_id) {
+                maxID = std::max(maxID, form.renderer_id.value());
               }
               for (const auto& field : form.fields) {
-                if (field.unique_renderer_id) {
-                  maxID = std::max(maxID, field.unique_renderer_id.value());
+                if (field.renderer_id) {
+                  maxID = std::max(maxID, field.renderer_id.value());
                 }
               }
             }
@@ -313,8 +304,8 @@ const char kFrameIdKey[] = "frame_id";
     return;
   }
 
-  GURL pageURL;
-  if (!GetPageURLAndCheckTrustLevel(_webState, &pageURL)) {
+  std::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
+  if (!pageURL) {
     completionHandler(NO, FormData());
     return;
   }
@@ -325,7 +316,7 @@ const char kFrameIdKey[] = "frame_id";
       ->ExtractForm(
           frame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
             FormData formData;
-            if (!JsonStringToFormData(jsonString, &formData, pageURL,
+            if (!JsonStringToFormData(jsonString, &formData, *pageURL,
                                       *fieldDataManager)) {
               completionHandler(NO, FormData());
               return;
@@ -348,9 +339,31 @@ const char kFrameIdKey[] = "frame_id";
       autofill::FieldPropertiesFlags::kUserTyped);
 }
 
-- (void)handleFormSubmittedMessage:(const web::ScriptMessage&)message {
+- (HandleSubmittedFormStatus)handleFormSubmittedMessage:
+    (const web::ScriptMessage&)message {
+  if (!_webState) {
+    return HandleSubmittedFormStatus::kRejectedNoWebState;
+  }
+
+  if (!self.delegate) {
+    return HandleSubmittedFormStatus::kRejectedNoDelegate;
+  }
+
+  std::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
+  if (!pageURL) {
+    return HandleSubmittedFormStatus::kRejectedNoTrustedUrl;
+  }
+
   web::WebFrame* frame = nullptr;
-  const auto& dict = message.body()->GetDict();
+  base::Value* body = message.body();
+
+  if (!body->is_dict()) {
+    // Don't handle the message if it isn't of dictionary type. The renderer
+    // must provide that type of message so it can be interpreted.
+    return HandleSubmittedFormStatus::kRejectedMessageBodyNotADict;
+  }
+
+  const auto& dict = body->GetDict();
   const std::string* frame_id = dict.FindString(password_manager::kFrameIdKey);
   if (frame_id) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
@@ -358,24 +371,19 @@ const char kFrameIdKey[] = "frame_id";
     frame = feature->GetWebFramesManager(_webState)->GetFrameWithId(*frame_id);
   }
   if (!frame) {
-    return;
-  }
-
-  GURL pageURL;
-  if (!GetPageURLAndCheckTrustLevel(_webState, &pageURL)) {
-    return;
+    return HandleSubmittedFormStatus::kRejectedNoFrameMatchingId;
   }
 
   FormData form;
-  if (!autofill::ExtractFormData(dict, false, std::u16string(), pageURL,
-                                 pageURL.DeprecatedGetOriginAsURL(),
+  if (!autofill::ExtractFormData(dict, false, std::u16string(), *pageURL,
+                                 pageURL->DeprecatedGetOriginAsURL(),
                                  *self.fieldDataManager, &form)) {
-    return;
+    return HandleSubmittedFormStatus::kRejectedCantExtractFormData;
   }
 
-  if (_webState && self.delegate) {
-    [self.delegate formHelper:self didSubmitForm:form inFrame:frame];
-  }
+  [self.delegate formHelper:self didSubmitForm:form inFrame:frame];
+
+  return HandleSubmittedFormStatus::kHandled;
 }
 
 @end

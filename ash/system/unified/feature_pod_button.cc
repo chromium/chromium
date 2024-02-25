@@ -62,7 +62,7 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
 
 FeaturePodIconButton::~FeaturePodIconButton() = default;
 
-BEGIN_METADATA(FeaturePodIconButton, IconButton)
+BEGIN_METADATA(FeaturePodIconButton)
 END_METADATA
 
 FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
@@ -102,9 +102,9 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
 
 FeaturePodLabelButton::~FeaturePodLabelButton() = default;
 
-void FeaturePodLabelButton::Layout() {
+void FeaturePodLabelButton::Layout(PassKey) {
   DCHECK(views::FocusRing::Get(this));
-  views::FocusRing::Get(this)->Layout();
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
   LayoutInCenter(label_, GetContentsBounds().y());
   LayoutInCenter(sub_label_, GetContentsBounds().CenterPoint().y() +
                                  kUnifiedFeaturePodInterLabelPadding);
@@ -112,7 +112,7 @@ void FeaturePodLabelButton::Layout() {
   if (!detailed_view_arrow_->GetVisible())
     return;
 
-  // We need custom Layout() because |label_| is first laid out in the center
+  // We need custom layout because |label_| is first laid out in the center
   // without considering |detailed_view_arrow_|, then |detailed_view_arrow_| is
   // placed on the right side of |label_|.
   gfx::Size arrow_size = detailed_view_arrow_->GetPreferredSize();
@@ -210,7 +210,7 @@ void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {
       child_width, preferred_size.height());
 }
 
-BEGIN_METADATA(FeaturePodLabelButton, views::Button)
+BEGIN_METADATA(FeaturePodLabelButton)
 END_METADATA
 
 FeaturePodButton::FeaturePodButton(FeaturePodControllerBase* controller,
@@ -251,7 +251,7 @@ void FeaturePodButton::SetLabel(const std::u16string& label) {
     return;
 
   label_button_->SetLabel(label);
-  Layout();
+  DeprecatedLayoutImmediately();
   label_button_->SchedulePaint();
 }
 
@@ -260,7 +260,7 @@ void FeaturePodButton::SetSubLabel(const std::u16string& sub_label) {
     return;
 
   label_button_->SetSubLabel(sub_label);
-  Layout();
+  DeprecatedLayoutImmediately();
   label_button_->SchedulePaint();
 }
 
@@ -279,7 +279,7 @@ void FeaturePodButton::SetIconAndLabelTooltips(const std::u16string& text) {
 
 void FeaturePodButton::ShowDetailedViewArrow() {
   label_button_->ShowDetailedViewArrow();
-  Layout();
+  DeprecatedLayoutImmediately();
   label_button_->SchedulePaint();
 }
 
@@ -325,7 +325,7 @@ void FeaturePodButton::OnEnabledChanged() {
   label_button_->SetEnabled(GetEnabled());
 }
 
-BEGIN_METADATA(FeaturePodButton, views::View)
+BEGIN_METADATA(FeaturePodButton)
 END_METADATA
 
 }  // namespace ash

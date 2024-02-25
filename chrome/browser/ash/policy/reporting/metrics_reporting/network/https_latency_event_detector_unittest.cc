@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
@@ -89,7 +89,7 @@ TEST_F(HttpsLatencyEventDetectorTest, NoEventDetected) {
           ->mutable_https_latency_data();
   current_latency_data->set_verdict(RoutineVerdict::NO_PROBLEM);
 
-  event_type = detector.DetectEvent(absl::nullopt, current_metric_data);
+  event_type = detector.DetectEvent(std::nullopt, current_metric_data);
 
   // No previously collected data and no problems found in current latency data.
   EXPECT_FALSE(event_type.has_value());
@@ -136,7 +136,7 @@ TEST_F(HttpsLatencyEventDetectorTest, EventDetected) {
           ->mutable_https_latency_data();
   current_latency_data->set_verdict(RoutineVerdict::PROBLEM);
 
-  auto event_type = detector.DetectEvent(absl::nullopt, current_metric_data);
+  auto event_type = detector.DetectEvent(std::nullopt, current_metric_data);
 
   // No data previously collected, and current collected data has problem.
   ASSERT_TRUE(event_type.has_value());

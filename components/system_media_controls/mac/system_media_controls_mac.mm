@@ -8,13 +8,15 @@ namespace system_media_controls {
 
 // static
 std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
-    const std::string& product_name) {
+    const std::string& product_name,
+    int window) {
   return std::make_unique<internal::SystemMediaControlsMac>();
 }
 
 namespace internal {
 
-SystemMediaControlsMac::SystemMediaControlsMac() = default;
+SystemMediaControlsMac::SystemMediaControlsMac()
+    : remote_command_center_delegate_(this) {}
 
 SystemMediaControlsMac::~SystemMediaControlsMac() = default;
 

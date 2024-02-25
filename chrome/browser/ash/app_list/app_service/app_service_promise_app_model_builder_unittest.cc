@@ -10,7 +10,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
@@ -81,13 +81,11 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
     // Register two promise apps in the promise app registry cache.
     apps::PromiseAppPtr promise_app_1 = std::make_unique<apps::PromiseApp>(
         apps::PackageId(apps::AppType::kArc, "test1"));
-    promise_app_1->name = "Test 1";
     promise_app_1->should_show = true;
     cache()->OnPromiseApp(std::move(promise_app_1));
 
     apps::PromiseAppPtr promise_app_2 = std::make_unique<apps::PromiseApp>(
         apps::PackageId(apps::AppType::kArc, "test2"));
-    promise_app_2->name = "Test 2";
     promise_app_2->should_show = true;
     cache()->OnPromiseApp(std::move(promise_app_2));
   }
@@ -101,9 +99,7 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
     // Confirm there are 2 launcher promise app items.
     EXPECT_EQ(model_updater()->ItemCount(), 2u);
     EXPECT_EQ(model_updater()->ItemAtForTest(0)->id(), "android:test1");
-    EXPECT_EQ(model_updater()->ItemAtForTest(0)->name(), "Test 1");
     EXPECT_EQ(model_updater()->ItemAtForTest(1)->id(), "android:test2");
-    EXPECT_EQ(model_updater()->ItemAtForTest(1)->name(), "Test 2");
   }
 
   AppListModelUpdater* model_updater() { return model_updater_.get(); }
@@ -121,7 +117,7 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
   display::test::TestScreen test_screen_;
   std::unique_ptr<Profile> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<apps::PromiseAppRegistryCache, ExperimentalAsh> cache_;
+  raw_ptr<apps::PromiseAppRegistryCache> cache_;
   syncer::StringOrdinal last_position_;
   base::WeakPtrFactory<AppServicePromiseAppModelBuilderTest> weak_ptr_factory_{
       this};

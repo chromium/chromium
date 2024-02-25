@@ -4,12 +4,16 @@
 
 #include "components/supervised_user/core/browser/supervised_user_content_settings_provider.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
@@ -68,9 +72,27 @@ SupervisedUserContentSettingsProvider::
 std::unique_ptr<content_settings::RuleIterator>
 SupervisedUserContentSettingsProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool incognito) const {
+    bool incognito,
+    const content_settings::PartitionKey& partition_key) const {
   base::AutoLock auto_lock(lock_);
   return value_map_.GetRuleIterator(content_type);
+}
+
+std::unique_ptr<content_settings::Rule>
+SupervisedUserContentSettingsProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const content_settings::PartitionKey& partition_key) const {
+  base::AutoLock auto_lock(lock_);
+  ContentSetting setting = value_map_.GetContentSetting(content_type);
+  if (setting != CONTENT_SETTING_DEFAULT) {
+    return std::make_unique<content_settings::Rule>(
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+        base::Value(setting), content_settings::RuleMetaData{});
+  }
+  return nullptr;
 }
 
 void SupervisedUserContentSettingsProvider::OnSupervisedSettingsAvailable(
@@ -95,7 +117,8 @@ void SupervisedUserContentSettingsProvider::OnSupervisedSettingsAvailable(
   }
   for (ContentSettingsType type : to_notify) {
     NotifyObservers(ContentSettingsPattern::Wildcard(),
-                    ContentSettingsPattern::Wildcard(), type);
+                    ContentSettingsPattern::Wildcard(), type,
+                    /*partition_key=*/nullptr);
   }
 }
 
@@ -107,12 +130,14 @@ bool SupervisedUserContentSettingsProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints) {
+    const content_settings::ContentSettingConstraints& constraints,
+    const content_settings::PartitionKey& partition_key) {
   return false;
 }
 
 void SupervisedUserContentSettingsProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {}
+    ContentSettingsType content_type,
+    const content_settings::PartitionKey& partition_key) {}
 
 void SupervisedUserContentSettingsProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());

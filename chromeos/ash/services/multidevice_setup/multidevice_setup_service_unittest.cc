@@ -95,24 +95,20 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
     return instance;
   }
 
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable>
       expected_testing_pref_service_;
-  raw_ptr<device_sync::FakeDeviceSyncClient, ExperimentalAsh>
-      expected_device_sync_client_;
-  raw_ptr<FakeAuthTokenValidator, ExperimentalAsh>
-      expected_auth_token_validator_;
-  raw_ptr<OobeCompletionTracker, ExperimentalAsh>
-      expected_oobe_completion_tracker_;
-  raw_ptr<FakeAndroidSmsAppHelperDelegate, ExperimentalAsh>
+  raw_ptr<device_sync::FakeDeviceSyncClient> expected_device_sync_client_;
+  raw_ptr<FakeAuthTokenValidator> expected_auth_token_validator_;
+  raw_ptr<OobeCompletionTracker> expected_oobe_completion_tracker_;
+  raw_ptr<FakeAndroidSmsAppHelperDelegate>
       expected_android_sms_app_helper_delegate_;
-  raw_ptr<FakeAndroidSmsPairingStateTracker, ExperimentalAsh>
+  raw_ptr<FakeAndroidSmsPairingStateTracker>
       expected_android_sms_pairing_state_tracker_;
-  raw_ptr<const device_sync::FakeGcmDeviceInfoProvider, ExperimentalAsh>
+  raw_ptr<const device_sync::FakeGcmDeviceInfoProvider>
       expected_gcm_device_info_provider_;
   bool expected_is_secondary_user_;
 
-  raw_ptr<FakeMultiDeviceSetup, DanglingUntriaged | ExperimentalAsh> instance_ =
-      nullptr;
+  raw_ptr<FakeMultiDeviceSetup, DanglingUntriaged> instance_ = nullptr;
 };
 
 }  // namespace
@@ -234,7 +230,7 @@ class MultiDeviceSetupServiceTest : public testing::Test {
   std::unique_ptr<FakeMultiDeviceSetupFactory> fake_multidevice_setup_factory_;
 
   std::unique_ptr<MultiDeviceSetupService> service_;
-  absl::optional<bool> last_debug_event_success_;
+  std::optional<bool> last_debug_event_success_;
 
   mojo::Remote<mojom::MultiDeviceSetup> multidevice_setup_remote_;
   mojo::Remote<mojom::PrivilegedHostDeviceSetter>

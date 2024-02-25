@@ -96,8 +96,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
 
   // NotificationDelegate overrides:
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
   // NetworkStateHandlerObserver override:
   void PortalStateChanged(const NetworkState* default_network,
@@ -118,8 +118,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void UpdateLastSurveyInteractionTime();
   void ShowDialog(const std::string& site_context);
 
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-  const raw_ref<const HatsConfig, ExperimentalAsh> hats_config_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ref<const HatsConfig> hats_config_;
   base::flat_map<std::string, std::string> product_specific_data_;
   std::unique_ptr<message_center::Notification> notification_;
   const std::u16string title_;

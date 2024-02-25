@@ -14,6 +14,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/wm_mode/wm_mode_controller.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
@@ -35,7 +36,7 @@ WmModeButtonTray::WmModeButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kWmMode),
       image_view_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
-  SetPressedCallback(base::BindRepeating(
+  SetCallback(base::BindRepeating(
       [](const ui::Event& event) { WmModeController::Get()->Toggle(); }));
 
   image_view_->SetTooltipText(GetAccessibleNameForTray());
@@ -85,5 +86,8 @@ void WmModeButtonTray::OnSessionStateChanged(
 void WmModeButtonTray::UpdateButtonVisibility() {
   SetVisiblePreferred(ShouldButtonBeVisible());
 }
+
+BEGIN_METADATA(WmModeButtonTray)
+END_METADATA
 
 }  // namespace ash

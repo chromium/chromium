@@ -5,18 +5,19 @@
 /**
  * @fileoverview Handles auto scrolling on navigation.
  */
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {AutomationUtil} from '../../common/automation_util.js';
-import {constants} from '../../common/constants.js';
-import {CursorUnit} from '../../common/cursors/cursor.js';
-import {CursorRange} from '../../common/cursors/range.js';
-import {EventHandler} from '../../common/event_handler.js';
-import {Command} from '../common/command_store.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {CursorUnit} from '/common/cursors/cursor.js';
+import {CursorRange} from '/common/cursors/range.js';
+import {EventHandler} from '/common/event_handler.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
+import {Command} from '../common/command.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVoxRange} from './chromevox_range.js';
-import {ChromeVoxState} from './chromevox_state.js';
-import {CommandHandlerInterface} from './command_handler_interface.js';
+import {CommandHandlerInterface} from './input/command_handler_interface.js';
 
 // setTimeout and its clean-up are referencing each other. So, we need to set
 // "ignoreReadBeforeAssign" in this file. ESLint doesn't support per-line rule
@@ -46,6 +47,9 @@ export class AutoScrollHandler {
 
     /** @private {boolean} */
     this.relatedFocusEventHappened_ = false;
+
+    /** @private {boolean} */
+    this.allowWebContentsForTesting_ = false;
   }
 
   static init() {
@@ -61,7 +65,7 @@ export class AutoScrollHandler {
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
    * @param {?CursorUnit} unit The unit to navigate by.
    * @param {?TtsSpeechProperties} speechProps The optional speech properties
-   *     given to |navigateToRange| to provide feedback of the current command.
+   *     given to |navigateTo| to provide feedback from the current command.
    * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
    *     the current navigation root.
    * @param {Function} retryCommandFunc The callback used to retry the command
@@ -177,6 +181,13 @@ export class AutoScrollHandler {
       ancestors = AutomationUtil.getUniqueAncestors(
           target.start.node, ChromeVoxRange.current.start.node);
     }
+    // Check if we are in ARC++. Scrolling behavior should only happen there,
+    // where additional nodes are not loaded until the user scrolls.
+    if (!this.allowWebContentsForTesting_ &&
+        !ancestors.find(
+            node => node.role === chrome.automation.RoleType.APPLICATION)) {
+      return null;
+    }
     const scrollable =
         ancestors.find(node => AutomationPredicate.autoScrollable(node));
     return scrollable ?? null;
@@ -214,7 +225,7 @@ export class AutoScrollHandler {
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
    * @param {?CursorUnit} unit The unit to navigate by.
    * @param {?TtsSpeechProperties} speechProps The optional speech properties
-   *     given to |navigateToRange| to provide feedback of the current command.
+   *     given to |navigateTo| to provide feedback for the current command.
    * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
    *     the current navigation root.
    * @param {Function} retryCommandFunc The callback used to retry the command
@@ -227,7 +238,7 @@ export class AutoScrollHandler {
         await this.scrollInDirection_(this.scrollingNode_, dir);
     if (!scrollResult) {
       this.isScrolling_ = false;
-      ChromeVoxState.instance.navigateToRange(target, false, speechProps);
+      ChromeVoxRange.navigateTo(target, false, speechProps);
       return;
     }
 
@@ -254,8 +265,7 @@ export class AutoScrollHandler {
       const nextRange = this.handleScrollingInAndroidRecyclerView_(
           pred, unit, dir, rootPred, this.scrollingNode_);
 
-      ChromeVoxState.instance.navigateToRange(
-          nextRange ?? target, false, speechProps);
+      ChromeVoxRange.navigateTo(nextRange ?? target, false, speechProps);
       return;
     }
 
@@ -440,3 +450,5 @@ const TIMEOUT_FOCUS_EVENT_DROP_MS = 2000;
  * @const {number}
  */
 const DELAY_HANDLE_SCROLLED_MS = 150;
+
+TestImportManager.exportForTesting(AutoScrollHandler);

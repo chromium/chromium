@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       'Tests async stacks for message channel API.');
   let debuggerId = (await dp.Debugger.enable()).result.debuggerId;

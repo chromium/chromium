@@ -4,40 +4,29 @@
 
 #include "ash/keyboard/ui/keyboard_ui_model.h"
 
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace keyboard {
 
-TEST(KeyboardUIModelTest, ChangeToValidStateRecordsPositiveHistogram) {
+TEST(KeyboardUIModelTest, ChangeToValidState) {
   base::HistogramTester histogram_tester;
 
   KeyboardUIModel model;
   ASSERT_EQ(KeyboardUIState::kInitial, model.state());
 
   model.ChangeState(KeyboardUIState::kLoading);
-  histogram_tester.ExpectUniqueSample(
-      "VirtualKeyboard.ControllerStateTransition",
-      GetStateTransitionHash(KeyboardUIState::kInitial,
-                             KeyboardUIState::kLoading),
-      1);
 }
 
 // Test fails DCHECK when the state transition is invalid. This is expected.
-#if !DCHECK_IS_ON()
-TEST(KeyboardUIModelTest, ChangeToInvalidStateRecordsNegativeHistogram) {
+TEST(KeyboardUIModelTest, ChangeToInvalidStateDCHECKs) {
   base::HistogramTester histogram_tester;
 
   KeyboardUIModel model;
   ASSERT_EQ(KeyboardUIState::kInitial, model.state());
 
-  model.ChangeState(KeyboardUIState::kShown);
-  histogram_tester.ExpectUniqueSample(
-      "VirtualKeyboard.ControllerStateTransition",
-      -GetStateTransitionHash(KeyboardUIState::kInitial,
-                              KeyboardUIState::kShown),
-      1);
+  EXPECT_DCHECK_DEATH(model.ChangeState(KeyboardUIState::kShown));
 }
-#endif
 
 }  // namespace keyboard

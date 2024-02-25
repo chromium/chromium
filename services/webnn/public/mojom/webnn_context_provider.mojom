@@ -1,0 +1,65 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "components/ml/webnn/features.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
+import "services/webnn/public/mojom/webnn_graph.mojom";
+
+enum PowerPreference {
+  // Let the user agent select the most suitable behavior.
+  kDefault = 0,
+  // Prioritizes execution speed over power consumption.
+  kHighPerformance = 1,
+  // Prioritizes power consumption over other considerations such as execution
+  // speed.
+  kLowPower = 2,
+};
+
+// Represents options of creating `WebNNContext` interface.
+struct CreateContextOptions {
+  // The power preference for power consumption.
+  PowerPreference power_preference;
+};
+
+// Represents the return value of `WebNNContext::CreateGraph()`. Let it be
+// `graph_remote` if the graph was successfully created and `error` otherwise.
+union CreateGraphResult {
+  pending_remote<WebNNGraph>? graph_remote;
+  Error error;
+};
+
+// Represents the return value of `WebNNContextProvider::CreateWebNNContext()`.
+// Let it be `context_remote` if WebNNContext was successfully created and
+// `error` otherwise.
+union CreateContextResult {
+  pending_remote<WebNNContext>? context_remote;
+  Error error;
+};
+
+// Represents the `MLContext` object in the WebIDL definition that is a global
+// state of neural network compute workload and execution processes. This
+// interface runs in the GPU process and is called from the renderer process.
+[RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
+interface WebNNContext {
+  // Called by the renderer process to create `WebNNGraph` message pipe for
+  // executing computational graph, the WebNN graph will be validated and
+  // compiled. Initializes the compiled graph for optimal performance of the
+  // subsequent graph executions if the initialization is a necessary step.
+  CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
+};
+
+// This interface runs in the GPU process and is called from the renderer
+// process to create `WebNNContext` interface. The renderer requests this
+// interface from the frame's BrowserInterfaceBroker, which requests it
+// from the GpuService via the GpuClient.
+[RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
+interface WebNNContextProvider {
+  // Called by the renderer process to create a message pipe for `MLContext`,
+  // the `CreateContextResult` will be `Error` with error messages if the
+  // configuration of options isn't supported.
+  CreateWebNNContext(CreateContextOptions options)
+      => (CreateContextResult result);
+};

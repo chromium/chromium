@@ -7,14 +7,22 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
+#include "url/origin.h"
 
-namespace url {
-class Origin;
+namespace base {
+class Value;
+}
+
+namespace network {
+class SimpleURLLoader;
 }
 
 namespace content {
@@ -35,6 +43,44 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     kMakePaymentCredential,
     kGetAssertion,
     kGetPaymentCredentialAssertion
+  };
+
+  // A RemoteValidation represents a pending remote validation of an RP ID.
+  class CONTENT_EXPORT RemoteValidation {
+   public:
+    ~RemoteValidation();
+
+    // Create and start a remote validation. The `callback` argument may be
+    // invoked before this function returns if the network request could not be
+    // started. In that case, the return value will be `nullptr`. Otherwise the
+    // caller should hold the result and wait for |callback| to be invoked. If
+    // the return value is destroyed then the fetch will be canceled and
+    // |callback| will never be invoked.
+    static std::unique_ptr<RemoteValidation> Create(
+        const url::Origin& caller_origin,
+        const std::string& relying_party_id,
+        base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
+
+    // ValidateWellKnownJSON implements the core of remote validation. It isn't
+    // intended to be called externally except for testing.
+    [[nodiscard]] static blink::mojom::AuthenticatorStatus
+    ValidateWellKnownJSON(const url::Origin& caller_origin,
+                          const base::Value& json);
+
+   private:
+    RemoteValidation(
+        const url::Origin& caller_origin,
+        base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
+
+    void OnFetchComplete(std::unique_ptr<std::string> body);
+    void OnDecodeComplete(base::expected<base::Value, std::string> maybe_value);
+
+    const url::Origin caller_origin_;
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback_;
+    std::unique_ptr<network::SimpleURLLoader> loader_;
+    std::unique_ptr<std::string> json_;
+
+    base::WeakPtrFactory<RemoteValidation> weak_factory_{this};
   };
 
   // Legacy App IDs, which google.com origins are allowed to assert for
@@ -62,23 +108,32 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
       RequestType type,
       bool* is_cross_origin);
 
-  // Returns AuthenticatorStatus::SUCCESS if the origin domain is valid under
-  // the referenced definitions, and also the requested RP ID is a registrable
-  // domain suffix of, or is equal to, the origin's effective domain.
+  // Runs the given callback with AuthenticatorStatus::SUCCESS if the origin
+  // domain is valid under the referenced definitions, and also the requested
+  // RP ID is a registrable domain suffix of, or is equal to, the origin's
+  // effective domain. In this case the callback will be called before this
+  // function returns.
   //
   // If `remote_destop_client_override` is non-null, this method also validates
   // whether `caller_origin` is authorized to use that extension.
+  //
+  // If the RP ID cannot be validated using the rule above then a remote
+  // validation will be attempted by fetching `.well-known/webauthn-origins`
+  // from the RP ID. In this case the return value will be non-null and the
+  // caller needs to retain it. If the return value is deleted then the
+  // operation will be canceled.
   //
   // References:
   //   https://url.spec.whatwg.org/#valid-domain-string
   //   https://html.spec.whatwg.org/multipage/origin.html#concept-origin-effective-domain
   //   https://html.spec.whatwg.org/multipage/origin.html#is-a-registrable-domain-suffix-of-or-is-equal-to
-  blink::mojom::AuthenticatorStatus ValidateDomainAndRelyingPartyID(
+  std::unique_ptr<RemoteValidation> ValidateDomainAndRelyingPartyID(
       const url::Origin& caller_origin,
       const std::string& relying_party_id,
       RequestType request_type,
       const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override);
+          remote_desktop_client_override,
+      base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
   // Validates whether `caller_origin` is authorized to claim the U2F AppID
   // `appid`, which per U2F's processing rules may be empty.

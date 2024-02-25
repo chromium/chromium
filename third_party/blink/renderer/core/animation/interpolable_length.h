@@ -23,23 +23,19 @@ class CSSMathExpressionNode;
 
 class CORE_EXPORT InterpolableLength final : public InterpolableValue {
  public:
-  ~InterpolableLength() final {}
   InterpolableLength(CSSLengthArray&& length_array);
   explicit InterpolableLength(const CSSMathExpressionNode& expression);
 
-  static std::unique_ptr<InterpolableLength> CreatePixels(double pixels);
-  static std::unique_ptr<InterpolableLength> CreatePercent(double pixels);
-  static std::unique_ptr<InterpolableLength> CreateNeutral();
+  static InterpolableLength* CreatePixels(double pixels);
+  static InterpolableLength* CreatePercent(double pixels);
+  static InterpolableLength* CreateNeutral();
 
-  static std::unique_ptr<InterpolableLength> MaybeConvertCSSValue(
-      const CSSValue& value);
-  static std::unique_ptr<InterpolableLength> MaybeConvertLength(
-      const Length& length,
-      float zoom);
+  static InterpolableLength* MaybeConvertCSSValue(const CSSValue& value);
+  static InterpolableLength* MaybeConvertLength(const Length& length,
+                                                float zoom);
 
-  static PairwiseInterpolationValue MergeSingles(
-      std::unique_ptr<InterpolableValue> start,
-      std::unique_ptr<InterpolableValue> end);
+  static PairwiseInterpolationValue MergeSingles(InterpolableValue* start,
+                                                 InterpolableValue* end);
 
   Length CreateLength(const CSSToLengthConversionData& conversion_data,
                       Length::ValueRange range) const;
@@ -52,12 +48,8 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   bool HasPercentage() const;
   void SubtractFromOneHundredPercent();
 
-  std::unique_ptr<InterpolableLength> Clone() const {
-    return std::unique_ptr<InterpolableLength>(RawClone());
-  }
-  std::unique_ptr<InterpolableLength> CloneAndZero() const {
-    return std::unique_ptr<InterpolableLength>(RawCloneAndZero());
-  }
+  InterpolableLength* Clone() const { return RawClone(); }
+  InterpolableLength* CloneAndZero() const { return RawCloneAndZero(); }
 
   // InterpolableValue:
   void Interpolate(const InterpolableValue& to,
@@ -74,10 +66,12 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   void ScaleAndAdd(double scale, const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
+  void Trace(Visitor* v) const override;
+
  private:
   InterpolableLength* RawClone() const final;
   InterpolableLength* RawCloneAndZero() const final {
-    return new InterpolableLength(CSSLengthArray());
+    return MakeGarbageCollected<InterpolableLength>(CSSLengthArray());
   }
 
   bool IsLengthArray() const { return type_ == Type::kLengthArray; }
@@ -90,7 +84,7 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   enum class Type { kLengthArray, kExpression };
   Type type_;
   CSSLengthArray length_array_;
-  Persistent<const CSSMathExpressionNode> expression_;
+  Member<const CSSMathExpressionNode> expression_;
 };
 
 template <>

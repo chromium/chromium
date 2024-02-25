@@ -17,6 +17,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -50,6 +51,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
  public:
   explicit WallpaperWidgetDelegate(views::View* view) {
     SetCanMaximize(true);
+    SetCanFullscreen(true);
     AddChildView(view);
     view->SetPaintToLayer();
   }
@@ -58,7 +60,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
   WallpaperWidgetDelegate& operator=(const WallpaperWidgetDelegate&) = delete;
 
   // Overrides views::View.
-  void Layout() override {
+  void Layout(PassKey) override {
     aura::Window* window = GetWidget()->GetNativeWindow();
     // Keep |this| at the bottom since there may be other windows on top of the
     // wallpaper view such as an overview mode shield.
@@ -66,7 +68,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     display::Display display =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window);
 
-    for (auto* child : children()) {
+    for (views::View* child : children()) {
       child->SetBounds(0, 0, display.size().width(), display.size().height());
       gfx::Transform transform;
       // Apply RTL transform explicitly becacuse Views layer code
@@ -110,10 +112,6 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
     parent()->RemoveChildViewT(shield_view_.get());
     shield_view_ = nullptr;
   }
-}
-
-const char* WallpaperView::GetClassName() const {
-  return "WallpaperView";
 }
 
 bool WallpaperView::OnMousePressed(const ui::MouseEvent& event) {
@@ -208,7 +206,7 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
     small_canvas.DrawImageInt(wallpaper, src.x(), src.y(), src.width(),
                               src.height(), 0, 0, quality_adjusted_rect.width(),
                               quality_adjusted_rect.height(), true);
-    small_image_ = absl::make_optional(
+    small_image_ = std::make_optional(
         gfx::ImageSkia::CreateFrom1xBitmap(small_canvas.GetBitmap()));
   }
 
@@ -323,5 +321,8 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
 
   return wallpaper_widget;
 }
+
+BEGIN_METADATA(WallpaperView)
+END_METADATA
 
 }  // namespace ash

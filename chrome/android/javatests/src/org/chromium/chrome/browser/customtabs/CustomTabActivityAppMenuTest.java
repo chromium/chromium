@@ -52,8 +52,11 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PackageManagerWrapper;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -62,6 +65,7 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
@@ -76,44 +80,49 @@ import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for the Custom Tab App Menu.
- */
+/** Integration tests for the Custom Tab App Menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
 public class CustomTabActivityAppMenuTest {
     private static final int MAX_MENU_CUSTOM_ITEMS = 7;
-    private static final int NUM_CHROME_MENU_ITEMS = 5;
-    private static final int NUM_CHROME_MENU_ITEMS_WITH_DIVIDER = 6;
+    private static final int NUM_CHROME_MENU_ITEMS = 6;
+    private static final int NUM_CHROME_MENU_ITEMS_WITH_DIVIDER = 7;
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_MENU_TITLE = "testMenuTitle";
 
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
-    @Mock
-    private TranslateBridge.Natives mTranslateBridgeJniMock;
+    @Rule public JniMocker jniMocker = new JniMocker();
+    @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
 
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule().setOverride(BaseCustomTabActivityModule.Factory.class,
-                    (BrowserServicesIntentDataProvider intentDataProvider,
-                            CustomTabNightModeStateController nightModeController,
-                            CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
-                            TopUiThemeColorProvider topUiThemeColorProvider,
-                            DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
-                            -> new BaseCustomTabActivityModule(intentDataProvider,
-                                    nightModeController, intentIgnoringCriterion,
-                                    topUiThemeColorProvider, new FakeDefaultBrowserProviderImpl()));
+            new ModuleOverridesRule()
+                    .setOverride(
+                            BaseCustomTabActivityModule.Factory.class,
+                            (BrowserServicesIntentDataProvider intentDataProvider,
+                                    CustomTabNightModeStateController nightModeController,
+                                    CustomTabIntentHandler.IntentIgnoringCriterion
+                                            intentIgnoringCriterion,
+                                    TopUiThemeColorProvider topUiThemeColorProvider,
+                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider) ->
+                                    new BaseCustomTabActivityModule(
+                                            intentDataProvider,
+                                            nightModeController,
+                                            intentIgnoringCriterion,
+                                            topUiThemeColorProvider,
+                                            new FakeDefaultBrowserProviderImpl()));
 
     @Rule
-    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
-                                          .around(mCustomTabActivityTestRule)
-                                          .around(mModuleOverridesRule);
+    public RuleChain mRuleChain =
+            RuleChain.emptyRuleChain()
+                    .around(mCustomTabActivityTestRule)
+                    .around(mModuleOverridesRule);
 
     private String mTestPage;
 
@@ -148,7 +157,8 @@ public class CustomTabActivityAppMenuTest {
         MockitoAnnotations.initMocks(this);
 
         // Mock translate bridge so "Translate..." menu item doesn't unexpectedly show up.
-        jniMocker.mock(org.chromium.chrome.browser.translate.TranslateBridgeJni.TEST_HOOKS,
+        jniMocker.mock(
+                org.chromium.chrome.browser.translate.TranslateBridgeJni.TEST_HOOKS,
                 mTranslateBridgeJniMock);
         jniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mTranslateBridgeJniMock);
 
@@ -164,14 +174,16 @@ public class CustomTabActivityAppMenuTest {
 
         // finish() is called on a non-UI thread by the testing harness. Must hide the menu
         // first, otherwise the UI is manipulated on a non-UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (mCustomTabActivityTestRule.getActivity() == null) return;
-            AppMenuCoordinator coordinator = mCustomTabActivityTestRule.getAppMenuCoordinator();
-            // CCT doesn't always have a menu (ex. in the media viewer).
-            if (coordinator == null) return;
-            AppMenuHandler handler = coordinator.getAppMenuHandler();
-            if (handler != null) handler.hideAppMenu();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mCustomTabActivityTestRule.getActivity() == null) return;
+                    AppMenuCoordinator coordinator =
+                            mCustomTabActivityTestRule.getAppMenuCoordinator();
+                    // CCT doesn't always have a menu (ex. in the media viewer).
+                    if (coordinator == null) return;
+                    AppMenuHandler handler = coordinator.getAppMenuHandler();
+                    if (handler != null) handler.hideAppMenu();
+                });
 
         WebappsUtils.setAddToHomeIntentSupportedForTesting(null);
     }
@@ -182,17 +194,15 @@ public class CustomTabActivityAppMenuTest {
     }
 
     private CustomTabIntentDataProvider getCustomTabIntentDataProvider() {
-        return (CustomTabIntentDataProvider) mCustomTabActivityTestRule.getActivity()
-                .getIntentDataProvider();
+        return (CustomTabIntentDataProvider)
+                mCustomTabActivityTestRule.getActivity().getIntentDataProvider();
     }
 
     private void openAppMenuAndAssertMenuShown() {
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(mCustomTabActivityTestRule.getActivity());
     }
 
-    /**
-     * Test the entries in the app menu.
-     */
+    /** Test the entries in the app menu. */
     @Test
     @SmallTest
     public void testAppMenu() throws Exception {
@@ -200,38 +210,64 @@ public class CustomTabActivityAppMenuTest {
         int numMenuEntries = 1;
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(true);
 
         openAppMenuAndAssertMenuShown();
-        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
-                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
         final int expectedMenuSize = numMenuEntries + NUM_CHROME_MENU_ITEMS_WITH_DIVIDER;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.bookmark_this_page_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.offline_page_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.open_in_browser_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.add_to_homescreen_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                R.id.request_desktop_site_row_menu_id));
-        Assert.assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_row_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.bookmark_this_page_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.offline_page_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_in_browser_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.add_to_homescreen_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.request_desktop_site_row_menu_id));
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.share_row_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
 
         // Assert the divider line is displayed in the correct position.
-        int dividerLine = AppMenuTestSupport.findIndexOfMenuItemById(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
+        int dividerLine =
+                AppMenuTestSupport.findIndexOfMenuItemById(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
         int expectedPos = numMenuEntries + 1; // Add 1 to account for app menu icon row.
         Assert.assertEquals("Divider line at incorrect index.", expectedPos, dividerLine);
 
@@ -245,26 +281,31 @@ public class CustomTabActivityAppMenuTest {
         int numMenuEntries = 0;
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(true);
         openAppMenuAndAssertMenuShown();
-        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
-                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
         final int expectedMenuSize = numMenuEntries + NUM_CHROME_MENU_ITEMS;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
 
         // Assert the divider line is not displayed.
-        int dividerLine = AppMenuTestSupport.findIndexOfMenuItemById(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
+        int dividerLine =
+                AppMenuTestSupport.findIndexOfMenuItemById(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
         int expectedPos = -1; // No custom menu entries, not expecting a divider line.
         Assert.assertEquals("Divider present when it shouldn't be.", expectedPos, dividerLine);
 
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
-    /**
-     * Test the App Menu does not show for media viewer.
-     */
+    /** Test the App Menu does not show for media viewer. */
     @Test
     @SmallTest
     public void testAppMenuForMediaViewer() {
@@ -273,15 +314,17 @@ public class CustomTabActivityAppMenuTest {
         IntentUtils.addTrustedIntentExtras(intent);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            mCustomTabActivityTestRule.getActivity().onMenuOrKeyboardAction(R.id.show_menu, false);
-            Assert.assertNull(mCustomTabActivityTestRule.getAppMenuCoordinator());
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mCustomTabActivityTestRule
+                            .getActivity()
+                            .onMenuOrKeyboardAction(R.id.show_menu, false);
+                    Assert.assertNull(mCustomTabActivityTestRule.getAppMenuCoordinator());
+                });
     }
 
-    /**
-     * Test the entries in app menu for Reader Mode.
-     */
+    /** Test the entries in app menu for Reader Mode. */
     @Test
     @SmallTest
     public void testAppMenuForReaderMode() throws Exception {
@@ -291,61 +334,71 @@ public class CustomTabActivityAppMenuTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         openAppMenuAndAssertMenuShown();
-        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
-                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
         final int expectedMenuSize = 2;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
 
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reader_mode_prefs_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.reader_mode_prefs_id));
 
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
-    /**
-     * Test the entries in app menu for media viewer.
-     */
+    /** Test the entries in app menu for media viewer. */
     @Test
     @SmallTest
     public void testAppMenuForOfflinePage() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE,
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_UI_TYPE,
                 CustomTabIntentDataProvider.CustomTabsUiType.OFFLINE_PAGE);
         IntentUtils.addTrustedIntentExtras(intent);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         openAppMenuAndAssertMenuShown();
-        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
-                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
         final int expectedMenuSize = 3;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
 
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                R.id.request_desktop_site_row_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.request_desktop_site_row_menu_id));
 
         ModelList iconRowModelList =
-                AppMenuTestSupport
-                        .getMenuItemPropertyModel(
+                AppMenuTestSupport.getMenuItemPropertyModel(
                                 mCustomTabActivityTestRule.getAppMenuCoordinator(),
                                 R.id.icon_row_menu_id)
                         .get(AppMenuItemProperties.SUBMENU);
         final int expectedIconMenuSize = 4;
         assertEquals(expectedIconMenuSize, iconRowModelList.size());
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.bookmark_this_page_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.bookmark_this_page_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
 
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
@@ -359,43 +412,59 @@ public class CustomTabActivityAppMenuTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
         openAppMenuAndAssertMenuShown();
-        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
-                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
         final int expectedMenuSize = 3;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
 
         // Checks the first row (icons).
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
-        Assert.assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.offline_page_id));
-        Assert.assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.bookmark_this_page_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.offline_page_id));
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.bookmark_this_page_id));
 
         // Following rows.
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                R.id.request_desktop_site_row_menu_id));
-        Assert.assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.open_in_browser_id));
-        Assert.assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.add_to_homescreen_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.request_desktop_site_row_menu_id));
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_in_browser_id));
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.add_to_homescreen_id));
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
 
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
-    /**
-     * Tests if the default share item can be shown in the app menu.
-     */
+    /** Tests if the default share item can be shown in the app menu. */
     @Test
     @SmallTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testShareMenuItem() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         intent.putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
@@ -403,8 +472,9 @@ public class CustomTabActivityAppMenuTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         openAppMenuAndAssertMenuShown();
-        PropertyModel sharePropertyModel = AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_menu_id);
+        PropertyModel sharePropertyModel =
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_menu_id);
         Assert.assertNotNull(sharePropertyModel);
         Assert.assertTrue(sharePropertyModel.get(AppMenuItemProperties.ENABLED));
     }
@@ -425,17 +495,17 @@ public class CustomTabActivityAppMenuTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         openAppMenuAndAssertMenuShown();
-        PropertyModel addToHomeScreenPropertyModel = AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.add_to_homescreen_id);
+        PropertyModel addToHomeScreenPropertyModel =
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.add_to_homescreen_id);
 
         Assert.assertNull(addToHomeScreenPropertyModel);
 
         ContextUtils.initApplicationContextForTests(contextToRestore);
     }
 
-    /**
-     * Test that only up to 7 entries are added to the custom menu.
-     */
+    /** Test that only up to 7 entries are added to the custom menu. */
     @Test
     @SmallTest
     public void testMaxMenuItems() throws Exception {
@@ -444,18 +514,25 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertTrue(MAX_MENU_CUSTOM_ITEMS < numMenuEntries);
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(true);
 
         openAppMenuAndAssertMenuShown();
-        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
-                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
         final int expectedMenuSize = MAX_MENU_CUSTOM_ITEMS + NUM_CHROME_MENU_ITEMS_WITH_DIVIDER;
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
     /**
-     * Test whether the custom menu is correctly shown and clicking it sends the right
-     * {@link PendingIntent}.
+     * Test whether the custom menu is correctly shown and clicking it sends the right {@link
+     * PendingIntent}.
      */
     // TODO(crbug.com/1420991): Re-enable this test after fixing/diagnosing flakiness.
     @Test
@@ -465,8 +542,9 @@ public class CustomTabActivityAppMenuTest {
         Intent customTabIntent = createMinimalCustomTabIntent();
         Intent baseCallbackIntent = new Intent();
         baseCallbackIntent.putExtra("FOO", 42);
-        final PendingIntent pi = CustomTabsIntentTestUtils.addMenuEntriesToIntent(
-                customTabIntent, 1, baseCallbackIntent, TEST_MENU_TITLE);
+        final PendingIntent pi =
+                CustomTabsIntentTestUtils.addMenuEntriesToIntent(
+                        customTabIntent, 1, baseCallbackIntent, TEST_MENU_TITLE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(customTabIntent);
 
         final CustomTabsIntentTestUtils.OnFinishedForTest onFinished =
@@ -474,15 +552,19 @@ public class CustomTabActivityAppMenuTest {
         getCustomTabIntentDataProvider().setPendingIntentOnFinishedForTesting(onFinished);
 
         openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            int itemId = ((CustomTabAppMenuPropertiesDelegate)
-                                  AppMenuTestSupport.getAppMenuPropertiesDelegate(
-                                          mCustomTabActivityTestRule.getAppMenuCoordinator()))
-                                 .getItemIdForTitle(TEST_MENU_TITLE);
-            Assert.assertNotEquals(AppMenuPropertiesDelegate.INVALID_ITEM_ID, itemId);
-            AppMenuTestSupport.onOptionsItemSelected(
-                    mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    int itemId =
+                            ((CustomTabAppMenuPropertiesDelegate)
+                                            AppMenuTestSupport.getAppMenuPropertiesDelegate(
+                                                    mCustomTabActivityTestRule
+                                                            .getAppMenuCoordinator()))
+                                    .getItemIdForTitle(TEST_MENU_TITLE);
+                    Assert.assertNotEquals(AppMenuPropertiesDelegate.INVALID_ITEM_ID, itemId);
+                    AppMenuTestSupport.onOptionsItemSelected(
+                            mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId);
+                });
 
         onFinished.waitForCallback("Pending Intent was not sent.");
         Intent callbackIntent = onFinished.getCallbackIntent();
@@ -503,27 +585,29 @@ public class CustomTabActivityAppMenuTest {
         // Augment the CustomTabsSession to catch the callback.
         CallbackHelper callbackTriggered = new CallbackHelper();
         CustomTabsSession session =
-                CustomTabsTestUtils
-                        .bindWithCallback(new CustomTabsCallback() {
-                            @Override
-                            public void extraCallback(String callbackName, Bundle args) {
-                                if (callbackName.equals(
-                                            CustomTabsConnection.OPEN_IN_BROWSER_CALLBACK)) {
-                                    callbackTriggered.notifyCalled();
-                                }
-                            }
-                        })
+                CustomTabsTestUtils.bindWithCallback(
+                                new CustomTabsCallback() {
+                                    @Override
+                                    public void extraCallback(String callbackName, Bundle args) {
+                                        if (callbackName.equals(
+                                                CustomTabsConnection.OPEN_IN_BROWSER_CALLBACK)) {
+                                            callbackTriggered.notifyCalled();
+                                        }
+                                    }
+                                })
                         .session;
 
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         intent.setData(Uri.parse(mTestPage));
-        intent.setComponent(new ComponentName(
-                ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
+        intent.setComponent(
+                new ComponentName(
+                        ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentUtils.addTrustedIntentExtras(intent);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
                         LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
@@ -534,23 +618,109 @@ public class CustomTabActivityAppMenuTest {
         final Instrumentation.ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
         openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                    mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.open_in_browser_id));
-            mCustomTabActivityTestRule.getActivity().onMenuOrKeyboardAction(
-                    R.id.open_in_browser_id, false);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    Assert.assertNotNull(
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                    mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                                    R.id.open_in_browser_id));
+                    mCustomTabActivityTestRule
+                            .getActivity()
+                            .onMenuOrKeyboardAction(R.id.open_in_browser_id, false);
+                });
         final Activity activity =
                 monitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
 
         callbackTriggered.waitForCallback(0);
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(RecordHistogram.getHistogramValueCountForTesting(
-                                       LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
-                                       LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU),
-                    Matchers.is(1));
-        }, 5000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            RecordHistogram.getHistogramValueCountForTesting(
+                                    LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                                    LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU),
+                            Matchers.is(1));
+                },
+                5000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         activity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenHistory() throws Exception {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.setData(Uri.parse(mTestPage));
+        intent.setComponent(
+                new ComponentName(
+                        ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(true);
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
+
+        openAppMenuAndAssertMenuShown();
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    Assert.assertNotNull(
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                    mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                                    R.id.open_history_menu_id));
+                    mCustomTabActivityTestRule
+                            .getActivity()
+                            .onMenuOrKeyboardAction(R.id.open_history_menu_id, false);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
+    public void testNoHistoryItem_FeatureDisabled() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        openAppMenuAndAssertMenuShown();
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
+
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
+        final int expectedMenuSize = NUM_CHROME_MENU_ITEMS - 1;
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+    }
+
+    @Test
+    @SmallTest
+    public void testNoHistoryItem_NoClientPackage() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        openAppMenuAndAssertMenuShown();
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
+
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
+        final int expectedMenuSize = NUM_CHROME_MENU_ITEMS - 1;
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 }

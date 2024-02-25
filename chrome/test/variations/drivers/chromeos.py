@@ -19,7 +19,6 @@ from chrome.test.variations.drivers import DriverFactory
 from chrome.test.variations.test_utils import SRC_DIR
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.chrome import service
 
 # The module chromite is under third_party and imported relative to its root.
 sys.path.append(os.path.join(SRC_DIR, 'third_party'))
@@ -97,9 +96,10 @@ class CrOSDriverFactory(DriverFactory):
   channel: str = attr.attrib()
   board: str = attr.attrib()
   server_port: int = attr.attrib()
-  chromedriver_path: str = attr.attrib()
 
+  #override
   def __attrs_post_init__(self):
+    super().__attrs_post_init__()
     # We use this to check whether we have started the VM before we attempt to
     # shut it down.
     self._vm_started = False
@@ -143,6 +143,12 @@ class CrOSDriverFactory(DriverFactory):
     remote_device.run(
       ['chmod', 'a+rw', remote_seed_path], remote_sudo=True, print_cmd=True)
     return remote_seed_path
+
+  #override
+  @property
+  def supports_startup_timeout(self) -> bool:
+    # ChromeOS is a remote driver that doesn't support browser startup timeout.
+    return False
 
   @functools.cached_property
   def device(self) -> device.Device:
@@ -194,13 +200,15 @@ class CrOSDriverFactory(DriverFactory):
     browser = _launch_browser(browser_args)
     debugging_port, _ = browser._browser_backend._FindDevToolsPortAndTarget()
 
-    options = options or webdriver.ChromeOptions()
+    options = options or self.default_options
     options.debugger_address=f'localhost:{debugging_port}'
 
     with self.tunnel_context(debugging_port, self.server_port):
-      driver = webdriver.Chrome(
-        service=service.Service(self.chromedriver_path),
-        options=options)
+      driver = webdriver.Chrome(service=self.get_driver_service(),
+                                options=options)
+      # VM may not be fully ready before it returns, wait for window handle
+      # to double confirm.
+      self.wait_for_window(driver)
       try:
         yield driver
       finally:

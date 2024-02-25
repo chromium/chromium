@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -32,12 +33,10 @@
 #include "content/common/content_export.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/notification_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_view_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
@@ -162,7 +161,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // `proxy_route_id` is only used when creating a `blink::WebView` in an
   //   inactive state.
   virtual bool CreateRenderView(
-      const absl::optional<blink::FrameToken>& opener_frame_token,
+      const std::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
       bool window_was_opened_by_another_window);
 
@@ -210,7 +209,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // `blink::RemoteFrame` and back, while cross-BrowsingInstances result in
   // creating a new unrelated RenderViewHost. This is not true in the legacy BCS
   // mode, so there the `main_browsing_context_state_` is null.
-  const absl::optional<base::SafeRef<BrowsingContextState>>&
+  const std::optional<base::SafeRef<BrowsingContextState>>&
   main_browsing_context_state() const {
     return main_browsing_context_state_;
   }
@@ -327,6 +326,8 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   base::SafeRef<RenderViewHostImpl> GetSafeRef();
 
+  mojom::ViewWidgetType ViewWidgetType();
+
   SiteInstanceGroup* site_instance_group() const {
     return &*site_instance_group_;
   }
@@ -410,6 +411,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Routing ID for the main frame's RenderFrameHost.
   int main_frame_routing_id_;
 
+  std::optional<mojom::ViewWidgetType> view_widget_type_;
+
   // This monitors input changes so they can be reflected to the interaction MQ.
   std::unique_ptr<InputDeviceChangeObserver> input_device_change_observer_;
 
@@ -435,7 +438,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   raw_ptr<FrameTree> frame_tree_;
 
   // See main_browsing_context_state() for more details.
-  absl::optional<base::SafeRef<BrowsingContextState>>
+  std::optional<base::SafeRef<BrowsingContextState>>
       main_browsing_context_state_;
 
   bool registered_with_frame_tree_ = false;

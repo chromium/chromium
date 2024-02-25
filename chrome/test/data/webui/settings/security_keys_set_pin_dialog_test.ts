@@ -4,7 +4,8 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {CrInputElement, SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl, SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from 'chrome://settings/lazy_load.js';
+import type {CrInputElement, SecurityKeysPinBrowserProxy, SettingsSecurityKeysSetPinDialogElement} from 'chrome://settings/lazy_load.js';
+import {SecurityKeysPinBrowserProxyImpl, SetPinDialogPage} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

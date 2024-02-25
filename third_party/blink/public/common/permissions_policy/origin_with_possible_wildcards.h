@@ -33,22 +33,22 @@ class BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
 
   // This is a shortcut for making a wildcard-free OriginWithPossibleWildcards.
   // The returned value will be empty if the origin is opaque or Parse fails.
-  static absl::optional<OriginWithPossibleWildcards> FromOrigin(
+  static std::optional<OriginWithPossibleWildcards> FromOrigin(
       const url::Origin& origin);
 
   // This is a shortcut for making a OriginWithPossibleWildcards while
   // overriding the wildcard options. Non-tests should use Parse() if they want
   // wildcard support, or FromOrigin() if they don't need it.
   // The returned value will be empty if the origin is opaque or Parse fails.
-  static absl::optional<OriginWithPossibleWildcards>
+  static std::optional<OriginWithPossibleWildcards>
   FromOriginAndWildcardsForTest(const url::Origin& origin,
                                 bool has_subdomain_wildcard);
 
   // This constructs a OriginWithPossibleWildcards from an allowlist_entry which
   // might or might not have a subdomain wildcard (only if the type is kHeader).
   // This does not support special types like *, 'self', 'src', or 'none'.
-  // If the entry cannot be parsed then absl::nullopt is returned.
-  static absl::optional<OriginWithPossibleWildcards> Parse(
+  // If the entry cannot be parsed then std::nullopt is returned.
+  static std::optional<OriginWithPossibleWildcards> Parse(
       const std::string& allowlist_entry,
       const NodeType type);
 

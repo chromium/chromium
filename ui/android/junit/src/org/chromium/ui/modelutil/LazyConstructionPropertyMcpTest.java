@@ -34,9 +34,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
-/**
- * Unit tests for LazyConstructionPropertyMcp.
- */
+/** Unit tests for LazyConstructionPropertyMcp. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LazyConstructionPropertyMcpTest {
@@ -50,10 +48,8 @@ public class LazyConstructionPropertyMcpTest {
     private FakeViewProvider<View> mViewProvider;
     private @Nullable PropertyObservable.PropertyObserver<PropertyKey> mModelObserver;
 
-    @Mock
-    private View mView;
-    @Mock
-    private ViewBinder<PropertyModel, View, PropertyKey> mViewBinder;
+    @Mock private View mView;
+    @Mock private ViewBinder<PropertyModel, View, PropertyKey> mViewBinder;
 
     @Before
     public void setup() {
@@ -61,11 +57,15 @@ public class LazyConstructionPropertyMcpTest {
         mModel = new PropertyModel(ALL_PROPERTIES);
         mModel.set(VISIBILITY, false);
         mViewProvider = new FakeViewProvider<>();
-        mModel.addObserver((source, propertyKey) -> {
-            // Forward model changes to the model observer if it exists. It's important for the test
-            // that the observer is notified before the LazyConstructionPropertyMcp.
-            if (mModelObserver != null) mModelObserver.onPropertyChanged(source, propertyKey);
-        });
+        mModel.addObserver(
+                (source, propertyKey) -> {
+                    // Forward model changes to the model observer if it exists. It's important for
+                    // the test that the observer is notified before the
+                    // LazyConstructionPropertyMcp.
+                    if (mModelObserver != null) {
+                        mModelObserver.onPropertyChanged(source, propertyKey);
+                    }
+                });
     }
 
     @Test
@@ -145,10 +145,11 @@ public class LazyConstructionPropertyMcpTest {
         LazyConstructionPropertyMcp.create(mModel, VISIBILITY, mViewProvider, mViewBinder);
 
         // Increase INT_PROPERTY any time visibility changes.
-        mModelObserver = (source, propertyKey) -> {
-            if (propertyKey != VISIBILITY) return;
-            mModel.set(INT_PROPERTY, mModel.get(INT_PROPERTY) + 1);
-        };
+        mModelObserver =
+                (source, propertyKey) -> {
+                    if (propertyKey != VISIBILITY) return;
+                    mModel.set(INT_PROPERTY, mModel.get(INT_PROPERTY) + 1);
+                };
 
         mModel.set(VISIBILITY, true);
         mViewProvider.finishInflation(mView);

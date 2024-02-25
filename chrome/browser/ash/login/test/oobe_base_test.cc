@@ -134,7 +134,9 @@ void OobeBaseTest::SetUpInProcessBrowserTestFixture() {
 }
 
 void OobeBaseTest::SetUpOnMainThread() {
-  ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
+  if (!needs_network_screen_skip_check_) {
+    ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
+  }
 
   host_resolver()->AddRule("*", "127.0.0.1");
 

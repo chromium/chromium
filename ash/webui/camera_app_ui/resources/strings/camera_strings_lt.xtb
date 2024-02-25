@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Ištrinti <ph name="PAGE_NUMBER" /> puslapį</translation>
 <translation id="1113173431709655881">Kameros režimas</translation>
 <translation id="1153190633558910465">Tinklelis išjungtas</translation>
-<translation id="1175958423215084756">Aptikta nuoroda. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> puslapis ištrintas</translation>
 <translation id="1258009455399840361">Pasukti 90 laipsnių pagal laikrodžio rodyklę</translation>
 <translation id="1417314334557041815">Redaguoti <ph name="INDEX" /> psl.</translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Pastumti dešinėn</translation>
 <translation id="3081586908890909590">Perjungti į filmavimo režimą</translation>
 <translation id="313467653172006084">30 KPS</translation>
+<translation id="3158534262962737808">Prisijungti prie „<ph name="WIFINAME" />“</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3240426699337459095">Nuoroda nukopijuota</translation>
 <translation id="3354465018370944241">Nuotraukų nustatymai</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Apdorojamas vaizdo įrašas...</translation>
 <translation id="3789724198583203151">Pasukti 90 laipsnių prieš laikrodžio rodyklę</translation>
 <translation id="3810838688059735925">Vaizdo</translation>
-<translation id="3892148308691398805">Kopijuoti tekstą</translation>
 <translation id="4060608699153044055">Negalite įrašyti, nes per mažai vietos įrenginio saugykloje. Jei norite pradėti įrašymą, turite atlaisvinti vietos įrenginyje.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pristabdyti įrašymą</translation>
 <translation id="4121305183798804752">Aptiktas dokumentas</translation>
 <translation id="414641094616694804">Negalima pakeisti šio fotoaparato skyros</translation>
 <translation id="4176463684765177261">Išjungta</translation>
-<translation id="4269820728363426813">Kopijuoti nuorodos adresą</translation>
 <translation id="428234092390943511">Puslapio miniatiūra</translation>
 <translation id="4349714250734879769">Keisti rėmelių mastelį pagal „Chrome“</translation>
 <translation id="4383571725254449280">Spausdinti našumo žurnalus</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Visa skyra</translation>
 <translation id="4864143361253542638">Nuskaitytų puslapių sąrašas</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopijuoti nuorodos adresą <ph name="URL" /></translation>
 <translation id="491895758387112773">Vaizdo įrašo įrašymą išskaidyti į kelis srautus</translation>
 <translation id="495170559598752135">Veiksmai</translation>
 <translation id="4984613436295737187">„Quad HD“ (1 440 tšk.)</translation>
 <translation id="5034763830503483128">Nuotraukos kraštinių santykis</translation>
 <translation id="5057360777601936059">Fotoaparatas šiuo metu nepasiekiamas.
         Patikrinkite, ar fotoaparatas tinkamai prijungtas.</translation>
+<translation id="5157591164390831335">Aptiktas URL.</translation>
 <translation id="5163387177077603948">Perkeliama dešinėn</translation>
-<translation id="5219374179772385066">Dabar pasiekiamas laiko tarpo režimas!</translation>
 <translation id="5235304959032763950">16 ir 9</translation>
 <translation id="5266635337630551423">Viršutinis kairysis dokumento kampas</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Dėkojame, kad pateikiate atsiliepimą apie Fotoaparato programą.
 
 Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotraukos ar vaizdo įrašo pavyzdį ir apibūdinkite, kad negerai. (Pavyzdžiui, nuotrauka pernelyg tamsi arba objektas nesufokusuotas.)</translation>
+<translation id="6519884562954018934">Prisijungti prie „<ph name="WIFINAME" />“</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6617916774429601017">Rodyti visas skyras</translation>
 <translation id="6631515515009660915">Veidrodinis vaizdas išjungtas</translation>
@@ -124,7 +124,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="6888362557094394345">Perkeliama žemyn</translation>
 <translation id="695140971690006676">Nustatyti viską iš naujo</translation>
 <translation id="6965382102122355670">Gerai</translation>
-<translation id="6965830616442491568">Portreto režimas</translation>
+<translation id="6965830616442491568">Stačiojo ekrano režimas</translation>
 <translation id="698156982839284926">3 sekundės</translation>
 <translation id="7134221860976209830">10 sek. laikmatis</translation>
 <translation id="7191890674911603392">Įrašo tipas</translation>
@@ -133,6 +133,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="7450541714075000668">Tekstas nukopijuotas</translation>
 <translation id="7488619942230388918">Įrašyti GIF vaizdo įrašą</translation>
 <translation id="7557677699350329807">Perjungti į kitą fotoaparatą</translation>
+<translation id="7562584071994185503">Kopijuoti tekstą <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Pristabdyta</translation>
 <translation id="7608223098072244877">4 iš 4</translation>
 <translation id="761421184377987513">Perkeliama žemyn, kairėn</translation>
@@ -155,10 +156,12 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8346544573713510785">Keisti rėmelių mastelį pagal Vaizdo kameros AĮAS</translation>
 <translation id="8425673304802773841">Nukreipti žemyn</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
+<translation id="8609951387004618906">Atidaryti <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 taškų</translation>
 <translation id="8711011893539266636">Perjungti mikrofono nutildymą. Nutildymas įjungtas</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8732462232047530626">Peržiūrėti metaduomenis</translation>
+<translation id="874854738381978209">Aptiktas „Wi-Fi“ tinklas.</translation>
 <translation id="8815966864175525708">Perjungti į portretą</translation>
 <translation id="8828441885228359828">Tęsti įrašymą</translation>
 <translation id="8870695351537079478">Nepavyko pradėti įrašymo</translation>

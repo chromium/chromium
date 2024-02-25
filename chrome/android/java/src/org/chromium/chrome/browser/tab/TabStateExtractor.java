@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 
@@ -12,9 +11,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Extracts a {@link TabState} from a {@link Tab}.
- */
+/** Extracts a {@link TabState} from a {@link Tab}. */
 public class TabStateExtractor {
     private static Map<Integer, TabState> sTabStatesForTesting;
 
@@ -31,19 +28,20 @@ public class TabStateExtractor {
         TabState tabState = new TabState();
         tabState.contentsState = getWebContentsState(tab);
         tabState.openerAppId = TabAssociatedApp.getAppId(tab);
-        tabState.parentId = CriticalPersistedTabData.from(tab).getParentId();
-        tabState.timestampMillis = CriticalPersistedTabData.from(tab).getTimestampMillis();
-        tabState.tabLaunchTypeAtCreation =
-                CriticalPersistedTabData.from(tab).getTabLaunchTypeAtCreation();
+        tabState.parentId = tab.getParentId();
+        tabState.timestampMillis = tab.getTimestampMillis();
+        tabState.tabLaunchTypeAtCreation = tab.getTabLaunchTypeAtCreation();
         // Don't save the actual default theme color because it could change on night mode state
         // changed.
-        tabState.themeColor = tab.isThemingAllowed() && !tab.isNativePage()
-                ? tab.getThemeColor()
-                : TabState.UNSPECIFIED_THEME_COLOR;
-        tabState.rootId = CriticalPersistedTabData.from(tab).getRootId();
-        tabState.userAgent = CriticalPersistedTabData.from(tab).getUserAgent();
+        tabState.themeColor =
+                tab.isThemingAllowed() && !tab.isNativePage()
+                        ? tab.getThemeColor()
+                        : TabState.UNSPECIFIED_THEME_COLOR;
+        tabState.rootId = tab.getRootId();
+        tabState.userAgent = tab.getUserAgent();
         tabState.lastNavigationCommittedTimestampMillis =
-                CriticalPersistedTabData.from(tab).getLastNavigationCommittedTimestampMillis();
+                tab.getLastNavigationCommittedTimestampMillis();
+        tabState.tabGroupId = tab.getTabGroupId();
         return tabState;
     }
 
@@ -52,8 +50,8 @@ public class TabStateExtractor {
      * @param tab The {@link Tab} from which to extract the WebContents state.
      **/
     public static WebContentsState getWebContentsState(Tab tab) {
-        if (CriticalPersistedTabData.from(tab).getWebContentsState() != null) {
-            return CriticalPersistedTabData.from(tab).getWebContentsState();
+        if (tab.getWebContentsState() != null) {
+            return tab.getWebContentsState();
         }
 
         // Native call returns null when buffer allocation needed to serialize the state failed.
@@ -73,10 +71,12 @@ public class TabStateExtractor {
         } else {
             Referrer referrer = pendingLoadParams.getReferrer();
             return WebContentsStateBridge.createSingleNavigationStateAsByteBuffer(
-                    pendingLoadParams.getUrl(), referrer != null ? referrer.getUrl() : null,
+                    pendingLoadParams.getUrl(),
+                    referrer != null ? referrer.getUrl() : null,
                     // Policy will be ignored for null referrer url, 0 is just a placeholder.
                     referrer != null ? referrer.getPolicy() : 0,
-                    pendingLoadParams.getInitiatorOrigin(), tab.isIncognito());
+                    pendingLoadParams.getInitiatorOrigin(),
+                    tab.isIncognito());
         }
     }
 

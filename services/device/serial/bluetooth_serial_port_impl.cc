@@ -236,7 +236,7 @@ void BluetoothSerialPortImpl::ReadMore() {
   }
   read_pending_ = true;
   pending_write_buffer_ =
-      base::make_span(reinterpret_cast<char*>(buffer), buffer_num_bytes);
+      base::make_span(static_cast<char*>(buffer), buffer_num_bytes);
   bluetooth_socket_->Receive(
       buffer_num_bytes,
       base::BindOnce(&BluetoothSerialPortImpl::OnBluetoothSocketReceive,
@@ -381,7 +381,7 @@ void BluetoothSerialPortImpl::WriteMore() {
   write_pending_ = true;
   // Copying the buffer because we might want to close in_stream_, thus
   // invalidating |buffer|, which is passed to Send().
-  auto io_buffer = base::MakeRefCounted<net::IOBuffer>(buffer_size);
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer_size);
   std::copy(static_cast<const char*>(buffer),
             static_cast<const char*>(buffer) + buffer_size, io_buffer->data());
 

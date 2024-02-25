@@ -3,25 +3,27 @@
 // found in the LICENSE file.
 
 import {getFileTasks} from '../../common/js/api.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {getNativeEntry} from '../../common/js/entry_utils.js';
 import {annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR} from '../../common/js/file_tasks.js';
-import {util} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {CurrentDirectory, DirectoryContent, FileData, FileKey, FileTasks, PropStatus, Selection, State} from '../../externs/ts/state.js';
-import {constants} from '../../foreground/js/constants.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {descriptorEqual} from '../../common/js/util.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
+import {DEFAULT_CROSTINI_VM} from '../../foreground/js/constants.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
-import {ActionsProducerGen} from '../../lib/actions_producer.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
+import type {ActionsProducerGen} from '../../lib/actions_producer.js';
+import {Slice} from '../../lib/base_store.js';
 import {keyedKeepFirst} from '../../lib/concurrency_models.js';
-import {Action, ActionType} from '../actions.js';
+import {type CurrentDirectory, DialogType, type DirectoryContent, type FileData, type FileKey, type FileTask, type FileTasks, PropStatus, type Selection, type State} from '../../state/state.js';
 import {getStore} from '../store.js';
 
+import {cacheEntries} from './all_entries.js';
+
 /**
- * @fileoverview
- * @suppress {checkTypes}
+ * @fileoverview Current directory slice of the store.
  */
+
+const slice = new Slice<State, State['currentDirectory']>('currentDirectory');
+export {slice as currentDirectorySlice};
 
 function getEmptySelection(keys: FileKey[] = []): Selection {
   return {
@@ -63,27 +65,18 @@ export function hasDlpDisabledFiles(currentState: State): boolean {
   return false;
 }
 
+/** Create action to change the Current Directory. */
+export const changeDirectory = slice.addReducer('set', changeDirectoryReducer);
 
-/** Map of actions to reducers for the search slice. */
-export const currentDirectoryReducersMap: ReducersMap<State, Action> =
-    new Map();
+function changeDirectoryReducer(currentState: State, payload: {
+  to?: DirectoryEntry|FilesAppDirEntry, toKey: FileKey,
+  status?: PropStatus,
+}): State {
+  // Cache entries, so the reducers can use any entry from `allEntries`.
+  if (payload.to) {
+    cacheEntries(currentState, [payload.to]);
+  }
 
-
-/** Action to request to change the Current Directory. */
-export interface ChangeDirectoryAction extends BaseAction {
-  type: ActionType.CHANGE_DIRECTORY;
-  payload: {
-    to?: DirectoryEntry|FilesAppDirEntry, toKey: FileKey,
-    status?: PropStatus,
-  };
-}
-
-/**
- * Reducer that updates the currentDirectory property of the state and returns
- * the modified state.
- */
-function changeDirectoryReducer(
-    currentState: State, payload: ChangeDirectoryAction['payload']): State {
   const {to, toKey} = payload;
   const key = toKey || to!.toURL();
   const status = payload.status || PropStatus.STARTED;
@@ -99,7 +92,7 @@ function changeDirectoryReducer(
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         tasks: [],
         policyDefaultHandlerStatus: undefined,
@@ -147,7 +140,7 @@ function changeDirectoryReducer(
         return {
           name: c.name,
           label: c.name,
-          key: c.url_,
+          key: c.getKey(),
         };
       });
 
@@ -162,36 +155,32 @@ function changeDirectoryReducer(
   };
 }
 
-/** Factory for the ChangeDirectoryAction. */
-export const changeDirectory = addReducer(
-    ActionType.CHANGE_DIRECTORY,
-    changeDirectoryReducer as Reducer<State, Action>,
-    currentDirectoryReducersMap);
+/** Create action to update currently selected files/folders. */
+export const updateSelection =
+    slice.addReducer('set-selection', updateSelectionReducer);
 
+function updateSelectionReducer(currentState: State, payload: {
+  selectedKeys: FileKey[],
+  entries: Array<Entry|FilesAppEntry>,
+}): State {
+  // Cache entries, so the reducers can use any entry from `allEntries`.
+  cacheEntries(currentState, payload.entries);
 
-/** Action to update the currently selected files/folders. */
-export interface ChangeSelectionAction extends BaseAction {
-  type: ActionType.CHANGE_SELECTION;
-  payload: {
-    selectedKeys: FileKey[],
-    entries: Array<Entry|FilesAppEntry>,
-  };
-}
-
-/**
- * Updates the `currentDirectory.selection` state.
- */
-function updateSelectionReducer(
-    currentState: State, payload: ChangeSelectionAction['payload']): State {
+  const updatingToEmpty =
+      (payload.entries.length === 0 && payload.selectedKeys.length === 0);
   if (!currentState.currentDirectory) {
-    console.warn('Missing `currentDirectory`');
-    console.debug('Dropping action:', payload);
+    if (!updatingToEmpty) {
+      console.warn('Missing `currentDirectory`');
+      console.debug('Dropping action:', payload);
+    }
     return currentState;
   }
 
   if (!currentState.currentDirectory.content) {
-    console.warn('Missing `currentDirectory.content`');
-    console.debug('Dropping action:', payload);
+    if (!updatingToEmpty) {
+      console.warn('Missing `currentDirectory.content`');
+      console.debug('Dropping action:', payload);
+    }
     return currentState;
   }
 
@@ -221,9 +210,11 @@ function updateSelectionReducer(
       selection.fileCount++;
     }
 
+    const metadata = fileData.metadata;
+
     // Update hostedCount to undefined if any entry doesn't have the metadata
     // yet.
-    const isHosted = fileData.metadata?.hosted;
+    const isHosted = metadata?.hosted;
     if (isHosted === undefined) {
       selection.hostedCount = undefined;
     } else {
@@ -232,15 +223,12 @@ function updateSelectionReducer(
       }
     }
 
-    // Update offlineCachedCount to undefined if any entry doesn't have the
-    // metadata yet.
-    const isOfflineCached = fileData.metadata?.offlineCached;
-    if (isOfflineCached === undefined) {
-      selection.offlineCachedCount = undefined;
-    } else {
-      if (selection.offlineCachedCount !== undefined && isOfflineCached) {
-        selection.offlineCachedCount++;
-      }
+    // If no availableOffline property, then assume it's available.
+    const isOfflineCached =
+        (metadata?.availableOffline === undefined ||
+         metadata?.availableOffline);
+    if (isOfflineCached) {
+      selection.offlineCachedCount++;
     }
   }
 
@@ -255,22 +243,12 @@ function updateSelectionReducer(
   };
 }
 
-/** Factory for the ChangeSelectionAction. */
-export const updateSelection = addReducer(
-    ActionType.CHANGE_SELECTION,
-    updateSelectionReducer as Reducer<State, Action>,
-    currentDirectoryReducersMap);
+/** Create action to update FileTasks for the current selection. */
+export const updateFileTasks =
+    slice.addReducer('set-file-tasks', updateFileTasksReducer);
 
-
-/** Action to update the FileTasks in the selection. */
-export interface ChangeFileTasksAction extends BaseAction {
-  type: ActionType.CHANGE_FILE_TASKS;
-  payload: FileTasks;
-}
-
-/** Updates the FileTasks in the selection for the current directory. */
 function updateFileTasksReducer(
-    currentState: State, payload: ChangeFileTasksAction['payload']): State {
+    currentState: State, payload: FileTasks): State {
   const initialSelection =
       currentState.currentDirectory?.selection ?? getEmptySelection();
 
@@ -296,27 +274,16 @@ function updateFileTasksReducer(
   };
 }
 
-/** Factory for the ChangeFileTasksAction. */
-export const updateFileTasks = addReducer(
-    ActionType.CHANGE_FILE_TASKS,
-    updateFileTasksReducer as Reducer<State, Action>,
-    currentDirectoryReducersMap);
+/** Create action to update the current directory's content. */
+export const updateDirectoryContent =
+    slice.addReducer('update-content', updateDirectoryContentReducer);
 
+function updateDirectoryContentReducer(currentState: State, payload: {
+  entries: Array<Entry|FilesAppEntry>,
+}): State {
+  // Cache entries, so the reducers can use any entry from `allEntries`.
+  cacheEntries(currentState, payload.entries);
 
-/** Action to update the current directory's content. */
-export interface UpdateDirectoryContentAction extends BaseAction {
-  type: ActionType.UPDATE_DIRECTORY_CONTENT;
-  payload: {
-    entries: Array<Entry|FilesAppEntry>,
-  };
-}
-
-/**
- * Updates the content in for the current directory.
- */
-function updateDirectoryContentReducer(
-    currentState: State,
-    payload: UpdateDirectoryContentAction['payload']): State {
   if (!currentState.currentDirectory) {
     console.warn('Missing `currentDirectory`');
     return currentState;
@@ -349,13 +316,6 @@ function updateDirectoryContentReducer(
   };
 }
 
-/** Factory for the UpdateDirectoryContentAction. */
-export const updateDirectoryContent = addReducer(
-    ActionType.UPDATE_DIRECTORY_CONTENT,
-    updateDirectoryContentReducer as Reducer<State, Action>,
-    currentDirectoryReducersMap);
-
-
 /**
  * Linux package installation is currently only supported for a single file
  * which is inside the Linux container, or in a shareable volume.
@@ -369,30 +329,24 @@ function allowCrostiniTask(filesData: FileData[]) {
   }
   const fileData = filesData[0]!;
   const rootType = (fileData.entry as FakeEntry).rootType;
-  if (rootType !== VolumeManagerCommon.RootType.CROSTINI) {
+  if (rootType !== RootType.CROSTINI) {
     return false;
   }
   const crostini = window.fileManager.crostini;
   return crostini.canSharePath(
-      constants.DEFAULT_CROSTINI_VM, (fileData.entry as Entry),
+      DEFAULT_CROSTINI_VM, (fileData.entry as Entry),
       /*persiste=*/ false);
 }
 
-function emptyAction(status: PropStatus): ChangeFileTasksAction {
-  return {
-    type: ActionType.CHANGE_FILE_TASKS,
-    payload: {
-      tasks: [],
-      policyDefaultHandlerStatus: undefined,
-      defaultTask: undefined,
-      status,
-    },
-  };
-}
+const emptyAction = (status: PropStatus) => updateFileTasks({
+  tasks: [],
+  policyDefaultHandlerStatus: undefined,
+  defaultTask: undefined,
+  status,
+});
 
 export async function*
-    fetchFileTasksInternal(filesData: FileData[]):
-        ActionsProducerGen<ChangeFileTasksAction> {
+    fetchFileTasksInternal(filesData: FileData[]): ActionsProducerGen {
   // Filters out the non-native entries.
   filesData = filesData.filter(getNativeEntry);
   const state = getStore().getState();
@@ -402,8 +356,7 @@ export async function*
       // File Picker/Save As doesn't show the "Open" button.
       dialogType !== DialogType.FULL_PAGE ||
       // The list of available tasks should not be available to trashed items.
-      currentRootType === VolumeManagerCommon.RootType.TRASH ||
-      filesData.length === 0);
+      currentRootType === RootType.TRASH || filesData.length === 0);
   if (shouldDisableTasks) {
     yield emptyAction(PropStatus.SUCCESS);
     return;
@@ -426,7 +379,7 @@ export async function*
     }
     if (!allowCrostiniTask(filesData)) {
       resultingTasks.tasks = resultingTasks.tasks.filter(
-          (task: chrome.fileManagerPrivate.FileTask) => !util.descriptorEqual(
+          (task: chrome.fileManagerPrivate.FileTask) => !descriptorEqual(
               task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
     const tasks = annotateTasks(resultingTasks.tasks, filesData);
@@ -437,15 +390,12 @@ export async function*
         getDefaultTask(
             tasks, resultingTasks.policyDefaultHandlerStatus, taskHistory) ??
         undefined;
-    yield {
-      type: ActionType.CHANGE_FILE_TASKS,
-      payload: {
-        tasks,
-        policyDefaultHandlerStatus: resultingTasks.policyDefaultHandlerStatus,
-        defaultTask: defaultTask,
-        status: PropStatus.SUCCESS,
-      },
-    };
+    yield updateFileTasks({
+      tasks: tasks as FileTask[],
+      policyDefaultHandlerStatus: resultingTasks.policyDefaultHandlerStatus,
+      defaultTask: defaultTask as FileTask,
+      status: PropStatus.SUCCESS,
+    });
   } catch (error) {
     yield emptyAction(PropStatus.ERROR);
   }

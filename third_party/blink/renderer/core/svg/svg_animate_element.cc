@@ -60,7 +60,7 @@ String ComputeCSSPropertyValue(SVGElement* element, CSSPropertyID id) {
   // Refer to comment in Element::computedStyle.
   DCHECK(element->InActiveDocument());
 
-  element->GetDocument().UpdateStyleAndLayoutTreeForNode(
+  element->GetDocument().UpdateStyleAndLayoutTreeForElement(
       element, DocumentUpdateReason::kSMILAnimation);
 
   // Don't include any properties resulting from CSS Transitions/Animations or
@@ -216,10 +216,11 @@ void SVGAnimateElement::ClearTargetProperty() {
 }
 
 void SVGAnimateElement::UpdateTargetProperty() {
-  if (SVGElement* target = targetElement())
+  if (targetElement()) {
     ResolveTargetProperty();
-  else
+  } else {
     ClearTargetProperty();
+  }
 }
 
 bool SVGAnimateElement::HasValidAnimation() const {

@@ -13,6 +13,8 @@ class AwVariationsSeed;
 
 std::unique_ptr<AwVariationsSeed> TakeSeed();
 
+void CacheSeedFreshness(long freshness);
+
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_BROWSER_VARIATIONS_VARIATIONS_SEED_LOADER_H_

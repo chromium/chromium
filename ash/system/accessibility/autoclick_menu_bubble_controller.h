@@ -72,6 +72,7 @@ class ASH_EXPORT AutoclickMenuBubbleController
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
   std::u16string GetAccessibleNameForBubble() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // LocaleChangeObserver:
   void OnLocaleChanged() override;
@@ -87,11 +88,11 @@ class ASH_EXPORT AutoclickMenuBubbleController
   friend class FloatingAccessibilityControllerTest;
 
   // Owned by views hierarchy.
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
-  raw_ptr<AutoclickMenuView, ExperimentalAsh> menu_view_ = nullptr;
+  raw_ptr<TrayBubbleView> bubble_view_ = nullptr;
+  raw_ptr<AutoclickMenuView> menu_view_ = nullptr;
   FloatingMenuPosition position_ = kDefaultAutoclickMenuPosition;
 
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
   // The controller for the scroll bubble. Only exists during a scroll. Owned
   // by this class so that positioning calculations can take place using both

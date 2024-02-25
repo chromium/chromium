@@ -57,7 +57,7 @@ void SidePanelResizeHandle::OnDidChangeFocus(views::View* before,
   }
 }
 
-BEGIN_METADATA(SidePanelResizeHandle, ImageView)
+BEGIN_METADATA(SidePanelResizeHandle)
 END_METADATA
 
 SidePanelResizeArea::SidePanelResizeArea(SidePanel* side_panel)
@@ -91,8 +91,8 @@ bool SidePanelResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
-void SidePanelResizeArea::Layout() {
-  ResizeArea::Layout();
+void SidePanelResizeArea::Layout(PassKey) {
+  LayoutSuperclass<ResizeArea>(this);
   // The side panel resize area should draw on top of its parent's border.
   gfx::Rect local_bounds = parent()->GetLocalBounds();
   gfx::Rect contents_bounds = parent()->GetContentsBounds();
@@ -110,7 +110,7 @@ void SidePanelResizeArea::Layout() {
   SetBoundsRect(resize_bounds);
 }
 
-BEGIN_METADATA(SidePanelResizeArea, ResizeArea)
+BEGIN_METADATA(SidePanelResizeArea)
 END_METADATA
 
 }  // namespace views

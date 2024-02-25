@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_AURA_H_
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
@@ -40,7 +41,7 @@ namespace blink {
 class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
  public:
   int ScrollbarThickness(float scale_from_dip,
-                         EScrollbarWidth scrollbar_width) override;
+                         EScrollbarWidth scrollbar_width) const override;
 
  protected:
   bool NativeThemeHasButtons() override { return true; }
@@ -61,6 +62,8 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   void PaintThumb(GraphicsContext&,
                   const Scrollbar&,
                   const gfx::Rect&) override;
+  virtual WebThemeEngine::ScrollbarThumbExtraParams
+  BuildScrollbarThumbExtraParams(const Scrollbar&);
 
   bool ShouldRepaintAllPartsOnInvalidation() const override;
   ScrollbarPart PartsToInvalidateOnThumbPositionChange(
@@ -77,6 +80,8 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   bool ShouldSnapBackToDragOrigin(const Scrollbar&,
                                   const WebMouseEvent&) override;
   virtual gfx::Size ButtonSize(const Scrollbar&) const;
+
+  float Proportion(EScrollbarWidth scrollbar_width) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeAuraTest, ButtonSizeHorizontal);

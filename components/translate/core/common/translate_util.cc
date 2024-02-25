@@ -32,17 +32,6 @@ BASE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled,
              "TFLiteLanguageDetectionIgnoreEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSForceTranslateEnabled,
-             "IOSForceTranslateEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRetryLanguageDetection,
-             "RetryLanguageDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kSkipLanguageDetectionOnEmptyContent,
-             "SkipLanguageDetectionOnEmptyContent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_WIN)
 BASE_FEATURE(kMmapLanguageDetectionModel,
              "MmapLanguageDetectionModel",
@@ -57,14 +46,6 @@ GURL GetTranslateSecurityOrigin() {
         command_line->GetSwitchValueASCII(switches::kTranslateSecurityOrigin);
   }
   return GURL(security_origin);
-}
-
-bool IsForceTranslateEnabled() {
-#if BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(kIOSForceTranslateEnabled);
-#else
-  return true;
-#endif
 }
 
 bool IsTFLiteLanguageDetectionEnabled() {

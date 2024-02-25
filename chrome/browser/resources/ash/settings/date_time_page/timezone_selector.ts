@@ -7,13 +7,14 @@
  */
 
 import '../settings_shared.css.js';
-import '/shared/settings/controls/settings_dropdown_menu.js';
+import '../controls/settings_dropdown_menu.js';
 
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
 import {TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 import {getTemplate} from './timezone_selector.html.js';
@@ -93,7 +94,7 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
     this.getTimeZonesRequestSent_ = false;
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.maybeGetTimeZoneList_();
@@ -103,7 +104,7 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
    * Fetches the list of time zones if necessary.
    * @param perUserTimeZoneMode Expected value of per-user time zone.
    */
-  private maybeGetTimeZoneList_(perUserTimeZoneMode?: boolean) {
+  private maybeGetTimeZoneList_(perUserTimeZoneMode?: boolean): void {
     if (typeof (perUserTimeZoneMode) !== 'undefined') {
       /* This method is called as observer. Skip if if current mode does not
        * match expected.
@@ -150,14 +151,14 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
   /**
    * Prefs observer for Per-user time zone enabled mode.
    */
-  private maybeGetTimeZoneListPerUser_() {
+  private maybeGetTimeZoneListPerUser_(): void {
     this.maybeGetTimeZoneList_(true);
   }
 
   /**
    * Prefs observer for Per-user time zone disabled mode.
    */
-  private maybeGetTimeZoneListPerSystem_() {
+  private maybeGetTimeZoneListPerSystem_(): void {
     this.maybeGetTimeZoneList_(false);
   }
 
@@ -165,7 +166,7 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
    * Converts the C++ response into an array of menu options.
    * @param timeZones C++ time zones response.
    */
-  private setTimeZoneList_(timeZones: string[][]) {
+  private setTimeZoneList_(timeZones: string[][]): void {
     this.timeZoneList_ = timeZones.map((timeZonePair) => {
       return {
         name: timeZonePair[1],
@@ -180,7 +181,7 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
    * Updates active time zone display name when changed.
    * @param activeTimeZoneId value of cros.system.timezone preference.
    */
-  private updateActiveTimeZoneName_(activeTimeZoneId: string) {
+  private updateActiveTimeZoneName_(activeTimeZoneId: string): void {
     const activeTimeZone = this.timeZoneList_.find(
         (timeZone) => timeZone.value.toString() === activeTimeZoneId);
     if (activeTimeZone) {

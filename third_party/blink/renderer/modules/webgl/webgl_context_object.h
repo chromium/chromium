@@ -36,7 +36,7 @@ class WebGLRenderingContextBase;
 // WebGLRenderingContextBase.
 class WebGLContextObject : public WebGLObject {
  public:
-  WebGLRenderingContextBase* Context() const { return context_; }
+  WebGLRenderingContextBase* Context() const { return context_.Get(); }
 
   bool Validate(const WebGLContextGroup*,
                 const WebGLRenderingContextBase*) const final;
@@ -46,7 +46,7 @@ class WebGLContextObject : public WebGLObject {
  protected:
   explicit WebGLContextObject(WebGLRenderingContextBase*);
 
-  bool HasGroupOrContext() const final { return context_; }
+  bool HasGroupOrContext() const final { return context_ != nullptr; }
 
   uint32_t CurrentNumberOfContextLosses() const final;
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <vector>
@@ -36,7 +37,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -98,7 +98,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // The currently-requested frame sink for capture. The frame sink manager
   // calls this when it learns of a new CapturableFrameSink to see if the target
   // can be resolved.
-  const absl::optional<VideoCaptureTarget>& target() const { return target_; }
+  const std::optional<VideoCaptureTarget>& target() const { return target_; }
 
   // In some cases, the target to resolve is already known and can be passed
   // directly instead of attempting to resolve it in |ResolveTarget|. This is
@@ -118,8 +118,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
-  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target,
-                    uint32_t crop_version) final;
+  void ChangeTarget(const std::optional<VideoCaptureTarget>& target,
+                    uint32_t sub_capture_target_version) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer,
              mojom::BufferFormatPreference buffer_format_preference) final;
   void Stop() final;
@@ -202,7 +202,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void RefreshEntireSourceNow();
 
   // CapturableFrameSink::Client implementation:
-  void OnFrameDamaged(const gfx::Size& frame_size,
+  void OnFrameDamaged(const gfx::Size& root_render_pass_size,
                       const gfx::Rect& damage_rect,
                       base::TimeTicks target_display_time,
                       const CompositorFrameMetadata& frame_metadata) final;
@@ -237,14 +237,14 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                          const CompositorFrameMetadata& frame_metadata);
 
   struct CaptureRequestProperties {
-    CaptureRequestProperties(int64_t capture_frame_number,
-                             OracleFrameNumber oracle_frame_number,
-                             int64_t content_version,
-                             gfx::Rect content_rect,
-                             gfx::Rect capture_rect,
-                             gfx::Rect active_frame_rect,
-                             scoped_refptr<media::VideoFrame> frame,
-                             base::TimeTicks request_time);
+    CaptureRequestProperties(
+        int64_t capture_frame_number,
+        OracleFrameNumber oracle_frame_number,
+        int64_t content_version,
+        gfx::Rect content_rect,
+        CapturableFrameSink::RegionProperties region_properties,
+        scoped_refptr<media::VideoFrame> frame,
+        base::TimeTicks request_time);
     CaptureRequestProperties();
     CaptureRequestProperties(const CaptureRequestProperties&);
     CaptureRequestProperties(CaptureRequestProperties&&);
@@ -269,20 +269,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
     // become marked and can be resurrected.
     int64_t content_version;
 
-    // The actual content size of the copied frame, as a post-scaled size
-    // with an origin at (0, 0).
-    // TODO(https://crbug.com/1287686): replace zero-origin gfx::Rect with
-    // gfx::Size.
+    // The subsection of the output frame that the content gets scaled to and
+    // outputted on, in post-scaled physical pixels.
     gfx::Rect content_rect;
 
-    // The requested capture region, may be larger or at a different
-    // location than |content_rect| but is also post-scaling and should
-    // be in the same coordinate system.
-    gfx::Rect capture_rect;
-
-    // The size of the entire active frame. If we are not using sub target
-    // capture, should be the same size as the capture rect.
-    gfx::Rect active_frame_rect;
+    // Properties of the region being captured.
+    CapturableFrameSink::RegionProperties region_properties;
 
     // The actual frame.
     scoped_refptr<media::VideoFrame> frame;
@@ -291,8 +283,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
     base::TimeTicks request_time;
   };
 
-  // Extracts the image data from the copy output |result|, populating the
-  // |content_rect| region of a [possibly letterboxed] video |frame|.
+  // Extracts the image data from the copy output result, populating the
+  // content region of a [possibly letterboxed] video frame.
   void DidCopyFrame(CaptureRequestProperties properties,
                     std::unique_ptr<CopyOutputResult> result);
 
@@ -343,9 +335,13 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // been released by it.
   void NotifyFrameReleased(scoped_refptr<media::VideoFrame> frame);
 
-  // Returns pipeline utilization. Pipeline utilization is different from pool
-  // utilization, since a marked frame may be returned multiple times w/o
-  // increasing pool utilization, but it would increase pipeline utilization.
+  // Returns pipeline utilization as a fraction of kTargetPipelineUtilization.
+  // May be more than 1.0 if the current pool utilization is greater than
+  // kTargetPipelineUtilization.
+  //
+  // Pipeline utilization is different from pool utilization, since a marked
+  // frame may be returned multiple times w/o increasing pool utilization, but
+  // it would increase pipeline utilization.
   float GetPipelineUtilization() const;
 
   // Informs the consumer that the frame was dropped due to being cropped
@@ -379,7 +375,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The target requested by the client, as provided in the last call to
   // ChangeTarget(). May be nullopt if no target is currently set.
-  absl::optional<VideoCaptureTarget> target_;
+  std::optional<VideoCaptureTarget> target_;
 
   // The resolved target of video capture, or null if the requested target does
   // not yet exist (or no longer exists).
@@ -416,7 +412,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // frame, when RequestRefreshFrame() has been called.
   //
   // Note: This is always set, but the instance is overridden for unit testing.
-  absl::optional<base::OneShotTimer> refresh_frame_retry_timer_;
+  std::optional<base::OneShotTimer> refresh_frame_retry_timer_;
 
   raw_ptr<GmbVideoFramePoolContextProvider>
       gmb_video_frame_pool_context_provider_;
@@ -460,7 +456,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The Oracle-provided media timestamp of the first frame. This is used to
   // compute the relative media stream timestamps for each successive frame.
-  absl::optional<base::TimeTicks> first_frame_media_ticks_;
+  std::optional<base::TimeTicks> first_frame_media_ticks_;
 
   // Zero or more overlays to be rendered over each captured video frame. The
   // order of the entries in this map determines the order in which each overlay
@@ -487,12 +483,13 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // of frames dropped due to being cropped to zero pixels.
   bool consumer_informed_of_empty_region_ = false;
 
-  // The crop-version allows Viz to communicate back to Blink the information
-  // of which crop-target each frame is associated with. Better, if cropTo()
-  // is called multiple times, oscillating between two targets, Blink can even
-  // tell whether the frame is cropped to an earlier or later invocation of
-  // cropTo() for a given target, because the crop-version keeps increasing.
-  uint32_t crop_version_ = 0;
+  // The sub-capture-target-version allows Viz to communicate back to Blink the
+  // information of which crop-target each frame is associated with. Better, if
+  // cropTo() is called multiple times, oscillating between two targets, Blink
+  // can even tell whether the frame is cropped to an earlier or later
+  // invocation of cropTo() for a given target, because the
+  // sub-capture-target-version keeps increasing.
+  uint32_t sub_capture_target_version_ = 0;
 
   // A weak pointer factory used for cancelling the results from any in-flight
   // copy output requests.

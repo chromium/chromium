@@ -14,11 +14,13 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/dmabuf_uapi.h"
@@ -34,6 +36,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
 
@@ -121,6 +124,10 @@ void WaylandBufferManagerHost::OnCommitOverlayError(
     const std::string& message) {
   error_message_ = message;
   TerminateGpuProcess();
+}
+
+base::Version WaylandBufferManagerHost::GetServerVersion() const {
+  return connection_->GetServerVersion();
 }
 
 wl::BufferFormatsWithModifiersMap
@@ -384,7 +391,7 @@ void WaylandBufferManagerHost::CommitOverlays(
   if (!window)
     return;
 
-  window->CommitOverlays(frame_id, data.seq, overlays);
+  window->CommitOverlays(frame_id, data, overlays);
 }
 
 void WaylandBufferManagerHost::DestroyBuffer(uint32_t buffer_id) {

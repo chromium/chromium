@@ -147,7 +147,7 @@ void SupportPacketMetadata::PopulateMetadataContents(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SupportPacketMetadata::OnMachineStatisticsLoaded(
     base::OnceClosure on_metadata_contents_populated) {
-  const absl::optional<base::StringPiece> machine_serial =
+  const std::optional<base::StringPiece> machine_serial =
       ash::system::StatisticsProvider::GetInstance()->GetMachineID();
   if (machine_serial && !machine_serial->empty()) {
     pii_[PIIType::kSerial].insert(std::string(machine_serial.value()));

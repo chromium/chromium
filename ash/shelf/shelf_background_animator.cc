@@ -16,7 +16,6 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/time/time.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -228,7 +227,7 @@ SkColor ShelfBackgroundAnimator::GetBackgroundColor(
       break;
     case ShelfBackgroundType::kOverview:
       shelf_target_color =
-          Shell::Get()->tablet_mode_controller()->InTabletMode()
+          display::Screen::GetScreen()->InTabletMode()
               ? ShelfConfig::Get()->GetMaximizedShelfColor(shelf_widget)
               : ShelfConfig::Get()->GetDefaultShelfColor(shelf_widget);
       break;

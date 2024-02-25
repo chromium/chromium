@@ -5,6 +5,7 @@
 #include "content/browser/payments/payment_app_info_fetcher.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/page.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -289,10 +289,8 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::OnIconFetched(
   std::vector<unsigned char> bitmap_data;
   bool success = gfx::PNGCodec::EncodeBGRASkBitmap(icon, false, &bitmap_data);
   DCHECK(success);
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(&bitmap_data[0]),
-                        bitmap_data.size()),
-      &(fetched_payment_app_info_->icon));
+  fetched_payment_app_info_->icon = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(&bitmap_data[0]), bitmap_data.size()));
   RunCallbackAndDestroy();
 }
 

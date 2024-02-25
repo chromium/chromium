@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -55,7 +56,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
                              ScriptPromise::CastUndefined(script_state)) {}
   ~TestUnderlyingSource() override = default;
 
-  ScriptPromise Start(ScriptState* script_state) override {
+  ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
     started_ = true;
     if (type_ == SourceType::kPush) {
       for (int element : sequence_) {
@@ -66,7 +67,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
     }
     return start_promise_;
   }
-  ScriptPromise pull(ScriptState* script_state) override {
+  ScriptPromise Pull(ScriptState* script_state, ExceptionState&) override {
     if (type_ == SourceType::kPush) {
       return ScriptPromise::CastUndefined(script_state);
     }
@@ -78,7 +79,9 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
     ++index_;
     return ScriptPromise::CastUndefined(script_state);
   }
-  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+  ScriptPromise Cancel(ScriptState* script_state,
+                       ScriptValue reason,
+                       ExceptionState&) override {
     cancelled_ = true;
     cancel_reason_ = reason;
     return ScriptPromise::CastUndefined(script_state);
@@ -101,7 +104,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
           script_state->GetIsolate(), "foo"));
       return;
     }
-    Controller()->Enqueue(num);
+    Controller()->Enqueue(v8::Integer::New(script_state->GetIsolate(), num));
   }
 
   const SourceType type_;
@@ -155,6 +158,7 @@ void ExpectDone(int line,
 // We only do minimal testing here. The functionality of transferable streams is
 // tested in the layout tests.
 TEST(TransferableStreamsTest, SmokeTest) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto* channel =
@@ -237,6 +241,7 @@ TEST(TransferableStreamsTest, SmokeTest) {
 }
 
 TEST(ConcatenatedReadableStreamTest, Empty) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -267,6 +272,7 @@ TEST(ConcatenatedReadableStreamTest, Empty) {
 }
 
 TEST(ConcatenatedReadableStreamTest, SuccessfulRead) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -319,6 +325,7 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulRead) {
 }
 
 TEST(ConcatenatedReadableStreamTest, SuccessfulReadForPushSources) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -371,6 +378,7 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulReadForPushSources) {
 }
 
 TEST(ConcatenatedReadableStreamTest, ErrorInSource1) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -407,6 +415,7 @@ TEST(ConcatenatedReadableStreamTest, ErrorInSource1) {
 }
 
 TEST(ConcatenatedReadableStreamTest, ErrorInSource2) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -443,6 +452,7 @@ TEST(ConcatenatedReadableStreamTest, ErrorInSource2) {
 }
 
 TEST(ConcatenatedReadableStreamTest, Cancel1) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -451,7 +461,8 @@ TEST(ConcatenatedReadableStreamTest, Cancel1) {
   TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({5, 6}));
 
-  ScriptValue reason = ScriptValue::From(script_state, "hello");
+  ScriptValue reason(script_state->GetIsolate(),
+                     V8String(script_state->GetIsolate(), "hello"));
 
   ReadableStream* stream =
       CreateConcatenatedReadableStream(script_state, source1, source2);
@@ -485,6 +496,7 @@ TEST(ConcatenatedReadableStreamTest, Cancel1) {
 }
 
 TEST(ConcatenatedReadableStreamTest, Cancel2) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -493,7 +505,8 @@ TEST(ConcatenatedReadableStreamTest, Cancel2) {
   TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({5}));
 
-  ScriptValue reason = ScriptValue::From(script_state, "hello");
+  ScriptValue reason(script_state->GetIsolate(),
+                     V8String(script_state->GetIsolate(), "hello"));
 
   ReadableStream* stream =
       CreateConcatenatedReadableStream(script_state, source1, source2);
@@ -522,6 +535,7 @@ TEST(ConcatenatedReadableStreamTest, Cancel2) {
 }
 
 TEST(ConcatenatedReadableStreamTest, PendingStart1) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -556,6 +570,7 @@ TEST(ConcatenatedReadableStreamTest, PendingStart1) {
 }
 
 TEST(ConcatenatedReadableStreamTest, PendingStart2) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 

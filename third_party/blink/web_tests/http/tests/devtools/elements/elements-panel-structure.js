@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that elements panel shows DOM tree structure.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>
@@ -25,9 +24,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   `);
 
   // Warm up highlighter module.
-  TestRunner.loadLegacyModule('source_frame').then(function() {
-    ElementsTestRunner.expandElementsTree(step1);
-  });
+  ElementsTestRunner.expandElementsTree(step1);
 
   function step1() {
     ElementsTestRunner.dumpElementsTree();

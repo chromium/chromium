@@ -92,7 +92,8 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationCreateInternal(
   scroll_offset_animation_->AddKeyframeModel(std::move(keyframe_model));
 }
 
-bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
+std::optional<gfx::PointF>
+ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
     const gfx::Vector2dF& scroll_delta,
     const gfx::PointF& max_scroll_offset,
     base::TimeTicks frame_monotonic_time,
@@ -101,7 +102,7 @@ bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
   if (!scroll_offset_animation_->element_animations()) {
     TRACE_EVENT_INSTANT0("cc", "No element animation exists",
                          TRACE_EVENT_SCOPE_THREAD);
-    return false;
+    return std::nullopt;
   }
 
   KeyframeModel* keyframe_model =
@@ -110,14 +111,15 @@ bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
     scroll_offset_animation_->DetachElement();
     TRACE_EVENT_INSTANT0("cc", "No keyframe model exists",
                          TRACE_EVENT_SCOPE_THREAD);
-    return false;
+    return std::nullopt;
   }
-  if (scroll_delta.IsZero())
-    return true;
 
   ScrollOffsetAnimationCurve* curve =
       ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
           keyframe_model->curve());
+  if (scroll_delta.IsZero()) {
+    return curve->target_value();
+  }
 
   gfx::PointF new_target = curve->target_value() + scroll_delta;
   new_target.SetToMax(gfx::PointF());
@@ -141,7 +143,7 @@ bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
                        TRACE_EVENT_SCOPE_THREAD, "UpdatedDuration",
                        curve->Duration().InMillisecondsF());
 
-  return true;
+  return curve->target_value();
 }
 
 void ScrollOffsetAnimationsImpl::ScrollAnimationApplyAdjustment(

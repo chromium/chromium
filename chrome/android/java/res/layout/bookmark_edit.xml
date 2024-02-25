@@ -92,11 +92,14 @@
                     android:text="@string/bookmark_folder"
                     android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
 
-                <!-- Negative margin required because the row is meant for a recycler view. -->
+                <!--
+                    This row is laid out for a recycler view, so when it's embedded in the edit
+                    flow the margins need to be adjusted to be left aligned with the title.
+                -->
                 <FrameLayout
                     android:id="@+id/improved_folder_row_container"
                     android:layout_marginTop="6dp"
-                    android:layout_marginStart="@dimen/improved_bookmark_row_start_negative_margin"
+                    android:layout_marginStart="@dimen/improved_bookmark_row_horizontal_negative_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 

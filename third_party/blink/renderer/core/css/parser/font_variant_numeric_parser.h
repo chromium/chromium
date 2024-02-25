@@ -15,7 +15,7 @@ class FontVariantNumericParser {
   STACK_ALLOCATED();
 
  public:
-  FontVariantNumericParser() {}
+  FontVariantNumericParser() : result_(CSSValueList::CreateSpaceSeparated()) {}
 
   enum class ParseResult { kConsumedValue, kDisallowedValue, kUnknownValue };
 
@@ -24,71 +24,61 @@ class FontVariantNumericParser {
     switch (value_id) {
       case CSSValueID::kLiningNums:
       case CSSValueID::kOldstyleNums:
-        if (numeric_figure_) {
+        if (saw_numeric_figure_value_) {
           return ParseResult::kDisallowedValue;
         }
-        numeric_figure_ = css_parsing_utils::ConsumeIdent(range);
-        return ParseResult::kConsumedValue;
+        saw_numeric_figure_value_ = true;
+        break;
       case CSSValueID::kProportionalNums:
       case CSSValueID::kTabularNums:
-        if (numeric_spacing_) {
+        if (saw_numeric_spacing_value_) {
           return ParseResult::kDisallowedValue;
         }
-        numeric_spacing_ = css_parsing_utils::ConsumeIdent(range);
-        return ParseResult::kConsumedValue;
+        saw_numeric_spacing_value_ = true;
+        break;
       case CSSValueID::kDiagonalFractions:
       case CSSValueID::kStackedFractions:
-        if (numeric_fraction_) {
+        if (saw_numeric_fraction_value_) {
           return ParseResult::kDisallowedValue;
         }
-        numeric_fraction_ = css_parsing_utils::ConsumeIdent(range);
-        return ParseResult::kConsumedValue;
+        saw_numeric_fraction_value_ = true;
+        break;
       case CSSValueID::kOrdinal:
-        if (ordinal_) {
+        if (saw_ordinal_value_) {
           return ParseResult::kDisallowedValue;
         }
-        ordinal_ = css_parsing_utils::ConsumeIdent(range);
-        return ParseResult::kConsumedValue;
+        saw_ordinal_value_ = true;
+        break;
       case CSSValueID::kSlashedZero:
-        if (slashed_zero_) {
+        if (saw_slashed_zero_value_) {
           return ParseResult::kDisallowedValue;
         }
-        slashed_zero_ = css_parsing_utils::ConsumeIdent(range);
-        return ParseResult::kConsumedValue;
+        saw_slashed_zero_value_ = true;
+        break;
       default:
         return ParseResult::kUnknownValue;
     }
+
+    result_->Append(*css_parsing_utils::ConsumeIdent(range));
+    return ParseResult::kConsumedValue;
   }
 
   CSSValue* FinalizeValue() {
-    CSSValueList* result = CSSValueList::CreateSpaceSeparated();
-    if (numeric_figure_) {
-      result->Append(*numeric_figure_);
+    if (!result_->length()) {
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
     }
-    if (numeric_spacing_) {
-      result->Append(*numeric_spacing_);
-    }
-    if (numeric_fraction_) {
-      result->Append(*numeric_fraction_);
-    }
-    if (ordinal_) {
-      result->Append(*ordinal_);
-    }
-    if (slashed_zero_) {
-      result->Append(*slashed_zero_);
-    }
-    if (result->length() > 0) {
-      return result;
-    }
-    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    CSSValue* result = result_;
+    result_ = nullptr;
+    return result;
   }
 
  private:
-  CSSIdentifierValue* numeric_figure_ = nullptr;
-  CSSIdentifierValue* numeric_spacing_ = nullptr;
-  CSSIdentifierValue* numeric_fraction_ = nullptr;
-  CSSIdentifierValue* ordinal_ = nullptr;
-  CSSIdentifierValue* slashed_zero_ = nullptr;
+  bool saw_numeric_figure_value_{false};
+  bool saw_numeric_spacing_value_{false};
+  bool saw_numeric_fraction_value_{false};
+  bool saw_ordinal_value_{false};
+  bool saw_slashed_zero_value_{false};
+  CSSValueList* result_;
 };
 
 }  // namespace blink

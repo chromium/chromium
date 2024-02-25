@@ -51,7 +51,7 @@ VAType GetVAType() {
 //   Key encryption: RSA-OAEP with no custom parameters.
 //   Data encryption: 256-bit key, AES-CBC with PKCS5 padding.
 //   MAC: HMAC-SHA-512 using the AES key.
-absl::optional<std::string> CreateChallengeResponseString(
+std::optional<std::string> CreateChallengeResponseString(
     const std::string& serialized_key_info,
     const SignedData& signed_challenge_data,
     const std::string& wrapping_key_modulus_hex,
@@ -66,23 +66,23 @@ absl::optional<std::string> CreateChallengeResponseString(
   std::string key;
   if (!CryptoUtility::EncryptWithSeed(
           serialized_key_info, response_pb.mutable_encrypted_key_info(), key)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bssl::UniquePtr<RSA> rsa(CryptoUtility::GetRSA(wrapping_key_modulus_hex));
   if (!rsa) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!CryptoUtility::WrapKeyOAEP(key, rsa.get(), wrapping_key_id,
                                   response_pb.mutable_encrypted_key_info())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Convert the challenge response proto to a string before returning it.
   std::string serialized_response;
   if (!response_pb.SerializeToString(&serialized_response)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return serialized_response;
 }
@@ -196,7 +196,7 @@ void BrowserAttestationService::OnKeyInfoDecorated(
 void BrowserAttestationService::OnResponseCreated(
     const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback,
-    absl::optional<std::string> encrypted_response) {
+    std::optional<std::string> encrypted_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!encrypted_response) {
     // Failed to create a response, so mark the device as untrusted (no

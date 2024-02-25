@@ -27,15 +27,15 @@ import java.io.File;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TabStateTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private TestTabModelDirectory mTestTabModelDirectory;
 
     @Before
     public void setUp() {
-        mTestTabModelDirectory = new TestTabModelDirectory(
-                ApplicationProvider.getApplicationContext(), "TabStateTest", null);
+        mTestTabModelDirectory =
+                new TestTabModelDirectory(
+                        ApplicationProvider.getApplicationContext(), "TabStateTest", null);
     }
 
     @After
@@ -47,7 +47,7 @@ public class TabStateTest {
         mTestTabModelDirectory.writeTabStateFile(info);
 
         File tabStateFile = new File(mTestTabModelDirectory.getBaseDirectory(), info.filename);
-        TabState tabState = TabStateFileManager.restoreTabState(tabStateFile, false);
+        TabState tabState = TabStateFileManager.restoreTabStateInternal(tabStateFile, false);
         Assert.assertNotNull(tabState);
         Assert.assertEquals(info.url, tabState.contentsState.getVirtualUrlFromState());
         Assert.assertEquals(info.title, tabState.contentsState.getDisplayTitleFromState());

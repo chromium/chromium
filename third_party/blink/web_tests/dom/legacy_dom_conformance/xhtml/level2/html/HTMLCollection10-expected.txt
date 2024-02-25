@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLCollection10
-Status	failure
-Message	nameIndexLink: assertEquals failed, actual select, expected SELECT.

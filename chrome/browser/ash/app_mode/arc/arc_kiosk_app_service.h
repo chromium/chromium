@@ -110,10 +110,10 @@ class ArcKioskAppService : public KeyedService,
   // Triggered when app is closed to reset launcher.
   void ResetAppLauncher();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   bool maintenance_session_running_ = false;
   base::OneShotTimer maintenance_timeout_timer_;
-  raw_ptr<ArcKioskAppManager, ExperimentalAsh> app_manager_;
+  raw_ptr<ArcKioskAppManager> app_manager_;
   std::string app_id_;
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info_;
   std::unique_ptr<ArcAppIcon> app_icon_;

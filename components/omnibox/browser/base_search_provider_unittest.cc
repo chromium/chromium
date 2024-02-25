@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -110,9 +111,15 @@ class BaseSearchProviderTestFixture {
  protected:
   void SetUp() {
     auto template_url_service = std::make_unique<TemplateURLService>(
-        nullptr /* PrefService */, std::make_unique<SearchTermsData>(),
-        nullptr /* KeywordWebDataService */,
-        std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure());
+        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr,
+        std::make_unique<SearchTermsData>(),
+        /*web_data_service=*/nullptr,
+        std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                                                         ,
+        /*for_lacros_main_profile=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
 
     client_ = std::make_unique<MockAutocompleteProviderClient>();
     client_->set_template_url_service(std::move(template_url_service));

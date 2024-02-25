@@ -40,7 +40,7 @@ void TestNetworkConfigurationObserver::OnConfigurationModified(
   if (!ui_data_str) {
     return;
   }
-  absl::optional<base::Value::Dict> ui_data_dict =
+  std::optional<base::Value::Dict> ui_data_dict =
       chromeos::onc::ReadDictionaryFromJson(*ui_data_str);
   if (!ui_data_dict.has_value()) {
     return;

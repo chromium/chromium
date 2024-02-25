@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,7 +15,6 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
@@ -48,7 +48,6 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -74,6 +73,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
 using ::testing::IsEmpty;
@@ -189,15 +189,14 @@ class CtrlClickProcessTest : public ChromeNavigationBrowserTest {
     content::WebContents* new_contents = nullptr;
     {
       content::WebContentsAddedObserver new_tab_observer;
+      static constexpr char kNewTabClickScriptTemplate[] =
 #if BUILDFLAG(IS_MAC)
-      const char* new_tab_click_script_template =
           "simulateClick(\"%s\", { metaKey: true });";
 #else
-      const char* new_tab_click_script_template =
           "simulateClick(\"%s\", { ctrlKey: true });";
 #endif
-      std::string new_tab_click_script = base::StringPrintf(
-          new_tab_click_script_template, id_of_anchor_to_click);
+      std::string new_tab_click_script =
+          base::StringPrintf(kNewTabClickScriptTemplate, id_of_anchor_to_click);
       EXPECT_TRUE(ExecJs(main_contents, new_tab_click_script));
 
       // Wait for a new tab to appear (the whole point of this test).
@@ -627,8 +626,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     std::string content =
         EvalJs(web_contents, "document.body ? document.body.innerText : '';")
             .ExtractString();
-    if (content.find("HTTP ERROR 404") != std::string::npos)
+    if (content.find("HTTP ERROR 404") != std::string::npos) {
       break;
+    }
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
@@ -1499,7 +1499,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // Open a popup.
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const char* kScriptFormat = "!!window.open('%s');";
+  static constexpr char kScriptFormat[] = "!!window.open('%s');";
   GURL popup_url = embedded_test_server()->GetURL("b.com", "/title1.html");
   content::TestNavigationObserver popup_waiter(nullptr, 1);
   popup_waiter.StartWatchingNewWebContents();
@@ -1529,7 +1529,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       blink::mojom::WebFeature::kOpenerNavigationDownloadCrossOrigin, 1);
 
   // Ensure that no download happened.
-  std::vector<download::DownloadItem*> download_items;
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+      download_items;
   content::DownloadManager* manager =
       browser()->profile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
@@ -1547,7 +1548,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // Open a popup.
   content::WebContents* opener =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const char* kScriptFormat = "!!window.open('%s');";
+  static constexpr char kScriptFormat[] = "!!window.open('%s');";
   GURL popup_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   content::TestNavigationObserver popup_waiter(nullptr, 1);
   popup_waiter.StartWatchingNewWebContents();
@@ -1576,11 +1577,12 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       blink::mojom::WebFeature::kOpenerNavigationDownloadCrossOrigin, 0);
 
   // Delete any pending download.
-  std::vector<download::DownloadItem*> download_items;
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+      download_items;
   content::DownloadManager* manager =
       browser()->profile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
-  for (auto* item : download_items) {
+  for (download::DownloadItem* item : download_items) {
     if (!item->IsDone())
       item->Cancel(true);
   }
@@ -1668,8 +1670,6 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   back_model->MenuWillShow();
   back_model->MenuWillClose();
   back_model->ActivatedAt(0);
-  histogram.ExpectBucketCount(
-      "Navigation.BackForward.NavigatingToEntryMarkedToBeSkipped", true, 1);
   histogram.ExpectTotalCount(
       "Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem", 1);
   histogram.ExpectTotalCount(

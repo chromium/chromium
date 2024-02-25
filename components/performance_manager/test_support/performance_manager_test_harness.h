@@ -5,10 +5,20 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_TEST_HARNESS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_TEST_HARNESS_H_
 
+#include <memory>
+#include <utility>
+
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "content/public/test/test_renderer_host.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace performance_manager {
+
+class GraphImpl;
 
 // A test harness that initializes PerformanceManagerImpl, plus the entire
 // RenderViewHost harness. Allows for creating full WebContents, and their

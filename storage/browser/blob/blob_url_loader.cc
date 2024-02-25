@@ -171,7 +171,7 @@ void BlobURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   NOTREACHED();
 }
 
@@ -192,11 +192,11 @@ MojoBlobReader::Delegate::RequestSideData BlobURLLoader::DidCalculateSize(
     return REQUEST_SIDE_DATA;
   }
 
-  HeadersCompleted(status_code, content_size, absl::nullopt);
+  HeadersCompleted(status_code, content_size, std::nullopt);
   return DONT_REQUEST_SIDE_DATA;
 }
 
-void BlobURLLoader::DidReadSideData(absl::optional<mojo_base::BigBuffer> data) {
+void BlobURLLoader::DidReadSideData(std::optional<mojo_base::BigBuffer> data) {
   HeadersCompleted(net::HTTP_OK, total_size_, std::move(data));
 }
 
@@ -210,7 +210,7 @@ void BlobURLLoader::OnComplete(net::Error error_code,
 void BlobURLLoader::HeadersCompleted(
     net::HttpStatusCode status_code,
     uint64_t content_size,
-    absl::optional<mojo_base::BigBuffer> metadata) {
+    std::optional<mojo_base::BigBuffer> metadata) {
   auto response = network::mojom::URLResponseHead::New();
   response->content_length = 0;
   if (status_code == net::HTTP_OK || status_code == net::HTTP_PARTIAL_CONTENT)

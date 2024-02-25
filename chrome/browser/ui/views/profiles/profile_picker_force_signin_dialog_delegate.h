@@ -37,8 +37,10 @@ class ProfilePickerForceSigninDialogDelegate
       public content::WebContentsDelegate,
       public ChromeWebModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost {
+  METADATA_HEADER(ProfilePickerForceSigninDialogDelegate,
+                  views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ProfilePickerForceSigninDialogDelegate);
   ProfilePickerForceSigninDialogDelegate(
       ProfilePickerForceSigninDialogHost* host,
       std::unique_ptr<views::WebView> web_view,
@@ -68,6 +70,8 @@ class ProfilePickerForceSigninDialogDelegate
   gfx::Size GetMaximumDialogSize() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+
+  content::WebContents* GetWebContentsForTesting() const;
 
  private:
   // Before its destruction, tells its parent container to reset its reference

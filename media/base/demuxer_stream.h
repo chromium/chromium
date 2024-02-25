@@ -33,8 +33,7 @@ class MEDIA_EXPORT DemuxerStream {
     UNKNOWN,
     AUDIO,
     VIDEO,
-    TEXT,
-    TYPE_MAX = TEXT,
+    TYPE_MAX = VIDEO,
   };
 
   // Returns a string representation of |type|.

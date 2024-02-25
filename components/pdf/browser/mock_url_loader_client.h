@@ -27,7 +27,7 @@ class MockURLLoaderClient : public network::mojom::URLLoaderClient {
               OnReceiveResponse,
               (network::mojom::URLResponseHeadPtr head,
                mojo::ScopedDataPipeConsumerHandle body,
-               absl::optional<mojo_base::BigBuffer> cached_metadata),
+               std::optional<mojo_base::BigBuffer> cached_metadata),
               (override));
   MOCK_METHOD(void,
               OnReceiveRedirect,

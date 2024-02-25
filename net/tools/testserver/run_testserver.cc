@@ -52,7 +52,7 @@ int main(int argc, const char* argv[]) {
   }
 
   // If populated, EmbeddedTestServer is used instead of the SpawnedTestServer.
-  absl::optional<net::EmbeddedTestServer::Type> embedded_test_server_type;
+  std::optional<net::EmbeddedTestServer::Type> embedded_test_server_type;
 
   net::SpawnedTestServer::Type server_type;
   if (command_line->HasSwitch("http")) {

@@ -116,7 +116,8 @@ static PrinterInfoKey printer_info_keys[] = {
     {"prn-info-4", PrinterInfoKey::Tag::kArray},
 };
 
-ScopedPrinterInfo::ScopedPrinterInfo(std::vector<std::string> data) {
+ScopedPrinterInfo::ScopedPrinterInfo(const std::string& printer_name,
+                                     std::vector<std::string> data) {
   CHECK_LE(data.size(), std::size(printer_info_keys));
   for (size_t i = 0; i < std::size(printer_info_keys); ++i) {
     if (i < data.size()) {
@@ -124,6 +125,10 @@ ScopedPrinterInfo::ScopedPrinterInfo(std::vector<std::string> data) {
     } else {
       printer_info_keys[i].Clear();
     }
+  }
+  if (data.empty()) {
+    // No keys were provided.  Just store the printer_name.
+    printer_info_keys[0].Set(printer_name);
   }
 }
 

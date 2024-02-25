@@ -41,7 +41,8 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
   // AXAuraObjWrapper overrides.
   bool HandleAccessibleAction(const ui::AXActionData& action) override;
   AXAuraObjWrapper* GetParent() override;
-  void GetChildren(std::vector<AXAuraObjWrapper*>* out_children) override;
+  void GetChildren(std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>*
+                       out_children) override;
   void Serialize(ui::AXNodeData* out_node_data) override;
   ui::AXNodeID GetUniqueId() const final;
   std::string ToString() const override;

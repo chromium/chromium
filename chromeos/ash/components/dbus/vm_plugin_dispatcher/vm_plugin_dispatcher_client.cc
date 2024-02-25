@@ -124,7 +124,7 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode protobuf for " << method_name;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
 
@@ -139,14 +139,14 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
   void OnDBusProtoResponse(chromeos::DBusMethodCallback<ResponseProto> callback,
                            dbus::Response* dbus_response) {
     if (!dbus_response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     ResponseProto reponse_proto;
     dbus::MessageReader reader(dbus_response);
     if (!reader.PopArrayOfBytesAsProto(&reponse_proto)) {
       LOG(ERROR) << "Failed to parse proto from DBus Response.";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(std::move(reponse_proto));
@@ -192,8 +192,7 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
       LOG(ERROR) << "Failed to connect to signal: " << signal_name;
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> vm_plugin_dispatcher_proxy_ =
-      nullptr;
+  raw_ptr<dbus::ObjectProxy> vm_plugin_dispatcher_proxy_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 

@@ -59,7 +59,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
       mojo::PendingRemote<mojom::AuthenticationStateObserver> observer);
 
   // AssistantClientObserver:
-  void OnAssistantClientCreated(AssistantClient* assistant_client) override;
   void OnAssistantClientRunning(AssistantClient* assistant_client) override;
   void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
 
@@ -123,7 +122,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   // Owned by ServiceController.
   // Set in `OnAssistantClientCreated()` and unset in
   // `OnDestroyingAssistantClient()`.
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
 
   // False until libassistant is running for the first time.
   // Any request that comes in before that is an error and will be DCHECK'ed.

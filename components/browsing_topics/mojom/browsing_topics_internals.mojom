@@ -16,9 +16,6 @@ struct WebUIBrowsingTopicsConfiguration {
   // Whether the `PrivacySandboxAdsAPIsOverride` feature is enabled.
   bool privacy_sandbox_ads_apis_override_enabled;
 
-  // Whether the `PrivacySandboxSettings3` feature is enabled.
-  bool privacy_sandbox_settings3_enabled;
-
   // Whether the `OverridePrivacySandboxSettingsLocalTesting` feature is
   // enabled.
   bool override_privacy_sandbox_settings_local_testing_enabled;
@@ -26,9 +23,6 @@ struct WebUIBrowsingTopicsConfiguration {
   // Whether the `BrowsingTopicsBypassIPIsPubliclyRoutableCheck` feature is
   // enabled.
   bool browsing_topics_bypass_ip_is_publicly_routable_check_enabled;
-
-  // Whether the deprecatedBrowsingTopics XHR attribute is allowed.
-  bool browsing_topics_xhr_enabled;
 
   // Whether document.browsingTopics() is allowed.
   bool browsing_topics_document_api_enabled;

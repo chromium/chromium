@@ -80,7 +80,7 @@ void TestNetworkQualityEstimator::RunOneRequest() {
                              TRAFFIC_ANNOTATION_FOR_TESTS));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
-  base::RunLoop().Run();
+  test_delegate.RunUntilComplete();
 }
 
 void TestNetworkQualityEstimator::SimulateNetworkChange(
@@ -191,7 +191,7 @@ bool TestNetworkQualityEstimator::GetRecentRTT(
                                                rtt, observations_count);
 }
 
-absl::optional<base::TimeDelta> TestNetworkQualityEstimator::GetTransportRTT()
+std::optional<base::TimeDelta> TestNetworkQualityEstimator::GetTransportRTT()
     const {
   if (start_time_null_transport_rtt_)
     return start_time_null_transport_rtt_;
@@ -282,7 +282,7 @@ void TestNetworkQualityEstimator::
     observer.OnEffectiveConnectionTypeChanged(type);
 }
 
-absl::optional<net::EffectiveConnectionType>
+std::optional<net::EffectiveConnectionType>
 TestNetworkQualityEstimator::GetOverrideECT() const {
   return effective_connection_type_;
 }

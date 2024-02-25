@@ -1,3 +1,0 @@
-
-"full_name","total_duration_ms","total_thread_duration_ms","count","window_start_ts","window_end_ts","scroll_type"
-"viz.mojom.CompositorFrameSinkClient message (hash=50871626),viz.mojom.CompositorFrameSinkClient message (hash=3114070324),SingleThreadProxy::BeginMainFrame(java_views=ToolbarLayout),blink.mojom.WidgetInputHandler reply (hash=3392143105),cc.mojom.RenderFrameMetadataObserverClient message (hash=330497194),RunTask(posted_from=cc/scheduler/scheduler.cc:ScheduleBeginImplFrameDeadline),RunTask(posted_from=cc/scheduler/scheduler.cc:PostPendingBeginFrameTask),viz.mojom.FrameSinkManagerClient message (hash=532012934)",7.568000,6.745000,11,666960999011,666972176011,"regular"

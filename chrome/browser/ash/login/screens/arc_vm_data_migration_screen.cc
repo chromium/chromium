@@ -162,6 +162,13 @@ void ReportBatteryConsumption(double battery_consumption_percent) {
       base::saturated_cast<int>(battery_consumption_percent));
 }
 
+void ReportGetAndroidDataInfoDuration(const base::TimeDelta& duration) {
+  base::UmaHistogramCustomTimes(
+      "Arc.VmDataMigration.GetAndroidDataInfoDuration", duration,
+      base::Seconds(1), kArcVmDataMigratorGetAndroidDataInfoTimeout,
+      kNumBucketsForUmaCustomCounts);
+}
+
 std::string GetChromeOsUsername(Profile* profile) {
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile));
   return cryptohome::CreateAccountIdentifierFromAccountId(account).account_id();
@@ -182,7 +189,7 @@ void OnArcVmDataMigratorStartedForGetAndroidDataInfo(
     bool result) {
   if (!result) {
     LOG(ERROR) << "Failed to start arcvm_data_migrator";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -320,7 +327,7 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
 }
 
 void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
-    absl::optional<int64_t> reply) {
+    std::optional<int64_t> reply) {
   if (!reply.has_value() || reply.value() < 0) {
     LOG(ERROR) << "Failed to get free disk space from spaced";
     HandleSetupFailure(
@@ -335,15 +342,24 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
   const uint64_t free_disk_space = reply.value();
   VLOG(1) << "Free disk space is " << free_disk_space;
 
+  const base::TimeTicks time_before_get_android_data_info =
+      tick_clock_->NowTicks();
+
   GetAndroidDataInfo(
       GetChromeOsUsername(profile_),
       base::BindOnce(&ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse,
-                     weak_ptr_factory_.GetWeakPtr(), free_disk_space));
+                     weak_ptr_factory_.GetWeakPtr(), free_disk_space,
+                     time_before_get_android_data_info));
 }
 
 void ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse(
     uint64_t free_disk_space,
-    absl::optional<arc::data_migrator::GetAndroidDataInfoResponse> response) {
+    const base::TimeTicks& time_before_get_android_data_info,
+    std::optional<arc::data_migrator::GetAndroidDataInfoResponse> response) {
+  const base::TimeDelta duration =
+      tick_clock_->NowTicks() - time_before_get_android_data_info;
+  ReportGetAndroidDataInfoDuration(duration);
+
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to get the size of Android /data";
     HandleSetupFailure(
@@ -500,7 +516,7 @@ void ArcVmDataMigrationScreen::SetUpDestinationAndTriggerMigration() {
 }
 
 void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
-    absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
+    std::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to create a disk image for /data: No D-Bus response";
     HandleSetupFailure(

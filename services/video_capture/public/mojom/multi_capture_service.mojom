@@ -6,6 +6,8 @@ module video_capture.mojom;
 
 import "url/mojom/origin.mojom";
 
+// Next MinVersion: 2
+
 // The MultiCaptureService is used as a communication channel between the
 // browser process and ash to inform about new / ending
 // multi capture events so that appropriate usage indicators can
@@ -23,6 +25,11 @@ interface MultiCaptureServiceClient {
   // Called when a new multi capture is started. This event provides a unique
   // label and the origin that triggered the capture.
   MultiCaptureStarted(string label, url.mojom.Origin origin);
+  // Called when a new multi capture is started. This event provides a unique
+  // label, the id of the app that made the call and the short name (derived
+  // from the app manifest or app title) of the app.
+  [MinVersion=1]MultiCaptureStartedFromApp(string label, string app_id,
+      string app_short_name);
   // Called when an existing multi capture is stopped. This event provides a
   // unique label. A multi capture is considered to be stopped when all used
   // devices are closed.

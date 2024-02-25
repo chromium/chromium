@@ -43,18 +43,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   using ScopedAnimationSettings =
       std::vector<std::unique_ptr<ScopedOverviewAnimationSettings>>;
 
-  // Information needed to do a clip on |window_|.
-  enum class ClippingType {
-    kEnter,   // Clips away the header if it exists.
-    kExit,    // Removes or resets clip.
-    kCustom,  // Clips to custom given bounds.
-  };
-  using ClippingData = std::pair<ClippingType, gfx::SizeF>;
-
   // Calculates and returns an optimal scale ratio. This is only taking into
-  // account |size.height()| as the width can vary.
-  static float GetItemScale(const gfx::SizeF& source,
-                            const gfx::SizeF& target,
+  // account height as the width can vary.
+  static float GetItemScale(int source_height,
+                            int target_height,
                             int top_view_inset,
                             int title_height);
 
@@ -67,6 +59,12 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   ScopedOverviewTransformWindow& operator=(
       const ScopedOverviewTransformWindow&) = delete;
   ~ScopedOverviewTransformWindow() override;
+
+  aura::Window* window() const { return window_; }
+
+  bool is_restoring() const { return is_restoring_; }
+
+  OverviewGridWindowFillMode type() const { return type_; }
 
   // Starts an animation sequence which will use animation settings specified by
   // |animation_type|. The |animation_settings| container is populated with
@@ -108,8 +106,9 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // Sets the opacity of the managed windows.
   void SetOpacity(float opacity);
 
-  // Apply clipping on the managed windows.
-  void SetClipping(const ClippingData& clipping_data);
+  // Apply clipping on the `window_`. Clip always starts on the origin of
+  // `window_`'s layer.
+  void SetClipping(const gfx::Rect& clip_rect);
 
   // Returns |rect| having been shrunk to fit within |bounds| (preserving the
   // aspect ratio). Takes into account a window header that is |top_view_inset|
@@ -155,18 +154,14 @@ class ASH_EXPORT ScopedOverviewTransformWindow
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  aura::Window* window() const { return window_; }
-
-  OverviewGridWindowFillMode type() const { return type_; }
+  // If true, makes `CloseWidget()` execute synchronously when used in tests.
+  static void SetImmediateCloseForTests(bool immediate);
 
  private:
-  friend class OverviewHighlightControllerTest;
+  friend class OverviewFocusCyclerTest;
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(OverviewSessionTest, CloseAnimationShadow);
   class LayerCachingAndFilteringObserver;
-
-  // If true, makes `CloseWidget()` execute synchronously when used in tests.
-  static void SetImmediateCloseForTests(bool immediate);
 
   // Closes the window managed by |this|.
   void CloseWidget();
@@ -175,14 +170,21 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // windows are hidden in overview mode and the visibility of the windows is
   // recovered after overview mode.
   void AddHiddenTransientWindows(
-      const std::vector<aura::Window*>& transient_windows);
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+          transient_windows);
 
   // A weak pointer to the overview item that owns |this|. Guaranteed to be not
   // null for the lifetime of |this|.
-  raw_ptr<OverviewItem, ExperimentalAsh> overview_item_;
+  raw_ptr<OverviewItem> overview_item_;
 
   // A weak pointer to the real window in the overview.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
+
+  // True during the process of `RestoreWindow()`. This prevents redundant
+  // cyclic calls to `OverviewItem::SetBounds()`, which may happen when
+  // `ScopedOverviewTransformWindow::OnWindowBoundsChanged()` is triggered
+  // during the restore see http://b/311255082 for an example.
+  bool is_restoring_ = false;
 
   // The original opacity of the window before entering overview mode.
   float original_opacity_;
@@ -218,8 +220,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   // While the transform window exists, apply dynamic raster scale to the
   // underlying window.
-  absl::optional<ScopedRasterScaleLayerObserverLock>
-      raster_scale_observer_lock_;
+  std::optional<ScopedRasterScaleLayerObserverLock> raster_scale_observer_lock_;
 
   base::WeakPtrFactory<ScopedOverviewTransformWindow> weak_ptr_factory_{this};
 };

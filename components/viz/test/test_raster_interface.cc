@@ -101,6 +101,12 @@ GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
   return 0;
 }
 
+GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
+  NOTREACHED();
+  return 0;
+}
+
 void TestRasterInterface::DeleteGpuRasterTexture(GLuint texture) {
   NOTREACHED();
 }
@@ -184,6 +190,16 @@ void TestRasterInterface::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
 void TestRasterInterface::ShallowFlushCHROMIUM() {
   if (test_support_)
     test_support_->CallAllSyncPointCallbacks();
+}
+
+void TestRasterInterface::set_supports_gpu_memory_buffer_format(
+    gfx::BufferFormat format,
+    bool support) {
+  if (support) {
+    caps_.gpu_memory_buffer_formats.Put(format);
+  } else {
+    caps_.gpu_memory_buffer_formats.Remove(format);
+  }
 }
 
 }  // namespace viz

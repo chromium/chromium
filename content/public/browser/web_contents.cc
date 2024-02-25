@@ -26,4 +26,21 @@ WebContents::CreateParams::CreateParams(const CreateParams& other) = default;
 
 WebContents::CreateParams::~CreateParams() = default;
 
+WebContents::ScopedIgnoreInputEvents::~ScopedIgnoreInputEvents() = default;
+
+WebContents::ScopedIgnoreInputEvents::ScopedIgnoreInputEvents(
+    ScopedIgnoreInputEvents&& rhs) {
+  on_destruction_cb_ = std::move(rhs.on_destruction_cb_);
+}
+
+WebContents::ScopedIgnoreInputEvents&
+WebContents::ScopedIgnoreInputEvents::operator=(ScopedIgnoreInputEvents&& rhs) {
+  on_destruction_cb_ = std::move(rhs.on_destruction_cb_);
+  return *this;
+}
+
+WebContents::ScopedIgnoreInputEvents::ScopedIgnoreInputEvents(
+    base::OnceClosure on_destruction_cb)
+    : on_destruction_cb_(std::move(on_destruction_cb)) {}
+
 }  // namespace content

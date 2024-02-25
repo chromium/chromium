@@ -125,20 +125,26 @@ class BackdropSurpriseMeImageFetcher {
                               const backdrop::Image& image,
                               const std::string& new_resume_token)>;
 
-  BackdropSurpriseMeImageFetcher(const std::string& collection_id,
-                                 const std::string& resume_token);
-
   BackdropSurpriseMeImageFetcher(const BackdropSurpriseMeImageFetcher&) =
       delete;
   BackdropSurpriseMeImageFetcher& operator=(
       const BackdropSurpriseMeImageFetcher&) = delete;
 
-  ~BackdropSurpriseMeImageFetcher();
+  virtual ~BackdropSurpriseMeImageFetcher();
 
   // Starts the fetcher.
-  void Start(OnSurpriseMeImageFetched callback);
+  virtual void Start(OnSurpriseMeImageFetched callback);
+
+ protected:
+  // Protected constructor forces creation via `WallpaperFetcherDelegate` to
+  // allow mocking in test code.
+  BackdropSurpriseMeImageFetcher(const std::string& collection_id,
+                                 const std::string& resume_token);
 
  private:
+  // Allow delegate to view the constructor.
+  friend class WallpaperFetcherDelegateImpl;
+
   // Called when the surprise me image info download completes.
   void OnResponseFetched(const std::string& response);
 
@@ -149,7 +155,8 @@ class BackdropSurpriseMeImageFetcher {
   const std::string collection_id_;
 
   // An opaque token returned by a previous image info fetch request. It is used
-  // to prevent duplicate images from being returned.
+  // to prevent duplicate images from being returned. It's intentional
+  // that this field is always empty. See (https://crbug.com/843537#c13).
   const std::string resume_token_;
 
   // The callback upon completion of downloading and deserializing the surprise
@@ -187,11 +194,11 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   virtual T ParseResponse(const base::Value::Dict* response) = 0;
 
   // Returns the count of results contained within the specified `result`.
-  virtual absl::optional<size_t> GetResultCount(const T& result) = 0;
+  virtual std::optional<size_t> GetResultCount(const T& result) = 0;
 
   // Contains logic for different HTTP error codes that we receive, as they can
   // carry information on the state of the user's Google Photos library.
-  virtual absl::optional<base::Value> CreateErrorResponse(int error_code);
+  virtual std::optional<base::Value> CreateErrorResponse(int error_code);
 
   // Returns the result of the managed policy
   // WallpaperGooglePhotosIntegrationEnabled, or true if this pref is
@@ -211,13 +218,13 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
                       std::unique_ptr<std::string> response_body);
   void OnResponseReady(const GURL& service_url,
                        base::TimeTicks start_time,
-                       absl::optional<base::Value> response);
+                       std::optional<base::Value> response);
 
   // Profile associated with the Google Photos account that will be queried.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Supplies `token_fetcher_` with `profile_`'s GAIA account information.
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
@@ -246,7 +253,7 @@ class GooglePhotosAlbumsFetcher
   ~GooglePhotosAlbumsFetcher() override;
 
   virtual void AddRequestAndStartIfNecessary(
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& resume_token,
       base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback);
 
  protected:
@@ -257,7 +264,7 @@ class GooglePhotosAlbumsFetcher
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
 
  private:
@@ -282,7 +289,7 @@ class GooglePhotosSharedAlbumsFetcher
   ~GooglePhotosSharedAlbumsFetcher() override;
 
   virtual void AddRequestAndStartIfNecessary(
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& resume_token,
       base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback);
 
  protected:
@@ -293,7 +300,7 @@ class GooglePhotosSharedAlbumsFetcher
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
 
  private:
@@ -324,7 +331,7 @@ class GooglePhotosEnabledFetcher
   // GooglePhotosFetcher:
   GooglePhotosEnablementState ParseResponse(
       const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosEnablementState& result) override;
 
  private:
@@ -345,9 +352,9 @@ class GooglePhotosPhotosFetcher
   ~GooglePhotosPhotosFetcher() override;
 
   virtual void AddRequestAndStartIfNecessary(
-      const absl::optional<std::string>& item_id,
-      const absl::optional<std::string>& album_id,
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& item_id,
+      const std::optional<std::string>& album_id,
+      const std::optional<std::string>& resume_token,
       bool shuffle,
       base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback);
 
@@ -357,10 +364,10 @@ class GooglePhotosPhotosFetcher
   explicit GooglePhotosPhotosFetcher(Profile* profile);
 
   // GooglePhotosFetcher:
-  absl::optional<base::Value> CreateErrorResponse(int error_code) override;
+  std::optional<base::Value> CreateErrorResponse(int error_code) override;
   GooglePhotosPhotosCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosPhotosCbkArgs& result) override;
 
  private:

@@ -6,7 +6,9 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_STORE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -18,7 +20,6 @@
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_persister.h"
 #include "services/network/trust_tokens/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -87,7 +88,7 @@ class TrustTokenStore {
   // of, for instance, corruption or clock skew).
   //
   // |issuer| must not be opaque.
-  [[nodiscard]] virtual absl::optional<base::TimeDelta> TimeSinceLastIssuance(
+  [[nodiscard]] virtual std::optional<base::TimeDelta> TimeSinceLastIssuance(
       const SuitableTrustTokenOrigin& issuer);
 
   // Returns the time elapsed since the last redemption recorded by
@@ -97,7 +98,7 @@ class TrustTokenStore {
   // top-level origin) pair.
   // 2. the time since the last redepmption is negative (because
   // of, for instance, corruption or clock skew).
-  [[nodiscard]] virtual absl::optional<base::TimeDelta> TimeSinceLastRedemption(
+  [[nodiscard]] virtual std::optional<base::TimeDelta> TimeSinceLastRedemption(
       const SuitableTrustTokenOrigin& issuer,
       const SuitableTrustTokenOrigin& top_level);
 
@@ -144,7 +145,7 @@ class TrustTokenStore {
   // tokens issued against non-current keys.
   virtual void AddTokens(const SuitableTrustTokenOrigin& issuer,
                          base::span<const std::string> token_bodies,
-                         base::StringPiece issuing_key);
+                         std::string_view issuing_key);
 
   // Returns the number of tokens stored for |issuer|.
   [[nodiscard]] virtual int CountTokens(const SuitableTrustTokenOrigin& issuer);
@@ -176,7 +177,7 @@ class TrustTokenStore {
   // top-level) origins.
   // - If the pair has a current (i.e., non-expired) RR, returns that RR.
   // - Otherwise, returns nullopt.
-  [[nodiscard]] virtual absl::optional<TrustTokenRedemptionRecord>
+  [[nodiscard]] virtual std::optional<TrustTokenRedemptionRecord>
   RetrieveNonstaleRedemptionRecord(const SuitableTrustTokenOrigin& issuer,
                                    const SuitableTrustTokenOrigin& top_level);
 

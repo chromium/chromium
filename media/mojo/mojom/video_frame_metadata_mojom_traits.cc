@@ -14,13 +14,13 @@
 
 namespace mojo {
 
-// Deserializes has_field and field into a absl::optional.
+// Deserializes has_field and field into a std::optional.
 #define DESERIALIZE_INTO_OPT(field) \
   if (input.has_##field())          \
     output->field = input.field()
 
 #define READ_AND_ASSIGN_OPT(type, field, FieldInCamelCase) \
-  absl::optional<type> field;                              \
+  std::optional<type> field;                               \
   if (!input.Read##FieldInCamelCase(&field))               \
     return false;                                          \
                                                            \
@@ -33,7 +33,8 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
          media::VideoFrameMetadata* output) {
   // int.
   DESERIALIZE_INTO_OPT(capture_counter);
-  output->crop_version = input.crop_version();
+  output->sub_capture_target_version = input.sub_capture_target_version();
+  output->frame_sequence = input.frame_sequence();
 
   // bool.
   output->allow_overlay = input.allow_overlay();
@@ -43,6 +44,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   output->wants_promotion_hint = input.wants_promotion_hint();
   output->protected_video = input.protected_video();
   output->hw_protected = input.hw_protected();
+  output->needs_detiling = input.needs_detiling();
   output->is_webgpu_compatible = input.is_webgpu_compatible();
   output->power_efficient = input.power_efficient();
   output->read_lock_fences_enabled = input.read_lock_fences_enabled();
@@ -78,6 +80,8 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   READ_AND_ASSIGN_OPT(base::TimeDelta, frame_duration, FrameDuration);
   READ_AND_ASSIGN_OPT(base::TimeDelta, wallclock_frame_duration,
                       WallclockFrameDuration);
+
+  output->frame_sequence = input.frame_sequence();
 
   return true;
 }

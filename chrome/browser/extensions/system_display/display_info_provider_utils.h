@@ -45,7 +45,7 @@ int GetRotationFromMojomDisplayRotationInfo(
 // Validates the DisplayProperties input. Does not perform any tests with
 // DisplayManager dependencies. Returns an error string on failure or nullopt
 // on success.
-absl::optional<std::string> ValidateDisplayPropertiesInput(
+std::optional<std::string> ValidateDisplayPropertiesInput(
     const std::string& display_id_str,
     const api::system_display::DisplayProperties& info);
 

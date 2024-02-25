@@ -8,9 +8,7 @@ import android.content.Context;
 
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
 
-/**
- * Interface for helper launching child processes.
- */
+/** Interface for helper launching child processes. */
 public final class ChildProcessLauncherHelper {
     private ChildProcessLauncherHelper() {}
 

@@ -23,13 +23,11 @@ namespace history {
 
 class HistoryService;
 
-// ModelTypeController for "history" data types - HISTORY and TYPED_URLS.
+// ModelTypeController for syncer::HISTORY.
 class HistoryModelTypeController : public syncer::ModelTypeController,
                                    public syncer::SyncServiceObserver {
  public:
-  // `model_type` must be either HISTORY or TYPED_URLS.
-  HistoryModelTypeController(syncer::ModelType model_type,
-                             syncer::SyncService* sync_service,
+  HistoryModelTypeController(syncer::SyncService* sync_service,
                              signin::IdentityManager* identity_manager,
                              HistoryService* history_service,
                              PrefService* pref_service);

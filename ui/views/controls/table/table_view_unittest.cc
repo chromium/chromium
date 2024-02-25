@@ -8,14 +8,17 @@
 
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/event_utils.h"
@@ -40,6 +43,8 @@
 // friend classes.
 namespace views {
 
+constexpr int kGroupingIndicatorSize = 6;
+
 class TableViewTestHelper {
  public:
   explicit TableViewTestHelper(TableView* table) : table_(table) {}
@@ -57,7 +62,7 @@ class TableViewTestHelper {
 
   size_t visible_col_count() { return table_->visible_columns().size(); }
 
-  absl::optional<size_t> GetActiveVisibleColumnIndex() {
+  std::optional<size_t> GetActiveVisibleColumnIndex() {
     return table_->GetActiveVisibleColumnIndex();
   }
 
@@ -139,8 +144,22 @@ class TableViewTestHelper {
     return expected_bounds;
   }
 
+  int GetCellMargin() const { return table_->GetCellMargin(); }
+
+  int GetCellElementSpacing() const { return table_->GetCellElementSpacing(); }
+
+  gfx::Rect GetPaintIconSrcBounds(const gfx::Size& image_size,
+                                  int image_dest_width) {
+    return table_->GetPaintIconSrcBounds(image_size, image_dest_width);
+  }
+
+  gfx::Rect GetPaintIconDestBounds(const gfx::Rect& cell_bounds,
+                                   int text_bounds_x) {
+    return table_->GetPaintIconDestBounds(cell_bounds, text_bounds_x);
+  }
+
  private:
-  raw_ptr<TableView, DanglingUntriaged> table_;
+  const raw_ptr<TableView> table_;
 };
 
 namespace {
@@ -202,7 +221,7 @@ class TestTableModel2 : public ui::TableModel {
  private:
   raw_ptr<ui::TableModelObserver> observer_ = nullptr;
 
-  absl::optional<std::u16string> tooltip_;
+  std::optional<std::u16string> tooltip_;
 
   // The data.
   std::vector<std::vector<int>> rows_;
@@ -422,7 +441,9 @@ bool DragLeftMouseTo(views::View* target, const gfx::Point& point) {
 // The test parameter is used to control whether or not to test the TableView
 // using the default construction path.
 class TableViewTest : public ViewsTestBase,
-                      public ::testing::WithParamInterface<bool> {
+                      public ::testing::WithParamInterface<
+                          std::tuple</*use_default_construction=*/bool,
+                                     /*use_rtl=*/bool>> {
  public:
   TableViewTest() = default;
 
@@ -443,15 +464,16 @@ class TableViewTest : public ViewsTestBase,
     std::unique_ptr<TableView> table;
 
     // Run the tests using both default and non-default TableView construction.
-    if (GetParam()) {
+    if (use_default_construction()) {
       table = std::make_unique<TableView>();
-      table->Init(model_.get(), columns, TEXT_ONLY, false);
+      table->Init(model_.get(), columns, TableType::kTextOnly, false);
     } else {
-      table =
-          std::make_unique<TableView>(model_.get(), columns, TEXT_ONLY, false);
+      table = std::make_unique<TableView>(model_.get(), columns,
+                                          TableType::kTextOnly, false);
     }
     table_ = table.get();
     auto scroll_view = TableView::CreateScrollViewWithTable(std::move(table));
+    scroll_view_ = scroll_view.get();
     scroll_view->SetBounds(0, 0, 10000, 10000);
     helper_ = std::make_unique<TableViewTestHelper>(table_);
 
@@ -467,6 +489,9 @@ class TableViewTest : public ViewsTestBase,
   }
 
   void TearDown() override {
+    table_ = nullptr;
+    scroll_view_ = nullptr;
+    helper_.reset();
     widget_.reset();
     ViewsTestBase::TearDown();
   }
@@ -583,13 +608,35 @@ class TableViewTest : public ViewsTestBase,
     }
   }
 
+  void SetColumnWidthForHorizontalScrollBarVisibility() {
+    EXPECT_EQ(2u, helper_->visible_col_count());
+    EXPECT_EQ(4u, table_->GetRowCount());
+    // Initially no active visible column.
+    EXPECT_FALSE(helper_->GetActiveVisibleColumnIndex().has_value());
+    EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+    scroll_view_->SetBounds(0, 0, 800, 800);
+    // Set the column width to make the horizontal scroll bar visible.
+    constexpr int kColumn0Width = 500;
+    constexpr int kColumn1Width = 1000;
+    table_->SetVisibleColumnWidth(0, kColumn0Width);
+    table_->SetVisibleColumnWidth(1, kColumn1Width);
+    test::RunScheduledLayout(scroll_view_);
+    EXPECT_EQ(table_->GetVisibleColumn(0).width, kColumn0Width);
+    EXPECT_EQ(table_->GetVisibleColumn(1).width, kColumn1Width);
+    EXPECT_TRUE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+  }
+
+  bool use_default_construction() const { return std::get<0>(GetParam()); }
+  bool use_rtl() const { return std::get<1>(GetParam()); }
+
  protected:
   virtual WidgetDelegate* GetWidgetDelegate(Widget* widget) { return nullptr; }
 
   std::unique_ptr<TestTableModel2> model_;
 
-  // Owned by |parent_|.
-  raw_ptr<TableView, DanglingUntriaged> table_ = nullptr;
+  // Owned by the scroll view owned by `widget_`.
+  raw_ptr<TableView> table_ = nullptr;
+  raw_ptr<ScrollView> scroll_view_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 
@@ -602,7 +649,11 @@ class TableViewTest : public ViewsTestBase,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, TableViewTest, testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TableViewTest,
+    testing::Combine(/*use_default_construction=*/testing::Bool(),
+                     /*use_rtl=*/testing::Bool()));
 
 // Verifies GetPaintRegion.
 TEST_P(TableViewTest, GetPaintRegion) {
@@ -833,8 +884,9 @@ TEST_P(TableViewTest, ResizeViaGesture) {
 // Verifies resizing a column works with the keyboard.
 // The resize keyboard amount is 5 pixels.
 TEST_P(TableViewTest, ResizeViaKeyboard) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
-    return;
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
 
   table_->RequestFocus();
   const int x = table_->GetVisibleColumn(0).width;
@@ -867,7 +919,6 @@ TEST_P(TableViewTest, ResizeViaKeyboard) {
 // Verifies resizing a column won't reduce the column width below the width of
 // the column's title text.
 TEST_P(TableViewTest, ResizeHonorsMinimum) {
-  TableViewTestHelper helper(table_);
   const int x = table_->GetVisibleColumn(0).width;
   EXPECT_NE(0, x);
 
@@ -875,7 +926,7 @@ TEST_P(TableViewTest, ResizeHonorsMinimum) {
   DragLeftMouseTo(helper_->header(), gfx::Point(20, 0));
 
   int title_width = gfx::GetStringWidth(
-      table_->GetVisibleColumn(0).column.title, helper.font_list());
+      table_->GetVisibleColumn(0).column.title, helper_->font_list());
   EXPECT_LT(title_width, table_->GetVisibleColumn(0).width);
 
   int old_width = table_->GetVisibleColumn(0).width;
@@ -1037,8 +1088,9 @@ TEST_P(TableViewTest, SortOnMouse) {
 // Verifies that pressing the space bar when a particular visible column is
 // active will sort by that column.
 TEST_P(TableViewTest, SortOnSpaceBar) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
-    return;
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
 
   table_->RequestFocus();
   ASSERT_TRUE(table_->sort_descriptors().empty());
@@ -1563,7 +1615,7 @@ TEST_P(TableViewTest, KeyUpDown) {
 
   EXPECT_EQ("2 3 4 0 1", GetViewToModelAsString(table_));
 
-  table_->Select(absl::nullopt);
+  table_->Select(std::nullopt);
   EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   observer.GetChangedCountAndClear();
@@ -1615,8 +1667,9 @@ TEST_P(TableViewTest, KeyUpDown) {
 
 // Verifies left/right correctly navigate through visible columns.
 TEST_P(TableViewTest, KeyLeftRight) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
-    return;
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
 
   TableViewObserverImpl observer;
   table_->set_observer(&observer);
@@ -1710,6 +1763,143 @@ TEST_P(TableViewTest, KeyLeftRight) {
   EXPECT_EQ("active=1 anchor=1 selection=1", SelectionStateAsString());
 
   table_->set_observer(nullptr);
+}
+
+// Verify table view that the left/right navigation scrolls the visible rect
+// correctly.
+TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableView) {
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
+
+  table_->RequestFocus();
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  // Initially no active visible column.
+  EXPECT_FALSE(helper_->GetActiveVisibleColumnIndex().has_value());
+  EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+  scroll_view_->SetBounds(0, 0, 800, 800);
+  // Set the column width to make the horizontal scroll bar visible.
+  constexpr int kColumn0Width = 500;
+  constexpr int kColumn1Width = 1000;
+  table_->SetVisibleColumnWidth(0, kColumn0Width);
+  table_->SetVisibleColumnWidth(1, kColumn1Width);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(table_->GetVisibleColumn(0).width, kColumn0Width);
+  EXPECT_EQ(table_->GetVisibleColumn(1).width, kColumn1Width);
+  EXPECT_TRUE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+
+  gfx::Rect visible_bounds = table_->GetVisibleBounds();
+  PressKey(ui::VKEY_RIGHT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  PressKey(ui::VKEY_RIGHT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(1u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(table_->GetVisibleBounds(),
+            gfx::Rect(kColumn0Width, visible_bounds.y(), visible_bounds.width(),
+                      visible_bounds.height()));
+
+  PressKey(ui::VKEY_LEFT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+}
+
+// Verify table header that the left/right navigation scrolls the visible rect
+// correctly.
+TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableHeader) {
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
+
+  table_->RequestFocus();
+  SetColumnWidthForHorizontalScrollBarVisibility();
+  gfx::Rect visible_bounds = table_->GetVisibleBounds();
+
+  // Navigate to the table header
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_FALSE(table_->header_row_is_active());
+  PressKey(ui::VKEY_UP);
+  EXPECT_TRUE(table_->header_row_is_active());
+
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  PressKey(ui::VKEY_RIGHT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(1u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(table_->GetVisibleBounds(),
+            gfx::Rect(table_->GetVisibleColumn(0).width, visible_bounds.y(),
+                      visible_bounds.width(), visible_bounds.height()));
+
+  PressKey(ui::VKEY_LEFT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+}
+
+// Verify that the table view visible bounds remains stable when up/down
+// switching between different rows when the layout is RTL or LTR. use_rtl()
+// returns true for testing the RTL layout and false for testing the LTR layout
+TEST_P(TableViewTest, KeyUpDownHorizontalScrollbarStability) {
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
+  EXPECT_FALSE(base::i18n::IsRTL());
+  if (use_rtl()) {
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+  }
+  table_->RequestFocus();
+  SetColumnWidthForHorizontalScrollBarVisibility();
+  gfx::Rect visible_bounds = table_->GetVisibleBounds();
+  PressKey(ui::VKEY_DOWN);
+  EXPECT_EQ(1u, table_->ViewToModel(1));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  PressKey(ui::VKEY_DOWN);
+  EXPECT_EQ(2u, table_->ViewToModel(2));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  PressKey(ui::VKEY_UP);
+  EXPECT_EQ(1u, table_->ViewToModel(1));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+  if (use_rtl()) {
+    base::i18n::SetRTLForTesting(false);
+  }
+  EXPECT_FALSE(base::i18n::IsRTL());
+}
+
+// Verify that the table view visible boundsr remains stable when clicking on
+// different rows when the layout is RTL or LTR. use_rtl() returns true for
+// testing the RTL layout and false for testing the LTR layout
+TEST_P(TableViewTest, ClickRowHorizontalScrollbarStability) {
+  EXPECT_FALSE(base::i18n::IsRTL());
+  if (use_rtl()) {
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+  }
+  table_->RequestFocus();
+  SetColumnWidthForHorizontalScrollBarVisibility();
+  gfx::Rect visible_bounds = table_->GetVisibleBounds();
+  ClickOnRow(1, 0);
+  EXPECT_EQ(1u, table_->ViewToModel(1));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  ClickOnRow(2, 0);
+  EXPECT_EQ(2u, table_->ViewToModel(2));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  ClickOnRow(3, 0);
+  EXPECT_EQ(3u, table_->ViewToModel(3));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+  if (use_rtl()) {
+    base::i18n::SetRTLForTesting(false);
+  }
+  EXPECT_FALSE(base::i18n::IsRTL());
 }
 
 // Verifies home/end do the right thing.
@@ -2029,8 +2219,9 @@ TEST_P(TableViewTest, TableHeaderRowAccessibleViewFocusable) {
 // Ensure that the TableView's header columns are keyboard accessible.
 // Tests for crbug.com/1189851.
 TEST_P(TableViewTest, TableHeaderColumnAccessibleViewsFocusable) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
-    return;
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
 
   ASSERT_NE(nullptr, helper_->header());
   table_->RequestFocus();
@@ -2123,7 +2314,11 @@ WidgetDelegate* TableViewFocusTest::GetWidgetDelegate(Widget* widget) {
   return delegate_.get();
 }
 
-INSTANTIATE_TEST_SUITE_P(All, TableViewFocusTest, testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TableViewFocusTest,
+    testing::Combine(/*use_default_construction=*/testing::Bool(),
+                     /*use_rtl=*/testing::Bool()));
 
 // Verifies that the active focus is cleared when the widget is destroyed.
 // In MD mode, if that doesn't happen a DCHECK in View::DoRemoveChildView(...)
@@ -2180,5 +2375,258 @@ TEST_F(TableViewDefaultConstructabilityTest, TestFunctionalWithoutModel) {
       TableView::CreateScrollViewWithTable(std::make_unique<TableView>());
   scroll_view->SetBounds(0, 0, 10000, 10000);
   widget()->client_view()->AddChildView(std::move(scroll_view));
+}
+
+class TestTableModel3 : public TestTableModel2 {
+ public:
+  TestTableModel3() {
+    icon_.allocN32Pixels(48, 48);
+    SkCanvas canvas(icon_, SkSurfaceProps{});
+    canvas.drawColor(SK_ColorRED);
+  }
+
+  TestTableModel3(const TestTableModel3&) = delete;
+  TestTableModel3& operator=(const TestTableModel3&) = delete;
+  ui::ImageModel GetIcon(size_t row) override {
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkia::CreateFrom1xBitmap(icon_));
+  }
+
+ private:
+  SkBitmap icon_;
+};
+
+// The test calculation paint icon bounds.
+class TableViewPaintIconBoundsTest : public ViewsTestBase {
+ public:
+  TableViewPaintIconBoundsTest() = default;
+  TableViewPaintIconBoundsTest(const TableViewPaintIconBoundsTest&) = delete;
+  TableViewPaintIconBoundsTest& operator=(const TableViewPaintIconBoundsTest&) =
+      delete;
+  ~TableViewPaintIconBoundsTest() override = default;
+
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+
+    model_ = std::make_unique<TestTableModel3>();
+    std::vector<ui::TableColumn> columns(2);
+    columns[0].title = u"A";
+    columns[0].sortable = true;
+    columns[1].title = u"B";
+    columns[1].id = 1;
+    columns[1].sortable = true;
+
+    std::unique_ptr<TableView> table = std::make_unique<TableView>(
+        model_.get(), columns, TableType::kTextOnly, false);
+    table_ = table.get();
+    auto scroll_view = TableView::CreateScrollViewWithTable(std::move(table));
+    scroll_view->SetBounds(0, 0, 1000, 1000);
+    helper_ = std::make_unique<TableViewTestHelper>(table_);
+
+    widget_ = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.bounds = gfx::Rect(0, 0, 650, 650);
+    widget_->Init(std::move(params));
+    test::RunScheduledLayout(
+        widget_->GetRootView()->AddChildView(std::move(scroll_view)));
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    table_ = nullptr;
+    helper_.reset();
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<TestTableModel2> model_;
+  raw_ptr<TableView> table_ = nullptr;
+  std::unique_ptr<TableViewTestHelper> helper_;
+  UniqueWidgetPtr widget_;
+};
+
+TEST_F(TableViewPaintIconBoundsTest, TestPaintIconBoundsForNormally) {
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  int cell_margin = helper_->GetCellMargin();
+  int cell_element_spacing = helper_->GetCellElementSpacing();
+  gfx::ImageSkia image =
+      model_->GetIcon(0).Rasterize(table_->GetColorProvider());
+  EXPECT_FALSE(image.isNull());
+  int first_column_min_width =
+      cell_margin + cell_element_spacing + kGroupingIndicatorSize;
+  gfx::Rect cell_bounds = helper_->GetCellBounds(0, 0);
+  // icon can be paint within the cell bounds.
+  EXPECT_GT(cell_bounds.width(),
+            first_column_min_width + ui::TableModel::kIconSize);
+  gfx::Rect text_bounds = cell_bounds;
+  text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
+  text_bounds.Inset(
+      gfx::Insets().set_left(kGroupingIndicatorSize + cell_element_spacing));
+  EXPECT_EQ(text_bounds.x(), first_column_min_width);
+
+  // If the cell size is sufficient to draw the icon, whether it is LTR or RTL,
+  // the `src_image_bounds` will be the size of the original image,
+  // which is (0, 0, image.width(), image.height()).
+  {
+    EXPECT_FALSE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    // If it is an LTR layout, the `dest_image_bounds.x()` will be the minimum
+    // width of the first column, and the size of `dest_image_bounds` will be
+    // ui::TableModel::kIconSize.
+    EXPECT_EQ(
+        dest_image_bounds,
+        gfx::Rect(first_column_min_width,
+                  cell_bounds.y() +
+                      (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+                  ui::TableModel::kIconSize, ui::TableModel::kIconSize));
+    gfx::Rect src_image_bounds =
+        helper_->GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+
+    EXPECT_EQ(src_image_bounds, gfx::Rect(image.size()));
+  }
+  {
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    // If it is an RTL layout, the `dest_image_bounds.x()` will be the
+    // table_view's width minus the minimum width of the first column and
+    // ui::TableModel::kIconSize, and the size of `dest_image_bounds` will be
+    // ui::TableModel::kIconSize.
+    EXPECT_EQ(
+        dest_image_bounds,
+        gfx::Rect(table_->width() - first_column_min_width -
+                      ui::TableModel::kIconSize,
+                  cell_bounds.y() +
+                      (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+                  ui::TableModel::kIconSize, ui::TableModel::kIconSize));
+    gfx::Rect src_image_bounds =
+        helper_->GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+    EXPECT_EQ(src_image_bounds, gfx::Rect(image.size()));
+    base::i18n::SetRTLForTesting(false);
+  }
+}
+
+TEST_F(TableViewPaintIconBoundsTest, TestPaintIconBoundsForClipped) {
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  int cell_margin = helper_->GetCellMargin();
+  int cell_element_spacing = helper_->GetCellElementSpacing();
+  gfx::ImageSkia image =
+      model_->GetIcon(0).Rasterize(table_->GetColorProvider());
+  EXPECT_FALSE(image.isNull());
+  int first_column_min_width =
+      cell_margin + cell_element_spacing + kGroupingIndicatorSize;
+  // Adjust the width of the first column so that only half of the icon can be
+  // displayed
+  int dest_image_width = ui::TableModel::kIconSize / 2;
+  int x = table_->GetVisibleColumn(0).width;
+  int resize_pixels = x - (first_column_min_width + dest_image_width);
+  PressLeftMouseAt(helper_->header(), gfx::Point(x, 0));
+  DragLeftMouseTo(helper_->header(), gfx::Point(x - resize_pixels, 0));
+
+  gfx::Rect cell_bounds = helper_->GetCellBounds(0, 0);
+  // If the cell size is only sufficient to draw half of the icon
+  EXPECT_EQ(cell_bounds.width(), first_column_min_width + dest_image_width);
+  gfx::Rect text_bounds = cell_bounds;
+  text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
+  text_bounds.Inset(
+      gfx::Insets().set_left(kGroupingIndicatorSize + cell_element_spacing));
+  {
+    // When the layout is LTR.
+    EXPECT_FALSE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    // The `dest_image_bounds.x()` should be equal to the minimum width of the
+    // first column. The `dest_image_bounds.width()` should be equal to half of
+    // ui::TableModel::kIconSize.
+    EXPECT_EQ(
+        dest_image_bounds,
+        gfx::Rect(first_column_min_width,
+                  cell_bounds.y() +
+                      (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+                  dest_image_width, ui::TableModel::kIconSize));
+    // The right boundary of `dest_image_bounds` should be equal to the right
+    // boundary of the cell when  clipped icon.
+    EXPECT_EQ(dest_image_bounds.right(), cell_bounds.right());
+    gfx::Rect src_image_bounds =
+        helper_->GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+
+    // `src_image_bounds.x()` should be 0 (clipping starts from the left side of
+    // the original image). The `src_image_bounds.width()` should be equal
+    // to half of `image.width()`.
+    EXPECT_EQ(src_image_bounds,
+              gfx::Rect(0, 0, image.width() / 2, image.height()));
+  }
+  {
+    // When the layout is RTL.
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    // The `dest_image_bounds.x()` should be equal to the table_view's width
+    // minus the minimum width of the first column and half of
+    // ui::TableModel::kIconSize.The `dest_image_bounds.width()` should be equal
+    // to half of ui::TableModel::kIconSize.
+    EXPECT_EQ(
+        dest_image_bounds,
+        gfx::Rect(table_->width() - (first_column_min_width + dest_image_width),
+                  cell_bounds.y() +
+                      (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+                  dest_image_width, ui::TableModel::kIconSize));
+    // The left boundary of `dest_image_bounds` should be equal to the left
+    // boundary of the cell when  clipped icon.
+    EXPECT_EQ(dest_image_bounds.x(), table_->GetMirroredRect(cell_bounds).x());
+    gfx::Rect src_image_bounds =
+        helper_->GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+    // `src_image_bounds.x()` should be equal to the width of the original image
+    // minus the width of the clipped icon. The `src_image_bounds.width()`
+    // should be equal to half of `image.width()`
+    EXPECT_EQ(src_image_bounds,
+              gfx::Rect(image.width() - src_image_bounds.width(), 0,
+                        image.width() / 2, image.height()));
+    base::i18n::SetRTLForTesting(false);
+  }
+}
+
+TEST_F(TableViewPaintIconBoundsTest, TestPaintIconBoundsNotNeedDisplay) {
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  int cell_margin = helper_->GetCellMargin();
+  int cell_element_spacing = helper_->GetCellElementSpacing();
+  gfx::ImageSkia image =
+      model_->GetIcon(0).Rasterize(table_->GetColorProvider());
+  EXPECT_FALSE(image.isNull());
+  int first_column_min_width =
+      cell_margin + cell_element_spacing + kGroupingIndicatorSize;
+  // Adjust the width of the first column. icon not need display
+  int x = table_->GetVisibleColumn(0).width;
+  int resize_pixels = x - first_column_min_width;
+  PressLeftMouseAt(helper_->header(), gfx::Point(x, 0));
+  DragLeftMouseTo(helper_->header(), gfx::Point(x - resize_pixels, 0));
+
+  gfx::Rect cell_bounds = helper_->GetCellBounds(0, 0);
+  EXPECT_EQ(cell_bounds.width(), first_column_min_width);
+  gfx::Rect text_bounds = cell_bounds;
+  text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
+  text_bounds.Inset(
+      gfx::Insets().set_left(kGroupingIndicatorSize + cell_element_spacing));
+  // If the bounds of the cell is not sufficient to draw the icon, whether it is
+  // LTR or RTL, the `dest_image_bounds` will be empty.
+  {
+    EXPECT_FALSE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    EXPECT_TRUE(dest_image_bounds.IsEmpty());
+  }
+  {
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    EXPECT_TRUE(dest_image_bounds.IsEmpty());
+    base::i18n::SetRTLForTesting(false);
+  }
 }
 }  // namespace views

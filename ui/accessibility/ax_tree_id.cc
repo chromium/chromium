@@ -29,7 +29,7 @@ AXTreeID::AXTreeID(const std::string& string) {
     type_ = ax::mojom::AXTreeIDType::kUnknown;
   } else {
     type_ = ax::mojom::AXTreeIDType::kToken;
-    absl::optional<base::UnguessableToken> token =
+    std::optional<base::UnguessableToken> token =
         base::ValueToUnguessableToken(base::Value(string));
     CHECK(token);
     token_ = *token;

@@ -10,7 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/constants.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
 namespace {
@@ -129,9 +129,10 @@ void FastInitiationAdvertiser::OnRegisterAdvertisement(
 void FastInitiationAdvertiser::OnRegisterAdvertisementError(
     base::OnceClosure error_callback,
     device::BluetoothAdvertisement::ErrorCode error_code) {
-  NS_LOG(ERROR) << "FastInitiationAdvertiser::StartAdvertising() failed with "
-                   "error code = "
-                << error_code;
+  CD_LOG(ERROR, Feature::NS)
+      << "FastInitiationAdvertiser::StartAdvertising() failed with "
+         "error code = "
+      << error_code;
   std::move(error_callback).Run();
   // |this| might be destroyed here, do not access local fields.
 }
@@ -155,7 +156,7 @@ void FastInitiationAdvertiser::OnUnregisterAdvertisement() {
 
 void FastInitiationAdvertiser::OnUnregisterAdvertisementError(
     device::BluetoothAdvertisement::ErrorCode error_code) {
-  NS_LOG(WARNING)
+  CD_LOG(WARNING, Feature::NS)
       << "FastInitiationAdvertiser::StopAdvertising() failed with error code = "
       << error_code;
   advertisement_.reset();

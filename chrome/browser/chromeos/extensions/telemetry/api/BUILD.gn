@@ -20,6 +20,7 @@ function_registration("api_registration") {
   deps = [
     "diagnostics",
     "events",
+    "management",
     "telemetry",
     "//base",
     "//extensions/common",
@@ -32,7 +33,10 @@ source_set("keyed_service_factory") {
     "telemetry_extension_api_browser_context_keyed_service_factories.h",
   ]
 
-  deps = [ "events:event_manager" ]
+  deps = [
+    "events:event_manager",
+    "routines:routine_manager",
+  ]
 }
 
 source_set("browser_tests") {
@@ -42,6 +46,7 @@ source_set("browser_tests") {
     "common:browser_tests",
     "diagnostics:browser_tests",
     "events:browser_tests",
+    "management:browser_tests",
     "routines:browser_tests",
     "telemetry:browser_tests",
   ]

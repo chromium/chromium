@@ -28,28 +28,28 @@ import org.chromium.components.signin.base.CoreAccountId;
 
 import java.util.HashMap;
 
-/**
- * Unit tests for {@link AccountInfoServiceImpl}.
- */
+/** Unit tests for {@link AccountInfoServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountInfoServiceImplTest {
     private static final String ACCOUNT_EMAIL = "test@gmail.com";
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private IdentityManager mIdentityManagerMock;
+    @Mock private IdentityManager mIdentityManagerMock;
 
-    @Mock
-    private AccountTrackerService mAccountTrackerServiceMock;
+    @Mock private AccountTrackerService mAccountTrackerServiceMock;
 
-    @Mock
-    private AccountInfoService.Observer mObserverMock;
+    @Mock private AccountInfoService.Observer mObserverMock;
 
-    private final AccountInfo mAccountInfoWithAvatar = new AccountInfo(
-            new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test", "full name",
-            "given name", mock(Bitmap.class), new AccountCapabilities(new HashMap<>()));
+    private final AccountInfo mAccountInfoWithAvatar =
+            new AccountInfo(
+                    new CoreAccountId("gaia-id-test"),
+                    ACCOUNT_EMAIL,
+                    "gaia-id-test",
+                    "full name",
+                    "given name",
+                    mock(Bitmap.class),
+                    new AccountCapabilities(new HashMap<>()));
 
     private AccountInfoServiceImpl mService;
 

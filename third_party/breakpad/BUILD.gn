@@ -83,6 +83,13 @@ if (!is_win) {
   if (current_toolchain == host_toolchain || target_os == "mac") {
     # Contains the code shared by both {micro,mini}dump_stackwalk.
     static_library("stackwalk_common") {
+      # Binaries that use this library are not debugged frequently and
+      # performance is vastly reduced without optimizations. So, force maximum
+      # optimization to get the lowest runtimes in Chromium tests that use these
+      # tools. These can be removed locally if debugging is actually needed.
+      configs -= [ "//build/config/compiler:default_optimization" ]
+      configs += [ "//build/config/compiler:optimize_max" ]
+
       sources = [
         "breakpad/src/common/path_helper.cc",
         "breakpad/src/common/path_helper.h",
@@ -357,8 +364,8 @@ if (is_mac) {
       if (enable_rust_crash) {
         deps = [ "//third_party/rust/rustc_demangle_capi/v0_1:lib" ]
         defines += [ "HAVE_RUSTC_DEMANGLE" ]
-        include_dirs +=
-            [ "//third_party/rust/rustc_demangle_capi/v0_1/crate/include" ]
+        include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include" ]
+        sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include/rustc_demangle.h" ]
       }
     }
     test("breakpad_unittests") {
@@ -421,6 +428,7 @@ if (is_mac) {
       script = "scripts/gen_symbol_tools_packager.py"
       _go_sources = [
         "breakpad/src/tools/mac/upload_system_symbols/arch_reader.go",
+        "breakpad/src/tools/mac/upload_system_symbols/extract.go",
         "breakpad/src/tools/mac/upload_system_symbols/upload_system_symbols.go",
       ]
       _extra_sources = [
@@ -559,8 +567,8 @@ if (is_linux || is_chromeos || is_android) {
       if (enable_rust_crash) {
         deps = [ "//third_party/rust/rustc_demangle_capi/v0_1:lib" ]
         defines += [ "HAVE_RUSTC_DEMANGLE" ]
-        include_dirs +=
-            [ "//third_party/rust/rustc_demangle_capi/v0_1/crate/include" ]
+        include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include" ]
+        sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include/rustc_demangle.h" ]
       }
 
       libs = [ "z" ]

@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -290,10 +290,10 @@ class CHROME_DBUS_EXPORT ObjectProxy
                                               void* user_data);
 
   // Helper method for logging response errors appropriately.
-  void LogMethodCallFailure(const base::StringPiece& interface_name,
-                            const base::StringPiece& method_name,
-                            const base::StringPiece& error_name,
-                            const base::StringPiece& error_message) const;
+  void LogMethodCallFailure(const std::string_view& interface_name,
+                            const std::string_view& method_name,
+                            const std::string_view& error_name,
+                            const std::string_view& error_message) const;
 
   // Used as ResponseOrErrorCallback by CallMethod().
   // Logs error message, and drops |error_response| from the arguments to pass
@@ -353,7 +353,7 @@ class CHROME_DBUS_EXPORT ObjectProxy
   // Known name owner of the well-known bus name represented by |service_name_|.
   std::string service_name_owner_;
 
-  std::set<DBusPendingCall*> pending_calls_;
+  std::set<raw_ptr<DBusPendingCall, SetExperimental>> pending_calls_;
 };
 
 }  // namespace dbus

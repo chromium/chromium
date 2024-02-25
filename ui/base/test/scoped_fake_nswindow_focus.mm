@@ -29,6 +29,14 @@ void SetFocus(NSWindow* window) {
 void ClearFocus() {
   NSWindow* window = g_fake_focused_window;
   g_fake_focused_window = nil;
+
+  // Some observers of these notifications (e.g. NSRemoteView) expect a
+  // non-nil window, and throw an exception otherwise. When the window's
+  // nil, just skip posting the notification.
+  if (window == nil) {
+    return;
+  }
+
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidResignKeyNotification
                     object:window];

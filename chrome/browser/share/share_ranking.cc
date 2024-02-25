@@ -4,6 +4,8 @@
 
 #include "chrome/browser/share/share_ranking.h"
 
+#include <vector>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -119,12 +121,9 @@ void FillGaps(std::vector<std::string>& ranking,
   // apps used for empty slots.
   std::vector<std::string> unused_available(ranking.begin() + length,
                                             ranking.end());
-
-  unused_available.erase(
-      std::remove_if(
-          unused_available.begin(), unused_available.end(),
-          [&](const std::string& e) { return !RankingContains(available, e); }),
-      unused_available.end());
+  std::erase_if(unused_available, [&](const std::string& e) {
+    return !RankingContains(available, e);
+  });
 
   // Now, append the rest of the system apps (those not already included) to
   // unused_available. These will be the apps that can handle the share type and
@@ -209,7 +208,7 @@ ShareRanking::Ranking AppendUpToLength(
 #if BUILDFLAG(IS_ANDROID)
 void RunJniRankCallback(base::android::ScopedJavaGlobalRef<jobject> callback,
                         JNIEnv* env,
-                        absl::optional<ShareRanking::Ranking> ranking) {
+                        std::optional<ShareRanking::Ranking> ranking) {
   auto result = base::android::ToJavaArrayOfStrings(env, ranking.value());
   base::android::RunObjectCallbackAndroid(callback, result);
 }
@@ -319,14 +318,14 @@ void ShareRanking::GetRanking(const std::string& type,
 
   if (db_init_status_ != leveldb_proto::Enums::kOK) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
   if (ranking_.contains(type)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
-                                  absl::make_optional(ranking_[type])));
+                                  std::make_optional(ranking_[type])));
     return;
   }
 
@@ -451,7 +450,7 @@ void ShareRanking::OnBackingGetDone(
     bool ok,
     std::unique_ptr<proto::ShareRanking> ranking) {
   if (!ok || db_init_status_ != leveldb_proto::Enums::kOK || !ranking) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -460,7 +459,7 @@ void ShareRanking::OnBackingGetDone(
     ranking_[key].push_back(it);
   }
 
-  std::move(callback).Run(absl::make_optional(ranking_[key]));
+  std::move(callback).Run(std::make_optional(ranking_[key]));
 }
 
 void ShareRanking::FlushToBackingDb(const std::string& key) {
@@ -486,7 +485,7 @@ void ShareRanking::OnRankGetAllDone(std::unique_ptr<PendingRankCall> pending,
                        weak_factory_.GetWeakPtr(), std::move(pending)),
         kRecentWindowDays);
   } else {
-    std::move(pending->callback).Run(absl::nullopt);
+    std::move(pending->callback).Run(std::nullopt);
   }
 }
 void ShareRanking::OnRankGetRecentDone(
@@ -501,7 +500,7 @@ void ShareRanking::OnRankGetRecentDone(
 }
 void ShareRanking::OnRankGetOldRankingDone(
     std::unique_ptr<PendingRankCall> pending,
-    absl::optional<Ranking> ranking) {
+    std::optional<Ranking> ranking) {
   if (!ranking)
     ranking = GetDefaultInitialRankingForType(pending->type);
 

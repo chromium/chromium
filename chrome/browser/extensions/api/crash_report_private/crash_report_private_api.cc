@@ -22,7 +22,7 @@ namespace api {
 namespace {
 
 WindowType GetWindowType(content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
     return WindowType::kNoBrowser;
   if (!browser->app_controller())

@@ -14,9 +14,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.webapps.WebappIntentDataProviderFactory;
 
-/**
- * Tests the WebappInfo class's ability to parse various URLs.
- */
+/** Tests the WebappInfo class's ability to parse various URLs. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MergedWebappInfoTest {
@@ -127,8 +125,7 @@ public class MergedWebappInfoTest {
     }
 
     /**
-     * Creates intent with url and id. If the url or id are not set createWebappInfo() returns
-     * null.
+     * Creates intent with url and id. If the url or id are not set createWebappInfo() returns null.
      */
     private Intent createIntentWithUrlAndId() {
         Intent intent = new Intent();

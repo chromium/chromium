@@ -43,7 +43,7 @@ void SavedDeskNameView::SetViewName(const std::u16string& name) {
   PreferredSizeChanged();
 }
 
-BEGIN_METADATA(SavedDeskNameView, DeskTextfield)
+BEGIN_METADATA(SavedDeskNameView)
 END_METADATA
 
 }  // namespace ash

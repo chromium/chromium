@@ -1,0 +1,43 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefs") {
+  public = [ "capture_device_ranking.h" ]
+  visibility = [
+    ":unit_tests",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/test/*",
+  ]
+  sources = [
+    "capture_device_ranking.cc",
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  public_deps = [
+    "//components/prefs",
+    "//media",
+    "//media/capture",
+    "//third_party/blink/public/common:headers",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility = [ "//chrome/test/*" ]
+  deps = [
+    ":prefs",
+    "//base",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "capture_device_ranking_unittest.cc" ]
+}

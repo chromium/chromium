@@ -59,6 +59,14 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
         text_vector, accessible_name, text_parts);
   }
 
+  void PopulateTextVectorForNoShortcut(
+      TextVector* text_vector,
+      std::vector<std::u16string>& accessible_name) {
+    auto shortcut_result = CreateKeyboardShortcutResult();
+    shortcut_result->PopulateTextVectorForNoShortcut(text_vector,
+                                                     accessible_name);
+  }
+
   std::unique_ptr<KeyboardShortcutResult> CreateKeyboardShortcutResult() {
     const auto& search_results =
         ash::shortcut_ui::fake_search_data::CreateFakeSearchResultList();
@@ -94,7 +102,7 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
             ash::mojom::StandardAcceleratorProperties::New(
-                accelerator, u"FakeKey", absl::nullopt)));
+                accelerator, u"FakeKey", std::nullopt)));
   }
 
   std::vector<ash::mojom::AcceleratorInfoPtr> CreateFakeAcceleratorInfoList(
@@ -105,6 +113,15 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
           CreateFakeStandardAcceleratorInfo(accelerator));
     }
     return accelerator_info_list;
+  }
+
+  std::string GetCategory(
+      const std::unique_ptr<KeyboardShortcutResult>& result) {
+    return result->accelerator_category_;
+  }
+
+  std::string GetAction(const std::unique_ptr<KeyboardShortcutResult>& result) {
+    return result->accelerator_action_;
   }
 };
 
@@ -230,10 +247,12 @@ TEST_F(KeyboardShortcutResultTest, StandardAcceleratorToResult) {
   auto result = std::make_unique<KeyboardShortcutResult>(
       /* profile= */ nullptr, search_result_ptr);
 
-  EXPECT_TRUE(search_result_ptr->accelerator_infos.at(0)
+  EXPECT_TRUE(search_result_ptr->accelerator_infos[0]
                   ->layout_properties->is_standard_accelerator());
-
-  EXPECT_EQ("keyboard_shortcut://1", result->id());
+  EXPECT_EQ("1", GetAction(result));
+  EXPECT_EQ("6", GetCategory(result));
+  // 1: kActionId1=1;  6: Category = kDebug.
+  EXPECT_EQ("keyboard_shortcut://1/6", result->id());
   EXPECT_EQ(0.5, result->relevance());
   EXPECT_EQ(u"first result", result->title());
   EXPECT_EQ(KeyboardShortcutResult::ResultType::kKeyboardShortcut,
@@ -383,6 +402,17 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVectorWithText) {
 
   std::u16string expected_accessible_name =
       u"Press  the ctrl key the a key Or  the arrow left key";
+  EXPECT_EQ(expected_accessible_name, base::JoinString(accessible_names, u" "));
+}
+
+TEST_F(KeyboardShortcutResultTest, PopulateTextVectorForNoShortcut) {
+  TextVector text_vector;
+  std::vector<std::u16string> accessible_names;
+  PopulateTextVectorForNoShortcut(&text_vector, accessible_names);
+
+  ASSERT_EQ(text_vector.size(), 1u);
+  VerifyTextItem(text_vector[0], u"No shortcut assigned", TextType::kString);
+  std::u16string expected_accessible_name = u"No shortcut assigned";
   EXPECT_EQ(expected_accessible_name, base::JoinString(accessible_names, u" "));
 }
 

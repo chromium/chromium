@@ -48,7 +48,7 @@ class BertCluAnnotator : public CluAnnotator {
   CreateFromOptions(
       const BertCluAnnotatorOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          std::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          std::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   explicit BertCluAnnotator(std::unique_ptr<core::TfLiteEngine> engine)
       : CluAnnotator(std::move(engine)) {}

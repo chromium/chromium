@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_ANDROID_OFFLINE_ITEM_BRIDGE_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_ANDROID_OFFLINE_ITEM_BRIDGE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/update_delta.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace offline_items_collection {
 namespace android {
@@ -33,7 +33,7 @@ class OfflineItemBridge {
   // Creates a Java UpdateDelta from |update_delta|.
   static base::android::ScopedJavaLocalRef<jobject> CreateUpdateDelta(
       JNIEnv* env,
-      const absl::optional<UpdateDelta>& update_delta);
+      const std::optional<UpdateDelta>& update_delta);
 
  private:
   OfflineItemBridge();

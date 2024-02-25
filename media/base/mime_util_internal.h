@@ -10,11 +10,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
+#include "media/base/media_types.h"
 #include "media/base/mime_util.h"
-#include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 
 namespace media::internal {
@@ -53,7 +53,9 @@ class MEDIA_EXPORT MimeUtil {
     DTS,
     DTSXP2,
     DTSE,
-    LAST_CODEC = DTSE
+    AC4,
+    IAMF,
+    LAST_CODEC = IAMF
   };
 
   // Platform configuration structure.  Controls which codecs are supported at
@@ -73,9 +75,7 @@ class MEDIA_EXPORT MimeUtil {
   struct ParsedCodecResult {
     Codec codec;
     bool is_ambiguous;
-    VideoCodecProfile video_profile;
-    uint8_t video_level;
-    VideoColorSpace video_color_space;
+    std::optional<VideoType> video;
   };
 
   // See mime_util.h for more information on these methods.
@@ -83,14 +83,10 @@ class MEDIA_EXPORT MimeUtil {
   void SplitCodecs(base::StringPiece codecs,
                    std::vector<std::string>* codecs_out) const;
   void StripCodecs(std::vector<std::string>* codecs) const;
-  bool ParseVideoCodecString(
-      base::StringPiece mime_type,  // fixme, make optional
-      base::StringPiece codec_id,
-      bool* out_is_ambiguous,
-      VideoCodec* out_codec,
-      VideoCodecProfile* out_profile,
-      uint8_t* out_level,
-      VideoColorSpace* out_color_space) const;
+  std::optional<VideoType> ParseVideoCodecString(
+      std::string_view mime_type,
+      std::string_view codec_id,
+      bool allow_ambiguous_matches) const;
   bool ParseAudioCodecString(base::StringPiece mime_type,
                              base::StringPiece codec_id,
                              bool* out_is_ambiguous,
@@ -181,7 +177,7 @@ class MEDIA_EXPORT MimeUtil {
   SupportsType IsCodecSupported(base::StringPiece mime_type_lower_case,
                                 Codec codec,
                                 VideoCodecProfile video_profile,
-                                uint8_t video_level,
+                                VideoCodecLevel video_level,
                                 const VideoColorSpace& eotf,
                                 bool is_encrypted) const;
 

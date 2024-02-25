@@ -178,8 +178,11 @@ void ExpectMiscInfoEqual<MINIDUMP_MISC_INFO_5>(
             expected_misc_info.XStateData.SizeOfInfo);
   EXPECT_EQ(observed_misc_info.XStateData.ContextSize,
             expected_misc_info.XStateData.ContextSize);
-  EXPECT_EQ(observed_misc_info.XStateData.EnabledFeatures,
-            expected_misc_info.XStateData.EnabledFeatures);
+  // `EnabledFeatures` is underaligned and `EXPECT_EQ` internally takes
+  // arguments by reference. Copy it into a temporary before comparing to avoid
+  // undefined behavior.
+  EXPECT_EQ(uint64_t{observed_misc_info.XStateData.EnabledFeatures},
+            uint64_t{expected_misc_info.XStateData.EnabledFeatures});
   for (size_t feature_index = 0;
        feature_index < std::size(observed_misc_info.XStateData.Features);
        ++feature_index) {

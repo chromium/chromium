@@ -26,9 +26,7 @@ import java.util.Set;
  * metrics accordingly.
  */
 class KeyboardAccessoryMetricsRecorder {
-    /**
-     * The Recorder itself should be stateless and have no need for an instance.
-     */
+    /** The Recorder itself should be stateless and have no need for an instance. */
     private KeyboardAccessoryMetricsRecorder() {}
 
     /**
@@ -37,7 +35,7 @@ class KeyboardAccessoryMetricsRecorder {
      */
     private static class AccessoryBarObserver
             implements ListObservable.ListObserver<Void>,
-                       PropertyObservable.PropertyObserver<PropertyKey> {
+                    PropertyObservable.PropertyObserver<PropertyKey> {
         private final Set<Integer> mRecordedActionImpressions = new HashSet<>();
         private final PropertyModel mModel;
 

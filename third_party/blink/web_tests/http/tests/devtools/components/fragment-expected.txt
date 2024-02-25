@@ -48,10 +48,10 @@ f3.outerHTML:
 () => f3.element().firstChild === f2.element()
   true
 
-() => UI.html`<div>${[1, 2, 3].map(x => UI.html`<span>${x}</span>`)}</div>`.childNodes.length === 3
+() => UIModule.Fragment.html`<div>${[1, 2, 3].map(x => UIModule.Fragment.html`<span>${x}</span>`)}</div>`.childNodes.length === 3
   true
-() => UI.html`first ${UI.html`<b>bold</b>`} second`.textContent === 'first bold second'
+() => UIModule.Fragment.html`first ${UIModule.Fragment.html`<b>bold</b>`} second`.textContent === 'first bold second'
   true
-() => UI.html`<a href='${url}'></a>`.href === url
+() => UIModule.Fragment.html`<a href='${url}'></a>`.href === url
   true
 

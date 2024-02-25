@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_AUTH_TOKEN_VALIDATOR_H_
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_AUTH_TOKEN_VALIDATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -32,7 +32,7 @@ class FakeAuthTokenValidator : public AuthTokenValidator {
   }
 
  private:
-  absl::optional<std::string> expected_auth_token_;
+  std::optional<std::string> expected_auth_token_;
 };
 
 }  // namespace multidevice_setup

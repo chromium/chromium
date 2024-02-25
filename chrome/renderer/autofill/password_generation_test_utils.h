@@ -17,8 +17,8 @@ namespace autofill {
 
 class PasswordGenerationAgent;
 
-// Sets that automatic generation available with |generation_agent| for fields
-// |new_password_id| and |confirm_password_id| which are in document |document|.
+// Sets that automatic generation available with `generation_agent` for fields
+// `new_password_id` and `confirm_password_id` which are in document `document`.
 void SetFoundFormEligibleForGeneration(
     PasswordGenerationAgent* generation_agent,
     blink::WebDocument document,

@@ -40,7 +40,7 @@ class AppServiceAppWindowShelfController
       public apps::InstanceRegistry::Observer,
       public ArcAppWindowDelegate {
  public:
-  using ProfileList = std::vector<Profile*>;
+  using ProfileList = std::vector<raw_ptr<Profile, VectorExperimental>>;
 
   explicit AppServiceAppWindowShelfController(ChromeShelfController* owner);
 
@@ -114,7 +114,7 @@ class AppServiceAppWindowShelfController
  private:
   using AuraWindowToAppWindow =
       std::map<aura::Window*, std::unique_ptr<AppWindowBase>>;
-  using WindowList = std::vector<aura::Window*>;
+  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
 
   void SetWindowActivated(aura::Window* window, bool active);
 
@@ -156,7 +156,7 @@ class AppServiceAppWindowShelfController
                           apps::InstanceRegistry::Observer>
       instance_registry_observation_{this};
 
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
   std::unique_ptr<AppServiceInstanceRegistryHelper>
       app_service_instance_helper_;
   std::unique_ptr<AppServiceAppWindowArcTracker> arc_tracker_;

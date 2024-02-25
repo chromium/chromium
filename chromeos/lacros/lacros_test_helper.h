@@ -11,22 +11,6 @@
 
 namespace chromeos {
 
-// Disables crosapi while this instance is alive.
-// This must be instantiate before LacrosService is instantiated.
-// Used only for testing purposes.
-class ScopedDisableCrosapiForTesting {
- public:
-  ScopedDisableCrosapiForTesting();
-  ScopedDisableCrosapiForTesting(const ScopedDisableCrosapiForTesting&) =
-      delete;
-  ScopedDisableCrosapiForTesting& operator=(
-      const ScopedDisableCrosapiForTesting&) = delete;
-  ~ScopedDisableCrosapiForTesting();
-
- private:
-  base::AutoReset<bool> disable_crosapi_resetter_;
-};
-
 // Helper for tests to instantiate LacrosService. This should only be
 // used for unit tests, not browser tests.
 // Instantiated LacrosService is expected to be accessed via
@@ -40,7 +24,6 @@ class ScopedLacrosServiceTestHelper {
   ~ScopedLacrosServiceTestHelper();
 
  private:
-  ScopedDisableCrosapiForTesting disable_crosapi_;
   LacrosService lacros_service_;
 };
 

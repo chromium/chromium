@@ -15,4 +15,9 @@
     CallWith=ScriptState,
     RaisesException
   ] Promise<Blob> getType(DOMString type);
+
+  [
+    Measure,
+    RuntimeEnabled=ClipboardSupportedTypes
+  ] static boolean supports(DOMString type);
 };

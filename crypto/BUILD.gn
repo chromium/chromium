@@ -57,45 +57,29 @@ component("crypto") {
     "unexportable_key_metrics.cc",
     "unexportable_key_metrics.h",
     "unexportable_key_software_unsecure.cc",
+    "user_verifying_key.cc",
+    "user_verifying_key.h",
   ]
 
-  deps = [
-    "//base",
-    "//base/third_party/dynamic_annotations",
-  ]
+  deps = [ "//base/third_party/dynamic_annotations" ]
 
   public_deps = [
     ":buildflags",
+    "//base",
     "//third_party/boringssl",
   ]
 
   if (is_apple) {
     sources += [
       "apple_keychain.h",
-
-      # TODO(brettw): these mocks should be moved to a test_support_crypto
-      # target if possible.
-      "mock_apple_keychain.cc",
-      "mock_apple_keychain.h",
+      "apple_keychain_v2.h",
+      "apple_keychain_v2.mm",
     ]
 
     if (is_mac) {
-      sources += [
-        "apple_keychain_mac.cc",
-
-        # TODO(brettw): these mocks should be moved to a test_support_crypto
-        # target if possible.
-        "mock_apple_keychain_mac.cc",
-      ]
-    }
-    if (is_ios) {
-      sources += [
-        "apple_keychain_ios.mm",
-
-        # TODO(brettw): these mocks should be moved to a test_support_crypto
-        # target if possible.
-        "mock_apple_keychain_ios.cc",
-      ]
+      sources += [ "apple_keychain_mac.cc" ]
+    } else if (is_ios) {
+      sources += [ "apple_keychain_ios.mm" ]
     }
 
     frameworks = [
@@ -115,6 +99,7 @@ component("crypto") {
       "scoped_capi_types.h",
       "scoped_cng_types.h",
       "unexportable_key_win.cc",
+      "user_verifying_key_win.cc",
     ]
     libs = [ "ncrypt.lib" ]
   }
@@ -148,6 +133,26 @@ component("crypto") {
   }
 
   defines = [ "CRYPTO_IMPLEMENTATION" ]
+}
+
+if (is_apple) {
+  source_set("mock_apple_keychain") {
+    sources = [
+      "mock_apple_keychain.cc",
+      "mock_apple_keychain.h",
+    ]
+
+    if (is_mac) {
+      sources += [ "mock_apple_keychain_mac.cc" ]
+    } else if (is_ios) {
+      sources += [ "mock_apple_keychain_ios.cc" ]
+    }
+
+    deps = [
+      ":crypto",
+      "//base",
+    ]
+  }
 }
 
 test("crypto_unittests") {
@@ -214,6 +219,14 @@ static_library("test_support") {
       "scoped_test_system_nss_key_slot.cc",
       "scoped_test_system_nss_key_slot.h",
     ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "fake_apple_keychain_v2.h",
+      "fake_apple_keychain_v2.mm",
+    ]
+    frameworks = [ "Foundation.framework" ]
   }
 
   deps = [

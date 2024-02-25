@@ -2,6 +2,7 @@ include_rules = [
   "+components/browser_ui/bottomsheet/android",
   "+components/browser_ui/test/android",
   "+components/externalauth/android",
+  "+components/browser_ui/device_lock/android",
 ]
 
 specific_include_rules = {

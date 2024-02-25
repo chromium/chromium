@@ -41,8 +41,8 @@ void PopupsOnlyUiController::OnNotificationUpdated(
 
 void PopupsOnlyUiController::OnNotificationClicked(
     const std::string& notification_id,
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   if (popups_visible_)
     ShowOrHidePopupBubbles();
 }

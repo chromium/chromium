@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -26,6 +27,7 @@ WakeLockManager* MakeManager(WakeLockTestingContext& context,
 }  // namespace
 
 TEST(WakeLockManagerTest, AcquireWakeLock) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
   auto* manager = MakeManager(context, V8WakeLockType::Enum::kScreen);
@@ -62,6 +64,7 @@ TEST(WakeLockManagerTest, AcquireWakeLock) {
 }
 
 TEST(WakeLockManagerTest, ReleaseAllWakeLocks) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
   auto* manager = MakeManager(context, V8WakeLockType::Enum::kScreen);
@@ -92,6 +95,7 @@ TEST(WakeLockManagerTest, ReleaseAllWakeLocks) {
 }
 
 TEST(WakeLockManagerTest, ReleaseOneWakeLock) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
   auto* manager = MakeManager(context, V8WakeLockType::Enum::kScreen);
@@ -128,6 +132,7 @@ TEST(WakeLockManagerTest, ReleaseOneWakeLock) {
 }
 
 TEST(WakeLockManagerTest, ClearEmptyWakeLockSentinelList) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
   auto* manager = MakeManager(context, V8WakeLockType::Enum::kSystem);
@@ -143,6 +148,7 @@ TEST(WakeLockManagerTest, ClearEmptyWakeLockSentinelList) {
 }
 
 TEST(WakeLockManagerTest, ClearWakeLocks) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
   auto* manager = MakeManager(context, V8WakeLockType::Enum::kSystem);
@@ -173,6 +179,7 @@ TEST(WakeLockManagerTest, ClearWakeLocks) {
 }
 
 TEST(WakeLockManagerTest, WakeLockConnectionError) {
+  test::TaskEnvironment task_environment;
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
   auto* manager = MakeManager(context, V8WakeLockType::Enum::kSystem);

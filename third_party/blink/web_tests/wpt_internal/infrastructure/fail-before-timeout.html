@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<title>`run_wpt_tests.py` should ignore unexpected FAIL before expected TIMEOUT</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    assert_equals(1, 2);
+  }, 'Fail unexpectedly');
+
+  promise_test(async (t) =>
+    new Promise((resolve) => t.step_timeout(resolve, 120000)), 'Timeout expectedly');
+</script>

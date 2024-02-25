@@ -1,0 +1,94 @@
+<style>
+  .links line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+    stroke-width: 1;
+  }
+
+  .dashed-links line {
+    marker-start: url(#arrowToSource);
+    stroke: #999;
+    stroke-dasharray: 3;
+    stroke-opacity: 0.6;
+    stroke-width: 1;
+  }
+
+  #arrowToSource {
+    fill: #999;
+    stroke: #999;
+  }
+
+  .nodes circle {
+    stroke: #000;
+    stroke-width: 1.5px;
+  }
+
+  .nodes circle.pinned {
+    stroke: red;
+  }
+
+  .dead image {
+    display: none;
+  }
+
+  .separator {
+    font: italic 13px sans-serif;
+    user-select: none;
+  }
+
+  div.tooltip {
+    background: lightsteelblue;
+    border: 0;
+    border-radius: 8px;
+    padding: 2px;
+    position: absolute;
+    text-align: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    div.tooltip {
+      background: dimgray;
+    }
+
+    .separator {
+      fill: var(--cr-secondary-text-color);
+    }
+
+    .separators line {
+      stroke: var(--cr-secondary-text-color);
+    }
+  }
+
+  tr {
+    font: 10px sans-serif;
+  }
+
+  tr.heading > td {
+    font-weight: bold;
+    text-align: center;
+  }
+
+  tr.value > td:nth-child(1) {
+    text-align: end;
+  }
+
+  tr.value > td:nth-child(2) {
+    text-align: start;
+  }
+
+  tr.value.collapsed {
+    display: none;
+  }
+
+</style>
+<div id="toolTips" width="100%" height="100%"
+    on-request-node-descriptions="onRequestNodeDescriptions_">
+</div>
+<svg id="graphBody" width="100%" height="100%">
+  <defs>
+    <marker id="arrowToSource" viewBox="0 -5 10 10" refX="-12" refY="0"
+            markerWidth="9" markerHeight="6" orient="auto">
+      <path d="M15,-7 L0,0 L15,7" >
+    </marker>
+  </defs>
+</svg>

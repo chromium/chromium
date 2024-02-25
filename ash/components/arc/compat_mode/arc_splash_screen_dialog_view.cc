@@ -26,6 +26,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -61,6 +63,8 @@ namespace {
 // Draws the blue-ish highlight border to the parent view according to the
 // highlight path.
 class HighlightBorder : public views::View {
+  METADATA_HEADER(HighlightBorder, views::View)
+
  public:
   HighlightBorder() = default;
   HighlightBorder(const HighlightBorder&) = delete;
@@ -74,7 +78,7 @@ class HighlightBorder : public views::View {
     SchedulePaint();
   }
 
-  void Layout() override {
+  void Layout(PassKey) override {
     auto bounds = parent()->GetLocalBounds();
     bounds.Inset(gfx::Insets(views::FocusRing::kDefaultHaloInset));
     SetBoundsRect(bounds);
@@ -100,6 +104,9 @@ class HighlightBorder : public views::View {
     canvas->DrawRoundRect(rect, (*rrect).GetSimpleRadius(), flags);
   }
 };
+
+BEGIN_METADATA(HighlightBorder)
+END_METADATA
 
 }  // namespace
 
@@ -262,7 +269,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
             .SetText(l10n_util::GetStringUTF16(
                 IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE))
             .SetCornerRadius(16)
-            .SetProminent(true)
+            .SetStyle(ui::ButtonStyle::kProminent)
             .SetIsDefault(true)
             .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(20, 0, 0, 0))
             .Build());
@@ -411,5 +418,8 @@ void ArcSplashScreenDialogView::Show(aura::Window* parent,
   }
   views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))->Show();
 }
+
+BEGIN_METADATA(ArcSplashScreenDialogView)
+END_METADATA
 
 }  // namespace arc

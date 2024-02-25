@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 
@@ -55,7 +56,7 @@ class SignedWebBundleId {
       base::span<const uint8_t, kDecodedIdLength - kTypeSuffixLength> data);
 
   static SignedWebBundleId CreateRandomForDevelopment(
-      base::RepeatingCallback<void(void*, size_t)> random_generator =
+      base::RepeatingCallback<void(base::span<uint8_t>)> random_generator =
           GetDefaultRandomGenerator());
 
   SignedWebBundleId(const SignedWebBundleId& other);
@@ -81,13 +82,13 @@ class SignedWebBundleId {
  private:
   SignedWebBundleId(Type type,
                     base::StringPiece encoded_id,
-                    std::array<uint8_t, kDecodedIdLength> decoded_id);
+                    base::span<const uint8_t, kDecodedIdLength> decoded_id);
 
   Type type_;
   std::string encoded_id_;
   std::array<uint8_t, kDecodedIdLength> decoded_id_;
 
-  static base::RepeatingCallback<void(void*, size_t)>
+  static base::RepeatingCallback<void(base::span<uint8_t>)>
   GetDefaultRandomGenerator();
 };
 

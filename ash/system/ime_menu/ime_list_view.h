@@ -24,9 +24,9 @@ class KeyboardStatusRow;
 // Optionally shows a toggle which is used to enable or disable the invocation
 // of the virtual keyboard.
 class ImeListView : public TrayDetailedView {
- public:
-  METADATA_HEADER(ImeListView);
+  METADATA_HEADER(ImeListView, TrayDetailedView)
 
+ public:
   enum SingleImeBehavior {
     // Shows the IME menu if there's only one IME in system.
     SHOW_SINGLE_IME,
@@ -98,8 +98,7 @@ class ImeListView : public TrayDetailedView {
 
   std::map<views::View*, std::string> ime_map_;
   std::map<views::View*, std::string> property_map_;
-  raw_ptr<KeyboardStatusRow, DanglingUntriaged | ExperimentalAsh>
-      keyboard_status_row_;
+  raw_ptr<KeyboardStatusRow, DanglingUntriaged> keyboard_status_row_;
 
   // The id of the last item selected with keyboard. It will be empty if the
   // item is not selected with keyboard.
@@ -113,13 +112,10 @@ class ImeListView : public TrayDetailedView {
   bool should_focus_ime_after_selection_with_keyboard_ = false;
 
   // The item view of the current selected IME.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> current_ime_view_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> current_ime_view_ = nullptr;
 
-  // The container for the IME list. Either a ScrollView (pre-QsRevamp) or a
-  // RoundedContainer (post-QsRevamp).
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_ =
-      nullptr;
+  // The container for the IME list.
+  raw_ptr<views::View, DanglingUntriaged> container_ = nullptr;
 };
 
 class ASH_EXPORT ImeListViewTestApi {
@@ -138,7 +134,7 @@ class ASH_EXPORT ImeListViewTestApi {
   }
 
  private:
-  raw_ptr<ImeListView, ExperimentalAsh> ime_list_view_;
+  raw_ptr<ImeListView> ime_list_view_;
 };
 
 }  // namespace ash

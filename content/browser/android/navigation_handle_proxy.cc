@@ -23,7 +23,8 @@ NavigationHandleProxy::NavigationHandleProxy(
     : cpp_navigation_handle_(cpp_navigation_handle) {
   JNIEnv* env = AttachCurrentThread();
 
-  java_navigation_handle_ = Java_NavigationHandle_Constructor(env);
+  java_navigation_handle_ = Java_NavigationHandle_Constructor(
+      env, reinterpret_cast<jlong>(cpp_navigation_handle));
 }
 
 void NavigationHandleProxy::DidStart() {
@@ -41,7 +42,7 @@ void NavigationHandleProxy::DidStart() {
       cpp_navigation_handle_->IsSameDocument(),
       cpp_navigation_handle_->IsRendererInitiated(),
       cpp_navigation_handle_->GetInitiatorOrigin()
-          ? cpp_navigation_handle_->GetInitiatorOrigin()->CreateJavaObject()
+          ? cpp_navigation_handle_->GetInitiatorOrigin()->ToJavaObject()
           : nullptr,
       cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->IsPost(),

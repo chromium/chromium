@@ -1,5 +1,5 @@
 Document
-++Text
+++Group IsControlElement=false
 ++++Text Name='Test label'
 ++Group Name='aria label'
 ++++Text Name='Generic container'

@@ -123,7 +123,7 @@ void LoginView::OnLoginModelDestroying() {
   http_auth_manager_ = nullptr;
 }
 
-BEGIN_METADATA(LoginView, views::View)
+BEGIN_METADATA(LoginView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Username)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Password)
 END_METADATA

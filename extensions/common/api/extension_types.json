@@ -6,9 +6,6 @@
   {
     "namespace": "extensionTypes",
     "description": "The <code>chrome.extensionTypes</code> API contains type declarations for Chrome extensions.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "ImageFormat",
@@ -38,7 +35,20 @@
       {
         "id": "RunAt",
         "type": "string",
-        "enum": ["document_start", "document_end", "document_idle"],
+        "enum": [
+          {
+            "name":"document_start",
+            "description": "Script is injected after any files from css, but before any other DOM is constructed or any other script is run."
+          },
+          {
+            "name": "document_end",
+            "description": "Script is injected immediately after the DOM is complete, but before subresources like images and frames have loaded."
+          },
+          {
+            "name":"document_idle",
+            "description": "The browser chooses a time to inject the script between \"document_end\" and immediately after the window.onload event fires. The exact moment of injection depends on how complex the document is and how long it is taking to load, and is optimized for page load speed. Content scripts running at \"document_idle\" do not need to listen for the window.onload event; they are guaranteed to run after the DOM is complete. If a script definitely needs to run after window.onload, the extension can check if onload has already fired by using the document.readyState property."
+          }
+        ],
         "description": "The soonest that the JavaScript or CSS will be injected into the tab."
       },
       {
@@ -52,7 +62,7 @@
         "type": "object",
         "description": "Details of the script or CSS to inject. Either the code or the file property must be set, but both may not be set at the same time.",
         "properties": {
-          "code": {"type": "string", "optional": true, "description": "JavaScript or CSS code to inject.<br><br><b>Warning:</b><br>Be careful using the <code>code</code> parameter. Incorrect use of it may open your extension to <a href=\"https://en.wikipedia.org/wiki/Cross-site_scripting\">cross site scripting</a> attacks."},
+          "code": {"type": "string", "optional": true, "description": "JavaScript or CSS code to inject. <br><br><aside class='warning'><b>Warning:</b> Be careful using the <code>code</code> parameter. Incorrect use of it may open your extension to <a href='https://en.wikipedia.org/wiki/Cross-site_scripting'>cross site scripting</a> attacks</aside>"},
           "file": {"type": "string", "optional": true, "description": "JavaScript or CSS file to inject."},
           "allFrames": {
             "type": "boolean",
@@ -120,8 +130,12 @@
         "id": "ExecutionWorld",
         "type": "string",
         "nodoc": true,
-        "enum": ["ISOLATED", "MAIN"],
-        "description": "The JavaScript world for a script to execute within. Can either be an isolated world, unique to this extension, or the main world of the DOM which is shared with the page's JavaScript."
+        "enum": [
+          "ISOLATED",
+          "MAIN",
+          "USER_SCRIPT"
+        ],
+        "description": "The JavaScript world for a script to execute within. Can either be an isolated world unique to this extension, the main world of the DOM which is shared with the page's JavaScript, or a user scripts world that is only available for scripts registered with the User Scripts API."
       }
     ]
   }

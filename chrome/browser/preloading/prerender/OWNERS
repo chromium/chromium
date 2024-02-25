@@ -1,1 +1,3 @@
 file://content/browser/preloading/prerender/OWNERS
+
+per-file *test.cc=robertlin@chromium.org

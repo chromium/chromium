@@ -10,7 +10,7 @@ source_set("test_support") {
     "//components/download/content/internal:unit_tests",
     "//components/download/internal/background_service:unit_tests",
     "//components/download/internal/background_service/ios:unit_tests",
-    "//ios/chrome/browser/download/background_service:unit_tests",
+    "//ios/chrome/browser/download/model/background_service:unit_tests",
   ]
 
   testonly = true

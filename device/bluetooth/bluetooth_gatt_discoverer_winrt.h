@@ -5,13 +5,13 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_GATT_DISCOVERER_WINRT_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_GATT_DISCOVERER_WINRT_H_
 
+#include <stdint.h>
 #include <windows.devices.bluetooth.genericattributeprofile.h>
 #include <windows.devices.bluetooth.h>
 #include <wrl/client.h>
 
-#include <stdint.h>
-
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -21,7 +21,6 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -46,7 +45,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
   BluetoothGattDiscovererWinrt(
       Microsoft::WRL::ComPtr<
           ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice> ble_device,
-      absl::optional<BluetoothUUID> service_uuid);
+      std::optional<BluetoothUUID> service_uuid);
 
   BluetoothGattDiscovererWinrt(const BluetoothGattDiscovererWinrt&) = delete;
   BluetoothGattDiscovererWinrt& operator=(const BluetoothGattDiscovererWinrt&) =
@@ -101,7 +100,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
       service_to_characteristics_map_;
   base::flat_map<uint16_t, GattDescriptorList>
       characteristic_to_descriptors_map_;
-  absl::optional<BluetoothUUID> service_uuid_;
+  std::optional<BluetoothUUID> service_uuid_;
   size_t num_services_ = 0;
   size_t num_characteristics_ = 0;
 

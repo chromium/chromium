@@ -37,12 +37,12 @@ interface mixin WindowEventHandlers {
   attribute EventHandler onlanguagechange;
   attribute EventHandler onmessage;
   attribute EventHandler onmessageerror;
+  [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls] attribute EventHandler onmove;
   attribute EventHandler onoffline;
   attribute EventHandler ononline;
   attribute EventHandler onpagehide;
   attribute EventHandler onpageshow;
   attribute EventHandler onpopstate;
-  [RuntimeEnabled=Portals] attribute EventHandler onportalactivate;
   attribute EventHandler onrejectionhandled;
   attribute EventHandler onstorage;
   [RuntimeEnabled=TimeZoneChangeEvent] attribute EventHandler ontimezonechange;

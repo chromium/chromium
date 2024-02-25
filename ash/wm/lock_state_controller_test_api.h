@@ -42,9 +42,12 @@ class LockStateControllerTestApi {
     controller_->real_shutdown_timer_.Stop();
   }
 
+  void set_pine_image_callback(base::OnceClosure callback) {
+    controller_->pine_image_callback_for_test_ = std::move(callback);
+  }
+
  private:
-  raw_ptr<LockStateController, DanglingUntriaged | ExperimentalAsh>
-      controller_;  // not owned
+  raw_ptr<LockStateController, DanglingUntriaged> controller_;  // not owned
 };
 
 }  // namespace ash

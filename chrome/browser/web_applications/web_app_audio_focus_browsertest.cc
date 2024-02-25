@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL app_url = embedded_test_server()->GetURL(kAudioFocusTestPageURL);
 
-  AppId app_id = InstallPWA(app_url);
+  webapps::AppId app_id = InstallPWA(app_url);
 
   // Launch browser with media page.
   content::WebContents* tab1 = AddTestPageTabAtIndex(0);
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, WebAppHasSameAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL app_url = embedded_test_server()->GetURL(kAudioFocusTestPageURL);
 
-  AppId app_id = InstallPWA(app_url);
+  webapps::AppId app_id = InstallPWA(app_url);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   content::WebContents* web_contents =

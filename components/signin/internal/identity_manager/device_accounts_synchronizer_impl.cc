@@ -7,23 +7,34 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace signin {
 
 DeviceAccountsSynchronizerImpl::DeviceAccountsSynchronizerImpl(
     ProfileOAuth2TokenServiceDelegate* token_service_delegate)
     : token_service_delegate_(token_service_delegate) {
-  DCHECK(token_service_delegate_);
+  CHECK(token_service_delegate_);
 }
 
 DeviceAccountsSynchronizerImpl::~DeviceAccountsSynchronizerImpl() = default;
 
 void DeviceAccountsSynchronizerImpl::
     ReloadAllAccountsFromSystemWithPrimaryAccount(
-        const absl::optional<CoreAccountId>& primary_account_id) {
+        const std::optional<CoreAccountId>& primary_account_id) {
   token_service_delegate_->ReloadAllAccountsFromSystemWithPrimaryAccount(
       primary_account_id);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void DeviceAccountsSynchronizerImpl::
+    SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+        const std::vector<CoreAccountInfo>& core_account_infos,
+        const std::optional<CoreAccountId>& primary_account_id) {
+  token_service_delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      core_account_infos, primary_account_id);
+}
+#endif
 
 #if BUILDFLAG(IS_IOS)
 void DeviceAccountsSynchronizerImpl::ReloadAccountFromSystem(

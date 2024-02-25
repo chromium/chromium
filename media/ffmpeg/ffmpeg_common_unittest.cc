@@ -372,6 +372,9 @@ TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
   EXPECT_EQ(0.2f, smpte_st_2086.primaries.fBY);
   EXPECT_EQ(0.1f, smpte_st_2086.primaries.fWX);
   EXPECT_EQ(0.2f, smpte_st_2086.primaries.fWY);
+  const auto& cta_861_3 = video_config.hdr_metadata()->cta_861_3.value();
+  EXPECT_EQ(11.0f, cta_861_3.max_content_light_level);
+  EXPECT_EQ(12.0f, cta_861_3.max_frame_average_light_level);
   EXPECT_EQ(VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST428_1,
                             VideoColorSpace::TransferID::LOG,
                             VideoColorSpace::MatrixID::RGB,

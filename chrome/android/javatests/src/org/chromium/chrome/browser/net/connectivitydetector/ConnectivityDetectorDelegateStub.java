@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.net.connectivitydetector;
 
-/**
- * Stub of ConnectivityDetector.Delegate for testing purpose.
- */
+/** Stub of ConnectivityDetector.Delegate for testing purpose. */
 public class ConnectivityDetectorDelegateStub implements ConnectivityDetector.Delegate {
     private @ConnectivityDetector.ConnectionState int mConnectionStateFromSystem;
     private boolean mSkipHttpProbes;

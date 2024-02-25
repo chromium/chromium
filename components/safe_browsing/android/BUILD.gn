@@ -5,22 +5,34 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 android_library("safe_browsing_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":jni_headers",
+    ":sb_java_features_srcjar",
+  ]
+
   sources = [
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiBridge.java",
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandler.java",
     "java/src/org/chromium/components/safe_browsing/SafetyNetApiHandler.java",
   ]
+}
+
+# Expose Safe Browsing feature flags to Java code
+java_cpp_features("sb_java_features_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "//components/safe_browsing/core/common/features.cc" ]
+  template = "java/src/org/chromium/components/safe_browsing/SafeBrowsingFeatures.java.tmpl"
 }
 
 fuzzable_proto_library("realtimeallowlist_proto") {
@@ -137,7 +149,7 @@ android_library("native_java_unittests_java") {
     ":safe_browsing_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
   ]
 
@@ -171,6 +183,7 @@ source_set("unit_tests_mobile") {
     "//components/safe_browsing/core/browser/db:unit_tests_shared",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//components/safe_browsing/core/common",
     "//components/variations",
     "//content/test:test_support",
     "//services/network:test_support",

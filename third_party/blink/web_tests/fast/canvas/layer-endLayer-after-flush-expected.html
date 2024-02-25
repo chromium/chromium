@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<p>
+  Calling endLayer after a flush should correctly render the layer content.
+
+  Nothing should be rendered if the canvas is flushed before calling endLayer.
+  After the flush, endLayer finds itself called alone without any other draw
+  calls. If endLayer fails to trigger a paint invalidation, the content of the
+  layer will never show up.
+</p>
+<canvas id="canvas" width="200" height="200"></canvas>
+<script>
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+ctx.fillStyle = 'red';
+ctx.fillRect(0, 0, 16, 16);
+
+ctx.beginLayer({filter: 'blur(5px)'});
+ctx.fillRect(64, 64, 128, 128);
+ctx.endLayer();
+
+</script>

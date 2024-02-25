@@ -19,8 +19,13 @@ import java.lang.annotation.RetentionPolicy;
  * understands.
  */
 public class MessageService {
-    @IntDef({MessageType.TAB_SUGGESTION, MessageType.IPH, MessageType.PRICE_MESSAGE,
-            MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE, MessageType.ALL})
+    @IntDef({
+        MessageType.TAB_SUGGESTION,
+        MessageType.IPH,
+        MessageType.PRICE_MESSAGE,
+        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+        MessageType.ALL
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageType {
         int FOR_TESTING = 0;
@@ -38,8 +43,12 @@ public class MessageService {
      * are persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
-    @IntDef({MessageDisableReason.UNKNOWN, MessageDisableReason.MESSAGE_ACCEPTED,
-            MessageDisableReason.MESSAGE_DISMISSED, MessageDisableReason.MESSAGE_IGNORED})
+    @IntDef({
+        MessageDisableReason.UNKNOWN,
+        MessageDisableReason.MESSAGE_ACCEPTED,
+        MessageDisableReason.MESSAGE_DISMISSED,
+        MessageDisableReason.MESSAGE_IGNORED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageDisableReason {
         int UNKNOWN = 0;
@@ -87,8 +96,7 @@ public class MessageService {
     }
 
     ObserverList<MessageObserver> mObservers = new ObserverList<>();
-    @MessageType
-    int mMessageType;
+    @MessageType int mMessageType;
 
     MessageService(@MessageType int mMessageType) {
         this.mMessageType = mMessageType;
@@ -124,9 +132,7 @@ public class MessageService {
         }
     }
 
-    /**
-     * Notifies all {@link MessageObserver} that a message is became invalid.
-     */
+    /** Notifies all {@link MessageObserver} that a message is became invalid. */
     public void sendInvalidNotification() {
         for (MessageObserver observer : mObservers) {
             observer.messageInvalidate(mMessageType);
@@ -140,7 +146,8 @@ public class MessageService {
      */
     void logMessageDisableMetrics(String messageType, @MessageDisableReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
-                String.format("GridTabSwitcher.%s.DisableReason", messageType), reason,
+                String.format("GridTabSwitcher.%s.DisableReason", messageType),
+                reason,
                 MessageDisableReason.MAX_VALUE + 1);
     }
 }

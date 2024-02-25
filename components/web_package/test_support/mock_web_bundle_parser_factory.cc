@@ -4,18 +4,19 @@
 
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/web_package/test_support/mock_web_bundle_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_package {
 
 MockWebBundleParserFactory::MockWebBundleParserFactory(
-    base::RepeatingCallback<void(absl::optional<GURL>)> on_create_parser)
+    base::RepeatingCallback<void(std::optional<GURL>)> on_create_parser)
     : on_create_parser_(std::move(on_create_parser)) {}
 
 MockWebBundleParserFactory::~MockWebBundleParserFactory() = default;
@@ -35,7 +36,7 @@ void MockWebBundleParserFactory::WaitUntilParseIntegrityBlockCalled(
 }
 
 void MockWebBundleParserFactory::WaitUntilParseMetadataCalled(
-    base::OnceCallback<void(absl::optional<uint64_t> offset)> callback) {
+    base::OnceCallback<void(std::optional<uint64_t> offset)> callback) {
   if (parser_) {
     parser_->WaitUntilParseMetadataCalled(std::move(callback));
   } else {
@@ -56,10 +57,10 @@ void MockWebBundleParserFactory::RunIntegrityBlockCallback(
 }
 
 void MockWebBundleParserFactory::RunMetadataCallback(
-    absl::optional<uint64_t> expected_metadata_offset,
+    std::optional<uint64_t> expected_metadata_offset,
     mojom::BundleMetadataPtr metadata,
     web_package::mojom::BundleMetadataParseErrorPtr error) {
-  base::test::TestFuture<absl::optional<uint64_t>> future;
+  base::test::TestFuture<std::optional<uint64_t>> future;
   WaitUntilParseMetadataCalled(future.GetCallback());
   EXPECT_EQ(expected_metadata_offset, future.Get());
 
@@ -137,7 +138,7 @@ void MockWebBundleParserFactory::SimulateParseResponseCrash() {
 
 void MockWebBundleParserFactory::GetParser(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-    const absl::optional<GURL>& base_url) {
+    const std::optional<GURL>& base_url) {
   on_create_parser_.Run(base_url);
 
   if (parser_) {
@@ -185,7 +186,7 @@ void MockWebBundleParserFactory::BindFileDataSource(
 
 void MockWebBundleParserFactory::GetParserForDataSource(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-    const absl::optional<GURL>& base_url,
+    const std::optional<GURL>& base_url,
     mojo::PendingRemote<mojom::BundleDataSource> data_source) {
   GetParser(std::move(receiver), base_url);
 }

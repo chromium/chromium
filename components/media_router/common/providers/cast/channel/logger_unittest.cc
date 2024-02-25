@@ -57,6 +57,46 @@ TEST(CastChannelLoggerTest, LogLastErrorEvents) {
   EXPECT_EQ(last_error.channel_event, ChannelEvent::AUTH_CHALLENGE_REPLY);
   EXPECT_EQ(last_error.challenge_reply_error,
             ChallengeReplyError::WRONG_PAYLOAD_TYPE);
+
+  // Logging a CRL related error event should reflect in the reply error type.
+  auth_result =
+      AuthResult("ERROR_CRL_INVALID failed", AuthResult::ERROR_CRL_INVALID);
+  logger->LogSocketChallengeReplyEvent(4, auth_result);
+  last_error = logger->GetLastError(4);
+  EXPECT_EQ(last_error.channel_event, ChannelEvent::AUTH_CHALLENGE_REPLY);
+  EXPECT_EQ(last_error.challenge_reply_error, ChallengeReplyError::CRL_INVALID);
+
+  auth_result =
+      AuthResult("ERROR_CERT_REVOKED failed", AuthResult::ERROR_CERT_REVOKED);
+  logger->LogSocketChallengeReplyEvent(5, auth_result);
+  last_error = logger->GetLastError(5);
+  EXPECT_EQ(last_error.channel_event, ChannelEvent::AUTH_CHALLENGE_REPLY);
+  EXPECT_EQ(last_error.challenge_reply_error,
+            ChallengeReplyError::CERT_REVOKED);
+
+  auth_result = AuthResult("ERROR_CRL_OK_FALLBACK_CRL success",
+                           AuthResult::ERROR_CRL_OK_FALLBACK_CRL);
+  logger->LogSocketChallengeReplyEvent(5, auth_result);
+  last_error = logger->GetLastError(5);
+  EXPECT_EQ(last_error.channel_event, ChannelEvent::AUTH_CHALLENGE_REPLY);
+  EXPECT_EQ(last_error.challenge_reply_error,
+            ChallengeReplyError::CRL_OK_FALLBACK_CRL);
+
+  auth_result = AuthResult("ERROR_CRL_OK_FALLBACK_CRL failed",
+                           AuthResult::ERROR_FALLBACK_CRL_INVALID);
+  logger->LogSocketChallengeReplyEvent(5, auth_result);
+  last_error = logger->GetLastError(5);
+  EXPECT_EQ(last_error.channel_event, ChannelEvent::AUTH_CHALLENGE_REPLY);
+  EXPECT_EQ(last_error.challenge_reply_error,
+            ChallengeReplyError::FALLBACK_CRL_INVALID);
+
+  auth_result = AuthResult("ERROR_CERTS_REVOKED_BY_FALLBACK_CRL failed",
+                           AuthResult::ERROR_CERTS_REVOKED_BY_FALLBACK_CRL);
+  logger->LogSocketChallengeReplyEvent(5, auth_result);
+  last_error = logger->GetLastError(5);
+  EXPECT_EQ(last_error.channel_event, ChannelEvent::AUTH_CHALLENGE_REPLY);
+  EXPECT_EQ(last_error.challenge_reply_error,
+            ChallengeReplyError::CERTS_REVOKED_BY_FALLBACK_CRL);
 }
 
 }  // namespace cast_channel

@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NativeClientForceAllowed": true
+        },
+        "prefs": {
+          "native_client_force_allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "NativeClientForceAllowed": false
+        },
+        "prefs": {
+          "native_client_force_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -72,7 +72,7 @@ static_assert(CSSPropertyID::kColor == kFirstHighPriorityCSSProperty,
 static_assert(CSSPropertyID::kZoom == kLastHighPriorityCSSProperty,
               "CSSPropertyID::kZoom is the last high-priority property");
 static_assert((static_cast<int>(kLastHighPriorityCSSProperty) -
-               static_cast<int>(kFirstHighPriorityCSSProperty)) == 31,
+               static_cast<int>(kFirstHighPriorityCSSProperty)) == 33,
               "There should a low number of high-priority properties");
 
 inline int GetCSSPropertyIDIndex(CSSPropertyID id) {
@@ -117,9 +117,6 @@ inline CSSPropertyID ResolveCSSPropertyID(CSSPropertyID id)
   return ConvertToCSSPropertyID(int_id);
 }
 
-CSSPropertyID CORE_EXPORT UnresolvedCSSPropertyID(const ExecutionContext*,
-                                                  const WTF::String&);
-
 CSSPropertyID CORE_EXPORT CssPropertyID(const ExecutionContext*,
                                         const WTF::String&);
 
@@ -148,17 +145,5 @@ class CSSPropertyIDList {
 mojom::blink::CSSSampleId CORE_EXPORT GetCSSSampleId(CSSPropertyID id);
 
 }  // namespace blink
-
-// Even though these hash traits are not affected by code generation,
-// it's important to define them in the same file as CSSPropertyID to avoid
-// hard-to-diagnose problems from neglecting to include said traits.
-// See https://crbug.com/1246970.
-namespace WTF {
-template <>
-struct HashTraits<blink::CSSPropertyID>
-    : EnumHashTraits<blink::CSSPropertyID,
-                     blink::CSSPropertyID::kInvalid,
-                     blink::kNumCSSPropertyIDs> {};
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_NAMES_H_

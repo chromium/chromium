@@ -31,14 +31,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_LINK_COLORS_H_
 
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class CSSValue;
-
-class TextLinkColors {
+class CORE_EXPORT TextLinkColors {
   DISALLOW_NEW();
 
  public:
@@ -62,10 +61,6 @@ class TextLinkColors {
   void ResetLinkColor() { has_custom_link_color_ = false; }
   void ResetVisitedLinkColor() { has_custom_visited_link_color_ = false; }
   void ResetActiveLinkColor() { has_custom_active_link_color_ = false; }
-  Color ColorFromCSSValue(const CSSValue&,
-                          Color current_color,
-                          mojom::blink::ColorScheme color_scheme,
-                          bool for_visited_link = false) const;
 
  private:
   Color text_color_;

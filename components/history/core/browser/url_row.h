@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/query_parser/snippet.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -106,14 +106,10 @@ class URLRow {
    public:
     explicit URLRowHasURL(const GURL& url) : url_(url) {}
 
-    bool operator()(const URLRow& row) {
-      return row.url() == url_;
-    }
+    bool operator()(const URLRow& row) { return row.url() == (*url_); }
 
    private:
-    // This field is not a raw_ref<> because it was filtered by the rewriter
-    // for: #constexpr-ctor-field-initializer
-    RAW_PTR_EXCLUSION const GURL& url_;
+    const raw_ref<const GURL> url_;
   };
 
  protected:
@@ -191,7 +187,7 @@ struct VisitContentModelAnnotations {
     Category(const std::string& id, int weight);
     // |vector| is expected to be of size 2 with the first entry being an ID of
     // string or int type and the second entry indicating an integer weight.
-    static absl::optional<Category> FromStringVector(
+    static std::optional<Category> FromStringVector(
         const std::vector<std::string>& vector);
     std::string ToString() const;
     bool operator==(const Category& other) const;
@@ -314,6 +310,9 @@ class URLResult : public URLRow {
     blocked_visit_ = blocked_visit;
   }
 
+  std::optional<std::string> app_id() const { return app_id_; }
+  void set_app_id(std::optional<std::string> app_id) { app_id_ = app_id; }
+
   // If this is a title match, title_match_positions contains an entry for
   // every word in the title that matched one of the query parameters. Each
   // entry contains the start and end of the match.
@@ -340,6 +339,10 @@ class URLResult : public URLRow {
 
   // Whether a managed user was blocked when attempting to visit this URL.
   bool blocked_visit_ = false;
+
+  // ID of the app this entry was generated for. Set to a non-null value
+  // on Android only.
+  std::optional<std::string> app_id_;
 
   // We support the implicit copy constructor and operator=.
 };

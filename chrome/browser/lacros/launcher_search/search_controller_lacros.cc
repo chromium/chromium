@@ -70,7 +70,7 @@ void SearchControllerLacros::Search(const std::u16string& query,
     // is unavailable.
     if (publisher_.is_bound() && publisher_.is_connected()) {
       publisher_->OnSearchResultsReceived(
-          mojom::SearchStatus::kBackendUnavailable, absl::nullopt);
+          mojom::SearchStatus::kBackendUnavailable, std::nullopt);
     }
     return;
   }
@@ -79,7 +79,7 @@ void SearchControllerLacros::Search(const std::u16string& query,
   // If there is an in-flight session, send a cancellation notification.
   if (publisher_.is_bound() && publisher_.is_connected()) {
     publisher_->OnSearchResultsReceived(mojom::SearchStatus::kCancelled,
-                                        absl::nullopt);
+                                        std::nullopt);
   }
 
   // Reset the remote and send a new pending receiver to ash.

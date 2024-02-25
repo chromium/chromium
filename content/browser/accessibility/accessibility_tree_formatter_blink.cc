@@ -6,7 +6,7 @@
 
 #include <cmath>
 #include <cstddef>
-
+#include <optional>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_selection.h"
@@ -28,15 +27,14 @@
 namespace content {
 namespace {
 
-absl::optional<std::string> GetStringAttribute(
-    const ui::AXNode& node,
-    ax::mojom::StringAttribute attr) {
+std::optional<std::string> GetStringAttribute(const ui::AXNode& node,
+                                              ax::mojom::StringAttribute attr) {
   // Language is different from other string attributes as it inherits and has
   // a method to compute it.
   if (attr == ax::mojom::StringAttribute::kLanguage) {
     std::string value = node.GetLanguage();
     if (value.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return value;
   }
@@ -45,7 +43,7 @@ absl::optional<std::string> GetStringAttribute(
   if (attr == ax::mojom::StringAttribute::kFontFamily) {
     std::string value = node.GetInheritedStringAttribute(attr);
     if (value.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return value;
   }
@@ -56,7 +54,7 @@ absl::optional<std::string> GetStringAttribute(
   if (node.GetStringAttribute(attr, &value)) {
     return value;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string FormatColor(int argb) {
@@ -101,13 +99,19 @@ std::string IntAttrToString(const ui::AXNode& node,
   switch (attr) {
     case ax::mojom::IntAttribute::kAriaCurrentState:
       return ui::ToString(static_cast<ax::mojom::AriaCurrentState>(value));
+    case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
+      return ui::ToString(
+          static_cast<ax::mojom::AriaNotificationInterrupt>(value));
+    case ax::mojom::IntAttribute::kAriaNotificationPriority:
+      return ui::ToString(
+          static_cast<ax::mojom::AriaNotificationPriority>(value));
     case ax::mojom::IntAttribute::kCheckedState:
       return ui::ToString(static_cast<ax::mojom::CheckedState>(value));
     case ax::mojom::IntAttribute::kDefaultActionVerb:
       return ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(value));
     case ax::mojom::IntAttribute::kDescriptionFrom:
       return ui::ToString(static_cast<ax::mojom::DescriptionFrom>(value));
-    case ax::mojom::IntAttribute::kDropeffect:
+    case ax::mojom::IntAttribute::kDropeffectDeprecated:
       return node.data().DropeffectBitfieldToString();
     case ax::mojom::IntAttribute::kHasPopup:
       return ui::ToString(static_cast<ax::mojom::HasPopup>(value));
@@ -714,7 +718,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        attr_index <= static_cast<int32_t>(ax::mojom::BoolAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::BoolAttribute>(attr_index);
-    absl::optional<bool> bool_value = dict.FindBool(ui::ToString(attr));
+    std::optional<bool> bool_value = dict.FindBool(ui::ToString(attr));
     if (!bool_value.has_value())
       continue;
     WriteAttribute(false,
@@ -727,7 +731,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        attr_index <= static_cast<int32_t>(ax::mojom::FloatAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::FloatAttribute>(attr_index);
-    absl::optional<double> float_value = dict.FindDouble(ui::ToString(attr));
+    std::optional<double> float_value = dict.FindDouble(ui::ToString(attr));
     if (!float_value)
       continue;
     WriteAttribute(

@@ -15,8 +15,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** A {@link RecyclerView.ViewHolder} specifically meant to display an image {@code OfflineItem}. */
 public class ImageViewHolder extends OfflineItemViewHolder {
     public static ImageViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_image_item, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_image_item, null);
         return new ImageViewHolder(view);
     }
 

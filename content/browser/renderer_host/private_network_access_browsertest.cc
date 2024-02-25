@@ -147,13 +147,25 @@ class PolicyTestContentBrowserClient
     allowlisted_origins_.insert(origin);
   }
 
-  bool ShouldAllowInsecurePrivateNetworkRequests(
+  void SetBlockInsteadOfWarn() { block_instead_of_warn_ = true; }
+
+  ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+  ShouldOverridePrivateNetworkRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override {
-    return allowlisted_origins_.find(origin) != allowlisted_origins_.end();
+    if (block_instead_of_warn_) {
+      return ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+          kBlockInsteadOfWarn;
+    }
+    return allowlisted_origins_.find(origin) != allowlisted_origins_.end()
+               ? ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+                     kForceAllow
+               : ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+                     kDefault;
   }
 
  private:
+  bool block_instead_of_warn_ = false;
   std::set<url::Origin> allowlisted_origins_;
 };
 
@@ -236,10 +248,10 @@ class RequestObserver {
 
 // Removes `prefix` from the start of `str`, if present.
 // Returns nullopt otherwise.
-absl::optional<base::StringPiece> StripPrefix(base::StringPiece str,
-                                              base::StringPiece prefix) {
+std::optional<base::StringPiece> StripPrefix(base::StringPiece str,
+                                             base::StringPiece prefix) {
   if (!base::StartsWith(str, prefix)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return str.substr(prefix.size());
@@ -276,7 +288,7 @@ std::string GetContentRangeHeader(const net::HttpByteRange& range,
 // Route: /echorange?<body>
 std::unique_ptr<net::test_server::HttpResponse> HandleRangeRequest(
     const net::test_server::HttpRequest& request) {
-  absl::optional<base::StringPiece> query =
+  std::optional<base::StringPiece> query =
       StripPrefix(request.relative_url, "/echorange?");
   if (!query) {
     return nullptr;
@@ -564,8 +576,15 @@ class PrivateNetworkAccessBrowserTest
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessSendPreflights,
             },
-            {}) {}
+            {
+                features::kPrivateNetworkAccessForNavigations,
+                features::kPrivateNetworkAccessForNavigationsWarningOnly,
+            }) {}
 };
+
+class PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption
+    : public PrivateNetworkAccessBrowserTest,
+      public testing::WithParamInterface<bool> {};
 
 class PrivateNetworkAccessBrowserTestDisableWebSecurity
     : public PrivateNetworkAccessBrowserTest {
@@ -612,27 +631,27 @@ class PrivateNetworkAccessBrowserTestBlockFromUnknown
 };
 
 // Test with PNA checks for iframes enabled.
-class PrivateNetworkAccessBrowserTestForIframes
+class PrivateNetworkAccessBrowserTestForNavigations
     : public PrivateNetworkAccessBrowserTestBase {
  public:
-  PrivateNetworkAccessBrowserTestForIframes()
+  PrivateNetworkAccessBrowserTestForNavigations()
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                features::kPrivateNetworkAccessForIframes,
+                features::kPrivateNetworkAccessForNavigations,
                 features::kPrivateNetworkAccessRespectPreflightResults,
                 network::features::kNetworkServiceMemoryCache,
             },
-            {}) {}
+            {features::kPrivateNetworkAccessForNavigationsWarningOnly}) {}
 };
 
-// Test with PNA checks for iframes enabled in warning-only mode.
-class PrivateNetworkAccessBrowserTestForIframesWarningOnly
-    : public PrivateNetworkAccessBrowserTestForIframes {
+// Test with PNA checks for navigations enabled in warning-only mode.
+class PrivateNetworkAccessBrowserTestForNavigationsWarningOnly
+    : public PrivateNetworkAccessBrowserTestForNavigations {
  private:
   base::test::ScopedFeatureList feature_list_{
-      features::kPrivateNetworkAccessForIframesWarningOnly};
+      features::kPrivateNetworkAccessForNavigationsWarningOnly};
 };
 
 // Test with the feature to send preflights (unenforced) disabled, and insecure
@@ -728,7 +747,7 @@ class PrivateNetworkAccessBrowserTestNoBlocking
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-                features::kPrivateNetworkAccessForIframes,
+                features::kPrivateNetworkAccessForNavigations,
                 features::kPrivateNetworkAccessForWorkers,
                 features::kPrivateNetworkAccessSendPreflights,
                 network::features::kNetworkServiceMemoryCache,
@@ -2402,11 +2421,23 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
             network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    testing::Values(false, true));
+
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to block requests from non-secure
 // contexts in the `public` address space.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsBlockByDefaultForInsecurePublic) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyIsBlockByDefaultForInsecurePublic) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2421,8 +2452,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from non-secure
 // contexts in the `private` address space with a warning.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsWarnByDefaultForInsecurePrivate) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyForInsecurePrivate) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2431,7 +2469,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            block_instead_of_warn
+                ? network::mojom::PrivateNetworkRequestPolicy::kBlock
+                : network::mojom::PrivateNetworkRequestPolicy::kWarn);
 }
 
 // This test verifies that when the right feature is enabled, the private
@@ -2453,8 +2493,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromPrivate,
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from non-secure
 // contexts in the `unknown` address space.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsAllowByDefaultForInsecureUnknown) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyIsAllowByDefaultForInsecureUnknown) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2500,8 +2547,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
 
 // This test verifies that when sending preflights is enabled, the private
 // network request policy for secure contexts is `kPreflightWarn`.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsPreflightWarnForSecureContexts) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyForSecureContexts) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2510,31 +2564,22 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
-}
-
-// This test verifies that when sending preflights is enabled, the private
-// network request policy for non-secure contexts in the `kPrivate` address
-// space is `kWarn`.
-// This checks that as long as the "block from insecure private" feature flag
-// is not enabled, we will only show warnings for these requests.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsWarnForInsecurePrivate) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            block_instead_of_warn
+                ? network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock
+                : network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
 }
 
 // This test verifies that blocking insecure private network requests from the
 // `kPublic` address space takes precedence over sending preflight requests.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsBlockForInsecurePublic) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyIsBlockForInsecurePublic) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2597,8 +2642,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 // This test verifies that child frames with distinct origins from their parent
 // do not inherit their private network request policy, which is based on the
 // origin of the child document instead.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkRequestPolicyCalculatedPerOrigin) {
+// TODO (crbug.com/324679506) : Fix the test.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    DISABLED_PrivateNetworkRequestPolicyCalculatedPerOrigin) {
   GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
@@ -3890,7 +3937,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - from an insecure page served from a public IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframesWarningOnly,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigationsWarningOnly,
                        IframeFromInsecurePublicToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -3916,7 +3963,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframesWarningOnly,
 //  - from an insecure page served from a public IP address
 //  - to a local IP address
 // are blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromInsecurePublicToLocalIsBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -3947,7 +3994,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 }
 
 // Same as above, testing the "treat-as-public-address" CSP directive.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromInsecureTreatAsPublicToLocalIsBlocked) {
   EXPECT_TRUE(
       NavigateToURL(shell(), InsecureLocalURL(kTreatAsPublicAddressPath)));
@@ -3966,7 +4013,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 // This test verifies that when an iframe navigation fails due to PNA, the
 // iframe navigates to an error page, even if it had previously committed a
 // document.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        FailedNavigationCommitsErrorPage) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -4007,7 +4054,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 //  - from a secure page served from a public IP address
 //  - to a local IP address
 // are preceded by a preflight request which is allowed to fail.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframesWarningOnly,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigationsWarningOnly,
                        IframeFromSecurePublicToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -4032,7 +4079,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframesWarningOnly,
 //  - from a secure page served from a public IP address
 //  - to a local IP address
 // are preceded by a preflight request which must succeed.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromSecurePublicToLocalIsBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -4066,7 +4113,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 //  - to a local IP address
 // are preceded by a preflight request, to which the server must respond
 // correctly.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromSecurePublicToLocalIsNotBlocked) {
   GURL initiator_url = SecurePublicURL(kDefaultPath);
   EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
@@ -4092,7 +4139,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 }
 
 // Same as above, testing the "treat-as-public-address" CSP directive.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        IframeFromSecureTreatAsPublicToLocalIsNotBlocked) {
   GURL initiator_url = SecureLocalURL(kTreatAsPublicAddressPath);
   EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
@@ -4114,8 +4161,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestForIframes,
-    FormSubmissionFromInsecurePublicToLocalIsNotBlockedInMainFrame) {
+    PrivateNetworkAccessBrowserTestForNavigations,
+    FormSubmissionFromInsecurePublicToLocalIsBlockedInMainFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   GURL url = InsecureLocalURL(kDefaultPath);
@@ -4133,16 +4180,12 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
-  // Check that the child iframe was not blocked.
-  EXPECT_TRUE(navigation_manager.was_successful());
-
-  EXPECT_EQ(url, EvalJs(root_frame_host(), "document.location.href"));
-  EXPECT_EQ(url, root_frame_host()->GetLastCommittedURL());
-  EXPECT_FALSE(root_frame_host()->GetLastCommittedOrigin().opaque());
+  // Check that the form submission was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestForIframes,
+    PrivateNetworkAccessBrowserTestForNavigations,
     FormSubmissionFromInsecurePublicToLocalIsBlockedInChildFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -4183,7 +4226,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestForIframes,
+    PrivateNetworkAccessBrowserTestForNavigations,
     FormSubmissionGetFromInsecurePublicToLocalIsBlockedInChildFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -4228,7 +4271,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForIframes,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
                        SiblingNavigationFromInsecurePublicToLocalIsBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 

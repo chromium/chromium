@@ -5,6 +5,7 @@
 #include <jni.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -58,7 +58,7 @@ net::DohProviderEntry::List GetFilteredProviders() {
 void RunProbe(base::WaitableEvent* waiter,
               bool* success,
               const std::string& doh_config) {
-  absl::optional<net::DnsOverHttpsConfig> parsed =
+  std::optional<net::DnsOverHttpsConfig> parsed =
       net::DnsOverHttpsConfig::FromString(doh_config);
   DCHECK(parsed.has_value());  // `doh_config` must be valid.
   auto* manager = g_browser_process->system_network_context_manager();
@@ -105,7 +105,7 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
   ret.reserve(providers.size());
   base::ranges::transform(
       providers, std::back_inserter(ret),
-      [](const auto* entry) -> std::vector<std::u16string> {
+      [](const net::DohProviderEntry* entry) -> std::vector<std::u16string> {
         net::DnsOverHttpsConfig config({entry->doh_server_config});
         return {base::UTF8ToUTF16(entry->ui_name),
                 base::UTF8ToUTF16(config.ToString()),
@@ -144,16 +144,6 @@ static jint JNI_SecureDnsBridge_GetManagementMode(JNIEnv* env) {
           ->GetSecureDnsConfiguration(
               true /* force_check_parental_controls_for_automatic_mode */)
           .management_mode());
-}
-
-static void JNI_SecureDnsBridge_UpdateDropdownHistograms(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& old_config,
-    const JavaParamRef<jstring>& new_config) {
-  secure_dns::UpdateDropdownHistograms(
-      GetFilteredProviders(),
-      base::android::ConvertJavaStringToUTF8(old_config),
-      base::android::ConvertJavaStringToUTF8(new_config));
 }
 
 static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,

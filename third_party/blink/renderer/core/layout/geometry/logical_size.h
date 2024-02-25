@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GEOMETRY_LOGICAL_SIZE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
@@ -68,11 +68,11 @@ struct CORE_EXPORT LogicalSize {
 
 constexpr LogicalSize kIndefiniteLogicalSize(kIndefiniteSize, kIndefiniteSize);
 
-inline LogicalSize operator-(const LogicalSize& a, const NGBoxStrut& b) {
+inline LogicalSize operator-(const LogicalSize& a, const BoxStrut& b) {
   return {a.inline_size - b.InlineSum(), a.block_size - b.BlockSum()};
 }
 
-inline LogicalSize& operator-=(LogicalSize& a, const NGBoxStrut& b) {
+inline LogicalSize& operator-=(LogicalSize& a, const BoxStrut& b) {
   a.inline_size -= b.InlineSum();
   a.block_size -= b.BlockSum();
   return a;

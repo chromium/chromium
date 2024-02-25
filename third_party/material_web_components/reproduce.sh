@@ -17,6 +17,16 @@ check_dep() {
   fi
 }
 
+replace_section() {
+  start_tag="# TAG(reproduce.sh) START_$1"
+  end_tag="# TAG(reproduce.sh) END_$1"
+  new_text=$2
+  file=$3
+
+  sed -e "/${start_tag}/,/${end_tag}/c\\${start_tag}\n${new_text}${end_tag}" $file > /tmp/reproduce_replace_section_output
+  mv /tmp/reproduce_replace_section_output $file
+}
+
 check_dep "which npm" "npm" "visiting https://nodejs.org/en/"
 check_dep "which rsync" "rsync" "installing rsync"
 check_dep "which egrep" "egrep" "installing egrep"
@@ -56,7 +66,7 @@ deleted=$(git status --porcelain components-chromium | grep '^.D' | \
 
 if [[ ! -z "${deleted}" ]]; then
   echo
-  echo 'These files appear to have been removed:'
+  echo 'INFO (no action needed): These files appear to have been removed:'
   echo "${deleted}" | sed 's/^/  /'
 fi
 
@@ -64,15 +74,28 @@ if [[ ! -z "${new}${deleted}" ]]; then
   echo
 fi
 
-# In our BUILD file we have a ts_library rule which exposes all lit type
-# definitions. The following bit of code discovers and outputs all lit type
-# definitions so an engineer can manually update the afformentioned rule.
-echo 'Please update the ts_library("library") rule in BUILD to contain these'
-echo 'definitions:'
-echo 'definitions = ['
-for x in `find components-chromium/node_modules -type f  | grep d.ts$`; do
-  echo "    \"$x\","
-done
-echo ']'
+echo "Updating build.gn ..."
 
+# In our BUILD file we have a ts_library rule which exposes all lit type
+# definitions, update these.
+new_text=""
+for x in `find components-chromium/node_modules -type f  | grep d.ts$`; do
+  new_text+="  \"$x\",\n"
+done
+replace_section DEFINITIONS "${new_text}" BUILD.gn
+
+# Also update the list of material files.
+new_text=""
+cd components-chromium/node_modules
+for x in `find @material/ \( -name "*.js"  \) -type f`; do
+  new_text+="  \"$x\",\n"
+done
+cd ../..
+replace_section MATERIAL_FILES "${new_text}" BUILD.gn
+
+echo "Cleaning up ..."
+
+rm -r "node_modules/"
 popd > /dev/null
+
+echo "Done! Thanks for using me :)"

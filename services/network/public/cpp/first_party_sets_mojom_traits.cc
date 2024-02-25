@@ -75,7 +75,7 @@ bool StructTraits<network::mojom::FirstPartySetEntryDataView,
   if (!entry.ReadSiteType(&site_type))
     return false;
 
-  absl::optional<net::FirstPartySetEntry::SiteIndex> site_index;
+  std::optional<net::FirstPartySetEntry::SiteIndex> site_index;
   if (!entry.ReadSiteIndex(&site_index))
     return false;
 
@@ -87,11 +87,11 @@ bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
                   net::FirstPartySetMetadata>::
     Read(network::mojom::FirstPartySetMetadataDataView metadata,
          net::FirstPartySetMetadata* out_metadata) {
-  absl::optional<net::FirstPartySetEntry> frame_entry;
+  std::optional<net::FirstPartySetEntry> frame_entry;
   if (!metadata.ReadFrameEntry(&frame_entry))
     return false;
 
-  absl::optional<net::FirstPartySetEntry> top_frame_entry;
+  std::optional<net::FirstPartySetEntry> top_frame_entry;
   if (!metadata.ReadTopFrameEntry(&top_frame_entry))
     return false;
 
@@ -127,8 +127,29 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
   if (!sets.ReadManualConfig(&manual_config))
     return false;
 
-  *out_sets = net::GlobalFirstPartySets(std::move(public_sets_version), entries,
-                                        aliases, std::move(manual_config));
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> manual_aliases;
+  if (!sets.ReadManualAliases(&manual_aliases)) {
+    return false;
+  }
+
+  // The manual_config must contain both the alias overrides and their
+  // corresponding canonical overrides, none of which may be deletions.
+  if (!base::ranges::all_of(manual_aliases, [&](const auto& pair) {
+        std::optional<net::FirstPartySetEntryOverride> aliased_override =
+            manual_config.FindOverride(pair.first);
+        std::optional<net::FirstPartySetEntryOverride> canonical_override =
+            manual_config.FindOverride(pair.second);
+        return aliased_override.has_value() &&
+               !aliased_override->IsDeletion() &&
+               canonical_override.has_value() &&
+               !canonical_override->IsDeletion();
+      })) {
+    return false;
+  }
+
+  *out_sets = net::GlobalFirstPartySets(
+      std::move(public_sets_version), std::move(entries), std::move(aliases),
+      std::move(manual_config), std::move(manual_aliases));
 
   return true;
 }
@@ -137,7 +158,7 @@ bool StructTraits<network::mojom::FirstPartySetEntryOverrideDataView,
                   net::FirstPartySetEntryOverride>::
     Read(network::mojom::FirstPartySetEntryOverrideDataView override,
          net::FirstPartySetEntryOverride* out) {
-  absl::optional<net::FirstPartySetEntry> entry;
+  std::optional<net::FirstPartySetEntry> entry;
   if (!override.ReadEntry(&entry))
     return false;
 

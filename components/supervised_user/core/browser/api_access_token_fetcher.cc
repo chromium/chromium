@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/types/expected.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -34,21 +35,22 @@ ToSingleReturnValue(GoogleServiceAuthError error,
 
 ApiAccessTokenFetcher::ApiAccessTokenFetcher(
     signin::IdentityManager& identity_manager,
-    const FetcherConfig& fetcher_config,
+    const AccessTokenConfig& access_token_config,
     Consumer consumer)
     : consumer_(std::move(consumer)) {
   OAuth2AccessTokenManager::ScopeSet scope_set(
-      {std::string(fetcher_config.oauth2_scope)});
+      {std::string(access_token_config.oauth2_scope)});
   // base::Unretained(.) is safe, because no extra on-destroyed semantics are
   // needed and this instance must outlive the callback execution.
+  CHECK(access_token_config.mode.has_value())
+      << "signin::PrimaryAccountAccessTokenFetcher::Mode is required";
   primary_account_access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           /*oauth_consumer_name=*/"supervised_user_fetcher", &identity_manager,
           scope_set,
           base::BindOnce(&ApiAccessTokenFetcher::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kSignin);
+          *(access_token_config.mode), signin::ConsentLevel::kSignin);
 }
 ApiAccessTokenFetcher::~ApiAccessTokenFetcher() = default;
 

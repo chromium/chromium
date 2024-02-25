@@ -4,7 +4,6 @@
 
 #include "components/exo/wayland/zcr_keyboard_configuration.h"
 
-#include <keyboard-configuration-unstable-v1-server-protocol.h>
 #include <linux/input.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
@@ -33,8 +32,7 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 
 namespace {
 
@@ -244,8 +242,8 @@ class WaylandKeyboardDeviceConfigurationDelegate
 
   wl_client* client() const { return wl_resource_get_client(resource_); }
 
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<Keyboard, ExperimentalAsh> keyboard_;
+  raw_ptr<wl_resource> resource_;
+  raw_ptr<Keyboard> keyboard_;
 
   // List of acknowledged installed keyboard layouts. Used to determine if there
   // are new keyboard layouts installed.
@@ -315,5 +313,4 @@ void bind_keyboard_configuration(wl_client* client,
       resource, &keyboard_configuration_implementation, data, nullptr);
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

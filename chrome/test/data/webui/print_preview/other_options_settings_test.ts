@@ -4,7 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import {CrCheckboxElement, PrintPreviewModelElement, PrintPreviewOtherOptionsSettingsElement} from 'chrome://print/print_preview.js';
+import type {CrCheckboxElement, PrintPreviewModelElement, PrintPreviewOtherOptionsSettingsElement} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';

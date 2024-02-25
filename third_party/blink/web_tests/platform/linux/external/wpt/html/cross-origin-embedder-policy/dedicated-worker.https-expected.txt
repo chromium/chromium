@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] COEP: worker inherits COEP from blob URL creator, not owner.
+  assert_equals: expected "FAILED" but got "LOADED"
+[FAIL] COEP: worker inherits COEP from filesystem URL creator, not owner.
+  assert_equals: expected "FAILED" but got "LOADED"
+Harness: the test ran to completion.
+

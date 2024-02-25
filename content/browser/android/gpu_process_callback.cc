@@ -7,6 +7,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/functional/overloaded.h"
+#include "base/logging.h"
 #include "content/browser/android/scoped_surface_request_manager.h"
 #include "content/common/android/surface_wrapper.h"
 #include "content/public/android/content_jni_headers/GpuProcessCallback_jni.h"
@@ -20,7 +21,7 @@ void JNI_GpuProcessCallback_CompleteScopedSurfaceRequest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& token,
     const base::android::JavaParamRef<jobject>& surface) {
-  absl::optional<base::UnguessableToken> requestToken =
+  std::optional<base::UnguessableToken> requestToken =
       base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(env,
                                                                        token);
   if (!requestToken) {

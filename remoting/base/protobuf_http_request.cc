@@ -50,6 +50,7 @@ void ProtobufHttpRequest::OnResponse(
   ProtobufHttpStatus url_loader_status = GetUrlLoaderStatus();
   // Move variables out of |this| as the callback can potentially delete |this|.
   auto invalidator = std::move(invalidator_);
+
   if (url_loader_status.ok()) {
     RunResponseCallback(ParseResponse(std::move(response_body)));
   } else {
@@ -57,7 +58,7 @@ void ProtobufHttpRequest::OnResponse(
     protobufhttpclient::Status api_status;
     if (response_body && api_status.ParseFromString(*response_body) &&
         api_status.code() > 0) {
-      RunResponseCallback(ProtobufHttpStatus(api_status));
+      RunResponseCallback(ProtobufHttpStatus(api_status, *response_body));
     } else {
       // Fallback to just return the status from URL loader.
       RunResponseCallback(url_loader_status);

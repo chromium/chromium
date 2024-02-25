@@ -23,6 +23,8 @@ class ASH_EXPORT NetworkTrayView : public TrayItemView,
                                    public network_icon::AnimationObserver,
                                    public SessionObserver,
                                    public TrayNetworkStateObserver {
+  METADATA_HEADER(NetworkTrayView, TrayItemView)
+
  public:
   NetworkTrayView(const NetworkTrayView&) = delete;
   NetworkTrayView& operator=(const NetworkTrayView&) = delete;
@@ -32,8 +34,6 @@ class ASH_EXPORT NetworkTrayView : public TrayItemView,
   NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type);
 
   std::u16string GetAccessibleNameString() const;
-
-  const char* GetClassName() const override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

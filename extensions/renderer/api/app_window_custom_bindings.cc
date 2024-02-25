@@ -9,9 +9,9 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/switches.h"
 #include "extensions/grit/extensions_renderer_resources.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -41,26 +41,25 @@ void AppWindowCustomBindings::GetFrame(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   // TODO(jeremya): convert this to IDL nocompile to get validation, and turn
   // these argument checks into CHECK().
-  if (args.Length() != 2)
+  if (args.Length() != 2) {
     return;
+  }
 
-  if (!args[0]->IsInt32() || !args[1]->IsBoolean())
+  if (!args[0]->IsString() || !args[1]->IsBoolean()) {
     return;
+  }
 
-  int frame_id = args[0].As<v8::Int32>()->Value();
   bool notify_browser = args[1].As<v8::Boolean>()->Value();
 
-  if (frame_id == MSG_ROUTING_NONE)
-    return;
-
   content::RenderFrame* app_frame =
-      content::RenderFrame::FromRoutingID(frame_id);
-  if (!app_frame)
+      ExtensionFrameHelper::FindFrameFromFrameTokenString(context()->isolate(),
+                                                          args[0]);
+  if (!app_frame) {
     return;
+  }
 
   if (notify_browser) {
-    app_frame->Send(
-        new ExtensionHostMsg_AppWindowReady(app_frame->GetRoutingID()));
+    ExtensionFrameHelper::Get(app_frame)->GetLocalFrameHost()->AppWindowReady();
   }
 
   v8::Local<v8::Value> window =
@@ -81,14 +80,14 @@ void AppWindowCustomBindings::GetFrame(
 
 void AppWindowCustomBindings::ResumeParser(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() != 1 || !args[0]->IsInt32()) {
+  if (args.Length() != 1 || !args[0]->IsString()) {
     NOTREACHED();
     return;
   }
 
-  int frame_id = args[0].As<v8::Int32>()->Value();
   content::RenderFrame* app_frame =
-      content::RenderFrame::FromRoutingID(frame_id);
+      ExtensionFrameHelper::FindFrameFromFrameTokenString(context()->isolate(),
+                                                          args[0]);
   if (!app_frame) {
     NOTREACHED();
     return;

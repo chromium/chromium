@@ -88,9 +88,9 @@ body {
   <div data-expected-width="100" data-offset-x="250" style="flex: 1 0 0; max-width: 100px;"></div>
 </div>
 
-<!-- True centering on overflow. -->
+<!-- Safe centering on overflow. -->
 <div class="flexbox" style="justify-content: space-around">
-  <div data-expected-width="800" data-offset-x="-100" style="width: 800px;"></div>
+  <div data-expected-width="800" data-offset-x="0" style="width: 800px;"></div>
 </div>
 
 <!-- Make sure we don't crash with no children. -->
@@ -113,9 +113,9 @@ body {
   <div data-expected-width="100" data-offset-x="250" style="flex: 1 0 0; max-width: 100px;"></div>
 </div>
 
-<!-- True centering on overflow. -->
+<!-- Safe centering on overflow. -->
 <div class="flexbox" style="justify-content: space-evenly">
-  <div data-expected-width="800" data-offset-x="-100" style="width: 800px;"></div>
+  <div data-expected-width="800" data-offset-x="0" style="width: 800px;"></div>
 </div>
 
 <!-- Make sure we don't crash with no children. -->

@@ -55,8 +55,6 @@ class SegmentSelectorImpl : public SegmentSelector {
   void OnPlatformInitialized(ExecutionService* execution_service) override;
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult() override;
-  void GetSelectedSegmentOnDemand(scoped_refptr<InputContext> input_context,
-                                  SegmentSelectionCallback callback) override;
 
   // Helper function to update the selected segment in the prefs. Auto-extends
   // the selection if the new result is unknown.

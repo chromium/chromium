@@ -12,10 +12,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
-
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-#include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
-#endif
+#include "ui/base/interaction/interaction_sequence.h"
 
 class GURL;
 class Profile;
@@ -24,29 +21,18 @@ namespace content {
 class NavigationHandle;
 }
 
-namespace {
-class FakeSessionManagerClientBrowserHelper;
-}
-
-// Base class for tests of ash-chrome integration with the ChromeOS platform,
-// like hardware daemons, graphics, kernel, etc.
-//
 // Sets up Kombucha for ash testing:
 // - Provides 1 Kombucha "context" per display, shared by all views::Widgets
 // - Provides a default "context widget" so Kombucha can synthesize mouse events
 // - Suppresses creating a browser window on startup, because most ash-chrome
 //   tests don't need the window and creating it slows down the test
 //
-// Tests using this base class can be added to "chromeos_integration_tests" to
-// run on devices under test (DUTs) and virtual machines (VMs). Also, if a test
-// only communicates with OS daemons via D-Bus then the test can also run in the
-// linux-chromeos "emulator" in "interactive_ui_tests". The latter approach
-// makes it simpler to write the initial version of a test, which can then be
-// added to "chromeos_integration_tests" to also run on DUT/VM.
-//
 // Because this class derives from InProcessBrowserTest the source files must be
 // added to a target that defines HAS_OUT_OF_PROC_TEST_RUNNER. The source files
 // cannot be in a shared test support target that lacks that define.
+//
+// For tests that run on a DUT or in a VM, use the subclass AshIntegrationTest,
+// which supports running on hardware.
 class InteractiveAshTest
     : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
@@ -75,19 +61,50 @@ class InteractiveAshTest
   // browser_navigator.h.
   base::WeakPtr<content::NavigationHandle> CreateBrowserWindow(const GURL& url);
 
- private:
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-  // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
-  // chromeos_integration_tests.
-  ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
+  // MixinBasedInProcessBrowserTest:
+  void TearDownOnMainThread() override;
 
-  // Whether to use real session manager client for tests that needs real
-  // user session.
-  bool use_real_session_manager_ = false;
+  // Blocks until a window exists with the given title. If a matching window
+  // already exists the test will resume immediately.
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForWindowWithTitle(
+      aura::Env* env,
+      std::u16string title);
 
-  std::unique_ptr<FakeSessionManagerClientBrowserHelper>
-      fake_session_manager_client_helper_;
-#endif
+  // Waits for an element identified by `query` to exist in the DOM of an
+  // instrumented WebUI identified by `element_id`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementExists(
+      const ui::ElementIdentifier& element_id,
+      const DeepQuery& query);
+
+  // Waits for an element identified by `query` to not exist in the DOM of an
+  // instrumented WebUI identified by `element_id`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForElementDoesNotExist(const ui::ElementIdentifier& element_id,
+                             const DeepQuery& query);
+
+  // Waits until the element or any of its children have the requested text.
+  //
+  // element_id
+  //     The identifier of the WebContents to query.
+  //
+  // query
+  //     The DeepQuery is a path to the element to start with, it can be {} to
+  //     query the entire page.
+  //
+  // expected
+  //     The text to search for.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForElementTextContains(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
+      const std::string& expected);
+
+  // Clicks on an element in the DOM. `element_id` is the identifier
+  // of the WebContents to query. `query` is a DeepQuery path to the
+  // element to start with, it can be {} to query the entire page.
+  ui::test::internal::InteractiveTestPrivate::MultiStep ClickElement(
+      const ui::ElementIdentifier& element_id,
+      const DeepQuery& query);
 };
 
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_

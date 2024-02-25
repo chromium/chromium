@@ -456,8 +456,6 @@ void AppendDynamicServices(fuchsia::web::ContextFeatureFlags features,
      "fuchsia.ui.composition.Allocator"},
     {ContextFeatureFlags::HEADLESS, kNoFeaturesRequested,
      "fuchsia.ui.composition.Flatland"},
-    {ContextFeatureFlags::HEADLESS, kNoFeaturesRequested,
-     "fuchsia.ui.scenic.Scenic"},
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
     {ContextFeatureFlags::LEGACYMETRICS, ContextFeatureFlags::LEGACYMETRICS,
      "fuchsia.legacymetrics.MetricsRecorder"},

@@ -10,23 +10,31 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_device_public_key_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_field_requirement.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_selector.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_disconnect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_element.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -34,12 +42,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_digitalcredentialfieldrequirement_string.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -58,21 +68,22 @@ using blink::mojom::blink::CableAuthenticationPtr;
 using blink::mojom::blink::CredentialInfo;
 using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialType;
-using blink::mojom::blink::DevicePublicKeyRequest;
-using blink::mojom::blink::DevicePublicKeyRequestPtr;
-using blink::mojom::blink::IdentityProvider;
+using blink::mojom::blink::DigitalCredentialFieldRequirement;
+using blink::mojom::blink::DigitalCredentialFieldRequirementPtr;
+using blink::mojom::blink::DigitalCredentialProvider;
+using blink::mojom::blink::DigitalCredentialProviderPtr;
+using blink::mojom::blink::DigitalCredentialSelector;
+using blink::mojom::blink::DigitalCredentialSelectorPtr;
+using blink::mojom::blink::Hint;
+using blink::mojom::blink::IdentityCredentialDisconnectOptions;
+using blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
-using blink::mojom::blink::IdentityProviderPtr;
+using blink::mojom::blink::IdentityProviderRequestOptions;
+using blink::mojom::blink::IdentityProviderRequestOptionsPtr;
 using blink::mojom::blink::IdentityUserInfo;
 using blink::mojom::blink::IdentityUserInfoPtr;
 using blink::mojom::blink::LargeBlobSupport;
-using blink::mojom::blink::LogoutRpsRequest;
-using blink::mojom::blink::LogoutRpsRequestPtr;
-using blink::mojom::blink::MDocElement;
-using blink::mojom::blink::MDocElementPtr;
-using blink::mojom::blink::MDocProvider;
-using blink::mojom::blink::MDocProviderPtr;
 using blink::mojom::blink::PRFValues;
 using blink::mojom::blink::PRFValuesPtr;
 using blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr;
@@ -90,6 +101,9 @@ using blink::mojom::blink::RemoteDesktopClientOverride;
 using blink::mojom::blink::RemoteDesktopClientOverridePtr;
 using blink::mojom::blink::ResidentKeyRequirement;
 using blink::mojom::blink::RpContext;
+using blink::mojom::blink::RpMode;
+using blink::mojom::blink::SupplementalPubKeysRequest;
+using blink::mojom::blink::SupplementalPubKeysRequestPtr;
 using blink::mojom::blink::UserVerificationRequirement;
 
 namespace {
@@ -166,13 +180,102 @@ TypeConverter<blink::Credential*, CredentialInfoPtr>::Convert(
   return nullptr;
 }
 
-// static helper method.
-Vector<uint8_t> ConvertFixedSizeArray(const blink::V8BufferSource* buffer,
-                                      unsigned length) {
-  if (blink::DOMArrayPiece(buffer).ByteLength() != length)
-    return {};
+static blink::DOMArrayBuffer* VectorToDOMArrayBuffer(
+    const Vector<uint8_t> buffer) {
+  return blink::DOMArrayBuffer::Create(static_cast<const void*>(buffer.data()),
+                                       buffer.size());
+}
 
-  return ConvertTo<Vector<uint8_t>>(buffer);
+#if BUILDFLAG(IS_ANDROID)
+static Vector<Vector<uint32_t>> UvmEntryToArray(
+    const Vector<blink::mojom::blink::UvmEntryPtr>& user_verification_methods) {
+  Vector<Vector<uint32_t>> uvm_array;
+  for (const auto& uvm : user_verification_methods) {
+    Vector<uint32_t> uvmEntry = {uvm->user_verification_method,
+                                 uvm->key_protection_type,
+                                 uvm->matcher_protection_type};
+    uvm_array.push_back(uvmEntry);
+  }
+  return uvm_array;
+}
+#endif
+
+// static
+blink::AuthenticationExtensionsClientOutputs*
+TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
+              blink::mojom::blink::AuthenticationExtensionsClientOutputsPtr>::
+    Convert(const blink::mojom::blink::AuthenticationExtensionsClientOutputsPtr&
+                extensions) {
+  auto* extension_outputs =
+      blink::AuthenticationExtensionsClientOutputs::Create();
+  if (extensions->echo_appid_extension) {
+    extension_outputs->setAppid(extensions->appid_extension);
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (extensions->echo_user_verification_methods) {
+    extension_outputs->setUvm(
+        UvmEntryToArray(std::move(*extensions->user_verification_methods)));
+  }
+#endif
+  if (extensions->echo_large_blob) {
+    DCHECK(blink::RuntimeEnabledFeatures::
+               WebAuthenticationLargeBlobExtensionEnabled());
+    blink::AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
+        blink::AuthenticationExtensionsLargeBlobOutputs::Create();
+    if (extensions->large_blob) {
+      large_blob_outputs->setBlob(
+          VectorToDOMArrayBuffer(std::move(*extensions->large_blob)));
+    }
+    if (extensions->echo_large_blob_written) {
+      large_blob_outputs->setWritten(extensions->large_blob_written);
+    }
+    extension_outputs->setLargeBlob(large_blob_outputs);
+  }
+  if (extensions->get_cred_blob) {
+    extension_outputs->setGetCredBlob(
+        VectorToDOMArrayBuffer(std::move(*extensions->get_cred_blob)));
+  }
+  if (extensions->supplemental_pub_keys) {
+    extension_outputs->setSupplementalPubKeys(
+        ConvertTo<blink::AuthenticationExtensionsSupplementalPubKeysOutputs*>(
+            extensions->supplemental_pub_keys));
+  }
+  if (extensions->echo_prf) {
+    auto* prf_outputs = blink::AuthenticationExtensionsPRFOutputs::Create();
+    if (extensions->prf_results) {
+      auto* values = blink::AuthenticationExtensionsPRFValues::Create();
+      values->setFirst(
+          MakeGarbageCollected<blink::V8UnionArrayBufferOrArrayBufferView>(
+              VectorToDOMArrayBuffer(
+                  std::move(extensions->prf_results->first))));
+      if (extensions->prf_results->second) {
+        values->setSecond(
+            MakeGarbageCollected<blink::V8UnionArrayBufferOrArrayBufferView>(
+                VectorToDOMArrayBuffer(
+                    std::move(extensions->prf_results->second.value()))));
+      }
+      prf_outputs->setResults(values);
+    }
+    extension_outputs->setPrf(prf_outputs);
+  }
+  return extension_outputs;
+}
+
+// static
+blink::AuthenticationExtensionsSupplementalPubKeysOutputs*
+TypeConverter<blink::AuthenticationExtensionsSupplementalPubKeysOutputs*,
+              blink::mojom::blink::SupplementalPubKeysResponsePtr>::
+    Convert(const blink::mojom::blink::SupplementalPubKeysResponsePtr&
+                supplemental_pub_keys) {
+  blink::HeapVector<blink::Member<blink::DOMArrayBuffer>> signatures;
+  for (const auto& sig : supplemental_pub_keys->signatures) {
+    signatures.push_back(VectorToDOMArrayBuffer(std::move(sig)));
+  }
+
+  auto* spk_outputs =
+      blink::AuthenticationExtensionsSupplementalPubKeysOutputs::Create();
+  spk_outputs->setSignatures(std::move(signatures));
+  return spk_outputs;
 }
 
 // static
@@ -208,8 +311,8 @@ PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(
 }
 
 // static
-absl::optional<AuthenticatorTransport>
-TypeConverter<absl::optional<AuthenticatorTransport>, String>::Convert(
+std::optional<AuthenticatorTransport>
+TypeConverter<std::optional<AuthenticatorTransport>, String>::Convert(
     const String& transport) {
   if (transport == "usb")
     return AuthenticatorTransport::USB;
@@ -222,7 +325,7 @@ TypeConverter<absl::optional<AuthenticatorTransport>, String>::Convert(
     return AuthenticatorTransport::HYBRID;
   if (transport == "internal")
     return AuthenticatorTransport::INTERNAL;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -243,8 +346,8 @@ String TypeConverter<String, AuthenticatorTransport>::Convert(
 }
 
 // static
-absl::optional<blink::mojom::blink::ResidentKeyRequirement>
-TypeConverter<absl::optional<blink::mojom::blink::ResidentKeyRequirement>,
+std::optional<blink::mojom::blink::ResidentKeyRequirement>
+TypeConverter<std::optional<blink::mojom::blink::ResidentKeyRequirement>,
               String>::Convert(const String& requirement) {
   if (requirement == "discouraged")
     return ResidentKeyRequirement::DISCOURAGED;
@@ -256,12 +359,12 @@ TypeConverter<absl::optional<blink::mojom::blink::ResidentKeyRequirement>,
   // AuthenticatorSelection.resident_key is defined as DOMString expressing a
   // ResidentKeyRequirement and unknown values must be treated as if the
   // property were unset.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
-absl::optional<UserVerificationRequirement>
-TypeConverter<absl::optional<UserVerificationRequirement>, String>::Convert(
+std::optional<UserVerificationRequirement>
+TypeConverter<std::optional<UserVerificationRequirement>, String>::Convert(
     const String& requirement) {
   if (requirement == "required")
     return UserVerificationRequirement::REQUIRED;
@@ -269,12 +372,12 @@ TypeConverter<absl::optional<UserVerificationRequirement>, String>::Convert(
     return UserVerificationRequirement::PREFERRED;
   if (requirement == "discouraged")
     return UserVerificationRequirement::DISCOURAGED;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
-absl::optional<AttestationConveyancePreference>
-TypeConverter<absl::optional<AttestationConveyancePreference>, String>::Convert(
+std::optional<AttestationConveyancePreference>
+TypeConverter<std::optional<AttestationConveyancePreference>, String>::Convert(
     const String& preference) {
   if (preference == "none")
     return AttestationConveyancePreference::NONE;
@@ -284,26 +387,26 @@ TypeConverter<absl::optional<AttestationConveyancePreference>, String>::Convert(
     return AttestationConveyancePreference::DIRECT;
   if (preference == "enterprise")
     return AttestationConveyancePreference::ENTERPRISE;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
-absl::optional<AuthenticatorAttachment> TypeConverter<
-    absl::optional<AuthenticatorAttachment>,
-    absl::optional<String>>::Convert(const absl::optional<String>& attachment) {
+std::optional<AuthenticatorAttachment> TypeConverter<
+    std::optional<AuthenticatorAttachment>,
+    std::optional<String>>::Convert(const std::optional<String>& attachment) {
   if (!attachment.has_value())
     return AuthenticatorAttachment::NO_PREFERENCE;
   if (attachment.value() == "platform")
     return AuthenticatorAttachment::PLATFORM;
   if (attachment.value() == "cross-platform")
     return AuthenticatorAttachment::CROSS_PLATFORM;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
 LargeBlobSupport
-TypeConverter<LargeBlobSupport, absl::optional<String>>::Convert(
-    const absl::optional<String>& large_blob_support) {
+TypeConverter<LargeBlobSupport, std::optional<String>>::Convert(
+    const std::optional<String>& large_blob_support) {
   if (large_blob_support) {
     if (*large_blob_support == "required")
       return LargeBlobSupport::REQUIRED;
@@ -326,17 +429,17 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
   mojo_criteria->authenticator_attachment =
       AuthenticatorAttachment::NO_PREFERENCE;
   if (criteria.hasAuthenticatorAttachment()) {
-    absl::optional<String> attachment = criteria.authenticatorAttachment();
+    std::optional<String> attachment = criteria.authenticatorAttachment();
     auto maybe_attachment =
-        ConvertTo<absl::optional<AuthenticatorAttachment>>(attachment);
+        ConvertTo<std::optional<AuthenticatorAttachment>>(attachment);
     if (maybe_attachment) {
       mojo_criteria->authenticator_attachment = *maybe_attachment;
     }
   }
 
-  absl::optional<ResidentKeyRequirement> resident_key;
+  std::optional<ResidentKeyRequirement> resident_key;
   if (criteria.hasResidentKey()) {
-    resident_key = ConvertTo<absl::optional<ResidentKeyRequirement>>(
+    resident_key = ConvertTo<std::optional<ResidentKeyRequirement>>(
         criteria.residentKey());
   }
   if (resident_key) {
@@ -349,25 +452,14 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
 
   mojo_criteria->user_verification = UserVerificationRequirement::PREFERRED;
   if (criteria.hasUserVerification()) {
-    absl::optional<UserVerificationRequirement> user_verification =
-        ConvertTo<absl::optional<UserVerificationRequirement>>(
+    std::optional<UserVerificationRequirement> user_verification =
+        ConvertTo<std::optional<UserVerificationRequirement>>(
             criteria.userVerification());
     if (user_verification) {
       mojo_criteria->user_verification = *user_verification;
     }
   }
   return mojo_criteria;
-}
-
-// static
-LogoutRpsRequestPtr
-TypeConverter<LogoutRpsRequestPtr, blink::IdentityCredentialLogoutRPsRequest>::
-    Convert(const blink::IdentityCredentialLogoutRPsRequest& request) {
-  auto mojo_request = LogoutRpsRequest::New();
-
-  mojo_request->url = blink::KURL(request.url());
-  mojo_request->account_id = request.accountId();
-  return mojo_request;
 }
 
 // static
@@ -416,7 +508,7 @@ TypeConverter<PublicKeyCredentialDescriptorPtr,
   if (descriptor.hasTransports() && !descriptor.transports().empty()) {
     for (const auto& transport : descriptor.transports()) {
       auto maybe_transport(
-          ConvertTo<absl::optional<AuthenticatorTransport>>(transport));
+          ConvertTo<std::optional<AuthenticatorTransport>>(transport));
       if (maybe_transport) {
         mojo_descriptor->transports.push_back(*maybe_transport);
       }
@@ -498,10 +590,12 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
         AuthenticatorSelectionCriteria::From(*options.authenticatorSelection());
   }
 
+  mojo_options->hints = ConvertTo<Vector<Hint>>(options.hints());
+
   mojo_options->attestation = AttestationConveyancePreference::NONE;
   if (options.hasAttestation()) {
-    absl::optional<AttestationConveyancePreference> attestation =
-        ConvertTo<absl::optional<AttestationConveyancePreference>>(
+    std::optional<AttestationConveyancePreference> attestation =
+        ConvertTo<std::optional<AttestationConveyancePreference>>(
             options.attestation());
     if (attestation) {
       mojo_options->attestation = *attestation;
@@ -540,7 +634,7 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
       mojo_options->cred_props = true;
     }
     if (extensions->hasLargeBlob()) {
-      absl::optional<WTF::String> support;
+      std::optional<WTF::String> support;
       if (extensions->largeBlob()->hasSupport()) {
         support = extensions->largeBlob()->support();
       }
@@ -562,16 +656,34 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
           RemoteDesktopClientOverride::From(
               *extensions->remoteDesktopClientOverride());
     }
-    if (extensions->hasDevicePubKey()) {
-      mojo_options->device_public_key =
-          DevicePublicKeyRequest::From(*extensions->devicePubKey());
+    if (extensions->hasSupplementalPubKeys()) {
+      auto supplemental_pub_keys =
+          ConvertTo<std::optional<SupplementalPubKeysRequestPtr>>(
+              *extensions->supplementalPubKeys());
+      if (supplemental_pub_keys) {
+        mojo_options->supplemental_pub_keys = std::move(*supplemental_pub_keys);
+      }
     }
     if (extensions->hasPrf()) {
       mojo_options->prf_enable = true;
+      if (extensions->prf()->hasEval()) {
+        mojo_options->prf_input =
+            ConvertTo<PRFValuesPtr>(*extensions->prf()->eval());
+      }
     }
   }
 
   return mojo_options;
+}
+
+static Vector<uint8_t> ConvertFixedSizeArray(
+    const blink::V8BufferSource* buffer,
+    unsigned length) {
+  if (blink::DOMArrayPiece(buffer).ByteLength() != length) {
+    return {};
+  }
+
+  return ConvertTo<Vector<uint8_t>>(buffer);
 }
 
 // static
@@ -636,13 +748,15 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
 
   mojo_options->user_verification = UserVerificationRequirement::PREFERRED;
   if (options.hasUserVerification()) {
-    absl::optional<UserVerificationRequirement> user_verification =
-        ConvertTo<absl::optional<UserVerificationRequirement>>(
+    std::optional<UserVerificationRequirement> user_verification =
+        ConvertTo<std::optional<UserVerificationRequirement>>(
             options.userVerification());
     if (user_verification) {
       mojo_options->user_verification = *user_verification;
     }
   }
+
+  mojo_options->hints = ConvertTo<Vector<Hint>>(options.hints());
 
   if (options.hasExtensions()) {
     mojo_options->extensions =
@@ -703,9 +817,13 @@ TypeConverter<AuthenticationExtensionsClientInputsPtr,
         RemoteDesktopClientOverride::From(
             *inputs.remoteDesktopClientOverride());
   }
-  if (inputs.hasDevicePubKey()) {
-    mojo_inputs->device_public_key =
-        DevicePublicKeyRequest::From(*inputs.devicePubKey());
+  if (inputs.hasSupplementalPubKeys()) {
+    auto supplemental_pub_keys =
+        ConvertTo<std::optional<SupplementalPubKeysRequestPtr>>(
+            *inputs.supplementalPubKeys());
+    if (supplemental_pub_keys) {
+      mojo_inputs->supplemental_pub_keys = std::move(*supplemental_pub_keys);
+    }
   }
   if (inputs.hasPrf()) {
     mojo_inputs->prf = true;
@@ -733,55 +851,101 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
 
   mojo_provider->config_url = blink::KURL(provider.configURL());
   mojo_provider->client_id = provider.clientId();
-  mojo_provider->nonce = provider.getNonceOr("");
-  mojo_provider->login_hint = provider.getLoginHintOr("");
-  mojo_provider->hosted_domain =
-      blink::RuntimeEnabledFeatures::FedCmHostedDomainEnabled()
-          ? provider.getHostedDomainOr("")
-          : "";
-
-  if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
-    if (provider.hasScope()) {
-      mojo_provider->scope = provider.scope();
-    }
-    if (provider.hasResponseType()) {
-      mojo_provider->responseType = provider.responseType();
-    }
-    if (provider.hasParams()) {
-      HashMap<String, String> params;
-      for (const auto& pair : provider.params()) {
-        params.Set(pair.first, pair.second);
-      }
-      mojo_provider->params = std::move(params);
-    }
-  }
-
   return mojo_provider;
 }
 
 // static
-IdentityProviderPtr
-TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
-    const blink::IdentityProviderConfig& provider) {
-  if (provider.hasMdoc() &&
-      blink::RuntimeEnabledFeatures::WebIdentityMDocsEnabled() &&
-      // TODO(https://crbug.com/1416939): make sure the MDocs API
-      // works well with the Multiple IdP API.
-      !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-    WTF::Vector<MDocElementPtr> requested_elements;
-    for (auto element : provider.mdoc()->requestedElements()) {
-      auto requested_element =
-          MDocElement::New(element->elementNamespace(), element->name());
-      requested_elements.push_back(std::move(requested_element));
-    }
-    auto mdoc = MDocProvider::New(provider.mdoc()->documentType(),
-                                  provider.mdoc()->readerPublicKey(),
-                                  std::move(requested_elements));
-    return IdentityProvider::NewMdoc(std::move(mdoc));
+IdentityProviderRequestOptionsPtr
+TypeConverter<IdentityProviderRequestOptionsPtr,
+              blink::IdentityProviderRequestOptions>::
+    Convert(const blink::IdentityProviderRequestOptions& options) {
+  auto mojo_options = IdentityProviderRequestOptions::New();
+  mojo_options->config = IdentityProviderConfig::New();
+  CHECK(options.hasConfigURL());
+  if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
+      options.configURL() == "any") {
+    mojo_options->config->use_registered_config_urls = true;
   } else {
-    auto config = IdentityProviderConfig::From(provider);
-    return IdentityProvider::NewFederated(std::move(config));
+    mojo_options->config->config_url = blink::KURL(options.configURL());
   }
+  mojo_options->config->client_id = options.clientId();
+
+  mojo_options->nonce = options.getNonceOr("");
+  mojo_options->login_hint = options.getLoginHintOr("");
+  mojo_options->domain_hint =
+      blink::RuntimeEnabledFeatures::FedCmDomainHintEnabled()
+          ? options.getDomainHintOr("")
+          : "";
+
+  if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
+    if (options.hasScope()) {
+      mojo_options->scope = options.scope();
+    }
+    if (options.hasResponseType()) {
+      mojo_options->responseType = options.responseType();
+    }
+    if (options.hasParams()) {
+      HashMap<String, String> params;
+      for (const auto& pair : options.params()) {
+        params.Set(pair.first, pair.second);
+      }
+      mojo_options->params = std::move(params);
+    }
+  }
+
+  return mojo_options;
+}
+
+// static
+DigitalCredentialProviderPtr
+TypeConverter<DigitalCredentialProviderPtr, blink::DigitalCredentialProvider>::
+    Convert(const blink::DigitalCredentialProvider& provider) {
+  auto mojo_provider = DigitalCredentialProvider::New();
+  if (provider.hasParams()) {
+    HashMap<String, String> params;
+    for (const auto& pair : provider.params()) {
+      params.Set(pair.first, pair.second);
+    }
+    mojo_provider->params = std::move(params);
+  }
+  if (provider.hasSelector()) {
+    mojo_provider->selector = DigitalCredentialSelector::New();
+    if (provider.selector()->hasFormat()) {
+      mojo_provider->selector->format = provider.selector()->format();
+    }
+    if (provider.selector()->hasDoctype()) {
+      mojo_provider->selector->doctype = provider.selector()->doctype();
+    }
+    if (provider.selector()->hasFields()) {
+      WTF::Vector<DigitalCredentialFieldRequirementPtr> fields;
+      for (auto element : provider.selector()->fields()) {
+        auto requested_element = DigitalCredentialFieldRequirement::New();
+        if (element->IsString()) {
+          requested_element->name = element->GetAsString();
+        } else {
+          requested_element->name =
+              element->GetAsDigitalCredentialFieldRequirement()->name();
+          if (element->GetAsDigitalCredentialFieldRequirement()->hasEquals()) {
+            requested_element->equals =
+                element->GetAsDigitalCredentialFieldRequirement()->equals();
+          }
+        }
+
+        fields.push_back(std::move(requested_element));
+      }
+      mojo_provider->selector->fields = std::move(fields);
+    }
+  }
+  if (provider.hasProtocol()) {
+    mojo_provider->protocol = provider.protocol();
+  }
+  if (provider.hasRequest()) {
+    mojo_provider->request = provider.request();
+  }
+  if (provider.hasPublicKey()) {
+    mojo_provider->publicKey = provider.publicKey();
+  }
+  return mojo_provider;
 }
 
 // static
@@ -800,6 +964,18 @@ TypeConverter<RpContext, blink::V8IdentityCredentialRequestOptionsContext>::
   }
 }
 
+// static
+RpMode
+TypeConverter<RpMode, blink::V8IdentityCredentialRequestOptionsMode>::Convert(
+    const blink::V8IdentityCredentialRequestOptionsMode& mode) {
+  switch (mode.AsEnum()) {
+    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kWidget:
+      return RpMode::kWidget;
+    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kButton:
+      return RpMode::kButton;
+  }
+}
+
 IdentityUserInfoPtr
 TypeConverter<IdentityUserInfoPtr, blink::IdentityUserInfo>::Convert(
     const blink::IdentityUserInfo& user_info) {
@@ -813,16 +989,32 @@ TypeConverter<IdentityUserInfoPtr, blink::IdentityUserInfo>::Convert(
 }
 
 // static
-DevicePublicKeyRequestPtr
-TypeConverter<DevicePublicKeyRequestPtr,
-              blink::AuthenticationExtensionsDevicePublicKeyInputs>::
-    Convert(const blink::AuthenticationExtensionsDevicePublicKeyInputs&
-                device_public_key) {
-  auto ret = DevicePublicKeyRequest::New();
-  ret->attestation = ConvertTo<absl::optional<AttestationConveyancePreference>>(
-                         device_public_key.attestation())
+std::optional<SupplementalPubKeysRequestPtr>
+TypeConverter<std::optional<SupplementalPubKeysRequestPtr>,
+              blink::AuthenticationExtensionsSupplementalPubKeysInputs>::
+    Convert(const blink::AuthenticationExtensionsSupplementalPubKeysInputs&
+                supplemental_pub_keys) {
+  bool device_scope_requested = false;
+  bool provider_scope_requested = false;
+  for (auto& scope : supplemental_pub_keys.scopes()) {
+    if (scope == "device") {
+      device_scope_requested = true;
+    } else if (scope == "provider") {
+      provider_scope_requested = true;
+    }
+  }
+
+  if (!device_scope_requested && !provider_scope_requested) {
+    return std::nullopt;
+  }
+
+  auto ret = SupplementalPubKeysRequest::New();
+  ret->device_scope_requested = device_scope_requested;
+  ret->provider_scope_requested = provider_scope_requested;
+  ret->attestation = ConvertTo<std::optional<AttestationConveyancePreference>>(
+                         supplemental_pub_keys.attestation())
                          .value_or(AttestationConveyancePreference::NONE);
-  ret->attestation_formats = device_public_key.attestationFormats();
+  ret->attestation_formats = supplemental_pub_keys.attestationFormats();
   return ret;
 }
 
@@ -859,6 +1051,40 @@ TypeConverter<Vector<PRFValuesPtr>, blink::AuthenticationExtensionsPRFInputs>::
   }
 
   std::sort(ret.begin(), ret.end(), SortPRFValuesByCredentialId);
+  return ret;
+}
+
+// static
+IdentityCredentialDisconnectOptionsPtr
+TypeConverter<IdentityCredentialDisconnectOptionsPtr,
+              blink::IdentityCredentialDisconnectOptions>::
+    Convert(const blink::IdentityCredentialDisconnectOptions& options) {
+  auto mojo_disconnect_options = IdentityCredentialDisconnectOptions::New();
+
+  mojo_disconnect_options->config = IdentityProviderConfig::New();
+  mojo_disconnect_options->config->config_url =
+      blink::KURL(options.configURL());
+  mojo_disconnect_options->config->client_id = options.clientId();
+
+  mojo_disconnect_options->account_hint = options.accountHint();
+  return mojo_disconnect_options;
+}
+
+Vector<Hint> TypeConverter<Vector<Hint>, Vector<String>>::Convert(
+    const Vector<String>& hints) {
+  Vector<Hint> ret;
+
+  for (const String& hint : hints) {
+    if (hint == "security-key") {
+      ret.push_back(Hint::SECURITY_KEY);
+    } else if (hint == "client-device") {
+      ret.push_back(Hint::CLIENT_DEVICE);
+    } else if (hint == "hybrid") {
+      ret.push_back(Hint::HYBRID);
+    }
+    // Unrecognised values are ignored.
+  }
+
   return ret;
 }
 

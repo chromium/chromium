@@ -222,10 +222,7 @@ std::string Nigori::GetKeyName() const {
   std::string output;
   output.assign(ciphertext);
   output.append(hash.begin(), hash.end());
-
-  std::string base64_encoded_output;
-  Base64Encode(output, &base64_encoded_output);
-  return base64_encoded_output;
+  return base::Base64Encode(output);
 }
 
 // Enc[Kenc,Kmac](value)
@@ -249,10 +246,7 @@ std::string Nigori::Encrypt(const std::string& value) const {
   output.assign(iv);
   output.append(ciphertext);
   output.append(hash.begin(), hash.end());
-
-  std::string base64_encoded_output;
-  Base64Encode(output, &base64_encoded_output);
-  return base64_encoded_output;
+  return base::Base64Encode(output);
 }
 
 bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {

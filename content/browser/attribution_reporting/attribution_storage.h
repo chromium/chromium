@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -25,9 +25,8 @@ class AttributionStorageDelegate;
 class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
+class StoreSourceResult;
 class StoredSource;
-
-struct StoreSourceResult;
 
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
@@ -45,7 +44,11 @@ class AttributionStorage {
   // pair. When a source is stored, all matching sources that have already
   // converted are marked as inactive, and are no longer eligible for reporting.
   // Unconverted matching sources are not modified.
-  virtual StoreSourceResult StoreSource(const StorableSource& source) = 0;
+  //
+  // TODO(linnan): Remove default argument for `debug_cookie_set`.
+  // Alternatively, consider making this a field in `StorableSource`.
+  virtual StoreSourceResult StoreSource(const StorableSource& source,
+                                        bool debug_cookie_set = false) = 0;
 
   // Finds all stored sources matching a given `trigger`, and stores the
   // new associated report. Only active sources will receive new attributions.
@@ -62,7 +65,7 @@ class AttributionStorage {
       int limit = -1) = 0;
 
   // Returns the first report time strictly after `time`.
-  virtual absl::optional<base::Time> GetNextReportTime(base::Time time) = 0;
+  virtual std::optional<base::Time> GetNextReportTime(base::Time time) = 0;
 
   // Returns the reports with the given IDs. This call is logically const, and
   // does not modify the underlying storage.
@@ -103,7 +106,7 @@ class AttributionStorage {
   // method returns null, no delay is applied. Otherwise, applies a random value
   // between `min_delay` and `max_delay`, both inclusive. Returns the new first
   // report time in storage, if any.
-  virtual absl::optional<base::Time> AdjustOfflineReportTimes() = 0;
+  virtual std::optional<base::Time> AdjustOfflineReportTimes() = 0;
 
   // Deletes all data in storage for reporting origins matching `filter`,
   // between `delete_begin` and `delete_end` time. More specifically, this:

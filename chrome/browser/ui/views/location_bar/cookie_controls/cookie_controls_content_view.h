@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 
@@ -20,10 +21,13 @@ class ImageView;
 
 // Content view used to display the cookie Controls.
 class CookieControlsContentView : public views::View {
+  METADATA_HEADER(CookieControlsContentView, views::View)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitle);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDescription);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleLabel);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFeedbackButton);
   CookieControlsContentView();
 
@@ -61,6 +65,7 @@ class CookieControlsContentView : public views::View {
   void AddContentLabels();
   void AddToggleRow();
   void AddFeedbackSection();
+  raw_ptr<views::View> label_wrapper_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<RichControlsContainerView> toggle_row_ = nullptr;

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -158,6 +159,7 @@ class ThreadableLoaderTestHelper final {
     loader_ = nullptr;
   }
   void ClearLoader() { loader_ = nullptr; }
+
   Checkpoint& GetCheckpoint() { return checkpoint_; }
   void CallCheckpoint(int n) { checkpoint_.Call(n); }
 
@@ -174,6 +176,7 @@ class ThreadableLoaderTestHelper final {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   Checkpoint checkpoint_;
   Persistent<ThreadableLoader> loader_;
@@ -198,6 +201,7 @@ class ThreadableLoaderTest : public testing::Test {
   void CancelLoader() { helper_->CancelLoader(); }
   void CancelAndClearLoader() { helper_->CancelAndClearLoader(); }
   void ClearLoader() { helper_->ClearLoader(); }
+
   Checkpoint& GetCheckpoint() { return helper_->GetCheckpoint(); }
   void CallCheckpoint(int n) { helper_->CallCheckpoint(n); }
 
@@ -471,6 +475,8 @@ TEST_F(ThreadableLoaderTest, ClearInRedirectDidFinishLoading) {
   CallCheckpoint(2);
   ServeRequests();
 }
+
+// TODO(crbug.com/1356128): Add unit tests to cover histogram logging.
 
 }  // namespace
 

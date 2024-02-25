@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/guest_view/browser/guest_view_message_handler.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
@@ -39,10 +40,10 @@ struct SetSizeParams {
   SetSizeParams();
   ~SetSizeParams();
 
-  absl::optional<bool> enable_auto_size;
-  absl::optional<gfx::Size> min_size;
-  absl::optional<gfx::Size> max_size;
-  absl::optional<gfx::Size> normal_size;
+  std::optional<bool> enable_auto_size;
+  std::optional<gfx::Size> min_size;
+  std::optional<gfx::Size> max_size;
+  std::optional<gfx::Size> normal_size;
 };
 
 // A GuestViewBase is the base class browser-side API implementation for a
@@ -199,17 +200,27 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   content::NavigationController& GetController();
 
-  GuestViewManager* GetGuestViewManager();
+  GuestViewManager* GetGuestViewManager() const;
+
+  // Returns the URL of the owner RenderFrameHost's last committed URL.
+  const GURL& GetOwnerLastCommittedURL() const;
 
   // Returns the URL of the owner RenderFrameHost's SiteInstance.
   const GURL& GetOwnerSiteURL() const;
 
-  // Returns the host of the owner WebContents. For extensions, this is the
-  // extension ID.
+  // Returns the host of the owner WebContents. If the owner RenderFrameHost is
+  // for an extension, returns the host of its URL, which is an extension ID. If
+  // the owner RenderFrameHost is a non-extension embedder of a Controlled
+  // Frame, returns its serialized origin.
+  // TODO(crbug.com/1517391): Expose this information as a url::Origin.
   std::string owner_host() const { return owner_host_; }
 
   // Whether the guest view is inside a plugin document.
   bool is_full_page_plugin() const { return is_full_page_plugin_; }
+
+  bool IsOwnedByExtension() const;
+  bool IsOwnedByWebUI() const;
+  bool IsOwnedByControlledFrameEmbedder() const;
 
   // Saves the attach state of the custom element hosting this GuestView.
   void SetAttachParams(const base::Value::Dict& params);
@@ -234,6 +245,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // interstitial instead of a plain error page.
   virtual bool RequiresSslInterstitials() const;
 
+  // Returns false if permission management should automatically drop
+  // permission requests of the given `type`.
+  virtual bool IsPermissionRequestable(ContentSettingsType type) const;
+
   content::RenderFrameHost* GetGuestMainFrame() const;
 
  protected:
@@ -243,7 +258,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   void SetOpener(GuestViewBase* opener);
 
-  const absl::optional<
+  const std::optional<
       std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
   GetCreateParams() const;
 
@@ -316,6 +331,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // only ever fire if IsPreferredSizeSupported returns true.
   virtual void OnPreferredSizeChanged(const gfx::Size& pref_size) {}
 
+  // This method is invoked when the owner contents audio muted state changes to
+  // give the container an opportunity to adjust their muted state.
+  virtual void OnOwnerAudioMutedStateUpdated(bool muted);
+
   // Signals that the guest view is ready.  The default implementation signals
   // immediately, but derived class can override this if they need to do
   // asynchronous setup.
@@ -371,11 +390,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) final;
-  bool ShouldFocusPageAfterCrash() final;
+  bool ShouldFocusPageAfterCrash(content::WebContents* source) final;
   void UpdatePreferredSize(content::WebContents* web_contents,
                            const gfx::Size& pref_size) final;
   void UpdateTargetURL(content::WebContents* source, const GURL& url) final;
-  bool ShouldResumeRequestsForCreatedWindow() final;
 
   // WebContentsObserver implementation.
   void DidStopLoading() final;
@@ -478,7 +496,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // The params used when creating the guest contents. These are saved here in
   // case we need to recreate the guest contents. Not all guest types need to
   // store these.
-  absl::optional<
+  std::optional<
       std::pair<base::Value::Dict, content::WebContents::CreateParams>>
       create_params_;
 

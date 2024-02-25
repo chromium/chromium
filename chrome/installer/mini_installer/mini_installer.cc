@@ -58,8 +58,9 @@ namespace mini_installer {
 void DeleteWithRetryAndMetrics(const wchar_t* path, int& max_delete_attempts) {
   int attempts = 0;
   DeleteWithRetry(path, attempts);
-  if (attempts > max_delete_attempts)
+  if (attempts > max_delete_attempts) {
     max_delete_attempts = attempts;
+  }
 }
 
 // TODO(grt): Frame this in terms of whether or not the brand supports
@@ -84,8 +85,9 @@ void WriteInstallResults(const Configuration& configuration,
                          ProcessExitResult result) {
   // Calls to setup.exe will write a "success" result if everything was good
   // so we don't need to write anything from here.
-  if (result.IsSuccess())
+  if (result.IsSuccess()) {
     return;
+  }
 
   // Write the value in Chrome ClientState key.
   RegKey key;
@@ -137,8 +139,9 @@ constexpr DWORD MetricToExtraCode1(MetricCategory category,
 void WriteExtraCode1(const Configuration& configuration, DWORD extra_code_1) {
   // Write the value in Chrome ClientState key.
   RegKey key;
-  if (OpenInstallStateKey(configuration, &key))
+  if (OpenInstallStateKey(configuration, &key)) {
     key.WriteDWValue(kInstallerExtraCode1RegistryValue, extra_code_1);
+  }
 }
 
 // This function sets the flag in registry to indicate that Google Update
@@ -148,8 +151,9 @@ void SetInstallerFlags(const Configuration& configuration) {
   StackString<128> value;
 
   RegKey key;
-  if (!OpenInstallStateKey(configuration, &key))
+  if (!OpenInstallStateKey(configuration, &key)) {
     return;
+  }
 
   // TODO(grt): Trim legacy modifiers (chrome,chromeframe,apphost,applauncher,
   // multi,readymode,stage,migrating,multifail) from the ap value.
@@ -162,8 +166,9 @@ void SetInstallerFlags(const Configuration& configuration) {
   // 2. When ap value is missing, we are going to create it with the required
   //    tag.
   if ((ret == ERROR_SUCCESS) || (ret == ERROR_FILE_NOT_FOUND)) {
-    if (ret == ERROR_FILE_NOT_FOUND)
+    if (ret == ERROR_FILE_NOT_FOUND) {
       value.clear();
+    }
 
     if (!StrEndsWith(value.get(), kFullInstallerSuffix) &&
         value.append(kFullInstallerSuffix)) {
@@ -183,23 +188,27 @@ ProcessExitResult GetSetupExePathForAppGuid(bool system_level,
   const HKEY root_key = system_level ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
   RegKey key;
   LONG result = OpenClientStateKey(root_key, app_guid, KEY_QUERY_VALUE, &key);
-  if (result == ERROR_SUCCESS)
+  if (result == ERROR_SUCCESS) {
     result = key.ReadSZValue(kUninstallRegistryValue, path, size);
-  if (result != ERROR_SUCCESS)
+  }
+  if (result != ERROR_SUCCESS) {
     return ProcessExitResult(UNABLE_TO_FIND_REGISTRY_KEY, result);
+  }
 
   // Check that the path to the existing installer includes the expected
   // version number.  It's not necessary for accuracy to verify before/after
   // delimiters.
-  if (!SearchStringI(path, previous_version))
+  if (!SearchStringI(path, previous_version)) {
     return ProcessExitResult(PATCH_NOT_FOR_INSTALLED_VERSION);
+  }
 
   // Strip double-quotes surrounding the string, if present.
   if (size >= 1 && path[0] == '\"') {
     size_t path_length = SafeStrLen(path, size);
     if (path_length >= 2 && path[path_length - 1] == '\"') {
-      if (!SafeStrCopy(path, size, path + 1))
+      if (!SafeStrCopy(path, size, path + 1)) {
         return ProcessExitResult(PATH_STRING_OVERFLOW);
+      }
       path[path_length - 2] = '\0';
     }
   }
@@ -288,8 +297,9 @@ void AppendCommandLineFlags(const wchar_t* command_line,
     ++command_line;
     while (true) {
       a_char = *command_line;
-      if (!a_char)
+      if (!a_char) {
         break;
+      }
       ++command_line;
       if (a_char == L'"') {
         a_char = *command_line;
@@ -300,32 +310,35 @@ void AppendCommandLineFlags(const wchar_t* command_line,
     // Scan forward for the first space or tab character.
     while (true) {
       a_char = *command_line;
-      if (!a_char || a_char == L' ' || a_char == L'\t')
+      if (!a_char || a_char == L' ' || a_char == L'\t') {
         break;
+      }
       ++command_line;
     }  // postcondition: |a_char| contains the character at *command_line.
   }
 
-  if (!a_char)
+  if (!a_char) {
     return;
+  }
 
   // Append a space if |command_line| doesn't begin with one.
-  if (a_char != ' ' && a_char != '\t' && !buffer->append(L" "))
+  if (a_char != ' ' && a_char != '\t' && !buffer->append(L" ")) {
     return;
+  }
   buffer->append(command_line);
 }
 
 namespace {
 
 // A ResourceEnumeratorDelegate that captures the resource name and data range
-// for the chrome 7zip archive and the optional setup patch 7zip archive.
-class LzmaResourceDelegate : public ResourceEnumeratorDelegate {
+// for the chrome 7zip archive and the setup.
+class ChromeResourceDelegate : public ResourceEnumeratorDelegate {
  public:
-  LzmaResourceDelegate(PathString& archive_name,
-                       MemoryRange& archive_range,
-                       PathString& setup_name,
-                       MemoryRange& setup_range,
-                       DWORD& error_code)
+  ChromeResourceDelegate(PathString& archive_name,
+                         MemoryRange& archive_range,
+                         PathString& setup_name,
+                         MemoryRange& setup_range,
+                         DWORD& error_code)
       : archive_name_(archive_name),
         archive_range_(archive_range),
         setup_name_(setup_name),
@@ -343,8 +356,8 @@ class LzmaResourceDelegate : public ResourceEnumeratorDelegate {
 
 // Returns false to stop enumeration on unexpected resource names, duplicate
 // archive resources, or string overflow.
-bool LzmaResourceDelegate::OnResource(const wchar_t* name,
-                                      const MemoryRange& data_range) {
+bool ChromeResourceDelegate::OnResource(const wchar_t* name,
+                                        const MemoryRange& data_range) {
   if (StrStartsWith(name, kChromeArchivePrefix)) {
     if (!archive_range_.empty()) {
       error_code_ = ERROR_TOO_MANY_NAMES;
@@ -359,43 +372,6 @@ bool LzmaResourceDelegate::OnResource(const wchar_t* name,
     if (!setup_range_.empty()) {
       error_code_ = ERROR_TOO_MANY_NAMES;
       return false;  // Break: duplicate resource name.
-    }
-    if (!setup_name_.assign(name)) {
-      error_code_ = ERROR_FILENAME_EXCED_RANGE;
-      return false;  // Break: resource name is too long.
-    }
-    setup_range_ = data_range;
-  } else {
-    error_code_ = ERROR_INVALID_DATA;
-    return false;  // Break: unexpected resource name.
-  }
-  return true;  // Continue: advance to the next resource.
-}
-
-// A ResourceEnumeratorDelegate that captures the resource name and data range
-// for the compressed setup executable.
-class LzResourceDelegate : public ResourceEnumeratorDelegate {
- public:
-  LzResourceDelegate(PathString& setup_name,
-                     MemoryRange& setup_range,
-                     DWORD& error_code)
-      : setup_name_(setup_name),
-        setup_range_(setup_range),
-        error_code_(error_code) {}
-  bool OnResource(const wchar_t* name, const MemoryRange& data_range) override;
-
- private:
-  PathString& setup_name_;
-  MemoryRange& setup_range_;
-  DWORD& error_code_;
-};
-
-bool LzResourceDelegate::OnResource(const wchar_t* name,
-                                    const MemoryRange& data_range) {
-  if (StrStartsWith(name, kSetupPrefix)) {
-    if (!setup_range_.empty()) {
-      error_code_ = ERROR_TOO_MANY_NAMES;
-      return false;  // Break: unexpected or duplicate resource name.
     }
     if (!setup_name_.assign(name)) {
       error_code_ = ERROR_FILENAME_EXCED_RANGE;
@@ -425,7 +401,6 @@ class ResourceWriterDelegate : public ResourceEnumeratorDelegate {
 bool ResourceWriterDelegate::OnResource(const wchar_t* name,
                                         const MemoryRange& data_range) {
   PathString full_path;
-
   return (!data_range.empty() && full_path.assign(base_path_) &&
           full_path.append(name) && WriteToDisk(data_range, full_path.get()));
 }
@@ -445,7 +420,6 @@ class ResourceDeleterDelegate : public ResourceEnumeratorDelegate {
 bool ResourceDeleterDelegate::OnResource(const wchar_t* name,
                                          const MemoryRange& data_range) {
   PathString full_path;
-
   if (full_path.assign(base_path_) && full_path.append(name)) {
     // Do not record metrics for these deletes, as they are not done for release
     // builds.
@@ -457,149 +431,155 @@ bool ResourceDeleterDelegate::OnResource(const wchar_t* name,
 }
 #endif  // defined(COMPONENT_BUILD)
 
+// Applies an differential update to the previous setup.exe provided by
+// `patch_path` and produces a new setup.exe at the path `target_path`.
+ProcessExitResult PatchSetup(const Configuration& configuration,
+                             const PathString& patch_path,
+                             const PathString& dest_path,
+                             int& max_delete_attempts) {
+  CommandString cmd_line;
+  PathString exe_path;
+  ProcessExitResult exit_code = GetPreviousSetupExePath(
+      configuration, exe_path.get(), exe_path.capacity());
+  if (!exit_code.IsSuccess()) {
+    return exit_code;
+  }
+
+  if (!cmd_line.append(L"\"") || !cmd_line.append(exe_path.get()) ||
+      !cmd_line.append(L"\" --") || !cmd_line.append(kCmdUpdateSetupExe) ||
+      !cmd_line.append(L"=\"") || !cmd_line.append(patch_path.get()) ||
+      !cmd_line.append(L"\" --") || !cmd_line.append(kCmdNewSetupExe) ||
+      !cmd_line.append(L"=\"") || !cmd_line.append(dest_path.get()) ||
+      !cmd_line.append(L"\"")) {
+    exit_code = ProcessExitResult(COMMAND_STRING_OVERFLOW);
+  }
+
+  if (!exit_code.IsSuccess()) {
+    return exit_code;
+  }
+
+  // Get any command line option specified for mini_installer and pass them
+  // on to setup.exe.
+  AppendCommandLineFlags(configuration.command_line(), &cmd_line);
+
+  exit_code = RunProcessAndWait(exe_path.get(), cmd_line.get(),
+                                SETUP_PATCH_FAILED_FILE_NOT_FOUND,
+                                SETUP_PATCH_FAILED_PATH_NOT_FOUND,
+                                SETUP_PATCH_FAILED_COULD_NOT_CREATE_PROCESS);
+  DeleteWithRetryAndMetrics(patch_path.get(), max_delete_attempts);
+
+  return exit_code;
+}
+
 }  // namespace
 
-// Finds and writes to disk resources of various types. Returns false
-// if there is a problem in writing any resource to disk. setup.exe resource
-// can come in one of three possible forms:
-// - Resource type 'B7', compressed using LZMA (*.7z)
-// - Resource type 'BL', compressed using LZ (*.ex_)
-// - Resource type 'BN', uncompressed (*.exe)
-// If setup.exe is present in more than one form, the precedence order is
-// BN < BL < B7
-// For more details see chrome/tools/build/win/create_installer_archive.py.
-// For component builds (where setup.ex_ is always used), all files stored as
-// uncompressed 'BN' resources are also extracted. This is generally the set of
-// DLLs/resources needed by setup.exe to run.
-// |max_delete_attempts| is set to the highest number of attempts needed by
-// DeleteWithRetry to delete files that are unpacked and processed
-// (setup_patch.packed.7z or setup.ex_).
-ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
-                                        HMODULE module,
+ProcessExitResult UnpackBinaryResources(HMODULE module,
                                         const wchar_t* base_path,
-                                        PathString* archive_path,
-                                        PathString* setup_path,
+                                        PathString& setup_path,
+                                        ResourceTypeString& setup_type,
+                                        PathString& archive_path,
+                                        ResourceTypeString& archive_type,
                                         int& max_delete_attempts) {
   // Generate the setup.exe path where we patch/uncompress setup resource.
-  PathString setup_dest_path;
-  if (!setup_dest_path.assign(base_path) || !setup_dest_path.append(kSetupExe))
-    return ProcessExitResult(PATH_STRING_OVERFLOW);
-
-  PathString archive_name;
-  MemoryRange archive_range;
   PathString setup_name;
   MemoryRange setup_range;
-  DWORD error_code;
+  PathString archive_name;
+  MemoryRange archive_range;
 
-  // Scan through type 'B7' resources looking for the mandatory chrome archive
-  // and the optional compressed setup patch.
-  error_code = ERROR_FILE_NOT_FOUND;
-  if (!EnumerateResources(
-          LzmaResourceDelegate(archive_name, archive_range, setup_name,
+  // Scan through all types of resources looking for the chrome archive (which
+  // is expected to be either a B7 chrome.packed.7z or a BN chrome.7z) and
+  // installer (which is expected to be a B7 setup_patch.packed.7z, a BL
+  // setup.ex_, or a BN setup.exe).
+  for (const auto* type :
+       {kLZMAResourceType, kLZCResourceType, kBinResourceType}) {
+    DWORD error_code = ERROR_SUCCESS;
+    // We ignore the result of EnumerateResources here because a non-success
+    // does not always indicate an error occurred.
+    EnumerateResources(
+        ChromeResourceDelegate(archive_name, archive_range, setup_name,
                                setup_range, error_code),
-          module, kLZMAResourceType) ||
-      archive_range.empty()) {
-    // Exit if the archive was not found.
-    return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE, error_code);
+        module, type);
+    // `error_code` will have been modified by the delegate in case of error.
+    if (error_code != ERROR_SUCCESS) {
+      return ProcessExitResult(archive_type.empty()
+                                   ? UNABLE_TO_EXTRACT_CHROME_ARCHIVE
+                                   : UNABLE_TO_EXTRACT_SETUP_EXE,
+                               error_code);
+    }
+    // If this iteration found either resource, remember its type.
+    if (archive_type.empty() && !archive_range.empty()) {
+      if (!archive_type.assign(type)) {
+        return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP,
+                                 UNABLE_TO_EXTRACT_CHROME_ARCHIVE);
+      }
+    }
+    if (setup_type.empty() && !setup_range.empty()) {
+      if (!setup_type.assign(type)) {
+        return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, ERROR_INCORRECT_SIZE);
+      }
+    }
+    // Keep searching even if both were found so that an ChromeResourceDelegate
+    // will propagate an error from `EnumerateResources` in case of duplicate
+    // resources.
+  }
+  if (archive_range.empty()) {
+    return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE,
+                             ERROR_FILE_NOT_FOUND);
+  }
+  if (setup_range.empty()) {
+    return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP_EXE, ERROR_FILE_NOT_FOUND);
   }
 
   // Write the archive to disk.
-  if (!archive_path->assign(base_path) ||
-      !archive_path->append(archive_name.get())) {
+  if (!archive_path.assign(base_path) ||
+      !archive_path.append(archive_name.get())) {
     return ProcessExitResult(PATH_STRING_OVERFLOW);
   }
-  if (!WriteToDisk(archive_range, archive_path->get())) {
+  if (!WriteToDisk(archive_range, archive_path.get())) {
     return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE,
                              ::GetLastError());
   }
 
-  ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
-
-  // If a compressed setup patch was found, run the previous setup.exe to
-  // generate the new setup.exe.
-  if (!setup_range.empty()) {
-    // Write the patch to disk.
-    if (!setup_path->assign(base_path) ||
-        !setup_path->append(setup_name.get())) {
-      return ProcessExitResult(PATH_STRING_OVERFLOW);
-    }
-    if (!WriteToDisk(setup_range, setup_path->get())) {
-      return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, ::GetLastError());
-    }
-
-    CommandString cmd_line;
-    PathString exe_path;
-    // Get the path to setup.exe first.
-    exit_code = GetPreviousSetupExePath(configuration, exe_path.get(),
-                                        exe_path.capacity());
-    if (exit_code.IsSuccess()) {
-      if (!cmd_line.append(L"\"") || !cmd_line.append(exe_path.get()) ||
-          !cmd_line.append(L"\" --") || !cmd_line.append(kCmdUpdateSetupExe) ||
-          !cmd_line.append(L"=\"") || !cmd_line.append(setup_path->get()) ||
-          !cmd_line.append(L"\" --") || !cmd_line.append(kCmdNewSetupExe) ||
-          !cmd_line.append(L"=\"") || !cmd_line.append(setup_dest_path.get()) ||
-          !cmd_line.append(L"\"")) {
-        exit_code = ProcessExitResult(COMMAND_STRING_OVERFLOW);
-      }
-    }
-
-    // Get any command line option specified for mini_installer and pass them
-    // on to setup.exe.
-    AppendCommandLineFlags(configuration.command_line(), &cmd_line);
-
-    if (exit_code.IsSuccess()) {
-      exit_code = RunProcessAndWait(
-          exe_path.get(), cmd_line.get(), SETUP_PATCH_FAILED_FILE_NOT_FOUND,
-          SETUP_PATCH_FAILED_PATH_NOT_FOUND,
-          SETUP_PATCH_FAILED_COULD_NOT_CREATE_PROCESS);
-    }
-    DeleteWithRetryAndMetrics(setup_path->get(), max_delete_attempts);
-    if (exit_code.IsSuccess())
-      setup_path->assign(setup_dest_path);
-    else
-      setup_path->clear();
-
-    return exit_code;
-  }
-
-  // setup.exe wasn't sent as 'B7', lets see if it was sent as 'BL'
-  // (compressed setup).
-  error_code = ERROR_FILE_NOT_FOUND;
-  if (!EnumerateResources(
-          LzResourceDelegate(setup_name, setup_range, error_code), module,
-          kLZCResourceType) ||
-      setup_range.empty()) {
-    return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, error_code);
-  }
-
-  // Write the compressed binary to disk.
-  if (!setup_path->assign(base_path) || !setup_path->append(setup_name.get())) {
+  // Extract directly to "setup.exe" if the resource is not compressed.
+  if (!setup_path.assign(base_path) ||
+      !setup_path.append(setup_type.compare(kBinResourceType) == 0
+                             ? kSetupExe
+                             : setup_name.get())) {
     return ProcessExitResult(PATH_STRING_OVERFLOW);
   }
-  if (!WriteToDisk(setup_range, setup_path->get())) {
+
+  // Write the setup binary, possibly compressed, to disk.
+  if (!WriteToDisk(setup_range, setup_path.get())) {
     return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, ::GetLastError());
   }
 
-  // Uncompress LZ compressed resource. Setup is packed with 'MSCF'
-  // as opposed to old DOS way of 'SZDD'. Hence we don't use LZCopy.
-  bool success =
-      mini_installer::Expand(setup_path->get(), setup_dest_path.get());
-  DeleteWithRetryAndMetrics(setup_path->get(), max_delete_attempts);
+  ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
-  if (success)
-    setup_path->assign(setup_dest_path);
-  else
-    exit_code = ProcessExitResult(UNABLE_TO_EXTRACT_SETUP_EXE);
+  if (setup_type.compare(kLZCResourceType) == 0) {
+    PathString setup_dest_path;
+    if (!setup_dest_path.assign(base_path) ||
+        !setup_dest_path.append(kSetupExe)) {
+      return ProcessExitResult(PATH_STRING_OVERFLOW);
+    }
+    bool success =
+        mini_installer::Expand(setup_path.get(), setup_dest_path.get());
+    DeleteWithRetryAndMetrics(setup_path.get(), max_delete_attempts);
+
+    if (!success) {
+      exit_code = ProcessExitResult(UNABLE_TO_EXTRACT_SETUP_EXE);
+    }
+    setup_path.assign(setup_dest_path);
+  }
 
 #if defined(COMPONENT_BUILD)
   if (exit_code.IsSuccess()) {
     // Extract the modules in component build required by setup.exe.
     if (!EnumerateResources(ResourceWriterDelegate(base_path), module,
-                            kBinResourceType)) {
+                            kDepResourceType)) {
       return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, ::GetLastError());
     }
   }
-#endif
+#endif  // defined(COMPONENT_BUILD)
 
   return exit_code;
 }
@@ -607,25 +587,27 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
 // Executes setup.exe, waits for it to finish and returns the exit code.
 ProcessExitResult RunSetup(const Configuration& configuration,
                            const wchar_t* archive_path,
-                           const wchar_t* setup_path) {
+                           const wchar_t* setup_path,
+                           bool compressed_archive) {
   // Get the path to setup.exe.
   PathString setup_exe;
 
   if (*setup_path != L'\0') {
-    if (!setup_exe.assign(setup_path))
+    if (!setup_exe.assign(setup_path)) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+    }
   } else {
     ProcessExitResult exit_code = GetPreviousSetupExePath(
         configuration, setup_exe.get(), setup_exe.capacity());
-    if (!exit_code.IsSuccess())
+    if (!exit_code.IsSuccess()) {
       return exit_code;
+    }
   }
 
   // There could be three full paths in the command line for setup.exe (path
   // to exe itself, path to archive and path to log file), so we declare
   // total size as three + one additional to hold command line options.
   CommandString cmd_line;
-
   // Put the quoted path to setup.exe in cmd_line first.
   if (!cmd_line.assign(L"\"") || !cmd_line.append(setup_exe.get()) ||
       !cmd_line.append(L"\"")) {
@@ -633,7 +615,9 @@ ProcessExitResult RunSetup(const Configuration& configuration,
   }
 
   // Append the command line param for chrome archive file.
-  if (!cmd_line.append(L" --") || !cmd_line.append(kCmdInstallArchive) ||
+  const wchar_t* const archive_switch =
+      compressed_archive ? kCmdInstallArchive : kCmdUncompressedArchive;
+  if (!cmd_line.append(L" --") || !cmd_line.append(archive_switch) ||
       !cmd_line.append(L"=\"") || !cmd_line.append(archive_path) ||
       !cmd_line.append(L"\"")) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
@@ -665,16 +649,18 @@ void DeleteExtractedFiles(HMODULE module,
                           const PathString& setup_path,
                           const PathString& base_path,
                           int& max_delete_attempts) {
-  if (!archive_path.empty())
+  if (!archive_path.empty()) {
     DeleteWithRetryAndMetrics(archive_path.get(), max_delete_attempts);
-  if (!setup_path.empty())
+  }
+  if (!setup_path.empty()) {
     DeleteWithRetryAndMetrics(setup_path.get(), max_delete_attempts);
+  }
 
 #if defined(COMPONENT_BUILD)
   // Delete the modules in a component build extracted for use by setup.exe.
   EnumerateResources(ResourceDeleterDelegate(base_path.get()), module,
-                     kBinResourceType);
-#endif
+                     kDepResourceType);
+#endif  // defined(COMPONENT_BUILD)
 
   // Delete the temp dir (if it is empty, otherwise fail).
   DeleteWithRetryAndMetrics(base_path.get(), max_delete_attempts);
@@ -696,8 +682,9 @@ bool IsAclSupportedForPath(const wchar_t* path) {
 // NOTE: On success the |sid| parameter must be freed with LocalFree().
 bool GetCurrentOwnerSid(wchar_t** sid) {
   HANDLE token;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
+  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token)) {
     return false;
+  }
 
   DWORD size = 0;
   bool result = false;
@@ -707,8 +694,9 @@ bool GetCurrentOwnerSid(wchar_t** sid) {
   if (size && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
     if (TOKEN_OWNER* owner =
             reinterpret_cast<TOKEN_OWNER*>(::LocalAlloc(LPTR, size))) {
-      if (::GetTokenInformation(token, TokenOwner, owner, size, &size))
+      if (::GetTokenInformation(token, TokenOwner, owner, size, &size)) {
         result = !!::ConvertSidToStringSid(owner->Owner, sid);
+      }
       ::LocalFree(owner);
     }
   }
@@ -722,12 +710,14 @@ bool GetCurrentOwnerSid(wchar_t** sid) {
 bool SetSecurityDescriptor(const wchar_t* path, PSECURITY_DESCRIPTOR* sd) {
   *sd = nullptr;
   // We succeed without doing anything if ACLs aren't supported.
-  if (!IsAclSupportedForPath(path))
+  if (!IsAclSupportedForPath(path)) {
     return true;
+  }
 
   wchar_t* sid = nullptr;
-  if (!GetCurrentOwnerSid(&sid))
+  if (!GetCurrentOwnerSid(&sid)) {
     return false;
+  }
 
   // The largest SID is under 200 characters, so 300 should give enough slack.
   StackString<300> sddl;
@@ -752,13 +742,15 @@ bool SetSecurityDescriptor(const wchar_t* path, PSECURITY_DESCRIPTOR* sd) {
 bool GetModuleDir(HMODULE module, PathString* directory) {
   DWORD len = ::GetModuleFileName(module, directory->get(),
                                   static_cast<DWORD>(directory->capacity()));
-  if (!len || len >= directory->capacity())
+  if (!len || len >= directory->capacity()) {
     return false;  // Failed to get module path.
+  }
 
   // Chop off the basename of the path.
   wchar_t* name = GetNameFromPathExt(directory->get(), len);
-  if (name == directory->get())
+  if (name == directory->get()) {
     return false;  // No path separator found.
+  }
 
   *name = L'\0';
 
@@ -779,8 +771,9 @@ bool CreateWorkDir(const wchar_t* base_path,
                    PathString* work_dir,
                    ProcessExitResult* exit_code) {
   *exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
-  if (!work_dir->assign(base_path) || !work_dir->append(kTempPrefix))
+  if (!work_dir->assign(base_path) || !work_dir->append(kTempPrefix)) {
     return false;
+  }
 
   // Store the location where we'll append the id.
   size_t end = work_dir->length();
@@ -789,8 +782,9 @@ bool CreateWorkDir(const wchar_t* base_path,
   // The name of the directory will use up 11 chars and then we need to append
   // the trailing backslash and a terminator.  We've already added the prefix
   // to the buffer, so let's just make sure we've got enough space for the rest.
-  if ((work_dir->capacity() - end) < (_countof("fffff.tmp") + 1))
+  if ((work_dir->capacity() - end) < (_countof("fffff.tmp") + 1)) {
     return false;
+  }
 
   // Add an ACL if supported by the filesystem. Otherwise system-level installs
   // are potentially vulnerable to file squatting attacks.
@@ -831,8 +825,10 @@ bool CreateWorkDir(const wchar_t* base_path,
     }
   }
 
-  if (sa.lpSecurityDescriptor)
+  if (sa.lpSecurityDescriptor) {
     LocalFree(sa.lpSecurityDescriptor);
+  }
+
   return exit_code->IsSuccess();
 }
 
@@ -855,18 +851,21 @@ ProcessExitResult WMain(HMODULE module) {
 
   // Parse configuration from the command line and resources.
   Configuration configuration;
-  if (!configuration.Initialize(module))
+  if (!configuration.Initialize(module)) {
     return ProcessExitResult(GENERIC_INITIALIZATION_FAILURE, ::GetLastError());
+  }
 
   // Exit early if an invalid switch (e.g., "--chrome-frame") was found on the
   // command line.
-  if (configuration.has_invalid_switch())
+  if (configuration.has_invalid_switch()) {
     return ProcessExitResult(INVALID_OPTION);
+  }
 
   // First get a path where we can extract payload
   PathString base_path;
-  if (!GetWorkDir(module, &base_path, &exit_code))
+  if (!GetWorkDir(module, &base_path, &exit_code)) {
     return exit_code;
+  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Set the magic suffix in registry to try full installer next time. We ignore
@@ -878,19 +877,41 @@ ProcessExitResult WMain(HMODULE module) {
 #endif
 
   int max_delete_attempts = 0;
-  PathString archive_path;
   PathString setup_path;
+  ResourceTypeString setup_type;
+  PathString archive_path;
+  ResourceTypeString archive_type;
+
   exit_code =
-      UnpackBinaryResources(configuration, module, base_path.get(),
-                            &archive_path, &setup_path, max_delete_attempts);
+      UnpackBinaryResources(module, base_path.get(), setup_path, setup_type,
+                            archive_path, archive_type, max_delete_attempts);
+
+  // If a compressed setup patch was found, run the previous setup.exe to
+  // patch and generate the new setup.exe.
+  if (exit_code.IsSuccess() && setup_type.compare(kLZMAResourceType) == 0) {
+    PathString setup_dest_path;
+    if (!setup_dest_path.assign(base_path.get()) ||
+        !setup_dest_path.append(kSetupExe)) {
+      return ProcessExitResult(PATH_STRING_OVERFLOW);
+    }
+    exit_code = PatchSetup(configuration, setup_path, setup_dest_path,
+                           max_delete_attempts);
+    if (exit_code.IsSuccess()) {
+      setup_path.assign(setup_dest_path);
+    } else {
+      setup_path.clear();
+    }
+  }
 
   // While unpacking the binaries, we paged in a whole bunch of memory that
   // we don't need anymore.  Let's give it back to the pool before running
   // setup.
   ::SetProcessWorkingSetSize(::GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
 
-  if (exit_code.IsSuccess())
-    exit_code = RunSetup(configuration, archive_path.get(), setup_path.get());
+  if (exit_code.IsSuccess()) {
+    exit_code = RunSetup(configuration, archive_path.get(), setup_path.get(),
+                         archive_type.compare(kLZMAResourceType) == 0);
+  }
 
   if (configuration.should_delete_extracted_files()) {
     DeleteExtractedFiles(module, archive_path, setup_path, base_path,

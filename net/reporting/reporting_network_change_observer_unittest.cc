@@ -4,7 +4,10 @@
 
 #include "net/reporting/reporting_network_change_observer.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/unguessable_token.h"
@@ -14,7 +17,6 @@
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace {
@@ -39,13 +41,12 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
   }
 
   size_t report_count() {
-    std::vector<const ReportingReport*> reports;
+    std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
     cache()->GetReports(&reports);
     return reports.size();
   }
 
-  const absl::optional<base::UnguessableToken> kReportingSource_ =
-      absl::nullopt;
+  const std::optional<base::UnguessableToken> kReportingSource_ = std::nullopt;
   const NetworkAnonymizationKey kNak_;
   const GURL kUrl_ = GURL("https://origin/path");
   const url::Origin kOrigin_ = url::Origin::Create(kUrl_);

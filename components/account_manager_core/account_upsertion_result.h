@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_UPSERTION_RESULT_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_UPSERTION_RESULT_H_
 
+#include <optional>
+
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace account_manager {
 
@@ -50,11 +51,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountUpsertionResult {
   static AccountUpsertionResult FromError(const GoogleServiceAuthError& error);
 
   // If `status` is `kSuccess`, the reauthenticated/added account will be
-  // returned from `account`. Otherwise `account` will be `absl::nullopt`.
+  // returned from `account`. Otherwise `account` will be `std::nullopt`.
   Status status() const { return status_; }
 
   // The account that was added. Set iff `status` is set to `kSuccess`.
-  const absl::optional<Account>& account() const { return account_; }
+  const std::optional<Account>& account() const { return account_; }
 
   // The error state is NONE unless `status` is set to `kNetworkError`.
   const GoogleServiceAuthError& error() const { return error_; }
@@ -65,11 +66,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountUpsertionResult {
 
  private:
   AccountUpsertionResult(Status status,
-                         const absl::optional<Account>& account,
+                         const std::optional<Account>& account,
                          const GoogleServiceAuthError& error);
 
   Status status_;
-  absl::optional<Account> account_;
+  std::optional<Account> account_;
   GoogleServiceAuthError error_;
 };
 

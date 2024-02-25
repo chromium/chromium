@@ -82,13 +82,16 @@ ShippingAddressEditorViewController::GetFieldDefinitions() {
 }
 
 std::u16string ShippingAddressEditorViewController::GetInitialValueForType(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   return GetValueForType(temporary_profile_, type);
 }
 
 bool ShippingAddressEditorViewController::ValidateModelAndSave() {
-  // To validate the profile first, we use a temporary object.
-  autofill::AutofillProfile profile;
+  // To validate the profile first, we use a temporary object. Note that the
+  // address country gets set first during `SaveFieldsToProfile()`, therefore it
+  // is okay to initially build this profile with an empty country.
+  autofill::AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   if (!SaveFieldsToProfile(&profile, /*ignore_errors=*/false))
     return false;
   if (!profile_to_edit_) {
@@ -118,12 +121,12 @@ ShippingAddressEditorViewController::CreateValidationDelegate(
     const EditorField& field) {
   return std::make_unique<
       ShippingAddressEditorViewController::ShippingAddressValidationDelegate>(
-      this, field);
+      weak_ptr_factory_.GetWeakPtr(), field);
 }
 
 std::unique_ptr<ui::ComboboxModel>
 ShippingAddressEditorViewController::GetComboboxModelForType(
-    const autofill::ServerFieldType& type) {
+    const autofill::FieldType& type) {
   switch (type) {
     case autofill::ADDRESS_HOME_COUNTRY: {
       auto model = std::make_unique<autofill::CountryComboboxModel>();
@@ -210,7 +213,7 @@ int ShippingAddressEditorViewController::GetPrimaryButtonId() {
 
 ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ShippingAddressValidationDelegate(
-        ShippingAddressEditorViewController* controller,
+        base::WeakPtr<ShippingAddressEditorViewController> controller,
         const EditorField& field)
     : field_(field), controller_(controller) {}
 
@@ -225,7 +228,8 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 std::u16string
 ShippingAddressEditorViewController::ShippingAddressValidationDelegate::Format(
     const std::u16string& text) {
-  if (controller_->chosen_country_index_ < controller_->countries_.size()) {
+  if (controller_ &&
+      controller_->chosen_country_index_ < controller_->countries_.size()) {
     return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
         base::UTF16ToUTF8(text),
         controller_->countries_[controller_->chosen_country_index_].first));
@@ -255,7 +259,9 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
   std::u16string error_message;
   bool is_valid = ValidateValue(textfield->GetText(), &error_message);
-  controller_->DisplayErrorMessageForField(field_.type, error_message);
+  if (controller_) {
+    controller_->DisplayErrorMessageForField(field_.type, error_message);
+  }
   return is_valid;
 }
 
@@ -265,18 +271,22 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
   bool is_valid = ValidateValue(
       combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
       &error_message);
-  controller_->DisplayErrorMessageForField(field_.type, error_message);
+  if (controller_) {
+    controller_->DisplayErrorMessageForField(field_.type, error_message);
+  }
   return is_valid;
 }
 
 void ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ComboboxModelChanged(ValidatingCombobox* combobox) {
-  controller_->OnComboboxModelChanged(combobox);
+  if (controller_) {
+    controller_->OnComboboxModelChanged(combobox);
+  }
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ValidateValue(const std::u16string& value, std::u16string* error_message) {
-  if (!controller_->spec())
+  if (!controller_ || !controller_->spec())
     return false;
 
   // Show errors from merchant's retry() call. Note that changing the selected
@@ -322,7 +332,7 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
 std::u16string ShippingAddressEditorViewController::GetValueForType(
     const autofill::AutofillProfile& profile,
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
     return autofill::i18n::GetFormattedPhoneNumberForDisplay(
         profile, state()->GetApplicationLocale());

@@ -12,6 +12,8 @@ source_set("system_signals") {
     "base_system_signals_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//components/device_signals/core/common/mojom",
     "//mojo/public/mojom/base",

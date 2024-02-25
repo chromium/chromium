@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -97,6 +98,15 @@ class DownloadTestBase : public InProcessBrowserTest {
   };
 
   static constexpr char kDownloadTest1Path[] = "download-test1.lib";
+#if BUILDFLAG(IS_WIN)
+  static constexpr char kDangerousMockFilePath[] =
+      "/downloads/dangerous/dangerous.exe";
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1264058): Find an actually "dangerous" extension for
+  // Fuchsia.
+  static constexpr char kDangerousMockFilePath[] =
+      "/downloads/dangerous/dangerous.sh";
+#endif
 
   DownloadTestBase();
   ~DownloadTestBase() override;
@@ -192,18 +202,20 @@ class DownloadTestBase : public InProcessBrowserTest {
                               const base::FilePath& downloaded_file,
                               const base::FilePath& origin_file);
 
-  content::DownloadTestObserver* CreateInProgressDownloadObserver(
-      size_t download_count);
-
-  download::DownloadItem* CreateSlowTestDownload();
+  // Creates an in-progress download and returns a pointer to its DownloadItem.
+  // Either supply a `browser` or the `browser()` in the test fixture will be
+  // used.
+  download::DownloadItem* CreateSlowTestDownload(Browser* browser = nullptr);
 
   bool RunSizeTest(Browser* browser,
                    SizeTestType type,
                    const std::string& partial_indication,
                    const std::string& total_indication);
 
-  void GetDownloads(Browser* browser,
-                    std::vector<download::DownloadItem*>* downloads) const;
+  void GetDownloads(
+      Browser* browser,
+      std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>*
+          downloads) const;
 
   static void ExpectWindowCountAfterDownload(size_t expected);
 
@@ -249,6 +261,12 @@ class DownloadTestBase : public InProcessBrowserTest {
       content::TestFileErrorInjector* error_injector,
       download::DownloadInterruptReason error);
 
+  // Provide equivalent to embedded_test_server() with a variant that uses HTTPS
+  // to avoid insecure download warnings.
+  net::EmbeddedTestServer* https_test_server() {
+    return https_test_server_.get();
+  }
+
  private:
   // Location of the test data.
   base::FilePath test_dir_;
@@ -257,6 +275,10 @@ class DownloadTestBase : public InProcessBrowserTest {
   std::unique_ptr<DownloadTestFileActivityObserver> file_activity_observer_;
   extensions::ScopedIgnoreContentVerifierForTest ignore_content_verifier_;
   extensions::ScopedInstallVerifierBypassForTest ignore_install_verification_;
+
+  // By default, the embedded test server uses HTTP. Keep an HTTPS server
+  // as well so that we can avoid unexpected insecure download warnings.
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_BROWSERTEST_UTILS_H_

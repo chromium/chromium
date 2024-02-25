@@ -6,18 +6,18 @@
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_WINDOW_H_
 
 #include <fidl/fuchsia.ui.input3/cpp/fidl.h>
+#include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/fuchsia/fidl_event_handler.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/fuchsia/keyboard_client.h"
 #include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/fuchsia/pointer_events_handler.h"
@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   fuchsia::ui::views::ViewRefFocusedPtr view_ref_focused_;
 
   // Flatland View size in logical pixels.
-  absl::optional<gfx::Size> logical_size_;
+  std::optional<gfx::Size> logical_size_;
 
   // The scale between logical pixels and physical pixels, set based on the
   // fuchsia::ui::composition::LayoutInfo. It's used to calculate dimensions of

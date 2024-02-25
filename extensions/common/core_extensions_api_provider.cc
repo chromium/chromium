@@ -4,6 +4,8 @@
 
 #include "extensions/common/core_extensions_api_provider.h"
 
+#include <string_view>
+
 #include "extensions/common/api/api_features.h"
 #include "extensions/common/api/behavior_features.h"
 #include "extensions/common/api/generated_schemas.h"
@@ -46,7 +48,7 @@ bool CoreExtensionsAPIProvider::IsAPISchemaGenerated(const std::string& name) {
   return api::GeneratedSchemas::IsGenerated(name);
 }
 
-base::StringPiece CoreExtensionsAPIProvider::GetAPISchema(
+std::string_view CoreExtensionsAPIProvider::GetAPISchema(
     const std::string& name) {
   return api::GeneratedSchemas::Get(name);
 }

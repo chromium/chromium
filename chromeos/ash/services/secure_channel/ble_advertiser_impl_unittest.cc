@@ -18,9 +18,9 @@
 #include "chromeos/ash/services/secure_channel/fake_ble_synchronizer.h"
 #include "chromeos/ash/services/secure_channel/fake_bluetooth_helper.h"
 #include "chromeos/ash/services/secure_channel/fake_error_tolerant_ble_advertisement.h"
-#include "chromeos/ash/services/secure_channel/fake_one_shot_timer.h"
-#include "chromeos/ash/services/secure_channel/fake_timer_factory.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "components/cross_device/timer_factory/fake_one_shot_timer.h"
+#include "components/cross_device/timer_factory/fake_timer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {
@@ -43,7 +43,7 @@ class FakeErrorTolerantBleAdvertisementFactory
 
   ~FakeErrorTolerantBleAdvertisementFactory() override = default;
 
-  const absl::optional<DeviceIdPair>& last_created_device_id_pair() const {
+  const std::optional<DeviceIdPair>& last_created_device_id_pair() const {
     return last_created_device_id_pair_;
   }
 
@@ -88,10 +88,10 @@ class FakeErrorTolerantBleAdvertisementFactory
     EXPECT_EQ(1u, num_deleted);
   }
 
-  raw_ptr<BluetoothHelper, ExperimentalAsh> bluetooth_helper_;
-  raw_ptr<BleSynchronizerBase, ExperimentalAsh> ble_synchronizer_base_;
+  raw_ptr<BluetoothHelper> bluetooth_helper_;
+  raw_ptr<BleSynchronizerBase> ble_synchronizer_base_;
 
-  absl::optional<DeviceIdPair> last_created_device_id_pair_;
+  std::optional<DeviceIdPair> last_created_device_id_pair_;
   base::flat_map<DeviceIdPair, FakeErrorTolerantBleAdvertisement*>
       device_id_pair_to_active_advertisement_map_;
   size_t num_instances_created_ = 0u;
@@ -118,7 +118,7 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
     fake_delegate_ = std::make_unique<FakeBleAdvertiserDelegate>();
     fake_bluetooth_helper_ = std::make_unique<FakeBluetoothHelper>();
     fake_ble_synchronizer_ = std::make_unique<FakeBleSynchronizer>();
-    fake_timer_factory_ = std::make_unique<FakeTimerFactory>();
+    fake_timer_factory_ = std::make_unique<cross_device::FakeTimerFactory>();
 
     fake_advertisement_factory_ =
         std::make_unique<FakeErrorTolerantBleAdvertisementFactory>(
@@ -177,7 +177,7 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
     return fake_advertisement;
   }
 
-  FakeOneShotTimer* GetLastCreatedTimer() {
+  cross_device::FakeOneShotTimer* GetLastCreatedTimer() {
     EXPECT_FALSE(
         fake_timer_factory_->id_for_last_created_one_shot_timer().is_empty());
     auto* fake_timer =
@@ -276,15 +276,15 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
   std::unique_ptr<FakeBleAdvertiserDelegate> fake_delegate_;
   std::unique_ptr<FakeBluetoothHelper> fake_bluetooth_helper_;
   std::unique_ptr<FakeBleSynchronizer> fake_ble_synchronizer_;
-  std::unique_ptr<FakeTimerFactory> fake_timer_factory_;
+  std::unique_ptr<cross_device::FakeTimerFactory> fake_timer_factory_;
 
   std::unique_ptr<FakeErrorTolerantBleAdvertisementFactory>
       fake_advertisement_factory_;
 
   base::UnguessableToken last_fetched_advertisement_id_;
   base::UnguessableToken last_fetched_timer_id_;
-  absl::optional<size_t> highest_slot_ended_delegate_index_verified_;
-  absl::optional<size_t> highest_failed_advertisement_delegate_index_verified_;
+  std::optional<size_t> highest_slot_ended_delegate_index_verified_;
+  std::optional<size_t> highest_failed_advertisement_delegate_index_verified_;
 
   scoped_refptr<base::TestSimpleTaskRunner> test_runner_;
 
@@ -296,7 +296,7 @@ TEST_F(SecureChannelBleAdvertiserImplTest, OneAdvertisement_TimerFires) {
   AddAdvertisementRequest(pair, ConnectionPriority::kLow);
 
   FakeErrorTolerantBleAdvertisement* advertisement;
-  FakeOneShotTimer* timer;
+  cross_device::FakeOneShotTimer* timer;
 
   // Simulate 5 consecutive timeouts, followed by removing the advertisement.
   const size_t kNumTimerFires = 5;
@@ -345,7 +345,7 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
 
   FakeErrorTolerantBleAdvertisement* advertisement =
       GetLastCreatedAdvertisement(pair);
-  FakeOneShotTimer* timer = GetLastCreatedTimer();
+  cross_device::FakeOneShotTimer* timer = GetLastCreatedTimer();
 
   // Fire the timer and verify that the advertisement was stopped, but do not
   // complete the asynchronous stopping flow.
@@ -377,12 +377,12 @@ TEST_F(SecureChannelBleAdvertiserImplTest, TwoAdvertisements_TimerFires) {
   AddAdvertisementRequest(pair_1, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_1 =
       GetLastCreatedAdvertisement(pair_1);
-  FakeOneShotTimer* timer_1 = GetLastCreatedTimer();
+  cross_device::FakeOneShotTimer* timer_1 = GetLastCreatedTimer();
 
   AddAdvertisementRequest(pair_2, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_2 =
       GetLastCreatedAdvertisement(pair_2);
-  FakeOneShotTimer* timer_2 = GetLastCreatedTimer();
+  cross_device::FakeOneShotTimer* timer_2 = GetLastCreatedTimer();
 
   // Simulate 5 consecutive timeouts, followed by removing the advertisement.
   const size_t kNumTimerFires = 5;
@@ -457,12 +457,12 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   AddAdvertisementRequest(pair_1, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_1 =
       GetLastCreatedAdvertisement(pair_1);
-  FakeOneShotTimer* timer_1 = GetLastCreatedTimer();
+  cross_device::FakeOneShotTimer* timer_1 = GetLastCreatedTimer();
 
   AddAdvertisementRequest(pair_2, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_2 =
       GetLastCreatedAdvertisement(pair_2);
-  FakeOneShotTimer* timer_2 = GetLastCreatedTimer();
+  cross_device::FakeOneShotTimer* timer_2 = GetLastCreatedTimer();
 
   // Fire the timer and verify that the advertisement was stopped, but do not
   // complete the asynchronous stopping flow.
@@ -506,7 +506,7 @@ TEST_F(SecureChannelBleAdvertiserImplTest,
   AddAdvertisementRequest(pair_2, ConnectionPriority::kLow);
   FakeErrorTolerantBleAdvertisement* advertisement_2 =
       GetLastCreatedAdvertisement(pair_2);
-  FakeOneShotTimer* timer_2 = GetLastCreatedTimer();
+  cross_device::FakeOneShotTimer* timer_2 = GetLastCreatedTimer();
 
   // Status: pair_1 - low (active, slot 1)
   //         pair_2 - low (active, slot 2)

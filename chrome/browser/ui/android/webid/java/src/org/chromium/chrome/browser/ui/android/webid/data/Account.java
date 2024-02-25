@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid.data;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.url.GURL;
 
 /**
@@ -27,7 +28,12 @@ public class Account {
      * @param isSignIn whether this account is a sign in or a sign up.
      */
     @CalledByNative
-    public Account(String id, String email, String name, String givenName, GURL pictureUrl,
+    public Account(
+            String id,
+            String email,
+            String name,
+            String givenName,
+            GURL pictureUrl,
             boolean isSignIn) {
         mId = id;
         mEmail = email;

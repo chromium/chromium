@@ -121,7 +121,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     return;
   }
 
-  absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata;
+  std::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata;
   if (mode_ == mojom::SCTAuditingMode::kHashdance) {
     // Randomly select a single entry and calculate its leaf hash for the
     // hashdance lookup query.
@@ -173,7 +173,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     sct_metadata->certificate_expiry =
         validated_certificate_chain->valid_expiry();
   }
-  absl::optional<SCTAuditingCache::ReportEntry> report =
+  std::optional<SCTAuditingCache::ReportEntry> report =
       owner_network_context_->network_service()
           ->sct_auditing_cache()
           ->MaybeGenerateReportEntry(
@@ -185,7 +185,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
               std::move(sct_metadata));
 }
 
-absl::optional<std::string> SCTAuditingHandler::SerializeData() {
+std::optional<std::string> SCTAuditingHandler::SerializeData() {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   base::Value::List reports;
@@ -193,33 +193,30 @@ absl::optional<std::string> SCTAuditingHandler::SerializeData() {
     auto reporter_key = kv.first;
     auto* reporter = kv.second.get();
 
-    base::Value::Dict report_entry;
+    std::string serialized_report;
+    reporter->report()->SerializeToString(&serialized_report);
+    serialized_report = base::Base64Encode(serialized_report);
 
-    report_entry.Set(kReporterKeyKey, reporter_key.ToString());
+    auto report_entry =
+        base::Value::Dict()
+            .Set(kReporterKeyKey, reporter_key.ToString())
+            .Set(kBackoffEntryKey,
+                 net::BackoffEntrySerializer::SerializeToList(
+                     *reporter->backoff_entry(), base::Time::Now()))
+            .Set(kAlreadyCountedKey, reporter->counted_towards_report_limit())
+            .Set(kReportKey, serialized_report);
 
     if (reporter->sct_hashdance_metadata()) {
       report_entry.Set(kSCTHashdanceMetadataKey,
                        reporter->sct_hashdance_metadata()->ToValue());
     }
 
-    base::Value::List backoff_entry_value =
-        net::BackoffEntrySerializer::SerializeToList(*reporter->backoff_entry(),
-                                                     base::Time::Now());
-    report_entry.Set(kBackoffEntryKey, std::move(backoff_entry_value));
-    report_entry.Set(kAlreadyCountedKey,
-                     reporter->counted_towards_report_limit());
-
-    std::string serialized_report;
-    reporter->report()->SerializeToString(&serialized_report);
-    base::Base64Encode(serialized_report, &serialized_report);
-    report_entry.Set(kReportKey, serialized_report);
-
     reports.Append(std::move(report_entry));
   }
 
   std::string output;
   if (!base::JSONWriter::Write(reports, &output)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return output;
 }
@@ -228,7 +225,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   // Parse the serialized reports.
-  absl::optional<base::Value> value = base::JSONReader::Read(serialized);
+  std::optional<base::Value> value = base::JSONReader::Read(serialized);
   if (!value || !value->is_list()) {
     base::UmaHistogramCounts100(
         "Security.SCTAuditing.NumPersistedReportsLoaded", 0);
@@ -244,11 +241,11 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
 
     std::string* reporter_key_string = entry_dict->FindString(kReporterKeyKey);
     std::string* report_string = entry_dict->FindString(kReportKey);
-    const absl::optional<base::Value> sct_metadata_value =
+    const std::optional<base::Value> sct_metadata_value =
         entry_dict->Extract(kSCTHashdanceMetadataKey);
     const base::Value::List* backoff_entry_value =
         entry_dict->FindList(kBackoffEntryKey);
-    const absl::optional<bool> counted_towards_report_limit =
+    const std::optional<bool> counted_towards_report_limit =
         entry_dict->FindBool(kAlreadyCountedKey);
 
     if (!reporter_key_string || !report_string || !backoff_entry_value) {
@@ -288,7 +285,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
       continue;
     }
 
-    absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata;
+    std::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata;
     if (sct_metadata_value) {
       sct_metadata = SCTAuditingReporter::SCTHashdanceMetadata::FromValue(
           *sct_metadata_value);
@@ -320,7 +317,7 @@ void SCTAuditingHandler::OnStartupFinished() {
 void SCTAuditingHandler::AddReporter(
     net::HashValue reporter_key,
     std::unique_ptr<sct_auditing::SCTClientReport> report,
-    absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata,
+    std::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata,
     std::unique_ptr<net::BackoffEntry> backoff_entry,
     bool already_counted) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
@@ -385,7 +382,7 @@ void SCTAuditingHandler::ClearPendingReports(base::OnceClosure callback) {
                   return std::move(cb).Run();
                 },
                 std::move(callback))));
-    absl::optional<std::string> data = SerializeData();
+    std::optional<std::string> data = SerializeData();
     if (data) {
       writer_->WriteNow(std::move(*data));
     }
@@ -454,7 +451,7 @@ network::mojom::URLLoaderFactory* SCTAuditingHandler::GetURLLoaderFactory() {
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   params->is_trusted = true;
   params->automatically_assign_isolation_info = true;
 

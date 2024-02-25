@@ -11,10 +11,9 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/input_method_context_impl_gtk.h"
@@ -23,7 +22,7 @@
 
 namespace gtk {
 
-GtkUiPlatformX11::GtkUiPlatformX11() : connection_(x11::Connection::Get()) {
+GtkUiPlatformX11::GtkUiPlatformX11() : connection_(*x11::Connection::Get()) {
   gdk_set_allowed_backends("x11");
   // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
   // it to ensure we get the x11 backend.
@@ -35,8 +34,9 @@ GtkUiPlatformX11::~GtkUiPlatformX11() = default;
 
 void GtkUiPlatformX11::OnInitialized(GtkWidget* widget) {
   // Ensure the singleton instance of GtkEventLoopX11 is created and started.
-  if (!event_loop_)
+  if (!event_loop_) {
     event_loop_ = std::make_unique<GtkEventLoopX11>(widget);
+  }
 
   // GTK sets an Xlib error handler that exits the process on any async errors.
   // We don't want this behavior, so reset the error handler to something that
@@ -83,10 +83,11 @@ bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
           ? gdk_x11_surface_get_xid(
                 gtk_native_get_surface(gtk_widget_get_native(widget)))
           : gdk_x11_window_get_xid(gtk_widget_get_window(widget)));
-  SetProperty(x11_window, x11::Atom::WM_TRANSIENT_FOR, x11::Atom::WINDOW,
-              parent);
-  SetProperty(x11_window, x11::GetAtom("_NET_WM_WINDOW_TYPE"), x11::Atom::ATOM,
-              x11::GetAtom("_NET_WM_WINDOW_TYPE_DIALOG"));
+  connection_->SetProperty(x11_window, x11::Atom::WM_TRANSIENT_FOR,
+                           x11::Atom::WINDOW, parent);
+  connection_->SetProperty(x11_window, x11::GetAtom("_NET_WM_WINDOW_TYPE"),
+                           x11::Atom::ATOM,
+                           x11::GetAtom("_NET_WM_WINDOW_TYPE_DIALOG"));
 
   ui::LinuxUiDelegate::GetInstance()->SetTransientWindowForParent(
       parent, static_cast<gfx::AcceleratedWidget>(x11_window));
@@ -99,8 +100,9 @@ void GtkUiPlatformX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
 }
 
 GdkDisplay* GtkUiPlatformX11::GetGdkDisplay() {
-  if (!display_)
+  if (!display_) {
     display_ = gdk_display_get_default();
+  }
   return display_;
 }
 

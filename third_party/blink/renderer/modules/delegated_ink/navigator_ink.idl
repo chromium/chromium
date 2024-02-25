@@ -6,7 +6,6 @@
 
 [
     ImplementedAs=Ink,
-    RuntimeEnabled=DelegatedInkTrails,
     Exposed=Window
 ] partial interface Navigator {
     [SameObject] readonly attribute Ink ink;

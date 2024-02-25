@@ -5,9 +5,9 @@
 import './add_supervision_ui.js';
 import './supervision/supervised_user_error.js';
 import './supervision/supervised_user_offline.js';
-import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './add_supervision_app.html.js';
@@ -38,47 +38,39 @@ class AddSupervisionApp extends PolymerElement {
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      currentScreen_: {
-        type: Screens,
-      },
-    };
-  }
-
-  private currentScreen_: Screens;
+  private currentScreen: Screens;
 
   override ready() {
     super.ready();
-    this.addEventListeners_();
-    this.switchToScreen_(navigator.onLine ? Screens.ONLINE : Screens.OFFLINE);
+    this.addEventListeners();
+    this.switchToScreen(navigator.onLine ? Screens.ONLINE : Screens.OFFLINE);
   }
 
-  private addEventListeners_() {
+  private addEventListeners() {
     window.addEventListener('online', () => {
-      this.switchToScreen_(Screens.ONLINE);
+      this.switchToScreen(Screens.ONLINE);
     });
 
     window.addEventListener('offline', () => {
-      this.switchToScreen_(Screens.OFFLINE);
+      this.switchToScreen(Screens.OFFLINE);
     });
 
     this.addEventListener('show-error', () => {
-      this.switchToScreen_(Screens.ERROR);
+      this.switchToScreen(Screens.ERROR);
     });
   }
 
-  private switchToScreen_(screen: Screens) {
-    if (this.isinvalidScreenSwitch_(screen)) {
+  private switchToScreen(screen: Screens) {
+    if (this.isinvalidScreenSwitch(screen)) {
       return;
     }
-    this.currentScreen_ = screen;
-    this.$.viewManager.switchView(this.currentScreen_);
+    this.currentScreen = screen;
+    this.$.viewManager.switchView(this.currentScreen);
   }
 
-  private isinvalidScreenSwitch_(screen: Screens): boolean {
-    return this.currentScreen_ === screen ||
-        this.currentScreen_ === Screens.ERROR;
+  private isinvalidScreenSwitch(screen: Screens): boolean {
+    return this.currentScreen === screen ||
+        this.currentScreen === Screens.ERROR;
   }
 }
 customElements.define(AddSupervisionApp.is, AddSupervisionApp);

@@ -11,15 +11,15 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * The callback used to indicate what action the user took in the picker.
- */
+/** The callback used to indicate what action the user took in the picker. */
 public interface PhotoPickerListener {
-    /**
-     * The action the user took in the picker.
-     */
-    @IntDef({PhotoPickerAction.CANCEL, PhotoPickerAction.PHOTOS_SELECTED,
-            PhotoPickerAction.LAUNCH_CAMERA, PhotoPickerAction.LAUNCH_GALLERY})
+    /** The action the user took in the picker. */
+    @IntDef({
+        PhotoPickerAction.CANCEL,
+        PhotoPickerAction.PHOTOS_SELECTED,
+        PhotoPickerAction.LAUNCH_CAMERA,
+        PhotoPickerAction.LAUNCH_GALLERY
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PhotoPickerAction {
         int CANCEL = 0;
@@ -29,10 +29,9 @@ public interface PhotoPickerListener {
         int NUM_ENTRIES = 4;
     }
 
-    /**
-     * The types of requests supported.
-     */
+    /** The types of requests supported. */
     static final int TAKE_PHOTO_REQUEST = 1;
+
     static final int SHOW_GALLERY = 2;
 
     /**

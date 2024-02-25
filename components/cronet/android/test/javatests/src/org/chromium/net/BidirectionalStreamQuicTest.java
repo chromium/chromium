@@ -19,39 +19,50 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 
 import java.nio.ByteBuffer;
 import java.util.Date;
 
-/**
- * Tests functionality of BidirectionalStream's QUIC implementation.
- */
+/** Tests functionality of BidirectionalStream's QUIC implementation. */
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason =
+                "The fallback implementation doesn't support bidirectional streaming. "
+                        + "crbug.com/1494870: Enable for AOSP_PLATFORM once fixed")
 public class BidirectionalStreamQuicTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private ExperimentalCronetEngine mCronetEngine;
 
     @Before
     public void setUp() throws Exception {
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            QuicTestServer.startQuicTestServer(
+                                    mTestRule.getTestFramework().getContext());
 
-            JSONObject quicParams = new JSONObject();
-            JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
-            JSONObject experimentalOptions = new JSONObject()
-                                                     .put("QUIC", quicParams)
-                                                     .put("HostResolverRules", hostResolverParams);
-            builder.setExperimentalOptions(experimentalOptions.toString())
-                    .addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
-                            QuicTestServer.getServerPort());
+                            JSONObject quicParams = new JSONObject();
+                            JSONObject hostResolverParams =
+                                    CronetTestUtil.generateHostResolverRules();
+                            JSONObject experimentalOptions =
+                                    new JSONObject()
+                                            .put("QUIC", quicParams)
+                                            .put("HostResolverRules", hostResolverParams);
+                            builder.setExperimentalOptions(experimentalOptions.toString())
+                                    .addQuicHint(
+                                            QuicTestServer.getServerHost(),
+                                            QuicTestServer.getServerPort(),
+                                            QuicTestServer.getServerPort());
 
-            CronetTestUtil.setMockCertVerifierForTesting(
-                    builder, QuicTestServer.createMockCertVerifier());
-        });
+                            CronetTestUtil.setMockCertVerifierForTesting(
+                                    builder, QuicTestServer.createMockCertVerifier());
+                        });
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
     }
@@ -63,7 +74,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Test that QUIC is negotiated.
     public void testSimpleGet() throws Exception {
         String path = "/simple.txt";
@@ -87,7 +97,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimplePost() throws Exception {
         String path = "/simple.txt";
         String quicURL = QuicTestServer.getServerURL() + path;
@@ -129,7 +138,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimplePostWithFlush() throws Exception {
         // TODO(xunjieli): Use ParameterizedTest instead of the loop.
         for (int i = 0; i < 2; i++) {
@@ -141,14 +149,15 @@ public class BidirectionalStreamQuicTest {
             callback.addWriteData("Test String".getBytes(), false);
             callback.addWriteData("1234567890".getBytes(), false);
             callback.addWriteData("woot!".getBytes(), true);
-            BidirectionalStream stream = mCronetEngine
-                                                 .newBidirectionalStreamBuilder(
-                                                         quicURL, callback, callback.getExecutor())
-                                                 .delayRequestHeadersUntilFirstFlush(i == 0)
-                                                 .addHeader("foo", "bar")
-                                                 .addHeader("empty", "")
-                                                 .addHeader("Content-Type", "zebra")
-                                                 .build();
+            BidirectionalStream stream =
+                    mCronetEngine
+                            .newBidirectionalStreamBuilder(
+                                    quicURL, callback, callback.getExecutor())
+                            .delayRequestHeadersUntilFirstFlush(i == 0)
+                            .addHeader("foo", "bar")
+                            .addHeader("empty", "")
+                            .addHeader("Content-Type", "zebra")
+                            .build();
             stream.start();
             callback.blockForDone();
             assertThat(stream.isDone()).isTrue();
@@ -163,7 +172,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimplePostWithFlushTwice() throws Exception {
         // TODO(xunjieli): Use ParameterizedTest instead of the loop.
         for (int i = 0; i < 2; i++) {
@@ -178,14 +186,15 @@ public class BidirectionalStreamQuicTest {
             callback.addWriteData("Test String".getBytes(), false);
             callback.addWriteData("1234567890".getBytes(), false);
             callback.addWriteData("woot!".getBytes(), true);
-            BidirectionalStream stream = mCronetEngine
-                                                 .newBidirectionalStreamBuilder(
-                                                         quicURL, callback, callback.getExecutor())
-                                                 .delayRequestHeadersUntilFirstFlush(i == 0)
-                                                 .addHeader("foo", "bar")
-                                                 .addHeader("empty", "")
-                                                 .addHeader("Content-Type", "zebra")
-                                                 .build();
+            BidirectionalStream stream =
+                    mCronetEngine
+                            .newBidirectionalStreamBuilder(
+                                    quicURL, callback, callback.getExecutor())
+                            .delayRequestHeadersUntilFirstFlush(i == 0)
+                            .addHeader("foo", "bar")
+                            .addHeader("empty", "")
+                            .addHeader("Content-Type", "zebra")
+                            .build();
             stream.start();
             callback.blockForDone();
             assertThat(stream.isDone()).isTrue();
@@ -200,21 +209,21 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimpleGetWithFlush() throws Exception {
         // TODO(xunjieli): Use ParameterizedTest instead of the loop.
         for (int i = 0; i < 2; i++) {
             String path = "/simple.txt";
             String url = QuicTestServer.getServerURL() + path;
 
-            TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback() {
-                @Override
-                public void onStreamReady(BidirectionalStream stream) {
-                    // This flush should send the delayed headers.
-                    stream.flush();
-                    super.onStreamReady(stream);
-                }
-            };
+            TestBidirectionalStreamCallback callback =
+                    new TestBidirectionalStreamCallback() {
+                        @Override
+                        public void onStreamReady(BidirectionalStream stream) {
+                            // This flush should send the delayed headers.
+                            stream.flush();
+                            super.onStreamReady(stream);
+                        }
+                    };
             BidirectionalStream stream =
                     mCronetEngine
                             .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
@@ -245,7 +254,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimplePostWithFlushAfterOneWrite() throws Exception {
         // TODO(xunjieli): Use ParameterizedTest instead of the loop.
         for (int i = 0; i < 2; i++) {
@@ -277,7 +285,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Tests that if the stream failed between the time when we issue a Write()
     // and when the Write() is executed in the native stack, there is no crash.
     // This test is racy, but it should catch a crash (if there is any) most of
@@ -286,17 +293,21 @@ public class BidirectionalStreamQuicTest {
         String path = "/simple.txt";
         String quicURL = QuicTestServer.getServerURL() + path;
 
-        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback() {
-            @Override
-            public void onWriteCompleted(BidirectionalStream stream, UrlResponseInfo info,
-                    ByteBuffer buffer, boolean endOfStream) {
-                // Super class will write the next piece of data.
-                super.onWriteCompleted(stream, info, buffer, endOfStream);
-                // Shut down the server, and the stream should error out.
-                // The second call to shutdownQuicTestServer is no-op.
-                QuicTestServer.shutdownQuicTestServer();
-            }
-        };
+        TestBidirectionalStreamCallback callback =
+                new TestBidirectionalStreamCallback() {
+                    @Override
+                    public void onWriteCompleted(
+                            BidirectionalStream stream,
+                            UrlResponseInfo info,
+                            ByteBuffer buffer,
+                            boolean endOfStream) {
+                        // Super class will write the next piece of data.
+                        super.onWriteCompleted(stream, info, buffer, endOfStream);
+                        // Shut down the server, and the stream should error out.
+                        // The second call to shutdownQuicTestServer is no-op.
+                        QuicTestServer.shutdownQuicTestServer();
+                    }
+                };
 
         callback.addWriteData("Test String".getBytes());
         callback.addWriteData("1234567890".getBytes());
@@ -324,18 +335,18 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testStreamFailWithQuicDetailedErrorCode() throws Exception {
         String path = "/simple.txt";
         String quicURL = QuicTestServer.getServerURL() + path;
-        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback() {
-            @Override
-            public void onStreamReady(BidirectionalStream stream) {
-                // Shut down the server, and the stream should error out.
-                // The second call to shutdownQuicTestServer is no-op.
-                QuicTestServer.shutdownQuicTestServer();
-            }
-        };
+        TestBidirectionalStreamCallback callback =
+                new TestBidirectionalStreamCallback() {
+                    @Override
+                    public void onStreamReady(BidirectionalStream stream) {
+                        // Shut down the server, and the stream should error out.
+                        // The second call to shutdownQuicTestServer is no-op.
+                        QuicTestServer.shutdownQuicTestServer();
+                    }
+                };
         BidirectionalStream stream =
                 mCronetEngine
                         .newBidirectionalStreamBuilder(quicURL, callback, callback.getExecutor())

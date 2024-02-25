@@ -126,8 +126,8 @@ ExecutionContextCSPDelegate::GetSourceLocation() {
   return CaptureSourceLocation(execution_context_);
 }
 
-absl::optional<uint16_t> ExecutionContextCSPDelegate::GetStatusCode() {
-  absl::optional<uint16_t> status_code;
+std::optional<uint16_t> ExecutionContextCSPDelegate::GetStatusCode() {
+  std::optional<uint16_t> status_code;
 
   // TODO(mkwst): We only have status code information for Documents. It would
   // be nice to get them for Workers as well.

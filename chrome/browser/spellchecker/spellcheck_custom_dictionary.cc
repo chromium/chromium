@@ -325,7 +325,7 @@ void SpellcheckCustomDictionary::WaitUntilReadyToSync(base::OnceClosure done) {
     wait_until_ready_to_sync_cb_ = std::move(done);
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SpellcheckCustomDictionary::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -379,7 +379,7 @@ syncer::SyncDataList SpellcheckCustomDictionary::GetAllSyncDataForTesting(
   return data;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 SpellcheckCustomDictionary::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
@@ -408,7 +408,11 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
   Notify(*dictionary_change);
   Save(std::move(dictionary_change));
 
-  return absl::nullopt;
+  return std::nullopt;
+}
+
+base::WeakPtr<syncer::SyncableService> SpellcheckCustomDictionary::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 SpellcheckCustomDictionary::LoadFileResult::LoadFileResult()
@@ -503,11 +507,11 @@ void SpellcheckCustomDictionary::Save(
                      std::move(dictionary_change), custom_dictionary_path_));
 }
 
-absl::optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
+std::optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
     const Change& dictionary_change) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsSyncing() || dictionary_change.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // The number of words on the sync server should not exceed the limits.
   int server_size = static_cast<int>(words_.size()) -
@@ -542,7 +546,7 @@ absl::optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
   }
 
   // Send the changes to the sync processor.
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, sync_change_list);
   if (error.has_value())
     return error;
@@ -552,7 +556,7 @@ absl::optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
   if (words_.size() > spellcheck::kMaxSyncableDictionaryWords)
     StopSyncing(syncer::DICTIONARY);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SpellcheckCustomDictionary::Notify(const Change& dictionary_change) {

@@ -38,8 +38,9 @@ namespace {
 bool ReadTestFile(const base::FilePath& relative_path,
                   std::vector<uint8_t>& output) {
   base::FilePath source_root_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir)) {
     return false;
+  }
 
   std::string file_contents_as_string;
   {
@@ -104,7 +105,7 @@ class ServiceProcessObserver : public ServiceProcessHost::Observer {
   }
 
  private:
-  absl::optional<base::RunLoop> launch_wait_loop_;
+  std::optional<base::RunLoop> launch_wait_loop_;
   int instances_started_ = 0;
 };
 

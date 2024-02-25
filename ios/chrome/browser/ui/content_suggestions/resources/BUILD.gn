@@ -26,6 +26,11 @@ colorset("fake_omnibox_placeholder_color") {
   sources = [ "fake_omnibox_placeholder_color.colorset/Contents.json" ]
 }
 
+colorset("magic_stack_edit_button_background_color") {
+  sources =
+      [ "magic_stack_edit_button_background_color.colorset/Contents.json" ]
+}
+
 imageset("ntp_search_icon") {
   sources = [
     "ntp_search_icon.imageset/Contents.json",

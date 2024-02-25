@@ -180,16 +180,17 @@ bool UmaSessionStats::IsBackgroundSessionStartForTesting() {
 }
 
 void UmaSessionStats::EmitAndResetCounters() {
-  absl::optional<int> on_precreate_counter =
+  std::optional<int> on_postcreate_counter =
       android::shared_preferences::GetAndClearInt(
-          "Chrome.UMA.OnPreCreateCounter");
-  absl::optional<int> on_resume_counter =
-      android::shared_preferences::GetAndClearInt("Chrome.UMA.OnResumeCounter");
-  int on_create_count = std::min(on_precreate_counter.value_or(0), 3);
+          "Chrome.UMA.OnPostCreateCounter2");
+  std::optional<int> on_resume_counter =
+      android::shared_preferences::GetAndClearInt(
+          "Chrome.UMA.OnResumeCounter2");
+  int on_create_count = std::min(on_postcreate_counter.value_or(0), 3);
   int on_resume_count = std::min(on_resume_counter.value_or(0), 3);
   ChromeActivityCounter count_code =
       static_cast<ChromeActivityCounter>(4 * on_create_count + on_resume_count);
-  UMA_HISTOGRAM_ENUMERATION("UMA.AndroidPreNative.ChromeActivityCounter",
+  UMA_HISTOGRAM_ENUMERATION("UMA.AndroidPreNative.ChromeActivityCounter2",
                             count_code);
 }
 
@@ -220,7 +221,7 @@ void UmaSessionStats::SessionTimeTracker::ReportBackgroundSessionTime() {
 }
 
 bool UmaSessionStats::SessionTimeTracker::BeginForegroundSession() {
-  // Emit onPreCreate & onResume counters. This is done early in the session
+  // Emit onPostCreate & onResume counters. This is done early in the session
   // to ensure that these are captured even if the session is not ended
   // cleanly.
   UmaSessionStats::EmitAndResetCounters();
@@ -376,8 +377,20 @@ static void JNI_UmaSessionStats_RecordPageLoaded(
   }
 }
 
+static void JNI_UmaSessionStats_RecordPageLoadedWithAccessory(JNIEnv*) {
+  base::RecordAction(UserMetricsAction("MobilePageLoadedWithAccessory"));
+}
+
 static void JNI_UmaSessionStats_RecordPageLoadedWithKeyboard(JNIEnv*) {
   base::RecordAction(UserMetricsAction("MobilePageLoadedWithKeyboard"));
+}
+
+static void JNI_UmaSessionStats_RecordPageLoadedWithMouse(JNIEnv*) {
+  base::RecordAction(UserMetricsAction("MobilePageLoadedWithMouse"));
+}
+
+static void JNI_UmaSessionStats_RecordPageLoadedWithToEdge(JNIEnv*) {
+  base::RecordAction(UserMetricsAction("MobilePageLoadedWithToEdge"));
 }
 
 static jlong JNI_UmaSessionStats_Init(JNIEnv* env) {

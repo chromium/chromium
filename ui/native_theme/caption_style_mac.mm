@@ -133,15 +133,15 @@ void GetMAFontAsCSSFontSpecifiers(std::string* font_family,
 
   base::apple::ScopedCFTypeRef<CFStringRef> ct_font_family_name(
       base::apple::CFCast<CFStringRef>(CTFontDescriptorCopyAttribute(
-          ct_font_desc, kCTFontFamilyNameAttribute)));
+          ct_font_desc.get(), kCTFontFamilyNameAttribute)));
   if (ct_font_family_name)
-    *font_family = base::SysCFStringRefToUTF8(ct_font_family_name);
+    *font_family = base::SysCFStringRefToUTF8(ct_font_family_name.get());
 
   base::apple::ScopedCFTypeRef<CFStringRef> ct_font_face_name(
-      base::apple::CFCast<CFStringRef>(
-          CTFontDescriptorCopyAttribute(ct_font_desc, kCTFontNameAttribute)));
+      base::apple::CFCast<CFStringRef>(CTFontDescriptorCopyAttribute(
+          ct_font_desc.get(), kCTFontNameAttribute)));
   if (ct_font_face_name)
-    *font_variant = base::SysCFStringRefToUTF8(ct_font_face_name);
+    *font_variant = base::SysCFStringRefToUTF8(ct_font_face_name.get());
 }
 
 std::string GetMAWindowColorAsCSSColor() {
@@ -169,9 +169,9 @@ std::string GetMAWindowRadiusAsCSSNumberInPixels() {
 }  // namespace
 
 // static
-absl::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
+std::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
   if (!base::FeatureList::IsEnabled(features::kSystemCaptionStyle))
-    return absl::nullopt;
+    return std::nullopt;
 
   CaptionStyle style;
 

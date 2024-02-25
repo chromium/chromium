@@ -5,6 +5,7 @@
 #include "components/sync/model/model_type_store_impl.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,7 +23,6 @@
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -48,33 +48,33 @@ sync_pb::EntityMetadata CreateEntityMetadata(const std::string& value) {
 // Following functions capture parameters passed to callbacks into variables
 // provided by test. They can be passed as callbacks to ModelTypeStore
 // functions.
-static void CaptureError(absl::optional<ModelError>* dst,
-                         const absl::optional<ModelError>& error) {
+static void CaptureError(std::optional<ModelError>* dst,
+                         const std::optional<ModelError>& error) {
   *dst = error;
 }
 
 void CaptureErrorAndRecords(
-    absl::optional<ModelError>* dst_error,
+    std::optional<ModelError>* dst_error,
     std::unique_ptr<ModelTypeStore::RecordList>* dst_records,
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore::RecordList> records) {
   *dst_error = error;
   *dst_records = std::move(records);
 }
 
-void CaptureErrorAndMetadataBatch(absl::optional<ModelError>* dst_error,
+void CaptureErrorAndMetadataBatch(std::optional<ModelError>* dst_error,
                                   std::unique_ptr<MetadataBatch>* dst_batch,
-                                  const absl::optional<ModelError>& error,
+                                  const std::optional<ModelError>& error,
                                   std::unique_ptr<MetadataBatch> batch) {
   *dst_error = error;
   *dst_batch = std::move(batch);
 }
 
 void CaptureErrorRecordsAndIdList(
-    absl::optional<ModelError>* dst_error,
+    std::optional<ModelError>* dst_error,
     std::unique_ptr<ModelTypeStore::RecordList>* dst_records,
     std::unique_ptr<ModelTypeStore::IdList>* dst_id_list,
-    const absl::optional<ModelError>& error,
+    const std::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore::RecordList> records,
     std::unique_ptr<ModelTypeStore::IdList> missing_id_list) {
   *dst_error = error;
@@ -88,7 +88,7 @@ void WriteData(ModelTypeStore* store,
   std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
       store->CreateWriteBatch();
   write_batch->WriteData(key, data);
-  absl::optional<ModelError> error;
+  std::optional<ModelError> error;
   store->CommitWriteBatch(std::move(write_batch),
                           base::BindOnce(&CaptureError, &error));
   base::RunLoop().RunUntilIdle();
@@ -102,7 +102,7 @@ void WriteMetadata(ModelTypeStore* store,
       store->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->UpdateMetadata(key, metadata);
 
-  absl::optional<ModelError> error;
+  std::optional<ModelError> error;
   store->CommitWriteBatch(std::move(write_batch),
                           base::BindOnce(&CaptureError, &error));
   base::RunLoop().RunUntilIdle();
@@ -115,7 +115,7 @@ void WriteModelTypeState(ModelTypeStore* store,
       store->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->UpdateModelTypeState(state);
 
-  absl::optional<ModelError> error;
+  std::optional<ModelError> error;
   store->CommitWriteBatch(std::move(write_batch),
                           base::BindOnce(&CaptureError, &error));
   base::RunLoop().RunUntilIdle();
@@ -126,7 +126,7 @@ void ReadStoreContents(
     ModelTypeStore* store,
     std::unique_ptr<ModelTypeStore::RecordList>* data_records,
     std::unique_ptr<MetadataBatch>* metadata_batch) {
-  absl::optional<ModelError> error;
+  std::optional<ModelError> error;
   store->ReadAllData(
       base::BindOnce(&CaptureErrorAndRecords, &error, data_records));
   base::RunLoop().RunUntilIdle();
@@ -225,14 +225,14 @@ TEST_P(ModelTypeStoreImplTest, WriteThenReadWithPreprocessing) {
   store()->ReadAllDataAndPreprocess(
       base::BindLambdaForTesting(
           [&](std::unique_ptr<ModelTypeStore::RecordList> record_list)
-              -> absl::optional<ModelError> {
+              -> std::optional<ModelError> {
             for (const ModelTypeStore::Record& record : *record_list) {
               preprocessed[std::string("key_") + record.id] =
                   std::string("value_") + record.value;
             }
-            return absl::nullopt;
+            return std::nullopt;
           }),
-      base::BindLambdaForTesting([&](const absl::optional<ModelError>& error) {
+      base::BindLambdaForTesting([&](const std::optional<ModelError>& error) {
         EXPECT_FALSE(error) << error->ToString();
         loop.Quit();
       }));
@@ -252,10 +252,10 @@ TEST_P(ModelTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
   store()->ReadAllDataAndPreprocess(
       base::BindLambdaForTesting(
           [&](std::unique_ptr<ModelTypeStore::RecordList> record_list)
-              -> absl::optional<ModelError> {
+              -> std::optional<ModelError> {
             return ModelError(FROM_HERE, "Preprocessing error");
           }),
-      base::BindLambdaForTesting([&](const absl::optional<ModelError>& error) {
+      base::BindLambdaForTesting([&](const std::optional<ModelError>& error) {
         EXPECT_TRUE(error);
         loop.Quit();
       }));
@@ -290,7 +290,7 @@ TEST_P(ModelTypeStoreImplTest, WriteThenDeleteAll) {
 TEST_P(ModelTypeStoreImplTest, MissingModelTypeState) {
   WriteTestData();
 
-  absl::optional<ModelError> error;
+  std::optional<ModelError> error;
 
   std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
       store()->CreateWriteBatch();
@@ -314,7 +314,7 @@ TEST_P(ModelTypeStoreImplTest, MissingModelTypeState) {
 TEST_P(ModelTypeStoreImplTest, ReadMissingDataRecords) {
   WriteTestData();
 
-  absl::optional<ModelError> error;
+  std::optional<ModelError> error;
 
   ModelTypeStore::IdList id_list;
   id_list.push_back("id1");

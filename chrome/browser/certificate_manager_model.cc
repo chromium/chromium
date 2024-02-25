@@ -258,17 +258,12 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
   void RefreshSlotsUnlocked() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DVLOG(1) << "refresh listing certs...";
-    cert_db_->ListCertsInfo(
-        base::BindOnce(&CertsSourcePlatformNSS::DidGetCerts,
-                       weak_ptr_factory_.GetWeakPtr()),
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-        SystemNetworkContextManager::IsUsingChromeRootStore()
-            ? net::NSSCertDatabase::NSSRootsHandling::kExclude
-            : net::NSSCertDatabase::NSSRootsHandling::kInclude
-#elif BUILDFLAG(CHROME_ROOT_STORE_ONLY)
-        net::NSSCertDatabase::NSSRootsHandling::kExclude
+    cert_db_->ListCertsInfo(base::BindOnce(&CertsSourcePlatformNSS::DidGetCerts,
+                                           weak_ptr_factory_.GetWeakPtr()),
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+                            net::NSSCertDatabase::NSSRootsHandling::kExclude
 #else
-        net::NSSCertDatabase::NSSRootsHandling::kInclude
+                            net::NSSCertDatabase::NSSRootsHandling::kInclude
 #endif
     );
   }

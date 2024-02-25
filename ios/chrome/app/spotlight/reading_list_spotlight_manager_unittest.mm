@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -17,10 +18,10 @@
 #import "ios/chrome/app/spotlight/fake_spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -115,7 +116,7 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   base::CancelableTaskTracker cancelable_task_tracker_;
-  ReadingListModel* model_;
+  raw_ptr<ReadingListModel> model_;
   FakeSpotlightInterface* spotlightInterface_;
   FakeSearchableItemFactory* searchableItemFactory_;
 };
@@ -206,6 +207,87 @@ TEST_F(ReadingListSpotlightManagerTest, testRemoveEntry) {
   EXPECT_EQ(
       fakeSpotlightInterface.deleteSearchableItemsWithIdentifiersCallsCount,
       1u);
+
+  [manager shutdown];
+}
+
+// Test that model updates in background don't do anything until the app is
+// foregrounded, at which point they cause a full reindex.
+TEST_F(ReadingListSpotlightManagerTest, testBackgroundPausesModelUpdates) {
+  FakeSpotlightInterface* fakeSpotlightInterface =
+      [[FakeSpotlightInterface alloc] init];
+
+  ReadingListSpotlightManager* manager = [[ReadingListSpotlightManager alloc]
+      initWithLargeIconService:large_icon_service_.get()
+              readingListModel:model_
+            spotlightInterface:fakeSpotlightInterface
+         searchableItemFactory:searchableItemFactory_];
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+
+  model_->RemoveEntryByURL(GURL(kTestURL1));
+
+  EXPECT_EQ(
+      fakeSpotlightInterface.deleteSearchableItemsWithIdentifiersCallsCount,
+      0u);
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  EXPECT_EQ(
+      fakeSpotlightInterface.deleteSearchableItemsWithIdentifiersCallsCount,
+      0u);
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            2u);
+
+  [manager shutdown];
+}
+
+// Test that attempting public API calls don't have an immediate effect in
+// background, and the update only happens when the app is foregrounded again.
+TEST_F(ReadingListSpotlightManagerTest, testBackgroundPausesAPICalls) {
+  FakeSpotlightInterface* fakeSpotlightInterface =
+      [[FakeSpotlightInterface alloc] init];
+
+  ReadingListSpotlightManager* manager = [[ReadingListSpotlightManager alloc]
+      initWithLargeIconService:large_icon_service_.get()
+              readingListModel:model_
+            spotlightInterface:fakeSpotlightInterface
+         searchableItemFactory:searchableItemFactory_];
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  [manager clearAndReindexReadingList];
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil
+                  userInfo:nil];
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            2u);
 
   [manager shutdown];
 }

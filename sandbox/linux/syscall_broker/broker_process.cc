@@ -35,7 +35,7 @@ namespace sandbox {
 
 namespace syscall_broker {
 
-BrokerProcess::BrokerProcess(absl::optional<BrokerSandboxConfig> policy,
+BrokerProcess::BrokerProcess(std::optional<BrokerSandboxConfig> policy,
                              BrokerType broker_type,
                              bool fast_check_in_client,
                              bool quiet_failures_for_tests)

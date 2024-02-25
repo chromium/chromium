@@ -1,3 +1,5 @@
+# Placeholder: load py_test
+
 package(
     default_visibility = ["//visibility:public"],
     features = ["-use_header_modules"],
@@ -20,6 +22,7 @@ cc_library(
         "//mediapipe/framework/port:any_proto",
         "//mediapipe/framework/port:ret_check",
         "@com_google_absl//absl/container:btree",
+        "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/strings",
         "@com_google_protobuf//:protobuf",
     ],
@@ -78,15 +81,13 @@ cc_library(
     srcs = ["node.cc"],
     hdrs = ["node.h"],
     deps = [
-        ":const_str",
         ":contract",
-        ":packet",
-        ":port",
         "//mediapipe/framework:calculator_base",
         "//mediapipe/framework:calculator_context",
         "//mediapipe/framework:calculator_contract",
         "//mediapipe/framework:subgraph",
-        "//mediapipe/framework/deps:no_destructor",
+        "//mediapipe/framework/deps:registration",
+        "@com_google_absl//absl/status",
     ],
 )
 
@@ -112,6 +113,7 @@ cc_test(
         "//mediapipe/framework/port:gtest_main",
         "//mediapipe/framework/port:parse_text_proto",
         "//mediapipe/framework/port:status",
+        "@com_google_absl//absl/log:absl_log",
     ],
 )
 
@@ -123,6 +125,7 @@ cc_library(
         ":tuple",
         "//mediapipe/framework:packet",
         "//mediapipe/framework/port:logging",
+        "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/meta:type_traits",
     ],
 )
@@ -152,6 +155,7 @@ cc_library(
         "//mediapipe/framework:output_side_packet",
         "//mediapipe/framework/port:logging",
         "//mediapipe/framework/tool:type_util",
+        "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/strings",
     ],
 )

@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/installable/fake_installable_manager.h"
@@ -32,7 +34,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -147,7 +148,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
 
  private:
   FakeWebPageMetadataAgent fake_chrome_render_frame_;
-  absl::optional<std::unique_ptr<WebAppInstallInfo>> web_app_info_;
+  std::optional<std::unique_ptr<WebAppInstallInfo>> web_app_info_;
   std::vector<apps::IconInfo> icons_;
 };
 
@@ -310,7 +311,7 @@ TEST_F(WebAppDataRetrieverTest,
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
   retriever.CheckInstallabilityAndRetrieveManifest(
-      web_contents(), /*bypass_service_worker_check=*/false,
+      web_contents(),
       base::BindLambdaForTesting(
           [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
               bool valid_manifest_for_web_app,
@@ -337,7 +338,7 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
   retriever.GetIcons(web_contents(),
-                     /*extra_favicon_urls=*/base::flat_set<GURL>(),
+                     /*extra_favicon_urls=*/IconUrlSizeSet(),
                      skip_page_favicons, fail_all_if_any_fail,
                      base::BindLambdaForTesting(
                          [&](IconsDownloadedResult result, IconsMap icons_map,
@@ -370,8 +371,19 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_FrameNavigated) {
   web_contents_tester()->NavigateAndCommit(kFooUrl);
   run_loop.Run();
 
-  EXPECT_EQ(kFooUrl.DeprecatedGetOriginAsURL(), web_app_info()->start_url);
-  EXPECT_EQ(kFooTitle, web_app_info()->title);
+  if (web_contents()
+          ->GetPrimaryMainFrame()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+    // If the RenderFrameHost changes, the FakeWebPageMetadataAgent mojo
+    // connection will be disconnected, causing the callback to be called with
+    // a null info.
+    EXPECT_EQ(nullptr, web_app_info());
+  } else {
+    // Otherwise, the mojo connection will persist and the callback will get
+    // the info from the previous document.
+    EXPECT_EQ(kFooUrl.DeprecatedGetOriginAsURL(), web_app_info()->start_url);
+    EXPECT_EQ(kFooTitle, web_app_info()->title);
+  }
 }
 
 TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
@@ -404,7 +416,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
   WebAppDataRetriever retriever;
 
   retriever.CheckInstallabilityAndRetrieveManifest(
-      web_contents(), /*bypass_service_worker_check=*/false,
+      web_contents(),
       base::BindLambdaForTesting(
           [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
               bool valid_manifest_for_web_app,
@@ -443,7 +455,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
   WebAppDataRetriever retriever;
 
   retriever.CheckInstallabilityAndRetrieveManifest(
-      web_contents(), /*bypass_service_worker_check=*/false,
+      web_contents(),
       base::BindLambdaForTesting(
           [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
               bool valid_manifest_for_web_app,

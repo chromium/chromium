@@ -131,7 +131,7 @@ const char kDisallowedByBlocklistHistogramName[] =
     "PageLoad.Clients.Ads.HeavyAds.DisallowedByBlocklist";
 
 void RecordHeavyAdInterventionDisallowedByBlocklist(bool disallowed) {
-  UMA_HISTOGRAM_BOOLEAN(kDisallowedByBlocklistHistogramName, disallowed);
+  base::UmaHistogramBoolean(kDisallowedByBlocklistHistogramName, disallowed);
 }
 
 using ResourceMimeType = AdsPageLoadMetricsObserver::ResourceMimeType;
@@ -363,13 +363,30 @@ void AdsPageLoadMetricsObserver::OnTimingUpdate(
   bool has_new_fcp = ancestor_data->SetEarliestFirstContentfulPaint(
       timing.paint_timing->first_contentful_paint);
 
-  // If this is the earliest FCP for any frame in the root ad frame's subtree,
-  // set Creative Origin Status.
   if (has_new_fcp) {
+    // If this is the earliest FCP for any frame in the root ad frame's subtree,
+    // set Creative Origin Status.
     OriginStatus origin_status =
         IsFrameSameOriginToOutermostMainFrame(frame_rfh) ? OriginStatus::kSame
                                                          : OriginStatus::kCross;
     ancestor_data->set_creative_origin_status(origin_status);
+
+    // Determine the offset of this ad-frame FCP from main frame navigation
+    // start, and remember it if it's the lowest. The time calculation is
+    // (frame_fcp + frame_nav_start) - main_frame_nav_start.
+    auto id_and_start =
+        frame_navigation_starts_.find(frame_rfh->GetFrameTreeNodeId());
+    if (id_and_start != frame_navigation_starts_.end()) {
+      base::TimeDelta time_since_top_nav_start =
+          (id_and_start->second +
+           timing.paint_timing->first_contentful_paint.value()) -
+          GetDelegate().GetNavigationStart();
+
+      ancestor_data->SetEarliestFirstContentfulPaintSinceTopNavStart(
+          time_since_top_nav_start);
+      aggregate_frame_data_->UpdateFirstAdFCPSinceNavStart(
+          time_since_top_nav_start);
+    }
   }
 }
 
@@ -521,6 +538,9 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
           FromNavigationHandle(*navigation_handle);
   DCHECK(throttle_manager);
 
+  frame_navigation_starts_[navigation_handle->GetFrameTreeNodeId()] =
+      navigation_handle->NavigationStart();
+
   const bool is_adframe = throttle_manager->IsFrameTaggedAsAd(
       navigation_handle->GetFrameTreeNodeId());
 
@@ -531,7 +551,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // logic should be moved into /subresource_filter/ and applied to all of ad
   // tagging, rather than being implemented in AdsPLMO.
   bool should_ignore_detected_ad = false;
-  absl::optional<subresource_filter::LoadPolicy> load_policy =
+  std::optional<subresource_filter::LoadPolicy> load_policy =
       throttle_manager->LoadPolicyForLastCommittedNavigation(
           navigation_handle->GetFrameTreeNodeId());
 
@@ -726,6 +746,8 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 }
 
 void AdsPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
+  frame_navigation_starts_.erase(frame_tree_node_id);
+
   const auto& id_and_data = ad_frames_data_.find(frame_tree_node_id);
   if (id_and_data == ad_frames_data_.end())
     return;
@@ -909,6 +931,9 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
       GetExponentialBucketForDistributionMoment(moments.excess_kurtosis));
   custom_sampling_builder.Record(ukm_recorder->Get());
 
+  ADS_HISTOGRAM("AverageViewportAdDensity", base::UmaHistogramPercentage,
+                FrameVisibility::kAnyVisibility, std::llround(moments.mean));
+
   // Only records histograms on pages that have some ad bytes.
   if (resource_data.ad_bytes() == 0)
     return;
@@ -948,6 +973,15 @@ void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
     }
   }
 
+  std::optional<base::TimeDelta> first_ad_fcp_after_main_nav_start =
+      aggregate_frame_data_->first_ad_fcp_after_main_nav_start();
+  if (first_ad_fcp_after_main_nav_start) {
+    PAGE_LOAD_HISTOGRAM(
+        "PageLoad.Clients.Ads.AdPaintTiming."
+        "TopFrameNavigationToFirstAdFirstContentfulPaint",
+        first_ad_fcp_after_main_nav_start.value());
+  }
+
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kNonVisible);
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kVisible);
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kAnyVisibility);
@@ -978,12 +1012,13 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForCpuUsage() {
                 aggregate_frame_data_->total_cpu_usage() -
                     aggregate_frame_data_->total_ad_cpu_usage());
   ADS_HISTOGRAM("Cpu.NonAdFrames.Aggregate.PeakWindowedPercent2",
-                UMA_HISTOGRAM_PERCENTAGE, visibility,
+                base::UmaHistogramPercentage, visibility,
                 aggregate_frame_data_->peak_windowed_non_ad_cpu_percent());
   ADS_HISTOGRAM("Cpu.FullPage.TotalUsage2", PAGE_LOAD_HISTOGRAM, visibility,
                 aggregate_frame_data_->total_cpu_usage());
-  ADS_HISTOGRAM("Cpu.FullPage.PeakWindowedPercent2", UMA_HISTOGRAM_PERCENTAGE,
-                visibility, aggregate_frame_data_->peak_windowed_cpu_percent());
+  ADS_HISTOGRAM("Cpu.FullPage.PeakWindowedPercent2",
+                base::UmaHistogramPercentage, visibility,
+                aggregate_frame_data_->peak_windowed_cpu_percent());
 }
 
 void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
@@ -996,18 +1031,18 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
   const auto& visibility_data =
       aggregate_frame_data_->get_ad_data_by_visibility(visibility);
 
-  ADS_HISTOGRAM("FrameCounts.AdFrames.Total", UMA_HISTOGRAM_COUNTS_1000,
+  ADS_HISTOGRAM("FrameCounts.AdFrames.Total", base::UmaHistogramCounts1000,
                 visibility, visibility_data.frames);
 
   // Only record AllPages histograms for the AnyVisibility suffix as these
   // numbers do not change for different visibility types.
   if (visibility == FrameVisibility::kAnyVisibility) {
-    ADS_HISTOGRAM("AllPages.PercentTotalBytesAds", UMA_HISTOGRAM_PERCENTAGE,
+    ADS_HISTOGRAM("AllPages.PercentTotalBytesAds", base::UmaHistogramPercentage,
                   visibility,
                   resource_data.ad_bytes() * 100 / resource_data.bytes());
     if (resource_data.network_bytes()) {
-      ADS_HISTOGRAM("AllPages.PercentNetworkBytesAds", UMA_HISTOGRAM_PERCENTAGE,
-                    visibility,
+      ADS_HISTOGRAM("AllPages.PercentNetworkBytesAds",
+                    base::UmaHistogramPercentage, visibility,
                     resource_data.ad_network_bytes() * 100 /
                         resource_data.network_bytes());
     }
@@ -1030,12 +1065,12 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
 
   if (resource_data.bytes()) {
     ADS_HISTOGRAM("Bytes.FullPage.Total2.PercentAdFrames",
-                  UMA_HISTOGRAM_PERCENTAGE, visibility,
+                  base::UmaHistogramPercentage, visibility,
                   visibility_data.bytes * 100 / resource_data.bytes());
   }
   if (resource_data.network_bytes()) {
     ADS_HISTOGRAM(
-        "Bytes.FullPage.Network.PercentAdFrames", UMA_HISTOGRAM_PERCENTAGE,
+        "Bytes.FullPage.Network.PercentAdFrames", base::UmaHistogramPercentage,
         visibility,
         visibility_data.network_bytes * 100 / resource_data.network_bytes());
   }
@@ -1064,8 +1099,8 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
     PAGE_BYTES_HISTOGRAM(
         "PageLoad.Clients.Ads.Memory.MainFrame.Max",
         aggregate_frame_data_->outermost_main_frame_max_memory());
-    UMA_HISTOGRAM_COUNTS_10000("PageLoad.Clients.Ads.Memory.UpdateCount",
-                               memory_update_count_);
+    base::UmaHistogramCounts10000("PageLoad.Clients.Ads.Memory.UpdateCount",
+                                  memory_update_count_);
   }
 }
 
@@ -1095,7 +1130,7 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForCpuUsage(
     // Report the peak windowed usage, which is independent of activation status
     // (measured only for the unactivated period).
     ADS_HISTOGRAM("Cpu.AdFrames.PerFrame.PeakWindowedPercent2",
-                  UMA_HISTOGRAM_PERCENTAGE, visibility,
+                  base::UmaHistogramPercentage, visibility,
                   ad_frame_data.peak_windowed_cpu_percent());
 
     if (ad_frame_data.user_activation_status() ==
@@ -1143,20 +1178,20 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
     ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.Network", PAGE_BYTES_HISTOGRAM,
                   visibility, resource_data.network_bytes());
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.OriginStatus",
-                  UMA_HISTOGRAM_ENUMERATION, visibility,
+                  base::UmaHistogramEnumeration, visibility,
                   ad_frame_data.origin_status());
 
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.CreativeOriginStatus",
-                  UMA_HISTOGRAM_ENUMERATION, visibility,
+                  base::UmaHistogramEnumeration, visibility,
                   ad_frame_data.creative_origin_status());
 
     ADS_HISTOGRAM(
         "FrameCounts.AdFrames.PerFrame.CreativeOriginStatusWithThrottling",
-        UMA_HISTOGRAM_ENUMERATION, visibility,
+        base::UmaHistogramEnumeration, visibility,
         ad_frame_data.GetCreativeOriginStatusWithThrottling());
 
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.UserActivation",
-                  UMA_HISTOGRAM_ENUMERATION, visibility,
+                  base::UmaHistogramEnumeration, visibility,
                   ad_frame_data.user_activation_status());
 
     if (auto first_contentful_paint =
@@ -1164,6 +1199,13 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
       ADS_HISTOGRAM("AdPaintTiming.NavigationToFirstContentfulPaint3",
                     PAGE_LOAD_LONG_HISTOGRAM, visibility,
                     first_contentful_paint.value());
+    }
+
+    if (auto earliest_fcp_since_top_nav_start =
+            ad_frame_data.earliest_fcp_since_top_nav_start()) {
+      ADS_HISTOGRAM("AdPaintTiming.TopFrameNavigationToFirstContentfulPaint",
+                    PAGE_LOAD_LONG_HISTOGRAM, visibility,
+                    earliest_fcp_since_top_nav_start.value());
     }
   }
 }
@@ -1177,7 +1219,7 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForHeavyAds(
   for (const auto visibility :
        {FrameVisibility::kAnyVisibility, ad_frame_data.visibility()}) {
     ADS_HISTOGRAM("HeavyAds.ComputedTypeWithThresholdNoise",
-                  UMA_HISTOGRAM_ENUMERATION, visibility,
+                  base::UmaHistogramEnumeration, visibility,
                   ad_frame_data.heavy_ad_status_with_noise());
   }
 }
@@ -1344,10 +1386,10 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   MetricsWebContentsObserver::RecordFeatureUsage(
       render_frame_host, blink::mojom::WebFeature::kHeavyAdIntervention);
 
-  ADS_HISTOGRAM("HeavyAds.InterventionType2", UMA_HISTOGRAM_ENUMERATION,
+  ADS_HISTOGRAM("HeavyAds.InterventionType2", base::UmaHistogramEnumeration,
                 FrameVisibility::kAnyVisibility,
                 frame_data->heavy_ad_status_with_policy());
-  ADS_HISTOGRAM("HeavyAds.InterventionType2", UMA_HISTOGRAM_ENUMERATION,
+  ADS_HISTOGRAM("HeavyAds.InterventionType2", base::UmaHistogramEnumeration,
                 frame_data->visibility(),
                 frame_data->heavy_ad_status_with_policy());
 

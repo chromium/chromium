@@ -123,9 +123,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
 // additional view to be added at the left side. Please refer to the example in
 // the header file for the container layout.
 class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(ButtonContainer);
+  METADATA_HEADER(ButtonContainer, views::FlexLayoutView)
 
+ public:
   explicit ButtonContainer(SystemDialogDelegateView* dialog_view)
       : cancel_button_(AddChildView(std::make_unique<PillButton>(
             base::BindRepeating(&SystemDialogDelegateView::Cancel,
@@ -205,7 +205,7 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
   raw_ptr<views::View> place_holder_view_ = nullptr;
 };
 
-BEGIN_METADATA(SystemDialogDelegateView, ButtonContainer, views::FlexLayoutView)
+BEGIN_METADATA(SystemDialogDelegateView, ButtonContainer)
 END_METADATA
 
 //------------------------------------------------------------------------------
@@ -326,6 +326,14 @@ void SystemDialogDelegateView::SetTopContentAlignment(
 void SystemDialogDelegateView::SetMiddleContentAlignment(
     views::LayoutAlignment alignment) {
   SetViewCrossAxisAlignment(contents_[ContentType::kMiddle], alignment);
+}
+
+void SystemDialogDelegateView::SetAcceptButtonVisible(bool visible) {
+  button_container_->accept_button()->SetVisible(visible);
+}
+
+void SystemDialogDelegateView::SetTitleMargins(const gfx::Insets& margins) {
+  SetViewLayoutSpecs(title_, margins);
 }
 
 gfx::Size SystemDialogDelegateView::CalculatePreferredSize() const {
@@ -489,7 +497,7 @@ void SystemDialogDelegateView::RunCallbackAndCloseDialog(
   }
 }
 
-BEGIN_METADATA(SystemDialogDelegateView, views::WidgetDelegateView)
+BEGIN_METADATA(SystemDialogDelegateView)
 END_METADATA
 
 }  // namespace ash

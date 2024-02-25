@@ -263,15 +263,19 @@ bool SendKeyPress(gfx::NativeWindow window,
                                     base::OnceClosure());
 }
 
-// Win and Linux implement a SendKeyPress() this as a
-// SendKeyPressAndRelease(), so we should as well (despite the name).
+// The implementation in ui_controls_aura.cc sends key press *and* release, so
+// this implementation does the same.
 bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 ui::KeyboardCode key,
                                 bool control,
                                 bool shift,
                                 bool alt,
                                 bool command,
-                                base::OnceClosure task) {
+                                base::OnceClosure task,
+                                KeyEventType wait_for) {
+  // This doesn't time out if `window` is deleted before the key release events
+  // are dispatched, so it's fine to ignore `wait_for` and always wait for key
+  // release events.
   CHECK(g_ui_controls_enabled);
   return SendKeyEventsNotifyWhenDone(
       window, key, kKeyPress | kKeyRelease, std::move(task),

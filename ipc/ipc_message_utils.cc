@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <type_traits>
 
 #include "base/files/file_path.h"
@@ -281,7 +282,7 @@ bool ReadValue(const base::Pickle* pickle,
       break;
     }
     case base::Value::Type::BINARY: {
-      absl::optional<base::span<const uint8_t>> data = iter->ReadData();
+      std::optional<base::span<const uint8_t>> data = iter->ReadData();
       if (!data) {
         return false;
       }
@@ -449,7 +450,7 @@ void ParamTraits<std::u16string>::Log(const param_type& p, std::string* l) {
 bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
                                      param_type* r) {
-  base::StringPiece16 piece16;
+  std::u16string_view piece16;
   if (!iter->ReadStringPiece16(&piece16))
     return false;
 
@@ -1206,9 +1207,9 @@ void ParamTraits<base::File::Info>::Write(base::Pickle* m,
                                           const param_type& p) {
   WriteParam(m, p.size);
   WriteParam(m, p.is_directory);
-  WriteParam(m, p.last_modified.ToDoubleT());
-  WriteParam(m, p.last_accessed.ToDoubleT());
-  WriteParam(m, p.creation_time.ToDoubleT());
+  WriteParam(m, p.last_modified.InSecondsFSinceUnixEpoch());
+  WriteParam(m, p.last_accessed.InSecondsFSinceUnixEpoch());
+  WriteParam(m, p.creation_time.InSecondsFSinceUnixEpoch());
 }
 
 bool ParamTraits<base::File::Info>::Read(const base::Pickle* m,
@@ -1221,9 +1222,9 @@ bool ParamTraits<base::File::Info>::Read(const base::Pickle* m,
       !ReadParam(m, iter, &last_accessed) ||
       !ReadParam(m, iter, &creation_time))
     return false;
-  p->last_modified = base::Time::FromDoubleT(last_modified);
-  p->last_accessed = base::Time::FromDoubleT(last_accessed);
-  p->creation_time = base::Time::FromDoubleT(creation_time);
+  p->last_modified = base::Time::FromSecondsSinceUnixEpoch(last_modified);
+  p->last_accessed = base::Time::FromSecondsSinceUnixEpoch(last_accessed);
+  p->creation_time = base::Time::FromSecondsSinceUnixEpoch(creation_time);
   return true;
 }
 
@@ -1234,11 +1235,11 @@ void ParamTraits<base::File::Info>::Log(const param_type& p,
   l->append(",");
   LogParam(p.is_directory, l);
   l->append(",");
-  LogParam(p.last_modified.ToDoubleT(), l);
+  LogParam(p.last_modified.InSecondsFSinceUnixEpoch(), l);
   l->append(",");
-  LogParam(p.last_accessed.ToDoubleT(), l);
+  LogParam(p.last_accessed.InSecondsFSinceUnixEpoch(), l);
   l->append(",");
-  LogParam(p.creation_time.ToDoubleT(), l);
+  LogParam(p.creation_time.InSecondsFSinceUnixEpoch(), l);
   l->append(")");
 }
 
@@ -1322,7 +1323,7 @@ bool ParamTraits<base::UnguessableToken>::Read(const base::Pickle* m,
   // This is not mapped as nullable_is_same_type, so any UnguessableToken
   // deserialized by the traits should always yield a non-empty token.
   // If deserialization results in an empty token, the data is malformed.
-  absl::optional<base::UnguessableToken> token =
+  std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return false;
@@ -1418,7 +1419,7 @@ void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {
   m->WriteUInt32(static_cast<uint32_t>(p.routing_id()));
   m->WriteUInt32(p.type());
   m->WriteUInt32(p.flags());
-  m->WriteData(p.payload(), p.payload_size());
+  m->WriteData(p.payload_bytes());
 }
 
 bool ParamTraits<Message>::Read(const base::Pickle* m,

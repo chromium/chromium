@@ -154,7 +154,7 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
   std::vector<std::string> keys_to_remove;
   base::Value::Dict host_zoom_dictionary_copy = host_zoom_dictionary.Clone();
   for (auto [host, value] : host_zoom_dictionary_copy) {
-    absl::optional<double> maybe_zoom;
+    std::optional<double> maybe_zoom;
     base::Time last_modified;
 
     if (value.is_dict()) {

@@ -13,6 +13,7 @@
 #include "content/browser/devtools/protocol/inspector_handler.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/protocol/target_handler.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -20,6 +21,17 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 namespace content {
+
+namespace {
+
+RenderFrameHostImpl* ContainingLocalRoot(RenderFrameHostImpl* frame) {
+  while (!frame->is_local_root()) {
+    frame = frame->GetParent();
+  }
+  return frame;
+}
+
+}  // namespace
 
 SharedStorageWorkletDevToolsAgentHost::SharedStorageWorkletDevToolsAgentHost(
     SharedStorageWorkletHost& worklet_host,
@@ -35,7 +47,7 @@ SharedStorageWorkletDevToolsAgentHost::
     ~SharedStorageWorkletDevToolsAgentHost() = default;
 
 BrowserContext* SharedStorageWorkletDevToolsAgentHost::GetBrowserContext() {
-  if (!worklet_host_->GetProcessHost()) {
+  if (!worklet_host_ || !worklet_host_->GetProcessHost()) {
     return nullptr;
   }
 
@@ -47,12 +59,16 @@ std::string SharedStorageWorkletDevToolsAgentHost::GetType() {
 }
 
 std::string SharedStorageWorkletDevToolsAgentHost::GetTitle() {
+  if (!worklet_host_) {
+    return std::string();
+  }
+
   return base::StrCat({"Shared storage worklet for ",
                        worklet_host_->script_source_url().spec()});
 }
 
 GURL SharedStorageWorkletDevToolsAgentHost::GetURL() {
-  return worklet_host_->script_source_url();
+  return worklet_host_ ? worklet_host_->script_source_url() : GURL();
 }
 
 bool SharedStorageWorkletDevToolsAgentHost::Activate() {
@@ -95,6 +111,16 @@ void SharedStorageWorkletDevToolsAgentHost::WorkletDestroyed() {
   }
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
+}
+
+bool SharedStorageWorkletDevToolsAgentHost::IsRelevantTo(
+    RenderFrameHostImpl* frame) {
+  if (!worklet_host_->GetFrame()) {
+    return false;
+  }
+
+  return ContainingLocalRoot(frame) ==
+         ContainingLocalRoot(worklet_host_->GetFrame());
 }
 
 protocol::TargetAutoAttacher*

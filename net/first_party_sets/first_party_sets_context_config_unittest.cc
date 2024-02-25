@@ -4,6 +4,8 @@
 
 #include "net/first_party_sets/first_party_sets_context_config.h"
 
+#include <optional>
+
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
@@ -11,7 +13,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using ::testing::Optional;
@@ -26,18 +27,18 @@ namespace net {
 TEST(FirstPartySetsContextConfigTest, FindOverride_empty) {
   EXPECT_EQ(FirstPartySetsContextConfig().FindOverride(
                 SchemefulSite(GURL("https://example.test"))),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(FirstPartySetsContextConfigTest, FindOverride_irrelevant) {
   SchemefulSite example(GURL("https://example.test"));
-  FirstPartySetEntry entry(example, SiteType::kPrimary, absl::nullopt);
+  FirstPartySetEntry entry(example, SiteType::kPrimary, std::nullopt);
   SchemefulSite foo(GURL("https://foo.test"));
 
   EXPECT_EQ(FirstPartySetsContextConfig(
                 {{example, FirstPartySetEntryOverride(entry)}})
                 .FindOverride(foo),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(FirstPartySetsContextConfigTest, FindOverride_deletion) {
@@ -51,7 +52,7 @@ TEST(FirstPartySetsContextConfigTest, FindOverride_deletion) {
 
 TEST(FirstPartySetsContextConfigTest, FindOverride_modification) {
   SchemefulSite example(GURL("https://example.test"));
-  FirstPartySetEntry entry(example, SiteType::kPrimary, absl::nullopt);
+  FirstPartySetEntry entry(example, SiteType::kPrimary, std::nullopt);
 
   EXPECT_THAT(FirstPartySetsContextConfig(
                   {{example, FirstPartySetEntryOverride(entry)}})

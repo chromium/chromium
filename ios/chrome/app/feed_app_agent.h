@@ -11,6 +11,7 @@
 // and users to perform Feed related operations e.g. Creating a Feed, Following
 // a Website, etc. This also manages feed background refresh.
 // TODO(crbug.com/1344866): Coordinate background tasks when more are added.
+// TODO(crbug.com/326035952): Update for multuple browser states.
 @interface FeedAppAgent : SceneObservingAppAgent
 @end
 

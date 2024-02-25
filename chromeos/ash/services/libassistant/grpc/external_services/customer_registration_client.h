@@ -83,8 +83,7 @@ class CustomerRegistrationClient {
       const ::assistant::api::ServiceRegistrationResponse& response);
 
   const std::string customer_server_address_;
-  const raw_ptr<GrpcLibassistantClient, ExperimentalAsh> libassistant_client_ =
-      nullptr;
+  const raw_ptr<GrpcLibassistantClient> libassistant_client_ = nullptr;
 
   ::assistant::api::RegisterCustomerRequest customer_registration_request_;
   bool is_started_ = false;

@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace message_center {
 namespace {
@@ -20,9 +21,7 @@ struct TestCase {
 
 // Returns a test image of `image_size`.
 gfx::ImageSkia CreateTestImageForSize(const gfx::Size& image_size) {
-  SkBitmap icon_bitmap;
-  icon_bitmap.allocN32Pixels(image_size.width(), image_size.height());
-  return gfx::ImageSkia::CreateFrom1xBitmap(icon_bitmap);
+  return gfx::test::CreateImageSkia(image_size.width(), image_size.height());
 }
 
 }  // namespace

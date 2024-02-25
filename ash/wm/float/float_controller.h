@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -23,6 +22,10 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace display {
+enum class TabletState;
+}  // namespace display
+
 namespace views {
 class Widget;
 }  // namespace views
@@ -30,15 +33,13 @@ class Widget;
 namespace ash {
 
 class Shell;
-class TabletModeController;
 class WorkspaceEventHandler;
 
 // This controller allows windows to be on top of all app windows, but below
 // pips. When a window is 'floated', it remains always on top for the user so
 // that they can complete secondary tasks. Floated window stays in the
 // `kShellWindowId_FloatContainer`.
-class ASH_EXPORT FloatController : public TabletModeObserver,
-                                   public display::DisplayObserver,
+class ASH_EXPORT FloatController : public display::DisplayObserver,
                                    public ShellObserver,
                                    public DesksController::Observer,
                                    public chromeos::FloatControllerBase,
@@ -126,11 +127,6 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
   void ClearWorkspaceEventHandler(aura::Window* root);
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnding() override;
-  void OnTabletControllerDestroyed() override;
-
   // DesksController::Observer:
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
@@ -138,6 +134,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
@@ -187,6 +184,10 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // `floated_window` from `floated_window_info_map_`.
   void OnFloatedWindowDestroying(aura::Window* floated_window);
 
+  // Called by `OnDisplayTabletStateChanged.
+  void OnTabletModeStarted();
+  void OnTabletModeEnding();
+
   // Used to map floated window to to its FloatedWindowInfo.
   // Contains extra info for a floated window such as its pre-float auto managed
   // state and tablet mode magnetism.
@@ -210,13 +211,10 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
                                      ScreenRotationAnimatorObserver>
       screen_rotation_observations_{this};
 
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
-
   base::ScopedObservation<DesksController, DesksController::Observer>
       desks_controller_observation_{this};
 
-  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+  std::optional<display::ScopedOptionalDisplayObserver> display_observer_;
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };
 

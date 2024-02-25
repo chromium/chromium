@@ -78,7 +78,7 @@ void AutofillKeyboardAccessoryView::Show() {
   for (int i = 0; i < controller_->GetLineCount(); ++i) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
     int android_icon_id = 0;
-    if (!suggestion.icon.empty()) {
+    if (suggestion.icon != Suggestion::Icon::kNoIcon) {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
           GetIconResourceID(suggestion.icon));
     }
@@ -121,9 +121,9 @@ void AutofillKeyboardAccessoryView::AxAnnounce(const std::u16string& text) {
 void AutofillKeyboardAccessoryView::ConfirmDeletion(
     const std::u16string& confirmation_title,
     const std::u16string& confirmation_body,
-    base::OnceClosure confirm_deletion) {
+    base::OnceCallback<void(bool)> deletion_callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  confirm_deletion_ = std::move(confirm_deletion);
+  deletion_callback_ = std::move(deletion_callback);
   Java_AutofillKeyboardAccessoryViewBridge_confirmDeletion(
       env, java_object_, ConvertUTF16ToJavaString(env, confirmation_title),
       ConvertUTF16ToJavaString(env, confirmation_body));
@@ -133,35 +133,47 @@ void AutofillKeyboardAccessoryView::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillKeyboardAccessoryAcceptanceDelayThreshold)) {
-    controller_->AcceptSuggestion(list_index);
-  } else {
-    controller_->AcceptSuggestionWithoutThreshold(list_index);
+    controller_->AcceptSuggestion(list_index, base::TimeTicks::Now());
   }
-}
 
 void AutofillKeyboardAccessoryView::DeletionRequested(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  controller_->RemoveSuggestion(list_index);
+  controller_->RemoveSuggestion(
+      list_index,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 }
 
-void AutofillKeyboardAccessoryView::DeletionConfirmed(
+void AutofillKeyboardAccessoryView::OnDeletionDialogClosed(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (confirm_deletion_.is_null()) {
-    LOG(DFATAL) << "DeletionConfirmed called but no deletion is pending!";
+    const JavaParamRef<jobject>& obj,
+    jboolean confirmed) {
+  if (deletion_callback_.is_null()) {
+    LOG(DFATAL) << "OnDeletionDialogClosed called but no deletion is pending!";
     return;
   }
-  std::move(confirm_deletion_).Run();
+  std::move(deletion_callback_).Run(confirmed);
 }
 
 void AutofillKeyboardAccessoryView::ViewDismissed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   controller_->ViewDestroyed();
+}
+
+// static
+base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
+    base::WeakPtr<AutofillPopupController> controller) {
+  auto adapter = std::make_unique<AutofillKeyboardAccessoryAdapter>(controller);
+  auto accessory_view = std::make_unique<AutofillKeyboardAccessoryView>(
+      adapter->GetWeakPtrToAdapter());
+  if (!accessory_view->Initialize()) {
+    return nullptr;  // Don't create an adapter without initialized view.
+  }
+
+  adapter->SetAccessoryView(std::move(accessory_view));
+  return adapter.release()->GetWeakPtr();
 }
 
 }  // namespace autofill

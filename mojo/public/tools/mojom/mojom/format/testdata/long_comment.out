@@ -1,0 +1,18 @@
+// This is a comment that is OK.
+// This is a comment that is more than eighty columns and should be wrapped into
+// two lines.
+// This is a very long comment that needs to be wrapped into three lines to make
+// sure that wrappping beyond two lines actually works as expected and that it
+// does not stop after the first wrap.
+// This next line shouldn't wrap:
+// https://www.urls.can.be.log.net/and/we/do/not/want/to/wrap/them/because/they/break/.
+// But now we're good.
+
+// Preserve the newline above.
+
+// All data are parsed from user-defined media data. The consumer of this API
+// should filter special
+// characters if needed. The encoding of strings may be UTF-8 that ffmpeg
+// library assumes strings to
+// be UTF-8 but does not validate the encoding.
+struct MediaMetadata {};

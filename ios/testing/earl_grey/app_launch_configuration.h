@@ -38,6 +38,8 @@ struct AppLaunchConfiguration {
   std::vector<variations::VariationID> variations_enabled;
   // Enabled trigger variations.
   std::vector<variations::VariationID> trigger_variations_enabled;
+  // Which FET IPH feature name to enable.
+  std::optional<std::string> iph_feature_enabled;
   // Additional arguments to be directly forwarded to the app.
   std::vector<std::string> additional_args;
   // Relaunch policy.

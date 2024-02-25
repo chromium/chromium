@@ -45,15 +45,8 @@
     margin-inline-start: var(--cr-controlled-by-spacing);
   }
 
-  .signin-button {
-    margin-inline-end: 8px;
-    padding: 8px 16px 8px 8px;
-  }
-
-  .signin-icon {
-    background-color: var(--text-color);
-    margin-inline-end: 4px;
-    margin-inline-start: 0;
+  #signinButton > iron-icon {
+    margin-inline-end: 0;
   }
 
   #mac-address-container {
@@ -64,8 +57,12 @@
     margin-inline-start: var(--cr-section-padding);
   }
 
-  cr-link-row {
+  cr-link-row:not([warning]) {
     --cr-secondary-text-color: var(--cros-text-color-positive);
+  }
+
+  #apnSubpageButton {
+    height: var(--cr-section-two-line-min-height);
   }
 </style>
 <!-- Title section: Icon + name + connection state. -->
@@ -77,7 +74,8 @@
     </network-icon>
     <div id="networkState" class="title settings-box-text"
         connected$="[[showConnectedState_(managedProperties_)]]"
-        warning$="[[showRestrictedConnectivity_(managedProperties_)]]"
+        warning$="[[showRestrictedConnectivity_(managedProperties_,
+                           deviceState_)]]"
         error$="[[isOutOfRangeOrNotEnabled_(outOfRange_, deviceState_)]]">
       [[getStateText_(managedProperties_, propertiesReceived_,
           outOfRange_, deviceState_)]]
@@ -90,11 +88,11 @@
       </cr-policy-indicator>
     </template>
   </div>
-  <cr-button class="signin-button" id="signinButton" on-click="onSigninClick_"
+  <cr-button id="signinButton" on-click="onSigninClick_"
       hidden$="[[!showSignin_(managedProperties_)]]"
       disabled="[[disableSignin_(managedProperties_, disabled_)]]">
-    <div class="signin-icon cr-icon icon-external"></div>
-      $i18n{networkButtonSignin}
+    <iron-icon icon="cr:open-in-new" slot="prefix-icon"></iron-icon>
+    $i18n{networkButtonSignin}
   </cr-button>
   <cr-button id="forgetButton" on-click="onForgetClick_"
       hidden$="[[!showForget_(managedProperties_)]]"
@@ -160,7 +158,7 @@
   <div class$="settings-box single-column
               [[messagesDividerClass_('secondary', managedProperties_,
                   globalPolicy, managedNetworkAvailable,
-                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+                  isSecondaryUser_, isWifiSyncEnabled_, deviceState_)]]">
     <div class="layout horizontal center">
       <iron-icon class="policy" icon="cr:group"></iron-icon>
       <div class="settings-box-text">
@@ -173,12 +171,12 @@
 
 <template is="dom-if"
     if="[[showShared_(managedProperties_, globalPolicy,
-        managedNetworkAvailable)]]">
+        managedNetworkAvailable, deviceState_)]]">
   <!-- Shared network. -->
   <div class$="settings-box settings-box-text
               [[messagesDividerClass_('shared', managedProperties_,
                   globalPolicy, managedNetworkAvailable,
-                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+                  isSecondaryUser_, isWifiSyncEnabled_, deviceState_)]]">
       [[sharedString_(managedProperties_)]]
   </div>
 </template>
@@ -189,10 +187,22 @@
   <div class$="settings-box settings-box-text
               [[messagesDividerClass_('synced', managedProperties_,
                   globalPolicy, managedNetworkAvailable,
-                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+                  isSecondaryUser_, isWifiSyncEnabled_, deviceState_)]]">
       <localized-link
           localized-string="[[syncedString_(managedProperties_)]]">
       </localized-link>
+  </div>
+</template>
+<template is="dom-if"
+    if="[[isCarrierLockedActiveSim_(managedProperties_, deviceState_)]]">
+  <!-- Carrier locked network. -->
+  <div class$="settings-box settings-box-text
+      [[messagesDividerClass_('carrierlocked', managedProperties_,
+          globalPolicy, managedNetworkAvailable,
+          isSecondaryUser_, isWifiSyncEnabled_, deviceState_)]]">
+    <localized-link id="carrierLockedNoticeLink"
+        localized-string="[[i18nAdvanced('networkCarrierLocked')]]">
+    </localized-link>
   </div>
 </template>
 <!-- End of NOTICES section -->
@@ -307,7 +317,9 @@
           label="$i18n{internetApnPageTitle}"
           sub-label="[[getApnRowSubLabel_(managedProperties_)]]"
           on-click="onApnRowClicked_"
-          role-description="$i18n{subpageArrowRoleDescription}">
+          role-description="$i18n{subpageArrowRoleDescription}"
+          warning$="[[showRestrictedConnectivity_(managedProperties_,
+              deviceState_)]]">
       </cr-link-row>
     </template>
   </template>
@@ -355,6 +367,22 @@
             </network-siminfo>
           </div>
         </template>
+
+        <!-- Suppress Text Messages (Cellular only). -->
+        <template is="dom-if"
+            if="[[shouldShowSuppressTextMessagesToggle_(managedProperties_,
+                  deviceState_)]]" restamp>
+          <div class="single-column stretch">
+            <network-config-toggle id="suppressTextMessagesToggle" policy-on-left
+                property="[[managedProperties_.typeProperties.cellular.allowTextMessages]]"
+                label="$i18n{networkSuppressTextMessages}"
+                checked="{{suppressTextMessagesOverride_}}"
+                on-checked-changed="suppressTextMessagesChanged_"
+                disabled="[[disabled_]]">
+            </network-config-toggle>
+          </div>
+        </template>
+
         <!-- Metered (WiFi and Cellular only). -->
         <template is="dom-if"
             if="[[showMetered_(managedProperties_, showMeteredToggle_)]]">
@@ -474,14 +502,20 @@
         </div>
 
         <!-- Hidden. -->
-        <settings-toggle-button id="hiddenToggle"
-            pref="{{hiddenPref_}}"
-            label="$i18n{networkHidden}"
-            sub-label="$i18n{networkHiddenSublabel}"
-            sub-label-icon="cr20:warning"
-            learn-more-url="$i18n{wifiHiddenNetworkLearnMoreUrl}"
-            deep-link-focus-id$="[[Setting.kWifiHidden]]">
-        </settings-toggle-button>
+        <template is="dom-if"
+            if="[[showHiddenNetworkToggle_(
+                    globalPolicy,
+                    managedNetworkAvailable,
+                    managedProperties_)]]">
+          <settings-toggle-button id="hiddenToggle"
+              pref="{{hiddenPref_}}"
+              label="$i18n{networkHidden}"
+              sub-label="$i18n{networkHiddenSublabel}"
+              sub-label-icon="cr20:warning"
+              learn-more-url="$i18n{wifiHiddenNetworkLearnMoreUrl}"
+              deep-link-focus-id$="[[Setting.kWifiHidden]]">
+          </settings-toggle-button>
+        </template>
       </iron-collapse>
     </template>
 

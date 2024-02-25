@@ -6,10 +6,9 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_RECOVERY_SUCCESS_RATE_TRACKER_H_
 
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-enum class ContentSettingsType;
 
 namespace permissions {
 
@@ -59,7 +58,7 @@ class PermissionRecoverySuccessRateTracker
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
 
-  absl::optional<url::Origin> origin_;
+  std::optional<url::Origin> origin_;
 
   bool page_reload_ = false;
 

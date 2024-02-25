@@ -15,9 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-/**
- * Mock implementation of {@link PersistedTabDataStorage} for tests
- */
+/** Mock implementation of {@link PersistedTabDataStorage} for tests */
 public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     private Semaphore mSemaphore;
     private final Map<String, ByteBuffer> mStorage = new HashMap<>();
@@ -32,7 +30,10 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     }
 
     @Override
-    public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer,
+    public void save(
+            int tabId,
+            String dataId,
+            Serializer<ByteBuffer> serializer,
             Callback<Integer> callback) {
         save(tabId, dataId, serializer);
         callback.onResult(0);
@@ -40,10 +41,14 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
 
     @Override
     public void restore(int tabId, String tabDataId, Callback<ByteBuffer> callback) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            callback.onResult(
-                    mStorage.get(getKey(tabId)) == null ? null : mStorage.get(getKey(tabId)));
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.onResult(
+                            mStorage.get(getKey(tabId)) == null
+                                    ? null
+                                    : mStorage.get(getKey(tabId)));
+                });
         if (mSemaphore != null) {
             mSemaphore.release();
         }

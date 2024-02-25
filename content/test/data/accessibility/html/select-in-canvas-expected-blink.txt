@@ -9,8 +9,6 @@ rootWebArea focusable
 ++++++canvas
 ++++++++staticText name='<newline>  '
 ++++++++comboBoxSelect collapsed focusable value='1'
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='1'
 ++++++++++genericContainer ignored
 ++++++++++++menuListOption focusable name='1'
 ++++++++++++menuListOption focusable name='2'

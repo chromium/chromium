@@ -51,7 +51,7 @@ void CheckApproximatelyEqual(const gfx::RoundedCornersF& lhs,
 }
 
 bool WaitForNextFrameToBePresented(ui::Compositor* compositor,
-                                   absl::optional<base::TimeDelta> timeout) {
+                                   std::optional<base::TimeDelta> timeout) {
   bool frames_presented = false;
   base::RunLoop runloop;
   base::CancelableOnceCallback<void(base::TimeTicks)> cancelable_callback(
@@ -62,7 +62,7 @@ bool WaitForNextFrameToBePresented(ui::Compositor* compositor,
   compositor->RequestSuccessfulPresentationTimeForNextFrame(
       cancelable_callback.callback());
 
-  absl::optional<base::OneShotTimer> timer;
+  std::optional<base::OneShotTimer> timer;
   if (timeout.has_value()) {
     timer.emplace();
     timer->Start(FROM_HERE, timeout.value(), runloop.QuitClosure());

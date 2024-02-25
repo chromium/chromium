@@ -49,7 +49,7 @@ bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
     LOG(ERROR) << "Gregorian calendar error = " << u_errorName(status);
     return false;
   }
-  UDate cur_date = static_cast<UDate>(clock->Now().ToDoubleT() *
+  UDate cur_date = static_cast<UDate>(clock->Now().InSecondsFSinceUnixEpoch() *
                                       base::Time::kMillisecondsPerSecond);
   status = U_ZERO_ERROR;
   gregorian_calendar->setTime(cur_date, status);
@@ -115,11 +115,11 @@ bool Contains(const base::Time& time,
   return false;
 }
 
-absl::optional<base::Time> GetNextEventTime(
+std::optional<base::Time> GetNextEventTime(
     const base::Time& current_time,
     const std::vector<WeeklyTimeInterval>& weekly_time_intervals) {
   if (weekly_time_intervals.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Time::Exploded exploded;
   current_time.UTCExplode(&exploded);

@@ -1273,10 +1273,9 @@ void BluetoothLowEnergyCreateServiceFunction::DoWork() {
 // is not possible.
 #if !BUILDFLAG(IS_WIN)
   base::WeakPtr<device::BluetoothLocalGattService> service =
-      device::BluetoothLocalGattService::Create(
-          event_router_->adapter(),
+      event_router_->adapter()->CreateLocalGattService(
           device::BluetoothUUID(params_->service.uuid),
-          params_->service.is_primary, nullptr, event_router_);
+          params_->service.is_primary, event_router_);
 
   event_router_->AddServiceToApp(extension_id(), service->GetIdentifier());
   Respond(ArgumentList(

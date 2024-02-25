@@ -1,0 +1,36 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "strum"
+  epoch = "0.25"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src/additional_attributes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src/lib.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "0.25.0"
+  cargo_pkg_authors = "Peter Glotfelty <peter.glotfelty@microsoft.com>"
+  cargo_pkg_name = "strum"
+  cargo_pkg_description = "Helpful macros for working with enums and strings"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [ "std" ]
+}

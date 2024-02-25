@@ -29,12 +29,14 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/vector_icons.h"
@@ -135,8 +137,7 @@ ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessSection() {
 std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessButton() {
   return extensions_container()
-      ->GetExtensionsToolbarControls()
-      ->request_access_button()
+      ->GetRequestAccessButton()
       ->GetExtensionIdsForTesting();
 }
 
@@ -889,7 +890,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {
       views::kPinIcon,
       color_provider->GetColor(kColorExtensionMenuPinButtonIcon)));
   auto three_dot_icon = gfx::Image(gfx::CreateVectorIcon(
-      kBrowserToolsIcon, color_provider->GetColor(kColorExtensionMenuIcon)));
+      features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
+                                      : kBrowserToolsIcon,
+      color_provider->GetColor(kColorExtensionMenuIcon)));
 
   // Verify context menu button has three dot icon for all button states.
   EXPECT_TRUE(gfx::test::AreImagesEqual(
@@ -1025,8 +1028,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
   EXPECT_EQ(menu_items().size(), 0u);
 }
 
-// Tests that extension's site permission button is always hidden when site is
-// restricted.
+// Tests that the site setting toggle, and extensions' site access toggle and
+// site permission button are always hidden when site is restricted.
 TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
   constexpr char kExtension[] = "Extension";
   constexpr char kEnterpriseExtension[] = "Enterprise extension";
@@ -1046,26 +1049,104 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
   ShowMenu();
   ASSERT_EQ(menu_items().size(), 2u);
 
-  // Both extension's site permissions button should be hidden.
+  // Verify site setting toggle is not visible, since no extension can customize
+  // a restricted site.
+  EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
+
+  // Verify both extensions':
+  //   - site access toggle is hidden, since site access cannot be changed
+  //   - site permission button is hidden, since restricted sites have priority
+  //   over enterprise extensions.
+  EXPECT_FALSE(menu_items()[0]->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_items()[1]->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(
       menu_items()[0]->site_permissions_button_for_testing()->GetVisible());
   EXPECT_FALSE(
       menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
+}
 
-  // Change site settings to "block all extensions".
-  extensions::PermissionsManagerWaiter waiter(
-      PermissionsManager::Get(browser()->profile()));
-  permissions_manager->UpdateUserSiteSetting(
-      restricted_origin,
-      PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  waiter.WaitForUserPermissionsSettingsChange();
+// Tests that the site setting toggle and extension's site access toggle is
+// always hidden, and extensions' site permissions button is visible and
+// disabled when site is blocked by policy.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
+  URLPattern default_policy_blocked_pattern =
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
 
-  // Both extension's site permission button should still be hidden (restricted
-  // sites have priority over enterprise extensions).
+  // Add a policy-blocked site.
+  extensions::URLPatternSet default_allowed_hosts;
+  extensions::URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      extensions::util::GetBrowserContextId(browser()->profile()),
+      default_blocked_hosts, default_allowed_hosts);
+
+  // Install extensions requesting host permissions.
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  auto enterprise_extension =
+      InstallEnterpriseExtension("Enterprise extension",
+                                 /*host_permissions=*/{"<all_urls>"});
+
+  // Allow enterprise extension access to policy-blocked site.
+  extensions::URLPatternSet allowed_hosts;
+  extensions::URLPatternSet blocked_hosts;
+  allowed_hosts.AddPattern(default_policy_blocked_pattern);
+  enterprise_extension->permissions_data()->SetPolicyHostRestrictions(
+      blocked_hosts, allowed_hosts);
+
+  // Navigate to the policy-blocked site.
+  const GURL policy_blocked_url("https://www.policy-blocked.com");
+  auto restricted_origin = url::Origin::Create(policy_blocked_url);
+  web_contents_tester()->NavigateAndCommit(policy_blocked_url);
+
+  ShowMenu();
+  ASSERT_EQ(menu_items().size(), 2u);
+
+  // Verify site setting toggle is not visible, since no extension can customize
+  // a policy-blocked site.
+  EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
+
+  // Retrieve menu items.
+  ExtensionMenuItemView* enterprise_extension_item = menu_items()[0];
+  ExtensionMenuItemView* extension_item = menu_items()[1];
+  ASSERT_EQ(enterprise_extension_item->primary_action_button_for_testing()
+                ->label_text_for_testing(),
+            u"Enterprise extension");
+  ASSERT_EQ(extension_item->primary_action_button_for_testing()
+                ->label_text_for_testing(),
+            u"Extension");
+
+  // Verify both extensions':
+  //   - site access toggle is hidden, since site access cannot be changed
+  //   - site permissions button is visible and disabled. We leave them visible
+  //     because enterprise extensions can still have access to the site, but
+  //     disabled because site access cannot be changed.
+  EXPECT_FALSE(extension_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(enterprise_extension_item->site_access_toggle_for_testing()
+                   ->GetVisible());
+  EXPECT_TRUE(
+      extension_item->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_TRUE(enterprise_extension_item->site_permissions_button_for_testing()
+                  ->GetVisible());
   EXPECT_FALSE(
-      menu_items()[0]->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_FALSE(
-      menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
+      extension_item->site_permissions_button_for_testing()->GetEnabled());
+  EXPECT_FALSE(enterprise_extension_item->site_permissions_button_for_testing()
+                   ->GetEnabled());
+
+  // Verify site permission button text for:
+  //   - extension is "none", since site is blocked by policy
+  //   - enterprise extension is "on all sites", since site is allowed to the
+  //     extension by policy.
+  EXPECT_EQ(
+      extension_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+  EXPECT_EQ(
+      enterprise_extension_item->site_permissions_button_for_testing()
+          ->title()
+          ->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 }
 
 // Tests that the message section only displays the text container when the
@@ -1091,6 +1172,44 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, MessageSection_RestrictedAccess) {
                 ->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT));
+}
+
+// Tests that the message section only displays the text container when the
+// site has policy-blocked access to all non-enterprise extensions.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, MessageSection_PolicyBlockedAccess) {
+  // Add a policy blocked site.
+  extensions::URLPatternSet default_blocked_hosts;
+  extensions::URLPatternSet default_allowed_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*"));
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      extensions::util::GetBrowserContextId(browser()->profile()),
+      default_blocked_hosts, default_allowed_hosts);
+
+  InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  InstallEnterpriseExtension("Enterprise extension", {"<all_urls>"});
+
+  // Navigate to the policy-blocked site.
+  const GURL policy_blocked_url("https://www.policy-blocked.com");
+  web_contents_tester()->NavigateAndCommit(policy_blocked_url);
+
+  ShowMenu();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
+  views::View* reload_container = main_page()->GetReloadContainerForTesting();
+  views::View* requests_access_container =
+      main_page()->GetRequestsAccessContainerForTesting();
+
+  // Only the text container is displayed with policy blocked site message and
+  // tooltip, when site access is blocked to all non-enterprise extensions.
+  EXPECT_TRUE(text_container->GetVisible());
+  EXPECT_FALSE(reload_container->GetVisible());
+  EXPECT_FALSE(requests_access_container->GetVisible());
+  EXPECT_EQ(
+      views::AsViewClass<views::Label>(text_container->children()[0])
+          ->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_POLICY_BLOCKED_ACCESS_TEXT));
+  EXPECT_TRUE(text_container->children()[1]->GetVisible());
 }
 
 // Tests that the message section only displays the text container when the

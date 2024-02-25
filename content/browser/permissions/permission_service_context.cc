@@ -4,6 +4,7 @@
 
 #include "content/browser/permissions/permission_service_context.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -18,7 +19,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/origin.h"
 
@@ -63,7 +63,7 @@ class PermissionServiceContext::PermissionSubscription {
     BrowserContext* browser_context = context_->GetBrowserContext();
     if (browser_context) {
       PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->UnsubscribePermissionStatusChange(id_);
+          ->UnsubscribeFromPermissionStatusChange(id_);
     }
   }
 
@@ -74,7 +74,7 @@ class PermissionServiceContext::PermissionSubscription {
 
   void StoreStatusAtBFCacheEntry() {
     status_at_bf_cache_entry_ =
-        absl::make_optional<PermissionStatus>(last_known_status_);
+        std::make_optional<PermissionStatus>(last_known_status_);
   }
 
   void NotifyPermissionStatusChangedIfNeeded() {
@@ -116,7 +116,7 @@ class PermissionServiceContext::PermissionSubscription {
   // RenderFrameHost enters  BFCache, and will be cleared when the
   // RenderFrameHost is restored from BFCache. Non-empty value indicates that
   // the RenderFrameHost is in BFCache.
-  absl::optional<PermissionStatus> status_at_bf_cache_entry_;
+  std::optional<PermissionStatus> status_at_bf_cache_entry_;
   base::WeakPtrFactory<PermissionSubscription> weak_ptr_factory_{this};
 };
 
@@ -197,7 +197,7 @@ void PermissionServiceContext::CreateSubscription(
   GURL requesting_origin(origin.Serialize());
   auto subscription_id =
       PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->SubscribePermissionStatusChange(
+          ->SubscribeToPermissionStatusChange(
               permission_type, render_process_host_, render_frame_host_,
               requesting_origin,
               base::BindRepeating(

@@ -9,11 +9,18 @@
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
 
-TEST(GraphFeaturesTest, ConfigureGraph) {
+class GraphFeaturesTest : public ::testing::Test {
+ protected:
+  // Some features require browser threads.
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+TEST_F(GraphFeaturesTest, ConfigureGraph) {
   GraphFeatures features;
 
   EXPECT_FALSE(features.flags().execution_context_registry);
@@ -32,7 +39,7 @@ TEST(GraphFeaturesTest, ConfigureGraph) {
   graph.TearDown();
 }
 
-TEST(GraphFeaturesTest, EnableDefault) {
+TEST_F(GraphFeaturesTest, EnableDefault) {
   GraphFeatures features;
   TestGraphImpl graph;
   graph.SetUp();
@@ -53,7 +60,7 @@ TEST(GraphFeaturesTest, EnableDefault) {
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
   EXPECT_FALSE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
 
-  size_t graph_owned_count = 12;
+  size_t graph_owned_count = 16;
 #if !BUILDFLAG(IS_ANDROID)
   // The SiteDataRecorder is not available on Android.
   graph_owned_count++;
@@ -63,8 +70,8 @@ TEST(GraphFeaturesTest, EnableDefault) {
   features.EnableDefault();
   features.ConfigureGraph(&graph);
   EXPECT_EQ(graph_owned_count, graph.GraphOwnedCountForTesting());
-  EXPECT_EQ(3u, graph.GraphRegisteredCountForTesting());
-  EXPECT_EQ(7u, graph.NodeDataDescriberCountForTesting());
+  EXPECT_EQ(6u, graph.GraphRegisteredCountForTesting());
+  EXPECT_EQ(9u, graph.NodeDataDescriberCountForTesting());
   // Ensure the GraphRegistered objects can be queried directly.
   EXPECT_TRUE(
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
@@ -73,7 +80,7 @@ TEST(GraphFeaturesTest, EnableDefault) {
   graph.TearDown();
 }
 
-TEST(GraphFeaturesTest, StandardConfigurations) {
+TEST_F(GraphFeaturesTest, StandardConfigurations) {
   GraphFeatures features;
   EXPECT_EQ(features.flags().flags, GraphFeatures::WithNone().flags().flags);
   features.EnableMinimal();

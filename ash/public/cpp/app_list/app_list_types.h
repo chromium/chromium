@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_TYPES_H_
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_TYPES_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
@@ -123,6 +123,8 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   std::string id;    // Id of the app list item.
   std::string name;  // Corresponding app/folder's name of the item.
 
+  std::string accessible_name;  // Text announced by the screen reader.
+
   // Package Id for the item's app package, used to match an installed app item
   // with its promise app item. In promise app items, this value is the same as
   // the primary `id` field.
@@ -140,7 +142,9 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   bool is_system_folder = false;
 
   gfx::ImageSkia icon;                  // The icon of this item.
+  bool is_placeholder_icon = false;     // The icon is a placeholder.
   SkColor badge_color = SK_ColorWHITE;  // Notification badge color.
+  gfx::ImageSkia badge_icon;            // The badge icon for the item.
 
   // Whether the app was installed this session and has not yet been launched.
   bool is_new_install = false;
@@ -270,6 +274,8 @@ enum class AppListBubblePage {
   kNone = 0,
   // The apps grid, as well as continue tasks and recent apps.
   kApps,
+  // The apps collections page.
+  kAppsCollections,
   // The search page.
   kSearch,
   // The assistant page.
@@ -288,6 +294,10 @@ enum class AppListToastType {
   // Shows the notification that the apps are temporarily sorted and allows
   // users to undo the sorting actions.
   kReorderUndo,
+
+  // Show the notification that the tutorial view is showing in the bubble
+  // launcher. Allows user to exit the tutorial view into the default apps view.
+  kTutorialViewNudge,
 };
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
@@ -387,8 +397,9 @@ enum class AppListSearchResultType {
   kImageSearch,            // Local image search result.
   kSystemInfo,             // System Info search result.
   kDesksAdminTemplate,     // Admin templates search results.
+  kAppShortcutV2,          // App shortcuts V2 search results.
   // Add new values here.
-  kMaxValue = kDesksAdminTemplate,
+  kMaxValue = kAppShortcutV2,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
@@ -463,6 +474,28 @@ enum class SystemInfoAnswerCardDisplayType {
   kMultiElementBarChart,
 };
 
+// The categories for launcher search controls.
+enum class AppListSearchControlCategory {
+  kMinValue = 0,
+
+  kCannotToggle = kMinValue,  // default value to indicate it is non-toggleable
+  kApps = 1,
+  kAppShortcuts = 2,
+  kFiles = 3,
+  kGames = 4,
+  kHelp = 5,
+  kImages = 6,
+  kPlayStore = 7,
+  kWeb = 8,
+
+  kMaxValue = kWeb
+};
+
+// Gets the pref name strings used for the app list control category preference
+// dictionary.
+ASH_PUBLIC_EXPORT std::string GetAppListControlCategoryName(
+    AppListSearchControlCategory control_category);
+
 struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconInfo();
   // TODO(crbug.com/1232897): Make the search backend explicitly set the shape
@@ -510,17 +543,17 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   // Answer card results which are a bar chart type. This will be a value
   // between 0 and 100. This is only set if the answer card is of type bar
   // chart.
-  absl::optional<double> bar_chart_percentage;
+  std::optional<double> bar_chart_percentage;
 
   // For System Info Answer Cards of bar chart type and upper or lower limit can
   // be set. If the value of the bar chart goes above/ below this value then the
   // bar chart turns from blue to red.
-  absl::optional<double> lower_warning_limit_bar_chart;
-  absl::optional<double> upper_warning_limit_bar_chart;
+  std::optional<double> lower_warning_limit_bar_chart;
+  std::optional<double> upper_warning_limit_bar_chart;
 
   // This is only set if the description has 2 components to it. This
   // description will be places on the right hand side of the details container.
-  absl::optional<std::u16string> extra_details;
+  std::optional<std::u16string> extra_details;
 };
 
 // Data required for showing file info.
@@ -531,9 +564,10 @@ struct ASH_PUBLIC_EXPORT FileMetadata {
   ~FileMetadata();
 
   base::File::Info file_info;
-  std::string mime_type;
   base::FilePath file_path;
-  base::FilePath virtual_path;
+  base::FilePath file_name;
+  // The folder path that is formatted for display.
+  base::FilePath displayable_folder_path;
 };
 
 class ASH_PUBLIC_EXPORT FileMetadataLoader {
@@ -669,15 +703,23 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   OverflowBehavior GetOverflowBehavior() const;
   SearchResultTextItem& SetOverflowBehavior(OverflowBehavior overflow_behavior);
 
+  bool GetAlternateIconAndTextStyling() const;
+  SearchResultTextItem& SetAlternateIconAndTextStyling(
+      bool alternate_icon_text_code_styling);
+
  private:
   SearchResultTextItemType item_type_;
-  // used for type SearchResultTextItemType::kString.
-  absl::optional<std::u16string> raw_text_;
-  absl::optional<SearchResultTags> text_tags_;
-  // used for type SearchResultTextItemType::kIconCode.
-  absl::optional<IconCode> icon_code_;
-  // used for type SearchResultTextItemType::kCustomIcon.
-  absl::optional<gfx::ImageSkia> raw_image_;
+  // Used for type SearchResultTextItemType::kString.
+  std::optional<std::u16string> raw_text_;
+  std::optional<SearchResultTags> text_tags_;
+  // Used for type SearchResultTextItemType::kIconCode.
+  std::optional<IconCode> icon_code_;
+  // Used for type SearchResultTextItemType::kIconCode and
+  // SearchResultTextItemType::kString. Alternate styling is used to distinguish
+  // regular keys such as 'c' and 'v' from 'ctrl' and 'alt'.
+  bool alternate_icon_text_code_styling_ = false;
+  // Used for type SearchResultTextItemType::kCustomIcon.
+  std::optional<gfx::ImageSkia> raw_image_;
   // Behavior of the text item when there is not enough space to show it in the
   // UI. only applicable to SearchResultTextItemType::kString.
   OverflowBehavior overflow_behavior_ = kElide;
@@ -775,9 +817,6 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // A score to determine the result display order.
   double display_score = 0;
 
-  // Whether this is searched from Omnibox.
-  bool is_omnibox_search = false;
-
   // Whether this result is a recommendation.
   bool is_recommendation = false;
 
@@ -789,7 +828,7 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // The details for an answer card result with System Information. This field
   // is only set for this specific result type.
-  absl::optional<SystemInfoAnswerCardData> system_info_answer_card_data;
+  std::optional<SystemInfoAnswerCardData> system_info_answer_card_data;
 
   // The file path for this search result. This is set only if the search result
   // is a file.

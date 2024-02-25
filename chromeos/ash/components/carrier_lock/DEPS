@@ -1,0 +1,14 @@
+include_rules = [
+  "+ash/constants",
+  "+base",
+  "+chromeos/ash/components/network",
+  "+chromeos/ash/components/system",
+  "+components/gcm_driver",
+  "+components/session_manager",
+  "+components/prefs",
+  "+google_apis",
+  "+services/network",
+  "+testing",
+  "+third_party/private_membership",
+  "+url",
+]

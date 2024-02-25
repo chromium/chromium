@@ -1,0 +1,10 @@
+{
+  "gn_args": {
+    "is_asan": true,
+    "is_component_build": true,
+    "is_debug": true,
+    "is_lsan": true,
+    "symbol_level": 1,
+    "use_remoteexec": true
+  }
+}

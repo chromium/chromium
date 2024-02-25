@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -21,10 +22,13 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -33,9 +37,32 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#endif
+
 namespace {
 
 constexpr char kHtmlMimeType[] = "text/html";
+
+// Returns true if a screen reader is present or (on Chrome OS only) if
+// select-to-speak is enabled.
+bool IsAccessibilityEnabled() {
+  // Active if a screen reader is present.
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Conditionally active if select-to-speak is enabled.
+  if (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
+      accessibility_state_utils::IsSelectToSpeakEnabled()) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return false;
+}
 
 // For a PDF tab, there are two associated processes (and two WebContentses):
 // (i) PDF Viewer Mimehandler (mime type = text/html) and (ii) PDF renderer
@@ -81,6 +108,10 @@ std::vector<content::WebContents*> GetPdfHtmlWebContentses(Profile* profile) {
 
 // Invoke screen reader alert to notify the user of the state.
 void AnnounceToScreenReader(const int message_id) {
+// TODO(crbug.com/1442928): Sending announcements results in a failure in
+// `AuraLinuxAccessibilityInProcessBrowserTest::IndexInParentWithModal` and
+// flaky fail when running Chrome.
+#if !BUILDFLAG(IS_LINUX)
   const Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (!browser) {
     VLOG(2) << "Browser is not ready to announce";
@@ -94,6 +125,7 @@ void AnnounceToScreenReader(const int message_id) {
 
   browser_view->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(message_id));
+#endif
 }
 
 void RecordAcceptLanguages(const std::string& accept_languages) {
@@ -103,7 +135,7 @@ void RecordAcceptLanguages(const std::string& accept_languages) {
     // Convert to a Chrome language code synonym. This language synonym is then
     // converted into a `LocaleCodeISO639` enum value for a UMA histogram.
     language::ToChromeLanguageSynonym(&language);
-    // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+    // TODO(crbug.com/1443346): Add a browser test to validate this UMA metric.
     base::UmaHistogramSparse("Accessibility.PdfOcr.UserAcceptLanguage",
                              base::HashMetricName(language));
   }
@@ -123,11 +155,26 @@ PdfOcrController::PdfOcrController(Profile* profile) : profile_(profile) {
       base::BindRepeating(&PdfOcrController::OnPdfOcrAlwaysActiveChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // Trigger if the preference is already set.
-  if (profile_->GetPrefs()->GetBoolean(
-          prefs::kAccessibilityPdfOcrAlwaysActive)) {
-    OnPdfOcrAlwaysActiveChanged();
+  // Register for changes to screenreader/spoken feedback/select to speak.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (auto* const accessibility_manager = ash::AccessibilityManager::Get();
+      accessibility_manager) {
+    // Unretained is safe because `this` owns the subscription.
+    accessibility_status_subscription_ =
+        accessibility_manager->RegisterCallback(
+            base::BindRepeating(&PdfOcrController::OnAccessibilityStatusEvent,
+                                base::Unretained(this)));
   }
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO: Observe Chrome OS's select-to-speak setting.
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Trigger if the preference is already set, and a screen reader or Select-to-
+  // Speak on ChromeOS is enabled.
+  OnActivationChanged();
 }
 
 PdfOcrController::~PdfOcrController() = default;
@@ -138,39 +185,14 @@ PdfOcrController::GetAllPdfWebContentsesForTesting(Profile* profile) {
   return GetPdfHtmlWebContentses(profile);
 }
 
-void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
-  if (!web_contents) {
-    CHECK_IS_TEST();
-    return;
-  }
-
-  if (MaybeScheduleRequest(web_contents)) {
-    // The request will be handled when the library is ready or discarded if it
-    // fails to load.
-    return;
-  }
-
-  // `web_contents` should be a PDF Viewer Mimehandler.
-  DCHECK_EQ(web_contents->GetContentsMimeType(), kHtmlMimeType);
-
-  ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
-  ax_mode.set_mode(ui::AXMode::kPDFOcr, true);
-  web_contents->SetAccessibilityMode(ax_mode);
-
-  RecordAcceptLanguages(
-      profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-}
-
 bool PdfOcrController::IsEnabled() const {
-  return profile_->GetPrefs()->GetBoolean(
-             prefs::kAccessibilityPdfOcrAlwaysActive) &&
-         !send_always_active_state_when_service_is_ready_;
+  return scoped_accessibility_mode_ != nullptr;
 }
 
 void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
-  bool is_always_active =
-      profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
-  VLOG(2) << "PDF OCR Always Active changed: " << is_always_active;
+  const auto& pref_value =
+      profile_->GetPrefs()->GetValue(prefs::kAccessibilityPdfOcrAlwaysActive);
+  VLOG(2) << "PDF OCR Always Active changed: " << pref_value.GetBool();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // This preference should be kept in sync with Ash.
@@ -181,79 +203,85 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
   } else {
     lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
         crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
-        profile_->GetPrefs()
-            ->GetValue(prefs::kAccessibilityPdfOcrAlwaysActive)
-            .Clone(),
-        base::OnceClosure());
+        pref_value.Clone(), base::OnceClosure());
   }
 #endif
+
+  OnActivationChanged();
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void PdfOcrController::OnAccessibilityStatusEvent(
+    const ash::AccessibilityStatusEventDetails& details) {
+  if (details.notification_type ==
+          ash::AccessibilityNotificationType::kToggleSpokenFeedback ||
+      details.notification_type ==
+          ash::AccessibilityNotificationType::kToggleSelectToSpeak) {
+    OnActivationChanged();
+  }
+}
+#endif  // BUIDLFLAG(IS_CHROMEOS_ASH)
+
+void PdfOcrController::OnActivationChanged() {
+  const bool is_always_active =
+      IsAccessibilityEnabled() &&
+      profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
+
+  if (is_always_active == IsEnabled()) {
+    return;  // No change in activation.
+  }
 
   if (is_always_active) {
     RecordAcceptLanguages(
         profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-    if (MaybeScheduleRequest(/*web_contents_for_only_once_request=*/nullptr)) {
-      // The request will be handled when the library is ready or discarded if
-      // it fails to load.
+
+    if (!ocr_service_ready_) {
+      // Avoid repeated requests.
+      if (waiting_for_ocr_service_initialization_) {
+        return;
+      }
+      waiting_for_ocr_service_initialization_ = true;
+
+      if (ScreenAIInstallState::GetInstance()->get_state() !=
+              ScreenAIInstallState::State::kDownloaded &&
+          !component_ready_observer_.IsObserving()) {
+        // Start observing ScreenAIInstallState to report it to user.
+        component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
+      }
+
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+          ->GetServiceStateAsync(
+              ScreenAIServiceRouter::Service::kOCR,
+              base::BindOnce(
+                  &PdfOcrController::OCRServiceInitializationCallback,
+                  weak_ptr_factory_.GetWeakPtr()));
       return;
     }
+
+    // This will send the `kPDFOcr` flag to all WebContents. Strictly speaking,
+    // it need only be sent to those associated with PDF Viewer Mimehandlers,
+    // but we have no filtering mechanism today. The others should simply ignore
+    // it.
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForBrowserContext(profile_, ui::AXMode::kPDFOcr);
   } else {
-    // If user has previously requested Always Active and the service was not
-    // ready then, and now user has untoggeled it, ignore both requests.
-    if (send_always_active_state_when_service_is_ready_) {
-      send_always_active_state_when_service_is_ready_ = false;
-      return;
-    }
-  }
-
-  SendPdfOcrAlwaysActiveToAll(is_always_active);
-}
-
-void PdfOcrController::SendPdfOcrAlwaysActiveToAll(bool is_always_active) {
-  std::vector<content::WebContents*> html_web_contents_vector =
-      GetPdfHtmlWebContentses(profile_);
-  // Iterate over all WebContentses associated with PDF Viewer Mimehandlers and
-  // set the AXMode with the ui::AXMode::kPDFOcr flag.
-  for (auto* web_contents : html_web_contents_vector) {
-    ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
-    ax_mode.set_mode(ui::AXMode::kPDFOcr, is_always_active);
-    web_contents->SetAccessibilityMode(ax_mode);
+    scoped_accessibility_mode_.reset();
   }
 }
 
-bool PdfOcrController::MaybeScheduleRequest(
-    content::WebContents* web_contents_for_only_once_request) {
-  ScreenAIInstallState::State current_install_state =
-      ScreenAIInstallState::GetInstance()->get_state();
-
-  // No need for scheduling if service is ready already.
-  if (current_install_state == ScreenAIInstallState::State::kReady) {
-    return false;
-  }
-
-  // Keep the request until the library is ready.
-  if (web_contents_for_only_once_request) {
-    // PDF OCR once request. Keep its weak pointer of the web contents
-    // requested for this. We only keep this request for one PDF (the last one).
-    last_webcontents_requested_for_run_once_ =
-        web_contents_for_only_once_request->GetWeakPtr();
+void PdfOcrController::OCRServiceInitializationCallback(bool successful) {
+  waiting_for_ocr_service_initialization_ = false;
+  ocr_service_ready_ = successful;
+  if (successful) {
+    OnActivationChanged();
   } else {
-    // PDF OCR always request.
-    send_always_active_state_when_service_is_ready_ = true;
+    // Call `StateChanged` to announce the state to user.
+    StateChanged(ScreenAIInstallState::State::kDownloadFailed);
   }
 
-  // TODO(crbug.com/127829): Make sure requesting to repeat a failed download
-  // will trigger a new one.
-  if (current_install_state == ScreenAIInstallState::State::kFailed) {
-    ScreenAIInstallState::GetInstance()->DownloadComponent();
-  }
-
-  if (!component_ready_observer_.IsObserving()) {
-    // Start observing ScreenAIInstallState when the user activates PDF OCR. It
-    // triggers downloading the Screen AI library if it's not downloaded.
-    component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
-  }
-
-  return true;
+  // No more need for observing Screen AI state changes.
+  component_ready_observer_.Reset();
 }
 
 void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
@@ -265,35 +293,25 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOADING);
       break;
 
-    case ScreenAIInstallState::State::kFailed:
+    case ScreenAIInstallState::State::kDownloadFailed:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR);
-      if (last_webcontents_requested_for_run_once_) {
-        last_webcontents_requested_for_run_once_.reset();
-      }
-      if (send_always_active_state_when_service_is_ready_) {
-        // Update the PDF OCR pref to be false to toggle off the button.
-        profile_->GetPrefs()->SetBoolean(
-            prefs::kAccessibilityPdfOcrAlwaysActive, false);
-        send_always_active_state_when_service_is_ready_ = false;
-      }
+      // Update the PDF OCR pref to be false to toggle off the button.
+      profile_->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
+                                       false);
       break;
 
     case ScreenAIInstallState::State::kDownloaded:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE);
-      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-          ->InitializeOCRIfNeeded();
       break;
-
-    case ScreenAIInstallState::State::kReady:
-      if (last_webcontents_requested_for_run_once_) {
-        RunPdfOcrOnlyOnce(last_webcontents_requested_for_run_once_.get());
-        last_webcontents_requested_for_run_once_.reset();
-      }
-      if (send_always_active_state_when_service_is_ready_) {
-        send_always_active_state_when_service_is_ready_ = false;
-        SendPdfOcrAlwaysActiveToAll(true);
-      }
   }
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void PdfOcrController::OnAXModeAdded(ui::AXMode mode) {
+  if (mode.has_mode(ui::AXMode::kScreenReader)) {
+    OnActivationChanged();
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace screen_ai

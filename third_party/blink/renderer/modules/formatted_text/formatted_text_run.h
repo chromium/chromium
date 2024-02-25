@@ -29,7 +29,7 @@ class FormattedTextRunInternal final
   FormattedTextRunInternal(const FormattedTextRunInternal&) = delete;
   FormattedTextRunInternal& operator=(const FormattedTextRunInternal&) = delete;
 
-  LayoutText* GetLayoutObject() { return layout_text_; }
+  LayoutText* GetLayoutObject() { return layout_text_.Get(); }
   void UpdateStyle(Document& document, const ComputedStyle& parent_style);
 
   void Trace(Visitor* visitor) const override;

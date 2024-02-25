@@ -4,16 +4,14 @@
 
 /**
  * @fileoverview xf-cloud-panel element.
- * Disable type checking for closure, as it is done by the typescript compiler.
- * @suppress {checkTypes}
  */
 
-import {str, strf, util} from '../common/js/util.js';
-import {constants} from '../foreground/js/constants.js';
+import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+
+import {getCurrentLocaleOrDefault, secondsToRemainingTimeString, str, strf} from '../common/js/translations.js';
+import {ICON_TYPES} from '../foreground/js/constants.js';
 
 import {css, customElement, html, property, query, XfBase} from './xf_base.js';
-
-import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 /**
  * These type indicate static states that the cloud panel can enter. If one of
@@ -23,6 +21,7 @@ export enum CloudPanelType {
   OFFLINE = 'offline',
   BATTERY_SAVER = 'battery_saver',
   NOT_ENOUGH_SPACE = 'not_enough_space',
+  METERED_NETWORK = 'metered_network',
 }
 
 /**
@@ -103,8 +102,7 @@ export class XfCloudPanel extends XfBase {
   /**
    * Provide a number formatter that matches the users locale.
    */
-  private numberFormatter_ =
-      new Intl.NumberFormat(util.getCurrentLocaleOrDefault());
+  private numberFormatter_ = new Intl.NumberFormat(getCurrentLocaleOrDefault());
 
   static get events() {
     return {
@@ -197,36 +195,40 @@ export class XfCloudPanel extends XfBase {
           <div class="progress-description">
           ${
         this.seconds && this.seconds > 0 ?
-            util.secondsToRemainingTimeString(this.seconds) :
+            secondsToRemainingTimeString(this.seconds) :
             str('DRIVE_BULK_PINNING_CALCULATING')}
           </div>
         </div>
         <div class="static" id="progress-finished">
-          <xf-icon type="${constants.ICON_TYPES.CLOUD}" size="large"></xf-icon>
+          <xf-icon type="${ICON_TYPES.CLOUD}" size="large"></xf-icon>
           <div class="status-description">
             ${str('BULK_PINNING_FILE_SYNC_ON')}
           </div>
         </div>
         <div class="static" id="progress-offline">
         <xf-icon type="${
-        constants.ICON_TYPES.BULK_PINNING_OFFLINE}" size="large"></xf-icon>
+        ICON_TYPES.BULK_PINNING_OFFLINE}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_BULK_PINNING_OFFLINE')}
           </div>
         </div>
         <div class="static" id="progress-battery-saver">
         <xf-icon type="${
-        constants.ICON_TYPES
-            .BULK_PINNING_BATTERY_SAVER}" size="large"></xf-icon>
+        ICON_TYPES.BULK_PINNING_BATTERY_SAVER}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_BULK_PINNING_BATTERY_SAVER')}
           </div>
         </div>
         <div class="static" id="progress-not-enough-space">
-        <xf-icon type="${
-        constants.ICON_TYPES.ERROR_BANNER}" size="large"></xf-icon>
+        <xf-icon type="${ICON_TYPES.ERROR_BANNER}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE')}
+          </div>
+        </div>
+        <div class="static" id="progress-metered-network">
+          <xf-icon type="${ICON_TYPES.CLOUD}" size="large"></xf-icon>
+          <div class="status-description">
+            ${str('DRIVE_BULK_PINNING_METERED_NETWORK')}
           </div>
         </div>
         <div class="divider"></div>
@@ -275,6 +277,10 @@ function getCSS() {
     }
 
     :host(:not([type="not_enough_space"])) #progress-not-enough-space {
+      display: none;
+    }
+
+    :host(:not([type="metered_network"])) #progress-metered-network {
       display: none;
     }
 

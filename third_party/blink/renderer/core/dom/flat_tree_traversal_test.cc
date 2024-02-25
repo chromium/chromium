@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 
 #include <memory>
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -20,29 +22,39 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-// To avoid symbol collisions in jumbo builds.
-namespace flat_tree_traversal_test {
+
+namespace {
+
+// Gathers all the nodes in `traversal_range` and returns them as a
+// `HeapVector`.
+HeapVector<Member<Node>> GatherFromTraversalRange(auto traversal_range) {
+  HeapVector<Member<Node>> result;
+  for (Node& node : traversal_range) {
+    result.push_back(&node);
+  }
+  return result;
+}
 
 class FlatTreeTraversalTest : public PageTestBase {
  public:
   FlatTreeTraversalTest() {}
 
  protected:
-  // Sets |mainHTML| to BODY element with |innerHTML| property and attaches
-  // shadow root to child with |shadowHTML|, then update distribution for
-  // calling member functions in |FlatTreeTraversal|.
-  void SetupSampleHTML(const char* main_html,
-                       const char* shadow_html,
-                       unsigned);
+  // Sets `mainHTML` to BODY element with `innerHTML` property and attaches
+  // shadow root to child with `shadowHTML`, then update distribution for
+  // calling member functions in `FlatTreeTraversal`.
+  void SetupSampleHTML(std::string_view main_html,
+                       std::string_view shadow_html,
+                       unsigned index);
 
-  void SetupDocumentTree(const char* main_html);
+  void SetupDocumentTree(std::string_view main_html);
 
   void AttachOpenShadowRoot(Element& shadow_host,
-                            const char* shadow_inner_html);
+                            std::string_view shadow_inner_html);
 };
 
-void FlatTreeTraversalTest::SetupSampleHTML(const char* main_html,
-                                            const char* shadow_html,
+void FlatTreeTraversalTest::SetupSampleHTML(std::string_view main_html,
+                                            std::string_view shadow_html,
                                             unsigned index) {
   Element* body = GetDocument().body();
   body->setInnerHTML(String::FromUTF8(main_html));
@@ -50,16 +62,16 @@ void FlatTreeTraversalTest::SetupSampleHTML(const char* main_html,
   AttachOpenShadowRoot(*shadow_host, shadow_html);
 }
 
-void FlatTreeTraversalTest::SetupDocumentTree(const char* main_html) {
+void FlatTreeTraversalTest::SetupDocumentTree(std::string_view main_html) {
   Element* body = GetDocument().body();
   body->setInnerHTML(String::FromUTF8(main_html));
 }
 
 void FlatTreeTraversalTest::AttachOpenShadowRoot(
     Element& shadow_host,
-    const char* shadow_inner_html) {
+    std::string_view shadow_inner_html) {
   ShadowRoot& shadow_root =
-      shadow_host.AttachShadowRootInternal(ShadowRootType::kOpen);
+      shadow_host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8(shadow_inner_html));
 }
 
@@ -145,6 +157,96 @@ TEST_F(FlatTreeTraversalTest, childAt) {
   // Distributed node |m00| is child of slot in shadow tree |s03|.
   EXPECT_EQ(
       m00, FlatTreeTraversal::FirstChild(*FlatTreeTraversal::FirstChild(*s03)));
+}
+
+TEST_F(FlatTreeTraversalTest, DescendantsOf) {
+  std::string_view main_html =
+      R"(<div id='m0'>
+        <span slot='#m00' id='m00'>m00</span>
+        <span slot='#m01' id='m01'>m01</span>
+      </div>)";
+  std::string_view shadow_html =
+      R"(<a id='s00'>s00</a>
+      <slot name='#m01'></slot>
+      <a id='s02'>s02</a>
+      <a id='s03'>
+        <slot name='#m00'></slot>
+      </a>
+      <a id='s04'>s04</a>)";
+  SetupSampleHTML(main_html, shadow_html, 0);
+
+  Element* body = GetDocument().body();
+  Element* m0 = body->QuerySelector(AtomicString("#m0"));
+  Element* shadow_host = m0;
+  ShadowRoot* shadow_root = shadow_host->OpenShadowRoot();
+  Element* s03 = shadow_root->QuerySelector(AtomicString("#s03"));
+
+  {
+    HeapVector<Member<Node>> expected_nodes;
+    for (Node* child = FlatTreeTraversal::FirstChild(*body); child;
+         child = FlatTreeTraversal::Next(*child)) {
+      expected_nodes.push_back(child);
+    }
+    EXPECT_EQ(expected_nodes, GatherFromTraversalRange(
+                                  FlatTreeTraversal::DescendantsOf(*body)));
+
+    expected_nodes.push_front(body);
+    EXPECT_EQ(expected_nodes,
+              GatherFromTraversalRange(
+                  FlatTreeTraversal::InclusiveDescendantsOf(*body)));
+  }
+
+  // Traversal of descendants of a node that is not the root node stays within
+  // the sub tree.
+  {
+    HeapVector<Member<Node>> expected_nodes;
+    for (Node* child = FlatTreeTraversal::FirstChild(*s03); child;
+         child = FlatTreeTraversal::Next(*child, /*stay_within=*/s03)) {
+      expected_nodes.push_back(child);
+    }
+    EXPECT_EQ(expected_nodes,
+              GatherFromTraversalRange(FlatTreeTraversal::DescendantsOf(*s03)));
+
+    expected_nodes.push_front(s03);
+    EXPECT_EQ(expected_nodes,
+              GatherFromTraversalRange(
+                  FlatTreeTraversal::InclusiveDescendantsOf(*s03)));
+  }
+}
+
+TEST_F(FlatTreeTraversalTest, StartsAtOrAfter) {
+  std::string_view main_html =
+      R"(<div id='m0'>
+        <span slot='#m00' id='m00'>m00</span>
+        <span slot='#m01' id='m01'>m01</span>
+      </div>)";
+  std::string_view shadow_html =
+      R"(<a id='s00'>s00</a>
+      <slot name='#m01'></slot>
+      <a id='s02'>s02</a>
+      <a id='s03'>
+        <slot name='#m00'></slot>
+      </a>
+      <a id='s04'>s04</a>)";
+  SetupSampleHTML(main_html, shadow_html, 0);
+
+  Element* body = GetDocument().body();
+  Element* m0 = body->QuerySelector(AtomicString("#m0"));
+  Element* shadow_host = m0;
+  ShadowRoot* shadow_root = shadow_host->OpenShadowRoot();
+  Element* s03 = shadow_root->QuerySelector(AtomicString("#s03"));
+
+  HeapVector<Member<Node>> expected_nodes;
+  for (Node* child = FlatTreeTraversal::Next(*s03); child;
+       child = FlatTreeTraversal::Next(*child)) {
+    expected_nodes.push_back(child);
+  }
+  EXPECT_EQ(expected_nodes,
+            GatherFromTraversalRange(FlatTreeTraversal::StartsAfter(*s03)));
+
+  expected_nodes.push_front(*s03);
+  EXPECT_EQ(expected_nodes,
+            GatherFromTraversalRange(FlatTreeTraversal::StartsAt(*s03)));
 }
 
 TEST_F(FlatTreeTraversalTest, ChildrenOf) {
@@ -753,5 +855,5 @@ TEST_F(FlatTreeTraversalTest, v1AllFallbackContent) {
   EXPECT_EQ(nullptr, FlatTreeTraversal::PreviousSibling(*fallback_x));
 }
 
-}  // namespace flat_tree_traversal_test
+}  // namespace
 }  // namespace blink

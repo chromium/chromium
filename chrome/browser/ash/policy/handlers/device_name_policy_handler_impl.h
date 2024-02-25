@@ -39,7 +39,7 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
 
   // DeviceNamePolicyHandler:
   DeviceNamePolicy GetDeviceNamePolicy() const override;
-  absl::optional<std::string> GetHostnameChosenByAdministrator() const override;
+  std::optional<std::string> GetHostnameChosenByAdministrator() const override;
 
  private:
   friend class DeviceNamePolicyHandlerImplTest;
@@ -72,10 +72,9 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
   void SetDeviceNamePolicy(DeviceNamePolicy policy,
                            const std::string& new_hostname);
 
-  raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
-  raw_ptr<ash::system::StatisticsProvider, ExperimentalAsh>
-      statistics_provider_;
-  raw_ptr<ash::NetworkStateHandler, ExperimentalAsh> handler_;
+  raw_ptr<ash::CrosSettings> cros_settings_;
+  raw_ptr<ash::system::StatisticsProvider> statistics_provider_;
+  raw_ptr<ash::NetworkStateHandler> handler_;
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_METADATA_SYNCER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -39,29 +39,29 @@ class FakeCryptAuthMetadataSyncer : public CryptAuthMetadataSyncer {
 
   // The RequestContext passed to SyncMetadata(). Returns null if
   // SyncMetadata() has not been called yet.
-  const absl::optional<cryptauthv2::RequestContext>& request_context() const {
+  const std::optional<cryptauthv2::RequestContext>& request_context() const {
     return request_context_;
   }
 
   // The local device's BetterTogetherDeviceMetadata passed to SyncMetadata().
   // Returns null if SyncMetadata() has not been called yet.
-  const absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
+  const std::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
   local_device_metadata() const {
     return local_device_metadata_;
   }
 
   // The initial group key passed to SyncMetadata(). Returns null if
   // SyncMetadata() has not been called yet.
-  const absl::optional<const CryptAuthKey*>& initial_group_key() const {
+  const std::optional<const CryptAuthKey*>& initial_group_key() const {
     return initial_group_key_;
   }
 
   void FinishAttempt(
       const IdToDeviceMetadataPacketMap& id_to_device_metadata_packet_map,
       std::unique_ptr<CryptAuthKey> new_group_key,
-      const absl::optional<cryptauthv2::EncryptedGroupPrivateKey>&
+      const std::optional<cryptauthv2::EncryptedGroupPrivateKey>&
           encrypted_group_private_key,
-      const absl::optional<cryptauthv2::ClientDirective>& new_client_directive,
+      const std::optional<cryptauthv2::ClientDirective>& new_client_directive,
       CryptAuthDeviceSyncResult::ResultCode device_sync_result_code);
 
  private:
@@ -71,10 +71,10 @@ class FakeCryptAuthMetadataSyncer : public CryptAuthMetadataSyncer {
       const cryptauthv2::BetterTogetherDeviceMetadata& local_device_metadata,
       const CryptAuthKey* initial_group_key) override;
 
-  absl::optional<cryptauthv2::RequestContext> request_context_;
-  absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>
+  std::optional<cryptauthv2::RequestContext> request_context_;
+  std::optional<cryptauthv2::BetterTogetherDeviceMetadata>
       local_device_metadata_;
-  absl::optional<const CryptAuthKey*> initial_group_key_;
+  std::optional<const CryptAuthKey*> initial_group_key_;
 };
 
 class FakeCryptAuthMetadataSyncerFactory
@@ -91,7 +91,8 @@ class FakeCryptAuthMetadataSyncerFactory
 
   // Returns a vector of all FakeCryptAuthMetadataSyncer instances created
   // by CreateInstance().
-  const std::vector<FakeCryptAuthMetadataSyncer*>& instances() const {
+  const std::vector<raw_ptr<FakeCryptAuthMetadataSyncer, VectorExperimental>>&
+  instances() const {
     return instances_;
   }
 
@@ -110,10 +111,10 @@ class FakeCryptAuthMetadataSyncerFactory
       PrefService* pref_service,
       std::unique_ptr<base::OneShotTimer> timer) override;
 
-  std::vector<FakeCryptAuthMetadataSyncer*> instances_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
-      nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> last_pref_service_ = nullptr;
+  std::vector<raw_ptr<FakeCryptAuthMetadataSyncer, VectorExperimental>>
+      instances_;
+  raw_ptr<CryptAuthClientFactory> last_client_factory_ = nullptr;
+  raw_ptr<PrefService> last_pref_service_ = nullptr;
 };
 
 }  // namespace device_sync

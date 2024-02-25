@@ -4,6 +4,8 @@
 
 #include "base/message_loop/message_pump_libevent.h"
 
+#include <fcntl.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #include <memory>
@@ -11,21 +13,25 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/message_loop/message_pump_buildflags.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
+#include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -45,6 +51,25 @@ enum PumpType {
 
 class MessagePumpLibeventTest : public testing::Test,
                                 public testing::WithParamInterface<PumpType> {
+ public:
+  int receiver() const { return receiver_.get(); }
+  int sender() const { return sender_.get(); }
+
+  scoped_refptr<SingleThreadTaskRunner> io_runner() const {
+    return io_thread_.task_runner();
+  }
+
+  void ClearNotifications() {
+    int unused;
+    while (read(receiver_.get(), &unused, sizeof(unused)) == sizeof(unused)) {
+    }
+  }
+
+  void Notify() {
+    const int data = 42;
+    PCHECK(write(sender_.get(), &data, sizeof(data)) == sizeof(data));
+  }
+
  protected:
   MessagePumpLibeventTest()
       : task_environment_(std::make_unique<test::SingleThreadTaskEnvironment>(
@@ -53,36 +78,39 @@ class MessagePumpLibeventTest : public testing::Test,
   ~MessagePumpLibeventTest() override = default;
 
   void SetUp() override {
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+    // Select MessagePumpLibevent or MessagePumpEpoll based on the test
+    // parameter.
+    scoped_feature_list_.InitWithFeatureState(base::kMessagePumpEpoll,
+                                              GetParam() == kEpoll);
+    MessagePumpLibevent::InitializeFeatures();
+#endif  // BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+
     Thread::Options options(MessagePumpType::IO, 0);
     ASSERT_TRUE(io_thread_.StartWithOptions(std::move(options)));
-    int ret = pipe(pipefds_);
-    ASSERT_EQ(0, ret);
+    int fds[2];
+    int rv = socketpair(AF_UNIX, SOCK_STREAM, 0, fds);
+    CHECK_EQ(rv, 0);
+    PCHECK(fcntl(fds[0], F_SETFL, O_NONBLOCK) == 0);
+    receiver_ = base::ScopedFD(fds[0]);
+    sender_ = base::ScopedFD(fds[1]);
   }
 
   void TearDown() override {
-    // Some tests watch |pipefds_| from the |io_thread_|. The |io_thread_| must
+    // Some tests watch `receiver_` from the `io_thread_`. The `io_thread_` must
     // thus be joined to ensure those watches are complete before closing the
-    // pipe.
+    // sockets.
     io_thread_.Stop();
 
-    if (IGNORE_EINTR(close(pipefds_[0])) < 0)
-      PLOG(ERROR) << "close";
-    if (IGNORE_EINTR(close(pipefds_[1])) < 0)
-      PLOG(ERROR) << "close";
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+    // Reset feature state for other tests running in this process.
+    scoped_feature_list_.Reset();
+    MessagePumpLibevent::InitializeFeatures();
+#endif  // BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
   }
 
   std::unique_ptr<MessagePumpLibevent> CreateMessagePump() {
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-    if (GetParam() == kEpoll) {
-      return std::make_unique<MessagePumpLibevent>(
-          MessagePumpLibevent::kUseEpoll);
-    }
-#endif
     return std::make_unique<MessagePumpLibevent>();
-  }
-
-  scoped_refptr<SingleThreadTaskRunner> io_runner() const {
-    return io_thread_.task_runner();
   }
 
   void SimulateIOEvent(MessagePumpLibevent* pump,
@@ -97,12 +125,18 @@ class MessagePumpLibeventTest : public testing::Test,
     pump->OnLibeventNotification(0, EV_WRITE | EV_READ, controller);
   }
 
-  int pipefds_[2];
   static constexpr char null_byte_ = 0;
   std::unique_ptr<test::SingleThreadTaskEnvironment> task_environment_;
 
  private:
   Thread io_thread_;
+  base::ScopedFD receiver_;
+  base::ScopedFD sender_;
+
+#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
+  // Features to override default feature settings.
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 };
 
 namespace {
@@ -159,7 +193,7 @@ TEST_P(MessagePumpLibeventTest, DeleteWatcher) {
   DeleteWatcher delegate(
       std::make_unique<MessagePumpLibevent::FdWatchController>(FROM_HERE));
   std::unique_ptr<MessagePumpLibevent> pump = CreateMessagePump();
-  pump->WatchFileDescriptor(pipefds_[1], false,
+  pump->WatchFileDescriptor(receiver(), false,
                             MessagePumpLibevent::WATCH_READ_WRITE,
                             delegate.controller(), &delegate);
   SimulateIOEvent(pump.get(), delegate.controller());
@@ -184,7 +218,7 @@ TEST_P(MessagePumpLibeventTest, StopWatcher) {
   std::unique_ptr<MessagePumpLibevent> pump = CreateMessagePump();
   MessagePumpLibevent::FdWatchController controller(FROM_HERE);
   StopWatcher delegate(&controller);
-  pump->WatchFileDescriptor(pipefds_[1], false,
+  pump->WatchFileDescriptor(receiver(), false,
                             MessagePumpLibevent::WATCH_READ_WRITE, &controller,
                             &delegate);
   SimulateIOEvent(pump.get(), &controller);
@@ -218,7 +252,7 @@ TEST_P(MessagePumpLibeventTest, NestedPumpWatcher) {
   NestedPumpWatcher delegate;
   std::unique_ptr<MessagePumpLibevent> pump = CreateMessagePump();
   MessagePumpLibevent::FdWatchController controller(FROM_HERE);
-  pump->WatchFileDescriptor(pipefds_[1], false, MessagePumpLibevent::WATCH_READ,
+  pump->WatchFileDescriptor(receiver(), false, MessagePumpLibevent::WATCH_READ,
                             &controller, &delegate);
   SimulateIOEvent(pump.get(), &controller);
 }
@@ -268,13 +302,13 @@ TEST_P(MessagePumpLibeventTest, QuitWatcher) {
                       WaitableEvent::InitialState::NOT_SIGNALED);
   std::unique_ptr<WaitableEventWatcher> watcher(new WaitableEventWatcher);
 
-  // Tell the pump to watch the pipe.
-  pump->WatchFileDescriptor(pipefds_[0], false, MessagePumpLibevent::WATCH_READ,
+  // Tell the pump to watch the `receiver_`.
+  pump->WatchFileDescriptor(receiver(), false, MessagePumpLibevent::WATCH_READ,
                             &controller, &delegate);
 
-  // Make the IO thread wait for |event| before writing to pipefds[1].
+  // Make the IO thread wait for |event| before writing to sender().
   WaitableEventWatcher::EventCallback write_fd_task =
-      BindOnce(&WriteFDWrapper, pipefds_[1], &null_byte_, 1);
+      BindOnce(&WriteFDWrapper, sender(), &null_byte_, 1);
   io_runner()->PostTask(
       FROM_HERE, BindOnce(IgnoreResult(&WaitableEventWatcher::StartWatching),
                           Unretained(watcher.get()), &event,
@@ -290,6 +324,93 @@ TEST_P(MessagePumpLibeventTest, QuitWatcher) {
   // StartWatching can move |watcher| to IO thread. Release on IO thread.
   io_runner()->PostTask(FROM_HERE, BindOnce(&WaitableEventWatcher::StopWatching,
                                             Owned(watcher.release())));
+}
+
+class InnerNestedWatcher : public MessagePumpLibevent::FdWatcher {
+ public:
+  InnerNestedWatcher(MessagePumpLibeventTest& test,
+                     MessagePumpLibevent::FdWatchController& outer_controller,
+                     base::OnceClosure callback)
+      : test_(test),
+        outer_controller_(outer_controller),
+        callback_(std::move(callback)) {
+    base::CurrentIOThread::Get().WatchFileDescriptor(
+        test_->receiver(), false, MessagePumpLibevent::WATCH_READ, &controller_,
+        this);
+  }
+  ~InnerNestedWatcher() override = default;
+
+  void OnFileCanReadWithoutBlocking(int) override {
+    // Cancelling the outer watch from within this inner event handler must be
+    // safe.
+    outer_controller_->StopWatchingFileDescriptor();
+    std::move(callback_).Run();
+  }
+
+  void OnFileCanWriteWithoutBlocking(int) override {}
+
+ private:
+  const raw_ref<MessagePumpLibeventTest> test_;
+  const raw_ref<MessagePumpLibevent::FdWatchController> outer_controller_;
+  base::OnceClosure callback_;
+  MessagePumpLibevent::FdWatchController controller_{FROM_HERE};
+};
+
+class OuterNestedWatcher : public MessagePumpLibevent::FdWatcher {
+ public:
+  OuterNestedWatcher(MessagePumpLibeventTest& test, base::OnceClosure callback)
+      : test_(test), callback_(std::move(callback)) {
+    base::RunLoop loop;
+    test_->io_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&OuterNestedWatcher::InitOnIOThread,
+                                  base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
+  }
+
+  ~OuterNestedWatcher() override = default;
+
+  void OnFileCanReadWithoutBlocking(int) override {
+    // Ensure that another notification will wake any active FdWatcher.
+    test_->ClearNotifications();
+
+    base::RunLoop loop;
+    std::unique_ptr<InnerNestedWatcher> inner_watcher =
+        std::make_unique<InnerNestedWatcher>(test_.get(), *controller_,
+                                             loop.QuitClosure());
+    test_->Notify();
+    loop.Run();
+
+    // Ensure that `InnerNestedWatcher` is destroyed before
+    // `OuterNestedWatcher`.
+    inner_watcher.reset();
+    std::move(callback_).Run();
+  }
+
+  void OnFileCanWriteWithoutBlocking(int) override {}
+
+ private:
+  void InitOnIOThread(base::OnceClosure ready_callback) {
+    controller_ =
+        std::make_unique<MessagePumpLibevent::FdWatchController>(FROM_HERE);
+    base::CurrentIOThread::Get().WatchFileDescriptor(
+        test_->receiver(), false, MessagePumpLibevent::WATCH_READ,
+        controller_.get(), this);
+    std::move(ready_callback).Run();
+  }
+
+  const raw_ref<MessagePumpLibeventTest> test_;
+  base::OnceClosure callback_;
+  std::unique_ptr<MessagePumpLibevent::FdWatchController> controller_;
+};
+
+TEST_P(MessagePumpLibeventTest, NestedNotification) {
+  // Regression test for https://crbug.com/1469529. Verifies that it's safe for
+  // a nested RunLoop to stop watching a file descriptor while the outer RunLoop
+  // is handling an event for the same descriptor.
+  base::RunLoop loop;
+  OuterNestedWatcher watcher(*this, loop.QuitClosure());
+  Notify();
+  loop.Run();
 }
 
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)

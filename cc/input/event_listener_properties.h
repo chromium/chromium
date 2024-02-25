@@ -9,13 +9,14 @@ namespace cc {
 
 enum class EventListenerClass {
   // This includes the pointerrawupdate events which are non-rAF-aligned.
-  kPointerRawUpdate,
+  kPointerRawUpdate = 0,
   // This value includes "touchstart", "touchmove", and "pointer" events.
   kTouchStartOrMove,
   // This value includes "wheel" and "mousewheel" events.
   kMouseWheel,
   // This value includes "touchend" and "touchcancel" events.
   kTouchEndOrCancel,
+
   kLast = kTouchEndOrCancel
 };
 

@@ -1,10 +1,11 @@
 caption: Enables the floating accessibility menu
+default: false
 desc: |-
   In kiosk mode, controls whether the floating accessibility menu is being shown.
 
-        If this policy is set to enabled, the floating accessibility menu will be always shown.
+  If this policy is set to enabled, the floating accessibility menu will be always shown.
 
-        If this policy is set to disabled or left unset, the floating accessibility menu will never be shown.
+  If this policy is set to disabled or left unset, the floating accessibility menu will never be shown.
 example_value: true
 features:
   dynamic_refresh: true

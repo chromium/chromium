@@ -101,10 +101,9 @@ class TPMAutoUpdateModePolicyHandler {
 
   void ShowTPMUpdateOnNextRebootNotification();
 
-  raw_ptr<ash::CrosSettings, DanglingUntriaged | ExperimentalAsh>
-      cros_settings_;
+  raw_ptr<ash::CrosSettings, DanglingUntriaged> cros_settings_;
 
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   std::unique_ptr<base::OneShotTimer> notification_timer_;
 

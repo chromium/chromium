@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<style>
+  div, body, html, img, textarea {
+    height: 1%;
+  }
+  #test2, #rt2, #test3 {
+    writing-mode: vertical-lr;
+  }
+</style>
+<div id="test3"><ruby>&nbsp;<rt id="rt3">rt</rt><textarea></textarea></ruby>
+<div id="test2"><ruby><textarea></textarea><iframe></iframe><rt id="rt2"></rt>&nbsp;</ruby></div>
+<ruby>
+  <div>
+    <img></img>
+  </div>
+  <rt></rt>
+This test checks that &lt;ruby&gt; doesn't leave any pointer in the percentage
+height descendant when it splits a ruby column, or merges ruby columns.<br>
+For this test to pass it should not crash or ASSERT!
+</ruby>
+<script>
+document.body.offsetTop;
+document.querySelector('#rt3').remove();
+if (window.testRunner)
+  testRunner.dumpAsText();
+</script>

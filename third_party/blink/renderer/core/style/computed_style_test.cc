@@ -7,12 +7,14 @@
 #include "base/memory/values_equivalent.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -41,6 +44,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "ui/base/ui_base_features.h"
 
@@ -49,7 +53,7 @@ namespace blink {
 class ComputedStyleTest : public testing::Test {
  protected:
   void SetUp() override {
-    initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
+    initial_style_ = ComputedStyle::GetInitialStyleSingleton();
   }
 
   const ComputedStyle* InitialComputedStyle() { return initial_style_; }
@@ -64,6 +68,7 @@ class ComputedStyleTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   Persistent<const ComputedStyle> initial_style_;
 };
 
@@ -93,10 +98,10 @@ TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
 
 TEST_F(ComputedStyleTest, ClipPathEqual) {
   scoped_refptr<BasicShapeCircle> shape = BasicShapeCircle::Create();
-  scoped_refptr<ShapeClipPathOperation> path1 =
-      ShapeClipPathOperation::Create(shape, GeometryBox::kBorderBox);
-  scoped_refptr<ShapeClipPathOperation> path2 =
-      ShapeClipPathOperation::Create(shape, GeometryBox::kBorderBox);
+  ShapeClipPathOperation* path1 = MakeGarbageCollected<ShapeClipPathOperation>(
+      shape, GeometryBox::kBorderBox);
+  ShapeClipPathOperation* path2 = MakeGarbageCollected<ShapeClipPathOperation>(
+      shape, GeometryBox::kBorderBox);
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
   builder1.SetClipPath(path1);
@@ -226,7 +231,8 @@ TEST_F(ComputedStyleTest,
   // An operation is necessary since having either a non-empty transform list
   // or a transform animation will set HasTransform();
   operations.Operations().push_back(
-      ScaleTransformOperation::Create(1, 1, TransformOperation::kScale));
+      MakeGarbageCollected<ScaleTransformOperation>(
+          1, 1, TransformOperation::kScale));
 
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
   builder.SetTransform(operations);
@@ -405,13 +411,11 @@ TEST_F(ComputedStyleTest, BorderWidth) {
   builder.SetBorderBottomWidth(LayoutUnit(5));
   const ComputedStyle* style = builder.TakeStyle();
   EXPECT_EQ(style->BorderBottomWidth(), 0);
-  EXPECT_EQ(style->BorderBottom().Width(), 5);
 
   builder = ComputedStyleBuilder(*style);
   builder.SetBorderBottomStyle(EBorderStyle::kSolid);
   style = builder.TakeStyle();
   EXPECT_EQ(style->BorderBottomWidth(), 5);
-  EXPECT_EQ(style->BorderBottom().Width(), 5);
 }
 
 TEST_F(ComputedStyleTest, CursorList) {
@@ -846,7 +850,7 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
             state.StyleBuilder().UsedColorScheme());
 }
 
-TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
+TEST_F(ComputedStyleTest, ApplyLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
@@ -871,7 +875,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   light_value->Append(*CSSIdentifierValue::Create(CSSValueID::kLight));
 
   auto* color_declaration = ParseDeclarationBlock(
-      "color:-internal-light-dark(black, white)", CSSParserMode::kUASheetMode);
+      "color:light-dark(black, white)", CSSParserMode::kUASheetMode);
   auto* dark_declaration = ParseDeclarationBlock("color-scheme:dark");
   auto* light_declaration = ParseDeclarationBlock("color-scheme:light");
 
@@ -894,7 +898,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   EXPECT_EQ(Color::kBlack, style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
-TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
+TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
@@ -913,8 +917,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   state.SetStyle(*initial);
 
   auto* bgimage_declaration = ParseDeclarationBlock(
-      "background-image:-internal-light-dark(none, url(dummy.png))",
-      kUASheetMode);
+      "background-image:light-dark(none, url(dummy.png))", kUASheetMode);
   auto* dark_declaration = ParseDeclarationBlock("color-scheme:dark");
   auto* light_declaration = ParseDeclarationBlock("color-scheme:light");
 
@@ -963,7 +966,7 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
                                  *style, nullptr /* layout_object */,
                                  false /* allow_visited_style */);
   ASSERT_TRUE(computed_value);
-  ASSERT_EQ("calc(0\% + 10px)", computed_value->CssText());
+  ASSERT_EQ("calc(10px)", computed_value->CssText());
 }
 
 TEST_F(ComputedStyleTest, InitialVariableNamesEmpty) {
@@ -1956,6 +1959,239 @@ TEST_F(ComputedStyleTest, ContainerNameNoDiff) {
 
   EXPECT_EQ(ComputedStyle::Difference::kEqual,
             ComputedStyle::ComputeDifference(style1, style2));
+}
+
+TEST_F(ComputedStyleTest, BackgroundRepeat) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
+      CSSIdentifierValue::Create(CSSValueID::kRepeatX));
+
+  To<Longhand>(GetCSSPropertyBackgroundRepeat())
+      .ApplyValue(state, *repeat_style_value, CSSProperty::ValueMode::kNormal);
+  const ComputedStyle* style = state.TakeStyle();
+  auto* computed_value = To<Longhand>(GetCSSPropertyBackgroundRepeat())
+                             .CSSValueFromComputedStyleInternal(
+                                 *style, nullptr /* layout_object */,
+                                 false /* allow_visited_style */);
+  ASSERT_TRUE(computed_value);
+  ASSERT_EQ("repeat-x", computed_value->CssText());
+}
+
+TEST_F(ComputedStyleTest, MaskRepeat) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
+      CSSIdentifierValue::Create(CSSValueID::kRepeatY));
+
+  To<Longhand>(GetCSSPropertyMaskRepeat())
+      .ApplyValue(state, *repeat_style_value, CSSProperty::ValueMode::kNormal);
+  const ComputedStyle* style = state.TakeStyle();
+  auto* computed_value = To<Longhand>(GetCSSPropertyMaskRepeat())
+                             .CSSValueFromComputedStyleInternal(
+                                 *style, nullptr /* layout_object */,
+                                 false /* allow_visited_style */);
+  ASSERT_TRUE(computed_value);
+  ASSERT_EQ("repeat-y", computed_value->CssText());
+}
+
+TEST_F(ComputedStyleTest, MaskMode) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  auto* mode_style_value = CSSIdentifierValue::Create(CSSValueID::kAlpha);
+
+  To<Longhand>(GetCSSPropertyMaskMode())
+      .ApplyValue(state, *mode_style_value, CSSProperty::ValueMode::kNormal);
+  const ComputedStyle* style = state.TakeStyle();
+  auto* computed_value = To<Longhand>(GetCSSPropertyMaskMode())
+                             .CSSValueFromComputedStyleInternal(
+                                 *style, nullptr /* layout_object */,
+                                 false /* allow_visited_style */);
+  ASSERT_TRUE(computed_value);
+  ASSERT_EQ("alpha", computed_value->CssText());
+}
+
+TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
+  const DynamicRangeLimit limit(/*standard_mix=*/0.3f,
+                                /*constrained_high_mix=*/0.7f);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetDynamicRangeLimit(limit);
+  auto* dynamic_range_limit_mix_value =
+      To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+          .CSSValueFromComputedStyleInternal(*builder.TakeStyle(),
+                                             nullptr /* layout_object */,
+                                             false /* allow_visited_style */);
+  ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
+
+  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
+            "dynamic-range-limit-mix(standard, constrained-high, 70%)");
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+      .ApplyValue(state, *dynamic_range_limit_mix_value,
+                  CSSProperty::ValueMode::kNormal);
+
+  const DynamicRangeLimit converted_limit =
+      state.TakeStyle()->GetDynamicRangeLimit();
+  EXPECT_FLOAT_EQ(converted_limit.standard_mix, limit.standard_mix);
+  EXPECT_FLOAT_EQ(converted_limit.constrained_high_mix,
+                  limit.constrained_high_mix);
+}
+
+TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
+  const DynamicRangeLimit limit(/*standard_mix=*/0.4f,
+                                /*constrained_high_mix=*/0.f);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetDynamicRangeLimit(limit);
+  auto* dynamic_range_limit_mix_value =
+      To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+          .CSSValueFromComputedStyleInternal(*builder.TakeStyle(),
+                                             nullptr /* layout_object */,
+                                             false /* allow_visited_style */);
+  ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
+
+  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
+            "dynamic-range-limit-mix(standard, high, 60%)");
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+      .ApplyValue(state, *dynamic_range_limit_mix_value,
+                  CSSProperty::ValueMode::kNormal);
+
+  const DynamicRangeLimit converted_limit =
+      state.TakeStyle()->GetDynamicRangeLimit();
+  EXPECT_FLOAT_EQ(converted_limit.standard_mix, limit.standard_mix);
+  EXPECT_FLOAT_EQ(converted_limit.constrained_high_mix,
+                  limit.constrained_high_mix);
+}
+
+TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
+  const DynamicRangeLimit limit(/*standard_mix=*/0.f,
+                                /*constrained_high_mix=*/0.55f);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetDynamicRangeLimit(limit);
+  auto* dynamic_range_limit_mix_value =
+      To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+          .CSSValueFromComputedStyleInternal(*builder.TakeStyle(),
+                                             nullptr /* layout_object */,
+                                             false /* allow_visited_style */);
+  ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
+
+  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
+            "dynamic-range-limit-mix(constrained-high, high, 45%)");
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+      .ApplyValue(state, *dynamic_range_limit_mix_value,
+                  CSSProperty::ValueMode::kNormal);
+
+  const DynamicRangeLimit converted_limit =
+      state.TakeStyle()->GetDynamicRangeLimit();
+  EXPECT_FLOAT_EQ(converted_limit.standard_mix, limit.standard_mix);
+  EXPECT_FLOAT_EQ(converted_limit.constrained_high_mix,
+                  limit.constrained_high_mix);
+}
+
+TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
+  const DynamicRangeLimit limit(/*standard_mix=*/0.2f,
+                                /*constrained_high_mix=*/0.6f);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetDynamicRangeLimit(limit);
+  auto* dynamic_range_limit_mix_value =
+      To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+          .CSSValueFromComputedStyleInternal(*builder.TakeStyle(),
+                                             nullptr /* layout_object */,
+                                             false /* allow_visited_style */);
+  ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
+
+  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
+            "dynamic-range-limit-mix(standard, "
+            "dynamic-range-limit-mix(constrained-high, high, 25%), 80%)");
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  To<Longhand>(GetCSSPropertyDynamicRangeLimit())
+      .ApplyValue(state, *dynamic_range_limit_mix_value,
+                  CSSProperty::ValueMode::kNormal);
+
+  const DynamicRangeLimit converted_limit =
+      state.TakeStyle()->GetDynamicRangeLimit();
+  EXPECT_FLOAT_EQ(converted_limit.standard_mix, limit.standard_mix);
+  EXPECT_FLOAT_EQ(converted_limit.constrained_high_mix,
+                  limit.constrained_high_mix);
 }
 
 }  // namespace blink

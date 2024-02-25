@@ -30,10 +30,12 @@ void FlossLoggingClient::SetDebugLogging(ResponseCallback<Void> callback,
 void FlossLoggingClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const int adapter_index,
+                              base::Version version,
                               base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
   logging_path_ = GenerateLoggingPath(adapter_index);
+  version_ = version;
 
   if (!bus_->GetObjectProxy(service_name_, logging_path_)) {
     LOG(ERROR) << "FlossLoggingClient couldn't init. Object proxy was null.";

@@ -13,14 +13,8 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/page_entities_model_handler.h"
-#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-#include "components/optimization_guide/core/page_entities_model_handler_impl.h"
-#endif
 
 namespace optimization_guide {
 
@@ -47,34 +41,6 @@ PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
 PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
     default;
 
-void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
-    OptimizationGuideModelProvider* optimization_guide_model_provider,
-    base::OnceCallback<void(bool)> callback) {
-  LOCAL_HISTOGRAM_BOOLEAN(
-      "OptimizationGuide.PageContentAnnotationsModelManager."
-      "PageEntitiesModelRequested",
-      true);
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
-
-  page_entities_model_handler_ = std::make_unique<PageEntitiesModelHandlerImpl>(
-      optimization_guide_model_provider, background_task_runner);
-
-  page_entities_model_handler_->AddOnModelUpdatedCallback(
-      base::BindOnce(std::move(callback), true));
-#else
-  std::move(callback).Run(false);
-#endif
-}
-
-void PageContentAnnotationsModelManager::
-    OverridePageEntitiesModelHandlerForTesting(
-        std::unique_ptr<PageEntitiesModelHandler> page_entities_model_handler) {
-  page_entities_model_handler_ = std::move(page_entities_model_handler);
-}
-
 void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
     OptimizationGuideModelProvider* optimization_guide_model_provider) {
   if (!features::PageVisibilityBatchAnnotationsEnabled())
@@ -86,35 +52,7 @@ void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
   page_visibility_model_handler_ = std::make_unique<PageVisibilityModelHandler>(
       optimization_guide_model_provider,
       base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
-      absl::nullopt);
-}
-
-void PageContentAnnotationsModelManager::SetUpTextEmbeddingModel(
-    OptimizationGuideModelProvider* optimization_guide_model_provider) {
-  if (!features::TextEmbeddingBatchAnnotationsEnabled()) {
-    return;
-  }
-
-  if (text_embedding_model_handler_) {
-    return;
-  }
-
-  text_embedding_model_handler_ = std::make_unique<TextEmbeddingModelHandler>(
-      optimization_guide_model_provider,
-      base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
-      absl::nullopt);
-}
-
-void PageContentAnnotationsModelManager::GetMetadataForEntityId(
-    const std::string& entity_id,
-    EntityMetadataRetrievedCallback callback) {
-  if (page_entities_model_handler_) {
-    page_entities_model_handler_->GetMetadataForEntityId(entity_id,
-                                                         std::move(callback));
-    return;
-  }
-
-  std::move(callback).Run(absl::nullopt);
+      std::nullopt);
 }
 
 void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
@@ -131,45 +69,17 @@ void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
     }
   }
 
-  if (type == AnnotationType::kPageEntities) {
-    if (page_entities_model_handler_) {
-      page_entities_model_handler_->AddOnModelUpdatedCallback(
-          base::BindOnce(std::move(callback), true));
-    } else {
-      SetUpPageEntitiesModel(optimization_guide_model_provider_,
-                             std::move(callback));
-    }
-    return;
-  }
-
-  if (type == AnnotationType::kTextEmbedding) {
-    // No-op if the executor is already setup.
-    SetUpTextEmbeddingModel(optimization_guide_model_provider_);
-
-    if (text_embedding_model_handler_) {
-      text_embedding_model_handler_->AddOnModelUpdatedCallback(
-          base::BindOnce(std::move(callback), true));
-      return;
-    }
-  }
-
   std::move(callback).Run(false);
 }
 
-absl::optional<ModelInfo>
+std::optional<ModelInfo>
 PageContentAnnotationsModelManager::GetModelInfoForType(
     AnnotationType type) const {
   if (type == AnnotationType::kContentVisibility &&
       page_visibility_model_handler_) {
     return page_visibility_model_handler_->GetModelInfo();
   }
-  if (type == AnnotationType::kPageEntities && page_entities_model_handler_) {
-    return page_entities_model_handler_->GetModelInfo();
-  }
-  if (type == AnnotationType::kTextEmbedding && text_embedding_model_handler_) {
-    return text_embedding_model_handler_->GetModelInfo();
-  }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PageContentAnnotationsModelManager::Annotate(
@@ -240,36 +150,6 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
     return;
   }
 
-  if (job->type() == AnnotationType::kPageEntities) {
-    if (!page_entities_model_handler_) {
-      job->FillWithNullOutputs();
-      job->OnComplete();
-      job.reset();
-      std::move(on_job_complete_callback).Run();
-      return;
-    }
-    page_entities_model_handler_->ExecuteJob(
-        std::move(on_job_complete_callback), std::move(job));
-    return;
-  }
-
-  if (job->type() != AnnotationType::kTextEmbedding &&
-      text_embedding_model_handler_) {
-    text_embedding_model_handler_->UnloadModel();
-  }
-
-  if (job->type() == AnnotationType::kTextEmbedding) {
-    if (!text_embedding_model_handler_) {
-      job->FillWithNullOutputs();
-      job->OnComplete();
-      job.reset();
-      std::move(on_job_complete_callback).Run();
-      return;
-    }
-    text_embedding_model_handler_->ExecuteJob(
-        std::move(on_job_complete_callback), std::move(job));
-    return;
-  }
   NOTREACHED();
 }
 

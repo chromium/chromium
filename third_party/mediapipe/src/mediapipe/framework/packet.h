@@ -20,11 +20,15 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <type_traits>
 
 #include "absl/base/macros.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/deps/no_destructor.h"
@@ -40,7 +44,6 @@
 #include "mediapipe/framework/timestamp.h"
 #include "mediapipe/framework/tool/type_util.h"
 #include "mediapipe/framework/type_map.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -111,7 +114,18 @@ class Packet {
   // Transfers the ownership of holder's data to a unique pointer
   // of the object if the packet is the sole owner of a non-foreign
   // holder. Otherwise, returns error when the packet can't be consumed.
-  // See ConsumeOrCopy for threading requirements and example usage.
+  //
+  // --- WARNING ---
+  // Packet is thread-compatible and this member function is non-const. Hence,
+  // calling it requires exclusive access to the object - callers are
+  // responsible for ensuring that no other thread is doing anything with the
+  // packet.
+  //
+  // For example, if a node/calculator calls this function, then no other
+  // calculator should be processing the same packet. Nodes/calculators cannot
+  // enforce/guarantee this as they don't know of each other, which means graph
+  // must be written in a special way to account for that. It's error-prone and
+  // general recommendation is to avoid calling this function.
   template <typename T>
   absl::StatusOr<std::unique_ptr<T>> Consume();
 
@@ -119,24 +133,33 @@ class Packet {
   // unique pointer if the packet is the sole owner of a non-foreign
   // holder. Otherwise, the unique pointer holds a copy of the original
   // data. In either case, the original packet is set to empty. The
-  // method returns error when the packet can't be consumed or copied. If
+  // function returns error when the packet can't be consumed or copied. If
   // was_copied is not nullptr, it is set to indicate whether the packet
   // data was copied.
-  // Packet is thread-compatible, therefore Packet::ConsumeOrCopy()
-  // must be thread-compatible: clients who use this function are
-  // responsible for ensuring that no other thread is doing anything
-  // with the Packet.
+  //
+  // --- WARNING ---
+  // Packet is thread-compatible and this member function is non-const. Hence,
+  // calling it requires exclusive access to the object - callers are
+  // responsible for ensuring that no other thread is doing anything with the
+  // packet.
+  //
+  // For example, if a node/calculator calls this function, then no other
+  // calculator should be processing the same packet. Nodes/calculators cannot
+  // enforce/guarantee this as they don't know of each other, which means graph
+  // must be written in a special way to account for that. It's error-prone and
+  // general recommendation is to avoid calling this function.
+  //
   // Example usage:
-  //   ASSIGN_OR_RETURN(std::unique_ptr<Detection> detection,
+  //   MP_ASSIGN_OR_RETURN(std::unique_ptr<Detection> detection,
   //                    p.ConsumeOrCopy<Detection>());
   //   // The unique_ptr type can be omitted with auto.
-  //   ASSIGN_OR_RETURN(auto detection, p.ConsumeOrCopy<Detection>());
-  //   If you would like to crash on failure (prefer ASSIGN_OR_RETURN):
+  //   MP_ASSIGN_OR_RETURN(auto detection, p.ConsumeOrCopy<Detection>());
+  //   If you would like to crash on failure (prefer MP_ASSIGN_OR_RETURN):
   //   auto detection = p.ConsumeOrCopy<Detection>().value();
   //   // In functions which do not return absl::Status use an adaptor
-  //   // function as the third argument to ASSIGN_OR_RETURN.  In tests,
+  //   // function as the third argument to MP_ASSIGN_OR_RETURN.  In tests,
   //   // use an adaptor which returns void.
-  //   ASSIGN_OR_RETURN(auto detection, p.ConsumeOrCopy<Detection>(),
+  //   MP_ASSIGN_OR_RETURN(auto detection, p.ConsumeOrCopy<Detection>(),
   //                    _.With([](const absl::Status& status) {
   //                      MP_EXPECT_OK(status);
   //                      // Use CHECK_OK to crash and report a usable line
@@ -612,53 +635,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
 
 template <typename T>
 inline absl::StatusOr<std::unique_ptr<T>> Packet::Consume() {
-  // If type validation fails, returns error.
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // Clients who use this function are responsible for ensuring that no
-  // other thread is doing anything with this Packet.
-  if (!holder_->HasForeignOwner() && holder_.unique()) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->As<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    return release_result;
-  }
-  // If packet isn't the sole owner of the holder, returns kFailedPrecondition
-  // error with message.
-  return absl::Status(absl::StatusCode::kFailedPrecondition,
-                      "Packet isn't the sole owner of the holder.");
+  return absl::InternalError("Consume isn't supported.");
 }
 
 template <typename T>
 inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
     bool* was_copied,
     typename std::enable_if<!std::is_array<T>::value>::type*) {
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // If holder is the sole owner of the underlying data, consumes this packet.
-  if (!holder_->HasForeignOwner() && holder_.unique()) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->As<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    if (was_copied) {
-      *was_copied = false;
-    }
-    return release_result;
-  }
-  VLOG(2) << "Copying the data of " << DebugString();
-  std::unique_ptr<T> data_ptr = absl::make_unique<T>(Get<T>());
-  VLOG(2) << "Setting " << DebugString() << " to empty.";
-  holder_.reset();
-  if (was_copied) {
-    *was_copied = true;
-  }
-  return std::move(data_ptr);
+  return absl::InternalError("ConsumeOrCopy isn't supported.");
 }
 
 template <typename T>
@@ -666,35 +650,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
     bool* was_copied,
     typename std::enable_if<std::is_array<T>::value &&
                             std::extent<T>::value != 0>::type*) {
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // If holder is the sole owner of the underlying data, consumes this packet.
-  if (!holder_->HasForeignOwner() && holder_.unique()) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->As<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    if (was_copied) {
-      *was_copied = false;
-    }
-    return release_result;
-  }
-  VLOG(2) << "Copying the data of " << DebugString();
-  const auto& original_array = Get<T>();
-  // Type T is bounded array type, such as int[N] and float[M].
-  // The new operator creates a new bounded array.
-  std::unique_ptr<T> data_ptr(reinterpret_cast<T*>(new T));
-  // Copies bounded array data into data_ptr.
-  std::copy(std::begin(original_array), std::end(original_array),
-            std::begin(*data_ptr));
-  VLOG(2) << "Setting " << DebugString() << " to empty.";
-  holder_.reset();
-  if (was_copied) {
-    *was_copied = true;
-  }
-  return std::move(data_ptr);
+  return absl::InternalError("ConsumeOrCopy isn't supported.");
 }
 
 template <typename T>
@@ -735,7 +691,7 @@ inline const T& Packet::Get() const {
   if (holder == nullptr) {
     // Produce a good error message.
     absl::Status status = ValidateAsType<T>();
-    LOG(FATAL) << "Packet::Get() failed: " << status.message();
+    ABSL_LOG(FATAL) << "Packet::Get() failed: " << status.message();
   }
   return holder->data();
 }

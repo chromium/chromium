@@ -18,8 +18,9 @@ namespace ash {
 // to build PhoneHubRecentAppButton implicitly contains the package name of the
 // same application.
 class ASH_EXPORT PhoneHubRecentAppButton : public views::ImageButton {
+  METADATA_HEADER(PhoneHubRecentAppButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(PhoneHubRecentAppButton);
   PhoneHubRecentAppButton(const gfx::Image& icon,
                           const std::u16string& visible_app_name,
                           PressedCallback callback);

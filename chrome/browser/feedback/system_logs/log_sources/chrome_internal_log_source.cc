@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
@@ -16,7 +17,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -39,10 +39,12 @@
 #include "extensions/common/api/power.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/ash_interfaces.h"
+#include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -57,14 +59,18 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/version/version_loader.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
+#include "ui/base/win/hidden_window.h"
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/google/google_update_win.h"
 #endif
-#include "ui/base/win/hidden_window.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -79,6 +85,7 @@ constexpr char kSyncDataKey[] = "about_sync_data";
 constexpr char kExtensionsListKey[] = "extensions";
 constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
+constexpr char kGraphiteEnabled[] = "graphite_enabled";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
@@ -124,7 +131,7 @@ constexpr char kInstallLocation[] = "install_location";
 #endif
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 constexpr char kCpuArch[] = "cpu_arch";
 #endif
 
@@ -140,23 +147,20 @@ std::string GetPrimaryAccountTypeString() {
     return "none";
 
   switch (primary_user->GetType()) {
-    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::UserType::kRegular:
       return "regular";
-    case user_manager::USER_TYPE_GUEST:
+    case user_manager::UserType::kGuest:
       return "guest";
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::UserType::kPublicAccount:
       return "public_account";
-    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::UserType::kKioskApp:
       return "kiosk_app";
-    case user_manager::USER_TYPE_CHILD:
+    case user_manager::UserType::kChild:
       return "child";
-    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::UserType::kArcKioskApp:
       return "arc_kiosk_app";
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::UserType::kWebKioskApp:
       return "web_kiosk_app";
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
-      break;
   }
   return std::string();
 }
@@ -205,7 +209,7 @@ void PopulateEntriesAsync(std::unique_ptr<SystemLogsResponse> response,
     DCHECK(stats);
 
     // Get the HWID.
-    absl::optional<base::StringPiece> hwid =
+    std::optional<base::StringPiece> hwid =
         stats->GetMachineStatistic(ash::system::kHardwareClassKey);
     if (hwid) {
       response->emplace(kHWIDKey, std::string(hwid.value()));
@@ -230,11 +234,10 @@ void PopulateDiskSpaceLogsAsync(std::unique_ptr<SystemLogsResponse> response,
                                 SysLogsSourceCallback callback) {
   auto on_get_free_disk_space = [](std::unique_ptr<SystemLogsResponse> response,
                                    SysLogsSourceCallback callback,
-                                   absl::optional<int64_t> free_space) {
+                                   std::optional<int64_t> free_space) {
     auto on_get_total_disk_space =
         [](std::unique_ptr<SystemLogsResponse> response,
-           SysLogsSourceCallback callback,
-           absl::optional<int64_t> total_space) {
+           SysLogsSourceCallback callback, std::optional<int64_t> total_space) {
           if (total_space.has_value()) {
             response->emplace(kTotalDiskSpace,
                               base::NumberToString(total_space.value()));
@@ -368,6 +371,25 @@ std::string MacCpuArchAsString() {
       return "arm64";
   }
 }
+#elif BUILDFLAG(IS_WIN)
+std::string WinCpuArchAsString() {
+#if defined(ARCH_CPU_ARM64)
+  return "arm64";
+#else
+  bool emulated = base::win::OSInfo::IsRunningEmulatedOnArm64();
+#if defined(ARCH_CPU_X86)
+  if (emulated) {
+    return "32-bit emulated";
+  }
+  return "32-bit";
+#else   // defined(ARCH_CPU_X86)
+  if (emulated) {
+    return "64-bit emulated";
+  }
+  return "64-bit";
+#endif  // defined(ARCH_CPU_X86)
+#endif  // defined(ARCH_CPU_ARM64)
+}
 #endif
 
 }  // namespace
@@ -411,7 +433,15 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
 
 #if BUILDFLAG(IS_MAC)
   response->emplace(kCpuArch, MacCpuArchAsString());
+#elif BUILDFLAG(IS_WIN)
+  response->emplace(kCpuArch, WinCpuArchAsString());
 #endif
+
+  std::string graphite_enabled =
+      features::IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())
+          ? "true"
+          : "false";
+  response->emplace(kGraphiteEnabled, graphite_enabled);
 
   if (ProfileManager::GetLastUsedProfile()->IsChild())
     response->emplace("account_type", "child");
@@ -571,12 +601,9 @@ void ChromeInternalLogSource::PopulateOnboardingTime(
       profile->GetPrefs()->GetTime(ash::prefs::kOobeOnboardingTime);
   if (time.is_null())
     return;
-
-  base::Time::Exploded exploded;
-  time.UTCExplode(&exploded);
   response->emplace(kOnboardingTime,
-                    base::StringPrintf("%04d-%02d-%02d", exploded.year,
-                                       exploded.month, exploded.day_of_month));
+                    base::UnlocalizedTimeFormatWithPattern(
+                        time, "yyyy-MM-dd", icu::TimeZone::getGMT()));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -609,7 +636,7 @@ void ChromeInternalLogSource::PopulateInstallerBrandCode(
 void ChromeInternalLogSource::PopulateLastUpdateState(
     SystemLogsResponse* response) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const absl::optional<UpdateState> update_state = GetLastUpdateState();
+  const std::optional<UpdateState> update_state = GetLastUpdateState();
   if (!update_state)
     return;  // There is nothing to include if no update check has completed.
 

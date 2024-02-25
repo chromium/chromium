@@ -119,7 +119,7 @@ void AmbientSlideshowPeripheralUi::UpdateImageDetails(
   ambient_info_view_->UpdateImageDetails(details, related_details);
 }
 
-BEGIN_METADATA(AmbientSlideshowPeripheralUi, views::View)
+BEGIN_METADATA(AmbientSlideshowPeripheralUi)
 END_METADATA
 
 }  // namespace ash

@@ -10,17 +10,18 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 AppServicePromiseAppIconLoader::AppServicePromiseAppIconLoader(
     Profile* profile,
@@ -60,12 +61,8 @@ void AppServicePromiseAppIconLoader::FetchImage(const std::string& id) {
   if (!promise_app) {
     return;
   }
-  ash::AppStatus status =
-      promise_app ? ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
-                        promise_app->status)
-                  : ash::AppStatus::kPending;
   CallLoadIcon(apps::PackageId::FromString(id).value(),
-               apps::GetPromiseIconEffectsForAppStatus(status));
+               apps::IconEffects::kCrOsStandardMask);
 }
 
 void AppServicePromiseAppIconLoader::ClearImage(const std::string& id) {
@@ -84,13 +81,10 @@ void AppServicePromiseAppIconLoader::OnPromiseAppUpdate(
   if (!update.StatusChanged()) {
     return;
   }
-  if (update.Status() == apps::PromiseStatus::kRemove) {
+  if (IsPromiseAppCompleted(update.Status())) {
     return;
   }
-  CallLoadIcon(update.PackageId(),
-               apps::GetPromiseIconEffectsForAppStatus(
-                   ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
-                       update.Status())));
+  CallLoadIcon(update.PackageId(), apps::IconEffects::kCrOsStandardMask);
 }
 
 void AppServicePromiseAppIconLoader::OnPromiseAppRegistryCacheWillBeDestroyed(
@@ -111,5 +105,7 @@ void AppServicePromiseAppIconLoader::OnLoadIcon(
     const apps::PackageId& package_id,
     apps::IconValuePtr icon_value) {
   gfx::ImageSkia image = icon_value->uncompressed;
-  delegate()->OnAppImageUpdated(package_id.ToString(), image);
+  delegate()->OnAppImageUpdated(package_id.ToString(), image,
+                                icon_value->is_placeholder_icon,
+                                /*badge_image=*/std::nullopt);
 }

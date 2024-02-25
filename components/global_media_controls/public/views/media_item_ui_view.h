@@ -15,7 +15,6 @@
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
-#include "components/global_media_controls/public/views/media_notification_view_ash_impl.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "media/base/media_switches.h"
@@ -34,6 +33,7 @@ class SlideOutController;
 
 namespace global_media_controls {
 
+enum class MediaDisplayPage;
 class MediaItemUIObserver;
 
 // MediaItemUIView holds a media notification for display
@@ -45,9 +45,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
       public global_media_controls::MediaItemUI,
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
- public:
-  METADATA_HEADER(MediaItemUIView);
+  METADATA_HEADER(MediaItemUIView, views::Button)
 
+ public:
   // MediaItemUIView is used in multiple places so some optional parameters may
   // not be set:
   // - Chrome OS media UI will set notification_theme for color theme.
@@ -59,11 +59,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       std::unique_ptr<MediaItemUIFooter> footer_view,
       std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
-      absl::optional<media_message_center::NotificationTheme>
-          notification_theme = absl::nullopt,
-      absl::optional<media_message_center::MediaColorTheme> media_color_theme =
-          absl::nullopt,
-      absl::optional<MediaDisplayPage> media_display_page = absl::nullopt);
+      std::optional<media_message_center::NotificationTheme>
+          notification_theme = std::nullopt,
+      std::optional<media_message_center::MediaColorTheme> media_color_theme =
+          std::nullopt,
+      std::optional<MediaDisplayPage> media_display_page = std::nullopt);
   MediaItemUIView(const MediaItemUIView&) = delete;
   MediaItemUIView& operator=(const MediaItemUIView&) = delete;
   ~MediaItemUIView() override;
@@ -96,8 +96,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   void OnColorsChanged(SkColor foreground,
                        SkColor foreground_disabled,
                        SkColor background) override;
-  void OnHeaderClicked() override;
+  void OnHeaderClicked(bool activate_original_media) override;
   void OnShowCastingDevicesRequested() override;
+  void OnDeviceSelectorViewSizeChanged() override;
 
   // views::SlideOutControllerDelegate:
   ui::Layer* GetSlideOutLayer() override;
@@ -111,7 +112,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   void RemoveObserver(
       global_media_controls::MediaItemUIObserver* observer) override;
 
-  void OnDeviceSelectorViewSizeChanged();
+  // Called when the devices in the device selector view have changed.
+  void OnDeviceSelectorViewDevicesChanged(bool has_devices);
 
   const std::u16string& GetTitle() const;
 
@@ -126,7 +128,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   views::ImageButton* GetDismissButtonForTesting();
 
   media_message_center::MediaNotificationViewImpl* view_for_testing() {
-    DCHECK(!base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI));
     return static_cast<media_message_center::MediaNotificationViewImpl*>(view_);
   }
   MediaItemUIDeviceSelector* device_selector_view_for_testing() {
@@ -150,7 +151,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   // Updates the forced expanded state of |view_|.
   void ForceExpandedState();
   // Notify observers that we've been clicked.
-  void ContainerClicked();
+  void ContainerClicked(bool activate_original_media);
   void OnSizeChanged();
 
   const std::string id_;
@@ -197,6 +198,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
 
   // Sets to true when the notification theme is provided on Chrome OS.
   const bool has_notification_theme_;
+
+  // Sets to true if the updated UI is enabled.
+  bool use_updated_ui_ = false;
 };
 
 }  // namespace global_media_controls

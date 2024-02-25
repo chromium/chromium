@@ -4,13 +4,13 @@
 
 #include "content/browser/attribution_reporting/storable_source.h"
 
+#include <optional>
 #include <utility>
 
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

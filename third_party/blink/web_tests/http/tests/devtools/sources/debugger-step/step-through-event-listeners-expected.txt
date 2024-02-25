@@ -4,26 +4,26 @@ Test that debugger will pause in all event listeners when corresponding breakpoi
 Running: testClickBreakpoint
 Script execution paused.
 Call stack:
-    0) listener3 (step-through-event-listeners.js:27)
-    1) addListenerAndClick (step-through-event-listeners.js:36)
+    0) listener3 (step-through-event-listeners.js:26)
+    1) addListenerAndClick (step-through-event-listeners.js:35)
     2)  (:1)
 Script execution resumed.
 Script execution paused.
 Call stack:
-    0) listener1 (step-through-event-listeners.js:19)
-    1) addListenerAndClick (step-through-event-listeners.js:36)
+    0) listener1 (step-through-event-listeners.js:18)
+    1) addListenerAndClick (step-through-event-listeners.js:35)
     2)  (:1)
 Script execution resumed.
 Script execution paused.
 Call stack:
-    0) listener2 (step-through-event-listeners.js:23)
-    1) addListenerAndClick (step-through-event-listeners.js:36)
+    0) listener2 (step-through-event-listeners.js:22)
+    1) addListenerAndClick (step-through-event-listeners.js:35)
     2)  (:1)
 Script execution resumed.
 Script execution paused.
 Call stack:
-    0) listener3 (step-through-event-listeners.js:27)
-    1) addListenerAndClick (step-through-event-listeners.js:36)
+    0) listener3 (step-through-event-listeners.js:26)
+    1) addListenerAndClick (step-through-event-listeners.js:35)
     2)  (:1)
 Script execution resumed.
 

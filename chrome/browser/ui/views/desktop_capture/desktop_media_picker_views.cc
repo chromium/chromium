@@ -12,11 +12,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -28,7 +30,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -40,6 +42,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -64,6 +67,10 @@
 #endif
 
 using content::DesktopMediaID;
+using content::RenderFrameHost;
+using content::WebContents;
+using content::WebContentsMediaCaptureId;
+using RequestSource = DesktopMediaPicker::Params::RequestSource;
 
 enum class DesktopMediaPickerDialogView::DialogType : int {
   kStandard = 0,
@@ -73,6 +80,14 @@ enum class DesktopMediaPickerDialogView::DialogType : int {
 namespace {
 
 using DialogType = DesktopMediaPickerDialogView::DialogType;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SelectedTabDiscardStatus {
+  kNonDiscarded = 0,
+  kDiscarded = 1,
+  kMaxValue = kDiscarded
+};
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA)
 DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
@@ -115,6 +130,7 @@ void RecordUma(GDMResult result, base::TimeTicks dialog_open_time) {
 
 void RecordUmaCancellation(DialogType dialog_type,
                            base::TimeTicks dialog_open_time) {
+  RecordAction(base::UserMetricsAction("GetDisplayMedia.Cancel"));
   if (dialog_type == DialogType::kPreferCurrentTab) {
     RecordUma(GDMPreferCurrentTabResult::kUserCancelled, dialog_open_time);
   } else {
@@ -137,6 +153,7 @@ void RecordUmaSelection(DialogType dialog_type,
       NOTREACHED_NORETURN();
 
     case DesktopMediaList::Type::kScreen:
+      RecordAction(base::UserMetricsAction("GetDisplayMedia.SelectScreen"));
       if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GDMPreferCurrentTabResult::kUserSelectedScreen,
                   dialog_open_time);
@@ -146,6 +163,7 @@ void RecordUmaSelection(DialogType dialog_type,
       break;
 
     case DesktopMediaList::Type::kWindow:
+      RecordAction(base::UserMetricsAction("GetDisplayMedia.SelectWindow"));
       if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GDMPreferCurrentTabResult::kUserSelectedWindow,
                   dialog_open_time);
@@ -155,6 +173,8 @@ void RecordUmaSelection(DialogType dialog_type,
       break;
 
     case DesktopMediaList::Type::kWebContents: {
+      RecordAction(
+          base::UserMetricsAction("GetDisplayMedia.SelectWebContents"));
       // Whether the current tab was selected. Note that this can happen
       // through a non-explicit selection of the current tab through the
       // list of all available tabs.
@@ -179,6 +199,7 @@ void RecordUmaSelection(DialogType dialog_type,
     }
 
     case DesktopMediaList::Type::kCurrentTab:
+      RecordAction(base::UserMetricsAction("GetDisplayMedia.SelectCurrentTab"));
       RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab,
                 dialog_open_time);
       break;
@@ -187,13 +208,13 @@ void RecordUmaSelection(DialogType dialog_type,
 
 std::u16string GetLabelForAudioCheckbox(DesktopMediaList::Type type,
                                         bool local_audio_suppression,
-                                        bool is_get_display_media_call) {
+                                        RequestSource request_source) {
   switch (type) {
     case DesktopMediaList::Type::kScreen: {
       bool show_warning = local_audio_suppression &&
                           base::FeatureList::IsEnabled(
                               kWarnUserOfSystemWideLocalAudioSuppression);
-      if (is_get_display_media_call &&
+      if (request_source == RequestSource::kGetDisplayMedia &&
           !base::FeatureList::IsEnabled(
               ::kSuppressLocalAudioPlaybackForSystemAudio)) {
         // Suppression blocked by killswitch, so no need to show a warning.
@@ -294,11 +315,10 @@ std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
     scroll_view->SetBackgroundThemeColorId(
         features::IsChromeRefresh2023() ? ui::kColorSysSurface4
                                         : ui::kColorSubtleEmphasisBackground);
-    if (audio_requested) {
-      // When audio is requested, a separator is added just below the scroll
-      // view, and the overflow indicator becomes redundant,
-      scroll_view->SetDrawOverflowIndicator(false);
-    }
+    // The overflow indicator is disabled to reduce clutter next to the
+    // separator to the audio control when audio is requested or the bottom of
+    // the dialog when audio is not requested.
+    scroll_view->SetDrawOverflowIndicator(false);
     return scroll_view;
   } else {
     return views::ScrollView::CreateScrollViewWithBorder();
@@ -323,7 +343,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DesktopMediaPickerDialogView,
 bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
-      return DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform;
+      return DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+          request_source_);
     case DesktopMediaList::Type::kWindow:
       return false;
     case DesktopMediaList::Type::kWebContents:
@@ -364,10 +385,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     DesktopMediaPickerViews* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
     : web_contents_(params.web_contents),
-      is_get_display_media_call_(params.is_get_display_media_call),
+      request_source_(params.request_source),
       app_name_(params.app_name),
       audio_requested_(params.request_audio),
       suppress_local_audio_playback_(params.suppress_local_audio_playback),
+      is_system_audio_offered_(audio_requested_ &&
+                               !params.exclude_system_audio &&
+                               AudioSupported(DesktopMediaList::Type::kScreen)),
       capturer_global_id_(
           params.web_contents
               ? params.web_contents->GetPrimaryMainFrame()->GetGlobalId()
@@ -376,7 +400,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       dialog_open_time_(base::TimeTicks::Now()) {
   DCHECK(!params.force_audio_checkboxes_to_default_checked ||
          !params.exclude_system_audio);
-
+  RecordAction(base::UserMetricsAction("GetDisplayMedia.ShowDialog"));
   SetProperty(views::kElementIdentifierKey,
               kDesktopMediaPickerDialogViewIdentifier);
   SetModalType(params.modality);
@@ -476,16 +500,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         screen_scroll_view->SetHorizontalScrollBarMode(
             views::ScrollView::ScrollBarMode::kDisabled);
 
-        const bool audio_offered =
-            !params.exclude_system_audio &&
-            AudioSupported(DesktopMediaList::Type::kScreen);
-        std::unique_ptr<views::View> pane =
-            SetupPane(DesktopMediaList::Type::kScreen,
-                      std::move(list_controller), audio_offered,
-                      /*audio_checked=*/
-                      params.force_audio_checkboxes_to_default_checked &&
-                          !screen_capture_audio_default_unchecked,
-                      supports_reselect_button, std::move(screen_scroll_view));
+        std::unique_ptr<views::View> pane = SetupPane(
+            DesktopMediaList::Type::kScreen, std::move(list_controller),
+            /*audio_offered=*/is_system_audio_offered_,
+            /*audio_checked=*/
+            params.force_audio_checkboxes_to_default_checked &&
+                !screen_capture_audio_default_unchecked,
+            supports_reselect_button, std::move(screen_scroll_view));
         panes.emplace_back(screen_title_text, std::move(pane));
         break;
       }
@@ -612,7 +633,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     AddChildView(std::move(panes.front().second));
   }
 
-  if (is_get_display_media_call_) {
+  if (request_source_ == RequestSource::kGetDisplayMedia) {
     description_label_->SetText(
         l10n_util::GetStringUTF16(IDS_DISPLAY_MEDIA_PICKER_TEXT));
   } else {
@@ -643,7 +664,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                       !params.web_contents->GetDelegate()->IsNeverComposited(
                           params.web_contents);
   if (modal_dialog) {
-    Browser* browser = chrome::FindBrowserWithWebContents(params.web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
     // Close the extension popup to prevent spoofing.
     if (browser && browser->window() &&
         browser->window()->GetExtensionsContainer()) {
@@ -802,8 +823,7 @@ void DesktopMediaPickerDialogView::MaybeCreateAudioCheckboxForPane(
   // If we need the audio checkbox build and add it now.
   std::unique_ptr<views::Checkbox> audio_share_checkbox =
       std::make_unique<views::Checkbox>(GetLabelForAudioCheckbox(
-          category.type, suppress_local_audio_playback_,
-          is_get_display_media_call_));
+          category.type, suppress_local_audio_playback_, request_source_));
   audio_share_checkbox->SetVisible(true);
   audio_share_checkbox->SetChecked(category.audio_checked);
   audio_share_checkbox->SetMultiLine(true);
@@ -836,7 +856,7 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
     const DisplaySurfaceCategory& category) const {
   if (!category.audio_offered) {
     return l10n_util::GetStringUTF16(
-        DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform
+        is_system_audio_offered_
             ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_SCREEN
             : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB);
   }
@@ -846,7 +866,7 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
       bool show_warning = suppress_local_audio_playback_ &&
                           base::FeatureList::IsEnabled(
                               kWarnUserOfSystemWideLocalAudioSuppression);
-      if (is_get_display_media_call_ &&
+      if (request_source_ == RequestSource::kGetDisplayMedia &&
           !base::FeatureList::IsEnabled(
               ::kSuppressLocalAudioPlaybackForSystemAudio)) {
         // Suppression blocked by killswitch, so no need to show a warning.
@@ -928,6 +948,78 @@ bool DesktopMediaPickerDialogView::IsAudioSharingApprovedByUser() const {
           categories_[index].pane->IsAudioSharingApprovedByUser());
 }
 
+void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
+  // Note that tabs are counted up to 1000, and windows/screens up to 100.
+
+  const std::optional<int> tab_count =
+      CountSourcesOfType(DesktopMediaList::Type::kWebContents);
+  if (tab_count.has_value()) {
+    base::UmaHistogramCounts1000(
+        "Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.Tabs",
+        tab_count.value());
+  }
+
+  const std::optional<int> window_count =
+      CountSourcesOfType(DesktopMediaList::Type::kWindow);
+  if (window_count.has_value()) {
+    base::UmaHistogramCounts100(
+        "Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.Windows",
+        window_count.value());
+  }
+
+  const std::optional<int> screen_count =
+      CountSourcesOfType(DesktopMediaList::Type::kScreen);
+  if (screen_count.has_value()) {
+    base::UmaHistogramCounts100(
+        "Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.Screens",
+        screen_count.value());
+  }
+}
+
+void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
+    const DesktopMediaID& source) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (source.type != DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+    return;
+  }
+
+  const WebContentsMediaCaptureId& web_contents_id = source.web_contents_id;
+  RenderFrameHost* const rfh = RenderFrameHost::FromID(
+      web_contents_id.render_process_id, web_contents_id.main_render_frame_id);
+  WebContents* const wc = WebContents::FromRenderFrameHost(rfh);
+  if (!wc) {
+    return;
+  }
+
+  const SelectedTabDiscardStatus status =
+      wc->WasDiscarded() ? SelectedTabDiscardStatus::kDiscarded
+                         : SelectedTabDiscardStatus::kNonDiscarded;
+
+  // Note: For simplicty's sake, we count all invocations of the picker,
+  // regardless of whether getDisplayMedia() or extension-based.
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.BasicFlow.SelectedTabDiscardStatus", status);
+}
+
+std::optional<int> DesktopMediaPickerDialogView::CountSourcesOfType(
+    DesktopMediaList::Type type) {
+  std::optional<int> count;
+
+  for (const DisplaySurfaceCategory& category : categories_) {
+    if (category.type != type) {
+      continue;
+    }
+
+    if (!count.has_value()) {
+      count = 0;
+    }
+    *count += static_cast<int>(category.controller->GetSourceCount());
+  }
+
+  return count;
+}
+
 void DesktopMediaPickerDialogView::DetachParent() {
   parent_ = nullptr;
 }
@@ -938,7 +1030,7 @@ gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
 }
 
 std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {
-  if (is_get_display_media_call_) {
+  if (request_source_ == RequestSource::kGetDisplayMedia) {
     return l10n_util::GetStringFUTF16(IDS_DISPLAY_MEDIA_PICKER_TITLE,
                                       app_name_);
   }
@@ -977,8 +1069,9 @@ views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
 
 bool DesktopMediaPickerDialogView::Accept() {
   DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
   // Ok button should only be enabled when a source is selected.
-  absl::optional<DesktopMediaID> source_optional =
+  std::optional<DesktopMediaID> source_optional =
       accepted_source_.has_value() ? accepted_source_
                                    : GetSelectedController()->GetSelection();
   DesktopMediaID source = source_optional.value();
@@ -986,10 +1079,12 @@ bool DesktopMediaPickerDialogView::Accept() {
       (audio_share_checkbox_ && audio_share_checkbox_->GetVisible() &&
        audio_share_checkbox_->GetChecked()) ||
       IsAudioSharingApprovedByUser();
-  if (is_get_display_media_call_) {
+  if (request_source_ == RequestSource::kGetDisplayMedia) {
     RecordUmaSelection(dialog_type_, capturer_global_id_, source,
                        GetSelectedSourceListType(), dialog_open_time_);
   }
+  RecordSourceCountsUma();
+  RecordTabDiscardedStatusUma(source);
 
   if (parent_)
     parent_->NotifyDialogResult(source);
@@ -999,9 +1094,11 @@ bool DesktopMediaPickerDialogView::Accept() {
 }
 
 bool DesktopMediaPickerDialogView::Cancel() {
-  if (is_get_display_media_call_) {
+  if (request_source_ == RequestSource::kGetDisplayMedia) {
     RecordUmaCancellation(dialog_type_, dialog_open_time_);
   }
+  RecordSourceCountsUma();
+
   return views::DialogDelegateView::Cancel();
 }
 
@@ -1025,11 +1122,12 @@ void DesktopMediaPickerDialogView::AcceptSource() {
 
 void DesktopMediaPickerDialogView::AcceptSpecificSource(
     const DesktopMediaID& source) {
-  accepted_source_ = absl::optional<DesktopMediaID>(source);
+  accepted_source_ = std::optional<DesktopMediaID>(source);
   AcceptSource();
 }
 
 void DesktopMediaPickerDialogView::Reject() {
+  RecordSourceCountsUma();
   CancelDialog();
 }
 
@@ -1090,16 +1188,14 @@ void DesktopMediaPickerDialogView::OnCanReselectChanged(
   reselect_button_->SetEnabled(controller->can_reselect());
 }
 
-BEGIN_METADATA(DesktopMediaPickerDialogView, views::DialogDelegateView)
+BEGIN_METADATA(DesktopMediaPickerDialogView)
 END_METADATA
-
-constexpr bool DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform;
 
 DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
 
 DesktopMediaPickerViews::~DesktopMediaPickerViews() {
   if (dialog_) {
-    if (is_get_display_media_call_) {
+    if (request_source_ == RequestSource::kGetDisplayMedia) {
       dialog_->RecordUmaDismissal();
     }
     dialog_->DetachParent();
@@ -1113,7 +1209,7 @@ void DesktopMediaPickerViews::Show(
     DoneCallback done_callback) {
   DesktopMediaPickerManager::Get()->OnShowDialog();
 
-  is_get_display_media_call_ = params.is_get_display_media_call;
+  request_source_ = params.request_source;
   callback_ = std::move(done_callback);
   dialog_ =
       new DesktopMediaPickerDialogView(params, this, std::move(source_lists));

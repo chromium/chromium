@@ -16,62 +16,61 @@ limitations under the License.
 package com.google.android.odml.image;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import static org.junit.Assert.assertThrows;
 
 import android.graphics.Rect;
-
+import java.nio.ByteBuffer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import java.nio.ByteBuffer;
-
 /** Tests for {@link ByteBufferMlImageBuilder} */
 @RunWith(RobolectricTestRunner.class)
 public final class ByteBufferMlImageBuilderTest {
-    @Test
-    public void build_fromByteBuffer_succeeds() {
-        ByteBuffer buffer = ByteBuffer.allocate(500);
 
-        MlImage image =
-                new ByteBufferMlImageBuilder(buffer, 20, 25, MlImage.IMAGE_FORMAT_RGB).build();
-        ImageContainer container = image.getContainer(MlImage.STORAGE_TYPE_BYTEBUFFER);
+  @Test
+  public void build_fromByteBuffer_succeeds() {
+    ByteBuffer buffer = ByteBuffer.allocate(500);
 
-        assertThat(image.getWidth()).isEqualTo(20);
-        assertThat(image.getHeight()).isEqualTo(25);
-        assertThat(image.getRoi()).isEqualTo(new Rect(0, 0, 20, 25));
-        assertThat(image.getRotation()).isEqualTo(0);
-        assertThat(image.getContainedImageProperties())
-                .containsExactly(ImageProperties.builder()
-                                         .setStorageType(MlImage.STORAGE_TYPE_BYTEBUFFER)
-                                         .setImageFormat(MlImage.IMAGE_FORMAT_RGB)
-                                         .build());
-        assertThat(((ByteBufferImageContainer) container).getImageFormat())
-                .isEqualTo(MlImage.IMAGE_FORMAT_RGB);
-    }
+    MlImage image = new ByteBufferMlImageBuilder(buffer, 20, 25, MlImage.IMAGE_FORMAT_RGB).build();
+    ImageContainer container = image.getContainer(MlImage.STORAGE_TYPE_BYTEBUFFER);
 
-    @Test
-    public void build_withOptionalProperties_succeeds() {
-        ByteBuffer buffer = ByteBuffer.allocate(500);
+    assertThat(image.getWidth()).isEqualTo(20);
+    assertThat(image.getHeight()).isEqualTo(25);
+    assertThat(image.getRoi()).isEqualTo(new Rect(0, 0, 20, 25));
+    assertThat(image.getRotation()).isEqualTo(0);
+    assertThat(image.getContainedImageProperties())
+        .containsExactly(
+            ImageProperties.builder()
+                .setStorageType(MlImage.STORAGE_TYPE_BYTEBUFFER)
+                .setImageFormat(MlImage.IMAGE_FORMAT_RGB)
+                .build());
+    assertThat(((ByteBufferImageContainer) container).getImageFormat())
+        .isEqualTo(MlImage.IMAGE_FORMAT_RGB);
+  }
 
-        MlImage image = new ByteBufferMlImageBuilder(buffer, 20, 25, MlImage.IMAGE_FORMAT_RGB)
-                                .setRoi(new Rect(0, 5, 10, 15))
-                                .setRotation(90)
-                                .setTimestamp(12345)
-                                .build();
+  @Test
+  public void build_withOptionalProperties_succeeds() {
+    ByteBuffer buffer = ByteBuffer.allocate(500);
 
-        assertThat(image.getTimestamp()).isEqualTo(12345);
-        assertThat(image.getRotation()).isEqualTo(90);
-        assertThat(image.getRoi()).isEqualTo(new Rect(0, 5, 10, 15));
-    }
+    MlImage image =
+        new ByteBufferMlImageBuilder(buffer, 20, 25, MlImage.IMAGE_FORMAT_RGB)
+            .setRoi(new Rect(0, 5, 10, 15))
+            .setRotation(90)
+            .setTimestamp(12345)
+            .build();
 
-    @Test
-    public void build_withInvalidRotation_throwsException() {
-        ByteBuffer buffer = ByteBuffer.allocate(500);
-        ByteBufferMlImageBuilder builder =
-                new ByteBufferMlImageBuilder(buffer, 20, 25, MlImage.IMAGE_FORMAT_RGB);
+    assertThat(image.getTimestamp()).isEqualTo(12345);
+    assertThat(image.getRotation()).isEqualTo(90);
+    assertThat(image.getRoi()).isEqualTo(new Rect(0, 5, 10, 15));
+  }
 
-        assertThrows(IllegalArgumentException.class, () -> builder.setRotation(360));
-    }
+  @Test
+  public void build_withInvalidRotation_throwsException() {
+    ByteBuffer buffer = ByteBuffer.allocate(500);
+    ByteBufferMlImageBuilder builder =
+        new ByteBufferMlImageBuilder(buffer, 20, 25, MlImage.IMAGE_FORMAT_RGB);
+
+    assertThrows(IllegalArgumentException.class, () -> builder.setRotation(360));
+  }
 }

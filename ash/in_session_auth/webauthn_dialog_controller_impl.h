@@ -80,7 +80,7 @@ class WebAuthNDialogControllerImpl : public WebAuthNDialogController {
   // Called when auth succeeds to close the dialog and report success.
   void OnAuthSuccess();
 
-  raw_ptr<InSessionAuthDialogClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<InSessionAuthDialogClient> client_ = nullptr;
 
   // Callback to provide result of the entire authentication flow to
   // UserAuthenticationServiceProvider.

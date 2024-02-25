@@ -37,15 +37,16 @@ bool TestSavedDeskDelegate::IsWindowPersistable(aura::Window* window) const {
   return true;
 }
 
-absl::optional<gfx::ImageSkia>
+std::optional<gfx::ImageSkia>
 TestSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     const std::string& identifier,
     const ui::ColorProvider* color_provider) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TestSavedDeskDelegate::GetFaviconForUrl(
     const std::string& page_url,
+    uint64_t lacros_profile_id,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {}
 

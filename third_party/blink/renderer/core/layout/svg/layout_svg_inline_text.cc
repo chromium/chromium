@@ -31,9 +31,9 @@
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -55,9 +55,9 @@ LayoutSVGInlineText::LayoutSVGInlineText(Node* n, String string)
 
 void LayoutSVGInlineText::TextDidChange() {
   NOT_DESTROYED();
-  SetTextInternal(NormalizeWhitespace(GetText()));
+  SetTextInternal(NormalizeWhitespace(TransformedText()));
   LayoutText::TextDidChange();
-  LayoutNGSVGText::NotifySubtreeStructureChanged(
+  LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
 
   if (StyleRef().UsedUserModify() != EUserModify::kReadOnly)
@@ -81,7 +81,7 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
     return;
 
   // The text metrics may be influenced by style changes.
-  if (auto* ng_text = LayoutNGSVGText::LocateLayoutSVGTextAncestor(this)) {
+  if (auto* ng_text = LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
     ng_text->SetNeedsTextMetricsUpdate();
     ng_text->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kStyleChange);
@@ -95,7 +95,7 @@ bool LayoutSVGInlineText::IsFontFallbackValid() const {
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
   if (!IsFontFallbackValid()) {
-    LayoutNGSVGText::NotifySubtreeStructureChanged(
+    LayoutSVGText::NotifySubtreeStructureChanged(
         this, layout_invalidation_reason::kFontsChanged);
   }
   LayoutText::InvalidateSubtreeLayoutForFontUpdates();
@@ -111,12 +111,13 @@ gfx::RectF LayoutSVGInlineText::ObjectBoundingBox() const {
   DCHECK(IsInLayoutNGInlineFormattingContext());
 
   gfx::RectF bounds;
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    const NGFragmentItem& item = *cursor.CurrentItem();
-    if (item.Type() == NGFragmentItem::kSvgText)
+    const FragmentItem& item = *cursor.CurrentItem();
+    if (item.IsSvgText()) {
       bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
+    }
   }
   return bounds;
 }
@@ -128,9 +129,9 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
             DocumentLifecycle::kPrePaintClean);
 
   DCHECK(IsInLayoutNGInlineFormattingContext());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*this);
-  NGInlineCursor last_hit_cursor;
+  InlineCursor last_hit_cursor;
   PhysicalOffset last_hit_transformed_point;
   LayoutUnit closest_distance = LayoutUnit::Max();
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {

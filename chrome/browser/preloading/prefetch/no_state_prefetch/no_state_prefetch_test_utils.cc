@@ -76,7 +76,7 @@ class NeverRunsExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
     NOTREACHED();
   }
@@ -97,7 +97,7 @@ TestNoStatePrefetchContents::TestNoStatePrefetchContents(
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
-    const absl::optional<url::Origin>& initiator_origin,
+    const std::optional<url::Origin>& initiator_origin,
     Origin origin,
     FinalStatus expected_final_status,
     bool ignore_final_status)
@@ -117,7 +117,7 @@ TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
     return;
 
   EXPECT_EQ(expected_final_status_, final_status())
-      << " when testing URL " << prerender_url().path()
+      << " when testing URL " << prefetch_url().path()
       << " (Expected: " << NameFromFinalStatus(expected_final_status_)
       << ", Actual: " << NameFromFinalStatus(final_status()) << ")";
 
@@ -327,7 +327,7 @@ TestNoStatePrefetchContentsFactory::~TestNoStatePrefetchContentsFactory() {
 std::unique_ptr<TestPrerender>
 TestNoStatePrefetchContentsFactory::ExpectNoStatePrefetchContents(
     FinalStatus final_status) {
-  std::unique_ptr<TestPrerender> handle(new TestPrerender());
+  auto handle = std::make_unique<TestPrerender>();
   expected_contents_queue_.push_back(
       ExpectedContents(final_status, handle->AsWeakPtr()));
   return handle;
@@ -344,7 +344,7 @@ TestNoStatePrefetchContentsFactory::CreateNoStatePrefetchContents(
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
-    const absl::optional<url::Origin>& initiator_origin,
+    const std::optional<url::Origin>& initiator_origin,
     Origin origin) {
   ExpectedContents expected;
   if (!expected_contents_queue_.empty()) {

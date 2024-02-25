@@ -29,6 +29,11 @@ aura::Window* NullCaptureModeSession::GetSelectedWindow() const {
 void NullCaptureModeSession::SetPreSelectedWindow(
     aura::Window* pre_selected_window) {
   selected_window_tracker_.Add(pre_selected_window);
+
+  // A pre-selected window has just been set, which means the selfie camera (if
+  // one is selected) can now be shown, and its parenting should be updated such
+  // that it can be made a child of the pre-selected window.
+  MaybeUpdateSelfieCamInSessionVisibility();
 }
 
 void NullCaptureModeSession::OnCaptureSourceChanged(

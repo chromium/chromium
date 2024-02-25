@@ -1,0 +1,253 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AsmJsInstantiateResult">
+  <int value="0" label="asm.js instantiation succeeded"/>
+  <int value="1" label="asm.js instantiation failed"/>
+</enum>
+
+<enum name="GarbageCollectionReason">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kAllocationFailure"/>
+  <int value="2" label="kAllocationLimit"/>
+  <int value="3" label="kContextDisposal"/>
+  <int value="4" label="kCountersExtension"/>
+  <int value="5" label="kDebugger"/>
+  <int value="6" label="kDeserializer"/>
+  <int value="7" label="kExternalMemoryPressure"/>
+  <int value="8" label="kFinalizeMarkingViaStackGuard"/>
+  <int value="9" label="kFinalizeMarkingViaTask"/>
+  <int value="10" label="kFullHashtable"/>
+  <int value="11" label="kHeapProfiler"/>
+  <int value="12" label="kIdleTask"/>
+  <int value="13" label="kLastResort"/>
+  <int value="14" label="kLowMemoryNotification"/>
+  <int value="15" label="kMakeHeapIterable"/>
+  <int value="16" label="kMemoryPressure"/>
+  <int value="17" label="kMemoryReducer"/>
+  <int value="18" label="kRuntime"/>
+  <int value="19" label="kSamplingProfiler"/>
+  <int value="20" label="kSnapshotCreator"/>
+  <int value="21" label="kTesting"/>
+  <int value="22" label="kExternalFinalize"/>
+  <int value="23" label="kGlobalAllocationLimit"/>
+  <int value="24" label="kMeasureMemory"/>
+  <int value="25" label="kBackgroundAllocationFailure"/>
+</enum>
+
+<enum name="LiftoffBailoutReason">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kDecodeError"/>
+  <int value="2" label="kUnsupportedArchitecture"/>
+  <int value="3" label="kMissingCPUFeature"/>
+  <int value="4" label="kComplexOperation"/>
+  <int value="5" label="kSimd"/>
+  <int value="6" label="kAnyRef"/>
+  <int value="7" label="kExceptionHandling"/>
+  <int value="8" label="kMultiValue"/>
+  <int value="9" label="kTailCall"/>
+  <int value="10" label="kAtomics"/>
+  <int value="11" label="kBulkMemory"/>
+  <int value="12" label="kNonTrappingFloatToInt"/>
+  <int value="13" label="kGC"/>
+  <int value="14" label="kRelaxedSimd"/>
+  <int value="20" label="kOtherReason"/>
+</enum>
+
+<enum name="V8CacheBehaviour">
+  <int value="0" label="kProduceCodeCache">
+    The compilation produced a code cache
+  </int>
+  <int value="1" label="kHitIsolateCacheWhenNoCache">
+    The compilation hit V8's isolate's compilation cache when Blink did not
+    request a code cache
+  </int>
+  <int value="2" label="kConsumeCodeCache">
+    The compilation consumed a code cache
+  </int>
+  <int value="3" label="kConsumeCodeCacheFailed">
+    The compilation tried to consume a code cache, but failed (see
+    V8.CodeCacheRejectReason)
+  </int>
+  <int value="4" label="kNoCacheBecauseInlineScript">
+    Blink did not request a code cache because this is an inline script
+  </int>
+  <int value="5" label="kNoCacheBecauseScriptTooSmall">
+    Blink did not request a code cache because this script is too small
+  </int>
+  <int value="6" label="kNoCacheBecauseCacheTooCold">
+    Blink did not request a code cache because the cached resource is too cold
+  </int>
+  <int value="7" label="kNoCacheNoReason">
+    Blink did not request a code cache but gave no reason
+  </int>
+  <int value="8" label="kNoCacheBecauseNoResource">
+    Blink did not request a code cache because there is no resource
+  </int>
+  <int value="9" label="kNoCacheBecauseInspector">
+    Blink did not request a code cache because the script came from the
+    inspector
+  </int>
+  <int value="10" label="kNoCacheBecauseCachingDisabled">
+    Blink did not request a code cache because caching is disabled
+  </int>
+  <int value="11" label="kNoCacheBecauseModule">
+    Blink did not request a code cache because the script is a module
+  </int>
+  <int value="12" label="kNoCacheBecauseStreamingSource">
+    Blink did not request a code cache because this is a streaming source
+  </int>
+  <int value="13" label="kNoCacheBecauseV8Extension">
+    Blink did not request a code cache because it is compiling a V8 extension
+  </int>
+  <int value="14" label="kHitIsolateCacheWhenProduceCodeCache">
+    The compilation hit V8's isolate's compilation cache and produced a code
+    cache
+  </int>
+  <int value="15" label="kHitIsolateCacheWhenConsumeCodeCache">
+    The compilation hit V8's isolate's compilation cache instead of consuming a
+    code cache
+  </int>
+  <int value="16" label="kNoCacheBecauseModuleExtension">
+    Blink did not request a code cache because it is compiling a module for an
+    extension
+  </int>
+  <int value="17" label="kNoCacheBecausePacScript">
+    Blink did not request a code cache because it is compiling a PAC script
+  </int>
+  <int value="18" label="kNoCacheBecauseInDocumentWrite">
+    Blink did not request a code cache because it is compiling a script created
+    by document.write
+  </int>
+  <int value="19" label="kNoCacheBecauseResourceWithNoCacheHandler">
+    Blink did not request a code cache because it has a script resource without
+    a cache handler
+  </int>
+  <int value="20" label="kHitIsolateCacheWhenStreamingSource">
+    Blink parsed and compiled the script as it was streamed, but we then hit
+    V8's isolate's compilation cache and did not require the streamed result.
+  </int>
+</enum>
+
+<enum name="V8CodeCacheRejectReason">
+  <int value="1" label="MAGIC_NUMBER_MISMATCH">
+    Reject due to magic number mismatch
+  </int>
+  <int value="2" label="VERSION_MISMATCH">
+    Reject due to version hash mismatch
+  </int>
+  <int value="3" label="SOURCE_MISMATCH">
+    Reject due to source hash mismatch
+  </int>
+  <int value="4" label="CPU_FEATURES_MISMATCH">
+    Reject due to CPU features mismatch
+  </int>
+  <int value="5" label="FLAGS_MISMATCH">Reject due to flags hash mismatch</int>
+  <int value="6" label="CHECKSUM_MISMATCH">Reject due to checksum mismatch</int>
+  <int value="7" label="INVALID_HEADER">Invalid header</int>
+</enum>
+
+<enum name="V8ExternalPointerTableCompactionOutcome">
+  <int value="0" label="kSuccess">Table compaction was successful.</int>
+  <int value="1" label="kPartialSuccess">
+    Table compaction was partially successful: marking finished successfully,
+    and so the table was successfully compacted, but some of the entries in the
+    evacuated area were already in use again during sweeping, preventing the
+    underlying OS pages from being deallocated.
+  </int>
+  <int value="2" label="kAbortedDuringMarking">
+    Table compaction was aborted during marking because not enough evacuation
+    entries (the new entries into which evacuated entries are moved) could be
+    allocated.
+  </int>
+</enum>
+
+<enum name="V8InitializerLoadV8SnapshotResult">
+  <int value="0" label="SUCCESS">Load succeeded</int>
+  <int value="1" label="FAILED_OPEN">Failure to open snapshot file</int>
+  <int value="2" label="FAILED_MAP">Failed to map snapshot</int>
+  <int value="3" label="FAILED_VERIFY">Failed to verify snapshot</int>
+</enum>
+
+<enum name="V8InitializerOpenV8FileResult">
+  <int value="0" label="OPENED">Opened without issue</int>
+  <int value="1" label="OPENED_RETRY">Opened after one or more retries</int>
+  <int value="2" label="FAILED_IN_USE">Failed because file in use</int>
+  <int value="3" label="FAILED_OTHER">Failed for other reason</int>
+</enum>
+
+<enum name="V8SandboxMode">
+  <int value="0" label="kSecure">
+    Using a default, securely-configured sandbox
+  </int>
+  <int value="1" label="kInsecure">
+    Using a fallback, insecurely-configured sandbox
+  </int>
+</enum>
+
+<enum name="WasmAllocationResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kSuccessAfterRetry"/>
+  <int value="2" label="kAddressSpaceLimitReachedFailure"/>
+  <int value="3" label="kOtherFailure"/>
+</enum>
+
+<enum name="WasmCodeCaching">
+  <int value="0" label="kMiss"/>
+  <int value="1" label="kHit"/>
+  <int value="2" label="kInvalidCacheEntry"/>
+  <int value="3" label="kNoCacheHandler"/>
+</enum>
+
+<enum name="WasmCompilationMethod">
+  <int value="0" label="kSyncCompilation"/>
+  <int value="1" label="kAsyncCompilation"/>
+  <int value="2" label="kStreamingCompilation"/>
+  <int value="3" label="kAsyncInstantiation"/>
+  <int value="4" label="kStreamingInstantiation"/>
+</enum>
+
+<enum name="WasmStreamingInputType">
+  <int value="0" label="kNoResponse"/>
+  <int value="1" label="kResponseNotOK"/>
+  <int value="2" label="kWrongMimeType"/>
+  <int value="3" label="kResponseEmpty"/>
+  <int value="4" label="kResponseLocked"/>
+  <int value="5" label="kNoURL"/>
+  <int value="6" label="kValidHttp"/>
+  <int value="7" label="kValidHttps"/>
+  <int value="8" label="kValidDataURL"/>
+  <int value="9" label="kValidFileURL"/>
+  <int value="10" label="kValidBlob"/>
+  <int value="11" label="kValidChromeExtension"/>
+  <int value="12" label="kValidOtherProtocol"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -331,13 +331,13 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
   constexpr struct {
     user_manager::UserType user_type;
     bool is_enabled;
-  } kTestCases[] = {{user_manager::USER_TYPE_REGULAR, true},
-                    {user_manager::USER_TYPE_GUEST, true},
-                    {user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
-                    {user_manager::USER_TYPE_KIOSK_APP, false},
-                    {user_manager::USER_TYPE_CHILD, true},
-                    {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
-                    {user_manager::USER_TYPE_WEB_KIOSK_APP, false}};
+  } kTestCases[] = {{user_manager::UserType::kRegular, true},
+                    {user_manager::UserType::kGuest, true},
+                    {user_manager::UserType::kPublicAccount, false},
+                    {user_manager::UserType::kKioskApp, false},
+                    {user_manager::UserType::kChild, true},
+                    {user_manager::UserType::kArcKioskApp, false},
+                    {user_manager::UserType::kWebKioskApp, false}};
 
   UserSession session;
   session.session_id = 1u;
@@ -425,13 +425,13 @@ TEST_F(ClipboardHistoryControllerTest, VThenSearchDoesNotShowLauncher) {
   GetEventGenerator()->ReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
 
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      /*display_id=*/absl::nullopt));
+      /*display_id=*/std::nullopt));
 
   // Release Search, which could trigger the Launcher.
   GetEventGenerator()->ReleaseKey(ui::VKEY_COMMAND, ui::EF_NONE);
 
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      /*display_id=*/absl::nullopt));
+      /*display_id=*/std::nullopt));
 }
 
 // Tests that clearing a single item from the clipboard clears clipboard
@@ -490,10 +490,11 @@ TEST_F(ClipboardHistoryControllerTest, EncodeImage) {
 
 TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
   // Write a bunch of bitmaps to the clipboard.
-  std::vector<const SkBitmap> test_bitmaps;
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(2, 1));
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
+  const std::vector<SkBitmap> test_bitmaps{
+      gfx::test::CreateBitmap(2, 1),
+      gfx::test::CreateBitmap(3, 2),
+      gfx::test::CreateBitmap(4, 3),
+  };
   for (const auto& test_bitmap : test_bitmaps) {
     WriteImageToClipboardAndConfirm(test_bitmap);
   }
@@ -513,9 +514,10 @@ TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
 
 TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
   // Write a bitmap to the clipboard.
-  std::vector<const SkBitmap> test_bitmaps;
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
+  const std::vector<SkBitmap> test_bitmaps{
+      gfx::test::CreateBitmap(3, 2),
+      gfx::test::CreateBitmap(4, 3),
+  };
   WriteImageToClipboardAndConfirm(test_bitmaps[0]);
 
   // Write another bitmap to the clipboard while encoding the first bitmap.
@@ -698,7 +700,7 @@ class ClipboardHistoryControllerWithTextfieldTest
   }
 
   std::unique_ptr<views::Widget> textfield_widget_;
-  raw_ptr<views::Textfield, ExperimentalAsh> textfield_;
+  raw_ptr<views::Textfield> textfield_;
 };
 
 TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {
@@ -1021,8 +1023,7 @@ class ClipboardHistoryRefreshDisplayFormatTest
   void WriteHtmlAndConfirm(const std::string& html) {
     {
       ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-      scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"",
-                    ui::ClipboardContentType::kUnsanitized);
+      scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"");
     }
 
     WaitForOperationConfirmed();

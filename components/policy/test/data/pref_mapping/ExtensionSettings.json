@@ -1,0 +1,84 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ExtensionSettings": {
+            "*": {
+              "allowed_types": [
+                "hosted_app"
+              ],
+              "blocked_permissions": [
+                "downloads",
+                "bookmarks",
+                "u2fDevices"
+              ],
+              "install_sources": [
+                "http://company-intranet/chromeapps"
+              ],
+              "installation_mode": "blocked"
+            },
+            "abcdefghijklmnopabcdefghijklmnop": {
+              "blocked_permissions": [
+                "history"
+              ],
+              "file_url_navigation_allowed": true,
+              "installation_mode": "allowed",
+              "toolbar_pin": "force_pinned"
+            },
+            "bcdefghijklmnopabcdefghijklmnopa": {
+              "allowed_permissions": [
+                "downloads"
+              ],
+              "installation_mode": "force_installed",
+              "update_url": "https://clients2.google.com/service/update2/crx"
+            }
+          }
+        },
+        "prefs": {
+          "extensions.management": {
+            "value": {
+              "*": {
+                "allowed_types": [
+                  "hosted_app"
+                ],
+                "blocked_permissions": [
+                  "downloads",
+                  "bookmarks",
+                  "u2fDevices"
+                ],
+                "install_sources": [
+                  "http://company-intranet/chromeapps"
+                ],
+                "installation_mode": "blocked"
+              },
+              "abcdefghijklmnopabcdefghijklmnop": {
+                "blocked_permissions": [
+                  "history"
+                ],
+                "file_url_navigation_allowed": true,
+                "installation_mode": "allowed",
+                "toolbar_pin": "force_pinned"
+              },
+              "bcdefghijklmnopabcdefghijklmnopa": {
+                "allowed_permissions": [
+                  "downloads"
+                ],
+                "installation_mode": "force_installed",
+                "update_url": "https://clients2.google.com/service/update2/crx"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+]

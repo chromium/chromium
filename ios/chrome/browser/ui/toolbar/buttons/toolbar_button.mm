@@ -57,6 +57,11 @@ const CGFloat kSpotlightCornerRadius = 7;
     [spotlightView.heightAnchor constraintEqualToConstant:kSpotlightSize]
         .active = YES;
     _spotlightView = spotlightView;
+    __weak __typeof(self) weakSelf = self;
+    CustomHighlightableButtonHighlightHandler handler = ^(BOOL highlighted) {
+      [weakSelf setIphHighlighted:highlighted];
+    };
+    [self setCustomHighlightHandler:handler];
   }
   return self;
 }

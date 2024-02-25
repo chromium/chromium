@@ -78,18 +78,18 @@ enum class KeyStatus : uint32_t {
 
 // Convert |init_data_type| to a string supported by MediaDRM.
 // "audio"/"video" does not matter, so use "video".
-std::string ConvertInitDataType(media::EmeInitDataType init_data_type) {
+std::string ConvertInitDataType(EmeInitDataType init_data_type) {
   // TODO(jrummell/xhwang): EME init data types like "webm" and "cenc" are
   // supported in API level >=21 for Widevine key system. Switch to use those
   // strings when they are officially supported in Android for all key systems.
   switch (init_data_type) {
-    case media::EmeInitDataType::WEBM:
+    case EmeInitDataType::WEBM:
       return "video/webm";
-    case media::EmeInitDataType::CENC:
+    case EmeInitDataType::CENC:
       return "video/mp4";
-    case media::EmeInitDataType::KEYIDS:
+    case EmeInitDataType::KEYIDS:
       return "keyids";
-    case media::EmeInitDataType::UNKNOWN:
+    case EmeInitDataType::UNKNOWN:
       NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();
@@ -178,7 +178,7 @@ KeySystemManager::KeySystemManager() {
   key_system_uuid_map_[kWidevineKeySystem] =
       UUID(kWidevineUuid, kWidevineUuid + std::size(kWidevineUuid));
   // External Clear Key is supported only for testing.
-  if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting)) {
+  if (base::FeatureList::IsEnabled(kExternalClearKeyForTesting)) {
     key_system_uuid_map_[kExternalClearKeyKeySystem] =
         UUID(kClearKeyUuid, kClearKeyUuid + std::size(kClearKeyUuid));
   }
@@ -247,8 +247,58 @@ MediaDrmBridge::SecurityLevel GetSecurityLevelFromString(
   return MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
 }
 
-// Do not change the return values as they are part of Android MediaDrm API for
-// Widevine.
+// Converts from String value returned from MediaDrm to an enum of HdcpVersion
+// values. Refer to http://shortn/_eFj9y8KBgR for the list of Strings that could
+// possibly be returned.
+HdcpVersion ToEmeHdcpVersion(const std::string& hdcp_level_str) {
+  if (hdcp_level_str == "Disconnected") {
+    // This means no external device is connected and the default screen is
+    // considered fully protected, so we return the max value possible.
+    return HdcpVersion::kHdcpVersion2_3;
+  }
+  if (hdcp_level_str == "Unprotected" || hdcp_level_str == "" ||
+      hdcp_level_str == "HDCP-LevelUnknown") {
+    return HdcpVersion::kHdcpVersionNone;
+  }
+  if (hdcp_level_str == "HDCP-1.0") {
+    return HdcpVersion::kHdcpVersion1_0;
+  }
+  if (hdcp_level_str == "HDCP-1.1") {
+    return HdcpVersion::kHdcpVersion1_1;
+  }
+  if (hdcp_level_str == "HDCP-1.2") {
+    return HdcpVersion::kHdcpVersion1_2;
+  }
+  if (hdcp_level_str == "HDCP-1.3") {
+    return HdcpVersion::kHdcpVersion1_3;
+  }
+  if (hdcp_level_str == "HDCP-1.4") {
+    return HdcpVersion::kHdcpVersion1_4;
+  }
+  if (hdcp_level_str == "HDCP-1.x") {
+    // Older versions of MediaDrm might return 1.x. This is equivalent to 1.4.
+    return HdcpVersion::kHdcpVersion1_4;
+  }
+  if (hdcp_level_str == "HDCP-2.0") {
+    return HdcpVersion::kHdcpVersion2_0;
+  }
+  if (hdcp_level_str == "HDCP-2.1") {
+    return HdcpVersion::kHdcpVersion2_1;
+  }
+  if (hdcp_level_str == "HDCP-2.2") {
+    return HdcpVersion::kHdcpVersion2_2;
+  }
+  if (hdcp_level_str == "HDCP-2.3") {
+    return HdcpVersion::kHdcpVersion2_3;
+  }
+
+  LOG(WARNING) << "Unexpected HdcpLevel " << hdcp_level_str
+               << " from MediaDrm, returning lowest value.";
+  return HdcpVersion::kHdcpVersionNone;
+}
+
+// Do not change the return values as they are part of Android MediaDrm API
+// for Widevine.
 std::string GetSecurityLevelString(
     MediaDrmBridge::SecurityLevel security_level) {
   switch (security_level) {
@@ -321,6 +371,28 @@ std::vector<uint8_t> MediaDrmBridge::GetUUID(const std::string& key_system) {
 }
 
 // static
+base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
+  scoped_refptr<MediaDrmBridge> media_drm_bridge =
+      MediaDrmBridge::CreateWithoutSessionSupport(
+          key_system, /* origin_id= */ "",
+          MediaDrmBridge::SECURITY_LEVEL_DEFAULT, base::NullCallback());
+  if (!media_drm_bridge) {
+    DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system;
+    return base::Version();
+  }
+
+  std::string version_str = media_drm_bridge->GetVersionInternal();
+
+  // Some devices return the version with an additional level (e.g. 18.0.0@1),
+  // so simply replace any '@'.
+  base::ReplaceChars(version_str, "@", ".", &version_str);
+
+  auto version = base::Version(version_str);
+  DVLOG_IF(1, !version.IsValid()) << "Unable to convert " << version_str;
+  return version;
+}
+
+// static
 scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
@@ -373,7 +445,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateWithoutSessionSupport(
 
 void MediaDrmBridge::SetServerCertificate(
     const std::vector<uint8_t>& certificate,
-    std::unique_ptr<media::SimpleCdmPromise> promise) {
+    std::unique_ptr<SimpleCdmPromise> promise) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__ << "(" << certificate.size() << " bytes)";
 
@@ -384,8 +456,8 @@ void MediaDrmBridge::SetServerCertificate(
       cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_certificate = base::android::ToJavaByteArray(
-      env, certificate.data(), certificate.size());
+  ScopedJavaLocalRef<jbyteArray> j_certificate =
+      base::android::ToJavaByteArray(env, certificate);
   if (Java_MediaDrmBridge_setServerCertificate(env, j_media_drm_,
                                                j_certificate)) {
     ResolvePromise(promise_id);
@@ -396,11 +468,28 @@ void MediaDrmBridge::SetServerCertificate(
   }
 }
 
+void MediaDrmBridge::GetStatusForPolicy(
+    HdcpVersion min_hdcp_version,
+    std::unique_ptr<KeyStatusCdmPromise> promise) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  DVLOG(2) << __func__;
+
+  if (!base::FeatureList::IsEnabled(kMediaDrmGetStatusForPolicy)) {
+    promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
+                    "GetStatusForPolicy() is not supported.");
+    return;
+  }
+
+  promise->resolve(min_hdcp_version <= GetCurrentHdcpLevel()
+                       ? CdmKeyInformation::KeyStatus::USABLE
+                       : CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED);
+}
+
 void MediaDrmBridge::CreateSessionAndGenerateRequest(
     CdmSessionType session_type,
-    media::EmeInitDataType init_data_type,
+    EmeInitDataType init_data_type,
     const std::vector<uint8_t>& init_data,
-    std::unique_ptr<media::NewSessionCdmPromise> promise) {
+    std::unique_ptr<NewSessionCdmPromise> promise) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
 
@@ -428,8 +517,7 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
       }
       if (!init_data_from_delegate.empty()) {
         j_init_data =
-            base::android::ToJavaByteArray(env, init_data_from_delegate.data(),
-                                           init_data_from_delegate.size());
+            base::android::ToJavaByteArray(env, init_data_from_delegate);
       }
       if (!optional_parameters_from_delegate.empty()) {
         j_optional_parameters = base::android::ToJavaArrayOfStrings(
@@ -439,8 +527,7 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
   }
 
   if (!j_init_data) {
-    j_init_data =
-        base::android::ToJavaByteArray(env, init_data.data(), init_data.size());
+    j_init_data = base::android::ToJavaByteArray(env, init_data);
   }
 
   ScopedJavaLocalRef<jstring> j_mime =
@@ -455,7 +542,7 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
 void MediaDrmBridge::LoadSession(
     CdmSessionType session_type,
     const std::string& session_id,
-    std::unique_ptr<media::NewSessionCdmPromise> promise) {
+    std::unique_ptr<NewSessionCdmPromise> promise) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
 
@@ -479,16 +566,15 @@ void MediaDrmBridge::LoadSession(
   Java_MediaDrmBridge_loadSession(env, j_media_drm_, j_session_id, promise_id);
 }
 
-void MediaDrmBridge::UpdateSession(
-    const std::string& session_id,
-    const std::vector<uint8_t>& response,
-    std::unique_ptr<media::SimpleCdmPromise> promise) {
+void MediaDrmBridge::UpdateSession(const std::string& session_id,
+                                   const std::vector<uint8_t>& response,
+                                   std::unique_ptr<SimpleCdmPromise> promise) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> j_response =
-      base::android::ToJavaByteArray(env, response.data(), response.size());
+      base::android::ToJavaByteArray(env, response);
   ScopedJavaLocalRef<jbyteArray> j_session_id =
       ToJavaByteArray(env, session_id);
   uint32_t promise_id =
@@ -497,9 +583,8 @@ void MediaDrmBridge::UpdateSession(
                                     promise_id);
 }
 
-void MediaDrmBridge::CloseSession(
-    const std::string& session_id,
-    std::unique_ptr<media::SimpleCdmPromise> promise) {
+void MediaDrmBridge::CloseSession(const std::string& session_id,
+                                  std::unique_ptr<SimpleCdmPromise> promise) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
 
@@ -511,9 +596,8 @@ void MediaDrmBridge::CloseSession(
   Java_MediaDrmBridge_closeSession(env, j_media_drm_, j_session_id, promise_id);
 }
 
-void MediaDrmBridge::RemoveSession(
-    const std::string& session_id,
-    std::unique_ptr<media::SimpleCdmPromise> promise) {
+void MediaDrmBridge::RemoveSession(const std::string& session_id,
+                                   std::unique_ptr<SimpleCdmPromise> promise) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
 
@@ -557,8 +641,9 @@ bool MediaDrmBridge::IsSecureCodecRequired() {
   // TODO(xhwang): This is specific to Widevine. See http://crbug.com/459400.
   // To fix it, we could call MediaCrypto.requiresSecureDecoderComponent().
   // See http://crbug.com/727918.
-  if (base::ranges::equal(scheme_uuid_, kWidevineUuid))
+  if (base::ranges::equal(scheme_uuid_, kWidevineUuid)) {
     return SECURITY_LEVEL_1 == GetSecurityLevel();
+  }
 
   // If UUID is ClearKey, we should automatically return false since secure
   // codecs should not be required.
@@ -573,6 +658,12 @@ bool MediaDrmBridge::IsSecureCodecRequired() {
 void MediaDrmBridge::Provision(
     base::OnceCallback<void(bool)> provisioning_complete_cb) {
   DVLOG(1) << __func__;
+
+  // CreateFetcherCB needs to be specified in order to do provisioning. No need
+  // to attempt provisioning if it's not specified.
+  CHECK(create_fetcher_cb_);
+
+  // Only one provisioning request at a time.
   DCHECK(provisioning_complete_cb);
   DCHECK(!provisioning_complete_cb_);
   provisioning_complete_cb_ = std::move(provisioning_complete_cb);
@@ -597,6 +688,13 @@ void MediaDrmBridge::ResolvePromiseWithSession(uint32_t promise_id,
                                                const std::string& session_id) {
   DVLOG(2) << __func__;
   cdm_promise_adapter_.ResolvePromise(promise_id, session_id);
+}
+
+void MediaDrmBridge::ResolvePromiseWithKeyStatus(
+    uint32_t promise_id,
+    CdmKeyInformation::KeyStatus key_status) {
+  DVLOG(2) << __func__;
+  cdm_promise_adapter_.ResolvePromise(promise_id, key_status);
 }
 
 void MediaDrmBridge::RejectPromise(uint32_t promise_id,
@@ -778,9 +876,8 @@ void MediaDrmBridge::OnSessionKeysChange(
     CdmKeyInformation::KeyStatus key_status =
         ConvertKeyStatus(static_cast<KeyStatus>(j_status_code), is_key_release);
 
-    DVLOG(2) << __func__ << "Key status change: "
-             << base::HexEncode(&key_id[0], key_id.size()) << ", "
-             << key_status;
+    DVLOG(2) << __func__ << "Key status change: " << base::HexEncode(key_id)
+             << ", " << key_status;
 
     cdm_keys_info.push_back(
         std::make_unique<CdmKeyInformation>(key_id, key_status, 0));
@@ -800,15 +897,15 @@ void MediaDrmBridge::OnSessionKeysChange(
   }
 }
 
-// According to MeidaDrm documentation [1], zero |expiry_time_ms| means the keys
+// According to MediaDrm documentation [1], zero |expiry_time_ms| means the keys
 // will never expire. This will be translated into a NULL base::Time() [2],
 // which will then be mapped to a zero Java time [3]. The zero Java time is
 // passed to Blink which will then be translated to NaN [4], which is what the
 // spec uses to indicate that the license will never expire [5].
 // [1]
 // http://developer.android.com/reference/android/media/MediaDrm.OnExpirationUpdateListener.html
-// [2] See base::Time::FromDoubleT()
-// [3] See base::Time::ToJavaTime()
+// [2] See base::Time::FromSecondsSinceUnixEpoch()
+// [3] See base::Time::InMillisecondsSinceUnixEpoch()
 // [4] See MediaKeySession::expirationChanged()
 // [5] https://github.com/w3c/encrypted-media/issues/58
 void MediaDrmBridge::OnSessionExpirationUpdate(
@@ -821,8 +918,9 @@ void MediaDrmBridge::OnSessionExpirationUpdate(
   JavaByteArrayToString(env, j_session_id, &session_id);
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(session_expiration_update_cb_, std::move(session_id),
-                     base::Time::FromDoubleT(expiry_time_ms / 1000.0)));
+      base::BindOnce(
+          session_expiration_update_cb_, std::move(session_id),
+          base::Time::FromMillisecondsSinceUnixEpoch(expiry_time_ms)));
 }
 
 //------------------------------------------------------------------------------
@@ -901,6 +999,22 @@ MediaDrmBridge::SecurityLevel MediaDrmBridge::GetSecurityLevel() {
   return GetSecurityLevelFromString(security_level_str);
 }
 
+std::string MediaDrmBridge::GetVersionInternal() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> j_version =
+      Java_MediaDrmBridge_getVersion(env, j_media_drm_);
+  return ConvertJavaStringToUTF8(env, j_version.obj());
+}
+
+HdcpVersion MediaDrmBridge::GetCurrentHdcpLevel() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> j_current_hdcp_level =
+      Java_MediaDrmBridge_getCurrentHdcpLevel(env, j_media_drm_);
+  std::string current_hdcp_level_str =
+      ConvertJavaStringToUTF8(env, j_current_hdcp_level.obj());
+  return ToEmeHdcpVersion(current_hdcp_level_str);
+}
+
 void MediaDrmBridge::NotifyMediaCryptoReady(JavaObjectPtr j_media_crypto) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(j_media_crypto);
@@ -926,9 +1040,8 @@ void MediaDrmBridge::SendProvisioningRequest(const GURL& default_url,
   DVLOG(1) << __func__;
 
   DCHECK(!provision_fetcher_) << "At most one provision request at any time.";
-  DCHECK(create_fetcher_cb_);
-  provision_fetcher_ = create_fetcher_cb_.Run();
 
+  provision_fetcher_ = create_fetcher_cb_.Run();
   provision_fetcher_->Retrieve(
       default_url, request_data,
       base::BindOnce(&MediaDrmBridge::ProcessProvisionResponse,

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/vr/elements/environment/grid.h"
+#include "chrome/browser/vr/elements/corner_radii.h"
 #include "chrome/browser/vr/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -26,10 +26,10 @@ class Transform;
 namespace vr {
 
 class BaseRenderer;
+class GridRenderer;
 class RadialGradientQuadRenderer;
 class TextureCopyRenderer;
 class TexturedQuadRenderer;
-class TransparentQuadRenderer;
 
 // An instance of this class is passed to UiElements by the UiRenderer in order
 // to issue the GL commands for drawing the frame. In some ways, this class is a
@@ -87,11 +87,10 @@ class UiElementRenderer {
 
   raw_ptr<BaseRenderer> last_renderer_ = nullptr;
 
-  std::unique_ptr<TransparentQuadRenderer> transparent_quad_renderer_;
   std::unique_ptr<TexturedQuadRenderer> textured_quad_renderer_;
   std::unique_ptr<RadialGradientQuadRenderer> radial_gradient_quad_renderer_;
   std::unique_ptr<TextureCopyRenderer> texture_copy_renderer_;
-  std::unique_ptr<Grid::Renderer> gradient_grid_renderer_;
+  std::unique_ptr<GridRenderer> gradient_grid_renderer_;
 };
 
 }  // namespace vr

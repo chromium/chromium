@@ -75,12 +75,20 @@
       Cancel
     </message>
 
+    <!-- Generic price tracking strings -->
+    <message name="IDS_PRICE_TRACKING_SAVE_DESCRIPTION" desc="Text displayed to the user explaining that the product on the web page is being tracked.">
+      You’re tracking this product.
+    </message>
+    <message name="IDS_PRICE_TRACKING_SAVE_LOCATION" desc="Text displayed to the user explaining where the product they are tracking is saved in bookmarks. This is not shown if the bookmark does not exist for the page or the user is not tracking the product.">
+      This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
+    </message>
+
     <!-- Email consent dialog for price tracking -->
     <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_BODY" desc="The main body text that is shown in the price drop email consent dialog offering to send an email notification when the product price drops on any site.">
-      Get emails sent to <ph name="EMAIL">$1<ex>example@example.com</ex></ph> when the price drops on any site.
+      Get emails sent to <ph name="EMAIL">$1<ex>example@example.com</ex></ph> when the price of items you track drops on any site.
     </message>
     <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_TITLE" desc="The title of the dialog that shows after a user has tracked a product asking for consent to send price drop email notifications.">
-      Want emails when the price drops?
+      Want emails when prices drop?
     </message>
     <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_LEARN_MORE_LINK_TEXT" desc="The text that will link to a help article that explains price tracking shown in the price drop email consent dialog.">
       Learn more about price tracking
@@ -97,9 +105,6 @@
     </message>
     <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_TITLE" desc="The title text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. This dialog is shown only when the product is currently being tracked.">
       Tracking price
-    </message>
-    <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_DESCRIPTION" desc="The description text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. It indicates this product is currently being tracked and which bookmarks folder it is saved.">
-      You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
     </message>
     <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_ACTION_BUTTON" desc="The action button text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. This dialog is shown only when the product is currently being tracked and the user can click this button to acknowledge this tracking.">
       Done
@@ -206,6 +211,20 @@
       Something went wrong.
     </message>
 
+    <message name="IDS_SHOPPING_COLLECTION_IPH_TITLE" desc="The title of the in-product-help explaining what the shopping list bookmark folder is.">
+      What is the Shopping list?
+    </message>
+    <if expr="use_titlecase">
+      <message name="IDS_SHOPPING_COLLECTION_IPH_BODY" desc="The body text of the in-product-help explaining what the shopping list bookmark folder is.">
+        A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more.
+      </message>
+    </if> <!-- use_titlecase -->
+    <if expr="not use_titlecase">
+      <message name="IDS_SHOPPING_COLLECTION_IPH_BODY" desc="The body text of the in-product-help explaining what the shopping list bookmark folder is.">
+        A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more
+      </message>
+    </if> <!-- not use_titlecase -->
+
     <!-- For Desktop Price Insights -->
     <if expr="use_titlecase">
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
@@ -213,6 +232,12 @@
       </message>
       <message name="IDS_PRICE_HISTORY_TITLE" desc="The title name of the Price History section in the Shopping Insights side panel.">
         Price History
+      </message>
+      <message name="IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we find multiple options of this product.">
+        Price History Across the Web for this Option
+      </message>
+      <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
+        Price History Across the Web
       </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
         Low Priced Option
@@ -242,6 +267,12 @@
       </message>
       <message name="IDS_PRICE_HISTORY_TITLE" desc="The title name of the Price History section in the Shopping Insights side panel.">
         Price history
+      </message>
+      <message name="IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we find multiple options of this product.">
+        Price history across the web for this option
+      </message>
+      <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
+        Price history across the web
       </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
         Low priced option
@@ -278,6 +309,18 @@
     <message name="IDS_PRICE_HISTORY_DESCRIPTION" desc="The description of the Price History section in the Shopping Insights side panel explaining how the prices are gathered.">
       Typical prices are based on stores across the web over the past 90 days.
     </message>
+    <if expr="is_win or is_linux">
+      <then>
+        <message name="IDS_PRICE_HISTORY_GRAPH_ACCESSIBILITY" desc="Accessibility string for the price history graph indicating how users can review the price changes on the graph.">
+          Browse mode, you can change to Forms mode to use the left/right arrow to review price changes on the graph
+        </message>
+      </then>
+      <else>
+        <message name="IDS_PRICE_HISTORY_GRAPH_ACCESSIBILITY" desc="Accessibility string for the price history graph indicating how users can review the price changes on the graph.">
+          You can use the left/right arrow to review price changes on the graph
+        </message>
+      </else>
+    </if>
     <message name="IDS_SHOPPING_INSIGHTS_COLLECT_FEEDBACK" desc="Text shown in Shopping Insights side panel. Clicking this link will pop up the feedback dialog which allows users to share feedback about the feature.">
       Give feedback
     </message>
@@ -305,14 +348,11 @@
     <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_TYPICAL_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option's price is typical. This string is used when we only find one buying option on the page.">
       This price is typical
     </message>
-    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DESCRIPTION" desc="The description of the Price Tracking section in the Shopping Insights side panel. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
-      You'll get email alerts if the price drops on any site
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DESCRIPTION" desc="The description of the Price Tracking section in the Shopping Insights side panel.">
+      You'll get email alerts if the price drops on any site.
     </message>
-    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_DONE" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user successfully tracks the product displayed on the current web page. It indicates this product is currently being tracked and which bookmarks folder it is saved. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
-      You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>
-    </message>
-    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_ERROR" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user failed to track the product displayed on the current web page. Please ignore the period in the end of the sentence in the screenshot and don't put period in the final translation, as the period is handled separately in code.">
-      Something went wrong. Your change wasn't saved
+    <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_ERROR" desc="The description of the Price Tracking section in the Shopping Insights side panel when a user failed to track the product displayed on the current web page.">
+      Something went wrong. Your change wasn't saved.
     </message>
 
     <!-- For Desktop Discounts on navigation -->
@@ -328,18 +368,24 @@
     <message name="IDS_TWO_STRINGS_CONNECTOR" desc="This is used to connect two sentences together by using a ending period and a space. The first sentence does not contain an ending period, but the second sentence will.">
       <ph name="FIRST_STRING">$1<ex>Use this code at checkout</ex></ph>. <ph name="SECOND_STRING">$2<ex>Valid until Aug 15 2023.</ex></ph>
     </message>
+    <message name="IDS_TWO_STRINGS_CONNECTOR_WITH_SPACE" desc="This is used to connect two sentences together with a space.">
+      <ph name="FIRST_STRING">$1<ex>Use this code at checkout. Valid until Aug 15 2023.</ex></ph> <ph name="SECOND_STRING">$2<ex>See Seller's terms and conditions</ex></ph>
+    </message>
+    <message name="IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_TITLE" desc="This is the title for the 'Terms and condition' dialog which shows users the additional qualification of the discount from the seller.">
+      Seller's terms and conditions
+    </message>
+    <message name="IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_FOOTER" desc="This is the footer in the 'Terms and condition' dialog. It's a disclaimer that the terms and conditions are provided by the seller.">
+      Terms and conditions provided by <ph name="URL">$1<ex>google.com</ex></ph>
+    </message>
+    <message name="IDS_SEE_SELLER_TERMS_AND_CONDITIONS" desc="This is used as a linked text in the discount dialog, when user clicks the text, it opens the 'Seller's terms and conditions' dialog to see additional qualification of the discount.">
+      See seller's terms and conditions
+    </message>
     <if expr="use_titlecase">
-      <message name="IDS_DISCOUNT_TERMS_AND_CONDITIONS" desc="This text is used in two places. 1) Use as title for the 'Terms and condition' dialog which shows users the additional qualification of the discount. 2) Use as a linked text in the discount dialog, when user clicks the text, it opens the 'Terms and conditions' dialog.">
-        Terms and Conditions
-      </message>
       <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
         Discount Found
       </message>
     </if> <!-- use_titlecase -->
     <if expr="not use_titlecase">
-      <message name="IDS_DISCOUNT_TERMS_AND_CONDITIONS" desc="This text is used in two places. 1) Use as title for the 'Terms and condition' dialog which shows users the additional qualification of the discount. 2) Use as a linked text in the discount dialog, when user clicks the text, it opens the 'Terms and conditions' dialog.">
-        Terms and conditions
-      </message>
       <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
         Discount found
       </message>
@@ -400,7 +446,8 @@
   <message name="IDS_PRICE_DROP_POPUP_UNTRACK_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we untrack this product and will no longer send its price drop to users." formatter_data="android_java">
     Untrack price
   </message>
+
   <message name="IDS_SHOPPING_COLLECTION_FOLDER_NAME" desc="The name of bookmark folder that is automatically created when a user bookmarks a product page.">
-    Shopping collection
+    Shopping list
   </message>
 </grit-part>

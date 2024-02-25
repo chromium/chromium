@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
@@ -15,13 +16,12 @@
 #include "ash/capture_mode/capture_mode_toast_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event.h"
@@ -29,6 +29,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace gfx {
 class Canvas;
@@ -53,17 +57,14 @@ class WindowDimmer;
 // beneath the layer of the bar widget. This layer is used to paint a dimming
 // shield of the areas that won't be captured, and another bright region showing
 // the one that will be.
-//
-// TODO(hewer): Update the order of the functions and member variables to match
-// `BaseCaptureModeSession` in a follow-up CL.
 class ASH_EXPORT CaptureModeSession
     : public BaseCaptureModeSession,
       public ui::LayerDelegate,
       public ui::EventHandler,
-      public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver,
-      public FolderSelectionDialogController::Delegate {
+      public FolderSelectionDialogController::Delegate,
+      public ui::ColorProviderSourceObserver {
  public:
   // Centralized place to control the events, observe windows and create the
   // capture mode needed widgets including `capture_mode_bar_widget_`,
@@ -92,39 +93,16 @@ class ASH_EXPORT CaptureModeSession
     return &capture_toast_controller_;
   }
 
-  // BaseCaptureModeSession:
-  aura::Window* GetSelectedWindow() const override;
-
-  void SetPreSelectedWindow(aura::Window* pre_selected_window) override;
-
   // Called when a user toggles the capture source or capture type to announce
   // an accessibility alert. If `trigger_now` is true, it will announce
   // immediately; otherwise, it will trigger another alert asynchronously with
   // the alert.
   void A11yAlertCaptureSource(bool trigger_now);
 
-  // TODO(hewer): Move this to private in a follow-up CL.
-  // Called when switching a capture type from another capture type.
-  void A11yAlertCaptureType();
-
-  void OnCaptureSourceChanged(CaptureModeSource new_source) override;
-  void OnCaptureTypeChanged(CaptureModeType new_type) override;
-  void OnRecordingTypeChanged() override;
-  void OnAudioRecordingModeChanged() override;
-  void OnDemoToolsSettingsChanged() override;
-
-  void OnWaitingForDlpConfirmationStarted() override;
-
-  void OnWaitingForDlpConfirmationEnded(bool reshow_uis) override;
-
   // Called when the settings menu is toggled. If `by_key_event` is true, it
   // means that the settings menu is being opened or closed as a result of a key
   // event (e.g. pressing the space bar) on the settings button.
   void SetSettingsMenuShown(bool shown, bool by_key_event = false);
-
-  void ReportSessionHistograms() override;
-
-  void StartCountDown(base::OnceClosure countdown_finished_callback) override;
 
   // Opens the dialog that lets users pick the folder to which they want the
   // captured files to be saved.
@@ -136,40 +114,6 @@ class ASH_EXPORT CaptureModeSession
   // Returns true if `capture_window_observer_` exists and the capture bar is
   // anchored to a pre-selected window.
   bool IsBarAnchoredToWindow() const;
-
-  void OnCaptureFolderMayHaveChanged() override;
-
-  void OnDefaultCaptureFolderSelectionChanged() override;
-
-  bool CalculateCameraPreviewTargetVisibility() const override;
-
-  views::Widget* GetCaptureModeBarWidget() override;
-
-  // ui::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override;
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
-
-  // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* event) override;
-  void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnTouchEvent(ui::TouchEvent* event) override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override;
-
-  // display::DisplayObserver:
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t metrics) override;
-
-  // FolderSelectionDialogController::Delegate:
-  void OnFolderSelected(const base::FilePath& path) override;
-  void OnSelectionWindowAdded() override;
-  void OnSelectionWindowClosed() override;
 
   // Updates the current cursor depending on current |location_in_screen| and
   // current capture type and source. |is_touch| is used when calculating fine
@@ -190,28 +134,65 @@ class ASH_EXPORT CaptureModeSession
   // reparented, display metrics change or located events enter / exit / move
   // on capture UI.
   void MaybeUpdateCaptureUisOpacity(
-      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
-
-  void OnCameraPreviewDragStarted() override;
-  void OnCameraPreviewDragEnded(const gfx::Point& screen_location,
-                                bool is_touch) override;
-
-  void OnCameraPreviewBoundsOrVisibilityChanged(
-      bool capture_surface_became_too_small,
-      bool did_bounds_or_visibility_change) override;
-
-  void OnCameraPreviewDestroyed() override;
-
-  void MaybeDismissUserNudgeForever() override;
+      std::optional<gfx::Point> cursor_screen_location = std::nullopt);
 
   // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
   // the `current_root_`, potentially moving the bar to a new display if
   // `current_root_` is different`.
   void RefreshBarWidgetBounds();
 
+  // BaseCaptureModeSession:
+  views::Widget* GetCaptureModeBarWidget() override;
+  aura::Window* GetSelectedWindow() const override;
+  void SetPreSelectedWindow(aura::Window* pre_selected_window) override;
+  void OnCaptureSourceChanged(CaptureModeSource new_source) override;
+  void OnCaptureTypeChanged(CaptureModeType new_type) override;
+  void OnRecordingTypeChanged() override;
+  void OnAudioRecordingModeChanged() override;
+  void OnDemoToolsSettingsChanged() override;
+  void OnWaitingForDlpConfirmationStarted() override;
+  void OnWaitingForDlpConfirmationEnded(bool reshow_uis) override;
+  void ReportSessionHistograms() override;
+  void StartCountDown(base::OnceClosure countdown_finished_callback) override;
+  void OnCaptureFolderMayHaveChanged() override;
+  void OnDefaultCaptureFolderSelectionChanged() override;
+  bool CalculateCameraPreviewTargetVisibility() const override;
+  void OnCameraPreviewDragStarted() override;
+  void OnCameraPreviewDragEnded(const gfx::Point& screen_location,
+                                bool is_touch) override;
+  void OnCameraPreviewBoundsOrVisibilityChanged(
+      bool capture_surface_became_too_small,
+      bool did_bounds_or_visibility_change) override;
+  void OnCameraPreviewDestroyed() override;
+  void MaybeDismissUserNudgeForever() override;
   void MaybeChangeRoot(aura::Window* new_root) override;
-
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
+
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override;
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
+
+  // FolderSelectionDialogController::Delegate:
+  void OnFolderSelected(const base::FilePath& path) override;
+  void OnSelectionWindowAdded() override;
+  void OnSelectionWindowClosed() override;
+
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
 
  private:
   friend class CaptureModeSettingsTestApi;
@@ -230,6 +211,9 @@ class ASH_EXPORT CaptureModeSession
     // the capture label animates into a countdown label.
     kCountdownStart,
   };
+
+  // Called when switching a capture type from another capture type.
+  void A11yAlertCaptureType();
 
   // Returns a list of all the currently available widgets that are owned by
   // this session.
@@ -352,7 +336,7 @@ class ASH_EXPORT CaptureModeSession
   // `cursor_screen_location` is not provived, we will try to get the screen
   // location of the mouse.
   void EndSelection(
-      absl::optional<gfx::Point> cursor_screen_location = absl::nullopt);
+      std::optional<gfx::Point> cursor_screen_location = std::nullopt);
 
   // Schedules a paint on the region and enough inset around it so that the
   // shadow, affordance circles, etc. are all repainted.
@@ -390,6 +374,10 @@ class ASH_EXPORT CaptureModeSession
   // according to the current state.
   void MaybeUpdateRecordingTypeMenu();
 
+  // Returns true if there is a selected window and it is the topmost
+  // capturable window at `screen_point`. Returns false otherwise.
+  bool IsPointOverSelectedWindow(const gfx::Point& screen_point) const;
+
   // BaseCaptureModeSession:
   void InitInternal() override;
   void ShutdownInternal() override;
@@ -398,13 +386,13 @@ class ASH_EXPORT CaptureModeSession
       std::make_unique<views::Widget>();
 
   // The content view of the above widget and owned by its views hierarchy.
-  raw_ptr<CaptureModeBarView, DanglingUntriaged | ExperimentalAsh>
-      capture_mode_bar_view_ = nullptr;
+  raw_ptr<CaptureModeBarView, DanglingUntriaged> capture_mode_bar_view_ =
+      nullptr;
 
   views::UniqueWidgetPtr capture_mode_settings_widget_;
 
   // The content view of the above widget and owned by its views hierarchy.
-  raw_ptr<CaptureModeSettingsView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<CaptureModeSettingsView, DanglingUntriaged>
       capture_mode_settings_view_ = nullptr;
 
   // Widget which displays capture region size during a region capture session.
@@ -417,14 +405,13 @@ class ASH_EXPORT CaptureModeSession
   // starting capturing, the widget will transform into a 3-second countdown
   // timer.
   views::UniqueWidgetPtr capture_label_widget_;
-  raw_ptr<CaptureLabelView, DanglingUntriaged | ExperimentalAsh>
-      capture_label_view_ = nullptr;
+  raw_ptr<CaptureLabelView, DanglingUntriaged> capture_label_view_ = nullptr;
 
   // Widget that hosts the recording type menu, from which the user can pick the
   // desired recording format type.
   views::UniqueWidgetPtr recording_type_menu_widget_;
-  raw_ptr<RecordingTypeMenuView, DanglingUntriaged | ExperimentalAsh>
-      recording_type_menu_view_ = nullptr;
+  raw_ptr<RecordingTypeMenuView, DanglingUntriaged> recording_type_menu_view_ =
+      nullptr;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;
@@ -460,7 +447,7 @@ class ASH_EXPORT CaptureModeSession
 
   // Caches the old status of mouse warping while dragging or resizing a
   // captured region.
-  absl::optional<bool> old_mouse_warp_status_;
+  std::optional<bool> old_mouse_warp_status_;
 
   // Observer to observe the current selected to-be-captured window.
   std::unique_ptr<CaptureWindowObserver> capture_window_observer_;
@@ -486,11 +473,10 @@ class ASH_EXPORT CaptureModeSession
 
   // The window which had input capture prior to entering the session. It may be
   // null if no such window existed.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
-      input_capture_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> input_capture_window_ = nullptr;
 
   // The display observer between init/shutdown.
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // True when we ask the DLP manager to check the screen content before we
   // perform the capture.

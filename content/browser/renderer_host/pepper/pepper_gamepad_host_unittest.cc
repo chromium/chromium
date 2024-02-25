@@ -107,8 +107,11 @@ TEST_F(PepperGamepadHostTest, WaitForReply) {
   EXPECT_EQ(button_down_data.items[0].buttons_length,
             buffer->data.items[0].buttons_length);
   for (size_t i = 0; i < device::Gamepad::kButtonsLengthCap; i++) {
-    EXPECT_EQ(button_down_data.items[0].buttons[i].value,
-              buffer->data.items[0].buttons[i].value);
+    // Gamepad data is packed, so `value` is misaligned. `EXPECT_EQ` internally
+    // takes a reference to the value, so we must copy into a correctly-aligned
+    // temporary first.
+    EXPECT_EQ(double{button_down_data.items[0].buttons[i].value},
+              double{buffer->data.items[0].buttons[i].value});
     EXPECT_EQ(button_down_data.items[0].buttons[i].pressed,
               buffer->data.items[0].buttons[i].pressed);
   }

@@ -18,14 +18,13 @@ class OverviewItemBase;
 
 void SendKey(ui::KeyboardCode key, int flags = ui::EF_NONE);
 
-// Highlights |window| in the active overview session by cycling through all
-// windows in overview until it is found. Returns true if |window| was found,
+// Focuses `window` in the active overview session by cycling through all
+// windows in overview until it is found. Returns true if `window` was found,
 // false otherwise.
-bool HighlightOverviewWindow(const aura::Window* window);
+bool FocusOverviewWindow(const aura::Window* window);
 
-// Gets the current highlighted window. Returns nullptr if no window is
-// highlighted.
-const aura::Window* GetOverviewHighlightedWindow();
+// Gets the current focused window. Returns nullptr if no window is focused.
+const aura::Window* GetOverviewFocusedWindow();
 
 void ToggleOverview(
     OverviewEnterExitType type = OverviewEnterExitType::kNormal);
@@ -35,12 +34,16 @@ void ToggleOverview(
 void WaitForOverviewEnterAnimation();
 void WaitForOverviewExitAnimation();
 
-OverviewSession* GetOverviewSession();
+// Like `WaitForOverviewEnterAnimation()` but waits even if using zero duration.
+// Used to wait for async pine image read operation.
+void WaitForOverviewEntered();
 
 OverviewGrid* GetOverviewGridForRoot(aura::Window* root);
 
 const std::vector<std::unique_ptr<OverviewItemBase>>& GetOverviewItemsForRoot(
     int index);
+
+std::vector<aura::Window*> GetWindowsListInOverviewGrids();
 
 // Returns the OverviewItem associated with |window| if it exists.
 OverviewItemBase* GetOverviewItemForWindow(aura::Window* window);
@@ -56,6 +59,14 @@ void DragItemToPoint(OverviewItemBase* item,
                      ui::test::EventGenerator* event_generator,
                      bool by_touch_gestures = false,
                      bool drop = true);
+
+// Press the key repeatedly until a window is focused, i.e. ignoring any
+// desk items.
+void SendKeyUntilOverviewItemIsFocused(ui::KeyboardCode key);
+
+// Waits until the occlusion state for window is equal to `target_state`.
+void WaitForOcclusionStateChange(aura::Window* window,
+                                 aura::Window::OcclusionState target_state);
 
 }  // namespace ash
 

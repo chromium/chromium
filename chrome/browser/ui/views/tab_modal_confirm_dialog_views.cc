@@ -45,7 +45,7 @@ TabModalConfirmDialogViews::TabModalConfirmDialogViews(
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetOwnedByWidget(true);
 
-  absl::optional<int> default_button = delegate_->GetDefaultDialogButton();
+  std::optional<int> default_button = delegate_->GetDefaultDialogButton();
   if (bool(default_button))
     SetDefaultButton(*default_button);
 
@@ -106,7 +106,7 @@ void TabModalConfirmDialogViews::LinkClicked(const ui::Event& event) {
 }
 
 views::View* TabModalConfirmDialogViews::GetInitiallyFocusedView() {
-  absl::optional<int> focused_button = delegate_->GetInitiallyFocusedButton();
+  std::optional<int> focused_button = delegate_->GetInitiallyFocusedButton();
   if (!focused_button) {
     return DialogDelegate::GetInitiallyFocusedView();
   }

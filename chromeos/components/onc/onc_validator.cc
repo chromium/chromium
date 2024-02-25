@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -16,14 +18,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
+
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "components/crx_file/id_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::onc {
 
@@ -75,7 +76,7 @@ Validator::Validator(bool error_on_unknown_field,
 
 Validator::~Validator() = default;
 
-absl::optional<base::Value::Dict> Validator::ValidateAndRepairObject(
+std::optional<base::Value::Dict> Validator::ValidateAndRepairObject(
     const OncValueSignature* object_signature,
     const base::Value::Dict& onc_object,
     Result* result) {
@@ -86,7 +87,7 @@ absl::optional<base::Value::Dict> Validator::ValidateAndRepairObject(
       MapObject(*object_signature, onc_object, &error);
   if (error) {
     *result = INVALID;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!validation_issues_.empty()) {
     *result = VALID_WITH_WARNINGS;
@@ -267,7 +268,7 @@ bool Validator::ValidateRecommendedField(
     base::Value::Dict* result) {
   CHECK(result);
 
-  absl::optional<base::Value> recommended_value =
+  std::optional<base::Value> recommended_value =
       result->Extract(::onc::kRecommended);
   // This remove passes ownership to |recommended_value|.
   if (!recommended_value) {
@@ -368,14 +369,14 @@ namespace {
 
 std::string JoinStringRange(const std::vector<const char*>& strings,
                             const std::string& separator) {
-  std::vector<base::StringPiece> string_vector(strings.begin(), strings.end());
+  std::vector<std::string_view> string_vector(strings.begin(), strings.end());
   return base::JoinString(string_vector, separator);
 }
 
 }  // namespace
 
 bool Validator::IsInDevicePolicy(base::Value::Dict* result,
-                                 const std::string& field_name) {
+                                 std::string_view field_name) {
   if (result->contains(field_name)) {
     if (onc_source_ != ::onc::ONC_SOURCE_DEVICE_POLICY) {
       std::ostringstream msg;
@@ -419,7 +420,7 @@ bool Validator::FieldExistsAndIsNotInRange(const base::Value::Dict& object,
                                            const std::string& field_name,
                                            int lower_bound,
                                            int upper_bound) {
-  absl::optional<int> actual_value = object.FindInt(field_name);
+  std::optional<int> actual_value = object.FindInt(field_name);
   if (!actual_value || (lower_bound <= actual_value.value() &&
                         actual_value.value() <= upper_bound)) {
     return false;
@@ -1073,7 +1074,7 @@ bool Validator::ValidateCertificatePattern(base::Value::Dict* result) {
 bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
   // Replace the deprecated kBlacklistedHexSSIDs with kBlockedHexSSIDs.
   if (!result->contains(::onc::global_network_config::kBlockedHexSSIDs)) {
-    absl::optional<base::Value> blocked =
+    std::optional<base::Value> blocked =
         result->Extract(::onc::global_network_config::kBlacklistedHexSSIDs);
     if (blocked) {
       result->Set(::onc::global_network_config::kBlockedHexSSIDs,
@@ -1081,29 +1082,24 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
     }
   }
 
-  // Validate that kAllowTextMessages, kAllowCellularSimLock,
-  // kAllowCellularHotspot, kDisableNetworkTypes, kAllowOnlyPolicyWiFiToConnect,
-  // kAllowOnlyPolicyCellularNetworks and kBlockedHexSSIDs are only allowed in
-  // device policy.
-  if (!IsInDevicePolicy(result,
-                        ::onc ::global_network_config::kAllowTextMessages) ||
-      !IsInDevicePolicy(result,
-                        ::onc ::global_network_config::kAllowCellularSimLock) ||
-      !IsInDevicePolicy(result,
-                        ::onc ::global_network_config::kAllowCellularHotspot) ||
-      !IsInDevicePolicy(result,
-                        ::onc::global_network_config::kDisableNetworkTypes) ||
-      !IsInDevicePolicy(
-          result,
-          ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks) ||
-      !IsInDevicePolicy(
-          result,
-          ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect) ||
-      !IsInDevicePolicy(result, ::onc::global_network_config::
-                                    kAllowOnlyPolicyWiFiToConnectIfAvailable) ||
-      !IsInDevicePolicy(result,
-                        ::onc::global_network_config::kBlockedHexSSIDs)) {
-    return false;
+  // Validate that these are only allowed in device policy.
+  const std::string_view kDevicePolicyOnlyKeys[] = {
+      ::onc::global_network_config::kAllowTextMessages,
+      ::onc::global_network_config::kAllowCellularSimLock,
+      ::onc::global_network_config::kAllowCellularHotspot,
+      ::onc::global_network_config::kAllowAPNModification,
+      ::onc::global_network_config::kDisableNetworkTypes,
+      ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      ::onc::global_network_config::kBlockedHexSSIDs,
+      ::onc::global_network_config::kRecommendedValuesAreEphemeral,
+      ::onc::global_network_config::
+          kUserCreatedNetworkConfigurationsAreEphemeral};
+  for (std::string_view key : kDevicePolicyOnlyKeys) {
+    if (!IsInDevicePolicy(result, key)) {
+      return false;
+    }
   }
 
   // Ensure the list contains only legitimate network type identifiers.

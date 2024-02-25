@@ -9,11 +9,9 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that we skip all pauses during navigation`);
-  await TestRunner.loadLegacyModule('sources');
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise();
-  await TestRunner.navigatePromise('resources/page-with-unload.html');
+  await TestRunner.navigatePromise('resources/page-with-pagehide.html');
   TestRunner.addResult('Navigate page..');
   TestRunner.evaluateInPagePromise('window.location.href = window.location.href');
   TestRunner.addResult('Wait for ready message..');

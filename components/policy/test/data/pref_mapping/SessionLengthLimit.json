@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SessionLengthLimit": 3600000
+        },
+        "prefs": {
+          "session.length_limit": {
+            "location": "local_state",
+            "value": 3600000
+          }
+        }
+      }
+    ]
+  }
+]

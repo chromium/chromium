@@ -5,8 +5,8 @@
 #ifndef MEDIA_CAPTURE_VIDEO_LINUX_V4L2_CAPTURE_DEVICE_H_
 #define MEDIA_CAPTURE_VIDEO_LINUX_V4L2_CAPTURE_DEVICE_H_
 
+#include <fcntl.h>
 #include <poll.h>
-#include <sys/fcntl.h>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"

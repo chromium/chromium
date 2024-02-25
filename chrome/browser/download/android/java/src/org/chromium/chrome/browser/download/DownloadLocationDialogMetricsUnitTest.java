@@ -17,9 +17,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
 
-/**
- * Unit test for {@link DownloadLocationDialogMetrics}.
- */
+/** Unit test for {@link DownloadLocationDialogMetrics}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DownloadLocationDialogMetricsUnitTest {
@@ -42,7 +40,8 @@ public class DownloadLocationDialogMetricsUnitTest {
     public void testRecordDownloadLocationDialogSuggestionEvent() {
         DownloadLocationDialogMetrics.recordDownloadLocationSuggestionEvent(
                 DownloadLocationSuggestionEvent.NOT_ENOUGH_SPACE_SHOWN);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         EVENT_METRIC_NAME, DownloadLocationSuggestionEvent.NOT_ENOUGH_SPACE_SHOWN));
     }

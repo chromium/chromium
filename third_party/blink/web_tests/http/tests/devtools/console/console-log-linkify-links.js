@@ -5,11 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Console from 'devtools/panels/console/console.js';
+import * as Components from 'devtools/ui/legacy/components/utils/utils.js';
+
 (async function() {
   TestRunner.addResult(`Test that console.log() would linkify the links. Bug 231074.\n`);
 
-  await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     console.log("www.chromium.org");
@@ -42,7 +43,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   `);
 
   TestRunner.addResult('Dump urls in messages');
-  var consoleView = Console.ConsoleView.instance();
+  var consoleView = Console.ConsoleView.ConsoleView.instance();
   var viewMessages = consoleView.visibleViewMessages;
   for (var i = 0; i < viewMessages.length; ++i) {
     var uiMessage = viewMessages[i];
@@ -50,7 +51,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     TestRunner.addResult('\nText: ' + element.deepTextContent());
     var links = element.querySelectorAll('.devtools-link');
     for (var link of links) {
-      var info = Components.Linkifier.linkInfo(link);
+      var info = Components.Linkifier.Linkifier.linkInfo(link);
       if (info && info.url) {
         TestRunner.addResult('Linked url: ' + info.url);
         if (info.lineNumber !== null || info.columnNumber !== null)
@@ -61,8 +62,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   // Ensures urls with lots of slashes does not bog down the regex.
   const dummyMessage = viewMessages[0];
-  Console.ConsoleViewMessage.prototype.linkifyStringAsFragment.call(dummyMessage, '/'.repeat(1000));
-  Console.ConsoleViewMessage.prototype.linkifyStringAsFragment.call(dummyMessage, '/a/'.repeat(1000));
+  Console.ConsoleViewMessage.ConsoleViewMessage.prototype.linkifyStringAsFragment.call(dummyMessage, '/'.repeat(1000));
+  Console.ConsoleViewMessage.ConsoleViewMessage.prototype.linkifyStringAsFragment.call(dummyMessage, '/a/'.repeat(1000));
 
   TestRunner.completeTest();
 })();

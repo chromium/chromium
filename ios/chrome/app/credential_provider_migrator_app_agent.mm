@@ -5,18 +5,18 @@
 #import "ios/chrome/app/credential_provider_migrator_app_agent.h"
 
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/credential_provider/credential_provider_migrator.h"
-#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
@@ -37,6 +37,8 @@
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
   SceneState* anyScene = self.appState.foregroundScenes.firstObject;
   DCHECK(anyScene);
+  // TODO(crbug.com/326036404): Clean this up for multiple browser states -- run
+  // the migration for every browser state.
   ChromeBrowserState* browserState =
       anyScene.browserProviderInterface.mainBrowserProvider.browser
           ->GetBrowserState();
@@ -49,7 +51,7 @@
       defaultStore == password_manager::PasswordForm::Store::kAccountStore
           ? IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
                 browserState, ServiceAccessType::IMPLICIT_ACCESS)
-          : IOSChromePasswordStoreFactory::GetForBrowserState(
+          : IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
                 browserState, ServiceAccessType::IMPLICIT_ACCESS);
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
   self.migrator =

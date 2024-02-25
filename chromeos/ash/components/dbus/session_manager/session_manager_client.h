@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_SESSION_MANAGER_CLIENT_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,9 +14,9 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
 namespace arc {
@@ -86,6 +87,17 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
     kUserless = 1,
   };
 
+  // Error type encountered while retrieving state keys. These values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused.
+  enum class StateKeyErrorType {
+    kNoError = 0,
+    kInvalidResponse = 1,
+    kCommunicationError = 2,
+    kMissingIdentifiers = 3,
+    kMaxValue = kMissingIdentifiers
+  };
+
   // Interface for observing changes from the session manager.
   class Observer {
    public:
@@ -109,6 +121,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
     // Called when a powerwash is requested.
     virtual void PowerwashRequested(bool admin_requested) {}
+
+    // Called when session stopping signal is received
+    virtual void SessionStopping() {}
   };
 
   // Interface for performing actions on behalf of the stub implementation.
@@ -201,8 +216,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // returned by the session manager. |error| contains an error message if an
   // error occurred, otherwise empty.
   using LoginScreenStorageRetrieveCallback =
-      base::OnceCallback<void(absl::optional<std::string> /* data */,
-                              absl::optional<std::string> /* error */)>;
+      base::OnceCallback<void(std::optional<std::string> /* data */,
+                              std::optional<std::string> /* error */)>;
 
   // Retrieve data stored earlier with the |LoginScreenStorageStore()| method.
   virtual void LoginScreenStorageRetrieve(
@@ -214,7 +229,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // |keys| is empty and |error| contains the error message.
   using LoginScreenStorageListKeysCallback =
       base::OnceCallback<void(std::vector<std::string> /* keys */,
-                              absl::optional<std::string> /* error */)>;
+                              std::optional<std::string> /* error */)>;
 
   // List all keys currently stored in the login screen storage.
   virtual void LoginScreenStorageListKeys(
@@ -242,7 +257,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const cryptohome::AccountIdentifier& cryptohome_id) = 0;
 
   // Starts the factory reset.
-  virtual void StartDeviceWipe() = 0;
+  virtual void StartDeviceWipe(chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Starts a remotely initiated factory reset, similar to |StartDeviceWipe|
   // above, but also performs additional checks on Chrome OS side.
@@ -440,8 +455,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const std::vector<std::string>& feature_flags,
       const std::map<std::string, std::string>& origin_list_flags) = 0;
 
-  using StateKeysCallback =
-      base::OnceCallback<void(const std::vector<std::string>& state_keys)>;
+  using StateKeysCallback = base::OnceCallback<void(
+      const base::expected<std::vector<std::string>, StateKeyErrorType>&
+          state_keys)>;
 
   // Get the currently valid server-backed state keys for the device.
   // Server-backed state keys are opaque, device-unique, time-dependent,

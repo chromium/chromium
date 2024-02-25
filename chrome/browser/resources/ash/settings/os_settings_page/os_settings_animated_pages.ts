@@ -14,15 +14,15 @@
  *    </os-settings-animated-pages>
  */
 
-import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 
-import {assert} from '//resources/js/assert_ts.js';
-import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
-import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_settings_animated_pages.html.js';
@@ -83,13 +83,13 @@ class OsSettingsAnimatedPagesElement extends
     this.previousRoute_ = null;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     assert(this.section in Section, `Invalid section: ${this.section}.`);
   }
 
-  private onIronSelect_(e: Event) {
+  private onIronSelect_(e: Event): void {
     // Ignore bubbling 'iron-select' events not originating from
     // |animatedPages| itself.
     if (e.target !== this.$.animatedPages) {
@@ -120,7 +120,7 @@ class OsSettingsAnimatedPagesElement extends
   /**
    * Called initially once the effective children are ready.
    */
-  private lightDomChanged_() {
+  private lightDomChanged_(): void {
     if (this.lightDomReady_) {
       return;
     }
@@ -134,7 +134,7 @@ class OsSettingsAnimatedPagesElement extends
   /**
    * Calls currentRouteChanged with the deferred route change info.
    */
-  private runQueuedRouteChange_() {
+  private runQueuedRouteChange_(): void {
     if (!this.queuedRouteChange_) {
       return;
     }
@@ -145,7 +145,7 @@ class OsSettingsAnimatedPagesElement extends
     });
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     this.previousRoute_ = oldRoute || null;
 
     if (newRoute.section === this.section && newRoute.isSubpage()) {
@@ -158,7 +158,7 @@ class OsSettingsAnimatedPagesElement extends
   /**
    * Selects the subpage specified by |newRoute|.
    */
-  private switchToSubpage_(newRoute: Route, oldRoute: Route|undefined) {
+  private switchToSubpage_(newRoute: Route, oldRoute: Route|undefined): void {
     // Don't manipulate the light DOM until it's ready.
     if (!this.lightDomReady_) {
       this.queuedRouteChange_ = this.queuedRouteChange_ || {oldRoute, newRoute};
@@ -173,7 +173,7 @@ class OsSettingsAnimatedPagesElement extends
   /**
    * Ensures that the template enclosing the subpage is stamped.
    */
-  private ensureSubpageInstance_() {
+  private ensureSubpageInstance_(): void {
     const routePath = Router.getInstance().currentRoute.path;
     const domIf =
         this.querySelector<DomIf>(`dom-if[route-path='${routePath}']`);

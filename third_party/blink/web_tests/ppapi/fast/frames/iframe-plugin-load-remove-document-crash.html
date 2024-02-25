@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+    if (window.testRunner)
+    {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+    }
+    
+    function runTest()
+    {
+        document.body.innerHTML = 'PASS';
+        
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }
+</script>
+<iframe src="data:application/x-blink-test-plugin,foo" onload="runTest()"></iframe>
+</body>
+</html>
+

@@ -52,11 +52,11 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
           ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name)))
       .AddOkButton(
           std::move(accept_callback),
-          ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
               IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_SAVE)))
       .AddCancelButton(
           std::move(cancel_callbacks.first),
-          ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
               IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_DONT_SAVE)))
       .SetCloseActionCallback(std::move(cancel_callbacks.second))
       .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL);

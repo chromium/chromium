@@ -17,7 +17,6 @@
 namespace invalidation {
 
 class Invalidation;
-class InvalidationLogger;
 
 // An InvalidationService that emits invalidations only when
 // its EmitInvalidationForTest method is called.
@@ -29,18 +28,14 @@ class FakeInvalidationService : public InvalidationService {
       delete;
   ~FakeInvalidationService() override;
 
-  void RegisterInvalidationHandler(InvalidationHandler* handler) override;
+  void AddObserver(InvalidationHandler* handler) override;
+  bool HasObserver(const InvalidationHandler* handler) const override;
   bool UpdateInterestedTopics(InvalidationHandler* handler,
                               const TopicSet& topics) override;
-  void UnsubscribeFromUnregisteredTopics(InvalidationHandler* handler) override;
-  void UnregisterInvalidationHandler(InvalidationHandler* handler) override;
+  void RemoveObserver(const InvalidationHandler* handler) override;
 
   InvalidatorState GetInvalidatorState() const override;
   std::string GetInvalidatorClientId() const override;
-  InvalidationLogger* GetInvalidationLogger() override;
-  void RequestDetailedStatus(
-      base::RepeatingCallback<void(base::Value::Dict)> caller) const override;
-
   void SetInvalidatorState(InvalidatorState state);
 
   const InvalidatorRegistrarWithMemory& invalidator_registrar() const {

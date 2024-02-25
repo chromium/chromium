@@ -8,14 +8,18 @@ import './shared_style.css.js';
 import './site_favicon.js';
 import './credential_details/password_details_card.js';
 import './credential_details/passkey_details_card.js';
+import './user_utils_mixin.js';
 
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_details_section.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
-import {Page, Route, RouteObserverMixin, Router} from './router.js';
+import type {Route} from './router.js';
+import {Page, RouteObserverMixin, Router} from './router.js';
+import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordDetailsSectionElement {
   $: {
@@ -24,7 +28,8 @@ export interface PasswordDetailsSectionElement {
   };
 }
 
-const PasswordDetailsSectionElementBase = RouteObserverMixin(PolymerElement);
+const PasswordDetailsSectionElementBase =
+    PrefsMixin(UserUtilMixin(RouteObserverMixin(PolymerElement)));
 
 export class PasswordDetailsSectionElement extends
     PasswordDetailsSectionElementBase {
@@ -37,7 +42,12 @@ export class PasswordDetailsSectionElement extends
   }
 
   static get properties() {
-    return {selectedGroup_: Object};
+    return {
+      selectedGroup_: {
+        type: Object,
+        observer: 'maybeRegisterPasswordSharingHelpBubble_',
+      },
+    };
   }
 
   private selectedGroup_: chrome.passwordsPrivate.CredentialGroup|undefined;
@@ -199,8 +209,13 @@ export class PasswordDetailsSectionElement extends
     }
     assert(matchingGroup);
     const newIds = matchingGroup.entries.map(entry => entry.id);
-    // If ids match, don't do anything.
-    if (currentIds.sort().toString() === newIds.sort().toString()) {
+    const currentStores =
+        this.selectedGroup_.entries.map(entry => entry.storedIn);
+    const newStores = matchingGroup.entries.map(entry => entry.storedIn);
+    // If ids match and stores used for entries haven't changed, don't do
+    // anything.
+    if (currentIds.sort().toString() === newIds.sort().toString() &&
+        currentStores.sort().toString() === newStores.sort().toString()) {
       return;
     }
     this.updateShownCredentials(matchingGroup)
@@ -211,6 +226,17 @@ export class PasswordDetailsSectionElement extends
               Router.getInstance().currentRoute.queryParameters);
         })
         .catch(this.navigateBack_);
+  }
+
+  private maybeRegisterPasswordSharingHelpBubble_() {
+    afterNextRender(this, () => {
+      if (this.selectedGroup_?.entries[0]?.isPasskey) {
+        return;
+      }
+
+      this.shadowRoot!.querySelector('password-details-card')
+          ?.maybeRegisterSharingHelpBubble();
+    });
   }
 }
 

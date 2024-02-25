@@ -44,7 +44,7 @@ class ArcMetricsAnr {
   base::OneShotTimer start_timer_;
   base::OneShotTimer pending_start_timer_;
   base::RepeatingTimer period_updater_;
-  const raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  const raw_ptr<PrefService> prefs_ = nullptr;
 
   std::string uma_suffix_;
 

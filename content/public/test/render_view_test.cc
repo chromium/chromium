@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string_view>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -43,7 +45,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -69,6 +70,9 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_source.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/native_theme/native_theme_features.h"
@@ -142,6 +146,37 @@ class FailingURLLoaderFactory : public network::SharedURLLoaderFactory {
   mojo::ReceiverSet<network::mojom::URLLoaderFactory,
                     scoped_refptr<FailingURLLoaderFactory>>
       receivers_;
+};
+
+class MockColorProviderSource : public ui::ColorProviderSource {
+ public:
+  explicit MockColorProviderSource() { provider_.GenerateColorMap(); }
+  MockColorProviderSource(const MockColorProviderSource&) = delete;
+  MockColorProviderSource& operator=(const MockColorProviderSource&) = delete;
+  ~MockColorProviderSource() override = default;
+
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override {
+    return &provider_;
+  }
+
+  const ui::RendererColorMap GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode color_mode,
+      ui::ColorProviderKey::ForcedColors forced_colors) const override {
+    auto key = GetColorProviderKey();
+    key.color_mode = color_mode;
+    key.forced_colors = forced_colors;
+    ui::ColorProvider* color_provider =
+        ui::ColorProviderManager::Get().GetColorProviderFor(key);
+    CHECK(color_provider);
+    return ui::CreateRendererColorMap(*color_provider);
+  }
+
+  ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
+
+ private:
+  ui::ColorProvider provider_;
+  ui::ColorProviderKey key_;
 };
 
 // Converts |ascii_character| into |key_code| and returns true on success.
@@ -262,14 +297,18 @@ RenderFrame* RenderViewTest::GetMainRenderFrame() {
   return RenderFrame::FromWebFrame(GetMainFrame());
 }
 
-void RenderViewTest::ExecuteJavaScriptForTests(const char* js) {
+v8::Isolate* RenderViewTest::Isolate() {
+  return GetMainFrame()->GetAgentGroupScheduler()->Isolate();
+}
+
+void RenderViewTest::ExecuteJavaScriptForTests(std::string_view js) {
   GetMainFrame()->ExecuteScript(WebScriptSource(WebString::FromUTF8(js)));
 }
 
 bool RenderViewTest::ExecuteJavaScriptAndReturnIntValue(
     const std::u16string& script,
     int* int_result) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(Isolate());
   v8::Local<v8::Value> result = GetMainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource(blink::WebString::FromUTF16(script)));
   if (result.IsEmpty() || !result->IsInt32())
@@ -284,7 +323,7 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnIntValue(
 bool RenderViewTest::ExecuteJavaScriptAndReturnNumberValue(
     const std::u16string& script,
     double* number_result) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(Isolate());
   v8::Local<v8::Value> result = GetMainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource(blink::WebString::FromUTF16(script)));
   if (result.IsEmpty() || !result->IsNumber())
@@ -296,13 +335,13 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnNumberValue(
   return true;
 }
 
-void RenderViewTest::LoadHTML(const char* html) {
+void RenderViewTest::LoadHTML(std::string_view html) {
   FrameLoadWaiter waiter(GetMainRenderFrame());
   std::string url_string = "data:text/html;charset=utf-8,";
   url_string.append(base::EscapeQueryParamValue(html, false));
   RenderFrame::FromWebFrame(GetMainFrame())
       ->LoadHTMLStringForTesting(html, GURL(url_string), "UTF-8", GURL(),
-                                 false /* replace_current_item */);
+                                 /*replace_current_item=*/false);
   // The load may happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();
@@ -310,12 +349,12 @@ void RenderViewTest::LoadHTML(const char* html) {
       blink::DocumentUpdateReason::kTest);
 }
 
-void RenderViewTest::LoadHTMLWithUrlOverride(const char* html,
-                                             const char* url_override) {
+void RenderViewTest::LoadHTMLWithUrlOverride(std::string_view html,
+                                             std::string_view url_override) {
   FrameLoadWaiter waiter(GetMainRenderFrame());
   RenderFrame::FromWebFrame(GetMainFrame())
       ->LoadHTMLStringForTesting(html, GURL(url_override), "UTF-8", GURL(),
-                                 false /* replace_current_item */);
+                                 /*replace_current_item=*/false);
   // The load may happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();
@@ -390,14 +429,14 @@ void RenderViewTest::SetUp() {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  autorelease_pool_ = std::make_unique<base::apple::ScopedNSAutoreleasePool>();
+  autorelease_pool_.emplace();
 #endif
   command_line_ =
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
   params_ = std::make_unique<MainFunctionParams>(command_line_.get());
   // Platform needs to be initialized before blink::Initialize. This is because
-  // Blink retrieves fonts for EdgeScrollbarNativeThemeFluent, but the platform
-  // expects the font manager singleton to be uninitialized.
+  // Blink retrieves fonts for NativeThemeFluent, but the platform expects the
+  // font manager singleton to be uninitialized.
   platform_ = std::make_unique<RendererMainPlatformDelegate>(*params_);
   platform_->PlatformInitialize();
 
@@ -419,9 +458,6 @@ void RenderViewTest::SetUp() {
   // since we are using a MockRenderThread.
   RenderThreadImpl::RegisterSchemes();
 
-  RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(
-      blink_platform_impl_.Get());
-
   // This check is needed because when run under content_browsertests,
   // ResourceBundle isn't initialized (since we have to use a diferent test
   // suite implementation than for content_unittests). For browser_tests, this
@@ -433,11 +469,28 @@ void RenderViewTest::SetUp() {
 
   process_ = std::make_unique<RenderProcess>();
 
+  // This is used to get the renderer color maps for the purpose of creating the
+  // color providers in Blink::Page.
+  MockColorProviderSource mock_color_provider_source_ =
+      MockColorProviderSource();
+
+  blink::ColorProviderColorMaps color_maps = blink::ColorProviderColorMaps{
+      mock_color_provider_source_.GetRendererColorMap(
+          ui::ColorProviderKey::ColorMode::kLight,
+          ui::ColorProviderKey::ForcedColors::kNone),
+      mock_color_provider_source_.GetRendererColorMap(
+          ui::ColorProviderKey::ColorMode::kDark,
+          ui::ColorProviderKey::ForcedColors::kNone),
+      mock_color_provider_source_.GetRendererColorMap(
+          mock_color_provider_source_.GetColorMode(),
+          ui::ColorProviderKey::ForcedColors::kActive)};
+
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
-  view_params->opener_frame_token = absl::nullopt;
+  view_params->opener_frame_token = std::nullopt;
   view_params->window_was_opened_by_another_window = false;
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
+  view_params->color_provider_colors = color_maps;
   view_params->replication_state = blink::mojom::FrameReplicationState::New();
   view_params->blink_page_broadcast =
       page_broadcast_.BindNewEndpointAndPassDedicatedReceiver();
@@ -510,8 +563,6 @@ void RenderViewTest::TearDown() {
   // some new tasks which need to be processed before shutting down WebKit
   // (http://crbug.com/21508).
   base::RunLoop().RunUntilIdle();
-
-  RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(nullptr);
 
 #if BUILDFLAG(IS_WIN)
   ClearDWriteFontProxySenderForTesting();
@@ -604,7 +655,7 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
   std::string script =
       base::ReplaceStringPlaceholders(kGetCoordinatesScript, params, nullptr);
 
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Value> value = GetMainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource(WebString::FromUTF8(script)));
@@ -612,13 +663,15 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
     return gfx::Rect();
 
   v8::Local<v8::Array> array = value.As<v8::Array>();
+  v8::Local<v8::Context> v8_context =
+      array->GetCreationContext().ToLocalChecked();
+  v8::Context::Scope v8_context_scope(v8_context);
   if (array->Length() != 4)
     return gfx::Rect();
   std::vector<int> coords;
   for (int i = 0; i < 4; ++i) {
     v8::Local<v8::Number> index = v8::Number::New(isolate, i);
-    if (!array->Get(isolate->GetCurrentContext(), index).ToLocal(&value) ||
-        !value->IsInt32()) {
+    if (!array->Get(v8_context, index).ToLocal(&value) || !value->IsInt32()) {
       return gfx::Rect();
     }
     coords.push_back(value.As<v8::Int32>()->Value());
@@ -694,8 +747,8 @@ void RenderViewTest::ChangeFocusToNull(const blink::WebDocument& document) {
 
 void RenderViewTest::Reload(const GURL& url) {
   auto common_params = blink::mojom::CommonNavigationParams::New(
-      url, /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, blink::mojom::Referrer::New(),
+      url, /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_LINK, blink::mojom::NavigationType::RELOAD,
       blink::NavigationDownloadPolicy(), false, GURL(), base::TimeTicks::Now(),
       "GET", nullptr, network::mojom::SourceLocation::New(),
@@ -826,8 +879,8 @@ void RenderViewTest::GoToOffset(int offset,
   int pending_offset = offset + webview->HistoryBackListCount();
 
   auto common_params = blink::mojom::CommonNavigationParams::New(
-      url, /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, blink::mojom::Referrer::New(),
+      url, /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_FORWARD_BACK,
       blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT,
       blink::NavigationDownloadPolicy(), false, GURL(), base::TimeTicks::Now(),

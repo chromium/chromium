@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+Testing.h"
 
 #import <memory>
 #import <vector>
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/test/mock_tracker.h"
@@ -17,13 +19,15 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+private.h"
+#import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -111,7 +115,8 @@ class OmniboxPopupMediatorTest : public PlatformTest {
 
     // Setup for AutocompleteController.
     auto template_url_service = std::make_unique<TemplateURLService>(
-        /*prefs=*/nullptr, std::make_unique<SearchTermsData>(),
+        /*prefs=*/nullptr, /*search_engine_search_service=*/nullptr,
+        std::make_unique<SearchTermsData>(),
         /*web_data_service=*/nullptr,
         std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure());
     auto client = std::make_unique<MockAutocompleteProviderClient>();
@@ -268,6 +273,40 @@ TEST_F(OmniboxPopupMediatorTest, SuggestionsPartVisible) {
   ExpectGroupBySearchVSURL(0, 1, visibleSuggestionCount);
   ExpectGroupBySearchVSURL(1, visibleSuggestionCount,
                            autocomplete_result_.size());
+}
+
+// Tests that the right "PasswordManager.ManagePasswordsReferrer" metric is
+// recorded when tapping the Manage Passwords suggestion.
+TEST_F(OmniboxPopupMediatorTest, SelectManagePasswordSuggestionMetricLogged) {
+  PedalSuggestionWrapper* pedal_suggestion_wrapper = [[PedalSuggestionWrapper
+      alloc]
+      initWithPedal:[[OmniboxPedalData alloc]
+                            initWithTitle:@""
+                                 subtitle:@""
+                        accessibilityHint:@""
+                                    image:[[UIImage alloc] init]
+                           imageTintColor:nil
+                          backgroundColor:nil
+                         imageBorderColor:nil
+                                     type:static_cast<int>(
+                                              OmniboxPedalId::MANAGE_PASSWORDS)
+                                   action:^{
+                                   }]];
+  base::HistogramTester histogram_tester;
+
+  // Verify that bucker count is zero.
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion, 0);
+
+  [mediator_ autocompleteResultConsumer:mockResultConsumer_
+                    didSelectSuggestion:pedal_suggestion_wrapper
+                                  inRow:0];
+
+  // Bucket count should now be one.
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion, 1);
 }
 
 }  // namespace

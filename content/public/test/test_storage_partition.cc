@@ -15,16 +15,20 @@ namespace content {
 TestStoragePartition::TestStoragePartition() {}
 TestStoragePartition::~TestStoragePartition() {}
 
-const StoragePartitionConfig& TestStoragePartition::GetConfig() {
+const StoragePartitionConfig& TestStoragePartition::GetConfig() const {
   return config_;
 }
 
-base::FilePath TestStoragePartition::GetPath() {
+const base::FilePath& TestStoragePartition::GetPath() const {
   return file_path_;
 }
 
 network::mojom::NetworkContext* TestStoragePartition::GetNetworkContext() {
   return network_context_;
+}
+cert_verifier::mojom::CertVerifierServiceUpdater*
+TestStoragePartition::GetCertVerifierServiceUpdater() {
+  return nullptr;
 }
 
 storage::SharedStorageManager* TestStoragePartition::GetSharedStorageManager() {
@@ -150,6 +154,17 @@ TestStoragePartition::GetPrivateAggregationDataModel() {
   return nullptr;
 }
 
+CookieDeprecationLabelManager*
+TestStoragePartition::GetCookieDeprecationLabelManager() {
+  return nullptr;
+}
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
+  return nullptr;
+}
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
 BrowsingTopicsSiteDataManager*
 TestStoragePartition::GetBrowsingTopicsSiteDataManager() {
   return browsing_topics_site_data_manager_;
@@ -243,6 +258,8 @@ int TestStoragePartition::GetDataRemovalObserverCount() {
 void TestStoragePartition::ClearBluetoothAllowedDevicesMapForTesting() {}
 
 void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
+
+void TestStoragePartition::FlushCertVerifierInterfaceForTesting() {}
 
 void TestStoragePartition::WaitForDeletionTasksForTesting() {}
 

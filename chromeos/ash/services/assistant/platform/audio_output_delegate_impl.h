@@ -36,7 +36,7 @@ class AudioOutputDelegateImpl
 
  private:
   mojo::Receiver<AudioOutputDelegate> receiver_{this};
-  const raw_ptr<AssistantMediaSession, ExperimentalAsh> media_session_;
+  const raw_ptr<AssistantMediaSession> media_session_;
 };
 
 }  // namespace ash::assistant

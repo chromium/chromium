@@ -73,7 +73,7 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
       notifier_id, optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              [](Profile* profile, absl::optional<int> button_index) {
+              [](Profile* profile, std::optional<int> button_index) {
                 if (button_index) {
                   DCHECK_EQ(0, *button_index);
                   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(

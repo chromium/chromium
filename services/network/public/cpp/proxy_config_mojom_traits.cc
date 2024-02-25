@@ -6,7 +6,9 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
+#include "services/network/public/cpp/network_param_mojom_traits.h"
 #include "url/gurl.h"
 
 namespace mojo {
@@ -39,31 +41,15 @@ bool StructTraits<network::mojom::ProxyBypassRulesDataView,
   return true;
 }
 
-std::vector<std::string>
-StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::proxies(
-    const net::ProxyList& r) {
-  std::vector<std::string> out;
-  for (const auto& proxy : r.GetAll()) {
-    out.push_back(net::ProxyServerToPacResultElement(proxy));
-  }
-  return out;
-}
-
 bool StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::Read(
     network::mojom::ProxyListDataView data,
     net::ProxyList* out_proxy_list) {
-  std::vector<std::string> proxies;
-  if (!data.ReadProxies(&proxies))
+  std::vector<net::ProxyChain> proxy_chains;
+  if (!data.ReadProxies(&proxy_chains)) {
     return false;
-  for (const auto& proxy : proxies) {
-    net::ProxyServer proxy_server = net::PacResultElementToProxyServer(proxy);
-    if (!proxy_server.is_valid()) {
-      mojo::debug::ScopedMessageErrorCrashKey crash_key_value(
-          "!proxy_server.is_valid()");
-      base::debug::DumpWithoutCrashing();
-      return false;
-    }
-    out_proxy_list->AddProxyServer(proxy_server);
+  }
+  for (const auto& proxy_chain : proxy_chains) {
+    out_proxy_list->AddProxyChain(proxy_chain);
   }
   return true;
 }
@@ -105,8 +91,6 @@ bool StructTraits<network::mojom::ProxyRulesDataView,
     Read(network::mojom::ProxyRulesDataView data,
          net::ProxyConfig::ProxyRules* out_proxy_rules) {
   out_proxy_rules->reverse_bypass = data.reverse_bypass();
-  out_proxy_rules->restrict_to_network_service_proxy_allow_list =
-      data.restrict_to_network_service_proxy_allow_list();
   return data.ReadBypassRules(&out_proxy_rules->bypass_rules) &&
          data.ReadType(&out_proxy_rules->type) &&
          data.ReadSingleProxies(&out_proxy_rules->single_proxies) &&

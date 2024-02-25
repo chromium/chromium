@@ -28,9 +28,12 @@ _DISABLED_ALWAYS = [
     "InflateParams",  # Null is ok when inflating views for dialogs.
     "InlinedApi",  # Constants are copied so they are always available.
     "LintBaseline",  # Don't warn about using baseline.xml files.
+    "LintBaselineFixed",  # We dont care if baseline.xml has unused entries.
     "MissingInflatedId",  # False positives https://crbug.com/1394222
     "MissingApplicationIcon",  # False positive for non-production targets.
+    "NetworkSecurityConfig",  # Breaks on library certificates b/269783280.
     "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
+    "StringFormatCount",  # Has false-positives.
     "SwitchIntDef",  # Many C++ enums are not used at all in java.
     "Typos",  # Strings are committed in English first and later translated.
     "VisibleForTests",  # Does not recognize "ForTesting" methods.
@@ -70,7 +73,8 @@ def _SrcRelative(path):
   return os.path.relpath(path, build_utils.DIR_SOURCE_ROOT)
 
 
-def _GenerateProjectFile(android_manifest,
+def _GenerateProjectFile(lint_gen_dir,
+                         android_manifest,
                          android_sdk_root,
                          cache_dir,
                          sources=None,
@@ -97,6 +101,9 @@ def _GenerateProjectFile(android_manifest,
   main_module.set('name', 'main')
   main_module.set('android', 'true')
   main_module.set('library', 'false')
+  # Required to make lint-resources.xml be written to a per-target path.
+  # https://crbug.com/1515070
+  main_module.set('partial-results-dir', lint_gen_dir)
   if android_sdk_version:
     main_module.set('compile_sdk_version', android_sdk_version)
   manifest = ElementTree.SubElement(main_module, 'manifest')
@@ -105,10 +112,16 @@ def _GenerateProjectFile(android_manifest,
     for srcjar_file in srcjar_sources:
       src = ElementTree.SubElement(main_module, 'src')
       src.set('file', srcjar_file)
+      # Cannot add generated="true" since then lint does not scan them, and
+      # we get "UnusedResources" lint errors when resources are used only by
+      # generated files.
   if sources:
     for source in sources:
       src = ElementTree.SubElement(main_module, 'src')
       src.set('file', source)
+      # Cannot set test="true" since we sometimes put Test.java files beside
+      # non-test files, which lint does not allow:
+      # "Test sources cannot be in the same source root as production files"
   if classpath:
     for file_path in classpath:
       classpath_element = ElementTree.SubElement(main_module, 'classpath')
@@ -188,8 +201,7 @@ def _WriteXmlFile(root, path):
             root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
 
 
-def _RunLint(create_cache,
-             custom_lint_jar_path,
+def _RunLint(custom_lint_jar_path,
              lint_jar_path,
              backported_methods_path,
              config_path,
@@ -210,13 +222,13 @@ def _RunLint(create_cache,
              testonly_target=False,
              warnings_as_errors=False):
   logging.info('Lint starting')
-
-  if create_cache:
-    # Occasionally lint may crash due to re-using intermediate files from older
-    # lint runs. See https://crbug.com/1258178 for context.
-    logging.info('Clearing cache dir %s before creating cache.', cache_dir)
-    shutil.rmtree(cache_dir, ignore_errors=True)
-    os.makedirs(cache_dir)
+  if not cache_dir:
+    # Use per-target cache directory when --cache-dir is not used.
+    cache_dir = os.path.join(lint_gen_dir, 'cache')
+    # Lint complains if the directory does not exist.
+    # When --create-cache is used, ninja will create this directory because the
+    # stamp file is created within it.
+    os.makedirs(cache_dir, exist_ok=True)
 
   if baseline and not os.path.exists(baseline):
     # Generating new baselines is only done locally, and requires more memory to
@@ -245,6 +257,7 @@ def _RunLint(create_cache,
       build_utils.JAVA_HOME,
       '--path-variables',
       f'SRC={pathvar_src}',
+      '--offline',
       '--quiet',  # Silences lint's "." progress updates.
       '--stacktrace',  # Prints full stacktraces for internal lint errors.
       '--disable',
@@ -270,9 +283,10 @@ def _RunLint(create_cache,
                                                    extra_manifest_paths,
                                                    min_sdk_version,
                                                    android_sdk_version)
-  # Include the rebased manifest_path in the lint generated path so that it is
-  # clear in error messages where the original AndroidManifest.xml came from.
-  lint_android_manifest_path = os.path.join(lint_gen_dir, manifest_path)
+  # Just use a hardcoded name, since we may have different target names (and
+  # thus different manifest_paths) using the same lint baseline. Eg.
+  # trichrome_chrome_bundle and trichrome_chrome_32_64_bundle.
+  lint_android_manifest_path = os.path.join(lint_gen_dir, 'AndroidManifest.xml')
   _WriteXmlFile(android_manifest_tree.getroot(), lint_android_manifest_path)
 
   resource_root_dir = os.path.join(lint_gen_dir, _RES_ZIP_DIR)
@@ -321,12 +335,10 @@ def _RunLint(create_cache,
       srcjar_sources.extend(build_utils.ExtractAll(srcjar, path=srcjar_dir))
 
   logging.info('Generating project file')
-  project_file_root = _GenerateProjectFile(lint_android_manifest_path,
-                                           android_sdk_root, cache_dir, sources,
-                                           classpath, srcjar_sources,
-                                           resource_sources, custom_lint_jars,
-                                           custom_annotation_zips,
-                                           android_sdk_version, baseline)
+  project_file_root = _GenerateProjectFile(
+      lint_gen_dir, lint_android_manifest_path, android_sdk_root, cache_dir,
+      sources, classpath, srcjar_sources, resource_sources, custom_lint_jars,
+      custom_annotation_zips, android_sdk_version, baseline)
 
   project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
   _WriteXmlFile(project_file_root, project_xml_path)
@@ -338,7 +350,7 @@ def _RunLint(create_cache,
 
   start = time.time()
   logging.debug('Lint command %s', ' '.join(cmd))
-  failed = True
+  failed = False
 
   if creating_baseline and not warnings_as_errors:
     # Allow error code 6 when creating a baseline: ERRNO_CREATED_BASELINE
@@ -347,24 +359,20 @@ def _RunLint(create_cache,
     fail_func = lambda returncode, _: returncode != 0
 
   try:
-    failed = bool(
-        build_utils.CheckOutput(cmd,
-                                print_stdout=True,
-                                stdout_filter=stdout_filter,
-                                stderr_filter=stderr_filter,
-                                fail_on_output=warnings_as_errors,
-                                fail_func=fail_func))
+    build_utils.CheckOutput(cmd,
+                            print_stdout=True,
+                            stdout_filter=stdout_filter,
+                            stderr_filter=stderr_filter,
+                            fail_on_output=warnings_as_errors,
+                            fail_func=fail_func)
+  except build_utils.CalledProcessError as e:
+    failed = True
+    # Do not output the python stacktrace because it is lengthy and is not
+    # relevant to the actual lint error.
+    sys.stderr.write(e.output)
   finally:
     # When not treating warnings as errors, display the extra footer.
     is_debug = os.environ.get('LINT_DEBUG', '0') != '0'
-
-    if failed:
-      print('- For more help with lint in Chrome:', _LINT_MD_URL)
-      if is_debug:
-        print('- DEBUG MODE: Here is the project.xml: {}'.format(
-            _SrcRelative(project_xml_path)))
-      else:
-        print('- Run with LINT_DEBUG=1 to enable lint configuration debugging')
 
     end = time.time() - start
     logging.info('Lint command took %ss', end)
@@ -373,6 +381,20 @@ def _RunLint(create_cache,
       shutil.rmtree(resource_root_dir, ignore_errors=True)
       shutil.rmtree(srcjar_root_dir, ignore_errors=True)
       os.unlink(project_xml_path)
+      # lint-resources.xml is meant to be used for caching, but is suspected
+      # to lead to crashes: b/324598620
+      lint_resources_xml = os.path.join(lint_gen_dir, 'lint-resources.xml')
+      if os.path.exists(lint_resources_xml):
+        os.unlink(lint_resources_xml)
+
+    if failed:
+      print('- For more help with lint in Chrome:', _LINT_MD_URL)
+      if is_debug:
+        print('- DEBUG MODE: Here is the project.xml: {}'.format(
+            _SrcRelative(project_xml_path)))
+      else:
+        print('- Run with LINT_DEBUG=1 to enable lint configuration debugging')
+      sys.exit(1)
 
   logging.info('Lint completed')
 
@@ -396,7 +418,6 @@ def _ParseArgs(argv):
   parser.add_argument('--backported-methods',
                       help='Path to backported methods file created by R8.')
   parser.add_argument('--cache-dir',
-                      required=True,
                       help='Path to the directory in which the android cache '
                       'directory tree should be stored.')
   parser.add_argument('--config-path', help='Path to lint suppressions file.')
@@ -499,8 +520,7 @@ def main():
                            ])
   depfile_deps = [p for p in possible_depfile_deps if p]
 
-  _RunLint(args.create_cache,
-           args.custom_lint_jar_path,
+  _RunLint(args.custom_lint_jar_path,
            args.lint_jar_path,
            args.backported_methods,
            args.config_path,

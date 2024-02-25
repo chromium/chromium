@@ -14,6 +14,7 @@ _proto_files = [
   "chrome_os_app_list_launch_event.proto",
   "chrome_user_metrics_extension.proto",
   "custom_tab_session.proto",
+  "device_state.proto",
   "execution_context.proto",
   "extension_install.proto",
   "histogram_event.proto",

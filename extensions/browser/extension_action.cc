@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "extensions/browser/extension_icon_placeholder.h"
@@ -66,7 +67,7 @@ struct IconRepresentationInfo {
 
 template <class T>
 bool HasValue(const std::map<int, T>& map, int tab_id) {
-  return map.find(tab_id) != map.end();
+  return base::Contains(map, tab_id);
 }
 
 }  // namespace
@@ -110,7 +111,7 @@ bool ExtensionAction::HasPopup(int tab_id) const {
 }
 
 GURL ExtensionAction::GetPopupUrl(int tab_id) const {
-  return GetValue(&popup_url_, tab_id);
+  return GetValue(popup_url_, tab_id);
 }
 
 void ExtensionAction::SetIcon(int tab_id, const gfx::Image& image) {
@@ -154,11 +155,11 @@ ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
 }
 
 gfx::Image ExtensionAction::GetExplicitlySetIcon(int tab_id) const {
-  return GetValue(&icon_, tab_id);
+  return GetValue(icon_, tab_id);
 }
 
 bool ExtensionAction::SetIsVisible(int tab_id, bool new_visibility) {
-  const bool old_visibility = GetValue(&is_visible_, tab_id);
+  const bool old_visibility = GetValue(is_visible_, tab_id);
 
   if (old_visibility == new_visibility)
     return false;
@@ -320,7 +321,7 @@ void ExtensionAction::Populate(const Extension& extension,
 // Determines which icon would be returned by |GetIcon|, and returns its width.
 int ExtensionAction::GetIconWidth(int tab_id) const {
   // If icon has been set, return its width.
-  gfx::Image icon = GetValue(&icon_, tab_id);
+  gfx::Image icon = GetValue(icon_, tab_id);
   if (!icon.IsEmpty())
     return icon.Width();
   // If there is a default icon, the icon width will be set depending on our
@@ -335,14 +336,17 @@ int ExtensionAction::GetIconWidth(int tab_id) const {
 
 bool ExtensionAction::GetIsVisibleInternal(int tab_id,
                                            bool include_declarative) const {
-  if (const bool* tab_is_visible = FindOrNull(&is_visible_, tab_id))
+  if (const bool* tab_is_visible = base::FindOrNull(is_visible_, tab_id)) {
     return *tab_is_visible;
+  }
 
   if (include_declarative && base::Contains(declarative_show_count_, tab_id))
     return true;
 
-  if (const bool* default_is_visible = FindOrNull(&is_visible_, kDefaultTabId))
+  if (const bool* default_is_visible =
+          base::FindOrNull(is_visible_, kDefaultTabId)) {
     return *default_is_visible;
+  }
 
   return false;
 }

@@ -18,82 +18,10 @@ Issue for -webkit-appearance "inner-spin-button": {
         }
     }
 }
-Issue for -webkit-appearance "media-slider": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&media-slider
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for -webkit-appearance "media-sliderthumb": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&media-sliderthumb
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for -webkit-appearance "media-volume-slider": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&media-volume-slider
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for -webkit-appearance "media-volume-sliderthumb": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&media-volume-sliderthumb
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
+-webkit-appearance value "media-slider" did not generate issue.
+-webkit-appearance value "media-sliderthumb" did not generate issue.
+-webkit-appearance value "media-volume-slider" did not generate issue.
+-webkit-appearance value "media-volume-sliderthumb" did not generate issue.
 Issue for -webkit-appearance "push-button": {
     issue : {
         code : DeprecationIssue
@@ -132,82 +60,10 @@ Issue for -webkit-appearance "searchfield-cancel-button": {
         }
     }
 }
-Issue for -webkit-appearance "slider-horizontal": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&slider-horizontal
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for -webkit-appearance "sliderthumb-horizontal": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&sliderthumb-horizontal
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for -webkit-appearance "sliderthumb-vertical": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&sliderthumb-vertical
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for -webkit-appearance "square-button": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?-webkit-appearance&square-button
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
+-webkit-appearance value "slider-horizontal" did not generate issue.
+-webkit-appearance value "sliderthumb-horizontal" did not generate issue.
+-webkit-appearance value "sliderthumb-vertical" did not generate issue.
+-webkit-appearance value "square-button" did not generate issue.
 -webkit-appearance value "auto" did not generate issue.
 -webkit-appearance value "none" did not generate issue.
 

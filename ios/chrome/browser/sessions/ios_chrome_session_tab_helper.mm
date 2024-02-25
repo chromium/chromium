@@ -7,7 +7,7 @@
 #import "base/check.h"
 
 IOSChromeSessionTabHelper::IOSChromeSessionTabHelper(web::WebState* web_state)
-    : session_id_(web_state->GetUniqueIdentifier()),
+    : session_id_(web_state->GetUniqueIdentifier().ToSessionID()),
       window_id_(SessionID::InvalidValue()) {
   DCHECK(session_id_.is_valid());
 }

@@ -38,8 +38,7 @@
 @implementation TFLCoreMLDelegateSettings
 
 - (instancetype)initWithCoreMLVersion:(int32_t)coreMLVersion
-                       enableddevices:
-                           (CoreMLDelegateEnabledDevices)enabledDevices {
+                       enableddevices:(CoreMLDelegateEnabledDevices)enabledDevices {
   self = [super init];
   if (self) {
     _enabledDevices = enabledDevices;
@@ -48,11 +47,10 @@
   return self;
 }
 
-- (id)copyWithZone:(NSZone*)zone {
-  TFLCoreMLDelegateSettings* coreMLDelegateSettings =
-      [[TFLCoreMLDelegateSettings alloc]
-          initWithCoreMLVersion:self.coreMLVersion
-                 enableddevices:self.enabledDevices];
+- (id)copyWithZone:(NSZone *)zone {
+  TFLCoreMLDelegateSettings *coreMLDelegateSettings =
+      [[TFLCoreMLDelegateSettings alloc] initWithCoreMLVersion:self.coreMLVersion
+                                                enableddevices:self.enabledDevices];
   return coreMLDelegateSettings;
 }
 

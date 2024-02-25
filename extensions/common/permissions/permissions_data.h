@@ -99,7 +99,7 @@ class PermissionsData {
   // Returns true if the "all_urls" meta-pattern should include access to
   // URLs with the "chrome" scheme. Access to these URLs is limited as they
   // are sensitive.
-  static bool AllUrlsIncludesChromeUrls(const std::string& extension_id);
+  static bool AllUrlsIncludesChromeUrls(const ExtensionId& extension_id);
 
   // Is this extension using the default scope for policy_blocked_hosts and
   // policy_allowed_hosts of the ExtensionSettings policy.
@@ -153,6 +153,10 @@ class PermissionsData {
   // Clears the tab-specific permissions of |tab_id|.
   void ClearTabSpecificPermissions(int tab_id) const;
 
+  // Returns whether the extension has tab-specific permissions for the security
+  // origin of `url` on `tab_id`.
+  bool HasTabPermissionsForSecurityOrigin(int tab_id, const GURL& url) const;
+
   // Returns true if the |extension| has the given |permission|. Prefer
   // IsExtensionWithPermissionOrSuggestInConsole when developers may be using an
   // api that requires a permission they didn't know about, e.g. open web apis.
@@ -172,21 +176,12 @@ class PermissionsData {
   // active tab permissions for.
   URLPatternSet GetEffectiveHostPermissions() const;
 
-  // TODO(rdevlin.cronin): HasHostPermission() and
-  // HasEffectiveAccessToAllHosts() are just forwards for the active
-  // permissions. We should either get rid of these, and have callers use
+  // TODO(rdevlin.cronin): HasHostPermission() is just a forward for the active
+  // permissions. We should either get rid of it, and have callers use
   // active_permissions(), or should get rid of active_permissions(), and make
   // callers use PermissionsData for everything. We should not do both.
-
   // Whether the extension has access to the given |url|.
   bool HasHostPermission(const GURL& url) const;
-
-  // Whether the extension has effective access to all hosts. This is true if
-  // there is a content script that matches all hosts, if there is a host
-  // permission grants access to all hosts (like <all_urls>) or an api
-  // permission that effectively grants access to all hosts (e.g. proxy,
-  // network, etc.)
-  bool HasEffectiveAccessToAllHosts() const;
 
   // Returns the full list of permission details for messages that should
   // display at install time, in a nested format ready for display.
@@ -363,7 +358,7 @@ class PermissionsData {
   // default policy-level and user-level settings.
   // If empty, these settings are ignored. This should mostly only be the case
   // in unittests.
-  mutable absl::optional<int> context_id_;
+  mutable std::optional<int> context_id_;
 
   // Whether the extension uses the default policy host restrictions.
   mutable bool uses_default_policy_host_restrictions_ = true;

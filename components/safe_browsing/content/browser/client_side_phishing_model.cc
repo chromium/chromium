@@ -5,7 +5,9 @@
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -30,7 +32,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -117,7 +118,7 @@ std::pair<std::string, base::File> LoadModelAndVisualTfLiteFile(
     return std::pair<std::string, base::File>();
   }
 
-  absl::optional<base::FilePath> visual_tflite_path = absl::nullopt;
+  std::optional<base::FilePath> visual_tflite_path = std::nullopt;
 
   for (const base::FilePath& path : additional_files) {
     // There should only be one loop after above check
@@ -152,6 +153,11 @@ void CloseModelFile(base::File model_file) {
   model_file.Close();
 }
 
+int* GetLiveClientPhishingModelCount() {
+  static int count = 0;
+  return &count;
+}
+
 }  // namespace
 
 // --- ClientSidePhishingModel methods ---
@@ -164,7 +170,11 @@ ClientSidePhishingModel::ClientSidePhishingModel(
       beginning_time_(base::TimeTicks::Now()) {
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING,
-      /*model_metadata=*/absl::nullopt, this);
+      /*model_metadata=*/std::nullopt, this);
+  *GetLiveClientPhishingModelCount() += 1;
+  base::UmaHistogramCounts1000(
+      "SBClientPhishing.LiveClientPhishingModelCountAtCreation",
+      *GetLiveClientPhishingModelCount());
 }
 
 void ClientSidePhishingModel::OnModelUpdated(
@@ -180,12 +190,29 @@ void ClientSidePhishingModel::OnModelUpdated(
     return;
   }
 
-  if (!model_info.has_value()) {
-    return;
-  }
-
   if (optimization_target ==
       optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
+    // If the model_info has no value, that means the OptimizationGuide server
+    // has sent an intentionally null model value to indicate that there is a
+    // bad model on disk and it should be removed. Therefore, we will clear the
+    // current model in the class.
+    if (!model_info.has_value()) {
+      mapped_region_ = base::MappedReadOnlyRegion();
+      if (visual_tflite_model_) {
+        background_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(&CloseModelFile, std::move(*visual_tflite_model_)));
+      }
+      // Run callback to remove models from the renderer process. When a
+      // callback is called and there are no models in this class while the
+      // model type is set, it's expected that it's asked to remove the models.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadModelAndVisualTfLiteFile,
@@ -197,6 +224,22 @@ void ClientSidePhishingModel::OnModelUpdated(
   } else if (optimization_target ==
              optimization_guide::proto::
                  OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
+    // If the model_info has no value for this target, we only remove the image
+    // embedding model, and if the trigger models are still valid, then the
+    // scorer will be created with the trigger models only.
+    if (!model_info.has_value()) {
+      if (image_embedding_model_) {
+        background_task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&CloseModelFile,
+                                      std::move(*image_embedding_model_)));
+      }
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LoadImageEmbeddingModelFile,
@@ -213,7 +256,7 @@ void ClientSidePhishingModel::SubscribeToImageEmbedderOptimizationGuide() {
     opt_guide_->AddObserverForOptimizationTargetModel(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
-        /*model_metadata=*/absl::nullopt, this);
+        /*model_metadata=*/std::nullopt, this);
   }
 }
 
@@ -222,7 +265,7 @@ bool ClientSidePhishingModel::IsSubscribedToImageEmbeddingModelUpdates() {
 }
 
 void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
-    absl::optional<optimization_guide::proto::Any> model_metadata,
+    std::optional<optimization_guide::proto::Any> model_metadata,
     std::pair<std::string, base::File> model_and_tflite) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -238,8 +281,6 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
   base::File visual_tflite_model = std::move(model_and_tflite.second);
 
   bool model_valid = false;
-  int model_version_field = 0;
-
   bool tflite_valid = visual_tflite_model.IsValid();
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           kOverrideCsdModelFlag) &&
@@ -253,8 +294,6 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
           base::ReadOnlySharedMemoryRegion::Create(model_str.length());
       if (mapped_region_.IsValid()) {
         model_type_ = CSDModelType::kFlatbuffer;
-        model_version_field =
-            flat::GetClientSideModel(model_str.data())->version();
         memcpy(mapped_region_.mapping.memory(), model_str.data(),
                model_str.length());
 
@@ -292,14 +331,6 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
   base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
                             model_valid);
 
-  if (model_valid) {
-    // At time of writing, versions go up to 25. We set a max version of 100
-    // to give some room.
-    const int kMaxVersion = 100;
-    base::UmaHistogramExactLinear("SBClientPhishing.ModelDynamicUpdateVersion",
-                                  model_version_field, kMaxVersion + 1);
-  }
-
   if (tflite_valid) {
     visual_tflite_model_ = std::move(visual_tflite_model);
   }
@@ -309,8 +340,8 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
         "SBClientPhishing.OptimizationGuide.ModelFetchTime",
         base::TimeTicks::Now() - beginning_time_);
 
-    absl::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
-        client_side_phishing_model_metadata = absl::nullopt;
+    std::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
+        client_side_phishing_model_metadata = std::nullopt;
 
     if (model_metadata.has_value()) {
       client_side_phishing_model_metadata =
@@ -334,14 +365,22 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
 }
 
 void ClientSidePhishingModel::OnImageEmbeddingModelLoaded(
-    absl::optional<optimization_guide::proto::Any> model_metadata,
+    std::optional<optimization_guide::proto::Any> model_metadata,
     base::File image_embedding_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (image_embedding_model_) {
+    // If the image embedding model file is already loaded, it should be closed
+    // on a background thread.
+    background_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CloseModelFile, std::move(*image_embedding_model_)));
+  }
+
   image_embedding_model_ = std::move(image_embedding_model);
 
-  absl::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
-      image_embedding_model_metadata = absl::nullopt;
+  std::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
+      image_embedding_model_metadata = std::nullopt;
 
   if (model_metadata.has_value()) {
     image_embedding_model_metadata = optimization_guide::ParsedAnyMetadata<
@@ -371,6 +410,11 @@ bool ClientSidePhishingModel::IsModelMetadataImageEmbeddingVersionMatching() {
          trigger_model_version_.value() == embedding_model_version_.value();
 }
 
+int ClientSidePhishingModel::GetTriggerModelVersion() {
+  return trigger_model_version_.has_value() ? trigger_model_version_.value()
+                                            : 0;
+}
+
 ClientSidePhishingModel::~ClientSidePhishingModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -398,6 +442,8 @@ ClientSidePhishingModel::~ClientSidePhishingModel() {
   }
 
   opt_guide_ = nullptr;
+
+  *GetLiveClientPhishingModelCount() -= 1;
 }
 
 base::CallbackListSubscription ClientSidePhishingModel::RegisterCallback(
@@ -512,8 +558,6 @@ void ClientSidePhishingModel::SetModelStringForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool model_valid = false;
-  int model_version_field = 0;
-
   bool tflite_valid = visual_tflite_model.IsValid();
 
   // TODO (andysjlim): Move to a helper function once protobuf feature is
@@ -530,8 +574,6 @@ void ClientSidePhishingModel::SetModelStringForTesting(
           base::ReadOnlySharedMemoryRegion::Create(model_str.length());
       if (mapped_region_.IsValid()) {
         model_type_ = CSDModelType::kFlatbuffer;
-        model_version_field =
-            flat::GetClientSideModel(model_str.data())->version();
         memcpy(mapped_region_.mapping.memory(), model_str.data(),
                model_str.length());
       } else {
@@ -543,15 +585,6 @@ void ClientSidePhishingModel::SetModelStringForTesting(
 
     base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
                               model_valid);
-
-    if (model_valid) {
-      // At time of writing, versions go up to 25. We set a max version of 100
-      // to give some room.
-      const int kMaxVersion = 100;
-      base::UmaHistogramExactLinear(
-          "SBClientPhishing.ModelDynamicUpdateVersion", model_version_field,
-          kMaxVersion + 1);
-    }
 
     if (tflite_valid) {
       visual_tflite_model_ = std::move(visual_tflite_model);
@@ -605,16 +638,12 @@ void ClientSidePhishingModel::MaybeOverrideModel() {
     base::FilePath overriden_model_directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             kOverrideCsdModelFlag);
-    CSDModelType model_type =
-        base::FeatureList::IsEnabled(kClientSideDetectionModelIsFlatBuffer)
-            ? CSDModelType::kFlatbuffer
-            : CSDModelType::kNone;
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(
             &ReadOverridenModel, overriden_model_directory,
             base::BindOnce(&ClientSidePhishingModel::OnGetOverridenModelData,
-                           base::Unretained(this), model_type)));
+                           base::Unretained(this), CSDModelType::kFlatbuffer)));
   }
 }
 
@@ -679,7 +708,7 @@ void ClientSidePhishingModel::SetModelAndVisualTfLiteForTesting(
       base::BindOnce(&LoadModelAndVisualTfLiteFile, model_file_path,
                      additional_files),
       base::BindOnce(&ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
+                     weak_ptr_factory_.GetWeakPtr(), std::nullopt));
 }
 
 }  // namespace safe_browsing

@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <sys/file.h>
+#include <unistd.h>
 
 #include <utility>
 
@@ -79,7 +80,7 @@ bool ReadMessage(int fd, std::string* message) {
 
   message_size -= message_header_size;  // The message size includes itself.
   char buffer[SerializationUtils::kMessageMaxLength];
-  if (!base::ReadFromFD(fd, buffer, message_size)) {
+  if (!base::ReadFromFD(fd, base::make_span(buffer, message_size))) {
     DPLOG(ERROR) << "reading metrics message body";
     return false;
   }
@@ -87,47 +88,15 @@ bool ReadMessage(int fd, std::string* message) {
   return true;
 }
 
-}  // namespace
-
-// This value is used as a max value in a histogram,
-// Platform.ExternalMetrics.SamplesRead. If it changes, the histogram will need
-// to be renamed.
-const int SerializationUtils::kMaxMessagesPerRead = 100000;
-
-std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
-    const std::string& sample) {
-  if (sample.empty())
-    return nullptr;
-
-  std::vector<std::string> parts = base::SplitString(
-      sample, std::string(1, '\0'),
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  // We should have two null terminated strings so split should produce
-  // three chunks.
-  if (parts.size() != 3) {
-    DLOG(ERROR) << "splitting message on \\0 produced " << parts.size()
-                << " parts (expected 3)";
-    return nullptr;
-  }
-  const std::string& name = parts[0];
-  const std::string& value = parts[1];
-
-  if (base::EqualsCaseInsensitiveASCII(name, "crash"))
-    return MetricSample::ParseCrash(value);
-  if (base::EqualsCaseInsensitiveASCII(name, "histogram"))
-    return MetricSample::ParseHistogram(value);
-  if (base::EqualsCaseInsensitiveASCII(name, "linearhistogram"))
-    return MetricSample::ParseLinearHistogram(value);
-  if (base::EqualsCaseInsensitiveASCII(name, "sparsehistogram"))
-    return MetricSample::ParseSparseHistogram(value);
-  if (base::EqualsCaseInsensitiveASCII(name, "useraction"))
-    return MetricSample::ParseUserAction(value);
-  DLOG(ERROR) << "invalid event type: " << name << ", value: " << value;
-  return nullptr;
-}
-
-void SerializationUtils::ReadAndTruncateMetricsFromFile(
+// Reads all samples from a file and when done:
+//  1) deletes the file if |delete_file| is true.
+//  2) truncates the file if |delete_file| is false.
+//
+// This method is the implementation of ReadAndTruncateMetricsFromFile() and
+// ReadAndDeleteMetricsFromFile().
+void ReadAndTruncateOrDeleteMetricsFromFile(
     const std::string& filename,
+    bool delete_file,
     std::vector<std::unique_ptr<MetricSample>>* metrics) {
   struct stat stat_buf;
   int result;
@@ -146,7 +115,9 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
     // Also nothing to collect.
     return;
   }
-  base::ScopedFD fd(open(filename.c_str(), O_RDWR));
+  // Only need to read/write if we're truncating.
+  int flag = delete_file ? O_RDONLY : O_RDWR;
+  base::ScopedFD fd(open(filename.c_str(), flag));
   if (fd.get() < 0) {
     DPLOG(ERROR) << "cannot open: " << filename;
     return;
@@ -159,38 +130,110 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
 
   // This processes all messages in the log. When all messages are
   // read and processed, or an error occurs, or we've read so many that the
-  // buffer is at risk of overflowing, truncate the file to zero size. If we
-  // hit kMaxMessagesPerRead, don't add them to the vector to avoid memory
-  // overflow.
-  while (metrics->size() < kMaxMessagesPerRead) {
+  // buffer is at risk of overflowing, delete the file or truncate the file to
+  // zero size according to |delete_file|. If we hit kMaxMessagesPerRead, don't
+  // add them to the vector to avoid memory overflow.
+  while (metrics->size() <
+         static_cast<size_t>(SerializationUtils::kMaxMessagesPerRead)) {
     std::string message;
 
     if (!ReadMessage(fd.get(), &message)) {
       break;
     }
 
-    std::unique_ptr<MetricSample> sample = ParseSample(message);
-    if (sample)
+    std::unique_ptr<MetricSample> sample =
+        SerializationUtils::ParseSample(message);
+    if (sample) {
       metrics->push_back(std::move(sample));
+    }
   }
 
-  base::UmaHistogramCustomCounts("Platform.ExternalMetrics.SamplesRead",
-                                 metrics->size(), 1, kMaxMessagesPerRead - 1,
-                                 50);
+  base::UmaHistogramCustomCounts(
+      "Platform.ExternalMetrics.SamplesRead", metrics->size(), 1,
+      SerializationUtils::kMaxMessagesPerRead - 1, 50);
 
-  result = ftruncate(fd.get(), 0);
-  if (result < 0)
-    DPLOG(ERROR) << "truncate metrics log: " << filename;
+  if (delete_file) {
+    result = unlink(filename.c_str());
+    if (result < 0) {
+      DPLOG(ERROR) << "error deleting metrics log: " << filename;
+    }
+  } else {
+    result = ftruncate(fd.get(), 0);
+    if (result < 0) {
+      DPLOG(ERROR) << "error truncating metrics log: " << filename;
+    }
+  }
 
   result = flock(fd.get(), LOCK_UN);
-  if (result < 0)
-    DPLOG(ERROR) << "unlock metrics log: " << filename;
+  if (result < 0) {
+    DPLOG(ERROR) << "error unlocking metrics log: " << filename;
+  }
+}
+
+}  // namespace
+
+// This value is used as a max value in a histogram,
+// Platform.ExternalMetrics.SamplesRead. If it changes, the histogram will need
+// to be renamed.
+const int SerializationUtils::kMaxMessagesPerRead = 100000;
+
+std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
+    const std::string& sample) {
+  if (sample.empty()) {
+    return nullptr;
+  }
+
+  std::vector<std::string> parts =
+      base::SplitString(sample, std::string(1, '\0'), base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_ALL);
+  // We should have two null terminated strings so split should produce
+  // three chunks.
+  if (parts.size() != 3) {
+    DLOG(ERROR) << "splitting message on \\0 produced " << parts.size()
+                << " parts (expected 3)";
+    return nullptr;
+  }
+  const std::string& name = parts[0];
+  const std::string& value = parts[1];
+
+  if (base::EqualsCaseInsensitiveASCII(name, "crash")) {
+    return MetricSample::ParseCrash(value);
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "histogram")) {
+    return MetricSample::ParseHistogram(value);
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "linearhistogram")) {
+    return MetricSample::ParseLinearHistogram(value);
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "sparsehistogram")) {
+    return MetricSample::ParseSparseHistogram(value);
+  }
+  if (base::EqualsCaseInsensitiveASCII(name, "useraction")) {
+    return MetricSample::ParseUserAction(value);
+  }
+  DLOG(ERROR) << "invalid event type: " << name << ", value: " << value;
+  return nullptr;
+}
+
+void SerializationUtils::ReadAndTruncateMetricsFromFile(
+    const std::string& filename,
+    std::vector<std::unique_ptr<MetricSample>>* metrics) {
+  ReadAndTruncateOrDeleteMetricsFromFile(filename, /*delete_file=*/false,
+                                         metrics);
+}
+
+void SerializationUtils::ReadAndDeleteMetricsFromFile(
+    const std::string& filename,
+    std::vector<std::unique_ptr<MetricSample>>* metrics) {
+  ReadAndTruncateOrDeleteMetricsFromFile(filename, /*delete_file=*/true,
+                                         metrics);
 }
 
 bool SerializationUtils::WriteMetricToFile(const MetricSample& sample,
                                            const std::string& filename) {
-  if (!sample.IsValid())
+  if (!sample.IsValid()) {
     return false;
+  }
 
   base::ScopedFD file_descriptor(open(filename.c_str(),
                                       O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC,

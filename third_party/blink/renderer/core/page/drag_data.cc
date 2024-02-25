@@ -41,11 +41,13 @@ namespace blink {
 DragData::DragData(DataObject* data,
                    const gfx::PointF& client_position,
                    const gfx::PointF& global_position,
-                   DragOperationsMask source_operation_mask)
+                   DragOperationsMask source_operation_mask,
+                   bool force_default_action)
     : client_position_(client_position),
       global_position_(global_position),
       platform_drag_data_(data),
-      dragging_source_operation_mask_(source_operation_mask) {}
+      dragging_source_operation_mask_(source_operation_mask),
+      force_default_action_(force_default_action) {}
 
 bool DragData::ContainsHTML() const {
   return platform_drag_data_->Types().Contains(kMimeTypeTextHTML);
@@ -73,6 +75,10 @@ bool DragData::ContainsFiles() const {
 
 int DragData::GetModifiers() const {
   return platform_drag_data_->GetModifiers();
+}
+
+bool DragData::ForceDefaultAction() const {
+  return force_default_action_;
 }
 
 void DragData::AsFilePaths(Vector<String>& result) const {
@@ -131,9 +137,10 @@ DocumentFragment* DragData::AsFragment(LocalFrame* frame) const {
     platform_drag_data_->HtmlAndBaseURL(html, base_url);
     DCHECK(frame->GetDocument());
     if (DocumentFragment* fragment =
-            CreateSanitizedFragmentFromMarkupWithContext(
-                *frame->GetDocument(), html, 0, html.length(), base_url))
+            CreateStrictlyProcessedFragmentFromMarkupWithContext(
+                *frame->GetDocument(), html, 0, html.length(), base_url)) {
       return fragment;
+    }
   }
 
   return nullptr;

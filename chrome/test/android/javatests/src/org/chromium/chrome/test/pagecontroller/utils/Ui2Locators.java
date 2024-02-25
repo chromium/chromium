@@ -14,9 +14,7 @@ import androidx.test.uiautomator.By;
 
 import java.util.regex.Pattern;
 
-/**
- * Locators that find UIObject2 nodes.
- */
+/** Locators that find UIObject2 nodes. */
 public final class Ui2Locators {
     private static Resources sMockResources;
 

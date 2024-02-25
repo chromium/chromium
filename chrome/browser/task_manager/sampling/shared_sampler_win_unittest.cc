@@ -75,7 +75,7 @@ class SharedSamplerTest : public testing::Test {
   }
 
   void OnSamplerRefreshDone(
-      absl::optional<SharedSampler::SamplingResult> results) {
+      std::optional<SharedSampler::SamplingResult> results) {
     if (results) {
       idle_wakeups_per_second_ = results->idle_wakeups_per_second;
       start_time_ = results->start_time;

@@ -71,7 +71,7 @@ mojo::AllocMessage(6, nullptr, 0, MOJO_ALLOC_MESSAGE_FLAG_NONE, &message);
 void *buffer;
 mojo::GetMessageBuffer(message.get(), &buffer);
 
-constexpr base::StringPiece kMessage = "hello";
+constexpr std::string_view kMessage = "hello";
 base::ranges::copy(kMessage, static_cast<char*>(buffer));
 
 mojo::WriteMessageNew(client.get(), std::move(message),
@@ -135,7 +135,8 @@ This new handle can be cloned arbitrarily many times by using the underlying
 handle's `Clone` method:
 
 ``` cpp
-mojo::ScopedSharedBufferHandle another_handle = buffer->Clone();
+mojo::ScopedSharedBufferHandle another_handle =
+    buffer->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
 mojo::ScopedSharedBufferHandle read_only_handle =
     buffer->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
 ```

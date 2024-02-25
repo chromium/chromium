@@ -44,7 +44,7 @@ class IndexedRulesetPerftest : public testing::Test {
 
   void SetUp() override {
     base::FilePath dir_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir_path);
 
     // The file contains the subresource URLs of the top-100 Alexa landing
     // pages.

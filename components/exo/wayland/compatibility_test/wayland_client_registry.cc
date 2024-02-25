@@ -26,7 +26,7 @@ WaylandClientRegistry::WaylandClientRegistry(wl_display* display)
 
 WaylandClientRegistry::~WaylandClientRegistry() = default;
 
-absl::optional<WaylandClientRegistry::Entry> WaylandClientRegistry::GetEntry(
+std::optional<WaylandClientRegistry::Entry> WaylandClientRegistry::GetEntry(
     const char* interface_name) const noexcept {
   DCHECK(registry_);
   if (!registry_)

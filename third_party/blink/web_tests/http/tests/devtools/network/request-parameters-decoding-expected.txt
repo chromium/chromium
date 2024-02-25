@@ -1,5 +1,0 @@
-Tests how request headers are decoded in network item view.
-
-Original value: Test+%21%40%23%24%25%5E%26*%28%29_%2B+parameters.
-Decoded value: Test !@#$%^&*()_+ parameters.
-

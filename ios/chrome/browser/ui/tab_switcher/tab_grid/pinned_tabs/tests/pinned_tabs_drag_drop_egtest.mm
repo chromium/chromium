@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,7 +22,6 @@
 
 using ::base::test::ios::kWaitForUIElementTimeout;
 using ::base::test::ios::WaitUntilConditionOrTimeout;
-using chrome_test_util::LongPressCellAndDragToOffsetOf;
 
 namespace {
 
@@ -174,13 +172,6 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
 
 @implementation PinnedTabsDragDropTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kEnablePinnedTabs);
-
-  return config;
-}
-
 // Checks that the Pinned Tabs feature is disabled on iPad.
 - (void)testDragRegularTabOniPad {
   if (![ChromeEarlGrey isIPadIdiom]) {
@@ -221,7 +212,14 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
 
 // Checks that dragging a regular tab and dropping it in the pinned view moves
 // it in the pinned view.
-- (void)testDragRegularTabInPinnedView {
+// TODO(crbug.com/1493679): Test is flaky on simluator. Re-enable the test.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testDragRegularTabInPinnedView \
+  FLAKY_testDragRegularTabInPinnedView
+#else
+#define MAYBE_testDragRegularTabInPinnedView testDragRegularTabInPinnedView
+#endif
+- (void)MAYBE_testDragRegularTabInPinnedView {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");

@@ -5,9 +5,15 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_SPARE_RENDER_PROCESS_HOST_MANAGER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_SPARE_RENDER_PROCESS_HOST_MANAGER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
 
 namespace content {
@@ -35,7 +41,8 @@ class RenderProcessHost;
 // It is safe to call WarmupSpareRenderProcessHost multiple times, although if
 // called in a context where the spare renderer is not likely to be used
 // performance may suffer due to the unnecessary RPH creation.
-class SpareRenderProcessHostManager : public RenderProcessHostObserver {
+class CONTENT_EXPORT SpareRenderProcessHostManager
+    : public RenderProcessHostObserver {
  public:
   SpareRenderProcessHostManager();
   ~SpareRenderProcessHostManager() override;
@@ -47,6 +54,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
 
   static SpareRenderProcessHostManager& GetInstance();
 
+  // Start a spare renderer immediately if there isn't one.
   void WarmupSpareRenderProcessHost(BrowserContext* browser_context);
 
   RenderProcessHost* MaybeTakeSpareRenderProcessHost(
@@ -59,7 +67,15 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
   // Note that depending on the caller PrepareForFutureRequests can be called
   // after the spare_render_process_host_ has either been 1) matched and taken
   // or 2) mismatched and ignored or 3) matched and ignored.
-  void PrepareForFutureRequests(BrowserContext* browser_context);
+  //
+  // The creation of new spare renderer will be delayed by `delay` if present.
+  // If `delay` is base::TimeDelta::Max(), the creation is delayed until the
+  // page finishes loading. In this case, there will be a separate call to this
+  // function with `delay` set to nullopt from WebContents::DidStopLoading().
+  // This is used to avoid potential resource contention.
+  void PrepareForFutureRequests(
+      BrowserContext* browser_context,
+      std::optional<base::TimeDelta> delay = std::nullopt);
 
   // Gracefully remove and cleanup a spare RenderProcessHost if it exists.
   void CleanupSpareRenderProcessHost();
@@ -82,6 +98,12 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
                            const ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
+  // Start a spare renderer at a later time if there isn't one.
+  // This is to avoid resource contention between existing renderers and a
+  // new spare renderer.
+  void DeferredWarmupSpareRenderProcessHost(BrowserContext* browser_context,
+                                            base::TimeDelta delay);
+
   // The clients who want to know when the spare render process host has
   // changed.
   base::RepeatingCallbackList<void(RenderProcessHost*)>
@@ -90,6 +112,13 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
   // This is a bare pointer, because RenderProcessHost manages the lifetime of
   // all its instances; see GetAllHosts().
   raw_ptr<RenderProcessHost> spare_render_process_host_ = nullptr;
+
+  // The timer used to track the startup time of the spare renderer process.
+  std::unique_ptr<base::ElapsedTimer> process_startup_timer_;
+  // The timer used to track the delay of spare renderer creation.
+  std::unique_ptr<base::ElapsedTimer> delay_timer_;
+
+  base::OneShotTimer deferred_warmup_timer_;
 };
 
 }  // namespace content

@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/build_config.h"
@@ -113,6 +114,8 @@ class BASE_EXPORT MadvFreeDiscardableMemoryPosix : public DiscardableMemory {
   raw_ptr<std::atomic<size_t>> allocator_byte_count_;
 
   // Data comes from mmap() and we manage its poisioning.
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
+  // there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION void* data_;
   bool is_locked_ = true;
 

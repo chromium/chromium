@@ -4,7 +4,10 @@
 
 #include "content/browser/renderer_host/policy_container_host.h"
 
+#include <utility>
+
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -21,15 +24,14 @@ namespace {
 // KeepAliveHandle is simply a class referencing a PolicyContainerHost through a
 // scoped_refptr, hence maintaining it alive.
 class KeepAliveHandle
-    : public scoped_refptr<PolicyContainerHost>,
-      public blink::mojom::PolicyContainerHostKeepAliveHandle {
+    : public blink::mojom::PolicyContainerHostKeepAliveHandle {
  public:
-  explicit KeepAliveHandle(PolicyContainerHost* policy_container_host) {
-    wrapped_pointer = policy_container_host;
-  }
+  explicit KeepAliveHandle(
+      scoped_refptr<PolicyContainerHost> policy_container_host)
+      : host_(std::move(policy_container_host)) {}
 
  private:
-  scoped_refptr<PolicyContainerHost> wrapped_pointer;
+  const scoped_refptr<PolicyContainerHost> host_;
 };
 
 using TokenPolicyContainerMap =
@@ -302,8 +304,9 @@ void PolicyContainerHost::Bind(
 void PolicyContainerHost::IssueKeepAliveHandle(
     mojo::PendingReceiver<blink::mojom::PolicyContainerHostKeepAliveHandle>
         receiver) {
-  keep_alive_handles_receiver_set_.Add(std::make_unique<KeepAliveHandle>(this),
-                                       std::move(receiver));
+  keep_alive_handles_receiver_set_.Add(
+      std::make_unique<KeepAliveHandle>(base::WrapRefCounted(this)),
+      std::move(receiver));
 }
 
 }  // namespace content

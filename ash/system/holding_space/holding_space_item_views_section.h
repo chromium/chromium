@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -33,6 +34,8 @@ class HoldingSpaceViewDelegate;
 
 // A section of holding space item views in a `HoldingSpaceTrayChildBubble`.
 class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
+  METADATA_HEADER(HoldingSpaceItemViewsSection, views::View)
+
  public:
   HoldingSpaceItemViewsSection(HoldingSpaceViewDelegate* delegate,
                                HoldingSpaceSectionId section_id);
@@ -142,16 +145,14 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
   void OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
   void OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
-  const raw_ptr<HoldingSpaceViewDelegate, DanglingUntriaged | ExperimentalAsh>
-      delegate_;
-  const raw_ptr<const HoldingSpaceSection, ExperimentalAsh> section_;
+  const raw_ptr<HoldingSpaceViewDelegate, DanglingUntriaged> delegate_;
+  const raw_ptr<const HoldingSpaceSection> section_;
 
   // Owned by view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> header_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> placeholder_ =
-      nullptr;
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::View> header_ = nullptr;
+  raw_ptr<views::View> container_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> placeholder_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
 
   // Bit flag representation of current `AnimationState`. Note that it is

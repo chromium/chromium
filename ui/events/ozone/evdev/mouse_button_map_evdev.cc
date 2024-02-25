@@ -36,7 +36,7 @@ MouseButtonMapEvdev::MouseButtonMapEvdev()
 MouseButtonMapEvdev::~MouseButtonMapEvdev() {
 }
 
-void MouseButtonMapEvdev::SetPrimaryButtonRight(absl::optional<int> device_id,
+void MouseButtonMapEvdev::SetPrimaryButtonRight(std::optional<int> device_id,
                                                 bool primary_button_right) {
   if (!enable_per_device_settings_ || !device_id.has_value()) {
     device_id = kSharedDeviceSettingsId;

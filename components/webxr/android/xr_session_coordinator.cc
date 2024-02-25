@@ -53,13 +53,13 @@ void XrSessionCoordinator::RequestArSession(
     const device::CompositorDelegateProvider& compositor_delegate_provider,
     device::SurfaceReadyCallback ready_callback,
     device::SurfaceTouchCallback touch_callback,
-    device::SurfaceDestroyedCallback destroyed_callback) {
+    device::JavaShutdownCallback destroyed_callback) {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
 
   surface_ready_callback_ = std::move(ready_callback);
   surface_touch_callback_ = std::move(touch_callback);
-  surface_destroyed_callback_ = std::move(destroyed_callback);
+  java_shutdown_callback_ = std::move(destroyed_callback);
 
   Java_XrSessionCoordinator_startArSession(
       env, j_xr_session_coordinator_,
@@ -74,14 +74,14 @@ void XrSessionCoordinator::RequestVrSession(
     const device::CompositorDelegateProvider& compositor_delegate_provider,
     device::SurfaceReadyCallback ready_callback,
     device::SurfaceTouchCallback touch_callback,
-    device::SurfaceDestroyedCallback destroyed_callback,
+    device::JavaShutdownCallback destroyed_callback,
     device::XrSessionButtonTouchedCallback button_touched_callback) {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
 
   surface_ready_callback_ = std::move(ready_callback);
   surface_touch_callback_ = std::move(touch_callback);
-  surface_destroyed_callback_ = std::move(destroyed_callback);
+  java_shutdown_callback_ = std::move(destroyed_callback);
   xr_button_touched_callback_ = std::move(button_touched_callback);
 
   Java_XrSessionCoordinator_startVrSession(
@@ -91,11 +91,13 @@ void XrSessionCoordinator::RequestVrSession(
 }
 
 void XrSessionCoordinator::RequestXrSession(
-    ActivityReadyCallback ready_callback) {
+    ActivityReadyCallback ready_callback,
+    device::JavaShutdownCallback shutdown_callback) {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
 
   activity_ready_callback_ = std::move(ready_callback);
+  java_shutdown_callback_ = std::move(shutdown_callback);
 
   Java_XrSessionCoordinator_startXrSession(env, j_xr_session_coordinator_);
 }
@@ -145,12 +147,12 @@ void XrSessionCoordinator::OnDrawingSurfaceTouch(
   surface_touch_callback_.Run(primary, touching, pointer_id, {x, y});
 }
 
-void XrSessionCoordinator::OnDrawingSurfaceDestroyed(
+void XrSessionCoordinator::OnJavaShutdown(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   DVLOG(1) << __func__ << ":::";
-  if (surface_destroyed_callback_) {
-    std::move(surface_destroyed_callback_).Run();
+  if (java_shutdown_callback_) {
+    std::move(java_shutdown_callback_).Run();
   }
 }
 

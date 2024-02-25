@@ -6,14 +6,9 @@ package org.chromium.chrome.browser;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
@@ -31,15 +26,11 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.SystemAccountManagerDelegate;
 import org.chromium.components.webapps.AppDetailsDelegate;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Base class for defining methods where different behavior is required by downstream targets.
@@ -52,9 +43,7 @@ import java.util.List;
 public abstract class AppHooks {
     private static AppHooksImpl sInstanceForTesting;
 
-    /**
-     * Sets a mocked instance for testing.
-     */
+    /** Sets a mocked instance for testing. */
     public static void setInstanceForTesting(AppHooksImpl instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
@@ -96,13 +85,6 @@ public abstract class AppHooks {
      */
     public CustomTabsConnection createCustomTabsConnection() {
         return new CustomTabsConnection();
-    }
-
-    /**
-     * Returns a new {@link DirectActionCoordinator} instance, if available.
-     */
-    public @Nullable DirectActionCoordinator createDirectActionCoordinator() {
-        return null;
     }
 
     /**
@@ -154,9 +136,7 @@ public abstract class AppHooks {
         return new RevenueStats();
     }
 
-    /**
-     * Returns a new instance of VariationsSession.
-     */
+    /** Returns a new instance of VariationsSession. */
     public VariationsSession createVariationsSession() {
         return new VariationsSession();
     }
@@ -180,14 +160,6 @@ public abstract class AppHooks {
     }
 
     /**
-     * @return A list of allowlisted app package names whose completed notifications
-     * we should suppress.
-     */
-    public List<String> getOfflinePagesSuppressNotificationPackages() {
-        return Collections.emptyList();
-    }
-
-    /**
      * @return An iterator of partner bookmarks.
      */
     @Nullable
@@ -202,62 +174,30 @@ public abstract class AppHooks {
         return new DigitalWellbeingClient();
     }
 
-    /**
-     * Checks the Google Play services availability on the this device.
-     *
-     * This is a workaround for the
-     * versioned API of {@link GoogleApiAvailability#isGooglePlayServicesAvailable()}. The current
-     * Google Play services SDK version doesn't have this API yet.
-     *
-     * TODO(zqzhang): Remove this method after the SDK is updated.
-     *
-     * @return status code indicating whether there was an error. The possible return values are the
-     * same as {@link GoogleApiAvailability#isGooglePlayServicesAvailable()}.
-     */
-    public int isGoogleApiAvailableWithMinApkVersion(int minApkVersion) {
-        int apkVersion =
-                PackageUtils.getPackageVersion(GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE);
-        return apkVersion < 0                ? ConnectionResult.SERVICE_MISSING
-                : apkVersion < minApkVersion ? ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED
-                                             : ConnectionResult.SUCCESS;
-    }
-
-    /**
-     * Returns a new {@link TrustedVaultClient.Backend} instance.
-     */
+    /** Returns a new {@link TrustedVaultClient.Backend} instance. */
     public TrustedVaultClient.Backend createSyncTrustedVaultClientBackend() {
         return new TrustedVaultClient.EmptyBackend();
     }
 
-    /**
-     * Returns the URL to the WebAPK creation/update server.
-     */
+    /** Returns the URL to the WebAPK creation/update server. */
     public String getWebApkServerUrl() {
         return "";
     }
 
-    /**
-     * Returns a Chime Delegate if the chime module is defined.
-     */
+    /** Returns a Chime Delegate if the chime module is defined. */
     public ChimeDelegate getChimeDelegate() {
         return new ChimeDelegate();
-    }
-
-    public @Nullable ImageEditorModuleProvider getImageEditorModuleProvider() {
-        return null;
     }
 
     public ChromeStartupDelegate createChromeStartupDelegate() {
         return new ChromeStartupDelegate();
     }
 
-    public boolean canStartForegroundServiceWhileInvisible() {
-        return true;
-    }
-
     public String getDefaultQueryTilesServerUrl() {
         return "";
     }
+
+    public void registerProtoExtensions() {}
 
     // Stop! Do not add new methods to AppHooks anymore. Follow go/apphooks-migration instead.
 }

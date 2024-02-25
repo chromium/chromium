@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/feature_tiles_container_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/shell.h"
@@ -18,7 +17,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_utils.h"
@@ -33,10 +31,6 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   MockFeaturePodController(const MockFeaturePodController&) = delete;
   MockFeaturePodController& operator=(const MockFeaturePodController&) = delete;
   ~MockFeaturePodController() override = default;
-
-  FeaturePodButton* CreateButton() override {
-    return new FeaturePodButton(/*controller=*/this);
-  }
 
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override {
     auto tile = std::make_unique<FeatureTile>(
@@ -67,10 +61,7 @@ constexpr int kMaxPrimaryTilesPerRow = 2;
 class FeatureTilesContainerViewTest : public AshTestBase,
                                       public views::ViewObserver {
  public:
-  FeatureTilesContainerViewTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
-
+  FeatureTilesContainerViewTest() = default;
   FeatureTilesContainerViewTest(const FeatureTilesContainerViewTest&) = delete;
   FeatureTilesContainerViewTest& operator=(
       const FeatureTilesContainerViewTest&) = delete;
@@ -137,7 +128,9 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   int GetVisibleCount() { return container()->GetVisibleFeatureTileCount(); }
 
-  std::vector<views::View*> pages() { return container()->children(); }
+  std::vector<raw_ptr<views::View, VectorExperimental>> pages() {
+    return container()->children();
+  }
 
   // Fills the container with a number of `pages` given the max amount of
   // displayable primary tiles per page.
@@ -158,12 +151,10 @@ class FeatureTilesContainerViewTest : public AshTestBase,
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  raw_ptr<FeatureTilesContainerView, DanglingUntriaged | ExperimentalAsh>
-      container_;
+  raw_ptr<FeatureTilesContainerView, DanglingUntriaged> container_;
 };
 
 // Tests `CalculateRowsFromHeight()` which returns the number of max displayable
@@ -496,7 +487,7 @@ TEST_F(FeatureTilesContainerViewTest, PaginationTransition) {
 
   // Page position after the transition ends should be a page offset to the
   // left.
-  int page_offset = kRevampedTrayMenuWidth;
+  int page_offset = kWideTrayMenuWidth;
   gfx::Rect final_bounds =
       gfx::Rect(initial_bounds.x() - page_offset, initial_bounds.y(),
                 initial_bounds.width(), initial_bounds.height());

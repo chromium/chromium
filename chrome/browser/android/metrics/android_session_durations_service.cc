@@ -205,7 +205,8 @@ JNI_AndroidSessionDurationsServiceState_GetAndroidSessionDurationsServiceState(
                                             last_reported_duration);
 
   return Java_AndroidSessionDurationsServiceState_Constructor(
-      env, session_start_time.ToJavaTime(), last_reported_duration.InMinutes());
+      env, session_start_time.InMillisecondsSinceUnixEpoch(),
+      last_reported_duration.InMinutes());
 }
 
 // Restores the service from an archived android object.
@@ -221,7 +222,7 @@ void JNI_AndroidSessionDurationsServiceState_RestoreAndroidSessionDurationsServi
   AndroidSessionDurationsService* duration_service =
       AndroidSessionDurationsServiceFactory::GetForProfile(profile);
 
-  base::Time session_start_time = base::Time::FromJavaTime(
+  base::Time session_start_time = base::Time::FromMillisecondsSinceUnixEpoch(
       Java_AndroidSessionDurationsServiceState_getSessionStartTime(
           env, j_duration_service));
   base::TimeDelta last_reported_duration = base::Minutes(

@@ -114,7 +114,7 @@ void RecordProductEvents(bool first_run,
   }
 
   // Record first user interaction with the omnibox. We call this all the
-  // time but the rlz lib should ingore all but the first one.
+  // time but the rlz lib should ignore all but the first one.
   if (omnibox_used) {
     rlz_lib::RecordProductEvent(rlz_lib::CHROME,
                                 RLZTracker::ChromeOmnibox(),
@@ -123,7 +123,7 @@ void RecordProductEvents(bool first_run,
 
 #if !BUILDFLAG(IS_IOS)
   // Record first user interaction with the home page. We call this all the
-  // time but the rlz lib should ingore all but the first one.
+  // time but the rlz lib should ignore all but the first one.
   if (homepage_used || is_google_in_startpages) {
     rlz_lib::RecordProductEvent(rlz_lib::CHROME,
                                 RLZTracker::ChromeHomePage(),
@@ -131,7 +131,7 @@ void RecordProductEvents(bool first_run,
   }
 
   // Record first user interaction with the app list. We call this all the
-  // time but the rlz lib should ingore all but the first one.
+  // time but the rlz lib should ignore all but the first one.
   if (app_list_used) {
     rlz_lib::RecordProductEvent(rlz_lib::CHROME,
                                 RLZTracker::ChromeAppList(),
@@ -257,6 +257,15 @@ void RLZTracker::SetDelegate(std::unique_ptr<RLZTrackerDelegate> delegate) {
   DCHECK(delegate);
   DCHECK(!delegate_);
   delegate_ = std::move(delegate);
+}
+
+// static
+void RLZTracker::ClearRlzDelegateForTesting() {
+  GetInstance()->ClearDelegateForTesting();  // IN-TEST
+}
+
+void RLZTracker::ClearDelegateForTesting() {
+  delegate_.reset();
 }
 
 // static
@@ -496,6 +505,12 @@ void RLZTracker::RecordFirstSearch(rlz_lib::AccessPoint point) {
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if !BUILDFLAG(IS_IOS)
+  if (point == ChromeHomePage()) {
+    chrome_homepage_search_recorded_ = true;
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
   bool* record_used = GetAccessPointRecord(point);
 
   // Try to record event now, else set the flag to try later when we
@@ -657,6 +672,32 @@ void RLZTracker::RecordAppListSearch() {
   if (tracker->delegate_)
     tracker->RecordFirstSearch(RLZTracker::ChromeAppList());
 }
-#endif
+
+// static
+bool RLZTracker::ShouldRecordChromeHomePageSearch() {
+  RLZTracker* tracker = GetInstance();
+  return tracker->delegate_ && tracker->delegate_->GetBrand(&tracker->brand_) &&
+         !tracker->delegate_->IsBrandOrganic(tracker->brand_) &&
+         !tracker->chrome_homepage_search_recorded_;
+}
+
+// static
+void RLZTracker::RecordChromeHomePageSearch() {
+  RLZTracker* tracker = GetInstance();
+  if (tracker->delegate_ && tracker->ShouldRecordChromeHomePageSearch()) {
+    tracker->delegate_->RunHomepageSearchCallback();
+  }
+}
+
+// static
+void RLZTracker::SetRlzChromeHomePageSearchRecordedForTesting(bool recorded) {
+  GetInstance()->SetChromeHomePageSearchRecordedForTesting(  // IN-TEST
+      recorded);
+}
+
+void RLZTracker::SetChromeHomePageSearchRecordedForTesting(bool recorded) {
+  chrome_homepage_search_recorded_ = recorded;
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace rlz

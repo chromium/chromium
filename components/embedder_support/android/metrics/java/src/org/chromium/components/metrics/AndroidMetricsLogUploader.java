@@ -4,12 +4,10 @@
 
 package org.chromium.components.metrics;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
-/**
- * Passes UMA logs from native to a java uploader.
- */
+/** Passes UMA logs from native to a java uploader. */
 @JNINamespace("metrics")
 public class AndroidMetricsLogUploader {
     private static volatile AndroidMetricsLogConsumer sConsumer;
@@ -34,10 +32,9 @@ public class AndroidMetricsLogUploader {
             if (consumer != null) {
                 return consumer.log(data);
             }
-            // If we end up not having an uploader yet
-            // it means metric reporting has been attempted too early
-            // so return Http Not Found (404) to indicate the resource
-            // does not exist yet.
+            // If we end up not having an uploader yet it means metric reporting has been
+            // attempted too early so return Http Not Found (404) to indicate the resource does
+            // not exist yet.
             return 404;
         }
     }

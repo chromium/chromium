@@ -4,6 +4,8 @@
 
 #include "chrome/updater/policy/dm_policy_manager.h"
 
+#include <optional>
+
 #include "base/enterprise_util.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -11,7 +13,6 @@
 #include "chrome/updater/util/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -121,16 +122,17 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
-  EXPECT_EQ(policy_manager->source(), "DeviceManagement");
+  EXPECT_EQ(policy_manager->source(), "Device Management");
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyPacUrl(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
+  EXPECT_EQ(policy_manager->CloudPolicyOverridesPlatformPolicy(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyMode(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyPacUrl(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyServer(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), std::nullopt);
   EXPECT_FALSE(
       policy_manager->GetEffectivePolicyForAppInstalls(test::kChromeAppId));
   EXPECT_FALSE(
@@ -138,7 +140,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   EXPECT_FALSE(
       policy_manager->IsRollbackToTargetVersionAllowed(test::kChromeAppId));
   EXPECT_EQ(policy_manager->GetTargetVersionPrefix(test::kChromeAppId),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST(DMPolicyManager, PolicyManagerFromProto) {
@@ -199,27 +201,27 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
-  EXPECT_EQ(policy_manager->source(), "DeviceManagement");
+  EXPECT_EQ(policy_manager->source(), "Device Management");
 
   // Verify global policies
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), base::Minutes(111));
 
-  absl::optional<UpdatesSuppressedTimes> suppressed_times =
+  std::optional<UpdatesSuppressedTimes> suppressed_times =
       policy_manager->GetUpdatesSuppressedTimes();
   ASSERT_TRUE(suppressed_times);
   EXPECT_EQ(suppressed_times->start_hour_, 9);
   EXPECT_EQ(suppressed_times->start_minute_, 30);
   EXPECT_EQ(suppressed_times->duration_minute_, 120);
 
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(),
+  EXPECT_EQ(policy_manager->GetDownloadPreference(),
             "test_download_preference");
 
   EXPECT_EQ(policy_manager->GetProxyServer(), "test_proxy_server");
   EXPECT_EQ(policy_manager->GetProxyMode(), "test_proxy_mode");
   EXPECT_EQ(policy_manager->GetProxyPacUrl(), "foo.c/proxy.pa");
 
-  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), std::nullopt);
   EXPECT_EQ(policy_manager->GetForceInstallApps(),
             std::vector<std::string>({kApp2}));
   EXPECT_EQ(policy_manager->GetAppsWithPolicy(),
@@ -234,8 +236,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   EXPECT_TRUE(
       policy_manager->IsRollbackToTargetVersionAllowed(test::kChromeAppId));
   EXPECT_EQ(policy_manager->GetTargetVersionPrefix(test::kChromeAppId), "81.");
-  EXPECT_EQ(policy_manager->GetTargetChannel(test::kChromeAppId),
-            absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel(test::kChromeAppId), std::nullopt);
 
   // Verify app1 policies.
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(kApp1),
@@ -243,8 +244,8 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(kApp1),
             kPolicyDisabled);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(kApp1),
-            absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kApp1), absl::nullopt);
+            std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kApp1), std::nullopt);
   EXPECT_EQ(policy_manager->GetTargetChannel(kApp1), "canary");
 
   // Verify app2 policies.
@@ -253,8 +254,8 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(kApp2),
             kPolicyEnabled);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(kApp2),
-            absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kApp2), absl::nullopt);
+            std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kApp2), std::nullopt);
   EXPECT_EQ(policy_manager->GetTargetChannel(kApp2), "dev");
 
   // Verify that if no app-specific polices, fallback to global-level policies
@@ -265,8 +266,8 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(app_guid),
             kPolicyManualUpdatesOnly);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(app_guid),
-            absl::nullopt);
-  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(app_guid), absl::nullopt);
+            std::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(app_guid), std::nullopt);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -287,22 +288,23 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
-  EXPECT_EQ(policy_manager->source(), "DeviceManagement");
+  EXPECT_EQ(policy_manager->source(), "Device Management");
 
-  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyPacUrl(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
+  EXPECT_EQ(policy_manager->CloudPolicyOverridesPlatformPolicy(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetLastCheckPeriod(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyMode(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyPacUrl(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetProxyServer(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), std::nullopt);
+  EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), std::nullopt);
 
   const std::string chrome_guid = "com.google.Chrome";
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(chrome_guid),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(chrome_guid),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(chrome_guid),
             true);
 

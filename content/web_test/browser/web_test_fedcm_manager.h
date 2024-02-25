@@ -10,6 +10,7 @@
 
 namespace content {
 
+class FederatedAuthRequestImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 
@@ -32,11 +33,17 @@ class WebTestFedCmManager
   void SelectFedCmAccount(uint32_t account_index,
                           SelectFedCmAccountCallback) override;
   void DismissFedCmDialog(DismissFedCmDialogCallback) override;
+  void ClickFedCmDialogButton(blink::test::mojom::DialogButton button,
+                              ClickFedCmDialogButtonCallback) override;
 
  private:
+  // Returns the active FederatedAuthRequestImpl for the current Page,
+  // or nullptr if there isn't one.
+  FederatedAuthRequestImpl* GetAuthRequestImpl();
+
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_WEB_TEST_BROWSER_WEB_TEST_STORAGE_ACCESS_MANAGER_H_
+#endif  // CONTENT_WEB_TEST_BROWSER_WEB_TEST_FEDCM_MANAGER_H_

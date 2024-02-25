@@ -30,6 +30,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_submit_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_radionodelist.h"
@@ -74,6 +75,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 bool HasFormInBetween(const Node* root, const Node* descendant) {
@@ -102,9 +105,6 @@ HTMLFormElement::HTMLFormElement(Document& document)
       did_finish_parsing_children_(false),
       is_in_reset_function_(false),
       rel_list_(MakeGarbageCollected<RelList>(this)) {
-  static uint64_t next_unique_renderer_form_id = 1;
-  unique_renderer_form_id_ = next_unique_renderer_form_id++;
-
   UseCounter::Count(document, WebFeature::kFormElement);
 }
 
@@ -137,8 +137,11 @@ Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
   HTMLElement::InsertedInto(insertion_point);
   LogAddElementIfIsolatedWorldAndInDocument("form", html_names::kMethodAttr,
                                             html_names::kActionAttr);
-  if (insertion_point.isConnected())
-    GetDocument().DidAddOrRemoveFormRelatedElement(this);
+  if (insertion_point.isConnected()) {
+    GetDocument().MarkTopLevelFormsDirty();
+    GetDocument().DidChangeFormRelatedElementDynamically(
+        this, WebFormRelatedChangeType::kAdd);
+  }
   return kInsertionDone;
 }
 
@@ -180,10 +183,10 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
   GetDocument().GetFormController().WillDeleteForm(this);
   HTMLElement::RemovedFrom(insertion_point);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillDetectRemovedFormControls) &&
-      insertion_point.isConnected()) {
-    GetDocument().DidAddOrRemoveFormRelatedElement(this);
+  if (insertion_point.isConnected()) {
+    GetDocument().MarkTopLevelFormsDirty();
+    GetDocument().DidChangeFormRelatedElementDynamically(
+        this, WebFormRelatedChangeType::kRemove);
   }
 }
 
@@ -274,13 +277,9 @@ bool HTMLFormElement::ValidateInteractively() {
           "An invalid form control with name='%name' is not focusable.");
       message.Replace("%name", unhandled->GetName());
 
-      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+      unhandled->ToHTMLElement().AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kError, message);
-      console_message->SetNodes(
-          GetDocument().GetFrame(),
-          {DOMNodeIds::IdForNode(&unhandled->ToHTMLElement())});
-      GetDocument().AddConsoleMessage(console_message);
     }
   }
   return false;
@@ -335,6 +334,18 @@ void HTMLFormElement::PrepareForSubmission(
         DispatchEvent(*Event::Create(event_type_names::kError));
         return;
       }
+    }
+  }
+
+  for (ListedElement* element : ListedElements()) {
+    if (auto* form_control =
+            DynamicTo<HTMLFormControlElementWithState>(element)) {
+      // After attempting form submission we have to make the controls start
+      // matching :user-valid/:user-invalid. We could do this by calling
+      // SetUserHasEditedTheFieldAndBlurred() even though the user has not
+      // actually taken those actions, but that would have side effects on
+      // autofill.
+      form_control->ForceUserValid();
     }
   }
 
@@ -470,6 +481,12 @@ void HTMLFormElement::ScheduleFormSubmission(
 
   FormSubmission* form_submission =
       FormSubmission::Create(this, attributes_, event, submit_button);
+  if (!form_submission) {
+    // Form submission is not allowed for some NavigationPolicies, e.g. Link
+    // Preview. If an user triggered such user event for form submission, just
+    // ignores it.
+    return;
+  }
   Frame* target_frame = form_submission->TargetFrame();
 
   // 'formdata' event handlers might disconnect the form.
@@ -489,7 +506,6 @@ void HTMLFormElement::ScheduleFormSubmission(
   DCHECK(form_submission->Method() == FormSubmission::kPostMethod ||
          form_submission->Method() == FormSubmission::kGetMethod);
   DCHECK(form_submission->Data());
-  DCHECK(form_submission->Form());
   if (form_submission->Action().IsEmpty())
     return;
   if (GetExecutionContext()->IsSandboxed(
@@ -589,9 +605,10 @@ FormData* HTMLFormElement::ConstructEntryList(
     if (!element.IsDisabledFormControl())
       control->AppendToFormData(form_data);
     if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-      if (input->type() == input_type_names::kPassword &&
-          !input->Value().empty())
+      if (input->FormControlType() == FormControlType::kInputPassword &&
+          !input->Value().empty()) {
         form_data.SetContainsPasswordData(true);
+      }
     }
   }
   DispatchEvent(*MakeGarbageCollected<FormDataEvent>(form_data));
@@ -630,6 +647,20 @@ void HTMLFormElement::reset() {
     frame->GetPage()->GetChromeClient().FormElementReset(*this);
 }
 
+void HTMLFormElement::AttachLayoutTree(AttachContext& context) {
+  HTMLElement::AttachLayoutTree(context);
+  if (!GetLayoutObject()) {
+    FocusabilityLost();
+  }
+}
+
+void HTMLFormElement::DetachLayoutTree(bool performing_reattach) {
+  HTMLElement::DetachLayoutTree(performing_reattach);
+  if (!performing_reattach) {
+    FocusabilityLost();
+  }
+}
+
 void HTMLFormElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
@@ -664,8 +695,7 @@ void HTMLFormElement::ParseAttribute(
     attributes_.SetAcceptCharset(params.new_value);
   } else if (name == html_names::kDisabledAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kFormDisabledAttributePresent);
-  } else if (name == html_names::kRelAttr &&
-             RuntimeEnabledFeatures::FormRelAttributeEnabled()) {
+  } else if (name == html_names::kRelAttr) {
     rel_attribute_ = RelAttribute::kNone;
     rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
     if (rel_list_->contains(AtomicString("noreferrer")))
@@ -739,13 +769,25 @@ void HTMLFormElement::CollectListedElements(
     elements.clear();
   for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
     if (ListedElement* listed_element = ListedElement::From(element)) {
-      // If there is a <form> in between |root| and |listed_element|, then we
-      // shouldn't include it in |elements_including_shadow_trees| in order to
-      // prevent multiple forms from "owning" the same |listed_element| as shown
-      // by their |elements_including_shadow_trees|. |elements| doesn't have
-      // this problem because it can check |listed_element->Form()|.
-      if (in_shadow_tree && !HasFormInBetween(&root, &element) &&
-          !listed_element->Form()) {
+      // There are two scenarios:
+      // - If `kAutofillIncludeFormElementsInShadowDom` is disabled, then we
+      //   expect every form control element to belong to at most one form
+      //   element. This means that if there is a <form> in between `root` and
+      //   `listed_element, then we should not include it in
+      //   `elements_including_shadow_trees`. Otherwise, multiple forms would
+      //    "own" the same `listed_element` as indicated by their
+      //    `elements_including_shadow_trees`.
+      // - If `kAutofillIncludeFormElementsInShadowDom` is enabled, then
+      //   Autofill only considers top level forms - forms that have form
+      //   ancestors are ignored. In that case, we should include all form
+      //   control descendants of the form for which we collect the listed
+      //   elements.
+      // Note that `elements` does not have this problem because it can check
+      // `listed_element->Form()`.
+      if (in_shadow_tree &&
+          (base::FeatureList::IsEnabled(
+               features::kAutofillIncludeFormElementsInShadowDom) ||
+           (!HasFormInBetween(&root, &element) && !listed_element->Form()))) {
         elements_including_shadow_trees->push_back(listed_element);
       } else if (listed_element->Form() == this) {
         elements.push_back(listed_element);
@@ -754,7 +796,9 @@ void HTMLFormElement::CollectListedElements(
       }
     }
     if (elements_including_shadow_trees && element.AuthorShadowRoot() &&
-        !HasFormInBetween(in_shadow_tree ? &root : this, &element)) {
+        (base::FeatureList::IsEnabled(
+             features::kAutofillIncludeFormElementsInShadowDom) ||
+         !HasFormInBetween(in_shadow_tree ? &root : this, &element))) {
       const Node& shadow = *element.AuthorShadowRoot();
       CollectListedElements(shadow, elements, elements_including_shadow_trees,
                             /*in_shadow_tree=*/true);
@@ -766,8 +810,6 @@ void HTMLFormElement::CollectListedElements(
 // because of lazy evaluation.
 const ListedElement::List& HTMLFormElement::ListedElements(
     bool include_shadow_trees) const {
-  if (!RuntimeEnabledFeatures::AutofillShadowDOMEnabled())
-    include_shadow_trees = false;
   bool collect_shadow_inputs =
       include_shadow_trees && listed_elements_including_shadow_trees_are_dirty_;
 

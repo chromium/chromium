@@ -6,9 +6,9 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsSearchSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -19,7 +19,7 @@ suite('<settings-search-subpage>', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      shouldShowQuickAnswersSettings: true,
+      isQuickAnswersSupported: true,
       quickAnswersSubToggleEnabled: true,
     });
   });

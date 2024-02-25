@@ -27,6 +27,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -78,7 +79,7 @@ SearchResultListView::SearchResultListView(
     AppListViewDelegate* view_delegate,
     SearchResultPageDialogController* dialog_controller,
     SearchResultView::SearchResultViewType search_result_view_type,
-    absl::optional<size_t> productivity_launcher_index)
+    std::optional<size_t> productivity_launcher_index)
     : SearchResultContainerView(view_delegate),
       results_container_(new views::View),
       productivity_launcher_index_(productivity_launcher_index),
@@ -199,7 +200,7 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
   }
 
   // A valid role must be set prior to setting the name.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListBox);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
       title_label_->GetText()));
@@ -326,16 +327,12 @@ std::vector<views::View*> SearchResultListView::GetViewsToAnimate() {
   return results;
 }
 
-void SearchResultListView::Layout() {
+void SearchResultListView::Layout(PassKey) {
   results_container_->SetBoundsRect(GetLocalBounds());
 }
 
 gfx::Size SearchResultListView::CalculatePreferredSize() const {
   return results_container_->GetPreferredSize();
-}
-
-const char* SearchResultListView::GetClassName() const {
-  return "SearchResultListView";
 }
 
 int SearchResultListView::GetHeightForWidth(int w) const {
@@ -480,5 +477,8 @@ bool SearchResultListView::FilterSearchResultsByCategory(
   return result.category() == category && !result.best_match() &&
          result.display_type() == SearchResultDisplayType::kList;
 }
+
+BEGIN_METADATA(SearchResultListView)
+END_METADATA
 
 }  // namespace ash

@@ -89,9 +89,10 @@ class FileTypePolicies {
       const GURL& source_url,
       const PrefService* prefs) const;
 
-  // Return max size for which unpacking and/or binary feature extration is
+  // Return max size for which unpacking and/or binary feature extraction is
   // supported for the given file extension.
   uint64_t GetMaxFileSizeToAnalyze(const std::string& ascii_ext) const;
+  uint64_t GetMaxFileSizeToAnalyze(const base::FilePath& path) const;
 
   // Return max number of archived_binaries we should add to a download ping.
   uint64_t GetMaxArchivedBinariesToReport() const;
@@ -159,6 +160,10 @@ class FileTypePolicies {
   FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest, UnpackResourceBundle);
   FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest, BadProto);
   FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest, BadUpdateFromExisting);
+  FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest,
+                           NoInspectionTypeReturnsDefault);
+  FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest,
+                           ChecksInspectionTypeNotDefault);
 
   friend struct FileTypePoliciesSingletonTrait;
   friend class FileTypePoliciesTestOverlay;

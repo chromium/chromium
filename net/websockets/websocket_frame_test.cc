@@ -5,11 +5,16 @@
 #include "net/websockets/websocket_frame.h"
 
 #include <stdint.h>
+#include <string.h>
 
+#include <algorithm>
+#include <iterator>
+#include <string>
 #include <vector>
 
 #include "base/memory/aligned_memory.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

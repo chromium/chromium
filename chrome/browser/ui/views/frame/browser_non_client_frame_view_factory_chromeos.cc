@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view_ash.h"
+#else
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
+#endif
 
 namespace chrome {
 
@@ -12,8 +17,13 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view) {
   if (browser_view->browser()->is_type_picture_in_picture()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return std::make_unique<PictureInPictureBrowserFrameViewAsh>(frame,
+                                                                 browser_view);
+#else
     return std::make_unique<PictureInPictureBrowserFrameView>(frame,
                                                               browser_view);
+#endif
   }
 
   auto frame_view =

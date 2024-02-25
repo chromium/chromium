@@ -58,8 +58,6 @@ class SyncCycleContext {
 
   ModelTypeSet GetConnectedTypes() const;
 
-  bool proxy_tabs_datatype_enabled() const;
-
   ExtensionsActivity* extensions_activity() {
     return extensions_activity_.get();
   }
@@ -129,11 +127,11 @@ class SyncCycleContext {
 
   // We use this to stuff extensions activity into CommitMessages so the server
   // can correlate commit traffic with extension-related bookmark mutations.
-  scoped_refptr<ExtensionsActivity> extensions_activity_;
+  const scoped_refptr<ExtensionsActivity> extensions_activity_;
 
   // Kept up to date with talk events to determine whether notifications are
   // enabled. True only if the notification channel is authorized and open.
-  bool notifications_enabled_;
+  bool notifications_enabled_ = false;
 
   const std::string cache_guid_;
 
@@ -145,7 +143,7 @@ class SyncCycleContext {
   std::string account_name_;
 
   // The server limits the number of items a client can commit in one batch.
-  int max_commit_batch_size_;
+  int max_commit_batch_size_ = kDefaultMaxCommitBatchSize;
 
   // We use this to get debug info to send to the server for debugging
   // client behavior on server side.
@@ -159,9 +157,10 @@ class SyncCycleContext {
   // Whether the account(s) present in the content area's cookie jar match the
   // chrome account. If multiple accounts are present in the cookie jar, a
   // mismatch implies all of them are different from the chrome account.
-  bool cookie_jar_mismatch_;
+  bool cookie_jar_mismatch_ = false;
 
-  ActiveDevicesInvalidationInfo active_devices_invalidation_info_;
+  ActiveDevicesInvalidationInfo active_devices_invalidation_info_ =
+      ActiveDevicesInvalidationInfo::CreateUninitialized();
 
   base::TimeDelta poll_interval_;
 };

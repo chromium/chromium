@@ -14,4 +14,27 @@ MockFeaturePromoController::GetAsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+FeaturePromoParamsMatcher::FeaturePromoParamsMatcher(
+    const base::Feature& feature)
+    : feature_(feature) {}
+FeaturePromoParamsMatcher::FeaturePromoParamsMatcher(
+    const FeaturePromoParamsMatcher&) = default;
+FeaturePromoParamsMatcher::~FeaturePromoParamsMatcher() = default;
+FeaturePromoParamsMatcher& FeaturePromoParamsMatcher::operator=(
+    const FeaturePromoParamsMatcher&) = default;
+
+bool FeaturePromoParamsMatcher::MatchAndExplain(
+    const FeaturePromoParams& params,
+    std::ostream*) const {
+  return &params.feature.get() == &feature_.get();
+}
+
+void FeaturePromoParamsMatcher::DescribeTo(std::ostream* os) const {
+  *os << "FeaturePromoParams has feature " << feature_->name;
+}
+
+void FeaturePromoParamsMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "FeaturePromoParams does not have feature " << feature_->name;
+}
+
 }  // namespace user_education::test

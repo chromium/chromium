@@ -1,11 +1,19 @@
 This is a testharness.js-based test.
-FAIL testing background-image: linear-gradient(rgb(0, 128, 0) calc(0%), rgb(0, 0, 255)) assert_equals: expected "linear-gradient(rgb(0, 128, 0) 0%, rgb(0, 0, 255))" but got "linear-gradient(rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))"
-FAIL testing background-image: linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255)) assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))"
-FAIL testing background-position: linear-gradient(calc(90deg), rgb(0, 128, 0) calc(0%), rgb(0, 0, 255)) assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0) 0%, rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))"
-FAIL testing background-image: linear-gradient(calc(0.1turn + 0.15turn), rgb(0, 128, 0), rgb(0, 0, 255)) assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))"
-FAIL testing background-image: linear-gradient(calc(150grad - 50grad), rgb(0, 128, 0), rgb(0, 0, 255)) assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))"
-FAIL testing background-image: linear-gradient(calc(200grad - 90deg), rgb(0, 128, 0), rgb(0, 0, 255)) assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))"
-FAIL testing background-image: radial-gradient(rgb(0, 128, 0) calc(10% + 20%), rgb(0, 0, 255) calc(30% + 40%)) assert_equals: expected "radial-gradient(rgb(0, 128, 0) 30%, rgb(0, 0, 255) 70%)" but got "radial-gradient(rgb(0, 128, 0) calc(30%), rgb(0, 0, 255) calc(70%))"
-FAIL testing background-image: conic-gradient(rgb(0, 128, 0) calc(50% + 10%), rgb(0, 0, 255) calc(60% + 20%)) assert_equals: expected "conic-gradient(rgb(0, 128, 0) 60%, rgb(0, 0, 255) 80%)" but got "conic-gradient(rgb(0, 128, 0) calc(60%), rgb(0, 0, 255) calc(80%))"
+[FAIL] testing background-image: linear-gradient(rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))
+  assert_equals: expected "linear-gradient(rgb(0, 128, 0) 0%, rgb(0, 0, 255))" but got "linear-gradient(rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))"
+[FAIL] testing background-image: linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))
+  assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))"
+[FAIL] testing background-image: linear-gradient(calc(90deg), rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))
+  assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0) 0%, rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0) calc(0%), rgb(0, 0, 255))"
+[FAIL] testing background-image: linear-gradient(calc(0.1turn + 0.15turn), rgb(0, 128, 0), rgb(0, 0, 255))
+  assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))"
+[FAIL] testing background-image: linear-gradient(calc(150grad - 50grad), rgb(0, 128, 0), rgb(0, 0, 255))
+  assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))"
+[FAIL] testing background-image: linear-gradient(calc(200grad - 90deg), rgb(0, 128, 0), rgb(0, 0, 255))
+  assert_equals: expected "linear-gradient(90deg, rgb(0, 128, 0), rgb(0, 0, 255))" but got "linear-gradient(calc(90deg), rgb(0, 128, 0), rgb(0, 0, 255))"
+[FAIL] testing background-image: radial-gradient(rgb(0, 128, 0) calc(10% + 20%), rgb(0, 0, 255) calc(30% + 40%))
+  assert_equals: expected "radial-gradient(rgb(0, 128, 0) 30%, rgb(0, 0, 255) 70%)" but got "radial-gradient(rgb(0, 128, 0) calc(30%), rgb(0, 0, 255) calc(70%))"
+[FAIL] testing background-image: conic-gradient(rgb(0, 128, 0) calc(50% + 10%), rgb(0, 0, 255) calc(60% + 20%))
+  assert_equals: expected "conic-gradient(rgb(0, 128, 0) 60%, rgb(0, 0, 255) 80%)" but got "conic-gradient(rgb(0, 128, 0) calc(60%), rgb(0, 0, 255) calc(80%))"
 Harness: the test ran to completion.
 

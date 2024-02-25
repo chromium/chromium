@@ -14,7 +14,9 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "content/browser/file_system_access/file_system_access_bucket_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/common/content_export.h"
@@ -22,6 +24,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom.h"
 
 namespace content {
@@ -45,15 +49,23 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   class CONTENT_EXPORT Observation : public base::CheckedObserver {
    public:
     // Describes a change to some location in a file system.
-    struct Change {
+    struct CONTENT_EXPORT Change {
+      Change(storage::FileSystemURL url,
+             blink::mojom::FileSystemAccessChangeTypePtr type,
+             FileSystemAccessChangeSource::FilePathType file_path_type);
+      ~Change();
+
+      // Copyable and movable.
+      Change(const Change&);
+      Change(Change&&) noexcept;
+
       storage::FileSystemURL url;
-      bool error;
-      // TODO(https://crbug.com/1425601): Include the type of change.
-      // TODO(https://crbug.com/1425601): Include whether the change was to a
-      // file or directory.
+      blink::mojom::FileSystemAccessChangeTypePtr type;
+      FileSystemAccessChangeSource::FilePathType file_path_type;
 
       bool operator==(const Change& other) const {
-        return url == other.url && error == other.error;
+        return url == other.url && type == other.type &&
+               file_path_type == other.file_path_type;
       }
     };
 
@@ -85,8 +97,9 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   };
 
   using BindingContext = FileSystemAccessEntryFactory::BindingContext;
-  using GetObservationCallback =
-      base::OnceCallback<void(std::unique_ptr<Observation>)>;
+  using GetObservationCallback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<Observation>,
+                     blink::mojom::FileSystemAccessErrorPtr>)>;
 
   FileSystemAccessWatcherManager(
       FileSystemAccessManagerImpl* manager,
@@ -108,8 +121,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // `FileSystemAccessChangeSource` if one does not already cover the scope of
   // the requested observation.
   //
-  // `get_observation_callback` returns an `Observation`, or nullptr if the
-  // given file or directory cannot be watched as requested.
+  // `get_observation_callback` returns an `Observation`, or an appropriate
+  // error if the given file or directory cannot be watched as requested.
   void GetFileObservation(const storage::FileSystemURL& file_url,
                           GetObservationCallback get_observation_callback);
   void GetDirectoryObservation(const storage::FileSystemURL& directory_url,
@@ -117,9 +130,10 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
                                GetObservationCallback get_observation_callback);
 
   // FileSystemAccessChangeSource::RawChangeObserver:
-  void OnRawChange(FileSystemAccessChangeSource* source,
-                   const base::FilePath& relative_path,
-                   bool error) override;
+  void OnRawChange(
+      const storage::FileSystemURL& changed_url,
+      bool error,
+      const FileSystemAccessChangeSource::ChangeInfo& change_info) override;
   void OnSourceBeingDestroyed(FileSystemAccessChangeSource* source) override;
 
   // Subscriber this instance to raw changes from `source`.
@@ -138,14 +152,12 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return observations_.HasObserver(observation);
   }
-  bool HasSourcesForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return source_observations_.IsObservingAnySource();
-  }
   bool HasSourceForTesting(FileSystemAccessChangeSource* source) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return source_observations_.IsObservingSource(source);
   }
+  bool HasSourceContainingScopeForTesting(
+      const FileSystemAccessWatchScope& scope) const;
 
   FileSystemAccessManagerImpl* manager() { return manager_; }
 
@@ -153,28 +165,43 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // Attempts to create a change source for `scope` if it does not exist.
   void EnsureSourceIsInitializedForScope(
       FileSystemAccessWatchScope scope,
-      base::OnceCallback<void(bool)> on_source_initialized);
-  void DidInitializeSource(base::WeakPtr<FileSystemAccessChangeSource> source,
-                           base::OnceCallback<void(bool)> on_source_initialized,
-                           bool success);
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          on_source_initialized);
+  void DidInitializeSource(
+      base::WeakPtr<FileSystemAccessChangeSource> source,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          on_source_initialized,
+      blink::mojom::FileSystemAccessErrorPtr result);
 
-  void PrepareObservationForScope(FileSystemAccessWatchScope scope,
-                                  GetObservationCallback callback,
-                                  bool success);
+  void PrepareObservationForScope(
+      FileSystemAccessWatchScope scope,
+      GetObservationCallback callback,
+      blink::mojom::FileSystemAccessErrorPtr source_initialization_result);
 
+  // Creates and returns a new (uninitialized) change source for the given
+  // scope, or nullptr if watching this scope is not supported.
   std::unique_ptr<FileSystemAccessChangeSource> CreateOwnedSourceForScope(
       FileSystemAccessWatchScope scope);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The manager which owns this instance.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
+
+  // Watches changes to the all bucket file systems. Though this is technically
+  // a change source which is owned by this instance, it is not included in
+  // `owned_sources_` simply because this watcher should never be revoked.
+  // TODO(https://crbug.com/1019297): Consider making the lifetime of this
+  // watcher match other owned sources; creating an instance on-demand and then
+  // destroying it when it is no longer needed.
+  std::unique_ptr<FileSystemAccessBucketPathWatcher> bucket_path_watcher_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::flat_set<std::unique_ptr<FileSystemAccessObserverHost>,
                  base::UniquePtrComparator>
       observer_hosts_;
 
-  // TODO(https://crbug.com/1019297): Make more efficient mappings to observers
+  // TODO(https://crbug.com/1489057): Make more efficient mappings to observers
   // and sources. For now, most actions requires iterating through lists.
 
   // Observations to which this instance will notify of changes within their
@@ -192,10 +219,10 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   base::ScopedMultiSourceObservation<FileSystemAccessChangeSource,
                                      RawChangeObserver>
       source_observations_ GUARDED_BY_CONTEXT(sequence_checker_){this};
-  // Raw pointers to each source in `source_observations_`.
+  // Raw refs to each source in `source_observations_`.
   // Unfortunately, ScopedMultiSourceObservation does not allow for peeking
   // inside the list. This is a workaround.
-  std::list<FileSystemAccessChangeSource*> all_sources_;
+  std::list<raw_ref<FileSystemAccessChangeSource>> all_sources_;
 
   base::WeakPtrFactory<FileSystemAccessWatcherManager> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

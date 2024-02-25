@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
@@ -13,7 +15,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::feature_usage {
 
@@ -43,7 +44,7 @@ class FeatureUsageMetricsTest : public ::testing::Test,
 
   // FeatureUsageMetrics::Delegate:
   bool IsEligible() const override { return is_eligible_; }
-  absl::optional<bool> IsAccessible() const override { return is_accessible_; }
+  std::optional<bool> IsAccessible() const override { return is_accessible_; }
   bool IsEnabled() const override { return is_enabled_; }
 
  protected:
@@ -54,7 +55,7 @@ class FeatureUsageMetricsTest : public ::testing::Test,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   bool is_eligible_ = true;
-  absl::optional<bool> is_accessible_;
+  std::optional<bool> is_accessible_;
   bool is_enabled_ = true;
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;

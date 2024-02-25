@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -40,7 +41,7 @@ class ReceiverSetState::Entry::DispatchFilter : public MessageFilter {
       nested_filter_->DidDispatchOrReject(message, accepted);
   }
 
-  // `entry_` is not a raw_ref<...> as that leads to a binary size increase.
+  // RAW_PTR_EXCLUSION: Binary size increase.
   RAW_PTR_EXCLUSION Entry& entry_;
   std::unique_ptr<MessageFilter> nested_filter_;
 };
@@ -92,7 +93,7 @@ ReportBadMessageCallback ReceiverSetState::GetBadMessageCallback() {
   return base::BindOnce(
       [](ReportBadMessageCallback error_callback,
          base::WeakPtr<ReceiverSetState> receiver_set, ReceiverId receiver_id,
-         base::StringPiece error) {
+         std::string_view error) {
         std::move(error_callback).Run(error);
         if (receiver_set)
           receiver_set->Remove(receiver_id);

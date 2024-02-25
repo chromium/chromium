@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_H_
 #define CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -27,7 +27,7 @@ class ZeroStateDriveProvider;
 }  // namespace app_list
 
 namespace ash {
-class DriveFileSuggestionProvider;
+class FileSuggestionProvider;
 class LocalFileSuggestionProvider;
 struct SearchResultMetadata;
 
@@ -91,13 +91,10 @@ class FileSuggestKeyedService : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns true if there is pending fetch on file suggestions.
-  bool HasPendingSuggestionFetchForTest() const;
-
   // Returns true if the service is ready to provide all types of suggestions.
   bool IsReadyForTest() const;
 
-  DriveFileSuggestionProvider* drive_file_suggestion_provider_for_test() {
+  FileSuggestionProvider* drive_file_suggestion_provider_for_test() {
     return drive_file_suggestion_provider_.get();
   }
 
@@ -113,7 +110,7 @@ class FileSuggestKeyedService : public KeyedService {
   // not appear. Then returns the filtered result through `callback`.
   void FilterRemovedSuggestions(
       GetSuggestFileDataCallback callback,
-      const absl::optional<std::vector<FileSuggestData>>& suggestions);
+      const std::optional<std::vector<FileSuggestData>>& suggestions);
 
   // Returns whether `proto_` is initialized.
   bool IsProtoInitialized() const;
@@ -128,14 +125,14 @@ class FileSuggestKeyedService : public KeyedService {
           type_id_pairs);
 
   // The provider of drive file suggestions.
-  std::unique_ptr<DriveFileSuggestionProvider> drive_file_suggestion_provider_;
+  std::unique_ptr<FileSuggestionProvider> drive_file_suggestion_provider_;
 
   // The provider of local file suggestions.
   std::unique_ptr<LocalFileSuggestionProvider> local_file_suggestion_provider_;
 
   base::ObserverList<Observer> observers_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Used to query/persis the removed result ids. NOTE: `proto_` contains
   // non-file ids.

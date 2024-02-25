@@ -39,7 +39,7 @@ void InstalledVersionUpdater::UpdateStatusChanged(
   // If status changes to `IDLE`, there is no currently available update.
   if (status.current_operation() == update_engine::Operation::IDLE) {
     build_state_->SetUpdate(BuildState::UpdateType::kNone, base::Version(),
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
@@ -76,5 +76,5 @@ void InstalledVersionUpdater::UpdateStatusChanged(
     }
   }
   build_state_->SetUpdate(update_type, base::Version(status.new_version()),
-                          absl::nullopt);
+                          std::nullopt);
 }

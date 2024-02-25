@@ -18,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/attestation/attestation_policy_observer.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
@@ -29,7 +28,7 @@
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"
@@ -45,7 +44,9 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -65,7 +66,6 @@ namespace {
 // Zero-touch enrollment flag values.
 
 const char kZeroTouchEnrollmentForced[] = "forced";
-const char kZeroTouchEnrollmentHandsOff[] = "hands-off";
 
 // Default frequency for uploading enterprise status reports. Can be overriden
 // by Device Policy.
@@ -81,7 +81,7 @@ bool IsForcedReEnrollmentEnabled() {
 }  // namespace
 
 DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
-    std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
+    std::unique_ptr<DeviceCloudPolicyStoreAsh> device_store,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     ServerBackedStateKeysBroker* state_keys_broker,
@@ -89,10 +89,10 @@ DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
     : CloudPolicyManager(
           dm_protocol::kChromeDevicePolicyType,
           std::string(),
-          store.get(),
+          std::move(device_store),
           task_runner,
           base::BindRepeating(&content::GetNetworkConnectionTracker)),
-      device_store_(std::move(store)),
+      device_store_(static_cast<DeviceCloudPolicyStoreAsh*>(store())),
       external_data_manager_(std::move(external_data_manager)),
       state_keys_broker_(state_keys_broker),
       crd_delegate_(&crd_delegate),
@@ -150,6 +150,8 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
   state_keys_broker_ = nullptr;
   managed_session_service_.reset();
   euicc_status_uploader_.reset();
+  core()->Disconnect();
+  machine_certificate_uploader_.reset();
   external_data_manager_->Disconnect();
   state_keys_update_subscription_ = {};
   CloudPolicyManager::Shutdown();
@@ -180,9 +182,6 @@ DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
       ash::switches::kEnterpriseEnableZeroTouchEnrollment);
   if (value == kZeroTouchEnrollmentForced) {
     return ZeroTouchEnrollmentMode::FORCED;
-  }
-  if (value == kZeroTouchEnrollmentHandsOff) {
-    return ZeroTouchEnrollmentMode::HANDS_OFF;
   }
   if (value.empty()) {
     return ZeroTouchEnrollmentMode::ENABLED;
@@ -217,7 +216,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
 
   core()->Connect(std::move(client_to_connect));
   core()->StartRefreshScheduler();
-  core()->RefreshSoon();
+  core()->RefreshSoon(PolicyFetchReason::kBrowserStart);
   core()->TrackRefreshDelayPref(local_state_,
                                 ::prefs::kDevicePolicyRefreshRate);
 
@@ -236,16 +235,14 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   euicc_status_uploader_ = std::make_unique<EuiccStatusUploader>(
       client(), g_browser_process->local_state());
 
-  // Don't create a MachineCertificateUploader or start the
-  // AttestationPolicyObserver if machine cert requests are disabled.
+  // Don't create a MachineCertificateUploader if machine cert requests are
+  // disabled.
   if (!(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kDisableMachineCertRequest))) {
     machine_certificate_uploader_ =
         std::make_unique<ash::attestation::MachineCertificateUploaderImpl>(
             client());
-    attestation_policy_observer_ =
-        std::make_unique<ash::attestation::AttestationPolicyObserver>(
-            machine_certificate_uploader_.get());
+    machine_certificate_uploader_->UploadCertificateIfNeeded(base::DoNothing());
   }
 
   // Start remote commands services now that we have setup everything they need.
@@ -264,9 +261,15 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     CreateStatusUploader(managed_session_service_.get());
     syslog_uploader_ =
         std::make_unique<SystemLogUploader>(nullptr, task_runner_);
-    heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
-        g_browser_process->gcm_driver(), client(), device_store_.get(),
-        install_attributes->GetDeviceId(), task_runner_);
+    if (base::FeatureList::IsEnabled(
+            chromeos::features::kKioskHeartbeatsViaERP)) {
+      // Do nothing as heartbeats go over ERP.
+    } else {
+      // Initialize legacy GCM heartbeat (default behaviour)
+      heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
+          g_browser_process->gcm_driver(), client(), device_store_.get(),
+          install_attributes->GetDeviceId(), task_runner_);
+    }
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
     os_updates_reporter_ = reporting::OsUpdatesReporter::Create();
@@ -317,8 +320,8 @@ void DeviceCloudPolicyManagerAsh::OnUserToBeRemoved(
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user || user->IsKioskType() ||
-      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      user->GetType() == user_manager::USER_TYPE_GUEST) {
+      user->GetType() == user_manager::UserType::kPublicAccount ||
+      user->GetType() == user_manager::UserType::kGuest) {
     return;
   }
 
@@ -407,4 +410,8 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
       managed_session_service_.get());
 }
 
+HeartbeatScheduler*
+DeviceCloudPolicyManagerAsh::GetHeartbeatSchedulerForTesting() const {
+  return heartbeat_scheduler_.get();
+}
 }  // namespace policy

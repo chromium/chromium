@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
@@ -61,6 +62,7 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/blink/blink_features.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -72,6 +74,11 @@ using page_load_metrics::PageVisitFinalStatus;
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
+
+static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 14878427190820;
+
+const char kHistogramSoftNavigationCount[] =
+    "PageLoad.Expermental.SoftNavigations.Count";
 
 template <size_t N>
 uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
@@ -182,7 +189,7 @@ int SiteInstanceRenderProcessAssignmentToInt(
 // These are the high bounds of each bucket, in enum order. The index into this
 // array is cast to an enum value when recording UKM. These should correspond to
 // the upper bounds of the BitsPerPixelExponential enum in
-// tools/metrics/enums.xml.
+// //tools/metrics/histograms/enums.xml.
 static const double kLCPEntropyBucketThresholds[] = {
     0.0,  0.00001, 0.0001, 0.001, 0.01, 0.02, 0.03, 0.04,  0.05,   0.06,   0.07,
     0.08, 0.09,    0.1,    0.2,   0.3,  0.4,  0.5,  0.6,   0.7,    0.8,    0.9,
@@ -220,7 +227,6 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
     const GURL& currently_committed_url,
     bool started_in_foreground) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
-  is_portal_ = web_contents->IsPortal();
   browser_context_ = web_contents->GetBrowserContext();
   navigation_id_ = navigation_handle->GetNavigationId();
   if (auto* clusters_helper =
@@ -378,16 +384,12 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
 UkmPageLoadMetricsObserver::ObservePolicy
 UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (is_portal_)
-    return STOP_OBSERVING;
-
   base::TimeTicks current_time = base::TimeTicks::Now();
   if (!was_hidden_) {
     RecordNavigationTimingMetrics();
     RecordPageLoadMetrics(current_time);
     RecordRendererUsageMetrics();
     RecordSiteEngagement();
-    RecordInputTimingMetrics();
   }
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
@@ -403,9 +405,6 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 
 UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (is_portal_)
-    return CONTINUE_OBSERVING;
-
   if (currently_in_foreground_ && !last_time_shown_.is_null()) {
     total_foreground_duration_ += base::TimeTicks::Now() - last_time_shown_;
   }
@@ -415,7 +414,6 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
     RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */);
     RecordRendererUsageMetrics();
     RecordSiteEngagement();
-    RecordInputTimingMetrics();
     was_hidden_ = true;
   }
 
@@ -435,9 +433,6 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
 
 UkmPageLoadMetricsObserver::ObservePolicy
 UkmPageLoadMetricsObserver::OnShown() {
-  if (is_portal_)
-    return CONTINUE_OBSERVING;
-
   currently_in_foreground_ = true;
   last_time_shown_ = base::TimeTicks::Now();
   return CONTINUE_OBSERVING;
@@ -445,9 +440,6 @@ UkmPageLoadMetricsObserver::OnShown() {
 
 void UkmPageLoadMetricsObserver::OnFailedProvisionalLoad(
     const page_load_metrics::FailedProvisionalLoadInfo& failed_load_info) {
-  if (is_portal_)
-    return;
-
   RecordPageEndMetrics(nullptr, base::TimeTicks(),
                        /* app_entered_background */ false);
   if (was_hidden_)
@@ -471,16 +463,12 @@ void UkmPageLoadMetricsObserver::OnFailedProvisionalLoad(
 
 void UkmPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (is_portal_)
-    return;
-
   base::TimeTicks current_time = base::TimeTicks::Now();
   if (!was_hidden_) {
     RecordNavigationTimingMetrics();
     RecordPageLoadMetrics(current_time /* no app_background_time */);
     RecordRendererUsageMetrics();
     RecordSiteEngagement();
-    RecordInputTimingMetrics();
   }
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
@@ -609,9 +597,6 @@ void UkmPageLoadMetricsObserver::RecordNavigationTimingMetrics() {
 
 void UkmPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (is_portal_)
-    return;
-
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_contentful_paint, GetDelegate()))
     return;
@@ -628,7 +613,7 @@ void UkmPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
 void UkmPageLoadMetricsObserver::RecordSiteEngagement() const {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
-  absl::optional<int64_t> rounded_site_engagement_score =
+  std::optional<int64_t> rounded_site_engagement_score =
       GetRoundedSiteEngagementScore();
   if (rounded_site_engagement_score) {
     builder.SetSiteEngagementScore(rounded_site_engagement_score.value());
@@ -688,30 +673,48 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
     }
   }
 
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      soft_nav_normalized_responsiveness_metrics =
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      soft_nav_responsiveness_metrics_normalization =
           GetDelegate()
-              .GetSoftNavigationIntervalNormalizedResponsivenessMetrics();
+              .GetSoftNavigationIntervalResponsivenessMetricsNormalization();
 
-  const auto& max_event_durations =
-      soft_nav_normalized_responsiveness_metrics.normalized_max_event_durations;
-  if (soft_nav_normalized_responsiveness_metrics.num_user_interactions) {
+  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      soft_nav_responsiveness_metrics_normalization.ApproximateHighPercentile();
+  if (inp.has_value()) {
     builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    soft_nav_normalized_responsiveness_metrics
-                        .num_user_interactions,
-                    max_event_durations.worst_ten_latencies)
-                    .InMilliseconds());
+            inp->interaction_latency.InMilliseconds());
+
+    // For soft navigations, the interaction offset is the offset _after_ the
+    // soft navigation occurred. So we want to start the offset at the number
+    // of interactions which had occurred before this soft navigation.
+    const page_load_metrics::ResponsivenessMetricsNormalization&
+        responsiveness_metrics_normalization =
+            GetDelegate().GetResponsivenessMetricsNormalization();
+    uint64_t previous_interaction_count =
+        (responsiveness_metrics_normalization.num_user_interactions() -
+         soft_nav_responsiveness_metrics_normalization.num_user_interactions());
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset -
+                                           previous_interaction_count);
+    // For soft navigations, the interaction time should be reported as the
+    // TimeDelta between the interaction and the soft navigation start. Since
+    // the interaction time is a TimeTicks and the soft navigation start_time is
+    // a TimeDelta from navigation_start, we need to add the navigation start
+    // TimeTicks to the soft_navigation start_time TimeDeltat and then subtract
+    // that from the interaction_time TimeTicks.
+    base::TimeDelta interaction_time =
+        inp->interaction_time - (GetDelegate().GetNavigationStart() +
+                                 soft_navigation_metrics.start_time);
+    builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            soft_nav_normalized_responsiveness_metrics.num_user_interactions));
+            soft_nav_responsiveness_metrics_normalization
+                .num_user_interactions()));
   }
 
   // Don't report CLS if we were never in the foreground.
   if (!last_time_shown_.is_null()) {
-    const absl::optional<float> cwv_cls_value =
+    const std::optional<float> cwv_cls_value =
         GetCoreWebVitalsSoftNavigationIntervalCLS();
     if (cwv_cls_value.has_value()) {
       builder
@@ -726,25 +729,27 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
 void UkmPageLoadMetricsObserver::
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics_before_soft_nav =
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization_before_soft_nav =
           GetDelegate()
-              .GetSoftNavigationIntervalNormalizedResponsivenessMetrics();
-  auto& max_event_durations = normalized_responsiveness_metrics_before_soft_nav
-                                  .normalized_max_event_durations;
-  if (normalized_responsiveness_metrics_before_soft_nav.num_user_interactions) {
+              .GetSoftNavigationIntervalResponsivenessMetricsNormalization();
+  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      responsiveness_metrics_normalization_before_soft_nav
+          .ApproximateHighPercentile();
+  if (inp.has_value()) {
     builder
         .SetInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics_before_soft_nav
-                        .num_user_interactions,
-                    max_event_durations.worst_ten_latencies)
-                    .InMilliseconds());
+            inp->interaction_latency.InMilliseconds());
+    builder.SetInteractiveTimingBeforeSoftNavigation_INPOffset(
+        inp->interaction_offset);
+    base::TimeDelta interaction_time =
+        inp->interaction_time - GetDelegate().GetNavigationStart();
+    builder.SetInteractiveTimingBeforeSoftNavigation_INPTime(
+        interaction_time.InMilliseconds());
     builder.SetInteractiveTimingBeforeSoftNavigation_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            normalized_responsiveness_metrics_before_soft_nav
-                .num_user_interactions));
+            responsiveness_metrics_normalization_before_soft_nav
+                .num_user_interactions()));
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -758,7 +763,7 @@ void UkmPageLoadMetricsObserver::
 
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
-  const absl::optional<float> cwv_cls_value =
+  const std::optional<float> cwv_cls_value =
       GetCoreWebVitalsSoftNavigationIntervalCLS();
 
   if (cwv_cls_value.has_value()) {
@@ -789,7 +794,7 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
   // in, the 1st(current) soft metrics are recorded. The initial soft
   // navigation metrics that have default values should not reported.
   if (current_soft_navigation_metrics->count == 0 ||
-      current_soft_navigation_metrics->count ==
+      current_soft_navigation_metrics->count >=
           new_soft_navigation_metrics.count) {
     return;
   }
@@ -922,19 +927,6 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
         first_input_timestamp.InMilliseconds());
   }
 
-  if (timing.interactive_timing->longest_input_delay) {
-    base::TimeDelta longest_input_delay =
-        timing.interactive_timing->longest_input_delay.value();
-    builder.SetInteractiveTiming_LongestInputDelay4(
-        longest_input_delay.InMilliseconds());
-  }
-  if (timing.interactive_timing->longest_input_timestamp) {
-    base::TimeDelta longest_input_timestamp =
-        timing.interactive_timing->longest_input_timestamp.value();
-    builder.SetInteractiveTiming_LongestInputTimestamp4(
-        longest_input_timestamp.InMilliseconds());
-  }
-
   if (timing.interactive_timing->first_scroll_delay &&
       WasStartedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_scroll_timestamp, GetDelegate())) {
@@ -953,25 +945,23 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
             first_scroll_timestamp.InMilliseconds()));
   }
 
-  if (timing.interactive_timing->first_input_processing_time &&
-      WasStartedInForegroundOptionalEventInForeground(
-          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
-    base::TimeDelta first_input_processing_time =
-        timing.interactive_timing->first_input_processing_time.value();
-    builder.SetInteractiveTiming_FirstInputProcessingTimes(
-        first_input_processing_time.InMilliseconds());
-  }
   if (timing.user_timing_mark_fully_loaded) {
     builder.SetPageTiming_UserTimingMarkFullyLoaded(
         timing.user_timing_mark_fully_loaded.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_fully_loaded.value(),
+                        "PageLoadMetrics.UserTimingMarkFullyLoaded");
   }
   if (timing.user_timing_mark_fully_visible) {
     builder.SetPageTiming_UserTimingMarkFullyVisible(
         timing.user_timing_mark_fully_visible.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_fully_visible.value(),
+                        "PageLoadMetrics.UserTimingMarkFullyVisible");
   }
   if (timing.user_timing_mark_interactive) {
     builder.SetPageTiming_UserTimingMarkInteractive(
         timing.user_timing_mark_interactive.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_interactive.value(),
+                        "PageLoadMetrics.UserTimingMarkInteractive");
   }
   builder.SetCpuTime(total_foreground_cpu_time_.InMilliseconds());
 
@@ -1000,9 +990,16 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
 
   builder.Record(ukm::UkmRecorder::Get());
 
-  // Record the LCP of the last soft navigation.
-  RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
-                              GetDelegate().GetSoftNavigationMetrics());
+  // Record last soft navigation metrics.
+  if (GetDelegate().GetSoftNavigationMetrics().count >= 1 &&
+      !GetDelegate().GetSoftNavigationMetrics().navigation_id.empty()) {
+    RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
+                                GetDelegate().GetSoftNavigationMetrics());
+  }
+
+  // Record soft navigation count histogram to UMA.
+  base::UmaHistogramCounts100(kHistogramSoftNavigationCount,
+                              GetDelegate().GetSoftNavigationMetrics().count);
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
@@ -1037,14 +1034,14 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     base::TimeTicks app_background_time) {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
-  absl::optional<bool> third_party_cookie_blocking_enabled =
+  std::optional<bool> third_party_cookie_blocking_enabled =
       GetThirdPartyCookieBlockingEnabled();
   if (third_party_cookie_blocking_enabled) {
     builder.SetThirdPartyCookieBlockingEnabledForSite(
         third_party_cookie_blocking_enabled.value());
   }
 
-  absl::optional<base::TimeDelta> foreground_duration =
+  std::optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(GetDelegate(),
                                                       app_background_time);
   if (foreground_duration) {
@@ -1173,6 +1170,16 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
   builder.SetMainFrameResource_RequestStartToReceiveHeadersEnd(
       request_start_to_receive_headers_end_ms);
 
+  if (!main_frame_timing_->connect_timing.connect_start.is_null() &&
+      !GetDelegate().GetNavigationStart().is_null()) {
+    base::TimeDelta navigation_start_to_connect_start =
+        main_frame_timing_->connect_timing.connect_start -
+        GetDelegate().GetNavigationStart();
+
+    builder.SetMainFrameResource_NavigationStartToConnectStart(
+        navigation_start_to_connect_start.InMilliseconds());
+  }
+
   if (!main_frame_timing_->request_start.is_null() &&
       !GetDelegate().GetNavigationStart().is_null()) {
     base::TimeDelta navigation_start_to_request_start =
@@ -1210,7 +1217,7 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
   }
 }
 
-absl::optional<float> UkmPageLoadMetricsObserver::GetCoreWebVitalsCLS() {
+std::optional<float> UkmPageLoadMetricsObserver::GetCoreWebVitalsCLS() {
   const page_load_metrics::NormalizedCLSData& normalized_cls_data =
       GetDelegate().GetNormalizedCLSData(
           page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
@@ -1218,17 +1225,17 @@ absl::optional<float> UkmPageLoadMetricsObserver::GetCoreWebVitalsCLS() {
   if (!normalized_cls_data.data_tainted) {
     return normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<float>
+std::optional<float>
 UkmPageLoadMetricsObserver::GetCoreWebVitalsSoftNavigationIntervalCLS() {
   const page_load_metrics::NormalizedCLSData& normalized_cls_data =
       GetDelegate().GetSoftNavigationIntervalNormalizedCLSData();
   if (!normalized_cls_data.data_tainted) {
     return normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void UkmPageLoadMetricsObserver::ReportLayoutStability() {
@@ -1255,7 +1262,7 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
                   .GetMainFrameRenderData()
                   .layout_shift_score_before_input_or_scroll));
 
-  const absl::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
+  const std::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
   if (cwv_cls_value.has_value()) {
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
@@ -1318,7 +1325,7 @@ void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {
   builder.SetExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHidden(
       page_load_metrics::LayoutShiftUkmValue(layout_shift_score));
   // Record CLS normalization UKM.
-  const absl::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
+  const std::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
   if (cwv_cls_value.has_value()) {
     builder
         .SetExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000ms(
@@ -1367,29 +1374,27 @@ void UkmPageLoadMetricsObserver::ReportResponsivenessAfterFirstForeground() {
   DCHECK(!last_time_shown_.is_null());
 
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
-  if (normalized_responsiveness_metrics.num_user_interactions) {
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization =
+          GetDelegate().GetResponsivenessMetricsNormalization();
+
+  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  if (inp.has_value()) {
     builder
         .SetInteractiveTiming_UserInteractionLatencyAtFirstOnHidden_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics.num_user_interactions,
-                    max_event_durations.worst_ten_latencies)
-                    .InMilliseconds());
+            inp->interaction_latency.InMilliseconds());
+
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset);
+    base::TimeDelta interaction_time =
+        inp->interaction_time - GetDelegate().GetNavigationStart();
+    builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
 
     UmaHistogramCustomTimes(
         "PageLoad.InteractiveTiming.UserInteractionLatencyAtFirstOnHidden."
         "HighPercentile2."
         "MaxEventDuration",
-        page_load_metrics::ResponsivenessMetricsNormalization::
-            ApproximateHighPercentile(
-                normalized_responsiveness_metrics.num_user_interactions,
-                max_event_durations.worst_ten_latencies),
-        base::Milliseconds(1), base::Seconds(60), 50);
+        inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -1452,19 +1457,6 @@ void UkmPageLoadMetricsObserver::RecordPageLoadTimestampMetrics(
   navigation_start_time_.LocalExplode(&exploded);
   builder.SetDayOfWeek(exploded.day_of_week);
   builder.SetHourOfDay(exploded.hour);
-}
-
-void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
-  ukm::builders::PageLoad(GetDelegate().GetPageUkmSourceId())
-      .SetInteractiveTiming_NumInputEvents(
-          GetDelegate().GetPageInputTiming().num_input_events)
-      .SetInteractiveTiming_TotalInputDelay(
-          GetDelegate().GetPageInputTiming().total_input_delay.InMilliseconds())
-      .SetInteractiveTiming_TotalAdjustedInputDelay(
-          GetDelegate()
-              .GetPageInputTiming()
-              .total_adjusted_input_delay.InMilliseconds())
-      .Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
@@ -1553,10 +1545,10 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
       .Record(ukm::UkmRecorder::Get());
 }
 
-absl::optional<int64_t>
+std::optional<int64_t>
 UkmPageLoadMetricsObserver::GetRoundedSiteEngagementScore() const {
   if (!browser_context_)
-    return absl::nullopt;
+    return std::nullopt;
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   site_engagement::SiteEngagementService* engagement_service =
@@ -1576,53 +1568,43 @@ UkmPageLoadMetricsObserver::GetRoundedSiteEngagementScore() const {
   return rounded_document_engagement_score;
 }
 
-absl::optional<bool>
+std::optional<bool>
 UkmPageLoadMetricsObserver::GetThirdPartyCookieBlockingEnabled() const {
   if (!browser_context_)
-    return absl::nullopt;
+    return std::nullopt;
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
   if (!cookie_settings->ShouldBlockThirdPartyCookies())
-    return absl::nullopt;
+    return std::nullopt;
 
   return !cookie_settings->IsThirdPartyAccessAllowed(GetDelegate().GetUrl());
 }
 
 void UkmPageLoadMetricsObserver::RecordResponsivenessMetrics() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
-  if (normalized_responsiveness_metrics.num_user_interactions) {
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization =
+          GetDelegate().GetResponsivenessMetricsNormalization();
+  std::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  if (inp.has_value()) {
     builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
-        max_event_durations.worst_latency.InMilliseconds());
-    builder
-        .SetInteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDuration(
-            max_event_durations.sum_of_latency_over_budget.InMilliseconds());
-    builder
-        .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
-            max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
-            normalized_responsiveness_metrics.num_user_interactions);
-    builder
-        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics.num_user_interactions,
-                    max_event_durations.worst_ten_latencies_over_budget)
-                    .InMilliseconds());
+        responsiveness_metrics_normalization.worst_latency()
+            .value()
+            .interaction_latency.InMilliseconds());
     builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics.num_user_interactions,
-                    max_event_durations.worst_ten_latencies)
-                    .InMilliseconds());
+            inp->interaction_latency.InMilliseconds());
+
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset);
+    base::TimeDelta interaction_time =
+        inp->interaction_time - GetDelegate().GetNavigationStart();
+    builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
+
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
-            normalized_responsiveness_metrics.num_user_interactions));
+            responsiveness_metrics_normalization.num_user_interactions()));
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -1647,7 +1629,7 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
             static_cast<int64_t>(GetDelegate().GetPageUkmSourceId()));
         data->set_latest_url(GetDelegate().GetUrl().spec());
 
-        const absl::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
+        const std::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
         if (cwv_cls_value.has_value()) {
           data->set_latest_cumulative_layout_shift(*cwv_cls_value);
         }
@@ -1728,11 +1710,6 @@ void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(
     total_foreground_cpu_time_ += timing.task_time;
 }
 
-void UkmPageLoadMetricsObserver::DidActivatePortal(
-    base::TimeTicks activation_time) {
-  is_portal_ = false;
-}
-
 void UkmPageLoadMetricsObserver::RecordNoStatePrefetchMetrics(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
@@ -1804,4 +1781,19 @@ void UkmPageLoadMetricsObserver::RecordGeneratedNavigationUKM(
   builder.SetFirstURLIsHomePage(start_url_is_home_page_);
   builder.SetFirstURLIsDefaultSearchEngine(start_url_is_default_search_);
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::EmitUserTimingEvent(base::TimeDelta duration,
+                                                     const char event_name[]) {
+  const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+  const perfetto::Track track(kInstantPageLoadEventsTraceTrackId,
+                              perfetto::ProcessTrack::Current());
+  TRACE_EVENT_INSTANT(
+      "loading,interactions", perfetto::StaticString{event_name}, track,
+      navigation_start + duration, [&](perfetto::EventContext ctx) {
+        auto* page_load_proto =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_page_load();
+        page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+      });
 }

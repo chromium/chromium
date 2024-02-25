@@ -5,6 +5,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -16,7 +17,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"
@@ -31,8 +31,6 @@ using ::testing::IsEmpty;
 
 namespace ash {
 namespace {
-
-const SkColor kDefaultColor = SK_ColorTRANSPARENT;
 
 const SkColor kGray = SkColorSetRGB(10, 10, 10);
 
@@ -117,10 +115,6 @@ void WallpaperColorCalculatorTest::InstallTaskRunner(
 void WallpaperColorCalculatorTest::CreateCalculator(
     const gfx::ImageSkia& image) {
   calculator_ = std::make_unique<WallpaperColorCalculator>(image);
-  std::vector<color_utils::ColorProfile> color_profiles;
-  color_profiles.emplace_back(color_utils::LumaRange::NORMAL,
-                              color_utils::SaturationRange::VIBRANT);
-  calculator_->SetColorProfiles(color_profiles);
 }
 
 // Used to group the asynchronous calculation tests.
@@ -145,28 +139,7 @@ TEST_F(WallPaperColorCalculatorAsyncTest,
   EXPECT_TRUE(notified);
 }
 
-TEST_F(WallPaperColorCalculatorAsyncTest, ColorUpdatedOnSuccessfulCalculation) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(chromeos::features::kJelly);
-
-  std::vector<SkColor> colors = {kDefaultColor};
-  SkColor k_mean_color = kDefaultColor;
-  calculator_->set_calculated_colors_for_test(
-      WallpaperCalculatedColors(colors, k_mean_color, kDefaultColor));
-
-  base::RunLoop run_loop;
-  EXPECT_TRUE(calculator_->StartCalculation(Wrap(run_loop.QuitClosure())));
-
-  run_loop.Run();
-  ASSERT_TRUE(calculator_->get_calculated_colors());
-  EXPECT_NE(kDefaultColor,
-            calculator_->get_calculated_colors()->prominent_colors[0]);
-  EXPECT_EQ(kGray, calculator_->get_calculated_colors()->k_mean_color);
-}
-
-TEST_F(WallPaperColorCalculatorAsyncTest, CelebiCalculatedWhenJellyEnabled) {
-  base::test::ScopedFeatureList features(chromeos::features::kJelly);
-
+TEST_F(WallPaperColorCalculatorAsyncTest, CelebiCalculated) {
   base::RunLoop run_loop;
   EXPECT_TRUE(calculator_->StartCalculation(Wrap(run_loop.QuitClosure())));
 
@@ -200,8 +173,6 @@ TEST_F(WallpaperColorCalculatorSyncTest, SetsCalculatedColorsSync) {
   EXPECT_FALSE(calculator_->get_calculated_colors().has_value());
   EXPECT_TRUE(calculator_->StartCalculation(base::DoNothing()));
   EXPECT_TRUE(calculator_->get_calculated_colors().has_value());
-  EXPECT_THAT(calculator_->get_calculated_colors()->prominent_colors,
-              ElementsAre(kVibrantGreen));
   EXPECT_SKCOLOR_EQ(calculator_->get_calculated_colors()->k_mean_color, kGray);
 }
 
@@ -212,9 +183,6 @@ TEST_F(WallpaperColorCalculatorSyncTest, SyncFailedExtraction) {
   EXPECT_TRUE(calculator_->StartCalculation(base::DoNothing()));
   auto calculated_colors = calculator_->get_calculated_colors();
   EXPECT_TRUE(calculated_colors.has_value());
-  // 1 color profile in test that failed to extract color.
-  EXPECT_THAT(calculated_colors->prominent_colors,
-              ElementsAre(kInvalidWallpaperColor));
   // `CreateNonColorProducingImage` returns solid gray.
   EXPECT_SKCOLOR_EQ(kGray, calculated_colors->k_mean_color);
 }

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 
 assert(is_chromeos_ash, "Personalization App is ash-chrome only")
 
@@ -30,7 +30,9 @@ static_library("personalization_app") {
     "//ash",
     "//ash/constants:constants",
     "//ash/public/cpp",
+    "//ash/webui/common:sea_pen",
     "//ash/webui/common:trusted_types_util",
+    "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//ash/webui/personalization_app/resources:resources",
@@ -42,6 +44,7 @@ static_library("personalization_app") {
     "//chromeos/strings",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/manta",
     "//content/public/browser",
     "//ui/chromeos",
     "//ui/chromeos/styles:cros_styles_views",
@@ -59,8 +62,8 @@ source_set("test_support") {
     "test/fake_personalization_app_keyboard_backlight_provider.h",
     "test/fake_personalization_app_user_provider.cc",
     "test/fake_personalization_app_user_provider.h",
-    "test/personalization_app_mojom_banned_browsertest_fixture.cc",
-    "test/personalization_app_mojom_banned_browsertest_fixture.h",
+    "test/personalization_app_mojom_banned_mocha_test_base.cc",
+    "test/personalization_app_mojom_banned_mocha_test_base.h",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -68,9 +71,10 @@ source_set("test_support") {
   deps = [
     ":personalization_app",
     "//ash/public/cpp",
+    "//ash/webui/common:sea_pen",
+    "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
-    "//ash/webui/web_applications/test:test_support",
     "//chrome/test:test_support_ui",
   ]
 

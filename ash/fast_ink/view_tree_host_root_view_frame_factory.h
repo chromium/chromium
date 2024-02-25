@@ -22,7 +22,6 @@ class Widget;
 }  // namespace views
 
 namespace gfx {
-class GpuMemoryBuffer;
 class Size;
 }  // namespace gfx
 
@@ -38,8 +37,6 @@ class ViewTreeHostUiResource : public UiResource {
   ViewTreeHostUiResource& operator=(const ViewTreeHostUiResource&) = delete;
 
   ~ViewTreeHostUiResource() override;
-
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
 };
 
 class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
@@ -74,7 +71,7 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
  private:
   void Paint(const gfx::Rect& invalidation_rect,
              const gfx::Transform& rotate_transform,
-             gfx::GpuMemoryBuffer* gpu_buffer);
+             ViewTreeHostUiResource* resource);
 
   // Configures and adds a `TextureDrawQuad` to the `render_pass`.
   void AppendQuad(viz::CompositorRenderPass& render_pass,

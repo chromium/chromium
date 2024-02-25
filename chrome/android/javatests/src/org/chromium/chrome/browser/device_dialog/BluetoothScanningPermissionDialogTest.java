@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -40,7 +41,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 /**
  * Tests for the BluetoothScanningPermissionDialog class.
  *
- * TODO(crbug.com/1222669): Componentize this test.
+ * <p>TODO(crbug.com/1222669): Componentize this test.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -54,8 +55,7 @@ public class BluetoothScanningPermissionDialogTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
     private int mFinishedEventType = -1;
 
@@ -72,20 +72,26 @@ public class BluetoothScanningPermissionDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        mocker.mock(BluetoothScanningPermissionDialogJni.TEST_HOOKS,
+        mocker.mock(
+                BluetoothScanningPermissionDialogJni.TEST_HOOKS,
                 new TestBluetoothScanningPermissionDialogJni());
         mPermissionDialog = createDialog();
     }
 
     private BluetoothScanningPermissionDialog createDialog() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
-            BluetoothScanningPermissionDialog dialog = new BluetoothScanningPermissionDialog(
-                    mWindowAndroid, "https://origin.example.com/", ConnectionSecurityLevel.SECURE,
-                    new ChromeBluetoothScanningPromptAndroidDelegate(),
-                    /*nativeBluetoothScanningPermissionDialogPtr=*/42);
-            return dialog;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
+                    BluetoothScanningPermissionDialog dialog =
+                            new BluetoothScanningPermissionDialog(
+                                    mWindowAndroid,
+                                    "https://origin.example.com/",
+                                    ConnectionSecurityLevel.SECURE,
+                                    new ChromeBluetoothScanningPromptAndroidDelegate(
+                                            ProfileManager.getLastUsedRegularProfile()),
+                                    /* nativeBluetoothScanningPermissionDialogPtr= */ 42);
+                    return dialog;
+                });
     }
 
     @Test
@@ -105,11 +111,12 @@ public class BluetoothScanningPermissionDialogTest {
         // The list view should be hidden since there is no item in the list.
         Assert.assertEquals(View.GONE, items.getVisibility());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPermissionDialog.addOrUpdateDevice("device_id_0", "device_name_0");
-            mPermissionDialog.addOrUpdateDevice("device_id_1", "device_name_1");
-            mPermissionDialog.addOrUpdateDevice("device_id_2", "device_name_2");
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPermissionDialog.addOrUpdateDevice("device_id_0", "device_name_0");
+                    mPermissionDialog.addOrUpdateDevice("device_id_1", "device_name_1");
+                    mPermissionDialog.addOrUpdateDevice("device_id_2", "device_name_2");
+                });
 
         // The 'Allow' and 'Block' button should still be visible and enabled.
         Assert.assertEquals(View.VISIBLE, allowButton.getVisibility());
@@ -120,12 +127,30 @@ public class BluetoothScanningPermissionDialogTest {
         Assert.assertEquals(View.VISIBLE, items.getVisibility());
 
         DeviceItemAdapter itemAdapter = mPermissionDialog.getItemAdapterForTesting();
-        Assert.assertTrue(itemAdapter.getItem(0).hasSameContents(
-                "device_id_0", "device_name_0", /*icon=*/null, /*iconDescription=*/null));
-        Assert.assertTrue(itemAdapter.getItem(1).hasSameContents(
-                "device_id_1", "device_name_1", /*icon=*/null, /*iconDescription=*/null));
-        Assert.assertTrue(itemAdapter.getItem(2).hasSameContents(
-                "device_id_2", "device_name_2", /*icon=*/null, /*iconDescription=*/null));
+        Assert.assertTrue(
+                itemAdapter
+                        .getItem(0)
+                        .hasSameContents(
+                                "device_id_0",
+                                "device_name_0",
+                                /* icon= */ null,
+                                /* iconDescription= */ null));
+        Assert.assertTrue(
+                itemAdapter
+                        .getItem(1)
+                        .hasSameContents(
+                                "device_id_1",
+                                "device_name_1",
+                                /* icon= */ null,
+                                /* iconDescription= */ null));
+        Assert.assertTrue(
+                itemAdapter
+                        .getItem(2)
+                        .hasSameContents(
+                                "device_id_2",
+                                "device_name_2",
+                                /* icon= */ null,
+                                /* iconDescription= */ null));
     }
 
     @Test

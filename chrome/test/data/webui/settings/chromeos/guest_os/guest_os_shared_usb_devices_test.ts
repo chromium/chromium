@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {GuestOsBrowserProxyImpl, SettingsGuestOsSharedUsbDevicesElement} from 'chrome://os-settings/lazy_load.js';
 import {CrDialogElement} from 'chrome://os-settings/os_settings.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -113,7 +113,8 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
     assertEquals(null, reassignDialog);
     items[2]!.click();
     flush();
-    reassignDialog = page.shadowRoot!.querySelector('#reassignDialog');
+    reassignDialog =
+        page.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog');
     assert(reassignDialog);
     assertTrue(reassignDialog.open);
 
@@ -127,7 +128,8 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
     // to the native <dialog> element.
     items[2]!.click();
     flush();
-    reassignDialog = page.shadowRoot!.querySelector('#reassignDialog');
+    reassignDialog =
+        page.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog');
     assert(reassignDialog);
     assertTrue(reassignDialog.open);
 
@@ -135,7 +137,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
     page.shadowRoot!.querySelector<CrDialogElement>('#reassignDialog')!
         .getNative()
         .dispatchEvent(e);
-    flush();
+    await flushTasks();
     assertEquals(null, page.shadowRoot!.querySelector('#reassignDialog'));
 
     // Clicking continue will call the proxy and close the dialog.
@@ -299,9 +301,9 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
     // Simulate a change in the underlying model.
     const updatedDevices =
         structuredClone(guestOsBrowserProxy.sharedUsbDevices);
-    updatedDevices[0].guestId.vm_name = 'termina';
-    updatedDevices[0].guestId.container_name = 'penguin';
-    updatedDevices[0].promptBeforeSharing = true;
+    updatedDevices[0]!.guestId!.vm_name = 'termina';
+    updatedDevices[0]!.guestId!.container_name = 'penguin';
+    updatedDevices[0]!.promptBeforeSharing = true;
     webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', updatedDevices);
     flush();
@@ -373,8 +375,8 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
     // Simulate a change in the underlying model.
     const updatedDevices =
         structuredClone(guestOsBrowserProxy.sharedUsbDevices);
-    updatedDevices[1].guestId.vm_name = 'not-termina';
-    updatedDevices[1].guestId.container_name = 'not-penguin';
+    updatedDevices[1]!.guestId!.vm_name = 'not-termina';
+    updatedDevices[1]!.guestId!.container_name = 'not-penguin';
     webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', updatedDevices);
     flush();

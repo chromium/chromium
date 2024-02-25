@@ -13,41 +13,60 @@ from multiprocessing import Process, Manager, cpu_count, Pool
 import os
 import subprocess
 
-FUZZ_RETRIES = 3
+WHOLE_CORPUS_RETRIES = 2
+WHOLE_CORPUS_TIMEOUT_SECS = 1200
+INDIVIDUAL_TESTCASE_TIMEOUT_SECS = 60
+INDIVIDUAL_TESTCASES_MAX_TO_TRY = 500
+INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED = 100
 
 
 def _run_fuzzer_target(args):
   """ Runs a given fuzzer target. Designed to be called in parallel.
 
   Parameters:
-    args[0]: Name of the fuzzer target.
-    args[1]: Command to be run.
-    args[2]: A multiprocessing.Manager.list for names of successful fuzzers.
-    args[3]: A multiprocessing.Manager.list for names of failed fuzzers.
+    args[0]: A dict containing information about what to run. Must contain:
+      name: name of the fuzzer target
+      corpus_dir: where to find its corpus. May be None.
+      profraw_dir: the directory in which to create a .profraws temporarily
+      profdata_file: the output .profdata filename to create
+      env: a dict of additional environment variables. This function will
+        append profdata environment variables.
+      cmd: a list of command line arguments, including the binary name.
+        This function will append corpus entries.
+    args[1]: A multiprocessing.Manager.list for names of successful fuzzers.
+    args[2]: A multiprocessing.Manager.list for names of failed fuzzers.
 
   Returns:
     None.
   """
-  target = args[0]
-  cmd = args[1]
-  env = args[2]
-  verified_fuzzer_targets = args[3]
-  failed_targets = args[4]
-  target_profraw = os.path.join(reportdir, target + ".profraw")
-  target_profdata = os.path.join(reportdir, target + ".profdata")
-  for i in range(FUZZ_RETRIES):
-    print("Trying command %s" % str(cmd))
+  target_details = args[0]
+  verified_fuzzer_targets = args[1]
+  failed_targets = args[2]
+  target = target_details['name']
+  cmd = target_details['cmd']
+  env = target_details['env']
+  corpus_dir = target_details['corpus']
+  profraw_dir = target_details['profraw_dir']
+  target_profdata = target_details['profdata_file']
+  fullcorpus_profraw = os.path.join(profraw_dir, target + ".profraw")
+  env['LLVM_PROFILE_FILE'] = fullcorpus_profraw
+  fullcorpus_cmd = cmd.copy()
+  if corpus_dir is not None:
+    fullcorpus_cmd.append(corpus_dir)
+  valid_profraws = set()
+  for i in range(WHOLE_CORPUS_RETRIES):
+    print("Trying command with full corpus %s" % str(fullcorpus_cmd))
     try:
-      subprocess.run(cmd,
+      subprocess.run(fullcorpus_cmd,
                      env=env,
-                     timeout=1800,
+                     timeout=WHOLE_CORPUS_TIMEOUT_SECS,
                      capture_output=True,
                      check=True)
       break
     except Exception as e:
       print(
           "Command %s exited with non-zero return code, failing on iteration %d"
-          % (cmd, i))
+          % (fullcorpus_cmd, i))
       if type(e) == subprocess.TimeoutExpired:
         print("Timed out after %d seconds" % e.timeout)
       else:
@@ -56,13 +75,67 @@ def _run_fuzzer_target(args):
         print(e.output)
         print(e.stderr)
         print("*** FULL FUZZING OUTPUT ABOVE ***")
-  if not os.path.isfile(target_profraw):
+  if os.path.exists(
+      fullcorpus_profraw) and os.path.getsize(fullcorpus_profraw) > 0:
+    valid_profraws.add(fullcorpus_profraw)
+  if len(valid_profraws) == 0 and corpus_dir is not None:
+    # We failed to run the fuzzer with the whole corpus in one go. That probably
+    # means one of the test cases caused a crash. Let's run each test
+    # case one at a time.
+    for count, corpus_entry in enumerate(os.listdir(corpus_dir)):
+      specific_test_case_profraw = os.path.join(
+          profraw_dir, target + "_" + str(count) + ".profraw")
+      test_case = os.path.join(corpus_dir, corpus_entry)
+      specific_test_case_cmd = cmd + [test_case]
+      env['LLVM_PROFILE_FILE'] = specific_test_case_profraw
+      print("Trying command with specific test case %d (%s)" %
+            (count, str(specific_test_case_cmd)))
+      try:
+        subprocess.run(specific_test_case_cmd,
+                       env=env,
+                       timeout=INDIVIDUAL_TESTCASE_TIMEOUT_SECS,
+                       capture_output=True,
+                       check=True)
+      except Exception as e:
+        print("Command %s exited with non-zero return code" %
+              (specific_test_case_cmd))
+        if type(e) == subprocess.TimeoutExpired:
+          print("Timed out after %d seconds" % e.timeout)
+        else:
+          print("Return code: " + str(e.returncode))
+          print("**** FULL FUZZING OUTPUT BELOW ***")
+          print(e.output)
+          print(e.stderr)
+          print("*** FULL FUZZING OUTPUT ABOVE ***")
+      if os.path.exists(specific_test_case_profraw
+                        ) and os.path.getsize(specific_test_case_profraw) > 0:
+        valid_profraws.add(specific_test_case_profraw)
+      # The corpus may be huge - don't keep going forever.
+      if count > INDIVIDUAL_TESTCASES_MAX_TO_TRY:
+        print("Skipping remaining test cases - >%d tried" %
+              INDIVIDUAL_TESTCASES_MAX_TO_TRY)
+        break
+      # And if we've got enough valid coverage files, assume this is a
+      # reasonable approximation of the total coverage. This is partly
+      # to ensure the profdata command line isn't too huge, partly
+      # to reduce processing time to something reasonable, and partly
+      # because profraw files are huge and can fill up bot disk space.
+      if len(valid_profraws) > INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED:
+        print("Skipping remaining test cases, >%d valid profiles recorded." %
+              INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED)
+        break
+  if len(valid_profraws) == 0:
     failed_targets.append(target)
     return
-  llvm_profdata_cmd = [
-      llvm_profdata, 'merge', '-sparse', target_profraw, '-o', target_profdata
-  ]
+  # This script is currently run only on Linux. If in future we want to use
+  # it on Windows, where command line length limits are smaller, we might
+  # want to use the -f argument instead of listing them all
+  llvm_profdata_cmd = [llvm_profdata, 'merge', '-sparse'
+                       ] + list(valid_profraws) + ['-o', target_profdata]
   subprocess.check_call(llvm_profdata_cmd)
+  # Free up disk space by deleting all non-zero-length profraw files
+  for f in valid_profraws:
+    os.unlink(f)
   verified_fuzzer_targets.append(target)
 
 
@@ -103,9 +176,7 @@ incomplete_targets = []
 verified_fuzzer_targets = Manager().list()
 failed_targets = Manager().list()
 reportdir = 'out/report'
-commands = []
-targets = []
-envs = []
+all_target_details = []
 llvm_profdata = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata'
 
 if not (os.path.isfile(llvm_profdata)):
@@ -128,23 +199,56 @@ for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
          'not a directory') % fuzzer_target)
     incomplete_targets.append(fuzzer_target)
   else:
-    subprocess_cmd = [
-        fuzzer_target_binpath, '-runs=0', fuzzer_target_corporadir
-    ]
-    profraw_file = fuzzer_target + ".profraw"
-    profraw_path = os.path.join(reportdir, profraw_file)
-    env = {'LLVM_PROFILE_FILE': profraw_path}
-    targets.append(fuzzer_target)
-    commands.append(subprocess_cmd)
-    envs.append(env)
+    all_target_details.append({
+        'name':
+        fuzzer_target,
+        'profraw_dir':
+        reportdir,
+        'profdata_file':
+        os.path.join(reportdir, fuzzer_target + ".profdata"),
+        'env':
+        dict(),
+        # RSS limit 8GB. Some of our fuzzers which involve running significant
+        # chunks of Chromium code require more than the 2GB default.
+        'cmd': [fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192'],
+        'corpus':
+        fuzzer_target_corporadir
+    })
+
+# We also want to run ./chrome without a valid X server.
+# It will almost immediately exit.
+# This runs essentially no Chrome code, so will result in all the lines
+# of code in the Chrome binary being marked as 0 in the code coverage
+# report. Without doing this step, many of the files of Chrome source
+# code simply don't appear in the coverage report at all.
+chrome_target_binpath = os.path.join(args.fuzzer_binaries_dir, "chrome")
+if not os.path.isfile(chrome_target_binpath):
+  print('Could not find binary file for Chrome itself')
+else:
+  profraw_file = chrome_target_binpath + ".profraw"
+  profraw_path = os.path.join(reportdir, profraw_file)
+
+  env = {'DISPLAY': 'not-a-real-display'}
+  all_target_details.append({
+      'name':
+      "chrome",
+      'profraw_dir':
+      reportdir,
+      'profdata_file':
+      os.path.join(reportdir, "chrome.profdata"),
+      'env':
+      env,
+      'cmd': [chrome_target_binpath],
+      'corpus':
+      None
+  })
 
 # Run the fuzzers in parallel.
 cpu_count = int(cpu_count())
 with Pool(cpu_count) as p:
-  results = p.map(
-      _run_fuzzer_target,
-      [(target, command, env, verified_fuzzer_targets, failed_targets)
-       for target, command, env in zip(targets, commands, envs)])
+  results = p.map(_run_fuzzer_target,
+                  [(target_details, verified_fuzzer_targets, failed_targets)
+                   for target_details in all_target_details])
 
 print("Successful targets: %s" % verified_fuzzer_targets)
 print("Failed targets: %s" % failed_targets)
@@ -161,4 +265,4 @@ for fuzzer in verified_fuzzer_targets:
   try:
     subprocess.check_call(cmd)
   except:
-    print.warning("Warning: failed to copy profraw for %s" % fuzzer)
+    print.warning("Warning: failed to copy profdata for %s" % fuzzer)

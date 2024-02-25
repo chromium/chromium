@@ -27,6 +27,7 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
      "os.bluetooth_peripherals_info"},
     {APIPermissionID::kChromeOSDiagnostics, "os.diagnostics"},
     {APIPermissionID::kChromeOSEvents, "os.events"},
+    {APIPermissionID::kChromeOSManagementAudio, "os.management.audio"},
     {APIPermissionID::kChromeOSTelemetry, "os.telemetry"},
     {APIPermissionID::kChromeOSTelemetrySerialNumber,
      "os.telemetry.serial_number"},

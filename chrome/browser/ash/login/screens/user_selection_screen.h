@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/session/user_info.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -30,7 +29,7 @@ class AccountId;
 
 namespace ash {
 
-class EasyUnlockService;
+class SmartLockService;
 class UserBoardView;
 struct LoginUserInfo;
 
@@ -96,14 +95,11 @@ class UserSelectionScreen
   // UserOnlineSigninNotifier::Observer
   void OnOnlineSigninEnforced(const AccountId& account_id) override;
 
-  // Builds a `UserAvatar` instance which contains the current image for `user`.
-  static UserAvatar BuildAshUserAvatarForUser(const user_manager::User& user);
-
   std::vector<LoginUserInfo> UpdateAndReturnUserListForAsh();
   void SetUsersLoaded(bool loaded);
 
  protected:
-  raw_ptr<UserBoardView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<UserBoardView> view_ = nullptr;
 
   // Map from public session account IDs to recommended locales set by policy.
   std::map<AccountId, std::vector<std::string>>
@@ -116,11 +112,12 @@ class UserSelectionScreen
   class DircryptoMigrationChecker;
   class TpmLockedChecker;
 
-  EasyUnlockService* GetEasyUnlockServiceForUser(
+  SmartLockService* GetSmartLockServiceForUser(
       const AccountId& account_id) const;
 
   void OnUserStatusChecked(const AccountId& account_id,
-                           TokenHandleUtil::TokenHandleStatus status);
+                           const std::string& token,
+                           bool reauth_required);
   void OnAllowedInputMethodsChanged();
 
   // Purpose of the screen.
@@ -145,13 +142,13 @@ class UserSelectionScreen
   user_manager::UserList users_to_send_;
 
   AccountId focused_pod_account_id_;
-  absl::optional<system::SystemClock::ScopedHourClockType>
+  std::optional<system::SystemClock::ScopedHourClockType>
       focused_user_clock_type_;
 
   // Sometimes we might get focused pod while user session is still active. e.g.
   // while creating lock screen. So postpone any work until after the session
   // state changes.
-  absl::optional<AccountId> pending_focused_account_id_;
+  std::optional<AccountId> pending_focused_account_id_;
 
   // Input Method Engine state used at the user selection screen.
   scoped_refptr<input_method::InputMethodManager::State> ime_state_;

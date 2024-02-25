@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeviceSettings, InputDeviceSettingsPolicy, InputDeviceType, PolicyStatus} from './input_device_settings_types.js';
+import {Button, DeviceSettings, InputDeviceSettingsPolicy, InputDeviceType, KeyEvent, PolicyStatus} from './input_device_settings_types.js';
 
 function objectsAreEqual(
     obj1: {[key: string]: any}, obj2: {[key: string]: any}): boolean {
@@ -29,9 +29,29 @@ function objectsAreEqual(
   return true;
 }
 
+function deviceInList(
+    deviceId: number, deviceList: InputDeviceType[]): boolean {
+  for (const device of deviceList) {
+    if (device.id === deviceId) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function settingsAreEqual(
     settings1: DeviceSettings, settings2: DeviceSettings): boolean {
   return objectsAreEqual(settings1, settings2);
+}
+
+export function buttonsAreEqual(button1: Button, button2: Button): boolean {
+  return objectsAreEqual(button1, button2);
+}
+
+export function keyEventsAreEqual(
+    keyEvent1: KeyEvent, keyEvent2: KeyEvent): boolean {
+  return objectsAreEqual(keyEvent1, keyEvent2);
 }
 
 interface PrefPolicyFields {
@@ -68,13 +88,13 @@ export function getDeviceStateChangesToAnnounce(
   let msgId: string;
   let devices: InputDeviceType[];
   if (newDeviceList.length > prevDeviceList.length) {
-    devices =
-        newDeviceList.filter((device) => !prevDeviceList.includes(device));
+    devices = newDeviceList.filter(
+        (device) => !deviceInList(device.id, prevDeviceList));
     msgId = 'deviceConnectedA11yLabel';
   } else {
     msgId = 'deviceDisconnectedA11yLabel';
-    devices =
-        prevDeviceList.filter((device) => !newDeviceList.includes(device));
+    devices = prevDeviceList.filter(
+        (device) => !deviceInList(device.id, newDeviceList));
   }
 
   return {msgId, deviceNames: devices.map(device => device.name)};

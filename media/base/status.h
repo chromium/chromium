@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -145,14 +146,14 @@ struct StatusTraitsHelper {
   static constexpr bool has_pack = HasPackExtraData<T>::as_method;
 
   // If T defines OkEnumValue(), then return it. Otherwise, return an
-  // T::Codes::kOk if that's defined, or absl::nullopt if its not.
-  static constexpr absl::optional<typename T::Codes> OkEnumValue() {
+  // T::Codes::kOk if that's defined, or std::nullopt if its not.
+  static constexpr std::optional<typename T::Codes> OkEnumValue() {
     if constexpr (has_default) {
       return T::OkEnumValue();
     } else if constexpr (has_ok) {
       return T::Codes::kOk;
     } else {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -221,6 +222,7 @@ class MEDIA_EXPORT TypedStatus {
   // Convenience aliases to allow, e.g., MyStatusType::Codes::kGreatDisturbance.
   using Traits = T;
   using Codes = typename T::Codes;
+  using Callback = base::OnceCallback<void(TypedStatus<T>)>;
 
   // See media/base/status.md for the ways that an instantiation of TypedStatus
   // can be constructed, since there are a few.
@@ -575,13 +577,27 @@ class MEDIA_EXPORT TypedStatus {
     }
 
    private:
-    absl::optional<TypedStatus<T>> error_;
+    std::optional<TypedStatus<T>> error_;
 
     // We wrap |OtherType| in a container so that windows COM wrappers work.
     // They override operator& and similar, and won't compile in a
-    // absl::optional.
-    absl::optional<std::tuple<OtherType>> value_;
+    // std::optional.
+    std::optional<std::tuple<OtherType>> value_;
   };
+
+  static Callback BindOkContinuation(Callback err,
+                                     base::OnceCallback<void(Callback)> ok) {
+    return base::BindOnce(
+        [](Callback err, base::OnceCallback<void(Callback)> ok,
+           TypedStatus<T> status) {
+          if (status.is_ok()) {
+            std::move(ok).Run(std::move(err));
+          } else {
+            std::move(err).Run(std::move(status));
+          }
+        },
+        std::move(err), std::move(ok));
+  }
 
  private:
   std::unique_ptr<internal::StatusData> data_;

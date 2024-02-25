@@ -53,15 +53,15 @@ class ASH_EXPORT PrivacyScreenToastController
   void OnMouseEnteredView() override;
   void OnMouseExitedView() override;
   std::u16string GetAccessibleNameForBubble() override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // PrivacyScreenController::Observer:
   void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) override;
 
-  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> tray_;
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
-  raw_ptr<PrivacyScreenToastView, DanglingUntriaged | ExperimentalAsh>
-      toast_view_ = nullptr;
+  const raw_ptr<UnifiedSystemTray> tray_;
+  raw_ptr<TrayBubbleView> bubble_view_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
+  raw_ptr<PrivacyScreenToastView, DanglingUntriaged> toast_view_ = nullptr;
   bool mouse_hovered_ = false;
   base::OneShotTimer close_timer_;
 };

@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_date
+  AssertionError: assert '0101-02-01' == '2000-01-01'
+Harness: the test ran to completion.

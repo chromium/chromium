@@ -61,7 +61,7 @@ net::SiteForCookies WorkerFetchContext::GetSiteForCookies() const {
 
 scoped_refptr<const SecurityOrigin> WorkerFetchContext::GetTopFrameOrigin()
     const {
-  absl::optional<WebSecurityOrigin> top_frame_origin =
+  std::optional<WebSecurityOrigin> top_frame_origin =
       web_context_->TopFrameOrigin();
 
   // The top frame origin of shared and service workers is null.
@@ -78,14 +78,10 @@ SubresourceFilter* WorkerFetchContext::GetSubresourceFilter() const {
   return subresource_filter_.Get();
 }
 
-bool WorkerFetchContext::AllowScriptFromSource(const KURL& url) const {
-  if (!global_scope_->ContentSettingsClient()) {
-    return true;
-  }
-  // If we're on a worker, script should be enabled, so no need to plumb
-  // Settings::GetScriptEnabled() here.
-  return global_scope_->ContentSettingsClient()->AllowScriptFromSource(true,
-                                                                       url);
+bool WorkerFetchContext::AllowScript() const {
+  // Script is always allowed in worker fetch contexts, since the fact that
+  // they're running is already evidence that script is allowed.
+  return true;
 }
 
 bool WorkerFetchContext::ShouldBlockRequestByInspector(const KURL& url) const {
@@ -143,15 +139,15 @@ WorkerFetchContext::CreateWebSocketHandshakeThrottle() {
 bool WorkerFetchContext::ShouldBlockFetchByMixedContentCheck(
     mojom::blink::RequestContextType request_context,
     network::mojom::blink::IPAddressSpace target_address_space,
-    const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
+    base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
-    const absl::optional<String>& devtools_id) const {
-  RedirectStatus redirect_status = redirect_info
+    const String& devtools_id) const {
+  RedirectStatus redirect_status = redirect_info.has_value()
                                        ? RedirectStatus::kFollowedRedirect
                                        : RedirectStatus::kNoRedirect;
   const KURL& url_before_redirects =
-      redirect_info ? redirect_info->original_url : url;
+      redirect_info.has_value() ? redirect_info->original_url : url;
   return MixedContentChecker::ShouldBlockFetchOnWorker(
       *const_cast<WorkerFetchContext*>(this), request_context,
       url_before_redirects, redirect_status, url, reporting_disposition,
@@ -181,7 +177,7 @@ const KURL& WorkerFetchContext::Url() const {
 }
 
 ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicy() const {
-  return content_security_policy_;
+  return content_security_policy_.Get();
 }
 
 void WorkerFetchContext::PrepareRequest(
@@ -198,6 +194,8 @@ void WorkerFetchContext::PrepareRequest(
   request.SetSharedDictionaryWriterEnabled(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
           GetExecutionContext()));
+
+  request.SetHasStorageAccess(GetExecutionContext()->HasStorageAccess());
 
   WrappedResourceRequest webreq(request);
   web_context_->WillSendRequest(webreq);
@@ -236,7 +234,7 @@ void WorkerFetchContext::AddResourceTiming(
 
 void WorkerFetchContext::PopulateResourceRequest(
     ResourceType type,
-    const absl::optional<float> resource_width,
+    const std::optional<float> resource_width,
     ResourceRequest& out_request,
     const ResourceLoaderOptions& options) {
   if (!GetResourceFetcherProperties().IsDetached())
@@ -286,7 +284,7 @@ WorkerFetchContext::GetContentSecurityNotifier() {
 }
 
 ExecutionContext* WorkerFetchContext::GetExecutionContext() const {
-  return global_scope_;
+  return global_scope_.Get();
 }
 
 void WorkerFetchContext::Trace(Visitor* visitor) const {

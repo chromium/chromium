@@ -43,6 +43,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -102,11 +103,11 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   //   |UserCloudPolicyManagerAsh| is created here.
   // - For device-local accounts, policy is provided by
   //   |DeviceLocalAccountPolicyService|.
-  // For non-enterprise accounts only for users with type USER_TYPE_CHILD
+  // For non-enterprise accounts only for users with type kChild
   //   |UserCloudPolicyManagerAsh| is created here.
   // All other user types do not have user policy.
   const AccountId& account_id = user->GetAccountId();
-  if (user->GetType() != user_manager::USER_TYPE_CHILD &&
+  if (user->GetType() != user_manager::UserType::kChild &&
       signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
           account_id.GetUserEmail()) ==
           signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
@@ -124,7 +125,8 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
     case AccountType::UNKNOWN:
     case AccountType::GOOGLE:
       // TODO(tnagel): Return nullptr for unknown accounts once AccountId
-      // migration is finished.  (KioskAppManager still needs to be migrated.)
+      // migration is finished.  (KioskChromeAppManager still needs to be
+      // migrated.)
       if (!user->HasGaiaAccount()) {
         DLOG(WARNING) << "No policy for users without Gaia accounts";
         return nullptr;
@@ -138,8 +140,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
       known_user.GetProfileRequiresPolicy(account_id);
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  const bool is_stub_user =
-      user_manager::UserManager::Get()->IsStubAccountId(account_id);
+  const bool is_stub_user = account_id == user_manager::StubAccountId();
 
   // If true, we don't know if we've ever checked for policy for this user, so
   // we need to do a policy check during initialization. This differs from
@@ -205,7 +206,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   // block signin. Policy refresh will fail without the token that is available
   // only after profile initialization.
   const bool policy_refresh_requires_oauth_token =
-      user->GetType() == user_manager::USER_TYPE_CHILD &&
+      user->GetType() == user_manager::UserType::kChild &&
       base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser);
 
   base::TimeDelta policy_refresh_timeout;

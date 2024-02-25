@@ -86,7 +86,7 @@ std::unique_ptr<ProxyConfigDictionary> GetProxyConfigForNetwork(
   // unshared) configuration.
   // The user's proxy setting is not stored in the Chrome preference yet. We
   // still rely on Shill storing it.
-  const absl::optional<base::Value::Dict>& value = network.proxy_config();
+  const std::optional<base::Value::Dict>& value = network.proxy_config();
   if (!value) {
     return nullptr;
   }

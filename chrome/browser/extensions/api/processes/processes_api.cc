@@ -75,35 +75,35 @@ api::processes::ProcessType GetProcessType(
     task_manager::Task::Type task_type) {
   switch (task_type) {
     case task_manager::Task::BROWSER:
-      return api::processes::PROCESS_TYPE_BROWSER;
+      return api::processes::ProcessType::kBrowser;
 
     case task_manager::Task::RENDERER:
-      return api::processes::PROCESS_TYPE_RENDERER;
+      return api::processes::ProcessType::kRenderer;
 
     case task_manager::Task::EXTENSION:
     case task_manager::Task::GUEST:
-      return api::processes::PROCESS_TYPE_EXTENSION;
+      return api::processes::ProcessType::kExtension;
 
     case task_manager::Task::PLUGIN:
-      return api::processes::PROCESS_TYPE_PLUGIN;
+      return api::processes::ProcessType::kPlugin;
 
     case task_manager::Task::NACL:
-      return api::processes::PROCESS_TYPE_NACL;
+      return api::processes::ProcessType::kNacl;
 
     // TODO(https://crbug.com/1048715): Assign a different process type for each
     //                                  worker type.
     case task_manager::Task::DEDICATED_WORKER:
     case task_manager::Task::SHARED_WORKER:
-      return api::processes::PROCESS_TYPE_WORKER;
+      return api::processes::ProcessType::kWorker;
 
     case task_manager::Task::SERVICE_WORKER:
-      return api::processes::PROCESS_TYPE_SERVICE_WORKER;
+      return api::processes::ProcessType::kServiceWorker;
 
     case task_manager::Task::UTILITY:
-      return api::processes::PROCESS_TYPE_UTILITY;
+      return api::processes::ProcessType::kUtility;
 
     case task_manager::Task::GPU:
-      return api::processes::PROCESS_TYPE_GPU;
+      return api::processes::ProcessType::kGpu;
 
     case task_manager::Task::UNKNOWN:
     case task_manager::Task::ARC:
@@ -114,11 +114,11 @@ api::processes::ProcessType GetProcessType(
     // TODO(crbug.com/1186464): Do not expose lacros tasks for now. Defer
     // the decision until further discussion is made.
     case task_manager::Task::LACROS:
-      return api::processes::PROCESS_TYPE_OTHER;
+      return api::processes::ProcessType::kOther;
   }
 
   NOTREACHED() << "Unknown task type.";
-  return api::processes::PROCESS_TYPE_NONE;
+  return api::processes::ProcessType::kNone;
 }
 
 // Fills |out_process| with the data of the process in which the task with |id|
@@ -459,7 +459,7 @@ ProcessesEventRouter* ProcessesAPI::processes_event_router() {
 
 ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
   // For this function, the task manager doesn't even need to be running.
-  absl::optional<api::processes::GetProcessIdForTab::Params> params =
+  std::optional<api::processes::GetProcessIdForTab::Params> params =
       api::processes::GetProcessIdForTab::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -489,7 +489,7 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // For this function, the task manager doesn't even need to be running.
-  absl::optional<api::processes::Terminate::Params> params =
+  std::optional<api::processes::Terminate::Params> params =
       api::processes::Terminate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -577,7 +577,7 @@ ProcessesGetProcessInfoFunction::ProcessesGetProcessInfoFunction()
           GetRefreshTypesFlagOnlyEssentialData()) {}
 
 ExtensionFunction::ResponseAction ProcessesGetProcessInfoFunction::Run() {
-  absl::optional<api::processes::GetProcessInfo::Params> params =
+  std::optional<api::processes::GetProcessInfo::Params> params =
       api::processes::GetProcessInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (params->process_ids.as_integer)

@@ -32,8 +32,8 @@ std::string GetUpdatesResponseEvent::GetType() const {
 }
 
 std::string GetUpdatesResponseEvent::GetDetails() const {
-  switch (error_.value()) {
-    case SyncerError::SYNCER_OK: {
+  switch (error_.type()) {
+    case SyncerError::Type::kSuccess: {
       std::string details = base::StringPrintf(
           "Received %d update(s).", response_.get_updates().entries_size());
       if (response_.get_updates().changes_remaining() != 0) {
@@ -41,22 +41,10 @@ std::string GetUpdatesResponseEvent::GetDetails() const {
       }
       return details;
     }
-    case SyncerError::UNSET:
-    case SyncerError::NETWORK_CONNECTION_UNAVAILABLE:
-    case SyncerError::NETWORK_IO_ERROR:
-    case SyncerError::SYNC_SERVER_ERROR:
-    case SyncerError::SYNC_AUTH_ERROR:
-    case SyncerError::SERVER_RETURN_UNKNOWN_ERROR:
-    case SyncerError::SERVER_RETURN_THROTTLED:
-    case SyncerError::SERVER_RETURN_TRANSIENT_ERROR:
-    case SyncerError::SERVER_RETURN_MIGRATION_DONE:
-    case SyncerError::SERVER_RETURN_CLEAR_PENDING:
-    case SyncerError::SERVER_RETURN_NOT_MY_BIRTHDAY:
-    case SyncerError::SERVER_RETURN_CONFLICT:
-    case SyncerError::SERVER_RESPONSE_VALIDATION_FAILED:
-    case SyncerError::SERVER_RETURN_DISABLED_BY_ADMIN:
-    case SyncerError::SERVER_RETURN_CLIENT_DATA_OBSOLETE:
-    case SyncerError::SERVER_RETURN_ENCRYPTION_OBSOLETE:
+    case SyncerError::Type::kNetworkError:
+    case SyncerError::Type::kHttpError:
+    case SyncerError::Type::kProtocolError:
+    case SyncerError::Type::kProtocolViolationError:
       return "Received error: " + error_.ToString();
   }
 }

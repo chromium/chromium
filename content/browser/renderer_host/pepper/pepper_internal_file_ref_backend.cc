@@ -107,7 +107,7 @@ void CallMove(scoped_refptr<storage::FileSystemContext> file_system_context,
 void CallGetMetadata(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& url,
-    int fields,
+    storage::FileSystemOperation::GetMetadataFieldSet fields,
     storage::FileSystemOperationRunner::GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   file_system_context->operation_runner()->GetMetadata(url, fields,
@@ -301,9 +301,10 @@ int32_t PepperInternalFileRefBackend::Query(
   if (!GetFileSystemURL().is_valid())
     return PP_ERROR_FAILED;
 
-  int fields = storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-               storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-               storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+  constexpr storage::FileSystemOperation::GetMetadataFieldSet fields = {
+      storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+      storage::FileSystemOperation::GetMetadataField::kSize,
+      storage::FileSystemOperation::GetMetadataField::kLastModified};
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

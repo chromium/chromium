@@ -67,6 +67,15 @@ ffmpeg -fflags nofillin -i noise_1ch_29_4khz_aot42_19_lufs_drc_config_change_mp4
 ffmpeg -fflags nofillin -i noise_2ch_44_1khz_aot42_19_lufs_config_change_mp4.m4a -acodec copy -t 1 -movflags frag_keyframe+empty_moov+default_base_moof noise-xhe-aac-44kHz.mp4
 ```
 
+#### sync2-trimmed.mp4
+Special mp4 created with audio/video offset by 3 seconds. sync2.mp4 is an
+internal higher resolution version of sync2.ogv.
+```
+ffmpeg -ss 83.482733 -i sync2.mp4 -an -vcodec copy -t 5 out_vid.mp4
+ffmpeg -ss 80.482733 -i sync2.mp4 -vn -acodec copy -t 8 out_audio.mp4
+ffmpeg -i out_vid.mp4 -itsoffset -3 -i out_audio.mp4 -c copy sync2-trimmed.mp4
+```
+
 ### FLAC
 
 #### bear-flac.mp4
@@ -364,6 +373,11 @@ ffmpeg -i bear-av1.mp4 -i bear-opus.mp4 -c copy -strict -2 \
 ```
 **Note**: "-strict -2" was required because the current ffmpeg version
 has support for OPUS in MP4 as experimental.
+
+#### av1-svc-L1T2.ivf
+AV1 data that has temporal layers.
+This is the same as av1-1-b8-22-svc-L1T2.ivf in [libaom test vectors].
+The video license is [libaom LICENSE].
 
 #### av1-svc-L2T2.ivf
 AV1 data that has spatial and temporal layers.
@@ -842,6 +856,9 @@ shaka/packager/tools/pssh/pssh-box.py --common-system-id --key-id 30313233343536
 
 ### HLS
 
+#### bear-1280x720-hls-clear-mpl.m3u8
+A single-segment hls media playlist which plays bear-1280x720-hls.ts.
+
 #### bear-1280x720-hls.ts
 Produced using Apple's mediafilesegmenter tool with bear-1280x720.ts as input,
 with no encryption.
@@ -856,6 +873,10 @@ manually and prepended to convey the encryption metadata, notably key id and IV)
 ```
 mediafilesegmenter -S -P -k 'key_iv.bin' -t 10 -start-segments-with-iframe -f 'output/' bear-1280x720.ts
 ```
+
+#### HLS - directory
+Samples of assorted playlist types and a README file explaining how each sample
+is generated.
 
 #### bear-1280x720-hls-with-CAT.ts
 Same as bear-1280x720-hls.ts but with an extra TS packet prepended. This is the
@@ -885,6 +906,12 @@ Additional containers derived from bear.ogv:
 * bear.mpeg   -- created using `avconv -i bear.ogv -f mpeg bear.mpeg`.
 * bear.rm     -- created using `avconv -i bear.ogv -f rm -b 192k bear.rm`.
 * bear.swf    -- created using `avconv -i bear.ogv -f swf -an bear.swf`.
+
+Additional containers created by Dolby:
+
+* ac4-ajoc.ac4                 -- encoded with bitstream version 2, presentation version 1 and prosentation level 3
+* ac4-channel-based-coding.ac4 -- encoded with bitstream version 2, presentation version 1 and prosentation level 1
+* ac4-ims.ac4                  -- encoded with bitstream version 2, presentation version 2
 
 ## VDA Test Files:
 
@@ -1331,6 +1358,27 @@ mp4mux --track bear.eac3 bear-eac3-only.mp4
 mp4fragment bear-eac3-only.mp4 bear-eac3-only-frag.mp4
 ```
 
+#### ac4-only-ajoc-frag.mp4
+AC4 A-JOC audio in framented MP4, generated with bento4 by the following command:
+```
+mp4mux --track ac4-ajoc.ac4 ac4-only-ajoc.mp4
+mp4fragment ac4-only-ajoc.mp4 ac4-only-ajoc-frag.mp4
+```
+
+#### ac4-only-channel-based-coding-frag.mp4
+AC4 channel based audio in framented MP4, generated with bento4 by the following command:
+```
+mp4mux --track ac4-channel-based-coding.ac4 ac4-only-channel-based-coding.mp4
+mp4fragment ac4-only-channel-based-coding.mp4 ac4-only-channel-based-coding-frag.mp4
+```
+
+#### ac4-only-ims-frag.mp4
+AC4 immersive stereo(IMS) audio in framented MP4, generated with bento4 by the following command:
+```
+mp4mux --track ac4-ims.ac4 ac4-only-ims.mp4
+mp4fragment ac4-only-ims.mp4 ac4-only-ims-frag.mp4
+```
+
 ### Mpeg2ts stream with AAC HE audio that uses SBR
 
 #### bear-1280x720-aac_he.ts
@@ -1464,6 +1512,24 @@ HEVC video stream with 8-bit main profile, generated with
 ffmpeg -i bear-1280x720.mp4 -vf "scale=3840:2160,setpts=4*PTS" -c:v libx265 -crf 28 -c:a copy bear-3840x2160-hevc.mp4
 ```
 
+### MP4 file with Dolby Vision
+
+#### glass-blowing2-dolby-vision-profile-5-frag.mp4
+Original sample from `https://media.developer.dolby.com/DolbyVision_Atmos/mp4/iOS_P5_GlassBlowing2_1920x1080%4059.94fps_15200kbps.mp4`. Dolby Vision profile 5 video stream generated using FFmpeg/mp4mux/mp4fragment with the following commands:
+```
+ffmpeg -ss 0:00:11 -i iOS_P5_GlassBlowing2_1920x1080@59.94fps_15200kbps.mp4 -t 1 -vcodec copy -an glass-blowing2-dolby-vision-profile-5.hevc
+mp4mux --track h265:glass-blowing2-dolby-vision-profile-5.hevc#dv_profile=5,dv_bc=0,format="dvh1",frame_rate=60,video glass-blowing2-dolby-vision-profile-5.mp4
+mp4fragment glass-blowing2-dolby-vision-profile-5.mp4 glass-blowing2-dolby-vision-profile-5-frag.mp4
+```
+
+#### glass-blowing2-dolby-vision-profile-8-1-frag.mp4
+Original sample from `https://media.developer.dolby.com/DolbyVision_Atmos/mp4/P81_GlassBlowing2_1920x1080%4059.94fps_15200kbps_fmp4.mp4`. Dolby Vision profile 8.1 video stream generated using FFmpeg/mp4mux/mp4fragment with the following commands:
+```
+ffmpeg -ss 0:00:11 -i P81_GlassBlowing2_1920x1080@59.94fps_15200kbps_fmp4.mp4 -t 1 -vcodec copy -an glass-blowing2-dolby-vision-profile-8-1.hevc
+mp4mux --track h265:glass-blowing2-dolby-vision-profile-8-1.hevc#dv_profile=8,dv_bc=1,format="hvc1",frame_rate=60,video glass-blowing2-dolby-vision-profile-8-1.mp4
+mp4fragment glass-blowing2-dolby-vision-profile-8-1.mp4 glass-blowing2-dolby-vision-profile-8-1-frag.mp4
+```
+
 ### Multi-track MP4 file
 
 (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org
@@ -1496,6 +1562,12 @@ Generated using following steps:
 H.264 video stream with the first track marked as disabled, generated with
 ````
 ffmpeg -f lavfi -i "color=c=white:d=1" -f lavfi -i "testsrc2=d=1" -map 0 -disposition:v:0 0 -map 1 -disposition:v:1 default -c:v libx264 multitrack-disabled.mp4
+````
+
+#### track-disabled.mp4
+H.264 video stream with the only track disabled, generated with
+````
+ffmpeg -f lavfi -i "color=c=white:d=1" -map 0 -disposition:v:0 0 -c:v libx264 track-disabled.mp4
 ````
 
 ### Multi-track WebM file
@@ -1593,3 +1665,6 @@ avc-bitstream-format-1.h264: Non-IDR
   ffmpeg -i %1 -f image2 -vcodec copy -bsf h264_mp4toannexb "%d.h264"
 - manually convert one of created Non-IDR annexb file to avc bitstream.
   (replace annexb start code with length)
+
+### hls/ directory
+This directory contains all the HLS files needed to run pipeline integration tests against the HLS demuxer. The readme file in this directory contains specific steps to regenerate media and manifest files.

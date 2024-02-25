@@ -79,12 +79,15 @@ ExceptionOr<ByteArray> InputStreamImpl::Read(std::int64_t size) {
   pending_read_buffer_ = std::make_unique<ByteArray>(size);
   pending_read_buffer_pos_ = 0;
 
-  read_waitable_event_.emplace();
+  // Signal and reset the WaitableEvent in case another thread is already
+  // waiting on a Read().
+  read_waitable_event_.Signal();
+  read_waitable_event_.Reset();
+
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&mojo::SimpleWatcher::ArmOrNotify,
                                 base::Unretained(&receive_stream_watcher_)));
-  read_waitable_event_->Wait();
-  read_waitable_event_.reset();
+  read_waitable_event_.Wait();
 
   pending_read_buffer_.reset();
   pending_read_buffer_pos_ = 0;
@@ -124,11 +127,10 @@ void InputStreamImpl::ReceiveMore(MojoResult result,
   DCHECK(!IsClosed());
   DCHECK(pending_read_buffer_);
   DCHECK_LT(pending_read_buffer_pos_, pending_read_buffer_->size());
-  DCHECK(read_waitable_event_);
 
   if (state.peer_closed()) {
     exception_or_received_byte_array_ = ExceptionOr<ByteArray>(Exception::kIo);
-    read_waitable_event_->Signal();
+    read_waitable_event_.Signal();
     return;
   }
 
@@ -154,7 +156,7 @@ void InputStreamImpl::ReceiveMore(MojoResult result,
   } else {
     exception_or_received_byte_array_ = ExceptionOr<ByteArray>(Exception::kIo);
   }
-  read_waitable_event_->Signal();
+  read_waitable_event_.Signal();
 }
 
 bool InputStreamImpl::IsClosed() const {
@@ -175,8 +177,7 @@ void InputStreamImpl::DoClose(base::WaitableEvent* task_run_waitable_event) {
     // cancel the stream watcher, the Read() call will block forever. We
     // trigger the event manually here, which will cause an IO exception to be
     // returned from Read().
-    if (read_waitable_event_)
-      read_waitable_event_->Signal();
+    read_waitable_event_.Signal();
   }
 
   if (task_run_waitable_event)

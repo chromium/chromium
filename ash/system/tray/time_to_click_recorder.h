@@ -38,7 +38,7 @@ class TimeToClickRecorder : public ui::EventHandler {
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash

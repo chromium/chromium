@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] el-image
+  assert_equals: <image data-testname="el-image" data-expectedrole="image" class="ex"></image> expected "image" but got "none"
+Harness: the test ran to completion.

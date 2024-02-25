@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/gfx/font_render_params.h"
@@ -38,6 +38,8 @@ constexpr uint32_t kDefaultInactiveSelectionFgColor = 0xFF323232;
 struct BLINK_COMMON_EXPORT RendererPreferences {
   bool can_accept_load_drops{true};
   bool should_antialias_text{true};
+  float text_contrast = SK_GAMMA_CONTRAST;
+  float text_gamma = SK_GAMMA_EXPONENT;
   gfx::FontRenderParams::Hinting hinting{gfx::FontRenderParams::HINTING_MEDIUM};
   bool use_autohinter{false};
   bool use_bitmaps{false};
@@ -50,7 +52,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   uint32_t inactive_selection_bg_color{kDefaultInactiveSelectionBgColor};
   uint32_t inactive_selection_fg_color{kDefaultInactiveSelectionFgColor};
   bool browser_handles_all_top_level_requests{false};
-  absl::optional<base::TimeDelta> caret_blink_interval;
+  std::optional<base::TimeDelta> caret_blink_interval;
   bool use_custom_colors{true};
   bool enable_referrers{true};
   bool allow_cross_origin_auth_prompt{false};
@@ -60,7 +62,6 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   uint16_t webrtc_udp_min_port{0};
   uint16_t webrtc_udp_max_port{0};
   std::vector<std::string> webrtc_local_ips_allowed_urls;
-  bool webrtc_allow_legacy_tls_protocols{false};
   UserAgentOverride user_agent_override;
   std::string accept_languages;
   bool send_subresource_notification{false};

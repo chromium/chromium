@@ -18,6 +18,11 @@
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/widget/widget.h"
 
+#if defined(IS_AURA)
+#include "ui/aura/window.h"
+#include "ui/views/view_constants_aura.h"
+#endif
+
 // static
 bool DropdownBarHost::disable_animations_during_testing_ = false;
 
@@ -60,8 +65,9 @@ void DropdownBarHost::Init(views::View* host_view,
 #endif
   host_->Init(std::move(params));
   host_->SetContentsView(std::move(clip_view));
-
-  SetHostViewNative(host_view);
+#if defined(IS_AURA)
+  host_->GetNativeView()->SetProperty(views::kHostViewKey, host_view);
+#endif
 
   // Start listening to focus changes, so we can register and unregister our
   // own handler for Escape.

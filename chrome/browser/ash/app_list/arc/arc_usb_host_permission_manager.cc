@@ -44,7 +44,7 @@ std::string GetAppIdFromPackageName(const std::string& package_name,
 bool GetUint16FromDict(const base::Value::Dict& dict,
                        const std::string& key,
                        uint16_t* result) {
-  absl::optional<int> value = dict.FindInt(key);
+  std::optional<int> value = dict.FindInt(key);
   if (!value.has_value()) {
     return false;
   }
@@ -61,8 +61,8 @@ bool GetUint16FromDict(const base::Value::Dict& dict,
 ArcUsbHostPermissionManager::UsbPermissionRequest::UsbPermissionRequest(
     const std::string& package_name,
     bool is_scan_request,
-    absl::optional<UsbDeviceEntry> usb_device_entry,
-    absl::optional<ArcUsbHostUiDelegate::RequestPermissionCallback> callback)
+    std::optional<UsbDeviceEntry> usb_device_entry,
+    std::optional<ArcUsbHostUiDelegate::RequestPermissionCallback> callback)
     : package_name_(package_name),
       is_scan_request_(is_scan_request),
       usb_device_entry_(std::move(usb_device_entry)),
@@ -121,8 +121,8 @@ ArcUsbHostPermissionManager* ArcUsbHostPermissionManager::GetForBrowserContext(
 }
 
 // static
-ArcUsbHostPermissionManager* ArcUsbHostPermissionManager::Create(
-    content::BrowserContext* context) {
+std::unique_ptr<ArcUsbHostPermissionManager>
+ArcUsbHostPermissionManager::Create(content::BrowserContext* context) {
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(context);
   // TODO(lgcheng): Change this to DCHECK(arc_app_list_prefs) after clear the
   // browsertest workflow.
@@ -134,7 +134,7 @@ ArcUsbHostPermissionManager* ArcUsbHostPermissionManager::Create(
   if (!arc_usb_host_bridge)
     return nullptr;
 
-  return new ArcUsbHostPermissionManager(
+  return std::make_unique<ArcUsbHostPermissionManager>(
       static_cast<Profile*>(context), arc_app_list_prefs, arc_usb_host_bridge);
 }
 
@@ -232,7 +232,7 @@ void ArcUsbHostPermissionManager::RequestUsbScanDeviceListPermission(
   pending_requests_.emplace_back(
       ArcUsbHostPermissionManager::UsbPermissionRequest(
           package_name, true /*is_scan_request*/,
-          absl::nullopt /*usb_device_entry*/, absl::nullopt /*callback*/));
+          std::nullopt /*usb_device_entry*/, std::nullopt /*callback*/));
   MaybeProcessNextPermissionRequest();
 }
 

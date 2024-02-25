@@ -82,11 +82,7 @@ def main(argv):
   cmd = build_utils.JavaCmd() + [
       '-classpath', options.turbine_jar_path, 'com.google.turbine.main.Main'
   ]
-  javac_cmd = [
-      # We currently target JDK 11 everywhere.
-      '--release',
-      '11',
-  ]
+  javac_cmd = ['--release', '17']
 
   # Turbine reads lists from command line args by consuming args until one
   # starts with double dash (--). Thus command line args should be grouped
@@ -115,7 +111,7 @@ def main(argv):
     # Use jar_path to ensure paths are relative (needed for goma).
     files_rsp_path = options.jar_path + '.java_files_list.txt'
     with open(files_rsp_path, 'w') as f:
-      f.write(' '.join(java_files))
+      f.write('\n'.join(java_files))
     # Pass source paths as response files to avoid extremely long command
     # lines that are tedius to debug.
     cmd += ['--sources']

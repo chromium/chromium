@@ -9,7 +9,10 @@
 #include <vector>
 
 #include "ash/login/ui/arrow_button_view.h"
+#include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
+#include "ash/login/ui/local_authentication_request_view.h"
+#include "ash/login/ui/local_authentication_request_widget.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_auth_user_view.h"
@@ -30,6 +33,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
@@ -211,13 +215,6 @@ bool LoginScreenTestApi::IsShutdownButtonShown() {
 // static
 bool LoginScreenTestApi::IsAppsButtonShown() {
   return IsLoginShelfViewButtonShown(LoginShelfView::kApps);
-}
-
-// static
-bool LoginScreenTestApi::IsAuthErrorBubbleShown() {
-  LockScreen::TestApi lock_screen_test(LockScreen::Get());
-  LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
-  return lock_contents_test.auth_error_bubble()->GetVisible();
 }
 
 // static
@@ -503,6 +500,12 @@ int64_t LoginScreenTestApi::GetUiUpdateCount() {
 bool LoginScreenTestApi::LaunchApp(const std::string& app_id) {
   LoginShelfView* view = GetLoginShelfView();
   return view && view->LaunchAppForTesting(app_id);
+}
+
+// static
+bool LoginScreenTestApi::LaunchApp(const AccountId& account_id) {
+  LoginShelfView* view = GetLoginShelfView();
+  return view && view->LaunchAppForTesting(account_id);
 }
 
 // static
@@ -899,6 +902,77 @@ void LoginScreenTestApi::CancelPinRequestWidget() {
   event_generator->MoveMouseTo(
       pin_view_test.back_button()->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
+}
+
+// static
+bool LoginScreenTestApi::IsLocalAuthenticationDialogVisible() {
+  return LocalAuthenticationRequestWidget::TestApi::IsVisible();
+}
+
+// static
+void LoginScreenTestApi::CancelLocalAuthenticationDialog() {
+  bool dialog_exists =
+      LocalAuthenticationRequestWidget::TestApi::CancelDialog();
+  if (!dialog_exists) {
+    FAIL() << "Local Authentication dialog is not shown";
+  }
+}
+
+// static
+void LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(
+    const std::string& password) {
+  bool dialog_exists =
+      LocalAuthenticationRequestWidget::TestApi::SubmitPassword(password);
+  if (!dialog_exists) {
+    FAIL() << "Local Authentication dialog is not shown";
+  }
+}
+
+// static
+bool LoginScreenTestApi::IsAuthErrorBubbleShown() {
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
+  return lock_contents_test.IsAuthErrorBubbleVisible();
+}
+
+// static
+void LoginScreenTestApi::ShowAuthError(int unlock_attempt) {
+  if (IsAuthErrorBubbleShown()) {
+    ADD_FAILURE() << "Auth error bubble is already shown.";
+  }
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
+  lock_contents_test.ShowAuthErrorBubble(unlock_attempt);
+}
+
+// static
+void LoginScreenTestApi::HideAuthError() {
+  if (!IsAuthErrorBubbleShown()) {
+    ADD_FAILURE() << "Auth error bubble is not shown.";
+  }
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
+  lock_contents_test.HideAuthErrorBubble();
+}
+
+// static
+void LoginScreenTestApi::PressAuthErrorRecoveryButton() {
+  if (!IsAuthErrorBubbleShown()) {
+    ADD_FAILURE() << "Auth error bubble is not shown.";
+  }
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
+  lock_contents_test.PressAuthErrorRecoveryButton();
+}
+
+// static
+void LoginScreenTestApi::PressAuthErrorLearnMoreButton() {
+  if (!IsAuthErrorBubbleShown()) {
+    ADD_FAILURE() << "Auth error bubble is not shown.";
+  }
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
+  lock_contents_test.PressAuthErrorLearnMoreButton();
 }
 
 }  // namespace ash

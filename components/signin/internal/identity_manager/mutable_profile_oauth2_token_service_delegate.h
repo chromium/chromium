@@ -30,6 +30,12 @@ class TokenWebData;
 class TokenBindingHelper;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+enum class RevokeAllTokensOnLoad {
+  kNo = 0,
+  kDeleteSiteDataOnExit = 1,
+  kExplicitRevoke = 2
+};
+
 class MutableProfileOAuth2TokenServiceDelegate
     : public ProfileOAuth2TokenServiceDelegate,
       public WebDataServiceConsumer,
@@ -43,7 +49,7 @@ class MutableProfileOAuth2TokenServiceDelegate
       network::NetworkConnectionTracker* network_connection_tracker,
       scoped_refptr<TokenWebData> token_web_data,
       signin::AccountConsistencyMethod account_consistency,
-      bool revoke_all_tokens_on_load,
+      RevokeAllTokensOnLoad revoke_all_tokens_on_load,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       std::unique_ptr<TokenBindingHelper> token_binding_helper,
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -60,7 +66,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) override;
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge) override;
 
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override;
@@ -147,6 +154,9 @@ class MutableProfileOAuth2TokenServiceDelegate
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            RevokeBoundToken);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest,
+      KeepPrimaryAccountTokenOnStartupWithClearOnExit);
 
   // WebDataServiceConsumer implementation:
   void OnWebDataServiceRequestDone(
@@ -226,6 +236,10 @@ class MutableProfileOAuth2TokenServiceDelegate
   // credentials.  This member is empty otherwise.
   CoreAccountId loading_primary_account_id_;
 
+  // Whether sync is enabled for the primary account of this service's profile
+  // during the loading of credentials.  This member is false otherwise.
+  bool loading_is_syncing_ = false;
+
   std::vector<std::unique_ptr<RevokeServerRefreshToken>> server_revokes_;
 
   // Used to verify that certain methods are called only on the thread on which
@@ -241,7 +255,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Revokes all the tokens after loading them. Secondary accounts will be
   // completely removed, and the primary account will be kept in authentication
   // error state.
-  bool revoke_all_tokens_on_load_;
+  RevokeAllTokensOnLoad revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kNo;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   // This is null if token binding is disabled.

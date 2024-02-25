@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_request.h"
@@ -24,7 +25,7 @@ namespace safe_browsing {
 
 class PasswordProtectionServiceBase;
 
-class PasswordProtectionRequestIOS : public PasswordProtectionRequest {
+class PasswordProtectionRequestIOS final : public PasswordProtectionRequest {
  public:
   PasswordProtectionRequestIOS(
       web::WebState* web_state,
@@ -40,10 +41,7 @@ class PasswordProtectionRequestIOS : public PasswordProtectionRequest {
       int request_timeout_in_ms);
 
   web::WebState* web_state() const { return web_state_; }
-
-  base::WeakPtr<PasswordProtectionRequestIOS> AsWeakPtr() {
-    return base::AsWeakPtr(this);
-  }
+  base::WeakPtr<PasswordProtectionRequest> AsWeakPtr() override;
 
  private:
   ~PasswordProtectionRequestIOS() override;
@@ -53,10 +51,12 @@ class PasswordProtectionRequestIOS : public PasswordProtectionRequest {
       const LoginReputationClientResponse* response) override;
 
   // WebState corresponding to the password protection event.
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
 
   // Cancels the request when it is no longer valid.
   std::unique_ptr<RequestCanceler> request_canceler_;
+
+  base::WeakPtrFactory<PasswordProtectionRequestIOS> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

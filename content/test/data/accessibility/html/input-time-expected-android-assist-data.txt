@@ -1,0 +1,8 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++Spinner text:"00:00:00" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="input"}, {display="inline-flex"}, {type="time"}, {value="00:00:00"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {pseudo="-webkit-date-and-time-value"}]
+++++++++TextView text:"12:00 AM" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++++Spinner text:"Breakfast" textSize:13.3 style:0 bgColor:-1052689 htmlInfo:[{htmlTag="input"}, {display="inline-flex"}, {aria-label="Breakfast"}, {type="time"}, {value="00:00:00"}]
+++++++View textSize:13.3 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {pseudo="-webkit-date-and-time-value"}]
+++++++++TextView text:"12:00 AM" textSize:13.3 style:0 htmlInfo:[{htmlTag=""}, {display=""}]

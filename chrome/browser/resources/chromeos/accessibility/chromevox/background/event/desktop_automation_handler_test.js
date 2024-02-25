@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
-
+GEN_INCLUDE(['../../../common/testing/documents.js']);
 GEN_INCLUDE(['../../testing/fake_objects.js']);
 
 /**
@@ -13,23 +13,6 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule(
-          'DesktopAutomationHandler',
-          '/chromevox/background/event/desktop_automation_handler.js'),
-      importModule(
-          'DesktopAutomationInterface',
-          '/chromevox/background/event/desktop_automation_interface.js'),
-      importModule(
-          'CustomAutomationEvent',
-          '/chromevox/common/custom_automation_event.js'),
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
 
     await ChromeVoxState.ready();
     this.handler_ = DesktopAutomationInterface.instance;
@@ -61,14 +44,14 @@ AX_TEST_F(
       Object.defineProperty(slider, 'value', {get: () => sliderValue});
 
       const event = new CustomAutomationEvent(EventType.VALUE_CHANGED, slider);
-      mockFeedback.call(() => this.handler_.onValueChanged(event))
+      mockFeedback.call(() => this.handler_.onValueChanged_(event))
           .expectSpeech('Slider', '50%')
 
           // Override the min time to observe value changes so that even super
           // fast updates triggers speech.
           .call(() => DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = -1)
           .call(() => sliderValue = '60%')
-          .call(() => this.handler_.onValueChanged(event))
+          .call(() => this.handler_.onValueChanged_(event))
 
           // The range stays on the slider, so subsequent value changes only
           // report the value.
@@ -79,12 +62,12 @@ AX_TEST_F(
           .call(
               () => DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = 10000)
           .call(() => sliderValue = '70%')
-          .call(() => this.handler_.onValueChanged(event))
+          .call(() => this.handler_.onValueChanged_(event))
 
           // Send one more that is processed.
           .call(() => DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = -1)
           .call(() => sliderValue = '80%')
-          .call(() => this.handler_.onValueChanged(event))
+          .call(() => this.handler_.onValueChanged_(event))
 
           .expectNextSpeechUtteranceIsNot('70%')
           .expectSpeech('80%');
@@ -195,6 +178,34 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
+// Ensures that selection events from IME candidate doesn't break ChromeVox's
+// range.
+AX_TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest', 'ImeCandidate_keepRange',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site =
+          `<button>First</button><button>Second</button><button>Third</button>`;
+      const root = await this.runWithLoadedTree(site);
+      const candidates = root.findAll({role: RoleType.BUTTON});
+      const first = candidates[0];
+      const third = candidates[2];
+      assertNotNullNorUndefined(first);
+      assertNotNullNorUndefined(third);
+      // Fake role to imitate IME candidates.
+      Object.defineProperty(third, 'role', {get: () => RoleType.IME_CANDIDATE});
+      const selectEvent = new CustomAutomationEvent(EventType.SELECTION, third);
+
+      mockFeedback.call(() => first.focus())
+          .expectSpeech('First')
+          .call(() => this.handler_.onSelection(selectEvent))
+          .expectSpeech('Third')
+          .expectSpeech(/tango/)
+          .call(doCmd('nextObject'))
+          .expectSpeech('Second');
+      await mockFeedback.replay();
+    });
+
 AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'IgnoreRepeatedAlerts',
     async function() {
@@ -294,7 +305,7 @@ AX_TEST_F(
       // Case: no selection start.
       // Because automation.setDocumentSelection enforces that there is a
       // selectionStart object, we will call the method directly.
-      instance.onDocumentSelectionChanged({
+      instance.onDocumentSelectionChanged_({
         target: {
           selectionStartObject: null,
           selectionStartOffset: 0,
@@ -305,3 +316,88 @@ AX_TEST_F(
 
       assertFalse(called);
     });
+
+AX_TEST_F('ChromeVoxDesktopAutomationHandlerTest', 'OnFocus', async function() {
+  const root = await this.runWithLoadedTree(Documents.button);
+  const button = root.find({role: RoleType.BUTTON});
+
+  // Case 1: Exits early if it's a rootWebArea that's not a frame, and the event
+  // is not from an action.
+  assertEquals('rootWebArea', root.role);
+  // Ensure it appears to not be a frame.
+  const rootParent = root.parent;
+  Object.defineProperty(root, 'parent', {value: null, configurable: true});
+  // The textEditHandler_ should not change if we exit early.
+  DesktopAutomationInterface.instance.textEditHandler_ = 'fake handler';
+  const assertGetFocusCalled = this.prepareToExpectMethodCall(
+      DesktopAutomationInterface.instance, 'maybeRecoverFocusAndOutput_');
+
+  DesktopAutomationInterface.instance.onFocus_({target: root});
+  await this.waitForPendingMethods();
+  assertGetFocusCalled();
+  assertEquals(
+      'fake handler', DesktopAutomationInterface.instance.textEditHandler_);
+
+  Object.defineProperty(root, 'parent', {value: rootParent});
+
+  const assertNoOutput = async () => {
+    const assertCreateTextHandlerCalled = this.prepareToExpectMethodCall(
+        DesktopAutomationInterface.instance, 'createTextEditHandlerIfNeeded_');
+    const assertExitEarly = this.prepareToExpectMethodNotCalled(
+        Output, 'forceModeForNextSpeechUtterance');
+
+    DesktopAutomationInterface.instance.onFocus_({target: button});
+    await this.waitForPendingMethods();
+    assertCreateTextHandlerCalled();
+    assertExitEarly();
+  };
+
+  // Case 2: Ignore embedded objects.
+  Object.defineProperty(
+      button, 'role', {value: RoleType.EMBEDDED_OBJECT, configurable: true});
+  await assertNoOutput();
+
+  // Case 3: Ignore plugin objects.
+  Object.defineProperty(
+      button, 'role', {value: RoleType.PLUGIN_OBJECT, configurable: true});
+  await assertNoOutput();
+
+  // Case 4: Ignore web views.
+  Object.defineProperty(
+      button, 'role', {value: RoleType.WEB_VIEW, configurable: true});
+  await assertNoOutput();
+
+  // Case 5: Ignore nodes with unknown role if there's not a reasonable target
+  // to "sync down" into.
+  AutomationUtil.findNodePre = () => null;
+  Object.defineProperty(
+      button, 'role', {value: RoleType.UNKNOWN, configurable: true});
+  await assertNoOutput();
+
+  Object.defineProperty(button, 'role', {value: RoleType.BUTTON});
+
+  // Case 6: Ignore nodes with no root.
+  Object.defineProperty(button, 'root', {value: null, configurable: true});
+  await assertNoOutput();
+
+  Object.defineProperty(button, 'root', {value: root});
+
+  // Case 7: AutoScrollHandler eats the event with onFocusEventNavigation().
+  AutoScrollHandler.instance.onFocusEventNavigation = () => false;
+  await assertNoOutput();
+
+  AutoScrollHandler.instance.onFocusEventNavigation = () => true;
+
+  // Default case.
+  DesktopAutomationInterface.instance.lastRootUrl_ = 'fake url';
+  const assertOutputFlush =
+      this.prepareToExpectMethodCall(Output, 'forceModeForNextSpeechUtterance');
+  const assertEventDefault = this.prepareToExpectMethodCall(
+      DesktopAutomationInterface.instance, 'onEventDefault');
+
+  DesktopAutomationInterface.instance.onFocus_({target: button});
+  await this.waitForPendingMethods();
+  assertNotEquals('fake url', DesktopAutomationInterface.instance.lastRootUrl_);
+  assertOutputFlush();
+  assertEventDefault();
+});

@@ -5,18 +5,27 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/input_method/editor_announcer.h"
+#include "chrome/browser/ash/input_method/editor_client_connector.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
+#include "chrome/browser/ash/input_method/editor_event_proxy.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
-#include "chrome/browser/ash/input_method/editor_instance_impl.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
+#include "chrome/browser/ash/input_method/editor_panel_manager.h"
+#include "chrome/browser/ash/input_method/editor_service_connector.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
-#include "chrome/browser/ash/input_method/editor_text_actuator.h"
-#include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
+#include "chrome/browser/ash/input_method/editor_system_actuator.h"
+#include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
+#include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 namespace input_method {
@@ -25,49 +34,81 @@ namespace input_method {
 // This includes all current (and future) trigger points, providing the required
 // plumbing to broker mojo connections from WebUIs and other clients, and
 // providing an overall unified interface for the backend of the project.
-class EditorMediator : public EditorInstanceImpl::Delegate,
-                       public EditorEventSink,
-                       public ProfileObserver {
+class EditorMediator : public EditorEventSink,
+                       public EditorPanelManager::Delegate,
+                       public EditorSystemActuator::System,
+                       public display::DisplayObserver,
+                       public KeyedService {
  public:
-  explicit EditorMediator(Profile* profile);
+  // country_code that determines the country/territory in which the device is
+  // situated.
+  EditorMediator(Profile* profile, std::string_view country_code);
   ~EditorMediator() override;
 
-  // Fetch the current instance of this class. Note that this class MUST be
-  // constructed prior to calling this method.
-  static EditorMediator* Get();
-
-  static bool HasInstance();
-
   // Binds a new editor instance request from a client.
-  void BindEditorInstance(
-      mojo::PendingReceiver<mojom::EditorInstance> pending_receiver);
+  void BindEditorClient(mojo::PendingReceiver<orca::mojom::EditorClient>
+                            pending_receiver) override;
 
-  // Handles a trigger event received from the system. This event could come
-  // from a number of system locations.
-  void HandleTrigger();
+  // Binds a new panel manager request from a client.
+  void BindEditorPanelManager(
+      mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
+          pending_receiver);
 
-  // EditorEventSink
+  // EditorEventSink overrides
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnActivateIme(std::string_view engine_id) override;
-  void OnConsentActionReceived(ConsentAction consent_action) override;
+  void OnSurroundingTextChanged(const std::u16string& text,
+                                gfx::Range selection_range) override;
 
-  // EditorInstanceImpl::Delegate overrides
-  void CommitEditorResult(std::string_view text) override;
+  // EditorPanelManager::Delegate overrides
+  void OnPromoCardDeclined() override;
+  // TODO(b/301869966): Consider removing default parameters once the context
+  // menu Orca entry is removed.
+  void HandleTrigger(
+      std::optional<std::string_view> preset_query_id = std::nullopt,
+      std::optional<std::string_view> freeform_text = std::nullopt) override;
+  EditorMode GetEditorMode() const override;
+  // This method is currently used for metric purposes to understand the ratio
+  // of requests being blocked vs. the potential requests that can be
+  // accommodated.
+  EditorOpportunityMode GetEditorOpportunityMode() const override;
+  std::vector<EditorBlockedReason> GetBlockedReasons() const override;
+  void CacheContext() override;
+  EditorMetricsRecorder* GetMetricsRecorder() override;
+
+  // display::DisplayObserver overrides
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
+
+  // EditorSystemActuator::System overrides
+  void Announce(const std::u16string& message) override;
+  void ProcessConsentAction(ConsentAction consent_action) override;
+  void ShowUI() override;
+  void CloseUI() override;
+  size_t GetSelectedTextLength() override;
+
+  // KeyedService overrides
+  void Shutdown() override;
 
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
 
-  // Checks if the feature can be triggered.
-  bool CanBeTriggered();
+  EditorPanelManager* panel_manager() { return &panel_manager_; }
 
-  ConsentStatus GetConsentStatus();
-
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override;
+  bool SetTextQueryProviderResponseForTesting(
+      const std::vector<std::string>& mock_results);
 
  private:
+  struct SurroundingText {
+    std::u16string text;
+    gfx::Range selection_range;
+  };
+
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
+
+  void SetUpNewEditorService();
+  void BindEditor();
+  void OnEditorServiceConnected(bool is_connection_bound);
 
   bool GetUserPref();
   void SetUserPref(bool value);
@@ -75,16 +116,24 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   // Not owned by this class
   raw_ptr<Profile> profile_;
 
-  EditorInstanceImpl editor_instance_impl_;
-  EditorTextActuator text_actuator_;
+  EditorPanelManager panel_manager_;
+  MakoBubbleCoordinator mako_bubble_coordinator_;
+
   std::unique_ptr<EditorSwitch> editor_switch_;
+  std::unique_ptr<EditorMetricsRecorder> metrics_recorder_;
   std::unique_ptr<EditorConsentStore> consent_store_;
+  EditorServiceConnector editor_service_connector_;
+  EditorLiveRegionAnnouncer announcer_;
 
-  // May contain an instance of MakoPageHandler. This is used to control the
-  // lifetime of the Mako WebUI.
-  std::unique_ptr<ash::MakoPageHandler> mako_page_handler_;
+  // TODO: b:298285960 - add the instantiation of this instance.
+  std::unique_ptr<EditorEventProxy> editor_event_proxy_;
+  std::unique_ptr<EditorClientConnector> editor_client_connector_;
+  std::unique_ptr<EditorTextQueryProvider> text_query_provider_;
+  std::unique_ptr<EditorSystemActuator> system_actuator_;
 
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  SurroundingText surrounding_text_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<EditorMediator> weak_ptr_factory_{this};
 };

@@ -48,7 +48,7 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
                int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
-  void Present(const absl::optional<gfx::Rect>& update_rect,
+  void Present(const std::optional<gfx::Rect>& update_rect,
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
   void EnsureBackbuffer() override;
@@ -58,7 +58,7 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   void EndPaint() override;
 
  private:
-  class OverlayData;
+  class MultiSurfaceSwapBuffersTracker;
 
   // Use instead of calling FinishSwapBuffers() directly.
   void DoFinishSwapBuffers(const gfx::Size& size,
@@ -79,6 +79,9 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   uint64_t backbuffer_estimated_size_ = 0;
 
   sk_sp<SkSurface> sk_surface_;
+
+  std::unique_ptr<MultiSurfaceSwapBuffersTracker>
+      multisurface_swapbuffers_tracker_;
 
   base::WeakPtrFactory<SkiaOutputDeviceGL> weak_ptr_factory_{this};
 };

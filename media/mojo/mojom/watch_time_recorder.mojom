@@ -97,7 +97,4 @@ interface WatchTimeRecorder {
   UpdateUnderflowCount(int32 total_count);
   UpdateUnderflowDuration(int32 total_completed_count,
                           mojo_base.mojom.TimeDelta total_duration);
-
-  // Updates the last known media timestamp for the video.
-  OnCurrentTimestampChanged(mojo_base.mojom.TimeDelta last_timestamp);
 };

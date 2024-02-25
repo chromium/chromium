@@ -24,9 +24,9 @@ class Profile;
 // The front end for Plugin VM, shown the first time the user launches it.
 class PluginVmInstallerView : public views::BubbleDialogDelegateView,
                               public plugin_vm::PluginVmInstaller::Observer {
- public:
-  METADATA_HEADER(PluginVmInstallerView);
+  METADATA_HEADER(PluginVmInstallerView, views::BubbleDialogDelegateView)
 
+ public:
   explicit PluginVmInstallerView(Profile* profile);
 
   PluginVmInstallerView(const PluginVmInstallerView&) = delete;
@@ -95,22 +95,20 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
 
   void StartInstallation();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::u16string app_name_;
-  raw_ptr<plugin_vm::PluginVmInstaller, ExperimentalAsh> plugin_vm_installer_ =
-      nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> message_label_ = nullptr;
-  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> download_progress_message_label_ =
-      nullptr;
-  raw_ptr<views::BoxLayout, ExperimentalAsh> lower_container_layout_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> big_image_ = nullptr;
-  raw_ptr<views::Link, ExperimentalAsh> learn_more_link_ = nullptr;
+  raw_ptr<plugin_vm::PluginVmInstaller> plugin_vm_installer_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> message_label_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
+  raw_ptr<views::Label> download_progress_message_label_ = nullptr;
+  raw_ptr<views::BoxLayout> lower_container_layout_ = nullptr;
+  raw_ptr<views::ImageView> big_image_ = nullptr;
+  raw_ptr<views::Link, DanglingUntriaged> learn_more_link_ = nullptr;
 
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;
-  absl::optional<plugin_vm::PluginVmInstaller::FailureReason> reason_;
+  std::optional<plugin_vm::PluginVmInstaller::FailureReason> reason_;
 
   base::OnceCallback<void(bool success)> finished_callback_for_testing_;
 };

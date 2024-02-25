@@ -4,18 +4,22 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 
+#import <unordered_set>
+
 #import "base/containers/contains.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
-#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_metrics.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
-#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
 namespace {
@@ -110,26 +114,26 @@ struct BadgeData {
 };
 
 // Creates a `BadgeData` from the provided dict.
-absl::optional<BadgeData> BadgeDataFromDict(const base::Value::Dict& dict) {
+std::optional<BadgeData> BadgeDataFromDict(const base::Value::Dict& dict) {
   BadgeData badgeData;
 
-  absl::optional<int> impressionsRemaining =
+  std::optional<int> impressionsRemaining =
       dict.FindInt(kImpressionsRemainingKey);
   if (!impressionsRemaining) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   badgeData.impressionsRemaining = impressionsRemaining.value();
 
-  absl::optional<bool> isFeatureDrivenBadge =
+  std::optional<bool> isFeatureDrivenBadge =
       dict.FindBool(kIsFeatureDrivenBadgeKey);
   if (!isFeatureDrivenBadge) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   badgeData.isFeatureDrivenBadge = isFeatureDrivenBadge.value();
 
   const std::string* badgeType = dict.FindString(kBadgeTypeKey);
   if (!badgeType) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   badgeData.badgeType = [OverflowMenuDestination
       badgeTypeFromString:base::SysUTF8ToNSString(*badgeType)];
@@ -282,6 +286,10 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   return _destinationCustomizationModel;
 }
 
+- (BOOL)isDestinationCustomizationInProgress {
+  return _destinationCustomizationModel != nil;
+}
+
 #pragma mark - Public
 
 - (void)recordClickForDestination:(overflow_menu::Destination)destination {
@@ -350,7 +358,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 }
 
 - (void)updatePageActions {
-  self.pageActionsGroup.actions = [self pageActions];
+  [self.pageActionsGroup setActionsWithAnimation:[self pageActions]];
 }
 
 - (void)updateForMenuDisappearance {
@@ -389,18 +397,25 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 }
 
 - (void)commitActionsUpdate {
+  if (!_actionCustomizationModel.hasChanged) {
+    [self cancelActionsUpdate];
+    return;
+  }
+
   ActionOrderData actionOrderData;
-  for (OverflowMenuAction* action in self.actionCustomizationModel.shownActions
-           .actions) {
+  for (OverflowMenuAction* action in self.actionCustomizationModel
+           .shownActions) {
     actionOrderData.shownActions.push_back(
         static_cast<overflow_menu::ActionType>(action.actionType));
   }
 
-  for (OverflowMenuAction* action in self.actionCustomizationModel.hiddenActions
-           .actions) {
+  for (OverflowMenuAction* action in self.actionCustomizationModel
+           .hiddenActions) {
     actionOrderData.hiddenActions.push_back(
         static_cast<overflow_menu::ActionType>(action.actionType));
   }
+
+  [self recordMetricsForActionCustomizationWithNewOrderData:actionOrderData];
 
   _actionOrderData = actionOrderData;
   [self flushActionsToPrefs];
@@ -412,6 +427,11 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 }
 
 - (void)commitDestinationsUpdate {
+  if (!_destinationCustomizationModel.hasChanged) {
+    [self cancelDestinationsUpdate];
+    return;
+  }
+
   DestinationOrderData orderData;
   for (OverflowMenuDestination* destination in self
            .destinationCustomizationModel.shownDestinations) {
@@ -424,6 +444,8 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
     orderData.hiddenDestinations.push_back(
         static_cast<overflow_menu::Destination>(destination.destination));
   }
+
+  [self recordMetricsForDestinationCustomizationWithNewOrderData:orderData];
 
   [self eraseBadgesAfterDestinationCustomization];
 
@@ -444,7 +466,8 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       _destinationCustomizationModel.destinationUsageEnabled;
   [self flushDestinationsToPrefs];
 
-  self.model.destinations = [self destinationsFromCurrentRanking];
+  [self.model
+      setDestinationsWithAnimation:[self destinationsFromCurrentRanking]];
 
   // Reset customization model so next customization can start fresh.
   _destinationCustomizationModel = nil;
@@ -456,6 +479,34 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 
 - (void)cancelDestinationsUpdate {
   _destinationCustomizationModel = nil;
+}
+
+- (void)customizationUpdateToggledShown:(BOOL)shown
+                    forLinkedActionType:(overflow_menu::ActionType)actionType
+                         actionSubtitle:(NSString*)actionSubtitle {
+  if (!_actionCustomizationModel) {
+    return;
+  }
+
+  OverflowMenuAction* correspondingAction;
+  for (OverflowMenuAction* action in _actionCustomizationModel.actionsGroup
+           .actions) {
+    if (action.actionType == static_cast<int>(actionType)) {
+      correspondingAction = action;
+      break;
+    }
+  }
+
+  if (!correspondingAction) {
+    return;
+  }
+
+  if (shown) {
+    correspondingAction.subtitle = nil;
+  } else {
+    correspondingAction.highlighted = YES;
+    correspondingAction.subtitle = actionSubtitle;
+  }
 }
 
 #pragma mark - Private
@@ -482,7 +533,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
         continue;
       }
 
-      absl::optional<BadgeData> badgeData = BadgeDataFromDict(value.GetDict());
+      std::optional<BadgeData> badgeData = BadgeDataFromDict(value.GetDict());
       if (!badgeData) {
         continue;
       }
@@ -633,6 +684,9 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 
 // Write stored action data back to local prefs/disk.
 - (void)flushActionsToPrefs {
+  if (!_localStatePrefs) {
+    return;
+  }
   base::Value::Dict storedActions;
 
   base::Value::List shownActions;
@@ -823,6 +877,9 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   // Check that all the destinations that were supposed to appear have been
   // added to the output at this point.
   DCHECK(remainingDestinations.empty());
+
+  [self recordMetricsForBadgeReorderingWithNewDestinationRanking:
+            newDestinationRanking];
 
   return newDestinationRanking;
 }
@@ -1063,6 +1120,327 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
     } else {
       it++;
     }
+  }
+}
+
+#pragma mark - Metrics helpers
+
+// Records any necessary metrics for when destination customization takes place,
+// given the new order data the user edited.
+- (void)recordMetricsForDestinationCustomizationWithNewOrderData:
+    (DestinationOrderData)orderData {
+  BOOL smartSortingNewlyEnabled =
+      !_destinationUsageHistoryEnabled.value &&
+      _destinationCustomizationModel.destinationUsageEnabled;
+  BOOL smartSortingNewlyDisabled =
+      _destinationUsageHistoryEnabled.value &&
+      !_destinationCustomizationModel.destinationUsageEnabled;
+  if (smartSortingNewlyEnabled || smartSortingNewlyDisabled) {
+    IOSOverflowMenuSmartSortingChange changeType;
+    if (smartSortingNewlyEnabled) {
+      changeType = IOSOverflowMenuSmartSortingChange::kNewlyEnabled;
+    } else {
+      changeType = IOSOverflowMenuSmartSortingChange::kNewlyDisabled;
+    }
+    base::UmaHistogramEnumeration("IOS.OverflowMenu.SmartSortingStateChange",
+                                  changeType);
+  }
+
+  std::set<overflow_menu::Destination> oldShownDestinations(
+      _destinationOrderData.shownDestinations.begin(),
+      _destinationOrderData.shownDestinations.end());
+  std::set<overflow_menu::Destination> newShownDestinations(
+      orderData.shownDestinations.begin(), orderData.shownDestinations.end());
+
+  DestinationRanking removedDestinations;
+  std::set_difference(oldShownDestinations.begin(), oldShownDestinations.end(),
+                      newShownDestinations.begin(), newShownDestinations.end(),
+                      std::back_inserter(removedDestinations));
+  DestinationRanking addedDestinations;
+  std::set_difference(newShownDestinations.begin(), newShownDestinations.end(),
+                      oldShownDestinations.begin(), oldShownDestinations.end(),
+                      std::back_inserter(addedDestinations));
+
+  for (overflow_menu::Destination destination : removedDestinations) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.DestinationRemoved",
+        HistogramDestinationFromDestination(destination));
+  }
+  for (overflow_menu::Destination destination : addedDestinations) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.DestinationAdded",
+        HistogramDestinationFromDestination(destination));
+  }
+
+  if (orderData.shownDestinations.size() >= 1) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition",
+        HistogramDestinationFromDestination(orderData.shownDestinations[0]));
+  }
+
+  if (orderData.shownDestinations.size() >= 2) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.DestinationsReordered.SecondPosition",
+        HistogramDestinationFromDestination(orderData.shownDestinations[1]));
+  }
+
+  if (orderData.shownDestinations.size() >= 3) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.DestinationsReordered.ThirdPosition",
+        HistogramDestinationFromDestination(orderData.shownDestinations[2]));
+  }
+
+  if (orderData.shownDestinations.size() >= 4) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition",
+        HistogramDestinationFromDestination(orderData.shownDestinations[3]));
+  }
+
+  DestinationsCustomizationEvent event;
+  event.PutOrRemove(
+      DestinationsCustomizationEventFields::kSmartSortingTurnedOff,
+      smartSortingNewlyDisabled);
+  event.PutOrRemove(DestinationsCustomizationEventFields::kSmartSortingTurnedOn,
+                    smartSortingNewlyEnabled);
+  event.PutOrRemove(DestinationsCustomizationEventFields::kSmartSortingIsOn,
+                    _destinationCustomizationModel.destinationUsageEnabled);
+  event.PutOrRemove(
+      DestinationsCustomizationEventFields::kDestinationWasRemoved,
+      removedDestinations.size() > 0);
+  event.PutOrRemove(DestinationsCustomizationEventFields::kDestinationWasAdded,
+                    addedDestinations.size() > 0);
+
+  // Loop through initial and new shown destinations lists to see if a
+  // reordering occurred.
+  for (unsigned long oldIndex = 0, newIndex = 0;
+       oldIndex < _destinationOrderData.shownDestinations.size() &&
+       newIndex < orderData.shownDestinations.size();) {
+    overflow_menu::Destination oldDestination =
+        _destinationOrderData.shownDestinations[oldIndex];
+    overflow_menu::Destination newDestination =
+        orderData.shownDestinations[newIndex];
+
+    bool destinationRemoved =
+        std::find(removedDestinations.begin(), removedDestinations.end(),
+                  oldDestination) != removedDestinations.end();
+    // If either destination was added or removed, skip it.
+    if (destinationRemoved) {
+      oldIndex++;
+      continue;
+    }
+
+    bool destinationAdded =
+        std::find(addedDestinations.begin(), addedDestinations.end(),
+                  newDestination) != addedDestinations.end();
+    if (destinationAdded) {
+      newIndex++;
+      continue;
+    }
+
+    if (oldDestination == newDestination) {
+      oldIndex++;
+      newIndex++;
+      continue;
+    }
+    event.Put(DestinationsCustomizationEventFields::kDestinationWasReordered);
+    break;
+  }
+  RecordDestinationsCustomizationEvent(event);
+}
+
+// Records any necessary metrics for when action customization takes place,
+// given the new order data the user edited.
+- (void)recordMetricsForActionCustomizationWithNewOrderData:
+    (ActionOrderData)orderData {
+  std::set<overflow_menu::ActionType> oldShownActions(
+      _actionOrderData.shownActions.begin(),
+      _actionOrderData.shownActions.end());
+  std::set<overflow_menu::ActionType> newShownActions(
+      orderData.shownActions.begin(), orderData.shownActions.end());
+
+  ActionRanking removedActions;
+  std::set_difference(oldShownActions.begin(), oldShownActions.end(),
+                      newShownActions.begin(), newShownActions.end(),
+                      std::back_inserter(removedActions));
+  ActionRanking addedActions;
+  std::set_difference(newShownActions.begin(), newShownActions.end(),
+                      oldShownActions.begin(), oldShownActions.end(),
+                      std::back_inserter(addedActions));
+
+  for (overflow_menu::ActionType action : removedActions) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.ActionRemoved",
+        HistogramActionFromActionType(action));
+  }
+
+  for (overflow_menu::ActionType action : addedActions) {
+    base::UmaHistogramEnumeration("IOS.OverflowMenu.Customization.ActionAdded",
+                                  HistogramActionFromActionType(action));
+  }
+
+  if (orderData.shownActions.size() >= 1) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition",
+        HistogramActionFromActionType(orderData.shownActions[0]));
+  }
+
+  if (orderData.shownActions.size() >= 2) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition",
+        HistogramActionFromActionType(orderData.shownActions[1]));
+  }
+
+  if (orderData.shownActions.size() >= 3) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition",
+        HistogramActionFromActionType(orderData.shownActions[2]));
+  }
+
+  if (orderData.shownActions.size() >= 4) {
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition",
+        HistogramActionFromActionType(orderData.shownActions[3]));
+  }
+
+  ActionsCustomizationEvent event;
+  event.PutOrRemove(ActionsCustomizationEventFields::kActionWasRemoved,
+                    removedActions.size() > 0);
+  event.PutOrRemove(ActionsCustomizationEventFields::kActionWasAdded,
+                    addedActions.size() > 0);
+  // Loop through initial and new shown actions lists to see if a reordering
+  // occurred.
+  for (unsigned long oldIndex = 0, newIndex = 0;
+       oldIndex < _actionOrderData.shownActions.size() &&
+       newIndex < orderData.shownActions.size();) {
+    overflow_menu::ActionType oldAction =
+        _actionOrderData.shownActions[oldIndex];
+    overflow_menu::ActionType newAction = orderData.shownActions[newIndex];
+
+    // If either action was added or removed, skip it.
+    bool actionRemoved = std::find(removedActions.begin(), removedActions.end(),
+                                   oldAction) != removedActions.end();
+    if (actionRemoved) {
+      oldIndex++;
+      continue;
+    }
+
+    bool actionAdded = std::find(addedActions.begin(), addedActions.end(),
+                                 newAction) != addedActions.end();
+    if (actionAdded) {
+      newIndex++;
+      continue;
+    }
+
+    if (oldAction == newAction) {
+      oldIndex++;
+      newIndex++;
+    } else {
+      event.Put(ActionsCustomizationEventFields::kActionWasReordered);
+      break;
+    }
+  }
+  RecordActionsCustomizationEvent(event);
+}
+
+// Records any necessary metrics for when Chrome automatically reorders the menu
+// due to badges on the items.
+- (void)recordMetricsForBadgeReorderingWithNewDestinationRanking:
+    (DestinationRanking)newDestinationRanking {
+  // Check if the menu was reordered due to a badge specifically. The assumption
+  // here is that if a reordered or newly added item has a badge, then the
+  // reordering was due to the badge
+  BOOL reorderedDueToNewBadge = NO;
+  BOOL reorderedDueToErrorBadge = NO;
+  std::unordered_set<overflow_menu::Destination> movedDestinations;
+  unsigned long finalIndex = 0;
+  for (unsigned long initialIndex = 0;
+       initialIndex < _destinationOrderData.shownDestinations.size() &&
+       finalIndex < newDestinationRanking.size();) {
+    overflow_menu::Destination initialDestination =
+        _destinationOrderData.shownDestinations[initialIndex];
+    overflow_menu::Destination finalDestination =
+        newDestinationRanking[finalIndex];
+
+    // If initial destination is not in newDestinationRanking, then it was
+    // removed.
+    if (std::find(newDestinationRanking.begin(), newDestinationRanking.end(),
+                  initialDestination) == newDestinationRanking.end()) {
+      initialIndex++;
+      continue;
+    }
+
+    // If final destination is not in the current ranking, then it was added.
+    if (std::find(_destinationOrderData.shownDestinations.begin(),
+                  _destinationOrderData.shownDestinations.end(),
+                  finalDestination) ==
+        _destinationOrderData.shownDestinations.end()) {
+      CHECK(_destinationBadgeData[finalDestination].badgeType != BadgeTypeNone);
+      if (_destinationBadgeData[finalDestination].badgeType == BadgeTypeError) {
+        reorderedDueToErrorBadge = YES;
+      } else {
+        reorderedDueToNewBadge = YES;
+      }
+      finalIndex++;
+      continue;
+    }
+
+    if (initialDestination == finalDestination) {
+      initialIndex++;
+      finalIndex++;
+    } else if (movedDestinations.contains(initialDestination)) {
+      initialIndex++;
+    } else {
+      CHECK(_destinationBadgeData[finalDestination].badgeType != BadgeTypeNone);
+
+      // Store that this destination was moved, so when it is encountered in the
+      // intial list later on, it can be skipped over.
+      movedDestinations.insert(finalDestination);
+      if (_destinationBadgeData[finalDestination].badgeType == BadgeTypeError) {
+        reorderedDueToErrorBadge = YES;
+      } else {
+        reorderedDueToNewBadge = YES;
+      }
+
+      // In this step, badges only move items forward in the list, so assume
+      // that the final ordering side is the one that moved.
+      finalIndex++;
+    }
+  }
+
+  // Check if any remaining destinations in the final list are new.
+  for (; finalIndex < newDestinationRanking.size(); finalIndex++) {
+    overflow_menu::Destination finalDestination =
+        newDestinationRanking[finalIndex];
+
+    bool destinationAdded =
+        std::find(_destinationOrderData.shownDestinations.begin(),
+                  _destinationOrderData.shownDestinations.end(),
+                  finalDestination) ==
+        _destinationOrderData.shownDestinations.end();
+    if (destinationAdded) {
+      CHECK(_destinationBadgeData[finalDestination].badgeType != BadgeTypeNone);
+      if (_destinationBadgeData[finalDestination].badgeType == BadgeTypeError) {
+        reorderedDueToErrorBadge = YES;
+      } else {
+        reorderedDueToNewBadge = YES;
+      }
+      finalIndex++;
+      continue;
+    }
+  }
+
+  if (reorderedDueToNewBadge || reorderedDueToErrorBadge) {
+    IOSOverflowMenuReorderingReason reason;
+    if (reorderedDueToNewBadge && reorderedDueToErrorBadge) {
+      reason = IOSOverflowMenuReorderingReason::kBothBadges;
+    } else if (reorderedDueToErrorBadge) {
+      reason = IOSOverflowMenuReorderingReason::kErrorBadge;
+    } else {
+      reason = IOSOverflowMenuReorderingReason::kNewBadge;
+    }
+
+    base::UmaHistogramEnumeration(
+        "IOS.OverflowMenu.DestinationsOrderChangedProgrammatically", reason);
   }
 }
 

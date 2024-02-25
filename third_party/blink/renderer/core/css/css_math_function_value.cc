@@ -78,12 +78,18 @@ double CSSMathFunctionValue::ComputeDegrees() const {
   return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
 }
 
+double CSSMathFunctionValue::ComputeDegrees(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK_EQ(kCalcAngle, expression_->Category());
+  return ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
+}
+
 double CSSMathFunctionValue::ComputeLengthPx(
     const CSSLengthResolver& length_resolver) const {
   // |CSSToLengthConversionData| only resolves relative length units, but not
   // percentages.
   DCHECK_EQ(kCalcLength, expression_->Category());
-  DCHECK(expression_->CanBeResolvedWithConversionData());
+  DCHECK(!expression_->HasPercentage());
   return ClampToPermittedRange(expression_->ComputeLengthPx(length_resolver));
 }
 
@@ -92,9 +98,30 @@ int CSSMathFunctionValue::ComputeInteger(
   // |CSSToLengthConversionData| only resolves relative length units, but not
   // percentages.
   DCHECK_EQ(kCalcNumber, expression_->Category());
-  DCHECK(expression_->CanBeResolvedWithConversionData());
+  DCHECK(!expression_->HasPercentage());
   return ClampTo<int>(
       ClampToPermittedRange(expression_->ComputeNumber(length_resolver)));
+}
+
+double CSSMathFunctionValue::ComputeNumber(
+    const CSSLengthResolver& length_resolver) const {
+  // |CSSToLengthConversionData| only resolves relative length units, but not
+  // percentages.
+  DCHECK_EQ(kCalcNumber, expression_->Category());
+  DCHECK(!expression_->HasPercentage());
+  double value =
+      ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
+  return std::isnan(value) ? 0.0 : value;
+}
+
+double CSSMathFunctionValue::ComputePercentage(
+    const CSSLengthResolver& length_resolver) const {
+  // |CSSToLengthConversionData| only resolves relative length units, but not
+  // percentages.
+  DCHECK_EQ(kCalcPercent, expression_->Category());
+  double value =
+      ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
+  return std::isnan(value) ? 0.0 : value;
 }
 
 double CSSMathFunctionValue::ComputeDotsPerPixel() const {
@@ -109,7 +136,7 @@ bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
 
 Length CSSMathFunctionValue::ConvertToLength(
     const CSSLengthResolver& length_resolver) const {
-  if (IsLength()) {
+  if (IsResolvableLength()) {
     return Length::Fixed(ComputeLengthPx(length_resolver));
   }
   return Length(ToCalcValue(length_resolver));

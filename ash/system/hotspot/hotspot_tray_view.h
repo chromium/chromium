@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -25,6 +26,8 @@ class ASH_EXPORT HotspotTrayView
       public SessionObserver,
       public HotspotIconAnimationObserver,
       public hotspot_config::mojom::CrosHotspotConfigObserver {
+  METADATA_HEADER(HotspotTrayView, TrayItemView)
+
  public:
   explicit HotspotTrayView(Shelf* shelf);
 
@@ -36,7 +39,6 @@ class ASH_EXPORT HotspotTrayView
   std::u16string GetAccessibleNameString() const;
 
   // views::View:
-  const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;

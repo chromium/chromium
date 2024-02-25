@@ -29,7 +29,7 @@ static InstanceState GetState(bool visible, bool active) {
 }
 
 bool IsAshBrowserWindow(aura::Window* aura_window) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     BrowserWindow* window = browser->window();
     if (window && window->GetNativeWindow() == aura_window) {
       return true;

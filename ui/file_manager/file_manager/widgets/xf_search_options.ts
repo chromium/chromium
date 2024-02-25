@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview A search widget that allows users to choose search options.
- * Disable type checking for closure, as it is done by the typescript compiler.
- * @suppress {checkTypes}
- */
-
 import {getTemplate} from './xf_search_options.html.js';
 import {XfSelect} from './xf_select.js';
 

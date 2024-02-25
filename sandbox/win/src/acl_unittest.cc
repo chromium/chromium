@@ -16,10 +16,9 @@ namespace {
 
 void CheckGetIntegrityLevelSid(IntegrityLevel integrity_level,
                                const wchar_t* sddl) {
-  absl::optional<base::win::Sid> sddl_sid =
-      base::win::Sid::FromSddlString(sddl);
+  std::optional<base::win::Sid> sddl_sid = base::win::Sid::FromSddlString(sddl);
   ASSERT_TRUE(sddl_sid);
-  absl::optional<DWORD> integrity_value = GetIntegrityLevelRid(integrity_level);
+  std::optional<DWORD> integrity_value = GetIntegrityLevelRid(integrity_level);
   ASSERT_TRUE(integrity_value);
   EXPECT_EQ(*sddl_sid, base::win::Sid::FromIntegrityLevel(*integrity_value));
 }
@@ -29,12 +28,12 @@ void CheckSetObjectIntegrityLabel(DWORD mandatory_policy,
                                   DWORD expected_error = ERROR_SUCCESS) {
   base::win::ScopedHandle job(::CreateJobObject(nullptr, nullptr));
   DWORD result =
-      SetObjectIntegrityLabel(job.Get(), base::win::SecurityObjectType::kKernel,
+      SetObjectIntegrityLabel(job.get(), base::win::SecurityObjectType::kKernel,
                               mandatory_policy, integrity_level);
   EXPECT_EQ(result, expected_error);
   if (result != ERROR_SUCCESS)
     return;
-  absl::optional<base::win::SecurityDescriptor> sd =
+  std::optional<base::win::SecurityDescriptor> sd =
       base::win::SecurityDescriptor::FromHandle(
           job.get(), base::win::SecurityObjectType::kKernel,
           LABEL_SECURITY_INFORMATION);
@@ -48,7 +47,7 @@ void CheckSetObjectIntegrityLabel(DWORD mandatory_policy,
   ASSERT_EQ(ace->Header.AceType, SYSTEM_MANDATORY_LABEL_ACE_TYPE);
   EXPECT_EQ(ace->Header.AceFlags, 0);
   EXPECT_EQ(ace->Mask, mandatory_policy);
-  absl::optional<DWORD> rid = GetIntegrityLevelRid(integrity_level);
+  std::optional<DWORD> rid = GetIntegrityLevelRid(integrity_level);
   base::win::Sid sid = base::win::Sid::FromIntegrityLevel(*rid);
   ASSERT_TRUE(::IsValidSid(&ace->SidStart));
   EXPECT_TRUE(sid.Equal(&ace->SidStart));

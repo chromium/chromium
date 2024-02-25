@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_BASE_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_BASE_SCREEN_HANDLER_H_
 
+#include <optional>
+
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -31,7 +32,7 @@ class BaseScreenHandler : public BaseWebUIHandler {
  protected:
   // Advances to the `oobe_screen_` in the WebUI. Optional `data` will be passed
   // to the `onBeforeShow` on the javascript side.
-  void ShowInWebUI(absl::optional<base::Value::Dict> data = absl::nullopt);
+  void ShowInWebUI(std::optional<base::Value::Dict> data = std::nullopt);
 
   template <typename... Args>
   void CallExternalAPI(const std::string& api_function, Args... args) {

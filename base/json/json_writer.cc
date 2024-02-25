@@ -215,21 +215,21 @@ void JSONWriter::IndentLine(size_t depth) {
   json_string_->append(depth * 3U, ' ');
 }
 
-absl::optional<std::string> WriteJson(ValueView node, size_t max_depth) {
+std::optional<std::string> WriteJson(ValueView node, size_t max_depth) {
   std::string result;
   if (!JSONWriter::Write(node, &result, max_depth)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
 
-absl::optional<std::string> WriteJsonWithOptions(ValueView node,
-                                                 uint32_t options,
-                                                 size_t max_depth) {
+std::optional<std::string> WriteJsonWithOptions(ValueView node,
+                                                uint32_t options,
+                                                size_t max_depth) {
   std::string result;
   if (!JSONWriter::WriteWithOptions(node, static_cast<int>(options), &result,
                                     max_depth)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }

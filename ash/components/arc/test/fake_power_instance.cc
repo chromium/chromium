@@ -26,8 +26,12 @@ void FakePowerInstance::Init(mojo::PendingRemote<mojom::PowerHost> host_remote,
   std::move(callback).Run();
 }
 
-void FakePowerInstance::SetInteractive(bool enabled) {
-  interactive_ = enabled;
+void FakePowerInstance::SetInteractiveDeprecated(bool enabled) {
+  idle_state_ = enabled ? mojom::IdleState::ACTIVE : mojom::IdleState::INACTIVE;
+}
+
+void FakePowerInstance::SetIdleState(mojom::IdleState state) {
+  idle_state_ = state;
 }
 
 void FakePowerInstance::Suspend(SuspendCallback callback) {

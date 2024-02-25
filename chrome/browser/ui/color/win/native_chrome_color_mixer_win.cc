@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -12,7 +14,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/grit/theme_resources.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -62,13 +64,13 @@ class FrameColorHelper {
                               base::Unretained(this)));
 
   // The frame color when active. If empty the default colors should be used.
-  absl::optional<SkColor> dwm_frame_color_;
+  std::optional<SkColor> dwm_frame_color_;
 
   // The frame color when inactive. If empty the default colors should be used.
-  absl::optional<SkColor> dwm_inactive_frame_color_;
+  std::optional<SkColor> dwm_inactive_frame_color_;
 
   // The DWM accent border color, if available; white otherwise.
-  SkColor dwm_accent_border_color_;
+  SkColor dwm_accent_border_color_ = SK_ColorWHITE;
 };
 
 FrameColorHelper::FrameColorHelper() {
@@ -81,11 +83,11 @@ void FrameColorHelper::AddNativeChromeColors(
   using TP = ThemeProperties;
   using ColorMode = ui::ColorProviderKey::ColorMode;
 
-  auto get_theme_color = [key](int id) -> absl::optional<SkColor> {
+  auto get_theme_color = [key](int id) -> std::optional<SkColor> {
     SkColor theme_color;
     if (key.custom_theme && key.custom_theme->GetColor(id, &theme_color))
       return theme_color;
-    return absl::nullopt;
+    return std::nullopt;
   };
 
   // When we're custom-drawing the titlebar we want to use either the colors
@@ -99,30 +101,42 @@ void FrameColorHelper::AddNativeChromeColors(
       SkColorSetRGB(0xE8, 0xE8, 0xE8);
   constexpr SkColor kSystemMicaDarkFrameColor = SkColorSetRGB(0x20, 0x20, 0x20);
 
-  absl::optional<ui::ColorTransform> active_frame_transform;
+  // Dwm colors should always be applied if present for pervasive accent colors
+  // pre-refresh. With refresh enabled we should only attempt to paint
+  // system-style frames if configured to do so in the key.
+  const bool use_native_colors =
+      !features::IsChromeRefresh2023() ||
+      (key.frame_type == ui::ColorProviderKey::FrameType::kChromium &&
+       key.frame_style == ui::ColorProviderKey::FrameStyle::kSystem);
+
+  std::optional<ui::ColorTransform> active_frame_transform;
   if (auto color = get_theme_color(TP::COLOR_FRAME_ACTIVE)) {
     active_frame_transform = {color.value()};
-  } else if (dwm_frame_color_) {
-    active_frame_transform = {dwm_frame_color_.value()};
-  } else if (ShouldDefaultThemeUseMicaTitlebar()) {
-    active_frame_transform = {key.color_mode == ColorMode::kDark
-                                  ? kSystemMicaDarkFrameColor
-                                  : kSystemMicaLightFrameColor};
-  }
-
-  absl::optional<ui::ColorTransform> inactive_frame_transform;
-  if (auto color = get_theme_color(TP::COLOR_FRAME_INACTIVE)) {
-    inactive_frame_transform = {color.value()};
-  } else if (dwm_inactive_frame_color_) {
-    inactive_frame_transform = {dwm_inactive_frame_color_.value()};
-  } else if (dwm_frame_color_) {
-    inactive_frame_transform =
-        ui::HSLShift({dwm_frame_color_.value()},
-                     GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
-  } else if (ShouldDefaultThemeUseMicaTitlebar()) {
-    inactive_frame_transform = {key.color_mode == ColorMode::kDark
+  } else if (use_native_colors) {
+    if (dwm_frame_color_) {
+      active_frame_transform = {dwm_frame_color_.value()};
+    } else if (ShouldDefaultThemeUseMicaTitlebar()) {
+      active_frame_transform = {key.color_mode == ColorMode::kDark
                                     ? kSystemMicaDarkFrameColor
                                     : kSystemMicaLightFrameColor};
+    }
+  }
+
+  std::optional<ui::ColorTransform> inactive_frame_transform;
+  if (auto color = get_theme_color(TP::COLOR_FRAME_INACTIVE)) {
+    inactive_frame_transform = {color.value()};
+  } else if (use_native_colors) {
+    if (dwm_inactive_frame_color_) {
+      inactive_frame_transform = {dwm_inactive_frame_color_.value()};
+    } else if (dwm_frame_color_) {
+      inactive_frame_transform =
+          ui::HSLShift({dwm_frame_color_.value()},
+                       GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
+    } else if (ShouldDefaultThemeUseMicaTitlebar()) {
+      inactive_frame_transform = {key.color_mode == ColorMode::kDark
+                                      ? kSystemMicaDarkFrameColor
+                                      : kSystemMicaLightFrameColor};
+    }
   }
 
   // If setting custom window frame colors ensure we also update the
@@ -204,11 +218,25 @@ void FrameColorHelper::OnAccentColorUpdated() {
 }
 
 void FrameColorHelper::FetchAccentColors() {
+  // Update the NativeTheme's user_color to reflect the system accent color.
+  // TODO(crbug.com/1477908): Explore moving FrameColorHelper logic into
+  // NativeThemeWin.
   const auto* accent_color_observer = ui::AccentColorObserver::Get();
+  const auto accent_color = accent_color_observer->accent_color();
+  ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(accent_color);
+  ui::NativeTheme::GetInstanceForDarkUI()->set_user_color(accent_color);
+
+  if (!accent_color_observer->use_dwm_frame_color()) {
+    dwm_accent_border_color_ = SK_ColorWHITE;
+    dwm_frame_color_.reset();
+    dwm_inactive_frame_color_.reset();
+    return;
+  }
+
   dwm_accent_border_color_ =
       accent_color_observer->accent_border_color().value_or(SK_ColorWHITE);
 
-  dwm_frame_color_ = accent_color_observer->accent_color();
+  dwm_frame_color_ = accent_color;
   dwm_inactive_frame_color_ = accent_color_observer->accent_color_inactive();
 }
 
@@ -255,15 +283,6 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabSearchCaptionButtonFocusRing] = ui::PickGoogleColor(
       ui::kColorFocusableBorderFocused, ui::kColorFrameActive,
       color_utils::kMinimumVisibleContrastRatio);
-  mixer[kColorTryChromeBackground] = {SkColorSetRGB(0x1F, 0x1F, 0x1F)};
-  mixer[kColorTryChromeBorder] = {SkColorSetARGB(0x80, 0x80, 0x80, 0x80)};
-  mixer[kColorTryChromeButtonBackgroundAccept] = {
-      SkColorSetRGB(0x00, 0x78, 0xDA)};
-  mixer[kColorTryChromeButtonBackgroundNoThanks] = {
-      SkColorSetA(SK_ColorWHITE, 0x33)};
-  mixer[kColorTryChromeButtonForeground] = {SK_ColorWHITE};
-  mixer[kColorTryChromeForeground] = {SkColorSetA(SK_ColorWHITE, 0xAD)};
-  mixer[kColorTryChromeHeaderForeground] = {SK_ColorWHITE};
 
   if (key.color_mode == ui::ColorProviderKey::ColorMode::kLight) {
     mixer[kColorNewTabPageBackground] = {ui::kColorNativeWindow};
@@ -317,6 +336,14 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundActiveFrameInactive] = {
       kColorTabBackgroundActiveFrameActive};
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorNativeHighlightText};
+  mixer[kColorNewTabButtonCRBackgroundFrameActive] = {
+      kColorTabBackgroundActiveFrameActive};
+  mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {
+      kColorTabBackgroundActiveFrameInactive};
+  mixer[kColorNewTabButtonForegroundFrameActive] = {
+      kColorTabForegroundActiveFrameActive};
+  mixer[kColorNewTabButtonForegroundFrameInactive] = {
+      kColorTabForegroundActiveFrameActive};
   mixer[kColorToolbar] = {ui::kColorNativeWindow};
   mixer[kColorToolbarButtonIcon] = {kColorToolbarText};
   const bool platform_high_contrast_ink_drop = base::FeatureList::IsEnabled(

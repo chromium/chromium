@@ -20,6 +20,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COPY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_UP;
@@ -78,6 +79,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
 import static org.chromium.ui.accessibility.AccessibilityState.EVENT_TYPE_MASK_NONE;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.EVENT_TYPE_MASK;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -88,24 +90,22 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.style.SuggestionSpan;
-import android.view.accessibility.AccessibilityEvent;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -113,22 +113,21 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Tests for WebContentsAccessibility. Actually tests WebContentsAccessibilityImpl that
- * implements the interface.
+ * Tests for WebContentsAccessibility. Actually tests WebContentsAccessibilityImpl that implements
+ * the interface.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Flaky tests")
+@Batch(Batch.PER_CLASS)
 @SuppressLint("VisibleForTests")
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class WebContentsAccessibilityTest {
     // Test output error messages
     private static final String DISABLED_COMBOBOX_ERROR =
@@ -137,7 +136,7 @@ public class WebContentsAccessibilityTest {
             "Too many TYPE_WINDOW_CONTENT_CHANGED events received in an atomic update.";
     private static final String THRESHOLD_LOW_EVENT_COUNT_ERROR =
             "Expected more TYPE_WINDOW_CONTENT_CHANGED events"
-            + "in an atomic update, is throttling still necessary?";
+                    + "in an atomic update, is throttling still necessary?";
     private static final String SPELLING_ERROR =
             "node should have a Spannable with spelling correction for given text.";
     private static final String INPUT_RANGE_VALUE_MISMATCH =
@@ -147,8 +146,6 @@ public class WebContentsAccessibilityTest {
     private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
     private static final String NODE_EXTRAS_UNCLIPPED_ERROR =
             "AccessibilityNodeInfo object should have unclipped bounds in extras bundle";
-    private static final String EVENT_TYPE_MASK_ERROR =
-            "Conversion of event masks to event types not correct.";
     private static final String TEXT_SELECTION_AND_TRAVERSAL_ERROR =
             "Expected to receive both a traversal and selection text event";
     private static final String BOUNDING_BOX_ERROR =
@@ -167,14 +164,10 @@ public class WebContentsAccessibilityTest {
             "Expected focus to be on a different node than it is.";
 
     // ContentFeatureList maps used for various tests.
-    private static final Map<String, Boolean> ON_DEMAND_ON_AXMODES_ON_PERF_TEST_OFF =
-            Map.of(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS, true,
-                    ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING, true,
-                    ContentFeatureList.ACCESSIBILITY_PERFORMANCE_TESTING, false);
-    private static final Map<String, Boolean> AUTO_DISABLE_V2_ON =
-            Map.of(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2, true);
-    private static final Map<String, Boolean> PERF_TEST_OFF =
-            Map.of(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_TESTING, false);
+    private static final Map<String, Boolean> INCLUDE_LONG_CLICK_ENABLED =
+            Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, true);
+    private static final Map<String, Boolean> INCLUDE_LONG_CLICK_DISABLED =
+            Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, false);
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
@@ -201,6 +194,9 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.setupTestFramework();
         mActivityTestRule.setAccessibilityDelegate();
 
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
     }
@@ -211,6 +207,9 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.setupTestFrameworkForFormControlsMode();
         mActivityTestRule.setAccessibilityDelegate();
 
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
     }
@@ -220,6 +219,9 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFrameworkForBasicMode();
         mActivityTestRule.setAccessibilityDelegate();
+
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
 
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
@@ -232,17 +234,11 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.setupTestFramework();
         mActivityTestRule.setAccessibilityDelegate();
 
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
-    }
-
-    /**
-     * Helper method to tear down our tests so we can start the next test clean.
-     */
-    @After
-    public void tearDown() {
-        mTestData = null;
-        mNodeInfo = null;
     }
 
     // Helper pass-through methods to make tests easier to read.
@@ -257,9 +253,12 @@ public class WebContentsAccessibilityTest {
         return mActivityTestRule.performActionOnUiThread(viewId, action.getId(), args);
     }
 
-    private boolean performActionOnUiThread(int viewId,
-            AccessibilityNodeInfoCompat.AccessibilityActionCompat action, Bundle args,
-            Callable<Boolean> criteria) throws ExecutionException, Throwable {
+    private boolean performActionOnUiThread(
+            int viewId,
+            AccessibilityNodeInfoCompat.AccessibilityActionCompat action,
+            Bundle args,
+            Callable<Boolean> criteria)
+            throws ExecutionException, Throwable {
         return mActivityTestRule.performActionOnUiThread(viewId, action.getId(), args, criteria);
     }
 
@@ -296,16 +295,17 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.performActionOnUiThread(viewId, action.getId(), args);
 
         // Poll until both events have been confirmed as received
-        CriteriaHelper.pollUiThread(() -> {
-            return mTestData.hasReceivedTraversalEvent() && mTestData.hasReceivedSelectionEvent();
-        }, TEXT_SELECTION_AND_TRAVERSAL_ERROR);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mTestData.hasReceivedTraversalEvent()
+                            && mTestData.hasReceivedSelectionEvent();
+                },
+                TEXT_SELECTION_AND_TRAVERSAL_ERROR);
     }
 
     // ------------------ Tests of WebContentsAccessibilityImpl methods ------------------ //
 
-    /**
-     * Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates.
-     */
+    /** Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates. */
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
@@ -326,9 +326,11 @@ public class WebContentsAccessibilityTest {
         executeJS("expandComboboxes()");
 
         // Poll until the JS method is confirmed to have finished.
-        CriteriaHelper.pollUiThread(() -> {
-            return createAccessibilityNodeInfo(vvid).getText().toString().equals("Done");
-        }, NODE_TIMEOUT_ERROR);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return createAccessibilityNodeInfo(vvid).getText().toString().equals("Done");
+                },
+                NODE_TIMEOUT_ERROR);
 
         // Signal end of test
         mActivityTestRule.sendEndOfTestSignal();
@@ -361,9 +363,11 @@ public class WebContentsAccessibilityTest {
         executeJS("expandComboboxes()");
 
         // Poll until the JS method is confirmed to have finished.
-        CriteriaHelper.pollUiThread(() -> {
-            return createAccessibilityNodeInfo(vvid).getText().toString().equals("Done");
-        }, NODE_TIMEOUT_ERROR);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return createAccessibilityNodeInfo(vvid).getText().toString().equals("Done");
+                },
+                NODE_TIMEOUT_ERROR);
 
         // Signal end of test
         mActivityTestRule.sendEndOfTestSignal();
@@ -373,65 +377,22 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(lowThresholdError(eventCount), eventCount > UNSUPPRESSED_EXPECTED_COUNT);
     }
 
-    /**
-     * Test logic for converting event type masks to a list of relevant event types.
-     */
+    /** Test that UMA histograms are recorded for AX Mode Complete. */
     @Test
     @SmallTest
-    public void testMaskToEventTypeConversion() {
-        // Build a simple web page.
-        setupTestWithHTML("<p>Test page</p>");
-
-        // Create some event masks with known outcomes.
-        int serviceEventMask_empty = 0;
-        int serviceEventMask_full = Integer.MAX_VALUE;
-        int serviceEventMask_test = AccessibilityEvent.TYPE_VIEW_CLICKED
-                | AccessibilityEvent.TYPE_VIEW_LONG_CLICKED | AccessibilityEvent.TYPE_VIEW_FOCUSED
-                | AccessibilityEvent.TYPE_VIEW_SCROLLED | AccessibilityEvent.TYPE_VIEW_SELECTED
-                | AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END;
-
-        // Convert each mask to a set of eventTypes.
-        Set<Integer> outcome_empty =
-                mActivityTestRule.mWcax.convertMaskToEventTypes(serviceEventMask_empty);
-        Set<Integer> outcome_full =
-                mActivityTestRule.mWcax.convertMaskToEventTypes(serviceEventMask_full);
-        Set<Integer> outcome_test =
-                mActivityTestRule.mWcax.convertMaskToEventTypes(serviceEventMask_test);
-
-        // Verify results.
-        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_empty);
-        Assert.assertTrue(EVENT_TYPE_MASK_ERROR, outcome_empty.isEmpty());
-
-        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_full);
-        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, 31, outcome_full.size());
-
-        Set<Integer> expected_test = new HashSet<Integer>(Arrays.asList(
-                AccessibilityEvent.TYPE_VIEW_CLICKED, AccessibilityEvent.TYPE_VIEW_LONG_CLICKED,
-                AccessibilityEvent.TYPE_VIEW_FOCUSED, AccessibilityEvent.TYPE_VIEW_SCROLLED,
-                AccessibilityEvent.TYPE_VIEW_SELECTED,
-                AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END));
-
-        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_test);
-        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, expected_test, outcome_test);
-    }
-
-    /**
-     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode Complete.
-     */
-    @Test
-    @SmallTest
-    public void testUMAHistograms_OnDemand_AXModeComplete() throws Throwable {
+    public void testUMAHistograms_AXModeComplete() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML("<p>This is a test 1</p>\n"
-                + "<p>This is a test 2</p>\n"
-                + "<p>This is a test 3</p>");
+        setupTestWithHTML(
+                "<p>This is a test 1</p>\n"
+                        + "<p>This is a test 2</p>\n"
+                        + "<p>This is a test 3</p>");
 
         // Set the relevant features and accessibility state.
-        FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON_PERF_TEST_OFF);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
-            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                });
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -450,23 +411,22 @@ public class WebContentsAccessibilityTest {
         histogramWatcher.assertExpected();
     }
 
-    /**
-     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode Form Controls.
-     */
+    /** Test that UMA histograms are recorded for AX Mode Form Controls. */
     @Test
     @SmallTest
-    public void testUMAHistograms_OnDemand_AXModeFormControls() throws Throwable {
+    public void testUMAHistograms_AXModeFormControls() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTMLForFormControlsMode("<p>This is a test 1</p>\n"
-                + "<p>This is a test 2</p>\n"
-                + "<p>This is a test 3</p>");
+        setupTestWithHTMLForFormControlsMode(
+                "<p>This is a test 1</p>\n"
+                        + "<p>This is a test 2</p>\n"
+                        + "<p>This is a test 3</p>");
 
         // Set the relevant features and accessibility state.
-        FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON_PERF_TEST_OFF);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
+                });
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -486,23 +446,22 @@ public class WebContentsAccessibilityTest {
         histogramWatcher.assertExpected();
     }
 
-    /**
-     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode Basic.
-     */
+    /** Test that UMA histograms are recorded for AX Mode Basic. */
     @Test
     @SmallTest
-    public void testUMAHistograms_OnDemand_AXModeBasic() throws Throwable {
+    public void testUMAHistograms_AXModeBasic() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTMLForBasicMode("<p>This is a test 1</p>\n"
-                + "<p>This is a test 2</p>\n"
-                + "<p>This is a test 3</p>");
+        setupTestWithHTMLForBasicMode(
+                "<p>This is a test 1</p>\n"
+                        + "<p>This is a test 2</p>\n"
+                        + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state.
-        FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON_PERF_TEST_OFF);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                });
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -523,24 +482,25 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode Complete
-     * when 100% of events are dropped.
+     * Test that UMA histograms are recorded for AX Mode Complete when 100% of events are dropped.
      */
     @Test
     @SmallTest
-    public void testUMAHistograms_OnDemand_AXModeComplete_100Percent() throws Throwable {
+    public void testUMAHistograms_AXModeComplete_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML("<p>This is a test 1</p>\n"
-                + "<p>This is a test 2</p>\n"
-                + "<p>This is a test 3</p>");
+        setupTestWithHTML(
+                "<p>This is a test 1</p>\n"
+                        + "<p>This is a test 2</p>\n"
+                        + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON_PERF_TEST_OFF);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
-            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
-            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setStateMaskForTesting(
+                            EVENT_TYPE_MASK, EVENT_TYPE_MASK_NONE);
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                });
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -561,24 +521,26 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode Form Controls
-     * when 100% of events are dropped.
+     * Test that UMA histograms are recorded for AX Mode Form Controls when 100% of events are
+     * dropped.
      */
     @Test
     @SmallTest
-    public void testUMAHistograms_OnDemand_AXModeFormControls_100Percent() throws Throwable {
+    public void testUMAHistograms_AXModeFormControls_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTMLForFormControlsMode("<p>This is a test 1</p>\n"
-                + "<p>This is a test 2</p>\n"
-                + "<p>This is a test 3</p>");
+        setupTestWithHTMLForFormControlsMode(
+                "<p>This is a test 1</p>\n"
+                        + "<p>This is a test 2</p>\n"
+                        + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON_PERF_TEST_OFF);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
-            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setStateMaskForTesting(
+                            EVENT_TYPE_MASK, EVENT_TYPE_MASK_NONE);
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
+                });
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -598,25 +560,24 @@ public class WebContentsAccessibilityTest {
         histogramWatcher.assertExpected();
     }
 
-    /**
-     * Test that UMA histograms are recorded for the OnDemand AT feature and AX Mode Basic
-     * when 100% of events are dropped.
-     */
+    /** Test that UMA histograms are recorded for AX Mode Basic when 100% of events are dropped. */
     @Test
     @SmallTest
-    public void testUMAHistograms_OnDemand_AXModeBasic_100Percent() throws Throwable {
+    public void testUMAHistograms_AXModeBasic_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTMLForBasicMode("<p>This is a test 1</p>\n"
-                + "<p>This is a test 2</p>\n"
-                + "<p>This is a test 3</p>");
+        setupTestWithHTMLForBasicMode(
+                "<p>This is a test 1</p>\n"
+                        + "<p>This is a test 2</p>\n"
+                        + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(ON_DEMAND_ON_AXMODES_ON_PERF_TEST_OFF);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
-            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setStateMaskForTesting(
+                            EVENT_TYPE_MASK, EVENT_TYPE_MASK_NONE);
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                });
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -644,12 +605,10 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testUMAHistograms_Cache() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML("<p>This is a test 1</p>\n"
-                + "<p>This is a test 2</p>\n"
-                + "<p>This is a test 3</p>");
-
-        // Set the correct performance testing state so the cache is used.
-        FeatureList.setTestFeatures(PERF_TEST_OFF);
+        setupTestWithHTML(
+                "<p>This is a test 1</p>\n"
+                        + "<p>This is a test 2</p>\n"
+                        + "<p>This is a test 3</p>");
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -658,26 +617,6 @@ public class WebContentsAccessibilityTest {
                         .build();
 
         performHistogramActions();
-
-        histogramWatcher.assertExpected();
-    }
-
-    /**
-     * Test that UMA histograms are recorded when an instance has been in the foreground.
-     */
-    @Test
-    @SmallTest
-    public void testUMAHistograms_Usage() throws Throwable {
-        setupTestWithHTML("<p>This is a test</p>");
-
-        // Since the test suite always initializes native, we should see values for both histograms.
-        // Unknown test timing means we cannot know for sure if the always on histogram is recorded.
-        var histogramWatcher = HistogramWatcher.newBuilder()
-                                       .expectAnyRecord(USAGE_FOREGROUND_TIME)
-                                       .expectAnyRecord(USAGE_NATIVE_INITIALIZED_TIME)
-                                       .build();
-
-        mActivityTestRule.mWcax.forceRecordUsageUMAHistogramsForTesting();
 
         histogramWatcher.assertExpected();
     }
@@ -692,7 +631,8 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTML("<p>This is a test</p>");
         waitForNodeMatching(sTextMatcher, "This is a test");
 
-        FeatureList.setTestFeatures(AUTO_DISABLE_V2_ON);
+        // Explicitly enable auto-disable capabilities for this test.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(true);
 
         // The test suite always initializes native, so first we will disable it manually.
         var histogramWatcher =
@@ -709,11 +649,12 @@ public class WebContentsAccessibilityTest {
 
         // The test suite always initializes native, so mock a call to disable accessibility. We
         // must update AccessibilityState to ensure the AXMode is propagated through to C++.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
-            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+                });
 
         // Assert that we record initial enabled time and that disabled was called once.
         histogramWatcher.assertExpected();
@@ -731,11 +672,12 @@ public class WebContentsAccessibilityTest {
                         .build();
 
         // To re-enable native accessibility, we need to make a request from the framework.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            mActivityTestRule.mWcax.getAccessibilityNodeProvider();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    mActivityTestRule.mWcax.getAccessibilityNodeProvider();
+                });
 
         // Assert that we record initial disabled time and that re-enabled was called once.
         histogramWatcher.assertExpected();
@@ -752,11 +694,12 @@ public class WebContentsAccessibilityTest {
                                 AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_SUCCESSIVE)
                         .expectNoRecords(USAGE_FOREGROUND_TIME)
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
-            AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(false);
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
+                });
         histogramWatcher.assertExpected();
 
         // Finally re-enable accessibility again to verify 'successive' histograms.
@@ -771,17 +714,16 @@ public class WebContentsAccessibilityTest {
                         .expectAnyRecord(
                                 AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_SUCCESSIVE)
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            mActivityTestRule.mWcax.getAccessibilityNodeProvider();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    mActivityTestRule.mWcax.getAccessibilityNodeProvider();
+                });
         histogramWatcher.assertExpected();
     }
 
-    /**
-     * Test that the {resetFocus} method performs as expected with accessibility enabled.
-     */
+    /** Test that the {resetFocus} method performs as expected with accessibility enabled. */
     @Test
     @SmallTest
     public void testResetFocus() throws Throwable {
@@ -814,9 +756,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(FOCUSING_ERROR, mNodeInfo.isAccessibilityFocused());
     }
 
-    /**
-     * Test restoring focus of the latest focused element with the {restoreFocus} method.
-     */
+    /** Test restoring focus of the latest focused element with the {restoreFocus} method. */
     @Test
     @SmallTest
     public void testRestoreFocus() throws Throwable {
@@ -850,8 +790,12 @@ public class WebContentsAccessibilityTest {
         focusNode(vvid2);
 
         // Reset focus by performing an action, it covers one more way of losing focus.
-        Assert.assertTrue(performActionOnUiThread(vvid2, ACTION_CLEAR_ACCESSIBILITY_FOCUS, null,
-                () -> !createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid2,
+                        ACTION_CLEAR_ACCESSIBILITY_FOCUS,
+                        null,
+                        () -> !createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
 
         // Restore focus, verify that the second (latest focused) element gets focus.
         TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.restoreFocus());
@@ -869,13 +813,14 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTML("<p>This is a test</p>");
         waitForNodeMatching(sTextMatcher, "This is a test");
 
-        // Enable feature, but set this instance as not a candidate.
-        FeatureList.setTestFeatures(AUTO_DISABLE_V2_ON);
+        // Set this instance as not a candidate.
         mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
 
         // Changing the accessibility state will refresh the native state.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { AccessibilityState.setIsTextShowPasswordEnabledForTesting(true); });
+                () -> {
+                    AccessibilityState.setIsTextShowPasswordEnabledForTesting(true);
+                });
 
         Assert.assertFalse(mActivityTestRule.mWcax.hasAnyPendingTimersForTesting());
     }
@@ -889,10 +834,11 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testNodeInfoCache_AccessibilityFocusAndActions() throws Throwable {
         // Build a simple web page with two paragraphs that can be focused.
-        setupTestWithHTML("<div>\n"
-                + "  <p>Example Paragraph 1</p>\n"
-                + "  <p>Example Paragraph 2</p>\n"
-                + "</div>");
+        setupTestWithHTML(
+                "<div>\n"
+                        + "  <p>Example Paragraph 1</p>\n"
+                        + "  <p>Example Paragraph 2</p>\n"
+                        + "</div>");
 
         // Define our root node and paragraph node IDs by looking for their text.
         int vvIdP1 = waitForNodeMatching(sTextMatcher, "Example Paragraph 1");
@@ -937,9 +883,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(nodeInfoP2.getActionList().contains(ACTION_CLEAR_ACCESSIBILITY_FOCUS));
     }
 
-    /**
-     * Test our internal cache of |AccessibilityNodeInfo| objects for proper leaf node updates.
-     */
+    /** Test our internal cache of |AccessibilityNodeInfo| objects for proper leaf node updates. */
     @Test
     @SmallTest
     public void testNodeInfoCache_LeafNodeText() throws Throwable {
@@ -974,15 +918,16 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testNodeInfoCache_BoundingBoxUpdatesOnWindowResize() {
         // Build a simple web page with a flex and a will-change: transform button.
-        setupTestWithHTML("<div style=\"display: flex; min-height: 90vh;\">\n"
-                + " <div style=\"display: flex; flex-grow: 1; align-items: flex-end;\">\n"
-                + "   <div>\n"
-                + "     <button style=\"display: inline-flex; will-change: transform;\">\n"
-                + "       Next\n"
-                + "     </button>\n"
-                + "   </div>\n"
-                + " </div>\n"
-                + "</div>");
+        setupTestWithHTML(
+                "<div style=\"display: flex; min-height: 90vh;\">\n"
+                        + " <div style=\"display: flex; flex-grow: 1; align-items: flex-end;\">\n"
+                        + "   <div>\n"
+                        + "     <button style=\"display: inline-flex; will-change: transform;\">\n"
+                        + "       Next\n"
+                        + "     </button>\n"
+                        + "   </div>\n"
+                        + " </div>\n"
+                        + "</div>");
 
         // Find the button and get the current bounding box.
         int buttonvvId = waitForNodeMatching(sClassNameMatcher, "android.widget.Button");
@@ -1012,18 +957,17 @@ public class WebContentsAccessibilityTest {
     // These tests are included here rather than in WebContentsAccessibilityEventsTest because
     // they test the AccessibilityEvent over a series of actions, rather than one method.
 
-    /**
-     * Ensure that disabled comboboxes and children are not shadow clickable.
-     */
+    /** Ensure that disabled comboboxes and children are not shadow clickable. */
     @Test
     @SmallTest
     public void testEvent_Combobox_disabled() throws Throwable {
         // Build a simple web page with a disabled combobox.
-        setupTestWithHTML("<select disabled>\n"
-                + "  <option>Volvo</option>\n"
-                + "  <option>Saab</option>\n"
-                + "  <option>Mercedes</option>\n"
-                + "</select>");
+        setupTestWithHTML(
+                "<select disabled>\n"
+                        + "  <option>Volvo</option>\n"
+                        + "  <option>Saab</option>\n"
+                        + "  <option>Mercedes</option>\n"
+                        + "</select>");
 
         // Find the disabled option node and set a delegate to track focus.
         int disabledNodeId = waitForNodeMatching(sTextMatcher, "Volvo");
@@ -1387,11 +1331,12 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     public void testEvent_paragraphGranularity() throws Throwable {
-        setupTestWithHTML("<p>Paragraph 1</p>"
-                + "<p>Paragraph 2</p>"
-                + "<p>Paragraph 3</p>"
-                + "<p>Paragraph 4</p>"
-                + "<p>Paragraph 5</p>");
+        setupTestWithHTML(
+                "<p>Paragraph 1</p>"
+                        + "<p>Paragraph 2</p>"
+                        + "<p>Paragraph 3</p>"
+                        + "<p>Paragraph 4</p>"
+                        + "<p>Paragraph 5</p>");
 
         // Set granularity to PARAGRAPH
         Bundle args = new Bundle();
@@ -1411,7 +1356,9 @@ public class WebContentsAccessibilityTest {
 
             // Poll until accessibility focus has changed
             CriteriaHelper.pollUiThread(
-                    () -> { return mTestData.hasReceivedAccessibilityFocusEvent(); });
+                    () -> {
+                        return mTestData.hasReceivedAccessibilityFocusEvent();
+                    });
         }
 
         // Ensure the last paragraph has accessibility focus
@@ -1451,8 +1398,11 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 20 + (2 * i),
-                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+            Assert.assertEquals(
+                    INPUT_RANGE_VALUE_MISMATCH,
+                    20 + (2 * i),
+                    mNodeInfo.getRangeInfo().getCurrent(),
+                    0.001);
 
             // Reset polling value for next test
             mTestData.setReceivedEvent(false);
@@ -1469,8 +1419,11 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 40 - (2 * i),
-                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+            Assert.assertEquals(
+                    INPUT_RANGE_VALUE_MISMATCH,
+                    40 - (2 * i),
+                    mNodeInfo.getRangeInfo().getCurrent(),
+                    0.001);
 
             // Reset polling value for next test
             mTestData.setReceivedEvent(false);
@@ -1522,17 +1475,18 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 10 - i,
-                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+            Assert.assertEquals(
+                    INPUT_RANGE_VALUE_MISMATCH,
+                    10 - i,
+                    mNodeInfo.getRangeInfo().getCurrent(),
+                    0.001);
 
             // Reset polling value for next test
             mTestData.setReceivedEvent(false);
         }
     }
 
-    /**
-     * Test <input type="range"> nodes move by a minimum value with increment/decrement actions.
-     */
+    /** Test <input type="range"> nodes move by a minimum value with increment/decrement actions. */
     @Test
     @SmallTest
     public void testNodeInfo_inputTypeRange_withRequiredMin() throws Throwable {
@@ -1557,8 +1511,11 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 500 + (50 * i),
-                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+            Assert.assertEquals(
+                    INPUT_RANGE_VALUE_MISMATCH,
+                    500 + (50 * i),
+                    mNodeInfo.getRangeInfo().getCurrent(),
+                    0.001);
 
             // Reset polling value for next test
             mTestData.setReceivedEvent(false);
@@ -1575,8 +1532,11 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 1000 - (50 * i),
-                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+            Assert.assertEquals(
+                    INPUT_RANGE_VALUE_MISMATCH,
+                    1000 - (50 * i),
+                    mNodeInfo.getRangeInfo().getCurrent(),
+                    0.001);
 
             // Reset polling value for next test
             mTestData.setReceivedEvent(false);
@@ -1596,9 +1556,10 @@ public class WebContentsAccessibilityTest {
         // would be generated if spelling correction was enabled. Clear our cache for this node.
         int textNodeVirtualViewId =
                 waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.mWcax.addSpellingErrorForTesting(textNodeVirtualViewId, 4, 9);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mWcax.addSpellingErrorForTesting(textNodeVirtualViewId, 4, 9);
+                });
         mActivityTestRule.mWcax.clearNodeInfoCacheForGivenId(textNodeVirtualViewId);
 
         // Get |AccessibilityNodeInfo| object and confirm it is not null.
@@ -1617,9 +1578,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(SPELLING_ERROR, 9, spannable.getSpanEnd(spans[0]));
     }
 
-    /**
-     * Test |AccessibilityNodeInfo| object for character bounds for a node in Android O.
-     */
+    /** Test |AccessibilityNodeInfo| object for character bounds for a node in Android O. */
     @Test
     @SmallTest
     public void testNodeInfo_extraDataAdded_characterLocations() {
@@ -1637,11 +1596,14 @@ public class WebContentsAccessibilityTest {
 
         // addExtraDataToAccessibilityNodeInfo() will end up calling RenderFrameHostImpl's method
         // AccessibilityPerformAction() in the C++ code, which needs to be run from the UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
-                    textNodeVirtualViewId, mNodeInfo, EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
-                    arguments);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            textNodeVirtualViewId,
+                            mNodeInfo,
+                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
+                            arguments);
+                });
 
         // It should return a result, but all of the rects will be the same because it hasn't
         // loaded inline text boxes yet.
@@ -1660,26 +1622,34 @@ public class WebContentsAccessibilityTest {
 
         // The data needed for text character locations loads asynchronously. Block until
         // it successfully returns the character bounds.
-        CriteriaHelper.pollUiThread(() -> {
-            AccessibilityNodeInfoCompat textNode =
-                    createAccessibilityNodeInfo(textNodeVirtualViewId);
-            mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
-                    textNodeVirtualViewId, textNode, EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
-                    arguments);
-            Bundle textNodeExtras = textNode.getExtras();
-            RectF[] textNodeResults = (RectF[]) textNodeExtras.getParcelableArray(
-                    EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
-            Criteria.checkThat(textNodeResults, Matchers.arrayWithSize(4));
-            Criteria.checkThat(textNodeResults[0], Matchers.not(textNodeResults[1]));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat textNode =
+                            createAccessibilityNodeInfo(textNodeVirtualViewId);
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            textNodeVirtualViewId,
+                            textNode,
+                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
+                            arguments);
+                    Bundle textNodeExtras = textNode.getExtras();
+                    RectF[] textNodeResults =
+                            (RectF[])
+                                    textNodeExtras.getParcelableArray(
+                                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
+                    Criteria.checkThat(textNodeResults, Matchers.arrayWithSize(4));
+                    Criteria.checkThat(textNodeResults[0], Matchers.not(textNodeResults[1]));
+                });
 
         // The final result should be the separate bounding box of all four characters.
         mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
-                    textNodeVirtualViewId, mNodeInfo, EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
-                    arguments);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            textNodeVirtualViewId,
+                            mNodeInfo,
+                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
+                            arguments);
+                });
 
         extras = mNodeInfo.getExtras();
         result = (RectF[]) extras.getParcelableArray(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
@@ -1701,16 +1671,15 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(result[2].left < result[3].left);
     }
 
-    /**
-     * Test |AccessibilityNodeInfo| object for image data for a node in Android O.
-     */
+    /** Test |AccessibilityNodeInfo| object for image data for a node in Android O. */
     @Test
     @SmallTest
     public void testNodeInfo_extraDataAdded_imageData() {
         // Setup test page with example image (20px red square).
-        setupTestWithHTML("<img id='id1' src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEU"
-                + "gAAABQAAAAUCAIAAAAC64paAAAAGElEQVR4AWOsZiAfDLDmUc2jmk"
-                + "c1j2oGADloCbFEqE6LAAAAAElFTkSuQmCC\"/>");
+        setupTestWithHTML(
+                "<img id='id1' src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEU"
+                        + "gAAABQAAAAUCAIAAAAC64paAAAAGElEQVR4AWOsZiAfDLDmUc2jmk"
+                        + "c1j2oGADloCbFEqE6LAAAAAElFTkSuQmCC\"/>");
 
         // Find the image node.
         int imageViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
@@ -1722,18 +1691,25 @@ public class WebContentsAccessibilityTest {
                 NODE_TIMEOUT_ERROR, mNodeInfo.getExtras().containsKey(EXTRAS_KEY_IMAGE_DATA));
 
         // The image data is added asynchronously, call the API and poll until it has been added.
-        CriteriaHelper.pollUiThread(() -> {
-            mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
-                    imageViewId, mNodeInfo, EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY, new Bundle());
-            return mNodeInfo.getExtras().containsKey(EXTRAS_KEY_IMAGE_DATA);
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            imageViewId,
+                            mNodeInfo,
+                            EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY,
+                            new Bundle());
+                    return mNodeInfo.getExtras().containsKey(EXTRAS_KEY_IMAGE_DATA);
+                });
 
         // Verify a byte array of sufficient size has been added to the node.
-        Assert.assertTrue(IMAGE_DATA_BUNDLE_EXTRA_ERROR,
+        Assert.assertTrue(
+                IMAGE_DATA_BUNDLE_EXTRA_ERROR,
                 mNodeInfo.getExtras().containsKey(EXTRAS_KEY_IMAGE_DATA));
-        Assert.assertNotNull(IMAGE_DATA_BUNDLE_EXTRA_ERROR,
+        Assert.assertNotNull(
+                IMAGE_DATA_BUNDLE_EXTRA_ERROR,
                 mNodeInfo.getExtras().getByteArray(EXTRAS_KEY_IMAGE_DATA));
-        Assert.assertTrue(IMAGE_DATA_BUNDLE_EXTRA_ERROR,
+        Assert.assertTrue(
+                IMAGE_DATA_BUNDLE_EXTRA_ERROR,
                 mNodeInfo.getExtras().getByteArray(EXTRAS_KEY_IMAGE_DATA).length > 50);
     }
 
@@ -1749,20 +1725,27 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
 
         // The page may take a moment to finish onload method, so poll for a child count.
-        CriteriaHelper.pollUiThread(() -> {
-            return createAccessibilityNodeInfo(vvIdDiv).getChildCount() == 100;
-        }, NODE_TIMEOUT_ERROR);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return createAccessibilityNodeInfo(vvIdDiv).getChildCount() == 100;
+                },
+                NODE_TIMEOUT_ERROR);
 
         // Focus the scroll container.
         focusNode(vvIdDiv);
 
         // Send a scroll event so some elements will be offscreen and poll for results.
-        performActionOnUiThread(vvIdDiv, ACTION_PAGE_UP, null, () -> {
-            return createAccessibilityNodeInfo(vvIdDiv).getExtras() != null
-                    && createAccessibilityNodeInfo(vvIdDiv).getExtras().getInt(
-                               EXTRAS_KEY_UNCLIPPED_TOP, 1)
-                    < 0;
-        });
+        performActionOnUiThread(
+                vvIdDiv,
+                ACTION_PAGE_UP,
+                null,
+                () -> {
+                    return createAccessibilityNodeInfo(vvIdDiv).getExtras() != null
+                            && createAccessibilityNodeInfo(vvIdDiv)
+                                            .getExtras()
+                                            .getInt(EXTRAS_KEY_UNCLIPPED_TOP, 1)
+                                    < 0;
+                });
 
         // Signal end of test.
         mActivityTestRule.sendEndOfTestSignal();
@@ -1772,9 +1755,11 @@ public class WebContentsAccessibilityTest {
 
         // Check that the container has unclipped values set.
         Assert.assertNotNull(NODE_EXTRAS_UNCLIPPED_ERROR, mNodeInfo.getExtras());
-        Assert.assertTrue(NODE_EXTRAS_UNCLIPPED_ERROR,
+        Assert.assertTrue(
+                NODE_EXTRAS_UNCLIPPED_ERROR,
                 mNodeInfo.getExtras().getInt(EXTRAS_KEY_UNCLIPPED_TOP) < 0);
-        Assert.assertTrue(NODE_EXTRAS_UNCLIPPED_ERROR,
+        Assert.assertTrue(
+                NODE_EXTRAS_UNCLIPPED_ERROR,
                 mNodeInfo.getExtras().getInt(EXTRAS_KEY_UNCLIPPED_BOTTOM) > 0);
     }
 
@@ -1786,10 +1771,11 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testNodeInfo_Actions_OverflowHidden() throws Throwable {
         // Build a simple web page with a div and overflow:hidden
-        setupTestWithHTML("<div title='1234' style='overflow:hidden; width: 200px; height:50px'>\n"
-                + "  <p>Example Paragraph 1</p>\n"
-                + "  <p>Example Paragraph 2</p>\n"
-                + "</div>");
+        setupTestWithHTML(
+                "<div title='1234' style='overflow:hidden; width: 200px; height:50px'>\n"
+                        + "  <p>Example Paragraph 1</p>\n"
+                        + "  <p>Example Paragraph 2</p>\n"
+                        + "</div>");
 
         // Define our root node and paragraph node IDs by looking for their text.
         int vvIdDiv = waitForNodeMatching(sTextMatcher, "1234");
@@ -1824,18 +1810,16 @@ public class WebContentsAccessibilityTest {
         assertActionsContainNoScrolls(nodeInfoP2);
     }
 
-    /**
-     * Test |AccessibilityNodeInfo| object actions for node is user scrollable.
-     */
+    /** Test |AccessibilityNodeInfo| object actions for node is user scrollable. */
     @Test
     @SmallTest
     public void testNodeInfo_Actions_OverflowScroll() throws Throwable {
         // Build a simple web page with a div and overflow:scroll
         setupTestWithHTML(
                 "<div id='div1' title='1234' style='overflow:scroll; width: 200px; height:50px'>\n"
-                + "  <p id='p1'>Example Paragraph 1</p>\n"
-                + "  <p id='p2'>Example Paragraph 2</p>\n"
-                + "</div>");
+                        + "  <p id='p1' tabindex=0>Example Paragraph 1</p>\n"
+                        + "  <p id='p2' tabindex=0>Example Paragraph 2</p>\n"
+                        + "</div>");
 
         // Define our root node and paragraph node IDs by looking for their ids.
         int vvIdDiv = waitForNodeMatching(sViewIdResourceNameMatcher, "div1");
@@ -1873,9 +1857,7 @@ public class WebContentsAccessibilityTest {
         assertActionsContainNoScrolls(nodeInfoP2);
     }
 
-    /**
-     * Test that isVisibleToUser and offscreen extra are properly reflecting obscured views.
-     */
+    /** Test that isVisibleToUser and offscreen extra are properly reflecting obscured views. */
     @Test
     @SmallTest
     public void testNodeInfo_isVisibleToUser_offscreenCSS() {
@@ -1902,23 +1884,56 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(VISIBLE_TO_USER_ERROR, mNodeInfo3.isVisibleToUser());
 
         // Check for offscreen Bundle extra, the second two texts should contain.
-        Assert.assertFalse(OFFSCREEN_BUNDLE_EXTRA_ERROR,
+        Assert.assertFalse(
+                OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo1.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
-        Assert.assertTrue(OFFSCREEN_BUNDLE_EXTRA_ERROR,
+        Assert.assertTrue(
+                OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo2.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
-        Assert.assertTrue(OFFSCREEN_BUNDLE_EXTRA_ERROR,
+        Assert.assertTrue(
+                OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo2.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
-        Assert.assertTrue(OFFSCREEN_BUNDLE_EXTRA_ERROR,
+        Assert.assertTrue(
+                OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo3.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
-        Assert.assertTrue(OFFSCREEN_BUNDLE_EXTRA_ERROR,
+        Assert.assertTrue(
+                OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo3.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
+    }
+
+    /** Test that ACTION_LONG_CLICK is included when experiment is running. */
+    @Test
+    @SmallTest
+    public void testNodeInfo_Actions_longClickIncluded() throws Throwable {
+        setupTestWithHTML("<p id='id1'>Example</p>");
+
+        FeatureList.setTestFeatures(INCLUDE_LONG_CLICK_ENABLED);
+
+        int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        mNodeInfo = createAccessibilityNodeInfo(vvId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        Assert.assertTrue(mNodeInfo.getActionList().contains(ACTION_LONG_CLICK));
+    }
+
+    /** Test that ACTION_LONG_CLICK is excluded when experiment is paused. */
+    @Test
+    @SmallTest
+    public void testNodeInfo_Actions_longClickExcluded() throws Throwable {
+        setupTestWithHTML("<p id='id1'>Example</p>");
+
+        FeatureList.setTestFeatures(INCLUDE_LONG_CLICK_DISABLED);
+
+        int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        mNodeInfo = createAccessibilityNodeInfo(vvId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        Assert.assertFalse(mNodeInfo.getActionList().contains(ACTION_LONG_CLICK));
     }
 
     // ------------------ Tests of performAction method ------------------ //
 
-    /**
-     * Test that the performAction for ACTION_SET_TEXT works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_SET_TEXT works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_setText() throws Throwable {
@@ -1942,8 +1957,12 @@ public class WebContentsAccessibilityTest {
 
         // Send a proper action and poll for update.
         bundle.putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "new text");
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_TEXT, bundle,
-                () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_SET_TEXT,
+                        bundle,
+                        () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty()));
 
         // Send of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -1953,9 +1972,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, "new text", mNodeInfo.getText().toString());
     }
 
-    /**
-     * Test that the performAction for ACTION_SET_SELECTION works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_setSelection() throws Throwable {
@@ -1977,10 +1994,15 @@ public class WebContentsAccessibilityTest {
         Bundle bundle = new Bundle();
         bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
         bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 5);
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_SELECTION, bundle, () -> {
-            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-        }));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_SET_SELECTION,
+                        bundle,
+                        () -> {
+                            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+                        }));
 
         // Send of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -1991,9 +2013,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, 5, mNodeInfo.getTextSelectionEnd());
     }
 
-    /**
-     * Test that the performAction for ACTION_CUT works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_CUT works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_cut() throws Throwable {
@@ -2009,18 +2029,28 @@ public class WebContentsAccessibilityTest {
         Bundle bundle = new Bundle();
         bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
         bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 7);
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_SELECTION, bundle, () -> {
-            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-        }));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_SET_SELECTION,
+                        bundle,
+                        () -> {
+                            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+                        }));
 
         // Perform the "cut" action, and poll for clipboard to be non-null.
-        ClipboardManager clipboardManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                    CLIPBOARD_SERVICE);
-        });
-        Assert.assertTrue(performActionOnUiThread(
-                vvid, ACTION_CUT, null, () -> clipboardManager.getPrimaryClip() != null));
+        ClipboardManager clipboardManager =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return (ClipboardManager)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getSystemService(CLIPBOARD_SERVICE);
+                        });
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid, ACTION_CUT, null, () -> clipboardManager.getPrimaryClip() != null));
 
         // Send end of test signal and refresh input node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -2030,16 +2060,16 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(PERFORM_ACTION_ERROR, clipboardManager.getPrimaryClip());
         Assert.assertEquals(
                 PERFORM_ACTION_ERROR, 1, clipboardManager.getPrimaryClip().getItemCount());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, "st te",
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR,
+                "st te",
                 clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
 
         // Verify input node was changed by the cut action.
         Assert.assertEquals(PERFORM_ACTION_ERROR, "text", mNodeInfo.getText().toString());
     }
 
-    /**
-     * Test that the performAction for ACTION_COPY works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_COPY works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_copy() throws Throwable {
@@ -2055,18 +2085,28 @@ public class WebContentsAccessibilityTest {
         Bundle bundle = new Bundle();
         bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
         bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 7);
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_SELECTION, bundle, () -> {
-            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-        }));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_SET_SELECTION,
+                        bundle,
+                        () -> {
+                            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
+                                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
+                        }));
 
         // Perform the "copy" action, and poll for clipboard to be non-null.
-        ClipboardManager clipboardManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                    CLIPBOARD_SERVICE);
-        });
-        Assert.assertTrue(performActionOnUiThread(
-                vvid, ACTION_COPY, null, () -> clipboardManager.getPrimaryClip() != null));
+        ClipboardManager clipboardManager =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return (ClipboardManager)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getSystemService(CLIPBOARD_SERVICE);
+                        });
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid, ACTION_COPY, null, () -> clipboardManager.getPrimaryClip() != null));
 
         // Send end of test signal and refresh input node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -2076,16 +2116,16 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(PERFORM_ACTION_ERROR, clipboardManager.getPrimaryClip());
         Assert.assertEquals(
                 PERFORM_ACTION_ERROR, 1, clipboardManager.getPrimaryClip().getItemCount());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, "st te",
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR,
+                "st te",
                 clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
 
         // Verify input node was not changed by the copy action.
         Assert.assertEquals(PERFORM_ACTION_ERROR, "test text", mNodeInfo.getText().toString());
     }
 
-    /**
-     * Test that the performAction for ACTION_PASTE works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_PASTE works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_paste() throws Throwable {
@@ -2098,19 +2138,27 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
 
         // Add some ClipData to the ClipboardManager to paste.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                            CLIPBOARD_SERVICE);
-            clipboardManager.setPrimaryClip(ClipData.newPlainText("test text", "test text"));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ClipboardManager clipboardManager =
+                            (ClipboardManager)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getSystemService(CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(
+                            ClipData.newPlainText("test text", "test text"));
+                });
 
         // Focus the input field node.
         focusNode(vvid);
 
         // Perform a paste action and poll for the text to change.
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_PASTE, null,
-                () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_PASTE,
+                        null,
+                        () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty()));
 
         // Send end of test signal and update node info.
         mActivityTestRule.sendEndOfTestSignal();
@@ -2118,21 +2166,21 @@ public class WebContentsAccessibilityTest {
 
         // Verify text has not been removed from the clipboard.
         ClipboardManager clipboardManager =
-                (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                        CLIPBOARD_SERVICE);
+                (ClipboardManager)
+                        mActivityTestRule.getActivity().getSystemService(CLIPBOARD_SERVICE);
         Assert.assertNotNull(PERFORM_ACTION_ERROR, clipboardManager.getPrimaryClip());
         Assert.assertEquals(
                 PERFORM_ACTION_ERROR, 1, clipboardManager.getPrimaryClip().getItemCount());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, "test text",
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR,
+                "test text",
                 clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
 
         // Verify text has been properly pasted into the input field.
         Assert.assertEquals(PERFORM_ACTION_ERROR, "test text", mNodeInfo.getText().toString());
     }
 
-    /**
-     * Test that the performAction for ACTION_SET_SELECTION works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_setProgress() throws Throwable {
@@ -2151,10 +2199,16 @@ public class WebContentsAccessibilityTest {
 
         // Send a proper action and poll for update.
         bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, 20);
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle, () -> {
-            return Math.abs(createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent() - 20)
-                    < 0.01;
-        }));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_SET_PROGRESS,
+                        bundle,
+                        () -> {
+                            var current =
+                                    createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent();
+                            return Math.abs(current - 20) < 0.01;
+                        }));
 
         // Update node.
         mNodeInfo = createAccessibilityNodeInfo(vvid);
@@ -2166,10 +2220,16 @@ public class WebContentsAccessibilityTest {
 
         // Send action that exceeds max value to test clamping.
         bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, 55);
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle, () -> {
-            return Math.abs(createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent() - 50)
-                    < 0.01;
-        }));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_SET_PROGRESS,
+                        bundle,
+                        () -> {
+                            var current =
+                                    createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent();
+                            return Math.abs(current - 50) < 0.01;
+                        }));
 
         // Update node.
         mNodeInfo = createAccessibilityNodeInfo(vvid);
@@ -2181,10 +2241,16 @@ public class WebContentsAccessibilityTest {
 
         // Send action that is less than minimum value to test clamping.
         bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, -5);
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle, () -> {
-            return Math.abs(createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent() - 0)
-                    < 0.01;
-        }));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_SET_PROGRESS,
+                        bundle,
+                        () -> {
+                            var current =
+                                    createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent();
+                            return Math.abs(current - 0) < 0.01;
+                        }));
 
         // Update node.
         mNodeInfo = createAccessibilityNodeInfo(vvid);
@@ -2195,9 +2261,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getMax(), 0.01);
     }
 
-    /**
-     * Test that the performAction for ACTION_SET_SELECTION works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_nextHtmlElement() throws Throwable {
@@ -2225,8 +2289,12 @@ public class WebContentsAccessibilityTest {
 
         // Send a proper action and poll for update.
         bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "p");
-        Assert.assertTrue(performActionOnUiThread(vvid1, ACTION_NEXT_HTML_ELEMENT, bundle,
-                () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_NEXT_HTML_ELEMENT,
+                        bundle,
+                        () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
 
         // Send of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -2238,9 +2306,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
     }
 
-    /**
-     * Test that the performAction for ACTION_SET_SELECTION works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_previousHtmlElement() throws Throwable {
@@ -2268,8 +2334,12 @@ public class WebContentsAccessibilityTest {
 
         // Send a proper action and poll for update.
         bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "p");
-        Assert.assertTrue(performActionOnUiThread(vvid2, ACTION_PREVIOUS_HTML_ELEMENT, bundle,
-                () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid2,
+                        ACTION_PREVIOUS_HTML_ELEMENT,
+                        bundle,
+                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
 
         // Send of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
@@ -2299,8 +2369,12 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
 
         // Send an action and poll for update.
-        Assert.assertTrue(performActionOnUiThread(vvid1, ACTION_ACCESSIBILITY_FOCUS, null,
-                () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_ACCESSIBILITY_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
 
         // Update nodes and verify results.
         mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
@@ -2328,8 +2402,12 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
 
         // Send an action and poll for update.
-        Assert.assertTrue(performActionOnUiThread(vvid1, ACTION_ACCESSIBILITY_FOCUS, null,
-                () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_ACCESSIBILITY_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
 
         // Update nodes and verify results.
         mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
@@ -2338,8 +2416,12 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
 
         // Clear accessibility focus from the node and verify.
-        Assert.assertTrue(performActionOnUiThread(vvid1, ACTION_CLEAR_ACCESSIBILITY_FOCUS, null,
-                () -> !createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_CLEAR_ACCESSIBILITY_FOCUS,
+                        null,
+                        () -> !createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
 
         mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
         mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
@@ -2347,9 +2429,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
     }
 
-    /**
-     * Test that the performAction for ACTION_FOCUS works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_FOCUS works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_focus() throws Throwable {
@@ -2365,8 +2445,12 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
 
         // Send an action and poll for update.
-        Assert.assertTrue(performActionOnUiThread(
-                vvid1, ACTION_FOCUS, null, () -> createAccessibilityNodeInfo(vvid1).isFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(vvid1).isFocused()));
 
         // Update nodes and verify results.
         mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
@@ -2375,9 +2459,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
     }
 
-    /**
-     * Test that the performAction for ACTION_CLEAR_FOCUS works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_CLEAR_FOCUS works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_clearFocus() throws Throwable {
@@ -2393,8 +2475,12 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
 
         // Send an action and poll for update.
-        Assert.assertTrue(performActionOnUiThread(
-                vvid1, ACTION_FOCUS, null, () -> createAccessibilityNodeInfo(vvid1).isFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(vvid1).isFocused()));
 
         // Update nodes and verify results.
         mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
@@ -2403,8 +2489,12 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
 
         // Clear focus from the node and verify.
-        Assert.assertTrue(performActionOnUiThread(vvid1, ACTION_CLEAR_FOCUS, null,
-                () -> !createAccessibilityNodeInfo(vvid1).isFocused()));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_CLEAR_FOCUS,
+                        null,
+                        () -> !createAccessibilityNodeInfo(vvid1).isFocused()));
 
         mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
         mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
@@ -2412,9 +2502,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
     }
 
-    /**
-     * Test that the performAction for ACTION_SHOW_ON_SCREEN works properly with accessibility.
-     */
+    /** Test that the performAction for ACTION_SHOW_ON_SCREEN works properly with accessibility. */
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1294296")
@@ -2431,13 +2519,21 @@ public class WebContentsAccessibilityTest {
         mNodeInfo.getBoundsInScreen(originalBounds);
         Assert.assertTrue(BOUNDING_BOX_ERROR, originalBounds.top > 0);
         Assert.assertTrue(BOUNDING_BOX_ERROR, originalBounds.bottom > 0);
-        Assert.assertTrue(OFFSCREEN_BUNDLE_EXTRA_ERROR,
+        Assert.assertTrue(
+                OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
 
         // Send an action and poll for update.
-        Assert.assertTrue(performActionOnUiThread(vvid, ACTION_SHOW_ON_SCREEN, null, () -> {
-            return !createAccessibilityNodeInfo(vvid).getExtras().containsKey(EXTRAS_KEY_OFFSCREEN);
-        }));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_SHOW_ON_SCREEN,
+                        null,
+                        () -> {
+                            return !createAccessibilityNodeInfo(vvid)
+                                    .getExtras()
+                                    .containsKey(EXTRAS_KEY_OFFSCREEN);
+                        }));
         mNodeInfo = createAccessibilityNodeInfo(vvid);
         Rect updatedBounds = new Rect(-1, -1, -1, -1);
         mNodeInfo.getBoundsInScreen(updatedBounds);
@@ -2445,7 +2541,8 @@ public class WebContentsAccessibilityTest {
         // Verify the bounds have decreased (moved up), and the offscreen extra has been removed.
         Assert.assertTrue(BOUNDING_BOX_ERROR, originalBounds.top > updatedBounds.top);
         Assert.assertTrue(BOUNDING_BOX_ERROR, originalBounds.bottom > updatedBounds.bottom);
-        Assert.assertFalse(OFFSCREEN_BUNDLE_EXTRA_ERROR,
+        Assert.assertFalse(
+                OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
     }
 
@@ -2463,8 +2560,11 @@ public class WebContentsAccessibilityTest {
     }
 
     private String lowThresholdError(int count) {
-        return THRESHOLD_LOW_EVENT_COUNT_ERROR + " Received " + count
-                + ", but expected at least: " + UNSUPPRESSED_EXPECTED_COUNT;
+        return THRESHOLD_LOW_EVENT_COUNT_ERROR
+                + " Received "
+                + count
+                + ", but expected at least: "
+                + UNSUPPRESSED_EXPECTED_COUNT;
     }
 
     /**

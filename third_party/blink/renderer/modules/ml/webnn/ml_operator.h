@@ -21,6 +21,10 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  public:
   enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
+    kArgMin,
+    kArgMax,
+    kBatchNormalization,
+    kCast,
     kClamp,
     kConcat,
     kConv2d,
@@ -29,31 +33,67 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kSub,
     kMul,
     kDiv,
+    kMin,
+    kMax,
+    kPow,
+    kEqual,
+    kGreater,
+    kGreaterOrEqual,
+    kLesser,
+    kLesserOrEqual,
     kAbs,
     kCeil,
+    kCos,
+    kExp,
     kFloor,
+    kLog,
     kNeg,
+    kSin,
+    kTan,
+    kErf,
+    kIdentity,
+    kLogicalNot,
+    kReciprocal,
+    kSqrt,
+    kInstanceNormalization,
+    kLayerNormalization,
     kLeakyRelu,
-    kMax,
-    kMin,
+    kLinear,
+    kLstm,
     kElu,
+    kExpand,
+    kGather,
     kGemm,
+    kHardSigmoid,
     kHardSwish,
     kAveragePool2d,
+    kL2Pool2d,
+    kMatmul,
     kMaxPool2d,
     kPad,
     kPRelu,
+    kReduceL1,
+    kReduceL2,
+    kReduceLogSum,
+    kReduceLogSumExp,
+    kReduceMax,
     kReduceMean,
+    kReduceMin,
+    kReduceProduct,
     kReduceSum,
+    kReduceSumSquare,
     kRelu,
     kReshape,
     kResample2d,
     kSigmoid,
     kSlice,
     kSoftmax,
+    kSoftplus,
+    kSoftsign,
     kSplit,
     kTanh,
-    kTranspose
+    kTranspose,
+    kWhere
   };
 
   static String OperatorKindToString(MLOperator::OperatorKind kind);
@@ -77,7 +117,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   MLOperator(const MLOperator&) = delete;
   MLOperator& operator=(const MLOperator&) = delete;
 
-  ~MLOperator();
+  virtual ~MLOperator();
 
   void Trace(Visitor* visitor) const;
 
@@ -117,12 +157,32 @@ class MODULES_EXPORT MLConcatOperator : public MLOperator {
   MLConcatOperator(const MLConcatOperator&) = delete;
   MLConcatOperator& operator=(const MLConcatOperator&) = delete;
 
-  ~MLConcatOperator();
+  ~MLConcatOperator() override;
 
   uint32_t Axis() const;
 
  private:
   uint32_t axis_;
+};
+
+class MODULES_EXPORT MLLstmOperator : public MLOperator {
+ public:
+  MLLstmOperator(MLGraphBuilder* builder,
+                 const uint32_t steps,
+                 const uint32_t hidden_size,
+                 const bindings::DictionaryBase* options = nullptr);
+
+  MLLstmOperator(const MLLstmOperator&) = delete;
+  MLLstmOperator& operator=(const MLLstmOperator&) = delete;
+
+  ~MLLstmOperator() override;
+
+  uint32_t steps() const;
+  uint32_t hidden_size() const;
+
+ private:
+  uint32_t steps_;
+  uint32_t hidden_size_;
 };
 
 class MODULES_EXPORT MLPadOperator : public MLOperator {
@@ -135,7 +195,7 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
   MLPadOperator(const MLPadOperator&) = delete;
   MLPadOperator& operator=(const MLPadOperator&) = delete;
 
-  ~MLPadOperator();
+  ~MLPadOperator() override;
 
   const Vector<uint32_t>& BeginningPadding() const;
   const Vector<uint32_t>& EndingPadding() const;
@@ -154,7 +214,7 @@ class MODULES_EXPORT MLSliceOperator : public MLOperator {
   MLSliceOperator(const MLSliceOperator&) = delete;
   MLSliceOperator& operator=(const MLSliceOperator&) = delete;
 
-  ~MLSliceOperator();
+  ~MLSliceOperator() override;
 
   const Vector<uint32_t>& Starts() const;
   const Vector<uint32_t>& Sizes() const;
@@ -176,7 +236,7 @@ class MODULES_EXPORT MLSplitOperator : public MLOperator {
   MLSplitOperator(const MLSplitOperator&) = delete;
   MLSplitOperator& operator=(const MLSplitOperator&) = delete;
 
-  ~MLSplitOperator();
+  ~MLSplitOperator() override;
 
   bool IsEvenSplit() const;
   uint32_t SplitNumber() const;

@@ -17,9 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Test that verifies preconditions for tests to run.
- */
+/** Test that verifies preconditions for tests to run. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ContentShellPreconditionsTest {
     @Test
@@ -27,8 +25,10 @@ public class ContentShellPreconditionsTest {
     @MediumTest
     @Feature({"TestInfrastructure"})
     public void testScreenIsOn() {
-        PowerManager pm = (PowerManager) InstrumentationRegistry.getContext().getSystemService(
-                Context.POWER_SERVICE);
+        PowerManager pm =
+                (PowerManager)
+                        InstrumentationRegistry.getContext()
+                                .getSystemService(Context.POWER_SERVICE);
 
         Assert.assertTrue("Many tests will fail if the screen is not on.", pm.isInteractive());
     }

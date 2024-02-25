@@ -223,7 +223,7 @@ nearby_share::mojom::TransferMetadataPtr TransferMetadata::ToMojo() const {
 
 TransferMetadata::TransferMetadata(Status status,
                                    float progress,
-                                   absl::optional<std::string> token,
+                                   std::optional<std::string> token,
                                    bool is_original,
                                    bool is_final_status)
     : status_(status),

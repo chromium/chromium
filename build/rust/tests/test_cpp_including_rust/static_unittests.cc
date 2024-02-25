@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
-#include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_bitmap.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,4 +28,8 @@ TEST(RustStaticTest, RustComponentUsesPartitionAlloc) {
             partition_alloc::IsManagedByPartitionAlloc(
                 reinterpret_cast<uintptr_t>(cpp_allocated_int.get())));
   rust::Box<SomeStruct>::from_raw(rust_allocated_ptr);
+}
+
+TEST(RustStaticTest, AllocAligned) {
+  alloc_aligned();
 }

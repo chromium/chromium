@@ -1,0 +1,12 @@
+include_rules = [
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/sessions",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^favicon_loader.mm": [
+    "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
+  ],
+}
+

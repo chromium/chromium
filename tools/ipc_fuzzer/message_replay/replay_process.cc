@@ -109,7 +109,7 @@ bool ReplayProcess::Initialize(int argc, const char** argv) {
   }
 
   // Log to both stderr and file destinations.
-  logging::SetMinLogLevel(logging::LOG_ERROR);
+  logging::SetMinLogLevel(logging::LOGGING_ERROR);
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_ALL;
   settings.log_file_path = FILE_PATH_LITERAL("ipc_replay.log");
@@ -165,7 +165,7 @@ bool ReplayProcess::OpenTestcase() {
 
 void ReplayProcess::SendNextMessage() {
   if (message_index_ >= messages_.size()) {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    loop_.QuitWhenIdle();
     return;
   }
 
@@ -175,7 +175,7 @@ void ReplayProcess::SendNextMessage() {
   if (!channel_->Send(message.release())) {
     LOG(ERROR) << "ChannelProxy::Send() failed after "
                << message_index_ << " messages";
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    loop_.QuitWhenIdle();
   }
 }
 
@@ -184,7 +184,7 @@ void ReplayProcess::Run() {
   timer.Start(FROM_HERE, base::Milliseconds(1),
               base::BindRepeating(&ReplayProcess::SendNextMessage,
                                   base::Unretained(this)));
-  base::RunLoop().Run();
+  loop_.Run();
 }
 
 bool ReplayProcess::OnMessageReceived(const IPC::Message& msg) {
@@ -194,7 +194,7 @@ bool ReplayProcess::OnMessageReceived(const IPC::Message& msg) {
 void ReplayProcess::OnChannelError() {
   LOG(ERROR) << "Channel error, quitting after "
              << message_index_ << " messages";
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  loop_.QuitWhenIdle();
 }
 
 }  // namespace ipc_fuzzer

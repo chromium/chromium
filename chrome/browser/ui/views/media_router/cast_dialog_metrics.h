@@ -40,22 +40,8 @@ class CastDialogMetrics {
   // is called when the list of sinks becomes non-empty.
   void OnSinksLoaded(const base::Time& sinks_load_time);
 
-  // Records the time it took to paint when called for the first time.
-  void OnPaint(const base::Time& paint_time);
-
-  // Records the index of the selected sink in the sink list. Also records how
-  // long it took to start casting if no other action (aside from selecting a
-  // sink) was taken prior to that.
-  void OnStartCasting(const base::Time& start_time,
-                      int selected_sink_index,
-                      MediaCastMode cast_mode,
-                      SinkIconType icon_type);
-
-  void OnStopCasting(bool is_local_route);
-
-  // Records the time it took to close the dialog, if no other action was taken
-  // prior to that after opening the dialog.
-  void OnCloseDialog(const base::Time& close_time);
+  // Records the cast mode and the sink type for a session that was started.
+  void OnStartCasting(MediaCastMode cast_mode, SinkIconType icon_type);
 
   // Records the number of sinks, which may be 0.
   void OnRecordSinkCount(
@@ -70,19 +56,12 @@ class CastDialogMetrics {
   // The time when the dialog UI started initializing.
   base::Time initialization_time_;
 
-  // The time when the dialog was painted.
-  base::Time paint_time_;
-
   // The time when a non-empty list of sinks was loaded.
   base::Time sinks_load_time_;
 
   MediaRouterDialogActivationLocation const activation_location_;
 
   bool const is_icon_pinned_;
-
-  // Whether we have already recorded the first user action taken in this dialog
-  // instance.
-  bool first_action_recorded_ = false;
 
   bool activation_location_and_cast_mode_recorded_ = false;
 };

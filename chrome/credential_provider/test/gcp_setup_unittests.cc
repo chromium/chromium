@@ -22,9 +22,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/test/scoped_path_override.h"
@@ -280,7 +280,7 @@ void GcpSetupTest::ExpectCredentialProviderToBeRegistered(
 
   // Make sure COM object is registered.
   std::wstring register_key_path =
-      base::StringPrintf(L"CLSID\\%ls\\InprocServer32", guid_string.c_str());
+      base::StrCat({L"CLSID\\", guid_string, L"\\InprocServer32"});
   base::win::RegKey clsid_key(HKEY_CLASSES_ROOT, register_key_path.c_str(),
                               KEY_READ);
   EXPECT_EQ(registered, clsid_key.Valid());
@@ -293,10 +293,10 @@ void GcpSetupTest::ExpectCredentialProviderToBeRegistered(
     EXPECT_EQ(path.value(), value);
   }
 
-  std::wstring cp_key_path = base::StringPrintf(
-      L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
-      L"Authentication\\Credential Providers\\%ls",
-      guid_string.c_str());
+  std::wstring cp_key_path =
+      L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\"
+      L"Credential Providers\\" +
+      guid_string;
 
   // Make sure credential provider is registered.
   base::win::RegKey cp_key(HKEY_LOCAL_MACHINE, cp_key_path.c_str(), KEY_READ);

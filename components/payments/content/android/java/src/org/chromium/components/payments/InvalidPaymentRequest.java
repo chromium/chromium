@@ -23,8 +23,11 @@ public final class InvalidPaymentRequest implements PaymentRequest {
     private PaymentRequestClient mClient;
 
     @Override
-    public void init(PaymentRequestClient client, PaymentMethodData[] unusedMethodData,
-            PaymentDetails unusedDetails, PaymentOptions unusedOptions) {
+    public void init(
+            PaymentRequestClient client,
+            PaymentMethodData[] unusedMethodData,
+            PaymentDetails unusedDetails,
+            PaymentOptions unusedOptions) {
         mClient = client;
     }
 

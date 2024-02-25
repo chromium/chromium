@@ -124,9 +124,4 @@ void PasswordsPrivateEventRouter::OnPasswordManagerAuthTimeout() {
       api::passwords_private::OnPasswordManagerAuthTimeout::Create()));
 }
 
-PasswordsPrivateEventRouter* PasswordsPrivateEventRouter::Create(
-    content::BrowserContext* context) {
-  return new PasswordsPrivateEventRouter(context);
-}
-
 }  // namespace extensions

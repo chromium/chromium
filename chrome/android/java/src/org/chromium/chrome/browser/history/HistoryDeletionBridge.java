@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.history;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 
 /** The JNI bridge for Android to receive notifications about history deletions. */
 public class HistoryDeletionBridge {
@@ -17,7 +18,9 @@ public class HistoryDeletionBridge {
      * Allows derived class to listen to history deletions that pass through this bridge. The
      * HistoryDeletionInfo passed as a parameter is only valid for the duration of the method.
      */
-    public interface Observer { void onURLsDeleted(HistoryDeletionInfo historyDeletionInfo); }
+    public interface Observer {
+        void onURLsDeleted(HistoryDeletionInfo historyDeletionInfo);
+    }
 
     private static HistoryDeletionBridge sInstance;
 

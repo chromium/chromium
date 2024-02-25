@@ -331,7 +331,7 @@ TEST_F(VisiblePositionTest, TextCombine) {
   EXPECT_EQ(Position(text_a, 1),
             CreateVisiblePosition(Position(text_a, 1)).DeepEquivalent());
 
-  if (text_01234.GetLayoutObject()->Parent()->IsLayoutNGTextCombine()) {
+  if (text_01234.GetLayoutObject()->Parent()->IsLayoutTextCombine()) {
     EXPECT_EQ(Position(text_01234, 0),
               CreateVisiblePosition(Position(text_01234, 0)).DeepEquivalent());
   } else {
@@ -349,7 +349,7 @@ TEST_F(VisiblePositionTest, TextCombine) {
   EXPECT_EQ(Position(text_01234, 5),
             CreateVisiblePosition(Position(text_01234, 5)).DeepEquivalent());
 
-  if (text_01234.GetLayoutObject()->Parent()->IsLayoutNGTextCombine()) {
+  if (text_01234.GetLayoutObject()->Parent()->IsLayoutTextCombine()) {
     EXPECT_EQ(Position(text_b, 0),
               CreateVisiblePosition(Position(text_b, 0)).DeepEquivalent());
   } else {

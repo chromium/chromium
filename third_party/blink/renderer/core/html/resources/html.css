@@ -108,7 +108,6 @@ center {
 hr {
     display: block;
     overflow: hidden;
-    unicode-bidi: isolate;
     margin-block-start: 0.5em;
     margin-block-end: 0.5em;
     margin-inline-start: auto;
@@ -156,7 +155,7 @@ video, canvas, img {
   overflow-clip-margin: content-box;
 }
 
-iframe, embed, object, fencedframe, portal {
+iframe, embed, object, fencedframe {
    overflow: clip !important;
    overflow-clip-margin: content-box !important;
 }
@@ -434,10 +433,10 @@ input, textarea, select, button {
 
 textarea {
   appearance: auto;
-  border: 1px solid -internal-light-dark(#767676, #858585);
+  border: 1px solid light-dark(#767676, #858585);
   column-count: initial !important;
   -webkit-rtl-ordering: logical;
-  resize: auto;
+  resize: -internal-textarea-auto;
   cursor: text;
   padding: 2px;
   white-space: pre-wrap;
@@ -449,7 +448,7 @@ textarea {
 input {
     appearance: auto;
     padding:1px 0;
-    border: 2px inset -internal-light-dark(#767676, #858585);
+    border: 2px inset light-dark(#767676, #858585);
     -webkit-rtl-ordering: logical;
     cursor: text;
     background-color: Field;
@@ -522,6 +521,10 @@ input[type="url" i] {
   padding-inline: 2px;
 }
 
+input[type="tel" i] {
+  direction: ltr;
+}
+
 input::-webkit-inner-spin-button {
     appearance: auto;
     display: inline-block;
@@ -592,6 +595,12 @@ input[type="password" i]::-internal-input-suggested.reveal-password {
     -webkit-text-security: none;
 }
 
+input[type="password" i]::-internal-input-suggested.fade-out-password {
+    width: fit-content;
+    -webkit-mask: linear-gradient(to right, #000 50%, #0000);
+    mask: linear-gradient(to right, #000 50%, #0000);
+}
+
 input[type="password" i]::-internal-reveal {
   width: 1.3em;
   height: 1.3em;
@@ -615,6 +624,12 @@ input[type="password" i]::-internal-reveal:focus {
   cursor: pointer;
 }
 
+input[type="password" i]::-internal-strong {
+  color: light-dark(#0B57D0, #A8C7FA);
+  font-family: roboto;
+  -webkit-text-security: none;
+}
+
 input[type="hidden" i], input[type="image" i], input[type="file" i] {
     appearance: none;
     padding: initial;
@@ -634,20 +649,6 @@ input[type="file" i] {
 
 input[type="image" i] {
     cursor: pointer;
-}
-
-/* TODO(crbug.com/880258): Use different styles for
-  `-internal-autofill-previewed` and `-internal-autofill-selected`. */
-input:-internal-autofill-previewed,
-input:-internal-autofill-selected,
-textarea:-internal-autofill-previewed,
-textarea:-internal-autofill-selected,
-select:-internal-autofill-previewed,
-select:-internal-autofill-selected {
-  appearance: menulist-button;
-  background-image:none !important;
-  background-color: -internal-light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
-  color: FieldText !important;
 }
 
 input[type="radio" i],
@@ -710,7 +711,7 @@ input[type="range" i] {
     border: initial;
     margin: 2px;
     cursor: default;
-    color: -internal-light-dark(#101010, #ffffff);
+    color: light-dark(#101010, #ffffff);
 }
 
 input[type="range" i]::-webkit-slider-container,
@@ -759,16 +760,9 @@ input[type="reset" i]:disabled,
 input[type="color" i]:disabled,
 input[type="file" i]:disabled::-webkit-file-upload-button,
 button:disabled {
-  background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
-  border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
-  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
-}
-
-select:disabled,
-optgroup:disabled,
-option:disabled,
-select[disabled]>option {
-    color: -internal-light-dark(GrayText, #aaa);
+  background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
+  border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
 }
 
 input[type="button" i]:active, input[type="submit" i]:active, input[type="reset" i]:active, input[type="file" i]:active::-webkit-file-upload-button, button:active {
@@ -781,18 +775,12 @@ input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, 
 
 input:disabled, textarea:disabled {
     cursor: default;
-    background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
-    color: -internal-light-dark(#545454, #aaaaaa);
-}
-
-input:disabled,
-select:disabled,
-textarea:disabled {
-  border-color: rgba(118, 118, 118, 0.3);
+    background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+    color: light-dark(#545454, #aaaaaa);
 }
 
 option:-internal-spatial-navigation-focus {
-    outline: -internal-light-dark(black, white) dashed 1px;
+    outline: light-dark(black, white) dashed 1px;
     outline-offset: -1px;
 }
 
@@ -804,6 +792,9 @@ area {
 base, basefont, datalist, head, link, meta, noembed,
 noframes, param, rp, script, style, template, title {
   display: none;
+}
+select:-internal-select-author-datalist > datalist:popover-open {
+  display: block;
 }
 input[type="hidden" i] {
   display: none !important;
@@ -913,7 +904,15 @@ input[readonly]::-webkit-calendar-picker-indicator {
     visibility: hidden;
 }
 
-select {
+/* Form controls that measure the inline size without doing actual layout
+   need to disable `text-autospace`, if their content can be affected by
+   the property. crbug.com/1484863 */
+input[type="date" i], input[type="datetime-local" i], input[type="month" i],
+input[type="week" i], select {
+    text-autospace: no-autospace !important;
+}
+
+select:not(:-internal-select-author-button) {
     appearance: auto;
     box-sizing: border-box;
     align-items: center;
@@ -921,9 +920,93 @@ select {
     -webkit-rtl-ordering: logical;
     color: FieldText;
     background-color: Field;
-    border: 1px solid -internal-light-dark(#767676, #858585);
+    border: 1px solid light-dark(#767676, #858585);
     cursor: default;
     border-radius: 0;
+}
+
+select:-internal-select-author-datalist > datalist {
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  box-sizing: border-box;
+  overflow: auto;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25em;
+  padding: 0.25em 0;
+  background-color: Field;
+  margin: 0;
+  inset: auto;
+  min-inline-size: anchor-size(self-inline);
+  min-block-size: 1lh;
+  position-fallback: -internal-select-datalist-default-fallbacks;
+}
+
+/* TODO(crbug.com/40279608): Use automatic fallbacks */
+@position-fallback -internal-select-datalist-default-fallbacks {
+  /* Fallbacks without vertical scrolling */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-inline-start: anchor(self-start);
+  }
+  /* Reverse block axis */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-start: anchor(self-start);
+  }
+  /* Reverse inline axis */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-inline-end: anchor(self-end);
+  }
+  /* Reverse both axes */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-end: anchor(self-end);
+  }
+
+  /* Fallbacks with vertical scrolling */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-inline-start: anchor(self-start);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse block axis */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-start: anchor(self-start);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse inline axis */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-inline-end: anchor(self-end);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse both axes */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-end: anchor(self-end);
+    block-size: -webkit-fill-available;
+  }
+}
+
+/* This is a copy of the [popover] styles. It may be combined after
+ * removing the StylableSelect flag. */
+select:-internal-select-author-datalist > datalist {
+  position: fixed;
+  width: fit-content;
+  height: fit-content;
+  color: CanvasText;
+}
+select:-internal-select-author-datalist > datalist:popover-open {
+  overlay: auto !important;
+}
+select:-internal-select-author-datalist > datalist:-internal-popover-in-top-layer::backdrop {
+  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
+  position: fixed;
+  inset: 0;
+  /* Specific to [popover]: */
+  pointer-events: none !important;
+  background-color: transparent;
 }
 
 select:disabled {
@@ -978,14 +1061,14 @@ select:-internal-list-box:focus option:checked:disabled {
 /* option selected, list-box not focused */
 select:-internal-list-box option:checked,
 select:-internal-list-box option:checked:hover {
-    background-color: -internal-light-dark(#cecece, #545454);
-    color: -internal-light-dark(#101010, #FFFFFF);
+    background-color: light-dark(#cecece, #545454);
+    color: light-dark(#101010, #FFFFFF);
 }
 
 select:-internal-list-box:disabled option:checked,
 select:-internal-list-box option:checked:disabled,
 select:-internal-list-box option:checked:disabled:hover {
-    color: -internal-light-dark(gray, #aaa);
+    color: light-dark(gray, #aaa);
 }
 
 select:-internal-list-box hr {
@@ -1014,6 +1097,36 @@ option {
     padding: 0 2px 1px 2px;
     white-space: nowrap;
     min-height: 1.2em;
+}
+
+/* The following select style rules have to go after the other
+   select styles in order to have higher precedence. */
+
+/* TODO(crbug.com/880258): Use different styles for
+  `-internal-autofill-previewed` and `-internal-autofill-selected`. */
+input:-internal-autofill-previewed,
+input:-internal-autofill-selected,
+textarea:-internal-autofill-previewed,
+textarea:-internal-autofill-selected,
+select:-internal-autofill-previewed,
+select:-internal-autofill-selected {
+  appearance: menulist-button;
+  background-image:none !important;
+  background-color: light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
+  color: FieldText !important;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  border-color: rgba(118, 118, 118, 0.3);
+}
+
+select:disabled,
+optgroup:disabled,
+option:disabled,
+select[disabled]>option {
+    color: light-dark(GrayText, #aaa);
 }
 
 output {
@@ -1055,8 +1168,8 @@ meter::-webkit-meter-bar {
     block-size: 100%;
     inline-size: 100%;
     -webkit-user-modify: read-only !important;
-    background: -internal-light-dark(#efefef, #3B3B3B);
-    border: thin solid -internal-light-dark(rgba(118, 118, 118, 0.3), #858585);
+    background: light-dark(#efefef, #3B3B3B);
+    border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
     grid-row-start: line1;
     grid-row-end: line2;
     border-radius: 20px;
@@ -1070,21 +1183,21 @@ meter::-webkit-meter-optimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: -internal-light-dark(#107c10, #74b374)
+    background: light-dark(#107c10, #74b374)
 }
 
 meter::-webkit-meter-suboptimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: -internal-light-dark(#ffb900, #f2c812)
+    background: light-dark(#ffb900, #f2c812)
 }
 
 meter::-webkit-meter-even-less-good-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: -internal-light-dark(#d83b01, #e98f6d)
+    background: light-dark(#d83b01, #e98f6d)
 }
 
 /* progress */
@@ -1187,11 +1300,6 @@ nobr {
     outline: Highlight 3px solid;
 }
 
-:-internal-spatial-navigation-interest {
-    outline: auto 1px -webkit-focus-ring-color !important;
-    box-shadow: none !important
-}
-
 :focus-visible {
     outline: auto 1px -webkit-focus-ring-color
 }
@@ -1228,7 +1336,7 @@ input[type="date" i]::-webkit-calendar-picker-indicator,
 input[type="datetime-local" i]::-webkit-calendar-picker-indicator,
 input[type="month" i]::-webkit-calendar-picker-indicator,
 input[type="week" i]::-webkit-calendar-picker-indicator {
-  background-image: -internal-light-dark(url(images/calendar_icon.svg), url(images/calendar_icon_white.svg));
+  background-image: light-dark(url(images/calendar_icon.svg), url(images/calendar_icon_white.svg));
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
@@ -1248,7 +1356,7 @@ input[type="week" i]::-webkit-calendar-picker-indicator:focus-visible {
 }
 
 input[type="time" i]::-webkit-calendar-picker-indicator {
-  background-image: -internal-light-dark(url(images/time_icon.svg), url(images/time_icon_white.svg));
+  background-image: light-dark(url(images/time_icon.svg), url(images/time_icon_white.svg));
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
@@ -1280,8 +1388,8 @@ input::-webkit-datetime-edit-month-field:focus,
 input::-webkit-datetime-edit-second-field:focus,
 input::-webkit-datetime-edit-week-field:focus,
 input::-webkit-datetime-edit-year-field:focus {
-    background-color: -internal-light-dark(highlight, #99C8FF);
-    color: -internal-light-dark(highlighttext, #000000);
+    background-color: light-dark(highlight, #99C8FF);
+    color: light-dark(highlighttext, #000000);
     outline: none;
 }
 
@@ -1294,7 +1402,7 @@ input::-webkit-datetime-edit-hour-field[disabled],
 input::-webkit-datetime-edit-millisecond-field[disabled],
 input::-webkit-datetime-edit-minute-field[disabled],
 input::-webkit-datetime-edit-second-field[disabled] {
-    color: -internal-light-dark(GrayText, rgb(165, 165, 165));
+    color: light-dark(GrayText, rgb(165, 165, 165));
 }
 
 a:-webkit-any-link {
@@ -1321,13 +1429,17 @@ ruby, rt {
     text-indent: 0; /* blocks used for ruby rendering should not trigger this */
 }
 
+ruby {
+    display: ruby;
+}
+
 rt {
     line-height: normal;
     text-emphasis: none;
 }
 
 ruby > rt {
-    display: block;
+    display: ruby-text;
     font-size: 50%;
     text-align: start;
 }
@@ -1379,14 +1491,20 @@ details[open] > summary:first-of-type {
     list-style-type: disclosure-open;
 }
 
-bdi, output {
+/* https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering */
+/* This chunk of styles interacts with the `name == html_names::kDirAttr` case
+   in HTMLElement::CollectStyleForPresentationAttribute(). Make sure any changes
+   here are congruent with changes made there. */
+address, blockquote, center, div, figure, figcaption, footer, form, header, hr,
+legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2,
+h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col,
+thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi,
+output, [dir=ltr i], [dir=rtl i], [dir=auto i] {
     unicode-bidi: isolate;
 }
-
-bdo {
-    unicode-bidi: bidi-override;
+bdo, bdo[dir] {
+    unicode-bidi: isolate-override;
 }
-
 textarea[dir=auto i] {
     unicode-bidi: plaintext;
 }

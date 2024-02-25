@@ -36,7 +36,7 @@ class RTCCertificateGeneratorRequest
 
   void GenerateCertificateAsync(
       const rtc::KeyParams& key_params,
-      const absl::optional<uint64_t>& expires_ms,
+      const std::optional<uint64_t>& expires_ms,
       blink::RTCCertificateCallback completion_callback) {
     DCHECK(main_thread_->BelongsToCurrentThread());
     DCHECK(completion_callback);
@@ -54,7 +54,7 @@ class RTCCertificateGeneratorRequest
 
   void GenerateCertificateOnWorkerThread(
       const rtc::KeyParams key_params,
-      const absl::optional<uint64_t> expires_ms,
+      const std::optional<uint64_t> expires_ms,
       blink::RTCCertificateCallback completion_callback) {
     DCHECK(worker_thread_->BelongsToCurrentThread());
 
@@ -84,7 +84,7 @@ class RTCCertificateGeneratorRequest
 
 void GenerateCertificateWithOptionalExpiration(
     const rtc::KeyParams& key_params,
-    const absl::optional<uint64_t>& expires_ms,
+    const std::optional<uint64_t>& expires_ms,
     blink::RTCCertificateCallback completion_callback,
     ExecutionContext& context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -115,7 +115,7 @@ void RTCCertificateGenerator::GenerateCertificate(
     blink::RTCCertificateCallback completion_callback,
     ExecutionContext& context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  GenerateCertificateWithOptionalExpiration(key_params, absl::nullopt,
+  GenerateCertificateWithOptionalExpiration(key_params, std::nullopt,
                                             std::move(completion_callback),
                                             context, task_runner);
 }

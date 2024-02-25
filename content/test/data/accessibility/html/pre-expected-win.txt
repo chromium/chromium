@@ -1,5 +1,5 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_PARAGRAPH
+++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_STATICTEXT name='This test is to check   pre<newline>formatting.'
 ++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_STATICTEXT name='This test is to check   pre<newline>formatting'

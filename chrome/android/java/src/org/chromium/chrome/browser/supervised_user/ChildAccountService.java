@@ -9,9 +9,10 @@ import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -31,17 +32,25 @@ public class ChildAccountService {
         ThreadUtils.assertOnUiThread();
         final Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                ChildAccountServiceJni.get().onReauthenticationFailed(nativeOnFailureCallback);
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        ChildAccountServiceJni.get()
+                                .onReauthenticationFailed(nativeOnFailureCallback);
+                    });
             return;
         }
         Account account = AccountUtils.createAccountFromName(accountName);
-        AccountManagerFacadeProvider.getInstance().updateCredentials(account, activity, success -> {
-            if (!success) {
-                ChildAccountServiceJni.get().onReauthenticationFailed(nativeOnFailureCallback);
-            }
-        });
+        AccountManagerFacadeProvider.getInstance()
+                .updateCredentials(
+                        account,
+                        activity,
+                        success -> {
+                            if (!success) {
+                                ChildAccountServiceJni.get()
+                                        .onReauthenticationFailed(nativeOnFailureCallback);
+                            }
+                        });
     }
 
     @NativeMethods

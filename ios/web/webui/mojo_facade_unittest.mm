@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -83,7 +84,7 @@ class FakeWebFrameWithMojoFacade : public FakeWebFrameImpl {
 
  private:
   int watch_id_;
-  MojoFacade* facade_;  // weak
+  raw_ptr<MojoFacade> facade_;  // weak
 };
 
 }  // namespace
@@ -137,8 +138,8 @@ class MojoFacadeTest : public WebTest {
 
  private:
   FakeWebStateWithInterfaceBinder web_state_;
-  web::FakeWebFramesManager* frames_manager_;
-  FakeWebFrameWithMojoFacade* main_frame_;
+  raw_ptr<web::FakeWebFramesManager> frames_manager_;
+  raw_ptr<FakeWebFrameWithMojoFacade> main_frame_;
   std::unique_ptr<MojoFacade> facade_;
 };
 

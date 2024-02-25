@@ -60,7 +60,7 @@ class EventsMetricsManagerTest : public testing::Test {
     test_tick_clock_.Advance(base::Microseconds(10));
     return EventMetrics::CreateForTesting(type, event_time,
                                           arrived_in_browser_main_timestamp,
-                                          &test_tick_clock_, absl::nullopt);
+                                          &test_tick_clock_, std::nullopt);
   }
 
   EventsMetricsManager manager_;

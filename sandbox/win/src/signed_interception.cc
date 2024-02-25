@@ -18,6 +18,9 @@
 
 namespace sandbox {
 
+// Note that this shim may be called before the heap is available, we must get
+// as far as |QueryBroker| without using the heap, for example when AppVerifier
+// is enabled.
 NTSTATUS WINAPI
 TargetNtCreateSection(NtCreateSectionFunction orig_CreateSection,
                       PHANDLE section_handle,
@@ -48,15 +51,25 @@ TargetNtCreateSection(NtCreateSectionFunction orig_CreateSection,
     if (!memory)
       break;
 
-    std::unique_ptr<wchar_t, NtAllocDeleter> path;
+    // As mentioned at the top of the function, we need to use the stack here
+    // because the heap may not be available.
+    constexpr ULONG path_buffer_size =
+        (MAX_PATH * sizeof(wchar_t)) + sizeof(OBJECT_NAME_INFORMATION);
+    // Avoid memset inserted by -ftrivial-auto-var-init=pattern.
+    STACK_UNINITIALIZED char path_buffer[path_buffer_size];
+    OBJECT_NAME_INFORMATION* path =
+        reinterpret_cast<OBJECT_NAME_INFORMATION*>(path_buffer);
+    ULONG out_buffer_size = 0;
+    NTSTATUS status =
+        GetNtExports()->QueryObject(file_handle, ObjectNameInformation, path,
+                                    path_buffer_size, &out_buffer_size);
 
-    if (!NtGetPathFromHandle(file_handle, &path))
+    if (!NT_SUCCESS(status)) {
       break;
-
-    const wchar_t* const_name = path.get();
+    }
 
     CountedParameterSet<NameBased> params;
-    params[NameBased::NAME] = ParamPickerMake(const_name);
+    params[NameBased::NAME] = ParamPickerMake(path->ObjectName.Buffer);
 
     // Check if this will be sent to the broker.
     if (!QueryBroker(IpcTag::NTCREATESECTION, params.GetBase()))
@@ -65,7 +78,10 @@ TargetNtCreateSection(NtCreateSectionFunction orig_CreateSection,
     if (!ValidParameter(section_handle, sizeof(HANDLE), WRITE))
       break;
 
-    CrossCallReturn answer = {0};
+    // Avoid memset inserted by -ftrivial-auto-var-init=pattern on debug builds.
+    STACK_UNINITIALIZED CrossCallReturn answer;
+    Memset(&answer, 0, sizeof(answer));
+
     answer.nt_status = STATUS_INVALID_IMAGE_HASH;
     SharedMemIPCClient ipc(memory);
     ResultCode code =

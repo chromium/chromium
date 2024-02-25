@@ -42,19 +42,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Test suite for the SplitCompatEngine class.
- */
+/** Test suite for the SplitCompatEngine class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SplitCompatEngineTest {
-    @Mock
-    private Logger mLogger;
-    @Mock
-    private SplitInstallManager mManager;
-    @Mock
-    private SplitInstallRequest mInstallRequest;
-    @Mock
-    private Task<Integer> mTask;
+    @Mock private Logger mLogger;
+    @Mock private SplitInstallManager mManager;
+    @Mock private SplitInstallRequest mInstallRequest;
+    @Mock private Task<Integer> mTask;
 
     private SplitCompatEngine mInstaller;
     private SplitCompatEngineFacade mInstallerFacade;
@@ -95,9 +89,12 @@ public class SplitCompatEngineTest {
         // Arrange.
         String installedModule = "m1";
         String uninstalledModule = "m2";
-        Set<String> installedModules = new HashSet<String>() {
-            { add(installedModule); }
-        };
+        Set<String> installedModules =
+                new HashSet<String>() {
+                    {
+                        add(installedModule);
+                    }
+                };
         doReturn(installedModules).when(mManager).getInstalledModules();
 
         // Act & Assert.

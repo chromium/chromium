@@ -34,7 +34,7 @@ SourceBufferTrackBaseSupplement& SourceBufferTrackBaseSupplement::From(
 SourceBuffer* SourceBufferTrackBaseSupplement::sourceBuffer(TrackBase& track) {
   SourceBufferTrackBaseSupplement* supplement = FromIfExists(track);
   if (supplement)
-    return supplement->source_buffer_;
+    return supplement->source_buffer_.Get();
   return nullptr;
 }
 

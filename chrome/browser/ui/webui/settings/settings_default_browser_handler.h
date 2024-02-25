@@ -53,7 +53,7 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   // done.
   // |js_callback_id| is specified when the state was requested from WebUI.
   void OnDefaultBrowserWorkerFinished(
-      const absl::optional<std::string>& js_callback_id,
+      const std::optional<std::string>& js_callback_id,
       shell_integration::DefaultWebClientState state);
 
   // Reference to a background worker that handles default browser settings.

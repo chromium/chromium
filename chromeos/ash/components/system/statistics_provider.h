@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::system {
 
@@ -204,21 +205,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
 
   // Returns statistic value if the named machine statistic (e.g.
   // "hardware_class") is found. Returns nullopt otherwise.
-  // Once statistics are loaded, returned base::StringPiece will never become
+  // Once statistics are loaded, returned std::string_view will never become
   // dangling as statistics are loaded only once and `StatisticsProvider` is
   // a singleton.
-  virtual absl::optional<base::StringPiece> GetMachineStatistic(
-      base::StringPiece name) = 0;
+  virtual std::optional<std::string_view> GetMachineStatistic(
+      std::string_view name) = 0;
 
   // Similar to `GetMachineStatistic` for boolean flags. As optional and bool do
   // not work safely together, returns custom tribool value.
-  virtual FlagValue GetMachineFlag(base::StringPiece name) = 0;
+  virtual FlagValue GetMachineFlag(std::string_view name) = 0;
 
   // Returns the machine serial number after examining a set of well-known
   // keys. In case no serial is found nullopt is returned.
   // Caveat: On older Samsung devices, the last letter is omitted from the
   // serial number for historical reasons. This is fine.
-  absl::optional<base::StringPiece> GetMachineID();
+  std::optional<std::string_view> GetMachineID();
 
   // Cancels any pending file operations.
   virtual void Shutdown() = 0;

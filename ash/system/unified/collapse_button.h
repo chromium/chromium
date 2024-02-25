@@ -14,9 +14,9 @@ namespace ash {
 // or collapsed through SetExpandedAmount and the icon will be rotated on the
 // `expanded_amount_`. Expanded is the default state.
 class CollapseButton : public IconButton {
- public:
-  METADATA_HEADER(CollapseButton);
+  METADATA_HEADER(CollapseButton, IconButton)
 
+ public:
   explicit CollapseButton(PressedCallback callback);
 
   CollapseButton(const CollapseButton&) = delete;

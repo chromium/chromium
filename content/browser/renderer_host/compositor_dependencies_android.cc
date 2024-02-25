@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "cc/raster/single_thread_task_graph_runner.h"
 #include "components/viz/client/frame_eviction_manager.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
@@ -59,15 +58,6 @@ void SendOnForegroundedToGpuService() {
         }
       }));
 }
-
-class SingleThreadTaskGraphRunner : public cc::SingleThreadTaskGraphRunner {
- public:
-  SingleThreadTaskGraphRunner() {
-    Start("CompositorTileWorker1", base::SimpleThread::Options());
-  }
-
-  ~SingleThreadTaskGraphRunner() override { Shutdown(); }
-};
 
 }  // namespace
 
@@ -118,12 +108,6 @@ void CompositorDependenciesAndroid::CreateVizFrameSinkManager() {
       host_frame_sink_manager_.debug_renderer_settings());
 }
 
-cc::TaskGraphRunner* CompositorDependenciesAndroid::GetTaskGraphRunner() {
-  if (!task_graph_runner_)
-    task_graph_runner_ = std::make_unique<SingleThreadTaskGraphRunner>();
-  return task_graph_runner_.get();
-}
-
 viz::FrameSinkId CompositorDependenciesAndroid::AllocateFrameSinkId() {
   return frame_sink_id_allocator_.NextFrameSinkId();
 }
@@ -152,8 +136,7 @@ void CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnMainThread(
 }
 
 void CompositorDependenciesAndroid::EnqueueLowEndBackgroundCleanup() {
-  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled() &&
-      !base::features::kPartialLowEndModeExcludeLowEndBackgroundCleanup.Get()) {
+  if (base::SysInfo::IsLowEndDevice()) {
     low_end_background_cleanup_task_.Reset(base::BindOnce(
         &CompositorDependenciesAndroid::DoLowEndBackgroundCleanup,
         base::Unretained(this)));

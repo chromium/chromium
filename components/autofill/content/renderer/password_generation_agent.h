@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
@@ -63,6 +64,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // if the generation was triggered successfully.
   void TriggeredGeneratePassword(
       TriggeredGeneratePasswordCallback callback) override;
+  void FocusNextFieldAfterPasswords() override;
 
   // Returns true if the field being changed is one where a generated password
   // is being offered. Updates the state of the popup if necessary.
@@ -98,10 +100,8 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // Previews the generation suggestion for the current generation element.
   void PreviewGenerationSuggestion(const std::u16string& password);
 
-  // Returns true if a generation suggestion was found and cleared successfully
-  // on |control_element|.
-  bool DidClearGenerationSuggestion(
-      const blink::WebFormControlElement& control_element);
+  // Clears the previewed field if it was previously previewed.
+  void ClearPreviewedForm();
 
  private:
   class DeferringPasswordGenerationDriver;
@@ -125,10 +125,11 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // all required information is collected.
   bool SetUpTriggeredGeneration();
 
-  // This is called whenever automatic generation could be offered.
-  // If manual generation was already requested, automatic generation will
-  // not be offered.
-  void MaybeOfferAutomaticGeneration();
+  // This is called whenever automatic generation could be offered, and returns
+  // true if generation was offered.
+  // If manual generation was already requested, automatic generation is not
+  // offered.
+  bool MaybeOfferAutomaticGeneration();
 
   // Signals the browser that it should offer automatic password generation
   // as a result of the user focusing a password field eligible for generation.
@@ -177,7 +178,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   // Unowned pointer. Used to notify PassowrdAutofillAgent when values
   // in password fields are updated.
-  PasswordAutofillAgent* password_agent_;
+  const raw_ptr<PasswordAutofillAgent> password_agent_;
 
   mojo::AssociatedRemote<mojom::PasswordGenerationDriver>
       password_generation_client_;

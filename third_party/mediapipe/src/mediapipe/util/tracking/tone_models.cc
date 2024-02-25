@@ -16,8 +16,8 @@
 
 #include <cmath>
 
-#include "absl/strings/str_format.h"
 #include "absl/log/absl_check.h"
+#include "absl/strings/str_format.h"
 
 namespace mediapipe {
 

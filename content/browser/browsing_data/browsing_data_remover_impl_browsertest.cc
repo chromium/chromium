@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -78,8 +77,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleHstsRequest(
 // Otherwise serves a Basic Auth challenge.
 std::unique_ptr<net::test_server::HttpResponse> HandleHttpAuthRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != kHttpAuthPath)
+  if (request.relative_url != kHttpAuthPath) {
     return nullptr;
+  }
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   if (base::Contains(request.headers, "Authorization")) {
@@ -154,7 +154,7 @@ class BrowsingDataRemoverImplBrowserTest
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory(), loader_helper.GetCallback());
+        url_loader_factory(), loader_helper.GetCallbackDeprecated());
     loader_helper.WaitForCallback();
     ASSERT_TRUE(loader_helper.response_body());
     EXPECT_EQ(kHstsResponseBody, *loader_helper.response_body());
@@ -181,7 +181,7 @@ class BrowsingDataRemoverImplBrowserTest
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     SimpleURLLoaderTestHelper loader_helper;
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory(), loader_helper.GetCallback());
+        url_loader_factory(), loader_helper.GetCallbackDeprecated());
     loader_helper.WaitForCallback();
 
     // On success, HSTS was enabled for the domain.
@@ -480,10 +480,6 @@ IN_PROC_BROWSER_TEST_F(
 class CookiesBrowsingDataRemoverImplBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {
  public:
-  CookiesBrowsingDataRemoverImplBrowserTest() {
-    feature_list_.InitAndEnableFeature(net::features::kPartitionedCookies);
-  }
-
   void SetUpOnMainThread() override {
     network_context()->GetCookieManager(
         cookie_manager_.BindNewPipeAndPassReceiver());
@@ -492,9 +488,9 @@ class CookiesBrowsingDataRemoverImplBrowserTest
   bool SetCookie(
       const GURL& url,
       const std::string& cookie_line,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+      const std::optional<net::CookiePartitionKey>& cookie_partition_key) {
     auto cookie_obj = net::CanonicalCookie::Create(
-        url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+        url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
         cookie_partition_key);
 
     base::test::TestFuture<net::CookieAccessResult> future;
@@ -511,19 +507,18 @@ class CookiesBrowsingDataRemoverImplBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
                        ClearsAllCookiesByDefault) {
   // Set unpartitioned cookies.
-  ASSERT_TRUE(SetCookie(GURL("http://a.com"), "A=0", absl::nullopt));
+  ASSERT_TRUE(SetCookie(GURL("http://a.com"), "A=0", std::nullopt));
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "B=1; secure; samesite=none",
-                        absl::nullopt));
+                        std::nullopt));
   ASSERT_TRUE(SetCookie(GURL("https://b.com"),
                         "C=2; secure; samesite=none; max-age=10000",
-                        absl::nullopt));
+                        std::nullopt));
   ASSERT_EQ(3u, GetAllCookies().size());
 
   // Set partitioned cookies.
@@ -552,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   // Cookies set by a.com, should be removed.
   // partition_key: null, host_key: a.com
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure; partitioned",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   // partition_key: a.com, host_key: a.com
   ASSERT_TRUE(SetCookie(
       GURL("https://a.com"), "B=1; secure; partitioned",
@@ -565,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   // Cookies set by b.com, should not be removed.
   // partition_key: null, host_key: b.com
   ASSERT_TRUE(SetCookie(GURL("https://b.com"), "D=3; secure; partitioned",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   // partition_key: a.com, host_key: b.com
   ASSERT_TRUE(SetCookie(
       GURL("https://b.com"), "E=4; secure; partitioned",
@@ -594,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
                        ClearCookiesWithEmptyFilter) {
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   ASSERT_EQ(1u, GetAllCookies().size());
 
   std::unique_ptr<BrowsingDataFilterBuilder> builder(
@@ -616,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   // Unpartitioned cookie should not be removed when third-party cookie blocking
   // applies to the request that sent Clear-Site-Data.
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure;",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   // Partitioned cookies should still be removed.
   ASSERT_TRUE(SetCookie(
       GURL("https://a.com"), "B=1; secure; partitioned",
@@ -753,7 +748,7 @@ class TrustTokensTester {
   }
 
  private:
-  raw_ptr<network::mojom::NetworkContext, DanglingUntriaged> network_context_;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
 };
 
 }  // namespace
@@ -859,12 +854,18 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
   tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 10);
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(origin));
-  EXPECT_EQ(10, tester.GetSharedStorageTotalEntries());
+
+  // Note that u"key" concatenated with a single digit has 4 char16_t's and
+  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
+  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
+  // 20 bytes.
+  const int kNumBytesPerEntry = 20;
+  EXPECT_EQ(10 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 
   RemoveAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE);
 
   EXPECT_TRUE(tester.GetSharedStorageOrigins().empty());
-  EXPECT_EQ(0, tester.GetSharedStorageTotalEntries());
+  EXPECT_EQ(0, tester.GetSharedStorageTotalBytes());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
@@ -883,7 +884,13 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
   EXPECT_THAT(
       tester.GetSharedStorageOrigins(),
       testing::UnorderedElementsAre(origin, sub_origin, another_origin));
-  EXPECT_EQ(16, tester.GetSharedStorageTotalEntries());
+
+  // Note that u"key" concatenated with a single digit has 4 char16_t's and
+  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
+  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
+  // 20 bytes.
+  const int kNumBytesPerEntry = 20;
+  EXPECT_EQ(16 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 
   std::unique_ptr<BrowsingDataFilterBuilder> builder(
       BrowsingDataFilterBuilder::Create(
@@ -894,7 +901,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
 
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(another_origin));
-  EXPECT_EQ(1, tester.GetSharedStorageTotalEntries());
+
+  EXPECT_EQ(1 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
@@ -913,7 +921,13 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
   EXPECT_THAT(
       tester.GetSharedStorageOrigins(),
       testing::UnorderedElementsAre(origin, sub_origin, another_origin));
-  EXPECT_EQ(16, tester.GetSharedStorageTotalEntries());
+
+  // Note that u"key" concatenated with a single digit has 4 char16_t's and
+  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
+  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
+  // 20 bytes.
+  const int kNumBytesPerEntry = 20;
+  EXPECT_EQ(16 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 
   // Delete all data *except* that specified by the filter.
   std::unique_ptr<BrowsingDataFilterBuilder> builder(
@@ -925,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
 
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(origin, sub_origin));
-  EXPECT_EQ(15, tester.GetSharedStorageTotalEntries());
+  EXPECT_EQ(15 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 }
 
 }  // namespace content

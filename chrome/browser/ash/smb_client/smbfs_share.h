@@ -22,8 +22,7 @@
 
 class Profile;
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // Represents an SMB share mounted using smbfs. Handles mounting, unmounting,
 // registration, and IPC communication with filesystem.
@@ -131,7 +130,7 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
   // Generate the input for stable mount ID hash (simplifies testing).
   std::string GenerateStableMountIdInput() const;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const SmbUrl share_url_;
   const std::string display_name_;
   MountOptions options_;
@@ -150,7 +149,6 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
   base::WeakPtrFactory<SmbFsShare> weak_factory_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMBFS_SHARE_H_

@@ -89,7 +89,7 @@ class KeepAliveOperation : public MessageTransferOperation {
   void SetClockForTest(base::Clock* clock_for_test);
 
   multidevice::RemoteDeviceRef remote_device_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::Time keep_alive_tickle_request_start_time_;

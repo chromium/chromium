@@ -9,218 +9,211 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ref.h"
-#include "base/notreached.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
+#include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
-#include "content/browser/attribution_reporting/attribution_debug_report.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
-#include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_report_sender.h"
+#include "content/browser/attribution_reporting/attribution_report_network_sender.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
-#include "content/browser/attribution_reporting/create_report_result.h"
-#include "content/browser/attribution_reporting/send_result.h"
-#include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
 namespace {
 
-struct AttributionReportJsonConverter {
-  explicit AttributionReportJsonConverter(base::Time time_origin)
-      : time_origin(time_origin) {}
+using ::attribution_reporting::mojom::RegistrationType;
 
-  base::Value::Dict ToJson(const AttributionReport& report,
-                           bool is_debug_report) const {
-    base::Value::Dict report_body = report.ReportBody();
+constexpr int64_t kNavigationId(-1);
 
-    absl::visit(
-        base::Overloaded{
-            [&](const AttributionReport::AggregatableAttributionData&
-                    aggregatable_data) {
-              // These fields normally encode a random GUID or the absolute time
-              // and therefore are sources of nondeterminism in the output.
+const aggregation_service::TestHpkeKey kHpkeKey;
 
-              // Output attribution_destination from the shared_info field.
-              absl::optional<base::Value> shared_info =
-                  report_body.Extract("shared_info");
-              DCHECK(shared_info);
-              std::string* shared_info_str = shared_info->GetIfString();
-              DCHECK(shared_info_str);
+base::TimeDelta TimeOffset(base::Time time_origin) {
+  return time_origin - base::Time::UnixEpoch();
+}
 
-              absl::optional<base::Value> shared_info_value =
-                  base::JSONReader::Read(*shared_info_str,
-                                         base::JSON_PARSE_RFC);
-              DCHECK(shared_info_value && shared_info_value->is_dict());
+base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
+                                       const std::string& shared_info) {
+  CHECK(payloads.has_value());
 
-              static constexpr char kKeyAttributionDestination[] =
-                  "attribution_destination";
-              std::string* attribution_destination =
-                  shared_info_value->GetDict().FindString(
-                      kKeyAttributionDestination);
-              DCHECK(attribution_destination);
-              DCHECK(!report_body.contains(kKeyAttributionDestination));
-              report_body.Set(kKeyAttributionDestination,
-                              std::move(*attribution_destination));
+  base::Value::List payloads_list = std::move(*payloads).TakeList();
+  CHECK_EQ(payloads_list.size(), 1u);
 
-              report_body.Remove("aggregation_service_payloads");
+  base::Value::Dict& payload_dict = payloads_list.front().GetDict();
 
-              // The aggregation coordinator may be platform specific.
-              report_body.Remove("aggregation_coordinator_origin");
+  std::optional<base::Value> payload = payload_dict.Extract("payload");
+  CHECK(payload.has_value());
 
-              base::Value::List list;
-              for (const auto& contribution : aggregatable_data.contributions) {
-                base::Value::Dict dict;
-                dict.Set("key", attribution_reporting::HexEncodeAggregationKey(
-                                    contribution.key()));
-                dict.Set("value",
-                         base::checked_cast<int>(contribution.value()));
+  std::optional<std::vector<uint8_t>> encrypted_payload =
+      base::Base64Decode(payload->GetString());
+  CHECK(encrypted_payload.has_value());
 
-                list.Append(std::move(dict));
-              }
-              report_body.Set("histograms", std::move(list));
-            },
-            [&](const AttributionReport::EventLevelData&) {
-              // Report IDs are a source of nondeterminism, so remove them.
-              report_body.Remove("report_id");
+  std::vector<uint8_t> decrypted_payload =
+      aggregation_service::DecryptPayloadWithHpke(
+          *encrypted_payload, kHpkeKey.full_hpke_key(), shared_info);
+  std::optional<cbor::Value> deserialized_payload =
+      cbor::Reader::Read(decrypted_payload);
+  CHECK(deserialized_payload.has_value());
+  const cbor::Value::MapValue& payload_map = deserialized_payload->GetMap();
+  const auto it = payload_map.find(cbor::Value("data"));
+  CHECK(it != payload_map.end());
 
-              bool ok = AdjustScheduledReportTime(report_body,
-                                                  report.initial_report_time());
-              DCHECK(ok);
-            },
-            [](const AttributionReport::NullAggregatableData&) {
-              NOTREACHED();
-            },
-        },
-        report.data());
+  base::Value::List list;
 
-    base::Value::Dict value;
-    value.Set("payload", std::move(report_body));
-    value.Set("report_url", report.ReportURL(is_debug_report).spec());
+  for (const cbor::Value& data : it->second.GetArray()) {
+    const cbor::Value::MapValue& data_map = data.GetMap();
 
-    value.Set("report_time",
-              FormatTime(is_debug_report ? report.attribution_info().time
-                                         : report.report_time()));
+    const cbor::Value::BinaryValue& bucket_byte_string =
+        data_map.at(cbor::Value("bucket")).GetBytestring();
 
-    return value;
-  }
+    absl::uint128 bucket;
+    CHECK(
+        base::HexStringToUInt128(base::HexEncode(bucket_byte_string), &bucket));
 
-  base::Value::Dict ToJson(const AttributionDebugReport& report,
-                           base::Time time) const {
-    base::Value::List report_body = report.ReportBody().Clone();
-    for (auto& value : report_body) {
-      base::Value::Dict* dict = value.GetIfDict();
-      DCHECK(dict);
+    const cbor::Value::BinaryValue& value_byte_string =
+        data_map.at(cbor::Value("value")).GetBytestring();
 
-      base::Value::Dict* body = dict->FindDict("body");
-      DCHECK(body);
+    uint32_t value;
+    CHECK(base::HexStringToUInt(base::HexEncode(value_byte_string), &value));
 
-      // Report IDs are a source of nondeterminism, so remove them.
-      body->Remove("report_id");
-
-      AdjustScheduledReportTime(*body,
-                                report.GetOriginalReportTimeForTesting());
+    // Ignore the paddings.
+    if (bucket == 0 && value == 0) {
+      continue;
     }
 
-    base::Value::Dict value;
-    value.Set("payload", std::move(report_body));
-    value.Set("report_url", report.ReportUrl().spec());
-    value.Set("report_time", FormatTime(time));
-    return value;
+    list.Append(
+        base::Value::Dict()
+            .Set("key", attribution_reporting::HexEncodeAggregationKey(bucket))
+            .Set("value", base::checked_cast<int>(value)));
   }
+  return list;
+}
 
-  std::string FormatTime(base::Time time) const {
-    base::TimeDelta time_delta = time - time_origin;
-    return base::NumberToString(time_delta.InMilliseconds());
-  }
+void AdjustEventLevelBody(base::Value::Dict& report_body,
+                          const base::Time time_origin) {
+  // Report IDs are a source of nondeterminism, so remove them.
+  report_body.Remove("report_id");
 
-  bool AdjustScheduledReportTime(base::Value::Dict& report_body,
-                                 base::Time original_report_time) const {
-    // This field contains a string encoding seconds from the UNIX epoch. It
-    // needs to be adjusted relative to the simulator's origin time in order
-    // for test output to be consistent.
-    std::string* str = report_body.FindString("scheduled_report_time");
-    if (!str) {
-      return false;
+  // This field contains a string encoding seconds from the UNIX epoch. It
+  // needs to be adjusted relative to the simulator's origin time in order
+  // for test output to be consistent.
+  if (std::string* str = report_body.FindString("scheduled_report_time")) {
+    if (int64_t seconds; base::StringToInt64(*str, &seconds)) {
+      *str =
+          base::NumberToString(seconds - TimeOffset(time_origin).InSeconds());
     }
+  }
+}
 
-    *str =
-        base::NumberToString((original_report_time - time_origin).InSeconds());
-    return true;
+AttributionInteropOutput::Report MakeReport(const network::ResourceRequest& req,
+                                            const base::Time time_origin) {
+  std::optional<base::Value> value =
+      base::JSONReader::Read(network::GetUploadData(req), base::JSON_PARSE_RFC);
+  CHECK(value.has_value());
+
+  if (base::EndsWith(req.url.path_piece(), "/report-aggregate-attribution")) {
+    base::Value::Dict& report_body = value->GetDict();
+
+    // These fields normally encode a random GUID or the absolute time
+    // and therefore are sources of nondeterminism in the output.
+
+    // Output attribution_destination from the shared_info field.
+    std::optional<base::Value> shared_info = report_body.Extract("shared_info");
+    CHECK(shared_info.has_value());
+    std::string shared_info_str = shared_info->GetString();
+
+    std::optional<base::Value> shared_info_value =
+        base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
+    CHECK(shared_info_value.has_value());
+    static constexpr char kKeyAttributionDestination[] =
+        "attribution_destination";
+    std::optional<base::Value> attribution_destination =
+        shared_info_value->GetDict().Extract(kKeyAttributionDestination);
+    CHECK(attribution_destination.has_value());
+    report_body.Set(kKeyAttributionDestination,
+                    std::move(*attribution_destination));
+
+    // The aggregation coordinator may be platform specific.
+    report_body.Remove("aggregation_coordinator_origin");
+
+    report_body.Set("histograms",
+                    GetDecryptedPayloads(
+                        report_body.Extract("aggregation_service_payloads"),
+                        shared_info_str));
+  } else if (base::EndsWith(req.url.path_piece(),
+                            "/report-event-attribution")) {
+    AdjustEventLevelBody(value->GetDict(), time_origin);
+  } else if (req.url.path_piece() ==
+             "/.well-known/attribution-reporting/debug/verbose") {
+    for (auto& item : value->GetList()) {
+      if (base::Value::Dict* dict = item.GetIfDict()) {
+        if (base::Value::Dict* body = dict->FindDict("body")) {
+          AdjustEventLevelBody(*body, time_origin);
+        }
+      }
+    }
   }
 
-  const base::Time time_origin;
-};
-
-class FakeReportSender : public AttributionReportSender {
- public:
-  FakeReportSender() = default;
-
-  ~FakeReportSender() override = default;
-
-  FakeReportSender(const FakeReportSender&) = delete;
-  FakeReportSender(FakeReportSender&&) = delete;
-
-  FakeReportSender& operator=(const FakeReportSender&) = delete;
-  FakeReportSender& operator=(FakeReportSender&&) = delete;
-
- private:
-  // AttributionManagerImpl::ReportSender:
-  void SendReport(AttributionReport report,
-                  bool is_debug_report,
-                  ReportSentCallback sent_callback) override {
-    std::move(sent_callback)
-        .Run(std::move(report), SendResult(SendResult::Status::kSent,
-                                           /*http_response_code=*/200));
-  }
-
-  void SendReport(AttributionDebugReport report,
-                  DebugReportSentCallback done) override {
-    std::move(done).Run(std::move(report), /*status=*/200);
-  }
-};
+  return AttributionInteropOutput::Report(
+      base::Time::Now() - TimeOffset(time_origin), req.url, std::move(*value));
+}
 
 class FakeCookieChecker : public AttributionCookieChecker {
  public:
@@ -247,22 +240,18 @@ class FakeCookieChecker : public AttributionCookieChecker {
 };
 
 // Registers sources and triggers in the `AttributionManagerImpl` and records
-// sent reports.
-class AttributionEventHandler : public AttributionObserver {
+// unparsable registrations.
+class AttributionEventHandler {
  public:
   AttributionEventHandler(std::unique_ptr<AttributionManagerImpl> manager,
                           FakeCookieChecker* fake_cookie_checker,
-                          AttributionReportJsonConverter json_converter)
+                          base::Time time_origin)
       : manager_(std::move(manager)),
         fake_cookie_checker_(
             raw_ref<FakeCookieChecker>::from_ptr(fake_cookie_checker)),
-        json_converter_(json_converter) {
+        time_offset_(TimeOffset(time_origin)) {
     DCHECK(manager_);
-
-    manager_->AddObserver(this);
   }
-
-  ~AttributionEventHandler() override { manager_->RemoveObserver(this); }
 
   void Handle(AttributionSimulationEvent event) {
     fake_cookie_checker_->set_debug_cookie_set(event.debug_permission);
@@ -274,19 +263,55 @@ class AttributionEventHandler : public AttributionObserver {
     }
 
     if (event.source_type.has_value()) {
-      auto registration =
-          attribution_reporting::SourceRegistration::Parse(std::move(*dict));
+      auto registration = attribution_reporting::SourceRegistration::Parse(
+          std::move(*dict), *event.source_type);
       if (!registration.has_value()) {
         AddUnparsableRegistration(event);
         return;
       }
 
-      manager_->HandleSource(
-          StorableSource(std::move(event.reporting_origin),
-                         std::move(*registration),
-                         std::move(event.context_origin), *event.source_type,
-                         /*is_within_fenced_frame=*/false),
-          GlobalRenderFrameHostId());
+      auto* attribution_data_host_manager = manager_->GetDataHostManager();
+
+      mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+
+      switch (*event.source_type) {
+        case attribution_reporting::mojom::SourceType::kNavigation: {
+          const blink::AttributionSrcToken attribution_src_token;
+          attribution_data_host_manager->RegisterNavigationDataHost(
+              data_host_remote.BindNewPipeAndPassReceiver(),
+              attribution_src_token);
+          attribution_data_host_manager->NotifyNavigationRegistrationStarted(
+              AttributionSuitableContext::CreateForTesting(
+                  event.context_origin,
+                  /*is_nested_within_fenced_frame=*/false,
+                  GlobalRenderFrameHostId(),
+                  /*last_navigation_id=*/kNavigationId,
+                  /*last_input_event=*/AttributionInputEvent(),
+                  attribution_data_host_manager),
+              attribution_src_token,
+              /*navigation_id=*/kNavigationId, /*devtools_request_id=*/"");
+          attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
+              attribution_src_token);
+          break;
+        }
+        case attribution_reporting::mojom::SourceType::kEvent:
+          attribution_data_host_manager->RegisterDataHost(
+              data_host_remote.BindNewPipeAndPassReceiver(),
+              AttributionSuitableContext::CreateForTesting(
+                  event.context_origin,
+                  /*is_nested_within_fenced_frame=*/false,
+                  GlobalRenderFrameHostId(),
+                  /*last_navigation_id=*/kNavigationId,
+                  /*last_input_event=*/AttributionInputEvent(),
+                  attribution_data_host_manager),
+              attribution_reporting::mojom::RegistrationEligibility::
+                  kSourceOrTrigger);
+          break;
+      }
+
+      data_host_remote->SourceDataAvailable(std::move(event.reporting_origin),
+                                            std::move(*registration));
+      data_host_remote.FlushForTesting();  // IN-TEST
       return;
     }
 
@@ -297,126 +322,80 @@ class AttributionEventHandler : public AttributionObserver {
       return;
     }
 
-    manager_->HandleTrigger(
-        AttributionTrigger(std::move(event.reporting_origin),
-                           std::move(*registration),
-                           std::move(event.context_origin),
-                           /*verifications=*/{},
-                           /*is_within_fenced_frame=*/false),
-        GlobalRenderFrameHostId());
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+
+    manager_->GetDataHostManager()->RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        AttributionSuitableContext::CreateForTesting(
+            event.context_origin,
+            /*is_nested_within_fenced_frame=*/false, GlobalRenderFrameHostId(),
+            /*last_navigation_id=*/kNavigationId,
+            /*last_input_event=*/AttributionInputEvent(),
+            manager_->GetDataHostManager()),
+        attribution_reporting::mojom::RegistrationEligibility::
+            kSourceOrTrigger);
+    data_host_remote->TriggerDataAvailable(std::move(event.reporting_origin),
+                                           std::move(*registration),
+                                           /*verifications=*/{});
+    data_host_remote.FlushForTesting();  // IN-TEST
   }
 
-  base::Value::Dict TakeOutput() {
-    base::Value::Dict output;
-
-    if (!event_level_reports_.empty()) {
-      output.Set(kEventLevelResultsKey,
-                 std::exchange(event_level_reports_, {}));
-    }
-
-    if (!debug_event_level_reports_.empty()) {
-      output.Set(kDebugEventLevelResultsKey,
-                 std::exchange(debug_event_level_reports_, {}));
-    }
-
-    if (!aggregatable_reports_.empty()) {
-      output.Set(kAggregatableResultsKey,
-                 std::exchange(aggregatable_reports_, {}));
-    }
-
-    if (!debug_aggregatable_reports_.empty()) {
-      output.Set(kDebugAggregatableResultsKey,
-                 std::exchange(debug_aggregatable_reports_, {}));
-    }
-
-    if (!verbose_debug_reports_.empty()) {
-      output.Set(kVerboseDebugReportsKey,
-                 std::exchange(verbose_debug_reports_, {}));
-    }
-
-    if (!unparsable_.empty()) {
-      output.Set(kUnparsableRegistrationsKey, std::exchange(unparsable_, {}));
-    }
-
-    return output;
+  std::vector<AttributionInteropOutput::UnparsableRegistration>
+  TakeUnparsable() && {
+    return std::move(unparsable_);
   }
 
-  base::Time max_report_time() const { return max_report_time_; }
+  void FastForwardUntilReportsConsumed(
+      BrowserTaskEnvironment& task_environment) {
+    while (true) {
+      auto delta = base::TimeDelta::Min();
+      base::RunLoop run_loop;
+
+      manager_->GetPendingReportsForInternalUse(
+          /*limit=*/-1, base::BindLambdaForTesting(
+                            [&](std::vector<AttributionReport> reports) {
+                              auto it = base::ranges::max_element(
+                                  reports, /*comp=*/{},
+                                  &AttributionReport::report_time);
+                              if (it != reports.end()) {
+                                delta = it->report_time() - base::Time::Now();
+                              }
+                              run_loop.Quit();
+                            }));
+
+      run_loop.Run();
+
+      if (delta.is_negative()) {
+        break;
+      }
+      task_environment.FastForwardBy(delta);
+    }
+  }
 
  private:
-  // AttributionObserver:
-
-  void OnReportSent(const AttributionReport& report,
-                    bool is_debug_report,
-                    const SendResult& info) override {
-    DCHECK_EQ(info.status, SendResult::Status::kSent);
-
-    base::Value::List* reports;
-    switch (report.GetReportType()) {
-      case AttributionReport::Type::kEventLevel:
-        reports = is_debug_report ? &debug_event_level_reports_
-                                  : &event_level_reports_;
-        break;
-      case AttributionReport::Type::kAggregatableAttribution:
-        reports = is_debug_report ? &debug_aggregatable_reports_
-                                  : &aggregatable_reports_;
-        break;
-      case AttributionReport::Type::kNullAggregatable:
-        // TODO(linnan): Consider supporting null reports in interop tests.
-        return;
-    }
-
-    reports->Append(json_converter_.ToJson(report, is_debug_report));
-  }
-
-  void OnDebugReportSent(const AttributionDebugReport& report,
-                         int status,
-                         base::Time time) override {
-    DCHECK_EQ(status, 200);
-    verbose_debug_reports_.Append(json_converter_.ToJson(report, time));
-  }
-
-  void OnTriggerHandled(const AttributionTrigger&,
-                        absl::optional<uint64_t> cleared_debug_key,
-                        const CreateReportResult& result) override {
-    if (const auto& report = result.new_event_level_report()) {
-      max_report_time_ = std::max(max_report_time_, report->report_time());
-    }
-
-    if (const auto& report = result.new_aggregatable_report()) {
-      max_report_time_ = std::max(max_report_time_, report->report_time());
-    }
-  }
-
   void AddUnparsableRegistration(const AttributionSimulationEvent& event) {
-    base::Value::Dict dict;
-    dict.Set("time", json_converter_.FormatTime(event.time));
-    dict.Set("type", event.source_type.has_value() ? "source" : "trigger");
-    unparsable_.Append(std::move(dict));
+    auto& registration = unparsable_.emplace_back();
+    registration.time = event.time - time_offset_;
+    registration.type = event.source_type.has_value()
+                            ? RegistrationType::kSource
+                            : RegistrationType::kTrigger;
   }
 
   const std::unique_ptr<AttributionManagerImpl> manager_;
   const raw_ref<FakeCookieChecker> fake_cookie_checker_;
 
-  const AttributionReportJsonConverter json_converter_;
+  const base::TimeDelta time_offset_;
 
-  base::Time max_report_time_;
-
-  base::Value::List event_level_reports_;
-  base::Value::List debug_event_level_reports_;
-  base::Value::List aggregatable_reports_;
-  base::Value::List debug_aggregatable_reports_;
-  base::Value::List verbose_debug_reports_;
-  base::Value::List unparsable_;
+  std::vector<AttributionInteropOutput::UnparsableRegistration> unparsable_;
 };
 
 }  // namespace
 
-base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
-    base::Value::Dict input,
-    const AttributionConfig& config) {
+base::expected<AttributionInteropOutput, std::string>
+RunAttributionInteropSimulation(base::Value::Dict input,
+                                const AttributionConfig& config) {
   // Prerequisites for using an environment with mock time.
-  content::BrowserTaskEnvironment task_environment(
+  BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestBrowserContext browser_context;
   const base::Time time_origin = base::Time::Now();
@@ -425,10 +404,11 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
                    ParseAttributionInteropInput(std::move(input), time_origin));
 
   if (events.empty()) {
-    return base::Value::Dict();
+    return AttributionInteropOutput();
   }
 
-  DCHECK(base::ranges::is_sorted(events));
+  DCHECK(base::ranges::is_sorted(events, /*comp=*/{},
+                                 &AttributionSimulationEvent::time));
   DCHECK(base::ranges::adjacent_find(
              events, /*pred=*/{},
              [](const auto& event) { return event.time; }) == events.end());
@@ -444,6 +424,15 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
   auto fake_cookie_checker = std::make_unique<FakeCookieChecker>();
   auto* raw_fake_cookie_checker = fake_cookie_checker.get();
 
+  AttributionInteropOutput output;
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        output.reports.emplace_back(MakeReport(req, time_origin));
+        test_url_loader_factory.AddResponse(req.url.spec(), /*content=*/"");
+      }));
+
   auto manager = AttributionManagerImpl::CreateForTesting(
       // Avoid creating an on-disk sqlite DB.
       /*user_data_directory=*/base::FilePath(),
@@ -451,7 +440,9 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
       /*special_storage_policy=*/nullptr,
       AttributionStorageDelegateImpl::CreateForTesting(
           AttributionNoiseMode::kNone, AttributionDelayMode::kDefault, config),
-      std::move(fake_cookie_checker), std::make_unique<FakeReportSender>(),
+      std::move(fake_cookie_checker),
+      std::make_unique<AttributionReportNetworkSender>(
+          test_url_loader_factory.GetSafeWeakWrapper()),
       std::make_unique<NoOpAttributionOsLevelManager>(), storage_partition,
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
@@ -459,13 +450,15 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
            base::ThreadPolicy::MUST_USE_FOREGROUND}));
 
   AttributionEventHandler handler(std::move(manager), raw_fake_cookie_checker,
-                                  AttributionReportJsonConverter(time_origin));
+                                  time_origin);
 
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
       ->SetPublicKeysForTesting(
-          GURL(kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam.Get()),
-          PublicKeyset({aggregation_service::GenerateKey().public_key},
+          GetAggregationServiceProcessingUrl(url::Origin::Create(
+              GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
+                       .Get()))),
+          PublicKeyset({kHpkeKey.GetPublicKey()},
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 
@@ -480,13 +473,10 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
 
   task_environment.FastForwardBy(max_event_time - base::Time::Now());
 
-  if (base::Time max_report_time = handler.max_report_time(),
-      now = base::Time::Now();
-      max_report_time >= now) {
-    task_environment.FastForwardBy(max_report_time - now);
-  }
+  handler.FastForwardUntilReportsConsumed(task_environment);
 
-  return handler.TakeOutput();
+  output.unparsable_registrations = std::move(handler).TakeUnparsable();
+  return output;
 }
 
 }  // namespace content

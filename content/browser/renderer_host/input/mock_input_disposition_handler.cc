@@ -5,7 +5,7 @@
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 
 #include "base/functional/bind.h"
-#include "content/browser/renderer_host/input/input_router.h"
+#include "content/common/input/input_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using blink::WebInputEvent;
@@ -58,8 +58,7 @@ void MockInputDispositionHandler::OnTouchEventAck(
 void MockInputDispositionHandler::OnGestureEventAck(
     const GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   VLOG(1) << __FUNCTION__ << " called!";
   acked_gesture_event_ = event.event;
   RecordAckCalled(event.event.GetType(), ack_result);

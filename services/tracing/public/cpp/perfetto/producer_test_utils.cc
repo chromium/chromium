@@ -6,6 +6,7 @@
 
 #include <deque>
 #include <functional>
+#include <optional>
 #include <utility>
 
 #include "base/debug/leak_annotations.h"
@@ -15,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/ext/base/utils.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/include/perfetto/protozero/root_message.h"
@@ -24,12 +24,14 @@ namespace tracing {
 
 namespace {
 
+constexpr size_t kChunkSize = 4096;
+
 // For sequences/threads other than our own, we just want to ignore
 // any events coming in.
 class DummyTraceWriter : public perfetto::TraceWriter {
  public:
   DummyTraceWriter()
-      : delegate_(perfetto::base::kPageSize), stream_(&delegate_) {}
+      : delegate_(kChunkSize), stream_(&delegate_) {}
 
   perfetto::TraceWriter::TracePacketHandle NewTracePacket() override {
     stream_.Reset(delegate_.GetNewBuffer());
@@ -60,7 +62,7 @@ TestProducerClient::TestProducerClient(
     std::unique_ptr<base::tracing::PerfettoTaskRunner> main_thread_task_runner,
     bool log_only_main_thread)
     : ProducerClient(main_thread_task_runner.get()),
-      delegate_(perfetto::base::kPageSize),
+      delegate_(kChunkSize),
       stream_(&delegate_),
       main_thread_task_runner_(std::move(main_thread_task_runner)),
       log_only_main_thread_(log_only_main_thread) {}

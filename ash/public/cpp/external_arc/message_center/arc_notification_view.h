@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/views/message_view.h"
 
 namespace aura {
@@ -25,9 +26,10 @@ class ArcNotificationContentView;
 // ArcNotificationContentView which shows content of the notification.
 class ArcNotificationView : public message_center::MessageView,
                             public ArcNotificationItem::Observer {
+  METADATA_HEADER(ArcNotificationView, message_center::MessageView)
+
  public:
   static ArcNotificationView* FromView(views::View* message_view);
-
   // |content_view| is a view to be hosted in this view.
   ArcNotificationView(ArcNotificationItem* item,
                       const message_center::Notification& notification,
@@ -46,7 +48,6 @@ class ArcNotificationView : public message_center::MessageView,
   // Overridden from MessageView:
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
-  void SetDrawBackgroundAsActive(bool active) override;
   void UpdateControlButtonsVisibility() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   message_center::NotificationControlButtonsView* GetControlButtonsView()
@@ -63,18 +64,22 @@ class ArcNotificationView : public message_center::MessageView,
   void UpdateBackgroundPainter() override;
   base::TimeDelta GetBoundsAnimationDuration(
       const message_center::Notification&) const override;
+  void AnimateGroupedChildExpandedCollapse(bool expanded) override;
+  void AnimateSingleToGroup(const std::string& notification_id,
+                            std::string parent_id) override;
+  void SetGroupedChildExpanded(bool expanded) override;
 
   // views::SlideOutControllerDelegate:
   void OnSlideChanged(bool in_progress) override;
 
   // Overridden from views::View:
-  gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
+  void Layout(PassKey) override;
   bool HasFocus() const override;
   void RequestFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void ChildPreferredSizeChanged(View* child) override;
   bool HandleAccessibleAction(const ui::AXActionData& action) override;
+  void OnThemeChanged() override;
 
   // ArcNotificationItem::Observer
   void OnItemDestroying() override;
@@ -91,14 +96,18 @@ class ArcNotificationView : public message_center::MessageView,
   void UpdateControlButtonsVisibilityWithNotification(
       const message_center::Notification& notification);
 
-  raw_ptr<ArcNotificationItem, ExperimentalAsh> item_;
+  raw_ptr<ArcNotificationItem> item_;
 
   // The view for the custom content. Owned by view hierarchy.
-  const raw_ptr<ArcNotificationContentView, ExperimentalAsh> content_view_;
+  const raw_ptr<ArcNotificationContentView> content_view_;
 
   const bool shown_in_popup_;
 
-  const bool is_group_child_;
+  bool is_group_child_;
+
+  raw_ptr<views::View> collapsed_summary_view_ = nullptr;
+
+  base::WeakPtrFactory<ArcNotificationView> weak_factory_{this};
 };
 
 }  // namespace ash

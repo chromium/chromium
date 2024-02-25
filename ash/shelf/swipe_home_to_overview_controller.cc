@@ -5,6 +5,7 @@
 #include "ash/shelf/swipe_home_to_overview_controller.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
@@ -21,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -133,13 +133,13 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
 
   float scale = gfx::Tween::FloatValueBetween(progress, 1.0f, kTargetHomeScale);
   Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
-      scale, 1.0f /*opacity*/, absl::nullopt /*animation_info*/,
+      scale, 1.0f /*opacity*/, std::nullopt /*animation_info*/,
       base::NullCallback());
 }
 
 void SwipeHomeToOverviewController::EndDrag(
     const gfx::PointF& location_in_screen,
-    absl::optional<float> velocity_y) {
+    std::optional<float> velocity_y) {
   if (state_ != State::kTrackingDrag) {
     state_ = State::kFinished;
     return;
@@ -181,7 +181,7 @@ void SwipeHomeToOverviewController::FinalizeDragAndShowOverview() {
   state_ = State::kFinished;
   overview_transition_threshold_y_ = 0;
 
-  if (features::AreContextualNudgesEnabled()) {
+  if (features::IsHideShelfControlsInTabletModeEnabled()) {
     contextual_tooltip::HandleGesturePerformed(
         Shell::Get()->session_controller()->GetActivePrefService(),
         contextual_tooltip::TooltipType::kHomeToOverview);
@@ -203,8 +203,14 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
   overview_transition_threshold_y_ = 0;
   state_ = State::kFinished;
 
+  // App list controller may get destroyed before shelf during shutdown.
+  auto* const app_list_controller = Shell::Get()->app_list_controller();
+  if (!app_list_controller) {
+    return;
+  }
+
   if (go_back) {
-    Shell::Get()->app_list_controller()->Back();
+    app_list_controller->Back();
     UMA_HISTOGRAM_ENUMERATION(kEnterOverviewHistogramName,
                               EnterOverviewFromHomeLauncher::kBack);
   } else {
@@ -215,8 +221,8 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
   // Make sure the home launcher scale and opacity return to the initial state.
   // Note that this is needed even if the gesture ended up in a fling, as early
   // gesture handling might have updated the launcher scale.
-  Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
-      1.0f /*scale*/, 1.0f /*opacity*/, absl::nullopt /*animation_info*/,
+  app_list_controller->UpdateScaleAndOpacityForHomeLauncher(
+      1.0f /*scale*/, 1.0f /*opacity*/, std::nullopt /*animation_info*/,
       base::BindRepeating(&UpdateHomeAnimationForGestureCancel, go_back));
 }
 

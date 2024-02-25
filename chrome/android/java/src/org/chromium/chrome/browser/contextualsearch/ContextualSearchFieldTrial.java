@@ -12,29 +12,20 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.variations.VariationsAssociatedData;
 
-/**
- * Provides Field Trial support for the Contextual Search application within Chrome for Android.
- */
+/** Provides Field Trial support for the Contextual Search application within Chrome for Android. */
 public class ContextualSearchFieldTrial {
     private static final String FIELD_TRIAL_NAME = "ContextualSearch";
     private static final String DISABLED_PARAM = "disabled";
     private static final String ENABLED_VALUE = "true";
 
-    //==========================================================================================
+    // ==========================================================================================
     // Related Searches FieldTrial and parameter names.
-    //==========================================================================================
+    // ==========================================================================================
     // Params used elsewhere but gathered here since they may be present in FieldTrial configs.
-    static final String RELATED_SEARCHES_NEEDS_URL_PARAM_NAME = "needs_url";
-    static final String RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME = "needs_content";
     // A comma-separated list of lower-case ISO 639 language codes.
-    static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME = "language_allowlist";
     static final String RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST = "en";
-    // Enabling this parameter will activate related searches for all languages, overriding any
-    // languages specified in the "language_allowlist".
-    static final String RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME =
-            "all_languages";
-    static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
     private static final String RELATED_SEARCHES_CONFIG_DEFAULT_STAMP = "1Rs";
+    private static final String RELATED_SEARCHES_ALL_LANGUAGE_CONFIG_DEFAULT_STAMP = "1Rsa";
 
     static final String CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME =
             "contextual_search_minimum_page_height_dp";
@@ -58,40 +49,17 @@ public class ContextualSearchFieldTrial {
      *         string is returned.
      */
     static String getRelatedSearchesExperimentConfigurationStamp() {
-        String stamp = getRelatedSearchesParam(RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME);
-        if (TextUtils.isEmpty(stamp)) {
-            stamp = RELATED_SEARCHES_CONFIG_DEFAULT_STAMP;
-        }
-        return stamp;
-    }
-
-    /**
-     * Gets the given parameter from the RelatedSearches FieldTrial feature.
-     * @param paramName The name of the parameter to get.
-     * @return The value of the parameter from the feature. If no param is present then an empty
-     *         string is returned.
-     */
-    static String getRelatedSearchesParam(String paramName) {
-        return ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.RELATED_SEARCHES, paramName);
-    }
-
-    /**
-     * Determines whether the specified parameter is present and enabled in the RelatedSearches
-     * Feature.
-     * @param relatedSearchesParamName The name of the param to get from the Feature.
-     * @return Whether the given parameter is enabled or not (has a value of "true").
-     */
-    static boolean isRelatedSearchesParamEnabled(String relatedSearchesParamName) {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.RELATED_SEARCHES, relatedSearchesParamName, false);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE)
+                ? RELATED_SEARCHES_ALL_LANGUAGE_CONFIG_DEFAULT_STAMP
+                : RELATED_SEARCHES_CONFIG_DEFAULT_STAMP;
     }
 
     /** Return The minimum height dp for the contextual search page. */
     static int getContextualSearchMinimumBasePageHeightDp() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW,
-                CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME, 0);
+                CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME,
+                0);
     }
 
     // --------------------------------------------------------------------------------------------
@@ -129,7 +97,8 @@ public class ContextualSearchFieldTrial {
         if (CommandLine.getInstance().hasSwitch(paramName)) {
             return true;
         }
-        return TextUtils.equals(ENABLED_VALUE,
+        return TextUtils.equals(
+                ENABLED_VALUE,
                 VariationsAssociatedData.getVariationParamValue(FIELD_TRIAL_NAME, paramName));
     }
 }

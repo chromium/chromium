@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PinUnlockWeakPinsAllowed": true
+        },
+        "prefs": {
+          "pin_unlock_weak_pins_allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

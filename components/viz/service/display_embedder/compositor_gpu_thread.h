@@ -23,10 +23,11 @@ namespace gpu {
 class GpuChannelManager;
 class VulkanImplementation;
 class VulkanDeviceQueue;
-class VulkanContextProvider;
 }  // namespace gpu
 
 namespace viz {
+
+class VulkanContextProvider;
 
 class VIZ_SERVICE_EXPORT CompositorGpuThread
     : public base::Thread,
@@ -90,6 +91,10 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
   bool init_succeeded_ = false;
 
   scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+  std::unique_ptr<gpu::DawnContextProvider> dawn_context_provider_;
+#endif
 
   // The GLDisplay lives in GLDisplayManager, which never deletes displays once
   // they are lazily created.

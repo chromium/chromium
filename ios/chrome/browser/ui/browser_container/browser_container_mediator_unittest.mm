@@ -4,12 +4,13 @@
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
-#import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -59,7 +60,7 @@ class BrowserContainerMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   FakeOverlayPresentationContext presentation_context_;
-  OverlayPresenter* overlay_presenter_ = nullptr;
+  raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
   BrowserContainerMediator* mediator_ = nil;
   FakeBrowserContainerConsumer* consumer_ = nil;
 };
@@ -74,9 +75,9 @@ TEST_F(BrowserContainerMediatorTest, BlockContentForHTTPAuthDialog) {
   auto passed_web_state = std::make_unique<web::FakeWebState>();
   web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kWebStateUrl);
-  browser_->GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
-                                              WebStateList::INSERT_ACTIVATE,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Show an HTTP authentication dialog from a different URL.
   const GURL kHttpAuthUrl("http://www.http_auth.test");

@@ -12,8 +12,13 @@ Are you a Google employee? See
 
 ## System requirements
 
-* A 64-bit Mac running 11.3 or later.
-* [Xcode](https://developer.apple.com/xcode) 13.1 or higher.
+* A 64-bit Mac capable of running the required version of Xcode.
+* [Xcode](https://developer.apple.com/xcode) 15.0 or higher.
+
+Note: after installing Xcode, you need to launch it and to let it install
+the iOS simulator. This is required as part of the build, see [this discussion](
+https://groups.google.com/a/chromium.org/g/chromium-dev/c/98d6MyLoYHM/m/A_HyOGxPAgAJ)
+on chromium-dev.
 
 ## Install `depot_tools`
 
@@ -131,6 +136,22 @@ You can also follow the manual instructions on the
 [Mac page](../mac_build_instructions.md), but make sure you set the
 GN arg `target_os="ios"`.
 
+### Faster builds
+
+This section contains some things you can change to speed up your builds,
+sorted so that the things that make the biggest difference are first.
+
+#### Use Reclient
+
+Google employees should use Reclient, a distributed compilation system. Detailed
+information is available internally but the relevant gn arg is:
+* `use_remoteexec = true`
+
+Google employees can visit
+[go/building-chrome-mac#using-remote-execution](https://goto.google.com/building-chrome-mac#using-remote-execution)
+for more information. For external contributors, Reclient does not support iOS
+builds.
+
 ## Building for device
 
 To be able to build and run Chromium and the tests for devices, you need to
@@ -171,7 +192,7 @@ application extensions:
 -   `${prefix}.chrome.ios.dev.ContentTodayExtension`
 -   `${prefix}.chrome.ios.dev.CredentialProviderExtension`
 -   `${prefix}.chrome.ios.dev.IntentsExtension`
--   `${prefix}.chrome.ios.dev.SearchTodayExtension`
+-   `${prefix}.chrome.ios.dev.OpenExtension`
 -   `${prefix}.chrome.ios.dev.ShareExtension`
 -   `${prefix}.chrome.ios.dev.TodayExtension`
 -   `${prefix}.chrome.ios.dev.WidgetKitExtension`
@@ -188,7 +209,8 @@ to share files and configurations while the `group.${prefix}.common` is shared
 with Chromium and other applications from the same organisation and can be used
 to send commands to Chromium.
 
-`${prefix}.chrome.ios.dev.CredentialProviderExtension` needs the AutoFill
+`${prefix}.chrome.ios.dev` and
+`${prefix}.chrome.ios.dev.CredentialProviderExtension` need the AutoFill
 Credential Provider Entitlement, which corresponds to the key
 `com.apple.developer.authentication-services.autofill-credential-provider`
 Please refer to Apple's documentation on how to set this up.
@@ -211,6 +233,13 @@ profiles for EarlGrey and OCHamcrest frameworks:
 In addition to that, then you'll need one additional provisioning profile for
 the XCTest module too. It must match the pattern:
 `${prefix}.gtest.${test-suite-name}-module`.
+
+
+### Entitlements
+
+PartitionAlloc-Everywhere is now enabled by default on iOS builds. When running
+on a real device you will need to set the
+`com.apple.developer.kernel.extended-virtual-addressing` entitlement.
 
 ### Other applications
 
@@ -264,9 +293,6 @@ most useful.
 $ autoninja -C out/Debug-iphonesimulator content_shell
 ```
 
-To run on a live device you will need to set the
-`com.apple.developer.kernel.extended-virtual-addressing` entitlement.
-
 ## Running apps from the command line
 
 Any target that is built and runs on the bots (see [below](#Troubleshooting))
@@ -275,7 +301,7 @@ command line, you can use `iossim`. For example, to run a debug build of
 `Chromium`:
 
 ```shell
-$ out/Debug-iphonesimulator/iossim out/Debug-iphonesimulator/Chromium.app
+$ out/Debug-iphonesimulator/iossim -i out/Debug-iphonesimulator/Chromium.app
 ```
 
 From Xcode 9 on, `iossim` no longer automatically launches the Simulator. This must now
@@ -288,7 +314,7 @@ Arguments needed to be passed to the test application through `iossim`, such as
 `--gtest_filter=SomeTest.FooBar` should be passed through the `-c` flag:
 
 ```shell
-$ out/Debug-iphonesimulator/iossim \
+$ out/Debug-iphonesimulator/iossim -i \
     -c "--gtest_filter=SomeTest.FooBar --gtest_repeat=3" \
     out/Debug-iphonesimulator/base_unittests.app
 ```
@@ -300,9 +326,29 @@ XCTest bundle that is injected into the target application. Therefore you must
 also pass in the test bundle:
 
 ```shell
-$ out/Debug-iphonesimulator/iossim \
+$ out/Debug-iphonesimulator/iossim -i \
     out/Debug-iphonesimulator/ios_chrome_ui_egtests.app \
     out/Debug-iphonesimulator/ios_chrome_ui_egtests.app/PlugIns/ios_chrome_ui_egtests_module.xctest
+```
+
+### Running Web Tests on Blink for iOS
+
+The current Blink for iOS only supports running Web Tests on the simulator
+environment now. Before you run the web tests, you need to build the blink_tests
+target to get content_shell and all of the other needed binaries for the
+simulator test environment.
+
+```shell
+$ autoninja -C out/Debug-iphonesimulator blink_tests
+```
+
+When the blink_tests target is complete you can then run the test runner script
+(third_party/blink/tools/run_web_tests.py) as below. See [Web Tests](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md) document
+for more information.
+
+```shell
+$ third_party/blink/tools/run_web_tests.py -t Debug-iphonesimulator \
+    --platform ios
 ```
 
 ### Running on specific simulator
@@ -315,7 +361,7 @@ For example, to run the tests on a simulated iPhone 6s running iOS 10.0,
 you would invoke `iossim` like this.
 
 ```shell
-$ out/Debug-iphonesimulator/iossim -d 'iPhone 6s' -s '10.0' \
+$ out/Debug-iphonesimulator/iossim -i -d 'iPhone 6s' -s '10.0' \
     out/Debug-iphonesimulator/base_unittests.app
 ```
 
@@ -479,7 +525,8 @@ $ git config core.untrackedCache true
 
 You can significantly speed up git by using [fsmonitor.](https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/)
 You should enable fsmonitor in large repos, such as Chromium and v8. Enabling
-it globally will launch many processes and probably isn't worthwhile. The
+it globally will launch many processes and probably isn't worthwhile. Be sure
+you have at least version 2.43 (fsmonitor on the Mac is broken before then). The
 command to enable fsmonitor in the current repo is:
 
 ```shell

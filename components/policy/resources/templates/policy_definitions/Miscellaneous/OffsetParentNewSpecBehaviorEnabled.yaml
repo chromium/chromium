@@ -1,5 +1,6 @@
 caption: Control the new behavior of <ph name="OFFSET_PARENT">HTMLElement.offsetParent</ph>
 default: null
+deprecated: true
 desc: |2-
   The <ph name="OFFSET_PARENT">HTMLElement.offsetParent</ph> API is being changed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> in order to comply with changes that have been made in <ph name="FIREFOX_PRODUCT_NAME">Firefox</ph> and <ph name="SAFARI_PRODUCT_NAME">Safari</ph>. This policy brings back the old behavior until M120.
 
@@ -16,8 +17,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: New offsetParent behavior will be used.
   value: true

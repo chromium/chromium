@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "v8/include/v8.h"
@@ -78,7 +77,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
           *g_page_holder->GetFrame().DomWindow());
       // Let the other end of the pipe close itself.
       blink::MessagePortDescriptorPair pipe;
-      port->Entangle(pipe.TakePort0());
+      port->Entangle(pipe.TakePort0(), nullptr);
       return port;
     });
     options.message_ports = message_ports;
@@ -107,7 +106,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
   // a chain of persistent handles), so some objects may not be collected until
   // a subsequent iteration. This is slow enough as is, so we compromise on one
   // major GC, as opposed to the 5 used in V8GCController for unit tests.
-  V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
+  isolate->RequestGarbageCollectionForTesting(
       v8::Isolate::kFullGarbageCollection);
 
   return 0;

@@ -66,7 +66,7 @@ TEST_F(OffloadingVideoEncoderTest, Initialize) {
         called_info = true;
       });
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, std::optional<VideoEncoder::CodecDescription>) {
         EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
         called_output = true;
       });
@@ -127,8 +127,7 @@ TEST_F(OffloadingVideoEncoderTest, ChangeOptions) {
       });
 
   VideoEncoder::OutputCB output_cb = base::BindRepeating(
-      [](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
-      });
+      [](VideoEncoderOutput, std::optional<VideoEncoder::CodecDescription>) {});
 
   EXPECT_CALL(*mock_video_encoder_, ChangeOptions(_, _, _))
       .WillOnce(Invoke([this](const VideoEncoder::Options& options,

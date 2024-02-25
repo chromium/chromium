@@ -82,6 +82,36 @@ TEST_F(ServerBackedStateKeysBrokerTest, RetryAfterFailure) {
   ExpectGoodBroker();
 }
 
+TEST_F(ServerBackedStateKeysBrokerTest, RetryAfterCommunicationFailure) {
+  fake_session_manager_client_.SetServerBackedStateKeyError(
+      ServerBackedStateKeysBroker::ErrorType::kCommunicationError);
+
+  {
+    base::RunLoop run_loop;
+    base::CallbackListSubscription subscription =
+        broker_.RegisterUpdateCallback(run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(run_loop.AnyQuitCalled());
+  }
+
+  EXPECT_FALSE(broker_.available());
+  EXPECT_TRUE(broker_.state_keys().empty());
+  EXPECT_TRUE(broker_.current_state_key().empty());
+
+  fake_session_manager_client_.set_server_backed_state_keys(state_keys_);
+
+  {
+    base::RunLoop run_loop;
+    base::CallbackListSubscription subscription =
+        broker_.RegisterUpdateCallback(run_loop.QuitClosure());
+    task_environment_.FastForwardBy(
+        ServerBackedStateKeysBroker::GetRetryIntervalForTesting());
+    EXPECT_TRUE(run_loop.AnyQuitCalled());
+  }
+
+  ExpectGoodBroker();
+}
+
 TEST_F(ServerBackedStateKeysBrokerTest, Refresh) {
   // Use unique_ptr to make `run_loop` resettable.
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -122,12 +152,15 @@ TEST_F(ServerBackedStateKeysBrokerTest, Request) {
 }
 
 TEST_F(ServerBackedStateKeysBrokerTest, RequestFailure) {
-  fake_session_manager_client_.set_server_backed_state_keys({});
+  fake_session_manager_client_.SetServerBackedStateKeyError(
+      ServerBackedStateKeysBroker::ErrorType::kInvalidResponse);
 
   base::test::TestFuture<const std::vector<std::string>&> state_keys_future;
   broker_.RequestStateKeys(state_keys_future.GetCallback());
   EXPECT_TRUE(state_keys_future.Wait());
   EXPECT_TRUE(state_keys_future.Get().empty());
+  EXPECT_EQ(broker_.error_type(),
+            ServerBackedStateKeysBroker::ErrorType::kInvalidResponse);
 }
 
 }  // namespace policy

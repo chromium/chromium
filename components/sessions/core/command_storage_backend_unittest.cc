@@ -97,7 +97,7 @@ class CommandStorageBackendTest : public testing::Test {
   }
 
   // Functions that call into private members of CommandStorageBackend.
-  absl::optional<CommandStorageBackend::SessionInfo> GetLastSessionInfo(
+  std::optional<CommandStorageBackend::SessionInfo> GetLastSessionInfo(
       CommandStorageBackend* backend) {
     // Force `last_session_info_` to be updated.
     backend->InitIfNecessary();
@@ -715,7 +715,8 @@ TEST_F(CommandStorageBackendTest, UseMarkerWithoutValidMarker) {
 // incompatible manner.
 TEST_F(CommandStorageBackendTest, ReadPreviouslyWrittenData) {
   base::FilePath test_data_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_path));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_path));
   test_data_path = test_data_path.AppendASCII("components")
                        .AppendASCII("test")
                        .AppendASCII("data")

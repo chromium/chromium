@@ -13,7 +13,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -91,8 +91,7 @@ class FakeIconLoader : public apps::IconLoader {
   }
 
   std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
-      apps::AppType app_type,
-      const std::string& app_id,
+      const std::string& id,
       const apps::IconKey& icon_key,
       apps::IconType icon_type,
       int32_t size_hint_in_dip,
@@ -100,8 +99,7 @@ class FakeIconLoader : public apps::IconLoader {
       apps::LoadIconCallback callback) override {
     auto iv = std::make_unique<apps::IconValue>();
     iv->icon_type = icon_type;
-    iv->uncompressed =
-        CreateImageSkia(16, 16, GetIconColor(app_id, SK_ColorWHITE));
+    iv->uncompressed = CreateImageSkia(16, 16, GetIconColor(id, SK_ColorWHITE));
     iv->is_placeholder_icon = false;
 
     std::move(callback).Run(std::move(iv));
@@ -271,8 +269,12 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
   void SetTestAppIconColor(const std::string& app_id, SkColor color) {
     icon_loader_.SetAppIconColor(app_id, color);
     // Force icon reload after setting the test color.
+    // We cannot call LoadAppIcon directly because we need to invalidate the
+    // icon color cache. So we use `IncrementIconVersion()` to remove the
+    // icon color cache entry and trigger icon loading.
     test::GetModelUpdater(AppListClientImpl::GetInstance())
-        ->LoadAppIcon(app_id);
+        ->FindItem(app_id)
+        ->IncrementIconVersion();
   }
 
   // Helps to prevent flakiness due to conflicting animations (`AppListView`
@@ -1154,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 // expected.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
                        TransitionToClamshellModeDuringAbortedFadeInAnimation) {
-  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       AcceleratorAction::kToggleAppList, {});
@@ -1177,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
-  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
 
   // Progress tablet mode animation to the end before item fade in animation
   // completes - this should hide the tablet mode app list and abort the fade in

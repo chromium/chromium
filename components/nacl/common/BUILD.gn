@@ -93,19 +93,6 @@ if (enable_nacl) {
     }
   }
 
-  source_set("debug_exception_handler") {
-    sources = []
-
-    deps = [ "//base" ]
-
-    if (is_win) {
-      sources += [
-        "nacl_debug_exception_handler_win.cc",
-        "nacl_debug_exception_handler_win.h",
-      ]
-    }
-  }
-
   mojom("mojo_bindings") {
     sources = [ "nacl.mojom" ]
     cpp_typemaps = [

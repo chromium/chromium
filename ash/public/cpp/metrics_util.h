@@ -35,8 +35,8 @@ struct ASH_PUBLIC_EXPORT AnimationData {
 // cc::FrameSequenceMetrics::ThroughputData, calculates the smoothness
 // out of it and forward it to the smoothness report callback.
 ASH_PUBLIC_EXPORT ReportCallback
-ForSmoothness(SmoothnessCallback callback,
-              bool exclude_from_data_collection = false);
+ForSmoothnessV3(SmoothnessCallback callback,
+                bool exclude_from_data_collection = false);
 
 // Starts to collect data reported by all trackers unless they opt out.
 // Note this DCHECKs if called again without StopDataCollection().
@@ -49,11 +49,11 @@ ASH_PUBLIC_EXPORT std::vector<AnimationData> StopDataCollection();
 ASH_PUBLIC_EXPORT std::vector<AnimationData> GetCollectedData();
 
 // Returns smoothness calculated from given data.
-ASH_PUBLIC_EXPORT int CalculateSmoothness(
+ASH_PUBLIC_EXPORT int CalculateSmoothnessV3(
     const cc::FrameSequenceMetrics::CustomReportData& data);
 
 // Returns jank percentage calculated from given data.
-ASH_PUBLIC_EXPORT int CalculateJank(
+ASH_PUBLIC_EXPORT int CalculateJankV3(
     const cc::FrameSequenceMetrics::CustomReportData& data);
 
 }  // namespace ash::metrics_util

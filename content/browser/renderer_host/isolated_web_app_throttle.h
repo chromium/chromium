@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_ISOLATED_WEB_APP_THROTTLE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_ISOLATED_WEB_APP_THROTTLE_H_
 
+#include <optional>
+
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -43,7 +44,7 @@ class CONTENT_EXPORT IsolatedWebAppThrottle : public NavigationThrottle {
   // recent step in the navigation's redirect chain, including the initial
   // navigation. |prev_origin_| will be nullopt if the frame being navigated
   // hasn't committed any navigation yet.
-  absl::optional<url::Origin> prev_origin_;
+  std::optional<url::Origin> prev_origin_;
   url::Origin dest_origin_;
 };
 

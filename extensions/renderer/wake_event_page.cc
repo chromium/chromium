@@ -10,14 +10,19 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/v8_helpers.h"
+#include "extensions/renderer/worker_thread_dispatcher.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "v8/include/v8-context.h"
@@ -29,9 +34,6 @@ namespace extensions {
 
 namespace {
 
-base::LazyInstance<WakeEventPage>::DestructorAtExit g_wake_event_page_instance =
-    LAZY_INSTANCE_INITIALIZER;
-
 constexpr char kWakeEventPageFunctionName[] = "WakeEventPage";
 
 }  // namespace
@@ -40,9 +42,8 @@ class WakeEventPage::WakeEventPageNativeHandler
     : public ObjectBackedNativeHandler {
  public:
   // Handles own lifetime.
-  WakeEventPageNativeHandler(ScriptContext* context,
-                             const MakeRequestCallback& make_request)
-      : ObjectBackedNativeHandler(context), make_request_(make_request) {
+  WakeEventPageNativeHandler(ScriptContext* context)
+      : ObjectBackedNativeHandler(context) {
     // Delete self on invalidation. base::Unretained because by definition this
     // can't be deleted before it's deleted.
     context->AddInvalidationObserver(base::BindOnce(
@@ -83,7 +84,17 @@ class WakeEventPage::WakeEventPageNativeHandler
     const std::string& extension_id = context()->GetExtensionID();
     CHECK(!extension_id.empty());
 
-    make_request_.Run(
+    mojom::RendererHost* renderer_host = nullptr;
+    if (context()->IsForServiceWorker()) {
+      renderer_host =
+          WorkerThreadDispatcher::GetServiceWorkerData()->GetRendererHost();
+    } else {
+      content::RenderFrame* frame = context()->GetRenderFrame();
+      CHECK(frame);
+      renderer_host = ExtensionFrameHelper::Get(frame)->GetRendererHost();
+    }
+    CHECK(renderer_host);
+    renderer_host->WakeEventPage(
         extension_id,
         base::BindOnce(&WakeEventPageNativeHandler::OnEventPageIsAwake,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -99,27 +110,11 @@ class WakeEventPage::WakeEventPageNativeHandler
                                 std::size(args), args);
   }
 
-  MakeRequestCallback make_request_;
   base::WeakPtrFactory<WakeEventPageNativeHandler> weak_ptr_factory_{this};
 };
 
 // static
-WakeEventPage* WakeEventPage::Get() {
-  return g_wake_event_page_instance.Pointer();
-}
-
-void WakeEventPage::Init(content::RenderThread* render_thread) {
-  DCHECK(render_thread);
-  DCHECK_EQ(content::RenderThread::Get(), render_thread);
-  DCHECK(!message_filter_);
-
-  message_filter_ = render_thread->GetSyncMessageFilter();
-  render_thread->AddObserver(this);
-}
-
 v8::Local<v8::Function> WakeEventPage::GetForContext(ScriptContext* context) {
-  DCHECK(message_filter_);
-
   v8::Isolate* isolate = context->isolate();
   v8::EscapableHandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = context->v8_context();
@@ -136,10 +131,8 @@ v8::Local<v8::Function> WakeEventPage::GetForContext(ScriptContext* context) {
       wake_event_page->IsUndefined()) {
     // Implement this using a NativeHandler, which requires a function name
     // (arbitrary in this case). Handles own lifetime.
-    WakeEventPageNativeHandler* native_handler = new WakeEventPageNativeHandler(
-        context, base::BindRepeating(&WakeEventPage::MakeRequest,
-                                     // Safe, owned by a LazyInstance.
-                                     base::Unretained(this)));
+    WakeEventPageNativeHandler* native_handler =
+        new WakeEventPageNativeHandler(context);
     native_handler->Initialize();
 
     // Extract and cache the wake-event-page function from the native handler.
@@ -152,59 +145,6 @@ v8::Local<v8::Function> WakeEventPage::GetForContext(ScriptContext* context) {
 
   CHECK(wake_event_page->IsFunction());
   return handle_scope.Escape(wake_event_page.As<v8::Function>());
-}
-
-WakeEventPage::RequestData::RequestData(int thread_id,
-                                        OnResponseCallback on_response)
-    : thread_id(thread_id), on_response(std::move(on_response)) {}
-
-WakeEventPage::RequestData::~RequestData() = default;
-
-WakeEventPage::WakeEventPage() = default;
-
-WakeEventPage::~WakeEventPage() = default;
-
-void WakeEventPage::MakeRequest(const std::string& extension_id,
-                                OnResponseCallback on_response) {
-  static base::AtomicSequenceNumber sequence_number;
-  int request_id = sequence_number.GetNext();
-  {
-    base::AutoLock lock(requests_lock_);
-    requests_[request_id] = std::make_unique<RequestData>(
-        content::WorkerThread::GetCurrentId(), std::move(on_response));
-  }
-  message_filter_->Send(
-      new ExtensionHostMsg_WakeEventPage(request_id, extension_id));
-}
-
-bool WakeEventPage::OnControlMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(WakeEventPage, message)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_WakeEventPageResponse,
-                        OnWakeEventPageResponse)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
-void WakeEventPage::OnWakeEventPageResponse(int request_id, bool success) {
-  std::unique_ptr<RequestData> request_data;
-  {
-    base::AutoLock lock(requests_lock_);
-    auto it = requests_.find(request_id);
-    CHECK(it != requests_.end()) << "No request with ID " << request_id;
-    request_data = std::move(it->second);
-    requests_.erase(it);
-  }
-  if (request_data->thread_id == 0) {
-    // Thread ID of 0 means it wasn't called on a worker thread, so safe to
-    // call immediately.
-    std::move(request_data->on_response).Run(success);
-  } else {
-    content::WorkerThread::PostTask(
-        request_data->thread_id,
-        base::BindOnce(std::move(request_data->on_response), success));
-  }
 }
 
 }  //  namespace extensions

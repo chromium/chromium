@@ -6,11 +6,12 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
 #include <string>
-#include <vector>
+#include <string_view>
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/property_change_reason.h"
@@ -18,10 +19,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace ash {
-class GameDashboardWidget;
-}
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class View;
@@ -32,8 +30,9 @@ namespace arc::input_overlay {
 
 class Action;
 class ActionEditMenu;
+class ActionViewListItem;
 class ButtonOptionsMenu;
-class ButtonLabelList;
+class DeleteEditShortcut;
 class EditFinishView;
 class EditingList;
 class EducationalView;
@@ -42,6 +41,8 @@ class InputMenuView;
 class MenuEntryView;
 class MessageView;
 class NudgeView;
+class RichNudge;
+class TargetView;
 class TouchInjector;
 class TouchInjectorObserver;
 
@@ -49,7 +50,8 @@ class TouchInjectorObserver;
 // menu, and educational dialog. It also handles the visibility of the
 // `ActionEditMenu` and `MessageView` by listening to the `LocatedEvent`.
 class DisplayOverlayController : public ui::EventHandler,
-                                 public aura::WindowObserver {
+                                 public aura::WindowObserver,
+                                 public views::WidgetObserver {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
   DisplayOverlayController(const DisplayOverlayController&) = delete;
@@ -60,10 +62,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void SetDisplayMode(DisplayMode mode);
 
   // Get the bounds of `menu_entry_` in screen coordinates.
-  absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
+  std::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
-  void AddEditMessage(const base::StringPiece& message,
-                      MessageType message_type);
+  void AddEditMessage(std::string_view message, MessageType message_type);
   void RemoveEditMessage();
 
   void OnInputBindingChange(Action* action,
@@ -87,16 +88,18 @@ class DisplayOverlayController : public ui::EventHandler,
   InputOverlayWindowStateType GetWindowStateType() const;
 
   // For editor.
-  void AddNewAction(ActionType action_type = ActionType::TAP);
+  void AddNewAction(ActionType action_type, const gfx::Point& target_pos);
   void RemoveAction(Action* action);
   // Creates a new action with guidance from the reference action, and deletes
   // the reference action.
   void ChangeActionType(Action* reference_action_, ActionType type);
-  void ChangeActionName(Action* action, int index);
+  void RemoveActionNewState(Action* action);
 
   // Returns the size of active actions which include the deleted default
   // actions.
   size_t GetActiveActionsSize();
+  // Return true if action is not deleted.
+  bool IsActiveAction(Action* action);
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);
@@ -107,23 +110,32 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void AddButtonOptionsMenuWidget(Action* action);
   void RemoveButtonOptionsMenuWidget();
-  void OnButtonOptionsMenuButtonLabelPressed(Action* action);
+  void SetButtonOptionsMenuWidgetVisibility(bool is_visible);
 
-  void AddButtonLabelListWidget(Action* action);
-  void RemoveButtonLabelListWidget();
-  void OnButtonLabelListBackButtonPressed();
+  void AddDeleteEditShortcutWidget(ActionViewListItem* anchor_view);
+  void RemoveDeleteEditShortcutWidget();
+
+  void EnterButtonPlaceMode(ActionType action_type);
+  // Exits button placement mode after adding a new action if `is_action_added`
+  // is true or giving up by pressing key `esc` if `is_action_added` is false.
+  void ExitButtonPlaceMode(bool is_action_added);
+  void UpdateButtonPlacementNudgeAnchorRect();
+
+  void AddActionHighlightWidget(Action* action);
+  void RemoveActionHighlightWidget();
+  void HideActionHighlightWidget();
 
   // Update widget bounds if the view content is changed or the app window
   // bounds are changed.
-  void UpdateButtonOptionsMenuWidgetBounds(Action* action);
+  void UpdateButtonOptionsMenuWidgetBounds();
   void UpdateInputMappingWidgetBounds();
   void UpdateEditingListWidgetBounds();
-  void UpdateEditingListWidgetPosition(const gfx::Vector2d& reposition_delta);
-  gfx::Rect GetEditingListWidgetBoundsInRootWindow();
+  void UpdateTargetWidgetBounds();
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
 
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -134,20 +146,20 @@ class DisplayOverlayController : public ui::EventHandler,
                                const void* key,
                                intptr_t old) override;
 
-  const TouchInjector* touch_injector() const { return touch_injector_; }
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
-  const std::vector<std::u16string> action_name_list() const {
-    return action_name_list_;
-  }
+  const TouchInjector* touch_injector() const { return touch_injector_; }
 
  private:
   friend class ActionView;
   friend class ArcInputOverlayManagerTest;
-  friend class ButtonLabelList;
   friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
   friend class DisplayOverlayControllerAlphaTest;
   friend class EditingList;
+  friend class EditingListTest;
   friend class EditLabelTest;
   friend class EducationalView;
   friend class GameControlsTestBase;
@@ -156,6 +168,9 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class MenuEntryView;
   friend class MenuEntryViewTest;
   friend class OverlayViewTestBase;
+  friend class RichNudgeTest;
+
+  class FocusCycler;
 
   // Display overlay is added for starting `display_mode`.
   void AddOverlay(DisplayMode display_mode);
@@ -164,17 +179,23 @@ class DisplayOverlayController : public ui::EventHandler,
   // event target on the layer underneath the overlay layer.
   void SetEventTarget(views::Widget* overlay_widget, bool on_overlay);
 
+  // Update display mode when initializing DisplayOverlayController or the
+  // window property is changed on `ash::kArcGameControlsFlagsKey`.
+  void UpdateDisplayMode();
+
   // On charge of Add/Remove nudge view.
   void AddNudgeView(views::Widget* overlay_widget);
   void RemoveNudgeView();
   void OnNudgeDismissed();
   gfx::Point CalculateNudgePosition(int nudge_width);
 
+  bool IsNudgeEmpty();
+
   void AddMenuEntryView(views::Widget* overlay_widget);
   void RemoveMenuEntryView();
   void OnMenuEntryPressed();
   void OnMenuEntryPositionChanged(bool leave_focus,
-                                  absl::optional<gfx::Point> location);
+                                  std::optional<gfx::Point> location);
   void FocusOnMenuEntry();
   void ClearFocus();
   void RemoveInputMenuView();
@@ -206,7 +227,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
   // Used for the magnetic function of the editing list.
-  void SetMagneticPosition();
 
   // Close `MessageView` if `LocatedEvent` happens outside
   // of their view bounds.
@@ -224,14 +244,34 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void AddInputMappingWidget();
   void RemoveInputMappingWidget();
+  InputMappingView* GetInputMapping();
 
   void AddEditingListWidget();
   void RemoveEditingListWidget();
+  void SetEditingListVisibility(bool visible);
+  EditingList* GetEditingList();
+
+  ButtonOptionsMenu* GetButtonOptionsMenu();
+
+  // Focus cycler operations.
+  void AddFocusCycler();
+  void RemoveFocusCycler();
+
+  // Shows or removes target view when in or out button place mode.
+  void AddTargetWidget(ActionType action_type);
+  void RemoveTargetWidget();
+  TargetView* GetTargetView() const;
+
+  void AddRichNudge();
+  void RemoveRichNudge();
+  RichNudge* GetRichNudge() const;
+
+  DeleteEditShortcut* GetDeleteEditShortcut() const;
 
   // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
   // window bounds in root window. Convert `bounds_in_root_window` in screen
   // coordinates to set `widget` bounds.
-  void UpdateWidgetBoundsInRootWindow(ash::GameDashboardWidget* widget,
+  void UpdateWidgetBoundsInRootWindow(views::Widget* widget,
                                       const gfx::Rect& bounds_in_root_window);
 
   // `TouchInjector` only rewrite events in `kView` mode. When changing between
@@ -246,18 +286,10 @@ class DisplayOverlayController : public ui::EventHandler,
   InputMenuView* GetInputMenuView() { return input_menu_view_; }
   MenuEntryView* GetMenuEntryView() { return menu_entry_; }
 
-  // `action_name_list_` is a vector that holds the list of action name labels
-  // that can be selected.
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  const std::vector<std::u16string> action_name_list_ = {
-      u"Move", u"Jump",  u"Attack", u"Special ability", u"Crouch",
-      u"Run",  u"Shoot", u"Magic",  u"Reload",          u"Dodge"};
-
-  // For editing list reposition. It is nullopt only the first time the editing
-  // list view and widget are created.
-  absl::optional<gfx::Point> editing_list_origin_ = absl::nullopt;
-
   const raw_ptr<TouchInjector> touch_injector_;
+
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
 
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView, DanglingUntriaged> input_mapping_view_ = nullptr;
@@ -267,15 +299,19 @@ class DisplayOverlayController : public ui::EventHandler,
   raw_ptr<MessageView, DanglingUntriaged> message_ = nullptr;
   raw_ptr<EducationalView, DanglingUntriaged> educational_view_ = nullptr;
   raw_ptr<NudgeView, DanglingUntriaged> nudge_view_ = nullptr;
-  raw_ptr<EditingList, DanglingUntriaged> editing_list_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 
   // For beta.
-  std::unique_ptr<ash::GameDashboardWidget> input_mapping_widget_;
-  std::unique_ptr<ash::GameDashboardWidget> editing_list_widget_;
-  std::unique_ptr<ash::GameDashboardWidget> button_options_widget_;
-  std::unique_ptr<ash::GameDashboardWidget> button_label_list_widget_;
+  std::unique_ptr<views::Widget> input_mapping_widget_;
+  std::unique_ptr<views::Widget> editing_list_widget_;
+  std::unique_ptr<views::Widget> button_options_widget_;
+  std::unique_ptr<views::Widget> target_widget_;
+  std::unique_ptr<views::Widget> action_highlight_widget_;
+  raw_ptr<views::Widget> delete_edit_shortcut_widget_;
+  raw_ptr<views::Widget> rich_nudge_widget_;
+
+  std::unique_ptr<FocusCycler> focus_cycler_;
 };
 
 }  // namespace arc::input_overlay

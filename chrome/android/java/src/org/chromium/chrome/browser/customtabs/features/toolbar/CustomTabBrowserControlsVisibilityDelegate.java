@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import dagger.Lazy;
+
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -13,11 +15,7 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
-
-/**
- * Implementation of {@link BrowserControlsVisibilityDelegate} for custom tabs.
- */
+/** Implementation of {@link BrowserControlsVisibilityDelegate} for custom tabs. */
 @ActivityScope
 public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate {
     private final Lazy<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
@@ -46,8 +44,7 @@ public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsV
     }
 
     private @BrowserControlsState int calculateVisibilityConstraints() {
-        @BrowserControlsState
-        int defaultConstraints = getDefaultVisibilityDelegate().get();
+        @BrowserControlsState int defaultConstraints = getDefaultVisibilityDelegate().get();
         if (defaultConstraints == BrowserControlsState.HIDDEN
                 || mBrowserControlsState == BrowserControlsState.HIDDEN) {
             return BrowserControlsState.HIDDEN;

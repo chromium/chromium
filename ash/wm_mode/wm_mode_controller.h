@@ -6,13 +6,16 @@
 #define ASH_WM_MODE_WM_MODE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm_mode/pie_menu_view.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -42,8 +45,19 @@ class ASH_EXPORT WmModeController : public ShellObserver,
                                     public ui::LayerOwner,
                                     public ui::LayerDelegate,
                                     public aura::WindowObserver,
-                                    public PieMenuView::Delegate {
+                                    public PieMenuView::Delegate,
+                                    public DesksController::Observer {
  public:
+  enum PieMenuButtonIds {
+    kSnapButtonId = 0,
+    kMoveToDeskButtonId = 1,
+    kResizeButtonId = 2,
+
+    kDeskButtonIdStart = 3,
+    // Keep this range reserved for desk button IDs.
+    kDeskButtonIdEnd = kDeskButtonIdStart + desks_util::kDesksUpperLimit - 1,
+  };
+
   WmModeController();
   WmModeController(const WmModeController&) = delete;
   WmModeController& operator=(const WmModeController&) = delete;
@@ -65,7 +79,7 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
-  base::StringPiece GetLogContext() const override;
+  std::string_view GetLogContext() const override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -78,10 +92,18 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // PieMenuView::Delegate:
   void OnPieMenuButtonPressed(int button_id) override;
 
-  // Returns true if the given `root` window is being dimmed.
-  bool IsRootWindowDimmedForTesting(aura::Window* root) const;
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk, bool from_undo) override;
+  void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override;
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
  private:
+  friend class WmModeTests;
+
   void UpdateDimmers();
 
   // Updates the state of all the WM Mode tray buttons on all displays.
@@ -110,6 +132,9 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // Builds the pie menu widget.
   void BuildPieMenu();
 
+  // If the pie menu is available, it rebuilds the move-to-desk sub menu items.
+  void MaybeRebuildMoveToDeskSubMenu();
+
   // Returns true if the given `event_target` is contained within the window
   // tree of the pie menu if it exists.
   bool IsTargetingPieMenu(aura::Window* event_target) const;
@@ -122,17 +147,19 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // Refreshes the visibility and the bounds of the pie menu (if it exists).
   void MaybeRefreshPieMenu();
 
+  // Moves the `selected_window_` to the desk at the given `index`.
+  void MoveSelectedWindowToDeskAtIndex(int index);
+
   bool is_active_ = false;
 
   // The current root window the layer of `this` belongs to. It's always nullptr
   // when WM Mode is inactive.
-  raw_ptr<aura::Window, ExperimentalAsh> current_root_ = nullptr;
+  raw_ptr<aura::Window> current_root_ = nullptr;
 
   // The window that got selected as the top-most one at the most recent
   // received located event. This window (if available) will be the one that
   // receives all the gestures supported by this mode.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> selected_window_ =
-      nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> selected_window_ = nullptr;
 
   views::UniqueWidgetPtr pie_menu_widget_;
   raw_ptr<PieMenuView> pie_menu_view_ = nullptr;
@@ -147,7 +174,7 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // The screen location of the last received release located event.
   // Valid only if we receive a release located event, and only until
   // `OnLocatedEvent()` returns.
-  absl::optional<gfx::Point> last_release_event_screen_point_;
+  std::optional<gfx::Point> last_release_event_screen_point_;
 };
 
 }  // namespace ash

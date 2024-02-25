@@ -5,11 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_FAKE_REMOTE_DEVICE_LIFE_CYCLE_H_
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_FAKE_REMOTE_DEVICE_LIFE_CYCLE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/proximity_auth/remote_device_life_cycle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 class ClientChannel;
@@ -21,7 +22,7 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
  public:
   explicit FakeRemoteDeviceLifeCycle(
       ash::multidevice::RemoteDeviceRef remote_device,
-      absl::optional<ash::multidevice::RemoteDeviceRef> local_device);
+      std::optional<ash::multidevice::RemoteDeviceRef> local_device);
 
   FakeRemoteDeviceLifeCycle(const FakeRemoteDeviceLifeCycle&) = delete;
   FakeRemoteDeviceLifeCycle& operator=(const FakeRemoteDeviceLifeCycle&) =
@@ -55,14 +56,12 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
 
  private:
   ash::multidevice::RemoteDeviceRef remote_device_;
-  absl::optional<ash::multidevice::RemoteDeviceRef> local_device_;
+  std::optional<ash::multidevice::RemoteDeviceRef> local_device_;
   base::ObserverList<Observer>::Unchecked observers_;
   bool started_;
   State state_;
-  raw_ptr<ash::secure_channel::ClientChannel,
-          DanglingUntriaged | ExperimentalAsh>
-      channel_;
-  raw_ptr<Messenger, ExperimentalAsh> messenger_;
+  raw_ptr<ash::secure_channel::ClientChannel, DanglingUntriaged> channel_;
+  raw_ptr<Messenger> messenger_;
 };
 
 }  // namespace proximity_auth

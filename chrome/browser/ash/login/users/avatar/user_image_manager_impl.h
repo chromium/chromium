@@ -167,7 +167,7 @@ class UserImageManagerImpl : public UserImageManager,
   bool IsCustomizationSelectorsPrefEnabled() const;
 
   // The user manager.
-  raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<user_manager::UserManager> user_manager_;
 
   // Whether the `profile_downloader_` is downloading the profile image for the
   // currently logged-in user (and not just the full name). Only valid when a

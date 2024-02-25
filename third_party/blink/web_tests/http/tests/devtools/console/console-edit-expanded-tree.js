@@ -5,10 +5,12 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as Console from 'devtools/panels/console/console.js';
+
 (async function() {
   TestRunner.addResult('Tests that expanded tree element is editable in console.\n');
 
-  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -25,14 +27,14 @@ import {ConsoleTestRunner} from 'console_test_runner';
   ConsoleTestRunner.expandConsoleMessages(onConsoleMessageExpanded);
 
   function onConsoleMessageExpanded() {
-    var messages = Console.ConsoleView.instance().visibleViewMessages;
+    var messages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
 
     for (var i = 0; i < messages.length; ++i) {
       var message = messages[i];
       var node = message.contentElement();
 
       for (var node = message.contentElement(); node; node = node.traverseNextNode(message.contentElement())) {
-        const treeElement = UI.TreeElement.getTreeElementBylistItemNode(node);
+        const treeElement = UIModule.TreeOutline.TreeElement.getTreeElementBylistItemNode(node);
         if (treeElement) {
           onTreeElement(treeElement.firstChild());
           return;
@@ -43,7 +45,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   function onTreeElement(treeElement) {
     treeElement.startEditing();
-    Console.ConsoleView.instance().viewport.refresh();
+    Console.ConsoleView.ConsoleView.instance().viewport.refresh();
     TestRunner.addResult('After viewport refresh tree element remains in editing mode: ' + !!treeElement.prompt);
     TestRunner.completeTest();
   }

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<style>
+embed {
+  display: block;
+  width: 100px;
+  height: 100px;
+  background: red;
+  padding: 30px;
+  box-sizing: border-box;
+}
+#negativeMargin {
+  width: 100px;
+  height: 100px;
+  background: green;
+  margin-top: -100px;
+}
+</style>
+<div id="negativeMargin">
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+onload = () => {
+  if (window.testRunner)
+    testRunner.waitUntilDone();
+
+  runAfterLayoutAndPaint(function() {
+    var embed = document.createElement('embed');
+    embed.type = 'application/x-blink-test-plugin';
+    embed.addEventListener("message", function(message) {
+      if (message.data == 'loaded') {
+        if (window.testRunner)
+          testRunner.notifyDone();
+      }
+    });
+    document.body.insertBefore(embed, negativeMargin);
+  });
+};
+</script>

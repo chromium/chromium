@@ -35,7 +35,7 @@ IDBVersionChangeEvent::IDBVersionChangeEvent()
 IDBVersionChangeEvent::IDBVersionChangeEvent(
     const AtomicString& event_type,
     uint64_t old_version,
-    const absl::optional<uint64_t>& new_version,
+    const std::optional<uint64_t>& new_version,
     mojom::IDBDataLoss data_loss,
     const String& data_loss_message)
     : Event(event_type, Bubbles::kNo, Cancelable::kNo),

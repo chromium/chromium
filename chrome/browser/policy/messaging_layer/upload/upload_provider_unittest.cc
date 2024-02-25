@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
@@ -19,11 +20,14 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::test::EqualsProto;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
@@ -32,21 +36,6 @@ using ::testing::WithArgs;
 
 namespace reporting {
 namespace {
-
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  if (expected_serialized != actual_serialized) {
-    LOG(ERROR) << "Provided proto did not match the expected proto"
-               << "\n Serialized Expected Proto: " << expected_serialized
-               << "\n Serialized Provided Proto: " << actual_serialized;
-    return false;
-  }
-  return true;
-}
 
 // CloudPolicyClient and UploadClient are not usable outside of a managed
 // environment, to sidestep this we override the functions that normally build

@@ -50,7 +50,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     message_center::Notification* notification =
         FindVisibleNotificationById(id);
     DCHECK(notification);
-    notification->delegate()->Click(absl::nullopt, absl::nullopt);
+    notification->delegate()->Click(std::nullopt, std::nullopt);
   }
 };
 
@@ -145,16 +145,24 @@ class BluetoothNotificationControllerTest : public AshTestBase {
   TestMessageCenter test_message_center_;
   scoped_refptr<device::MockBluetoothAdapter> mock_adapter_;
   std::unique_ptr<BluetoothNotificationController> notification_controller_;
-  raw_ptr<TestSystemTrayClient, DanglingUntriaged | ExperimentalAsh>
-      system_tray_client_;
+  raw_ptr<TestSystemTrayClient, DanglingUntriaged> system_tray_client_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_1_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_2_;
-  raw_ptr<ToastManagerImpl, DanglingUntriaged | ExperimentalAsh>
-      toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, DanglingUntriaged> toast_manager_ = nullptr;
 };
 
 TEST_F(BluetoothNotificationControllerTest, DiscoverableToast) {
   VerifyDiscoverableToastVisibility(/*visible=*/false);
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+
+  ShowDiscoverableToast(notification_controller_.get());
+
+  VerifyDiscoverableToastVisibility(/*visible=*/false);
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
 
   ShowDiscoverableToast(notification_controller_.get());
 

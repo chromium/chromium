@@ -11,7 +11,12 @@
 
 namespace apps {
 
-APP_ENUM_TO_STRING(PromiseStatus, kUnknown, kPending, kInstalling, kRemove)
+APP_ENUM_TO_STRING(PromiseStatus,
+                   kUnknown,
+                   kPending,
+                   kInstalling,
+                   kSuccess,
+                   kCancelled)
 
 PromiseApp::PromiseApp(const apps::PackageId& package_id)
     : package_id(package_id) {}
@@ -21,8 +26,9 @@ PromiseAppIcon::PromiseAppIcon() = default;
 PromiseAppIcon::~PromiseAppIcon() = default;
 
 bool PromiseApp::operator==(const PromiseApp& rhs) const {
-  return this->package_id == rhs.package_id && this->name == rhs.name &&
-         this->progress == rhs.progress && this->status == rhs.status &&
+  return this->package_id == rhs.package_id && this->progress == rhs.progress &&
+         this->status == rhs.status && this->name == rhs.name &&
+         this->installed_app_id == rhs.installed_app_id &&
          this->should_show == rhs.should_show;
 }
 
@@ -35,6 +41,7 @@ PromiseAppPtr PromiseApp::Clone() const {
     promise_app->progress = progress;
   }
   promise_app->status = status;
+  promise_app->installed_app_id = installed_app_id;
   if (should_show.has_value()) {
     promise_app->should_show = should_show;
   }
@@ -51,6 +58,8 @@ std::ostream& operator<<(std::ostream& out, const PromiseApp& promise_app) {
       << std::endl;
   out << "- Status: " << EnumToString(promise_app.status) << std::endl;
   out << "- Should Show: " << promise_app.should_show.value_or(false)
+      << std::endl;
+  out << "- Installed App ID: " << promise_app.installed_app_id.value_or("")
       << std::endl;
   return out;
 }

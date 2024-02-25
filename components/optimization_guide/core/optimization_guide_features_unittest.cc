@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -93,6 +94,64 @@ TEST(OptimizationGuideFeaturesTest,
   EXPECT_TRUE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
 }
 
+TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(features::kModelQualityLogging);
+
+  EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
+
+  // Compose, wallpaper search and tab organization should be enabled by
+  // default whereas test feature should be disabled.
+  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TEST));
+}
+
+TEST(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kModelQualityLogging,
+      {{"model_execution_feature_compose", "false"},
+       {"model_execution_feature_wallpaper_search", "false"},
+       {"model_execution_feature_tab_organization", "false"}});
+
+  EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
+
+  // All features should be disabled for logging.
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TEST));
+}
+
+TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndDisableFeature(features::kModelQualityLogging);
+
+  // All features logging should be disabled if ModelQualityLogging is disabled.
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabled());
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TEST));
+}
+
 TEST(OptimizationGuideFeaturesTest,
      ShouldExecutePageEntitiesModelOnPageContentWithAllowlist) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -151,27 +210,89 @@ TEST(OptimizationGuideFeaturesTest,
       features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
 }
 
-TEST(OptimizationGuideFeaturesTest, OptimizationGuidePersonalizedFetching) {
+TEST(OptimizationGuideFeaturesTest, RemotePageMetadataEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
 
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kRemotePageMetadata,
+      {{"supported_locales", "en-US,en-CA"}, {"supported_countries", "US,CA"}});
+
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "CA"));
+  EXPECT_FALSE(features::RemotePageMetadataEnabled("", ""));
+  EXPECT_FALSE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
+  EXPECT_FALSE(features::RemotePageMetadataEnabled("badlocale", "US"));
+}
+
+TEST(OptimizationGuideFeaturesTest, ShouldPersistSalientImageMetadata) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageContentAnnotationsPersistSalientImageMetadata,
+      {{"supported_locales", "en-US,en-CA"}, {"supported_countries", "US,CA"}});
+
+  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "CA"));
+  // Tests case-insensitivity.
+  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "cA"));
+  EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("", ""));
+  EXPECT_FALSE(
+      features::ShouldPersistSalientImageMetadata("en-US", "badcountry"));
+  EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("badlocale", "US"));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     OptimizationGuidePersonalizedFetchingDefaultBehaviour) {
+  features::RequestContextSet allowedContexts =
+      features::GetAllowedContextsForPersonalizedMetadata();
+
+  // Check contexts.
+  EXPECT_FALSE(
+      allowedContexts.Has(optimization_guide::proto::CONTEXT_UNSPECIFIED));
+  EXPECT_TRUE(allowedContexts.Has(
+      optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     OptimizationGuidePersonalizedFetchingPopulatedParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuidePersonalizedFetching,
       {
           {"allowed_contexts", "CONTEXT_PAGE_NAVIGATION,CONTEXT_BOOKMARKS"},
-          {"oauth_scopes", "scope,scope2"},
       });
 
-  // Check scopes.
-  EXPECT_THAT(features::OAuthScopesForPersonalizedMetadata(),
-              ::testing::UnorderedElementsAre("scope", "scope2"));
+  features::RequestContextSet allowedContexts =
+      features::GetAllowedContextsForPersonalizedMetadata();
 
   // Check contexts.
-  EXPECT_FALSE(features::EnabledPersonalizedMetadata(
-      optimization_guide::proto::CONTEXT_UNSPECIFIED));
-  EXPECT_TRUE(features::EnabledPersonalizedMetadata(
-      optimization_guide::proto::CONTEXT_PAGE_NAVIGATION));
-  EXPECT_TRUE(features::EnabledPersonalizedMetadata(
-      optimization_guide::proto::CONTEXT_BOOKMARKS));
+  EXPECT_FALSE(
+      allowedContexts.Has(optimization_guide::proto::CONTEXT_UNSPECIFIED));
+  EXPECT_FALSE(allowedContexts.Has(
+      optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
+  EXPECT_TRUE(
+      allowedContexts.Has(optimization_guide::proto::CONTEXT_PAGE_NAVIGATION));
+  EXPECT_TRUE(
+      allowedContexts.Has(optimization_guide::proto::CONTEXT_BOOKMARKS));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     OptimizationGuidePersonalizedFetchingEmptyParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuidePersonalizedFetching,
+      {
+          {"allowed_contexts", ""},
+      });
+
+  features::RequestContextSet allowedContexts =
+      features::GetAllowedContextsForPersonalizedMetadata();
+
+  // Check contexts.
+  EXPECT_FALSE(
+      allowedContexts.Has(optimization_guide::proto::CONTEXT_UNSPECIFIED));
+  EXPECT_FALSE(
+      allowedContexts.Has(optimization_guide::proto::CONTEXT_PAGE_NAVIGATION));
+  EXPECT_FALSE(allowedContexts.Has(
+      optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
 }
 
 TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
@@ -179,7 +300,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
     std::string label;
     bool enabled;
     std::map<std::string, std::string> params;
-    std::vector<std::pair<proto::OptimizationTarget, absl::optional<int>>> want;
+    std::vector<std::pair<proto::OptimizationTarget, std::optional<int>>> want;
   };
 
   struct TestCase tests[] = {
@@ -189,8 +310,8 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .params = {},
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, std::nullopt},
               },
       },
       {
@@ -199,8 +320,8 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
           .params = {},
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, std::nullopt},
               },
       },
       {
@@ -212,7 +333,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
                   {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, 1},
               },
       },
@@ -225,8 +346,8 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, std::nullopt},
               },
       },
       {
@@ -238,8 +359,8 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
-                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, std::nullopt},
               },
       },
       {
@@ -251,7 +372,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
               },
           .want =
               {
-                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt},
+                  {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt},
                   {proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, -1},
               },
       },
@@ -299,7 +420,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
 
     for (const auto& expectation : test.want) {
       proto::OptimizationTarget opt_target = expectation.first;
-      absl::optional<int> num_threads = expectation.second;
+      std::optional<int> num_threads = expectation.second;
 
       EXPECT_EQ(num_threads,
                 features::OverrideNumThreadsForOptTarget(opt_target))
@@ -324,6 +445,23 @@ TEST(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
                     testing::Pair(proto::OPTIMIZATION_TARGET_MODEL_VALIDATION,
                                   testing::ElementsAre(5))));
   }
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     IsPerformanceClassCompatibleWithOnDeviceModel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"compatible_on_device_performance_classes", "4,6"}});
+
+  EXPECT_FALSE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
+      OnDeviceModelPerformanceClass::kError));
+  EXPECT_TRUE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
+      OnDeviceModelPerformanceClass::kMedium));
+  EXPECT_FALSE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
+      OnDeviceModelPerformanceClass::kHigh));
+  EXPECT_TRUE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
+      OnDeviceModelPerformanceClass::kVeryHigh));
 }
 
 }  // namespace

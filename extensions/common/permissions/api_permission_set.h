@@ -22,8 +22,8 @@ class APIPermissionSet;
 
 template<>
 struct BaseSetOperatorsTraits<APIPermissionSet> {
-  typedef APIPermission ElementType;
-  typedef mojom::APIPermissionID ElementIDType;
+  using ElementType = APIPermission;
+  using ElementIDType = mojom::APIPermissionID;
 };
 
 class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {

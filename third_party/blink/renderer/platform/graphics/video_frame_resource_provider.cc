@@ -50,8 +50,7 @@ void VideoFrameResourceProvider::Initialize(
   resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
       media_context_provider, shared_bitmap_reporter, resource_provider_.get(),
       settings_.use_stream_video_draw_quad,
-      settings_.resource_settings.use_gpu_memory_buffer_resources,
-      settings_.resource_settings.use_r16_texture, max_texture_size);
+      settings_.use_gpu_memory_buffer_resources, max_texture_size);
 }
 
 void VideoFrameResourceProvider::OnContextLost() {
@@ -121,7 +120,7 @@ void VideoFrameResourceProvider::AppendQuads(
 
   resource_updater_->AppendQuads(render_pass, std::move(frame), transform,
                                  quad_rect, visible_quad_rect, mask_filter_info,
-                                 /*clip_rect=*/absl::nullopt, is_opaque,
+                                 /*clip_rect=*/std::nullopt, is_opaque,
                                  draw_opacity, sorting_context_id);
 }
 

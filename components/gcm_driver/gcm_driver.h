@@ -202,10 +202,6 @@ class GCMDriver {
   // been called, no other GCMDriver methods may be used.
   virtual void Shutdown();
 
-  // Called when the user signs in to or out of a GAIA account.
-  virtual void OnSignedIn() = 0;
-  virtual void OnSignedOut() = 0;
-
   // Adds a handler for a given app.
   virtual void AddAppHandler(const std::string& app_id, GCMAppHandler* handler);
 

@@ -6,6 +6,7 @@
 #define NET_REPORTING_REPORTING_TEST_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -66,7 +66,7 @@ class TestReportingUploader : public ReportingUploader {
     virtual const url::Origin& report_origin() const = 0;
     virtual const GURL& url() const = 0;
     virtual const std::string& json() const = 0;
-    virtual absl::optional<base::Value> GetValue() const = 0;
+    virtual std::optional<base::Value> GetValue() const = 0;
 
     virtual void Complete(Outcome outcome) = 0;
 
@@ -344,7 +344,7 @@ class TestReportingService : public ReportingService {
 
   void QueueReport(
       const GURL& url,
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& user_agent,
       const std::string& group,
@@ -370,7 +370,8 @@ class TestReportingService : public ReportingService {
 
   ReportingContext* GetContextForTesting() const override;
 
-  std::vector<const ReportingReport*> GetReports() const override;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> GetReports()
+      const override;
   base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
   GetV1ReportingEndpointsByOrigin() const override;
   void AddReportingCacheObserver(ReportingCacheObserver* observer) override;

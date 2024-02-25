@@ -65,4 +65,8 @@ int FakeMetricReportQueue::GetNumFlush() const {
 bool FakeMetricReportQueue::IsEmpty() const {
   return reported_data_.IsEmpty();
 }
+
+Destination FakeMetricReportQueue::GetDestination() const {
+  return Destination::UNDEFINED_DESTINATION;
+}
 }  // namespace reporting::test

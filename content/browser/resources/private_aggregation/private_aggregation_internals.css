@@ -1,0 +1,46 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  color: rgb(48, 57, 66);
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  height: 100%;
+  margin: 15px;
+  overflow: auto;
+}
+
+h1 {
+  color: rgb(92, 97, 102);
+  font-size: 1.5rem;
+  padding-bottom: 10px;
+}
+
+main {
+  border-top: 1px solid rgb(48, 57, 66);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.content {
+  background-color: rgb(251, 251, 251);
+}
+
+button {
+  font: inherit;
+  margin-inline-end: 30px;
+}
+
+.sendbutton {
+  margin-bottom: 16px;
+}

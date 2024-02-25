@@ -45,7 +45,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
@@ -56,12 +55,18 @@
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_logging.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/i18n/time_formatting.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
 #include <initguid.h>
+
 #include "base/logging_win.h"
 #include "base/process/process_info.h"
 #include "base/syslog_logging.h"
@@ -549,13 +554,9 @@ bool DialogsAreSuppressed() {
 #if BUILDFLAG(IS_CHROMEOS)
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp) {
-  base::Time::Exploded time_deets;
-  timestamp.UTCExplode(&time_deets);
-  std::string suffix =
-      base::StringPrintf("_%02d%02d%02d-%02d%02d%02d", time_deets.year,
-                         time_deets.month, time_deets.day_of_month,
-                         time_deets.hour, time_deets.minute, time_deets.second);
-  return base_path.InsertBeforeExtensionASCII(suffix);
+  return base_path.InsertBeforeExtensionASCII(
+      base::UnlocalizedTimeFormatWithPattern(timestamp, "_yyMMdd-HHmmss",
+                                             icu::TimeZone::getGMT()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

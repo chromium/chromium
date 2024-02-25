@@ -6,16 +6,16 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/circular_deque.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
@@ -27,7 +27,6 @@
 #include "net/websockets/websocket_deflate_predictor.h"
 #include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_frame.h"
-#include "net/websockets/websocket_inflater.h"
 #include "net/websockets/websocket_stream.h"
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"

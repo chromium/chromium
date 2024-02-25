@@ -130,7 +130,8 @@
 <div id="destinationDropdown" on-keydown="onKeyDown_" tabindex="0"
     on-blur="onBlur_" on-click="onClick_" role="button" aria-haspopup="true"
     aria-label="$i18n{destinationLabel} [[value.displayName]]"
-    aria-description$="[[getAriaDescription_(destinationStatusText)]]">
+    aria-description$="[[getAriaDescription_(destinationStatusText)]]"
+    aria-expanded="[[opened_]]" aria-setsize$="[[dropdownLength_]]">
   <div id="destination-display-container">
     <div id="destination-icon-box">
       <iron-icon icon="[[destinationIcon]]"></iron-icon>
@@ -152,7 +153,8 @@
               class$="list-item [[getHighlightedClass_(item.key,
                   highlightedIndex_)]]"
               aria-description$="[[getPrinterStatusErrorString_(
-                  item.printerStatusReason)]]">
+                  item.printerStatusReason)]]"
+              aria-posinset$="[[getPrinterPosinset_(index)]]">
             <iron-icon icon="[[getPrinterStatusIcon_(
                 item.printerStatusReason, item.isEnterprisePrinter,
                 isDarkModeActive_)]]">
@@ -163,6 +165,7 @@
         <button on-click="onSelect_" tabindex="-1" value="[[pdfDestinationKey]]"
           hidden$="[[pdfPrinterDisabled]]" on-blur="onBlur_" role="menuitem"
           aria-setsize$="[[dropdownLength_]]"
+          aria-posinset$="[[pdfPosinset]]"
           class$="list-item [[getHighlightedClass_(pdfDestinationKey,
               highlightedIndex_)]]">
           $i18n{printToPDF}
@@ -170,19 +173,21 @@
         <button on-click="onSelect_" tabindex="-1" on-blur="onBlur_"
           value="[[driveDestinationKey]]" hidden$="[[!driveDestinationKey]]"
           role="menuitem" aria-setsize$="[[dropdownLength_]]"
+          aria-posinset$="[[drivePosinset]]"
           class$="list-item [[getHighlightedClass_(driveDestinationKey,
               highlightedIndex_)]]">
           $i18n{printToGoogleDrive}
         </button>
         <button on-click="onSelect_" tabindex="-1" value="noDestinations"
           hidden$="[[!noDestinations]]" on-blur="onBlur_" role="menuitem"
-          aria-setsize$="[[dropdownLength_]]"
+          aria-setsize$="[[dropdownLength_]]" aria-posinset$="1"
           class$="list-item [[getHighlightedClass_('noDestinations',
               highlightedIndex_)]]">
           $i18n{noDestinationsMessage}
         </button>
         <button on-click="onSelect_" tabindex="-1" value="seeMore"
           aria-label="$i18n{seeMoreDestinationsLabel}" on-blur="onBlur_"
+          aria-posinset$="[[seeMorePosinset]]"
           role="menuitem" aria-setsize$="[[dropdownLength_]]"
           class$="list-item [[getHighlightedClass_('seeMore',
               highlightedIndex_)]]">

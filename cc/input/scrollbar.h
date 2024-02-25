@@ -27,16 +27,16 @@ static constexpr int kDefaultWinScrollbarThickness = 17;
 
 namespace cc {
 
-enum class ScrollbarOrientation { HORIZONTAL, VERTICAL };
+enum class ScrollbarOrientation { kHorizontal, kVertical };
 
 enum class ScrollbarPart {
-  THUMB,
-  TRACK_BUTTONS_TICKMARKS,  // for PartNeedsRepaint() and PaintPart() only.
-  BACK_BUTTON,
-  FORWARD_BUTTON,
-  BACK_TRACK,
-  FORWARD_TRACK,
-  NO_PART,
+  kThumb,
+  kTrackButtonsTickmarks,  // for PartNeedsRepaint() and PaintPart() only.
+  kBackButton,
+  kForwardButton,
+  kBackTrack,
+  kForwardTrack,
+  kNoPart,
 };
 
 class Scrollbar : public base::RefCounted<Scrollbar> {
@@ -48,10 +48,15 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual ScrollbarOrientation Orientation() const = 0;
   virtual bool IsLeftSideVerticalScrollbar() const = 0;
   virtual bool IsSolidColor() const = 0;
+  // The color for a solid color scrollbar. This is meaningful only
+  // when IsSolidColor() is true.
+  virtual SkColor4f GetSolidColor() const = 0;
   virtual bool IsOverlay() const = 0;
+  virtual bool IsFluentOverlayScrollbarMinimalMode() const = 0;
   virtual bool HasThumb() const = 0;
   virtual bool SupportsDragSnapBack() const = 0;
   virtual bool JumpOnTrackClick() const = 0;
+  virtual bool IsOpaque() const = 0;
 
   // The following rects are all relative to the scrollbar's origin.
   // The location of ThumbRect reflects scroll offset, but cc will ignore it
@@ -65,13 +70,13 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual float Opacity() const = 0;
   virtual bool HasTickmarks() const = 0;
 
-  // Whether we need to repaint the part. Only THUMB and TRACK_BUTTONS_TICKMARKS
+  // Whether we need to repaint the part. Only kThumb and kTrackButtonsTickmarks
   // are supported.
   virtual bool NeedsRepaintPart(ScrollbarPart part) const = 0;
 
   // Paints the part in the given rect. The implementation should paint
   // relative to the rect, and doesn't need to know the current coordinate
-  // space of |canvas|. Only THUMB, TRACK_BUTTONS_TICKMARKS are supported.
+  // space of |canvas|. Only kThumb, kTrackButtonsTickmarks are supported.
   virtual void PaintPart(PaintCanvas* canvas,
                          ScrollbarPart part,
                          const gfx::Rect& rect) = 0;
@@ -86,6 +91,8 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual bool UsesNinePatchThumbResource() const = 0;
   virtual gfx::Size NinePatchThumbCanvasSize() const = 0;
   virtual gfx::Rect NinePatchThumbAperture() const = 0;
+  virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
+      gfx::Rect& rect) const = 0;
 
  protected:
   friend class base::RefCounted<Scrollbar>;

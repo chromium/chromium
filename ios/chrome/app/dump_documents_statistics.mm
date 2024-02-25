@@ -10,6 +10,7 @@
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/i18n/time_formatting.h"
 #import "base/json/json_writer.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,11 +21,7 @@ namespace documents_statistics {
 
 // Converts time to a human readable string in the device's local time.
 std::string TimeToLocalString(base::Time time) {
-  base::Time::Exploded exploded;
-  time.LocalExplode(&exploded);
-  return base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d", exploded.year,
-                            exploded.month, exploded.day_of_month,
-                            exploded.hour, exploded.minute, exploded.second);
+  return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd'T'HH:mm:ss");
 }
 
 // Gathers statistics for `root`, recusively if `root` is a directory.
@@ -83,8 +80,7 @@ void WriteSandboxStatisticsToFile(base::FilePath root,
       base::CreateDirectory(statistics_dir);
     }
 
-    std::string file_name = base::StringPrintf(
-        "%s.json", TimeToLocalString(base::Time::Now()).c_str());
+    std::string file_name = TimeToLocalString(base::Time::Now()) + ".json";
 
     base::FilePath statistics_file_path = statistics_dir.Append(file_name);
     base::File statistics_file(

@@ -7,13 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-@class ChromeTableViewController;
-
-// TableViewNavigationController encapsulates a ChromeTableViewController inside
-// a UINavigationController.
+// TableViewNavigationController encapsulates a UIViewController inside a
+// UINavigationController with a styling used for TableViews.
 @interface TableViewNavigationController : UINavigationController
 
-- (instancetype)initWithTable:(ChromeTableViewController*)table
+- (instancetype)initWithTable:(UIViewController*)table
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithRootViewController:(UIViewController*)rootViewController
     NS_UNAVAILABLE;

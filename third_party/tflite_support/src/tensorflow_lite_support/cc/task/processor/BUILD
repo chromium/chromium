@@ -3,7 +3,6 @@ load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "
 default_visibility = ["//tensorflow_lite_support:internal"]
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = default_visibility,
     licenses = ["notice"],  # Apache 2.0
 )
@@ -13,7 +12,7 @@ cc_library_with_tflite(
     srcs = ["processor.cc"],
     hdrs = ["processor.h"],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite/core/shims:common",
+        "@org_tensorflow//tensorflow/lite/c:common",
         "//tensorflow_lite_support/cc/task/core:tflite_engine",
     ],
     deps = [

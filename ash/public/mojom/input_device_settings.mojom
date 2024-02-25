@@ -7,6 +7,7 @@ module ash.mojom;
 import "ash/public/mojom/accelerator_actions.mojom";
 import "ash/public/mojom/accelerator_keys.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "ui/events/ash/mojom/extended_fkeys_modifier.mojom";
 import "ui/events/ash/mojom/modifier_key.mojom";
 import "ui/events/ash/mojom/simulate_right_click_modifier.mojom";
 import "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom";
@@ -37,15 +38,53 @@ struct InputDeviceSettingsPolicy {
   bool value;
 };
 
+// Represents the policy that controls the F11/F12 settings.
+struct InputDeviceSettingsFkeyPolicy {
+  PolicyStatus policy_status;
+  ui.mojom.ExtendedFkeysModifier value;
+};
+
+// Represents the policy that controls the "six pack" settings.
+struct InputDeviceSettingsSixPackKeyPolicy {
+  PolicyStatus policy_status;
+  ui.mojom.SixPackShortcutModifier value;
+};
+
 // Represents the current set of keyboard enterprise policies. All members are
 // optional. When null, there is no enterprise policy set for the given setting.
 struct KeyboardPolicies {
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Accessibility/KeyboardDefaultToFunctionKeys.yaml
   InputDeviceSettingsPolicy? top_row_are_fkeys_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/
+  //   DeviceSwitchFunctionKeysBehaviorEnabled.yaml
+  InputDeviceSettingsPolicy? enable_meta_fkey_rewrites_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/F11KeyModifier.yaml
+  InputDeviceSettingsFkeyPolicy? f11_key_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/F12KeyModifier.yaml
+  InputDeviceSettingsFkeyPolicy? f12_key_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/HomeAndEndKeysModifier.yaml
+  InputDeviceSettingsSixPackKeyPolicy? home_and_end_keys_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/PageUpAndPageDownKeysModifier.yaml
+  InputDeviceSettingsSixPackKeyPolicy? page_up_and_page_down_keys_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/DeleteKeyModifier.yaml
+  InputDeviceSettingsSixPackKeyPolicy? delete_key_policy;
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/InsertKeyModifier.yaml
+  InputDeviceSettingsSixPackKeyPolicy? insert_key_policy;
 };
 
 // Represents the current set of mouse enterprise policies. All members are
 // optional. When null, there is no enterprise policy set for the given setting.
 struct MousePolicies {
+  // This policy is defined at components/policy/resources/templates/
+  //   policy_definitions/Miscellaneous/PrimaryMouseButtonSwitch.yaml
   InputDeviceSettingsPolicy? swap_right_policy;
 };
 
@@ -57,6 +96,35 @@ enum MetaKey {
   kLauncher,
   kExternalMeta,
   kCommand
+};
+
+// Contains top row action keys found on different keyboards.
+// Note: that this enumeration will need to be extended if new keys are added.
+enum TopRowActionKey {
+  kNone,
+  kUnknown,
+  kBack,
+  kForward,
+  kRefresh,
+  kFullscreen,
+  kOverview,
+  kScreenshot,
+  kScreenBrightnessDown,
+  kScreenBrightnessUp,
+  kMicrophoneMute,
+  kVolumeMute,
+  kVolumeDown,
+  kVolumeUp,
+  kKeyboardBacklightToggle,
+  kKeyboardBacklightDown,
+  kKeyboardBacklightUp,
+  kNextTrack,
+  kPreviousTrack,
+  kPlayPause,
+  kAllApplications,
+  kEmojiPicker,
+  kDictation,
+  kPrivacyScreenToggle,
 };
 
 // Contains all information needed to display, apply, and update keyboard
@@ -78,6 +146,9 @@ struct Keyboard {
   MetaKey meta_key;
   // List of modifier keys (caps lock, assistant, etc) present on this device.
   array<ui.mojom.ModifierKey> modifier_keys;
+  // List of top row action keys (back, refresh, etc) present on this device.
+  // The keys are stored in the order they appear on the device.
+  array<TopRowActionKey> top_row_action_keys;
   KeyboardSettings settings;
 };
 
@@ -87,6 +158,12 @@ struct KeyboardSettings {
   bool top_row_are_fkeys;
   bool suppress_meta_fkey_rewrites;
   SixPackKeyInfo? six_pack_key_remappings;
+  // Modifier key used to remap key events to the F11 key for ChromeOS
+  // keyboards.
+  ui.mojom.ExtendedFkeysModifier? f11;
+  // Modifier key used to remap key events to the F12 key for ChromeOS
+  // keyboards.
+  ui.mojom.ExtendedFkeysModifier? f12;
 };
 
 // Contains all information needed to display, apply, and update mouse
@@ -104,6 +181,10 @@ struct Mouse {
   // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
   // Example: 5022:18d1.
   string device_key;
+  // Used to check customization restriction of the mouse.
+  CustomizationRestriction customization_restriction;
+  // Used to get the mouse button config.
+  MouseButtonConfig mouse_button_config;
   MouseSettings settings;
 };
 
@@ -209,15 +290,22 @@ struct Stylus {
 // Contains all information needed to display, apply, and update graphics
 // tablet settings.
 struct GraphicsTablet {
-  // Key used to lookup device settings in prefs in the format
-  // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
-  // Example: 5022:18d1.
-  string device_key;
+  // User visible name for the graphics tablet seen within the Settings SWA.
+  string name;
   // Unique identifier for the graphics tablet which is assigned by ozone when
   // it is connected and is reassigned when disconnected and reconnected to the
   // system. These ids can be rarely reused for multiple devices if the original
   // device holding the id had been disconnected.
   uint32 id;
+  // Key used to lookup device settings in prefs in the format
+  // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
+  // Example: 5022:18d1.
+  string device_key;
+  // Used to check customization restriction of the graphics tablet.
+  CustomizationRestriction customization_restriction;
+  // Used to configure the buttons that are known on the device through
+  // metadata.
+  GraphicsTabletButtonConfig graphics_tablet_button_config;
   GraphicsTabletSettings settings;
 };
 
@@ -230,7 +318,8 @@ struct GraphicsTabletSettings {
 };
 
 // Contains all information needed to apply remappings from a button to
-// either an action or key event and display it within the settings app.
+// either an acceleration action or key event or static shortcut action
+// and display it within the settings app.
 struct ButtonRemapping {
   // Human-readable label of the button remapping which user can rename.
   string name;
@@ -238,10 +327,12 @@ struct ButtonRemapping {
   RemappingAction? remapping_action;
 };
 
-// Represents the remapping action which can be either a key event or action.
+// Represents the remapping action which can be either a key event or
+// acceleration action or static shortcut action.
 union RemappingAction {
-  ash.mojom.AcceleratorAction action;
+  ash.mojom.AcceleratorAction accelerator_action;
   KeyEvent key_event;
+  StaticShortcutAction static_shortcut_action;
 };
 
 // Represents the key event the button remaps to.
@@ -250,6 +341,9 @@ struct KeyEvent {
   uint32 dom_code;
   uint32 dom_key;
   uint32 modifiers;
+
+  // Name of the key to display in the UI.
+  string key_display;
 };
 
 // Represents the button to remap which can be either a virtual key or
@@ -268,4 +362,70 @@ enum CustomizableButton {
   kBack = 4,
   kExtra = 5,
   kSide = 6,
+  // Scroll buttons are for buttons that emit as horizontal scrolling events.
+  // Usually done by shifting the mouse wheel left and right.
+  kScrollLeft = 7,
+  kScrollRight = 8,
+};
+
+// Contains the valid set of mouse button configs.
+enum MouseButtonConfig {
+  // Mouse with no explicit configuration about
+  // what customizable buttons it has.
+  kNoConfig = 0,
+  // Mouse with five customizable buttons.
+  kFiveKey = 1,
+  // Logitech mouse with six customizable buttons.
+  kLogitechSixKey = 2,
+  // Logitech mouse with six customizable buttons, where the 6th button sends
+  // tab.
+  kLogitechSixKeyWithTab = 3,
+};
+
+// Contains the valid set of graphics tablet button configs.
+enum GraphicsTabletButtonConfig {
+  // Mouse with no explicit configuration about
+  // what customizable buttons it has.
+  kNoConfig = 0,
+  // Graphics tablets that follow standard button configuration with no tablet
+  // buttons.
+  kWacomStandardPenOnly = 1,
+  // Graphics tablets that follow standard button configurations with four
+  // tablet buttons.
+  kWacomStandardFourButtons = 2,
+};
+
+// Contains the valid set of static shortcut actions.
+enum StaticShortcutAction {
+  kDisable = 0,
+  kCopy = 1,
+  kPaste = 2,
+  kUndo = 3,
+  kRedo = 4,
+  kZoomIn = 5,
+  kZoomOut = 6,
+  kPreviousPage = 7,
+  kNextPage = 8,
+  kLeftClick = 9,
+  kRightClick = 10,
+  kMiddleClick = 11,
+};
+
+// Contains the customization restrictions of the devices.
+enum CustomizationRestriction {
+  // Full access to customization feature with no restrictions.
+  kAllowCustomizations = 0,
+  // Completely disable the customization feature.
+  kDisallowCustomizations = 1,
+  // Disable key event rewrites.
+  kDisableKeyEventRewrites = 2,
+  // Allow Alphabet key event rewrites.
+  kAllowAlphabetKeyEventRewrites = 3,
+  // Allow Alphabet or Number key event rewrites.
+  kAllowAlphabetOrNumberKeyEventRewrites = 4,
+  // Allow horizontal scroll wheel as well as normal mouse buttons. Identical to
+  // kDisableKeyEventRewrites but permits horizontal scroll wheel buttons.
+  kAllowHorizontalScrollWheelRewrites = 5,
+  // Allow tab events in addition to normal mouse events to be rewritten.
+  kAllowTabEventRewrites = 6,
 };

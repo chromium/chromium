@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "ash/ambient/ambient_ui_settings.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/test/test_ash_web_view.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
@@ -26,10 +26,12 @@ namespace ash {
 namespace ambient {
 namespace metrics {
 using AmbientMetricsTest = testing::Test;
+using ash::personalization_app::mojom::AmbientTheme;
+using ash::personalization_app::mojom::TopicSource;
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceArt) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kArtGallery;
+  settings.topic_source = TopicSource::kArtGallery;
 
   EXPECT_EQ(AmbientModePhotoSource::kArtGallery,
             AmbientSettingsToPhotoSource(settings));
@@ -37,7 +39,7 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceArt) {
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosEmpty) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  settings.topic_source = TopicSource::kGooglePhotos;
   settings.selected_album_ids.clear();
 
   EXPECT_EQ(AmbientModePhotoSource::kGooglePhotosEmpty,
@@ -46,7 +48,7 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosEmpty) {
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosRecentHighlights) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  settings.topic_source = TopicSource::kGooglePhotos;
   settings.selected_album_ids.clear();
   settings.selected_album_ids.push_back(
       ash::kAmbientModeRecentHighlightsAlbumId);
@@ -57,7 +59,7 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosRecentHighlights) {
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosBoth) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  settings.topic_source = TopicSource::kGooglePhotos;
   settings.selected_album_ids.clear();
   settings.selected_album_ids.push_back(
       ash::kAmbientModeRecentHighlightsAlbumId);
@@ -69,7 +71,7 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosBoth) {
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosPersonalAlbum) {
   AmbientSettings settings;
-  settings.topic_source = AmbientModeTopicSource::kGooglePhotos;
+  settings.topic_source = TopicSource::kGooglePhotos;
   settings.selected_album_ids.clear();
   settings.selected_album_ids.push_back("abcde");
 

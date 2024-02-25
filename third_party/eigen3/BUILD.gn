@@ -2,9 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-config("eigen_includes") {
+config("eigen_public_includes") {
   include_dirs = [ "src" ]
 
+  defines = [
+    "EIGEN_MPL2_ONLY",
+    "EIGEN_MAX_ALIGN_BYTES=64",
+    "EIGEN_HAS_TYPE_TRAITS=0",
+  ]
+}
+
+# As this target suppresses warnings, it should not be added to public_configs.
+# Only eigen_public_includes should be in public_configs.
+config("eigen_includes") {
   cflags = [
     "-Wno-deprecated-copy",
     "-Wno-deprecated-declarations",
@@ -13,15 +23,5 @@ config("eigen_includes") {
     "-Wno-unused-result",
   ]
 
-  defines = [
-    "EIGEN_MPL2_ONLY",
-    "EIGEN_MAX_ALIGN_BYTES=64",
-    "EIGEN_HAS_TYPE_TRAITS=0",
-  ]
-
-  if (target_os == "win" && target_cpu == "arm64") {
-    # https://crbug.com/1182242 - Neon extensions are temporarily disabled
-    # for this component on Windows on Arm due to compilation errors.
-    defines += [ "EIGEN_DONT_VECTORIZE" ]
-  }
+  configs = [ ":eigen_public_includes" ]
 }

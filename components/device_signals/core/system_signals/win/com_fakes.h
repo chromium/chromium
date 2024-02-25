@@ -8,14 +8,16 @@
 #include <atlcomcli.h>
 #include <iwscapi.h>
 #include <wbemidl.h>
+
 #include <iterator>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device_signals {
 
@@ -60,7 +62,7 @@ class FakeEnumWbemClassObject : public IEnumWbemClassObject {
   IFACEMETHODIMP Skip(long lTimeout, ULONG nCount) override;
 
   std::vector<std::pair<IWbemClassObject*, ULONG>> items_;
-  absl::optional<std::vector<std::pair<IWbemClassObject*, ULONG>>::iterator>
+  std::optional<std::vector<std::pair<IWbemClassObject*, ULONG>>::iterator>
       iterator_;
 };
 
@@ -186,7 +188,7 @@ class FakeWscProduct : public IWscProduct {
 
   bool ShouldFail(FailureStep step);
 
-  absl::optional<FailureStep> failed_step_;
+  std::optional<FailureStep> failed_step_;
 
   base::win::ScopedBstr name_;
   base::win::ScopedBstr id_;
@@ -215,7 +217,7 @@ class FakeWSCProductList : public IWSCProductList {
   // represented by `step`.
   void set_failed_step(FailureStep step) { failed_step_ = step; }
 
-  const absl::optional<ULONG>& provider() { return provider_; }
+  const std::optional<ULONG>& provider() { return provider_; }
 
  private:
   // IWSCProductList:
@@ -223,10 +225,10 @@ class FakeWSCProductList : public IWSCProductList {
 
   bool ShouldFail(FailureStep step);
 
-  absl::optional<FailureStep> failed_step_;
+  std::optional<FailureStep> failed_step_;
 
-  absl::optional<ULONG> provider_;
-  std::vector<IWscProduct*> products_;
+  std::optional<ULONG> provider_;
+  std::vector<raw_ptr<IWscProduct, VectorExperimental>> products_;
 };
 
 }  // namespace device_signals

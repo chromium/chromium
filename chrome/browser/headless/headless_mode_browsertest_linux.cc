@@ -4,16 +4,55 @@
 
 #include "chrome/browser/headless/headless_mode_browsertest.h"
 
+#include "chrome/browser/headless/headless_mode_browsertest_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window.h"
+#include "ui/views/widget/widget.h"
 
 namespace headless {
+
+namespace test {
+
+bool IsPlatformWindowVisible(views::Widget* widget) {
+  CHECK(widget);
+
+  gfx::NativeWindow native_window = widget->GetNativeWindow();
+  CHECK(native_window);
+
+  aura::WindowTreeHostPlatform* host =
+      static_cast<aura::WindowTreeHostPlatform*>(native_window->GetHost());
+  CHECK(host);
+
+  ui::PlatformWindow* platform_window = host->platform_window();
+  CHECK(platform_window);
+
+  return platform_window->IsVisible();
+}
+
+gfx::Rect GetPlatformWindowExpectedBounds(views::Widget* widget) {
+  CHECK(widget);
+
+  gfx::NativeWindow native_window = widget->GetNativeWindow();
+  CHECK(native_window);
+
+  aura::WindowTreeHostPlatform* host =
+      static_cast<aura::WindowTreeHostPlatform*>(native_window->GetHost());
+  CHECK(host);
+
+  ui::PlatformWindow* platform_window = host->platform_window();
+  CHECK(platform_window);
+
+  return platform_window->GetBoundsInPixels();
+}
+
+}  // namespace test
 
 namespace {
 

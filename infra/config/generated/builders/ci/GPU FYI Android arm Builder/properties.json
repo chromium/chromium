@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/GPU FYI Android arm Builder/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -117,7 +120,8 @@
                 "bucket": "ci",
                 "builder": "GPU FYI Android arm Builder",
                 "project": "chromium"
-              }
+              },
+              "run_tests_serially": true
             }
           },
           {
@@ -146,7 +150,8 @@
                 "bucket": "ci",
                 "builder": "GPU FYI Android arm Builder",
                 "project": "chromium"
-              }
+              },
+              "run_tests_serially": true
             }
           },
           {

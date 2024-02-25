@@ -71,11 +71,13 @@ void CardUnmaskPromptViewAndroid::OnUserInput(
     const JavaParamRef<jstring>& cvc,
     const JavaParamRef<jstring>& month,
     const JavaParamRef<jstring>& year,
-    jboolean enable_fido_auth) {
+    jboolean enable_fido_auth,
+    jboolean was_checkbox_visible) {
   controller_->OnUnmaskPromptAccepted(
       base::android::ConvertJavaStringToUTF16(env, cvc),
       base::android::ConvertJavaStringToUTF16(env, month),
-      base::android::ConvertJavaStringToUTF16(env, year), enable_fido_auth);
+      base::android::ConvertJavaStringToUTF16(env, year), enable_fido_auth,
+      was_checkbox_visible);
 }
 
 void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(
@@ -170,7 +172,7 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
   return java_object_internal_ = Java_CardUnmaskBridge_create(
              env, reinterpret_cast<intptr_t>(this), dialog_title, instructions,
              ResourceMapper::MapToJavaDrawableId(
-                 GetIconResourceID(controller_->GetCardIconString())),
+                 GetIconResourceID(controller_->GetCardIcon())),
              card_name, card_last_four_digits, card_expiration, card_art_url,
              confirm,
              ResourceMapper::MapToJavaDrawableId(controller_->GetCvcImageRid()),

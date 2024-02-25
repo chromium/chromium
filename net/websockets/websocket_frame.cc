@@ -7,7 +7,10 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <ostream>
+
 #include "base/big_endian.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"

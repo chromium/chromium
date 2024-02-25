@@ -1,0 +1,46 @@
+Check that the WebAuthn default backup flags are reflected
+
+Authenticator with defaultBackupEligibility=true
+Create credential status: OK
+be: true (expected true)
+Get assertion status: OK
+be: true (expected true)
+Get credential through devtools
+backupEligibility: true (expected true)
+Replacing credential by one added through devtools
+Get credential status: OK
+be: true (expected true)
+
+Authenticator with defaultBackupEligibility=false
+Create credential status: OK
+be: false (expected false)
+Get assertion status: OK
+be: false (expected false)
+Get credential through devtools
+backupEligibility: false (expected false)
+Replacing credential by one added through devtools
+Get credential status: OK
+be: false (expected false)
+
+Authenticator with defaultBackupState=true
+Create credential status: OK
+bs: true (expected true)
+Get assertion status: OK
+bs: true (expected true)
+Get credential through devtools
+backupState: true (expected true)
+Replacing credential by one added through devtools
+Get credential status: OK
+bs: true (expected true)
+
+Authenticator with defaultBackupState=false
+Create credential status: OK
+bs: false (expected false)
+Get assertion status: OK
+bs: false (expected false)
+Get credential through devtools
+backupState: false (expected false)
+Replacing credential by one added through devtools
+Get credential status: OK
+bs: false (expected false)
+

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 class CloudPolicyClient;
@@ -69,9 +69,9 @@ class CertProvisioningClient {
 
   using StartCsrCallback = base::OnceCallback<void(
       policy::DeviceManagementStatus status,
-      absl::optional<enterprise_management::
-                         ClientCertificateProvisioningResponse::Error> error,
-      absl::optional<int64_t> try_later,
+      std::optional<enterprise_management::
+                        ClientCertificateProvisioningResponse::Error> error,
+      std::optional<int64_t> try_later,
       const std::string& invalidation_topic,
       const std::string& va_challenge,
       enterprise_management::HashingAlgorithm hash_algorithm,
@@ -79,15 +79,15 @@ class CertProvisioningClient {
 
   using FinishCsrCallback = base::OnceCallback<void(
       policy::DeviceManagementStatus status,
-      absl::optional<enterprise_management::
-                         ClientCertificateProvisioningResponse::Error> error,
-      absl::optional<int64_t> try_later)>;
+      std::optional<enterprise_management::
+                        ClientCertificateProvisioningResponse::Error> error,
+      std::optional<int64_t> try_later)>;
 
   using DownloadCertCallback = base::OnceCallback<void(
       policy::DeviceManagementStatus status,
-      absl::optional<enterprise_management::
-                         ClientCertificateProvisioningResponse::Error> error,
-      absl::optional<int64_t> try_later,
+      std::optional<enterprise_management::
+                        ClientCertificateProvisioningResponse::Error> error,
+      std::optional<int64_t> try_later,
       const std::string& pem_encoded_certificate)>;
 
   using StartCallback = base::OnceCallback<void(

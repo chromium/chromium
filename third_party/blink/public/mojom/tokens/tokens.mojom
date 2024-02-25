@@ -127,10 +127,6 @@ union ExecutionContextToken {
   ShadowRealmToken shadow_realm_token;
 };
 
-struct PortalToken {
-  mojo_base.mojom.UnguessableToken value;
-};
-
 struct V8ContextToken {
   mojo_base.mojom.UnguessableToken value;
 };
@@ -138,4 +134,6 @@ struct V8ContextToken {
 union WebGPUExecutionContextToken {
   DocumentToken document_token;
   DedicatedWorkerToken dedicated_worker_token;
+  SharedWorkerToken shared_worker_token;
+  ServiceWorkerToken service_worker_token;
 };

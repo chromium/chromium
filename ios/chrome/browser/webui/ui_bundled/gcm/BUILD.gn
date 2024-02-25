@@ -1,0 +1,19 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("gcm") {
+  sources = [
+    "gcm_internals_ui.cc",
+    "gcm_internals_ui.h",
+  ]
+  deps = [
+    "//base",
+    "//components/gcm_driver",
+    "//components/resources",
+    "//ios/chrome/browser/gcm/model",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/web/public/webui",
+  ]
+}

@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

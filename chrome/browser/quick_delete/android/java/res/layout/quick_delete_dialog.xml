@@ -109,6 +109,7 @@ found in the LICENSE file.
             android:layout_marginBottom="@dimen/qd_dialog_items_bottom_margin_small"
             android:drawableEnd="@drawable/ic_expand_more_horizontal_black_24dp"
             android:text="@string/quick_delete_dialog_more_options_button_text"
+            android:contentDescription="@string/quick_delete_dialog_more_options_button_text_a11y"
             style="@style/MoreOptionsButton"/>
 
         <org.chromium.ui.widget.TextViewWithClickableSpans

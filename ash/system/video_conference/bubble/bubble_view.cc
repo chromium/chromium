@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
+#include "ash/system/video_conference/bubble/set_camera_background_view.h"
 #include "ash/system/video_conference/bubble/set_value_effects_view.h"
 #include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
@@ -19,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -41,6 +45,10 @@ constexpr int kLinuxAppWarningViewTopPadding = 12;
 constexpr int kLinuxAppWarningViewSpacing = 1;
 constexpr int kLinuxAppWarningIconSize = 16;
 
+CameraEffectsController* GetCameraEffectsController() {
+  return Shell::Get()->camera_effects_controller();
+}
+
 // Check if there's a linux app in the given `apps`.
 bool HasLinuxApps(const MediaApps& apps) {
   for (auto& app : apps) {
@@ -57,9 +65,9 @@ bool HasLinuxApps(const MediaApps& apps) {
 // other media apps, used to warn users that effects cannot be applied to Linux
 // apps.
 class LinuxAppWarningView : public views::View {
- public:
-  METADATA_HEADER(LinuxAppWarningView);
+  METADATA_HEADER(LinuxAppWarningView, views::View)
 
+ public:
   LinuxAppWarningView() {
     SetID(BubbleViewID::kLinuxAppWarningView);
     SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -92,7 +100,7 @@ class LinuxAppWarningView : public views::View {
   ~LinuxAppWarningView() override = default;
 };
 
-BEGIN_METADATA(LinuxAppWarningView, views::View);
+BEGIN_METADATA(LinuxAppWarningView);
 END_METADATA
 
 }  // namespace
@@ -118,14 +126,14 @@ void BubbleView::AddedToWidget() {
   // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
   // a parent widget).
-  AddChildView(std::make_unique<ReturnToAppPanel>(media_apps_));
+  AddChildView(std::make_unique<ReturnToAppPanel>(*media_apps_));
 
   const bool has_toggle_effects =
-      controller_->effects_manager().HasToggleEffects();
+      controller_->GetEffectsManager().HasToggleEffects();
   const bool has_set_value_effects =
-      controller_->effects_manager().HasSetValueEffects();
+      controller_->GetEffectsManager().HasSetValueEffects();
 
-  if (HasLinuxApps(media_apps_) &&
+  if (HasLinuxApps(*media_apps_) &&
       (has_toggle_effects || has_set_value_effects)) {
     AddChildView(std::make_unique<LinuxAppWarningView>());
   }
@@ -136,10 +144,10 @@ void BubbleView::AddedToWidget() {
   // `ShowBubble` in `VideoConferenceTray::ToggleBubble`.
   auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view->SetAllowKeyboardScrolling(false);
-  scroll_view->SetBackgroundColor(absl::nullopt);
+  scroll_view->SetBackgroundColor(std::nullopt);
 
   // TODO(b/262930924): Use the correct max_height.
-  scroll_view->ClipHeightTo(/*min_height=*/0, /*max_height=*/300);
+  scroll_view->ClipHeightTo(/*min_height=*/0, /*max_height=*/400);
   scroll_view->SetDrawOverflowIndicator(false);
   scroll_view->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
@@ -164,6 +172,13 @@ void BubbleView::AddedToWidget() {
     scroll_contents_view->AddChildView(
         std::make_unique<SetValueEffectsView>(controller_));
   }
+
+  if (features::IsVcBackgroundReplaceEnabled()) {
+    set_camera_background_view_ = scroll_contents_view->AddChildView(
+        std::make_unique<SetCameraBackgroundView>(this, controller_.get()));
+    set_camera_background_view_->SetVisible(
+        GetCameraEffectsController()->GetCameraEffects()->replace_enabled);
+  }
 }
 
 void BubbleView::ChildPreferredSizeChanged(View* child) {
@@ -174,5 +189,16 @@ void BubbleView::ChildPreferredSizeChanged(View* child) {
 bool BubbleView::CanActivate() const {
   return true;
 }
+
+void BubbleView::SetBackgroundReplaceUiVisible(bool visible) {
+  CHECK(features::IsVcBackgroundReplaceEnabled() && set_camera_background_view_)
+      << "Can't show set_camera_background_view before it is constructed.";
+
+  set_camera_background_view_->SetVisible(visible);
+  ChildPreferredSizeChanged(set_camera_background_view_);
+}
+
+BEGIN_METADATA(BubbleView)
+END_METADATA
 
 }  // namespace ash::video_conference

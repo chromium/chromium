@@ -42,14 +42,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 
-namespace features {
-
-BASE_FEATURE(kDumpWhenFrameTreeNodeTakesNavigationRequestWithEvictedBFCacheRFH,
-             "DumpWhenFrameTreeNodeTakesNavigationRequestWithEvictedBFCacheRFH",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
-
 namespace content {
 
 namespace {
@@ -151,9 +143,10 @@ FrameTreeNode::FencedFrameStatus ComputeFencedFrameStatus(
     const blink::FramePolicy& frame_policy) {
   using FencedFrameStatus = FrameTreeNode::FencedFrameStatus;
   if (blink::features::IsFencedFramesEnabled() &&
-      frame_tree.type() == FrameTree::Type::kFencedFrame) {
-    if (!parent)
+      frame_tree.is_fenced_frame()) {
+    if (!parent) {
       return FencedFrameStatus::kFencedFrameRoot;
+    }
     return FencedFrameStatus::kIframeNestedWithinFencedFrame;
   }
 
@@ -192,12 +185,11 @@ FrameTreeNode::FrameTreeNode(
 void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
   // If `this` is an dummy outer delegate node, then we really are representing
   // an inner FrameTree for one of the following consumers:
-  //   - `Portal`
   //   - `FencedFrame`
   //   - `GuestView`
   // If we are representing a `FencedFrame` object, we need to destroy it
-  // alongside ourself. `Portals` and `GuestView` however, *currently* have a
-  // more complex lifetime and are dealt with separately.
+  // alongside ourself. `GuestView` however, *currently* has a more complex
+  // lifetime and is dealt with separately.
   bool is_outer_dummy_node = false;
   if (current_frame_host() &&
       current_frame_host()->inner_tree_main_frame_tree_node_id() !=
@@ -206,11 +198,7 @@ void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
   }
 
   if (is_outer_dummy_node) {
-    FencedFrame* doomed_fenced_frame = FindFencedFrame(this);
-    // `doomed_fenced_frame` might not actually exist, because some outer dummy
-    // `FrameTreeNode`s might correspond to `Portal`s, which do not have their
-    // lifetime managed in the same way as `FencedFrames`.
-    if (doomed_fenced_frame) {
+    if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
       parent()->DestroyFencedFrame(*doomed_fenced_frame);
     }
   }
@@ -370,14 +358,14 @@ RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocumentHelper(
   }
 
   if (!escape_guest_view) {
-    // If we are not a fenced frame root nor inside a portal then return early.
+    // If we are not a fenced frame root then return early.
     // This code does not escape GuestViews.
-    if (!IsFencedFrameRoot() && !frame_tree_->delegate()->IsPortal()) {
+    if (!IsFencedFrameRoot()) {
       return nullptr;
     }
   }
 
-  // Find the parent in the outer embedder (GuestView, Portal, or Fenced Frame).
+  // Find the parent in the outer embedder (GuestView or Fenced Frame).
   FrameTreeNode* frame_in_embedder = render_manager()->GetOuterDelegateNode();
   if (frame_in_embedder) {
     return frame_in_embedder->current_frame_host()->GetParent();
@@ -605,23 +593,15 @@ void FrameTreeNode::TakeNavigationRequest(
   // initiated previously.
   CancelRestartingBackForwardCacheNavigation();
 
-  // TODO(crbug.com/1468984): Remove.
-  // Dump the process to investigate the case when BFCache is evicted
-  // after the NavigationRequest creation but before its ownership is
-  // transferred to the FrameTreeNode.
-  if (base::FeatureList::IsEnabled(
-          features::
-              kDumpWhenFrameTreeNodeTakesNavigationRequestWithEvictedBFCacheRFH)) {
-    if (navigation_request->IsServedFromBackForwardCache() &&
-        navigation_request->GetRenderFrameHostRestoredFromBackForwardCache()
-            ->is_evicted_from_back_forward_cache()) {
-      SCOPED_CRASH_KEY_STRING256(
-          "Bug1468984", "bfcache_eviction_reason",
-          navigation_request->GetRenderFrameHostRestoredFromBackForwardCache()
-              ->GetBackForwardCacheMetrics()
-              ->GetPageStoredResultString());
-      base::debug::DumpWithoutCrashing();
-    }
+  // If `navigation_request` is a BFCache navigation, the RFH for BFCache
+  // restore should not be evicted before.
+  // This CHECK is added with the fix of https://crbug.com/1468984. See
+  // `BackForwardCacheBrowserTest.TwoBackNavigationsToTheSameEntry` for how
+  // BFCache entry could be evicted before the BFCache `NavigationRequest`
+  // is moved to the FrameTreeNode without the fix.
+  if (navigation_request->IsServedFromBackForwardCache()) {
+    CHECK(!navigation_request->GetRenderFrameHostRestoredFromBackForwardCache()
+               ->is_evicted_from_back_forward_cache());
   }
 
   navigation_request_ = std::move(navigation_request);
@@ -678,6 +658,7 @@ void FrameTreeNode::DidStartLoading(
 
   // Notify the proxies of the event.
   current_frame_host()->browsing_context_state()->OnDidStartLoading();
+  devtools_instrumentation::DidChangeFrameLoadingState(*this);
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.DidStartLoading.",
                     IsOutermostMainFrame() ? "MainFrame" : "Subframe"}),
@@ -715,6 +696,7 @@ void FrameTreeNode::DidStopLoading() {
     loading_tree->NodeLoadingStateChanged(*this,
                                           LoadingState::LOADING_UI_REQUESTED);
   }
+  devtools_instrumentation::DidChangeFrameLoadingState(*this);
 }
 
 void FrameTreeNode::DidChangeLoadProgress(double load_progress) {
@@ -744,7 +726,7 @@ void FrameTreeNode::DidFocus() {
 void FrameTreeNode::BeforeUnloadCanceled() {
   // TODO(clamy): Support BeforeUnload in subframes. Fenced Frames don't run
   // BeforeUnload. Maybe need to check whether other MPArch inner pages cases
-  // need beforeunload(e.g., portals, GuestView if it gets ported to MPArch).
+  // need beforeunload(e.g., GuestView if it gets ported to MPArch).
   if (!IsOutermostMainFrame())
     return;
 
@@ -843,11 +825,7 @@ bool FrameTreeNode::UpdateUserActivationState(
       break;
     case blink::mojom::UserActivationUpdateType::
         kNotifyActivationPendingBrowserVerification: {
-      const bool user_activation_verified = VerifyUserActivation();
-      // Add UMA metric for when browser user activation verification succeeds
-      base::UmaHistogramBoolean("Event.BrowserVerifiedUserActivation",
-                                user_activation_verified);
-      if (user_activation_verified) {
+      if (VerifyUserActivation()) {
         update_result = NotifyUserActivation(
             blink::mojom::UserActivationNotificationType::kInteraction);
         update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
@@ -870,6 +848,12 @@ void FrameTreeNode::DidConsumeHistoryUserActivation() {
   for (FrameTreeNode* node : frame_tree().Nodes()) {
     node->current_frame_host()->ConsumeHistoryUserActivation();
   }
+}
+
+void FrameTreeNode::DidOpenDocumentInputStream() {
+  // document.open causes the document to lose its "initial empty document"
+  // status.
+  set_not_on_initial_empty_document();
 }
 
 void FrameTreeNode::PruneChildFrameNavigationEntries(
@@ -921,6 +905,23 @@ bool FrameTreeNode::HasNavigation() {
   return false;
 }
 
+bool FrameTreeNode::HasPendingCommitNavigation() {
+  // Same-RenderFrameHost navigation is committing:
+  if (current_frame_host()->HasPendingCommitNavigation()) {
+    return true;
+  }
+
+  // Cross-RenderFrameHost navigation is committing:
+  RenderFrameHostImpl* speculative_frame_host =
+      render_manager()->speculative_frame_host();
+  if (speculative_frame_host &&
+      speculative_frame_host->HasPendingCommitNavigation()) {
+    return true;
+  }
+
+  return false;
+}
+
 bool FrameTreeNode::IsFencedFrameRoot() const {
   return fenced_frame_status_ == FencedFrameStatus::kFencedFrameRoot;
 }
@@ -929,56 +930,49 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
   return fenced_frame_status_ != FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
-const absl::optional<FencedFrameProperties>&
-FrameTreeNode::GetFencedFrameProperties(bool force_tree_traversal) {
-  return GetFencedFramePropertiesForEditing(force_tree_traversal);
-}
-
-absl::optional<FencedFrameProperties>&
-FrameTreeNode::GetFencedFramePropertiesForEditing(bool force_tree_traversal) {
-  if (!force_tree_traversal && IsInFencedFrameTree()) {
+std::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
+    FencedFramePropertiesNodeSource node_source) {
+  if (node_source == FencedFramePropertiesNodeSource::kFrameTreeRoot) {
     return frame_tree().root()->fenced_frame_properties_;
   }
 
-  // If we might be in a urn iframe, try to find the "urn iframe root",
-  // and, if it exists, return the attached `FencedFrameProperties`.
-  if (force_tree_traversal || blink::features::IsAllowURNsInIframeEnabled()) {
-    FrameTreeNode* node = this;
-    while (node) {
-      if (node->fenced_frame_properties_.has_value()) {
-        return node->fenced_frame_properties_;
-      }
-      node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
+  // The only other option is `kClosestAncestor`. In this case the fenced frame
+  // properties are obtained by a bottom-up traversal.
+  CHECK_EQ(node_source, FencedFramePropertiesNodeSource::kClosestAncestor);
+
+  FrameTreeNode* node = this;
+  while (node) {
+    if (node->fenced_frame_properties_.has_value()) {
+      return node->fenced_frame_properties_;
     }
+    node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
   }
 
   return fenced_frame_properties_;
 }
 
-void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData() {
-  absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing(/*force_tree_traversal=*/true);
+void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData(
+    blink::mojom::AutomaticBeaconType event_type) {
+  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid.
   if (!properties) {
     return;
   }
-  properties->MaybeResetAutomaticBeaconData();
+  properties->MaybeResetAutomaticBeaconData(event_type);
 }
 
 void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
+    blink::mojom::AutomaticBeaconType event_type,
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features,
-    bool once) {
-  absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing(
-          /*force_tree_traversal=*/true);
+    bool once,
+    bool cross_origin_exposed) {
+  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid. This allows URN iframes to call this function without
   // getting bad-messaged.
-  if (!properties || !properties->fenced_frame_reporter_) {
+  if (!properties || !properties->fenced_frame_reporter()) {
     mojo::ReportBadMessage(
         "Automatic beacon data can only be set in fenced frames or iframes "
         "loaded from a config with a fenced frame reporter.");
@@ -986,16 +980,16 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
   }
   // This metadata should only be present in the renderer in frames that are
   // same-origin to the mapped url.
-  if (!properties->mapped_url_.has_value() ||
+  if (!properties->mapped_url().has_value() ||
       !current_origin().IsSameOriginWith(url::Origin::Create(
-          properties->mapped_url_->GetValueIgnoringVisibility()))) {
+          properties->mapped_url()->GetValueIgnoringVisibility()))) {
     mojo::ReportBadMessage(
         "Automatic beacon data can only be set from documents that are same-"
         "origin to the mapped url from the fenced frame config.");
     return;
   }
-  properties->UpdateAutomaticBeaconData(
-      event_data, destinations, attribution_reporting_runtime_features, once);
+  properties->UpdateAutomaticBeaconData(event_type, event_data, destinations,
+                                        once, cross_origin_exposed);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth(
@@ -1012,7 +1006,7 @@ size_t FrameTreeNode::GetFencedFrameDepth(
 
       // This implies the fenced frame is from shared storage.
       if (node->fenced_frame_properties_ &&
-          node->fenced_frame_properties_->shared_storage_budget_metadata_) {
+          node->fenced_frame_properties_->shared_storage_budget_metadata()) {
         shared_storage_fenced_frame_root_count += 1;
       }
     } else {
@@ -1027,20 +1021,23 @@ size_t FrameTreeNode::GetFencedFrameDepth(
   return depth;
 }
 
-absl::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
-  auto& root_fenced_frame_properties = GetFencedFrameProperties();
+std::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
+  // For partition nonce, all nested frame inside a fenced frame tree should
+  // operate on the partition nonce of the frame tree root.
+  auto& root_fenced_frame_properties = GetFencedFrameProperties(
+      /*node_source=*/FencedFramePropertiesNodeSource::kFrameTreeRoot);
   if (!root_fenced_frame_properties.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  if (root_fenced_frame_properties->partition_nonce_.has_value()) {
-    return root_fenced_frame_properties->partition_nonce_
+  if (root_fenced_frame_properties->partition_nonce().has_value()) {
+    return root_fenced_frame_properties->partition_nonce()
         ->GetValueIgnoringVisibility();
   }
   // It is only possible for there to be `FencedFrameProperties` but no
   // partition nonce in urn iframes (when not nested inside a fenced frame).
   CHECK(blink::features::IsAllowURNsInIframeEnabled());
   CHECK(!IsInFencedFrameTree());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FrameTreeNode::SetFencedFramePropertiesIfNeeded() {
@@ -1059,12 +1056,21 @@ FrameTreeNode::GetDeprecatedFencedFrameMode() {
     return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
   }
 
+  // See test "NestedUrnIframeUnderFencedFrameUnfencedTopNavigation" in
+  // "FencedFrameParameterizedBrowserTest" for why tree traversal is
+  // needed here to obtain the correct fenced frame properties.
+  // TODO(crbug.com/1475682): Now the fenced frame properties here are obtained
+  // via tree traversal, we should make sure it does not break things at
+  // renderers, for example, `_unfencedTop` navigation. Note these issues are
+  // pre-existing.
+  // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
+  // is deprecated, the issue above will no longer be relevant.
   auto& root_fenced_frame_properties = GetFencedFrameProperties();
   if (!root_fenced_frame_properties.has_value()) {
     return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
   }
 
-  return root_fenced_frame_properties->mode_;
+  return root_fenced_frame_properties->mode();
 }
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
@@ -1083,9 +1089,9 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
 
   while (true) {
     if (node->fenced_frame_properties_ &&
-        node->fenced_frame_properties_->shared_storage_budget_metadata_) {
+        node->fenced_frame_properties_->shared_storage_budget_metadata()) {
       result.emplace_back(
-          node->fenced_frame_properties_->shared_storage_budget_metadata_
+          node->fenced_frame_properties_->shared_storage_budget_metadata()
               ->GetValueIgnoringVisibility());
     }
 
@@ -1099,18 +1105,17 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
   return result;
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 FrameTreeNode::GetEmbedderSharedStorageContextIfAllowed() {
-  absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing();
+  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
   // We only return embedder context for frames that are same origin with the
   // fenced frame root or ancestor URN iframe.
-  if (!properties || !properties->mapped_url_.has_value() ||
+  if (!properties || !properties->mapped_url().has_value() ||
       !current_origin().IsSameOriginWith(url::Origin::Create(
-          properties->mapped_url_->GetValueIgnoringVisibility()))) {
-    return absl::nullopt;
+          properties->mapped_url()->GetValueIgnoringVisibility()))) {
+    return std::nullopt;
   }
-  return properties->embedder_shared_storage_context_;
+  return properties->embedder_shared_storage_context();
 }
 
 const scoped_refptr<BrowsingContextState>&
@@ -1178,7 +1183,7 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     bool is_same_document,
     const GURL& url,
     const url::Origin& origin,
-    const absl::optional<GURL>& initiator_base_url,
+    const std::optional<GURL>& initiator_base_url,
     const net::IsolationInfo& isolation_info_for_subresources,
     blink::mojom::ReferrerPtr referrer,
     const ui::PageTransition& transition,

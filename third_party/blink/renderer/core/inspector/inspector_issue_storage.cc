@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
-#include "third_party/blink/renderer/core/inspector/inspector_issue.h"
-#include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 
@@ -29,17 +27,6 @@ void InspectorIssueStorage::AddInspectorIssue(
 }
 
 void InspectorIssueStorage::AddInspectorIssue(CoreProbeSink* sink,
-                                              InspectorIssue* issue) {
-  AddInspectorIssue(sink, ConvertInspectorIssueToProtocolFormat(issue));
-}
-
-void InspectorIssueStorage::AddInspectorIssue(
-    CoreProbeSink* sink,
-    mojom::blink::InspectorIssueInfoPtr info) {
-  AddInspectorIssue(sink, InspectorIssue::Create(std::move(info)));
-}
-
-void InspectorIssueStorage::AddInspectorIssue(CoreProbeSink* sink,
                                               AuditsIssue issue) {
   AddInspectorIssue(sink, issue.TakeIssue());
 }
@@ -47,13 +34,6 @@ void InspectorIssueStorage::AddInspectorIssue(CoreProbeSink* sink,
 void InspectorIssueStorage::AddInspectorIssue(ExecutionContext* context,
                                               AuditsIssue issue) {
   AddInspectorIssue(probe::ToCoreProbeSink(context), issue.TakeIssue());
-}
-
-void InspectorIssueStorage::AddInspectorIssue(
-    ExecutionContext* context,
-    mojom::blink::InspectorIssueInfoPtr info) {
-  AddInspectorIssue(probe::ToCoreProbeSink(context),
-                    InspectorIssue::Create(std::move(info)));
 }
 
 void InspectorIssueStorage::Clear() {

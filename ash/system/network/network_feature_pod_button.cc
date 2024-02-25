@@ -23,7 +23,7 @@ void NetworkFeaturePodButton::OnThemeChanged() {
   delegate_->OnFeaturePodButtonThemeChanged();
 }
 
-BEGIN_METADATA(NetworkFeaturePodButton, FeaturePodButton)
+BEGIN_METADATA(NetworkFeaturePodButton)
 END_METADATA
 
 }  // namespace ash

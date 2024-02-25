@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/report/device_metrics/use_case/use_case.h"
 
+#include "chromeos/ash/components/report/device_metrics/use_case/psm_client_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -17,13 +18,13 @@ UseCaseParameters::UseCaseParameters(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& high_entropy_seed,
     PrefService* local_state,
-    std::unique_ptr<PsmDelegateInterface> psm_delegate)
+    PsmClientManager* psm_client_manager)
     : active_ts_(active_ts),
       chrome_device_params_(chrome_device_params),
       url_loader_factory_(url_loader_factory),
       high_entropy_seed_(high_entropy_seed),
       local_state_(local_state),
-      psm_delegate_(std::move(psm_delegate)) {}
+      psm_client_manager_(psm_client_manager) {}
 
 UseCaseParameters::~UseCaseParameters() = default;
 
@@ -49,8 +50,8 @@ PrefService* UseCaseParameters::GetLocalState() const {
   return local_state_;
 }
 
-PsmDelegateInterface* UseCaseParameters::GetPsmDelegate() const {
-  return psm_delegate_.get();
+PsmClientManager* UseCaseParameters::GetPsmClientManager() const {
+  return psm_client_manager_;
 }
 
 UseCase::UseCase(UseCaseParameters* params) : params_(params) {}
@@ -69,6 +70,18 @@ net::NetworkTrafficAnnotationTag UseCase::GetCheckMembershipTrafficTag() {
                    "the device activity when the default network changes"
           data: "Google API Key."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "hirthanan@google.com"
+            }
+            contacts {
+              email: "chromeos-data-eng@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2023-07-05"
         }
         policy {
           cookies_allowed: NO
@@ -89,40 +102,31 @@ net::NetworkTrafficAnnotationTag UseCase::GetCheckInTrafficTag() {
                   "is operating system images to be retrieved and provisioned "
                   "from anywhere internet access is available. So when a new "
                   "Chrome OS device joins a LAN, it gets added to the Private "
-                  "Set of that LAN. After that, it can view the health status "
-                  "(CPU/RAM/disk usage) of other Chrome OS devices "
-                  "on the same LAN."
+                  "Set of that LAN. The import request contains an encrypted "
+                  "derived device id, and metadata used to calculate churn."
           trigger: "Chrome OS client makes this network request and records "
                    "the device activity when the default network changes"
-          data: "Google API Key."
+          data: "Google API Key and metadata that is used to count device actives and churn."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "hirthanan@google.com"
+            }
+            contacts {
+              email: "chromeos-data-eng@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: OTHER
+          }
+          last_reviewed: "2023-07-05"
         }
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
           policy_exception_justification: "Not implemented."
         })");
-}
-
-psm_rlwe::PrivateMembershipRlweClient* UseCase::GetPsmRlweClient() {
-  return psm_rlwe_client_.get();
-}
-
-void UseCase::SetPsmRlweClient(
-    psm_rlwe::RlweUseCase psm_use_case,
-    std::vector<psm_rlwe::RlwePlaintextId> query_psm_ids) {
-  DCHECK(!query_psm_ids.empty());
-
-  auto status_or_client = GetParams()->GetPsmDelegate()->CreatePsmClient(
-      psm_use_case, query_psm_ids);
-
-  if (!status_or_client.ok()) {
-    LOG(ERROR) << "Failed to initialize PSM RLWE client.";
-    return;
-  }
-
-  // Re-assigning the unique_ptr will reset the old unique_ptr.
-  psm_rlwe_client_ = std::move(status_or_client.value());
 }
 
 UseCaseParameters* UseCase::GetParams() const {

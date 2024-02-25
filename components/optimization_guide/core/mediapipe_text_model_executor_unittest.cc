@@ -19,13 +19,13 @@ class MediapipeTextModelExecutorTest : public testing::Test {
   void SetUp() override {
     executor_ = std::make_unique<MediapipeTextModelExecutor>();
     executor_->InitializeAndMoveToExecutionThread(
-        /*model_inference_timeout=*/absl::nullopt,
+        /*model_inference_timeout=*/std::nullopt,
         proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
         task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMainThreadTaskRunner());
 
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("components")
             .AppendASCII("test")
@@ -52,7 +52,7 @@ TEST_F(MediapipeTextModelExecutorTest, Execute) {
   executor()->SendForExecution(
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<Category>>& output) {
+             const std::optional<std::vector<Category>>& output) {
             EXPECT_TRUE(output);
 
             std::string top_topic;

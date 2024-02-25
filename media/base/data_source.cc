@@ -32,7 +32,7 @@ void DataSource::OnMediaPlaybackRateChanged(double playback_rate) {}
 
 void DataSource::OnMediaIsPlaying() {}
 
-const CrossOriginDataSource* DataSource::GetAsCrossOriginDataSource() const {
+CrossOriginDataSource* DataSource::GetAsCrossOriginDataSource() {
   return nullptr;
 }
 

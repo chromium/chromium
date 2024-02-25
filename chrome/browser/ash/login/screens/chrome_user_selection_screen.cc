@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -58,8 +57,9 @@ void ChromeUserSelectionScreen::Init(const user_manager::UserList& users) {
   // Retrieve the current policy for all users.
   for (user_manager::UserList::const_iterator it = users.begin();
        it != users.end(); ++it) {
-    if ((*it)->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+    if ((*it)->GetType() == user_manager::UserType::kPublicAccount) {
       OnPolicyUpdated((*it)->GetAccountId().GetUserEmail());
+    }
   }
 }
 
@@ -157,8 +157,9 @@ void ChromeUserSelectionScreen::SetPublicSessionDisplayName(
     const AccountId& account_id) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
     return;
+  }
 
   view_->SetPublicSessionDisplayName(account_id,
                                      base::UTF16ToUTF8(user->GetDisplayName()));

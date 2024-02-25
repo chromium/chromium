@@ -14,6 +14,7 @@
 #include <memory>
 #include <numeric>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -44,7 +45,7 @@ using mojom::UsbTransferStatus;
 
 namespace {
 
-const base::WStringPiece kWinUsbDriverName = L"winusb";
+const std::wstring_view kWinUsbDriverName = L"winusb";
 
 uint8_t BuildRequestFlags(UsbTransferDirection direction,
                           UsbControlTransferType request_type,

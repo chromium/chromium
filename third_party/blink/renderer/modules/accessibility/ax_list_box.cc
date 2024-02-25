@@ -56,7 +56,7 @@ AXObject* AXListBox::ActiveDescendant() {
   // It's also more accurate, because active_index includes optgroup lines,
   // whereas select->item() assumes an index that does not include them.
   HTMLOptionElement* option = select->ActiveSelectionEnd();
-  return AXObjectCache().GetOrCreate(option);
+  return AXObjectCache().Get(option);
 }
 
 void AXListBox::ActiveIndexChanged() {

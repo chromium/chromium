@@ -4,11 +4,11 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
- * #import=//resources/cr_elements/cr_shared_style.css.js
- * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #import=//resources/cr_elements/search_highlight_style.css.js
+ * #import=//resources/ash/common/cr_elements/cr_shared_style.css.js
+ * #import=//resources/ash/common/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/ash/common/cr_elements/search_highlight_style.css.js
  * #import=./settings_vars.css.js
- * #import=//resources/cr_elements/chromeos/cros_color_overrides.css.js
+ * #import=//resources/ash/common/cr_elements/cros_color_overrides.css.js
  * #include=cr-shared-style search-highlight-style cros-color-overrides
  * #css_wrapper_metadata_end */
 
@@ -77,18 +77,22 @@ a[href] {
   color: var(--cr-link-color);
 }
 
-/* For elements that are simple out-links but don't look like anchors. */
-.inherit-color {
-  color: inherit !important;
+a[href]:focus {
+  outline-color: var(--cros-sys-focus_ring);
 }
 
+/**
+ * primary-toggle is a row containing a toggle that represents some setting's
+ * on/off state. Examples: bluetooth primary toggle, wifi primary toggle, etc.
+ */
 .primary-toggle {
-  color: var(--cr-secondary-text-color);
-  font-weight: 500;
+  color: var(--cros-sys-on_surface_variant);
+  font: var(--cros-button-2-font);
 }
 
+.primary-toggle[on],
 .primary-toggle[checked] {
-  color: var(--google-blue-500);
+  color: var(--cros-sys-primary);
 }
 
 collapse-radio-button,
@@ -115,10 +119,6 @@ cr-radio-group {
  * (See: https://bugzilla.mozilla.org/show_bug.cgi?id=1108514#c5) */
 .no-min-width {
   min-width: 0;
-}
-
-.header-aligned-button {
-  margin-top: 12px;  /* Align cr-button with <h2>. */
 }
 
 .link-wrapper {
@@ -195,8 +195,13 @@ cr-radio-group {
   align-items: center;
   border-top: var(--cr-separator-line);
   display: flex;
-  min-height: var(--cr-section-min-height);
+  min-height: var(--settings-row-min-height);
   padding: 0 var(--cr-section-padding);
+}
+
+:host-context(body.revamp-wayfinding-enabled) cr-link-row,
+:host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+  min-height: var(--settings-row-min-height);
 }
 
 .settings-box.no-padding {
@@ -219,6 +224,7 @@ cr-radio-group {
   box-sizing: border-box;
   padding-bottom: var(--cr-section-vertical-padding);
   padding-top: var(--cr-section-vertical-padding);
+  padding-inline-end: 20px;
 }
 
 /* We use an explicit tag to remove the top border, rather than a
@@ -331,12 +337,6 @@ iron-list,
   margin: 0;
 }
 
-.column-header {
-  color: var(--cr-secondary-text-color);
-  font-size: inherit;
-  font-weight: 400;
-}
-
 /* Error message that appears in a toast to indicate the success or
  * failure of an operation. An example is when adding a printer. */
 .error-message {
@@ -348,18 +348,16 @@ iron-list,
   white-space: normal;
 }
 
-/* URLs should always be displayed using a LTR embedding - see
- * https://url.spec.whatwg.org/#url-rendering. */
-.url-directionality {
-  direction: ltr;
-  unicode-bidi: embed;
-}
-
 /* Override dialog title font specified in cros_color_overrides.css */
-:host-context(body.jelly-enabled) cr-dialog>[slot='title'] {
+cr-dialog > [slot='title'] {
   font: var(--cros-title-1-font);
 }
 
-:host-context(body.jelly-enabled) cr-button {
+controlled-button,
+cr-button {
   font: var(--cros-button-2-font);
+}
+
+:host-context(body.revamp-wayfinding-enabled) cr-link-row {
+  --cr-link-row-start-icon-color: var(--cros-sys-primary);
 }

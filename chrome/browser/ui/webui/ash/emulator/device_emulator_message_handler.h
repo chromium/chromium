@@ -132,14 +132,12 @@ class DeviceEmulatorMessageHandler
 
   void UpdateAudioNodes();
 
-  raw_ptr<bluez::FakeBluetoothDeviceClient, ExperimentalAsh>
-      fake_bluetooth_device_client_;
+  raw_ptr<bluez::FakeBluetoothDeviceClient> fake_bluetooth_device_client_;
   std::unique_ptr<BluetoothObserver> bluetooth_observer_;
 
   std::unique_ptr<CrasAudioObserver> cras_audio_observer_;
 
-  raw_ptr<chromeos::FakePowerManagerClient, ExperimentalAsh>
-      fake_power_manager_client_;
+  raw_ptr<chromeos::FakePowerManagerClient> fake_power_manager_client_;
   std::unique_ptr<PowerObserver> power_observer_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;

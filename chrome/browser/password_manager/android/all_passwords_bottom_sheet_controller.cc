@@ -18,10 +18,9 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
 
 using autofill::mojom::FocusedFieldType;
@@ -34,7 +33,8 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     content::WebContents* web_contents,
     std::unique_ptr<AllPasswordsBottomSheetView> view,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-    password_manager::PasswordStoreInterface* store,
+    password_manager::PasswordStoreInterface* profile_store,
+    password_manager::PasswordStoreInterface* account_store,
     base::OnceCallback<void()> dismissal_callback,
     FocusedFieldType focused_field_type,
     PasswordManagerClient* client,
@@ -43,7 +43,8 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     ShowMigrationWarningCallback show_migration_warning_callback)
     : view_(std::move(view)),
       web_contents_(web_contents),
-      store_(store),
+      profile_store_(profile_store),
+      account_store_(account_store),
       dismissal_callback_(std::move(dismissal_callback)),
       driver_(std::move(driver)),
       focused_field_type_(focused_field_type),
@@ -55,19 +56,21 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
 
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     content::WebContents* web_contents,
-    password_manager::PasswordStoreInterface* store,
+    password_manager::PasswordStoreInterface* profile_store,
+    password_manager::PasswordStoreInterface* account_store,
     base::OnceCallback<void()> dismissal_callback,
     FocusedFieldType focused_field_type)
     : view_(std::make_unique<AllPasswordsBottomSheetViewImpl>(this)),
       web_contents_(web_contents),
-      store_(store),
+      profile_store_(profile_store),
+      account_store_(account_store),
       dismissal_callback_(std::move(dismissal_callback)),
       focused_field_type_(focused_field_type),
       show_migration_warning_callback_(
           base::BindRepeating(&local_password_migration::ShowWarning)) {
-  DCHECK(web_contents_);
-  DCHECK(store_);
-  DCHECK(dismissal_callback_);
+  CHECK(web_contents_);
+  CHECK(profile_store);
+  CHECK(dismissal_callback_);
   password_manager::ContentPasswordManagerDriverFactory* factory =
       password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
           web_contents_);
@@ -83,21 +86,37 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
 
 AllPasswordsBottomSheetController::~AllPasswordsBottomSheetController() {
   if (authenticator_) {
-    authenticator_->Cancel(
-        device_reauth::DeviceAuthRequester::kAllPasswordsList);
+    authenticator_->Cancel();
   }
 }
 
 void AllPasswordsBottomSheetController::Show() {
-  store_->GetAllLoginsWithAffiliationAndBrandingInformation(
+  if (on_password_forms_received_barrier_callback_) {
+    return;
+  }
+
+  int awaiting_calls = account_store_ ? 2 : 1;
+  on_password_forms_received_barrier_callback_ = base::BarrierCallback<
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>>(
+      awaiting_calls,
+      base::BindOnce(
+          &AllPasswordsBottomSheetController::OnResultFromAllStoresReceived,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  profile_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
       weak_ptr_factory_.GetWeakPtr());
+  if (account_store_) {
+    account_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
+        weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 void AllPasswordsBottomSheetController::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+  CHECK(on_password_forms_received_barrier_callback_);
   base::EraseIf(results,
                 [](const auto& form_ptr) { return form_ptr->blocked_by_user; });
-  view_->Show(std::move(results), focused_field_type_);
+  on_password_forms_received_barrier_callback_.Run(std::move(results));
 }
 
 gfx::NativeView AllPasswordsBottomSheetController::GetNativeView() {
@@ -121,16 +140,15 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     // WebContents. And AllPasswordBottomSheetController is owned by
     // PasswordAccessoryController.
     DCHECK(client_);
-    scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+    std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
         client_->GetDeviceAuthenticator();
     if (password_manager_util::CanUseBiometricAuth(authenticator.get(),
                                                    client_)) {
       authenticator_ = std::move(authenticator);
-      authenticator_->Authenticate(
-          device_reauth::DeviceAuthRequester::kAllPasswordsList,
+      authenticator_->AuthenticateWithMessage(
+          u"",
           base::BindOnce(&AllPasswordsBottomSheetController::OnReauthCompleted,
-                         base::Unretained(this), password),
-          /*use_last_valid_auth=*/true);
+                         base::Unretained(this), password));
       return;
     }
 
@@ -181,4 +199,18 @@ void AllPasswordsBottomSheetController::FillPassword(
     return;
   driver_->FillIntoFocusedField(true, password);
   password_reuse_detection_manager_client_->OnPasswordSelected(password);
+}
+
+void AllPasswordsBottomSheetController::OnResultFromAllStoresReceived(
+    std::vector<std::vector<std::unique_ptr<password_manager::PasswordForm>>>
+        results) {
+  CHECK(on_password_forms_received_barrier_callback_);
+  CHECK(!results.empty());
+  on_password_forms_received_barrier_callback_.Reset();
+
+  if (results.size() > 1) {
+    std::move(results[1].begin(), results[1].end(),
+              std::back_inserter(results[0]));
+  }
+  view_->Show(std::move(results[0]), focused_field_type_);
 }

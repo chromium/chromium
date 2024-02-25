@@ -19,7 +19,11 @@ public class TestWebFeedFaviconFetcher extends WebFeedFaviconFetcher {
     }
 
     @Override
-    public void beginFetch(int iconSizePx, int textSizePx, GURL siteUrl, GURL faviconUrl,
+    public void beginFetch(
+            int iconSizePx,
+            int textSizePx,
+            GURL siteUrl,
+            GURL faviconUrl,
             Callback<Bitmap> callback) {
         mCallback = callback;
     }
@@ -36,7 +40,8 @@ public class TestWebFeedFaviconFetcher extends WebFeedFaviconFetcher {
 
     public Bitmap getTestBitmap() {
         if (mTestBitmap == null) {
-            mTestBitmap = Bitmap.createBitmap(/*width=*/1, /*height=*/1, Bitmap.Config.ARGB_8888);
+            mTestBitmap =
+                    Bitmap.createBitmap(/* width= */ 1, /* height= */ 1, Bitmap.Config.ARGB_8888);
         }
         return mTestBitmap;
     }

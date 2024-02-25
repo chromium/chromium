@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 
 #include <jni.h>
+#include <stddef.h>
 
 #include <iterator>
 #include <set>
@@ -16,6 +17,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -26,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
@@ -34,6 +37,8 @@
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -42,7 +47,7 @@ namespace content {
 
 namespace {
 
-using ApiState = ::content::AttributionOsLevelManager::ApiState;
+using ApiState = ContentBrowserClient::AttributionReportingOsApiState;
 
 int GetDeletionMode(bool delete_rate_limit_data) {
   // See
@@ -130,19 +135,26 @@ AttributionOsLevelManagerAndroid::~AttributionOsLevelManagerAndroid() {
       base::android::AttachCurrentThread(), jobj_);
 }
 
-void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
-                                                bool is_debug_key_allowed,
-                                                RegisterCallback callback) {
+void AttributionOsLevelManagerAndroid::Register(
+    OsRegistration registration,
+    const std::vector<bool>& is_debug_key_allowed,
+    RegisterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(registration.registration_items.size(), is_debug_key_allowed.size());
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
   attribution_reporting::mojom::RegistrationType type = registration.GetType();
-  auto registration_url =
-      url::GURLAndroid::FromNativeGURL(env, registration.registration_url);
+  GlobalRenderFrameHostId render_frame_id = registration.render_frame_id;
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> registration_urls;
+  base::ranges::transform(
+      registration.registration_items, std::back_inserter(registration_urls),
+      [env](const attribution_reporting::OsRegistrationItem& item) {
+        return url::GURLAndroid::FromNativeGURL(env, item.url);
+      });
   auto top_level_origin = url::GURLAndroid::FromNativeGURL(
       env, registration.top_level_origin.GetURL());
-  absl::optional<AttributionInputEvent> input_event = registration.input_event;
+  std::optional<AttributionInputEvent> input_event = registration.input_event;
 
   int request_id = next_callback_id_++;
   pending_registration_callbacks_.emplace(
@@ -151,19 +163,41 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
   switch (type) {
     case attribution_reporting::mojom::RegistrationType::kSource:
       DCHECK(input_event.has_value());
-      if (AttributionOsLevelManager::ShouldUseOsWebSource()) {
+      if (AttributionOsLevelManager::ShouldUseOsWebSource(render_frame_id)) {
+        auto sources = Java_AttributionOsLevelManager_createWebSourceParamsList(
+            env, is_debug_key_allowed.size());
+        for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
+          Java_AttributionOsLevelManager_addWebSourceParams(
+              env, sources, registration_urls[i], is_debug_key_allowed[i]);
+        }
         Java_AttributionOsLevelManager_registerWebAttributionSource(
-            env, jobj_, request_id, registration_url, top_level_origin,
-            is_debug_key_allowed, input_event->input_event);
+            env, jobj_, request_id, sources, top_level_origin,
+            input_event->input_event);
       } else {
         Java_AttributionOsLevelManager_registerAttributionSource(
-            env, jobj_, request_id, registration_url, input_event->input_event);
+            env, jobj_, request_id,
+            url::GURLAndroid::ToJavaArrayOfGURLs(env, registration_urls),
+            input_event->input_event);
       }
       break;
     case attribution_reporting::mojom::RegistrationType::kTrigger:
-      Java_AttributionOsLevelManager_registerWebAttributionTrigger(
-          env, jobj_, request_id, registration_url, top_level_origin,
-          is_debug_key_allowed);
+      if (AttributionOsLevelManager::ShouldUseOsWebTrigger(render_frame_id)) {
+        auto triggers =
+            Java_AttributionOsLevelManager_createWebTriggerParamsList(
+                env, is_debug_key_allowed.size());
+        for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
+          Java_AttributionOsLevelManager_addWebTriggerParams(
+              env, triggers, registration_urls[i], is_debug_key_allowed[i]);
+        }
+        Java_AttributionOsLevelManager_registerWebAttributionTrigger(
+            env, jobj_, request_id, triggers, top_level_origin);
+
+      } else {
+        for (const auto& registration_url : registration_urls) {
+          Java_AttributionOsLevelManager_registerAttributionTrigger(
+              env, jobj_, request_id, registration_url);
+        }
+      }
       break;
   }
 }
@@ -190,8 +224,8 @@ void AttributionOsLevelManagerAndroid::ClearData(
   pending_data_deletion_callbacks_.emplace(request_id, std::move(done));
 
   Java_AttributionOsLevelManager_deleteRegistrations(
-      env, jobj_, request_id, delete_begin.ToJavaTime(),
-      delete_end.ToJavaTime(),
+      env, jobj_, request_id, delete_begin.InMillisecondsSinceUnixEpoch(),
+      delete_end.InMillisecondsSinceUnixEpoch(),
       url::GURLAndroid::ToJavaArrayOfGURLs(env, j_origins),
       base::android::ToJavaArrayOfStrings(
           env, std::vector<std::string>(domains.begin(), domains.end())),

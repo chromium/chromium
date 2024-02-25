@@ -63,7 +63,7 @@ class FastInitiationScanner
   // device::BluetoothLowEnergyScanSession::Delegate:
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override;
   void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
                      device::BluetoothDevice* device) override;

@@ -54,17 +54,17 @@ Element* LargestContentfulPaint::element() const {
   if (!document.IsActive() || !document.GetFrame())
     return nullptr;
 
-  return element_;
+  return element_.Get();
 }
 
 void LargestContentfulPaint::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  builder.Add("size", size_);
-  builder.Add("renderTime", render_time_);
-  builder.Add("loadTime", load_time_);
-  builder.Add("firstAnimatedFrameTime", first_animated_frame_time_);
-  builder.Add("id", id_);
-  builder.Add("url", url_);
+  builder.AddInteger("size", size_);
+  builder.AddNumber("renderTime", render_time_);
+  builder.AddNumber("loadTime", load_time_);
+  builder.AddNumber("firstAnimatedFrameTime", first_animated_frame_time_);
+  builder.AddString("id", id_);
+  builder.AddString("url", url_);
 }
 
 void LargestContentfulPaint::Trace(Visitor* visitor) const {

@@ -18,7 +18,6 @@
 #include <windows.h>
 
 #include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
 #include "util/file/directory_reader.h"
 #include "util/misc/time.h"
 
@@ -35,7 +34,7 @@ bool IsSymbolicLink(const base::FilePath& path) {
                                             nullptr,
                                             0));
   if (!handle.is_valid()) {
-    PLOG(ERROR) << "FindFirstFileEx " << base::WideToUTF8(path.value());
+    PLOG(ERROR) << "FindFirstFileEx " << path;
     return false;
   }
 
@@ -45,7 +44,7 @@ bool IsSymbolicLink(const base::FilePath& path) {
 
 bool LoggingRemoveDirectoryImpl(const base::FilePath& path) {
   if (!RemoveDirectory(path.value().c_str())) {
-    PLOG(ERROR) << "RemoveDirectory " << base::WideToUTF8(path.value());
+    PLOG(ERROR) << "RemoveDirectory " << path;
     return false;
   }
   return true;
@@ -69,13 +68,13 @@ bool FileModificationTime(const base::FilePath& path, timespec* mtime) {
                    flags,
                    nullptr));
   if (!handle.is_valid()) {
-    PLOG(ERROR) << "CreateFile " << base::WideToUTF8(path.value());
+    PLOG(ERROR) << "CreateFile " << path;
     return false;
   }
 
   FILETIME file_mtime;
   if (!GetFileTime(handle.get(), nullptr, nullptr, &file_mtime)) {
-    PLOG(ERROR) << "GetFileTime " << base::WideToUTF8(path.value());
+    PLOG(ERROR) << "GetFileTime " << path;
     return false;
   }
   *mtime = FiletimeToTimespecEpoch(file_mtime);
@@ -90,12 +89,12 @@ bool LoggingCreateDirectory(const base::FilePath& path,
   }
   if (may_reuse && GetLastError() == ERROR_ALREADY_EXISTS) {
     if (!IsDirectory(path, true)) {
-      LOG(ERROR) << base::WideToUTF8(path.value()) << " not a directory";
+      LOG(ERROR) << path << " not a directory";
       return false;
     }
     return true;
   }
-  PLOG(ERROR) << "CreateDirectory " << base::WideToUTF8(path.value());
+  PLOG(ERROR) << "CreateDirectory " << path;
   return false;
 }
 
@@ -104,8 +103,7 @@ bool MoveFileOrDirectory(const base::FilePath& source,
   if (!MoveFileEx(source.value().c_str(),
                   dest.value().c_str(),
                   IsDirectory(source, false) ? 0 : MOVEFILE_REPLACE_EXISTING)) {
-    PLOG(ERROR) << "MoveFileEx" << base::WideToUTF8(source.value()) << ", "
-                << base::WideToUTF8(dest.value());
+    PLOG(ERROR) << "MoveFileEx" << source << ", " << dest;
     return false;
   }
   return true;
@@ -114,7 +112,7 @@ bool MoveFileOrDirectory(const base::FilePath& source,
 bool IsRegularFile(const base::FilePath& path) {
   DWORD fileattr = GetFileAttributes(path.value().c_str());
   if (fileattr == INVALID_FILE_ATTRIBUTES) {
-    PLOG(ERROR) << "GetFileAttributes " << base::WideToUTF8(path.value());
+    PLOG(ERROR) << "GetFileAttributes " << path;
     return false;
   }
   if ((fileattr & FILE_ATTRIBUTE_DIRECTORY) != 0 ||
@@ -127,7 +125,7 @@ bool IsRegularFile(const base::FilePath& path) {
 bool IsDirectory(const base::FilePath& path, bool allow_symlinks) {
   DWORD fileattr = GetFileAttributes(path.value().c_str());
   if (fileattr == INVALID_FILE_ATTRIBUTES) {
-    PLOG(ERROR) << "GetFileAttributes " << base::WideToUTF8(path.value());
+    PLOG(ERROR) << "GetFileAttributes " << path;
     return false;
   }
   if (!allow_symlinks && (fileattr & FILE_ATTRIBUTE_REPARSE_POINT) != 0) {
@@ -146,7 +144,7 @@ bool LoggingRemoveFile(const base::FilePath& path) {
   }
 
   if (!DeleteFile(path.value().c_str())) {
-    PLOG(ERROR) << "DeleteFile " << base::WideToUTF8(path.value());
+    PLOG(ERROR) << "DeleteFile " << path;
     return false;
   }
   return true;
@@ -154,7 +152,7 @@ bool LoggingRemoveFile(const base::FilePath& path) {
 
 bool LoggingRemoveDirectory(const base::FilePath& path) {
   if (IsSymbolicLink(path)) {
-    LOG(ERROR) << "Not a directory " << base::WideToUTF8(path.value());
+    LOG(ERROR) << "Not a directory " << path;
     return false;
   }
   return LoggingRemoveDirectoryImpl(path);
@@ -169,7 +167,7 @@ uint64_t GetFileSize(const base::FilePath& filepath) {
   if (ret_value == 0) {
     return statbuf.st_size;
   }
-  PLOG(ERROR) << "stat " << filepath.value().c_str();
+  PLOG(ERROR) << "stat " << filepath;
   return 0;
 }
 

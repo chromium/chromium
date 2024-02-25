@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>Broken Image Icon Should Not Be LCP</title>
+</head>
+
+<body>
+  <img src="../non-existent-image.jpg">
+  <script>
+    const GetLCP = async () => {
+      return await new Promise(resolve => {
+        new PerformanceObserver((entryList, observer) => {
+          resolve(entryList.getEntries().length);
+          observer.disconnect();
+        }).observe({ type: 'largest-contentful-paint', buffered: true });
+
+        setTimeout(() => { resolve(0); }, 100);
+      });
+    };
+  </script>
+</body>

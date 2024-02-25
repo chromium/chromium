@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 
 namespace remoting::protocol {
 
@@ -40,7 +39,7 @@ WebrtcEventLogData::TakeLogData() {
   return result;
 }
 
-void WebrtcEventLogData::Write(base::StringPiece log_event) {
+void WebrtcEventLogData::Write(std::string_view log_event) {
   if (base::checked_cast<int>(log_event.size()) > max_section_size_) {
     LOG(WARNING) << "Oversized RTC log event: size = " << log_event.size();
   }

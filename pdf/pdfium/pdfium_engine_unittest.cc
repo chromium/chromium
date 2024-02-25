@@ -377,7 +377,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
     // The whole attachment content is too long to do string comparison.
     // Instead, we only verify the checksum value here.
     base::MD5Digest hash;
-    base::MD5Sum(content.data(), content.size(), &hash);
+    base::MD5Sum(content, &hash);
     EXPECT_EQ(kCheckSum, base::MD5DigestToBase16(hash));
   }
 
@@ -523,7 +523,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   ASSERT_EQ(2, engine->GetNumberOfPages());
 
   // A destination with a valid page object
-  absl::optional<PDFEngine::NamedDestination> valid_page_obj =
+  std::optional<PDFEngine::NamedDestination> valid_page_obj =
       engine->GetNamedDestination("ValidPageObj");
   ASSERT_TRUE(valid_page_obj.has_value());
   EXPECT_EQ(0u, valid_page_obj->page);
@@ -532,18 +532,18 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   EXPECT_EQ(1.2f, valid_page_obj->params[2]);
 
   // A destination with an invalid page object
-  absl::optional<PDFEngine::NamedDestination> invalid_page_obj =
+  std::optional<PDFEngine::NamedDestination> invalid_page_obj =
       engine->GetNamedDestination("InvalidPageObj");
   ASSERT_FALSE(invalid_page_obj.has_value());
 
   // A destination with a valid page number
-  absl::optional<PDFEngine::NamedDestination> valid_page_number =
+  std::optional<PDFEngine::NamedDestination> valid_page_number =
       engine->GetNamedDestination("ValidPageNumber");
   ASSERT_TRUE(valid_page_number.has_value());
   EXPECT_EQ(1u, valid_page_number->page);
 
   // A destination with an out-of-range page number
-  absl::optional<PDFEngine::NamedDestination> invalid_page_number =
+  std::optional<PDFEngine::NamedDestination> invalid_page_number =
       engine->GetNamedDestination("OutOfRangePageNumber");
   EXPECT_FALSE(invalid_page_number.has_value());
 }
@@ -924,12 +924,75 @@ TEST_P(PDFiumEngineTest, SelectTextWithNonPrintableCharacter) {
   EXPECT_EQ("Hello, world!", engine->GetSelectedText());
 }
 
+TEST_P(PDFiumEngineTest, RotateAfterSelectedText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kPosition(100, 120);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+
+  DocumentLayout::Options options;
+  EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(276, 556)))
+      .WillOnce(Return());
+  engine->RotateClockwise();
+  options.RotatePagesClockwise();
+  engine->ApplyDocumentLayout(options);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+
+  EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(276, 556)))
+      .WillOnce(Return());
+  engine->RotateCounterclockwise();
+  options.RotatePagesCounterclockwise();
+  engine->ApplyDocumentLayout(options);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kPosition(100, 120);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+
+  DocumentLayout::Options options;
+  options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
+  EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithOptions(options)))
+      .WillOnce(Return());
+  engine->SetDocumentLayout(DocumentLayout::PageSpread::kTwoUpOdd);
+  engine->ApplyDocumentLayout(options);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+
+  options.set_page_spread(DocumentLayout::PageSpread::kOneUp);
+  EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithOptions(options)))
+      .WillOnce(Return());
+  engine->SetDocumentLayout(DocumentLayout::PageSpread::kOneUp);
+  engine->ApplyDocumentLayout(options);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
 
 using PDFiumEngineDeathTest = PDFiumEngineTest;
 
 TEST_P(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
 

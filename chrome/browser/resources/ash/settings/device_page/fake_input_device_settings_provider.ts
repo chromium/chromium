@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
-import {ActionChoice, GraphicsTablet, GraphicsTabletObserverInterface, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {ActionChoice, Button, ButtonPressObserverInterface, GraphicsTablet, GraphicsTabletObserverInterface, GraphicsTabletSettings, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -19,8 +19,9 @@ interface InputDeviceSettingsType {
   fakePointingSticks: PointingStick[];
   fakeStyluses: Stylus[];
   fakeGraphicsTablets: GraphicsTablet[];
-  fakeMouseButtonActions: ActionChoice[];
-  fakeGraphicsTabletButtonActions: ActionChoice[];
+  fakeMouseButtonActions: {options: ActionChoice[]};
+  fakeGraphicsTabletButtonActions: {options: ActionChoice[]};
+  fakeHasLauncherButton: {hasLauncherButton: boolean};
 }
 
 class FakeMethodState {
@@ -37,7 +38,7 @@ class FakeMethodState {
     return this.result;
   }
 
-  setResult(result: any) {
+  setResult(result: any): void {
     this.result = result;
   }
 }
@@ -85,6 +86,12 @@ export class FakeInputDeviceSettingsProvider implements
   private touchpadObservers: TouchpadObserverInterface[] = [];
   private stylusObservers: StylusObserverInterface[] = [];
   private graphicsTabletObservers: GraphicsTabletObserverInterface[] = [];
+  private buttonPressObservers: ButtonPressObserverInterface[] = [];
+  private observedIds: number[] = [];
+  private callCounts_ = {
+    setGraphicsTabletSettings: 0,
+    setMouseSettings: 0,
+  };
 
   constructor() {
     // Setup method resolvers.
@@ -96,6 +103,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeGraphicsTablets');
     this.methods.register('fakeMouseButtonActions');
     this.methods.register('fakeGraphicsTabletButtonActions');
+    this.methods.register('fakeHasLauncherButton');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -144,6 +152,7 @@ export class FakeInputDeviceSettingsProvider implements
 
   setFakeGraphicsTablets(graphicsTablets: GraphicsTablet[]): void {
     this.methods.setResult('fakeGraphicsTablets', graphicsTablets);
+    this.notifyGraphicsTabletListUpdated();
   }
 
   getConnectedGraphicsTabletSettings(): Promise<GraphicsTablet[]> {
@@ -192,6 +201,12 @@ export class FakeInputDeviceSettingsProvider implements
       }
     }
     this.methods.setResult('fakeMice', mice);
+    this.notifyMouseListUpdated();
+    this.callCounts_.setMouseSettings++;
+  }
+
+  getSetMouseSettingsCallCount(): number {
+    return this.callCounts_.setMouseSettings;
   }
 
   setTouchpadSettings(id: number, settings: TouchpadSettings): void {
@@ -214,11 +229,27 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult('fakePointingSticks', pointingSticks);
   }
 
+  setGraphicsTabletSettings(id: number, settings: GraphicsTabletSettings):
+      void {
+    const graphicsTablets = this.methods.getResult('fakeGraphicsTablets');
+    for (const graphicsTablet of graphicsTablets) {
+      if (graphicsTablet.id === id) {
+        graphicsTablet.settings = settings;
+      }
+    }
+    this.methods.setResult('fakeGraphicsTablets', graphicsTablets);
+    this.notifyGraphicsTabletListUpdated();
+    this.callCounts_.setGraphicsTabletSettings++;
+  }
+
+  getSetGraphicsTabletSettingsCallCount(): number {
+    return this.callCounts_.setGraphicsTabletSettings;
+  }
+
   notifyKeboardListUpdated(): void {
     const keyboards = this.methods.getResult('fakeKeyboards');
     // Make a deep copy to notify the functions observing keyboard settings.
-    const keyboardsClone =
-        !keyboards ? keyboards : JSON.parse(JSON.stringify(keyboards));
+    const keyboardsClone = !keyboards ? keyboards : structuredClone(keyboards);
     for (const observer of this.keyboardObservers) {
       observer.onKeyboardListUpdated(keyboardsClone);
     }
@@ -252,7 +283,7 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
-  notifyGraphicsTabletUpdated(): void {
+  notifyGraphicsTabletListUpdated(): void {
     const graphicsTablets = this.methods.getResult('fakeGraphicsTablets');
     for (const observer of this.graphicsTabletObservers) {
       observer.onGraphicsTabletListUpdated(graphicsTablets);
@@ -287,24 +318,60 @@ export class FakeInputDeviceSettingsProvider implements
   observeGraphicsTabletSettings(observer: GraphicsTabletObserverInterface):
       void {
     this.graphicsTabletObservers.push(observer);
-    this.notifyGraphicsTabletUpdated();
+    this.notifyGraphicsTabletListUpdated();
   }
 
-  getActionsForMouseButtonCustomization(): Promise<ActionChoice[]> {
+  observeButtonPresses(observer: ButtonPressObserverInterface): void {
+    this.buttonPressObservers.push(observer);
+  }
+
+  getActionsForMouseButtonCustomization(): Promise<{options: ActionChoice[]}> {
     return this.methods.resolveMethod('fakeMouseButtonActions');
   }
 
   setFakeActionsForMouseButtonCustomization(actionChoices: ActionChoice[]):
       void {
-    this.methods.setResult('fakeMouseButtonActions', actionChoices);
+    this.methods.setResult('fakeMouseButtonActions', {options: actionChoices});
   }
 
-  getActionsForGraphicsTabletButtonCustomization(): Promise<ActionChoice[]> {
+  getActionsForGraphicsTabletButtonCustomization():
+      Promise<{options: ActionChoice[]}> {
     return this.methods.resolveMethod('fakeGraphicsTabletButtonActions');
   }
 
   setFakeActionsForGraphicsTabletButtonCustomization(actionChoices:
                                                          ActionChoice[]): void {
-    this.methods.setResult('fakeGraphicsTabletButtonActions', actionChoices);
+    this.methods.setResult(
+        'fakeGraphicsTabletButtonActions', {options: actionChoices});
+  }
+
+  startObserving(id: number): void {
+    if (this.observedIds.includes(id)) {
+      return;
+    }
+    this.observedIds.push(id);
+  }
+
+  stopObserving(): void {
+    this.observedIds = [];
+  }
+
+  getObservedDevices(): number[] {
+    return this.observedIds;
+  }
+
+  sendButtonPress(button: Button): void {
+    for (const observer of this.buttonPressObservers) {
+      observer.onButtonPressed(button);
+    }
+  }
+
+  hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
+    return this.methods.resolveMethod('fakeHasLauncherButton');
+  }
+
+  setFakeHasLauncherButton(hasLauncherButton: boolean): void {
+    this.methods.setResult(
+        'fakeHasLauncherButton', {hasLauncherButton: hasLauncherButton});
   }
 }

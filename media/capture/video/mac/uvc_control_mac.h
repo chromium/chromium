@@ -149,7 +149,8 @@ class CAPTURE_EXPORT UvcControl {
                            sizeof(ValueType));
     command.pData = &value;
 
-    IOReturn ret = (*interface_)->ControlRequestTO(interface_, 0, &command);
+    IOReturn ret =
+        (*interface_.get())->ControlRequestTO(interface_.get(), 0, &command);
     VLOG_IF(1, ret != kIOReturnSuccess)
         << "Set " << control_name << " value to " << value << " failed (0x"
         << std::hex << ret << ")";
@@ -189,7 +190,8 @@ class CAPTURE_EXPORT UvcControl {
     ValueType data;
     command.pData = &data;
 
-    IOReturn ret = (*interface_)->ControlRequestTO(interface_, 0, &command);
+    IOReturn ret =
+        (*interface_.get())->ControlRequestTO(interface_.get(), 0, &command);
     VLOG_IF(1, ret != kIOReturnSuccess)
         << control_name << " failed (0x" << std::hex << ret;
     if (ret != kIOReturnSuccess) {

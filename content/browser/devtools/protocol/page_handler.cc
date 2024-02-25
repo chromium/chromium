@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -58,9 +59,11 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "net/base/filename_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/script_source_location.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -157,7 +160,7 @@ std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
           .SetDeviceHeight(content_size_dip.height())
           .SetScrollOffsetX(root_scroll_offset_dip.x())
           .SetScrollOffsetY(root_scroll_offset_dip.y())
-          .SetTimestamp(base::Time::Now().ToDoubleT())
+          .SetTimestamp(base::Time::Now().InSecondsFSinceUnixEpoch())
           .Build();
   return page_metadata;
 }
@@ -208,13 +211,12 @@ bool CanExecuteGlobalCommands(
 
 }  // namespace
 
-PageHandler::PageHandler(
-    EmulationHandler* emulation_handler,
-    BrowserHandler* browser_handler,
-    bool allow_unsafe_operations,
-    bool is_trusted,
-    absl::optional<url::Origin> navigation_initiator_origin,
-    bool may_read_local_files)
+PageHandler::PageHandler(EmulationHandler* emulation_handler,
+                         BrowserHandler* browser_handler,
+                         bool allow_unsafe_operations,
+                         bool is_trusted,
+                         std::optional<url::Origin> navigation_initiator_origin,
+                         bool may_read_local_files)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       allow_unsafe_operations_(allow_unsafe_operations),
       is_trusted_(is_trusted),
@@ -648,6 +650,19 @@ void PageHandler::OnFrameDetached(const base::UnguessableToken& frame_id) {
   frontend_->FrameDetached(frame_id.ToString(), "remove");
 }
 
+void PageHandler::DidChangeFrameLoadingState(const FrameTreeNode& ftn) {
+  if (!enabled_) {
+    return;
+  }
+  const std::string& frame_id =
+      ftn.current_frame_host()->devtools_frame_token().ToString();
+  if (ftn.IsLoading()) {
+    frontend_->FrameStartedLoading(frame_id);
+  } else {
+    frontend_->FrameStoppedLoading(frame_id);
+  }
+}
+
 void PageHandler::OnDownloadDestroyed(download::DownloadItem* item) {
   pending_downloads_.erase(item);
 }
@@ -758,8 +773,12 @@ Response PageHandler::ResetNavigationHistory() {
     return response;
 
   NavigationController& controller = host_->frame_tree()->controller();
-  controller.DeleteNavigationEntries(base::BindRepeating(&ReturnTrue));
-  return Response::Success();
+  if (controller.CanPruneAllButLastCommitted()) {
+    controller.DeleteNavigationEntries(base::BindRepeating(&ReturnTrue));
+    return Response::Success();
+  } else {
+    return Response::ServerError("History cannot be pruned");
+  }
 }
 
 void PageHandler::CaptureSnapshot(
@@ -873,7 +892,7 @@ void PageHandler::CaptureScreenshot(
                        weak_factory_.GetWeakPtr(), std::move(callback),
                        std::move(absl::get<BitmapEncoder>(encoder)),
                        gfx::Size(), gfx::Size(), blink::DeviceEmulationParams(),
-                       absl::nullopt),
+                       std::nullopt),
         false);
     return;
   }
@@ -934,7 +953,7 @@ void PageHandler::CaptureScreenshot(
     modified_params.viewport_offset.Scale(widget_host_device_scale_factor);
   }
 
-  absl::optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;
+  std::optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;
   if (capture_beyond_viewport.value_or(false)) {
     blink::web_pref::WebPreferences original_web_prefs =
         host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences();
@@ -1223,7 +1242,7 @@ void PageHandler::ScreenshotCaptured(
     const gfx::Size& original_view_size,
     const gfx::Size& requested_image_size,
     const blink::DeviceEmulationParams& original_emulation_params,
-    const absl::optional<blink::web_pref::WebPreferences>&
+    const std::optional<blink::web_pref::WebPreferences>&
         maybe_original_web_prefs,
     const gfx::Image& image) {
   if (original_view_size.width()) {
@@ -1410,9 +1429,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           EnteredBackForwardCacheBeforeServiceWorkerHostAdded;
-    case Reason::kNotMostRecentNavigationEntry:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          NotMostRecentNavigationEntry;
     case Reason::kServiceWorkerClaim:
       return Page::BackForwardCacheNotRestoredReasonEnum::ServiceWorkerClaim;
     case Reason::kIgnoreEventAndEvict:
@@ -1473,8 +1489,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::NoResponseHead;
     case Reason::kErrorDocument:
       return Page::BackForwardCacheNotRestoredReasonEnum::ErrorDocument;
-    case Reason::kFencedFramesEmbedder:
-      return Page::BackForwardCacheNotRestoredReasonEnum::FencedFramesEmbedder;
     case Reason::kCookieDisabled:
       return Page::BackForwardCacheNotRestoredReasonEnum::CookieDisabled;
     case Reason::kHTTPAuthRequired:
@@ -1523,9 +1537,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::ContainsPlugins;
     case WebSchedulerTrackedFeature::kDocumentLoaded:
       return Page::BackForwardCacheNotRestoredReasonEnum::DocumentLoaded;
-    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          DedicatedWorkerOrWorklet;
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestOthers;
@@ -1610,7 +1621,29 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       // Currently we add WebSchedulerTrackedFeature::kWebSerial only for
       // disabling aggressive throttling.
       NOTREACHED_NORETURN();
+    case WebSchedulerTrackedFeature::kSmartCard:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SmartCard;
+    case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
+      return Page::BackForwardCacheNotRestoredReasonEnum::LiveMediaStreamTrack;
+    case WebSchedulerTrackedFeature::kUnloadHandler:
+      return Page::BackForwardCacheNotRestoredReasonEnum::UnloadHandler;
   }
+}
+
+std::unique_ptr<Page::BackForwardCacheBlockingDetails> SourceLocationToProtocol(
+    const blink::mojom::ScriptSourceLocationPtr& source) {
+  auto blocking_details = Page::BackForwardCacheBlockingDetails::Create();
+  if (!source->url.empty()) {
+    blocking_details.SetUrl(source->url);
+  }
+  if (!source->function_name.empty()) {
+    blocking_details.SetFunction(source->function_name);
+  }
+  CHECK(source->line_number > 0);
+  CHECK(source->column_number > 0);
+  return blocking_details.SetLineNumber(source->line_number - 1)
+      .SetColumnNumber(source->column_number - 1)
+      .Build();
 }
 
 Page::BackForwardCacheNotRestoredReason
@@ -1736,7 +1769,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kSessionRestored:
     case Reason::kServiceWorkerPostMessage:
     case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
-    case Reason::kNotMostRecentNavigationEntry:
     case Reason::kServiceWorkerClaim:
     case Reason::kIgnoreEventAndEvict:
     case Reason::kHaveInnerContents:
@@ -1754,7 +1786,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kServiceWorkerUnregistration:
     case Reason::kNoResponseHead:
     case Reason::kErrorDocument:
-    case Reason::kFencedFramesEmbedder:
     case Reason::kCookieDisabled:
     case Reason::kHTTPAuthRequired:
     case Reason::kCookieFlushed:
@@ -1793,6 +1824,9 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
     case WebSchedulerTrackedFeature::kWebTransport:
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
+    case WebSchedulerTrackedFeature::kSmartCard:
+    case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
+    case WebSchedulerTrackedFeature::kUnloadHandler:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case WebSchedulerTrackedFeature::kPortal:
     case WebSchedulerTrackedFeature::kWebNfc:
@@ -1809,7 +1843,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kPictureInPicture:
     case WebSchedulerTrackedFeature::kWebLocks:
     case WebSchedulerTrackedFeature::kWebSocket:
-    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
     case WebSchedulerTrackedFeature::kSpeechSynthesis:
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
@@ -1838,13 +1871,18 @@ MapDisableForRenderFrameHostReasonToType(
   return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
 }
 
+using BlockingDetailsMap =
+    std::map<blink::scheduler::WebSchedulerTrackedFeature,
+             std::vector<blink::mojom::BlockingDetailsPtr>>;
+
 std::unique_ptr<protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>
 CreateNotRestoredExplanation(
     const BackForwardCacheCanStoreDocumentResult::NotRestoredReasons
         not_restored_reasons,
     const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features,
     const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap&
-        disabled_reasons) {
+        disabled_reasons,
+    const BlockingDetailsMap& details) {
   auto reasons = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
 
@@ -1855,11 +1893,27 @@ CreateNotRestoredExplanation(
       DCHECK(!blocklisted_features.Empty());
       for (blink::scheduler::WebSchedulerTrackedFeature feature :
            blocklisted_features) {
-        reasons->emplace_back(
+        // Details are not always present for blocklisted features, because the
+        // number of details reported is limited.
+        auto details_list = std::make_unique<
+            protocol::Array<Page::BackForwardCacheBlockingDetails>>();
+        CHECK(details.contains(feature));
+        for (const auto& detail : details.at(feature)) {
+          if (detail->source) {
+            details_list->push_back(SourceLocationToProtocol(detail->source));
+          }
+        }
+        auto explanation =
             Page::BackForwardCacheNotRestoredExplanation::Create()
                 .SetType(MapBlocklistedFeatureToType(feature))
                 .SetReason(BlocklistedFeatureToProtocol(feature))
-                .Build());
+                .Build();
+
+        if (!details_list->empty()) {
+          explanation->SetDetails(std::move(details_list));
+        }
+
+        reasons->emplace_back(std::move(explanation));
       }
     } else if (not_restored_reason ==
                BackForwardCacheMetrics::NotRestoredReason::
@@ -1893,7 +1947,8 @@ CreateNotRestoredExplanationTree(
   auto explanation = CreateNotRestoredExplanation(
       tree_result.GetDocumentResult().not_restored_reasons(),
       tree_result.GetDocumentResult().blocklisted_features(),
-      tree_result.GetDocumentResult().disabled_reasons());
+      tree_result.GetDocumentResult().disabled_reasons(),
+      tree_result.GetDocumentResult().blocking_details_map());
 
   auto children_array = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanationTree>>();
@@ -1960,7 +2015,7 @@ void PageHandler::BackForwardCacheNotUsed(
 
   auto explanation = CreateNotRestoredExplanation(
       result->not_restored_reasons(), result->blocklisted_features(),
-      result->disabled_reasons());
+      result->disabled_reasons(), result->blocking_details_map());
 
   // TODO(crbug.com/1281855): |tree_result| should not be nullptr when |result|
   // has the reasons.

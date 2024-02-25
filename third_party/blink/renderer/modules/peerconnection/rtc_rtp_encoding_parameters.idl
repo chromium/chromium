@@ -24,4 +24,7 @@ dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
     [RuntimeEnabled=RTCSvcScalabilityMode] DOMString scalabilityMode;
     // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpencodingparameters-adaptiveptime
     boolean adaptivePtime = false;
+    // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpencodingparameters-codec
+    [RuntimeEnabled=RTCRtpEncodingParametersCodec]
+    RTCRtpCodec codec;
 };

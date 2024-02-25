@@ -11,6 +11,29 @@
 
 namespace supervised_user {
 
+// This enum describes the filter types of Chrome, which is
+// set by Family Link App or at families.google.com/families. These values
+// are logged to UMA. Entries should not be renumbered and numeric values
+// should never be reused. Please keep in sync with "FamilyLinkWebFilterType"
+// in src/tools/metrics/histograms/enums.xml.
+enum class WebFilterType {
+  // The web filter is set to "Allow all sites".
+  kAllowAllSites = 0,
+
+  // The web filter is set to "Try to block mature sites".
+  kTryToBlockMatureSites = 1,
+
+  // The web filter is set to "Only allow certain sites".
+  kCertainSites = 2,
+
+  // Used for UMA only. There are multiple web filters on the device.
+  kMixed = 3,
+
+  // Used for UMA. Update kMaxValue to the last value. Add future entries
+  // above this comment. Sync with enums.xml.
+  kMaxValue = kMixed,
+};
+
 // These values corresponds to SupervisedUserSafetyFilterResult in
 // tools/metrics/histograms/enums.xml. If you change anything here, make
 // sure to also update enums.xml accordingly.
@@ -23,6 +46,22 @@ enum SupervisedUserSafetyFilterResult {
   FILTERING_BEHAVIOR_BLOCK_DEFAULT = 6,
   FILTERING_BEHAVIOR_ALLOW_ALLOWLIST = 7,
   FILTERING_BEHAVIOR_MAX = FILTERING_BEHAVIOR_ALLOW_ALLOWLIST
+};
+
+// These enum values describe the result of filtering and are logged to UMA.
+// Please keep in sync with "SupervisedUserFilterTopLevelResult" in
+// tools/metrics/histograms/enums.xml.
+enum class SupervisedUserFilterTopLevelResult {
+  // A parent has explicitly allowed the domain on the allowlist or all sites
+  // are allowed through parental controls.
+  kAllow = 0,
+  // Site is blocked by the safe sites filter
+  kBlockSafeSites = 1,
+  // Sites that were blocked due to being on the blocklist
+  kBlockManual = 2,
+  // Sites are blocked by default when the "Only allow certain sites" setting is
+  // enabled for the supervised user. Sites on the allowlist are not blocked.
+  kBlockNotInAllowlist = 3,
 };
 
 // Constants used by SupervisedUserURLFilter::RecordFilterResultEvent.
@@ -44,6 +83,7 @@ extern const char kGeolocationDisabled[];
 extern const char kSafeSitesEnabled[];
 extern const char kSigninAllowed[];
 extern const char kSigninAllowedOnNextStartup[];
+extern const char kSkipParentApprovalToInstallExtensions[];
 
 // A special supervised user ID used for child accounts.
 extern const char kChildAccountSUID[];
@@ -70,8 +110,16 @@ GURL KidsManagementClassifyURLRequestURL();
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
 
-// Histogram name to log URL filtering results.
+// Histogram name to log Family Link user web filter type segmentation.
+// This filter only applies to supervised user accounts.
+extern const char kFamilyLinkUserLogSegmentWebFilterHistogramName[];
+
+// Histogram name to log URL filtering results with reason for filter and page
+// transition.
 extern const char kSupervisedUserURLFilteringResultHistogramName[];
+
+// Histogram name to log top level URL filtering results with reason for filter.
+extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
 
 }  // namespace supervised_user
 

@@ -8,17 +8,20 @@ import "components/sync/protocol/web_app_specifics.proto";
 import "chrome/browser/ash/system_web_apps/types/proto/system_web_app_data.proto";
 import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
 import "chrome/browser/web_applications/proto/web_app_os_integration_state.proto";
+import "chrome/browser/web_applications/proto/web_app_proto_package.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/proto/web_app_tab_strip.proto";
 
 option optimize_for = LITE_RUNTIME;
 
+// TODO(http://b/307989065) Make this web_app.proto and remove "Proto" from type
+// names.
 package web_app;
 
 // A mapping between a MIME type and a set of file extensions for a file handler
 // "accept" entry. See chrome/browser/web_applications/web_app.h for details.
 message WebAppFileHandlerAcceptProto {
-  required string mimetype = 1;
+  optional string mimetype = 1;  // Required.
   repeated string file_extensions = 2;
 }
 
@@ -27,7 +30,7 @@ message WebAppFileHandlerAcceptProto {
 // handler can handle. See chrome/browser/web_applications/web_app.h for
 // details.
 message WebAppFileHandlerProto {
-  required string action = 1;
+  optional string action = 1;  // Required.
   repeated WebAppFileHandlerAcceptProto accept = 2;
   repeated sync_pb.WebAppIconInfo downloaded_icons = 3;
   optional string display_name = 4;
@@ -38,22 +41,22 @@ message WebAppFileHandlerProto {
     SINGLE_CLIENT = 1;
     MULTIPLE_CLIENTS = 2;
   }
-  required LaunchType launch_type = 5;
+  optional LaunchType launch_type = 5;  // Required.
 }
 
 message WebAppProtocolHandler {
-  required string protocol = 1;
-  required string url = 2;
+  optional string protocol = 1;  // Required.
+  optional string url = 2;       // Required.
 }
 
 message WebAppUrlHandlerProto {
-  required string origin = 1;
-  required bool has_origin_wildcard = 2;
+  optional string origin = 1;             // Required.
+  optional bool has_origin_wildcard = 2;  // Required.
 }
 
 message WebAppScopeExtensionProto {
-  required string origin = 1;
-  required bool has_origin_wildcard = 2;
+  optional string origin = 1;             // Required.
+  optional bool has_origin_wildcard = 2;  // Required.
 }
 
 // A set to track simultaneous installs and uninstalls from multiple install
@@ -61,28 +64,28 @@ message WebAppScopeExtensionProto {
 // chrome/browser/web_applications/web_app_constants.h
 // and the WebAppManagementProto enum below.
 message SourcesProto {
-  required bool system = 1;
-  required bool policy = 2;
-  required bool web_app_store = 3;
-  required bool sync = 4;
-  required bool default = 5;
+  optional bool system = 1;
+  optional bool policy = 2;
+  optional bool web_app_store = 3;
+  optional bool sync = 4;
+  optional bool default = 5;
   optional bool sub_app = 6;
   optional bool kiosk = 7;
   optional bool command_line = 8;
   optional bool oem = 9;
   optional bool one_drive_integration = 10;
+  optional bool aps_default = 11;
 }
 
 // Properties for integrating with Chrome OS.
 message ChromeOSDataProto {
-  required bool show_in_launcher = 1;
-  required bool show_in_search = 2;
-  required bool show_in_management = 3;
-  required bool is_disabled = 4;
+  optional bool show_in_launcher = 1;
+  optional bool show_in_search_and_shelf = 2;
+  optional bool show_in_management = 3;
+  optional bool is_disabled = 4;
   optional bool oem_installed = 5;
   optional bool handles_file_open_intents = 6;
-  // See explanation on IsolationDataProto for storing path as bytes.
-  optional bytes app_profile_path = 7;
+  reserved 7;
 }
 
 message ClientDataProto {
@@ -91,8 +94,8 @@ message ClientDataProto {
 
 // Properties for a WebApp's shortcuts menu item.
 message WebAppShortcutsMenuItemInfoProto {
-  required string name = 1;
-  required string url = 2;
+  optional string name = 1;  // Required.
+  optional string url = 2;   // Required.
   repeated sync_pb.WebAppIconInfo shortcut_manifest_icons = 3;
   repeated sync_pb.WebAppIconInfo shortcut_manifest_icons_maskable = 4;
   repeated sync_pb.WebAppIconInfo shortcut_manifest_icons_monochrome = 5;
@@ -127,6 +130,7 @@ enum WebAppManagementProto {
   COMMAND_LINE = 8;
   OEM = 9;
   ONEDRIVEINTEGRATION = 10;
+  APS_DEFAULT = 11;
 }
 
 // This stores data per-external-WebAppManagement::Type, as each installation
@@ -180,8 +184,8 @@ message IsolationDataProto {
   // this Isolated Web App.
   repeated string controlled_frame_partitions = 4;
 
-  // The version of the IWA.
-  required string version = 5;
+  // The version of the IWA - required.
+  optional string version = 5;
 
   message PendingUpdateInfo {
     oneof location {
@@ -189,10 +193,31 @@ message IsolationDataProto {
       DevModeBundle dev_mode_bundle = 2;
       DevModeProxy dev_mode_proxy = 3;
     }
-    required string version = 4;
+    // The version of the pending update - required.
+    optional string version = 4;
   }
 
   optional PendingUpdateInfo pending_update_info = 6;
+}
+
+// The initiator of a sync generated icon fix time window.
+enum GeneratedIconFixSource {
+  GeneratedIconFixSource_UNKNOWN = 0;
+  GeneratedIconFixSource_SYNC_INSTALL = 1;
+  GeneratedIconFixSource_RETROACTIVE = 2;
+  GeneratedIconFixSource_MANIFEST_UPDATE = 3;
+};
+
+// Represents the current state of attempts to fix broken icons from sync
+// installed web apps.
+message GeneratedIconFix {
+  optional GeneratedIconFixSource source = 1;  // Required.
+
+  optional int64 window_start_time = 2;  // Required.
+
+  optional int64 last_attempt_time = 3;
+
+  optional uint32 attempt_count = 4;  // Required.
 }
 
 // Full WebApp object data. See detailed comments in
@@ -206,7 +231,7 @@ message WebAppProto {
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
   // generate a placeholder icon. Any device may write new values to synced
   // |name| and |theme_color|. A random last update wins.
-  required sync_pb.WebAppSpecifics sync_data = 1;
+  optional sync_pb.WebAppSpecifics sync_data = 1;  // Required.
 
   // This enum should be synced with
   // third_party/blink/public/mojom/manifest/display_mode.mojom
@@ -219,17 +244,18 @@ message WebAppProto {
     WINDOW_CONTROLS_OVERLAY = 5;
     TABBED = 6;
     BORDERLESS = 7;
+    PICTURE_IN_PICTURE = 8;
   }
 
   // Local data. May vary across devices. Not to be synced.
   //
-  required string name = 2;
+  optional string name = 2;  // Required.
   optional uint32 theme_color = 3;
   optional string description = 4;
   optional DisplayMode display_mode = 5;
   optional string scope = 6;
-  required SourcesProto sources = 7;
-  required bool is_locally_installed = 8;
+  optional SourcesProto sources = 7;       // Required.
+  optional bool is_locally_installed = 8;  // Required.
 
   // Installation state:
   // Specifies if this web app is from sync and has not completed installation.
@@ -259,7 +285,7 @@ message WebAppProto {
 
   // Time the app is installed.
   // ms since the Unix epoch. See sync/base/time.h.
-  optional int64 install_time = 16;
+  optional int64 first_install_time = 16;
 
   // A list of protocol handlers.
   repeated WebAppProtocolHandler protocol_handlers = 17;
@@ -442,5 +468,22 @@ message WebAppProto {
 
   // Stores whether the current web app is set as the default app to capture
   // links.
-  optional bool is_user_selected_app_for_capturing_links = 63;
+  optional proto.LinkCapturingUserPreference user_link_capturing_preference =
+      63;
+
+  // Time the app was updated as part of a full install. For example when a
+  // policy installs an app that is already in the DB installed as a
+  // default/sync installed app and the DB data is overwritten. ms since the
+  // Unix epoch. See sync/base/time.h.
+  optional int64 latest_install_time = 64;
+
+  // Contains bookkeeping details about attempts to fix broken icons from sync
+  // installed web apps.
+  optional GeneratedIconFix generated_icon_fix = 65;
+
+  // Records the number of times the user has ignored/dismissed the offer to
+  // turn on user link capturing after launching the app via the intent picker,
+  // specifically from the `EnableLinkCapturingInfoBarDelegate`.
+  optional int32 supported_links_offer_ignore_count = 66;
+  optional int32 supported_links_offer_dismiss_count = 67;
 }

@@ -16,38 +16,37 @@ limitations under the License.
 package org.tensorflow.lite.task.processor;
 
 import com.google.auto.value.AutoValue;
-
-import org.tensorflow.lite.task.core.annotations.UsedByReflection;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 
 /** Represents the search result of a Searcher model. */
 @AutoValue
 @UsedByReflection("searcher_jni.cc")
 public abstract class NearestNeighbor {
-    @UsedByReflection("searcher_jni.cc")
-    static NearestNeighbor create(byte[] metadataArray, float distance) {
-        // Convert byte[] metadataArray to ByteBuffer which handles endianess better.
-        //
-        // Ideally, the API should accept a ByteBuffer instead of a byte[]. However, converting
-        // byte[] to ByteBuffer in JNI will lead to unnecessarily complex code which involves 6 more
-        // reflection calls. We can make this method package private, because users in general
-        // shouldn't need to create NearestNeighbor instances, but only consume the objects return
-        // from Task Library. This API will be used mostly for internal purpose.
-        ByteBuffer metadata = ByteBuffer.wrap(metadataArray);
-        metadata.order(ByteOrder.nativeOrder());
-        return new AutoValue_NearestNeighbor(metadata, distance);
-    }
 
-    /**
-     * Gets the user-defined metadata about the result. This could be a label, a unique ID, a
-     * serialized proto of some sort, etc.
-     *
-     * <p><b>Do not mutate</b> the returned metadata.
-     */
-    public abstract ByteBuffer getMetadata();
+  @UsedByReflection("searcher_jni.cc")
+  static NearestNeighbor create(byte[] metadataArray, float distance) {
+    // Convert byte[] metadataArray to ByteBuffer which handles endianess better.
+    //
+    // Ideally, the API should accept a ByteBuffer instead of a byte[]. However, converting byte[]
+    // to ByteBuffer in JNI will lead to unnecessarily complex code which involves 6 more reflection
+    // calls. We can make this method package private, because users in general shouldn't need to
+    // create NearestNeighbor instances, but only consume the objects return from Task Library. This
+    // API will be used mostly for internal purpose.
+    ByteBuffer metadata = ByteBuffer.wrap(metadataArray);
+    metadata.order(ByteOrder.nativeOrder());
+    return new AutoValue_NearestNeighbor(metadata, distance);
+  }
 
-    /** Gets the distance score indicating how confident the result is. Lower is better. */
-    public abstract float getDistance();
+  /**
+   * Gets the user-defined metadata about the result. This could be a label, a unique ID, a
+   * serialized proto of some sort, etc.
+   *
+   * <p><b>Do not mutate</b> the returned metadata.
+   */
+  public abstract ByteBuffer getMetadata();
+
+  /** Gets the distance score indicating how confident the result is. Lower is better. */
+  public abstract float getDistance();
 }

@@ -1,0 +1,62 @@
+{
+  "short_name": "Manifest",
+  "name": "Test app SVG icon with no size",
+  "icons": [
+    {
+      "src": "red_no_size.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "scope": "/",
+  "display": "standalone",
+  "description": "SVG Icon with size any specified",
+  "shortcuts": [
+    {
+      "name": "shortcut_menu_item1",
+      "url": "/",
+      "icons": [
+        {
+          "src": "red_no_size.svg",
+          "sizes": "any",
+          "type": "image/svg+xml",
+          "purpose": "any monochrome"
+        }
+      ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/",
+      "name": "Plain Text",
+      "icons": [
+        {
+          "src": "red_no_size.svg",
+          "sizes": "any"
+        }
+      ],
+      "accept": {
+        "image/txt": [".txt", ".md", ".csv"]
+      }
+    }
+  ],
+  "tab_strip": {
+    "home_tab": {
+      "url": "/",
+      "icons": [
+        {
+          "src": "red_no_size.svg",
+          "sizes": "any"
+        }
+      ],
+      "scope_patterns": [
+        {"pathname": "/[^/]*/.*"}
+      ]
+    },
+    "new_tab_button": {
+      "url": "one.html"
+    }
+  }
+}
+  

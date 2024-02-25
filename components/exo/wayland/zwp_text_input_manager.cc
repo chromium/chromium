@@ -103,11 +103,11 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   }
 
   void SetPendingGrammarFragment(
-      const absl::optional<ui::GrammarFragment>& grammar_fragment) {
+      const std::optional<ui::GrammarFragment>& grammar_fragment) {
     pending_grammar_fragment_ = grammar_fragment;
   }
 
-  absl::optional<ui::GrammarFragment> TakeGrammarFragment() {
+  std::optional<ui::GrammarFragment> TakeGrammarFragment() {
     auto result = pending_grammar_fragment_;
     pending_grammar_fragment_.reset();
     return result;
@@ -117,7 +117,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     pending_autocorrect_info_ = autocorrect_info;
   }
 
-  absl::optional<ui::AutocorrectInfo> TakeAutocorrectInfo() {
+  std::optional<ui::AutocorrectInfo> TakeAutocorrectInfo() {
     auto result = pending_autocorrect_info_;
     pending_autocorrect_info_.reset();
     return result;
@@ -127,7 +127,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     pending_surrounding_text_offset_utf16_ = offset;
   }
 
-  absl::optional<uint32_t> TakeSurroundingTextOffsetUtf16() {
+  std::optional<uint32_t> TakeSurroundingTextOffsetUtf16() {
     auto result = pending_surrounding_text_offset_utf16_;
     pending_surrounding_text_offset_utf16_.reset();
     return result;
@@ -452,16 +452,16 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
                ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SINCE_VERSION;
   }
 
-  raw_ptr<wl_resource, ExperimentalAsh> text_input_;
-  raw_ptr<wl_resource, ExperimentalAsh> extended_text_input_ = nullptr;
-  raw_ptr<wl_resource, ExperimentalAsh> surface_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> text_input_;
+  raw_ptr<wl_resource, DanglingUntriaged> extended_text_input_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> surface_ = nullptr;
 
   // Owned by Seat, which is updated before calling the callbacks of this
   // class.
-  const raw_ptr<const XkbTracker, ExperimentalAsh> xkb_tracker_;
+  const raw_ptr<const XkbTracker> xkb_tracker_;
 
   // Owned by Server, which always outlives this delegate.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
+  const raw_ptr<SerialTracker> serial_tracker_;
   ui::XkbModifierConverter modifier_converter_{
       std::vector<std::string>(std::begin(kModifierNames),
                                std::end(kModifierNames))};
@@ -472,9 +472,9 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
 
   // Pending surrounding text supported flag.
   bool pending_surrounding_text_supported_ = true;
-  absl::optional<ui::GrammarFragment> pending_grammar_fragment_;
-  absl::optional<ui::AutocorrectInfo> pending_autocorrect_info_;
-  absl::optional<std::uint32_t> pending_surrounding_text_offset_utf16_;
+  std::optional<ui::GrammarFragment> pending_grammar_fragment_;
+  std::optional<ui::AutocorrectInfo> pending_autocorrect_info_;
+  std::optional<std::uint32_t> pending_surrounding_text_offset_utf16_;
 
   base::WeakPtrFactory<WaylandTextInputDelegate> weak_factory_{this};
 };
@@ -831,8 +831,8 @@ void extended_text_input_set_grammar_fragment_at_cursor(
   }
 
   delegate->SetPendingGrammarFragment(
-      start == end ? absl::nullopt
-                   : absl::make_optional(ui::GrammarFragment(
+      start == end ? std::nullopt
+                   : std::make_optional(ui::GrammarFragment(
                          gfx::Range(start, end), suggestion)));
 }
 
@@ -948,7 +948,7 @@ void extended_text_input_set_large_surrounding_text(wl_client* client,
   {
     text.resize(size);
     base::ScopedFD fd(raw_fd);
-    if (!base::ReadFromFD(fd.get(), text.data(), size)) {
+    if (!base::ReadFromFD(fd.get(), text)) {
       PLOG(ERROR) << "Failed to read file descriptor for surrounding text";
       return;
     }

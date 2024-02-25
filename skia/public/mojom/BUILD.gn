@@ -36,6 +36,7 @@ mojom("mojom") {
     "image_info.mojom",
     "skcolor.mojom",
     "skcolor4f.mojom",
+    "skcolorspace.mojom",
     "skcolorspace_primaries.mojom",
     "surface_origin.mojom",
     "tile_mode.mojom",
@@ -91,6 +92,26 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "skia.mojom.SkcmsMatrix3x3"
+          cpp = "::skcms_Matrix3x3"
+        },
+      ]
+      traits_headers = [ "skcolorspace_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.SkcmsTransferFunction"
+          cpp = "::skcms_TransferFunction"
+        },
+      ]
+      traits_headers = [ "skcolorspace_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
           mojom = "skia.mojom.SkColor"
           cpp = "::SkColor"
           copyable_pass_by_value = true
@@ -117,6 +138,16 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "skcolorspace_primaries_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.SkColorSpace"
+          cpp = "::sk_sp<SkColorSpace>"
+        },
+      ]
+      traits_headers = [ "skcolorspace_mojom_traits.h" ]
       traits_public_deps = [ "//skia" ]
     },
     {
@@ -158,5 +189,9 @@ mojom("mojom") {
 
   cpp_typemaps = shared_skia_cpp_typemaps
   blink_cpp_typemaps = shared_skia_cpp_typemaps
+
+  # Generate TypeScript bindings for WebUI and JavaScript legacy bindings for
+  # Blink.
   webui_module_path = "chrome://resources/mojo/skia/public/mojom/"
+  generate_legacy_js_bindings = true
 }

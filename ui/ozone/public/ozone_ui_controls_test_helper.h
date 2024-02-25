@@ -61,6 +61,10 @@ class OzoneUIControlsTestHelper {
                               int id,
                               const gfx::Point& touch_loc,
                               base::OnceClosure closure) = 0;
+
+  // Update display and executes |closure| when done.
+  virtual void UpdateDisplay(const std::string& display_specs,
+                             base::OnceClosure closure) = 0;
 #endif
 
   // Executes closure after all pending ui events are sent.
@@ -70,6 +74,10 @@ class OzoneUIControlsTestHelper {
   // SendMouseMotionNotifyEvent instead of calling MoveCursorTo via
   // aura::Window.
   virtual bool MustUseUiControlsForMoveCursorTo() = 0;
+
+#if BUILDFLAG(IS_LINUX)
+  virtual void ForceUseScreenCoordinatesOnce();
+#endif
 };
 
 COMPONENT_EXPORT(OZONE)

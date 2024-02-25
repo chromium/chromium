@@ -23,7 +23,7 @@ class BasePlatformDelegate : public PlatformDelegate {
       const FilePathSet& file_paths) override;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  absl::optional<ProductMetadata> GetProductMetadata(
+  std::optional<ProductMetadata> GetProductMetadata(
       const base::FilePath& file_path) override;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 

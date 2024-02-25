@@ -60,14 +60,13 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link AppModalPresenter}.
- */
+/** Tests for {@link AppModalPresenter}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AppModalPresenterTest {
     @ClassRule
     public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -90,11 +89,14 @@ public class AppModalPresenterTest {
     @BeforeClass
     public static void setupSuite() {
         activityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivity = activityTestRule.getActivity();
-            sManager = new ModalDialogManager(
-                    new AppModalPresenter(sActivity), ModalDialogManager.ModalDialogType.APP);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivity = activityTestRule.getActivity();
+                    sManager =
+                            new ModalDialogManager(
+                                    new AppModalPresenter(sActivity),
+                                    ModalDialogManager.ModalDialogType.APP);
+                });
     }
 
     @Before
@@ -163,17 +165,20 @@ public class AppModalPresenterTest {
     public void testBackPressedCallback_ModalDialogProperty_IsFired() throws TimeoutException {
         PropertyModel dialog = createDialog(sActivity, sManager, "title", null);
         CallbackHelper callbackHelper = new CallbackHelper();
-        final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                callbackHelper.notifyCalled();
-            }
-        };
+        final OnBackPressedCallback onBackPressedCallback =
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        callbackHelper.notifyCalled();
+                    }
+                };
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            dialog.set(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
-                    onBackPressedCallback);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    dialog.set(
+                            ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                            onBackPressedCallback);
+                });
 
         showDialog(sManager, dialog, ModalDialogType.APP);
 
@@ -185,8 +190,13 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testButton_negativeButtonFilled() throws Exception {
-        PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver,
-                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED);
+        PropertyModel dialog =
+                createDialog(
+                        sActivity,
+                        sManager,
+                        "title",
+                        mTestObserver,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED);
         showDialog(sManager, dialog, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(hasCurrentTextColor(Color.WHITE)));
         onView(withText(R.string.ok)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
@@ -196,8 +206,13 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testButton_primaryButtonFilled() throws Exception {
-        PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver,
-                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
+        PropertyModel dialog =
+                createDialog(
+                        sActivity,
+                        sManager,
+                        "title",
+                        mTestObserver,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
         showDialog(sManager, dialog, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
         onView(withText(R.string.ok)).check(matches(hasCurrentTextColor(Color.WHITE)));
@@ -208,17 +223,25 @@ public class AppModalPresenterTest {
     @Feature({"ModalDialog"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testFullscreenDarkStyle() {
-        PropertyModel dialog = createDialogWithDialogStyle(sActivity, sManager, "title",
-                mTestObserver, ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG);
+        PropertyModel dialog =
+                createDialogWithDialogStyle(
+                        sActivity,
+                        sManager,
+                        "title",
+                        mTestObserver,
+                        ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG);
         showDialog(sManager, dialog, ModalDialogType.APP);
         Window window = ((AppModalPresenter) sManager.getCurrentPresenterForTest()).getWindow();
 
-        assertEquals(sActivity.getColor(R.color.toolbar_background_primary_dark),
+        assertEquals(
+                sActivity.getColor(R.color.toolbar_background_primary_dark),
                 window.getStatusBarColor());
-        assertEquals(sActivity.getColor(R.color.toolbar_background_primary_dark),
+        assertEquals(
+                sActivity.getColor(R.color.toolbar_background_primary_dark),
                 window.getNavigationBarColor());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            assertEquals(sActivity.getColor(R.color.bottom_system_nav_divider_color_light),
+            assertEquals(
+                    sActivity.getColor(R.color.bottom_system_nav_divider_color_light),
                     window.getNavigationBarDividerColor());
         }
     }
@@ -226,11 +249,13 @@ public class AppModalPresenterTest {
     private static Matcher<View> hasCurrentTextColor(int expected) {
         return new BoundedMatcher<View, Button>(Button.class) {
             private int mColor;
+
             @Override
             public boolean matchesSafely(Button button) {
                 mColor = button.getCurrentTextColor();
                 return expected == mColor;
             }
+
             @Override
             public void describeTo(final Description description) {
                 description.appendText("Color did not match " + mColor);

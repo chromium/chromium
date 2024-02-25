@@ -2,9 +2,7 @@ owners:
 - sidereal@google.com
 - file://chrome/browser/ash/guest_os/OWNERS
 
-caption: |-
-  Configure the installer for Bruschetta VMs on <ph name="PRODUCT_OS_NAME">$2
-  <ex>Google ChromeOS</ex></ph> devices
+caption: Configure the installer for Bruschetta VMs on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices
 
 desc: |-
   Sets metadata used by the installer for Bruschetta VMs on <ph
@@ -36,7 +34,8 @@ schema:
       type: string
       description: |-
         A URL for users to visit to learn more. If unset there will
-        be no "learn more" URL in the installer.
+        be no "learn more" URL in the installer. If present, it must use
+        the https scheme.
 
 example_value:
   display_name: AwesomeNix

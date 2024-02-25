@@ -7,11 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_notifier_impl.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -43,11 +40,7 @@ void ExpectReleaseNotesChip(ChromeSearchResult* result,
 
 class HelpAppZeroStateProviderTest : public AppListTestBase {
  public:
-  HelpAppZeroStateProviderTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kReleaseNotesSuggestionChip},
-        /*disabled_features=*/{});
-  }
+  HelpAppZeroStateProviderTest() = default;
   ~HelpAppZeroStateProviderTest() override = default;
 
   void SetUp() override {
@@ -80,15 +73,12 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
   ::test::TestAppListController app_list_controller_;
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
   TestSearchController search_controller_;
-  raw_ptr<HelpAppZeroStateProvider, ExperimentalAsh> provider_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<HelpAppZeroStateProvider> provider_ = nullptr;
 };
 
 // Test for empty query.
 TEST_F(HelpAppZeroStateProviderTest,
        HasNoResultsForEmptyQueryIfTimesLeftToShowIsZero) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
@@ -98,22 +88,8 @@ TEST_F(HelpAppZeroStateProviderTest,
 }
 
 TEST_F(HelpAppZeroStateProviderTest,
-       ReturnsDiscoverTabChipForEmptyQueryIfTimesLeftIsPositive) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 1);
-  profile()->GetPrefs()->SetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
-
-  StartZeroStateSearch();
-
-  ASSERT_EQ(0u, GetLatestResults().size());
-}
-
-TEST_F(HelpAppZeroStateProviderTest,
        ReturnsReleaseNotesChipForEmptyQueryIfTimesLeftIsPositive) {
   profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
-  profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
 
   StartZeroStateSearch();
@@ -122,31 +98,6 @@ TEST_F(HelpAppZeroStateProviderTest,
   ChromeSearchResult* result = GetLatestResults().at(0).get();
   ExpectReleaseNotesChip(result, IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE,
                          ash::SearchResultDisplayType::kContinue);
-}
-
-TEST_F(HelpAppZeroStateProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 1);
-  profile()->GetPrefs()->SetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
-
-  StartZeroStateSearch();
-
-  ASSERT_EQ(1u, GetLatestResults().size());
-
-  ChromeSearchResult* result = GetLatestResults().at(0).get();
-  ExpectReleaseNotesChip(result, IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE,
-                         ash::SearchResultDisplayType::kContinue);
-}
-
-TEST_F(HelpAppZeroStateProviderTest,
-       DecrementsTimesLeftToShowDiscoverTabChipUponShowing) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
-
-  StartZeroStateSearch();
-
-  EXPECT_EQ(0u, GetLatestResults().size());
 }
 
 TEST_F(HelpAppZeroStateProviderTest,
@@ -184,16 +135,6 @@ TEST_F(HelpAppZeroStateProviderTest,
 
   EXPECT_EQ(2, profile()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-}
-
-TEST_F(HelpAppZeroStateProviderTest,
-       ClickingDiscoverTabChipStopsItFromShowing) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
-
-  StartZeroStateSearch();
-
-  EXPECT_EQ(0u, GetLatestResults().size());
 }
 
 TEST_F(HelpAppZeroStateProviderTest,

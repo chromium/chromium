@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "allow_screen_lock": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AllowScreenLock": false
+        },
+        "prefs": {
+          "allow_screen_lock": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

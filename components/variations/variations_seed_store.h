@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_VARIATIONS_SEED_STORE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -14,10 +15,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/variations/variations_safe_seed_store.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/dbus/featured/featured.pb.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PrefService;
 class PrefRegistrySimple;
@@ -42,7 +48,12 @@ struct ValidatedSeed {
 class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
  public:
   // Standard constructor. Enables signature verification.
-  explicit VariationsSeedStore(PrefService* local_state);
+  // |safe_seed_store| controls how to load and store the safe seed data.
+  // TODO(https://crbug.com/1489453): Remove this constructor and migrate
+  // callers to the more-verbose version.
+  VariationsSeedStore(PrefService* local_state,
+                      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store);
+
   // |initial_seed| may be null. If not null, then it will be stored in this
   // seed store. This is used by Android Chrome to supply the first run seed,
   // and by Android WebView to supply the seed on every run.
@@ -54,6 +65,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   VariationsSeedStore(PrefService* local_state,
                       std::unique_ptr<SeedResponse> initial_seed,
                       bool signature_verification_enabled,
+                      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
                       bool use_first_run_prefs = true);
 
   VariationsSeedStore(const VariationsSeedStore&) = delete;
@@ -123,12 +135,45 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   base::Time GetLastFetchTime() const;
 
   // Returns the time at which the safe seed was persisted to the local state.
-  base::Time GetSafeSeedFetchTime() const;
+  //
+  // Virtual for early-boot CrOS experiments to use a different safe seed.
+  virtual base::Time GetSafeSeedFetchTime() const;
+
+  // Loads the milestone that was used for the latest seed that was persisted to
+  // the local state.
+  int GetLatestMilestone() const;
+
+  // Returns the milestone that was used for the safe seed.
+  int GetSafeSeedMilestone() const;
 
   // Records |fetch_time| as the last time at which a seed was fetched
   // successfully. Also updates the safe seed's fetch time if the latest and
   // safe seeds are identical.
   void RecordLastFetchTime(base::Time fetch_time);
+
+  // Loads the last server-provided seed date (for the latest seed) that was
+  // persisted to the local state. (See GetTimeForStudyDateChecks.)
+  base::Time GetLatestTimeForStudyDateChecks() const;
+
+  // Loads the last server-provided safe seed date of when the seed to be used
+  // was fetched. (See GetTimeForStudyDateChecks.)
+  base::Time GetSafeSeedTimeForStudyDateChecks() const;
+
+  // Returns the time to use when determining whether a client should
+  // participate in a study. The returned time is one of the following:
+  // (A) The server-provided timestamp of when the seed to be used was fetched.
+  // (B) The Chrome binary's build time.
+  // (C) A client-provided timestamp stored in prefs during the FRE on some
+  //     platforms (in ChromeFeatureListCreator::SetupInitialPrefs()).
+  //
+  // These are prioritized as follows:
+  // (1) The server-provided timestamp (A) is returned when it is available and
+  //     fresher than the binary build time.
+  // (2) The client-provided timestamp (C) is returned if it was written to
+  //     prefs, has not yet been overwritten by a server-provided timestamp,
+  //     and it is fresher than the binary build time.
+  // (3) Otherwise, the binary build time (B) is returned.
+  base::Time GetTimeForStudyDateChecks(bool is_safe_seed);
 
   // Updates |kVariationsSeedDate| and logs when previous date was from a
   // different day.
@@ -156,6 +201,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       const std::string& seed_bytes,
       const std::string& base64_seed_signature);
 
+  // Given a serialized VariationsSeed, compress it and base-64 encode it.
+  // Fails if gzip encoding fails.
+  static std::optional<std::string> SeedBytesToCompressedBase64Seed(
+      const std::string& seed_bytes);
+
  protected:
   // Verify an already-loaded |seed_data| along with its |base64_seed_signature|
   // and, if verification passes, parse it into |*seed|.
@@ -163,7 +213,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       VariationsSeed* seed,
       const std::string& seed_data,
       const std::string& base64_seed_signature,
-      absl::optional<VerifySignatureResult>* verify_signature_result);
+      std::optional<VerifySignatureResult>* verify_signature_result);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, VerifySeedSignature);
@@ -305,6 +355,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // The pref service used to persist the variations seed.
   raw_ptr<PrefService> local_state_;
 
+  // Setters and getters for safe seed state.
+  std::unique_ptr<VariationsSafeSeedStore> safe_seed_store_;
+
   // Cached serial number from the most recently fetched variations seed.
   std::string latest_serial_number_;
 
@@ -314,6 +367,30 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Whether this may read or write to Java "first run" SharedPreferences.
   const bool use_first_run_prefs_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Gets the combined server and client state used for early boot variations
+  // platform disaster recovery.
+  featured::SeedDetails GetSafeSeedStateForPlatform(
+      const ValidatedSeed& seed,
+      const int seed_milestone,
+      const ClientFilterableState& client_state,
+      const base::Time seed_fetch_time);
+
+  // Retries sending the safe seed to platform. Does not retry after two failed
+  // attempts.
+  void MaybeRetrySendSafeSeed(const featured::SeedDetails& safe_seed,
+                              bool success);
+
+  // Sends the safe seed to the platform.
+  void SendSafeSeedToPlatform(const featured::SeedDetails& safe_seed);
+
+  // A counter that keeps track of how many times the current safe seed is sent
+  // to platform.
+  size_t send_seed_to_platform_attempts_ = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<VariationsSeedStore> weak_ptr_factory_{this};
 };
 

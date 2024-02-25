@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<!--
+Creates 8 WebGL canvases with the cross-product of WebGL version, anti-aliasing,
+and premultiplied alpha. Uses drawingBufferStorage to ensure these canvases are
+sRGB encoded. Draws a color that will match rgba(255, 128, 0, 0.5);
+
+The result should be a rectangle of a solid color.
+
+If a sub-test can't run (e.g, because WebGL, WebGL 2, or EXT_sRGB is not
+present), then that sub-test will report a passing result (by setting its
+background color to the expected color).
+-->
+<head>
+<script>
+function sendResult(status) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+var g_swapsBeforeAck = 15;
+function waitForFinish() {
+  if (g_swapsBeforeAck == 0) {
+    sendResult("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+
+function drawQuad(elementId, contextType, contextOptions, color, expected) {
+  let testSkipColor = 'rgba(255, 128, 0, 0.5019607843137255)';
+  let element = document.getElementById(elementId);
+  let gl = element.getContext(contextType, contextOptions);
+  if (!gl) {
+    sendResult("FAILURE", "Failed to create WebGL context");
+	return;
+  }
+
+  let format = null;
+  if (contextType == 'webgl') {
+    let ext = gl.getExtension('EXT_sRGB');
+    if (!ext) {
+      sendResult("FAILURE", "EXT_sRGB not present");
+      return;
+    }
+    format = ext.SRGB8_ALPHA8_EXT;
+  } else
+  if (contextType == 'webgl2') {
+    format = gl.SRGB8_ALPHA8;
+  }
+
+  gl.drawingBufferStorage(format,
+                          gl.drawingBufferWidth,
+                          gl.drawingBufferHeight);
+
+  // Create the program to draw a point sprite.
+  let program = null;
+  {
+    let compileShader = function(gl, vertCode, fragCode) {
+      let vertShader = gl.createShader(gl.VERTEX_SHADER);
+      gl.shaderSource(vertShader, vertCode);
+      gl.compileShader(vertShader);
+      if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS))
+        throw new Error(gl.getShaderInfoLog(vertShader));
+
+      let fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+      gl.shaderSource(fragShader, fragCode);
+      gl.compileShader(fragShader);
+      if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS))
+        throw new Error(gl.getShaderInfoLog(fragShader));
+
+      let shaderProgram = gl.createProgram();
+      gl.attachShader(shaderProgram, vertShader);
+      gl.attachShader(shaderProgram, fragShader);
+      gl.linkProgram(shaderProgram);
+      if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
+        throw new Error(gl.getProgramInfoLog(program));
+
+      return shaderProgram;
+    }
+    let vs = `attribute vec2 position;
+              void main() {
+                gl_Position = vec4(position, 0.0, 1.0);
+              }`;
+    let fs = `precision mediump float;
+              uniform vec4 color;
+              void main() {
+                gl_FragColor = color;
+              }`;
+    program = compileShader(gl, vs, fs);
+  }
+  gl.useProgram(program);
+
+  // Draw using that program.
+  {
+    let vertices = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertices);
+    gl.bufferData(gl.ARRAY_BUFFER,
+                  new Float32Array([-1,-1, 1,-1, 1,1, -1,1]),
+                  gl.STATIC_DRAW);
+
+    let indices = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indices);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+                  new Uint16Array([0,1,2, 0,2,3]),
+                  gl.STATIC_DRAW);
+
+    let positionLocation = gl.getAttribLocation(program, 'position');
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(positionLocation);
+
+    gl.uniform4fv(gl.getUniformLocation(program, 'color'), color);
+    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+  }
+
+  // Ensure that we can read back the values and get the expected results.
+  let pixels = new Uint8Array(4);
+  gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+  for (let c = 0; c < 4; ++c) {
+    const epsilon = 6;
+    if (Math.abs(pixels[c] - expected[c]) > epsilon) {
+      const failureText = "Incorrect result from readPixels." +
+                          " Expected:" + expected +
+                          " Actual:" + pixels;
+      sendResult("FAILURE", failureText);
+  	  return;
+    }
+  }
+}
+
+function main() {
+  let srgbToLinear = function(x) {
+    if (x < 0.0)
+      return 0.0;
+    if (x < 0.04045)
+      return x / 12.92;
+    if (x < 1.0) {
+      return Math.pow((x + 0.055)/1.055, 2.4);
+    }
+    return 1.0;
+  }
+
+  let colorPremul = new Float32Array([
+      srgbToLinear(128/255), srgbToLinear(64/255), 0.0, 128/255]);
+  let expectedPremul = new Uint8Array([
+      128, 64, 0,128]);
+  let colorUnmul = new Float32Array([
+      1.0, srgbToLinear(128/255), 0.0, 128/255]);
+  let expectedUnmul = new Uint8Array([
+      255, 128, 0, 128]);
+
+  drawQuad('c0', 'webgl',  {premultipliedAlpha: true,  antialias:false},
+           colorPremul, expectedPremul);
+  drawQuad('c1', 'webgl',  {premultipliedAlpha: true,  antialias:true},
+           colorPremul, expectedPremul);
+  drawQuad('c2', 'webgl',  {premultipliedAlpha: false, antialias:false},
+           colorUnmul,  expectedUnmul);
+  drawQuad('c3', 'webgl',  {premultipliedAlpha: false, antialias:true},
+           colorUnmul,  expectedUnmul);
+  drawQuad('c4', 'webgl2', {premultipliedAlpha: true,  antialias:false},
+           colorPremul, expectedPremul);
+  drawQuad('c5', 'webgl2', {premultipliedAlpha: true,  antialias:true},
+           colorPremul, expectedPremul);
+  drawQuad('c6', 'webgl2', {premultipliedAlpha: false, antialias:false},
+           colorUnmul,  expectedUnmul);
+  drawQuad('c7', 'webgl2', {premultipliedAlpha: false, antialias:true},
+           colorUnmul,  expectedUnmul);
+
+  waitForFinish();
+}
+</script>
+</head>
+<body onload='main()'>
+  <p style='width:160px; height:32px;
+            background-color:rgba(255, 128, 0, 0.5019607843137255);
+            position:absolute; left:8px; top: 8px;'></p>
+
+  <p style='width:160px; height:32px;
+            background-color:rgba(255, 128, 0, 0.5019607843137255);
+            position:absolute; left:8px; top:72px;'></p>
+
+  <canvas id='c0' width='20' height='32'
+          style='position:absolute; left:  8px; top:56px;'></canvas>
+  <canvas id='c1' width='20' height='32'
+          style='position:absolute; left: 28px; top:56px;'></canvas>
+  <canvas id='c2' width='20' height='32'
+          style='position:absolute; left: 48px; top:56px;'></canvas>
+  <canvas id='c3' width='20' height='32'
+          style='position:absolute; left: 68px; top:56px;'></canvas>
+  <canvas id='c4' width='20' height='32'
+          style='position:absolute; left: 88px; top:56px;'></canvas>
+  <canvas id='c5' width='20' height='32'
+          style='position:absolute; left:108px; top:56px;'></canvas>
+  <canvas id='c6' width='20' height='32'
+          style='position:absolute; left:128px; top:56px;'></canvas>
+  <canvas id='c7' width='20' height='32'
+          style='position:absolute; left:148px; top:56px;'></canvas>
+
+</body>
+</html>
+

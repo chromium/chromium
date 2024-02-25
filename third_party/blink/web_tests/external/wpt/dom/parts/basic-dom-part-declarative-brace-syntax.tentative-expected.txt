@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Just parts, no text before
+  assert_equals: expected "<!----><!---->" but got " <!----> <!---->"
+[FAIL] Foreign content should support Parts
+  assert_equals: expected 1 but got 0
+Harness: the test ran to completion.
+

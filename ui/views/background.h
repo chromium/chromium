@@ -103,13 +103,13 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateThemedRoundedRectBackground(
     ui::ColorId color_id,
     float top_radius,
     float bottom_radius,
-    int for_border_thickness);
+    int for_border_thickness = 0);
 
 // Same as above except each corner radius can be different and customized.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedRoundedRectBackground(
     ui::ColorId color_id,
     const gfx::RoundedCornersF& radii,
-    int for_border_thickness);
+    int for_border_thickness = 0);
 
 // Creates a background that fills the canvas in the color specified by the
 // view's ColorProvider and the given color identifier.

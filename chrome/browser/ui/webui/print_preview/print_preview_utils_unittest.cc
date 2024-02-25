@@ -167,7 +167,7 @@ void ValidateDpi(const base::Value::Dict* printer_out,
 }
 
 void ValidateCollate(const base::Value::Dict* printer_out) {
-  absl::optional<bool> collate_out = printer_out->FindBool(kCollate);
+  std::optional<bool> collate_out = printer_out->FindBool(kCollate);
   ASSERT_TRUE(collate_out.has_value());
   EXPECT_TRUE(collate_out.value());
 }
@@ -228,7 +228,7 @@ void ValidatePrinter(const base::Value::Dict& cdd_out,
 bool GetDpiResetToDefault(base::Value::Dict cdd) {
   const base::Value::Dict* printer = cdd.FindDict(kPrinter);
   const base::Value::Dict* dpi = printer->FindDict(kDpi);
-  absl::optional<bool> reset_to_default = dpi->FindBool(kResetToDefault);
+  std::optional<bool> reset_to_default = dpi->FindBool(kResetToDefault);
   if (!reset_to_default.has_value()) {
     ADD_FAILURE();
     return false;

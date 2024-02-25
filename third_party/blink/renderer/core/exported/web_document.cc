@@ -32,6 +32,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/platform/web_distillability.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_dom_event.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -116,11 +118,11 @@ WebString WebDocument::GetReferrer() const {
   return ConstUnwrap<Document>()->referrer();
 }
 
-absl::optional<SkColor> WebDocument::ThemeColor() {
-  absl::optional<Color> color = Unwrap<Document>()->ThemeColor();
+std::optional<SkColor> WebDocument::ThemeColor() {
+  std::optional<Color> color = Unwrap<Document>()->ThemeColor();
   if (color)
     return color->Rgb();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 WebURL WebDocument::OpenSearchDescriptionURL() const {
@@ -216,6 +218,17 @@ WebVector<WebFormElement> WebDocument::Forms() const {
   return form_elements;
 }
 
+WebVector<WebFormElement> WebDocument::GetTopLevelForms() const {
+  Vector<WebFormElement> web_forms;
+  HeapVector<Member<HTMLFormElement>> forms =
+      const_cast<Document*>(ConstUnwrap<Document>())->GetTopLevelForms();
+  web_forms.reserve(forms.size());
+  for (auto& form : forms) {
+    web_forms.push_back(form.Get());
+  }
+  return web_forms;
+}
+
 WebURL WebDocument::CompleteURL(const WebString& partial_url) const {
   return ConstUnwrap<Document>()->CompleteURL(partial_url);
 }
@@ -308,6 +321,10 @@ bool WebDocument::IsPrerendering() {
   return ConstUnwrap<Document>()->IsPrerendering();
 }
 
+bool WebDocument::HasDocumentPictureInPictureWindow() const {
+  return ConstUnwrap<Document>()->HasDocumentPictureInPictureWindow();
+}
+
 bool WebDocument::IsAccessibilityEnabled() {
   return ConstUnwrap<Document>()->IsAccessibilityEnabled();
 }
@@ -335,6 +352,20 @@ WebDocument& WebDocument::operator=(Document* elem) {
 
 WebDocument::operator Document*() const {
   return blink::To<Document>(private_.Get());
+}
+
+net::ReferrerPolicy WebDocument::GetReferrerPolicy() const {
+  network::mojom::ReferrerPolicy policy =
+      ConstUnwrap<Document>()->GetExecutionContext()->GetReferrerPolicy();
+  if (policy == network::mojom::ReferrerPolicy::kDefault) {
+    return blink::ReferrerUtils::GetDefaultNetReferrerPolicy();
+  } else {
+    return network::ReferrerPolicyForUrlRequest(policy);
+  }
+}
+
+WebString WebDocument::OutgoingReferrer() const {
+  return WebString(ConstUnwrap<Document>()->domWindow()->OutgoingReferrer());
 }
 
 }  // namespace blink

@@ -1,0 +1,136 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSignin": 1
+        },
+        "prefs": {
+          "signin.allowed_on_next_startup": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSignin": 2
+        },
+        "prefs": {
+          "profile.browser_guest_enabled": {
+            "location": "local_state",
+            "value": false
+          },
+          "profile.force_browser_signin": {
+            "location": "local_state",
+            "value": true
+          },
+          "signin.allowed_on_next_startup": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSignin": 2
+        },
+        "prefs": {
+          "profile.force_browser_signin": {
+            "default_value": false,
+            "location": "local_state"
+          },
+          "signin.allowed_on_next_startup": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSignin": 2
+        },
+        "prefs": {
+          "profile.force_browser_signin": {
+            "location": "local_state",
+            "value": true
+          },
+          "signin.allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSignin": 1,
+          "ForceBrowserSignin": true
+        },
+        "prefs": {
+          "profile.force_browser_signin": {
+            "default_value": false,
+            "location": "local_state"
+          },
+          "signin.allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSignin": 1,
+          "ForceBrowserSignin": true
+        },
+        "prefs": {
+          "profile.force_browser_signin": {
+            "default_value": false,
+            "location": "local_state"
+          },
+          "signin.allowed_on_next_startup": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

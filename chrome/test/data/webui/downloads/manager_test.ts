@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsManagerElement, loadTimeData, PageRemote, States} from 'chrome://downloads/downloads.js';
+import type {CrToastManagerElement, DownloadsManagerElement, PageRemote} from 'chrome://downloads/downloads.js';
+import {BrowserProxy, DangerType, loadTimeData, State} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDownload, TestDownloadsProxy} from './test_support.js';
 
@@ -18,6 +20,7 @@ suite('manager tests', function() {
   let toastManager: CrToastManagerElement;
 
   setup(function() {
+    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestDownloadsProxy();
@@ -39,7 +42,7 @@ suite('manager tests', function() {
     callbackRouterRemote.insertItems(
         0, [createDownload({
           fileName: 'file name',
-          state: States.COMPLETE,
+          state: State.kComplete,
           sinceString: 'Today',
           url: stringToMojoUrl(url),
           displayUrl: stringToMojoString16(displayUrl),
@@ -86,8 +89,8 @@ suite('manager tests', function() {
 
   test('update', async () => {
     const dangerousDownload = createDownload({
-      dangerType: DangerType.DANGEROUS_FILE,
-      state: States.DANGEROUS,
+      dangerType: DangerType.kDangerousFile,
+      state: State.kDangerous,
     });
     callbackRouterRemote.insertItems(0, [dangerousDownload]);
     await callbackRouterRemote.$.flushForTesting();
@@ -96,8 +99,8 @@ suite('manager tests', function() {
                      .shadowRoot!.querySelector('.dangerous'));
 
     const safeDownload = Object.assign({}, dangerousDownload, {
-      dangerType: DangerType.NOT_DANGEROUS,
-      state: States.COMPLETE,
+      dangerType: DangerType.kNoApplicableDangerType,
+      state: State.kComplete,
     });
     callbackRouterRemote.updateItem(0, safeDownload);
     await callbackRouterRemote.$.flushForTesting();
@@ -109,7 +112,7 @@ suite('manager tests', function() {
   test('remove', async () => {
     callbackRouterRemote.insertItems(0, [createDownload({
                                        fileName: 'file name',
-                                       state: States.COMPLETE,
+                                       state: State.kComplete,
                                        sinceString: 'Today',
                                        url: stringToMojoUrl('a'.repeat(1000)),
                                      })]);
@@ -117,7 +120,10 @@ suite('manager tests', function() {
     flush();
     const item = manager.shadowRoot!.querySelector('downloads-item')!;
 
-    item.$.remove.click();
+    item.getMoreActionsButton().click();
+    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
+    assertTrue(!!removeButton);
+    removeButton.click();
     await testBrowserProxy.handler.whenCalled('remove');
     flush();
     const list = manager.shadowRoot!.querySelector('iron-list')!;
@@ -128,7 +134,7 @@ suite('manager tests', function() {
   test('toolbar hasClearableDownloads set correctly', async () => {
     const clearable = createDownload();
     callbackRouterRemote.insertItems(0, [clearable]);
-    const checkNotClearable = async (state: States) => {
+    const checkNotClearable = async (state: State) => {
       const download = createDownload({state: state});
       callbackRouterRemote.updateItem(0, clearable);
       await callbackRouterRemote.$.flushForTesting();
@@ -137,13 +143,13 @@ suite('manager tests', function() {
       await callbackRouterRemote.$.flushForTesting();
       assertFalse(manager.$.toolbar.hasClearableDownloads);
     };
-    await checkNotClearable(States.DANGEROUS);
-    await checkNotClearable(States.IN_PROGRESS);
-    await checkNotClearable(States.PAUSED);
+    await checkNotClearable(State.kDangerous);
+    await checkNotClearable(State.kInProgress);
+    await checkNotClearable(State.kPaused);
 
     callbackRouterRemote.updateItem(0, clearable);
     callbackRouterRemote.insertItems(
-        1, [createDownload({state: States.DANGEROUS})]);
+        1, [createDownload({state: State.kDangerous})]);
     await callbackRouterRemote.$.flushForTesting();
     assertTrue(manager.$.toolbar.hasClearableDownloads);
     callbackRouterRemote.removeItem(0);
@@ -161,7 +167,7 @@ suite('manager tests', function() {
     // Add a download entry so that clear-all-command is applicable.
     callbackRouterRemote.insertItems(0, [createDownload({
                                        fileName: 'file name',
-                                       state: States.COMPLETE,
+                                       state: State.kComplete,
                                        sinceString: 'Today',
                                        url: stringToMojoUrl('a'.repeat(1000)),
                                      })]);
@@ -230,4 +236,116 @@ suite('manager tests', function() {
     keyDownOn(document.documentElement, 0, 'alt', isMac ? 'ç' : 'c');
     assertFalse(toastManager.slottedHidden);
   });
+
+  test(
+      'bypass warning confirmation dialog shown on save-dangerous-click',
+      async () => {
+        callbackRouterRemote.insertItems(0, [
+          createDownload({
+            id: 'itemId',
+            fileName: 'item.pdf',
+            state: State.kDangerous,
+            isDangerous: true,
+            dangerType: DangerType.kDangerousUrl,
+          }),
+        ]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const item = manager.shadowRoot!.querySelector('downloads-item');
+        assertTrue(!!item);
+        item.dispatchEvent(new CustomEvent('save-dangerous-click', {
+          bubbles: true,
+          composed: true,
+          detail: {id: item.data.id},
+        }));
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const recordOpenId = await testBrowserProxy.handler.whenCalled(
+            'recordOpenBypassWarningPrompt');
+        assertEquals('itemId', recordOpenId);
+        const dialog = manager.shadowRoot!.querySelector(
+            'download-bypass-warning-confirmation-dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.$.dialog.open);
+        assertEquals('item.pdf', dialog.fileName);
+        // Confirm the dialog to download the dangerous file.
+        dialog.$.dialog.close();
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const saveDangerousId = await testBrowserProxy.handler.whenCalled(
+            'saveDangerousFromPromptRequiringGesture');
+        assertEquals('itemId', saveDangerousId);
+        assertFalse(dialog.$.dialog.open);
+      });
+
+  test('bypass warning confirmation dialog records cancellation', async () => {
+    callbackRouterRemote.insertItems(0, [
+      createDownload({
+        id: 'itemId',
+        fileName: 'item.pdf',
+        state: State.kDangerous,
+        isDangerous: true,
+        dangerType: DangerType.kDangerousUrl,
+      }),
+    ]);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    const item = manager.shadowRoot!.querySelector('downloads-item');
+    assertTrue(!!item);
+    item.dispatchEvent(new CustomEvent('save-dangerous-click', {
+      bubbles: true,
+      composed: true,
+      detail: {id: item.data.id},
+    }));
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    const recordOpenId = await testBrowserProxy.handler.whenCalled(
+        'recordOpenBypassWarningPrompt');
+    assertEquals('itemId', recordOpenId);
+    const dialog = manager.shadowRoot!.querySelector(
+        'download-bypass-warning-confirmation-dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.$.dialog.open);
+    assertEquals('item.pdf', dialog.fileName);
+    // Cancel the dialog and check that it's recorded.
+    dialog.$.dialog.cancel();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    const recordCancelId = await testBrowserProxy.handler.whenCalled(
+        'recordCancelBypassWarningPrompt');
+    assertEquals('itemId', recordCancelId);
+    assertFalse(dialog.$.dialog.open);
+  });
+
+  test(
+      'bypass warning confirmation dialog closed when file removed',
+      async () => {
+        callbackRouterRemote.insertItems(0, [
+          createDownload({
+            id: 'itemId',
+            state: State.kDangerous,
+            isDangerous: true,
+            dangerType: DangerType.kDangerousUrl,
+          }),
+        ]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const item = manager.shadowRoot!.querySelector('downloads-item')!;
+        assertTrue(!!item);
+        item.dispatchEvent(new CustomEvent('save-dangerous-click', {
+          bubbles: true,
+          composed: true,
+          detail: {id: item.data.id},
+        }));
+        flush();
+        const dialog = manager.shadowRoot!.querySelector(
+            'download-bypass-warning-confirmation-dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.$.dialog.open);
+        // Remove the file and check that the dialog is hidden.
+        callbackRouterRemote.removeItem(0);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        assertFalse(isVisible(dialog));
+      });
 });

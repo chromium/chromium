@@ -96,7 +96,7 @@ class FakeUsbDeviceInfo : public base::RefCounted<FakeUsbDeviceInfo> {
   void SetDefault();
   mojom::UsbDeviceInfo device_info_;
   base::ObserverList<Observer> observer_list_;
-  raw_ptr<MockUsbMojoDevice, LeakedDanglingUntriaged> mock_device_ = nullptr;
+  raw_ptr<MockUsbMojoDevice> mock_device_ = nullptr;
 };
 
 }  // namespace device

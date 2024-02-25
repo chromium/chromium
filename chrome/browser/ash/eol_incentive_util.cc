@@ -66,7 +66,7 @@ EolIncentiveType ShouldShowEolIncentive(Profile* profile,
 
   const user_manager::User* user =
       BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
-  if (user && user->GetType() != user_manager::USER_TYPE_REGULAR) {
+  if (user && user->GetType() != user_manager::UserType::kRegular) {
     return EolIncentiveType::kNone;
   }
 

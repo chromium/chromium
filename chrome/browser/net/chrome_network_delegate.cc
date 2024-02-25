@@ -16,6 +16,10 @@
 #include "chrome/common/chrome_paths.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ambient_time_of_day_constants.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/android/path_utils.h"
@@ -42,8 +46,10 @@ bool IsPathOnAllowlist(const base::FilePath& path,
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsLacrosLogFile(const base::FilePath& path) {
-  return fnmatch("/home/chronos/user/lacros/lacros*.log", path.value().c_str(),
-                 FNM_NOESCAPE) == 0;
+  return (fnmatch("/home/chronos/user/lacros/lacros*.log", path.value().c_str(),
+                  FNM_NOESCAPE) == 0) ||
+         (fnmatch("/var/log/lacros/lacros*.log", path.value().c_str(),
+                  FNM_NOESCAPE) == 0);
 }
 
 // Returns true if access is allowed for |path| for a user with |profile_path).
@@ -66,7 +72,6 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   // Use an allowlist to only allow access to files residing in the list of
   // directories below.
   static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
-      "/home/chronos/user/Downloads",
       "/home/chronos/user/MyFiles",
       "/home/chronos/user/WebRTC Logs",
       "/home/chronos/user/google-assistant-library/log",
@@ -94,8 +99,6 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   // switching to use explicit "$PROFILE_PATH/Xyz" path and here allow such
   // access.
   if (!profile_path.empty()) {
-    const base::FilePath downloads = profile_path.AppendASCII("Downloads");
-    allowlist.push_back(downloads);
     allowlist.push_back(profile_path.AppendASCII("MyFiles"));
     const base::FilePath webrtc_logs = profile_path.AppendASCII("WebRTC Logs");
     allowlist.push_back(webrtc_logs);
@@ -107,6 +110,10 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
     if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_dir))
       allowlist.push_back(downloads_dir);
   }
+  // /run/imageloader is the root directory for all DLC packages. The "timeofday" package
+  // specifically contains assets required for one of ash's screen saver themes.
+  allowlist.push_back(
+      base::FilePath("/run/imageloader").Append(ash::kTimeOfDayDlcId));
 #else
   // Lacros uses the system-level documents directory and downloads directory
   // under /home/chronos/u-<hash>, which are provided via PathService. Since

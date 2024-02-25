@@ -172,9 +172,15 @@ void TriggerHapticFeedbackForNotification(UINotificationFeedbackType type);
 // of the count if the user has more than 99 tabs open.
 NSAttributedString* TextForTabCount(int count, CGFloat font_size);
 
+// Returns the attributed text for tabs count to be displayed in the bottom
+// trailing view of a group cell with the correct font.
+NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size);
+
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 // Adds `item` to the global Edit Menu configuration (UIMenuController). No-op
 // if a UIMenuItem with the same selector as `item` has already been registered.
 void RegisterEditMenuItem(UIMenuItem* item);
+#endif
 
 // Finds the root of `view`'s view hierarchy -- its window if it has one, or
 // the first (recursive) superview with no superview.
@@ -187,5 +193,12 @@ UIActivityIndicatorView* GetMediumUIActivityIndicatorView();
 // Creates and inits a large-sized UIActivityIndicatorView, regardless of iOS
 // version.
 UIActivityIndicatorView* GetLargeUIActivityIndicatorView();
+
+// Whether the given scroll view is considered scrolled to its top/bottom.
+bool IsScrollViewScrolledToTop(UIScrollView* scroll_view);
+bool IsScrollViewScrolledToBottom(UIScrollView* scroll_view);
+
+// Returns the approximate corner radius of the current device.
+CGFloat DeviceCornerRadius();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_UIKIT_UI_UTIL_H_

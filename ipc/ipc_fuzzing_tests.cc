@@ -142,12 +142,17 @@ TEST(IPCMessageIntegrity, DISABLED_ReadVectorTooLarge3) {
 
 class SimpleListener : public IPC::Listener {
  public:
-  SimpleListener() : other_(nullptr) {}
-  void Init(IPC::Sender* s) {
-    other_ = s;
+  SimpleListener() = default;
+  void Init(IPC::Sender* s) { other_ = s; }
+  void set_run_loop(base::RunLoop* loop) { loop_ = loop; }
+  void Reset() {
+    other_ = nullptr;
+    loop_ = nullptr;
   }
+
  protected:
-  raw_ptr<IPC::Sender, DanglingUntriaged> other_;
+  raw_ptr<base::RunLoop> loop_ = nullptr;
+  raw_ptr<IPC::Sender> other_ = nullptr;
 };
 
 enum {
@@ -201,7 +206,7 @@ class FuzzerServerListener : public SimpleListener {
     --message_count_;
     --pending_messages_;
     if (0 == message_count_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      loop_->QuitWhenIdle();
   }
 
   void ReplyMsgNotHandled(uint32_t type_id) {
@@ -227,7 +232,7 @@ class FuzzerClientListener : public SimpleListener {
 
   bool OnMessageReceived(const IPC::Message& msg) override {
     last_msg_ = std::make_unique<IPC::Message>(msg);
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    loop_->QuitWhenIdle();
     return true;
   }
 
@@ -255,7 +260,7 @@ class FuzzerClientListener : public SimpleListener {
 
  private:
   bool MsgHandlerInternal(uint32_t type_id) {
-    base::RunLoop().Run();
+    loop_->Run();
     if (!last_msg_)
       return false;
     if (FUZZER_ROUTING_ID != last_msg_->routing_id())
@@ -270,9 +275,11 @@ class FuzzerClientListener : public SimpleListener {
 // messages have been received.
 DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(FuzzServerClient) {
   FuzzerServerListener listener;
+  base::RunLoop loop;
   Connect(&listener);
   listener.Init(channel());
-  base::RunLoop().Run();
+  listener.set_run_loop(&loop);
+  loop.Run();
   Close();
 }
 
@@ -282,10 +289,12 @@ using IPCFuzzingTest = IPCChannelMojoTestBase;
 // are working properly by generating two well formed IPC calls.
 TEST_F(IPCFuzzingTest, SanityTest) {
   Init("FuzzServerClient");
-
+  base::RunLoop loop1;
+  base::RunLoop loop2;
   FuzzerClientListener listener;
   CreateChannel(&listener);
   listener.Init(channel());
+  listener.set_run_loop(&loop1);
   ASSERT_TRUE(ConnectChannel());
 
   IPC::Message* msg = nullptr;
@@ -294,10 +303,12 @@ TEST_F(IPCFuzzingTest, SanityTest) {
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(value, MsgClassIS::ID));
 
+  listener.set_run_loop(&loop2);
   msg = new MsgClassSI(u"expect 44", ++value);
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(value, MsgClassSI::ID));
 
+  listener.Reset();
   EXPECT_TRUE(WaitForClientShutdown());
   DestroyChannel();
 }
@@ -307,10 +318,12 @@ TEST_F(IPCFuzzingTest, SanityTest) {
 // IPC to make sure framing is working properly.
 TEST_F(IPCFuzzingTest, MsgBadPayloadShort) {
   Init("FuzzServerClient");
-
+  base::RunLoop loop1;
+  base::RunLoop loop2;
   FuzzerClientListener listener;
   CreateChannel(&listener);
   listener.Init(channel());
+  listener.set_run_loop(&loop1);
   ASSERT_TRUE(ConnectChannel());
 
   IPC::Message* msg = new IPC::Message(MSG_ROUTING_CONTROL, MsgClassIS::ID,
@@ -319,10 +332,12 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadShort) {
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMsgNotHandled(MsgClassIS::ID));
 
+  listener.set_run_loop(&loop2);
   msg = new MsgClassSI(u"expect one", 1);
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(1, MsgClassSI::ID));
 
+  listener.Reset();
   EXPECT_TRUE(WaitForClientShutdown());
   DestroyChannel();
 }
@@ -333,10 +348,12 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadShort) {
 // as by design we don't carry type information on the IPC message.
 TEST_F(IPCFuzzingTest, MsgBadPayloadArgs) {
   Init("FuzzServerClient");
-
+  base::RunLoop loop1;
+  base::RunLoop loop2;
   FuzzerClientListener listener;
   CreateChannel(&listener);
   listener.Init(channel());
+  listener.set_run_loop(&loop1);
   ASSERT_TRUE(ConnectChannel());
 
   IPC::Message* msg = new IPC::Message(MSG_ROUTING_CONTROL, MsgClassSI::ID,
@@ -348,12 +365,14 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadArgs) {
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(0, MsgClassSI::ID));
 
+  listener.set_run_loop(&loop2);
   // Now send a well formed message to make sure the receiver wasn't
   // thrown out of sync by the extra argument.
   msg = new MsgClassIS(3, u"expect three");
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(3, MsgClassIS::ID));
 
+  listener.Reset();
   EXPECT_TRUE(WaitForClientShutdown());
   DestroyChannel();
 }

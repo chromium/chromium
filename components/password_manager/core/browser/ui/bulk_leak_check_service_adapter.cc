@@ -9,10 +9,11 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
-#include "components/password_manager/core/browser/leak_detection_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -36,6 +37,7 @@ BulkLeakCheckServiceAdapter::~BulkLeakCheckServiceAdapter() {
 }
 
 bool BulkLeakCheckServiceAdapter::StartBulkLeakCheck(
+    LeakDetectionInitiator initiator,
     const void* key,
     LeakCheckCredential::Data* data) {
   if (service_->GetState() == BulkLeakCheckServiceInterface::State::kRunning)
@@ -61,9 +63,7 @@ bool BulkLeakCheckServiceAdapter::StartBulkLeakCheck(
     }
   }
 
-  service_->CheckUsernamePasswordPairs(
-      LeakDetectionInitiator::kBulkSyncedPasswordsCheck,
-      std::move(credentials));
+  service_->CheckUsernamePasswordPairs(initiator, std::move(credentials));
   return true;
 }
 
@@ -82,7 +82,7 @@ size_t BulkLeakCheckServiceAdapter::GetPendingChecksCount() const {
 
 void BulkLeakCheckServiceAdapter::OnEdited(
     const CredentialUIEntry& credential) {
-  if (CanStartLeakCheck(*prefs_)) {
+  if (LeakDetectionCheck::CanStartLeakCheck(*prefs_, nullptr)) {
     // Here no extra canonicalization is needed, as there are no other
     // credentials we could de-dupe before we pass it on to the service.
     std::vector<LeakCheckCredential> credentials;

@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">I-delete ang page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Camera mode</translation>
 <translation id="1153190633558910465">Naka-off ang Grid</translation>
-<translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Na-delete ang page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">I-rotate nang 90 degree clockwise</translation>
 <translation id="1417314334557041815">I-edit ang page <ph name="INDEX" /></translation>
@@ -47,6 +46,7 @@
 <translation id="3067436040345934772">Mag-pan sa kanan</translation>
 <translation id="3081586908890909590">Lumipat sa pag-record ng video</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Sumali sa "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Mikropono</translation>
 <translation id="3240426699337459095">Nakopya ang link</translation>
 <translation id="3354465018370944241">Mga setting ng larawan</translation>
@@ -60,14 +60,12 @@
 <translation id="3642192109456033823">Pinoproseso ang video...</translation>
 <translation id="3789724198583203151">I-rotate nang 90 degree counterclockwise</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="4060608699153044055">Hindi ka puwedeng mag-record dahil sa mababang storage space ng device. Para magsimulang mag-record, kailangan mong magbakante ng espasyo sa iyong device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">I-pause ang pag-record</translation>
 <translation id="4121305183798804752">Na-detect ang dokumento</translation>
 <translation id="414641094616694804">Hindi puwedeng baguhin ng camera na ito ang resolution</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
-<translation id="4269820728363426813">Kopyahin ang address ng link</translation>
 <translation id="428234092390943511">Thumbnail ng page</translation>
 <translation id="4349714250734879769">I-scale ang mga frame gamit ang Chrome</translation>
 <translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>
@@ -81,14 +79,15 @@
 <translation id="4705093842003735294">Buong resolution</translation>
 <translation id="4864143361253542638">Listahan ng naka-scan na page</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopyahin ang address ng link na <ph name="URL" /></translation>
 <translation id="491895758387112773">Pag-record ng multistream video</translation>
 <translation id="495170559598752135">Mga Pagkilos</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Aspect ratio ng larawan</translation>
 <translation id="5057360777601936059">Kasalukuyang hindi available ang iyong camera.
         Pakitingnan kung maayos na nakakonekta ang camera.</translation>
+<translation id="5157591164390831335">May na-detect na URL.</translation>
 <translation id="5163387177077603948">Gumagalaw pakanan</translation>
-<translation id="5219374179772385066">Available na ang Time Lapse mode!</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Kaliwang sulok sa itaas ng dokumento</translation>
 <translation id="5317780077021120954">I-save</translation>
@@ -114,6 +113,7 @@
 <translation id="6353688143752491039">Salamat sa pagbibigay ng feedback sa Camera app.
 
 Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng halimbawang larawan o video at ilarawan kung ano ang mali rito. (Halimbawa, masyadong madilim ang larawan o hindi naka-focus ang paksa.)</translation>
+<translation id="6519884562954018934">Sumali sa <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6617916774429601017">Ipakita ang lahat ng resolution</translation>
 <translation id="6631515515009660915">Naka-off ang Mirror</translation>
@@ -133,6 +133,7 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="7450541714075000668">Nakopya ang text</translation>
 <translation id="7488619942230388918">Mag-record ng GIF na video</translation>
 <translation id="7557677699350329807">Lumipat sa susunod na camera</translation>
+<translation id="7562584071994185503">Kopyahin ang text na <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="761421184377987513">Gumagalaw pakaliwa at pababa</translation>
@@ -155,10 +156,12 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8346544573713510785">I-scale ang mga frame gamit ang Camera HAL</translation>
 <translation id="8425673304802773841">I-tilt pababa</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
+<translation id="8609951387004618906">Buksan ang <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">I-toggle ang pagkaka-mute ng mikropono. Naka-on ang mute</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8732462232047530626">I-preview ang metadata</translation>
+<translation id="874854738381978209">May na-detect na Wi-Fi network.</translation>
 <translation id="8815966864175525708">Lumipat para kumuha ng portrait na larawan</translation>
 <translation id="8828441885228359828">Ituloy ang pag-record</translation>
 <translation id="8870695351537079478">Hindi masimulan ang pag-record</translation>

@@ -9,10 +9,11 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
@@ -46,9 +47,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
 
     private TemplateUrlService mTemplateUrlService;
 
-    /**
-     * The WebContents associated with the Tab which this helper is monitoring, unless detached.
-     */
+    /** The WebContents associated with the Tab which this helper is monitoring, unless detached. */
     private WebContents mWebContents;
 
     /**
@@ -60,9 +59,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     /** The GestureListener used for handling events from the current WebContents. */
     private GestureStateListener mGestureStateListener;
 
-    /**
-     * Manages incoming calls to Smart Select when available, for the current base WebContents.
-     */
+    /** Manages incoming calls to Smart Select when available, for the current base WebContents. */
     private SelectionClientManager mSelectionClientManager;
 
     /** The pointer to our native C++ implementation. */
@@ -114,10 +111,11 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     public void onContentChanged(Tab tab) {
         // Native initialization happens after a page loads or content is changed to ensure profile
         // is initialized.
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        Profile profile = tab.getProfile();
         if (mNativeHelper == 0 && tab.getWebContents() != null) {
-            mNativeHelper = ContextualSearchTabHelperJni.get().init(
-                    ContextualSearchTabHelper.this, profile);
+            mNativeHelper =
+                    ContextualSearchTabHelperJni.get()
+                            .init(ContextualSearchTabHelper.this, profile);
         }
         if (profile != null && mTemplateUrlService == null) {
             mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
@@ -135,8 +133,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     @Override
     public void onDestroyed(Tab tab) {
         if (mNativeHelper != 0) {
-            ContextualSearchTabHelperJni.get().destroy(
-                    mNativeHelper, ContextualSearchTabHelper.this);
+            ContextualSearchTabHelperJni.get()
+                    .destroy(mNativeHelper, ContextualSearchTabHelper.this);
             mNativeHelper = 0;
         }
         if (mTemplateUrlService != null) {
@@ -218,9 +216,10 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                 // the objects associated with the web content need to be recreated in order for
                 // selection to continue working. See https://crbug.com/1076326 for more details.
                 removeContextualSearchHooks(mWebContents);
-                mSelectionClientManager = currentWebContents != null
-                        ? new SelectionClientManager(currentWebContents)
-                        : null;
+                mSelectionClientManager =
+                        currentWebContents != null
+                                ? new SelectionClientManager(currentWebContents)
+                                : null;
             }
             mWebContents = currentWebContents;
             updateContextualSearchHooks(mWebContents);
@@ -258,8 +257,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             controller.setSelectionClient(
                     mSelectionClientManager.addContextualSearchSelectionClient(
                             contextualSearchManager.getContextualSearchSelectionClient()));
-            ContextualSearchTabHelperJni.get().installUnhandledTapNotifierIfNeeded(
-                    mNativeHelper, ContextualSearchTabHelper.this, webContents, mPxToDp);
+            ContextualSearchTabHelperJni.get()
+                    .installUnhandledTapNotifierIfNeeded(
+                            mNativeHelper, ContextualSearchTabHelper.this, webContents, mPxToDp);
         }
     }
 
@@ -305,32 +305,42 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             return false;
         }
 
+        Profile profile = Profile.fromWebContents(webContents);
         boolean isDseGoogle =
-                TemplateUrlServiceFactory.getForProfile(Profile.fromWebContents(webContents))
-                        .isDefaultSearchEngineGoogle();
-        boolean isActive = !webContents.isIncognito() && FirstRunStatus.getFirstRunFlowComplete()
-                && !ContextualSearchPolicy.isContextualSearchDisabled() && isDseGoogle
-                && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
-                // Svelte and Accessibility devices are incompatible with the first-run flow and
-                // Talkback has poor interaction with Contextual Search (see http://crbug.com/399708
-                // and http://crbug.com/396934).
-                && !manager.isRunningInCompatibilityMode() && !(mTab.isShowingErrorPage())
-                && isDeviceOnline(manager);
+                TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle();
+        boolean isActive =
+                !webContents.isIncognito()
+                        && FirstRunStatus.getFirstRunFlowComplete()
+                        && !ContextualSearchPolicy.isContextualSearchDisabled(profile)
+                        && isDseGoogle
+                        && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
+                        // Svelte and Accessibility devices are incompatible with the first-run flow
+                        // and Talkback has poor interaction with Contextual Search (see
+                        // http://crbug.com/399708 and http://crbug.com/396934).
+                        && !manager.isRunningInCompatibilityMode()
+                        && !(mTab.isShowingErrorPage())
+                        && isDeviceOnline(manager);
         if (isCct && !isActive) {
             // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
             Log.w(TAG, "Not allowed to be active! Checking reasons:");
-            Log.w(TAG,
-                    "!isIncognito: " + !webContents.isIncognito() + " getFirstRunFlowComplete: "
+            Log.w(
+                    TAG,
+                    "!isIncognito: "
+                            + !webContents.isIncognito()
+                            + " getFirstRunFlowComplete: "
                             + FirstRunStatus.getFirstRunFlowComplete()
                             + " !isContextualSearchDisabled: "
-                            + !ContextualSearchManager.isContextualSearchDisabled()
-                            + " isDefaultSearchEngineGoogle: " + isDseGoogle
+                            + !ContextualSearchManager.isContextualSearchDisabled(profile)
+                            + " isDefaultSearchEngineGoogle: "
+                            + isDseGoogle
                             + " !needToCheckForSearchEnginePromo: "
                             + !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                             + " !isRunningInCompatibilityMode: "
                             + !manager.isRunningInCompatibilityMode()
-                            + " !isShowingErrorPage: " + !mTab.isShowingErrorPage()
-                            + " isDeviceOnline: " + isDeviceOnline(manager));
+                            + " !isShowingErrorPage: "
+                            + !mTab.isShowingErrorPage()
+                            + " isDeviceOnline: "
+                            + isDeviceOnline(manager));
         }
         return isActive;
     }
@@ -338,7 +348,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     /** @return Whether the device is online, or we have disabled online-detection. */
     private boolean isDeviceOnline(ContextualSearchManager manager) {
         return ChromeFeatureList.isEnabled(
-                       ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
+                        ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
                 ? true
                 : manager.isDeviceOnline();
     }
@@ -397,8 +407,13 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     @NativeMethods
     interface Natives {
         long init(ContextualSearchTabHelper caller, Profile profile);
-        void installUnhandledTapNotifierIfNeeded(long nativeContextualSearchTabHelper,
-                ContextualSearchTabHelper caller, WebContents webContents, float pxToDpScaleFactor);
+
+        void installUnhandledTapNotifierIfNeeded(
+                long nativeContextualSearchTabHelper,
+                ContextualSearchTabHelper caller,
+                WebContents webContents,
+                float pxToDpScaleFactor);
+
         void destroy(long nativeContextualSearchTabHelper, ContextualSearchTabHelper caller);
     }
 }

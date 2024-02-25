@@ -44,8 +44,9 @@ public class OneshotSupplierImpl<T> implements OneshotSupplier<T> {
     }
 
     /**
-     * Set the object supplied by this supplier. This will notify registered callbacks that the
-     * dependency is available. If set() has already been called, this method will assert.
+     * Set the object supplied by this supplier. This will post notifications to registered
+     * callbacks that the dependency is available. If set() has already been called, this method
+     * will assert.
      *
      * @param object The object to supply.
      */

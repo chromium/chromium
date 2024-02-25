@@ -12,8 +12,9 @@
 // overlay display override. Does not interact with the buttons. It is just
 // used to indicate that this is non-client-area.
 class CaptionButtonPlaceholderContainer : public views::View {
+  METADATA_HEADER(CaptionButtonPlaceholderContainer, views::View)
+
  public:
-  METADATA_HEADER(CaptionButtonPlaceholderContainer);
   CaptionButtonPlaceholderContainer();
   CaptionButtonPlaceholderContainer(const CaptionButtonPlaceholderContainer&) =
       delete;

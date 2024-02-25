@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/android/abi.gni")
-import("//build/config/android/jni.gni")
 import("//build/config/sysroot.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 # These targets shall only be referenced on Android builds.
 assert(is_android)
@@ -93,6 +93,7 @@ component("cast_browser") {
   deps = [
     ":common_apk_deps",
     "//chromecast:cast_shell_lib_simple",
+    "//third_party/jni_zero",
   ]
 
   cflags = [ "-fsymbol-partition=cast_browser_partition" ]

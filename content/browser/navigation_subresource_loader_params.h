@@ -13,6 +13,7 @@
 
 namespace content {
 
+class ServiceWorkerContainerHost;
 class ServiceWorkerObjectHost;
 
 // For NetworkService glues:
@@ -37,6 +38,11 @@ struct CONTENT_EXPORT SubresourceLoaderParams {
   // ServiceWorkerObjectHost::CreateIncompleteObjectInfo() for details.
   blink::mojom::ControllerServiceWorkerInfoPtr controller_service_worker_info;
   base::WeakPtr<ServiceWorkerObjectHost> controller_service_worker_object_host;
+
+  // For `NavigationURLLoaderImpl` only, to detect the controller lost and
+  // cancel ServiceWorker subresource interception. See the comment in
+  // `NavigationURLLoaderImpl::NotifyResponseStarted()` for details.
+  base::WeakPtr<ServiceWorkerContainerHost> container_host;
 
   // When signed exchanges were prefetched in the previous page and were stored
   // to the PrefetchedSignedExchangeCache, and the main resource for the

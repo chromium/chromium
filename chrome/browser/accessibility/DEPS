@@ -1,13 +1,15 @@
 include_rules = [
   "+components/live_caption",
   "+components/soda",
+  "+pdf/pdf_features.h",
   "+services/image_annotation",
   "+testing/gmock",
   "+testing/gtest",
 ]
 
 specific_include_rules = {
-  'accessibility_extension_api_chromeos.cc': [
+  'accessibility_extension_api_ash.cc': [
     "+services/accessibility/public/mojom/assistive_technology_type.mojom.h",
+    "+ash/accessibility/accessibility_controller.h",
   ]
 }

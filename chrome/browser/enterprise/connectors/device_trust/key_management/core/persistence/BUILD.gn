@@ -10,6 +10,7 @@ source_set("persistence") {
   ]
 
   sources = [
+    "key_persistence_delegate.cc",
     "key_persistence_delegate_factory.cc",
     "metrics_utils.cc",
   ]

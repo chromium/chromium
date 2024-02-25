@@ -106,6 +106,8 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/browser.h",
     "protocol/device_access.cc",
     "protocol/device_access.h",
+    "protocol/device_orientation.cc",
+    "protocol/device_orientation.h",
     "protocol/dom.cc",
     "protocol/dom.h",
     "protocol/emulation.cc",

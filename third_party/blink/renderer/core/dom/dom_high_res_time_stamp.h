@@ -17,7 +17,8 @@ inline double ConvertDOMHighResTimeStampToSeconds(
 }
 
 inline DOMHighResTimeStamp ConvertTimeToDOMHighResTimeStamp(base::Time time) {
-  return static_cast<DOMHighResTimeStamp>(time.ToJsTimeIgnoringNull());
+  return static_cast<DOMHighResTimeStamp>(
+      time.InMillisecondsFSinceUnixEpochIgnoringNull());
 }
 
 }  // namespace blink

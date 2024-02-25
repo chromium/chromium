@@ -1,8 +1,8 @@
 Name: TensorFlow Lite Support
 Short Name: tflite-support
 URL: https://github.com/tensorflow/tflite-support
-Version: 15cf9c5fb28fdd4d83302b5118119f578cd7b9d4
-Date: 2022/11/30
+Version: d3a8a112e5d3f83696e665f76f660f2b5dd47052
+Date: 2023-09-27
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -20,45 +20,44 @@ Third party dependencies:
 - utf
 - tensorflow-text
 
-Modifications:
-01) Patch since removed
-02) Remove support for sentencepiece tokenization because the required overhead
-    isn't worth adding this functionality, esp since no feature team needs it.
-03) Remove the ABSL_DEPRECATED annotation from a deprecated struct since this
-    is a no-op in chromium builds and upsets clang.
-04) Do not use absl::any since it is not supported in chromium
-05) Remove an unneeded static initializer.
-06) Check (instead of resetting) the cancel_flag_ before Invoking the model.
-07) Fix minizip path inclusion. Upstream uses contrib/minizip/, but chromium
-    uses third_party/zlib/contrib/minizip/.
-08) Fix unused variable in task_utils.h.
-09) Use SysNSStringToUTF8 to convert NSString.
-10) Set executable bit for common_win.bat.
-11) Fix unused function/field errors on windows.
-12) Remove whitespace tokenizer since it uses the unsafe function `chartorune`.
-13) Remove big testdata files.
-14) Run clang-format.
-    * This patch might not apply cleanly, so run `git cl format` and commit the
-      changes.
-15) Use abs() from std in tflite::task::core::Category
-16) Fix dependencies which were moved out of experimental folder.
-17) Fix shim headers being removed in TFLite.
-18) Fix shim headers for Text Embedder and related header/cc files.
-19) Fix shim headers for Image Embedder.
+Local modifications with their associated descriptions are contained in the
+patches/ subdirectory.
 
-Update Process (internal: http://shortn/_nwz8liqimy):
-1) Run these commands:
+Update process:
 
-  ```
-  pushd third_party/tflite_support/
-  rm -rf src/
-  git clone https://github.com/tensorflow/tflite-support/
-  mv tflite-support/ src/
-  rm -rf src/.git/
-  popd
-  ```
+1) First, update Chrome's copy from the main tflite support repository:
+   ```
+   pushd third_party/tflite_support/
+   rm -rf src/
+   git clone https://github.com/tensorflow/tflite-support/ src
+   rm -rf src/.git/
+   git add src
+   popd
+   git commit -m "Initial roll."
+   ```
+2) Apply the patches in patches/:
+   ```
+   git am --keep-cr third_party/tflite_support/patches/*
+   ```
+3) This works somewhat like a rebase, and conflicts may need to be resolved
+   along the way.
+4) If additional patches are needed, record each distinct patch as its own git
+   commit. A reasonably-sized patch would be "delete component <X> which is not
+   used in Chrome". A patch named "fix the build for Chrome" would probably be
+   too generic and large.
+5) Regenerate the patches/ subdirectory:
+   ```
+   git rm third_party/tflite_support/patches/*
+   git format-patch HEAD -<number of changes> -o third_party/tflite_support/patches
+   git add third_party/tflite_support/patches/*
+   ```
 
-2) Apply each patch listed above residing in patches/ using `git apply
-   third_party/tflite_support/patches/$PATCHFILE`.
-3) Get the build working.
-4) Record the patches made with `git format-patch HEAD -<number of changes>`
+Important: do not proceed to the next steps until all local patches have been
+updated and applied!
+
+6) Remove the testdata directory, which contains many large binary artifacts:
+   ```
+   git rm -r third_party/tflite_support/src/tensorflow_lite_support/cc/test/testdata
+   ```
+   This is not tracked as a patchfile, as `git format-patch` can generate very
+   large diffs for this.

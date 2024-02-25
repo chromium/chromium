@@ -148,8 +148,7 @@ KeyframeEffect* KeyframeEffect::Create(
     composite =
         EffectModel::StringToCompositeOperation(effect_options->composite())
             .value();
-    if (RuntimeEnabledFeatures::WebAnimationsAPIEnabled() &&
-        !effect_options->pseudoElement().empty()) {
+    if (!effect_options->pseudoElement().empty()) {
       pseudo = effect_options->pseudoElement();
       if (!ValidateAndCanonicalizePseudo(pseudo)) {
         // TODO(gtsteel): update when
@@ -171,7 +170,7 @@ KeyframeEffect* KeyframeEffect::Create(
   if (!pseudo.empty()) {
     effect->target_pseudo_ = pseudo;
     if (element) {
-      element->GetDocument().UpdateStyleAndLayoutTreeForNode(
+      element->GetDocument().UpdateStyleAndLayoutTreeForElement(
           element, DocumentUpdateReason::kWebAnimation);
       PseudoId pseudo_id =
           CSSSelectorParser::ParsePseudoElement(pseudo, element);
@@ -268,7 +267,7 @@ void KeyframeEffect::RefreshTarget() {
   } else if (target_pseudo_.empty()) {
     new_target = target_element_;
   } else {
-    target_element_->GetDocument().UpdateStyleAndLayoutTreeForNode(
+    target_element_->GetDocument().UpdateStyleAndLayoutTreeForElement(
         target_element_, DocumentUpdateReason::kWebAnimation);
     PseudoId pseudoId =
         CSSSelectorParser::ParsePseudoElement(target_pseudo_, target_element_);
@@ -330,7 +329,7 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     V8ObjectBuilder object_builder(script_state);
     keyframes[indices[i]]->AddKeyframePropertiesToV8Object(object_builder,
                                                            target());
-    object_builder.Add("computedOffset", computed_offsets[indices[i]]);
+    object_builder.AddNumber("computedOffset", computed_offsets[indices[i]]);
     computed_keyframes.push_back(object_builder.GetScriptValue());
   }
 
@@ -355,9 +354,6 @@ void KeyframeEffect::setKeyframes(ScriptState* script_state,
 }
 
 void KeyframeEffect::SetKeyframes(StringKeyframeVector keyframes) {
-  Model()->SetComposite(
-      EffectInput::ResolveCompositeOperation(Model()->Composite(), keyframes));
-
   To<StringKeyframeEffectModel>(Model())->SetFrames(keyframes);
 
   // Changing the keyframes will invalidate any sampled effect, as well as
@@ -421,7 +417,7 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
 
 void KeyframeEffect::StartAnimationOnCompositor(
     int group,
-    absl::optional<double> start_time,
+    std::optional<double> start_time,
     base::TimeDelta time_offset,
     double animation_playback_rate,
     CompositorAnimation* compositor_animation,
@@ -632,7 +628,7 @@ void KeyframeEffect::ApplyEffects() {
     GetAnimation()->CancelAnimationOnCompositor();
   }
 
-  absl::optional<double> iteration = CurrentIteration();
+  std::optional<double> iteration = CurrentIteration();
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
   bool changed = false;
@@ -727,7 +723,7 @@ void KeyframeEffect::DetachTarget(Animation* animation) {
 
 AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
     bool forwards,
-    absl::optional<AnimationTimeDelta> local_time,
+    std::optional<AnimationTimeDelta> local_time,
     AnimationTimeDelta time_to_next_iteration) const {
   const AnimationTimeDelta start_time = NormalizedTiming().start_delay;
 
@@ -762,8 +758,8 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
       }
       return {};
     case Timing::kPhaseAfter:
-      DCHECK(GreaterThanOrEqualToWithinTimeTolerance(local_time.value(),
-                                                     after_time));
+      DCHECK(TimingCalculations::GreaterThanOrEqualToWithinTimeTolerance(
+          local_time.value(), after_time));
       if (forwards) {
         // If an animation has a positive-valued end delay, we need an
         // additional tick at the end time to ensure that the finished event is
@@ -778,11 +774,11 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
   }
 }
 
-absl::optional<AnimationTimeDelta> KeyframeEffect::TimelineDuration() const {
+std::optional<AnimationTimeDelta> KeyframeEffect::TimelineDuration() const {
   if (GetAnimation() && GetAnimation()->TimelineInternal()) {
     return GetAnimation()->TimelineInternal()->GetDuration();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns true if transform, translate, rotate or scale is composited

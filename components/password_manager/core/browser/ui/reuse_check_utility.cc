@@ -9,8 +9,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/psl_matching_helper.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace password_manager {
 
@@ -65,14 +65,16 @@ bool AllUsernameAreEquivalent(
 
 bool HasOnlyAndroidApps(const CredentialUIEntry* credential) {
   return base::ranges::all_of(credential->facets, [](const auto& facet) {
-    return IsValidAndroidFacetURI(facet.signon_realm);
+    return affiliations::IsValidAndroidFacetURI(facet.signon_realm);
   });
 }
 
 bool IsMainDomainEqual(const std::set<std::string>& signon_realms) {
   std::set<std::string> domain_parts;
   for (const auto& signon_realm : signon_realms) {
-    domain_parts.insert(GetRegistryControlledDomain(GURL(signon_realm)));
+    domain_parts.insert(net::registry_controlled_domains::GetDomainAndRegistry(
+        GURL(signon_realm),
+        net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
   }
 
   return domain_parts.size() == 1;
@@ -93,7 +95,7 @@ bool AllDomainsAreEquivalent(
     }
 
     for (const auto& facet : credential->facets) {
-      if (IsValidAndroidFacetURI(facet.signon_realm)) {
+      if (affiliations::IsValidAndroidFacetURI(facet.signon_realm)) {
         continue;
       }
 

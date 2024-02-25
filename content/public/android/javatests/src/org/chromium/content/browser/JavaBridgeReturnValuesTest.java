@@ -38,8 +38,7 @@ import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeReturnValuesTest {
-    @Rule
-    public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
+    @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     // An instance of this class is injected into the page to test returning
     // Java values to JavaScript.
@@ -53,15 +52,18 @@ public class JavaBridgeReturnValuesTest {
             mStringResult = x;
             notifyResultIsReady();
         }
+
         public synchronized String waitForStringResult() {
             waitForResult();
             return mStringResult;
         }
+
         @JavascriptInterface
         public synchronized void setBooleanResult(boolean x) {
             mBooleanResult = x;
             notifyResultIsReady();
         }
+
         public synchronized boolean waitForBooleanResult() {
             waitForResult();
             return mBooleanResult;
@@ -71,73 +73,88 @@ public class JavaBridgeReturnValuesTest {
         public boolean getBooleanValue() {
             return true;
         }
+
         @JavascriptInterface
         public byte getByteValue() {
             return 42;
         }
+
         @JavascriptInterface
         public char getCharValue() {
             return '\u002A';
         }
+
         @JavascriptInterface
         public short getShortValue() {
             return 42;
         }
+
         @JavascriptInterface
         public int getIntValue() {
             return 42;
         }
+
         @JavascriptInterface
         public long getLongValue() {
             return 42L;
         }
+
         @JavascriptInterface
         public float getFloatValue() {
             return 42.1f;
         }
+
         @JavascriptInterface
         public float getFloatValueNoDecimal() {
             return 42.0f;
         }
+
         @JavascriptInterface
         public double getDoubleValue() {
             return 42.1;
         }
+
         @JavascriptInterface
         public double getDoubleValueNoDecimal() {
             return 42.0;
         }
+
         @JavascriptInterface
         public String getStringValue() {
             return "foo";
         }
+
         @JavascriptInterface
         public String getEmptyStringValue() {
             return "";
         }
+
         @JavascriptInterface
         public String getNullStringValue() {
             return null;
         }
+
         @JavascriptInterface
         public Object getObjectValue() {
             return new Object();
         }
+
         @JavascriptInterface
         public Object getNullObjectValue() {
             return null;
         }
+
         @JavascriptInterface
         public CustomType getCustomTypeValue() {
             return new CustomType();
         }
+
         @JavascriptInterface
         public void getVoidValue() {}
     }
 
     // A custom type used when testing passing objects.
-    private static class CustomType {
-    }
+    private static class CustomType {}
 
     @UseMethodParameterBefore(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void setupMojoTest(boolean useMojo) {
@@ -169,7 +186,8 @@ public class JavaBridgeReturnValuesTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testMethodReturnTypes(boolean useMojo) throws Throwable {
-        Assert.assertEquals("boolean",
+        Assert.assertEquals(
+                "boolean",
                 executeJavaScriptAndGetStringResult("typeof testObject.getBooleanValue()"));
         Assert.assertEquals(
                 "number", executeJavaScriptAndGetStringResult("typeof testObject.getByteValue()"));
@@ -184,26 +202,36 @@ public class JavaBridgeReturnValuesTest {
                 "number", executeJavaScriptAndGetStringResult("typeof testObject.getLongValue()"));
         Assert.assertEquals(
                 "number", executeJavaScriptAndGetStringResult("typeof testObject.getFloatValue()"));
-        Assert.assertEquals("number",
+        Assert.assertEquals(
+                "number",
                 executeJavaScriptAndGetStringResult("typeof testObject.getFloatValueNoDecimal()"));
-        Assert.assertEquals("number",
+        Assert.assertEquals(
+                "number",
                 executeJavaScriptAndGetStringResult("typeof testObject.getDoubleValue()"));
-        Assert.assertEquals("number",
+        Assert.assertEquals(
+                "number",
                 executeJavaScriptAndGetStringResult("typeof testObject.getDoubleValueNoDecimal()"));
-        Assert.assertEquals("string",
+        Assert.assertEquals(
+                "string",
                 executeJavaScriptAndGetStringResult("typeof testObject.getStringValue()"));
-        Assert.assertEquals("string",
+        Assert.assertEquals(
+                "string",
                 executeJavaScriptAndGetStringResult("typeof testObject.getEmptyStringValue()"));
         // LIVECONNECT_COMPLIANCE: This should have type object.
-        Assert.assertEquals("undefined",
+        Assert.assertEquals(
+                "undefined",
                 executeJavaScriptAndGetStringResult("typeof testObject.getNullStringValue()"));
-        Assert.assertEquals("object",
+        Assert.assertEquals(
+                "object",
                 executeJavaScriptAndGetStringResult("typeof testObject.getObjectValue()"));
-        Assert.assertEquals("object",
+        Assert.assertEquals(
+                "object",
                 executeJavaScriptAndGetStringResult("typeof testObject.getNullObjectValue()"));
-        Assert.assertEquals("object",
+        Assert.assertEquals(
+                "object",
                 executeJavaScriptAndGetStringResult("typeof testObject.getCustomTypeValue()"));
-        Assert.assertEquals("undefined",
+        Assert.assertEquals(
+                "undefined",
                 executeJavaScriptAndGetStringResult("typeof testObject.getVoidValue()"));
     }
 
@@ -222,14 +250,18 @@ public class JavaBridgeReturnValuesTest {
                 executeJavaScriptAndGetBooleanResult("42 === testObject.getShortValue()"));
         Assert.assertTrue(executeJavaScriptAndGetBooleanResult("42 === testObject.getIntValue()"));
         Assert.assertTrue(executeJavaScriptAndGetBooleanResult("42 === testObject.getLongValue()"));
-        Assert.assertTrue(executeJavaScriptAndGetBooleanResult(
-                "Math.abs(42.1 - testObject.getFloatValue()) < 0.001"));
-        Assert.assertTrue(executeJavaScriptAndGetBooleanResult(
-                "42.0 === testObject.getFloatValueNoDecimal()"));
-        Assert.assertTrue(executeJavaScriptAndGetBooleanResult(
-                "Math.abs(42.1 - testObject.getDoubleValue()) < 0.001"));
-        Assert.assertTrue(executeJavaScriptAndGetBooleanResult(
-                "42.0 === testObject.getDoubleValueNoDecimal()"));
+        Assert.assertTrue(
+                executeJavaScriptAndGetBooleanResult(
+                        "Math.abs(42.1 - testObject.getFloatValue()) < 0.001"));
+        Assert.assertTrue(
+                executeJavaScriptAndGetBooleanResult(
+                        "42.0 === testObject.getFloatValueNoDecimal()"));
+        Assert.assertTrue(
+                executeJavaScriptAndGetBooleanResult(
+                        "Math.abs(42.1 - testObject.getDoubleValue()) < 0.001"));
+        Assert.assertTrue(
+                executeJavaScriptAndGetBooleanResult(
+                        "42.0 === testObject.getDoubleValueNoDecimal()"));
         Assert.assertEquals(
                 "foo", executeJavaScriptAndGetStringResult("testObject.getStringValue()"));
         Assert.assertEquals(

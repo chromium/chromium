@@ -29,21 +29,21 @@ class MockDecrypter : public quic::QuicDecrypter {
   ~MockDecrypter() override = default;
 
   // QuicCrypter implementation
-  bool SetKey(absl::string_view key) override;
-  bool SetNoncePrefix(absl::string_view nonce_prefix) override;
-  bool SetIV(absl::string_view iv) override;
-  bool SetHeaderProtectionKey(absl::string_view key) override;
+  bool SetKey(std::string_view key) override;
+  bool SetNoncePrefix(std::string_view nonce_prefix) override;
+  bool SetIV(std::string_view iv) override;
+  bool SetHeaderProtectionKey(std::string_view key) override;
   size_t GetKeySize() const override;
   size_t GetIVSize() const override;
   size_t GetNoncePrefixSize() const override;
 
   // QuicDecrypter implementation
-  bool SetPreliminaryKey(absl::string_view key) override;
+  bool SetPreliminaryKey(std::string_view key) override;
   bool SetDiversificationNonce(
       const quic::DiversificationNonce& nonce) override;
   bool DecryptPacket(uint64_t packet_number,
-                     absl::string_view associated_data,
-                     absl::string_view ciphertext,
+                     std::string_view associated_data,
+                     std::string_view ciphertext,
                      char* output,
                      size_t* output_length,
                      size_t max_output_length) override;
@@ -51,8 +51,8 @@ class MockDecrypter : public quic::QuicDecrypter {
       quic::QuicDataReader* sample_reader) override;
   uint32_t cipher_id() const override;
   quic::QuicPacketCount GetIntegrityLimit() const override;
-  absl::string_view GetKey() const override;
-  absl::string_view GetNoncePrefix() const override;
+  std::string_view GetKey() const override;
+  std::string_view GetNoncePrefix() const override;
 };
 
 }  // namespace net

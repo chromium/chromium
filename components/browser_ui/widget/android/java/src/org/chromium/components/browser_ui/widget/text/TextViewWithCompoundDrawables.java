@@ -44,9 +44,10 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
 
     /**
      * Set the tint color of the compound drawables.
-     * @param color The tint color.
+     *
+     * @param color The tint color. May be null to clear the tint color.
      */
-    public void setDrawableTintColor(ColorStateList color) {
+    public void setDrawableTintColor(@Nullable ColorStateList color) {
         mDrawableTint = color;
         setDrawableTint(getCompoundDrawablesRelative());
     }
@@ -79,8 +80,11 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
     }
 
     @Override
-    public void setCompoundDrawablesRelative(@Nullable Drawable start, @Nullable Drawable top,
-            @Nullable Drawable end, @Nullable Drawable bottom) {
+    public void setCompoundDrawablesRelative(
+            @Nullable Drawable start,
+            @Nullable Drawable top,
+            @Nullable Drawable end,
+            @Nullable Drawable bottom) {
         Drawable[] drawables = {start, top, end, bottom};
         setDrawableBounds(drawables);
 
@@ -92,15 +96,19 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        TypedArray array = context.obtainStyledAttributes(
-                attrs, R.styleable.TextViewWithCompoundDrawables, defStyleAttr, 0);
+        TypedArray array =
+                context.obtainStyledAttributes(
+                        attrs, R.styleable.TextViewWithCompoundDrawables, defStyleAttr, 0);
 
-        mDrawableWidth = array.getDimensionPixelSize(
-                R.styleable.TextViewWithCompoundDrawables_drawableWidth, -1);
-        mDrawableHeight = array.getDimensionPixelSize(
-                R.styleable.TextViewWithCompoundDrawables_drawableHeight, -1);
-        mDrawableTint = array.getColorStateList(
-                R.styleable.TextViewWithCompoundDrawables_chromeDrawableTint);
+        mDrawableWidth =
+                array.getDimensionPixelSize(
+                        R.styleable.TextViewWithCompoundDrawables_drawableWidth, -1);
+        mDrawableHeight =
+                array.getDimensionPixelSize(
+                        R.styleable.TextViewWithCompoundDrawables_drawableHeight, -1);
+        mDrawableTint =
+                array.getColorStateList(
+                        R.styleable.TextViewWithCompoundDrawables_chromeDrawableTint);
 
         array.recycle();
 
@@ -120,8 +128,13 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
             if (drawable == null) continue;
 
             drawable.mutate();
-            drawable.setColorFilter(
-                    mDrawableTint.getColorForState(getDrawableState(), 0), PorterDuff.Mode.SRC_IN);
+            if (mDrawableTint == null) {
+                drawable.clearColorFilter();
+            } else {
+                drawable.setColorFilter(
+                        mDrawableTint.getColorForState(getDrawableState(), 0),
+                        PorterDuff.Mode.SRC_IN);
+            }
         }
     }
 

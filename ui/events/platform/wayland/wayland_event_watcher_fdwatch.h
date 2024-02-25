@@ -14,7 +14,9 @@ namespace ui {
 class WaylandEventWatcherFdWatch : public WaylandEventWatcher,
                                    public base::MessagePumpForUI::FdWatcher {
  public:
-  WaylandEventWatcherFdWatch(wl_display* display, wl_event_queue* event_queue);
+  WaylandEventWatcherFdWatch(wl_display* display,
+                             wl_event_queue* event_queue,
+                             bool use_threaded_polling);
   WaylandEventWatcherFdWatch(const WaylandEventWatcherFdWatch&) = delete;
   WaylandEventWatcherFdWatch& operator=(const WaylandEventWatcherFdWatch&) =
       delete;

@@ -15,6 +15,7 @@
 #ifndef ABSL_LOG_INTERNAL_LOG_IMPL_H_
 #define ABSL_LOG_INTERNAL_LOG_IMPL_H_
 
+#include "absl/log/absl_vlog_is_on.h"
 #include "absl/log/internal/conditions.h"
 #include "absl/log/internal/log_message.h"
 #include "absl/log/internal/strip.h"
@@ -39,6 +40,35 @@
 #define ABSL_LOG_INTERNAL_DLOG_IMPL(severity)             \
   ABSL_LOG_INTERNAL_CONDITION##severity(STATELESS, false) \
       ABSL_LOGGING_INTERNAL_LOG##severity.InternalStream()
+#endif
+
+// The `switch` ensures that this expansion is the begnning of a statement (as
+// opposed to an expression). The use of both `case 0` and `default` is to
+// suppress a compiler warning.
+#define ABSL_LOG_INTERNAL_VLOG_IMPL(verbose_level)                         \
+  switch (const int absl_logging_internal_verbose_level = (verbose_level)) \
+  case 0:                                                                  \
+  default:                                                                 \
+    ABSL_LOG_INTERNAL_LOG_IF_IMPL(                                         \
+        _INFO, ABSL_VLOG_IS_ON(absl_logging_internal_verbose_level))       \
+        .WithVerbosity(absl_logging_internal_verbose_level)
+
+#ifndef NDEBUG
+#define ABSL_LOG_INTERNAL_DVLOG_IMPL(verbose_level)                        \
+  switch (const int absl_logging_internal_verbose_level = (verbose_level)) \
+  case 0:                                                                  \
+  default:                                                                 \
+    ABSL_LOG_INTERNAL_LOG_IF_IMPL(                                         \
+        _INFO, ABSL_VLOG_IS_ON(absl_logging_internal_verbose_level))       \
+        .WithVerbosity(absl_logging_internal_verbose_level)
+#else
+#define ABSL_LOG_INTERNAL_DVLOG_IMPL(verbose_level)                           \
+  switch (const int absl_logging_internal_verbose_level = (verbose_level))    \
+  case 0:                                                                     \
+  default:                                                                    \
+    ABSL_LOG_INTERNAL_LOG_IF_IMPL(                                            \
+        _INFO, false && ABSL_VLOG_IS_ON(absl_logging_internal_verbose_level)) \
+        .WithVerbosity(absl_logging_internal_verbose_level)
 #endif
 
 #define ABSL_LOG_INTERNAL_LOG_IF_IMPL(severity, condition)    \
@@ -133,6 +163,42 @@
   ABSL_LOG_INTERNAL_CONDITION_INFO(STATEFUL, false)                  \
   (EveryNSec, n_seconds) ABSL_LOGGING_INTERNAL_LOG##severity.InternalStream()
 #endif  // def NDEBUG
+
+#define ABSL_LOG_INTERNAL_VLOG_EVERY_N_IMPL(verbose_level, n)                \
+  switch (const int absl_logging_internal_verbose_level = (verbose_level))   \
+  case 0:                                                                    \
+  default:                                                                   \
+    ABSL_LOG_INTERNAL_CONDITION_INFO(                                        \
+        STATEFUL, ABSL_VLOG_IS_ON(absl_logging_internal_verbose_level))      \
+  (EveryN, n) ABSL_LOGGING_INTERNAL_LOG_INFO.InternalStream().WithVerbosity( \
+      absl_logging_internal_verbose_level)
+
+#define ABSL_LOG_INTERNAL_VLOG_FIRST_N_IMPL(verbose_level, n)                \
+  switch (const int absl_logging_internal_verbose_level = (verbose_level))   \
+  case 0:                                                                    \
+  default:                                                                   \
+    ABSL_LOG_INTERNAL_CONDITION_INFO(                                        \
+        STATEFUL, ABSL_VLOG_IS_ON(absl_logging_internal_verbose_level))      \
+  (FirstN, n) ABSL_LOGGING_INTERNAL_LOG_INFO.InternalStream().WithVerbosity( \
+      absl_logging_internal_verbose_level)
+
+#define ABSL_LOG_INTERNAL_VLOG_EVERY_POW_2_IMPL(verbose_level)               \
+  switch (const int absl_logging_internal_verbose_level = (verbose_level))   \
+  case 0:                                                                    \
+  default:                                                                   \
+    ABSL_LOG_INTERNAL_CONDITION_INFO(                                        \
+        STATEFUL, ABSL_VLOG_IS_ON(absl_logging_internal_verbose_level))      \
+  (EveryPow2) ABSL_LOGGING_INTERNAL_LOG_INFO.InternalStream().WithVerbosity( \
+      absl_logging_internal_verbose_level)
+
+#define ABSL_LOG_INTERNAL_VLOG_EVERY_N_SEC_IMPL(verbose_level, n_seconds)  \
+  switch (const int absl_logging_internal_verbose_level = (verbose_level)) \
+  case 0:                                                                  \
+  default:                                                                 \
+    ABSL_LOG_INTERNAL_CONDITION_INFO(                                      \
+        STATEFUL, ABSL_VLOG_IS_ON(absl_logging_internal_verbose_level))    \
+  (EveryNSec, n_seconds) ABSL_LOGGING_INTERNAL_LOG_INFO.InternalStream()   \
+      .WithVerbosity(absl_logging_internal_verbose_level)
 
 #define ABSL_LOG_INTERNAL_LOG_IF_EVERY_N_IMPL(severity, condition, n)   \
   ABSL_LOG_INTERNAL_CONDITION##severity(STATEFUL, condition)(EveryN, n) \

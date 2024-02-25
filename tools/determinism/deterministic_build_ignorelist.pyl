@@ -207,5 +207,7 @@
     # command line which then is recorded in the PDB).
     'test_control_flow_guard.exe',
     'test_control_flow_guard.exe.pdb',
+    'cloud_authenticator_test_service.exe',
+    'cloud_authenticator_test_service.exe.pdb',
   ],
 }

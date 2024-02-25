@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
@@ -113,7 +113,7 @@ class FeedApi {
   virtual void FetchResource(
       const GURL& url,
       const std::string& method,
-      const std::vector<std::string>& header_name_and_values,
+      const std::vector<std::string>& header_names_and_values,
       const std::string& post_data,
       base::OnceCallback<void(NetworkResponse)> callback) = 0;
 

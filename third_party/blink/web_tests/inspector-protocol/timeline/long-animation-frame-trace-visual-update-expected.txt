@@ -1,0 +1,9 @@
+Tests reporting of long animation frames in traces (with visual update).
+Recording started
+Tracing complete
+Found matching LoAF event
+duration-blockingDuration>=50
+renderDuration>0
+styleAndLayoutDuration>0
+numScripts=1
+

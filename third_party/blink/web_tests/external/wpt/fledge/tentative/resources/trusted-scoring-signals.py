@@ -1,6 +1,9 @@
 import json
 from urllib.parse import unquote_plus, urlparse
 
+from fledge.tentative.resources import fledge_http_server_util
+
+
 # Script to generate trusted scoring signals. The responses depends on the
 # query strings in the ads Urls - some result in entire response failures,
 # others affect only their own value. Each renderUrl potentially has a
@@ -10,7 +13,12 @@ from urllib.parse import unquote_plus, urlparse
 def main(request, response):
     hostname = None
     renderUrls = None
-    adComponentRenderUrls = None
+    adComponentRenderURLs = None
+    # List of {type: <render URL type>, urls: <render URL list>} pairs, where <render URL type> is
+    # one of the two render URL dictionary keys used in the response ("renderURLs" or
+    # "adComponentRenderURLs"). May be of length 1 or 2, depending on whether there
+    # are any component URLs.
+    urlLists = []
 
     # Manually parse query params. Can't use request.GET because it unescapes as well as splitting,
     # and commas mean very different things from escaped commas.
@@ -28,9 +36,11 @@ def main(request, response):
             continue
         if pair[0] == "renderUrls" and renderUrls == None:
             renderUrls = list(map(unquote_plus, pair[1].split(",")))
+            urlLists.append({"type":"renderURLs", "urls":renderUrls})
             continue
-        if pair[0] == "adComponentRenderUrls" and adComponentRenderUrls == None:
-            adComponentRenderUrls = list(map(unquote_plus, pair[1].split(",")))
+        if pair[0] == "adComponentRenderUrls" and adComponentRenderURLs == None:
+            adComponentRenderURLs = list(map(unquote_plus, pair[1].split(",")))
+            urlLists.append({"type":"adComponentRenderURLs", "urls":adComponentRenderURLs})
             continue
         return fail(response, "Unexpected query parameter: " + param)
 
@@ -52,9 +62,10 @@ def main(request, response):
     contentType = "application/json"
     adAuctionAllowed = "true"
     dataVersion = None
-    if renderUrls:
-        for renderUrl in renderUrls:
+    for urlList in urlLists:
+        for renderUrl in urlList["urls"]:
             value = "default value"
+            addValue = True
 
             signalsParams = None
             for param in urlparse(renderUrl).query.split("&"):
@@ -93,8 +104,10 @@ def main(request, response):
                         adAuctionAllowed = "false"
                     elif signalsParam == "no-ad-auction-allow":
                         adAuctionAllowed = None
+                    elif signalsParam == "wrong-url":
+                        renderUrl = "https://wrong-url.test/"
                     elif signalsParam == "no-value":
-                        continue
+                        addValue = False
                     elif signalsParam == "null-value":
                         value = None
                     elif signalsParam == "num-value":
@@ -107,8 +120,12 @@ def main(request, response):
                         value = {"a":"b", "c":["d"]}
                     elif signalsParam == "hostname":
                         value = request.GET.first(b"hostname", b"not-found").decode("ASCII")
-            if value != None:
-                responseBody["renderUrls"][renderUrl] = value
+                    elif signalsParam == "headers":
+                        value = fledge_http_server_util.headers_to_ascii(request.headers)
+            if addValue:
+                if urlList["type"] not in responseBody:
+                    responseBody[urlList["type"]] = {}
+                responseBody[urlList["type"]][renderUrl] = value
 
     if contentType:
         response.headers.set("Content-Type", contentType)

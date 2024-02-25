@@ -5,24 +5,24 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_PROPERTIES_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_PROPERTIES_H_
 
+#include <cstdint>
 #include "base/component_export.h"
-#include "dbus/object_proxy.h"
-#include "dbus/property.h"
 
-// Wrapper class of dbus::PropertySet that holds Dbus property fields
-// pertaining to an FWUPD Dbus object. Properties of this class gets updated
-// whenever dbus::PropertiesChanged() is called for the Fwupd interface.
+// Abstract class that mirrors the properties of a FWUPD DBus object.
 namespace ash {
 
-class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdProperties
-    : public dbus::PropertySet {
+class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdProperties {
  public:
-  FwupdProperties(dbus::ObjectProxy* object_proxy,
-                  const PropertyChangedCallback& callback);
-  ~FwupdProperties() override;
+  virtual ~FwupdProperties() = default;
 
-  dbus::Property<uint32_t> percentage;
-  dbus::Property<uint32_t> status;
+  virtual void SetPercentage(uint32_t new_percentage) = 0;
+  virtual void SetStatus(uint32_t new_status) = 0;
+
+  virtual uint32_t GetPercentage() = 0;
+  virtual uint32_t GetStatus() = 0;
+
+  virtual bool IsPercentageValid() = 0;
+  virtual bool IsStatusValid() = 0;
 };
 
 }  // namespace ash

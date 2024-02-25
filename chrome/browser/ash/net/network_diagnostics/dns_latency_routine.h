@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_DNS_LATENCY_ROUTINE_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_DNS_LATENCY_ROUTINE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -31,7 +31,8 @@ namespace ash::network_diagnostics {
 // Tests whether the DNS latency is below an acceptable threshold.
 class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
  public:
-  DnsLatencyRoutine();
+  explicit DnsLatencyRoutine(
+      chromeos::network_diagnostics::mojom::RoutineCallSource source);
   DnsLatencyRoutine(const DnsLatencyRoutine&) = delete;
   DnsLatencyRoutine& operator=(const DnsLatencyRoutine&) = delete;
   ~DnsLatencyRoutine() override;
@@ -58,8 +59,8 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
  private:
   void OnComplete(int result,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
+                  const std::optional<net::AddressList>& resolved_addresses,
+                  const std::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata);
 
   void CreateHostResolver();
@@ -67,12 +68,11 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
   bool ProblemDetected();
 
   // Unowned
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   // Unowned
-  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh> network_context_ =
-      nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   // Unowned
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
   bool successfully_resolved_all_addresses_ = false;
   base::TimeTicks start_resolution_time_;
   base::TimeTicks resolution_complete_time_;

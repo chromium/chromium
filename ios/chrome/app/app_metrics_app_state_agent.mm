@@ -9,8 +9,9 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
-#import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
+#import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
@@ -102,6 +103,7 @@
       [MetricsMediator logStartupDuration:self.appState.startupInformation];
       if (ios::provider::IsPrimesSupported()) {
         ios::provider::PrimesAppReady();
+        tests_hook::SignalAppLaunched();
       }
     }
   }
@@ -136,6 +138,8 @@
   self.appState.lastTimeInForeground = base::TimeTicks();
 }
 
+// TODO(b/326183375): Avoid using appState.mainBrowserState. Evaluate if this
+// should be run for multiple browser states.
 - (IOSProfileSessionDurationsService*)psdService {
   if (!self.appState.mainBrowserState) {
     return nil;

@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../strings.m.js';
 
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
-import {PriceInsightsInfo, PriceInsightsInfo_PriceBucket} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
+import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
+import type {PriceInsightsInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {PriceInsightsInfo_PriceBucket} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './catalog_attributes_row.html.js';
@@ -28,8 +33,7 @@ export class CatalogAttributesRow extends PolymerElement {
   }
 
   priceInsightsInfo: PriceInsightsInfo;
-  private shoppingApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
+  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private openJackpot_() {
     this.shoppingApi_.openUrlInNewTab(this.priceInsightsInfo.jackpot);

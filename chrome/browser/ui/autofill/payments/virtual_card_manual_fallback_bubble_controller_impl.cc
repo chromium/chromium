@@ -291,7 +291,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::DoShowBubble() {
   // clicks the icon during the delay.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   set_bubble_view(browser->window()
                       ->GetAutofillBubbleHandler()
                       ->ShowVirtualCardManualFallbackBubble(

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_PAIRING_HANDLER_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_PAIRING_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/device_pairing_handler.h"
 
 namespace ash::bluetooth_config {
@@ -17,7 +18,7 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
   ~FakeDevicePairingHandler() override;
 
   void SimulatePairDeviceFinished(
-      absl::optional<device::ConnectionFailureReason> failure_reason);
+      std::optional<device::ConnectionFailureReason> failure_reason);
 
   void SimulateFetchDeviceFinished(mojom::BluetoothDevicePropertiesPtr device);
 
@@ -34,7 +35,7 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
     return DevicePairingHandler::current_pairing_device_id();
   }
 
-  const absl::optional<bool>& last_confirm() const { return last_confirm_; }
+  const std::optional<bool>& last_confirm() const { return last_confirm_; }
 
  private:
   // DevicePairingHandler:
@@ -42,16 +43,17 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
                    FetchDeviceCallback callback) override;
   void PerformPairDevice(const std::string& device_id) override;
   void PerformFinishCurrentPairingRequest(
-      absl::optional<device::ConnectionFailureReason> failure_reason,
+      std::optional<device::ConnectionFailureReason> failure_reason,
       base::TimeDelta duration) override;
   void CancelPairing() override;
   void OnRequestPinCode(const std::string& pin_code) override;
   void OnRequestPasskey(const std::string& passkey) override;
   void OnConfirmPairing(bool confirmed) override;
 
-  absl::optional<bool> last_confirm_;
+  std::optional<bool> last_confirm_;
 
-  std::vector<device::BluetoothDevice*> device_list_;
+  std::vector<raw_ptr<device::BluetoothDevice, VectorExperimental>>
+      device_list_;
 
   FetchDeviceCallback fetch_device_callback_;
 };

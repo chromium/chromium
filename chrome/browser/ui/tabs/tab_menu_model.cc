@@ -14,6 +14,8 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -22,7 +24,7 @@
 #include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -56,9 +58,20 @@ void TabMenuModel::BuildForWebApp(TabStripModel* tab_strip, int index) {
       (!web_app::HasPinnedHomeTab(tab_strip) ||
        *tab_strip->selection_model().selected_indices().begin() != 0)) {
     int num_tabs = tab_strip->selection_model().selected_indices().size();
-    AddItem(TabStripModel::CommandMoveTabsToNewWindow,
-            l10n_util::GetPluralStringFUTF16(
-                IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
+    if (ExistingWindowSubMenuModel::ShouldShowSubmenuForApp(
+            tab_menu_model_delegate_)) {
+      // Create submenu with existing windows
+      add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
+          delegate(), tab_menu_model_delegate_, tab_strip, index);
+      AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
+                 l10n_util::GetPluralStringFUTF16(
+                     IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
+                 add_to_existing_window_submenu_.get());
+    } else {
+      AddItem(TabStripModel::CommandMoveTabsToNewWindow,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
+    }
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -133,6 +146,16 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     AddItem(TabStripModel::CommandMoveTabsToNewWindow,
             l10n_util::GetPluralStringFUTF16(
                 IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
+  }
+
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(tab_strip->profile())) {
+    auto* const tab_organization_service =
+        TabOrganizationServiceFactory::GetForProfile(tab_strip->profile());
+    if (tab_organization_service) {
+      AddItemWithStringId(TabStripModel::CommandOrganizeTabs,
+                          IDS_TAB_CXMENU_ORGANIZE_TABS);
+      SetIsNewFeatureAt(GetItemCount() - 1, true);
+    }
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);

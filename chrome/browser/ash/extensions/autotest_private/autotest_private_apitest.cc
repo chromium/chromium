@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"
 
 #include <memory>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/components/arc/arc_prefs.h"
@@ -19,6 +21,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
@@ -42,12 +45,14 @@
 #include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -74,7 +79,8 @@ namespace {
 class TestSearchProvider : public app_list::SearchProvider {
  public:
   explicit TestSearchProvider(ash::AppListSearchResultType result_type)
-      : result_type_(result_type) {}
+      : SearchProvider(app_list::SearchCategory::kTest),
+        result_type_(result_type) {}
 
   ~TestSearchProvider() override = default;
 
@@ -114,13 +120,15 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
     // App pin syncing code makes an untitled Play Store icon appear in the
     // shelf. Sync isn't relevant to this test, so skip pinned app sync.
     // https://crbug.com/1085597
-    ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
+    ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(true);
   }
 
   AutotestPrivateApiTest(const AutotestPrivateApiTest&) = delete;
   AutotestPrivateApiTest& operator=(const AutotestPrivateApiTest&) = delete;
 
-  ~AutotestPrivateApiTest() override = default;
+  ~AutotestPrivateApiTest() override {
+    ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(false);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
@@ -166,7 +174,14 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivate) {
 }
 
 // Set of tests where ARC is enabled and test apps and packages are registered.
-IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcEnabled) {
+// TODO(https://crbug.com/1514431): re-enable the following test.
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+#define MAYBE_AutotestPrivateArcEnabled DISABLED_AutotestPrivateArcEnabled
+#else
+#define MAYBE_AutotestPrivateArcEnabled AutotestPrivateArcEnabled
+#endif
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest,
+                       MAYBE_AutotestPrivateArcEnabled) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(browser()->profile());
   ASSERT_TRUE(prefs);
 
@@ -288,19 +303,18 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
       RunAutotestPrivateExtensionTest("holdingSpace", std::move(suite_args)))
       << message_;
 
-  absl::optional<base::Time> timeOfFirstAdd =
+  std::optional<base::Time> timeOfFirstAdd =
       ash::holding_space_prefs::GetTimeOfFirstAdd(prefs);
-  absl::optional<base::Time> timeOfFirstAvailability =
+  std::optional<base::Time> timeOfFirstAvailability =
       ash::holding_space_prefs::GetTimeOfFirstAvailability(prefs);
 
   ASSERT_TRUE(ash::holding_space_prefs::IsPreviewsEnabled(prefs));
   ASSERT_EQ(timeOfFirstAdd.has_value(), mark_time_of_first_add);
-  ASSERT_NE(timeOfFirstAvailability, absl::nullopt);
-  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstEntry(prefs),
-            absl::nullopt);
+  ASSERT_NE(timeOfFirstAvailability, std::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstEntry(prefs), std::nullopt);
   ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs),
-            absl::nullopt);
-  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), absl::nullopt);
+            std::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), std::nullopt);
 
   if (timeOfFirstAdd) {
     ASSERT_GT(timeOfFirstAdd, timeOfFirstAvailability);
@@ -447,17 +461,21 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
   // AutotestPrivateApiTest:
   void SetUpOnMainThread() override {
     AutotestPrivateApiTest::SetUpOnMainThread();
+
     tracing_helper_.SetUp(profile());
+    root_surface_ = std::make_unique<exo::Surface>();
     performance_tracing()->SetCustomSessionReadyCallbackForTesting(
         base::BindRepeating(
             &arc::ArcAppPerformanceTracingTestHelper::PlayDefaultSequence,
-            base::Unretained(&tracing_helper())));
+            base::Unretained(&tracing_helper_), root_surface_.get()));
   }
 
   void TearDownOnMainThread() override {
+    root_surface_.reset();
     performance_tracing()->SetCustomSessionReadyCallbackForTesting(
         arc::ArcAppPerformanceTracing::CustomSessionReadyCallback());
     tracing_helper_.TearDown();
+
     AutotestPrivateApiTest::TearDownOnMainThread();
   }
 
@@ -469,14 +487,15 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
     return tracing_helper_.GetTracing();
   }
 
+  std::unique_ptr<exo::Surface> root_surface_;
+
  private:
   arc::ArcAppPerformanceTracingTestHelper tracing_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
-  exo::Surface root_surface;
   const auto arc_widget = arc::ArcTaskWindowBuilder()
-                              .SetShellRootSurface(&root_surface)
+                              .SetShellRootSurface(root_surface_.get())
                               .BuildOwnsNativeWidget();
 
   performance_tracing()->OnWindowActivated(
@@ -547,17 +566,15 @@ class AutotestPrivateSearchTest
     : public AutotestPrivateApiTest,
       public ::testing::WithParamInterface</* tablet_mode =*/bool> {
  public:
-  AutotestPrivateSearchTest() {
-    feature_list.InitAndEnableFeature(
-        ash::features::kAutocompleteExtendedSuggestions);
-  }
+  AutotestPrivateSearchTest() = default;
 
   ~AutotestPrivateSearchTest() override = default;
   AutotestPrivateSearchTest(const AutotestPrivateSearchTest&) = delete;
   AutotestPrivateSearchTest& operator=(const AutotestPrivateSearchTest&) =
       delete;
 
-  std::vector<ChromeSearchResult*> PublishedResults() {
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+  PublishedResults() {
     return AppListClientImpl::GetInstance()
         ->GetModelUpdaterForTest()
         ->GetPublishedSearchResultsForTest();
@@ -595,17 +612,20 @@ class AutotestPrivateSearchTest
     }
     return results;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AutotestPrivateSearchTest,
                          /* tablet_mode= */ ::testing::Bool());
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LauncherSearchBoxStateAPITest \
+  DISABLED_LauncherSearchBoxStateAPITest
+#else
+#define MAYBE_LauncherSearchBoxStateAPITest LauncherSearchBoxStateAPITest
+#endif
 IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
-                       LauncherSearchBoxStateAPITest) {
+                       MAYBE_LauncherSearchBoxStateAPITest) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
   test::GetAppListClient()->ShowAppList(ash::AppListShowSource::kSearchKey);
   if (!GetParam()) {
@@ -630,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
   results_waiter.Wait();
 
   std::vector<ChromeSearchResult*> results;
-  for (auto* result : PublishedResults()) {
+  for (ChromeSearchResult* result : PublishedResults()) {
     // There may be zero state results that are also published, but not visible
     // in the UI. This test should only check search list results.
     if (result->display_type() != ash::SearchResultDisplayType::kList) {
@@ -646,6 +666,57 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
 
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("launcherSearchBoxState"))
       << message_;
+}
+
+class AutotestPrivateIsFieldTrialActiveApiTest : public AutotestPrivateApiTest {
+ public:
+  AutotestPrivateIsFieldTrialActiveApiTest() {
+    base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
+        "ActiveTrialForTest", "GroupForTest");
+    trial->Activate();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateIsFieldTrialActiveApiTest,
+                       IsFieldTrialActive) {
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("isFieldTrialActive"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ClearAllowedPref) {
+  static constexpr auto kTestTheme =
+      ash::personalization_app::mojom::AmbientTheme::kFloatOnBy;
+  ash::personalization_app::mojom::AmbientTheme default_theme =
+      ash::AmbientUiSettings::ReadFromPrefService(
+          *browser()->profile()->GetPrefs())
+          .theme();
+  ASSERT_NE(kTestTheme, default_theme);
+  ash::AmbientUiSettings(kTestTheme)
+      .WriteToPrefService(*browser()->profile()->GetPrefs());
+
+  base::Value::List suite_args;
+  suite_args.Append(base::Value(ash::ambient::prefs::kAmbientUiSettings));
+
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("clearAllowedPref",
+                                              std::move(suite_args)))
+      << message_;
+  // Value read back should be the default.
+  EXPECT_EQ(ash::AmbientUiSettings::ReadFromPrefService(
+                *browser()->profile()->GetPrefs())
+                .theme(),
+            default_theme);
+}
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, SetDeviceLanguage) {
+  std::string target_locale = "ja-JP";
+  base::Value::List args;
+  args.Append(base::Value(target_locale));
+  ASSERT_TRUE(
+      RunAutotestPrivateExtensionTest("setDeviceLanguage", std::move(args)))
+      << message_;
+  std::string cur_locale = browser()->profile()->GetPrefs()->GetString(
+      language::prefs::kApplicationLocale);
+  EXPECT_EQ(cur_locale, target_locale);
 }
 
 }  // namespace extensions

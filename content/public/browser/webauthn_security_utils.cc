@@ -60,9 +60,10 @@ bool OriginIsAllowedToClaimRelyingPartyId(
           claimed_relying_party_id,
           net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    // TODO(crbug.com/803414): Accept corner-case situations like the
-    // following origin: "https://login.awesomecompany", relying_party_id:
-    // "awesomecompany".
+    // This prevents "https://login.awesomecompany" from claiming
+    // "awesomecompany", which is allowed by the spec but disallowed by
+    // chromium. It is a potential footgun if a company uses an internal label
+    // that later gets added to the PSL.
     return false;
   }
 

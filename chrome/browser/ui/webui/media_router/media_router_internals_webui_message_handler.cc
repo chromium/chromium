@@ -87,7 +87,7 @@ void MediaRouterInternalsWebUIMessageHandler::HandleGetProviderState(
     return;
   }
 
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
+  std::optional<mojom::MediaRouteProviderId> provider_id =
       ProviderIdFromString(args[1].GetString());
   if (!provider_id) {
     RejectJavascriptCallback(callback_id,

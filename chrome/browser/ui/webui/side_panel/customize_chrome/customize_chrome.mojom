@@ -4,6 +4,7 @@
 
 module side_panel.mojom;
 
+import "mojo/public/mojom/base/token.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
 
@@ -15,6 +16,9 @@ struct BackgroundImage {
   url.mojom.Url snapshot_url;
   // Whether the image is a local resource.
   bool is_uploaded_image;
+  // Id for local resource. It is empty if it is an uploaded image and set if
+  // it is a local wallpaper search resource.
+  mojo_base.mojom.Token? local_background_id;
   // Title of the background image.
   string title;
   // Collection id of the background image.
@@ -86,6 +90,16 @@ enum CustomizeChromeSection {
   kAppearance,
   kShortcuts,
   kModules,
+  kWallpaperSearch,
+};
+
+enum ChromeWebStoreCollection {
+  kWrittingEssentials,
+};
+
+enum ChromeWebStoreCategory {
+  kWorkflowPlanning,
+  kShopping,
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -139,8 +153,17 @@ interface CustomizeChromePageHandler {
   // Open Chrome Web Store's theme page in a new tab.
   OpenChromeWebStore();
 
+  // Open Chrome Web Store's home page in a new tab.
+  OpenChromeWebStoreHomePage();
+
   // Opens link to Chrome Web Store theme in a new tab.
   OpenThirdPartyThemePage(string theme_id);
+
+  // Opens link to Chrome Web Store category page in a new tab.
+  OpenChromeWebStoreCategoryPage(ChromeWebStoreCategory category);
+
+  // Opens link to Chrome Web Store collection page in a new tab.
+  OpenChromeWebStoreCollectionPage(ChromeWebStoreCollection collection);
 
   // If |visible| the modules will be shown.
   SetModulesVisible(bool visible);
@@ -154,14 +177,14 @@ interface CustomizeChromePageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface CustomizeChromePage {
-   // Sets available modules and their associated properties such as id, name,
-   // enabled status, visibility and managed state.
-   SetModulesSettings(array<ModuleSettings> modules_settings, bool managed,
-       bool visible);
+  // Sets available modules and their associated properties such as id, name,
+  // enabled status, visibility and managed state.
+  SetModulesSettings(array<ModuleSettings> modules_settings, bool managed,
+      bool visible);
   // Sets the visibility of NTP tiles and whether custom links are enabled.
   SetMostVisitedSettings(bool custom_links_enabled, bool visible);
-   // Sets the current theme.
-   SetTheme(Theme theme);
+  // Sets the current theme.
+  SetTheme(Theme theme);
   // Scrolls side panel to |section|. Possibly a response to a call to
   // |CustomizeChromePageHandler.UpdateScrollToSection()|.
   ScrollToSection(CustomizeChromeSection section);

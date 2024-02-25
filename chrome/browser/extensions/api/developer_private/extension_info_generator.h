@@ -15,14 +15,9 @@
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-namespace supervised_user {
-class SupervisedUserService;
-}  // namespace supervised_user
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace content {
 class BrowserContext;
@@ -78,7 +73,8 @@ class ExtensionInfoGenerator {
   // extensions page.
   static api::developer_private::SafetyCheckStrings
   CreateSafetyCheckDisplayString(const CWSInfoService::CWSInfo& cws_info,
-                                 api::developer_private::ExtensionState state);
+                                 api::developer_private::ExtensionState state,
+                                 BitMapBlocklistState blocklist_state);
 
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
@@ -107,9 +103,6 @@ class ExtensionInfoGenerator {
   raw_ptr<WarningService> warning_service_;
   raw_ptr<ErrorConsole> error_console_;
   raw_ptr<ImageLoader> image_loader_;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // The number of pending image loads.
   size_t pending_image_loads_;

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/Win x64 Builder (dbg)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -19,7 +22,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -42,7 +46,8 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -72,7 +77,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "win10_chromium_x64_dbg_ng",
+          "builder": "win10-dbg",
           "group": "tryserver.chromium.win"
         }
       ]

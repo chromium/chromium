@@ -5,6 +5,7 @@
 #include "services/audio/input_controller.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -61,7 +62,9 @@ enum class DecreaseFifoSizeSetting {
   kDecreasedTo0,
 };
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 const std::string kFifoSizeParameter = "fifo_size";
+#endif
 
 }  // namespace
 
@@ -74,7 +77,7 @@ class MockInputControllerEventHandler : public InputController::EventHandler {
   MockInputControllerEventHandler& operator=(
       const MockInputControllerEventHandler&) = delete;
 
-  void OnLog(base::StringPiece) override {}
+  void OnLog(std::string_view) override {}
 
   MOCK_METHOD1(OnCreated, void(bool initially_muted));
   MOCK_METHOD1(OnError, void(InputController::ErrorCode error_code));
@@ -122,7 +125,7 @@ class MockAudioInputStream : public media::AudioInputStream {
     captured_callback_ = callback;
   }
 
-  absl::optional<AudioInputCallback*> captured_callback_;
+  std::optional<AudioInputCallback*> captured_callback_;
 };
 
 enum class AudioManagerType { MOCK, FAKE };

@@ -99,26 +99,64 @@ void File::Initialize(const FilePath& path, uint32_t flags) {
 }
 #endif
 
+std::optional<size_t> File::Read(int64_t offset, span<uint8_t> data) {
+  span<char> chars = base::as_writable_chars(data);
+  int size = checked_cast<int>(chars.size());
+  int result = Read(offset, chars.data(), size);
+  if (result < 0) {
+    return std::nullopt;
+  }
+  return checked_cast<size_t>(result);
+}
+
 bool File::ReadAndCheck(int64_t offset, span<uint8_t> data) {
-  int size = checked_cast<int>(data.size());
-  return Read(offset, reinterpret_cast<char*>(data.data()), size) == size;
+  // Size checked in span form of Read() above.
+  return Read(offset, data) == static_cast<int>(data.size());
+}
+
+std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
+  span<char> chars = base::as_writable_chars(data);
+  int size = checked_cast<int>(chars.size());
+  int result = ReadAtCurrentPos(chars.data(), size);
+  if (result < 0) {
+    return std::nullopt;
+  }
+  return checked_cast<size_t>(result);
 }
 
 bool File::ReadAtCurrentPosAndCheck(span<uint8_t> data) {
-  int size = checked_cast<int>(data.size());
-  return ReadAtCurrentPos(reinterpret_cast<char*>(data.data()), size) == size;
+  // Size checked in span form of ReadAtCurrentPos() above.
+  return ReadAtCurrentPos(data) == static_cast<int>(data.size());
+}
+
+std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
+  span<const char> chars = base::as_chars(data);
+  int size = checked_cast<int>(chars.size());
+  int result = Write(offset, chars.data(), size);
+  if (result < 0) {
+    return std::nullopt;
+  }
+  return checked_cast<size_t>(result);
 }
 
 bool File::WriteAndCheck(int64_t offset, span<const uint8_t> data) {
-  int size = checked_cast<int>(data.size());
-  return Write(offset, reinterpret_cast<const char*>(data.data()), size) ==
-         size;
+  // Size checked in span form of Write() above.
+  return Write(offset, data) == static_cast<int>(data.size());
+}
+
+std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
+  span<const char> chars = base::as_chars(data);
+  int size = checked_cast<int>(chars.size());
+  int result = WriteAtCurrentPos(chars.data(), size);
+  if (result < 0) {
+    return std::nullopt;
+  }
+  return checked_cast<size_t>(result);
 }
 
 bool File::WriteAtCurrentPosAndCheck(span<const uint8_t> data) {
-  int size = checked_cast<int>(data.size());
-  return WriteAtCurrentPos(reinterpret_cast<const char*>(data.data()), size) ==
-         size;
+  // Size checked in span form of WriteAtCurrentPos() above.
+  return WriteAtCurrentPos(data) == static_cast<int>(data.size());
 }
 
 // static

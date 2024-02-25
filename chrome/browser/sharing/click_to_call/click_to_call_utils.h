@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_UTILS_H_
 #define CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_UTILS_H_
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -19,8 +19,8 @@ bool ShouldOfferClickToCallForURL(content::BrowserContext* browser_context,
                                   const GURL& url);
 
 // Returns the first possible phone number in |selection_text| if click to call
-// should be offered. Otherwise returns absl::nullopt.
-absl::optional<std::string> ExtractPhoneNumberForClickToCall(
+// should be offered. Otherwise returns std::nullopt.
+std::optional<std::string> ExtractPhoneNumberForClickToCall(
     content::BrowserContext* browser_context,
     const std::string& selection_text);
 

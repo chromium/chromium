@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -58,6 +59,8 @@ class CrosNetworkConfigTestHelper {
   void Initialize(
       ManagedNetworkConfigurationHandler* network_configuration_handler);
 
+  void SetSerialNumber(const std::string& serial_number);
+
  protected:
   // Called in |~CrosNetworkConfigTestHelper()| to set the global network config
   // to nullptr and destroy cros_network_config_impl_.
@@ -67,6 +70,7 @@ class CrosNetworkConfigTestHelper {
       /*use_default_devices_and_services=*/false};
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<CrosNetworkConfig> cros_network_config_impl_;
+  system::FakeStatisticsProvider statistics_provider_;
 };
 
 }  // namespace network_config

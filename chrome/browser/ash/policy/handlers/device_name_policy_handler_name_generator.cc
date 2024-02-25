@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_util.h"
 
 namespace policy {
@@ -24,7 +25,7 @@ bool inline IsValidHostnameCharacter(char c) {
   return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '_' || c == '-';
 }
 
-bool IsValidHostname(base::StringPiece hostname) {
+bool IsValidHostname(std::string_view hostname) {
   if ((hostname.size() > kMaxHostnameLength) || (hostname.size() == 0))
     return false;
   if (hostname[0] == '-')
@@ -38,12 +39,12 @@ bool IsValidHostname(base::StringPiece hostname) {
 
 }  // namespace
 
-std::string FormatHostname(base::StringPiece name_template,
-                           base::StringPiece asset_id,
-                           base::StringPiece serial,
-                           base::StringPiece mac,
-                           base::StringPiece machine_name,
-                           base::StringPiece location) {
+std::string FormatHostname(std::string_view name_template,
+                           std::string_view asset_id,
+                           std::string_view serial,
+                           std::string_view mac,
+                           std::string_view machine_name,
+                           std::string_view location) {
   std::string result = std::string(name_template);
   base::ReplaceSubstringsAfterOffset(&result, 0, kAssetIDPlaceholder, asset_id);
   base::ReplaceSubstringsAfterOffset(&result, 0, kSerialNumPlaceholder, serial);

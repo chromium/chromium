@@ -5,6 +5,7 @@
 #include "ash/app_menu/notification_item_view.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -115,7 +116,7 @@ gfx::Size NotificationItemView::CalculatePreferredSize() const {
                    kNotificationItemViewHeight);
 }
 
-void NotificationItemView::Layout() {
+void NotificationItemView::Layout(PassKey) {
   gfx::Insets insets = GetInsets();
   // Enforce |text_container_| width, if necessary the labels will elide as a
   // result of |text_container_| being too small to hold the full width of its
@@ -166,5 +167,8 @@ void NotificationItemView::OnGestureEvent(ui::GestureEvent* event) {
       return;
   }
 }
+
+BEGIN_METADATA(NotificationItemView)
+END_METADATA
 
 }  // namespace ash

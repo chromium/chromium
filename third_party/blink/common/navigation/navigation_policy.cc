@@ -12,37 +12,21 @@
 
 namespace blink {
 
-namespace {
-
-void LogPerPolicyApplied(NavigationDownloadType type) {
-  UMA_HISTOGRAM_ENUMERATION("Navigation.DownloadPolicy.LogPerPolicyApplied",
-                            type);
-}
-
-void LogArbitraryPolicyPerDownload(NavigationDownloadType type) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Navigation.DownloadPolicy.LogArbitraryPolicyPerDownload", type);
-}
-}  // namespace
-
 NavigationDownloadPolicy::NavigationDownloadPolicy() = default;
 NavigationDownloadPolicy::~NavigationDownloadPolicy() = default;
 NavigationDownloadPolicy::NavigationDownloadPolicy(
     const NavigationDownloadPolicy&) = default;
 
 void NavigationDownloadPolicy::SetAllowed(NavigationDownloadType type) {
-  DCHECK(type != NavigationDownloadType::kDefaultAllow);
   observed_types.set(static_cast<size_t>(type));
 }
 
 void NavigationDownloadPolicy::SetDisallowed(NavigationDownloadType type) {
-  DCHECK(type != NavigationDownloadType::kDefaultAllow);
   observed_types.set(static_cast<size_t>(type));
   disallowed_types.set(static_cast<size_t>(type));
 }
 
 bool NavigationDownloadPolicy::IsType(NavigationDownloadType type) const {
-  DCHECK(type != NavigationDownloadType::kDefaultAllow);
   return observed_types.test(static_cast<size_t>(type));
 }
 
@@ -64,28 +48,6 @@ ResourceInterceptPolicy NavigationDownloadPolicy::GetResourceInterceptPolicy()
 
 bool NavigationDownloadPolicy::IsDownloadAllowed() const {
   return disallowed_types.none();
-}
-
-void NavigationDownloadPolicy::RecordHistogram() const {
-  if (observed_types.none()) {
-    LogPerPolicyApplied(NavigationDownloadType::kDefaultAllow);
-    LogArbitraryPolicyPerDownload(NavigationDownloadType::kDefaultAllow);
-    return;
-  }
-
-  bool first_type_seen = false;
-  for (size_t i = 0; i < observed_types.size(); ++i) {
-    if (observed_types.test(i)) {
-      NavigationDownloadType policy = static_cast<NavigationDownloadType>(i);
-      DCHECK(policy != NavigationDownloadType::kDefaultAllow);
-      LogPerPolicyApplied(policy);
-      if (!first_type_seen) {
-        LogArbitraryPolicyPerDownload(policy);
-        first_type_seen = true;
-      }
-    }
-  }
-  DCHECK(first_type_seen);
 }
 
 void NavigationDownloadPolicy::ApplyDownloadFramePolicy(

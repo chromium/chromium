@@ -35,7 +35,7 @@ using ::signin::ConsentLevel;
 using ::signin::IdentityTestEnvironment;
 
 class ApiAccessTokenFetcherTest
-    : public ::testing::TestWithParam<FetcherConfig> {
+    : public ::testing::TestWithParam<AccessTokenConfig> {
  protected:
   // A pinhole class that allows to verify the fetch result.
   class Receiver {
@@ -53,6 +53,7 @@ class ApiAccessTokenFetcherTest
     FetchResultType fetch_result_ = unexpected(GoogleServiceAuthError());
   };
 
+  AccessTokenConfig GetAccessTokenConfig() { return GetParam(); }
   TaskEnvironment task_environment_;
   IdentityTestEnvironment identity_test_env_;
 };
@@ -62,8 +63,7 @@ TEST_P(ApiAccessTokenFetcherTest, ReadToken) {
       "bob@example.com", ConsentLevel::kSignin);
   Receiver receiver;
   ApiAccessTokenFetcher service(*identity_test_env_.identity_manager(),
-                                /*fetcher_config=*/GetParam(),
-                                receiver.Receive());
+                                GetAccessTokenConfig(), receiver.Receive());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "expected_access_token", Time::Max());
@@ -76,8 +76,7 @@ TEST_P(ApiAccessTokenFetcherTest, AuthError) {
       "bob@example.com", ConsentLevel::kSignin);
   Receiver receiver;
   ApiAccessTokenFetcher service(*identity_test_env_.identity_manager(),
-                                /*fetcher_config=*/GetParam(),
-                                receiver.Receive());
+                                GetAccessTokenConfig(), receiver.Receive());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(
@@ -87,10 +86,11 @@ TEST_P(ApiAccessTokenFetcherTest, AuthError) {
             GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
 }
 
-INSTANTIATE_TEST_SUITE_P(ApiAccessTokenFetcherTest,
-                         ApiAccessTokenFetcherTest,
-                         ::testing::Values(kClassifyUrlConfig,
-                                           kListFamilyMembersConfig));
+INSTANTIATE_TEST_SUITE_P(
+    ApiAccessTokenFetcherTest,
+    ApiAccessTokenFetcherTest,
+    ::testing::Values(kClassifyUrlConfig.access_token_config,
+                      kListFamilyMembersConfig.access_token_config));
 
 }  // namespace
 }  // namespace supervised_user

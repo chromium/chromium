@@ -1,0 +1,28 @@
+{
+  "name": "Camera Permission Policy Allowed Test",
+  "version": "1.0.0",
+  "id": "/",
+  "scope": "/",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "permissions_policy": {
+    "cross-origin-isolated": [
+      "*"
+    ],
+    "camera": [
+      "self",
+      "https://permission-allowed.com:*"
+    ],
+    "microphone": [
+      "self",
+      "https://permission-allowed.com:*"
+    ]
+  },
+  "icons": [
+    {
+      "src": "256x256-green.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}

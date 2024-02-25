@@ -289,7 +289,7 @@ void StorageArea::HandleFunctionCall(const std::string& method_name,
   if (!access_checker_->HasAccessOrThrowError(context, full_method_name))
     return;
 
-  std::vector<v8::Local<v8::Value>> argument_list = arguments->GetAll();
+  v8::LocalVector<v8::Value> argument_list = arguments->GetAll();
 
   const APISignature* signature = type_refs_->GetTypeMethodSignature(
       base::StringPrintf("%s.%s", "storage.StorageArea", method_name.c_str()));

@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell.h"
@@ -38,7 +38,7 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
 
   void TearDown() override { AshTestBase::TearDown(); }
 
-  AccessibilityControllerImpl* GetAccessibilitController() {
+  AccessibilityController* GetAccessibilitController() {
     return Shell::Get()->accessibility_controller();
   }
 

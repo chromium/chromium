@@ -34,8 +34,8 @@ class GrpcHttpConnectionDelegate
 
  private:
   const int id_;
-  const raw_ptr<GrpcHttpConnectionClient, ExperimentalAsh>
-      grpc_http_connection_client_ = nullptr;
+  const raw_ptr<GrpcHttpConnectionClient> grpc_http_connection_client_ =
+      nullptr;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

@@ -1,0 +1,4 @@
+Tests browser window fullscreen and restore.
+Initial: normal visible
+Fullscreen: fullscreen visible
+Restored: normal visible

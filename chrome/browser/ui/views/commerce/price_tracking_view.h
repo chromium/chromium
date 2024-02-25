@@ -9,7 +9,7 @@
 #include "base/scoped_observation.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -18,10 +18,11 @@ class Profile;
 
 class PriceTrackingView : public commerce::SubscriptionsObserver,
                           public views::FlexLayoutView {
+  METADATA_HEADER(PriceTrackingView, views::FlexLayoutView)
+
  public:
   PriceTrackingView(Profile* profile,
                     const GURL& page_url,
-                    const gfx::ImageSkia& product_image,
                     bool is_price_track_enabled,
                     const commerce::ProductInfo& product_info);
   ~PriceTrackingView() override;

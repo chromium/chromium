@@ -34,7 +34,6 @@ class HttpRequestHeaders;
 class HttpResponseInfo;
 class IOBuffer;
 class SSLCertRequestInfo;
-class SSLInfo;
 class StreamSocket;
 class UploadDataStream;
 
@@ -109,8 +108,6 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
     return non_informational_response_start_time_;
   }
   base::TimeTicks first_early_hints_time() { return first_early_hints_time_; }
-
-  void GetSSLInfo(SSLInfo* ssl_info);
 
   void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info);
 
@@ -321,6 +318,12 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // |request_body_read_buf_| unless the data is chunked.
   scoped_refptr<SeekableIOBuffer> request_body_send_buf_;
   bool sent_last_chunk_ = false;
+
+  // Whether the Content-Length was known and extra data was discarded.
+  bool discarded_extra_data_ = false;
+
+  // Whether the response body should be truncated to the Content-Length.
+  const bool truncate_to_content_length_enabled_;
 
   // Error received when uploading the body, if any.
   int upload_error_ = OK;

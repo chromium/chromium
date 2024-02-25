@@ -167,8 +167,8 @@ interface URLLoaderNetworkServiceObserver {
   OnPrivateNetworkAccessPermissionRequired(
       url.mojom.Url url,
       network.mojom.IPAddress ip_address,
-      string private_network_device_id,
-      string private_network_device_name) => (bool permission_granted);
+      string? private_network_device_id,
+      string? private_network_device_name) => (bool permission_granted);
 
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.
